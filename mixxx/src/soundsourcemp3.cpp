@@ -550,7 +550,19 @@ int SoundSourceMp3::parseHeader()
 {
     setType("mp3");
 
-    TagLib::MPEG::File f(getFilename().toUtf8().constData());
+    #ifdef __WINDOWS__
+		/* From Tobias: A Utf-8 string did not work on my Windows XP (German edition)
+		 * If you try this conversion, f.isValid() will return false in many cases
+		 * and processTaglibFile() will fail
+		 * 
+		 * The method toLocal8Bit() returns the local 8-bit representation of the string as a QByteArray. 
+		 * The returned byte array is undefined if the string contains characters not supported 
+		 * by the local 8-bit encoding.
+		 */
+		TagLib::MPEG::File f(getFilename().toLocal8Bit().constData());
+	#else
+		TagLib::MPEG::File f(getFilename().toUtf8().constData());
+	#endif
 
     // Takes care of all the default metadata
     bool result = processTaglibFile(f);
