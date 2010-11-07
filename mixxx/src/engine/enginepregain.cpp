@@ -52,6 +52,7 @@ EnginePregain::~EnginePregain()
 {
     delete potmeterPregain;
     delete m_pControlReplayGain;
+    delete m_pTotalGain;
 }
 
 void EnginePregain::process(const CSAMPLE * pIn, const CSAMPLE * pOut, const int iBufferSize)
