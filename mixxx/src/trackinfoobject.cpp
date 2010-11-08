@@ -123,6 +123,7 @@ void TrackInfoObject::initialize(bool parseHeader) {
     m_iChannels = 0;
     m_fCuePoint = 0.0f;
     m_dVisualResampleRate = 0;
+    m_pTrackBeats = NULL;
 
     // parse() parses the metadata from file. This is not a quick operation!
     if (parseHeader)
