@@ -411,7 +411,8 @@ void VinylControlXwax::run()
 	                dDriftControl = ((filePosition - dVinylPosition)  / dVinylPosition) / 100 * 4.0f;
 	                
 	                //if we hit the end of the ring, loop around
-	                if(ringPos++ > RING_SIZE)
+                    ringPos++;
+	                if(ringPos > RING_SIZE)
        				 	ringPos = 0;
 		            dOldPos = dVinylPosition;
 		        }
