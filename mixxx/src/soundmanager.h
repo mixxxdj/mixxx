@@ -59,7 +59,7 @@ class SoundManager : public QObject
         int setConfig(SoundManagerConfig config);
         void checkConfig();
         QHash<AudioOutput, const CSAMPLE*>
-            requestBuffer(QList<AudioOutput> outputs, unsigned long iFramesPerBuffer, SoundDevice*);
+            requestBuffer(QList<AudioOutput> outputs, unsigned long iFramesPerBuffer, SoundDevice*, double streamTime);
         void pushBuffer(QList<AudioInput> inputs, short *inputBuffer, 
                         unsigned long iFramesPerBuffer, unsigned int iFrameSize);
     signals:
@@ -76,6 +76,7 @@ class SoundManager : public QObject
         QHash<AudioOutput, const CSAMPLE*> m_outputBuffers;
         QHash<AudioInput, short*> m_inputBuffers; /** Audio received from input */
         QHash<SoundDevice*, long> m_deviceFrameCount;   /** Sound card sync */
+        QHash<SoundDevice*, double> m_deviceStreamTime; /** Sound card sync */
         QTimer m_soundcardSyncTimer;    /** Sound card sync */
 #ifdef __VINYLCONTROL__
         QList<VinylControlProxy*> m_VinylControl;
