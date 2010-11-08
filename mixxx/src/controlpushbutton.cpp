@@ -41,7 +41,7 @@ void ControlPushButton::setToggleButton(bool bIsToggleButton)
 
 void ControlPushButton::setStates(int num_states)
 {
-	m_iNoStates = num_states;
+    m_iNoStates = num_states;
 }
 
 void ControlPushButton::setValueFromMidi(MidiCategory c, double v)
@@ -55,45 +55,32 @@ void ControlPushButton::setValueFromMidi(MidiCategory c, double v)
     
     if (m_bIsToggleButton) //This block makes push-buttons act as toggle buttons.
     {
-    	if (c == NOTE_ON)
-    	{
-    		if (v > 0.)
-    		{
-    			m_dValue = !m_dValue;
-    		}
-    	}
-    	else
-    	{
-			if (v > 0.)
-		    {
-		        if (m_dValue == 0.)
-		            m_dValue = 1.;
-		    }
-		    else
-		   	{
-		   		if (m_dValue == 1.)
-		   			m_dValue = 0.;
-		   	}
-		}
+        if (c == NOTE_ON)
+        {
+            if (v > 0.)
+            {
+                m_dValue = !m_dValue;
+            }
+        }
     }
     else //Not a toggle button (trigger only when button pushed)
     {
-    	if (m_iNoStates > 2) //multistate button
-    	{
-    		if (v > 0.) //looking for NOTE_ON doesn't seem to work...
-    		{
-	    		m_dValue++;
-	    		if (m_dValue >= m_iNoStates)
-	    			m_dValue = 0;
-	    	}
-    	}
-    	else  //press-and-hold button
-    	{
-		    if (v > 0.)
-	        	m_dValue = v;
-		    else
-		        m_dValue = 0.0;
-		}
+        if (m_iNoStates > 2) //multistate button
+        {
+            if (v > 0.) //looking for NOTE_ON doesn't seem to work...
+            {
+                m_dValue++;
+                if (m_dValue >= m_iNoStates)
+                    m_dValue = 0;
+            }
+        }
+        else  //press-and-hold button
+        {
+            if (c == NOTE_ON)
+                m_dValue = v;
+            else if (c == NOTE_OFF)
+                m_dValue = 0.0;
+        }
     }
 
     emit(valueChanged(m_dValue));
