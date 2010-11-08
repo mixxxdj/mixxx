@@ -44,4 +44,12 @@ double qip(CSAMPLE x, unsigned int n);
 
 static CSAMPLE pi     = acos(-1.0f);
 
+#ifdef _MSC_VER
+#include <float.h>  // for _isnan() on VC++
+#define isnan(x) _isnan(x)  // VC++ uses _isnan() instead of isnan()
+#else
+//#include <math.h>  // for isnan() everywhere else
+#endif
+
+
 #endif

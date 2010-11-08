@@ -34,6 +34,9 @@
 
  ********************/
 
+bool VinylControlXwax::m_bLUTInitialized = false;
+QMutex VinylControlXwax::m_xwaxLUTMutex;
+
 VinylControlXwax::VinylControlXwax(ConfigObject<ConfigValue> * pConfig, const char * _group) : VinylControl(pConfig, _group)
 {
     dOldPos                 = 0.0f;
@@ -69,10 +72,17 @@ VinylControlXwax::VinylControlXwax(ConfigObject<ConfigValue> * pConfig, const ch
     //qDebug() << "Xwax Vinyl control starting with a sample rate of:" << iSampleRate;
     qDebug() << "Building timecode lookup tables...";
 
-  
-    //Initialize the timecoder structure.
-    timecoder_init(&timecoder, timecode, iSampleRate);
     
+    //Initialize the timecoder structure.
+    m_xwaxLUTMutex.lock(); //Static mutex! We don't want two threads doing this!
+   
+    timecoder_init(&timecoder, timecode, 1.0f, iSampleRate);
+    //Note that timecoder_init will not double-malloc the LUTs, and after this we are guaranteed
+    //that the LUT has been generated unless we ran out of memory.
+    m_bLUTInitialized = true;
+    //}
+    m_xwaxLUTMutex.unlock();
+
     qDebug() << "Starting vinyl control xwax thread";
 
     //Start this thread (ends up calling-back the function "run()" below)
@@ -89,6 +99,7 @@ VinylControlXwax::~VinylControlXwax()
 
     //Cleanup xwax nicely
     timecoder_clear(&timecoder);
+    m_bLUTInitialized = false;
 
     // Continue the run() function and close it
     lockSamples.lock();
@@ -100,6 +111,16 @@ VinylControlXwax::~VinylControlXwax()
     wait();
 }
 
+//static
+void VinylControlXwax::freeLUTs()
+{
+    m_xwaxLUTMutex.lock(); //Static mutex! We don't want two threads doing this!
+    if (m_bLUTInitialized) {
+        timecoder_free_lookup(); //Frees all the LUTs in xwax.
+        m_bLUTInitialized = false;
+    }
+    m_xwaxLUTMutex.unlock();
+}
 
 
 void VinylControlXwax::AnalyseSamples(short *samples, size_t size)
@@ -390,7 +411,8 @@ void VinylControlXwax::run()
 	                dDriftControl = ((filePosition - dVinylPosition)  / dVinylPosition) / 100 * 4.0f;
 	                
 	                //if we hit the end of the ring, loop around
-	                if(ringPos++ > RING_SIZE)
+                    ringPos++;
+	                if(ringPos > RING_SIZE)
        				 	ringPos = 0;
 		            dOldPos = dVinylPosition;
 		        }

@@ -24,6 +24,7 @@
 #include "sounddeviceportaudio.h"
 #include "engine/enginemaster.h"
 #include "controlobjectthreadmain.h"
+#include "vinylcontrolxwax.h"
 #include "audiopath.h"
 
 /** Initializes Mixxx's audio core
@@ -237,6 +238,9 @@ void SoundManager::closeDevices()
         if (vc != NULL) {
             delete vc;
         }
+        //xwax has a global LUT that we need to free after we've shut down our
+        //vinyl control threads because it's not thread-safe.
+        VinylControlXwax::freeLUTs();
     }
     m_VinylMapping.clear();
 #endif

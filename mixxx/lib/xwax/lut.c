@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008 Mark Hills <mark@pogo.org.uk>
+ * Copyright (C) 2010 Mark Hills <mark@pogo.org.uk>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -43,22 +43,22 @@ int lut_init(struct lut_t *lut, int nslots)
     bytes = sizeof(struct slot_t) * nslots + sizeof(slot_no_t) * hashes;
 
     fprintf(stderr, "Lookup table has %d hashes to %d slots"
-            " (%d slots per hash, %dKb)\n",
+            " (%d slots per hash, %zuKb)\n",
             hashes, nslots, nslots / hashes, bytes / 1024);
 
-    lut->slot = malloc(sizeof(struct slot_t) * nslots);
-    if(lut->slot == NULL) {
+    lut->slot = (struct slot_t*)malloc(sizeof(struct slot_t) * nslots);
+    if (lut->slot == NULL) {
         perror("malloc");
         return -1;
     }
 
-    lut->table = malloc(sizeof(slot_no_t) * hashes);
-    if(lut->table == NULL) {
+    lut->table = (slot_no_t*)malloc(sizeof(slot_no_t) * hashes);
+    if (lut->table == NULL) {
         perror("malloc");
         return -1;
     }
 
-    for(n = 0; n < hashes; n++)
+    for (n = 0; n < hashes; n++)
         lut->table[n] = NO_SLOT;
 
     lut->avail = 0;
@@ -99,9 +99,9 @@ unsigned int lut_lookup(struct lut_t *lut, unsigned int timecode)
     hash = HASH(timecode);
     slot_no = lut->table[hash];
 
-    while(slot_no != NO_SLOT) {
+    while (slot_no != NO_SLOT) {
         slot = &lut->slot[slot_no];
-        if(slot->timecode == timecode)
+        if (slot->timecode == timecode)
             return slot_no;
         slot_no = slot->next;
     }
