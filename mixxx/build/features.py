@@ -229,15 +229,12 @@ class VinylControl(Feature):
                    'dlgprefvinyl.cpp',
                    'vinylcontrolsignalwidget.cpp',
                    '#lib/scratchlib/DAnalyse.cpp']
-        if build.platform_is_windows:
-			raise Exception('timecoder_win32 not updated yet')
-            #sources.append("#lib/xwax/timecoder_win32.c")
-            #sources.append("#lib/xwax/lut.c")
-            #sources.append("#lib/xwax/pitch.c")
+        if build.toolchain_is_msvs:
+            sources.append("#lib/xwax/timecoder_win32.cpp")
         else:
             sources.append("#lib/xwax/timecoder.c")
-            sources.append("#lib/xwax/lut.c")
-            sources.append("#lib/xwax/pitch.c")
+        sources.append("#lib/xwax/lut.cpp")
+        sources.append("#lib/xwax/pitch.cpp")
         return sources
 
 class Tonal(Feature):

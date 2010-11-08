@@ -46,13 +46,13 @@ int lut_init(struct lut_t *lut, int nslots)
             " (%d slots per hash, %dKb)\n",
             hashes, nslots, nslots / hashes, bytes / 1024);
 
-    lut->slot = malloc(sizeof(struct slot_t) * nslots);
+    lut->slot = (struct slot_t*)malloc(sizeof(struct slot_t) * nslots);
     if(lut->slot == NULL) {
         perror("malloc");
         return -1;
     }
 
-    lut->table = malloc(sizeof(slot_no_t) * hashes);
+    lut->table = (slot_no_t*)malloc(sizeof(slot_no_t) * hashes);
     if(lut->table == NULL) {
         perror("malloc");
         return -1;

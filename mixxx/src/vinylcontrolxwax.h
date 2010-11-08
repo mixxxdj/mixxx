@@ -5,9 +5,9 @@
 #include <time.h>
 
 
-extern "C" {
+//extern "C" {
 #include "timecoder.h"
-}
+//}
 
 #define XWAX_DEVICE_FRAME 32
 #define XWAX_SMOOTHING (128 / XWAX_DEVICE_FRAME) /* result value is in frames */
@@ -22,7 +22,8 @@ class VinylControlXwax : public VinylControl
         virtual ~VinylControlXwax();
     	void ToggleVinylControl(bool enable);
     	bool isEnabled();
-    	void AnalyseSamples(short* samples, size_t size);      
+    	void AnalyseSamples(short* samples, size_t size);  
+        static void freeLUTs();
 protected:
 	void run();						// main thread loop
 
@@ -56,6 +57,8 @@ private:
 
     //Contains information that xwax's code needs internally about the timecode and how to process it.
     struct timecoder_t timecoder;
+    static QMutex m_xwaxLUTMutex; /** Static mutex that protects our creation/destruction of the xwax LUTs */
+    static bool m_bLUTInitialized;
 
 	short*  m_samples;
 	size_t  m_SamplesSize;
