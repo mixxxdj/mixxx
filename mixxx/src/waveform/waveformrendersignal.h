@@ -28,7 +28,6 @@ public:
     void resize(int w, int h);
     void setup(QDomNode node);
     void draw(QPainter *pPainter, QPaintEvent *event, QVector<float> *buffer, double playPos, double rateAdjust);
-    void drawgain(QPainter *pPainter, QPaintEvent *event, QVector<float> *buffer, double playPos, double rateAdjust, double gain);
     void newTrack(TrackPointer pTrack);
 
 public slots:

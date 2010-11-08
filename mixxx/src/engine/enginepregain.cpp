@@ -64,13 +64,14 @@ void EnginePregain::process(const CSAMPLE * pIn, const CSAMPLE * pOut, const int
     float fGain = potmeterPregain->get();
     float fRGain = m_pControlReplayGain->get();
     m_fReplayGainCorrection=1;
+    fGain = fGain/2;
     if(fRGain*fEnableRG != 0)
     {
 
         //Passing a user defined boost
         m_fReplayGainCorrection=fRGain*pow(10, fReplayGainBoost/20);
     }
-    fGain = (fGain/2)*m_fReplayGainCorrection;
+    fGain = fGain*m_fReplayGainCorrection;
     m_pTotalGain -> set(fGain);
 
 
