@@ -474,7 +474,7 @@ void SoundManager::sync()
 
 //Requests a buffer in the proper format, if we're prepared to give one.
 QHash<AudioOutput, const CSAMPLE*>
-SoundManager::requestBuffer(QList<AudioOutput> outputs, unsigned long iFramesPerBuffer, SoundDevice* device)
+SoundManager::requestBuffer(QList<AudioOutput> outputs, unsigned long iFramesPerBuffer, SoundDevice* device, double streamTime)
 {
     Q_UNUSED(outputs); // unused, we just give the caller the full hash -bkgood
     //qDebug() << "SoundManager::requestBuffer()";
@@ -483,6 +483,7 @@ SoundManager::requestBuffer(QList<AudioOutput> outputs, unsigned long iFramesPer
     long currentFrameCount = 0;
     if (m_deviceFrameCount.contains(device)) currentFrameCount=m_deviceFrameCount.value(device);
     m_deviceFrameCount.insert(device, currentFrameCount+iFramesPerBuffer);  // Overwrites existing value if already present
+    m_deviceStreamTime.insert(device, streamTime);  // Overwrites existing value if already present
     
     //qDebug() << "numOpenedDevices" << iNumOpenedDevices;
     //qDebug() << "iNumDevicesHaveRequestedBuffer" << iNumDevicesHaveRequestedBuffer;
@@ -614,12 +615,20 @@ void SoundManager::pushBuffer(QList<AudioInput> inputs, short * inputBuffer,
 }
 
 void SoundManager::soundcardSync() {
+    // Measure the skew
+    double firstCard = NULL;
     QHashIterator<SoundDevice*, long> i(m_deviceFrameCount);
+    qDebug() << "---";
     while (i.hasNext()) {
         i.next();
+        if (firstCard==NULL) firstCard = m_deviceStreamTime.value(i.key())*1000;
         qDebug() << i.key()->getDisplayName()
                  << "is running at" << (i.value()*1000)/m_soundcardSyncTimer.interval()
-                 << "audio frames per second";
+                 << "Hz (\"frames\") Clock skew =" << firstCard-(m_deviceStreamTime.value(i.key())*1000) << "ms";
     }
     m_deviceFrameCount.clear();
+    m_deviceStreamTime.clear();
+    
+    // TODO: Correct for it
+    
 }
