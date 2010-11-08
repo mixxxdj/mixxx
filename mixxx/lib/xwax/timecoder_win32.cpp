@@ -21,7 +21,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#ifndef _MSC_VER
 #include <unistd.h>
+#endif
 
 #include "timecoder.h"
 
@@ -51,91 +53,91 @@
 
 static struct timecode_def_t timecode_def[] = {
     {
-        .name = "serato_2a",
-        .desc = "Serato 2nd Ed., side A",
-        .resolution = 1000,
-        .flags = 0,
-        .bits = 20,
-        .seed = 0x59017,
-        .taps = 0x361e4,
-        .length = 712000,
-        .safe = 707000,
-        .lookup = false
+        "serato_2a",
+        "Serato 2nd Ed., side A",
+        1000,
+        0,
+        20,
+        0x59017,
+        0x361e4,
+        712000,
+        707000,
+        false
     },
     {
-        .name = "serato_2b",
-        .desc = "Serato 2nd Ed., side B",
-        .resolution = 1000,
-        .flags = 0,
-        .bits = 20,
-        .seed = 0x8f3c6,
-        .taps = 0x4f0d8, /* reverse of side A */
-        .length = 922000,
-        .safe = 917000,
-        .lookup = false
+        "serato_2b",
+        "Serato 2nd Ed., side B",
+        1000,
+        0,
+        20,
+        0x8f3c6,
+        0x4f0d8, /* reverse of side A */
+        922000,
+        917000,
+        false
     },
     {
-        .name = "serato_cd",
-        .desc = "Serato CD",
-        .resolution = 1000,
-        .flags = 0,
-        .bits = 20,
-        .seed = 0xd8b40,
-        .taps = 0x34d54,
-        .length = 950000,
-        .safe = 940000,
-        .lookup = false
+        "serato_cd",
+        "Serato CD",
+        1000,
+        0,
+        20,
+        0xd8b40,
+        0x34d54,
+        950000,
+        940000,
+        false
     },
     {
-        .name = "traktor_a",
-        .desc = "Traktor Scratch, side A",
-        .resolution = 2000,
-        .flags = SWITCH_PRIMARY | SWITCH_POLARITY | SWITCH_PHASE,
-        .bits = 23,
-        .seed = 0x134503,
-        .taps = 0x041040,
-        .length = 1500000,
-        .safe = 1480000,
-        .lookup = false        
+        "traktor_a",
+        "Traktor Scratch, side A",
+        2000,
+        SWITCH_PRIMARY | SWITCH_POLARITY | SWITCH_PHASE,
+        23,
+        0x134503,
+        0x041040,
+        1500000,
+        1480000,
+        false        
     },
     {
-        .name = "traktor_b",
-        .desc = "Traktor Scratch, side B",
-        .resolution = 2000,
-        .flags = SWITCH_PRIMARY | SWITCH_POLARITY | SWITCH_PHASE,
-        .bits = 23,
-        .seed = 0x32066c,
-        .taps = 0x041040, /* same as side A */
-        .length = 2110000,
-        .safe = 2090000,
-        .lookup = false
+        "traktor_b",
+        "Traktor Scratch, side B",
+        2000,
+        SWITCH_PRIMARY | SWITCH_POLARITY | SWITCH_PHASE,
+        23,
+        0x32066c,
+        0x041040, /* same as side A */
+        2110000,
+        2090000,
+        false
     },
     {
-        .name = "mixvibes_v2",
-        .desc = "MixVibes V2",
-        .resolution = 1300,
-        .flags = SWITCH_PHASE,
-        .bits = 20,
-        .seed = 0x22c90,
-        .taps = 0x00008,
-        .length = 950000,
-        .safe = 923000,
-        .lookup = false
+        "mixvibes_v2",
+        "MixVibes V2",
+        1300,
+        SWITCH_PHASE,
+        20,
+        0x22c90,
+        0x00008,
+        950000,
+        923000,
+        false
     },
     {
-        .name = "mixvibes_7inch",
-        .desc = "MixVibes 7\"",
-        .resolution = 1300,
-        .flags = SWITCH_PHASE,
-        .bits = 20,
-        .seed = 0x22c90,
-        .taps = 0x00008,
-        .length = 312000,
-        .safe = 310000,
-        .lookup = false
+        "mixvibes_7inch",
+        "MixVibes 7\"",
+        1300,
+        SWITCH_PHASE,
+        20,
+        0x22c90,
+        0x00008,
+        312000,
+        310000,
+        false
     },
     {
-        .name = NULL
+        NULL
     }
 };
 
@@ -302,7 +304,7 @@ void timecoder_clear(struct timecoder_t *tc)
 int timecoder_monitor_init(struct timecoder_t *tc, int size)
 {
     tc->mon_size = size;
-    tc->mon = malloc(SQ(tc->mon_size));
+    tc->mon = (unsigned char*)malloc(SQ(tc->mon_size));
     if (tc->mon == NULL) {
         perror("malloc");
         return -1;
