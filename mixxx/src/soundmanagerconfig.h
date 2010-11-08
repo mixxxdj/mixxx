@@ -29,7 +29,7 @@ class AudioInput;
 
 #define DEFAULT_API "None"
 
-const unsigned int MAX_LATENCY = 6; // this represents latency values from 1 ms to about
+const unsigned int MAX_LATENCY = 7; // this represents latency values from 1 ms to about
                                     // 180 ms, should be sufficient -- bkgood
 // 20100726 latencies ~80 and ~170 are utterly broken right now, at least on
 // linux/ALSA (although I think this is a Mixxx bug somewhere around

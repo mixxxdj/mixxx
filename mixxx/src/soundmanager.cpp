@@ -202,6 +202,8 @@ void SoundManager::closeDevices()
 {
     //qDebug() << "SoundManager::closeDevices()";
     QListIterator<SoundDevice*> dev_it(m_devices);
+    
+    m_soundcardSyncTimer.stop();
 
     //requestBufferMutex.lock(); //Ensures we don't kill a stream in the middle of a callback call.
                                  //Note: if we're using Pa_StopStream() (like now), we don't need
@@ -413,6 +415,10 @@ int SoundManager::setupDevices()
         }
     }
 
+    //Set up a timer to measure sound card clock drift
+    connect(&m_soundcardSyncTimer, SIGNAL(timeout()), this, SLOT(soundcardSync()));
+    m_soundcardSyncTimer.start(500);
+
     qDebug() << "iNumDevicesOpenedForOutput:" << iNumDevicesOpenedForOutput;
     qDebug() << "iNumDevicesOpenedForInput:" << iNumDevicesOpenedForInput;
 
@@ -468,11 +474,16 @@ void SoundManager::sync()
 
 //Requests a buffer in the proper format, if we're prepared to give one.
 QHash<AudioOutput, const CSAMPLE*>
-SoundManager::requestBuffer(QList<AudioOutput> outputs, unsigned long iFramesPerBuffer)
+SoundManager::requestBuffer(QList<AudioOutput> outputs, unsigned long iFramesPerBuffer, SoundDevice* device)
 {
     Q_UNUSED(outputs); // unused, we just give the caller the full hash -bkgood
     //qDebug() << "SoundManager::requestBuffer()";
-
+    
+//     qDebug() << iFramesPerBuffer << "frames requested by" << device->getInternalName();
+    long currentFrameCount = 0;
+    if (m_deviceFrameCount.contains(device)) currentFrameCount=m_deviceFrameCount.value(device);
+    m_deviceFrameCount.insert(device, currentFrameCount+iFramesPerBuffer);  // Overwrites existing value if already present
+    
     //qDebug() << "numOpenedDevices" << iNumOpenedDevices;
     //qDebug() << "iNumDevicesHaveRequestedBuffer" << iNumDevicesHaveRequestedBuffer;
 
@@ -600,4 +611,15 @@ void SoundManager::pushBuffer(QList<AudioInput> inputs, short * inputBuffer,
     }
     //TODO: Add pass-through option here (and push it into EngineMaster)...
     //      (or maybe save it, and then have requestBuffer() push it into EngineMaster)...
+}
+
+void SoundManager::soundcardSync() {
+    QHashIterator<SoundDevice*, long> i(m_deviceFrameCount);
+    while (i.hasNext()) {
+        i.next();
+        qDebug() << i.key()->getDisplayName()
+                 << "is running at" << (i.value()*1000)/m_soundcardSyncTimer.interval()
+                 << "audio frames per second";
+    }
+    m_deviceFrameCount.clear();
 }

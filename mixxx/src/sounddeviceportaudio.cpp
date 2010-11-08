@@ -341,7 +341,7 @@ int SoundDevicePortAudio::callbackProcess(unsigned long framesPerBuffer, float *
     {
         assert(iFrameSize > 0);
         QHash<AudioOutput, const CSAMPLE*> outputAudio
-            = m_pSoundManager->requestBuffer(m_audioOutputs, framesPerBuffer);
+            = m_pSoundManager->requestBuffer(m_audioOutputs, framesPerBuffer, this);
 
         // Reset sample for each open channel
         memset(output, 0, framesPerBuffer * iFrameSize * sizeof(*output));
