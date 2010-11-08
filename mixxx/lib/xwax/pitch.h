@@ -20,6 +20,8 @@
 #ifndef PITCH_H
 #define PITCH_H
 
+#include "msvccompat.h"
+
 /* State of the pitch calculation filter */
 
 struct pitch_t {
