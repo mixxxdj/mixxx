@@ -204,6 +204,7 @@ void SoundManager::closeDevices()
     QListIterator<SoundDevice*> dev_it(m_devices);
     
     m_soundcardSyncTimer.stop();
+    disconnect(&m_soundcardSyncTimer, SIGNAL(timeout()), this, SLOT(soundcardSync()));
 
     //requestBufferMutex.lock(); //Ensures we don't kill a stream in the middle of a callback call.
                                  //Note: if we're using Pa_StopStream() (like now), we don't need
