@@ -8,13 +8,13 @@ msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2010-10-28 15:35-0400\n"
-"PO-Revision-Date: 2010-10-31 10:14+0000\n"
-"Last-Translator: Jens Maucher <Unknown>\n"
+"PO-Revision-Date: 2010-11-09 19:23+0000\n"
+"Last-Translator: cmdrhenner <cmdrhenner@gmail.com>\n"
 "Language-Team: German <de@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2010-11-01 05:05+0000\n"
+"X-Launchpad-Export-Date: 2010-11-10 05:00+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
 #: AutoDJFeature#1
@@ -217,7 +217,7 @@ msgstr "Min"
 
 #: DlgBpmSchemeDlg#6
 msgid "Analyze Entire Song"
-msgstr "Analysiere kompletten Song"
+msgstr "Analysiere kompletten Titel"
 
 #: DlgMidiLearning#1
 msgid "Skip"
@@ -225,7 +225,7 @@ msgstr "Überspringen"
 
 #: DlgMidiLearning#2
 msgid "Successfully mapped to: "
-msgstr ""
+msgstr "Erfolgreich zugewiesen zu: "
 
 #: DlgMidiLearning#3
 msgid "Next"
@@ -245,6 +245,8 @@ msgid ""
 "This wizard allows you to easily map the controls on your MIDI controller to "
 "Mixxx's controls."
 msgstr ""
+"Dieser Assistent ermöglicht es die Bedienelemente Ihres MIDI-Controllers "
+"denen von Mixxx zuzuweisen."
 
 #: DlgMidiLearning#7
 msgid "Begin"
@@ -256,11 +258,11 @@ msgstr "Bitte bewegen Sie das MIDI Bedienelement für:"
 
 #: DlgMidiLearning#9
 msgid "Mixxx Control"
-msgstr ""
+msgstr "Mixxx Element"
 
 #: DlgMidiLearning#10
 msgid "Previous"
-msgstr "Vorheriger"
+msgstr "Zurück"
 
 #: DlgMidiLearning#11
 msgid "Press spacebar to proceed or skip."
@@ -268,7 +270,7 @@ msgstr "Drücke die Leertaste um fortzufahren oder zu überspringen."
 
 #: DlgMidiLearning#12
 msgid "MIDI learning complete!"
-msgstr ""
+msgstr "Midi-Lernen ist vollständig!"
 
 #: DlgMidiLearning#13
 msgid ""
@@ -286,6 +288,19 @@ msgid ""
 "left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><br />Now "
 "go spin some beats!</p></body></html>"
 msgstr ""
+"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" "
+"\"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+"<html><head><meta name=\"qrichtext\" content=\"1\" /><style "
+"type=\"text/css\">\n"
+"p, li { white-space: pre-wrap; }\n"
+"</style></head><body style=\" font-family:'Lucida Grande'; font-size:13pt; "
+"font-weight:400; font-style:normal;\">\n"
+"<p align=\"center\" style=\" margin-top:0px; margin-bottom:0px; margin-"
+"left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">Dieser "
+"Assistent kann jederzeit erneut gestartet werden.</p>\n"
+"<p align=\"center\" style=\" margin-top:0px; margin-bottom:0px; margin-"
+"left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><br />Und "
+"nun los!</p></body></html>"
 
 #: DlgMidiLearning#14
 msgid "Finito!"
@@ -293,7 +308,7 @@ msgstr "Fertig!"
 
 #: DlgPrefBPMDlg#1
 msgid "BPM Detection Settings"
-msgstr ""
+msgstr "Einstellungen BPM Erkennung"
 
 #: DlgPrefBPMDlg#2
 msgctxt "DlgPrefBPMDlg#2"
