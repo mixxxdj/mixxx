@@ -383,7 +383,7 @@ void VinylControlXwax::run()
 	                    resetSteadyPitch(dVinylPitch, dVinylPosition);
 	                }
 	                else if (fabs(dVinylPosition - filePosition) > 0.1f &&
-                		dVinylPosition < 0.0f)
+                		dVinylPosition < 2.0f)
                     {
                     	//At first I thought it was a bug to resync to leadin in relative mode,
                     	//but after using it that way it's actually pretty convenient.
