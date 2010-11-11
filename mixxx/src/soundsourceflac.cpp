@@ -143,12 +143,13 @@ inline unsigned long SoundSourceFLAC::length() {
 }
 
 int SoundSourceFLAC::parseHeader() {
-    open();
+    // can't call this->open here, someone else may call it on this object
+    SoundSourceFLAC s(m_file.fileName());
+    s.open();
     setType("FLAC");
-    // TODO(bkgood) check this next line
-    setBitrate(m_iSampleRate * 16 * m_iChannels / 1000); // 16 = bps
-    setDuration(m_samples / m_iSampleRate);
-    foreach (QString i, m_tags) {
+    setBitrate(s.m_iSampleRate * s.m_bps * s.m_iChannels / 1000); 
+    setDuration(s.m_samples / s.m_iSampleRate);
+    foreach (QString i, s.m_tags) {
         setTag(i);
     }
     return OK;
@@ -179,6 +180,7 @@ void SoundSourceFLAC::setTag(const QString &tag) {
 
 /**
  * Shift needed to take our FLAC sample size to Mixxx's 16-bit samples.
+ * Shift right on negative, left on positive.
  */
 inline int SoundSourceFLAC::getShift() const {
     return 16 - m_bps;
@@ -189,13 +191,15 @@ inline int SoundSourceFLAC::getShift() const {
  */
 inline FLAC__int16 SoundSourceFLAC::shift(FLAC__int32 sample) const {
     // this is how libsndfile does this operation and is wonderfully
-    // straightforward -- bkgood
-    if (getShift() == 0) {
+    // straightforward. Just shift the sample left or right so that
+    // it fits in a 16-bit short. -- bkgood
+    int shift = getShift();
+    if (shift == 0) {
         return sample;
-    } else if (getShift() < 0) {
-        return sample >> abs(getShift());
+    } else if (shift < 0) {
+        return sample >> abs(shift);
     } else {
-        return sample << getShift();
+        return sample << shift;
     }
 };
 
