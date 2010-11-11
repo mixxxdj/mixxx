@@ -80,10 +80,10 @@ int SoundSourceFLAC::open() {
     if (m_leftoverBuffer == NULL) {
         m_leftoverBuffer = new FLAC__int16[m_maxBlocksize * 2 /*m_iChannels*/];
     }
-    qDebug() << "SSFLAC: Total samples: " << m_samples;
-    qDebug() << "SSFLAC: Sampling rate: " << m_iSampleRate << " Hz";
-    qDebug() << "SSFLAC: Channels: " << m_iChannels;
-    qDebug() << "SSFLAC: BPS: " << m_bps;
+//    qDebug() << "SSFLAC: Total samples: " << m_samples;
+//    qDebug() << "SSFLAC: Sampling rate: " << m_iSampleRate << " Hz";
+//    qDebug() << "SSFLAC: Channels: " << m_iChannels;
+//    qDebug() << "SSFLAC: BPS: " << m_bps;
     return OK;
 decoderError:
     FLAC__stream_decoder_finish(m_decoder);
