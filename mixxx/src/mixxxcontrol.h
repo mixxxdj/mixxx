@@ -16,6 +16,8 @@ typedef enum {
     MIDI_OPT_HERC_JOG         = 8, // Generic hercules wierd range correction
     MIDI_OPT_SPREAD64         = 9, // Accelerated difference from 64
     MIDI_OPT_SELECTKNOB       = 10,// Relative knob which can be turned forever and outputs a signed value.
+
+    MIDI_OPT_SOFT_TAKEOVER    = 40,// Prevents sudden changes when hardware position differs from software value
     
     MIDI_OPT_SCRIPT           = 50,// Maps a MIDI control to a custom MixxxScript function
 } MidiOption;

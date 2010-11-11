@@ -4,6 +4,42 @@ import util
 from mixxx import Feature
 import SCons.Script as SCons
 
+class HSS1394(Feature):
+    def description(self):
+        return "HSS1394 MIDI device support"
+
+    def enabled(self, build):
+        build.flags['hss1394'] = util.get_flags(build.env, 'hss1394', 0)
+        if int(build.flags['hss1394']):
+            return True
+        return False
+
+    def add_options(self, build, vars):
+        vars.Add('hss1394', 'Set to 1 to enable HSS1394 MIDI device support.', 0)
+
+    def configure(self, build, conf):
+        if not self.enabled(build):
+            return
+        if build.platform_is_linux:
+            # TODO(XXX) Enable this when when FFADO back-end support is written into Mixxx
+            return
+            #have_ffado = conf.CheckLib('ffado', autoadd=False)
+            #if not have_ffado:
+            #    raise Exception('Could not find libffado.')
+        else:
+            #have_hss1394_h = conf.CheckHeader('hss1394/hss1394.h') # WTF this gives tons of errors on MSVC
+            have_hss1394 = conf.CheckLib('hss1394', autoadd=False)
+            #if not (have_hss1394 and have_hss1394_h):
+            if not have_hss1394:
+                raise Exception('Could not find libhss1394 or its development headers.')
+            build.env.Append(LIBS = 'hss1394')
+        build.env.Append(CPPDEFINES = '__HSS1394__')
+
+    def sources(self, build):
+        sources = SCons.Split("""midi/mididevicehss1394.cpp
+                            midi/hss1394enumerator.cpp
+                            """)
+        return sources
 
 class MIDIScript(Feature):
     def description(self):
@@ -192,7 +228,6 @@ class VinylControl(Feature):
                    'vinylcontrolxwax.cpp',
                    'dlgprefvinyl.cpp',
                    'vinylcontrolsignalwidget.cpp',
-                   'engine/enginevinylcontrol.cpp',
                    '#lib/scratchlib/DAnalyse.cpp']
         if build.platform_is_windows:
             sources.append("#lib/xwax/timecoder_win32.c")
@@ -495,35 +530,40 @@ class Shoutcast(Feature):
         return "Shoutcast Broadcasting (OGG/MP3)"
 
     def enabled(self, build):
-        build.flags['shoutcast'] = util.get_flags(build.env, 'shoutcast', 0)
+        build.flags['shoutcast'] = util.get_flags(build.env, 'shoutcast', 1)
         if int(build.flags['shoutcast']):
             return True
         return False
 
     def add_options(self, build, vars):
-        vars.Add('shoutcast', 'Set to 1 to enable shoutcast support', 0)
+        vars.Add('shoutcast', 'Set to 1 to enable shoutcast support', 1)
 
     def configure(self, build, conf):
         if not self.enabled(build):
             return
 
         libshout_found = conf.CheckLib(['libshout','shout'])
+        build.env.Append(CPPDEFINES = '__SHOUTCAST__')
 
         if not libshout_found:
             raise Exception('Could not find libshout or its development headers. Please install it or compile Mixxx without Shoutcast support using the shoutcast=0 flag.')
-
-        vorbisenc_found = conf.CheckLib(['vorbisenc'])
-        build.env.Append(CPPDEFINES = '__SHOUTCAST__')
-
+        
+        # libvorbisenc does only exist on Linux and OSX, on Windows it is
+        # included in vorbisfile.dll
+        if not build.platform_is_windows:
+            vorbisenc_found = conf.CheckLib(['vorbisenc'])
+            if not vorbisenc_found:
+                raise Exception("libvorbisenc was not found! Please install it or compile Mixxx without Shoutcast support using the shoutcast=0 flag.")
+        
+        #pthread library needs to be explicitly linked on Windows
         if build.platform_is_windows:
             build.env.Append(LIBS = 'pthreadVC2')
             build.env.Append(LIBS = 'pthreadVCE2')
             build.env.Append(LIBS = 'pthreadVSE2')
-        elif not vorbisenc_found:
-            # libvorbisenc does only exist on Linux and OSX, on Windows it is
-            # included in vorbisfile.dll
-            raise Exception("libvorbisenc was not found! Please install it or compile Mixxx without Shoutcast support using the shoutcast=0 flag.")
-
+            build.env.Append(LIBS = 'Ws2_32')
+            build.env.Append(LIBS = 'winmm')
+            #libshout is stupid and shout be linked against all of these on its own.
+            
     def sources(self, build):
         build.env.Uic4('dlgprefshoutcastdlg.ui')
         return ['dlgprefshoutcast.cpp',
@@ -671,10 +711,6 @@ class Optimize(Feature):
 
             # Common flags to all optimizations
             build.env.Append(CCFLAGS='-O3 -fomit-frame-pointer -ffast-math -funroll-loops')
-
-            # GC unused code
-            build.env.Append(CCFLAGS='-ffunction-sections -fdata-sections')
-            build.env.Append(LINKFLAGS='-Wl,--gc-sections')
 
             if optimize_level == 1:
                 # only includes what we already applied

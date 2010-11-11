@@ -27,7 +27,6 @@
 #include "dlgprefmidibindings.h"
 #include "midi/mididevice.h"
 #include "midi/mididevicemanager.h"
-#include "widget/wwidget.h"
 #include "configobject.h"
 #include "midi/midimapping.h"
 
@@ -35,8 +34,6 @@
 #include "midi/midiscriptengine.h"
 #endif
 
-
-#define MIXXX_TEXT_NO_OUTPUT_DEVICE tr("None")
 
 DlgPrefMidiBindings::DlgPrefMidiBindings(QWidget *parent, MidiDevice* midiDevice,
                                          MidiDeviceManager* midiDeviceManager,
@@ -134,7 +131,7 @@ void DlgPrefMidiBindings::enumerateOutputDevices()
 {
     comboBoxOutputDevice->clear();
 
-    comboBoxOutputDevice->addItem(MIXXX_TEXT_NO_OUTPUT_DEVICE);
+    comboBoxOutputDevice->addItem(tr("None"));
 
     //For each MIDI output device, insert an item into the output device combobox.
     QList<MidiDevice*> deviceList = m_pMidiDeviceManager->getDeviceList(true, false);
@@ -226,7 +223,7 @@ void DlgPrefMidiBindings::slotApply() {
         //FIXME: We need some logic like this to make changing the output device work.
         //       See MidiDeviceManager::associateInputAndOutputDevices() for more info...
         /*
-        if (comboBoxOutputDevice->currentText() != MIXXX_TEXT_NO_OUTPUT_DEVICE)
+        if (comboBoxOutputDevice->currentText() != tr("None"))
             m_pMidiDeviceManager->associateInputAndOutputDevices(m_pMidiDevice, comboBoxOutputDevice->currentText());
         */
     }
@@ -301,8 +298,8 @@ void DlgPrefMidiBindings::slotLoadMidiMapping(const QString &name) {
  */
 void DlgPrefMidiBindings::slotExportXML() {
     QString fileName = QFileDialog::getSaveFileName(this,
-            "Export Mixxx MIDI Bindings", m_pConfig->getConfigPath().append("midi/"),
-            "Preset Files (*.midi.xml)");
+            tr("Export Mixxx MIDI Bindings"), m_pConfig->getConfigPath().append("midi/"),
+            tr("Preset Files (*.midi.xml)"));
     if (!fileName.isNull()) m_pMidiDevice->getMidiMapping()->savePreset(fileName);
 }
 
@@ -407,8 +404,8 @@ void DlgPrefMidiBindings::slotRemoveInputBinding()
 }
 
 void DlgPrefMidiBindings::slotClearAllInputBindings() {
-    if (QMessageBox::warning(this, "Clear Input Bindings",
-            "Are you sure you want to clear all bindings?",
+    if (QMessageBox::warning(this, tr("Clear Input Bindings"),
+            tr("Are you sure you want to clear all bindings?"),
             QMessageBox::Ok | QMessageBox::Cancel, QMessageBox::Cancel) != QMessageBox::Ok)
         return;
 
@@ -455,8 +452,8 @@ void DlgPrefMidiBindings::slotRemoveOutputBinding()
 }
 
 void DlgPrefMidiBindings::slotClearAllOutputBindings() {
-    if (QMessageBox::warning(this, "Clear Output Bindings",
-            "Are you sure you want to clear all output bindings?",
+    if (QMessageBox::warning(this, tr("Clear Output Bindings"),
+            tr("Are you sure you want to clear all output bindings?"),
             QMessageBox::Ok | QMessageBox::Cancel, QMessageBox::Cancel) != QMessageBox::Ok)
         return;
 

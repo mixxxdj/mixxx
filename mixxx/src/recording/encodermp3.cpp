@@ -29,7 +29,7 @@
 #include "defs_recording.h"
 #include "errordialoghandler.h"
 
-EncoderMp3::EncoderMp3(ConfigObject<ConfigValue> *_config, EngineAbstractRecord *engine) {
+EncoderMp3::EncoderMp3(EngineAbstractRecord *engine) {
     m_pEngine = engine;
     m_metaDataTitle = NULL;
     m_metaDataArtist = NULL;
@@ -41,7 +41,7 @@ EncoderMp3::EncoderMp3(ConfigObject<ConfigValue> *_config, EngineAbstractRecord 
     m_bufferOutSize = 0;
     m_lameFlags = NULL;
     m_library = NULL;
-    m_pConfig = _config;
+   
     //These are the function pointers for lame
     lame_init =  0;
     lame_set_num_channels = 0;
@@ -100,20 +100,20 @@ EncoderMp3::EncoderMp3(ConfigObject<ConfigValue> *_config, EngineAbstractRecord 
         delete m_library;
         m_library = NULL;
     }
-
+    
     if(!m_library || !m_library->isLoaded()) {
         ErrorDialogProperties* props = ErrorDialogHandler::instance()->newDialogProperties();
         props->setType(DLG_WARNING);
-        props->setTitle("Encoder");
+        props->setTitle(tr("Encoder"));
         QString key = "";
 #ifdef __LINUX__
-        key = "<html>Mixxx is unable to load or find the MP3 encoder lame. <p>Please install libmp3lame (also known as lame) and check if /usr/lib/libmp3lame.so exists on your system </html>";
+        key = tr("<html>Mixxx is unable to load or find the MP3 encoder lame. <p>Please install libmp3lame (also known as lame) and check if /usr/lib/libmp3lame.so exists on your system </html>");
         props->setText(key);
 #elif __WINDOWS__
-        key = "<html>Mixxx is unable to load or find the MP3 encoder lame. <p>Please put lame_enc.dll in the directory you have installed Mixxx </html>";
+        key = tr("<html>Mixxx is unable to load or find the MP3 encoder lame. <p>Please put lame_enc.dll in the directory you have installed Mixxx </html>");
         props->setText(key);
 #elif __APPLE__
-        key = "<html>Mixxx is unable to load or find the MP3 encoder lame. <p>Please install libmp3lame (also known as lame) and check if /usr/local/lib/libmp3lame.dylib exists on your system </html>";
+        key = tr("<html>Mixxx is unable to load or find the MP3 encoder lame. <p>Please install libmp3lame (also known as lame) and check if /usr/local/lib/libmp3lame.dylib exists on your system </html>");
         props->setText(key);
 #endif
         props->setKey(key);
@@ -192,14 +192,15 @@ EncoderMp3::EncoderMp3(ConfigObject<ConfigValue> *_config, EngineAbstractRecord 
 
         ErrorDialogProperties* props = ErrorDialogHandler::instance()->newDialogProperties();
         props->setType(DLG_WARNING);
-        props->setTitle("Encoder");
-        QString key = "<html>Mixxx has detected that you use a modified version of libmp3lame. See <a href='http://mixxx.org/wiki/doku.php/internet_broadcasting'>Mixxx Wiki</a> for more information.</html>";
+        props->setTitle(tr("Encoder"));
+        QString key = tr("<html>Mixxx has detected that you use a modified version of libmp3lame. See <a href='http://mixxx.org/wiki/doku.php/internet_broadcasting'>Mixxx Wiki</a> for more information.</html>");
         props->setText(key);
         props->setKey(key);
         ErrorDialogHandler::instance()->requestErrorDialog(props);
         return;
     }
     qDebug() << "Loaded libmp3lame version " << get_lame_version();
+    m_samplerate = new ControlObjectThread(ControlObject::getControl(ConfigKey("[Master]", "samplerate")));
 }
 
 // Destructor
@@ -233,6 +234,8 @@ EncoderMp3::~EncoderMp3() {
     id3tag_set_title = 0;
     id3tag_set_artist = 0;
     id3tag_set_album = 0;
+    //Delete control object
+    if(m_samplerate) delete  m_samplerate;
 }
 
 /*
@@ -323,8 +326,8 @@ void EncoderMp3::initStream() {
 int EncoderMp3::initEncoder(int bitrate) {
     if(m_library == NULL || !m_library->isLoaded())
         return -1;
-
-    unsigned long samplerate_in = m_pConfig->getValueString(ConfigKey("[Soundcard]","Samplerate")).toULong();
+    
+    unsigned long samplerate_in = m_samplerate->get();
     unsigned long samplerate_out = (samplerate_in>48000?48000:samplerate_in);
 
     m_lameFlags = lame_init();
