@@ -15,6 +15,7 @@
 
 #include <cstring> // memcpy
 #include <QtDebug>
+#include <taglib/flacfile.h>
 
 #include "soundsourceflac.h"
 
@@ -143,16 +144,18 @@ inline unsigned long SoundSourceFLAC::length() {
 }
 
 int SoundSourceFLAC::parseHeader() {
-    // can't call this->open here, someone else may call it on this object
-    SoundSourceFLAC s(m_file.fileName());
-    s.open();
-    setType("FLAC");
-    setBitrate(s.m_iSampleRate * s.m_bps * s.m_iChannels / 1000); 
-    setDuration(s.m_samples / s.m_iSampleRate);
-    foreach (QString i, s.m_tags) {
-        setTag(i);
+    setType("flac");
+    TagLib::FLAC::File f(m_file.fileName().toUtf8().constData());
+    bool result = processTaglibFile(f);
+    TagLib::ID3v2::Tag *id3v2 = f.ID3v2Tag();
+    TagLib::Ogg::XiphComment *xiph = f.xiphComment();
+    if (id3v2) {
+        processID3v2Tag(id3v2);
     }
-    return OK;
+    if (xiph) {
+        processXiphComment(xiph);
+    }
+    return result ? OK : ERR;
 }
 
 void SoundSourceFLAC::setTag(const QString &tag) {
