@@ -87,7 +87,7 @@ DlgPrefShoutcast::DlgPrefShoutcast(QWidget *parent, ConfigObject<ConfigValue> *_
     //Stream genre
     tmp_string = m_pConfig->getValueString(ConfigKey(SHOUTCAST_PREF_KEY,"stream_genre"));
     if (tmp_string.isEmpty())
-        tmp_string = tr("Live Mix");
+        tmp_string = "Live Mix";
     stream_genre->setText(tmp_string);
     
     //Stream "public" checkbox

@@ -11,13 +11,13 @@
 #include "widget/wwaveformviewer.h"
 
 
-QList<QObject*> WaveformViewerFactory::m_viewers = QList<QObject*>();
+QList<QWidget*> WaveformViewerFactory::m_viewers = QList<QWidget*>();
 QList<WVisualSimple*> WaveformViewerFactory::m_simpleViewers = QList<WVisualSimple*>();
 QList<WWaveformViewer*> WaveformViewerFactory::m_visualViewers = QList<WWaveformViewer*>();
 QList<WGLWaveformViewer*> WaveformViewerFactory::m_visualGLViewers = QList<WGLWaveformViewer*>();
+QTimer WaveformViewerFactory::s_waveformUpdateTimer;;
 
-
-WaveformViewerType WaveformViewerFactory::createWaveformViewer(const char *group, QWidget *parent, ConfigObject<ConfigValue> *pConfig, QObject **target, WaveformRenderer* pWaveformRenderer) {
+WaveformViewerType WaveformViewerFactory::createWaveformViewer(const char *group, QWidget *parent, ConfigObject<ConfigValue> *pConfig, QWidget **target, WaveformRenderer* pWaveformRenderer) {
     qDebug() << "createWaveformViewer()";
 
     bool bVisualWaveform = true;
@@ -85,10 +85,19 @@ WaveformViewerType WaveformViewerFactory::createWaveformViewer(const char *group
         *target = simple;
     }
 
+    // If the waveform update timer is not active, start it.
+    if (!s_waveformUpdateTimer.isActive()) {
+        int desired_fps = 40;
+        float update_interval = 1000.0f / desired_fps;
+        s_waveformUpdateTimer.start(update_interval);
+    }
+    // Connect the waveform update timer to the waveform
+    QObject::connect(&s_waveformUpdateTimer, SIGNAL(timeout()), *target, SLOT(refresh()));
+
     return ret;
 }
 
-void WaveformViewerFactory::destroyWaveformViewer(QObject *pWaveformViewer) {
+void WaveformViewerFactory::destroyWaveformViewer(QWidget *pWaveformViewer) {
     qDebug() << "destroyWaveformViewer()";
 
     if(pWaveformViewer == NULL)
@@ -119,7 +128,7 @@ void WaveformViewerFactory::destroyWaveformViewer(QObject *pWaveformViewer) {
 
 }
 
-WaveformViewerType WaveformViewerFactory::getWaveformViewerType(QObject *pWaveformViewer) {
+WaveformViewerType WaveformViewerFactory::getWaveformViewerType(QWidget *pWaveformViewer) {
     if(pWaveformViewer == NULL)
         return WAVEFORM_INVALID;
     if(m_simpleViewers.indexOf((WVisualSimple*)pWaveformViewer) != -1)
@@ -129,4 +138,31 @@ WaveformViewerType WaveformViewerFactory::getWaveformViewerType(QObject *pWavefo
     if(m_visualGLViewers.indexOf((WGLWaveformViewer*)pWaveformViewer) != -1)
         return WAVEFORM_GL;
     return WAVEFORM_INVALID;
+}
+
+// static
+int WaveformViewerFactory::numViewers(WaveformViewerType type) {
+    if (type == WAVEFORM_SIMPLE) {
+        return m_simpleViewers.count();
+    } else if (type == WAVEFORM_WIDGET) {
+        return m_visualViewers.count();
+    } else if (type == WAVEFORM_GL) {
+        return m_visualGLViewers.count();
+    }
+    return 0;
+}
+
+// static
+bool WaveformViewerFactory::isDirectRenderingEnabled() {
+    if (m_visualGLViewers.count() > 0) {
+        bool enabled = true;
+        foreach (WGLWaveformViewer* pViewer, m_visualGLViewers) {
+            if (!pViewer->directRendering()) {
+                enabled = false;
+            }
+        }
+        return enabled;
+    }
+    // Doesn't matter
+    return true;
 }

@@ -32,7 +32,7 @@ class PortMIDI(Dependence):
             build.env.Append(LIBS='advapi32')
 
     def sources(self, build):
-        return ['midi/midideviceportmidi.cpp']
+        return ['midi/portmidienumerator.cpp', 'midi/midideviceportmidi.cpp']
 
 class OpenGL(Dependence):
 
@@ -290,6 +290,10 @@ class SoundTouch(Dependence):
                 (build.toolchain_is_gnu and optimize > 2):
             build.env.Append(CPPDEFINES='ALLOW_X86_OPTIMIZATIONS')
 
+class TagLib(Dependence):
+    def configure(self, build, conf):
+        if not conf.CheckLib('tag'):
+            raise Exception("Could not find libtag or it's development headers.")
 
 class MixxxCore(Feature):
 
@@ -317,6 +321,7 @@ class MixxxCore(Feature):
 
                    "dlgpreferences.cpp",
                    "dlgprefsound.cpp",
+                   "dlgprefsounditem.cpp",
                    "dlgprefmidibindings.cpp",
                    "dlgprefplaylist.cpp",
                    "dlgprefnomidi.cpp",
@@ -369,6 +374,7 @@ class MixxxCore(Feature):
 
                    "midi/mididevice.cpp",
                    "midi/mididevicemanager.cpp",
+                   "midi/midideviceenumerator.cpp",
                    "midi/midimapping.cpp",
                    "midi/midiinputmappingtablemodel.cpp",
                    "midi/midioutputmappingtablemodel.cpp",
@@ -384,7 +390,6 @@ class MixxxCore(Feature):
                    "controlvaluedelegate.cpp",
                    "mixxxcontrol.cpp",
                    "mixxx.cpp",
-                   "mixxxview.cpp",
                    "errordialoghandler.cpp",
                    "upgrade.cpp",
 
@@ -392,6 +397,7 @@ class MixxxCore(Feature):
 
                    "widget/wwidget.cpp",
                    "widget/wlabel.cpp",
+                   "widget/wtracktext.cpp",
                    "widget/wnumber.cpp",
                    "widget/wnumberpos.cpp",
                    "widget/wnumberrate.cpp",
@@ -409,6 +415,7 @@ class MixxxCore(Feature):
                    "widget/wsearchlineedit.cpp",
                    "widget/wpixmapstore.cpp",
                    "widget/hexspinbox.cpp",
+                   "widget/wtrackproperty.cpp",
 
                    "mathstuff.cpp",
 
@@ -490,9 +497,13 @@ class MixxxCore(Feature):
                    "waveform/waveformrendermarkrange.cpp",
                    "waveform/waveformrenderbeat.cpp",
 
-                   "imginvert.cpp",
-                   "imgloader.cpp",
-                   "imgcolor.cpp",
+                   "skin/imginvert.cpp",
+                   "skin/imgloader.cpp",
+                   "skin/imgcolor.cpp",
+                   "skin/skinloader.cpp",
+                   "skin/legacyskinparser.cpp",
+                   "skin/colorschemeparser.cpp",
+
 
                    "sampleutil.cpp",
                    "trackinfoobject.cpp",
@@ -500,6 +511,8 @@ class MixxxCore(Feature):
                    "playermanager.cpp",
                    "sounddevice.cpp",
                    "soundmanager.cpp",
+                   "soundmanagerconfig.cpp",
+                   "audiopath.cpp",
                    "dlgprefrecord.cpp",
                    "playerinfo.cpp",
 
@@ -529,6 +542,7 @@ class MixxxCore(Feature):
         build.env.Uic4('dlgtrackinfo.ui')
         build.env.Uic4('dlgprepare.ui')
         build.env.Uic4('dlgautodj.ui')
+        build.env.Uic4('dlgprefsounditem.ui')
 
         # Add the QRC file which compiles in some extra resources (prefs icons,
         # etc.)
@@ -679,7 +693,7 @@ class MixxxCore(Feature):
 
     def depends(self, build):
         return [SoundTouch, KissFFT, PortAudio, PortMIDI, Qt,
-                FidLib, Mad, SndFile, FLAC, OggVorbis, OpenGL]
+                FidLib, Mad, SndFile, FLAC, OggVorbis, OpenGL, TagLib]
 
     def post_dependency_check_configure(self, build, conf):
         """Sets up additional things in the Environment that must happen
@@ -688,7 +702,7 @@ class MixxxCore(Feature):
             build.env.Append(LINKFLAGS = ['/nodefaultlib:LIBCMT.lib',
                                           '/nodefaultlib:LIBCMTd.lib',
                                           '/entry:mainCRTStartup'])
-            # Makes the program not launch a shell first 
+            # Makes the program not launch a shell first
             if build.toolchain_is_msvs:
                 build.env.Append(LINKFLAGS = '/subsystem:windows')
             elif build.toolchain_is_gnu:

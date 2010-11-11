@@ -18,7 +18,7 @@
 #ifndef WSKINCOLOR_H
 #define WSKINCOLOR_H
 
-#include "imgsource.h"
+#include "skin/imgsource.h"
 
 class WSkinColor {
 

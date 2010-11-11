@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>DlgPrefSoundItem</class>
+ <widget class="QWidget" name="DlgPrefSoundItem">
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <layout class="QHBoxLayout" name="horizontalLayout">
+   <property name="margin">
+    <number>0</number>
+   </property>
+   <item>
+    <widget class="QLabel" name="typeLabel">
+     <property name="text">
+      <string>Type (#)</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QComboBox" name="deviceComboBox"/>
+   </item>
+   <item>
+    <widget class="QComboBox" name="channelComboBox"/>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
