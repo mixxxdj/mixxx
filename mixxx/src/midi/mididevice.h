@@ -33,6 +33,7 @@
 
 #include <QtCore>
 #include "midimessage.h"
+#include "mixxxcontrol.h"
 
 //Forward declarations
 class MidiMapping;
@@ -113,6 +114,7 @@ Q_OBJECT
             MIDI message while we're trying to shut it down. See
             MidiDevice::shutdown() for more details. */
         bool m_bSendInhibit;
+        QHash<MixxxControl,double> m_softTakeover;
 };
 
 #endif
