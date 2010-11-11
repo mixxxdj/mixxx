@@ -1,260 +1,282 @@
-#, fuzzy
+# Italian translation for mixxx
+# Copyright (c) 2010 Rosetta Contributors and Canonical Ltd 2010
+# This file is distributed under the same license as the mixxx package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2010.
+#
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-10-28 16:01-0400\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
+"Project-Id-Version: mixxx\n"
+"Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
+"POT-Creation-Date: 2010-10-28 15:35-0400\n"
+"PO-Revision-Date: 2010-11-10 21:28+0000\n"
+"Last-Translator: Vittorio Colao <Unknown>\n"
+"Language-Team: Italian <it@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Translate Toolkit 1.5.3\n"
+"X-Launchpad-Export-Date: 2010-11-11 04:39+0000\n"
+"X-Generator: Launchpad (build Unknown)\n"
 
 #: AutoDJFeature#1
 msgid "Auto DJ"
-msgstr ""
+msgstr "Auto DJ"
 
 #: BrowseFeature#1
 msgid "Browse"
-msgstr ""
+msgstr "Sfoglia"
 
 #: BrowseFeature#2
 msgid "Permission Denied"
-msgstr ""
+msgstr "Pernesso Negato"
 
 #: BrowseFeature#3
 msgid "You don't have permission to view this folder."
-msgstr ""
+msgstr "Non possiedi i permessi per sfogliare questa cartella"
 
 #: CrateFeature#1
 msgid "New Crate"
-msgstr ""
+msgstr "Nuovo Cesto"
 
 #: CrateFeature#2
 msgctxt "CrateFeature#2"
 msgid "Remove"
-msgstr ""
+msgstr "Rimuovi"
 
 #: CrateFeature#3
 msgid "Crates"
-msgstr ""
+msgstr "Cesti"
 
 #: CrateFeature#4
 msgid "Crate name:"
-msgstr ""
+msgstr "Nome del Cesto"
 
 #: CrateFeature#5
 msgid "Crate Creation Failed"
-msgstr ""
+msgstr "Impossibile creare il Cesto"
 
 #: CrateFeature#6
 msgid "A crate cannot have a blank name."
-msgstr ""
+msgstr "Ogni Cesto deve avere un nome."
 
 #: CrateFeature#7
 msgid "Creating Crate Failed"
-msgstr ""
+msgstr "Impossibile creare il Cesto"
 
 #: CrateFeature#8
 msgid "A crate by that name already exists."
-msgstr ""
+msgstr "Esiste già un cesto con lo stesso nome"
 
 #: CrateTableModel#1
 msgid "ID"
-msgstr ""
+msgstr "ID"
 
 #: CrateTableModel#2
 msgctxt "CrateTableModel#2"
 msgid "Artist"
-msgstr ""
+msgstr "Artista"
 
 #: CrateTableModel#3
 msgctxt "CrateTableModel#3"
 msgid "Title"
-msgstr ""
+msgstr "Titolo"
 
 #: CrateTableModel#4
 msgctxt "CrateTableModel#4"
 msgid "Album"
-msgstr ""
+msgstr "Album"
 
 #: CrateTableModel#5
 msgctxt "CrateTableModel#5"
 msgid "Genre"
-msgstr ""
+msgstr "Genere"
 
 #: CrateTableModel#6
 msgctxt "CrateTableModel#6"
 msgid "Year"
-msgstr ""
+msgstr "Anno"
 
 #: CrateTableModel#7
 msgctxt "CrateTableModel#7"
 msgid "Type"
-msgstr ""
+msgstr "Tipo"
 
 #: CrateTableModel#8
 msgctxt "CrateTableModel#8"
 msgid "Location"
-msgstr ""
+msgstr "Posizione"
 
 #: CrateTableModel#9
 msgctxt "CrateTableModel#9"
 msgid "Comment"
-msgstr ""
+msgstr "Commento"
 
 #: CrateTableModel#10
 msgctxt "CrateTableModel#10"
 msgid "Duration"
-msgstr ""
+msgstr "Durata"
 
 #: CrateTableModel#11
 msgctxt "CrateTableModel#11"
 msgid "Track #"
-msgstr ""
+msgstr "Traccia #"
 
 #: CrateTableModel#12
 msgctxt "CrateTableModel#12"
 msgid "Bitrate"
-msgstr ""
+msgstr "Bitrate"
 
 #: CrateTableModel#13
 msgctxt "CrateTableModel#13"
 msgid "BPM"
-msgstr ""
+msgstr "BPM"
 
 #: CrateTableModel#14
 msgctxt "CrateTableModel#14"
 msgid "Date Added"
-msgstr ""
+msgstr "Aggiunto il"
 
 #: DlgAboutDlg#1
 msgid "About Mixxx"
-msgstr ""
+msgstr "Informazioni su Mixxx"
 
 #: DlgAboutDlg#2
 msgid ""
-"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-"
-"html40/strict.dtd\">\n"
-"<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
+"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" "
+"\"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+"<html><head><meta name=\"qrichtext\" content=\"1\" /><style "
+"type=\"text/css\">\n"
 "p, li { white-space: pre-wrap; }\n"
-"</style></head><body style=\" font-family:'MS Shell Dlg 2'; font-size:8.25pt; "
-"font-weight:400; font-style:normal;\">\n"
+"</style></head><body style=\" font-family:'MS Shell Dlg 2'; font-"
+"size:8.25pt; font-weight:400; font-style:normal;\">\n"
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-"
 "right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-"
 "family:'Sans Serif'; font-size:9pt;\">Credits go here</span></p>\n"
 "<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; "
-"margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; "
-"font-family:'Sans Serif'; font-size:9pt;\"></p></body></html>"
+"margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-"
+"family:'Sans Serif'; font-size:9pt;\"></p></body></html>"
 msgstr ""
+"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" "
+"\"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+"<html><head><meta name=\"qrichtext\" content=\"1\" /><style "
+"type=\"text/css\">\n"
+"p, li { white-space: pre-wrap; }\n"
+"</style></head><body style=\" font-family:'MS Shell Dlg 2'; font-"
+"size:8.25pt; font-weight:400; font-style:normal;\">\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-"
+"right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-"
+"family:'Sans Serif'; font-size:9pt;\">Credits go here</span></p>\n"
+"<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; "
+"margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-"
+"family:'Sans Serif'; font-size:9pt;\"></p></body></html>"
 
 #: DlgAboutDlg#3
 msgid "1.x.x"
-msgstr ""
+msgstr "1.x.x"
 
 #: DlgAboutDlg#4
 msgid "<a href=\"http://mixxx.org/\">Official Website</a>"
-msgstr ""
+msgstr "<a href=\"http://mixxx.org/\">Sito Ufficiale</a>"
 
 #: DlgAutoDJ#1
 msgid "Disable Auto DJ"
-msgstr ""
+msgstr "Disabilita l'Auto DJ"
 
 #: DlgAutoDJ#2
 msgid "Enable Auto DJ"
-msgstr ""
+msgstr "Abilita l'Auto DJ"
 
 #: DlgAutoDJ#3
 msgctxt "DlgAutoDJ#3"
 msgid "Manage"
-msgstr ""
+msgstr "Gestisci"
 
 #: DlgAutoDJ#4
 msgid "Add tracks to the queue below..."
-msgstr ""
+msgstr "Aggiungi le tracce alla coda qui sotto..."
 
 #: DlgBpmSchemeDlg#1
 msgid "BPM Scheme"
-msgstr ""
+msgstr "Schema dei BPM"
 
 #: DlgBpmSchemeDlg#2
 msgid "Scheme Name:"
-msgstr ""
+msgstr "Nome dello Schema:"
 
 #: DlgBpmSchemeDlg#3
 msgid "BPM Range"
-msgstr ""
+msgstr "Intervallo dei BPM"
 
 #: DlgBpmSchemeDlg#4
 msgid "Max"
-msgstr ""
+msgstr "Max"
 
 #: DlgBpmSchemeDlg#5
 msgid "Min"
-msgstr ""
+msgstr "Min"
 
 #: DlgBpmSchemeDlg#6
 msgid "Analyze Entire Song"
-msgstr ""
+msgstr "Analizza l'intero brano"
 
 #: DlgMidiLearning#1
 msgid "Skip"
-msgstr ""
+msgstr "Tralascia"
 
 #: DlgMidiLearning#2
 msgid "Successfully mapped to: "
-msgstr ""
+msgstr "Collegato con successo a: "
 
 #: DlgMidiLearning#3
 msgid "Next"
-msgstr ""
+msgstr "Prossimo"
 
 #: DlgMidiLearning#4
 msgctxt "DlgMidiLearning#4"
 msgid "MIDI Learning Wizard"
-msgstr ""
+msgstr "Wizard di Apprendimento MIDI"
 
 #: DlgMidiLearning#5
 msgid "Welcome to the MIDI Learning Wizard"
-msgstr ""
+msgstr "Benvenuto nel Wizard di Apprendimento MIDI"
 
 #: DlgMidiLearning#6
 msgid ""
 "This wizard allows you to easily map the controls on your MIDI controller to "
 "Mixxx's controls."
 msgstr ""
+"Questo wizard ti permette di collegare facilmente i controlli del tuo "
+"controller MIDI ai controlli di Mixxx"
 
 #: DlgMidiLearning#7
 msgid "Begin"
-msgstr ""
+msgstr "Inizia"
 
 #: DlgMidiLearning#8
 msgid "Please tweak the control for:"
-msgstr ""
+msgstr "Agisci sul controllo per:"
 
 #: DlgMidiLearning#9
 msgid "Mixxx Control"
-msgstr ""
+msgstr "Controllo di Mixxx"
 
 #: DlgMidiLearning#10
 msgid "Previous"
-msgstr ""
+msgstr "Precedente"
 
 #: DlgMidiLearning#11
 msgid "Press spacebar to proceed or skip."
-msgstr ""
+msgstr "Premere la barra spaziatrice per procedere o tralasciare."
 
 #: DlgMidiLearning#12
 msgid "MIDI learning complete!"
-msgstr ""
+msgstr "Apprendimento MIDI completato!"
 
 #: DlgMidiLearning#13
 msgid ""
-"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-"
-"html40/strict.dtd\">\n"
-"<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
+"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" "
+"\"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+"<html><head><meta name=\"qrichtext\" content=\"1\" /><style "
+"type=\"text/css\">\n"
 "p, li { white-space: pre-wrap; }\n"
 "</style></head><body style=\" font-family:'Lucida Grande'; font-size:13pt; "
 "font-weight:400; font-style:normal;\">\n"
@@ -268,7 +290,7 @@ msgstr ""
 
 #: DlgMidiLearning#14
 msgid "Finito!"
-msgstr ""
+msgstr "The End!"
 
 #: DlgPrefBPMDlg#1
 msgid "BPM Detection Settings"
@@ -289,7 +311,7 @@ msgstr ""
 
 #: DlgPrefBPMDlg#5
 msgid "Write BPM to ID3 Tag"
-msgstr ""
+msgstr "Scrivi i BPM sul Tag ID3"
 
 #: DlgPrefBPMDlg#6
 msgid "If BPM can be detected but not within specified range"
@@ -306,61 +328,61 @@ msgstr ""
 #: DlgPrefBPMDlg#9
 msgctxt "DlgPrefBPMDlg#9"
 msgid "Add"
-msgstr ""
+msgstr "Aggiungi"
 
 #: DlgPrefBPMDlg#10
 msgid "Edit"
-msgstr ""
+msgstr "Edita"
 
 #: DlgPrefBPMDlg#11
 msgid "Delete"
-msgstr ""
+msgstr "Cancella"
 
 #: DlgPrefBPMDlg#12
 msgid "Default"
-msgstr ""
+msgstr "Default"
 
 #: DlgPrefBpm#1
 msgid "Error"
-msgstr ""
+msgstr "Errore"
 
 #: DlgPrefBpm#2
 msgid "Cannot open file %1"
-msgstr ""
+msgstr "Impossibile aprire il file %1"
 
 #: DlgPrefControls#1
 msgid "This skin does not support schemes"
-msgstr ""
+msgstr "Questa skin non supporta gli schemi"
 
 #: DlgPrefControls#2
 msgid "Up increases speed"
-msgstr ""
+msgstr "verso Su aumenta la velocità"
 
 #: DlgPrefControls#3
 msgid "Down increases speed (Technics SL1210)"
-msgstr ""
+msgstr "verso Giù aumenta la velocità"
 
 #: DlgPrefControls#4
 msgctxt "DlgPrefControls#4"
 msgid "Information"
-msgstr ""
+msgstr "Informazioni"
 
 #: DlgPrefControls#5
 msgid "Mixxx must be restarted before the changes will take effect."
-msgstr ""
+msgstr "Mixxx deve essere riavviato prima che le modifiche abbiano effetto."
 
 #: DlgPrefControlsDlg#1
 msgctxt "DlgPrefControlsDlg#1"
 msgid "Form1"
-msgstr ""
+msgstr "Form1"
 
 #: DlgPrefControlsDlg#2
 msgid "Skin"
-msgstr ""
+msgstr "Skin"
 
 #: DlgPrefControlsDlg#3
 msgid "Scheme"
-msgstr ""
+msgstr "Schema"
 
 #: DlgPrefControlsDlg#4
 msgid "Waveform display"
@@ -372,17 +394,17 @@ msgstr ""
 
 #: DlgPrefControlsDlg#6
 msgid "Tool tips"
-msgstr ""
+msgstr "Suggerimenti"
 
 #: DlgPrefControlsDlg#7
 msgctxt "DlgPrefControlsDlg#7"
 msgid "On"
-msgstr ""
+msgstr "On"
 
 #: DlgPrefControlsDlg#8
 msgctxt "DlgPrefControlsDlg#8"
 msgid "Off"
-msgstr ""
+msgstr "Off"
 
 #: DlgPrefControlsDlg#9
 msgid "Pitch/Rate slider range"
@@ -406,11 +428,11 @@ msgstr ""
 
 #: DlgPrefControlsDlg#14
 msgid "Left click"
-msgstr ""
+msgstr "Click sinistro"
 
 #: DlgPrefControlsDlg#15
 msgid "Right click"
-msgstr ""
+msgstr "Click destro"
 
 #: DlgPrefControlsDlg#16
 msgid "Permanent rate change (between 1 and 8000) when left clicking"
@@ -418,7 +440,7 @@ msgstr ""
 
 #: DlgPrefControlsDlg#17
 msgid "%"
-msgstr ""
+msgstr "%"
 
 #: DlgPrefControlsDlg#18
 msgid "Permanent rate change (between 1 and 8000) when right clicking"
@@ -459,15 +481,15 @@ msgstr ""
 
 #: DlgPrefCrossfaderDlg#4
 msgid "Fast cut"
-msgstr ""
+msgstr "Taglio rapido"
 
 #: DlgPrefCrossfaderDlg#5
 msgid "Constant power"
-msgstr ""
+msgstr "Potere costante"
 
 #: DlgPrefCrossfaderDlg#6
 msgid "Mixing"
-msgstr ""
+msgstr "Mixando"
 
 #: DlgPrefCrossfaderDlg#7
 msgid "Scratching"
@@ -475,21 +497,21 @@ msgstr ""
 
 #: DlgPrefCrossfaderDlg#8
 msgid "Linear"
-msgstr ""
+msgstr "Lineare"
 
 #: DlgPrefCrossfaderDlg#9
 msgid "Logarithmic"
-msgstr ""
+msgstr "Logaritmico"
 
 #: DlgPrefCrossfaderDlg#10
 msgctxt "DlgPrefCrossfaderDlg#10"
 msgid "Reset"
-msgstr ""
+msgstr "Reset"
 
 #: DlgPrefEQDlg#1
 msgctxt "DlgPrefEQDlg#1"
 msgid "Form1"
-msgstr ""
+msgstr "Form1"
 
 #: DlgPrefEQDlg#2
 msgid "Static EQs (for slower CPUs)"
@@ -505,15 +527,15 @@ msgstr ""
 
 #: DlgPrefEQDlg#5
 msgid "16 Hz"
-msgstr ""
+msgstr "16 Hz"
 
 #: DlgPrefEQDlg#6
 msgid "2.045 kHz"
-msgstr ""
+msgstr "2.045 kHz"
 
 #: DlgPrefEQDlg#7
 msgid "20.05 kHz"
-msgstr ""
+msgstr "20.05 kHz"
 
 #: DlgPrefEQDlg#8
 msgid "Low Shelf EQ"
@@ -526,12 +548,12 @@ msgstr ""
 #: DlgPrefEQDlg#10
 msgctxt "DlgPrefEQDlg#10"
 msgid "Reset"
-msgstr ""
+msgstr "Reset"
 
 #: DlgPrefMidiBindings#1
 msgctxt "DlgPrefMidiBindings#1"
 msgid "None"
-msgstr ""
+msgstr "Nulla"
 
 #: DlgPrefMidiBindings#2
 msgid "Apply MIDI device settings?"
@@ -559,15 +581,15 @@ msgstr ""
 
 #: DlgPrefMidiBindings#7
 msgid "Preset Files (*.midi.xml)"
-msgstr ""
+msgstr "File Presenti (*.midi.xml)"
 
 #: DlgPrefMidiBindings#8
 msgid "Select Control Group"
-msgstr ""
+msgstr "Seleziona il Gruppo di Controllo"
 
 #: DlgPrefMidiBindings#9
 msgid "Select Control"
-msgstr ""
+msgstr "Seleziona Controllo"
 
 #: DlgPrefMidiBindings#10
 msgid "Clear Input Bindings"
@@ -588,7 +610,7 @@ msgstr ""
 #: DlgPrefMidiBindingsDlg#1
 msgctxt "DlgPrefMidiBindingsDlg#1"
 msgid "Dialog"
-msgstr ""
+msgstr "Dialogo"
 
 #: DlgPrefMidiBindingsDlg#2
 msgid "Your Device Name"
@@ -600,29 +622,29 @@ msgstr ""
 
 #: DlgPrefMidiBindingsDlg#4
 msgid "Export"
-msgstr ""
+msgstr "Esporta"
 
 #: DlgPrefMidiBindingsDlg#5
 msgid "Output:"
-msgstr ""
+msgstr "Output:"
 
 #: DlgPrefMidiBindingsDlg#6
 msgid "Enabled"
-msgstr ""
+msgstr "Abilitato"
 
 #: DlgPrefMidiBindingsDlg#7
 msgid "Controls"
-msgstr ""
+msgstr "Controlli"
 
 #: DlgPrefMidiBindingsDlg#8
 msgctxt "DlgPrefMidiBindingsDlg#8"
 msgid "Add"
-msgstr ""
+msgstr "Aggiungi"
 
 #: DlgPrefMidiBindingsDlg#9
 msgctxt "DlgPrefMidiBindingsDlg#9"
 msgid "Remove"
-msgstr ""
+msgstr "Rimuovi"
 
 #: DlgPrefMidiBindingsDlg#10
 msgctxt "DlgPrefMidiBindingsDlg#10"
@@ -631,19 +653,19 @@ msgstr ""
 
 #: DlgPrefMidiBindingsDlg#11
 msgid "Clear All"
-msgstr ""
+msgstr "Pulisci Tutto"
 
 #: DlgPrefMidiBindingsDlg#12
 msgid "MIDI Input"
-msgstr ""
+msgstr "Entrate MIDI"
 
 #: DlgPrefMidiBindingsDlg#13
 msgid "Outputs"
-msgstr ""
+msgstr "Uscite"
 
 #: DlgPrefMidiBindingsDlg#14
 msgid "MIDI Output"
-msgstr ""
+msgstr "Uscite MIDI"
 
 #: DlgPrefNoMidiDlg#1
 msgctxt "DlgPrefNoMidiDlg#1"
@@ -657,7 +679,7 @@ msgstr ""
 #: DlgPrefPlaylist#1
 msgctxt "DlgPrefPlaylist#1"
 msgid "Choose music library directory"
-msgstr ""
+msgstr "Scegli la cartella della tua libreria musicale"
 
 #: DlgPrefPlaylist#2
 msgid "Multiple iPods Detected"
@@ -668,6 +690,8 @@ msgid ""
 "Mixxx has detected another iPod. \n"
 "\n"
 msgstr ""
+"Mixxx ha trovato un altro iPod + \n"
+"\n"
 
 #: DlgPrefPlaylist#4
 msgid "Choose Yes to use the newly found iPod @ "
@@ -687,25 +711,25 @@ msgstr ""
 
 #: DlgPrefPlaylist#8
 msgid "Choose iPod mount point"
-msgstr ""
+msgstr "Scegli il punto di mount dell'iPod"
 
 #: DlgPrefPlaylistDlg#1
 msgctxt "DlgPrefPlaylistDlg#1"
 msgid "Form3"
-msgstr ""
+msgstr "Form3"
 
 #: DlgPrefPlaylistDlg#2
 msgid "iPod"
-msgstr ""
+msgstr "iPod"
 
 #: DlgPrefPlaylistDlg#3
 msgid "iPod mountpoint"
-msgstr ""
+msgstr "Punto di mount dell'iPod"
 
 #: DlgPrefPlaylistDlg#4
 msgctxt "DlgPrefPlaylistDlg#4"
 msgid "Browse..."
-msgstr ""
+msgstr "Sfoglia..."
 
 #: DlgPrefPlaylistDlg#5
 msgid "Detect"
@@ -714,7 +738,7 @@ msgstr ""
 #: DlgPrefPlaylistDlg#6
 msgctxt "DlgPrefPlaylistDlg#6"
 msgid "Library"
-msgstr ""
+msgstr "Libreria"
 
 #: DlgPrefPlaylistDlg#7
 msgid "Music Directory:"
@@ -738,7 +762,7 @@ msgstr ""
 
 #: DlgPrefPlaylistDlg#12
 msgid "Available Online..."
-msgstr ""
+msgstr "Disponibili Online..."
 
 #: DlgPrefPlaylistDlg#13
 msgid "Bundled Songs"
@@ -753,7 +777,7 @@ msgstr ""
 #: DlgPrefRecord#1
 msgctxt "DlgPrefRecord#1"
 msgid "Save Recording As..."
-msgstr ""
+msgstr "Salvare la registrazione come..."
 
 #: DlgPrefRecord#2
 msgid "kbps"
@@ -761,7 +785,7 @@ msgstr ""
 
 #: DlgPrefRecord#3
 msgid "Quality: "
-msgstr ""
+msgstr "Qualità: "
 
 #: DlgPrefRecordDlg#1
 msgctxt "DlgPrefRecordDlg#1"
@@ -770,12 +794,12 @@ msgstr ""
 
 #: DlgPrefRecordDlg#2
 msgid "File"
-msgstr ""
+msgstr "Documento"
 
 #: DlgPrefRecordDlg#3
 msgctxt "DlgPrefRecordDlg#3"
 msgid "Browse..."
-msgstr ""
+msgstr "Cerca..."
 
 #: DlgPrefRecordDlg#4
 msgctxt "DlgPrefRecordDlg#4"
@@ -784,35 +808,35 @@ msgstr ""
 
 #: DlgPrefRecordDlg#5
 msgid "Quality"
-msgstr ""
+msgstr "Qualità"
 
 #: DlgPrefRecordDlg#6
 msgctxt "DlgPrefRecordDlg#6"
 msgid "High"
-msgstr ""
+msgstr "Alto"
 
 #: DlgPrefRecordDlg#7
 msgctxt "DlgPrefRecordDlg#7"
 msgid "Low"
-msgstr ""
+msgstr "Basso"
 
 #: DlgPrefRecordDlg#8
 msgid "Tags"
-msgstr ""
+msgstr "Tag"
 
 #: DlgPrefRecordDlg#9
 msgctxt "DlgPrefRecordDlg#9"
 msgid "Title"
-msgstr ""
+msgstr "Titolo"
 
 #: DlgPrefRecordDlg#10
 msgid "Author"
-msgstr ""
+msgstr "Autore"
 
 #: DlgPrefRecordDlg#11
 msgctxt "DlgPrefRecordDlg#11"
 msgid "Album"
-msgstr ""
+msgstr "Album"
 
 #: DlgPrefShoutcastDlg#1
 msgctxt "DlgPrefShoutcastDlg#1"
@@ -826,12 +850,12 @@ msgstr ""
 
 #: DlgPrefShoutcastDlg#3
 msgid "Server connection"
-msgstr ""
+msgstr "Connessione server"
 
 #: DlgPrefShoutcastDlg#4
 msgctxt "DlgPrefShoutcastDlg#4"
 msgid "Type"
-msgstr ""
+msgstr "Tipo"
 
 #: DlgPrefShoutcastDlg#5
 msgid "Icecast 2"
@@ -847,31 +871,31 @@ msgstr ""
 
 #: DlgPrefShoutcastDlg#8
 msgid "Mount"
-msgstr ""
+msgstr "Monta"
 
 #: DlgPrefShoutcastDlg#9
 msgid "/mixxx.ogg"
-msgstr ""
+msgstr "/mixxx.ogg"
 
 #: DlgPrefShoutcastDlg#10
 msgid "Host"
-msgstr ""
+msgstr "Host"
 
 #: DlgPrefShoutcastDlg#11
 msgid "192.168.123.8"
-msgstr ""
+msgstr "192.168.123.8"
 
 #: DlgPrefShoutcastDlg#12
 msgid "Port"
-msgstr ""
+msgstr "Porta"
 
 #: DlgPrefShoutcastDlg#13
 msgid "8000"
-msgstr ""
+msgstr "8000"
 
 #: DlgPrefShoutcastDlg#14
 msgid "Login"
-msgstr ""
+msgstr "Accesso"
 
 #: DlgPrefShoutcastDlg#15
 msgid "source"
@@ -879,11 +903,11 @@ msgstr ""
 
 #: DlgPrefShoutcastDlg#16
 msgid "Password"
-msgstr ""
+msgstr "Password"
 
 #: DlgPrefShoutcastDlg#17
 msgid "test1234"
-msgstr ""
+msgstr "test1234"
 
 #: DlgPrefShoutcastDlg#18
 msgid "Stream settings"
@@ -899,21 +923,22 @@ msgstr ""
 
 #: DlgPrefShoutcastDlg#21
 msgid "Website"
-msgstr ""
+msgstr "Sito Web"
 
 #: DlgPrefShoutcastDlg#22
 msgid "http://mixxx.sf.net"
-msgstr ""
+msgstr "http://mixxx.sf.net"
 
 #: DlgPrefShoutcastDlg#23
 msgid "Description"
-msgstr ""
+msgstr "Descrizione"
 
 #: DlgPrefShoutcastDlg#24
 msgid ""
-"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-"
-"html40/strict.dtd\">\n"
-"<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
+"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" "
+"\"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+"<html><head><meta name=\"qrichtext\" content=\"1\" /><style "
+"type=\"text/css\">\n"
 "p, li { white-space: pre-wrap; }\n"
 "</style></head><body style=\" font-family:'Sans'; font-size:10pt; font-"
 "weight:400; font-style:normal;\">\n"
@@ -926,7 +951,7 @@ msgstr ""
 #: DlgPrefShoutcastDlg#25
 msgctxt "DlgPrefShoutcastDlg#25"
 msgid "Genre"
-msgstr ""
+msgstr "Genere"
 
 #: DlgPrefShoutcastDlg#26
 msgid "Live mix"
@@ -948,51 +973,51 @@ msgstr ""
 
 #: DlgPrefShoutcastDlg#30
 msgid "320 kbps"
-msgstr ""
+msgstr "320 kbps"
 
 #: DlgPrefShoutcastDlg#31
 msgid "256 kbps"
-msgstr ""
+msgstr "256 kbps"
 
 #: DlgPrefShoutcastDlg#32
 msgid "224 kbps"
-msgstr ""
+msgstr "224 kbps"
 
 #: DlgPrefShoutcastDlg#33
 msgid "192 kbps"
-msgstr ""
+msgstr "192 kbps"
 
 #: DlgPrefShoutcastDlg#34
 msgid "160 kbps"
-msgstr ""
+msgstr "160 kbps"
 
 #: DlgPrefShoutcastDlg#35
 msgid "128 kbps"
-msgstr ""
+msgstr "128 kbps"
 
 #: DlgPrefShoutcastDlg#36
 msgid "112 kbps"
-msgstr ""
+msgstr "112 kbps"
 
 #: DlgPrefShoutcastDlg#37
 msgid "96 kbps"
-msgstr ""
+msgstr "96 kbps"
 
 #: DlgPrefShoutcastDlg#38
 msgid "80 kbps"
-msgstr ""
+msgstr "80 kbps"
 
 #: DlgPrefShoutcastDlg#39
 msgid "64 kbps"
-msgstr ""
+msgstr "64 kbps"
 
 #: DlgPrefShoutcastDlg#40
 msgid "48 kbps"
-msgstr ""
+msgstr "48 kbps"
 
 #: DlgPrefShoutcastDlg#41
 msgid "Format"
-msgstr ""
+msgstr "Formato"
 
 #: DlgPrefShoutcastDlg#42
 msgid "Ogg Vorbis"
@@ -1000,15 +1025,15 @@ msgstr ""
 
 #: DlgPrefShoutcastDlg#43
 msgid "MP3"
-msgstr ""
+msgstr "MP3"
 
 #: DlgPrefShoutcastDlg#44
 msgid "Channels"
-msgstr ""
+msgstr "Canali"
 
 #: DlgPrefShoutcastDlg#45
 msgid "Stereo"
-msgstr ""
+msgstr "Stereo"
 
 #: DlgPrefShoutcastDlg#46
 msgid "Custom metadata"
@@ -1021,7 +1046,7 @@ msgstr ""
 #: DlgPrefShoutcastDlg#48
 msgctxt "DlgPrefShoutcastDlg#48"
 msgid "Artist"
-msgstr ""
+msgstr "Artista"
 
 #: DlgPrefShoutcastDlg#49
 msgid "%mainartist"
@@ -1030,7 +1055,7 @@ msgstr ""
 #: DlgPrefShoutcastDlg#50
 msgctxt "DlgPrefShoutcastDlg#50"
 msgid "Title"
-msgstr ""
+msgstr "Titolo"
 
 #: DlgPrefShoutcastDlg#51
 msgid "%maintitle"
@@ -1045,11 +1070,11 @@ msgstr ""
 #: DlgPrefSound#1
 msgctxt "DlgPrefSound#1"
 msgid "None"
-msgstr ""
+msgstr "Nulla"
 
 #: DlgPrefSound#2
 msgid "JACK"
-msgstr ""
+msgstr "JACK"
 
 #: DlgPrefSound#3
 msgid "%1 ms"
@@ -1058,7 +1083,7 @@ msgstr ""
 #: DlgPrefSound#4
 msgctxt "DlgPrefSound#4"
 msgid "Mixxx"
-msgstr ""
+msgstr "Mixxx"
 
 #: DlgPrefSound#5
 msgid ""
@@ -1070,7 +1095,7 @@ msgstr ""
 #: DlgPrefSound#6
 msgctxt "DlgPrefSound#6"
 msgid "Configuration error"
-msgstr ""
+msgstr "Errore di configurazione"
 
 #: DlgPrefSound#7
 msgctxt "DlgPrefSound#7"
@@ -1156,11 +1181,11 @@ msgstr ""
 
 #: DlgPrefSoundDlg#11
 msgid "Latency"
-msgstr ""
+msgstr "Latenza"
 
 #: DlgPrefSoundDlg#12
 msgid "256 ms"
-msgstr ""
+msgstr "256 ms"
 
 #: DlgPrefSoundDlg#13
 msgctxt "DlgPrefSoundDlg#13"
@@ -1174,11 +1199,11 @@ msgstr ""
 
 #: DlgPrefSoundDlg#15
 msgid "Fast CPU"
-msgstr ""
+msgstr "CPU veloce"
 
 #: DlgPrefSoundDlg#16
 msgid "Slow CPU"
-msgstr ""
+msgstr "CPU lenta"
 
 #: DlgPrefSoundDlg#17
 msgid ""
@@ -1198,7 +1223,7 @@ msgstr ""
 
 #: DlgPrefSoundItem#3
 msgid "Type (#)"
-msgstr ""
+msgstr "Tipo (#)"
 
 #: DlgPrefVinyl#1
 msgctxt "DlgPrefVinyl#1"
@@ -1208,7 +1233,7 @@ msgstr ""
 #: DlgPrefVinyl#2
 msgctxt "DlgPrefVinyl#2"
 msgid "Configuration error"
-msgstr ""
+msgstr "Errore di configurazione"
 
 #: DlgPrefVinyl#3
 msgctxt "DlgPrefVinyl#3"
@@ -1244,8 +1269,9 @@ msgstr ""
 
 #: DlgPrefVinylDlg#5
 msgid ""
-"<a href=\"http://www.mixxx.org/wiki/doku.php/vinyl_control#troubleshooting\">T"
-"roubleshooting</a>"
+"<a "
+"href=\"http://www.mixxx.org/wiki/doku.php/vinyl_control#troubleshooting\">Tro"
+"ubleshooting</a>"
 msgstr ""
 
 #: DlgPrefVinylDlg#6
@@ -1801,7 +1827,8 @@ msgid ""
 msgstr ""
 
 #: MidiMapping#4
-msgid "* Check to see that the function name is spelled correctly in the mapping "
+msgid ""
+"* Check to see that the function name is spelled correctly in the mapping "
 "file (.xml) and script file (.js)\n"
 msgstr ""
 

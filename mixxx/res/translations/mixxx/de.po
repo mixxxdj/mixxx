@@ -8,13 +8,13 @@ msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2010-10-28 15:35-0400\n"
-"PO-Revision-Date: 2010-11-09 19:23+0000\n"
+"PO-Revision-Date: 2010-11-10 21:27+0000\n"
 "Last-Translator: cmdrhenner <cmdrhenner@gmail.com>\n"
 "Language-Team: German <de@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2010-11-10 05:00+0000\n"
+"X-Launchpad-Export-Date: 2010-11-11 04:39+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
 #: AutoDJFeature#1
@@ -23,7 +23,7 @@ msgstr "Auto DJ"
 
 #: BrowseFeature#1
 msgid "Browse"
-msgstr ""
+msgstr "Browsen"
 
 #: BrowseFeature#2
 msgid "Permission Denied"
@@ -321,7 +321,7 @@ msgstr "Aktiviere BPM Erkennung"
 
 #: DlgPrefBPMDlg#4
 msgid "Detect Song BPM on Import"
-msgstr "Erkenne BPM des Songs beim importieren"
+msgstr "Erkenne BPM des Titels beim importieren"
 
 #: DlgPrefBPMDlg#5
 msgid "Write BPM to ID3 Tag"
@@ -329,7 +329,7 @@ msgstr "BPM in das ID3 Tag schreiben"
 
 #: DlgPrefBPMDlg#6
 msgid "If BPM can be detected but not within specified range"
-msgstr ""
+msgstr "Falls BPM erkannt wird aber nicht im angegebenen Bereich"
 
 #: DlgPrefBPMDlg#7
 msgid "Allow BPM above the range"
@@ -422,11 +422,11 @@ msgstr "Aus"
 
 #: DlgPrefControlsDlg#9
 msgid "Pitch/Rate slider range"
-msgstr ""
+msgstr "Bereich Pitch/Rate Regler"
 
 #: DlgPrefControlsDlg#10
 msgid "Pitch/Rate slider direction"
-msgstr ""
+msgstr "Richtung Pitch/Rate Regler"
 
 #: DlgPrefControlsDlg#11
 msgid "Cue behaviour"
@@ -450,7 +450,7 @@ msgstr "Rechtsklick"
 
 #: DlgPrefControlsDlg#16
 msgid "Permanent rate change (between 1 and 8000) when left clicking"
-msgstr ""
+msgstr "Veränderung permanente Rate (zwischen 1 und 8000) beim Linksklick"
 
 #: DlgPrefControlsDlg#17
 msgid "%"
@@ -458,7 +458,7 @@ msgstr "%"
 
 #: DlgPrefControlsDlg#18
 msgid "Permanent rate change (between 1 and 8000) when right clicking"
-msgstr ""
+msgstr "Veränderung permanente Rate (zwischen 1 und 8000) beim Rechtsklick"
 
 #: DlgPrefControlsDlg#19
 msgid "Temporary Pitch/Rate Buttons"
@@ -466,7 +466,7 @@ msgstr "Temporäre Pitch/Rate Tasten"
 
 #: DlgPrefControlsDlg#20
 msgid "Temporary rate change (between 1 and 8000) when left clicking"
-msgstr ""
+msgstr "Veränderung temporäre Rate (zwischen 1 und 8000) beim Linksklick"
 
 #: DlgPrefControlsDlg#21
 msgid "Temporary rate change (between 1 and 8000) when right clicking"
@@ -491,11 +491,11 @@ msgstr ""
 
 #: DlgPrefCrossfaderDlg#3
 msgid "Slow fade"
-msgstr ""
+msgstr "Langsamer Fade"
 
 #: DlgPrefCrossfaderDlg#4
 msgid "Fast cut"
-msgstr ""
+msgstr "Schneller Cut"
 
 #: DlgPrefCrossfaderDlg#5
 msgid "Constant power"
@@ -604,11 +604,11 @@ msgstr "Preset Datei (*.midi.xml)"
 
 #: DlgPrefMidiBindings#8
 msgid "Select Control Group"
-msgstr ""
+msgstr "Elemente Gruppe auswählen"
 
 #: DlgPrefMidiBindings#9
 msgid "Select Control"
-msgstr ""
+msgstr "Element auswählen"
 
 #: DlgPrefMidiBindings#10
 msgid "Clear Input Bindings"
@@ -653,7 +653,7 @@ msgstr "Aktiviert"
 
 #: DlgPrefMidiBindingsDlg#7
 msgid "Controls"
-msgstr ""
+msgstr "Elemente"
 
 #: DlgPrefMidiBindingsDlg#8
 msgctxt "DlgPrefMidiBindingsDlg#8"
