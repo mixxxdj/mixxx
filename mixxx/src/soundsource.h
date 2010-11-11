@@ -69,7 +69,7 @@ public:
     virtual QString getYear();
     virtual QString getGenre();
     virtual QString getTrackNumber();
-    virtual float getRG();
+    virtual float getReplayGain();
     virtual float getBPM();
     virtual int getDuration();
     virtual int getBitrate();
@@ -84,7 +84,7 @@ public:
     virtual void setYear(QString);
     virtual void setGenre(QString);
     virtual void setTrackNumber(QString);
-    virtual void setRG(float);
+    virtual void setReplayGain(float);
     virtual void setBPM(float);
     virtual void setDuration(int);
     virtual void setBitrate(int);
@@ -101,7 +101,7 @@ protected:
     bool processXiphComment(TagLib::Ogg::XiphComment* xiph);
     bool processMP4Tag(TagLib::MP4::Tag* mp4);
     void processBpmString(QString tagName, QString sBpm);
-    void parseRGString(QString sRG);
+    void parseReplayGainString(QString sReplayGain);
 
     /** File name */
     QString m_qFilename;
@@ -114,7 +114,7 @@ protected:
     QString m_sYear;
     QString m_sGenre;
     QString m_sTrackNumber;
-    float m_fRG;
+    float m_fReplayGain;
     float m_fBPM;
     int m_iDuration;
     int m_iBitrate;

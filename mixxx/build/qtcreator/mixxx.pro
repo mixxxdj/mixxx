@@ -114,6 +114,7 @@ HEADERS += $$UI_DIR/ui_dlgaboutdlg.h \
 
 INCLUDEPATH += src \
     lib/kissfft \
+    lib/replaygain \
     lib/ladspa \
     /sw/include \
     $$UI_DIR
@@ -617,6 +618,10 @@ win32-g++ {
 
 # kissfft
 SOURCES += $$BASE_DIR/lib/kissfft/kiss_fft.c
+
+# ReplayGain
+
+SOURCES += $$BASE_DIR/lib/replaygain/replaygain_analysis.c
 
 FORMS += \
 $$BASE_DIR/src/dlgaboutdlg.ui \

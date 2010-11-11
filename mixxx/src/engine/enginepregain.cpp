@@ -38,12 +38,12 @@ EnginePregain::EnginePregain(const char * group)
     if(ControlObject::getControl(ConfigKey("[ReplayGain]", "InitialReplayGainBoost"))==NULL)
     {
         m_pReplayGainBoost = new ControlPotmeter(ConfigKey("[ReplayGain]", "InitialReplayGainBoost"),0., 15.);
-        m_pEnableRG = new ControlPotmeter(ConfigKey("[ReplayGain]", "ReplayGainEnabled"));
+        m_pEnableReplayGain = new ControlPotmeter(ConfigKey("[ReplayGain]", "ReplayGainEnabled"));
     }
     else
     {
         m_pReplayGainBoost = (ControlPotmeter*)ControlObject::getControl(ConfigKey("[ReplayGain]", "InitialReplayGainBoost"));
-        m_pEnableRG = (ControlPotmeter*)ControlObject::getControl(ConfigKey("[ReplayGain]", "ReplayGainEnabled"));
+        m_pEnableReplayGain = (ControlPotmeter*)ControlObject::getControl(ConfigKey("[ReplayGain]", "ReplayGainEnabled"));
     }
 
 }
@@ -58,18 +58,18 @@ EnginePregain::~EnginePregain()
 void EnginePregain::process(const CSAMPLE * pIn, const CSAMPLE * pOut, const int iBufferSize)
 {
 
-    float fEnableRG = m_pEnableRG->get();
+    float fEnableReplayGain = m_pEnableReplayGain->get();
     float fReplayGainBoost = m_pReplayGainBoost->get();
     CSAMPLE * pOutput = (CSAMPLE *)pOut;
     float fGain = potmeterPregain->get();
-    float fRGain = m_pControlReplayGain->get();
+    float fReplayGain = m_pControlReplayGain->get();
     m_fReplayGainCorrection=1;
     fGain = fGain/2;
-    if(fRGain*fEnableRG != 0)
+    if(fReplayGain*fEnableReplayGain != 0)
     {
 
         //Passing a user defined boost
-        m_fReplayGainCorrection=fRGain*pow(10, fReplayGainBoost/20);
+        m_fReplayGainCorrection=fReplayGain*pow(10, fReplayGainBoost/20);
     }
     fGain = fGain*m_fReplayGainCorrection;
     m_pTotalGain -> set(fGain);

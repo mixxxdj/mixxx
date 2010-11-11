@@ -213,6 +213,13 @@ class KissFFT(Dependence):
     def configure(self, build, conf):
         build.env.Append(CPPPATH="#lib/kissfft")
 
+class ReplayGain(Dependence):
+
+    def sources(self, build):
+        return ["#lib/replaygain/replaygain_analysis.c"]
+
+    def configure(self, build, conf):
+        build.env.Append(CPPPATH="#lib/replaygain")
 
 class SoundTouch(Dependence):
     SOUNDTOUCH_PATH = 'soundtouch-1.4.1'
@@ -355,9 +362,7 @@ class MixxxCore(Feature):
                    "engine/cuecontrol.cpp",
                    "engine/readaheadmanager.cpp",
                    "cachingreader.cpp",
-			
-		   "replaygain/replaygain_analysis.c",
-		   "analyserrg.cpp",
+                   "analyserrg.cpp",
                    "analyserqueue.cpp",
                    "analyserwavesummary.cpp",
                    "analyserbpm.cpp",
@@ -684,7 +689,7 @@ class MixxxCore(Feature):
             build.env.Append(CPPDEFINES=('UNIX_SHARE_PATH', r'\"%s\"' % share_path))
 
     def depends(self, build):
-        return [SoundTouch, KissFFT, PortAudio, PortMIDI, Qt,
+        return [SoundTouch, KissFFT, ReplayGain, PortAudio, PortMIDI, Qt,
                 FidLib, Mad, SndFile, OggVorbis, OpenGL, TagLib]
 
     def post_dependency_check_configure(self, build, conf):
