@@ -213,7 +213,7 @@ void TrackDAO::bindTrackToLibraryInsert(QSqlQuery& query, TrackInfoObject* pTrac
     query.bindValue(":samplerate", pTrack->getSampleRate());
     query.bindValue(":cuepoint", pTrack->getCuePoint());
     query.bindValue(":bpm", pTrack->getBpm());
-    query.bindValue(":replaygain", pTrack->getRG());
+    query.bindValue(":replaygain", pTrack->getReplayGain());
     const QByteArray* pWaveSummary = pTrack->getWaveSummary();
     if (pWaveSummary) //Avoid null pointer deref
         query.bindValue(":wavesummaryhex", *pWaveSummary);
@@ -535,7 +535,7 @@ TrackPointer TrackDAO::getTrackFromDB(QSqlQuery &query) const
         track->setSampleRate(samplerate);
         track->setCuePoint((float)cuepoint);
         track->setBpm(bpm.toFloat());
-        track->setRG(replaygain.toFloat());
+        track->setReplayGain(replaygain.toFloat());
         track->setWaveSummary(wavesummaryhex, false);
         delete wavesummaryhex;
         //track->setTimesPlayed //Doesn't exist wtfbbq
@@ -663,7 +663,7 @@ void TrackDAO::updateTrack(TrackInfoObject* pTrack)
     query.bindValue(":samplerate", pTrack->getSampleRate());
     query.bindValue(":cuepoint", pTrack->getCuePoint());
     query.bindValue(":bpm", pTrack->getBpm());
-    query.bindValue(":replaygain", pTrack->getRG());
+    query.bindValue(":replaygain", pTrack->getReplayGain());
     const QByteArray* pWaveSummary = pTrack->getWaveSummary();
     if (pWaveSummary) //Avoid null pointer deref
         query.bindValue(":wavesummaryhex", *pWaveSummary);

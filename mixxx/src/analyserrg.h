@@ -21,7 +21,7 @@ public:
 
 private:
     int m_iStepControl;
-    ConfigObject<ConfigValue> *m_pConfigRG;
+    ConfigObject<ConfigValue> *m_pConfigReplayGain;
     //int m_iStartTime;
 };
 

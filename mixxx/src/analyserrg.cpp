@@ -6,10 +6,10 @@
 
 #include "trackinfoobject.h"
 #include "analyserrg.h"
-#include "replaygain/replaygain_analysis.h"
+#include "../lib/replaygain/replaygain_analysis.h"
 
 AnalyserGain::AnalyserGain(ConfigObject<ConfigValue> *_config) {
-    m_pConfigRG = _config;
+    m_pConfigReplayGain = _config;
     m_iStepControl = 0;
 }
 //TODO: On may think on rewriting replaygain/replagain_analys.* to improve performances. Anyway those willing to do should be sure of
@@ -19,11 +19,11 @@ AnalyserGain::AnalyserGain(ConfigObject<ConfigValue> *_config) {
 
 void AnalyserGain::initialise(TrackPointer tio, int sampleRate, int totalSamples) {
 
-    bool bAnalyserEnabled = (bool)m_pConfigRG->getValueString(ConfigKey("[ReplayGain]","ReplayGainAnalyserEnabled")).toInt();
-    float fRG = tio->getRG();
-    if(totalSamples == 0 || fRG != 0 || !bAnalyserEnabled) {
+    bool bAnalyserEnabled = (bool)m_pConfigReplayGain->getValueString(ConfigKey("[ReplayGain]","ReplayGainAnalyserEnabled")).toInt();
+    float fReplayGain = tio->getReplayGain();
+    if(totalSamples == 0 || fReplayGain != 0 || !bAnalyserEnabled) {
         //qDebug() << "Replaygain Analyser will not start.";
-        //if (fRG != 0 ) qDebug() << "Found a ReplayGain value of " << 20*log10(fRG) << "dB for track :" <<(tio->getFilename());
+        //if (fReplayGain != 0 ) qDebug() << "Found a ReplayGain value of " << 20*log10(fReplayGain) << "dB for track :" <<(tio->getFilename());
         return;
     }
     m_iStepControl = InitGainAnalysis( (long)sampleRate );
@@ -38,22 +38,22 @@ void AnalyserGain::process(const CSAMPLE *pIn, const int iLen) {
 
     if(m_iStepControl!=1) return;
 
-    CSAMPLE *m_fLems = new CSAMPLE[(int)(iLen/2)];
-    CSAMPLE *m_fRems = new CSAMPLE[(int)(iLen/2)];
+    CSAMPLE *m_fLeftChannel = new CSAMPLE[(int)(iLen/2)];
+    CSAMPLE *m_fRightChannel = new CSAMPLE[(int)(iLen/2)];
     int iRGCounter = 0;
     for(int i=0; i<iLen; i+=2) {
-        m_fLems[iRGCounter] = pIn[i]*32767;
-        m_fRems[iRGCounter] = pIn[i+1]*32767;
+        m_fLeftChannel[iRGCounter] = pIn[i]*32767;
+        m_fRightChannel[iRGCounter] = pIn[i+1]*32767;
 
         iRGCounter++;
     }
 
-    m_iStepControl = AnalyzeSamples(m_fLems,m_fRems,iRGCounter,2);
+    m_iStepControl = AnalyzeSamples(m_fLeftChannel,m_fRightChannel,iRGCounter,2);
 
-    delete m_fLems;
-    delete m_fRems;
-    m_fLems = NULL;
-    m_fRems = NULL;
+    delete m_fLeftChannel;
+    delete m_fRightChannel;
+    m_fLeftChannel = NULL;
+    m_fRightChannel = NULL;
 
 }
 
@@ -70,11 +70,11 @@ void AnalyserGain::finalise(TrackPointer tio) {
     // it directly sends results as relative peaks.
     // In that way there is no need to spend resources in calculating log10 or pow.
 
-    float fGain_Result = pow(10,GetTitleGain()/20);
-    tio->setRG(fGain_Result);
-    //if(fGain_Result) qDebug() << "ReplayGain Analyser found a ReplayGain value of "<< 20*log10(fGain_Result) << "dB for track " << (tio->getFilename());
+    float fReplayGain_Result = pow(10,GetTitleGain()/20);
+    tio->setReplayGain(fReplayGain_Result);
+    //if(fReplayGain_Result) qDebug() << "ReplayGain Analyser found a ReplayGain value of "<< 20*log10(fReplayGain_Result) << "dB for track " << (tio->getFilename());
     m_iStepControl=0;
-    fGain_Result=0;
+    fReplayGain_Result=0;
     //m_iStartTime = clock() - m_iStartTime;
     //qDebug() << "AnalyserGain :: Generation took " << double(m_iStartTime) / CLOCKS_PER_SEC << " seconds";
 }

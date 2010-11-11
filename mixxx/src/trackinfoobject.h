@@ -101,9 +101,9 @@ public:
 
 
     /** Returns ReplayGain*/
-    float getRG() const;
+    float getReplayGain() const;
     /** Set ReplayGain*/
-    void setRG(float);
+    void setReplayGain(float);
     /** Returns BPM */
     float getBpm() const;
     /** Set BPM */
@@ -233,7 +233,7 @@ public:
   signals:
     void wavesummaryUpdated(TrackInfoObject*);
     void bpmUpdated(double bpm);
-    void RGUpdated(double replaygain);
+    void ReplayGainUpdated(double replaygain);
     void cuesUpdated();
     void changed();
     void dirty();
@@ -309,7 +309,7 @@ public:
     /** Number of times the track has been played */
     int m_iTimesPlayed;
     /** Replay Gain volume */
-    float m_fRG;
+    float m_fReplayGain;
     /** Beat per minutes (BPM) */
     float m_fBpm;
     /** Minimum BPM range. If this is 0.0, then the config min BPM will be used */

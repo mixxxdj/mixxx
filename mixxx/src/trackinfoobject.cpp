@@ -68,7 +68,7 @@ TrackInfoObject::TrackInfoObject(const QDomNode &nodeHeader)
     m_iBitrate = XmlParse::selectNodeQString(nodeHeader, "Bitrate").toInt();
     m_iLength = XmlParse::selectNodeQString(nodeHeader, "Length").toInt();
     m_iTimesPlayed = XmlParse::selectNodeQString(nodeHeader, "TimesPlayed").toInt();
-    m_fRG = XmlParse::selectNodeQString(nodeHeader, "replaygain").toFloat();
+    m_fReplayGain = XmlParse::selectNodeQString(nodeHeader, "replaygain").toFloat();
     m_fBpm = XmlParse::selectNodeQString(nodeHeader, "Bpm").toFloat();
     m_bBpmConfirm = XmlParse::selectNodeQString(nodeHeader, "BpmConfirm").toInt();
     m_fBeatFirst = XmlParse::selectNodeQString(nodeHeader, "BeatFirst").toFloat();
@@ -114,7 +114,7 @@ void TrackInfoObject::initialize(bool parseHeader) {
     m_iBitrate = 0;
     m_iTimesPlayed = 0;
     m_fBpm = 0.;
-    m_fRG = 0.;
+    m_fReplayGain = 0.;
     m_bBpmConfirm = false;
     m_bIsValid = false;
     m_bHeaderParsed = false;
@@ -162,7 +162,7 @@ void TrackInfoObject::writeToXML( QDomDocument &doc, QDomElement &header )
     XmlParse::addElement( doc, header, "Bitrate", QString("%1").arg(m_iBitrate));
     XmlParse::addElement( doc, header, "Length", QString("%1").arg(m_iLength) );
     XmlParse::addElement( doc, header, "TimesPlayed", QString("%1").arg(m_iTimesPlayed) );
-    XmlParse::addElement( doc, header, "replaygain", QString("%1").arg(m_fRG) );
+    XmlParse::addElement( doc, header, "replaygain", QString("%1").arg(m_fReplayGain) );
     XmlParse::addElement( doc, header, "Bpm", QString("%1").arg(m_fBpm) );
     XmlParse::addElement( doc, header, "BpmConfirm", QString("%1").arg(m_bBpmConfirm) );
     XmlParse::addElement( doc, header, "BeatFirst", QString("%1").arg(m_fBeatFirst) );
@@ -266,21 +266,21 @@ bool TrackInfoObject::exists()  const
 
 //Added for replaygain
 
-float TrackInfoObject::getRG() const
+float TrackInfoObject::getReplayGain() const
 {
     QMutexLocker lock(&m_qMutex);
-    return m_fRG;
+    return m_fReplayGain;
 }
 
-void TrackInfoObject::setRG(float f)
+void TrackInfoObject::setReplayGain(float f)
 {
     QMutexLocker lock(&m_qMutex);
-    bool dirty = m_fRG != f;
-    m_fRG = f;
-    //qDebug() << "Reported ReplayGain value: " << m_fRG;
+    bool dirty = m_fReplayGain != f;
+    m_fReplayGain = f;
+    //qDebug() << "Reported ReplayGain value: " << m_fReplayGain;
     if (dirty)
         setDirty(true);
-    emit(RGUpdated(f));
+    emit(ReplayGainUpdated(f));
     lock.unlock();
 }
 
