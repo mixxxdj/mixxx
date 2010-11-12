@@ -102,6 +102,19 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel *model) {
     // QHeaderView here saves on setModel() calls. Since we parent the
     // QHeaderView to the WTrackTableView, it is automatically deleted.
     QHeaderView* tempHeader = new QHeaderView(Qt::Horizontal, this);
+    /* Tobias Rafreider: DO NOT SET SORTING TO TRUE during header replacement
+     * Otherwise, setSortingEnabled(1) will immediately trigger sortByColumn()
+     * For some reason this will cause 4 select statements in series
+     * from which 3 are redundant --> expensive at all
+     * 
+     * Sorting columns, however, is possible because we
+     * enable clickable sorting indicators some lines below.
+     * Furthermore, we connect signal 'sortIndicatorChanged'.
+     *
+     * Fixes Bug #672762
+     */
+    
+    setSortingEnabled(false);
     setHorizontalHeader(tempHeader);
 
     setModel(model);
