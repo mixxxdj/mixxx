@@ -80,11 +80,12 @@ void EnginePregain::process(const CSAMPLE * pIn, const CSAMPLE * pOut, const int
         {
             if(m_fClock==0)
                 m_fClock=clock();
+            m_fSumClock += (float)((clock()-m_fClock)/CLOCKS_PER_SEC);
+            m_fClock=clock();
             if(m_fSumClock<1)
             {
                 //Fade smoothly
-                m_fSumClock += (float)((clock()-m_fClock)/CLOCKS_PER_SEC);
-                m_fClock=clock();
+
                 m_fReplayGainCorrection=(1-m_fSumClock)+(m_fSumClock)*fReplayGain*pow(10, fReplayGainBoost/20);
 
             }
