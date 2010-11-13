@@ -142,13 +142,11 @@ CSAMPLE * EngineBufferScaleLinear::scale(double playpos, unsigned long buf_size,
 
         // Be very defensive about equating the remainder
         // back into unscaled_samples_needed
-	if ((unscaled_samples_needed - rem) >= 1)
-	{
+		if ((unscaled_samples_needed - rem) >= 1)
+		{
             carry_remainder = TRUE;
             m_scaleRemainder -= rem;
-            unscaled_samples_needed -= rem;
         }
-
     }
 
     // Multiply by 2 because it is predicting mono rates, while we want a stereo
@@ -200,8 +198,8 @@ CSAMPLE * EngineBufferScaleLinear::scale(double playpos, unsigned long buf_size,
         if (current_sample+1 >= buffer_size) {
             //Q_ASSERT(unscaled_samples_needed > 0);
             if (unscaled_samples_needed == 0) {
-                unscaled_samples_needed = 2;
-                screwups++;
+	            unscaled_samples_needed = 2;
+	            screwups++;
             }
 
             int samples_to_read = math_min(kiLinearScaleReadAheadLength,
