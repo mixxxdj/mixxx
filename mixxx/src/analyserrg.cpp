@@ -38,22 +38,22 @@ void AnalyserGain::process(const CSAMPLE *pIn, const int iLen) {
 
     if(m_iStepControl!=1) return;
 
-    CSAMPLE *m_fLeftChannel = new CSAMPLE[(int)(iLen/2)];
-    CSAMPLE *m_fRightChannel = new CSAMPLE[(int)(iLen/2)];
+    CSAMPLE *LeftChannel = new CSAMPLE[(int)(iLen/2)];
+    CSAMPLE *RightChannel = new CSAMPLE[(int)(iLen/2)];
     int iRGCounter = 0;
     for(int i=0; i<iLen; i+=2) {
-        m_fLeftChannel[iRGCounter] = pIn[i]*32767;
-        m_fRightChannel[iRGCounter] = pIn[i+1]*32767;
+        LeftChannel[iRGCounter] = pIn[i]*32767;
+        RightChannel[iRGCounter] = pIn[i+1]*32767;
 
         iRGCounter++;
     }
 
-    m_iStepControl = AnalyzeSamples(m_fLeftChannel,m_fRightChannel,iRGCounter,2);
+    m_iStepControl = AnalyzeSamples(LeftChannel,RightChannel,iRGCounter,2);
 
-    delete m_fLeftChannel;
-    delete m_fRightChannel;
-    m_fLeftChannel = NULL;
-    m_fRightChannel = NULL;
+    delete LeftChannel;
+    delete RightChannel;
+    LeftChannel = NULL;
+    RightChannel = NULL;
 
 }
 
