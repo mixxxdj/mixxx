@@ -42,8 +42,7 @@ EngineBufferScaleST::EngineBufferScaleST(ReadAheadManager *pReadAheadManager) :
     m_pSoundTouch->setChannels(2);
     m_pSoundTouch->setRate(m_dBaseRate);
     m_pSoundTouch->setTempo(m_dTempo);
-    //I've got a fast computer, don't use quickseek
-    m_pSoundTouch->setSetting(SETTING_USE_QUICKSEEK, 0);
+    m_pSoundTouch->setSetting(SETTING_USE_QUICKSEEK, 1);
     m_pSoundTouch->setSetting(SETTING_USE_AA_FILTER, 1);
     m_qMutex.unlock();
 
@@ -200,8 +199,8 @@ CSAMPLE* EngineBufferScaleST::scale(double playpos, unsigned long buf_size,
     CSAMPLE* read = buffer;
     bool last_read_failed = false;
     while (remaining_frames > 0) {
-        long received_frames = received_frames = m_pSoundTouch->receiveSamples((SAMPLETYPE*)read,
-                                                                              remaining_frames);
+        long received_frames = m_pSoundTouch->receiveSamples((SAMPLETYPE*)read,
+                                                             remaining_frames);
         remaining_frames -= received_frames;
         total_received_frames += received_frames;
         read += received_frames*2;
