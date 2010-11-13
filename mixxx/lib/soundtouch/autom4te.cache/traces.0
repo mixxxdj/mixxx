@@ -567,8 +567,8 @@ m4trace:configure.ac:69: -1- AH_OUTPUT([inline], [/* Define to `__inline__\' or 
 #undef inline
 #endif])
 m4trace:configure.ac:74: -1- _m4_warn([obsolete], [The macro `AC_HELP_STRING' is obsolete.
-You should run autoupdate.], [../../lib/autoconf/general.m4:230: AC_HELP_STRING is expanded from...
-../../lib/autoconf/general.m4:1474: AC_ARG_ENABLE is expanded from...
+You should run autoupdate.], [../../lib/autoconf/general.m4:209: AC_HELP_STRING is expanded from...
+../../lib/autoconf/general.m4:1463: AC_ARG_ENABLE is expanded from...
 configure.ac:74: the top level])
 m4trace:configure.ac:83: -1- AC_DEFINE_TRACE_LITERAL([INTEGER_SAMPLES])
 m4trace:configure.ac:83: -1- m4_pattern_allow([^INTEGER_SAMPLES$])
@@ -598,7 +598,7 @@ m4trace:configure.ac:94: -1- m4_pattern_allow([^malloc$])
 m4trace:configure.ac:94: -1- AH_OUTPUT([malloc], [/* Define to rpl_malloc if the replacement function should be used. */
 @%:@undef malloc])
 m4trace:configure.ac:95: -1- _m4_warn([obsolete], [The macro `AC_TYPE_SIGNAL' is obsolete.
-You should run autoupdate.], [../../lib/autoconf/types.m4:754: AC_TYPE_SIGNAL is expanded from...
+You should run autoupdate.], [../../lib/autoconf/types.m4:738: AC_TYPE_SIGNAL is expanded from...
 configure.ac:95: the top level])
 m4trace:configure.ac:95: -1- AC_DEFINE_TRACE_LITERAL([RETSIGTYPE])
 m4trace:configure.ac:95: -1- m4_pattern_allow([^RETSIGTYPE$])
