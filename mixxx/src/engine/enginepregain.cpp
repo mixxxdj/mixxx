@@ -46,6 +46,10 @@ EnginePregain::EnginePregain(const char * group)
         m_pEnableReplayGain = (ControlPotmeter*)ControlObject::getControl(ConfigKey("[ReplayGain]", "ReplayGainEnabled"));
     }
 
+    m_bSmoothFade = false;
+    m_fClock=0;
+    m_fSumClock=0;
+
 }
 
 EnginePregain::~EnginePregain()
@@ -67,14 +71,49 @@ void EnginePregain::process(const CSAMPLE * pIn, const CSAMPLE * pOut, const int
     fGain = fGain/2;
     if(fReplayGain*fEnableReplayGain != 0)
     {
+        // Here is the point, when ReplayGain Analyser takes its action, suggested gain changes from 0 to a nonzero value
+        // We want to smoothly fade to this last.
+        // Anyway we have some the problem that code cannot block the full process for one second.
+        // So we need to alter gain each time ::process is called.
 
-        //Passing a user defined boost
-        m_fReplayGainCorrection=fReplayGain*pow(10, fReplayGainBoost/20);
+        if(m_bSmoothFade)//This means that a ReplayGain value has been calculated after the track has been loaded
+        {
+            if(m_fClock==0)
+                m_fClock=clock();
+            if(m_fSumClock<1)
+            {
+                //Fade smoothly
+                m_fSumClock += (float)((clock()-m_fClock)/CLOCKS_PER_SEC);
+                m_fClock=clock();
+                m_fReplayGainCorrection=(1-m_fSumClock)+(m_fSumClock)*fReplayGain*pow(10, fReplayGainBoost/20);
+
+            }
+            else
+            {
+                m_bSmoothFade = false;
+            }
+        }
+        else
+        {
+            //Passing a user defined boost
+            m_fReplayGainCorrection=fReplayGain*pow(10, fReplayGainBoost/20);
+        }
+    }
+    else
+    {
+        // If track has not ReplayGain value and ReplayGain is enabled
+        // we prepare for smoothfading to ReplayGain suggested gain
+        if(fEnableReplayGain != 0)
+        {
+            m_bSmoothFade=true;
+            m_fClock=0;
+            m_fSumClock=0;
+        }
     }
     fGain = fGain*m_fReplayGainCorrection;
     m_pTotalGain -> set(fGain);
 
-
+    //qDebug()<<"Clock"<<(float)clock()/CLOCKS_PER_SEC;
     // SampleUtil deals with aliased buffers and gains of 1 or 0.
     SampleUtil::copyWithGain(pOutput, pIn, fGain, iBufferSize);
 }
