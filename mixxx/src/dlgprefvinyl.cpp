@@ -89,7 +89,6 @@ DlgPrefVinyl::DlgPrefVinyl(QWidget * parent, SoundManager * soundman,
     connect(NeedleSkipEnable, SIGNAL(stateChanged(int)), this, SLOT(settingsChanged()));
     connect(AbsoluteMode, SIGNAL(toggled(bool)), this, SLOT(settingsChanged()));
     connect(RelativeMode, SIGNAL(toggled(bool)), this, SLOT(settingsChanged()));
-    connect(ScratchMode, SIGNAL(toggled(bool)), this, SLOT(settingsChanged()));
 }
 
 DlgPrefVinyl::~DlgPrefVinyl()
