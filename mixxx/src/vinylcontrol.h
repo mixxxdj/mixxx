@@ -57,6 +57,7 @@ class VinylControl : public QThread
         ControlObjectThread *timecodeInputL;    //The ControlObject used to notify the GUI about vinyl control left channel's volume.
         ControlObjectThread *timecodeInputR;    //The ControlObject used to notify the GUI about vinyl control right channel's volume.
         ControlObjectThread *vinylStatus;
+        ControlObjectThread *rateDir; //direction of rate
 		//ControlObject *vinylStatus;  //Status of vinyl control
 
     	int iLeadInTime;				//The lead-in time...

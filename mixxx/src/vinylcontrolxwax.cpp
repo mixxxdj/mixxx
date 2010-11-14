@@ -131,6 +131,7 @@ void VinylControlXwax::AnalyseSamples(short *samples, size_t size)
         timecoder_submit(&timecoder, samples, size);
 
         //Update the input signal strength
+        //qDebug() << (float)fabs((float)samples[0]);
         timecodeInputL->slotSet((float)fabs((float)samples[0]) / SHRT_MAX * 2.0f);
         timecodeInputR->slotSet((float)fabs((float)samples[1]) / SHRT_MAX * 2.0f);
         
@@ -391,7 +392,7 @@ void VinylControlXwax::run()
                     	syncPosition();
                         resetSteadyPitch(dVinylPitch, dVinylPosition);
                         if (uiUpdateTime(filePosition))
-                        	rateSlider->slotSet((fabs(dVinylPitch) - 1.0f) / fRateRange);
+                        	rateSlider->slotSet(rateDir->get() * (fabs(dVinylPitch) - 1.0f) / fRateRange);
                     }
                     else if (!m_bNeedleSkipPrevention &&
                     	fabs(dVinylPosition - dOldPos) >= 0.1f &&
@@ -462,7 +463,7 @@ void VinylControlXwax::run()
 	            	controlScratch->slotSet(averagePitch + dDriftControl);
 	            	if (iPosition != -1 && reportedPlayButton && uiUpdateTime(filePosition))
 	            	{
-	                	rateSlider->slotSet((fabs(averagePitch + dDriftControl) - 1.0f) / fRateRange);
+	                	rateSlider->slotSet(rateDir->get() * (fabs(averagePitch + dDriftControl) - 1.0f) / fRateRange);
 	                	dUiUpdateTime = filePosition;
 	                }
 	            }
@@ -471,7 +472,7 @@ void VinylControlXwax::run()
 	                controlScratch->slotSet(averagePitch);
 	                if (iPosition != -1 && reportedPlayButton && uiUpdateTime(filePosition))
 	            	{
-	                	rateSlider->slotSet((fabs(averagePitch) - 1.0f) / fRateRange);
+	                	rateSlider->slotSet(rateDir->get() * (fabs(averagePitch) - 1.0f) / fRateRange);
 	                	dUiUpdateTime = filePosition;
 	                }
 	            }
@@ -522,7 +523,7 @@ void VinylControlXwax::enableConstantMode()
 	mode->slotSet((double)iVCMode);
 	togglePlayButton(true);
 	double rate = controlScratch->get();
-	rateSlider->slotSet((fabs(rate) - 1.0f) / fRateRange);
+	rateSlider->slotSet(rateDir->get() * (fabs(rate) - 1.0f) / fRateRange);
 	controlScratch->slotSet(rate);
 }
 
