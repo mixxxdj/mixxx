@@ -145,7 +145,8 @@ inline unsigned long SoundSourceFLAC::length() {
 
 int SoundSourceFLAC::parseHeader() {
     setType("flac");
-    TagLib::FLAC::File f(m_file.fileName().toUtf8().constData());
+    QByteArray fileName(m_file.fileName().toUtf8());
+    TagLib::FLAC::File f(fileName.constData());
     bool result = processTaglibFile(f);
     TagLib::ID3v2::Tag *id3v2 = f.ID3v2Tag();
     TagLib::Ogg::XiphComment *xiph = f.xiphComment();
