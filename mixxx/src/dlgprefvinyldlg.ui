@@ -270,13 +270,6 @@ p, li { white-space: pre-wrap; }
        </widget>
       </item>
       <item>
-       <widget class="QRadioButton" name="ScratchMode">
-        <property name="text">
-         <string>Scratch Mode</string>
-        </property>
-       </widget>
-      </item>
-      <item>
        <widget class="QCheckBox" name="NeedleSkipEnable">
         <property name="text">
          <string>Enable Needle Skip Prevention</string>
