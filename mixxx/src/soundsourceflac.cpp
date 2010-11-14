@@ -15,6 +15,7 @@
 
 #include <cstring> // memcpy
 #include <QtDebug>
+#include <taglib/flacfile.h>
 
 #include "soundsourceflac.h"
 
@@ -80,10 +81,10 @@ int SoundSourceFLAC::open() {
     if (m_leftoverBuffer == NULL) {
         m_leftoverBuffer = new FLAC__int16[m_maxBlocksize * 2 /*m_iChannels*/];
     }
-    //qDebug() << "SSFLAC: Total samples: " << m_samples;
-    //qDebug() << "SSFLAC: Sampling rate: " << m_iSampleRate << " Hz";
-    //qDebug() << "SSFLAC: Channels: " << m_iChannels;
-    //qDebug() << "SSFLAC: BPS: " << m_bps;
+//    qDebug() << "SSFLAC: Total samples: " << m_samples;
+//    qDebug() << "SSFLAC: Sampling rate: " << m_iSampleRate << " Hz";
+//    qDebug() << "SSFLAC: Channels: " << m_iChannels;
+//    qDebug() << "SSFLAC: BPS: " << m_bps;
     return OK;
 decoderError:
     FLAC__stream_decoder_finish(m_decoder);
@@ -143,15 +144,19 @@ inline unsigned long SoundSourceFLAC::length() {
 }
 
 int SoundSourceFLAC::parseHeader() {
-    open();
-    setType("FLAC");
-    // TODO(bkgood) check this next line
-    setBitrate(m_iSampleRate * 16 * m_iChannels / 1000); // 16 = bps
-    setDuration(m_samples / m_iSampleRate);
-    foreach (QString i, m_tags) {
-        setTag(i);
+    setType("flac");
+    QByteArray fileName(m_file.fileName().toUtf8());
+    TagLib::FLAC::File f(fileName.constData());
+    bool result = processTaglibFile(f);
+    TagLib::ID3v2::Tag *id3v2 = f.ID3v2Tag();
+    TagLib::Ogg::XiphComment *xiph = f.xiphComment();
+    if (id3v2) {
+        processID3v2Tag(id3v2);
     }
-    return OK;
+    if (xiph) {
+        processXiphComment(xiph);
+    }
+    return result ? OK : ERR;
 }
 
 void SoundSourceFLAC::setTag(const QString &tag) {
@@ -179,6 +184,7 @@ void SoundSourceFLAC::setTag(const QString &tag) {
 
 /**
  * Shift needed to take our FLAC sample size to Mixxx's 16-bit samples.
+ * Shift right on negative, left on positive.
  */
 inline int SoundSourceFLAC::getShift() const {
     return 16 - m_bps;
@@ -189,13 +195,15 @@ inline int SoundSourceFLAC::getShift() const {
  */
 inline FLAC__int16 SoundSourceFLAC::shift(FLAC__int32 sample) const {
     // this is how libsndfile does this operation and is wonderfully
-    // straightforward -- bkgood
-    if (getShift() == 0) {
+    // straightforward. Just shift the sample left or right so that
+    // it fits in a 16-bit short. -- bkgood
+    int shift = getShift();
+    if (shift == 0) {
         return sample;
-    } else if (getShift() < 0) {
-        return sample >> abs(getShift());
+    } else if (shift < 0) {
+        return sample >> abs(shift);
     } else {
-        return sample << getShift();
+        return sample << shift;
     }
 };
 

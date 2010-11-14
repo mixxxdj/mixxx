@@ -700,7 +700,7 @@ void MidiMapping::savePreset() {
  */
 void MidiMapping::savePreset(QString path) {
     qDebug() << "Writing MIDI preset file" << path;
-    m_mappingLock.lock();
+    QMutexLocker lock(&m_mappingLock);
     QFile output(path);
     if (!output.open(QIODevice::WriteOnly | QIODevice::Truncate)) return;
     QTextStream outputstream(&output);
@@ -709,7 +709,6 @@ void MidiMapping::savePreset(QString path) {
     // Save the DOM to the XML file
     docBindings.save(outputstream, 4);
     output.close();
-    m_mappingLock.unlock();
 }
 
 /* applyPreset()
