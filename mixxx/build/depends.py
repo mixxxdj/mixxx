@@ -100,6 +100,18 @@ class SndFile(Dependence):
     def sources(self, build):
         return ['soundsourcesndfile.cpp']
 
+class FLAC(Dependence):
+    def configure(self, build, conf):
+        if not conf.CheckHeader('FLAC/stream_decoder.h'):
+            raise Exception('Did not find libFLAC development headers, exiting!')
+        elif not conf.CheckLib(['libFLAC', 'FLAC']):
+            raise Exception('Did not find libFLAC development libraries, exiting!')
+        return
+
+    def sources(self, build):
+        return ['soundsourceflac.cpp',]
+
+
 class Qt(Dependence):
     DEFAULT_QTDIRS = {'linux': '/usr/share/qt4',
                       'bsd': '/usr/local/lib/qt4',
@@ -681,7 +693,7 @@ class MixxxCore(Feature):
 
     def depends(self, build):
         return [SoundTouch, KissFFT, PortAudio, PortMIDI, Qt,
-                FidLib, Mad, SndFile, OggVorbis, OpenGL, TagLib]
+                FidLib, Mad, SndFile, FLAC, OggVorbis, OpenGL, TagLib]
 
     def post_dependency_check_configure(self, build, conf):
         """Sets up additional things in the Environment that must happen
