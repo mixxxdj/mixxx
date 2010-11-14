@@ -50,8 +50,8 @@ void AnalyserGain::process(const CSAMPLE *pIn, const int iLen) {
 
     m_iStepControl = AnalyzeSamples(LeftChannel,RightChannel,iRGCounter,2);
 
-    delete LeftChannel;
-    delete RightChannel;
+    delete [] LeftChannel;
+    delete [] RightChannel;
     LeftChannel = NULL;
     RightChannel = NULL;
 
