@@ -24,7 +24,7 @@ VinylControl::VinylControl(ConfigObject<ConfigValue> * pConfig, const char * _gr
     timecodeInputR      = new ControlObjectThread(ControlObject::getControl(ConfigKey(group, "VinylControlInputR")));
     //vinylStatus			= new ControlObject(ConfigKey(group,"VinylStatus"));
     vinylStatus     = new ControlObjectThread(ControlObject::getControl(ConfigKey(group, "VinylStatus")));
-
+    rateDir         = new ControlObjectThread(ControlObject::getControl(ConfigKey(group, "rate_dir")));
 
     dVinylPitch = 0.0f;
     dVinylPosition = 0.0f;
