@@ -223,14 +223,13 @@ void EngineBuffer::setPitchIndpTimeStretch(bool b)
     //the waveform the roll in a weird way or fire an ASSERT from
     //visualchannel.cpp or something. Need to valgrind this or something.
 
-	//OWEN HACK: actually the newer soundtouch sounds great! Always use it
-    //if (b == true) {
-	m_pScale = m_pScaleST;
-	((EngineBufferScaleST *)m_pScaleST)->setPitchIndpTimeStretch(b);
-    /*} else {
+    if (b == true) {
+		m_pScale = m_pScaleST;
+		((EngineBufferScaleST *)m_pScaleST)->setPitchIndpTimeStretch(b);
+    } else {
         m_pScale = m_pScaleLinear;
     }
-    m_bScalerChanged = true;*/
+    m_bScalerChanged = true;
 }
 
 double EngineBuffer::getBpm()
@@ -396,11 +395,11 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
 
     if (!m_pTrackEnd->get() && pause.tryLock()) {
 
-        /*if (m_pKeylock->get() && m_pScale != m_pScaleST) {
+        if (m_pKeylock->get() && m_pScale != m_pScaleST) {
             setPitchIndpTimeStretch(true);
         } else if (!m_pKeylock->get() && m_pScale == m_pScaleST) {
             setPitchIndpTimeStretch(false);
-        }*/
+        }
 
         float sr = m_pSampleRate->get();
 
