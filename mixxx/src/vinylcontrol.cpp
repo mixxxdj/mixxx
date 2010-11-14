@@ -46,6 +46,10 @@ VinylControl::VinylControl(ConfigObject<ConfigValue> * pConfig, const char * _gr
 
     //Enabled or not
     bIsEnabled = m_pConfig->getValueString(ConfigKey(group,"vinylcontrol")).toInt();
+    
+    //Gain
+    ControlObject::getControl(ConfigKey("[VinylControl]", "VinylControlGain"))->set(
+    	m_pConfig->getValueString(ConfigKey("[VinylControl]","VinylControlGain")).toInt());
 }
 
 void VinylControl::ToggleVinylControl(bool enable)
