@@ -21,7 +21,7 @@ void AnalyserWavesummary::initialise(TrackPointer tio, int sampleRate, int total
     Q_UNUSED(sampleRate);
     // Check if the preview has already been generated
     const QByteArray* p = tio->getWaveSummary();
-    if(p != NULL && p->size() > 0) {
+   if(p != NULL && p->size() > 0) {
         return;
     }
 

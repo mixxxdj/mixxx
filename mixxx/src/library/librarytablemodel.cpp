@@ -201,6 +201,7 @@ bool LibraryTableModel::isColumnInternal(int column) {
     if ((column == fieldIndex(LIBRARYTABLE_ID)) ||
         (column == fieldIndex(LIBRARYTABLE_URL)) ||
         (column == fieldIndex(LIBRARYTABLE_CUEPOINT)) ||
+        (column == fieldIndex(LIBRARYTABLE_REPLAYGAIN)) ||
         (column == fieldIndex(LIBRARYTABLE_WAVESUMMARYHEX)) ||
         (column == fieldIndex(LIBRARYTABLE_SAMPLERATE)) ||
         (column == fieldIndex(LIBRARYTABLE_MIXXXDELETED)) ||
