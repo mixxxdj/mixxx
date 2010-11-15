@@ -45,8 +45,13 @@ MidiMapping::MidiMapping(MidiDevice* outputMidiDevice)
           m_mappingLock(QMutex::Recursive) {
     // If BINDINGS_PATH doesn't exist, create it
     if (!QDir(BINDINGS_PATH).exists()) {
-        qDebug() << "Creating new MIDI presets directory" << BINDINGS_PATH;
+        qDebug() << "Creating new MIDI mapping directory" << BINDINGS_PATH;
         QDir().mkpath(BINDINGS_PATH);
+    }
+    // Likewise, if LPRESETS_PATH doesn't exist, create that too
+    if (!QDir(LPRESETS_PATH).exists()) {
+        qDebug() << "Creating new MIDI presets directory" <<LPRESETS_PATH;
+        QDir().mkpath(LPRESETS_PATH);
     }
     // So we can signal the MidiScriptEngine and pass a QList
     qRegisterMetaType<QList<QString> >("QList<QString>");
