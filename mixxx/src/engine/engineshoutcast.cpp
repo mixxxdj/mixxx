@@ -568,7 +568,7 @@ bool EngineShoutcast::metaDataHasChanged()
         break;
     case 1:
         // track 1 is active
-        newMetaData = PlayerInfo::Instance().getTrackInfo(1);
+        newMetaData = PlayerInfo::Instance().getTrackInfo("[Channel1]");
         if (newMetaData != m_pMetaData)
         {
             m_pMetaData = newMetaData;
@@ -577,7 +577,7 @@ bool EngineShoutcast::metaDataHasChanged()
         break;
     case 2:
         // track 2 is active
-		newMetaData = PlayerInfo::Instance().getTrackInfo(2);
+		newMetaData = PlayerInfo::Instance().getTrackInfo("[Channel2]");
 		if (newMetaData != m_pMetaData)
         {
             m_pMetaData = newMetaData;
