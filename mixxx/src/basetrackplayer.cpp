@@ -72,6 +72,9 @@ BaseTrackPlayer::BaseTrackPlayer(QObject* pParent,
     m_pBPM = new ControlObjectThreadMain(
         ControlObject::getControl(ConfigKey(getGroup(), "file_bpm")));
 
+    m_pReplayGain = new ControlObjectThreadMain(
+        ControlObject::getControl(ConfigKey(getGroup(), "replaygain")));
+
     // Create WaveformRenderer last, because it relies on controls created above
     // (e.g. EngineBuffer)
 
@@ -94,6 +97,7 @@ BaseTrackPlayer::~BaseTrackPlayer()
     delete m_pLoopOutPoint;
     delete m_pPlayPosition;
     delete m_pBPM;
+    delete m_pReplayGain;
 }
 
 void BaseTrackPlayer::slotLoadTrack(TrackPointer track, bool bStartFromEndPos)
@@ -138,6 +142,10 @@ void BaseTrackPlayer::slotLoadTrack(TrackPointer track, bool bStartFromEndPos)
     connect(m_pLoadedTrack.data(), SIGNAL(bpmUpdated(double)),
             m_pBPM, SLOT(slotSet(double)));
 
+    // Listen for updates to the file's Replay Gain
+    connect(m_pLoadedTrack.data(), SIGNAL(ReplayGainUpdated(double)),
+            m_pReplayGain, SLOT(slotSet(double)));
+
     //Request a new track from the reader
     emit(loadTrack(track));
 }
@@ -161,6 +169,7 @@ void BaseTrackPlayer::slotUnloadTrack(TrackPointer) {
     }
     m_pDuration->set(0);
     m_pBPM->slotSet(0);
+    m_pReplayGain->slotSet(0);
     m_pLoopInPoint->slotSet(-1);
     m_pLoopOutPoint->slotSet(-1);
     m_pLoadedTrack.clear();
@@ -187,6 +196,7 @@ void BaseTrackPlayer::slotFinishLoading(TrackPointer pTrackInfoObject)
     //Update the BPM and duration values that are stored in ControlObjects
     m_pDuration->set(m_pLoadedTrack->getDuration());
     m_pBPM->slotSet(m_pLoadedTrack->getBpm());
+    m_pReplayGain->slotSet(m_pLoadedTrack->getReplayGain());
 
     // Update the PlayerInfo class that is used in EngineShoutcast to replace
     // the metadata of a stream

@@ -30,6 +30,7 @@ const QString LIBRARYTABLE_COMMENT = "comment";
 const QString LIBRARYTABLE_DURATION = "duration";
 const QString LIBRARYTABLE_BITRATE = "bitrate";
 const QString LIBRARYTABLE_BPM = "bpm";
+const QString LIBRARYTABLE_REPLAYGAIN = "replaygain";
 const QString LIBRARYTABLE_CUEPOINT = "cuepoint";
 const QString LIBRARYTABLE_URL = "url";
 const QString LIBRARYTABLE_SAMPLERATE = "samplerate";

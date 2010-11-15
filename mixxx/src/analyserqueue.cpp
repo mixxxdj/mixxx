@@ -11,6 +11,7 @@
 #include "analyserwaveform.h"
 #include "analyserwavesummary.h"
 #include "analyserbpm.h"
+#include "analyserrg.h"
 
 AnalyserQueue::AnalyserQueue() : m_aq(),
                                  m_tioq(),
@@ -202,6 +203,7 @@ AnalyserQueue* AnalyserQueue::createDefaultAnalyserQueue(ConfigObject<ConfigValu
     ret->addAnalyser(new AnalyserWavesummary());
     ret->addAnalyser(new AnalyserWaveform());
     ret->addAnalyser(new AnalyserBPM(_config));
+    ret->addAnalyser(new AnalyserGain(_config));
 
     ret->start(QThread::IdlePriority);
     return ret;
@@ -211,6 +213,7 @@ AnalyserQueue* AnalyserQueue::createPrepareViewAnalyserQueue(ConfigObject<Config
 	AnalyserQueue* ret = new AnalyserQueue();
     ret->addAnalyser(new AnalyserWavesummary());
     ret->addAnalyser(new AnalyserBPM(_config));
+    ret->addAnalyser(new AnalyserGain(_config));
 	ret->start(QThread::IdlePriority);
 	return ret;
 }

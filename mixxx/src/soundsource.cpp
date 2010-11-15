@@ -25,6 +25,7 @@
 #include <taglib/id3v1tag.h>
 #include <taglib/tmap.h>
 #include <taglib/tstringlist.h>
+#include <taglib/textidentificationframe.h>
 #include <taglib/wavpackfile.h>
 
 
@@ -50,6 +51,7 @@ SoundSource::SoundSource(QString qFilename)
     m_qFilename = qFilename;
     m_iSampleRate = 0;
     m_fBPM = 0.0f;
+    m_fReplayGain = 0.0f;
     m_iDuration = 0;
     m_iBitrate = 0;
     m_iChannels = 0;
@@ -109,6 +111,10 @@ QString SoundSource::getTrackNumber()
 {
     return m_sTrackNumber;
 }
+float SoundSource::getReplayGain()
+{
+	return m_fReplayGain;
+}
 float SoundSource::getBPM()
 {
     return m_fBPM;
@@ -161,6 +167,10 @@ void SoundSource::setGenre(QString genre)
 void SoundSource::setTrackNumber(QString trackNumber)
 {
     m_sTrackNumber = trackNumber;
+}
+void SoundSource::setReplayGain(float replaygain)
+{
+	m_fReplayGain = replaygain;
 }
 void SoundSource::setBPM(float bpm)
 {
@@ -245,6 +255,17 @@ bool SoundSource::processTaglibFile(TagLib::File& f) {
     return false;
 }
 
+void SoundSource::parseReplayGainString (QString sReplayGain) {
+    QString ReplayGainstring = sReplayGain.remove( " dB" );
+    float fReplayGain = pow(10,(ReplayGainstring.toFloat())/20);
+    //I found some mp3s of mine with replaygain tag set to 0dB even if not normalized.
+    //This is because of Rapid Evolution 3, I suppose. I prefer to rescan them by setting value to 0 (i.e. rescan via analyserrg)
+    if(fReplayGain==1.0f){
+        fReplayGain= 0.0f;
+    }
+    setReplayGain(fReplayGain);
+}
+
 void SoundSource::processBpmString(QString tagName, QString sBpm) {
     if (s_bDebugMetadata)
         qDebug() << tagName << "BPM" << sBpm;
@@ -262,7 +283,7 @@ bool SoundSource::processID3v2Tag(TagLib::ID3v2::Tag* id3v2) {
         TagLib::ID3v2::FrameList::ConstIterator it = id3v2->frameList().begin();
         for(; it != id3v2->frameList().end(); it++) {
             qDebug() << "ID3V2" << (*it)->frameID().data() << "-"
-                     << TStringToQString((*it)->toString());
+                    << TStringToQString((*it)->toString());
         }
     }
 
@@ -279,6 +300,28 @@ bool SoundSource::processID3v2Tag(TagLib::ID3v2::Tag* id3v2) {
             qDebug() << "KEY" << sKey;
         // TODO(XXX) write key to SoundSource and copy that to the Track
     }
+    // Foobar2000-style ID3v2.3.0 tags
+    // TODO: Check if everything is ok.
+    TagLib::ID3v2::FrameList frames = id3v2->frameListMap()["TXXX"];
+    for ( TagLib::ID3v2::FrameList::Iterator it = frames.begin(); it != frames.end(); ++it ) {
+        TagLib::ID3v2::UserTextIdentificationFrame* ReplayGainframe =
+                dynamic_cast<TagLib::ID3v2::UserTextIdentificationFrame*>( *it );
+        if ( ReplayGainframe && ReplayGainframe->fieldList().size() >= 2 )
+        {
+            QString desc = TStringToQString( ReplayGainframe->description() ).toLower();
+            if ( desc == "replaygain_album_gain" ){
+                QString sReplayGain = TStringToQString( ReplayGainframe->fieldList()[1]);
+                parseReplayGainString(sReplayGain);
+            }
+            if ( desc == "replaygain_track_gain" ){
+                QString sReplayGain = TStringToQString( ReplayGainframe->fieldList()[1]);
+                parseReplayGainString(sReplayGain);
+            }
+        }
+    }
+
+
+
 
     return true;
 }
@@ -286,7 +329,7 @@ bool SoundSource::processID3v2Tag(TagLib::ID3v2::Tag* id3v2) {
 bool SoundSource::processAPETag(TagLib::APE::Tag* ape) {
     if (s_bDebugMetadata) {
         for(TagLib::APE::ItemListMap::ConstIterator it = ape->itemListMap().begin();
-            it != ape->itemListMap().end(); ++it) {
+                it != ape->itemListMap().end(); ++it) {
             qDebug() << "APE" << TStringToQString((*it).first) << "-" << TStringToQString((*it).second.toString());
         }
     }
@@ -295,13 +338,25 @@ bool SoundSource::processAPETag(TagLib::APE::Tag* ape) {
         QString sBpm = TStringToQString(ape->itemListMap()["BPM"].toString());
         processBpmString("APE", sBpm);
     }
+
+    if ( ape->itemListMap().contains("REPLAYGAIN_ALBUM_GAIN") ) {
+        QString sReplayGain = TStringToQString(ape->itemListMap()["REPLAYGAIN_ALBUM_GAIN"].toString());
+        parseReplayGainString(sReplayGain);
+    }
+
+    //Prefer track gain over album gain.
+    if ( ape->itemListMap().contains("REPLAYGAIN_TRACK_GAIN") ) {
+        QString sReplayGain = TStringToQString(ape->itemListMap()["REPLAYGAIN_TRACK_GAIN"].toString());
+        qDebug()<<"APE value" << sReplayGain;
+        parseReplayGainString(sReplayGain);
+    }
     return true;
 }
 
 bool SoundSource::processXiphComment(TagLib::Ogg::XiphComment* xiph) {
     if (s_bDebugMetadata) {
         for (TagLib::Ogg::FieldListMap::ConstIterator it = xiph->fieldListMap().begin();
-             it != xiph->fieldListMap().end(); ++it) {
+                it != xiph->fieldListMap().end(); ++it) {
             qDebug() << "XIPH" << TStringToQString((*it).first) << "-" << TStringToQString((*it).second.toString());
         }
     }
@@ -319,6 +374,20 @@ bool SoundSource::processXiphComment(TagLib::Ogg::XiphComment* xiph) {
         QString sBpm = TStringToQString(bpmString.toString());
         processBpmString("XIPH-TEMPO", sBpm);
     }
+
+
+    if (xiph->fieldListMap().contains("REPLAYGAIN_ALBUM_GAIN")) {
+        TagLib::StringList rgainString = xiph->fieldListMap()["REPLAYGAIN_ALBUM_GAIN"];
+        QString sReplayGain = TStringToQString(rgainString.toString());
+        parseReplayGainString(sReplayGain);
+    }
+
+    if (xiph->fieldListMap().contains("REPLAYGAIN_TRACK_GAIN")) {
+        TagLib::StringList rgainString = xiph->fieldListMap()["REPLAYGAIN_TRACK_GAIN"];
+        QString sReplayGain = TStringToQString(rgainString.toString());
+        parseReplayGainString(sReplayGain);
+    }
+
 
     return true;
 }
