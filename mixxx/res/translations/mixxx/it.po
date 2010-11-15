@@ -1,20 +1,15 @@
-# Italian translation for mixxx
-# Copyright (c) 2010 Rosetta Contributors and Canonical Ltd 2010
-# This file is distributed under the same license as the mixxx package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, 2010.
-#
 msgid ""
 msgstr ""
-"Project-Id-Version: mixxx\n"
-"Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2010-10-28 15:35-0400\n"
-"PO-Revision-Date: 2010-11-10 21:28+0000\n"
+"PO-Revision-Date: 2010-11-14 20:06+0000\n"
 "Last-Translator: Vittorio Colao <Unknown>\n"
-"Language-Team: Italian <it@li.org>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2010-11-11 04:39+0000\n"
+"X-Launchpad-Export-Date: 2010-11-15 04:57+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
 #: AutoDJFeature#1
@@ -299,15 +294,15 @@ msgstr ""
 #: DlgPrefBPMDlg#2
 msgctxt "DlgPrefBPMDlg#2"
 msgid "BPM Detection"
-msgstr ""
+msgstr "Calcolo dei BPM"
 
 #: DlgPrefBPMDlg#3
 msgid "Enable BPM Detection"
-msgstr ""
+msgstr "Abilita il calcolo dei BPM"
 
 #: DlgPrefBPMDlg#4
 msgid "Detect Song BPM on Import"
-msgstr ""
+msgstr "Calcola i BPM di una traccia durante l'importazione"
 
 #: DlgPrefBPMDlg#5
 msgid "Write BPM to ID3 Tag"
@@ -315,15 +310,15 @@ msgstr "Scrivi i BPM sul Tag ID3"
 
 #: DlgPrefBPMDlg#6
 msgid "If BPM can be detected but not within specified range"
-msgstr ""
+msgstr "Se i BPM possono essere calcolati ma non nell'intervallo specificato"
 
 #: DlgPrefBPMDlg#7
 msgid "Allow BPM above the range"
-msgstr ""
+msgstr "Permetti BPM fuori intervallo"
 
 #: DlgPrefBPMDlg#8
 msgid "BPM Schemes"
-msgstr ""
+msgstr "Schemi dei BPM"
 
 #: DlgPrefBPMDlg#9
 msgctxt "DlgPrefBPMDlg#9"
@@ -416,11 +411,11 @@ msgstr ""
 
 #: DlgPrefControlsDlg#11
 msgid "Cue behaviour"
-msgstr ""
+msgstr "Comportamento del Cue"
 
 #: DlgPrefControlsDlg#12
 msgid "Auto Recall Cue"
-msgstr ""
+msgstr "Richiamo automatico del Cue"
 
 #: DlgPrefControlsDlg#13
 msgid "Permanent Pitch/Rate Buttons"
@@ -515,7 +510,7 @@ msgstr "Form1"
 
 #: DlgPrefEQDlg#2
 msgid "Static EQs (for slower CPUs)"
-msgstr ""
+msgstr "EQ statici (per CPU lente)"
 
 #: DlgPrefEQDlg#3
 msgid "High Shelf EQ"
@@ -564,6 +559,9 @@ msgid ""
 "Your settings must be applied before starting the MIDI learning wizard.\n"
 "Apply settings and continue?"
 msgstr ""
+"Le tue impostazioni devono essere applicate prima che il Wizard di "
+"apprendimento MIDI possa partire.\n"
+"Applicare le impostazioni e continuare?"
 
 #: DlgPrefMidiBindings#4
 msgid "Overwrite existing mapping?"
@@ -649,7 +647,7 @@ msgstr "Rimuovi"
 #: DlgPrefMidiBindingsDlg#10
 msgctxt "DlgPrefMidiBindingsDlg#10"
 msgid "MIDI Learning Wizard"
-msgstr ""
+msgstr "Wizard di apprendimento MIDI"
 
 #: DlgPrefMidiBindingsDlg#11
 msgid "Clear All"
@@ -746,15 +744,15 @@ msgstr ""
 
 #: DlgPrefPlaylistDlg#8
 msgid "Audio Playback Plugins"
-msgstr ""
+msgstr "Plugin di riproduzione audio"
 
 #: DlgPrefPlaylistDlg#9
 msgid "Extra Playback Plugins:"
-msgstr ""
+msgstr "Plugin extra di riproduzione"
 
 #: DlgPrefPlaylistDlg#10
 msgid "MP3, Ogg Vorbis, FLAC, Wave, Aiff Playback:"
-msgstr ""
+msgstr "Riproduzione MP3, Ogg Vorbis, FLAC, Wave, Aiff:"
 
 #: DlgPrefPlaylistDlg#11
 msgid "Built-in"
@@ -781,7 +779,7 @@ msgstr "Salvare la registrazione come..."
 
 #: DlgPrefRecord#2
 msgid "kbps"
-msgstr ""
+msgstr "kbps"
 
 #: DlgPrefRecord#3
 msgid "Quality: "
@@ -859,15 +857,15 @@ msgstr "Tipo"
 
 #: DlgPrefShoutcastDlg#5
 msgid "Icecast 2"
-msgstr ""
+msgstr "Icecast 2"
 
 #: DlgPrefShoutcastDlg#6
 msgid "Shoutcast"
-msgstr ""
+msgstr "Shoutcast"
 
 #: DlgPrefShoutcastDlg#7
 msgid "Icecast 1"
-msgstr ""
+msgstr "Icecast 1"
 
 #: DlgPrefShoutcastDlg#8
 msgid "Mount"
@@ -899,7 +897,7 @@ msgstr "Accesso"
 
 #: DlgPrefShoutcastDlg#15
 msgid "source"
-msgstr ""
+msgstr "Sorgente"
 
 #: DlgPrefShoutcastDlg#16
 msgid "Password"
@@ -969,7 +967,7 @@ msgstr ""
 #: DlgPrefShoutcastDlg#29
 msgctxt "DlgPrefShoutcastDlg#29"
 msgid "Bitrate"
-msgstr ""
+msgstr "Bitrate"
 
 #: DlgPrefShoutcastDlg#30
 msgid "320 kbps"
@@ -1021,7 +1019,7 @@ msgstr "Formato"
 
 #: DlgPrefShoutcastDlg#42
 msgid "Ogg Vorbis"
-msgstr ""
+msgstr "Ogg Vorbis"
 
 #: DlgPrefShoutcastDlg#43
 msgid "MP3"
@@ -1110,11 +1108,11 @@ msgstr ""
 #: DlgPrefSound#9
 msgctxt "DlgPrefSound#9"
 msgid "Audio device could not be opened"
-msgstr ""
+msgstr "La periferica audio non può essere utilizzata"
 
 #: DlgPrefSound#10
 msgid "Configuration problem"
-msgstr ""
+msgstr "Problema di configurazione"
 
 #: DlgPrefSound#11
 msgid "Sound API could not be initialized"
