@@ -46,8 +46,8 @@ void AutoDJFeature::bindWidget(WLibrarySidebar* sidebarWidget,
     libraryWidget->registerView(m_sAutoDJViewName, pAutoDJView);
     connect(pAutoDJView, SIGNAL(loadTrack(TrackPointer)),
             this, SIGNAL(loadTrack(TrackPointer)));
-    connect(pAutoDJView, SIGNAL(loadTrackToPlayer(TrackPointer, int)),
-            this, SIGNAL(loadTrackToPlayer(TrackPointer, int)));
+    connect(pAutoDJView, SIGNAL(loadTrackToPlayer(TrackPointer, QString)),
+            this, SIGNAL(loadTrackToPlayer(TrackPointer, QString)));
 }
 
 QAbstractItemModel* AutoDJFeature::getChildModel() {
