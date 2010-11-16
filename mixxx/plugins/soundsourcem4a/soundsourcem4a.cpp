@@ -172,7 +172,7 @@ inline long unsigned SoundSourceM4A::length(){
     //return m_iChannels * mp4_duration(&ipd) * m_iSampleRate;
 }
 
-int SoundSourceM4A::parseHeader(){
+int SoundSourceM4A::parseHeader() {
 
     //Disclaimer: This code sucks because we're opening the file twice.
     //            Once in the MP4Read(..) below, and once in the
@@ -204,7 +204,7 @@ int SoundSourceM4A::parseHeader(){
     }
 
     if (MP4GetMetadataAlbum(mp4file, &value) && value != NULL) {
-        setAlbum(value);
+        setAlbum(QString::fromUtf8(value));
         MP4Free(value);
         value = NULL;
     }
@@ -273,10 +273,19 @@ int SoundSourceM4A::parseHeader(){
     int bits_per_second = MP4GetTrackBitRate(mp4file, track_id);
     this->setBitrate(bits_per_second/1000);
 
+    MP4Close(mp4file);
+
     //We have to initialize the decoder to figure out the sample rate
     //and the number of channels in the track...
-    if (initializeDecoder() != OK)
+    // this method has to be re-entrant, so we can't initialize this's
+    // decoder. Instead, make a new one (on the stack for ease) and then
+    // extract the needed information -- bkgood
+    SoundSourceM4A ss(getFilename());
+    // associated file will be closed when ss goes out of scope -- bkgood
+    if (ss.initializeDecoder() != OK)
         return ERR;
+    setSampleRate(ss.getSampleRate());
+    setChannels(ss.getChannels());
 
     return OK;
 }
