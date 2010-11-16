@@ -151,7 +151,9 @@ bool MissingTableModel::isColumnInternal(int column) {
         return false;
 }
 bool MissingTableModel::isColumnHiddenByDefault(int column) {
-        return false;
+    if (column == fieldIndex(LIBRARYTABLE_KEY))    
+        return true;
+    return false;
 }
 
 QMimeData* MissingTableModel::mimeData(const QModelIndexList &indexes) const {

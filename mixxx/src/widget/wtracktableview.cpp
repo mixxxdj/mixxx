@@ -91,7 +91,7 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel *model) {
     // header. Also, for some reason the WTrackTableView has to be hidden or
     // else problems occur. Since we parent the WtrackTableViewHeader's to the
     // WTrackTableView, they are automatically deleted.
-    QHeaderView* header = new WTrackTableViewHeader(Qt::Horizontal, this);
+    WTrackTableViewHeader* header = new WTrackTableViewHeader(Qt::Horizontal, this);
 
     // WTF(rryan) The following saves on unnecessary work on the part of
     // WTrackTableHeaderView. setHorizontalHeader() calls setModel() on the
@@ -140,6 +140,14 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel *model) {
 
         // Show or hide the column based on whether it should be shown or not.
         if (track_model->isColumnInternal(i)) {
+            //qDebug() << "Hiding column" << i;
+            horizontalHeader()->hideSection(i);
+        }
+        /* If Mixxx starts the first time or the header states have been cleared due to database schema evolution
+         * we gonna hide all columns that may contain a potential large number of NULL values.
+         * This will hide the key colum by default unless the user brings it to front
+         */
+        if (track_model->isColumnHiddenByDefault(i) && !header->hasPersistedHeaderState()) {
             //qDebug() << "Hiding column" << i;
             horizontalHeader()->hideSection(i);
         }

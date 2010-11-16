@@ -305,7 +305,9 @@ bool PlaylistTableModel::isColumnInternal(int column) {
     return false;
 }
 bool PlaylistTableModel::isColumnHiddenByDefault(int column) {
-   return false;
+    if (column == fieldIndex(LIBRARYTABLE_KEY))    
+        return true;
+    return false;
 }
 
 QMimeData* PlaylistTableModel::mimeData(const QModelIndexList &indexes) const {
