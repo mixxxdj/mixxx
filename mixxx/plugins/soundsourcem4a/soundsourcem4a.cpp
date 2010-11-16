@@ -125,7 +125,7 @@ unsigned SoundSourceM4A::read(volatile unsigned long size, const SAMPLE* destina
     int total_bytes_decoded = 0;
     int num_bytes_req = 4096;
     char* buffer = (char*)destination;
-    SAMPLE * as_buffer = (SAMPLE*) destination;	//pointer for mono->stereo filling.
+    SAMPLE * as_buffer = (SAMPLE*) destination; //pointer for mono->stereo filling.
     do {
         if (total_bytes_decoded + num_bytes_req > total_bytes_to_decode)
             num_bytes_req = total_bytes_to_decode - total_bytes_decoded;
