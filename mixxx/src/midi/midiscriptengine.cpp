@@ -173,16 +173,19 @@ void MidiScriptEngine::loadScriptFiles(QList<QString> scriptFileNames) {
 
     qDebug() << "MidiScriptEngine: Loading & evaluating all MIDI script code";
 
-    ConfigObject<ConfigValue> *config = new ConfigObject<ConfigValue>(QDir::homePath().append("/").append(SETTINGS_PATH).append(SETTINGS_FILE));
+    // scriptPaths holds the paths to search in when we're looking for scripts
+    QList<QString> scriptPaths;
+    scriptPaths.append(QDir::homePath().append("/").append(SETTINGS_PATH).append("presets/"));
 
-    QString scriptPath = config->getConfigPath().append("midi/");
+    ConfigObject<ConfigValue> *config = new ConfigObject<ConfigValue>(QDir::homePath().append("/").append(SETTINGS_PATH).append(SETTINGS_FILE));
+    scriptPaths.append(config->getConfigPath().append("midi/"));
     delete config;
 
     QListIterator<QString> it(scriptFileNames);
     m_scriptEngineLock.lock();
     while (it.hasNext()) {
         QString curScriptFileName = it.next();
-        safeEvaluate(scriptPath+curScriptFileName);
+        safeEvaluate(curScriptFileName, scriptPaths);
 
         if(m_scriptErrors.contains(curScriptFileName)) {
             qDebug() << "Errors occured while loading " << curScriptFileName;
@@ -249,7 +252,8 @@ void MidiScriptEngine::run() {
    -------- ------------------------------------------------------ */
 bool MidiScriptEngine::evaluate(QString filepath) {
     m_scriptEngineLock.lock();
-    bool ret = safeEvaluate(filepath);
+    QList<QString> dummy;
+    bool ret = safeEvaluate(filepath, dummy);
     m_scriptEngineLock.unlock();
     return ret;
 }
@@ -827,16 +831,31 @@ void MidiScriptEngine::slotValueChanged(double value) {
    Input:   Script filename
    Output:  false if the script file has errors or doesn't exist
    -------- ------------------------------------------------------ */
-bool MidiScriptEngine::safeEvaluate(QString filename) {
+bool MidiScriptEngine::safeEvaluate(QString scriptName, QList<QString> scriptPaths) {
 
     if(m_pEngine == NULL) {
         return false;
     }
 
+    QString filename = "";
+    QFile input;
+
+    if (scriptPaths.length() == 0) {
+        // If we aren't given any paths to search, assume that scriptName
+        // contains the full file name
+        filename = scriptName;
+        input.setFileName(filename);
+    } else {
+        QListIterator<QString> it(scriptPaths);
+        do {
+            filename = it.next()+scriptName;
+            input.setFileName(filename);
+        } while (it.hasNext() && !input.exists());
+    }
+
     qDebug() << "MidiScriptEngine: Loading" << filename;
 
     // Read in the script file
-    QFile input(filename);
     if (!input.open(QIODevice::ReadOnly)) {
         QString errorLog =
             QString("MidiScriptEngine: Problem opening the script file: %1, error # %2, %3")

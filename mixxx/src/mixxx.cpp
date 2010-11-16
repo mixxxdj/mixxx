@@ -39,8 +39,8 @@
 #include "soundsourceproxy.h"
 
 #include "analyserqueue.h"
-#include "player.h"
 #include "playermanager.h"
+
 #include "library/library.h"
 #include "library/librarytablemodel.h"
 #include "library/libraryscanner.h"
@@ -259,8 +259,12 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
 
     // Create the player manager.
     m_pPlayerManager = new PlayerManager(m_pConfig, m_pEngine, m_pLibrary);
-    m_pPlayerManager->addPlayer();
-    m_pPlayerManager->addPlayer();
+    m_pPlayerManager->addDeck();
+    m_pPlayerManager->addDeck();
+    // m_pPlayerManager->addSampler();
+    // m_pPlayerManager->addSampler();
+    // m_pPlayerManager->addSampler();
+    // m_pPlayerManager->addSampler();
 
     //Scan the library directory.
     m_pLibraryScanner = new LibraryScanner(m_pLibrary->getTrackCollection());
@@ -353,18 +357,18 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
 
     // Load tracks in args.qlMusicFiles (command line arguments) into player
     // 1 and 2:
-    for (int i = 0; i < m_pPlayerManager->numPlayers()
+    for (int i = 0; i < m_pPlayerManager->numDecks()
             && i < args.qlMusicFiles.count(); ++i) {
-        m_pPlayerManager->slotLoadToPlayer(args.qlMusicFiles.at(i), i+1);
+        m_pPlayerManager->slotLoadToDeck(args.qlMusicFiles.at(i), i+1);
     }
 
     //Automatically load specially marked promotional tracks on first run
     if (bFirstRun || bUpgraded) {
         QList<TrackPointer> tracksToAutoLoad =
             m_pLibrary->getTracksToAutoLoad();
-        for (int i = 0; i < m_pPlayerManager->numPlayers()
+        for (int i = 0; i < m_pPlayerManager->numDecks()
                 && i < tracksToAutoLoad.count(); i++) {
-            m_pPlayerManager->slotLoadTrackToPlayer(tracksToAutoLoad.at(i), i+1);
+            m_pPlayerManager->slotLoadToDeck(args.qlMusicFiles.at(i), i+1);
         }
     }
 
@@ -904,7 +908,7 @@ void MixxxApp::slotFileLoadSongPlayer1()
                 .arg(SoundSourceProxy::supportedFileExtensionsString()));
 
     if (s != QString::null) {
-        m_pPlayerManager->slotLoadToPlayer(s, 1);
+        m_pPlayerManager->slotLoadToDeck(s, 1);
     }
 }
 
@@ -934,7 +938,7 @@ void MixxxApp::slotFileLoadSongPlayer2()
                 .arg(SoundSourceProxy::supportedFileExtensionsString()));
 
     if (s != QString::null) {
-        m_pPlayerManager->slotLoadToPlayer(s, 2);
+        m_pPlayerManager->slotLoadToDeck(s, 2);
     }
 }
 
@@ -1143,6 +1147,11 @@ void MixxxApp::slotHelpAbout()
 "Phillip Whelan<br>"
 "Tobias Rafreider<br>"
 "S. Brandt<br>"
+"Bill Good<br>"
+"Owen Williams<br>"
+"Bruno Buccolo<br>"
+"Ryan Baker<br>"
+"Vittorio Colao<br>"
 
 "</p>"
 "<p align=\"center\"><b>With contributions from:</b></p>"
@@ -1154,7 +1163,6 @@ void MixxxApp::slotHelpAbout()
 "Mathieu Rene<br>"
 "Miko Kiiski<br>"
 "Brian Jackson<br>"
-"Owen Williams<br>"
 "Andreas Pflug<br>"
 "Bas van Schaik<br>"
 "J&aacute;n Jockusch<br>"
@@ -1172,6 +1180,7 @@ void MixxxApp::slotHelpAbout()
 "Antonio Passamani<br>"
 "Guy Martin<br>"
 "Anders Gunnarson<br>"
+"Alex Barker<br>"
 
 "</p>"
 "<p align=\"center\"><b>And special thanks to:</b></p>"
@@ -1230,7 +1239,6 @@ void MixxxApp::slotHelpAbout()
 "quil0m80<br>"
 "Martin Sakm&#225;r<br>"
 "Ilian Persson<br>"
-"Alex Barker<br>"
 "Dave Jarvis<br>"
 "Thomas Baag<br>"
 "Karlis Kalnins<br>"
