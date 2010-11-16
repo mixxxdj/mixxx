@@ -217,7 +217,9 @@ out:
         MP4Close(priv->mp4.handle);
     if (priv->decoder)
         faacDecClose(priv->decoder);
-    free(priv);
+    delete priv;
+    delete [] priv->sample_buf;
+    delete [] priv->aac_data;
     return -IP_ERROR_FILE_FORMAT;
 }
 
@@ -232,6 +234,14 @@ static int mp4_close(struct input_plugin_data *ip_data)
 
     if (priv->decoder)
         faacDecClose(priv->decoder);
+
+    if (priv->sample_buf) {
+        delete [] priv->sample_buf;
+    }
+    
+    if (priv->aac_data) {
+        delete [] priv->aac_data;
+    }
 
     delete priv;
     ip_data->private_ipd = NULL;
