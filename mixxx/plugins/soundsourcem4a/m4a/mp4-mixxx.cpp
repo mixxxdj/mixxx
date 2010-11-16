@@ -56,6 +56,11 @@
     #define strncasecmp strnicmp
 #endif
 
+#ifdef __M4AHACK__
+    typedef uint32_t SAMPLERATE_TYPE;
+#else
+    typedef unsigned long SAMPLERATE_TYPE;
+#endif
 
 struct mp4_private {
     char *overflow_buf;
@@ -191,13 +196,9 @@ static int mp4_open(struct input_plugin_data *ip_data)
     }
 
     /* init decoder according to mpeg-4 audio config */
-        if (faacDecInit2(priv->decoder, buf, buf_size,
-#ifdef __M4AHACK__
-                         (uint32_t*)&priv->sample_rate, &priv->channels) < 0) {
-#else
-                         (unsigned long*)&priv->sample_rate, &priv->channels) < 0) {
-#endif
-    free(buf);
+    if (faacDecInit2(priv->decoder, buf, buf_size,
+            (SAMPLERATE_TYPE*)&priv->sample_rate, &priv->channels) < 0) {
+        free(buf);
         goto out;
     }
     free(buf);
@@ -232,7 +233,7 @@ static int mp4_close(struct input_plugin_data *ip_data)
     if (priv->decoder)
         faacDecClose(priv->decoder);
 
-    free(priv);
+    delete priv;
     ip_data->private_ipd = NULL;
 
     return 0;
