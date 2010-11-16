@@ -42,7 +42,7 @@ SoundSourceM4A::SoundSourceM4A(QString qFileName)
 
 SoundSourceM4A::~SoundSourceM4A() {
     if (ipd.filename) {
-        delete ipd.filename;
+        delete [] ipd.filename;
         ipd.filename = NULL;
     }
 
