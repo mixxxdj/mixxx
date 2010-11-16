@@ -200,6 +200,9 @@ bool LibraryTableModel::isColumnInternal(int column) {
     }
     return false;
 }
+bool LibraryTableModel::isColumnHiddenByDefault(int column) {
+    return false;
+}
 
 QItemDelegate* LibraryTableModel::delegateForColumn(const int i) {
     return NULL;

@@ -304,6 +304,9 @@ bool PlaylistTableModel::isColumnInternal(int column) {
         return true;
     return false;
 }
+bool PlaylistTableModel::isColumnHiddenByDefault(int column) {
+   return false;
+}
 
 QMimeData* PlaylistTableModel::mimeData(const QModelIndexList &indexes) const {
     QMimeData *mimeData = new QMimeData();

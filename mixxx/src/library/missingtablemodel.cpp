@@ -150,6 +150,9 @@ bool MissingTableModel::isColumnInternal(int column) {
     else
         return false;
 }
+bool MissingTableModel::isColumnHiddenByDefault(int column) {
+        return false;
+}
 
 QMimeData* MissingTableModel::mimeData(const QModelIndexList &indexes) const {
     QMimeData *mimeData = new QMimeData();

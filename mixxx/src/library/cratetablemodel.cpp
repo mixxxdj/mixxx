@@ -198,6 +198,10 @@ bool CrateTableModel::isColumnInternal(int column) {
     }
     return false;
 }
+bool CrateTableModel::isColumnHiddenByDefault(int column) {
+    return false;
+}
+
 
 QMimeData* CrateTableModel::mimeData(const QModelIndexList &indexes) const {
     QMimeData *mimeData = new QMimeData();
