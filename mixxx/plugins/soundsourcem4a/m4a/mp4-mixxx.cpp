@@ -276,13 +276,13 @@ static int decode_one_frame(struct input_plugin_data *ip_data, void *buffer, int
     if (MP4ReadSample(priv->mp4.handle, priv->mp4.track, this_frame,
                       &aac_data, &aac_data_len,
                       NULL, NULL, NULL, NULL) == 0) {
-        qDebug() << "error reading mp4 sample" << priv->mp4.sample;
+        qWarning() << "m4a: error reading mp4 sample" << priv->mp4.sample;
         errno = EINVAL;
         return -1;
     }
 
     if (!aac_data) {
-        qDebug() << "aac_data == NULL";
+        qWarning() << "m4a: aac_data == NULL";
         errno = EINVAL;
         return -1;
     }
@@ -303,7 +303,7 @@ static int decode_one_frame(struct input_plugin_data *ip_data, void *buffer, int
     //          << frame_info.samplerate << "samplerate";
 
     if (!sample_buf || frame_info.bytesconsumed <= 0) {
-        qDebug() << "fatal error:" << faacDecGetErrorMessage(frame_info.error);
+        qWarning() << "m4a fatal error:" << faacDecGetErrorMessage(frame_info.error);
         errno = EINVAL;
         return -1;
     }
@@ -313,8 +313,9 @@ static int decode_one_frame(struct input_plugin_data *ip_data, void *buffer, int
         return -2;
     }
 
-    if (frame_info.samples <= 0)
+    if (frame_info.samples <= 0) {
         return -2;
+    }
 
     if (frame_info.channels != priv->channels ||
       frame_info.samplerate != priv->sample_rate) {
@@ -368,7 +369,6 @@ static int mp4_read(struct input_plugin_data *ip_data, char *buffer, int count)
 
     do {
         rc = decode_one_frame(ip_data, buffer, count);
-        if (rc < 0) qDebug() << "ERROR";
     } while (rc == -2);
 
     return rc;
