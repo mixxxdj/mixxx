@@ -52,7 +52,7 @@ void WStatusLight::setNoPos(int iNoPos)
     if (m_iNoPos>0)
     {
         m_pPixmapSLs = new QPixmap*[m_iNoPos];
-        for (int i=0; i<m_iNoPos; ++i)
+        for (int i=0; i<m_iNoPos; i++)
             m_pPixmapSLs[i] = 0;
     }
 }
