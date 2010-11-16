@@ -66,12 +66,12 @@ struct mp4_private {
     char *overflow_buf;
     int overflow_buf_len;
 
-  unsigned char *aac_data;
+    unsigned char *aac_data;
     unsigned int aac_data_len;
 
-  char *sample_buf;
-  unsigned int sample_buf_frame;
-  unsigned int sample_buf_len;
+    char *sample_buf;
+    unsigned int sample_buf_frame;
+    unsigned int sample_buf_len;
 
     unsigned char channels;
     unsigned long sample_rate;
@@ -136,17 +136,18 @@ static int mp4_open(struct input_plugin_data *ip_data)
         return -IP_ERROR_FUNCTION_NOT_SUPPORTED;
 
     /* init private_ipd struct */
-//  priv = xnew0(struct mp4_private, 1);
-  priv = new mp4_private();
-  //priv = (mp4_private*) calloc(1, sizeof(mp4_private)); // FIXME: there was some alloc error checking in the orgininal ver
-  memset(priv, 0, sizeof(*priv));
+    //  priv = xnew0(struct mp4_private, 1);
+    priv = new mp4_private();
+    //priv = (mp4_private*) calloc(1, sizeof(mp4_private));
+    // FIXME: there was some alloc error checking in the orgininal ver
+    memset(priv, 0, sizeof(*priv));
 
-  priv->overflow_buf_len = 0;
-  priv->overflow_buf = NULL;
+    priv->overflow_buf_len = 0;
+    priv->overflow_buf = NULL;
 
-  priv->sample_buf_len = 4096;
-  priv->sample_buf = new char[priv->sample_buf_len];
-  priv->sample_buf_frame = -1;
+    priv->sample_buf_len = 4096;
+    priv->sample_buf = new char[priv->sample_buf_len];
+    priv->sample_buf_frame = -1;
 
     ip_data->private_ipd = priv;
 
@@ -155,11 +156,11 @@ static int mp4_open(struct input_plugin_data *ip_data)
     neaac_cfg = faacDecGetCurrentConfiguration(priv->decoder);
     neaac_cfg->outputFormat = FAAD_FMT_16BIT; /* force 16 bit audio */
     neaac_cfg->downMatrix = 1; /* 5.1 -> stereo */
-  neaac_cfg->defObjectType = LC;
-  qDebug() << "Decoder Config" << neaac_cfg->defObjectType
-           << neaac_cfg->defSampleRate
-           << neaac_cfg->useOldADTSFormat
-           << neaac_cfg->dontUpSampleImplicitSBR;
+    neaac_cfg->defObjectType = LC;
+    //qDebug() << "Decoder Config" << neaac_cfg->defObjectType
+    //         << neaac_cfg->defSampleRate
+    //         << neaac_cfg->useOldADTSFormat
+    //         << neaac_cfg->dontUpSampleImplicitSBR;
     faacDecSetConfiguration(priv->decoder, neaac_cfg);
 
     /* open mpeg-4 file */
@@ -176,12 +177,12 @@ static int mp4_open(struct input_plugin_data *ip_data)
         goto out;
     }
 
-  // Allocate AAC read buffer
-  priv->aac_data_len = MP4GetTrackMaxSampleSize(priv->mp4.handle, priv->mp4.track);
-  priv->aac_data = new unsigned char[priv->aac_data_len];
+    // Allocate AAC read buffer
+    priv->aac_data_len = MP4GetTrackMaxSampleSize(priv->mp4.handle, priv->mp4.track);
+    priv->aac_data = new unsigned char[priv->aac_data_len];
 
     priv->mp4.num_samples = MP4GetTrackNumberOfSamples(priv->mp4.handle, priv->mp4.track);
-  // MP4 frames are 1-indexed
+    // MP4 frames are 1-indexed
     priv->mp4.sample = 1;
 
     buf = NULL;
@@ -190,9 +191,9 @@ static int mp4_open(struct input_plugin_data *ip_data)
         /* failed to get mpeg-4 audio config... this is ok.
          * faacDecInit2() will simply use default values instead.
          */
-    qDebug() << "Didn't get MP4 Audio Config (not a bad thing)";
-        buf = NULL;
-        buf_size = 0;
+        qDebug() << "Didn't get MP4 Audio Config (not a bad thing)";
+            buf = NULL;
+            buf_size = 0;
     }
 
     /* init decoder according to mpeg-4 audio config */
@@ -211,7 +212,6 @@ static int mp4_open(struct input_plugin_data *ip_data)
 #endif
 
     return 0;
-
 out:
     if (priv->mp4.handle)
         MP4Close(priv->mp4.handle);
@@ -249,23 +249,23 @@ static int decode_one_frame(struct input_plugin_data *ip_data, void *buffer, int
     faacDecFrameInfo frame_info;
     int bytes;
 
-//    BUG_ON(priv->overflow_buf_len);
+    //BUG_ON(priv->overflow_buf_len);
 
     if (priv->mp4.sample > priv->mp4.num_samples)
         return 0; /* EOF */
 
-  unsigned char *aac_data = priv->aac_data;
-  unsigned int aac_data_len = priv->aac_data_len;
+    unsigned char *aac_data = priv->aac_data;
+    unsigned int aac_data_len = priv->aac_data_len;
 
-  // If you do this, then MP4ReadSample allocates the buffer for you. We don't
-  // want this because it's slow.
-  // unsigned char *aac_data = NULL;
+    // If you do this, then MP4ReadSample allocates the buffer for you. We don't
+    // want this because it's slow.
+    // unsigned char *aac_data = NULL;
     // unsigned int aac_data_len = 0;
 
-  int this_frame = priv->mp4.sample;
+    int this_frame = priv->mp4.sample;
     if (MP4ReadSample(priv->mp4.handle, priv->mp4.track, this_frame,
-                    &aac_data, &aac_data_len,
-                    NULL, NULL, NULL, NULL) == 0) {
+                      &aac_data, &aac_data_len,
+                      NULL, NULL, NULL, NULL) == 0) {
         qDebug() << "error reading mp4 sample" << priv->mp4.sample;
         errno = EINVAL;
         return -1;
@@ -277,20 +277,20 @@ static int decode_one_frame(struct input_plugin_data *ip_data, void *buffer, int
         return -1;
     }
 
-  char* sample_buf = priv->sample_buf;
-  int sample_buf_len = priv->sample_buf_len;
+    char* sample_buf = priv->sample_buf;
+    int sample_buf_len = priv->sample_buf_len;
 
-  NeAACDecDecode2(priv->decoder,
+    NeAACDecDecode2(priv->decoder,
                   &frame_info,
                   aac_data, aac_data_len,
                   (void**)&sample_buf, sample_buf_len);
 
-  // qDebug() << "Sample frame" << priv->mp4.sample
-  //          << "has" << frame_info.samples << "samples"
-  //          << frame_info.bytesconsumed << "bytes"
-  //          << frame_info.channels << "channels"
-  //          << frame_info.error << "error"
-  //          << frame_info.samplerate << "samplerate";
+    // qDebug() << "Sample frame" << priv->mp4.sample
+    //          << "has" << frame_info.samples << "samples"
+    //          << frame_info.bytesconsumed << "bytes"
+    //          << frame_info.channels << "channels"
+    //          << frame_info.error << "error"
+    //          << frame_info.samplerate << "samplerate";
 
     if (!sample_buf || frame_info.bytesconsumed <= 0) {
         qDebug() << "fatal error:" << faacDecGetErrorMessage(frame_info.error);
@@ -312,25 +312,25 @@ static int decode_one_frame(struct input_plugin_data *ip_data, void *buffer, int
         return -2;
     }
 
-  // The frame read was successful
-  priv->sample_buf_frame = this_frame;
-  priv->mp4.sample++;
+    // The frame read was successful
+    priv->sample_buf_frame = this_frame;
+    priv->mp4.sample++;
 
     /* 16-bit samples */
     bytes = frame_info.samples * 2;
 
     if (bytes > count) {
         /* decoded too much; keep overflow. */
-    //memcpy(priv->overflow_buf_base, sample_buf + count, bytes - count);
-    //priv->overflow_buf = priv->overflow_buf_base;
+        //memcpy(priv->overflow_buf_base, sample_buf + count, bytes - count);
+        //priv->overflow_buf = priv->overflow_buf_base;
 
-    priv->overflow_buf = sample_buf + count;
+        priv->overflow_buf = sample_buf + count;
         priv->overflow_buf_len = bytes - count;
         memcpy(buffer, sample_buf, count);
         return count;
     }
 
-  memcpy(buffer, sample_buf, bytes);
+    memcpy(buffer, sample_buf, bytes);
     return bytes;
 }
 
@@ -350,37 +350,38 @@ static int mp4_read(struct input_plugin_data *ip_data, char *buffer, int count)
         priv->overflow_buf += len;
         priv->overflow_buf_len -= len;
 
-    qDebug() << "Reading" << len << "from overflow."
-             << priv->overflow_buf_len << "overflow remains";
+        //qDebug() << "Reading" << len << "from overflow."
+        //         << priv->overflow_buf_len << "overflow remains";
 
         return len;
     }
 
     do {
         rc = decode_one_frame(ip_data, buffer, count);
-    if (rc < 0) qDebug() << "ERROR";
+        if (rc < 0) qDebug() << "ERROR";
     } while (rc == -2);
 
     return rc;
 }
+
 static int mp4_total_samples(struct input_plugin_data *ip_data) {
-  struct mp4_private *priv = (struct mp4_private*)ip_data->private_ipd;
-  return priv->channels * priv->mp4.num_samples * 1024;
+    struct mp4_private *priv = (struct mp4_private*)ip_data->private_ipd;
+    return priv->channels * priv->mp4.num_samples * 1024;
 }
 
 static int mp4_current_sample(struct input_plugin_data *ip_data) {
-  struct mp4_private *priv = (struct mp4_private*)ip_data->private_ipd;
-  int frame_length = priv->channels * 1024;
-  if (priv->overflow_buf_len == 0) {
+    struct mp4_private *priv = (struct mp4_private*)ip_data->private_ipd;
+    int frame_length = priv->channels * 1024;
+    if (priv->overflow_buf_len == 0) {
     return priv->mp4.sample * frame_length - priv->overflow_buf_len;
-  }
-  // rryan 9/2009 This is equivalent to the current sample. The full expression
-  // is (priv->mp4.sample - 1) * frame_length + (frame_length -
-  // priv->overflow_buf_len); but the frame_length lone terms drop out.
+    }
+    // rryan 9/2009 This is equivalent to the current sample. The full expression
+    // is (priv->mp4.sample - 1) * frame_length + (frame_length -
+    // priv->overflow_buf_len); but the frame_length lone terms drop out.
 
-  // -1 because if overflow buf is filled then mp4.sample is incremented, and
-  // the samples in the overflow buf are for sample - 1
-  return (priv->mp4.sample - 1) * frame_length - priv->overflow_buf_len;
+    // -1 because if overflow buf is filled then mp4.sample is incremented, and
+    // the samples in the overflow buf are for sample - 1
+    return (priv->mp4.sample - 1) * frame_length - priv->overflow_buf_len;
 }
 
 static int mp4_seek_sample(struct input_plugin_data *ip_data, int sample)
@@ -388,65 +389,65 @@ static int mp4_seek_sample(struct input_plugin_data *ip_data, int sample)
     struct mp4_private *priv;
     priv = (mp4_private*) ip_data->private_ipd;
 
-  Q_ASSERT(sample >= 0);
-  // The first frame is samples 0 through 2047. The first sample of the second
-  // frame is 2048. 2048 / 2048 = 1, so frame_for_sample will be 2 on the
-  // 2048'th sample. The frame_offset_samples is how many samples into the frame
-  // the sample'th sample is. For x in (0,2047), the frame offset is x. For x in
-  // (2048,4095) the offset is x-2048 and so on. sample % 2048 is therefore
-  // suitable for calculating the offset.
-  unsigned int frame_for_sample = 1 + (sample / (2 * 1024));
-  unsigned int frame_offset_samples = sample % (2 * 1024);
-  unsigned int frame_offset_bytes = frame_offset_samples * 2;
+    Q_ASSERT(sample >= 0);
+    // The first frame is samples 0 through 2047. The first sample of the second
+    // frame is 2048. 2048 / 2048 = 1, so frame_for_sample will be 2 on the
+    // 2048'th sample. The frame_offset_samples is how many samples into the frame
+    // the sample'th sample is. For x in (0,2047), the frame offset is x. For x in
+    // (2048,4095) the offset is x-2048 and so on. sample % 2048 is therefore
+    // suitable for calculating the offset.
+    unsigned int frame_for_sample = 1 + (sample / (2 * 1024));
+    unsigned int frame_offset_samples = sample % (2 * 1024);
+    unsigned int frame_offset_bytes = frame_offset_samples * 2;
 
-  //qDebug() << "Seeking to" << frame_for_sample << ":" << frame_offset;
+    //qDebug() << "Seeking to" << frame_for_sample << ":" << frame_offset;
 
-  // Invalid sample requested -- return the current position.
-  if (frame_for_sample < 1 || frame_for_sample > priv->mp4.num_samples)
+    // Invalid sample requested -- return the current position.
+    if (frame_for_sample < 1 || frame_for_sample > priv->mp4.num_samples)
+        return mp4_current_sample(ip_data);
+
+    // We don't have the current frame decoded -- decode it.
+    if (priv->sample_buf_frame != frame_for_sample) {
+
+        // We might have to 'prime the pump' if this isn't the first frame. The
+        // decoder has internal state that it builds as it plays, and just seeking
+        // to the frame we want will result in poor audio quality (clicks and
+        // pops). This is akin to seeking in a video and seeing MPEG
+        // artifacts. Figure out how many frames we need to go backward -- 1 seems
+        // to work.
+        const int how_many_backwards = 1;
+        int start_frame = math_max(frame_for_sample - how_many_backwards, 1);
+        priv->mp4.sample = start_frame;
+
+        // rryan 9/2009 -- the documentation is sketchy on this, but I think that
+        // it tells the decoder that you are seeking so it should flush its state
+        faacDecPostSeekReset(priv->decoder, priv->mp4.sample);
+
+        // Loop until the current frame is past the frame we intended to read
+        // (i.e. we have decoded how_many_backwards + 1 frames). The desidered
+        // decoded frame will be stored in the overflow buffer, since we're asking
+        // to read 0 bytes.
+        int result;
+        do {
+            result = decode_one_frame(ip_data, 0, 0);
+            if (result < 0) qDebug() << "SEEK_ERROR";
+        } while (result == -2 || priv->mp4.sample <= frame_for_sample);
+
+        if (result == -1 || result == 0) {
+            return mp4_current_sample(ip_data);
+        }
+    } else {
+        qDebug() << "Seek within frame";
+    }
+
+    // Now the overflow buffer contains the sample we want to seek to. Fix the
+    // overflow buffer so that the next call to read() will read starting with the
+    // requested sample.
+    priv->overflow_buf = priv->sample_buf;
+    priv->overflow_buf += frame_offset_bytes;
+    priv->overflow_buf_len -= frame_offset_bytes;
+
     return mp4_current_sample(ip_data);
-
-  // We don't have the current frame decoded -- decode it.
-  if (priv->sample_buf_frame != frame_for_sample) {
-
-      // We might have to 'prime the pump' if this isn't the first frame. The
-      // decoder has internal state that it builds as it plays, and just seeking
-      // to the frame we want will result in poor audio quality (clicks and
-      // pops). This is akin to seeking in a video and seeing MPEG
-      // artifacts. Figure out how many frames we need to go backward -- 1 seems
-      // to work.
-      const int how_many_backwards = 1;
-      int start_frame = math_max(frame_for_sample - how_many_backwards, 1);
-      priv->mp4.sample = start_frame;
-
-      // rryan 9/2009 -- the documentation is sketchy on this, but I think that
-      // it tells the decoder that you are seeking so it should flush its state
-      faacDecPostSeekReset(priv->decoder, priv->mp4.sample);
-
-      // Loop until the current frame is past the frame we intended to read
-      // (i.e. we have decoded how_many_backwards + 1 frames). The desidered
-      // decoded frame will be stored in the overflow buffer, since we're asking
-      // to read 0 bytes.
-      int result;
-      do {
-          result = decode_one_frame(ip_data, 0, 0);
-          if (result < 0) qDebug() << "SEEK_ERROR";
-      } while (result == -2 || priv->mp4.sample <= frame_for_sample);
-
-      if (result == -1 || result == 0) {
-          return mp4_current_sample(ip_data);
-      }
-  } else {
-      qDebug() << "Seek within frame";
-  }
-
-  // Now the overflow buffer contains the sample we want to seek to. Fix the
-  // overflow buffer so that the next call to read() will read starting with the
-  // requested sample.
-  priv->overflow_buf = priv->sample_buf;
-  priv->overflow_buf += frame_offset_bytes;
-  priv->overflow_buf_len -= frame_offset_bytes;
-
-  return mp4_current_sample(ip_data);
 }
 
 static int mp4_seek(struct input_plugin_data *ip_data, double offset)
@@ -468,11 +469,12 @@ static int mp4_seek(struct input_plugin_data *ip_data, double offset)
 
     qDebug() << "seeking from sample" << priv->mp4.sample << "to sample" << sample;
     priv->mp4.sample = sample;
-  priv->overflow_buf_len = 0;
+    priv->overflow_buf_len = 0;
 
     return priv->mp4.sample;
 }
-/*
+
+/* commented because we use TagLib now ??? -- bkgood
 static int mp4_read_comments(struct input_plugin_data *ip_data,
         struct keyval **comments)
 {
@@ -488,22 +490,22 @@ static int mp4_read_comments(struct input_plugin_data *ip_data,
 
      MP4GetMetadata* provides malloced pointers, and the data
      * is in UTF-8 (or at least it should be).
-    if (MP4GetMetadataArtist(priv->mp4.handle, &str))
-        comments_add(&c, "artist", str);
-    if (MP4GetMetadataAlbum(priv->mp4.handle, &str))
-        comments_add(&c, "album", str);
-    if (MP4GetMetadataName(priv->mp4.handle, &str))
-        comments_add(&c, "title", str);
-    if (MP4GetMetadataGenre(priv->mp4.handle, &str))
-        comments_add(&c, "genre", str);
-    if (MP4GetMetadataYear(priv->mp4.handle, &str))
-        comments_add(&c, "date", str);
+     if (MP4GetMetadataArtist(priv->mp4.handle, &str))
+         comments_add(&c, "artist", str);
+     if (MP4GetMetadataAlbum(priv->mp4.handle, &str))
+         comments_add(&c, "album", str);
+     if (MP4GetMetadataName(priv->mp4.handle, &str))
+         comments_add(&c, "title", str);
+     if (MP4GetMetadataGenre(priv->mp4.handle, &str))
+         comments_add(&c, "genre", str);
+     if (MP4GetMetadataYear(priv->mp4.handle, &str))
+         comments_add(&c, "date", str);
 
-    if (MP4GetMetadataCompilation(priv->mp4.handle, &val))
-        comments_add_const(&c, "compilation", val ? "yes" : "no");
+     if (MP4GetMetadataCompilation(priv->mp4.handle, &val))
+         comments_add_const(&c, "compilation", val ? "yes" : "no");
 #if 0
-    if (MP4GetBytesProperty(priv->mp4.handle, "moov.udta.meta.ilst.aART.data", &ustr, &size)) {
-        char *xstr;
+     if (MP4GetBytesProperty(priv->mp4.handle, "moov.udta.meta.ilst.aART.data", &ustr, &size)) {
+         char *xstr;
 
          What's this?
          * This is the result from lack of documentation.
@@ -512,16 +514,16 @@ static int mp4_read_comments(struct input_plugin_data *ip_data,
          * beginning. Could be a bug. Could be intentional.
          * Hopefully this works around it:
 
-        if (ustr[0] == 0 && size > 16) {
-            ustr += 16;
-            size -= 16;
-        }
-        xstr = xmalloc(size + 1);
-        memcpy(xstr, ustr, size);
-        xstr[size] = 0;
-        comments_add(&c, "albumartist", xstr);
-        free(xstr);
-    }
+         if (ustr[0] == 0 && size > 16) {
+             ustr += 16;
+             size -= 16;
+         }
+         xstr = xmalloc(size + 1);
+         memcpy(xstr, ustr, size);
+         xstr[size] = 0;
+         comments_add(&c, "albumartist", xstr);
+         free(xstr);
+     }
 #endif
     if (MP4GetMetadataTrack(priv->mp4.handle, &meta_num, &meta_total)) {
         char buf[6];
@@ -539,6 +541,7 @@ static int mp4_read_comments(struct input_plugin_data *ip_data,
     return 0;
 }
 */
+
 static int mp4_duration(struct input_plugin_data *ip_data)
 {
     struct mp4_private *priv;
