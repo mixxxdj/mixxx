@@ -106,6 +106,9 @@ QVariant RhythmboxTrackModel::data(const QModelIndex& item, int role) const {
 bool RhythmboxTrackModel::isColumnInternal(int column) {
     return false;
 }
+bool RhythmboxTrackModel::isColumnHiddenByDefault(int column) {
+    return false;
+}
 
 QVariant RhythmboxTrackModel::getTrackColumnData(QDomNode songNode, const QModelIndex& index) const
 {

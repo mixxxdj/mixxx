@@ -246,6 +246,9 @@ QVariant ITunesTrackModel::getTrackColumnData(QDomNode songNode, const QModelInd
 bool ITunesTrackModel::isColumnInternal(int column) {
     return false;
 }
+bool ITunesTrackModel::isColumnHiddenByDefault(int column) {
+    return false;
+}
 
 TrackPointer ITunesTrackModel::parseTrackNode(QDomNode songNode) const
 {
