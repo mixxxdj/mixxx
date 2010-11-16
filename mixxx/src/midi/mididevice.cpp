@@ -263,23 +263,30 @@ void MidiDevice::receive(MidiStatusByte status, char channel, char control, char
         
         // Soft-takeover is processed in addition to any other options
         if (currMidiOption == MIDI_OPT_SOFT_TAKEOVER) {
-//             qDebug() << "MixxxControl" << currMixxxControlValue << "MIDI control" << newValue;
             bool ignore = false;
+            if (!m_softTakeoverTimes.contains(mixxxControl)) {
+                QTime t;
+                t.start();
+                m_softTakeoverTimes.insert(mixxxControl,t);
+            }
+            
+            // We only want to ignore the MIDI controller when all of the following are true:
+            //  - its new value is far away from the MixxxControl
+            //  - it's been awhile since the last MIDI message for this control affected it
+            
             double newDifference = currMixxxControlValue - newValue;
-            // If the values are within 10 steps of each other, process the new value regardless
-            if (fabs(newDifference)>10 && m_softTakeover.contains(mixxxControl)) {
-                // Only ignore if the previous and current MIDI values are on
-                //  the same side of the MixxxControl value
-                double prevDifference = currMixxxControlValue - m_softTakeover.value(mixxxControl);
-                if ((prevDifference>0 && newDifference>0) || (prevDifference<0 && newDifference<0))
-                    ignore = true;
-                
-                // (If the previous MIDI value was on one side of the MixxxControl
-                //  and the current one is on the other, don't ignore
-                //  since that signals a rapid movement)
+//             double prevDifference = currMixxxControlValue - m_softTakeover.value(mixxxControl);
+            if (m_softTakeover.contains(mixxxControl)
+                && fabs(newDifference)>3
+                && m_softTakeoverTimes.value(mixxxControl).elapsed() > 50) {
+                ignore = true;
             }
             m_softTakeover.insert(mixxxControl,newValue);  // Replaces any previous value for this MixxxControl
             if (ignore) return;
+            //  Restart the clock only if the value is not ignored
+            QTime t = m_softTakeoverTimes.value(mixxxControl);
+            t.restart();
+            m_softTakeoverTimes.insert(mixxxControl,t);
         }
 
         ControlObject::sync();

@@ -115,6 +115,7 @@ Q_OBJECT
             MidiDevice::shutdown() for more details. */
         bool m_bSendInhibit;
         QHash<MixxxControl,double> m_softTakeover;
+        QHash<MixxxControl,QTime> m_softTakeoverTimes;
 };
 
 #endif
