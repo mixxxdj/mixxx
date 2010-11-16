@@ -20,6 +20,7 @@
 
 // include files for QT
 #include <qaction.h>
+#include <qdom.h>
 #include <qmenubar.h>
 #include <qtoolbutton.h>
 #include <qstring.h>
@@ -29,6 +30,7 @@
 #include <qpainter.h>
 #include <qpoint.h>
 #include <qapplication.h>
+#include <QList>
 //Added by qt3to4:
 #include <QFrame>
 #include <qstringlist.h>
