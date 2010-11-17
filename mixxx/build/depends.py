@@ -481,6 +481,10 @@ class MixxxCore(Feature):
                    "library/featuredartistswebview.cpp",
                    "library/bundledsongswebview.cpp",
                    "library/songdownloader.cpp",
+                   "library/starrating.cpp",
+                   "library/stardelegate.cpp",
+                   "library/stareditor.cpp",
+                   "audiotagger.cpp",
 
                    "xmlparse.cpp",
                    "parser.cpp",
