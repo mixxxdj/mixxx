@@ -102,7 +102,7 @@ void WStatusLight::setPixmap(int iState, const QString &filename)
 void WStatusLight::setValue(double v)
 {
 	//FIXME: why are we getting invald values here?
-	if (m_iPos != (int)v && m_iPos < m_iNoPos && m_iPos >= 0)
+	if (m_iPos != (int)v && (int)v < m_iNoPos && (int)v >= 0)
 	{
 	    m_iPos = (int)v;
 	    update();
