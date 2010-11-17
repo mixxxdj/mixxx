@@ -27,7 +27,7 @@
 WStatusLight::WStatusLight(QWidget * parent) : WWidget(parent)
 {
     m_pPixmapSLs = 0;
-    m_iNoPos = 0;
+    m_iNoPos = 2;
     m_iPos = 0;
     
     setNoPos(0);
@@ -42,6 +42,8 @@ WStatusLight::~WStatusLight()
 
 void WStatusLight::setNoPos(int iNoPos)
 {
+	if (iNoPos < 2)
+    	iNoPos = 2; //values less than 2 make no sense (need at least off, on)
     m_iNoPos = iNoPos;
     m_fValue = 0.;
 
@@ -101,11 +103,31 @@ void WStatusLight::setPixmap(int iState, const QString &filename)
 
 void WStatusLight::setValue(double v)
 {
-	//FIXME: why are we getting invald values here?
-	if (m_iPos != (int)v && (int)v < m_iNoPos && (int)v >= 0)
+	int val = (int)v;
+	if (m_iPos == val)
+		return;
+
+	if (m_iNoPos == 2)
 	{
-	    m_iPos = (int)v;
-	    update();
+		//original behavior for two-state lights: any non-zero value is "on"
+		if (val == 0)
+			m_iPos = 0;
+		else
+			m_iPos = 1;
+		update();
+	}
+	else
+	{
+		//multi-state behavior: values must be correct
+		if (val < m_iNoPos && val >= 0)
+		{
+			m_iPos = val;
+			update();
+		}
+		else
+		{
+			qDebug() << "Warning: wstatuslight asked for invalid position:" << val << "max val:" << m_iNoPos-1;
+		}
 	}
 }
 
@@ -115,7 +137,8 @@ void WStatusLight::paintEvent(QPaintEvent *)
     if (m_pPixmapSLs[m_iPos])
     {
         QPainter p(this);
-        if(m_iPos != 0 && m_pPixmapSLs[0]) p.drawPixmap(0, 0, *m_pPixmapSLs[0]);
+        if(m_iPos != 0 && m_pPixmapSLs[0]) 
+        	p.drawPixmap(0, 0, *m_pPixmapSLs[0]);
         p.drawPixmap(0, 0, *m_pPixmapSLs[m_iPos]);
     }
 }
