@@ -296,6 +296,7 @@ int SoundSourceProxy::ParseHeader(TrackInfoObject* p)
         p->setBitrate(sndsrc->getBitrate());
         p->setSampleRate(sndsrc->getSampleRate());
         p->setChannels(sndsrc->getChannels());
+	p->setKey(sndsrc->getKey());
         p->setHeaderParsed(true);
     }
     else
