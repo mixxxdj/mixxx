@@ -101,7 +101,8 @@ void WStatusLight::setPixmap(int iState, const QString &filename)
 
 void WStatusLight::setValue(double v)
 {
-	if (m_iPos != (int)v)
+	//FIXME: why are we getting invald values here?
+	if (m_iPos != (int)v && m_iPos < m_iNoPos && m_iPos >= 0)
 	{
 	    m_iPos = (int)v;
 	    update();
@@ -110,6 +111,7 @@ void WStatusLight::setValue(double v)
 
 void WStatusLight::paintEvent(QPaintEvent *)
 {
+	Q_ASSERT (m_iPos < m_iNoPos);
     if (m_pPixmapSLs[m_iPos])
     {
         QPainter p(this);
