@@ -23,6 +23,7 @@
 #include "configobject.h"
 #include "midimessage.h"
 #include "pitchfilter.h"
+#include "mixxxcontrol.h"
 class MidiDevice;
 
 //Forward declaration(s)
@@ -56,6 +57,7 @@ public:
     Q_INVOKABLE void scratchEnable(int deck, int intervalsPerRev, float rpm, float alpha, float beta);
     Q_INVOKABLE void scratchTick(int deck, int interval);
     Q_INVOKABLE void scratchDisable(int deck);
+    Q_INVOKABLE void softTakeover(QString group, QString name, bool set);
 
 public slots:
     void slotValueChanged(double value);
@@ -112,6 +114,7 @@ private:
     QMutex m_scriptEngineLock;
     QHash<ConfigKey, ControlObjectThread*> m_controlCache;
     QHash<int, QPair<QString, bool> > m_timers;
+    QHash<MixxxControl,uint> m_softTakeoverTimes;
     
     // Scratching functions & variables
     void scratchProcess(int timerId);
