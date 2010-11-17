@@ -50,6 +50,11 @@ bool ProxyTrackModel::isColumnInternal(int column) {
     return m_pTrackModel->isColumnInternal(column);
 }
 
+bool ProxyTrackModel::isColumnHiddenByDefault(int column) {
+    return m_pTrackModel->isColumnHiddenByDefault(column);
+}
+
+
 void ProxyTrackModel::removeTrack(const QModelIndex& index) {
     QModelIndex indexSource = mapToSource(index);
     m_pTrackModel->removeTrack(indexSource);

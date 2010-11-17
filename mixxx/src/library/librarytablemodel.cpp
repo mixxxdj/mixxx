@@ -20,14 +20,18 @@ LibraryTableModel::LibraryTableModel(QObject* parent,
     query.prepare("CREATE TEMPORARY VIEW IF NOT EXISTS library_view AS "
                   "SELECT "
                   "library." + LIBRARYTABLE_ID + "," +
+                  "library." + LIBRARYTABLE_PLAYED + "," +
+                  "library." + LIBRARYTABLE_TIMESPLAYED + "," +
                   "library." + LIBRARYTABLE_ARTIST + "," +
                   "library." + LIBRARYTABLE_TITLE + "," +
                   "library." + LIBRARYTABLE_ALBUM + "," +
                   "library." + LIBRARYTABLE_YEAR + "," +
                   "library." + LIBRARYTABLE_DURATION + "," +
+                  "library." + LIBRARYTABLE_RATING + "," +
                   "library." + LIBRARYTABLE_GENRE + "," +
                   "library." + LIBRARYTABLE_FILETYPE + "," +
                   "library." + LIBRARYTABLE_TRACKNUMBER + "," +
+                  "library." + LIBRARYTABLE_KEY + "," +
                   "library." + LIBRARYTABLE_DATETIMEADDED + "," +
                   "library." + LIBRARYTABLE_BPM + "," +
                   "track_locations.location," +
@@ -43,7 +47,7 @@ LibraryTableModel::LibraryTableModel(QObject* parent,
 
     //Print out any SQL error, if there was one.
     if (query.lastError().isValid()) {
-     	qDebug() << __FILE__ << __LINE__ << query.lastError();
+        qDebug() << __FILE__ << __LINE__ << query.lastError();
     }
 
     //setTable("library");
@@ -56,34 +60,9 @@ LibraryTableModel::LibraryTableModel(QObject* parent,
     //and shows it...
     //setRelation(fieldIndex(LIBRARYTABLE_LOCATION), QSqlRelation("track_locations", "id", "location"));
 
-    //Set the column heading labels, rename them for translations and have
-    //proper capitalization
-    setHeaderData(fieldIndex(LIBRARYTABLE_ARTIST),
-                  Qt::Horizontal, tr("Artist"));
-    setHeaderData(fieldIndex(LIBRARYTABLE_TITLE),
-                  Qt::Horizontal, tr("Title"));
-    setHeaderData(fieldIndex(LIBRARYTABLE_ALBUM),
-                  Qt::Horizontal, tr("Album"));
-    setHeaderData(fieldIndex(LIBRARYTABLE_GENRE),
-                  Qt::Horizontal, tr("Genre"));
-    setHeaderData(fieldIndex(LIBRARYTABLE_YEAR),
-                  Qt::Horizontal, tr("Year"));
-    setHeaderData(fieldIndex(LIBRARYTABLE_FILETYPE),
-                  Qt::Horizontal, tr("Type"));
-    setHeaderData(fieldIndex(LIBRARYTABLE_LOCATION),
-                  Qt::Horizontal, tr("Location"));
-    setHeaderData(fieldIndex(LIBRARYTABLE_COMMENT),
-                  Qt::Horizontal, tr("Comment"));
-    setHeaderData(fieldIndex(LIBRARYTABLE_DURATION),
-                  Qt::Horizontal, tr("Duration"));
-    setHeaderData(fieldIndex(LIBRARYTABLE_BITRATE),
-                  Qt::Horizontal, tr("Bitrate"));
-    setHeaderData(fieldIndex(LIBRARYTABLE_BPM),
-                  Qt::Horizontal, tr("BPM"));
-    setHeaderData(fieldIndex(LIBRARYTABLE_TRACKNUMBER),
-                  Qt::Horizontal, tr("Track #"));
-    setHeaderData(fieldIndex(LIBRARYTABLE_DATETIMEADDED),
-                  Qt::Horizontal, tr("Date Added"));
+
+    // BaseSqlTabelModel will setup the header info
+    initHeaderData();
 
     //Sets up the table filter so that we don't show "deleted" tracks (only show mixxx_deleted=0).
     slotSearch("");
@@ -126,15 +105,15 @@ bool LibraryTableModel::addTrack(const QModelIndex& index, QString location)
 
 TrackPointer LibraryTableModel::getTrack(const QModelIndex& index) const
 {
-	int trackId = index.sibling(index.row(), fieldIndex(LIBRARYTABLE_ID)).data().toInt();
-	return m_trackDao.getTrack(trackId);
+    int trackId = index.sibling(index.row(), fieldIndex(LIBRARYTABLE_ID)).data().toInt();
+    return m_trackDao.getTrack(trackId);
 }
 
 QString LibraryTableModel::getTrackLocation(const QModelIndex& index) const
 {
-	const int locationColumnIndex = fieldIndex(LIBRARYTABLE_LOCATION);
-	QString location = index.sibling(index.row(), locationColumnIndex).data().toString();
-	return location;
+    const int locationColumnIndex = fieldIndex(LIBRARYTABLE_LOCATION);
+    QString location = index.sibling(index.row(), locationColumnIndex).data().toString();
+    return location;
 }
 
 void LibraryTableModel::removeTracks(const QModelIndexList& indices) {
@@ -152,9 +131,9 @@ void LibraryTableModel::removeTracks(const QModelIndexList& indices) {
 
 void LibraryTableModel::removeTrack(const QModelIndex& index)
 {
-	int trackId = index.sibling(index.row(), fieldIndex(LIBRARYTABLE_ID)).data().toInt();
-	m_trackDao.removeTrack(trackId);
-	select(); //Repopulate the data model.
+    int trackId = index.sibling(index.row(), fieldIndex(LIBRARYTABLE_ID)).data().toInt();
+    m_trackDao.removeTrack(trackId);
+    select(); //Repopulate the data model.
 }
 
 void LibraryTableModel::moveTrack(const QModelIndex& sourceIndex, const QModelIndex& destIndex)
@@ -181,12 +160,21 @@ void LibraryTableModel::slotSearch(const QString& searchText) {
         filter = "(" + LibraryTableModel::DEFAULT_LIBRARYFILTER + ")";
     else {
         QSqlField search("search", QVariant::String);
-        search.setValue("%" + searchText + "%");
-        QString escapedText = database().driver()->formatValue(search);
-        filter = "(" + LibraryTableModel::DEFAULT_LIBRARYFILTER + " AND " +
-                "(artist LIKE " + escapedText + " OR " +
-                "album LIKE " + escapedText + " OR " +
-                "title  LIKE " + escapedText + "))";
+
+        filter = "(" + LibraryTableModel::DEFAULT_LIBRARYFILTER;
+
+        foreach(QString term, searchText.split(" "))
+        {
+            search.setValue("%" + term + "%");
+            QString escapedText = database().driver()->formatValue(search);
+            filter += " AND (artist LIKE " + escapedText + " OR " +
+                    "album LIKE " + escapedText + " OR " +
+                    "location LIKE " + escapedText + " OR " +
+                    "comment LIKE " + escapedText + " OR " +
+                    "title  LIKE " + escapedText + ")";
+        }
+
+        filter += ")";
     }
     setFilter(filter);
 }
@@ -206,35 +194,21 @@ bool LibraryTableModel::isColumnInternal(int column) {
         (column == fieldIndex(LIBRARYTABLE_SAMPLERATE)) ||
         (column == fieldIndex(LIBRARYTABLE_MIXXXDELETED)) ||
         (column == fieldIndex(LIBRARYTABLE_HEADERPARSED)) ||
+        (column == fieldIndex(LIBRARYTABLE_PLAYED)) ||
         (column == fieldIndex(LIBRARYTABLE_CHANNELS)) ||
         (column == fieldIndex(TRACKLOCATIONSTABLE_FSDELETED))) {
         return true;
     }
     return false;
 }
+bool LibraryTableModel::isColumnHiddenByDefault(int column) {
+    if (column == fieldIndex(LIBRARYTABLE_KEY))    
+        return true;
+    return false;
+}
 
 QItemDelegate* LibraryTableModel::delegateForColumn(const int i) {
     return NULL;
-}
-
-QVariant LibraryTableModel::data(const QModelIndex& item, int role) const {
-    if (!item.isValid())
-        return QVariant();
-
-    QVariant value;
-    if (role == Qt::ToolTipRole)
-        value = BaseSqlTableModel::data(item, Qt::DisplayRole);
-    else
-        value = BaseSqlTableModel::data(item, role);
-
-    if ((role == Qt::DisplayRole || role == Qt::ToolTipRole) &&
-        item.column() == fieldIndex(LIBRARYTABLE_DURATION)) {
-        if (qVariantCanConvert<int>(value)) {
-            value = MixxxUtils::secondsToMinutes(qVariantValue<int>(value));
-        }
-    }
-
-    return value;
 }
 
 QMimeData* LibraryTableModel::mimeData(const QModelIndexList &indexes) const {
@@ -262,26 +236,6 @@ QMimeData* LibraryTableModel::mimeData(const QModelIndexList &indexes) const {
     }
     mimeData->setUrls(urls);
     return mimeData;
-}
-
-Qt::ItemFlags LibraryTableModel::flags(const QModelIndex &index) const
-{
-    Qt::ItemFlags defaultFlags = QAbstractItemModel::flags(index);
-    if (!index.isValid())
-      return Qt::ItemIsEnabled;
-
-    // Enable dragging songs from this data model to elsewhere (like the
-    // waveform widget to load a track into a Player).
-    defaultFlags |= Qt::ItemIsDragEnabled;
-
-    /** FIXME: This doesn't seem to work - Albert */
-    const int bpmColumnIndex = fieldIndex(LIBRARYTABLE_BPM);
-    if (index.column() == bpmColumnIndex)
-    {
-        return defaultFlags | Qt::ItemIsEditable;
-    }
-
-    return defaultFlags;
 }
 
 TrackModel::CapabilitiesFlags LibraryTableModel::getCapabilities() const

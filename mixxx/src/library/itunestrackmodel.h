@@ -51,6 +51,7 @@ class ITunesTrackModel : public AbstractXmlTrackModel
     virtual ~ITunesTrackModel();
     virtual QItemDelegate* delegateForColumn(const int i);
     virtual bool isColumnInternal(int column);
+    virtual bool isColumnHiddenByDefault(int column);
     static QString getiTunesMusicPath();
     QDomNode getTrackNodeById(const QString& ) const;
 

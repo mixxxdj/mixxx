@@ -27,10 +27,10 @@
 #include "defs.h"
 #include <QString>
 
-#define MIXXX_SOUNDSOURCE_API_VERSION 1
+#define MIXXX_SOUNDSOURCE_API_VERSION 2
 /** @note SoundSource API Version history:
            1 - Mixxx 1.8.0 Beta 2
-           ...
+           2 - Mixxx 1.9.0 Pre (added key code)
   */
 
 /** Getter function to be declared by all SoundSource plugins */
@@ -70,6 +70,7 @@ public:
     virtual QString getGenre();
     virtual QString getTrackNumber();
     virtual float getReplayGain();
+    virtual QString getKey();
     virtual float getBPM();
     virtual int getDuration();
     virtual int getBitrate();
@@ -85,6 +86,7 @@ public:
     virtual void setGenre(QString);
     virtual void setTrackNumber(QString);
     virtual void setReplayGain(float);
+    virtual void setKey(QString);
     virtual void setBPM(float);
     virtual void setDuration(int);
     virtual void setBitrate(int);
@@ -115,6 +117,7 @@ protected:
     QString m_sGenre;
     QString m_sTrackNumber;
     float m_fReplayGain;
+    QString m_sKey;
     float m_fBPM;
     int m_iDuration;
     int m_iBitrate;

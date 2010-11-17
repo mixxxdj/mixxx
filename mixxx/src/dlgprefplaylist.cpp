@@ -142,6 +142,10 @@ void DlgPrefPlaylist::slotUpdate()
     LineEditiPodMountPoint->setText(config->getValueString(ConfigKey("[iPod]","MountPoint")));
     //Bundled songs stat tracking
     checkBoxPromoStats->setChecked((bool)config->getValueString(ConfigKey("[Promo]","StatTracking")).toInt());
+    checkBox_library_scan->setChecked((bool)config->getValueString(ConfigKey("[Library]","RescanOnStartup")).toInt());
+    checkbox_ID3_sync->setChecked((bool)config->getValueString(ConfigKey("[Library]","WriteAudioTags")).toInt());
+
+
 }
 
 void DlgPrefPlaylist::slotBrowseDir()
@@ -218,6 +222,14 @@ void DlgPrefPlaylist::slotApply()
 
     config->set(ConfigKey("[Promo]","StatTracking"), 
                    ConfigValue((int)checkBoxPromoStats->isChecked()));
+
+    config->set(ConfigKey("[Library]","RescanOnStartup"), 
+                   ConfigValue((int)checkBox_library_scan->isChecked()));
+    
+    config->set(ConfigKey("[Library]","WriteAudioTags"), 
+                   ConfigValue((int)checkbox_ID3_sync->isChecked()));
+
+
     config->Save();
 
     // Update playlist if path has changed
