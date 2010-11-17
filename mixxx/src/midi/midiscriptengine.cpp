@@ -696,7 +696,31 @@ void MidiScriptEngine::setValue(QString group, QString name, double newValue) {
     ControlObjectThread *cot = getControlObjectThread(group, name);
 
     if(cot != NULL) {
-        cot->slotSet(newValue);
+        // Soft-takeover
+        bool ignore = false;
+        MixxxControl mixxxControl = MixxxControl(group,name);
+        if (m_softTakeoverTimes.contains(mixxxControl)) {
+            // We only want to ignore the MIDI controller when all of the following are true:
+            //  - its new value is far away from the MixxxControl
+            //  - it's been awhile since the last MIDI message for this control affected it
+            
+            double difference = getValue(group,name) - newValue;
+            uint currentTime = QDateTime::currentDateTime().toTime_t()*1000+QDateTime::currentDateTime().toString("zzz").toUInt();
+            // FIXME: Argh, need a way to find out the max & min values of the
+            //  ControlObject in question instead of hard-coding the difference threshold
+            if (fabs(difference)>0.05
+                && (currentTime - m_softTakeoverTimes.value(mixxxControl)) > 50) {
+                ignore = true;
+            }
+            if (!ignore) {
+                //  Update the time only if the value is not ignored
+                //qint64 t = QDateTime::currentDateTime().toMSecsSinceEpoch();  // Requires Qt 4.7
+                uint t = QDateTime::currentDateTime().toTime_t()*1000+QDateTime::currentDateTime().toString("zzz").toUInt();
+                m_softTakeoverTimes.insert(mixxxControl,t); // Replaces any previous value for this MixxxControl
+            }
+        }
+        
+        if (!ignore) cot->slotSet(newValue);
     }
 
 }
@@ -1219,4 +1243,20 @@ void MidiScriptEngine::scratchDisable(int deck) {
     else m_rampTo[deck]=0.0;
 
     m_ramp[deck] = true;    // Activate the ramping in scratchProcess()
+}
+
+/*  -------- ------------------------------------------------------
+    Purpose: [En/dis]ables soft-takeover status for a particular MixxxControl
+    Input:   MixxxControl group and key values,
+                whether to set the soft-takeover status or not
+    Output:  -
+    -------- ------------------------------------------------------ */
+void MidiScriptEngine::softTakeover(QString group, QString name, bool set) {
+    MixxxControl mc = MixxxControl(group,name);
+    if (set) {
+        //qint64 t = QDateTime::currentDateTime().toMSecsSinceEpoch();  // Requires Qt 4.7
+        uint t = QDateTime::currentDateTime().toTime_t()*1000+QDateTime::currentDateTime().toString("zzz").toUInt();
+        m_softTakeoverTimes.insert(mc,t);
+    }
+    else m_softTakeoverTimes.remove(mc);
 }

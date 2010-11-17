@@ -265,8 +265,7 @@ void MidiDevice::receive(MidiStatusByte status, char channel, char control, char
         if (currMidiOption == MIDI_OPT_SOFT_TAKEOVER) {
             bool ignore = false;
             if (!m_softTakeoverTimes.contains(mixxxControl)) {
-                QTime t;
-                t.start();
+                uint t = QDateTime::currentDateTime().toTime_t()*1000+QDateTime::currentDateTime().toString("zzz").toUInt();
                 m_softTakeoverTimes.insert(mixxxControl,t);
             }
             
@@ -275,18 +274,16 @@ void MidiDevice::receive(MidiStatusByte status, char channel, char control, char
             //  - it's been awhile since the last MIDI message for this control affected it
             
             double newDifference = currMixxxControlValue - newValue;
-//             double prevDifference = currMixxxControlValue - m_softTakeover.value(mixxxControl);
-            if (m_softTakeover.contains(mixxxControl)
-                && fabs(newDifference)>3
-                && m_softTakeoverTimes.value(mixxxControl).elapsed() > 50) {
+            uint currentTime = QDateTime::currentDateTime().toTime_t()*1000+QDateTime::currentDateTime().toString("zzz").toUInt();
+            if (fabs(newDifference)>3
+                && (currentTime - m_softTakeoverTimes.value(mixxxControl)) > 50) {
                 ignore = true;
             }
-            m_softTakeover.insert(mixxxControl,newValue);  // Replaces any previous value for this MixxxControl
             if (ignore) return;
-            //  Restart the clock only if the value is not ignored
-            QTime t = m_softTakeoverTimes.value(mixxxControl);
-            t.restart();
-            m_softTakeoverTimes.insert(mixxxControl,t);
+            //  Update the time only if the value is not ignored
+            //qint64 t = QDateTime::currentDateTime().toMSecsSinceEpoch();  // Requires Qt 4.7
+            uint t = QDateTime::currentDateTime().toTime_t()*1000+QDateTime::currentDateTime().toString("zzz").toUInt();
+            m_softTakeoverTimes.insert(mixxxControl,t); // Replaces any previous value for this MixxxControl
         }
 
         ControlObject::sync();
@@ -304,7 +301,7 @@ void MidiDevice::receive(const unsigned char data[], unsigned int length) {
     QMutexLocker locker(&m_mutex); //Lots of returns in this function. Keeps things simple.
 
     QString message = m_strDeviceName+": [";
-    for(int i=0; i<length; i++) {
+    for(uint i=0; i<length; i++) {
         message += QString("%1%2")
                     .arg(data[i], 2, 16, QChar('0')).toUpper()
                     .arg((i<(length-1))?' ':']');

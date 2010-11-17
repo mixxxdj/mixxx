@@ -114,8 +114,7 @@ Q_OBJECT
             MIDI message while we're trying to shut it down. See
             MidiDevice::shutdown() for more details. */
         bool m_bSendInhibit;
-        QHash<MixxxControl,double> m_softTakeover;
-        QHash<MixxxControl,QTime> m_softTakeoverTimes;
+        QHash<MixxxControl,uint> m_softTakeoverTimes;
 };
 
 #endif
