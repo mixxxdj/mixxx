@@ -154,8 +154,12 @@ void PlaylistTableModel::removeTracks(const QModelIndexList& indices) {
         trackPositions.append(trackPosition);
     }
 
-    foreach (int trackPosition, trackPositions) {
-        m_playlistDao.removeTrackFromPlaylist(m_iPlaylistId, trackPosition);
+    qSort(trackPositions);
+    QListIterator<int> iterator(trackPositions);
+    iterator.toBack();
+
+    while (iterator.hasPrevious()) {
+        m_playlistDao.removeTrackFromPlaylist(m_iPlaylistId, iterator.previous());
     }
 
     select();
