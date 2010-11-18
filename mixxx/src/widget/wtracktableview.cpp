@@ -25,10 +25,12 @@ WTrackTableView::WTrackTableView(QWidget * parent,
           m_pTrackCollection(pTrackCollection),
           m_searchThread(this) {
 
-    pTrackInfo = new DlgTrackInfo(this);
-    connect(pTrackInfo, SIGNAL(next()),
+    // Give a NULL parent because otherwise it inherits our style which can make
+    // it unreadable. Bug #673411
+    m_pTrackInfo = new DlgTrackInfo(NULL);
+    connect(m_pTrackInfo, SIGNAL(next()),
             this, SLOT(slotNextTrackInfo()));
-    connect(pTrackInfo, SIGNAL(previous()),
+    connect(m_pTrackInfo, SIGNAL(previous()),
             this, SLOT(slotPrevTrackInfo()));
 
     connect(&m_loadTrackMapper, SIGNAL(mapped(QString)),
@@ -85,6 +87,8 @@ WTrackTableView::~WTrackTableView()
     delete m_pPlaylistMenu;
     delete m_pCrateMenu;
     //delete m_pRenamePlaylistAct;
+
+    delete m_pTrackInfo;
 }
 
 void WTrackTableView::loadTrackModel(QAbstractItemModel *model) {
@@ -123,14 +127,14 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel *model) {
      * Otherwise, setSortingEnabled(1) will immediately trigger sortByColumn()
      * For some reason this will cause 4 select statements in series
      * from which 3 are redundant --> expensive at all
-     * 
+     *
      * Sorting columns, however, is possible because we
      * enable clickable sorting indicators some lines below.
      * Furthermore, we connect signal 'sortIndicatorChanged'.
      *
      * Fixes Bug #672762
      */
-    
+
     setSortingEnabled(false);
     setHorizontalHeader(tempHeader);
 
@@ -270,9 +274,9 @@ void WTrackTableView::showTrackInfo(QModelIndex index) {
 
     TrackPointer pTrack = trackModel->getTrack(index);
     // NULL is fine.
-    pTrackInfo->loadTrack(pTrack);
+    m_pTrackInfo->loadTrack(pTrack);
     currentTrackInfoIndex = index;
-    pTrackInfo->show();
+    m_pTrackInfo->show();
 }
 
 void WTrackTableView::contextMenuEvent(QContextMenuEvent * event)
