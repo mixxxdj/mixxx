@@ -300,8 +300,8 @@ QWidget* LegacySkinParser::parseBackground(QDomElement node, QWidget* pParent) {
 QWidget* LegacySkinParser::parsePushButton(QDomElement node, QWidget* pParent) {
     WPushButton* p = new WPushButton(pParent);
     setupWidget(node, p);
-    setupConnections(node, p);
     p->setup(node);
+    setupConnections(node, p);
     p->installEventFilter(m_pKeyboard);
     return p;
 }
@@ -309,8 +309,8 @@ QWidget* LegacySkinParser::parsePushButton(QDomElement node, QWidget* pParent) {
 QWidget* LegacySkinParser::parseSliderComposed(QDomElement node, QWidget* pParent) {
     WSliderComposed* p = new WSliderComposed(pParent);
     setupWidget(node, p);
-    setupConnections(node, p);
     p->setup(node);
+    setupConnections(node, p);
     p->installEventFilter(m_pKeyboard);
     setControlDefaults(node, p);
     return p;
@@ -333,8 +333,8 @@ QWidget* LegacySkinParser::parseOverview(QDomElement node, QWidget* pParent) {
     WOverview* p = new WOverview(pSafeChannelStr, pParent);
 
     setupWidget(node, p);
-    setupConnections(node, p);
     p->setup(node);
+    setupConnections(node, p);
     p->installEventFilter(m_pKeyboard);
 
     // Connect the player's load and unload signals to the overview widget.
@@ -379,7 +379,6 @@ QWidget* LegacySkinParser::parseVisual(QDomElement node, QWidget* pParent) {
     p->setWidget((QWidget *)widget, true, true, true, Qt::LeftButton);
 
     setupWidget(node, widget);
-    setupConnections(node, widget);
     if (type == WAVEFORM_GL) {
         ((WGLWaveformViewer*)widget)->setup(node);
     } else if (type == WAVEFORM_WIDGET) {
@@ -387,6 +386,7 @@ QWidget* LegacySkinParser::parseVisual(QDomElement node, QWidget* pParent) {
     } else if (type == WAVEFORM_SIMPLE) {
         ((WVisualSimple*)widget)->setup(node);
     }
+    setupConnections(node, widget);
 
     connect(widget, SIGNAL(trackDropped(QString, QString)),
             m_pPlayerManager, SLOT(slotLoadToPlayer(QString, QString)));
@@ -404,8 +404,8 @@ QWidget* LegacySkinParser::parseText(QDomElement node, QWidget* pParent) {
 
     WTrackText* p = new WTrackText(pParent);
     setupWidget(node, p);
-    setupConnections(node, p);
     p->setup(node);
+    setupConnections(node, p);
     p->installEventFilter(m_pKeyboard);
 
     connect(pPlayer, SIGNAL(newTrackLoaded(TrackPointer)),
@@ -432,8 +432,8 @@ QWidget* LegacySkinParser::parseTrackProperty(QDomElement node, QWidget* pParent
 
     WTrackProperty* p = new WTrackProperty(pParent);
     setupWidget(node, p);
-    setupConnections(node, p);
     p->setup(node);
+    setupConnections(node, p);
     p->installEventFilter(m_pKeyboard);
 
     connect(pPlayer, SIGNAL(newTrackLoaded(TrackPointer)),
@@ -452,8 +452,8 @@ QWidget* LegacySkinParser::parseTrackProperty(QDomElement node, QWidget* pParent
 QWidget* LegacySkinParser::parseVuMeter(QDomElement node, QWidget* pParent) {
     WVuMeter * p = new WVuMeter(pParent);
     setupWidget(node, p);
-    setupConnections(node, p);
     p->setup(node);
+    setupConnections(node, p);
     p->installEventFilter(m_pKeyboard);
     return p;
 }
@@ -461,8 +461,8 @@ QWidget* LegacySkinParser::parseVuMeter(QDomElement node, QWidget* pParent) {
 QWidget* LegacySkinParser::parseStatusLight(QDomElement node, QWidget* pParent) {
     WStatusLight * p = new WStatusLight(pParent);
     setupWidget(node, p);
-    setupConnections(node, p);
     p->setup(node);
+    setupConnections(node, p);
     p->installEventFilter(m_pKeyboard);
     return p;
 }
@@ -470,8 +470,8 @@ QWidget* LegacySkinParser::parseStatusLight(QDomElement node, QWidget* pParent) 
 QWidget* LegacySkinParser::parseDisplay(QDomElement node, QWidget* pParent) {
     WDisplay * p = new WDisplay(pParent);
     setupWidget(node, p);
-    setupConnections(node, p);
     p->setup(node);
+    setupConnections(node, p);
     p->installEventFilter(m_pKeyboard);
     return p;
 }
@@ -497,8 +497,8 @@ QWidget* LegacySkinParser::parseNumberRate(QDomElement node, QWidget* pParent) {
 
     WNumberRate * p = new WNumberRate(pSafeChannelStr, pParent);
     setupWidget(node, p);
-    setupConnections(node, p);
     p->setup(node);
+    setupConnections(node, p);
     p->installEventFilter(m_pKeyboard);
     p->setPalette(palette);
 
@@ -517,8 +517,8 @@ QWidget* LegacySkinParser::parseNumberPos(QDomElement node, QWidget* pParent) {
     WNumberPos* p = new WNumberPos(pSafeChannelStr, pParent);
     p->installEventFilter(m_pKeyboard);
     setupWidget(node, p);
-    setupConnections(node, p);
     p->setup(node);
+    setupConnections(node, p);
     return p;
 }
 
@@ -538,8 +538,8 @@ QWidget* LegacySkinParser::parseNumberBpm(QDomElement node, QWidget* pParent) {
 
     WNumberBpm * p = new WNumberBpm(pSafeChannelStr, pParent);
     setupWidget(node, p);
-    setupConnections(node, p);
     p->setup(node);
+    setupConnections(node, p);
     p->installEventFilter(m_pKeyboard);
 
     connect(pPlayer, SIGNAL(newTrackLoaded(TrackPointer)),
@@ -558,8 +558,8 @@ QWidget* LegacySkinParser::parseNumberBpm(QDomElement node, QWidget* pParent) {
 QWidget* LegacySkinParser::parseNumber(QDomElement node, QWidget* pParent) {
     WNumber* p = new WNumber(pParent);
     setupWidget(node, p);
-    setupConnections(node, p);
     p->setup(node);
+    setupConnections(node, p);
     p->installEventFilter(m_pKeyboard);
     return p;
 }
@@ -567,8 +567,8 @@ QWidget* LegacySkinParser::parseNumber(QDomElement node, QWidget* pParent) {
 QWidget* LegacySkinParser::parseLabel(QDomElement node, QWidget* pParent) {
     WLabel * p = new WLabel(pParent);
     setupWidget(node, p);
-    setupConnections(node, p);
     p->setup(node);
+    setupConnections(node, p);
     p->installEventFilter(m_pKeyboard);
     return p;
 }
@@ -576,8 +576,8 @@ QWidget* LegacySkinParser::parseLabel(QDomElement node, QWidget* pParent) {
 QWidget* LegacySkinParser::parseKnob(QDomElement node, QWidget* pParent) {
     WKnob * p = new WKnob(pParent);
     setupWidget(node, p);
-    setupConnections(node, p);
     p->setup(node);
+    setupConnections(node, p);
     p->installEventFilter(m_pKeyboard);
     setControlDefaults(node, p);
     return p;
