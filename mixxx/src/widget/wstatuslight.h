@@ -31,24 +31,26 @@
   */
 
 class WStatusLight : public WWidget  {
-    Q_OBJECT
-  public:
+   Q_OBJECT
+public: 
     WStatusLight(QWidget *parent=0);
-    virtual ~WStatusLight();
+    ~WStatusLight();
     void setup(QDomNode node);
-    void setPixmap(int iState, const QString &filename);
-    void setNoPos(int iNoPos);
-  public slots:
-    void setValue(double v);
-  private:
+    void setPixmaps(const QString &backFilename, const QString &vuFilename, bool bHorizontal=false);
+    
+private:
+    /** Set position number to zero and deallocate pixmaps */
+    void resetPositions();
     void paintEvent(QPaintEvent *);
 
     /** Current position */
     int m_iPos;
-    /** Number of positions associated with this light */
+    /** Number of positions associated with this knob */
     int m_iNoPos;
     /** Associated pixmaps */
-    QPixmap **m_pPixmapSLs;
+    QPixmap *m_pPixmapBack, *m_pPixmapSL;
+    /** True if it's a horizontal vu meter */
+    bool m_bHorizontal;
 };
 
 #endif
