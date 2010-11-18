@@ -5,18 +5,20 @@
 #define ITUNESBOXFEATURE_H
 
 #include <QStringListModel>
+#include <QtSql>
 
 #include "library/libraryfeature.h"
+#include "library/trackcollection.h"
 
 //class ITunesPlaylistModel;
 class ITunesTrackModel;
 class ITunesPlaylistModel;
-class ProxyTrackModel;
+
 
 class ITunesFeature : public LibraryFeature {
  Q_OBJECT
  public:
-    ITunesFeature(QObject* parent = NULL);
+    ITunesFeature(QObject* parent, TrackCollection* pTrackCollection);
     virtual ~ITunesFeature();
     static bool isSupported();
 
@@ -39,9 +41,20 @@ public slots:
 private:
     ITunesTrackModel* m_pITunesTrackModel;
     ITunesPlaylistModel* m_pITunesPlaylistModel;
-    ProxyTrackModel* m_pTrackModelProxy;
-    ProxyTrackModel* m_pPlaylistModelProxy;
     QStringListModel m_childModel;
+    QStringList m_playlists;
+    TrackCollection* m_pTrackCollection;
+    QSqlDatabase &m_database;
+
+    static QString getiTunesMusicPath();
+    bool importLibrary(QString file);
+    void parseTracks(QXmlStreamReader &xml);
+    void parseTrack(QXmlStreamReader &xml, QSqlQuery &query);
+    void parsePlaylists(QXmlStreamReader &xml);
+    void parsePlaylist(QXmlStreamReader &xml, QSqlQuery &query1, QSqlQuery &query2);
+    void clearTable(QString table_name);
+    bool m_isActivated;
+    
 };
 
 #endif /* ITUNESFEATURE_H */
