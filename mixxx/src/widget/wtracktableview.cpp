@@ -11,6 +11,7 @@
 #include "library/trackcollection.h"
 #include "trackinfoobject.h"
 #include "controlobject.h"
+#include "controlobjectthreadmain.h"
 #include "widget/wtracktableview.h"
 #include "dlgtrackinfo.h"
 
@@ -24,17 +25,36 @@ WTrackTableView::WTrackTableView(QWidget * parent,
           m_pTrackCollection(pTrackCollection),
           m_searchThread(this) {
 
-    pTrackInfo = new DlgTrackInfo(this);
-    connect(pTrackInfo, SIGNAL(next()),
+    // Give a NULL parent because otherwise it inherits our style which can make
+    // it unreadable. Bug #673411
+    m_pTrackInfo = new DlgTrackInfo(NULL);
+    connect(m_pTrackInfo, SIGNAL(next()),
             this, SLOT(slotNextTrackInfo()));
-    connect(pTrackInfo, SIGNAL(previous()),
+    connect(m_pTrackInfo, SIGNAL(previous()),
             this, SLOT(slotPrevTrackInfo()));
 
+    connect(&m_loadTrackMapper, SIGNAL(mapped(QString)),
+            this, SLOT(loadSelectionToGroup(QString)));
+
+    connect(&m_deckMapper, SIGNAL(mapped(QString)),
+            this, SLOT(loadSelectionToGroup(QString)));
+    connect(&m_samplerMapper, SIGNAL(mapped(QString)),
+            this, SLOT(loadSelectionToGroup(QString)));
+
+    m_pNumSamplers = new ControlObjectThreadMain(
+        ControlObject::getControl(ConfigKey("[Master]", "num_samplers")));
+    m_pNumDecks = new ControlObjectThreadMain(
+        ControlObject::getControl(ConfigKey("[Master]", "num_decks")));
+
     m_pMenu = new QMenu(this);
+
+    m_pSamplerMenu = new QMenu(this);
+    m_pSamplerMenu->setTitle(tr("Load to Sampler"));
     m_pPlaylistMenu = new QMenu(this);
     m_pPlaylistMenu->setTitle(tr("Add to Playlist"));
     m_pCrateMenu = new QMenu(this);
     m_pCrateMenu->setTitle(tr("Add to Crate"));
+
     //Disable editing
     //setEditTriggers(QAbstractItemView::NoEditTriggers);
 
@@ -61,14 +81,14 @@ WTrackTableView::~WTrackTableView()
     }
 
     delete m_pAutoDJAct;
-    delete m_pPlayer1Act;
-    delete m_pPlayer2Act;
     delete m_pRemoveAct;
     delete m_pPropertiesAct;
     delete m_pMenu;
     delete m_pPlaylistMenu;
     delete m_pCrateMenu;
     //delete m_pRenamePlaylistAct;
+
+    delete m_pTrackInfo;
 }
 
 void WTrackTableView::loadTrackModel(QAbstractItemModel *model) {
@@ -92,7 +112,7 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel *model) {
     // header. Also, for some reason the WTrackTableView has to be hidden or
     // else problems occur. Since we parent the WtrackTableViewHeader's to the
     // WTrackTableView, they are automatically deleted.
-    QHeaderView* header = new WTrackTableViewHeader(Qt::Horizontal, this);
+    WTrackTableViewHeader* header = new WTrackTableViewHeader(Qt::Horizontal, this);
 
     // WTF(rryan) The following saves on unnecessary work on the part of
     // WTrackTableHeaderView. setHorizontalHeader() calls setModel() on the
@@ -103,6 +123,19 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel *model) {
     // QHeaderView here saves on setModel() calls. Since we parent the
     // QHeaderView to the WTrackTableView, it is automatically deleted.
     QHeaderView* tempHeader = new QHeaderView(Qt::Horizontal, this);
+    /* Tobias Rafreider: DO NOT SET SORTING TO TRUE during header replacement
+     * Otherwise, setSortingEnabled(1) will immediately trigger sortByColumn()
+     * For some reason this will cause 4 select statements in series
+     * from which 3 are redundant --> expensive at all
+     *
+     * Sorting columns, however, is possible because we
+     * enable clickable sorting indicators some lines below.
+     * Furthermore, we connect signal 'sortIndicatorChanged'.
+     *
+     * Fixes Bug #672762
+     */
+
+    setSortingEnabled(false);
     setHorizontalHeader(tempHeader);
 
     setModel(model);
@@ -128,6 +161,14 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel *model) {
 
         // Show or hide the column based on whether it should be shown or not.
         if (track_model->isColumnInternal(i)) {
+            //qDebug() << "Hiding column" << i;
+            horizontalHeader()->hideSection(i);
+        }
+        /* If Mixxx starts the first time or the header states have been cleared due to database schema evolution
+         * we gonna hide all columns that may contain a potential large number of NULL values.
+         * This will hide the key colum by default unless the user brings it to front
+         */
+        if (track_model->isColumnHiddenByDefault(i) && !header->hasPersistedHeaderState()) {
             //qDebug() << "Hiding column" << i;
             horizontalHeader()->hideSection(i);
         }
@@ -160,12 +201,7 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel *model) {
 void WTrackTableView::createActions()
 {
     Q_ASSERT(m_pMenu);
-
-    m_pPlayer1Act = new QAction(tr("Load in Player 1"),this);
-    connect(m_pPlayer1Act, SIGNAL(triggered()), this, SLOT(slotLoadPlayer1()));
-
-    m_pPlayer2Act = new QAction(tr("Load in Player 2"),this);
-    connect(m_pPlayer2Act, SIGNAL(triggered()), this, SLOT(slotLoadPlayer2()));
+    Q_ASSERT(m_pSamplerMenu);
 
     m_pRemoveAct = new QAction(tr("Remove"),this);
     connect(m_pRemoveAct, SIGNAL(triggered()), this, SLOT(slotRemove()));
@@ -175,12 +211,6 @@ void WTrackTableView::createActions()
 
     m_pAutoDJAct = new QAction(tr("Add to Auto DJ Queue"),this);
     connect(m_pAutoDJAct, SIGNAL(triggered()), this, SLOT(slotSendToAutoDJ()));
-
- 	//m_pRenamePlaylistAct = new QAction(tr("Rename..."), this);
- 	//connect(RenamePlaylistAct, SIGNAL(triggered()), this, SLOT(slotShowPlaylistRename()));
-
- 	//Create all the "send to->playlist" actions.
- 	//updatePlaylistActions();
 }
 
 void WTrackTableView::slotMouseDoubleClicked(const QModelIndex &index)
@@ -192,26 +222,14 @@ void WTrackTableView::slotMouseDoubleClicked(const QModelIndex &index)
     }
 }
 
-void WTrackTableView::slotLoadPlayer1() {
+void WTrackTableView::loadSelectionToGroup(QString group) {
     if (m_selectedIndices.size() > 0) {
         QModelIndex index = m_selectedIndices.at(0);
         TrackModel* trackModel = getTrackModel();
         TrackPointer pTrack;
         if (trackModel &&
             (pTrack = trackModel->getTrack(index))) {
-            emit(loadTrackToPlayer(pTrack, 1));
-        }
-    }
-}
-
-void WTrackTableView::slotLoadPlayer2() {
-    if (m_selectedIndices.size() > 0) {
-        QModelIndex index = m_selectedIndices.at(0);
-        TrackModel* trackModel = getTrackModel();
-        TrackPointer pTrack;
-        if (trackModel &&
-            (pTrack = trackModel->getTrack(index))) {
-            emit(loadTrackToPlayer(pTrack, 2));
+            emit(loadTrackToPlayer(pTrack, group));
         }
     }
 }
@@ -256,9 +274,9 @@ void WTrackTableView::showTrackInfo(QModelIndex index) {
 
     TrackPointer pTrack = trackModel->getTrack(index);
     // NULL is fine.
-    pTrackInfo->loadTrack(pTrack);
+    m_pTrackInfo->loadTrack(pTrack);
     currentTrackInfoIndex = index;
-    pTrackInfo->show();
+    m_pTrackInfo->show();
 }
 
 void WTrackTableView::contextMenuEvent(QContextMenuEvent * event)
@@ -266,22 +284,8 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent * event)
     //Get the indices of the selected rows.
     m_selectedIndices = this->selectionModel()->selectedRows();
 
-    //Gray out some stuff if multiple songs were selected.
-    if (m_selectedIndices.count() != 1) {
-        m_pPlayer1Act->setEnabled(false);
-        m_pPlayer2Act->setEnabled(false);
-        m_pPropertiesAct->setEnabled(false);
-    } else {
-        m_pPlayer1Act->setEnabled(true);
-        m_pPlayer2Act->setEnabled(true);
-        m_pPropertiesAct->setEnabled(true);
-    }
-
-    //Gray out player 1 and/or player 2 if those players are playing.
-    if (ControlObject::getControl(ConfigKey("[Channel1]","play"))->get()==1.)
-        m_pPlayer1Act->setEnabled(false);
-    if (ControlObject::getControl(ConfigKey("[Channel2]","play"))->get()==1.)
-        m_pPlayer2Act->setEnabled(false);
+    // Gray out some stuff if multiple songs were selected.
+    bool oneSongSelected = m_selectedIndices.count() == 1;
 
     m_pMenu->clear();
 
@@ -290,8 +294,37 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent * event)
         m_pMenu->addSeparator();
     }
 
-    m_pMenu->addAction(m_pPlayer1Act);
-    m_pMenu->addAction(m_pPlayer2Act);
+    int iNumDecks = m_pNumDecks->get();
+    if (iNumDecks > 0) {
+        for (int i = 1; i <= iNumDecks; ++i) {
+            QString deckGroup = QString("[Channel%1]").arg(i);
+            bool deckPlaying = ControlObject::getControl(
+                ConfigKey(deckGroup, "play"))->get() == 1.0f;
+            bool deckEnabled = !deckPlaying && oneSongSelected;
+            QAction* pAction = new QAction(tr("Load to Deck %1").arg(i), m_pMenu);
+            pAction->setEnabled(deckEnabled);
+            m_pMenu->addAction(pAction);
+            m_deckMapper.setMapping(pAction, deckGroup);
+            connect(pAction, SIGNAL(triggered()), &m_deckMapper, SLOT(map()));
+        }
+    }
+
+    int iNumSamplers = m_pNumSamplers->get();
+    if (iNumSamplers > 0) {
+        m_pSamplerMenu->clear();
+        for (int i = 1; i <= iNumSamplers; ++i) {
+            QString samplerGroup = QString("[Sampler%1]").arg(i);
+            bool samplerPlaying = ControlObject::getControl(
+                ConfigKey(samplerGroup, "play"))->get() == 1.0f;
+            bool samplerEnabled = !samplerPlaying && oneSongSelected;
+            QAction* pAction = new QAction(tr("Sampler %1").arg(i), m_pSamplerMenu);
+            pAction->setEnabled(samplerEnabled);
+            m_pSamplerMenu->addAction(pAction);
+            m_samplerMapper.setMapping(pAction, samplerGroup);
+            connect(pAction, SIGNAL(triggered()), &m_samplerMapper, SLOT(map()));
+        }
+        m_pMenu->addMenu(m_pSamplerMenu);
+    }
 
     m_pMenu->addSeparator();
 
@@ -336,6 +369,8 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent * event)
 
     m_pMenu->addSeparator();
     m_pMenu->addAction(m_pRemoveAct);
+
+    m_pPropertiesAct->setEnabled(oneSongSelected);
     m_pMenu->addAction(m_pPropertiesAct);
 
     //Create the right-click menu
@@ -614,21 +649,23 @@ bool WTrackTableView::modelHasCapabilities(TrackModel::CapabilitiesFlags capabil
 
 void WTrackTableView::keyPressEvent(QKeyEvent* event)
 {
-    m_selectedIndices = this->selectionModel()->selectedRows();
+
     if (event->key() == Qt::Key_Return)
     {
-        if (m_selectedIndices.size() > 0) {
-            QModelIndex index = m_selectedIndices.at(0);
-            slotMouseDoubleClicked(index);
-        }
+		/*
+		 * It is not a good idea if 'key_return'
+		 * causes a track to load since we allow in-line editing
+		 * of table items in general
+		 */
+        return;
     }
     else if (event->key() == Qt::Key_BracketLeft)
     {
-        slotLoadPlayer1();
+        loadSelectionToGroup("[Channel1]");
     }
     else if (event->key() == Qt::Key_BracketRight)
     {
-        slotLoadPlayer2();
+        loadSelectionToGroup("[Channel2]");
     }
     else
         QTableView::keyPressEvent(event);

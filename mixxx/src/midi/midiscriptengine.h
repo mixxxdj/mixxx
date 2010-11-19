@@ -50,6 +50,7 @@ public:
     Q_INVOKABLE bool connectControl(QString group, QString name,
                                     QString function, bool disconnect = false);
     Q_INVOKABLE void trigger(QString group, QString name);
+    Q_INVOKABLE void log(QString message);
     Q_INVOKABLE int beginTimer(int interval, QString scriptCode, bool oneShot = false);
     Q_INVOKABLE void stopTimer(int timerId);
     Q_INVOKABLE void scratchEnable(int deck, int intervalsPerRev, float rpm, float alpha, float beta);
@@ -63,7 +64,9 @@ public slots:
     // Execute a particular function
     bool execute(QString function); 
     // Execute a particular function with a data string (e.g. a device ID)
-    bool execute(QString function, QString data); 
+    bool execute(QString function, QString data);
+    // Execute a particular function with a data buffer (e.g. a SysEx message)
+    bool execute(QString function, const unsigned char data[], unsigned int length);
     // Execute a particular function with all the data
     bool execute(QString function, char channel,
                  char control, char value, MidiStatusByte status, QString group);
@@ -84,10 +87,11 @@ private slots:
     
 private:
     // Only call these with the scriptEngineLock
-    bool safeEvaluate(QString filepath);
+    bool safeEvaluate(QString scriptName, QList<QString> scriptPaths);
     bool internalExecute(QString scriptCode);
     bool safeExecute(QString function);
     bool safeExecute(QString function, QString data);
+    bool safeExecute(QString function, const unsigned char data[], unsigned int length);
     bool safeExecute(QString function, char channel, 
                      char control, char value, MidiStatusByte status, QString group);
     void initializeScriptEngine();

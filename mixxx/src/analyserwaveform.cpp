@@ -13,9 +13,9 @@ AnalyserWaveform::AnalyserWaveform() {
 
 void AnalyserWaveform::initialise(TrackPointer tio, int sampleRate, int totalSamples) {
 
-    if(tio->getVisualWaveform() != NULL) {
-        return;
-    }
+  if(tio->getVisualWaveform() != NULL) {
+       return;
+   }
 
     if(totalSamples == 0) {
         return;  //?
@@ -25,10 +25,11 @@ void AnalyserWaveform::initialise(TrackPointer tio, int sampleRate, int totalSam
     double n = double(sampleRate) / mz;
 
     QByteArray err_tmp = QString("TrackPointer %1 returned bad data: VisualResampleRate=%2, n=%3") .arg(tio->getId()).arg(mz).arg(n).toAscii();
-    Q_ASSERT_X(mz != 0 && n > 0,"AnalyserWaveform::initialise",err_tmp);
 
     if (mz == 0 || n <= 0) {
-        qDebug() << "TrackPointer" << tio->getId() << "returned bad data: tio->getVisualResampleRate()=" << mz << "n=" << n << "Aborting analysis";
+        qDebug() << err_tmp
+                 << "Track must not be loaded to a player with a waveform display."
+                 << "Skipping analysis.";
         return;
     }
 

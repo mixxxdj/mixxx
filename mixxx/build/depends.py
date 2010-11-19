@@ -32,7 +32,7 @@ class PortMIDI(Dependence):
             build.env.Append(LIBS='advapi32')
 
     def sources(self, build):
-        return ['midi/midideviceportmidi.cpp']
+        return ['midi/portmidienumerator.cpp', 'midi/midideviceportmidi.cpp']
 
 class OpenGL(Dependence):
 
@@ -99,6 +99,18 @@ class SndFile(Dependence):
 
     def sources(self, build):
         return ['soundsourcesndfile.cpp']
+
+class FLAC(Dependence):
+    def configure(self, build, conf):
+        if not conf.CheckHeader('FLAC/stream_decoder.h'):
+            raise Exception('Did not find libFLAC development headers, exiting!')
+        elif not conf.CheckLib(['libFLAC', 'FLAC']):
+            raise Exception('Did not find libFLAC development libraries, exiting!')
+        return
+
+    def sources(self, build):
+        return ['soundsourceflac.cpp',]
+
 
 class Qt(Dependence):
     DEFAULT_QTDIRS = {'linux': '/usr/share/qt4',
@@ -213,6 +225,13 @@ class KissFFT(Dependence):
     def configure(self, build, conf):
         build.env.Append(CPPPATH="#lib/kissfft")
 
+class ReplayGain(Dependence):
+
+    def sources(self, build):
+        return ["#lib/replaygain/replaygain_analysis.c"]
+
+    def configure(self, build, conf):
+        build.env.Append(CPPPATH="#lib/replaygain")
 
 class SoundTouch(Dependence):
     SOUNDTOUCH_PATH = 'soundtouch-1.4.1'
@@ -315,6 +334,7 @@ class MixxxCore(Feature):
                    "dlgprefnomidi.cpp",
                    "dlgprefcontrols.cpp",
                    "dlgprefbpm.cpp",
+                   "dlgprefreplaygain.cpp",
                    "dlgbpmscheme.cpp",
                    "dlgabout.cpp",
                    "dlgprefeq.cpp",
@@ -354,7 +374,7 @@ class MixxxCore(Feature):
                    "engine/cuecontrol.cpp",
                    "engine/readaheadmanager.cpp",
                    "cachingreader.cpp",
-
+                   "analyserrg.cpp",
                    "analyserqueue.cpp",
                    "analyserwavesummary.cpp",
                    "analyserbpm.cpp",
@@ -362,6 +382,7 @@ class MixxxCore(Feature):
 
                    "midi/mididevice.cpp",
                    "midi/mididevicemanager.cpp",
+                   "midi/midideviceenumerator.cpp",
                    "midi/midimapping.cpp",
                    "midi/midiinputmappingtablemodel.cpp",
                    "midi/midioutputmappingtablemodel.cpp",
@@ -460,6 +481,10 @@ class MixxxCore(Feature):
                    "library/featuredartistswebview.cpp",
                    "library/bundledsongswebview.cpp",
                    "library/songdownloader.cpp",
+                   "library/starrating.cpp",
+                   "library/stardelegate.cpp",
+                   "library/stareditor.cpp",
+                   "audiotagger.cpp",
 
                    "xmlparse.cpp",
                    "parser.cpp",
@@ -494,8 +519,12 @@ class MixxxCore(Feature):
 
                    "sampleutil.cpp",
                    "trackinfoobject.cpp",
-                   "player.cpp",
+                   "baseplayer.cpp",
+                   "basetrackplayer.cpp",
+                   "deck.cpp",
+                   "sampler.cpp",
                    "playermanager.cpp",
+                   "samplerbank.cpp",
                    "sounddevice.cpp",
                    "soundmanager.cpp",
                    "soundmanagerconfig.cpp",
@@ -520,6 +549,7 @@ class MixxxCore(Feature):
         build.env.Uic4('dlgprefeqdlg.ui')
         build.env.Uic4('dlgprefcrossfaderdlg.ui')
         build.env.Uic4('dlgprefbpmdlg.ui')
+        build.env.Uic4('dlgprefreplaygaindlg.ui')
         build.env.Uic4('dlgbpmschemedlg.ui')
         # build.env.Uic4('dlgbpmtapdlg.ui')
         build.env.Uic4('dlgprefvinyldlg.ui')
@@ -679,8 +709,8 @@ class MixxxCore(Feature):
             build.env.Append(CPPDEFINES=('UNIX_SHARE_PATH', r'\"%s\"' % share_path))
 
     def depends(self, build):
-        return [SoundTouch, KissFFT, PortAudio, PortMIDI, Qt,
-                FidLib, Mad, SndFile, OggVorbis, OpenGL, TagLib]
+        return [SoundTouch, KissFFT, ReplayGain, PortAudio, PortMIDI, Qt,
+                FidLib, Mad, SndFile, FLAC, OggVorbis, OpenGL, TagLib]
 
     def post_dependency_check_configure(self, build, conf):
         """Sets up additional things in the Environment that must happen

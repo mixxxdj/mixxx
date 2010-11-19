@@ -57,7 +57,7 @@ public slots:
     void slotShowTrackModel(QAbstractItemModel* model);
     void slotSwitchToView(const QString& view);
     void slotLoadTrack(TrackPointer pTrack);
-    void slotLoadTrackToPlayer(TrackPointer pTrack, int player);
+    void slotLoadTrackToPlayer(TrackPointer pTrack, QString group);
     void slotRestoreSearch(const QString& text);
     void slotRefreshLibraryModels();
     void slotCreatePlaylist();
@@ -66,7 +66,7 @@ signals:
     void showTrackModel(QAbstractItemModel* model);
     void switchToView(const QString& view);
     void loadTrack(TrackPointer tio);
-    void loadTrackToPlayer(TrackPointer tio, int n);
+    void loadTrackToPlayer(TrackPointer tio, QString group);
     void restoreSearch(const QString&);
 
 private:

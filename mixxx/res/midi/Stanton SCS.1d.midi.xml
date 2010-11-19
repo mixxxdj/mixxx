@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<MixxxMIDIPreset schemaVersion="1" mixxxVersion="1.7.0+">
+<MixxxMIDIPreset schemaVersion="1" mixxxVersion="1.8.0">
     <info>
         <name>Stanton SCS.1d</name>
         <author>Sean M. Pappalardo</author>
@@ -345,28 +345,9 @@
                 <!--    Platter    -->
                 
                 <control>
-                    <status>0x90</status>
-                    <midino>0x7f</midino>
+                    <status>0xf9</status>
                     <group>[Master]</group>
-                    <key>StantonSCS1d.platterGrabbed</key>
-                    <options>
-                        <Script-Binding/>
-                    </options>
-                </control>
-                <control>
-                    <status>0xB0</status>
-                    <midino>0x05</midino>
-                    <group>[Master]</group>
-                    <key>StantonSCS1d.platterBend</key>
-                    <options>
-                        <Script-Binding/>
-                    </options>
-                </control>
-                <control>
-                    <status>0xB0</status>
-                    <midino>0x02</midino>
-                    <group>[Master]</group>
-                    <key>StantonSCS1d.platterScratch</key>
+                    <key>StantonSCS1d.vinylMoved</key>
                     <options>
                         <Script-Binding/>
                     </options>

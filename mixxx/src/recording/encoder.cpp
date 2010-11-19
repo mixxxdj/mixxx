@@ -38,16 +38,17 @@ Encoder::~Encoder() {
 int Encoder::convertToBitrate(int quality) {
     switch(quality)
     {
-        case 1: return 16;
-        case 2: return 24;
-        case 3: return 32;
-        case 4: return 64;
-        case 5: return 128;
-        case 6: return 160;
-        case 7: return 192;
-        case 8: return 224;
-        case 9: return 256;
-        case 10: return 320;
+        case 1: return 48;
+        case 2: return 64;
+        case 3: return 80;
+        case 4: return 96;
+        case 5: return 112;
+        case 6: return 128;
+        case 7: return 160;
+        case 8: return 192;
+        case 9: return 224;
+        case 10: return 256;
+        case 11: return 320;
         default: return 128;
     }
 }
