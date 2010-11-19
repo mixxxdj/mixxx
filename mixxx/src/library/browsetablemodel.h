@@ -22,6 +22,7 @@ class BrowseTableModel : public QFileSystemModel, public TrackModel
     virtual bool isColumnInternal(int);
     virtual void moveTrack(const QModelIndex&, const QModelIndex&);
     virtual QItemDelegate* delegateForColumn(const int);
+    virtual bool isColumnHiddenByDefault(int column);
 	private:
 };
 

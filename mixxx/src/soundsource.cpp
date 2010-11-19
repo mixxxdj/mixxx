@@ -55,6 +55,7 @@ SoundSource::SoundSource(QString qFilename)
     m_iDuration = 0;
     m_iBitrate = 0;
     m_iChannels = 0;
+    m_sKey = "";
 }
 
 SoundSource::~SoundSource()
@@ -192,6 +193,12 @@ void SoundSource::setChannels(int channels)
 {
     m_iChannels = channels;
 }
+QString SoundSource::getKey(){
+    return m_sKey;
+}
+void SoundSource::setKey(QString key){
+    m_sKey = key;
+}
 
 bool SoundSource::processTaglibFile(TagLib::File& f) {
     if (s_bDebugMetadata)
@@ -296,9 +303,7 @@ bool SoundSource::processID3v2Tag(TagLib::ID3v2::Tag* id3v2) {
     TagLib::ID3v2::FrameList keyFrame = id3v2->frameListMap()["TKEY"];
     if (!keyFrame.isEmpty()) {
         QString sKey = TStringToQString(keyFrame.front()->toString());
-        if (s_bDebugMetadata)
-            qDebug() << "KEY" << sKey;
-        // TODO(XXX) write key to SoundSource and copy that to the Track
+        setKey(sKey);   
     }
     // Foobar2000-style ID3v2.3.0 tags
     // TODO: Check if everything is ok.
@@ -375,7 +380,6 @@ bool SoundSource::processXiphComment(TagLib::Ogg::XiphComment* xiph) {
         processBpmString("XIPH-TEMPO", sBpm);
     }
 
-
     if (xiph->fieldListMap().contains("REPLAYGAIN_ALBUM_GAIN")) {
         TagLib::StringList rgainString = xiph->fieldListMap()["REPLAYGAIN_ALBUM_GAIN"];
         QString sReplayGain = TStringToQString(rgainString.toString());
@@ -389,11 +393,29 @@ bool SoundSource::processXiphComment(TagLib::Ogg::XiphComment* xiph) {
     }
 
 
+    /*
+	 * Reading key code information
+	 * Unlike, ID3 tags, there's no standard or recommendation on how to store 'key' code
+	 * 
+	 * Luckily, there are only a few tools for that, e.g., Rapid Evolution (RE).
+	 * Assuming no distinction between start and end key, RE uses a "INITIALKEY" 
+	 * or a "KEY" vorbis comment. 
+	 */
+     if (xiph->fieldListMap().contains("KEY")) {
+        TagLib::StringList keyStr = xiph->fieldListMap()["KEY"];
+        QString key = TStringToQString(keyStr.toString());
+        setKey(key);
+    }
+    if (getKey() == "" && xiph->fieldListMap().contains("INITIALKEY")) {
+        TagLib::StringList keyStr = xiph->fieldListMap()["INITIALKEY"];
+        QString key = TStringToQString(keyStr.toString());
+        setKey(key);
+    }
     return true;
 }
 
 bool SoundSource::processMP4Tag(TagLib::MP4::Tag* mp4) {
-    if (s_bDebugMetadata) {
+    if (!s_bDebugMetadata) {
         for(TagLib::MP4::ItemListMap::ConstIterator it = mp4->itemListMap().begin();
             it != mp4->itemListMap().end(); ++it) {
             qDebug() << "MP4" << TStringToQString((*it).first) << "-" << TStringToQString((*it).second.toStringList().toString());
@@ -405,5 +427,11 @@ bool SoundSource::processMP4Tag(TagLib::MP4::Tag* mp4) {
         QString sBpm = TStringToQString(mp4->itemListMap()["tmpo"].toStringList().toString());
         processBpmString("MP4", sBpm);
     }
+    // Get KEY (conforms to Rapid Evolution)
+    if (mp4->itemListMap().contains("----:com.apple.iTunes:KEY")) {
+        QString key = TStringToQString(mp4->itemListMap()["----:com.apple.iTunes:KEY"].toStringList().toString());
+        setKey(key);
+    }
+
     return true;
 }
