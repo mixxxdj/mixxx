@@ -351,7 +351,7 @@ int SoundManager::setupDevices()
     // TODO(bkgood) this ought to be done in the ctor or something. Not here. Really
     // shouldn't be any reason for these to be reinitialized every time the
     // audio prefs are updated. Will require work in DlgPrefVinyl.
-    QHash<ChannelGroup, VinylControlProxy*> vinyl_inputs;
+    QHash<QString, VinylControlProxy*> vinyl_inputs;
     m_VinylControl.append(new VinylControlProxy(m_pConfig, "[Channel1]"));
     m_VinylControl.append(new VinylControlProxy(m_pConfig, "[Channel2]"));
 	m_VinylMapping.clear();
@@ -377,16 +377,22 @@ int SoundManager::setupDevices()
             		//vinyl_inputs keeps track of which channel groups were 
             		//originally assigned to which vinyl threads
             		
-            		if (vinyl_inputs.contains(in.getChannelGroup()))
+            		//ugh, this is an ugly way to get a hash, but we need
+            		//both the device and the channel group here
+            		QString channel_hash = QString("%1 -- %2")
+            			.arg(device->getInternalName())
+            			.arg(in.getChannelGroup().getHash());
+            		
+            		if (vinyl_inputs.contains(channel_hash))
             		{
             			//this set of inputs already exists, map it
             			m_VinylMapping[m_VinylControl[in.getIndex()]] = 
-            				m_VinylMapping[vinyl_inputs[in.getChannelGroup()]];
+            				m_VinylMapping[vinyl_inputs[channel_hash]];
             		}
             		else
             		{
             			//this is a new set of inputs
-            			vinyl_inputs[in.getChannelGroup()] = 
+            			vinyl_inputs[channel_hash] = 
             				m_VinylControl[in.getIndex()];
 		        		//m_VinylMapping keeps track of which AudioInputs
 		        		//should be assigned to which vinyl threads
