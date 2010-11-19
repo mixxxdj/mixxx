@@ -93,6 +93,9 @@ QVariant ITunesPlaylistModel::data ( const QModelIndex & index, int role ) const
 bool ITunesPlaylistModel::isColumnInternal(int column) {
     return false;
 }
+bool ITunesPlaylistModel::isColumnHiddenByDefault(int column) {
+    return false;
+}
 
 QVariant ITunesPlaylistModel::headerData ( int section, Qt::Orientation orientation, int role ) const
 {

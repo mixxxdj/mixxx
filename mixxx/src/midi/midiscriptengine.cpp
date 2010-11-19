@@ -173,16 +173,19 @@ void MidiScriptEngine::loadScriptFiles(QList<QString> scriptFileNames) {
 
     qDebug() << "MidiScriptEngine: Loading & evaluating all MIDI script code";
 
-    ConfigObject<ConfigValue> *config = new ConfigObject<ConfigValue>(QDir::homePath().append("/").append(SETTINGS_PATH).append(SETTINGS_FILE));
+    // scriptPaths holds the paths to search in when we're looking for scripts
+    QList<QString> scriptPaths;
+    scriptPaths.append(QDir::homePath().append("/").append(SETTINGS_PATH).append("presets/"));
 
-    QString scriptPath = config->getConfigPath().append("midi/");
+    ConfigObject<ConfigValue> *config = new ConfigObject<ConfigValue>(QDir::homePath().append("/").append(SETTINGS_PATH).append(SETTINGS_FILE));
+    scriptPaths.append(config->getConfigPath().append("midi/"));
     delete config;
 
     QListIterator<QString> it(scriptFileNames);
     m_scriptEngineLock.lock();
     while (it.hasNext()) {
         QString curScriptFileName = it.next();
-        safeEvaluate(scriptPath+curScriptFileName);
+        safeEvaluate(curScriptFileName, scriptPaths);
 
         if(m_scriptErrors.contains(curScriptFileName)) {
             qDebug() << "Errors occured while loading " << curScriptFileName;
@@ -249,7 +252,8 @@ void MidiScriptEngine::run() {
    -------- ------------------------------------------------------ */
 bool MidiScriptEngine::evaluate(QString filepath) {
     m_scriptEngineLock.lock();
-    bool ret = safeEvaluate(filepath);
+    QList<QString> dummy;
+    bool ret = safeEvaluate(filepath, dummy);
     m_scriptEngineLock.unlock();
     return ret;
 }
@@ -282,7 +286,21 @@ bool MidiScriptEngine::execute(QString function, QString data) {
 
 /* -------- ------------------------------------------------------
    Purpose: Evaluate & call a script function
+   Input:   Function name, pointer to data buffer, length of buffer
+   Output:  false if an invalid function or an exception
+   -------- ------------------------------------------------------ */
+bool MidiScriptEngine::execute(QString function, const unsigned char data[],
+                               unsigned int length) {
+    m_scriptEngineLock.lock();
+    bool ret = safeExecute(function, data, length);
+    m_scriptEngineLock.unlock();
+    return ret;
+}
+
+/* -------- ------------------------------------------------------
+   Purpose: Evaluate & call a script function
    Input:   Function name, channel #, control #, value, status
+                MixxxControl group
    Output:  false if an invalid function or an exception
    -------- ------------------------------------------------------ */
 bool MidiScriptEngine::execute(QString function, char channel,
@@ -396,7 +414,41 @@ bool MidiScriptEngine::safeExecute(QString function, QString data) {
         return false;
 
     QScriptValueList args;
-    args << QScriptValue(m_pEngine, data);
+    args << QScriptValue(data);
+
+    scriptFunction.call(QScriptValue(), args);
+    if (checkException())
+        return false;
+    return true;
+}
+
+/* -------- ------------------------------------------------------
+   Purpose: Evaluate & call a script function
+   Input:   Function name, ponter to data buffer, length of buffer
+   Output:  false if an invalid function or an exception
+   -------- ------------------------------------------------------ */
+bool MidiScriptEngine::safeExecute(QString function, const unsigned char data[],
+                                    unsigned int length) {
+
+    if(m_pEngine == NULL) {
+        return false;
+    }
+
+    if (!m_pEngine->canEvaluate(function)) {
+        qCritical() << "MidiScriptEngine: ?Syntax error in function " << function;
+        return false;
+    }
+
+    QScriptValue scriptFunction = m_pEngine->evaluate(function);
+
+    if (checkException())
+        return false;
+    if (!scriptFunction.isFunction())
+        return false;
+
+    QScriptValueList args;
+    args << QScriptValue(m_pEngine, (const char*)data);
+    args << QScriptValue(m_pEngine, length);
 
     scriptFunction.call(QScriptValue(), args);
     if (checkException())
@@ -427,11 +479,11 @@ bool MidiScriptEngine::safeExecute(QString function, char channel,
         return false;
 
     QScriptValueList args;
-    args << QScriptValue(m_pEngine, channel);
-    args << QScriptValue(m_pEngine, control);
-    args << QScriptValue(m_pEngine, value);
-    args << QScriptValue(m_pEngine, status);
-    args << QScriptValue(m_pEngine, group);
+    args << QScriptValue(channel);
+    args << QScriptValue(control);
+    args << QScriptValue(value);
+    args << QScriptValue(status);
+    args << QScriptValue(group);
 
     scriptFunction.call(QScriptValue(), args);
     if (checkException())
@@ -650,6 +702,16 @@ void MidiScriptEngine::setValue(QString group, QString name, double newValue) {
 }
 
 /* -------- ------------------------------------------------------
+   Purpose: qDebugs script output so it ends up in mixxx.log
+   Input:   String to log
+   Output:  -
+   -------- ------------------------------------------------------ */
+void MidiScriptEngine::log(QString message) {
+
+    qDebug()<<message;
+}
+
+/* -------- ------------------------------------------------------
    Purpose: Emits valueChanged() so device outputs update
    Input:   -
    Output:  -
@@ -749,9 +811,9 @@ void MidiScriptEngine::slotValueChanged(double value) {
         // Could branch to safeExecute from here, but for now do it this way.
         QScriptValue function_value = m_pEngine->evaluate(function);
         QScriptValueList args;
-        args << QScriptValue(m_pEngine, value);
-        args << QScriptValue(m_pEngine, key.group); // Added by Math`
-        args << QScriptValue(m_pEngine, key.item);  // Added by Math`
+        args << QScriptValue(value);
+        args << QScriptValue(key.group); // Added by Math`
+        args << QScriptValue(key.item);  // Added by Math`
         QScriptValue result = function_value.call(QScriptValue(), args);
         if (result.isError()) {
             qWarning()<< "MidiScriptEngine: Call to " << function << " resulted in an error:  " << result.toString();
@@ -769,16 +831,31 @@ void MidiScriptEngine::slotValueChanged(double value) {
    Input:   Script filename
    Output:  false if the script file has errors or doesn't exist
    -------- ------------------------------------------------------ */
-bool MidiScriptEngine::safeEvaluate(QString filename) {
+bool MidiScriptEngine::safeEvaluate(QString scriptName, QList<QString> scriptPaths) {
 
     if(m_pEngine == NULL) {
         return false;
     }
 
+    QString filename = "";
+    QFile input;
+
+    if (scriptPaths.length() == 0) {
+        // If we aren't given any paths to search, assume that scriptName
+        // contains the full file name
+        filename = scriptName;
+        input.setFileName(filename);
+    } else {
+        QListIterator<QString> it(scriptPaths);
+        do {
+            filename = it.next()+scriptName;
+            input.setFileName(filename);
+        } while (it.hasNext() && !input.exists());
+    }
+
     qDebug() << "MidiScriptEngine: Loading" << filename;
 
     // Read in the script file
-    QFile input(filename);
     if (!input.open(QIODevice::ReadOnly)) {
         QString errorLog =
             QString("MidiScriptEngine: Problem opening the script file: %1, error # %2, %3")

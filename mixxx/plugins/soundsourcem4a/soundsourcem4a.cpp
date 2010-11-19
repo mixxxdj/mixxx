@@ -43,7 +43,7 @@ SoundSourceM4A::SoundSourceM4A(QString qFileName)
 
 SoundSourceM4A::~SoundSourceM4A() {
     if (ipd.filename) {
-        delete ipd.filename;
+        delete [] ipd.filename;
         ipd.filename = NULL;
     }
 
@@ -58,9 +58,9 @@ int SoundSourceM4A::open()
     //Initialize the FAAD2 decoder...
     initializeDecoder();
 
-    qDebug() << "SSM4A: channels:" << m_iChannels
-             << "filelength:" << filelength
-             << "Sample Rate:" << m_iSampleRate;
+    //qDebug() << "SSM4A: channels:" << m_iChannels
+    //         << "filelength:" << filelength
+    //         << "Sample Rate:" << m_iSampleRate;
     return OK;
 }
 
@@ -80,7 +80,7 @@ int SoundSourceM4A::initializeDecoder()
 
     int mp4_open_status = mp4_open(&ipd);
     if (mp4_open_status != 0) {
-        qDebug() << "SSM4A::initializeDecoder failed"
+        qWarning() << "SSM4A::initializeDecoder failed"
                  << m_qFilename << " with status:" << mp4_open_status;
         return ERR;
     }
@@ -101,7 +101,7 @@ long SoundSourceM4A::seek(long filepos){
     if (filelength == 0)
         return 0;
 
-    qDebug() << "SSM4A::seek()" << filepos;
+    //qDebug() << "SSM4A::seek()" << filepos;
 
     // qDebug() << "MP4SEEK: seek time:" << filepos / (m_iChannels * m_iSampleRate) ;
 
@@ -126,7 +126,7 @@ unsigned SoundSourceM4A::read(volatile unsigned long size, const SAMPLE* destina
     int total_bytes_decoded = 0;
     int num_bytes_req = 4096;
     char* buffer = (char*)destination;
-    SAMPLE * as_buffer = (SAMPLE*) destination;	//pointer for mono->stereo filling.
+    SAMPLE * as_buffer = (SAMPLE*) destination; //pointer for mono->stereo filling.
     do {
         if (total_bytes_decoded + num_bytes_req > total_bytes_to_decode)
             num_bytes_req = total_bytes_to_decode - total_bytes_decoded;
@@ -136,7 +136,7 @@ unsigned SoundSourceM4A::read(volatile unsigned long size, const SAMPLE* destina
                                buffer,
                                num_bytes_req);
         if(numRead <= 0) {
-            qDebug() << "SSM4A::read: EOF";
+            //qDebug() << "SSM4A::read: EOF";
             break;
         }
         buffer += numRead;

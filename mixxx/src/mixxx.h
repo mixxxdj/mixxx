@@ -20,6 +20,7 @@
 
 // include files for QT
 #include <qaction.h>
+#include <qdom.h>
 #include <qmenubar.h>
 #include <qtoolbutton.h>
 #include <qstring.h>
@@ -29,6 +30,7 @@
 #include <qpainter.h>
 #include <qpoint.h>
 #include <qapplication.h>
+#include <QList>
 //Added by qt3to4:
 #include <QFrame>
 #include <qstringlist.h>
@@ -155,10 +157,10 @@ class MixxxApp : public QMainWindow
     PlayerManager* m_pPlayerManager;
 
     MidiDeviceManager *m_pMidiDeviceManager;
-    ControlObject *m_pControl;
+
     ConfigObject<ConfigValue> *m_pConfig;
-    /** Pointer to active keyboard configuration */
-    ConfigObject<ConfigValueKbd> *m_pKbdConfig;
+
+
     MixxxKeyboard* m_pKeyboard;
     /** Library scanner object */
     LibraryScanner* m_pLibraryScanner;
@@ -182,25 +184,14 @@ class MixxxApp : public QMainWindow
     QMenu *macroMenu;
 #endif
 
-    QAction *m_pFileNew;
     QAction *m_pFileLoadSongPlayer1;
     QAction *m_pFileLoadSongPlayer2;
-    QAction *m_pFileSave;
-    QAction *m_pFileSaveAs;
-    QAction *m_pFileClose;
-    QAction *m_pFilePrint;
     QAction *m_pFileQuit;
-
-    QAction *m_pEditCut;
-    QAction *m_pEditCopy;
-    QAction *m_pEditPaste;
 
     QAction *m_pPlaylistsNew;
     QAction *m_pCratesNew;
     QAction *m_pPlaylistsImport;
     QAction **m_pPlaylistsList;
-
-    QAction *m_pIPodToggle;
 
     QAction *m_pBatchBpmDetect;
 
