@@ -3,13 +3,13 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2010-10-28 15:35-0400\n"
-"PO-Revision-Date: 2010-11-12 12:01+0000\n"
-"Last-Translator: RJ Ryan <Unknown>\n"
+"PO-Revision-Date: 2010-11-18 23:14+0000\n"
+"Last-Translator: toomuch <Unknown>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2010-11-13 04:51+0000\n"
+"X-Launchpad-Export-Date: 2010-11-19 04:46+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
 #: AutoDJFeature#1
@@ -18,7 +18,7 @@ msgstr "AutoDJ"
 
 #: BrowseFeature#1
 msgid "Browse"
-msgstr "Browsen"
+msgstr "Durchsuchen"
 
 #: BrowseFeature#2
 msgid "Permission Denied"
@@ -30,7 +30,7 @@ msgstr "Sie haben keine Berechtigung diesen Ordner zu öffnen."
 
 #: CrateFeature#1
 msgid "New Crate"
-msgstr "Neues Crate"
+msgstr "Neue Plattenkiste"
 
 #: CrateFeature#2
 msgctxt "CrateFeature#2"
@@ -39,27 +39,27 @@ msgstr "Entfernen"
 
 #: CrateFeature#3
 msgid "Crates"
-msgstr "Crates"
+msgstr "Plattenkisten"
 
 #: CrateFeature#4
 msgid "Crate name:"
-msgstr "Name des Crate:"
+msgstr "Name der Plattenkiste"
 
 #: CrateFeature#5
 msgid "Crate Creation Failed"
-msgstr "Erstellung des Crate fehlgeschlagen"
+msgstr "Erstellung der Plattenkiste fehlgeschlagen"
 
 #: CrateFeature#6
 msgid "A crate cannot have a blank name."
-msgstr "Ein Crate muss einen Namen haben."
+msgstr "Eine Plattenkiste muss einen Namen haben."
 
 #: CrateFeature#7
 msgid "Creating Crate Failed"
-msgstr "Erstellung des Crate fehlgeschlagen"
+msgstr "Erstellung der Plattenkiste fehlgeschlagen"
 
 #: CrateFeature#8
 msgid "A crate by that name already exists."
-msgstr "Ein Crate mit diesem Namen gibt es bereits."
+msgstr "Eine Plattenkiste mit diesem Namen gibt es bereits."
 
 #: CrateTableModel#1
 msgid "ID"
@@ -93,12 +93,12 @@ msgstr "Jahr"
 #: CrateTableModel#7
 msgctxt "CrateTableModel#7"
 msgid "Type"
-msgstr "Art"
+msgstr "Dateityp"
 
 #: CrateTableModel#8
 msgctxt "CrateTableModel#8"
 msgid "Location"
-msgstr "Ort"
+msgstr "Dateipfad"
 
 #: CrateTableModel#9
 msgctxt "CrateTableModel#9"
@@ -108,12 +108,12 @@ msgstr "Kommentar"
 #: CrateTableModel#10
 msgctxt "CrateTableModel#10"
 msgid "Duration"
-msgstr "Dauer"
+msgstr "Titellänge"
 
 #: CrateTableModel#11
 msgctxt "CrateTableModel#11"
 msgid "Track #"
-msgstr "Titel#"
+msgstr "Titelnummer"
 
 #: CrateTableModel#12
 msgctxt "CrateTableModel#12"
@@ -128,7 +128,7 @@ msgstr "BPM"
 #: CrateTableModel#14
 msgctxt "CrateTableModel#14"
 msgid "Date Added"
-msgstr "Hinzugefügt"
+msgstr "Hinzufügedatum"
 
 #: DlgAboutDlg#1
 msgid "About Mixxx"
@@ -174,11 +174,11 @@ msgstr "<a href=\"http://mixxx.org/\">Offizielle Webseite</a>"
 
 #: DlgAutoDJ#1
 msgid "Disable Auto DJ"
-msgstr "AutoDJ aktivieren"
+msgstr "Auto DJ deaktivieren"
 
 #: DlgAutoDJ#2
 msgid "Enable Auto DJ"
-msgstr "AutoDJ deaktivieren"
+msgstr "Auto DJ aktivieren"
 
 #: DlgAutoDJ#3
 msgctxt "DlgAutoDJ#3"
@@ -187,7 +187,7 @@ msgstr "Verwalten"
 
 #: DlgAutoDJ#4
 msgid "Add tracks to the queue below..."
-msgstr "Titel zur Warteliste hinzufügen..."
+msgstr "Titel zur Warteschlange hinzufügen..."
 
 #: DlgBpmSchemeDlg#1
 msgid "BPM Scheme"
@@ -203,15 +203,15 @@ msgstr "BPM Bereich"
 
 #: DlgBpmSchemeDlg#4
 msgid "Max"
-msgstr "Max"
+msgstr "Maximum"
 
 #: DlgBpmSchemeDlg#5
 msgid "Min"
-msgstr "Min"
+msgstr "Minimum"
 
 #: DlgBpmSchemeDlg#6
 msgid "Analyze Entire Song"
-msgstr "Gesamten Song analyzieren"
+msgstr "Gesamten Song analysieren"
 
 #: DlgMidiLearning#1
 msgid "Skip"
@@ -244,7 +244,7 @@ msgstr ""
 
 #: DlgMidiLearning#7
 msgid "Begin"
-msgstr "Start"
+msgstr "Anfang"
 
 #: DlgMidiLearning#8
 msgid "Please tweak the control for:"
