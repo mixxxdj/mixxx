@@ -61,6 +61,8 @@ void BaseSqlTableModel::initHeaderData() {
                   Qt::Horizontal, tr("Date Added"));
     setHeaderData(fieldIndex(PLAYLISTTRACKSTABLE_POSITION),
                   Qt::Horizontal, tr("#"));
+    setHeaderData(fieldIndex(LIBRARYTABLE_KEY),
+                  Qt::Horizontal, tr("Key"));
 }
 
 bool BaseSqlTableModel::select() {
@@ -144,6 +146,8 @@ QVariant BaseSqlTableModel::getBaseValue(const QModelIndex& index, int role) con
             return QVariant(pTrack->getTimesPlayed());
         } else if (fieldIndex(LIBRARYTABLE_RATING) == col) {
             return pTrack->getRating();
+        } else if (fieldIndex(LIBRARYTABLE_KEY) == col) {
+            return pTrack->getKey();
         }
     }
 
@@ -208,7 +212,7 @@ QVariant BaseSqlTableModel::data(const QModelIndex& index, int role) const {
 
 bool BaseSqlTableModel::setData(const QModelIndex &index, const QVariant &value, int role)
 {
-	if (!index.isValid())
+    if (!index.isValid())
         return false;
 
     int row = index.row();
@@ -232,7 +236,7 @@ bool BaseSqlTableModel::setData(const QModelIndex &index, const QVariant &value,
 
     int trackId = m_rowToTrackId[row];
     TrackPointer pTrack = m_trackDAO.getTrack(trackId);
-    
+
     // TODO(XXX) Qt properties could really help here.
     if (fieldIndex(LIBRARYTABLE_ARTIST) == col) {
         pTrack->setArtist(value.toString());
@@ -266,11 +270,15 @@ bool BaseSqlTableModel::setData(const QModelIndex &index, const QVariant &value,
     } else if (fieldIndex(LIBRARYTABLE_RATING) == col) {
         StarRating starRating = qVariantValue<StarRating>(value);
         pTrack->setRating(starRating.starCount());
+    } else if (fieldIndex(LIBRARYTABLE_KEY) == col) {
+        pTrack->setKey(value.toString());
     }
+
     // Do not save the track here. Changing the track dirties it and the caching
     // system will automatically save the track once it is unloaded from
     // memory. rryan 10/2010
     //m_trackDAO.saveTrack(pTrack);
+
     return true;
 }
 
@@ -307,7 +315,7 @@ QString BaseSqlTableModel::orderByClause() const {
 
     QString table = m_qTableName;
     QString field = database().driver()->escapeIdentifier(f.name(),
-                                                           QSqlDriver::FieldName);
+                                                          QSqlDriver::FieldName);
     s.append(QLatin1String("ORDER BY "));
     QString sort_field = QString("%1.%2").arg(table).arg(field);
 

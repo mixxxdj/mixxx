@@ -26,26 +26,24 @@ WBrowseTableView::~WBrowseTableView() {
 }
 
 void WBrowseTableView::contextMenuEvent(QContextMenuEvent* pEvent) {
-    // TODO(XXX) Get rid of this!
     m_player1Act.setEnabled(
         ControlObject::getControl(ConfigKey("[Channel1]","play"))->get()==0.);
     m_player2Act.setEnabled(
         ControlObject::getControl(ConfigKey("[Channel2]","play"))->get()==0.);
-
     m_contextMenu.exec(pEvent->globalPos());
 }
 
 void WBrowseTableView::slotLoadPlayer1() {
     QModelIndexList selectedIndices = selectionModel()->selectedRows();
     if (selectedIndices.size() > 0) {
-        emit(loadToPlayer(selectedIndices.at(0), 1));
+        emit(loadToPlayer(selectedIndices.at(0), "[Channel1]"));
     }
 }
 
 void WBrowseTableView::slotLoadPlayer2() {
     QModelIndexList selectedIndices = selectionModel()->selectedRows();
     if (selectedIndices.size() > 0) {
-        emit(loadToPlayer(selectedIndices.at(0), 2));
+        emit(loadToPlayer(selectedIndices.at(0), "[Channel2]"));
     }
 }
 

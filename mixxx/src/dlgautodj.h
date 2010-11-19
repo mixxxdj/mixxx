@@ -32,7 +32,7 @@ public slots:
     void player2PositionChanged(double value);
 signals:
     void loadTrack(TrackPointer tio);
-    void loadTrackToPlayer(TrackPointer tio, int player);
+    void loadTrackToPlayer(TrackPointer tio, QString group);
 private:
     bool loadNextTrackFromQueue(bool removeTopMostBeforeLoading);
 

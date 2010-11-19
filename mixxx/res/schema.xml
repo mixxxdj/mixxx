@@ -153,7 +153,7 @@ METADATA
     <sql>
       ALTER TABLE library ADD COLUMN timesplayed integer DEFAULT 0;
       ALTER TABLE library ADD COLUMN rating integer DEFAULT 0;
-
+      ALTER TABLE library ADD COLUMN key varchar(8) DEFAULT "";
       UPDATE library SET timesplayed = played;
       UPDATE library SET played = 0;
 

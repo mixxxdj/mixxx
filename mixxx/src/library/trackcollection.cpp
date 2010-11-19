@@ -44,6 +44,8 @@ TrackCollection::~TrackCollection()
 {
     // Save all tracks that haven't been saved yet.
     m_trackDao.saveDirtyTracks();
+    // TODO(XXX) Maybe fold saveDirtyTracks into TrackDAO::finish now that it
+    // exists? -- rryan 10/2010
     m_trackDao.finish();
 
     Q_ASSERT(!m_db.rollback()); //Rollback any uncommitted transaction
@@ -66,7 +68,7 @@ bool TrackCollection::checkForTables()
         return false;
     }
 
-    int requiredSchemaVersion = 6;
+    int requiredSchemaVersion = 7;
     if (!SchemaManager::upgradeToSchemaVersion(m_pConfig, m_db,
                                                requiredSchemaVersion)) {
         QMessageBox::warning(0, tr("Cannot upgrade database schema"),

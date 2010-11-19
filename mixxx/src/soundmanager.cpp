@@ -376,19 +376,22 @@ int SoundManager::setupDevices()
             		
             		//vinyl_inputs keeps track of which channel groups were 
             		//originally assigned to which vinyl threads
-            		vinyl_inputs[in.getChannelGroup()] = 
-            			m_VinylControl[in.getIndex()];
-            		//m_VinylMapping keeps track of which AudioInputs should
-            		//be assigned to which vinyl threads
-            		m_VinylMapping[m_VinylControl[in.getIndex()]] = in;
-            	}
-            	else if (err == SOUNDDEVICE_ERROR_DUPLICATE_INPUT_CHANNEL)
-            	{
-            		//if we don't have this, something went wrong
-            		Q_ASSERT (vinyl_inputs.contains(in.getChannelGroup()));
-            		//assign the original "real" input to this deck,
-            		m_VinylMapping[m_VinylControl[in.getIndex()]] = 
-            			m_VinylMapping[vinyl_inputs[in.getChannelGroup()]];
+            		
+            		if (vinyl_inputs.contains(in.getChannelGroup())
+            		{
+            			//this set of inputs already exists, map it
+            			m_VinylMapping[m_VinylControl[in.getIndex()]] = 
+            				m_VinylMapping[vinyl_inputs[in.getChannelGroup()]];
+            		}
+            		else
+            		{
+            			//this is a new set of inputs
+            			vinyl_inputs[in.getChannelGroup()] = 
+            				m_VinylControl[in.getIndex()];
+		        		//m_VinylMapping keeps track of which AudioInputs
+		        		//should be assigned to which vinyl threads
+		        		m_VinylMapping[m_VinylControl[in.getIndex()]] = in;
+            		}
             	}
             	else
             		return err;

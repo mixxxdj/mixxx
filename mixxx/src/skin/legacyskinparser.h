@@ -60,6 +60,8 @@ class LegacySkinParser : public QObject, public SkinParser {
     void setupWidget(QDomNode node, QWidget* pWidget);
     void setupConnections(QDomNode node, QWidget* pWidget);
 
+    QString lookupNodeGroup(QDomElement node);
+
     ConfigObject<ConfigValue>* m_pConfig;
     MixxxKeyboard* m_pKeyboard;
     PlayerManager* m_pPlayerManager;

@@ -31,6 +31,7 @@ LibraryTableModel::LibraryTableModel(QObject* parent,
                   "library." + LIBRARYTABLE_GENRE + "," +
                   "library." + LIBRARYTABLE_FILETYPE + "," +
                   "library." + LIBRARYTABLE_TRACKNUMBER + "," +
+                  "library." + LIBRARYTABLE_KEY + "," +
                   "library." + LIBRARYTABLE_DATETIMEADDED + "," +
                   "library." + LIBRARYTABLE_BPM + "," +
                   "track_locations.location," +
@@ -46,7 +47,7 @@ LibraryTableModel::LibraryTableModel(QObject* parent,
 
     //Print out any SQL error, if there was one.
     if (query.lastError().isValid()) {
-     	qDebug() << __FILE__ << __LINE__ << query.lastError();
+        qDebug() << __FILE__ << __LINE__ << query.lastError();
     }
 
     //setTable("library");
@@ -58,6 +59,7 @@ LibraryTableModel::LibraryTableModel(QObject* parent,
     //equal to our location col. It then grabs the "location" col from that row
     //and shows it...
     //setRelation(fieldIndex(LIBRARYTABLE_LOCATION), QSqlRelation("track_locations", "id", "location"));
+
 
     // BaseSqlTabelModel will setup the header info
     initHeaderData();
@@ -158,20 +160,20 @@ void LibraryTableModel::slotSearch(const QString& searchText) {
         filter = "(" + LibraryTableModel::DEFAULT_LIBRARYFILTER + ")";
     else {
         QSqlField search("search", QVariant::String);
-        
+
         filter = "(" + LibraryTableModel::DEFAULT_LIBRARYFILTER;
-        
+
         foreach(QString term, searchText.split(" "))
         {
-        	search.setValue("%" + term + "%");
-        	QString escapedText = database().driver()->formatValue(search);
-        	filter += " AND (artist LIKE " + escapedText + " OR " +
-                "album LIKE " + escapedText + " OR " +
-                "location LIKE " + escapedText + " OR " + 
-                "comment LIKE " + escapedText + " OR " +
-                "title  LIKE " + escapedText + ")";
+            search.setValue("%" + term + "%");
+            QString escapedText = database().driver()->formatValue(search);
+            filter += " AND (artist LIKE " + escapedText + " OR " +
+                    "album LIKE " + escapedText + " OR " +
+                    "location LIKE " + escapedText + " OR " +
+                    "comment LIKE " + escapedText + " OR " +
+                    "title  LIKE " + escapedText + ")";
         }
-        
+
         filter += ")";
     }
     setFilter(filter);
@@ -187,6 +189,7 @@ bool LibraryTableModel::isColumnInternal(int column) {
     if ((column == fieldIndex(LIBRARYTABLE_ID)) ||
         (column == fieldIndex(LIBRARYTABLE_URL)) ||
         (column == fieldIndex(LIBRARYTABLE_CUEPOINT)) ||
+        (column == fieldIndex(LIBRARYTABLE_REPLAYGAIN)) ||
         (column == fieldIndex(LIBRARYTABLE_WAVESUMMARYHEX)) ||
         (column == fieldIndex(LIBRARYTABLE_SAMPLERATE)) ||
         (column == fieldIndex(LIBRARYTABLE_MIXXXDELETED)) ||
@@ -196,6 +199,11 @@ bool LibraryTableModel::isColumnInternal(int column) {
         (column == fieldIndex(TRACKLOCATIONSTABLE_FSDELETED))) {
         return true;
     }
+    return false;
+}
+bool LibraryTableModel::isColumnHiddenByDefault(int column) {
+    if (column == fieldIndex(LIBRARYTABLE_KEY))    
+        return true;
     return false;
 }
 

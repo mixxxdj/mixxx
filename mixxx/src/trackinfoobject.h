@@ -101,6 +101,12 @@ public:
     // the TrackInfoObject is created, or when setLocation() is called.
     bool exists() const;
 
+
+
+    /** Returns ReplayGain*/
+    float getReplayGain() const;
+    /** Set ReplayGain*/
+    void setReplayGain(float);
     /** Returns BPM */
     float getBpm() const;
     /** Set BPM */
@@ -186,6 +192,11 @@ public:
     /** Sets rating */
     void setRating(int);
 
+    /** Returns KEY_CODE */
+    QString getKey() const;
+    /** Set KEY_CODE */
+    void setKey(QString);
+
     /** Get URL for track */
     QString getURL();
     /** Set URL for track */
@@ -240,6 +251,7 @@ public:
   signals:
     void wavesummaryUpdated(TrackInfoObject*);
     void bpmUpdated(double bpm);
+    void ReplayGainUpdated(double replaygain);
     void cuesUpdated();
     void changed();
     void dirty();
@@ -316,6 +328,8 @@ public:
     int m_iBitrate;
     /** Number of times the track has been played */
     int m_iTimesPlayed;
+    /** Replay Gain volume */
+    float m_fReplayGain;
     /** Has this track been played this sessions? */
     bool m_bPlayed;
     /** Beat per minutes (BPM) */
@@ -336,6 +350,8 @@ public:
     float m_fCuePoint;
     /** Date. creation date of file */
     QDateTime m_dCreateDate;
+
+    QString m_key;
 
     // The list of cue points for the track
     QList<Cue*> m_cuePoints;

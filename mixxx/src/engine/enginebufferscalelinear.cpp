@@ -140,6 +140,7 @@ CSAMPLE * EngineBufferScaleLinear::scale(double playpos, unsigned long buf_size,
     {
         long rem = (long)floor(m_scaleRemainder);
 
+
         // Be very defensive about equating the remainder
         // back into unscaled_samples_needed
 		if ((unscaled_samples_needed - rem) >= 1)

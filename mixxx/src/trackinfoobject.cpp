@@ -69,6 +69,7 @@ TrackInfoObject::TrackInfoObject(const QDomNode &nodeHeader)
     m_iBitrate = XmlParse::selectNodeQString(nodeHeader, "Bitrate").toInt();
     m_iLength = XmlParse::selectNodeQString(nodeHeader, "Length").toInt();
     m_iTimesPlayed = XmlParse::selectNodeQString(nodeHeader, "TimesPlayed").toInt();
+    m_fReplayGain = XmlParse::selectNodeQString(nodeHeader, "replaygain").toFloat();
     m_fBpm = XmlParse::selectNodeQString(nodeHeader, "Bpm").toFloat();
     m_bBpmConfirm = XmlParse::selectNodeQString(nodeHeader, "BpmConfirm").toInt();
     m_fBeatFirst = XmlParse::selectNodeQString(nodeHeader, "BeatFirst").toFloat();
@@ -121,6 +122,7 @@ void TrackInfoObject::initialize(bool parseHeader) {
     m_iTimesPlayed = 0;
     m_bPlayed = false;
     m_fBpm = 0.;
+    m_fReplayGain = 0.;
     m_bBpmConfirm = false;
     m_bIsValid = false;
     m_bHeaderParsed = false;
@@ -133,6 +135,7 @@ void TrackInfoObject::initialize(bool parseHeader) {
     m_dVisualResampleRate = 0;
     m_dCreateDate = QDateTime::currentDateTime();
     m_Rating = 0;
+    m_key = "";
 
     // parse() parses the metadata from file. This is not a quick operation!
     if (parseHeader)
@@ -158,7 +161,7 @@ void TrackInfoObject::writeToXML( QDomDocument &doc, QDomElement &header )
 {
     QMutexLocker lock(&m_qMutex);
 
-	QString create_date;
+    QString create_date;
     XmlParse::addElement( doc, header, "Filename", m_sFilename );
     //XmlParse::addElement( doc, header, "Filepath", m_sFilepath );
     XmlParse::addElement( doc, header, "Title", m_sTitle );
@@ -171,6 +174,7 @@ void TrackInfoObject::writeToXML( QDomDocument &doc, QDomElement &header )
     XmlParse::addElement( doc, header, "Bitrate", QString("%1").arg(m_iBitrate));
     XmlParse::addElement( doc, header, "Length", QString("%1").arg(m_iLength) );
     XmlParse::addElement( doc, header, "TimesPlayed", QString("%1").arg(m_iTimesPlayed) );
+    XmlParse::addElement( doc, header, "replaygain", QString("%1").arg(m_fReplayGain) );
     XmlParse::addElement( doc, header, "Bpm", QString("%1").arg(m_fBpm) );
     XmlParse::addElement( doc, header, "BpmConfirm", QString("%1").arg(m_bBpmConfirm) );
     XmlParse::addElement( doc, header, "BeatFirst", QString("%1").arg(m_fBeatFirst) );
@@ -269,9 +273,9 @@ QString TrackInfoObject::getFilename()  const
 
 QDateTime TrackInfoObject::getCreateDate() const
 {
-	QMutexLocker lock(&m_qMutex);
-	QDateTime create_date = QDateTime(m_dCreateDate);
-	return create_date;
+    QMutexLocker lock(&m_qMutex);
+    QDateTime create_date = QDateTime(m_dCreateDate);
+    return create_date;
 }
 
 bool TrackInfoObject::exists()  const
@@ -280,12 +284,33 @@ bool TrackInfoObject::exists()  const
     return m_bExists;
 }
 
+//Added for replaygain
+
+float TrackInfoObject::getReplayGain() const
+{
+    QMutexLocker lock(&m_qMutex);
+    return m_fReplayGain;
+}
+
+void TrackInfoObject::setReplayGain(float f)
+{
+    QMutexLocker lock(&m_qMutex);
+    bool dirty = m_fReplayGain != f;
+    m_fReplayGain = f;
+    //qDebug() << "Reported ReplayGain value: " << m_fReplayGain;
+    if (dirty)
+        setDirty(true);
+    emit(ReplayGainUpdated(f));
+    lock.unlock();
+}
 
 float TrackInfoObject::getBpm() const
 {
     QMutexLocker lock(&m_qMutex);
     return m_fBpm;
 }
+
+
 
 void TrackInfoObject::setBpm(float f)
 {
@@ -294,8 +319,8 @@ void TrackInfoObject::setBpm(float f)
     m_fBpm = f;
     if (dirty)
         setDirty(true);
-    lock.unlock();
 
+    lock.unlock();
     //Tell the GUI to update the bpm label...
     //qDebug() << "TrackInfoObject signaling BPM update to" << f;
     emit(bpmUpdated(f));
@@ -470,8 +495,8 @@ void TrackInfoObject::setTimesPlayed(int t)
 void TrackInfoObject::incTimesPlayed()
 {
     QMutexLocker lock(&m_qMutex);
-    //std::cout << "Track Played:" << m_sArtist.toStdString() << " - " << m_sTitle.toStdString() << " - " << m_sFilename.toStdString();
-	qDebug() << "Track Played:" << m_sArtist << " - " << m_sTitle << " - " << m_sFilename;
+    std::cout << "Track Played:" << m_sArtist.toStdString() << " - " << m_sTitle.toStdString();
+    qDebug() << "Track Played:" << m_sArtist << " - " << m_sTitle;
     m_bPlayed = true;
     ++m_iTimesPlayed;
     setDirty(true);
@@ -479,30 +504,30 @@ void TrackInfoObject::incTimesPlayed()
 
 bool TrackInfoObject::getPlayed() const
 {
-	QMutexLocker lock(&m_qMutex);
+    QMutexLocker lock(&m_qMutex);
     bool bPlayed = m_bPlayed;
     return bPlayed;
 }
 
 void TrackInfoObject::setPlayed(bool bPlayed)
 {
-	QMutexLocker lock(&m_qMutex);
-	bool dirty = bPlayed != m_bPlayed;
+    QMutexLocker lock(&m_qMutex);
+    bool dirty = bPlayed != m_bPlayed;
     m_bPlayed = bPlayed;
-   	if (dirty)
-   	{
-		if (bPlayed)
-		{
-			//std::cout << "Track Played:" << m_sArtist.toStdString() << " - " << m_sTitle.toStdString() << " - " << m_sFilename.toStdString();
-			qDebug() << "Track Played:" << m_sArtist << " - " << m_sTitle << " - " << m_sFilename;
-		}
-		else
-		{
-			//std::cout << "Track Unplayed:" << m_sArtist.toStdString() << " - " << m_sTitle.toStdString()  << " - " << m_sFilename.toStdString();
-			qDebug() << "Track Unplayed:" << m_sArtist << " - " << m_sTitle << " - " << m_sFilename;
-	    }
-		setDirty(true);
-	}
+    if (dirty)
+    {
+        if (bPlayed)
+        {
+            std::cout << "Track Played:" << m_sArtist.toStdString() << " - " << m_sTitle.toStdString();
+            qDebug() << "Track Played:" << m_sArtist << " - " << m_sTitle;
+        }
+        else
+        {
+            std::cout << "Track Unplayed:" << m_sArtist.toStdString() << " - " << m_sTitle.toStdString();
+            qDebug() << "Track Unplayed:" << m_sArtist << " - " << m_sTitle;
+        }
+        setDirty(true);
+    }
 }
 
 QString TrackInfoObject::getComment() const
@@ -795,3 +820,15 @@ void TrackInfoObject::setRating (int rating){
     if (dirty)
         setDirty(true);
 }
+QString TrackInfoObject::getKey() const{
+    QMutexLocker lock(&m_qMutex);
+    return m_key;
+}
+void TrackInfoObject::setKey(QString key){
+    QMutexLocker lock(&m_qMutex);
+    bool dirty = key != m_key;
+    m_key = key;
+    if (dirty)
+        setDirty(true);
+}
+

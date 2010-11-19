@@ -36,6 +36,7 @@ MissingTableModel::MissingTableModel(QObject* parent,
                   "library." + LIBRARYTABLE_GENRE + "," +
                   "library." + LIBRARYTABLE_FILETYPE + "," +
                   "library." + LIBRARYTABLE_TRACKNUMBER + "," +
+                  "library." + LIBRARYTABLE_KEY + "," +
                   "library." + LIBRARYTABLE_DATETIMEADDED + "," +
                   "library." + LIBRARYTABLE_BPM + "," +
                   "track_locations.location," +
@@ -148,6 +149,11 @@ bool MissingTableModel::isColumnInternal(int column) {
         return true;
     else
         return false;
+}
+bool MissingTableModel::isColumnHiddenByDefault(int column) {
+    if (column == fieldIndex(LIBRARYTABLE_KEY))    
+        return true;
+    return false;
 }
 
 QMimeData* MissingTableModel::mimeData(const QModelIndexList &indexes) const {

@@ -33,8 +33,8 @@ void CrateTableModel::setCrate(int crateId) {
     QString queryString = QString("CREATE TEMPORARY VIEW IF NOT EXISTS %1 AS "
                                   "SELECT "
                                   "library." + LIBRARYTABLE_ID + "," +
-                                  LIBRARYTABLE_PLAYED + "," + 
-                  				  LIBRARYTABLE_TIMESPLAYED + "," + 
+                                  LIBRARYTABLE_PLAYED + "," +
+                                  LIBRARYTABLE_TIMESPLAYED + "," +
                                   LIBRARYTABLE_ARTIST + "," +
                                   LIBRARYTABLE_TITLE + "," +
                                   LIBRARYTABLE_ALBUM + "," +
@@ -44,6 +44,7 @@ void CrateTableModel::setCrate(int crateId) {
                                   LIBRARYTABLE_GENRE + "," +
                                   LIBRARYTABLE_FILETYPE + "," +
                                   LIBRARYTABLE_TRACKNUMBER + "," +
+                                  LIBRARYTABLE_KEY + "," +
                                   LIBRARYTABLE_BPM + "," +
                                   LIBRARYTABLE_DATETIMEADDED + ","
                                   "track_locations.location," +
@@ -163,21 +164,21 @@ void CrateTableModel::slotSearch(const QString& searchText) {
         filter = "(" + LibraryTableModel::DEFAULT_LIBRARYFILTER + ")";
     else {
         QSqlField search("search", QVariant::String);
-        
-        
-		filter = "(" + LibraryTableModel::DEFAULT_LIBRARYFILTER;
-        
+
+
+        filter = "(" + LibraryTableModel::DEFAULT_LIBRARYFILTER;
+
         foreach(QString term, searchText.split(" "))
         {
-        	search.setValue("%" + term + "%");
-        	QString escapedText = database().driver()->formatValue(search);
-        	filter += " AND (artist LIKE " + escapedText + " OR " +
-                "album LIKE " + escapedText + " OR " +
-                "location LIKE " + escapedText + " OR " + 
-                "comment LIKE " + escapedText + " OR " +
-                "title  LIKE " + escapedText + ")";
+            search.setValue("%" + term + "%");
+            QString escapedText = database().driver()->formatValue(search);
+            filter += " AND (artist LIKE " + escapedText + " OR " +
+                    "album LIKE " + escapedText + " OR " +
+                    "location LIKE " + escapedText + " OR " +
+                    "comment LIKE " + escapedText + " OR " +
+                    "title  LIKE " + escapedText + ")";
         }
-        
+
         filter += ")";
     }
 
@@ -190,13 +191,19 @@ const QString CrateTableModel::currentSearch() {
 
 bool CrateTableModel::isColumnInternal(int column) {
     if (column == fieldIndex(LIBRARYTABLE_ID) ||
-    	column == fieldIndex(LIBRARYTABLE_PLAYED) ||
+        column == fieldIndex(LIBRARYTABLE_PLAYED) ||
         column == fieldIndex(LIBRARYTABLE_MIXXXDELETED) ||
         column == fieldIndex(TRACKLOCATIONSTABLE_FSDELETED)) {
         return true;
     }
     return false;
 }
+bool CrateTableModel::isColumnHiddenByDefault(int column) {
+    if (column == fieldIndex(LIBRARYTABLE_KEY))    
+        return true;
+    return false;
+}
+
 
 QMimeData* CrateTableModel::mimeData(const QModelIndexList &indexes) const {
     QMimeData *mimeData = new QMimeData();

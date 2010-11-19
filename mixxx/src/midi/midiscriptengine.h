@@ -87,7 +87,7 @@ private slots:
     
 private:
     // Only call these with the scriptEngineLock
-    bool safeEvaluate(QString filepath);
+    bool safeEvaluate(QString scriptName, QList<QString> scriptPaths);
     bool internalExecute(QString scriptCode);
     bool safeExecute(QString function);
     bool safeExecute(QString function, QString data);

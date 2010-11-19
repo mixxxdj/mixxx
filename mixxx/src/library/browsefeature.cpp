@@ -70,8 +70,8 @@ void BrowseFeature::bindWidget(WLibrarySidebar* sidebarWidget,
 
     connect(pBrowseView, SIGNAL(activated(const QModelIndex &)),
             this, SLOT(onFileActivate(const QModelIndex &)));
-    connect(pBrowseView, SIGNAL(loadToPlayer(const QModelIndex&, int)),
-            this, SLOT(loadToPlayer(const QModelIndex&, int)));
+    connect(pBrowseView, SIGNAL(loadToPlayer(const QModelIndex&, QString)),
+            this, SLOT(loadToPlayer(const QModelIndex&, QString)));
     connect(this, SIGNAL(setRootIndex(const QModelIndex&)),
             pBrowseView, SLOT(setRootIndex(const QModelIndex&)));
     connect(pBrowseView, SIGNAL(search(const QString&)),
@@ -143,7 +143,7 @@ void BrowseFeature::onFileActivate(const QModelIndex& index) {
     }
 }
 
-void BrowseFeature::loadToPlayer(const QModelIndex& index, int player) {
+void BrowseFeature::loadToPlayer(const QModelIndex& index, QString group) {
     QModelIndex sourceIndex = m_proxyModel.mapToSource(index);
     QString path = m_browseModel.filePath(sourceIndex);
     QFileInfo info(path);
@@ -158,7 +158,7 @@ void BrowseFeature::loadToPlayer(const QModelIndex& index, int player) {
             track = TrackPointer(new TrackInfoObject(info), &QObject::deleteLater);
         }
 
-        emit(loadTrackToPlayer(track, player));
+        emit(loadTrackToPlayer(track, group));
     }
 }
 

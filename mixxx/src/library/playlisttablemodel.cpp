@@ -55,6 +55,7 @@ void PlaylistTableModel::setPlaylist(int playlistId)
                   "library." + LIBRARYTABLE_GENRE + "," +
                   "library." + LIBRARYTABLE_FILETYPE + "," +
                   "library." + LIBRARYTABLE_TRACKNUMBER + "," +
+                  "library." + LIBRARYTABLE_KEY + "," +
                   "library." + LIBRARYTABLE_DATETIMEADDED + "," +
                   "library." + LIBRARYTABLE_BPM + ","
                   "track_locations.location,"
@@ -153,8 +154,12 @@ void PlaylistTableModel::removeTracks(const QModelIndexList& indices) {
         trackPositions.append(trackPosition);
     }
 
-    foreach (int trackPosition, trackPositions) {
-        m_playlistDao.removeTrackFromPlaylist(m_iPlaylistId, trackPosition);
+    qSort(trackPositions);
+    QListIterator<int> iterator(trackPositions);
+    iterator.toBack();
+
+    while (iterator.hasPrevious()) {
+        m_playlistDao.removeTrackFromPlaylist(m_iPlaylistId, iterator.previous());
     }
 
     select();
@@ -300,6 +305,11 @@ bool PlaylistTableModel::isColumnInternal(int column) {
         column == fieldIndex(LIBRARYTABLE_PLAYED) ||
         column == fieldIndex(LIBRARYTABLE_MIXXXDELETED) ||
         column == fieldIndex(TRACKLOCATIONSTABLE_FSDELETED))
+        return true;
+    return false;
+}
+bool PlaylistTableModel::isColumnHiddenByDefault(int column) {
+    if (column == fieldIndex(LIBRARYTABLE_KEY))    
         return true;
     return false;
 }
