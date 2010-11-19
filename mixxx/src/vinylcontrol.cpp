@@ -5,8 +5,6 @@ VinylControl::VinylControl(ConfigObject<ConfigValue> * pConfig, const char * _gr
 {
     m_pConfig = pConfig;
     group = _group;
-
-    iSampleRate = m_pConfig->getValueString(ConfigKey("[Soundcard]","Samplerate")).toULong();
     iRIAACorrection = 0;
 
     // Get Control objects
@@ -25,6 +23,8 @@ VinylControl::VinylControl(ConfigObject<ConfigValue> * pConfig, const char * _gr
     //vinylStatus			= new ControlObject(ConfigKey(group,"VinylStatus"));
     vinylStatus     = new ControlObjectThread(ControlObject::getControl(ConfigKey(group, "VinylStatus")));
     rateDir         = new ControlObjectThread(ControlObject::getControl(ConfigKey(group, "rate_dir")));
+    ControlObjectThread *samplerate = new ControlObjectThread(ControlObject::getControl(ConfigKey("[Master]", "samplerate")));
+    iSampleRate = samplerate->get();
 
     dVinylPitch = 0.0f;
     dVinylPosition = 0.0f;
