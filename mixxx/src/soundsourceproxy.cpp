@@ -290,6 +290,7 @@ int SoundSourceProxy::ParseHeader(TrackInfoObject* p)
         p->setGenre(sndsrc->getGenre());
 	p->setComment(sndsrc->getComment());
         p->setTrackNumber(sndsrc->getTrackNumber());
+        p->setReplayGain(sndsrc->getReplayGain());
         p->setBpm(sndsrc->getBPM());
         p->setDuration(sndsrc->getDuration());
         p->setBitrate(sndsrc->getBitrate());

@@ -25,6 +25,10 @@ SoundSourceFLAC::SoundSourceFLAC(QString filename)
     , m_decoder(NULL)
     , m_samples(0)
     , m_bps(0)
+    , m_minBlocksize(0)
+    , m_maxBlocksize(0)
+    , m_minFramesize(0)
+    , m_maxFramesize(0)
     , m_flacBuffer(NULL)
     , m_flacBufferLength(0)
     , m_leftoverBuffer(NULL)
@@ -43,7 +47,7 @@ SoundSourceFLAC::~SoundSourceFLAC() {
     if (m_decoder) {
         FLAC__stream_decoder_finish(m_decoder);
         FLAC__stream_decoder_delete(m_decoder); // frees memory
-        m_decoder = NULL; // probably not necessary
+        m_decoder = NULL;
     }
 }
 
@@ -55,16 +59,12 @@ int SoundSourceFLAC::open() {
         qWarning() << "SSFLAC: decoder allocation failed!";
         return ERR;
     }
-    if (!FLAC__stream_decoder_set_metadata_respond(m_decoder,
-                FLAC__METADATA_TYPE_VORBIS_COMMENT)) {
-        qWarning() << "SSFLAC: set metadata respond to vorbis comments failed";
-        goto decoderError;
-    }
-    FLAC__StreamDecoderInitStatus initStatus;
-    initStatus = FLAC__stream_decoder_init_stream(
-        m_decoder, FLAC_read_cb, FLAC_seek_cb, FLAC_tell_cb, FLAC_length_cb,
-        FLAC_eof_cb, FLAC_write_cb, FLAC_metadata_cb, FLAC_error_cb,
-        (void*) this);
+    FLAC__StreamDecoderInitStatus initStatus(
+        FLAC__stream_decoder_init_stream(
+            m_decoder, FLAC_read_cb, FLAC_seek_cb, FLAC_tell_cb, FLAC_length_cb,
+            FLAC_eof_cb, FLAC_write_cb, FLAC_metadata_cb, FLAC_error_cb,
+            (void*) this)
+    );
     if (initStatus != FLAC__STREAM_DECODER_INIT_STATUS_OK) {
         qWarning() << "SSFLAC: decoder init failed!";
         goto decoderError;
@@ -95,19 +95,18 @@ decoderError:
 
 long SoundSourceFLAC::seek(long filepos) {
     if (!m_decoder) return 0;
-    FLAC__bool seekResult;
     // important division here, filepos is in audio samples (i.e. shorts)
     // but libflac expects a number in time samples. I _think_ this should
     // be hard-coded at two because *2 is the assumption the caller makes
     // -- bkgood
-    seekResult = FLAC__stream_decoder_seek_absolute(m_decoder, filepos / 2);
+    FLAC__stream_decoder_seek_absolute(m_decoder, filepos / 2);
     m_leftoverBufferLength = 0; // clear internal buffer since we moved
     return filepos;
 }
 
 unsigned int SoundSourceFLAC::read(unsigned long size, const SAMPLE *destination) {
     if (!m_decoder) return 0;
-    SAMPLE *destBuffer = const_cast<SAMPLE*>(destination);
+    SAMPLE *destBuffer(const_cast<SAMPLE*>(destination));
     unsigned int samplesWritten = 0;
     unsigned int i = 0;
     while (samplesWritten < size) {
@@ -148,8 +147,8 @@ int SoundSourceFLAC::parseHeader() {
     QByteArray fileName(m_file.fileName().toUtf8());
     TagLib::FLAC::File f(fileName.constData());
     bool result = processTaglibFile(f);
-    TagLib::ID3v2::Tag *id3v2 = f.ID3v2Tag();
-    TagLib::Ogg::XiphComment *xiph = f.xiphComment();
+    TagLib::ID3v2::Tag *id3v2(f.ID3v2Tag());
+    TagLib::Ogg::XiphComment *xiph(f.xiphComment());
     if (id3v2) {
         processID3v2Tag(id3v2);
     }
@@ -157,29 +156,6 @@ int SoundSourceFLAC::parseHeader() {
         processXiphComment(xiph);
     }
     return result ? OK : ERR;
-}
-
-void SoundSourceFLAC::setTag(const QString &tag) {
-    QString key = tag.left(tag.indexOf("=")).toUpper();
-    QString value = tag.right(tag.length() - tag.indexOf("=") - 1);
-    // standard here: http://www.xiph.org/vorbis/doc/v-comment.html
-    if (key == "ARTIST") {
-        m_sArtist = value;
-    } else if (key == "TITLE") {
-        m_sTitle = value;
-    } else if (key == "ALBUM") {
-        m_sAlbum = value;
-    } else if (key == "COMMENT") { // this doesn't exist in standard vorbis comments
-        m_sComment = value;
-    } else if (key == "DATE") {
-        m_sYear = value;
-    } else if (key == "GENRE") {
-        m_sGenre = value;
-    } else if (key == "TRACKNUMBER") {
-        m_sTrackNumber = value;
-    } else if (key == "BPM") { // this doesn't exist in standard vorbis comments
-        m_fBPM = value.toFloat();
-    }
 }
 
 /**
@@ -197,7 +173,7 @@ inline FLAC__int16 SoundSourceFLAC::shift(FLAC__int32 sample) const {
     // this is how libsndfile does this operation and is wonderfully
     // straightforward. Just shift the sample left or right so that
     // it fits in a 16-bit short. -- bkgood
-    int shift = getShift();
+    int shift(getShift());
     if (shift == 0) {
         return sample;
     } else if (shift < 0) {
@@ -260,7 +236,7 @@ FLAC__bool SoundSourceFLAC::flacEOF() {
 
 FLAC__StreamDecoderWriteStatus SoundSourceFLAC::flacWrite(const FLAC__Frame *frame,
         const FLAC__int32 *const buffer[]) {
-    unsigned int i;
+    unsigned int i(0);
     m_flacBufferLength = 0;
     if (frame->header.channels > 1) {
         // stereo (or greater)
@@ -295,15 +271,7 @@ void SoundSourceFLAC::flacMetadata(const FLAC__StreamMetadata *metadata) {
 //        qDebug() << "Blocksize in [" << m_minBlocksize << ", " << m_maxBlocksize
 //            << "], Framesize in [" << m_minFramesize << ", " << m_maxFramesize << "]";
         break;
-    case FLAC__METADATA_TYPE_VORBIS_COMMENT:
-        for (unsigned int i = 0; i < metadata->data.vorbis_comment.num_comments; ++i) {
-            m_tags.append(QString::fromUtf8(
-                        (const char*) metadata->data.vorbis_comment.comments[i].entry,
-                        metadata->data.vorbis_comment.comments[i].length));
-        }
-        break;
     default:
-        // don't care, and libflac won't send us any others anyway...
         break;
     }
 }
