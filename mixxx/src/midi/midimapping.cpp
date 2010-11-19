@@ -45,8 +45,13 @@ MidiMapping::MidiMapping(MidiDevice* outputMidiDevice)
           m_mappingLock(QMutex::Recursive) {
     // If BINDINGS_PATH doesn't exist, create it
     if (!QDir(BINDINGS_PATH).exists()) {
-        qDebug() << "Creating new MIDI presets directory" << BINDINGS_PATH;
+        qDebug() << "Creating new MIDI mapping directory" << BINDINGS_PATH;
         QDir().mkpath(BINDINGS_PATH);
+    }
+    // Likewise, if LPRESETS_PATH doesn't exist, create that too
+    if (!QDir(LPRESETS_PATH).exists()) {
+        qDebug() << "Creating new MIDI presets directory" <<LPRESETS_PATH;
+        QDir().mkpath(LPRESETS_PATH);
     }
     // So we can signal the MidiScriptEngine and pass a QList
     qRegisterMetaType<QList<QString> >("QList<QString>");
@@ -700,7 +705,7 @@ void MidiMapping::savePreset() {
  */
 void MidiMapping::savePreset(QString path) {
     qDebug() << "Writing MIDI preset file" << path;
-    QMutexLocker lock(&m_mappingLock);
+    m_mappingLock.lock();
     QFile output(path);
     if (!output.open(QIODevice::WriteOnly | QIODevice::Truncate)) return;
     QTextStream outputstream(&output);
@@ -709,6 +714,7 @@ void MidiMapping::savePreset(QString path) {
     // Save the DOM to the XML file
     docBindings.save(outputstream, 4);
     output.close();
+    m_mappingLock.unlock();
 }
 
 /* applyPreset()

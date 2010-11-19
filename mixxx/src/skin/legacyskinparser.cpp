@@ -14,7 +14,7 @@
 
 #include "mixxxkeyboard.h"
 #include "playermanager.h"
-#include "player.h"
+#include "basetrackplayer.h"
 #include "library/library.h"
 #include "waveformviewerfactory.h"
 #include "xmlparse.h"
@@ -317,8 +317,7 @@ QWidget* LegacySkinParser::parseSliderComposed(QDomElement node, QWidget* pParen
 }
 
 QWidget* LegacySkinParser::parseOverview(QDomElement node, QWidget* pParent) {
-    int channel = XmlParse::selectNodeInt(node, "Channel");
-    QString channelStr = QString("[Channel%1]").arg(channel);
+    QString channelStr = lookupNodeGroup(node);
 
     // TODO(XXX) This is a memory leak, but it's tiny. We have to do this for
     // now while everything expects groups as const char* because otherwise
@@ -326,7 +325,7 @@ QWidget* LegacySkinParser::parseOverview(QDomElement node, QWidget* pParent) {
     // get free'd at some point.
     const char* pSafeChannelStr = strdup(channelStr.toAscii().constData());
 
-    Player* pPlayer = m_pPlayerManager->getPlayer(channel);
+    BaseTrackPlayer* pPlayer = m_pPlayerManager->getPlayer(channelStr);
 
     if (pPlayer == NULL)
         return NULL;
@@ -353,9 +352,8 @@ QWidget* LegacySkinParser::parseOverview(QDomElement node, QWidget* pParent) {
 }
 
 QWidget* LegacySkinParser::parseVisual(QDomElement node, QWidget* pParent) {
-    int channel = XmlParse::selectNodeInt(node, "Channel");
-    QString channelStr = QString("[Channel%1]").arg(channel);
-    Player* pPlayer = m_pPlayerManager->getPlayer(channel);
+    QString channelStr = lookupNodeGroup(node);
+    BaseTrackPlayer* pPlayer = m_pPlayerManager->getPlayer(channelStr);
 
     // TODO(XXX) This is a memory leak, but it's tiny. We have to do this for
     // now while everything expects groups as const char* because otherwise
@@ -397,10 +395,9 @@ QWidget* LegacySkinParser::parseVisual(QDomElement node, QWidget* pParent) {
 }
 
 QWidget* LegacySkinParser::parseText(QDomElement node, QWidget* pParent) {
-    int channel = XmlParse::selectNodeInt(node, "Channel");
-    QString channelStr = QString("[Channel%1]").arg(channel);
+    QString channelStr = lookupNodeGroup(node);
 
-    Player* pPlayer = m_pPlayerManager->getPlayer(channel);
+    BaseTrackPlayer* pPlayer = m_pPlayerManager->getPlayer(channelStr);
 
     if (!pPlayer)
         return NULL;
@@ -425,10 +422,10 @@ QWidget* LegacySkinParser::parseText(QDomElement node, QWidget* pParent) {
 }
 
 QWidget* LegacySkinParser::parseTrackProperty(QDomElement node, QWidget* pParent) {
-    int channel = XmlParse::selectNodeInt(node, "Channel");
-    QString channelStr = QString("[Channel%1]").arg(channel);
+    QString channelStr = lookupNodeGroup(node);
 
-    Player* pPlayer = m_pPlayerManager->getPlayer(channel);
+
+    BaseTrackPlayer* pPlayer = m_pPlayerManager->getPlayer(channelStr);
 
     if (!pPlayer)
         return NULL;
@@ -480,8 +477,7 @@ QWidget* LegacySkinParser::parseDisplay(QDomElement node, QWidget* pParent) {
 }
 
 QWidget* LegacySkinParser::parseNumberRate(QDomElement node, QWidget* pParent) {
-    int channel = XmlParse::selectNodeInt(node, "Channel");
-    QString channelStr = QString("[Channel%1]").arg(channel);
+    QString channelStr = lookupNodeGroup(node);
 
     // TODO(XXX) This is a memory leak, but it's tiny. We have to do this for
     // now while everything expects groups as const char* because otherwise
@@ -510,8 +506,7 @@ QWidget* LegacySkinParser::parseNumberRate(QDomElement node, QWidget* pParent) {
 }
 
 QWidget* LegacySkinParser::parseNumberPos(QDomElement node, QWidget* pParent) {
-    int channel = XmlParse::selectNodeInt(node, "Channel");
-    QString channelStr = QString("[Channel%1]").arg(channel);
+    QString channelStr = lookupNodeGroup(node);
 
     // TODO(XXX) This is a memory leak, but it's tiny. We have to do this for
     // now while everything expects groups as const char* because otherwise
@@ -528,8 +523,7 @@ QWidget* LegacySkinParser::parseNumberPos(QDomElement node, QWidget* pParent) {
 }
 
 QWidget* LegacySkinParser::parseNumberBpm(QDomElement node, QWidget* pParent) {
-    int channel = XmlParse::selectNodeInt(node, "Channel");
-    QString channelStr = QString("[Channel%1]").arg(channel);
+    QString channelStr = lookupNodeGroup(node);
 
     // TODO(XXX) This is a memory leak, but it's tiny. We have to do this for
     // now while everything expects groups as const char* because otherwise
@@ -537,7 +531,7 @@ QWidget* LegacySkinParser::parseNumberBpm(QDomElement node, QWidget* pParent) {
     // get free'd at some point.
     const char* pSafeChannelStr = strdup(channelStr.toAscii().constData());
 
-    Player* pPlayer = m_pPlayerManager->getPlayer(channel);
+    BaseTrackPlayer* pPlayer = m_pPlayerManager->getPlayer(channelStr);
 
     if (!pPlayer)
         return NULL;
@@ -767,6 +761,19 @@ QWidget* LegacySkinParser::parseTableView(QDomElement node, QWidget* pParent) {
     pTabWidget->setStyleSheet(style);
 
     return pTabWidget;
+}
+
+QString LegacySkinParser::lookupNodeGroup(QDomElement node) {
+    QString group = XmlParse::selectNodeQString(node, "Group");
+
+    // If the group is not present, then check for a Channel, since legacy skins
+    // will specify the channel as either 1 or 2.
+    if (group.size() == 0) {
+        int channel = XmlParse::selectNodeInt(node, "Channel");
+        group = QString("[Channel%1]").arg(channel);
+    }
+
+    return group;
 }
 
 QWidget* LegacySkinParser::parseStyle(QDomElement node, QWidget* pParent) {

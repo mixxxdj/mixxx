@@ -242,44 +242,17 @@ void MidiDevice::receive(MidiStatusByte status, char channel, char control, char
 
     if (p) //Only pass values on to valid ControlObjects.
     {
-        double currMixxxControlValue = p->GetMidiValue();
-        MidiOption currMidiOption = mixxxControl.getMidiOption();
-        // FIXME: We should accept multiple options, since soft-takeover would apply in addition
-        //  Remove this if clause and newValue=value assignment when that's done
-        double newValue = value;
-        if (currMidiOption!=MIDI_OPT_SOFT_TAKEOVER)
-            newValue = m_pMidiMapping->ComputeValue(currMidiOption, currMixxxControlValue, value);
+        double newValue = m_pMidiMapping->ComputeValue(mixxxControl.getMidiOption(), p->GetMidiValue(), value);
 
         // ControlPushButton ControlObjects only accept NOTE_ON, so if the midi 
         // mapping is <button> we override the Midi 'status' appropriately.
-        switch (currMidiOption) {
+        switch (mixxxControl.getMidiOption()) {
             case MIDI_OPT_BUTTON:
             case MIDI_OPT_SWITCH: status = MIDI_STATUS_NOTE_ON; break; // Buttons and Switches are 
                                                                        // treated the same, except 
                                                                        // that their values are 
                                                                        // computed differently.
             default: break;
-        }
-        
-        // Soft-takeover is processed in addition to any other options
-        if (currMidiOption == MIDI_OPT_SOFT_TAKEOVER) {
-//             qDebug() << "MixxxControl" << currMixxxControlValue << "MIDI control" << newValue;
-            bool ignore = false;
-            double newDifference = currMixxxControlValue - newValue;
-            // If the values are within 10 steps of each other, process the new value regardless
-            if (fabs(newDifference)>10 && m_softTakeover.contains(mixxxControl)) {
-                // Only ignore if the previous and current MIDI values are on
-                //  the same side of the MixxxControl value
-                double prevDifference = currMixxxControlValue - m_softTakeover.value(mixxxControl);
-                if ((prevDifference>0 && newDifference>0) || (prevDifference<0 && newDifference<0))
-                    ignore = true;
-                
-                // (If the previous MIDI value was on one side of the MixxxControl
-                //  and the current one is on the other, don't ignore
-                //  since that signals a rapid movement)
-            }
-            m_softTakeover.insert(mixxxControl,newValue);  // Replaces any previous value for this MixxxControl
-            if (ignore) return;
         }
 
         ControlObject::sync();

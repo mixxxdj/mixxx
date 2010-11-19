@@ -515,8 +515,12 @@ class MixxxCore(Feature):
 
                    "sampleutil.cpp",
                    "trackinfoobject.cpp",
-                   "player.cpp",
+                   "baseplayer.cpp",
+                   "basetrackplayer.cpp",
+                   "deck.cpp",
+                   "sampler.cpp",
                    "playermanager.cpp",
+                   "samplerbank.cpp",
                    "sounddevice.cpp",
                    "soundmanager.cpp",
                    "soundmanagerconfig.cpp",
