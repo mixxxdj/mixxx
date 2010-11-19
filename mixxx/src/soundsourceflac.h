@@ -25,8 +25,6 @@
 #include "defs.h"
 #include "soundsource.h"
 
-class TrackInfoObject;
-
 class SoundSourceFLAC : public SoundSource {
 public:
     SoundSourceFLAC(QString filename);
@@ -47,7 +45,6 @@ public:
     void flacMetadata(const FLAC__StreamMetadata *metadata);
     void flacError(FLAC__StreamDecoderErrorStatus status);
 private:
-    void setTag(const QString &tag);
     // these next two are inline but are defined in the cpp file because
     // they should only be used there -- bkgood
     inline int getShift() const;
@@ -71,7 +68,6 @@ private:
     FLAC__int16 *m_leftoverBuffer; // buffer to place any samples which haven't been used
                                    // at the end of a read call
     unsigned int m_leftoverBufferLength;
-    QList<QString> m_tags; // stored in vorbis comment format as received, ex. "ARTIST=blah"
 };
 
 // callbacks for libFLAC

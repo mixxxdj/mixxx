@@ -146,4 +146,13 @@ METADATA
       ALTER TABLE LibraryHashes ADD COLUMN needs_verification INTEGER DEFAULT 0;
     </sql>
   </revision>
+  <revision version="6">
+  <description>
+                Added a ReplayGain Column.
+  </description>
+  <sql>
+    ALTER TABLE library ADD COLUMN replaygain float DEFAULT 0;
+  </sql>
+  </revision>
+  
 </schema>
