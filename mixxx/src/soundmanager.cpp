@@ -84,8 +84,8 @@ SoundManager::SoundManager(ConfigObject<ConfigValue> * pConfig, EngineMaster * _
 
     // TODO(bkgood) do these really need to be here? they're set in
     // SoundDevicePortAudio::open
-    pControlObjectLatency->slotSet(m_config.getFramesPerBuffer() / m_config.getSampleRate() * 1000);
-    pControlObjectSampleRate->slotSet(m_config.getSampleRate());
+    //pControlObjectLatency->slotSet(m_config.getFramesPerBuffer() / m_config.getSampleRate() * 1000);
+    //pControlObjectSampleRate->slotSet(m_config.getSampleRate());
 }
 
 /** Destructor for the SoundManager class. Closes all the devices, cleans up their pointers
@@ -444,8 +444,14 @@ int SoundManager::setupDevices()
             device->setFramesPerBuffer(m_config.getFramesPerBuffer());
             ++devicesAttempted;
             err = device->open();
+            
             if (err != OK) {
                 return err;
+            } else if (device->getSampleRate() != m_config.getSampleRate()){
+            	qDebug() << "Device sample rate doesn't match config sample rate";
+            	m_config.setSampleRate(device->getSampleRate());
+            	closeDevices();
+            	return WRONG_SAMPLERATE;
             } else {
                 ++devicesOpened;
                 if (isOutput)
@@ -491,6 +497,12 @@ int SoundManager::setConfig(SoundManagerConfig config) {
     m_config = config;
     checkConfig();
     err = setupDevices();
+    if (err == WRONG_SAMPLERATE)
+    {
+    	//try once more, we updated the config value when we discovered the
+    	//problem
+    	err = setupDevices();
+    }
     if (err == OK) {
         m_config.writeToDisk();
     }
