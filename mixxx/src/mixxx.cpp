@@ -239,6 +239,7 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
     m_pSoundManager = new SoundManager(m_pConfig, m_pEngine);
 
     // Get Music dir
+    bool hasChanged_MusicDir = false;
     QDir dir(m_pConfig->getValueString(ConfigKey("[Playlist]","Directory")));
     if (m_pConfig->getValueString(
         ConfigKey("[Playlist]","Directory")).length() < 1 || !dir.exists())
@@ -251,6 +252,7 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
         {
             m_pConfig->set(ConfigKey("[Playlist]","Directory"), fd);
             m_pConfig->Save();
+            hasChanged_MusicDir = true;
         }
     }
 
@@ -273,9 +275,13 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
     connect(m_pLibraryScanner, SIGNAL(scanFinished()),
             m_pLibrary, SLOT(slotRefreshLibraryModels()));
 
-    //Scan the library for new files and directories.
-	m_pLibraryScanner->scan(
-        m_pConfig->getValueString(ConfigKey("[Playlist]", "Directory")));
+    //Scan the library for new files and directories
+    bool rescan = (bool)m_pConfig->getValueString(ConfigKey("[Library]","RescanOnStartup")).toInt();
+    if(rescan || hasChanged_MusicDir){    
+        m_pLibraryScanner->scan(
+            m_pConfig->getValueString(ConfigKey("[Playlist]", "Directory")));
+        qDebug() << "Rescan finished";
+    }
 
     // Call inits to invoke all other construction parts
 
@@ -676,10 +682,9 @@ void MixxxApp::initActions()
 
 #ifdef __VINYLCONTROL__
     m_pOptionsVinylControl = new QAction(tr("Enable &Vinyl Control"), this);
-	m_pOptionsVinylControl->setShortcut(tr("Ctrl+Y"));
+    m_pOptionsVinylControl->setShortcut(tr("Ctrl+Y"));
     m_pOptionsVinylControl->setShortcutContext(Qt::ApplicationShortcut);
     
-    //this is temp
     m_pOptionsVinylControl2 = new QAction(tr("Enable &Vinyl Control 2"), this);
     m_pOptionsVinylControl2->setShortcut(tr("Ctrl+U"));
     m_pOptionsVinylControl2->setShortcutContext(Qt::ApplicationShortcut);
@@ -749,30 +754,41 @@ void MixxxApp::initActions()
             this, SLOT(slotOptionsBeatMark(bool)));
 
 #ifdef __VINYLCONTROL__
-    //Either check or uncheck the vinyl control menu item depending on what it was saved as.
+    // Either check or uncheck the vinyl control menu item depending on what
+    // it was saved as.
     m_pOptionsVinylControl->setCheckable(true);
-    if ((bool)m_pConfig->getValueString(ConfigKey("[VinylControl]","EnabledCh1")).toInt() == true)
+    if ((bool)m_pConfig->getValueString(
+    	ConfigKey("[VinylControl]","EnabledCh1")).toInt() == true)
         m_pOptionsVinylControl->setChecked(true);
     else
-    	m_pOptionsVinylControl->setChecked(false);
+        m_pOptionsVinylControl->setChecked(false);
     m_pOptionsVinylControl->setStatusTip(tr("Activate Vinyl Control"));
-    m_pOptionsVinylControl->setWhatsThis(tr("Use timecoded vinyls on external turntables to control Mixxx"));
-    connect(m_pOptionsVinylControl, SIGNAL(toggled(bool)), this, SLOT(slotCheckboxVinylControl(bool)));
+    m_pOptionsVinylControl->setWhatsThis(
+    	tr("Use timecoded vinyls on external turntables to control Mixxx"));
+    connect(m_pOptionsVinylControl, SIGNAL(toggled(bool)), this, 
+    	SLOT(slotCheckboxVinylControl(bool)));
 
-    ControlObjectThreadMain *enabled1 = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[Channel1]", "vinylcontrol")));
-    connect(enabled1, SIGNAL(valueChanged(double)), this, SLOT(slotControlVinylControl(double)));
+    ControlObjectThreadMain *enabled1 = new ControlObjectThreadMain(
+    	ControlObject::getControl(ConfigKey("[Channel1]", "vinylcontrol")));
+    connect(enabled1, SIGNAL(valueChanged(double)), this, 
+    	SLOT(slotControlVinylControl(double)));
     
     m_pOptionsVinylControl2->setCheckable(true);
-    if ((bool)m_pConfig->getValueString(ConfigKey("[VinylControl]","EnabledCh2")).toInt() == true)
+    if ((bool)m_pConfig->getValueString(
+    	ConfigKey("[VinylControl]","EnabledCh2")).toInt() == true)
         m_pOptionsVinylControl2->setChecked(true);
     else
         m_pOptionsVinylControl2->setChecked(false);
     m_pOptionsVinylControl2->setStatusTip(tr("Activate Vinyl Control"));
-    m_pOptionsVinylControl2->setWhatsThis(tr("Use timecoded vinyls on external turntables to control Mixxx"));
-    connect(m_pOptionsVinylControl2, SIGNAL(toggled(bool)), this, SLOT(slotCheckboxVinylControl2(bool)));
+    m_pOptionsVinylControl2->setWhatsThis(
+    	tr("Use timecoded vinyls on external turntables to control Mixxx"));
+    connect(m_pOptionsVinylControl2, SIGNAL(toggled(bool)), this, 
+    	SLOT(slotCheckboxVinylControl2(bool)));
     
-    ControlObjectThreadMain *enabled2 = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[Channel2]", "vinylcontrol")));
-    connect(enabled2, SIGNAL(valueChanged(double)), this, SLOT(slotControlVinylControl2(double)));
+    ControlObjectThreadMain *enabled2 = new ControlObjectThreadMain(
+    	ControlObject::getControl(ConfigKey("[Channel2]", "vinylcontrol")));
+    connect(enabled2, SIGNAL(valueChanged(double)), this, 
+    	SLOT(slotControlVinylControl2(double)));
 #endif
 
 #ifdef __SHOUTCAST__

@@ -55,10 +55,10 @@ LibraryScanner::LibraryScanner(TrackCollection* collection) :
      */
     QString iTunesArtFolder = "";
 #if defined(__WINDOWS__)
-		iTunesArtFolder = QDesktopServices::storageLocation(QDesktopServices::MusicLocation) + "\\iTunes\\Album Artwork";
-		iTunesArtFolder.replace(QString("\\"), QString("/"));
+    iTunesArtFolder = QDesktopServices::storageLocation(QDesktopServices::MusicLocation) + "\\iTunes\\Album Artwork";
+    iTunesArtFolder.replace(QString("\\"), QString("/"));
 #elif defined(__APPLE__)
-		iTunesArtFolder = QDesktopServices::storageLocation(QDesktopServices::MusicLocation) + "/iTunes/Album Artwork";
+    iTunesArtFolder = QDesktopServices::storageLocation(QDesktopServices::MusicLocation) + "/iTunes/Album Artwork";
 #endif
     m_directoriesBlacklist << iTunesArtFolder;
     qDebug() << "iTunes Album Art path is:" << iTunesArtFolder;
@@ -109,7 +109,7 @@ LibraryScanner::~LibraryScanner()
 
     //Print out any SQL error, if there was one.
     if (query.lastError().isValid()) {
-     	qDebug() << query.lastError();
+        qDebug() << query.lastError();
     }
 
     QString dir;
@@ -167,15 +167,25 @@ void LibraryScanner::run()
 
     QTime t2;
     t2.start();
-    //Try to upgrade the library from 1.7 (XML) to 1.8+ (DB) if needed
-    LegacyLibraryImporter libImport(m_trackDao, m_playlistDao);
-    connect(&libImport, SIGNAL(progress(QString)),
-            m_pProgress, SLOT(slotUpdate(QString)),
-            Qt::BlockingQueuedConnection);
-    m_database.transaction();
-    libImport.import();
-    m_database.commit();
-    qDebug("Legacy importer took %d ms", t2.elapsed());
+
+    //Try to upgrade the library from 1.7 (XML) to 1.8+ (DB) if needed. If the
+    //upgrade_filename already exists, then do not try to upgrade since we have
+    //already done it.
+    QString upgrade_filename = QDir::homePath().append("/").append(SETTINGS_PATH).append("DBUPGRADED");
+    qDebug() << "upgrade filename is " << upgrade_filename;
+    QFile upgradefile(upgrade_filename);
+    if (!upgradefile.exists())
+    {
+        LegacyLibraryImporter libImport(m_trackDao, m_playlistDao);
+        connect(&libImport, SIGNAL(progress(QString)),
+                m_pProgress, SLOT(slotUpdate(QString)),
+                Qt::BlockingQueuedConnection);
+        m_database.transaction();
+        libImport.import();
+        m_database.commit();
+        qDebug("Legacy importer took %d ms", t2.elapsed());
+
+    }
 
     //Refresh the name filters in case we loaded new
     //SoundSource plugins.
