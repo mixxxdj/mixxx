@@ -82,6 +82,18 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
             Qt::DirectConnection);
     playButtonCOT = new ControlObjectThreadMain(playButton);
 
+    //Play from Start Button (for sampler)
+    playStartButton = new ControlPushButton(ConfigKey(group, "playstart"));
+    connect(playStartButton, SIGNAL(valueChanged(double)), this, SLOT(slotControlPlayFromStart(double)));
+    playStartButton->set(0);
+    playStartButtonCOT = new ControlObjectThreadMain(playStartButton);
+
+    //Stop playback (for sampler)
+    stopButton = new ControlPushButton(ConfigKey(group, "stop"));
+    connect(stopButton, SIGNAL(valueChanged(double)), this, SLOT(slotControlStop(double)));
+    stopButton->set(0);
+    stopButtonCOT = new ControlObjectThreadMain(stopButton);
+
     // Start button
     startButton = new ControlPushButton(ConfigKey(group, "start"));
     connect(startButton, SIGNAL(valueChanged(double)),
@@ -184,6 +196,7 @@ EngineBuffer::~EngineBuffer()
     delete m_pReader;
 
     delete playButton;
+    delete playStartButton;
     delete startButton;
     delete endButton;
     delete rateEngine;
@@ -372,6 +385,17 @@ void EngineBuffer::slotControlStart(double)
 void EngineBuffer::slotControlEnd(double)
 {
     slotControlSeek(1.);
+}
+
+void EngineBuffer::slotControlPlayFromStart(double)
+{
+    slotControlSeek(0.);
+    playButton->set(1);
+}
+
+void EngineBuffer::slotControlStop(double)
+{
+    playButton->set(0);
 }
 
 void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBufferSize)

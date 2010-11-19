@@ -90,3 +90,4 @@ void BpmControl::slotControlBeatSync(double)
     }
 
 }
+
