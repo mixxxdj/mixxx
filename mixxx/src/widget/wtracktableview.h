@@ -63,7 +63,7 @@ private:
     QModelIndexList m_selectedIndices;
     QSignalMapper m_loadTrackMapper;
 
-    DlgTrackInfo* pTrackInfo;
+    DlgTrackInfo* m_pTrackInfo;
     QModelIndex currentTrackInfoIndex;
 
     SearchThread m_searchThread;
