@@ -6,6 +6,17 @@ VinylControl::VinylControl(ConfigObject<ConfigValue> * pConfig, const char * _gr
     m_pConfig = pConfig;
     group = _group;
     iRIAACorrection = 0;
+    
+    SoundManagerConfig m_config;
+    if (!m_config.readFromDisk())
+    {
+    	//fall back on old config file I guess
+    	iSampleRate = m_pConfig->getValueString(ConfigKey("[Soundcard]","Samplerate")).toULong();
+    }
+    else
+    {
+    	iSampleRate = m_config.getSampleRate();
+    }
 
     // Get Control objects
     playPos             = new ControlObjectThread(ControlObject::getControl(ConfigKey(group, "playposition")));    //Range: 0.0 to 1.0
@@ -23,8 +34,6 @@ VinylControl::VinylControl(ConfigObject<ConfigValue> * pConfig, const char * _gr
     //vinylStatus			= new ControlObject(ConfigKey(group,"VinylStatus"));
     vinylStatus     = new ControlObjectThread(ControlObject::getControl(ConfigKey(group, "VinylStatus")));
     rateDir         = new ControlObjectThread(ControlObject::getControl(ConfigKey(group, "rate_dir")));
-    ControlObjectThread *samplerate = new ControlObjectThread(ControlObject::getControl(ConfigKey("[Master]", "samplerate")));
-    iSampleRate = samplerate->get();
 
     dVinylPitch = 0.0f;
     dVinylPosition = 0.0f;

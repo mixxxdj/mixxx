@@ -62,6 +62,11 @@ int SoundDevice::getNumOutputChannels() const
     return m_iNumOutputChannels;
 }
 
+double SoundDevice::getSampleRate() const
+{
+	return m_dSampleRate;
+}
+
 void SoundDevice::setHostAPI(QString api)
 {
     m_hostAPI = api;

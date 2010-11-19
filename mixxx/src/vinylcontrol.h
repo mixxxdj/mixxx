@@ -4,6 +4,7 @@
 #include <qthread.h>
 #include "configobject.h"
 #include "controlobject.h"
+#include "soundmanagerconfig.h"
 //XXX: this is only so we have access to vinylcontrol status consts
 #include "engine/enginebuffer.h"
 
@@ -74,6 +75,7 @@ class VinylControl : public QThread
 	    int iRIAACorrection;
     	int iVCMode;
     	bool atRecordEnd;
+    	
 	QWaitCondition waitForNextInput;
 	QMutex         lockInput;
 	QMutex		   lockSamples;
