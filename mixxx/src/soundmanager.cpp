@@ -450,6 +450,7 @@ int SoundManager::setupDevices()
             } else if (device->getSampleRate() != m_config.getSampleRate()){
             	qDebug() << "Device sample rate doesn't match config sample rate";
             	m_config.setSampleRate(device->getSampleRate());
+            	m_pConfig->set(ConfigKey("[Soundcard]","Samplerate"), ConfigValue(device->getSampleRate()));
             	closeDevices();
             	return WRONG_SAMPLERATE;
             } else {
@@ -496,6 +497,9 @@ int SoundManager::setConfig(SoundManagerConfig config) {
     int err = OK;
     m_config = config;
     checkConfig();
+    
+    //we can safely set this value even if it turns out to be wrong
+    m_pConfig->set(ConfigKey("[Soundcard]","Samplerate"), ConfigValue(config.getSampleRate()));
     err = setupDevices();
     if (err == WRONG_SAMPLERATE)
     {
