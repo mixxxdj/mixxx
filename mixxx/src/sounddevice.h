@@ -50,6 +50,7 @@ class SoundDevice
         virtual QString getError() const = 0;
         int getNumOutputChannels() const;     
         int getNumInputChannels() const;
+        double getSampleRate() const;
         SoundDeviceError addOutput(const AudioOutput &out);
         SoundDeviceError addInput(const AudioInput &in);
         void clearOutputs();

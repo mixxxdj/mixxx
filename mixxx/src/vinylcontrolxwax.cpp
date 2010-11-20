@@ -131,7 +131,7 @@ void VinylControlXwax::AnalyseSamples(short *samples, size_t size)
         timecoder_submit(&timecoder, samples, size);
 
         //Update the input signal strength
-        //qDebug() << (float)fabs((float)samples[0]);
+        //qDebug() << group << (float)fabs((float)samples[0]);
         timecodeInputL->slotSet((float)fabs((float)samples[0]) / SHRT_MAX * 2.0f);
         timecodeInputR->slotSet((float)fabs((float)samples[1]) / SHRT_MAX * 2.0f);
         
@@ -153,6 +153,7 @@ void VinylControlXwax::run()
     dVinylPitch     = 0.0f;
     dOldPitch       = 0.0f;
     //bool absoluteMode = true;
+    int iPosition = -1;
     float filePosition = 0.0f;
     //bool bScratchMode = true;
     double dDriftAmt = 0.0f;
@@ -193,9 +194,8 @@ void VinylControlXwax::run()
         if (duration != NULL && bIsEnabled)	
         {
         	// Analyse the input samples
-		    int iPosition = -1;
 	        iPosition = timecoder_get_position(&timecoder, &when);
-	        //qDebug() << id << iPosition;
+        	//qDebug() << group << id << iPosition;
 	        
         	double cur_duration = duration->get();
         	//FIXME? we should really sync on all track changes
@@ -305,7 +305,7 @@ void VinylControlXwax::run()
 				//or 1 (plays back at that rate)
 				
 				if (reportedPlayButton)
-					controlScratch->slotSet((rateSlider->get() * fRateRange) + 1.0f);
+					controlScratch->slotSet(rateDir->get() * (rateSlider->get() * fRateRange) + 1.0f);
 				else
 					controlScratch->slotSet(0.0f);
 					

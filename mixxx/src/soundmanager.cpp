@@ -84,8 +84,8 @@ SoundManager::SoundManager(ConfigObject<ConfigValue> * pConfig, EngineMaster * _
 
     // TODO(bkgood) do these really need to be here? they're set in
     // SoundDevicePortAudio::open
-    pControlObjectLatency->slotSet(m_config.getFramesPerBuffer() / m_config.getSampleRate() * 1000);
-    pControlObjectSampleRate->slotSet(m_config.getSampleRate());
+    //pControlObjectLatency->slotSet(m_config.getFramesPerBuffer() / m_config.getSampleRate() * 1000);
+    //pControlObjectSampleRate->slotSet(m_config.getSampleRate());
 }
 
 /** Destructor for the SoundManager class. Closes all the devices, cleans up their pointers
@@ -444,8 +444,15 @@ int SoundManager::setupDevices()
             device->setFramesPerBuffer(m_config.getFramesPerBuffer());
             ++devicesAttempted;
             err = device->open();
+            
             if (err != OK) {
                 return err;
+            } else if (device->getSampleRate() != m_config.getSampleRate()){
+            	qDebug() << "Device sample rate doesn't match config sample rate";
+            	m_config.setSampleRate(device->getSampleRate());
+            	m_pConfig->set(ConfigKey("[Soundcard]","Samplerate"), ConfigValue(device->getSampleRate()));
+            	closeDevices();
+            	return WRONG_SAMPLERATE;
             } else {
                 ++devicesOpened;
                 if (isOutput)
@@ -490,7 +497,16 @@ int SoundManager::setConfig(SoundManagerConfig config) {
     int err = OK;
     m_config = config;
     checkConfig();
+    
+    //we can safely set this value even if it turns out to be wrong
+    m_pConfig->set(ConfigKey("[Soundcard]","Samplerate"), ConfigValue(config.getSampleRate()));
     err = setupDevices();
+    if (err == WRONG_SAMPLERATE)
+    {
+    	//try once more, we updated the config value when we discovered the
+    	//problem
+    	err = setupDevices();
+    }
     if (err == OK) {
         m_config.writeToDisk();
     }
@@ -637,22 +653,32 @@ void SoundManager::pushBuffer(QList<AudioInput> inputs, short * inputBuffer,
     if (inputBuffer)
     {
 #ifdef __VINYLCONTROL__
-		/*QListIterator<AudioInput> inputItr(inputs);
-		while (inputItr.hasNext())
-        {
-            AudioInput in = inputItr.next();
-            qDebug() << "theirs" << &m_inputBuffers[in];
-        }*/
-      
+		//TODO: it would be nicer to loop through the inputs and find out
+		//what vinyl controls are associated with each one, but 
+		//I don't know how to do a Hash of Lists in C++
+		//(ie, given an AudioInput, return an iterable list of pointers
+		//to vinylcontrol objects that should analyze those samples)
       	QListIterator<VinylControlProxy*> vinylItr(m_VinylControl);
     	while(vinylItr.hasNext())
     	{
     		VinylControlProxy* vinyl_control = vinylItr.next();
-           	//qDebug() << "mine" << vinyl_control << &m_inputBuffers[m_VinylMapping[vinyl_control]];
-        	if (vinyl_control && m_inputBuffers.contains(m_VinylMapping[vinyl_control]))
-            	vinyl_control->AnalyseSamples(m_inputBuffers[m_VinylMapping[vinyl_control]], iFramesPerBuffer);
-            //else
-            //	qDebug() << "processing FAIL";
+    		
+    		if (vinyl_control && 
+    			m_inputBuffers.contains(m_VinylMapping[vinyl_control]))
+    		{
+				QListIterator<AudioInput> inputItr(inputs);
+				while (inputItr.hasNext())
+				{
+					AudioInput in = inputItr.next();
+					//make sure that the mapped buffer is the one we've been
+					//asked to process
+					if (m_inputBuffers[m_VinylMapping[vinyl_control]] == 
+						m_inputBuffers[in])
+						vinyl_control->AnalyseSamples(
+							m_inputBuffers[m_VinylMapping[vinyl_control]], 
+							iFramesPerBuffer);
+				}
+			}
         }
 #endif
     }
