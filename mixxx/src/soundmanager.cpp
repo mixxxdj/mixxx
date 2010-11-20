@@ -653,22 +653,32 @@ void SoundManager::pushBuffer(QList<AudioInput> inputs, short * inputBuffer,
     if (inputBuffer)
     {
 #ifdef __VINYLCONTROL__
-		/*QListIterator<AudioInput> inputItr(inputs);
-		while (inputItr.hasNext())
-        {
-            AudioInput in = inputItr.next();
-            qDebug() << "theirs" << &m_inputBuffers[in];
-        }*/
-      
+		//TODO: it would be nicer to loop through the inputs and find out
+		//what vinyl controls are associated with each one, but 
+		//I don't know how to do a Hash of Lists in C++
+		//(ie, given an AudioInput, return an iterable list of pointers
+		//to vinylcontrol objects that should analyze those samples)
       	QListIterator<VinylControlProxy*> vinylItr(m_VinylControl);
     	while(vinylItr.hasNext())
     	{
     		VinylControlProxy* vinyl_control = vinylItr.next();
-           	//qDebug() << "mine" << vinyl_control << &m_inputBuffers[m_VinylMapping[vinyl_control]];
-        	if (vinyl_control && m_inputBuffers.contains(m_VinylMapping[vinyl_control]))
-            	vinyl_control->AnalyseSamples(m_inputBuffers[m_VinylMapping[vinyl_control]], iFramesPerBuffer);
-            //else
-            //	qDebug() << "processing FAIL";
+    		
+    		if (vinyl_control && 
+    			m_inputBuffers.contains(m_VinylMapping[vinyl_control]))
+    		{
+				QListIterator<AudioInput> inputItr(inputs);
+				while (inputItr.hasNext())
+				{
+					AudioInput in = inputItr.next();
+					//make sure that the mapped buffer is the one we've been
+					//asked to process
+					if (m_inputBuffers[m_VinylMapping[vinyl_control]] == 
+						m_inputBuffers[in])
+						vinyl_control->AnalyseSamples(
+							m_inputBuffers[m_VinylMapping[vinyl_control]], 
+							iFramesPerBuffer);
+				}
+			}
         }
 #endif
     }
