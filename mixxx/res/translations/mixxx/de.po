@@ -3,13 +3,13 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2010-10-28 15:35-0400\n"
-"PO-Revision-Date: 2010-11-18 23:14+0000\n"
-"Last-Translator: toomuch <Unknown>\n"
+"PO-Revision-Date: 2010-11-19 13:20+0000\n"
+"Last-Translator: Niklas Karbaum <Unknown>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2010-11-19 04:46+0000\n"
+"X-Launchpad-Export-Date: 2010-11-20 05:02+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
 #: AutoDJFeature#1
@@ -219,7 +219,7 @@ msgstr "Überspringen"
 
 #: DlgMidiLearning#2
 msgid "Successfully mapped to: "
-msgstr "Erfolgreich zugewiesen: "
+msgstr "Erfolgreich zugewiesen zu: "
 
 #: DlgMidiLearning#3
 msgid "Next"
@@ -607,19 +607,19 @@ msgstr "Control auswählen"
 
 #: DlgPrefMidiBindings#10
 msgid "Clear Input Bindings"
-msgstr "Input Bindings löschen"
+msgstr "Input Belegungen löschen"
 
 #: DlgPrefMidiBindings#11
 msgid "Are you sure you want to clear all bindings?"
-msgstr "Wollen Sie wirklich alle Bindings löschen?"
+msgstr "Wollen Sie wirklich alle Belegungen löschen?"
 
 #: DlgPrefMidiBindings#12
 msgid "Clear Output Bindings"
-msgstr "Output Bindings löschen"
+msgstr "Output Belegungen löschen"
 
 #: DlgPrefMidiBindings#13
 msgid "Are you sure you want to clear all output bindings?"
-msgstr "Wollen Sie wirklich alle Output Bindings löschen?"
+msgstr "Wollen Sie wirklich alle Output Belegungen löschen?"
 
 #: DlgPrefMidiBindingsDlg#1
 msgctxt "DlgPrefMidiBindingsDlg#1"
@@ -648,7 +648,7 @@ msgstr "Aktiviert"
 
 #: DlgPrefMidiBindingsDlg#7
 msgid "Controls"
-msgstr "Controls"
+msgstr "Bedienelemente"
 
 #: DlgPrefMidiBindingsDlg#8
 msgctxt "DlgPrefMidiBindingsDlg#8"
@@ -780,7 +780,7 @@ msgstr "Online verfügbar..."
 
 #: DlgPrefPlaylistDlg#13
 msgid "Bundled Songs"
-msgstr "Mitgelieferte Songs (Bundle)"
+msgstr "Mitgelieferte Titel (Bundle)"
 
 #: DlgPrefPlaylistDlg#14
 msgid ""
@@ -1953,11 +1953,11 @@ msgstr "Grenzbereich Max"
 
 #: MidiScriptEngine#1
 msgid "Uncaught exception at line %1 in file %2: %3"
-msgstr "Uncaught exception bei Zeile %1 in Datei %2: %3"
+msgstr "Nicht abgefangene Ausnahme bei Zeile %1 in Datei %2: %3"
 
 #: MidiScriptEngine#2
 msgid "Uncaught exception at line %1 in passed code: %2"
-msgstr "Uncaught exception bei Zeile %1 in übergebenen Code: %2"
+msgstr "Nicht abgefangene Ausnahme bei Zeile %1 in übergebenen Code: %2"
 
 #: MidiScriptEngine#3
 msgid "MIDI script error"
@@ -1965,7 +1965,7 @@ msgstr "MIDI-Script Fehler"
 
 #: MidiScriptEngine#4
 msgid "A MIDI control you just used is not working properly."
-msgstr "Eine gerade benutzte MIDI-Control arbeitet nicht richtig."
+msgstr "Ein gerade benutztes MIDI-Element arbeitet nicht richtig."
 
 #: MidiScriptEngine#5
 msgid ""
@@ -2575,7 +2575,7 @@ msgstr ""
 
 #: MixxxLibraryFeature#1
 msgid "Missing Songs"
-msgstr ""
+msgstr "Fehlende Titel"
 
 #: MixxxLibraryFeature#2
 msgctxt "MixxxLibraryFeature#2"
