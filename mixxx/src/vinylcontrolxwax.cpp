@@ -305,7 +305,7 @@ void VinylControlXwax::run()
 				//or 1 (plays back at that rate)
 				
 				if (reportedPlayButton)
-					controlScratch->slotSet((rateSlider->get() * fRateRange) + 1.0f);
+					controlScratch->slotSet(rateDir->get() * (rateSlider->get() * fRateRange) + 1.0f);
 				else
 					controlScratch->slotSet(0.0f);
 					

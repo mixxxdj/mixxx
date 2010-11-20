@@ -394,7 +394,7 @@ double RateControl::calculateRate(double baserate, bool paused) {
                 rate *= (oldScratchFactor+1.);
             }
         }
-
+        
         rate += jogFactor;
 
         // If we are reversing (and not scratching,) flip the rate.
