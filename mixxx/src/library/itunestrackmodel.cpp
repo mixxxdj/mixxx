@@ -9,7 +9,7 @@
 ITunesTrackModel::ITunesTrackModel(QObject* parent,
                                    TrackCollection* pTrackCollection)
         : TrackModel(pTrackCollection->getDatabase(),
-                     "mixxx.db.model.playlist"),
+                     "mixxx.db.model.itunes"),
           BaseSqlTableModel(parent, pTrackCollection, pTrackCollection->getDatabase()),
           m_pTrackCollection(pTrackCollection),
           m_database(m_pTrackCollection->getDatabase()) {
