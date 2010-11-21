@@ -3,13 +3,13 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2010-10-28 15:35-0400\n"
-"PO-Revision-Date: 2010-11-19 13:20+0000\n"
-"Last-Translator: Niklas Karbaum <Unknown>\n"
+"PO-Revision-Date: 2010-11-20 19:05+0000\n"
+"Last-Translator: cmdrhenner <cmdrhenner@gmail.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2010-11-20 05:02+0000\n"
+"X-Launchpad-Export-Date: 2010-11-21 04:44+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
 #: AutoDJFeature#1
@@ -599,11 +599,11 @@ msgstr "Preset Datei (*.midi.xml)"
 
 #: DlgPrefMidiBindings#8
 msgid "Select Control Group"
-msgstr "Control Gruppe auswählen"
+msgstr "Elemente Gruppe auswählen"
 
 #: DlgPrefMidiBindings#9
 msgid "Select Control"
-msgstr "Control auswählen"
+msgstr "Element auswählen"
 
 #: DlgPrefMidiBindings#10
 msgid "Clear Input Bindings"
@@ -789,7 +789,7 @@ msgid ""
 msgstr ""
 "Unterstütze Mixxx und erlaube das Sammeln und Senden \n"
 "von Statistiken über die Wiedergabe und Anzahl der besuchten Links \n"
-"für die mitgelieferten Songs"
+"für die mitgelieferten Titel"
 
 #: DlgPrefRecord#1
 msgctxt "DlgPrefRecord#1"
@@ -1271,7 +1271,7 @@ msgstr "Form"
 
 #: DlgPrefSoundItem#3
 msgid "Type (#)"
-msgstr ""
+msgstr "Typ (#)"
 
 #: DlgPrefVinyl#1
 msgctxt "DlgPrefVinyl#1"
@@ -1658,7 +1658,7 @@ msgid ""
 "<html>Could not create audio file for recording!<p><br>Maybe you do not have "
 "enough free disk space or file permissions.</html>"
 msgstr ""
-"<html>Konnte keine Audiodatei für die Aufnahme erstellen!<p><br>VIelleicht "
+"<html>Konnte keine Audiodatei für die Aufnahme erstellen!<p><br>Vielleicht "
 "haben Sie nicht genug Speicherplatz oder keine Zugriffsberechtigung</html>"
 
 #: EngineShoutcast#1
@@ -1879,12 +1879,12 @@ msgstr "Midi Kanal"
 #: MidiInputMappingTableModel#4
 msgctxt "MidiInputMappingTableModel#4"
 msgid "Control Group"
-msgstr "Control Gruppe"
+msgstr "Element Gruppe"
 
 #: MidiInputMappingTableModel#5
 msgctxt "MidiInputMappingTableModel#5"
 msgid "Control Value"
-msgstr "Control Wert"
+msgstr "Element Wert"
 
 #: MidiMapping#1
 msgid "MIDI script function not found"
@@ -1936,12 +1936,12 @@ msgstr "Midi Kanal"
 #: MidiOutputMappingTableModel#4
 msgctxt "MidiOutputMappingTableModel#4"
 msgid "Control Group"
-msgstr "Control Gruppe"
+msgstr "Element Gruppe"
 
 #: MidiOutputMappingTableModel#5
 msgctxt "MidiOutputMappingTableModel#5"
 msgid "Control Value"
-msgstr "Control Wert"
+msgstr "Element Wert"
 
 #: MidiOutputMappingTableModel#6
 msgid "Threshold Min"
@@ -2218,7 +2218,7 @@ msgstr "Ctrl+Q"
 
 #: MixxxApp#29
 msgid "&Rescan Library"
-msgstr "&Bibliothek erneut scannen"
+msgstr "&Bibliothek neu einlesen"
 
 #: MixxxApp#30
 msgid "Add &new playlist"
@@ -2357,9 +2357,9 @@ msgid ""
 "\n"
 "Rescans the song library"
 msgstr ""
-"Bibliothek erneut scannen\n"
+"Bibliothek neu einlesen\n"
 "\n"
-"Die Musikbibliothek erneut scannen"
+"Die Musikbibliothek neu einlesen"
 
 #: MixxxApp#59
 msgid "Create a new playlist"
@@ -2377,7 +2377,7 @@ msgstr ""
 
 #: MixxxApp#61
 msgid "Create a new crate"
-msgstr "Neues Crate erstellen"
+msgstr "Neue Crate erstellen"
 
 #: MixxxApp#62
 msgid ""
@@ -2385,9 +2385,9 @@ msgid ""
 "\n"
 "Create a new crate."
 msgstr ""
-"Neues Crate\n"
+"Neue Crate\n"
 "\n"
-"Eine neues Crate erstellen."
+"Eine neue Crate erstellen."
 
 #: MixxxApp#63
 msgid "Import playlist"
