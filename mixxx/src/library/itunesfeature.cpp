@@ -55,8 +55,8 @@ void ITunesFeature::activate() {
             QMessageBox::warning(
                 NULL,
                 tr("Error Loading iTunes Library"),
-                tr("There was an error loading your iTunes library. Some of your iTunes tracks or
-playlists may not have loaded."));
+                tr("There was an error loading your iTunes library. Some of "
+                   "your iTunes tracks or playlists may not have loaded."));
         }
 
         //Sort the playlists since in iTunes they are sorted, too.
