@@ -117,7 +117,7 @@ QString ITunesFeature::getiTunesMusicPath() {
     return musicFolder;
 }
 bool ITunesFeature::importLibrary(QString file) {
-    //Delete all table entries of Traktor feature
+    //Delete all table entries of iTunes feature
     m_database.transaction();
     clearTable("itunes_playlist_tracks");
     clearTable("itunes_library");
