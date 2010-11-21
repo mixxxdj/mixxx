@@ -59,15 +59,16 @@ class SoundManager : public QObject
         int setConfig(SoundManagerConfig config);
         void checkConfig();
         QHash<AudioOutput, const CSAMPLE*>
-            requestBuffer(QList<AudioOutput> outputs, unsigned long iFramesPerBuffer, SoundDevice*, double streamTime);
+            requestBuffer(QList<AudioOutput> outputs, unsigned long iFramesPerBuffer, SoundDevice*, double streamTime=0);
         void pushBuffer(QList<AudioInput> inputs, short *inputBuffer, 
                         unsigned long iFramesPerBuffer, unsigned int iFrameSize);
     signals:
         void devicesUpdated(); // emitted when all the pointers to SoundDevices go stale
     public slots:
         void sync();
-        void soundcardSync();
     private:
+        void clearOperativeVariables();
+        
         EngineMaster *m_pMaster;
         ConfigObject<ConfigValue> *m_pConfig;
         QList<SoundDevice*> m_devices;
@@ -76,14 +77,13 @@ class SoundManager : public QObject
         QHash<AudioOutput, const CSAMPLE*> m_outputBuffers;
         QHash<AudioInput, short*> m_inputBuffers; /** Audio received from input */
         QHash<SoundDevice*, long> m_deviceFrameCount;   /** Sound card sync */
-        QHash<SoundDevice*, double> m_deviceStreamTime; /** Sound card sync */
-        QTimer m_soundcardSyncTimer;    /** Sound card sync */
+        QHash<SoundDevice*, double> m_deviceClkDrifts; /** Sound card sync */
 #ifdef __VINYLCONTROL__
         QList<VinylControlProxy*> m_VinylControl;
 #endif        
         unsigned int iNumDevicesOpenedForOutput;
         unsigned int iNumDevicesOpenedForInput;
-        unsigned int iNumDevicesHaveRequestedBuffer;
+        SoundDevice* m_pClkRefDevice;  /** Sound card sync */
         QMutex requestBufferMutex;
         QTimer m_controlObjSyncTimer;
         SoundManagerConfig m_config;

@@ -41,9 +41,7 @@ SoundManager::SoundManager(ConfigObject<ConfigValue> * pConfig, EngineMaster * _
     m_pConfig = pConfig;
     m_pMaster = _master;
 
-    iNumDevicesOpenedForOutput = 0;
-    iNumDevicesOpenedForInput = 0;
-    iNumDevicesHaveRequestedBuffer = 0;
+    clearOperativeVariables();
 
     //TODO: Find a better spot for this:
     //Set up a timer to sync Mixxx's ControlObjects on...
@@ -103,6 +101,18 @@ SoundManager::~SoundManager()
     }
     // vinyl control proxies and input buffers are freed in closeDevices, called
     // by clearDeviceList -- bkgood
+}
+
+/**
+ * Clears all variables used in operation.
+ * @note This is in a function because it's done in a few places
+ */
+void SoundManager::clearOperativeVariables()
+{
+    iNumDevicesOpenedForOutput = 0;
+    iNumDevicesOpenedForInput = 0;
+    m_deviceClkDrifts.clear();
+    m_pClkRefDevice = NULL;
 }
 
 /**
@@ -203,9 +213,6 @@ void SoundManager::closeDevices()
     //qDebug() << "SoundManager::closeDevices()";
     QListIterator<SoundDevice*> dev_it(m_devices);
     
-    m_soundcardSyncTimer.stop();
-    disconnect(&m_soundcardSyncTimer, SIGNAL(timeout()), this, SLOT(soundcardSync()));
-
     //requestBufferMutex.lock(); //Ensures we don't kill a stream in the middle of a callback call.
                                  //Note: if we're using Pa_StopStream() (like now), we don't need
                                  //      to lock. PortAudio stops the threads nicely.
@@ -217,9 +224,7 @@ void SoundManager::closeDevices()
     //requestBufferMutex.unlock();
 
     //requestBufferMutex.lock();
-    iNumDevicesOpenedForOutput = 0;
-    iNumDevicesOpenedForInput = 0;
-    iNumDevicesHaveRequestedBuffer = 0;
+    clearOperativeVariables();
     //requestBufferMutex.unlock();
 
     m_outputBuffers.clear(); // anti-cruft (safe because outputs only have
@@ -337,7 +342,7 @@ int SoundManager::setupDevices()
 {
     qDebug() << "SoundManager::setupDevices()";
     int err = 0;
-    iNumDevicesOpenedForOutput = iNumDevicesOpenedForInput = 0;
+    clearOperativeVariables();
     int devicesAttempted = 0;
     int devicesOpened = 0;
 
@@ -388,12 +393,19 @@ int SoundManager::setupDevices()
             switch (out.getType()) {
             case AudioPath::MASTER:
                 m_outputBuffers[out] = m_pMaster->getMasterBuffer();
+                // Set the master output device's clock as the reference
+                //  to avoid any clock-related disturbances to the public address
+                m_pClkRefDevice = device;
                 break;
             case AudioPath::HEADPHONES:
                 m_outputBuffers[out] = m_pMaster->getHeadphoneBuffer();
                 break;
             case AudioPath::DECK:
                 m_outputBuffers[out] = m_pMaster->getChannelBuffer(out.getIndex());
+                // If a reference device has not yet been set (such as when the Master output
+                //  isn't being used with an external mixer,) use the first deck output
+                //  to avoid any clock-related disturbances on at least one public output
+                if (!m_pClkRefDevice) m_pClkRefDevice = device;
                 break;
             default:
                 break;
@@ -415,10 +427,15 @@ int SoundManager::setupDevices()
             }
         }
     }
-
-    //Set up a timer to measure sound card clock drift
-    connect(&m_soundcardSyncTimer, SIGNAL(timeout()), this, SLOT(soundcardSync()));
-    m_soundcardSyncTimer.start(500);
+    
+    if (!m_pClkRefDevice) {
+        QList<SoundDevice*> outputDevices = getDeviceList(m_config.getAPI(), true, false);
+        SoundDevice* device = outputDevices.first();
+        qWarning() << "Output sound device clock reference not set! Using" << device->getDisplayName();
+        m_pClkRefDevice = device;
+    }
+    else qDebug() << "Using" << m_pClkRefDevice->getDisplayName() << "as output sound device clock reference";
+    m_deviceClkDrifts.insert(m_pClkRefDevice, 0);   // Ensure reference device has a value
 
     qDebug() << "iNumDevicesOpenedForOutput:" << iNumDevicesOpenedForOutput;
     qDebug() << "iNumDevicesOpenedForInput:" << iNumDevicesOpenedForInput;
@@ -480,34 +497,46 @@ SoundManager::requestBuffer(QList<AudioOutput> outputs, unsigned long iFramesPer
     Q_UNUSED(outputs); // unused, we just give the caller the full hash -bkgood
     //qDebug() << "SoundManager::requestBuffer()";
     
-//     qDebug() << iFramesPerBuffer << "frames requested by" << device->getInternalName();
+    // Sound card sync
     long currentFrameCount = 0;
     if (m_deviceFrameCount.contains(device)) currentFrameCount=m_deviceFrameCount.value(device);
     m_deviceFrameCount.insert(device, currentFrameCount+iFramesPerBuffer);  // Overwrites existing value if already present
-    m_deviceStreamTime.insert(device, streamTime);  // Overwrites existing value if already present
+    // Get current time in milliseconds
+//     uint t = QDateTime::currentDateTime().toTime_t()*1000+QDateTime::currentDateTime().toString("zzz").toUint();
+    
+    // Store absolute stream time for the reference device
+    if (device == m_pClkRefDevice) m_deviceClkDrifts.insert(device, streamTime);
+    else {  // If not the reference device,
+        // Measure the drift from the reference device
+        //  and the amount of additional drift since the last callback
+        double refCardStreamTime = m_deviceClkDrifts.value(m_pClkRefDevice);
+        double currentDrift = refCardStreamTime-streamTime;
+        double difference = 0;
+//         float sampleRate = (m_deviceFrameCount.value(i.key())*1000)/m_soundcardSyncTimer.interval();
+        if (m_deviceClkDrifts.contains(device)) {
+            difference = currentDrift-m_deviceClkDrifts.value(device);
+            qDebug() << device->getDisplayName()
+                     << "additional drift" << difference*1000 << "ms"
+                     << "Total drift" << currentDrift*1000 << "ms";
+        }
+        m_deviceClkDrifts.insert(device, currentDrift);  // Overwrites existing value if already present
+    }
     
     //qDebug() << "numOpenedDevices" << iNumOpenedDevices;
-    //qDebug() << "iNumDevicesHaveRequestedBuffer" << iNumDevicesHaveRequestedBuffer;
 
-    //When the first device requests a buffer...
-    if (requestBufferMutex.tryLock())
+    //When the clock reference device requests a buffer...
+    if (device == m_pClkRefDevice && requestBufferMutex.tryLock())
     {
-        if (iNumDevicesHaveRequestedBuffer == 0)
-        {
-            //First, sync control parameters with changes from GUI thread
-            sync();
+        // Only generate a new buffer for the clock reference card
+//         qDebug() << "New buffer for" << device->getDisplayName() << "of size" << iFramesPerBuffer;
+        //First, sync control parameters with changes from GUI thread
+        sync();
 
-            //Process a block of samples for output. iFramesPerBuffer is the
-            //number of samples for one channel, but the EngineObject
-            //architecture expects number of samples for two channels
-            //as input (buffer size) so...
-            m_pMaster->process(0, 0, iFramesPerBuffer*2);
-
-        }
-        iNumDevicesHaveRequestedBuffer++;
-
-        if (iNumDevicesHaveRequestedBuffer >= iNumDevicesOpenedForOutput)
-            iNumDevicesHaveRequestedBuffer = 0;
+        //Process a block of samples for output. iFramesPerBuffer is the
+        //number of samples for one channel, but the EngineObject
+        //architecture expects number of samples for two channels
+        //as input (buffer size) so...
+        m_pMaster->process(0, 0, iFramesPerBuffer*2);
 
         requestBufferMutex.unlock();
     }
@@ -613,23 +642,4 @@ void SoundManager::pushBuffer(QList<AudioInput> inputs, short * inputBuffer,
     }
     //TODO: Add pass-through option here (and push it into EngineMaster)...
     //      (or maybe save it, and then have requestBuffer() push it into EngineMaster)...
-}
-
-void SoundManager::soundcardSync() {
-    // Measure the skew
-    double firstCard = NULL;
-    QHashIterator<SoundDevice*, long> i(m_deviceFrameCount);
-    qDebug() << "---";
-    while (i.hasNext()) {
-        i.next();
-        if (firstCard==NULL) firstCard = m_deviceStreamTime.value(i.key())*1000;
-        qDebug() << i.key()->getDisplayName()
-                 << "is running at" << (i.value()*1000)/m_soundcardSyncTimer.interval()
-                 << "Hz (\"frames\") Clock skew =" << firstCard-(m_deviceStreamTime.value(i.key())*1000) << "ms";
-    }
-    m_deviceFrameCount.clear();
-    m_deviceStreamTime.clear();
-    
-    // TODO: Correct for it
-    
 }
