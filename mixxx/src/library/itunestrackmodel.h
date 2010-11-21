@@ -48,4 +48,4 @@ class ITunesTrackModel : public BaseSqlTableModel, public virtual TrackModel
     QString m_currentSearch;
 };
 
-#endif /* TRAKTOR_TABLE_MODEL_H */
+#endif /* ITUNES_TABLE_MODEL_H */

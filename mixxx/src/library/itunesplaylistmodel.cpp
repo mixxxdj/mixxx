@@ -28,8 +28,6 @@ bool ITunesPlaylistModel::addTrack(const QModelIndex& index, QString location)
 
 TrackPointer ITunesPlaylistModel::getTrack(const QModelIndex& index) const
 {
-    //qDebug() << "getTraktorTrack";
-
     QString artist = index.sibling(index.row(), fieldIndex("artist")).data().toString();
     QString title = index.sibling(index.row(), fieldIndex("title")).data().toString();
     QString album = index.sibling(index.row(), fieldIndex("album")).data().toString();
@@ -168,7 +166,7 @@ void ITunesPlaylistModel::setPlaylist(QString playlist_path) {
 
     if (!query.exec()) {
 
-        qDebug() << "Error creating temporary view for traktor playlists. ITunesPlaylistModel --> line: " << __LINE__ << " " << query.lastError();
+        qDebug() << "Error creating temporary view for itunes playlists. ITunesPlaylistModel --> line: " << __LINE__ << " " << query.lastError();
         qDebug() << "Executed Query: " <<  query.executedQuery();
         return;
     }
