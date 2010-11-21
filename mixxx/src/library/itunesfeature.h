@@ -32,20 +32,13 @@ class ITunesFeature : public LibraryFeature {
 
     QAbstractItemModel* getChildModel();
 
-public slots:
+  public slots:
     void activate();
     void activateChild(const QModelIndex& index);
     void onRightClick(const QPoint& globalPos);
     void onRightClickChild(const QPoint& globalPos, QModelIndex index);
 
-private:
-    ITunesTrackModel* m_pITunesTrackModel;
-    ITunesPlaylistModel* m_pITunesPlaylistModel;
-    QStringListModel m_childModel;
-    QStringList m_playlists;
-    TrackCollection* m_pTrackCollection;
-    QSqlDatabase &m_database;
-
+  private:
     static QString getiTunesMusicPath();
     bool importLibrary(QString file);
     void parseTracks(QXmlStreamReader &xml);
@@ -53,8 +46,14 @@ private:
     void parsePlaylists(QXmlStreamReader &xml);
     void parsePlaylist(QXmlStreamReader &xml, QSqlQuery &query1, QSqlQuery &query2);
     void clearTable(QString table_name);
+
+    ITunesTrackModel* m_pITunesTrackModel;
+    ITunesPlaylistModel* m_pITunesPlaylistModel;
+    QStringListModel m_childModel;
+    QStringList m_playlists;
+    TrackCollection* m_pTrackCollection;
+    QSqlDatabase &m_database;
     bool m_isActivated;
-    
 };
 
 #endif /* ITUNESFEATURE_H */
