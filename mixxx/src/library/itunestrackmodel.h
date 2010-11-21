@@ -18,7 +18,7 @@ class ITunesTrackModel : public BaseSqlTableModel, public virtual TrackModel
   public:
     ITunesTrackModel(QObject* parent, TrackCollection* pTrackCollection);
     virtual ~ITunesTrackModel();
-    
+
     virtual TrackPointer getTrack(const QModelIndex& index) const;
     virtual QString getTrackLocation(const QModelIndex& index) const;
     virtual void search(const QString& searchText);
@@ -29,10 +29,10 @@ class ITunesTrackModel : public BaseSqlTableModel, public virtual TrackModel
     virtual void removeTracks(const QModelIndexList& indices);
     virtual bool addTrack(const QModelIndex& index, QString location);
     virtual void moveTrack(const QModelIndex& sourceIndex, const QModelIndex& destIndex);
-	
+
     virtual Qt::ItemFlags flags(const QModelIndex &index) const;
     QMimeData* mimeData(const QModelIndexList &indexes) const;
-   
+
     QItemDelegate* delegateForColumn(const int i);
     TrackModel::CapabilitiesFlags getCapabilities() const;
 
@@ -44,9 +44,7 @@ class ITunesTrackModel : public BaseSqlTableModel, public virtual TrackModel
 
   private:
     TrackCollection* m_pTrackCollection;
-	QSqlDatabase &m_database;
-    
-    
+    QSqlDatabase &m_database;
     QString m_currentSearch;
 };
 
