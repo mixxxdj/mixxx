@@ -49,15 +49,20 @@ void ITunesFeature::activate() {
             return;
         }
 
-        if (importLibrary(getiTunesMusicPath()))
+        if (importLibrary(getiTunesMusicPath())) {
             m_isActivated =  true;
-
+        } else {
+            QMessageBox::warning(
+                NULL,
+                tr("Error Loading iTunes Library"),
+                tr("There was an error loading your iTunes library. Some of your iTunes tracks or
+playlists may not have loaded."));
+        }
 
         //Sort the playlists since in iTunes they are sorted, too.
         //list.sort();
 
         m_childModel.setStringList(m_playlists);
-
     }
 
     emit(showTrackModel(m_pITunesTrackModel));
@@ -123,7 +128,7 @@ bool ITunesFeature::importLibrary(QString file) {
 
     m_database.transaction();
 
-    //Parse Trakor XML file using SAX (for performance)
+    //Parse iTunes XML file using SAX (for performance)
     QFile itunes_file(file);
     if (!itunes_file.open(QIODevice::ReadOnly | QIODevice::Text)) {
         qDebug() << "Cannot open iTunes music collection";
@@ -147,21 +152,22 @@ bool ITunesFeature::importLibrary(QString file) {
         }
     }
 
+    itunes_file.close();
+
+    // Even if an error occured, commit the transaction. The file may have been
+    // half-parsed.
+    m_database.commit();
+    m_pITunesTrackModel->select();
+
     if (xml.hasError()) {
         // do error handling
         qDebug() << "Cannot process iTunes music collection";
         qDebug() << "XML ERROR: " << xml.errorString();
-        itunes_file.close();
         return false;
     }
-
-    itunes_file.close();
-    m_database.commit();
-    m_pITunesTrackModel->select();
-
     return true;
-
 }
+
 void ITunesFeature::parseTracks(QXmlStreamReader &xml) {
     QSqlQuery query(m_database);
     query.prepare("INSERT INTO itunes_library (id, artist, title, album, year, genre, comment, tracknumber,"
