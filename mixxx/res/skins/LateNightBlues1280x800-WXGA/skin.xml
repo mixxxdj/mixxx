@@ -1,8 +1,8 @@
 	<!--
-	LateNightBlues , Skin for Mixxx 1.8.x
+	LateNightBlues , Skin for Mixxx 1.9.x
 	www.mixxx.org
 	Copyright (C) 2010 jus ; jus@justmail.de
-	This file is part of the "LateNightBlues" Skin for Mixxx 1.8.x
+	This file is part of the "LateNightBlues" Skin for Mixxx
 	"LateNightBlues" is licensed under the Creative Commons Attribution-ShareAlike 3.0 Unported license.
 	http://creativecommons.org/licenses/by-sa/3.0/
 
@@ -20,6 +20,11 @@
 
 	<!--
 	CHANGELOG
+	v1.06	(19/11/2010)
+	* Added Mixxx 1.9 features: Keylock & Repeat buttons
+	* Changed all graphics for better contrast
+	* Deleted end-of-track mode buttons
+
 	v1.05	(20/09/2010)
 	* Added stylesheet support for library & tooltips
 
@@ -97,7 +102,7 @@
 	-->
 	<Background>
 		<Path>background1280x800.png</Path>
-		<BgColor>#2D3439</BgColor>
+		<BgColor>#22272B</BgColor>
 	</Background>
 
 	<!--
@@ -111,12 +116,12 @@
 		QLabel { font: 13px/15px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 		background-color: transparent; color: #CDCDCD; text-align: left; padding-left: 1%; }
 		QTableView { font: 13px/15px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-		background: #2D3439; alternate-background-color: #2D3439; color: #CDCDCD; }
+		background: #22272B; alternate-background-color: #22272B; color: #CDCDCD; }
 		QHeaderView { font: 11px/13px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; }
 		QRadioButton { color: #CDCDCD; }
-		QTextBrowser { background: #2D3439; color: #CDCDCD; }
-		WLibrarySidebar { background: #2D3439; color: #CDCDCD; }
-		WSearchLineEdit { background: #2D3439; color: #CDCDCD; }
+		QTextBrowser { background: #22272B; color: #CDCDCD; }
+		WLibrarySidebar { background: #22272B; color: #CDCDCD; }
+		WSearchLineEdit { background: #22272B; color: #CDCDCD; }
 		</Style>
 		<Pos>6,346</Pos>
 		<Size>1251,347</Size>
@@ -147,7 +152,7 @@
 		<Channel>1</Channel>
 		<Pos>104,1</Pos>
 		<Size>1054,73</Size>
-		<BgColor>#21272B</BgColor>
+		<BgColor>#22272B</BgColor>
 		<HfcColor>#1b1b1b</HfcColor>
 		<SignalColor>#FFC318</SignalColor>
 		<BeatColor>#ffffff</BeatColor>
@@ -186,21 +191,21 @@
 			<Control>hotcue_1_position</Control>
 			<Text> HOTCUE 1 </Text>
 			<Align>center</Align>
-			<Color>#66CCFF</Color>
+			<Color>#0033FF</Color>
 			<TextColor>#FFFFFF</TextColor>
 		</Mark>
 		<Mark>
 			<Control>hotcue_2_position</Control>
 			<Text> HOTCUE 2 </Text>
 			<Align>center</Align>
-			<Color>#FF6FCF</Color>
+			<Color>#FF0000</Color>
 			<TextColor>#FFFFFF</TextColor>
 		</Mark>
 		<Mark>
 			<Control>hotcue_3_position</Control>
 			<Text> HOTCUE 3 </Text>
 			<Align>center</Align>
-			<Color>#FF6666</Color>
+			<Color>#FF00FF</Color>
 			<TextColor>#FFFFFF</TextColor>
 		</Mark>
 		<Mark>
@@ -423,7 +428,7 @@
 		<Channel>2</Channel>
 		<Pos>104,76</Pos>
 		<Size>1054,73</Size>
-		<BgColor>#21272B</BgColor>
+		<BgColor>#22272B</BgColor>
 		<HfcColor>#1b1b1b</HfcColor>
 		<SignalColor>#FF9900</SignalColor>
 		<BeatColor>#ffffff</BeatColor>
@@ -462,21 +467,21 @@
 			<Control>hotcue_1_position</Control>
 			<Text> HOTCUE 1 </Text>
 			<Align>center</Align>
-			<Color>#66CCFF</Color>
+			<Color>#0033FF</Color>
 			<TextColor>#FFFFFF</TextColor>
 		</Mark>
 		<Mark>
 			<Control>hotcue_2_position</Control>
 			<Text> HOTCUE 2 </Text>
 			<Align>center</Align>
-			<Color>#FF6FCF</Color>
+			<Color>#FF0000</Color>
 			<TextColor>#FFFFFF</TextColor>
 		</Mark>
 		<Mark>
 			<Control>hotcue_3_position</Control>
 			<Text> HOTCUE 3 </Text>
 			<Align>center</Align>
-			<Color>#FF6666</Color>
+			<Color>#FF00FF</Color>
 			<TextColor>#FFFFFF</TextColor>
 		</Mark>
 		<Mark>
@@ -705,7 +710,7 @@
 		<Channel>1</Channel>
 		<Pos>1,250</Pos>
 		<Size>407,37</Size>
-		<BgColor>#2D3439</BgColor>
+		<BgColor>#22272B</BgColor>
 		<SignalColor>#FFC318</SignalColor>
 		<MarkerColor>#00FF00</MarkerColor>
 		<Connection>
@@ -721,7 +726,7 @@
 		<Channel>2</Channel>
 		<Pos>804,250</Pos>
 		<Size>407,37</Size>
-		<BgColor>#2D3439</BgColor>
+		<BgColor>#22272B</BgColor>
 		<SignalColor>#FF9900</SignalColor>
 		<MarkerColor>#00FF00</MarkerColor>
 		<Connection>
@@ -1043,7 +1048,7 @@
 		</Style>
 		<Handle>knob_crossfader.png</Handle>
 		<Slider>slider_crossfader.png</Slider>
-		<Pos>546,297</Pos>
+		<Pos>549,297</Pos>
 		<Horizontal>true</Horizontal>
 		<Connection>
 			<ConfigKey>[Master],crossfader</ConfigKey>
@@ -1995,7 +2000,7 @@
 			<Pressed>btn_sync1_over.png</Pressed>
 			<Unpressed>btn_sync1.png</Unpressed>
 		</State>
-		<Pos>53,65</Pos>
+		<Pos>53,35</Pos>
 		<Connection>
 			<ConfigKey>[Channel1],beatsync</ConfigKey>
 			<EmitOnDownPress>true</EmitOnDownPress>
@@ -2018,7 +2023,7 @@
 			<Pressed>btn_sync2_over.png</Pressed>
 			<Unpressed>btn_sync2.png</Unpressed>
 		</State>
-		<Pos>1174,65</Pos>
+		<Pos>1174,35</Pos>
 		<Connection>
 			<ConfigKey>[Channel2],beatsync</ConfigKey>
 			<EmitOnDownPress>true</EmitOnDownPress>
@@ -2028,6 +2033,105 @@
 			<ConfigKey>[Channel2],beatsync</ConfigKey>
 			<EmitOnDownPress>false</EmitOnDownPress>
 			<ButtonState>LeftButton</ButtonState>
+		</Connection>
+	</PushButton>
+
+	<!--
+	**********************************************
+	Button- BPM Tap 
+	**********************************************
+	-->
+
+<!--//Jus BPM tap deactivated see https://bugs.launchpad.net/mixxx/+bug/677366 
+	<PushButton>
+		<Tooltip>BPM Tap&#10;It takes the progressive average of the last 8 taps and sets the bpm of the deck to that value, assuming the pitch range is large enough to reach it.&#10;</Tooltip>
+		<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+		</Style>
+		<NumberStates>2</NumberStates>
+		<State>
+			<Number>0</Number>
+			<Pressed>btn_tap1_over.png</Pressed>
+			<Unpressed>btn_tap1.png</Unpressed>
+		</State>
+		<State>
+			<Number>1</Number>
+			<Pressed>btn_tap1_over.png</Pressed>
+			<Unpressed>btn_tap1.png</Unpressed>
+		</State>
+		<Pos>53,62</Pos>
+		<Connection>
+			<ConfigKey>[Channel1],bpm</ConfigKey>
+		</Connection>
+	</PushButton>
+	<PushButton>
+		<Tooltip>BPM Tap&#10;It takes the progressive average of the last 8 taps and sets the bpm of the deck to that value, assuming the pitch range is large enough to reach it.&#10;</Tooltip>
+		<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+		</Style>
+		<NumberStates>2</NumberStates>
+		<State>
+			<Number>0</Number>
+			<Pressed>btn_tap2_over.png</Pressed>
+			<Unpressed>btn_tap2.png</Unpressed>
+		</State>
+		<State>
+			<Number>1</Number>
+			<Pressed>btn_tap2_over.png</Pressed>
+			<Unpressed>btn_tap2.png</Unpressed>
+		</State>
+		<Pos>1174,62</Pos>
+		<Connection>
+			<ConfigKey>[Channel2],bpm</ConfigKey>
+		</Connection>
+	</PushButton>
+-->
+	<!--
+	**********************************************
+	Button- Key lock
+	**********************************************
+	-->
+
+	<PushButton>
+		<Tooltip>Key-lock&#10;Activates pitch-independent time stretch in the deck.&#10;Warning: Toggling key-lock during playback may result in a momentary audio glitch.&#10;</Tooltip>
+		<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+		</Style>
+		<NumberStates>2</NumberStates>
+		<State>
+			<Number>0</Number>
+			<Pressed>btn_keylock1.png</Pressed>
+			<Unpressed>btn_keylock1.png</Unpressed>
+		</State>
+		<State>
+			<Number>1</Number>
+			<Pressed>btn_keylock1_over.png</Pressed>
+			<Unpressed>btn_keylock1_over.png</Unpressed>
+		</State>
+		<Pos>61,100</Pos>
+		<Connection>
+			<ConfigKey>[Channel1],keylock</ConfigKey>
+		</Connection>
+	</PushButton>
+	<PushButton>
+		<Tooltip>Key-lock&#10;Activates pitch-independent time stretch in the deck.&#10;Warning: Toggling key-lock during playback may result in a momentary audio glitch.&#10;</Tooltip>
+		<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+		</Style>
+		<NumberStates>2</NumberStates>
+		<State>
+			<Number>0</Number>
+			<Pressed>btn_keylock2.png</Pressed>
+			<Unpressed>btn_keylock2.png</Unpressed>
+		</State>
+		<State>
+			<Number>1</Number>
+			<Pressed>btn_keylock2_over.png</Pressed>
+			<Unpressed>btn_keylock2_over.png</Unpressed>
+		</State>
+		<Pos>1182,100</Pos>
+		<Connection>
+			<ConfigKey>[Channel2],keylock</ConfigKey>
 		</Connection>
 	</PushButton>
 
@@ -2047,7 +2151,7 @@
 			<Pressed>btn_pitch_up1_over.png</Pressed>
 			<Unpressed>btn_pitch_up1.png</Unpressed>
 		</State>
-		<Pos>47,126</Pos>
+		<Pos>47,138</Pos>
 		<Connection>
 			<ConfigKey>[Channel1],rate_perm_up</ConfigKey>
 			<EmitOnDownPress>true</EmitOnDownPress>
@@ -2080,7 +2184,7 @@
 			<Pressed>btn_pitch_up2_over.png</Pressed>
 			<Unpressed>btn_pitch_up1.png</Unpressed>
 		</State>
-		<Pos>1168,126</Pos>
+		<Pos>1168,138</Pos>
 		<Connection>
 			<ConfigKey>[Channel2],rate_perm_up</ConfigKey>
 			<EmitOnDownPress>true</EmitOnDownPress>
@@ -2113,7 +2217,7 @@
 			<Pressed>btn_pitch_down1_over.png</Pressed>
 			<Unpressed>btn_pitch_down1.png</Unpressed>
 		</State>
-		<Pos>47,153</Pos>
+		<Pos>47,165</Pos>
 		<Connection>
 			<ConfigKey>[Channel1],rate_perm_down</ConfigKey>
 			<EmitOnDownPress>true</EmitOnDownPress>
@@ -2136,7 +2240,7 @@
 			<Pressed>btn_pitch_down2_over.png</Pressed>
 			<Unpressed>btn_pitch_down2.png</Unpressed>
 		</State>
-		<Pos>1168,153</Pos>
+		<Pos>1168,165</Pos>
 		<Connection>
 			<ConfigKey>[Channel2],rate_perm_down</ConfigKey>
 			<EmitOnDownPress>true</EmitOnDownPress>
@@ -2165,7 +2269,7 @@
 			<Pressed>btn_nudge_up1_over.png</Pressed>
 			<Unpressed>btn_nudge_up1.png</Unpressed>
 		</State>
-		<Pos>74,126</Pos>
+		<Pos>74,138</Pos>
 		<Connection>
 			<ConfigKey>[Channel1],rate_temp_up</ConfigKey>
 			<EmitOnDownPress>true</EmitOnDownPress>
@@ -2198,7 +2302,7 @@
 			<Pressed>btn_nudge_up2_over.png</Pressed>
 			<Unpressed>btn_nudge_up2.png</Unpressed>
 		</State>
-		<Pos>1195,126</Pos>
+		<Pos>1195,138</Pos>
 		<Connection>
 			<ConfigKey>[Channel2],rate_temp_up</ConfigKey>
 			<EmitOnDownPress>true</EmitOnDownPress>
@@ -2231,7 +2335,7 @@
 			<Pressed>btn_nudge_down1_over.png</Pressed>
 			<Unpressed>btn_nudge_down1.png</Unpressed>
 		</State>
-		<Pos>74,153</Pos>
+		<Pos>74,165</Pos>
 		<Connection>
 			<ConfigKey>[Channel1],rate_temp_down</ConfigKey>
 			<EmitOnDownPress>true</EmitOnDownPress>
@@ -2264,7 +2368,7 @@
 			<Pressed>btn_nudge_down2_over.png</Pressed>
 			<Unpressed>btn_nudge_down2.png</Unpressed>
 		</State>
-		<Pos>1195,153</Pos>
+		<Pos>1195,165</Pos>
 		<Connection>
 			<ConfigKey>[Channel2],rate_temp_down</ConfigKey>
 			<EmitOnDownPress>true</EmitOnDownPress>
@@ -2337,47 +2441,47 @@
 
 	<!--
 	**********************************************
-	Button- End of track mode
+	Button- Repeat (End of track mode)
 	**********************************************
 	-->
 	<PushButton>
-		<Tooltip>End of track mode&#10;Determines Mixxx's behaviour when it reaches the end of the track.&#10;</Tooltip>
+		<Tooltip>Repeat&#10;When active the track will repeat if you go past the end or reverse before the start.&#10;</Tooltip>
 		<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
 		</Style>
 		<NumberStates>2</NumberStates>
 		<State>
 			<Number>0</Number>
-			<Pressed>btn_trackmode_stop.png</Pressed>
-			<Unpressed>btn_trackmode_stop.png</Unpressed>
+			<Pressed>btn_repeat1.png</Pressed>
+			<Unpressed>btn_repeat1.png</Unpressed>
 		</State>
 		<State>
 			<Number>1</Number>
-			<Pressed>btn_trackmode_loop.png</Pressed>
-			<Unpressed>btn_trackmode_loop.png</Unpressed>
+			<Pressed>btn_repeat1_over.png</Pressed>
+			<Unpressed>btn_repeat1_over.png</Unpressed>
 		</State>
-		<Pos>419,257</Pos>
+		<Pos>417,259</Pos>
 		<Connection>
 			<ConfigKey>[Channel1],repeat</ConfigKey>
 		</Connection>
 	</PushButton>
 	<PushButton>
-		<Tooltip>End of track mode&#10;Determines Mixxx's behaviour when it reaches the end of the track.&#10;</Tooltip>
+		<Tooltip>Repeat&#10;When active the track will repeat if you go past the end or reverse before the start.&#10;</Tooltip>
 		<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
 		</Style>
 		<NumberStates>2</NumberStates>
 		<State>
 			<Number>0</Number>
-			<Pressed>btn_trackmode_stop.png</Pressed>
-			<Unpressed>btn_trackmode_stop.png</Unpressed>
+			<Pressed>btn_repeat2.png</Pressed>
+			<Unpressed>btn_repeat2.png</Unpressed>
 		</State>
 		<State>
 			<Number>1</Number>
-			<Pressed>btn_trackmode_loop.png</Pressed>
-			<Unpressed>btn_trackmode_loop.png</Unpressed>
+			<Pressed>btn_repeat2_over.png</Pressed>
+			<Unpressed>btn_repeat2_over.png</Unpressed>
 		</State>
-		<Pos>1222,257</Pos>
+		<Pos>1220,259</Pos>
 		<Connection>
 			<ConfigKey>[Channel2],repeat</ConfigKey>
 		</Connection>
