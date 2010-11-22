@@ -8,10 +8,10 @@
 ///
 ////////////////////////////////////////////////////////////////////////////////
 //
-// Last changed  : $Date: 2009-01-11 06:36:36 -0500 (Sun, 11 Jan 2009) $
+// Last changed  : $Date: 2009-05-17 14:30:57 +0300 (Sun, 17 May 2009) $
 // File revision : $Revision: 3 $
 //
-// $Id: STTypes.h 47 2009-01-11 11:36:36Z oparviai $
+// $Id: STTypes.h 70 2009-05-17 11:30:57Z oparviai $
 //
 ////////////////////////////////////////////////////////////////////////////////
 //
@@ -42,24 +42,18 @@
 typedef unsigned int    uint;
 typedef unsigned long   ulong;
 
-/* 
 #ifdef __GNUC__
     // In GCC, include soundtouch_config.h made by config scritps
     #include "soundtouch_config.h"
 #endif
-*/
 
 #ifndef _WINDEF_
     // if these aren't defined already by Windows headers, define now
 
     typedef int BOOL;
 
-#ifndef FALSE
     #define FALSE   0
-#endif
-#ifndef TRUE
     #define TRUE    1
-#endif
 
 #endif  // _WINDEF_
 
@@ -100,7 +94,7 @@ namespace soundtouch
         /// routines compiled for whatever reason, you may disable these optimizations 
         /// to make the library compile.
 
-        //#define ALLOW_X86_OPTIMIZATIONS     1
+        #define ALLOW_X86_OPTIMIZATIONS     1
 
     #endif
 
@@ -144,5 +138,12 @@ namespace soundtouch
 
     #endif  // INTEGER_SAMPLES
 };
+
+
+// When this #define is active, eliminates a clicking sound when the "rate" or "pitch" 
+// parameter setting crosses from value <1 to >=1 or vice versa during processing. 
+// Default is off as such crossover is untypical case and involves a slight sound 
+// quality compromise.
+//#define PREVENT_CLICK_AT_RATE_CROSSOVER   1
 
 #endif

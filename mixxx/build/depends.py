@@ -234,7 +234,7 @@ class ReplayGain(Dependence):
         build.env.Append(CPPPATH="#lib/replaygain")
 
 class SoundTouch(Dependence):
-    SOUNDTOUCH_PATH = 'soundtouch-1.4.1'
+    SOUNDTOUCH_PATH = 'soundtouch-1.5.0'
 
     def sources(self, build):
         sources = ['engine/enginebufferscalest.cpp',

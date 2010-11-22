@@ -15,7 +15,7 @@
 ///
 ////////////////////////////////////////////////////////////////////////////////
 //
-// Last changed  : $Date: 2009-02-27 12:24:42 -0500 (Fri, 27 Feb 2009) $
+// Last changed  : $Date: 2009-02-27 19:24:42 +0200 (Fri, 27 Feb 2009) $
 // File revision : $Revision: 4 $
 //
 // $Id: FIFOSampleBuffer.cpp 68 2009-02-27 17:24:42Z oparviai $
