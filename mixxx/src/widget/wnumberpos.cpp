@@ -19,7 +19,7 @@ WNumberPos::WNumberPos(const char * group, QWidget * parent) : WNumber(parent)
 {
     m_dDuration = 0.;
     m_dOldValue = 0.;
-    m_qsText = "E: ";
+    m_qsText = "";
     m_bRemain = false;
 
     m_pShowDurationRemaining = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[Controls]", "ShowDurationRemaining")));
