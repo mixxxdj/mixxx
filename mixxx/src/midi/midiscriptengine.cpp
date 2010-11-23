@@ -22,6 +22,9 @@
 #include "midiscriptengine.h"
 #include "errordialoghandler.h"
 
+// HACK: remove this after Control 2.0 is here
+#include "controlpotmeter.h"
+
 // #include <QScriptSyntaxCheckResult>
 
 #ifdef _MSC_VER
@@ -708,7 +711,15 @@ void MidiScriptEngine::setValue(QString group, QString name, double newValue) {
             uint currentTime = QDateTime::currentDateTime().toTime_t()*1000+QDateTime::currentDateTime().toString("zzz").toUInt();
             // FIXME: Argh, need a way to find out the max & min values of the
             //  ControlObject in question instead of hard-coding the difference threshold
-            if (fabs(difference)>0.05
+            float threshold = 0.05; // default
+            
+            // HACK until we have Control 2.0. It can't come soon enough...
+            ControlObject* temp = cot->getControlObject();
+            ControlPotmeter* cpo = dynamic_cast<ControlPotmeter*>(temp);
+            if (cpo != NULL) threshold = (fabs(cpo->getMax())-fabs(cpo->getMin()))/128*3;
+            // End hack
+            
+            if (fabs(difference)>threshold
                 && (currentTime - m_softTakeoverTimes.value(mixxxControl)) > 50) {
                 ignore = true;
             }
