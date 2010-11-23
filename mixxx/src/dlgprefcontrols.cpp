@@ -211,13 +211,13 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxApp * mixxx,
 // #endif
 
    // Detect small display and prompt user to use small skin.
-   if (QApplication::desktop()->width() >= 800 && QApplication::desktop()->height() == 480 && pConfig->getValueString(ConfigKey("[Config]","Skin"))!= "outlineMini") {
+   if (QApplication::desktop()->width() >= 800 && QApplication::desktop()->height() == 480 && pConfig->getValueString(ConfigKey("[Config]","Skin"))!= "Outline800x480-WVGA") {
       int ret = QMessageBox::warning(this, tr("Mixxx Detected a WVGA Screen"), tr("Mixxx has detected that your screen has a resolution of ") +
                    QString::number(QApplication::desktop()->width()) + " x " + QString::number(QApplication::desktop()->height()) + ".  " +
-                   tr("The only skin compatiable with this size display is OutlineMini (800x480).  Would you like to use that skin?"),
+                   tr("The only skin compatiable with this size display is Outline800x480-WVGA.  Would you like to use that skin?"),
                    QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes);
       if (ret == QMessageBox::Yes) {
-         pConfig->set(ConfigKey("[Config]","Skin"), ConfigValue("outlineMini"));
+         pConfig->set(ConfigKey("[Config]","Skin"), ConfigValue("Outline800x480-WVGA"));
          pConfig->Save();
          ComboBoxSkinconf->setCurrentIndex(ComboBoxSkinconf->findText(pConfig->getValueString(ConfigKey("[Config]","Skin"))));
          qDebug() << "Retrieved skin:" << pConfig->getValueString(ConfigKey("[Config]","Skin")) << "ComboBoxSkinconf:" << ComboBoxSkinconf->currentText();
