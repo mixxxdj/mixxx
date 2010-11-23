@@ -57,10 +57,6 @@ private:
     ReadAheadManager* m_pReadAheadManager;
     double m_dCurSampleIndex;
     double m_dNextSampleIndex;
-    bool reversiDEBUG;
 };
-
-#define SQ(x) ((x)*(x))
-static inline float cubic_interpolate(float y[4], float mu);
 
 #endif
