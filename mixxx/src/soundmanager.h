@@ -80,14 +80,17 @@ class SoundManager : public QObject
         QHash<AudioOutput, const CSAMPLE*> m_outputBuffers;
         QHash<SoundDevice*, AudioOutput> m_audioOutputDevices;
         QHash<AudioInput, short*> m_inputBuffers; /** Audio received from input */
-        QHash<SoundDevice*, long> m_deviceFrameCount;   /** Sound card sync */
-        QHash<SoundDevice*, QPair<double, unsigned long> > m_deviceStreamStats; /** Sound card sync */
-        QHash<SoundDevice*, double> m_deviceClkDrifts; /** Sound card sync */
-        SoundDevice *m_pClkRefDevice;  /** Sound card sync */
+        
+        /** Member variables used for sound card synchronization */
+        QHash<SoundDevice*, long> m_deviceFrameCount;
+        QHash<SoundDevice*, QPair<double, unsigned long> > m_deviceStreamStats;
+        QHash<SoundDevice*, double> m_deviceClkDrifts;
+        SoundDevice *m_pClkRefDevice;
+        double m_dClkRefSampleRate;
         /** SoundTouch time/pitch scaling lib, used for sound card sync here */
         SoundTouch *m_pSoundTouch;
-        /** Used to protect SoundTouch calls */
-        QMutex m_STMutex;
+        /** End sound card sync variables */
+        
 #ifdef __VINYLCONTROL__
         QList<VinylControlProxy*> m_VinylControl;
 #endif        
