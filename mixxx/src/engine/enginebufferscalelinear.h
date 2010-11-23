@@ -52,12 +52,15 @@ private:
     /** Buffer for handling calls to ReadAheadManager */
     CSAMPLE *buffer_int;
     int buffer_int_size;
-    CSAMPLE m_fPrevSample[4];
+    CSAMPLE m_fPrevSample[2];
     //CSAMPLE m_fPreviousL, m_fPreviousR;
     // The read-ahead manager that we use to fetch samples
     ReadAheadManager* m_pReadAheadManager;
     double m_dCurSampleIndex;
     double m_dNextSampleIndex;
 };
+
+#define SQ(x) ((x)*(x))
+static inline float cubic_interpolate(float y[4], float mu);
 
 #endif
