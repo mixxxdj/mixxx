@@ -115,6 +115,9 @@ void SoundManager::clearOperativeVariables()
     m_deviceClkDrifts.clear();
     m_pClkRefDevice = NULL;
     m_deviceStreamStats.clear();
+    if (m_pSoundTouch) m_pSoundTouch->clear();
+    m_deviceFrameCount.clear();
+    m_dClkRefSampleRate = 0.;
 }
 
 /**
@@ -455,14 +458,12 @@ int SoundManager::setupDevices()
     
     // Set up SoundTouch scaler only if there is more than one output sound device
     if (iNumDevicesOpenedForOutput > 1) {
-        m_STMutex.lock();
         m_pSoundTouch = new soundtouch::SoundTouch();
         
         m_pSoundTouch->setSampleRate(m_config.getSampleRate());
         m_pSoundTouch->setChannels(2);
         m_pSoundTouch->setRate(1.);
 //         m_pSoundTouch->setSetting(SETTING_USE_AA_FILTER, 0);
-        m_STMutex.unlock();
     }
 
     // returns OK if we were able to open all the devices the user
@@ -522,36 +523,67 @@ SoundManager::requestBuffer(QList<AudioOutput> outputs, unsigned long iFramesPer
     Q_UNUSED(outputs); // unused, we just give the caller the full hash -bkgood
     //qDebug() << "SoundManager::requestBuffer()";
     
-    // Sound card sync
-//     long currentFrameCount = 0;
-//     if (m_deviceFrameCount.contains(device)) currentFrameCount=m_deviceFrameCount.value(device);
-//     m_deviceFrameCount.insert(device, currentFrameCount+iFramesPerBuffer);  // Overwrites existing value if already present
+    // Sound card sync - Sean's House of Measurements
     
+    // Running total of requested frames
+    long currentFrameCount = 0;
+    if (m_deviceFrameCount.contains(device)) currentFrameCount=m_deviceFrameCount.value(device);
+    m_deviceFrameCount.insert(device, currentFrameCount+iFramesPerBuffer);  // insert() overwrites existing value if already present
+    
+    // Measurement #1 - instantaneous sample rate
+    double currentSampleRate = 0.;
     QPair<double, unsigned long> streamStats;
     if (m_deviceStreamStats.contains(device)) {
         streamStats = m_deviceStreamStats.value(device);
         double difference = streamTime-streamStats.first;
+        currentSampleRate = streamStats.second/difference;
 //         qDebug() << device->getDisplayName() << "played" << streamStats.second << "samples in"
-//                  << difference*1000 << "ms, so" << streamStats.second/difference << "Hz";
+//                  << difference*1000 << "ms, so" << currentSampleRate << "Hz";
 //         qDebug() << QString("\"%1\",\"%2\",\"%3\",\"%4\"").arg(device->getDisplayName()).arg(difference*1000).arg(streamStats.second).arg(streamStats.second/difference);
     }
     streamStats.first = streamTime;
     streamStats.second = iFramesPerBuffer;
     m_deviceStreamStats.insert(device,streamStats);
     
-    // Store absolute stream time for the reference device
-    if (device == m_pClkRefDevice) m_deviceClkDrifts.insert(device, streamTime);
+    // Calculate adjustment rate if not the reference device
+    double adjustmentRate = 1.;
+    if (device != m_pClkRefDevice && m_pSoundTouch && currentSampleRate != 0. 
+        && m_dClkRefSampleRate != 0.)
+    {
+        adjustmentRate = m_dClkRefSampleRate/currentSampleRate;
+        qDebug() << " " << device->getDisplayName() << "adjustment rate is" << adjustmentRate;
+    }
+    
+    // Measurement #2 - Clock drift
+    //  Store absolute stream time & current sample rate for the reference device
+    if (device == m_pClkRefDevice) {
+        m_deviceClkDrifts.insert(device, streamTime);
+        m_dClkRefSampleRate = currentSampleRate;
+    }
     else {  // If not the reference device,
-        // Measure the drift from the reference device
+        // Detect dropped frames/buffers
+        long sdifference = m_deviceFrameCount.value(m_pClkRefDevice)-m_deviceFrameCount.value(device);
+        QString message = "dropped";
+        if (sdifference < 0) message = "duplicated";
+        if (sdifference != 0) {
+            m_deviceFrameCount.clear();
+            message = QString("%1  %2 %3 frames (%4 buffers)")
+                        .arg(device->getDisplayName())
+                        .arg(message)
+                        .arg(fabs(sdifference))
+                        .arg(fabs(sdifference)/iFramesPerBuffer);
+            qWarning() << message;
+        }
+        // Measure the clock drift from the reference device
         //  and the amount of additional drift since the last callback
         double refCardStreamTime = m_deviceClkDrifts.value(m_pClkRefDevice);
         double currentDrift = refCardStreamTime-streamTime;
         double difference = 0;
         if (m_deviceClkDrifts.contains(device)) {
             difference = currentDrift-m_deviceClkDrifts.value(device);
-            qDebug() << device->getDisplayName()
-                     << "additional drift" << difference*1000 << "ms"
-                     << "Total drift" << currentDrift*1000 << "ms";
+//             qDebug() << device->getDisplayName()
+//                      << "additional drift" << difference*1000 << "ms"
+//                      << "Total drift" << currentDrift*1000 << "ms";
         }
         m_deviceClkDrifts.insert(device, currentDrift);  // Overwrites existing value if already present
     }
@@ -597,35 +629,33 @@ SoundManager::requestBuffer(QList<AudioOutput> outputs, unsigned long iFramesPer
     }
     
     const CSAMPLE* destBuffer = m_outputBuffers.value(aOutput);
-//     // No scaling with a single device or the clock master device
-//     if (device == m_pClkRefDevice || iNumDevicesOpenedForOutput == 1) {
-// //         memcpy((CSAMPLE*)destBuffer, sourceBuffer, iFramesPerBuffer*2);  // I don't know how to use this, what am I thinking?
-//         for (uint i=0; i<iFramesPerBuffer; i++) {
-//             destBuffer[i] = sourceBuffer[i];
-//         }
-//     }
-//     else {
+    // No scaling with the clock master device or a single output device
+    if (device == m_pClkRefDevice || !m_pSoundTouch) {
+        memcpy((CSAMPLE*)destBuffer, sourceBuffer, iFramesPerBuffer*2*sizeof(CSAMPLE)); // *2 for stereo
+    }
+    else {
         // Use Sample Rate Tranposition to adjust the buffer length for the card that's requesting it
         //  to compensate for clock drift
-        m_STMutex.lock();
-        m_pSoundTouch->clear();
-        m_pSoundTouch->setRate(1.); // TODO: Figure out amount to adjust & replace the 1. here with it.
+        m_pSoundTouch->setRate(adjustmentRate);
         long remaining_frames = iFramesPerBuffer;
+//         int passes = 1;
         while (m_pSoundTouch->numSamples() < remaining_frames) {
 //             qDebug() << "Giving ST" << remaining_frames << "frames";
             m_pSoundTouch->putSamples(sourceBuffer,remaining_frames);
             remaining_frames -= m_pSoundTouch->numSamples();
-//             qDebug() << "numSamples" << m_pSoundTouch->numSamples() << "remaining_frames" << remaining_frames;
+//             qDebug() << "numSamples" << m_pSoundTouch->numSamples() << "remaining_frames" << remaining_frames << "pass" << passes;
+//             passes++;
         }
+//         qDebug() << "ST requred" << passes << "passes to process"
+//                  << m_pSoundTouch->numSamples() << "frames, and it was asked for"
+//                  << iFramesPerBuffer;
         unsigned long received_frames;
-//         qDebug() << device->getDisplayName() << "writing output to" << destBuffer;
         received_frames = m_pSoundTouch->receiveSamples((SAMPLETYPE*)destBuffer, iFramesPerBuffer);
-        m_STMutex.unlock();
         if (received_frames != iFramesPerBuffer)
-            qWarning() << "For card" << device->getDisplayName()
+            qWarning() << device->getDisplayName()
                        << "SoundTouch returned" << received_frames
                        << "out of" << iFramesPerBuffer << "frames!";
-//     }
+    }
     return m_outputBuffers;
 }
 
