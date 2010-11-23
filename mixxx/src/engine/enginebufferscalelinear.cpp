@@ -29,7 +29,6 @@ EngineBufferScaleLinear::EngineBufferScaleLinear(ReadAheadManager *pReadAheadMan
     m_dTempo = 0.0f;
     m_fOldTempo = 1.0f;
     m_fOldBaseRate = 1.0f;
-    m_scaleRemainder = 0.0f;
     m_dCurSampleIndex = 0.0f;
     m_dNextSampleIndex = 0.0f;
     
@@ -38,6 +37,7 @@ EngineBufferScaleLinear::EngineBufferScaleLinear(ReadAheadManager *pReadAheadMan
 
     buffer_int = new CSAMPLE[kiLinearScaleReadAheadLength];
     buffer_int_size = 0;
+    reversiDEBUG=false;
 }
 
 EngineBufferScaleLinear::~EngineBufferScaleLinear()
@@ -76,7 +76,6 @@ void EngineBufferScaleLinear::setBaseRate(double dBaseRate)
 void EngineBufferScaleLinear::clear()
 {
     m_bClear = true;
-    m_scaleRemainder = 0.0f;
 }
 
 
@@ -104,9 +103,6 @@ CSAMPLE * EngineBufferScaleLinear::scale(double playpos, unsigned long buf_size,
     double rate_add_abs;
     bool reversing = false;
 
-    if ( rate_add_diff )
-        m_scaleRemainder = 0.0f;
-        
     //Update the old base rate because we only need to
     //interpolate/ramp up the pitch changes once.
     m_fOldBaseRate = m_dBaseRate;
@@ -116,45 +112,46 @@ CSAMPLE * EngineBufferScaleLinear::scale(double playpos, unsigned long buf_size,
     new_playpos = playpos;
 
 
-    const int iRateLerpLength = math_min(RATE_LERP_LENGTH, buf_size);
+    const int iRateLerpLength = math_min(RATE_LERP_LENGTH, buf_size); //= buf_size;
 
     // Guard against buf_size == 0
     if (iRateLerpLength == 0)
         return buffer;
       
-	  
     if (rate_add_new * rate_add_old < 0)
     {
-    	qDebug() << "reversing";
-    	reversing = true;
-    }
-    //attempt at solving reverse-direction clicks
-    /*	
-    {
-    	qDebug() << "Reverse direction";
+    	//qDebug() << "Reverse direction" << rate_add_old << rate_add_new;
+    	reversiDEBUG = true;
     	
     	//const int leftover = buf_size - iRateLerpLength;
     	
-    	CSAMPLE *pOldRate = new CSAMPLE[buf_size];
-    	CSAMPLE *pNewRate = new CSAMPLE[buf_size];
+    	int overlap = math_min(buf_size, RATE_LERP_LENGTH);
+    	CSAMPLE *pOldRate = new CSAMPLE[buf_size/2 + overlap];
+    	CSAMPLE *pNewRate = new CSAMPLE[buf_size/2 + overlap];
     	//CSAMPLE *pLeftOver = new CSAMPLE[leftover];
     	CSAMPLE *buffer_save = buffer;
+    	
     	
     	float old_rate = rate_add_old;
     	float new_rate = rate_add_new;
     	
     	m_fOldBaseRate = old_rate;
     	m_dBaseRate = old_rate;
-    	//qDebug() << "first rate:" << old_rate;
     	//is this insanely not threadsafe?
     	buffer = pOldRate;
-    	pOldRate = scale(playpos, buf_size, pBase, iBaseLength);
+    	pOldRate = scale(0, buf_size/2 + overlap, pBase, iBaseLength);
     	
+    	buffer_int_size=0;
+    	m_dCurSampleIndex = -1.0;
+    	m_dNextSampleIndex = 0;
+    	
+    	m_fPrevSample[0] = pOldRate[buf_size/2 - 2];
+    	m_fPrevSample[1] = pOldRate[buf_size/2 - 1];
     	m_fOldBaseRate = new_rate;
     	m_dBaseRate = new_rate;
     	//qDebug() << "second rate:" << new_rate;
     	buffer = pNewRate;
-    	pNewRate = scale(playpos, buf_size, pBase, iBaseLength);
+    	pNewRate = scale(0, buf_size/2 + overlap, pBase, iBaseLength);
     	
     	//m_fOldBaseRate = new_rate;
     	//m_dBaseRate = new_rate;
@@ -165,24 +162,60 @@ CSAMPLE * EngineBufferScaleLinear::scale(double playpos, unsigned long buf_size,
     	buffer = buffer_save;
     	//int fade_time = buf_size > iRateLerpLength ? iRateLerpLength : buf_size;
     	
-    	for (int i=0; i<buf_size; i++)
+    	int cross_start = buf_size / 2 - overlap;
+    	int cross_end = buf_size / 2 + overlap;
+    	for (int i=0; i<buf_size; i+=2)
     	{
-    		//if (i < fade_time)
-    			buffer[i] = (int)(
-    							(float)pOldRate[i] * 
-	    							((float)(buf_size-i) / (float)buf_size) + 
-	    						(float)pNewRate[i] * 
-	    							((float)i / (float)buf_size));
-    		//else
-    		//	buffer[i] = pLeftOver[i-fade_time];
+    		
+    		if (i<cross_start)
+    		{
+    			buffer[i] = pOldRate[i];
+    			buffer[i+1] = pOldRate[i+1];
+    		}
+    		else if (i>=cross_start && i < cross_end)
+    		{
+    			float frac = (float)(i - cross_start) / ((float)overlap * 2.0);
+    			//dip volume across speed change
+    			float gain = 2 * frac - 1.0;
+    			buffer[i] =  gain * ((1.0 - frac) * (float)pOldRate[i] + frac * (float)pNewRate[i-cross_start]);
+    			buffer[i+1] = gain * ((1.0 - frac) * (float)pOldRate[i+1] + frac * (float)pNewRate[i+1-cross_start]);
+    		}
+    		else // if (i>=cross_end)
+    		{
+    			buffer[i] = pNewRate[i-cross_start];
+    			buffer[i+1] = pNewRate[i+1-cross_start];
+    		}
+    		//if (i == buf_size/2)
+    		//	qDebug() << "half:";
+    		//qDebug() << i << buffer[i];
     	}
     	
     	delete pOldRate;
     	delete pNewRate;
     	//delete pLeftOver;
     	
+    	/*for (int j=2; j<buf_size; j+=2)
+    	{
+    		if (fabs(buffer[j] - buffer[j-2]) > 100)
+    		{
+    			int k = math_max(0, j-10);
+    			for (;k<math_min(j+10, buf_size); k+=2)
+    				qDebug() << k << buffer[k] << "reverser";
+    			qDebug() << "";
+    		}
+    	}*/
+    	
+    	
+    	/*for (int j=0; j<20; j+=2)
+			qDebug() << buffer[j];
+		qDebug() << "---";
+
+		for (int j=buf_size-20; j<buf_size; j+=2)
+			qDebug() << buffer[j];*/
+    	
+    	reversiDEBUG = false;
 		return buffer;
-    }*/
+    }
     
     // Simulate the loop to estimate how many samples we need
     double samples = 0;
@@ -215,7 +248,6 @@ CSAMPLE * EngineBufferScaleLinear::scale(double playpos, unsigned long buf_size,
     //Q_ASSERT(unscaled_samples_needed >= 0);
     //Q_ASSERT(unscaled_samples_needed != 0);
 
-    long prev_index = 0;
     bool last_read_failed = false;
     CSAMPLE prev_sample[2];
     CSAMPLE cur_sample[2];
@@ -234,6 +266,8 @@ CSAMPLE * EngineBufferScaleLinear::scale(double playpos, unsigned long buf_size,
     int screwups = 0;
     //qDebug() << m_fPrevSample[0] << buffer_int[0];
     //qDebug() << "loop" << m_dCurSampleIndex << m_dNextSampleIndex << samples << unscaled_samples_needed;
+    //if (rate_add_abs < 0.1)
+    //	qDebug() << rate_add;
     while(i < buf_size)
     {
     	//shift indicies
@@ -241,17 +275,17 @@ CSAMPLE * EngineBufferScaleLinear::scale(double playpos, unsigned long buf_size,
     	m_dCurSampleIndex = m_dNextSampleIndex;
     	
     	//if we're interpolating between old samples, load them
-    	if (prevIndex < 0.0)
+    	if (m_dCurSampleIndex < 0.0)
 		{
 			prev_sample[0] = m_fPrevSample[0];
 			prev_sample[1] = m_fPrevSample[1];
 		}
 		else
 		{
-			if ((int)floor(prevIndex)*2+1 < buffer_int_size)
+			if ((int)floor(m_dCurSampleIndex)*2+1 < buffer_int_size)
 			{
-				prev_sample[0] = buffer_int[(int)floor(prevIndex)*2];
-				prev_sample[1] = buffer_int[(int)floor(prevIndex)*2+1];
+				prev_sample[0] = buffer_int[(int)floor(m_dCurSampleIndex)*2];
+				prev_sample[1] = buffer_int[(int)floor(m_dCurSampleIndex)*2+1];
 			}
 			else
 			{
@@ -260,17 +294,15 @@ CSAMPLE * EngineBufferScaleLinear::scale(double playpos, unsigned long buf_size,
 				prev_sample[1] = 0;
 			}
 		}
-    	
+		
     	// if we don't have enough samples, load some more
     	while ((int)ceil(m_dCurSampleIndex)*2+1 >= buffer_int_size) {
+    		//qDebug() << "buffer at i=" << i << unscaled_samples_needed << prev_sample[0]; 
     		//qDebug() << m_dCurSampleIndex << m_dNextSampleIndex << unscaled_samples_needed << buffer_int_size << "buffer";
     		//qDebug() << "buffer" << m_dCurSampleIndex << buffer_int_size;
     		//if (rate_add_abs < 0.1)
     		//	qDebug() << "need to buffer" << m_dCurSampleIndex << buffer_int_size;
     		int old_bufsize = buffer_int_size;
-    		
-    		m_fPrevSample[0] = prev_sample[0];
-    		m_fPrevSample[1] = prev_sample[1];
     		
             //Q_ASSERT(unscaled_samples_needed > 0);
             if (unscaled_samples_needed == 0) {
@@ -286,8 +318,6 @@ CSAMPLE * EngineBufferScaleLinear::scale(double playpos, unsigned long buf_size,
                                 ->getNextSamples(m_dBaseRate,buffer_int,
                                                  samples_to_read);
 			
-			
-
             if (m_dBaseRate > 0)
                 new_playpos += buffer_int_size;
             else if (m_dBaseRate < 0)
@@ -302,6 +332,17 @@ CSAMPLE * EngineBufferScaleLinear::scale(double playpos, unsigned long buf_size,
             unscaled_samples_needed -= buffer_int_size;
             //shift the index by the size of the old buffer
             m_dCurSampleIndex -= old_bufsize / 2;
+            prevIndex -= old_bufsize / 2;
+            if (prevIndex > -2.0 && old_bufsize !=0)
+            {
+            	m_fPrevSample[0] = prev_sample[0] = cur_sample[0];
+	    		m_fPrevSample[1] = prev_sample[1] = cur_sample[1];
+            }
+            else
+            {
+            	m_fPrevSample[0] = prev_sample[0];
+            	m_fPrevSample[1] = prev_sample[1];
+            }
             //qDebug() << "buffer size" << buffer_int_size << m_dCurSampleIndex <<unscaled_samples_needed;
         }
 
@@ -313,24 +354,43 @@ CSAMPLE * EngineBufferScaleLinear::scale(double playpos, unsigned long buf_size,
         //improve sound quality.
         if (i < iRateLerpLength) {
             rate_add = (rate_add_diff) / (float)iRateLerpLength * (float)i + rate_add_old;
+           // qDebug() << i << rate_add;
         }
         else {
+        	//if (i==iRateLerpLength)
+        	//	qDebug() << i << rate_add_new << "for remainder";
             rate_add = rate_add_new;
         }
 
 		//for the current index, what percentage is it between the previous and the next?
         CSAMPLE frac = m_dCurSampleIndex - floor(m_dCurSampleIndex);
-        
+
+		
         //Perform linear interpolation
         buffer[i] = prev_sample[0] + frac * (cur_sample[0] - prev_sample[0]);
         buffer[i+1] = prev_sample[1] + frac * (cur_sample[1] - prev_sample[1]);
         
-		if (reversing)
+        
+        //at extremely low speeds, dampen the gain to smooth out pops and clicks
+        if (fabs(rate_add) < 0.1)
+        {
+        	CSAMPLE gainfrac = fabs(rate_add) / 0.1;
+        	//qDebug() << "gainfrac" << gainfrac;
+        	buffer[i] = (float)gainfrac * (float)buffer[i];
+        	buffer[i+1] = (float)gainfrac * (float)buffer[i+1];
+        }
+        
+        //if (reversiDEBUG)
+        //{
+        //	qDebug() << i << buffer[i] << prev_sample[0] << frac << cur_sample[0] << prevIndex << m_dCurSampleIndex;
+        //}
+        
+		/*if (reversing)
 		{
 			//fade out and in over the reversal
 			buffer[i] = buffer[i] * (fabs(2.0 * (float)i / (float)buf_size - 1.0));
 			buffer[i+1] = buffer[i+1] * (fabs(2.0 * (float)i / (float)buf_size - 1.0));
-		}
+		}*/
 
         if (i < iRateLerpLength)
             m_dNextSampleIndex = m_dCurSampleIndex + fabs(rate_add);
@@ -349,7 +409,30 @@ CSAMPLE * EngineBufferScaleLinear::scale(double playpos, unsigned long buf_size,
     // It's possible that we will exit this function without having satisfied
     // this requirement. We may be trying to read past the end of the file.
     //Q_ASSERT(unscaled_samples_needed == 0);
+    
+    //if (!reversiDEBUG)
+    //if (rate_add_new < 0.05)
+    //{
+    	/*for (int j=2; j<buf_size; j+=2)
+    	{
+    		if (fabs(buffer[j] - buffer[j-2]) > 10)
+    		{
+    			int k = math_max(0, j-10);
+    			for (;k<math_min(j+10, buf_size); k+=2)
+    				qDebug() << k << buffer[k];
+    			break;
+    		}
+    	}*/
+    	
+    	
+		/*for (int j=0; j<20; j+=2)
+			qDebug() << buffer[j];
+		qDebug() << "---";
 
+		for (int j=buf_size-20; j<buf_size; j+=2)
+			qDebug() << buffer[j];*/
+	//}
+    	
     return buffer;
 }
 
