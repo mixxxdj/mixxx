@@ -45,13 +45,6 @@ SoundManager::SoundManager(ConfigObject<ConfigValue> * pConfig, EngineMaster * _
     iNumDevicesOpenedForInput = 0;
     iNumDevicesHaveRequestedBuffer = 0;
 
-    //TODO: Find a better spot for this:
-    //Set up a timer to sync Mixxx's ControlObjects on...
-    //(We set the timer to fire off
-    //connect(&m_controlObjSyncTimer, SIGNAL(timeout()), this, SLOT(sync()));
-    //m_controlObjSyncTimer.start(33);
-    //m_controlObjSyncTimer->start(m_pConfig->getValueString(ConfigKey("[Soundcard]","Latency")).toInt());
-
     //These are ControlObjectThreadMains because all the code that
     //uses them is called from the GUI thread (stuff like opening soundcards).
     ControlObjectThreadMain* pControlObjectLatency = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[Master]", "latency")));
