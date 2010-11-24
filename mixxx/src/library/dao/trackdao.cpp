@@ -121,7 +121,9 @@ void TrackDAO::saveTrack(TrackInfoObject* pTrack) {
 
             emit(trackClean(trackId));
         } else {
-            Q_ASSERT(!m_dirtyTracks.contains(trackId));
+            //Q_ASSERT(!m_dirtyTracks.contains(trackId));
+            if (m_dirtyTracks.contains(trackId))
+            	qDebug() << "formerly fatal error regarding track updates: trackdao.cpp:125";
             //qDebug() << "Skipping track update for track" << pTrack->getId();
         }
     } else {
