@@ -9,13 +9,19 @@ class HSS1394(Feature):
         return "HSS1394 MIDI device support"
 
     def enabled(self, build):
-        build.flags['hss1394'] = util.get_flags(build.env, 'hss1394', 0)
+        if build.platform_is_windows or build.platform_is_osx:
+            build.flags['hss1394'] = util.get_flags(build.env, 'hss1394', 1)
+        else:
+            build.flags['hss1394'] = util.get_flags(build.env, 'hss1394', 0)
         if int(build.flags['hss1394']):
             return True
         return False
 
     def add_options(self, build, vars):
-        vars.Add('hss1394', 'Set to 1 to enable HSS1394 MIDI device support.', 0)
+        if build.platform_is_windows or build.platform_is_osx:
+            vars.Add('hss1394', 'Set to 1 to enable HSS1394 MIDI device support.', 1)
+        else:
+            vars.Add('hss1394', 'Set to 1 to enable HSS1394 MIDI device support.', 0)
 
     def configure(self, build, conf):
         if not self.enabled(build):
@@ -27,11 +33,12 @@ class HSS1394(Feature):
             #if not have_ffado:
             #    raise Exception('Could not find libffado.')
         else:
-            #have_hss1394_h = conf.CheckHeader('hss1394/hss1394.h') # WTF this gives tons of errors on MSVC
-            have_hss1394 = conf.CheckLib('hss1394', autoadd=False)
-            #if not (have_hss1394 and have_hss1394_h):
-            if not have_hss1394:
-                raise Exception('Could not find libhss1394 or its development headers.')
+#            if not conf.CheckHeader('HSS1394/HSS1394.h'):  # WTF this gives tons of errors on MSVC
+#                raise Exception('Did not find HSS1394 development headers, exiting!')
+#            elif not conf.CheckLib(['libHSS1394', 'HSS1394']):
+            if not conf.CheckLib(['libHSS1394', 'HSS1394']):
+                raise Exception('Did not find HSS1394 development library, exiting!')
+                return
             build.env.Append(LIBS = 'hss1394')
         build.env.Append(CPPDEFINES = '__HSS1394__')
 
@@ -554,15 +561,6 @@ class Shoutcast(Feature):
             vorbisenc_found = conf.CheckLib(['vorbisenc'])
             if not vorbisenc_found:
                 raise Exception("libvorbisenc was not found! Please install it or compile Mixxx without Shoutcast support using the shoutcast=0 flag.")
-        
-        #pthread library needs to be explicitly linked on Windows
-        if build.platform_is_windows:
-            build.env.Append(LIBS = 'pthreadVC2')
-            build.env.Append(LIBS = 'pthreadVCE2')
-            build.env.Append(LIBS = 'pthreadVSE2')
-            build.env.Append(LIBS = 'Ws2_32')
-            build.env.Append(LIBS = 'winmm')
-            #libshout is stupid and shout be linked against all of these on its own.
             
     def sources(self, build):
         build.env.Uic4('dlgprefshoutcastdlg.ui')
@@ -673,28 +671,30 @@ class Optimize(Feature):
             # http://msdn.microsoft.com/en-us/library/ms235601.aspx
             build.env.Append(CCFLAGS = '/fp:fast')
 
-            # Show a progress indicator. Not related to optimization so why is
-            # it here? Should we turn on PGO ?
+            # Do link-time code generation (and show a progress indicator)
+            # Should we turn on PGO ?
             # http://msdn.microsoft.com/en-us/library/xbf3tbeh.aspx
             build.env.Append(LINKFLAGS = '/LTCG:STATUS')
-
-            # Suggested for Code unused code removal
+            
+            # Suggested for unused code removal
             # http://msdn.microsoft.com/en-us/library/ms235601.aspx
             # http://msdn.microsoft.com/en-us/library/xsa71f43.aspx
             # http://msdn.microsoft.com/en-us/library/bxwfs976.aspx
             build.env.Append(CCFLAGS = '/Gy')
             build.env.Append(LINKFLAGS = '/OPT:REF')
-            if build.machine_is_64bit:
-                build.env.Append(LINKFLAGS = '/OPT:ICF')
+            build.env.Append(LINKFLAGS = '/OPT:ICF')
+            
+            # Don't worry about alining code on 4KB boundaries
+            build.env.Append(LINKFLAGS = '/OPT:NOWIN98')
 
-            # WTF? http://msdn.microsoft.com/en-us/library/59a3b321.aspx
+            # http://msdn.microsoft.com/en-us/library/59a3b321.aspx
             # In general, you should pick /O2 over /Ox
-            if optimize_level == 1:
+            if optimize_level >= 1:
                 self.status = "Enabled -- Maximize Speed (/O2)"
                 build.env.Append(CCFLAGS = '/O2')
-            elif optimize_level >= 2:
-                self.status = "Enabled -- Maximum Optimizations (/Ox)"
-                build.env.Append(CCFLAGS = '/Ox')
+            #elif optimize_level >= 2:
+            #    self.status = "Enabled -- Maximum Optimizations (/Ox)"
+            #    build.env.Append(CCFLAGS = '/Ox')
 
             # SSE and SSE2 are core instructions on x64
             if not build.machine_is_64bit:
