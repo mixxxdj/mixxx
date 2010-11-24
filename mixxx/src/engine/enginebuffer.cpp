@@ -416,6 +416,7 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
     CSAMPLE * pOutput = (CSAMPLE *)pOut;
 
     bool bCurBufferPaused = false;
+    double rate;
 
     if (!m_pTrackEnd->get() && pause.tryLock()) {
 
@@ -433,7 +434,7 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
 
         bool paused = playButton->get() != 0.0f ? false : true;
 
-        double rate = m_pRateControl->calculateRate(baserate, paused);
+        rate = m_pRateControl->calculateRate(baserate, paused);
         //qDebug() << "rate" << rate << " paused" << paused;
         
         int tweak;
@@ -472,6 +473,7 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
         bCurBufferPaused = rate == 0 ||
             //(at_start && backwards) ||
             (at_end && !backwards);
+            
 
         // If the buffer is not paused, then scale the audio.
         if (!bCurBufferPaused) {
@@ -605,14 +607,15 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
     if (m_bLastBufferPaused && !bCurBufferPaused) {
         // Ramp from zero
         int iLen = math_min(iBufferSize, kiRampLength);
-        float fStep = pOutput[iLen-1]/(float)iLen;
-        for (int i=0; i<iLen; ++i)
-            pOutput[i] = fStep*i;
-
+        for (int i=0; i<iLen; i+=2)
+        {
+        	pOutput[i] = (float)pOutput[i] * ((float)i / (float)iLen);
+        	pOutput[i+1] = (float)pOutput[i+1] * ((float)i / (float)iLen);
+        }
     }
     // Force ramp out if this is the first buffer to be paused.
     else if (!m_bLastBufferPaused && bCurBufferPaused) {
-        rampOut(pOut, iBufferSize);
+        rampOut(pOutput, iBufferSize);
     }
     // If the previous buffer was paused and we are currently paused, then
     // memset the output to zero.
@@ -636,13 +639,13 @@ void EngineBuffer::rampOut(const CSAMPLE* pOut, int iBufferSize)
     if (m_fLastSampleValue!=0.)
     {
         int iLen = math_min(iBufferSize, kiRampLength);
-        float fStep = m_fLastSampleValue/(float)iLen;
         // TODO(XXX) SSE
         while (i<iLen)
         {
-            pOutput[i] = fStep*(iLen-(i+1));
-            ++i;
-        }
+        	pOutput[i] = (float)pOutput[i] * ((float)(iLen-i) / (float)iLen);
+        	pOutput[i+1] = (float)pOutput[i+1] * ((float)(iLen-i) / (float)iLen);
+        	i+=2;
+       	}
     }
 
     // TODO(XXX) memset

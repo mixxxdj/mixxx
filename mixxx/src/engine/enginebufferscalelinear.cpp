@@ -19,7 +19,8 @@
 #include "enginebufferscalelinear.h"
 #include "mathstuff.h"
 
-#define RATE_LERP_LENGTH 200
+//#define RATE_LERP_LENGTH 200
+#define RATE_LERP_LENGTH 400
 
 EngineBufferScaleLinear::EngineBufferScaleLinear(ReadAheadManager *pReadAheadManager) :
     EngineBufferScale(),
@@ -29,11 +30,14 @@ EngineBufferScaleLinear::EngineBufferScaleLinear(ReadAheadManager *pReadAheadMan
     m_dTempo = 0.0f;
     m_fOldTempo = 1.0f;
     m_fOldBaseRate = 1.0f;
-    m_fPreviousL = 0.0f;
-    m_fPreviousR = 0.0f;
-    m_scaleRemainder = 0.0f;
+    m_dCurSampleIndex = 0.0f;
+    m_dNextSampleIndex = 0.0f;
+    
+    for (int i=0; i<2; i++)
+    	m_fPrevSample[i] = 0.0f;
 
     buffer_int = new CSAMPLE[kiLinearScaleReadAheadLength];
+    buffer_int_size = 0;
 }
 
 EngineBufferScaleLinear::~EngineBufferScaleLinear()
@@ -72,7 +76,6 @@ void EngineBufferScaleLinear::setBaseRate(double dBaseRate)
 void EngineBufferScaleLinear::clear()
 {
     m_bClear = true;
-    m_scaleRemainder = 0.0f;
 }
 
 
@@ -99,174 +102,283 @@ CSAMPLE * EngineBufferScaleLinear::scale(double playpos, unsigned long buf_size,
     float rate_add_diff = rate_add_new - rate_add_old;
     double rate_add_abs;
 
-    if ( rate_add_diff )
-        m_scaleRemainder = 0.0f;
-
     //Update the old base rate because we only need to
     //interpolate/ramp up the pitch changes once.
     m_fOldBaseRate = m_dBaseRate;
-
+    
     // Determine position in read_buffer to start from. (This is always 0 with
     // the new EngineBuffer implementation)
     new_playpos = playpos;
 
-    const int iRateLerpLength = math_min(RATE_LERP_LENGTH, buf_size);
+    const int iRateLerpLength = math_min(RATE_LERP_LENGTH, buf_size); //= buf_size;
 
     // Guard against buf_size == 0
     if (iRateLerpLength == 0)
         return buffer;
-
+      
+    if (rate_add_new * rate_add_old < 0)
+    {
+    	//qDebug() << "Reverse direction" << rate_add_old << rate_add_new;
+    	
+    	//calculate some buffer going one way, and some buffer going
+    	//the other way.  Then crossfade between the two, and dip volume
+    	//in the middle. Voila, a scratch
+    	
+    	int overlap = math_min(buf_size / 4, RATE_LERP_LENGTH);
+    	CSAMPLE *pOldRate = new CSAMPLE[buf_size/2 + overlap];
+    	CSAMPLE *pNewRate = new CSAMPLE[buf_size/2 + overlap];
+    	CSAMPLE *buffer_save = buffer;
+    	
+    	
+    	float old_rate = rate_add_old;
+    	float new_rate = rate_add_new;
+    	
+    	m_fOldBaseRate = old_rate;
+    	m_dBaseRate = 0.0;
+    	//is this insanely not threadsafe?  I haven't had problems...
+    	buffer = pOldRate;
+    	pOldRate = scale(0, buf_size/2 + overlap, pBase, iBaseLength);
+    	
+    	buffer_int_size=0;
+    	m_dCurSampleIndex = -1.0;
+    	m_dNextSampleIndex = 0;
+    	
+    	m_fPrevSample[0] = pOldRate[buf_size/2 - 2];
+    	m_fPrevSample[1] = pOldRate[buf_size/2 - 1];
+    	m_fOldBaseRate = 0.0;
+    	m_dBaseRate = new_rate;
+    	buffer = pNewRate;
+    	pNewRate = scale(0, buf_size/2 + overlap, pBase, iBaseLength);
+    	
+    	buffer = buffer_save;
+    	
+    	int cross_start = buf_size / 2 - overlap;
+    	int cross_end = buf_size / 2 + overlap;
+    	//qDebug() << "cross" << cross_start << cross_end;
+    	for (int i=0; i<buf_size; i+=2)
+    	{
+    		
+    		if (i<cross_start)
+    		{
+    			buffer[i] = pOldRate[i];
+    			buffer[i+1] = pOldRate[i+1];
+    		}
+    		else if (i>=cross_start && i < cross_end)
+    		{
+    			float frac = (float)(i - cross_start) / ((float)overlap * 2.0);
+    			//dip volume across speed change
+    			float gain = 2 * frac - 1.0;
+    			buffer[i] =  gain * ((1.0 - frac) * (float)pOldRate[i] + frac * (float)pNewRate[i-cross_start]);
+    			buffer[i+1] = gain * ((1.0 - frac) * (float)pOldRate[i+1] + frac * (float)pNewRate[i+1-cross_start]);
+    		}
+    		else // if (i>=cross_end)
+    		{
+    			buffer[i] = pNewRate[i-cross_start];
+    			buffer[i+1] = pNewRate[i+1-cross_start];
+    		}
+    	}
+    	
+    	delete pOldRate;
+    	delete pNewRate;
+    	
+		return buffer;
+    }
+    
     // Simulate the loop to estimate how many samples we need
     double samples = 0;
 
     for (int j = 0; j < iRateLerpLength; j+=2)
     {
-        rate_add = (rate_add_diff) / iRateLerpLength * j + rate_add_old;
+        rate_add = (rate_add_diff) / (float)iRateLerpLength * (float)j + rate_add_old;
         samples += fabs(rate_add);
     }
-
+    
     rate_add = rate_add_new;
     rate_add_abs = fabs(rate_add);
 
-    samples += (rate_add_abs * ((buf_size - iRateLerpLength)/2));
-    unscaled_samples_needed = ceil(samples);
-
-
-    if ( samples != unscaled_samples_needed)
-        m_scaleRemainder += (double)unscaled_samples_needed - samples;
-
-    bool carry_remainder = FALSE;
-    if ((m_scaleRemainder > 1) || (m_scaleRemainder < 1))
-    {
-        long rem = (long)floor(m_scaleRemainder);
-
-
-        // Be very defensive about equating the remainder
-        // back into unscaled_samples_needed
-		if ((unscaled_samples_needed - rem) >= 1)
-		{
-            carry_remainder = TRUE;
-            m_scaleRemainder -= rem;
-        }
-    }
-
+	//we're calculating mono samples, so divide remaining buffer by 2;
+    samples += (rate_add_abs * ((float)(buf_size - iRateLerpLength)/2));
+    //qDebug() << "predicted samples:" << samples;
+   	unscaled_samples_needed = floor(samples);
+   	
+   	//if the current position fraction plus the future position fraction 
+   	//loops over 1.0, we need to round up
+    if (m_dNextSampleIndex - floor(m_dNextSampleIndex) + samples - floor(samples) > 1.0)
+    	unscaled_samples_needed++;
+    
     // Multiply by 2 because it is predicting mono rates, while we want a stereo
     // number of samples.
     unscaled_samples_needed *= 2;
+    //0 is never the right answer
+    unscaled_samples_needed = math_max(2,unscaled_samples_needed);
+    
+    //Q_ASSERT(unscaled_samples_needed >= 0);
+    //Q_ASSERT(unscaled_samples_needed != 0);
 
-    Q_ASSERT(unscaled_samples_needed >= 0);
-    Q_ASSERT(unscaled_samples_needed != 0);
-
-    int buffer_size = 0;
-    double buffer_index = 0;
-
-    long current_sample = 0;
-    long prev_sample = 0;
     bool last_read_failed = false;
+    CSAMPLE prev_sample[2];
+    CSAMPLE cur_sample[2];
+    double prevIndex=0;
 
     // Use new_playpos to count the new samples we touch.
     new_playpos = 0;
+    
+    prev_sample[0]=0;
+    prev_sample[1]=0;
+    cur_sample[0]=0;
+    cur_sample[1]=0;
 
     int i = 0;
     int screwups = 0;
+    //qDebug() << "rates:" << rate_add_old << rate_add_new;
+    //qDebug() <<  m_dCurSampleIndex;
     while(i < buf_size)
     {
-        prev_sample = current_sample;
-
-        current_sample = floor(buffer_index) * 2;
-        if (!even(current_sample))
-            current_sample++;
-
-        Q_ASSERT(current_sample % 2 == 0);
-        Q_ASSERT(current_sample >= 0);
-        
-        //This code is so messed up. These ASSERTs should be enabled, but they actually
-        //fire because of bug(s). 
-        //Q_ASSERT(prev_sample >= 0);
-        //Q_ASSERT(prev_sample-1 < kiLinearScaleReadAheadLength); 
-        //the prev_sample-1 leaves room for the other sample in the stereo frame
-        //Instead, we're going to workaround the bug by just clamping prev_sample
-        //to make sure it stays in bounds:
-        prev_sample = math_min(kiLinearScaleReadAheadLength, prev_sample);
-        prev_sample = math_max(0, prev_sample);
-
-
-        if (prev_sample != current_sample) {
-            m_fPreviousL = buffer_int[prev_sample];
-            m_fPreviousR = buffer_int[prev_sample+1];
-        }
-
-        if (current_sample+1 >= buffer_size) {
+    	//shift indicies
+    	prevIndex = m_dCurSampleIndex;
+    	m_dCurSampleIndex = m_dNextSampleIndex;
+    	
+    	//if we're really, really close to zero, just call it zero.
+    	if (fabs(m_dCurSampleIndex - floor(m_dCurSampleIndex)) < 0.0001 && 
+    		ceil(m_dCurSampleIndex) == 1.0)
+    	{
+    		m_dCurSampleIndex = floor(m_dCurSampleIndex);
+    	}
+    	
+    	//we're going to be interpolating between two samples, a lower (prev)
+    	//and upper (cur) sample.  If the lower sample is off the end of the buffer,
+    	//load it from the saved globals
+		
+		if ((int)floor(m_dCurSampleIndex)*2+1 < buffer_int_size && m_dCurSampleIndex >= 0.0)
+		{
+			prev_sample[0] = buffer_int[(int)floor(m_dCurSampleIndex)*2];
+			prev_sample[1] = buffer_int[(int)floor(m_dCurSampleIndex)*2+1];
+		}
+		else
+		{
+			prev_sample[0] = m_fPrevSample[0];
+			prev_sample[1] = m_fPrevSample[1];
+		}
+		
+    	// if we don't have enough samples, load some more
+    	
+    	while ((int)ceil(m_dCurSampleIndex)*2+1 >= buffer_int_size) {
+    		int old_bufsize = buffer_int_size;
+    		//qDebug() << "buffer" << rate_add_new << i << m_dCurSampleIndex << buffer_int_size <<unscaled_samples_needed;
             //Q_ASSERT(unscaled_samples_needed > 0);
             if (unscaled_samples_needed == 0) {
+            	//qDebug() << "screwup" << m_dCurSampleIndex << (int)ceil(m_dCurSampleIndex)*2+1 << buffer_int_size;
 	            unscaled_samples_needed = 2;
 	            screwups++;
             }
 
             int samples_to_read = math_min(kiLinearScaleReadAheadLength,
                                            unscaled_samples_needed);
-
-            buffer_size = m_pReadAheadManager
+                                           
+            buffer_int_size = m_pReadAheadManager
                                 ->getNextSamples(m_dBaseRate,buffer_int,
                                                  samples_to_read);
-
+			
             if (m_dBaseRate > 0)
-                new_playpos += buffer_size;
+                new_playpos += buffer_int_size;
             else if (m_dBaseRate < 0)
-                new_playpos -= buffer_size;
+                new_playpos -= buffer_int_size;
 
 
-            if (buffer_size == 0 && last_read_failed) {
+            if (buffer_int_size == 0 && last_read_failed) {
                 break;
             }
-            last_read_failed = buffer_size == 0;
+            last_read_failed = buffer_int_size == 0;
 
-            unscaled_samples_needed -= buffer_size;
-            buffer_index = buffer_index - floor(buffer_index);
-
-            continue;
+            unscaled_samples_needed -= buffer_int_size;
+            //shift the index by the size of the old buffer
+            //qDebug() << prevIndex << m_dCurSampleIndex << old_bufsize;
+            m_dCurSampleIndex -= old_bufsize / 2;
+            prevIndex -= old_bufsize / 2;
+            //fractions below 0 is ok, the ceil will bring it up to 0
+            Q_ASSERT(m_dCurSampleIndex > -1.0);
+            
+            if (prevIndex > -2.0)
+            {
+            	if (old_bufsize > 0)
+            	{
+	            	//at slower speeds, the lower sample will just be the current
+	            	//sample (we just had to read a new buffer to get the 
+	            	//actual new current sample, remember?)
+	            	m_fPrevSample[0] = prev_sample[0] = cur_sample[0];
+		    		m_fPrevSample[1] = prev_sample[1] = cur_sample[1];
+		    	}
+		    	//else... just use whatever the prev_sample already was.
+            }
+            else
+            {
+            	//at higher speeds, take the one we've already got
+            	//actually this doesn't really happen
+            	m_fPrevSample[0] = prev_sample[0];
+            	m_fPrevSample[1] = prev_sample[1];
+            }
         }
+        //I guess?
+        if (last_read_failed)
+        	break;
 
+ 		cur_sample[0] = buffer_int[(int)ceil(m_dCurSampleIndex)*2];
+		cur_sample[1] = buffer_int[(int)ceil(m_dCurSampleIndex)*2+1];
+		
         //Smooth any changes in the playback rate over iRateLerpLength
         //samples. This prevents the change from being discontinuous and helps
         //improve sound quality.
         if (i < iRateLerpLength) {
-            rate_add = (rate_add_diff) / iRateLerpLength * i + rate_add_old;
+            rate_add = (float)i * (rate_add_diff) / (float)iRateLerpLength + rate_add_old;
         }
         else {
             rate_add = rate_add_new;
         }
-
-        CSAMPLE frac = buffer_index - floor(buffer_index);
+        
+		//for the current index, what percentage is it between the previous and the next?
+        CSAMPLE frac = m_dCurSampleIndex - floor(m_dCurSampleIndex);
 
         //Perform linear interpolation
-        buffer[i] = m_fPreviousL + frac * (buffer_int[current_sample] - m_fPreviousL);
-        buffer[i+1] = m_fPreviousR + frac * (buffer_int[current_sample+1] - m_fPreviousR);
-
+        buffer[i] = (float)prev_sample[0] + frac * ((float)cur_sample[0] - (float)prev_sample[0]);
+        buffer[i+1] = (float)prev_sample[1] + frac * ((float)cur_sample[1] - (float)prev_sample[1]);
+        
+        //at extremely low speeds, dampen the gain to hide pops and clicks
+       	if (fabs(rate_add) < 0.1)
+       	{
+       		float dither = (float)(rand() % 32768) / 32768 - 0.5; // dither
+       		CSAMPLE gainfrac = fabs(rate_add) / 0.1;
+       		
+       		//if (i==0)
+       		//	qDebug() << buffer[i] << gainfrac << gainfrac * (float)buffer[i] + dither;
+       		buffer[i] = gainfrac * (float)buffer[i] + dither;
+       		buffer[i+1] = gainfrac * (float)buffer[i+1] + dither;
+       		
+       		if (i>=2)
+       		{
+       			buffer[i] = ((float)buffer[i] + (float)buffer[i-2]) / 2;
+       			buffer[i+1] = ((float)buffer[i+1] + (float)buffer[i-1]) / 2;
+       		}
+       	}
+       	
         if (i < iRateLerpLength)
-            buffer_index += fabs(rate_add);
+            m_dNextSampleIndex = m_dCurSampleIndex + fabs(rate_add);
         else
-            buffer_index += rate_add_abs;
-
+            m_dNextSampleIndex = m_dCurSampleIndex + rate_add_abs;
+            
         i+=2;
     }
-
-    if ( carry_remainder )
-    {
-        m_fPreviousL = buffer_int[buffer_size-2];
-        m_fPreviousR = buffer_int[buffer_size-1];
-    }
-
     // If we broke out of the loop, zero the remaining samples
     // TODO(XXX) memset
     for (; i < buf_size; i += 2) {
         buffer[i] = 0.0f;
         buffer[i+1] = 0.0f;
     }
+    
+	Q_ASSERT(i>=buf_size);
 
     // It's possible that we will exit this function without having satisfied
     // this requirement. We may be trying to read past the end of the file.
     //Q_ASSERT(unscaled_samples_needed == 0);
-
+    
     return buffer;
 }

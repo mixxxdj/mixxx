@@ -48,12 +48,14 @@ private:
                                     between the old one and the new one to avoid any discontinuities
                                     in the audio when you change the playback rate */
     float m_fOldBaseRate;       /** Same as old tempo, but for the base playback rate */
-    float m_scaleRemainder;
     /** Buffer for handling calls to ReadAheadManager */
     CSAMPLE *buffer_int;
-    CSAMPLE m_fPreviousL, m_fPreviousR;
+    int buffer_int_size;
+    CSAMPLE m_fPrevSample[2];
     // The read-ahead manager that we use to fetch samples
     ReadAheadManager* m_pReadAheadManager;
+    double m_dCurSampleIndex;
+    double m_dNextSampleIndex;
 };
 
 #endif
