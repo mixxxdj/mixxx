@@ -38,15 +38,10 @@ EngineBufferScaleLinear::EngineBufferScaleLinear(ReadAheadManager *pReadAheadMan
 
     buffer_int = new CSAMPLE[kiLinearScaleReadAheadLength];
     buffer_int_size = 0;
-    
-    //df.setFileName("mixxx-debug.csv");
-    //df.open(QIODevice::WriteOnly | QIODevice::Text);
-    //writer.setDevice(&df);
 }
 
 EngineBufferScaleLinear::~EngineBufferScaleLinear()
 {
-	//df.close();
 }
 
 double EngineBufferScaleLinear::setTempo(double _tempo)
