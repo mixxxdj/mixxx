@@ -173,8 +173,8 @@ CSAMPLE * EngineBufferScaleLinear::scale(double playpos, unsigned long buf_size,
     		{
     			float frac = (float)(i - cross_start) / ((float)overlap * 2.0);
     			//dip volume across speed change
-    			//float gain = 2 * frac - 1.0;
-    			float gain = 1.0;
+    			float gain = 2 * frac - 1.0;
+    			//float gain = 1.0;
     			buffer[i] =  gain * ((1.0 - frac) * (float)pOldRate[i] + frac * (float)pNewRate[i-cross_start]);
     			buffer[i+1] = gain * ((1.0 - frac) * (float)pOldRate[i+1] + frac * (float)pNewRate[i+1-cross_start]);
     		}
