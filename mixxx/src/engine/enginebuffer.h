@@ -236,9 +236,6 @@ private:
     bool m_bLastBufferPaused;
 
     TrackPointer m_pCurrentTrack;
-    
-    QFile df;
-    QTextStream writer;
 };
 
 #endif

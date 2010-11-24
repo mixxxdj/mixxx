@@ -52,13 +52,10 @@ private:
     CSAMPLE *buffer_int;
     int buffer_int_size;
     CSAMPLE m_fPrevSample[2];
-    //CSAMPLE m_fPreviousL, m_fPreviousR;
     // The read-ahead manager that we use to fetch samples
     ReadAheadManager* m_pReadAheadManager;
     double m_dCurSampleIndex;
     double m_dNextSampleIndex;
-    //QFile df;
-    //QTextStream writer;
 };
 
 #endif
