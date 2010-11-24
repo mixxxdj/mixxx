@@ -178,6 +178,7 @@ CSAMPLE * EngineBufferScaleLinear::scale(double playpos, unsigned long buf_size,
     		}
     	}
     	
+    	
     	delete pOldRate;
     	delete pNewRate;
     	
