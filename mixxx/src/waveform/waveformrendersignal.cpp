@@ -95,11 +95,10 @@ void WaveformRenderSignal::draw(QPainter *pPainter, QPaintEvent *event, QVector<
         // Start at curPos minus half the waveform viewer
         int thisIndex = iCurPos+2*(i-halfw);
         if(thisIndex >= 0 && (thisIndex+1) < numBufferSamples) {
-            float sampl = math_min(1,baseBuffer[thisIndex]*m_fGain);
-            float sampr = math_min(1,baseBuffer[thisIndex+1]*m_fGain);
+            float sampl = baseBuffer[thisIndex] * m_fGain * m_iHeight;
+            float sampr = -baseBuffer[thisIndex+1] * m_fGain * m_iHeight;
             const qreal xPos = i/subpixelsPerPixel;
-            m_lines[i].setLine(xPos, -sampr*0.40*m_iHeight,
-                    xPos, sampl*0.40*m_iHeight);
+            m_lines[i].setLine(xPos, sampr, xPos, sampl);
         } else {
             m_lines[i].setLine(0,0,0,0);
         }
