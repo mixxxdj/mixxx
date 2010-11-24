@@ -1,8 +1,8 @@
 	<!--
-	Deere , Skin for Mixxx 1.8.x
+	Deere , Skin for Mixxx 1.9.x
 	www.mixxx.org
 	Copyright (C) 2010 jus ; jus@justmail.de
-	This file is part of the "Deere" Skin for Mixxx 1.8.x
+	This file is part of the "Deere" Skin for Mixxx
 	"Deere" is licensed under the Creative Commons Attribution-ShareAlike 3.0 Unported license.
 	http://creativecommons.org/licenses/by-sa/3.0/
 
@@ -20,6 +20,11 @@
 
 	<!--
 	CHANGELOG
+	v1.06	(19/11/2010)
+	* Added Mixxx 1.9 features: Keylock & Repeat buttons
+	* Changed graphics for VUmeters to a more brighter variant
+	* Deleted end-of-track mode buttons
+
 	v1.05	(20/09/2010)
 	* Added stylesheet support for library & tooltips
 
@@ -129,7 +134,7 @@
 		</Style>
 		<Channel>1</Channel>
 		<Pos>3,84</Pos>
-		<Size>404,102</Size>
+		<Size>404,112</Size>
 		<BgColor>#000000</BgColor>
 		<HfcColor>#1b1b1b</HfcColor>
 		<SignalColor>#0099FF</SignalColor>
@@ -412,7 +417,7 @@
 		</Style>
 		<Channel>2</Channel>
 		<Pos>859,84</Pos>
-		<Size>403,102</Size>
+		<Size>403,112</Size>
 		<BgColor>#000000</BgColor>
 		<HfcColor>#1b1b1b</HfcColor>
 		<SignalColor>#E17800</SignalColor>
@@ -700,8 +705,8 @@
 		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
 		</Style>
 		<Channel>1</Channel>
-		<Pos>3,194</Pos>
-		<Size>355,40</Size>
+		<Pos>3,202</Pos>
+		<Size>342,34</Size>
 		<BgColor>#000000</BgColor>
 		<SignalColor>#0099FF</SignalColor>
 		<MarkerColor>#00FF00</MarkerColor>
@@ -716,8 +721,8 @@
 		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
 		</Style>
 		<Channel>2</Channel>
-		<Pos>859,194</Pos>
-		<Size>355,40</Size>
+		<Pos>859,202</Pos>
+		<Size>342,34</Size>
 		<BgColor>#000000</BgColor>
 		<SignalColor>#E17800</SignalColor>
 		<MarkerColor>#00FF00</MarkerColor>
@@ -756,7 +761,7 @@
 		</Style>
 		<PathVu>btn_volume_display2_over.png</PathVu>
 		<PathBack>btn_volume_display2.png</PathBack>
-		<Pos>645,135</Pos>
+		<Pos>647,135</Pos>
 		<Horizontal>false</Horizontal>
 		<PeakHoldSize>5</PeakHoldSize>
 		<PeakHoldTime>500</PeakHoldTime>
@@ -790,7 +795,7 @@
 		</Style>
 		<PathVu>btn_volume_display_master2_over.png</PathVu>
 		<PathBack>btn_volume_display_master2.png</PathBack>
-		<Pos>632,135</Pos>
+		<Pos>633,135</Pos>
 		<PeakHoldSize>5</PeakHoldSize>
 		<PeakHoldTime>500</PeakHoldTime>
 		<PeakFallTime>50</PeakFallTime>
@@ -824,7 +829,7 @@
 		</Style>
 		<PathStatusLight>btn_clipping2_over.png</PathStatusLight>
 		<PathBack>btn_clipping2.png</PathBack>
-		<Pos>645,122</Pos>
+		<Pos>647,122</Pos>
 		<Connection>
 			<ConfigKey>[Channel2],PeakIndicator</ConfigKey>
 		</Connection>
@@ -1020,7 +1025,7 @@
 		</Style>
 		<Handle>knob_volume2.png</Handle>
 		<Slider>slider_volume2.png</Slider>
-		<Pos>657,111</Pos>
+		<Pos>659,111</Pos>
 		<Horizontal>false</Horizontal>
 		<Connection>
 			<ConfigKey>[Channel2],volume</ConfigKey>
@@ -2030,6 +2035,105 @@
 
 	<!--
 	**********************************************
+	Button- BPM Tap 
+	**********************************************
+	-->
+
+<!--//Jus BPM tap deactivated see https://bugs.launchpad.net/mixxx/+bug/677366 
+	<PushButton>
+		<Tooltip>BPM Tap&#10;It takes the progressive average of the last 8 taps and sets the bpm of the deck to that value, assuming the pitch range is large enough to reach it.&#10;</Tooltip>
+		<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+		</Style>
+		<NumberStates>2</NumberStates>
+		<State>
+			<Number>0</Number>
+			<Pressed>btn_tap1_over.png</Pressed>
+			<Unpressed>btn_tap1.png</Unpressed>
+		</State>
+		<State>
+			<Number>1</Number>
+			<Pressed>btn_tap1_over.png</Pressed>
+			<Unpressed>btn_tap1.png</Unpressed>
+		</State>
+		<Pos>758,96</Pos>
+		<Connection>
+			<ConfigKey>[Channel1],bpm</ConfigKey>
+		</Connection>
+	</PushButton>
+	<PushButton>
+		<Tooltip>BPM Tap&#10;It takes the progressive average of the last 8 taps and sets the bpm of the deck to that value, assuming the pitch range is large enough to reach it.&#10;</Tooltip>
+		<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+		</Style>
+		<NumberStates>2</NumberStates>
+		<State>
+			<Number>0</Number>
+			<Pressed>btn_tap2_over.png</Pressed>
+			<Unpressed>btn_tap2.png</Unpressed>
+		</State>
+		<State>
+			<Number>1</Number>
+			<Pressed>btn_tap2_over.png</Pressed>
+			<Unpressed>btn_tap2.png</Unpressed>
+		</State>
+		<Pos>758,297</Pos>
+		<Connection>
+			<ConfigKey>[Channel2],bpm</ConfigKey>
+		</Connection>
+	</PushButton>
+-->
+	<!--
+	**********************************************
+	Button- Key lock
+	**********************************************
+	-->
+
+	<PushButton>
+		<Tooltip>Key-lock&#10;Activates pitch-independent time stretch in the deck.&#10;Warning: Toggling key-lock during playback may result in a momentary audio glitch.&#10;</Tooltip>
+		<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+		</Style>
+		<NumberStates>2</NumberStates>
+		<State>
+			<Number>0</Number>
+			<Pressed>btn_keylock1.png</Pressed>
+			<Unpressed>btn_keylock1.png</Unpressed>
+		</State>
+		<State>
+			<Number>1</Number>
+			<Pressed>btn_keylock1_over.png</Pressed>
+			<Unpressed>btn_keylock1_over.png</Unpressed>
+		</State>
+		<Pos>379,206</Pos>
+		<Connection>
+			<ConfigKey>[Channel1],keylock</ConfigKey>
+		</Connection>
+	</PushButton>
+	<PushButton>
+		<Tooltip>Key-lock&#10;Activates pitch-independent time stretch in the deck.&#10;Warning: Toggling key-lock during playback may result in a momentary audio glitch.&#10;</Tooltip>
+		<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+		</Style>
+		<NumberStates>2</NumberStates>
+		<State>
+			<Number>0</Number>
+			<Pressed>btn_keylock2.png</Pressed>
+			<Unpressed>btn_keylock2.png</Unpressed>
+		</State>
+		<State>
+			<Number>1</Number>
+			<Pressed>btn_keylock2_over.png</Pressed>
+			<Unpressed>btn_keylock2_over.png</Unpressed>
+		</State>
+		<Pos>1234,206</Pos>
+		<Connection>
+			<ConfigKey>[Channel2],keylock</ConfigKey>
+		</Connection>
+	</PushButton>
+
+	<!--
+	**********************************************
 	Button- Pitch control
 	**********************************************
 	-->
@@ -2334,47 +2438,47 @@
 
 	<!--
 	**********************************************
-	Button- End of track mode
+	Button- Repeat (End of track mode)
 	**********************************************
 	-->
 	<PushButton>
-		<Tooltip>End of track mode&#10;Determines Mixxx's behaviour when it reaches the end of the track.&#10;</Tooltip>
+		<Tooltip>Repeat&#10;When active the track will repeat if you go past the end or reverse before the start.&#10;</Tooltip>
 		<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
 		</Style>
 		<NumberStates>2</NumberStates>
 		<State>
 			<Number>0</Number>
-			<Pressed>btn_trackmode_stop.png</Pressed>
-			<Unpressed>btn_trackmode_stop.png</Unpressed>
+			<Pressed>btn_repeat1.png</Pressed>
+			<Unpressed>btn_repeat1.png</Unpressed>
 		</State>
 		<State>
 			<Number>1</Number>
-			<Pressed>btn_trackmode_loop.png</Pressed>
-			<Unpressed>btn_trackmode_loop.png</Unpressed>
+			<Pressed>btn_repeat1_over.png</Pressed>
+			<Unpressed>btn_repeat1_over.png</Unpressed>
 		</State>
-		<Pos>367,202</Pos>
+		<Pos>352,206</Pos>
 		<Connection>
 			<ConfigKey>[Channel1],repeat</ConfigKey>
 		</Connection>
 	</PushButton>
 	<PushButton>
-		<Tooltip>End of track mode&#10;Determines Mixxx's behaviour when it reaches the end of the track.&#10;</Tooltip>
+		<Tooltip>Repeat&#10;When active the track will repeat if you go past the end or reverse before the start.&#10;</Tooltip>
 		<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
 		</Style>
 		<NumberStates>2</NumberStates>
 		<State>
 			<Number>0</Number>
-			<Pressed>btn_trackmode_stop.png</Pressed>
-			<Unpressed>btn_trackmode_stop.png</Unpressed>
+			<Pressed>btn_repeat2.png</Pressed>
+			<Unpressed>btn_repeat2.png</Unpressed>
 		</State>
 		<State>
 			<Number>1</Number>
-			<Pressed>btn_trackmode_loop.png</Pressed>
-			<Unpressed>btn_trackmode_loop.png</Unpressed>
+			<Pressed>btn_repeat2_over.png</Pressed>
+			<Unpressed>btn_repeat2_over.png</Unpressed>
 		</State>
-		<Pos>1223,202</Pos>
+		<Pos>1207,206</Pos>
 		<Connection>
 			<ConfigKey>[Channel2],repeat</ConfigKey>
 		</Connection>

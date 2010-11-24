@@ -284,8 +284,6 @@ bool TrackInfoObject::exists()  const
     return m_bExists;
 }
 
-//Added for replaygain
-
 float TrackInfoObject::getReplayGain() const
 {
     QMutexLocker lock(&m_qMutex);
@@ -300,8 +298,8 @@ void TrackInfoObject::setReplayGain(float f)
     //qDebug() << "Reported ReplayGain value: " << m_fReplayGain;
     if (dirty)
         setDirty(true);
-    emit(ReplayGainUpdated(f));
     lock.unlock();
+    emit(ReplayGainUpdated(f));
 }
 
 float TrackInfoObject::getBpm() const
@@ -802,25 +800,25 @@ bool TrackInfoObject::locationChanged() {
     QMutexLocker lock(&m_qMutex);
     return m_bLocationChanged;
 }
-/** Returns the rating */
+
 int TrackInfoObject::getRating() const{
-	QMutexLocker lock(&m_qMutex);
-
-	return m_Rating;
+    QMutexLocker lock(&m_qMutex);
+    return m_Rating;
 }
-    /** Set rating */
-void TrackInfoObject::setRating (int rating){
-	QMutexLocker lock(&m_qMutex);
 
-	bool dirty = rating != m_Rating;
+void TrackInfoObject::setRating (int rating){
+    QMutexLocker lock(&m_qMutex);
+    bool dirty = rating != m_Rating;
     m_Rating = rating;
     if (dirty)
         setDirty(true);
 }
+
 QString TrackInfoObject::getKey() const{
     QMutexLocker lock(&m_qMutex);
     return m_key;
 }
+
 void TrackInfoObject::setKey(QString key){
     QMutexLocker lock(&m_qMutex);
     bool dirty = key != m_key;
