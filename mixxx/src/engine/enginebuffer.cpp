@@ -184,10 +184,6 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
     connect(m_pEject, SIGNAL(valueChanged(double)),
             this, SLOT(slotEjectTrack(double)),
             Qt::DirectConnection);
-
-	df.setFileName("mixxx-debug.csv");
-    df.open(QIODevice::WriteOnly | QIODevice::Text);
-    writer.setDevice(&df);
 }
 
 EngineBuffer::~EngineBuffer()
@@ -218,8 +214,6 @@ EngineBuffer::~EngineBuffer()
 
     delete m_pKeylock;
     delete m_pEject;
-    
-    df.close();
 }
 
 void EngineBuffer::setPitchIndpTimeStretch(bool b)
@@ -604,35 +598,21 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
     if (m_bLastBufferPaused && !bCurBufferPaused) {
         // Ramp from zero
         int iLen = math_min(iBufferSize, kiRampLength);
-        //float fStep = pOutput[iLen-1]/(float)iLen;
-        //for (int i=0; i<iLen; ++i)
-        //    pOutput[i] = fStep*i;
         for (int i=0; i<iLen; i+=2)
         {
         	pOutput[i] = (float)pOutput[i] * ((float)i / (float)iLen);
         	pOutput[i+1] = (float)pOutput[i+1] * ((float)i / (float)iLen);
         }
-            
-        //for (int i=0; i<iBufferSize; i+=2)
-        //	writer << i << "," << pOutput[i] << "," << rate << "," << "fadein" << "\n";
-
     }
     // Force ramp out if this is the first buffer to be paused.
     else if (!m_bLastBufferPaused && bCurBufferPaused) {
         rampOut(pOutput, iBufferSize);
-        //for (int i=0; i<iBufferSize; i+=2)
-        //	writer << i << "," << pOutput[i] << "," << rate<< ","<< "fadeout" <<"\n";
     }
     // If the previous buffer was paused and we are currently paused, then
     // memset the output to zero.
     else if (m_bLastBufferPaused && bCurBufferPaused) {
         memset(pOutput, 0, sizeof(pOutput[0])*iBufferSize);
     }
-    //else
-    //{
-    	//for (int i=0; i<iBufferSize; i+=2)
-        //	writer << i << "," << pOutput[i] << "," << rate<< "\n";
-    //}
 
     m_bLastBufferPaused = bCurBufferPaused;
     m_fLastSampleValue = pOutput[iBufferSize-1];
@@ -650,15 +630,12 @@ void EngineBuffer::rampOut(const CSAMPLE* pOut, int iBufferSize)
     if (m_fLastSampleValue!=0.)
     {
         int iLen = math_min(iBufferSize, kiRampLength);
-        //float fStep = m_fLastSampleValue/(float)iLen;
         // TODO(XXX) SSE
         while (i<iLen)
         {
         	pOutput[i] = (float)pOutput[i] * ((float)(iLen-i) / (float)iLen);
         	pOutput[i+1] = (float)pOutput[i+1] * ((float)(iLen-i) / (float)iLen);
         	i+=2;
-        //    pOutput[i] = fStep*(iLen-(i+1));
-        //    ++i;
        	}
     }
 
