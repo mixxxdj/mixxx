@@ -182,7 +182,7 @@
 			<Control>loop_end_position</Control>
 			<Text> LOOP OUT </Text>
 			<Align>bottom</Align>
-			<Color>#70E100</Color>
+			<Color>#0032FF</Color>
 			<TextColor>#FFFFFF</TextColor>
 		</Mark>
 		<!--
