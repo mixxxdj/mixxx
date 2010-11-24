@@ -134,7 +134,7 @@
 		</Style>
 		<Channel>1</Channel>
 		<Pos>934,90</Pos>
-		<Size>722,118</Size>
+		<Size>721,118</Size>
 		<BgColor>#F7F7F7</BgColor>
 		<HfcColor>#3250FF</HfcColor>
 		<SignalColor>#0080FF</SignalColor>
@@ -410,7 +410,7 @@
 		</Style>
 		<Channel>2</Channel>
 		<Pos>934,212</Pos>
-		<Size>722,116</Size>
+		<Size>721,116</Size>
 		<BgColor>#F7F7F7</BgColor>
 		<HfcColor>#3250FF</HfcColor>
 		<SignalColor>#E17000</SignalColor>
