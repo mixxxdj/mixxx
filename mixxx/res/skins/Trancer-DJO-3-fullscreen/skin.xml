@@ -1000,7 +1000,7 @@
   <Tooltip>Play position/remaining time</Tooltip>
   <Channel>1</Channel>
   <Pos>373,274</Pos>
-  <Size>94,16</Size>
+  <Size>105,16</Size>
   <Alignment>right</Alignment>
   <NumberOfDigits>6</NumberOfDigits>
   <BgColor>#000000</BgColor>
@@ -1014,7 +1014,7 @@
   <Tooltip>Play position/remaining time</Tooltip>
   <Channel>2</Channel>
   <Pos>652,274</Pos>
-  <Size>94,16</Size>
+  <Size>105,16</Size>
   <Alignment>right</Alignment>
   <NumberOfDigits>6</NumberOfDigits>
   <BgColor>#000000</BgColor>
@@ -1108,7 +1108,7 @@
  
 
  
-  
+ 
    <TableView>
  <!--  <Pos>17,396</Pos>
   <Size>766,298</Size> -->

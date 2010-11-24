@@ -1009,7 +1009,7 @@
   <Tooltip>Play position/remaining time</Tooltip>
   <Channel>1</Channel>
   <Pos>171,250</Pos>
-  <Size>94,16</Size>
+  <Size>105,16</Size>
   <Alignment>right</Alignment>
   <NumberOfDigits>6</NumberOfDigits>
   <BgColor>#000000</BgColor>
@@ -1023,7 +1023,7 @@
   <Tooltip>Play position/remaining time</Tooltip>
   <Channel>2</Channel>
   <Pos>450,250</Pos>
-  <Size>94,16</Size>
+  <Size>105,16</Size>
   <Alignment>right</Alignment>
   <NumberOfDigits>6</NumberOfDigits>
   <BgColor>#000000</BgColor>
@@ -1115,9 +1115,7 @@
   </Connection>
  </SliderComposed> -->
  
- 
- 
-  
+
    <TableView>
  <!--  <Pos>17,396</Pos>
   <Size>766,298</Size> -->
