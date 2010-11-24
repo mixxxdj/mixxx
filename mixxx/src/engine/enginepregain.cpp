@@ -24,7 +24,7 @@
 #include "controlobject.h"
 
 #include "sampleutil.h"
-
+#include <time.h>   // for clock() and CLOCKS_PER_SEC
 
 /*----------------------------------------------------------------
    A pregaincontrol is ... a pregain.
