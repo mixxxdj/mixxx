@@ -598,7 +598,7 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
     // Force ramp in if this is the first buffer during a play
     if (m_bLastBufferPaused && !bCurBufferPaused) {
         // Ramp from zero
-        int iLen = math_min(iBufferSize, kiRampLength);
+        int iLen = iBufferSize / 2;
         for (int i=0; i<iLen; i+=2)
         {
         	pOutput[i] = (float)pOutput[i] * ((float)i / (float)iLen);
@@ -616,7 +616,7 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
     }
 
     m_bLastBufferPaused = bCurBufferPaused;
-    m_fLastSampleValue = pOutput[iBufferSize-1];
+    m_fLastSampleValue = pOutput[iBufferSize-2];
 }
 
 
@@ -630,14 +630,25 @@ void EngineBuffer::rampOut(const CSAMPLE* pOut, int iBufferSize)
     int i=0;
     if (m_fLastSampleValue!=0.)
     {
-        int iLen = math_min(iBufferSize, kiRampLength);
+        int iLen = iBufferSize / 2;
         // TODO(XXX) SSE
-        while (i<iLen)
+        if (pOutput[0] == 0)
         {
-        	pOutput[i] = (float)pOutput[i] * ((float)(iLen-i) / (float)iLen);
-        	pOutput[i+1] = (float)pOutput[i+1] * ((float)(iLen-i) / (float)iLen);
-        	i+=2;
-       	}
+        	while (i<iLen)
+        	{
+        		pOutput[i] = (float)m_fLastSampleValue * ((float)(iLen-i) / (float)iLen);
+	        	i++;
+        	}
+        }
+        else
+        {
+	        while (i<iLen)
+	        {
+	        	pOutput[i] = (float)pOutput[i] * ((float)(iLen-i) / (float)iLen);
+	        	pOutput[i+1] = (float)pOutput[i+1] * ((float)(iLen-i) / (float)iLen);
+	        	i+=2;
+	       	}
+	    }
     }
 
     // TODO(XXX) memset

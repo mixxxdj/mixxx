@@ -72,11 +72,6 @@ const int VINYL_STATUS_OK = 1;
 const int VINYL_STATUS_WARNING = 2;
 const int VINYL_STATUS_ERROR = 3;
 
-// Maximum number of samples used to ramp to or from zero when playback is
-// stopped or started.
-const int kiRampLength = 200;
-
-
 class EngineBuffer : public EngineObject
 {
      Q_OBJECT
