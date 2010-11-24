@@ -14,8 +14,6 @@
  *                                                                         *
  ***************************************************************************/
 
-#include <time.h>
-
 #include "enginepregain.h"
 #include "controllogpotmeter.h"
 #include "controlpotmeter.h"
