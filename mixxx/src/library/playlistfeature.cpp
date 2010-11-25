@@ -101,7 +101,14 @@ void PlaylistFeature::onRightClickChild(const QPoint& globalPos, QModelIndex ind
 
 void PlaylistFeature::slotCreatePlaylist() {
     int err = 0;
-    QString name = QInputDialog::getText(NULL, tr("New Playlist"), tr("Playlist name:"), QLineEdit::Normal, tr("New Playlist"));
+    bool ok = false;
+    QString name = QInputDialog::getText(
+        NULL, tr("New Playlist"), tr("Playlist name:"),
+        QLineEdit::Normal, tr("New Playlist"), &ok);
+
+    if (!ok)
+        return;
+
     //Ensure the name isn't blank
     if (name == "") {
         QMessageBox::warning(NULL,
