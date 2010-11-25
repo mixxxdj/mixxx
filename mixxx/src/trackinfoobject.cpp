@@ -493,7 +493,6 @@ void TrackInfoObject::setTimesPlayed(int t)
 void TrackInfoObject::incTimesPlayed()
 {
     QMutexLocker lock(&m_qMutex);
-    std::cout << "Track Played:" << m_sArtist.toStdString() << " - " << m_sTitle.toStdString();
     qDebug() << "Track Played:" << m_sArtist << " - " << m_sTitle;
     m_bPlayed = true;
     ++m_iTimesPlayed;
@@ -516,12 +515,10 @@ void TrackInfoObject::setPlayed(bool bPlayed)
     {
         if (bPlayed)
         {
-            std::cout << "Track Played:" << m_sArtist.toStdString() << " - " << m_sTitle.toStdString();
             qDebug() << "Track Played:" << m_sArtist << " - " << m_sTitle;
         }
         else
         {
-            std::cout << "Track Unplayed:" << m_sArtist.toStdString() << " - " << m_sTitle.toStdString();
             qDebug() << "Track Unplayed:" << m_sArtist << " - " << m_sTitle;
         }
         setDirty(true);
