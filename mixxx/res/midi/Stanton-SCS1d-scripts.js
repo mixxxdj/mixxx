@@ -2,7 +2,7 @@
 /*      Stanton SCS.1d MIDI controller script vPre              */
 /*          Copyright (C) 2009-2010, Sean M. Pappalardo         */
 /*      but feel free to tweak this to your heart's content!    */
-/*      For Mixxx version 1.9.x                                 */
+/*      For Mixxx version 1.9.x, controller firmware v1.25      */
 /****************************************************************/
 
 function StantonSCS1d() {}
@@ -168,7 +168,8 @@ StantonSCS1d.init = function (id) {    // called when the MIDI device is opened 
     
     midi.sendSysexMsg(StantonSCS1d.sysex.concat([StantonSCS1d.channel, 14, 0, 0xF7]),8);  // Clear Passive mode
 
-    //for (var i=0x48; i<=0x5c; i++) midi.sendShortMsg(No,i,0x40); // Set surface LEDs to black default
+    // TODO: Check firmware version if possible. Platter behaves very differently after v1.25!
+    //StantonSCS1d.fwVersion = 
     
     // Force change to first deck, initializing the LEDs and connecting signals in the process
     StantonSCS1d.state["Oldknob"]=1;
@@ -1955,7 +1956,10 @@ TODO:
 - Wait for motor to get to speed before changing to vinyl mode
 - Stop motor on FF/REW? If not, FF/REW only at motor speed?
 
-Bugs:
+- Use timers for flashy deck change lights
+- End-of-track warning flash
+
+BUGS:
 - If pad pressed while velocity button held, don't change velocity state
 
 - Window dragging screws up speed - use timestamps

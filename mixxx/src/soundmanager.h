@@ -53,6 +53,7 @@ class SoundManager : public QObject
         void queryDevices();
         int setupDevices();
         SoundDevice* getErrorDevice() const;
+        QList<unsigned int> getSampleRates(QString api) const;
         QList<unsigned int> getSampleRates() const;
         QList<QString> getHostAPIList() const;
         SoundManagerConfig getConfig() const;
@@ -85,6 +86,7 @@ class SoundManager : public QObject
         SoundDevice *m_pErrorDevice;
 #ifdef __PORTAUDIO__
         bool m_paInitialized;
+        unsigned int m_jackSampleRate;
 #endif
 };
 
