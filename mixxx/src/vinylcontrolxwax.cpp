@@ -215,7 +215,7 @@ void VinylControlXwax::run()
         	dDriftControl = 0.0f;
         	dVinylPitch = timecoder_get_pitch(&timecoder);
             filePosition = playPos->get() * cur_duration;             //Get the playback position in the file in seconds.
-            if (filePosition == cur_duration)
+            if (playPos->get() == 1.0 && dVinylPitch > 0)
             {
             	//end of track
             	togglePlayButton(false);
