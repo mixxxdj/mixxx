@@ -69,9 +69,10 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
     m_pScaleLinear(NULL),
     m_pScaleST(NULL),
     m_bScalerChanged(false),
-    m_fLastSampleValue(0.),
     m_bLastBufferPaused(true) {
 
+	m_fLastSampleValue[0] = 0;
+	m_fLastSampleValue[1] = 0;
 
     // Play button
     playButton = new ControlPushButton(ConfigKey(group, "play"));
@@ -634,22 +635,32 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
 	   // m_iRampIter++;
 	}
 	
-	if (!m_bLastBufferPaused && bCurBufferPaused)
+	else if (!m_bLastBufferPaused && bCurBufferPaused)
 	// Force ramp out if this is the first buffer to be paused.
 	{
 	    rampOut(pOutput, iBufferSize);
 	}
 	// If the previous buffer was paused and we are currently paused, then
     // memset the output to zero.
-    else if (m_bLastBufferPaused && bCurBufferPaused) 
+    else if (m_bLastBufferPaused && bCurBufferPaused)
+    { 
 		memset(pOutput, 0, sizeof(pOutput[0])*iBufferSize);
+		
+		//let's try holding the last sample value constant!
+		/*for (int i=0; i<iBufferSize; i+=2)
+		{
+			pOutput[i] = m_fLastSampleValue[0];
+			pOutput[i+1] = m_fLastSampleValue[1];
+		}*/
+	}
     
     m_bLastBufferPaused = bCurBufferPaused;
-    m_fLastSampleValue = pOutput[iBufferSize-2];
+    m_fLastSampleValue[0] = pOutput[iBufferSize-2];
+    m_fLastSampleValue[1] = pOutput[iBufferSize-1];
     
     /*for (int i=0; i<iBufferSize; i+=2)
     {
-    	writer << pOutput[i] << "," << m_iRampIter*100 << "\n";
+    	writer << pOutput[i] << "," << m_fLastSampleValue[0] <<  "\n";
     }*/
 }
 
@@ -662,7 +673,7 @@ void EngineBuffer::rampOut(const CSAMPLE* pOut, int iBufferSize)
 
     // Ramp to zero
     int i=0;
-    if (m_fLastSampleValue!=0.)
+    if (m_fLastSampleValue[0]!=0.)
     {
         // TODO(XXX) SSE
         if (pOutput[0] == 0)
@@ -671,8 +682,9 @@ void EngineBuffer::rampOut(const CSAMPLE* pOut, int iBufferSize)
         	{
         		float sigmoid = sigmoid_zero((float)(iBufferSize - i), (float)iBufferSize);
         		float dither = (float)(rand() % 32768) / 32768 - 0.5; // dither
-        		pOutput[i] = (float)m_fLastSampleValue * sigmoid + dither;
-	        	i++;
+        		pOutput[i] = (float)m_fLastSampleValue[0] * sigmoid + dither;
+        		pOutput[i+1] = (float)m_fLastSampleValue[1] * sigmoid + dither;
+	        	i+=2;
         	}
         }
         else

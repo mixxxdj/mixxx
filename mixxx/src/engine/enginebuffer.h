@@ -230,7 +230,7 @@ private:
 
     /** Holds the last sample value of the previous buffer. This is used when ramping to
       * zero in case of an immediate stop of the playback */
-    float m_fLastSampleValue;
+    float m_fLastSampleValue[2];
     /** Is true if the previous buffer was silent due to pausing */
     bool m_bLastBufferPaused;
     //int m_iRampIter;
