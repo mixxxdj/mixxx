@@ -22,6 +22,7 @@ int ReadAheadManager::getNextSamples(double dRate, CSAMPLE* buffer,
 
     bool in_reverse = dRate < 0;
     int start_sample = m_iCurrentPosition;
+    //qDebug() << "start" << start_sample << requested_samples;
     int samples_needed = requested_samples;
     CSAMPLE* base_buffer = buffer;
 
@@ -102,6 +103,7 @@ int ReadAheadManager::getNextSamples(double dRate, CSAMPLE* buffer,
         }
     }
 
+	//qDebug() << "read" << m_iCurrentPosition << samples_read;
     return samples_read;
 }
 

@@ -41,6 +41,7 @@ bool even(long n);
 /** Compute pow(x,n) for positive integer n through repeated
   * squarings */
 double qip(CSAMPLE x, unsigned int n);
+float sigmoid_zero(double t, double max_t);
 
 static CSAMPLE pi     = acos(-1.0f);
 
