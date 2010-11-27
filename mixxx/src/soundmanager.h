@@ -87,7 +87,6 @@ class SoundManager : public QObject
         unsigned int iNumDevicesOpenedForInput;
         unsigned int iNumDevicesHaveRequestedBuffer;
         QMutex requestBufferMutex;
-        QTimer m_controlObjSyncTimer;
         SoundManagerConfig m_config;
         SoundDevice *m_pErrorDevice;
 #ifdef __PORTAUDIO__
