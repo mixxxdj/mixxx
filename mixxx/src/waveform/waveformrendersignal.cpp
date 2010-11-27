@@ -18,16 +18,17 @@
 #include "trackinfoobject.h"
 
 WaveformRenderSignal::WaveformRenderSignal(const char* group, WaveformRenderer *parent)
-: m_pParent(parent),
-  m_iWidth(0),
-  m_iHeight(0),
-  m_lines(0),
-  m_pTrack(NULL),
-  m_fGain(1),
-  signalColor(255,255,255) {
+  : m_pParent(parent),
+    m_iWidth(0),
+    m_iHeight(0),
+    m_fGain(1),
+    m_lines(0),
+    m_pTrack(NULL),
+
+    signalColor(255,255,255) {
 
     m_pGain = new ControlObjectThreadMain(
-            ControlObject::getControl(ConfigKey(group, "total_gain")));
+        ControlObject::getControl(ConfigKey(group, "total_gain")));
     if(m_pGain != NULL) {
         connect(m_pGain, SIGNAL(valueChanged(double)),
                 this, SLOT(slotUpdateGain(double)));
@@ -44,8 +45,6 @@ void WaveformRenderSignal::resize(int w, int h) {
     m_iWidth = w;
     m_iHeight = h;
 }
-
-
 
 void WaveformRenderSignal::newTrack(TrackPointer pTrack) {
     m_pTrack = pTrack;
@@ -93,8 +92,8 @@ void WaveformRenderSignal::draw(QPainter *pPainter, QPaintEvent *event, QVector<
         // Start at curPos minus half the waveform viewer
         int thisIndex = iCurPos+2*(i-halfw);
         if(thisIndex >= 0 && (thisIndex+1) < numBufferSamples) {
-            float sampl = baseBuffer[thisIndex] * m_fGain * m_iHeight;
-            float sampr = -baseBuffer[thisIndex+1] * m_fGain * m_iHeight;
+            float sampl = baseBuffer[thisIndex] * m_fGain * m_iHeight * 0.5f;
+            float sampr = -baseBuffer[thisIndex+1] * m_fGain * m_iHeight * 0.5f;
             const qreal xPos = i/subpixelsPerPixel;
             m_lines[i].setLine(xPos, sampr, xPos, sampl);
         } else {

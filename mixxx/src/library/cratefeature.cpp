@@ -130,14 +130,20 @@ void CrateFeature::onRightClickChild(const QPoint& globalPos, QModelIndex index)
 
 void CrateFeature::slotCreateCrate() {
 
+    bool ok = false;
     QString name = QInputDialog::getText(NULL,
                                          tr("New Crate"),
                                          tr("Crate name:"),
-                                         QLineEdit::Normal, tr("New Crate"));
+                                         QLineEdit::Normal, tr("New Crate"),
+                                         &ok);
+
+    if (!ok)
+        return;
+
     CrateDAO& crateDao = m_pTrackCollection->getCrateDAO();
 
     if (name == "") {
-		QMessageBox::warning(NULL,
+        QMessageBox::warning(NULL,
                              tr("Crate Creation Failed"),
                              tr("A crate cannot have a blank name."));
         return;

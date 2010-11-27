@@ -302,8 +302,7 @@ class SoundTouch(Dependence):
 class TagLib(Dependence):
     def configure(self, build, conf):
         if not conf.CheckLib('tag'):
-            raise Exception("Could not find libtag or it's development headers.")
-
+            raise Exception("Could not find libtag or its development headers.")
 class MixxxCore(Feature):
 
     def description(self):
@@ -625,19 +624,6 @@ class MixxxCore(Feature):
             # Need this on Windows until we have UTF16 support in Mixxx
             build.env.Append(CPPDEFINES='UNICODE')
             build.env.Append(CPPDEFINES='WIN%s' % build.bitwidth) # WIN32 or WIN64
-
-            #Needed for Midi stuff, should be able to remove since PortMIDI
-            #Tobias Rafreider: libshout won't compile if you uncomment this
-            #build.env.Append(LIBS = 'ogg_static')
-            #build.env.Append(LIBS = 'vorbis_static')
-            #build.env.Append(LIBS = 'vorbisfile_static')
-            '''build.env.Append(LIBS = 'WinMM');
-            build.env.Append(LIBS = 'imm32')
-            build.env.Append(LIBS = 'wsock32')
-            build.env.Append(LIBS = 'delayimp')
-            build.env.Append(LIBS = 'winspool')
-            build.env.Append(LIBS = 'shell32')'''
-
 
         elif build.platform_is_linux:
             build.env.Append(CPPDEFINES='__LINUX__')
