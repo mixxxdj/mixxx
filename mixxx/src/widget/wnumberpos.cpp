@@ -19,7 +19,7 @@ WNumberPos::WNumberPos(const char * group, QWidget * parent) : WNumber(parent)
 {
     m_dDuration = 0.;
     m_dOldValue = 0.;
-    m_qsText = "Pos: ";
+    m_qsText = "";
     m_bRemain = false;
 
     m_pShowDurationRemaining = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[Controls]", "ShowDurationRemaining")));
@@ -59,7 +59,7 @@ void WNumberPos::setValue(double dValue)
         v = m_dDuration-v;
 
     int min1=0,min2=0,sec1=0,sec2=0,msec1=0,msec2=0;
-    int minv21=0,minv22=0,secv21=0,secv22=0;
+    int minv21=0,minv22=0,secv21=0,secv22=0,msecv21=0,msecv22=0;
     if (v>0.)
     {
         min1 = (int)(floor(v/600.))%100;
@@ -76,6 +76,8 @@ void WNumberPos::setValue(double dValue)
         minv22 = (int)(floor(v2/60.))%10;
         secv21 = (int)(floor(v2/10.))%6;
         secv22 = (int)(floor(v2))%10;
+        msecv21 = (int)floor((v2-floor(v2))*10.);
+        msecv22 = (int)(floor((v2-floor(v2))*100.))%10;
     }
 
 /*
@@ -85,9 +87,9 @@ void WNumberPos::setValue(double dValue)
         m_pLabel->setPaletteForegroundColor(m_qFgColor);
  */
 
-    m_pLabel->setText(QString(m_qsText).append("%1%2:%3%4, Dur: %5%6:%7%8")
-                      .arg(min1,1,10).arg(min2,1,10).arg(sec1,1,10).arg(sec2,1,10)
-                      .arg(minv21,1,10).arg(minv22,1,10).arg(secv21,1,10).arg(secv22,1,10));
+    m_pLabel->setText(QString(m_qsText).append("%1%2:%3%4.%5%6 / %7%8:%9%10.%11%12")
+                      .arg(min1,1,10).arg(min2,1,10).arg(sec1,1,10).arg(sec2,1,10).arg(msec1,1,10).arg(msec2,1,10)
+                      .arg(minv21,1,10).arg(minv22,1,10).arg(secv21,1,10).arg(secv22,1,10).arg(msecv21,1,10).arg(msecv22,1,10));
 }
 
 void WNumberPos::slotSetRemain(double remain) {
@@ -99,10 +101,12 @@ void WNumberPos::setRemain(bool bRemain)
     m_bRemain = bRemain;
 
     // Shift display state between showing position and remaining
+    /*
     if (m_bRemain)
-        m_qsText = "Rem: ";
+        m_qsText = "R: ";
     else
-        m_qsText = "Pos: ";
+        m_qsText = "E: ";
+    */
 
     // Have the widget redraw itself with its current value.
     setValue(m_dOldValue);
