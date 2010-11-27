@@ -186,11 +186,17 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
     connect(m_pEject, SIGNAL(valueChanged(double)),
             this, SLOT(slotEjectTrack(double)),
             Qt::DirectConnection);
-
+            
+	//m_iRampIter = 0;            
+	
+	/*df.setFileName("mixxx-debug.csv");
+	df.open(QIODevice::WriteOnly | QIODevice::Text);
+	writer.setDevice(&df);*/
 }
 
 EngineBuffer::~EngineBuffer()
 {
+	//df.close();
     delete m_pLoopingControl;
     delete m_pRateControl;
     delete m_pBpmControl;
@@ -444,13 +450,17 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
         if (rate != rate_old || m_bScalerChanged || tweak != tweak_old) {
             // The rate returned by the scale object can be different from the wanted rate!
 
-            //XXX: Trying to force RAMAN to read from correct
-            //     playpos when rate changes direction - Albert
-            if (m_bScalerChanged || (rate_old <= 0 && rate > 0) ||
-                (rate_old >= 0 && rate < 0))
+            //linear scaler does this for us now
+            if (m_pScale != m_pScaleLinear)
             {
-                setNewPlaypos(filepos_play);
-            }
+		        //XXX: Trying to force RAMAN to read from correct
+		        //     playpos when rate changes direction - Albert	
+		        if (m_bScalerChanged || (rate_old <= 0 && rate > 0) ||
+		            (rate_old >= 0 && rate < 0))
+		        {
+		            setNewPlaypos(filepos_play);
+		        }
+		    }
 
             rate_old = rate;
             tweak_old = tweak;
@@ -604,27 +614,43 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
     m_pReader->wake();
 
     // Force ramp in if this is the first buffer during a play
-    if (m_bLastBufferPaused && !bCurBufferPaused) {
-        // Ramp from zero
-        int iLen = iBufferSize / 2;
-        for (int i=0; i<iLen; i+=2)
-        {
-        	pOutput[i] = (float)pOutput[i] * ((float)i / (float)iLen);
-        	pOutput[i+1] = (float)pOutput[i+1] * ((float)i / (float)iLen);
-        }
-    }
-    // Force ramp out if this is the first buffer to be paused.
-    else if (!m_bLastBufferPaused && bCurBufferPaused) {
-        rampOut(pOutput, iBufferSize);
-    }
-    // If the previous buffer was paused and we are currently paused, then
+   // if (m_iRampIter == 0)
+    //{
+		if (m_bLastBufferPaused && !bCurBufferPaused)
+	//		m_iRampIter = 0 - kiRampLength;
+   // }
+   // else
+    {
+	    // Ramp from zero over kiRampLength iterations
+	    for (int i=0; i<iBufferSize; i+=2)
+	    {
+	    	//float sigmoid = sigmoid_zero((float)(i + ((m_iRampIter+kiRampLength)*iBufferSize)), (float)(iBufferSize*kiRampLength));
+	    	float sigmoid = sigmoid_zero((float)i, (float)iBufferSize);
+	    	//qDebug() << sigmoid << (float)(i + ((m_iRampIter+kiRampLength)*iBufferSize)) << (float)(iBufferSize*kiRampLength);
+	    	float dither = (float)(rand() % 32768) / 32768 - 0.5; // dither
+	    	pOutput[i] = (float)pOutput[i] * sigmoid + dither;
+	    	pOutput[i+1] = (float)pOutput[i+1] * sigmoid + dither;
+	    }
+	   // m_iRampIter++;
+	}
+	
+	if (!m_bLastBufferPaused && bCurBufferPaused)
+	// Force ramp out if this is the first buffer to be paused.
+	{
+	    rampOut(pOutput, iBufferSize);
+	}
+	// If the previous buffer was paused and we are currently paused, then
     // memset the output to zero.
-    else if (m_bLastBufferPaused && bCurBufferPaused) {
-        memset(pOutput, 0, sizeof(pOutput[0])*iBufferSize);
-    }
-
+    else if (m_bLastBufferPaused && bCurBufferPaused) 
+		memset(pOutput, 0, sizeof(pOutput[0])*iBufferSize);
+    
     m_bLastBufferPaused = bCurBufferPaused;
     m_fLastSampleValue = pOutput[iBufferSize-2];
+    
+    /*for (int i=0; i<iBufferSize; i+=2)
+    {
+    	writer << pOutput[i] << "," << m_iRampIter*100 << "\n";
+    }*/
 }
 
 
@@ -638,22 +664,25 @@ void EngineBuffer::rampOut(const CSAMPLE* pOut, int iBufferSize)
     int i=0;
     if (m_fLastSampleValue!=0.)
     {
-        int iLen = iBufferSize / 2;
         // TODO(XXX) SSE
         if (pOutput[0] == 0)
         {
-        	while (i<iLen)
+        	while (i<iBufferSize)
         	{
-        		pOutput[i] = (float)m_fLastSampleValue * ((float)(iLen-i) / (float)iLen);
+        		float sigmoid = sigmoid_zero((float)(iBufferSize - i), (float)iBufferSize);
+        		float dither = (float)(rand() % 32768) / 32768 - 0.5; // dither
+        		pOutput[i] = (float)m_fLastSampleValue * sigmoid + dither;
 	        	i++;
         	}
         }
         else
         {
-	        while (i<iLen)
+	        while (i<iBufferSize)
 	        {
-	        	pOutput[i] = (float)pOutput[i] * ((float)(iLen-i) / (float)iLen);
-	        	pOutput[i+1] = (float)pOutput[i+1] * ((float)(iLen-i) / (float)iLen);
+	        	float sigmoid = sigmoid_zero((float)(iBufferSize - i), (float)iBufferSize);
+	        	float dither = (float)(rand() % 32768) / 32768 - 0.5; // dither
+	        	pOutput[i] = (float)pOutput[i] * sigmoid + dither;
+	        	pOutput[i+1] = (float)pOutput[i+1] * sigmoid + dither;
 	        	i+=2;
 	       	}
 	    }

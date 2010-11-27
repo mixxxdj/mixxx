@@ -56,6 +56,10 @@ private:
     ReadAheadManager* m_pReadAheadManager;
     double m_dCurSampleIndex;
     double m_dNextSampleIndex;
+    
+    /*QFile df;
+    QTextStream writer;
+    int buffer_count;*/
 };
 
 #endif
