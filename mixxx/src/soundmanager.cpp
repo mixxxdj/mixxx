@@ -36,6 +36,7 @@ SoundManager::SoundManager(ConfigObject<ConfigValue> * pConfig, EngineMaster * _
     , m_pErrorDevice(NULL)
 #ifdef __PORTAUDIO__
     , m_paInitialized(false)
+    , m_jackSampleRate(0)
 #endif
 {
     //qDebug() << "SoundManager::SoundManager()";
@@ -262,12 +263,29 @@ void SoundManager::clearDeviceList()
 #endif
 }
 
-/** Returns a list of samplerates we will attempt to support.
+/** Returns a list of samplerates we will attempt to support for a given API.
+ *  @param API a string describing the API, some APIs support a more limited
+ *             subset of APIs (for instance, JACK)
  *  @return The list of available samplerates.
+ */
+QList<unsigned int> SoundManager::getSampleRates(QString api) const
+{
+#ifdef __PORTAUDIO__
+    if (api == MIXXX_PORTAUDIO_JACK_STRING) {
+        QList<unsigned int> samplerates;
+        samplerates.append(m_jackSampleRate);
+        return samplerates;
+    }
+#endif
+    return m_samplerates;
+}
+
+/**
+ * Convenience overload for SoundManager::getSampleRates(QString)
  */
 QList<unsigned int> SoundManager::getSampleRates() const
 {
-    return m_samplerates;
+    return getSampleRates("");
 }
 
 //Creates a list of sound devices that PortAudio sees.
@@ -317,6 +335,10 @@ void SoundManager::queryDevices()
          */
         SoundDevicePortAudio *currentDevice = new SoundDevicePortAudio(m_pConfig, this, deviceInfo, i);
         m_devices.push_back(currentDevice);
+        if (Pa_GetHostApiInfo(deviceInfo->hostApi)->name
+                == MIXXX_PORTAUDIO_JACK_STRING) {
+            m_jackSampleRate = deviceInfo->defaultSampleRate;
+        }
     }
 #endif
     // now tell the prefs that we updated the device list -- bkgood
