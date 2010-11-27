@@ -215,6 +215,17 @@ void VinylControlXwax::run()
         	dDriftControl = 0.0f;
         	dVinylPitch = timecoder_get_pitch(&timecoder);
             filePosition = playPos->get() * cur_duration;             //Get the playback position in the file in seconds.
+            if (filePosition == cur_duration)
+            {
+            	//end of track
+            	togglePlayButton(false);
+            	resetSteadyPitch(0.0f, 0.0f);
+		        controlScratch->slotSet(0.0f);
+		        ringPos = 0;
+		        ringFilled = 0;
+            	continue;
+            }
+            
             reportedMode = mode->get();
             //qDebug() << "cur mode" << reportedMode;
             reportedPlayButton = playButton->get();
@@ -224,7 +235,7 @@ void VinylControlXwax::run()
 			//also reset timer if they switch the new mode too
 			if (iVCMode != reportedMode)
 		    {
-		    	qDebug() << "cur mode" << iVCMode << "new mode" << reportedMode;
+		    	//qDebug() << "cur mode" << iVCMode << "new mode" << reportedMode;
 		    	//if we have needleskip on, and are playing, don't allow change 
 		    	//to absolute mode (would cause sudden track skip)
 		    	if (reportedPlayButton && reportedMode == MIXXX_VCMODE_ABSOLUTE 
