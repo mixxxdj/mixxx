@@ -39,8 +39,6 @@ class AudioInput;
 #define MIXXX_PORTAUDIO_DIRECTSOUND_STRING "Windows DirectSound"
 #define MIXXX_PORTAUDIO_COREAUDIO_STRING "Core Audio"
 
-#define WRONG_SAMPLERATE -3
-
 class SoundManager : public QObject
 {
     Q_OBJECT
