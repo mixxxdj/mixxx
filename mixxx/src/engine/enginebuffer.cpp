@@ -184,6 +184,8 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
     connect(m_pEject, SIGNAL(valueChanged(double)),
             this, SLOT(slotEjectTrack(double)),
             Qt::DirectConnection);
+            
+	//m_iRampIter = 0;            
 	
 	/*df.setFileName("mixxx-debug.csv");
 	df.open(QIODevice::WriteOnly | QIODevice::Text);
@@ -604,33 +606,42 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
     m_pReader->wake();
 
     // Force ramp in if this is the first buffer during a play
-    if (m_bLastBufferPaused && !bCurBufferPaused) {
-        // Ramp from zero
-        //int iLen = iBufferSize / 2;
-        for (int i=0; i<iBufferSize; i+=2)
-        {
-        	float sigmoid = sigmoid_zero((float) i, (float)iBufferSize);
-        	float dither = (float)(rand() % 32768) / 32768 - 0.5; // dither
-        	pOutput[i] = (float)pOutput[i] * sigmoid + dither;
-        	pOutput[i+1] = (float)pOutput[i+1] * sigmoid + dither;
-        }
-    }
-    // Force ramp out if this is the first buffer to be paused.
-    else if (!m_bLastBufferPaused && bCurBufferPaused) {
-        rampOut(pOutput, iBufferSize);
-    }
-    // If the previous buffer was paused and we are currently paused, then
+   // if (m_iRampIter == 0)
+    //{
+		if (m_bLastBufferPaused && !bCurBufferPaused)
+	//		m_iRampIter = 0 - kiRampLength;
+   // }
+   // else
+    {
+	    // Ramp from zero over kiRampLength iterations
+	    for (int i=0; i<iBufferSize; i+=2)
+	    {
+	    	//float sigmoid = sigmoid_zero((float)(i + ((m_iRampIter+kiRampLength)*iBufferSize)), (float)(iBufferSize*kiRampLength));
+	    	float sigmoid = sigmoid_zero((float)i, (float)iBufferSize);
+	    	//qDebug() << sigmoid << (float)(i + ((m_iRampIter+kiRampLength)*iBufferSize)) << (float)(iBufferSize*kiRampLength);
+	    	float dither = (float)(rand() % 32768) / 32768 - 0.5; // dither
+	    	pOutput[i] = (float)pOutput[i] * sigmoid + dither;
+	    	pOutput[i+1] = (float)pOutput[i+1] * sigmoid + dither;
+	    }
+	   // m_iRampIter++;
+	}
+	
+	if (!m_bLastBufferPaused && bCurBufferPaused)
+	// Force ramp out if this is the first buffer to be paused.
+	{
+	    rampOut(pOutput, iBufferSize);
+	}
+	// If the previous buffer was paused and we are currently paused, then
     // memset the output to zero.
-    else if (m_bLastBufferPaused && bCurBufferPaused) {
-        memset(pOutput, 0, sizeof(pOutput[0])*iBufferSize);
-    }
-
+    else if (m_bLastBufferPaused && bCurBufferPaused) 
+		memset(pOutput, 0, sizeof(pOutput[0])*iBufferSize);
+    
     m_bLastBufferPaused = bCurBufferPaused;
     m_fLastSampleValue = pOutput[iBufferSize-2];
     
     /*for (int i=0; i<iBufferSize; i+=2)
     {
-    	writer << pOutput[i] << "\n";
+    	writer << pOutput[i] << "," << m_iRampIter*100 << "\n";
     }*/
 }
 
@@ -645,13 +656,12 @@ void EngineBuffer::rampOut(const CSAMPLE* pOut, int iBufferSize)
     int i=0;
     if (m_fLastSampleValue!=0.)
     {
-        //int iLen = iBufferSize / 2;
         // TODO(XXX) SSE
         if (pOutput[0] == 0)
         {
         	while (i<iBufferSize)
         	{
-        		float sigmoid = sigmoid_zero((float) (iBufferSize - i), (float)iBufferSize);
+        		float sigmoid = sigmoid_zero((float)(iBufferSize - i), (float)iBufferSize);
         		float dither = (float)(rand() % 32768) / 32768 - 0.5; // dither
         		pOutput[i] = (float)m_fLastSampleValue * sigmoid + dither;
 	        	i++;
@@ -661,7 +671,7 @@ void EngineBuffer::rampOut(const CSAMPLE* pOut, int iBufferSize)
         {
 	        while (i<iBufferSize)
 	        {
-	        	float sigmoid = sigmoid_zero((float) (iBufferSize - i), (float)iBufferSize);
+	        	float sigmoid = sigmoid_zero((float)(iBufferSize - i), (float)iBufferSize);
 	        	float dither = (float)(rand() % 32768) / 32768 - 0.5; // dither
 	        	pOutput[i] = (float)pOutput[i] * sigmoid + dither;
 	        	pOutput[i+1] = (float)pOutput[i+1] * sigmoid + dither;

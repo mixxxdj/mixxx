@@ -73,6 +73,8 @@ const int VINYL_STATUS_OK = 1;
 const int VINYL_STATUS_WARNING = 2;
 const int VINYL_STATUS_ERROR = 3;
 
+//const int kiRampLength = 3;
+
 class EngineBuffer : public EngineObject
 {
      Q_OBJECT
@@ -228,10 +230,11 @@ private:
     float m_fLastSampleValue;
     /** Is true if the previous buffer was silent due to pausing */
     bool m_bLastBufferPaused;
+    //int m_iRampIter;
 
     TrackPointer m_pCurrentTrack;
-    //QFile df;
-    //QTextStream writer;
+    /*QFile df;
+    QTextStream writer;*/
 };
 
 #endif

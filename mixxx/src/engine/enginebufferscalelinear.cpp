@@ -35,10 +35,16 @@ EngineBufferScaleLinear::EngineBufferScaleLinear(ReadAheadManager *pReadAheadMan
 
     buffer_int = new CSAMPLE[kiLinearScaleReadAheadLength];
     buffer_int_size = 0;
+    
+    /*df.setFileName("mixxx-debug-scaler.csv");
+	df.open(QIODevice::WriteOnly | QIODevice::Text);
+	writer.setDevice(&df);
+	buffer_count=0;*/
 }
 
 EngineBufferScaleLinear::~EngineBufferScaleLinear()
 {
+	//df.close();
 }
 
 double EngineBufferScaleLinear::setTempo(double _tempo)
@@ -119,6 +125,7 @@ CSAMPLE * EngineBufferScaleLinear::scale(double playpos, unsigned long buf_size,
     {
     	//calculate half buffer going one way, and half buffer going
     	//the other way.  
+    	//qDebug() << "reverse" << buffer_count;
     	
     	CSAMPLE *pOldRate = new CSAMPLE[buf_size/2];
     	CSAMPLE *pNewRate = new CSAMPLE[buf_size/2];
@@ -145,7 +152,8 @@ CSAMPLE * EngineBufferScaleLinear::scale(double playpos, unsigned long buf_size,
     	
     	//if the buffer has extra samples, do a read so we end up back where
     	//we should be
-    	int extra_samples = buffer_int_size - (int)ceil(m_dNextSampleIndex)*2 - 2;
+    	//qDebug() << "reverse time" << buffer_int_size << m_dCurSampleIndex << m_dNextSampleIndex;
+    	int extra_samples = buffer_int_size - (int)ceil(m_dCurSampleIndex)*2 - 2;
     	if (extra_samples > 0)
     	{
 	    	if (extra_samples % 2 != 0)
@@ -284,7 +292,7 @@ CSAMPLE * EngineBufferScaleLinear::scale(double playpos, unsigned long buf_size,
             int samples_to_read = math_min(kiLinearScaleReadAheadLength,
                                            unscaled_samples_needed);
                              
-			if(rate_add == 0)
+			if(rate_add_new == 0)
 			{
 				//qDebug() << "new rate was zero";
 				buffer_int_size = m_pReadAheadManager
@@ -298,11 +306,11 @@ CSAMPLE * EngineBufferScaleLinear::scale(double playpos, unsigned long buf_size,
 			else
 			{
 	            buffer_int_size = m_pReadAheadManager
-                                ->getNextSamples(rate_add,buffer_int,
+                                ->getNextSamples(rate_add_new,buffer_int,
                                                  samples_to_read);
-				if (rate_add > 0)
+				if (rate_add_new > 0)
 		            new_playpos += buffer_int_size;
-		        else if (rate_add < 0)
+		        else if (rate_add_new < 0)
 		            new_playpos -= buffer_int_size;                                                 	
 			}
 
@@ -338,10 +346,15 @@ CSAMPLE * EngineBufferScaleLinear::scale(double playpos, unsigned long buf_size,
        	if (fabs(rate_add) < 0.5)
        	{
        		float dither = (float)(rand() % 32768) / 32768 - 0.5; // dither
-       		CSAMPLE gainfrac = fabs(rate_add) / 0.5;
+       		float gainfrac = fabs(rate_add) / 0.5;
        		buffer[i] = gainfrac * (float)buffer[i] + dither;
        		buffer[i+1] = gainfrac * (float)buffer[i+1] + dither;
        	}
+       	
+       	/*writer << QString("%1,%2,%3,%4\n").arg(buffer_count)
+       									  .arg(buffer[i])
+   							  			  .arg(prev_sample[0])
+       							  		  .arg(cur_sample[0]);*/
        	
        	//increment the index for the next loop
         if (i < iRateLerpLength)
@@ -350,6 +363,7 @@ CSAMPLE * EngineBufferScaleLinear::scale(double playpos, unsigned long buf_size,
             m_dNextSampleIndex = m_dCurSampleIndex + rate_add_abs;
             
         i+=2;
+        //buffer_count++;
     }
     // If we broke out of the loop, zero the remaining samples
     // TODO(XXX) memset
