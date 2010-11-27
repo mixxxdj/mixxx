@@ -213,7 +213,6 @@ CSAMPLE * EngineBufferScaleLinear::scale(double playpos, unsigned long buf_size,
 
 	//we're calculating mono samples, so divide remaining buffer by 2;
     samples += (rate_add_abs * ((float)(buf_size - iRateLerpLength)/2));
-    //qDebug() << "predicted samples:" << samples;
    	unscaled_samples_needed = floor(samples);
    	
    	//if the current position fraction plus the future position fraction 
@@ -354,7 +353,8 @@ CSAMPLE * EngineBufferScaleLinear::scale(double playpos, unsigned long buf_size,
        	/*writer << QString("%1,%2,%3,%4\n").arg(buffer_count)
        									  .arg(buffer[i])
    							  			  .arg(prev_sample[0])
-       							  		  .arg(cur_sample[0]);*/
+       							  		  .arg(cur_sample[0]);
+		buffer_count++;*/       							  		  	
        	
        	//increment the index for the next loop
         if (i < iRateLerpLength)
@@ -363,7 +363,7 @@ CSAMPLE * EngineBufferScaleLinear::scale(double playpos, unsigned long buf_size,
             m_dNextSampleIndex = m_dCurSampleIndex + rate_add_abs;
             
         i+=2;
-        //buffer_count++;
+        
     }
     // If we broke out of the loop, zero the remaining samples
     // TODO(XXX) memset
