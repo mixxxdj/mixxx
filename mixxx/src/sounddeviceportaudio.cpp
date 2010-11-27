@@ -108,7 +108,6 @@ int SoundDevicePortAudio::open()
     //    the JACK samplerate:
     if (m_hostAPI == MIXXX_PORTAUDIO_JACK_STRING) {
         m_dSampleRate = m_deviceInfo->defaultSampleRate;
-        qDebug() << "JACK corrected m_dSampleRate" << m_dSampleRate;
         //Sure hope that's the right samplerate
     }
 
