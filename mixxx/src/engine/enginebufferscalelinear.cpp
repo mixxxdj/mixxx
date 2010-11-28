@@ -341,6 +341,7 @@ CSAMPLE * EngineBufferScaleLinear::scale(double playpos, unsigned long buf_size,
         buffer[i+1] = (float)prev_sample[1] + frac * ((float)cur_sample[1] - (float)prev_sample[1]);
         
         //at extremely low speeds, dampen the gain to hide pops and clicks
+        //this does cause odd-looking linear waveforms that go to zero and back
        	if (fabs(rate_add) < 0.5)
        	{
        		float dither = (float)(rand() % 32768) / 32768 - 0.5; // dither
