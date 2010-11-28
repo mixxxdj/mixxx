@@ -472,12 +472,7 @@ void VinylControlXwax::run()
 					averagePitch = dVinylPitch;
 				
 				
-				if (fabs(dVinylPitch) < 0.005)
-				{
-					if (uiUpdateTime(filePosition))
-	            		rateSlider->slotSet(0.0);
-	            }
-	            else if (iVCMode == MIXXX_VCMODE_ABSOLUTE)
+	            if (iVCMode == MIXXX_VCMODE_ABSOLUTE)
 	            {
 	            	controlScratch->slotSet(averagePitch + dDriftControl);
 	            	if (iPosition != -1 && reportedPlayButton && uiUpdateTime(filePosition))

@@ -324,11 +324,18 @@ CSAMPLE * EngineBufferScaleLinear::scale(double playpos, unsigned long buf_size,
             prevIndex -= old_bufsize / 2;
             //fractions below 0 is ok, the ceil will bring it up to 0
             Q_ASSERT(m_dCurSampleIndex > -1.0);
+            
+            //not sure this actually does anything, but it seems to help
+            if ((int)floor(m_dCurSampleIndex)*2 >= 0.0)
+			{
+				m_fPrevSample[0] = prev_sample[0] = buffer_int[(int)floor(m_dCurSampleIndex)*2];
+				m_fPrevSample[1] = prev_sample[1] = buffer_int[(int)floor(m_dCurSampleIndex)*2+1];
+			}
         }
         //I guess?
         if (last_read_failed)
         	break;
-
+        	
  		cur_sample[0] = buffer_int[(int)ceil(m_dCurSampleIndex)*2];
 		cur_sample[1] = buffer_int[(int)ceil(m_dCurSampleIndex)*2+1];
 		
