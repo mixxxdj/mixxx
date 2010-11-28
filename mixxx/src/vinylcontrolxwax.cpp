@@ -215,24 +215,11 @@ void VinylControlXwax::run()
         	dDriftControl = 0.0f;
         	dVinylPitch = timecoder_get_pitch(&timecoder);
             filePosition = playPos->get() * cur_duration;             //Get the playback position in the file in seconds.
-            if (playPos->get() == 1.0 && dVinylPitch > 0)
-            {
-            	//end of track
-            	togglePlayButton(false);
-            	resetSteadyPitch(0.0f, 0.0f);
-		        controlScratch->slotSet(0.0f);
-		        ringPos = 0;
-		        ringFilled = 0;
-            	continue;
-            }
             
             reportedMode = mode->get();
             //qDebug() << "cur mode" << reportedMode;
             reportedPlayButton = playButton->get();
             
-            //if playing, don't switch modes instantly, in case user goes through ABS on the
-			//way to REL
-			//also reset timer if they switch the new mode too
 			if (iVCMode != reportedMode)
 		    {
 		    	//qDebug() << "cur mode" << iVCMode << "new mode" << reportedMode;
@@ -413,6 +400,16 @@ void VinylControlXwax::run()
                     	syncPosition();
 	                    resetSteadyPitch(dVinylPitch, dVinylPosition);
                     }
+                    else if (playPos->get() == 1.0 && dVinylPitch > 0)
+				    {
+				    	//end of track
+				    	togglePlayButton(false);
+				    	resetSteadyPitch(0.0f, 0.0f);
+						controlScratch->slotSet(0.0f);
+						ringPos = 0;
+						ringFilled = 0;
+				    	continue;
+				    }
 	                else 
 	                {
 	                	togglePlayButton(checkSteadyPitch(dVinylPitch, filePosition) > 0.5);
@@ -433,6 +430,17 @@ void VinylControlXwax::run()
 		        	//POSITION: NO  PITCH: YES
 		        	//if we don't have valid position, we're not playing so reset time to current
 		            //estimate vinyl position
+		            
+		            if (playPos->get() == 1.0 && dVinylPitch > 0)
+				    {
+				    	//end of track
+				    	togglePlayButton(false);
+				    	resetSteadyPitch(0.0f, 0.0f);
+						controlScratch->slotSet(0.0f);
+						ringPos = 0;
+						ringFilled = 0;
+				    	continue;
+				    }
 		            
 		            dOldPos = filePosition + dDriftAmt;
 		            if (uiUpdateTime(filePosition))
