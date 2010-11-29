@@ -34,32 +34,39 @@ CueControl::CueControl(const char * _group,
 
     m_pCueSet = new ControlPushButton(ConfigKey(_group, "cue_set"));
     connect(m_pCueSet, SIGNAL(valueChanged(double)),
-            this, SLOT(cueSet(double)));
+            this, SLOT(cueSet(double)),
+            Qt::DirectConnection);
 
     m_pCueGoto = new ControlPushButton(ConfigKey(_group, "cue_goto"));
     connect(m_pCueGoto, SIGNAL(valueChanged(double)),
-            this, SLOT(cueGoto(double)));
+            this, SLOT(cueGoto(double)),
+            Qt::DirectConnection);
 
     m_pCueGotoAndStop =
             new ControlPushButton(ConfigKey(_group, "cue_gotoandstop"));
     connect(m_pCueGotoAndStop, SIGNAL(valueChanged(double)),
-            this, SLOT(cueGotoAndStop(double)));
+            this, SLOT(cueGotoAndStop(double)),
+            Qt::DirectConnection);
 
     m_pCueSimple = new ControlPushButton(ConfigKey(_group, "cue_simple"));
     connect(m_pCueSimple, SIGNAL(valueChanged(double)),
-            this, SLOT(cueSimple(double)));
+            this, SLOT(cueSimple(double)),
+            Qt::DirectConnection);
 
     m_pCuePreview = new ControlPushButton(ConfigKey(_group, "cue_preview"));
     connect(m_pCuePreview, SIGNAL(valueChanged(double)),
-            this, SLOT(cuePreview(double)));
+            this, SLOT(cuePreview(double)),
+            Qt::DirectConnection);
 
     m_pCueCDJ = new ControlPushButton(ConfigKey(_group, "cue_cdj"));
     connect(m_pCueCDJ, SIGNAL(valueChanged(double)),
-            this, SLOT(cueCDJ(double)));
+            this, SLOT(cueCDJ(double)),
+            Qt::DirectConnection);
 
     m_pCueDefault = new ControlPushButton(ConfigKey(_group, "cue_default"));
     connect(m_pCueDefault, SIGNAL(valueChanged(double)),
-            this, SLOT(cueDefault(double)));
+            this, SLOT(cueDefault(double)),
+            Qt::DirectConnection);
 }
 
 CueControl::~CueControl() {
@@ -143,7 +150,8 @@ void CueControl::attachCue(Cue* pCue, int hotCue) {
     Q_ASSERT(m_hotcue[hotCue] == NULL);
     m_hotcue[hotCue] = pCue;
     connect(pCue, SIGNAL(updated()),
-            this, SLOT(cueUpdated()));
+            this, SLOT(cueUpdated()),
+            Qt::DirectConnection);
 
     m_hotcuePosition[hotCue]->set(pCue->getPosition());
     m_hotcueEnabled[hotCue]->set(pCue->getPosition() == -1 ? 0.0 : 1.0);
@@ -169,29 +177,22 @@ void CueControl::loadTrack(TrackPointer pTrack) {
 
     m_pLoadedTrack = pTrack;
     connect(pTrack.data(), SIGNAL(cuesUpdated()),
-            this, SLOT(trackCuesUpdated()));
+            this, SLOT(trackCuesUpdated()),
+            Qt::DirectConnection);
 
     Cue* loadCue = NULL;
-    Cue* otherCue = NULL;
     const QList<Cue*>& cuePoints = pTrack->getCuePoints();
     QListIterator<Cue*> it(cuePoints);
     while (it.hasNext()) {
         Cue* pCue = it.next();
         if (pCue->getType() == Cue::LOAD) {
             loadCue = pCue;
-        } else if (pCue->getType() == Cue::CUE) {
-            otherCue = pCue;
-        } else {
+        } else if (pCue->getType() != Cue::CUE) {
             continue;
         }
         int hotcue = pCue->getHotCue();
         if (hotcue != -1)
             attachCue(pCue, hotcue);
-    }
-
-    // Prefer to load a LOAD cue, otherwise load any cue.
-    if (loadCue == NULL && otherCue) {
-        loadCue = otherCue;
     }
 
     if (loadCue != NULL) {
