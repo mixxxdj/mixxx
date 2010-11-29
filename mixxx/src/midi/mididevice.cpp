@@ -42,7 +42,6 @@ MidiDevice::MidiDevice(MidiMapping* mapping) : QThread()
     m_bIsOpen = false;
     m_bMidiLearn = false;
     m_bReceiveInhibit = false;
-    m_bSendInhibit = false;
 
     if (m_pMidiMapping == NULL) {
         m_pMidiMapping = new MidiMapping(this);
@@ -88,17 +87,15 @@ void MidiDevice::shutdown()
     //mapped and we end up with a deadlock.
     //Similarly, if a MIDI message is sent from the scripting 
     //engine while we've held this lock, we'll end up with
-    //a similar deadlock. (Note that shutdownScriptEngin()
+    //a similar deadlock. (Note that shutdownScriptEngine()
     //waits for the scripting engine thread to terminate,
     //which will never happen if it's stuck waiting for 
     //m_mappingPtrMutex to unlock.
     setReceiveInhibit(true);
-    setSendInhibit(true);
 #ifdef __MIDISCRIPT__
     m_pMidiMapping->shutdownScriptEngine();
 #endif
     setReceiveInhibit(false);
-    setSendInhibit(false);
 }
 
 void MidiDevice::setMidiMapping(MidiMapping* mapping)
@@ -331,11 +328,4 @@ void MidiDevice::setReceiveInhibit(bool inhibit)
     //See comments for m_bReceiveInhibit.
     QMutexLocker locker(&m_mutex);
     m_bReceiveInhibit = inhibit;
-}
-
-void MidiDevice::setSendInhibit(bool inhibit)
-{
-    //See comments for m_bSendInhibit.
-    QMutexLocker locker(&m_mutex);
-    m_bSendInhibit = inhibit;
 }
