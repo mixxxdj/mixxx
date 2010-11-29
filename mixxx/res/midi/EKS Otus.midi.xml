@@ -6,9 +6,11 @@
         <description>This is a complete mapping for a single EKS Otus controller controlling two virtual decks using the Default mapping. Requires scripting.</description>
     </info>
         <controller id="EKS Otus" >
+<!--
             <scriptfiles>
                 <file filename="EKS-Otus-scripts.js" functionprefix="EksOtus"/>
             </scriptfiles>
+-->
             <controls>
                 <control>
                     <status>0xe0</status>
