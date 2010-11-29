@@ -32,23 +32,24 @@
 void StarDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
     // Populate the correct colors based on the styling
-    QStyleOptionViewItem newOption = option;
-    initStyleOption(&newOption, index);
+    //QStyleOptionViewItem newOption = option;
+    //initStyleOption(&newOption, index);
 
     // Set the palette appropriately based on whether the row is selected or not
-    if (newOption.state & QStyle::State_Selected) {
-        painter->fillRect(newOption.rect, newOption.palette.highlight());
-        painter->setBrush(newOption.palette.highlightedText());
+    if (option.state & QStyle::State_Selected) {
+        painter->fillRect(option.rect, option.palette.highlight());
+        painter->setBrush(option.palette.highlightedText());
     } else {
-        painter->fillRect(newOption.rect, newOption.palette.base());
-        painter->setBrush(newOption.palette.text());
+        painter->fillRect(option.rect, option.palette.base());
+        painter->setBrush(option.palette.text());
     }
 
     if (qVariantCanConvert<StarRating>(index.data())) {
         StarRating starRating = qVariantValue<StarRating>(index.data());
-        starRating.paint(painter, newOption.rect, newOption.palette, StarRating::ReadOnly);
+        starRating.paint(painter, option.rect, option.palette, StarRating::ReadOnly);
     } else {
-        QStyledItemDelegate::paint(painter, newOption, index);
+        //QStyledItemDelegate::paint(painter, newOption, index);
+        QItemDelegate::paint(painter, option, index);
     }
 }
 
@@ -58,7 +59,7 @@ QSize StarDelegate::sizeHint(const QStyleOptionViewItem &option, const QModelInd
         StarRating starRating = qVariantValue<StarRating>(index.data());
         return starRating.sizeHint();
     } else {
-        return QStyledItemDelegate::sizeHint(option, index);
+        return QItemDelegate::sizeHint(option, index);
     }
 }
 /*
@@ -69,16 +70,16 @@ QSize StarDelegate::sizeHint(const QStyleOptionViewItem &option, const QModelInd
 QWidget *StarDelegate::createEditor(QWidget *parent, const QStyleOptionViewItem &option,const QModelIndex &index) const
 {
     // Populate the correct colors based on the styling
-    QStyleOptionViewItem newOption = option;
-    initStyleOption(&newOption, index);
+    //QStyleOptionViewItem newOption = option;
+    //initStyleOption(&newOption, index);
 
     if (qVariantCanConvert<StarRating>(index.data())) {
-        StarEditor *editor = new StarEditor(parent, newOption);
+        StarEditor *editor = new StarEditor(parent, option);
         connect(editor, SIGNAL(editingFinished()),
         this, SLOT(commitAndCloseEditor()));
         return editor;
     } else {
-        return QStyledItemDelegate::createEditor(parent, newOption, index);
+        return QItemDelegate::createEditor(parent, option, index);
     }
 }
 
@@ -89,7 +90,7 @@ void StarDelegate::setEditorData(QWidget *editor, const QModelIndex &index) cons
         StarEditor *starEditor = qobject_cast<StarEditor *>(editor);
         starEditor->setStarRating(starRating);
     } else {
-        QStyledItemDelegate::setEditorData(editor, index);
+        QItemDelegate::setEditorData(editor, index);
     }
 }
 
@@ -99,7 +100,7 @@ void StarDelegate::setModelData(QWidget *editor, QAbstractItemModel *model, cons
         StarEditor *starEditor = qobject_cast<StarEditor *>(editor);
         model->setData(index, qVariantFromValue(starEditor->starRating()));
     } else {
-        QStyledItemDelegate::setModelData(editor, model, index);
+        QItemDelegate::setModelData(editor, model, index);
     }
 }
 /*
