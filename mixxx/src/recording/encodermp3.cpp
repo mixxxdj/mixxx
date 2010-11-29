@@ -41,6 +41,7 @@ EncoderMp3::EncoderMp3(EngineAbstractRecord *engine) {
     m_bufferOutSize = 0;
     m_lameFlags = NULL;
     m_library = NULL;
+    m_samplerate = NULL;
    
     //These are the function pointers for lame
     lame_init =  0;
