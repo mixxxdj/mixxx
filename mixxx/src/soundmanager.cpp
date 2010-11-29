@@ -574,6 +574,9 @@ SoundManager::requestBuffer(QList<AudioOutput> outputs, unsigned long iFramesPer
 void SoundManager::pushBuffer(QList<AudioInput> inputs, short * inputBuffer,
                               unsigned long iFramesPerBuffer, unsigned int iFrameSize)
 {
+	//This function is called a *lot* and is a big source of CPU usage.
+	//It needs to be very fast.
+	
 //    m_inputBuffers[RECEIVER_VINYLCONTROL_ONE]
 
     //short vinylControlBuffer1[iFramesPerBuffer * 2];
@@ -625,28 +628,29 @@ void SoundManager::pushBuffer(QList<AudioInput> inputs, short * inputBuffer,
     else { //More than two channels of input (iFrameSize > 2)
         //Do crazy deinterleaving of the audio into the correct m_inputBuffers.
         //iFrameBase is the "base sample" in a frame (ie. the first sample in a frame)
-        for (unsigned int iFrameBase=0; iFrameBase < iFramesPerBuffer*iFrameSize; iFrameBase += iFrameSize)
+        
+        QListIterator<AudioInput> inputItr(inputs);
+        int iChannel;
+        while (inputItr.hasNext())
         {
-            //Deinterlace the input audio data from the portaudio buffer
-            //We iterate through the receiver list to find out what goes into each buffer.
-            //Data is deinterlaced in the order of the list
-            QListIterator<AudioInput> inputItr(inputs);
-            int iChannel;
-            while (inputItr.hasNext())
+        	AudioInput in = inputItr.next();
+            ChannelGroup chanGroup = in.getChannelGroup();
+            int grp_channel_count = chanGroup.getChannelCount();
+            int grp_channel_base = chanGroup.getChannelBase();
+            
+            for (unsigned int iFrameBase=0; iFrameBase < iFramesPerBuffer*iFrameSize; iFrameBase += iFrameSize)
             {
-                AudioInput in = inputItr.next();
-                ChannelGroup chanGroup = in.getChannelGroup();
-                int iLocalFrameBase = (iFrameBase/iFrameSize) * chanGroup.getChannelCount();
+		        int iLocalFrameBase = (iFrameBase/iFrameSize) * grp_channel_count;
 
-                for (iChannel = 0; iChannel < chanGroup.getChannelCount(); iChannel++)
-                    //this will make sure a sample from each channel is copied
-                {
-                    //output[iFrameBase + src.channelBase + iChannel] +=
-                    //  outputAudio[src.type][iLocalFrameBase + iChannel] * SHRT_CONVERSION_FACTOR;
-                    m_inputBuffers[in][iLocalFrameBase + iChannel] =
-                        inputBuffer[iFrameBase + chanGroup.getChannelBase() + iChannel];
-                }
-            }
+		        for (iChannel = 0; iChannel < grp_channel_count; iChannel++)
+		            //this will make sure a sample from each channel is copied
+		        {
+		            //output[iFrameBase + src.channelBase + iChannel] +=
+		            //  outputAudio[src.type][iLocalFrameBase + iChannel] * SHRT_CONVERSION_FACTOR;
+		            m_inputBuffers[in][iLocalFrameBase + iChannel] =
+		                inputBuffer[iFrameBase + grp_channel_base + iChannel];
+		        }
+		    }
         }
     }
 
