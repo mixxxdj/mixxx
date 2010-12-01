@@ -101,7 +101,7 @@ private:
         
     MidiDevice* m_pMidiDevice;
     bool m_midiDebug;
-    QHash<ConfigKey, QString> m_connectedControls;
+    QMultiHash<ConfigKey, QString> m_connectedControls;
     QScriptEngine *m_pEngine;
     QStringList m_scriptFunctions;
     QMap<QString,QStringList> m_scriptErrors;
