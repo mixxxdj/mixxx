@@ -248,7 +248,7 @@ void SoundManager::clearDeviceList()
         SoundDevice* dev = m_devices.takeLast();
         delete dev;
     }
-    
+
 #ifdef __PORTAUDIO__
     Pa_Terminate();
 #endif
@@ -275,7 +275,7 @@ void SoundManager::queryDevices()
         qDebug() << "Error:" << Pa_GetErrorText(err);
         return;
     }
-    
+
     int iNumDevices;
     iNumDevices = Pa_GetDeviceCount();
     if(iNumDevices < 0)
@@ -564,34 +564,37 @@ CSAMPLE * SoundManager::pushBuffer(QList<AudioReceiver> recvs, short * inputBuff
 
         //Do crazy deinterleaving of the audio into the correct m_pReceiverBuffers.
 
-        //iFrameBase is the "base sample" in a frame (ie. the first sample in a frame)
-        for (unsigned int iFrameBase=0; iFrameBase < iFramesPerBuffer*iFrameSize; iFrameBase += iFrameSize)
-        {
-			//Deinterlace the input audio data from the portaudio buffer
-			//We iterate through the receiver list to find out what goes into each buffer.
-			//Data is deinterlaced in the order of the list
-			QListIterator<AudioReceiver> devItr(recvs);
-			int iChannel;
-			while(devItr.hasNext())
-			{
-				AudioReceiver recv = devItr.next();
-				int iLocalFrameBase = (iFrameBase/iFrameSize) * recv.channels;
-				for(iChannel = 0; iChannel < recv.channels; iChannel++)	//this will make sure a sample from each channel is copied
-				{
-					//output[iFrameBase + src.channelBase + iChannel] += outputAudio[src.type][iLocalFrameBase + iChannel] * SHRT_CONVERSION_FACTOR;
-			        m_pReceiverBuffers[recv.type][iLocalFrameBase + iChannel] = inputBuffer[iFrameBase + recv.channelBase + iChannel];
+        //Deinterlace the input audio data from the portaudio buffer
+        //We iterate through the receiver list to find out what goes into each buffer.
+        //Data is deinterlaced in the order of the list
+
+        for (QList<AudioReceiver>::const_iterator i = recvs.begin(),
+                     e = recvs.end(); i != e; ++i) {
+            const AudioReceiver& recv = *i;
+            const int iNumChannels = recv.channels;
+            short* receiverBuffer = m_pReceiverBuffers[recv.type];
+            const int iChannelBase = recv.channelBase;
+
+            for (unsigned int iFrameNo = 0; iFrameNo < iFramesPerBuffer; ++iFrameNo) {
+                // iFrameBase is the "base sample" in a frame (ie. the first
+                // sample in a frame)
+                unsigned int iFrameBase = iFrameNo * iFrameSize;
+                unsigned int iLocalFrameBase = iFrameNo * iNumChannels;
+
+                // this will make sure a sample from each channel is copied
+                for (int iChannel = 0; iChannel < iNumChannels; ++iChannel) {
+                    // output[iFrameBase + src.channelBase + iChannel] +=
+                    //         outputAudio[src.type][iLocalFrameBase + iChannel] * SHRT_CONVERSION_FACTOR;
+                    receiverBuffer[iLocalFrameBase + iChannel] =
+                            inputBuffer[iFrameBase + iChannelBase + iChannel];
                 }
-			}
+            }
         }
+
         //Set the pointers to point to the de-interlaced input audio
         vinylControlBuffer1 = m_pReceiverBuffers[RECEIVER_VINYLCONTROL_ONE];
         vinylControlBuffer2 = m_pReceiverBuffers[RECEIVER_VINYLCONTROL_TWO];
     }
-
-/*
-
-*/
-
 
     if (inputBuffer)
     {
