@@ -698,11 +698,14 @@ bool MidiScriptEngine::connectControl(QString group, QString name, QString funct
     if(!checkException() && slot.isFunction()) {
         if(disconnect) {
 //             qDebug() << "MidiScriptEngine::connectControl disconnected " << group << name << " from " << function;
-            this->disconnect(cobj, SIGNAL(valueChanged(double)),
-                             this, SLOT(slotValueChanged(double)));
-            this->disconnect(cobj, SIGNAL(valueChangedFromEngine(double)),
-                             this, SLOT(slotValueChanged(double)));
-            m_connectedControls.remove(cobj->getKey());
+            m_connectedControls.remove(cobj->getKey(), function);
+            // Only disconnect the signal if there are no other instances of this control using it
+            if (!m_connectedControls.contains(cobj->getKey())) {
+                this->disconnect(cobj, SIGNAL(valueChanged(double)),
+                                this, SLOT(slotValueChanged(double)));
+                this->disconnect(cobj, SIGNAL(valueChangedFromEngine(double)),
+                                this, SLOT(slotValueChanged(double)));
+            }
         } else {
 //             qDebug() << "MidiScriptEngine::connectControl connected " << group << name << " to " << function;
             connect(cobj, SIGNAL(valueChanged(double)),
@@ -737,20 +740,24 @@ void MidiScriptEngine::slotValueChanged(double value) {
     //qDebug() << QString("MidiScriptEngine: slotValueChanged Thread ID=%1").arg(QThread::currentThreadId(),0,16);
 
     if(m_connectedControls.contains(key)) {
-        QString function = m_connectedControls.value(key);
-//         qDebug() << "MidiScriptEngine::slotValueChanged() received signal from " << key.group << key.item << " ... firing : " << function;
+        QMultiHash<ConfigKey, QString>::iterator i = m_connectedControls.find(key);
+        while (i != m_connectedControls.end() && i.key() == key) {
+            QString function = i.value();
+            
+//             qDebug() << "MidiScriptEngine::slotValueChanged() received signal from " << key.group << key.item << " ... firing : " << function;
 
-        // Could branch to safeExecute from here, but for now do it this way.
-        QScriptValue function_value = m_pEngine->evaluate(function);
-        QScriptValueList args;
-        args << QScriptValue(value);
-        args << QScriptValue(key.group); // Added by Math`
-        args << QScriptValue(key.item);  // Added by Math`
-        QScriptValue result = function_value.call(QScriptValue(), args);
-        if (result.isError()) {
-            qWarning()<< "MidiScriptEngine: Call to " << function << " resulted in an error:  " << result.toString();
+            // Could branch to safeExecute from here, but for now do it this way.
+            QScriptValue function_value = m_pEngine->evaluate(function);
+            QScriptValueList args;
+            args << QScriptValue(value);
+            args << QScriptValue(key.group); // Added by Math`
+            args << QScriptValue(key.item);  // Added by Math`
+            QScriptValue result = function_value.call(QScriptValue(), args);
+            if (result.isError()) {
+                qWarning()<< "MidiScriptEngine: Call to " << function << " resulted in an error:  " << result.toString();
+            }
+            ++i;
         }
-
     } else {
         qWarning() << "MidiScriptEngine::slotValueChanged() Received signal from ControlObject that is not connected to a script function.";
     }
