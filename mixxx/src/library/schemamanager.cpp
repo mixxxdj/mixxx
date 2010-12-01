@@ -160,7 +160,15 @@ bool SchemaManager::isBackwardsCompatible(SettingsDAO& settings,
     // settings table, assume the current schema version is only backwards
     // compatible with itself.
     if (backwardsCompatibleVersion.isNull()) {
-        iBackwardsCompatibleVersion = currentVersion;
+        // rryan 11/2010 We just added the backwards compatible flags, and some
+        // people using the Mixxx trunk are already on schema version 7. This
+        // special case is for them. Schema version 7 is backwards compatible
+        // with schema version 3.
+        if (currentVersion == 7) {
+            iBackwardsCompatibleVersion = 3;
+        } else {
+            iBackwardsCompatibleVersion = currentVersion;
+        }
     }
 
     // If the target version is greater than the minimum compatible version of
