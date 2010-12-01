@@ -125,8 +125,20 @@ void BrowseFeature::onFileActivate(const QModelIndex& index) {
             }
             return;
         }
+        
+        //Appending ".." to the path doesn't always work on Windows.
+        //The right way to do it is to use QDir::cdUp(), we think... - Albert Nov 27, 2010
+        if (info.fileName() == "..") {
+            qDebug() << "cdUp";
+            QDir rootDir = m_browseModel.rootDirectory();
+            if (!rootDir.cdUp())
+                return; //Parent does not exist.
+
+            absPath = rootDir.absolutePath();
+        }
 
         m_browseModel.setRootPath(absPath);
+
         QModelIndex absIndex = m_browseModel.index(absPath);
         QModelIndex absIndexProxy = m_proxyModel.mapFromSource(absIndex);
         emit(setRootIndex(absIndexProxy));
