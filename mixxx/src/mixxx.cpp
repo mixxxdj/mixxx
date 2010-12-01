@@ -363,7 +363,7 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
 
     // Load tracks in args.qlMusicFiles (command line arguments) into player
     // 1 and 2:
-    for (int i = 0; i < m_pPlayerManager->numDecks()
+    for (int i = 0; i < (int)m_pPlayerManager->numDecks()
             && i < args.qlMusicFiles.count(); ++i) {
         m_pPlayerManager->slotLoadToDeck(args.qlMusicFiles.at(i), i+1);
     }
@@ -372,7 +372,7 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
     if (bFirstRun || bUpgraded) {
         QList<TrackPointer> tracksToAutoLoad =
             m_pLibrary->getTracksToAutoLoad();
-        for (int i = 0; i < m_pPlayerManager->numDecks()
+        for (int i = 0; i < (int)m_pPlayerManager->numDecks()
                 && i < tracksToAutoLoad.count(); i++) {
             m_pPlayerManager->slotLoadToDeck(args.qlMusicFiles.at(i), i+1);
         }
