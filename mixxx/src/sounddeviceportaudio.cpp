@@ -107,7 +107,7 @@ int SoundDevicePortAudio::open()
 
     //XXX Workaround for PortAudio crashing when our samplerate doesn't match
     //    the JACK samplerate:
-    if (m_pConfig->getValueString(ConfigKey("[Soundcard]","SoundApi")) == 
+    if (m_pConfig->getValueString(ConfigKey("[Soundcard]","SoundApi")) ==
             MIXXX_PORTAUDIO_JACK_STRING)
     {
         m_dSampleRate = m_deviceInfo->defaultSampleRate;
@@ -355,42 +355,45 @@ int SoundDevicePortAudio::callbackProcess(unsigned long framesPerBuffer, float *
 
     if (output && framesPerBuffer > 0)
     {
-		assert(iFrameSize > 0);
-        CSAMPLE** outputAudio = m_pSoundManager->requestBuffer(m_audioSources, framesPerBuffer);
-
-	//qDebug() << framesPerBuffer;
+        assert(iFrameSize > 0);
+        CSAMPLE** outputAudio =
+                m_pSoundManager->requestBuffer(m_audioSources, framesPerBuffer);
 
         //Reset sample for each open channel
         memset(output, 0, framesPerBuffer * iFrameSize * sizeof(*output));
 
-        //iFrameBase is the "base sample" in a frame (ie. the first sample in a frame)
+        // Interlace Audio data onto portaudio buffer. We iterate through the
+        // source list to find out what goes in the buffer data is interlaced in
+        // the order of the list
 
-        for (unsigned int iFrameBase=0; iFrameBase < framesPerBuffer*iFrameSize; iFrameBase += iFrameSize)
-        {
-			//Interlace Audio data onto portaudio buffer
-			//We iterate through the source list to find out what goes in the buffer
-			//data is interlaced in the order of the list
-			//QListIterator<AudioSource> devItr(m_audioSources);
-			int iChannel;
-			//while(devItr.hasNext())
-            for (int i = 0; i < m_audioSources.length(); ++i)
-			{
-				//const AudioSource& src = devItr.next();
-                const AudioSource& src = m_audioSources.at(i);
-				int iLocalFrameBase = (iFrameBase/iFrameSize) * src.channels;
-				for(iChannel = 0; iChannel < src.channels; iChannel++)	//this will make sure a sample from each channel is copied
-				{
-					output[iFrameBase + src.channelBase + iChannel] += outputAudio[src.type][iLocalFrameBase + iChannel] * SHRT_CONVERSION_FACTOR;
-					//Input audio pass-through (useful for debugging)
-                    //if (in)
-					//    output[iFrameBase + src.channelBase + iChannel] += in[iFrameBase + src.channelBase + iChannel] * SHRT_CONVERSION_FACTOR;
-			    }
-			}
+        for (QList<AudioSource>::const_iterator i = m_audioSources.begin(),
+                     e = m_audioSources.end(); i != e; ++i) {
+            const AudioSource& src = *i;
+            const CSAMPLE* input = outputAudio[src.type];
+            const int iNumChannels = src.channels;
+            const int iChannelBase = src.channelBase;
+
+            for (unsigned int iFrameNo = 0; iFrameNo < framesPerBuffer; ++iFrameNo) {
+                // this will make sure a sample from each channel is copied
+                for(int iChannel = 0; iChannel < iNumChannels; iChannel++) {
+                    // iFrameBase is the "base sample" in a frame (ie. the first
+                    // sample in a frame)
+                    unsigned int iFrameBase = iFrameNo * iFrameSize;
+                    unsigned int iLocalFrameBase = iFrameNo * iNumChannels;
+
+                    output[iFrameBase + iChannelBase + iChannel] +=
+                            input[iLocalFrameBase + iChannel] * SHRT_CONVERSION_FACTOR;
+
+                    //Input audio pass-through (useful for debugging)
+                    // if (in)
+                    //     output[iFrameBase + src.channelBase + iChannel] +=
+                    //     in[iFrameBase + src.channelBase + iChannel] * SHRT_CONVERSION_FACTOR;
+                }
+            }
         }
     }
 
     return paContinue;
-
 }
 /* -------- ------------------------------------------------------
    Purpose: Wrapper function to call processing loop function,
