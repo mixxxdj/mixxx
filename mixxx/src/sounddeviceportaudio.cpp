@@ -351,10 +351,9 @@ int SoundDevicePortAudio::callbackProcess(unsigned long framesPerBuffer, float *
             int iChannelCount = outChans.getChannelCount();
             int iChannelBase = outChans.getChannelBase();
 
-            // this will make sure a sample from each channel is copied
-            for (int iChannel = 0; iChannel < iChannelCount; ++iChannel) {
-
-                for (unsigned int iFrameNo=0; iFrameNo < framesPerBuffer; ++iFrameNo) {
+            for (unsigned int iFrameNo=0; iFrameNo < framesPerBuffer; ++iFrameNo) {
+                // this will make sure a sample from each channel is copied
+                for (int iChannel = 0; iChannel < iChannelCount; ++iChannel) {
                     // iFrameBase is the "base sample" in a frame (ie. the first
                     // sample in a frame)
                     unsigned int iFrameBase = iFrameNo * iFrameSize;
