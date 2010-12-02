@@ -21,7 +21,7 @@
 
 #include "starrating.h"
 
-const int PaintingScaleFactor = 20;
+const int PaintingScaleFactor = 15;
 
 
 
