@@ -323,6 +323,10 @@ MixxxApp::MixxxApp(QApplication * a, struct CmdlineArgs args)
     ControlObject::getControl(ConfigKey("[Channel1]","TrackEndMode"))->queueFromThread(config->getValueString(ConfigKey("[Controls]","TrackEndModeCh1")).toDouble());
     ControlObject::getControl(ConfigKey("[Channel2]","TrackEndMode"))->queueFromThread(config->getValueString(ConfigKey("[Controls]","TrackEndModeCh2")).toDouble());
 
+
+    qRegisterMetaType<MidiMessage>("MidiMessage");
+    qRegisterMetaType<MidiStatusByte>("MidiStatusByte");
+
     // Initialise midi
     m_pMidiDeviceManager = new MidiDeviceManager(config);
     //TODO: Try to open MIDI devices?
