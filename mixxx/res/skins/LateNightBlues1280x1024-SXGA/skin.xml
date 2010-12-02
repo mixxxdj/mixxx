@@ -20,6 +20,9 @@
 
 	<!--
 	CHANGELOG
+	v1.07	(02/12/2010)
+	* Added Mixxx 1.9 feature: BPM tap buttons
+
 	v1.06	(19/11/2010)
 	* Added Mixxx 1.9 features: Keylock & Repeat buttons
 	* Changed all graphics for better contrast
@@ -2042,50 +2045,49 @@
 	**********************************************
 	-->
 
-<!--//Jus BPM tap deactivated see https://bugs.launchpad.net/mixxx/+bug/677366 
 	<PushButton>
-		<Tooltip>BPM Tap&#10;It takes the progressive average of the last 8 taps and sets the bpm of the deck to that value, assuming the pitch range is large enough to reach it.&#10;</Tooltip>
+		<Tooltip>BPM Tap&#10;It takes the progressive average of the last 4 taps &#10;and sets the bpm of the deck to that value, &#10;assuming the pitch range is large enough to reach it.&#10;</Tooltip>
 		<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
 		</Style>
-		<NumberStates>2</NumberStates>
+		<NumberStates>1</NumberStates>
 		<State>
 			<Number>0</Number>
-			<Pressed>btn_tap1_over.png</Pressed>
-			<Unpressed>btn_tap1.png</Unpressed>
-		</State>
-		<State>
-			<Number>1</Number>
 			<Pressed>btn_tap1_over.png</Pressed>
 			<Unpressed>btn_tap1.png</Unpressed>
 		</State>
 		<Pos>53,62</Pos>
 		<Connection>
-			<ConfigKey>[Channel1],bpm</ConfigKey>
+			<ConfigKey>[Channel1],bpm_tap</ConfigKey>
+			<EmitOnDownPress>true</EmitOnDownPress>
+		</Connection>
+		<Connection>
+			<ConfigKey>[Channel1],bpm_tap</ConfigKey>
+			<EmitOnDownPress>false</EmitOnDownPress>
 		</Connection>
 	</PushButton>
 	<PushButton>
-		<Tooltip>BPM Tap&#10;It takes the progressive average of the last 8 taps and sets the bpm of the deck to that value, assuming the pitch range is large enough to reach it.&#10;</Tooltip>
+		<Tooltip>BPM Tap&#10;It takes the progressive average of the last 4 taps &#10;and sets the bpm of the deck to that value, &#10;assuming the pitch range is large enough to reach it.&#10;</Tooltip>
 		<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
 		</Style>
-		<NumberStates>2</NumberStates>
+		<NumberStates>1</NumberStates>
 		<State>
 			<Number>0</Number>
 			<Pressed>btn_tap2_over.png</Pressed>
 			<Unpressed>btn_tap2.png</Unpressed>
 		</State>
-		<State>
-			<Number>1</Number>
-			<Pressed>btn_tap2_over.png</Pressed>
-			<Unpressed>btn_tap2.png</Unpressed>
-		</State>
 		<Pos>1174,62</Pos>
 		<Connection>
-			<ConfigKey>[Channel2],bpm</ConfigKey>
+			<ConfigKey>[Channel2],bpm_tap</ConfigKey>
+			<EmitOnDownPress>true</EmitOnDownPress>
+		</Connection>
+		<Connection>
+			<ConfigKey>[Channel2],bpm_tap</ConfigKey>
+			<EmitOnDownPress>false</EmitOnDownPress>
 		</Connection>
 	</PushButton>
--->
+
 	<!--
 	**********************************************
 	Button- Key lock
