@@ -22,11 +22,13 @@ BpmControl::BpmControl(const char* _group,
 
     m_pFileBpm = new ControlObject(ConfigKey(_group, "file_bpm"));
     connect(m_pFileBpm, SIGNAL(valueChanged(double)),
-            this, SLOT(slotFileBpmChanged(double)));
+            this, SLOT(slotFileBpmChanged(double)),
+            Qt::DirectConnection);
 
     m_pEngineBpm = new ControlObject(ConfigKey(_group, "bpm"));
     connect(m_pEngineBpm, SIGNAL(valueChanged(double)),
-            this, SLOT(slotSetEngineBpm(double)));
+            this, SLOT(slotSetEngineBpm(double)),
+            Qt::DirectConnection);
 
     m_pButtonTap = new ControlPushButton(ConfigKey(_group, "bpm_tap"));
     connect(m_pButtonTap, SIGNAL(valueChanged(double)),
@@ -36,7 +38,8 @@ BpmControl::BpmControl(const char* _group,
     // Beat sync (scale buffer tempo relative to tempo of other buffer)
     m_pButtonSync = new ControlPushButton(ConfigKey(_group, "beatsync"));
     connect(m_pButtonSync, SIGNAL(valueChanged(double)),
-            this, SLOT(slotControlBeatSync(double)));
+            this, SLOT(slotControlBeatSync(double)),
+            Qt::DirectConnection);
 
     connect(&m_tapFilter, SIGNAL(tapped(double,int)),
             this, SLOT(slotTapFilter(double,int)),
