@@ -607,7 +607,6 @@ TrackPointer TrackDAO::getTrack(int id) const
 {
     //qDebug() << "TrackDAO::getTrack" << QThread::currentThread() << m_database.connectionName();
 
-
     // If the track cache contains the track, use it to get a strong reference
     // to the track. We do this first so that the QCache keeps track of the
     // least-recently-used track so that it expires them intelligently.
@@ -882,13 +881,13 @@ void TrackDAO::detectMovedFiles()
 void TrackDAO::clearCache()
 {
     m_trackCache.clear();
+    m_dirtyTracks.clear();
 }
-void TrackDAO::writeAudioMetaData(TrackInfoObject* pTrack){
 
-    if(m_pConfig && m_pConfig->getValueString(ConfigKey("[Library]","WriteAudioTags")).toInt() == 1){
-       
+void TrackDAO::writeAudioMetaData(TrackInfoObject* pTrack){
+    if (m_pConfig && m_pConfig->getValueString(ConfigKey("[Library]","WriteAudioTags")).toInt() == 1) {
         AudioTagger tagger(pTrack->getLocation());
-        
+
         tagger.setArtist(pTrack->getArtist());
         tagger.setTitle(pTrack->getTitle());
         tagger.setGenre(pTrack->getGenre());
@@ -896,9 +895,7 @@ void TrackDAO::writeAudioMetaData(TrackInfoObject* pTrack){
         tagger.setComment(pTrack->getComment());
         tagger.setTracknumber(pTrack->getTrackNumber());
         tagger.setBpm(pTrack->getBpmStr());
-        
-        tagger.save();
-    
-    }
 
+        tagger.save();
+    }
 }
