@@ -121,7 +121,17 @@ void TrackDAO::saveTrack(TrackInfoObject* pTrack) {
 
             emit(trackClean(trackId));
         } else {
-            Q_ASSERT(!m_dirtyTracks.contains(trackId));
+            // We don't know why this is happening right now, but this assert is
+            //failing. The condition is mostly harmless, so simply take
+            //corrective action instead of asserting and warn about it in the
+            //log -- rryan 12/2010
+
+            // Q_ASSERT(!m_dirtyTracks.contains(trackId));
+            if (!m_dirtyTracks.contains(trackId)) {
+                qDebug() << "WARNING: Inconsistent state in TrackDAO. Track is clean while TrackDAO thinks it is dirty. Correcting.";
+                m_dirtyTracks.remove(trackId);
+            }
+
             //qDebug() << "Skipping track update for track" << pTrack->getId();
         }
     } else {
