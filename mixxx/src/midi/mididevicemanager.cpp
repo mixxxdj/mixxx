@@ -32,10 +32,6 @@ MidiDeviceManager::MidiDeviceManager(ConfigObject<ConfigValue> * pConfig) : QObj
 {
     m_pConfig = pConfig;
     m_pDeviceSettings = new ConfigObject<ConfigValue>(DEVICE_CONFIG_PATH);
-
-    //Register this class with QT so we can use this bad boy in signals/slots.
-    qRegisterMetaType<MidiMessage>("MidiMessage");
-    qRegisterMetaType<MidiStatusByte>("MidiStatusByte");
 }
 
 MidiDeviceManager::~MidiDeviceManager()
