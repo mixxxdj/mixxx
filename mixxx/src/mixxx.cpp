@@ -316,6 +316,10 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
         m_pConfig->set(ConfigKey("[BPM]", "AnalyzeEntireSong"),ConfigValue(1));
     }
 
+
+    qRegisterMetaType<MidiMessage>("MidiMessage");
+    qRegisterMetaType<MidiStatusByte>("MidiStatusByte");
+
     // Initialise midi
     m_pMidiDeviceManager = new MidiDeviceManager(m_pConfig);
     m_pMidiDeviceManager->setupDevices();

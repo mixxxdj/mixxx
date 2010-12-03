@@ -1,6 +1,6 @@
 /****************************************************************/
 /*      Reloop Digital Jockey 2 controller script v 1.0         */
-/*          Copyright (C) 2010, Tobias Rafreider  				*/
+/*          Copyright (C) 2010, Tobias Rafreider  		*/
 /*      but feel free to tweak this to your heart's content!    */
 /*      For Mixxx version 1.8.x                                 */
 /****************************************************************/
@@ -15,17 +15,20 @@ DigitalJockey2Controller.keyUp = 0x00;
 DigitalJockey2Controller.scratchModeChannel1 = false;
 DigitalJockey2Controller.scratchModeChannel2 = false;
 
+DigitalJockey2Controller.searchModeChannel1 = false;
+DigitalJockey2Controller.searchModeChannel2 = false;
+
 //boolean value that indicated if CUP LED is active
 DigitalJockey2Controller.CUP_Button1_IsActive = false;
 DigitalJockey2Controller.CUP_Button2_IsActive = false;
 
 DigitalJockey2Controller.init = function(id){
-    print ("Initalizing Reloop Digital Jockey 2 Controler Edition.");
+    //print ("Initalizing Reloop Digital Jockey 2 Controler Edition.");
 	DigitalJockey2Controller.resetLEDs();
 
 		
 	engine.connectControl("[Channel1]","play","DigitalJockey2Controller.isChannel1_Playing");
-    engine.connectControl("[Channel2]","play","DigitalJockey2Controller.isChannel2_Playing");
+	engine.connectControl("[Channel2]","play","DigitalJockey2Controller.isChannel2_Playing");
 	
 	engine.connectControl("[Channel1]","cue_default","DigitalJockey2Controller.isChannel1_Cue_Active");
 	engine.connectControl("[Channel2]","cue_default","DigitalJockey2Controller.isChannel2_Cue_Active");
@@ -45,7 +48,9 @@ DigitalJockey2Controller.init = function(id){
 	engine.connectControl("[Channel1]","loop_enabled","DigitalJockey2Controller.LoopActiveLED1");
 	engine.connectControl("[Channel2]","loop_enabled","DigitalJockey2Controller.LoopActiveLED2");
 	
-
+	//Key Lock
+	engine.connectControl("[Channel1]","keylock","DigitalJockey2Controller.OnKeyLockChange1");
+	engine.connectControl("[Channel2]","keylock","DigitalJockey2Controller.OnKeyLockChange2");
 }
 DigitalJockey2Controller.resetLEDs = function(){
 
@@ -58,6 +63,10 @@ DigitalJockey2Controller.resetLEDs = function(){
 	midi.sendShortMsg(0x90, 0x15, DigitalJockey2Controller.ledOff); //MidFilterKill
 	midi.sendShortMsg(0x90, 0x16, DigitalJockey2Controller.ledOff); //LowFilterKill
 	midi.sendShortMsg(0x90, 0x1B, DigitalJockey2Controller.ledOff); //disable scratch control
+	midi.sendShortMsg(0x90, 0x1A, DigitalJockey2Controller.ledOff); //disable search control
+	midi.sendShortMsg(0x90, 0x1C, DigitalJockey2Controller.ledOff); //disable fx dry/wet control
+	midi.sendShortMsg(0x90, 0x02, DigitalJockey2Controller.ledOff); //disable key lock deck 1
+	
 	
 	midi.sendShortMsg(0x90, 0x55, DigitalJockey2Controller.ledOff);   // Turn on the Play LED2 off
 	midi.sendShortMsg(0x90, 0x53, DigitalJockey2Controller.ledOff); //Turn CUP LED2 off
@@ -67,6 +76,9 @@ DigitalJockey2Controller.resetLEDs = function(){
 	midi.sendShortMsg(0x90, 0x51, DigitalJockey2Controller.ledOff); //MidFilterKill
 	midi.sendShortMsg(0x90, 0x52, DigitalJockey2Controller.ledOff); //LowFilterKill
 	midi.sendShortMsg(0x90, 0x57, DigitalJockey2Controller.ledOff); //disable scratch control
+	midi.sendShortMsg(0x90, 0x56, DigitalJockey2Controller.ledOff); //disable search control
+	midi.sendShortMsg(0x90, 0x58, DigitalJockey2Controller.ledOff); //disable fx dry/wet control
+	midi.sendShortMsg(0x90, 0x3E, DigitalJockey2Controller.ledOff); //disable key lock deck 2
 }
 DigitalJockey2Controller.shutdown = function(id){
  //Turn all LEDs off by using init function
@@ -91,8 +103,8 @@ DigitalJockey2Controller.playTrack = function (channel, control, value) {
 		return;
 		
 	var currentlyPlaying = engine.getValue("[Channel"+channel+"]","play");
-    /*
-	 * We immediately want to start and stop playing as soon as play button1 has been pressed
+	/*
+	 * We immediately want to start and stop playing as soon as play button has been pressed
 	 * KeyUp events are out of interest in this case
 	 */
 	if(value == DigitalJockey2Controller.keyPressed){
@@ -107,7 +119,6 @@ DigitalJockey2Controller.playTrack = function (channel, control, value) {
 		}
 	}
 }
- // Play button deck 1
 DigitalJockey2Controller.CueButton1 = function (channel, control, value) {
 	DigitalJockey2Controller.Cue(1, control, value);	
 }
@@ -164,8 +175,8 @@ DigitalJockey2Controller.CuePlay = function (channel, control, value) {
 	if(value == DigitalJockey2Controller.keyPressed){
 		//If CUP is active, we disable and enable CUP in sequence as a user would do
 		if(isCupActive == 1 || currentlyPlaying == 0){
-			print ("isCUPActive" + isCupActive);
-			print ("isPlaying" + currentlyPlaying);
+			//print ("isCUPActive" + isCupActive);
+			//print ("isPlaying" + currentlyPlaying);
 			
 			if(isCupActive == 1){	//diable CUP
 				engine.setValue("[Channel"+channel+"]","cue_default",0);
@@ -207,6 +218,25 @@ DigitalJockey2Controller.CuePlay = function (channel, control, value) {
 		
 	}
 }
+DigitalJockey2Controller.KeyLock1 = function (channel, control, value) {
+	DigitalJockey2Controller.KeyLock(1, control, value);	
+}
+DigitalJockey2Controller.KeyLock2 = function (channel, control, value) {
+	DigitalJockey2Controller.KeyLock(2, control, value);	
+}
+DigitalJockey2Controller.KeyLock = function (channel, control, value) {
+	var isHeadPhoneActive = engine.getValue("[Channel"+channel+"]","keylock");
+	if(value == DigitalJockey2Controller.keyPressed){
+		if(isHeadPhoneActive == 1){
+			engine.setValue("[Channel"+channel+"]","keylock",0);
+			midi.sendShortMsg(0x90, control, DigitalJockey2Controller.ledOff); //Turn LED off
+		}
+		else{
+			engine.setValue("[Channel"+channel+"]","keylock",1);
+			midi.sendShortMsg(0x90, control, DigitalJockey2Controller.ledOn); //Turn LED off
+		}
+	}
+}
 DigitalJockey2Controller.EnableHeadPhone1 = function (channel, control, value) {
 	DigitalJockey2Controller.EnableHeadPhone(1, control, value);
 }
@@ -215,6 +245,7 @@ DigitalJockey2Controller.EnableHeadPhone2 = function (channel, control, value) {
 }
 DigitalJockey2Controller.EnableHeadPhone = function (channel, control, value) {
 	var isHeadPhoneActive = engine.getValue("[Channel"+channel+"]","pfl");
+	//print("Channel"+channel+" isHeadPhoneActive: " + isHeadPhoneActive);
 	if(value == DigitalJockey2Controller.keyPressed){
 		if(isHeadPhoneActive == 1){
 			engine.setValue("[Channel"+channel+"]","pfl",0);
@@ -320,32 +351,55 @@ DigitalJockey2Controller.Scratch2 = function (channel, control, value){
 }
 DigitalJockey2Controller.Scratch = function (channel, control, value){
 	if(value == DigitalJockey2Controller.keyPressed){
-		//print ("Sratch 1: " + DigitalJockey2Controller.scratchModeChannel1);
-		//print ("Sratch 2: " + DigitalJockey2Controller.scratchModeChannel2);
 		if(channel == 1){
+		    //print("Scratch 1: " + DigitalJockey2Controller.scratchModeChannel1);
 			if(DigitalJockey2Controller.scratchModeChannel1 == true){
 				DigitalJockey2Controller.scratchModeChannel1 = false;
-				engine.scratchDisable(channel);
 				midi.sendShortMsg(0x90, control, DigitalJockey2Controller.ledOff);
 			}
 			else{
 				DigitalJockey2Controller.scratchModeChannel1 = true;
-				engine.scratchEnable(channel, 128, 33+1/3, 1.0/8, (1.0/8)/32);
 				midi.sendShortMsg(0x90, control, DigitalJockey2Controller.ledOn);
 			}
 		}
-		if( channel == 2){
+		if(channel == 2){
+		    //print("Scratch 2: " + DigitalJockey2Controller.scratchModeChannel2);
 			if(DigitalJockey2Controller.scratchModeChannel2 == true){
 				DigitalJockey2Controller.scratchModeChannel2 = false;
-				engine.scratchDisable(channel);
 				midi.sendShortMsg(0x90, control, DigitalJockey2Controller.ledOff);
 			}
 			else{
 				DigitalJockey2Controller.scratchModeChannel2 = true;
-				engine.scratchEnable(channel, 128, 33+1/3, 1.0/8, (1.0/8)/32);
 				midi.sendShortMsg(0x90, control, DigitalJockey2Controller.ledOn);		
 			}
 		}
+	}
+}
+
+DigitalJockey2Controller.Search1 = function (channel, control, value, status, group){
+    if(value == DigitalJockey2Controller.keyPressed){
+	    if(DigitalJockey2Controller.searchModeChannel1 == false){
+	        DigitalJockey2Controller.searchModeChannel1 = true;
+		    midi.sendShortMsg(0x90, 0x1A, DigitalJockey2Controller.ledOn); //Turn LED on
+	    }
+	    else{
+	        DigitalJockey2Controller.searchModeChannel1 = false;
+		    midi.sendShortMsg(0x90, 0x1A, DigitalJockey2Controller.ledOff); //Turn LED off
+	    }
+	    //print("Search 1: " + DigitalJockey2Controller.searchModeChannel1);
+	}
+}
+DigitalJockey2Controller.Search2 = function (channel, control, value, status, group){
+    if(value == DigitalJockey2Controller.keyPressed){
+	    if(DigitalJockey2Controller.searchModeChannel2 == false){
+	        DigitalJockey2Controller.searchModeChannel2 = true;
+		    midi.sendShortMsg(0x90, 0x56, DigitalJockey2Controller.ledOn); //Turn LED on
+	    }
+	    else{
+	        DigitalJockey2Controller.searchModeChannel2 = false;
+		    midi.sendShortMsg(0x90, 0x56, DigitalJockey2Controller.ledOff); //Turn LED off
+	    }
+	    //print("Search 2: " + DigitalJockey2Controller.searchModeChannel2);
 	}
 }
 
@@ -356,6 +410,45 @@ DigitalJockey2Controller.JogWheel1 = function (channel, control, value){
 DigitalJockey2Controller.JogWheel2 = function (channel, control, value){
 	DigitalJockey2Controller.JogWheel(2, control, value);
 }
+
+DigitalJockey2Controller.PitchBend1Enabled = false;
+DigitalJockey2Controller.PitchBend2Enabled = false;
+
+DigitalJockey2Controller.DisablePitchBending1 = function () {
+    engine.setValue("[Channel1]", "rate_temp_up", 0);
+    engine.setValue("[Channel1]", "rate_temp_down", 0);
+    DigitalJockey2Controller.PitchBend1Enabled = false;
+}
+DigitalJockey2Controller.DisablePitchBending2 = function () {
+    engine.setValue("[Channel2]", "rate_temp_up", 0);
+    engine.setValue("[Channel2]", "rate_temp_down", 0);
+    DigitalJockey2Controller.PitchBend2Enabled = false;
+}
+
+DigitalJockey2Controller.PitchBendTimerResolution = 40;
+
+DigitalJockey2Controller.Scratch1Enabled = false;
+DigitalJockey2Controller.Scratch2Enabled = false;
+
+DigitalJockey2Controller.DisableScratching1 = function () {
+    engine.scratchDisable(1);
+    DigitalJockey2Controller.Scratch1Enabled = false;
+}
+DigitalJockey2Controller.DisableScratching2 = function () {
+    engine.scratchDisable(2);
+    DigitalJockey2Controller.Scratch2Enabled = false;
+}
+
+DigitalJockey2Controller.ScratchTimerResolution = 40;
+
+DigitalJockey2Controller.Scratch1Timer = 0;
+DigitalJockey2Controller.Scratch2Timer = 0;
+
+DigitalJockey2Controller.PitchBend1Timer = 0;
+DigitalJockey2Controller.PitchBend2Timer = 0;
+
+DigitalJockey2Controller.SearchSensitivity = 0.01;
+
 DigitalJockey2Controller.JogWheel = function (channel, control, value){
 	/*
 	 * The JogWheels of the controler work as follows.
@@ -370,15 +463,127 @@ DigitalJockey2Controller.JogWheel = function (channel, control, value){
 	
 	//Functionality of Jog Wheel if we're in scratch mode 
 	if(channel == 1){
-		if (DigitalJockey2Controller.scratchModeChannel1 == true) {
-			
-			engine.scratchTick(channel,jogValue);
-
+	    if (DigitalJockey2Controller.scratchModeChannel1 == true && DigitalJockey2Controller.searchModeChannel1 == true) {
+	        if (jogValue > 0) {
+	            engine.setValue("[Channel1]", "rate_temp_up", 1);
+	            engine.setValue("[Channel1]", "rate_temp_down", 0);
+	        }
+	        else if (jogValue < 0) {
+	            engine.setValue("[Channel1]", "rate_temp_up", 0);
+	            engine.setValue("[Channel1]", "rate_temp_down", 1);
+	        }
+	        else
+	            return;
+	        if (DigitalJockey2Controller.PitchBend1Enabled == false)
+		    {
+		        DigitalJockey2Controller.PitchBend1Enabled = true;
+		        // Start timer1
+		        DigitalJockey2Controller.PitchBend1Timer = engine.beginTimer(DigitalJockey2Controller.PitchBendTimerResolution, "DigitalJockey2Controller.DisablePitchBending1()", true);
+		        //print("PitchBend1Timer started!");
+		    }
+			else
+			{
+			    // Restart timer1
+			    engine.stopTimer(DigitalJockey2Controller.PitchBend1Timer);
+			    DigitalJockey2Controller.PitchBend1Timer = engine.beginTimer(DigitalJockey2Controller.PitchBendTimerResolution, "DigitalJockey2Controller.DisablePitchBending1()", true);
+			    //print("PitchBend1Timer restarted!");
+			}
+	    }
+		else if (DigitalJockey2Controller.scratchModeChannel1 == true && DigitalJockey2Controller.searchModeChannel1 == false) {
+		    if (DigitalJockey2Controller.Scratch1Enabled == false)
+		    {
+		        engine.scratchEnable(1, 128, 33+1/3, 1.0/8, (1.0/8)/32);
+		        DigitalJockey2Controller.Scratch1Enabled = true;
+		        // Start timer1
+		        DigitalJockey2Controller.Scratch1Timer = engine.beginTimer(DigitalJockey2Controller.ScratchTimerResolution, "DigitalJockey2Controller.DisableScratching1()", true);
+		        //print("Scratch1Timer started!");
+		    }
+			else
+			{
+			    engine.scratchTick(1,jogValue);
+			    // Restart timer1
+			    engine.stopTimer(DigitalJockey2Controller.Scratch1Timer);
+			    DigitalJockey2Controller.Scratch1Timer = engine.beginTimer(DigitalJockey2Controller.ScratchTimerResolution, "DigitalJockey2Controller.DisableScratching1()", true);
+			    //print("Scratch1Timer restarted!");
+			}
+		}
+		else if (DigitalJockey2Controller.scratchModeChannel1 == false && DigitalJockey2Controller.searchModeChannel1 == true) {
+		    var playpos = engine.getValue("[Channel1]", "playposition");
+		    if (jogValue > 0) {
+		        if (playpos < 1 - DigitalJockey2Controller.SearchSensitivity)
+		            playpos += DigitalJockey2Controller.SearchSensitivity;
+		        else
+		            playpos = 1;
+	        }
+	        else if (jogValue < 0) {
+	            if (playpos > DigitalJockey2Controller.SearchSensitivity)
+	                playpos -= DigitalJockey2Controller.SearchSensitivity;
+	            else
+	                playpos = 0;
+	        }
+	        engine.setValue("[Channel1]", "playposition", playpos);
 		}		
 	}
 	if(channel == 2){
-		if (DigitalJockey2Controller.scratchModeChannel2 == true) {
-			engine.scratchTick(channel,jogValue);
+	    if (DigitalJockey2Controller.scratchModeChannel2 == true && DigitalJockey2Controller.searchModeChannel2 == true) {
+	        if (jogValue > 0) {
+	            engine.setValue("[Channel2]", "rate_temp_up", 1);
+	            engine.setValue("[Channel2]", "rate_temp_down", 0);
+	        }
+	        else if (jogValue < 0) {
+	            engine.setValue("[Channel2]", "rate_temp_up", 0);
+	            engine.setValue("[Channel2]", "rate_temp_down", 1);
+	        }
+	        else
+	            return;
+	        if (DigitalJockey2Controller.PitchBend2Enabled == false)
+		    {
+		        DigitalJockey2Controller.PitchBend2Enabled = true;
+		        // Start timer2
+		        DigitalJockey2Controller.PitchBend2Timer = engine.beginTimer(DigitalJockey2Controller.PitchBendTimerResolution, "DigitalJockey2Controller.DisablePitchBending2()", true);
+		        //print("PitchBend2Timer started!");
+		    }
+			else
+			{
+			    // Restart timer2
+			    engine.stopTimer(DigitalJockey2Controller.PitchBend2Timer);
+			    DigitalJockey2Controller.PitchBend2Timer = engine.beginTimer(DigitalJockey2Controller.PitchBendTimerResolution, "DigitalJockey2Controller.DisablePitchBending2()", true);
+			    //print("PitchBend2Timer restarted!");
+			}
+	    }
+		else if (DigitalJockey2Controller.scratchModeChannel2 == true && DigitalJockey2Controller.searchModeChannel2 == false) {
+		    if (DigitalJockey2Controller.Scratch2Enabled == false)
+		    {
+		        engine.scratchEnable(2, 128, 33+1/3, 1.0/8, (1.0/8)/32);
+		        // Start timer1
+		        DigitalJockey2Controller.Scratch2Enabled = true;
+		        DigitalJockey2Controller.Scratch2Timer = engine.beginTimer(DigitalJockey2Controller.ScratchTimerResolution, "DigitalJockey2Controller.DisableScratching2()", true);
+		        //print("Scratch2Timer started!");
+		    }
+			else
+			{
+			    engine.scratchTick(2,jogValue);
+			    // Restart timer2
+			    engine.stopTimer(DigitalJockey2Controller.Scratch2Timer);
+			    DigitalJockey2Controller.Scratch2Timer = engine.beginTimer(DigitalJockey2Controller.ScratchTimerResolution, "DigitalJockey2Controller.DisableScratching2()", true);
+			    //print("Scratch2Timer restarted!");
+			}
+		}
+		else if (DigitalJockey2Controller.scratchModeChannel2 == false && DigitalJockey2Controller.searchModeChannel2 == true) {
+		    var playpos = engine.getValue("[Channel2]", "playposition");
+		    if (jogValue > 0) {
+		        if (playpos < 1 - DigitalJockey2Controller.SearchSensitivity)
+		            playpos += DigitalJockey2Controller.SearchSensitivity;
+		        else
+		            playpos = 1;
+	        }
+	        else if (jogValue < 0) {
+	            if (playpos > DigitalJockey2Controller.SearchSensitivity)
+	                playpos -= DigitalJockey2Controller.SearchSensitivity;
+	            else
+	                playpos = 0;
+	        }
+	        engine.setValue("[Channel2]", "playposition", playpos);
 		}		
 	}
 }
@@ -500,26 +705,42 @@ DigitalJockey2Controller.OnFilterLow_KillButton1 = function (value){
 DigitalJockey2Controller.OnPFL_Button1 = function (value){
 	if(value == 1){
 			midi.sendShortMsg(0x90, 0x5, DigitalJockey2Controller.ledOn); //Turn LED off
-		}
-		else{
-			midi.sendShortMsg(0x90, 0x5, DigitalJockey2Controller.ledOff); //Turn LED off
-		}
+	}
+	else{
+		midi.sendShortMsg(0x90, 0x5, DigitalJockey2Controller.ledOff); //Turn LED off
+	}
 }
 DigitalJockey2Controller.OnPFL_Button2 = function (value){
 	if(value == 1){
-			midi.sendShortMsg(0x90, 0x41, DigitalJockey2Controller.ledOn); //Turn LED off
-		}
-		else{
-			midi.sendShortMsg(0x90, 0x41, DigitalJockey2Controller.ledOff); //Turn LED off
-		}
+		midi.sendShortMsg(0x90, 0x41, DigitalJockey2Controller.ledOn); //Turn LED off
+	}
+	else{
+		midi.sendShortMsg(0x90, 0x41, DigitalJockey2Controller.ledOff); //Turn LED off
+	}
+}
+DigitalJockey2Controller.OnKeyLockChange1 = function(value){
+	if(value == 1){
+		midi.sendShortMsg(0x90, 0x02, DigitalJockey2Controller.ledOn); //Turn Keylock on
+	}
+	else{
+		midi.sendShortMsg(0x90, 0x02, DigitalJockey2Controller.ledOff); //Turn KeyLock off
+	}
+}
+DigitalJockey2Controller.OnKeyLockChange2 = function(value){
+	if(value == 1){
+		midi.sendShortMsg(0x90, 0x3E, DigitalJockey2Controller.ledOn); //Turn KeyLock on
+	}
+	else{
+		midi.sendShortMsg(0x90, 0x3E, DigitalJockey2Controller.ledOff); //Turn KeyLock off
+	}
 }
 DigitalJockey2Controller.LoopIn = function (channel, control, value, status, group) {
 	if(value == DigitalJockey2Controller.keyPressed){
-		midi.sendShortMsg(status, control, DigitalJockey2Controller.ledOn); //Turn LED on
+		midi.sendShortMsg(status, control, DigitalJockey2Controller.ledOn); //set loop in
 		engine.setValue(group,"loop_in",1);
 	}
 	else{
-		midi.sendShortMsg(status, control, DigitalJockey2Controller.ledOff); //Turn LED on
+		midi.sendShortMsg(status, control, DigitalJockey2Controller.ledOff); //unset loop in
 	}
 }
 DigitalJockey2Controller.LoopOut = function (channel, control, value, status, group) {
@@ -559,4 +780,31 @@ DigitalJockey2Controller.LoopActiveLED2 = function (value){
 		midi.sendShortMsg(0x90, 0x4E, DigitalJockey2Controller.ledOff); //Turn LED on
 	}
 	
+}
+
+DigitalJockey2Controller.Flanger1 = function (channel, control, value, status, group){
+    if(value == DigitalJockey2Controller.keyPressed){
+        var flanger = engine.getValue("[Channel1]", "flanger");
+	    if(flanger){
+	        engine.setValue("[Channel1]", "flanger", 0);
+	        midi.sendShortMsg(0x90, 0xe, DigitalJockey2Controller.ledOff); //Turn LED off
+	    }
+	    else{
+	        engine.setValue("[Channel1]", "flanger", 1);
+		    midi.sendShortMsg(0x90, 0xe, DigitalJockey2Controller.ledOn); //Turn LED on
+	    }
+	}
+}
+DigitalJockey2Controller.Flanger2 = function (channel, control, value, status, group){
+    if(value == DigitalJockey2Controller.keyPressed){
+        var flanger = engine.getValue("[Channel2]", "flanger");
+	    if(flanger){
+	        engine.setValue("[Channel2]", "flanger", 0);
+	        midi.sendShortMsg(0x90, 0x45, DigitalJockey2Controller.ledOff); //Turn LED off
+	    }
+	    else{
+	        engine.setValue("[Channel2]", "flanger", 1);
+		    midi.sendShortMsg(0x90, 0x45, DigitalJockey2Controller.ledOn); //Turn LED on
+	    }
+	}
 }
