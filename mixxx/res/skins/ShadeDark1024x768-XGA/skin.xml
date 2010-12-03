@@ -20,6 +20,10 @@
 
 	<!--
 	CHANGELOG
+	v1.07	(02/12/2010)
+	* Added custom images for checkboxes in library
+	* Updated styles
+
 	v1.06	(20/11/2010)
 	* Added Mixxx 1.9 features: Keylock & Repeat buttons
 	* Deleted end-of-track mode buttons
@@ -97,17 +101,20 @@
 	**********************************************
 	-->
 	<TableView>
-		<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+		<Style>
+		QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-		QLabel { font: 13px/15px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-		background-color: transparent; color: #E4E4E4; text-align: left; padding-left: 1%; }
-		QTableView { font: 13px/15px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-		background: #3F4249; alternate-background-color: #3F4249; color: #FFFFFF; }
+
+		QTableView, QTextBrowser, QTreeView , QLineEdit { font: 13px/15px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+		background: #3F4249; alternate-background-color: #3F4249; color: #E4E4E4; }
+		QTableView::indicator { width: 12px; height: 12px;}
+		QTableView::indicator:checked { background: url(skin:/style_checkbox_checked.png);}
+		QTableView::indicator:unchecked { background: url(skin:/style_checkbox_unchecked.png);}
+
 		QHeaderView { font: 11px/13px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; }
-		QRadioButton { color: #E4E4E4; }
-		QTextBrowser { background: #3F4249; color: #E4E4E4; }
-		WLibrarySidebar { background: #3F4249; color: #E4E4E4; }
-		WSearchLineEdit { background: #3F4249; color: #E4E4E4; }
+
+		QLabel, QPushButton { font: 13px/15px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; }
+		QRadioButton { font: 13px/15px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; background: transparent; color: #E4E4E4; }
 		</Style>
 		<Pos>11,267</Pos>
 		<Size>986,390</Size>
