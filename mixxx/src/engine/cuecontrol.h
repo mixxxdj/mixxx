@@ -15,6 +15,55 @@ class ControlObject;
 class ControlPushButton;
 class Cue;
 
+class HotcueControl : public QObject {
+    Q_OBJECT
+  public:
+    HotcueControl(const char* pGroup, int hotcueNumber);
+    virtual ~HotcueControl();
+
+    inline int getHotcueNumber() { return m_iHotcueNumber; }
+    inline Cue* getCue() { return m_pCue; }
+    inline void setCue(Cue* pCue) { m_pCue = pCue; }
+    inline ControlObject* getPosition() { return m_hotcuePosition; }
+    inline ControlObject* getEnabled() { return m_hotcueEnabled; }
+
+  private slots:
+    void slotHotcueSet(double v);
+    void slotHotcueGoto(double v);
+    void slotHotcueGotoAndStop(double v);
+    void slotHotcueActivate(double v);
+    void slotHotcueActivatePreview(double v);
+    void slotHotcueClear(double v);
+    void slotHotcuePositionChanged(double newPosition);
+
+  signals:
+    void hotcueSet(HotcueControl* pHotcue, double v);
+    void hotcueGoto(HotcueControl* pHotcue, double v);
+    void hotcueGotoAndStop(HotcueControl* pHotcue, double v);
+    void hotcueActivate(HotcueControl* pHotcue, double v);
+    void hotcueActivatePreview(HotcueControl* pHotcue, double v);
+    void hotcueClear(HotcueControl* pHotcue, double v);
+    void hotcuePositionChanged(HotcueControl* pHotcue, double newPosition);
+
+  private:
+    ConfigKey keyForControl(int hotcue, QString name);
+
+    const char* m_pGroup;
+    int m_iHotcueNumber;
+    Cue* m_pCue;
+
+    // Hotcue state controls
+    ControlObject* m_hotcuePosition;
+    ControlObject* m_hotcueEnabled;
+    // Hotcue button controls
+    ControlObject* m_hotcueSet;
+    ControlObject* m_hotcueGoto;
+    ControlObject* m_hotcueGotoAndStop;
+    ControlObject* m_hotcueActivate;
+    ControlObject* m_hotcueActivatePreview;
+    ControlObject* m_hotcueClear;
+};
+
 class CueControl : public EngineControl {
     Q_OBJECT
   public:
@@ -31,13 +80,13 @@ class CueControl : public EngineControl {
   private slots:
     void cueUpdated();
     void trackCuesUpdated();
-    void hotcueSet(double v);
-    void hotcueGoto(double v);
-    void hotcueGotoAndStop(double v);
-    void hotcueActivate(double v);
-    void hotcueActivatePreview(double v);
-    void hotcueClear(double v);
-    void hotcuePositionChanged(double newPosition);
+    void hotcueSet(HotcueControl* pControl, double v);
+    void hotcueGoto(HotcueControl* pControl, double v);
+    void hotcueGotoAndStop(HotcueControl* pControl, double v);
+    void hotcueActivate(HotcueControl* pControl, double v);
+    void hotcueActivatePreview(HotcueControl* pControl, double v);
+    void hotcueClear(HotcueControl* pControl, double v);
+    void hotcuePositionChanged(HotcueControl* pControl, double newPosition);
 
     void cueSet(double v);
     void cueGoto(double v);
@@ -49,12 +98,10 @@ class CueControl : public EngineControl {
 
   private:
     // These methods are not thread safe, only call them when the lock is held.
-    ConfigKey keyForControl(int hotcue, QString name);
     void createControls();
-    void attachCue(Cue* pCue, int hotKey);
-    void detachCue(int hotKey);
+    void attachCue(Cue* pCue, int hotcueNumber);
+    void detachCue(int hotcueNumber);
     void saveCuePoint(double cuePoint);
-    int senderHotcue(QObject* pSender);
 
     bool m_bPreviewing;
     bool m_bPreviewingHotcue;
@@ -62,16 +109,7 @@ class CueControl : public EngineControl {
     int m_iCurrentlyPreviewingHotcues;
 
     const int m_iNumHotCues;
-    // Hotcue state controls
-    QList<ControlObject*> m_hotcuePosition;
-    QList<ControlObject*> m_hotcueEnabled;
-    // Hotcue button controls
-    QList<ControlObject*> m_hotcueSet;
-    QList<ControlObject*> m_hotcueGoto;
-    QList<ControlObject*> m_hotcueGotoAndStop;
-    QList<ControlObject*> m_hotcueActivate;
-    QList<ControlObject*> m_hotcueActivatePreview;
-    QList<ControlObject*> m_hotcueClear;
+    QList<HotcueControl*> m_hotcueControl;
     QList<Cue*> m_hotcue;
 
     ControlObject* m_pTrackSamples;
