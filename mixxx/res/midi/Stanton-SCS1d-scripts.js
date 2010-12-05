@@ -15,7 +15,7 @@ StantonSCS1d.globalMode = false;        // Stay in the current modes on deck cha
 StantonSCS1d.platterSpeed = 0;          // Speed of the platter at 0% pitch: 0=33 RPM, 1=45 RPM
 StantonSCS1d.deckChangeWait = 1000;     // Time in milliseconds to hold the Deck Change button down to avoid changing decks
 StantonSCS1d.padVelocity = true;        // Use the velocity values when recalling cues on the trigger pads
-StantonSCS1d.crossFader = false;         // Use the pitch slider to adjust cross-fader when Range is held down
+StantonSCS1d.crossFader = true;         // Use the pitch slider to adjust cross-fader when Range is held down
 StantonSCS1d.browseDamp = 2;			// Number of platter ticks to move the highlight one item when browsing the library
 
 // These values are heavily latency-dependent. They're preset for 10ms and will need tuning for other latencies. (For 2ms, try 0.885, 0.15, and 1.5.)
@@ -522,6 +522,7 @@ StantonSCS1d.rangeButton = function (channel, control, value, status) {
         if (!StantonSCS1d.state["crossfaderAdjusted"]) {
             // Change the range
             var currentRange = engine.getValue("[Channel"+StantonSCS1d.deck+"]","rateRange");
+            // TODO: Extend this to work with arbitrary-length pitchRanges array
             switch (true) {
                 case (currentRange<StantonSCS1d.pitchRanges[0]):
                         engine.setValue("[Channel"+StantonSCS1d.deck+"]","rateRange",StantonSCS1d.pitchRanges[0]);
@@ -1430,6 +1431,7 @@ StantonSCS1d.pad = function (channel, control, value, status) {
 		if (StantonSCS1d.modifier["velocityToggle"]==1) { // Delete a cue point
 			engine.setValue("[Channel"+deck+"]","hotcue_"+hotCue+"_clear",1);
 			engine.setValue("[Channel"+deck+"]","hotcue_"+hotCue+"_clear",0);
+			StantonSCS1d.state["padCleared"]=true;
 			return;
 		}
 		
@@ -1959,9 +1961,9 @@ TODO:
 - Use timers for flashy deck change lights
 - End-of-track warning flash
 
-BUGS:
-- If pad pressed while velocity button held, don't change velocity state
+- Extend .rangeButton*() to work with arbitrary-length pitchRanges array
 
+BUGS:
 - Window dragging screws up speed - use timestamps
 - Sticker drift - timestamps?
 - Changing pitch makes speed jiggly - timestamps??
