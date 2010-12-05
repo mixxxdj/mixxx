@@ -26,7 +26,6 @@
 #endif
 #include "soundmanagerconfig.h"
 #include <QTimer>
-#include "SoundTouch.h"
 
 class SoundDevice;
 class EngineMaster;
@@ -39,8 +38,6 @@ class AudioInput;
 #define MIXXX_PORTAUDIO_ASIO_STRING "ASIO"
 #define MIXXX_PORTAUDIO_DIRECTSOUND_STRING "Windows DirectSound"
 #define MIXXX_PORTAUDIO_COREAUDIO_STRING "Core Audio"
-
-using namespace soundtouch;
 
 class SoundManager : public QObject
 {
@@ -78,25 +75,14 @@ class SoundManager : public QObject
         QList<unsigned int> m_samplerates;
         QString m_hostAPI;
         QHash<AudioOutput, const CSAMPLE*> m_outputBuffers;
-        QHash<SoundDevice*, AudioOutput> m_audioOutputDevices;
         QHash<AudioInput, short*> m_inputBuffers; /** Audio received from input */
-        
-        /** Member variables used for sound card synchronization */
-        QHash<SoundDevice*, long> m_deviceFrameCount;
-        QHash<SoundDevice*, QPair<double, unsigned long> > m_deviceStreamStats;
-        QHash<SoundDevice*, double> m_deviceClkDrifts;
-        SoundDevice *m_pClkRefDevice;
-        double m_dClkRefSampleRate;
-        /** SoundTouch time/pitch scaling lib, used for sound card sync here */
-        SoundTouch *m_pSoundTouch;
-        /** End sound card sync variables */
-        
+        QHash<SoundDevice*, long> m_deviceFrameCount;   /** Sound card sync */
+        SoundDevice* m_pClkRefDevice;  /** Sound card sync */
 #ifdef __VINYLCONTROL__
         QList<VinylControlProxy*> m_VinylControl;
 #endif        
         unsigned int iNumDevicesOpenedForOutput;
         unsigned int iNumDevicesOpenedForInput;
-        
         QMutex requestBufferMutex;
         QTimer m_controlObjSyncTimer;
         SoundManagerConfig m_config;
