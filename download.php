@@ -119,7 +119,7 @@ sudo apt-get install mixxx
 						        	</td>
 						        	<td width="50%"><a href="http://downloads.mixxx.org/mixxx-1.8.2/mixxx-1.8.2-win32.exe"  onClick="javascript: pageTracker._trackPageview('/downloads/182win32'); ">Mixxx 1.8.2</a><br>(32-bit)
 						            </td>
-						            <td width="50%"><a href="http://downloads.mixxx.org/mixxx-1.8.2/mixxx-1.8.1-win64.exe"  onClick="javascript: pageTracker._trackPageview('/downloads/181win64'); ">Mixxx 1.8.1</a><br>(64-bit)
+						            <td width="50%"><a href="http://downloads.mixxx.org/mixxx-1.8.1/mixxx-1.8.1-win64.exe"  onClick="javascript: pageTracker._trackPageview('/downloads/181win64'); ">Mixxx 1.8.1</a><br>(64-bit)
 
                                     <!--
 		            			    <p style="font-size: 0.6em;margin:0px;padding:0px;">
