@@ -115,7 +115,7 @@ $(function() {
 						if (navigator.userAgent.indexOf("Intel Mac")!=-1) //Intel machines
 						{
 							//OSName += " (Intel)";
-							OSName += " (Universal)";
+							OSName += " (Intel)";
 						}
 					}
 
@@ -181,12 +181,13 @@ $(function() {
                    every year? Through our open source license, Mixxx will always be <b>free</b>,
                    and you'll never be locked in.
                 </p>
+		<img src="images/deere_spacer.png" alt="">
             </div>
             <div class="downloadFloat">
 				<img src="images/download_now.png" alt="Download Now" onclick="location.href='downloadlatest.php?os=' + OSName;" border="0px" style="vertical-align: middle; cursor:pointer;" />
                 <br/>
                 <p class="downloadSmall" style="text-align: center;">
-                    Mixxx 1.8.1 for 
+                    Mixxx 1.8.2 for 
                 <script type="text/javascript">
                         document.write(OSName);
                 </script>

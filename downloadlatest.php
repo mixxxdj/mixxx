@@ -1,6 +1,6 @@
 <?php
 $os = $_GET["os"];
-$url = "http://downloads.mixxx.org/mixxx-1.8.1/mixxx-1.8.1-";
+$url = "http://downloads.mixxx.org/mixxx-1.8.2/mixxx-1.8.2-";
 if ($os == "Windows") {
 	$url .= "win32.exe";
 }
