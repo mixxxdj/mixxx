@@ -181,7 +181,6 @@ $(function() {
                    every year? Through our open source license, Mixxx will always be <b>free</b>,
                    and you'll never be locked in.
                 </p>
-		<img src="images/deere_spacer.png" alt="">
             </div>
             <div class="downloadFloat">
 				<img src="images/download_now.png" alt="Download Now" onclick="location.href='downloadlatest.php?os=' + OSName;" border="0px" style="vertical-align: middle; cursor:pointer;" />
