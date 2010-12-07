@@ -1041,7 +1041,7 @@ void MixxxApp::slotOptionsVinylControl(bool toggle)
     if (countVCIns == 0 && toggle)
     {
         QMessageBox::warning(this, tr("Mixxx"),
-            tr("No input device(s) select.\nPlease select your soundcard(s) "
+            tr("No input device(s) selected.\nPlease select your soundcard(s) "
                 "in the sound hardware preferences."),
             QMessageBox::Ok,
             QMessageBox::Ok);
