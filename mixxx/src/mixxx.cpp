@@ -1015,7 +1015,7 @@ void MixxxApp::slotOptionsVinylControl(bool toggle)
     if (device1 == "" && device2 == "" && (toggle==true))
     {
         QMessageBox::warning(this, tr("Mixxx"),
-                                   tr("No input device(s) select.\n"
+                                   tr("No input device(s) selected.\n"
                                       "Please select your soundcard(s) in vinyl control preferences."),
                                    QMessageBox::Ok,
                                    QMessageBox::Ok);
