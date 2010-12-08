@@ -24,7 +24,7 @@
 
 WNumberBpm::WNumberBpm(const char * group, QWidget * parent) : WNumber(parent)
 {
-    m_qsText = "BPM: ";
+    m_qsText = "";
     m_pRateControl = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey(group, "rate")));
     m_pRateDirControl = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey(group, "rate_dir")));
     m_pRateRangeControl = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey(group, "rateRange")));

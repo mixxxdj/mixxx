@@ -323,6 +323,9 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
     ControlObject::getControl(ConfigKey("[Channel1]","VinylMode"))->queueFromThread(m_pConfig->getValueString(ConfigKey("[VinylControl]","Mode")).toDouble());
     ControlObject::getControl(ConfigKey("[Channel2]","VinylMode"))->queueFromThread(m_pConfig->getValueString(ConfigKey("[VinylControl]","Mode")).toDouble());
 
+    qRegisterMetaType<MidiMessage>("MidiMessage");
+    qRegisterMetaType<MidiStatusByte>("MidiStatusByte");
+
     // Initialise midi
     m_pMidiDeviceManager = new MidiDeviceManager(m_pConfig);
     m_pMidiDeviceManager->setupDevices();
@@ -370,7 +373,7 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
 
     // Load tracks in args.qlMusicFiles (command line arguments) into player
     // 1 and 2:
-    for (int i = 0; i < m_pPlayerManager->numDecks()
+    for (int i = 0; i < (int)m_pPlayerManager->numDecks()
             && i < args.qlMusicFiles.count(); ++i) {
         m_pPlayerManager->slotLoadToDeck(args.qlMusicFiles.at(i), i+1);
     }
@@ -379,7 +382,7 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
     if (bFirstRun || bUpgraded) {
         QList<TrackPointer> tracksToAutoLoad =
             m_pLibrary->getTracksToAutoLoad();
-        for (int i = 0; i < m_pPlayerManager->numDecks()
+        for (int i = 0; i < (int)m_pPlayerManager->numDecks()
                 && i < tracksToAutoLoad.count(); i++) {
             m_pPlayerManager->slotLoadToDeck(args.qlMusicFiles.at(i), i+1);
         }
@@ -671,7 +674,7 @@ void MixxxApp::initActions()
 
     m_pOptionsFullScreen->setShortcutContext(Qt::ApplicationShortcut);
     // QShortcut * shortcut = new QShortcut(QKeySequence(tr("Esc")),  this);
-    // connect(shortcut, SIGNAL(activated()), this, SLOT(slotQuitFullScreen()));
+    // connect(shortcut, SIGNAL(triggered()), this, SLOT(slotQuitFullScreen()));
 
     m_pOptionsPreferences = new QAction(tr("&Preferences"), this);
     m_pOptionsPreferences->setShortcut(tr("Ctrl+P"));
@@ -707,41 +710,41 @@ void MixxxApp::initActions()
     m_pFileLoadSongPlayer1->setStatusTip(tr("Opens a song in player 1"));
     m_pFileLoadSongPlayer1->setWhatsThis(
         tr("Open\n\nOpens a song in player 1"));
-    connect(m_pFileLoadSongPlayer1, SIGNAL(activated()),
+    connect(m_pFileLoadSongPlayer1, SIGNAL(triggered()),
             this, SLOT(slotFileLoadSongPlayer1()));
 
     m_pFileLoadSongPlayer2->setStatusTip(tr("Opens a song in player 2"));
     m_pFileLoadSongPlayer2->setWhatsThis(
         tr("Open\n\nOpens a song in player 2"));
-    connect(m_pFileLoadSongPlayer2, SIGNAL(activated()),
+    connect(m_pFileLoadSongPlayer2, SIGNAL(triggered()),
             this, SLOT(slotFileLoadSongPlayer2()));
 
     m_pFileQuit->setStatusTip(tr("Quits the application"));
     m_pFileQuit->setWhatsThis(tr("Exit\n\nQuits the application"));
-    connect(m_pFileQuit, SIGNAL(activated()), this, SLOT(slotFileQuit()));
+    connect(m_pFileQuit, SIGNAL(triggered()), this, SLOT(slotFileQuit()));
 
     m_pLibraryRescan->setStatusTip(tr("Rescans the song library"));
     m_pLibraryRescan->setWhatsThis(
         tr("Rescan library\n\nRescans the song library"));
     m_pLibraryRescan->setCheckable(false);
-    connect(m_pLibraryRescan, SIGNAL(activated()),
+    connect(m_pLibraryRescan, SIGNAL(triggered()),
             this, SLOT(slotScanLibrary()));
     connect(m_pLibraryScanner, SIGNAL(scanFinished()),
             this, SLOT(slotEnableRescanLibraryAction()));
 
     m_pPlaylistsNew->setStatusTip(tr("Create a new playlist"));
     m_pPlaylistsNew->setWhatsThis(tr("New playlist\n\nCreate a new playlist"));
-    connect(m_pPlaylistsNew, SIGNAL(activated()),
+    connect(m_pPlaylistsNew, SIGNAL(triggered()),
             m_pLibrary, SLOT(slotCreatePlaylist()));
 
     m_pCratesNew->setStatusTip(tr("Create a new crate"));
     m_pCratesNew->setWhatsThis(tr("New crate\n\nCreate a new crate."));
-    connect(m_pCratesNew, SIGNAL(activated()),
+    connect(m_pCratesNew, SIGNAL(triggered()),
             m_pLibrary, SLOT(slotCreateCrate()));
 
     m_pPlaylistsImport->setStatusTip(tr("Import playlist"));
     m_pPlaylistsImport->setWhatsThis(tr("Import playlist"));
-    //connect(playlistsImport, SIGNAL(activated()),
+    //connect(playlistsImport, SIGNAL(triggered()),
     //        m_pTrack, SLOT(slotImportPlaylist()));
     //FIXME: Disabled due to library rework
 
@@ -824,22 +827,22 @@ void MixxxApp::initActions()
     m_pOptionsPreferences->setStatusTip(tr("Preferences"));
     m_pOptionsPreferences->setWhatsThis(
         tr("Preferences\nPlayback and MIDI preferences"));
-    connect(m_pOptionsPreferences, SIGNAL(activated()),
+    connect(m_pOptionsPreferences, SIGNAL(triggered()),
             this, SLOT(slotOptionsPreferences()));
 
     m_pHelpSupport->setStatusTip(tr("Support..."));
     m_pHelpSupport->setWhatsThis(tr("Support\n\nGet help with Mixxx"));
-    connect(m_pHelpSupport, SIGNAL(activated()), this, SLOT(slotHelpSupport()));
+    connect(m_pHelpSupport, SIGNAL(triggered()), this, SLOT(slotHelpSupport()));
 
     m_pHelpAboutApp->setStatusTip(tr("About the application"));
     m_pHelpAboutApp->setWhatsThis(tr("About\n\nAbout the application"));
-    connect(m_pHelpAboutApp, SIGNAL(activated()), this, SLOT(slotHelpAbout()));
+    connect(m_pHelpAboutApp, SIGNAL(triggered()), this, SLOT(slotHelpAbout()));
 
 #ifdef __SCRIPT__
     macroStudio->setStatusTip(tr("Shows the macro studio window"));
     macroStudio->setWhatsThis(
         tr("Show Studio\n\nMakes the macro studio visible"));
-     connect(macroStudio, SIGNAL(activated()),
+     connect(macroStudio, SIGNAL(triggered()),
              scriptEng->getStudio(), SLOT(showStudio()));
 #endif
 }
@@ -1287,6 +1290,7 @@ void MixxxApp::slotHelpAbout()
 "Anders Gunnarson<br>"
 "Alex Barker<br>"
 "Mikko Jania<br>"
+"Juan Pedro Bol&iacute;var Puente<br>"
 
 "</p>"
 "<p align=\"center\"><b>And special thanks to:</b></p>"
