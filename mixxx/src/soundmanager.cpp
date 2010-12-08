@@ -254,7 +254,7 @@ void SoundManager::clearDeviceList()
         SoundDevice* dev = m_devices.takeLast();
         delete dev;
     }
-    
+
 #ifdef __PORTAUDIO__
     if (m_paInitialized) {
         Pa_Terminate();
@@ -600,11 +600,11 @@ void SoundManager::pushBuffer(QList<AudioInput> inputs, short * inputBuffer,
     // memory in certain cases -- bkgood
     if (iFrameSize == 2)
     {
-        QListIterator<AudioInput> inputItr(inputs);
-        while (inputItr.hasNext()) {
-            AudioInput in = inputItr.next();
+        for (QList<AudioInput>::const_iterator i = inputs.begin(),
+                     e = inputs.end(); i != e; ++i) {
+            const AudioInput& in = *i;
             memcpy(m_inputBuffers[in], inputBuffer,
-                    sizeof(*inputBuffer) * iFrameSize * iFramesPerBuffer);
+                   sizeof(*inputBuffer) * iFrameSize * iFramesPerBuffer);
         }
     }
 
@@ -626,31 +626,32 @@ void SoundManager::pushBuffer(QList<AudioInput> inputs, short * inputBuffer,
     }
 */
     else { //More than two channels of input (iFrameSize > 2)
-        //Do crazy deinterleaving of the audio into the correct m_inputBuffers.
-        //iFrameBase is the "base sample" in a frame (ie. the first sample in a frame)
-        
-        QListIterator<AudioInput> inputItr(inputs);
-        int iChannel;
-        while (inputItr.hasNext())
-        {
-        	AudioInput in = inputItr.next();
-            ChannelGroup chanGroup = in.getChannelGroup();
-            int grp_channel_count = chanGroup.getChannelCount();
-            int grp_channel_base = chanGroup.getChannelBase();
-            
-            for (unsigned int iFrameBase=0; iFrameBase < iFramesPerBuffer*iFrameSize; iFrameBase += iFrameSize)
-            {
-		        int iLocalFrameBase = (iFrameBase/iFrameSize) * grp_channel_count;
 
-		        for (iChannel = 0; iChannel < grp_channel_count; iChannel++)
-		            //this will make sure a sample from each channel is copied
-		        {
-		            //output[iFrameBase + src.channelBase + iChannel] +=
-		            //  outputAudio[src.type][iLocalFrameBase + iChannel] * SHRT_CONVERSION_FACTOR;
-		            m_inputBuffers[in][iLocalFrameBase + iChannel] =
-		                inputBuffer[iFrameBase + grp_channel_base + iChannel];
-		        }
-		    }
+        // Do crazy deinterleaving of the audio into the correct m_inputBuffers.
+
+        for (QList<AudioInput>::const_iterator i = inputs.begin(),
+                     e = inputs.end(); i != e; ++i) {
+            const AudioInput& in = *i;
+            short* pInputBuffer = m_inputBuffers[in];
+            ChannelGroup chanGroup = in.getChannelGroup();
+            int iChannelCount = chanGroup.getChannelCount();
+            int iChannelBase = chanGroup.getChannelBase();
+
+            for (unsigned int iFrameNo = 0; iFrameNo < iFramesPerBuffer; ++iFrameNo) {
+                // iFrameBase is the "base sample" in a frame (ie. the first
+                // sample in a frame)
+                unsigned int iFrameBase = iFrameNo * iFrameSize;
+                unsigned int iLocalFrameBase = iFrameNo * iChannelCount;
+
+                // this will make sure a sample from each channel is copied
+                for (int iChannel = 0; iChannel < iChannelCount; ++iChannel) {
+                    //output[iFrameBase + src.channelBase + iChannel] +=
+                    //  outputAudio[src.type][iLocalFrameBase + iChannel] * SHRT_CONVERSION_FACTOR;
+
+                    pInputBuffer[iLocalFrameBase + iChannel] =
+                            inputBuffer[iFrameBase + iChannelBase + iChannel];
+                }
+            }
         }
     }
 

@@ -87,7 +87,7 @@ void WNumberPos::setValue(double dValue)
         m_pLabel->setPaletteForegroundColor(m_qFgColor);
  */
 
-    m_pLabel->setText(QString(m_qsText).append("%1%2:%3%4.%5%6 / %7%8:%9%10.%11%12")
+    m_pLabel->setText(QString(m_qsText).append("%1%2:%3%4.%5%6   %7%8:%9%10.%11%12")
                       .arg(min1,1,10).arg(min2,1,10).arg(sec1,1,10).arg(sec2,1,10).arg(msec1,1,10).arg(msec2,1,10)
                       .arg(minv21,1,10).arg(minv22,1,10).arg(secv21,1,10).arg(secv22,1,10).arg(msecv21,1,10).arg(msecv22,1,10));
 }
@@ -101,12 +101,10 @@ void WNumberPos::setRemain(bool bRemain)
     m_bRemain = bRemain;
 
     // Shift display state between showing position and remaining
-    /*
     if (m_bRemain)
-        m_qsText = "R: ";
+        m_qsText = "-";
     else
-        m_qsText = "E: ";
-    */
+        m_qsText = "";
 
     // Have the widget redraw itself with its current value.
     setValue(m_dOldValue);

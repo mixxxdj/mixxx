@@ -137,7 +137,7 @@
 		</Style>
 		<Channel>1</Channel>
 		<Pos>11,65</Pos>
-		<Size>314,113</Size>
+		<Size>313,113</Size>
 		<BgColor>#3F4249</BgColor>
 		<HfcColor>#3F4249</HfcColor>
 		<SignalColor>#E4E4E4</SignalColor>
@@ -413,7 +413,7 @@
 		</Style>
 		<Channel>2</Channel>
 		<Pos>682,65</Pos>
-		<Size>314,113</Size>
+		<Size>313,113</Size>
 		<BgColor>#3F4249</BgColor>
 		<HfcColor>#3F4249</HfcColor>
 		<SignalColor>#E4E4E4</SignalColor>
@@ -878,7 +878,7 @@
 	**********************************************
 	-->
 	<NumberBpm>
-		<Tooltip>Tempo information&#10;Displays the tempo of the loaded track (BPM=beat per minute)&#10;</Tooltip>
+		<Tooltip>Tempo information&#10;Displays the tempo of the loaded track in BPM (beats per minute)&#10;</Tooltip>
 		<Style>QLabel { font: bold 13px/15px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 		background-color: transparent; color: #E4E4E4; text-align: left;padding-left: 1%; }
 		QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
@@ -893,7 +893,7 @@
 		</Connection>
 	</NumberBpm>
 	<NumberBpm>
-		<Tooltip>Tempo information&#10;Displays the tempo of the loaded track (BPM=beat per minute)&#10;</Tooltip>
+		<Tooltip>Tempo information&#10;Displays the tempo of the loaded track in BPM (beats per minute)&#10;</Tooltip>
 		<Style>QLabel { font: bold 13px/15px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 		background-color: transparent; color: #E4E4E4; text-align: left;padding-left: 1%; }
 		QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
@@ -914,7 +914,7 @@
 	**********************************************
 	-->
 	<NumberPos>
-		<Tooltip>Time information&#10;Displays the current playback position or remaining time of the loaded track.&#10;Depends on your settings in Preferences→Interface→Position display.&#10;</Tooltip>
+		<Tooltip>Time information&#10;Displays the current playback position (or remaining time) and the duration of the loaded track.&#10;Depends on your settings in Preferences→Interface→Position display.&#10;</Tooltip>
 		<Style>QLabel { font: bold 13px/15px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 		background-color: transparent; color: #E4E4E4; text-align: left;padding-left: 1%; }
 		QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
@@ -929,7 +929,7 @@
 		</Connection>
 	</NumberPos>
 	<NumberPos>
-		<Tooltip>Time information&#10;Displays the current playback position or remaining time of the loaded track.&#10;Depends on your settings in Preferences→Interface→Position display.&#10;</Tooltip>
+		<Tooltip>Time information&#10;Displays the current playback position (or remaining time) and the duration of the loaded track.&#10;Depends on your settings in Preferences→Interface→Position display.&#10;</Tooltip>
 		<Style>QLabel { font: bold 13px/15px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 		background-color: transparent; color: #E4E4E4; text-align: left;padding-left: 1%; }
 		QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
@@ -2028,50 +2028,8 @@
 	**********************************************
 	-->
 
-<!--//Jus BPM tap deactivated see https://bugs.launchpad.net/mixxx/+bug/677366 
-	<PushButton>
-		<Tooltip>BPM Tap&#10;It takes the progressive average of the last 8 taps and sets the bpm of the deck to that value, assuming the pitch range is large enough to reach it.&#10;</Tooltip>
-		<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-		</Style>
-		<NumberStates>2</NumberStates>
-		<State>
-			<Number>0</Number>
-			<Pressed>btn_tap1_over.png</Pressed>
-			<Unpressed>btn_tap1.png</Unpressed>
-		</State>
-		<State>
-			<Number>1</Number>
-			<Pressed>btn_tap1_over.png</Pressed>
-			<Unpressed>btn_tap1.png</Unpressed>
-		</State>
-		<Pos>758,96</Pos>
-		<Connection>
-			<ConfigKey>[Channel1],bpm</ConfigKey>
-		</Connection>
-	</PushButton>
-	<PushButton>
-		<Tooltip>BPM Tap&#10;It takes the progressive average of the last 8 taps and sets the bpm of the deck to that value, assuming the pitch range is large enough to reach it.&#10;</Tooltip>
-		<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-		</Style>
-		<NumberStates>2</NumberStates>
-		<State>
-			<Number>0</Number>
-			<Pressed>btn_tap2_over.png</Pressed>
-			<Unpressed>btn_tap2.png</Unpressed>
-		</State>
-		<State>
-			<Number>1</Number>
-			<Pressed>btn_tap2_over.png</Pressed>
-			<Unpressed>btn_tap2.png</Unpressed>
-		</State>
-		<Pos>758,297</Pos>
-		<Connection>
-			<ConfigKey>[Channel2],bpm</ConfigKey>
-		</Connection>
-	</PushButton>
--->
+	<!-- TODO (see one of the LateNight skins for example and lp:677366) -->
+
 	<!--
 	**********************************************
 	Button- Key lock

@@ -170,6 +170,9 @@ QWidget* LegacySkinParser::parseSkin(QString skinPath, QWidget* pParent) {
 
     ColorSchemeParser::setupLegacyColorSchemes(skinDocument, m_pConfig);
 
+    QStringList skinPaths(skinPath);
+    QDir::setSearchPaths("skin", skinPaths);
+
     return parseNode(skinDocument, pParent);
 }
 
