@@ -83,7 +83,6 @@ int MidiDevicePortMidi::open()
     }
 
     setReceiveInhibit(false);
-    setSendInhibit(false);
 
     startup();
 
@@ -157,7 +156,6 @@ int MidiDevicePortMidi::open()
 int MidiDevicePortMidi::close()
 {
     setReceiveInhibit(true);    // Prevent deadlock
-    setSendInhibit(true);
 
     if (!m_bIsOpen) {
         qDebug() << "PortMIDI device" << m_strDeviceName << "already closed";
@@ -271,10 +269,6 @@ void MidiDevicePortMidi::sendShortMsg(unsigned int word)
 {
     QMutexLocker Locker(&m_mutex);
 
-    //Prevent race condition
-    if (m_bSendInhibit)
-        return;
-
     if (m_pOutputStream)
     {
         m_sPMLock.lock();
@@ -289,10 +283,6 @@ void MidiDevicePortMidi::sendShortMsg(unsigned int word)
 void MidiDevicePortMidi::sendSysexMsg(unsigned char data[], unsigned int length)
 {
     QMutexLocker Locker(&m_mutex);
-
-    //Prevent race condition
-    if (m_bSendInhibit)
-        return;
 
     if (m_pOutputStream)
     {

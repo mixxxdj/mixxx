@@ -649,6 +649,9 @@ bool WTrackTableView::modelHasCapabilities(TrackModel::CapabilitiesFlags capabil
 
 void WTrackTableView::keyPressEvent(QKeyEvent* event)
 {
+    //Update our saved list of selected indices when there's a keypress
+    // (eg. arrow keys!)
+    m_selectedIndices = this->selectionModel()->selectedRows();
 
     if (event->key() == Qt::Key_Return)
     {

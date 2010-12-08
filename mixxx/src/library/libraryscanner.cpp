@@ -36,14 +36,13 @@ LibraryScanner::LibraryScanner(TrackCollection* collection) :
     nameFilters(SoundSourceProxy::supportedFileExtensionsString().split(" "))
 {
 
-    qDebug() << "Constructed LibraryScanner!!!";
+    qDebug() << "Constructed LibraryScanner";
     resetCancel();
 
-    //Force the GUI thread's TrackInfoObject cache to be cleared
-    //when a library scan is finished, because we might have
-    //modified the database directly when we detected moved files,
-    //and the TIOs corresponding to the moved files would then have the
-    //wrong track location.
+    // Force the GUI thread's TrackInfoObject cache to be cleared when a library
+    // scan is finished, because we might have modified the database directly
+    // when we detected moved files, and the TIOs corresponding to the moved
+    // files would then have the wrong track location.
     connect(this, SIGNAL(scanFinished()),
             &(collection->getTrackDAO()), SLOT(clearCache()));
 

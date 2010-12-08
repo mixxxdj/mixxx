@@ -537,6 +537,7 @@ class MixxxCore(Feature):
                    "recording/encoder.cpp",
 
                    "segmentation.cpp",
+                   "tapfilter.cpp",
                    ]
 
         # Uic these guys (they're moc'd automatically after this) - Generates
