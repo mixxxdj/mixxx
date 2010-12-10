@@ -289,76 +289,85 @@ if build.platform_is_windows:
 	env.Alias('mixxx', binary)
 
 def win32_find_nsis_via_registry():
-        # Windows registry access to find where NSIS is installed
-        import _winreg
-        hklm = _winreg.ConnectRegistry(None, _winreg.HKEY_LOCAL_MACHINE)
+    # Windows registry access to find where NSIS is installed
+    import _winreg
+    hklm = _winreg.ConnectRegistry(None, _winreg.HKEY_LOCAL_MACHINE)
+    nsis_location_handle = None
+    try:
+        nsis_location_handle = _winreg.OpenKey(hklm, "SOFTWARE\\NSIS", 0, _winreg.KEY_READ)
+    except WindowsError:
         nsis_location_handle = None
-        try:
-                nsis_location_handle = _winreg.OpenKey(hklm, "SOFTWARE\\NSIS", 0, _winreg.KEY_READ)
-        except WindowsError:
-                nsis_location_handle = None
 
-        if not nsis_location_handle:
-                try:
-                        nsis_location_handle = _winreg.OpenKey(hklm, "SOFTWARE\\Wow6432Node\\NSIS", 0, _winreg.KEY_READ)
-                except WindowsError:
-                        nsis_location_handle = None
-        return nsis_location_handle
+    if not nsis_location_handle:
+        try:
+            nsis_location_handle = _winreg.OpenKey(hklm, "SOFTWARE\\Wow6432Node\\NSIS", 0, _winreg.KEY_READ)
+        except WindowsError:
+            nsis_location_handle = None
+    
+    nsis_location = _winreg.QueryValue(nsis_location_handle, None)
+    _winreg.CloseKey(hklm)
+    return nsis_location
 
 def BuildRelease(target, source, env):
-	print
-	print "==== Mixxx Post-Build Checks ===="
-	print
-	print "You have built version %s" % mixxx_version
-	print
-	if int(flags['msvcdebug']):
-		print "YOU ARE ABOUT TO PACKAGE A DEBUG BUILD!!"
-		print
-	print "Binary has size ",
-	os.system('ls -lh '+dist_dir+'/mixxx.exe | cut -d \' \' -f 5')
-	print
-	print "Installer file ",
-	os.system('grep OutFile Mixxx.nsi | cut -d \' \' -f 2')
-	printpath
-	print "Top line of README, check version:"
-	os.system('head -n 1 README')
-	print
-	print "Top 2 lines of LICENSE, check version and copyright dates:"
-	os.system('head -n 2 LICENSE')
-	print
-	print "More checks here soon... :)"
-	print
+    print
+    print "==== Mixxx Post-Build Checks ===="
+    print
+    print "You have built version %s" % mixxx_version
+    print
+    if int(flags['msvcdebug']):
+        print "YOU ARE ABOUT TO PACKAGE A DEBUG BUILD!!"
+        print
+    print "Binary has size ",
+    if build.platform_is_windows:
+        print "     Implement me!"
+    else:
+        os.system('ls -lh '+dist_dir+'/mixxx.exe | cut -d \' \' -f 5')
+    print
+    print "Installer file ",
+    if build.platform_is_windows:
+        print "     Implement me!"
+    else:
+        os.system('grep OutFile Mixxx.nsi | cut -d \' \' -f 2')
+    print
+    print "Top line of README, check version:"
+    if build.platform_is_windows:
+        print "     Implement me!"
+    else:
+        os.system('head -n 1 README')
+    print
+    print "Top 2 lines of LICENSE, check version and copyright dates:"
+    if build.platform_is_windows:
+        print "     Implement me!"
+    else:
+        os.system('head -n 2 LICENSE')
 
-	if (raw_input("Go ahead and build installer (yes/[no])? ") == "yes"):
-		print "\nNow building installer..."
-		buildwin64 = ""
+    if (raw_input("Go ahead and build installer (yes/[no])? ") == "yes"):
+        print "\nNow building installer..."
+        buildwin64 = ""
+        command_flag = None
+        nsis_path = None
+        if not build.crosscompile and build.platform_is_windows:
+            nsis_directory = win32_find_nsis_via_registry()
+            nsis_path = "\"%s\\makensis.exe\"" % nsis_directory
+            command_flag = '/'
+        elif build.crosscompile and build.platform_is_windows:
+            nsis_path = 'makensis'
+            command_flag = '-'
 
-                command_flag = None
-                nsis_path = None
-                if not build.crosscompile and build.platform_is_windows:
-                        nsis_directory = win32_find_nsis_via_registry()
-                        nsis_path = "\"%s\\makensis.exe\"" % nsis_directory
-                        command_flag = '/'
-                elif build.crosscompile and build.platform_is_windows:
-                        nsis_path = 'makensis'
-                        command_flag = '-'
-
-                if not nsis_path:
-			print "Cannot find NSIS. Do you have it installed?"
-		else:
-                        parameters = []
-			if build.machine_is_64bit:
-                                parameters.append("%sx64=1" % command_flag)
-			nsis_location = _winreg.QueryValue(nsis_location_handle, None)
-			_winreg.CloseKey(hklm)
-
-			# Call the NSIS build
-			command = '\"%(path)s\\makensis.exe\" /DPRODUCT_VERSION=%(version)s %(64bit)s build\\nsis\\Mixxx.nsi' % {'path':nsis_location, \
-'version':mixxx_version, '64bit':buildwin64}
-			print "Using command:" + command
-			os.system(command)
-	else:
-		print "Aborted building installer"
+        if not nsis_path:
+            print "Cannot find NSIS. Do you have it installed?"
+        else:
+            parameters = []
+            if build.machine_is_64bit:
+                parameters.append("%sx64=1" % command_flag)
+            
+            # Call the NSIS build
+            command = '%(path)s /DPRODUCT_VERSION=%(version)s %(64bit)s build\\nsis\\Mixxx.nsi' % \
+                {'path':nsis_path, 'version':mixxx_version, '64bit':buildwin64}
+            print "Using command:" + command
+            os.system(command)
+    else:
+        print "Aborted building installer"
 
 # Do release things
 versionbld = Builder(action = BuildRelease, suffix = '.foo', src_suffix = '.bar')
