@@ -20,7 +20,7 @@ SetCompressor /SOLID lzma
 !define PRODUCT_PUBLISHER "The Mixxx Team"
 !define PRODUCT_WEB_SITE "http://www.mixxx.org"
 
-!define DEFAULT_SKIN "outlineNetbook"
+!define DEFAULT_SKIN "Outline1024x600-Netbook"
 
 ; Assumes this script is locaed in <base>\mixxx\build\nsis
 !define BASE_BUILD_DIR "..\.."
@@ -201,7 +201,7 @@ SectionGroup "MIDI controller mappings" SecControllerMappings
 	Section "Hercules DJ Control MP3 e2"
 	  SetOutPath $INSTDIR\midi
 	  File "${BASE_BUILD_DIR}\dist${BITWIDTH}\midi\Hercules DJ Control MP3 e2.midi.xml"
-	  File "${BASE_BUILD_DIR}\dist${BITWIDTH}\midi\Hercules-DJ-Control-MP3-e2-scripts.js"
+	  File "${BASE_BUILD_DIR}\dist${BITWIDTH}\midi\Hercules DJ Control MP3 e2-scripts.js"
 	SectionEnd
 	
 	Section "Stanton SCS.3d"
@@ -214,6 +214,12 @@ SectionGroup "MIDI controller mappings" SecControllerMappings
 	  SetOutPath $INSTDIR\midi
 	  File "${BASE_BUILD_DIR}\dist${BITWIDTH}\midi\Stanton SCS.3m.midi.xml"
 	  File "${BASE_BUILD_DIR}\dist${BITWIDTH}\midi\Stanton-SCS3m-scripts.js"
+	SectionEnd
+	
+    Section /o "Stanton SCS.1d" SecSCS1d
+	  SetOutPath $INSTDIR\midi
+	  File "${BASE_BUILD_DIR}\dist${BITWIDTH}\midi\Stanton SCS.1d.midi.xml"
+	  File "${BASE_BUILD_DIR}\dist${BITWIDTH}\midi\Stanton-SCS1d-scripts.js"
 	SectionEnd
 	
 	Section "Stanton SCS.1m" SecSCS1m
@@ -245,62 +251,46 @@ SectionGroupEnd
 
 SectionGroup "Additional Skins" SecAddlSkins
 
-	;Section /o "Minimalist skins" SecBasicSkins
-	;  
-	;  SetOutPath "$INSTDIR\skins"
-	;  File /r /x ".svn" /x ".bzr" ${BASE_BUILD_DIR}\dist${BITWIDTH}\skins\outline*
-	;  
-	;  ;SetOutPath "$INSTDIR\skins\outline"
-	;  ;File /r /x ".svn" /x ".bzr" ${BASE_BUILD_DIR}\dist${BITWIDTH}\skins\outline\*.*
-	;  ;SetOutPath "$INSTDIR\skins\outlineClose"
-	;  ;File /r /x ".svn" /x ".bzr" ${BASE_BUILD_DIR}\dist${BITWIDTH}\skins\outlineClose\*.*
-	;  ;SetOutPath "$INSTDIR\skins\outlineSmall"
-	;  ;File /r /x ".svn" /x ".bzr" ${BASE_BUILD_DIR}\dist${BITWIDTH}\skins\outlineSmall\*.*
-	;  ;SetOutPath "$INSTDIR\skins\outlineMini"
-	;  ;File /r /x ".svn" /x ".bzr" ${BASE_BUILD_DIR}\dist${BITWIDTH}\skins\outlineMini\*.*
-	;  
-	;SectionEnd
-
-	;Section "Additional skins (recommended)" SecFancySkins
-	;
-	;  SetOutPath "$INSTDIR\skins"
-	;  File /r /x ".svn" /x ".bzr" /x "outline*" ${BASE_BUILD_DIR}\dist${BITWIDTH}\skins\*.*
-	;  
-	;SectionEnd
+	Section "Minimalist skins" SecBasicSkins
+	  
+	  SetOutPath "$INSTDIR\skins"
+	  File /r /x ".svn" /x ".bzr" ${BASE_BUILD_DIR}\dist${BITWIDTH}\skins\Outline*
+	  
+	  SetOutPath "$INSTDIR\skins\Outline800x480-WVGA"
+	  File /r /x ".svn" /x ".bzr" ${BASE_BUILD_DIR}\dist${BITWIDTH}\skins\Outline800x480-WVGA\*.*
+	  SetOutPath "$INSTDIR\skins\Outline1024x768-XGA"
+	  File /r /x ".svn" /x ".bzr" ${BASE_BUILD_DIR}\dist${BITWIDTH}\skins\Outline1024x768-XGA\*.*
+	  
+	SectionEnd
 
 	Section "Netbook-size (1024x600)" SecNetbookSkins
 	  SetOutPath "$INSTDIR\skins"
-	  File /r /x ".svn" /x ".bzr" ${BASE_BUILD_DIR}\dist${BITWIDTH}\skins\*-Netbook*
+	  File /r /x ".svn" /x ".bzr" /x "Outline*" ${BASE_BUILD_DIR}\dist${BITWIDTH}\skins\*-Netbook*
 	SectionEnd
 
 	Section "XGA-size (1024x768)" SecXGASkins
 	  SetOutPath "$INSTDIR\skins"
-	  File /r /x ".svn" /x ".bzr" ${BASE_BUILD_DIR}\dist${BITWIDTH}\skins\*-XGA*
+	  File /r /x ".svn" /x ".bzr" /x "Outline*" ${BASE_BUILD_DIR}\dist${BITWIDTH}\skins\*-XGA*
 	SectionEnd
 
 	Section "WXGA-size (1280x800)" SecWXGASkins
 	  SetOutPath "$INSTDIR\skins"
-	  File /r /x ".svn" /x ".bzr" ${BASE_BUILD_DIR}\dist${BITWIDTH}\skins\*-WXGA*
+	  File /r /x ".svn" /x ".bzr" /x "Outline*" ${BASE_BUILD_DIR}\dist${BITWIDTH}\skins\*-WXGA*
 	SectionEnd
 
 	Section "SXGA-size (1280x1024)" SecSXGASkins
 	  SetOutPath "$INSTDIR\skins"
-	  File /r /x ".svn" /x ".bzr" ${BASE_BUILD_DIR}\dist${BITWIDTH}\skins\*-SXGA*
+	  File /r /x ".svn" /x ".bzr" /x "Outline*" ${BASE_BUILD_DIR}\dist${BITWIDTH}\skins\*-SXGA*
 	SectionEnd
 
 	Section "UXGA-size (1600x1200)" SecUXGASkins
 	  SetOutPath "$INSTDIR\skins"
-	  File /r /x ".svn" /x ".bzr" ${BASE_BUILD_DIR}\dist${BITWIDTH}\skins\*-UXGA*
+	  File /r /x ".svn" /x ".bzr" /x "Outline*" ${BASE_BUILD_DIR}\dist${BITWIDTH}\skins\*-UXGA*
 	SectionEnd
 
 	Section "WSXGA-size (1680x1050)" SecWSXGASkins
 	  SetOutPath "$INSTDIR\skins"
-	  File /r /x ".svn" /x ".bzr" ${BASE_BUILD_DIR}\dist${BITWIDTH}\skins\*-WSXGA*
-	SectionEnd
-
-	Section /o "Legacy v1.7 skins" Sec17Skins
-	  SetOutPath "$INSTDIR\skins"
-	  File /r /x ".svn" /x ".bzr" "${BASE_BUILD_DIR}\dist${BITWIDTH}\skins\*- 1.7*"
+	  File /r /x ".svn" /x ".bzr" /x "Outline*" ${BASE_BUILD_DIR}\dist${BITWIDTH}\skins\*-WSXGA*
 	SectionEnd
 	
 SectionGroupEnd
@@ -334,11 +324,11 @@ SectionEnd
   LangString DESC_SecControllerMappings ${LANG_ENGLISH} "Mappings that enable popular MIDI controllers to be used with Mixxx"
   LangString DESC_SecCertifiedMappings ${LANG_ENGLISH} "Mappings developed and supported by the Mixxx team."
   LangString DESC_SecCommunityMappings ${LANG_ENGLISH} "User-developed mappings that the Mixxx team is unable to directly support. Please visit the Mixxx forum for help with these: http://mixxx.org/forums/"
-  LangString DESC_SecSCS1m ${LANG_ENGLISH} "Mapping for the Stanton SCS.1m. This requires using the SCS.1m_thru preset in DaRouter."
+  LangString DESC_SecSCS1d ${LANG_ENGLISH} "UNFINISHED mapping for the Stanton SCS.1d. DaRouter must be closed to use it."
+  LangString DESC_SecSCS1m ${LANG_ENGLISH} "Mapping for the Stanton SCS.1m. DaRouter must be closed to use it."
   
   ; Skin group descriptions
-;  LangString DESC_SecBasicSkins ${LANG_ENGLISH} "Additional skins using the Outline theme (featuring a clear, clean and simple layout,) including one for 800x600 screens"
-;  LangString DESC_SecFancySkins ${LANG_ENGLISH} "Additional skins with different themes, flashier graphics, and some for screens larger than 1024x768"
+  LangString DESC_SecBasicSkins ${LANG_ENGLISH} "Additional skins using the Outline theme (featuring a clear, clean and simple layout,) including one for 800 pixel-wide screens"
   LangString DESC_SecAddlSkins ${LANG_ENGLISH} "Additional good-looking skins with varying themes and larger screen sizes."
   LangString DESC_SecNetbookSkins ${LANG_ENGLISH} "Includes Shade and Shade Dark"
   LangString DESC_SecXGASkins ${LANG_ENGLISH} "Includes Shade and Shade Dark"
@@ -346,8 +336,6 @@ SectionEnd
   LangString DESC_SecSXGASkins ${LANG_ENGLISH} "Includes Deere, Late Night and Late Night Blues"
   LangString DESC_SecUXGASkins ${LANG_ENGLISH} "Includes Phoney and Phoney Dark"
   LangString DESC_SecWSXGASkins ${LANG_ENGLISH} "Includes Phoney and Phoney Dark"
-  LangString DESC_Sec17Skins ${LANG_ENGLISH} "Collusion (1280) and smaller Outline skins from v1.7. These have not been updated to use the new features in v1.8."
-  
 
   ;Assign language strings to sections
   !insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN
@@ -358,13 +346,14 @@ SectionEnd
     !insertmacro MUI_DESCRIPTION_TEXT ${SecCertifiedMappings} $(DESC_SecCertifiedMappings)
     !insertmacro MUI_DESCRIPTION_TEXT ${SecCommunityMappings} $(DESC_SecCommunityMappings)
     !insertmacro MUI_DESCRIPTION_TEXT ${SecAddlSkins} $(DESC_SecAddlSkins)
+    !insertmacro MUI_DESCRIPTION_TEXT ${SecBasicSkins} $(DESC_SecBasicSkins)
     !insertmacro MUI_DESCRIPTION_TEXT ${SecNetbookSkins} $(DESC_SecNetbookSkins)
     !insertmacro MUI_DESCRIPTION_TEXT ${SecXGASkins} $(DESC_SecXGASkins)
 	!insertmacro MUI_DESCRIPTION_TEXT ${SecWXGASkins} $(DESC_SecWXGASkins)
 	!insertmacro MUI_DESCRIPTION_TEXT ${SecSXGASkins} $(DESC_SecSXGASkins)
 	!insertmacro MUI_DESCRIPTION_TEXT ${SecUXGASkins} $(DESC_SecUXGASkins)
 	!insertmacro MUI_DESCRIPTION_TEXT ${SecWSXGASkins} $(DESC_SecWSXGASkins)
-    !insertmacro MUI_DESCRIPTION_TEXT ${Sec17Skins} $(DESC_Sec17Skins)
+    !insertmacro MUI_DESCRIPTION_TEXT ${SecSCS1d} $(DESC_SecSCS1d)
     !insertmacro MUI_DESCRIPTION_TEXT ${SecSCS1m} $(DESC_SecSCS1m)
   !insertmacro MUI_FUNCTION_DESCRIPTION_END
 
@@ -400,17 +389,15 @@ Section "Uninstall"
 
   ; Remove skins, keyboard, midi mappings, promos
   Delete "$INSTDIR\skins\${DEFAULT_SKIN}\*.*"
-  Delete "$INSTDIR\skins\Collusion (1280) - 1.7\*.*"
-  Delete "$INSTDIR\skins\Collusion (1280-WS) - 1.7\*.*"
   Delete "$INSTDIR\skins\Deere1280x1024-SXGA\*.*"
   Delete "$INSTDIR\skins\Deere1280x800-WXGA\*.*"
   Delete "$INSTDIR\skins\LateNight1280x1024-SXGA\*.*"
   Delete "$INSTDIR\skins\LateNight1280x800-WXGA\*.*"
   Delete "$INSTDIR\skins\LateNightBlues1280x1024-SXGA\*.*"
   Delete "$INSTDIR\skins\LateNightBlues1280x800-WXGA\*.*"
-  Delete "$INSTDIR\skins\outline - 1.7\*.*"
-  Delete "$INSTDIR\skins\outlineMini - 1.7\*.*"
-  Delete "$INSTDIR\skins\outlineNetbook\*.*"
+  Delete "$INSTDIR\skins\Outline1024x600-Netbook\*.*"
+  Delete "$INSTDIR\skins\Outline800x480-WVGA\*.*"
+  Delete "$INSTDIR\skins\Outline1024x768-XGA\*.*"
   Delete "$INSTDIR\skins\Phoney1600x1200-UXGA\*.*"
   Delete "$INSTDIR\skins\Phoney1680x1050-WSXGA\*.*"
   Delete "$INSTDIR\skins\PhoneyDark1600x1200-UXGA\*.*"
@@ -427,17 +414,15 @@ Section "Uninstall"
   Delete $INSTDIR\promo\*.*
   
   RMDir "$INSTDIR\skins\${DEFAULT_SKIN}"
-  RMDir "$INSTDIR\skins\Collusion (1280) - 1.7"
-  RMDir "$INSTDIR\skins\Collusion (1280-WS) - 1.7"
   RMDir "$INSTDIR\skins\Deere1280x1024-SXGA"
   RMDir "$INSTDIR\skins\Deere1280x800-WXGA"
   RMDir "$INSTDIR\skins\LateNight1280x1024-SXGA"
   RMDir "$INSTDIR\skins\LateNight1280x800-WXGA"
   RMDir "$INSTDIR\skins\LateNightBlues1280x1024-SXGA"
   RMDir "$INSTDIR\skins\LateNightBlues1280x800-WXGA"
-  RMDir "$INSTDIR\skins\outline - 1.7"
-  RMDir "$INSTDIR\skins\outlineMini - 1.7"
-  RMDir "$INSTDIR\skins\outlineNetbook"
+  RMDir "$INSTDIR\skins\Outline1024x600-Netbook"
+  RMDir "$INSTDIR\skins\Outline800x480-WVGA"
+  RMDir "$INSTDIR\skins\Outline1024x768-XGA"
   RMDir "$INSTDIR\skins\Phoney1600x1200-UXGA"
   RMDir "$INSTDIR\skins\Phoney1680x1050-WSXGA"
   RMDir "$INSTDIR\skins\PhoneyDark1600x1200-UXGA"
