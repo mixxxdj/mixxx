@@ -1,8 +1,8 @@
 /****************************************************************/
-/*      Stanton SCS.3d MIDI controller script v1.52             */
+/*      Stanton SCS.3d MIDI controller script v1.60             */
 /*          Copyright (C) 2009-2010, Sean M. Pappalardo         */
 /*      but feel free to tweak this to your heart's content!    */
-/*      For Mixxx version 1.8.x                                 */
+/*      For Mixxx version 1.9.x                                 */
 /****************************************************************/
 
 function StantonSCS3d() {}
@@ -171,12 +171,21 @@ StantonSCS3d.deckSignals = [    ["CurrentChannel", "volume", "StantonSCS3d.gainL
 // ----------   Functions   ----------
 
 StantonSCS3d.init = function (id) {    // called when the MIDI device is opened & set up
-    
     StantonSCS3d.id = id;   // Store the ID of this device for later use
     
+    // Find out the firmware version
+    if (!StantonSCS3d.state["flat"]) midi.sendSysexMsg([0xF0, 0x7E, StantonSCS3d.channel, 0x06, 0x01, 0xF7],6);
+    
+    // TODO: Remove this once the deadlock issue is resolved
+    //  where you have to send something from the controller in order for the init2
+    //  function to run after the .statusResponse() calls it
+    StantonSCS3d.init2();
+}
+
+StantonSCS3d.init2 = function () {    // called when the MIDI device is opened & set up
     // Set the device's MIDI channel to a known value
 //     midi.sendSysexMsg(StantonSCS3d.sysex.concat([0x02, StantonSCS3d.channel, 0xF7]),7);
-    
+
     var CC = 0xB0 + StantonSCS3d.channel;
     var No = 0x90 + StantonSCS3d.channel;
     midi.sendShortMsg(CC,0x7B,0x00);  // Extinguish all LEDs
@@ -203,6 +212,32 @@ StantonSCS3d.init = function (id) {    // called when the MIDI device is opened 
     StantonSCS3d.durationChange2(engine.getValue("[Channel2]","duration"));
     
     print ("StantonSCS3d: \""+StantonSCS3d.id+"\" on MIDI channel "+(StantonSCS3d.channel+1)+" initialized.");
+}
+
+StantonSCS3d.statusResponse = function (data, length) {
+    var statusResponsePreamble=[0xF0,0x7E,0,6,2,0,1,0x60,0x2c,1,1,0];
+    // Check if this SysEx is the one we're looking for
+    var i=0;
+    var comp=true;
+    while (i<12 && comp) {
+        if (statusResponsePreamble[i]!=data.charCodeAt(i)) comp=false;
+        i++;
+    }
+    
+    if (comp) {
+        print ("Stanton SCS.3d v"+data.charCodeAt(12)+", "+(2008+data.charCodeAt(13))+"-"+data.charCodeAt(14)+"-"+data.charCodeAt(15));
+        
+        if ((2008+data.charCodeAt(13))==2009 && !StantonSCS3d.state["flat"]) {
+            // If the year is 2009, this is the test "smart" firmware
+            print ("WARNING: This SCS.3d is running test firmware and should be re-flashed with production firmware!\n\
+                    (Contact Stanton support.)  Changing unit to flat mode and re-initializing...");
+            //  Send the command to change the device to flat mode which is mostly compatible
+            midi.sendSysexMsg(StantonSCS3d.sysex.concat([0x10, StantonSCS3d.channel, 0xF7]),7);
+            StantonSCS3d.state["flat"]=true;
+            StantonSCS3d.init(StantonSCS3d.id); // TODO: Remove this once the deadlock issue is resolved
+        }
+    }
+//     StantonSCS3d.init2();
 }
 
 StantonSCS3d.shutdown = function () {   // called when the MIDI device is closed

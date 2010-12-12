@@ -139,7 +139,7 @@ bpm.tapButton = function(deck) {
 }
 
 
-// ----------------- Scratching functions ---------------------
+// ----------------- DEPRECATED Scratching functions ---------------------
 function scratch() {}
 // Allows for smooth scratching with MIDI controllers
 // See full details here: http://mixxx.org/wiki/doku.php/midi_scripting#available_common_functions
