@@ -197,7 +197,7 @@ void AudioTagger::addID3v2Tag(TagLib::ID3v2::Tag* id3v2)
     }
 
     TagLib::ID3v2::FrameList keyFrame = id3v2->frameListMap()["TKEY"];
-    if (!bpmFrame.isEmpty()) 
+    if (!keyFrame.isEmpty()) 
     {
         keyFrame.front()->setText(m_key.toStdString());
         
