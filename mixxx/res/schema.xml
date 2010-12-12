@@ -172,4 +172,31 @@ METADATA
       DELETE FROM settings WHERE name="mixxx.db.model.missing.header_state";
     </sql>
   </revision>
+  <revision version="8" min_compatible="3">
+    <description>
+      Added iTunes tables
+    </description>
+    <sql>
+      CREATE TABLE IF NOT EXISTS itunes_library (
+        id INTEGER primary key,
+        artist varchar(48), title varchar(48),
+        album varchar(48), year varchar(16),
+        genre varchar(32), tracknumber varchar(3),
+        location varchar(512),
+        comment varchar(60),
+        duration integer,
+        bitrate integer,
+        bpm integer,
+        rating integer);
+
+       CREATE TABLE IF NOT EXISTS itunes_playlists (
+        id INTEGER primary key,
+        name varchar(100) UNIQUE);
+
+      CREATE TABLE IF NOT EXISTS itunes_playlist_tracks (
+        id INTEGER primary key AUTOINCREMENT,
+        playlist_id INTEGER REFERENCES itunes_playlist(id),
+        track_id INTEGER REFERENCES itunes_library(id));
+    </sql>
+  </revision>
 </schema>
