@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <MixxxMIDIPreset schemaVersion="1" mixxxVersion="1.9.0">
     <info>
-        <name>Stanton SCS.1d</name>
+        <name>Stanton SCS.1d (unfinished)</name>
         <author>Sean M. Pappalardo</author>
         <description>This is a complete mapping for a single Stanton SCS.1d turntable controller. Requires scripting and native HSS1394 support.</description>
     </info>
