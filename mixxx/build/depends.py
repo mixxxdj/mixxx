@@ -107,6 +107,22 @@ class FLAC(Dependence):
     def sources(self, build):
         return ['soundsourceflac.cpp',]
 
+class CoreAudio(Dependence):
+    def configure(self, build, conf):
+        if build.platform_is_osx:
+            build.env.Append(CPPPATH='/System/Library/Frameworks/AudioToolbox.framework/Headers/')
+            build.env.Append(LINKFLAGS='-framework AudioToolbox -framework CoreFoundation')
+        """blah"""
+        """
+        if not conf.CheckHeader('CoreAudio.h'):
+            raise Exception('Did not find CoreAudio development headers, exiting!')
+        if not conf.CheckLib(['CoreAudio']):
+            raise Exception('Did not find CoreAudio development libraries, exiting!')
+        return"""
+
+    def sources(self, build):
+        if build.platform_is_osx:
+            return ['soundsourcecoreaudio.cpp', '/Developer/Examples/CoreAudio/PublicUtility/CAStreamBasicDescription.h']
 
 class Qt(Dependence):
     DEFAULT_QTDIRS = {'linux': '/usr/share/qt4',
@@ -692,7 +708,7 @@ class MixxxCore(Feature):
             build.env.Append(CPPDEFINES=('UNIX_SHARE_PATH', r'\"%s\"' % share_path))
 
     def depends(self, build):
-        return [SoundTouch, KissFFT, ReplayGain, PortAudio, PortMIDI, Qt,
+        return [SoundTouch, CoreAudio, KissFFT, ReplayGain, PortAudio, PortMIDI, Qt,
                 FidLib, Mad, SndFile, FLAC, OggVorbis, OpenGL, TagLib]
 
     def post_dependency_check_configure(self, build, conf):
