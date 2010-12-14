@@ -63,13 +63,9 @@ MidiDevicePortMidi::~MidiDevicePortMidi()
 {
     int success = close();
 
-    if (success == 0 && !m_bStopped) {
-        //Wait until run() has actually finished before letting the 
-        //destructor finish up
-        m_mutex.lock();
-        m_shutdownWait.wait(&m_mutex);
-        m_mutex.unlock();
-    }
+    // Wait until run() has actually finished before letting the 
+    //  destructor finish up
+    if (success == 0) this->wait();
     //Otherwise the stream was already closed, so we don't have to wait.
 }
 
@@ -205,9 +201,6 @@ void MidiDevicePortMidi::run()
     QThread::currentThread()->setObjectName(QString("PM %1").arg(m_strDeviceName));
     int numEvents = 0;
     bool stopRunning = false;
-    m_mutex.lock();
-    m_bStopped = false;
-    m_mutex.unlock();
     // Storage for SysEx messages
     unsigned char receive_msg[1024];
     int receive_msg_index = 0;
@@ -294,11 +287,6 @@ void MidiDevicePortMidi::run()
         m_mutex.unlock();
 
     } while (!stopRunning);
-
-    m_mutex.lock();
-    m_bStopped = true;
-    m_shutdownWait.wakeAll();
-    m_mutex.unlock();
 }
 
 void MidiDevicePortMidi::sendShortMsg(unsigned int word)
