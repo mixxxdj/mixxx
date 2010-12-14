@@ -63,12 +63,12 @@ MidiDevicePortMidi::~MidiDevicePortMidi()
 {
     int success = close();
 
-
-    QMutexLocker locker(&m_mutex);
-    if (success == 0) {
+    if (success == 0 && !m_bStopped) {
         //Wait until run() has actually finished before letting the 
         //destructor finish up
+        m_mutex.lock();
         m_shutdownWait.wait(&m_mutex);
+        m_mutex.unlock();
     }
     //Otherwise the stream was already closed, so we don't have to wait.
 }
@@ -163,10 +163,10 @@ int MidiDevicePortMidi::close()
     }
 
     shutdown();
-
+    
     //shutdown() locks so we must lock after it.
     QMutexLocker Locker(&m_mutex);
-
+    
     m_bStopRequested = true;
 
     if (m_pInputStream)
@@ -205,7 +205,14 @@ void MidiDevicePortMidi::run()
     QThread::currentThread()->setObjectName(QString("PM %1").arg(m_strDeviceName));
     int numEvents = 0;
     bool stopRunning = false;
-
+    m_mutex.lock();
+    m_bStopped = false;
+    m_mutex.unlock();
+    // Storage for SysEx messages
+    unsigned char receive_msg[1024];
+    int receive_msg_index = 0;
+    bool inSysex = false;
+    bool endSysex = false;
 
     do
     {
@@ -222,20 +229,49 @@ void MidiDevicePortMidi::run()
                 // Don't process anything, continue to loop
                 numEvents = 0;
             }
-
+            
             for (int i = 0; i < numEvents; i++)
             {
-                //if (Pm_MessageStatus(m_midiBuffer[i].message) == 0x90) //Note on, channel 1
-                {
-                    unsigned char status = Pm_MessageStatus(m_midiBuffer[i].message);
-                    unsigned char opcode = status & 0xF0;
-                    unsigned char channel = status & 0x0F;
-                    unsigned char note = Pm_MessageData1(m_midiBuffer[i].message);
-                    unsigned char velocity = Pm_MessageData2(m_midiBuffer[i].message);
-
-                    MidiDevice::receive((MidiStatusByte)opcode, channel, note, velocity);
-
+                unsigned char status = Pm_MessageStatus(m_midiBuffer[i].message);
+                
+                if ((status & 0xF8) == 0xF8) {
+                    // Handle real-time MIDI messages at any time
+                    MidiDevice::receive((MidiStatusByte)status, 0, 0, 0);
                 }
+                
+                if (!inSysex) {
+                    if (status == 0xF0) {
+                        inSysex=true;
+                        status = 0;
+                    }
+                    else {
+                        unsigned char opcode = status & 0xF0;
+                        unsigned char channel = status & 0x0F;
+                        unsigned char note = Pm_MessageData1(m_midiBuffer[i].message);
+                        unsigned char velocity = Pm_MessageData2(m_midiBuffer[i].message);
+
+                        MidiDevice::receive((MidiStatusByte)status, channel, note, velocity);
+                    }
+                }
+                
+                if (inSysex) {
+                    int data = 0;
+                    // Collect bytes from PmMessage
+                    for (int shift = 0; shift < 32 && (data != MIDI_STATUS_EOX); shift += 8) {
+                        receive_msg[receive_msg_index++] = data = 
+                            (m_midiBuffer[i].message >> shift) & 0xFF;
+                    }
+                    // End System Exclusive message if the EOX byte or
+                    //  a non-realtime status byte was received
+                    if (data == MIDI_STATUS_EOX || status > 0x7F) endSysex=true;
+                }
+            }
+            
+            if (inSysex && endSysex) {
+                MidiDevice::receive(receive_msg, receive_msg_index);
+                inSysex=false;
+                endSysex=false;
+                receive_msg_index = 0;
             }
 
             // Check if new events came while we were processing, if not, sleep
@@ -260,9 +296,9 @@ void MidiDevicePortMidi::run()
     } while (!stopRunning);
 
     m_mutex.lock();
+    m_bStopped = true;
     m_shutdownWait.wakeAll();
     m_mutex.unlock();
-
 }
 
 void MidiDevicePortMidi::sendShortMsg(unsigned int word)
@@ -282,6 +318,8 @@ void MidiDevicePortMidi::sendShortMsg(unsigned int word)
 // The sysex data must already contain the start byte 0xf0 and the end byte 0xf7.
 void MidiDevicePortMidi::sendSysexMsg(unsigned char data[], unsigned int length)
 {
+    Q_UNUSED(length);   // We have to accept it even if we don't use it
+                        // to be consistent with other MIDI APIs that do need it
     QMutexLocker Locker(&m_mutex);
 
     if (m_pOutputStream)
