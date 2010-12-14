@@ -3,13 +3,13 @@ msgstr ""
 "Project-Id-Version: Mixxx 1.8\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2010-10-28 15:35-0400\n"
-"PO-Revision-Date: 2010-12-13 00:18+0000\n"
-"Last-Translator: teza <Unknown>\n"
+"PO-Revision-Date: 2010-12-13 20:38+0000\n"
+"Last-Translator: teza <tsaliou75@orange.fr>\n"
 "Language-Team: <tezalprod@gmail.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2010-12-13 04:55+0000\n"
+"X-Launchpad-Export-Date: 2010-12-14 04:49+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 "X-Poedit-Country: FRANCE\n"
 "X-Poedit-Language: French\n"
@@ -20,7 +20,7 @@ msgstr "Auto DJ"
 
 #: BrowseFeature#1
 msgid "Browse"
-msgstr "Chercher"
+msgstr "Parcourir"
 
 #: BrowseFeature#2
 msgid "Permission Denied"
@@ -37,7 +37,7 @@ msgstr "Nouveaux container"
 #: CrateFeature#2
 msgctxt "CrateFeature#2"
 msgid "Remove"
-msgstr "Retirer"
+msgstr "Enlever"
 
 #: CrateFeature#3
 msgid "Crates"
@@ -152,6 +152,19 @@ msgid ""
 "margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-"
 "family:'Sans Serif'; font-size:9pt;\"></p></body></html>"
 msgstr ""
+"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" "
+"\"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+"<html><head><meta name=\"qrichtext\" content=\"1\" /><style "
+"type=\"text/css\">\n"
+"p, li { white-space: pre-wrap; }\n"
+"</style></head><body style=\" font-family:'MS Shell Dlg 2'; font-"
+"size:8.25pt; font-weight:400; font-style:normal;\">\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-"
+"right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-"
+"family:'Sans Serif'; font-size:9pt;\">Les crédits ici</span></p>\n"
+"<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; "
+"margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-"
+"family:'Sans Serif'; font-size:9pt;\"></p></body></html>"
 
 #: DlgAboutDlg#3
 msgid "1.x.x"
@@ -180,7 +193,7 @@ msgstr "Ajouter une piste dans la queue ci-dessous..."
 
 #: DlgBpmSchemeDlg#1
 msgid "BPM Scheme"
-msgstr ""
+msgstr "Modèle BPM"
 
 #: DlgBpmSchemeDlg#2
 msgid "Scheme Name:"
@@ -237,7 +250,7 @@ msgstr "Début"
 
 #: DlgMidiLearning#8
 msgid "Please tweak the control for:"
-msgstr ""
+msgstr "S'il vous plait ajustez le control pour:"
 
 #: DlgMidiLearning#9
 msgid "Mixxx Control"
@@ -253,7 +266,7 @@ msgstr "Appuyer sur la barre d'espace pour procéder ou sauter"
 
 #: DlgMidiLearning#12
 msgid "MIDI learning complete!"
-msgstr ""
+msgstr "Apprentissage MIDI complet"
 
 #: DlgMidiLearning#13
 msgid ""
@@ -271,6 +284,19 @@ msgid ""
 "left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><br />Now "
 "go spin some beats!</p></body></html>"
 msgstr ""
+"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" "
+"\"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+"<html><head><meta name=\"qrichtext\" content=\"1\" /><style "
+"type=\"text/css\">\n"
+"p, li { white-space: pre-wrap; }\n"
+"</style></head><body style=\" font-family:'Lucida Grande'; font-size:13pt; "
+"font-weight:400; font-style:normal;\">\n"
+"<p align=\"center\" style=\" margin-top:0px; margin-bottom:0px; margin-"
+"left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">Cet "
+"assistant peux être relancé à tout instants.</p>\n"
+"<p align=\"center\" style=\" margin-top:0px; margin-bottom:0px; margin-"
+"left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><br />Now "
+"go spin some beats!</p></body></html>"
 
 #: DlgMidiLearning#14
 msgid "Finito!"
@@ -299,15 +325,15 @@ msgstr "Écrire BPM dans ID3 Tag"
 
 #: DlgPrefBPMDlg#6
 msgid "If BPM can be detected but not within specified range"
-msgstr ""
+msgstr "si BPM peut être détecté, mais pas dans la gamme indiquée"
 
 #: DlgPrefBPMDlg#7
 msgid "Allow BPM above the range"
-msgstr ""
+msgstr "Autoriser BPM au dessus du niveau"
 
 #: DlgPrefBPMDlg#8
 msgid "BPM Schemes"
-msgstr ""
+msgstr "BPM Modèles"
 
 #: DlgPrefBPMDlg#9
 msgctxt "DlgPrefBPMDlg#9"
@@ -393,11 +419,11 @@ msgstr "Éteins"
 
 #: DlgPrefControlsDlg#9
 msgid "Pitch/Rate slider range"
-msgstr ""
+msgstr "Pitch/Rate slider range"
 
 #: DlgPrefControlsDlg#10
 msgid "Pitch/Rate slider direction"
-msgstr ""
+msgstr "Pitch/Rate slider direction"
 
 #: DlgPrefControlsDlg#11
 msgid "Cue behaviour"
@@ -409,7 +435,7 @@ msgstr "Rappel automatique CUE"
 
 #: DlgPrefControlsDlg#13
 msgid "Permanent Pitch/Rate Buttons"
-msgstr ""
+msgstr "Permanent Pitch/Rate Buttons"
 
 #: DlgPrefControlsDlg#14
 msgid "Left click"
@@ -421,7 +447,7 @@ msgstr "Clic droit"
 
 #: DlgPrefControlsDlg#16
 msgid "Permanent rate change (between 1 and 8000) when left clicking"
-msgstr ""
+msgstr "Changement de taux provisoire (entre 1 et 8000) sur clic gauche"
 
 #: DlgPrefControlsDlg#17
 msgid "%"
@@ -429,27 +455,27 @@ msgstr "%"
 
 #: DlgPrefControlsDlg#18
 msgid "Permanent rate change (between 1 and 8000) when right clicking"
-msgstr ""
+msgstr "Changement de taux provisoire (entre 1 et 8000) sur clic droit"
 
 #: DlgPrefControlsDlg#19
 msgid "Temporary Pitch/Rate Buttons"
-msgstr ""
+msgstr "Temporary Pitch/Rate Buttons"
 
 #: DlgPrefControlsDlg#20
 msgid "Temporary rate change (between 1 and 8000) when left clicking"
-msgstr ""
+msgstr "Changement de taux provisoire (entre 1 et 8000) sur click droit"
 
 #: DlgPrefControlsDlg#21
 msgid "Temporary rate change (between 1 and 8000) when right clicking"
-msgstr ""
+msgstr "Changement de taux provisoire (entre 1 et 8000) sur click gauche"
 
 #: DlgPrefControlsDlg#22
 msgid "Ramping Pitchbend"
-msgstr ""
+msgstr "Ramping Pitchbend"
 
 #: DlgPrefControlsDlg#23
 msgid "Pitchbend sensitivity"
-msgstr ""
+msgstr "Sensibilité du pichtbend"
 
 #: DlgPrefCrossfaderDlg#1
 msgctxt "DlgPrefCrossfaderDlg#1"
@@ -504,7 +530,7 @@ msgstr "EQs statique (pour processeur lent)"
 
 #: DlgPrefEQDlg#3
 msgid "High Shelf EQ"
-msgstr ""
+msgstr "High Shelf EQ"
 
 #: DlgPrefEQDlg#4
 msgid "textLabel1"
@@ -524,7 +550,7 @@ msgstr "20.05 kHz"
 
 #: DlgPrefEQDlg#8
 msgid "Low Shelf EQ"
-msgstr ""
+msgstr "Low Shelf EQ"
 
 #: DlgPrefEQDlg#9
 msgid "textLabel2"
@@ -561,38 +587,40 @@ msgid ""
 "Are you sure you'd like to load the %1 mapping?\n"
 "This will overwrite your existing MIDI mapping."
 msgstr ""
+"Êtes-vous sûrs que vous désirez charger la %1 cartographie ?\n"
+"Cela écrasera votre cartographie de MIDI existante."
 
 #: DlgPrefMidiBindings#6
 msgid "Export Mixxx MIDI Bindings"
-msgstr ""
+msgstr "Exporter les connections MIDI de Mixxx"
 
 #: DlgPrefMidiBindings#7
 msgid "Preset Files (*.midi.xml)"
-msgstr ""
+msgstr "Fichiers Preset (*.midi.xml)"
 
 #: DlgPrefMidiBindings#8
 msgid "Select Control Group"
-msgstr ""
+msgstr "Sélectionner une group de contrôle"
 
 #: DlgPrefMidiBindings#9
 msgid "Select Control"
-msgstr ""
+msgstr "Sélectionner contrôle"
 
 #: DlgPrefMidiBindings#10
 msgid "Clear Input Bindings"
-msgstr ""
+msgstr "Effacer les connection d'entrée"
 
 #: DlgPrefMidiBindings#11
 msgid "Are you sure you want to clear all bindings?"
-msgstr ""
+msgstr "Êtes vous sur de vouloir effacer toutes vos connections"
 
 #: DlgPrefMidiBindings#12
 msgid "Clear Output Bindings"
-msgstr ""
+msgstr "Effacer les connections de sortie"
 
 #: DlgPrefMidiBindings#13
 msgid "Are you sure you want to clear all output bindings?"
-msgstr ""
+msgstr "Êtes vous de vouloir effacer toutes vos connections de sortie?"
 
 #: DlgPrefMidiBindingsDlg#1
 msgctxt "DlgPrefMidiBindingsDlg#1"
@@ -601,7 +629,7 @@ msgstr "Dialogue"
 
 #: DlgPrefMidiBindingsDlg#2
 msgid "Your Device Name"
-msgstr ""
+msgstr "Nom de votre interface"
 
 #: DlgPrefMidiBindingsDlg#3
 msgid "Load Preset:"
@@ -760,6 +788,8 @@ msgid ""
 "Support Mixxx by counting and sharing bundled songs\n"
 "playback and outbound link statistics"
 msgstr ""
+"Soutenez Mixxx en comptant et partageant des chansons groupées(empaquetées)\n"
+"Lecture et statistiques de liaison en partance"
 
 #: DlgPrefRecord#1
 msgctxt "DlgPrefRecord#1"
@@ -934,6 +964,17 @@ msgid ""
 "family:'DejaVu Sans'; font-size:9pt; font-style:italic;\">This stream is on "
 "line for testing purposes!</span></p></body></html>"
 msgstr ""
+"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" "
+"\"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+"<html><head><meta name=\"qrichtext\" content=\"1\" /><style "
+"type=\"text/css\">\n"
+"p, li { white-space: pre-wrap; }\n"
+"</style></head><body style=\" font-family:'Sans'; font-size:10pt; font-"
+"weight:400; font-style:normal;\">\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-"
+"right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-"
+"family:'DejaVu Sans'; font-size:9pt; font-style:italic;\">Ce flux est en "
+"ligne ligne aux fins de test!</span></p></body></html>"
 
 #: DlgPrefShoutcastDlg#25
 msgctxt "DlgPrefShoutcastDlg#25"
@@ -1081,6 +1122,9 @@ msgid ""
 "samplerate.\n"
 "The samplerate has been reset to 44100 Hz."
 msgstr ""
+"Les disques Final Scratch ne fonctionnent correctement qu' avec un taux "
+"d'échantillonnage de 44100 Hz actuellement.\n"
+"Le taux d'échantillonnage a été réinitialisé à 44100 Hz."
 
 #: DlgPrefSound#6
 msgctxt "DlgPrefSound#6"
@@ -1109,7 +1153,7 @@ msgstr "Problèmes de configuration"
 
 #: DlgPrefSound#11
 msgid "Sound API could not be initialized"
-msgstr ""
+msgstr "Son API ne peux être initialisé"
 
 #: DlgPrefSound#12
 msgid "Mixxx - Master and Headphones sharing the same channels"
@@ -1126,6 +1170,17 @@ msgid ""
 "If your sound card has only two channels set the 'Headphones' channel to "
 "'None'."
 msgstr ""
+"Avoir le  Casque partageant les mêmes canaux de sortie de carte son "
+"principale\n"
+"Aboutira à ce que Mixxx jouera en a plein volume sans respecter le contrôle "
+"de volume général\n"
+"(ce sont parce que les canaux du Casque à écouteurs ne respecte pas le "
+"volume  général).\n"
+"\n"
+"On ne recommande pas cette configuration à cause de cela\n"
+"\n"
+"Si votre carte son a seulement deux canaux mettent le canal 'du Casque ' à "
+"'Acun'"
 
 #: DlgPrefSoundDlg#1
 msgctxt "DlgPrefSoundDlg#1"
@@ -1150,7 +1205,7 @@ msgstr "Taux d'échantillonnage (Hz)"
 
 #: DlgPrefSoundDlg#6
 msgid "Sound API"
-msgstr ""
+msgstr "Son API"
 
 #: DlgPrefSoundDlg#7
 msgid "Pitch behaviour"
@@ -1162,13 +1217,15 @@ msgstr "Émulation vinyl"
 
 #: DlgPrefSoundDlg#9
 msgid "Pitch independent time stretch"
-msgstr ""
+msgstr "Pitch independent time stretch"
 
 #: DlgPrefSoundDlg#10
 msgid ""
 "Stretching beyond +-10% with pitch independent time stretch is not advised, "
 "and is likely to result in bad sound quality."
 msgstr ""
+"Stretching beyond +-10% with pitch independent time stretch is not advised, "
+"and is likely to result in bad sound quality."
 
 #: DlgPrefSoundDlg#11
 msgid "Latency"
@@ -1294,7 +1351,7 @@ msgstr "Vinyl Type"
 
 #: DlgPrefVinylDlg#11
 msgid "Lead-in time"
-msgstr ""
+msgstr "Temps d'introduction"
 
 #: DlgPrefVinylDlg#12
 msgid "seconds"
@@ -1468,7 +1525,7 @@ msgstr "Commentaire:"
 
 #: DlgTrackInfo#15
 msgid "Reload track metadata from file."
-msgstr ""
+msgstr "Recharger les métadonnées de la piste depuis le fichier."
 
 #: DlgTrackInfo#16
 msgid "Track Information (Click to Expand)"
@@ -1488,19 +1545,20 @@ msgstr "/2"
 
 #: DlgTrackInfo#20
 msgid "Tap to Beat"
-msgstr ""
+msgstr "Tap to Tempo"
 
 #: DlgTrackInfo#21
 msgid "Hint: Use the Library Analyze view to run BPM detection."
 msgstr ""
+"Conseil: Utilisez l'Analyse Bibliothèque pour lancer la détéction BPM"
 
 #: DlgTrackInfo#22
 msgid "Track BPM"
-msgstr ""
+msgstr "BPM Piste"
 
 #: DlgTrackInfo#23
 msgid "Cue Id"
-msgstr ""
+msgstr "Cue Id"
 
 #: DlgTrackInfo#24
 msgctxt "DlgTrackInfo#24"
@@ -1509,11 +1567,11 @@ msgstr "Position"
 
 #: DlgTrackInfo#25
 msgid "Hotcue"
-msgstr ""
+msgstr "Hotcue"
 
 #: DlgTrackInfo#26
 msgid "Label"
-msgstr ""
+msgstr "Label"
 
 #: DlgTrackInfo#27
 msgid "Activate Cue"
@@ -1525,7 +1583,7 @@ msgstr "Supprimer cue"
 
 #: DlgTrackInfo#29
 msgid "Track Cuepoints"
-msgstr ""
+msgstr "Piste Cuepoints"
 
 #: DlgTrackInfo#30
 msgid "<< &Prev"
@@ -1557,12 +1615,18 @@ msgid ""
 "install libmp3lame (also known as lame) and check if /usr/lib/libmp3lame.so "
 "exists on your system </html>"
 msgstr ""
+"<html>Mixxx est incapable de charger ou trouver l'encodeur Lame "
+"MP3.<p>Veuillez installer libmp3lame (ou lame) et vérifiez si "
+"/usr/lib/libmp3lame.so existe sur votre système </html>"
 
 #: EncoderMp3#3
 msgid ""
 "<html>Mixxx is unable to load or find the MP3 encoder lame. <p>Please put "
 "lame_enc.dll in the directory you have installed Mixxx </html>"
 msgstr ""
+"<html>Mixxx est incapable de charger ou trouver l'encodeur Lame "
+"MP3.<p><Veuillez déposer lame_enc.dll dans le dossier d'installation de "
+"Mixxx </html>"
 
 #: EncoderMp3#4
 msgid ""
@@ -1570,6 +1634,9 @@ msgid ""
 "install libmp3lame (also known as lame) and check if "
 "/usr/local/lib/libmp3lame.dylib exists on your system </html>"
 msgstr ""
+"<html>Mixxx est incapable de charger ou trouver l'encodeur Lame "
+"MP3.<p>Veuillez installer libmp3lame (ou lame) et vérifiez si "
+"/usr/local/lib/libmp3lame.dylib  existe sur votre système </html>"
 
 #: EncoderMp3#5
 msgid ""
@@ -1577,6 +1644,9 @@ msgid ""
 "<a href='http://mixxx.org/wiki/doku.php/internet_broadcasting'>Mixxx "
 "Wiki</a> for more information.</html>"
 msgstr ""
+"<html>Mixxx a detecté que vous utilisez version modifiée  de libmp3lame. "
+"Voir <a href='http://mixxx.org/wiki/doku.php/internet_broadcasting'>Mixxx "
+"Wiki</a> Voir pour plus d'information.</html>"
 
 #: EngineRecord#1
 msgctxt "EngineRecord#1"
@@ -1588,6 +1658,9 @@ msgid ""
 "<html>Could not create audio file for recording!<p><br>Maybe you do not have "
 "enough free disk space or file permissions.</html>"
 msgstr ""
+"<html>Ne peux céer le fichier audio pour l'enregistrement!<p><br>Peut-être "
+"que vous n'avez pas assez d'espace sur votre disque dur ou les droits sur le "
+"fichier.</html>"
 
 #: EngineShoutcast#1
 msgid "Mixxx encountered a problem"
@@ -1595,25 +1668,27 @@ msgstr "Mixxx a rencontré un problème"
 
 #: EngineShoutcast#2
 msgid "Could not allocate shout_t"
-msgstr ""
+msgstr "Ne peux allouer  shout_t"
 
 #: EngineShoutcast#3
 msgid "Could not allocate shout_metadata_t"
-msgstr ""
+msgstr "Ne peux allouer shout_metadata_t"
 
 #: EngineShoutcast#4
 msgid "Error setting non-blocking mode:"
-msgstr ""
+msgstr "Erreur de configuration en mode non-bloquant:"
 
 #: EngineShoutcast#5
 msgid "Shoutcast aborted connect after 3 tries"
-msgstr ""
+msgstr "Shoutcast a abandonner la connection après 3 tentatives"
 
 #: EngineShoutcast#6
 msgid ""
 "Please check your connection to the Internet and verify that your username "
 "and password are correct."
 msgstr ""
+"Veuillez vérifier votre connection Internet et que votre identifiant et mot "
+"de passe soit correct."
 
 #: EngineShoutcast#7
 msgid "Mixxx could not connect to the server"
@@ -1711,7 +1786,7 @@ msgstr "Inconnu"
 
 #: LADSPAPresetSlot#1
 msgid "Drag a preset from the list & drop it here"
-msgstr ""
+msgstr "Cliquez sur un preset depuis la liste & déposez le ici"
 
 #: LibraryScannerDlg#1
 msgid "It's taking Mixxx a minute to scan your music library, please wait..."
@@ -1790,7 +1865,7 @@ msgstr "Date de l'ajout"
 
 #: MidiInputMappingTableModel#1
 msgid "Midi Status Type"
-msgstr ""
+msgstr "Type de Statut Midi"
 
 #: MidiInputMappingTableModel#2
 msgctxt "MidiInputMappingTableModel#2"
@@ -1814,38 +1889,45 @@ msgstr "Valeur Contrôle"
 
 #: MidiMapping#1
 msgid "MIDI script function not found"
-msgstr ""
+msgstr "Fonction de script MIDI non trouvée"
 
 #: MidiMapping#2
 msgid "The MIDI script function '%1' was not found in loaded scripts."
 msgstr ""
+"La fonction de script MIDI '%1' n'a pas été trouvée dans les scripts chargés."
 
 #: MidiMapping#3
 msgid ""
 "The MIDI message %1 %2 will not be bound.\n"
 "(Click Show Details for hints.)"
 msgstr ""
+"Le message  MIDI %1 %2 de ne sera pas lié.\n"
+"(Cliquez Montrer Détails pour avoir des conseil)"
 
 #: MidiMapping#4
 msgid ""
 "* Check to see that the function name is spelled correctly in the mapping "
 "file (.xml) and script file (.js)\n"
 msgstr ""
+"*Veuillez regarder si le nom de la fonction est épeler dans le fichier de "
+"cartographie (.xml) and script file (.js)\n"
 
 #: MidiMapping#5
 msgid ""
 "* Check to see that the script file name (.js) is spelled correctly in the "
 "mapping file (.xml)"
 msgstr ""
+"Veuillez vérifier si le nom du fichier script (.js) est correctement "
+"orthographié dans le fichier de cartographie (.xml)"
 
 #: MidiOutputMappingTableModel#1
 msgid "Midi Status"
-msgstr ""
+msgstr "Status Midi"
 
 #: MidiOutputMappingTableModel#2
 msgctxt "MidiOutputMappingTableModel#2"
 msgid "Midi Note"
-msgstr ""
+msgstr "Note Midi"
 
 #: MidiOutputMappingTableModel#3
 msgctxt "MidiOutputMappingTableModel#3"
@@ -1855,28 +1937,28 @@ msgstr "Canal MIDI"
 #: MidiOutputMappingTableModel#4
 msgctxt "MidiOutputMappingTableModel#4"
 msgid "Control Group"
-msgstr ""
+msgstr "Groupe Contrôle"
 
 #: MidiOutputMappingTableModel#5
 msgctxt "MidiOutputMappingTableModel#5"
 msgid "Control Value"
-msgstr ""
+msgstr "Valeur Contrôle"
 
 #: MidiOutputMappingTableModel#6
 msgid "Threshold Min"
-msgstr ""
+msgstr "Seuil Min"
 
 #: MidiOutputMappingTableModel#7
 msgid "Threshold Max"
-msgstr ""
+msgstr "Seuil Max"
 
 #: MidiScriptEngine#1
 msgid "Uncaught exception at line %1 in file %2: %3"
-msgstr ""
+msgstr "Exception non captée à la ligne %1 dans le fichier %2: %3"
 
 #: MidiScriptEngine#2
 msgid "Uncaught exception at line %1 in passed code: %2"
-msgstr ""
+msgstr "Exception non captée à la ligne %1 dans le code passé: %2"
 
 #: MidiScriptEngine#3
 msgid "MIDI script error"
@@ -1885,6 +1967,8 @@ msgstr "Erreur de script MIDI"
 #: MidiScriptEngine#4
 msgid "A MIDI control you just used is not working properly."
 msgstr ""
+"L'interface MIDI que vous venez juste d'utiliser ne fonctionne pas "
+"correctement."
 
 #: MidiScriptEngine#5
 msgid ""
@@ -1893,6 +1977,10 @@ msgid ""
 "erratic behavior</li><li>Try to recover by resetting your "
 "controller</li></ul></html>"
 msgstr ""
+"<html>(Le script MIDI a besoin d'être réparé.)<br>Pour l'instant vous "
+"pouvez:<ul><li>Ignorer cette erreur pour cette session Mais vous pouvez "
+"expérimenter des comportements irréguliers</li><li>Essayez de récupérer en "
+"reconfigurant votre contrôleur</li></ul></html>"
 
 #: MidiStatusDelegate#1
 msgctxt "MidiStatusDelegate#1"
@@ -1980,6 +2068,10 @@ msgid ""
 "developers. Would you like to help us make Mixxx better by enabling this "
 "feature?"
 msgstr ""
+"Le retour d'information communautaire conduit le développement de Mixxx. À "
+"votre discrétion, Mixxx peut automatiquement envoyer des données sur votre "
+"expérience d'utilisateur aux développeurs. Voudriez-vous nous aider a créer "
+"un meilleur Mixxx en activant cette fonction?"
 
 #: MixxxApp#4
 msgid "Yes"
@@ -2021,6 +2113,30 @@ msgid ""
 "This information will not be used to personally identify you, contact you, "
 "advertise to you, or otherwise bother you in any way.\n"
 msgstr ""
+"Le retour d'information communautaire conduit le développement de Mixxx. "
+"Pour aider a améliorer les versions futures Mixxx  avec votre permission de "
+"rassembler des informations sur votre matériel et utilisation de Mixxx. Ces "
+"informations seront principalement utilisées pour corriger des bogues, "
+"amélioreront les caractéristiques et détermineront les pré-requis techniques "
+"de versions postérieures. De plus ces informations peuvent être utilisées "
+"dans l'ensemble des statistique.\n"
+"\n"
+"Les informations sur le matériel utilisé seront incluent:\n"
+"\t-modèle de CPU et features\n"
+"\t-Quantité Totale/Disponible de RAM\n"
+"t-Espace disque disponible\n"
+"\t-OS version\n"
+"\n"
+"Vos informations d'utilisation seront incluent:\n"
+"\t-Configuration/Préférences\n"
+"\t-erreurs interne\n"
+" \t-débogage messages Interne\n"
+"\t-la statistique de Performance (font la moyenne la latence, l'utilisation "
+"du CPU)\n"
+"\n"
+"Ces informations ne seront pas utilisées pour personnellement vous "
+"identifiez, vous contactez, vous feront de la publicité, ou vous dérangeront "
+"de quelle façon que ce soit.\n"
 
 #: MixxxApp#9
 msgctxt "MixxxApp#9"
@@ -2033,11 +2149,11 @@ msgstr "Carte son Occupée"
 
 #: MixxxApp#11
 msgid "<html>Mixxx cannot access the sound device <b>"
-msgstr ""
+msgstr "<html>Mixxx ne peux accéder a votre carte son <b>"
 
 #: MixxxApp#12
 msgid "Another application is using the sound device or it is "
-msgstr ""
+msgstr "Une autre application utilise la carte son ou c'est "
 
 #: MixxxApp#13
 msgid "not plugged in."
@@ -2045,11 +2161,11 @@ msgstr "pas connecter"
 
 #: MixxxApp#14
 msgid "<b>Retry</b> after closing the other application "
-msgstr ""
+msgstr "<b>Réessayer</b> après avoir fermé l'autre application "
 
 #: MixxxApp#15
 msgid "or reconnecting the sound device"
-msgstr ""
+msgstr "ou reconnecter la carte son"
 
 #: MixxxApp#16
 msgid "<b>Reconfigure</b> Mixxx to use another sound device."
@@ -2133,7 +2249,7 @@ msgstr "Ctrl+I"
 
 #: MixxxApp#36
 msgid "&Audio Beat Marks"
-msgstr ""
+msgstr "&Repères de Tempo Audio"
 
 #: MixxxApp#37
 msgid "&Full Screen"
@@ -2161,7 +2277,7 @@ msgstr "&A propos..."
 
 #: MixxxApp#43
 msgid "&Community Support..."
-msgstr ""
+msgstr "&Assistance Communautaire"
 
 #: MixxxApp#44
 msgid "Enable &Vinyl Control"
@@ -2190,7 +2306,7 @@ msgstr "Ctrl+R"
 
 #: MixxxApp#50
 msgid "Show Studio"
-msgstr ""
+msgstr "Monter Studio"
 
 #: MixxxApp#51
 msgid "Opens a song in player 1"
@@ -2282,13 +2398,15 @@ msgstr "Importer une liste de lecture"
 
 #: MixxxApp#64
 msgid "Audio Beat Marks"
-msgstr ""
+msgstr "Repères Tempo Audio"
 
 #: MixxxApp#65
 msgid ""
 "Audio Beat Marks\n"
 "Mark beats by audio clicks"
 msgstr ""
+"Repères Tempo Audio\n"
+"Marquer les repères de tempo audio par un click"
 
 #: MixxxApp#66
 msgid "Activate Vinyl Control"
@@ -2297,6 +2415,8 @@ msgstr "Activer Vinyl Contrôle"
 #: MixxxApp#67
 msgid "Use timecoded vinyls on external turntables to control Mixxx"
 msgstr ""
+"Utiliser des disques vinyl encodés sur une platine externe pour controler "
+"Mixxx"
 
 #: MixxxApp#68
 msgid "Activate live broadcasting"
@@ -2331,11 +2451,11 @@ msgstr "Préférences"
 msgid ""
 "Preferences\n"
 "Playback and MIDI preferences"
-msgstr ""
+msgstr "Écoute et préférences MIDI"
 
 #: MixxxApp#76
 msgid "Support..."
-msgstr ""
+msgstr "Assistance"
 
 #: MixxxApp#77
 msgid ""
@@ -2343,6 +2463,9 @@ msgid ""
 "\n"
 "Get help with Mixxx"
 msgstr ""
+"Assistance\n"
+"\n"
+"Trouver de l'aide avec Mixxx"
 
 #: MixxxApp#78
 msgid "About the application"
@@ -2360,14 +2483,14 @@ msgstr ""
 
 #: MixxxApp#80
 msgid "Shows the macro studio window"
-msgstr ""
+msgstr "Montrer la fenetre du studio macro"
 
 #: MixxxApp#81
 msgid ""
 "Show Studio\n"
 "\n"
 "Makes the macro studio visible"
-msgstr ""
+msgstr "Montrer Studio"
 
 #: MixxxApp#82
 msgid "&File"
@@ -2430,6 +2553,9 @@ msgid ""
 "No input device(s) select.\n"
 "Please select your soundcard(s) in vinyl control preferences."
 msgstr ""
+"Pas d'interface d'entrée(s) sélectionnées. \n"
+"Veuillez sélectionner votre carte son(s) dans le préférences du contrôle "
+"vinyle."
 
 #: MixxxApp#95
 msgctxt "MixxxApp#95"
@@ -2445,6 +2571,8 @@ msgid ""
 "The file %1 already exists. Would you like to overwrite it?\n"
 "Selecting \"No\" will abort the recording."
 msgstr ""
+"Ce fichier %1 existe déjà. Voulez vous l'écraser?\n"
+"Sélectionnez \"NON\" pour abandonner l'enregistrement."
 
 #: MixxxLibraryFeature#1
 msgid "Missing Songs"
@@ -2666,6 +2794,12 @@ msgid ""
 "\n"
 "Click OK to exit."
 msgstr ""
+"Incapable d'établir une connexion de base de données.\n"
+"Mixxx exige QT avec l'assistance de SQLITE. Lisez s'il vous plaît la "
+"documentation de SQL Qt pour des informations sur la façon de construire "
+"cela\n"
+"\n"
+"Cliquez sur OK pour sortir."
 
 #: TrackCollection#3
 msgid "Cannot upgrade database schema"
@@ -2679,6 +2813,11 @@ msgid ""
 "\n"
 "Click OK to exit."
 msgstr ""
+"Incapable de mettre à jour votre schéma de base de données à la version 1.\n"
+"Votre fichier de mixxx.db peut être corrompu.\n"
+"Essai le renomant et redémarrer Mixxx.\n"
+"\n"
+"Cliquez sur OK pour sortir."
 
 #: Ui#1
 msgctxt "Ui#1"
