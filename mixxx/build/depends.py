@@ -26,11 +26,7 @@ class PortMIDI(Dependence):
         if not conf.CheckLib(['portmidi', 'libportmidi']) and \
                 not conf.CheckHeader(['portmidi.h']):
             raise Exception('Did not find PortMidi or its development headers.')
-
-        # WHY!? Supposedly we need this for PortMIDI.
-        if build.platform_is_windows:
-            build.env.Append(LIBS='advapi32')
-
+            
     def sources(self, build):
         return ['midi/portmidienumerator.cpp', 'midi/midideviceportmidi.cpp']
 
@@ -57,21 +53,21 @@ class OpenGL(Dependence):
 class OggVorbis(Dependence):
 
     def configure(self, build, conf):
-        if build.platform_is_windows and build.machine_is_64bit:
+#        if build.platform_is_windows and build.machine_is_64bit:
             # For some reason this has to be checked this way on win64,
             # otherwise it looks for the dll lib which will cause a conflict
             # later
-            if not conf.CheckLib('vorbisfile_static'):
-                raise Exception('Did not find vorbisfile_static.lib or the libvorbisfile development headers.')
-        else:
-            if not conf.CheckLib('vorbisfile'):
-                Exception('Did not find libvorbisfile.a, libvorbisfile.lib, '
-                    'or the libvorbisfile development headers.')
+#            if not conf.CheckLib('vorbisfile_static'):
+#                raise Exception('Did not find vorbisfile_static.lib or the libvorbisfile development headers.')
+#        else:
+        if not conf.CheckLib(['libvorbisfile', 'vorbisfile']):
+            Exception('Did not find libvorbisfile.a, libvorbisfile.lib, '
+                'or the libvorbisfile development headers.')
 
-        if not conf.CheckLib('vorbis'):
+        if not conf.CheckLib(['libvorbis', 'vorbis']):
             raise Exception('Did not find libvorbis.a, libvorbis.lib, or the libvorbisfile development headers.')
 
-        if not conf.CheckLib('ogg'):
+        if not conf.CheckLib(['libogg', 'ogg']):
             raise Exception('Did not find libogg.a, libogg.lib, or the libogg development headers, exiting!')
 
     def sources(self, build):
@@ -80,9 +76,9 @@ class OggVorbis(Dependence):
 class Mad(Dependence):
 
     def configure(self, build, conf):
-        if not conf.CheckLib(['mad','libmad']):
+        if not conf.CheckLib(['libmad','mad']):
             raise Exception('Did not find libmad.a, libmad.lib, or the libmad development header files - exiting!')
-        if not conf.CheckLib(['id3tag','libid3tag-release']):
+        if not conf.CheckLib(['libid3tag', 'id3tag','libid3tag-release']):
             raise Exception('Did not find libid3tag.a, libid3tag.lib, or the libid3tag development header files - exiting!')
 
     def sources(self, build):

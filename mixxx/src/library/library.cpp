@@ -64,7 +64,7 @@ Library::Library(QObject* parent, ConfigObject<ConfigValue>* pConfig, bool first
     if (RhythmboxFeature::isSupported())
         addFeature(new RhythmboxFeature(this));
     if (ITunesFeature::isSupported())
-        addFeature(new ITunesFeature(this));
+        addFeature(new ITunesFeature(this, m_pTrackCollection));
 
     //Show the promo tracks view on first run, otherwise show the library
     if (firstRun) {
