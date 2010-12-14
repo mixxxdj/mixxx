@@ -137,9 +137,17 @@
 		QHeaderView { font: 11px/13px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; }
 
 		WSearchLineEdit { padding: 2px; font: 13px/15px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; }
-		WSearchLineEdit:focus {padding: 2px; border: 3px solid #FF6600; font: 13px/15px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;}
+		WSearchLineEdit:focus {padding: 2px; border: 2px solid #FF6600; font: 13px/15px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;}
 
-		QLabel, QPushButton , QRadioButton { font: 13px/15px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; }
+		QSplitter::handle { image: url(skin:/style_handle_unchecked.png); background: none; }
+		QSplitter::handle:pressed { image: url(skin:/style_handle_checked.png); background: none; }
+		QSplitter::handle:horizontal { width: 6px; }
+		QSplitter::handle:vertical { height: 6px; }
+
+		QLabel, QPushButton { font: 13px/15px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; }
+
+		<!--Extra declaration for QRadionButton otherwise it shows up with wrong colors in Linux with Gnome -->
+		QRadioButton { font: 13px/15px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; background: transparent; color: #191919; }
 		</Style>
 		<Pos>107,225</Pos>
 		<Size>800,345</Size>
