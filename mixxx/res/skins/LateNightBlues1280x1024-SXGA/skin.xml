@@ -22,6 +22,8 @@
 	CHANGELOG
 	v1.07	(02/12/2010)
 	* Added Mixxx 1.9 feature: BPM tap buttons
+	* Added custom images for checkboxes in library
+	* Updated styles
 
 	v1.06	(19/11/2010)
 	* Added Mixxx 1.9 features: Keylock & Repeat buttons
@@ -114,24 +116,27 @@
 	**********************************************
 	-->
 	<TableView>
-		<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+		<Style>
+		QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-		QLabel { font: 13px/15px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-		background-color: transparent; color: #CDCDCD; text-align: left; padding-left: 1%; }
-		QTableView { font: 13px/15px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+
+		QTableView, QTextBrowser, QTreeView , QLineEdit { font: 13px/15px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 		background: #22272B; alternate-background-color: #22272B; color: #CDCDCD; }
+		QTableView::indicator { width: 12px; height: 12px;}
+		QTableView::indicator:checked { background: url(skin:/style_checkbox_checked.png);}
+		QTableView::indicator:unchecked { background: url(skin:/style_checkbox_unchecked.png);}
+
 		QHeaderView { font: 11px/13px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; }
-		QRadioButton { color: #CDCDCD; }
-		QTextBrowser { background: #22272B; color: #CDCDCD; }
-		WLibrarySidebar { background: #22272B; color: #CDCDCD; }
-		WSearchLineEdit { background: #22272B; color: #CDCDCD; }
+
+		QLabel, QPushButton { font: 13px/15px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; }
+		QRadioButton { font: 13px/15px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; background: transparent; color: #CDCDCD; }
 		</Style>
 		<Pos>6,346</Pos>
 		<Size>1251,571</Size>
-		<BgColor>#2D3439</BgColor>
+		<BgColor>#22272B</BgColor>
 		<FgColor>#CDCDCD</FgColor>
-		<BgColorRowEven>#292F33</BgColorRowEven>
-		<BgColorRowUneven>#292F33</BgColorRowUneven>
+		<BgColorRowEven>#22272B</BgColorRowEven>
+		<BgColorRowUneven>#22272B</BgColorRowUneven>
 	</TableView>
 
 	<!--
