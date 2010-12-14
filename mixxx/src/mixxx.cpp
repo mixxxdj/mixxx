@@ -1144,6 +1144,7 @@ void MixxxApp::slotControlVinylControl(double toggle)
 		    m_pOptionsVinylControl->setChecked(false);
 		    m_pConfig->set(ConfigKey("[VinylControl]","EnabledCh1"), ConfigValue(0));
 		    ControlObject::getControl(ConfigKey("[Channel1]", "VinylStatus"))->set(VINYL_STATUS_DISABLED);
+		    ControlObject::getControl(ConfigKey("[Channel1]", "vinylcontrol"))->set(0);
 		}
 	}
 #endif
@@ -1190,9 +1191,10 @@ void MixxxApp::slotControlVinylControl2(double toggle)
 		        QMessageBox::Ok);
 		    m_pPrefDlg->show();
 		    m_pPrefDlg->showSoundHardwarePage();
+		    m_pOptionsVinylControl2->setChecked(false);
 		    m_pConfig->set(ConfigKey("[VinylControl]","EnabledCh2"), ConfigValue(0));
 		    ControlObject::getControl(ConfigKey("[Channel2]", "VinylStatus"))->set(VINYL_STATUS_DISABLED);
-		    m_pOptionsVinylControl2->setChecked(false);
+		    ControlObject::getControl(ConfigKey("[Channel2]", "vinylcontrol"))->set(0);
 		}
 	}
 #endif
