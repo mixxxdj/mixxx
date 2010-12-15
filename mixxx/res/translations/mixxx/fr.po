@@ -3,13 +3,13 @@ msgstr ""
 "Project-Id-Version: Mixxx 1.8\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2010-10-28 15:35-0400\n"
-"PO-Revision-Date: 2010-12-13 20:38+0000\n"
-"Last-Translator: teza <tsaliou75@orange.fr>\n"
+"PO-Revision-Date: 2010-12-15 02:12+0000\n"
+"Last-Translator: teza <Unknown>\n"
 "Language-Team: <tezalprod@gmail.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2010-12-14 04:49+0000\n"
+"X-Launchpad-Export-Date: 2010-12-15 04:34+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 "X-Poedit-Country: FRANCE\n"
 "X-Poedit-Language: French\n"
@@ -37,7 +37,7 @@ msgstr "Nouveaux container"
 #: CrateFeature#2
 msgctxt "CrateFeature#2"
 msgid "Remove"
-msgstr "Enlever"
+msgstr "Retirer"
 
 #: CrateFeature#3
 msgid "Crates"
@@ -362,7 +362,7 @@ msgstr "Ne peux ouvrir le fichier %1"
 
 #: DlgPrefControls#1
 msgid "This skin does not support schemes"
-msgstr "Cet habillage n'accepte pas les modèles"
+msgstr "Ce thème n'accepte pas les modèles"
 
 #: DlgPrefControls#2
 msgid "Up increases speed"
@@ -370,7 +370,7 @@ msgstr "Haut accélère la vitesse"
 
 #: DlgPrefControls#3
 msgid "Down increases speed (Technics SL1210)"
-msgstr "Bas augmente la vitesse"
+msgstr "Bas augmente la vitesse (Technics SL1210)"
 
 #: DlgPrefControls#4
 msgctxt "DlgPrefControls#4"
@@ -389,7 +389,7 @@ msgstr "Form1"
 
 #: DlgPrefControlsDlg#2
 msgid "Skin"
-msgstr "Habillage"
+msgstr "Thème"
 
 #: DlgPrefControlsDlg#3
 msgid "Scheme"
@@ -435,7 +435,7 @@ msgstr "Rappel automatique CUE"
 
 #: DlgPrefControlsDlg#13
 msgid "Permanent Pitch/Rate Buttons"
-msgstr "Permanent Pitch/Rate Buttons"
+msgstr "Permanent Pitch/Rate Boutons"
 
 #: DlgPrefControlsDlg#14
 msgid "Left click"
@@ -447,7 +447,7 @@ msgstr "Clic droit"
 
 #: DlgPrefControlsDlg#16
 msgid "Permanent rate change (between 1 and 8000) when left clicking"
-msgstr "Changement de taux provisoire (entre 1 et 8000) sur clic gauche"
+msgstr "Le taux permanent change(entre 1 et 8000) sur clic gauche"
 
 #: DlgPrefControlsDlg#17
 msgid "%"
@@ -455,19 +455,19 @@ msgstr "%"
 
 #: DlgPrefControlsDlg#18
 msgid "Permanent rate change (between 1 and 8000) when right clicking"
-msgstr "Changement de taux provisoire (entre 1 et 8000) sur clic droit"
+msgstr "Le taux permanent change(entre 1 et 8000) sur clic droit"
 
 #: DlgPrefControlsDlg#19
 msgid "Temporary Pitch/Rate Buttons"
-msgstr "Temporary Pitch/Rate Buttons"
+msgstr "Temporaire Pitch/Rate Boutons"
 
 #: DlgPrefControlsDlg#20
 msgid "Temporary rate change (between 1 and 8000) when left clicking"
-msgstr "Changement de taux provisoire (entre 1 et 8000) sur click droit"
+msgstr "Le taux temporaire change(entre 1 et 8000) sur clic gauche"
 
 #: DlgPrefControlsDlg#21
 msgid "Temporary rate change (between 1 and 8000) when right clicking"
-msgstr "Changement de taux provisoire (entre 1 et 8000) sur click gauche"
+msgstr "Le taux temporaire change(entre 1 et 8000) sur clic droit"
 
 #: DlgPrefControlsDlg#22
 msgid "Ramping Pitchbend"
@@ -1170,12 +1170,11 @@ msgid ""
 "If your sound card has only two channels set the 'Headphones' channel to "
 "'None'."
 msgstr ""
-"Avoir le  Casque partageant les mêmes canaux de sortie de carte son "
+"Avoir le Casque partageant les mêmes canaux de sortie de carte son "
 "principale\n"
 "Aboutira à ce que Mixxx jouera en a plein volume sans respecter le contrôle "
 "de volume général\n"
-"(ce sont parce que les canaux du Casque à écouteurs ne respecte pas le "
-"volume  général).\n"
+"( parce que les canaux du Casque ne respecte pas le volume  général).\n"
 "\n"
 "On ne recommande pas cette configuration à cause de cela\n"
 "\n"
@@ -1733,7 +1732,7 @@ msgstr "iTunes"
 
 #: ITunesFeature#2
 msgid "Load iTunes Library?"
-msgstr "Charger la librairie iTunes"
+msgstr "Charger la librairie iTunes?"
 
 #: ITunesFeature#3
 msgid "Would you like to load your iTunes library?"
@@ -1902,22 +1901,22 @@ msgid ""
 "(Click Show Details for hints.)"
 msgstr ""
 "Le message  MIDI %1 %2 de ne sera pas lié.\n"
-"(Cliquez Montrer Détails pour avoir des conseil)"
+"(Cliquez Montrer Détails pour avoir des conseils)"
 
 #: MidiMapping#4
 msgid ""
 "* Check to see that the function name is spelled correctly in the mapping "
 "file (.xml) and script file (.js)\n"
 msgstr ""
-"*Veuillez regarder si le nom de la fonction est épeler dans le fichier de "
-"cartographie (.xml) and script file (.js)\n"
+"* Veuillez regarder si le nom de la fonction est correctement orthographié "
+"dans le fichier de cartographie (.xml) and script file (.js)\n"
 
 #: MidiMapping#5
 msgid ""
 "* Check to see that the script file name (.js) is spelled correctly in the "
 "mapping file (.xml)"
 msgstr ""
-"Veuillez vérifier si le nom du fichier script (.js) est correctement "
+"* Veuillez vérifier si le nom du fichier script (.js) est correctement "
 "orthographié dans le fichier de cartographie (.xml)"
 
 #: MidiOutputMappingTableModel#1
@@ -2814,8 +2813,8 @@ msgid ""
 "Click OK to exit."
 msgstr ""
 "Incapable de mettre à jour votre schéma de base de données à la version 1.\n"
-"Votre fichier de mixxx.db peut être corrompu.\n"
-"Essai le renomant et redémarrer Mixxx.\n"
+"Votre fichier mixxx.db est peut être corrompu.\n"
+"Essayez de le renommer et redémarrer Mixxx.\n"
 "\n"
 "Cliquez sur OK pour sortir."
 
