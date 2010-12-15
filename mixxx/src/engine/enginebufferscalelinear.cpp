@@ -93,9 +93,100 @@ inline float hermite4(float frac_pos, float xm1, float x0, float x1, float x2)
     return ((((a * frac_pos) - b_neg) * frac_pos + c) * frac_pos + x0);
 }
 
-/** Stretch a buffer worth of audio using linear interpolation */
+/** Determine if we're changing directions (scratching) and then perform
+	a stretch */
 CSAMPLE * EngineBufferScaleLinear::scale(double playpos, unsigned long buf_size,
                                          CSAMPLE* pBase, unsigned long iBaseLength)
+{
+    float rate_add_new = m_dBaseRate;
+    float rate_add_old = m_fOldBaseRate; //Smoothly interpolate to new playback rate
+
+    //Update the old base rate because we only need to
+    //interpolate/ramp up the pitch changes once.
+    m_fOldBaseRate = m_dBaseRate;
+    
+    // Determine position in read_buffer to start from. (This is always 0 with
+    // the new EngineBuffer implementation)
+    new_playpos = playpos;
+
+    // Guard against buf_size == 0
+    if ((int)buf_size == 0)
+        return buffer;
+      
+    if (rate_add_new * rate_add_old < 0)
+    {
+    	//calculate half buffer going one way, and half buffer going
+    	//the other way.
+    	
+    	CSAMPLE *pOldRate = new CSAMPLE[buf_size/2];
+    	CSAMPLE *pNewRate = new CSAMPLE[buf_size/2];
+    	
+    	//first half: rate goes from old rate to zero
+    	m_fOldBaseRate = rate_add_old;
+    	m_dBaseRate = 0.0;
+    	pOldRate = do_scale(pOldRate, 0, buf_size/2, pBase, iBaseLength);
+    	
+    	//reset prev sample so we can now read in the other direction
+    	//(may not be necessary?)
+    	if ((int)ceil(m_dCurSampleIndex)*2+1 < buffer_int_size)
+    	{
+    		m_fPrevSample[0] = buffer_int[(int)ceil(m_dNextSampleIndex)*2];
+    		m_fPrevSample[1] = buffer_int[(int)ceil(m_dNextSampleIndex)*2+1];
+    	}
+    	
+    	//if the buffer has extra samples, do a read so RAMAN ends up back where
+    	//it should be
+    	int extra_samples = buffer_int_size - (int)ceil(m_dCurSampleIndex)*2 - 2;
+    	if (extra_samples > 0)
+    	{
+	    	if (extra_samples % 2 != 0)
+	    		extra_samples++;
+	    	qDebug() << "extra samples" << extra_samples;
+	    	
+	    	m_pReadAheadManager->getNextSamples(rate_add_new,buffer_int,
+                                                 extra_samples);
+	                                                 	
+		}
+		//force a buffer read:
+		buffer_int_size=0;
+		//make sure the indexes stay correct for interpolation
+		m_dCurSampleIndex = 0 - m_dCurSampleIndex + floor(m_dCurSampleIndex);
+    	m_dNextSampleIndex = 1.0 - (m_dNextSampleIndex - floor(m_dNextSampleIndex));
+    	
+    	//second half: rate goes from zero to new rate
+    	m_fOldBaseRate = 0.0;
+    	m_dBaseRate = rate_add_new;
+    	pNewRate = do_scale(pNewRate, 0, buf_size/2, pBase, iBaseLength);
+    	
+    	//write it to the real buffer
+    	//TODO: mmap it
+    	int crossover = buf_size / 2;
+    	for (int i=0; i<buf_size; i+=2)
+    	{
+    		if (i<crossover)
+    		{
+    			buffer[i] = pOldRate[i];
+    			buffer[i+1] = pOldRate[i+1];
+    		}
+    		else 
+    		{
+    			buffer[i] = pNewRate[i-crossover];
+    			buffer[i+1] = pNewRate[i+1-crossover];
+    		}
+    	}
+    	
+    	delete pOldRate;
+    	delete pNewRate;
+    	
+		return buffer;
+    }
+    
+    return do_scale(buffer, playpos, buf_size, pBase, iBaseLength);
+}
+                                         
+/** Stretch a specified buffer worth of audio using linear interpolation */
+CSAMPLE * EngineBufferScaleLinear::do_scale(CSAMPLE* buf, double playpos, unsigned long buf_size,
+                                         CSAMPLE* pBase, unsigned long iBaseLength)                                         
 {
 
     long unscaled_samples_needed;
@@ -117,87 +208,12 @@ CSAMPLE * EngineBufferScaleLinear::scale(double playpos, unsigned long buf_size,
 
     // Guard against buf_size == 0
     if (iRateLerpLength == 0)
-        return buffer;
+        return buf;
       
-      
-    //qDebug() << "loop" <<buffer_count << rate_add_old << rate_add_new;
-    if (rate_add_new * rate_add_old < 0)
-    {
-    	//calculate half buffer going one way, and half buffer going
-    	//the other way.  
-    	//qDebug() << "reverse" << buffer_count;
-    	
-    	CSAMPLE *pOldRate = new CSAMPLE[buf_size/2];
-    	CSAMPLE *pNewRate = new CSAMPLE[buf_size/2];
-    	CSAMPLE *buffer_save = buffer;
-    	
-    	
-    	float old_rate = rate_add_old;
-    	float new_rate = rate_add_new;
-    	
-    	m_fOldBaseRate = old_rate;
-    	m_dBaseRate = 0.0;
-    	//is this insanely not threadsafe?  I haven't had problems...
-    	buffer = pOldRate;
-    	
-    	pOldRate = scale(0, buf_size/2, pBase, iBaseLength);
-    	
-    	
-    	//reset all the variables so we can now read in the other direction
-    	if ((int)ceil(m_dCurSampleIndex)*2+1 < buffer_int_size)
-    	{
-    		m_fPrevSample[0] = buffer_int[(int)ceil(m_dNextSampleIndex)*2];
-    		m_fPrevSample[1] = buffer_int[(int)ceil(m_dNextSampleIndex)*2+1];
-    	}
-    	
-    	//if the buffer has extra samples, do a read so we end up back where
-    	//we should be
-    	//qDebug() << "reverse time" << buffer_int_size << m_dCurSampleIndex << m_dNextSampleIndex;
-    	int extra_samples = buffer_int_size - (int)ceil(m_dCurSampleIndex)*2 - 2;
-    	if (extra_samples > 0)
-    	{
-	    	if (extra_samples % 2 != 0)
-	    		extra_samples++;
-	    	qDebug() << "extra samples" << extra_samples;
-	    	
-	    	m_pReadAheadManager->getNextSamples(new_rate,buffer_int,
-                                                 extra_samples);
-	                                                 	
-		}
-		//force a buffer read:
-		buffer_int_size=0;
-		//make sure the indexes stay correct for interpolation
-		m_dCurSampleIndex = 0 - m_dCurSampleIndex + floor(m_dCurSampleIndex);
-    	m_dNextSampleIndex = 1.0 - (m_dNextSampleIndex - floor(m_dNextSampleIndex));
-    	m_fOldBaseRate = 0.0;
-    	m_dBaseRate = new_rate;
-    	buffer = pNewRate;
-    	
-    	pNewRate = scale(0, buf_size/2, pBase, iBaseLength);
-    	
-    	//reload the old buffer
-    	buffer = buffer_save;
-    	
-    	int crossover = buf_size / 2;
-    	for (int i=0; i<buf_size; i+=2)
-    	{
-    		if (i<crossover)
-    		{
-    			buffer[i] = pOldRate[i];
-    			buffer[i+1] = pOldRate[i+1];
-    		}
-    		else 
-    		{
-    			buffer[i] = pNewRate[i-crossover];
-    			buffer[i+1] = pNewRate[i+1-crossover];
-    		}
-    	}
-    	
-    	delete pOldRate;
-    	delete pNewRate;
-    	
-		return buffer;
-    }
+	
+	//We check for scratch condition in the public function, so this
+	//shouldn't happen      
+    Q_ASSERT(rate_add_new * rate_add_old >= 0);
     
     // Simulate the loop to estimate how many samples we need
     double samples = 0;
@@ -346,8 +362,8 @@ CSAMPLE * EngineBufferScaleLinear::scale(double playpos, unsigned long buf_size,
         CSAMPLE frac = m_dCurSampleIndex - floor(m_dCurSampleIndex);
 
         //Perform linear interpolation
-        buffer[i] = (float)prev_sample[0] + frac * ((float)cur_sample[0] - (float)prev_sample[0]);
-        buffer[i+1] = (float)prev_sample[1] + frac * ((float)cur_sample[1] - (float)prev_sample[1]);
+        buf[i] = (float)prev_sample[0] + frac * ((float)cur_sample[0] - (float)prev_sample[0]);
+        buf[i+1] = (float)prev_sample[1] + frac * ((float)cur_sample[1] - (float)prev_sample[1]);
         
         //at extremely low speeds, dampen the gain to hide pops and clicks
         //this does cause odd-looking linear waveforms that go to zero and back
@@ -355,8 +371,8 @@ CSAMPLE * EngineBufferScaleLinear::scale(double playpos, unsigned long buf_size,
        	{
        		float dither = (float)(rand() % 32768) / 32768 - 0.5; // dither
        		float gainfrac = fabs(rate_add) / 0.5;
-       		buffer[i] = gainfrac * (float)buffer[i] + dither;
-       		buffer[i+1] = gainfrac * (float)buffer[i+1] + dither;
+       		buf[i] = gainfrac * (float)buf[i] + dither;
+       		buf[i+1] = gainfrac * (float)buf[i+1] + dither;
        	}
        	
        	/*writer << QString("%1,%2,%3,%4\n").arg(buffer_count)
@@ -377,8 +393,8 @@ CSAMPLE * EngineBufferScaleLinear::scale(double playpos, unsigned long buf_size,
     // If we broke out of the loop, zero the remaining samples
     // TODO(XXX) memset
     for (; i < buf_size; i += 2) {
-        buffer[i] = 0.0f;
-        buffer[i+1] = 0.0f;
+        buf[i] = 0.0f;
+        buf[i+1] = 0.0f;
     }
     
 	Q_ASSERT(i>=buf_size);
@@ -387,5 +403,5 @@ CSAMPLE * EngineBufferScaleLinear::scale(double playpos, unsigned long buf_size,
     // this requirement. We may be trying to read past the end of the file.
     //Q_ASSERT(unscaled_samples_needed == 0);
     
-    return buffer;
+    return buf;
 }

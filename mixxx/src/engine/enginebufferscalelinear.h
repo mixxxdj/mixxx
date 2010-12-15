@@ -36,11 +36,15 @@ public:
     ~EngineBufferScaleLinear();
     CSAMPLE *scale(double playpos, unsigned long buf_size, 
                    CSAMPLE* pBase, unsigned long iBaseLength);
+
     void setBaseRate(double dBaseRate);
     double setTempo(double dTempo);
     void clear();
 
 private:
+	CSAMPLE *do_scale(CSAMPLE* buf, double playpos, unsigned long buf_size, 
+                   CSAMPLE* pBase, unsigned long iBaseLength);
+
     /** Holds playback direction */
     bool m_bBackwards;
     bool m_bClear;
