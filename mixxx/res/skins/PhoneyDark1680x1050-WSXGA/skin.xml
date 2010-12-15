@@ -22,6 +22,7 @@
 	CHANGELOG
 	v1.08	(14/12/2010)
 	* Added custom images for splitter in library
+	* Added custom images for branch triangle in treeview
 	* Added visual feedback when searchbox has focus
 
 	v1.07	(02/12/2010)
@@ -124,9 +125,14 @@
 		QSplitter::handle:vertical { height: 6px; }
 
 		QLabel, QPushButton { font: 13px/15px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; }
-
 		<!--Extra declaration for QRadionButton otherwise it shows up with wrong colors in Linux with Gnome -->
-		QRadioButton { font: 13px/15px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; background: transparent; color: #F6F6F6; }
+		QRadioButton { font: 13px/15px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; background: transparent; }
+
+		<!--Workaround for QT4.7.0 background color bug in Linux with Gnome https://bugs.launchpad.net/mixxx/+bug/690280-->
+		QTreeView::branch:has-children:!has-siblings:closed,
+		QTreeView::branch:closed:has-children:has-siblings { border-image: none; image: url(skin:/style_branch_closed.png);}
+		QTreeView::branch:open:has-children:!has-siblings,
+		QTreeView::branch:open:has-children:has-siblings { border-image: none; image: url(skin:/style_branch_open.png);}
 		</Style>
 		<Pos>10,430</Pos>
 		<Size>1643,509</Size>
