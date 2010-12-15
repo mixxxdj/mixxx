@@ -128,8 +128,12 @@ void TrackDAO::saveTrack(TrackInfoObject* pTrack) {
 
             // Q_ASSERT(!m_dirtyTracks.contains(trackId));
             if (!m_dirtyTracks.contains(trackId)) {
-                qDebug() << "WARNING: Inconsistent state in TrackDAO. Track is clean while TrackDAO thinks it is dirty. Correcting.";
+                qDebug() << "WARNING: Inconsistent state in TrackDAO. Track is clean while TrackDAO thinks it is dirty. Correcting. (updating anyway)";
+                updateTrack(pTrack);
                 m_dirtyTracks.remove(trackId);
+                //Write audio meta data, if enabled in the preferences
+            	writeAudioMetaData(pTrack);
+            	emit(trackClean(trackId));
             }
 
             //qDebug() << "Skipping track update for track" << pTrack->getId();
