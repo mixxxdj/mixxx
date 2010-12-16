@@ -101,14 +101,6 @@ CSAMPLE * EngineBufferScaleLinear::scale(double playpos, unsigned long buf_size,
     float rate_add_new = m_dBaseRate;
     float rate_add_old = m_fOldBaseRate; //Smoothly interpolate to new playback rate
 
-    //Update the old base rate because we only need to
-    //interpolate/ramp up the pitch changes once.
-    m_fOldBaseRate = m_dBaseRate;
-    
-    // Determine position in read_buffer to start from. (This is always 0 with
-    // the new EngineBuffer implementation)
-    new_playpos = playpos;
-
     // Guard against buf_size == 0
     if ((int)buf_size == 0)
         return buffer;

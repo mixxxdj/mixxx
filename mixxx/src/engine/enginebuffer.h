@@ -26,7 +26,7 @@
 #include "configobject.h"
 // #include "monitor.h"
 #include "rotary.h"
-//#include <QtCore>
+/*#include <QtCore>*/
 
 class EngineControl;
 class BpmControl;

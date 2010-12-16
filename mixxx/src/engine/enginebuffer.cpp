@@ -201,7 +201,7 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
 
 EngineBuffer::~EngineBuffer()
 {
-	//df.close();
+	/*df.close();*/
     delete m_pLoopingControl;
     delete m_pRateControl;
     delete m_pBpmControl;
