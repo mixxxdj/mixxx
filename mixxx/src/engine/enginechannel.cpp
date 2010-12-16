@@ -81,8 +81,14 @@ void EngineChannel::process(const CSAMPLE*, const CSAMPLE * pOut, const int iBuf
     m_pClipping->process(pOut, pOut, iBufferSize);
     // Update VU meter
     m_pVUMeter->process(pOut, pOut, iBufferSize);
-    // Apply channel volume
-    m_pVolume->process(pOut, pOut, iBufferSize);
+    // Apply channel volume if we aren't PFL
+    if (!isPFL()) {
+        m_pVolume->process(pOut, pOut, iBufferSize);
+    }
+}
+
+void EngineChannel::applyVolume(CSAMPLE *pBuff, const int iBufferSize) const {
+    m_pVolume->process(pBuff, pBuff, iBufferSize);
 }
 
 EngineBuffer* EngineChannel::getEngineBuffer() {
