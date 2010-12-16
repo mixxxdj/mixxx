@@ -849,6 +849,27 @@
   <MarkerColor>#007eff</MarkerColor>
   <FisheyeColor>#ffc600</FisheyeColor>
   <Zoom>true</Zoom>
+	<MarkRange>
+		<StartControl>loop_start_position</StartControl>
+		<EndControl>loop_end_position</EndControl>
+		<EnabledControl>loop_enabled</EnabledControl>
+		<Color>#bfa859</Color>
+		<DisabledColor>#000000</DisabledColor>
+	</MarkRange>
+	<Mark>
+		<Control>loop_start_position</Control>
+		<Text> LOOP IN </Text>
+		<Align>bottom</Align>
+		<Color>#eece33</Color>
+		<TextColor>#ffffff</TextColor>
+	</Mark>
+	<Mark>
+		<Control>loop_end_position</Control>
+		<Text> LOOP OUT </Text>
+		<Align>bottom</Align>
+		<Color>#eece33</Color>
+		<TextColor>#ffffff</TextColor>
+	</Mark>
  </Visual>
 
  <Visual>
@@ -862,6 +883,27 @@
   <MarkerColor>#008303</MarkerColor>
   <FisheyeColor>#ffc600</FisheyeColor>
   <Zoom>true</Zoom>
+	<MarkRange>
+		<StartControl>loop_start_position</StartControl>
+		<EndControl>loop_end_position</EndControl>
+		<EnabledControl>loop_enabled</EnabledControl>
+		<Color>#bfa859</Color>
+		<DisabledColor>#000000</DisabledColor>
+	</MarkRange>
+	<Mark>
+		<Control>loop_start_position</Control>
+		<Text> LOOP IN </Text>
+		<Align>bottom</Align>
+		<Color>#eece33</Color>
+		<TextColor>#ffffff</TextColor>
+	</Mark>
+	<Mark>
+		<Control>loop_end_position</Control>
+		<Text> LOOP OUT </Text>
+		<Align>bottom</Align>
+		<Color>#eece33</Color>
+		<TextColor>#ffffff</TextColor>
+	</Mark>
  </Visual>
  
  <StatusLight>
@@ -1109,6 +1151,18 @@
 
  
  
+ <ComboBox>
+  <Pos>3,406</Pos>
+  <Size>164,24</Size>
+ </ComboBox>
+
+ <Search>
+  <Pos>873,406</Pos>
+  <Size>400,24</Size>
+  <BgColor>#ffffff</BgColor>
+ </Search>
+ 
+  
    <TableView>
  <!--  <Pos>17,396</Pos>
   <Size>766,298</Size> -->
