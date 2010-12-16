@@ -274,7 +274,7 @@ void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
     //etc.  (cpu intensive non-realtime tasks)
     sidechain->submitSamples(m_pMaster, iBufferSize);
 
-    // Copy headphone to master with appropriate gain
+    // Add headphone to master with appropriate gain
     SampleUtil::addWithGain(m_pHead, m_pMaster, cmaster_gain, iBufferSize);
 
     // Head volume and clipping
