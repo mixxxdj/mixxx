@@ -432,7 +432,7 @@ double RateControl::calculateRate(double baserate, bool paused) {
         	if (m_pVinylMode->get() == MIXXX_VCMODE_ABSOLUTE)
         		rate = scratchFactor;
         	else
-        		rate = scratchFactor + m_dVinylTweakRate;
+        		rate = scratchFactor * (1.0 + m_dVinylTweakRate);
         }
         else {
             // Deprecated old scratch behavior
