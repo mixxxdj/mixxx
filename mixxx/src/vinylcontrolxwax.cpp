@@ -360,7 +360,6 @@ void VinylControlXwax::run()
 	            		fabs(filePosition - dOldFilePos) < fabs(dVinylPosition - dOldPos) &&
 	            		fabs(dVinylPosition - dOldPos) > 0.1f &&
 	            		iVCMode == MIXXX_VCMODE_ABSOLUTE &&
-	            		playButton->get() &&
 	                    m_bNeedleSkipPrevention)
 	                {
 	                	//red alert, moved a lot of time on the record very quickly.
