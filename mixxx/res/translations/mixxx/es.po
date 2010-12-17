@@ -8,18 +8,18 @@ msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2010-10-28 15:35-0400\n"
-"PO-Revision-Date: 2010-12-14 11:31+0000\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"PO-Revision-Date: 2010-12-16 11:16+0000\n"
+"Last-Translator: Phillip Whelan <Unknown>\n"
 "Language-Team: Spanish <es@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2010-12-15 04:34+0000\n"
+"X-Launchpad-Export-Date: 2010-12-17 04:41+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
 #: AutoDJFeature#1
 msgid "Auto DJ"
-msgstr ""
+msgstr "DJ Automatico"
 
 #: BrowseFeature#1
 msgid "Browse"
@@ -27,98 +27,98 @@ msgstr ""
 
 #: BrowseFeature#2
 msgid "Permission Denied"
-msgstr ""
+msgstr "Permiso Denegado"
 
 #: BrowseFeature#3
 msgid "You don't have permission to view this folder."
-msgstr ""
+msgstr "Not tienes permiso para ver esta carpeta."
 
 #: CrateFeature#1
 msgid "New Crate"
-msgstr ""
+msgstr "Nueva Caja"
 
 #: CrateFeature#2
 msgctxt "CrateFeature#2"
 msgid "Remove"
-msgstr ""
+msgstr "Sacar"
 
 #: CrateFeature#3
 msgid "Crates"
-msgstr ""
+msgstr "Cajas"
 
 #: CrateFeature#4
 msgid "Crate name:"
-msgstr ""
+msgstr "Nombre de la Caja"
 
 #: CrateFeature#5
 msgid "Crate Creation Failed"
-msgstr ""
+msgstr "Creacion de la Caja ha fallado"
 
 #: CrateFeature#6
 msgid "A crate cannot have a blank name."
-msgstr ""
+msgstr "Una Caja no puede tener un nombre en blanco."
 
 #: CrateFeature#7
 msgid "Creating Crate Failed"
-msgstr ""
+msgstr "Creacion de la Caja ha fallado"
 
 #: CrateFeature#8
 msgid "A crate by that name already exists."
-msgstr ""
+msgstr "Una Caja con ese nombre ya existe."
 
 #: CrateTableModel#1
 msgid "ID"
-msgstr ""
+msgstr "ID"
 
 #: CrateTableModel#2
 msgctxt "CrateTableModel#2"
 msgid "Artist"
-msgstr ""
+msgstr "Artista"
 
 #: CrateTableModel#3
 msgctxt "CrateTableModel#3"
 msgid "Title"
-msgstr ""
+msgstr "Titulo"
 
 #: CrateTableModel#4
 msgctxt "CrateTableModel#4"
 msgid "Album"
-msgstr ""
+msgstr "Album"
 
 #: CrateTableModel#5
 msgctxt "CrateTableModel#5"
 msgid "Genre"
-msgstr ""
+msgstr "Genero"
 
 #: CrateTableModel#6
 msgctxt "CrateTableModel#6"
 msgid "Year"
-msgstr ""
+msgstr "Anyo"
 
 #: CrateTableModel#7
 msgctxt "CrateTableModel#7"
 msgid "Type"
-msgstr ""
+msgstr "Tipo"
 
 #: CrateTableModel#8
 msgctxt "CrateTableModel#8"
 msgid "Location"
-msgstr ""
+msgstr "Lugar"
 
 #: CrateTableModel#9
 msgctxt "CrateTableModel#9"
 msgid "Comment"
-msgstr ""
+msgstr "Comentario"
 
 #: CrateTableModel#10
 msgctxt "CrateTableModel#10"
 msgid "Duration"
-msgstr ""
+msgstr "Duracion"
 
 #: CrateTableModel#11
 msgctxt "CrateTableModel#11"
 msgid "Track #"
-msgstr ""
+msgstr "Track #"
 
 #: CrateTableModel#12
 msgctxt "CrateTableModel#12"
@@ -128,7 +128,7 @@ msgstr ""
 #: CrateTableModel#13
 msgctxt "CrateTableModel#13"
 msgid "BPM"
-msgstr ""
+msgstr "BPM"
 
 #: CrateTableModel#14
 msgctxt "CrateTableModel#14"
@@ -137,7 +137,7 @@ msgstr ""
 
 #: DlgAboutDlg#1
 msgid "About Mixxx"
-msgstr ""
+msgstr "Sobre Mixxx"
 
 #: DlgAboutDlg#2
 msgid ""
@@ -155,55 +155,68 @@ msgid ""
 "margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-"
 "family:'Sans Serif'; font-size:9pt;\"></p></body></html>"
 msgstr ""
+"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" "
+"\"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+"<html><head><meta name=\"qrichtext\" content=\"1\" /><style "
+"type=\"text/css\">\n"
+"p, li { white-space: pre-wrap; }\n"
+"</style></head><body style=\" font-family:'MS Shell Dlg 2'; font-"
+"size:8.25pt; font-weight:400; font-style:normal;\">\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-"
+"right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-"
+"family:'Sans Serif'; font-size:9pt;\">Los Creditos van Aqui</span></p>\n"
+"<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; "
+"margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-"
+"family:'Sans Serif'; font-size:9pt;\"></p></body></html>"
 
 #: DlgAboutDlg#3
 msgid "1.x.x"
-msgstr ""
+msgstr "1.x.x"
 
 #: DlgAboutDlg#4
 msgid "<a href=\"http://mixxx.org/\">Official Website</a>"
-msgstr ""
+msgstr "<a href=\"http://mixxx.org/\">Sitio Oficial</a>"
 
 #: DlgAutoDJ#1
 msgid "Disable Auto DJ"
-msgstr ""
+msgstr "Desactivar el DJ Automatico"
 
 #: DlgAutoDJ#2
 msgid "Enable Auto DJ"
-msgstr ""
+msgstr "Activar el DJ Automatico"
 
 #: DlgAutoDJ#3
 msgctxt "DlgAutoDJ#3"
 msgid "Manage"
-msgstr ""
+msgstr "Manejar"
 
 #: DlgAutoDJ#4
 msgid "Add tracks to the queue below..."
-msgstr ""
+msgstr "Agregar canciones a la cola aqui debajo..."
 
 #: DlgBpmSchemeDlg#1
 msgid "BPM Scheme"
-msgstr ""
+msgstr "Esquema de BPM"
 
 #: DlgBpmSchemeDlg#2
 msgid "Scheme Name:"
-msgstr ""
+msgstr "Nombre del Esquema"
 
 #: DlgBpmSchemeDlg#3
 msgid "BPM Range"
-msgstr ""
+msgstr "Rango de BPM"
 
 #: DlgBpmSchemeDlg#4
 msgid "Max"
-msgstr ""
+msgstr "Max"
 
 #: DlgBpmSchemeDlg#5
 msgid "Min"
-msgstr ""
+msgstr "Min"
 
 #: DlgBpmSchemeDlg#6
 msgid "Analyze Entire Song"
-msgstr ""
+msgstr "Analizar la Cancion Entera"
 
 #: DlgMidiLearning#1
 msgid "Skip"
@@ -211,50 +224,52 @@ msgstr ""
 
 #: DlgMidiLearning#2
 msgid "Successfully mapped to: "
-msgstr ""
+msgstr "Exitosamente ligado a: "
 
 #: DlgMidiLearning#3
 msgid "Next"
-msgstr ""
+msgstr "Proximo"
 
 #: DlgMidiLearning#4
 msgctxt "DlgMidiLearning#4"
 msgid "MIDI Learning Wizard"
-msgstr ""
+msgstr "Mago de Aprendizaje de MIDI"
 
 #: DlgMidiLearning#5
 msgid "Welcome to the MIDI Learning Wizard"
-msgstr ""
+msgstr "Bienvenido al Mago de Aprendizaje de MIDI"
 
 #: DlgMidiLearning#6
 msgid ""
 "This wizard allows you to easily map the controls on your MIDI controller to "
 "Mixxx's controls."
 msgstr ""
+"Este mago te deja facilmente ligar los controles de tu controladora MIDI a "
+"los controles de Mixxx."
 
 #: DlgMidiLearning#7
 msgid "Begin"
-msgstr ""
+msgstr "Empezar"
 
 #: DlgMidiLearning#8
 msgid "Please tweak the control for:"
-msgstr ""
+msgstr "Por favor mover el control para:"
 
 #: DlgMidiLearning#9
 msgid "Mixxx Control"
-msgstr ""
+msgstr "Control de Mixxx"
 
 #: DlgMidiLearning#10
 msgid "Previous"
-msgstr ""
+msgstr "Anterior"
 
 #: DlgMidiLearning#11
 msgid "Press spacebar to proceed or skip."
-msgstr ""
+msgstr "Aprieta la barra de espacio para proceder o saltarse este paso."
 
 #: DlgMidiLearning#12
 msgid "MIDI learning complete!"
-msgstr ""
+msgstr "El Aprendizaje de MIDI esta completo!"
 
 #: DlgMidiLearning#13
 msgid ""
