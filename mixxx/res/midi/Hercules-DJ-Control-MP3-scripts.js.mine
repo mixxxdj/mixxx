@@ -40,6 +40,9 @@ HerculesMP3.rate2time = 0;
 HerculesMP3.rate1changing = 0; //-1 down, 0 steady, 1 up
 HerculesMP3.rate2changing = 0;
 
+HerculesMP3.vinylenabled1 = 0;
+HerculesMP3.vinylenabled2 = 0;
+
 HerculesMP3.init = function (id) {    // called when the MIDI device is opened & set up
     print ("HerculesMP3 id: \""+id+"\" initialized.");
 
@@ -50,6 +53,8 @@ HerculesMP3.init = function (id) {    // called when the MIDI device is opened &
     engine.connectControl("[Channel2]","play","HerculesMP3.play2");
     engine.connectControl("[Channel1]","playposition","HerculesMP3.playpos1");
     engine.connectControl("[Channel2]","playposition","HerculesMP3.playpos2");
+    engine.connectControl("[Channel1]","vinylcontrol","HerculesMP3.vinylcontrol1");
+    engine.connectControl("[Channel2]","vinylcontrol","HerculesMP3.vinylcontrol2");
     
     engine.beginTimer(100,"HerculesMP3.rate_changer()");
     //print ("stuff hooked up");
@@ -163,62 +168,90 @@ HerculesMP3.workaroundblink2 = function(value) {
 }
 
 HerculesMP3.rate_perm_up_small1 = function (group, control, value, status) {
-	if (value == 127)
+	if (HerculesMP3.vinylenabled1)
 	{
-		HerculesMP3.rate1changing = 1;
-		HerculesMP3.rate1startval = engine.getValue("[Channel1]","rate");
-		HerculesMP3.rate1time = 0;
+		engine.setValue("[Channel1]", "rate_perm_up_small", value);
 	}
 	else
 	{
-		HerculesMP3.rate1changing = 0;
-		HerculesMP3.rate1startval = 0;
-		HerculesMP3.rate1time = 0;
+		if (value == 127)
+		{
+			HerculesMP3.rate1changing = 1;
+			HerculesMP3.rate1startval = engine.getValue("[Channel1]","rate");
+			HerculesMP3.rate1time = 0;
+		}
+		else
+		{
+			HerculesMP3.rate1changing = 0;
+			HerculesMP3.rate1startval = 0;
+			HerculesMP3.rate1time = 0;
+		}
 	}
 }
 
 HerculesMP3.rate_perm_up_small2 = function (group, control, value, status) {
-	if (value == 127)
+	if (HerculesMP3.vinylenabled2)
 	{
-		HerculesMP3.rate2changing = 1;
-		HerculesMP3.rate2startval = engine.getValue("[Channel2]","rate");
-		HerculesMP3.rate2time = 0;
+		engine.setValue("[Channel2]", "rate_perm_up_small", value);
 	}
 	else
 	{
-		HerculesMP3.rate2changing = 0;
-		HerculesMP3.rate2startval = 0;
-		HerculesMP3.rate2time = 0;
+		if (value == 127)
+		{
+			HerculesMP3.rate2changing = 1;
+			HerculesMP3.rate2startval = engine.getValue("[Channel2]","rate");
+			HerculesMP3.rate2time = 0;
+		}
+		else
+		{
+			HerculesMP3.rate2changing = 0;
+			HerculesMP3.rate2startval = 0;
+			HerculesMP3.rate2time = 0;
+		}
 	}
 }
 
 HerculesMP3.rate_perm_down_small1 = function (group, control, value, status) {
-	if (value == 127)
+	if (HerculesMP3.vinylenabled1)
 	{
-		HerculesMP3.rate1changing = -1;
-		HerculesMP3.rate1startval = engine.getValue("[Channel1]","rate");
-		HerculesMP3.rate1time = 0;
+		engine.setValue("[Channel1]", "rate_perm_down_small", value);
 	}
 	else
 	{
-		HerculesMP3.rate1changing = 0;
-		HerculesMP3.rate1startval = 0;
-		HerculesMP3.rate1time = 0;
+		if (value == 127)
+		{
+			HerculesMP3.rate1changing = -1;
+			HerculesMP3.rate1startval = engine.getValue("[Channel1]","rate");
+			HerculesMP3.rate1time = 0;
+		}
+		else
+		{
+			HerculesMP3.rate1changing = 0;
+			HerculesMP3.rate1startval = 0;
+			HerculesMP3.rate1time = 0;
+		}
 	}
 }
 
 HerculesMP3.rate_perm_down_small2 = function (group, control, value, status) {
-	if (value == 127)
+	if (HerculesMP3.vinylenabled2)
 	{
-		HerculesMP3.rate2changing = -1;
-		HerculesMP3.rate2startval = engine.getValue("[Channel2]","rate");
-		HerculesMP3.rate2time = 0;
+		engine.setValue("[Channel2]", "rate_perm_down_small", value);
 	}
 	else
 	{
-		HerculesMP3.rate2changing = 0;
-		HerculesMP3.rate2startval = 0;
-		HerculesMP3.rate2time = 0;
+		if (value == 127)
+		{
+			HerculesMP3.rate2changing = -1;
+			HerculesMP3.rate2startval = engine.getValue("[Channel2]","rate");
+			HerculesMP3.rate2time = 0;
+		}
+		else
+		{
+			HerculesMP3.rate2changing = 0;
+			HerculesMP3.rate2startval = 0;
+			HerculesMP3.rate2time = 0;
+		}
 	}
 }
 
@@ -253,4 +286,12 @@ HerculesMP3.change_rate2 = function () {
 	new_rate = Math.max(new_rate, -1);
 	engine.setValue("[Channel2]", "rate", new_rate);
 	HerculesMP3.rate2time++; //tick
+}
+
+HerculesMP3.vinylcontrol1 = function (value) {
+	HerculesMP3.vinylenabled1 = value;
+}
+
+HerculesMP3.vinylcontrol2 = function (value) {
+	HerculesMP3.vinylenabled2 = value;
 }

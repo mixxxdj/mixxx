@@ -38,6 +38,7 @@ public:
     // Returns the current engine rate.
     double calculateRate(double baserate, bool paused);
     double getRawRate();
+    void resetVinylTweak();
 
     // Set rate change when temp rate button is pressed
     static void setTemp(double v);
@@ -164,6 +165,8 @@ private:
       * pressed, because there is a fixed limit on the range of the pitch
       * slider */
     double m_dOldRate;
+    
+    double m_dVinylTweakRate;
 
     /** Handle for configuration */
     ConfigObject<ConfigValue>* m_pConfig;

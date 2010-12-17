@@ -319,6 +319,9 @@ void EngineBuffer::slotTrackLoaded(TrackPointer pTrack,
 
     // Let the engine know that a track is loaded now.
     m_pTrackEndCOT->slotSet(0.0f); //XXX: Not sure if to use the COT or CO here
+    
+    //reset the tweak
+    m_pRateControl->resetVinylTweak();
 
     pause.unlock();
 

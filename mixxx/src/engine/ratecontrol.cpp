@@ -6,6 +6,7 @@
 #include "controlpotmeter.h"
 #include "controlttrotary.h"
 #include "rotary.h"
+#include "vinylcontrol.h"
 
 #include "engine/enginecontrol.h"
 #include "engine/ratecontrol.h"
@@ -39,6 +40,7 @@ RateControl::RateControl(const char* _group,
     m_eRampBackMode(RATERAMP_RAMPBACK_NONE),
     m_dRateTempRampbackChange(0.0),
     m_dOldRate(0.0f),
+    m_dVinylTweakRate(0.0f),
     m_pConfig(_config)
 {
     m_pRateDir = new ControlObject(ConfigKey(_group, "rate_dir"));
@@ -252,28 +254,40 @@ void RateControl::slotControlRatePermDown(double)
 {
     // Adjusts temp rate down if button pressed
     if (buttonRatePermDown->get())
+    {
         m_pRateSlider->sub(m_pRateDir->get() * m_dPerm / (100. * m_pRateRange->get()));
+        m_dVinylTweakRate -= m_pRateDir->get() * m_dPerm / (100. * m_pRateRange->get());
+    }
 }
 
 void RateControl::slotControlRatePermDownSmall(double)
 {
     // Adjusts temp rate down if button pressed
     if (buttonRatePermDownSmall->get())
+    {
         m_pRateSlider->sub(m_pRateDir->get() * m_dPermSmall / (100. * m_pRateRange->get()));
+        m_dVinylTweakRate -= m_pRateDir->get() * m_dPermSmall / (100. * m_pRateRange->get());
+    }
 }
 
 void RateControl::slotControlRatePermUp(double)
 {
     // Adjusts temp rate up if button pressed
     if (buttonRatePermUp->get())
+    {
         m_pRateSlider->add(m_pRateDir->get() * m_dPerm / (100. * m_pRateRange->get()));
+        m_dVinylTweakRate += m_pRateDir->get() * m_dPerm / (100. * m_pRateRange->get());
+    }
 }
 
 void RateControl::slotControlRatePermUpSmall(double)
 {
     // Adjusts temp rate up if button pressed
     if (buttonRatePermUpSmall->get())
+    {
         m_pRateSlider->add(m_pRateDir->get() * m_dPermSmall / (100. * m_pRateRange->get()));
+        m_dVinylTweakRate += m_pRateDir->get() * m_dPermSmall / (100. * m_pRateRange->get());
+    }
 }
 
 void RateControl::slotControlRateTempDown(double)
@@ -411,7 +425,15 @@ double RateControl::calculateRate(double baserate, bool paused) {
         rate += wheelFactor;
 
         // New scratch behavior - overrides playback speed (and old behavior)
-        if (scratchEnable) rate = scratchFactor;
+        // OWEN EDIT: no, actually, keep the other rate too -- this is
+        // incompatible with ABS mode though...
+        if (scratchEnable)
+        {
+        	if (m_pVinylMode->get() == MIXXX_VCMODE_ABSOLUTE)
+        		rate = scratchFactor;
+        	else
+        		rate = scratchFactor + m_dVinylTweakRate;
+        }
         else {
             // Deprecated old scratch behavior
             if (oldScratchFactor < 0.) {
@@ -588,3 +610,7 @@ void RateControl::slotControlVinyl(double toggle)
 	m_bVinylControlEnabled = (bool)toggle;
 }
 
+void RateControl::resetVinylTweak()
+{
+	m_dVinylTweakRate = 0.0f;
+}
