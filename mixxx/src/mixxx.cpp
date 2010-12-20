@@ -277,7 +277,7 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
 
     //Scan the library for new files and directories
     bool rescan = (bool)m_pConfig->getValueString(ConfigKey("[Library]","RescanOnStartup")).toInt();
-    if(rescan || hasChanged_MusicDir){    
+    if(rescan || hasChanged_MusicDir){
         m_pLibraryScanner->scan(
             m_pConfig->getValueString(ConfigKey("[Playlist]", "Directory")));
         qDebug() << "Rescan finished";
@@ -1189,7 +1189,7 @@ void MixxxApp::slotHelpAbout()
 "David Gnedt<br>"
 "Antonio Passamani<br>"
 "Guy Martin<br>"
-"Anders Gunnarson<br>"
+"Anders Gunnarsson<br>"
 "Alex Barker<br>"
 "Mikko Jania<br>"
 "Juan Pedro Bol&iacute;var Puente<br>"
