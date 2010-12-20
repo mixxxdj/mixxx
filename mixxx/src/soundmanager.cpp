@@ -18,7 +18,7 @@
 #include <QtDebug>
 #include <QtCore>
 #include <portaudio.h>
-#include <cstring> // for memcpy
+#include <cstring> // for memcpy and strcmp
 #include "soundmanager.h"
 #include "sounddevice.h"
 #include "sounddeviceportaudio.h"
@@ -335,8 +335,8 @@ void SoundManager::queryDevices()
          */
         SoundDevicePortAudio *currentDevice = new SoundDevicePortAudio(m_pConfig, this, deviceInfo, i);
         m_devices.push_back(currentDevice);
-        if (Pa_GetHostApiInfo(deviceInfo->hostApi)->name
-                == MIXXX_PORTAUDIO_JACK_STRING) {
+        if (!strcmp(Pa_GetHostApiInfo(deviceInfo->hostApi)->name,
+                    MIXXX_PORTAUDIO_JACK_STRING)) {
             m_jackSampleRate = deviceInfo->defaultSampleRate;
         }
     }
