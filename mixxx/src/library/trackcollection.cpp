@@ -68,7 +68,7 @@ bool TrackCollection::checkForTables()
         return false;
     }
 
-    int requiredSchemaVersion = 8;
+    int requiredSchemaVersion = 9;
     if (!SchemaManager::upgradeToSchemaVersion(m_pConfig, m_db,
                                                requiredSchemaVersion)) {
         QMessageBox::warning(0, tr("Cannot upgrade database schema"),

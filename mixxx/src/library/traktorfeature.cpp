@@ -67,7 +67,7 @@ void TraktorFeature::activate() {
             == QMessageBox::Cancel) {
             return;
         }
-		if(importLibrary("d:/tobias/MixxxBuilds/collection.nml"))
+		if(importLibrary(getTraktorMusicDatabase()))
 			m_isActivated =  true;
 	}
 	emit(showTrackModel(m_pTraktorTableModel));
@@ -266,8 +266,16 @@ void TraktorFeature::parseTrack(QXmlStreamReader &xml, QSqlQuery &query){
 				volume = attr.value("VOLUME").toString();
 				path = attr.value("DIR").toString();
 				filename = attr.value("FILE").toString();
-				//compute the location, i.e, combining all the values
+				/*compute the location, i.e, combining all the values
+				 * On Windows the volume holds the drive letter e.g., d:
+				 * On OS X, the volume is supposed to be "Macintosh HD" at all times,
+				 * which is a folder in /Volumes/
+				 */
+				#if defined(__APPLE__)
+				location = "/Volumes/"+volume;
+				#else
 				location = volume;
+				#endif
 				location += path.replace(QString(":"), QString(""));
 				location += filename;
 				continue;
@@ -483,8 +491,12 @@ void TraktorFeature::parsePlaylistEntries(QXmlStreamReader &xml,QString playlist
                 if(type == "TRACK")
                 {
                     key.replace(QString(":"), QString(""));
-                    //TODO: IFDEF                    
+                    //TODO: IFDEF
+                    #if defined(__WINDOWS__)             
                     key.insert(1,":");
+                    #else
+                    key.prepend("/Volumes/");
+                    #endif
 
                     //insert to database
                     int track_id = -1;
@@ -544,7 +556,7 @@ QString TraktorFeature::getTraktorMusicDatabase()
 {
 	QString musicFolder;
 #if defined(__APPLE__)
-	musicFolder = QDir::homePath();
+	musicFolder = QDir::homePath() +"/Documents/Native Instruments/Traktor/collection.nml";
 #elif defined(__WINDOWS__)
     QSettings settings("HKEY_CURRENT_USER\\Software\\Native Instruments\\Traktor Pro", QSettings::NativeFormat);
 		// if the value method fails it returns QTDir::homePath
@@ -555,7 +567,7 @@ QString TraktorFeature::getTraktorMusicDatabase()
 #else
 		musicFolder = "";
 #endif
-    qDebug() << "ITunesLibrary=[" << musicFolder << "]";
+    qDebug() << "Traktor Library Location=[" << musicFolder << "]";
     return musicFolder;
 
 

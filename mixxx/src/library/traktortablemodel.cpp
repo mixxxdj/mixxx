@@ -9,7 +9,7 @@
 TraktorTableModel::TraktorTableModel(QObject* parent,
                                        TrackCollection* pTrackCollection)
         : TrackModel(pTrackCollection->getDatabase(),
-                     "mixxx.db.model.playlist"),
+                     "mixxx.db.model.traktor_tablemodel"),
           BaseSqlTableModel(parent, pTrackCollection, pTrackCollection->getDatabase()),
           m_pTrackCollection(pTrackCollection),
 		  m_database(m_pTrackCollection->getDatabase())
