@@ -1193,6 +1193,7 @@ void MixxxApp::slotHelpAbout()
 "Alex Barker<br>"
 "Mikko Jania<br>"
 "Juan Pedro Bol&iacute;var Puente<br>"
+"Linus Amvall<br>"
 
 "</p>"
 "<p align=\"center\"><b>And special thanks to:</b></p>"
@@ -1201,6 +1202,7 @@ void MixxxApp::slotHelpAbout()
 "Hercules<br>"
 "EKS<br>"
 "Echo Digital Audio<br>"
+"JP Disco<br>"
 "Adam Bellinson<br>"
 "Alexandre Bancel<br>"
 "Melanie Thielker<br>"
