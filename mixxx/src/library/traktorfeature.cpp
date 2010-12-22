@@ -39,7 +39,7 @@ QVariant TraktorFeature::title() {
 }
 
 QIcon TraktorFeature::getIcon() {
-    return QIcon(":/images/library/ic_library_library.png");
+    return QIcon(":/images/library/ic_library_traktor.png");
 }
 bool TraktorFeature::isSupported() {
     return (QFile::exists(getTraktorMusicDatabase()));
