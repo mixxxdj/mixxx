@@ -18,6 +18,7 @@
 #include "library/playlistfeature.h"
 #include "library/preparefeature.h"
 #include "library/promotracksfeature.h"
+#include "library/traktorfeature.h"
 
 #include "widget/wtracktableview.h"
 #include "widget/wlibrary.h"
@@ -25,6 +26,7 @@
 
 #include "mixxxkeyboard.h"
 #include "librarymidicontrol.h"
+
 
 // This is is the name which we use to register the WTrackTableView with the
 // WLibrary
@@ -63,6 +65,8 @@ Library::Library(QObject* parent, ConfigObject<ConfigValue>* pConfig, bool first
         addFeature(new RhythmboxFeature(this));
     if (ITunesFeature::isSupported())
         addFeature(new ITunesFeature(this, m_pTrackCollection));
+    if (TraktorFeature::isSupported())
+        addFeature(new TraktorFeature(this, m_pTrackCollection));
 
     //Show the promo tracks view on first run, otherwise show the library
     if (firstRun) {

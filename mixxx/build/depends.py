@@ -480,6 +480,13 @@ class MixxxCore(Feature):
                    "library/stardelegate.cpp",
                    "library/stareditor.cpp",
                    "audiotagger.cpp",
+                   
+                   "library/treeitemmodel.cpp",
+				   "library/treeitem.cpp",
+				   
+				   "library/traktorfeature.cpp",
+				   "library/traktortablemodel.cpp",
+				   "library/traktorplaylistmodel.cpp",
 
                    "xmlparse.cpp",
                    "parser.cpp",
