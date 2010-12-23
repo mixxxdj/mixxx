@@ -9,6 +9,8 @@
 
 #include "library/libraryfeature.h"
 #include "library/trackcollection.h"
+#include "treeitemmodel.h"
+#include "treeitem.h"
 
 //class ITunesPlaylistModel;
 class ITunesTrackModel;
@@ -30,7 +32,7 @@ class ITunesFeature : public LibraryFeature {
     bool dragMoveAccept(QUrl url);
     bool dragMoveAcceptChild(const QModelIndex& index, QUrl url);
 
-    QAbstractItemModel* getChildModel();
+    TreeItemModel* getChildModel();
 
   public slots:
     void activate();
@@ -49,11 +51,13 @@ class ITunesFeature : public LibraryFeature {
 
     ITunesTrackModel* m_pITunesTrackModel;
     ITunesPlaylistModel* m_pITunesPlaylistModel;
-    QStringListModel m_childModel;
+    TreeItemModel m_childModel;
     QStringList m_playlists;
     TrackCollection* m_pTrackCollection;
     QSqlDatabase &m_database;
     bool m_isActivated;
+    //Zhe root of the childmodel
+    TreeItem *m_rootItem;
 };
 
 #endif /* ITUNESFEATURE_H */

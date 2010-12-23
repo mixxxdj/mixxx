@@ -11,6 +11,8 @@
 #include "library/libraryfeature.h"
 #include "library/dao/playlistdao.h"
 #include "library/dao/trackdao.h"
+#include "treeitemmodel.h"
+
 
 class PlaylistTableModel;
 class TrackCollection;
@@ -29,8 +31,8 @@ public:
     bool dragMoveAccept(QUrl url);
     bool dragMoveAcceptChild(const QModelIndex& index, QUrl url);
 
-    QAbstractItemModel* getChildModel();
-
+    TreeItemModel* getChildModel();
+ 
     void bindWidget(WLibrarySidebar* sidebarWidget,
                     WLibrary* libraryWidget,
                     MixxxKeyboard* keyboard);
@@ -47,6 +49,9 @@ public slots:
     void slotDeletePlaylist();
 
  private:
+ 	void constructChildModel();
+    void clearChildModel();
+    
     PlaylistTableModel* m_pPlaylistTableModel;
     PlaylistDAO &m_playlistDao;
     TrackDAO &m_trackDao;
@@ -54,6 +59,7 @@ public slots:
     QAction *m_pDeletePlaylistAction;
     QSqlTableModel m_playlistTableModel;
     QModelIndex m_lastRightClickedIndex;
+    TreeItemModel m_childModel;
 };
 
 #endif /* PLAYLISTFEATURE_H */

@@ -11,6 +11,7 @@
 #include "library/browsefilter.h"
 #include "library/browsetablemodel.h"
 #include "library/libraryfeature.h"
+#include "treeitemmodel.h"
 
 class TrackCollection;
 
@@ -33,7 +34,7 @@ class BrowseFeature : public LibraryFeature {
     virtual void bindWidget(WLibrarySidebar* sidebarWidget,
                             WLibrary* libraryWidget,
                             MixxxKeyboard* keyboard);
-    QAbstractItemModel* getChildModel();
+    TreeItemModel* getChildModel();
 
   public slots:
     void activate();
@@ -55,7 +56,7 @@ class BrowseFeature : public LibraryFeature {
     BrowseTableModel m_browseModel;
     BrowseFilter m_proxyModel;
     TrackCollection* m_pTrackCollection;
-    QStringListModel m_childModel;
+    TreeItemModel m_childModel;
     QString m_currentSearch;
 };
 

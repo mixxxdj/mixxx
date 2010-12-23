@@ -8,6 +8,7 @@
 #include "library/itunesplaylistmodel.h"
 
 
+
 ITunesFeature::ITunesFeature(QObject* parent, TrackCollection* pTrackCollection)
         : LibraryFeature(parent),
           m_pTrackCollection(pTrackCollection),
@@ -15,6 +16,7 @@ ITunesFeature::ITunesFeature(QObject* parent, TrackCollection* pTrackCollection)
     m_pITunesTrackModel = new ITunesTrackModel(this, m_pTrackCollection);
     m_pITunesPlaylistModel = new ITunesPlaylistModel(this, m_pTrackCollection);
     m_isActivated = false;
+    m_rootItem = new TreeItem("$root","$root", this);
 }
 
 ITunesFeature::~ITunesFeature() {
@@ -58,11 +60,8 @@ void ITunesFeature::activate() {
                 tr("There was an error loading your iTunes library. Some of "
                    "your iTunes tracks or playlists may not have loaded."));
         }
-
-        //Sort the playlists since in iTunes they are sorted, too.
-        //list.sort();
-
-        m_childModel.setStringList(m_playlists);
+        //set the root item for the childmodel.	
+        m_childModel.setRootItem(m_rootItem);
     }
 
     emit(showTrackModel(m_pITunesTrackModel));
@@ -76,7 +75,7 @@ void ITunesFeature::activateChild(const QModelIndex& index) {
     emit(showTrackModel(m_pITunesPlaylistModel));
 }
 
-QAbstractItemModel* ITunesFeature::getChildModel() {
+TreeItemModel* ITunesFeature::getChildModel() {
     return &m_childModel;
 }
 
@@ -423,8 +422,9 @@ void ITunesFeature::parsePlaylist(QXmlStreamReader &xml, QSqlQuery &query_insert
                                  << " " << query_insert_to_playlists.lastError();
                         return;
                     }
-                    //for the child model
-                    m_playlists << playlistname;
+                    //append the playlist to the child model
+            		TreeItem *item = new TreeItem(playlistname, playlistname, this, m_rootItem);
+            		m_rootItem->appendChild(item);
 
                 }
                 /*
