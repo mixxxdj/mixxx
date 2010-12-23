@@ -13,6 +13,7 @@
 #include "widget/wlibrary.h"
 #include "widget/wlibrarysidebar.h"
 #include "mixxxkeyboard.h"
+#include "treeitem.h"
 
 CrateFeature::CrateFeature(QObject* parent,
                            TrackCollection* pTrackCollection)
@@ -34,6 +35,20 @@ CrateFeature::CrateFeature(QObject* parent,
                               Qt::AscendingOrder);
     m_crateListTableModel.setFilter("show = 1");
     m_crateListTableModel.select();
+    
+    //construct child model
+    TreeItem *rootItem = new TreeItem("$root","$root", this);
+
+    int idColumn = m_crateListTableModel.record().indexOf("name");
+    for (int row = 0; row < m_crateListTableModel.rowCount(); ++row) {
+            QModelIndex ind = m_crateListTableModel.index(row, idColumn);
+            QString crate_name = m_crateListTableModel.data(ind).toString();
+            TreeItem *playlist_item = new TreeItem(crate_name, crate_name, this, rootItem);
+            rootItem->appendChild(playlist_item);
+            
+    }
+    m_childModel.setRootItem(rootItem);
+
 }
 
 CrateFeature::~CrateFeature() {
@@ -92,8 +107,8 @@ void CrateFeature::bindWidget(WLibrarySidebar* sidebarWidget,
     libraryWidget->registerView("CRATEHOME", edit);
 }
 
-QAbstractItemModel* CrateFeature::getChildModel() {
-    return &m_crateListTableModel;
+TreeItemModel* CrateFeature::getChildModel() {
+    return &m_childModel;
 }
 
 void CrateFeature::activate() {
@@ -148,7 +163,9 @@ void CrateFeature::slotCreateCrate() {
                              tr("A crate cannot have a blank name."));
         return;
     } else if (crateDao.createCrate(name)) {
+    	clearChildModel();
         m_crateListTableModel.select();
+        constructChildModel();
         // Switch to the new crate.
         int crate_id = crateDao.getCrateIdByName(name);
         m_crateTableModel.setCrate(crate_id);
@@ -169,9 +186,35 @@ void CrateFeature::slotDeleteCrate() {
     int crateId = m_pTrackCollection->getCrateDAO().getCrateIdByName(crateName);
 
     if (m_pTrackCollection->getCrateDAO().deleteCrate(crateId)) {
+        clearChildModel();
         m_crateListTableModel.select();
+        constructChildModel();
         emit(featureUpdated());
     } else {
         qDebug() << "Failed to delete crateId" << crateId;
     }
 }
+/**
+  * Purpose: When inserting or removing playlists,
+  * we require the sidebar model not to reset.
+  * This method queries the database and does dynamic insertion 
+*/
+void CrateFeature::constructChildModel()
+{
+    QList<QString> data_list;
+    int idColumn = m_crateListTableModel.record().indexOf("name");
+    for (int row = 0; row < m_crateListTableModel.rowCount(); ++row) {
+            QModelIndex ind = m_crateListTableModel.index(row, idColumn);
+            QString crate_name = m_crateListTableModel.data(ind).toString();
+            data_list.append(crate_name);
+    }    
+    m_childModel.insertRows(data_list, 0, m_crateListTableModel.rowCount());  
+}
+/**
+  * Clears the child model dynamically
+  */
+void CrateFeature::clearChildModel()
+{
+    m_childModel.removeRows(0,m_crateListTableModel.rowCount());
+}
+

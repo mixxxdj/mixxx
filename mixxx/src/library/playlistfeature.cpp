@@ -10,6 +10,7 @@
 #include "library/trackcollection.h"
 #include "library/playlisttablemodel.h"
 #include "mixxxkeyboard.h"
+#include "treeitem.h"
 
 PlaylistFeature::PlaylistFeature(QObject* parent, TrackCollection* pTrackCollection)
         : LibraryFeature(parent),
@@ -37,6 +38,19 @@ PlaylistFeature::PlaylistFeature(QObject* parent, TrackCollection* pTrackCollect
     m_playlistTableModel.setSort(m_playlistTableModel.fieldIndex("position"),
                                  Qt::AscendingOrder);
     m_playlistTableModel.select();
+    
+	//construct child model
+    TreeItem *rootItem = new TreeItem("$root","$root", this);
+
+    int idColumn = m_playlistTableModel.record().indexOf("name");
+    for (int row = 0; row < m_playlistTableModel.rowCount(); ++row) {
+            QModelIndex ind = m_playlistTableModel.index(row, idColumn);
+            QString playlist_name = m_playlistTableModel.data(ind).toString();
+            TreeItem *playlist_item = new TreeItem(playlist_name, playlist_name, this, rootItem);
+            rootItem->appendChild(playlist_item);
+            
+    }
+    m_childModel.setRootItem(rootItem);
 }
 
 PlaylistFeature::~PlaylistFeature() {
@@ -127,8 +141,10 @@ void PlaylistFeature::slotCreatePlaylist() {
                                  + name);
             return;
         }
-
+        
+		clearChildModel();
         m_playlistTableModel.select();
+        constructChildModel();
         emit(featureUpdated());
 
         //Switch the view to the new playlist.
@@ -149,8 +165,11 @@ void PlaylistFeature::slotDeletePlaylist()
     if (m_lastRightClickedIndex.isValid()) {
         int playlistId = m_playlistDao.getPlaylistIdFromName(m_lastRightClickedIndex.data().toString());
         Q_ASSERT(playlistId >= 0);
+        
+        clearChildModel();
         m_playlistDao.deletePlaylist(playlistId);
         m_playlistTableModel.select();
+        constructChildModel();
     }
 
     emit(featureUpdated());
@@ -203,6 +222,29 @@ bool PlaylistFeature::dragMoveAcceptChild(const QModelIndex& index, QUrl url) {
     return true;
 }
 
-QAbstractItemModel* PlaylistFeature::getChildModel() {
-    return &m_playlistTableModel;
+TreeItemModel* PlaylistFeature::getChildModel() {
+    return &m_childModel;
+}
+/**
+  * Purpose: When inserting or removing playlists,
+  * we require the sidebar model not to reset.
+  * This method queries the database and does dynamic insertion 
+*/
+void PlaylistFeature::constructChildModel()
+{
+    QList<QString> data_list;
+    int idColumn = m_playlistTableModel.record().indexOf("name");
+    for (int row = 0; row < m_playlistTableModel.rowCount(); ++row) {
+            QModelIndex ind = m_playlistTableModel.index(row, idColumn);
+            QString playlist_name = m_playlistTableModel.data(ind).toString();
+            data_list.append(playlist_name);
+    }    
+    m_childModel.insertRows(data_list, 0, m_playlistTableModel.rowCount());  
+}
+/**
+  * Clears the child model dynamically
+  */
+void PlaylistFeature::clearChildModel()
+{
+    m_childModel.removeRows(0,m_playlistTableModel.rowCount());
 }

@@ -8,6 +8,7 @@
 #include "library/libraryfeature.h"
 #include "library/cratetablemodel.h"
 #include "library/proxytrackmodel.h"
+#include "treeitemmodel.h"
 
 class TrackCollection;
 
@@ -29,7 +30,7 @@ class CrateFeature : public LibraryFeature {
                     WLibrary* libraryWidget,
                     MixxxKeyboard* keyboard);
 
-    QAbstractItemModel* getChildModel();
+    TreeItemModel* getChildModel();
   signals:
     void showPage(const QUrl& page);
 
@@ -43,12 +44,16 @@ class CrateFeature : public LibraryFeature {
     void slotDeleteCrate();
 
   private:
+    void constructChildModel();
+    void clearChildModel();
+  
     TrackCollection* m_pTrackCollection;
     QAction *m_pCreateCrateAction;
     QAction *m_pDeleteCrateAction;
     QSqlTableModel m_crateListTableModel;
     CrateTableModel m_crateTableModel;
     QModelIndex m_lastRightClickedIndex;
+    TreeItemModel m_childModel;
 };
 
 #endif /* CRATEFEATURE_H */
