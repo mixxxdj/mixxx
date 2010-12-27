@@ -146,4 +146,12 @@ METADATA
       ALTER TABLE LibraryHashes ADD COLUMN needs_verification INTEGER DEFAULT 0;
     </sql>
   </revision>
+  <revision version="6">
+    <description>
+      Add beats column to library table.
+    </description>
+    <sql>
+      ALTER TABLE Library ADD COLUMN beats BLOB;
+    </sql>
+  </revision>
 </schema>

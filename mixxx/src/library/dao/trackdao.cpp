@@ -3,6 +3,7 @@
 #include <QtCore>
 #include <QtSql>
 #include "trackinfoobject.h"
+#include "trackbeats.h"
 #include "library/dao/trackdao.h"
 
 // The number of tracks to cache in memory at once. Once the n+1'th track is
@@ -189,12 +190,12 @@ void TrackDAO::prepareLibraryInsert(QSqlQuery& query) {
     query.prepare("INSERT INTO library (artist, title, album, year, genre, tracknumber, "
                   "filetype, location, comment, url, duration, "
                   "bitrate, samplerate, cuepoint, bpm, wavesummaryhex, "
-                  "channels, mixxx_deleted, header_parsed) "
+                  "channels, mixxx_deleted, header_parsed, beats) "
                   "VALUES (:artist, "
                   ":title, :album, :year, :genre, :tracknumber, "
                   ":filetype, :location, :comment, :url, :duration, "
                   ":bitrate, :samplerate, :cuepoint, :bpm, :wavesummaryhex, "
-                  ":channels, :mixxx_deleted, :header_parsed)");
+                  ":channels, :mixxx_deleted, :header_parsed, :beats)");
 }
 
 void TrackDAO::bindTrackToLibraryInsert(QSqlQuery& query, TrackInfoObject* pTrack, int trackLocationId) {
@@ -216,11 +217,22 @@ void TrackDAO::bindTrackToLibraryInsert(QSqlQuery& query, TrackInfoObject* pTrac
     const QByteArray* pWaveSummary = pTrack->getWaveSummary();
     if (pWaveSummary) //Avoid null pointer deref
         query.bindValue(":wavesummaryhex", *pWaveSummary);
+    else
+        query.bindValue(":wavesummaryhex", NULL);
     //query.bindValue(":timesplayed", pTrack->getCuePoint());
     //query.bindValue(":datetime_added", pTrack->getDateAdded());
     query.bindValue(":channels", pTrack->getChannels());
     query.bindValue(":mixxx_deleted", 0);
     query.bindValue(":header_parsed", pTrack->getHeaderParsed() ? 1 : 0);
+    const QByteArray *pBeatsBlob = NULL;
+    TrackBeats *pBeats = pTrack->getTrackBeats();
+    if ( pBeats )
+        pBeatsBlob = pBeats->serializeToBlob();
+    
+    if ( pBeatsBlob )
+        query.bindValue(":beats", *pBeatsBlob);    
+    else
+        query.bindValue(":beats", NULL);
 }
 
 void TrackDAO::addTracks(QList<TrackInfoObject*> tracksToAdd) {
@@ -273,7 +285,8 @@ void TrackDAO::addTracks(QList<TrackInfoObject*> tracksToAdd) {
         bindTrackToLibraryInsert(query, pTrack, pTrack->getId());
 
         if (!query.exec()) {
-            qDebug() << "Failed to INSERT new track into library"
+            qDebug() << "Failed to INSERT new track into library:" 
+                         << pTrack->getFilename()
                      << __FILE__ << __LINE__ << query.lastError();
             m_database.rollback();
             return;
@@ -644,7 +657,8 @@ void TrackDAO::updateTrack(TrackInfoObject* pTrack)
                   "comment=:comment, url=:url, duration=:duration, "
                   "bitrate=:bitrate, samplerate=:samplerate, cuepoint=:cuepoint, "
                   "bpm=:bpm, wavesummaryhex=:wavesummaryhex, "
-                  "channels=:channels, header_parsed=:header_parsed "
+                  "channels=:channels, header_parsed=:header_parsed, "
+                  "beats=:beats "
                   "WHERE id="+QString("%1").arg(trackId));
     query.bindValue(":artist", pTrack->getArtist());
     query.bindValue(":title", pTrack->getTitle());
@@ -667,6 +681,13 @@ void TrackDAO::updateTrack(TrackInfoObject* pTrack)
     query.bindValue(":channels", pTrack->getChannels());
     query.bindValue(":header_parsed", pTrack->getHeaderParsed() ? 1 : 0);
     //query.bindValue(":location", pTrack->getLocation());
+    TrackBeats *pBeats = pTrack->getTrackBeats();
+    if ( pBeats )
+    {
+        const QByteArray *pBeatsBlob = pBeats->serializeToBlob();
+        if ( pBeatsBlob )
+            query.bindValue(":beats", *pBeatsBlob);
+    }
 
     if (!query.exec()) {
         qDebug() << query.lastError();
