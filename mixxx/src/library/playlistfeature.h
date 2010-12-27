@@ -45,6 +45,7 @@ public slots:
 
     void slotCreatePlaylist();
     void slotDeletePlaylist();
+	void slotRenamePlaylist();
 
  private:
     PlaylistTableModel* m_pPlaylistTableModel;
@@ -52,6 +53,7 @@ public slots:
     TrackDAO &m_trackDao;
     QAction *m_pCreatePlaylistAction;
     QAction *m_pDeletePlaylistAction;
+    QAction *m_pRenamePlaylistAction;
     QSqlTableModel m_playlistTableModel;
     QModelIndex m_lastRightClickedIndex;
 };

@@ -41,11 +41,13 @@ class CrateFeature : public LibraryFeature {
 
     void slotCreateCrate();
     void slotDeleteCrate();
+    void slotRenameCrate();
 
   private:
     TrackCollection* m_pTrackCollection;
     QAction *m_pCreateCrateAction;
     QAction *m_pDeleteCrateAction;
+    QAction *m_pRenameCrateAction;
     QSqlTableModel m_crateListTableModel;
     CrateTableModel m_crateTableModel;
     QModelIndex m_lastRightClickedIndex;

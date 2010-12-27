@@ -23,6 +23,7 @@ class CrateDAO : public virtual DAO {
     unsigned int crateCount();
     bool createCrate(const QString& name);
     bool deleteCrate(int crateId);
+    bool renameCrate(int crateId, const QString& newName);
     int getCrateIdByName(const QString& name);
     int getCrateId(int position);
     QString crateName(int crateId);
