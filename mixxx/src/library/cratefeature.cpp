@@ -26,6 +26,10 @@ CrateFeature::CrateFeature(QObject* parent,
     m_pDeleteCrateAction = new QAction(tr("Remove"),this);
     connect(m_pDeleteCrateAction, SIGNAL(triggered()),
             this, SLOT(slotDeleteCrate()));
+			
+	m_pRenameCrateAction = new QAction(tr("Rename"),this);
+	connect(m_pRenameCrateAction, SIGNAL(triggered()),
+			this, SLOT(slotRenameCrate()));
 
     m_crateListTableModel.setTable("crates");
     m_crateListTableModel.removeColumn(m_crateListTableModel.fieldIndex("id"));
@@ -124,6 +128,7 @@ void CrateFeature::onRightClickChild(const QPoint& globalPos, QModelIndex index)
     QMenu menu(NULL);
     menu.addAction(m_pCreateCrateAction);
     menu.addSeparator();
+	menu.addAction(m_pRenameCrateAction);
     menu.addAction(m_pDeleteCrateAction);
     menu.exec(globalPos);
 }
@@ -173,5 +178,36 @@ void CrateFeature::slotDeleteCrate() {
         emit(featureUpdated());
     } else {
         qDebug() << "Failed to delete crateId" << crateId;
+    }
+}
+
+void CrateFeature::slotRenameCrate() {
+    QString oldName = m_lastRightClickedIndex.data().toString();
+    int crateId = m_pTrackCollection->getCrateDAO().getCrateIdByName(oldName);
+
+    bool ok = false;
+    QString newName = QInputDialog::getText(NULL,
+                                            tr("Rename Crate"),
+                                            tr("New crate name:"),
+                                            QLineEdit::Normal,
+                                            oldName,
+                                            &ok);
+    if (!ok) {
+        return;
+    }
+
+    if (newName.isEmpty()) {
+        QMessageBox::warning(NULL,
+                             tr("Renaming Crate Failed"),
+                             tr("A crate cannot have a blank name."));
+        return;
+    } 
+
+    if (m_pTrackCollection->getCrateDAO().renameCrate(crateId, newName)) {
+        m_crateListTableModel.select();
+        emit(featureUpdated());
+        m_crateTableModel.setCrate(crateId);
+    } else {
+        qDebug() << "Failed to rename crateId" << crateId;
     }
 }

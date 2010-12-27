@@ -51,6 +51,25 @@ bool CrateDAO::createCrate(const QString& name) {
     return false;
 }
 
+bool CrateDAO::renameCrate(int crateId, const QString& newName) {
+    qDebug() << "renameCrate()";
+
+    Q_ASSERT(m_database.transaction());
+    QSqlQuery query;
+    query.prepare("UPDATE " CRATE_TABLE " SET name = :name WHERE id = :id");
+    query.bindValue(":name", newName);
+    query.bindValue(":id", crateId);
+
+    if (!query.exec()) {
+        qDebug() << query.executedQuery() << query.lastError();
+        Q_ASSERT(m_database.rollback());
+        return false;
+    }
+
+    Q_ASSERT(m_database.commit());
+    return true;
+}
+
 bool CrateDAO::deleteCrate(int crateId) {
     Q_ASSERT(m_database.transaction());
 

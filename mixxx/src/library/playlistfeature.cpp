@@ -27,6 +27,10 @@ PlaylistFeature::PlaylistFeature(QObject* parent, TrackCollection* pTrackCollect
     connect(m_pDeletePlaylistAction, SIGNAL(triggered()),
             this, SLOT(slotDeletePlaylist()));
 
+    m_pRenamePlaylistAction = new QAction(tr("Rename"),this);
+    connect(m_pRenamePlaylistAction, SIGNAL(triggered()),
+            this, SLOT(slotRenamePlaylist()));
+
     // Setup the sidebar playlist model
     m_playlistTableModel.setTable("Playlists");
     m_playlistTableModel.setFilter("hidden=0");
@@ -95,6 +99,7 @@ void PlaylistFeature::onRightClickChild(const QPoint& globalPos, QModelIndex ind
     QMenu menu(NULL);
     menu.addAction(m_pCreatePlaylistAction);
     menu.addSeparator();
+    menu.addAction(m_pRenamePlaylistAction);
     menu.addAction(m_pDeletePlaylistAction);
     menu.exec(globalPos);
 }
@@ -141,6 +146,38 @@ void PlaylistFeature::slotCreatePlaylist() {
                                  tr("Playlist Creation Failed"),
                                  tr("A playlist by that name already exists."));
     }
+}
+
+void PlaylistFeature::slotRenamePlaylist()
+{
+    qDebug() << "slotRenamePlaylist()";
+
+    QString oldName = m_lastRightClickedIndex.data().toString();
+    int playlistId = m_playlistDao.getPlaylistIdFromName(oldName);
+
+    bool ok = false;
+    QString newName = QInputDialog::getText(NULL,
+                                            tr("Rename Playlist"),
+                                            tr("New playlist name:"),
+                                            QLineEdit::Normal,
+                                            oldName,
+                                            &ok);
+
+    if (!ok) {
+        return;
+    }
+
+    if (newName.isEmpty()) {
+        QMessageBox::warning(NULL,
+                            tr("Renaming Playlist Failed"),
+                            tr("A playlist cannot have a blank name."));
+        return;
+    }
+
+    m_playlistDao.renamePlaylist(playlistId, newName);
+    m_playlistTableModel.select();
+    emit(featureUpdated());
+    m_pPlaylistTableModel->setPlaylist(playlistId);
 }
 
 void PlaylistFeature::slotDeletePlaylist()
