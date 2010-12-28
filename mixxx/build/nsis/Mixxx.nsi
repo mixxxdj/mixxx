@@ -132,11 +132,13 @@ Section "Mixxx (required)" SecMixxx
   ;  Visual C++ 2008 is msvc?90.dll and Microsoft.VC90.CRT.manifest)
   ;
   ; See http://mixxx.org/wiki/doku.php/build_windows_installer for full details.
+  ;
+  ; Update: The Microsoft Visual C++ 2010 Runtime gets rid of the manifest file, so it
+  ;         is no longer necessary.
   
-  File ${BASE_BUILD_DIR}\..\mixxx-win${BITWIDTH}lib-msvc\msvcr*.dll
-  File ${BASE_BUILD_DIR}\..\mixxx-win${BITWIDTH}lib-msvc\msvcp*.dll
-  File /nonfatal ${BASE_BUILD_DIR}\..\mixxx-win64lib-msvc\msvcm*.dll
-  File ${BASE_BUILD_DIR}\..\mixxx-win${BITWIDTH}lib-msvc\Microsoft.VC*.CRT.manifest
+  ; File ${BASE_BUILD_DIR}\..\mixxx-win${BITWIDTH}lib-msvc100\msvc*.dll
+  ; File /nonfatal ${BASE_BUILD_DIR}\..\mixxx-win64lib-msvc100\msvcm*.dll
+  ; File ${BASE_BUILD_DIR}\..\mixxx-win${BITWIDTH}lib-msvc100\Microsoft.VC*.CRT.manifest
 
   ; And documentation, licence etc.
   File "${BASE_BUILD_DIR}\Mixxx-Manual.pdf"
