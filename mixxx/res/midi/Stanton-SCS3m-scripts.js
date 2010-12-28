@@ -1,8 +1,8 @@
 /****************************************************************/
-/*      Stanton SCS.3m MIDI controller script v1.03             */
+/*      Stanton SCS.3m MIDI controller script v1.04             */
 /*          Copyright (C) 2010, Sean M. Pappalardo              */
 /*      but feel free to tweak this to your heart's content!    */
-/*      For Mixxx version 1.7.x                                 */
+/*      For Mixxx version 1.8.x                                 */
 /****************************************************************/
 
 function StantonSCS3m() {}
@@ -504,10 +504,7 @@ StantonSCS3m.modeButton = function (channel, control, status, modeName, side) {
             var group = signalList[i][0];
             var calledFunction = signalList[i][2]+side;
             if (group=="CurrentChannel") group = "[Channel"+deck+"]";
-            // FIXME: engine.trigger() doesn't work in 1.7.2!
-            var command = calledFunction+"("+engine.getValue(group,signalList[i][1])+")";
-//             if (StantonSCS3m.debug) print("Stanton SCS.3m: command="+command);
-            eval(command);
+            engine.trigger(group,signalList[i][1]);
         }
         return;
     }
@@ -868,5 +865,5 @@ Possibly add:
 
 TODO:
 - Rework slider mode changes to use presets or timers
-- non-script lights appear to be broken - https://bugs.launchpad.net/mixxx/+bug/586891
+- Don't use the hardware buttons for pitch bending. Switch the sliders to absolute mode & use the formula from the SCS.3d script.
 */

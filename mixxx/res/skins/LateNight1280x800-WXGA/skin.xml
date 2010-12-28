@@ -1,8 +1,8 @@
 	<!--
-	LateNight , Skin for Mixxx 1.8.x
+	LateNight , Skin for Mixxx 1.9.x
 	www.mixxx.org
 	Copyright (C) 2010 jus ; jus@justmail.de
-	This file is part of the "LateNight" Skin for Mixxx 1.8.x
+	This file is part of the "LateNight" Skin for Mixxx
 	"LateNight" is licensed under the Creative Commons Attribution-ShareAlike 3.0 Unported license.
 	http://creativecommons.org/licenses/by-sa/3.0/
 
@@ -20,6 +20,16 @@
 
 	<!--
 	CHANGELOG
+	v1.07	(02/12/2010)
+	* Added Mixxx 1.9 feature: BPM tap buttons
+	* Added custom images for checkboxes in library
+	* Updated styles
+
+	v1.06	(19/11/2010)
+	* Added Mixxx 1.9 features: Keylock & Repeat buttons
+	* Changed graphics for VUmeters to a more brighter variant
+	* Deleted end-of-track mode buttons
+
 	v1.05	(20/09/2010)
 	* Added stylesheet support for library & tooltips
 
@@ -105,21 +115,24 @@
 	**********************************************
 	-->
 	<TableView>
-		<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+		<Style>
+		QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-		QLabel { font: 13px/15px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-		background-color: transparent; color: #DFDFDF; text-align: left; padding-left: 1%; }
-		QTableView { font: 13px/15px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-		background: #0C0C0C; alternate-background-color: #0C0C0C; color: #DFDFDF; }
+
+		QTableView, QTextBrowser, QTreeView , QLineEdit { font: 13px/15px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+		background: #121212; alternate-background-color: #121212; color: #DFDFDF; }
+		QTableView::indicator { width: 12px; height: 12px;}
+		QTableView::indicator:checked { background: url(skin:/style_checkbox_checked.png);}
+		QTableView::indicator:unchecked { background: url(skin:/style_checkbox_unchecked.png);}
+
 		QHeaderView { font: 11px/13px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; }
-		QRadioButton { color: #DFDFDF; }
-		QTextBrowser { background: #0C0C0C; color: #DFDFDF; }
-		WLibrarySidebar { background: #0C0C0C; color: #DFDFDF; }
-		WSearchLineEdit { background: #0C0C0C; color: #DFDFDF; }
+
+		QLabel, QPushButton { font: 13px/15px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; }
+		QRadioButton { font: 13px/15px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; background: transparent; color: #DFDFDF; }
 		</Style>
 		<Pos>6,346</Pos>
 		<Size>1251,347</Size>
-		<BgColor>#0C0C0C</BgColor>
+		<BgColor>#121212</BgColor>
 		<FgColor>#DFDFDF</FgColor>
 		<BgColorRowEven>#121212</BgColorRowEven>
 		<BgColorRowUneven>#121212</BgColorRowUneven>
@@ -145,8 +158,8 @@
 		</Style>
 		<Channel>1</Channel>
 		<Pos>104,1</Pos>
-		<Size>1054,73</Size>
-		<BgColor>#000000</BgColor>
+		<Size>1053,73</Size>
+		<BgColor>#060606</BgColor>
 		<HfcColor>#1b1b1b</HfcColor>
 		<SignalColor>#0099FF</SignalColor>
 		<BeatColor>#ffffff</BeatColor>
@@ -421,8 +434,8 @@
 		</Style>
 		<Channel>2</Channel>
 		<Pos>104,76</Pos>
-		<Size>1054,73</Size>
-		<BgColor>#000000</BgColor>
+		<Size>1053,73</Size>
+		<BgColor>#060606</BgColor>
 		<HfcColor>#1b1b1b</HfcColor>
 		<SignalColor>#CC6600</SignalColor>
 		<BeatColor>#ffffff</BeatColor>
@@ -704,7 +717,7 @@
 		<Channel>1</Channel>
 		<Pos>1,250</Pos>
 		<Size>407,37</Size>
-		<BgColor>#111111</BgColor>
+		<BgColor>#060606</BgColor>
 		<SignalColor>#0099FF</SignalColor>
 		<MarkerColor>#70E100</MarkerColor>
 		<Connection>
@@ -720,7 +733,7 @@
 		<Channel>2</Channel>
 		<Pos>804,250</Pos>
 		<Size>407,37</Size>
-		<BgColor>#111111</BgColor>
+		<BgColor>#060606</BgColor>
 		<SignalColor>#CC6600</SignalColor>
 		<MarkerColor>#70E100</MarkerColor>
 		<Connection>
@@ -886,7 +899,7 @@
 	**********************************************
 	-->
 	<NumberBpm>
-		<Tooltip>Tempo information&#10;Displays the tempo of the loaded track (BPM=beat per minute)&#10;</Tooltip>
+		<Tooltip>Tempo information&#10;Displays the tempo of the loaded track in BPM (beats per minute)&#10;</Tooltip>
 		<Style>QLabel { font: bold 13px/15px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 		background-color: transparent; color: #0099FF; text-align: left;padding-left: 1%; }
 		QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
@@ -901,7 +914,7 @@
 		</Connection>
 	</NumberBpm>
 	<NumberBpm>
-		<Tooltip>Tempo information&#10;Displays the tempo of the loaded track (BPM=beat per minute)&#10;</Tooltip>
+		<Tooltip>Tempo information&#10;Displays the tempo of the loaded track in BPM (beats per minute)&#10;</Tooltip>
 		<Style>QLabel { font: bold 13px/15px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 		background-color: transparent; color: #CC6600; text-align: left;padding-left: 1%; }
 		QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
@@ -922,7 +935,7 @@
 	**********************************************
 	-->
 	<NumberPos>
-		<Tooltip>Time information&#10;Displays the current playback position or remaining time of the loaded track.&#10;Depends on your settings in Preferences→Interface→Position display.&#10;</Tooltip>
+		<Tooltip>Time information&#10;Displays the current playback position (or remaining time) and the duration of the loaded track.&#10;Depends on your settings in Preferences→Interface→Position display.&#10;</Tooltip>
 		<Style>QLabel { font: bold 13px/15px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 		background-color: transparent; color: #0099FF; text-align: left;padding-left: 1%; }
 		QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
@@ -937,7 +950,7 @@
 		</Connection>
 	</NumberPos>
 	<NumberPos>
-		<Tooltip>Time information&#10;Displays the current playback position or remaining time of the loaded track.&#10;Depends on your settings in Preferences→Interface→Position display.&#10;</Tooltip>
+		<Tooltip>Time information&#10;Displays the current playback position (or remaining time) and the duration of the loaded track.&#10;Depends on your settings in Preferences→Interface→Position display.&#10;</Tooltip>
 		<Style>QLabel { font: bold 13px/15px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 		background-color: transparent; color: #CC6600; text-align: left;padding-left: 1%; }
 		QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
@@ -1994,7 +2007,7 @@
 			<Pressed>btn_sync1_over.png</Pressed>
 			<Unpressed>btn_sync1.png</Unpressed>
 		</State>
-		<Pos>53,65</Pos>
+		<Pos>53,35</Pos>
 		<Connection>
 			<ConfigKey>[Channel1],beatsync</ConfigKey>
 			<EmitOnDownPress>true</EmitOnDownPress>
@@ -2017,7 +2030,7 @@
 			<Pressed>btn_sync2_over.png</Pressed>
 			<Unpressed>btn_sync2.png</Unpressed>
 		</State>
-		<Pos>1174,65</Pos>
+		<Pos>1174,35</Pos>
 		<Connection>
 			<ConfigKey>[Channel2],beatsync</ConfigKey>
 			<EmitOnDownPress>true</EmitOnDownPress>
@@ -2027,6 +2040,104 @@
 			<ConfigKey>[Channel2],beatsync</ConfigKey>
 			<EmitOnDownPress>false</EmitOnDownPress>
 			<ButtonState>LeftButton</ButtonState>
+		</Connection>
+	</PushButton>
+
+	<!--
+	**********************************************
+	Button- BPM Tap 
+	**********************************************
+	-->
+
+	<PushButton>
+		<Tooltip>BPM Tap&#10;It takes the progressive average of the last 4 taps &#10;and sets the bpm of the deck to that value, &#10;assuming the pitch range is large enough to reach it.&#10;</Tooltip>
+		<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+		</Style>
+		<NumberStates>1</NumberStates>
+		<State>
+			<Number>0</Number>
+			<Pressed>btn_tap1_over.png</Pressed>
+			<Unpressed>btn_tap1.png</Unpressed>
+		</State>
+		<Pos>53,62</Pos>
+		<Connection>
+			<ConfigKey>[Channel1],bpm_tap</ConfigKey>
+			<EmitOnDownPress>true</EmitOnDownPress>
+		</Connection>
+		<Connection>
+			<ConfigKey>[Channel1],bpm_tap</ConfigKey>
+			<EmitOnDownPress>false</EmitOnDownPress>
+		</Connection>
+	</PushButton>
+	<PushButton>
+		<Tooltip>BPM Tap&#10;It takes the progressive average of the last 4 taps &#10;and sets the bpm of the deck to that value, &#10;assuming the pitch range is large enough to reach it.&#10;</Tooltip>
+		<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+		</Style>
+		<NumberStates>1</NumberStates>
+		<State>
+			<Number>0</Number>
+			<Pressed>btn_tap2_over.png</Pressed>
+			<Unpressed>btn_tap2.png</Unpressed>
+		</State>
+		<Pos>1174,62</Pos>
+		<Connection>
+			<ConfigKey>[Channel2],bpm_tap</ConfigKey>
+			<EmitOnDownPress>true</EmitOnDownPress>
+		</Connection>
+		<Connection>
+			<ConfigKey>[Channel2],bpm_tap</ConfigKey>
+			<EmitOnDownPress>false</EmitOnDownPress>
+		</Connection>
+	</PushButton>
+
+	<!--
+	**********************************************
+	Button- Key lock
+	**********************************************
+	-->
+
+	<PushButton>
+		<Tooltip>Key-lock&#10;Activates pitch-independent time stretch in the deck.&#10;Warning: Toggling key-lock during playback may result in a momentary audio glitch.&#10;</Tooltip>
+		<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+		</Style>
+		<NumberStates>2</NumberStates>
+		<State>
+			<Number>0</Number>
+			<Pressed>btn_keylock1.png</Pressed>
+			<Unpressed>btn_keylock1.png</Unpressed>
+		</State>
+		<State>
+			<Number>1</Number>
+			<Pressed>btn_keylock1_over.png</Pressed>
+			<Unpressed>btn_keylock1_over.png</Unpressed>
+		</State>
+		<Pos>61,100</Pos>
+		<Connection>
+			<ConfigKey>[Channel1],keylock</ConfigKey>
+		</Connection>
+	</PushButton>
+	<PushButton>
+		<Tooltip>Key-lock&#10;Activates pitch-independent time stretch in the deck.&#10;Warning: Toggling key-lock during playback may result in a momentary audio glitch.&#10;</Tooltip>
+		<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+		</Style>
+		<NumberStates>2</NumberStates>
+		<State>
+			<Number>0</Number>
+			<Pressed>btn_keylock2.png</Pressed>
+			<Unpressed>btn_keylock2.png</Unpressed>
+		</State>
+		<State>
+			<Number>1</Number>
+			<Pressed>btn_keylock2_over.png</Pressed>
+			<Unpressed>btn_keylock2_over.png</Unpressed>
+		</State>
+		<Pos>1182,100</Pos>
+		<Connection>
+			<ConfigKey>[Channel2],keylock</ConfigKey>
 		</Connection>
 	</PushButton>
 
@@ -2046,7 +2157,7 @@
 			<Pressed>btn_pitch_up1_over.png</Pressed>
 			<Unpressed>btn_pitch_up1.png</Unpressed>
 		</State>
-		<Pos>47,126</Pos>
+		<Pos>47,138</Pos>
 		<Connection>
 			<ConfigKey>[Channel1],rate_perm_up</ConfigKey>
 			<EmitOnDownPress>true</EmitOnDownPress>
@@ -2079,7 +2190,7 @@
 			<Pressed>btn_pitch_up2_over.png</Pressed>
 			<Unpressed>btn_pitch_up1.png</Unpressed>
 		</State>
-		<Pos>1168,126</Pos>
+		<Pos>1168,138</Pos>
 		<Connection>
 			<ConfigKey>[Channel2],rate_perm_up</ConfigKey>
 			<EmitOnDownPress>true</EmitOnDownPress>
@@ -2112,7 +2223,7 @@
 			<Pressed>btn_pitch_down1_over.png</Pressed>
 			<Unpressed>btn_pitch_down1.png</Unpressed>
 		</State>
-		<Pos>47,153</Pos>
+		<Pos>47,165</Pos>
 		<Connection>
 			<ConfigKey>[Channel1],rate_perm_down</ConfigKey>
 			<EmitOnDownPress>true</EmitOnDownPress>
@@ -2135,7 +2246,7 @@
 			<Pressed>btn_pitch_down2_over.png</Pressed>
 			<Unpressed>btn_pitch_down2.png</Unpressed>
 		</State>
-		<Pos>1168,153</Pos>
+		<Pos>1168,165</Pos>
 		<Connection>
 			<ConfigKey>[Channel2],rate_perm_down</ConfigKey>
 			<EmitOnDownPress>true</EmitOnDownPress>
@@ -2164,7 +2275,7 @@
 			<Pressed>btn_nudge_up1_over.png</Pressed>
 			<Unpressed>btn_nudge_up1.png</Unpressed>
 		</State>
-		<Pos>74,126</Pos>
+		<Pos>74,138</Pos>
 		<Connection>
 			<ConfigKey>[Channel1],rate_temp_up</ConfigKey>
 			<EmitOnDownPress>true</EmitOnDownPress>
@@ -2197,7 +2308,7 @@
 			<Pressed>btn_nudge_up2_over.png</Pressed>
 			<Unpressed>btn_nudge_up2.png</Unpressed>
 		</State>
-		<Pos>1195,126</Pos>
+		<Pos>1195,138</Pos>
 		<Connection>
 			<ConfigKey>[Channel2],rate_temp_up</ConfigKey>
 			<EmitOnDownPress>true</EmitOnDownPress>
@@ -2230,7 +2341,7 @@
 			<Pressed>btn_nudge_down1_over.png</Pressed>
 			<Unpressed>btn_nudge_down1.png</Unpressed>
 		</State>
-		<Pos>74,153</Pos>
+		<Pos>74,165</Pos>
 		<Connection>
 			<ConfigKey>[Channel1],rate_temp_down</ConfigKey>
 			<EmitOnDownPress>true</EmitOnDownPress>
@@ -2263,7 +2374,7 @@
 			<Pressed>btn_nudge_down2_over.png</Pressed>
 			<Unpressed>btn_nudge_down2.png</Unpressed>
 		</State>
-		<Pos>1195,153</Pos>
+		<Pos>1195,165</Pos>
 		<Connection>
 			<ConfigKey>[Channel2],rate_temp_down</ConfigKey>
 			<EmitOnDownPress>true</EmitOnDownPress>
@@ -2336,59 +2447,49 @@
 
 	<!--
 	**********************************************
-	Button- End of track mode
+	Button- Repeat (End of track mode)
 	**********************************************
 	-->
 	<PushButton>
-		<Tooltip>End of track mode&#10;Determines Mixxx's behaviour when it reaches the end of the track.&#10;</Tooltip>
+		<Tooltip>Repeat&#10;When active the track will repeat if you go past the end or reverse before the start.&#10;</Tooltip>
 		<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
 		</Style>
-		<NumberStates>3</NumberStates>
+		<NumberStates>2</NumberStates>
 		<State>
 			<Number>0</Number>
-			<Pressed>btn_trackmode_stop.png</Pressed>
-			<Unpressed>btn_trackmode_stop.png</Unpressed>
+			<Pressed>btn_repeat1.png</Pressed>
+			<Unpressed>btn_repeat1.png</Unpressed>
 		</State>
 		<State>
 			<Number>1</Number>
-			<Pressed>btn_trackmode_next.png</Pressed>
-			<Unpressed>btn_trackmode_next.png</Unpressed>
+			<Pressed>btn_repeat1_over.png</Pressed>
+			<Unpressed>btn_repeat1_over.png</Unpressed>
 		</State>
-		<State>
-			<Number>2</Number>
-			<Pressed>btn_trackmode_loop.png</Pressed>
-			<Unpressed>btn_trackmode_loop.png</Unpressed>
-		</State>
-		<Pos>419,257</Pos>
+		<Pos>417,259</Pos>
 		<Connection>
-			<ConfigKey>[Channel1],TrackEndMode</ConfigKey>
+			<ConfigKey>[Channel1],repeat</ConfigKey>
 		</Connection>
 	</PushButton>
 	<PushButton>
-		<Tooltip>End of track mode&#10;Determines Mixxx's behaviour when it reaches the end of the track.&#10;</Tooltip>
+		<Tooltip>Repeat&#10;When active the track will repeat if you go past the end or reverse before the start.&#10;</Tooltip>
 		<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
 		</Style>
-		<NumberStates>3</NumberStates>
+		<NumberStates>2</NumberStates>
 		<State>
 			<Number>0</Number>
-			<Pressed>btn_trackmode_stop.png</Pressed>
-			<Unpressed>btn_trackmode_stop.png</Unpressed>
+			<Pressed>btn_repeat2.png</Pressed>
+			<Unpressed>btn_repeat2.png</Unpressed>
 		</State>
 		<State>
 			<Number>1</Number>
-			<Pressed>btn_trackmode_next.png</Pressed>
-			<Unpressed>btn_trackmode_next.png</Unpressed>
+			<Pressed>btn_repeat2_over.png</Pressed>
+			<Unpressed>btn_repeat2_over.png</Unpressed>
 		</State>
-		<State>
-			<Number>2</Number>
-			<Pressed>btn_trackmode_loop.png</Pressed>
-			<Unpressed>btn_trackmode_loop.png</Unpressed>
-		</State>
-		<Pos>1222,257</Pos>
+		<Pos>1220,259</Pos>
 		<Connection>
-			<ConfigKey>[Channel2],TrackEndMode</ConfigKey>
+			<ConfigKey>[Channel2],repeat</ConfigKey>
 		</Connection>
 	</PushButton>
 

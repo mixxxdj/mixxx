@@ -42,7 +42,7 @@ class BrowseFeature : public LibraryFeature {
     void onRightClickChild(const QPoint& globalPos, QModelIndex index);
 
     // Called when a file in browse view is selected to be loaded into a player.
-    void loadToPlayer(const QModelIndex& index, int player);
+    void loadToPlayer(const QModelIndex& index, QString group);
     // Called when a file in the browse view is activated.
     void onFileActivate(const QModelIndex& index);
     void searchStarting();

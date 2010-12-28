@@ -43,6 +43,7 @@ class DlgPrefRecord;
 class DlgPrefBpm;
 class DlgPrefVinyl;
 class DlgPrefShoutcast;
+class DlgPrefReplayGain;
 class PowerMate;
 class MidiDeviceManager;
 class SkinLoader;
@@ -65,7 +66,7 @@ public slots:
     void rescanMidi();
     void slotApply();
     void changePage(QTreeWidgetItem *current, QTreeWidgetItem *previous);
-    void showVinylControlPage();
+    void showSoundHardwarePage();
     void slotHighlightDevice(DlgPrefMidiBindings* dialog, bool enabled);
 signals:
     void closeDlg();
@@ -86,6 +87,7 @@ private:
     DlgPrefBpm *wbpm;
     DlgPrefVinyl *wvinylcontrol;
     DlgPrefShoutcast *wshoutcast;
+    DlgPrefReplayGain *wreplaygain;
 
 	QTreeWidgetItem* m_pSoundButton;
 	QTreeWidgetItem* m_pPlaylistButton;
@@ -96,6 +98,7 @@ private:
 	QTreeWidgetItem* m_pBPMdetectButton;
 	QTreeWidgetItem* m_pVinylControlButton;
 	QTreeWidgetItem* m_pShoutcastButton;
+	QTreeWidgetItem* m_pReplayGainButton;
     QTreeWidgetItem* m_pMIDITreeItem;
     QList<QTreeWidgetItem*> m_midiBindingsButtons;
 

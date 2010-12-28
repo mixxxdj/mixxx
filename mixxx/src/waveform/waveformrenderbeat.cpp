@@ -138,6 +138,8 @@ void WaveformRenderBeat::drawTrackBeat(QPainter *pPainter, QPaintEvent *event, Q
     if ( m_pTrackBeats == NULL )
         return;
 
+    slotUpdateTrackSamples(m_pTrackSamples->get());
+
     if(m_iSampleRate == -1 || m_iSampleRate == 0 || m_iNumSamples == 0)
         return;
 

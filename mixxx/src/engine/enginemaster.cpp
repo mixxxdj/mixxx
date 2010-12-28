@@ -111,8 +111,10 @@ EngineMaster::~EngineMaster()
     delete head_clipping;
     delete sidechain;
 
+
     SampleUtil::free(m_pHead);
     SampleUtil::free(m_pMaster);
+
 
     QMutableListIterator<CSAMPLE*> buffer_it(m_channelBuffers);
     while (buffer_it.hasNext()) {
@@ -121,6 +123,7 @@ EngineMaster::~EngineMaster()
         SampleUtil::free(buffer);
     }
 
+
     QMutableListIterator<EngineChannel*> channel_it(m_channels);
     while (channel_it.hasNext()) {
         EngineChannel* channel = channel_it.next();
@@ -128,24 +131,16 @@ EngineMaster::~EngineMaster()
         delete channel;
     }
 
+
+
 }
 
-void EngineMaster::setPitchIndpTimeStretch(bool b)
-{
-    QListIterator<EngineChannel*> channel_iter(m_channels);
-
-    while (channel_iter.hasNext()) {
-        EngineChannel* pChannel = channel_iter.next();
-        pChannel->setPitchIndpTimeStretch(b);
-    }
-}
-
-const CSAMPLE* EngineMaster::getMasterBuffer()
+const CSAMPLE* EngineMaster::getMasterBuffer() const
 {
     return m_pMaster;
 }
 
-const CSAMPLE* EngineMaster::getHeadphoneBuffer()
+const CSAMPLE* EngineMaster::getHeadphoneBuffer() const
 {
     return m_pHead;
 }
@@ -153,11 +148,24 @@ const CSAMPLE* EngineMaster::getHeadphoneBuffer()
 void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBufferSize)
 {
     CSAMPLE **pOutput = (CSAMPLE**)pOut;
+    Q_UNUSED(pOutput);
 
     // Prepare each channel for output
 
-    QList<CSAMPLE*> pflChannels;
     QList<QPair<CSAMPLE*, EngineChannel::ChannelOrientation> > masterChannels;
+
+    // Compute headphone mix
+    // Head phone left/right mix
+    float cf_val = head_mix->get();
+    float chead_gain = 0.5*(-cf_val+1.);
+    float cmaster_gain = 0.5*(cf_val+1.);
+    // qDebug() << "head val " << cf_val << ", head " << chead_gain
+    //          << ", master " << cmaster_gain;
+
+    // we have to copy PFL channels to the headphone buffer here before we
+    // process the master mix, as PFL channels don't have their fader volume
+    // applied but the master channels do -- bkgood
+    SampleUtil::applyGain(m_pHead, 0.0f, iBufferSize);
 
     for (int channel_number = 0; channel_number < m_channels.size(); ++channel_number) {
         EngineChannel* channel = m_channels[channel_number];
@@ -169,10 +177,13 @@ void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
         CSAMPLE* buffer = m_channelBuffers[channel_number];
         channel->process(NULL, buffer, iBufferSize);
 
-        // If the channel is enabled for previewing in headphones, add it to a
-        // list of headphone channels.
+        // If the channel is enabled for previewing in headphones, copy it
+        // over to the headphone buffer
         if (channel->isPFL()) {
-            pflChannels.push_back(buffer);
+            SampleUtil::addWithGain(m_pHead, buffer, chead_gain, iBufferSize);
+            // EngineChannel doesn't apply the volume if it knows it's PFL,
+            // so apply it
+            channel->applyVolume(buffer, iBufferSize);
         }
 
         // Add the channel to the list of master output channels.
@@ -263,38 +274,8 @@ void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
     //etc.  (cpu intensive non-realtime tasks)
     sidechain->submitSamples(m_pMaster, iBufferSize);
 
-    // Compute headphone mix
-
-    // Head phone left/right mix
-    float cf_val = head_mix->get();
-    float chead_gain = 0.5*(-cf_val+1.);
-    float cmaster_gain = 0.5*(cf_val+1.);
-    // qDebug() << "head val " << cf_val
-    //          << ", head " << chead_gain
-    //          << ", master " << cmaster_gain;
-
-    // Set headphone to master with appropriate gain
-    SampleUtil::copyWithGain(m_pHead, m_pMaster, cmaster_gain, iBufferSize);
-
-    if (pflChannels.size() == 0) {
-        // Do nothing
-    } else if (pflChannels.size() == 1) {
-        // Apply gain
-        CSAMPLE* buffer = pflChannels[0];
-        SampleUtil::addWithGain(m_pHead, buffer, chead_gain, iBufferSize);
-    } else if (pflChannels.size() == 2) {
-        CSAMPLE* buffer1 = pflChannels[0];
-        CSAMPLE* buffer2 = pflChannels[1];
-        SampleUtil::add2WithGain(m_pHead,
-                                 buffer1, chead_gain,
-                                 buffer2, chead_gain,
-                                 iBufferSize);
-    } else {
-        for (int i = 0; i < pflChannels.size(); ++i) {
-            CSAMPLE* buffer = pflChannels[i];
-            SampleUtil::addWithGain(m_pHead, buffer, chead_gain, iBufferSize);
-        }
-    }
+    // Add master to headphone with appropriate gain
+    SampleUtil::addWithGain(m_pHead, m_pMaster, cmaster_gain, iBufferSize);
 
     // Head volume and clipping
     head_volume->process(m_pHead, m_pHead, iBufferSize);
@@ -326,12 +307,12 @@ void EngineMaster::addChannel(EngineChannel* pChannel) {
     }
 }
 
-int EngineMaster::numChannels() {
+int EngineMaster::numChannels() const {
     return m_channels.size();
 }
 
-const CSAMPLE* EngineMaster::getChannelBuffer(int i) {
-    if (i >= 0 && i < numChannels()) {
+const CSAMPLE* EngineMaster::getChannelBuffer(unsigned int i) const {
+    if (i < numChannels()) {
         return m_channelBuffers[i];
     }
     return NULL;

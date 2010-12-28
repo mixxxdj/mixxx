@@ -63,6 +63,11 @@ Q_OBJECT
         Q_INVOKABLE void sendSysexMsg(QList<int> data, unsigned int length);
         bool getMidiLearnStatus();
         void receive(MidiStatusByte status, char channel, char control, char value);
+#ifdef __MIDISCRIPT__
+        /** Receives System Exclusive (and other unhandled and/or arbitrary-length)
+            messages and passes them straight to a script function. */
+        void receive(const unsigned char data[], unsigned int length);
+#endif
         bool midiDebugging();
         void setReceiveInhibit(bool inhibit);
     public slots:
@@ -95,8 +100,8 @@ Q_OBJECT
         bool m_midiDebug;
         /** Mutex to protect against concurrent access to member variables */
         QMutex m_mutex;
-        /** Mutex to protect against concurrent access to m_pMidiMapping. */
-        QMutex m_mappingMutex;
+        /** Mutex to protect against concurrent access to the m_pMidiMapping _pointer. Note that MidiMapping itself is thread-safe, so we just need to protect the pointer!. */
+        QMutex m_mappingPtrMutex;
         /** A flag to inhibit the reception of messages from this device. This is used to prevent
             a race condition when a MIDI message is received and looked up in the MidiMapping while
             the MidiMapping is being modified (and is already locked).  */
