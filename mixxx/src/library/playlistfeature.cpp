@@ -188,7 +188,6 @@ void PlaylistFeature::slotRenamePlaylist()
         }
     } while (!validNameGiven);
 
-    qDebug() << "got out of the loop";
     m_playlistDao.renamePlaylist(playlistId, newName);
     m_playlistTableModel.select();
     emit(featureUpdated());
