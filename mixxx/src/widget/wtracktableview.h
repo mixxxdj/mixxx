@@ -11,7 +11,7 @@
 #include "library/trackmodel.h" // Can't forward declare enums
 #include "widget/wlibrarytableview.h"
 
-
+class ControlObjectThreadMain;
 class DlgTrackInfo;
 class TrackCollection;
 
@@ -36,8 +36,6 @@ class WTrackTableView : public WLibraryTableView
 public slots:
     void loadTrackModel(QAbstractItemModel* model);
     void slotMouseDoubleClicked(const QModelIndex &);
-    void slotLoadPlayer1();
-    void slotLoadPlayer2();
 private slots:
     void slotRemove();
     void slotShowTrackInfo();
@@ -46,9 +44,7 @@ private slots:
     void slotSendToAutoDJ();
     void addSelectionToPlaylist(int iPlaylistId);
     void addSelectionToCrate(int iCrateId);
-signals:
-    void loadTrack(TrackPointer pTrack);
-    void loadTrackToPlayer(TrackPointer pTrack, int player);
+    void loadSelectionToGroup(QString group);
 
 private:
     void showTrackInfo(QModelIndex index);
@@ -63,27 +59,29 @@ private:
 
     ConfigObject<ConfigValue> * m_pConfig;
     TrackCollection* m_pTrackCollection;
-    //QList<QString> m_selectedTrackLocations;
-    QModelIndexList m_selectedIndices;
 
-    DlgTrackInfo* pTrackInfo;
+    QModelIndexList m_selectedIndices;
+    QSignalMapper m_loadTrackMapper;
+
+    DlgTrackInfo* m_pTrackInfo;
     QModelIndex currentTrackInfoIndex;
 
     SearchThread m_searchThread;
 
-    //Used for right-click operations
-    /** Right-click menu */
-    QMenu *m_pMenu, *m_pPlaylistMenu, *m_pCrateMenu;
-    QSignalMapper m_playlistMapper, m_crateMapper;
-    /**Send to AutoDJ Action**/
+    ControlObjectThreadMain* m_pNumSamplers;
+    ControlObjectThreadMain* m_pNumDecks;
+
+    // Context menu machinery
+    QMenu *m_pMenu, *m_pPlaylistMenu, *m_pCrateMenu, *m_pSamplerMenu;
+    QSignalMapper m_playlistMapper, m_crateMapper, m_deckMapper, m_samplerMapper;
+
+    // Send to Auto-DJ Action
     QAction *m_pAutoDJAct;
-    /**Send to Player 1 Action**/
-    QAction *m_pPlayer1Act;
-    /**Send to Player 2 Action**/
-    QAction *m_pPlayer2Act;
-    /**Remove from Table Action**/
+
+    // Remove from table
     QAction *m_pRemoveAct;
-    /**Shows track editor/BPM tap**/
+
+    // Show track-editor action
     QAction *m_pPropertiesAct;
 };
 

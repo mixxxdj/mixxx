@@ -95,15 +95,6 @@ WOverview::~WOverview()
 
 void WOverview::setup(QDomNode node)
 {
-    // Setup position and connections
-    WWidget::setup(node);
-
-    // Size
-    QString size = selectNodeQString(node, "Size");
-    int x = size.left(size.indexOf(",")).toInt();
-    int y = size.mid(size.indexOf(",")+1).toInt();
-    setFixedSize(x,y);
-
     // Set constants for line drawing
 /*
     m_qMarkerPos1.setX(x/2);
@@ -199,14 +190,17 @@ void WOverview::cueChanged(double v) {
 
 void WOverview::loopStartChanged(double v) {
     m_dLoopStart = v;
+    update();
 }
 
 void WOverview::loopEndChanged(double v) {
     m_dLoopEnd = v;
+    update();
 }
 
 void WOverview::loopEnabledChanged(double v) {
     m_bLoopEnabled = !(v == 0.0f);
+    update();
 }
 
 void WOverview::setData(const QByteArray* pWaveformSummary, long liSampleDuration)

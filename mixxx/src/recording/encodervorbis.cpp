@@ -44,13 +44,15 @@ http://svn.xiph.org/trunk/vorbis/examples/encoder_example.c
 #include "errordialoghandler.h"
 
 // Constructor
-EncoderVorbis::EncoderVorbis(ConfigObject<ConfigValue> *_config, EngineAbstractRecord *engine) {
+EncoderVorbis::EncoderVorbis(EngineAbstractRecord *engine) {
     m_pEngine = engine;
     m_metaDataTitle = NULL;
     m_metaDataArtist = NULL;
     m_metaDataAlbum = NULL;
     m_pMetaData = TrackPointer(NULL);
-    m_pConfig = _config;
+   
+
+    m_samplerate = new ControlObjectThread(ControlObject::getControl(ConfigKey("[Master]", "samplerate")));
 }
 
 // Destructor  //call flush before any encoder gets deleted
@@ -60,6 +62,8 @@ EncoderVorbis::~EncoderVorbis() {
     vorbis_dsp_clear(&m_vdsp);
     vorbis_comment_clear(&m_vcomment);
     vorbis_info_clear(&m_vinfo);
+
+    if(m_samplerate)    delete m_samplerate;
 }
 //call sendPackages() or write() after 'flush()' as outlined in engineshoutcast.cpp
 void EncoderVorbis::flush() {
@@ -190,7 +194,8 @@ int EncoderVorbis::initEncoder(int bitrate) {
     vorbis_info_init(&m_vinfo);
 
     // initialize VBR quality based mode
-    unsigned long samplerate = m_pConfig->getValueString(ConfigKey("[Soundcard]","Samplerate")).toULong();
+    unsigned long samplerate = m_samplerate->get();
+    
     ret = vorbis_encode_init(&m_vinfo, 2, samplerate, -1, bitrate*1000, -1);
 
     if (ret == 0) {

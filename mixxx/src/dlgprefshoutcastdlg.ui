@@ -513,6 +513,11 @@ p, li { white-space: pre-wrap; }
    </item>
    <item row="1" column="0" colspan="2">
     <widget class="QLabel" name="label_16">
+     <property name="font">
+      <font>
+       <italic>true</italic>
+      </font>
+     </property>
      <property name="text">
       <string>Please note that for technical reasons changing any shoutcast settings will cause an established connection to disconnect and reconnect. </string>
      </property>
@@ -524,7 +529,6 @@ p, li { white-space: pre-wrap; }
   </layout>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
- <pixmapfunction>qPixmapFromMimeSource</pixmapfunction>
  <resources/>
  <connections/>
 </ui>

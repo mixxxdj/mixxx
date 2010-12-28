@@ -62,7 +62,7 @@ Library::Library(QObject* parent, ConfigObject<ConfigValue>* pConfig, bool first
     if (RhythmboxFeature::isSupported())
         addFeature(new RhythmboxFeature(this));
     if (ITunesFeature::isSupported())
-        addFeature(new ITunesFeature(this));
+        addFeature(new ITunesFeature(this, m_pTrackCollection));
 
     //Show the promo tracks view on first run, otherwise show the library
     if (firstRun) {
@@ -101,8 +101,8 @@ void Library::bindWidget(WLibrarySidebar* pSidebarWidget,
             pTrackTableView, SLOT(loadTrackModel(QAbstractItemModel*)));
     connect(pTrackTableView, SIGNAL(loadTrack(TrackPointer)),
             this, SLOT(slotLoadTrack(TrackPointer)));
-    connect(pTrackTableView, SIGNAL(loadTrackToPlayer(TrackPointer, int)),
-            this, SLOT(slotLoadTrackToPlayer(TrackPointer, int)));
+    connect(pTrackTableView, SIGNAL(loadTrackToPlayer(TrackPointer, QString)),
+            this, SLOT(slotLoadTrackToPlayer(TrackPointer, QString)));
     pLibraryWidget->registerView(m_sTrackViewName, pTrackTableView);
 
     connect(this, SIGNAL(switchToView(const QString&)),
@@ -141,8 +141,8 @@ void Library::addFeature(LibraryFeature* feature) {
             this, SLOT(slotSwitchToView(const QString&)));
     connect(feature, SIGNAL(loadTrack(TrackPointer)),
             this, SLOT(slotLoadTrack(TrackPointer)));
-    connect(feature, SIGNAL(loadTrackToPlayer(TrackPointer, int)),
-            this, SLOT(slotLoadTrackToPlayer(TrackPointer, int)));
+    connect(feature, SIGNAL(loadTrackToPlayer(TrackPointer, QString)),
+            this, SLOT(slotLoadTrackToPlayer(TrackPointer, QString)));
     connect(feature, SIGNAL(restoreSearch(const QString&)),
             this, SLOT(slotRestoreSearch(const QString&)));
 }
@@ -165,8 +165,8 @@ void Library::slotLoadTrack(TrackPointer pTrack) {
     emit(loadTrack(pTrack));
 }
 
-void Library::slotLoadTrackToPlayer(TrackPointer pTrack, int player) {
-    emit(loadTrackToPlayer(pTrack, player));
+void Library::slotLoadTrackToPlayer(TrackPointer pTrack, QString group) {
+    emit(loadTrackToPlayer(pTrack, group));
 }
 
 void Library::slotRestoreSearch(const QString& text) {

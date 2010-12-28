@@ -44,10 +44,6 @@ EngineChannel::EngineChannel(const char* group,
     m_pPFL->setToggleButton(true);
     m_pOrientation = new ControlObject(ConfigKey(group, "orientation"));
     m_pOrientation->set(defaultOrientation);
-
-    // Create the 'transform' control. It isn't used anymore, but is needed for
-    // backwards compatibility.
-    new ControlPushButton(ConfigKey(group, "transform"));
 }
 
 EngineChannel::~EngineChannel() {
@@ -85,8 +81,14 @@ void EngineChannel::process(const CSAMPLE*, const CSAMPLE * pOut, const int iBuf
     m_pClipping->process(pOut, pOut, iBufferSize);
     // Update VU meter
     m_pVUMeter->process(pOut, pOut, iBufferSize);
-    // Apply channel volume
-    m_pVolume->process(pOut, pOut, iBufferSize);
+    // Apply channel volume if we aren't PFL
+    if (!isPFL()) {
+        m_pVolume->process(pOut, pOut, iBufferSize);
+    }
+}
+
+void EngineChannel::applyVolume(CSAMPLE *pBuff, const int iBufferSize) const {
+    m_pVolume->process(pBuff, pBuff, iBufferSize);
 }
 
 EngineBuffer* EngineChannel::getEngineBuffer() {
@@ -103,10 +105,6 @@ EngineChannel::ChannelOrientation EngineChannel::getOrientation() {
         return RIGHT;
     }
     return CENTER;
-}
-
-void EngineChannel::setPitchIndpTimeStretch(bool b) {
-    m_pBuffer->setPitchIndpTimeStretch(b);
 }
 
 bool EngineChannel::isActive() {

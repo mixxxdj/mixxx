@@ -127,3 +127,7 @@ QKeySequence MixxxKeyboard::getKeySeq(QKeyEvent * e)
     return s;
 
 }
+
+ConfigObject<ConfigValueKbd>* MixxxKeyboard::getKeyboardConfig() {
+    return m_pKbdConfigObject;
+}

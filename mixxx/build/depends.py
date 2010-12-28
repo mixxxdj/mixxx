@@ -26,13 +26,9 @@ class PortMIDI(Dependence):
         if not conf.CheckLib(['portmidi', 'libportmidi']) and \
                 not conf.CheckHeader(['portmidi.h']):
             raise Exception('Did not find PortMidi or its development headers.')
-
-        # WHY!? Supposedly we need this for PortMIDI.
-        if build.platform_is_windows:
-            build.env.Append(LIBS='advapi32')
-
+            
     def sources(self, build):
-        return ['midi/midideviceportmidi.cpp']
+        return ['midi/portmidienumerator.cpp', 'midi/midideviceportmidi.cpp']
 
 class OpenGL(Dependence):
 
@@ -57,21 +53,21 @@ class OpenGL(Dependence):
 class OggVorbis(Dependence):
 
     def configure(self, build, conf):
-        if build.platform_is_windows and build.machine_is_64bit:
+#        if build.platform_is_windows and build.machine_is_64bit:
             # For some reason this has to be checked this way on win64,
             # otherwise it looks for the dll lib which will cause a conflict
             # later
-            if not conf.CheckLib('vorbisfile_static'):
-                raise Exception('Did not find vorbisfile_static.lib or the libvorbisfile development headers.')
-        else:
-            if not conf.CheckLib('vorbisfile'):
-                Exception('Did not find libvorbisfile.a, libvorbisfile.lib, '
-                    'or the libvorbisfile development headers.')
+#            if not conf.CheckLib('vorbisfile_static'):
+#                raise Exception('Did not find vorbisfile_static.lib or the libvorbisfile development headers.')
+#        else:
+        if not conf.CheckLib(['libvorbisfile', 'vorbisfile']):
+            Exception('Did not find libvorbisfile.a, libvorbisfile.lib, '
+                'or the libvorbisfile development headers.')
 
-        if not conf.CheckLib('vorbis'):
+        if not conf.CheckLib(['libvorbis', 'vorbis']):
             raise Exception('Did not find libvorbis.a, libvorbis.lib, or the libvorbisfile development headers.')
 
-        if not conf.CheckLib('ogg'):
+        if not conf.CheckLib(['libogg', 'ogg']):
             raise Exception('Did not find libogg.a, libogg.lib, or the libogg development headers, exiting!')
 
     def sources(self, build):
@@ -80,9 +76,9 @@ class OggVorbis(Dependence):
 class Mad(Dependence):
 
     def configure(self, build, conf):
-        if not conf.CheckLib(['mad','libmad']):
+        if not conf.CheckLib(['libmad','mad']):
             raise Exception('Did not find libmad.a, libmad.lib, or the libmad development header files - exiting!')
-        if not conf.CheckLib(['id3tag','libid3tag-release']):
+        if not conf.CheckLib(['libid3tag', 'id3tag','libid3tag-release']):
             raise Exception('Did not find libid3tag.a, libid3tag.lib, or the libid3tag development header files - exiting!')
 
     def sources(self, build):
@@ -99,6 +95,18 @@ class SndFile(Dependence):
 
     def sources(self, build):
         return ['soundsourcesndfile.cpp']
+
+class FLAC(Dependence):
+    def configure(self, build, conf):
+        if not conf.CheckHeader('FLAC/stream_decoder.h'):
+            raise Exception('Did not find libFLAC development headers, exiting!')
+        elif not conf.CheckLib(['libFLAC', 'FLAC']):
+            raise Exception('Did not find libFLAC development libraries, exiting!')
+        return
+
+    def sources(self, build):
+        return ['soundsourceflac.cpp',]
+
 
 class Qt(Dependence):
     DEFAULT_QTDIRS = {'linux': '/usr/share/qt4',
@@ -213,6 +221,13 @@ class KissFFT(Dependence):
     def configure(self, build, conf):
         build.env.Append(CPPPATH="#lib/kissfft")
 
+class ReplayGain(Dependence):
+
+    def sources(self, build):
+        return ["#lib/replaygain/replaygain_analysis.c"]
+
+    def configure(self, build, conf):
+        build.env.Append(CPPPATH="#lib/replaygain")
 
 class SoundTouch(Dependence):
     SOUNDTOUCH_PATH = 'soundtouch-1.4.1'
@@ -281,8 +296,7 @@ class SoundTouch(Dependence):
 class TagLib(Dependence):
     def configure(self, build, conf):
         if not conf.CheckLib('tag'):
-            raise Exception("Could not find libtag or it's development headers.")
-
+            raise Exception("Could not find libtag or its development headers.")
 class MixxxCore(Feature):
 
     def description(self):
@@ -309,11 +323,13 @@ class MixxxCore(Feature):
 
                    "dlgpreferences.cpp",
                    "dlgprefsound.cpp",
+                   "dlgprefsounditem.cpp",
                    "dlgprefmidibindings.cpp",
                    "dlgprefplaylist.cpp",
                    "dlgprefnomidi.cpp",
                    "dlgprefcontrols.cpp",
                    "dlgprefbpm.cpp",
+                   "dlgprefreplaygain.cpp",
                    "dlgbpmscheme.cpp",
                    "dlgabout.cpp",
                    "dlgprefeq.cpp",
@@ -353,7 +369,7 @@ class MixxxCore(Feature):
                    "engine/cuecontrol.cpp",
                    "engine/readaheadmanager.cpp",
                    "cachingreader.cpp",
-
+                   "analyserrg.cpp",
                    "analyserqueue.cpp",
                    "analyserwavesummary.cpp",
                    "analyserbpm.cpp",
@@ -361,6 +377,7 @@ class MixxxCore(Feature):
 
                    "midi/mididevice.cpp",
                    "midi/mididevicemanager.cpp",
+                   "midi/midideviceenumerator.cpp",
                    "midi/midimapping.cpp",
                    "midi/midiinputmappingtablemodel.cpp",
                    "midi/midioutputmappingtablemodel.cpp",
@@ -459,6 +476,10 @@ class MixxxCore(Feature):
                    "library/featuredartistswebview.cpp",
                    "library/bundledsongswebview.cpp",
                    "library/songdownloader.cpp",
+                   "library/starrating.cpp",
+                   "library/stardelegate.cpp",
+                   "library/stareditor.cpp",
+                   "audiotagger.cpp",
 
                    "xmlparse.cpp",
                    "parser.cpp",
@@ -494,10 +515,16 @@ class MixxxCore(Feature):
                    "sampleutil.cpp",
                    "trackinfoobject.cpp",
                    "trackbeats.cpp",
-                   "player.cpp",
+                   "baseplayer.cpp",
+                   "basetrackplayer.cpp",
+                   "deck.cpp",
+                   "sampler.cpp",
                    "playermanager.cpp",
+                   "samplerbank.cpp",
                    "sounddevice.cpp",
                    "soundmanager.cpp",
+                   "soundmanagerconfig.cpp",
+                   "audiopath.cpp",
                    "dlgprefrecord.cpp",
                    "playerinfo.cpp",
 
@@ -505,6 +532,7 @@ class MixxxCore(Feature):
                    "recording/encoder.cpp",
 
                    "segmentation.cpp",
+                   "tapfilter.cpp",
                    ]
 
         # Uic these guys (they're moc'd automatically after this) - Generates
@@ -518,6 +546,7 @@ class MixxxCore(Feature):
         build.env.Uic4('dlgprefeqdlg.ui')
         build.env.Uic4('dlgprefcrossfaderdlg.ui')
         build.env.Uic4('dlgprefbpmdlg.ui')
+        build.env.Uic4('dlgprefreplaygaindlg.ui')
         build.env.Uic4('dlgbpmschemedlg.ui')
         # build.env.Uic4('dlgbpmtapdlg.ui')
         build.env.Uic4('dlgprefvinyldlg.ui')
@@ -527,6 +556,7 @@ class MixxxCore(Feature):
         build.env.Uic4('dlgtrackinfo.ui')
         build.env.Uic4('dlgprepare.ui')
         build.env.Uic4('dlgautodj.ui')
+        build.env.Uic4('dlgprefsounditem.ui')
 
         # Add the QRC file which compiles in some extra resources (prefs icons,
         # etc.)
@@ -590,19 +620,6 @@ class MixxxCore(Feature):
             # Need this on Windows until we have UTF16 support in Mixxx
             build.env.Append(CPPDEFINES='UNICODE')
             build.env.Append(CPPDEFINES='WIN%s' % build.bitwidth) # WIN32 or WIN64
-
-            #Needed for Midi stuff, should be able to remove since PortMIDI
-            #Tobias Rafreider: libshout won't compile if you uncomment this
-            #build.env.Append(LIBS = 'ogg_static')
-            #build.env.Append(LIBS = 'vorbis_static')
-            #build.env.Append(LIBS = 'vorbisfile_static')
-            '''build.env.Append(LIBS = 'WinMM');
-            build.env.Append(LIBS = 'imm32')
-            build.env.Append(LIBS = 'wsock32')
-            build.env.Append(LIBS = 'delayimp')
-            build.env.Append(LIBS = 'winspool')
-            build.env.Append(LIBS = 'shell32')'''
-
 
         elif build.platform_is_linux:
             build.env.Append(CPPDEFINES='__LINUX__')
@@ -676,8 +693,8 @@ class MixxxCore(Feature):
             build.env.Append(CPPDEFINES=('UNIX_SHARE_PATH', r'\"%s\"' % share_path))
 
     def depends(self, build):
-        return [SoundTouch, KissFFT, PortAudio, PortMIDI, Qt,
-                FidLib, Mad, SndFile, OggVorbis, OpenGL, TagLib]
+        return [SoundTouch, KissFFT, ReplayGain, PortAudio, PortMIDI, Qt,
+                FidLib, Mad, SndFile, FLAC, OggVorbis, OpenGL, TagLib]
 
     def post_dependency_check_configure(self, build, conf):
         """Sets up additional things in the Environment that must happen

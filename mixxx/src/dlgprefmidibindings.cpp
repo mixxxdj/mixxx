@@ -27,7 +27,6 @@
 #include "dlgprefmidibindings.h"
 #include "midi/mididevice.h"
 #include "midi/mididevicemanager.h"
-#include "widget/wwidget.h"
 #include "configobject.h"
 #include "midi/midimapping.h"
 
@@ -38,14 +37,17 @@
 
 DlgPrefMidiBindings::DlgPrefMidiBindings(QWidget *parent, MidiDevice* midiDevice,
                                          MidiDeviceManager* midiDeviceManager,
-                                         ConfigObject<ConfigValue> *pConfig) :
-                            QWidget(parent), Ui::DlgPrefMidiBindingsDlg() {
+                                         ConfigObject<ConfigValue> *pConfig)
+    : QWidget(parent), Ui::DlgPrefMidiBindingsDlg()
+{
     setupUi(this);
     m_pConfig = pConfig;
     m_pMidiDevice = midiDevice;
     m_pMidiDeviceManager = midiDeviceManager;
 
     m_pDlgMidiLearning = NULL;
+    
+    m_bDirty = false;
 
     labelDeviceName->setText(m_pMidiDevice->getName());
 
@@ -100,17 +102,28 @@ DlgPrefMidiBindings::DlgPrefMidiBindings(QWidget *parent, MidiDevice* midiDevice
 
     //Input bindings
     connect(btnMidiLearnWizard, SIGNAL(clicked()), this, SLOT(slotShowMidiLearnDialog()));
+    connect(btnMidiLearnWizard, SIGNAL(clicked()), this, SLOT(slotDirty()));
     connect(btnClearAllInputBindings, SIGNAL(clicked()), this, SLOT(slotClearAllInputBindings()));
+    connect(btnClearAllInputBindings, SIGNAL(clicked()), this, SLOT(slotDirty()));
     connect(btnRemoveInputBinding, SIGNAL(clicked()), this, SLOT(slotRemoveInputBinding()));
+    connect(btnRemoveInputBinding, SIGNAL(clicked()), this, SLOT(slotDirty()));
     connect(btnAddInputBinding, SIGNAL(clicked()), this, SLOT(slotAddInputBinding()));
+    connect(btnAddInputBinding, SIGNAL(clicked()), this, SLOT(slotDirty()));
 
     //Output bindings
     connect(btnClearAllOutputBindings, SIGNAL(clicked()), this, SLOT(slotClearAllOutputBindings()));
+    connect(btnClearAllOutputBindings, SIGNAL(clicked()), this, SLOT(slotDirty()));
     connect(btnRemoveOutputBinding, SIGNAL(clicked()), this, SLOT(slotRemoveOutputBinding()));
+    connect(btnRemoveOutputBinding, SIGNAL(clicked()), this, SLOT(slotDirty()));
     connect(btnAddOutputBinding, SIGNAL(clicked()), this, SLOT(slotAddOutputBinding()));
+    connect(btnAddOutputBinding, SIGNAL(clicked()), this, SLOT(slotDirty()));
 
     connect(comboBoxPreset, SIGNAL(activated(const QString&)), this, SLOT(slotLoadMidiMapping(const QString&)));
+    connect(comboBoxPreset, SIGNAL(activated(const QString&)), this, SLOT(slotDirty()));
 
+    connect(m_pInputMappingTableView, SIGNAL(doubleClicked(const QModelIndex &)), this, SLOT(slotDirty()));
+    connect(m_pOutputMappingTableView, SIGNAL(doubleClicked(const QModelIndex &)), this, SLOT(slotDirty()));
+    
     //Load the list of presets into the presets combobox.
     enumeratePresets();
 
@@ -126,6 +139,11 @@ DlgPrefMidiBindings::~DlgPrefMidiBindings() {
     delete m_pMidiStatusDelegate;
 
     delete m_deleteMIDIInputRowAction;
+}
+
+void DlgPrefMidiBindings::slotDirty ()
+{
+    m_bDirty = true;
 }
 
 void DlgPrefMidiBindings::enumerateOutputDevices()
@@ -163,16 +181,23 @@ void DlgPrefMidiBindings::enumeratePresets()
     // when a user has their controller plugged in)
     comboBoxPreset->addItem("...");
 
-    QString midiDirPath = m_pConfig->getConfigPath().append("midi/");
-    QDirIterator it(midiDirPath, QDirIterator::Subdirectories);
-    while (it.hasNext())
-    {
-        it.next(); //Advance iterator. We get the filename from the next line. (It's a bit weird.)
-        QString curMapping = it.fileName();
-        if (curMapping.endsWith(MIDI_MAPPING_EXTENSION)) //blah, thanks for nothing Qt
+    // paths to search for midi presets
+    QList<QString> midiDirPaths;
+    midiDirPaths.append(LPRESETS_PATH);
+    midiDirPaths.append(m_pConfig->getConfigPath().append("midi/"));
+
+    QListIterator<QString> itpth(midiDirPaths);
+    while (itpth.hasNext()) {
+        QDirIterator it(itpth.next());
+        while (it.hasNext())
         {
-            curMapping.chop(QString(MIDI_MAPPING_EXTENSION).length()); //chop off the .midi.xml
-            presetsList.append(curMapping);
+            it.next(); //Advance iterator. We get the filename from the next line. (It's a bit weird.)
+            QString curMapping = it.fileName();
+            if (curMapping.endsWith(MIDI_MAPPING_EXTENSION)) //blah, thanks for nothing Qt
+            {
+                curMapping.chop(QString(MIDI_MAPPING_EXTENSION).length()); //chop off the .midi.xml
+                presetsList.append(curMapping);
+            }
         }
     }
     //Sort in alphabetical order
@@ -202,33 +227,40 @@ void DlgPrefMidiBindings::slotUpdate() {
 
     //Connect the "Enabled" checkbox after the checkbox state is set
     connect(chkEnabledDevice, SIGNAL(stateChanged(int)), this, SLOT(slotDeviceState(int)));
+    connect(chkEnabledDevice, SIGNAL(stateChanged(int)), this, SLOT(slotDirty()));
 }
 
 /* slotApply()
  * Called when the OK button is pressed.
  */
 void DlgPrefMidiBindings::slotApply() {
-    /* User has pressed OK, so enable or disable the device, write the controls to the DOM, and reload the MIDI
-     * bindings. */
-    m_pMidiDevice->disableMidiLearn();
-    if (chkEnabledDevice->isChecked()) {
-        //Enable the device.
-        enableDevice();
-
-        //Disable processing of MIDI messages received from the device in order to
-        //prevent a race condition while we modify the MIDI mapping.
-        m_pMidiDevice->setReceiveInhibit(true);
-        m_pMidiDevice->getMidiMapping()->applyPreset();
-        m_pMidiDevice->setReceiveInhibit(false);
-
-        //FIXME: We need some logic like this to make changing the output device work.
-        //       See MidiDeviceManager::associateInputAndOutputDevices() for more info...
-        /*
-        if (comboBoxOutputDevice->currentText() != tr("None"))
-            m_pMidiDeviceManager->associateInputAndOutputDevices(m_pMidiDevice, comboBoxOutputDevice->currentText());
-        */
+    /* User has pressed OK, so enable or disable the device, write the
+     * controls to the DOM, and reload the MIDI bindings.  FIXED: only
+     * do this if the user has changed the preferences.
+     */
+    if (m_bDirty)
+    {
+        m_pMidiDevice->disableMidiLearn();
+        if (chkEnabledDevice->isChecked()) {
+            //Enable the device.
+            enableDevice();
+            
+            //Disable processing of MIDI messages received from the device in order to
+            //prevent a race condition while we modify the MIDI mapping.
+            m_pMidiDevice->setReceiveInhibit(true);
+            m_pMidiDevice->getMidiMapping()->applyPreset();
+            m_pMidiDevice->setReceiveInhibit(false);
+            
+            //FIXME: We need some logic like this to make changing the output device work.
+            //       See MidiDeviceManager::associateInputAndOutputDevices() for more info...
+            /*
+              if (comboBoxOutputDevice->currentText() != tr("None"))
+              m_pMidiDeviceManager->associateInputAndOutputDevices(m_pMidiDevice, comboBoxOutputDevice->currentText());
+            */
+        }
+        else disableDevice();
     }
-    else disableDevice();
+    m_bDirty = false;    
 }
 
 void DlgPrefMidiBindings::slotShowMidiLearnDialog() {
@@ -286,7 +318,10 @@ void DlgPrefMidiBindings::slotLoadMidiMapping(const QString &name) {
          }
     }
 
-    QString filename = m_pConfig->getConfigPath().append("midi/") + name + MIDI_MAPPING_EXTENSION;
+    QString filename = LPRESETS_PATH + name + MIDI_MAPPING_EXTENSION;
+    QFile ftest(filename);
+    if ( !ftest.exists() ) filename = m_pConfig->getConfigPath().append("midi/") + name + MIDI_MAPPING_EXTENSION;
+
     if (!filename.isNull()) m_pMidiDevice->getMidiMapping()->loadPreset(filename, true);    // It's applied on prefs close
     m_pInputMappingTableView->update();
 

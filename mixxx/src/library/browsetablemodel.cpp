@@ -45,6 +45,9 @@ const QString BrowseTableModel::currentSearch()
 bool BrowseTableModel::isColumnInternal(int) {
     return false;
 }
+bool BrowseTableModel::isColumnHiddenByDefault(int) {
+    return false;
+}
 
 void BrowseTableModel::moveTrack(const QModelIndex&, const QModelIndex&) {
 
