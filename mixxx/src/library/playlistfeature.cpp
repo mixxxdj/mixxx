@@ -154,26 +154,41 @@ void PlaylistFeature::slotRenamePlaylist()
 
     QString oldName = m_lastRightClickedIndex.data().toString();
     int playlistId = m_playlistDao.getPlaylistIdFromName(oldName);
+    
+    QString newName;
+    bool validNameGiven = false;
+    
+    do {
+        bool ok = false;
+        newName = QInputDialog::getText(NULL,
+                                        tr("Rename Playlist"),
+                                        tr("New playlist name:"),
+                                        QLineEdit::Normal,
+                                        oldName,
+                                        &ok).trimmed();
+  
+        if (!ok || oldName == newName) {
+            return;
+        }
 
-    bool ok = false;
-    QString newName = QInputDialog::getText(NULL,
-                                            tr("Rename Playlist"),
-                                            tr("New playlist name:"),
-                                            QLineEdit::Normal,
-                                            oldName,
-                                            &ok);
+        int existingId = m_playlistDao.getPlaylistIdFromName(newName);
+        
+        if (existingId != -1) {
+            QMessageBox::warning(NULL,
+                                tr("Renaming Playlist Failed"),
+                                tr("A playlist by that name already exists."));
+        }
+        else if (newName.isEmpty()) {
+            QMessageBox::warning(NULL,
+                                tr("Renaming Playlist Failed"),
+                                tr("A playlist cannot have a blank name."));
+        }
+        else {
+            validNameGiven = true;
+        }
+    } while (!validNameGiven);
 
-    if (!ok) {
-        return;
-    }
-
-    if (newName.isEmpty()) {
-        QMessageBox::warning(NULL,
-                            tr("Renaming Playlist Failed"),
-                            tr("A playlist cannot have a blank name."));
-        return;
-    }
-
+    qDebug() << "got out of the loop";
     m_playlistDao.renamePlaylist(playlistId, newName);
     m_playlistTableModel.select();
     emit(featureUpdated());

@@ -185,23 +185,39 @@ void CrateFeature::slotRenameCrate() {
     QString oldName = m_lastRightClickedIndex.data().toString();
     int crateId = m_pTrackCollection->getCrateDAO().getCrateIdByName(oldName);
 
-    bool ok = false;
-    QString newName = QInputDialog::getText(NULL,
-                                            tr("Rename Crate"),
-                                            tr("New crate name:"),
-                                            QLineEdit::Normal,
-                                            oldName,
-                                            &ok);
-    if (!ok) {
-        return;
-    }
+    QString newName;
+    bool validNameGiven = false;
+    
+    do {
+        bool ok = false;
+        newName = QInputDialog::getText(NULL,
+                                        tr("Rename Crate"),
+                                        tr("New crate name:"),
+                                        QLineEdit::Normal,
+                                        oldName,
+                                        &ok).trimmed();
+                                        
+        if (!ok || newName == oldName) {
+            return;
+        }
 
-    if (newName.isEmpty()) {
-        QMessageBox::warning(NULL,
-                             tr("Renaming Crate Failed"),
-                             tr("A crate cannot have a blank name."));
-        return;
-    } 
+        int existingId = m_pTrackCollection->getCrateDAO().getCrateIdByName(newName);
+
+        if (existingId != -1) {
+            QMessageBox::warning(NULL,
+                                tr("Renaming Crate Failed"),
+                                tr("A crate by that name already exists."));
+        }
+        else if (newName.isEmpty()) {
+            QMessageBox::warning(NULL,
+                                tr("Renaming Crate Failed"),
+                                tr("A crate cannot have a blank name."));
+        }
+        else {
+            validNameGiven = true;
+        }
+    } while (!validNameGiven);
+
 
     if (m_pTrackCollection->getCrateDAO().renameCrate(crateId, newName)) {
         m_crateListTableModel.select();
