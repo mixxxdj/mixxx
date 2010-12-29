@@ -28,6 +28,10 @@ PlaylistFeature::PlaylistFeature(QObject* parent, TrackCollection* pTrackCollect
     connect(m_pDeletePlaylistAction, SIGNAL(triggered()),
             this, SLOT(slotDeletePlaylist()));
 
+    m_pRenamePlaylistAction = new QAction(tr("Rename"),this);
+    connect(m_pRenamePlaylistAction, SIGNAL(triggered()),
+            this, SLOT(slotRenamePlaylist()));
+
     // Setup the sidebar playlist model
     m_playlistTableModel.setTable("Playlists");
     m_playlistTableModel.setFilter("hidden=0");
@@ -109,6 +113,7 @@ void PlaylistFeature::onRightClickChild(const QPoint& globalPos, QModelIndex ind
     QMenu menu(NULL);
     menu.addAction(m_pCreatePlaylistAction);
     menu.addSeparator();
+    menu.addAction(m_pRenamePlaylistAction);
     menu.addAction(m_pDeletePlaylistAction);
     menu.exec(globalPos);
 }
@@ -166,6 +171,54 @@ void PlaylistFeature::slotCreatePlaylist() {
                              tr("An unknown error occurred while creating playlist: ")
                               + name);
     }
+}
+
+void PlaylistFeature::slotRenamePlaylist()
+{
+    qDebug() << "slotRenamePlaylist()";
+
+    QString oldName = m_lastRightClickedIndex.data().toString();
+    int playlistId = m_playlistDao.getPlaylistIdFromName(oldName);
+    
+    QString newName;
+    bool validNameGiven = false;
+    
+    do {
+        bool ok = false;
+        newName = QInputDialog::getText(NULL,
+                                        tr("Rename Playlist"),
+                                        tr("New playlist name:"),
+                                        QLineEdit::Normal,
+                                        oldName,
+                                        &ok).trimmed();
+  
+        if (!ok || oldName == newName) {
+            return;
+        }
+
+        int existingId = m_playlistDao.getPlaylistIdFromName(newName);
+        
+        if (existingId != -1) {
+            QMessageBox::warning(NULL,
+                                tr("Renaming Playlist Failed"),
+                                tr("A playlist by that name already exists."));
+        }
+        else if (newName.isEmpty()) {
+            QMessageBox::warning(NULL,
+                                tr("Renaming Playlist Failed"),
+                                tr("A playlist cannot have a blank name."));
+        }
+        else {
+            validNameGiven = true;
+        }
+    } while (!validNameGiven);
+
+    m_playlistDao.renamePlaylist(playlistId, newName);
+    clearChildModel();
+    m_playlistTableModel.select();
+    constructChildModel();
+    emit(featureUpdated());
+    m_pPlaylistTableModel->setPlaylist(playlistId);
 }
 
 void PlaylistFeature::slotDeletePlaylist()
