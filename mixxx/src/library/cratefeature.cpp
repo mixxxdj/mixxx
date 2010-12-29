@@ -130,24 +130,42 @@ void CrateFeature::onRightClickChild(const QPoint& globalPos, QModelIndex index)
 
 void CrateFeature::slotCreateCrate() {
 
-    bool ok = false;
-    QString name = QInputDialog::getText(NULL,
-                                         tr("New Crate"),
-                                         tr("Crate name:"),
-                                         QLineEdit::Normal, tr("New Crate"),
-                                         &ok);
-
-    if (!ok)
-        return;
-
+    QString name;
+    bool validNameGiven = false;
     CrateDAO& crateDao = m_pTrackCollection->getCrateDAO();
+    
+    do {
+        bool ok = false;
+        name = QInputDialog::getText(NULL,
+                                     tr("New Crate"),
+                                     tr("Crate name:"),
+                                     QLineEdit::Normal, tr("New Crate"),
+                                     &ok).trimmed();
 
-    if (name == "") {
-        QMessageBox::warning(NULL,
-                             tr("Crate Creation Failed"),
-                             tr("A crate cannot have a blank name."));
-        return;
-    } else if (crateDao.createCrate(name)) {
+        if (!ok)
+            return;
+
+        int existingId = crateDao.getCrateIdByName(name);
+        
+        if (existingId != -1) {
+            QMessageBox::warning(NULL,
+                                 tr("Creating Crate Failed"),
+                                 tr("A crate by that name already exists."));
+        }
+        else if (name.isEmpty()) {
+            QMessageBox::warning(NULL,
+                                 tr("Creating Crate Failed"),
+                                 tr("A crate cannot have a blank name."));
+        }
+        else {
+            validNameGiven = true;
+        }
+        
+    } while (!validNameGiven);
+
+    bool crateCreated = crateDao.createCrate(name);
+    
+    if (crateCreated) {
         m_crateListTableModel.select();
         // Switch to the new crate.
         int crate_id = crateDao.getCrateIdByName(name);
@@ -156,10 +174,11 @@ void CrateFeature::slotCreateCrate() {
         // TODO(XXX) set sidebar selection
         emit(featureUpdated());
     } else {
-        qDebug() << "Error creating crate (may already exist) with name " << name;
+        qDebug() << "Error creating crate with name " << name;
         QMessageBox::warning(NULL,
                              tr("Creating Crate Failed"),
-                             tr("A crate by that name already exists."));
+                             tr("An unknown error occurred while creating crate: ")
+                             + name);
 
     }
 }
