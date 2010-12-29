@@ -939,6 +939,7 @@ void MixxxApp::slotFileLoadSongPlayer2()
 
 void MixxxApp::slotFileQuit()
 {
+    hide();
     qApp->quit();
 }
 
