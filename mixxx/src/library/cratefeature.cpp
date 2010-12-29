@@ -27,6 +27,10 @@ CrateFeature::CrateFeature(QObject* parent,
     m_pDeleteCrateAction = new QAction(tr("Remove"),this);
     connect(m_pDeleteCrateAction, SIGNAL(triggered()),
             this, SLOT(slotDeleteCrate()));
+			
+	m_pRenameCrateAction = new QAction(tr("Rename"),this);
+	connect(m_pRenameCrateAction, SIGNAL(triggered()),
+			this, SLOT(slotRenameCrate()));
 
     m_crateListTableModel.setTable("crates");
     m_crateListTableModel.removeColumn(m_crateListTableModel.fieldIndex("id"));
@@ -139,6 +143,7 @@ void CrateFeature::onRightClickChild(const QPoint& globalPos, QModelIndex index)
     QMenu menu(NULL);
     menu.addAction(m_pCreateCrateAction);
     menu.addSeparator();
+	menu.addAction(m_pRenameCrateAction);
     menu.addAction(m_pDeleteCrateAction);
     menu.exec(globalPos);
 }
@@ -211,6 +216,55 @@ void CrateFeature::slotDeleteCrate() {
         emit(featureUpdated());
     } else {
         qDebug() << "Failed to delete crateId" << crateId;
+    }
+}
+
+void CrateFeature::slotRenameCrate() {
+    QString oldName = m_lastRightClickedIndex.data().toString();
+    int crateId = m_pTrackCollection->getCrateDAO().getCrateIdByName(oldName);
+
+    QString newName;
+    bool validNameGiven = false;
+    
+    do {
+        bool ok = false;
+        newName = QInputDialog::getText(NULL,
+                                        tr("Rename Crate"),
+                                        tr("New crate name:"),
+                                        QLineEdit::Normal,
+                                        oldName,
+                                        &ok).trimmed();
+                                        
+        if (!ok || newName == oldName) {
+            return;
+        }
+
+        int existingId = m_pTrackCollection->getCrateDAO().getCrateIdByName(newName);
+
+        if (existingId != -1) {
+            QMessageBox::warning(NULL,
+                                tr("Renaming Crate Failed"),
+                                tr("A crate by that name already exists."));
+        }
+        else if (newName.isEmpty()) {
+            QMessageBox::warning(NULL,
+                                tr("Renaming Crate Failed"),
+                                tr("A crate cannot have a blank name."));
+        }
+        else {
+            validNameGiven = true;
+        }
+    } while (!validNameGiven);
+
+
+    if (m_pTrackCollection->getCrateDAO().renameCrate(crateId, newName)) {
+	clearChildModel();
+        m_crateListTableModel.select();
+	constructChildModel();
+        emit(featureUpdated());
+        m_crateTableModel.setCrate(crateId);
+    } else {
+        qDebug() << "Failed to rename crateId" << crateId;
     }
 }
 /**
