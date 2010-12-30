@@ -358,15 +358,13 @@ void WOverview::paintEvent(QPaintEvent *)
     // Draw waveform, then playpos
     paint.drawPixmap(0, 0, *m_pScreenBuffer);
 
-    // Draw play position
-    paint.setPen(m_qColorMarker);
-    paint.drawLine(m_iPos,   0, m_iPos,   height());
-    paint.drawLine(m_iPos+1, 0, m_iPos+1, height());
-    //paint.drawLine(m_iPos-1, 0, m_iPos-1, height());
-
-    // Draw hotcues
-
     if (m_liSampleDuration > 0) {
+        // Draw play position
+        paint.setPen(m_qColorMarker);
+        paint.drawLine(m_iPos,   0, m_iPos,   height());
+        paint.drawLine(m_iPos+1, 0, m_iPos+1, height());
+        //paint.drawLine(m_iPos-1, 0, m_iPos-1, height());
+
         float fPos;
 
         // Draw loop markers
@@ -404,6 +402,7 @@ void WOverview::paintEvent(QPaintEvent *)
         paint.setPen(m_qColorMarker);
         paint.setFont(font);
 
+        // Draw hotcues
         for (int i = 0; i < m_hotcues.size(); ++i) {
             int position = m_hotcues[i];
             if (position == -1)
