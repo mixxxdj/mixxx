@@ -1198,7 +1198,7 @@ void MixxxApp::slotHelpAbout()
 "Mikko Jania<br>"
 "Juan Pedro Bol&iacute;var Puente<br>"
 "Linus Amvall<br>"
-"Irwin Céspedes<br>"
+"Irwin C&eacute;spedes B<br>"
 
 "</p>"
 "<p align=\"center\"><b>And special thanks to:</b></p>"
