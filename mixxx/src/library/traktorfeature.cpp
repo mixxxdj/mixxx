@@ -563,7 +563,7 @@ QString TraktorFeature::getTraktorMusicDatabase()
     musicFolder = settings.value("RootDirectory", QDir::homePath()).toString();
     musicFolder += "collection.nml";
 #elif defined(__LINUX__)
-		musicFolder =  QDir::homePath();
+		musicFolder =  QDir::homePath() + "/collection.nml";
 #else
 		musicFolder = "";
 #endif

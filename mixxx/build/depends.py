@@ -489,9 +489,9 @@ class MixxxCore(Feature):
 				   "library/traktorplaylistmodel.cpp",
 
                    "xmlparse.cpp",
-                   "parser.cpp",
-                   "parserpls.cpp",
-                   "parserm3u.cpp",
+                   "library/parser.cpp",
+                   "library/parserpls.cpp",
+                   "library/parserm3u.cpp",
 
                    "bpm/bpmscheme.cpp",
 
