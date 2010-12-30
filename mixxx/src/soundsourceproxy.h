@@ -53,6 +53,7 @@ public:
     /** Returns filename */
     QString getFilename();
     static QList<QString> supportedFileExtensions();
+    static QList<QString> supportedFileExtensionsByPlugins();
     static QString supportedFileExtensionsString();
     static QString supportedFileExtensionsRegex();
 
