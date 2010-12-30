@@ -132,11 +132,13 @@ class MixxxApp : public QMainWindow
   protected:
     /** Event filter to block certain events (eg. tooltips if tooltips are disabled) */
     bool eventFilter(QObject *obj, QEvent *event);
+    void closeEvent(QCloseEvent *event);
 
 
 
   private:
     void checkDirectRendering();
+    bool confirmExit();
 
     // Pointer to the root GUI widget
     QWidget* m_pView;
