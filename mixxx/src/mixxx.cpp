@@ -244,6 +244,13 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
     if (m_pConfig->getValueString(
         ConfigKey("[Playlist]","Directory")).length() < 1 || !dir.exists())
     {
+        // TODO this needs to be smarter, we can't distinguish between an empty
+        // path return value (not sure if this is normally possible, but it is
+        // possible with the Windows 7 "Music" library, which is what
+        // QDesktopServices::storageLocation(QDesktopServices::MusicLocation)
+        // resolves to) and a user hitting 'cancel'. If we get a blank return
+        // but the user didn't hit cancel, we need to know this and let the
+        // user take some course of action -- bkgood
         QString fd = QFileDialog::getExistingDirectory(
             this, tr("Choose music library directory"),
             QDesktopServices::storageLocation(QDesktopServices::MusicLocation));
@@ -254,6 +261,14 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
             m_pConfig->Save();
             hasChanged_MusicDir = true;
         }
+    }
+
+    // library dies in seemingly unrelated qtsql error about not having a
+    // sqlite driver if this path doesn't exist. Normally config->Save()
+    // above would make it but if it doesn't get run for whatever reason
+    // we get hosed -- bkgood
+    if (!QDir(QDir::homePath().append("/").append(SETTINGS_PATH)).exists()) {
+        QDir().mkpath(QDir::homePath().append("/").append(SETTINGS_PATH));
     }
 
     m_pLibrary = new Library(this, m_pConfig, bFirstRun || bUpgraded);
