@@ -1,4 +1,4 @@
-qDebug#include <QtDebug>
+#include <QtDebug>
 
 #include "defs.h"
 #include "trackbeats.h"
