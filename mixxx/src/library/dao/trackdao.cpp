@@ -563,6 +563,7 @@ TrackPointer TrackDAO::getTrackFromDB(QSqlQuery &query) const
         bool header_parsed = query.value(query.record().indexOf("header_parsed")).toBool();
 
         TrackInfoObject* track = new TrackInfoObject(location, false);
+        TrackPointer pTrack = TrackPointer(track, this->deleteTrack);
 
         // TIO already stats the file to see if it exists, what its length is,
         // etc. So don't bother setting it.
@@ -595,7 +596,7 @@ TrackPointer TrackDAO::getTrackFromDB(QSqlQuery &query) const
             query.value(query.record().indexOf("beats")).toByteArray());
         if ( beatsblob->size() > 1 )
         {
-            TrackBeats* pTrackBeats = new TrackBeats(TrackPointer(track));
+            TrackBeats* pTrackBeats = new TrackBeats(pTrack);
             pTrackBeats->unserializeFromBlob(beatsblob);
             track->setTrackBeats(pTrackBeats, false);
         }
@@ -618,8 +619,6 @@ TrackPointer TrackDAO::getTrackFromDB(QSqlQuery &query) const
                 this, SLOT(slotTrackChanged()));
         connect(track, SIGNAL(save()),
                 this, SLOT(slotTrackSave()));
-
-        TrackPointer pTrack = TrackPointer(track, this->deleteTrack);
 
         // Automatic conversion to a weak pointer
         m_tracks[trackId] = pTrack;
