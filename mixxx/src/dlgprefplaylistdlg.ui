@@ -111,6 +111,20 @@
         </property>
        </widget>
       </item>
+      <item row="2" column="0">
+       <widget class="QLabel" name="label_3">
+        <property name="text">
+         <string>Loaded Plugins:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="1">
+       <widget class="QLabel" name="pluginsLabel">
+        <property name="text">
+         <string>None</string>
+        </property>
+       </widget>
+      </item>
      </layout>
     </widget>
    </item>

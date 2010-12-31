@@ -119,9 +119,17 @@ bool WGLWaveformViewer::eventFilter(QObject *o, QEvent *e) {
 
 void WGLWaveformViewer::dragEnterEvent(QDragEnterEvent * event)
 {
-    // Accept the enter event if the thing is a filepath.
-    if (event->mimeData()->hasUrls())
-        event->acceptProposedAction();
+    // Accept the enter event if the thing is a filepath and nothing's playing
+    // in this deck.
+    if (event->mimeData()->hasUrls()) {
+        ControlObject *pPlayCO = ControlObject::getControl(
+            ConfigKey(m_pGroup, "play"));
+        if (pPlayCO && pPlayCO->get()) {
+            event->ignore();
+        } else {
+            event->acceptProposedAction();
+        }
+    }
 }
 
 void WGLWaveformViewer::dropEvent(QDropEvent * event)
