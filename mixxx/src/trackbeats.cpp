@@ -1,4 +1,4 @@
-#include <QtDebug>
+qDebug#include <QtDebug>
 
 #include "defs.h"
 #include "trackbeats.h"
@@ -193,15 +193,13 @@ QByteArray *TrackBeats::serializeToBlob()
     
     while ( iter.hasNext())
     {
-        qDebug() << "TIB: Offset=" << iter.value();
         *ptr++ = iter.value();
         iter.next();
     }
     
     blob = new QByteArray((char *)buffer, getBeatCount() * sizeof(int));
     delete []buffer;
-    
-    qDebug() << "TIB: Blob Length:" << blob->size();
+
     return blob;
 }
 
@@ -213,7 +211,6 @@ void TrackBeats::unserializeFromBlob(QByteArray *blob)
     
     for (i = blob->size() / sizeof(int); --i; ptr++)
     {
-        qDebug() << "TIB: Offset=" << *ptr;
         addBeatSample(*ptr);
     }
 }
