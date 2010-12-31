@@ -277,7 +277,7 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
 
     //Scan the library for new files and directories
     bool rescan = (bool)m_pConfig->getValueString(ConfigKey("[Library]","RescanOnStartup")).toInt();
-    if(rescan || hasChanged_MusicDir){    
+    if(rescan || hasChanged_MusicDir){
         m_pLibraryScanner->scan(
             m_pConfig->getValueString(ConfigKey("[Playlist]", "Directory")));
         qDebug() << "Rescan finished";
@@ -997,6 +997,10 @@ void MixxxApp::slotFileLoadSongPlayer2()
 
 void MixxxApp::slotFileQuit()
 {
+    if (!confirmExit()) {
+        return;
+    }
+    hide();
     qApp->quit();
 }
 
@@ -1289,10 +1293,11 @@ void MixxxApp::slotHelpAbout()
 "David Gnedt<br>"
 "Antonio Passamani<br>"
 "Guy Martin<br>"
-"Anders Gunnarson<br>"
+"Anders Gunnarsson<br>"
 "Alex Barker<br>"
 "Mikko Jania<br>"
 "Juan Pedro Bol&iacute;var Puente<br>"
+"Linus Amvall<br>"
 
 "</p>"
 "<p align=\"center\"><b>And special thanks to:</b></p>"
@@ -1301,6 +1306,7 @@ void MixxxApp::slotHelpAbout()
 "Hercules<br>"
 "EKS<br>"
 "Echo Digital Audio<br>"
+"JP Disco<br>"
 "Adam Bellinson<br>"
 "Alexandre Bancel<br>"
 "Melanie Thielker<br>"
@@ -1446,7 +1452,12 @@ bool MixxxApp::eventFilter(QObject *obj, QEvent *event)
         // standard event processing
         return QObject::eventFilter(obj, event);
     }
+}
 
+void MixxxApp::closeEvent(QCloseEvent *event) {
+    if (!confirmExit()) {
+        event->ignore();
+    }
 }
 
 void MixxxApp::slotScanLibrary()
@@ -1508,4 +1519,30 @@ void MixxxApp::checkDirectRendering() {
                              "Direct rendering is not enabled on your machine.\n\nThis means that the waveform displays will be very\nslow and take a lot of CPU time. Either update your\nconfiguration to enable direct rendering, or disable\nthe waveform displays in the control panel by\nselecting \"Simple\" under waveform displays.\nNOTE: In case you run on NVidia hardware,\ndirect rendering may not be present, but you will\nnot experience a degradation in performance.");
         m_pConfig->set(ConfigKey("[Direct Rendering]", "Warned"), ConfigValue(QString("yes")));
     }
+}
+
+bool MixxxApp::confirmExit() {
+    bool playing(false);
+    unsigned int deckCount = m_pPlayerManager->numDecks();
+    for (unsigned int i = 0; i < deckCount; ++i) {
+        ControlObject *pPlayCO(
+            ControlObject::getControl(
+                ConfigKey(QString("[Channel%1]").arg(i + 1), "play")
+            )
+        );
+        if (pPlayCO && pPlayCO->get()) {
+            playing = true;
+            break;
+        }
+    }
+    if (playing) {
+        QMessageBox::StandardButton btn = QMessageBox::question(this,
+            tr("Confirm Exit"),
+            tr("A deck is currently playing. Exit Mixxx?"),
+            QMessageBox::Yes | QMessageBox::No, QMessageBox::No);
+        if (btn == QMessageBox::No) {
+            return false;
+        }
+    }
+    return true;
 }
