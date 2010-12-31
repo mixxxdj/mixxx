@@ -346,8 +346,6 @@ void TrackInfoObject::setTrackBeats(TrackBeats *beats, bool isDirty)
 {
     QMutexLocker lock(&m_qMutex);
     m_pTrackBeats = beats;
-    lock.unlock();
-    
     if ( isDirty )
         setDirty(true);
 
