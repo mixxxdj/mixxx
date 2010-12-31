@@ -68,10 +68,15 @@ int SoundSourceM4A::initializeDecoder()
 {
     // Copy QString to char[] buffer for mp4_open to read from later
     QByteArray qbaFileName;
+#ifdef Q_OS_WIN32
+    // fopen() doesn't do utf8 on windows
+    qbaFileName = m_qFilename.toLocal8Bit();
+#else
     qbaFileName = m_qFilename.toUtf8();
+#endif
     int bytes = m_qFilename.length() + 1;
     ipd.filename = new char[bytes];
-    strncpy(ipd.filename, qbaFileName.data(), bytes);
+    strncpy(ipd.filename, qbaFileName.constData(), bytes);
     ipd.filename[bytes-1] = '\0';
     ipd.remote = false; // File is not an stream
     // The file was loading and failing erratically because
@@ -175,8 +180,14 @@ inline long unsigned SoundSourceM4A::length(){
 
 int SoundSourceM4A::parseHeader(){
     setType("m4a");
-
+    
+#ifdef __WINDOWS__
+    // fopen() doesn't do utf8 on windows
+    TagLib::MP4::File f(getFilename().toLocal8Bit().constData());
+#else
     TagLib::MP4::File f(getFilename().toUtf8().constData());
+#endif
+
     bool result = processTaglibFile(f);
     TagLib::MP4::Tag* tag = f.tag();
 
