@@ -1,8 +1,14 @@
 #include <QtDebug>
 #include <QMenu>
 #include <QInputDialog>
+#include <QFileDialog>
+#include <QDesktopServices>
 
 #include "library/playlistfeature.h"
+#include "library/parser.h"
+#include "library/parserm3u.h"
+#include "library/parserpls.h"
+
 
 #include "widget/wlibrary.h"
 #include "widget/wlibrarysidebar.h"
@@ -31,6 +37,10 @@ PlaylistFeature::PlaylistFeature(QObject* parent, TrackCollection* pTrackCollect
     m_pRenamePlaylistAction = new QAction(tr("Rename"),this);
     connect(m_pRenamePlaylistAction, SIGNAL(triggered()),
             this, SLOT(slotRenamePlaylist()));
+
+    m_pImportPlaylistAction = new QAction(tr("Import Playlist"),this);
+    connect(m_pImportPlaylistAction, SIGNAL(triggered()),
+            this, SLOT(slotImportPlaylist()));
 
     // Setup the sidebar playlist model
     m_playlistTableModel.setTable("Playlists");
@@ -115,6 +125,8 @@ void PlaylistFeature::onRightClickChild(const QPoint& globalPos, QModelIndex ind
     menu.addSeparator();
     menu.addAction(m_pRenamePlaylistAction);
     menu.addAction(m_pDeletePlaylistAction);
+    menu.addSeparator();
+    menu.addAction(m_pImportPlaylistAction);
     menu.exec(globalPos);
 }
 
@@ -309,4 +321,50 @@ void PlaylistFeature::constructChildModel()
 void PlaylistFeature::clearChildModel()
 {
     m_childModel.removeRows(0,m_playlistTableModel.rowCount());
+}
+void PlaylistFeature::slotImportPlaylist()
+{
+    qDebug() << "slotImportPlaylist() row:" ; //<< m_lastRightClickedIndex.data();
+
+
+    QString playlist_file = QFileDialog::getOpenFileName
+            (
+            NULL,
+            tr("Import Playlist"),
+            QDesktopServices::storageLocation(QDesktopServices::MusicLocation),
+            tr("Playlist Files (*.m3u *.pls)") 
+            );
+    //Exit method if user cancelled the open dialog.
+    if (playlist_file.isNull() || playlist_file.isEmpty() ) return;
+
+    Parser* playlist_parser = NULL;
+    
+    if(playlist_file.endsWith(".m3u", Qt::CaseInsensitive))
+    {
+        playlist_parser = new ParserM3u();
+    }
+    else if(playlist_file.endsWith(".pls", Qt::CaseInsensitive))
+    {
+        playlist_parser = new ParserPls();
+    }
+    else
+    {
+        return;
+    }
+    qDebug() << "Start Import Playlist " << playlist_file;
+    QList<QString> entries = playlist_parser->parse(playlist_file);
+
+    qDebug() << "Entries: " << entries.size();
+    
+    //Iterate over the List that holds URLs of playlist entires
+    for (int i = 0; i < entries.size(); ++i) {
+        m_pPlaylistTableModel->addTrack(QModelIndex(), entries[i]);
+        
+    }
+ 
+
+    //delete the parser object
+    if(playlist_parser) delete playlist_parser;
+    
+    
 }
