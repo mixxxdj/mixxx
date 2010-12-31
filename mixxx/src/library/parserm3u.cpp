@@ -10,6 +10,7 @@
 //
 //
 #include <QTextStream>
+#include <QDebug>
 #include "parserm3u.h"
 
 /**
@@ -49,7 +50,16 @@ QList<QString> ParserM3u::parse(QString sFilename)
     clearLocations();
     //qDebug() << "ParserM3u: Starting to parse.";
     if (file.open(QIODevice::ReadOnly) && !isBinary(sFilename)) {
-        QTextStream textstream(&file);
+    	/* Unfortunately, QT 4.7 does not handle <CR> line breaks.
+    	 * This is important on OS X where iTunes, e.g., exports M3U playlists using <CR>
+    	 *
+    	 * Using QFile::readAll() we obtain the complete content of the playlist as a ByteArray.
+    	 * We replace any '\r' with '\n' if applicaple
+    	 * This ensures that playlists from iTunes on OS X can be parsed
+    	 */
+    	QByteArray ba = file.readAll();
+    	ba.replace('\r',"\n");
+        QTextStream textstream(ba.data());
         
         while(!textstream.atEnd()) {
             QString sLine = getFilepath(&textstream, basepath);
@@ -79,6 +89,8 @@ QString ParserM3u::getFilepath(QTextStream *stream, QString basepath)
     QString textline,filename = "";
 
     textline = stream->readLine();
+	textline.replace("\r", "\n");
+    qDebug() << textline;
     while(!textline.isEmpty()){
         if(textline.isNull())
             break;
