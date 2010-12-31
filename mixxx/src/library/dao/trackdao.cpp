@@ -588,6 +588,19 @@ TrackPointer TrackDAO::getTrackFromDB(QSqlQuery &query) const
         track->setReplayGain(replaygain.toFloat());
         track->setWaveSummary(wavesummaryhex, false);
         delete wavesummaryhex;
+
+        // TrackBeats needs the samplerate for it's constructor
+        // so we do it all right here.
+        QByteArray* beatsblob = new QByteArray(
+            query.value(query.record().indexOf("beats")).toByteArray());
+        if ( beatsblob->size() > 1 )
+        {
+            TrackBeats* pTrackBeats = new TrackBeats(TrackPointer(track));
+            pTrackBeats->unserializeFromBlob(beatsblob);
+            track->setTrackBeats(pTrackBeats, false);
+        }
+        delete beatsblob;
+
         track->setTimesPlayed(timesplayed);
         track->setPlayed(played);
         track->setChannels(channels);
@@ -660,7 +673,17 @@ TrackPointer TrackDAO::getTrack(int id) const
     time.start();
     QSqlQuery query(m_database);
 
-    query.prepare("SELECT library.id, artist, title, album, year, genre, tracknumber, filetype, rating, key, track_locations.location as location, track_locations.filesize as filesize, comment, url, duration, bitrate, samplerate, cuepoint, bpm, replaygain, wavesummaryhex, channels, header_parsed, timesplayed, played FROM Library INNER JOIN track_locations ON library.location = track_locations.id WHERE library.id=" + QString("%1").arg(id));
+    query.prepare(
+        "SELECT library.id, artist, title, album, year, genre, tracknumber, "
+        "filetype, rating, key, track_locations.location as location, "
+        "track_locations.filesize as filesize, comment, url, duration, bitrate, "
+        "samplerate, cuepoint, bpm, replaygain, wavesummaryhex, channels, "
+        "header_parsed, timesplayed, played, beats "
+        "FROM Library "
+        "INNER JOIN track_locations "
+            "ON library.location = track_locations.id "
+        "WHERE library.id=" + QString("%1").arg(id)
+    );
 
     TrackPointer pTrack;
 
