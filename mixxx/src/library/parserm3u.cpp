@@ -12,6 +12,7 @@
 #include <QTextStream>
 #include <QDebug>
 #include "parserm3u.h"
+#include <QUrl>
 
 /**
    @author Ingo Kossyk (kossyki@cs.tu-berlin.de)
@@ -89,7 +90,6 @@ QString ParserM3u::getFilepath(QTextStream *stream, QString basepath)
     QString textline,filename = "";
 
     textline = stream->readLine();
-	textline.replace("\r", "\n");
     qDebug() << textline;
     while(!textline.isEmpty()){
         if(textline.isNull())
@@ -97,11 +97,16 @@ QString ParserM3u::getFilepath(QTextStream *stream, QString basepath)
 
         if(!textline.contains("#") && !textline.isEmpty()){
             filename = textline;
-            if(isFilepath(filename)) {
-                return filename;
+            filename.remove("file://");
+            QByteArray strlocbytes = filename.toUtf8();
+            QUrl location = QUrl::fromEncoded(strlocbytes);
+            QString trackLocation = location.toLocalFile();
+            //qDebug() << trackLocation;
+            if(isFilepath(trackLocation)) {
+                return trackLocation;
             } else {
                 // Try relative to m3u dir
-                QString rel = basepath + "/" + filename;
+                QString rel = basepath + "/" + trackLocation;
                 if (isFilepath(rel)) {
                     return rel;
                 }
