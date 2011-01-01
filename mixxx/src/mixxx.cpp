@@ -1201,7 +1201,6 @@ void MixxxApp::slotHelpAbout()
 "Bill Egert<br>"
 "Zach Shutters<br>"
 "Owen Bullock<br>"
-"Bill Good<br>"
 "Graeme Mathieson<br>"
 "Sebastian Actist<br>"
 "Jussi Sainio<br>"
