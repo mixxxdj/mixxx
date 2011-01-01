@@ -71,6 +71,8 @@ PlaylistFeature::~PlaylistFeature() {
     delete m_pPlaylistTableModel;
     delete m_pCreatePlaylistAction;
     delete m_pDeletePlaylistAction;
+    delete m_pImportPlaylistAction;
+    delete m_pRenamePlaylistAction;
 }
 
 QVariant PlaylistFeature::title() {
@@ -351,10 +353,7 @@ void PlaylistFeature::slotImportPlaylist()
     {
         return;
     }
-    qDebug() << "Start Import Playlist " << playlist_file;
     QList<QString> entries = playlist_parser->parse(playlist_file);
-
-    qDebug() << "Entries: " << entries.size();
     
     //Iterate over the List that holds URLs of playlist entires
     for (int i = 0; i < entries.size(); ++i) {
@@ -362,9 +361,6 @@ void PlaylistFeature::slotImportPlaylist()
         
     }
  
-
     //delete the parser object
-    if(playlist_parser) delete playlist_parser;
-    
-    
+    if(playlist_parser) delete playlist_parser;  
 }

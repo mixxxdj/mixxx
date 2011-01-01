@@ -43,6 +43,7 @@ class CrateFeature : public LibraryFeature {
     void slotCreateCrate();
     void slotDeleteCrate();
     void slotRenameCrate();
+    void slotImportPlaylist();
 
   private:
     void constructChildModel();
@@ -52,6 +53,7 @@ class CrateFeature : public LibraryFeature {
     QAction *m_pCreateCrateAction;
     QAction *m_pDeleteCrateAction;
     QAction *m_pRenameCrateAction;
+    QAction *m_pImportPlaylistAction;
     QSqlTableModel m_crateListTableModel;
     CrateTableModel m_crateTableModel;
     QModelIndex m_lastRightClickedIndex;
