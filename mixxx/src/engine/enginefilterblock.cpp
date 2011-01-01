@@ -120,6 +120,8 @@ void EngineFilterBlock::setFilters(bool forceSetting)
         blofi = m_lofiEq->get();
         if(blofi)
         {
+            // why is this DJM800 at line ~34 (LOFI ifdef) and just
+            // bessel_lowpass# here? bkgood
             low = new EngineFilterIIR(bessel_lowpass4,4);
             band = new EngineFilterIIR(bessel_bandpass,8);
             high = new EngineFilterIIR(bessel_highpass4,4);
