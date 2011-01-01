@@ -6,6 +6,9 @@
 #include <QLineEdit>
 
 #include "library/cratefeature.h"
+#include "library/parser.h"
+#include "library/parserm3u.h"
+#include "library/parserpls.h"
 
 #include "library/cratetablemodel.h"
 #include "library/trackcollection.h"
@@ -32,6 +35,10 @@ CrateFeature::CrateFeature(QObject* parent,
 	connect(m_pRenameCrateAction, SIGNAL(triggered()),
 			this, SLOT(slotRenameCrate()));
 
+    m_pImportPlaylistAction = new QAction(tr("Import Playlist"),this);
+    connect(m_pImportPlaylistAction, SIGNAL(triggered()),
+            this, SLOT(slotImportPlaylist()));
+
     m_crateListTableModel.setTable("crates");
     m_crateListTableModel.removeColumn(m_crateListTableModel.fieldIndex("id"));
     m_crateListTableModel.removeColumn(m_crateListTableModel.fieldIndex("show"));
@@ -56,6 +63,12 @@ CrateFeature::CrateFeature(QObject* parent,
 }
 
 CrateFeature::~CrateFeature() {
+    //delete QActions
+    delete m_pCreateCrateAction;
+    delete m_pDeleteCrateAction;
+    delete m_pRenameCrateAction;
+    delete m_pImportPlaylistAction;
+
 }
 
 QVariant CrateFeature::title() {
@@ -145,6 +158,8 @@ void CrateFeature::onRightClickChild(const QPoint& globalPos, QModelIndex index)
     menu.addSeparator();
 	menu.addAction(m_pRenameCrateAction);
     menu.addAction(m_pDeleteCrateAction);
+    menu.addSeparator();
+    menu.addAction(m_pImportPlaylistAction);
     menu.exec(globalPos);
 }
 
@@ -289,5 +304,48 @@ void CrateFeature::constructChildModel()
 void CrateFeature::clearChildModel()
 {
     m_childModel.removeRows(0,m_crateListTableModel.rowCount());
+}
+void CrateFeature::slotImportPlaylist()
+{
+    qDebug() << "slotImportPlaylist() row:" ; //<< m_lastRightClickedIndex.data();
+
+
+    QString playlist_file = QFileDialog::getOpenFileName
+            (
+            NULL,
+            tr("Import Playlist"),
+            QDesktopServices::storageLocation(QDesktopServices::MusicLocation),
+            tr("Playlist Files (*.m3u *.pls)") 
+            );
+    //Exit method if user cancelled the open dialog.
+    if (playlist_file.isNull() || playlist_file.isEmpty() ) return;
+
+    Parser* playlist_parser = NULL;
+    
+    if(playlist_file.endsWith(".m3u", Qt::CaseInsensitive))
+    {
+        playlist_parser = new ParserM3u();
+    }
+    else if(playlist_file.endsWith(".pls", Qt::CaseInsensitive))
+    {
+        playlist_parser = new ParserPls();
+    }
+    else
+    {
+        return;
+    }
+    
+    QList<QString> entries = playlist_parser->parse(playlist_file);
+
+    //Iterate over the List that holds URLs of playlist entires
+    for (int i = 0; i < entries.size(); ++i) {
+        m_crateTableModel.addTrack(QModelIndex(), entries[i]);
+        
+    }
+
+    //delete the parser object
+    if(playlist_parser) delete playlist_parser;
+    
+    
 }
 
