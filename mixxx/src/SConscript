@@ -344,7 +344,8 @@ def BuildRelease(target, source, env):
     else:
         os.system('head -n 2 LICENSE')
 
-    if (raw_input("Go ahead and build installer (yes/[no])? ") == "yes"):
+    #if (raw_input("Go ahead and build installer (yes/[no])? ") == "yes"):
+    if (True):
         print "\nNow building installer..."
         buildwin64 = ""
         command_flag = None

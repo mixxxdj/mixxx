@@ -59,10 +59,13 @@ BrandingText " "
 
 ; The file to write and default installation directory
 !ifdef x64
-    OutFile "${PRODUCT_NAME}-${PRODUCT_VERSION}-x64.exe"
+    ;OutFile "${PRODUCT_NAME}-${PRODUCT_VERSION}-x64.exe"
+    ; Need consistency by taking our version number for automated builds. -- Albert
+    OutFile "${PRODUCT_NAME}-x64.exe"
     ;InstallDir "$PROGRAMFILES64\${PRODUCT_NAME}"
 !else
-    OutFile "${PRODUCT_NAME}-${PRODUCT_VERSION}-x86.exe"
+    ;OutFile "${PRODUCT_NAME}-${PRODUCT_VERSION}-x86.exe"
+    OutFile "${PRODUCT_NAME}-x86.exe"
 !endif
 
 ; Registry key to check for directory (so if you install again, it will 
