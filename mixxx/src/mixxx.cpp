@@ -407,11 +407,13 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
     // Use frame as container for view, needed for fullscreen display
     m_pView = new QFrame;
 
+    m_pWidgetParent = NULL;
     // Loads the skin as a child of m_pView
-    if (!m_pSkinLoader->loadDefaultSkin(m_pView,
+    // assignment itentional in next line
+    if (!(m_pWidgetParent = m_pSkinLoader->loadDefaultSkin(m_pView,
                                         m_pKeyboard,
                                         m_pPlayerManager,
-                                        m_pLibrary)) {
+                                        m_pLibrary))) {
         qDebug() << "Could not load default skin.";
     }
 
@@ -992,6 +994,12 @@ void MixxxApp::slotOptionsFullScreen(bool toggle)
     {
 #if defined(__LINUX__) || defined(__APPLE__)
          m_winpos = pos();
+         // fix some x11 silliness -- for some reason the move(m_winpos)
+         // is moving the currentWindow to (0, 0), not the frame (as it's
+         // supposed to, I might add)
+         // if this messes stuff up on your distro yell at me -bkgood
+         m_winpos.setX(m_winpos.x() + (geometry().x() - x()));
+         m_winpos.setY(m_winpos.y() + (geometry().y() - y()));
          // Can't set max to -1,-1 or 0,0 for unbounded?
          setMaximumSize(32767,32767);
 #endif
@@ -1011,25 +1019,25 @@ void MixxxApp::slotOptionsFullScreen(bool toggle)
         int deskw = width();
         int deskh = height();
 #endif
-        if (m_pView)
-            m_pView->move((deskw - m_pView->width())/2,
-                          (deskh - m_pView->height())/2);
+        if (m_pWidgetParent)
+            m_pWidgetParent->move((deskw - m_pWidgetParent->width())/2,
+                          (deskh - m_pWidgetParent->height())/2);
         // FWI: End of fullscreen patch
     }
     else
     {
         // FWI: Begin of fullscreen patch
-        if (m_pView)
-            m_pView->move(0,0);
+        if (m_pWidgetParent)
+            m_pWidgetParent->move(0,0);
 
         menuBar()->show();
         showNormal();
 
 #ifdef __LINUX__
-        if (size().width() != m_pView->width() ||
-            size().height() != m_pView->height() + menuBar()->height()) {
-          setFixedSize(m_pView->width(),
-                  m_pView->height() + menuBar()->height());
+        if (size().width() != m_pWidgetParent->width() ||
+            size().height() != m_pWidgetParent->height() + menuBar()->height()) {
+          setFixedSize(m_pWidgetParent->width(),
+                  m_pWidgetParent->height() + menuBar()->height());
         }
         move(m_winpos);
 #endif
@@ -1307,13 +1315,13 @@ void MixxxApp::slotHelpSupport()
 
 void MixxxApp::rebootMixxxView() {
 
-    if (!m_pView)
+    if (!m_pWidgetParent || !m_pView)
         return;
 
     // Ok, so wierdly if you call setFixedSize with the same value twice, Qt
     // breaks. So we check and if the size hasn't changed we don't make the call
-    int oldh = m_pView->height();
-    int oldw = m_pView->width();
+    int oldh = m_pWidgetParent->height();
+    int oldw = m_pWidgetParent->width();
     qDebug() << "Now in Rebootmixxview...";
 
     // Workaround for changing skins while fullscreen, just go out of fullscreen
@@ -1329,10 +1337,11 @@ void MixxxApp::rebootMixxxView() {
     delete m_pView;
     m_pView = new QFrame();
 
-    if (!m_pSkinLoader->loadDefaultSkin(m_pView,
+    // assignment in next line intentional
+    if (!(m_pWidgetParent = m_pSkinLoader->loadDefaultSkin(m_pView,
                                         m_pKeyboard,
                                         m_pPlayerManager,
-                                        m_pLibrary)) {
+                                        m_pLibrary))) {
         qDebug() << "Could not reload the skin.";
     }
 
@@ -1341,9 +1350,9 @@ void MixxxApp::rebootMixxxView() {
 
     qDebug() << "rebootgui DONE";
 
-    if (oldw != m_pView->width()
-            || oldh != m_pView->height() + menuBar()->height()) {
-      setFixedSize(m_pView->width(), m_pView->height() + menuBar()->height());
+    if (oldw != m_pWidgetParent->width()
+            || oldh != m_pWidgetParent->height() + menuBar()->height()) {
+      setFixedSize(m_pWidgetParent->width(), m_pWidgetParent->height() + menuBar()->height());
     }
 }
 
