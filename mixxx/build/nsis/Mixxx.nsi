@@ -152,6 +152,9 @@ Section "Mixxx (required)" SecMixxx
   SetOutPath $INSTDIR\promo\${PRODUCT_VERSION}
   File /nonfatal /r "${BASE_BUILD_DIR}\dist${BITWIDTH}\promo\${PRODUCT_VERSION}\*"
 
+  SetOutPath $INSTDIR\sqldrivers
+  File /nonfatal /r "${BASE_BUILD_DIR}\dist${BITWIDTH}\sqldrivers\*"
+
   SetOutPath $INSTDIR\keyboard
   File "${BASE_BUILD_DIR}\dist${BITWIDTH}\keyboard\Standard.kbd.cfg"
   File "${BASE_BUILD_DIR}\dist${BITWIDTH}\keyboard\Old.kbd.cfg"
