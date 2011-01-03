@@ -50,7 +50,7 @@ private:
     void parsePlaylistEntries(QXmlStreamReader &xml, QString playlist_path, 
     			QSqlQuery query_insert_into_playlist, QSqlQuery query_insert_into_playlisttracks);
     void clearTable(QString table_name);
-	static QString getTraktorMusicDatabase();
+    static QString getTraktorMusicDatabase();
     //private fields
     TreeItemModel m_childModel;
     TrackCollection* m_pTrackCollection;
