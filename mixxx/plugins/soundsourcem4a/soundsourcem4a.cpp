@@ -74,7 +74,7 @@ int SoundSourceM4A::initializeDecoder()
 #else
     qbaFileName = m_qFilename.toUtf8();
 #endif
-    int bytes = m_qFilename.length() + 1;
+    int bytes = qbaFileName.length() + 1;
     ipd.filename = new char[bytes];
     strncpy(ipd.filename, qbaFileName.constData(), bytes);
     ipd.filename[bytes-1] = '\0';
