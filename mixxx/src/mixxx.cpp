@@ -421,7 +421,7 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
     // million different variables the first waveform may be horribly
     // corrupted. See bug 521509 -- bkgood
     setCentralWidget(m_pView);
-    
+
     // keep gui centered (esp for fullscreen)
     // the layout will be deleted whenever m_pView gets deleted
     QHBoxLayout *pLayout = new QHBoxLayout(m_pView);
@@ -994,61 +994,25 @@ void MixxxApp::slotOptionsFullScreen(bool toggle)
     if (m_pOptionsFullScreen)
         m_pOptionsFullScreen->setChecked(toggle);
 
-    // Making a fullscreen window on linux and windows is harder than you
-    // could possibly imagine...
-    if (toggle)
-    {
+    if (toggle) {
 #if defined(__LINUX__) || defined(__APPLE__)
-         m_winpos = pos();
+         // this and the later move(m_winpos) doesn't seem necessary
+         // here on kwin, if it's necessary with some other x11 wm, re-enable
+         // it, I guess -bkgood
+         //m_winpos = pos();
          // fix some x11 silliness -- for some reason the move(m_winpos)
          // is moving the currentWindow to (0, 0), not the frame (as it's
          // supposed to, I might add)
          // if this messes stuff up on your distro yell at me -bkgood
-         m_winpos.setX(m_winpos.x() + (geometry().x() - x()));
-         m_winpos.setY(m_winpos.y() + (geometry().y() - y()));
-         // Can't set max to -1,-1 or 0,0 for unbounded?
-         setMaximumSize(32767,32767);
+         //m_winpos.setX(m_winpos.x() + (geometry().x() - x()));
+         //m_winpos.setY(m_winpos.y() + (geometry().y() - y()));
 #endif
-
         showFullScreen();
-        //menuBar()->hide();
-        // FWI: Begin of fullscreen patch
-#if defined(__LINUX__) || defined(__APPLE__)
-        // Crazy X window managers break this so I'm told by Qt docs
-        //         int deskw = app->desktop()->width();
-        //         int deskh = app->desktop()->height();
-
-        //support for xinerama
-        int deskw = m_pApp->desktop()->screenGeometry(m_pView).width();
-        int deskh = m_pApp->desktop()->screenGeometry(m_pView).height();
-#else
-        int deskw = width();
-        int deskh = height();
-#endif
-        //if (m_pWidgetParent)
-        //    m_pWidgetParent->move((deskw - m_pWidgetParent->width())/2,
-        //                  (deskh - m_pWidgetParent->height())/2);
-        // FWI: End of fullscreen patch
-    }
-    else
-    {
-        // FWI: Begin of fullscreen patch
-        //if (m_pWidgetParent)
-        //    m_pWidgetParent->move(0,0);
-
-        //menuBar()->show();
+    } else {
         showNormal();
-
 #ifdef __LINUX__
-        if (size().width() != m_pWidgetParent->width() ||
-            size().height() != m_pWidgetParent->height() + menuBar()->height()) {
-          setFixedSize(m_pWidgetParent->width(),
-                  m_pWidgetParent->height() + menuBar()->height());
-        }
-        move(m_winpos);
+        //move(m_winpos);
 #endif
-
-        // FWI: End of fullscreen patch
     }
 }
 
@@ -1324,10 +1288,6 @@ void MixxxApp::rebootMixxxView() {
     if (!m_pWidgetParent || !m_pView)
         return;
 
-    // Ok, so wierdly if you call setFixedSize with the same value twice, Qt
-    // breaks. So we check and if the size hasn't changed we don't make the call
-    int oldh = m_pWidgetParent->height();
-    int oldw = m_pWidgetParent->width();
     qDebug() << "Now in Rebootmixxview...";
 
     // Workaround for changing skins while fullscreen, just go out of fullscreen
@@ -1335,6 +1295,8 @@ void MixxxApp::rebootMixxxView() {
     // window returns to 0,0 but and the backdrop disappears so it looks as if
     // it is not fullscreen, but acts as if it is.
     slotOptionsFullScreen(false);
+
+    bool wasMaximized(isMaximized());
 
     // TODO(XXX) Make getSkinPath not public
     QString qSkinPath = m_pSkinLoader->getConfiguredSkinPath();
@@ -1353,19 +1315,25 @@ void MixxxApp::rebootMixxxView() {
 
     // don't move this before loadDefaultSkin above. bug 521509 --bkgood
     setCentralWidget(m_pView);
-    
+
     // keep gui centered (esp for fullscreen)
     // the layout will be deleted whenever m_pView gets deleted
     QHBoxLayout *pLayout = new QHBoxLayout(m_pView);
     pLayout->addWidget(m_pWidgetParent);
     pLayout->setContentsMargins(0, 0, 0, 0); // don't want margins
-    
-    qDebug() << "rebootgui DONE";
 
-    if (oldw != m_pWidgetParent->width()
-            || oldh != m_pWidgetParent->height() + menuBar()->height()) {
-        //setFixedSize(m_pWidgetParent->width(), m_pWidgetParent->height() + menuBar()->height());
+    // if we move from big skin to smaller skin, size the window down to fit
+    // (qt scales up for us if we go the other way) -bkgood
+    setFixedSize(m_pView->width(), m_pView->height());
+    setFixedSize(QSize(QWIDGETSIZE_MAX, QWIDGETSIZE_MAX));
+
+    if (wasMaximized) {
+        // apparently this often won't work on linux/x11 because current wm
+        // protocols don't report maximization (or at least qt doesn't speak
+        // the protocols that do) -bkgood
+        showMaximized();
     }
+    qDebug() << "rebootgui DONE";
 }
 
 /** Event filter to block certain events. For example, this function is used
