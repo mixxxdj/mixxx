@@ -1296,8 +1296,6 @@ void MixxxApp::rebootMixxxView() {
     // it is not fullscreen, but acts as if it is.
     slotOptionsFullScreen(false);
 
-    bool wasMaximized(isMaximized());
-
     // TODO(XXX) Make getSkinPath not public
     QString qSkinPath = m_pSkinLoader->getConfiguredSkinPath();
 
@@ -1324,15 +1322,10 @@ void MixxxApp::rebootMixxxView() {
 
     // if we move from big skin to smaller skin, size the window down to fit
     // (qt scales up for us if we go the other way) -bkgood
+    // this doesn't always seem to snap down tight on windows... sigh -bkgood
     setFixedSize(m_pView->width(), m_pView->height());
     setFixedSize(QSize(QWIDGETSIZE_MAX, QWIDGETSIZE_MAX));
 
-    if (wasMaximized) {
-        // apparently this often won't work on linux/x11 because current wm
-        // protocols don't report maximization (or at least qt doesn't speak
-        // the protocols that do) -bkgood
-        showMaximized();
-    }
     qDebug() << "rebootgui DONE";
 }
 
