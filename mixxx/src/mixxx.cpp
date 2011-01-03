@@ -1322,7 +1322,7 @@ void MixxxApp::rebootMixxxView() {
 
     // if we move from big skin to smaller skin, size the window down to fit
     // (qt scales up for us if we go the other way) -bkgood
-    // this doesn't always seem to snap down tight on windows... sigh -bkgood
+    // this doesn't always seem to snap down tight on Windows... sigh -bkgood
     setFixedSize(m_pView->width(), m_pView->height());
     setFixedSize(QSize(QWIDGETSIZE_MAX, QWIDGETSIZE_MAX));
 
