@@ -53,12 +53,12 @@ private:
 	static QString getTraktorMusicDatabase();
     //private fields
     TreeItemModel m_childModel;
-	TrackCollection* m_pTrackCollection;
-	QSqlDatabase &m_database;
-	TraktorTableModel* m_pTraktorTableModel;
+    TrackCollection* m_pTrackCollection;
+    QSqlDatabase &m_database;
+    TraktorTableModel* m_pTraktorTableModel;
     TraktorPlaylistModel* m_pTraktorPlaylistModel;
 
-	bool m_isActivated;
+    bool m_isActivated;
 
    
 };

@@ -1,5 +1,5 @@
-#ifndef TAKTOR_SIDEBAR_MODEL_H
- #define TAKTOR_SIDEBAR_MODEL_H
+#ifndef TREE_ITEM_MODEL_H
+ #define TREE_ITEM_MODEL_H
 
  #include <QAbstractItemModel>
  #include <QModelIndex>
