@@ -421,6 +421,12 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
     // million different variables the first waveform may be horribly
     // corrupted. See bug 521509 -- bkgood
     setCentralWidget(m_pView);
+    
+    // keep gui centered (esp for fullscreen)
+    // the layout will be deleted whenever m_pView gets deleted
+    QHBoxLayout *pLayout = new QHBoxLayout(m_pView);
+    pLayout->addWidget(m_pWidgetParent);
+    pLayout->setContentsMargins(0, 0, 0, 0); // don't want margins
 
     // Check direct rendering and warn user if they don't have it
     checkDirectRendering();
@@ -1019,18 +1025,18 @@ void MixxxApp::slotOptionsFullScreen(bool toggle)
         int deskw = width();
         int deskh = height();
 #endif
-        if (m_pWidgetParent)
-            m_pWidgetParent->move((deskw - m_pWidgetParent->width())/2,
-                          (deskh - m_pWidgetParent->height())/2);
+        //if (m_pWidgetParent)
+        //    m_pWidgetParent->move((deskw - m_pWidgetParent->width())/2,
+        //                  (deskh - m_pWidgetParent->height())/2);
         // FWI: End of fullscreen patch
     }
     else
     {
         // FWI: Begin of fullscreen patch
-        if (m_pWidgetParent)
-            m_pWidgetParent->move(0,0);
+        //if (m_pWidgetParent)
+        //    m_pWidgetParent->move(0,0);
 
-        menuBar()->show();
+        //menuBar()->show();
         showNormal();
 
 #ifdef __LINUX__
@@ -1347,12 +1353,18 @@ void MixxxApp::rebootMixxxView() {
 
     // don't move this before loadDefaultSkin above. bug 521509 --bkgood
     setCentralWidget(m_pView);
-
+    
+    // keep gui centered (esp for fullscreen)
+    // the layout will be deleted whenever m_pView gets deleted
+    QHBoxLayout *pLayout = new QHBoxLayout(m_pView);
+    pLayout->addWidget(m_pWidgetParent);
+    pLayout->setContentsMargins(0, 0, 0, 0); // don't want margins
+    
     qDebug() << "rebootgui DONE";
 
     if (oldw != m_pWidgetParent->width()
             || oldh != m_pWidgetParent->height() + menuBar()->height()) {
-      setFixedSize(m_pWidgetParent->width(), m_pWidgetParent->height() + menuBar()->height());
+        //setFixedSize(m_pWidgetParent->width(), m_pWidgetParent->height() + menuBar()->height());
     }
 }
 
