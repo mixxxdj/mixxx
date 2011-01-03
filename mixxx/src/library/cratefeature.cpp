@@ -30,8 +30,8 @@ CrateFeature::CrateFeature(QObject* parent,
     m_pDeleteCrateAction = new QAction(tr("Remove"),this);
     connect(m_pDeleteCrateAction, SIGNAL(triggered()),
             this, SLOT(slotDeleteCrate()));
-			
-	m_pRenameCrateAction = new QAction(tr("Rename"),this);
+
+    m_pRenameCrateAction = new QAction(tr("Rename"),this);
 	connect(m_pRenameCrateAction, SIGNAL(triggered()),
 			this, SLOT(slotRenameCrate()));
 
@@ -273,9 +273,9 @@ void CrateFeature::slotRenameCrate() {
 
 
     if (m_pTrackCollection->getCrateDAO().renameCrate(crateId, newName)) {
-	clearChildModel();
+		clearChildModel();
         m_crateListTableModel.select();
-	constructChildModel();
+		constructChildModel();
         emit(featureUpdated());
         m_crateTableModel.setCrate(crateId);
     } else {
