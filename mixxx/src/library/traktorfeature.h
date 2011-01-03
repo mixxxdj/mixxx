@@ -25,7 +25,7 @@ class TraktorFeature : public LibraryFeature {
 
     QVariant title();
     QIcon getIcon();
-	static bool isSupported();
+    static bool isSupported();
     bool dropAccept(QUrl url);
     bool dropAcceptChild(const QModelIndex& index, QUrl url);
     bool dragMoveAccept(QUrl url);
@@ -47,7 +47,8 @@ private:
     /** Iterates over all playliost and folders and constructs the childmodel **/    
     void parsePlaylists(QXmlStreamReader &xml);
     /** processes a particular playlist **/
-    void parsePlaylistEntries(QXmlStreamReader &xml, QString playlist_path, QSqlQuery query_insert_into_playlist, QSqlQuery query_insert_into_playlisttracks);
+    void parsePlaylistEntries(QXmlStreamReader &xml, QString playlist_path, 
+    			QSqlQuery query_insert_into_playlist, QSqlQuery query_insert_into_playlisttracks);
     void clearTable(QString table_name);
 	static QString getTraktorMusicDatabase();
     //private fields
@@ -56,8 +57,7 @@ private:
 	QSqlDatabase &m_database;
 	TraktorTableModel* m_pTraktorTableModel;
     TraktorPlaylistModel* m_pTraktorPlaylistModel;
-	
-	
+
 	bool m_isActivated;
 
    
