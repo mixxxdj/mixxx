@@ -67,30 +67,27 @@ DlgPrefEQ::~DlgPrefEQ()
 
 void DlgPrefEQ::loadSettings()
 {
-	QString val = config->getValueString(ConfigKey(CONFIG_KEY, "HiEQFrequency"));
-	if(config->getValueString(ConfigKey(CONFIG_KEY, "HiEQFrequency")) == QString(""))
-		setDefaults();
-	else
-	{
-		SliderHiEQ->setValue( getSliderPosition(config->getValueString(ConfigKey(CONFIG_KEY, "HiEQFrequency")).toInt()));
-		SliderLoEQ->setValue( getSliderPosition(config->getValueString(ConfigKey(CONFIG_KEY, "LoEQFrequency")).toInt()));
+    if(config->getValueString(ConfigKey(CONFIG_KEY, "HiEQFrequency")) == QString("")) {
+        setDefaults();
+    }
+    SliderHiEQ->setValue(getSliderPosition(config->getValueString(ConfigKey(CONFIG_KEY, "HiEQFrequency")).toInt()));
+    SliderLoEQ->setValue(getSliderPosition(config->getValueString(ConfigKey(CONFIG_KEY, "LoEQFrequency")).toInt()));
 
-		if(config->getValueString(ConfigKey(CONFIG_KEY, "LoFiEQs")) == QString("yes"))
-			CheckBoxLoFi->setChecked(true);
-		else
-			CheckBoxLoFi->setChecked(false);
+    if(config->getValueString(ConfigKey(CONFIG_KEY, "LoFiEQs")) == QString("yes"))
+        CheckBoxLoFi->setChecked(true);
+    else
+        CheckBoxLoFi->setChecked(false);
 
-		slotUpdate();
-		slotApply();
-	}
+    slotUpdate();
+    slotApply();
 }
 
 void DlgPrefEQ::setDefaults()
 {
 	CheckBoxLoFi->setChecked(true);
-
-	slotUpdate();
-	slotApply();
+    // set some default shelves -bkgood
+    config->set(ConfigKey(CONFIG_KEY, "HiEQFrequency"), ConfigValue(2500));
+    config->set(ConfigKey(CONFIG_KEY, "LoEQFrequency"), ConfigValue(250));
 }
 
 void DlgPrefEQ::slotLoFiChanged()
