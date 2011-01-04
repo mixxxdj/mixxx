@@ -479,6 +479,9 @@ MixxxApp::~MixxxApp()
     m_pSoundManager->closeDevices();
     qDebug() << "soundmanager->close() done";
 
+    qDebug() << "delete SkinLoader";
+    delete m_pSkinLoader;
+
     qDebug() << "delete MidiDeviceManager";
     delete m_pMidiDeviceManager;
 
