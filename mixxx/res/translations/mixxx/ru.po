@@ -8,13 +8,13 @@ msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2010-10-28 15:35-0400\n"
-"PO-Revision-Date: 2011-01-02 23:48+0000\n"
+"PO-Revision-Date: 2011-01-03 17:15+0000\n"
 "Last-Translator: Eugene Marshal <Unknown>\n"
 "Language-Team: Russian <ru@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-01-03 04:41+0000\n"
+"X-Launchpad-Export-Date: 2011-01-04 13:48+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
 #: AutoDJFeature#1
@@ -155,6 +155,19 @@ msgid ""
 "margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-"
 "family:'Sans Serif'; font-size:9pt;\"></p></body></html>"
 msgstr ""
+"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" "
+"\"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+"<html><head><meta name=\"qrichtext\" content=\"1\" /><style "
+"type=\"text/css\">\n"
+"p, li { white-space: pre-wrap; }\n"
+"</style></head><body style=\" font-family:'MS Shell Dlg 2'; font-"
+"size:8.25pt; font-weight:400; font-style:normal;\">\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-"
+"right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-"
+"family:'Sans Serif'; font-size:9pt;\">Авторы</span></p>\n"
+"<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; "
+"margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-"
+"family:'Sans Serif'; font-size:9pt;\"></p></body></html>"
 
 #: DlgAboutDlg#3
 msgid "1.x.x"
@@ -274,6 +287,19 @@ msgid ""
 "left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><br />Now "
 "go spin some beats!</p></body></html>"
 msgstr ""
+"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" "
+"\"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+"<html><head><meta name=\"qrichtext\" content=\"1\" /><style "
+"type=\"text/css\">\n"
+"p, li { white-space: pre-wrap; }\n"
+"</style></head><body style=\" font-family:'Lucida Grande'; font-size:13pt; "
+"font-weight:400; font-style:normal;\">\n"
+"<p align=\"center\" style=\" margin-top:0px; margin-bottom:0px; margin-"
+"left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">Этот "
+"мастер может быть запущен снова в любое время.</p>\n"
+"<p align=\"center\" style=\" margin-top:0px; margin-bottom:0px; margin-"
+"left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><br "
+"/>Теперь крутаните блины на вертушках!</p></body></html>"
 
 #: DlgMidiLearning#14
 msgid "Finito!"
@@ -343,11 +369,11 @@ msgstr "Эта обложка не поддерживает схемы."
 
 #: DlgPrefControls#2
 msgid "Up increases speed"
-msgstr ""
+msgstr "Вверх - увеличивает скорость"
 
 #: DlgPrefControls#3
 msgid "Down increases speed (Technics SL1210)"
-msgstr ""
+msgstr "Вниз - уменьшает скорость"
 
 #: DlgPrefControls#4
 msgctxt "DlgPrefControls#4"
@@ -395,23 +421,23 @@ msgstr "Отключить"
 
 #: DlgPrefControlsDlg#9
 msgid "Pitch/Rate slider range"
-msgstr ""
+msgstr "Диапазон бегунка тона/скорости"
 
 #: DlgPrefControlsDlg#10
 msgid "Pitch/Rate slider direction"
-msgstr ""
+msgstr "Направление бегунка тона/скорости"
 
 #: DlgPrefControlsDlg#11
 msgid "Cue behaviour"
-msgstr ""
+msgstr "Поведение метки"
 
 #: DlgPrefControlsDlg#12
 msgid "Auto Recall Cue"
-msgstr ""
+msgstr "Автоматический вызов метки"
 
 #: DlgPrefControlsDlg#13
 msgid "Permanent Pitch/Rate Buttons"
-msgstr ""
+msgstr "Кнопки постоянного тона/скорости"
 
 #: DlgPrefControlsDlg#14
 msgid "Left click"
@@ -438,7 +464,7 @@ msgstr ""
 
 #: DlgPrefControlsDlg#19
 msgid "Temporary Pitch/Rate Buttons"
-msgstr ""
+msgstr "Кнопки временного тона/скорости"
 
 #: DlgPrefControlsDlg#20
 msgid "Temporary rate change (between 1 and 8000) when left clicking"
@@ -1302,7 +1328,7 @@ msgstr ""
 
 #: DlgPrefVinylDlg#6
 msgid "Turntable Preamp"
-msgstr ""
+msgstr "Проигрыватель предуселитель"
 
 #: DlgPrefVinylDlg#7
 msgid "1 (Off)"
@@ -1322,7 +1348,7 @@ msgstr "Тип винила"
 
 #: DlgPrefVinylDlg#11
 msgid "Lead-in time"
-msgstr ""
+msgstr "Время вступления"
 
 #: DlgPrefVinylDlg#12
 msgid "seconds"
@@ -1346,7 +1372,7 @@ msgstr "Режим скретча"
 
 #: DlgPrefVinylDlg#17
 msgid "Enable Needle Skip Prevention"
-msgstr ""
+msgstr "Использовать защиту от пропусков иглы"
 
 #: DlgPrefVinylDlg#18
 msgid "Signal Quality"
@@ -1362,51 +1388,51 @@ msgstr ""
 
 #: DlgPreferences#1
 msgid "Sound Hardware"
-msgstr ""
+msgstr "Звуковое оборудование"
 
 #: DlgPreferences#2
 msgid "MIDI Controllers"
-msgstr ""
+msgstr "Контроллеры MIDI"
 
 #: DlgPreferences#3
 msgctxt "DlgPreferences#3"
 msgid "Library"
-msgstr ""
+msgstr "Библиотека"
 
 #: DlgPreferences#4
 msgid "Interface"
-msgstr ""
+msgstr "Интерфейс"
 
 #: DlgPreferences#5
 msgid "Equalizers"
-msgstr ""
+msgstr "Эквалайзеры"
 
 #: DlgPreferences#6
 msgid "Crossfader"
-msgstr ""
+msgstr "Кроссфейдер"
 
 #: DlgPreferences#7
 msgctxt "DlgPreferences#7"
 msgid "Recording"
-msgstr ""
+msgstr "Запись"
 
 #: DlgPreferences#8
 msgctxt "DlgPreferences#8"
 msgid "BPM Detection"
-msgstr ""
+msgstr "Определение уд./мин."
 
 #: DlgPreferences#9
 msgid "Vinyl Control"
-msgstr ""
+msgstr "Управление винилом"
 
 #: DlgPreferences#10
 msgid "Live Broadcasting"
-msgstr ""
+msgstr "Живое вещание"
 
 #: DlgPreferencesDlg#1
 msgctxt "DlgPreferencesDlg#1"
 msgid "Dialog"
-msgstr ""
+msgstr "Диалог"
 
 #: DlgPreferencesDlg#2
 msgid "1"
@@ -1415,68 +1441,68 @@ msgstr ""
 #: DlgPrepare#1
 msgctxt "DlgPrepare#1"
 msgid "Manage"
-msgstr ""
+msgstr "Диспетчер"
 
 #: DlgPrepare#2
 msgid "Recently Added"
-msgstr ""
+msgstr "Недавно добавленные"
 
 #: DlgPrepare#3
 msgid "All Songs"
-msgstr ""
+msgstr "Все композиции"
 
 #: DlgPrepare#4
 msgid "Progress"
-msgstr ""
+msgstr "Выполнение"
 
 #: DlgPrepare#5
 msgid "Select All"
-msgstr ""
+msgstr "Выделить все"
 
 #: DlgPrepare#6
 msgctxt "DlgPrepare#6"
 msgid "Analyze"
-msgstr ""
+msgstr "Анализировать"
 
 #: DlgTrackInfo#1
 msgid "Track Editor"
-msgstr ""
+msgstr "Редактор дорожек"
 
 #: DlgTrackInfo#2
 msgid "Song:"
-msgstr ""
+msgstr "Композиция:"
 
 #: DlgTrackInfo#3
 msgid "Title:"
-msgstr ""
+msgstr "Название:"
 
 #: DlgTrackInfo#4
 msgid "Artist:"
-msgstr ""
+msgstr "Исполнитель:"
 
 #: DlgTrackInfo#5
 msgid "Album:"
-msgstr ""
+msgstr "Альбом:"
 
 #: DlgTrackInfo#6
 msgid "Date:"
-msgstr ""
+msgstr "Дата:"
 
 #: DlgTrackInfo#7
 msgid "Track #:"
-msgstr ""
+msgstr "Дорожка #:"
 
 #: DlgTrackInfo#8
 msgid "Genre:"
-msgstr ""
+msgstr "Жанр:"
 
 #: DlgTrackInfo#9
 msgid "Filename:"
-msgstr ""
+msgstr "Имя файла:"
 
 #: DlgTrackInfo#10
 msgid "Duration:"
-msgstr ""
+msgstr "Длительность:"
 
 #: DlgTrackInfo#11
 msgid "3:00"
@@ -1484,7 +1510,7 @@ msgstr ""
 
 #: DlgTrackInfo#12
 msgid "File Type:"
-msgstr ""
+msgstr "Тип файла:"
 
 #: DlgTrackInfo#13
 msgid "77"
@@ -1492,19 +1518,19 @@ msgstr ""
 
 #: DlgTrackInfo#14
 msgid "Comments:"
-msgstr ""
+msgstr "Описание:"
 
 #: DlgTrackInfo#15
 msgid "Reload track metadata from file."
-msgstr ""
+msgstr "Обновить метаданные дорожки из файла."
 
 #: DlgTrackInfo#16
 msgid "Track Information (Click to Expand)"
-msgstr ""
+msgstr "Сведения о дорожке (Щелкните для получения дополнительных сведений)"
 
 #: DlgTrackInfo#17
 msgid "Track BPM: "
-msgstr ""
+msgstr "Дорожка уд./мин.: "
 
 #: DlgTrackInfo#18
 msgid "x2"
@@ -1521,51 +1547,53 @@ msgstr ""
 #: DlgTrackInfo#21
 msgid "Hint: Use the Library Analyze view to run BPM detection."
 msgstr ""
+"Совет: используйте анализатор библиотеки для запуска определения кол-ва "
+"уд./мин."
 
 #: DlgTrackInfo#22
 msgid "Track BPM"
-msgstr ""
+msgstr "Уд./мин. дорожки"
 
 #: DlgTrackInfo#23
 msgid "Cue Id"
-msgstr ""
+msgstr "Id метки"
 
 #: DlgTrackInfo#24
 msgctxt "DlgTrackInfo#24"
 msgid "Position"
-msgstr ""
+msgstr "Положение"
 
 #: DlgTrackInfo#25
 msgid "Hotcue"
-msgstr ""
+msgstr "Быстрые метки"
 
 #: DlgTrackInfo#26
 msgid "Label"
-msgstr ""
+msgstr "Метка"
 
 #: DlgTrackInfo#27
 msgid "Activate Cue"
-msgstr ""
+msgstr "Использовать метку"
 
 #: DlgTrackInfo#28
 msgid "Delete Cue"
-msgstr ""
+msgstr "Удалить метку"
 
 #: DlgTrackInfo#29
 msgid "Track Cuepoints"
-msgstr ""
+msgstr "Отмеченные ключевые точки дорожки"
 
 #: DlgTrackInfo#30
 msgid "<< &Prev"
-msgstr ""
+msgstr "<< &Назад"
 
 #: DlgTrackInfo#31
 msgid "&Apply"
-msgstr ""
+msgstr "&Применить"
 
 #: DlgTrackInfo#32
 msgid "&Cancel"
-msgstr ""
+msgstr "&Отменить"
 
 #: DlgTrackInfo#33
 msgid "Alt+O"
@@ -1573,11 +1601,11 @@ msgstr ""
 
 #: DlgTrackInfo#34
 msgid "&Next >>"
-msgstr ""
+msgstr "&Далее >>"
 
 #: EncoderMp3#1
 msgid "Encoder"
-msgstr ""
+msgstr "Кодек"
 
 #: EncoderMp3#2
 msgid ""
@@ -1585,12 +1613,17 @@ msgid ""
 "install libmp3lame (also known as lame) and check if /usr/lib/libmp3lame.so "
 "exists on your system </html>"
 msgstr ""
+"<html>Mixxx не может найти или загрузить кодек MP3 lame. <p>Пожалуйста, "
+"установите libmp3lame (также известен под названием lame) и убедитесь, что "
+"он размещен в /usr/lib/libmp3lame.so </html>"
 
 #: EncoderMp3#3
 msgid ""
 "<html>Mixxx is unable to load or find the MP3 encoder lame. <p>Please put "
 "lame_enc.dll in the directory you have installed Mixxx </html>"
 msgstr ""
+"<html>Mixxx не может найти или загрузить кодек MP3 lame. <p>Пожалуйста, "
+"переместите lame_enc.dll в каталог с установленной программой Mixxx </html>"
 
 #: EncoderMp3#4
 msgid ""
@@ -1598,6 +1631,9 @@ msgid ""
 "install libmp3lame (also known as lame) and check if "
 "/usr/local/lib/libmp3lame.dylib exists on your system </html>"
 msgstr ""
+"<html>Mixxx не может найти или загрузить кодек MP3 lame. <p>Пожалуйста, "
+"установите libmp3lame (также известен под названием lame) и убедитесь, что "
+"он размещен в /usr/local/lib/libmp3lame.dylib </html>"
 
 #: EncoderMp3#5
 msgid ""
@@ -1605,80 +1641,87 @@ msgid ""
 "<a href='http://mixxx.org/wiki/doku.php/internet_broadcasting'>Mixxx "
 "Wiki</a> for more information.</html>"
 msgstr ""
+"<html>Mixxx определил, что вы используете измененную версию libmp3lame. См. "
+"<a href='http://mixxx.org/wiki/doku.php/internet_broadcasting'>Mixxx "
+"Wiki</a> для получения дополнительных сведений.</html>"
 
 #: EngineRecord#1
 msgctxt "EngineRecord#1"
 msgid "Recording"
-msgstr ""
+msgstr "Запись"
 
 #: EngineRecord#2
 msgid ""
 "<html>Could not create audio file for recording!<p><br>Maybe you do not have "
 "enough free disk space or file permissions.</html>"
 msgstr ""
+"<html>Невозможно создать звуковой файл для записи!<p><br>Возможно у вас "
+"недостаточно места на диске или прав на файл.</html>"
 
 #: EngineShoutcast#1
 msgid "Mixxx encountered a problem"
-msgstr ""
+msgstr "Mixxx обнаружил проблему"
 
 #: EngineShoutcast#2
 msgid "Could not allocate shout_t"
-msgstr ""
+msgstr "Невозможно найти shout_t"
 
 #: EngineShoutcast#3
 msgid "Could not allocate shout_metadata_t"
-msgstr ""
+msgstr "Невозможно найти shout_metadata_t"
 
 #: EngineShoutcast#4
 msgid "Error setting non-blocking mode:"
-msgstr ""
+msgstr "Ошибка установки неблокирующего режима:"
 
 #: EngineShoutcast#5
 msgid "Shoutcast aborted connect after 3 tries"
-msgstr ""
+msgstr "Shoutcast прервал соединение после 3 попыток"
 
 #: EngineShoutcast#6
 msgid ""
 "Please check your connection to the Internet and verify that your username "
 "and password are correct."
 msgstr ""
+"Пожалуйста, проверьте ваше соединение с интернетом и убедитесь в "
+"правильности ввода имени пользователя и пароля."
 
 #: EngineShoutcast#7
 msgid "Mixxx could not connect to the server"
-msgstr ""
+msgstr "Mixxx не может подключиться к серверу"
 
 #: EngineShoutcast#8
 msgid "Live broadcasting"
-msgstr ""
+msgstr "Живое вещание"
 
 #: EngineShoutcast#9
 msgid "Mixxx has successfully connected to the shoutcast server"
-msgstr ""
+msgstr "Mixxx успешно подключён к серверу shoutcast"
 
 #: EngineShoutcast#10
 msgid "Mixxx has successfully disconnected to the shoutcast server"
-msgstr ""
+msgstr "Mixxx успешно отключен от сервера shoutcast"
 
 #: ErrorDialogHandler#1
 msgid "Fatal error"
-msgstr ""
+msgstr "Критическая ошибка"
 
 #: ErrorDialogHandler#2
 msgid "Critical error"
-msgstr ""
+msgstr "Критическая ошибка"
 
 #: ErrorDialogHandler#3
 msgid "Warning"
-msgstr ""
+msgstr "Внимание"
 
 #: ErrorDialogHandler#4
 msgctxt "ErrorDialogHandler#4"
 msgid "Information"
-msgstr ""
+msgstr "Сведения"
 
 #: ErrorDialogHandler#5
 msgid "Question"
-msgstr ""
+msgstr "Вопрос"
 
 #: ITunesFeature#1
 msgid "iTunes"
@@ -1686,137 +1729,139 @@ msgstr ""
 
 #: ITunesFeature#2
 msgid "Load iTunes Library?"
-msgstr ""
+msgstr "Загрузить библиотеку iTunes?"
 
 #: ITunesFeature#3
 msgid "Would you like to load your iTunes library?"
-msgstr ""
+msgstr "Вы действительно хотите загрузить вашу библиотеку из iTunes?"
 
 #: ITunesPlaylistModel#1
 msgctxt "ITunesPlaylistModel#1"
 msgid "Artist"
-msgstr ""
+msgstr "Исполнитель"
 
 #: ITunesPlaylistModel#2
 msgctxt "ITunesPlaylistModel#2"
 msgid "Title"
-msgstr ""
+msgstr "Название"
 
 #: ITunesPlaylistModel#3
 msgctxt "ITunesPlaylistModel#3"
 msgid "Album"
-msgstr ""
+msgstr "Альбом"
 
 #: ITunesPlaylistModel#4
 msgctxt "ITunesPlaylistModel#4"
 msgid "Date"
-msgstr ""
+msgstr "Дата"
 
 #: ITunesPlaylistModel#5
 msgctxt "ITunesPlaylistModel#5"
 msgid "BPM"
-msgstr ""
+msgstr "Уд./мин."
 
 #: ITunesPlaylistModel#6
 msgctxt "ITunesPlaylistModel#6"
 msgid "Genre"
-msgstr ""
+msgstr "Жанр"
 
 #: ITunesPlaylistModel#7
 msgctxt "ITunesPlaylistModel#7"
 msgid "Location"
-msgstr ""
+msgstr "Расположение"
 
 #: ITunesPlaylistModel#8
 msgctxt "ITunesPlaylistModel#8"
 msgid "Duration"
-msgstr ""
+msgstr "Длительность"
 
 #: ITunesPlaylistModel#9
 msgctxt "ITunesPlaylistModel#9"
 msgid "Unknown"
-msgstr ""
+msgstr "Неизвестно"
 
 #: LADSPAPresetSlot#1
 msgid "Drag a preset from the list & drop it here"
-msgstr ""
+msgstr "Перенесите сюда схему из списка"
 
 #: LibraryScannerDlg#1
 msgid "It's taking Mixxx a minute to scan your music library, please wait..."
 msgstr ""
+"Mixxx понадобится время для обработки вашей музыкальной библиотеки, "
+"пожалуйста, подождите..."
 
 #: LibraryScannerDlg#2
 msgid "Cancel"
-msgstr ""
+msgstr "Отменить"
 
 #: LibraryTableModel#1
 msgctxt "LibraryTableModel#1"
 msgid "Artist"
-msgstr ""
+msgstr "Исполнитель"
 
 #: LibraryTableModel#2
 msgctxt "LibraryTableModel#2"
 msgid "Title"
-msgstr ""
+msgstr "Название"
 
 #: LibraryTableModel#3
 msgctxt "LibraryTableModel#3"
 msgid "Album"
-msgstr ""
+msgstr "Альбом"
 
 #: LibraryTableModel#4
 msgctxt "LibraryTableModel#4"
 msgid "Genre"
-msgstr ""
+msgstr "Жанр"
 
 #: LibraryTableModel#5
 msgctxt "LibraryTableModel#5"
 msgid "Year"
-msgstr ""
+msgstr "Год"
 
 #: LibraryTableModel#6
 msgctxt "LibraryTableModel#6"
 msgid "Type"
-msgstr ""
+msgstr "Тип"
 
 #: LibraryTableModel#7
 msgctxt "LibraryTableModel#7"
 msgid "Location"
-msgstr ""
+msgstr "Расположение"
 
 #: LibraryTableModel#8
 msgctxt "LibraryTableModel#8"
 msgid "Comment"
-msgstr ""
+msgstr "Описание"
 
 #: LibraryTableModel#9
 msgctxt "LibraryTableModel#9"
 msgid "Duration"
-msgstr ""
+msgstr "Длительность"
 
 #: LibraryTableModel#10
 msgctxt "LibraryTableModel#10"
 msgid "Bitrate"
-msgstr ""
+msgstr "Битрейт"
 
 #: LibraryTableModel#11
 msgctxt "LibraryTableModel#11"
 msgid "BPM"
-msgstr ""
+msgstr "Уд./мин."
 
 #: LibraryTableModel#12
 msgctxt "LibraryTableModel#12"
 msgid "Track #"
-msgstr ""
+msgstr "Дорожка #"
 
 #: LibraryTableModel#13
 msgctxt "LibraryTableModel#13"
 msgid "Date Added"
-msgstr ""
+msgstr "Дата добавления"
 
 #: MidiInputMappingTableModel#1
 msgid "Midi Status Type"
-msgstr ""
+msgstr "Тип состояния Midi"
 
 #: MidiInputMappingTableModel#2
 msgctxt "MidiInputMappingTableModel#2"
@@ -1826,47 +1871,53 @@ msgstr ""
 #: MidiInputMappingTableModel#3
 msgctxt "MidiInputMappingTableModel#3"
 msgid "Midi Channel"
-msgstr ""
+msgstr "Канал Midi"
 
 #: MidiInputMappingTableModel#4
 msgctxt "MidiInputMappingTableModel#4"
 msgid "Control Group"
-msgstr ""
+msgstr "Управляющая группа"
 
 #: MidiInputMappingTableModel#5
 msgctxt "MidiInputMappingTableModel#5"
 msgid "Control Value"
-msgstr ""
+msgstr "Управляющее значение"
 
 #: MidiMapping#1
 msgid "MIDI script function not found"
-msgstr ""
+msgstr "Не найдена функция сценария MIDI"
 
 #: MidiMapping#2
 msgid "The MIDI script function '%1' was not found in loaded scripts."
-msgstr ""
+msgstr "Функция сценария MIDI '%1' не найдена в загруженных сценариях."
 
 #: MidiMapping#3
 msgid ""
 "The MIDI message %1 %2 will not be bound.\n"
 "(Click Show Details for hints.)"
 msgstr ""
+"Сообщение MIDI %1 %2 не будет прикреплено.\n"
+"(Щелкните на дополнительные сведения.)"
 
 #: MidiMapping#4
 msgid ""
 "* Check to see that the function name is spelled correctly in the mapping "
 "file (.xml) and script file (.js)\n"
 msgstr ""
+"* Убедитесь, что имя функции введено правильно в файле раскладки (.xml) и "
+"файле сценария (.js)\n"
 
 #: MidiMapping#5
 msgid ""
 "* Check to see that the script file name (.js) is spelled correctly in the "
 "mapping file (.xml)"
 msgstr ""
+"* Убедитесь, что имя файла сценария (.js) введено правильно в файле "
+"раскладки (.xml)"
 
 #: MidiOutputMappingTableModel#1
 msgid "Midi Status"
-msgstr ""
+msgstr "Состояние Midi"
 
 #: MidiOutputMappingTableModel#2
 msgctxt "MidiOutputMappingTableModel#2"
@@ -1876,41 +1927,42 @@ msgstr ""
 #: MidiOutputMappingTableModel#3
 msgctxt "MidiOutputMappingTableModel#3"
 msgid "Midi Channel"
-msgstr ""
+msgstr "Канал Midi"
 
 #: MidiOutputMappingTableModel#4
 msgctxt "MidiOutputMappingTableModel#4"
 msgid "Control Group"
-msgstr ""
+msgstr "Контрольная группа"
 
 #: MidiOutputMappingTableModel#5
 msgctxt "MidiOutputMappingTableModel#5"
 msgid "Control Value"
-msgstr ""
+msgstr "Контрольное значение"
 
 #: MidiOutputMappingTableModel#6
 msgid "Threshold Min"
-msgstr ""
+msgstr "Минимальный порог"
 
 #: MidiOutputMappingTableModel#7
 msgid "Threshold Max"
-msgstr ""
+msgstr "Максимальный порог"
 
 #: MidiScriptEngine#1
 msgid "Uncaught exception at line %1 in file %2: %3"
-msgstr ""
+msgstr "Не перехваченное исключение в строке %1 в файле %2: %3"
 
 #: MidiScriptEngine#2
 msgid "Uncaught exception at line %1 in passed code: %2"
 msgstr ""
+"Не перехваченное исключение в строке %1 в прошедшем контроль коде: %2"
 
 #: MidiScriptEngine#3
 msgid "MIDI script error"
-msgstr ""
+msgstr "Ошибка сценария MIDI"
 
 #: MidiScriptEngine#4
 msgid "A MIDI control you just used is not working properly."
-msgstr ""
+msgstr "Используемое вами управление MIDI работает не правильно."
 
 #: MidiScriptEngine#5
 msgid ""
@@ -1919,76 +1971,80 @@ msgid ""
 "erratic behavior</li><li>Try to recover by resetting your "
 "controller</li></ul></html>"
 msgstr ""
+"<html>(Код сценария MIDI должен быть исправлен.)<br>Теперь, вы "
+"можете:<ul><li>Пропустить эту ошибку для этого сеанса, но можете испытывать "
+"сбои в работе</li><li>Попытаться восстановить, перезапустив ваш "
+"контроллер</li></ul></html>"
 
 #: MidiStatusDelegate#1
 msgctxt "MidiStatusDelegate#1"
 msgid "Unknown"
-msgstr ""
+msgstr "Неизвестно"
 
 #: MissingTableModel#1
 msgctxt "MissingTableModel#1"
 msgid "Location"
-msgstr ""
+msgstr "Расположение"
 
 #: MissingTableModel#2
 msgctxt "MissingTableModel#2"
 msgid "Artist"
-msgstr ""
+msgstr "Исполнитель"
 
 #: MissingTableModel#3
 msgctxt "MissingTableModel#3"
 msgid "Title"
-msgstr ""
+msgstr "Название"
 
 #: MissingTableModel#4
 msgctxt "MissingTableModel#4"
 msgid "Album"
-msgstr ""
+msgstr "Альбом"
 
 #: MissingTableModel#5
 msgctxt "MissingTableModel#5"
 msgid "Genre"
-msgstr ""
+msgstr "Жанр"
 
 #: MissingTableModel#6
 msgctxt "MissingTableModel#6"
 msgid "Year"
-msgstr ""
+msgstr "Год"
 
 #: MissingTableModel#7
 msgctxt "MissingTableModel#7"
 msgid "Type"
-msgstr ""
+msgstr "Тип"
 
 #: MissingTableModel#8
 msgctxt "MissingTableModel#8"
 msgid "Comment"
-msgstr ""
+msgstr "Описание"
 
 #: MissingTableModel#9
 msgctxt "MissingTableModel#9"
 msgid "Duration"
-msgstr ""
+msgstr "Длительность"
 
 #: MissingTableModel#10
 msgctxt "MissingTableModel#10"
 msgid "Track #"
-msgstr ""
+msgstr "Дорожка #"
 
 #: MissingTableModel#11
 msgctxt "MissingTableModel#11"
 msgid "Bitrate"
-msgstr ""
+msgstr "Битрейт"
 
 #: MissingTableModel#12
 msgctxt "MissingTableModel#12"
 msgid "BPM"
-msgstr ""
+msgstr "Уд./мин."
 
 #: MissingTableModel#13
 msgctxt "MissingTableModel#13"
 msgid "Date Added"
-msgstr ""
+msgstr "Дата добавления"
 
 #: MixxxApp#1
 msgid "Mixxx "
@@ -2006,22 +2062,26 @@ msgid ""
 "developers. Would you like to help us make Mixxx better by enabling this "
 "feature?"
 msgstr ""
+"Разработка Mixxx ведётся на основе взаимодействия с сообществом.  На ваше "
+"усмотрение, Mixxx может автоматически отправлять данные вашего "
+"пользовательского опыта разработчикам. Вы действительно хотите помочь нам "
+"улучшить Mixxx  включив эту возможность?"
 
 #: MixxxApp#4
 msgid "Yes"
-msgstr ""
+msgstr "Да"
 
 #: MixxxApp#5
 msgid "No"
-msgstr ""
+msgstr "Нет"
 
 #: MixxxApp#6
 msgid "Privacy Policy"
-msgstr ""
+msgstr "Политика конфиденциальности"
 
 #: MixxxApp#7
 msgid "Mixxx: Privacy Policy"
-msgstr ""
+msgstr "Mixxx: Политика конфиденциальности"
 
 #: MixxxApp#8
 msgid ""
@@ -2047,67 +2107,91 @@ msgid ""
 "This information will not be used to personally identify you, contact you, "
 "advertise to you, or otherwise bother you in any way.\n"
 msgstr ""
+"Разработка Mixxx ведётся на основе взаимодействия с сообществом. Чтобы "
+"помочь нам внедрять новые возможности в будущие версии Mixxx, программа "
+"будет собирать сведения о вашем аппаратном обеспечении и использовании "
+"Mixxx.  Эти сведения в первую очередь будут использоваться для исправления "
+"ошибок, усовершенствования возможностей и определения системных требований "
+"новых версий. Также эти сведения могут использоваться  в статистических "
+"целях.\n"
+"\n"
+"Аппаратные сведения будут включать:\n"
+"\t- Модель ЦП и функции\n"
+"\t- Общее/доступное кол-во ОЗУ\n"
+"\t- Доступное место на диске\n"
+"\t- Версия ОС\n"
+"\n"
+"Сведения о использовании включают:\n"
+"\t- Настройки/свойства\n"
+"\t- Внутренние ошибки\n"
+"\t- Внутренние сообщения отладки\n"
+"\t- Статистика производительности (средняя задержка, использование ЦП)\n"
+"\n"
+"Эти сведения не будут использоваться для личностной идентификации, для связи "
+"с вами, для рекламы и в любом другом случае, который может побеспокоить "
+"вас.\n"
 
 #: MixxxApp#9
 msgctxt "MixxxApp#9"
 msgid "Choose music library directory"
-msgstr ""
+msgstr "Выберите каталог музыкальной библиотеки"
 
 #: MixxxApp#10
 msgid "Sound Device Busy"
-msgstr ""
+msgstr "Звуковое устройство занято"
 
 #: MixxxApp#11
 msgid "<html>Mixxx cannot access the sound device <b>"
-msgstr ""
+msgstr "<html>Mixxx не может получить доступ к звуковому устройству <b>"
 
 #: MixxxApp#12
 msgid "Another application is using the sound device or it is "
-msgstr ""
+msgstr "Другое приложение использует звуковое устройство или оно "
 
 #: MixxxApp#13
 msgid "not plugged in."
-msgstr ""
+msgstr "не подключено."
 
 #: MixxxApp#14
 msgid "<b>Retry</b> after closing the other application "
-msgstr ""
+msgstr "<b>Повторить</b> после закрытия другой программы "
 
 #: MixxxApp#15
 msgid "or reconnecting the sound device"
-msgstr ""
+msgstr "или переподключения звукового устройства"
 
 #: MixxxApp#16
 msgid "<b>Reconfigure</b> Mixxx to use another sound device."
 msgstr ""
+"<b>Настроить</b> Mixxx для использования с другим звуковым устройством."
 
 #: MixxxApp#17
 msgid "Get <b>Help</b> from the Mixxx Wiki."
-msgstr ""
+msgstr "Получить <b>справку</b> из базы знаний Mixxx Wiki."
 
 #: MixxxApp#18
 msgid "<b>Exit</b> without saving your settings."
-msgstr ""
+msgstr "<b>Выйти</b> без сохранения ваших настроек."
 
 #: MixxxApp#19
 msgid "Retry"
-msgstr ""
+msgstr "Повторить"
 
 #: MixxxApp#20
 msgid "Reconfigure"
-msgstr ""
+msgstr "Настроить заново"
 
 #: MixxxApp#21
 msgid "Help"
-msgstr ""
+msgstr "Справка"
 
 #: MixxxApp#22
 msgid "Exit"
-msgstr ""
+msgstr "Выйти"
 
 #: MixxxApp#23
 msgid "&Load Song (Player 1)..."
-msgstr ""
+msgstr "&Загрузить композицию (Проигрыватель 1)..."
 
 #: MixxxApp#24
 msgid "Ctrl+O"
@@ -2115,7 +2199,7 @@ msgstr ""
 
 #: MixxxApp#25
 msgid "&Load Song (Player 2)..."
-msgstr ""
+msgstr "&Загрузить композицию (Проигрыватель 2)..."
 
 #: MixxxApp#26
 msgid "Ctrl+Shift+O"
@@ -2123,7 +2207,7 @@ msgstr ""
 
 #: MixxxApp#27
 msgid "&Exit"
-msgstr ""
+msgstr "&Выйти"
 
 #: MixxxApp#28
 msgid "Ctrl+Q"
@@ -2131,11 +2215,11 @@ msgstr ""
 
 #: MixxxApp#29
 msgid "&Rescan Library"
-msgstr ""
+msgstr "&Обновить библиотеку"
 
 #: MixxxApp#30
 msgid "Add &new playlist"
-msgstr ""
+msgstr "Создать &новый список воспроизведения"
 
 #: MixxxApp#31
 msgid "Ctrl+N"
@@ -2143,7 +2227,7 @@ msgstr ""
 
 #: MixxxApp#32
 msgid "Add new &crate"
-msgstr ""
+msgstr "Добавить новый &список"
 
 #: MixxxApp#33
 msgid "Ctrl+C"
@@ -2151,7 +2235,7 @@ msgstr ""
 
 #: MixxxApp#34
 msgid "&Import playlist"
-msgstr ""
+msgstr "&Импортировать список воспроизведения"
 
 #: MixxxApp#35
 msgid "Ctrl+I"
@@ -2163,7 +2247,7 @@ msgstr ""
 
 #: MixxxApp#37
 msgid "&Full Screen"
-msgstr ""
+msgstr "&Во весь экран"
 
 #: MixxxApp#38
 msgid "Ctrl+F"
@@ -2175,7 +2259,7 @@ msgstr ""
 
 #: MixxxApp#40
 msgid "&Preferences"
-msgstr ""
+msgstr "&Параметры"
 
 #: MixxxApp#41
 msgid "Ctrl+P"
@@ -2183,15 +2267,15 @@ msgstr ""
 
 #: MixxxApp#42
 msgid "&About..."
-msgstr ""
+msgstr "&Сведения о программе..."
 
 #: MixxxApp#43
 msgid "&Community Support..."
-msgstr ""
+msgstr "&Поддержка оказываемая сообществом..."
 
 #: MixxxApp#44
 msgid "Enable &Vinyl Control"
-msgstr ""
+msgstr "Использовать управление &винилом"
 
 #: MixxxApp#45
 msgid "Ctrl+Y"
@@ -2200,7 +2284,7 @@ msgstr ""
 #: MixxxApp#46
 msgctxt "MixxxApp#46"
 msgid "Enable live broadcasting"
-msgstr ""
+msgstr "Использовать живое вещание"
 
 #: MixxxApp#47
 msgid "Ctrl+L"
@@ -2208,7 +2292,7 @@ msgstr ""
 
 #: MixxxApp#48
 msgid "&Record Mix"
-msgstr ""
+msgstr "&Записать микс"
 
 #: MixxxApp#49
 msgid "Ctrl+R"
@@ -2220,7 +2304,7 @@ msgstr ""
 
 #: MixxxApp#51
 msgid "Opens a song in player 1"
-msgstr ""
+msgstr "Oткрывает композицию в проигрывателе 1"
 
 #: MixxxApp#52
 msgid ""
@@ -2228,10 +2312,13 @@ msgid ""
 "\n"
 "Opens a song in player 1"
 msgstr ""
+"Oткрыть\n"
+"\n"
+"Oткрывает композицию в проигрывателе 1"
 
 #: MixxxApp#53
 msgid "Opens a song in player 2"
-msgstr ""
+msgstr "Oткрывает композицию в проигрывателе 2"
 
 #: MixxxApp#54
 msgid ""
@@ -2239,10 +2326,13 @@ msgid ""
 "\n"
 "Opens a song in player 2"
 msgstr ""
+"Oткрыть\n"
+"\n"
+"Oткрывает композицию в проигрывателе 2"
 
 #: MixxxApp#55
 msgid "Quits the application"
-msgstr ""
+msgstr "Выход из программы"
 
 #: MixxxApp#56
 msgid ""
@@ -2250,10 +2340,13 @@ msgid ""
 "\n"
 "Quits the application"
 msgstr ""
+"Выйти\n"
+"\n"
+"Выход из программы"
 
 #: MixxxApp#57
 msgid "Rescans the song library"
-msgstr ""
+msgstr "Обновить музыкальную библиотеку"
 
 #: MixxxApp#58
 msgid ""
@@ -2261,10 +2354,13 @@ msgid ""
 "\n"
 "Rescans the song library"
 msgstr ""
+"Обновить библиотеку\n"
+"\n"
+"Обновить музыкальную библиотеку"
 
 #: MixxxApp#59
 msgid "Create a new playlist"
-msgstr ""
+msgstr "Создать список воспроизведения"
 
 #: MixxxApp#60
 msgid ""
@@ -2272,10 +2368,13 @@ msgid ""
 "\n"
 "Create a new playlist"
 msgstr ""
+"Создать список воспроизведения\n"
+"\n"
+"Создать новый список воспроизведения"
 
 #: MixxxApp#61
 msgid "Create a new crate"
-msgstr ""
+msgstr "Создать новый список"
 
 #: MixxxApp#62
 msgid ""
@@ -2283,10 +2382,13 @@ msgid ""
 "\n"
 "Create a new crate."
 msgstr ""
+"Создать список\n"
+"\n"
+"Создать новый список."
 
 #: MixxxApp#63
 msgid "Import playlist"
-msgstr ""
+msgstr "Импортировать список воспроизведения"
 
 #: MixxxApp#64
 msgid "Audio Beat Marks"
@@ -2300,50 +2402,54 @@ msgstr ""
 
 #: MixxxApp#66
 msgid "Activate Vinyl Control"
-msgstr ""
+msgstr "Использовать управление винилом"
 
 #: MixxxApp#67
 msgid "Use timecoded vinyls on external turntables to control Mixxx"
 msgstr ""
+"Использовать винил с временными метками на внешних проигрывателях для "
+"управления Mixxx"
 
 #: MixxxApp#68
 msgid "Activate live broadcasting"
-msgstr ""
+msgstr "Использовать живое вещание"
 
 #: MixxxApp#69
 msgid "Stream your mixes to a shoutcast or icecast server"
-msgstr ""
+msgstr "Транслируйте ваши миксы через серверы shoutcast или icecast"
 
 #: MixxxApp#70
 msgid "Start Recording your Mix"
-msgstr ""
+msgstr "Начать запись вашего микса"
 
 #: MixxxApp#71
 msgid "Record your mix to a file"
-msgstr ""
+msgstr "Записать ваш микс в файл"
 
 #: MixxxApp#72
 msgid "Full Screen"
-msgstr ""
+msgstr "Во весь экран"
 
 #: MixxxApp#73
 msgid "Display Mixxx using the full screen"
-msgstr ""
+msgstr "Разворачивать Mixxx на весь экран"
 
 #: MixxxApp#74
 msgctxt "MixxxApp#74"
 msgid "Preferences"
-msgstr ""
+msgstr "Параметры"
 
 #: MixxxApp#75
 msgid ""
 "Preferences\n"
 "Playback and MIDI preferences"
 msgstr ""
+"Параметры\n"
+"Параметры воспроизведения и MIDI"
 
 #: MixxxApp#76
 msgid "Support..."
-msgstr ""
+msgstr "Поддержка..."
 
 #: MixxxApp#77
 msgid ""
@@ -2351,10 +2457,13 @@ msgid ""
 "\n"
 "Get help with Mixxx"
 msgstr ""
+"Поддержка\n"
+"\n"
+"Получите поддержку для Mixxx"
 
 #: MixxxApp#78
 msgid "About the application"
-msgstr ""
+msgstr "Сведения о программе"
 
 #: MixxxApp#79
 msgid ""
@@ -2362,6 +2471,9 @@ msgid ""
 "\n"
 "About the application"
 msgstr ""
+"Сведения\n"
+"\n"
+"Сведения о программе"
 
 #: MixxxApp#80
 msgid "Shows the macro studio window"
@@ -2376,122 +2488,130 @@ msgstr ""
 
 #: MixxxApp#82
 msgid "&File"
-msgstr ""
+msgstr "&Файл"
 
 #: MixxxApp#83
 msgid "&Options"
-msgstr ""
+msgstr "&Параметры"
 
 #: MixxxApp#84
 msgid "&Library"
-msgstr ""
+msgstr "&Библиотека"
 
 #: MixxxApp#85
 msgid "&View"
-msgstr ""
+msgstr "&Вид"
 
 #: MixxxApp#86
 msgid "&Help"
-msgstr ""
+msgstr "&Справка"
 
 #: MixxxApp#87
 msgid "&Macro"
-msgstr ""
+msgstr "&Автоматизация"
 
 #: MixxxApp#88
 msgid "Quit..."
-msgstr ""
+msgstr "Выход..."
 
 #: MixxxApp#89
 msgid "Do your really want to quit?"
-msgstr ""
+msgstr "Вы действительно хотите выйти?"
 
 #: MixxxApp#90
 msgid ""
 "Player 1 is currently playing a song.\n"
 "Are you sure you want to load a new song?"
 msgstr ""
+"Проигрыватель 1 в данный момент воспроизводит композицию.\n"
+"Вы действительно хотите загрузить новую композицию?"
 
 #: MixxxApp#91
 msgid "Load Song into Player 1"
-msgstr ""
+msgstr "Загрузить композицию в проигрыватель 1"
 
 #: MixxxApp#92
 msgid ""
 "Player 2 is currently playing a song.\n"
 "Are you sure you want to load a new song?"
 msgstr ""
+"Проигрыватель 2 в данный момент воспроизводит композицию.\n"
+"Вы действительно хотите загрузить новую композицию?"
 
 #: MixxxApp#93
 msgid "Load Song into Player 2"
-msgstr ""
+msgstr "Загрузить композицию в проигрыватель 2"
 
 #: MixxxApp#94
 msgid ""
 "No input device(s) select.\n"
 "Please select your soundcard(s) in vinyl control preferences."
 msgstr ""
+"Необходимо выбрать устройство(а) ввода.\n"
+"Пожалуйста, выберите вашу звуковую карту(ы) в параметрах управления винилом."
 
 #: MixxxApp#95
 msgctxt "MixxxApp#95"
 msgid "Save Recording As..."
-msgstr ""
+msgstr "Сохранить запись как..."
 
 #: MixxxApp#96
 msgid "Mixxx Recording"
-msgstr ""
+msgstr "Mixxx запись"
 
 #: MixxxApp#97
 msgid ""
 "The file %1 already exists. Would you like to overwrite it?\n"
 "Selecting \"No\" will abort the recording."
 msgstr ""
+"Файл %1 уже существует. Вы действительно хотите заменить его?\n"
+"Выбрав \"Нет\" произойдёт отмена записи."
 
 #: MixxxLibraryFeature#1
 msgid "Missing Songs"
-msgstr ""
+msgstr "Отсутствующие композиции"
 
 #: MixxxLibraryFeature#2
 msgctxt "MixxxLibraryFeature#2"
 msgid "Library"
-msgstr ""
+msgstr "Библиотека"
 
 #: Player#1
 msgid "Couldn't load track."
-msgstr ""
+msgstr "Невозможно загрузить дорожку."
 
 #: PlaylistFeature#1
 msgid "New Playlist"
-msgstr ""
+msgstr "Создать список воспроизведения"
 
 #: PlaylistFeature#2
 msgctxt "PlaylistFeature#2"
 msgid "Remove"
-msgstr ""
+msgstr "Удалить"
 
 #: PlaylistFeature#3
 msgid "Playlists"
-msgstr ""
+msgstr "Списки воспроизведения"
 
 #: PlaylistFeature#4
 msgid "Playlist name:"
-msgstr ""
+msgstr "Название списка воспроизведения:"
 
 #: PlaylistFeature#5
 msgid "Playlist Creation Failed"
-msgstr ""
+msgstr "Ошибка создания списка воспроизведения"
 
 #: PlaylistFeature#6
 msgid "A playlist cannot have a blank name."
-msgstr ""
+msgstr "Необходимо ввести название списка воспроизведения"
 
 #: PlaylistFeature#7
 msgid "An unknown error occurred while creating playlist: "
-msgstr ""
+msgstr "Обнаружена неизвестная ошибка при создании списка воспроизведения "
 
 #: PlaylistFeature#8
 msgid "A playlist by that name already exists."
-msgstr ""
+msgstr "Список воспроизведения с этим названием уже существует."
 
 #: PlaylistTableModel#1
 msgid "#"
@@ -2500,7 +2620,7 @@ msgstr ""
 #: PlaylistTableModel#2
 msgctxt "PlaylistTableModel#2"
 msgid "Artist"
-msgstr ""
+msgstr "Исполнитель"
 
 #: PlaylistTableModel#3
 msgctxt "PlaylistTableModel#3"
@@ -2510,62 +2630,62 @@ msgstr ""
 #: PlaylistTableModel#4
 msgctxt "PlaylistTableModel#4"
 msgid "Album"
-msgstr ""
+msgstr "Альбом"
 
 #: PlaylistTableModel#5
 msgctxt "PlaylistTableModel#5"
 msgid "Genre"
-msgstr ""
+msgstr "Жанр"
 
 #: PlaylistTableModel#6
 msgctxt "PlaylistTableModel#6"
 msgid "Year"
-msgstr ""
+msgstr "Год"
 
 #: PlaylistTableModel#7
 msgctxt "PlaylistTableModel#7"
 msgid "Type"
-msgstr ""
+msgstr "Тип"
 
 #: PlaylistTableModel#8
 msgctxt "PlaylistTableModel#8"
 msgid "Location"
-msgstr ""
+msgstr "Расположение"
 
 #: PlaylistTableModel#9
 msgctxt "PlaylistTableModel#9"
 msgid "Comment"
-msgstr ""
+msgstr "Описание"
 
 #: PlaylistTableModel#10
 msgctxt "PlaylistTableModel#10"
 msgid "Duration"
-msgstr ""
+msgstr "Длительность"
 
 #: PlaylistTableModel#11
 msgctxt "PlaylistTableModel#11"
 msgid "Track #"
-msgstr ""
+msgstr "Дорожка #"
 
 #: PlaylistTableModel#12
 msgctxt "PlaylistTableModel#12"
 msgid "Bitrate"
-msgstr ""
+msgstr "Битрейт"
 
 #: PlaylistTableModel#13
 msgctxt "PlaylistTableModel#13"
 msgid "Date Added"
-msgstr ""
+msgstr "Дата добавления"
 
 #: PlaylistTableModel#14
 msgctxt "PlaylistTableModel#14"
 msgid "BPM"
-msgstr ""
+msgstr "Уд./мин."
 
 #: PrepareFeature#1
 msgctxt "PrepareFeature#1"
 msgid "Analyze"
-msgstr ""
+msgstr "Анализировать"
 
 #: RhythmboxFeature#1
 msgid "Rhythmbox"
@@ -2573,90 +2693,90 @@ msgstr ""
 
 #: RhythmboxFeature#2
 msgid "Load Rhythmbox Library?"
-msgstr ""
+msgstr "Загрузить библиотеку Rhythmbox?"
 
 #: RhythmboxFeature#3
 msgid "Would you like to load your Rhythmbox library?"
-msgstr ""
+msgstr "Вы действительно хотите загрузить библиотеку Rhythmbox?"
 
 #: RhythmboxPlaylistModel#1
 msgctxt "RhythmboxPlaylistModel#1"
 msgid "Artist"
-msgstr ""
+msgstr "Исполнитель"
 
 #: RhythmboxPlaylistModel#2
 msgctxt "RhythmboxPlaylistModel#2"
 msgid "Title"
-msgstr ""
+msgstr "Название"
 
 #: RhythmboxPlaylistModel#3
 msgctxt "RhythmboxPlaylistModel#3"
 msgid "Album"
-msgstr ""
+msgstr "Альбом"
 
 #: RhythmboxPlaylistModel#4
 msgctxt "RhythmboxPlaylistModel#4"
 msgid "Year"
-msgstr ""
+msgstr "Год"
 
 #: RhythmboxPlaylistModel#5
 msgctxt "RhythmboxPlaylistModel#5"
 msgid "Genre"
-msgstr ""
+msgstr "Жанр"
 
 #: RhythmboxPlaylistModel#6
 msgctxt "RhythmboxPlaylistModel#6"
 msgid "Location"
-msgstr ""
+msgstr "Расположение"
 
 #: RhythmboxPlaylistModel#7
 msgctxt "RhythmboxPlaylistModel#7"
 msgid "Duration"
-msgstr ""
+msgstr "Длительность"
 
 #: RhythmboxPlaylistModel#8
 msgctxt "RhythmboxPlaylistModel#8"
 msgid "Unknown"
-msgstr ""
+msgstr "Неизвестно"
 
 #: RhythmboxTrackModel#1
 msgctxt "RhythmboxTrackModel#1"
 msgid "Artist"
-msgstr ""
+msgstr "Исполнитель"
 
 #: RhythmboxTrackModel#2
 msgctxt "RhythmboxTrackModel#2"
 msgid "Title"
-msgstr ""
+msgstr "Название"
 
 #: RhythmboxTrackModel#3
 msgctxt "RhythmboxTrackModel#3"
 msgid "Album"
-msgstr ""
+msgstr "Альбом"
 
 #: RhythmboxTrackModel#4
 msgctxt "RhythmboxTrackModel#4"
 msgid "Date"
-msgstr ""
+msgstr "Дата"
 
 #: RhythmboxTrackModel#5
 msgctxt "RhythmboxTrackModel#5"
 msgid "Genre"
-msgstr ""
+msgstr "Жанр"
 
 #: RhythmboxTrackModel#6
 msgctxt "RhythmboxTrackModel#6"
 msgid "Location"
-msgstr ""
+msgstr "Расположение"
 
 #: RhythmboxTrackModel#7
 msgctxt "RhythmboxTrackModel#7"
 msgid "Duration"
-msgstr ""
+msgstr "Длительность"
 
 #: TrackCollection#1
 msgid "Cannot open database"
-msgstr ""
+msgstr "Ошибка открытия базы данных"
 
 #: TrackCollection#2
 msgid ""
@@ -2666,10 +2786,15 @@ msgid ""
 "\n"
 "Click OK to exit."
 msgstr ""
+"Невозможно установить соединение с базой данных.\n"
+"Mixxx необходим QT с поддержкой SQLite. Пожалуйста, прочитайте руководство "
+"по сборке драйвера Qt SQL.\n"
+"\n"
+"Нажмите OK для выхода."
 
 #: TrackCollection#3
 msgid "Cannot upgrade database schema"
-msgstr ""
+msgstr "Невозможно обновить логическую структуру в базе данных"
 
 #: TrackCollection#4
 msgid ""
@@ -2679,11 +2804,16 @@ msgid ""
 "\n"
 "Click OK to exit."
 msgstr ""
+"Невозможно обновить логическую структуру в базе данных до версии %1.\n"
+"Файл mixxx.db может быть повреждён.\n"
+"Попробуйте переименовать его и перезапустить Mixxx.\n"
+"\n"
+"Нажмите OK для выхода."
 
 #: Ui#1
 msgctxt "Ui#1"
 msgid "Position"
-msgstr ""
+msgstr "Расположение"
 
 #: Ui#2
 msgid "Remaining"
@@ -2692,39 +2822,41 @@ msgstr ""
 #: Ui#3
 msgctxt "Ui#3"
 msgid "On"
-msgstr ""
+msgstr "Задействовать"
 
 #: Ui#4
 msgctxt "Ui#4"
 msgid "Off"
-msgstr ""
+msgstr "Отключить"
 
 #: Ui#5
 msgid "CDJ Mode"
-msgstr ""
+msgstr "Режим CDJ"
 
 #: Ui#6
 msgid "Simple"
-msgstr ""
+msgstr "Простой"
 
 #: Ui#7
 msgid "Mixxx Detected a WVGA Screen"
-msgstr ""
+msgstr "Mixxx обнаружил экран с разрешением WVGA"
 
 #: Ui#8
 msgid "Mixxx has detected that your screen has a resolution of "
-msgstr ""
+msgstr "Mixxx определил, что ваш экран имеет разрешение "
 
 #: Ui#9
 msgid ""
 "The only skin compatiable with this size display is OutlineMini (800x480).  "
 "Would you like to use that skin?"
 msgstr ""
+"Единственная обложка такого формата OutlineMini (800x480).  Вы действительно "
+"хотите использовать эту обложку?"
 
 #: Ui#10
 msgctxt "Ui#10"
 msgid "Preferences"
-msgstr ""
+msgstr "Параметры"
 
 #: VinylControlSignalWidget#1
 msgid "OK"
@@ -2733,20 +2865,20 @@ msgstr ""
 #: WBrowseTableView#1
 msgctxt "WBrowseTableView#1"
 msgid "Load in Player 1"
-msgstr ""
+msgstr "Загрузить в проигрыватель 1"
 
 #: WBrowseTableView#2
 msgctxt "WBrowseTableView#2"
 msgid "Load in Player 2"
-msgstr ""
+msgstr "Загрузить в проигрыватель 2"
 
 #: WSearchLineEdit#1
 msgid "Search..."
-msgstr ""
+msgstr "Найти..."
 
 #: WTrackTableView#1
 msgid "Add to Playlist"
-msgstr ""
+msgstr "Добавить в список воспроизведения"
 
 #: WTrackTableView#2
 msgid "Add to Crate"
