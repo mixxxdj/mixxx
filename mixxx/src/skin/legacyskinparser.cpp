@@ -65,7 +65,9 @@ LegacySkinParser::LegacySkinParser(ConfigObject<ConfigValue>* pConfig,
 }
 
 LegacySkinParser::~LegacySkinParser() {
-
+    foreach (const char *s, m_channelStrs) {
+        free((void*) s); // created using strdup/malloc so use free
+    }
 }
 
 bool LegacySkinParser::canParse(QString skinPath) {
@@ -342,11 +344,7 @@ QWidget* LegacySkinParser::parseSliderComposed(QDomElement node) {
 QWidget* LegacySkinParser::parseOverview(QDomElement node) {
     QString channelStr = lookupNodeGroup(node);
 
-    // TODO(XXX) This is a memory leak, but it's tiny. We have to do this for
-    // now while everything expects groups as const char* because otherwise
-    // we'll be providing a pointer to QString's internal memory, which might
-    // get free'd at some point.
-    const char* pSafeChannelStr = strdup(channelStr.toAscii().constData());
+    const char* pSafeChannelStr = safeChannelString(channelStr);
 
     BaseTrackPlayer* pPlayer = m_pPlayerManager->getPlayer(channelStr);
 
@@ -378,11 +376,7 @@ QWidget* LegacySkinParser::parseVisual(QDomElement node) {
     QString channelStr = lookupNodeGroup(node);
     BaseTrackPlayer* pPlayer = m_pPlayerManager->getPlayer(channelStr);
 
-    // TODO(XXX) This is a memory leak, but it's tiny. We have to do this for
-    // now while everything expects groups as const char* because otherwise
-    // we'll be providing a pointer to QString's internal memory, which might
-    // get free'd at some point.
-    const char* pSafeChannelStr = strdup(channelStr.toAscii().constData());
+    const char* pSafeChannelStr = safeChannelString(channelStr);
 
     if (pPlayer == NULL)
         return NULL;
@@ -502,11 +496,7 @@ QWidget* LegacySkinParser::parseDisplay(QDomElement node) {
 QWidget* LegacySkinParser::parseNumberRate(QDomElement node) {
     QString channelStr = lookupNodeGroup(node);
 
-    // TODO(XXX) This is a memory leak, but it's tiny. We have to do this for
-    // now while everything expects groups as const char* because otherwise
-    // we'll be providing a pointer to QString's internal memory, which might
-    // get free'd at some point.
-    const char* pSafeChannelStr = strdup(channelStr.toAscii().constData());
+    const char* pSafeChannelStr = safeChannelString(channelStr);
 
     QColor c(255,255,255);
     if (!XmlParse::selectNode(node, "BgColor").isNull()) {
@@ -531,11 +521,7 @@ QWidget* LegacySkinParser::parseNumberRate(QDomElement node) {
 QWidget* LegacySkinParser::parseNumberPos(QDomElement node) {
     QString channelStr = lookupNodeGroup(node);
 
-    // TODO(XXX) This is a memory leak, but it's tiny. We have to do this for
-    // now while everything expects groups as const char* because otherwise
-    // we'll be providing a pointer to QString's internal memory, which might
-    // get free'd at some point.
-    const char* pSafeChannelStr = strdup(channelStr.toAscii().constData());
+    const char* pSafeChannelStr = safeChannelString(channelStr);
 
     WNumberPos* p = new WNumberPos(pSafeChannelStr, m_pParent);
     p->installEventFilter(m_pKeyboard);
@@ -548,11 +534,7 @@ QWidget* LegacySkinParser::parseNumberPos(QDomElement node) {
 QWidget* LegacySkinParser::parseNumberBpm(QDomElement node) {
     QString channelStr = lookupNodeGroup(node);
 
-    // TODO(XXX) This is a memory leak, but it's tiny. We have to do this for
-    // now while everything expects groups as const char* because otherwise
-    // we'll be providing a pointer to QString's internal memory, which might
-    // get free'd at some point.
-    const char* pSafeChannelStr = strdup(channelStr.toAscii().constData());
+    const char* pSafeChannelStr = safeChannelString(channelStr);
 
     BaseTrackPlayer* pPlayer = m_pPlayerManager->getPlayer(channelStr);
 
@@ -797,6 +779,17 @@ QString LegacySkinParser::lookupNodeGroup(QDomElement node) {
     }
 
     return group;
+}
+
+const char* LegacySkinParser::safeChannelString(QString channelStr) {
+    foreach (const char *s, m_channelStrs) {
+        if (channelStr == s) { // calls QString::operator==(const char*)
+            return s;
+        }
+    }
+    const char *safe(strdup(channelStr.toAscii().constData()));
+    m_channelStrs.append(safe);
+    return safe;
 }
 
 QWidget* LegacySkinParser::parseStyle(QDomElement node) {

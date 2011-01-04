@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include <QString>
+#include <QList>
 #include <QDomElement>
 
 #include "configobject.h"
@@ -61,12 +62,14 @@ class LegacySkinParser : public QObject, public SkinParser {
     void setupConnections(QDomNode node, QWidget* pWidget);
 
     QString lookupNodeGroup(QDomElement node);
+    const char* safeChannelString(QString channelStr);
 
     ConfigObject<ConfigValue>* m_pConfig;
     MixxxKeyboard* m_pKeyboard;
     PlayerManager* m_pPlayerManager;
     Library* m_pLibrary;
     QWidget *m_pParent;
+    QList<const char*> m_channelStrs;
 };
 
 
