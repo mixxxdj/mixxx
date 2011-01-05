@@ -32,7 +32,7 @@ CrateFeature::CrateFeature(QObject* parent,
             this, SLOT(slotDeleteCrate()));
 
     m_pRenameCrateAction = new QAction(tr("Rename"),this);
-	connect(m_pRenameCrateAction, SIGNAL(triggered()),
+    connect(m_pRenameCrateAction, SIGNAL(triggered()),
 			this, SLOT(slotRenameCrate()));
 
     m_pImportPlaylistAction = new QAction(tr("Import Playlist"),this);
@@ -156,7 +156,7 @@ void CrateFeature::onRightClickChild(const QPoint& globalPos, QModelIndex index)
     QMenu menu(NULL);
     menu.addAction(m_pCreateCrateAction);
     menu.addSeparator();
-	menu.addAction(m_pRenameCrateAction);
+    menu.addAction(m_pRenameCrateAction);
     menu.addAction(m_pDeleteCrateAction);
     menu.addSeparator();
     menu.addAction(m_pImportPlaylistAction);
@@ -273,9 +273,9 @@ void CrateFeature::slotRenameCrate() {
 
 
     if (m_pTrackCollection->getCrateDAO().renameCrate(crateId, newName)) {
-		clearChildModel();
+        clearChildModel();
         m_crateListTableModel.select();
-		constructChildModel();
+        constructChildModel();
         emit(featureUpdated());
         m_crateTableModel.setCrate(crateId);
     } else {
