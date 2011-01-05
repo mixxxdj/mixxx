@@ -482,11 +482,10 @@ class MixxxCore(Feature):
                    "audiotagger.cpp",
                    
                    "library/treeitemmodel.cpp",
-				   "library/treeitem.cpp",
-				   
-				   "library/traktorfeature.cpp",
-				   "library/traktortablemodel.cpp",
-				   "library/traktorplaylistmodel.cpp",
+                   "library/treeitem.cpp",
+                   "library/traktorfeature.cpp",
+                   "library/traktortablemodel.cpp",
+                   "library/traktorplaylistmodel.cpp",
 
                    "xmlparse.cpp",
                    "library/parser.cpp",
