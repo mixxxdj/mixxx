@@ -52,7 +52,7 @@ private:
 	bool bHaveSignal;					//Any signal at all?
 	bool bAtRecordEnd;
 	bool bForceResync;
-	int iNewMode;
+	int iOldMode;
 	double dOldFilePos;
 	double dSteadyPitch;
 	double dSteadyPitchTime;
