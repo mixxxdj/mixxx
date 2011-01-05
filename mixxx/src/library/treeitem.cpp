@@ -73,7 +73,7 @@ bool TreeItem::insertChildren(QList<QString>& data, int position, int count)
 
      for (int row = 0; row < count; ++row) {
          TreeItem *item = new TreeItem(data.at(row), data.at(row), m_feature, this);
-         m_childItems.insert(position, item);
+         m_childItems.insert(row, item);
      }
 
      return true;
