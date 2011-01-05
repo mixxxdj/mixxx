@@ -56,7 +56,7 @@ class ITunesFeature : public LibraryFeature {
     TrackCollection* m_pTrackCollection;
     QSqlDatabase &m_database;
     bool m_isActivated;
-    //Zhe root of the childmodel
+    //The root of the childmodel
     TreeItem *m_rootItem;
 };
 

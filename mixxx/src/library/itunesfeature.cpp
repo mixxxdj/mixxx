@@ -423,8 +423,8 @@ void ITunesFeature::parsePlaylist(QXmlStreamReader &xml, QSqlQuery &query_insert
                         return;
                     }
                     //append the playlist to the child model
-            		TreeItem *item = new TreeItem(playlistname, playlistname, this, m_rootItem);
-            		m_rootItem->appendChild(item);
+                    TreeItem *item = new TreeItem(playlistname, playlistname, this, m_rootItem);
+                    m_rootItem->appendChild(item);
 
                 }
                 /*

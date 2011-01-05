@@ -21,7 +21,7 @@ TraktorFeature::TraktorFeature(QObject* parent, TrackCollection* pTrackCollectio
 		m_database(m_pTrackCollection->getDatabase())
 {
     
-	m_isActivated =  false;
+    m_isActivated =  false;
     m_pTraktorTableModel = new TraktorTableModel(this, m_pTrackCollection);
     m_pTraktorPlaylistModel = new TraktorPlaylistModel(this, m_pTrackCollection);
 	
@@ -67,8 +67,8 @@ void TraktorFeature::activate() {
             == QMessageBox::Cancel) {
             return;
         }
-		if(importLibrary(getTraktorMusicDatabase()))
-			m_isActivated =  true;
+        if(importLibrary(getTraktorMusicDatabase()))
+            m_isActivated =  true;
 	}
 	emit(showTrackModel(m_pTraktorTableModel));
   
@@ -116,37 +116,37 @@ bool TraktorFeature::importLibrary(QString file){
 
     //Delete all table entries of Traktor feature
     m_database.transaction();
-	clearTable("traktor_playlist_tracks");
-	clearTable("traktor_library");
+    clearTable("traktor_playlist_tracks");
+    clearTable("traktor_library");
     clearTable("traktor_playlists");
     m_database.commit();
 
     m_database.transaction();
     QSqlQuery query(m_database);
-	query.prepare("INSERT INTO traktor_library (artist, title, album, year, genre,comment, tracknumber,"
-				   "bpm, bitrate,"
-				   "duration, location,"
-				   "rating,"
-				   "key) "
-                  "VALUES (:artist, :title, :album, :year, :genre,:comment, :tracknumber,"
-				  ":bpm, :bitrate,"
-				  ":duration, :location,"
-				  ":rating,"
-				  
-				  ":key)");
+    query.prepare("INSERT INTO traktor_library (artist, title, album, year, genre,comment," 
+                   "tracknumber,"
+                   "bpm, bitrate,"
+                   "duration, location,"
+                   "rating,"
+                   "key) "
+                   "VALUES (:artist, :title, :album, :year, :genre,:comment, :tracknumber,"
+                   ":bpm, :bitrate,"
+                   ":duration, :location,"
+                   ":rating,"
+                   ":key)");
 	
-	//Parse Trakor XML file using SAX (for performance)
-	QFile traktor_file(file);
-	if (!traktor_file.open(QIODevice::ReadOnly | QIODevice::Text)) {
-		qDebug() << "Cannot open Traktor music collection";
-		return false;
-	}
-	QXmlStreamReader xml(&traktor_file);
-	bool inCollectionTag = false;
-	bool inEntryTag = false;
+    //Parse Trakor XML file using SAX (for performance)
+    QFile traktor_file(file);
+    if (!traktor_file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+        qDebug() << "Cannot open Traktor music collection";
+        return false;
+    }
+    QXmlStreamReader xml(&traktor_file);
+    bool inCollectionTag = false;
+    bool inEntryTag = false;
     bool inPlaylistsTag = false;
     bool isRootFolderParsed = false;
-	int nAudioFiles = 0;
+    int nAudioFiles = 0;
 	
 	
 	
