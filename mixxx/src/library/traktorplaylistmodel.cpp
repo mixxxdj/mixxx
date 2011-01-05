@@ -35,7 +35,7 @@ TrackPointer TraktorPlaylistModel::getTrack(const QModelIndex& index) const
 {
 	//qDebug() << "getTraktorTrack";
 	
-	QString artist = index.sibling(index.row(), fieldIndex("artist")).data().toString();
+    QString artist = index.sibling(index.row(), fieldIndex("artist")).data().toString();
 	QString title = index.sibling(index.row(), fieldIndex("title")).data().toString();
 	QString album = index.sibling(index.row(), fieldIndex("album")).data().toString();
 	QString year = index.sibling(index.row(), fieldIndex("year")).data().toString();
