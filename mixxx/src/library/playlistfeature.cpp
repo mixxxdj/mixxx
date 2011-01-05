@@ -49,7 +49,7 @@ PlaylistFeature::PlaylistFeature(QObject* parent, TrackCollection* pTrackCollect
     m_playlistTableModel.removeColumn(m_playlistTableModel.fieldIndex("position"));
     m_playlistTableModel.removeColumn(m_playlistTableModel.fieldIndex("date_created"));
     m_playlistTableModel.removeColumn(m_playlistTableModel.fieldIndex("date_modified"));
-    m_playlistTableModel.setSort(m_playlistTableModel.fieldIndex("position"),
+    m_playlistTableModel.setSort(m_playlistTableModel.fieldIndex("name"),
                                  Qt::AscendingOrder);
     m_playlistTableModel.select();
     
@@ -313,8 +313,9 @@ void PlaylistFeature::constructChildModel()
     for (int row = 0; row < m_playlistTableModel.rowCount(); ++row) {
             QModelIndex ind = m_playlistTableModel.index(row, idColumn);
             QString playlist_name = m_playlistTableModel.data(ind).toString();
-            data_list.append(playlist_name);
-    }    
+            data_list.insert(row,playlist_name);
+    }
+    
     m_childModel.insertRows(data_list, 0, m_playlistTableModel.rowCount());  
 }
 /**
