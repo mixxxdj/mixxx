@@ -12,7 +12,7 @@ TraktorPlaylistModel::TraktorPlaylistModel(QObject* parent,
                      "mixxx.db.model.traktor.playlistmodel"),
           BaseSqlTableModel(parent, pTrackCollection, pTrackCollection->getDatabase()),
           m_pTrackCollection(pTrackCollection),
-		  m_database(m_pTrackCollection->getDatabase())
+          m_database(m_pTrackCollection->getDatabase())
           
 {
     connect(this, SIGNAL(doSearch(const QString&)), this, SLOT(slotSearch(const QString&)));
@@ -217,7 +217,7 @@ void TraktorPlaylistModel::setPlaylist(QString playlist_path)
     slotSearch("");
 
     select(); //Populate the data model.
-	initHeaderData();
+    initHeaderData();
 }
 bool TraktorPlaylistModel::isColumnHiddenByDefault(int column) {
     if (column == fieldIndex(LIBRARYTABLE_KEY))    

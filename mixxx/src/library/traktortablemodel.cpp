@@ -12,11 +12,11 @@ TraktorTableModel::TraktorTableModel(QObject* parent,
                      "mixxx.db.model.traktor_tablemodel"),
           BaseSqlTableModel(parent, pTrackCollection, pTrackCollection->getDatabase()),
           m_pTrackCollection(pTrackCollection),
-		  m_database(m_pTrackCollection->getDatabase())
+          m_database(m_pTrackCollection->getDatabase())
           
 {
     connect(this, SIGNAL(doSearch(const QString&)), this, SLOT(slotSearch(const QString&)));
-	setTable("traktor_library");
+    setTable("traktor_library");
     initHeaderData();
 }
 
@@ -31,25 +31,25 @@ bool TraktorTableModel::addTrack(const QModelIndex& index, QString location)
 
 TrackPointer TraktorTableModel::getTrack(const QModelIndex& index) const
 {
-	//qDebug() << "getTraktorTrack";
-	
-	QString artist = index.sibling(index.row(), fieldIndex("artist")).data().toString();
-	QString title = index.sibling(index.row(), fieldIndex("title")).data().toString();
-	QString album = index.sibling(index.row(), fieldIndex("album")).data().toString();
-	QString year = index.sibling(index.row(), fieldIndex("year")).data().toString();
-	QString genre = index.sibling(index.row(), fieldIndex("genre")).data().toString();
-	float bpm = index.sibling(index.row(), fieldIndex("bpm")).data().toString().toFloat();
-	
-	QString location = index.sibling(index.row(), fieldIndex("location")).data().toString();
-	
-	TrackInfoObject* pTrack = new TrackInfoObject(location);
-	pTrack->setArtist(artist);
+    //qDebug() << "getTraktorTrack";
+    
+    QString artist = index.sibling(index.row(), fieldIndex("artist")).data().toString();
+    QString title = index.sibling(index.row(), fieldIndex("title")).data().toString();
+    QString album = index.sibling(index.row(), fieldIndex("album")).data().toString();
+    QString year = index.sibling(index.row(), fieldIndex("year")).data().toString();
+    QString genre = index.sibling(index.row(), fieldIndex("genre")).data().toString();
+    float bpm = index.sibling(index.row(), fieldIndex("bpm")).data().toString().toFloat();
+    
+    QString location = index.sibling(index.row(), fieldIndex("location")).data().toString();
+    
+    TrackInfoObject* pTrack = new TrackInfoObject(location);
+    pTrack->setArtist(artist);
     pTrack->setTitle(title);
     pTrack->setAlbum(album);
     pTrack->setYear(year);
     pTrack->setGenre(genre);
     pTrack->setBpm(bpm);
-	
+    
 
     return TrackPointer(pTrack, &QObject::deleteLater);
 }
@@ -154,7 +154,7 @@ bool TraktorTableModel::isColumnHiddenByDefault(int column) {
     if (column == fieldIndex(LIBRARYTABLE_KEY))    
         return true;
     if(column == fieldIndex(LIBRARYTABLE_BITRATE))
-    	return true;
-	
-	return false;    	
+        return true;
+    
+    return false;        
 }
