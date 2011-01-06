@@ -299,14 +299,18 @@ QWidget* LegacySkinParser::parseBackground(QDomElement node, QWidget* pGrandpare
     QPixmap* background = WPixmapStore::getPixmapNoCache(WWidget::getPath(filename));
 
     bg->move(0, 0);
-    if (background != NULL)
+    if (background != NULL) {
         bg->setPixmap(*background);
+    }
+
     bg->lower();
 
     // yes, this is confusing. Sorry. See ::parseSkin.
     m_pParent->move(0,0);
-    m_pParent->setFixedSize(background->width(), background->height());
-    pGrandparent->setMinimumSize(background->width(), background->height());
+    if (background != NULL) {
+        m_pParent->setFixedSize(background->width(), background->height());
+        pGrandparent->setMinimumSize(background->width(), background->height());
+    }
 
     QColor c(0,0,0); // Default background color is now black, if people want to do <invert/> filters they'll have to figure something out for this.
     if (!XmlParse::selectNode(node, "BgColor").isNull()) {
@@ -318,6 +322,10 @@ QWidget* LegacySkinParser::parseBackground(QDomElement node, QWidget* pGrandpare
     pGrandparent->setBackgroundRole(QPalette::Window);
     pGrandparent->setPalette(palette);
     pGrandparent->setAutoFillBackground(true);
+
+    // WPixmapStore::getPixmapNoCache() allocated background and gave us
+    // ownership. QLabel::setPixmap makes a copy, so we have to delete this.
+    delete background;
 
     return bg;
 }
