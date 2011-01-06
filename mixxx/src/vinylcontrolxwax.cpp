@@ -46,7 +46,7 @@ VinylControlXwax::VinylControlXwax(ConfigObject<ConfigValue> * pConfig, const ch
     char * timecode  =  NULL;
     bShouldClose    = false;
     bForceResync    = false;
-    iNewMode		= -1;
+    iOldMode		= MIXXX_VCMODE_ABSOLUTE;
     dUiUpdateTime   = -1.0f;
     m_bNeedleSkipPrevention = (bool)(m_pConfig->getValueString( ConfigKey( "[VinylControl]", "NeedleSkipPrevention" ) ).toInt());
     
@@ -534,6 +534,7 @@ void VinylControlXwax::enableRecordEndMode()
 
 void VinylControlXwax::enableConstantMode()
 {
+	iOldMode = iVCMode;
 	iVCMode = MIXXX_VCMODE_CONSTANT;
 	mode->slotSet((double)iVCMode);
 	togglePlayButton(true);
@@ -546,6 +547,9 @@ void VinylControlXwax::disableRecordEndMode()
 {
 	vinylStatus->slotSet(VINYL_STATUS_OK);
 	atRecordEnd = false;
+	//don't start a new track with constant mode
+	if (iVCMode == MIXXX_VCMODE_CONSTANT)
+		iVCMode = iOldMode;
 }
 
 void VinylControlXwax::togglePlayButton(bool on)
