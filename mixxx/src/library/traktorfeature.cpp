@@ -235,7 +235,7 @@ void TraktorFeature::parseTrack(QXmlStreamReader &xml, QSqlQuery &query){
     QString key;
     //duration of a track
     int playtime = 0;
-    int rating = 1;
+    int rating = 0;
     QString comment;
     QString tracknumber;
 
