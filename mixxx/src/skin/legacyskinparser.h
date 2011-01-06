@@ -5,6 +5,7 @@
 #include <QString>
 #include <QList>
 #include <QDomElement>
+#include <QMutex>
 
 #include "configobject.h"
 #include "skin/skinparser.h"
@@ -27,6 +28,7 @@ class LegacySkinParser : public QObject, public SkinParser {
 
     // Legacy support for looking up the scheme list.
     static QList<QString> getSchemeList(QString qSkinPath);
+    static void freeChannelStrings();
   private:
     static QDomElement openSkin(QString skinPath);
 
@@ -62,14 +64,15 @@ class LegacySkinParser : public QObject, public SkinParser {
     void setupConnections(QDomNode node, QWidget* pWidget);
 
     QString lookupNodeGroup(QDomElement node);
-    const char* safeChannelString(QString channelStr);
+    static const char* safeChannelString(QString channelStr);
 
     ConfigObject<ConfigValue>* m_pConfig;
     MixxxKeyboard* m_pKeyboard;
     PlayerManager* m_pPlayerManager;
     Library* m_pLibrary;
     QWidget *m_pParent;
-    QList<const char*> m_channelStrs;
+    static QList<const char*> s_channelStrs;
+    static QMutex s_safeStringMutex;
 };
 
 

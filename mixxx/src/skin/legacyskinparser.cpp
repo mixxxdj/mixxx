@@ -8,6 +8,7 @@
 #include <QVBoxLayout>
 #include <QLabel>
 #include <QGridLayout>
+#include <QMutexLocker>
 
 #include "controlobject.h"
 #include "controlobjectthreadwidget.h"
@@ -50,7 +51,8 @@
 #include "widget/wskincolor.h"
 #include "widget/wpixmapstore.h"
 
-
+QList<const char*> LegacySkinParser::s_channelStrs;
+QMutex LegacySkinParser::s_safeStringMutex;
 
 LegacySkinParser::LegacySkinParser(ConfigObject<ConfigValue>* pConfig,
                                    MixxxKeyboard* pKeyboard,
@@ -65,9 +67,6 @@ LegacySkinParser::LegacySkinParser(ConfigObject<ConfigValue>* pConfig,
 }
 
 LegacySkinParser::~LegacySkinParser() {
-    foreach (const char *s, m_channelStrs) {
-        free((void*) s); // created using strdup/malloc so use free
-    }
 }
 
 bool LegacySkinParser::canParse(QString skinPath) {
@@ -131,6 +130,14 @@ QList<QString> LegacySkinParser::getSchemeList(QString qSkinPath) {
     }
 
     return schlist;
+}
+
+// static
+void LegacySkinParser::freeChannelStrings() {
+    QMutexLocker lock(&s_safeStringMutex);
+    foreach (const char *s, s_channelStrs) {
+        free((void*) s); // created using strdup/malloc so use free
+    }
 }
 
 bool LegacySkinParser::compareConfigKeys(QDomNode node, QString key)
@@ -789,14 +796,17 @@ QString LegacySkinParser::lookupNodeGroup(QDomElement node) {
     return group;
 }
 
+// static
 const char* LegacySkinParser::safeChannelString(QString channelStr) {
-    foreach (const char *s, m_channelStrs) {
+    QMutexLocker lock(&s_safeStringMutex);
+    foreach (const char *s, s_channelStrs) {
         if (channelStr == s) { // calls QString::operator==(const char*)
             return s;
         }
     }
-    const char *safe(strdup(channelStr.toAscii().constData()));
-    m_channelStrs.append(safe);
+    QByteArray qba(channelStr.toAscii());
+    const char *safe(strdup(qba.constData()));
+    s_channelStrs.append(safe);
     return safe;
 }
 
