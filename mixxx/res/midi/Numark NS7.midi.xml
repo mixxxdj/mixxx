@@ -1,0 +1,569 @@
+<?xml version="1.0" encoding="utf-8"?>
+<MixxxMIDIPreset vschemaVersion="1" mixxxVersion="1.9.0">
+   <info>
+      <name>Numark NS7</name>
+      <author>Anders Gunnarsson</author>
+      <description>Numark NS7 controller preliminary mapping, v1.9.0 Requires script v1.9.0</description>
+   </info>
+   <controller id="Numark NS7 MIDI">
+      <scriptfiles>
+         <file filename="Numark-NS7-scripts.js" functionprefix="NumarkNS7"/>
+      </scriptfiles>
+      <controls>
+         <!-- Deck A -->
+         <control>
+            <group>[Channel1]</group>
+            <key>rate</key>
+            <status>0xB0</status>
+            <midino>0x04</midino>
+         </control>
+         <control>
+            <group>[Channel1]</group>
+            <key>rate_temp_down</key>
+            <status>0x90</status>
+            <midino>0x18</midino>
+            <options>
+               <Button />
+            </options>
+         </control>
+         <control>
+            <group>[Channel1]</group>
+            <key>rate_temp_up</key>
+            <status>0x90</status>
+            <midino>0x19</midino>
+            <options>
+               <Button />
+            </options>
+         </control>
+         <control>
+            <group>[Channel1]</group>
+            <key>beatsync</key>
+            <status>0x90</status>
+            <midino>0x0F</midino>
+            <options>
+               <Button />
+            </options>
+         </control>
+         <control>
+            <group>[Channel1]</group>
+            <key>NumarkNS7.rate_range</key>
+            <status>0x90</status>
+            <midino>0x1A</midino>
+            <options>
+               <Script-Binding />
+            </options>
+         </control>
+         <control>
+            <group>[Channel1]</group>
+            <key>cue_default</key>
+            <status>0x90</status>
+            <midino>0x10</midino>
+            <options>
+               <Button />
+            </options>
+         </control>
+         <control>
+            <group>[Channel1]</group>
+            <key>play</key>
+            <status>0x90</status>
+            <midino>0x11</midino>
+            <options>
+               <Button />
+            </options>
+         </control>
+         <control>
+            <group>[Channel1]</group>
+            <key>hotcue_1_activate</key>
+            <status>0x90</status>
+            <midino>0x13</midino>
+            <options>
+               <Button />
+            </options>
+         </control>
+         <control>
+            <group>[Channel1]</group>
+            <key>hotcue_2_activate</key>
+            <status>0x90</status>
+            <midino>0x14</midino>
+            <options>
+               <Button />
+            </options>
+         </control>
+         <control>
+            <group>[Channel1]</group>
+            <key>hotcue_3_activate</key>
+            <status>0x90</status>
+            <midino>0x15</midino>
+            <options>
+               <Button />
+            </options>
+         </control>
+         <control>
+            <group>[Channel1]</group>
+            <key>hotcue_4_activate</key>
+            <status>0x90</status>
+            <midino>0x16</midino>
+            <options>
+               <Button />
+            </options>
+         </control>
+         <control>
+            <group>[Channel1]</group>
+            <key>hotcue_5_activate</key>
+            <status>0x90</status>
+            <midino>0x17</midino>
+            <options>
+               <Button />
+            </options>
+         </control>
+         <control>
+            <group>[Channel1]</group>
+            <key>loop_in</key>
+            <status>0x90</status>
+            <midino>0x28</midino>
+            <options>
+               <Button />
+            </options>
+         </control>
+         <control>
+            <group>[Channel1]</group>
+            <key>loop_out</key>
+            <status>0x90</status>
+            <midino>0x29</midino>
+            <options>
+               <Button />
+            </options>
+         </control>
+         <control>
+            <group>[Channel1]</group>
+            <key>reloop_exit</key>
+            <status>0x90</status>
+            <midino>0x31</midino>
+            <options>
+               <Button />
+            </options>
+         </control>
+         <control>
+            <group>[Channel1]</group>
+            <key>NumarkNS7.scratch</key>
+            <status>0x90</status>
+            <midino>0x21</midino>
+            <options>
+               <Script-Binding/>
+            </options>
+         </control>
+         <control>
+            <group>[Channel1]</group>
+            <key>back</key>
+            <status>0x90</status>
+            <midino>0x1F</midino>
+            <options>
+               <Button />
+            </options>
+         </control>
+         <control>
+            <group>[Channel1]</group>
+            <key>fwd</key>
+            <status>0x90</status>
+            <midino>0x20</midino>
+            <options>
+               <Button />
+            </options>
+         </control>
+         <control>
+            <group>[Channel1]</group>
+            <key>keylock</key>
+            <status>0x90</status>
+            <midino>0x1B</midino>
+            <options>
+               <Button />
+            </options>
+         </control>
+         <control>
+            <group>[Channel1]</group>
+            <key>LoadSelectedTrack</key>
+            <status>0x90</status>
+            <midino>0x0C</midino>
+            <options>
+               <Button />
+            </options>
+         </control>
+         <control>
+            <group>[Channel1]</group>
+            <key>NumarkNS7.jog_move</key>
+            <status>0xB0</status>
+			<midino>0x00</midino>
+			<options>
+               <Script-Binding/>
+            </options>
+         </control>
+         <control>
+            <group>[Channel1]</group>
+            <key>playposition</key>
+            <status>0xB0</status>
+            <midino>0x45</midino>
+         </control>
+         
+         <!-- Deck B -->
+         <control>
+            <group>[Channel2]</group>
+            <key>rate</key>
+            <status>0xB0</status>
+            <midino>0x05</midino>
+         </control>
+         <control>
+            <group>[Channel2]</group>
+            <key>rate_temp_down</key>
+            <status>0x90</status>
+            <midino>0x39</midino>
+            <options>
+               <Button />
+            </options>
+         </control>
+         <control>
+            <group>[Channel2]</group>
+            <key>rate_temp_up</key>
+            <status>0x90</status>
+            <midino>0x3A</midino>
+            <options>
+               <Button />
+            </options>
+         </control>
+         <control>
+            <group>[Channel2]</group>
+            <key>beatsync</key>
+            <status>0x90</status>
+            <midino>0x30</midino>
+            <options>
+               <Button />
+            </options>
+         </control>
+         <control>
+            <group>[Channel2]</group>
+            <key>NumarkNS7.rate_range</key>
+            <status>0x90</status>
+            <midino>0x3B</midino>
+            <options>
+               <Script-Binding />
+            </options>
+         </control>
+         <control>
+            <group>[Channel2]</group>
+            <key>cue_default</key>
+            <status>0x90</status>
+            <midino>0x31</midino>
+            <options>
+               <Button />
+            </options>
+         </control>
+         <control>
+            <group>[Channel2]</group>
+            <key>play</key>
+            <status>0x90</status>
+            <midino>0x32</midino>
+            <options>
+               <Button />
+            </options>
+         </control>
+         <control>
+            <group>[Channel2]</group>
+            <key>hotcue_1_activate</key>
+            <status>0x90</status>
+            <midino>0x34</midino>
+            <options>
+               <Button />
+            </options>
+         </control>
+         <control>
+            <group>[Channel2]</group>
+            <key>hotcue_2_activate</key>
+            <status>0x90</status>
+            <midino>0x35</midino>
+            <options>
+               <Button />
+            </options>
+         </control>
+         <control>
+            <group>[Channel2]</group>
+            <key>hotcue_3_activate</key>
+            <status>0x90</status>
+            <midino>0x36</midino>
+            <options>
+               <Button />
+            </options>
+         </control>
+         <control>
+            <group>[Channel2]</group>
+            <key>hotcue_4_activate</key>
+            <status>0x90</status>
+            <midino>0x37</midino>
+            <options>
+               <Button />
+            </options>
+         </control>
+         <control>
+            <group>[Channel2]</group>
+            <key>hotcue_5_activate</key>
+            <status>0x90</status>
+            <midino>0x38</midino>
+            <options>
+               <Button />
+            </options>
+         </control>
+         <control>
+            <group>[Channel2]</group>
+            <key>loop_in</key>
+            <status>0x90</status>
+            <midino>0x49</midino>
+            <options>
+               <Button />
+            </options>
+         </control>
+         <control>
+            <group>[Channel2]</group>
+            <key>loop_out</key>
+            <status>0x90</status>
+            <midino>0x50</midino>
+            <options>
+               <Button />
+            </options>
+         </control>
+         <control>
+            <group>[Channel2]</group>
+            <key>reloop_exit</key>
+            <status>0x90</status>
+            <midino>0x52</midino>
+            <options>
+               <Button />
+            </options>
+         </control>
+         <control>
+            <group>[Channel2]</group>
+            <key>NumarkNS7.scratch</key>
+            <status>0x90</status>
+            <midino>0x42</midino>
+            <options>
+               <Script-Binding/>
+            </options>
+         </control>
+         <control>
+            <group>[Channel2]</group>
+            <key>back</key>
+            <status>0x90</status>
+            <midino>0x40</midino>
+            <options>
+               <Button />
+            </options>
+         </control>
+         <control>
+            <group>[Channel2]</group>
+            <key>fwd</key>
+            <status>0x90</status>
+            <midino>0x41</midino>
+            <options>
+               <Button />
+            </options>
+         </control>
+         <control>
+            <group>[Channel2]</group>
+            <key>keylock</key>
+            <status>0x90</status>
+            <midino>0x3C</midino>
+            <options>
+               <Button />
+            </options>
+         </control>
+         <control>
+            <group>[Channel2]</group>
+            <key>LoadSelectedTrack</key>
+            <status>0x90</status>
+            <midino>0x0E</midino>
+            <options>
+               <Button />
+            </options>
+         </control>
+         <control>
+            <group>[Channel2]</group>
+            <key>NumarkNS7.jog_move</key>
+            <status>0xB0</status>
+			<midino>0x02</midino>
+			<options>
+               <Script-Binding/>
+            </options>
+         </control>
+         <control>
+            <group>[Channel2]</group>
+            <key>playposition</key>
+            <status>0xB0</status>
+            <midino>0x4D</midino>
+         </control>
+         
+         <!-- Mixer main-->
+         <control>
+            <group>[Master]</group>
+            <key>crossfader</key>
+            <status>0xB0</status>
+            <midino>0x07</midino>
+         </control>
+         <!-- <control>
+            <group>[Master]</group>
+            <key>NumarkNS7.crossfader_lsb</key>
+            <status>0xB0</status>
+            <midino>0x1F</midino>
+            <options>
+               <Script-Binding/>
+            </options>
+         </control> -->
+         <control>
+            <group>[Master]</group>
+            <key>headMix</key>
+            <status>0xB0</status>
+            <midino>0x12</midino>
+         </control>
+         <control>
+            <group>[Master]</group>
+            <key>headVolume</key>
+            <status>0xB0</status>
+            <midino>0x42</midino>
+         </control>
+         <control>
+            <group>[Master]</group>
+            <key>volume</key>
+            <status>0xB0</status>
+            <midino>0x40</midino>
+         </control>
+         
+         <!-- Mixer channel 1 -->
+         <control>
+            <group>[Channel1]</group>
+            <key>pregain</key>
+            <status>0xB0</status>
+            <midino>0x0C</midino>
+         </control>
+         <control>
+            <group>[Channel1]</group>
+            <key>filterHigh</key>
+            <status>0xB0</status>
+            <midino>0x0B</midino>
+         </control>
+         <control>
+            <group>[Channel1]</group>
+            <key>filterMid</key>
+            <status>0xB0</status>
+            <midino>0x0A</midino>
+         </control>
+         <control>
+            <group>[Channel1]</group>
+            <key>filterLow</key>
+            <status>0xB0</status>
+            <midino>0x09</midino>
+         </control>
+         <control>
+            <group>[Channel1]</group>
+            <key>volume</key>
+            <status>0xB0</status>
+            <midino>0x08</midino>
+         </control>
+         
+         <!-- Mixer channel 2 -->
+         <control>
+            <group>[Channel2]</group>
+            <key>pregain</key>
+            <status>0xB0</status>
+            <midino>0x11</midino>
+         </control>
+         <control>
+            <group>[Channel2]</group>
+            <key>filterHigh</key>
+            <status>0xB0</status>
+            <midino>0x10</midino>
+         </control>
+         <control>
+            <group>[Channel2]</group>
+            <key>filterMid</key>
+            <status>0xB0</status>
+            <midino>0x0F</midino>
+         </control>
+         <control>
+            <group>[Channel2]</group>
+            <key>filterLow</key>
+            <status>0xB0</status>
+            <midino>0x0E</midino>
+         </control>
+         <control>
+            <group>[Channel2]</group>
+            <key>volume</key>
+            <status>0xB0</status>
+            <midino>0x0D</midino>
+         </control>
+      </controls>
+      <outputs>
+	      <output>
+				<group>[Channel1]</group>
+				<key>play</key>
+				<status>0xB0</status>
+				<midino>0x09</midino>
+				<minimum>0.5</minimum>
+	      </output>
+	      <output>
+			    <group>[Channel2]</group>
+			    <key>play</key>
+			    <status>0xB0</status>
+			    <midino>0x1F</midino>
+			    <minimum>0.5</minimum>
+	      </output>
+	      <output>
+	          <group>[Channel1]</group>
+	          <key>cue_default</key>
+	          <status>0xB0</status>
+	          <midino>0x08</midino>
+	          <minimum>0.5</minimum>
+	      </output>
+	      <output>
+	          <group>[Channel2]</group>
+	          <key>cue_default</key>
+	          <status>0xB0</status>
+	          <midino>0x1E</midino>
+	          <minimum>0.5</minimum>
+	      </output>
+	      <output>
+	        <group>[Channel1]</group>
+	        <key>playposition</key>
+	        <status>0xB0</status>
+	        <midino>0x3B</midino>
+	        <minimum>0.9</minimum>
+	        <maximum>0.99</maximum>
+	      </output>
+	      <output>
+	        <group>[Channel2]</group>
+	        <key>playposition</key>
+	        <status>0xB0</status>
+	        <midino>0x53</midino>
+	        <minimum>0.9</minimum>
+	        <maximum>0.99</maximum>
+	      </output>
+	
+	<!-- Headphone Cue -->
+			<output>
+			    <group>[Channel1]</group>
+			    <key>pfl</key>
+			    <status>0xB0</status>
+			    <midino>0x14</midino>
+			    <minimum>0.5</minimum>
+			</output>
+			<output>
+			    <group>[Channel2]</group>
+			    <key>pfl</key>
+			    <status>0xB0</status>
+			    <midino>0x18</midino>
+			    <minimum>0.5</minimum>
+			</output>
+			<output>
+			    <group>[Master]</group>
+			    <key>VuMeter</key>
+			    <status>0xB0</status>
+			    <midino>0x36</midino>
+			</output>
+      </outputs>
+   </controller>
+</MixxxMIDIPreset>

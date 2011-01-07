@@ -2,10 +2,16 @@
 #include <QtDebug>
 #include <QXmlStreamReader>
 #include <QDesktopServices>
+#include <QFileDialog>
+#include <QMenu>
+#include <QAction>
 #include "library/itunesfeature.h"
 
 #include "library/itunestrackmodel.h"
 #include "library/itunesplaylistmodel.h"
+#include "library/dao/settingsdao.h"
+
+const QString ITunesFeature::ITDB_PATH_KEY = "mixxx.itunesfeature.itdbpath";
 
 
 ITunesFeature::ITunesFeature(QObject* parent, TrackCollection* pTrackCollection)
@@ -15,6 +21,7 @@ ITunesFeature::ITunesFeature(QObject* parent, TrackCollection* pTrackCollection)
     m_pITunesTrackModel = new ITunesTrackModel(this, m_pTrackCollection);
     m_pITunesPlaylistModel = new ITunesPlaylistModel(this, m_pTrackCollection);
     m_isActivated = false;
+    m_rootItem = new TreeItem("$root","$root", this);
 }
 
 ITunesFeature::~ITunesFeature() {
@@ -23,7 +30,9 @@ ITunesFeature::~ITunesFeature() {
 }
 
 bool ITunesFeature::isSupported() {
-    return QFile::exists(getiTunesMusicPath());
+    // itunes db might just be elsewhere, don't rely on it being in its
+    // normal place. And since we will load an itdb on any platform...
+    return true; //QFile::exists(getiTunesMusicPath());
 }
 
 
@@ -36,10 +45,14 @@ QIcon ITunesFeature::getIcon() {
 }
 
 void ITunesFeature::activate() {
+    activate(false);
+}
+
+void ITunesFeature::activate(bool forceReload, bool askToLoad /* = true */) {
     //qDebug("ITunesFeature::activate()");
 
-    if (!m_isActivated) {
-        if (QMessageBox::question(
+    if (!m_isActivated || forceReload) {
+        if (askToLoad && QMessageBox::question(
             NULL,
             tr("Load iTunes Library?"),
             tr("Would you like to load your iTunes library?"),
@@ -49,7 +62,26 @@ void ITunesFeature::activate() {
             return;
         }
 
-        if (importLibrary(getiTunesMusicPath())) {
+        // first, assume we should use the default
+        QString dbfile = getiTunesMusicPath();
+        SettingsDAO settings(m_database);
+        QString dbSetting(settings.getValue(ITDB_PATH_KEY));
+        // if a path exists in the database, use it
+        if (!dbSetting.isEmpty() && QFile::exists(dbSetting)) {
+            dbfile = dbSetting;
+        }
+        // if the path we got between the default and the database doesn't
+        // exist, ask for a new one and use/save it if it exists
+        if (!QFile::exists(dbfile)) {
+            dbfile = QFileDialog::getOpenFileName(NULL,
+                tr("Select your iTunes library"),
+                QDir::homePath(), "*.xml");
+            if (dbfile.isEmpty() || !QFile::exists(dbfile)) {
+                return;
+            }
+            settings.setValue(ITDB_PATH_KEY, dbfile);
+        }
+        if (importLibrary(dbfile)) {
             m_isActivated =  true;
         } else {
             QMessageBox::warning(
@@ -58,11 +90,8 @@ void ITunesFeature::activate() {
                 tr("There was an error loading your iTunes library. Some of "
                    "your iTunes tracks or playlists may not have loaded."));
         }
-
-        //Sort the playlists since in iTunes they are sorted, too.
-        //list.sort();
-
-        m_childModel.setStringList(m_playlists);
+        //set the root item for the childmodel.	
+        m_childModel.setRootItem(m_rootItem);
     }
 
     emit(showTrackModel(m_pITunesTrackModel));
@@ -76,11 +105,32 @@ void ITunesFeature::activateChild(const QModelIndex& index) {
     emit(showTrackModel(m_pITunesPlaylistModel));
 }
 
-QAbstractItemModel* ITunesFeature::getChildModel() {
+TreeItemModel* ITunesFeature::getChildModel() {
     return &m_childModel;
 }
 
 void ITunesFeature::onRightClick(const QPoint& globalPos) {
+    QMenu menu;
+    QAction useDefault(tr("Use Default Library"), &menu);
+    QAction chooseNew(tr("Choose Library..."), &menu);
+    menu.addAction(&useDefault);
+    menu.addAction(&chooseNew);
+    QAction *chosen(menu.exec(globalPos));
+    if (chosen == &useDefault) {
+        SettingsDAO settings(m_database);
+        settings.setValue(ITDB_PATH_KEY, QString());
+        activate(true, false); // clears tables before parsing
+    } else if (chosen == &chooseNew) {
+        SettingsDAO settings(m_database);
+        QString dbfile = QFileDialog::getOpenFileName(NULL,
+            tr("Select your iTunes library"),
+            QDir::homePath(), "*.xml");
+        if (dbfile.isEmpty() || !QFile::exists(dbfile)) {
+            return;
+        }
+        settings.setValue(ITDB_PATH_KEY, dbfile);
+        activate(true, false); // clears tables before parsing
+    }
 }
 
 void ITunesFeature::onRightClickChild(const QPoint& globalPos, QModelIndex index) {
@@ -423,8 +473,9 @@ void ITunesFeature::parsePlaylist(QXmlStreamReader &xml, QSqlQuery &query_insert
                                  << " " << query_insert_to_playlists.lastError();
                         return;
                     }
-                    //for the child model
-                    m_playlists << playlistname;
+                    //append the playlist to the child model
+                    TreeItem *item = new TreeItem(playlistname, playlistname, this, m_rootItem);
+                    m_rootItem->appendChild(item);
 
                 }
                 /*

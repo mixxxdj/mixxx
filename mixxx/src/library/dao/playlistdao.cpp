@@ -145,6 +145,27 @@ void PlaylistDAO::deletePlaylist(int playlistId)
     //TODO: Crap, we need to shuffle the positions of all the playlists?
 }
 
+
+void PlaylistDAO::renamePlaylist(int playlistId, const QString& newName)
+{
+    qDebug() << "renamePlaylist()";
+    
+    m_database.transaction();
+    QSqlQuery query(m_database);
+    query.prepare("UPDATE Playlists SET name = :name WHERE id = :id");
+    query.bindValue(":name", newName);
+    query.bindValue(":id", playlistId);
+    
+    if (!query.exec()) {
+        qDebug() << query.executedQuery() << query.lastError();
+        m_database.rollback();
+    }
+    else {
+        m_database.commit();
+    }
+}
+
+
 /** Append a track to a playlist */
 void PlaylistDAO::appendTrackToPlaylist(int trackId, int playlistId)
 {

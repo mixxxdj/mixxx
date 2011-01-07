@@ -1,8 +1,8 @@
 #include "wskincolor.h"
 
-ImgSource * WSkinColor::loader = 0;
+QSharedPointer<ImgSource> WSkinColor::loader;
 
-void WSkinColor::setLoader(ImgSource * ld) {
+void WSkinColor::setLoader(QSharedPointer<ImgSource> ld) {
     loader = ld;
 }
 
