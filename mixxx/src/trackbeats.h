@@ -45,6 +45,8 @@ private:
     QMap<int, int> m_beats;
     /** Pointer to the related Track */
     TrackPointer m_track;
+    /** Mutex protecting access to object */
+    mutable QMutex m_qMutex;
 };
 
 #endif
