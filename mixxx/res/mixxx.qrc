@@ -28,5 +28,6 @@
         <file>images/library/ic_library_prepare.png</file>
         <file>images/library/ic_library_promotracks.png</file>
         <file>images/library/ic_library_rhythmbox.png</file>
+        <file>images/library/ic_library_traktor.png</file>
     </qresource>
 </RCC>

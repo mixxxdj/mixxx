@@ -9,6 +9,7 @@
 #include "library/missingtablemodel.h"
 #include "library/proxytrackmodel.h"
 #include "library/trackcollection.h"
+#include "treeitem.h"
 
 #define CHILD_MISSING "Missing Songs"
 
@@ -17,9 +18,11 @@ MixxxLibraryFeature::MixxxLibraryFeature(QObject* parent,
     : LibraryFeature(parent),
       m_pLibraryTableModel(new LibraryTableModel(this, pTrackCollection)),
       m_pMissingTableModel(new MissingTableModel(this, pTrackCollection)) {
-    QStringList children;
-    children << tr("Missing Songs"); //Insert michael jackson joke here
-    m_childModel.setStringList(children);
+    
+    TreeItem *rootItem = new TreeItem("$root","$root", this);
+    TreeItem *childItem = new TreeItem(CHILD_MISSING,CHILD_MISSING, this,rootItem);
+    rootItem->appendChild(childItem);
+    m_childModel.setRootItem(rootItem);    
 }
 
 MixxxLibraryFeature::~MixxxLibraryFeature() {
@@ -35,7 +38,7 @@ QIcon MixxxLibraryFeature::getIcon() {
     return QIcon(":/images/library/ic_library_library.png");
 }
 
-QAbstractItemModel* MixxxLibraryFeature::getChildModel() {
+TreeItemModel* MixxxLibraryFeature::getChildModel() {
     return &m_childModel;
 }
 
@@ -53,7 +56,10 @@ void MixxxLibraryFeature::activate() {
 void MixxxLibraryFeature::activateChild(const QModelIndex& index) {
     QString itemName = index.data().toString();
 
-    if (itemName == m_childModel.stringList().at(0))
+    /*if (itemName == m_childModel.stringList().at(0))
+        emit(showTrackModel(m_pMissingTableModel));
+     */
+    if (itemName == CHILD_MISSING) 
         emit(showTrackModel(m_pMissingTableModel));
 }
 

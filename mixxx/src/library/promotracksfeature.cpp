@@ -161,7 +161,7 @@ void PromoTracksFeature::bindWidget(WLibrarySidebar* sidebarWidget,
     */
 }
 
-QAbstractItemModel* PromoTracksFeature::getChildModel() {
+TreeItemModel* PromoTracksFeature::getChildModel() {
     //XXX Promo 3.0:
     //return NULL;
     return &m_childModel;
