@@ -10,6 +10,7 @@
 #include "library/libraryfeature.h"
 #include "library/dao/playlistdao.h"
 #include "configobject.h"
+#include "treeitemmodel.h"
 
 class PlaylistTableModel;
 class TrackCollection;
@@ -34,7 +35,7 @@ class AutoDJFeature : public LibraryFeature {
                     WLibrary* libraryWidget,
                     MixxxKeyboard* keyboard);
 
-    QAbstractItemModel* getChildModel();
+    TreeItemModel* getChildModel();
 
 public slots:
     void activate();
@@ -47,7 +48,7 @@ private:
     TrackCollection* m_pTrackCollection;
     PlaylistDAO& m_playlistDao;
     const static QString m_sAutoDJViewName;
-    QStringListModel m_childModel;
+    TreeItemModel m_childModel;
 };
 
 

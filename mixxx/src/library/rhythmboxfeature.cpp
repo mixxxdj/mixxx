@@ -6,6 +6,7 @@
 #include "library/rhythmboxtrackmodel.h"
 #include "library/rhythmboxplaylistmodel.h"
 #include "library/rhythmboxfeature.h"
+#include "treeitem.h"
 
 RhythmboxFeature::RhythmboxFeature(QObject* parent)
     : LibraryFeature(parent) {
@@ -34,7 +35,7 @@ QIcon RhythmboxFeature::getIcon() {
     return QIcon(":/images/library/ic_library_rhythmbox.png");
 }
 
-QAbstractItemModel* RhythmboxFeature::getChildModel() {
+TreeItemModel* RhythmboxFeature::getChildModel() {
     return &m_childModel;
 }
 
@@ -62,11 +63,14 @@ void RhythmboxFeature::activate() {
         m_pPlaylistModelProxy->setFilterCaseSensitivity(Qt::CaseInsensitive);
         m_pPlaylistModelProxy->setSortCaseSensitivity(Qt::CaseInsensitive);
 
-        QStringList list;
+        TreeItem *rootItem = new TreeItem("$root","$root", this);
         for (int i = 0; i < m_pRhythmboxPlaylistModel->numPlaylists(); ++i) {
-            list << m_pRhythmboxPlaylistModel->playlistTitle(i);
+            QString playlist_name = m_pRhythmboxPlaylistModel->playlistTitle(i);
+            TreeItem *item = new TreeItem(playlist_name, playlist_name, this,rootItem);
+            
+            rootItem->appendChild(item);
         }
-        m_childModel.setStringList(list);
+        m_childModel.setRootItem(rootItem);
     }
     emit(showTrackModel(m_pTrackModelProxy));
 }

@@ -42,7 +42,7 @@ QIcon BrowseFeature::getIcon() {
     return QIcon(":/images/library/ic_library_browse.png");
 }
 
-QAbstractItemModel* BrowseFeature::getChildModel() {
+TreeItemModel* BrowseFeature::getChildModel() {
     return &m_childModel;
 }
 

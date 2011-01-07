@@ -50,8 +50,8 @@ void AutoDJFeature::bindWidget(WLibrarySidebar* sidebarWidget,
             this, SIGNAL(loadTrackToPlayer(TrackPointer, QString)));
 }
 
-QAbstractItemModel* AutoDJFeature::getChildModel() {
-    return &m_childModel;
+TreeItemModel* AutoDJFeature::getChildModel() {
+	return &m_childModel;
 }
 
 void AutoDJFeature::activate() {

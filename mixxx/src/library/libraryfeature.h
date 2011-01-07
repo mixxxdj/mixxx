@@ -14,6 +14,7 @@
 #include <QUrl>
 
 #include "trackinfoobject.h"
+#include "treeitemmodel.h"
 
 class TrackModel;
 class WLibrarySidebar;
@@ -38,7 +39,7 @@ class LibraryFeature : public QObject {
                             WLibrary* /* libraryWidget */,
                             MixxxKeyboard* /* keyboard */) {
     }
-    virtual QAbstractItemModel* getChildModel() = 0;
+    virtual TreeItemModel* getChildModel() = 0;
 
   public slots:
     virtual void activate() = 0;
