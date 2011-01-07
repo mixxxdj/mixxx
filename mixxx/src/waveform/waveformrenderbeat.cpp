@@ -106,9 +106,9 @@ void WaveformRenderBeat::newTrack(TrackPointer pTrack) {
 
     // Reset the tracker beats for each new song
     m_pTrackBeats = pTrack->getTrackBeats();
-    //slotUpdateTrackBeats(1);
-    connect(pTrack.data(), SIGNAL(trackBeatsUpdated(int)), this, SLOT(slotUpdateTrackBeats(int)));
-    //qDebug() << "WaveformRenderBeat sampleRate  " << sampleRate << " samplesPerPixel " << m_dSamplesPerPixel;
+    connect(pTrack.data(), SIGNAL(trackBeatsUpdated(int)), this, 
+                SLOT(slotUpdateTrackBeats(int)));
+
 }
 
 void WaveformRenderBeat::setup(QDomNode node) {
