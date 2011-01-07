@@ -5,30 +5,34 @@
 #include "trackinfoobject.h"
 
 
-TrackBeats::TrackBeats(TrackPointer tio)
+TrackBeats::TrackBeats(TrackPointer tio) : m_qMutex(QMutex::Recursive)
 {
     m_iSampleRate = tio->getSampleRate();
 }
 
 void TrackBeats::addBeatSeconds(double beat)
 {
+    QMutexLocker lock(&m_qMutex);
     addBeatSample((int)round(beat * m_iSampleRate));
 }
 
 double TrackBeats::findNextBeatSeconds(double beat) const
 {
+    QMutexLocker lock(&m_qMutex);
     int sample = (int) round(beat * m_iSampleRate);
     return findNextBeatSample(sample) / m_iSampleRate;
 }
 
 double TrackBeats::findPrevBeatSeconds(double beat) const
 {
+    QMutexLocker lock(&m_qMutex);
     int sample = (int) round(beat * m_iSampleRate);
     return findPrevBeatSample(sample) / m_iSampleRate;
 }
 
 QList<double> TrackBeats::findBeatsSeconds(double start, double stop) const
 {
+    QMutexLocker lock(&m_qMutex);
     QList<double> ret;
     QList<int> samples;
     int begin = round(start * m_iSampleRate);
@@ -50,11 +54,13 @@ QList<double> TrackBeats::findBeatsSeconds(double start, double stop) const
 
 int TrackBeats::getBeatCount() const
 {
+    QMutexLocker lock(&m_qMutex);
     return m_beats.size();
 }
 
 void TrackBeats::dumpBeats()
 {
+    QMutexLocker lock(&m_qMutex);
     QMapIterator<int, int> iter(m_beats);
     
     do {
@@ -66,11 +72,13 @@ void TrackBeats::dumpBeats()
 
 int TrackBeats::sampleIndex(int sample) const
 {
+    QMutexLocker lock(&m_qMutex);
     return (int) round(sample / (m_iSampleRate * 10));
 }
 
 void TrackBeats::addBeatSample(int sample)
 {
+    QMutexLocker lock(&m_qMutex);
     int index = sampleIndex(sample);
     
     
@@ -90,6 +98,7 @@ void TrackBeats::addBeatSample(int sample)
 
 int TrackBeats::findNextBeatSample(int sample) const
 {
+    QMutexLocker lock(&m_qMutex);
     QMapIterator<int, int> iter(m_beats);
     int index = sampleIndex(sample);
     
@@ -110,6 +119,7 @@ int TrackBeats::findNextBeatSample(int sample) const
 
 int TrackBeats::findBeatOffsetSamples(int sample, int offset) const
 {
+    QMutexLocker lock(&m_qMutex);
     QMapIterator<int, int> iter(m_beats);
     int index = sampleIndex(sample);
     int i;
@@ -145,6 +155,7 @@ int TrackBeats::findBeatOffsetSamples(int sample, int offset) const
 
 int TrackBeats::findPrevBeatSample(int sample) const
 {
+    QMutexLocker lock(&m_qMutex);
     QMapIterator<int, int> iter(m_beats);
     int index = sampleIndex(sample);
     
@@ -163,6 +174,7 @@ int TrackBeats::findPrevBeatSample(int sample) const
 
 QList<int> TrackBeats::findBeatsSamples(int start, int stop) const
 {
+    QMutexLocker lock(&m_qMutex);
     QList<int> ret;
     QMapIterator<int, int> iter(m_beats);
     int index = sampleIndex(start);
@@ -183,6 +195,7 @@ QList<int> TrackBeats::findBeatsSamples(int start, int stop) const
 
 QByteArray *TrackBeats::serializeToBlob()
 {
+    QMutexLocker lock(&m_qMutex);
     QByteArray *blob;
     int *buffer = new int[getBeatCount()];
     int *ptr = buffer;
@@ -205,6 +218,7 @@ QByteArray *TrackBeats::serializeToBlob()
 
 void TrackBeats::unserializeFromBlob(QByteArray *blob)
 {
+    QMutexLocker lock(&m_qMutex);
     int *ptr = (int *)blob->constData();
     int i;
     
