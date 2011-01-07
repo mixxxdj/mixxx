@@ -201,7 +201,7 @@ SectionGroup "MIDI controller mappings" SecControllerMappings
 	Section "Hercules DJ Control MP3 e2"
 	  SetOutPath $INSTDIR\midi
 	  File "${BASE_BUILD_DIR}\dist${BITWIDTH}\midi\Hercules DJ Control MP3 e2.midi.xml"
-	  File "${BASE_BUILD_DIR}\dist${BITWIDTH}\midi\Hercules-DJ-Control-MP3-e2-scripts.js"
+	  File "${BASE_BUILD_DIR}\dist${BITWIDTH}\midi\Hercules DJ Control MP3 e2-scripts.js"
 	SectionEnd
 	
 	Section "Stanton SCS.3d"
