@@ -14,6 +14,7 @@
 #include <QDebug>
 #include <QTextStream>
 #include <QFile>
+#include <QUrl>
 
 /**
    @author Ingo Kossyk (kossyki@cs.tu-berlin.de)
@@ -43,7 +44,16 @@ QList<QString> ParserPls::parse(QString sFilename)
 
     if (file.open(QIODevice::ReadOnly) && !isBinary(sFilename) ) {
 
-        QTextStream textstream(&file);
+        /* Unfortunately, QT 4.7 does not handle <CR> line breaks.
+    	 * This is important on OS X where iTunes, e.g., exports M3U playlists using <CR>
+    	 *
+    	 * Using QFile::readAll() we obtain the complete content of the playlist as a ByteArray.
+    	 * We replace any '\r' with '\n' if applicaple
+    	 * This ensures that playlists from iTunes on OS X can be parsed
+    	 */
+    	QByteArray ba = file.readAll();
+    	ba.replace('\r',"\n");
+        QTextStream textstream(ba.data());
 
         while(!textstream.atEnd()) {
             QString psLine = getFilepath(&textstream, basepath);
@@ -104,12 +114,20 @@ QString ParserPls::getFilepath(QTextStream *stream, QString basepath)
             ++iPos;
 
             filename = textline.right(textline.length()-iPos);
+           
+            //Rythmbox playlists starts with file://<path>
+            //We remove the file protocol if found. 
+            filename.remove("file://");
+            QByteArray strlocbytes = filename.toUtf8();
+            QUrl location = QUrl::fromEncoded(strlocbytes);
+            QString trackLocation = location.toLocalFile();
+            //qDebug() << trackLocation;
 
-            if(isFilepath(filename)) {
-                return filename;
+            if(isFilepath(trackLocation)) {
+                return trackLocation;
             } else {
                 // Try relative to m3u dir
-                QString rel = basepath + "/" + filename;
+                QString rel = basepath + "/" + trackLocation;
                 if (isFilepath(rel)) {
                     return rel;
                 }
