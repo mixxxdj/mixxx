@@ -564,6 +564,10 @@ class MixxxCore(Feature):
 
         if build.platform_is_windows:
             # Add Windows resource file with icons and such
+            # force manifest file creation, apparently not necessary for all
+            # people but necessary for this committers handicapped windows
+            # installation -- bkgood
+            build.env.Append(LINKFLAGS="/MANIFEST")
             build.env.RES('#src/mixxx.rc')
             # Tobias Rafreider: What is the purpose of the following line, if
             # the file doesn't exist?
@@ -667,10 +671,15 @@ class MixxxCore(Feature):
 
         # Set up flags for config/track listing files
         if build.platform_is_linux or \
-                build.platform_is_bsd or \
-                build.platform_is_osx:
+                build.platform_is_bsd:
             mixxx_files = [
                 ('SETTINGS_PATH','.mixxx/'),
+                ('BPMSCHEME_FILE','mixxxbpmscheme.xml'),
+                ('SETTINGS_FILE', 'mixxx.cfg'),
+                ('TRACK_FILE', 'mixxxtrack.xml')]
+        elif build.platform_is_osx:
+            mixxx_files = [
+                ('SETTINGS_PATH','Library/Application Support/Mixxx/'),
                 ('BPMSCHEME_FILE','mixxxbpmscheme.xml'),
                 ('SETTINGS_FILE', 'mixxx.cfg'),
                 ('TRACK_FILE', 'mixxxtrack.xml')]

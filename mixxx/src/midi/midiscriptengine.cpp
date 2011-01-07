@@ -446,9 +446,14 @@ bool MidiScriptEngine::safeExecute(QString function, const unsigned char data[],
     if (!scriptFunction.isFunction())
         return false;
 
+    QVector<QChar> temp(length);
+    for (int i=0; i <= length; i++) {
+        temp[i]=data[i];
+    }
+    QString buffer = QString(temp.constData(),length);
     QScriptValueList args;
-    args << QScriptValue(m_pEngine, (const char*)data);
-    args << QScriptValue(m_pEngine, length);
+    args << QScriptValue(buffer);
+    args << QScriptValue(length);
 
     scriptFunction.call(QScriptValue(), args);
     if (checkException())
@@ -1108,7 +1113,7 @@ void MidiScriptEngine::scratchEnable(int deck, int intervalsPerRev, float rpm, f
         cot = getControlObjectThread(group, "play");
         if (cot != NULL && cot->get() == 1) {
             // If so, set the filter's initial velocity to the playback speed
-            float rate;
+            float rate=0;
             cot = getControlObjectThread(group, "rate");
             if (cot != NULL) rate = cot->get();
             cot = getControlObjectThread(group, "rateRange");
@@ -1208,7 +1213,7 @@ void MidiScriptEngine::scratchDisable(int deck) {
     ControlObjectThread *cot = getControlObjectThread(group, "play");
     if (cot != NULL && cot->get() == 1) {
         // If so, set the target velocity to the playback speed
-        float rate;
+        float rate=0;
         // Get the pitch slider value
         cot = getControlObjectThread(group, "rate");
         if (cot != NULL) rate = cot->get();

@@ -139,7 +139,7 @@ bpm.tapButton = function(deck) {
 }
 
 
-// ----------------- Scratching functions ---------------------
+// ----------------- DEPRECATED Scratching functions ---------------------
 function scratch() {}
 // Allows for smooth scratching with MIDI controllers
 // See full details here: http://mixxx.org/wiki/doku.php/midi_scripting#available_common_functions
@@ -297,4 +297,88 @@ scratch.filter = function (currentDeck, controlValue, revtime, alpha, beta) {
 
     return scratch.variables["scratch"];
 }
-// ----------------- END Scratching functions ---------------------
+// ----------------- END Scratching functions --------------------
+
+// ----------------- Object definitions --------------------------
+
+
+ButtonState = {"released":0x00, "pressed":0x7F};
+LedState =  {"off": 0x00, "on": 0x7F};
+
+//Controller
+function Controller () {
+   this.group = "[Master]";
+   this.Controls = [];
+   this.Buttons = [];
+};
+
+Controller.prototype.addButton = function(buttonName, button, eventHandler) {
+   if(eventHandler) {
+      var executionEnvironment = this;
+      function handler(value) {
+         button.state = value;
+         executionEnvironment[eventHandler](value);
+      }
+      button.handler = handler;
+   }
+   this.Buttons[buttonName] = button; 
+}
+
+Controller.prototype.setControlValue = function(control, value) {
+   this.Controls[control].setValue(this.group, value);
+}
+
+//Button
+function Button(controlId) {
+   this.controlId = controlId;
+   this.state = ButtonState.released;
+}
+Button.prototype.handleEvent = function(value) {
+   this.handler(value);
+};
+
+//Control
+function Control(mappedFunction, softMode) {
+   this.minInput = 0;
+   this.midInput = 0x3F;
+   this.maxInput = 0x7F;
+   this.minOutput = -1.0;
+   this.midOutput = 0.0;
+   this.maxOutput = 1.0;
+   this.mappedFunction = mappedFunction;
+   this.softMode = softMode;
+   this.maxJump = 10;
+}
+Control.prototype.setValue = function(group, inputValue){
+   var outputValue = 0;
+   if(inputValue <= this.midInput){
+      outputValue = this.minOutput + ((inputValue - this.minInput) / (this.midInput - this.minInput)) * (this.midOutput - this.minOutput);
+   } else {
+      outputValue = this.midOutput + ((inputValue - this.midInput) / (this.maxInput - this.midInput)) * (this.maxOutput - this.midOutput);
+   }
+   if(this.softMode){ 
+      var currentValue = engine.getValue(group, this.mappedFunction);
+      var currentRelative = 0.0;
+      if(currentValue <= this.midOutput){
+         currentRelative = this.minInput + ((currentValue - this.minOutput) / (this.midOutput - this.minOutput)) * (this.midInput - this.minInput);
+      } else {
+         currentRelative = this.midInput + ((currentValue - this.midOutput) / (this.maxOutput - this.midOutput)) * (this.maxInput - this.midInput);
+      }
+      if(inputValue > currentRelative - this.maxJump && inputValue < currentRelative + this.maxJump) {
+         engine.setValue(group, this.mappedFunction, outputValue);
+      }
+   } else {
+      engine.setValue(group, this.mappedFunction, outputValue);
+   }
+}
+
+//Deck
+Deck = function (deckNumber, group) {
+   this.deckNumber = deckNumber;
+   this.group = group;
+   this.Buttons = [];
+}
+Deck.prototype.setControlValue = Controller.prototype.setControlValue;
+Deck.prototype.addButton = Controller.prototype.addButton;
+
+// ----------------- END Object definitions ----------------------

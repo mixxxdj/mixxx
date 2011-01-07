@@ -118,7 +118,7 @@
 	-->
 	<Background>
 		<Path>background800x480.png</Path>
-		<BgColor>#000000</BgColor>
+		<BgColor>#ffffff</BgColor>
 	</Background>
 
 	<!--

@@ -34,6 +34,7 @@ class ITunesFeature : public LibraryFeature {
 
   public slots:
     void activate();
+    void activate(bool forceReload, bool askToLoad = true);
     void activateChild(const QModelIndex& index);
     void onRightClick(const QPoint& globalPos);
     void onRightClickChild(const QPoint& globalPos, QModelIndex index);
@@ -54,6 +55,8 @@ class ITunesFeature : public LibraryFeature {
     TrackCollection* m_pTrackCollection;
     QSqlDatabase &m_database;
     bool m_isActivated;
+
+    static const QString ITDB_PATH_KEY;
 };
 
 #endif /* ITUNESFEATURE_H */
