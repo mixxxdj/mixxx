@@ -318,6 +318,7 @@ QList<QString> SoundSourceProxy::supportedFileExtensions()
     supportedFileExtensions.append(SoundSourceMp3::supportedFileExtensions());
     supportedFileExtensions.append(SoundSourceOggVorbis::supportedFileExtensions());
     supportedFileExtensions.append(SoundSourceSndFile::supportedFileExtensions());
+    supportedFileExtensions.append(SoundSourceCoreAudio::supportedFileExtensions());
     supportedFileExtensions.append(m_extensionsSupportedByPlugins.keys());
 
     return supportedFileExtensions;
