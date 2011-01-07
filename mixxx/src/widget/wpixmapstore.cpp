@@ -22,7 +22,7 @@
 
 QHash<QString, PixmapInfoType*> WPixmapStore::dictionary;
 
-ImgSource * WPixmapStore::loader = 0;
+QSharedPointer<ImgSource> WPixmapStore::loader;
 
 WPixmapStore::WPixmapStore()
 {
@@ -98,6 +98,6 @@ void WPixmapStore::emptyStore() {
 
 }
 
-void WPixmapStore::setLoader(ImgSource * ld) {
+void WPixmapStore::setLoader(QSharedPointer<ImgSource> ld) {
     loader = ld;
 }

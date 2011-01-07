@@ -17,6 +17,9 @@ SkinLoader::SkinLoader(ConfigObject<ConfigValue>* pConfig) :
 
 }
 
+SkinLoader::~SkinLoader() {
+    LegacySkinParser::freeChannelStrings();
+}
 
 QString SkinLoader::getConfiguredSkinPath() {
     const QString defaultSkin = "Outline1024x600-Netbook";
