@@ -20,6 +20,7 @@
 #include "soundsourceproxy.h"
 #include "soundsourcemp3.h"
 #include "soundsourceoggvorbis.h"
+#include "soundsourcecoreaudio.h"
 #ifdef __SNDFILE__
 #include "soundsourcesndfile.h"
 #endif
@@ -120,6 +121,8 @@ SoundSource* SoundSourceProxy::initialize(QString qFilename) {
 	    return new SoundSourceOggVorbis(qFilename);
     } else if (SoundSourceFLAC::supportedFileExtensions().contains(extension)) {
         return new SoundSourceFLAC(qFilename);
+    } else if (SoundSourceCoreAudio::supportedFileExtensions().contains(extension)) {
+        return new SoundSourceCoreAudio(qFilename);
     } else if (m_extensionsSupportedByPlugins.contains(extension)) {
         getSoundSourceFunc getter = m_extensionsSupportedByPlugins.value(extension);
         if (getter)
