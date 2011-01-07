@@ -158,7 +158,7 @@ ConfigObject<ConfigValue>* Upgrade::versionUpgrade() {
 
 #ifdef __APPLE__
         qDebug() << "Config version is empty, trying to read pre-1.9.0 config";
-        //Try to read the config from the pre-1.9.0 final directory on OS X.
+        //Try to read the config from the pre-1.9.0 final directory on OS X (we moved it in 1.9.0 final)
         QFile* oldFile = new QFile(QDir::homePath().append("/").append(".mixxx/mixxx.cfg"));
         if (oldFile->exists()) {
             qDebug() << "Found pre-1.9.0 config for OS X";
@@ -166,16 +166,18 @@ ConfigObject<ConfigValue>* Upgrade::versionUpgrade() {
             //Note: We changed SETTINGS_PATH in 1.9.0 final on OS X so it must be hardcoded to ".mixxx" here for legacy.
             configVersion = config->getValueString(ConfigKey("[Config]","Version"));
             delete oldFile;
-#endif
         }
         else {
+#endif
             //This must have been the first run... right? :)
             qDebug() << "No version number in configuration file. Setting to" << VERSION;
             config->set(ConfigKey("[Config]","Version"), ConfigValue(VERSION));
             m_bFirstRun = true;
             delete oldFile;
             return config;
+#ifdef __APPLE__
         }
+#endif
     }
     
     // If it's already current, stop here
