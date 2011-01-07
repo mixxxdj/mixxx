@@ -173,7 +173,6 @@ ConfigObject<ConfigValue>* Upgrade::versionUpgrade() {
             qDebug() << "No version number in configuration file. Setting to" << VERSION;
             config->set(ConfigKey("[Config]","Version"), ConfigValue(VERSION));
             m_bFirstRun = true;
-            delete oldFile;
             return config;
 #ifdef __APPLE__
         }
