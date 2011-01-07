@@ -8,13 +8,13 @@ msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2010-10-28 15:35-0400\n"
-"PO-Revision-Date: 2010-12-20 07:52+0000\n"
+"PO-Revision-Date: 2011-01-06 09:15+0000\n"
 "Last-Translator: Petr Šimáček <petr.simacek@gmail.com>\n"
 "Language-Team: Czech <cs@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2010-12-21 13:25+0000\n"
+"X-Launchpad-Export-Date: 2011-01-07 04:56+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
 #: AutoDJFeature#1
@@ -584,7 +584,7 @@ msgstr "Vybrat ovládání"
 
 #: DlgPrefMidiBindings#10
 msgid "Clear Input Bindings"
-msgstr ""
+msgstr "Vyčistit vazby ze vstupu"
 
 #: DlgPrefMidiBindings#11
 msgid "Are you sure you want to clear all bindings?"
@@ -609,7 +609,7 @@ msgstr "Název vašeho zařízení"
 
 #: DlgPrefMidiBindingsDlg#3
 msgid "Load Preset:"
-msgstr ""
+msgstr "Nahrát předvolbu"
 
 #: DlgPrefMidiBindingsDlg#4
 msgid "Export"
@@ -1086,7 +1086,7 @@ msgstr ""
 #: DlgPrefSound#6
 msgctxt "DlgPrefSound#6"
 msgid "Configuration error"
-msgstr ""
+msgstr "Chyba nastavení"
 
 #: DlgPrefSound#7
 msgctxt "DlgPrefSound#7"
@@ -1397,7 +1397,7 @@ msgstr "Všechny songy"
 
 #: DlgPrepare#4
 msgid "Progress"
-msgstr ""
+msgstr "Průběh"
 
 #: DlgPrepare#5
 msgid "Select All"
@@ -1406,7 +1406,7 @@ msgstr "Vybrat vše"
 #: DlgPrepare#6
 msgctxt "DlgPrepare#6"
 msgid "Analyze"
-msgstr "Analyze"
+msgstr "Analýza"
 
 #: DlgTrackInfo#1
 msgid "Track Editor"
@@ -1490,7 +1490,7 @@ msgstr ""
 
 #: DlgTrackInfo#21
 msgid "Hint: Use the Library Analyze view to run BPM detection."
-msgstr "Tip: Pomocí knihovny Analýza náhledu spustit BPM detekci."
+msgstr "Tip: Analýzu knihovny použijte k detekci BPM."
 
 #: DlgTrackInfo#22
 msgid "Track BPM"
@@ -1531,7 +1531,7 @@ msgstr ""
 
 #: DlgTrackInfo#31
 msgid "&Apply"
-msgstr ""
+msgstr "&Použít"
 
 #: DlgTrackInfo#32
 msgid "&Cancel"
@@ -1573,6 +1573,9 @@ msgid ""
 "install libmp3lame (also known as lame) and check if "
 "/usr/local/lib/libmp3lame.dylib exists on your system </html>"
 msgstr ""
+"<html>Mixxx nemůže nahrát nebo nalézt MP3 enkodér lame. <p>Prosím "
+"nainstalujte libmp3lame (známou také jako lame) a zkontrolujte jestli "
+"/usr/local/lib/libmp3lame.dylib je ve vašem systému </html>"
 
 #: EncoderMp3#5
 msgid ""
@@ -1580,6 +1583,9 @@ msgid ""
 "<a href='http://mixxx.org/wiki/doku.php/internet_broadcasting'>Mixxx "
 "Wiki</a> for more information.</html>"
 msgstr ""
+"<html>Mixxx zjistil, že používate upravenou verzi libmp3lame. Podívejte se "
+"na <a href='http://mixxx.org/wiki/doku.php/internet_broadcasting'>Mixxx "
+"Wiki</a> pro víc informací.</html>"
 
 #: EngineRecord#1
 msgctxt "EngineRecord#1"
@@ -1600,11 +1606,11 @@ msgstr "Mixxx narazil na problém"
 
 #: EngineShoutcast#2
 msgid "Could not allocate shout_t"
-msgstr ""
+msgstr "Nelze alokovat shout_t"
 
 #: EngineShoutcast#3
 msgid "Could not allocate shout_metadata_t"
-msgstr ""
+msgstr "Nelze alokovat shout_metadata_t"
 
 #: EngineShoutcast#4
 msgid "Error setting non-blocking mode:"
@@ -1640,158 +1646,160 @@ msgstr "Mixxx se úspěšně odpojil od Shoutcast serveru"
 
 #: ErrorDialogHandler#1
 msgid "Fatal error"
-msgstr ""
+msgstr "Fatální chyba"
 
 #: ErrorDialogHandler#2
 msgid "Critical error"
-msgstr ""
+msgstr "Kritická chyba"
 
 #: ErrorDialogHandler#3
 msgid "Warning"
-msgstr ""
+msgstr "Varování"
 
 #: ErrorDialogHandler#4
 msgctxt "ErrorDialogHandler#4"
 msgid "Information"
-msgstr ""
+msgstr "Informace"
 
 #: ErrorDialogHandler#5
 msgid "Question"
-msgstr ""
+msgstr "Otázka"
 
 #: ITunesFeature#1
 msgid "iTunes"
-msgstr ""
+msgstr "iTunes"
 
 #: ITunesFeature#2
 msgid "Load iTunes Library?"
-msgstr ""
+msgstr "Nahrát knihovnu iTunes?"
 
 #: ITunesFeature#3
 msgid "Would you like to load your iTunes library?"
-msgstr ""
+msgstr "Chcete nahrát knihovnu iTunes?"
 
 #: ITunesPlaylistModel#1
 msgctxt "ITunesPlaylistModel#1"
 msgid "Artist"
-msgstr ""
+msgstr "Interpret"
 
 #: ITunesPlaylistModel#2
 msgctxt "ITunesPlaylistModel#2"
 msgid "Title"
-msgstr ""
+msgstr "Název"
 
 #: ITunesPlaylistModel#3
 msgctxt "ITunesPlaylistModel#3"
 msgid "Album"
-msgstr ""
+msgstr "Album"
 
 #: ITunesPlaylistModel#4
 msgctxt "ITunesPlaylistModel#4"
 msgid "Date"
-msgstr ""
+msgstr "Datum"
 
 #: ITunesPlaylistModel#5
 msgctxt "ITunesPlaylistModel#5"
 msgid "BPM"
-msgstr ""
+msgstr "BPM"
 
 #: ITunesPlaylistModel#6
 msgctxt "ITunesPlaylistModel#6"
 msgid "Genre"
-msgstr ""
+msgstr "Styl"
 
 #: ITunesPlaylistModel#7
 msgctxt "ITunesPlaylistModel#7"
 msgid "Location"
-msgstr ""
+msgstr "Umístění"
 
 #: ITunesPlaylistModel#8
 msgctxt "ITunesPlaylistModel#8"
 msgid "Duration"
-msgstr ""
+msgstr "Prolnutí"
 
 #: ITunesPlaylistModel#9
 msgctxt "ITunesPlaylistModel#9"
 msgid "Unknown"
-msgstr ""
+msgstr "Neznámý"
 
 #: LADSPAPresetSlot#1
 msgid "Drag a preset from the list & drop it here"
-msgstr ""
+msgstr "Chyťte šablonu ze seznamu a upusťte ji zde"
 
 #: LibraryScannerDlg#1
 msgid "It's taking Mixxx a minute to scan your music library, please wait..."
 msgstr ""
+"Bude chvílit trvat, než Mixxx naskenuje vaši hudební sbírku, čekejte "
+"prosím...."
 
 #: LibraryScannerDlg#2
 msgid "Cancel"
-msgstr ""
+msgstr "Zrušit"
 
 #: LibraryTableModel#1
 msgctxt "LibraryTableModel#1"
 msgid "Artist"
-msgstr ""
+msgstr "Interpret"
 
 #: LibraryTableModel#2
 msgctxt "LibraryTableModel#2"
 msgid "Title"
-msgstr ""
+msgstr "Název"
 
 #: LibraryTableModel#3
 msgctxt "LibraryTableModel#3"
 msgid "Album"
-msgstr ""
+msgstr "Album"
 
 #: LibraryTableModel#4
 msgctxt "LibraryTableModel#4"
 msgid "Genre"
-msgstr ""
+msgstr "Styl"
 
 #: LibraryTableModel#5
 msgctxt "LibraryTableModel#5"
 msgid "Year"
-msgstr ""
+msgstr "Rok"
 
 #: LibraryTableModel#6
 msgctxt "LibraryTableModel#6"
 msgid "Type"
-msgstr ""
+msgstr "Typ"
 
 #: LibraryTableModel#7
 msgctxt "LibraryTableModel#7"
 msgid "Location"
-msgstr ""
+msgstr "Umístění"
 
 #: LibraryTableModel#8
 msgctxt "LibraryTableModel#8"
 msgid "Comment"
-msgstr ""
+msgstr "Komentář"
 
 #: LibraryTableModel#9
 msgctxt "LibraryTableModel#9"
 msgid "Duration"
-msgstr ""
+msgstr "Prolnutí"
 
 #: LibraryTableModel#10
 msgctxt "LibraryTableModel#10"
 msgid "Bitrate"
-msgstr ""
+msgstr "Datový tok"
 
 #: LibraryTableModel#11
 msgctxt "LibraryTableModel#11"
 msgid "BPM"
-msgstr ""
+msgstr "BPM"
 
 #: LibraryTableModel#12
 msgctxt "LibraryTableModel#12"
 msgid "Track #"
-msgstr ""
+msgstr "Stopa #"
 
 #: LibraryTableModel#13
 msgctxt "LibraryTableModel#13"
 msgid "Date Added"
-msgstr ""
+msgstr "Datum přidání"
 
 #: MidiInputMappingTableModel#1
 msgid "Midi Status Type"
@@ -1819,11 +1827,11 @@ msgstr ""
 
 #: MidiMapping#1
 msgid "MIDI script function not found"
-msgstr ""
+msgstr "MIDI funkce skriptu nebyla nalezena"
 
 #: MidiMapping#2
 msgid "The MIDI script function '%1' was not found in loaded scripts."
-msgstr ""
+msgstr "MIDI funkce skriptu  '%1' nebyla nalezena v nahraných skriptech."
 
 #: MidiMapping#3
 msgid ""
@@ -1855,17 +1863,17 @@ msgstr ""
 #: MidiOutputMappingTableModel#3
 msgctxt "MidiOutputMappingTableModel#3"
 msgid "Midi Channel"
-msgstr ""
+msgstr "Midi kanál"
 
 #: MidiOutputMappingTableModel#4
 msgctxt "MidiOutputMappingTableModel#4"
 msgid "Control Group"
-msgstr ""
+msgstr "Kontrolní skupina"
 
 #: MidiOutputMappingTableModel#5
 msgctxt "MidiOutputMappingTableModel#5"
 msgid "Control Value"
-msgstr ""
+msgstr "Kontrolní hodnota"
 
 #: MidiOutputMappingTableModel#6
 msgid "Threshold Min"
@@ -1885,7 +1893,7 @@ msgstr ""
 
 #: MidiScriptEngine#3
 msgid "MIDI script error"
-msgstr ""
+msgstr "Chyba MIDI skriptu"
 
 #: MidiScriptEngine#4
 msgid "A MIDI control you just used is not working properly."
@@ -1902,81 +1910,81 @@ msgstr ""
 #: MidiStatusDelegate#1
 msgctxt "MidiStatusDelegate#1"
 msgid "Unknown"
-msgstr ""
+msgstr "Neznámý"
 
 #: MissingTableModel#1
 msgctxt "MissingTableModel#1"
 msgid "Location"
-msgstr ""
+msgstr "Umístění"
 
 #: MissingTableModel#2
 msgctxt "MissingTableModel#2"
 msgid "Artist"
-msgstr ""
+msgstr "Interpret"
 
 #: MissingTableModel#3
 msgctxt "MissingTableModel#3"
 msgid "Title"
-msgstr ""
+msgstr "Název"
 
 #: MissingTableModel#4
 msgctxt "MissingTableModel#4"
 msgid "Album"
-msgstr ""
+msgstr "Album"
 
 #: MissingTableModel#5
 msgctxt "MissingTableModel#5"
 msgid "Genre"
-msgstr ""
+msgstr "Styl"
 
 #: MissingTableModel#6
 msgctxt "MissingTableModel#6"
 msgid "Year"
-msgstr ""
+msgstr "Rok"
 
 #: MissingTableModel#7
 msgctxt "MissingTableModel#7"
 msgid "Type"
-msgstr ""
+msgstr "Typ"
 
 #: MissingTableModel#8
 msgctxt "MissingTableModel#8"
 msgid "Comment"
-msgstr ""
+msgstr "Komentář"
 
 #: MissingTableModel#9
 msgctxt "MissingTableModel#9"
 msgid "Duration"
-msgstr ""
+msgstr "Prolnutí"
 
 #: MissingTableModel#10
 msgctxt "MissingTableModel#10"
 msgid "Track #"
-msgstr ""
+msgstr "Stopa #"
 
 #: MissingTableModel#11
 msgctxt "MissingTableModel#11"
 msgid "Bitrate"
-msgstr ""
+msgstr "Datový tok"
 
 #: MissingTableModel#12
 msgctxt "MissingTableModel#12"
 msgid "BPM"
-msgstr ""
+msgstr "BPM"
 
 #: MissingTableModel#13
 msgctxt "MissingTableModel#13"
 msgid "Date Added"
-msgstr ""
+msgstr "Datum přidání"
 
 #: MixxxApp#1
 msgid "Mixxx "
-msgstr ""
+msgstr "Mixxx "
 
 #: MixxxApp#2
 msgctxt "MixxxApp#2"
 msgid "Mixxx"
-msgstr ""
+msgstr "Mixxx"
 
 #: MixxxApp#3
 msgid ""
@@ -1988,19 +1996,19 @@ msgstr ""
 
 #: MixxxApp#4
 msgid "Yes"
-msgstr ""
+msgstr "Ano"
 
 #: MixxxApp#5
 msgid "No"
-msgstr ""
+msgstr "Ne"
 
 #: MixxxApp#6
 msgid "Privacy Policy"
-msgstr ""
+msgstr "Ochrana osobních údajů"
 
 #: MixxxApp#7
 msgid "Mixxx: Privacy Policy"
-msgstr ""
+msgstr "Mixxx: Ochrana osobních údajů"
 
 #: MixxxApp#8
 msgid ""
@@ -2030,15 +2038,15 @@ msgstr ""
 #: MixxxApp#9
 msgctxt "MixxxApp#9"
 msgid "Choose music library directory"
-msgstr ""
+msgstr "Vybrat adresář s hudební knihovnou"
 
 #: MixxxApp#10
 msgid "Sound Device Busy"
-msgstr ""
+msgstr "Zvukové zařízení je zaneprázdněné"
 
 #: MixxxApp#11
 msgid "<html>Mixxx cannot access the sound device <b>"
-msgstr ""
+msgstr "<html>Mixxx nemůže přistoupit ke zvukovému zařízení <b>"
 
 #: MixxxApp#12
 msgid "Another application is using the sound device or it is "
@@ -2046,15 +2054,15 @@ msgstr ""
 
 #: MixxxApp#13
 msgid "not plugged in."
-msgstr ""
+msgstr "není zapojen."
 
 #: MixxxApp#14
 msgid "<b>Retry</b> after closing the other application "
-msgstr ""
+msgstr "<b>Zkuste znovu</b> po zavření jiné aplikace. "
 
 #: MixxxApp#15
 msgid "or reconnecting the sound device"
-msgstr ""
+msgstr "nebo znovu připojte zvukové zařízení"
 
 #: MixxxApp#16
 msgid "<b>Reconfigure</b> Mixxx to use another sound device."
@@ -2062,63 +2070,63 @@ msgstr ""
 
 #: MixxxApp#17
 msgid "Get <b>Help</b> from the Mixxx Wiki."
-msgstr ""
+msgstr "Získejte <b>pomoc</b> z Mixxx Wiki."
 
 #: MixxxApp#18
 msgid "<b>Exit</b> without saving your settings."
-msgstr ""
+msgstr "<b>Zavřít</b> bez uložení nastavení."
 
 #: MixxxApp#19
 msgid "Retry"
-msgstr ""
+msgstr "Opakovat"
 
 #: MixxxApp#20
 msgid "Reconfigure"
-msgstr ""
+msgstr "Nastavit znovu"
 
 #: MixxxApp#21
 msgid "Help"
-msgstr ""
+msgstr "Nápověda"
 
 #: MixxxApp#22
 msgid "Exit"
-msgstr ""
+msgstr "Ukončit"
 
 #: MixxxApp#23
 msgid "&Load Song (Player 1)..."
-msgstr ""
+msgstr "&Nabít píseň (Přehrávač 1)..."
 
 #: MixxxApp#24
 msgid "Ctrl+O"
-msgstr ""
+msgstr "Ctrl+O"
 
 #: MixxxApp#25
 msgid "&Load Song (Player 2)..."
-msgstr ""
+msgstr "&Nabít píseň (Přehrávač 2)..."
 
 #: MixxxApp#26
 msgid "Ctrl+Shift+O"
-msgstr ""
+msgstr "Ctrl+Shift+O"
 
 #: MixxxApp#27
 msgid "&Exit"
-msgstr ""
+msgstr "&Ukončit"
 
 #: MixxxApp#28
 msgid "Ctrl+Q"
-msgstr ""
+msgstr "Ctrl+Q"
 
 #: MixxxApp#29
 msgid "&Rescan Library"
-msgstr ""
+msgstr "&Přeskenovat knihovnu"
 
 #: MixxxApp#30
 msgid "Add &new playlist"
-msgstr ""
+msgstr "Přidat &nový playlist"
 
 #: MixxxApp#31
 msgid "Ctrl+N"
-msgstr ""
+msgstr "Ctrl+N"
 
 #: MixxxApp#32
 msgid "Add new &crate"
@@ -2126,15 +2134,15 @@ msgstr ""
 
 #: MixxxApp#33
 msgid "Ctrl+C"
-msgstr ""
+msgstr "Ctrl+C"
 
 #: MixxxApp#34
 msgid "&Import playlist"
-msgstr ""
+msgstr "&Importovat playlist"
 
 #: MixxxApp#35
 msgid "Ctrl+I"
-msgstr ""
+msgstr "Ctrl+I"
 
 #: MixxxApp#36
 msgid "&Audio Beat Marks"
@@ -2142,31 +2150,31 @@ msgstr ""
 
 #: MixxxApp#37
 msgid "&Full Screen"
-msgstr ""
+msgstr "&Celá obrazovka"
 
 #: MixxxApp#38
 msgid "Ctrl+F"
-msgstr ""
+msgstr "Ctrl+F"
 
 #: MixxxApp#39
 msgid "F11"
-msgstr ""
+msgstr "F11"
 
 #: MixxxApp#40
 msgid "&Preferences"
-msgstr ""
+msgstr "&Možnosti"
 
 #: MixxxApp#41
 msgid "Ctrl+P"
-msgstr ""
+msgstr "Ctrl+P"
 
 #: MixxxApp#42
 msgid "&About..."
-msgstr ""
+msgstr "&O programu"
 
 #: MixxxApp#43
 msgid "&Community Support..."
-msgstr ""
+msgstr "&Komunitní podpora..."
 
 #: MixxxApp#44
 msgid "Enable &Vinyl Control"
@@ -2174,16 +2182,16 @@ msgstr ""
 
 #: MixxxApp#45
 msgid "Ctrl+Y"
-msgstr ""
+msgstr "Ctrl+Y"
 
 #: MixxxApp#46
 msgctxt "MixxxApp#46"
 msgid "Enable live broadcasting"
-msgstr ""
+msgstr "Povolit živé vysílání"
 
 #: MixxxApp#47
 msgid "Ctrl+L"
-msgstr ""
+msgstr "Ctrl+L"
 
 #: MixxxApp#48
 msgid "&Record Mix"
@@ -2191,15 +2199,15 @@ msgstr ""
 
 #: MixxxApp#49
 msgid "Ctrl+R"
-msgstr ""
+msgstr "Ctrl+R"
 
 #: MixxxApp#50
 msgid "Show Studio"
-msgstr ""
+msgstr "Ukázat studio"
 
 #: MixxxApp#51
 msgid "Opens a song in player 1"
-msgstr ""
+msgstr "Otevře song v přehrávači 1"
 
 #: MixxxApp#52
 msgid ""
@@ -2207,10 +2215,13 @@ msgid ""
 "\n"
 "Opens a song in player 1"
 msgstr ""
+"Otevřít\n"
+"\n"
+"Otevře song v přehrávači 1"
 
 #: MixxxApp#53
 msgid "Opens a song in player 2"
-msgstr ""
+msgstr "Otevře song v přehrávači 2"
 
 #: MixxxApp#54
 msgid ""
@@ -2218,10 +2229,13 @@ msgid ""
 "\n"
 "Opens a song in player 2"
 msgstr ""
+"Otevřít\n"
+"\n"
+"Otevře song v přehrávači 2"
 
 #: MixxxApp#55
 msgid "Quits the application"
-msgstr ""
+msgstr "Ukončí aplikaci"
 
 #: MixxxApp#56
 msgid ""
@@ -2229,10 +2243,13 @@ msgid ""
 "\n"
 "Quits the application"
 msgstr ""
+"Ukončit\n"
+"\n"
+"Zavře program"
 
 #: MixxxApp#57
 msgid "Rescans the song library"
-msgstr ""
+msgstr "Přeskenuje hudební knihovnu"
 
 #: MixxxApp#58
 msgid ""
@@ -2240,10 +2257,13 @@ msgid ""
 "\n"
 "Rescans the song library"
 msgstr ""
+"Přeskenování knihovny\n"
+"\n"
+"Přeskenuje hudební knihovnu"
 
 #: MixxxApp#59
 msgid "Create a new playlist"
-msgstr ""
+msgstr "Vytvořit nový playlist"
 
 #: MixxxApp#60
 msgid ""
@@ -2251,6 +2271,9 @@ msgid ""
 "\n"
 "Create a new playlist"
 msgstr ""
+"Nový playlist\n"
+"\n"
+"Vytvořit nový playlist"
 
 #: MixxxApp#61
 msgid "Create a new crate"
@@ -2265,7 +2288,7 @@ msgstr ""
 
 #: MixxxApp#63
 msgid "Import playlist"
-msgstr ""
+msgstr "Importovat playlist"
 
 #: MixxxApp#64
 msgid "Audio Beat Marks"
@@ -2279,7 +2302,7 @@ msgstr ""
 
 #: MixxxApp#66
 msgid "Activate Vinyl Control"
-msgstr ""
+msgstr "Aktivovat ovládání vinylu"
 
 #: MixxxApp#67
 msgid "Use timecoded vinyls on external turntables to control Mixxx"
@@ -2287,42 +2310,44 @@ msgstr ""
 
 #: MixxxApp#68
 msgid "Activate live broadcasting"
-msgstr ""
+msgstr "Zahájit živé vysílání"
 
 #: MixxxApp#69
 msgid "Stream your mixes to a shoutcast or icecast server"
-msgstr ""
+msgstr "Streamovat vaše mixy na shoutcast nebo icecast serveru"
 
 #: MixxxApp#70
 msgid "Start Recording your Mix"
-msgstr ""
+msgstr "Začněte nahrávat mixování"
 
 #: MixxxApp#71
 msgid "Record your mix to a file"
-msgstr ""
+msgstr "Nahrát mixování do souboru"
 
 #: MixxxApp#72
 msgid "Full Screen"
-msgstr ""
+msgstr "Celá obrazovka"
 
 #: MixxxApp#73
 msgid "Display Mixxx using the full screen"
-msgstr ""
+msgstr "Zobrazit Mixxx v režimu \"celá obrazovka\""
 
 #: MixxxApp#74
 msgctxt "MixxxApp#74"
 msgid "Preferences"
-msgstr ""
+msgstr "Nastavení"
 
 #: MixxxApp#75
 msgid ""
 "Preferences\n"
 "Playback and MIDI preferences"
 msgstr ""
+"Nastavení\n"
+"Nastavení playbacku a MIDI"
 
 #: MixxxApp#76
 msgid "Support..."
-msgstr ""
+msgstr "Podpora..."
 
 #: MixxxApp#77
 msgid ""
@@ -2330,10 +2355,13 @@ msgid ""
 "\n"
 "Get help with Mixxx"
 msgstr ""
+"Podpora\n"
+"\n"
+"Získejte pomoc pro Mixxx"
 
 #: MixxxApp#78
 msgid "About the application"
-msgstr ""
+msgstr "O aplikaci"
 
 #: MixxxApp#79
 msgid ""
@@ -2341,10 +2369,13 @@ msgid ""
 "\n"
 "About the application"
 msgstr ""
+"O\n"
+"\n"
+"O programu"
 
 #: MixxxApp#80
 msgid "Shows the macro studio window"
-msgstr ""
+msgstr "Zobrazí makro okno studia"
 
 #: MixxxApp#81
 msgid ""
@@ -2352,58 +2383,65 @@ msgid ""
 "\n"
 "Makes the macro studio visible"
 msgstr ""
+"Zobrazit studio\n"
+"\n"
+"Umožní vidět makro studio"
 
 #: MixxxApp#82
 msgid "&File"
-msgstr ""
+msgstr "&Soubor"
 
 #: MixxxApp#83
 msgid "&Options"
-msgstr ""
+msgstr "&Možnosti"
 
 #: MixxxApp#84
 msgid "&Library"
-msgstr ""
+msgstr "&Knihovna"
 
 #: MixxxApp#85
 msgid "&View"
-msgstr ""
+msgstr "&Pohled"
 
 #: MixxxApp#86
 msgid "&Help"
-msgstr ""
+msgstr "&Nápověda"
 
 #: MixxxApp#87
 msgid "&Macro"
-msgstr ""
+msgstr "&Makro"
 
 #: MixxxApp#88
 msgid "Quit..."
-msgstr ""
+msgstr "Ukončit..."
 
 #: MixxxApp#89
 msgid "Do your really want to quit?"
-msgstr ""
+msgstr "Opravdu chcete program ukončit?"
 
 #: MixxxApp#90
 msgid ""
 "Player 1 is currently playing a song.\n"
 "Are you sure you want to load a new song?"
 msgstr ""
+"Přehrávač 1 právě přehrává hudbu.\n"
+"Chcete opravdu vložit nový?"
 
 #: MixxxApp#91
 msgid "Load Song into Player 1"
-msgstr ""
+msgstr "Vložit hudbu do Přehrávače 1"
 
 #: MixxxApp#92
 msgid ""
 "Player 2 is currently playing a song.\n"
 "Are you sure you want to load a new song?"
 msgstr ""
+"Přehrávač 2 právě přehrává hudbu.\n"
+"Chcete opravdu vložit nový song?"
 
 #: MixxxApp#93
 msgid "Load Song into Player 2"
-msgstr ""
+msgstr "Vložit hudbu do Přehrávače 1"
 
 #: MixxxApp#94
 msgid ""
@@ -2414,228 +2452,230 @@ msgstr ""
 #: MixxxApp#95
 msgctxt "MixxxApp#95"
 msgid "Save Recording As..."
-msgstr ""
+msgstr "Uložit nahrávku jako..."
 
 #: MixxxApp#96
 msgid "Mixxx Recording"
-msgstr ""
+msgstr "Mixxx nahrává"
 
 #: MixxxApp#97
 msgid ""
 "The file %1 already exists. Would you like to overwrite it?\n"
 "Selecting \"No\" will abort the recording."
 msgstr ""
+"Soubor %1 existuje. Chcete ho přepsat?\n"
+"Vybrání \"Ne\" přeruší nahrávání."
 
 #: MixxxLibraryFeature#1
 msgid "Missing Songs"
-msgstr ""
+msgstr "Chybějící hudba"
 
 #: MixxxLibraryFeature#2
 msgctxt "MixxxLibraryFeature#2"
 msgid "Library"
-msgstr ""
+msgstr "Knihovna"
 
 #: Player#1
 msgid "Couldn't load track."
-msgstr ""
+msgstr "Nelze načíst stopu"
 
 #: PlaylistFeature#1
 msgid "New Playlist"
-msgstr ""
+msgstr "Nový playlist"
 
 #: PlaylistFeature#2
 msgctxt "PlaylistFeature#2"
 msgid "Remove"
-msgstr ""
+msgstr "Odstranit"
 
 #: PlaylistFeature#3
 msgid "Playlists"
-msgstr ""
+msgstr "Playlisty"
 
 #: PlaylistFeature#4
 msgid "Playlist name:"
-msgstr ""
+msgstr "Název playlistu:"
 
 #: PlaylistFeature#5
 msgid "Playlist Creation Failed"
-msgstr ""
+msgstr "Playlist nebyl vytvořen"
 
 #: PlaylistFeature#6
 msgid "A playlist cannot have a blank name."
-msgstr ""
+msgstr "Playlist nemůže být nepojmenovaný."
 
 #: PlaylistFeature#7
 msgid "An unknown error occurred while creating playlist: "
-msgstr ""
+msgstr "Při vytváření playlistu došlo k neznámé chybě. "
 
 #: PlaylistFeature#8
 msgid "A playlist by that name already exists."
-msgstr ""
+msgstr "Playlist tohoto jména již existuje"
 
 #: PlaylistTableModel#1
 msgid "#"
-msgstr ""
+msgstr "#"
 
 #: PlaylistTableModel#2
 msgctxt "PlaylistTableModel#2"
 msgid "Artist"
-msgstr ""
+msgstr "Interpret"
 
 #: PlaylistTableModel#3
 msgctxt "PlaylistTableModel#3"
 msgid "Title"
-msgstr ""
+msgstr "Název"
 
 #: PlaylistTableModel#4
 msgctxt "PlaylistTableModel#4"
 msgid "Album"
-msgstr ""
+msgstr "Album"
 
 #: PlaylistTableModel#5
 msgctxt "PlaylistTableModel#5"
 msgid "Genre"
-msgstr ""
+msgstr "Styl"
 
 #: PlaylistTableModel#6
 msgctxt "PlaylistTableModel#6"
 msgid "Year"
-msgstr ""
+msgstr "Rok"
 
 #: PlaylistTableModel#7
 msgctxt "PlaylistTableModel#7"
 msgid "Type"
-msgstr ""
+msgstr "Typ"
 
 #: PlaylistTableModel#8
 msgctxt "PlaylistTableModel#8"
 msgid "Location"
-msgstr ""
+msgstr "Umístění"
 
 #: PlaylistTableModel#9
 msgctxt "PlaylistTableModel#9"
 msgid "Comment"
-msgstr ""
+msgstr "Komentář"
 
 #: PlaylistTableModel#10
 msgctxt "PlaylistTableModel#10"
 msgid "Duration"
-msgstr ""
+msgstr "Prolnutí"
 
 #: PlaylistTableModel#11
 msgctxt "PlaylistTableModel#11"
 msgid "Track #"
-msgstr ""
+msgstr "Stopa #"
 
 #: PlaylistTableModel#12
 msgctxt "PlaylistTableModel#12"
 msgid "Bitrate"
-msgstr ""
+msgstr "Datový tok"
 
 #: PlaylistTableModel#13
 msgctxt "PlaylistTableModel#13"
 msgid "Date Added"
-msgstr ""
+msgstr "Datum přidání"
 
 #: PlaylistTableModel#14
 msgctxt "PlaylistTableModel#14"
 msgid "BPM"
-msgstr ""
+msgstr "BPM"
 
 #: PrepareFeature#1
 msgctxt "PrepareFeature#1"
 msgid "Analyze"
-msgstr ""
+msgstr "Analýza"
 
 #: RhythmboxFeature#1
 msgid "Rhythmbox"
-msgstr ""
+msgstr "Rhythmbox"
 
 #: RhythmboxFeature#2
 msgid "Load Rhythmbox Library?"
-msgstr ""
+msgstr "Nahrát knihovnu z Rhythmboxu?"
 
 #: RhythmboxFeature#3
 msgid "Would you like to load your Rhythmbox library?"
-msgstr ""
+msgstr "Chcete nahrát knihovnu z Rhythmboxu?"
 
 #: RhythmboxPlaylistModel#1
 msgctxt "RhythmboxPlaylistModel#1"
 msgid "Artist"
-msgstr ""
+msgstr "Interpret"
 
 #: RhythmboxPlaylistModel#2
 msgctxt "RhythmboxPlaylistModel#2"
 msgid "Title"
-msgstr ""
+msgstr "Název"
 
 #: RhythmboxPlaylistModel#3
 msgctxt "RhythmboxPlaylistModel#3"
 msgid "Album"
-msgstr ""
+msgstr "Album"
 
 #: RhythmboxPlaylistModel#4
 msgctxt "RhythmboxPlaylistModel#4"
 msgid "Year"
-msgstr ""
+msgstr "Rok"
 
 #: RhythmboxPlaylistModel#5
 msgctxt "RhythmboxPlaylistModel#5"
 msgid "Genre"
-msgstr ""
+msgstr "Styl"
 
 #: RhythmboxPlaylistModel#6
 msgctxt "RhythmboxPlaylistModel#6"
 msgid "Location"
-msgstr ""
+msgstr "Umístění"
 
 #: RhythmboxPlaylistModel#7
 msgctxt "RhythmboxPlaylistModel#7"
 msgid "Duration"
-msgstr ""
+msgstr "Prolnutí"
 
 #: RhythmboxPlaylistModel#8
 msgctxt "RhythmboxPlaylistModel#8"
 msgid "Unknown"
-msgstr ""
+msgstr "Neznámý"
 
 #: RhythmboxTrackModel#1
 msgctxt "RhythmboxTrackModel#1"
 msgid "Artist"
-msgstr ""
+msgstr "Interpret"
 
 #: RhythmboxTrackModel#2
 msgctxt "RhythmboxTrackModel#2"
 msgid "Title"
-msgstr ""
+msgstr "Název"
 
 #: RhythmboxTrackModel#3
 msgctxt "RhythmboxTrackModel#3"
 msgid "Album"
-msgstr ""
+msgstr "Album"
 
 #: RhythmboxTrackModel#4
 msgctxt "RhythmboxTrackModel#4"
 msgid "Date"
-msgstr ""
+msgstr "Datum"
 
 #: RhythmboxTrackModel#5
 msgctxt "RhythmboxTrackModel#5"
 msgid "Genre"
-msgstr ""
+msgstr "Styl"
 
 #: RhythmboxTrackModel#6
 msgctxt "RhythmboxTrackModel#6"
 msgid "Location"
-msgstr ""
+msgstr "Umístění"
 
 #: RhythmboxTrackModel#7
 msgctxt "RhythmboxTrackModel#7"
 msgid "Duration"
-msgstr ""
+msgstr "Prolnutí"
 
 #: TrackCollection#1
 msgid "Cannot open database"
-msgstr ""
+msgstr "Nelze otevřít databázi"
 
 #: TrackCollection#2
 msgid ""
@@ -2662,21 +2702,21 @@ msgstr ""
 #: Ui#1
 msgctxt "Ui#1"
 msgid "Position"
-msgstr ""
+msgstr "Pozice"
 
 #: Ui#2
 msgid "Remaining"
-msgstr ""
+msgstr "Zbývá"
 
 #: Ui#3
 msgctxt "Ui#3"
 msgid "On"
-msgstr ""
+msgstr "Zapnout"
 
 #: Ui#4
 msgctxt "Ui#4"
 msgid "Off"
-msgstr ""
+msgstr "Vypnout"
 
 #: Ui#5
 msgid "CDJ Mode"
@@ -2684,40 +2724,42 @@ msgstr ""
 
 #: Ui#6
 msgid "Simple"
-msgstr ""
+msgstr "Jednoduchý"
 
 #: Ui#7
 msgid "Mixxx Detected a WVGA Screen"
-msgstr ""
+msgstr "Mixxx detekoval a WVGA obrazovku"
 
 #: Ui#8
 msgid "Mixxx has detected that your screen has a resolution of "
-msgstr ""
+msgstr "Mixxx detekoval obrazovku s rozlišením "
 
 #: Ui#9
 msgid ""
 "The only skin compatiable with this size display is OutlineMini (800x480).  "
 "Would you like to use that skin?"
 msgstr ""
+"Pouze vzhled OutlineMini (800x480) je kompatibilní s velikostí displeje. "
+"Chcete ho použít?"
 
 #: Ui#10
 msgctxt "Ui#10"
 msgid "Preferences"
-msgstr ""
+msgstr "Nastavení"
 
 #: VinylControlSignalWidget#1
 msgid "OK"
-msgstr ""
+msgstr "OK"
 
 #: WBrowseTableView#1
 msgctxt "WBrowseTableView#1"
 msgid "Load in Player 1"
-msgstr ""
+msgstr "Vložit do Přehrávače 1"
 
 #: WBrowseTableView#2
 msgctxt "WBrowseTableView#2"
 msgid "Load in Player 2"
-msgstr ""
+msgstr "Vložit do Přehrávače 2"
 
 #: WSearchLineEdit#1
 msgid "Search..."
