@@ -56,7 +56,7 @@ ImgSource* ColorSchemeParser::parseFilters(QDomNode filt) {
         return 0;
     }
 
-    ImgSource * ret = NULL;
+    ImgSource * ret = new ImgLoader();
 
     QDomNode f = filt.firstChild();
 
@@ -106,9 +106,6 @@ ImgSource* ColorSchemeParser::parseFilters(QDomNode filt) {
         }
         f = f.nextSibling();
     }
-
-    if (ret == NULL)
-        ret = new ImgLoader();
 
     return ret;
 }
