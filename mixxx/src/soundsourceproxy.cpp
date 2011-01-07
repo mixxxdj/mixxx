@@ -320,6 +320,15 @@ QList<QString> SoundSourceProxy::supportedFileExtensions()
     return supportedFileExtensions;
 }
 
+QList<QString> SoundSourceProxy::supportedFileExtensionsByPlugins()
+{
+    QMutexLocker locker(&m_extensionsMutex);
+    QList<QString> supportedFileExtensions;
+    supportedFileExtensions.append(m_extensionsSupportedByPlugins.keys());
+
+    return supportedFileExtensions;
+}
+
 QString SoundSourceProxy::supportedFileExtensionsString()
 {
     QList<QString> supportedFileExtList = SoundSourceProxy::supportedFileExtensions();

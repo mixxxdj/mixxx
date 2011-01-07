@@ -1,8 +1,8 @@
 /****************************************************************/
-/*      Stanton SCS.3d MIDI controller script v1.52             */
+/*      Stanton SCS.3d MIDI controller script v1.60             */
 /*          Copyright (C) 2009-2010, Sean M. Pappalardo         */
 /*      but feel free to tweak this to your heart's content!    */
-/*      For Mixxx version 1.8.x                                 */
+/*      For Mixxx version 1.9.x                                 */
 /****************************************************************/
 
 function StantonSCS3d() {}
@@ -64,7 +64,7 @@ StantonSCS3d.hotCues = {    1:{ 0x48: 1, 0x4A: 2, 0x4C: 3, 0x4E: 4, 0x4F: 5, 0x5
 StantonSCS3d.triggerS4 = 0xFF;
 
 // Signals to (dis)connect by mode: Group, Key, Function name
-StantonSCS3d.modeSignals = {"fx":[ 	  ["[Flanger]", "lfoDepth", "StantonSCS3d.FXDepthLEDs"],
+StantonSCS3d.modeSignals = {"fx":[    ["[Flanger]", "lfoDepth", "StantonSCS3d.FXDepthLEDs"],
                                       ["[Flanger]", "lfoDelay", "StantonSCS3d.FXDelayLEDs"],
                                       ["[Flanger]", "lfoPeriod", "StantonSCS3d.FXPeriodLEDs"],
                                       ["CurrentChannel", "reverse", "StantonSCS3d.B11LED"],
@@ -80,77 +80,77 @@ StantonSCS3d.modeSignals = {"fx":[ 	  ["[Flanger]", "lfoDepth", "StantonSCS3d.FX
                             "loop2":[ ["CurrentChannel", "pfl", "StantonSCS3d.B11LED"] ],
                             "loop3":[ ["CurrentChannel", "pfl", "StantonSCS3d.B11LED"] ],
                             "trig":[  ["CurrentChannel", "pfl", "StantonSCS3d.B11LED"],
-									  ["CurrentChannel", "hotcue_1_enabled", "StantonSCS3d.BsALED"],
-									  ["CurrentChannel", "hotcue_2_enabled", "StantonSCS3d.BsBLED"],
-									  ["CurrentChannel", "hotcue_3_enabled", "StantonSCS3d.BsCLED"],
-									  ["CurrentChannel", "hotcue_4_enabled", "StantonSCS3d.BsDLED"],
-									  ["CurrentChannel", "hotcue_5_enabled", "StantonSCS3d.BsELED"],
-									  ["CurrentChannel", "hotcue_6_enabled", "StantonSCS3d.BsFLED"],
-									  ["CurrentChannel", "hotcue_7_enabled", "StantonSCS3d.BsGLED"],
-									  ["CurrentChannel", "hotcue_8_enabled", "StantonSCS3d.BsHLED"],
-									  ["CurrentChannel", "hotcue_9_enabled", "StantonSCS3d.BsILED"],
-									  ["CurrentChannel", "hotcue_10_enabled", "StantonSCS3d.BsJLED"],
-									  ["CurrentChannel", "hotcue_11_enabled", "StantonSCS3d.BsKLED"],
-									  ["CurrentChannel", "hotcue_12_enabled", "StantonSCS3d.BsLLED"],
-									  ["CurrentChannel", "hotcue_1_activate", "StantonSCS3d.BsAaLED"],
-									  ["CurrentChannel", "hotcue_2_activate", "StantonSCS3d.BsBaLED"],
-									  ["CurrentChannel", "hotcue_3_activate", "StantonSCS3d.BsCaLED"],
-									  ["CurrentChannel", "hotcue_4_activate", "StantonSCS3d.BsDaLED"],
-									  ["CurrentChannel", "hotcue_5_activate", "StantonSCS3d.BsEaLED"],
-									  ["CurrentChannel", "hotcue_6_activate", "StantonSCS3d.BsFaLED"],
-									  ["CurrentChannel", "hotcue_7_activate", "StantonSCS3d.BsGaLED"],
-									  ["CurrentChannel", "hotcue_8_activate", "StantonSCS3d.BsHaLED"],
-									  ["CurrentChannel", "hotcue_9_activate", "StantonSCS3d.BsIaLED"],
-									  ["CurrentChannel", "hotcue_10_activate", "StantonSCS3d.BsJaLED"],
-									  ["CurrentChannel", "hotcue_11_activate", "StantonSCS3d.BsKaLED"],
-									  ["CurrentChannel", "hotcue_12_activate", "StantonSCS3d.BsLaLED"] ],
+                                      ["CurrentChannel", "hotcue_1_enabled", "StantonSCS3d.BsALED"],
+                                      ["CurrentChannel", "hotcue_2_enabled", "StantonSCS3d.BsBLED"],
+                                      ["CurrentChannel", "hotcue_3_enabled", "StantonSCS3d.BsCLED"],
+                                      ["CurrentChannel", "hotcue_4_enabled", "StantonSCS3d.BsDLED"],
+                                      ["CurrentChannel", "hotcue_5_enabled", "StantonSCS3d.BsELED"],
+                                      ["CurrentChannel", "hotcue_6_enabled", "StantonSCS3d.BsFLED"],
+                                      ["CurrentChannel", "hotcue_7_enabled", "StantonSCS3d.BsGLED"],
+                                      ["CurrentChannel", "hotcue_8_enabled", "StantonSCS3d.BsHLED"],
+                                      ["CurrentChannel", "hotcue_9_enabled", "StantonSCS3d.BsILED"],
+                                      ["CurrentChannel", "hotcue_10_enabled", "StantonSCS3d.BsJLED"],
+                                      ["CurrentChannel", "hotcue_11_enabled", "StantonSCS3d.BsKLED"],
+                                      ["CurrentChannel", "hotcue_12_enabled", "StantonSCS3d.BsLLED"],
+                                      ["CurrentChannel", "hotcue_1_activate", "StantonSCS3d.BsAaLED"],
+                                      ["CurrentChannel", "hotcue_2_activate", "StantonSCS3d.BsBaLED"],
+                                      ["CurrentChannel", "hotcue_3_activate", "StantonSCS3d.BsCaLED"],
+                                      ["CurrentChannel", "hotcue_4_activate", "StantonSCS3d.BsDaLED"],
+                                      ["CurrentChannel", "hotcue_5_activate", "StantonSCS3d.BsEaLED"],
+                                      ["CurrentChannel", "hotcue_6_activate", "StantonSCS3d.BsFaLED"],
+                                      ["CurrentChannel", "hotcue_7_activate", "StantonSCS3d.BsGaLED"],
+                                      ["CurrentChannel", "hotcue_8_activate", "StantonSCS3d.BsHaLED"],
+                                      ["CurrentChannel", "hotcue_9_activate", "StantonSCS3d.BsIaLED"],
+                                      ["CurrentChannel", "hotcue_10_activate", "StantonSCS3d.BsJaLED"],
+                                      ["CurrentChannel", "hotcue_11_activate", "StantonSCS3d.BsKaLED"],
+                                      ["CurrentChannel", "hotcue_12_activate", "StantonSCS3d.BsLaLED"] ],
                             "trig2":[ ["CurrentChannel", "pfl", "StantonSCS3d.B11LED"],
-									  ["CurrentChannel", "hotcue_13_enabled", "StantonSCS3d.BsALED"],
-									  ["CurrentChannel", "hotcue_14_enabled", "StantonSCS3d.BsBLED"],
-									  ["CurrentChannel", "hotcue_15_enabled", "StantonSCS3d.BsCLED"],
-									  ["CurrentChannel", "hotcue_16_enabled", "StantonSCS3d.BsDLED"],
-									  ["CurrentChannel", "hotcue_17_enabled", "StantonSCS3d.BsELED"],
-									  ["CurrentChannel", "hotcue_18_enabled", "StantonSCS3d.BsFLED"],
-									  ["CurrentChannel", "hotcue_19_enabled", "StantonSCS3d.BsGLED"],
-									  ["CurrentChannel", "hotcue_20_enabled", "StantonSCS3d.BsHLED"],
-									  ["CurrentChannel", "hotcue_21_enabled", "StantonSCS3d.BsILED"],
-									  ["CurrentChannel", "hotcue_22_enabled", "StantonSCS3d.BsJLED"],
-									  ["CurrentChannel", "hotcue_23_enabled", "StantonSCS3d.BsKLED"],
-									  ["CurrentChannel", "hotcue_24_enabled", "StantonSCS3d.BsLLED"],
-									  ["CurrentChannel", "hotcue_13_activate", "StantonSCS3d.BsAaLED"],
-									  ["CurrentChannel", "hotcue_14_activate", "StantonSCS3d.BsBaLED"],
-									  ["CurrentChannel", "hotcue_15_activate", "StantonSCS3d.BsCaLED"],
-									  ["CurrentChannel", "hotcue_16_activate", "StantonSCS3d.BsDaLED"],
-									  ["CurrentChannel", "hotcue_17_activate", "StantonSCS3d.BsEaLED"],
-									  ["CurrentChannel", "hotcue_18_activate", "StantonSCS3d.BsFaLED"],
-									  ["CurrentChannel", "hotcue_19_activate", "StantonSCS3d.BsGaLED"],
-									  ["CurrentChannel", "hotcue_20_activate", "StantonSCS3d.BsHaLED"],
-									  ["CurrentChannel", "hotcue_21_activate", "StantonSCS3d.BsIaLED"],
-									  ["CurrentChannel", "hotcue_22_activate", "StantonSCS3d.BsJaLED"],
-									  ["CurrentChannel", "hotcue_23_activate", "StantonSCS3d.BsKaLED"],
-									  ["CurrentChannel", "hotcue_24_activate", "StantonSCS3d.BsLaLED"] ],
+                                      ["CurrentChannel", "hotcue_13_enabled", "StantonSCS3d.BsALED"],
+                                      ["CurrentChannel", "hotcue_14_enabled", "StantonSCS3d.BsBLED"],
+                                      ["CurrentChannel", "hotcue_15_enabled", "StantonSCS3d.BsCLED"],
+                                      ["CurrentChannel", "hotcue_16_enabled", "StantonSCS3d.BsDLED"],
+                                      ["CurrentChannel", "hotcue_17_enabled", "StantonSCS3d.BsELED"],
+                                      ["CurrentChannel", "hotcue_18_enabled", "StantonSCS3d.BsFLED"],
+                                      ["CurrentChannel", "hotcue_19_enabled", "StantonSCS3d.BsGLED"],
+                                      ["CurrentChannel", "hotcue_20_enabled", "StantonSCS3d.BsHLED"],
+                                      ["CurrentChannel", "hotcue_21_enabled", "StantonSCS3d.BsILED"],
+                                      ["CurrentChannel", "hotcue_22_enabled", "StantonSCS3d.BsJLED"],
+                                      ["CurrentChannel", "hotcue_23_enabled", "StantonSCS3d.BsKLED"],
+                                      ["CurrentChannel", "hotcue_24_enabled", "StantonSCS3d.BsLLED"],
+                                      ["CurrentChannel", "hotcue_13_activate", "StantonSCS3d.BsAaLED"],
+                                      ["CurrentChannel", "hotcue_14_activate", "StantonSCS3d.BsBaLED"],
+                                      ["CurrentChannel", "hotcue_15_activate", "StantonSCS3d.BsCaLED"],
+                                      ["CurrentChannel", "hotcue_16_activate", "StantonSCS3d.BsDaLED"],
+                                      ["CurrentChannel", "hotcue_17_activate", "StantonSCS3d.BsEaLED"],
+                                      ["CurrentChannel", "hotcue_18_activate", "StantonSCS3d.BsFaLED"],
+                                      ["CurrentChannel", "hotcue_19_activate", "StantonSCS3d.BsGaLED"],
+                                      ["CurrentChannel", "hotcue_20_activate", "StantonSCS3d.BsHaLED"],
+                                      ["CurrentChannel", "hotcue_21_activate", "StantonSCS3d.BsIaLED"],
+                                      ["CurrentChannel", "hotcue_22_activate", "StantonSCS3d.BsJaLED"],
+                                      ["CurrentChannel", "hotcue_23_activate", "StantonSCS3d.BsKaLED"],
+                                      ["CurrentChannel", "hotcue_24_activate", "StantonSCS3d.BsLaLED"] ],
                             "trig3":[ ["CurrentChannel", "pfl", "StantonSCS3d.B11LED"],
-									  ["CurrentChannel", "hotcue_25_enabled", "StantonSCS3d.BsALED"],
-									  ["CurrentChannel", "hotcue_26_enabled", "StantonSCS3d.BsBLED"],
-									  ["CurrentChannel", "hotcue_27_enabled", "StantonSCS3d.BsCLED"],
-									  ["CurrentChannel", "hotcue_28_enabled", "StantonSCS3d.BsDLED"],
-									  ["CurrentChannel", "hotcue_29_enabled", "StantonSCS3d.BsELED"],
-									  ["CurrentChannel", "hotcue_30_enabled", "StantonSCS3d.BsFLED"],
-									  ["CurrentChannel", "hotcue_31_enabled", "StantonSCS3d.BsGLED"],
-									  ["CurrentChannel", "hotcue_25_activate", "StantonSCS3d.BsAaLED"],
-									  ["CurrentChannel", "hotcue_26_activate", "StantonSCS3d.BsBaLED"],
-									  ["CurrentChannel", "hotcue_27_activate", "StantonSCS3d.BsCaLED"],
-									  ["CurrentChannel", "hotcue_28_activate", "StantonSCS3d.BsDaLED"],
-									  ["CurrentChannel", "hotcue_29_activate", "StantonSCS3d.BsEaLED"],
-									  ["CurrentChannel", "hotcue_30_activate", "StantonSCS3d.BsFaLED"],
-									  ["CurrentChannel", "hotcue_31_activate", "StantonSCS3d.BsGaLED"] ],
+                                      ["CurrentChannel", "hotcue_25_enabled", "StantonSCS3d.BsALED"],
+                                      ["CurrentChannel", "hotcue_26_enabled", "StantonSCS3d.BsBLED"],
+                                      ["CurrentChannel", "hotcue_27_enabled", "StantonSCS3d.BsCLED"],
+                                      ["CurrentChannel", "hotcue_28_enabled", "StantonSCS3d.BsDLED"],
+                                      ["CurrentChannel", "hotcue_29_enabled", "StantonSCS3d.BsELED"],
+                                      ["CurrentChannel", "hotcue_30_enabled", "StantonSCS3d.BsFLED"],
+                                      ["CurrentChannel", "hotcue_31_enabled", "StantonSCS3d.BsGLED"],
+                                      ["CurrentChannel", "hotcue_25_activate", "StantonSCS3d.BsAaLED"],
+                                      ["CurrentChannel", "hotcue_26_activate", "StantonSCS3d.BsBaLED"],
+                                      ["CurrentChannel", "hotcue_27_activate", "StantonSCS3d.BsCaLED"],
+                                      ["CurrentChannel", "hotcue_28_activate", "StantonSCS3d.BsDaLED"],
+                                      ["CurrentChannel", "hotcue_29_activate", "StantonSCS3d.BsEaLED"],
+                                      ["CurrentChannel", "hotcue_30_activate", "StantonSCS3d.BsFaLED"],
+                                      ["CurrentChannel", "hotcue_31_activate", "StantonSCS3d.BsGaLED"] ],
                             "vinyl":[ ["CurrentChannel", "pfl", "StantonSCS3d.B11LED"],
                                       ["CurrentChannel", "VuMeter", "StantonSCS3d.VUMeterLEDs"] ],
                             "vinyl2":[["CurrentChannel", "pfl", "StantonSCS3d.B11LED"],
                                       ["CurrentChannel", "VuMeter", "StantonSCS3d.VUMeterLEDs"] ],
                             "vinyl3":[],
                             "deck":[  ["[Master]","balance","StantonSCS3d.pitchLEDs"],
-									  ["[Master]","volume","StantonSCS3d.MasterVolumeLEDs"],
+                                      ["[Master]","volume","StantonSCS3d.MasterVolumeLEDs"],
                                       ["[Master]","headMix","StantonSCS3d.headMixLEDs"],
                                       ["[Master]","headVolume","StantonSCS3d.headVolLEDs"],
                                       ["[Master]","crossfader","StantonSCS3d.crossFaderLEDs"] ],
@@ -171,12 +171,21 @@ StantonSCS3d.deckSignals = [    ["CurrentChannel", "volume", "StantonSCS3d.gainL
 // ----------   Functions   ----------
 
 StantonSCS3d.init = function (id) {    // called when the MIDI device is opened & set up
-    
     StantonSCS3d.id = id;   // Store the ID of this device for later use
     
+    // Find out the firmware version
+    if (!StantonSCS3d.state["flat"]) midi.sendSysexMsg([0xF0, 0x7E, StantonSCS3d.channel, 0x06, 0x01, 0xF7],6);
+    
+    // TODO: Remove this once the deadlock issue is resolved
+    //  where you have to send something from the controller in order for the init2
+    //  function to run after the .statusResponse() calls it
+    StantonSCS3d.init2();
+}
+
+StantonSCS3d.init2 = function () {    // called when the MIDI device is opened & set up
     // Set the device's MIDI channel to a known value
 //     midi.sendSysexMsg(StantonSCS3d.sysex.concat([0x02, StantonSCS3d.channel, 0xF7]),7);
-    
+
     var CC = 0xB0 + StantonSCS3d.channel;
     var No = 0x90 + StantonSCS3d.channel;
     midi.sendShortMsg(CC,0x7B,0x00);  // Extinguish all LEDs
@@ -203,6 +212,32 @@ StantonSCS3d.init = function (id) {    // called when the MIDI device is opened 
     StantonSCS3d.durationChange2(engine.getValue("[Channel2]","duration"));
     
     print ("StantonSCS3d: \""+StantonSCS3d.id+"\" on MIDI channel "+(StantonSCS3d.channel+1)+" initialized.");
+}
+
+StantonSCS3d.statusResponse = function (data, length) {
+    var statusResponsePreamble=[0xF0,0x7E,0,6,2,0,1,0x60,0x2c,1,1,0];
+    // Check if this SysEx is the one we're looking for
+    var i=0;
+    var comp=true;
+    while (i<12 && comp) {
+        if (statusResponsePreamble[i]!=data.charCodeAt(i)) comp=false;
+        i++;
+    }
+    
+    if (comp) {
+        print ("Stanton SCS.3d v"+data.charCodeAt(12)+", "+(2008+data.charCodeAt(13))+"-"+data.charCodeAt(14)+"-"+data.charCodeAt(15));
+        
+        if ((2008+data.charCodeAt(13))==2009 && !StantonSCS3d.state["flat"]) {
+            // If the year is 2009, this is the test "smart" firmware
+            print ("WARNING: This SCS.3d is running test firmware and should be re-flashed with production firmware!\n\
+                    (Contact Stanton support.)  Changing unit to flat mode and re-initializing...");
+            //  Send the command to change the device to flat mode which is mostly compatible
+            midi.sendSysexMsg(StantonSCS3d.sysex.concat([0x10, StantonSCS3d.channel, 0xF7]),7);
+            StantonSCS3d.state["flat"]=true;
+            StantonSCS3d.init(StantonSCS3d.id); // TODO: Remove this once the deadlock issue is resolved
+        }
+    }
+//     StantonSCS3d.init2();
 }
 
 StantonSCS3d.shutdown = function () {   // called when the MIDI device is closed
@@ -765,9 +800,9 @@ StantonSCS3d.modeButton = function (channel, control, status, modeName) {
                     midi.sendShortMsg(byte1,i,0x40); // Set center slider to black
             break;
         case "deck":
-			StantonSCS3d.state["forceGain"]=true;
-			StantonSCS3d.gainLEDs(engine.getValue("[Channel"+StantonSCS3d.deck+"]","volume"));  // Restore Gain LEDs
-			StantonSCS3d.state["forceGain"]=false;
+            StantonSCS3d.state["forceGain"]=true;
+            StantonSCS3d.gainLEDs(engine.getValue("[Channel"+StantonSCS3d.deck+"]","volume"));  // Restore Gain LEDs
+            StantonSCS3d.state["forceGain"]=false;
             StantonSCS3d.connectDeckSignals(channel,false,"common");    // Connect static common signals
             break;
     }
@@ -1096,12 +1131,12 @@ StantonSCS3d.S4absolute = function (channel, control, value) {
             var button = 0x5C-2*Math.floor(value/32);
             if (StantonSCS3d.triggerS4==button) return; // prevent retriggering before releasing the button
             
-			// Deactivate any previous hot cue in the same slider touch
+            // Deactivate any previous hot cue in the same slider touch
             if (StantonSCS3d.state["S4hotcue"] != -1) {
-				engine.setValue("[Channel"+StantonSCS3d.deck+"]","hotcue_"+StantonSCS3d.state["S4hotcue"]+"_activate",0);
-				StantonSCS3d.state["S4hotcue"]=-1;
-			}
-			
+                engine.setValue("[Channel"+StantonSCS3d.deck+"]","hotcue_"+StantonSCS3d.state["S4hotcue"]+"_activate",0);
+                StantonSCS3d.state["S4hotcue"]=-1;
+            }
+            
             StantonSCS3d.triggerS4 = button;
             
             var index = currentMode.charAt(currentMode.length-1);
@@ -1117,7 +1152,7 @@ StantonSCS3d.S4absolute = function (channel, control, value) {
             // If hotcue X is set, seeks the player to hotcue X's position.
             // If hotcue X is not set, sets hotcue X to the current play position.            
             engine.setValue("[Channel"+StantonSCS3d.deck+"]","hotcue_"+StantonSCS3d.hotCues[index][button]+"_activate",1);
-            StantonSCS3d.state["S4hotcue"]=StantonSCS3d.hotCues[index][button];	// so it can be deactivated later
+            StantonSCS3d.state["S4hotcue"]=StantonSCS3d.hotCues[index][button];    // so it can be deactivated later
             break;
     }
 }
@@ -1265,16 +1300,16 @@ StantonSCS3d.S4touch = function (channel, control, value, status) {
             break;
         case "loop2":
         case "loop3":
-			StantonSCS3d.S4buttonLights(channel,false,StantonSCS3d.triggerS4);
+            StantonSCS3d.S4buttonLights(channel,false,StantonSCS3d.triggerS4);
             StantonSCS3d.triggerS4 = 0xFF;
             break;
         case "trig":
         case "trig2":
         case "trig3":
-			if (StantonSCS3d.state["S4hotcue"] != -1) {
-				engine.setValue("[Channel"+StantonSCS3d.deck+"]","hotcue_"+StantonSCS3d.state["S4hotcue"]+"_activate",0);
-				StantonSCS3d.state["S4hotcue"]=-1;
-			}
+            if (StantonSCS3d.state["S4hotcue"] != -1) {
+                engine.setValue("[Channel"+StantonSCS3d.deck+"]","hotcue_"+StantonSCS3d.state["S4hotcue"]+"_activate",0);
+                StantonSCS3d.state["S4hotcue"]=-1;
+            }
             //StantonSCS3d.S4buttonLights(channel,false,StantonSCS3d.triggerS4);
             StantonSCS3d.triggerS4 = 0xFF;
             break;
@@ -1416,7 +1451,7 @@ StantonSCS3d.SurfaceButton = function (channel, control, value, status) {
         switch (currentMode) {
             case "loop2":
             case "loop3":
-				midi.sendShortMsg(byte1,buttonLight,0x01); // Turn on button light
+                midi.sendShortMsg(byte1,buttonLight,0x01); // Turn on button light
                 // Multiple pitch points
 //                 if (StantonSCS3d.modifier[currentMode]==1) {    // Delete a pitch point if the mode button is held
 //                     StantonSCS3d.pitchPoints[index][button] = -0.1;
@@ -1440,7 +1475,7 @@ StantonSCS3d.SurfaceButton = function (channel, control, value, status) {
                 
                 if (StantonSCS3d.modifier[currentMode]==1) { // Delete a cue point
                     engine.setValue("[Channel"+StantonSCS3d.deck+"]","hotcue_"+StantonSCS3d.hotCues[index][control]+"_clear",1);
-					engine.setValue("[Channel"+StantonSCS3d.deck+"]","hotcue_"+StantonSCS3d.hotCues[index][control]+"_clear",0);
+                    engine.setValue("[Channel"+StantonSCS3d.deck+"]","hotcue_"+StantonSCS3d.hotCues[index][control]+"_clear",0);
                     break;
                 }
                 // If hotcue X is set, seeks the player to hotcue X's position.
@@ -1451,16 +1486,16 @@ StantonSCS3d.SurfaceButton = function (channel, control, value, status) {
         return;
     }
 
-	switch (currentMode) {
-		case "trig":
+    switch (currentMode) {
+        case "trig":
         case "trig2":
-		case "trig3":
-			engine.setValue("[Channel"+StantonSCS3d.deck+"]","hotcue_"+StantonSCS3d.hotCues[index][control]+"_activate",0);
-			break;
-		default:
-			midi.sendShortMsg(byte1,buttonLight,0x00); // Turn off activated button LED
-			break;
-	}
+        case "trig3":
+            engine.setValue("[Channel"+StantonSCS3d.deck+"]","hotcue_"+StantonSCS3d.hotCues[index][control]+"_activate",0);
+            break;
+        default:
+            midi.sendShortMsg(byte1,buttonLight,0x00); // Turn off activated button LED
+            break;
+    }
 }
 
 
@@ -1507,18 +1542,18 @@ StantonSCS3d.B14LED = function (value) {
 // ---- Hot cues ----
 
 StantonSCS3d.BsLED = function (value, button, activate) {
-	var light = button;
-	
-	if (activate) {
-		// Button-pressed (hot cue activated) LED
-		if (StantonSCS3d.markHotCues == "red") light = StantonSCS3d.buttonLEDs[button];
-	}
-	else {
-		// Hot cue set LED
-		if (StantonSCS3d.markHotCues != "red") light = StantonSCS3d.buttonLEDs[button];
-	}
+    var light = button;
+    
+    if (activate) {
+        // Button-pressed (hot cue activated) LED
+        if (StantonSCS3d.markHotCues == "red") light = StantonSCS3d.buttonLEDs[button];
+    }
+    else {
+        // Hot cue set LED
+        if (StantonSCS3d.markHotCues != "red") light = StantonSCS3d.buttonLEDs[button];
+    }
 
-	var byte1 = 0x90 + StantonSCS3d.channel;	
+    var byte1 = 0x90 + StantonSCS3d.channel;    
     if (value != 0) midi.sendShortMsg(byte1,light,0x01);
     else midi.sendShortMsg(byte1,light,0x00);
 }
