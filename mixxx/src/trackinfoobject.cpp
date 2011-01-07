@@ -144,6 +144,11 @@ void TrackInfoObject::initialize(bool parseHeader) {
 }
 
 TrackInfoObject::~TrackInfoObject() {
+    if ( m_pTrackBeats )
+    {
+        delete m_pTrackBeats;
+        m_pTrackBeats = NULL;
+    }
 }
 
 void TrackInfoObject::doSave() {
