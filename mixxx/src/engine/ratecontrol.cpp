@@ -256,7 +256,7 @@ void RateControl::slotControlRatePermDown(double)
     if (buttonRatePermDown->get())
     {
         m_pRateSlider->sub(m_pRateDir->get() * m_dPerm / (100. * m_pRateRange->get()));
-        m_dVinylTweakRate -= m_pRateDir->get() * m_dPerm / (500. * m_pRateRange->get());
+        m_dVinylTweakRate -= m_pRateDir->get() * m_dPerm / (100. * m_pRateRange->get());
     }
 }
 
@@ -266,7 +266,7 @@ void RateControl::slotControlRatePermDownSmall(double)
     if (buttonRatePermDownSmall->get())
     {
         m_pRateSlider->sub(m_pRateDir->get() * m_dPermSmall / (100. * m_pRateRange->get()));
-        m_dVinylTweakRate -= m_pRateDir->get() * m_dPermSmall / (500. * m_pRateRange->get());
+        m_dVinylTweakRate -= m_pRateDir->get() * m_dPermSmall / (100. * m_pRateRange->get());
     }
 }
 
@@ -276,7 +276,7 @@ void RateControl::slotControlRatePermUp(double)
     if (buttonRatePermUp->get())
     {
         m_pRateSlider->add(m_pRateDir->get() * m_dPerm / (100. * m_pRateRange->get()));
-        m_dVinylTweakRate += m_pRateDir->get() * m_dPerm / (500. * m_pRateRange->get());
+        m_dVinylTweakRate += m_pRateDir->get() * m_dPerm / (100. * m_pRateRange->get());
     }
 }
 
@@ -286,7 +286,7 @@ void RateControl::slotControlRatePermUpSmall(double)
     if (buttonRatePermUpSmall->get())
     {
         m_pRateSlider->add(m_pRateDir->get() * m_dPermSmall / (100. * m_pRateRange->get()));
-        m_dVinylTweakRate += m_pRateDir->get() * m_dPermSmall / (500. * m_pRateRange->get());
+        m_dVinylTweakRate += m_pRateDir->get() * m_dPermSmall / (100. * m_pRateRange->get());
     }
 }
 
@@ -432,7 +432,7 @@ double RateControl::calculateRate(double baserate, bool paused) {
         	if (m_pVinylMode->get() == MIXXX_VCMODE_ABSOLUTE)
         		rate = scratchFactor;
         	else
-        		rate = scratchFactor * (1.0 + m_dVinylTweakRate);
+        		rate = scratchFactor * (1.0 + (m_dVinylTweakRate/10.0));
         }
         else {
             // Deprecated old scratch behavior
