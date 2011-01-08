@@ -215,7 +215,7 @@ void TrackDAO::bindTrackToTrackLocationsInsert(QSqlQuery& query, TrackInfoObject
 
 void TrackDAO::prepareLibraryInsert(QSqlQuery& query) {
     query.prepare("INSERT INTO library (artist, title, album, year, genre, tracknumber, "
-                  "filetype, location, comment, url, duration, "
+                  "filetype, location, comment, url, duration, rating, key, "
                   "bitrate, samplerate, cuepoint, bpm, replaygain, wavesummaryhex, "
                   "timesplayed, "
                   "channels, mixxx_deleted, header_parsed) "
