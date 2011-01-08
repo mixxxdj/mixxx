@@ -548,7 +548,10 @@ void VinylControlXwax::disableRecordEndMode()
 	atRecordEnd = false;
 	//don't start a new track with constant mode
 	if (iVCMode == MIXXX_VCMODE_CONSTANT)
+	{
 		iVCMode = iOldMode;
+		mode->slotSet((double)iVCMode);
+	}
 }
 
 void VinylControlXwax::togglePlayButton(bool on)
