@@ -8,13 +8,13 @@ msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2010-10-28 15:35-0400\n"
-"PO-Revision-Date: 2010-12-28 05:21+0000\n"
+"PO-Revision-Date: 2011-01-07 23:06+0000\n"
 "Last-Translator: Fitoschido <Unknown>\n"
 "Language-Team: Spanish <es@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2010-12-29 04:37+0000\n"
+"X-Launchpad-Export-Date: 2011-01-08 04:39+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
 #: AutoDJFeature#1
@@ -365,7 +365,7 @@ msgstr "No se puede abrir el archivo %1"
 
 #: DlgPrefControls#1
 msgid "This skin does not support schemes"
-msgstr ""
+msgstr "Esta piel no permite esquemas"
 
 #: DlgPrefControls#2
 msgid "Up increases speed"
@@ -681,7 +681,7 @@ msgstr ""
 
 #: DlgPrefMidiBindingsDlg#14
 msgid "MIDI Output"
-msgstr ""
+msgstr "Salida MIDI"
 
 #: DlgPrefNoMidiDlg#1
 msgctxt "DlgPrefNoMidiDlg#1"
@@ -690,7 +690,7 @@ msgstr ""
 
 #: DlgPrefNoMidiDlg#2
 msgid "No MIDI devices available"
-msgstr ""
+msgstr "No hay dispositivos MIDI disponibles"
 
 #: DlgPrefPlaylist#1
 msgctxt "DlgPrefPlaylist#1"
@@ -782,7 +782,7 @@ msgstr "Disponible en línea..."
 
 #: DlgPrefPlaylistDlg#13
 msgid "Bundled Songs"
-msgstr ""
+msgstr "Canciones incluidas"
 
 #: DlgPrefPlaylistDlg#14
 msgid ""
@@ -923,7 +923,7 @@ msgstr "Contraseña"
 
 #: DlgPrefShoutcastDlg#17
 msgid "test1234"
-msgstr ""
+msgstr "test1234"
 
 #: DlgPrefShoutcastDlg#18
 msgid "Stream settings"
@@ -1437,11 +1437,11 @@ msgstr "Editor de pistas"
 
 #: DlgTrackInfo#2
 msgid "Song:"
-msgstr ""
+msgstr "Canción:"
 
 #: DlgTrackInfo#3
 msgid "Title:"
-msgstr "Titulo:"
+msgstr "Título:"
 
 #: DlgTrackInfo#4
 msgid "Artist:"
@@ -1662,7 +1662,7 @@ msgstr "Error crítico"
 
 #: ErrorDialogHandler#3
 msgid "Warning"
-msgstr "Advertencia"
+msgstr "Aviso"
 
 #: ErrorDialogHandler#4
 msgctxt "ErrorDialogHandler#4"
