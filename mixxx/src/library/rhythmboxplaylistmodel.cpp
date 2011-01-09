@@ -1,99 +1,103 @@
-/***************************************************************************
-                           rhythmboxPlaylistsource.cpp
-                              -------------------
-     begin                : 8/17/2009
-     copyright            : (C) 2009 Phillip Whelan
-     email                : pwhelan@mixxx.org
-***************************************************************************/
-
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
-
 #include <QtCore>
 #include <QtGui>
 #include <QtSql>
-#include <QtDebug>
-#include <QtXmlPatterns/QXmlQuery>
-
-#include "library/rhythmboxtrackmodel.h"
+#include "library/trackcollection.h"
 #include "library/rhythmboxplaylistmodel.h"
-#include "xmlparse.h"
-#include "trackinfoobject.h"
-#include "defs.h"
 
 #include "mixxxutils.cpp"
 
-RhythmboxPlaylistModel::RhythmboxPlaylistModel(RhythmboxTrackModel *Rhythhmbox) :
-        TrackModel(QSqlDatabase::database("QSQLITE"),
-                   "mixxx.db.model.rhythmbox_playlist"),
-        m_pRhythmbox(Rhythhmbox),
-        m_sCurrentPlaylist("") {
-    int idx = 0;
-    QDomDocument rhythmplaylistdb;
-    QXmlQuery query;
-    QString res;
-
-    QFile db(MIXXX_RHYTHMBOX_DB_LOCATION);
-    if ( ! db.exists()) {
-        db.setFileName(MIXXX_RHYTHMBOX_DB_LOCATION_ALT);
-        if ( ! db.exists())
-            return;
-    }
-
-    if (!db.open(QIODevice::ReadOnly | QIODevice::Text))
-        return;
-
-    /*
-     * Use QXmlQuery to execute an XPath query. We add the version to
-     * the XPath query to make sure it is the schema we expect.
-     */
-    query.setFocus(&db);
-    query.setQuery("rhythmdb-playlists/playlist[@type='static']");
-    if ( ! query.isValid())
-        return;
-
-    query.evaluateTo(&res);
-    db.close();
-
-    rhythmplaylistdb.setContent("<rhythmdb-playlists>" + res + "</rhythmdb-playlists>");
-    m_playlistNodes = rhythmplaylistdb.elementsByTagName("playlist");
-
-
-    /* Add Playlists to the internal playlist map */
-    while (( idx < m_playlistNodes.count())) {
-        QDomNode n = m_playlistNodes.item(idx);
-        QDomElement e = n.toElement();
-
-        qDebug() << "Adding Rhythmbox Playlist" << e.attribute("name");
-        QString playlist = e.attribute("name");
-
-        m_mPlaylists[playlist] = n.childNodes();
-        m_sCurrentPlaylist = playlist;
-
-        idx++;
-    }
+RhythmboxPlaylistModel::RhythmboxPlaylistModel(QObject* parent,
+                                         TrackCollection* pTrackCollection)
+        : TrackModel(pTrackCollection->getDatabase(),
+                     "mixxx.db.model.rhythmbox_playlist"),
+          BaseSqlTableModel(parent, pTrackCollection, pTrackCollection->getDatabase()),
+          m_pTrackCollection(pTrackCollection),
+          m_database(m_pTrackCollection->getDatabase())
+{
+    connect(this, SIGNAL(doSearch(const QString&)), this, SLOT(slotSearch(const QString&)));
 }
 
-RhythmboxPlaylistModel::~RhythmboxPlaylistModel()
-{
+RhythmboxPlaylistModel::~RhythmboxPlaylistModel() {
 }
 
-Qt::ItemFlags RhythmboxPlaylistModel::flags ( const QModelIndex & index ) const
+bool RhythmboxPlaylistModel::addTrack(const QModelIndex& index, QString location)
 {
-    Qt::ItemFlags defaultFlags = QAbstractTableModel::flags(index);
 
-    if (!index.isValid())
-        return Qt::ItemIsEnabled;
+    return false;
+}
 
-    defaultFlags |= Qt::ItemIsDragEnabled;
+TrackPointer RhythmboxPlaylistModel::getTrack(const QModelIndex& index) const
+{
+    QString artist = index.sibling(index.row(), fieldIndex("artist")).data().toString();
+    QString title = index.sibling(index.row(), fieldIndex("title")).data().toString();
+    QString album = index.sibling(index.row(), fieldIndex("album")).data().toString();
+    QString year = index.sibling(index.row(), fieldIndex("year")).data().toString();
+    QString genre = index.sibling(index.row(), fieldIndex("genre")).data().toString();
+    float bpm = index.sibling(index.row(), fieldIndex("bpm")).data().toString().toFloat();
 
-    return defaultFlags;
+    QString location = index.sibling(index.row(), fieldIndex("location")).data().toString();
+
+    TrackInfoObject* pTrack = new TrackInfoObject(location);
+    pTrack->setArtist(artist);
+    pTrack->setTitle(title);
+    pTrack->setAlbum(album);
+    pTrack->setYear(year);
+    pTrack->setGenre(genre);
+    pTrack->setBpm(bpm);
+
+    return TrackPointer(pTrack, &QObject::deleteLater);
+}
+
+QString RhythmboxPlaylistModel::getTrackLocation(const QModelIndex& index) const {
+    QString location = index.sibling(index.row(), fieldIndex("location")).data().toString();
+    return location;
+}
+
+void RhythmboxPlaylistModel::removeTrack(const QModelIndex& index) {
+
+}
+
+void RhythmboxPlaylistModel::removeTracks(const QModelIndexList& indices) {
+
+}
+
+void RhythmboxPlaylistModel::moveTrack(const QModelIndex& sourceIndex, const QModelIndex& destIndex) {
+
+}
+
+void RhythmboxPlaylistModel::search(const QString& searchText) {
+    // qDebug() << "RhythmboxPlaylistModel::search()" << searchText
+    //          << QThread::currentThread();
+    emit(doSearch(searchText));
+}
+
+void RhythmboxPlaylistModel::slotSearch(const QString& searchText) {
+    if (!m_currentSearch.isNull() && m_currentSearch == searchText)
+        return;
+    m_currentSearch = searchText;
+
+    QString filter;
+    QSqlField search("search", QVariant::String);
+    search.setValue("%" + searchText + "%");
+    QString escapedText = database().driver()->formatValue(search);
+    filter = "(artist LIKE " + escapedText + " OR " +
+            "album LIKE " + escapedText + " OR " +
+            "title  LIKE " + escapedText + ")";
+    setFilter(filter);
+}
+
+const QString RhythmboxPlaylistModel::currentSearch() {
+    return m_currentSearch;
+}
+
+bool RhythmboxPlaylistModel::isColumnInternal(int column) {
+    if (column == fieldIndex(LIBRARYTABLE_ID) ||
+        column == fieldIndex(LIBRARYTABLE_MIXXXDELETED) ||
+        column == fieldIndex(TRACKLOCATIONSTABLE_FSDELETED) ||
+        column == fieldIndex("name") ||
+        column == fieldIndex("track_id"))
+        return true;
+    return false;
 }
 
 QMimeData* RhythmboxPlaylistModel::mimeData(const QModelIndexList &indexes) const {
@@ -122,173 +126,83 @@ QMimeData* RhythmboxPlaylistModel::mimeData(const QModelIndexList &indexes) cons
 }
 
 
-QVariant RhythmboxPlaylistModel::data ( const QModelIndex & index, int role ) const
-{
-    if ( m_sCurrentPlaylist == "" )
-        return QVariant();
-
-    if (!index.isValid())
-        return QVariant();
-
-    // OwenB - attempting to make this more efficient, don't create a new
-    // TIO for every row
-	  if (role == Qt::DisplayRole || role == Qt::ToolTipRole) {
-		  // get location string from playlist
-        QString location = getTrackLocation(index);
-
-          // use this to get DOM node from RhythmboxTrackModel
-       QDomNode songNode = m_pRhythmbox->getTrackNodeByLocation(location);
-
-          // return the node's data item that was asked for.
-        return m_pRhythmbox->getTrackColumnData(songNode, index);
-    }
-
-    return QVariant();
-}
-
-bool RhythmboxPlaylistModel::isColumnInternal(int column) {
-    return false;
-}
-bool RhythmboxPlaylistModel::isColumnHiddenByDefault(int column) {
-    return false;
-}
-
-
-QVariant RhythmboxPlaylistModel::headerData ( int section, Qt::Orientation orientation, int role ) const
-{
-    /* Only respond to requests for column header display names */
-    if ( role != Qt::DisplayRole )
-        return QVariant();
-
-    if (orientation == Qt::Horizontal)
-    {
-        switch (section)
-        {
-            case RhythmboxPlaylistModel::COLUMN_ARTIST:
-                return QString(tr("Artist"));
-
-            case RhythmboxPlaylistModel::COLUMN_TITLE:
-                return QString(tr("Title"));
-
-            case RhythmboxPlaylistModel::COLUMN_ALBUM:
-                return QString(tr("Album"));
-
-            case RhythmboxPlaylistModel::COLUMN_DATE:
-                return QString(tr("Year"));
-
-            case RhythmboxPlaylistModel::COLUMN_GENRE:
-                return QString(tr("Genre"));
-
-            case RhythmboxPlaylistModel::COLUMN_LOCATION:
-                return QString(tr("Location"));
-
-            case RhythmboxPlaylistModel::COLUMN_DURATION:
-                return QString(tr("Duration"));
-
-            default:
-                return QString(tr("Unknown"));
-        }
-    }
-
-    return QVariant();
-}
-
-int RhythmboxPlaylistModel::rowCount ( const QModelIndex & parent ) const
-{
-    // FIXME
-    //if ( !m_mPlaylists.containts(m_sCurrentPlaylist))
-    //    return 0;
-
-    if ( m_sCurrentPlaylist == "" )
-        return 0;
-
-    return m_mPlaylists[m_sCurrentPlaylist].size();
-}
-
-int RhythmboxPlaylistModel::columnCount(const QModelIndex& parent) const
-{
-    if (parent != QModelIndex()) //Some weird thing for table-based models.
-        return 0;
-    return RhythmboxPlaylistModel::NUM_COLUMNS;
-}
-
-bool RhythmboxPlaylistModel::addTrack(const QModelIndex& index, QString location)
-{
-    //Should do nothing... hmmm
-    return false;
-}
-
-/** Removes a track from the library track collection. */
-void RhythmboxPlaylistModel::removeTrack(const QModelIndex& index)
-{
-    //Should do nothing... hmmm
-}
-
-void RhythmboxPlaylistModel::removeTracks(const QModelIndexList& indices)
-{
-    //Should do nothing... hmmm
-}
-
-void RhythmboxPlaylistModel::moveTrack(const QModelIndex& sourceIndex, const QModelIndex& destIndex)
-{
-    //Should do nothing... hmmm
-}
-
-
-
-QString RhythmboxPlaylistModel::getTrackLocation(const QModelIndex& index) const
-{
-    QDomNodeList playlistTrackList = m_mPlaylists[m_sCurrentPlaylist];
-    QDomNode pnode = playlistTrackList.at(index.row());
-    QString location = pnode.toElement().text();
-
-    return location;
-}
-
-TrackPointer RhythmboxPlaylistModel::getTrack(const QModelIndex& index) const
-{
-    QString location = getTrackLocation(index);
-
-    return m_pRhythmbox->getTrackByLocation(location);
-}
-
 QItemDelegate* RhythmboxPlaylistModel::delegateForColumn(const int i) {
     return NULL;
 }
 
-QList<QString> RhythmboxPlaylistModel::getPlaylists()
-{
-    return m_mPlaylists.keys();
+TrackModel::CapabilitiesFlags RhythmboxPlaylistModel::getCapabilities() const {
+    return NULL;
 }
 
-int RhythmboxPlaylistModel::numPlaylists() {
-    return m_mPlaylists.size();
+Qt::ItemFlags RhythmboxPlaylistModel::flags(const QModelIndex &index) const {
+    return readOnlyFlags(index);
 }
 
-QString RhythmboxPlaylistModel::playlistTitle(int n) {
-    return m_mPlaylists.keys().at(n);
-}
+void RhythmboxPlaylistModel::setPlaylist(QString playlist_path) {
+    int playlistId = -1;
+    QSqlQuery finder_query(m_database);
+    finder_query.prepare("SELECT id from rhythmbox_playlists where name='"+playlist_path+"'");
 
-void RhythmboxPlaylistModel::setPlaylist(QString playlist)
-{
-    if ( m_mPlaylists.contains(playlist))
-        m_sCurrentPlaylist = playlist;
+    if(finder_query.exec()){
+        while (finder_query.next()) {
+            playlistId = finder_query.value(finder_query.record().indexOf("id")).toInt();
+        }
+    }
     else
-        m_sCurrentPlaylist = "";
+        qDebug() << "SQL Error in RhythmboxPlaylistModel.cpp: line" << __LINE__ << " " << finder_query.lastError();
 
-    // force the layout to update
-    emit(layoutChanged());
+
+    QString playlistID = "ITunesPlaylist_" + QString("%1").arg(playlistId);
+    //Escape the playlist name
+    QSqlDriver* driver = m_pTrackCollection->getDatabase().driver();
+    QSqlField playlistNameField("name", QVariant::String);
+    playlistNameField.setValue(playlistID);
+
+    QSqlQuery query(m_database);
+    query.prepare("CREATE TEMPORARY VIEW IF NOT EXISTS "+ driver->formatValue(playlistNameField) + " AS "
+                  "SELECT "
+                  "rhythmbox_library.id,"
+                  "rhythmbox_library.artist,"
+                  "rhythmbox_library.title,"
+                  "rhythmbox_library.album,"
+                  "rhythmbox_library.year,"
+                  "rhythmbox_library.genre,"
+                  "rhythmbox_library.tracknumber,"
+                  "rhythmbox_library.location,"
+                  "rhythmbox_library.comment,"
+                  "rhythmbox_library.rating,"
+                  "rhythmbox_library.duration,"
+                  "rhythmbox_library.bitrate,"
+                  "rhythmbox_library.bpm,"
+                  "rhythmbox_playlist_tracks.track_id, "
+                  "rhythmbox_playlists.name "
+                  "FROM rhythmbox_library "
+                  "INNER JOIN rhythmbox_playlist_tracks "
+                  "ON rhythmbox_playlist_tracks.track_id = itunes_library.id "
+                  "INNER JOIN rhythmbox_playlists "
+                  "ON rhythmbox_playlist_tracks.playlist_id = rhythmbox_playlists.id "
+                  "where rhythmbox_playlists.name='"+playlist_path+"'"
+                  );
+
+
+    if (!query.exec()) {
+
+        qDebug() << "Error creating temporary view for itunes playlists. RhythmboxPlaylistModel --> line: " << __LINE__ << " " << query.lastError();
+        qDebug() << "Executed Query: " <<  query.executedQuery();
+        return;
+    }
+    setTable(playlistID);
+
+    //removeColumn(fieldIndex("track_id"));
+    //removeColumn(fieldIndex("name"));
+    //removeColumn(fieldIndex("id"));
+
+    slotSearch("");
+
+    select(); //Populate the data model.
+    initHeaderData();
 }
 
-void RhythmboxPlaylistModel::search(const QString& searchText)
-{
-    m_currentSearch = searchText;
-}
-
-const QString RhythmboxPlaylistModel::currentSearch() {
-    return m_currentSearch;
-}
-
-const QList<int>& RhythmboxPlaylistModel::searchColumns() const {
-    return m_pRhythmbox->searchColumns();
+bool RhythmboxPlaylistModel::isColumnHiddenByDefault(int column) {
+    return false;
 }

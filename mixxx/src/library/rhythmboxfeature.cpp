@@ -8,14 +8,14 @@
 #include "library/rhythmboxfeature.h"
 #include "treeitem.h"
 
-RhythmboxFeature::RhythmboxFeature(QObject* parent)
-    : LibraryFeature(parent) {
+RhythmboxFeature::RhythmboxFeature(QObject* parent, TrackCollection* pTrackCollection)
+    : LibraryFeature(parent),
+      m_pTrackCollection(pTrackCollection),
+      m_database(m_pTrackCollection->getDatabase()) {
 
-    m_pRhythmboxTrackModel = NULL;
-    m_pTrackModelProxy = NULL;
-    m_pRhythmboxPlaylistModel = NULL;
-    m_pPlaylistModelProxy = NULL;
-
+    m_pRhythmboxTrackModel = new RhythmboxTrackModel(this, m_pTrackCollection);
+    m_pRhythmboxPlaylistModel = new RhythmboxPlaylistModel(this, m_pTrackCollection);
+    m_isActivated =  false;
 }
 
 RhythmboxFeature::~RhythmboxFeature() {
@@ -23,8 +23,8 @@ RhythmboxFeature::~RhythmboxFeature() {
 }
 
 bool RhythmboxFeature::isSupported() {
-    return (QFile::exists(MIXXX_RHYTHMBOX_DB_LOCATION) ||
-            QFile::exists(MIXXX_RHYTHMBOX_DB_LOCATION_ALT));
+    return (QFile::exists(QDir::homePath() + "/.gnome2/rhythmbox/rhythmdb.xml") ||
+            QFile::exists(QDir::homePath() + "/.local/share/rhythmbox/rhythmdb.xml"));
 }
 
 QVariant RhythmboxFeature::title() {
@@ -40,9 +40,9 @@ TreeItemModel* RhythmboxFeature::getChildModel() {
 }
 
 void RhythmboxFeature::activate() {
-    //qDebug("RhythmboxFeature::activate()");
-
-    if (!m_pRhythmboxTrackModel) {
+     qDebug() << "RhythmboxFeature::activate()";
+    
+    if(!m_isActivated){
         if (QMessageBox::question(
             NULL,
             tr("Load Rhythmbox Library?"),
@@ -52,27 +52,10 @@ void RhythmboxFeature::activate() {
             == QMessageBox::Cancel) {
             return;
         }
-
-        m_pRhythmboxTrackModel = new RhythmboxTrackModel();
-        m_pTrackModelProxy = new ProxyTrackModel(m_pRhythmboxTrackModel);
-        m_pTrackModelProxy->setFilterCaseSensitivity(Qt::CaseInsensitive);
-        m_pTrackModelProxy->setSortCaseSensitivity(Qt::CaseInsensitive);
-
-        m_pRhythmboxPlaylistModel = new RhythmboxPlaylistModel(m_pRhythmboxTrackModel);
-        m_pPlaylistModelProxy = new ProxyTrackModel(m_pRhythmboxPlaylistModel);
-        m_pPlaylistModelProxy->setFilterCaseSensitivity(Qt::CaseInsensitive);
-        m_pPlaylistModelProxy->setSortCaseSensitivity(Qt::CaseInsensitive);
-
-        TreeItem *rootItem = new TreeItem("$root","$root", this);
-        for (int i = 0; i < m_pRhythmboxPlaylistModel->numPlaylists(); ++i) {
-            QString playlist_name = m_pRhythmboxPlaylistModel->playlistTitle(i);
-            TreeItem *item = new TreeItem(playlist_name, playlist_name, this,rootItem);
-            
-            rootItem->appendChild(item);
-        }
-        m_childModel.setRootItem(rootItem);
+        if(importMusicCollection() && importPlaylists())
+            m_isActivated =  true;
     }
-    emit(showTrackModel(m_pTrackModelProxy));
+    emit(showTrackModel(m_pRhythmboxTrackModel));
 }
 
 void RhythmboxFeature::activateChild(const QModelIndex& index) {
@@ -80,7 +63,7 @@ void RhythmboxFeature::activateChild(const QModelIndex& index) {
     QString playlist = index.data().toString();
     qDebug() << "Activating " << playlist;
     m_pRhythmboxPlaylistModel->setPlaylist(playlist);
-    emit(showTrackModel(m_pPlaylistModelProxy));
+    emit(showTrackModel(m_pRhythmboxPlaylistModel));
 }
 
 void RhythmboxFeature::onRightClick(const QPoint& globalPos) {
@@ -104,5 +87,32 @@ bool RhythmboxFeature::dragMoveAccept(QUrl url) {
 bool RhythmboxFeature::dragMoveAcceptChild(const QModelIndex& index, QUrl url) {
     return false;
 }
+bool RhythmboxFeature::importMusicCollection()
+{
+    /*
+     * Try and open the Rhythmbox DB. An API call which tells us where
+     * the file is would be nice.
+     */
+    QFile db(QDir::homePath() + "/.gnome2/rhythmbox/rhythmdb.xml");
+    if ( ! db.exists()) {
+        db.setFileName(QDir::homePath() + "/.local/share/rhythmbox/rhythmdb.xml");
+        if ( ! db.exists())
+            return false;
+    }
 
+    if (!db.open(QIODevice::ReadOnly | QIODevice::Text))
+        return false;
+
+    return true;
+
+}
+bool RhythmboxFeature::importPlaylists()
+{
+    QFile db(QDir::homePath() + "/.gnome2/rhythmbox/playlists.xml");
+    if ( ! db.exists()) {
+        db.setFileName(QDir::homePath() + "/.local/share/rhythmbox/playlists.xml");
+        if ( ! db.exists())
+            return false;
+    }
+}
 

@@ -5,18 +5,21 @@
 #define RHYTHMBOXFEATURE_H
 
 #include <QStringListModel>
+#include <QtSql>
+#include <QXmlStreamReader>
 
 #include "library/libraryfeature.h"
 #include "treeitemmodel.h"
+#include "library/rhythmboxtrackmodel.h"
+#include "library/rhythmboxplaylistmodel.h"
+#include "library/trackcollection.h"
 
-class RhythmboxPlaylistModel;
-class RhythmboxTrackModel;
-class ProxyTrackModel;
+
 
 class RhythmboxFeature : public LibraryFeature {
  Q_OBJECT
  public:
-    RhythmboxFeature(QObject* parent = NULL);
+    RhythmboxFeature(QObject* parent, TrackCollection*);
     virtual ~RhythmboxFeature();
     static bool isSupported();
 
@@ -29,6 +32,8 @@ class RhythmboxFeature : public LibraryFeature {
     bool dragMoveAcceptChild(const QModelIndex& index, QUrl url);
 
     TreeItemModel* getChildModel();
+    bool importMusicCollection();
+    bool importPlaylists();
 
 public slots:
     void activate();
@@ -39,8 +44,10 @@ public slots:
 private:
     RhythmboxTrackModel* m_pRhythmboxTrackModel;
     RhythmboxPlaylistModel* m_pRhythmboxPlaylistModel;
-    ProxyTrackModel* m_pTrackModelProxy;
-    ProxyTrackModel* m_pPlaylistModelProxy;
+    TrackCollection* m_pTrackCollection;
+    QSqlDatabase &m_database;
+    bool m_isActivated;
+    
     TreeItemModel m_childModel;
 };
 

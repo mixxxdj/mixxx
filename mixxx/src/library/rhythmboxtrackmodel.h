@@ -2,7 +2,7 @@
                            rhythmboxtracksource.h
                               -------------------
      begin                : 8/15/2009
-     copyright            : (C) 2009 Albert Santoni
+     copyright            : (C) 2011 Tobias Rafreider
      email                : alberts@mixxx.org
 ***************************************************************************/
 
@@ -18,55 +18,52 @@
 #ifndef RHYTHMBOXTRACKMODEL_H
 #define RHYTHMBOXTRACKMODEL_H
 
+
 #include <QtSql>
-#include <QtXml>
+#include <QItemDelegate>
+#include <QtCore>
 #include "trackmodel.h"
-#include "abstractxmltrackmodel.h"
+#include "library/basesqltablemodel.h"
+#include "library/librarytablemodel.h"
+#include "library/dao/playlistdao.h"
+#include "library/dao/trackdao.h"
 
+class TrackCollection;
 
-class QSqlDatabase;
-
-
-/**
-   @author Albert Santoni
-*/
-class RhythmboxTrackModel : public AbstractXmlTrackModel
+class RhythmboxTrackModel : public BaseSqlTableModel, public virtual TrackModel
 {
-    enum Columns {
-        COLUMN_ARTIST = 0,
-        COLUMN_TITLE,
-        COLUMN_ALBUM,
-        COLUMN_DATE,
-        COLUMN_GENRE,
-        COLUMN_LOCATION,
-        COLUMN_DURATION,
-        NUM_COLUMNS
-    };
-
     Q_OBJECT
-public:
-    RhythmboxTrackModel();
+  public:
+    RhythmboxTrackModel(QObject* parent, TrackCollection* pTrackCollection);
     virtual ~RhythmboxTrackModel();
-    virtual QItemDelegate* delegateForColumn(const int i);
+
+    virtual TrackPointer getTrack(const QModelIndex& index) const;
+    virtual QString getTrackLocation(const QModelIndex& index) const;
+    virtual void search(const QString& searchText);
+    virtual const QString currentSearch();
     virtual bool isColumnInternal(int column);
     virtual bool isColumnHiddenByDefault(int column);
-    virtual QVariant data(const QModelIndex& item, int role) const;
-    QDomNode getTrackNodeByLocation(const QString& ) const;
+    virtual void removeTrack(const QModelIndex& index);
+    virtual void removeTracks(const QModelIndexList& indices);
+    virtual bool addTrack(const QModelIndex& index, QString location);
+    virtual void moveTrack(const QModelIndex& sourceIndex, const QModelIndex& destIndex);
 
-protected:
-    virtual TrackPointer parseTrackNode(QDomNode node) const;
-    /* Implemented by AbstractXmlTrackModel implementations to return the data for song columns */
-    virtual QVariant getTrackColumnData(QDomNode node, const QModelIndex& index) const;
-    /* Called by AbstractXmlTrackModel implementations to enumerate their columns */
+    virtual Qt::ItemFlags flags(const QModelIndex &index) const;
+    QMimeData* mimeData(const QModelIndexList &indexes) const;
 
-public slots:
+    QItemDelegate* delegateForColumn(const int i);
+    TrackModel::CapabilitiesFlags getCapabilities() const;
 
-signals:
- 	void startedLoading();
- 	void progressLoading(QString path);
- 	void finishedLoading();
+  private slots:
+    void slotSearch(const QString& searchText);
 
- 	friend class RhythmboxPlaylistModel;
+  signals:
+    void doSearch(const QString& searchText);
+
+  private:
+    TrackCollection* m_pTrackCollection;
+    QSqlDatabase &m_database;
+    QString m_currentSearch;
 };
 
 #endif

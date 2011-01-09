@@ -1,9 +1,9 @@
 /***************************************************************************
                            rhythmboxPlaylistsource.h
                               -------------------
-     begin                : 8/17/2009
-     copyright            : (C) 2009 Phillip Whelan
-     email                : pwhelan@mixxx.org
+     begin                : 01/09/2011
+     copyright            : (C) 2011 Tobias Rafreider
+     
 ***************************************************************************/
 
 /***************************************************************************
@@ -19,93 +19,51 @@
 #define RHYTHMBOXPLAYLISTMODEL_H
 
 #include <QtSql>
-#include <QtXml>
-#include <QList>
-
+#include <QItemDelegate>
+#include <QtCore>
 #include "trackmodel.h"
-#include "rhythmboxtrackmodel.h"
+#include "library/basesqltablemodel.h"
+#include "library/librarytablemodel.h"
+#include "library/dao/playlistdao.h"
+#include "library/dao/trackdao.h"
 
+class TrackCollection;
 
-#define MIXXX_RHYTHMBOX_DB_LOCATION QDir::homePath() + "/.gnome2/rhythmbox/playlists.xml"
-#define MIXXX_RHYTHMBOX_DB_LOCATION_ALT QDir::homePath() + "/.local/share/rhythmbox/playlists.xml"
-
-/**
-   @author Phillip Whelan
-   Code copied originally from RhythmBoxTrackModel
-*/
-class RhythmboxPlaylistModel : public QAbstractTableModel, public TrackModel
+class RhythmboxPlaylistModel : public BaseSqlTableModel, public virtual TrackModel
 {
-    enum Columns {
-        COLUMN_ARTIST = 0,
-        COLUMN_TITLE,
-        COLUMN_ALBUM,
-        COLUMN_DATE,
-        COLUMN_GENRE,
-        COLUMN_LOCATION,
-        COLUMN_DURATION,
-        NUM_COLUMNS
-    };
-
     Q_OBJECT
-    public:
-    RhythmboxPlaylistModel(RhythmboxTrackModel*);
+  public:
+    RhythmboxPlaylistModel(QObject* parent, TrackCollection* pTrackCollection);
     virtual ~RhythmboxPlaylistModel();
 
-    //QAbstractTableModel stuff
-    virtual Qt::ItemFlags flags(const QModelIndex& index) const;
-    QMimeData* mimeData(const QModelIndexList &indexes) const;
-    virtual QVariant data(const QModelIndex & index,
-                          int role = Qt::DisplayRole) const;
-    virtual QVariant headerData(int section,
-                                Qt::Orientation orientation,
-                                int role = Qt::DisplayRole) const;
-    virtual int rowCount(const QModelIndex& parent = QModelIndex()) const;
-    virtual int columnCount(const QModelIndex& parent) const;
-
-    //Playlist Model stuff
     virtual TrackPointer getTrack(const QModelIndex& index) const;
     virtual QString getTrackLocation(const QModelIndex& index) const;
     virtual void search(const QString& searchText);
     virtual const QString currentSearch();
-    virtual const QList<int>& searchColumns() const;
     virtual bool isColumnInternal(int column);
     virtual bool isColumnHiddenByDefault(int column);
     virtual void removeTrack(const QModelIndex& index);
     virtual void removeTracks(const QModelIndexList& indices);
     virtual bool addTrack(const QModelIndex& index, QString location);
-    virtual void moveTrack(const QModelIndex& sourceIndex,
-                           const QModelIndex& destIndex);
+    virtual void moveTrack(const QModelIndex& sourceIndex, const QModelIndex& destIndex);
+
+    virtual Qt::ItemFlags flags(const QModelIndex &index) const;
+    QMimeData* mimeData(const QModelIndexList &indexes) const;
+
     QItemDelegate* delegateForColumn(const int i);
+    TrackModel::CapabilitiesFlags getCapabilities() const;
+    /** sets the playlist **/
+    void setPlaylist(QString path_name);
 
-    virtual QList<QString> getPlaylists();
-    virtual void setPlaylist(QString playlist);
-
-    int numPlaylists();
-    QString playlistTitle(int n);
-
-
-/*
- 	void scanPath(QString path);
- 	bool trackExistsInDatabase(QString file_location);
-
- 	QList<TrackInfoObject*> dumpDB();
-
- 	QSqlDatabase getDatabase();
- */
-  public slots:
-
+  private slots:
+    void slotSearch(const QString& searchText);
 
   signals:
-    void startedLoading();
-    void progressLoading(QString path);
-    void finishedLoading();
+    void doSearch(const QString& searchText);
 
-private:
-    QDomNodeList m_playlistNodes;
-    RhythmboxTrackModel *m_pRhythmbox;
-    QMap<QString, QDomNodeList> m_mPlaylists;
-    QString m_sCurrentPlaylist;
+  private:
+    TrackCollection* m_pTrackCollection;
+    QSqlDatabase &m_database;
     QString m_currentSearch;
 };
-
 #endif
