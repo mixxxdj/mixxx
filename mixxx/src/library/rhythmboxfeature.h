@@ -56,7 +56,7 @@ private:
     /** reads the properties of a track and executes a SQL statement **/
     void importTrack(QXmlStreamReader &xml, QSqlQuery &query);
     /** reads all playlist entries and executes a SQL statement **/
-    void importPlaylist(QXmlStreamReader &xml, QSqlQuery &query);
+    void importPlaylist(QXmlStreamReader &xml, QSqlQuery &query, int playlist_id);
 };
 
 #endif /* RHYTHMBOXFEATURE_H */
