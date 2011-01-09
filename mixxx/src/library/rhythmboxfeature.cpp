@@ -18,7 +18,8 @@ RhythmboxFeature::RhythmboxFeature(QObject* parent, TrackCollection* pTrackColle
 }
 
 RhythmboxFeature::~RhythmboxFeature() {
-
+    delete m_pRhythmboxTrackModel;
+    delete m_pRhythmboxPlaylistModel;
 }
 
 bool RhythmboxFeature::isSupported() {
@@ -121,7 +122,6 @@ bool RhythmboxFeature::importMusicCollection()
     
     
     QXmlStreamReader xml(&db);
-    bool inEntryTag = false;
     while (!xml.atEnd()) {
         xml.readNext();
         if (xml.isStartElement() && xml.name() == "entry") {
@@ -153,9 +153,64 @@ bool RhythmboxFeature::importPlaylists()
     QFile db(QDir::homePath() + "/.gnome2/rhythmbox/playlists.xml");
     if ( ! db.exists()) {
         db.setFileName(QDir::homePath() + "/.local/share/rhythmbox/playlists.xml");
-        if ( ! db.exists())
+        if (!db.exists())
             return false;
     }
+    //Open file
+     if (!db.open(QIODevice::ReadOnly | QIODevice::Text))
+        return false;
+    
+    QSqlQuery query_insert_to_playlists(m_database);
+    query_insert_to_playlists.prepare("INSERT INTO rhythmbox_playlists (id, name) "
+                                      "VALUES (:id, :name)");
+
+    QSqlQuery query_insert_to_playlist_tracks(m_database);
+    query_insert_to_playlist_tracks.prepare("INSERT INTO rhythmbox_playlist_tracks (playlist_id, track_id) "
+                                            "VALUES (:playlist_id, :track_id)");
+    //The tree structure holding the playlists
+    TreeItem *rootItem = new TreeItem("$root","$root", this);
+                                            
+    QXmlStreamReader xml(&db);
+    while (!xml.atEnd()) {
+        xml.readNext();
+        if (xml.isStartElement() && xml.name() == "playlist") {
+            QXmlStreamAttributes attr = xml.attributes();
+            
+            //Only parse non build-in playlists
+            if(attr.value("type").toString() == "static"){
+                QString playlist_name = attr.value("name").toString();
+                
+                //Construct the childmodel
+                TreeItem * item = new TreeItem(playlist_name,playlist_name, this, rootItem);
+                rootItem->appendChild(item);
+                
+                //Execute SQL statement
+                query_insert_to_playlists.bindValue(":name", playlist_name);
+                
+                bool success = query_insert_to_playlists.exec();
+                if(!success){
+                    qDebug() << "SQL Error in RhythmboxFeature.cpp: line" << __LINE__ << " " 
+                                    << query_insert_to_playlists.lastError();
+                    return false;
+                }
+                //Process playlist entries
+                //importPlaylist(xml, query_insert_to_playlist_tracks);
+                
+            }
+        }
+    }
+    
+    m_database.commit();
+    m_childModel.setRootItem(rootItem);
+   
+    if (xml.hasError()) {
+        // do error handling
+        qDebug() << "Cannot process Rhythmbox music collection";
+        qDebug() << "XML ERROR: " << xml.errorString();
+        return false;
+    }
+    db.close();                                        
+                                            
 }
 void RhythmboxFeature::importTrack(QXmlStreamReader &xml, QSqlQuery &query)
 {

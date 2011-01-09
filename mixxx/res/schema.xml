@@ -247,13 +247,13 @@ METADATA
         rating integer
         );
       CREATE TABLE IF NOT EXISTS rhythmbox_playlists (
-        id INTEGER primary key,
+        id INTEGER primary key AUTOINCREMENT,
         name varchar(100) UNIQUE
         );
       CREATE TABLE IF NOT EXISTS rhythmbox_playlist_tracks (
         id INTEGER primary key AUTOINCREMENT,
-        playlist_id INTEGER REFERENCES traktor_playlist(id),
-        track_id INTEGER REFERENCES traktor_library(id)
+        playlist_id INTEGER REFERENCES rhythmbox_playlist(id),
+        track_id INTEGER REFERENCES rhythmbox_library(id)
         );
     </sql>
   </revision>
