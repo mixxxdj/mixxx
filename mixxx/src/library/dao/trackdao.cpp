@@ -19,6 +19,9 @@ TrackDAO::TrackDAO(QSqlDatabase& database, CueDAO& cueDao, ConfigObject<ConfigVa
           m_pConfig(pConfig),
           m_trackCache(TRACK_CACHE_SIZE) {
 
+	m_librarysavetimer = new QTimer(this);
+	connect(m_librarysavetimer, SIGNAL(timeout()), this, SLOT(saveDirtyTracks()));
+	m_librarysavetimer->start(5 * 60 * 1000); //every 5 minutes
 }
 
 void TrackDAO::finish()
@@ -191,6 +194,7 @@ void TrackDAO::slotTrackSave() {
 }
 
 void TrackDAO::saveDirtyTracks() {
+	qDebug() << "saving dirty tracks...";
     QHashIterator<int, TrackWeakPointer> it(m_tracks);
     while (it.hasNext()) {
         it.next();
