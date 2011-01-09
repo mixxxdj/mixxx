@@ -1,8 +1,14 @@
 #include <QtDebug>
 #include <QMenu>
 #include <QInputDialog>
+#include <QFileDialog>
+#include <QDesktopServices>
 
 #include "library/playlistfeature.h"
+#include "library/parser.h"
+#include "library/parserm3u.h"
+#include "library/parserpls.h"
+
 
 #include "widget/wlibrary.h"
 #include "widget/wlibrarysidebar.h"
@@ -10,6 +16,7 @@
 #include "library/trackcollection.h"
 #include "library/playlisttablemodel.h"
 #include "mixxxkeyboard.h"
+#include "treeitem.h"
 
 PlaylistFeature::PlaylistFeature(QObject* parent, TrackCollection* pTrackCollection)
         : LibraryFeature(parent),
@@ -27,6 +34,14 @@ PlaylistFeature::PlaylistFeature(QObject* parent, TrackCollection* pTrackCollect
     connect(m_pDeletePlaylistAction, SIGNAL(triggered()),
             this, SLOT(slotDeletePlaylist()));
 
+    m_pRenamePlaylistAction = new QAction(tr("Rename"),this);
+    connect(m_pRenamePlaylistAction, SIGNAL(triggered()),
+            this, SLOT(slotRenamePlaylist()));
+
+    m_pImportPlaylistAction = new QAction(tr("Import Playlist"),this);
+    connect(m_pImportPlaylistAction, SIGNAL(triggered()),
+            this, SLOT(slotImportPlaylist()));
+
     // Setup the sidebar playlist model
     m_playlistTableModel.setTable("Playlists");
     m_playlistTableModel.setFilter("hidden=0");
@@ -34,15 +49,30 @@ PlaylistFeature::PlaylistFeature(QObject* parent, TrackCollection* pTrackCollect
     m_playlistTableModel.removeColumn(m_playlistTableModel.fieldIndex("position"));
     m_playlistTableModel.removeColumn(m_playlistTableModel.fieldIndex("date_created"));
     m_playlistTableModel.removeColumn(m_playlistTableModel.fieldIndex("date_modified"));
-    m_playlistTableModel.setSort(m_playlistTableModel.fieldIndex("position"),
+    m_playlistTableModel.setSort(m_playlistTableModel.fieldIndex("name"),
                                  Qt::AscendingOrder);
     m_playlistTableModel.select();
+    
+	//construct child model
+    TreeItem *rootItem = new TreeItem("$root","$root", this);
+
+    int idColumn = m_playlistTableModel.record().indexOf("name");
+    for (int row = 0; row < m_playlistTableModel.rowCount(); ++row) {
+            QModelIndex ind = m_playlistTableModel.index(row, idColumn);
+            QString playlist_name = m_playlistTableModel.data(ind).toString();
+            TreeItem *playlist_item = new TreeItem(playlist_name, playlist_name, this, rootItem);
+            rootItem->appendChild(playlist_item);
+            
+    }
+    m_childModel.setRootItem(rootItem);
 }
 
 PlaylistFeature::~PlaylistFeature() {
     delete m_pPlaylistTableModel;
     delete m_pCreatePlaylistAction;
     delete m_pDeletePlaylistAction;
+    delete m_pImportPlaylistAction;
+    delete m_pRenamePlaylistAction;
 }
 
 QVariant PlaylistFeature::title() {
@@ -95,52 +125,114 @@ void PlaylistFeature::onRightClickChild(const QPoint& globalPos, QModelIndex ind
     QMenu menu(NULL);
     menu.addAction(m_pCreatePlaylistAction);
     menu.addSeparator();
+    menu.addAction(m_pRenamePlaylistAction);
     menu.addAction(m_pDeletePlaylistAction);
+    menu.addSeparator();
+    menu.addAction(m_pImportPlaylistAction);
     menu.exec(globalPos);
 }
 
 void PlaylistFeature::slotCreatePlaylist() {
-    int err = 0;
-    bool ok = false;
-    QString name = QInputDialog::getText(
-        NULL, tr("New Playlist"), tr("Playlist name:"),
-        QLineEdit::Normal, tr("New Playlist"), &ok);
+    QString name;
+    bool validNameGiven = false;
 
-    if (!ok)
-        return;
+    do {
+        bool ok = false;
+        name = QInputDialog::getText(NULL,
+                                     tr("New Playlist"),
+                                     tr("Playlist name:"),
+                                     QLineEdit::Normal,
+                                     tr("New Playlist"),
+                                     &ok).trimmed();
+                                             
+        if (!ok)
+            return;
 
-    //Ensure the name isn't blank
-    if (name == "") {
-        QMessageBox::warning(NULL,
-                             tr("Playlist Creation Failed"),
-                             tr("A playlist cannot have a blank name."));
-        return;
-    }
-    //Ensure that a playlist with this name doesn't exist already
-    if (m_playlistDao.getPlaylistIdFromName(name) == -1) {
-        //Ensure the creation works at the DAO level...
-        if (!m_playlistDao.createPlaylist(name))
-        {
+        int existingId = m_playlistDao.getPlaylistIdFromName(name);
+        
+        if (existingId != -1) {
             QMessageBox::warning(NULL,
                                  tr("Playlist Creation Failed"),
-                                 tr("An unknown error occurred while creating playlist: ")
-                                 + name);
-            return;
+                                 tr("A playlist by that name already exists."));
         }
+        else if (name.isEmpty()) {
+            QMessageBox::warning(NULL,
+                                 tr("Playlist Creation Failed"),
+                                 tr("A playlist cannot have a blank name."));
+        }
+        else {
+            validNameGiven = true;
+        }
+                                             
+    } while (!validNameGiven);
 
+    bool playlistCreated = m_playlistDao.createPlaylist(name);
+
+    if (playlistCreated) {
+        clearChildModel();
         m_playlistTableModel.select();
+        constructChildModel();
         emit(featureUpdated());
-
         //Switch the view to the new playlist.
         int playlistId = m_playlistDao.getPlaylistIdFromName(name);
         m_pPlaylistTableModel->setPlaylist(playlistId);
         // TODO(XXX) set sidebar selection
         emit(showTrackModel(m_pPlaylistTableModel));
-    } else {
-            QMessageBox::warning(NULL,
-                                 tr("Playlist Creation Failed"),
-                                 tr("A playlist by that name already exists."));
     }
+    else {
+        QMessageBox::warning(NULL,
+                             tr("Playlist Creation Failed"),
+                             tr("An unknown error occurred while creating playlist: ")
+                              + name);
+    }
+}
+
+void PlaylistFeature::slotRenamePlaylist()
+{
+    qDebug() << "slotRenamePlaylist()";
+
+    QString oldName = m_lastRightClickedIndex.data().toString();
+    int playlistId = m_playlistDao.getPlaylistIdFromName(oldName);
+    
+    QString newName;
+    bool validNameGiven = false;
+    
+    do {
+        bool ok = false;
+        newName = QInputDialog::getText(NULL,
+                                        tr("Rename Playlist"),
+                                        tr("New playlist name:"),
+                                        QLineEdit::Normal,
+                                        oldName,
+                                        &ok).trimmed();
+  
+        if (!ok || oldName == newName) {
+            return;
+        }
+
+        int existingId = m_playlistDao.getPlaylistIdFromName(newName);
+        
+        if (existingId != -1) {
+            QMessageBox::warning(NULL,
+                                tr("Renaming Playlist Failed"),
+                                tr("A playlist by that name already exists."));
+        }
+        else if (newName.isEmpty()) {
+            QMessageBox::warning(NULL,
+                                tr("Renaming Playlist Failed"),
+                                tr("A playlist cannot have a blank name."));
+        }
+        else {
+            validNameGiven = true;
+        }
+    } while (!validNameGiven);
+
+    m_playlistDao.renamePlaylist(playlistId, newName);
+    clearChildModel();
+    m_playlistTableModel.select();
+    constructChildModel();
+    emit(featureUpdated());
+    m_pPlaylistTableModel->setPlaylist(playlistId);
 }
 
 void PlaylistFeature::slotDeletePlaylist()
@@ -149,8 +241,11 @@ void PlaylistFeature::slotDeletePlaylist()
     if (m_lastRightClickedIndex.isValid()) {
         int playlistId = m_playlistDao.getPlaylistIdFromName(m_lastRightClickedIndex.data().toString());
         Q_ASSERT(playlistId >= 0);
+        
+        clearChildModel();
         m_playlistDao.deletePlaylist(playlistId);
         m_playlistTableModel.select();
+        constructChildModel();
     }
 
     emit(featureUpdated());
@@ -203,6 +298,70 @@ bool PlaylistFeature::dragMoveAcceptChild(const QModelIndex& index, QUrl url) {
     return true;
 }
 
-QAbstractItemModel* PlaylistFeature::getChildModel() {
-    return &m_playlistTableModel;
+TreeItemModel* PlaylistFeature::getChildModel() {
+    return &m_childModel;
+}
+/**
+  * Purpose: When inserting or removing playlists,
+  * we require the sidebar model not to reset.
+  * This method queries the database and does dynamic insertion 
+*/
+void PlaylistFeature::constructChildModel()
+{
+    QList<QString> data_list;
+    int idColumn = m_playlistTableModel.record().indexOf("name");
+    for (int row = 0; row < m_playlistTableModel.rowCount(); ++row) {
+            QModelIndex ind = m_playlistTableModel.index(row, idColumn);
+            QString playlist_name = m_playlistTableModel.data(ind).toString();
+            data_list.insert(row,playlist_name);
+    }
+    
+    m_childModel.insertRows(data_list, 0, m_playlistTableModel.rowCount());  
+}
+/**
+  * Clears the child model dynamically
+  */
+void PlaylistFeature::clearChildModel()
+{
+    m_childModel.removeRows(0,m_playlistTableModel.rowCount());
+}
+void PlaylistFeature::slotImportPlaylist()
+{
+    qDebug() << "slotImportPlaylist() row:" ; //<< m_lastRightClickedIndex.data();
+
+
+    QString playlist_file = QFileDialog::getOpenFileName
+            (
+            NULL,
+            tr("Import Playlist"),
+            QDesktopServices::storageLocation(QDesktopServices::MusicLocation),
+            tr("Playlist Files (*.m3u *.pls)") 
+            );
+    //Exit method if user cancelled the open dialog.
+    if (playlist_file.isNull() || playlist_file.isEmpty() ) return;
+
+    Parser* playlist_parser = NULL;
+    
+    if(playlist_file.endsWith(".m3u", Qt::CaseInsensitive))
+    {
+        playlist_parser = new ParserM3u();
+    }
+    else if(playlist_file.endsWith(".pls", Qt::CaseInsensitive))
+    {
+        playlist_parser = new ParserPls();
+    }
+    else
+    {
+        return;
+    }
+    QList<QString> entries = playlist_parser->parse(playlist_file);
+    
+    //Iterate over the List that holds URLs of playlist entires
+    for (int i = 0; i < entries.size(); ++i) {
+        m_pPlaylistTableModel->addTrack(QModelIndex(), entries[i]);
+        
+    }
+ 
+    //delete the parser object
+    if(playlist_parser) delete playlist_parser;  
 }

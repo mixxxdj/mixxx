@@ -3,7 +3,9 @@
 
 #include <QObject>
 #include <QString>
+#include <QList>
 #include <QDomElement>
+#include <QMutex>
 
 #include "configobject.h"
 #include "skin/skinparser.h"
@@ -26,10 +28,11 @@ class LegacySkinParser : public QObject, public SkinParser {
 
     // Legacy support for looking up the scheme list.
     static QList<QString> getSchemeList(QString qSkinPath);
+    static void freeChannelStrings();
   private:
     static QDomElement openSkin(QString skinPath);
 
-    QWidget* parseNode(QDomElement node, QWidget* pParent);
+    QWidget* parseNode(QDomElement node, QWidget* pGrandparent);
 
     // Support for various legacy behavior
     void parseColorSchemes(QDomElement node);
@@ -37,35 +40,39 @@ class LegacySkinParser : public QObject, public SkinParser {
     bool compareConfigKeys(QDomNode node, QString key);
 
     // Parsers for each node
-    QWidget* parseWidgetGroup(QDomElement node, QWidget* pParent);
-    QWidget* parseBackground(QDomElement node, QWidget* pParent);
-    QWidget* parsePushButton(QDomElement node, QWidget* pParent);
-    QWidget* parseSliderComposed(QDomElement node, QWidget* pParent);
-    QWidget* parseVisual(QDomElement node, QWidget* pParent);
-    QWidget* parseOverview(QDomElement node, QWidget* pParent);
-    QWidget* parseText(QDomElement node, QWidget* pParent);
-    QWidget* parseTrackProperty(QDomElement node, QWidget* pParent);
-    QWidget* parseVuMeter(QDomElement node, QWidget* pParent);
-    QWidget* parseStatusLight(QDomElement node, QWidget* pParent);
-    QWidget* parseDisplay(QDomElement node, QWidget* pParent);
-    QWidget* parseNumberRate(QDomElement node, QWidget* pParent);
-    QWidget* parseNumberPos(QDomElement node, QWidget* pParent);
-    QWidget* parseNumberBpm(QDomElement node, QWidget* pParent);
-    QWidget* parseNumber(QDomElement node, QWidget* pParent);
-    QWidget* parseLabel(QDomElement node, QWidget* pParent);
-    QWidget* parseKnob(QDomElement node, QWidget* pParent);
-    QWidget* parseTableView(QDomElement node, QWidget* pParent);
-    QWidget* parseStyle(QDomElement node, QWidget* pParent);
+    QWidget* parseWidgetGroup(QDomElement node);
+    QWidget* parseBackground(QDomElement node, QWidget* pGrandparent);
+    QWidget* parsePushButton(QDomElement node);
+    QWidget* parseSliderComposed(QDomElement node);
+    QWidget* parseVisual(QDomElement node);
+    QWidget* parseOverview(QDomElement node);
+    QWidget* parseText(QDomElement node);
+    QWidget* parseTrackProperty(QDomElement node);
+    QWidget* parseVuMeter(QDomElement node);
+    QWidget* parseStatusLight(QDomElement node);
+    QWidget* parseDisplay(QDomElement node);
+    QWidget* parseNumberRate(QDomElement node);
+    QWidget* parseNumberPos(QDomElement node);
+    QWidget* parseNumberBpm(QDomElement node);
+    QWidget* parseNumber(QDomElement node);
+    QWidget* parseLabel(QDomElement node);
+    QWidget* parseKnob(QDomElement node);
+    QWidget* parseTableView(QDomElement node);
+    QWidget* parseStyle(QDomElement node);
 
     void setupWidget(QDomNode node, QWidget* pWidget);
     void setupConnections(QDomNode node, QWidget* pWidget);
 
     QString lookupNodeGroup(QDomElement node);
+    static const char* safeChannelString(QString channelStr);
 
     ConfigObject<ConfigValue>* m_pConfig;
     MixxxKeyboard* m_pKeyboard;
     PlayerManager* m_pPlayerManager;
     Library* m_pLibrary;
+    QWidget *m_pParent;
+    static QList<const char*> s_channelStrs;
+    static QMutex s_safeStringMutex;
 };
 
 

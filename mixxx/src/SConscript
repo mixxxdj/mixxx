@@ -253,7 +253,12 @@ if build.platform_is_osx and 'bundle' in COMMAND_LINE_TARGETS:
 		 QT_HACK = [(p_tgt_dir, os.path.join("/Developer/Applications/Qt/plugins/", p_tgt_dir, p)) for p_tgt_dir, p in qt_plugins] #sigh :(
 		 ,
 		 STRIP=True,
-		 #STRIP=(type == 'RELEASE')
+		 #STRIP=(type == 'RELEASE'),
+         IDENTIFIER="org.mixxx.mixxx",
+         DISPLAY_NAME="Mixxx",
+         SHORT_VERSION="1.9.0", #FIXME: parse defs_version.h???
+         COPYRIGHT="Copyright © 2011 Mixxx Development Team", #FIXME: datetime.year()
+         CATEGORY="public.app-category.music"
 		 )
 	#env.Default(mixxx_bin) #todo: make the Default() just the program itself *globally* (not just for OS X); bundle should be a separate target
 	env.Alias('bundle', bundle)
