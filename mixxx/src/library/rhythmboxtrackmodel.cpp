@@ -1,181 +1,140 @@
 #include <QtCore>
 #include <QtGui>
 #include <QtSql>
-#include <QtDebug>
-#include <QtXmlPatterns/QXmlQuery>
-
-#include "rhythmboxtrackmodel.h"
-#include "xmlparse.h"
-#include "trackinfoobject.h"
-#include "defs.h"
+#include "library/trackcollection.h"
+#include "library/rhythmboxtrackmodel.h"
 
 #include "mixxxutils.cpp"
 
-RhythmboxTrackModel::RhythmboxTrackModel()
-        : AbstractXmlTrackModel("mixxx.db.model.rhythmbox") {
-
-    QXmlQuery query;
-    QString res;
-    QDomDocument rhythmdb;
-
-
-    /*
-     * Try and open the Rhythmbox DB. An API call which tells us where
-     * the file is would be nice.
-     */
-    QFile db(QDir::homePath() + "/.gnome2/rhythmbox/rhythmdb.xml");
-    if ( ! db.exists()) {
-        db.setFileName(QDir::homePath() + "/.local/share/rhythmbox/rhythmdb.xml");
-        if ( ! db.exists())
-            return;
-    }
-
-    if (!db.open(QIODevice::ReadOnly | QIODevice::Text))
-        return;
-
-    /*
-     * Use QXmlQuery to execute an XPath query. We add the version to
-     * the XPath query to make sure it is the schema we expect.
-     */
-    query.setFocus(&db);
-    query.setQuery("rhythmdb[@version='1.4' or @version='1.6' or @version='1.7']/entry[@type='song']");
-    if ( ! query.isValid())
-        return;
-
-    query.evaluateTo(&res);
-    db.close();
-
-
-    /*
-     * Parse the result as an XML file. These shennanigans actually
-     * reduce the load time from a minute to a matter of seconds.
-     */
-    rhythmdb.setContent("<rhythmdb version='1.6'>" + res + "</rhythmdb>");
-    m_trackNodes = rhythmdb.elementsByTagName("entry");
-
-
-    for (int i = 0; i < m_trackNodes.count(); i++) {
-        QDomNode n = m_trackNodes.at(i);
-        QString location = n.firstChildElement("location").text();
-
-        m_mTracksByLocation[location] = n;
-    }
-    qDebug() << "RhythmboxTrackModel: m_entryNodes size is" << m_trackNodes.size();
-
-
-    addColumnName(RhythmboxTrackModel::COLUMN_ARTIST, tr("Artist"));
-    addColumnName(RhythmboxTrackModel::COLUMN_TITLE, tr("Title"));
-    addColumnName(RhythmboxTrackModel::COLUMN_ALBUM, tr("Album"));
-    addColumnName(RhythmboxTrackModel::COLUMN_DATE, tr("Date"));
-    addColumnName(RhythmboxTrackModel::COLUMN_GENRE, tr("Genre"));
-    addColumnName(RhythmboxTrackModel::COLUMN_LOCATION, tr("Location"));
-    addColumnName(RhythmboxTrackModel::COLUMN_DURATION, tr("Duration"));
-
-    addSearchColumn(RhythmboxTrackModel::COLUMN_ARTIST);
-    addSearchColumn(RhythmboxTrackModel::COLUMN_TITLE);
-    addSearchColumn(RhythmboxTrackModel::COLUMN_ALBUM);
-    addSearchColumn(RhythmboxTrackModel::COLUMN_GENRE);
-    addSearchColumn(RhythmboxTrackModel::COLUMN_LOCATION);
+RhythmboxTrackModel::RhythmboxTrackModel(QObject* parent,
+                                   TrackCollection* pTrackCollection)
+        : TrackModel(pTrackCollection->getDatabase(),
+                     "mixxx.db.model.rhythmbox"),
+          BaseSqlTableModel(parent, pTrackCollection, pTrackCollection->getDatabase()),
+          m_pTrackCollection(pTrackCollection),
+          m_database(m_pTrackCollection->getDatabase()) {
+    connect(this, SIGNAL(doSearch(const QString&)), this, SLOT(slotSearch(const QString&)));
+    setTable("rhythmbox_library");
+    initHeaderData();
 }
 
-RhythmboxTrackModel::~RhythmboxTrackModel()
-{
+RhythmboxTrackModel::~RhythmboxTrackModel() {
+}
+
+bool RhythmboxTrackModel::addTrack(const QModelIndex& index, QString location) {
+    return false;
+}
+
+TrackPointer RhythmboxTrackModel::getTrack(const QModelIndex& index) const {
+    QString artist = index.sibling(index.row(), fieldIndex("artist")).data().toString();
+    QString title = index.sibling(index.row(), fieldIndex("title")).data().toString();
+    QString album = index.sibling(index.row(), fieldIndex("album")).data().toString();
+    QString year = index.sibling(index.row(), fieldIndex("year")).data().toString();
+    QString genre = index.sibling(index.row(), fieldIndex("genre")).data().toString();
+    float bpm = index.sibling(index.row(), fieldIndex("bpm")).data().toString().toFloat();
+
+    QString location = index.sibling(index.row(), fieldIndex("location")).data().toString();
+
+    TrackInfoObject* pTrack = new TrackInfoObject(location);
+    pTrack->setArtist(artist);
+    pTrack->setTitle(title);
+    pTrack->setAlbum(album);
+    pTrack->setYear(year);
+    pTrack->setGenre(genre);
+    pTrack->setBpm(bpm);
+
+    return TrackPointer(pTrack, &QObject::deleteLater);
+}
+
+QString RhythmboxTrackModel::getTrackLocation(const QModelIndex& index) const {
+    QString location = index.sibling(index.row(), fieldIndex("location")).data().toString();
+    return location;
+}
+
+void RhythmboxTrackModel::removeTrack(const QModelIndex& index) {
 
 }
+
+void RhythmboxTrackModel::removeTracks(const QModelIndexList& indices) {
+
+}
+
+void RhythmboxTrackModel::moveTrack(const QModelIndex& sourceIndex, const QModelIndex& destIndex) {
+
+}
+
+void RhythmboxTrackModel::search(const QString& searchText) {
+    // qDebug() << "RhythmboxTrackModel::search()" << searchText
+    //          << QThread::currentThread();
+    emit(doSearch(searchText));
+}
+
+void RhythmboxTrackModel::slotSearch(const QString& searchText) {
+    if (!m_currentSearch.isNull() && m_currentSearch == searchText)
+        return;
+    m_currentSearch = searchText;
+
+    QString filter;
+    QSqlField search("search", QVariant::String);
+    search.setValue("%" + searchText + "%");
+    QString escapedText = database().driver()->formatValue(search);
+    filter = "(artist LIKE " + escapedText + " OR " +
+            "album LIKE " + escapedText + " OR " +
+            "title  LIKE " + escapedText + ")";
+    setFilter(filter);
+
+}
+
+const QString RhythmboxTrackModel::currentSearch() {
+    return m_currentSearch;
+}
+
+bool RhythmboxTrackModel::isColumnInternal(int column) {
+    if (column == fieldIndex(LIBRARYTABLE_ID) ||
+        column == fieldIndex(LIBRARYTABLE_MIXXXDELETED) ||
+        column == fieldIndex(TRACKLOCATIONSTABLE_FSDELETED))
+        return true;
+    return false;
+}
+
+QMimeData* RhythmboxTrackModel::mimeData(const QModelIndexList &indexes) const {
+    QMimeData *mimeData = new QMimeData();
+    QList<QUrl> urls;
+
+    //Ok, so the list of indexes we're given contains separates indexes for
+    //each column, so even if only one row is selected, we'll have like 7 indexes.
+    //We need to only count each row once:
+    QList<int> rows;
+
+    foreach (QModelIndex index, indexes) {
+        if (index.isValid()) {
+            if (!rows.contains(index.row())) {
+                rows.push_back(index.row());
+                QUrl url = QUrl::fromLocalFile(getTrackLocation(index));
+                if (!url.isValid())
+                    qDebug() << "ERROR invalid url\n";
+                else
+                    urls.append(url);
+            }
+        }
+    }
+    mimeData->setUrls(urls);
+    return mimeData;
+}
+
 
 QItemDelegate* RhythmboxTrackModel::delegateForColumn(const int i) {
     return NULL;
 }
 
-QVariant RhythmboxTrackModel::data(const QModelIndex& item, int role) const {
-    if (!item.isValid())
-        return QVariant();
-
-    QVariant value = AbstractXmlTrackModel::data(item, role);
-
-    if ((role == Qt::DisplayRole || role == Qt::ToolTipRole) &&
-        item.column() == COLUMN_DURATION) {
-
-        if (qVariantCanConvert<int>(value)) {
-            value = MixxxUtils::secondsToMinutes(qVariantValue<int>(value));
-        }
-    }
-    return value;
+TrackModel::CapabilitiesFlags RhythmboxTrackModel::getCapabilities() const {
+    return NULL;
 }
 
-bool RhythmboxTrackModel::isColumnInternal(int column) {
-    return false;
+Qt::ItemFlags RhythmboxTrackModel::flags(const QModelIndex &index) const {
+    return readOnlyFlags(index);
 }
+
 bool RhythmboxTrackModel::isColumnHiddenByDefault(int column) {
     return false;
-}
-
-QVariant RhythmboxTrackModel::getTrackColumnData(QDomNode songNode, const QModelIndex& index) const
-{
-    int date;
-    switch (index.column()) {
-        case RhythmboxTrackModel::COLUMN_ARTIST:
-            return songNode.firstChildElement("artist").text();
-        case RhythmboxTrackModel::COLUMN_TITLE:
-            return songNode.firstChildElement("title").text();
-        case RhythmboxTrackModel::COLUMN_ALBUM:
-            return songNode.firstChildElement("album").text();
-        case RhythmboxTrackModel::COLUMN_DATE:
-            date = songNode.firstChildElement("date").text().toInt();
-            // Rhythmbox uses the Rata Die Julian Day system while Qt uses true
-            // Julian Days. It's just a difference in epoch start dates.
-            if (date == 0)
-                return "";
-            return QDate::fromJulianDay(ceil(float(date) + 1721424.5)).year();
-        case RhythmboxTrackModel::COLUMN_GENRE:
-            return songNode.firstChildElement("genre").text();
-        case RhythmboxTrackModel::COLUMN_LOCATION:
-            return songNode.firstChildElement("location").text();
-        case RhythmboxTrackModel::COLUMN_DURATION:
-            return songNode.firstChildElement("duration").text();
-
-        default:
-            return QVariant();
-    }
-}
-
-TrackPointer RhythmboxTrackModel::parseTrackNode(QDomNode songNode) const
-{
-    QString strloc = songNode.firstChildElement("location").text();
-    QByteArray strlocbytes = strloc.toUtf8();
-    QUrl location = QUrl::fromEncoded(strlocbytes);
-    QString trackLocation = location.toLocalFile();
-
-    TrackInfoObject *pTrack = new TrackInfoObject(trackLocation);
-
-    pTrack->setArtist(songNode.firstChildElement("artist").text());
-    pTrack->setTitle(songNode.firstChildElement("title").text());
-    pTrack->setAlbum(songNode.firstChildElement("album").text());
-    int date = songNode.firstChildElement("date").text().toInt();
-    // Rhythmbox uses the Rata Die Julian Day system while Qt uses true
-    // Julian Days. It's just a difference in epoch start dates.
-    if (date == 0) {
-        pTrack->setYear("");
-    } else {
-        date = QDate::fromJulianDay(ceil(float(date) + 1721424.5)).year();
-        pTrack->setYear(QString("%1").arg(date));
-    }
-    pTrack->setGenre(songNode.firstChildElement("genre").text());
-    pTrack->setDuration(songNode.firstChildElement("duration").text().toUInt());
-
-    // TODO(ywwg) why was this added? constructor above does the same -- rryan
-    pTrack->setLocation(trackLocation);
-
-    // Have QObject handle deleting this track
-    return TrackPointer(pTrack, &QObject::deleteLater);
-}
-
-//OwenB - for use by the playlistmodel
-QDomNode RhythmboxTrackModel::getTrackNodeByLocation(const QString& location) const
-{
-    if ( !m_mTracksByLocation.contains(location))
-        return QDomNode();
-
-    QDomNode songNode = m_mTracksByLocation[location];
-    return songNode;
 }

@@ -62,7 +62,7 @@ Library::Library(QObject* parent, ConfigObject<ConfigValue>* pConfig, bool first
     //messagebox popup when you select them. (This forces you to reach for your
     //mouse or keyboard if you're using MIDI control and you scroll through them...)
     if (RhythmboxFeature::isSupported())
-        addFeature(new RhythmboxFeature(this));
+        addFeature(new RhythmboxFeature(this, m_pTrackCollection));
     if (ITunesFeature::isSupported())
         addFeature(new ITunesFeature(this, m_pTrackCollection));
     if (TraktorFeature::isSupported())
