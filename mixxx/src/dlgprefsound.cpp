@@ -37,12 +37,12 @@
 #include "defs_mixxxcmetrics.h"
 #endif
 
-// Calculates log2 of number.  
-// 
+// Calculates log2 of number.
+//
 #ifndef log2
-double log2( double n )  
-{  
-    // log(n)/log(2) is log2.  
+double log2( double n )
+{
+    // log(n)/log(2) is log2.
     return log( n ) / log( 2.0 );   // MSVC doesn't know how to take logs of ints.
 }
 #endif
@@ -116,7 +116,7 @@ DlgPrefSound::DlgPrefSound(QWidget * parent, SoundManager * _soundman,
 
 	connect(ComboBoxSoundcardMaster,	SIGNAL(activated(int)),		this,	SLOT(slotComboBoxSoundcardMasterChange()));
 	connect(ComboBoxSoundcardHeadphones,		SIGNAL(activated(int)),		this,	SLOT(slotComboBoxSoundcardHeadphonesChange()));
-	
+
 	slotComboBoxSoundcardMasterChange();
 	slotComboBoxSoundcardHeadphonesChange();
 	ComboBoxSoundcardMaster->setCurrentIndex(config->getValueString(ConfigKey("[Soundcard]","ChannelMaster")).toInt());
@@ -230,7 +230,7 @@ void DlgPrefSound::slotUpdate()
     }
     else
         SliderLatency->setEnabled(true);
-    
+
 }
 
 void DlgPrefSound::slotLatency()
@@ -291,16 +291,16 @@ void DlgPrefSound::slotApply()
 
 #ifdef __VINYLCONTROL__
     //Crappy Scratchlib warning hack about the samplerate...
-    if ((config->getValueString(ConfigKey("[VinylControl]","strVinylType")) == MIXXX_VINYL_FINALSCRATCH) && 
+    if ((config->getValueString(ConfigKey("[VinylControl]","strVinylType")) == MIXXX_VINYL_FINALSCRATCH) &&
         (config->getValueString(ConfigKey("[Soundcard]","Samplerate")) != "44100"))
     {
         QMessageBox::warning( this, "Mixxx",
                             "FinalScratch records currently only work properly with a 44100 Hz samplerate.\n"
-                            "The samplerate has been reset to 44100 Hz." );    
+                            "The samplerate has been reset to 44100 Hz." );
         config->set(ConfigKey("[Soundcard]","Samplerate"), ConfigValue(44100));
     }
 #endif
-    
+
     if (radioButtonPitchIndp->isChecked())
         config->set(ConfigKey("[Soundcard]","PitchIndpTimeStretch"), ConfigValue(1));
     else
@@ -319,23 +319,28 @@ void DlgPrefSound::slotApply()
 	    if (deviceOpenError == MIXXX_ERROR_DUPLICATE_OUTPUT_CHANNEL)
 	        QMessageBox::warning(0, "Configuration error", "You cannot send multiple outputs to a single channel");
 	    else if (deviceOpenError == MIXXX_ERROR_DUPLICATE_INPUT_CHANNEL)
-	        QMessageBox::warning(0, "Configuration error", "You cannot use a single pair of channels for both decks");		
-	    else if (deviceOpenError != 0)
-		    QMessageBox::warning(0, "Configuration error","Audio device could not be opened");
+	        QMessageBox::warning(0, "Configuration error", "You cannot use a single pair of channels for both decks");
+        else if (deviceOpenError != 0) {
+            int sampleRate = config->getValueString(ConfigKey("[Soundcard]","Samplerate")).toInt();
+            QString message = QString(
+                tr("An audio device could not be opened.\n(Do all devices support the selected %1Hz sample rate?)"))
+                .arg(sampleRate);
+            QMessageBox::warning(0, "Configuration error",message);
+        }
 		else
 			slotUpdate();
 	}
-	
+
 #ifdef __C_METRICS__
         QByteArray baAPI = config->getValueString(ConfigKey("[Soundcard]","SoundApi")).toUtf8();
         QByteArray baSamplerate = config->getValueString(ConfigKey("[Soundcard]","Samplerate")).toUtf8();
         QByteArray baLatency = config->getValueString(ConfigKey("[Soundcard]","Latency")).toUtf8();
-        
+
 	    cm_writemsg_utf8(MIXXXCMETRICS_SOUND_API, baAPI.data());
 	    cm_writemsg_utf8(MIXXXCMETRICS_SOUND_SAMPLERATE, baSamplerate.data());
 	    cm_writemsg_utf8(MIXXXCMETRICS_SOUND_LATENCY, baLatency.data());
-#endif	
-	
+#endif
+
 }
 
 void DlgPrefSound::slotApplyApi()
@@ -356,12 +361,16 @@ void DlgPrefSound::slotApplyApi()
     } else {
         if (m_pSoundManager->setupDevices() != 0)
         {
-            QMessageBox::warning(0, "Configuration error","Audio device could not be opened");
+            int sampleRate = config->getValueString(ConfigKey("[Soundcard]","Samplerate")).toInt();
+            QString message = QString(
+                tr("An audio device could not be opened.\n(Do all devices support the selected %1Hz sample rate?)"))
+                .arg(sampleRate);
+            QMessageBox::warning(0, "Configuration error",message);
 			m_parent->setHidden(false);
         }
     }
     enableValidComboBoxes();
-    
+
     emit(apiUpdated());
     m_pSoundManager->setDefaults(false, true, true);
     slotUpdate();
@@ -394,7 +403,7 @@ void DlgPrefSound::slotComboBoxSoundcardMasterChange()
 	QListIterator<SoundDevice*> devItr(devList);
 	SoundDevice *pdev;
 	ComboBoxChannelMaster->clear();
-	
+
 	while(devItr.hasNext())
 	{
 		pdev = devItr.next();
@@ -414,7 +423,7 @@ void DlgPrefSound::slotComboBoxSoundcardMasterChange()
 				}
 			}
 			break;
-		} 
+		}
 	}
         enableValidComboBoxes();
 }
@@ -446,7 +455,7 @@ void DlgPrefSound::slotComboBoxSoundcardHeadphonesChange()
 				}
 			}
 			break;
-		} 
+		}
 	}
 	enableValidComboBoxes();
 }
@@ -468,11 +477,11 @@ void DlgPrefSound::enableValidComboBoxes()
 void DlgPrefSound::slotChannelChange(){
 #if 0 //Warning them immediatly when this happens might be annoying.  Consider the situation of swapping headphone/master channels, they will
 		//have to click through this.  I left it in however, in case we decide on this.
-	if (ComboBoxSoundcardMaster->currentText() != "None" && 
-         ComboBoxSoundcardMaster->isEnabled() && ComboBoxSoundcardHeadphones->isEnabled() && 
-         ComboBoxSoundcardMaster->currentText() == ComboBoxSoundcardHeadphones->currentText() && 
+	if (ComboBoxSoundcardMaster->currentText() != "None" &&
+         ComboBoxSoundcardMaster->isEnabled() && ComboBoxSoundcardHeadphones->isEnabled() &&
+         ComboBoxSoundcardMaster->currentText() == ComboBoxSoundcardHeadphones->currentText() &&
          ComboBoxChannelMaster->currentText() == ComboBoxChannelHeadphones->currentText()) {
-           QMessageBox::warning(this, "Mixxx - Master and Headphones sharing the same channels", 
+           QMessageBox::warning(this, "Mixxx - Master and Headphones sharing the same channels",
              "Having the Headphone share the same sound card output channels as Master\nwill result in Mixxx playing back at full volume irespective of the volume\ncontrols (this is because Headphone channels do not repect Master volume).\n\nThis configuration is NOT recommended because of that.\n\nIf your sound card has only two channels set the 'Headphones' channel to 'None'.");
     }
 #endif
