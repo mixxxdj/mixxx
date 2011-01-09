@@ -33,7 +33,3 @@ double EngineBufferScale::getNewPlaypos()
 {
     return new_playpos;
 }
-
-void EngineBufferScale::setSeekWindowTweak(int tweak)
-{
-}

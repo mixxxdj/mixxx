@@ -44,8 +44,6 @@ public:
     virtual void setBaseRate(double dBaseRate) = 0;
     /** Set tempo */
     virtual double setTempo(double dTempo) = 0;
-    /** Set PITS seek window size */
-    virtual void setSeekWindowTweak(int tweak);
     /** Get new playpos after call to scale() */
     double getNewPlaypos();
     /** Called from EngineBuffer when seeking, to ensure the buffers are flushed */

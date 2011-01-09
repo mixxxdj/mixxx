@@ -112,9 +112,6 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
 
     m_pMasterRate = ControlObject::getControl(ConfigKey("[Master]", "rate"));
     
-    // PITS seek window tweak value (added to window size)
-    m_pSeekWindowTweak = new ControlPotmeter(ConfigKey(group, "seekwindowtweak"), -50., 50.);
-    
     // Actual rate (used in visuals, not for control)
     rateEngine = new ControlObject(ConfigKey(group, "rateEngine"));
 
@@ -451,11 +448,8 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
         rate = m_pRateControl->calculateRate(baserate, paused);
         //qDebug() << "rate" << rate << " paused" << paused;
         
-        int tweak;
-		tweak = m_pSeekWindowTweak->get();
-
         // If the rate has changed, set it in the scale object
-        if (rate != rate_old || m_bScalerChanged || tweak != tweak_old) {
+        if (rate != rate_old || m_bScalerChanged) {
             // The rate returned by the scale object can be different from the wanted rate!
 
             //linear scaler does this for us now
@@ -471,13 +465,10 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
 		    }
 
             rate_old = rate;
-            tweak_old = tweak;
             if (baserate > 0) //Prevent division by 0
                 rate = baserate*m_pScale->setTempo(rate/baserate);
             m_pScale->setBaseRate(baserate);
-            m_pScale->setSeekWindowTweak(tweak);
             rate_old = rate;
-            tweak_old = tweak;
             // Scaler is up to date now.
             m_bScalerChanged = false;
         }

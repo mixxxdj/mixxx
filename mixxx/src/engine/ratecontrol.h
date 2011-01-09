@@ -101,6 +101,7 @@ private:
     ControlObject* m_pBackButton;
     ControlObject* m_pForwardButton;
     ControlObject* m_pWheelSensitivity;
+    ControlObject *m_pVinylPitchTweakKnob;
 
     ControlTTRotary* m_pWheel;
     ControlTTRotary* m_pScratch;
@@ -166,7 +167,7 @@ private:
       * slider */
     double m_dOldRate;
     
-    double m_dVinylTweakRate;
+    double m_dVinylTweakRatePerm;
 
     /** Handle for configuration */
     ConfigObject<ConfigValue>* m_pConfig;

@@ -55,9 +55,6 @@ public:
     /** Set tempo */
     double setTempo(double dTempo);
     
-    /** Set PITS seek window */
-    void setSeekWindowTweak(int tweak);
-
     /** Set base rate */
     void setBaseRate(double dBaseRate);
 

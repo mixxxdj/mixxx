@@ -156,13 +156,6 @@ double EngineBufferScaleST::setTempo(double dTempo)
     }
 }
 
-void EngineBufferScaleST::setSeekWindowTweak(int tweak)
-{
-	m_qMutex.lock();	
-	m_pSoundTouch->setSeekWindowTweak(tweak);
-	m_qMutex.unlock();
-}
-
 /**
  * @param playpos The play position in the EngineBuffer (in samples)
  * @param buf_size The size of the audio buffer to scale (in samples)
