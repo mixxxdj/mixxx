@@ -152,8 +152,10 @@ void LibraryTableModel::slotSearch(const QString& searchText) {
     // qDebug() << "slotSearch()" << searchText << QThread::currentThread();
     if (!m_currentSearch.isNull() && m_currentSearch == searchText)
         return;
-
     m_currentSearch = searchText;
+
+    //update database so searches reflect updated data
+    m_trackDao.saveDirtyTracks();
 
     QString filter;
     if (searchText == "")

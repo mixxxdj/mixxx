@@ -159,6 +159,9 @@ void CrateTableModel::slotSearch(const QString& searchText) {
         return;
     m_currentSearch = searchText;
 
+    //update database so searches reflect updated data
+    m_pTrackCollection->getTrackDAO().saveDirtyTracks();
+
     QString filter;
     if (searchText == "")
         filter = "(" + LibraryTableModel::DEFAULT_LIBRARYFILTER + ")";

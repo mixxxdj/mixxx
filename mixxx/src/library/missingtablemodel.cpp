@@ -122,6 +122,9 @@ void MissingTableModel::slotSearch(const QString& searchText) {
         return;
     m_currentSearch = searchText;
 
+    //update database so searches reflect updated data
+    m_trackDao.saveDirtyTracks();
+    
     QString filter;
     if (searchText == "")
         filter = "(" + MissingTableModel::MISSINGFILTER + ")";

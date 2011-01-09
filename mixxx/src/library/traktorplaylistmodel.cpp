@@ -87,6 +87,9 @@ void TraktorPlaylistModel::slotSearch(const QString& searchText)
         return;
     m_currentSearch = searchText;
 
+    //update database so searches reflect updated data
+    m_pTrackCollection->getTrackDAO().saveDirtyTracks();
+    
     QString filter;
     QSqlField search("search", QVariant::String);
     search.setValue("%" + searchText + "%");
