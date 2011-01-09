@@ -178,7 +178,7 @@ void RhythmboxPlaylistModel::setPlaylist(QString playlist_path) {
                   "rhythmbox_playlists.name "
                   "FROM rhythmbox_library "
                   "INNER JOIN rhythmbox_playlist_tracks "
-                  "ON rhythmbox_playlist_tracks.track_id = itunes_library.id "
+                  "ON rhythmbox_playlist_tracks.track_id = rhythmbox_library.id "
                   "INNER JOIN rhythmbox_playlists "
                   "ON rhythmbox_playlist_tracks.playlist_id = rhythmbox_playlists.id "
                   "where rhythmbox_playlists.name='"+playlist_path+"'"
@@ -187,7 +187,7 @@ void RhythmboxPlaylistModel::setPlaylist(QString playlist_path) {
 
     if (!query.exec()) {
 
-        qDebug() << "Error creating temporary view for itunes playlists. RhythmboxPlaylistModel --> line: " << __LINE__ << " " << query.lastError();
+        qDebug() << "Error creating temporary view for rhythmbox playlists. RhythmboxPlaylistModel --> line: " << __LINE__ << " " << query.lastError();
         qDebug() << "Executed Query: " <<  query.executedQuery();
         return;
     }
