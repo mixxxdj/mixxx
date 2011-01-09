@@ -151,6 +151,14 @@ class MixxxBuild(object):
             elif flags_force64:
                 self.env.Append(CCFLAGS = '-m64')
 
+        if self.platform == 'osx':
+            if self.bitwidth == 32:
+                self.env.Append(CCFLAGS = '-arch i386')
+                self.env.Append(LINKFLAGS = '-arch i386')
+            elif self.bitwidth == 64:
+                self.env.Append(CCFLAGS = '-arch x86_64')
+                self.env.Append(LINKFLAGS = '-arch x86_64')
+
         if self.crosscompile:
             crosscompile_root = Script.ARGUMENTS.get('crosscompile_root', '')
 

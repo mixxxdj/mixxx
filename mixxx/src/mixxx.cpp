@@ -244,6 +244,13 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
     if (m_pConfig->getValueString(
         ConfigKey("[Playlist]","Directory")).length() < 1 || !dir.exists())
     {
+        // TODO this needs to be smarter, we can't distinguish between an empty
+        // path return value (not sure if this is normally possible, but it is
+        // possible with the Windows 7 "Music" library, which is what
+        // QDesktopServices::storageLocation(QDesktopServices::MusicLocation)
+        // resolves to) and a user hitting 'cancel'. If we get a blank return
+        // but the user didn't hit cancel, we need to know this and let the
+        // user take some course of action -- bkgood
         QString fd = QFileDialog::getExistingDirectory(
             this, tr("Choose music library directory"),
             QDesktopServices::storageLocation(QDesktopServices::MusicLocation));
@@ -254,6 +261,14 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
             m_pConfig->Save();
             hasChanged_MusicDir = true;
         }
+    }
+
+    // library dies in seemingly unrelated qtsql error about not having a
+    // sqlite driver if this path doesn't exist. Normally config->Save()
+    // above would make it but if it doesn't get run for whatever reason
+    // we get hosed -- bkgood
+    if (!QDir(QDir::homePath().append("/").append(SETTINGS_PATH)).exists()) {
+        QDir().mkpath(QDir::homePath().append("/").append(SETTINGS_PATH));
     }
 
     m_pLibrary = new Library(this, m_pConfig, bFirstRun || bUpgraded);
@@ -398,11 +413,13 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
     // Use frame as container for view, needed for fullscreen display
     m_pView = new QFrame;
 
+    m_pWidgetParent = NULL;
     // Loads the skin as a child of m_pView
-    if (!m_pSkinLoader->loadDefaultSkin(m_pView,
+    // assignment itentional in next line
+    if (!(m_pWidgetParent = m_pSkinLoader->loadDefaultSkin(m_pView,
                                         m_pKeyboard,
                                         m_pPlayerManager,
-                                        m_pLibrary)) {
+                                        m_pLibrary))) {
         qDebug() << "Could not load default skin.";
     }
 
@@ -410,6 +427,12 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
     // million different variables the first waveform may be horribly
     // corrupted. See bug 521509 -- bkgood
     setCentralWidget(m_pView);
+
+    // keep gui centered (esp for fullscreen)
+    // the layout will be deleted whenever m_pView gets deleted
+    QHBoxLayout *pLayout = new QHBoxLayout(m_pView);
+    pLayout->addWidget(m_pWidgetParent);
+    pLayout->setContentsMargins(0, 0, 0, 0); // don't want margins
 
     // Check direct rendering and warn user if they don't have it
     checkDirectRendering();
@@ -469,6 +492,8 @@ MixxxApp::~MixxxApp()
     m_pConfig->set(ConfigKey("[VinylControl]","EnabledCh2"), ConfigValue((int)ControlObject::getControl(ConfigKey("[Channel2]","vinylcontrol"))->get()));
     m_pConfig->set(ConfigKey("[VinylControl]","Mode"), ConfigValue((int)ControlObject::getControl(ConfigKey("[Channel1]","VinylMode"))->get()));
     m_pConfig->set(ConfigKey("[VinylControl]","Mode"), ConfigValue((int)ControlObject::getControl(ConfigKey("[Channel2]","VinylMode"))->get()));
+    qDebug() << "delete SkinLoader";
+    delete m_pSkinLoader;
 
     qDebug() << "delete MidiDeviceManager";
     delete m_pMidiDeviceManager;
@@ -1014,55 +1039,25 @@ void MixxxApp::slotOptionsFullScreen(bool toggle)
     if (m_pOptionsFullScreen)
         m_pOptionsFullScreen->setChecked(toggle);
 
-    // Making a fullscreen window on linux and windows is harder than you
-    // could possibly imagine...
-    if (toggle)
-    {
+    if (toggle) {
 #if defined(__LINUX__) || defined(__APPLE__)
-         m_winpos = pos();
-         // Can't set max to -1,-1 or 0,0 for unbounded?
-         setMaximumSize(32767,32767);
+         // this and the later move(m_winpos) doesn't seem necessary
+         // here on kwin, if it's necessary with some other x11 wm, re-enable
+         // it, I guess -bkgood
+         //m_winpos = pos();
+         // fix some x11 silliness -- for some reason the move(m_winpos)
+         // is moving the currentWindow to (0, 0), not the frame (as it's
+         // supposed to, I might add)
+         // if this messes stuff up on your distro yell at me -bkgood
+         //m_winpos.setX(m_winpos.x() + (geometry().x() - x()));
+         //m_winpos.setY(m_winpos.y() + (geometry().y() - y()));
 #endif
-
         showFullScreen();
-        //menuBar()->hide();
-        // FWI: Begin of fullscreen patch
-#if defined(__LINUX__) || defined(__APPLE__)
-        // Crazy X window managers break this so I'm told by Qt docs
-        //         int deskw = app->desktop()->width();
-        //         int deskh = app->desktop()->height();
-
-        //support for xinerama
-        int deskw = m_pApp->desktop()->screenGeometry(m_pView).width();
-        int deskh = m_pApp->desktop()->screenGeometry(m_pView).height();
-#else
-        int deskw = width();
-        int deskh = height();
-#endif
-        if (m_pView)
-            m_pView->move((deskw - m_pView->width())/2,
-                          (deskh - m_pView->height())/2);
-        // FWI: End of fullscreen patch
-    }
-    else
-    {
-        // FWI: Begin of fullscreen patch
-        if (m_pView)
-            m_pView->move(0,0);
-
-        menuBar()->show();
+    } else {
         showNormal();
-
 #ifdef __LINUX__
-        if (size().width() != m_pView->width() ||
-            size().height() != m_pView->height() + menuBar()->height()) {
-          setFixedSize(m_pView->width(),
-                  m_pView->height() + menuBar()->height());
-        }
-        move(m_winpos);
+        //move(m_winpos);
 #endif
-
-        // FWI: End of fullscreen patch
     }
 }
 
@@ -1286,7 +1281,6 @@ void MixxxApp::slotHelpAbout()
 "Bill Egert<br>"
 "Zach Shutters<br>"
 "Owen Bullock<br>"
-"Bill Good<br>"
 "Graeme Mathieson<br>"
 "Sebastian Actist<br>"
 "Jussi Sainio<br>"
@@ -1298,6 +1292,7 @@ void MixxxApp::slotHelpAbout()
 "Mikko Jania<br>"
 "Juan Pedro Bol&iacute;var Puente<br>"
 "Linus Amvall<br>"
+"Irwin C&eacute;spedes B<br>"
 
 "</p>"
 "<p align=\"center\"><b>And special thanks to:</b></p>"
@@ -1392,13 +1387,9 @@ void MixxxApp::slotHelpSupport()
 
 void MixxxApp::rebootMixxxView() {
 
-    if (!m_pView)
+    if (!m_pWidgetParent || !m_pView)
         return;
 
-    // Ok, so wierdly if you call setFixedSize with the same value twice, Qt
-    // breaks. So we check and if the size hasn't changed we don't make the call
-    int oldh = m_pView->height();
-    int oldw = m_pView->width();
     qDebug() << "Now in Rebootmixxview...";
 
     // Workaround for changing skins while fullscreen, just go out of fullscreen
@@ -1414,22 +1405,30 @@ void MixxxApp::rebootMixxxView() {
     delete m_pView;
     m_pView = new QFrame();
 
-    if (!m_pSkinLoader->loadDefaultSkin(m_pView,
+    // assignment in next line intentional
+    if (!(m_pWidgetParent = m_pSkinLoader->loadDefaultSkin(m_pView,
                                         m_pKeyboard,
                                         m_pPlayerManager,
-                                        m_pLibrary)) {
+                                        m_pLibrary))) {
         qDebug() << "Could not reload the skin.";
     }
 
     // don't move this before loadDefaultSkin above. bug 521509 --bkgood
     setCentralWidget(m_pView);
 
-    qDebug() << "rebootgui DONE";
+    // keep gui centered (esp for fullscreen)
+    // the layout will be deleted whenever m_pView gets deleted
+    QHBoxLayout *pLayout = new QHBoxLayout(m_pView);
+    pLayout->addWidget(m_pWidgetParent);
+    pLayout->setContentsMargins(0, 0, 0, 0); // don't want margins
 
-    if (oldw != m_pView->width()
-            || oldh != m_pView->height() + menuBar()->height()) {
-      setFixedSize(m_pView->width(), m_pView->height() + menuBar()->height());
-    }
+    // if we move from big skin to smaller skin, size the window down to fit
+    // (qt scales up for us if we go the other way) -bkgood
+    // this doesn't always seem to snap down tight on Windows... sigh -bkgood
+    setFixedSize(m_pView->width(), m_pView->height());
+    setFixedSize(QSize(QWIDGETSIZE_MAX, QWIDGETSIZE_MAX));
+
+    qDebug() << "rebootgui DONE";
 }
 
 /** Event filter to block certain events. For example, this function is used
