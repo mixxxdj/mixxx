@@ -139,7 +139,7 @@ METADATA
     </sql>
   </revision>
   <revision version="5">
-   <description>
+    <description>
       Add needs_verification column to library hashes table.
     </description>
     <sql>

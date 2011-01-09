@@ -365,8 +365,6 @@ bool LibraryScanner::recursiveScan(QString dirPath, QList<TrackInfoObject*>& tra
 
     //Calculate a hash of the directory's file list.
     newHash = qHash(newHashStr);
-    
-    //qDebug() << dirPath << "new hash" << newHash;
 
     //Try to retrieve a hash from the last time that directory was scanned.
     prevHash = m_libraryHashDao.getDirectoryHash(dirPath);
@@ -377,7 +375,6 @@ bool LibraryScanner::recursiveScan(QString dirPath, QList<TrackInfoObject*>& tra
     {
         //If we didn't know about this directory before...
         if (!prevHashExists) {
-        	qDebug() << "creating hash";
             m_libraryHashDao.saveDirectoryHash(dirPath, newHash);
         }
         else //Contents of a known directory have changed.

@@ -43,7 +43,7 @@ DlgPrefSoundItem::DlgPrefSoundItem(QWidget *parent, AudioPathType type,
     } else {
         typeLabel->setText(AudioPath::getTrStringFromType(type));
     }
-    deviceComboBox->addItem(tr("None"), "None");
+   	deviceComboBox->addItem(tr("None"), "None");
     connect(deviceComboBox, SIGNAL(currentIndexChanged(int)),
             this, SLOT(deviceChanged(int)));
     connect(channelComboBox, SIGNAL(currentIndexChanged(int)),
