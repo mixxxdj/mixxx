@@ -439,8 +439,8 @@ class MixxxCore(Feature):
                    "library/preparelibrarytablemodel.cpp",
                    "library/browsetablemodel.cpp",
                    "library/missingtablemodel.cpp",
-                   "library/proxytrackmodel.cpp",
-                   "library/abstractxmltrackmodel.cpp",
+                   
+                   
                    "library/rhythmboxtrackmodel.cpp",
                    "library/rhythmboxplaylistmodel.cpp",
                    "library/itunestrackmodel.cpp",

@@ -7,7 +7,7 @@
 
 #include "library/libraryfeature.h"
 #include "library/cratetablemodel.h"
-#include "library/proxytrackmodel.h"
+
 #include "treeitemmodel.h"
 
 class TrackCollection;

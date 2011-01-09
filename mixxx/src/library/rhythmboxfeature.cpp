@@ -2,7 +2,6 @@
 #include <QtDebug>
 #include <QStringList>
 
-#include "library/proxytrackmodel.h"
 #include "library/rhythmboxtrackmodel.h"
 #include "library/rhythmboxplaylistmodel.h"
 #include "library/rhythmboxfeature.h"

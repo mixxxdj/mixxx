@@ -21,7 +21,6 @@
 #include "library/promotracksfeature.h"
 #include "library/bundledsongswebview.h"
 #include "library/featuredartistswebview.h"
-#include "library/proxytrackmodel.h"
 #include "library/trackcollection.h"
 #include "library/dao/cratedao.h"
 #include "trackinfoobject.h"

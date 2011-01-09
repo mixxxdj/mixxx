@@ -11,7 +11,6 @@
 
 #include "library/librarytablemodel.h"
 #include "library/missingtablemodel.h"
-#include "library/proxytrackmodel.h"
 #include "library/trackcollection.h"
 #include "treeitem.h"
 
