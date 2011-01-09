@@ -32,7 +32,9 @@ class RhythmboxFeature : public LibraryFeature {
     bool dragMoveAcceptChild(const QModelIndex& index, QUrl url);
 
     TreeItemModel* getChildModel();
+    /** processes the music collection **/
     bool importMusicCollection();
+    /** processes the playlist entries **/
     bool importPlaylists();
 
 public slots:
@@ -49,6 +51,12 @@ private:
     bool m_isActivated;
     
     TreeItemModel m_childModel;
+    /**Removes all rows from a given table **/
+    void clearTable(QString table_name);
+    /** reads the properties of a track and executes a SQL statement **/
+    void importTrack(QXmlStreamReader &xml, QSqlQuery &query);
+    /** reads all playlist entries and executes a SQL statement **/
+    void importPlaylist(QXmlStreamReader &xml, QSqlQuery &query);
 };
 
 #endif /* RHYTHMBOXFEATURE_H */
