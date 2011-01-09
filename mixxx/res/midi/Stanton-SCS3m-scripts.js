@@ -334,7 +334,8 @@ StantonSCS3m.PitchRbR = function (channel, control, value, status) {
 }
 
 StantonSCS3m.PitchBendButton = function (status, side, comp) {
-    if (StantonSCS3m.modifier["Master"]) return;    // Skip if Master button is held
+    // Skip if Master button is held or fine-tuning the pitch
+    if (StantonSCS3m.modifier["Master"] || StantonSCS3m.modifier["Deck"+side]) return;
     var deck = StantonSCS3m.SideToDeck(side);
     if (engine.getValue("[Channel"+deck+"]","rate_dir") == comp) {   // Go in the appropriate direction
         if ((status & 0xF0) == 0x90)    // If button down
