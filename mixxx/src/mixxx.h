@@ -146,6 +146,7 @@ class MixxxApp : public QMainWindow
 
     // Pointer to the root GUI widget
     QWidget* m_pView;
+    QWidget* m_pWidgetParent;
 
     QApplication *m_pApp;
 

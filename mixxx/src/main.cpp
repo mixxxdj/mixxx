@@ -44,29 +44,29 @@
 
 void InitDebugConsole() { // Open a Debug Console so we can printf
     int fd;
-    FILE * fp;
+    FILE *fp;
 
     FreeConsole();
     if (AllocConsole()) {
         SetConsoleTitleA("Mixxx Debug Messages");
 
-        fd = _open_osfhandle( (long)GetStdHandle( STD_OUTPUT_HANDLE ), 0);
-        fp = _fdopen( fd, "w" );
+        fd = _open_osfhandle((long) GetStdHandle(STD_OUTPUT_HANDLE), 0);
+        fp = _fdopen(fd, "w");
 
         *stdout = *fp;
-        setvbuf( stdout, NULL, _IONBF, 0 );
+        setvbuf(stdout, NULL, _IONBF, 0);
 
-        fd = _open_osfhandle( (long)GetStdHandle( STD_ERROR_HANDLE ), 0);
-        fp = _fdopen( fd, "w" );
+        fd = _open_osfhandle((long) GetStdHandle(STD_ERROR_HANDLE), 0);
+        fp = _fdopen(fd, "w");
 
         *stderr = *fp;
-        setvbuf( stderr, NULL, _IONBF, 0 );
+        setvbuf(stderr, NULL, _IONBF, 0);
     }
 }
 #endif // DEBUGCONSOLE
 #endif // __WINDOWS__
 
-QApplication * a;
+QApplication *a;
 
 QStringList plugin_paths; //yes this is global. sometimes global is good.
 
@@ -76,10 +76,8 @@ QFile Logfile; // global logfile variable
 
 /* Debug message handler which outputs to both a logfile and a
  * and prepends the thread the message came from too.
- *
- *
  */
-void MessageHandler( QtMsgType type, const char * input )
+void MessageHandler(QtMsgType type, const char *input)
 {
     static QMutex mutex;
     QMutexLocker locker(&mutex);
@@ -90,39 +88,46 @@ void MessageHandler( QtMsgType type, const char * input )
 
     if(!Logfile.isOpen())
     {
-    	Logfile.setFileName(QDir::homePath().append("/").append(SETTINGS_PATH).append("mixxx.log"));
+#ifdef Q_OS_WIN32
+        QString logFileName("mixxx.log");
+#else
+        QString logFileName(QDir::homePath().append("/").append(SETTINGS_PATH).append("mixxx.log"));
+#endif
+        // XXX will there ever be a case that we can't write to our current
+        // working directory?
+        Logfile.setFileName(logFileName);
         Logfile.open(QIODevice::WriteOnly | QIODevice::Text);
     }
 
-    QTextStream Log( &Logfile );
+    QTextStream Log(&Logfile);
 
     ErrorDialogHandler* dialogHandler = ErrorDialogHandler::instance();
 
-    switch ( type ) {
+    switch (type) {
     case QtDebugMsg:
 #ifdef __WINDOWS__  //wtf? -kousu 2/2009
         if (strstr(input, "doneCurrent")) {
             break;
         }
 #endif
-        fprintf( stderr, "Debug: %s\n", s );
+        fprintf(stderr, "Debug: %s\n", s);
         Log << "Debug: " << s << "\n";
         break;
     case QtWarningMsg:
-        fprintf( stderr, "Warning: %s\n", s);
+        fprintf(stderr, "Warning: %s\n", s);
         Log << "Warning: " << s << "\n";
         // Don't use qWarning for reporting user-facing errors.
         //dialogHandler->requestErrorDialog(DLG_WARNING,input);
         break;
     case QtCriticalMsg:
-        fprintf( stderr, "Critical: %s\n", s );
+        fprintf(stderr, "Critical: %s\n", s);
         Log << "Critical: " << s << "\n";
         Logfile.flush();    // Ensure the error is written to the log before exiting
         dialogHandler->requestErrorDialog(DLG_CRITICAL,input);
 //         exit(-1);    // Done in ErrorDialogHandler
         break; //NOTREACHED
     case QtFatalMsg:
-        fprintf( stderr, "Fatal: %s\n", s );
+        fprintf(stderr, "Fatal: %s\n", s);
         Log << "Fatal: " << s << "\n";
         Logfile.flush();    // Ensure the error is written to the log before aborting
         dialogHandler->requestErrorDialog(DLG_FATAL,input);
@@ -147,7 +152,7 @@ int main(int argc, char * argv[])
     InitDebugConsole();
   #endif
 #endif
-    qInstallMsgHandler( MessageHandler );
+    qInstallMsgHandler(MessageHandler);
 
     // Other things depend on this name to enforce thread exclusivity,
     //  so if you change it here, change it also in:
@@ -168,12 +173,12 @@ int main(int argc, char * argv[])
     //LADSPALoader ladspaloader;
 #endif
 
-    QTranslator tor( 0 );
+    QTranslator tor(0);
     // set the location where your .qm files are in load() below as the last parameter instead of "."
     // for development, use "/" to use the english original as
     // .qm files are stored in the base project directory.
-    tor.load( QString("mixxx.") + QLocale::system().name(), "." );
-    a->installTranslator( &tor );
+    tor.load(QString("mixxx.") + QLocale::system().name(), ".");
+    a->installTranslator(&tor);
 
     // Check if one of the command line arguments is "--no-visuals"
 //    bool bVisuals = true;
@@ -287,10 +292,10 @@ int main(int argc, char * argv[])
      }
 #endif
 
-    MixxxApp * mixxx=new MixxxApp(a, args);
+    MixxxApp *mixxx = new MixxxApp(a, args);
 
     //a->setMainWidget(mixxx);
-    a -> connect( a, SIGNAL(lastWindowClosed()), a, SLOT(quit()) );
+    a->connect(a, SIGNAL(lastWindowClosed()), a, SLOT(quit()));
 
     int result = -1;
 
@@ -310,8 +315,9 @@ int main(int argc, char * argv[])
 
     // Don't make any more output after this
     //    or mixxx.log will get clobbered!
-    if(Logfile.isOpen())
-    Logfile.close();
+    if(Logfile.isOpen()) {
+        Logfile.close();
+    }
 
     //delete plugin_paths;
     return result;

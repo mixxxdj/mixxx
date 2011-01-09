@@ -7,6 +7,7 @@
 #include <QStringListModel>
 
 #include "library/libraryfeature.h"
+#include "treeitemmodel.h"
 
 class LibraryTableModel;
 class MissingTableModel;
@@ -28,7 +29,7 @@ class MixxxLibraryFeature : public LibraryFeature {
     bool dragMoveAcceptChild(const QModelIndex& index, QUrl url);
     void setLibraryPrefix(QString sPrefix);
 
-    QAbstractItemModel* getChildModel();
+    TreeItemModel* getChildModel();
 
 public slots:
     void activate();
@@ -39,7 +40,7 @@ public slots:
 private:
     LibraryTableModel* m_pLibraryTableModel;
     MissingTableModel* m_pMissingTableModel;
-    QStringListModel m_childModel;
+    TreeItemModel m_childModel;
 };
 
 

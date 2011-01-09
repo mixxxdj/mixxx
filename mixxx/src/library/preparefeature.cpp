@@ -50,7 +50,7 @@ void PrepareFeature::bindWidget(WLibrarySidebar* sidebarWidget,
     libraryWidget->registerView(m_sPrepareViewName, pPrepareView);
 }
 
-QAbstractItemModel* PrepareFeature::getChildModel() {
+TreeItemModel* PrepareFeature::getChildModel() {
     return &m_childModel;
 }
 
