@@ -1148,6 +1148,8 @@ void MixxxApp::slotHelpAbout()
 "Guy Martin<br>"
 "Anders Gunnarson<br>"
 "Mikko Jania<br>"
+"Micz Flor<br>"
+"Daniel James<br>"
 
 "</p>"
 "<p align=\"center\"><b>And special thanks to:</b></p>"
