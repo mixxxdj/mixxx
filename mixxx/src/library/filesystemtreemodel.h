@@ -1,22 +1,21 @@
-#ifndef TREE_ITEM_MODEL_H
- #define TREE_ITEM_MODEL_H
+#ifndef FILE_SYSTEM_TREE_MODEL_H
+ #define FILE_SYSTEM_TREE_MODEL_H
 
  #include <QAbstractItemModel>
  #include <QModelIndex>
  #include <QVariant>
  #include <QList>
 
+#include "treeitemmodel.h"
+#include "library/browsefeature.h"
 
-
- class TreeItem;
-
- class TreeItemModel : public QAbstractItemModel
+ class FileSystemTreeModel : public TreeItemModel
  {
      Q_OBJECT
 
  public:
-     TreeItemModel(QObject *parent = 0);
-     virtual ~TreeItemModel();
+     FileSystemTreeModel(QObject *parent = 0, LibraryFeature* pfeature = 0);
+     virtual ~FileSystemTreeModel();
 
      virtual QVariant data(const QModelIndex &index, int role) const;
      virtual Qt::ItemFlags flags(const QModelIndex &index) const;
@@ -29,12 +28,11 @@
 
      virtual int rowCount(const QModelIndex &parent = QModelIndex()) const;
      virtual int columnCount(const QModelIndex &parent = QModelIndex()) const;
-     void setRootItem(TreeItem *item);
-     TreeItem* getItem(const QModelIndex &index) const;
+    
     
 
- protected:
-     TreeItem *m_rootItem;
+ private:
+     LibraryFeature* m_browser;
      
  };
 

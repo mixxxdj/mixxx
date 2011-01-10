@@ -26,12 +26,15 @@ BrowseFeature::BrowseFeature(QObject* parent, ConfigObject<ConfigValue>* pConfig
           m_proxyModel(this),
           m_pTrackCollection(pTrackCollection) {
     m_proxyModel.setSourceModel(&m_browseModel);
+    
     connect(this, SIGNAL(setRootIndex(const QModelIndex&)),
             &m_proxyModel, SLOT(setProxyParent(const QModelIndex&)));
+            
+    m_childModel = new FileSystemTreeModel(0,this);
 }
 
 BrowseFeature::~BrowseFeature() {
-
+    delete m_childModel;
 }
 
 QVariant BrowseFeature::title() {
@@ -43,7 +46,7 @@ QIcon BrowseFeature::getIcon() {
 }
 
 TreeItemModel* BrowseFeature::getChildModel() {
-    return &m_childModel;
+    return m_childModel;
 }
 
 bool BrowseFeature::dropAccept(QUrl url) {
