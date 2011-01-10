@@ -11,7 +11,7 @@
 #include "library/browsefilter.h"
 #include "library/browsetablemodel.h"
 #include "library/libraryfeature.h"
-#include "treeitemmodel.h"
+#include "library/filesystemtreemodel.h"
 
 class TrackCollection;
 
@@ -56,7 +56,7 @@ class BrowseFeature : public LibraryFeature {
     BrowseTableModel m_browseModel;
     BrowseFilter m_proxyModel;
     TrackCollection* m_pTrackCollection;
-    TreeItemModel m_childModel;
+    TreeItemModel* m_childModel;
     QString m_currentSearch;
 };
 

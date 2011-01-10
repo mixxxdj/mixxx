@@ -483,6 +483,7 @@ class MixxxCore(Feature):
                    
                    "library/treeitemmodel.cpp",
                    "library/treeitem.cpp",
+                   "library/filesystemtreemodel.cpp",
                    "library/traktorfeature.cpp",
                    "library/traktortablemodel.cpp",
                    "library/traktorplaylistmodel.cpp",
