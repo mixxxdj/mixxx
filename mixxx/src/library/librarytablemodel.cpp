@@ -154,13 +154,13 @@ void LibraryTableModel::slotSearch(const QString& searchText) {
         return;
     m_currentSearch = searchText;
 
-    //update database so searches reflect updated data
-    m_trackDao.saveDirtyTracks();
-
     QString filter;
     if (searchText == "")
         filter = "(" + LibraryTableModel::DEFAULT_LIBRARYFILTER + ")";
     else {
+    	//update database so searches reflect updated data
+    	m_trackDao.saveDirtyTracks();
+    	
         QSqlField search("search", QVariant::String);
 
         filter = "(" + LibraryTableModel::DEFAULT_LIBRARYFILTER;

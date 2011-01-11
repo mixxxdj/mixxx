@@ -121,14 +121,14 @@ void MissingTableModel::slotSearch(const QString& searchText) {
     if (!m_currentSearch.isNull() && m_currentSearch == searchText)
         return;
     m_currentSearch = searchText;
-
-    //update database so searches reflect updated data
-    m_trackDao.saveDirtyTracks();
     
     QString filter;
     if (searchText == "")
         filter = "(" + MissingTableModel::MISSINGFILTER + ")";
     else {
+    	//update database so searches reflect updated data
+    	m_trackDao.saveDirtyTracks();
+    	
         QSqlField search("search", QVariant::String);
         search.setValue("%" + searchText + "%");
         QString escapedText = database().driver()->formatValue(search);
