@@ -28,7 +28,7 @@
     /** for dynamic resizing models **/
      bool insertChildren(QList<QString>& data, int position, int count);
      bool removeChildren(int position, int count);
-    
+     
      /** sets data **/ 
      bool setData(const QVariant &data, const QVariant &data_path);
      /** simple name of the playlist **/
