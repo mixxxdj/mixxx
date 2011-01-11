@@ -5,8 +5,10 @@
 #include <QTreeView>
 #include <QDirModel>
 #include <QStringList>
+#include <QFileInfo>
 
 #include "trackinfoobject.h"
+#include "library/treeitem.h"
 #include "library/browsefeature.h"
 #include "library/browsefilter.h"
 #include "library/libraryview.h"
@@ -30,11 +32,26 @@ BrowseFeature::BrowseFeature(QObject* parent, ConfigObject<ConfigValue>* pConfig
     connect(this, SIGNAL(setRootIndex(const QModelIndex&)),
             &m_proxyModel, SLOT(setProxyParent(const QModelIndex&)));
             
-    m_childModel = new FileSystemTreeModel(0,this);
+    //The invisible root item of the child model
+    TreeItem* rootItem = new TreeItem("$root","$root");
+     
+    #if defined(__WINDOWS__)
+    QFileInfoList drives = QDir::drives();
+    //show drive letters
+    foreach(QFileInfo drive, drives){
+        TreeItem* driveLetter = new TreeItem(drive.fileName(), drive.fileName(), this , rootItem);
+        rootItem->appendChild(driveLetter);
+    }
+    #else
+    //show root directory on UNIX-based operating systems
+    TreeItem* driveLetter = new TreeItem(QDir::rootPath(), QDir::rootPath(),this , rootItem);
+    rootItem->appendChild(driveLetter);
+    #endif
+    m_childModel.setRootItem(rootItem);
 }
 
 BrowseFeature::~BrowseFeature() {
-    delete m_childModel;
+    
 }
 
 QVariant BrowseFeature::title() {
@@ -46,7 +63,7 @@ QIcon BrowseFeature::getIcon() {
 }
 
 TreeItemModel* BrowseFeature::getChildModel() {
-    return m_childModel;
+    return &m_childModel;
 }
 
 bool BrowseFeature::dropAccept(QUrl url) {
@@ -103,7 +120,32 @@ void BrowseFeature::activate() {
     emit(restoreSearch(m_currentSearch));
 }
 
-void BrowseFeature::activateChild(const QModelIndex&) {
+void BrowseFeature::activateChild(const QModelIndex& index) {
+    TreeItem *item = static_cast<TreeItem*>(index.internalPointer());
+    qDebug() << "BrowseFeature::activateChild " << item->data() << " " << item->dataPath();
+    
+    //populate childs
+    QDir dir(item->dataPath().toString());
+    QFileInfoList all = dir.entryInfoList(QDir::Dirs | QDir::NoDotAndDotDot);
+
+    // loop through all the item and construct the childs
+    QList<QString> folders;
+    foreach(QFileInfo one, all){
+        //TreeItem* folder = new TreeItem(one.fileName(), item->dataPath().toString().append(one.fileName() +"/"), this, item);
+        //item->appendChild(folder);
+        folders << one.fileName();
+        
+        
+    }
+    //Before we populate the subtree, we need to delete old subtrees
+    m_childModel.removeRows(0, item->childCount(), index);
+    m_childModel.insertRows(folders, 0, folders.size() , index);
+    
+    QModelIndex startIndex = m_browseModel.index(item->dataPath().toString());
+    QModelIndex proxyIndex = m_proxyModel.mapFromSource(startIndex);
+    emit(setRootIndex(proxyIndex));
+    emit(switchToView("BROWSE"));
+
 }
 
 void BrowseFeature::onRightClick(const QPoint& globalPos) {
