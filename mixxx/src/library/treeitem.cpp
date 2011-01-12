@@ -84,10 +84,9 @@ bool TreeItem::removeChildren(int position, int count)
         return false;
 
     for (int row = 0; row < count; ++row){
+        //Remove from list to avoid invalid pointers
         TreeItem* item = m_childItems.takeAt(position);
         if(item) delete item;
-        //Remove from list to avoid invalid pointers
-        m_childItems.removeAt(position);
     }
     return true;
  }

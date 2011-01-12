@@ -310,18 +310,21 @@ void PlaylistFeature::constructChildModel()
 {
     QList<TreeItem*> data_list;
     int idColumn = m_playlistTableModel.record().indexOf("name");
+    //Access the invisible root item
+    TreeItem* root = m_childModel.getItem(QModelIndex());
+    //Create new TreeItems for the playlists in the database
     for (int row = 0; row < m_playlistTableModel.rowCount(); ++row) {
             QModelIndex ind = m_playlistTableModel.index(row, idColumn);
             QString playlist_name = m_playlistTableModel.data(ind).toString();
-            
-            TreeItem* item = new TreeItem(playlist_name, playlist_name, this);
+            //Create the TreeItem whose parent is the invisible root item
+            TreeItem* item = new TreeItem(playlist_name, playlist_name, this, root );
             data_list.append(item);
     }
-    
+    //Append all the newly created TreeItems in a dynamic way to the childmodel
     m_childModel.insertRows(data_list, 0, m_playlistTableModel.rowCount());  
 }
 /**
-  * Clears the child model dynamically
+  * Clears the child model dynamically, but the invisible root item remains
   */
 void PlaylistFeature::clearChildModel()
 {
