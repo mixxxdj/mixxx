@@ -129,13 +129,13 @@ void BrowseFeature::activateChild(const QModelIndex& index) {
     QFileInfoList all = dir.entryInfoList(QDir::Dirs | QDir::NoDotAndDotDot);
 
     // loop through all the item and construct the childs
-    QList<QString> folders;
+    QList<TreeItem*> folders;
     foreach(QFileInfo one, all){
-        //TreeItem* folder = new TreeItem(one.fileName(), item->dataPath().toString().append(one.fileName() +"/"), this, item);
-        //item->appendChild(folder);
-        folders << one.fileName();
-        
-        
+        // We here create new items for the sidebar models
+        // Once the items are added to the TreeItemModel, 
+        // the models takes ownership of them and ensures their deletion
+        TreeItem* folder = new TreeItem(one.fileName(), item->dataPath().toString().append(one.fileName() +"/"), this, item);
+        folders << folder;  
     }
     //Before we populate the subtree, we need to delete old subtrees
     m_childModel.removeRows(0, item->childCount(), index);

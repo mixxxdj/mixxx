@@ -66,16 +66,13 @@ bool TreeItem::isFolder() const
  {
      return m_feature;
  }
-bool TreeItem::insertChildren(QList<QString>& data, int position, int count)
+bool TreeItem::insertChildren(QList<TreeItem*> &data, int position, int count)
  {
      if (position < 0 || position > m_childItems.size())
          return false;
 
      for (int row = 0; row < count; ++row) {
-         TreeItem* item = NULL;
-         
-         item = new TreeItem(data.at(row), this->dataPath().toString().append(data.at(row) +"/"), m_feature, this);
-       
+         TreeItem* item = data.at(row);
          m_childItems.insert(row, item);
      }
 
@@ -84,12 +81,15 @@ bool TreeItem::insertChildren(QList<QString>& data, int position, int count)
 bool TreeItem::removeChildren(int position, int count)
  {
     if (position < 0 || position + count > m_childItems.size())
-         return false;
+        return false;
 
-     for (int row = 0; row < count; ++row)
-         delete m_childItems.takeAt(position);
-
-     return true;
+    for (int row = 0; row < count; ++row){
+        TreeItem* item = m_childItems.takeAt(position);
+        if(item) delete item;
+        //Remove from list to avoid invalid pointers
+        m_childItems.removeAt(position);
+    }
+    return true;
  }
 
 bool TreeItem::setData(const QVariant &data, const QVariant &data_path)

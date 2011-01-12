@@ -289,12 +289,14 @@ void CrateFeature::slotRenameCrate() {
 */
 void CrateFeature::constructChildModel()
 {
-    QList<QString> data_list;
+    QList<TreeItem*> data_list;
     int idColumn = m_crateListTableModel.record().indexOf("name");
     for (int row = 0; row < m_crateListTableModel.rowCount(); ++row) {
             QModelIndex ind = m_crateListTableModel.index(row, idColumn);
             QString crate_name = m_crateListTableModel.data(ind).toString();
-            data_list.append(crate_name);
+            
+            TreeItem* item = new TreeItem(crate_name, crate_name, this);
+            data_list.append(item);
     }    
     m_childModel.insertRows(data_list, 0, m_crateListTableModel.rowCount());  
 }
