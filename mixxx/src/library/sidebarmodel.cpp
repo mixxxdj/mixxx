@@ -99,7 +99,7 @@ QModelIndex SidebarModel::index(int row, int column,
 }
 
 QModelIndex SidebarModel::parent(const QModelIndex& index) const {
-    qDebug() << "SidebarModel::parent index=" << index.data();
+    //qDebug() << "SidebarModel::parent index=" << index.data();
     if (index.isValid()) {
         /* If we have selected the root of a library feature
          * its internal pointer is the current sidebar object model
