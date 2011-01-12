@@ -57,6 +57,7 @@ private:
 	double dSteadyPitch;
 	double dSteadyPitchTime;
 	double dUiUpdateTime;
+	double m_dKnobTweak;
 
     //Contains information that xwax's code needs internally about the timecode and how to process it.
     struct timecoder_t timecoder;

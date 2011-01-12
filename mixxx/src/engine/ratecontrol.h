@@ -38,7 +38,6 @@ public:
     // Returns the current engine rate.
     double calculateRate(double baserate, bool paused);
     double getRawRate();
-    void resetVinylTweak();
 
     // Set rate change when temp rate button is pressed
     static void setTemp(double v);
@@ -101,8 +100,7 @@ private:
     ControlObject* m_pBackButton;
     ControlObject* m_pForwardButton;
     ControlObject* m_pWheelSensitivity;
-    ControlObject *m_pVinylPitchTweakKnob;
-
+    
     ControlTTRotary* m_pWheel;
     ControlTTRotary* m_pScratch;
     ControlTTRotary* m_pOldScratch;
@@ -167,8 +165,6 @@ private:
       * slider */
     double m_dOldRate;
     
-    double m_dVinylTweakRatePerm;
-
     /** Handle for configuration */
     ConfigObject<ConfigValue>* m_pConfig;
 };

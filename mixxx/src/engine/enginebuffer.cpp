@@ -137,6 +137,8 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
 
 #ifdef __VINYLCONTROL__
     m_pVinylStatus = new ControlObject(ConfigKey(group,"VinylStatus"));
+    //a midi knob to tweak the vinyl pitch for decks with crappy sliders
+    m_pVinylPitchTweakKnob = new ControlPotmeter(ConfigKey(_group, "vinylpitchtweak"), -0.015, 0.015);
 #endif
 
     // Sample rate
@@ -317,9 +319,6 @@ void EngineBuffer::slotTrackLoaded(TrackPointer pTrack,
     // Let the engine know that a track is loaded now.
     m_pTrackEndCOT->slotSet(0.0f); //XXX: Not sure if to use the COT or CO here
     
-    //reset the tweak
-    m_pRateControl->resetVinylTweak();
-
     pause.unlock();
 
     emit(trackLoaded(pTrack));

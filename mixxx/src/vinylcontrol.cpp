@@ -25,6 +25,8 @@ VinylControl::VinylControl(ConfigObject<ConfigValue> * pConfig, const char * _gr
     //vinylStatus			= new ControlObject(ConfigKey(group,"VinylStatus"));
     vinylStatus     = new ControlObjectThread(ControlObject::getControl(ConfigKey(group, "VinylStatus")));
     rateDir         = new ControlObjectThread(ControlObject::getControl(ConfigKey(group, "rate_dir")));
+    //a midi knob to tweak the vinyl pitch for decks with crappy sliders
+    m_pVinylPitchTweakKnob = new ControlObjectThread(ControlObject::getControl(ConfigKey(group,  "vinylpitchtweak")));
 
     dVinylPitch = 0.0f;
     dVinylPosition = 0.0f;

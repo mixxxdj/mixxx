@@ -40,7 +40,6 @@ RateControl::RateControl(const char* _group,
     m_eRampBackMode(RATERAMP_RAMPBACK_NONE),
     m_dRateTempRampbackChange(0.0),
     m_dOldRate(0.0f),
-    m_dVinylTweakRatePerm(0.0f),
     m_pConfig(_config)
 {
     m_pRateDir = new ControlObject(ConfigKey(_group, "rate_dir"));
@@ -131,9 +130,6 @@ RateControl::RateControl(const char* _group,
     m_pWheelSensitivity = new ControlPotmeter(ConfigKey("[Master]", "wheelsensitivity"), 0., 2.);
     connect(m_pWheelSensitivity, SIGNAL(valueChanged(double)), this, SLOT(slotWheelSensitivity(double)));
     
-    //a midi knob to tweak the vinyl pitch for decks with crappy sliders
-    m_pVinylPitchTweakKnob = new ControlPotmeter(ConfigKey(_group, "vinylpitchtweak"), -0.02, 0.02);
-
     // Scratch controller, this is an accumulator which is useful for
     // controllers that return individiual +1 or -1s, these get added up and
     // cleared when we read
@@ -257,40 +253,28 @@ void RateControl::slotControlRatePermDown(double)
 {
     // Adjusts temp rate down if button pressed
     if (buttonRatePermDown->get())
-    {
         m_pRateSlider->sub(m_pRateDir->get() * m_dPerm / (100. * m_pRateRange->get()));
-        m_dVinylTweakRatePerm -= m_pRateDir->get() * m_dPerm / (100. * m_pRateRange->get());
-    }
 }
 
 void RateControl::slotControlRatePermDownSmall(double)
 {
     // Adjusts temp rate down if button pressed
     if (buttonRatePermDownSmall->get())
-    {
         m_pRateSlider->sub(m_pRateDir->get() * m_dPermSmall / (100. * m_pRateRange->get()));
-        m_dVinylTweakRatePerm -= m_pRateDir->get() * m_dPermSmall / (100. * m_pRateRange->get());
-    }
 }
 
 void RateControl::slotControlRatePermUp(double)
 {
     // Adjusts temp rate up if button pressed
     if (buttonRatePermUp->get())
-    {
         m_pRateSlider->add(m_pRateDir->get() * m_dPerm / (100. * m_pRateRange->get()));
-        m_dVinylTweakRatePerm += m_pRateDir->get() * m_dPerm / (100. * m_pRateRange->get());
-    }
 }
 
 void RateControl::slotControlRatePermUpSmall(double)
 {
     // Adjusts temp rate up if button pressed
     if (buttonRatePermUpSmall->get())
-    {
         m_pRateSlider->add(m_pRateDir->get() * m_dPermSmall / (100. * m_pRateRange->get()));
-        m_dVinylTweakRatePerm += m_pRateDir->get() * m_dPermSmall / (100. * m_pRateRange->get());
-    }
 }
 
 void RateControl::slotControlRateTempDown(double)
@@ -430,14 +414,7 @@ double RateControl::calculateRate(double baserate, bool paused) {
         // New scratch behavior - overrides playback speed (and old behavior)
         if (scratchEnable)
         {
-        	if (m_pVinylMode->get() == MIXXX_VCMODE_ABSOLUTE)
-        		rate = scratchFactor;
-        	else
-        	{
-        		//Apply tweak value in non-abs modes only
-        		double knobtweak = m_pVinylPitchTweakKnob->get();
-        		rate = scratchFactor * (1.0 + (m_dVinylTweakRatePerm/10.0) + knobtweak);
-        	}
+       		rate = scratchFactor;
         }
         else {
             // Deprecated old scratch behavior
@@ -613,9 +590,4 @@ void RateControl::resetRateTemp(void)
 void RateControl::slotControlVinyl(double toggle)
 {
 	m_bVinylControlEnabled = (bool)toggle;
-}
-
-void RateControl::resetVinylTweak()
-{
-	m_dVinylTweakRatePerm = 0.0f;
 }

@@ -212,6 +212,7 @@ private:
     ControlPushButton* m_pRepeat;
 
 	ControlObject *m_pVinylStatus;  //Status of vinyl control
+	ControlObject *m_pVinylPitchTweakKnob; // vinyl rate tweaker
 	
     /** Fwd and back controls, start and end of track control */
     ControlPushButton *startButton, *endButton;

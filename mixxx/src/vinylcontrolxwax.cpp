@@ -48,6 +48,7 @@ VinylControlXwax::VinylControlXwax(ConfigObject<ConfigValue> * pConfig, const ch
     bForceResync    = false;
     iOldMode		= MIXXX_VCMODE_ABSOLUTE;
     dUiUpdateTime   = -1.0f;
+    m_dKnobTweak = 0.0f;
     m_bNeedleSkipPrevention = (bool)(m_pConfig->getValueString( ConfigKey( "[VinylControl]", "NeedleSkipPrevention" ) ).toInt());
     
     //this is all needed because libxwax indexes by C-strings
@@ -219,6 +220,7 @@ void VinylControlXwax::run()
             reportedMode = mode->get();
             //qDebug() << "cur mode" << reportedMode;
             reportedPlayButton = playButton->get();
+            m_dKnobTweak = m_pVinylPitchTweakKnob->get();
             
 			if (iVCMode != reportedMode)
 		    {
@@ -474,6 +476,7 @@ void VinylControlXwax::run()
 				
 	            if (iVCMode == MIXXX_VCMODE_ABSOLUTE)
 	            {
+	            	//do not apply knob tweak in absolute mode
 	            	controlScratch->slotSet(averagePitch + dDriftControl);
 	            	if (iPosition != -1 && reportedPlayButton && uiUpdateTime(filePosition))
 	            	{
@@ -483,10 +486,10 @@ void VinylControlXwax::run()
 	            }
 	            else if (iVCMode == MIXXX_VCMODE_RELATIVE)
 	            {
-	                controlScratch->slotSet(averagePitch);
+	                controlScratch->slotSet(averagePitch + m_dKnobTweak);
 	                if (iPosition != -1 && reportedPlayButton && uiUpdateTime(filePosition))
 	            	{
-	                	rateSlider->slotSet(rateDir->get() * (fabs(averagePitch) - 1.0f) / fRateRange);
+	                	rateSlider->slotSet(rateDir->get() * (fabs(averagePitch + m_dKnobTweak) - 1.0f) / fRateRange);
 	                	dUiUpdateTime = filePosition;
 	                }
 	            }
@@ -538,8 +541,8 @@ void VinylControlXwax::enableConstantMode()
 	mode->slotSet((double)iVCMode);
 	togglePlayButton(true);
 	double rate = controlScratch->get();
-	rateSlider->slotSet(rateDir->get() * (fabs(rate) - 1.0f) / fRateRange);
-	controlScratch->slotSet(rate);
+	rateSlider->slotSet(rateDir->get() * (fabs(rate + m_dKnobTweak) - 1.0f) / fRateRange);
+	controlScratch->slotSet(rate + m_dKnobTweak);
 }
 
 void VinylControlXwax::disableRecordEndMode()
@@ -603,13 +606,13 @@ bool VinylControlXwax::checkEnabled(bool was, bool is)
 		//This allows for single-deck control, dj handoffs, etc.
 
 		togglePlayButton(playButton->get() || fabs(controlScratch->get()) > 0.05f);
-		controlScratch->slotSet((rateSlider->get() * fRateRange) + 1.0f);
+		controlScratch->slotSet(rateDir->get() * (rateSlider->get() * fRateRange) + 1.0f);
 		resetSteadyPitch(0.0f, 0.0f);
 		bForceResync = true; 
 		if (!was)
 			dOldFilePos = 0.0f;
 		iVCMode = mode->get();
-		disableRecordEndMode();
+		atRecordEnd = false;
 	}
 	if (is && !was)
 	{
