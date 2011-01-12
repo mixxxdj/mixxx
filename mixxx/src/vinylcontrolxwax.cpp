@@ -603,13 +603,13 @@ bool VinylControlXwax::checkEnabled(bool was, bool is)
 		//This allows for single-deck control, dj handoffs, etc.
 
 		togglePlayButton(playButton->get() || fabs(controlScratch->get()) > 0.05f);
-		controlScratch->slotSet((rateSlider->get() * fRateRange) + 1.0f);
+		controlScratch->slotSet(rateDir->get() * (rateSlider->get() * fRateRange) + 1.0f);
 		resetSteadyPitch(0.0f, 0.0f);
 		bForceResync = true; 
 		if (!was)
 			dOldFilePos = 0.0f;
 		iVCMode = mode->get();
-		disableRecordEndMode();
+		atRecordEnd = false;
 	}
 	if (is && !was)
 	{
