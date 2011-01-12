@@ -128,7 +128,7 @@ bool TreeItemModel::insertRows(QList<TreeItem*> &data, int position, int rows, c
      return success;
  }
  bool TreeItemModel::removeRows(int position, int rows, const QModelIndex &parent)
- {
+ { 
      TreeItem *parentItem = getItem(parent);
      bool success = true;
 

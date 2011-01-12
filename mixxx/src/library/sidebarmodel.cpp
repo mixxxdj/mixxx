@@ -99,7 +99,7 @@ QModelIndex SidebarModel::index(int row, int column,
 }
 
 QModelIndex SidebarModel::parent(const QModelIndex& index) const {
-    //qDebug() << "SidebarModel::parent index=" << index.data();
+    qDebug() << "SidebarModel::parent index=" << index.data();
     if (index.isValid()) {
         /* If we have selected the root of a library feature
          * its internal pointer is the current sidebar object model
@@ -260,15 +260,29 @@ bool SidebarModel::dragMoveAccept(const QModelIndex& index, QUrl url)
     }
     return false;
 }
-
+//Translates an index from the child models to an index of the sidebar models
 QModelIndex SidebarModel::translateSourceIndex(const QModelIndex& index) {
     QModelIndex translatedIndex;
+    
+    /* These method is called from the slot functions below.
+     * QObject::sender() return the object which emitted the signal
+     * handled by the slot functions.
+     
+     * For child models, this always the child models itself
+     */
+    
     const QAbstractItemModel* model = (QAbstractItemModel*)sender();
+    
     Q_ASSERT(model);
     if (index.isValid()) {
-        translatedIndex = createIndex(index.row(), index.column(),
-                                      (void*)model);
-    } else {
+       TreeItem* item = (TreeItem*)index.internalPointer();
+       translatedIndex = createIndex(index.row(), index.column(), item);
+       
+    } 
+    else 
+    {
+        //Comment from Tobias Rafreider --> Dead Code????
+        
         for (int i = 0; i < m_sFeatures.size(); ++i) {
             if (m_sFeatures[i]->getChildModel() == model) {
                 translatedIndex = createIndex(i, 0, (void*)this);

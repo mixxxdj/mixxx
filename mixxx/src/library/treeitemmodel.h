@@ -30,6 +30,8 @@
      virtual int rowCount(const QModelIndex &parent = QModelIndex()) const;
      virtual int columnCount(const QModelIndex &parent = QModelIndex()) const;
      void setRootItem(TreeItem *item);
+     /** Return the underlying TreeItem. 
+       * If the index is invalid, the root item is returned. **/
      TreeItem* getItem(const QModelIndex &index) const;
     
 
