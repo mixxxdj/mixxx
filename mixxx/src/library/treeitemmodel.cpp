@@ -116,7 +116,7 @@
   * Before you can resize the data model dynamically by using 'insertRows' and 'removeRows' 
   * make sure you have initialized 
   */ 
-bool TreeItemModel::insertRows(QList<QString>& data, int position, int rows, const QModelIndex &parent)
+bool TreeItemModel::insertRows(QList<TreeItem*> &data, int position, int rows, const QModelIndex &parent)
  {  
      TreeItem *parentItem = getItem(parent);
      bool success;

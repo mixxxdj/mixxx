@@ -308,12 +308,14 @@ TreeItemModel* PlaylistFeature::getChildModel() {
 */
 void PlaylistFeature::constructChildModel()
 {
-    QList<QString> data_list;
+    QList<TreeItem*> data_list;
     int idColumn = m_playlistTableModel.record().indexOf("name");
     for (int row = 0; row < m_playlistTableModel.rowCount(); ++row) {
             QModelIndex ind = m_playlistTableModel.index(row, idColumn);
             QString playlist_name = m_playlistTableModel.data(ind).toString();
-            data_list.insert(row,playlist_name);
+            
+            TreeItem* item = new TreeItem(playlist_name, playlist_name, this);
+            data_list.append(item);
     }
     
     m_childModel.insertRows(data_list, 0, m_playlistTableModel.rowCount());  

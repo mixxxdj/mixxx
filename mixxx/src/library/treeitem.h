@@ -26,7 +26,8 @@
      TreeItem *parent();
      
     /** for dynamic resizing models **/
-     bool insertChildren(QList<QString>& data, int position, int count);
+     bool insertChildren(QList<TreeItem*> &data, int position, int count);
+     /** Removes <count> children from the child list starting at index <position> **/
      bool removeChildren(int position, int count);
      
      /** sets data **/ 

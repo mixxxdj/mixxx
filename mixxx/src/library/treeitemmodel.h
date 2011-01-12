@@ -24,7 +24,7 @@
      virtual QModelIndex index(int row, int column, const QModelIndex &parent = QModelIndex()) const;
      virtual QModelIndex parent(const QModelIndex &index) const;
 
-     virtual bool insertRows(QList<QString>& data, int position, int rows, const QModelIndex &parent = QModelIndex());
+     virtual bool insertRows(QList<TreeItem*> &data, int position, int rows, const QModelIndex &parent = QModelIndex());
      virtual bool removeRows(int position, int rows, const QModelIndex &parent = QModelIndex());
 
      virtual int rowCount(const QModelIndex &parent = QModelIndex()) const;
