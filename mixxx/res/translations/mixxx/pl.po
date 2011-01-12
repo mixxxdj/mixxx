@@ -8,18 +8,18 @@ msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2010-10-28 15:35-0400\n"
-"PO-Revision-Date: 2010-12-31 12:13+0000\n"
-"Last-Translator: Mariusz <Unknown>\n"
+"PO-Revision-Date: 2011-01-11 17:22+0000\n"
+"Last-Translator: Adam Czabara <kolofaza@o2.pl>\n"
 "Language-Team: Polish <pl@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-01-01 04:52+0000\n"
+"X-Launchpad-Export-Date: 2011-01-12 04:42+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
 #: AutoDJFeature#1
 msgid "Auto DJ"
-msgstr ""
+msgstr "Auto DJ"
 
 #: BrowseFeature#1
 msgid "Browse"
@@ -27,11 +27,11 @@ msgstr "Przeglądaj"
 
 #: BrowseFeature#2
 msgid "Permission Denied"
-msgstr "Brak dostępu"
+msgstr "Odmowa dostępu"
 
 #: BrowseFeature#3
 msgid "You don't have permission to view this folder."
-msgstr "Brak uprawnień do przeglądania utworu"
+msgstr "Nie masz uprawnień do przegladania tego folderu."
 
 #: CrateFeature#1
 msgid "New Crate"
@@ -52,7 +52,7 @@ msgstr "Nowe nazwa"
 
 #: CrateFeature#5
 msgid "Crate Creation Failed"
-msgstr ""
+msgstr "Tworzenie paczki nie powiodło się"
 
 #: CrateFeature#6
 msgid "A crate cannot have a blank name."
@@ -60,15 +60,15 @@ msgstr "Pole Nazwa puste"
 
 #: CrateFeature#7
 msgid "Creating Crate Failed"
-msgstr ""
+msgstr "Tworzenie paczki nie powiodło się"
 
 #: CrateFeature#8
 msgid "A crate by that name already exists."
-msgstr ""
+msgstr "Paczka o podanej nazwie już istnieje."
 
 #: CrateTableModel#1
 msgid "ID"
-msgstr "Identyfikator"
+msgstr "ID"
 
 #: CrateTableModel#2
 msgctxt "CrateTableModel#2"
@@ -123,7 +123,7 @@ msgstr "Nr utworu"
 #: CrateTableModel#12
 msgctxt "CrateTableModel#12"
 msgid "Bitrate"
-msgstr ""
+msgstr "Bitrate"
 
 #: CrateTableModel#13
 msgctxt "CrateTableModel#13"
@@ -137,7 +137,7 @@ msgstr "Data dodania"
 
 #: DlgAboutDlg#1
 msgid "About Mixxx"
-msgstr ""
+msgstr "O Mixxx"
 
 #: DlgAboutDlg#2
 msgid ""
@@ -155,14 +155,27 @@ msgid ""
 "margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-"
 "family:'Sans Serif'; font-size:9pt;\"></p></body></html>"
 msgstr ""
+"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" "
+"\"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+"<html><head><meta name=\"qrichtext\" content=\"1\" /><style "
+"type=\"text/css\">\n"
+"p, li { white-space: pre-wrap; }\n"
+"</style></head><body style=\" font-family:'MS Shell Dlg 2'; font-"
+"size:8.25pt; font-weight:400; font-style:normal;\">\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-"
+"right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-"
+"family:'Sans Serif'; font-size:9pt;\">Podziękowania dla</span></p>\n"
+"<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; "
+"margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-"
+"family:'Sans Serif'; font-size:9pt;\"></p></body></html>"
 
 #: DlgAboutDlg#3
 msgid "1.x.x"
-msgstr ""
+msgstr "1.x.x"
 
 #: DlgAboutDlg#4
 msgid "<a href=\"http://mixxx.org/\">Official Website</a>"
-msgstr ""
+msgstr "<a href=\"http://mixxx.org/\">Oficjalna strona www</a>"
 
 #: DlgAutoDJ#1
 msgid "Disable Auto DJ"
@@ -183,15 +196,15 @@ msgstr "Dodaj Utwór do kolejki"
 
 #: DlgBpmSchemeDlg#1
 msgid "BPM Scheme"
-msgstr ""
+msgstr "Schemat BMP"
 
 #: DlgBpmSchemeDlg#2
 msgid "Scheme Name:"
-msgstr ""
+msgstr "Nazwa schematu"
 
 #: DlgBpmSchemeDlg#3
 msgid "BPM Range"
-msgstr ""
+msgstr "Zakres BPM"
 
 #: DlgBpmSchemeDlg#4
 msgid "Max"
@@ -211,7 +224,7 @@ msgstr "Pomiń"
 
 #: DlgMidiLearning#2
 msgid "Successfully mapped to: "
-msgstr ""
+msgstr "Pomyślnie zmapowano do: "
 
 #: DlgMidiLearning#3
 msgid "Next"
@@ -220,17 +233,19 @@ msgstr "Następny"
 #: DlgMidiLearning#4
 msgctxt "DlgMidiLearning#4"
 msgid "MIDI Learning Wizard"
-msgstr ""
+msgstr "Kreator nauki MIDI"
 
 #: DlgMidiLearning#5
 msgid "Welcome to the MIDI Learning Wizard"
-msgstr ""
+msgstr "Witamy w kreatorze nauki MIDI"
 
 #: DlgMidiLearning#6
 msgid ""
 "This wizard allows you to easily map the controls on your MIDI controller to "
 "Mixxx's controls."
 msgstr ""
+"Kreator pozwala łatwo przypisać sterowanie kontrolera MIDI do sterowania "
+"Mixxx"
 
 #: DlgMidiLearning#7
 msgid "Begin"
@@ -242,7 +257,7 @@ msgstr ""
 
 #: DlgMidiLearning#9
 msgid "Mixxx Control"
-msgstr ""
+msgstr "Kontrola Mixxx"
 
 #: DlgMidiLearning#10
 msgid "Previous"
@@ -250,11 +265,11 @@ msgstr "Wstecz"
 
 #: DlgMidiLearning#11
 msgid "Press spacebar to proceed or skip."
-msgstr ""
+msgstr "Wciśnij spację, aby kontynuować lub pominąć."
 
 #: DlgMidiLearning#12
 msgid "MIDI learning complete!"
-msgstr ""
+msgstr "Nauka MIDI zakończona!"
 
 #: DlgMidiLearning#13
 msgid ""
@@ -272,128 +287,141 @@ msgid ""
 "left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><br />Now "
 "go spin some beats!</p></body></html>"
 msgstr ""
+"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" "
+"\"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+"<html><head><meta name=\"qrichtext\" content=\"1\" /><style "
+"type=\"text/css\">\n"
+"p, li { white-space: pre-wrap; }\n"
+"</style></head><body style=\" font-family:'Lucida Grande'; font-size:13pt; "
+"font-weight:400; font-style:normal;\">\n"
+"<p align=\"center\" style=\" margin-top:0px; margin-bottom:0px; margin-"
+"left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">Kreator "
+"można uruchomić ponownie w dowolnym momencie.</p>\n"
+"<p align=\"center\" style=\" margin-top:0px; margin-bottom:0px; margin-"
+"left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><br "
+"/>Teraz idź wykręć jakieś beaty!</p></body></html>"
 
 #: DlgMidiLearning#14
 msgid "Finito!"
-msgstr ""
+msgstr "Finito!"
 
 #: DlgPrefBPMDlg#1
 msgid "BPM Detection Settings"
-msgstr ""
+msgstr "Ustawienia detekcji BPM"
 
 #: DlgPrefBPMDlg#2
 msgctxt "DlgPrefBPMDlg#2"
 msgid "BPM Detection"
-msgstr ""
+msgstr "detekcja BPM"
 
 #: DlgPrefBPMDlg#3
 msgid "Enable BPM Detection"
-msgstr ""
+msgstr "Włącz detekcje BPM"
 
 #: DlgPrefBPMDlg#4
 msgid "Detect Song BPM on Import"
-msgstr ""
+msgstr "Wykryj BPM utworu podczas importu"
 
 #: DlgPrefBPMDlg#5
 msgid "Write BPM to ID3 Tag"
-msgstr ""
+msgstr "Zapisz BPM do ID3 Tag"
 
 #: DlgPrefBPMDlg#6
 msgid "If BPM can be detected but not within specified range"
-msgstr ""
+msgstr "Jeśli można wykryćBPM, ale nie w podanym zakresie"
 
 #: DlgPrefBPMDlg#7
 msgid "Allow BPM above the range"
-msgstr ""
+msgstr "Zezwól na BPM poza zakresem"
 
 #: DlgPrefBPMDlg#8
 msgid "BPM Schemes"
-msgstr ""
+msgstr "Schemat BPM"
 
 #: DlgPrefBPMDlg#9
 msgctxt "DlgPrefBPMDlg#9"
 msgid "Add"
-msgstr ""
+msgstr "Dodaj"
 
 #: DlgPrefBPMDlg#10
 msgid "Edit"
-msgstr ""
+msgstr "Edycja"
 
 #: DlgPrefBPMDlg#11
 msgid "Delete"
-msgstr ""
+msgstr "Usuń"
 
 #: DlgPrefBPMDlg#12
 msgid "Default"
-msgstr ""
+msgstr "Domyślnie"
 
 #: DlgPrefBpm#1
 msgid "Error"
-msgstr ""
+msgstr "Błąd"
 
 #: DlgPrefBpm#2
 msgid "Cannot open file %1"
-msgstr ""
+msgstr "Nie można otworzyć pliku %1"
 
 #: DlgPrefControls#1
 msgid "This skin does not support schemes"
-msgstr ""
+msgstr "Skórka nie obługuje schematw"
 
 #: DlgPrefControls#2
 msgid "Up increases speed"
-msgstr ""
+msgstr "W górę, podnosi prędkość"
 
 #: DlgPrefControls#3
 msgid "Down increases speed (Technics SL1210)"
-msgstr ""
+msgstr "W dół, obniża prędkość"
 
 #: DlgPrefControls#4
 msgctxt "DlgPrefControls#4"
 msgid "Information"
-msgstr ""
+msgstr "Informacja"
 
 #: DlgPrefControls#5
 msgid "Mixxx must be restarted before the changes will take effect."
-msgstr ""
+msgstr "Należy ponownie uruchomić Mixxx, w celu zastosowania zmian."
 
 #: DlgPrefControlsDlg#1
 msgctxt "DlgPrefControlsDlg#1"
 msgid "Form1"
-msgstr ""
+msgstr "Form1"
 
 #: DlgPrefControlsDlg#2
 msgid "Skin"
-msgstr ""
+msgstr "Skórka"
 
 #: DlgPrefControlsDlg#3
 msgid "Scheme"
-msgstr ""
+msgstr "Schemat"
 
 #: DlgPrefControlsDlg#4
 msgid "Waveform display"
-msgstr ""
+msgstr "Wyświetlanie fali dźwiękowej"
 
 #: DlgPrefControlsDlg#5
 msgid "Position display"
-msgstr ""
+msgstr "Wyświetlanie pozycji"
 
 #: DlgPrefControlsDlg#6
 msgid "Tool tips"
-msgstr ""
+msgstr "Podpowiedzi"
 
 #: DlgPrefControlsDlg#7
 msgctxt "DlgPrefControlsDlg#7"
 msgid "On"
-msgstr ""
+msgstr "Wł."
 
 #: DlgPrefControlsDlg#8
 msgctxt "DlgPrefControlsDlg#8"
 msgid "Off"
-msgstr ""
+msgstr "Wył."
 
 #: DlgPrefControlsDlg#9
 msgid "Pitch/Rate slider range"
-msgstr ""
+msgstr "Pitch / Tempo suwak zakresu"
 
 #: DlgPrefControlsDlg#10
 msgid "Pitch/Rate slider direction"
