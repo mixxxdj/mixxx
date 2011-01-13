@@ -1,18 +1,20 @@
 
 #include <QtCore>
 #include <QtSql>
+#include <QStringList>
+
 #include "browsetablemodel.h"
+#include "soundsourceproxy.h"
 
 
 BrowseTableModel::BrowseTableModel(QObject* parent)
-        : QFileSystemModel(parent),
+        : QStandardItemModel(parent),
           TrackModel(QSqlDatabase::database("QSQLITE"),
                      "mixxx.db.model.browse")
 {
-    QFileSystemModel::setReadOnly(true);
-    QFileSystemModel::setFilter(QDir::AllDirs | QDir::AllEntries);
-    //QFileSystemModel::setSorting(QDir::DirsFirst | Qir::IgnoreCase);
-
+    QStringList header_data;
+    header_data << "Filename" << "Artist" << "Title" << "Album" << "BPM" << "Key" << "Year";
+    setHorizontalHeaderLabels(header_data); 
 }
 
 BrowseTableModel::~BrowseTableModel()
@@ -20,21 +22,49 @@ BrowseTableModel::~BrowseTableModel()
 
 }
 
+void BrowseTableModel::setPath(QString absPath)
+{
+    //Refresh the name filters in case we loaded new
+    //SoundSource plugins.
+    QStringList nameFilters(SoundSourceProxy::supportedFileExtensionsString().split(" "));
+    QDirIterator fileIt(absPath, nameFilters, QDir::Files | QDir::NoDotAndDotDot);
+    
+    //remove all rows
+    removeRows(0, rowCount());
+    
+    
+    //Iterate over the files
+    while (fileIt.hasNext())
+    {
+        QString filepath = fileIt.next();
+        
+        TrackInfoObject tio(filepath);
+        QList<QStandardItem*> row;
+        QStandardItem* filename_item = new QStandardItem(filepath);
+        QStandardItem* artist_item = new QStandardItem(tio.getArtist());
+        
+        row << filename_item << artist_item;
+        appendRow(row);
+        
+    }
+    
+}
+
 TrackPointer BrowseTableModel::getTrack(const QModelIndex& index) const
 {
-	//TODO
+	
 
     return TrackPointer();
 }
 
 QString BrowseTableModel::getTrackLocation(const QModelIndex& index) const
 {
-    return filePath(index);
+    return 0;
 }
 
 void BrowseTableModel::search(const QString& searchText)
 {
-	//TODO
+	
 }
 
 const QString BrowseTableModel::currentSearch()
