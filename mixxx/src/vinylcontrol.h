@@ -23,7 +23,7 @@ class ControlObjectThread;
 #define MIXXX_VCMODE_CONSTANT  2
 #define MIXXX_VCMODE_SCRATCH  3
 
-#define MIXXX_VC_DEFAULT_LEADINTIME 0
+#define MIXXX_VC_DEFAULT_LEADINTIME 30
 
 //TODO: Make this an EngineObject instead one day? (need to route all the input audio through the engine that way too...)
 
