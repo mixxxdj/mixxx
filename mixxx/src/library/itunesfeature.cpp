@@ -21,7 +21,8 @@ ITunesFeature::ITunesFeature(QObject* parent, TrackCollection* pTrackCollection)
     m_pITunesTrackModel = new ITunesTrackModel(this, m_pTrackCollection);
     m_pITunesPlaylistModel = new ITunesPlaylistModel(this, m_pTrackCollection);
     m_isActivated = false;
-    m_rootItem = new TreeItem("$root","$root", this);
+    
+    m_rootItem = new TreeItem();
 }
 
 ITunesFeature::~ITunesFeature() {

@@ -3,7 +3,30 @@
 
 #include <QStringList>
 #include "treeitem.h"
-
+    /*
+     * Just a word about how the TreeItem objects and TreeItemModels are used in general:
+     * TreeItems are used by the TreeItemModel class to display tree
+     * structures in the sidebar.
+     *
+     * The constructor has 4 arguments:
+     * 1. argument represents a name shown in the sidebar view later on
+     * 2. argument represents the absolute path of this tree item
+     * 3. argument is a library feature object.
+     *    This is necessary because in sidebar.cpp we hanlde 'activateChid' events
+     * 4. the parent TreeItem object
+     *    The constructor does not add this TreeItem object to the parent's child list
+     *
+     * In case of no arguments, the standard constructor creates a
+     * root item that is not visible in the sidebar.
+     *
+     * Once the TreeItem objects are inserted to models, the models take care of their 
+     * deletion.
+     *
+     * Examples on how to use TreeItem and TreeItemModels can be found in
+     * - playlistfeature.cpp
+     * - cratefeature.cpp
+     * - *feature.cpp
+     */
 TreeItem::TreeItem(const QString &data, const QString &data_path, LibraryFeature* feature, TreeItem* parent)
  {
      m_data = data;
@@ -11,7 +34,13 @@ TreeItem::TreeItem(const QString &data, const QString &data_path, LibraryFeature
      m_parentItem = parent;
      m_feature = feature;
  }
-
+TreeItem::TreeItem()
+ {
+     m_data = "$root";
+     m_dataPath = "$root";
+     m_parentItem = NULL;
+     m_feature = NULL;
+ }
  TreeItem::~TreeItem()
  {
      qDeleteAll(m_childItems);

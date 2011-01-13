@@ -12,7 +12,11 @@
  class TreeItem
  {
  public:
-     TreeItem(const QString &data, const QString &data_path, LibraryFeature* feature = 0, TreeItem* parent = 0);
+     TreeItem(); //creates an invisible root item for the tree
+     TreeItem(const QString &data, 
+              const QString &data_path, 
+              LibraryFeature* feature, 
+              TreeItem* parent);
      ~TreeItem();
      /** appends a child item to this object **/ 
      void appendChild(TreeItem *child);

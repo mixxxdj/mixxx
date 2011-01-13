@@ -63,7 +63,7 @@ void RhythmboxFeature::activate() {
         m_pPlaylistModelProxy->setFilterCaseSensitivity(Qt::CaseInsensitive);
         m_pPlaylistModelProxy->setSortCaseSensitivity(Qt::CaseInsensitive);
 
-        TreeItem *rootItem = new TreeItem("$root","$root", this);
+        TreeItem *rootItem = new TreeItem();
         for (int i = 0; i < m_pRhythmboxPlaylistModel->numPlaylists(); ++i) {
             QString playlist_name = m_pRhythmboxPlaylistModel->playlistTitle(i);
             TreeItem *item = new TreeItem(playlist_name, playlist_name, this,rootItem);

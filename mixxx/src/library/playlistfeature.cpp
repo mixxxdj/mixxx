@@ -54,7 +54,7 @@ PlaylistFeature::PlaylistFeature(QObject* parent, TrackCollection* pTrackCollect
     m_playlistTableModel.select();
     
 	//construct child model
-    TreeItem *rootItem = new TreeItem("$root","$root", this);
+    TreeItem *rootItem = new TreeItem();
 
     int idColumn = m_playlistTableModel.record().indexOf("name");
     for (int row = 0; row < m_playlistTableModel.rowCount(); ++row) {

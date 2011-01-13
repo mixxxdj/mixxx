@@ -48,7 +48,7 @@ CrateFeature::CrateFeature(QObject* parent,
     m_crateListTableModel.select();
     
     //construct child model
-    TreeItem *rootItem = new TreeItem("$root","$root", this);
+    TreeItem *rootItem = new TreeItem();
 
     int idColumn = m_crateListTableModel.record().indexOf("name");
     for (int row = 0; row < m_crateListTableModel.rowCount(); ++row) {
