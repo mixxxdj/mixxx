@@ -33,19 +33,42 @@ BrowseFeature::BrowseFeature(QObject* parent, ConfigObject<ConfigValue>* pConfig
             &m_proxyModel, SLOT(setProxyParent(const QModelIndex&)));
             
     //The invisible root item of the child model
-    TreeItem* rootItem = new TreeItem("$root","$root");
-     
+    TreeItem* rootItem = new TreeItem();
+    
+    /*
+     * Just a word about how the TreeItem objects are used for the BrowseFeature:
+     * The constructor has 4 arguments:
+     * 1. argument represents the folder name shown in the sidebar later on
+     * 2. argument represents the folder path which MUST end with '/'
+     * 3. argument is the library feature itself
+     * 4. the parent TreeItem object
+     *
+     * Except the invisible root item, you must always state all 4 arguments.
+     *
+     * Once the TreeItem objects are inserted to models, the models take care of their 
+     * deletion.
+     */
+      
+    //Add a shortcut to the Music folder which Mixxx uses
+    QString mixxx_music_dir = m_pConfig->getValueString(ConfigKey("[Playlist]","Directory"));
+    TreeItem* mixxx_music_dir_item = new TreeItem("My Music", mixxx_music_dir +"/" ,this , rootItem);
+    rootItem->appendChild(mixxx_music_dir_item);
+    
     #if defined(__WINDOWS__)
     QFileInfoList drives = QDir::drives();
     //show drive letters
     foreach(QFileInfo drive, drives){
-        TreeItem* driveLetter = new TreeItem(drive.fileName(), drive.fileName(), this , rootItem);
+        TreeItem* driveLetter = new TreeItem(
+                        drive.canonicalPath(), // displays C:
+                        drive.filePath(), //Displays C:/
+                        this , 
+                        rootItem);
         rootItem->appendChild(driveLetter);
     }
     #else
     //show root directory on UNIX-based operating systems
-    TreeItem* driveLetter = new TreeItem(QDir::rootPath(), QDir::rootPath(),this , rootItem);
-    rootItem->appendChild(driveLetter);
+    TreeItem* root_folder_item = new TreeItem(QDir::rootPath(), QDir::rootPath(),this , rootItem);
+    rootItem->appendChild(root_folder_item);
     #endif
     m_childModel.setRootItem(rootItem);
 }
