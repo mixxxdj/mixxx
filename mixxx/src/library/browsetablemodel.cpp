@@ -5,6 +5,7 @@
 
 #include "browsetablemodel.h"
 #include "soundsourceproxy.h"
+#include "mixxxutils.cpp"
 
 
 BrowseTableModel::BrowseTableModel(QObject* parent)
@@ -13,7 +14,10 @@ BrowseTableModel::BrowseTableModel(QObject* parent)
                      "mixxx.db.model.browse")
 {
     QStringList header_data;
-    header_data << "Filename" << "Artist" << "Title" << "Album" << "BPM" << "Key" << "Year";
+    header_data << "Filename" << "Artist" << "Title" << "Album" 
+        << "Year" << "BPM" << "Key" << "Duration" << "Type"
+        << "Bitrate" << "Genre" << "Track #" << "Comment"
+        << "Location";
     setHorizontalHeaderLabels(header_data); 
 }
 
@@ -32,29 +36,103 @@ void BrowseTableModel::setPath(QString absPath)
     //remove all rows
     removeRows(0, rowCount());
     
-    
+    int row = 0;
     //Iterate over the files
     while (fileIt.hasNext())
     {
         QString filepath = fileIt.next();
-        
         TrackInfoObject tio(filepath);
-        QList<QStandardItem*> row;
-        QStandardItem* filename_item = new QStandardItem(filepath);
-        QStandardItem* artist_item = new QStandardItem(tio.getArtist());
         
-        row << filename_item << artist_item;
-        appendRow(row);
+        int columns = columnCount();
+        //Note that headers can change via context menus
+        //Also note that the order can change
         
-    }
-    
+        for(int column=0; column < columns; ++column){
+        
+            QString header = horizontalHeaderItem(column)->text();
+            if(header == "Filename"){
+                QStandardItem* item = new QStandardItem(tio.getFilename());
+                setItem(row, column, item);
+            }
+            if(header == "Artist"){
+                QStandardItem* item = new QStandardItem(tio.getArtist());
+                setItem(row, column, item);
+            }
+            if(header == "Title"){
+                QStandardItem* item = new QStandardItem(tio.getTitle());
+                setItem(row, column, item);
+            }
+            if(header == "Album"){
+                QStandardItem* item = new QStandardItem(tio.getAlbum());
+                setItem(row, column, item);
+            }
+            if(header == "BPM"){
+                QStandardItem* item = new QStandardItem(tio.getBpmStr());
+                setItem(row, column, item);
+            }
+            if(header == "Key"){
+                QStandardItem* item = new QStandardItem(tio.getKey());
+                setItem(row, column, item);
+            }
+            if(header == "Year"){
+                QStandardItem* item = new QStandardItem(tio.getYear());
+                setItem(row, column, item);
+            }
+            if(header == "Duration"){
+                QString duration = MixxxUtils::secondsToMinutes(qVariantValue<int>(tio.getDuration()));
+                QStandardItem* item = new QStandardItem(duration);
+                setItem(row, column, item);
+            }
+            if(header == "Bitrate"){
+                QStandardItem* item = new QStandardItem(tio.getBitrateStr());
+                setItem(row, column, item);
+            }
+            if(header == "Type"){
+                QStandardItem* item = new QStandardItem(tio.getType());
+                setItem(row, column, item);
+            }
+            if(header == "Genre"){
+                QStandardItem* item = new QStandardItem(tio.getGenre());
+                setItem(row, column, item);
+            }
+            if(header == "Track #"){
+                QStandardItem* item = new QStandardItem(tio.getTrackNumber());
+                setItem(row, column, item);
+            }
+            if(header == "Comment"){
+                QStandardItem* item = new QStandardItem(tio.getComment());
+                setItem(row, column, item);
+            }
+            if(header == "Location"){
+                QStandardItem* item = new QStandardItem(filepath);
+                setItem(row, column, item);
+            }
+        }
+        ++row;    
+    }   
 }
 
 TrackPointer BrowseTableModel::getTrack(const QModelIndex& index) const
 {
+    TrackInfoObject* tio = new TrackInfoObject();
+    int row = index.row();
+    int columns = columnCount();
+    //Note that headers can change via context menus
+    //Also note that the order can change
+        
+    for(int column=0; column < columns; ++column){
+        QString header = horizontalHeaderItem(column)->text();
+        if(header == "Location"){
+            tio->setLocation(item(row, column)->text());
+        }
+    }
+        
 	
+	
+	
+    
 
-    return TrackPointer();
+    return TrackPointer(tio, &QObject::deleteLater);
 }
 
 QString BrowseTableModel::getTrackLocation(const QModelIndex& index) const
