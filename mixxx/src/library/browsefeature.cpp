@@ -25,12 +25,12 @@ BrowseFeature::BrowseFeature(QObject* parent, ConfigObject<ConfigValue>* pConfig
         : LibraryFeature(parent),
           m_pConfig(pConfig),
           m_browseModel(this),
-          m_proxyModel(this),
+          //m_proxyModel(this),
           m_pTrackCollection(pTrackCollection) {
-    m_proxyModel.setSourceModel(&m_browseModel);
+    //m_proxyModel.setSourceModel(&m_browseModel);
     
-    connect(this, SIGNAL(setRootIndex(const QModelIndex&)),
-            &m_proxyModel, SLOT(setProxyParent(const QModelIndex&)));
+    //connect(this, SIGNAL(setRootIndex(const QModelIndex&)),
+    //        &m_proxyModel, SLOT(setProxyParent(const QModelIndex&)));
             
     //The invisible root item of the child model
     TreeItem* rootItem = new TreeItem();
@@ -127,14 +127,15 @@ void BrowseFeature::bindWidget(WLibrarySidebar* sidebarWidget,
     pBrowseView->setDragEnabled(true);
     pBrowseView->setDragDropMode(QAbstractItemView::DragDrop);
     pBrowseView->setAcceptDrops(false);
-    pBrowseView->setModel(&m_proxyModel);
+    //pBrowseView->setModel(&m_proxyModel);
 
     QString startPath = m_pConfig->getValueString(ConfigKey("[Playlist]","Directory"));
-    m_browseModel.setRootPath(startPath);
+    //m_browseModel.setRootPath(startPath);
+    /*
     QModelIndex startIndex = m_browseModel.index(startPath);
     QModelIndex proxyIndex = m_proxyModel.mapFromSource(startIndex);
     emit(setRootIndex(proxyIndex));
-
+    */
     libraryWidget->registerView("BROWSE", pBrowseView);
 }
 
@@ -163,11 +164,15 @@ void BrowseFeature::activateChild(const QModelIndex& index) {
     //Before we populate the subtree, we need to delete old subtrees
     m_childModel.removeRows(0, item->childCount(), index);
     m_childModel.insertRows(folders, 0, folders.size() , index);
-    
+    /*
     QModelIndex startIndex = m_browseModel.index(item->dataPath().toString());
     QModelIndex proxyIndex = m_proxyModel.mapFromSource(startIndex);
     emit(setRootIndex(proxyIndex));
     emit(switchToView("BROWSE"));
+    */
+    m_browseModel.setPath(item->dataPath().toString());
+    emit(switchToView("BROWSE"));
+    emit(showTrackModel(&m_browseModel));
 
 }
 
@@ -178,6 +183,7 @@ void BrowseFeature::onRightClickChild(const QPoint& globalPos, QModelIndex index
 }
 
 void BrowseFeature::onFileActivate(const QModelIndex& index) {
+    /*
     QModelIndex sourceIndex = m_proxyModel.mapToSource(index);
     QFileInfo info = m_browseModel.fileInfo(sourceIndex);
     QString absPath = info.absoluteFilePath();
@@ -221,9 +227,11 @@ void BrowseFeature::onFileActivate(const QModelIndex& index) {
 
         emit(loadTrack(track));
     }
+    */
 }
 
 void BrowseFeature::loadToPlayer(const QModelIndex& index, QString group) {
+    /*
     QModelIndex sourceIndex = m_proxyModel.mapToSource(index);
     QString path = m_browseModel.filePath(sourceIndex);
     QFileInfo info(path);
@@ -240,6 +248,7 @@ void BrowseFeature::loadToPlayer(const QModelIndex& index, QString group) {
 
         emit(loadTrackToPlayer(track, group));
     }
+    */
 }
 
 void BrowseFeature::searchStarting() {
@@ -248,10 +257,10 @@ void BrowseFeature::searchStarting() {
 
 void BrowseFeature::search(const QString& text) {
     m_currentSearch = text;
-    m_proxyModel.setFilterFixedString(text);
+    //m_proxyModel.setFilterFixedString(text);
 }
 
 void BrowseFeature::searchCleared() {
     m_currentSearch = "";
-    m_proxyModel.setFilterFixedString("");
+    //m_proxyModel.setFilterFixedString("");
 }
