@@ -1196,6 +1196,8 @@ void MixxxApp::slotHelpAbout()
 "Juan Pedro Bol&iacute;var Puente<br>"
 "Linus Amvall<br>"
 "Irwin C&eacute;spedes B<br>"
+"Micz Flor<br>"
+"Daniel James<br>"
 
 "</p>"
 "<p align=\"center\"><b>And special thanks to:</b></p>"
