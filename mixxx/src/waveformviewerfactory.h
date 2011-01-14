@@ -4,6 +4,7 @@
 
 #include <QList>
 #include <QDomNode>
+#include <QGLContext>
 
 #include "configobject.h"
 #include "widget/wwidget.h"
@@ -30,6 +31,7 @@ private:
     static QList<WVisualSimple*> m_simpleViewers;
     static QList<WWaveformViewer*> m_visualViewers;
     static QList<WGLWaveformViewer*> m_visualGLViewers;
+    static QGLContext *s_pSharedOGLCtxt;
 
 public:
     static WaveformViewerType createWaveformViewer(const char* group, QWidget *pParent, ConfigObject<ConfigValue> *pConfig, QObject **target, WaveformRenderer *pWaveformRenderer);

@@ -1,6 +1,7 @@
 
 #include <QtDebug>
 #include <QtGui>
+#include <QGLContext>
 
 #include "configobject.h"
 #include "waveformviewerfactory.h"
@@ -15,9 +16,22 @@ QList<QObject*> WaveformViewerFactory::m_viewers = QList<QObject*>();
 QList<WVisualSimple*> WaveformViewerFactory::m_simpleViewers = QList<WVisualSimple*>();
 QList<WWaveformViewer*> WaveformViewerFactory::m_visualViewers = QList<WWaveformViewer*>();
 QList<WGLWaveformViewer*> WaveformViewerFactory::m_visualGLViewers = QList<WGLWaveformViewer*>();
+QGLContext* WaveformViewerFactory::s_pSharedOGLCtxt = (QGLContext *)NULL;
 
 
 WaveformViewerType WaveformViewerFactory::createWaveformViewer(const char *group, QWidget *parent, ConfigObject<ConfigValue> *pConfig, QObject **target, WaveformRenderer* pWaveformRenderer) {
+    
+    QGLContext *ctxt;
+    
+    if ( s_pSharedOGLCtxt == (QGLContext*)NULL ) {
+        s_pSharedOGLCtxt = new QGLContext(QGLFormat(QGL::SampleBuffers));
+        s_pSharedOGLCtxt->create();
+        s_pSharedOGLCtxt->makeCurrent();
+    }
+    
+    ctxt = new QGLContext(QGLFormat(QGL::SampleBuffers));
+    ctxt->create(s_pSharedOGLCtxt);
+
     qDebug() << "createWaveformViewer()";
 
     bool bVisualWaveform = true;
@@ -42,7 +56,7 @@ WaveformViewerType WaveformViewerFactory::createWaveformViewer(const char *group
         else
             qDebug() << "WaveformViewerFactory :: Sharing existing GL context.";
         
-        WGLWaveformViewer *visual = new WGLWaveformViewer(group, pWaveformRenderer, parent, NULL);
+        WGLWaveformViewer *visual = new WGLWaveformViewer(group, pWaveformRenderer, parent, NULL, ctxt);
 
         if(visual->isValid()) {
             m_visualGLViewers.append(visual);
