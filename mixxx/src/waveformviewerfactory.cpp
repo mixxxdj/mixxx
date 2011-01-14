@@ -20,7 +20,7 @@ QTimer WaveformViewerFactory::s_waveformUpdateTimer;;
 QGLContext* WaveformViewerFactory::s_pSharedOGLCtxt = (QGLContext *)NULL;
 
 
-WaveformViewerType WaveformViewerFactory::createWaveformViewer(const char *group, QWidget *parent, ConfigObject<ConfigValue> *pConfig, QObject **target, WaveformRenderer* pWaveformRenderer) {
+WaveformViewerType WaveformViewerFactory::createWaveformViewer(const char *group, QWidget *parent, ConfigObject<ConfigValue> *pConfig, QWidget **target, WaveformRenderer* pWaveformRenderer) {
     
     QGLContext *ctxt;
     
