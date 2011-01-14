@@ -54,7 +54,7 @@ BrowseFeature::BrowseFeature(QObject* parent, ConfigObject<ConfigValue>* pConfig
     TreeItem* mixxx_music_dir_item = new TreeItem("My Music", mixxx_music_dir +"/" ,this , rootItem);
     rootItem->appendChild(mixxx_music_dir_item);
     
-    #if defined(__WINDOWS__)
+#if defined(__WINDOWS__)
     QFileInfoList drives = QDir::drives();
     //show drive letters
     foreach(QFileInfo drive, drives){
@@ -65,11 +65,17 @@ BrowseFeature::BrowseFeature(QObject* parent, ConfigObject<ConfigValue>* pConfig
                         rootItem);
         rootItem->appendChild(driveLetter);
     }
-    #else
+#elif defined(__APPLE__)
+    //Apple hides the base Linux file structure
+    //But all devices are mounted at /Volumes
+    TreeItem* devices = new TreeItem("Devices", "/Volumes/", this , rootItem);
+    rootItem->appendChild(devices);
+#else
     //show root directory on UNIX-based operating systems
     TreeItem* root_folder_item = new TreeItem(QDir::rootPath(), QDir::rootPath(),this , rootItem);
     rootItem->appendChild(root_folder_item);
-    #endif
+#endif
+    
     m_childModel.setRootItem(rootItem);
 }
 
@@ -171,7 +177,7 @@ void BrowseFeature::activateChild(const QModelIndex& index) {
     emit(switchToView("BROWSE"));
     */
     m_browseModel.setPath(item->dataPath().toString());
-    emit(switchToView("BROWSE"));
+    //emit(switchToView("BROWSE"));
     emit(showTrackModel(&m_browseModel));
 
 }

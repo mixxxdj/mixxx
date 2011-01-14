@@ -27,6 +27,8 @@ class BrowseTableModel : public QStandardItemModel, public TrackModel
         virtual QItemDelegate* delegateForColumn(const int);
         virtual bool isColumnHiddenByDefault(int column);
 	private:
+	   //This method is executed in a Thread
+	   void populateModel(QString absPath);
 };
 
 #endif
