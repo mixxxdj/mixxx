@@ -138,7 +138,7 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
 #ifdef __VINYLCONTROL__
     m_pVinylStatus = new ControlObject(ConfigKey(group,"VinylStatus"));
     //a midi knob to tweak the vinyl pitch for decks with crappy sliders
-    m_pVinylPitchTweakKnob = new ControlPotmeter(ConfigKey(_group, "vinylpitchtweak"), -0.015, 0.015);
+    m_pVinylPitchTweakKnob = new ControlPotmeter(ConfigKey(_group, "vinylpitchtweak"), -0.01, 0.01);
 #endif
 
     // Sample rate
