@@ -506,13 +506,15 @@ int SoundManager::setConfig(SoundManagerConfig config) {
     m_config = config;
     checkConfig();
     
+    // certain parts of mixxx rely on this being here, for the time being, just
+    // letting those be -- bkgood
+    // Do this first so vinyl control gets the right samplerate -- Owen W.
+    m_pConfig->set(ConfigKey("[Soundcard]","Samplerate"), ConfigValue(m_config.getSampleRate()));
+    
     err = setupDevices();
     if (err == OK) {
         m_config.writeToDisk();
     }
-    // certain parts of mixxx rely on this being here, for the time being, just
-    // letting those be -- bkgood
-    m_pConfig->set(ConfigKey("[Soundcard]","Samplerate"), ConfigValue(m_config.getSampleRate()));
     return err;
 }
 
