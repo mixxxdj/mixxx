@@ -225,10 +225,9 @@ void VinylControlXwax::run()
 			if (iVCMode != reportedMode)
 		    {
 		    	//qDebug() << "cur mode" << iVCMode << "new mode" << reportedMode;
-		    	//if we have needleskip on, and are playing, don't allow change 
+		    	//if we are playing, don't allow change 
 		    	//to absolute mode (would cause sudden track skip)
-		    	if (reportedPlayButton && reportedMode == MIXXX_VCMODE_ABSOLUTE 
-		    		&& m_bNeedleSkipPrevention )
+		    	if (reportedPlayButton && reportedMode == MIXXX_VCMODE_ABSOLUTE)
 		    	{
 		    		iVCMode = MIXXX_VCMODE_RELATIVE;
 		    		mode->slotSet((double)iVCMode);
@@ -358,13 +357,15 @@ void VinylControlXwax::run()
 	                    }
 	                    bForceResync = false;
 	            	}
-	            	else if (filePosition != dOldFilePos &&
-	            		fabs(filePosition - dOldFilePos) < fabs(dVinylPosition - dOldPos) &&
-	            		fabs(dVinylPosition - dOldPos) > 0.1f &&
+	            	else if (m_bNeedleSkipPrevention &&
 	            		iVCMode == MIXXX_VCMODE_ABSOLUTE &&
-	                    m_bNeedleSkipPrevention)
+	            		filePosition != dOldFilePos &&
+	                    (
+		                    ((dVinylPosition - dOldPos) * (dVinylPitch / fabs(dVinylPitch)) < 0) ||
+		                    ((dVinylPosition - dOldPos) * (dVinylPitch / fabs(dVinylPitch)) > 0.6)
+	                    ))
 	                {
-	                	//red alert, moved a lot of time on the record very quickly.
+	                	//red alert, moved wrong direction or jumped forward a lot,
 	                	//move to constant mode and keep playing
 	                	//TODO: trigger some sort of UI alert so the dj
 	                	//can clean the needle
@@ -552,7 +553,10 @@ void VinylControlXwax::disableRecordEndMode()
 	//don't start a new track with constant mode
 	if (iVCMode == MIXXX_VCMODE_CONSTANT)
 	{
-		iVCMode = iOldMode;
+		if (iOldMode == MIXXX_VCMODE_CONSTANT)
+			iVCMode = MIXXX_VCMODE_RELATIVE;
+		else
+			iVCMode = iOldMode;
 		mode->slotSet((double)iVCMode);
 	}
 }
