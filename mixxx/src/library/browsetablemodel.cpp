@@ -131,6 +131,10 @@ QMimeData* BrowseTableModel::mimeData(const QModelIndexList &indexes) const {
 }
 void BrowseTableModel::populateModel(QString absPath)
 {
+    QMutexLocker locker(&m_populationMutex);
+    //Give the thread low priority to prevent GUI freezing
+    QThread* thisThread = QThread::currentThread();
+    thisThread->setPriority(QThread::LowPriority);
     //Refresh the name filters in case we loaded new
     //SoundSource plugins.
     QStringList nameFilters(SoundSourceProxy::supportedFileExtensionsString().split(" "));

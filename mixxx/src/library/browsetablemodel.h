@@ -29,6 +29,7 @@ class BrowseTableModel : public QStandardItemModel, public TrackModel
 	private:
 	   //This method is executed in a Thread
 	   void populateModel(QString absPath);
+	   QMutex m_populationMutex;
 };
 
 #endif
