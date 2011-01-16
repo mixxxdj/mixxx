@@ -161,6 +161,10 @@ void BrowseFeature::activateChild(const QModelIndex& index) {
     // loop through all the item and construct the childs
     QList<TreeItem*> folders;
     foreach(QFileInfo one, all){
+        //Skip folders that end with .app on OS X
+        #if defined(__APPLE__)
+        if(one.isDir() && one.fileName().endsWith(".app")) continue;
+        #endif
         // We here create new items for the sidebar models
         // Once the items are added to the TreeItemModel, 
         // the models takes ownership of them and ensures their deletion
