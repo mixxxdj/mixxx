@@ -48,18 +48,24 @@ TrackPointer BrowseTableModel::getTrack(const QModelIndex& index) const
             tio->setLocation(item(row, column)->text());
         }
     }
-        
-	
-	
-	
-    
-
     return TrackPointer(tio, &QObject::deleteLater);
 }
 
 QString BrowseTableModel::getTrackLocation(const QModelIndex& index) const
 {
-    return 0;
+    int row = index.row();
+    int columns = columnCount();
+    //Note that headers can change via context menus
+    //Also note that the order can change
+        
+    for(int column=0; column < columns; ++column){
+        QString header = horizontalHeaderItem(column)->text();
+        if(header == "Location"){
+            QModelIndex index = this->index(row, column);
+            return data(index).toString();
+        }
+    }
+
 }
 
 void BrowseTableModel::search(const QString& searchText)
