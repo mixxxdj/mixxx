@@ -25,6 +25,7 @@ VinylControl::VinylControl(ConfigObject<ConfigValue> * pConfig, const char * _gr
     //vinylStatus			= new ControlObject(ConfigKey(group,"VinylStatus"));
     vinylStatus     = new ControlObjectThread(ControlObject::getControl(ConfigKey(group, "VinylStatus")));
     rateDir         = new ControlObjectThread(ControlObject::getControl(ConfigKey(group, "rate_dir")));
+    loopEnabled		= new ControlObjectThread(ControlObject::getControl(ConfigKey(group, "loop_enabled")));
 
     dVinylPitch = 0.0f;
     dVinylPosition = 0.0f;
