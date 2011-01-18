@@ -862,6 +862,83 @@
 			<ConfigKey>[Master],PeakIndicator</ConfigKey>
 		</Connection>
 	</StatusLight>
+	
+	<!--
+	**********************************************
+	Vinyl Stuff
+	**********************************************
+	-->
+	
+	<StatusLight>
+	  <Tooltip>Vinyl Status</Tooltip>
+	  <NumberPos>3</NumberPos>
+	  <PathBack>vinyl-status-disabled.png</PathBack>
+	  <PathStatusLight>vinyl-status-green.png</PathStatusLight>
+	  <PathStatusLight2>vinyl-status-yellow.png</PathStatusLight2>
+	  <PathStatusLight3>vinyl-status-red.png</PathStatusLight3>
+	  <Pos>357,194</Pos>
+	  <Connection>
+	   <ConfigKey>[Channel1],VinylStatus</ConfigKey>
+	  </Connection>
+	</StatusLight>
+	<StatusLight>
+	  <Tooltip>Vinyl Status</Tooltip>
+	  <NumberPos>3</NumberPos>
+	  <PathBack>vinyl-status-disabled.png</PathBack>
+	  <PathStatusLight>vinyl-status-green.png</PathStatusLight>
+	  <PathStatusLight2>vinyl-status-yellow.png</PathStatusLight2>
+	  <PathStatusLight3>vinyl-status-red.png</PathStatusLight3>
+	  <Pos>597,194</Pos>
+	  <Connection>
+	   <ConfigKey>[Channel2],VinylStatus</ConfigKey>
+	  </Connection>
+	</StatusLight>
+	<PushButton>
+	  <Tooltip>Vinyl Control Mode</Tooltip>
+	  <NumberStates>3</NumberStates>
+	  <State>
+		   <Number>0</Number>
+		   <Pressed>vinyl-abs.png</Pressed>
+		   <Unpressed>vinyl-abs.png</Unpressed>
+	  </State>
+	  <State>
+		   <Number>1</Number>
+		   <Pressed>vinyl-rel.png</Pressed>
+		   <Unpressed>vinyl-rel.png</Unpressed>
+	  </State>
+	  <State>
+		   <Number>2</Number>
+		   <Pressed>vinyl-const.png</Pressed>
+		   <Unpressed>vinyl-const.png</Unpressed>
+	  </State>
+	  <Pos>380,192</Pos>
+	  <Connection>
+	  	 	<ConfigKey>[Channel1],VinylMode</ConfigKey>
+	  </Connection>
+ 	</PushButton>
+ 	<PushButton>
+	  <Tooltip>Vinyl Control Mode</Tooltip>
+	  <NumberStates>3</NumberStates>
+	  <State>
+		   <Number>0</Number>
+		   <Pressed>vinyl-abs.png</Pressed>
+		   <Unpressed>vinyl-abs.png</Unpressed>
+	  </State>
+	  <State>
+		   <Number>1</Number>
+		   <Pressed>vinyl-rel.png</Pressed>
+		   <Unpressed>vinyl-rel.png</Unpressed>
+	  </State>
+	  <State>
+		   <Number>2</Number>
+		   <Pressed>vinyl-const.png</Pressed>
+		   <Unpressed>vinyl-const.png</Unpressed>
+	  </State>
+	  <Pos>621,192</Pos>
+	  <Connection>
+	  	 	<ConfigKey>[Channel2],VinylMode</ConfigKey>
+	  </Connection>
+ 	</PushButton>
 
 	<!--
 	############################################################################################
