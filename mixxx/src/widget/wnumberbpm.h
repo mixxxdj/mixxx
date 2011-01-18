@@ -20,6 +20,7 @@
 
 #include "wnumber.h"
 #include "trackinfoobject.h"
+#include <QTimer>
 
 class ControlObjectThreadMain;
 
@@ -38,11 +39,14 @@ public slots:
     void setValue(double dValue);
     void slotTrackLoaded(TrackPointer track);
     void slotTrackUnloaded(TrackPointer track);
+	void updateLabel(); 
 
 private:
     /** Pointer to control object for rate */
     ControlObjectThreadMain *m_pRateControl, *m_pRateDirControl, *m_pRateRangeControl, *m_pBpmControl;
     static bool m_bScaleBpm;
+    QTimer *m_tLabelUpdateTimer;
+    double m_dNumber;
 };
 
 #endif

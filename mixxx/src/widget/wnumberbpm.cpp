@@ -39,6 +39,10 @@ WNumberBpm::WNumberBpm(const char * group, QWidget * parent) : WNumber(parent)
     connect(m_pBpmControl, SIGNAL(valueChanged(double)),
             this, SLOT(setValue(double)));
 
+	m_tLabelUpdateTimer = new QTimer(this);
+	connect(m_tLabelUpdateTimer, SIGNAL(timeout()), this, SLOT(updateLabel()));
+	m_tLabelUpdateTimer->start(250); //update BPM every quarter second
+	m_dNumber = 0;
 }
 
 
@@ -58,7 +62,7 @@ void WNumberBpm::setValue(double)
                    m_pRateControl->get()*
                    m_pRateDirControl->get()*
                    m_pRateRangeControl->get());
-    WNumber::setValue(bpm*rate);
+    m_dNumber = bpm*rate;
 }
 
 
@@ -72,4 +76,9 @@ void WNumberBpm::slotTrackLoaded(TrackPointer track) {
 
 void WNumberBpm::slotTrackUnloaded(TrackPointer track) {
     setValue(0);
+}
+
+void WNumberBpm::updateLabel()
+{
+	WNumber::setValue(m_dNumber);
 }
