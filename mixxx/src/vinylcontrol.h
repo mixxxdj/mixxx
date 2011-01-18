@@ -60,6 +60,7 @@ class VinylControl : public QThread
         ControlObjectThread *vinylStatus;
         ControlObjectThread *rateDir; //direction of rate
         ControlObjectThread *m_pVinylPitchTweakKnob;
+        ControlObjectThread *loopEnabled; //looping enabled?
 		//ControlObject *vinylStatus;  //Status of vinyl control
 
     	int iLeadInTime;				//The lead-in time...

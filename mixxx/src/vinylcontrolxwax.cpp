@@ -240,6 +240,13 @@ void VinylControlXwax::run()
 	            		vinylStatus->slotSet(VINYL_STATUS_OK);
 		   		}	
 		    }
+
+			//if looping has been enabled, don't allow absolute mode		    
+		    if (loopEnabled->get() && iVCMode == MIXXX_VCMODE_ABSOLUTE)
+		    {
+		    	iVCMode = MIXXX_VCMODE_RELATIVE;
+		    	mode->slotSet((double)iVCMode);
+		    }
 		    
             //are we newly playing near the end of the record?  (in absolute mode, this happens
             //when the filepos is past safe (more accurate), 
