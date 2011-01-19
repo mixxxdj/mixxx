@@ -172,6 +172,7 @@ class Qt(Dependence):
             build.env.Append(LIBS = 'QtWebKit4');
             build.env.Append(LIBS = 'QtNetwork4')
             build.env.Append(LIBS = 'QtOpenGL4');
+            build.env.Append(LIBS = 'shell32');
 
         # Set Qt include paths for non-OSX
         if not build.platform_is_osx:
@@ -483,6 +484,7 @@ class MixxxCore(Feature):
                    
                    "library/treeitemmodel.cpp",
                    "library/treeitem.cpp",
+				   "library/foldertreemodel.cpp",
                    "library/traktorfeature.cpp",
                    "library/traktortablemodel.cpp",
                    "library/traktorplaylistmodel.cpp",

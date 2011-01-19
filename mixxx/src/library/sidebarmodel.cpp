@@ -5,6 +5,7 @@
 #include "library/libraryfeature.h"
 #include "library/sidebarmodel.h"
 #include "library/treeitem.h"
+#include "library/browsefeature.h"
 
 SidebarModel::SidebarModel(QObject* parent)
         : QAbstractItemModel(parent),
@@ -153,6 +154,24 @@ int SidebarModel::columnCount(const QModelIndex& parent) const {
     //qDebug() << "SidebarModel::columnCount parent=" << parent;
     // TODO(rryan) will we ever have columns? I don't think so.
     return 1;
+}
+bool SidebarModel::hasChildren(const QModelIndex& parent) const {
+    
+   if (parent.isValid()) {
+        if (parent.internalPointer() == this) {
+            return QAbstractItemModel::hasChildren(parent);
+        } 
+        else 
+        {
+            TreeItem* tree_item = (TreeItem*)parent.internalPointer();
+            LibraryFeature* feature = tree_item->getFeature();
+			feature->getChildModel()->hasChildren(parent);
+        }
+    }
+	else
+	{
+		return QAbstractItemModel::hasChildren(parent);
+	}
 }
 
 QVariant SidebarModel::data(const QModelIndex& index, int role) const {
