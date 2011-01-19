@@ -169,6 +169,3 @@ TreeItem* TreeItemModel::getItem(const QModelIndex &index) const
      }
      return m_rootItem;
  }
-
-
-

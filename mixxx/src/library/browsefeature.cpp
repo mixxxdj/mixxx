@@ -180,7 +180,7 @@ void BrowseFeature::activateChild(const QModelIndex& index) {
     emit(setRootIndex(proxyIndex));
     emit(switchToView("BROWSE"));
     */
-    m_browseModel.setPath(item->dataPath().toString());
+    //m_browseModel.setPath(item->dataPath().toString());
     //emit(switchToView("BROWSE"));
     emit(showTrackModel(&m_browseModel));
 

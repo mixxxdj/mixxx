@@ -35,7 +35,7 @@
      TreeItem* getItem(const QModelIndex &index) const;
     
 
- protected:
+ private:
      TreeItem *m_rootItem;
      
  };
