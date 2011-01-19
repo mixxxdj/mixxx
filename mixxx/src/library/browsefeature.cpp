@@ -173,14 +173,18 @@ void BrowseFeature::activateChild(const QModelIndex& index) {
     }
     //Before we populate the subtree, we need to delete old subtrees
     m_childModel.removeRows(0, item->childCount(), index);
-    m_childModel.insertRows(folders, 0, folders.size() , index);
+    
+    //we need to check here if subfolders are found
+    //On Ubuntu 10.04, otherwise, this will draw an icon although the folder has no subfolders
+    if(!folders.isEmpty())
+        m_childModel.insertRows(folders, 0, folders.size() , index);
     /*
     QModelIndex startIndex = m_browseModel.index(item->dataPath().toString());
     QModelIndex proxyIndex = m_proxyModel.mapFromSource(startIndex);
     emit(setRootIndex(proxyIndex));
     emit(switchToView("BROWSE"));
     */
-    //m_browseModel.setPath(item->dataPath().toString());
+    m_browseModel.setPath(item->dataPath().toString());
     //emit(switchToView("BROWSE"));
     emit(showTrackModel(&m_browseModel));
 
@@ -190,75 +194,6 @@ void BrowseFeature::onRightClick(const QPoint& globalPos) {
 }
 
 void BrowseFeature::onRightClickChild(const QPoint& globalPos, QModelIndex index) {
-}
-
-void BrowseFeature::onFileActivate(const QModelIndex& index) {
-    /*
-    QModelIndex sourceIndex = m_proxyModel.mapToSource(index);
-    QFileInfo info = m_browseModel.fileInfo(sourceIndex);
-    QString absPath = info.absoluteFilePath();
-
-    if (m_browseModel.isDir(sourceIndex)) {
-        if (!info.isReadable()) {
-            // Alert that the user didn't have permissions.
-            WBrowseTableView* pBrowseTableView = dynamic_cast<WBrowseTableView*>(sender());
-            if (pBrowseTableView) {
-                QMessageBox::warning(pBrowseTableView,
-                                     tr("Permission Denied"),
-                                     tr("You don't have permission to view this folder."));
-            }
-            return;
-        }
-        
-        //Appending ".." to the path doesn't always work on Windows.
-        //The right way to do it is to use QDir::cdUp(), we think... - Albert Nov 27, 2010
-        if (info.fileName() == "..") {
-            qDebug() << "cdUp";
-            QDir rootDir = m_browseModel.rootDirectory();
-            if (!rootDir.cdUp())
-                return; //Parent does not exist.
-
-            absPath = rootDir.absolutePath();
-        }
-
-        m_browseModel.setRootPath(absPath);
-
-        QModelIndex absIndex = m_browseModel.index(absPath);
-        QModelIndex absIndexProxy = m_proxyModel.mapFromSource(absIndex);
-        emit(setRootIndex(absIndexProxy));
-    } else {
-        TrackDAO& trackDao = m_pTrackCollection->getTrackDAO();
-        TrackPointer track = trackDao.getTrack(trackDao.getTrackId(absPath));
-
-        // The track doesn't exist in the database.
-        if (track == NULL) {
-            track = TrackPointer(new TrackInfoObject(info), &QObject::deleteLater);
-        }
-
-        emit(loadTrack(track));
-    }
-    */
-}
-
-void BrowseFeature::loadToPlayer(const QModelIndex& index, QString group) {
-    /*
-    QModelIndex sourceIndex = m_proxyModel.mapToSource(index);
-    QString path = m_browseModel.filePath(sourceIndex);
-    QFileInfo info(path);
-    QString absPath = info.absoluteFilePath();
-
-    if (!m_browseModel.isDir(sourceIndex)) {
-        TrackDAO& trackDao = m_pTrackCollection->getTrackDAO();
-        TrackPointer track = trackDao.getTrack(trackDao.getTrackId(absPath));
-
-        // The track doesn't exist in the database.
-        if (track == NULL) {
-            track = TrackPointer(new TrackInfoObject(info), &QObject::deleteLater);
-        }
-
-        emit(loadTrackToPlayer(track, group));
-    }
-    */
 }
 
 void BrowseFeature::searchStarting() {
