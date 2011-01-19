@@ -6,6 +6,12 @@
 	#include <windows.h>
 	#include <Shellapi.h>
 	#include <Shobjidl.h>
+#else
+    #include <sys/types.h>
+    #include <sys/stat.h>
+    #include <dirent.h>
+    #include <unistd.h>
+    #include <errno.h>
 #endif
 
 
@@ -55,9 +61,27 @@ bool FolderTreeModel::hasChildren( const QModelIndex & parent) const
 	SHGetFileInfo((LPCWSTR) folder.constData(), NULL, &sfi, sizeof(sfi), SHGFI_ATTRIBUTES);
 	return (sfi.dwAttributes & SFGAO_HASSUBFOLDER);
 #else
-	// TODO: For OS X and Linux
+	// For OS X and Linux
 	// http://stackoverflow.com/questions/2579948/checking-if-subfolders-exist-linux
-	return TreeItemModel::hasChildren(parent);
+	
+	std::string dot("."), dotdot("..");
+    bool found_subdir = false;    
+    DIR *directory = opendir(folder.toStdString().c_str());
+
+    if (directory == NULL){
+        return false;
+    }
+    struct dirent *entry;
+    while (!found_subdir && ((entry = readdir(directory)) != NULL)) {
+        if (entry->d_name != dot && entry->d_name != dotdot) 
+        {
+            found_subdir = (entry->d_type == DT_DIR);
+            
+        }
+    }
+    closedir(directory);
+    return found_subdir;
+
 #endif
     
 }
