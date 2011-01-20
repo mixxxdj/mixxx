@@ -360,5 +360,10 @@ TrackModel::CapabilitiesFlags PlaylistTableModel::getCapabilities() const
     if (m_iPlaylistId != m_playlistDao.getPlaylistIdFromName(AUTODJ_TABLE))
         caps |= TRACKMODELCAPS_ADDTOAUTODJ;
 
+    bool locked = m_playlistDao.isPlaylistLocked(m_iPlaylistId);
+
+    if (locked)
+        caps |= TRACKMODELCAPS_LOCKED;
+
     return caps;
 }
