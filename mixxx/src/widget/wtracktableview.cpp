@@ -371,8 +371,10 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent * event)
         m_pMenu->addMenu(m_pCrateMenu);
     }
 
-    m_pMenu->addSeparator();
-    m_pMenu->addAction(m_pRemoveAct);
+    if (!modelHasCapabilities(TrackModel::TRACKMODELCAPS_LOCKED)) {
+        m_pMenu->addSeparator();
+        m_pMenu->addAction(m_pRemoveAct);
+    }
 
     m_pPropertiesAct->setEnabled(oneSongSelected);
     m_pMenu->addAction(m_pPropertiesAct);

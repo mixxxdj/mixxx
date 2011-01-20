@@ -29,6 +29,7 @@ public:
         TRACKMODELCAPS_ADDTOPLAYLIST  = 0x0004,
         TRACKMODELCAPS_ADDTOCRATE     = 0x0008,
         TRACKMODELCAPS_ADDTOAUTODJ    = 0x0010,
+        TRACKMODELCAPS_LOCKED         = 0x0020,
                                     //0x0004
     };
 

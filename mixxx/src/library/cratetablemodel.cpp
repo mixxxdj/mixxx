@@ -244,6 +244,18 @@ QItemDelegate* CrateTableModel::delegateForColumn(int i) {
 }
 
 TrackModel::CapabilitiesFlags CrateTableModel::getCapabilities() const {
-    return TRACKMODELCAPS_RECEIVEDROPS | TRACKMODELCAPS_ADDTOPLAYLIST |
-            TRACKMODELCAPS_ADDTOCRATE | TRACKMODELCAPS_ADDTOAUTODJ;
+    
+    CapabilitiesFlags caps =  TRACKMODELCAPS_RECEIVEDROPS  |
+                              TRACKMODELCAPS_ADDTOPLAYLIST |
+                              TRACKMODELCAPS_ADDTOCRATE    |
+                              TRACKMODELCAPS_ADDTOAUTODJ;
+
+    CrateDAO& crateDao = m_pTrackCollection->getCrateDAO();
+    bool locked = crateDao.isCrateLocked(m_iCrateId);
+
+    if (locked) {
+        caps |= TRACKMODELCAPS_LOCKED;
+    }
+    
+    return caps;
 }
