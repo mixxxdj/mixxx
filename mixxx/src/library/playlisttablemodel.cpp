@@ -139,30 +139,38 @@ QString PlaylistTableModel::getTrackLocation(const QModelIndex& index) const
 
 void PlaylistTableModel::removeTrack(const QModelIndex& index)
 {
-    const int positionColumnIndex = fieldIndex(PLAYLISTTRACKSTABLE_POSITION);
-    int position = index.sibling(index.row(), positionColumnIndex).data().toInt();
-    m_playlistDao.removeTrackFromPlaylist(m_iPlaylistId, position);
-    select(); //Repopulate the data model.
+    bool locked = m_playlistDao.isPlaylistLocked(m_iPlaylistId);
+
+    if (!locked) {
+        const int positionColumnIndex = fieldIndex(PLAYLISTTRACKSTABLE_POSITION);
+        int position = index.sibling(index.row(), positionColumnIndex).data().toInt();
+        m_playlistDao.removeTrackFromPlaylist(m_iPlaylistId, position);
+        select(); //Repopulate the data model.
+    }
 }
 
 void PlaylistTableModel::removeTracks(const QModelIndexList& indices) {
-    const int positionColumnIndex = fieldIndex(PLAYLISTTRACKSTABLE_POSITION);
+    bool locked = m_playlistDao.isPlaylistLocked(m_iPlaylistId);
 
-    QList<int> trackPositions;
-    foreach (QModelIndex index, indices) {
-        int trackPosition = index.sibling(index.row(), positionColumnIndex).data().toInt();
-        trackPositions.append(trackPosition);
+    if (!locked) {
+        const int positionColumnIndex = fieldIndex(PLAYLISTTRACKSTABLE_POSITION);
+
+        QList<int> trackPositions;
+        foreach (QModelIndex index, indices) {
+            int trackPosition = index.sibling(index.row(), positionColumnIndex).data().toInt();
+            trackPositions.append(trackPosition);
+        }
+
+        qSort(trackPositions);
+        QListIterator<int> iterator(trackPositions);
+        iterator.toBack();
+
+        while (iterator.hasPrevious()) {
+            m_playlistDao.removeTrackFromPlaylist(m_iPlaylistId, iterator.previous());
+        }
+
+        select();
     }
-
-    qSort(trackPositions);
-    QListIterator<int> iterator(trackPositions);
-    iterator.toBack();
-
-    while (iterator.hasPrevious()) {
-        m_playlistDao.removeTrackFromPlaylist(m_iPlaylistId, iterator.previous());
-    }
-
-    select();
 }
 
 void PlaylistTableModel::moveTrack(const QModelIndex& sourceIndex, const QModelIndex& destIndex)

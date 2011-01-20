@@ -33,7 +33,14 @@ CrateFeature::CrateFeature(QObject* parent,
 
     m_pRenameCrateAction = new QAction(tr("Rename"),this);
     connect(m_pRenameCrateAction, SIGNAL(triggered()),
-			this, SLOT(slotRenameCrate()));
+            this, SLOT(slotRenameCrate()));
+
+    m_pLockCrateAction = new QAction(tr("Lock"),this);
+    if (m_pLockCrateAction != 0) {
+        m_pLockCrateAction->setCheckable(true);
+    }
+    connect(m_pLockCrateAction, SIGNAL(triggered()),
+            this, SLOT(slotSetCrateLocked()));
 
     m_pImportPlaylistAction = new QAction(tr("Import Playlist"),this);
     connect(m_pImportPlaylistAction, SIGNAL(triggered()),
@@ -67,6 +74,7 @@ CrateFeature::~CrateFeature() {
     delete m_pCreateCrateAction;
     delete m_pDeleteCrateAction;
     delete m_pRenameCrateAction;
+    delete m_pLockCrateAction;
     delete m_pImportPlaylistAction;
 
 }
@@ -101,8 +109,15 @@ bool CrateFeature::dropAcceptChild(const QModelIndex& index, QUrl url) {
     qDebug() << "CrateFeature::dropAcceptChild adding track"
              << trackId << "to crate" << crateId;
 
-    if (trackId >= 0)
-        return m_pTrackCollection->getCrateDAO().addTrackToCrate(trackId, crateId);
+    CrateDAO& crateDao = m_pTrackCollection->getCrateDAO();
+
+    if (crateDao.isCrateLocked(crateId)) {
+        QMessageBox::warning(NULL,
+                             tr("Unable to add tracks to the crate"),
+                             tr("The crate is locked. Please unlock it before adding tracks."));
+    }
+    else if (trackId >= 0)
+        return crateDao.addTrackToCrate(trackId, crateId);
     return false;
 }
 
@@ -152,12 +167,17 @@ void CrateFeature::onRightClick(const QPoint& globalPos) {
 void CrateFeature::onRightClickChild(const QPoint& globalPos, QModelIndex index) {
     //Save the model index so we can get it in the action slots...
     m_lastRightClickedIndex = index;
+    QString crateName = index.data().toString();
+    CrateDAO& crateDAO = m_pTrackCollection->getCrateDAO();
+    int crateId = crateDAO.getCrateIdByName(crateName);
+    m_pLockCrateAction->setChecked(crateDAO.isCrateLocked(crateId));
 
     QMenu menu(NULL);
     menu.addAction(m_pCreateCrateAction);
     menu.addSeparator();
     menu.addAction(m_pRenameCrateAction);
     menu.addAction(m_pDeleteCrateAction);
+    menu.addAction(m_pLockCrateAction);
     menu.addSeparator();
     menu.addAction(m_pImportPlaylistAction);
     menu.exec(globalPos);
@@ -282,6 +302,24 @@ void CrateFeature::slotRenameCrate() {
         qDebug() << "Failed to rename crateId" << crateId;
     }
 }
+
+void CrateFeature::slotSetCrateLocked()
+{
+    QString crateName = m_lastRightClickedIndex.data().toString();
+    CrateDAO& crateDAO = m_pTrackCollection->getCrateDAO();
+    int crateId = crateDAO.getCrateIdByName(crateName);
+    bool locked = !crateDAO.isCrateLocked(crateId);
+
+    if (crateDAO.setCrateLocked(crateId, locked) && 
+		m_pLockCrateAction != 0) {
+		m_pLockCrateAction->setChecked(locked);
+    } else {
+        qDebug() << "Failed to toggle lock of crateId " << crateId;
+		m_pLockCrateAction->setChecked(!locked);
+    }
+}
+
+
 /**
   * Purpose: When inserting or removing playlists,
   * we require the sidebar model not to reset.
