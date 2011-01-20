@@ -70,6 +70,51 @@ bool CrateDAO::renameCrate(int crateId, const QString& newName) {
     return true;
 }
 
+bool CrateDAO::setCrateLocked(int crateId, bool locked) {
+    qDebug() << "setCrateLocked()";
+
+    // SQLite3 doesn't support boolean value. Using integer instead.
+    int lock = 0;
+
+    if (locked) {
+        lock = 1;
+    }
+
+    Q_ASSERT(m_database.transaction());
+    QSqlQuery query;
+    query.prepare("UPDATE " CRATE_TABLE " SET locked = :lock WHERE id = :id");
+    query.bindValue(":lock", lock);
+    query.bindValue(":id", crateId);
+
+    if (!query.exec()) {
+        qDebug() << query.executedQuery() << query.lastError();
+        Q_ASSERT(m_database.rollback());
+        return false;
+    }
+
+    Q_ASSERT(m_database.commit());
+    return true;
+}
+
+bool CrateDAO::isCrateLocked(int crateId) {
+    qDebug() << "isCrateLocked()";
+
+    QSqlQuery query;
+    query.prepare("SELECT locked FROM " CRATE_TABLE " WHERE id = :id");
+    query.bindValue(":id", crateId);
+
+    if (query.exec()) {
+        if (query.next()) {
+            int lockValue = query.value(0).toInt();
+            return lockValue == 1;
+        }
+    } else {
+        qDebug() << query.lastError();
+    }
+    
+    return false;
+}
+
 bool CrateDAO::deleteCrate(int crateId) {
     Q_ASSERT(m_database.transaction());
 

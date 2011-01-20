@@ -43,6 +43,7 @@ class CrateFeature : public LibraryFeature {
     void slotCreateCrate();
     void slotDeleteCrate();
     void slotRenameCrate();
+    void slotSetCrateLocked();
     void slotImportPlaylist();
 
   private:
@@ -53,6 +54,7 @@ class CrateFeature : public LibraryFeature {
     QAction *m_pCreateCrateAction;
     QAction *m_pDeleteCrateAction;
     QAction *m_pRenameCrateAction;
+    QAction *m_pLockCrateAction;
     QAction *m_pImportPlaylistAction;
     QSqlTableModel m_crateListTableModel;
     CrateTableModel m_crateTableModel;

@@ -38,6 +38,13 @@ PlaylistFeature::PlaylistFeature(QObject* parent, TrackCollection* pTrackCollect
     connect(m_pRenamePlaylistAction, SIGNAL(triggered()),
             this, SLOT(slotRenamePlaylist()));
 
+    m_pLockPlaylistAction = new QAction(tr("Lock"),this);
+    if (m_pLockPlaylistAction != 0) {
+        m_pLockPlaylistAction->setCheckable(true);
+    }
+    connect(m_pLockPlaylistAction, SIGNAL(triggered()),
+            this, SLOT(slotSetPlaylistLocked()));
+
     m_pImportPlaylistAction = new QAction(tr("Import Playlist"),this);
     connect(m_pImportPlaylistAction, SIGNAL(triggered()),
             this, SLOT(slotImportPlaylist()));
@@ -73,6 +80,7 @@ PlaylistFeature::~PlaylistFeature() {
     delete m_pDeletePlaylistAction;
     delete m_pImportPlaylistAction;
     delete m_pRenamePlaylistAction;
+    delete m_pLockPlaylistAction;
 }
 
 QVariant PlaylistFeature::title() {
@@ -120,6 +128,9 @@ void PlaylistFeature::onRightClick(const QPoint& globalPos) {
 void PlaylistFeature::onRightClickChild(const QPoint& globalPos, QModelIndex index) {
     //Save the model index so we can get it in the action slots...
     m_lastRightClickedIndex = index;
+    QString playlistName = index.data().toString();
+    int playlistId = m_playlistDao.getPlaylistIdFromName(playlistName);
+    m_pLockPlaylistAction->setChecked(m_playlistDao.isPlaylistLocked(playlistId));
 
     //Create the right-click menu
     QMenu menu(NULL);
@@ -127,6 +138,7 @@ void PlaylistFeature::onRightClickChild(const QPoint& globalPos, QModelIndex ind
     menu.addSeparator();
     menu.addAction(m_pRenamePlaylistAction);
     menu.addAction(m_pDeletePlaylistAction);
+    menu.addAction(m_pLockPlaylistAction);
     menu.addSeparator();
     menu.addAction(m_pImportPlaylistAction);
     menu.exec(globalPos);
@@ -235,6 +247,22 @@ void PlaylistFeature::slotRenamePlaylist()
     m_pPlaylistTableModel->setPlaylist(playlistId);
 }
 
+
+void PlaylistFeature::slotSetPlaylistLocked()
+{
+    QString playlistName = m_lastRightClickedIndex.data().toString();
+    int playlistId = m_playlistDao.getPlaylistIdFromName(playlistName);
+    bool locked = !m_playlistDao.isPlaylistLocked(playlistId);
+
+    if (m_playlistDao.setPlaylistLocked(playlistId, locked) &&
+        m_pLockPlaylistAction != 0) {
+        m_pLockPlaylistAction->setChecked(locked);
+    } else {
+        qDebug() << "Failed to toggle lock of playlistId " << playlistId;
+        m_pLockPlaylistAction->setChecked(!locked);
+    }
+}
+
 void PlaylistFeature::slotDeletePlaylist()
 {
     //qDebug() << "slotDeletePlaylist() row:" << m_lastRightClickedIndex.data();
@@ -285,6 +313,13 @@ bool PlaylistFeature::dropAcceptChild(const QModelIndex& index, QUrl url) {
 
     // appendTrackToPlaylist doesn't return whether it succeeded, so assume it
     // did.
+    if (m_playlistDao.isPlaylistLocked(playlistId)) {
+        QMessageBox::warning(NULL,
+                             tr("Unable to add tracks to the playlist"),
+                             tr("The playlist is locked. Please unlock it before adding tracks."));
+        return false;
+    }
+
     m_playlistDao.appendTrackToPlaylist(trackId, playlistId);
     return true;
 }

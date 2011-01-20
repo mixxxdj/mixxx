@@ -228,4 +228,13 @@ METADATA
         );
     </sql>
   </revision>
+  <revision version="10" min_compatible="3">
+    <description>
+      Playlist and crate locks
+    </description>
+    <sql>
+      ALTER TABLE crates ADD COLUMN locked integer DEFAULT 0;
+      ALTER TABLE playlists ADD COLUMN locked integer DEFAULT 0;
+    </sql>
+  </revision>
 </schema>
