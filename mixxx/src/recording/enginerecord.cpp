@@ -47,6 +47,7 @@ EngineRecord::EngineRecord(ConfigObject<ConfigValue> * _config)
     m_recReady = new ControlObjectThread(m_recReadyCO);
     m_samplerate = new ControlObjectThread(ControlObject::getControl(ConfigKey("[Master]", "samplerate")));
 
+    m_pMetaDataLife = 0;
 }
 
 EngineRecord::~EngineRecord()
@@ -67,6 +68,8 @@ void EngineRecord::updateFromPreferences()
     m_baTitle = m_config->getValueString(ConfigKey(RECORDING_PREF_KEY, "Title")).toLatin1();
     m_baAuthor = m_config->getValueString(ConfigKey(RECORDING_PREF_KEY, "Author")).toLatin1();
     m_baAlbum = m_config->getValueString(ConfigKey(RECORDING_PREF_KEY, "Album")).toLatin1();
+    m_cuefilename = m_config->getValueString(ConfigKey(RECORDING_PREF_KEY, "CuePath")).toLatin1();
+    m_bCueIsEnabled = m_config->getValueString(ConfigKey(RECORDING_PREF_KEY, "CueEnabled")).toInt();
 
     if(m_encoder){
         delete m_encoder;	//delete m_encoder if it has been initalized (with maybe) different bitrate
@@ -112,6 +115,121 @@ void EngineRecord::updateFromPreferences()
 
 }
 
+/*
+ * Algorithm which simply flips the lowest and/or second lowest bits,
+ * bits 1 and 2, to represent which track is active and returns the result.
+ */
+int EngineRecord::getActiveTracks()
+{
+    int tracks = 0;
+
+
+    if (ControlObject::getControl(ConfigKey("[Channel1]","play"))->get()==1.) tracks |= 1;
+    if (ControlObject::getControl(ConfigKey("[Channel2]","play"))->get()==1.) tracks |= 2;
+
+    if (tracks ==  0) {
+        qDebug() << "No Tracks";
+        return 0;
+    }
+
+    double vol1, vol2, xfader;
+
+
+    vol1 = ControlObject::getControl(ConfigKey("[Channel1]","volume"))->get();
+    vol2 = ControlObject::getControl(ConfigKey("[Channel2]","volume"))->get();
+    xfader = ControlObject::getControl(ConfigKey("[Master]","crossfader"))->get();
+
+    if ( tracks & 1 ) {
+        if (vol1 == 0.)
+            tracks &= ~1;
+    }
+
+    if ( tracks & 2 ) {
+        if (vol2 == 0.)
+            tracks &= ~2;
+    }
+
+    // Detect the dominant track by checking the crossfader and volume levels
+    if ((tracks & (1 | 2))) {
+
+        // allow a bit of leeway with the crossfader
+        if ((xfader < 0.05) && (xfader > -0.05)) {
+
+            if (vol1 > vol2) {
+                tracks = 1;
+            }
+            else if (vol1 < vol2) {
+                tracks = 2;
+            }
+
+        }
+        else if ( xfader < -0.05 ) {
+            tracks = 1;
+        }
+        else if ( xfader > 0.05 ) {
+            tracks = 2;
+        }
+
+    }
+
+    qDebug() << "Tracks:" << tracks;
+    return tracks;
+}
+
+/*
+ * Check if the metadata has changed since the previous check.
+ * We also check when was the last check performed to avoid using
+ * too much CPU and as well to avoid changing the metadata during
+ * scratches.
+ */
+bool EngineRecord::metaDataHasChanged()
+{
+    int tracks;
+    TrackPointer newMetaData;
+    bool changed = false;
+
+
+    if ( m_pMetaDataLife < 4 ) {
+        m_pMetaDataLife++;
+        return false;
+    }
+
+    m_pMetaDataLife = 0;
+
+
+    tracks = getActiveTracks();
+
+    switch (tracks)
+    {
+    case 0:
+        // no tracks are playing
+        // we should set the metadata to nothing
+        break;
+    case 1:
+        // track 1 is active
+        newMetaData = PlayerInfo::Instance().getTrackInfo("[Channel1]");
+        if (newMetaData != m_pMetaData)
+        {
+            m_pMetaData = newMetaData;
+            changed = true;
+        }
+        break;
+    case 2:
+        // track 2 is active
+		newMetaData = PlayerInfo::Instance().getTrackInfo("[Channel2]");
+		if (newMetaData != m_pMetaData)
+        {
+            m_pMetaData = newMetaData;
+            changed = true;
+        }
+        break;
+    case 3:
+        // both tracks are active, just stick with it for now
+        break;
+    }
+    return changed;
+}
+
 void EngineRecord::process(const CSAMPLE * pIn, const CSAMPLE * pOut, const int iBufferSize)
 {
     //if recording is disabled
@@ -126,6 +244,12 @@ void EngineRecord::process(const CSAMPLE * pIn, const CSAMPLE * pOut, const int 
         if(openFile()){
             qDebug("Setting record flag to: ON");
             m_recReady->slotSet(RECORD_ON);
+            
+            if ( m_bCueIsEnabled ) {
+                openCueFile();
+                m_cuesamplepos = 0;
+                m_cuetrack = 0;
+            }
         }
         else{ //Maybe the encoder could not be initialized
             qDebug("Setting record flag to: OFF");
@@ -139,14 +263,65 @@ void EngineRecord::process(const CSAMPLE * pIn, const CSAMPLE * pOut, const int 
                 sf_write_float(m_sndfile, pIn, iBufferSize);
         }
         else{
-            if(!m_encoder) return;
-            //Compress audio. Encoder will call method 'write()' below to write a file stream
-            m_encoder->encodeBuffer(pIn, iBufferSize);
+            if ( m_encoder) {
+                //Compress audio. Encoder will call method 'write()' below to write a file stream
+                m_encoder->encodeBuffer(pIn, iBufferSize);
+            }
         }
+
+        if ( m_bCueIsEnabled ) {
+
+            if ( metaDataHasChanged()) {
+                m_cuetrack++;
+                writeCueLine();
+                m_cuefile.flush();
+            }
+            
+            m_cuesamplepos += iBufferSize;
+
+        }
+
   	}
 
+}
+
+void EngineRecord::writeCueLine()
+{
+    // account for multiple channels
+    unsigned long samplerate = m_samplerate->get() * 2;
+    // CDDA is specified as having 75 frames a second
+    unsigned long frames = ((unsigned long)
+                                        ((m_cuesamplepos / (samplerate / 75)))
+                                        % 75);
+
+    unsigned long seconds =  ((unsigned long)
+                                (m_cuesamplepos / samplerate)
+                                % 60 );
+
+    unsigned long minutes = m_cuesamplepos / (samplerate * 60);
+
+    m_cuefile.write(QString("  TRACK %1 AUDIO\n")
+            .arg((double)m_cuetrack, 2, 'f', 0, '0')
+        .toLatin1()
+    );
+
+    m_cuefile.write(QString("    TITLE %1\n")
+        .arg(m_pMetaData->getTitle()).toLatin1());
+    m_cuefile.write(QString("    PERFORMER %1\n")
+        .arg(m_pMetaData->getArtist()).toLatin1());
+
+    // Woefully inaccurate (at the seconds level anyways). 
+    // We'd need a signal fired state tracker
+    // for the track detection code.
+    m_cuefile.write(QString("    INDEX 01 %1:%2:%3\n")
+            .arg((double)minutes, 2, 'f', 0, '0')
+            .arg((double)seconds, 2, 'f', 0, '0')
+            .arg((double)frames, 2, 'f', 0, '0')
+        .toLatin1()
+    );
 
 }
+
 /** encoder will call this method to write compressed audio **/
 void EngineRecord::write(unsigned char *header, unsigned char *body,
                          int headerLen, int bodyLen)
@@ -232,9 +407,43 @@ bool EngineRecord::openFile(){
         ErrorDialogHandler::instance()->requestErrorDialog(props);
         return false;
     }
-    return true;
 
+    return true;
 }
+bool EngineRecord::openCueFile() {
+    if ( m_cuefilename.length() <= 0 )
+    {
+        return false;
+    }
+
+    qDebug() << "Opening Cue File:" << m_cuefilename;
+    m_cuefile.setFileName(m_cuefilename);
+    m_cuefile.open(QIODevice::WriteOnly);
+
+    if ( m_baAuthor.length() > 0 ) {
+        m_cuefile.write(QString("PERFORMER \"%1\"\n")
+                .arg(QString(m_baAuthor).replace(QString("\""), QString("\\\"")))
+            .toLatin1()
+        );
+    }
+
+    if ( m_baTitle.length() > 0 ) {
+        m_cuefile.write(QString("TITLE \"%1\"\n")
+                .arg(QString(m_baTitle).replace(QString("\""), QString("\\\"")))
+            .toLatin1()
+        );
+    }
+
+    m_cuefile.write(QString("FILE \"%1\" %2%3\n")
+            .arg(QString(m_filename).replace(QString("\""), QString("\\\"")))
+            .arg(QString(m_Encoding).toUpper())
+                .arg((m_Encoding == ENCODING_WAVE ? 'E' : ' '))
+        .toLatin1()
+    );
+
+    return true;
+}
+
 void EngineRecord::closeFile(){
     if(m_Encoding == ENCODING_WAVE || m_Encoding == ENCODING_AIFF){
         if(m_sndfile != NULL){
