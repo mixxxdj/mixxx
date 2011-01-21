@@ -55,11 +55,14 @@ DlgPrefRecord::DlgPrefRecord(QWidget * parent, ConfigObject<ConfigValue> * _conf
 
     //Connections
     connect(PushButtonBrowse, SIGNAL(clicked()),        this,   SLOT(slotBrowseSave()));
+    connect(PushButtonBrowseCue, SIGNAL(clicked()),        this,   SLOT(slotBrowseCueSave()));
     connect(LineEditRecPath,  SIGNAL(returnPressed()),  this,   SLOT(slotApply()));
     connect(comboBoxEncoding, SIGNAL(activated(int)),   this,   SLOT(slotRecordPathChange()));
     connect(SliderQuality,    SIGNAL(valueChanged(int)), this,  SLOT(slotSliderQuality()));
     connect(SliderQuality,    SIGNAL(sliderMoved(int)), this,   SLOT(slotSliderQuality()));
     connect(SliderQuality,    SIGNAL(sliderReleased()), this,   SLOT(slotSliderQuality()));
+    connect(CheckBoxRecordCueFile, SIGNAL(stateChanged(int)), this, SLOT(slotEnableCueFile(int)));
+    connect(LineEditRecPath, SIGNAL(textChanged(QString)), this, SLOT(slotRecordPathChanged(QString)));
 
     slotApply();
     recordControl->slotSet(RECORD_OFF); //make sure a corrupt config file won't cause us to record constantly
@@ -78,6 +81,45 @@ void DlgPrefRecord::slotBrowseSave()
         }        
         LineEditRecPath->setText( selectedFile );
     }
+}
+
+void DlgPrefRecord::slotBrowseCueSave()
+{
+    QString encodingFileFilter = QString("CUE file (*.cue)");
+    QString selectedFile = QFileDialog::getSaveFileName(NULL, tr("Save Cue File As..."), config->getValueString(ConfigKey(RECORDING_PREF_KEY,"CuePath")), encodingFileFilter);
+    if (selectedFile.toLower() != "")
+    {
+        if(!selectedFile.toLower().endsWith(".cue"))
+        {
+            selectedFile.append(".cue");
+        }        
+        LineEditCuePath->setText( selectedFile );
+    }
+}
+
+void DlgPrefRecord::slotEnableCueFile(int enabled)
+{
+    bool status = enabled ? true : false;
+
+
+    config->set(ConfigKey(RECORDING_PREF_KEY, "CueEnabled"), ConfigValue(CheckBoxRecordCueFile->isChecked()));
+
+    LabelCueFile->setEnabled(status);
+    LineEditCuePath->setEnabled(status);
+    PushButtonBrowseCue->setEnabled(status);
+}
+
+void DlgPrefRecord::slotRecordPathChanged(QString path)
+{
+    QString cuePath = path;
+    int pos;
+
+
+    pos = path.lastIndexOf(".");
+    cuePath.replace(pos, 4, ".cue");
+    cuePath.truncate(pos + 4);
+
+    LineEditCuePath->setText(cuePath);
 }
 
 void DlgPrefRecord::slotSliderQuality()
@@ -192,6 +234,7 @@ void DlgPrefRecord::slotUpdate()
 void DlgPrefRecord::slotApply()
 {
     config->set(ConfigKey(RECORDING_PREF_KEY, "Path"), LineEditRecPath->text());
+    config->set(ConfigKey(RECORDING_PREF_KEY, "CuePath"), LineEditCuePath->text());
     setMetaData();
 
     slotEncoding();
