@@ -39,9 +39,11 @@
      bool isPlaylist() const;
      /** returns true if we have an inner node **/
      bool isFolder() const;
-     
      /* Returns the Library feature object to which an item belongs to */ 
      LibraryFeature* getFeature();
+
+     void setIcon(const QIcon& icon);
+     QIcon getIcon();
 
  private:
      QList<TreeItem*> m_childItems;
@@ -50,6 +52,7 @@
      LibraryFeature* m_feature;
 
      TreeItem *m_parentItem;
+     QIcon m_icon;
  };
 
  #endif

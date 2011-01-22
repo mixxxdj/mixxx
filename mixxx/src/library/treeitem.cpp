@@ -95,3 +95,15 @@ bool TreeItem::setData(const QVariant &data, const QVariant &data_path)
     m_dataPath = data_path.toString();
     return true;
  }
+
+
+QIcon TreeItem::getIcon()
+{
+    return m_icon;
+}
+
+
+void TreeItem::setIcon(const QIcon& icon)
+{
+    m_icon = icon;
+}
