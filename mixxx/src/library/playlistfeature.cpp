@@ -39,9 +39,6 @@ PlaylistFeature::PlaylistFeature(QObject* parent, TrackCollection* pTrackCollect
             this, SLOT(slotRenamePlaylist()));
 
     m_pLockPlaylistAction = new QAction(tr("Lock"),this);
-    if (m_pLockPlaylistAction != 0) {
-        m_pLockPlaylistAction->setCheckable(true);
-    }
     connect(m_pLockPlaylistAction, SIGNAL(triggered()),
             this, SLOT(slotSetPlaylistLocked()));
 
@@ -130,8 +127,15 @@ void PlaylistFeature::onRightClickChild(const QPoint& globalPos, QModelIndex ind
     m_lastRightClickedIndex = index;
     QString playlistName = index.data().toString();
     int playlistId = m_playlistDao.getPlaylistIdFromName(playlistName);
-    m_pLockPlaylistAction->setChecked(m_playlistDao.isPlaylistLocked(playlistId));
-
+    bool locked = m_playlistDao.isPlaylistLocked(playlistId);
+    
+    if (locked) {
+        m_pLockPlaylistAction->setText(tr("Unlock"));
+    }
+    else {
+        m_pLockPlaylistAction->setText(tr("Lock"));
+    }
+    
     //Create the right-click menu
     QMenu menu(NULL);
     menu.addAction(m_pCreatePlaylistAction);
@@ -254,12 +258,8 @@ void PlaylistFeature::slotSetPlaylistLocked()
     int playlistId = m_playlistDao.getPlaylistIdFromName(playlistName);
     bool locked = !m_playlistDao.isPlaylistLocked(playlistId);
 
-    if (m_playlistDao.setPlaylistLocked(playlistId, locked) &&
-        m_pLockPlaylistAction != 0) {
-        m_pLockPlaylistAction->setChecked(locked);
-    } else {
+    if (!m_playlistDao.setPlaylistLocked(playlistId, locked)) {
         qDebug() << "Failed to toggle lock of playlistId " << playlistId;
-        m_pLockPlaylistAction->setChecked(!locked);
     }
 }
 
