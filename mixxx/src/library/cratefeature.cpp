@@ -36,9 +36,6 @@ CrateFeature::CrateFeature(QObject* parent,
             this, SLOT(slotRenameCrate()));
 
     m_pLockCrateAction = new QAction(tr("Lock"),this);
-    if (m_pLockCrateAction != 0) {
-        m_pLockCrateAction->setCheckable(true);
-    }
     connect(m_pLockCrateAction, SIGNAL(triggered()),
             this, SLOT(slotSetCrateLocked()));
 
@@ -170,7 +167,14 @@ void CrateFeature::onRightClickChild(const QPoint& globalPos, QModelIndex index)
     QString crateName = index.data().toString();
     CrateDAO& crateDAO = m_pTrackCollection->getCrateDAO();
     int crateId = crateDAO.getCrateIdByName(crateName);
-    m_pLockCrateAction->setChecked(crateDAO.isCrateLocked(crateId));
+    bool locked = crateDAO.isCrateLocked(crateId);
+
+    if (locked) {
+        m_pLockCrateAction->setText(tr("Unlock"));
+    }
+    else {
+        m_pLockCrateAction->setText(tr("Lock"));
+    }
 
     QMenu menu(NULL);
     menu.addAction(m_pCreateCrateAction);
@@ -310,12 +314,8 @@ void CrateFeature::slotSetCrateLocked()
     int crateId = crateDAO.getCrateIdByName(crateName);
     bool locked = !crateDAO.isCrateLocked(crateId);
 
-    if (crateDAO.setCrateLocked(crateId, locked) && 
-		m_pLockCrateAction != 0) {
-		m_pLockCrateAction->setChecked(locked);
-    } else {
+    if (!crateDAO.setCrateLocked(crateId, locked)) {
         qDebug() << "Failed to toggle lock of crateId " << crateId;
-		m_pLockCrateAction->setChecked(!locked);
     }
 }
 
