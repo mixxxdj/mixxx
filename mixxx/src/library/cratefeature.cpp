@@ -59,8 +59,18 @@ CrateFeature::CrateFeature(QObject* parent,
             QModelIndex ind = m_crateListTableModel.index(row, idColumn);
             QString crate_name = m_crateListTableModel.data(ind).toString();
             TreeItem *playlist_item = new TreeItem(crate_name, crate_name, this, rootItem);
-            rootItem->appendChild(playlist_item);
+            CrateDAO crateDao = m_pTrackCollection->getCrateDAO();
+            int crateID = crateDao.getCrateIdByName(crate_name);
+            bool locked = crateDao.isCrateLocked(crateID);
             
+            if (locked) {
+                playlist_item->setIcon(QIcon(":/images/library/ic_library_crates.png"));
+            }
+            else {
+                playlist_item->setIcon(QIcon());
+            }
+            
+            rootItem->appendChild(playlist_item);
     }
     m_childModel.setRootItem(rootItem);
 
@@ -316,6 +326,15 @@ void CrateFeature::slotSetCrateLocked()
 
     if (!crateDAO.setCrateLocked(crateId, locked)) {
         qDebug() << "Failed to toggle lock of crateId " << crateId;
+    }
+
+    TreeItem* crateItem = m_childModel.getItem(m_lastRightClickedIndex);
+    
+    if (locked) {
+        crateItem->setIcon(QIcon(":/images/library/ic_library_crates.png"));
+    }
+    else {
+        crateItem->setIcon(QIcon());
     }
 }
 

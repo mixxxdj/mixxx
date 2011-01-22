@@ -65,6 +65,17 @@ PlaylistFeature::PlaylistFeature(QObject* parent, TrackCollection* pTrackCollect
             QModelIndex ind = m_playlistTableModel.index(row, idColumn);
             QString playlist_name = m_playlistTableModel.data(ind).toString();
             TreeItem *playlist_item = new TreeItem(playlist_name, playlist_name, this, rootItem);
+            int playlistID = m_playlistDao.getPlaylistIdFromName(playlist_name);
+            bool locked = m_playlistDao.isPlaylistLocked(playlistID);
+            
+            if (locked) {
+                playlist_item->setIcon(QIcon(":/images/library/ic_library_crates.png"));
+            }
+            else {
+                playlist_item->setIcon(QIcon());
+            }
+            
+            
             rootItem->appendChild(playlist_item);
             
     }
@@ -260,6 +271,15 @@ void PlaylistFeature::slotSetPlaylistLocked()
 
     if (!m_playlistDao.setPlaylistLocked(playlistId, locked)) {
         qDebug() << "Failed to toggle lock of playlistId " << playlistId;
+    }
+
+    TreeItem* playlistItem = m_childModel.getItem(m_lastRightClickedIndex);
+
+    if (locked) {
+        playlistItem->setIcon(QIcon(":/images/library/ic_library_crates.png"));
+    }
+    else {
+        playlistItem->setIcon(QIcon());
     }
 }
 
