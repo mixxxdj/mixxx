@@ -251,21 +251,22 @@ void TrackDAO::bindTrackToLibraryInsert(QSqlQuery& query, TrackInfoObject* pTrac
     if (pWaveSummary) //Avoid null pointer deref
         query.bindValue(":wavesummaryhex", *pWaveSummary);
     else
-        query.bindValue(":wavesummaryhex", NULL);
+        query.bindValue(":wavesummaryhex", QVariant(QVariant::ByteArray));
     query.bindValue(":timesplayed", pTrack->getTimesPlayed());
     //query.bindValue(":datetime_added", pTrack->getDateAdded());
     query.bindValue(":channels", pTrack->getChannels());
     query.bindValue(":mixxx_deleted", 0);
     query.bindValue(":header_parsed", pTrack->getHeaderParsed() ? 1 : 0);
     const QByteArray *pBeatsBlob = NULL;
-    TrackBeats *pBeats = pTrack->getTrackBeats();
+    TrackBeatsPointer pBeats = pTrack->getTrackBeats();
     if ( pBeats )
         pBeatsBlob = pBeats->serializeToBlob();
-    
+
     if ( pBeatsBlob )
-        query.bindValue(":beats", *pBeatsBlob);    
+        query.bindValue(":beats", *pBeatsBlob);
     else
-        query.bindValue(":beats", NULL);
+        query.bindValue(":beats", QVariant(QVariant::ByteArray));
+
 }
 
 void TrackDAO::addTracks(QList<TrackInfoObject*> tracksToAdd) {
@@ -749,7 +750,7 @@ void TrackDAO::updateTrack(TrackInfoObject* pTrack)
     query.bindValue(":channels", pTrack->getChannels());
     query.bindValue(":header_parsed", pTrack->getHeaderParsed() ? 1 : 0);
     //query.bindValue(":location", pTrack->getLocation());
-    TrackBeats *pBeats = pTrack->getTrackBeats();
+    TrackBeatsPointer pBeats = pTrack->getTrackBeats();
     if ( pBeats )
     {
         const QByteArray *pBeatsBlob = pBeats->serializeToBlob();

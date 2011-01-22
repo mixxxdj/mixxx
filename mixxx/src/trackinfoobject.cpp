@@ -133,7 +133,6 @@ void TrackInfoObject::initialize(bool parseHeader) {
     m_iChannels = 0;
     m_fCuePoint = 0.0f;
     m_dVisualResampleRate = 0;
-    m_pTrackBeats = NULL;
     m_dCreateDate = QDateTime::currentDateTime();
     m_Rating = 0;
     m_key = "";
@@ -144,11 +143,6 @@ void TrackInfoObject::initialize(bool parseHeader) {
 }
 
 TrackInfoObject::~TrackInfoObject() {
-    if ( m_pTrackBeats )
-    {
-        delete m_pTrackBeats;
-        m_pTrackBeats = NULL;
-    }
 }
 
 void TrackInfoObject::doSave() {
@@ -350,17 +344,17 @@ void TrackInfoObject::setBpmConfirm(bool confirm)
 void TrackInfoObject::setTrackBeats(TrackBeats *beats, bool isDirty)
 {
     QMutexLocker lock(&m_qMutex);
-    m_pTrackBeats = beats;
+    m_pTrackBeats = TrackBeatsPointer(beats);
     if ( isDirty )
         setDirty(true);
 
     emit(trackBeatsUpdated(1));
 }
 
-TrackBeats *TrackInfoObject::getTrackBeats() const
+TrackBeatsPointer TrackInfoObject::getTrackBeats() const
 {
     QMutexLocker lock(&m_qMutex);
-    return m_pTrackBeats;
+    return TrackBeatsPointer(m_pTrackBeats);
 }
 
 bool TrackInfoObject::getHeaderParsed()  const

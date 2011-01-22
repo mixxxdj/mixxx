@@ -1,18 +1,19 @@
 #include <QtDebug>
 #include <QList>
+#include <QSharedPointer>
+#include "trackinfoobject.h"
 
 
 #ifndef __TRACK_BEATS_H__
 #define __TRACK_BEATS_H__
 
-
-#include "trackinfoobject.h"
-
+class TrackBeats;
+typedef QSharedPointer<TrackBeats> TrackBeatsPointer;
 
 class TrackBeats {
 public:
     TrackBeats(TrackPointer);
-    ~TrackBeats();
+    virtual ~TrackBeats();
     
     void addBeatSeconds(double);
     

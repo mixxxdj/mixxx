@@ -38,7 +38,7 @@ private:
     ControlObjectThreadMain *m_pBpm;
     ControlObjectThreadMain *m_pBeatFirst;
     ControlObjectThreadMain *m_pTrackSamples;
-    TrackBeats* m_pTrackBeats;
+    TrackBeatsPointer m_pTrackBeats;
     TrackPointer m_pTrack;
     int m_iWidth, m_iHeight;
     double m_dBpm;

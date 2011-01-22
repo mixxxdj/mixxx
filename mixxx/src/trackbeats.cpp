@@ -10,6 +10,10 @@ TrackBeats::TrackBeats(TrackPointer tio) : m_qMutex(QMutex::Recursive)
     m_iSampleRate = tio->getSampleRate();
 }
 
+TrackBeats::~TrackBeats()
+{
+}
+
 void TrackBeats::addBeatSeconds(double beat)
 {
     QMutexLocker lock(&m_qMutex);

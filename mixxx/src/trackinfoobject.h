@@ -38,12 +38,13 @@ class QDomNode;
 class ControlObject;
 class TrackPlaylist;
 class Cue;
-class TrackBeats;
 
 class TrackInfoObject;
+class TrackBeats;
 
 typedef QSharedPointer<TrackInfoObject> TrackPointer;
 typedef QWeakPointer<TrackInfoObject> TrackWeakPointer;
+typedef QSharedPointer<TrackBeats> TrackBeatsPointer;
 
 #include "segmentation.h"
 
@@ -244,7 +245,7 @@ public:
     void setLocation(QString location);
 
     /** Get the Track's Beats list */
-    TrackBeats* getTrackBeats() const;
+    TrackBeatsPointer getTrackBeats() const;
 
     /** Set the Track's Beats */
     void setTrackBeats(TrackBeats* beats, bool isDirty);
@@ -379,7 +380,7 @@ public:
     Segmentation<QString> m_chordData;
 
     // Storage for the Track's detected beats
-    TrackBeats* m_pTrackBeats;
+    TrackBeatsPointer m_pTrackBeats;
 
     friend class TrackDAO;
 };

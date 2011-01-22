@@ -33,12 +33,9 @@ void AnalyserBPM::initialise(TrackPointer tio, int sampleRate, int totalSamples)
     else if ( tio->getBpm() != 0. )
     {
         // Make sure we have the track beats loaded or generate them.
-        TrackBeats *pTrackBeats = tio->getTrackBeats();
+        TrackBeatsPointer pTrackBeats = tio->getTrackBeats();
         if ( pTrackBeats == NULL )
             doBeats(tio);
-
-        // Let go of the reference
-        pTrackBeats = NULL;
     }
 }
 
