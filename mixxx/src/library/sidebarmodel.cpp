@@ -165,7 +165,7 @@ bool SidebarModel::hasChildren(const QModelIndex& parent) const {
         {
             TreeItem* tree_item = (TreeItem*)parent.internalPointer();
             LibraryFeature* feature = tree_item->getFeature();
-			feature->getChildModel()->hasChildren(parent);
+			return feature->getChildModel()->hasChildren(parent);
         }
     }
 	else
