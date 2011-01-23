@@ -13,15 +13,16 @@ const int COLUMN_FILENAME = 0;
 const int COLUMN_ARTIST = 1;
 const int COLUMN_TITLE = 2;
 const int COLUMN_ALBUM = 3;
-const int COLUMN_YEAR = 4;
-const int COLUMN_GENRE = 5;
-const int COLUMN_COMMENT = 6;
-const int COLUMN_DURATION = 7;
-const int COLUMN_BPM = 8;
-const int COLUMN_KEY = 9;
-const int COLUMN_TYPE = 10;
-const int COLUMN_BITRATE = 11;
-const int COLUMN_LOCATION = 12;
+const int COLUMN_TRACK_NUMBER = 4;
+const int COLUMN_YEAR = 5;
+const int COLUMN_GENRE = 6;
+const int COLUMN_COMMENT = 7;
+const int COLUMN_DURATION = 8;
+const int COLUMN_BPM = 9;
+const int COLUMN_KEY = 10;
+const int COLUMN_TYPE = 11;
+const int COLUMN_BITRATE = 12;
+const int COLUMN_LOCATION = 13;
 
 BrowseTableModel::BrowseTableModel(QObject* parent)
         : QStandardItemModel(parent),
@@ -34,6 +35,7 @@ BrowseTableModel::BrowseTableModel(QObject* parent)
     header_data.insert(COLUMN_ARTIST, "Artist");
     header_data.insert(COLUMN_TITLE, "Title");
     header_data.insert(COLUMN_ALBUM, "Album");
+    header_data.insert(COLUMN_TRACK_NUMBER, "Track #");
     header_data.insert(COLUMN_GENRE, "Genre");
     header_data.insert(COLUMN_YEAR, "Year");
     header_data.insert(COLUMN_BPM, "BPM");
@@ -195,71 +197,50 @@ void BrowseTableModel::populateModel(QString absPath)
         QString filepath = fileIt.next();
         TrackInfoObject tio(filepath);
         
-        int columns = columnCount();
-        //Note that headers can change via context menus
-        //Also note that the order can change
-        
-        for(int column=0; column < columns; ++column){
-        
-            QString header = horizontalHeaderItem(column)->text();
-            if(header == "Filename"){
-                QStandardItem* item = new QStandardItem(tio.getFilename());
-                setItem(row, column, item);
-            }
-            if(header == "Artist"){
-                QStandardItem* item = new QStandardItem(tio.getArtist());
-                setItem(row, column, item);
-            }
-            if(header == "Title"){
-                QStandardItem* item = new QStandardItem(tio.getTitle());
-                setItem(row, column, item);
-            }
-            if(header == "Album"){
-                QStandardItem* item = new QStandardItem(tio.getAlbum());
-                setItem(row, column, item);
-            }
-            if(header == "BPM"){
-                QStandardItem* item = new QStandardItem(tio.getBpmStr());
-                setItem(row, column, item);
-            }
-            if(header == "Key"){
-                QStandardItem* item = new QStandardItem(tio.getKey());
-                setItem(row, column, item);
-            }
-            if(header == "Year"){
-                QStandardItem* item = new QStandardItem(tio.getYear());
-                setItem(row, column, item);
-            }
-            if(header == "Duration"){
-                QString duration = MixxxUtils::secondsToMinutes(qVariantValue<int>(tio.getDuration()));
-                QStandardItem* item = new QStandardItem(duration);
-                setItem(row, column, item);
-            }
-            if(header == "Bitrate"){
-                QStandardItem* item = new QStandardItem(tio.getBitrateStr());
-                setItem(row, column, item);
-            }
-            if(header == "Type"){
-                QStandardItem* item = new QStandardItem(tio.getType());
-                setItem(row, column, item);
-            }
-            if(header == "Genre"){
-                QStandardItem* item = new QStandardItem(tio.getGenre());
-                setItem(row, column, item);
-            }
-            if(header == "Track #"){
-                QStandardItem* item = new QStandardItem(tio.getTrackNumber());
-                setItem(row, column, item);
-            }
-            if(header == "Comment"){
-                QStandardItem* item = new QStandardItem(tio.getComment());
-                setItem(row, column, item);
-            }
-            if(header == "Location"){
-                QStandardItem* item = new QStandardItem(filepath);
-                setItem(row, column, item);
-            }
-        }
-        ++row;    
+         QStandardItem* item = new QStandardItem(tio.getFilename());
+         setItem(row, COLUMN_FILENAME, item);
+           
+         item = new QStandardItem(tio.getArtist());
+         setItem(row, COLUMN_ARTIST, item);
+          
+         item = new QStandardItem(tio.getTitle());
+         setItem(row, COLUMN_TITLE, item);
+           
+         item = new QStandardItem(tio.getAlbum());
+         setItem(row, COLUMN_ALBUM, item);
+            
+         item = new QStandardItem(tio.getBpmStr());
+         setItem(row, COLUMN_BPM, item);
+           
+          item = new QStandardItem(tio.getKey());
+          setItem(row, COLUMN_KEY, item);
+            
+          item = new QStandardItem(tio.getYear());
+          setItem(row, COLUMN_YEAR, item);
+            
+          QString duration = MixxxUtils::secondsToMinutes(qVariantValue<int>(tio.getDuration()));
+          item = new QStandardItem(duration);
+          setItem(row, COLUMN_DURATION, item);
+            
+          item = new QStandardItem(tio.getBitrateStr());
+          setItem(row, COLUMN_BITRATE, item);
+            
+          item = new QStandardItem(tio.getType());
+          setItem(row, COLUMN_TYPE, item);
+            
+          item = new QStandardItem(tio.getGenre());
+          setItem(row, COLUMN_GENRE, item);
+           
+          item = new QStandardItem(tio.getTrackNumber());
+          setItem(row, COLUMN_TRACK_NUMBER, item);
+            
+          item = new QStandardItem(tio.getComment());
+          setItem(row, COLUMN_COMMENT, item);
+           
+          item = new QStandardItem(filepath);
+          setItem(row, COLUMN_LOCATION, item);
+          
+          ++row;
+   
     }     
 }
