@@ -355,12 +355,30 @@ void CrateFeature::constructChildModel()
 {
     QList<QString> data_list;
     int idColumn = m_crateListTableModel.record().indexOf("name");
+    CrateDAO crateDao = m_pTrackCollection->getCrateDAO();
+
     for (int row = 0; row < m_crateListTableModel.rowCount(); ++row) {
             QModelIndex ind = m_crateListTableModel.index(row, idColumn);
             QString crate_name = m_crateListTableModel.data(ind).toString();
             data_list.append(crate_name);
-    }    
-    m_childModel.insertRows(data_list, 0, m_crateListTableModel.rowCount());  
+    }
+    
+    m_childModel.insertRows(data_list, 0, m_crateListTableModel.rowCount());
+    
+    for (int row = 0; row < m_childModel.rowCount(); ++row) {
+        QModelIndex ind = m_childModel.index(row, 0);
+        QString crate_name = m_childModel.data(ind, Qt::DisplayRole).toString();
+        int crateID = crateDao.getCrateIdByName(crate_name);
+        bool locked = crateDao.isCrateLocked(crateID);
+        TreeItem* playlist_item = m_childModel.getItem(ind);
+        
+        if (locked) {
+            playlist_item->setIcon(QIcon(":/images/library/ic_library_crates.png"));
+        }
+        else {
+            playlist_item->setIcon(QIcon());
+        }
+    }
 }
 /**
   * Clears the child model dynamically

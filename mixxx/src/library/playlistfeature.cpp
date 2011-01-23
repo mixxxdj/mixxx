@@ -375,9 +375,35 @@ void PlaylistFeature::constructChildModel()
             QModelIndex ind = m_playlistTableModel.index(row, idColumn);
             QString playlist_name = m_playlistTableModel.data(ind).toString();
             data_list.insert(row,playlist_name);
+            
+            int playlistID = m_playlistDao.getPlaylistIdFromName(playlist_name);
+            bool locked = m_playlistDao.isPlaylistLocked(playlistID);
+            TreeItem* playlist_item = m_childModel.getItem(ind);
+            
+            if (locked) {
+                playlist_item->setIcon(QIcon(":/images/library/ic_library_crates.png"));
+            }
+            else {
+                playlist_item->setIcon(QIcon());
+            }
     }
     
-    m_childModel.insertRows(data_list, 0, m_playlistTableModel.rowCount());  
+    m_childModel.insertRows(data_list, 0, m_playlistTableModel.rowCount());
+
+    for (int row = 0; row < m_childModel.rowCount(); ++row) {
+        QModelIndex ind = m_childModel.index(row, 0);
+        QString playlist_name = m_childModel.data(ind, Qt::DisplayRole).toString();
+        int playlistID = m_playlistDao.getPlaylistIdFromName(playlist_name);
+        bool locked = m_playlistDao.isPlaylistLocked(playlistID);
+        TreeItem* playlist_item = m_childModel.getItem(ind);
+        
+        if (locked) {
+            playlist_item->setIcon(QIcon(":/images/library/ic_library_crates.png"));
+        }
+        else {
+            playlist_item->setIcon(QIcon());
+        }
+    }
 }
 /**
   * Clears the child model dynamically
