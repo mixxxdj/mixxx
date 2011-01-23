@@ -7,6 +7,7 @@ class QMimeData;
 
 class BrowseTableModel : public QStandardItemModel, public TrackModel
 {
+    
     Q_OBJECT
 	public:
 		BrowseTableModel(QObject* parent);
@@ -26,10 +27,18 @@ class BrowseTableModel : public QStandardItemModel, public TrackModel
         virtual void moveTrack(const QModelIndex&, const QModelIndex&);
         virtual QItemDelegate* delegateForColumn(const int);
         virtual bool isColumnHiddenByDefault(int column);
+        virtual const QList<int>& searchColumns() const;
 	private:
 	   //This method is executed in a Thread
 	   void populateModel(QString absPath);
 	   QMutex m_populationMutex;
+	   
+	   // A list of columns that the implementation wants searched
+       QList<int> m_searchColumns;
+       // Add a column to be searched when searching occurs
+       void addSearchColumn(int index);
+       
+
 };
 
 #endif

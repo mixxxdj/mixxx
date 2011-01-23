@@ -8,6 +8,20 @@
 #include "soundsourceproxy.h"
 #include "mixxxutils.cpp"
 
+//constants
+const int COLUMN_FILENAME = 0;
+const int COLUMN_ARTIST = 1;
+const int COLUMN_TITLE = 2;
+const int COLUMN_ALBUM = 3;
+const int COLUMN_YEAR = 4;
+const int COLUMN_GENRE = 5;
+const int COLUMN_COMMENT = 6;
+const int COLUMN_DURATION = 7;
+const int COLUMN_BPM = 8;
+const int COLUMN_KEY = 9;
+const int COLUMN_TYPE = 10;
+const int COLUMN_BITRATE = 11;
+const int COLUMN_LOCATION = 12;
 
 BrowseTableModel::BrowseTableModel(QObject* parent)
         : QStandardItemModel(parent),
@@ -15,10 +29,29 @@ BrowseTableModel::BrowseTableModel(QObject* parent)
                      "mixxx.db.model.browse")
 {
     QStringList header_data;
-    header_data << "Filename" << "Artist" << "Title" << "Album" 
-        << "Year" << "BPM" << "Key" << "Duration" << "Type"
-        << "Bitrate" << "Genre" << "Track #" << "Comment"
-        << "Location";
+    
+    header_data.insert(COLUMN_FILENAME, "Filename");
+    header_data.insert(COLUMN_ARTIST, "Artist");
+    header_data.insert(COLUMN_TITLE, "Title");
+    header_data.insert(COLUMN_ALBUM, "Album");
+    header_data.insert(COLUMN_GENRE, "Genre");
+    header_data.insert(COLUMN_YEAR, "Year");
+    header_data.insert(COLUMN_BPM, "BPM");
+    header_data.insert(COLUMN_KEY, "Key");
+    header_data.insert(COLUMN_DURATION, "Duration");
+    header_data.insert(COLUMN_TYPE, "Type");
+    header_data.insert(COLUMN_BITRATE, "Bitrate");
+    header_data.insert(COLUMN_COMMENT, "Comment");
+    header_data.insert(COLUMN_LOCATION, "Location");
+    
+    addSearchColumn(COLUMN_FILENAME);
+    addSearchColumn(COLUMN_ARTIST);
+    addSearchColumn(COLUMN_ALBUM);
+    addSearchColumn(COLUMN_TITLE);
+    addSearchColumn(COLUMN_GENRE);
+    addSearchColumn(COLUMN_KEY);
+    addSearchColumn(COLUMN_COMMENT);
+     
     setHorizontalHeaderLabels(header_data); 
 }
 
@@ -27,6 +60,12 @@ BrowseTableModel::~BrowseTableModel()
 
 }
 
+const QList<int>& BrowseTableModel::searchColumns() const {
+    return m_searchColumns;
+}
+void BrowseTableModel::addSearchColumn(int index) {
+    m_searchColumns.push_back(index);
+}
 void BrowseTableModel::setPath(QString absPath)
 {
     //call and execute method populateModel as a Thread
