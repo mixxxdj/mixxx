@@ -77,36 +77,17 @@ void BrowseTableModel::setPath(QString absPath)
 
 TrackPointer BrowseTableModel::getTrack(const QModelIndex& index) const
 {
-    TrackInfoObject* tio = new TrackInfoObject();
-    int row = index.row();
-    int columns = columnCount();
-    //Note that headers can change via context menus
-    //Also note that the order can change
-        
-    for(int column=0; column < columns; ++column){
-        QString header = horizontalHeaderItem(column)->text();
-        if(header == "Location"){
-            tio->setLocation(item(row, column)->text());
-        }
-    }
+    TrackInfoObject* tio = new TrackInfoObject(getTrackLocation(index));
     return TrackPointer(tio, &QObject::deleteLater);
 }
 
 QString BrowseTableModel::getTrackLocation(const QModelIndex& index) const
 {
     int row = index.row();
-    int columns = columnCount();
-    //Note that headers can change via context menus
-    //Also note that the order can change
-        
-    for(int column=0; column < columns; ++column){
-        QString header = horizontalHeaderItem(column)->text();
-        if(header == "Location"){
-            QModelIndex index = this->index(row, column);
-            return data(index).toString();
-        }
-    }
-
+            
+    QModelIndex index2 = this->index(row, COLUMN_LOCATION);
+    return data(index2).toString();
+    
 }
 
 void BrowseTableModel::search(const QString& searchText)
