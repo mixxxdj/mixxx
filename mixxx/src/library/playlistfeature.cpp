@@ -152,7 +152,11 @@ void PlaylistFeature::onRightClickChild(const QPoint& globalPos, QModelIndex ind
     menu.addAction(m_pCreatePlaylistAction);
     menu.addSeparator();
     menu.addAction(m_pRenamePlaylistAction);
-    menu.addAction(m_pDeletePlaylistAction);
+
+    if (!locked) {
+        menu.addAction(m_pDeletePlaylistAction);
+    }
+    
     menu.addAction(m_pLockPlaylistAction);
     menu.addSeparator();
     menu.addAction(m_pImportPlaylistAction);
@@ -286,17 +290,19 @@ void PlaylistFeature::slotSetPlaylistLocked()
 void PlaylistFeature::slotDeletePlaylist()
 {
     //qDebug() << "slotDeletePlaylist() row:" << m_lastRightClickedIndex.data();
-    if (m_lastRightClickedIndex.isValid()) {
-        int playlistId = m_playlistDao.getPlaylistIdFromName(m_lastRightClickedIndex.data().toString());
+    int playlistId = m_playlistDao.getPlaylistIdFromName(m_lastRightClickedIndex.data().toString());
+    
+    if (m_lastRightClickedIndex.isValid() &&
+        !m_playlistDao.isPlaylistLocked(playlistId)) {
         Q_ASSERT(playlistId >= 0);
         
         clearChildModel();
         m_playlistDao.deletePlaylist(playlistId);
         m_playlistTableModel.select();
         constructChildModel();
+        emit(featureUpdated());
     }
-
-    emit(featureUpdated());
+    
 }
 
 bool PlaylistFeature::dropAccept(QUrl url) {

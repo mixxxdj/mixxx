@@ -190,7 +190,11 @@ void CrateFeature::onRightClickChild(const QPoint& globalPos, QModelIndex index)
     menu.addAction(m_pCreateCrateAction);
     menu.addSeparator();
     menu.addAction(m_pRenameCrateAction);
-    menu.addAction(m_pDeleteCrateAction);
+
+    if (!locked) {
+        menu.addAction(m_pDeleteCrateAction);
+    }
+    
     menu.addAction(m_pLockCrateAction);
     menu.addSeparator();
     menu.addAction(m_pImportPlaylistAction);
@@ -256,9 +260,12 @@ void CrateFeature::slotCreateCrate() {
 
 void CrateFeature::slotDeleteCrate() {
     QString crateName = m_lastRightClickedIndex.data().toString();
-    int crateId = m_pTrackCollection->getCrateDAO().getCrateIdByName(crateName);
+    CrateDAO crateDao = m_pTrackCollection->getCrateDAO();
+    int crateId = crateDao.getCrateIdByName(crateName);
 
-    if (m_pTrackCollection->getCrateDAO().deleteCrate(crateId)) {
+    if (!crateDao.isCrateLocked(crateId) &&
+        crateDao.deleteCrate(crateId)) {
+        
         clearChildModel();
         m_crateListTableModel.select();
         constructChildModel();
