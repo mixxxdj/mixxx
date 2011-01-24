@@ -398,7 +398,7 @@ void PlaylistFeature::constructChildModel()
         TreeItem* playlist_item = m_childModel.getItem(ind);
         
         if (locked) {
-            playlist_item->setIcon(QIcon(":/images/library/ic_library_crates.png"));
+            playlist_item->setIcon(QIcon(":/images/library/ic_library_locked.png"));
         }
         else {
             playlist_item->setIcon(QIcon());
