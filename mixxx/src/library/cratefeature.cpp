@@ -64,7 +64,7 @@ CrateFeature::CrateFeature(QObject* parent,
             bool locked = crateDao.isCrateLocked(crateID);
             
             if (locked) {
-                playlist_item->setIcon(QIcon(":/images/library/ic_library_crates.png"));
+                playlist_item->setIcon(QIcon(":/images/library/ic_library_locked.png"));
             }
             else {
                 playlist_item->setIcon(QIcon());
@@ -338,7 +338,7 @@ void CrateFeature::slotSetCrateLocked()
     TreeItem* crateItem = m_childModel.getItem(m_lastRightClickedIndex);
     
     if (locked) {
-        crateItem->setIcon(QIcon(":/images/library/ic_library_crates.png"));
+        crateItem->setIcon(QIcon(":/images/library/ic_library_locked.png"));
     }
     else {
         crateItem->setIcon(QIcon());
@@ -373,7 +373,7 @@ void CrateFeature::constructChildModel()
         TreeItem* playlist_item = m_childModel.getItem(ind);
         
         if (locked) {
-            playlist_item->setIcon(QIcon(":/images/library/ic_library_crates.png"));
+            playlist_item->setIcon(QIcon(":/images/library/ic_library_locked.png"));
         }
         else {
             playlist_item->setIcon(QIcon());
