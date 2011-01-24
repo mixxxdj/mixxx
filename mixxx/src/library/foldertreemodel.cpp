@@ -75,7 +75,8 @@ bool FolderTreeModel::hasChildren( const QModelIndex & parent) const
     while (!found_subdir && ((entry = readdir(directory)) != NULL)) {
         if (entry->d_name != dot && entry->d_name != dotdot) 
         {
-            found_subdir = (entry->d_type == DT_DIR);
+            found_subdir = (entry->d_type == DT_DIR || entry->d_type == DT_LNK);
+            //qDebug() << "Subfolder of " << folder << " : " << entry->d_name << "type :" << entry->d_type; 
             
         }
     }
