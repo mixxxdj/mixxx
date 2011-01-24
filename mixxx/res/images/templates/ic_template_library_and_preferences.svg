@@ -13,7 +13,7 @@
    inkscape:export-filename=""
    style="display:inline"
    sodipodi:docname="ic_template_library_and_preferences.svg"
-   inkscape:version="0.48.0 r9654"
+   inkscape:version="0.48+devel r9889"
    id="svg2"
    height="32"
    width="32"
@@ -32,7 +32,7 @@
      id="namedview26"
      showgrid="true"
      inkscape:zoom="10"
-     inkscape:cx="30.145312"
+     inkscape:cx="11.595312"
      inkscape:cy="29.45"
      inkscape:window-x="1280"
      inkscape:window-y="0"
@@ -781,9 +781,9 @@
     <rdf:RDF>
       <rdf:Description
          rdf:about="">
-        <dc:title></dc:title>
-        <dc:creator></dc:creator>
-        <dc:rights></dc:rights>
+        <dc:title />
+        <dc:creator />
+        <dc:rights />
         <dc:description />
         <dc:format>image/svg+xml</dc:format>
         <dc:language>en</dc:language>
@@ -930,6 +930,29 @@ Grid based on suggestions from http://techbase.kde.org/Projects/Oxygen/Style</dc
            inkscape:connector-curvature="0"
            sodipodi:nodetypes="cccccccccccccccccccccccccccc" />
       </g>
+    </g>
+    <g
+       inkscape:groupmode="layer"
+       id="layer5"
+       inkscape:label="locked.png"
+       style="display:none"
+       sodipodi:insensitive="true">
+      <path
+         style="fill:none;stroke:#000000;stroke-width:3;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+         d="m 9.5,14 c 0,0 0.012953,-3 0,-4.5 -0.012957,-1.5004487 0.4612148,-5.9608363 6.5,-6 6,-0.038912 6.495685,4.4997009 6.5,7 0.0026,1.5 0,3.5 0,3.5"
+         id="path8889"
+         inkscape:connector-curvature="0"
+         sodipodi:nodetypes="csssc" />
+      <path
+         style="font-size:medium;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-indent:0;text-align:start;text-decoration:none;line-height:normal;letter-spacing:normal;word-spacing:normal;text-transform:none;direction:ltr;block-progression:tb;writing-mode:lr-tb;text-anchor:start;baseline-shift:baseline;color:#000000;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:2;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate;font-family:Sans;-inkscape-font-specification:Sans"
+         d="m 6,14 c -1,0 -2,1 -2,2 l 0,12 c 0,1 1,2 2,2 l 20,0 c 1,0 2,-1 2,-2 l 0,-12 c 0,-1 -1,-2 -2,-2 z M 9.03125,18 23,18 c 0.522127,0 0.997189,0.476401 0.997189,1 0,0.523599 -0.475062,1 -0.997189,1 L 9.03125,20 C 8.4410263,20 8,19.478827 8,19 8,18.521173 8.4261918,18 9.03125,18 z m 0,4 L 23,22 c 0.522127,0 0.997189,0.476401 0.997189,1 0,0.523599 -0.475062,1 -0.997189,1 L 9.03125,24 C 8.4896665,24 8,23.478827 8,23 8,22.521173 8.4836539,22 9.03125,22 z m 0,4 L 23,26 c 0.522127,0 0.997189,0.476401 0.997189,1 0,0.523599 -0.475062,1 -0.997189,1 L 9.03125,28 C 8.4799385,28 8,27.478827 8,27 8,26.521173 8.4473629,26 9.03125,26 z"
+         id="rect8885"
+         inkscape:connector-curvature="0"
+         sodipodi:nodetypes="ssssssssscssscaccssscaccssscac" />
+      <g
+         id="g8895"
+         style="fill:#0e232e;stroke:#0e232e;stroke-width:0.99776536"
+         transform="matrix(1.0044843,0,0,1,26.044843,18)" />
     </g>
     <g
        inkscape:groupmode="layer"
@@ -1225,7 +1248,7 @@ Grid based on suggestions from http://techbase.kde.org/Projects/Oxygen/Style</dc
            sodipodi:cy="7"
            sodipodi:rx="5"
            sodipodi:ry="5"
-           d="M 12,7 A 5,5 0 1 1 2,7 5,5 0 1 1 12,7 z"
+           d="M 12,7 C 12,9.7614237 9.7614237,12 7,12 4.2385763,12 2,9.7614237 2,7 2,4.2385763 4.2385763,2 7,2 c 2.7614237,0 5,2.2385763 5,5 z"
            transform="matrix(1.9222927,0,0,1.9222927,0.5439511,-13.456048)" />
         <path
            sodipodi:type="arc"
@@ -1235,7 +1258,7 @@ Grid based on suggestions from http://techbase.kde.org/Projects/Oxygen/Style</dc
            sodipodi:cy="6"
            sodipodi:rx="1.4933327"
            sodipodi:ry="1.4933327"
-           d="M 7.4933327,6 A 1.4933327,1.4933327 0 1 1 4.5066673,6 1.4933327,1.4933327 0 1 1 7.4933327,6 z"
+           d="M 7.4933327,6 C 7.4933327,6.8247449 6.8247449,7.4933327 6,7.4933327 5.1752551,7.4933327 4.5066673,6.8247449 4.5066673,6 4.5066673,5.1752551 5.1752551,4.5066673 6,4.5066673 6.8247449,4.5066673 7.4933327,5.1752551 7.4933327,6 z"
            transform="matrix(1.3392862,0,0,1.3392862,5.9642827,-8.0357171)" />
       </g>
     </g>

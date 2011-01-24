@@ -69,7 +69,7 @@ PlaylistFeature::PlaylistFeature(QObject* parent, TrackCollection* pTrackCollect
             bool locked = m_playlistDao.isPlaylistLocked(playlistID);
             
             if (locked) {
-                playlist_item->setIcon(QIcon(":/images/library/ic_library_crates.png"));
+                playlist_item->setIcon(QIcon(":/images/library/ic_library_locked.png"));
             }
             else {
                 playlist_item->setIcon(QIcon());
@@ -280,7 +280,7 @@ void PlaylistFeature::slotSetPlaylistLocked()
     TreeItem* playlistItem = m_childModel.getItem(m_lastRightClickedIndex);
 
     if (locked) {
-        playlistItem->setIcon(QIcon(":/images/library/ic_library_crates.png"));
+        playlistItem->setIcon(QIcon(":/images/library/ic_library_locked.png"));
     }
     else {
         playlistItem->setIcon(QIcon());
@@ -381,7 +381,7 @@ void PlaylistFeature::constructChildModel()
             TreeItem* playlist_item = m_childModel.getItem(ind);
             
             if (locked) {
-                playlist_item->setIcon(QIcon(":/images/library/ic_library_crates.png"));
+                playlist_item->setIcon(QIcon(":/images/library/ic_library_locked.png"));
             }
             else {
                 playlist_item->setIcon(QIcon());
