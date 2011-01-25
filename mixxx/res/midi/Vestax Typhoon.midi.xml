@@ -190,6 +190,20 @@
         <midino>0x11</midino>
         <options><Script-Binding/></options>
       </control>
+      <control>
+        <!-- fx1 (flanger chan 1 currently) -->
+        <group>[Channel1]</group>
+        <key>flanger</key>
+        <status>0x92</status>
+        <midino>0x29</midino>
+      </control>
+      <control>
+        <!-- fx1 d/w (flanger depth currently) -->
+        <group>[Flanger]</group>
+        <key>lfoDepth</key>
+        <status>0xB2</status>
+        <midino>0x51</midino>
+      </control>
 
 
       <control>
@@ -372,6 +386,20 @@
         <midino>0x11</midino>
         <options><Script-Binding/></options>
       </control>
+      <control>
+        <!-- fx2 (flanger chan 2 currently) -->
+        <group>[Channel2]</group>
+        <key>flanger</key>
+        <status>0x92</status>
+        <midino>0x28</midino>
+      </control>
+      <control>
+        <!-- fx2 d/w (flanger period currently) -->
+        <group>[Flanger]</group>
+        <key>lfoPeriod</key>
+        <status>0xB2</status>
+        <midino>0x52</midino>
+      </control>
 
 
       <!-- channel >1: common controls -->
@@ -483,6 +511,13 @@
         <on>0x7f</on>
         <minimum>1.0</minimum>
       </output>
+      <output>
+        <group>[Channel1]</group>
+        <key>flanger</key>
+        <status>0x92</status>
+        <midino>0x29</midino>
+        <minimum>0.1</minimum>
+      </output>
 
       <!-- channel 2 -->
       <output>
@@ -548,6 +583,13 @@
         <midino>0x2d</midino>
         <on>0x7f</on>
         <minimum>1.0</minimum>
+      </output>
+      <output>
+        <group>[Channel2]</group>
+        <key>flanger</key>
+        <status>0x92</status>
+        <midino>0x28</midino>
+        <minimum>0.1</minimum>
       </output>
     </outputs>
   </controller>
