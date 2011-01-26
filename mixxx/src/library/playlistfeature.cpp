@@ -40,7 +40,7 @@ PlaylistFeature::PlaylistFeature(QObject* parent, TrackCollection* pTrackCollect
 
     m_pLockPlaylistAction = new QAction(tr("Lock"),this);
     connect(m_pLockPlaylistAction, SIGNAL(triggered()),
-            this, SLOT(slotSetPlaylistLocked()));
+            this, SLOT(slotTogglePlaylistLock()));
 
     m_pImportPlaylistAction = new QAction(tr("Import Playlist"),this);
     connect(m_pImportPlaylistAction, SIGNAL(triggered()),
@@ -267,7 +267,7 @@ void PlaylistFeature::slotRenamePlaylist()
 }
 
 
-void PlaylistFeature::slotSetPlaylistLocked()
+void PlaylistFeature::slotTogglePlaylistLock()
 {
     QString playlistName = m_lastRightClickedIndex.data().toString();
     int playlistId = m_playlistDao.getPlaylistIdFromName(playlistName);

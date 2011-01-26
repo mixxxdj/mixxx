@@ -37,7 +37,7 @@ CrateFeature::CrateFeature(QObject* parent,
 
     m_pLockCrateAction = new QAction(tr("Lock"),this);
     connect(m_pLockCrateAction, SIGNAL(triggered()),
-            this, SLOT(slotSetCrateLocked()));
+            this, SLOT(slotToggleCrateLock()));
 
     m_pImportPlaylistAction = new QAction(tr("Import Playlist"),this);
     connect(m_pImportPlaylistAction, SIGNAL(triggered()),
@@ -324,7 +324,7 @@ void CrateFeature::slotRenameCrate() {
     }
 }
 
-void CrateFeature::slotSetCrateLocked()
+void CrateFeature::slotToggleCrateLock()
 {
     QString crateName = m_lastRightClickedIndex.data().toString();
     CrateDAO& crateDAO = m_pTrackCollection->getCrateDAO();
