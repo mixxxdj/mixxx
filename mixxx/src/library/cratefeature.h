@@ -43,7 +43,7 @@ class CrateFeature : public LibraryFeature {
     void slotCreateCrate();
     void slotDeleteCrate();
     void slotRenameCrate();
-    void slotSetCrateLocked();
+    void slotToggleCrateLock();
     void slotImportPlaylist();
 
   private:

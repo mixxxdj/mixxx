@@ -48,7 +48,7 @@ public slots:
     void slotCreatePlaylist();
     void slotDeletePlaylist();
     void slotRenamePlaylist();
-    void slotSetPlaylistLocked();
+    void slotTogglePlaylistLock();
     void slotImportPlaylist();
 
  private:
