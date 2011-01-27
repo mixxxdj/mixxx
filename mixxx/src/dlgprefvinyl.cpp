@@ -78,8 +78,6 @@ DlgPrefVinyl::DlgPrefVinyl(QWidget * parent, SoundManager * soundman,
     ComboBoxVinylType->addItem(MIXXX_VINYL_SERATOCD);
     ComboBoxVinylType->addItem(MIXXX_VINYL_TRAKTORSCRATCHSIDEA);
     ComboBoxVinylType->addItem(MIXXX_VINYL_TRAKTORSCRATCHSIDEB);
-    ComboBoxVinylType->addItem(MIXXX_VINYL_FINALSCRATCH);
-    ComboBoxVinylType->addItem(MIXXX_VINYL_MIXVIBESDVSCD);
 
     connect(VinylGain, SIGNAL(sliderReleased()), this, SLOT(VinylGainSlotApply()));
     //connect(ComboBoxDeviceDeck1, SIGNAL(currentIndexChanged()), this, SLOT(()));
@@ -177,7 +175,6 @@ void DlgPrefVinyl::slotApply()
     //Apply updates for everything else...
     VinylTypeSlotApply();
     VinylGainSlotApply();
-    AutoCalibrationSlotApply();
 
     int iMode = 0;
     if (AbsoluteMode->isChecked())
@@ -207,11 +204,6 @@ void DlgPrefVinyl::EnableScratchModeSlotApply()
 void DlgPrefVinyl::VinylTypeSlotApply()
 {
     config->set(ConfigKey("[VinylControl]","strVinylType"), ConfigValue(ComboBoxVinylType->currentText()));
-}
-
-void DlgPrefVinyl::AutoCalibrationSlotApply()
-{
-    // Do the scratchlib calibration steps.
 }
 
 void DlgPrefVinyl::VinylGainSlotApply()
