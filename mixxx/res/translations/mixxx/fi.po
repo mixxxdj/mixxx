@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2010-10-28 15:35-0400\n"
-"PO-Revision-Date: 2011-01-04 18:30+0000\n"
+"PO-Revision-Date: 2011-01-26 22:57+0000\n"
 "Last-Translator: Mika Haulo <Unknown>\n"
 "Language-Team: Finnish <fi@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-01-05 04:42+0000\n"
-"X-Generator: Launchpad (build Unknown)\n"
+"X-Launchpad-Export-Date: 2011-01-27 04:32+0000\n"
+"X-Generator: Launchpad (build 12177)\n"
 
 #: AutoDJFeature#1
 msgid "Auto DJ"
@@ -35,7 +35,7 @@ msgstr "Sinulla ei ole oikeuksia tarkastella tätä hakemistoa."
 
 #: CrateFeature#1
 msgid "New Crate"
-msgstr ""
+msgstr "Uusi levylaukku"
 
 #: CrateFeature#2
 msgctxt "CrateFeature#2"
@@ -44,27 +44,27 @@ msgstr "Poista"
 
 #: CrateFeature#3
 msgid "Crates"
-msgstr ""
+msgstr "Levylaukut"
 
 #: CrateFeature#4
 msgid "Crate name:"
-msgstr ""
+msgstr "Levylaukun nimi:"
 
 #: CrateFeature#5
 msgid "Crate Creation Failed"
-msgstr ""
+msgstr "Levylaukun luonti epäonnistui"
 
 #: CrateFeature#6
 msgid "A crate cannot have a blank name."
-msgstr ""
+msgstr "Levylaukun nimi ei voi olla tyhjä."
 
 #: CrateFeature#7
 msgid "Creating Crate Failed"
-msgstr ""
+msgstr "Levylaukun luonti epäonnistui"
 
 #: CrateFeature#8
 msgid "A crate by that name already exists."
-msgstr ""
+msgstr "Levylaukku on jo olemassa."
 
 #: CrateTableModel#1
 msgid "ID"
@@ -203,7 +203,7 @@ msgstr "Minimi"
 
 #: DlgBpmSchemeDlg#6
 msgid "Analyze Entire Song"
-msgstr ""
+msgstr "Analysoi koko kappale"
 
 #: DlgMidiLearning#1
 msgid "Skip"
@@ -220,7 +220,7 @@ msgstr "Seuraava"
 #: DlgMidiLearning#4
 msgctxt "DlgMidiLearning#4"
 msgid "MIDI Learning Wizard"
-msgstr ""
+msgstr "Ohjattu MIDI-asetusten luominen"
 
 #: DlgMidiLearning#5
 msgid "Welcome to the MIDI Learning Wizard"
@@ -231,6 +231,8 @@ msgid ""
 "This wizard allows you to easily map the controls on your MIDI controller to "
 "Mixxx's controls."
 msgstr ""
+"Tällä toiminnolla voit helposti yhdistää MIDI-ohjaimesi säätimet Mixxxin "
+"toimintoihin."
 
 #: DlgMidiLearning#7
 msgid "Begin"
@@ -238,7 +240,7 @@ msgstr "Aloita"
 
 #: DlgMidiLearning#8
 msgid "Please tweak the control for:"
-msgstr ""
+msgstr "Liikuta säädintä toiminnolle:"
 
 #: DlgMidiLearning#9
 msgid "Mixxx Control"
@@ -279,12 +281,12 @@ msgstr ""
 
 #: DlgPrefBPMDlg#1
 msgid "BPM Detection Settings"
-msgstr ""
+msgstr "Temponmääritysasetukset"
 
 #: DlgPrefBPMDlg#2
 msgctxt "DlgPrefBPMDlg#2"
 msgid "BPM Detection"
-msgstr ""
+msgstr "Temponmääritys"
 
 #: DlgPrefBPMDlg#3
 msgid "Enable BPM Detection"
@@ -292,11 +294,11 @@ msgstr ""
 
 #: DlgPrefBPMDlg#4
 msgid "Detect Song BPM on Import"
-msgstr ""
+msgstr "Määritä tempo kappaleen tuonnin yhteydessä"
 
 #: DlgPrefBPMDlg#5
 msgid "Write BPM to ID3 Tag"
-msgstr ""
+msgstr "Kirjoita tempo ID3-tagiin"
 
 #: DlgPrefBPMDlg#6
 msgid "If BPM can be detected but not within specified range"
@@ -304,7 +306,7 @@ msgstr ""
 
 #: DlgPrefBPMDlg#7
 msgid "Allow BPM above the range"
-msgstr ""
+msgstr "Salli tempoalueen ylitys"
 
 #: DlgPrefBPMDlg#8
 msgid "BPM Schemes"
@@ -458,15 +460,15 @@ msgstr ""
 
 #: DlgPrefCrossfaderDlg#2
 msgid "Crossfader Curve"
-msgstr ""
+msgstr "Crossfaderin käyttäytyminen"
 
 #: DlgPrefCrossfaderDlg#3
 msgid "Slow fade"
-msgstr ""
+msgstr "Hidas häivytys"
 
 #: DlgPrefCrossfaderDlg#4
 msgid "Fast cut"
-msgstr ""
+msgstr "Nopea leikkaus"
 
 #: DlgPrefCrossfaderDlg#5
 msgid "Constant power"
@@ -474,11 +476,11 @@ msgstr ""
 
 #: DlgPrefCrossfaderDlg#6
 msgid "Mixing"
-msgstr ""
+msgstr "Miksaamisen soveltuva"
 
 #: DlgPrefCrossfaderDlg#7
 msgid "Scratching"
-msgstr ""
+msgstr "Scratchaamiseen soveltuva"
 
 #: DlgPrefCrossfaderDlg#8
 msgid "Linear"
@@ -500,7 +502,7 @@ msgstr ""
 
 #: DlgPrefEQDlg#2
 msgid "Static EQs (for slower CPUs)"
-msgstr ""
+msgstr "Staattiset taajuuskorjaimet (pienempi suorituskykyvaatimus)"
 
 #: DlgPrefEQDlg#3
 msgid "High Shelf EQ"
@@ -559,6 +561,8 @@ msgid ""
 "Are you sure you'd like to load the %1 mapping?\n"
 "This will overwrite your existing MIDI mapping."
 msgstr ""
+"Haluatko varmasti ladata assosiaation %1?\n"
+"Tämä korvaa olemassaolevan asetuksen."
 
 #: DlgPrefMidiBindings#6
 msgid "Export Mixxx MIDI Bindings"
@@ -668,7 +672,7 @@ msgstr ""
 
 #: DlgPrefPlaylist#2
 msgid "Multiple iPods Detected"
-msgstr ""
+msgstr "Useita iPodeja havaittu"
 
 #: DlgPrefPlaylist#3
 msgid ""
@@ -1049,6 +1053,8 @@ msgid ""
 "Please note that for technical reasons changing any shoutcast settings will "
 "cause an established connection to disconnect and reconnect. "
 msgstr ""
+"Huomautus: teknisistä syistä johtuen Shoutcast-asetusten muuttaminen vaatii "
+"olemassaolevan yhteyden katkaisun ja uudelleenavaamisen. "
 
 #: DlgPrefSound#1
 msgctxt "DlgPrefSound#1"
@@ -1074,6 +1080,9 @@ msgid ""
 "samplerate.\n"
 "The samplerate has been reset to 44100 Hz."
 msgstr ""
+"FinalScratch-aikakoodilevyt toimivat ainoastaan 44100 Hz:n "
+"näytteenottotaajuudella.\n"
+"Näytteenottotaajuudeksi on asetettu 44100 Hz."
 
 #: DlgPrefSound#6
 msgctxt "DlgPrefSound#6"
@@ -1126,7 +1135,7 @@ msgstr ""
 
 #: DlgPrefSoundDlg#2
 msgid "Audio Output"
-msgstr ""
+msgstr "Ääniasetukset"
 
 #: DlgPrefSoundDlg#3
 msgid "Master"
@@ -1138,11 +1147,11 @@ msgstr "Kuulokkeet"
 
 #: DlgPrefSoundDlg#5
 msgid "Sample rate (Hz)"
-msgstr ""
+msgstr "Näytteenottotaajuus (Hz)"
 
 #: DlgPrefSoundDlg#6
 msgid "Sound API"
-msgstr ""
+msgstr "Äänirajapinta"
 
 #: DlgPrefSoundDlg#7
 msgid "Pitch behaviour"
@@ -1164,7 +1173,7 @@ msgstr ""
 
 #: DlgPrefSoundDlg#11
 msgid "Latency"
-msgstr ""
+msgstr "Latenssi"
 
 #: DlgPrefSoundDlg#12
 msgid "256 ms"
@@ -1173,12 +1182,12 @@ msgstr ""
 #: DlgPrefSoundDlg#13
 msgctxt "DlgPrefSoundDlg#13"
 msgid "Low"
-msgstr ""
+msgstr "Heikko"
 
 #: DlgPrefSoundDlg#14
 msgctxt "DlgPrefSoundDlg#14"
 msgid "High"
-msgstr ""
+msgstr "Hyvä"
 
 #: DlgPrefSoundDlg#15
 msgid "Fast CPU"
@@ -1198,7 +1207,7 @@ msgstr ""
 #: DlgPrefSoundItem#1
 msgctxt "DlgPrefSoundItem#1"
 msgid "None"
-msgstr ""
+msgstr "Ei määritelty"
 
 #: DlgPrefSoundItem#2
 msgid "Form"
@@ -1211,12 +1220,12 @@ msgstr ""
 #: DlgPrefVinyl#1
 msgctxt "DlgPrefVinyl#1"
 msgid "None"
-msgstr ""
+msgstr "Ei käytössä"
 
 #: DlgPrefVinyl#2
 msgctxt "DlgPrefVinyl#2"
 msgid "Configuration error"
-msgstr ""
+msgstr "Virhe asetuksissa"
 
 #: DlgPrefVinyl#3
 msgctxt "DlgPrefVinyl#3"
@@ -1244,11 +1253,11 @@ msgstr ""
 
 #: DlgPrefVinylDlg#3
 msgid "Deck 1"
-msgstr ""
+msgstr "Soitin 1"
 
 #: DlgPrefVinylDlg#4
 msgid "Deck 2"
-msgstr ""
+msgstr "Soitin 2"
 
 #: DlgPrefVinylDlg#5
 msgid ""
@@ -1259,15 +1268,15 @@ msgstr ""
 
 #: DlgPrefVinylDlg#6
 msgid "Turntable Preamp"
-msgstr ""
+msgstr "Esivahvistus"
 
 #: DlgPrefVinylDlg#7
 msgid "1 (Off)"
-msgstr ""
+msgstr "1 (Ei käytössä)"
 
 #: DlgPrefVinylDlg#8
 msgid "150"
-msgstr ""
+msgstr "150"
 
 #: DlgPrefVinylDlg#9
 msgid "Vinyl Configuration"
@@ -1275,7 +1284,7 @@ msgstr ""
 
 #: DlgPrefVinylDlg#10
 msgid "Vinyl Type"
-msgstr ""
+msgstr "Aikakoodilevyn tyyppi"
 
 #: DlgPrefVinylDlg#11
 msgid "Lead-in time"
@@ -1283,7 +1292,7 @@ msgstr ""
 
 #: DlgPrefVinylDlg#12
 msgid "seconds"
-msgstr ""
+msgstr "sekuntia"
 
 #: DlgPrefVinylDlg#13
 msgid "Control Mode"
@@ -1328,15 +1337,15 @@ msgstr ""
 #: DlgPreferences#3
 msgctxt "DlgPreferences#3"
 msgid "Library"
-msgstr ""
+msgstr "Kokoelma"
 
 #: DlgPreferences#4
 msgid "Interface"
-msgstr ""
+msgstr "Käyttöliittymä"
 
 #: DlgPreferences#5
 msgid "Equalizers"
-msgstr ""
+msgstr "Taajuuskorjaimet"
 
 #: DlgPreferences#6
 msgid "Crossfader"
@@ -1350,7 +1359,7 @@ msgstr ""
 #: DlgPreferences#8
 msgctxt "DlgPreferences#8"
 msgid "BPM Detection"
-msgstr ""
+msgstr "Temponmääritys"
 
 #: DlgPreferences#9
 msgid "Vinyl Control"
@@ -1372,15 +1381,15 @@ msgstr ""
 #: DlgPrepare#1
 msgctxt "DlgPrepare#1"
 msgid "Manage"
-msgstr ""
+msgstr "Hallinta"
 
 #: DlgPrepare#2
 msgid "Recently Added"
-msgstr ""
+msgstr "Äskettäin lisätyt"
 
 #: DlgPrepare#3
 msgid "All Songs"
-msgstr ""
+msgstr "Kaikki kappaleet"
 
 #: DlgPrepare#4
 msgid "Progress"
@@ -1393,7 +1402,7 @@ msgstr ""
 #: DlgPrepare#6
 msgctxt "DlgPrepare#6"
 msgid "Analyze"
-msgstr ""
+msgstr "Analysoi"
 
 #: DlgTrackInfo#1
 msgid "Track Editor"
@@ -1413,7 +1422,7 @@ msgstr ""
 
 #: DlgTrackInfo#5
 msgid "Album:"
-msgstr ""
+msgstr "Julkaisu:"
 
 #: DlgTrackInfo#6
 msgid "Date:"
@@ -1425,7 +1434,7 @@ msgstr ""
 
 #: DlgTrackInfo#8
 msgid "Genre:"
-msgstr ""
+msgstr "Tyylilaji:"
 
 #: DlgTrackInfo#9
 msgid "Filename:"
@@ -1433,7 +1442,7 @@ msgstr ""
 
 #: DlgTrackInfo#10
 msgid "Duration:"
-msgstr ""
+msgstr "Kesto:"
 
 #: DlgTrackInfo#11
 msgid "3:00"
@@ -1441,7 +1450,7 @@ msgstr ""
 
 #: DlgTrackInfo#12
 msgid "File Type:"
-msgstr ""
+msgstr "Tiedostotyyppi:"
 
 #: DlgTrackInfo#13
 msgid "77"
@@ -1465,11 +1474,11 @@ msgstr ""
 
 #: DlgTrackInfo#18
 msgid "x2"
-msgstr ""
+msgstr "Tuplaa"
 
 #: DlgTrackInfo#19
 msgid "/2"
-msgstr ""
+msgstr "Puolita"
 
 #: DlgTrackInfo#20
 msgid "Tap to Beat"
@@ -1481,7 +1490,7 @@ msgstr ""
 
 #: DlgTrackInfo#22
 msgid "Track BPM"
-msgstr ""
+msgstr "Tempo"
 
 #: DlgTrackInfo#23
 msgid "Cue Id"
@@ -1526,7 +1535,7 @@ msgstr ""
 
 #: DlgTrackInfo#33
 msgid "Alt+O"
-msgstr ""
+msgstr "Alt+O"
 
 #: DlgTrackInfo#34
 msgid "&Next >>"
@@ -1626,7 +1635,7 @@ msgstr ""
 
 #: ErrorDialogHandler#3
 msgid "Warning"
-msgstr ""
+msgstr "Varoitus"
 
 #: ErrorDialogHandler#4
 msgctxt "ErrorDialogHandler#4"
@@ -1639,7 +1648,7 @@ msgstr ""
 
 #: ITunesFeature#1
 msgid "iTunes"
-msgstr ""
+msgstr "iTunes"
 
 #: ITunesFeature#2
 msgid "Load iTunes Library?"
@@ -1652,7 +1661,7 @@ msgstr ""
 #: ITunesPlaylistModel#1
 msgctxt "ITunesPlaylistModel#1"
 msgid "Artist"
-msgstr ""
+msgstr "Artisti"
 
 #: ITunesPlaylistModel#2
 msgctxt "ITunesPlaylistModel#2"
@@ -1662,7 +1671,7 @@ msgstr ""
 #: ITunesPlaylistModel#3
 msgctxt "ITunesPlaylistModel#3"
 msgid "Album"
-msgstr ""
+msgstr "Julkaisu"
 
 #: ITunesPlaylistModel#4
 msgctxt "ITunesPlaylistModel#4"
@@ -1672,17 +1681,17 @@ msgstr ""
 #: ITunesPlaylistModel#5
 msgctxt "ITunesPlaylistModel#5"
 msgid "BPM"
-msgstr ""
+msgstr "Tempo"
 
 #: ITunesPlaylistModel#6
 msgctxt "ITunesPlaylistModel#6"
 msgid "Genre"
-msgstr ""
+msgstr "Tyylilaji"
 
 #: ITunesPlaylistModel#7
 msgctxt "ITunesPlaylistModel#7"
 msgid "Location"
-msgstr ""
+msgstr "Sijanti"
 
 #: ITunesPlaylistModel#8
 msgctxt "ITunesPlaylistModel#8"
@@ -1700,7 +1709,7 @@ msgstr ""
 
 #: LibraryScannerDlg#1
 msgid "It's taking Mixxx a minute to scan your music library, please wait..."
-msgstr ""
+msgstr "Kokoelman skannaaminen kestää hetken. Ole hyvä ja odota..."
 
 #: LibraryScannerDlg#2
 msgid "Cancel"
@@ -1709,7 +1718,7 @@ msgstr ""
 #: LibraryTableModel#1
 msgctxt "LibraryTableModel#1"
 msgid "Artist"
-msgstr ""
+msgstr "Artisti"
 
 #: LibraryTableModel#2
 msgctxt "LibraryTableModel#2"
@@ -1719,12 +1728,12 @@ msgstr ""
 #: LibraryTableModel#3
 msgctxt "LibraryTableModel#3"
 msgid "Album"
-msgstr ""
+msgstr "Julkaisu"
 
 #: LibraryTableModel#4
 msgctxt "LibraryTableModel#4"
 msgid "Genre"
-msgstr ""
+msgstr "Tyylilaji"
 
 #: LibraryTableModel#5
 msgctxt "LibraryTableModel#5"
@@ -1739,7 +1748,7 @@ msgstr ""
 #: LibraryTableModel#7
 msgctxt "LibraryTableModel#7"
 msgid "Location"
-msgstr ""
+msgstr "Sijanti"
 
 #: LibraryTableModel#8
 msgctxt "LibraryTableModel#8"
@@ -1759,12 +1768,12 @@ msgstr ""
 #: LibraryTableModel#11
 msgctxt "LibraryTableModel#11"
 msgid "BPM"
-msgstr ""
+msgstr "Tempo"
 
 #: LibraryTableModel#12
 msgctxt "LibraryTableModel#12"
 msgid "Track #"
-msgstr ""
+msgstr "Raita #"
 
 #: LibraryTableModel#13
 msgctxt "LibraryTableModel#13"
@@ -1885,12 +1894,12 @@ msgstr ""
 #: MissingTableModel#1
 msgctxt "MissingTableModel#1"
 msgid "Location"
-msgstr ""
+msgstr "Sijanti"
 
 #: MissingTableModel#2
 msgctxt "MissingTableModel#2"
 msgid "Artist"
-msgstr ""
+msgstr "Artisti"
 
 #: MissingTableModel#3
 msgctxt "MissingTableModel#3"
@@ -1900,17 +1909,17 @@ msgstr ""
 #: MissingTableModel#4
 msgctxt "MissingTableModel#4"
 msgid "Album"
-msgstr ""
+msgstr "Julkaisu"
 
 #: MissingTableModel#5
 msgctxt "MissingTableModel#5"
 msgid "Genre"
-msgstr ""
+msgstr "Tyylilaji"
 
 #: MissingTableModel#6
 msgctxt "MissingTableModel#6"
 msgid "Year"
-msgstr ""
+msgstr "Vuosi"
 
 #: MissingTableModel#7
 msgctxt "MissingTableModel#7"
@@ -1930,7 +1939,7 @@ msgstr ""
 #: MissingTableModel#10
 msgctxt "MissingTableModel#10"
 msgid "Track #"
-msgstr ""
+msgstr "Raita #"
 
 #: MissingTableModel#11
 msgctxt "MissingTableModel#11"
@@ -1940,7 +1949,7 @@ msgstr ""
 #: MissingTableModel#12
 msgctxt "MissingTableModel#12"
 msgid "BPM"
-msgstr ""
+msgstr "Tempo"
 
 #: MissingTableModel#13
 msgctxt "MissingTableModel#13"
@@ -1954,7 +1963,7 @@ msgstr ""
 #: MixxxApp#2
 msgctxt "MixxxApp#2"
 msgid "Mixxx"
-msgstr ""
+msgstr "Mixxx"
 
 #: MixxxApp#3
 msgid ""
@@ -2112,7 +2121,7 @@ msgstr ""
 
 #: MixxxApp#35
 msgid "Ctrl+I"
-msgstr ""
+msgstr "Ctrl+I"
 
 #: MixxxApp#36
 msgid "&Audio Beat Marks"
@@ -2124,11 +2133,11 @@ msgstr ""
 
 #: MixxxApp#38
 msgid "Ctrl+F"
-msgstr ""
+msgstr "Ctrl+F"
 
 #: MixxxApp#39
 msgid "F11"
-msgstr ""
+msgstr "F11"
 
 #: MixxxApp#40
 msgid "&Preferences"
@@ -2136,7 +2145,7 @@ msgstr ""
 
 #: MixxxApp#41
 msgid "Ctrl+P"
-msgstr ""
+msgstr "Ctrl+P"
 
 #: MixxxApp#42
 msgid "&About..."
@@ -2152,7 +2161,7 @@ msgstr ""
 
 #: MixxxApp#45
 msgid "Ctrl+Y"
-msgstr ""
+msgstr "Ctrl+Y"
 
 #: MixxxApp#46
 msgctxt "MixxxApp#46"
@@ -2161,7 +2170,7 @@ msgstr ""
 
 #: MixxxApp#47
 msgid "Ctrl+L"
-msgstr ""
+msgstr "Ctrl+L"
 
 #: MixxxApp#48
 msgid "&Record Mix"
@@ -2169,7 +2178,7 @@ msgstr ""
 
 #: MixxxApp#49
 msgid "Ctrl+R"
-msgstr ""
+msgstr "Ctrl+R"
 
 #: MixxxApp#50
 msgid "Show Studio"
@@ -2221,7 +2230,7 @@ msgstr ""
 
 #: MixxxApp#59
 msgid "Create a new playlist"
-msgstr ""
+msgstr "Luo uusi soittolista"
 
 #: MixxxApp#60
 msgid ""
@@ -2232,7 +2241,7 @@ msgstr ""
 
 #: MixxxApp#61
 msgid "Create a new crate"
-msgstr ""
+msgstr "Luo uusi levylaukku"
 
 #: MixxxApp#62
 msgid ""
@@ -2243,7 +2252,7 @@ msgstr ""
 
 #: MixxxApp#63
 msgid "Import playlist"
-msgstr ""
+msgstr "Tuo soittolista"
 
 #: MixxxApp#64
 msgid "Audio Beat Marks"
@@ -2290,7 +2299,7 @@ msgstr ""
 #: MixxxApp#74
 msgctxt "MixxxApp#74"
 msgid "Preferences"
-msgstr ""
+msgstr "Asetukset"
 
 #: MixxxApp#75
 msgid ""
@@ -2411,7 +2420,7 @@ msgstr ""
 #: MixxxLibraryFeature#2
 msgctxt "MixxxLibraryFeature#2"
 msgid "Library"
-msgstr ""
+msgstr "Kokoelma"
 
 #: Player#1
 msgid "Couldn't load track."
@@ -2424,7 +2433,7 @@ msgstr ""
 #: PlaylistFeature#2
 msgctxt "PlaylistFeature#2"
 msgid "Remove"
-msgstr ""
+msgstr "Poista"
 
 #: PlaylistFeature#3
 msgid "Playlists"
@@ -2457,7 +2466,7 @@ msgstr ""
 #: PlaylistTableModel#2
 msgctxt "PlaylistTableModel#2"
 msgid "Artist"
-msgstr ""
+msgstr "Artisti"
 
 #: PlaylistTableModel#3
 msgctxt "PlaylistTableModel#3"
@@ -2467,17 +2476,17 @@ msgstr ""
 #: PlaylistTableModel#4
 msgctxt "PlaylistTableModel#4"
 msgid "Album"
-msgstr ""
+msgstr "Julkaisu"
 
 #: PlaylistTableModel#5
 msgctxt "PlaylistTableModel#5"
 msgid "Genre"
-msgstr ""
+msgstr "Tyylilaji"
 
 #: PlaylistTableModel#6
 msgctxt "PlaylistTableModel#6"
 msgid "Year"
-msgstr ""
+msgstr "Vuosi"
 
 #: PlaylistTableModel#7
 msgctxt "PlaylistTableModel#7"
@@ -2487,7 +2496,7 @@ msgstr ""
 #: PlaylistTableModel#8
 msgctxt "PlaylistTableModel#8"
 msgid "Location"
-msgstr ""
+msgstr "Sijanti"
 
 #: PlaylistTableModel#9
 msgctxt "PlaylistTableModel#9"
@@ -2502,7 +2511,7 @@ msgstr ""
 #: PlaylistTableModel#11
 msgctxt "PlaylistTableModel#11"
 msgid "Track #"
-msgstr ""
+msgstr "Raita #"
 
 #: PlaylistTableModel#12
 msgctxt "PlaylistTableModel#12"
@@ -2517,12 +2526,12 @@ msgstr ""
 #: PlaylistTableModel#14
 msgctxt "PlaylistTableModel#14"
 msgid "BPM"
-msgstr ""
+msgstr "Tempo"
 
 #: PrepareFeature#1
 msgctxt "PrepareFeature#1"
 msgid "Analyze"
-msgstr ""
+msgstr "Analysoi"
 
 #: RhythmboxFeature#1
 msgid "Rhythmbox"
@@ -2539,7 +2548,7 @@ msgstr ""
 #: RhythmboxPlaylistModel#1
 msgctxt "RhythmboxPlaylistModel#1"
 msgid "Artist"
-msgstr ""
+msgstr "Artisti"
 
 #: RhythmboxPlaylistModel#2
 msgctxt "RhythmboxPlaylistModel#2"
@@ -2549,22 +2558,22 @@ msgstr ""
 #: RhythmboxPlaylistModel#3
 msgctxt "RhythmboxPlaylistModel#3"
 msgid "Album"
-msgstr ""
+msgstr "Julkaisu"
 
 #: RhythmboxPlaylistModel#4
 msgctxt "RhythmboxPlaylistModel#4"
 msgid "Year"
-msgstr ""
+msgstr "Vuosi"
 
 #: RhythmboxPlaylistModel#5
 msgctxt "RhythmboxPlaylistModel#5"
 msgid "Genre"
-msgstr ""
+msgstr "Tyylilaji"
 
 #: RhythmboxPlaylistModel#6
 msgctxt "RhythmboxPlaylistModel#6"
 msgid "Location"
-msgstr ""
+msgstr "Sijanti"
 
 #: RhythmboxPlaylistModel#7
 msgctxt "RhythmboxPlaylistModel#7"
@@ -2579,7 +2588,7 @@ msgstr ""
 #: RhythmboxTrackModel#1
 msgctxt "RhythmboxTrackModel#1"
 msgid "Artist"
-msgstr ""
+msgstr "Artisti"
 
 #: RhythmboxTrackModel#2
 msgctxt "RhythmboxTrackModel#2"
@@ -2589,7 +2598,7 @@ msgstr ""
 #: RhythmboxTrackModel#3
 msgctxt "RhythmboxTrackModel#3"
 msgid "Album"
-msgstr ""
+msgstr "Julkaisu"
 
 #: RhythmboxTrackModel#4
 msgctxt "RhythmboxTrackModel#4"
@@ -2599,12 +2608,12 @@ msgstr ""
 #: RhythmboxTrackModel#5
 msgctxt "RhythmboxTrackModel#5"
 msgid "Genre"
-msgstr ""
+msgstr "Tyylilaji"
 
 #: RhythmboxTrackModel#6
 msgctxt "RhythmboxTrackModel#6"
 msgid "Location"
-msgstr ""
+msgstr "Sijanti"
 
 #: RhythmboxTrackModel#7
 msgctxt "RhythmboxTrackModel#7"
@@ -2681,52 +2690,52 @@ msgstr ""
 #: Ui#10
 msgctxt "Ui#10"
 msgid "Preferences"
-msgstr ""
+msgstr "Asetukset"
 
 #: VinylControlSignalWidget#1
 msgid "OK"
-msgstr ""
+msgstr "Hyväksy"
 
 #: WBrowseTableView#1
 msgctxt "WBrowseTableView#1"
 msgid "Load in Player 1"
-msgstr ""
+msgstr "Lataa soittimeen 1"
 
 #: WBrowseTableView#2
 msgctxt "WBrowseTableView#2"
 msgid "Load in Player 2"
-msgstr ""
+msgstr "Lataa soittimeen 2"
 
 #: WSearchLineEdit#1
 msgid "Search..."
-msgstr ""
+msgstr "Etsi..."
 
 #: WTrackTableView#1
 msgid "Add to Playlist"
-msgstr ""
+msgstr "Lisää soittolistaan"
 
 #: WTrackTableView#2
 msgid "Add to Crate"
-msgstr ""
+msgstr "Lisää levylaukkuun"
 
 #: WTrackTableView#3
 msgctxt "WTrackTableView#3"
 msgid "Load in Player 1"
-msgstr ""
+msgstr "Lataa soittimeen 1"
 
 #: WTrackTableView#4
 msgctxt "WTrackTableView#4"
 msgid "Load in Player 2"
-msgstr ""
+msgstr "Lataa soittimeen 2"
 
 #: WTrackTableView#5
 msgctxt "WTrackTableView#5"
 msgid "Remove"
-msgstr ""
+msgstr "Poista"
 
 #: WTrackTableView#6
 msgid "Properties..."
-msgstr ""
+msgstr "Ominaisuudet..."
 
 #: WTrackTableView#7
 msgid "Add to Auto DJ Queue"
@@ -2734,4 +2743,4 @@ msgstr ""
 
 #: WTrackTableViewHeader#1
 msgid "Show or hide columns."
-msgstr ""
+msgstr "Näytä tai piilota sarakkeita."
