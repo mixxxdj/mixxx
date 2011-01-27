@@ -48,18 +48,9 @@ VestaxTyphoon.init = function(id) {
         new VestaxTyphoon.Light(1, vu[light]).off();
         for (var j = 0; j < 20000000; ++j);
     }*/
-
-//    for (var deck in VestaxTyphoon.decks) {
-//        VestaxTyphoon.decks[deck].updateVuMeter.timer = engine.beginTimer(1.0/30*1000, VestaxTyphoon.decks[deck].updateVuMeter);
-//    }
-//    VestaxTyphoon.decks["L"].updateVuMeter.timer = engine.beginTimer(1.0/30*1000, "VestaxTyphoon.updateLVuMeter");
-//    VestaxTyphoon.decks["R"].updateVuMeter.timer = engine.beginTimer(1.0/30*1000, "VestaxTyphoon.updateRVuMeter");
 }
 
 VestaxTyphoon.shutdown = function(id) {
-    for (var deck in VestaxTyphoon.decks) {
-        engine.stopTimer(VestaxTyphoon.decks[deck].updateVuMeter.timer);
-    }
     // clear everything
     for (var light in VestaxTyphoon.DECK_LIGHTS) {
         new VestaxTyphoon.Light(0, VestaxTyphoon.DECK_LIGHTS[light]).off();
@@ -192,7 +183,6 @@ VestaxTyphoon.Deck = function(deckNum, group) {
     this.lights["vu3"] = new VestaxTyphoon.Light(deckNum-1, 0x2b);
     this.lights["vu4"] = new VestaxTyphoon.Light(deckNum-1, 0x2c);
     this.lights["vu5"] = new VestaxTyphoon.Light(deckNum-1, 0x2d);
-//    this.updateVuMeter();
 }
 
 VestaxTyphoon.Deck.prototype.addButton = VestaxTyphoon.addButton;
@@ -207,36 +197,6 @@ VestaxTyphoon.Deck.prototype.handleEvent = function(channel, control, value, sta
         for (var button in buttons) {
             buttons[button].handleEvent(value);
         }
-    }
-}
-
-VestaxTyphoon.Deck.prototype.updateVuMeter = function() {
-//    print("updating vu");
-    var vol = engine.getValue(this.group, "VuMeter");
-    if (vol >= 0.2) {
-        this.lights["vu1"].on();
-    } else {
-        this.lights["vu1"].off();
-    }
-    if (vol >= 0.4) {
-        this.lights["vu2"].off();
-    } else {
-        this.lights["vu2"].off();
-    }
-    if (vol >= 0.6) {
-        this.lights["vu3"].off();
-    } else {
-        this.lights["vu3"].off();
-    }
-    if (vol >= 0.8) {
-        this.lights["vu4"].off();
-    } else {
-        this.lights["vu4"].off();
-    }
-    if (vol >= 1.0) {
-        this.lights["vu5"].off();
-    } else {
-        this.lights["vu5"].off();
     }
 }
 
@@ -367,13 +327,5 @@ VestaxTyphoon.Button.prototype.handleScratch = function() {
     } else {
         engine.setValue(this.group, "jog", this.state - 0x40);
     }
-}
-
-VestaxTyphoon.updateLVuMeter = function() {
-//    VestaxTyphoon.decks["L"].updateVuMeter();
-}
-
-VestaxTyphoon.updateRVuMeter = function() {
-//    VestaxTyphoon.decks["R"].updateVuMeter();
 }
 
