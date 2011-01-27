@@ -231,11 +231,9 @@ class VinylControl(Feature):
     def sources(self, build):
         sources = ['vinylcontrol.cpp',
                    'vinylcontrolproxy.cpp',
-                   'vinylcontrolscratchlib.cpp',
                    'vinylcontrolxwax.cpp',
                    'dlgprefvinyl.cpp',
-                   'vinylcontrolsignalwidget.cpp',
-                   '#lib/scratchlib/DAnalyse.cpp']
+                   'vinylcontrolsignalwidget.cpp']
         if build.platform_is_windows:
             sources.append("#lib/xwax/timecoder_win32.c")
         else:
