@@ -257,7 +257,7 @@ if build.platform_is_osx and 'bundle' in COMMAND_LINE_TARGETS:
 		 #STRIP=(type == 'RELEASE'),
          IDENTIFIER="org.mixxx.mixxx",
          DISPLAY_NAME="Mixxx",
-         SHORT_VERSION="1.9.0", #FIXME: parse defs_version.h???
+         SHORT_VERSION=mixxx_version, #FIXME: parse defs_version.h???
          COPYRIGHT="Copyright © 2011 Mixxx Development Team", #FIXME: datetime.year()
          CATEGORY="public.app-category.music"
 		 )

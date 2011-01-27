@@ -1141,13 +1141,7 @@ void MixxxApp::slotHelpAbout()
 {
 
     DlgAbout *about = new DlgAbout(this);
-#if defined(AMD64) || defined(EM64T) || defined(x86_64)
-    about->version_label->setText(VERSION " x64");
-#elif defined(IA64)
-    about->version_label->setText(VERSION " IA64");
-#else
     about->version_label->setText(VERSION);
-#endif
     QString credits =
     QString("<p align=\"center\"><b>Mixxx %1 Development Team</b></p>"
 "<p align=\"center\">"
@@ -1196,6 +1190,8 @@ void MixxxApp::slotHelpAbout()
 "Juan Pedro Bol&iacute;var Puente<br>"
 "Linus Amvall<br>"
 "Irwin C&eacute;spedes B<br>"
+"Micz Flor<br>"
+"Daniel James<br>"
 
 "</p>"
 "<p align=\"center\"><b>And special thanks to:</b></p>"
@@ -1267,14 +1263,7 @@ void MixxxApp::slotHelpAbout()
 "Michael Pujos<br>"
 "Claudio Bantaloukas<br>"
 "Pavol Rusnak<br>"
-
-#if defined(AMD64) || defined(EM64T) || defined(x86_64)
-    "</p>").arg(VERSION " x64");
-#elif defined(IA64)
-    "</p>").arg(VERSION " IA64");
-#else
     "</p>").arg(VERSION);
-#endif
 
     about->textBrowser->setHtml(credits);
     about->show();
