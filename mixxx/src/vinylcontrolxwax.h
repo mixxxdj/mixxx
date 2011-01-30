@@ -39,6 +39,7 @@ private:
 	void enableRecordEndMode();
 	void disableRecordEndMode();
 	void enableConstantMode();
+	void enableConstantMode(double rate);
 	bool uiUpdateTime(double time);
 
 	double dFileLength; 			//The length (in samples) of the current song.
