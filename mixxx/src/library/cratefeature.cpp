@@ -262,10 +262,16 @@ void CrateFeature::slotDeleteCrate() {
     QString crateName = m_lastRightClickedIndex.data().toString();
     CrateDAO crateDao = m_pTrackCollection->getCrateDAO();
     int crateId = crateDao.getCrateIdByName(crateName);
+    bool locked = crateDao.isCrateLocked(crateId);
 
-    if (!crateDao.isCrateLocked(crateId) &&
-        crateDao.deleteCrate(crateId)) {
-        
+    if (locked)  {
+        qDebug() << "Cannot delete a locked crate: " << crateId;
+        return;
+    }
+    
+    bool deleted = crateDao.deleteCrate(crateId);
+
+    if (deleted) {
         clearChildModel();
         m_crateListTableModel.select();
         constructChildModel();
