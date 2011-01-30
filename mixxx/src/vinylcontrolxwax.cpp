@@ -376,8 +376,9 @@ void VinylControlXwax::run()
 	                	//can clean the needle
 	                	qDebug() << "WARNING: needle skip detected!:";
 	                	qDebug() << filePosition << dOldFilePos << dVinylPosition << dOldPos;
-	                	enableConstantMode();
-	                	resetSteadyPitch(dVinylPitch, dVinylPosition);
+	                	//try setting the rate to the steadypitch value
+	                	enableConstantMode(dSteadyPitch);
+	                	//resetSteadyPitch(dVinylPitch, dVinylPosition);
 	                	vinylStatus->slotSet(VINYL_STATUS_ERROR);
 	                }
 	                else if (fabs(dVinylPosition - dOldPos) >= 5.0f &&  
@@ -546,6 +547,16 @@ void VinylControlXwax::enableConstantMode()
 	mode->slotSet((double)iVCMode);
 	togglePlayButton(true);
 	double rate = controlScratch->get();
+	rateSlider->slotSet(rateDir->get() * (fabs(rate) - 1.0f) / fRateRange);
+	controlScratch->slotSet(rate);
+}
+
+void VinylControlXwax::enableConstantMode(double rate)
+{
+	iOldMode = iVCMode;
+	iVCMode = MIXXX_VCMODE_CONSTANT;
+	mode->slotSet((double)iVCMode);
+	togglePlayButton(true);
 	rateSlider->slotSet(rateDir->get() * (fabs(rate) - 1.0f) / fRateRange);
 	controlScratch->slotSet(rate);
 }
