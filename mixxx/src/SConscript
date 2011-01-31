@@ -247,7 +247,8 @@ if build.platform_is_osx and 'bundle' in COMMAND_LINE_TARGETS:
 		Dir('#res/skins/'),
 		File('#res/schema.xml'),
 		Dir('#res/midi/'), Dir('#res/keyboard/'),
-		Dir('#res/ladspa_presets'), Dir('#res/doc/'), Dir('#res/promo/')],
+		Dir('#res/ladspa_presets'), Dir('#res/doc/'), Dir('#res/promo/'),
+        Dir('/Library/Frameworks/QtGui.framework/Resources/qt_menu.nib')], #qt_menu.nib for Cocoa Qt 4.7+
 		 PLUGINS=plugins, ##XXX test what happens if we don't pass any plugins
 			#Qt plugins ((Qt *NEEDS* its plugins in specific locations or it refuses to find them, however this is clearly awkward to write out like this.. maybe))
 		 QT_HACK = [(p_tgt_dir, os.path.join("/Developer/Applications/Qt/plugins/", p_tgt_dir, p)) for p_tgt_dir, p in qt_plugins] #sigh :(

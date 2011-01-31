@@ -170,7 +170,7 @@ void SoundManagerConfig::setSampleRate(unsigned int sampleRate) {
  *          otherwise true
  */
 bool SoundManagerConfig::checkSampleRate(const SoundManager &soundManager) {
-    if (!soundManager.getSampleRates().contains(m_sampleRate)) {
+    if (!soundManager.getSampleRates(m_api).contains(m_sampleRate)) {
         return false;
     }
     return true;

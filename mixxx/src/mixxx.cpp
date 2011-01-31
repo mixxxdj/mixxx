@@ -105,7 +105,9 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
 
     QCoreApplication::setApplicationName("Mixxx");
     QCoreApplication::setApplicationVersion(VERSION);
-#if defined(AMD64) || defined(EM64T) || defined(x86_64)
+#ifdef __APPLE__
+    setWindowTitle(tr("Mixxx")); //App Store
+#elif defined(AMD64) || defined(EM64T) || defined(x86_64)
     setWindowTitle(tr("Mixxx " VERSION " x64"));
 #elif defined(IA64)
     setWindowTitle(tr("Mixxx " VERSION " Itanium"));
@@ -1194,6 +1196,8 @@ void MixxxApp::slotHelpAbout()
 "Juan Pedro Bol&iacute;var Puente<br>"
 "Linus Amvall<br>"
 "Irwin C&eacute;spedes B<br>"
+"Micz Flor<br>"
+"Daniel James<br>"
 
 "</p>"
 "<p align=\"center\"><b>And special thanks to:</b></p>"

@@ -32,7 +32,14 @@ ITunesFeature::~ITunesFeature() {
 bool ITunesFeature::isSupported() {
     // itunes db might just be elsewhere, don't rely on it being in its
     // normal place. And since we will load an itdb on any platform...
+    // update: itunes writes absolute paths which means they generally
+    // won't translate when you open the itdb from some other os (eg. linux)
+    // so I'm disabling on non-mac/win platforms -bkgood
+#if defined(Q_OS_WIN32) || defined(Q_OS_MAC)
     return true; //QFile::exists(getiTunesMusicPath());
+#else
+    return false;
+#endif
 }
 
 

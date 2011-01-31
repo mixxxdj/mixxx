@@ -743,8 +743,9 @@ QWidget* LegacySkinParser::parseTableView(QDomElement node) {
             // disappears when we do background-color. I suspect they use
             // background-image instead of border-image, against their own
             // documentation's recommendation.
-
-            // styleHack.append(QString("QTreeView::branch:has-children {  background-color: %1; }\n ").arg(color.name()));
+            // EDIT: Un-commented next line cause it works if we use custom images as triangle,
+            // see https://bugs.launchpad.net/mixxx/+bug/690280 --jus 12/2010
+            styleHack.append(QString("QTreeView::branch:has-children {  background-color: %1; }\n ").arg(color.name()));
         } else {
             styleHack.append(QString("WLibraryTableView {  background-color: %1; }\n ").arg(color.name()));
             styleHack.append(QString("WLibrarySidebar {  background-color: %1; }\n ").arg(color.name()));
