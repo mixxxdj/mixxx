@@ -14,34 +14,7 @@
    <string>Dialog</string>
   </property>
   <layout class="QGridLayout" name="gridLayout_4">
-   <item row="0" column="0">
-    <widget class="QLabel" name="labelDeviceName">
-     <property name="font">
-      <font>
-       <pointsize>14</pointsize>
-       <weight>75</weight>
-       <bold>true</bold>
-      </font>
-     </property>
-     <property name="text">
-      <string>Your Device Name</string>
-     </property>
-    </widget>
-   </item>
-   <item row="0" column="2" rowspan="2">
-    <spacer name="horizontalSpacer">
-     <property name="orientation">
-      <enum>Qt::Horizontal</enum>
-     </property>
-     <property name="sizeHint" stdset="0">
-      <size>
-       <width>115</width>
-       <height>20</height>
-      </size>
-     </property>
-    </spacer>
-   </item>
-   <item row="0" column="3" rowspan="2">
+   <item row="0" column="3" rowspan="3">
     <widget class="QGroupBox" name="groupBoxPresets">
      <property name="title">
       <string/>
@@ -53,6 +26,9 @@
       <bool>false</bool>
      </property>
      <layout class="QGridLayout" name="gridLayout">
+      <property name="margin">
+       <number>0</number>
+      </property>
       <item row="1" column="1">
        <widget class="QLabel" name="label">
         <property name="text">
@@ -71,6 +47,12 @@
           <verstretch>0</verstretch>
          </sizepolicy>
         </property>
+        <property name="maximumSize">
+         <size>
+          <width>250</width>
+          <height>16777215</height>
+         </size>
+        </property>
        </widget>
       </item>
       <item row="1" column="3">
@@ -88,6 +70,12 @@
         <property name="enabled">
          <bool>false</bool>
         </property>
+        <property name="maximumSize">
+         <size>
+          <width>250</width>
+          <height>16777215</height>
+         </size>
+        </property>
        </widget>
       </item>
       <item row="2" column="1">
@@ -100,19 +88,15 @@
      </layout>
     </widget>
    </item>
-   <item row="1" column="0">
-    <widget class="QCheckBox" name="chkEnabledDevice">
-     <property name="text">
-      <string>Enabled</string>
-     </property>
-    </widget>
-   </item>
-   <item row="2" column="0" colspan="4">
+   <item row="3" column="0" colspan="4">
     <widget class="QToolBox" name="toolBox">
      <property name="frameShape">
       <enum>QFrame::NoFrame</enum>
      </property>
      <property name="currentIndex">
+      <number>0</number>
+     </property>
+     <property name="tabSpacing">
       <number>0</number>
      </property>
      <widget class="QWidget" name="page">
@@ -121,7 +105,7 @@
         <x>0</x>
         <y>0</y>
         <width>580</width>
-        <height>252</height>
+        <height>301</height>
        </rect>
       </property>
       <attribute name="label">
@@ -215,8 +199,8 @@
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>317</width>
-        <height>174</height>
+        <width>234</width>
+        <height>137</height>
        </rect>
       </property>
       <attribute name="label">
@@ -278,6 +262,53 @@
        </item>
       </layout>
      </widget>
+    </widget>
+   </item>
+   <item row="0" column="2" rowspan="3">
+    <spacer name="horizontalSpacer">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>24</width>
+       <height>20</height>
+      </size>
+     </property>
+    </spacer>
+   </item>
+   <item row="0" column="0">
+    <widget class="QLabel" name="labelDeviceName">
+     <property name="font">
+      <font>
+       <pointsize>14</pointsize>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="text">
+      <string>Your Device Name</string>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="0">
+    <widget class="QCheckBox" name="chkEnabledDevice">
+     <property name="text">
+      <string>Enabled</string>
+     </property>
+    </widget>
+   </item>
+   <item row="2" column="0">
+    <widget class="QLabel" name="label_3">
+     <property name="text">
+      <string>&lt;a href=&quot;http://mixxx.org/wiki/doku.php/midi_controller_mapping_file_format&quot;&gt;Troubleshooting&lt;/a&gt;</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+     </property>
+     <property name="openExternalLinks">
+      <bool>true</bool>
+     </property>
     </widget>
    </item>
   </layout>
