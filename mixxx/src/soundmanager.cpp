@@ -270,9 +270,8 @@ QList<unsigned int> SoundManager::getSampleRates(QString api) const
 {
 #ifdef __PORTAUDIO__
     if (api == MIXXX_PORTAUDIO_JACK_STRING) {
-        if (m_jackSampleRate == -1) {
-            queryDevices();
-        }
+        // queryDevices must have been called for this to work, but the
+        // ctor calls it -bkgood
         QList<unsigned int> samplerates;
         samplerates.append(m_jackSampleRate);
         return samplerates;
