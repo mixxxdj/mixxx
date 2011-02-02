@@ -88,11 +88,8 @@ void MessageHandler(QtMsgType type, const char *input)
 
     if(!Logfile.isOpen())
     {
-#ifdef Q_OS_WIN32
-        QString logFileName("mixxx.log");
-#else
-        QString logFileName(".mixxx.log");
-#endif
+        QString logFileName = QDir::homePath().append("/").append(SETTINGS_PATH).append("/mixxx.log");
+
         // XXX will there ever be a case that we can't write to our current
         // working directory?
         Logfile.setFileName(logFileName);

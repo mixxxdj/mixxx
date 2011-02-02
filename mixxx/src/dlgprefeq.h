@@ -43,9 +43,11 @@ public slots:
 	void slotUpdate();
 signals:
     void apply(const QString &);
+private slots:
+    void reset();
 private:
 	void loadSettings();
-	void setDefaults();
+	void setDefaultShelves();
 	int getEqFreq(int);
     int getSliderPosition(int eqFreq);
     void validate_levels();

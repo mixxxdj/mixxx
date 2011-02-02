@@ -18,7 +18,7 @@
  public:
      FolderTreeModel(QObject *parent = 0);
      virtual ~FolderTreeModel();
-	 virtual bool hasChildren ( const QModelIndex & parent = QModelIndex() ) const;
+    virtual bool hasChildren ( const QModelIndex & parent = QModelIndex() ) const;
 
        
  };
