@@ -20,6 +20,26 @@ void TrackBeats::addBeatSeconds(double beat)
     addBeatSample((int)round(beat * m_iSampleRate));
 }
 
+bool TrackBeats::hasBeatsSamples(double bgnRange, double endRange) const
+{
+    QMutexLocker lock(&m_qMutex);
+    QMapIterator<int, int> iter(m_beats);
+    int index = sampleIndex(start);
+
+
+    if (iter.findNext(m_beatIndex.value(index)))
+    {
+        do {
+            if ((iter.value() >= start) && (iter.value() <= stop))
+                 return true;
+            
+            iter.next();
+        } while((iter.hasNext()) && (iter.value() <= stop));
+    }
+    
+    return false;
+}
+    
 double TrackBeats::findNextBeatSeconds(double beat) const
 {
     QMutexLocker lock(&m_qMutex);
