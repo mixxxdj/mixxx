@@ -106,6 +106,9 @@ QVariant RhythmboxTrackModel::data(const QModelIndex& item, int role) const {
 bool RhythmboxTrackModel::isColumnInternal(int column) {
     return false;
 }
+bool RhythmboxTrackModel::isColumnHiddenByDefault(int column) {
+    return false;
+}
 
 QVariant RhythmboxTrackModel::getTrackColumnData(QDomNode songNode, const QModelIndex& index) const
 {
@@ -159,6 +162,9 @@ TrackPointer RhythmboxTrackModel::parseTrackNode(QDomNode songNode) const
     }
     pTrack->setGenre(songNode.firstChildElement("genre").text());
     pTrack->setDuration(songNode.firstChildElement("duration").text().toUInt());
+
+    // TODO(ywwg) why was this added? constructor above does the same -- rryan
+    pTrack->setLocation(trackLocation);
 
     // Have QObject handle deleting this track
     return TrackPointer(pTrack, &QObject::deleteLater);

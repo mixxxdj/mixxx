@@ -48,6 +48,7 @@ TrackInfoObject::TrackInfoObject(const QDomNode &nodeHeader)
         : m_qMutex(QMutex::Recursive) {
     m_sFilename = XmlParse::selectNodeQString(nodeHeader, "Filename");
     m_sLocation = XmlParse::selectNodeQString(nodeHeader, "Filepath") + "/" +  m_sFilename;
+    QString create_date;
 
     // We don't call initialize() here because it would end up calling parse()
     // on the file. Plus those initializations weren't done before, so it might
@@ -73,6 +74,11 @@ TrackInfoObject::TrackInfoObject(const QDomNode &nodeHeader)
     m_bBpmConfirm = XmlParse::selectNodeQString(nodeHeader, "BpmConfirm").toInt();
     m_fBeatFirst = XmlParse::selectNodeQString(nodeHeader, "BeatFirst").toFloat();
     m_bHeaderParsed = false;
+    create_date = XmlParse::selectNodeQString(nodeHeader, "CreateDate");
+    if (create_date == "")
+        m_dCreateDate = fileInfo.created();
+    else
+        m_dCreateDate = QDateTime::fromString(create_date);
 
     // Mixxx <1.8 recorded track IDs in mixxxtrack.xml, but we are going to
     // ignore those. Tracks will get a new ID from the database.
@@ -80,6 +86,7 @@ TrackInfoObject::TrackInfoObject(const QDomNode &nodeHeader)
     m_iId = -1;
 
     m_fCuePoint = XmlParse::selectNodeQString(nodeHeader, "CuePoint").toFloat();
+    m_bPlayed = false;
 
     m_pVisualWave = 0;
     m_dVisualResampleRate = 0;
@@ -113,6 +120,7 @@ void TrackInfoObject::initialize(bool parseHeader) {
     m_iDuration = 0;
     m_iBitrate = 0;
     m_iTimesPlayed = 0;
+    m_bPlayed = false;
     m_fBpm = 0.;
     m_fReplayGain = 0.;
     m_bBpmConfirm = false;
@@ -125,6 +133,9 @@ void TrackInfoObject::initialize(bool parseHeader) {
     m_iChannels = 0;
     m_fCuePoint = 0.0f;
     m_dVisualResampleRate = 0;
+    m_dCreateDate = QDateTime::currentDateTime();
+    m_Rating = 0;
+    m_key = "";
 
     // parse() parses the metadata from file. This is not a quick operation!
     if (parseHeader)
@@ -150,6 +161,7 @@ void TrackInfoObject::writeToXML( QDomDocument &doc, QDomElement &header )
 {
     QMutexLocker lock(&m_qMutex);
 
+    QString create_date;
     XmlParse::addElement( doc, header, "Filename", m_sFilename );
     //XmlParse::addElement( doc, header, "Filepath", m_sFilepath );
     XmlParse::addElement( doc, header, "Title", m_sTitle );
@@ -168,6 +180,7 @@ void TrackInfoObject::writeToXML( QDomDocument &doc, QDomElement &header )
     XmlParse::addElement( doc, header, "BeatFirst", QString("%1").arg(m_fBeatFirst) );
     XmlParse::addElement( doc, header, "Id", QString("%1").arg(m_iId) );
     XmlParse::addElement( doc, header, "CuePoint", QString::number(m_fCuePoint) );
+    XmlParse::addElement( doc, header, "CreateDate", m_dCreateDate.toString() );
     //if (m_pWave) {
         //XmlParse::addHexElement(doc, header, "WaveSummaryHex", m_pWave);
     //}
@@ -258,13 +271,18 @@ QString TrackInfoObject::getFilename()  const
     return m_sFilename;
 }
 
+QDateTime TrackInfoObject::getCreateDate() const
+{
+    QMutexLocker lock(&m_qMutex);
+    QDateTime create_date = QDateTime(m_dCreateDate);
+    return create_date;
+}
+
 bool TrackInfoObject::exists()  const
 {
     QMutexLocker lock(&m_qMutex);
     return m_bExists;
 }
-
-//Added for replaygain
 
 float TrackInfoObject::getReplayGain() const
 {
@@ -280,8 +298,8 @@ void TrackInfoObject::setReplayGain(float f)
     //qDebug() << "Reported ReplayGain value: " << m_fReplayGain;
     if (dirty)
         setDirty(true);
-    emit(ReplayGainUpdated(f));
     lock.unlock();
+    emit(ReplayGainUpdated(f));
 }
 
 float TrackInfoObject::getBpm() const
@@ -463,11 +481,48 @@ int TrackInfoObject::getTimesPlayed()  const
     return m_iTimesPlayed;
 }
 
+void TrackInfoObject::setTimesPlayed(int t)
+{
+    QMutexLocker lock(&m_qMutex);
+    bool dirty = t != m_iTimesPlayed;
+    m_iTimesPlayed = t;
+    if (dirty)
+        setDirty(true);
+}
+
 void TrackInfoObject::incTimesPlayed()
 {
     QMutexLocker lock(&m_qMutex);
+    qDebug() << "Track Played:" << m_sArtist << " - " << m_sTitle;
+    m_bPlayed = true;
     ++m_iTimesPlayed;
     setDirty(true);
+}
+
+bool TrackInfoObject::getPlayed() const
+{
+    QMutexLocker lock(&m_qMutex);
+    bool bPlayed = m_bPlayed;
+    return bPlayed;
+}
+
+void TrackInfoObject::setPlayed(bool bPlayed)
+{
+    QMutexLocker lock(&m_qMutex);
+    bool dirty = bPlayed != m_bPlayed;
+    m_bPlayed = bPlayed;
+    if (dirty)
+    {
+        if (bPlayed)
+        {
+            qDebug() << "Track Played:" << m_sArtist << " - " << m_sTitle;
+        }
+        else
+        {
+            qDebug() << "Track Unplayed:" << m_sArtist << " - " << m_sTitle;
+        }
+        setDirty(true);
+    }
 }
 
 QString TrackInfoObject::getComment() const
@@ -745,3 +800,30 @@ bool TrackInfoObject::locationChanged() {
     QMutexLocker lock(&m_qMutex);
     return m_bLocationChanged;
 }
+
+int TrackInfoObject::getRating() const{
+    QMutexLocker lock(&m_qMutex);
+    return m_Rating;
+}
+
+void TrackInfoObject::setRating (int rating){
+    QMutexLocker lock(&m_qMutex);
+    bool dirty = rating != m_Rating;
+    m_Rating = rating;
+    if (dirty)
+        setDirty(true);
+}
+
+QString TrackInfoObject::getKey() const{
+    QMutexLocker lock(&m_qMutex);
+    return m_key;
+}
+
+void TrackInfoObject::setKey(QString key){
+    QMutexLocker lock(&m_qMutex);
+    bool dirty = key != m_key;
+    m_key = key;
+    if (dirty)
+        setDirty(true);
+}
+

@@ -25,10 +25,12 @@ WTrackTableView::WTrackTableView(QWidget * parent,
           m_pTrackCollection(pTrackCollection),
           m_searchThread(this) {
 
-    pTrackInfo = new DlgTrackInfo(this);
-    connect(pTrackInfo, SIGNAL(next()),
+    // Give a NULL parent because otherwise it inherits our style which can make
+    // it unreadable. Bug #673411
+    m_pTrackInfo = new DlgTrackInfo(NULL);
+    connect(m_pTrackInfo, SIGNAL(next()),
             this, SLOT(slotNextTrackInfo()));
-    connect(pTrackInfo, SIGNAL(previous()),
+    connect(m_pTrackInfo, SIGNAL(previous()),
             this, SLOT(slotPrevTrackInfo()));
 
     connect(&m_loadTrackMapper, SIGNAL(mapped(QString)),
@@ -85,6 +87,8 @@ WTrackTableView::~WTrackTableView()
     delete m_pPlaylistMenu;
     delete m_pCrateMenu;
     //delete m_pRenamePlaylistAct;
+
+    delete m_pTrackInfo;
 }
 
 void WTrackTableView::loadTrackModel(QAbstractItemModel *model) {
@@ -108,7 +112,7 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel *model) {
     // header. Also, for some reason the WTrackTableView has to be hidden or
     // else problems occur. Since we parent the WtrackTableViewHeader's to the
     // WTrackTableView, they are automatically deleted.
-    QHeaderView* header = new WTrackTableViewHeader(Qt::Horizontal, this);
+    WTrackTableViewHeader* header = new WTrackTableViewHeader(Qt::Horizontal, this);
 
     // WTF(rryan) The following saves on unnecessary work on the part of
     // WTrackTableHeaderView. setHorizontalHeader() calls setModel() on the
@@ -119,6 +123,19 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel *model) {
     // QHeaderView here saves on setModel() calls. Since we parent the
     // QHeaderView to the WTrackTableView, it is automatically deleted.
     QHeaderView* tempHeader = new QHeaderView(Qt::Horizontal, this);
+    /* Tobias Rafreider: DO NOT SET SORTING TO TRUE during header replacement
+     * Otherwise, setSortingEnabled(1) will immediately trigger sortByColumn()
+     * For some reason this will cause 4 select statements in series
+     * from which 3 are redundant --> expensive at all
+     *
+     * Sorting columns, however, is possible because we
+     * enable clickable sorting indicators some lines below.
+     * Furthermore, we connect signal 'sortIndicatorChanged'.
+     *
+     * Fixes Bug #672762
+     */
+
+    setSortingEnabled(false);
     setHorizontalHeader(tempHeader);
 
     setModel(model);
@@ -144,6 +161,14 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel *model) {
 
         // Show or hide the column based on whether it should be shown or not.
         if (track_model->isColumnInternal(i)) {
+            //qDebug() << "Hiding column" << i;
+            horizontalHeader()->hideSection(i);
+        }
+        /* If Mixxx starts the first time or the header states have been cleared due to database schema evolution
+         * we gonna hide all columns that may contain a potential large number of NULL values.
+         * This will hide the key colum by default unless the user brings it to front
+         */
+        if (track_model->isColumnHiddenByDefault(i) && !header->hasPersistedHeaderState()) {
             //qDebug() << "Hiding column" << i;
             horizontalHeader()->hideSection(i);
         }
@@ -249,9 +274,9 @@ void WTrackTableView::showTrackInfo(QModelIndex index) {
 
     TrackPointer pTrack = trackModel->getTrack(index);
     // NULL is fine.
-    pTrackInfo->loadTrack(pTrack);
+    m_pTrackInfo->loadTrack(pTrack);
     currentTrackInfoIndex = index;
-    pTrackInfo->show();
+    m_pTrackInfo->show();
 }
 
 void WTrackTableView::contextMenuEvent(QContextMenuEvent * event)
@@ -624,13 +649,18 @@ bool WTrackTableView::modelHasCapabilities(TrackModel::CapabilitiesFlags capabil
 
 void WTrackTableView::keyPressEvent(QKeyEvent* event)
 {
+    //Update our saved list of selected indices when there's a keypress
+    // (eg. arrow keys!)
     m_selectedIndices = this->selectionModel()->selectedRows();
+
     if (event->key() == Qt::Key_Return)
     {
-        if (m_selectedIndices.size() > 0) {
-            QModelIndex index = m_selectedIndices.at(0);
-            slotMouseDoubleClicked(index);
-        }
+		/*
+		 * It is not a good idea if 'key_return'
+		 * causes a track to load since we allow in-line editing
+		 * of table items in general
+		 */
+        return;
     }
     else if (event->key() == Qt::Key_BracketLeft)
     {

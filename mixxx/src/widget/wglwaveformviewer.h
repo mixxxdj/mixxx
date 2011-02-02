@@ -10,6 +10,7 @@
 #include <QDragEnterEvent>
 #include <QDropEvent>
 #include <QTimerEvent>
+#include <QGLContext>
 
 #include "wwidget.h"
 #include "defs.h"
@@ -23,6 +24,7 @@ class WGLWaveformViewer : public QGLWidget
   public:
     WGLWaveformViewer(const char *group, WaveformRenderer* pWaveformRenderer,
                       QWidget *pParent=0, const QGLWidget *pShareWidget = 0,
+                      QGLContext *ctxt = 0,
                       Qt::WFlags f = 0);
     virtual ~WGLWaveformViewer();
 

@@ -170,7 +170,7 @@ void SoundManagerConfig::setSampleRate(unsigned int sampleRate) {
  *          otherwise true
  */
 bool SoundManagerConfig::checkSampleRate(const SoundManager &soundManager) {
-    if (!soundManager.getSampleRates().contains(m_sampleRate)) {
+    if (!soundManager.getSampleRates(m_api).contains(m_sampleRate)) {
         return false;
     }
     return true;
@@ -322,13 +322,13 @@ void SoundManagerConfig::loadDefaults(SoundManager *soundManager, unsigned int f
         }
     }
     if (flags & SoundManagerConfig::OTHER) {
-        QList<unsigned int> sampleRates = soundManager->getSampleRates();
+        QList<unsigned int> sampleRates = soundManager->getSampleRates(m_api);
         if (sampleRates.contains(DEFAULT_SAMPLE_RATE)) {
             m_sampleRate = DEFAULT_SAMPLE_RATE;
         } else if (!sampleRates.isEmpty()) {
             m_sampleRate = sampleRates.first();
         } else {
-            qDebug() << "got empty sample rate list from SoundManager, this is a bug";
+            qWarning() << "got empty sample rate list from SoundManager, this is a bug";
             Q_ASSERT(false);
         }
         m_latency = DEFAULT_LATENCY;

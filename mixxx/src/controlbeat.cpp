@@ -23,6 +23,7 @@ ControlBeat::ControlBeat(ConfigKey key, bool bMidiSimulateLatching) : ControlObj
     m_dValue = 0.;
     time.start();
     m_bPressed = false;
+    m_iValidPresses = 0;
 
     // Filter buffer
     buffer = new CSAMPLE[filterLength];
@@ -39,35 +40,44 @@ void ControlBeat::setValueFromMidi(MidiCategory, double v)
 {
     if (!m_bPressed || !m_bMidiSimulateLatching)
     {
-        setValue(v);
+        beatTap();
         m_bPressed = true;
     }
     else
         m_bPressed = false;
 }
 
-void ControlBeat::setValue(double)
+void ControlBeat::setValueFromThread(double dValue) {
+    if (dValue > 0) {
+        beatTap();
+    }
+}
+
+void ControlBeat::beatTap()
 {
-    int elapsed = time.elapsed();
-    time.restart();
+    int elapsed = time.restart();
 
-    if (elapsed<=maxInterval)
-    {
+    if (elapsed <= maxInterval) {
         // Move back in filter one sample
-        int i;
-        for (i=1; i<filterLength; i++)
-            buffer[i-1] = buffer[i];
+        for (int i = filterLength-1; i > 0; i--)
+            buffer[i] = buffer[i-1];
 
-        buffer[filterLength-1] = 1000.*(60./elapsed);
-        if (buffer[filterLength-1]>maxBPM)
-            buffer[filterLength-1] = maxBPM;
+        buffer[0] = 1000.*(60./elapsed);
+        if (buffer[0] > maxBPM)
+            buffer[0] = maxBPM;
+
+        m_iValidPresses++;
+        if (m_iValidPresses > filterLength)
+            m_iValidPresses = filterLength;
 
         double temp = 0.;
-        for (i=0; i<filterLength; i++)
+        for (int i = 0; i < m_iValidPresses; ++i)
             temp += buffer[i];
-        temp /= filterLength;
+        temp /= m_iValidPresses;
         m_dValue = temp;
 
         emit(valueChanged(m_dValue));
+    } else {
+        m_iValidPresses = 0;
     }
 }

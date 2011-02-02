@@ -26,11 +26,7 @@ class PortMIDI(Dependence):
         if not conf.CheckLib(['portmidi', 'libportmidi']) and \
                 not conf.CheckHeader(['portmidi.h']):
             raise Exception('Did not find PortMidi or its development headers.')
-
-        # WHY!? Supposedly we need this for PortMIDI.
-        if build.platform_is_windows:
-            build.env.Append(LIBS='advapi32')
-
+            
     def sources(self, build):
         return ['midi/portmidienumerator.cpp', 'midi/midideviceportmidi.cpp']
 
@@ -57,21 +53,21 @@ class OpenGL(Dependence):
 class OggVorbis(Dependence):
 
     def configure(self, build, conf):
-        if build.platform_is_windows and build.machine_is_64bit:
+#        if build.platform_is_windows and build.machine_is_64bit:
             # For some reason this has to be checked this way on win64,
             # otherwise it looks for the dll lib which will cause a conflict
             # later
-            if not conf.CheckLib('vorbisfile_static'):
-                raise Exception('Did not find vorbisfile_static.lib or the libvorbisfile development headers.')
-        else:
-            if not conf.CheckLib('vorbisfile'):
-                Exception('Did not find libvorbisfile.a, libvorbisfile.lib, '
-                    'or the libvorbisfile development headers.')
+#            if not conf.CheckLib('vorbisfile_static'):
+#                raise Exception('Did not find vorbisfile_static.lib or the libvorbisfile development headers.')
+#        else:
+        if not conf.CheckLib(['libvorbisfile', 'vorbisfile']):
+            Exception('Did not find libvorbisfile.a, libvorbisfile.lib, '
+                'or the libvorbisfile development headers.')
 
-        if not conf.CheckLib('vorbis'):
+        if not conf.CheckLib(['libvorbis', 'vorbis']):
             raise Exception('Did not find libvorbis.a, libvorbis.lib, or the libvorbisfile development headers.')
 
-        if not conf.CheckLib('ogg'):
+        if not conf.CheckLib(['libogg', 'ogg']):
             raise Exception('Did not find libogg.a, libogg.lib, or the libogg development headers, exiting!')
 
     def sources(self, build):
@@ -80,9 +76,9 @@ class OggVorbis(Dependence):
 class Mad(Dependence):
 
     def configure(self, build, conf):
-        if not conf.CheckLib(['mad','libmad']):
+        if not conf.CheckLib(['libmad','mad']):
             raise Exception('Did not find libmad.a, libmad.lib, or the libmad development header files - exiting!')
-        if not conf.CheckLib(['id3tag','libid3tag-release']):
+        if not conf.CheckLib(['libid3tag', 'id3tag','libid3tag-release']):
             raise Exception('Did not find libid3tag.a, libid3tag.lib, or the libid3tag development header files - exiting!')
 
     def sources(self, build):
@@ -300,8 +296,7 @@ class SoundTouch(Dependence):
 class TagLib(Dependence):
     def configure(self, build, conf):
         if not conf.CheckLib('tag'):
-            raise Exception("Could not find libtag or it's development headers.")
-
+            raise Exception("Could not find libtag or its development headers.")
 class MixxxCore(Feature):
 
     def description(self):
@@ -481,6 +476,10 @@ class MixxxCore(Feature):
                    "library/featuredartistswebview.cpp",
                    "library/bundledsongswebview.cpp",
                    "library/songdownloader.cpp",
+                   "library/starrating.cpp",
+                   "library/stardelegate.cpp",
+                   "library/stareditor.cpp",
+                   "audiotagger.cpp",
 
                    "xmlparse.cpp",
                    "parser.cpp",
@@ -532,6 +531,7 @@ class MixxxCore(Feature):
                    "recording/encoder.cpp",
 
                    "segmentation.cpp",
+                   "tapfilter.cpp",
                    ]
 
         # Uic these guys (they're moc'd automatically after this) - Generates
@@ -564,6 +564,10 @@ class MixxxCore(Feature):
 
         if build.platform_is_windows:
             # Add Windows resource file with icons and such
+            # force manifest file creation, apparently not necessary for all
+            # people but necessary for this committers handicapped windows
+            # installation -- bkgood
+            build.env.Append(LINKFLAGS="/MANIFEST")
             build.env.RES('#src/mixxx.rc')
             # Tobias Rafreider: What is the purpose of the following line, if
             # the file doesn't exist?
@@ -571,6 +575,9 @@ class MixxxCore(Feature):
             # I think this file is auto-generated on Windows, as qrc_mixxx.cc is
             # auto-generated above. Leaving uncommented.
             #sources.append("mixxx.res")
+        elif build.platform_is_osx:
+            build.env.Append(LINKFLAGS="-headerpad=ffff"); #Need extra room for code signing (App Store)
+            build.env.Append(LINKFLAGS="-headerpad_max_install_names"); #Need extra room for code signing (App Store)
 
         return sources
 
@@ -620,19 +627,6 @@ class MixxxCore(Feature):
             build.env.Append(CPPDEFINES='UNICODE')
             build.env.Append(CPPDEFINES='WIN%s' % build.bitwidth) # WIN32 or WIN64
 
-            #Needed for Midi stuff, should be able to remove since PortMIDI
-            #Tobias Rafreider: libshout won't compile if you uncomment this
-            #build.env.Append(LIBS = 'ogg_static')
-            #build.env.Append(LIBS = 'vorbis_static')
-            #build.env.Append(LIBS = 'vorbisfile_static')
-            '''build.env.Append(LIBS = 'WinMM');
-            build.env.Append(LIBS = 'imm32')
-            build.env.Append(LIBS = 'wsock32')
-            build.env.Append(LIBS = 'delayimp')
-            build.env.Append(LIBS = 'winspool')
-            build.env.Append(LIBS = 'shell32')'''
-
-
         elif build.platform_is_linux:
             build.env.Append(CPPDEFINES='__LINUX__')
 
@@ -680,10 +674,15 @@ class MixxxCore(Feature):
 
         # Set up flags for config/track listing files
         if build.platform_is_linux or \
-                build.platform_is_bsd or \
-                build.platform_is_osx:
+                build.platform_is_bsd:
             mixxx_files = [
                 ('SETTINGS_PATH','.mixxx/'),
+                ('BPMSCHEME_FILE','mixxxbpmscheme.xml'),
+                ('SETTINGS_FILE', 'mixxx.cfg'),
+                ('TRACK_FILE', 'mixxxtrack.xml')]
+        elif build.platform_is_osx:
+            mixxx_files = [
+                ('SETTINGS_PATH','Library/Application Support/Mixxx/'),
                 ('BPMSCHEME_FILE','mixxxbpmscheme.xml'),
                 ('SETTINGS_FILE', 'mixxx.cfg'),
                 ('TRACK_FILE', 'mixxxtrack.xml')]

@@ -29,7 +29,7 @@ class QWidget;
 
 class DlgPrefEQ : public QWidget, public Ui::DlgPrefEQDlg  {
     Q_OBJECT
-public: 
+public:
     DlgPrefEQ(QWidget *parent, ConfigObject<ConfigValue> *_config);
     ~DlgPrefEQ();
 public slots:
@@ -41,15 +41,17 @@ public slots:
     /** Apply changes to widget */
     void slotApply();
 	void slotUpdate();
-	void setDefaults();
 signals:
     void apply(const QString &);
+private slots:
+    void reset();
 private:
 	void loadSettings();
+	void setDefaultShelves();
 	int getEqFreq(int);
     int getSliderPosition(int eqFreq);
     void validate_levels();
-    
+
 	int m_lowEqFreq, m_highEqFreq;
     /** Pointer to config object */
     ConfigObject<ConfigValue> *config;

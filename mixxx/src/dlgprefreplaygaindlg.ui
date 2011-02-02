@@ -15,12 +15,6 @@
   <layout class="QVBoxLayout" name="verticalLayout" >
    <item>
     <widget class="QGroupBox" name="groupBox" >
-     <property name="font" >
-      <font>
-       <weight>50</weight>
-       <bold>false</bold>
-      </font>
-     </property>
      <property name="title" >
       <string>ReplayGain Normalization</string>
      </property>
@@ -256,7 +250,6 @@
   </layout>
  </widget>
  <layoutdefault spacing="6" margin="11" />
- <pixmapfunction>qPixmapFromMimeSource</pixmapfunction>
  <resources/>
  <connections>
   <connection>

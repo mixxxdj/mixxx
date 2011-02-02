@@ -17,9 +17,12 @@ SkinLoader::SkinLoader(ConfigObject<ConfigValue>* pConfig) :
 
 }
 
+SkinLoader::~SkinLoader() {
+    LegacySkinParser::freeChannelStrings();
+}
 
 QString SkinLoader::getConfiguredSkinPath() {
-    const QString defaultSkin = "outlineNetbook";
+    const QString defaultSkin = "Outline1024x600-Netbook";
 
     QString qSkinPath = m_pConfig->getConfigPath();
     qSkinPath.append("skins/");
