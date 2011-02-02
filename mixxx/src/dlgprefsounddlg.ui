@@ -91,6 +91,9 @@
          <property name="frameShape">
           <enum>QFrame::NoFrame</enum>
          </property>
+         <property name="frameShadow">
+          <enum>QFrame::Plain</enum>
+         </property>
          <property name="widgetResizable">
           <bool>true</bool>
          </property>
@@ -135,6 +138,9 @@
         <widget class="QScrollArea" name="inputScrollArea">
          <property name="frameShape">
           <enum>QFrame::NoFrame</enum>
+         </property>
+         <property name="frameShadow">
+          <enum>QFrame::Plain</enum>
          </property>
          <property name="widgetResizable">
           <bool>true</bool>
@@ -214,7 +220,6 @@
   </layout>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
- <pixmapfunction>qPixmapFromMimeSource</pixmapfunction>
  <resources/>
  <connections/>
 </ui>

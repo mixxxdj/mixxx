@@ -125,27 +125,6 @@
     </control>
     <control>
       <group>[Channel1]</group>
-      <key>reverse</key>
-      <status>0x80</status>
-      <midino>19</midino>
-      <controltype>button</controltype>
-    </control>
-    <control>
-      <group>[Channel1]</group>
-      <key>cue_gotoandstop</key>
-      <status>0x90</status>
-      <midino>18</midino>
-      <controltype>button</controltype>
-    </control>
-    <control>
-      <group>[Channel1]</group>
-      <key>cue_gotoandstop</key>
-      <status>0x80</status>
-      <midino>18</midino>
-      <controltype>button</controltype>
-    </control>
-    <control>
-      <group>[Channel1]</group>
       <key>volume</key>
       <status>0xB0</status>
       <midino>7</midino>
@@ -620,27 +599,6 @@
     </control>
     <control>
       <group>[Channel2]</group>
-      <key>reverse</key>
-      <status>0x81</status>
-      <midino>19</midino>
-      <controltype>button</controltype>
-    </control>
-    <control>
-      <group>[Channel2]</group>
-      <key>cue_gotoandstop</key>
-      <status>0x91</status>
-      <midino>18</midino>
-      <controltype>button</controltype>
-    </control>
-    <control>
-      <group>[Channel2]</group>
-      <key>cue_gotoandstop</key>
-      <status>0x81</status>
-      <midino>18</midino>
-      <controltype>button</controltype>
-    </control>
-    <control>
-      <group>[Channel2]</group>
       <key>volume</key>
       <status>0xB1</status>
       <midino>7</midino>
@@ -1055,6 +1013,33 @@
         <Script-Binding/>
       </options>
     </control>
+    <control>
+      <group>[Channel1]</group>
+      <key>MaudioXponent.actbin</key>
+      <status>0x90</status>
+      <midino>18</midino>
+      <options>
+        <Script-Binding/>
+      </options>
+    </control>
+    <control>
+      <group>[Channel2]</group>
+      <key>MaudioXponent.actbin</key>
+      <status>0x91</status>
+      <midino>18</midino>
+      <options>
+        <Script-Binding/>
+      </options>
+    </control>
+    <!-- <control> -->
+    <!--   <group>[Channel2]</group> -->
+    <!--   <key>MaudioXponent.actbinstop</key> -->
+    <!--   <status>0x80</status> -->
+    <!--   <midino>18</midino> -->
+    <!--   <options> -->
+    <!--     <Script-Binding/> -->
+    <!--   </options> -->
+    <!-- </control> -->
   </controls>
 </controller>
 </MixxxMIDIPreset>

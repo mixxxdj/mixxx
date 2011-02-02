@@ -17,6 +17,7 @@
 
 #include "dlgprefplaylist.h"
 #include "library/promotracksfeature.h"
+#include "soundsourceproxy.h"
 //#include "plugindownloader.h"
 #include <QtCore>
 #include <QtGui>
@@ -61,6 +62,11 @@ DlgPrefPlaylist::DlgPrefPlaylist(QWidget * parent, ConfigObject<ConfigValue> * _
     {
         groupBoxBundledSongs->hide();
     }
+
+    // plugins are loaded in src/main.cpp way early in boot so this is safe
+    // here, doesn't need done at every slotUpdate
+    QStringList plugins(SoundSourceProxy::supportedFileExtensionsByPlugins());
+    pluginsLabel->setText(plugins.join(", "));
 }
 
 DlgPrefPlaylist::~DlgPrefPlaylist()
@@ -142,6 +148,10 @@ void DlgPrefPlaylist::slotUpdate()
     LineEditiPodMountPoint->setText(config->getValueString(ConfigKey("[iPod]","MountPoint")));
     //Bundled songs stat tracking
     checkBoxPromoStats->setChecked((bool)config->getValueString(ConfigKey("[Promo]","StatTracking")).toInt());
+    checkBox_library_scan->setChecked((bool)config->getValueString(ConfigKey("[Library]","RescanOnStartup")).toInt());
+    checkbox_ID3_sync->setChecked((bool)config->getValueString(ConfigKey("[Library]","WriteAudioTags")).toInt());
+
+
 }
 
 void DlgPrefPlaylist::slotBrowseDir()
@@ -218,6 +228,14 @@ void DlgPrefPlaylist::slotApply()
 
     config->set(ConfigKey("[Promo]","StatTracking"), 
                    ConfigValue((int)checkBoxPromoStats->isChecked()));
+
+    config->set(ConfigKey("[Library]","RescanOnStartup"), 
+                   ConfigValue((int)checkBox_library_scan->isChecked()));
+    
+    config->set(ConfigKey("[Library]","WriteAudioTags"), 
+                   ConfigValue((int)checkbox_ID3_sync->isChecked()));
+
+
     config->Save();
 
     // Update playlist if path has changed

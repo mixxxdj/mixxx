@@ -296,6 +296,7 @@ int SoundSourceProxy::ParseHeader(TrackInfoObject* p)
         p->setBitrate(sndsrc->getBitrate());
         p->setSampleRate(sndsrc->getSampleRate());
         p->setChannels(sndsrc->getChannels());
+	p->setKey(sndsrc->getKey());
         p->setHeaderParsed(true);
     }
     else
@@ -314,6 +315,15 @@ QList<QString> SoundSourceProxy::supportedFileExtensions()
     supportedFileExtensions.append(SoundSourceMp3::supportedFileExtensions());
     supportedFileExtensions.append(SoundSourceOggVorbis::supportedFileExtensions());
     supportedFileExtensions.append(SoundSourceSndFile::supportedFileExtensions());
+    supportedFileExtensions.append(m_extensionsSupportedByPlugins.keys());
+
+    return supportedFileExtensions;
+}
+
+QList<QString> SoundSourceProxy::supportedFileExtensionsByPlugins()
+{
+    QMutexLocker locker(&m_extensionsMutex);
+    QList<QString> supportedFileExtensions;
     supportedFileExtensions.append(m_extensionsSupportedByPlugins.keys());
 
     return supportedFileExtensions;

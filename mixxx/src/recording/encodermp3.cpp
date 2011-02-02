@@ -41,6 +41,7 @@ EncoderMp3::EncoderMp3(EngineAbstractRecord *engine) {
     m_bufferOutSize = 0;
     m_lameFlags = NULL;
     m_library = NULL;
+    m_samplerate = NULL;
    
     //These are the function pointers for lame
     lame_init =  0;
@@ -91,6 +92,8 @@ EncoderMp3::EncoderMp3(EngineAbstractRecord *engine) {
     libnames << "lame_enc.dll";
 #elif __APPLE__
     libnames << "/usr/local/lib/libmp3lame.dylib";
+    //Using MacPorts (former DarwinPorts) results in ...
+    libnames << "/opt/local/lib/libmp3lame.dylib"; 
 #endif
 
     foreach (QString libname, libnames) {

@@ -104,13 +104,6 @@ int SoundDevicePortAudio::open()
     }
     qDebug() << "Requested sample rate:" << m_dSampleRate;
 
-    //XXX Workaround for PortAudio crashing when our samplerate doesn't match
-    //    the JACK samplerate:
-    if (m_hostAPI == MIXXX_PORTAUDIO_JACK_STRING) {
-        m_dSampleRate = m_deviceInfo->defaultSampleRate;
-        //Sure hope that's the right samplerate
-    }
-
     //Get latency in milleseconds
     qDebug() << "framesPerBuffer:" << m_framesPerBuffer;
     double latencyMSec = m_framesPerBuffer / m_dSampleRate * 1000;
@@ -364,10 +357,9 @@ int SoundDevicePortAudio::callbackProcess(unsigned long framesPerBuffer, float *
             int iChannelCount = outChans.getChannelCount();
             int iChannelBase = outChans.getChannelBase();
 
-            // this will make sure a sample from each channel is copied
-            for (int iChannel = 0; iChannel < iChannelCount; ++iChannel) {
-
-                for (unsigned int iFrameNo=0; iFrameNo < framesPerBuffer; ++iFrameNo) {
+            for (unsigned int iFrameNo=0; iFrameNo < framesPerBuffer; ++iFrameNo) {
+                // this will make sure a sample from each channel is copied
+                for (int iChannel = 0; iChannel < iChannelCount; ++iChannel) {
                     // iFrameBase is the "base sample" in a frame (ie. the first
                     // sample in a frame)
                     unsigned int iFrameBase = iFrameNo * iFrameSize;

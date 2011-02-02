@@ -18,7 +18,7 @@
 #include <QtDebug>
 #include <QtCore>
 #include <portaudio.h>
-#include <cstring> // for memcpy
+#include <cstring> // for memcpy and strcmp
 #include "soundmanager.h"
 #include "sounddevice.h"
 #include "sounddeviceportaudio.h"
@@ -35,6 +35,7 @@ SoundManager::SoundManager(ConfigObject<ConfigValue> * pConfig, EngineMaster * _
     , m_pErrorDevice(NULL)
 #ifdef __PORTAUDIO__
     , m_paInitialized(false)
+    , m_jackSampleRate(-1)
 #endif
 {
     //qDebug() << "SoundManager::SoundManager()";
@@ -42,13 +43,6 @@ SoundManager::SoundManager(ConfigObject<ConfigValue> * pConfig, EngineMaster * _
     m_pMaster = _master;
 
     clearOperativeVariables();
-
-    //TODO: Find a better spot for this:
-    //Set up a timer to sync Mixxx's ControlObjects on...
-    //(We set the timer to fire off
-    //connect(&m_controlObjSyncTimer, SIGNAL(timeout()), this, SLOT(sync()));
-    //m_controlObjSyncTimer.start(33);
-    //m_controlObjSyncTimer->start(m_pConfig->getValueString(ConfigKey("[Soundcard]","Latency")).toInt());
 
     //These are ControlObjectThreadMains because all the code that
     //uses them is called from the GUI thread (stuff like opening soundcards).
@@ -265,7 +259,7 @@ void SoundManager::clearDeviceList()
         SoundDevice* dev = m_devices.takeLast();
         delete dev;
     }
-    
+
 #ifdef __PORTAUDIO__
     if (m_paInitialized) {
         Pa_Terminate();
@@ -274,12 +268,31 @@ void SoundManager::clearDeviceList()
 #endif
 }
 
-/** Returns a list of samplerates we will attempt to support.
+/** Returns a list of samplerates we will attempt to support for a given API.
+ *  @param API a string describing the API, some APIs support a more limited
+ *             subset of APIs (for instance, JACK)
  *  @return The list of available samplerates.
+ */
+QList<unsigned int> SoundManager::getSampleRates(QString api) const
+{
+#ifdef __PORTAUDIO__
+    if (api == MIXXX_PORTAUDIO_JACK_STRING) {
+        // queryDevices must have been called for this to work, but the
+        // ctor calls it -bkgood
+        QList<unsigned int> samplerates;
+        samplerates.append(m_jackSampleRate);
+        return samplerates;
+    }
+#endif
+    return m_samplerates;
+}
+
+/**
+ * Convenience overload for SoundManager::getSampleRates(QString)
  */
 QList<unsigned int> SoundManager::getSampleRates() const
 {
-    return m_samplerates;
+    return getSampleRates("");
 }
 
 //Creates a list of sound devices that PortAudio sees.
@@ -329,6 +342,10 @@ void SoundManager::queryDevices()
          */
         SoundDevicePortAudio *currentDevice = new SoundDevicePortAudio(m_pConfig, this, deviceInfo, i);
         m_devices.push_back(currentDevice);
+        if (!strcmp(Pa_GetHostApiInfo(deviceInfo->hostApi)->name,
+                    MIXXX_PORTAUDIO_JACK_STRING)) {
+            m_jackSampleRate = deviceInfo->defaultSampleRate;
+        }
     }
 #endif
     // now tell the prefs that we updated the device list -- bkgood
@@ -547,6 +564,7 @@ SoundManager::requestBuffer(QList<AudioOutput> outputs, unsigned long iFramesPer
 void SoundManager::pushBuffer(QList<AudioInput> inputs, short * inputBuffer,
                               unsigned long iFramesPerBuffer, unsigned int iFrameSize)
 {
+
 //    m_inputBuffers[RECEIVER_VINYLCONTROL_ONE]
 
     //short vinylControlBuffer1[iFramesPerBuffer * 2];
@@ -570,11 +588,11 @@ void SoundManager::pushBuffer(QList<AudioInput> inputs, short * inputBuffer,
     // memory in certain cases -- bkgood
     if (iFrameSize == 2)
     {
-        QListIterator<AudioInput> inputItr(inputs);
-        while (inputItr.hasNext()) {
-            AudioInput in = inputItr.next();
+        for (QList<AudioInput>::const_iterator i = inputs.begin(),
+                     e = inputs.end(); i != e; ++i) {
+            const AudioInput& in = *i;
             memcpy(m_inputBuffers[in], inputBuffer,
-                    sizeof(*inputBuffer) * iFrameSize * iFramesPerBuffer);
+                   sizeof(*inputBuffer) * iFrameSize * iFramesPerBuffer);
         }
     }
 
@@ -596,28 +614,30 @@ void SoundManager::pushBuffer(QList<AudioInput> inputs, short * inputBuffer,
     }
 */
     else { //More than two channels of input (iFrameSize > 2)
-        //Do crazy deinterleaving of the audio into the correct m_inputBuffers.
-        //iFrameBase is the "base sample" in a frame (ie. the first sample in a frame)
-        for (unsigned int iFrameBase=0; iFrameBase < iFramesPerBuffer*iFrameSize; iFrameBase += iFrameSize)
-        {
-            //Deinterlace the input audio data from the portaudio buffer
-            //We iterate through the receiver list to find out what goes into each buffer.
-            //Data is deinterlaced in the order of the list
-            QListIterator<AudioInput> inputItr(inputs);
-            int iChannel;
-            while (inputItr.hasNext())
-            {
-                AudioInput in = inputItr.next();
-                ChannelGroup chanGroup = in.getChannelGroup();
-                int iLocalFrameBase = (iFrameBase/iFrameSize) * chanGroup.getChannelCount();
 
-                for (iChannel = 0; iChannel < chanGroup.getChannelCount(); iChannel++)
-                    //this will make sure a sample from each channel is copied
-                {
+        // Do crazy deinterleaving of the audio into the correct m_inputBuffers.
+
+        for (QList<AudioInput>::const_iterator i = inputs.begin(),
+                     e = inputs.end(); i != e; ++i) {
+            const AudioInput& in = *i;
+            short* pInputBuffer = m_inputBuffers[in];
+            ChannelGroup chanGroup = in.getChannelGroup();
+            int iChannelCount = chanGroup.getChannelCount();
+            int iChannelBase = chanGroup.getChannelBase();
+
+            for (unsigned int iFrameNo = 0; iFrameNo < iFramesPerBuffer; ++iFrameNo) {
+                // iFrameBase is the "base sample" in a frame (ie. the first
+                // sample in a frame)
+                unsigned int iFrameBase = iFrameNo * iFrameSize;
+                unsigned int iLocalFrameBase = iFrameNo * iChannelCount;
+
+                // this will make sure a sample from each channel is copied
+                for (int iChannel = 0; iChannel < iChannelCount; ++iChannel) {
                     //output[iFrameBase + src.channelBase + iChannel] +=
                     //  outputAudio[src.type][iLocalFrameBase + iChannel] * SHRT_CONVERSION_FACTOR;
-                    m_inputBuffers[in][iLocalFrameBase + iChannel] =
-                        inputBuffer[iFrameBase + chanGroup.getChannelBase() + iChannel];
+
+                    pInputBuffer[iLocalFrameBase + iChannel] =
+                            inputBuffer[iFrameBase + iChannelBase + iChannel];
                 }
             }
         }
@@ -626,10 +646,9 @@ void SoundManager::pushBuffer(QList<AudioInput> inputs, short * inputBuffer,
     if (inputBuffer)
     {
 #ifdef __VINYLCONTROL__
-        QListIterator<AudioInput> inputItr(inputs);
-        while (inputItr.hasNext())
-        {
-            AudioInput in = inputItr.next();
+        for (QList<AudioInput>::const_iterator i = inputs.begin(),
+                     e = inputs.end(); i != e; ++i) {
+            const AudioInput& in = *i;
             if (in.getType() == AudioInput::VINYLCONTROL) {
                 unsigned int index = in.getIndex();
                 Q_ASSERT(index < 2); // XXX we only do two vc decks atm -- bkgood

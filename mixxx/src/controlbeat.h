@@ -39,22 +39,22 @@ const int maxInterval = (int)(1000.*(60./(CSAMPLE)minBPM));
 /** Filter length */
 const int filterLength = 5;
 
-class ControlBeat : public ControlObject
-{
-public:
+class ControlBeat : public ControlObject {
+  public:
     ControlBeat(ConfigKey key, bool bMidiSimulateLatching=false);
-    ~ControlBeat();
+    virtual ~ControlBeat();
 
-protected:
+  protected:
     void setValueFromMidi(MidiCategory c, double v);
-private:
-    void setValue(double dValue);
+    void setValueFromThread(double dValue);
+  private:
+    void beatTap();
 
     QTime time;
     CSAMPLE *buffer;
     bool m_bMidiSimulateLatching;
     bool m_bPressed;
-
+    int m_iValidPresses;
 };
 
 #endif
