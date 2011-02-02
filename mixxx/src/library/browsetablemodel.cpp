@@ -26,10 +26,13 @@ const int COLUMN_LOCATION = 13;
 
 BrowseTableModel::BrowseTableModel(QObject* parent)
         : QStandardItemModel(parent),
+          m_populationMutex(QMutex::Recursive),
           TrackModel(QSqlDatabase::database("QSQLITE"),
                      "mixxx.db.model.browse")
 {
     QStringList header_data;
+    m_currentPath = "";
+    isBackGroundThreadActive = false;
     
     header_data.insert(COLUMN_FILENAME, "Filename");
     header_data.insert(COLUMN_ARTIST, "Artist");
@@ -70,8 +73,12 @@ void BrowseTableModel::addSearchColumn(int index) {
 }
 void BrowseTableModel::setPath(QString absPath)
 {
+    m_currentPath = absPath;
+    isBackGroundThreadActive = false;
     //call and execute method populateModel as a Thread
-    QtConcurrent::run(this, &BrowseTableModel::populateModel, absPath);
+    m_populationMutex.lock();
+    isBackGroundThreadActive = true;
+    QtConcurrent::run(this, &BrowseTableModel::populateModel);
 
 }
 
@@ -92,7 +99,7 @@ QString BrowseTableModel::getTrackLocation(const QModelIndex& index) const
 
 void BrowseTableModel::search(const QString& searchText)
 {
-	
+
 }
 
 const QString BrowseTableModel::currentSearch()
@@ -117,17 +124,16 @@ QItemDelegate* BrowseTableModel::delegateForColumn(const int) {
 
 void BrowseTableModel::removeTrack(const QModelIndex& index)
 {
-	//TODO
+
 }
 
 void BrowseTableModel::removeTracks(const QModelIndexList& indices)
 {
-	//TODO
+
 }
 
 bool BrowseTableModel::addTrack(const QModelIndex& index, QString location)
 {
-	//TODO
     return false;
 }
 
@@ -157,17 +163,24 @@ QMimeData* BrowseTableModel::mimeData(const QModelIndexList &indexes) const {
     mimeData->setUrls(urls);
     return mimeData;
 }
-void BrowseTableModel::populateModel(QString absPath)
+void BrowseTableModel::populateModel()
 {
-    QMutexLocker locker(&m_populationMutex);
     //Give the thread low priority to prevent GUI freezing
     QThread* thisThread = QThread::currentThread();
-    thisThread->setPriority(QThread::LowPriority);
+    thisThread->setPriority(QThread::LowestPriority);
     //Refresh the name filters in case we loaded new
     //SoundSource plugins.
     QStringList nameFilters(SoundSourceProxy::supportedFileExtensionsString().split(" "));
-    QDirIterator fileIt(absPath, nameFilters, QDir::Files | QDir::NoDotAndDotDot);
+    QString thisPath(m_currentPath);
+    QDirIterator fileIt(thisPath, nameFilters, QDir::Files | QDir::NoDotAndDotDot);
     
+    //If path has changed in this thread we exit the loop to stop the thread
+    qDebug() << "Thread: " << thisThread << " Paths: " << m_currentPath << " " << thisPath ;
+    if(!isBackGroundThreadActive){
+        qDebug() << "Stopping Library Thread bceause path has changed from " << thisPath << " to " << m_currentPath;
+        m_populationMutex.unlock();
+        return;
+    }
     //remove all rows
     removeRows(0, rowCount());
     
@@ -175,53 +188,60 @@ void BrowseTableModel::populateModel(QString absPath)
     //Iterate over the files
     while (fileIt.hasNext())
     {
+        //If path has changed in this thread we exit the loop to stop the thread
+        if(!isBackGroundThreadActive){
+            qDebug() << "Stopping Library Thread bceause path has changed from " << thisPath << " to " << m_currentPath;
+            return;
+        }
+
         QString filepath = fileIt.next();
         TrackInfoObject tio(filepath);
-        
-         QStandardItem* item = new QStandardItem(tio.getFilename());
-         setItem(row, COLUMN_FILENAME, item);
+
+        QStandardItem* item = new QStandardItem(tio.getFilename());
+        setItem(row, COLUMN_FILENAME, item);
            
-         item = new QStandardItem(tio.getArtist());
-         setItem(row, COLUMN_ARTIST, item);
+        item = new QStandardItem(tio.getArtist());
+        setItem(row, COLUMN_ARTIST, item);
           
-         item = new QStandardItem(tio.getTitle());
-         setItem(row, COLUMN_TITLE, item);
+        item = new QStandardItem(tio.getTitle());
+        setItem(row, COLUMN_TITLE, item);
            
-         item = new QStandardItem(tio.getAlbum());
-         setItem(row, COLUMN_ALBUM, item);
+        item = new QStandardItem(tio.getAlbum());
+        setItem(row, COLUMN_ALBUM, item);
             
-         item = new QStandardItem(tio.getBpmStr());
-         setItem(row, COLUMN_BPM, item);
+        item = new QStandardItem(tio.getBpmStr());
+        setItem(row, COLUMN_BPM, item);
            
-          item = new QStandardItem(tio.getKey());
-          setItem(row, COLUMN_KEY, item);
+        item = new QStandardItem(tio.getKey());
+        setItem(row, COLUMN_KEY, item);
             
-          item = new QStandardItem(tio.getYear());
-          setItem(row, COLUMN_YEAR, item);
+        item = new QStandardItem(tio.getYear());
+        setItem(row, COLUMN_YEAR, item);
             
-          QString duration = MixxxUtils::secondsToMinutes(qVariantValue<int>(tio.getDuration()));
-          item = new QStandardItem(duration);
-          setItem(row, COLUMN_DURATION, item);
+        QString duration = MixxxUtils::secondsToMinutes(qVariantValue<int>(tio.getDuration()));
+        item = new QStandardItem(duration);
+        setItem(row, COLUMN_DURATION, item);
             
-          item = new QStandardItem(tio.getBitrateStr());
-          setItem(row, COLUMN_BITRATE, item);
+        item = new QStandardItem(tio.getBitrateStr());
+        setItem(row, COLUMN_BITRATE, item);
             
-          item = new QStandardItem(tio.getType());
-          setItem(row, COLUMN_TYPE, item);
+        item = new QStandardItem(tio.getType());
+        setItem(row, COLUMN_TYPE, item);
             
-          item = new QStandardItem(tio.getGenre());
-          setItem(row, COLUMN_GENRE, item);
-           
-          item = new QStandardItem(tio.getTrackNumber());
-          setItem(row, COLUMN_TRACK_NUMBER, item);
-            
-          item = new QStandardItem(tio.getComment());
-          setItem(row, COLUMN_COMMENT, item);
-           
-          item = new QStandardItem(filepath);
-          setItem(row, COLUMN_LOCATION, item);
+        item = new QStandardItem(tio.getGenre());
+        setItem(row, COLUMN_GENRE, item);
+
+        item = new QStandardItem(tio.getTrackNumber());
+        setItem(row, COLUMN_TRACK_NUMBER, item);
+
+        item = new QStandardItem(tio.getComment());
+        setItem(row, COLUMN_COMMENT, item);
+
+        item = new QStandardItem(filepath);
+        setItem(row, COLUMN_LOCATION, item);
           
-          ++row;
+        ++row;
    
-    }     
+    }
+    m_populationMutex.unlock();
 }
