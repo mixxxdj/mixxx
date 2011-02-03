@@ -1135,6 +1135,10 @@ void MixxxApp::slotOptionsFullScreen(bool toggle)
 		}
 
 #ifdef __LINUX__
+		if (size().width() != m_pView->width() ||
+		    size().height() != m_pView->height() + menuBar()->height()) {
+		    adjustSize();
+		}
         //move(m_winpos);
 #endif
     }
