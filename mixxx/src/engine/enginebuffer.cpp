@@ -450,13 +450,15 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
         // If the rate has changed, set it in the scale object
         if (rate != rate_old || m_bScalerChanged) {
             // The rate returned by the scale object can be different from the wanted rate!
-
-            //linear scaler does this for us now
-            if (m_pScale != m_pScaleLinear)
+            // Make sure new scaler has proper position
+            if (m_bScalerChanged)
+				setNewPlaypos(filepos_play);
+			//linear scaler does this part for us now
+			else if (m_pScale != m_pScaleLinear)
             {
 		        //XXX: Trying to force RAMAN to read from correct
 		        //     playpos when rate changes direction - Albert	
-		        if (m_bScalerChanged || (rate_old <= 0 && rate > 0) ||
+		        if ((rate_old <= 0 && rate > 0) ||
 		            (rate_old >= 0 && rate < 0))
 		        {
 		            setNewPlaypos(filepos_play);
