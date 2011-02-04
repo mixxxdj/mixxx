@@ -42,14 +42,14 @@ configure-stamp:
 
 build: build-stamp
 
-build-stamp: configure-stamp 
+build-stamp: configure-stamp
 	dh_testdir
 
 	mkdir -p $(CURDIR)/debian/tmp/usr
 
 	# Add here commands to compile the package.
 	($(SCONS) $(MIXXX_SCONS_FLAGS))
-	docbook-to-man debian/mixxx.sgml > mixxx.1 
+	docbook-to-man debian/mixxx.sgml > mixxx.1
 
 	touch build-stamp
 
@@ -63,10 +63,10 @@ clean:
 	($(SCONS) -c)
 	# hand cleaning!
 	rm -rf src/.{configure.def,moc,obj,summary.log,ui} src/{mixxx,a.out,Makefile}
-	rm -f build/qt4.pyc
+	rm -f build/*.pyc
 	test -e .sconsign.dblite && rm -f .sconsign.dblite
 	test -e .sconf_temp && rm -rf .sconf_temp
-	
+
 	rm -f $(CURDIR)/debian/tmp
 
 	dh_clean
@@ -82,7 +82,7 @@ install: build
 	# Add here commands to install the package into debian/mixxx.
 	$(SCONS) $(MIXXX_SCONS_FLAGS) install
 	#the scons prefix path is in MIXXX_SCONS_FLAGS at the top of this file.
-	#(cd src; $(MAKE) install INSTALL_ROOT=$(CURDIR)/debian/tmp DESTDIR=$(CURDIR)/debian/tmp) 
+	#(cd src; $(MAKE) install INSTALL_ROOT=$(CURDIR)/debian/tmp DESTDIR=$(CURDIR)/debian/tmp)
 
 	dh_install --sourcedir=$(CURDIR)/debian/tmp
 
@@ -94,13 +94,13 @@ binary-indep: build install
 binary-arch: build install
 	dh_testdir
 	dh_testroot
-	dh_installchangelogs 
+	dh_installchangelogs
 	dh_installdocs
 	dh_installexamples
 #	dh_install
 	dh_installmenu
 	dh_desktop
-#	dh_installdebconf	
+#	dh_installdebconf
 #	dh_installlogrotate
 #	dh_installemacsen
 #	dh_installpam
