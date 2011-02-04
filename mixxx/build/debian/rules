@@ -9,18 +9,18 @@
 # Uncomment this to turn on verbose mode.
 #export DH_VERBOSE=1
 
-CFLAGS = -Wall -g
-
 # no thanks dpkg-buildpackage, we will handle our own C++ optimizations
 DEB_BUILD_OPTIONS= noopt
 
-MIXXX_SCONS_FLAGS = optimize=0
+# By default, optimize=9 will turn on basic GCC optimizations combined with
+# -mtune=generic, which should be safe.
+MIXXX_SCONS_FLAGS = optimize=9
 
 ifneq (,$(findstring i386,$(ARCH)))
-	MIXXX_SCONS_FLAGS = optimize=1 machine=x86
+	MIXXX_SCONS_FLAGS += machine=x86
 endif
 ifneq (,$(findstring amd64,$(ARCH)))
-	MIXXX_SCONS_FLAGS = optimize=3 machine=x86_64
+	MIXXX_SCONS_FLAGS += machine=x86_64
 endif
 
 # detect number of processors
