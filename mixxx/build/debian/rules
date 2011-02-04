@@ -15,12 +15,13 @@ CFLAGS = -Wall -g
 DEB_BUILD_OPTIONS= noopt
 
 MIXXX_SCONS_FLAGS = optimize=0
-ifeq (,$(findstring i386,$(DEB_BUILD_ARCH)))
-	MIXXX_SCONS_FLAGS = optimize=1
+
+ifneq (,$(findstring "i386",$(ARCH)))
+	MIXXX_SCONS_FLAGS = optimize=1 machine=x86
 endif
-#ifeq (,$(findstring amd64,$(DEB_BUILD_ARCH)))
-#	MIXXX_SCONS_FLAGS = optimize=3
-#endif
+ifneq (,$(findstring "amd64",$(ARCH)))
+	MIXXX_SCONS_FLAGS = optimize=3 machine=x86_64
+endif
 
 # detect number of processors
 NCPUS := $(shell getconf _NPROCESSORS_ONLN 2>/dev/null || echo 1)
