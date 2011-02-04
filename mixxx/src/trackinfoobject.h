@@ -248,7 +248,7 @@ public:
     TrackBeatsPointer getTrackBeats() const;
 
     /** Set the Track's Beats */
-    void setTrackBeats(TrackBeats* beats, bool isDirty);
+    void setTrackBeats(TrackBeatsPointer beats, bool isDirty);
 
     const Segmentation<QString>* getChordData();
     void setChordData(Segmentation<QString> cd);
@@ -380,7 +380,7 @@ public:
     Segmentation<QString> m_chordData;
 
     // Storage for the Track's detected beats
-    TrackBeatsPointer m_pTrackBeats;
+    TrackBeatsPointer m_pTrackBeatsPointer;
 
     friend class TrackDAO;
 };
