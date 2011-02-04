@@ -16,10 +16,10 @@ DEB_BUILD_OPTIONS= noopt
 
 MIXXX_SCONS_FLAGS = optimize=0
 
-ifneq (,$(findstring "i386",$(ARCH)))
+ifneq (,$(findstring i386,$(ARCH)))
 	MIXXX_SCONS_FLAGS = optimize=1 machine=x86
 endif
-ifneq (,$(findstring "amd64",$(ARCH)))
+ifneq (,$(findstring amd64,$(ARCH)))
 	MIXXX_SCONS_FLAGS = optimize=3 machine=x86_64
 endif
 
