@@ -12,7 +12,6 @@ TrackBeats::TrackBeats(TrackPointer tio) : m_qMutex(QMutex::Recursive)
 
 TrackBeats::~TrackBeats()
 {
-	qDebug() << "Freeing TrackBeats";
 }
 
 void TrackBeats::addBeatSeconds(double beat)

@@ -10,7 +10,9 @@
 class TrackBeats;
 typedef QSharedPointer<TrackBeats> TrackBeatsPointer;
 
-class TrackBeats {
+class TrackBeats : public QObject
+{
+    Q_OBJECT;
 public:
     TrackBeats(TrackPointer);
     virtual ~TrackBeats();
