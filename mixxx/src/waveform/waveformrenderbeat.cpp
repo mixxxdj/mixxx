@@ -131,7 +131,7 @@ void WaveformRenderBeat::draw(QPainter *pPainter, QPaintEvent *event, QVector<fl
 
 void WaveformRenderBeat::drawTrackBeat(QPainter *pPainter, QPaintEvent *event, QVector<float> *buffer, double dPlayPos, double rateAdjust)
 {
-    QList<int> beatSamples;
+    QList<int>* beatSamples;
     int i;
 
 
@@ -190,8 +190,8 @@ void WaveformRenderBeat::drawTrackBeat(QPainter *pPainter, QPaintEvent *event, Q
 
     beatSamples = m_pTrackBeats->findBeatsSamples(curSample, endSample);
 
-    for(i = 0; i < beatSamples.size(); i++) {
-        curPos = beatSamples.at(i);
+    for(i = 0; i < beatSamples->size(); i++) {
+        curPos = beatSamples->at(i);
 
 
         if (curPos < 0)
@@ -217,6 +217,7 @@ void WaveformRenderBeat::drawTrackBeat(QPainter *pPainter, QPaintEvent *event, Q
         }
     }
 
+    delete beatSamples;
     pPainter->restore();
 
 }
