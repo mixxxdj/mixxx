@@ -745,10 +745,20 @@ class Optimize(Feature):
                 # don't know what kind of 64-bit CPU they'll have, so let
                 # -mtune=generic pick the best options. Used by the debian rules
                 # script.
-                build.env.Append(CCFLAGS = '-mtune=generic')
-                # Enable MMX/SSE/SSE2/SSE3 on 64-bit machines.
+
+                # It's a little sketchy, but I'm turning on SSE and MMX by
+                # default. opt=9 is a distribution mode, we don't really support
+                # CPU's earlier than Pentium 3, which is the class of CPUs this
+                # decision affects. The downside of this is that we aren't truly
+                # i386 compatible, so builds that claim 'i386' will crash.
+                # -- rryan 2/2011
+
+                # TODO(XXX) check the soundtouch package in Ubuntu to see what they do about this.
+                build.env.Append(CCFLAGS = '-mtune=generic -mmmx -msse -mfpmath=sse')
+
+                # Enable SSE2 on 64-bit machines. SSE3 is not a sure thing on 64-bit
                 if build.machine_is_64bit:
-                    build.env.Append(CCFLAGS = '-mmmx -msse -msse2 -msse3')
+                    build.env.Append(CCFLAGS = '-msse2')
 
 
 class Tuned(Feature):
