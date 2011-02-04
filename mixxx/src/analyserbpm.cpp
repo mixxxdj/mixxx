@@ -78,7 +78,7 @@ void AnalyserBPM::doBeats(TrackPointer tio)
         pTrackBeats->addBeatSeconds(seconds);
     }
 
-    tio->setTrackBeats(pTrackBeats, TRUE);
+    tio->setTrackBeats(TrackBeatsPointer(pTrackBeats, &QObject::deleteLater), TRUE);
 }
 
 void AnalyserBPM::finalise(TrackPointer tio) {
