@@ -12,6 +12,7 @@ TrackBeats::TrackBeats(TrackPointer tio) : m_qMutex(QMutex::Recursive)
 
 TrackBeats::~TrackBeats()
 {
+	qDebug() << "Freeing TrackBeats";
 }
 
 void TrackBeats::addBeatSeconds(double beat)
@@ -20,7 +21,7 @@ void TrackBeats::addBeatSeconds(double beat)
     addBeatSample((int)round(beat * m_iSampleRate));
 }
 
-bool TrackBeats::hasBeatsSamples(double bgnRange, double endRange) const
+bool TrackBeats::hasBeatsSamples(double start, double stop) const
 {
     QMutexLocker lock(&m_qMutex);
     QMapIterator<int, int> iter(m_beats);
@@ -54,25 +55,26 @@ double TrackBeats::findPrevBeatSeconds(double beat) const
     return findPrevBeatSample(sample) / m_iSampleRate;
 }
 
-QList<double> TrackBeats::findBeatsSeconds(double start, double stop) const
+QList<double>* TrackBeats::findBeatsSeconds(double start, double stop) const
 {
     QMutexLocker lock(&m_qMutex);
-    QList<double> ret;
-    QList<int> samples;
+    QList<double> *ret = new QList<double>;
+    QList<int>* samples;
     int begin = round(start * m_iSampleRate);
     int end = round(stop * m_iSampleRate);
     int i;
     
     
     samples = findBeatsSamples(begin, end);
-    for (i = 0; i < samples.size(); i++)
+    for (i = 0; i < samples->size(); i++)
     {
         //qDebug() << "Sample:" << samples.at(i) << "SampleRate:" << m_iSampleRate
         //            << "Seconds:" << ((double)samples.at(i) / (double)m_iSampleRate);
         
-        ret.append((double)samples.at(i) / (double)m_iSampleRate);
+        ret->append((double)samples->at(i) / (double)m_iSampleRate);
     }
     
+    delete samples;
     return ret;
 }
 
@@ -196,10 +198,10 @@ int TrackBeats::findPrevBeatSample(int sample) const
     return -1;
 }
 
-QList<int> TrackBeats::findBeatsSamples(int start, int stop) const
+QList<int>* TrackBeats::findBeatsSamples(int start, int stop) const
 {
     QMutexLocker lock(&m_qMutex);
-    QList<int> ret;
+    QList<int> *ret = new QList<int>;
     QMapIterator<int, int> iter(m_beats);
     int index = sampleIndex(start);
     
@@ -208,7 +210,7 @@ QList<int> TrackBeats::findBeatsSamples(int start, int stop) const
     {
         do {
             if ((iter.value() >= start) && (iter.value() <= stop))
-                 ret.append(iter.value());
+                 ret->append(iter.value());
             
             iter.next();
         } while((iter.hasNext()) && (iter.value() <= stop));
