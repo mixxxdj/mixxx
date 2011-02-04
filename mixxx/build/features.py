@@ -746,6 +746,9 @@ class Optimize(Feature):
                 # -mtune=generic pick the best options. Used by the debian rules
                 # script.
                 build.env.Append(CCFLAGS = '-mtune=generic')
+                # Enable MMX/SSE/SSE2/SSE3 on 64-bit machines.
+                if build.machine_is_64bit:
+                    build.env.Append(CCFLAGS = '-mmmx -msse -msse2 -msse3')
 
 
 class Tuned(Feature):
