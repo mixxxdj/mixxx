@@ -19,7 +19,7 @@ public:
     
     double findNextBeatSeconds(double) const;
     double findPrevBeatSeconds(double) const;
-    QList<double> findBeatsSeconds(double, double) const;
+    QList<double>* findBeatsSeconds(double, double) const;
     
     int getBeatCount() const;
     void dumpBeats();
@@ -29,7 +29,7 @@ public:
     int findNextBeatSample(int) const;
     int findBeatOffsetSamples(int sample, int offset) const;
     bool hasBeatsSamples(double bgnRange, double endRange) const;
-    QList<int> findBeatsSamples(int, int) const;
+    QList<int>* findBeatsSamples(int, int) const;
     QByteArray *serializeToBlob();
     void unserializeFromBlob(QByteArray *blob);
     
