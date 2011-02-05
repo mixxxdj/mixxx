@@ -6,19 +6,22 @@ def get_bzr_revision():
     return os.popen("bzr revno").readline().strip()
 
 def get_bzr_branch_name():
-    output = os.popen("bzr info").readline()
-    match = re.match(
-        '\s*parent branch: http://bazaar.launchpad.net/(?P<owner>.*?)/mixxx/(?P<branch_name>.*?)/$',
-        output)
-    if match:
-        match = match.groupdict()
-        owner = match['owner']
-        branch_name = match['branch_name']
+    output_lines = os.popen("bzr info").read().splitlines()
 
-        # Don't include the default name
-        if owner == '~mixxxdevelopers':
-            return branch_name
-        return "%s_%s" % (owner.replace('~',''), branch_name)
+    matcher = re.compile(
+        '\s*parent branch: http://bazaar.launchpad.net/(?P<owner>.*?)/mixxx/(?P<branch_name>.*?)/$')
+
+    for line in output_lines:
+        match = matcher.match(line)
+        if match:
+            match = match.groupdict()
+            owner = match['owner']
+            branch_name = match['branch_name']
+
+            # Don't include the default name
+            if owner == '~mixxxdevelopers':
+                return branch_name
+            return "%s_%s" % (owner.replace('~',''), branch_name)
     # Fall back on branch nick.
     return os.popen('bzr nick').readline()
 
