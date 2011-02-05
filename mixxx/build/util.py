@@ -7,7 +7,9 @@ def get_bzr_revision():
 
 def get_bzr_branch_name():
     output = os.popen("bzr info").readline()
-    match = re.match('\s*parent branch: http://bazaar.launchpad.net/(?P<owner>.*?/mixxx/(?P<branch_name>.*?)/$')
+    match = re.match(
+        '\s*parent branch: http://bazaar.launchpad.net/(?P<owner>.*?/mixxx/(?P<branch_name>.*?)/$',
+        output)
     if match:
         match = match.groupdict()
         owner = match['owner']
