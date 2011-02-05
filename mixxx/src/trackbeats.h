@@ -16,22 +16,26 @@ class TrackBeats : public QObject
 public:
     TrackBeats(TrackPointer);
     virtual ~TrackBeats();
-    
-    void addBeatSeconds(double);
-    
-    double findNextBeatSeconds(double) const;
-    double findPrevBeatSeconds(double) const;
-    QList<double>* findBeatsSeconds(double, double) const;
+
     
     int getBeatCount() const;
     void dumpBeats();
-    
+
     void addBeatSample(int);
+    void addBeatSeconds(double);
+    void removeBeatSample(int);
+    void removeBeatSeconds(double);
+    void nudgeSamples(int);
+
     int findPrevBeatSample(int) const;
     int findNextBeatSample(int) const;
-    int findBeatOffsetSamples(int sample, int offset) const;
-    bool hasBeatsSamples(double bgnRange, double endRange) const;
+    int findBeatOffsetSamples(int, int) const;
+    bool hasBeatsSamples(double, double) const;
+    double findNextBeatSeconds(double) const;
+    double findPrevBeatSeconds(double) const;
     QList<int>* findBeatsSamples(int, int) const;
+    double findBeatOffsetSeconds(double, int) const;
+    QList<double>* findBeatsSeconds(double, double) const;
     QByteArray *serializeToBlob();
     void unserializeFromBlob(QByteArray *blob);
     
