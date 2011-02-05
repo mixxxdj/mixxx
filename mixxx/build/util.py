@@ -1,11 +1,24 @@
 from SCons import Script
 import os, sys, platform
+import re
 
 def get_bzr_revision():
     return os.popen("bzr revno").readline().strip()
 
 def get_bzr_branch_name():
-    return os.popen("bzr nick -q").readline().strip()
+    output = os.popen("bzr info").readline()
+    match = re.match('\s*parent branch: http://bazaar.launchpad.net/(?P<owner>.*?/mixxx/(?P<branch_name>.*?)/$')
+    if match:
+        match = match.groupdict()
+        owner = match['owner']
+        branch_name = match['branch_name']
+
+        # Don't include the default name
+        if owner == '~mixxxdevelopers':
+            return branch_name
+        return "%s_%s" % (owner.replace('~',''), branch_name)
+    return 'unknown'
+
 
 def get_build_dir(platformString, bitwidth):
     build_dir = '%s%s_build' % (platformString[0:3],bitwidth)
