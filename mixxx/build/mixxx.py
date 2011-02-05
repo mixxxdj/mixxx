@@ -58,6 +58,8 @@ class MixxxBuild(object):
 
         self.machine = machine
         self.build = build
+        self.build_is_debug = build == 'debug'
+        self.build_is_release = build == 'release'
 
         self.toolchain = toolchain
         self.toolchain_is_gnu = self.toolchain == 'gnu'
