@@ -1,8 +1,10 @@
 #include <QtDebug>
 
 #include "defs.h"
-#include "trackbeats.h"
 #include "trackinfoobject.h"
+#include "trackbeats.h"
+
+#define TRACKBEATS_INDEX_RANGE 20
 
 
 TrackBeats::TrackBeats(TrackPointer tio) : m_qMutex(QMutex::Recursive)
@@ -12,12 +14,6 @@ TrackBeats::TrackBeats(TrackPointer tio) : m_qMutex(QMutex::Recursive)
 
 TrackBeats::~TrackBeats()
 {
-}
-
-void TrackBeats::addBeatSeconds(double beat)
-{
-    QMutexLocker lock(&m_qMutex);
-    addBeatSample((int)round(beat * m_iSampleRate));
 }
 
 bool TrackBeats::hasBeatsSamples(double start, double stop) const
@@ -39,43 +35,6 @@ bool TrackBeats::hasBeatsSamples(double start, double stop) const
     
     return false;
 }
-    
-double TrackBeats::findNextBeatSeconds(double beat) const
-{
-    QMutexLocker lock(&m_qMutex);
-    int sample = (int) round(beat * m_iSampleRate);
-    return findNextBeatSample(sample) / m_iSampleRate;
-}
-
-double TrackBeats::findPrevBeatSeconds(double beat) const
-{
-    QMutexLocker lock(&m_qMutex);
-    int sample = (int) round(beat * m_iSampleRate);
-    return findPrevBeatSample(sample) / m_iSampleRate;
-}
-
-QList<double>* TrackBeats::findBeatsSeconds(double start, double stop) const
-{
-    QMutexLocker lock(&m_qMutex);
-    QList<double> *ret = new QList<double>;
-    QList<int>* samples;
-    int begin = round(start * m_iSampleRate);
-    int end = round(stop * m_iSampleRate);
-    int i;
-    
-    
-    samples = findBeatsSamples(begin, end);
-    for (i = 0; i < samples->size(); i++)
-    {
-        //qDebug() << "Sample:" << samples.at(i) << "SampleRate:" << m_iSampleRate
-        //            << "Seconds:" << ((double)samples.at(i) / (double)m_iSampleRate);
-        
-        ret->append((double)samples->at(i) / (double)m_iSampleRate);
-    }
-    
-    delete samples;
-    return ret;
-}
 
 int TrackBeats::getBeatCount() const
 {
@@ -86,19 +45,12 @@ int TrackBeats::getBeatCount() const
 void TrackBeats::dumpBeats()
 {
     QMutexLocker lock(&m_qMutex);
-    QMapIterator<int, int> iter(m_beats);
-    
-    do {
-        iter.next();
-        qDebug() << "TrackBeat Sample:" << iter.value();
-        
-    } while(iter.hasNext());
 }
 
 int TrackBeats::sampleIndex(int sample) const
 {
     QMutexLocker lock(&m_qMutex);
-    return (int) round(sample / (m_iSampleRate * 10));
+    return (int) round(sample / (m_iSampleRate * TRACKBEATS_INDEX_RANGE));
 }
 
 void TrackBeats::addBeatSample(int sample)
@@ -117,8 +69,47 @@ void TrackBeats::addBeatSample(int sample)
         
         m_beatIndex.append(sample);
     }
+    else
+    {
+        if ( m_beatIndex.at(index) > sample )
+            m_beatIndex[index] = sample;
+    }
     
     m_beats[sample] = sample;
+}
+
+void TrackBeats::removeBeatSample(int sample)
+{
+    QMutexLocker lock(&m_qMutex);
+    int index = sampleIndex(sample);
+    int d;
+
+
+    m_beats.remove(sample);
+
+    if ( ! m_beatIndex.contains(sample))
+        return;
+    
+    for (d = index; d > (index - TRACKBEATS_INDEX_RANGE - 1) && m_beatIndex.at(d) >= sample; d--) {
+        if ( m_beatIndex.at(d) == sample ) {
+            m_beatIndex.removeAt(d);
+        }
+    }
+
+    if ( m_beatIndex.contains(sample) )
+        qDebug() << "Dangling Indexes:" << m_beatIndex.count(sample);
+}
+
+void TrackBeats::addBeatSeconds(double beat)
+{
+    QMutexLocker lock(&m_qMutex);
+    addBeatSample((int)round(beat * m_iSampleRate));
+}
+
+void TrackBeats::removeBeatSeconds(double beat)
+{
+    QMutexLocker lock(&m_qMutex);
+    removeBeatSample((int)round(beat * m_iSampleRate));
 }
 
 int TrackBeats::findNextBeatSample(int sample) const
@@ -130,11 +121,29 @@ int TrackBeats::findNextBeatSample(int sample) const
     
     if (m_beatIndex.size() > index)
     {
-        // make sure we dont trip on unindex'ed areas (-1)..
         iter.findNext(m_beatIndex.value(index));
         do {
             iter.next();
         } while((iter.hasNext()) && (iter.value() <= sample));
+        
+        return iter.value();
+    }
+    
+    return -1;
+}
+
+int TrackBeats::findPrevBeatSample(int sample) const
+{
+    QMutexLocker lock(&m_qMutex);
+    QMapIterator<int, int> iter(m_beats);
+    int index = sampleIndex(sample);
+    
+    if (m_beatIndex.size() > index)
+    {
+        iter.findNext(m_beatIndex.value(index));
+        do {
+            iter.previous();
+        } while((iter.hasPrevious()) && (iter.value() >= sample));
         
         return iter.value();
     }
@@ -178,25 +187,6 @@ int TrackBeats::findBeatOffsetSamples(int sample, int offset) const
     return iter.value();
 }
 
-int TrackBeats::findPrevBeatSample(int sample) const
-{
-    QMutexLocker lock(&m_qMutex);
-    QMapIterator<int, int> iter(m_beats);
-    int index = sampleIndex(sample);
-    
-    if (m_beatIndex.size() > index)
-    {
-        iter.findNext(m_beatIndex.value(index));
-        do {
-            iter.previous();
-        } while((iter.hasPrevious()) && (iter.value() >= sample));
-        
-        return iter.value();
-    }
-    
-    return -1;
-}
-
 QList<int>* TrackBeats::findBeatsSamples(int start, int stop) const
 {
     QMutexLocker lock(&m_qMutex);
@@ -215,6 +205,48 @@ QList<int>* TrackBeats::findBeatsSamples(int start, int stop) const
         } while((iter.hasNext()) && (iter.value() <= stop));
     }
     
+    return ret;
+}
+
+double TrackBeats::findNextBeatSeconds(double beat) const
+{
+    QMutexLocker lock(&m_qMutex);
+    int sample = (int) round(beat * m_iSampleRate);
+    return findNextBeatSample(sample) / m_iSampleRate;
+}
+
+double TrackBeats::findPrevBeatSeconds(double beat) const
+{
+    QMutexLocker lock(&m_qMutex);
+    int sample = (int) round(beat * m_iSampleRate);
+    return findPrevBeatSample(sample) / m_iSampleRate;
+}
+
+double TrackBeats::findBeatOffsetSeconds(double sample, int offset) const
+{
+    QMutexLocker lock(&m_qMutex);
+    int bgn = round(sample * m_iSampleRate);
+    
+    return ((double)findBeatOffsetSamples(bgn, offset) / m_iSampleRate);
+}
+
+QList<double>* TrackBeats::findBeatsSeconds(double start, double stop) const
+{
+    QMutexLocker lock(&m_qMutex);
+    QList<double> *ret = new QList<double>;
+    QList<int>* samples;
+    int begin = round(start * m_iSampleRate);
+    int end = round(stop * m_iSampleRate);
+    int i;
+    
+    
+    samples = findBeatsSamples(begin, end);
+    for (i = 0; i < samples->size(); i++)
+    {
+        ret->append((double)samples->at(i) / (double)m_iSampleRate);
+    }
+    
+    delete samples;
     return ret;
 }
 
