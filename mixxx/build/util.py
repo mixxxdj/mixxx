@@ -17,7 +17,8 @@ def get_bzr_branch_name():
         if owner == '~mixxxdevelopers':
             return branch_name
         return "%s_%s" % (owner.replace('~',''), branch_name)
-    return 'unknown'
+    # Fall back on branch nick.
+    return os.popen('bzr nick').readline()
 
 
 def get_build_dir(platformString, bitwidth):
