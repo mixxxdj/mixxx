@@ -187,6 +187,7 @@ class Qt(Dependence):
         # Set the rpath for linux/bsd/osx. 
         # This is not support on OS X before the 10.5 SDK.
         using_104_sdk = (str(build.env["CCFLAGS"]).find("10.4") >= 0)
+        compiling_on_104 = False
         if build.platform_is_osx:
             compiling_on_104 = (os.popen('sw_vers').readlines()[1].find('10.4') >= 0)
         if not build.platform_is_windows and not (using_104_sdk or compiling_on_104):
