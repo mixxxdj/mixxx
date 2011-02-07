@@ -3,13 +3,13 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2010-10-28 15:35-0400\n"
-"PO-Revision-Date: 2011-02-06 00:05+0000\n"
+"PO-Revision-Date: 2011-02-06 13:50+0000\n"
 "Last-Translator: Alexander Haack <Unknown>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-02-06 04:50+0000\n"
+"X-Launchpad-Export-Date: 2011-02-07 05:17+0000\n"
 "X-Generator: Launchpad (build 12177)\n"
 
 #: AutoDJFeature#1
@@ -68,7 +68,7 @@ msgstr "ID"
 #: CrateTableModel#2
 msgctxt "CrateTableModel#2"
 msgid "Artist"
-msgstr "Interpret"
+msgstr "Künstler"
 
 #: CrateTableModel#3
 msgctxt "CrateTableModel#3"
@@ -93,7 +93,7 @@ msgstr "Jahr"
 #: CrateTableModel#7
 msgctxt "CrateTableModel#7"
 msgid "Type"
-msgstr "Dateityp"
+msgstr "Typ"
 
 #: CrateTableModel#8
 msgctxt "CrateTableModel#8"
@@ -113,7 +113,7 @@ msgstr "Dauer"
 #: CrateTableModel#11
 msgctxt "CrateTableModel#11"
 msgid "Track #"
-msgstr ""
+msgstr "Titel#"
 
 #: CrateTableModel#12
 msgctxt "CrateTableModel#12"
@@ -199,7 +199,7 @@ msgstr "Schema Name:"
 
 #: DlgBpmSchemeDlg#3
 msgid "BPM Range"
-msgstr "BPM Bereich"
+msgstr "BPM-Bereich"
 
 #: DlgBpmSchemeDlg#4
 msgid "Max"
@@ -252,7 +252,7 @@ msgstr "Bitte bewegen Sie das MIDI Bedienelement für:"
 
 #: DlgMidiLearning#9
 msgid "Mixxx Control"
-msgstr "Mixxx Element"
+msgstr "Mixxx-Steuerung"
 
 #: DlgMidiLearning#10
 msgid "Previous"
@@ -260,7 +260,7 @@ msgstr "Zurück"
 
 #: DlgMidiLearning#11
 msgid "Press spacebar to proceed or skip."
-msgstr "Zum weitermachen oder überspringen die Leertaste drücken."
+msgstr "Zum Fortsetzen oder Überspringen die Leertaste drücken."
 
 #: DlgMidiLearning#12
 msgid "MIDI learning complete!"
@@ -319,7 +319,7 @@ msgstr "BPM eines Titels beim Import erkennen"
 
 #: DlgPrefBPMDlg#5
 msgid "Write BPM to ID3 Tag"
-msgstr "BPM in das ID3 Tag schreiben"
+msgstr "BPM in den ID3-Tag schreiben"
 
 #: DlgPrefBPMDlg#6
 msgid "If BPM can be detected but not within specified range"
@@ -327,11 +327,11 @@ msgstr "Falls BPM erkannt wird aber nicht im angegebenen Bereich"
 
 #: DlgPrefBPMDlg#7
 msgid "Allow BPM above the range"
-msgstr "BPM überhalb des Bereiches erlauben"
+msgstr "BPM oberhalb des Bereiches erlauben"
 
 #: DlgPrefBPMDlg#8
 msgid "BPM Schemes"
-msgstr "BPM Schemen"
+msgstr "BPM-Schemen"
 
 #: DlgPrefBPMDlg#9
 msgctxt "DlgPrefBPMDlg#9"
@@ -476,11 +476,11 @@ msgstr ""
 
 #: DlgPrefControlsDlg#22
 msgid "Ramping Pitchbend"
-msgstr "Weiches Pitchbend"
+msgstr "Weiche Tonhöhenveränderung"
 
 #: DlgPrefControlsDlg#23
 msgid "Pitchbend sensitivity"
-msgstr "Empfindlichkeit Pitchbend"
+msgstr "Feinheit der Tonhöhe"
 
 #: DlgPrefCrossfaderDlg#1
 msgctxt "DlgPrefCrossfaderDlg#1"
@@ -493,7 +493,7 @@ msgstr "Crossfader Kurve"
 
 #: DlgPrefCrossfaderDlg#3
 msgid "Slow fade"
-msgstr "Langsamer Fade"
+msgstr "Langsames ausblenden"
 
 #: DlgPrefCrossfaderDlg#4
 msgid "Fast cut"
@@ -501,7 +501,7 @@ msgstr "Schnelles Schneiden"
 
 #: DlgPrefCrossfaderDlg#5
 msgid "Constant power"
-msgstr "Konstant"
+msgstr "Gleichbleibende Leistung"
 
 #: DlgPrefCrossfaderDlg#6
 msgid "Mixing"
@@ -513,7 +513,7 @@ msgstr "Scratchen"
 
 #: DlgPrefCrossfaderDlg#8
 msgid "Linear"
-msgstr "Linear"
+msgstr "Geradlinig"
 
 #: DlgPrefCrossfaderDlg#9
 msgid "Logarithmic"
@@ -1136,7 +1136,7 @@ msgstr ""
 #: DlgPrefSound#6
 msgctxt "DlgPrefSound#6"
 msgid "Configuration error"
-msgstr ""
+msgstr "Fehler in der Konfiguration"
 
 #: DlgPrefSound#7
 msgctxt "DlgPrefSound#7"
@@ -1364,7 +1364,7 @@ msgstr "Sekunden"
 
 #: DlgPrefVinylDlg#13
 msgid "Control Mode"
-msgstr ""
+msgstr "Kontrollmodus"
 
 #: DlgPrefVinylDlg#14
 msgid "Absolute Mode"
@@ -1948,7 +1948,7 @@ msgstr "Element Gruppe"
 #: MidiOutputMappingTableModel#5
 msgctxt "MidiOutputMappingTableModel#5"
 msgid "Control Value"
-msgstr ""
+msgstr "Kontrollwert"
 
 #: MidiOutputMappingTableModel#6
 msgid "Threshold Min"
