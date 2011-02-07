@@ -23,7 +23,7 @@ def get_bzr_branch_name():
                 return branch_name
             return "%s_%s" % (owner.replace('~',''), branch_name)
     # Fall back on branch nick.
-    return os.popen('bzr nick').readline()
+    return os.popen('bzr nick').readline().strip()
 
 
 def get_build_dir(platformString, bitwidth):
