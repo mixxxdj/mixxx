@@ -157,12 +157,13 @@ class MixxxBuild(object):
             if self.machine == 'powerpc':
                 self.env.Append(CCFLAGS = '-arch ppc')
                 self.env.Append(LINKFLAGS = '-arch ppc')
-            if self.bitwidth == 32:
-                self.env.Append(CCFLAGS = '-arch i386')
-                self.env.Append(LINKFLAGS = '-arch i386')
-            elif self.bitwidth == 64:
-                self.env.Append(CCFLAGS = '-arch x86_64')
-                self.env.Append(LINKFLAGS = '-arch x86_64')
+            else:
+                if self.bitwidth == 32:
+                    self.env.Append(CCFLAGS = '-arch i386')
+                    self.env.Append(LINKFLAGS = '-arch i386')
+                elif self.bitwidth == 64:
+                    self.env.Append(CCFLAGS = '-arch x86_64')
+                    self.env.Append(LINKFLAGS = '-arch x86_64')
 
         if self.crosscompile:
             crosscompile_root = Script.ARGUMENTS.get('crosscompile_root', '')
