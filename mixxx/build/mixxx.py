@@ -154,6 +154,9 @@ class MixxxBuild(object):
                 self.env.Append(CCFLAGS = '-m64')
 
         if self.platform == 'osx':
+            if self.machine == 'powerpc':
+                self.env.Append(CCFLAGS = '-arch ppc')
+                self.env.Append(LINKFLAGS = '-arch ppc')
             if self.bitwidth == 32:
                 self.env.Append(CCFLAGS = '-arch i386')
                 self.env.Append(LINKFLAGS = '-arch i386')
