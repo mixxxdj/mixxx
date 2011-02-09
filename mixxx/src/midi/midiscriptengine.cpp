@@ -447,7 +447,7 @@ bool MidiScriptEngine::safeExecute(QString function, const unsigned char data[],
         return false;
 
     QVector<QChar> temp(length);
-    for (int i=0; i <= length; i++) {
+    for (int i=0; i < length; i++) {
         temp[i]=data[i];
     }
     QString buffer = QString(temp.constData(),length);
