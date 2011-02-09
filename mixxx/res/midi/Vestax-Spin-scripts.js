@@ -49,17 +49,9 @@ VestaxSpin.init = function(id) {
         for (var j = 0; j < 20000000; ++j);
     }*/
 
-//    for (var deck in VestaxSpin.decks) {
-//        VestaxSpin.decks[deck].updateVuMeter.timer = engine.beginTimer(1.0/30*1000, VestaxSpin.decks[deck].updateVuMeter);
-//    }
-//    VestaxSpin.decks["L"].updateVuMeter.timer = engine.beginTimer(1.0/30*1000, "VestaxSpin.updateLVuMeter");
-//    VestaxSpin.decks["R"].updateVuMeter.timer = engine.beginTimer(1.0/30*1000, "VestaxSpin.updateRVuMeter");
 }
 
 VestaxSpin.shutdown = function(id) {
-    for (var deck in VestaxSpin.decks) {
-        engine.stopTimer(VestaxSpin.decks[deck].updateVuMeter.timer);
-    }
     // clear everything
     for (var light in VestaxSpin.DECK_LIGHTS) {
         new VestaxSpin.Light(0, VestaxSpin.DECK_LIGHTS[light]).off();
@@ -180,18 +172,20 @@ VestaxSpin.Deck = function(deckNum, group) {
     this.addButton("back", new VestaxSpin.Button(deckNum-1, 0x36, true, 0x32), "handleBack");
     this.addButton("rw", new VestaxSpin.Button(deckNum-1, 0x37, true, 0x35), "handleRW");
     this.addButton("ff", new VestaxSpin.Button(deckNum-1, 0x38, true, 0x33), "handleFF");
-// this next one is basically useless since we don't need touch for jog, maybe useful later?
     this.addButton("wheeltouch", new VestaxSpin.Button(deckNum-1, 0x2e), "handleWheelTouch");
+    // is this needed on the spin? I don't think we get a different control number
+    // from touch if the scratch button light is active like on typhoon
     this.addButton("wheeltouchfilter", new VestaxSpin.Button(deckNum-1, 0x2f), "handleWheelTouchFilter");
     this.addButton("jog", new VestaxSpin.Button(deckNum-1, 0x10), "handleJog");
-    this.addButton("scratch", new VestaxSpin.Button(deckNum-1, 0x11), "handleScratch");
+    // spin doesn't send different control number when the scratch button light
+    // is enabled like the typhoon does
+    //this.addButton("scratch", new VestaxSpin.Button(deckNum-1, 0x11), "handleScratch");
 
     this.lights["vu1"] = new VestaxSpin.Light(deckNum-1, 0x29);
     this.lights["vu2"] = new VestaxSpin.Light(deckNum-1, 0x2a);
     this.lights["vu3"] = new VestaxSpin.Light(deckNum-1, 0x2b);
     this.lights["vu4"] = new VestaxSpin.Light(deckNum-1, 0x2c);
     this.lights["vu5"] = new VestaxSpin.Light(deckNum-1, 0x2d);
-//    this.updateVuMeter();
 }
 
 VestaxSpin.Deck.prototype.addButton = VestaxSpin.addButton;
@@ -206,36 +200,6 @@ VestaxSpin.Deck.prototype.handleEvent = function(channel, control, value, status
         for (var button in buttons) {
             buttons[button].handleEvent(value);
         }
-    }
-}
-
-VestaxSpin.Deck.prototype.updateVuMeter = function() {
-//    print("updating vu");
-    var vol = engine.getValue(this.group, "VuMeter");
-    if (vol >= 0.2) {
-        this.lights["vu1"].on();
-    } else {
-        this.lights["vu1"].off();
-    }
-    if (vol >= 0.4) {
-        this.lights["vu2"].off();
-    } else {
-        this.lights["vu2"].off();
-    }
-    if (vol >= 0.6) {
-        this.lights["vu3"].off();
-    } else {
-        this.lights["vu3"].off();
-    }
-    if (vol >= 0.8) {
-        this.lights["vu4"].off();
-    } else {
-        this.lights["vu4"].off();
-    }
-    if (vol >= 1.0) {
-        this.lights["vu5"].off();
-    } else {
-        this.lights["vu5"].off();
     }
 }
 
@@ -372,13 +336,5 @@ VestaxSpin.Button.prototype.handleJog = function() {
     } else {
         engine.setValue(this.group, "jog", this.state - 0x40);
     }
-}
-
-VestaxSpin.updateLVuMeter = function() {
-//    VestaxSpin.decks["L"].updateVuMeter();
-}
-
-VestaxSpin.updateRVuMeter = function() {
-//    VestaxSpin.decks["R"].updateVuMeter();
 }
 
