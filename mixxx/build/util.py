@@ -18,10 +18,17 @@ def get_bzr_branch_name():
             owner = match['owner']
             branch_name = match['branch_name']
 
-            # Don't include the default name
-            if owner == '~mixxxdevelopers':
+            # Strip ~ from owner name
+            owner = owner.replace('~', '')
+
+            # Underscores are not ok in version names, dashes are fine though.
+            branch_name = branch_name.replace('_', '-')
+
+            # Don't include the default owner
+            if owner == 'mixxxdevelopers':
                 return branch_name
-            return "%s~%s" % (owner.replace('~',''), branch_name)
+
+            return "%s~%s" % (owner, branch_name)
     # Fall back on branch nick.
     return os.popen('bzr nick').readline().strip()
 
