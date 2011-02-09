@@ -16,49 +16,35 @@ TrackBeats::~TrackBeats()
 {
 }
 
-bool TrackBeats::hasBeatsSamples(double start, double stop) const
-{
-    QMutexLocker lock(&m_qMutex);
-    QMapIterator<int, int> iter(m_beats);
-    int index = sampleIndex(start);
-
-
-    if (iter.findNext(m_beatIndex.value(index)))
-    {
-        do {
-            if ((iter.value() >= start) && (iter.value() <= stop))
-                 return true;
-            
-            iter.next();
-        } while((iter.hasNext()) && (iter.value() <= stop));
-    }
-    
-    return false;
-}
-
-int TrackBeats::getBeatCount() const
-{
-    QMutexLocker lock(&m_qMutex);
-    return m_beats.size();
-}
-
-void TrackBeats::dumpBeats()
-{
-    QMutexLocker lock(&m_qMutex);
-}
-
+/**
+ * Private function that returns the sample index. This is an index into 
+ * m_beatIndex which holds the first sample offset that holds a beat for a 
+ * certain range of sample offsets.
+ */
 int TrackBeats::sampleIndex(int sample) const
 {
     QMutexLocker lock(&m_qMutex);
     return (int) round(sample / (m_iSampleRate * TRACKBEATS_INDEX_RANGE));
 }
 
+/**
+ * Get the count of beats stored.
+ */
+int TrackBeats::getBeatCount() const
+{
+    QMutexLocker lock(&m_qMutex);
+    return m_beats.size();
+}
+
+/**
+ * Add a beat at 'sample' sample.
+ */
 void TrackBeats::addBeatSample(int sample)
 {
     QMutexLocker lock(&m_qMutex);
     int index = sampleIndex(sample);
-    
-    
+
+
     if ((m_beatIndex.size()-1) < index ) 
     {
         int i;
@@ -74,25 +60,37 @@ void TrackBeats::addBeatSample(int sample)
         if ( m_beatIndex.at(index) > sample )
             m_beatIndex[index] = sample;
     }
-    
+
     m_beats[sample] = sample;
 }
 
+/**
+ * Remove the beat with the sample offset specified.
+ */
 void TrackBeats::removeBeatSample(int sample)
 {
     QMutexLocker lock(&m_qMutex);
     int index = sampleIndex(sample);
     int d;
-
+    int newSample = -1;
 
     m_beats.remove(sample);
 
     if ( ! m_beatIndex.contains(sample))
         return;
-    
-    for (d = index; d > (index - TRACKBEATS_INDEX_RANGE - 1) && m_beatIndex.at(d) >= sample; d--) {
-        if ( m_beatIndex.at(d) == sample ) {
-            m_beatIndex.removeAt(d);
+
+    if ((index+1) < m_beatIndex.size()) {
+        newSample = m_beatIndex.at(index+1);
+        
+        for (d = index; d > 0 && m_beatIndex.at(d) >= sample; d--) {
+            if ( m_beatIndex.at(d) == sample )
+                m_beatIndex[d] = newSample;
+        }
+    }
+    else {
+        for (d = index; d > 0 && m_beatIndex.at(d) >= sample; d--) {
+            if ( m_beatIndex.at(d) == sample )
+                m_beatIndex.removeAt(d);
         }
     }
 
@@ -100,18 +98,28 @@ void TrackBeats::removeBeatSample(int sample)
         qDebug() << "Dangling Indexes:" << m_beatIndex.count(sample);
 }
 
+/**
+ * Add a beat at 'beat' seconds.
+ */
 void TrackBeats::addBeatSeconds(double beat)
 {
     QMutexLocker lock(&m_qMutex);
     addBeatSample((int)round(beat * m_iSampleRate));
 }
 
+
+/**
+ * Remove a beat at 'beat' seconds.
+ */
 void TrackBeats::removeBeatSeconds(double beat)
 {
     QMutexLocker lock(&m_qMutex);
     removeBeatSample((int)round(beat * m_iSampleRate));
 }
 
+/**
+ * Find the Next beat starting from offset sample.
+ */
 int TrackBeats::findNextBeatSample(int sample) const
 {
     QMutexLocker lock(&m_qMutex);
@@ -132,6 +140,9 @@ int TrackBeats::findNextBeatSample(int sample) const
     return -1;
 }
 
+/**
+ * Find the Previous beat starting from offset sample.
+ */
 int TrackBeats::findPrevBeatSample(int sample) const
 {
     QMutexLocker lock(&m_qMutex);
@@ -151,6 +162,9 @@ int TrackBeats::findPrevBeatSample(int sample) const
     return -1;
 }
 
+/**
+ * Find the Nth beat (offset) from sample .
+ */
 int TrackBeats::findBeatOffsetSamples(int sample, int offset) const
 {
     QMutexLocker lock(&m_qMutex);
@@ -187,6 +201,32 @@ int TrackBeats::findBeatOffsetSamples(int sample, int offset) const
     return iter.value();
 }
 
+/**
+ * Return TRUE if there is any beats between start and stop (in samples)
+ */
+bool TrackBeats::hasBeatsSamples(double start, double stop) const
+{
+    QMutexLocker lock(&m_qMutex);
+    QMapIterator<int, int> iter(m_beats);
+    int index = sampleIndex(start);
+
+
+    if (iter.findNext(m_beatIndex.value(index)))
+    {
+        do {
+            if ((iter.value() >= start) && (iter.value() <= stop))
+                 return true;
+            
+            iter.next();
+        } while((iter.hasNext()) && (iter.value() <= stop));
+    }
+    
+    return false;
+}
+
+/**
+ * Find and return a list of all beats between sample offset start and stop.
+ */
 QList<int>* TrackBeats::findBeatsSamples(int start, int stop) const
 {
     QMutexLocker lock(&m_qMutex);
@@ -208,6 +248,9 @@ QList<int>* TrackBeats::findBeatsSamples(int start, int stop) const
     return ret;
 }
 
+/**
+ * Find the Next beat starting from an offset in seconds.
+ */
 double TrackBeats::findNextBeatSeconds(double beat) const
 {
     QMutexLocker lock(&m_qMutex);
@@ -215,6 +258,9 @@ double TrackBeats::findNextBeatSeconds(double beat) const
     return findNextBeatSample(sample) / m_iSampleRate;
 }
 
+/**
+ * Find the Previous beat starting from an offset in seconds.
+ */
 double TrackBeats::findPrevBeatSeconds(double beat) const
 {
     QMutexLocker lock(&m_qMutex);
@@ -222,14 +268,32 @@ double TrackBeats::findPrevBeatSeconds(double beat) const
     return findPrevBeatSample(sample) / m_iSampleRate;
 }
 
-double TrackBeats::findBeatOffsetSeconds(double sample, int offset) const
+/**
+ * Find the Nth beat (offset) from offset seconds in seconds.
+ */
+double TrackBeats::findBeatOffsetSeconds(double seconds, int offset) const
 {
     QMutexLocker lock(&m_qMutex);
-    int bgn = round(sample * m_iSampleRate);
+    int bgn = round(seconds * m_iSampleRate);
     
     return ((double)findBeatOffsetSamples(bgn, offset) / m_iSampleRate);
 }
 
+/**
+ * Return TRUE if there is any beats between start and stop (in seconds)
+ */
+bool TrackBeats::hasBeatsSeconds(double start, double stop) const
+{
+    QMutexLocker lock(&m_qMutex);
+    int bgn = round(start * m_iSampleRate);
+    int end = round(stop * m_iSampleRate);
+
+    return hasBeatsSamples(bgn, end);
+}
+
+/**
+ * Find and return a list of all beats between seconds start and stop.
+ */
 QList<double>* TrackBeats::findBeatsSeconds(double start, double stop) const
 {
     QMutexLocker lock(&m_qMutex);

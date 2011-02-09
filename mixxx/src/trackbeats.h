@@ -19,7 +19,6 @@ public:
 
     
     int getBeatCount() const;
-    void dumpBeats();
 
     void addBeatSample(int);
     void addBeatSeconds(double);
@@ -31,6 +30,7 @@ public:
     int findNextBeatSample(int) const;
     int findBeatOffsetSamples(int, int) const;
     bool hasBeatsSamples(double, double) const;
+    bool hasBeatsSeconds(double, double) const;
     double findNextBeatSeconds(double) const;
     double findPrevBeatSeconds(double) const;
     QList<int>* findBeatsSamples(int, int) const;
@@ -42,7 +42,6 @@ public:
 private:
     /** Find the Samples Index */
     int sampleIndex(int) const;
-    
     /** Sample Rate for this song */
     int m_iSampleRate;
     /** Duration of the entire song in seconds */
