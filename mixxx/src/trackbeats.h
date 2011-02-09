@@ -17,7 +17,7 @@ public:
     TrackBeats(TrackPointer);
     virtual ~TrackBeats();
 
-    
+
     int getBeatCount() const;
 
     void addBeatSample(int);
@@ -38,7 +38,7 @@ public:
     QList<double>* findBeatsSeconds(double, double) const;
     QByteArray *serializeToBlob();
     void unserializeFromBlob(QByteArray *blob);
-    
+
 private:
     /** Find the Samples Index */
     int sampleIndex(int) const;
