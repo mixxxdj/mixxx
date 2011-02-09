@@ -26,7 +26,7 @@ class PortMIDI(Dependence):
         if not conf.CheckLib(['portmidi', 'libportmidi']) and \
                 not conf.CheckHeader(['portmidi.h']):
             raise Exception('Did not find PortMidi or its development headers.')
-            
+
     def sources(self, build):
         return ['midi/portmidienumerator.cpp', 'midi/midideviceportmidi.cpp']
 
@@ -297,6 +297,12 @@ class TagLib(Dependence):
     def configure(self, build, conf):
         if not conf.CheckLib('tag'):
             raise Exception("Could not find libtag or its development headers.")
+
+        # Karmic seems to have an issue with mp4tag.h where they don't include
+        # the files correctly. Adding this folder ot the include path should fix
+        # it, though might cause issues. This is safe to remove once we
+        # deprecate Karmic support. rryan 2/2011
+        build.env.Append(CPPPATH='/usr/include/taglib/')
 class MixxxCore(Feature):
 
     def description(self):
@@ -581,6 +587,9 @@ class MixxxCore(Feature):
             # I think this file is auto-generated on Windows, as qrc_mixxx.cc is
             # auto-generated above. Leaving uncommented.
             #sources.append("mixxx.res")
+        elif build.platform_is_osx:
+            build.env.Append(LINKFLAGS="-headerpad=ffff"); #Need extra room for code signing (App Store)
+            build.env.Append(LINKFLAGS="-headerpad_max_install_names"); #Need extra room for code signing (App Store)
 
         return sources
 
