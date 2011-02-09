@@ -508,6 +508,13 @@
         <on>0x7f</on>
         <minimum>1.0</minimum>
       </output>
+      <output>
+        <group>[Channel1]</group>
+        <key>flanger</key>
+        <status>0x92</status>
+        <midino>0x29</midino>
+        <minimum>0.1</minimum>
+      </output>
 
       <!-- channel 2 -->
       <output>
@@ -573,6 +580,13 @@
         <midino>0x2d</midino>
         <on>0x7f</on>
         <minimum>1.0</minimum>
+      </output>
+      <output>
+        <group>[Channel2]</group>
+        <key>flanger</key>
+        <status>0x92</status>
+        <midino>0x28</midino>
+        <minimum>0.1</minimum>
       </output>
     </outputs>
   </controller>

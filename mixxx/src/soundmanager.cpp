@@ -36,7 +36,7 @@ SoundManager::SoundManager(ConfigObject<ConfigValue> * pConfig, EngineMaster * _
     , m_pErrorDevice(NULL)
 #ifdef __PORTAUDIO__
     , m_paInitialized(false)
-    , m_jackSampleRate(0)
+    , m_jackSampleRate(-1)
 #endif
 {
     //qDebug() << "SoundManager::SoundManager()";
@@ -272,6 +272,8 @@ QList<unsigned int> SoundManager::getSampleRates(QString api) const
 {
 #ifdef __PORTAUDIO__
     if (api == MIXXX_PORTAUDIO_JACK_STRING) {
+        // queryDevices must have been called for this to work, but the
+        // ctor calls it -bkgood
         QList<unsigned int> samplerates;
         samplerates.append(m_jackSampleRate);
         return samplerates;

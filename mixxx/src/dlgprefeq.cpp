@@ -53,7 +53,7 @@ DlgPrefEQ::DlgPrefEQ(QWidget * parent, ConfigObject<ConfigValue> * _config) :  Q
 	slotLoFiChanged();
 	CheckBoxLoFi->setEnabled(false);
 #endif
-	connect(PushButtonReset,	  SIGNAL(clicked(bool)), this,	SLOT(setDefaults()));
+	connect(PushButtonReset,	  SIGNAL(clicked(bool)), this,	SLOT(reset()));
 
 	m_lowEqFreq = 0;
 	m_highEqFreq = 0;
@@ -68,7 +68,9 @@ DlgPrefEQ::~DlgPrefEQ()
 void DlgPrefEQ::loadSettings()
 {
     if(config->getValueString(ConfigKey(CONFIG_KEY, "HiEQFrequency")) == QString("")) {
-        setDefaults();
+        // apparently we don't have any settings, set defaults
+        CheckBoxLoFi->setChecked(true);
+        setDefaultShelves();
     }
     SliderHiEQ->setValue(getSliderPosition(config->getValueString(ConfigKey(CONFIG_KEY, "HiEQFrequency")).toInt()));
     SliderLoEQ->setValue(getSliderPosition(config->getValueString(ConfigKey(CONFIG_KEY, "LoEQFrequency")).toInt()));
@@ -82,12 +84,17 @@ void DlgPrefEQ::loadSettings()
     slotApply();
 }
 
-void DlgPrefEQ::setDefaults()
+void DlgPrefEQ::setDefaultShelves()
 {
-	CheckBoxLoFi->setChecked(true);
-    // set some default shelves -bkgood
     config->set(ConfigKey(CONFIG_KEY, "HiEQFrequency"), ConfigValue(2500));
     config->set(ConfigKey(CONFIG_KEY, "LoEQFrequency"), ConfigValue(250));
+}
+
+/** Resets settings, leaves LOFI box checked asis.
+ */
+void DlgPrefEQ::reset() {
+    setDefaultShelves();
+    loadSettings();
 }
 
 void DlgPrefEQ::slotLoFiChanged()
