@@ -14,6 +14,8 @@
 #include "library/foldertreemodel.h"
 #include "library/proxytrackmodel.h"
 
+#define QUICK_LINK_NODE "::mixxx_quick_lnk_node::"
+#define DEVICE_NODE "::mixxx_device_node::"
 
 class TrackCollection;
 

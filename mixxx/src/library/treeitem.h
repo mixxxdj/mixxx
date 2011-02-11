@@ -44,7 +44,7 @@
      bool isPlaylist() const;
      /** returns true if we have an inner node **/
      bool isFolder() const;
-     
+
      /* Returns the Library feature object to which an item belongs to */ 
      LibraryFeature* getFeature();
 

@@ -6,7 +6,7 @@
 #include <QDirModel>
 #include <QStringList>
 #include <QFileInfo>
-
+#include <QDesktopServices>
 #include "trackinfoobject.h"
 #include "library/treeitem.h"
 #include "library/browsefeature.h"
@@ -21,6 +21,8 @@
 #include "widget/wlibrarytableview.h"
 #include "widget/wbrowsetableview.h"
 
+
+
 BrowseFeature::BrowseFeature(QObject* parent, ConfigObject<ConfigValue>* pConfig, TrackCollection* pTrackCollection)
         : LibraryFeature(parent),
           m_pConfig(pConfig),
@@ -33,7 +35,40 @@ BrowseFeature::BrowseFeature(QObject* parent, ConfigObject<ConfigValue>* pConfig
                
     //The invisible root item of the child model
     TreeItem* rootItem = new TreeItem();
-    
+
+    TreeItem* quick_link = new TreeItem(tr("Quick Links"), QUICK_LINK_NODE ,this , rootItem);
+    rootItem->appendChild(quick_link);
+
+    //Create the 'devices' shortcut
+#if defined(__WINDOWS__)
+    TreeItem* devices_link = new TreeItem(tr("Devices"), DEVICE_NODE ,this , rootItem);
+    rootItem->appendChild(devices_link);
+    //show drive letters
+    QFileInfoList drives = QDir::drives();
+    //show drive letters
+    foreach(QFileInfo drive, drives){
+        TreeItem* driveLetter = new TreeItem(
+                        drive.canonicalPath(), // displays C:
+                        drive.filePath(), //Displays C:/
+                        this ,
+                        devices_link);
+        devices_link->appendChild(driveLetter);
+    }
+#elif defined(__APPLE__)
+    //Apple hides the base Linux file structure
+    //But all devices are mounted at /Volumes
+    TreeItem* devices_link = new TreeItem(tr("Devices"), "/Volumes/", this , rootItem);
+    rootItem->appendChild(devices_link)
+#else //LINUX
+    TreeItem* devices_link = new TreeItem(tr("Removable Devices"), "/media/", this , rootItem);
+    rootItem->appendChild(devices_link);
+
+    //show root directory on UNIX-based operating systems
+    TreeItem* root_folder_item = new TreeItem(QDir::rootPath(), QDir::rootPath(),this , rootItem);
+    rootItem->appendChild(root_folder_item);
+
+#endif
+
     /*
      * Just a word about how the TreeItem objects are used for the BrowseFeature:
      * The constructor has 4 arguments:
@@ -44,37 +79,33 @@ BrowseFeature::BrowseFeature(QObject* parent, ConfigObject<ConfigValue>* pConfig
      *
      * Except the invisible root item, you must always state all 4 arguments.
      *
-     * Once the TreeItem objects are inserted to models, the models take care of their 
+     * Once the TreeItem objects are inserted to models, the models take care of their
      * deletion.
      */
-      
+
     //Add a shortcut to the Music folder which Mixxx uses
     QString mixxx_music_dir = m_pConfig->getValueString(ConfigKey("[Playlist]","Directory"));
-    TreeItem* mixxx_music_dir_item = new TreeItem("My Music", mixxx_music_dir +"/" ,this , rootItem);
-    rootItem->appendChild(mixxx_music_dir_item);
-    
-#if defined(__WINDOWS__)
-    QFileInfoList drives = QDir::drives();
-    //show drive letters
-    foreach(QFileInfo drive, drives){
-        TreeItem* driveLetter = new TreeItem(
-                        drive.canonicalPath(), // displays C:
-                        drive.filePath(), //Displays C:/
-                        this , 
-                        rootItem);
-        rootItem->appendChild(driveLetter);
-    }
-#elif defined(__APPLE__)
-    //Apple hides the base Linux file structure
-    //But all devices are mounted at /Volumes
-    TreeItem* devices = new TreeItem("Devices", "/Volumes/", this , rootItem);
-    rootItem->appendChild(devices);
-#else
-    //show root directory on UNIX-based operating systems
-    TreeItem* root_folder_item = new TreeItem(QDir::rootPath(), QDir::rootPath(),this , rootItem);
-    rootItem->appendChild(root_folder_item);
-#endif
-    
+    QString os_music_folder_dir = QDesktopServices::storageLocation(QDesktopServices::MusicLocation);
+    QString os_documents_folder_dir = QDesktopServices::storageLocation(QDesktopServices::DocumentsLocation);
+    QString os_home_folder_dir = QDesktopServices::storageLocation(QDesktopServices::HomeLocation);
+    QString os_desktop_folder_dir = QDesktopServices::storageLocation(QDesktopServices::DesktopLocation);
+
+    TreeItem* mixxx_library_dir_item = new TreeItem("Mixxx Library", mixxx_music_dir +"/" ,this , quick_link);
+    quick_link->appendChild(mixxx_library_dir_item);
+
+    TreeItem*os_home_dir_item = new TreeItem("Home Directory", os_home_folder_dir +"/" , this , quick_link);
+    quick_link->appendChild(os_home_dir_item);
+
+    TreeItem*os_music_dir_item = new TreeItem("Music Directory", os_music_folder_dir +"/" , this , quick_link);
+    quick_link->appendChild(os_music_dir_item);
+
+    TreeItem*os_docs_dir_item = new TreeItem("Document Directory", os_documents_folder_dir +"/" , this , quick_link);
+    quick_link->appendChild(os_docs_dir_item);
+
+    TreeItem*os_desktop_dir_item = new TreeItem("Desktop", os_desktop_folder_dir +"/" , this , quick_link);
+    quick_link->appendChild(os_desktop_dir_item);
+
+    //initialize the model
     m_childModel.setRootItem(rootItem);
 }
 
@@ -111,49 +142,18 @@ bool BrowseFeature::dragMoveAcceptChild(const QModelIndex& index, QUrl url) {
 }
 
 void BrowseFeature::activate() {
-    emit(switchToView("BROWSE"));
     emit(restoreSearch(m_currentSearch));
 }
 
 void BrowseFeature::activateChild(const QModelIndex& index) {
     TreeItem *item = static_cast<TreeItem*>(index.internalPointer());
     qDebug() << "BrowseFeature::activateChild " << item->data() << " " << item->dataPath();
-    
-    //populate childs
-    QDir dir(item->dataPath().toString());
-    QFileInfoList all = dir.entryInfoList(QDir::Dirs | QDir::NoDotAndDotDot);
 
-    // loop through all the item and construct the childs
-    QList<TreeItem*> folders;
-    foreach(QFileInfo one, all){
-        //Skip folders that end with .app on OS X
-        #if defined(__APPLE__)
-        if(one.isDir() && one.fileName().endsWith(".app")) continue;
-        #endif
-        // We here create new items for the sidebar models
-        // Once the items are added to the TreeItemModel, 
-        // the models takes ownership of them and ensures their deletion
-        TreeItem* folder = new TreeItem(one.fileName(), item->dataPath().toString().append(one.fileName() +"/"), this, item);
-        folders << folder;  
-    }
-    //Before we populate the subtree, we need to delete old subtrees
-    m_childModel.removeRows(0, item->childCount(), index);
-    
-    //we need to check here if subfolders are found
-    //On Ubuntu 10.04, otherwise, this will draw an icon although the folder has no subfolders
-    if(!folders.isEmpty())
-        m_childModel.insertRows(folders, 0, folders.size() , index);
-    /*
-    QModelIndex startIndex = m_browseModel.index(item->dataPath().toString());
-    QModelIndex proxyIndex = m_proxyModel.mapFromSource(startIndex);
-    emit(setRootIndex(proxyIndex));
-    emit(switchToView("BROWSE"));
-    */
+    //if(m_childModel.canFetchMore(index))
+        //m_childModel.fetchMore(index);
+
     m_browseModel.setPath(item->dataPath().toString());
-    //emit(switchToView("BROWSE"));
-    //emit(showTrackModel(&m_browseModel));
     emit(showTrackModel(&m_proxyModel));
-    
 
 }
 
