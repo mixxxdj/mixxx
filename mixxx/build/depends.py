@@ -172,6 +172,9 @@ class Qt(Dependence):
             build.env.Append(LIBS = 'QtWebKit4');
             build.env.Append(LIBS = 'QtNetwork4')
             build.env.Append(LIBS = 'QtOpenGL4');
+            # Tobias: Don't remove this line
+            # I used the Windows API in foldertreemodel.cpp
+            # to quickly test if a folder has subfolders
             build.env.Append(LIBS = 'shell32');
 
         # Set Qt include paths for non-OSX
@@ -484,7 +487,7 @@ class MixxxCore(Feature):
                    
                    "library/treeitemmodel.cpp",
                    "library/treeitem.cpp",
-				   "library/foldertreemodel.cpp",
+                   "library/foldertreemodel.cpp",
                    "library/traktorfeature.cpp",
                    "library/traktortablemodel.cpp",
                    "library/traktorplaylistmodel.cpp",

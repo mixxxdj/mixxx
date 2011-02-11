@@ -3,6 +3,7 @@
 
 #include <QStandardItemModel>
 #include "trackmodel.h"
+
 class QMimeData;
 
 class BrowseTableModel : public QStandardItemModel, public TrackModel

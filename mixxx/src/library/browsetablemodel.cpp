@@ -34,20 +34,20 @@ BrowseTableModel::BrowseTableModel(QObject* parent)
     m_currentPath = "";
     isBackGroundThreadActive = false;
     
-    header_data.insert(COLUMN_FILENAME, "Filename");
-    header_data.insert(COLUMN_ARTIST, "Artist");
-    header_data.insert(COLUMN_TITLE, "Title");
-    header_data.insert(COLUMN_ALBUM, "Album");
-    header_data.insert(COLUMN_TRACK_NUMBER, "Track #");
-    header_data.insert(COLUMN_GENRE, "Genre");
-    header_data.insert(COLUMN_YEAR, "Year");
-    header_data.insert(COLUMN_BPM, "BPM");
-    header_data.insert(COLUMN_KEY, "Key");
-    header_data.insert(COLUMN_DURATION, "Duration");
-    header_data.insert(COLUMN_TYPE, "Type");
-    header_data.insert(COLUMN_BITRATE, "Bitrate");
-    header_data.insert(COLUMN_COMMENT, "Comment");
-    header_data.insert(COLUMN_LOCATION, "Location");
+    header_data.insert(COLUMN_FILENAME, tr("Filename"));
+    header_data.insert(COLUMN_ARTIST, tr("Artist"));
+    header_data.insert(COLUMN_TITLE, tr("Title"));
+    header_data.insert(COLUMN_ALBUM, tr("Album"));
+    header_data.insert(COLUMN_TRACK_NUMBER, tr("Track #"));
+    header_data.insert(COLUMN_GENRE, tr("Genre"));
+    header_data.insert(COLUMN_YEAR, tr("Year"));
+    header_data.insert(COLUMN_BPM, tr("BPM"));
+    header_data.insert(COLUMN_KEY, tr("Key"));
+    header_data.insert(COLUMN_DURATION, tr("Duration"));
+    header_data.insert(COLUMN_TYPE, tr("Type"));
+    header_data.insert(COLUMN_BITRATE, tr("Bitrate"));
+    header_data.insert(COLUMN_COMMENT, tr("Comment"));
+    header_data.insert(COLUMN_LOCATION, tr("Location"));
     
     addSearchColumn(COLUMN_FILENAME);
     addSearchColumn(COLUMN_ARTIST);
