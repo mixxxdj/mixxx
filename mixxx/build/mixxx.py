@@ -58,6 +58,8 @@ class MixxxBuild(object):
 
         self.machine = machine
         self.build = build
+        self.build_is_debug = build == 'debug'
+        self.build_is_release = build == 'release'
 
         self.toolchain = toolchain
         self.toolchain_is_gnu = self.toolchain == 'gnu'
@@ -152,12 +154,16 @@ class MixxxBuild(object):
                 self.env.Append(CCFLAGS = '-m64')
 
         if self.platform == 'osx':
-            if self.bitwidth == 32:
-                self.env.Append(CCFLAGS = '-arch i386')
-                self.env.Append(LINKFLAGS = '-arch i386')
-            elif self.bitwidth == 64:
-                self.env.Append(CCFLAGS = '-arch x86_64')
-                self.env.Append(LINKFLAGS = '-arch x86_64')
+            if self.machine == 'powerpc':
+                self.env.Append(CCFLAGS = '-arch ppc')
+                self.env.Append(LINKFLAGS = '-arch ppc')
+            else:
+                if self.bitwidth == 32:
+                    self.env.Append(CCFLAGS = '-arch i386')
+                    self.env.Append(LINKFLAGS = '-arch i386')
+                elif self.bitwidth == 64:
+                    self.env.Append(CCFLAGS = '-arch x86_64')
+                    self.env.Append(LINKFLAGS = '-arch x86_64')
 
         if self.crosscompile:
             crosscompile_root = Script.ARGUMENTS.get('crosscompile_root', '')
