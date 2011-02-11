@@ -5,6 +5,7 @@ import os
 import sys
 import SCons
 import shutil
+import time
 
 from build import util
 
@@ -31,6 +32,8 @@ from build import util
 #
 
 mixxx_version = util.get_mixxx_version()
+branch_name = util.get_bzr_branch_name()
+bazaar_revision = util.get_bzr_revision()
 print "WE ARE IN:", os.getcwd()
 
 plugins = []
@@ -309,7 +312,7 @@ def win32_find_nsis_via_registry():
             nsis_location_handle = _winreg.OpenKey(hklm, "SOFTWARE\\Wow6432Node\\NSIS", 0, _winreg.KEY_READ)
         except WindowsError:
             nsis_location_handle = None
-    
+
     nsis_location = _winreg.QueryValue(nsis_location_handle, None)
     _winreg.CloseKey(hklm)
     return nsis_location
@@ -366,7 +369,7 @@ def BuildRelease(target, source, env):
             parameters = []
             if build.machine_is_64bit:
                 parameters.append("%sx64=1" % command_flag)
-            
+
             # Call the NSIS build
             command = '%(path)s /DPRODUCT_VERSION=%(version)s %(64bit)s build\\nsis\\Mixxx.nsi' % \
                 {'path':nsis_path, 'version':mixxx_version, '64bit':buildwin64}
@@ -383,7 +386,39 @@ if 'makerelease' in COMMAND_LINE_TARGETS:
 	makerelease = env.BuildRelease('', binary_files)
 	env.Alias('makerelease', makerelease)
 
-#Build the Ubuntu package
+def ubuntu_construct_version(build, mixxx_version, branch_name, bazaar_revision):
+	if build.build_is_release:
+		return mixxx_version
+	# In a debug build package, include the branch name and
+	# revision number
+	return "%s~%s~bzr%s" % (mixxx_version, branch_name, bazaar_revision)
+
+def ubuntu_append_changelog(debian_dir,
+			    package_name, package_version,
+			    branch_name, bazaar_revision,
+			    distro='karmic',
+			    urgency='low'):
+	now_formatted = time.strftime("%a,  %d %b %Y %H:%M:%S +0000", time.gmtime())
+	new_entry = [
+		"%s (%s) %s; urgency=%s" % (package_name, package_version, distro, urgency),
+		"",
+		"  * Experimental build of branch '%s' at Bazaar revision %s" % (branch_name, bazaar_revision),
+		"",
+		" -- Mixxx Buildbot <builds@mixxx.org>  %s" % now_formatted,
+		"",
+		]
+	lines = []
+	with open(os.path.join(debian_dir, 'changelog'), 'r') as changelog:
+		lines = list(changelog)
+	with open(os.path.join(debian_dir, 'changelog'), 'w') as changelog:
+		changelog.writelines(["%s\n" % x for x in new_entry])
+		changelog.writelines(lines)
+
+def ubuntu_cleanup():
+	os.system('rm -rf ubuntu')
+	os.mkdir('ubuntu')
+
+# Build the Ubuntu package
 def BuildUbuntuPackage(target, source, env):
 	print
 	print "==== Mixxx Post-Build Checks ===="
@@ -401,65 +436,94 @@ def BuildUbuntuPackage(target, source, env):
 	os.system('head -n 1 build/debian/changelog')
 	print
 
-	if ("yes" == "yes"):
-		print "Now building DEB package..."
-                print
-		mixxx_dir = 'mixxx-' + mixxx_version
-		mixxx_tarball = 'mixxx_' + mixxx_version + '.orig.tar.gz' #The underscore is super important here to make the deb package work
+	print "Now building DEB package..."
+	print
 
-		if not os.path.exists('ubuntu'):
-			os.mkdir('ubuntu')
+	arch = 'i386'
+	if build.machine == 'x86_64':
+		arch = 'amd64'
 
-		if os.path.exists('ubuntu/'+mixxx_dir):
-			print "* Cleaning up ubuntu/"+mixxx_dir + " (cwd: " + os.getcwd() + ")"
-			print
-			os.system('rm -rf ubuntu/'+mixxx_dir)
+	ubuntu_distro = ARGUMENTS.get('ubuntu_dist', None)
+	if ubuntu_distro is None:
+		print "You did not specify an Ubuntu distribution to target. Specify one with the ubuntu_dist flag."
+		# TODO(XXX) default to their current distro? the .pbuilderrc does this
+		return
 
-		# TODO: make a get flags arg to accept a revision which can override this and checkout of a specific SVN rev for the package
+	# The underscore is super important here to make the deb package work
+	package_name = 'mixxx'
+	package_version = ubuntu_construct_version(build, mixxx_version, branch_name, bazaar_revision)
 
-		# Export the source folder
-		print "* Exporting source folder from current workspace (bzr rev: " + util.get_bzr_revision() + ")"
+	#mixxx_dir = '%s-%s' % (package_name, mixxx_version)
+	mixxx_dir = '%s-%s' % (package_name, package_version)
+	mixxx_tarball = "%s_%s.orig.tar.gz" % (package_name, package_version)
+
+	# Destroy ubuntu/ and create it
+	ubuntu_cleanup()
+
+	build_dir = os.path.join('ubuntu', mixxx_dir)
+
+	if os.path.exists(build_dir):
+		print "* Cleaning up %s (cwd: %s)" % (build_dir, os.getcwd())
 		print
-		os.system('bzr export ubuntu/'+mixxx_dir + ' .')
+		os.system('rm -rf %s' % build_dir) # be careful.
 
-		# Copy a patch to be included in the exported build sources (this can also be something like src/SConscript, /build/debian/rules)
-		if os.path.exists('post-export-patch'):
-			print "* Applying post export patch"
-			print
-			os.system('cp --dereference -r post-export-patch/* ubuntu/'+mixxx_dir)
+	# TODO: make a get flags arg to accept a revision which can override this and checkout of a specific SVN rev for the package
 
-		os.chdir('ubuntu')
-		# Tar the source code
-		print "* Tarring source directory to "+ os.getcwd() +"/mixxx_" + mixxx_version + ".orig.tar.gz ... (this can take a couple minutes)"
+	# Export the source folder
+	print "* Exporting source folder from current workspace (bzr rev: %s)" % bazaar_revision
+	print
+	os.system('bzr export %s .' % build_dir)
+
+	# Copy a patch to be included in the exported build sources (this can also be something like src/SConscript, /build/debian/rules)
+	if os.path.exists('post-export-patch'):
+		print "* Applying post export patch"
 		print
-		os.system("rm -f mixxx_" + mixxx_version + ".orig.tar.gz") #Remove old tarball
-		os.system('tar --exclude=debian --exclude=debian/* -czf  mixxx_' + mixxx_version + '.orig.tar.gz ' + mixxx_dir)
+		os.system('cp --dereference -r post-export-patch/* %s' % build_dir)
 
-		os.chdir(mixxx_dir)
-		# Copy the debian folder from /build/debian to exported source folder root
-		print "* Copying Debian build directory from build/debian to debian (cwd: " + os.getcwd() + ")"
+	os.chdir('ubuntu')
+
+	# Tar the source code
+	print "* Tarring source directory to '%s' ... (this can take a couple minutes)" % os.path.join(os.getcwd(), mixxx_tarball)
+	print
+	os.system('rm -f "%s"' % mixxx_tarball) #Remove old tarball
+	os.system('tar --exclude=debian --exclude=debian/* -czf "%s" %s' % (mixxx_tarball, mixxx_dir))
+
+	os.chdir(mixxx_dir)
+	# Copy the debian folder from /build/debian to exported source folder root
+	print "* Copying Debian build directory from build/debian to debian (cwd: %s)" % os.getcwd()
+	print
+	os.system('cp -r build/debian .')
+
+	# Add a changelog record for this package
+	if build.build_is_debug:
+		ubuntu_append_changelog('debian', package_name, package_version, branch_name, bazaar_revision)
+
+	# Run pbuilder
+	print "* Starting pbuilder ...  (cwd: %s)" % os.getcwd()
+	print
+	result = os.system('ARCH=%s DIST=%s pdebuild' % (arch, ubuntu_distro))
+
+	# Return back to the starting directory, otherwise you'll get a .sconsign.dblite error!
+	os.chdir('../..')
+	print "* Returning to starting working directory ...  (cwd: " + os.getcwd() + ")"
+	print
+
+	result_path = "/var/cache/pbuilder/%s-%s/result/" % (ubuntu_distro, arch)
+	result_filename = "%s_%s_%s.deb" % (package_name, package_version, arch)
+	result_file = os.path.join(result_path, result_filename)
+	dest_file = os.path.join('ubuntu', result_filename)
+
+	if result == 0 and os.path.exists(result_file):
+		print "Done! Package and tarballs are in %s" % result_path
+		print "* Found package at '%s'. Copying to ubuntu/" % result_filename
 		print
-		os.system('cp -r build/debian .')
-
-		#Run pbuilder
-		print "* Starting pbuilder ...  (cwd: " + os.getcwd() + ")"
-		print
-		os.system('pdebuild')
-
-		# Return back to the starting directory, otherwise you'll get a .sconsign.dblite error!
-		os.chdir('../..')
-		print "* Returning to starting working directory ...  (cwd: " + os.getcwd() + ")"
-		print
-
-		#/var/cache/pbuilder/result
-		print
-		# print "Signing the .deb changes file..."
-		# os.system('sudo debsign /var/cache/pbuilder/result/*.changes')
-
-		print "Done! Package and tarballs are in /var/cache/pbuilder/result"
-
+		shutil.copyfile(result_file, dest_file)
 	else:
-		print "Aborted building installer"
+		print "* Build failed."
+		print
+
+	# print "Signing the .deb changes file..."
+	# os.system('sudo debsign /var/cache/pbuilder/result/*.changes')
 
 #Build the Ubuntu package if "makeubuntu" was passed as an argument
 versiondebbld = Builder(action = BuildUbuntuPackage) #, suffix = '.foo', src_suffix = '.bar')
