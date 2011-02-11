@@ -43,22 +43,19 @@ void TrackBeats::addBeatSample(int sample)
 {
     QMutexLocker lock(&m_qMutex);
     int index = sampleIndex(sample);
+    int i;
 
 
     if ((m_beatIndex.size()-1) < index ) 
     {
-        int i;
-
-
-        for (i = m_beatIndex.size() - 1; i < index; i++ )
+        for (i = m_beatIndex.size() - 1; i <= index; i++ )
             m_beatIndex.append(sample);
-        
-        m_beatIndex.append(sample);
     }
     else
     {
-        if ( m_beatIndex.at(index) > sample )
+        for (i = index; m_beatIndex.at(i) >= sample && i >= 0; i-- ) {
             m_beatIndex[index] = sample;
+        }
     }
 
     m_beats[sample] = sample;
@@ -71,8 +68,9 @@ void TrackBeats::removeBeatSample(int sample)
 {
     QMutexLocker lock(&m_qMutex);
     int index = sampleIndex(sample);
-    int d;
+    int i;
     int newSample = -1;
+
 
     m_beats.remove(sample);
 
@@ -82,15 +80,15 @@ void TrackBeats::removeBeatSample(int sample)
     if ((index+1) < m_beatIndex.size()) {
         newSample = m_beatIndex.at(index+1);
 
-        for (d = index; d > 0 && m_beatIndex.at(d) >= sample; d--) {
-            if ( m_beatIndex.at(d) == sample )
-                m_beatIndex[d] = newSample;
+        for (i = index; i >= 0 && m_beatIndex.at(i) >= sample; i--) {
+            if ( m_beatIndex.at(i) == sample )
+                m_beatIndex[i] = newSample;
         }
     }
     else {
-        for (d = index; d > 0 && m_beatIndex.at(d) >= sample; d--) {
-            if ( m_beatIndex.at(d) == sample )
-                m_beatIndex.removeAt(d);
+        for (i = index; i >= 0 && m_beatIndex.at(i) >= sample; i--) {
+            if ( m_beatIndex.at(i) == sample )
+                m_beatIndex.removeAt(i);
         }
     }
 
