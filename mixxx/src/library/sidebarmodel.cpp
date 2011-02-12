@@ -329,7 +329,6 @@ bool SidebarModel::canFetchMore(const QModelIndex &parent) const
      {
           return QAbstractItemModel::canFetchMore(parent);
      }
-
 }
 
 void SidebarModel::fetchMore(const QModelIndex &parent)

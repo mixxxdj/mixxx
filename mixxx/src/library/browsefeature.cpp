@@ -58,7 +58,7 @@ BrowseFeature::BrowseFeature(QObject* parent, ConfigObject<ConfigValue>* pConfig
     //Apple hides the base Linux file structure
     //But all devices are mounted at /Volumes
     TreeItem* devices_link = new TreeItem(tr("Devices"), "/Volumes/", this , rootItem);
-    rootItem->appendChild(devices_link)
+    rootItem->appendChild(devices_link);
 #else //LINUX
     TreeItem* devices_link = new TreeItem(tr("Removable Devices"), "/media/", this , rootItem);
     rootItem->appendChild(devices_link);
@@ -150,7 +150,7 @@ void BrowseFeature::activateChild(const QModelIndex& index) {
     qDebug() << "BrowseFeature::activateChild " << item->data() << " " << item->dataPath();
 
     //if(m_childModel.canFetchMore(index))
-        //m_childModel.fetchMore(index);
+        m_childModel.fetchMore(index);
 
     m_browseModel.setPath(item->dataPath().toString());
     emit(showTrackModel(&m_proxyModel));
