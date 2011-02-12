@@ -7,6 +7,7 @@
 #include <QVector>
 
 #include "renderobject.h"
+#include "trackbeats.h"
 
 class QDomNode;
 class QPainter;
@@ -16,7 +17,7 @@ class QPaintEvent;
 class ControlObjectThreadMain;
 class WaveformRenderer;
 class SoundSourceProxy;
-class TrackBeats;
+
 
 class WaveformRenderBeat : public RenderObject {
     Q_OBJECT
@@ -38,8 +39,8 @@ private:
     ControlObjectThreadMain *m_pBpm;
     ControlObjectThreadMain *m_pBeatFirst;
     ControlObjectThreadMain *m_pTrackSamples;
-    TrackBeatsPointer m_pTrackBeats;
     TrackPointer m_pTrack;
+    TrackBeatsPointer m_pTrackBeats;
     int m_iWidth, m_iHeight;
     double m_dBpm;
     double m_dBeatFirst;
