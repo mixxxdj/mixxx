@@ -1,6 +1,3 @@
-// beatgrid.cpp
-// Created 2/12/2011 by RJ Ryan (rryan@mit.edu)
-
 #include <QMutexLocker>
 
 #include "beatgrid.h"
@@ -146,6 +143,8 @@ void BeatGrid::translate(double dNumSamples) {
         return;
     }
     m_dFirstBeat += dNumSamples;
+    locker.unlock();
+    emit(updated());
 }
 
 void BeatGrid::scale(double dScalePercentage) {
@@ -155,7 +154,7 @@ void BeatGrid::scale(double dScalePercentage) {
     }
     m_dBpm *= dScalePercentage;
     locker.unlock();
-    emit(bpmUpdated(m_dBpm));
+    emit(updated());
 }
 
 void BeatGrid::slotTrackBpmUpdated(double dBpm) {
