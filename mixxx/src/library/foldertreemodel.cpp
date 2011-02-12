@@ -51,8 +51,11 @@ bool FolderTreeModel::hasChildren( const QModelIndex & parent) const
      */
     if(item->dataPath().toString() == QUICK_LINK_NODE)
         return true;
+    //Can only happen on Windows
     if(item->dataPath().toString() == DEVICE_NODE)
         return true;
+
+    //In all other cases the dataPath() points to a folder
 
     QString folder = item->dataPath().toString();
 
@@ -102,6 +105,11 @@ bool FolderTreeModel::hasChildren( const QModelIndex & parent) const
 #endif
     
 }
+
+//Whenever double clicking on an item
+// or whenever expanding the triangle
+// the view checks if it can fetch more data
+// if so the view calls fetchMore()
 bool FolderTreeModel::canFetchMore(const QModelIndex &parent) const
 {
     qDebug() << "FolderTreemodel::canFetchMore :" << parent.data() << " " <<QAbstractItemModel::canFetchMore(parent);
