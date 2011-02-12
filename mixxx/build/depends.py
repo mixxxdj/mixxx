@@ -26,7 +26,7 @@ class PortMIDI(Dependence):
         if not conf.CheckLib(['portmidi', 'libportmidi']) and \
                 not conf.CheckHeader(['portmidi.h']):
             raise Exception('Did not find PortMidi or its development headers.')
-            
+
     def sources(self, build):
         return ['midi/portmidienumerator.cpp', 'midi/midideviceportmidi.cpp']
 
@@ -480,7 +480,7 @@ class MixxxCore(Feature):
                    "library/stardelegate.cpp",
                    "library/stareditor.cpp",
                    "audiotagger.cpp",
-                   
+
                    "library/treeitemmodel.cpp",
                    "library/treeitem.cpp",
                    "library/traktorfeature.cpp",
@@ -521,6 +521,7 @@ class MixxxCore(Feature):
                    "sampleutil.cpp",
                    "trackinfoobject.cpp",
                    "trackbeats.cpp",
+                   "beatgrid.cpp",
                    "baseplayer.cpp",
                    "basetrackplayer.cpp",
                    "deck.cpp",
