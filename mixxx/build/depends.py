@@ -26,7 +26,7 @@ class PortMIDI(Dependence):
         if not conf.CheckLib(['portmidi', 'libportmidi']) and \
                 not conf.CheckHeader(['portmidi.h']):
             raise Exception('Did not find PortMidi or its development headers.')
-            
+
     def sources(self, build):
         return ['midi/portmidienumerator.cpp', 'midi/midideviceportmidi.cpp']
 
@@ -184,11 +184,14 @@ class Qt(Dependence):
                                       '$QTDIR/include/QtWebKit',
                                       '$QTDIR/include/Qt'])
 
-        # Set the rpath for linux/bsd/osx. TODO(XXX) is this supposed to be done
-        # for OSX?
-        if not build.platform_is_windows:
+        # Set the rpath for linux/bsd/osx. 
+        # This is not support on OS X before the 10.5 SDK.
+        using_104_sdk = (str(build.env["CCFLAGS"]).find("10.4") >= 0)
+        compiling_on_104 = False
+        if build.platform_is_osx:
+            compiling_on_104 = (os.popen('sw_vers').readlines()[1].find('10.4') >= 0)
+        if not build.platform_is_windows and not (using_104_sdk or compiling_on_104):
             build.env.Append(LINKFLAGS = "-Wl,-rpath,$QTDIR/lib")
-
 
 
 class FidLib(Dependence):
@@ -297,6 +300,12 @@ class TagLib(Dependence):
     def configure(self, build, conf):
         if not conf.CheckLib('tag'):
             raise Exception("Could not find libtag or its development headers.")
+
+        # Karmic seems to have an issue with mp4tag.h where they don't include
+        # the files correctly. Adding this folder ot the include path should fix
+        # it, though might cause issues. This is safe to remove once we
+        # deprecate Karmic support. rryan 2/2011
+        build.env.Append(CPPPATH='/usr/include/taglib/')
 class MixxxCore(Feature):
 
     def description(self):
@@ -581,6 +590,9 @@ class MixxxCore(Feature):
             # I think this file is auto-generated on Windows, as qrc_mixxx.cc is
             # auto-generated above. Leaving uncommented.
             #sources.append("mixxx.res")
+        elif build.platform_is_osx:
+            build.env.Append(LINKFLAGS="-headerpad=ffff"); #Need extra room for code signing (App Store)
+            build.env.Append(LINKFLAGS="-headerpad_max_install_names"); #Need extra room for code signing (App Store)
 
         return sources
 
@@ -639,6 +651,10 @@ class MixxxCore(Feature):
 
 
         elif build.platform_is_osx:
+            #Stuff you may have compiled by hand
+            build.env.Append(LIBPATH = ['/usr/local/lib'])
+            build.env.Append(CPPPATH = ['/usr/local/include'])
+
             #Non-standard libpaths for fink and certain (most?) darwin ports
             build.env.Append(LIBPATH = ['/sw/lib'])
             build.env.Append(CPPPATH = ['/sw/include'])
