@@ -149,9 +149,58 @@ void BrowseFeature::activateChild(const QModelIndex& index) {
     TreeItem *item = static_cast<TreeItem*>(index.internalPointer());
     qDebug() << "BrowseFeature::activateChild " << item->data() << " " << item->dataPath();
 
-    //if(m_childModel.canFetchMore(index))
-        m_childModel.fetchMore(index);
+    // If the item is a build-in node, e.g., 'QuickLink' return
+    if(item->dataPath().toString() == QUICK_LINK_NODE)
+        return;
 
+    //Before we populate the subtree, we need to delete old subtrees
+   m_childModel.removeRows(0, item->childCount(), index);
+
+    // List of subfolders or drive letters
+    QList<TreeItem*> folders;
+
+    // If we are on the special device node
+    if(item->dataPath().toString() == DEVICE_NODE){
+       //Repopulate drive list
+        QFileInfoList drives = QDir::drives();
+        //show drive letters
+        foreach(QFileInfo drive, drives){
+            TreeItem* driveLetter = new TreeItem(
+                            drive.canonicalPath(), // displays C:
+                            drive.filePath(), //Displays C:/
+                            this ,
+                            item);
+            folders << driveLetter;
+        }
+
+    }
+    else // we assume that the path refers to a folder in the file system
+    {
+        //populate childs
+        QDir dir(item->dataPath().toString());
+        QFileInfoList all = dir.entryInfoList(QDir::Dirs | QDir::NoDotAndDotDot);
+
+        // loop through all the item and construct the childs
+        foreach(QFileInfo one, all){
+            //Skip folders that end with .app on OS X
+            #if defined(__APPLE__)
+            if(one.isDir() && one.fileName().endsWith(".app")) continue;
+            #endif
+            // We here create new items for the sidebar models
+            // Once the items are added to the TreeItemModel,
+            // the models takes ownership of them and ensures their deletion
+            TreeItem* folder = new TreeItem(one.fileName(),
+                                            item->dataPath().toString().append(one.fileName() +"/"),
+                                           this,
+                                            item);
+            folders << folder;
+        }
+    }
+    //we need to check here if subfolders are found
+    //On Ubuntu 10.04, otherwise, this will draw an icon although the folder has no subfolders
+    qDebug() << "HERERERRT";
+    if(!folders.isEmpty())
+       m_childModel.insertRows(folders, 0, folders.size() , index);
     m_browseModel.setPath(item->dataPath().toString());
     emit(showTrackModel(&m_proxyModel));
 

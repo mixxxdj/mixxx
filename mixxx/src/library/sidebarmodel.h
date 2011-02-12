@@ -33,8 +33,6 @@ class SidebarModel : public QAbstractItemModel {
     bool dropAccept(const QModelIndex& index, QUrl url);
     bool dragMoveAccept(const QModelIndex& index, QUrl url);
     virtual bool hasChildren ( const QModelIndex & parent = QModelIndex() ) const;
-    virtual bool canFetchMore(const QModelIndex &parent) const;
-    virtual void fetchMore(const QModelIndex &parent);
   public slots:
     void clicked(const QModelIndex& index);
     void rightClicked(const QPoint& globalPos, const QModelIndex& index);

@@ -310,48 +310,6 @@ QModelIndex SidebarModel::translateSourceIndex(const QModelIndex& index) {
     }
     return translatedIndex;
 }
-bool SidebarModel::canFetchMore(const QModelIndex &parent) const
-{
-
-
-    if (parent.isValid()) {
-         if (parent.internalPointer() == this) {
-              return QAbstractItemModel::canFetchMore(parent);
-         }
-         else
-         {
-             TreeItem* tree_item = (TreeItem*)parent.internalPointer();
-             LibraryFeature* feature = tree_item->getFeature();
-             return feature->getChildModel()->canFetchMore(parent);
-         }
-     }
-     else
-     {
-          return QAbstractItemModel::canFetchMore(parent);
-     }
-}
-
-void SidebarModel::fetchMore(const QModelIndex &parent)
-{
-
-    if (parent.isValid()) {
-         if (parent.internalPointer() == this) {
-              QAbstractItemModel::fetchMore(parent);
-         }
-         else
-         {
-             TreeItem* tree_item = (TreeItem*)parent.internalPointer();
-             LibraryFeature* feature = tree_item->getFeature();
-             feature->getChildModel()->fetchMore(parent);
-         }
-     }
-     else
-     {
-          QAbstractItemModel::fetchMore(parent);
-     }
-
-}
-
 void SidebarModel::slotDataChanged(const QModelIndex& topLeft, const QModelIndex& bottomRight) {
     //qDebug() << "slotDataChanged topLeft:" << topLeft << "bottomRight:" << bottomRight;
 }
