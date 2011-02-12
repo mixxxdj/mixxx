@@ -522,6 +522,7 @@ class MixxxCore(Feature):
                    "trackinfoobject.cpp",
                    "trackbeats.cpp",
                    "beatgrid.cpp",
+                   "beatmatrix.cpp",
                    "baseplayer.cpp",
                    "basetrackplayer.cpp",
                    "deck.cpp",

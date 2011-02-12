@@ -1,25 +1,26 @@
-#ifndef BEATGRID_H
-#define BEATGRID_H
+#ifndef BEATMATRIX_H
+#define BEATMATRIX_H
 
-#include <QMutex>
 #include <QObject>
+#include <QMutex>
 
 #include "trackinfoobject.h"
 #include "beats.h"
 
-// BeatGrid is an implementation of the Beats interface that implements an
-// infinite grid of beats, aligned to a song simply by a starting offset of the
-// first beat and the song's average beats-per-minute.
-class BeatGrid : public QObject, public virtual Beats {
+typedef QVector<double> BeatList;
+
+// BeatMatrix is an implementation of the Beats interface that implements a list
+// of finite beats that have been extracted or otherwise annotated for a track.
+class BeatMatrix : public QObject, public Beats {
     Q_OBJECT
   public:
-    BeatGrid(QObject* pParent, TrackPointer pTrack, QByteArray* pByteArray=NULL);
-    virtual ~BeatGrid();
+    BeatMatrix(QObject* pParent, TrackPointer pTrack, QByteArray* pByteArray=NULL);
+    virtual ~BeatMatrix();
 
     // See method comments in beats.h
 
     virtual Beats::CapabilitiesFlags getCapabilities() const {
-        return BEATSCAP_TRANSLATE | BEATSCAP_SCALE;
+        return BEATSCAP_TRANSLATE | BEATSCAP_SCALE | BEATSCAP_ADDREMOVE | BEATSCAP_MOVEBEAT;
     }
 
     virtual QByteArray* toByteArray() const;
@@ -57,12 +58,11 @@ class BeatGrid : public QObject, public virtual Beats {
     void readByteArray(QByteArray* pByteArray);
     // For internal use only.
     bool isValid() const;
+    unsigned int numBeats() const;
 
     mutable QMutex m_mutex;
     int m_iSampleRate;
-    double m_dBpm, m_dFirstBeat;
-    double m_dBeatLength;
+    BeatList m_beatList;
 };
 
-
-#endif /* BEATGRID_H */
+#endif /* BEATMATRIX_H */

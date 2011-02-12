@@ -1,6 +1,9 @@
 #ifndef BEATS_H
 #define BEATS_H
 
+#include <QString>
+#include <QByteArray>
+
 // Beats is a pure abstract base class for BPM and beat management classes. It
 // provides a specification of all methods a beat-manager class must provide, as
 // well as a capability model for representing optional features.
