@@ -31,6 +31,7 @@ class EngineControl;
 class BpmControl;
 class RateControl;
 class LoopingControl;
+class BeatControl;
 class ReadAheadManager;
 class ControlObject;
 class ControlPushButton;
@@ -81,7 +82,10 @@ public:
     void bindWorkers(EngineWorkerScheduler* pWorkerScheduler);
 
     // Add an engine control to the EngineBuffer
-    void addControl(EngineControl* pControl);
+    void appendControl(EngineControl* pControl);
+
+    // Add an engine control to the EngineBuffer
+    void prependControl(EngineControl* pControl);
 
     /** Return the current rate (not thread-safe) */
     double getRate();
@@ -148,6 +152,9 @@ private:
 
     /** Pointer to the loop control object */
     LoopingControl* m_pLoopingControl;
+    
+    /** Pointer to the beat juggling control object */
+    BeatControl* m_pBeatControl;
 
     /** Pointer to the rate control object */
     RateControl* m_pRateControl;
