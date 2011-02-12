@@ -31,11 +31,9 @@ class BrowseTableModel : public QStandardItemModel, public TrackModel
         virtual const QList<int>& searchColumns() const;
     private:
        //This method is executed in a Thread
-       void populateModel();
+       void populateModel(QString absPath);
        QMutex m_populationMutex;
-
-       QString m_currentPath;
-       volatile bool isBackGroundThreadActive;
+       volatile bool m_isBackGroundThreadActive;
 
        // A list of columns that the implementation wants searched
        QList<int> m_searchColumns;

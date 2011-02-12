@@ -31,8 +31,7 @@ BrowseTableModel::BrowseTableModel(QObject* parent)
                      "mixxx.db.model.browse")
 {
     QStringList header_data;
-    m_currentPath = "";
-    isBackGroundThreadActive = false;
+    m_isBackGroundThreadActive = false;
     
     header_data.insert(COLUMN_FILENAME, tr("Filename"));
     header_data.insert(COLUMN_ARTIST, tr("Artist"));
@@ -73,12 +72,7 @@ void BrowseTableModel::addSearchColumn(int index) {
 }
 void BrowseTableModel::setPath(QString absPath)
 {
-    m_currentPath = absPath;
-    isBackGroundThreadActive = false;
-    //call and execute method populateModel as a Thread
-    m_populationMutex.lock();
-    isBackGroundThreadActive = true;
-    QtConcurrent::run(this, &BrowseTableModel::populateModel);
+    QtConcurrent::run(this, &BrowseTableModel::populateModel, absPath);
 
 }
 
@@ -163,21 +157,22 @@ QMimeData* BrowseTableModel::mimeData(const QModelIndexList &indexes) const {
     mimeData->setUrls(urls);
     return mimeData;
 }
-void BrowseTableModel::populateModel()
+void BrowseTableModel::populateModel(QString absPath)
 {
+    m_isBackGroundThreadActive = false;
+    m_populationMutex.lock();
+    m_isBackGroundThreadActive = true;
     //Give the thread low priority to prevent GUI freezing
     QThread* thisThread = QThread::currentThread();
     thisThread->setPriority(QThread::LowestPriority);
     //Refresh the name filters in case we loaded new
     //SoundSource plugins.
     QStringList nameFilters(SoundSourceProxy::supportedFileExtensionsString().split(" "));
-    QString thisPath(m_currentPath);
-    QDirIterator fileIt(thisPath, nameFilters, QDir::Files | QDir::NoDotAndDotDot);
+    QDirIterator fileIt(absPath, nameFilters, QDir::Files | QDir::NoDotAndDotDot);
     
     //If path has changed in this thread we exit the loop to stop the thread
-    qDebug() << "Thread: " << thisThread << " Paths: " << m_currentPath << " " << thisPath ;
-    if(!isBackGroundThreadActive){
-        qDebug() << "Stopping Library Thread bceause path has changed from " << thisPath << " to " << m_currentPath;
+    if(!m_isBackGroundThreadActive){
+        qDebug() << "Stopping Library Thread bceause path has changed";
         m_populationMutex.unlock();
         return;
     }
@@ -189,8 +184,8 @@ void BrowseTableModel::populateModel()
     while (fileIt.hasNext())
     {
         //If path has changed in this thread we exit the loop to stop the thread
-        if(!isBackGroundThreadActive){
-            qDebug() << "Stopping Library Thread bceause path has changed from " << thisPath << " to " << m_currentPath;
+        if(!m_isBackGroundThreadActive){
+            qDebug() << "Stopping Library Thread bceause path has changed";
             return;
         }
 
