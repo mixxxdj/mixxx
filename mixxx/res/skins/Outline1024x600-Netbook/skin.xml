@@ -19,6 +19,15 @@
 
 	<!--
 	CHANGELOG
+	v1.4	(14/12/2010)
+	* Added custom images for splitter in library
+	* Added custom images for branch triangle in treeview
+
+	v1.3	(12/12/2010)
+	* Added BPM Tap button
+	* Added visual feedback when searchbox has focus
+	* Updated text alignments
+
 	v1.2	(02/12/2010)
 	* Added custom images for checkboxes in library
 	* Updated styles
@@ -124,15 +133,30 @@
 
 		<!-- No use of colour CSS colour propertys here, this breaks the colour schemes as of QT 4.7.1-->
 
-		QTableView, QTextBrowser, QTreeView , QLineEdit { font: 13px/15px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; }
+		QTableView, QTextBrowser, QTreeView { font: 13px/15px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; }
 		QTableView::indicator { width: 12px; height: 12px;}
 		QTableView::indicator:checked { background: url(skin:/style_checkbox_checked.png);}
 		QTableView::indicator:unchecked { background: url(skin:/style_checkbox_unchecked.png);}
 
 		QHeaderView { font: 11px/13px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; }
 
+		WSearchLineEdit { padding: 2px; font: 13px/15px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; }
+		WSearchLineEdit:focus {padding: 2px; border: 2px solid #FF6600; font: 13px/15px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;}
+
+		QSplitter::handle { image: url(skin:/style_handle_unchecked.png); background: none; }
+		QSplitter::handle:pressed { image: url(skin:/style_handle_checked.png); background: none; }
+		QSplitter::handle:horizontal { width: 6px; }
+		QSplitter::handle:vertical { height: 6px; }
+
 		QLabel, QPushButton { font: 13px/15px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; }
-		QRadioButton { font: 13px/15px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;}
+		<!--Extra declaration for QRadionButton otherwise it shows up with wrong colors in Linux with Gnome -->
+		QRadioButton { font: 13px/15px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; background: transparent; }
+
+		<!--Workaround for QT4.7.0 background color bug in Linux with Gnome https://bugs.launchpad.net/mixxx/+bug/690280-->
+		QTreeView::branch:has-children:!has-siblings:closed,
+		QTreeView::branch:closed:has-children:has-siblings { border-image: none; image: url(skin:/style_branch_closed.png);}
+		QTreeView::branch:open:has-children:!has-siblings,
+		QTreeView::branch:open:has-children:has-siblings { border-image: none; image: url(skin:/style_branch_open.png);}
 		</Style>
 		<Pos>107,225</Pos>
 		<Size>800,345</Size>
@@ -719,8 +743,8 @@
 		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
 		</Style>
 		<Channel>1</Channel>
-		<Pos>108,158</Pos>
-		<Size>278,20</Size>
+		<Pos>150,158</Pos>
+		<Size>236,20</Size>
 		<BgColor>#FFFFFF</BgColor>
 		<SignalColor>#00ff00</SignalColor>
 		<MarkerColor>#0032FF</MarkerColor>
@@ -736,7 +760,7 @@
 		</Style>
 		<Channel>2</Channel>
 		<Pos>629,158</Pos>
-		<Size>278,20</Size>
+		<Size>236,20</Size>
 		<BgColor>#FFFFFF</BgColor>
 		<SignalColor>#00ff00</SignalColor>
 		<MarkerColor>#ff0000</MarkerColor>
@@ -892,7 +916,7 @@
 	<Text>
 		<Tooltip>Track information&#10;Displays the Name and Title of the loaded track.&#10;Informations are extracted from the tracks tags.&#10;</Tooltip>
 		<Style>QLabel { font: bold 14px/16px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-		background-color: transparent; text-align: left; padding-left: 1%; }
+		background-color: transparent; text-align: left; }
 		QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
 		</Style>
@@ -903,7 +927,7 @@
 	<Text>
 		<Tooltip>Track information&#10;Displays the Name and Title of the loaded track.&#10;Informations are extracted from the tracks tags.&#10;</Tooltip>
 		<Style>QLabel { font: bold 14px/16px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-		background-color: transparent; text-align: left; padding-left: 1%; }
+		background-color: transparent; text-align: left; }
 		QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
 		</Style>
@@ -920,16 +944,16 @@
 	<NumberBpm>
 		<Tooltip>Tempo information&#10;Displays the tempo of the loaded track in BPM (beats per minute)&#10;</Tooltip>
 		<Style>QLabel { font: 12px/14px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-		background-color: transparent; text-align: left;padding-left: 1%; }
+		background-color: transparent; text-align: left; }
 		QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }
 		</Style>
 		<Channel>1</Channel>
 		<Pos>108,141</Pos>
-		<Size>100,16</Size>
+		<Size>80,16</Size>
+		<!--CSS alignments not respected see bug lp:605530 , lets call <Alignment>-->
+		<Alignment>left</Alignment>
 		<NumberOfDigits>6</NumberOfDigits>
-		<!--<FgColor>Key for text to make colour schemes work, CSS declaration only is not enough -->
-		<FgColor>#606060</FgColor>
 		<Connection>
 			<ConfigKey>[Channel1],bpm</ConfigKey>
 		</Connection>
@@ -937,13 +961,15 @@
 	<NumberBpm>
 		<Tooltip>Tempo information&#10;Displays the tempo of the loaded track in BPM (beats per minute)&#10;</Tooltip>
 		<Style>QLabel { font: 12px/14px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-		background-color: transparent; text-align: left;padding-left: 1%; }
+		background-color: transparent; text-align: left; }
 		QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }
 		</Style>
 		<Channel>2</Channel>
 		<Pos>587,141</Pos>
-		<Size>100,16</Size>
+		<Size>80,16</Size>
+		<!--CSS alignments not respected see bug lp:605530 , lets call <Alignment>-->
+		<Alignment>left</Alignment>
 		<NumberOfDigits>6</NumberOfDigits>
 		<Connection>
 			<ConfigKey>[Channel2],bpm</ConfigKey>
@@ -958,7 +984,7 @@
 	<NumberPos>
 		<Tooltip>Time information&#10;Displays the current playback position (or remaining time) and the duration of the loaded track.&#10;Depends on your settings in Preferences→Interface→Position display.&#10;</Tooltip>
 		<Style>QLabel { font: 12px/14px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-		background-color: transparent; text-align: right;padding-right: 1%; }
+		background-color: transparent; text-align: right; }
 		QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
 		</Style>
@@ -975,7 +1001,7 @@
 	<NumberPos>
 		<Tooltip>Time information&#10;Displays the current playback position (or remaining time) and the duration of the loaded track.&#10;Depends on your settings in Preferences→Interface→Position display.&#10;</Tooltip>
 		<Style>QLabel { font: 12px/14px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-		background-color: transparent; text-align: right;padding-right: 1%; }
+		background-color: transparent; text-align: right; }
 		QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
 		</Style>
@@ -998,12 +1024,12 @@
 	<NumberRate>
 		<Tooltip>Pitch rate information&#10;Displays the current pitch of the track based on the original tempo.&#10;</Tooltip>
 		<Style>QLabel { font: 12px/14px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-		background-color: transparent; text-align: right; padding-right: 1%; }
+		background-color: transparent; text-align: right; }
 		QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
 		</Style>
 		<Channel>1</Channel>
-		<Pos>218,141</Pos>
+		<Pos>205,141</Pos>
 		<Size>60,16</Size>
 		<NumberOfDigits>4</NumberOfDigits>
 		<Connection>
@@ -1013,12 +1039,12 @@
 	<NumberRate>
 		<Tooltip>Pitch rate information&#10;Displays the current pitch of the track based on the original tempo.&#10;</Tooltip>
 		<Style>QLabel { font: 12px/14px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-		background-color: transparent; text-align: right; padding-right: 1%; }
+		background-color: transparent; text-align: right; }
 		QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
 		</Style>
 		<Channel>2</Channel>
-		<Pos>697,141</Pos>
+		<Pos>685,141</Pos>
 		<Size>60,16</Size>
 		<NumberOfDigits>4</NumberOfDigits>
 		<Connection>
@@ -2070,6 +2096,55 @@
 
 	<!--
 	**********************************************
+	Button- BPM Tap 
+	**********************************************
+	-->
+
+	<PushButton>
+		<Tooltip>BPM Tap&#10;It takes the progressive average of the last 4 taps &#10;and sets the bpm of the deck to that value, &#10;assuming the pitch range is large enough to reach it.&#10;</Tooltip>
+		<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+		</Style>
+		<NumberStates>1</NumberStates>
+		<State>
+			<Number>0</Number>
+			<Pressed>btn_tap1_over.png</Pressed>
+			<Unpressed>btn_tap1.png</Unpressed>
+		</State>
+		<Pos>108,158</Pos>
+		<Connection>
+			<ConfigKey>[Channel1],bpm_tap</ConfigKey>
+			<EmitOnDownPress>true</EmitOnDownPress>
+		</Connection>
+		<Connection>
+			<ConfigKey>[Channel1],bpm_tap</ConfigKey>
+			<EmitOnDownPress>false</EmitOnDownPress>
+		</Connection>
+	</PushButton>
+	<PushButton>
+		<Tooltip>BPM Tap&#10;It takes the progressive average of the last 4 taps &#10;and sets the bpm of the deck to that value, &#10;assuming the pitch range is large enough to reach it.&#10;</Tooltip>
+		<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+		</Style>
+		<NumberStates>1</NumberStates>
+		<State>
+			<Number>0</Number>
+			<Pressed>btn_tap2_over.png</Pressed>
+			<Unpressed>btn_tap2.png</Unpressed>
+		</State>
+		<Pos>587,158</Pos>
+		<Connection>
+			<ConfigKey>[Channel2],bpm_tap</ConfigKey>
+			<EmitOnDownPress>true</EmitOnDownPress>
+		</Connection>
+		<Connection>
+			<ConfigKey>[Channel2],bpm_tap</ConfigKey>
+			<EmitOnDownPress>false</EmitOnDownPress>
+		</Connection>
+	</PushButton>
+
+	<!--
+	**********************************************
 	Button- Key lock
 	**********************************************
 	-->
@@ -2463,7 +2538,7 @@
 			<Pressed>btn_repeat2_over.png</Pressed>
 			<Unpressed>btn_repeat2_over.png</Unpressed>
 		</State>
-		<Pos>587,158</Pos>
+		<Pos>867,158</Pos>
 		<Connection>
 			<ConfigKey>[Channel2],repeat</ConfigKey>
 		</Connection>
