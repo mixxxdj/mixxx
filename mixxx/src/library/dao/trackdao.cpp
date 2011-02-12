@@ -599,7 +599,7 @@ TrackPointer TrackDAO::getTrackFromDB(QSqlQuery &query) const
         {
             TrackBeats* pTrackBeats = new TrackBeats(pTrack);
             pTrackBeats->unserializeFromBlob(beatsblob);
-            track->setTrackBeats(pTrackBeats, false);
+            track->setTrackBeats(TrackBeatsPointer(pTrackBeats, &QObject::deleteLater), false);
         }
         delete beatsblob;
 

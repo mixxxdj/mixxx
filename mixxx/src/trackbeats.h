@@ -10,33 +10,38 @@
 class TrackBeats;
 typedef QSharedPointer<TrackBeats> TrackBeatsPointer;
 
-class TrackBeats {
+class TrackBeats : public QObject
+{
+    Q_OBJECT;
 public:
     TrackBeats(TrackPointer);
     virtual ~TrackBeats();
-    
-    void addBeatSeconds(double);
-    
-    double findNextBeatSeconds(double) const;
-    double findPrevBeatSeconds(double) const;
-    QList<double> findBeatsSeconds(double, double) const;
-    
+
+
     int getBeatCount() const;
-    void dumpBeats();
-    
+
     void addBeatSample(int);
+    void addBeatSeconds(double);
+    void removeBeatSample(int);
+    void removeBeatSeconds(double);
+    void nudgeSamples(int);
+
     int findPrevBeatSample(int) const;
     int findNextBeatSample(int) const;
-    int findBeatOffsetSamples(int sample, int offset) const;
-    bool hasBeatsSamples(double bgnRange, double endRange) const;
-    QList<int> findBeatsSamples(int, int) const;
+    int findBeatOffsetSamples(int, int) const;
+    bool hasBeatsSamples(double, double) const;
+    bool hasBeatsSeconds(double, double) const;
+    double findNextBeatSeconds(double) const;
+    double findPrevBeatSeconds(double) const;
+    QList<int>* findBeatsSamples(int, int) const;
+    double findBeatOffsetSeconds(double, int) const;
+    QList<double>* findBeatsSeconds(double, double) const;
     QByteArray *serializeToBlob();
     void unserializeFromBlob(QByteArray *blob);
-    
+
 private:
     /** Find the Samples Index */
     int sampleIndex(int) const;
-    
     /** Sample Rate for this song */
     int m_iSampleRate;
     /** Duration of the entire song in seconds */

@@ -341,10 +341,10 @@ void TrackInfoObject::setBpmConfirm(bool confirm)
     m_bBpmConfirm = confirm;
 }
 
-void TrackInfoObject::setTrackBeats(TrackBeats *beats, bool isDirty)
+void TrackInfoObject::setTrackBeats(TrackBeatsPointer beats, bool isDirty)
 {
     QMutexLocker lock(&m_qMutex);
-    m_pTrackBeats = TrackBeatsPointer(beats);
+    m_pTrackBeatsPointer = beats;
     if ( isDirty )
         setDirty(true);
 
@@ -354,7 +354,7 @@ void TrackInfoObject::setTrackBeats(TrackBeats *beats, bool isDirty)
 TrackBeatsPointer TrackInfoObject::getTrackBeats() const
 {
     QMutexLocker lock(&m_qMutex);
-    return TrackBeatsPointer(m_pTrackBeats);
+    return m_pTrackBeatsPointer;
 }
 
 bool TrackInfoObject::getHeaderParsed()  const
