@@ -5,6 +5,7 @@
 #include "library/libraryfeature.h"
 #include "library/sidebarmodel.h"
 #include "library/treeitem.h"
+#include "library/browsefeature.h"
 
 SidebarModel::SidebarModel(QObject* parent)
         : QAbstractItemModel(parent),
@@ -154,6 +155,24 @@ int SidebarModel::columnCount(const QModelIndex& parent) const {
     // TODO(rryan) will we ever have columns? I don't think so.
     return 1;
 }
+bool SidebarModel::hasChildren(const QModelIndex& parent) const {
+    
+   if (parent.isValid()) {
+        if (parent.internalPointer() == this) {
+            return QAbstractItemModel::hasChildren(parent);
+        } 
+        else 
+        {
+            TreeItem* tree_item = (TreeItem*)parent.internalPointer();
+            LibraryFeature* feature = tree_item->getFeature();
+            return feature->getChildModel()->hasChildren(parent);
+        }
+    }
+    else
+    {
+        return QAbstractItemModel::hasChildren(parent);
+    }
+}
 
 QVariant SidebarModel::data(const QModelIndex& index, int role) const {
     // qDebug("SidebarModel::data row=%d column=%d pointer=%8x, role=%d",
@@ -260,15 +279,29 @@ bool SidebarModel::dragMoveAccept(const QModelIndex& index, QUrl url)
     }
     return false;
 }
-
+//Translates an index from the child models to an index of the sidebar models
 QModelIndex SidebarModel::translateSourceIndex(const QModelIndex& index) {
     QModelIndex translatedIndex;
+    
+    /* These method is called from the slot functions below.
+     * QObject::sender() return the object which emitted the signal
+     * handled by the slot functions.
+     
+     * For child models, this always the child models itself
+     */
+    
     const QAbstractItemModel* model = (QAbstractItemModel*)sender();
+    
     Q_ASSERT(model);
     if (index.isValid()) {
-        translatedIndex = createIndex(index.row(), index.column(),
-                                      (void*)model);
-    } else {
+       TreeItem* item = (TreeItem*)index.internalPointer();
+       translatedIndex = createIndex(index.row(), index.column(), item);
+       
+    } 
+    else 
+    {
+        //Comment from Tobias Rafreider --> Dead Code????
+        
         for (int i = 0; i < m_sFeatures.size(); ++i) {
             if (m_sFeatures[i]->getChildModel() == model) {
                 translatedIndex = createIndex(i, 0, (void*)this);
@@ -277,7 +310,6 @@ QModelIndex SidebarModel::translateSourceIndex(const QModelIndex& index) {
     }
     return translatedIndex;
 }
-
 void SidebarModel::slotDataChanged(const QModelIndex& topLeft, const QModelIndex& bottomRight) {
     //qDebug() << "slotDataChanged topLeft:" << topLeft << "bottomRight:" << bottomRight;
 }
