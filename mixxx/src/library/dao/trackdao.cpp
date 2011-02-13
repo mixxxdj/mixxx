@@ -252,10 +252,7 @@ void TrackDAO::bindTrackToLibraryInsert(QSqlQuery& query, TrackInfoObject* pTrac
     query.bindValue(":replaygain", pTrack->getReplayGain());
     query.bindValue(":key", pTrack->getKey());
     const QByteArray* pWaveSummary = pTrack->getWaveSummary();
-    if (pWaveSummary) //Avoid null pointer deref
-        query.bindValue(":wavesummaryhex", *pWaveSummary);
-    else
-        query.bindValue(":wavesummaryhex", QVariant(QVariant::ByteArray));
+    query.bindValue(":wavesummaryhex", pWaveSummary ? *pWaveSummary : QVariant(QVariant::ByteArray));
     query.bindValue(":timesplayed", pTrack->getTimesPlayed());
     //query.bindValue(":datetime_added", pTrack->getDateAdded());
     query.bindValue(":channels", pTrack->getChannels());
@@ -749,8 +746,7 @@ void TrackDAO::updateTrack(TrackInfoObject* pTrack)
     query.bindValue(":key", pTrack->getKey());
     query.bindValue(":rating", pTrack->getRating());
     const QByteArray* pWaveSummary = pTrack->getWaveSummary();
-    if (pWaveSummary) //Avoid null pointer deref
-        query.bindValue(":wavesummaryhex", *pWaveSummary);
+    query.bindValue(":wavesummaryhex", pWaveSummary ? *pWaveSummary, QVariant(QVariant::ByteArray));
     query.bindValue(":timesplayed", pTrack->getTimesPlayed());
     query.bindValue(":played", pTrack->getPlayed());
     query.bindValue(":channels", pTrack->getChannels());
