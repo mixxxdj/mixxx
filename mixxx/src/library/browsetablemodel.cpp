@@ -184,8 +184,12 @@ void BrowseTableModel::populateModel()
     //Iterate over the files
     while (fileIt.hasNext())
     {
+        /*
+         * If a user quickly jumps through the folders
+         * the current task becomes "dirty"
+         */
         if(thisPath != m_path){
-            qDebug() << "Exit populateModel()";
+            //qDebug() << "Exit populateModel()";
             return;
         }
         QString filepath = fileIt.next();
