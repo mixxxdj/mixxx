@@ -10,16 +10,8 @@
 #include "trackinfoobject.h"
 #include "library/treeitem.h"
 #include "library/browsefeature.h"
-#include "library/browsefilter.h"
-#include "library/libraryview.h"
 #include "library/trackcollection.h"
 #include "library/dao/trackdao.h"
-#include "widget/wwidget.h"
-#include "widget/wskincolor.h"
-#include "widget/wlibrary.h"
-#include "widget/wlibrarysidebar.h"
-#include "widget/wlibrarytableview.h"
-#include "widget/wbrowsetableview.h"
 
 
 
