@@ -30,17 +30,20 @@ class BrowseTableModel : public QStandardItemModel, public TrackModel
         virtual bool isColumnHiddenByDefault(int column);
         virtual const QList<int>& searchColumns() const;
     private:
+       void populateModel();
        //This method is executed in a Thread
-       void populateModel(QString absPath);
-       QMutex m_populationMutex;
-       volatile bool m_isBackGroundThreadActive;
-
-       // A list of columns that the implementation wants searched
-       QList<int> m_searchColumns;
+       void browserThread();
        // Add a column to be searched when searching occurs
        void addSearchColumn(int index);
-       
 
+       QMutex m_mutex;
+       QWaitCondition m_locationUpdated;
+
+       QFuture<void> m_future;
+       QList<int> m_searchColumns;
+       QString m_path;
+
+       bool m_bStopThread;
 };
 
 #endif

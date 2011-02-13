@@ -26,13 +26,12 @@ const int COLUMN_LOCATION = 13;
 
 BrowseTableModel::BrowseTableModel(QObject* parent)
         : QStandardItemModel(parent),
-          m_populationMutex(QMutex::Recursive),
+          //m_populationMutex(QMutex::Recursive),
           TrackModel(QSqlDatabase::database("QSQLITE"),
                      "mixxx.db.model.browse")
 {
     QStringList header_data;
-    m_isBackGroundThreadActive = false;
-    
+
     header_data.insert(COLUMN_FILENAME, tr("Filename"));
     header_data.insert(COLUMN_ARTIST, tr("Artist"));
     header_data.insert(COLUMN_TITLE, tr("Title"));
@@ -57,11 +56,24 @@ BrowseTableModel::BrowseTableModel(QObject* parent)
     addSearchColumn(COLUMN_COMMENT);
      
     setHorizontalHeaderLabels(header_data); 
+
+    /*
+     * Start background thread.
+     * Used to read the ID3 tags
+     */
+    m_bStopThread = false;
+    m_future = QtConcurrent::run(this, &BrowseTableModel::browserThread);
+    m_path = "";
 }
 
 BrowseTableModel::~BrowseTableModel()
 {
-
+    qDebug() << "Wait to finish browser background thread";
+    m_bStopThread = true;
+    //wake up thread since it might wait for user input
+    m_locationUpdated.wakeAll();
+    m_future.waitForFinished();
+    qDebug() << "Browser background thread terminated!";
 }
 
 const QList<int>& BrowseTableModel::searchColumns() const {
@@ -72,7 +84,8 @@ void BrowseTableModel::addSearchColumn(int index) {
 }
 void BrowseTableModel::setPath(QString absPath)
 {
-    QtConcurrent::run(this, &BrowseTableModel::populateModel, absPath);
+    m_path = absPath;
+    m_locationUpdated.wakeAll();
 
 }
 
@@ -157,25 +170,13 @@ QMimeData* BrowseTableModel::mimeData(const QModelIndexList &indexes) const {
     mimeData->setUrls(urls);
     return mimeData;
 }
-void BrowseTableModel::populateModel(QString absPath)
+void BrowseTableModel::populateModel()
 {
-    m_isBackGroundThreadActive = false;
-    m_populationMutex.lock();
-    m_isBackGroundThreadActive = true;
-    //Give the thread low priority to prevent GUI freezing
-    QThread* thisThread = QThread::currentThread();
-    thisThread->setPriority(QThread::LowestPriority);
     //Refresh the name filters in case we loaded new
     //SoundSource plugins.
     QStringList nameFilters(SoundSourceProxy::supportedFileExtensionsString().split(" "));
-    QDirIterator fileIt(absPath, nameFilters, QDir::Files | QDir::NoDotAndDotDot);
+    QDirIterator fileIt(m_path, nameFilters, QDir::Files | QDir::NoDotAndDotDot);
     
-    //If path has changed in this thread we exit the loop to stop the thread
-    if(!m_isBackGroundThreadActive){
-        qDebug() << "Stopping Library Thread bceause path has changed";
-        m_populationMutex.unlock();
-        return;
-    }
     //remove all rows
     removeRows(0, rowCount());
     
@@ -183,12 +184,6 @@ void BrowseTableModel::populateModel(QString absPath)
     //Iterate over the files
     while (fileIt.hasNext())
     {
-        //If path has changed in this thread we exit the loop to stop the thread
-        if(!m_isBackGroundThreadActive){
-            qDebug() << "Stopping Library Thread bceause path has changed";
-            return;
-        }
-
         QString filepath = fileIt.next();
         TrackInfoObject tio(filepath);
 
@@ -238,5 +233,28 @@ void BrowseTableModel::populateModel(QString absPath)
         ++row;
    
     }
-    m_populationMutex.unlock();
+}
+void BrowseTableModel::browserThread()
+{
+    //Give the thread low priority to prevent GUI freezing
+    QThread* thisThread = QThread::currentThread();
+    thisThread->setPriority(QThread::LowestPriority);
+
+    while(1){
+        m_mutex.lock();
+        //Wait until the user has selected a folder
+        m_locationUpdated.wait(&m_mutex);
+
+        //Terminate thread if Mixxx closes
+        if(m_bStopThread)
+            return;
+
+        /*
+         * Populate the model
+         */
+        populateModel();
+
+        m_mutex.unlock();
+
+    }
 }
