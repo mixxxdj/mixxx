@@ -13,10 +13,16 @@
 class BeatGrid : public QObject, public virtual Beats {
     Q_OBJECT
   public:
-    BeatGrid(QObject* pParent, TrackPointer pTrack, QByteArray* pByteArray=NULL);
+    BeatGrid(TrackPointer pTrack, QByteArray* pByteArray=NULL);
     virtual ~BeatGrid();
 
-    // See method comments in beats.h
+    // Initializes the BeatGrid to have a BPM of dBpm and the first beat offset
+    // of dFirstBeatSample. Does not generate an updated() signal, since it is
+    // meant for initialization.
+    void setGrid(double dBpm, double dFirstBeatSample);
+
+    // The following are all methods from the Beats interface, see method
+    // comments in beats.h
 
     virtual Beats::CapabilitiesFlags getCapabilities() const {
         return BEATSCAP_TRANSLATE | BEATSCAP_SCALE;
@@ -32,7 +38,7 @@ class BeatGrid : public QObject, public virtual Beats {
     virtual double findNextBeat(double dSamples) const;
     virtual double findPrevBeat(double dSamples) const;
     virtual double findClosestBeat(double dSamples) const;
-    virtual void findBeats(double startSample, double stopSample, QList<double>* pBeatsList) const;
+    virtual void findBeats(double startSample, double stopSample, BeatList* pBeatsList) const;
     virtual bool hasBeatInRange(double startSample, double stopSample) const;
     virtual double getBpm() const;
     virtual double getBpmRange(double startSample, double stopSample) const;

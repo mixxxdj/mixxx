@@ -234,6 +234,7 @@ METADATA
     </description>
     <sql>
       ALTER TABLE Library ADD COLUMN beats BLOB;
+      ALTER TABLE Library ADD COLUMN beats_version TEXT;
     </sql>
   </revision>
 </schema>

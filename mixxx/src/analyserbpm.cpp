@@ -3,7 +3,8 @@
 
 #include "BPMDetect.h"
 #include "trackinfoobject.h"
-#include "trackbeats.h"
+#include "beatgrid.h"
+#include "beatfactory.h"
 #include "analyserbpm.h"
 
 
@@ -30,19 +31,9 @@ void AnalyserBPM::initialise(TrackPointer tio, int sampleRate, int totalSamples)
         //                                    defaultrange ? MIN_BPM : m_iMinBpm,
         //                                    defaultrange ? MAX_BPM : m_iMaxBpm);
     }
-    else if ( tio->getBpm() != 0. )
-    {
-        // Make sure we have the track beats loaded or generate them.
-        TrackBeatsPointer pTrackBeats = tio->getTrackBeats();
-        if ( pTrackBeats == NULL )
-            doBeats(tio);
-    }
 }
 
-
-
 void AnalyserBPM::process(const CSAMPLE *pIn, const int iLen) {
-
     // Check if BPM detection is enabled
     if(m_pDetector == NULL) {
         return;
@@ -50,7 +41,6 @@ void AnalyserBPM::process(const CSAMPLE *pIn, const int iLen) {
     //qDebug() << "AnalyserBPM::process() processing " << iLen << " samples";
 
     m_pDetector->inputSamples(pIn, iLen/2);
-
 }
 
 float AnalyserBPM::correctBPM( float BPM, int min, int max, int aboveRange) {
@@ -64,21 +54,6 @@ float AnalyserBPM::correctBPM( float BPM, int min, int max, int aboveRange) {
     while ( BPM < min ) BPM *= 2;
 
     return BPM;
-}
-
-void AnalyserBPM::doBeats(TrackPointer tio)
-{
-    TrackBeats *pTrackBeats = new TrackBeats(tio);
-    float seconds;
-    float duration = (float)tio->getDuration();
-    float inc = 60. / tio->getBpm();
-
-    for (seconds = 0; seconds < duration; seconds += inc)
-    {
-        pTrackBeats->addBeatSeconds(seconds);
-    }
-
-    tio->setTrackBeats(TrackBeatsPointer(pTrackBeats, &QObject::deleteLater), TRUE);
 }
 
 void AnalyserBPM::finalise(TrackPointer tio) {
@@ -95,7 +70,12 @@ void AnalyserBPM::finalise(TrackPointer tio) {
         tio->setBpm(newbpm);
         tio->setBpmConfirm();
 
-        doBeats(tio);
+        // Currently, the BPM is only analyzed if the track has no BPM. This
+        // means we don't have to worry that the track already has an existing
+        // BeatGrid.
+        BeatsPointer pBeats = BeatFactory::makeBeatGrid(tio, newbpm, 0.0f);
+        tio->setBeats(pBeats);
+
         //if(pBpmReceiver) {
         //pBpmReceiver->setComplete(tio, false, bpm);
         //}

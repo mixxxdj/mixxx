@@ -341,20 +341,40 @@ void TrackInfoObject::setBpmConfirm(bool confirm)
     m_bBpmConfirm = confirm;
 }
 
-void TrackInfoObject::setTrackBeats(TrackBeatsPointer beats, bool isDirty)
-{
+void TrackInfoObject::setBeats(BeatsPointer pBeats) {
     QMutexLocker lock(&m_qMutex);
-    m_pTrackBeatsPointer = beats;
-    if ( isDirty )
-        setDirty(true);
 
-    emit(trackBeatsUpdated(1));
+    // This whole method is not so great. The fact that Beats is an ABC is
+    // limiting with respect to QObject and signals/slots.
+
+    QObject* pObject = NULL;
+    if (m_pBeats) {
+        pObject = dynamic_cast<QObject*>(m_pBeats.data());
+        if (pObject)
+            pObject->disconnect(this, SIGNAL(updated()));
+    }
+    m_pBeats = pBeats;
+    pObject = dynamic_cast<QObject*>(m_pBeats.data());
+    Q_ASSERT(pObject);
+    if (pObject) {
+        connect(pObject, SIGNAL(updated()),
+                this, SLOT(slotBeatsUpdated()));
+    }
+    setDirty(true);
+    lock.unlock();
+    emit(beatsUpdated());
 }
 
-TrackBeatsPointer TrackInfoObject::getTrackBeats() const
-{
+BeatsPointer TrackInfoObject::getBeats() const {
     QMutexLocker lock(&m_qMutex);
-    return m_pTrackBeatsPointer;
+    return m_pBeats;
+}
+
+void TrackInfoObject::slotBeatsUpdated() {
+    QMutexLocker lock(&m_qMutex);
+    setDirty(true);
+    lock.unlock();
+    emit(beatsUpdated());
 }
 
 bool TrackInfoObject::getHeaderParsed()  const

@@ -3,8 +3,8 @@
 
 #include "beatmatrix.h"
 
-BeatMatrix::BeatMatrix(QObject* pParent, TrackPointer pTrack, QByteArray* pByteArray)
-        : QObject(pParent),
+BeatMatrix::BeatMatrix(TrackPointer pTrack, QByteArray* pByteArray)
+        : QObject(),
           m_mutex(QMutex::Recursive),
           m_iSampleRate(pTrack->getSampleRate()) {
     if (pByteArray != NULL) {
@@ -22,8 +22,14 @@ unsigned int BeatMatrix::numBeats() const {
 
 QByteArray* BeatMatrix::toByteArray() const {
     QMutexLocker locker(&m_mutex);
-    const double* pBuffer = m_beatList.data();
+    // No guarantees BeatLists are made of a data type which located adjacent
+    // items in adjacent memory locations.
+    double* pBuffer = new double[m_beatList.size()];
+    for (int i = 0; i < m_beatList.size(); ++i) {
+        pBuffer[i] = m_beatList[i];
+    }
     QByteArray* pByteArray = new QByteArray((char*)pBuffer, sizeof(pBuffer[0]) * m_beatList.size());
+    delete [] pBuffer;
     return pByteArray;
 }
 

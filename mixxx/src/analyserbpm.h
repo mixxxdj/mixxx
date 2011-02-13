@@ -8,7 +8,6 @@
 
 
 class AnalyserBPM : public Analyser {
-
   public:
     AnalyserBPM(ConfigObject<ConfigValue> *_config);
     void initialise(TrackPointer tio, int sampleRate, int totalSamples);
@@ -17,13 +16,11 @@ class AnalyserBPM : public Analyser {
 
   private:
     float correctBPM(float BPM, int min, int max, int aboveRange);
-    void doBeats(TrackPointer tio);
 
     ConfigObject<ConfigValue> *m_pConfig;
     soundtouch::BPMDetect *m_pDetector;
     int m_iMinBpm, m_iMaxBpm;
     bool m_bProcessEntireSong;
-
 };
 
 #endif
