@@ -520,9 +520,9 @@ class MixxxCore(Feature):
 
                    "sampleutil.cpp",
                    "trackinfoobject.cpp",
-                   "trackbeats.cpp",
                    "beatgrid.cpp",
                    "beatmatrix.cpp",
+                   "beatfactory.cpp",
                    "baseplayer.cpp",
                    "basetrackplayer.cpp",
                    "deck.cpp",

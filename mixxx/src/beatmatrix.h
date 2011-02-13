@@ -7,14 +7,12 @@
 #include "trackinfoobject.h"
 #include "beats.h"
 
-typedef QVector<double> BeatList;
-
 // BeatMatrix is an implementation of the Beats interface that implements a list
 // of finite beats that have been extracted or otherwise annotated for a track.
 class BeatMatrix : public QObject, public Beats {
     Q_OBJECT
   public:
-    BeatMatrix(QObject* pParent, TrackPointer pTrack, QByteArray* pByteArray=NULL);
+    BeatMatrix(TrackPointer pTrack, QByteArray* pByteArray=NULL);
     virtual ~BeatMatrix();
 
     // See method comments in beats.h

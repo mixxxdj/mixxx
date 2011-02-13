@@ -2,8 +2,8 @@
 
 #include "beatgrid.h"
 
-BeatGrid::BeatGrid(QObject* pParent, TrackPointer pTrack, QByteArray* pByteArray)
-        : QObject(pParent),
+BeatGrid::BeatGrid(TrackPointer pTrack, QByteArray* pByteArray)
+        : QObject(),
           m_mutex(QMutex::Recursive),
           m_iSampleRate(pTrack->getSampleRate()),
           m_dBpm(0.0f),
@@ -12,18 +12,20 @@ BeatGrid::BeatGrid(QObject* pParent, TrackPointer pTrack, QByteArray* pByteArray
     connect(pTrack.data(), SIGNAL(bpmUpdated(double)),
             this, SLOT(slotTrackBpmUpdated(double)));
 
-    // TODO(XXX) setBpm isn't a slot
-    // connect(this, SIGNAL(bpmUpdated(double)),
-    //         pTrack.data(), SLOT(setBpm(double)));
-
     if (pByteArray != NULL) {
         readByteArray(pByteArray);
     }
-
 }
 
 BeatGrid::~BeatGrid() {
 
+}
+
+void BeatGrid::setGrid(double dBpm, double dFirstBeatSample) {
+    QMutexLocker lock(&m_mutex);
+    m_dBpm = dBpm;
+    m_dFirstBeat = dFirstBeatSample;
+    m_dBeatLength = 60.0 * m_iSampleRate / m_dBpm;
 }
 
 QByteArray* BeatGrid::toByteArray() const {
@@ -41,9 +43,7 @@ void BeatGrid::readByteArray(QByteArray* pByteArray) {
         return;
     }
     double* pBuffer = (double*)pByteArray->data();
-    m_dBpm = pBuffer[0];
-    m_dFirstBeat = pBuffer[1];
-    m_dBeatLength = 60.0 * m_iSampleRate / m_dBpm;
+    setGrid(pBuffer[0], pBuffer[1]);
 }
 
 QString BeatGrid::getVersion() const {

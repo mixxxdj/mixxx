@@ -2,7 +2,17 @@
 #define BEATS_H
 
 #include <QString>
+#include <QList>
 #include <QByteArray>
+#include <QSharedPointer>
+
+class Beats;
+typedef QSharedPointer<Beats> BeatsPointer;
+
+// QList's are attractive because they pre-allocate an internal buffer that is
+// not free'd after a clear(). The downside is that they do not necessarily
+// store adjecent items in adjacent memory locations.
+typedef QList<double> BeatList;
 
 // Beats is a pure abstract base class for BPM and beat management classes. It
 // provides a specification of all methods a beat-manager class must provide, as
@@ -49,7 +59,7 @@ class Beats {
 
     // Adds to pBeatsList the position in samples of every beat occuring between
     // startPosition and endPosition
-    virtual void findBeats(double startSample, double stopSample, QList<double>* pBeatsList) const = 0;
+    virtual void findBeats(double startSample, double stopSample, BeatList* pBeatsList) const = 0;
 
     // Return whether or not a sample lies between startPosition and endPosition
     virtual bool hasBeatInRange(double startSample, double stopSample) const = 0;
