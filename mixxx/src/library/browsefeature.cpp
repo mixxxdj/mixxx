@@ -85,13 +85,13 @@ BrowseFeature::BrowseFeature(QObject* parent, ConfigObject<ConfigValue>* pConfig
     TreeItem* mixxx_library_dir_item = new TreeItem(tr("Mixxx Library"), mixxx_music_dir +"/" ,this , quick_link);
     quick_link->appendChild(mixxx_library_dir_item);
 
-    TreeItem*os_home_dir_item = new TreeItem(tr("Home Directory"), os_home_folder_dir +"/" , this , quick_link);
+    TreeItem*os_home_dir_item = new TreeItem(tr("Home"), os_home_folder_dir +"/" , this , quick_link);
     quick_link->appendChild(os_home_dir_item);
 
-    TreeItem*os_music_dir_item = new TreeItem(tr("Music Directory"), os_music_folder_dir +"/" , this , quick_link);
+    TreeItem*os_music_dir_item = new TreeItem(tr("Music"), os_music_folder_dir +"/" , this , quick_link);
     quick_link->appendChild(os_music_dir_item);
 
-    TreeItem*os_docs_dir_item = new TreeItem(tr("Document Directory"), os_documents_folder_dir +"/" , this , quick_link);
+    TreeItem*os_docs_dir_item = new TreeItem(tr("Documents"), os_documents_folder_dir +"/" , this , quick_link);
     quick_link->appendChild(os_docs_dir_item);
 
     TreeItem*os_desktop_dir_item = new TreeItem(tr("Desktop"), os_desktop_folder_dir +"/" , this , quick_link);
