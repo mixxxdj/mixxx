@@ -38,6 +38,8 @@ void TrackDAO::finish()
 
 TrackDAO::~TrackDAO()
 {
+    qDebug() << "~TrackDAO()";
+    clearCache();
 }
 
 void TrackDAO::initialize()
@@ -518,7 +520,7 @@ void TrackDAO::unremoveTrack(int trackId)
 void TrackDAO::deleteTrack(TrackInfoObject* pTrack) {
     Q_ASSERT(pTrack);
 
-    //qDebug() << "Got deletion call for track" << pTrack << "ID" << pTrack->getId() << pTrack->getInfo();
+    qDebug() << "Got deletion call for track" << pTrack << "ID" << pTrack->getId() << pTrack->getInfo();
 
     // Save dirty tracks.
     pTrack->save();
