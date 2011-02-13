@@ -191,14 +191,13 @@ void BrowseFeature::activateChild(const QModelIndex& index) {
             // the models takes ownership of them and ensures their deletion
             TreeItem* folder = new TreeItem(one.fileName(),
                                             item->dataPath().toString().append(one.fileName() +"/"),
-                                           this,
+                                            this,
                                             item);
             folders << folder;
         }
     }
     //we need to check here if subfolders are found
     //On Ubuntu 10.04, otherwise, this will draw an icon although the folder has no subfolders
-    qDebug() << "HERERERRT";
     if(!folders.isEmpty())
        m_childModel.insertRows(folders, 0, folders.size() , index);
     m_browseModel.setPath(item->dataPath().toString());

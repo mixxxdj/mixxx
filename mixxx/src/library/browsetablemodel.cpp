@@ -176,7 +176,7 @@ void BrowseTableModel::populateModel()
     //SoundSource plugins.
     QStringList nameFilters(SoundSourceProxy::supportedFileExtensionsString().split(" "));
     QDirIterator fileIt(m_path, nameFilters, QDir::Files | QDir::NoDotAndDotDot);
-    
+    QString thisPath(m_path);
     //remove all rows
     removeRows(0, rowCount());
     
@@ -184,6 +184,10 @@ void BrowseTableModel::populateModel()
     //Iterate over the files
     while (fileIt.hasNext())
     {
+        if(thisPath != m_path){
+            qDebug() << "Exit populateModel()";
+            return;
+        }
         QString filepath = fileIt.next();
         TrackInfoObject tio(filepath);
 
