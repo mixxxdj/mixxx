@@ -26,7 +26,6 @@ const int COLUMN_LOCATION = 13;
 
 BrowseTableModel::BrowseTableModel(QObject* parent)
         : QStandardItemModel(parent),
-          //m_populationMutex(QMutex::Recursive),
           TrackModel(QSqlDatabase::database("QSQLITE"),
                      "mixxx.db.model.browse")
 {
@@ -37,14 +36,14 @@ BrowseTableModel::BrowseTableModel(QObject* parent)
     header_data.insert(COLUMN_TITLE, tr("Title"));
     header_data.insert(COLUMN_ALBUM, tr("Album"));
     header_data.insert(COLUMN_TRACK_NUMBER, tr("Track #"));
-    header_data.insert(COLUMN_GENRE, tr("Genre"));
     header_data.insert(COLUMN_YEAR, tr("Year"));
+    header_data.insert(COLUMN_GENRE, tr("Genre"));
+    header_data.insert(COLUMN_COMMENT, tr("Comment"));
+    header_data.insert(COLUMN_DURATION, tr("Duration"));
     header_data.insert(COLUMN_BPM, tr("BPM"));
     header_data.insert(COLUMN_KEY, tr("Key"));
-    header_data.insert(COLUMN_DURATION, tr("Duration"));
     header_data.insert(COLUMN_TYPE, tr("Type"));
     header_data.insert(COLUMN_BITRATE, tr("Bitrate"));
-    header_data.insert(COLUMN_COMMENT, tr("Comment"));
     header_data.insert(COLUMN_LOCATION, tr("Location"));
     
     addSearchColumn(COLUMN_FILENAME);
@@ -206,7 +205,11 @@ void BrowseTableModel::populateModel()
            
         item = new QStandardItem(tio.getAlbum());
         setItem(row, COLUMN_ALBUM, item);
-            
+
+        QString duration = MixxxUtils::secondsToMinutes(qVariantValue<int>(tio.getDuration()));
+        item = new QStandardItem(duration);
+        setItem(row, COLUMN_DURATION, item);
+
         item = new QStandardItem(tio.getBpmStr());
         setItem(row, COLUMN_BPM, item);
            
@@ -215,11 +218,7 @@ void BrowseTableModel::populateModel()
             
         item = new QStandardItem(tio.getYear());
         setItem(row, COLUMN_YEAR, item);
-            
-        QString duration = MixxxUtils::secondsToMinutes(qVariantValue<int>(tio.getDuration()));
-        item = new QStandardItem(duration);
-        setItem(row, COLUMN_DURATION, item);
-            
+
         item = new QStandardItem(tio.getBitrateStr());
         setItem(row, COLUMN_BITRATE, item);
             
