@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<MixxxMIDIPreset vschemaVersion="1" mixxxVersion="1.8.0">
+<MixxxMIDIPreset vschemaVersion="1" mixxxVersion="1.9.0">
     <info>
         <name>Hercules DJ Console RMX</name>
         <author>Anders Gunnarsson</author>
-        <description>Hercules DJ Console RMX controller mapping, v1.8.1. Requires script v1.8.1</description>
+        <description>Hercules DJ Console RMX controller mapping, v1.9.0. Requires script v1.9.0</description>
     </info>
     <controller id="Hercules DJ Console RMX MIDI">
         <scriptfiles>
@@ -425,6 +425,24 @@
                 <midino>0x20</midino>
                 <options>
                     <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>keylock</key>
+                <status>0xB0</status>
+                <midino>0x08</midino>
+                <options>
+                    <Button />
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>keylock</key>
+                <status>0xB0</status>
+                <midino>0x15</midino>
+                <options>
+                    <Button />
                 </options>
             </control>
             <control>

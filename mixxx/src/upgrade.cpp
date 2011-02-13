@@ -155,12 +155,28 @@ ConfigObject<ConfigValue>* Upgrade::versionUpgrade() {
     QString configVersion = config->getValueString(ConfigKey("[Config]","Version"));
 
     if (configVersion.isEmpty()) {
-        qDebug() << "No version number in configuration file. Setting to" << VERSION;
-        config->set(ConfigKey("[Config]","Version"), ConfigValue(VERSION));
 
-        //This must have been the first run... right? :)
-        m_bFirstRun = true;
-        return config;
+#ifdef __APPLE__
+        qDebug() << "Config version is empty, trying to read pre-1.9.0 config";
+        //Try to read the config from the pre-1.9.0 final directory on OS X (we moved it in 1.9.0 final)
+        QFile* oldFile = new QFile(QDir::homePath().append("/").append(".mixxx/mixxx.cfg"));
+        if (oldFile->exists()) {
+            qDebug() << "Found pre-1.9.0 config for OS X";
+            config = new ConfigObject<ConfigValue>(QDir::homePath().append("/").append(".mixxx/mixxx.cfg"));
+            //Note: We changed SETTINGS_PATH in 1.9.0 final on OS X so it must be hardcoded to ".mixxx" here for legacy.
+            configVersion = config->getValueString(ConfigKey("[Config]","Version"));
+            delete oldFile;
+        }
+        else {
+#endif
+            //This must have been the first run... right? :)
+            qDebug() << "No version number in configuration file. Setting to" << VERSION;
+            config->set(ConfigKey("[Config]","Version"), ConfigValue(VERSION));
+            m_bFirstRun = true;
+            return config;
+#ifdef __APPLE__
+        }
+#endif
     }
     
     // If it's already current, stop here
@@ -202,6 +218,54 @@ ConfigObject<ConfigValue>* Upgrade::versionUpgrade() {
         configVersion.startsWith("1.8.0~beta2")) {
         qDebug() << "Upgrading from v1.8.0~beta to" << VERSION <<"...";
         // Upgrade tasks go here
+    }
+    if (configVersion.startsWith("1.8") || configVersion.startsWith("1.9.0beta1")) {
+        qDebug() << "Upgrading from" << configVersion << "to" << VERSION <<"...";
+        // Upgrade tasks go here
+#ifdef __APPLE__
+        QString OSXLocation180 = QDir::homePath().append("/").append(".mixxx");
+        QString OSXLocation190 = QDir::homePath().append("/").append(SETTINGS_PATH);
+        QDir newOSXDir(OSXLocation190);
+        newOSXDir.mkpath(OSXLocation190);
+
+        QList<QPair<QString, QString> > dirsToMove;
+        dirsToMove.push_back(QPair<QString, QString>(OSXLocation180, OSXLocation190));
+        dirsToMove.push_back(QPair<QString, QString>(OSXLocation180 + "/midi", OSXLocation190 + "midi"));
+        dirsToMove.push_back(QPair<QString, QString>(OSXLocation180 + "/presets", OSXLocation190 + "presets"));
+
+        QListIterator<QPair<QString, QString> > dirIt(dirsToMove);
+        QPair<QString, QString> curPair;
+        while (dirIt.hasNext())
+        {
+            curPair = dirIt.next();
+            qDebug() << "Moving" << curPair.first << "to" << curPair.second;
+            QDir oldSubDir(curPair.first);
+            QDir newSubDir(curPair.second);
+            newSubDir.mkpath(curPair.second); //Create the new destination directory
+            
+            QStringList contents = oldSubDir.entryList(QDir::Files | QDir::NoDotAndDotDot);
+            QStringListIterator it(contents);
+            QString cur;
+            //Iterate over all the files in the source directory and copy them to the dest dir.
+            while (it.hasNext())
+            {
+                cur = it.next();
+                QString src = curPair.first + "/" + cur;
+                QString dest = curPair.second + "/" + cur;
+                qDebug() << "Copying" << src << "to" << dest;
+                if (!QFile::copy(src, dest))
+                {
+                    qDebug() << "Failed to move file during upgrade.";
+                }
+            }
+
+            //Rename the old directory.
+            newOSXDir.rename(OSXLocation180, OSXLocation180+ "-1.8");
+        }
+        //Reload the configuration file from the new location. 
+        //(We want to make sure we save to the new location...)
+        config = new ConfigObject<ConfigValue>(QDir::homePath().append("/").append(SETTINGS_PATH).append(SETTINGS_FILE));
+#endif
     }
     // For the next release
     /*

@@ -23,7 +23,7 @@ WLibraryTableView::WLibraryTableView(QWidget* parent,
     setEditTriggers(QAbstractItemView::SelectedClicked);
 
     // This is to support rating of tracks
-    setItemDelegate(new StarDelegate());
+    setItemDelegate(new StarDelegate(this));
 
     //Enable selection by rows and extended selection (ctrl/shift click)
     setSelectionBehavior(QAbstractItemView::SelectRows);

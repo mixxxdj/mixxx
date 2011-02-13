@@ -217,9 +217,9 @@ out:
         MP4Close(priv->mp4.handle);
     if (priv->decoder)
         faacDecClose(priv->decoder);
-    delete priv;
     delete [] priv->sample_buf;
     delete [] priv->aac_data;
+    delete priv;
     return -IP_ERROR_FILE_FORMAT;
 }
 
