@@ -446,7 +446,7 @@ bool MidiScriptEngine::safeExecute(QString function, const unsigned char data[],
     if (!scriptFunction.isFunction())
         return false;
 
-	QByteArray temp((const char*)data, length);
+	  QByteArray temp((const char*)data, length);
     QString buffer = QString(temp);
     QScriptValueList args;
     args << QScriptValue(buffer);

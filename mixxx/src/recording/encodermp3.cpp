@@ -92,6 +92,8 @@ EncoderMp3::EncoderMp3(EngineAbstractRecord *engine) {
     libnames << "lame_enc.dll";
 #elif __APPLE__
     libnames << "/usr/local/lib/libmp3lame.dylib";
+    //Using MacPorts (former DarwinPorts) results in ...
+    libnames << "/opt/local/lib/libmp3lame.dylib"; 
 #endif
 
     foreach (QString libname, libnames) {

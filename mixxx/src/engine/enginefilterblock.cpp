@@ -37,24 +37,24 @@ EngineFilterBlock::EngineFilterBlock(const char * group)
     qDebug() << "Using LoFi EQs";
 #else
 
-	//Setup Filter Controls
-	if(ControlObject::getControl(ConfigKey("[Mixer Profile]", "LoEQFrequency")) == NULL)
-	{
-		m_loEqFreq = new ControlPotmeter(ConfigKey("[Mixer Profile]", "LoEQFrequency"), 0., 22040);
-		m_hiEqFreq = new ControlPotmeter(ConfigKey("[Mixer Profile]", "HiEQFrequency"), 0., 22040);
-		m_lofiEq = new ControlPushButton(ConfigKey("[Mixer Profile]", "LoFiEQs"));
-	}
-	else
-	{
-		m_loEqFreq = (ControlPotmeter*) ControlObject::getControl(ConfigKey("[Mixer Profile]", "LoEQFrequency"));
-		m_hiEqFreq = (ControlPotmeter*) ControlObject::getControl(ConfigKey("[Mixer Profile]", "HiEQFrequency"));
-		m_lofiEq = (ControlPushButton*) ControlObject::getControl(ConfigKey("[Mixer Profile]", "LoFiEQs"));
-	}
+    //Setup Filter Controls
+    if(ControlObject::getControl(ConfigKey("[Mixer Profile]", "LoEQFrequency")) == NULL)
+    {
+        m_loEqFreq = new ControlPotmeter(ConfigKey("[Mixer Profile]", "LoEQFrequency"), 0., 22040);
+        m_hiEqFreq = new ControlPotmeter(ConfigKey("[Mixer Profile]", "HiEQFrequency"), 0., 22040);
+        m_lofiEq = new ControlPushButton(ConfigKey("[Mixer Profile]", "LoFiEQs"));
+    }
+    else
+    {
+        m_loEqFreq = (ControlPotmeter*) ControlObject::getControl(ConfigKey("[Mixer Profile]", "LoEQFrequency"));
+        m_hiEqFreq = (ControlPotmeter*) ControlObject::getControl(ConfigKey("[Mixer Profile]", "HiEQFrequency"));
+        m_lofiEq = (ControlPushButton*) ControlObject::getControl(ConfigKey("[Mixer Profile]", "LoFiEQs"));
+    }
 
-	high = band = low = NULL;
+    high = band = low = NULL;
 
-	//Load Defaults
-	setFilters(true);
+    //Load Defaults
+    setFilters(true);
 
 #endif
     /*
@@ -110,28 +110,30 @@ EngineFilterBlock::~EngineFilterBlock()
 
 void EngineFilterBlock::setFilters(bool forceSetting)
 {
-	if((ilowFreq != m_loEqFreq->get()) || (ihighFreq != m_hiEqFreq->get()) || (blofi != m_lofiEq->get()) || forceSetting)
-	{
-		delete low;
-		delete band;
-		delete high;
-		ilowFreq = m_loEqFreq->get();
-		ihighFreq = m_hiEqFreq->get();
-		blofi = m_lofiEq->get();
-		if(blofi)
-		{
-			low = new EngineFilterIIR(bessel_lowpass4,4);
-      band = new EngineFilterIIR(bessel_bandpass,8);
-			high = new EngineFilterIIR(bessel_highpass4,4);
-		}
-		else
-		{
-			low = new EngineFilterButterworth8(FILTER_LOWPASS, 44100, m_loEqFreq->get());
-			band = new EngineFilterButterworth8(FILTER_BANDPASS, 44100, m_loEqFreq->get(), m_hiEqFreq->get());
-			high = new EngineFilterButterworth8(FILTER_HIGHPASS, 44100, m_hiEqFreq->get());
-		}
+    if((ilowFreq != m_loEqFreq->get()) || (ihighFreq != m_hiEqFreq->get()) || (blofi != m_lofiEq->get()) || forceSetting)
+    {
+        delete low;
+        delete band;
+        delete high;
+        ilowFreq = m_loEqFreq->get();
+        ihighFreq = m_hiEqFreq->get();
+        blofi = m_lofiEq->get();
+        if(blofi)
+        {
+            // why is this DJM800 at line ~34 (LOFI ifdef) and just
+            // bessel_lowpass# here? bkgood
+            low = new EngineFilterIIR(bessel_lowpass4,4);
+            band = new EngineFilterIIR(bessel_bandpass,8);
+            high = new EngineFilterIIR(bessel_highpass4,4);
+        }
+        else
+        {
+            low = new EngineFilterButterworth8(FILTER_LOWPASS, 44100, m_loEqFreq->get());
+            band = new EngineFilterButterworth8(FILTER_BANDPASS, 44100, m_loEqFreq->get(), m_hiEqFreq->get());
+            high = new EngineFilterButterworth8(FILTER_HIGHPASS, 44100, m_hiEqFreq->get());
+        }
 
-	}
+    }
 }
 
 void EngineFilterBlock::process(const CSAMPLE * pIn, const CSAMPLE * pOut, const int iBufferSize)

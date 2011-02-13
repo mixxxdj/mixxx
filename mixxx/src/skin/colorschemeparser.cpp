@@ -35,16 +35,17 @@ void ColorSchemeParser::setupLegacyColorSchemes(QDomElement docElem,
         }
 
         if (found) {
-            ImgSource * imsrc = parseFilters(sch.namedItem("Filters"));
+            QSharedPointer<ImgSource> imsrc =
+                    QSharedPointer<ImgSource>(parseFilters(sch.namedItem("Filters")));
             WPixmapStore::setLoader(imsrc);
             WSkinColor::setLoader(imsrc);
         } else {
-            WPixmapStore::setLoader(NULL);
-            WSkinColor::setLoader(NULL);
+            WPixmapStore::setLoader(QSharedPointer<ImgSource>());
+            WSkinColor::setLoader(QSharedPointer<ImgSource>());
         }
     } else {
-        WPixmapStore::setLoader(NULL);
-        WSkinColor::setLoader(NULL);
+        WPixmapStore::setLoader(QSharedPointer<ImgSource>());
+        WSkinColor::setLoader(QSharedPointer<ImgSource>());
     }
 }
 

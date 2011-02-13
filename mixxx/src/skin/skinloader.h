@@ -13,6 +13,7 @@ class MixxxView;
 class SkinLoader {
   public:
     SkinLoader(ConfigObject<ConfigValue>* pConfig);
+    ~SkinLoader();
     QWidget* loadDefaultSkin(QWidget* pParent,
                                MixxxKeyboard* pKeyboard,
                                PlayerManager* pPlayerManager,
