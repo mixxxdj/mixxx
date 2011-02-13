@@ -8,7 +8,6 @@
 #include <QSortFilterProxyModel>
 
 #include "configobject.h"
-#include "library/browsefilter.h"
 #include "library/browsetablemodel.h"
 #include "library/libraryfeature.h"
 #include "library/foldertreemodel.h"
