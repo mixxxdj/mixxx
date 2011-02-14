@@ -213,7 +213,7 @@ class VinylControl(Feature):
         return "Vinyl Control"
 
     def enabled(self, build):
-        build.flags['vinylcontrol'] = util.get_flags(build.env, 'vinylcontrol', 1)
+        build.flags['vinylcontrol'] = util.get_flags(build.env, 'vinylcontrol', 0)
         if int(build.flags['vinylcontrol']):
             return True
         return False
