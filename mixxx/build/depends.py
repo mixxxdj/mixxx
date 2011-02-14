@@ -721,7 +721,7 @@ class MixxxCore(Feature):
 
     def depends(self, build):
         return [SoundTouch, CoreAudio, KissFFT, ReplayGain, PortAudio, PortMIDI, Qt,
-                FidLib, Mad, SndFile, FLAC, OggVorbis, OpenGL, TagLib]
+                FidLib, SndFile, FLAC, OggVorbis, OpenGL, TagLib]
 
     def post_dependency_check_configure(self, build, conf):
         """Sets up additional things in the Environment that must happen

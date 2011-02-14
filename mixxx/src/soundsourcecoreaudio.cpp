@@ -15,6 +15,7 @@
 
 #include <QtDebug>
 #include <QUrl>
+#include <taglib/mpegfile.h>
 #include <taglib/mp4file.h>
 
 #include "soundsourcecoreaudio.h"
@@ -220,15 +221,43 @@ inline unsigned long SoundSourceCoreAudio::length() {
 }
 
 int SoundSourceCoreAudio::parseHeader() {
-    setType("m4a");
+    if (getFilename().endsWith(".m4a"))
+        setType("m4a");
+    else if (getFilename().endsWith(".mp3"))
+        setType("mp3");
+    else if (getFilename().endsWith(".mp2"))
+        setType("mp2");
 
-    TagLib::MP4::File f(getFilename().toUtf8().constData());
-    bool result = processTaglibFile(f);
-    TagLib::MP4::Tag* tag = f.tag();
+    bool result = false;
 
-    if (tag) {
-        processMP4Tag(tag);
+    if (getType() == "m4a") {
+        TagLib::MP4::File f(getFilename().toUtf8().constData());
+        result = processTaglibFile(f);
+        TagLib::MP4::Tag* tag = f.tag();
+        if (tag) {
+            processMP4Tag(tag);
+        }
+    } else if (getType() == "mp3") {
+		TagLib::MPEG::File f(getFilename().toUtf8().constData());
+
+        // Takes care of all the default metadata
+        result = processTaglibFile(f);
+
+        // Now look for MP3 specific metadata (e.g. BPM)
+        TagLib::ID3v2::Tag* id3v2 = f.ID3v2Tag();
+        if (id3v2) {
+            processID3v2Tag(id3v2);
+        }
+
+        TagLib::APE::Tag *ape = f.APETag();
+        if (ape) {
+            processAPETag(ape);
+        }
+    } else if (getType() == "mp2") {
+        //TODO: MP2 metadata. Does anyone use mp2 files anymore?
+        //      Feels like 1995 again...
     }
+
 
     if (result)
         return OK;
@@ -240,6 +269,8 @@ int SoundSourceCoreAudio::parseHeader() {
 QList<QString> SoundSourceCoreAudio::supportedFileExtensions() {
     QList<QString> list;
     list.push_back("m4a");
+    list.push_back("mp3");
+    list.push_back("mp2");
     //Can add mp3, mp2, ac3, and others here if you want.
     //See:
     //  http://developer.apple.com/library/mac/documentation/MusicAudio/Reference/AudioFileConvertRef/Reference/reference.html#//apple_ref/doc/c_ref/AudioFileTypeID

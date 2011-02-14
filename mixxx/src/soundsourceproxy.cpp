@@ -18,7 +18,7 @@
 
 #include "trackinfoobject.h"
 #include "soundsourceproxy.h"
-#include "soundsourcemp3.h"
+//#include "soundsourcemp3.h"
 #include "soundsourceoggvorbis.h"
 #include "soundsourcecoreaudio.h"
 #ifdef __SNDFILE__
@@ -115,9 +115,10 @@ SoundSource* SoundSourceProxy::initialize(QString qFilename) {
     return new SoundSourceFFmpeg(qFilename);
 #endif
 
-    if (SoundSourceMp3::supportedFileExtensions().contains(extension)) {
-	    return new SoundSourceMp3(qFilename);
-    } else if (SoundSourceOggVorbis::supportedFileExtensions().contains(extension)) {
+    //if (SoundSourceMp3::supportedFileExtensions().contains(extension)) {
+	//    return new SoundSourceMp3(qFilename);
+    //} 
+    if (SoundSourceOggVorbis::supportedFileExtensions().contains(extension)) {
 	    return new SoundSourceOggVorbis(qFilename);
     } else if (SoundSourceFLAC::supportedFileExtensions().contains(extension)) {
         return new SoundSourceFLAC(qFilename);
@@ -315,7 +316,7 @@ QList<QString> SoundSourceProxy::supportedFileExtensions()
 {
     QMutexLocker locker(&m_extensionsMutex);
     QList<QString> supportedFileExtensions;
-    supportedFileExtensions.append(SoundSourceMp3::supportedFileExtensions());
+    //supportedFileExtensions.append(SoundSourceMp3::supportedFileExtensions());
     supportedFileExtensions.append(SoundSourceOggVorbis::supportedFileExtensions());
     supportedFileExtensions.append(SoundSourceSndFile::supportedFileExtensions());
     supportedFileExtensions.append(SoundSourceCoreAudio::supportedFileExtensions());
