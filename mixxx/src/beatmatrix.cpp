@@ -13,7 +13,6 @@ BeatMatrix::BeatMatrix(TrackPointer pTrack, QByteArray* pByteArray)
 }
 
 BeatMatrix::~BeatMatrix() {
-
 }
 
 unsigned int BeatMatrix::numBeats() const {
@@ -58,34 +57,11 @@ bool BeatMatrix::isValid() const {
 }
 
 double BeatMatrix::findNextBeat(double dSamples) const {
-    QMutexLocker locker(&m_mutex);
-    if (!isValid()) {
-        return -1;
-    }
-    BeatList::const_iterator it = qLowerBound(m_beatList.begin(),
-                                              m_beatList.end(), dSamples);
-
-    if (it != m_beatList.end()) {
-        return *it;
-    }
-
-    return -1;
+    return findNthBeat(dSamples, 1);
 }
 
 double BeatMatrix::findPrevBeat(double dSamples) const {
-    QMutexLocker locker(&m_mutex);
-    if (!isValid()) {
-        return -1;
-    }
-
-    BeatList::const_iterator it = qLowerBound(m_beatList.begin(),
-                                              m_beatList.end(), dSamples);
-
-    if (it != m_beatList.begin()) {
-        it--;
-        return *it;
-    }
-    return -1;
+    return findNthBeat(dSamples, -1);
 }
 
 double BeatMatrix::findClosestBeat(double dSamples) const {
@@ -96,6 +72,43 @@ double BeatMatrix::findClosestBeat(double dSamples) const {
     double nextBeat = findNextBeat(dSamples);
     double prevBeat = findPrevBeat(dSamples);
     return (nextBeat - dSamples > dSamples - prevBeat) ? prevBeat : nextBeat;
+}
+
+double BeatMatrix::findNthBeat(double dSamples, int offset) const {
+    QMutexLocker locker(&m_mutex);
+    BeatList::const_iterator it;
+    int i;
+
+    if (!isValid()) {
+        return -1;
+    }
+
+    if ( offset > 0 ) {
+        it = qUpperBound(m_beatList.begin(), m_beatList.end(), dSamples);
+        if ( it != m_beatList.end()) {
+            if (*it == dSamples) {
+                return *it;
+            }
+            for (i = 0; i > offset && it != m_beatList.begin(); i--) {
+                it--;
+            }
+            return *it;
+        }
+    }
+    else if ( offset < 0 ) {
+        it = qLowerBound(m_beatList.begin(), m_beatList.end(), dSamples);
+        if (it != m_beatList.end()) {
+            if (*it == dSamples) {
+                return *it;
+            }
+            for (i = 0; i < offset && it != m_beatList.end(); i++) {
+                it++;
+            }
+            return *it;
+        }
+    }
+
+    return -1;
 }
 
 void BeatMatrix::findBeats(double startSample, double stopSample, QList<double>* pBeatsList) const {
