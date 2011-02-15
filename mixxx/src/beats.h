@@ -57,6 +57,11 @@ class Beats {
     // the track, or -1 if none exists.
     virtual double findClosestBeat(double dSamples) const = 0;
 
+    // Find the Nth beat from Sample offset. Works with both positive and negative
+    // offsets. The offset 0 is invalid and both -1 and 1 will return the same
+    // value if the sample requested is a beat itself.
+    virtual double findNthBeat(double dSamples, int offset) const = 0;
+
     // Adds to pBeatsList the position in samples of every beat occuring between
     // startPosition and endPosition
     virtual void findBeats(double startSample, double stopSample, BeatList* pBeatsList) const = 0;
@@ -83,11 +88,6 @@ class Beats {
     // Remove a beat at location dBeatSample. Beats instance must have the
     // capability BEATSCAP_ADDREMOVE.
     virtual void removeBeat(double dBeatSample) = 0;
-
-    // Move the beat located at location dBeatSample to the position
-    // dNewBeatSample. Returns true on success and false on a failure. Beats
-    // instance must have the capability BEATSCAP_MOVEBEAT.
-    virtual void moveBeat(double dBeatSample, double dNewBeatSample) = 0;
 
     // Translate all beats in the song by dNumSamples samples. Beats that lie
     // before the start of the track or after the end of the track are not

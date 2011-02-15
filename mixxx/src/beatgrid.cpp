@@ -1,4 +1,5 @@
 #include <QMutexLocker>
+#include <QDebug>
 
 #include "beatgrid.h"
 
@@ -12,6 +13,7 @@ BeatGrid::BeatGrid(TrackPointer pTrack, QByteArray* pByteArray)
     connect(pTrack.data(), SIGNAL(bpmUpdated(double)),
             this, SLOT(slotTrackBpmUpdated(double)));
 
+    qDebug() << "New BeatGrid";
     if (pByteArray != NULL) {
         readByteArray(pByteArray);
     }
@@ -56,30 +58,52 @@ bool BeatGrid::isValid() const {
     return m_iSampleRate > 0 && m_dBpm > 0;
 }
 
+// This could be implemented in the Beats Class itself.
+// If necessary, the child class can redefine it.
 double BeatGrid::findNextBeat(double dSamples) const {
     QMutexLocker locker(&m_mutex);
     if (!isValid()) {
         return -1;
     }
-    return ceilf(dSamples/m_dBeatLength)*m_dBeatLength;
+    return findNthBeat(dSamples, +1);
 }
 
+// This could be implemented in the Beats Class itself.
+// If necessary, the child class can redefine it.
 double BeatGrid::findPrevBeat(double dSamples) const {
     QMutexLocker locker(&m_mutex);
     if (!isValid()) {
         return -1;
     }
-    return floorf(dSamples/m_dBeatLength)*m_dBeatLength;
+    return findNthBeat(dSamples, -1);
 }
 
+// This is an internal call. This could be implemented in the Beats Class itself.
 double BeatGrid::findClosestBeat(double dSamples) const {
     QMutexLocker locker(&m_mutex);
     if (!isValid()) {
         return -1;
     }
-    double nextBeat = ceilf(dSamples/m_dBeatLength)*m_dBeatLength;
-    double prevBeat = floorf(dSamples/m_dBeatLength)*m_dBeatLength;
+    double nextBeat = findNextBeat(dSamples);
+    double prevBeat = findPrevBeat(dSamples);
     return (nextBeat - dSamples > dSamples - prevBeat) ? prevBeat : nextBeat;
+}
+
+double BeatGrid::findNthBeat(double dSamples, int offset) const {
+    QMutexLocker locker(&m_mutex);
+    double ret;
+
+
+    if ( offset > 0 ) {
+        return (ceilf(dSamples/m_dBeatLength) * m_dBeatLength + m_dFirstBeat) + 
+                    (m_dBeatLength * (offset-1));
+    }
+    else if ( offset < 0 ) {
+        return (floorf(dSamples/m_dBeatLength) * m_dBeatLength + m_dFirstBeat) - 
+                    (m_dBeatLength * (offset+1));
+    }
+
+    return -1;
 }
 
 void BeatGrid::findBeats(double startSample, double stopSample, QList<double>* pBeatsList) const {
@@ -87,7 +111,10 @@ void BeatGrid::findBeats(double startSample, double stopSample, QList<double>* p
     if (!isValid()) {
         return;
     }
-    double curBeat = ceilf(startSample/m_dBeatLength)*m_dBeatLength;
+    if ( startSample > stopSample ) {
+        return;
+    }
+    double curBeat = findNextBeat(startSample);
     while (curBeat <= stopSample) {
         pBeatsList->append(curBeat);
         curBeat += m_dBeatLength;
@@ -99,7 +126,7 @@ bool BeatGrid::hasBeatInRange(double startSample, double stopSample) const {
     if (!isValid()) {
         return false;
     }
-    double curBeat = ceilf(startSample/m_dBeatLength)*m_dBeatLength;
+    double curBeat = findNextBeat(startSample);
     if (curBeat <= stopSample) {
         return true;
     }
