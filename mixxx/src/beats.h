@@ -46,11 +46,13 @@ class Beats {
     ////////////////////////////////////////////////////////////////////////////
 
     // Starting from sample dSamples, return the sample of the next beat in the
-    // track, or -1 if none exists.
+    // track, or -1 if none exists. If dSamples refers to the location of a
+    // beat, dSamples is returned.
     virtual double findNextBeat(double dSamples) const = 0;
 
     // Starting from sample dSamples, return the sample of the previous beat in
-    // the track, or -1 if none exists.
+    // the track, or -1 if none exists. If dSamples refers to the location of
+    // beat, dSamples is returned.
     virtual double findPrevBeat(double dSamples) const = 0;
 
     // Starting from sample dSamples, return the sample of the closest beat in
