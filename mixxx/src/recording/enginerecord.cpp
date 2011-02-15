@@ -52,6 +52,7 @@ EngineRecord::EngineRecord(ConfigObject<ConfigValue> * _config)
 
 EngineRecord::~EngineRecord()
 {
+    closeCueFile();
     closeFile();
     if(m_recReadyCO)    delete m_recReadyCO;
     if(m_recReady)      delete m_recReady;
@@ -410,6 +411,7 @@ bool EngineRecord::openFile(){
 
     return true;
 }
+
 bool EngineRecord::openCueFile() {
     if ( m_cuefilename.length() <= 0 )
     {
@@ -464,3 +466,8 @@ void EngineRecord::closeFile(){
     }
 }
 
+void EngineRecord::closeCueFile() {
+    if ( m_cuefile.handle() != -1) {
+        m_cuefile.close();
+    }
+}
