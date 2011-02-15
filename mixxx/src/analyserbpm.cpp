@@ -22,18 +22,14 @@ void AnalyserBPM::initialise(TrackPointer tio, int sampleRate, int totalSamples)
     // int defaultrange = m_pConfig->getValueString(ConfigKey("[BPM]","BPMAboveRangeEnabled")).toInt();
     bool bpmEnabled = (bool)m_pConfig->getValueString(ConfigKey("[BPM]","BPMDetectionEnabled")).toInt();
 
-    // If BPM detection is not enabled, or the track already has BPM detection done.
-    if(bpmEnabled &&
-       tio->getBpm() == 0.) {
+    // If BPM detection is enabled and the track does not have a BPM already,
+    // create a detector.
+    if(bpmEnabled && tio->getBpm() == 0.) {
         // All SoundSource's return stereo data, no matter the real file's type
         m_pDetector = new soundtouch::BPMDetect(2, sampleRate);
         //m_pDetector = new BPMDetect(tio->getChannels(), sampleRate);
         //                                    defaultrange ? MIN_BPM : m_iMinBpm,
         //                                    defaultrange ? MAX_BPM : m_iMaxBpm);
-    }
-    else if (!tio->getBeats()) {
-        BeatsPointer pBeats = BeatFactory::makeBeatGrid(tio, tio->getBpm(), 0.0f);
-        tio->setBeats(pBeats);
     }
 }
 
