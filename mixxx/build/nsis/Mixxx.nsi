@@ -139,7 +139,7 @@ Section "Mixxx (required)" SecMixxx
   ; Update: The Microsoft Visual C++ 2010 Runtime gets rid of the manifest file, so it
   ;         is no longer necessary.
   
-  ; File ${BASE_BUILD_DIR}\..\mixxx-win${BITWIDTH}lib-msvc100\msvc*.dll
+  File ${BASE_BUILD_DIR}\..\mixxx-win${BITWIDTH}lib-msvc100\msvc*.dll
   ; File /nonfatal ${BASE_BUILD_DIR}\..\mixxx-win64lib-msvc100\msvcm*.dll
   ; File ${BASE_BUILD_DIR}\..\mixxx-win${BITWIDTH}lib-msvc100\Microsoft.VC*.CRT.manifest
 
@@ -395,6 +395,7 @@ Section "Uninstall"
   Delete $INSTDIR\LICENSE
   Delete $INSTDIR\README
   Delete $INSTDIR\COPYING
+  Delete $INSTDIR\sqldrivers\*.dll
 
   ; Remove skins, keyboard, midi mappings, promos
   Delete "$INSTDIR\skins\${DEFAULT_SKIN}\*.*"
