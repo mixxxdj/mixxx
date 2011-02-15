@@ -74,37 +74,41 @@ double BeatMatrix::findClosestBeat(double dSamples) const {
     return (nextBeat - dSamples > dSamples - prevBeat) ? prevBeat : nextBeat;
 }
 
-double BeatMatrix::findNthBeat(double dSamples, int offset) const {
+double BeatMatrix::findNthBeat(double dSamples, int n) const {
     QMutexLocker locker(&m_mutex);
     BeatList::const_iterator it;
     int i;
 
-    if (!isValid()) {
+    if (!isValid() || n == 0) {
         return -1;
     }
 
-    if ( offset > 0 ) {
-        it = qUpperBound(m_beatList.begin(), m_beatList.end(), dSamples);
-        if ( it != m_beatList.end()) {
-            if (*it == dSamples) {
+    if (n > 0) {
+        it = qLowerBound(m_beatList.begin(), m_beatList.end(), dSamples);
+
+        // Count down until n=1
+        while (it != m_beatList.end()) {
+            if (n == 1) {
                 return *it;
             }
-            for (i = 0; i > offset && it != m_beatList.begin(); i--) {
-                it--;
-            }
-            return *it;
+            it++; n--;
         }
     }
-    else if ( offset < 0 ) {
-        it = qLowerBound(m_beatList.begin(), m_beatList.end(), dSamples);
-        if (it != m_beatList.end()) {
-            if (*it == dSamples) {
+    else if (n < 0) {
+        it = qUpperBound(m_beatList.begin(), m_beatList.end(), dSamples);
+
+        // Count up until n=-1
+        while (it != m_beatList.begin()) {
+            // qUpperBound starts us off at the position just-one-past the last
+            // occurence of dSamples-or-smaller in the list. In order to get the
+            // last instance of dSamples-or-smaller, we decrement it by 1 before
+            // touching it. The guard of this while loop guarantees this does
+            // not put us before the start of the loop.
+            it--;
+            if (n == -1) {
                 return *it;
             }
-            for (i = 0; i < offset && it != m_beatList.end(); i++) {
-                it++;
-            }
-            return *it;
+            n++;
         }
     }
 
