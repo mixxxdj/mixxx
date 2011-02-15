@@ -118,12 +118,7 @@ bool CrateFeature::dropAcceptChild(const QModelIndex& index, QUrl url) {
 
     CrateDAO& crateDao = m_pTrackCollection->getCrateDAO();
 
-    if (crateDao.isCrateLocked(crateId)) {
-        QMessageBox::warning(NULL,
-                             tr("Unable to add tracks to the crate"),
-                             tr("The crate is locked. Please unlock it before adding tracks."));
-    }
-    else if (trackId >= 0)
+    if (trackId >= 0)
         return crateDao.addTrackToCrate(trackId, crateId);
     return false;
 }
@@ -134,7 +129,12 @@ bool CrateFeature::dragMoveAccept(QUrl url) {
 
 bool CrateFeature::dragMoveAcceptChild(const QModelIndex& index, QUrl url) {
     //TODO: Filter by supported formats regex and reject anything that doesn't match.
-    return true;
+    QString crateName = index.data().toString();
+    CrateDAO& crateDao = m_pTrackCollection->getCrateDAO();
+    int crateId = crateDao.getCrateIdByName(crateName);
+    bool locked = crateDao.isCrateLocked(crateId);
+    
+    return !locked;
 }
 
 void CrateFeature::bindWidget(WLibrarySidebar* sidebarWidget,
@@ -178,9 +178,12 @@ void CrateFeature::onRightClickChild(const QPoint& globalPos, QModelIndex index)
     CrateDAO& crateDAO = m_pTrackCollection->getCrateDAO();
     int crateId = crateDAO.getCrateIdByName(crateName);
     bool locked = crateDAO.isCrateLocked(crateId);
-
+    m_pDeleteCrateAction->setEnabled(!locked);
+    m_pRenameCrateAction->setEnabled(!locked);
+    
     if (locked) {
         m_pLockCrateAction->setText(tr("Unlock"));
+
     }
     else {
         m_pLockCrateAction->setText(tr("Lock"));
@@ -190,11 +193,7 @@ void CrateFeature::onRightClickChild(const QPoint& globalPos, QModelIndex index)
     menu.addAction(m_pCreateCrateAction);
     menu.addSeparator();
     menu.addAction(m_pRenameCrateAction);
-
-    if (!locked) {
-        menu.addAction(m_pDeleteCrateAction);
-    }
-    
+    menu.addAction(m_pDeleteCrateAction);
     menu.addAction(m_pLockCrateAction);
     menu.addSeparator();
     menu.addAction(m_pImportPlaylistAction);
@@ -263,12 +262,6 @@ void CrateFeature::slotDeleteCrate() {
     CrateDAO crateDao = m_pTrackCollection->getCrateDAO();
     int crateId = crateDao.getCrateIdByName(crateName);
     bool locked = crateDao.isCrateLocked(crateId);
-
-    if (locked)  {
-        qDebug() << "Cannot delete a locked crate: " << crateId;
-        return;
-    }
-    
     bool deleted = crateDao.deleteCrate(crateId);
 
     if (deleted) {

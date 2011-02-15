@@ -139,7 +139,9 @@ void PlaylistFeature::onRightClickChild(const QPoint& globalPos, QModelIndex ind
     QString playlistName = index.data().toString();
     int playlistId = m_playlistDao.getPlaylistIdFromName(playlistName);
     bool locked = m_playlistDao.isPlaylistLocked(playlistId);
-    
+    m_pDeletePlaylistAction->setEnabled(!locked);
+    m_pRenamePlaylistAction->setEnabled(!locked);
+        
     if (locked) {
         m_pLockPlaylistAction->setText(tr("Unlock"));
     }
@@ -152,11 +154,7 @@ void PlaylistFeature::onRightClickChild(const QPoint& globalPos, QModelIndex ind
     menu.addAction(m_pCreatePlaylistAction);
     menu.addSeparator();
     menu.addAction(m_pRenamePlaylistAction);
-
-    if (!locked) {
-        menu.addAction(m_pDeletePlaylistAction);
-    }
-    
+    menu.addAction(m_pDeletePlaylistAction);
     menu.addAction(m_pLockPlaylistAction);
     menu.addSeparator();
     menu.addAction(m_pImportPlaylistAction);
@@ -339,13 +337,6 @@ bool PlaylistFeature::dropAcceptChild(const QModelIndex& index, QUrl url) {
 
     // appendTrackToPlaylist doesn't return whether it succeeded, so assume it
     // did.
-    if (m_playlistDao.isPlaylistLocked(playlistId)) {
-        QMessageBox::warning(NULL,
-                             tr("Unable to add tracks to the playlist"),
-                             tr("The playlist is locked. Please unlock it before adding tracks."));
-        return false;
-    }
-
     m_playlistDao.appendTrackToPlaylist(trackId, playlistId);
     return true;
 }
@@ -356,7 +347,12 @@ bool PlaylistFeature::dragMoveAccept(QUrl url) {
 
 bool PlaylistFeature::dragMoveAcceptChild(const QModelIndex& index, QUrl url) {
     //TODO: Filter by supported formats regex and reject anything that doesn't match.
-    return true;
+
+    QString playlistName = index.data().toString();
+    int playlistId = m_playlistDao.getPlaylistIdFromName(playlistName);
+    bool locked = m_playlistDao.isPlaylistLocked(playlistId);
+    
+    return !locked;
 }
 
 TreeItemModel* PlaylistFeature::getChildModel() {

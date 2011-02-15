@@ -336,13 +336,14 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent * event)
         for (int i = 0; i < numPlaylists; ++i) {
             int iPlaylistId = playlistDao.getPlaylistId(i);
 
-            if (!playlistDao.isPlaylistLocked(iPlaylistId) &&
-                !playlistDao.isHidden(iPlaylistId)) {
+            if (!playlistDao.isHidden(iPlaylistId)) {
                 
                 QString playlistName = playlistDao.getPlaylistName(iPlaylistId);
                 // No leak because making the menu the parent means they will be
                 // auto-deleted
                 QAction* pAction = new QAction(playlistName, m_pPlaylistMenu);
+                bool locked = playlistDao.isPlaylistLocked(iPlaylistId);
+                pAction->setEnabled(!locked);
                 m_pPlaylistMenu->addAction(pAction);
                 m_playlistMapper.setMapping(pAction, iPlaylistId);
                 connect(pAction, SIGNAL(triggered()), &m_playlistMapper, SLOT(map()));
@@ -358,24 +359,23 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent * event)
         int numCrates = crateDao.crateCount();
         for (int i = 0; i < numCrates; ++i) {
             int iCrateId = crateDao.getCrateId(i);
-            if (!crateDao.isCrateLocked(iCrateId)) {
-                // No leak because making the menu the parent means they will be
-                // auto-deleted
-                QAction* pAction = new QAction(crateDao.crateName(iCrateId), m_pCrateMenu);
-                m_pCrateMenu->addAction(pAction);
-                m_crateMapper.setMapping(pAction, iCrateId);
-                connect(pAction, SIGNAL(triggered()), &m_crateMapper, SLOT(map()));
-            }
+            // No leak because making the menu the parent means they will be
+            // auto-deleted
+            QAction* pAction = new QAction(crateDao.crateName(iCrateId), m_pCrateMenu);
+            bool locked = crateDao.isCrateLocked(iCrateId);
+            pAction->setEnabled(!locked);
+            m_pCrateMenu->addAction(pAction);
+            m_crateMapper.setMapping(pAction, iCrateId);
+            connect(pAction, SIGNAL(triggered()), &m_crateMapper, SLOT(map()));
         }
 
         m_pMenu->addMenu(m_pCrateMenu);
     }
 
-    if (!modelHasCapabilities(TrackModel::TRACKMODELCAPS_LOCKED)) {
-        m_pMenu->addSeparator();
-        m_pMenu->addAction(m_pRemoveAct);
-    }
-
+    bool locked = modelHasCapabilities(TrackModel::TRACKMODELCAPS_LOCKED);
+    m_pRemoveAct->setEnabled(!locked);
+    m_pMenu->addSeparator();
+    m_pMenu->addAction(m_pRemoveAct);
     m_pPropertiesAct->setEnabled(oneSongSelected);
     m_pMenu->addAction(m_pPropertiesAct);
 
