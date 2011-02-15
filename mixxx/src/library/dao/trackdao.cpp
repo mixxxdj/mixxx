@@ -746,7 +746,7 @@ void TrackDAO::updateTrack(TrackInfoObject* pTrack)
     query.bindValue(":key", pTrack->getKey());
     query.bindValue(":rating", pTrack->getRating());
     const QByteArray* pWaveSummary = pTrack->getWaveSummary();
-    query.bindValue(":wavesummaryhex", pWaveSummary ? *pWaveSummary, QVariant(QVariant::ByteArray));
+    query.bindValue(":wavesummaryhex", pWaveSummary ? *pWaveSummary : QVariant(QVariant::ByteArray));
     query.bindValue(":timesplayed", pTrack->getTimesPlayed());
     query.bindValue(":played", pTrack->getPlayed());
     query.bindValue(":channels", pTrack->getChannels());
