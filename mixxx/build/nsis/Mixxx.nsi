@@ -139,9 +139,9 @@ Section "Mixxx (required)" SecMixxx
   ; Update: The Microsoft Visual C++ 2010 Runtime gets rid of the manifest file, so it
   ;         is no longer necessary.
   
-  File ${BASE_BUILD_DIR}\..\mixxx-win${BITWIDTH}lib-msvc100\msvc*.dll
-  ; File /nonfatal ${BASE_BUILD_DIR}\..\mixxx-win64lib-msvc100\msvcm*.dll
-  ; File ${BASE_BUILD_DIR}\..\mixxx-win${BITWIDTH}lib-msvc100\Microsoft.VC*.CRT.manifest
+  File ${BASE_BUILD_DIR}\..\..\mixxx-win${BITWIDTH}lib-msvc100-release\msvc*.dll
+  ; File /nonfatal ${BASE_BUILD_DIR}\..\..\mixxx-win64lib-msvc100-release\msvcm*.dll
+  ; File ${BASE_BUILD_DIR}\..\..\mixxx-win${BITWIDTH}lib-msvc100-release\Microsoft.VC*.CRT.manifest
 
 
   ; And documentation, licence etc.
