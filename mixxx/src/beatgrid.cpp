@@ -105,10 +105,7 @@ double BeatGrid::findNthBeat(double dSamples, int n) const {
 
 void BeatGrid::findBeats(double startSample, double stopSample, QList<double>* pBeatsList) const {
     QMutexLocker locker(&m_mutex);
-    if (!isValid()) {
-        return;
-    }
-    if ( startSample > stopSample ) {
+    if (!isValid() || startSample > stopSample) {
         return;
     }
     double curBeat = findNextBeat(startSample);
@@ -120,7 +117,7 @@ void BeatGrid::findBeats(double startSample, double stopSample, QList<double>* p
 
 bool BeatGrid::hasBeatInRange(double startSample, double stopSample) const {
     QMutexLocker locker(&m_mutex);
-    if (!isValid()) {
+    if (!isValid() || startSample > stopSample) {
         return false;
     }
     double curBeat = findNextBeat(startSample);
@@ -140,7 +137,7 @@ double BeatGrid::getBpm() const {
 
 double BeatGrid::getBpmRange(double startSample, double stopSample) const {
     QMutexLocker locker(&m_mutex);
-    if (!isValid()) {
+    if (!isValid() || startSample > stopSample) {
         return -1;
     }
     return m_dBpm;
