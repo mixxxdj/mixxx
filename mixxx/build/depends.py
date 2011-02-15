@@ -608,7 +608,14 @@ class MixxxCore(Feature):
             if os.system("which g++ > /dev/null"): #Checks for non-zero return code
                 raise Exception("Did not find g++.")
         elif build.toolchain_is_msvs:
-            mixxx_lib_path = '#/../../mixxx-win%slib-msvc100' % build.bitwidth
+            # Validate the specified winlib directory exists
+            mixxx_lib_path = SCons.ARGUMENTS.get('winlib', '..\\..\\..\\mixxx-win32lib-msvc100-release')
+            if not os.path.exists(mixxx_lib_path):
+                print mixxx_lib_path
+                raise Exception("Winlib path does not exist! Please specify your winlib directory" 
+                                "path by running 'scons winlib=[path]'")
+                Script.Exit(1)
+            #mixxx_lib_path = '#/../../mixxx-win%slib-msvc100-release' % build.bitwidth
 
             # Set include and library paths to work with this
             build.env.Append(CPPPATH=mixxx_lib_path)
