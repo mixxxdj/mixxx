@@ -61,20 +61,12 @@ bool BeatGrid::isValid() const {
 // This could be implemented in the Beats Class itself.
 // If necessary, the child class can redefine it.
 double BeatGrid::findNextBeat(double dSamples) const {
-    QMutexLocker locker(&m_mutex);
-    if (!isValid()) {
-        return -1;
-    }
     return findNthBeat(dSamples, +1);
 }
 
 // This could be implemented in the Beats Class itself.
 // If necessary, the child class can redefine it.
 double BeatGrid::findPrevBeat(double dSamples) const {
-    QMutexLocker locker(&m_mutex);
-    if (!isValid()) {
-        return -1;
-    }
     return findNthBeat(dSamples, -1);
 }
 
@@ -89,18 +81,19 @@ double BeatGrid::findClosestBeat(double dSamples) const {
     return (nextBeat - dSamples > dSamples - prevBeat) ? prevBeat : nextBeat;
 }
 
-double BeatGrid::findNthBeat(double dSamples, int offset) const {
+double BeatGrid::findNthBeat(double dSamples, int n) const {
     QMutexLocker locker(&m_mutex);
-    double ret;
-
-
-    if ( offset > 0 ) {
-        return (ceilf(dSamples/m_dBeatLength) * m_dBeatLength + m_dFirstBeat) + 
-                    (m_dBeatLength * (offset-1));
+    if (!isValid()) {
+        return -1;
     }
-    else if ( offset < 0 ) {
-        return (floorf(dSamples/m_dBeatLength) * m_dBeatLength + m_dFirstBeat) - 
-                    (m_dBeatLength * (offset+1));
+
+    if (n > 0) {
+        return (ceilf(dSamples/m_dBeatLength) * m_dBeatLength + m_dFirstBeat) +
+                (m_dBeatLength * (n-1));
+    }
+    else if (n < 0) {
+        return (floorf(dSamples/m_dBeatLength) * m_dBeatLength + m_dFirstBeat) -
+                (m_dBeatLength * (n+1));
     }
 
     return -1;

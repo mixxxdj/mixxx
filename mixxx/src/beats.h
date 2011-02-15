@@ -59,10 +59,12 @@ class Beats {
     // the track, or -1 if none exists.
     virtual double findClosestBeat(double dSamples) const = 0;
 
-    // Find the Nth beat from Sample offset. Works with both positive and negative
-    // offsets. The offset 0 is invalid and both -1 and 1 will return the same
-    // value if the sample requested is a beat itself.
-    virtual double findNthBeat(double dSamples, int offset) const = 0;
+    // Find the Nth beat from sample dSamples. Works with both positive and
+    // negative values of n. Calling findNthBeat with n=0 is invalid. Calling
+    // findNthBeat with n=1 or n=-1 is equivalent to calling findNextBeat and
+    // findPrevBeat, respectively. If dSamples refers to the location of a beat,
+    // then dSamples is returned. If no beat can be found, returns -1.<
+    virtual double findNthBeat(double dSamples, int n) const = 0;
 
     // Adds to pBeatsList the position in samples of every beat occuring between
     // startPosition and endPosition
