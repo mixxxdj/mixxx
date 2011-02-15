@@ -31,6 +31,10 @@ void AnalyserBPM::initialise(TrackPointer tio, int sampleRate, int totalSamples)
         //                                    defaultrange ? MIN_BPM : m_iMinBpm,
         //                                    defaultrange ? MAX_BPM : m_iMaxBpm);
     }
+    else if (!tio->getBeats()) {
+        BeatsPointer pBeats = BeatFactory::makeBeatGrid(tio, tio->getBpm(), 0.0f);
+        tio->setBeats(pBeats);
+    }
 }
 
 void AnalyserBPM::process(const CSAMPLE *pIn, const int iLen) {
