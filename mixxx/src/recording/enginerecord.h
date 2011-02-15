@@ -50,6 +50,7 @@ class EngineRecord : public EngineAbstractRecord {
     void updateFromPreferences();
     bool fileOpen();
     bool openCueFile();
+    void closeCueFile();
 
   private:
     int getActiveTracks();
