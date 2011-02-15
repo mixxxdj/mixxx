@@ -635,6 +635,15 @@ TrackPointer TrackDAO::getTrackFromDB(QSqlQuery &query) const
             pTrack->parse();
         }
 
+        if (!pBeats && pTrack->getBpm() != 0.0f) {
+            // The track has no stored beats but has a previously detected BPM
+            // or a BPM loaded from metadata. Automatically create a beatgrid
+            // for the track. This dirties the track so we have to do it after
+            // all the signal connections, etc. are in place.
+            BeatsPointer pBeats = BeatFactory::makeBeatGrid(pTrack, pTrack->getBpm(), 0.0f);
+            pTrack->setBeats(pBeats);
+        }
+
         return pTrack;
     }
     //query.finish();
