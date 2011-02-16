@@ -21,24 +21,23 @@ BrowseThread::~BrowseThread()
     m_bStopThread = true;
     //wake up thread since it might wait for user input
     m_locationUpdated.wakeAll();
-    qDebug() << "Browser background thread terminated!";
     //Wait until thread terminated
-    //wait();
+    //terminate();
+    wait();
+    qDebug() << "Browser background thread terminated!";
 
 }
 
 void BrowseThread::setPath(QString& path)
 {
     m_path = path;
-    //m_locationUpdated.wakeAll();
-    populateModel();
+    m_locationUpdated.wakeAll();
+
 }
 
 void BrowseThread::run()
 {
-    //start event loop
-   exec();
-    /*
+
     while(1){
         m_mutex.lock();
         //Wait until the user has selected a folder
@@ -50,12 +49,12 @@ void BrowseThread::run()
 
         /*
          * Populate the model
-         *
+         */
         populateModel();
         m_mutex.unlock();
 
     }
-    */
+
 }
 void BrowseThread::populateModel()
 {
@@ -66,7 +65,7 @@ void BrowseThread::populateModel()
     QString thisPath(m_path);
     //remove all rows
     emit(clearModel());
-
+    QCoreApplication::processEvents();
 
     int row = 0;
     //Iterate over the files
@@ -78,7 +77,7 @@ void BrowseThread::populateModel()
          */
         if(thisPath != m_path){
             qDebug() << "Exit populateModel()";
-            return;
+            return populateModel();
         }
 
         QString filepath = fileIt.next();
@@ -130,12 +129,12 @@ void BrowseThread::populateModel()
         column_data.insert(COLUMN_LOCATION, item);
 
         emit(rowDataAppended(column_data));
-        QCoreApplication::processEvents();
 
+        QCoreApplication::processEvents();
         ++row;
 
-
-
+        //Sleep for 50ms which prevents us from GUI freezes
+        msleep(50);
     }
 
 }
