@@ -266,7 +266,8 @@ if build.platform_is_osx and 'bundle' in COMMAND_LINE_TARGETS:
 		 )
 	#env.Default(mixxx_bin) #todo: make the Default() just the program itself *globally* (not just for OS X); bundle should be a separate target
 	env.Alias('bundle', bundle)
-	dmg = env.Dmg('mixxx-%s-%s' % (mixxx_version, ARCH), [bundle, ] + docs_files, VOLNAME=VOLNAME, ICON = DMG_ICON)
+	#dmg = env.Dmg('mixxx-%s-%s' % (mixxx_version, ARCH), [bundle, ] + docs_files, VOLNAME=VOLNAME, ICON = DMG_ICON)
+	dmg = env.Dmg('mixxx', [bundle, ] + docs_files, VOLNAME=VOLNAME, ICON = DMG_ICON)
 	env.Alias('package', dmg)
 
 if build.platform_is_windows:
