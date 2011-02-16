@@ -41,11 +41,10 @@ BrowseTableModel::BrowseTableModel(QObject* parent)
     addSearchColumn(COLUMN_KEY);
     addSearchColumn(COLUMN_COMMENT);
 
-    m_backgroundThread.moveToThread(&m_backgroundThread);
+    //m_backgroundThread.moveToThread(&m_backgroundThread);
     m_backgroundThread.start(QThread::LowestPriority);
 
     setHorizontalHeaderLabels(header_data);
-    //qRegisterMetaType<QString>("QString");
 
     QObject::connect(&m_backgroundThread, SIGNAL(clearModel()),
             this, SLOT(slotClear()));
