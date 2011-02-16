@@ -116,7 +116,7 @@ def build_dmg(target, source, env):
         system('SetFile -a C "%s"' % dmg) #is there an sconsey way to declare this? Would be nice so that it could write what
     
     
-    if system("hdiutil create -srcfolder %s -format UDBZ -volname %s %s" % (dmg, env['VOLNAME'], target)):
+    if system("hdiutil create -srcfolder %s -format UDBZ -ov -volname %s %s" % (dmg, env['VOLNAME'], target)):
         raise Exception("hdiutil create failed")
     
     shutil.rmtree(dmg)
