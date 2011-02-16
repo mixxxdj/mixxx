@@ -19,9 +19,6 @@ VinylControl::VinylControl(ConfigObject<ConfigValue> * pConfig, const char * _gr
     mode                = new ControlObjectThread(ControlObject::getControl(ConfigKey(group, "VinylMode")));
 	enabled     		= new ControlObjectThread(ControlObject::getControl(ConfigKey(group, "vinylcontrol")));
     rateRange           = new ControlObjectThread(ControlObject::getControl(ConfigKey(group, "rateRange")));
-    timecodeQuality     = new ControlObjectThread(ControlObject::getControl(ConfigKey(group, "VinylControlQuality")));
-    timecodeInputL      = new ControlObjectThread(ControlObject::getControl(ConfigKey(group, "VinylControlInputL")));
-    timecodeInputR      = new ControlObjectThread(ControlObject::getControl(ConfigKey(group, "VinylControlInputR")));
     //vinylStatus			= new ControlObject(ConfigKey(group,"VinylStatus"));
     vinylStatus     = new ControlObjectThread(ControlObject::getControl(ConfigKey(group, "VinylStatus")));
     rateDir         = new ControlObjectThread(ControlObject::getControl(ConfigKey(group, "rate_dir")));
@@ -32,6 +29,9 @@ VinylControl::VinylControl(ConfigObject<ConfigValue> * pConfig, const char * _gr
     dVinylScratch = 0.0f;
     dDriftControl   = 0.0f;
     fRateRange = 0.0f;
+    m_fSignalLeft = 0.0f;
+    m_fSignalRight = 0.0f;
+    m_fTimecodeQuality = 0.0f;
 
     //Get the vinyl type
     strVinylType = m_pConfig->getValueString(ConfigKey("[VinylControl]","strVinylType"));
@@ -76,12 +76,20 @@ float VinylControl::getSpeed()
 {
     return dVinylScratch;
 }
-
-//Returns some sort of indication of the vinyl's signal strength.
-//Range of fTimecodeStrength should be 0.0 to 1.0
-/*
-float VinylControl::getTimecodeStrength()
+float VinylControl::getSignalLeft()
 {
-    return fTimecodeStrength;
+    return m_fSignalLeft;
 }
-*/
+
+float VinylControl::getSignalRight()
+{
+    return m_fSignalRight;
+}
+
+/** Returns some sort of indication of the vinyl's signal quality. 
+    Range of m_fTimecodeQuality should be 0.0 to 1.0 */
+float VinylControl::getTimecodeQuality()
+{
+    return m_fTimecodeQuality;
+}
+

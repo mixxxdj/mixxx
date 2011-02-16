@@ -38,7 +38,9 @@ class VinylControl : public QThread
     	virtual void syncPosition() = 0; */
     	virtual void AnalyseSamples(short* samples, size_t size) = 0;
     	virtual float getSpeed();
-    	//virtual float getTimecodeStrength();
+        virtual float getSignalLeft();
+        virtual float getSignalRight();
+        virtual float getTimecodeQuality();
     protected:
 	    virtual void run() = 0;						// main thread loop
 
@@ -54,9 +56,6 @@ class VinylControl : public QThread
     	ControlObjectThread *mode;            //The ControlObject used to get the vinyl control mode (absolute/relative/scratch)
     	ControlObjectThread *enabled;         //The ControlObject used to get if the vinyl control is enabled or disabled.
     	ControlObjectThread *rateRange;         //The ControlObject used to the get the pitch range from the prefs.
-    	ControlObjectThread *timecodeQuality;   //The ControlObject used to notify the GUI about the quality of the timecode signal.
-        ControlObjectThread *timecodeInputL;    //The ControlObject used to notify the GUI about vinyl control left channel's volume.
-        ControlObjectThread *timecodeInputR;    //The ControlObject used to notify the GUI about vinyl control right channel's volume.
         ControlObjectThread *vinylStatus;
         ControlObjectThread *rateDir; //direction of rate
         ControlObjectThread *loopEnabled; //looping enabled?
@@ -70,6 +69,9 @@ class VinylControl : public QThread
                                         //... these two values naturally drift apart, so we need to keep making adjustments to the pitch
                                         //to stop it from getting bad.
         float fRateRange;               //The pitch range setting from Mixxx's preferences
+        float m_fTimecodeQuality;       //Used as a measure of the quality of the timecode signal.
+        float m_fSignalLeft;            //Measures the left channel's volume.
+        float m_fSignalRight;           //Measures the right channel's volume.
 
 	    unsigned long iSampleRate;
 	    bool bIsEnabled;

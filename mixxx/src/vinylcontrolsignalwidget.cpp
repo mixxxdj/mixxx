@@ -15,30 +15,51 @@
 *                                                                         *
 ***************************************************************************/
 
+/**
+    TODO(XXX): Feb 2011 - asantoni 
+        * This class probably doesn't need the locking anymore. 
 
+*/
 
 #include <QtCore>
 #include <QtGui>
-#include "vinylcontrolsignalwidget.h"
 #include <math.h>
-#include <stdlib.h>
+#include "vinylcontrolsignalwidget.h"
+#include "vinylcontrolproxy.h"
 
 VinylControlSignalWidget::VinylControlSignalWidget()
-    : QGraphicsView(),
-      m_iTimerId(0) {
+    : QWidget(),
+      m_iTimerId(0),
+      m_pVinylControl(NULL) {
     for (int type = 0; type < (int) VINYLCONTROL_SIGTYPE_NUM; type++) {
-        m_signalRectItem[type] = NULL;
     }
-    setupWidget();
+
 }
 
 VinylControlSignalWidget::~VinylControlSignalWidget()
 {
 }
 
+/** This gets called before the VinylControlProxy objects get destroyed, in
+    order to prevent us from having bad pointers dangling. */
+void VinylControlSignalWidget::invalidateVinylControl()
+{
+    m_pVinylControl = NULL;
+}
+
+void VinylControlSignalWidget::setVinylControlProxy(VinylControlProxy* vc)
+{
+
+    m_pVinylControl = vc;
+    //Catch when the VinylControl objects get deleted (like when
+    //you change your vinyl type)
+    connect(m_pVinylControl, SIGNAL(destroyed()),
+            this, SLOT(invalidateVinylControl()));
+}
+
 void VinylControlSignalWidget::startDrawing() {
     if (m_iTimerId == 0) {
-        m_iTimerId = startTimer(50);
+        m_iTimerId = startTimer(60);
     }
 }
 
@@ -50,46 +71,23 @@ void VinylControlSignalWidget::stopDrawing() {
 }
 
 void VinylControlSignalWidget::timerEvent(QTimerEvent *event) {
-    updateScene();
-}
-
-void VinylControlSignalWidget::updateScene() {
-    m_controlLock.lock();
-    for (int type = 0; type < (int)VINYLCONTROL_SIGTYPE_NUM; type++) {
-        
-        if (m_samplesCalculated[type] == 0)
-            continue;
-        
-        QBrush brush;
-        if (type == VINYLCONTROL_SIGQUALITY) {
-            if (m_fRMSvolume[type] >= 0.990f) {
-                m_textItem->setPlainText(tr("OK"));
-                brush = QBrush(m_signalGradGood);
-            }
-            else {
-                m_textItem->setPlainText(tr(""));
-                brush = QBrush(m_signalGradBad);
-            }
-        }
-        else { //For the left/right channel signals.
-            if (m_fRMSvolume[type] < 0.90f && m_fRMSvolume[type] > 0.10f) { //This is totally empirical.
-                brush = QBrush(m_signalGradGood);
-            } else {
-                brush = QBrush(m_signalGradBad);
-            }
-        }
-            
-        //The QGraphicsView coord system is upside down...
-        int sizeY = this->height();
-        m_signalRect[type].setHeight(-m_fRMSvolume[type] * sizeY);
-        m_signalRectItem[type]->setBrush(brush);
-        m_signalRectItem[type]->setRect(m_signalRect[type]);
-
-        // Reset calculation:
-        m_fRMSvolumeSum[type] = 0;
-        m_samplesCalculated[type] = 0;
+    if (m_pVinylControl) {
+        updateSignalQuality(VINYLCONTROL_SIGQUALITY, 
+                            m_pVinylControl->getTimecodeQuality());
+        updateSignalQuality(VINYLCONTROL_SIGLEFTCHANNEL, 
+                            m_pVinylControl->getSignalLeft());
+        updateSignalQuality(VINYLCONTROL_SIGRIGHTCHANNEL, 
+                            m_pVinylControl->getSignalRight());
+    } 
+    else {
+        updateSignalQuality(VINYLCONTROL_SIGQUALITY, 
+                            0.0f);
+        updateSignalQuality(VINYLCONTROL_SIGLEFTCHANNEL, 
+                            0.0f);
+        updateSignalQuality(VINYLCONTROL_SIGRIGHTCHANNEL, 
+                            0.0f);
     }
-    m_controlLock.unlock();
+    update();
 }
 
 void VinylControlSignalWidget::resetWidget()
@@ -104,80 +102,45 @@ void VinylControlSignalWidget::resetWidget()
     m_controlLock.unlock();
 }
 
-
-void VinylControlSignalWidget::setupWidget()
+void VinylControlSignalWidget::paintEvent(QPaintEvent* event)
 {
     int sizeX = this->width();
     int sizeY = this->height();
 
-    m_signalScene.setSceneRect(0,0,sizeX, sizeY);
-    m_signalScene.setBackgroundBrush(Qt::black);
+    QPainter painter(this);
+    //painter.fillRect(this->rect(), QBrush(Qt::black));
 
-    this->setInteractive(false);
+    //Paint the background as a measure of whether or not the timecode is
+    //being successfully decoded.
+    painter.fillRect(this->rect(), QBrush(QColor(0, m_fRMSvolume[0]*255, 0)));
 
-    //Disable any scrollbars on the QGraphicsView
-    this->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-    this->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-
-    //Initialize QPens
-    QPen gridPen(Qt::green);
-    QPen graphLinePen(Qt::white);
-    QPen signalPen(Qt::black);
-
-    m_signalGradGood = QLinearGradient(0, 0, 0, rect().height());
-    m_signalGradBad = QLinearGradient(0, 0, 0, rect().height());
-    m_signalGradGood.setColorAt(0, Qt::green);
-    m_signalGradGood.setColorAt(1, Qt::darkGreen);    
-    m_signalGradBad.setColorAt(0, Qt::red);
-    m_signalGradBad.setColorAt(1, Qt::darkRed);
-      
+    for (int type = 0; type < (int)VINYLCONTROL_SIGTYPE_NUM; type++) {
+        
+        if (m_samplesCalculated[type] == 0)
+            continue;
+        QBrush brush;
+        if (type == VINYLCONTROL_SIGQUALITY) {
+            //Hmmm.
+        }
+        else { //For the left/right channel signals.
             
-    //QBrush signalBrush[VINYLCONTROL_SIGTYPE_NUM];
-    //QPixmap bg1(this->width() / 3, this->height());
-   /*
-    QPainter painter(m_bg[type]);
-    painter.fillRect(m_bg1->rect(), QBrush(QColor(0, 0, 255)));
-    painter.setPen(Qt::red);
-    painter.setFont(QFont("Tahoma", 8));
-    painter.drawText(rect(), tr("OK")); //Draw the OK text
-    painter.end();
-    */
+            painter.setPen(QPen(Qt::white));
+            int width = m_fRMSvolume[1]*sizeX;
+            int height = m_fRMSvolume[2]*sizeY;
+            int centerX = (sizeX-width) / 2;
+            int centerY = (sizeY-height) / 2;
+            painter.drawEllipse(centerX,
+                                centerY,
+                                width,
+                                height);
+        }
 
-    //draw grid
-#define GRID_X_LINES 3
-#define GRID_Y_LINES 3
-    for(int i=1; i < GRID_X_LINES; i++)
-    {
-        QGraphicsItem* line = m_signalScene.addLine(QLineF(0, i *(sizeY/GRID_X_LINES),
-                                                           sizeX,i *(sizeY/GRID_X_LINES)), gridPen);
-        line->setZValue(0);
+        // Reset calculation:
+        m_fRMSvolumeSum[type] = 0;
+        m_samplesCalculated[type] = 0;
     }
-    for(int i=1; i < GRID_Y_LINES; i++)
-    {
-        QGraphicsItem* line = m_signalScene.addLine(QLineF( i * (sizeX/GRID_Y_LINES), 0,
-                                                            i * (sizeX/GRID_Y_LINES), sizeY), gridPen);
-        line->setZValue(0);
-    }
-
-    for (int type = 0; type < (int)VINYLCONTROL_SIGTYPE_NUM; type++)
-    {
-        m_signalRect[type].setX(type * (sizeX / 3));
-        m_signalRect[type].setY(sizeY);
-        m_signalRect[type].setWidth(sizeX / 3);
-        m_signalRect[type].setHeight(1);
-        m_signalRectItem[type] = m_signalScene.addRect(m_signalRect[type],
-                                                       signalPen,
-                                                       QBrush(m_signalGradGood));
-        m_signalRectItem[type]->setZValue(1);
-    }
-
-    m_textItem = m_signalScene.addText("", QFont("Tahoma", 8));
-    m_textItem->setPos(QPointF(1, 1));
-    m_textItem->setDefaultTextColor(QColor(0,0,0));
-    m_textItem->setZValue(2);
-
-    this->setScene(&m_signalScene);
 }
+
 
 /** @brief Wraps Updates the signal quality indicators with a given signal strength
   * @param indicator_index Identifies the corresponding channel and indicator to be updated.

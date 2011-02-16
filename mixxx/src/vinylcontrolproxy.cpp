@@ -96,3 +96,30 @@ float VinylControlProxy::getSpeed()
     else
         return 0.0f;
 }
+
+float VinylControlProxy::getSignalLeft()
+{
+    if (m_pVinylControl)
+        return m_pVinylControl->getSignalLeft();
+    else
+        return 0.0f;
+}
+
+float VinylControlProxy::getSignalRight()
+{
+    if (m_pVinylControl)
+        return m_pVinylControl->getSignalRight();
+    else
+        return 0.0f;
+}
+
+/** Returns some sort of indication of the vinyl's signal quality. 
+    Range of m_fTimecodeQuality should be 0.0 to 1.0 */
+float VinylControlProxy::getTimecodeQuality()
+{
+    if (m_pVinylControl)
+        return m_pVinylControl->getTimecodeQuality();
+    else
+        return 0.0f;
+}
+
