@@ -59,6 +59,7 @@ class SoundManager : public QObject
         SoundManagerConfig getConfig() const;
 #ifdef __VINYLCONTROL__        
         bool hasVinylInput(int deck);
+        QList<VinylControlProxy*> getVinylControlProxies();
 #endif
         int setConfig(SoundManagerConfig config);
         void checkConfig();

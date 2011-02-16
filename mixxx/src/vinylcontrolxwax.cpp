@@ -131,9 +131,8 @@ void VinylControlXwax::AnalyseSamples(short *samples, size_t size)
         timecoder_submit(&timecoder, samples, size);
 
         //Update the input signal strength
-        //qDebug() << group << (float)fabs((float)samples[0]);
-        timecodeInputL->slotSet((float)fabs((float)samples[0]) / SHRT_MAX * 2.0f);
-        timecodeInputR->slotSet((float)fabs((float)samples[1]) / SHRT_MAX * 2.0f);
+        m_fSignalLeft = ((float)fabs((float)samples[0])) / SHRT_MAX * 2.0f;
+        m_fSignalRight = ((float)fabs((float)samples[1])) / SHRT_MAX * 2.0f;
         
         bHaveSignal = fabs((float)samples[0]) + fabs((float)samples[1]) > MIN_SIGNAL;
         //qDebug() << "signal?" << bHaveSignal;
@@ -325,7 +324,7 @@ void VinylControlXwax::run()
             {
             	//POSITION: MAYBE  PITCH: YES
 				//Notify the UI that the timecode quality is good
-                timecodeQuality->slotSet(1.0f);
+                m_fTimecodeQuality = 1.0f;
                 
                 //dVinylPitch = (dOldPitch * (XWAX_SMOOTHING - 1) + dVinylPitch) / XWAX_SMOOTHING;
                 				
@@ -453,7 +452,7 @@ void VinylControlXwax::run()
 		            
 		            dOldPos = filePosition + dDriftAmt;
 		            if (uiUpdateTime(filePosition))
-		        		timecodeQuality->slotSet(0.75f);
+		        		m_fTimecodeQuality = 0.75f;
 		        	
 		        	if (dVinylPitch > 0.2)
 		        	{	
@@ -522,7 +521,7 @@ void VinylControlXwax::run()
 			        controlScratch->slotSet(0.0f);
 			        //resetSteadyPitch(dVinylPitch, filePosition);
 			        //Notify the UI that the timecode quality is garbage/missing.
-			        timecodeQuality->slotSet(0.0f);
+			        m_fTimecodeQuality = 0.0f;
 			        ringPos = 0;
 			        ringFilled = 0;
 			        vinylStatus->slotSet(VINYL_STATUS_OK);
