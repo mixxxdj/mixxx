@@ -123,7 +123,7 @@ Section "Mixxx (required)" SecMixxx
 
   ; Put binary files there
   File "${BASE_BUILD_DIR}\dist${BITWIDTH}\mixxx.exe"
-  File "${BASE_BUILD_DIR}\dist${BITWIDTH}\*.dll"
+  File "${BASE_BUILD_DIR}\..\..\mixxx-win${BITWIDTH}lib-msvc100-release\*.dll"
 
   ; Put other files there
   File "${BASE_BUILD_DIR}\dist${BITWIDTH}\*.xml"
@@ -139,7 +139,7 @@ Section "Mixxx (required)" SecMixxx
   ; Update: The Microsoft Visual C++ 2010 Runtime gets rid of the manifest file, so it
   ;         is no longer necessary.
   
-  File ${BASE_BUILD_DIR}\..\..\mixxx-win${BITWIDTH}lib-msvc100-release\msvc*.dll
+  ; File ${BASE_BUILD_DIR}\..\..\mixxx-win${BITWIDTH}lib-msvc100-release\msvc*.dll
   ; File /nonfatal ${BASE_BUILD_DIR}\..\..\mixxx-win64lib-msvc100-release\msvcm*.dll
   ; File ${BASE_BUILD_DIR}\..\..\mixxx-win${BITWIDTH}lib-msvc100-release\Microsoft.VC*.CRT.manifest
 
