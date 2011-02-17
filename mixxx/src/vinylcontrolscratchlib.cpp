@@ -100,9 +100,9 @@ void VinylControlScratchlib::AnalyseSamples(short * samples, size_t size)
     }
 
     if (strVinylType == MIXXX_VINYL_FINALSCRATCH)
-        timecodeQuality->slotSet(analyzer->GetTimecodesPerSecond() / 32);
+        m_fTimecodeQuality = analyzer->GetTimecodesPerSecond() / 32;
     else if (strVinylType == MIXXX_VINYL_MIXVIBESDVSCD)
-        timecodeQuality->slotSet(analyzer->GetTimecodesPerSecond() / 32);
+        m_fTimecodeQuality = analyzer->GetTimecodesPerSecond() / 32;
 
     waitForNextInput.wakeAll();
     lockSamples.unlock();

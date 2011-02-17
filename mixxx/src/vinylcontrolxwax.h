@@ -14,7 +14,8 @@ extern "C" {
 
 #define XWAX_DEVICE_FRAME 32
 #define XWAX_SMOOTHING (128 / XWAX_DEVICE_FRAME) /* result value is in frames */
-#define RING_SIZE 20
+#define RING_SIZE 40
+#define QUALITY_RING_SIZE 100
 #define MIN_SIGNAL 75
 
 
@@ -27,6 +28,8 @@ class VinylControlXwax : public VinylControl
     	bool isEnabled();
     	void AnalyseSamples(short* samples, size_t size);  
         static void freeLUTs();
+        unsigned char* getScopeBytemap();
+        float getAngle();
 protected:
 	void run();						// main thread loop
 
@@ -41,12 +44,17 @@ private:
 	void enableConstantMode();
 	void enableConstantMode(double rate);
 	bool uiUpdateTime(double time);
+	void establishQuality(bool quality_sample);
 
 	double dFileLength; 			//The length (in samples) of the current song.
 
 	double dOldPos;   				//The position read last time it was polled.
 	double dOldDiff;  				//The old difference between the positions. (used to check if the needle's on the record...)
 	double dOldPitch;
+	
+	bool bQualityRing[QUALITY_RING_SIZE];
+    int iQualPos;
+    int iQualFilled;
 
 	bool bNeedleDown; 				//Is the needle on the record? (used for needle dropping)
 	bool bSeeking; 					//Are we seeking through the record? (ie. is it moving really fast?)

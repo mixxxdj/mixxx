@@ -45,14 +45,7 @@ public slots:
     void slotApply();
 	void EnableRelativeModeSlotApply();
 	void VinylTypeSlotApply();
-	void AutoCalibrationSlotApply();
     void VinylGainSlotApply();
-    void updateSignalQuality1(double value);
-    void updateSignalQuality2(double value);
-    void updateInputLevelLeft1(double value);
-    void updateInputLevelRight1(double value);
-    void updateInputLevelLeft2(double value);
-    void updateInputLevelRight2(double value);
     void slotClose();
     void slotShow();
 
