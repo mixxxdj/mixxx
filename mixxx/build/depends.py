@@ -184,7 +184,7 @@ class Qt(Dependence):
                                       '$QTDIR/include/QtWebKit',
                                       '$QTDIR/include/Qt'])
 
-        # Set the rpath for linux/bsd/osx. 
+        # Set the rpath for linux/bsd/osx.
         # This is not support on OS X before the 10.5 SDK.
         using_104_sdk = (str(build.env["CCFLAGS"]).find("10.4") >= 0)
         compiling_on_104 = False
@@ -576,7 +576,8 @@ class MixxxCore(Feature):
             # force manifest file creation, apparently not necessary for all
             # people but necessary for this committers handicapped windows
             # installation -- bkgood
-            build.env.Append(LINKFLAGS="/MANIFEST")
+            if build.toolchain_is_msvs:
+                build.env.Append(LINKFLAGS="/MANIFEST")
         elif build.platform_is_osx:
             build.env.Append(LINKFLAGS="-headerpad=ffff"); #Need extra room for code signing (App Store)
             build.env.Append(LINKFLAGS="-headerpad_max_install_names"); #Need extra room for code signing (App Store)
@@ -717,12 +718,13 @@ class MixxxCore(Feature):
         """Sets up additional things in the Environment that must happen
         after the Configure checks run."""
         if build.platform_is_windows:
-            build.env.Append(LINKFLAGS = ['/nodefaultlib:LIBCMT.lib',
-                                          '/nodefaultlib:LIBCMTd.lib',
-                                          '/entry:mainCRTStartup'])
-            # Makes the program not launch a shell first
             if build.toolchain_is_msvs:
+                build.env.Append(LINKFLAGS = ['/nodefaultlib:LIBCMT.lib',
+                                              '/nodefaultlib:LIBCMTd.lib',
+                                              '/entry:mainCRTStartup'])
+                # Makes the program not launch a shell first
                 build.env.Append(LINKFLAGS = '/subsystem:windows')
             elif build.toolchain_is_gnu:
+                # Makes the program not launch a shell first
                 build.env.Append(LINKFLAGS = '--subsystem,windows')
                 build.env.Append(LINKFLAGS = '-mwindows')
