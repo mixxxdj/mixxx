@@ -49,6 +49,9 @@ VinylControlXwax::VinylControlXwax(ConfigObject<ConfigValue> * pConfig, const ch
     iOldMode		= MIXXX_VCMODE_ABSOLUTE;
     dUiUpdateTime   = -1.0f;
     m_bNeedleSkipPrevention = (bool)(m_pConfig->getValueString( ConfigKey( "[VinylControl]", "NeedleSkipPrevention" ) ).toInt());
+    iQualPos = 0;
+    iQualFilled = 0;
+
     
     //this is all needed because libxwax indexes by C-strings
     //so we go and pass libxwax a pointer into our local stack...
@@ -77,6 +80,7 @@ VinylControlXwax::VinylControlXwax(ConfigObject<ConfigValue> * pConfig, const ch
     m_xwaxLUTMutex.lock(); //Static mutex! We don't want two threads doing this!
    
     timecoder_init(&timecoder, timecode, 1.0f, iSampleRate);
+    timecoder_monitor_init(&timecoder, MIXXX_VINYL_SCOPE_SIZE);
     //Note that timecoder_init will not double-malloc the LUTs, and after this we are guaranteed
     //that the LUT has been generated unless we ran out of memory.
     m_bLUTInitialized = true;
@@ -129,11 +133,6 @@ void VinylControlXwax::AnalyseSamples(short *samples, size_t size)
     {
         //Submit the samples to the xwax timecode processor
         timecoder_submit(&timecoder, samples, size);
-
-        //Update the input signal strength
-        //qDebug() << group << (float)fabs((float)samples[0]);
-        timecodeInputL->slotSet((float)fabs((float)samples[0]) / SHRT_MAX * 2.0f);
-        timecodeInputR->slotSet((float)fabs((float)samples[1]) / SHRT_MAX * 2.0f);
         
         bHaveSignal = fabs((float)samples[0]) + fabs((float)samples[1]) > MIN_SIGNAL;
         //qDebug() << "signal?" << bHaveSignal;
@@ -141,6 +140,11 @@ void VinylControlXwax::AnalyseSamples(short *samples, size_t size)
         waitForNextInput.wakeAll();
         lockSamples.unlock();
     }
+}
+
+unsigned char* VinylControlXwax::getScopeBytemap()
+{
+	return timecoder.mon;
 }
 
 
@@ -190,11 +194,18 @@ void VinylControlXwax::run()
     	//Get the pitch range from the prefs.
         fRateRange = rateRange->get();
         
+		if(bHaveSignal)
+		{
+		    //Always analyse the input samples
+			iPosition = timecoder_get_position(&timecoder, &when);
+		    //Notify the UI if the timecode quality is good
+			establishQuality(iPosition != -1);
+		}
+        
 		//are we even playing and enabled at all?
         if (duration != NULL && bIsEnabled)	
         {
-        	// Analyse the input samples
-	        iPosition = timecoder_get_position(&timecoder, &when);
+        	
         	//qDebug() << group << id << iPosition;
 	        
         	double cur_duration = duration->get();
@@ -324,18 +335,7 @@ void VinylControlXwax::run()
             if(bHaveSignal)
             {
             	//POSITION: MAYBE  PITCH: YES
-				//Notify the UI that the timecode quality is good
-                timecodeQuality->slotSet(1.0f);
-                
-                //dVinylPitch = (dOldPitch * (XWAX_SMOOTHING - 1) + dVinylPitch) / XWAX_SMOOTHING;
-                				
-                //FIXME (when Mark finished variable samplerates in timecoder)
-                //Hack to make other samplerates work with xwax:
-                //dVinylPitch *= (iSampleRate/44100);
 
-                //Re-get the duration, just in case a track hasn't been loaded yet...
-                //duration = ControlObject::getControl(ConfigKey(group, "duration"));
-                
 				//We have pitch, but not position.  so okay signal but not great (scratching / cueing?)
 				//qDebug() << "Pitch" << dVinylPitch;
 				if (iPosition != -1)
@@ -452,8 +452,6 @@ void VinylControlXwax::run()
 				    }
 		            
 		            dOldPos = filePosition + dDriftAmt;
-		            if (uiUpdateTime(filePosition))
-		        		timecodeQuality->slotSet(0.75f);
 		        	
 		        	if (dVinylPitch > 0.2)
 		        	{	
@@ -522,7 +520,7 @@ void VinylControlXwax::run()
 			        controlScratch->slotSet(0.0f);
 			        //resetSteadyPitch(dVinylPitch, filePosition);
 			        //Notify the UI that the timecode quality is garbage/missing.
-			        timecodeQuality->slotSet(0.0f);
+			        m_fTimecodeQuality = 0.0f;
 			        ringPos = 0;
 			        ringFilled = 0;
 			        vinylStatus->slotSet(VINYL_STATUS_OK);
@@ -661,4 +659,40 @@ bool VinylControlXwax::uiUpdateTime(double now)
 		return true;
 	}
 	return false;
+}
+
+void VinylControlXwax::establishQuality(bool quality_sample)
+{
+	bQualityRing[iQualPos] = quality_sample;
+	if(iQualFilled < QUALITY_RING_SIZE)
+	iQualFilled++;
+		       
+	int quality = 0;
+	for (int i=0; i<iQualFilled; i++)
+	{
+		if (bQualityRing[i])
+			quality++;
+	}
+
+	//qDebug() << "quality" << m_fTimecodeQuality;
+	m_fTimecodeQuality = (float)quality / (float)iQualFilled;
+		       
+	iQualPos++;
+	if(iQualPos >= QUALITY_RING_SIZE)
+		iQualPos = 0;
+}
+
+float VinylControlXwax::getAngle()
+{
+	float when;
+	float pos = timecoder_get_position(&timecoder, &when);
+	
+	if (pos == -1)
+		return -1.0;
+		
+	pos /= 1000.0;
+	
+	float rps = timecoder_revs_per_sec(&timecoder);
+	//invert angle to make vinyl spin direction correct
+	return 360 - ((int)(pos * 360.0 * rps) % 360);
 }

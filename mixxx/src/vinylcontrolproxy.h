@@ -15,6 +15,9 @@ class VinylControlProxy : public VinylControl
         void ToggleVinylControl(bool enable);
         void run();
         float getSpeed();
+        float getTimecodeQuality();
+        unsigned char* getScopeBytemap();
+        float getAngle();
     protected:
         VinylControl* m_pVinylControl; //Pointer to active VinylControl object
 };
