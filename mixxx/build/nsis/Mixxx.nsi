@@ -135,7 +135,7 @@ Section "Mixxx (required)" SecMixxx
 
   File ${BASE_BUILD_DIR}\..\mixxx-win${BITWIDTH}lib-msvc\msvcr*.dll
   File ${BASE_BUILD_DIR}\..\mixxx-win${BITWIDTH}lib-msvc\msvcp*.dll
-  File /nonfatal ${BASE_BUILD_DIR}\..\mixxx-win64lib-msvc\msvcm*.dll
+  File /nonfatal ${BASE_BUILD_DIR}\..\mixxx-win${BITWIDTH}lib-msvc\msvcm*.dll
   File ${BASE_BUILD_DIR}\..\mixxx-win${BITWIDTH}lib-msvc\Microsoft.VC*.CRT.manifest
 
   ; And documentation, licence etc.
