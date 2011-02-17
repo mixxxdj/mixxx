@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2010-10-28 15:35-0400\n"
-"PO-Revision-Date: 2011-01-03 17:15+0000\n"
-"Last-Translator: Eugene Marshal <Unknown>\n"
+"PO-Revision-Date: 2011-02-16 22:34+0000\n"
+"Last-Translator: Pavel <kitchenknif@Gmail.com>\n"
 "Language-Team: Russian <ru@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-01-04 13:48+0000\n"
-"X-Generator: Launchpad (build Unknown)\n"
+"X-Launchpad-Export-Date: 2011-02-17 04:33+0000\n"
+"X-Generator: Launchpad (build 12351)\n"
 
 #: AutoDJFeature#1
 msgid "Auto DJ"
@@ -68,7 +68,7 @@ msgstr "Список с этим наименованием уже сущест�
 
 #: CrateTableModel#1
 msgid "ID"
-msgstr ""
+msgstr "Идентификационный номер"
 
 #: CrateTableModel#2
 msgctxt "CrateTableModel#2"
@@ -387,7 +387,7 @@ msgstr "Для применения изменений, необходимо п�
 #: DlgPrefControlsDlg#1
 msgctxt "DlgPrefControlsDlg#1"
 msgid "Form1"
-msgstr ""
+msgstr "Форма 1"
 
 #: DlgPrefControlsDlg#2
 msgid "Skin"
@@ -454,7 +454,7 @@ msgstr ""
 
 #: DlgPrefControlsDlg#17
 msgid "%"
-msgstr ""
+msgstr "%"
 
 #: DlgPrefControlsDlg#18
 msgid "Permanent rate change (between 1 and 8000) when right clicking"
@@ -487,7 +487,7 @@ msgstr "Чувствительность точной подстройки те�
 #: DlgPrefCrossfaderDlg#1
 msgctxt "DlgPrefCrossfaderDlg#1"
 msgid "Form1"
-msgstr ""
+msgstr "Форма 1"
 
 #: DlgPrefCrossfaderDlg#2
 msgid "Crossfader Curve"
@@ -515,7 +515,7 @@ msgstr "Скретчинг"
 
 #: DlgPrefCrossfaderDlg#8
 msgid "Linear"
-msgstr ""
+msgstr "Линейное"
 
 #: DlgPrefCrossfaderDlg#9
 msgid "Logarithmic"
@@ -529,7 +529,7 @@ msgstr "Сбросить"
 #: DlgPrefEQDlg#1
 msgctxt "DlgPrefEQDlg#1"
 msgid "Form1"
-msgstr ""
+msgstr "Форма 1"
 
 #: DlgPrefEQDlg#2
 msgid "Static EQs (for slower CPUs)"
@@ -885,7 +885,7 @@ msgstr ""
 
 #: DlgPrefShoutcastDlg#6
 msgid "Shoutcast"
-msgstr ""
+msgstr "Shoutcast"
 
 #: DlgPrefShoutcastDlg#7
 msgid "Icecast 1"
