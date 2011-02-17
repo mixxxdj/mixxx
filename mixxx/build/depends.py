@@ -586,13 +586,6 @@ class MixxxCore(Feature):
             # people but necessary for this committers handicapped windows
             # installation -- bkgood
             build.env.Append(LINKFLAGS="/MANIFEST")
-            build.env.RES('#src/mixxx.rc')
-            # Tobias Rafreider: What is the purpose of the following line, if
-            # the file doesn't exist?
-            #
-            # I think this file is auto-generated on Windows, as qrc_mixxx.cc is
-            # auto-generated above. Leaving uncommented.
-            #sources.append("mixxx.res")
         elif build.platform_is_osx:
             build.env.Append(LINKFLAGS="-headerpad=ffff"); #Need extra room for code signing (App Store)
             build.env.Append(LINKFLAGS="-headerpad_max_install_names"); #Need extra room for code signing (App Store)
