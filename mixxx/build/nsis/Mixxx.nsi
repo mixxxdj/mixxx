@@ -123,7 +123,7 @@ Section "Mixxx (required)" SecMixxx
 
   ; Put binary files there
   File "${BASE_BUILD_DIR}\dist${BITWIDTH}\mixxx.exe"
-  File "${BASE_BUILD_DIR}\..\..\mixxx-win${BITWIDTH}lib-msvc100-release\*.dll"
+  File "${BASE_BUILD_DIR}\dist${BITWIDTH}\*.dll"
 
   ; Put other files there
   File "${BASE_BUILD_DIR}\dist${BITWIDTH}\*.xml"
