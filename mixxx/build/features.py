@@ -39,7 +39,7 @@ class HSS1394(Feature):
             if not conf.CheckLib(['libHSS1394', 'HSS1394']):
                 raise Exception('Did not find HSS1394 development library, exiting!')
                 return
-            build.env.Append(LIBS = 'hss1394')
+
         build.env.Append(CPPDEFINES = '__HSS1394__')
 
     def sources(self, build):

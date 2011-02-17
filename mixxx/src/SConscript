@@ -369,9 +369,8 @@ def BuildRelease(target, source, env):
         if not nsis_path:
             print "Cannot find NSIS. Do you have it installed?"
         else:
-            parameters = []
             if build.machine_is_64bit:
-                parameters.append("%sx64=1" % command_flag)
+                buildwin64 = "/Dx64=1"
 
             # Call the NSIS build
             command = '%(path)s /DPRODUCT_VERSION=%(version)s %(64bit)s build\\nsis\\Mixxx.nsi' % \
