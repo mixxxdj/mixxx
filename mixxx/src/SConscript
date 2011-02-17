@@ -6,6 +6,7 @@ import sys
 import SCons
 import shutil
 import time
+import SCons.Script as SCons
 
 from build import util
 
