@@ -430,7 +430,7 @@ void VinylControlXwax::run()
 	                
 	                //if we hit the end of the ring, loop around
                     ringPos++;
-	                if(ringPos > RING_SIZE)
+	                if(ringPos >= RING_SIZE)
        				 	ringPos = 0;
 		            dOldPos = dVinylPosition;
 		        }
