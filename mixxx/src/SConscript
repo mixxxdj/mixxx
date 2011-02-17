@@ -150,7 +150,7 @@ image_files = Glob('#res/images/preferences/*')  # These are compiled in to the 
 # all files on 2+ builds after a clean.
 if build.toolchain_is_msvs:
         mixxx_winlib_path = SCons.ARGUMENTS.get('winlib', '..\\..\\..\\mixxx-win32lib-msvc100-release')
-        dll_files = Glob('%/*.dll' % mixxx_winlib_path)
+        dll_files = Glob('%s/*.dll' % mixxx_winlib_path)
 elif build.crosscompile and build.platform_is_windows and build.toolchain_is_gnu:
         # We're cross-compiling, grab these from the crosscompile bin folder. How should we be doing this?
         dll_files = Glob('#/../../mixxx-win%slib-crossmingw' % build.bitwidth)
