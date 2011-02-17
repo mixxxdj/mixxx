@@ -59,6 +59,7 @@ class SoundManager : public QObject
         SoundManagerConfig getConfig() const;
 #ifdef __VINYLCONTROL__        
         bool hasVinylInput(int deck);
+        QList<VinylControlProxy*> getVinylControlProxies();
 #endif
         int setConfig(SoundManagerConfig config);
         void checkConfig();
@@ -68,6 +69,7 @@ class SoundManager : public QObject
                         unsigned long iFramesPerBuffer, unsigned int iFrameSize);
     signals:
         void devicesUpdated(); // emitted when all the pointers to SoundDevices go stale
+        void devicesSetup(); // emitted when the sound devices have been set up
     public slots:
         void sync();
     private:

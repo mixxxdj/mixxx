@@ -8,10 +8,11 @@
 #ifndef VINYLCONTROLSIGNALWIDGET_H_
 #define VINYLCONTROLSIGNALWIDGET_H_
 
-
 #include <QtGui>
 #include <QPainter>
 #include <QTimerEvent>
+
+class VinylControlProxy;
 
 enum VinylControlSignalType {
     VINYLCONTROL_SIGQUALITY = 0,
@@ -20,40 +21,42 @@ enum VinylControlSignalType {
     VINYLCONTROL_SIGTYPE_NUM
 };
 
-class VinylControlSignalWidget : public QGraphicsView
+class VinylControlSignalWidget : public QWidget
 {
     Q_OBJECT
 public:
-    VinylControlSignalWidget();
+	VinylControlSignalWidget();
+    VinylControlSignalWidget(int size);
     ~VinylControlSignalWidget();
+    void setVinylControlProxy(VinylControlProxy* vc);
+    void paintEvent(QPaintEvent* event);
+    void setSize(int size);
     
     void resetWidget();
     void startDrawing();
     void stopDrawing();
-    void updateScene();
-    void setupWidget();
                       
 public slots:
-    void updateSignalQuality(VinylControlSignalType type, double value);
+    void invalidateVinylControl();
 
 protected:
     void timerEvent (QTimerEvent* event);
     
 private:
     QMutex m_controlLock;
-    QGraphicsScene m_signalScene;
-    QGraphicsRectItem* m_signalRectItem[VINYLCONTROL_SIGTYPE_NUM];
-    QGraphicsTextItem* m_textItem;
-    QRectF m_signalRect[VINYLCONTROL_SIGTYPE_NUM];
+    VinylControlProxy* m_pVinylControl;
     
-    QLinearGradient m_signalGradGood;
-    QLinearGradient m_signalGradBad;
-
     float m_fRMSvolumeSum[VINYLCONTROL_SIGTYPE_NUM];
     float m_fRMSvolume[VINYLCONTROL_SIGTYPE_NUM];
     long m_samplesCalculated[VINYLCONTROL_SIGTYPE_NUM];
 
     int m_iTimerId;
+    int m_iSize;
+    
+    QImage m_qImage;
+    unsigned char * m_imageData;
+    int m_iAngle;
+    float m_fSignalQuality;
 };
 
 #endif /* VINYLCONTROLSIGNALWIDGET_H_ */
