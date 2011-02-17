@@ -388,6 +388,7 @@ if 'makerelease' in COMMAND_LINE_TARGETS:
 	env.Alias('makerelease', makerelease)
 
 def ubuntu_construct_version(build, mixxx_version, branch_name, bazaar_revision):
+        # In release mode, we only use the version.
 	if build.build_is_release:
 		return mixxx_version
 	# In a debug build package, include the branch name and
@@ -442,7 +443,9 @@ def BuildUbuntuPackage(target, source, env):
 
 	arch = 'i386'
 	if build.machine == 'x86_64':
-		arch = 'amd64'
+                arch = 'amd64'
+
+        package_target = ARGUMENTS.get('package', None)
 
 	ubuntu_distro = ARGUMENTS.get('ubuntu_dist', None)
 	if ubuntu_distro is None:
@@ -502,26 +505,45 @@ def BuildUbuntuPackage(target, source, env):
 	# Run pbuilder
 	print "* Starting pbuilder ...  (cwd: %s)" % os.getcwd()
 	print
-	result = os.system('ARCH=%s DIST=%s pdebuild' % (arch, ubuntu_distro))
+
+        command = ["ARCH=%s" % arch,
+                   "DIST=%s" % ubuntu_distro]
+
+        if package_target == 'source':
+                # TODO(rryan) we have to figure out the key-signing situation
+                # here.
+                command.extend(['debuild', '-S', '-sa'])
+        else:
+                command.extend(['pdebuild'])
+        result = os.system(' '.join(command))
 
 	# Return back to the starting directory, otherwise you'll get a .sconsign.dblite error!
 	os.chdir('../..')
 	print "* Returning to starting working directory ...  (cwd: " + os.getcwd() + ")"
 	print
 
-	result_path = "/var/cache/pbuilder/%s-%s/result/" % (ubuntu_distro, arch)
-	result_filename = "%s_%s_%s.deb" % (package_name, package_version, arch)
-	result_file = os.path.join(result_path, result_filename)
-	dest_file = os.path.join('ubuntu', result_filename)
+        if package_target == 'source':
+                if result == 0:
+                        # TODO(rryan) check it actually succeeded
+                        print "* Done! Signed source package is in ubuntu/"
+                        print
+                else:
+                        print "* Build failed."
+                        print
+        else:
+                result_path = "/var/cache/pbuilder/%s-%s/result/" % (ubuntu_distro, arch)
+                result_filename = "%s_%s_%s.deb" % (package_name, package_version, arch)
+                result_file = os.path.join(result_path, result_filename)
+                dest_file = os.path.join('ubuntu', result_filename)
 
-	if result == 0 and os.path.exists(result_file):
-		print "Done! Package and tarballs are in %s" % result_path
-		print "* Found package at '%s'. Copying to ubuntu/" % result_filename
-		print
-		shutil.copyfile(result_file, dest_file)
-	else:
-		print "* Build failed."
-		print
+                if result == 0 and os.path.exists(result_file):
+                        print "Done! Package and tarballs are in %s" % result_path
+                        print "* Found package at '%s'. Copying to ubuntu/" % result_filename
+                        print
+                        shutil.copyfile(result_file, dest_file)
+                else:
+                        print "* Build failed."
+                        print
 
 	# print "Signing the .deb changes file..."
 	# os.system('sudo debsign /var/cache/pbuilder/result/*.changes')
