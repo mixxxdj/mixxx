@@ -47,6 +47,18 @@
     <script defer type="text/javascript" src="js/pngfix.js"></script>
     <![endif]-->
     
+	<script type="text/javascript">
+	/* <![CDATA[ */
+	    (function() {
+		var s = document.createElement('script'), t = document.getElementsByTagName('script')[0];
+		s.type = 'text/javascript';
+		s.async = true;
+		s.src = 'http://api.flattr.com/js/0.6/load.js?mode=auto';
+		t.parentNode.insertBefore(s, t);
+	    })();
+	/* ]]> */
+	</script>
+
     <title>Mixxx | Download</title>
   </head>
 
@@ -117,9 +129,9 @@ sudo apt-get install mixxx
 						        	<td>
 						        	<img src="images/downloads_win.png">
 						        	</td>
-						        	<td width="50%"><a href="http://downloads.mixxx.org/mixxx-1.8.2/mixxx-1.8.2-win32.exe"  onClick="javascript: pageTracker._trackPageview('/downloads/182win32'); ">Mixxx 1.8.2</a><br>(32-bit)
+						        	<td width="50%"><a href="http://downloads.mixxx.org/mixxx-1.9.0/mixxx-1.9.0-win32.exe"  onClick="javascript: pageTracker._trackPageview('/downloads/190win32'); ">Mixxx 1.9.0</a><br>(32-bit)
 						            </td>
-						            <td width="50%"><a href="http://downloads.mixxx.org/mixxx-1.8.2/mixxx-1.8.2-win64.exe"  onClick="javascript: pageTracker._trackPageview('/downloads/182win64'); ">Mixxx 1.8.2</a><br>(64-bit)
+						            <td width="50%"><a href="http://downloads.mixxx.org/mixxx-1.8.2/mixxx-1.8.2-win64.exe"  onClick="javascript: pageTracker._trackPageview('/downloads/180win64'); ">Mixxx 1.8.2</a><br>(64-bit)
 
                                     <!--
 		            			    <p style="font-size: 0.6em;margin:0px;padding:0px;">
@@ -142,8 +154,11 @@ sudo apt-get install mixxx
 						            <td>
 						                <img src="images/downloads_mac.png">
 						            </td>
-						            <td width="100%"><a href="http://downloads.mixxx.org/mixxx-1.8.2/mixxx-1.8.2-macintel.dmg"  onClick="javascript: pageTracker._trackPageview('/downloads/182osxintel'); ">Mixxx 1.8.2</a><br>
+						            <td width="50%"><a href="http://downloads.mixxx.org/mixxx-1.9.0/mixxx-1.9.0-macintel.dmg"  onClick="javascript: pageTracker._trackPageview('/downloads/190osxintel'); ">Mixxx 1.9.0</a><br>
 						    		(10.5+, Intel)<br>
+						    		</td>
+						            <td width="50%"><a href="http://downloads.mixxx.org/mixxx-1.9.0/mixxx-1.9.0-macppc.dmg"  onClick="javascript: pageTracker._trackPageview('/downloads/190osxppc'); ">Mixxx 1.9.0</a><br>
+						    		(10.5, PPC)<br>
 						    		</td>
 						            <td><img src="images/mac.png"></td>
 						        </tr>
@@ -154,7 +169,7 @@ sudo apt-get install mixxx
 						        <tr>
 						        	<td><img src="images/downloads_linux.png"></td>
 						            <td width="30%">
-						             <a href="http://downloads.mixxx.org/mixxx-1.8.2/mixxx-1.8.2-src.tar.gz"  onClick="javascript: pageTracker._trackPageview('/downloads/182linuxsrc'); ">Mixxx 1.8.2</a><br>
+						             <a href="http://downloads.mixxx.org/mixxx-1.9.0/mixxx-1.9.0-src.tar.gz"  onClick="javascript: pageTracker._trackPageview('/downloads/190linuxsrc'); ">Mixxx 1.9.0</a><br>
 						    (Source)
 						            </td>
 						            <td width="30%">
@@ -165,6 +180,7 @@ sudo apt-get install mixxx
 						        </tr>
 						    </table>						   
 					    </div>
+<!--
 <div id="beta">
 							<img src="images/beta.png" style="float: left; padding: 10px">
 							<p>The Mixxx 1.9.0 beta includes Shoutcast/Icecast broadcasting, library improvements, and more! <p>If you'd like to try out the latest features and are willing to <a href="https://bugs.launchpad.net/mixxx/">report any bugs</a> you find, try the latest <b>(unstable) beta release</b>:</p>
@@ -174,9 +190,10 @@ sudo apt-get install mixxx
 <li><a href="http://downloads.mixxx.org/mixxx-1.9.0-beta1/mixxx-1.9.0-beta1-macintel.dmg" onClick="javascript: pageTracker._trackPageview('/downloads/190beta1osx'); ">Mixxx 1.9.0-beta1 for Mac OS X 10.5+ (Intel)</a></li>
 <li><a href="http://downloads.mixxx.org/mixxx-1.9.0-beta1/mixxx-1.9.0-beta1-src.tar.gz" onClick="javascript: pageTracker._trackPageview('/downloads/190beta1linuxsrc'); ">Mixxx 1.9.0-beta1 for Linux (source)</a></li>
 </ul>
-<b>Downgrading: </b>If you'd like to downgrade after trying the 1.9.0 beta, <b>Mixxx 1.8.2 is required</b>.
+<b>Downgrading: </b>If you'd like to downgrade after trying the 1.9.0 beta, <b>Mixxx 1.9.0 is required</b>.
 We <b>do not recommend</b> using beta software for live performances.<br>
 </div>
+-->
 						<div id="donate">
 							<h2>Show your Support</h2><br>
 							<!--<img src="images/face-grin.png" style="float: left; padding: 10px">-->
@@ -192,6 +209,10 @@ We <b>do not recommend</b> using beta software for live performances.<br>
 <!--
 <a href="http://www.pledgie.com/campaigns/13624" style="margin-left: 1em; margin-right: 1em;"><img alt="Click here to lend your support to: Mixxx 1.9 Build Server Fundraiser and make a donation at www.pledgie.com !" border="0" src="http://www.pledgie.com/campaigns/13624.png?skin_name=chrome" /></a>
 -->
+<br>
+<a class="FlattrButton" style="display:none;"
+href="http://www.mixxx.org"></a>
+
 </center>
 <br>
 
@@ -201,7 +222,7 @@ We <b>do not recommend</b> using beta software for live performances.<br>
 							<img src="images/source.png" style="float: right; padding: 10px;">
 							<p>Mixxx is also available as source code, licensed under the GPL v2. Please check the LICENSE file for complete licensing information. You can grab the latest distribution or get the latest code directly from BZR:</p>
 							<ul>
-								<li><a href="http://downloads.mixxx.org/mixxx-1.8.2/mixxx-1.8.2-src.tar.gz" onClick="javascript: pageTracker._trackPageview('/downloads/182linuxsrc'); ">Mixxx 1.8.2 source code</a></li>
+								<li><a href="http://downloads.mixxx.org/mixxx-1.9.0/mixxx-1.9.0-src.tar.gz" onClick="javascript: pageTracker._trackPageview('/downloads/190linuxsrc'); ">Mixxx 1.9.0 source code</a></li>
 		           				<li>Checking out from BZR:
 							<pre>bzr branch lp:mixxx</pre></li>
 							</ul>
