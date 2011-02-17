@@ -94,7 +94,7 @@ void MidiScriptEngine::gracefulShutdown(QList<QString> scriptFunctionPrefixes) {
 
     // Stop all timers
     stopAllTimers();
-
+    
     // Call each script's shutdown function if it exists
     QListIterator<QString> prefixIt(scriptFunctionPrefixes);
     while (prefixIt.hasNext()) {
@@ -106,7 +106,19 @@ void MidiScriptEngine::gracefulShutdown(QList<QString> scriptFunctionPrefixes) {
                 qWarning() << "MidiScriptEngine: No" << shutName << "function in script";
         }
     }
-
+    
+    // Prevents leaving decks in an unstable state
+    //  if the controller is shut down while scratching
+    QHashIterator<int, int> i(m_scratchTimers);
+    while (i.hasNext()) {
+        i.next();
+        qDebug() << "Aborting scratching on deck" << i.value();
+        // Clear scratch2_enable
+        QString group = QString("[Channel%1]").arg(i.value());
+        ControlObjectThread *cot = getControlObjectThread(group, "scratch2_enable");
+        if(cot != NULL) cot->slotSet(0);
+    }
+    
     // Free all the control object threads
     QList<ConfigKey> keys = m_controlCache.keys();
     QList<ConfigKey>::iterator it = keys.begin();
