@@ -56,7 +56,7 @@ flags = build.flags
 #=========================
 if build.platform_is_windows:
 	dist_dir = 'dist%s' % build.bitwidth
-	mixxx_bin = env.Program('mixxx', [sources, build.env.RES('#src/mixxx.rc')]
+	mixxx_bin = env.Program('mixxx', [sources, build.env.RES('#src/mixxx.rc')],
 				LINKCOM  = [env['LINKCOM'], 'mt.exe -nologo -manifest ${TARGET}.manifest -outputresource:$TARGET;1'])
 else:
 	mixxx_bin = env.Program('mixxx', sources)
