@@ -3,6 +3,7 @@
 
 #include "vinylcontrol.h"
 #include <time.h>
+#include <QTime>
 
 #ifdef _MSC_VER
 #include "timecoder.h"
@@ -64,7 +65,9 @@ private:
 	int iOldMode;
 	double dOldFilePos;
 	double dSteadyPitch;
+	double dOldSteadyPitch;
 	double dSteadyPitchTime;
+	QTime tSinceSteadyPitch;
 	double dUiUpdateTime;
 
     //Contains information that xwax's code needs internally about the timecode and how to process it.
