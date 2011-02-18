@@ -120,6 +120,10 @@ void Library::bindWidget(WLibrarySidebar* pSidebarWidget,
     pSidebarWidget->setModel(m_pSidebarModel);
     connect(pSidebarWidget, SIGNAL(pressed(const QModelIndex&)),
             m_pSidebarModel, SLOT(clicked(const QModelIndex&)));
+    // Lazy model: Let triange symbol increment the model
+    connect(pSidebarWidget, SIGNAL(expanded(const QModelIndex&)),
+            m_pSidebarModel, SLOT(clicked(const QModelIndex&)));
+
     connect(pSidebarWidget, SIGNAL(rightClicked(const QPoint&, const QModelIndex&)),
             m_pSidebarModel, SLOT(rightClicked(const QPoint&, const QModelIndex&)));
 

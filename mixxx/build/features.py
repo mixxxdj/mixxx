@@ -288,7 +288,7 @@ class M4A(Feature):
             return
 
         have_mp4v2_h = conf.CheckHeader('mp4v2/mp4v2.h')
-        have_mp4v2 = conf.CheckLib('mp4v2', autoadd=False)
+        have_mp4v2 = conf.CheckLib(['mp4v2','libmp4v2'], autoadd=False)
         have_mp4 = conf.CheckLib('mp4', autoadd=False)
 
         # Either mp4 or mp4v2 works
@@ -297,7 +297,7 @@ class M4A(Feature):
         if not have_mp4:
             raise Exception('Could not find libmp4, libmp4v2 or the libmp4v2 development headers.')
 
-        have_faad = conf.CheckLib('faad', autoadd=False)
+        have_faad = conf.CheckLib(['faad','libfaad'], autoadd=False)
 
         if not have_faad:
             raise Exception('Could not find libfaad or the libfaad development headers.')
