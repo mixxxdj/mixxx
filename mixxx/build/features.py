@@ -179,6 +179,7 @@ class MSVCDebug(Feature):
             # for sndfile w/ flac support on windows.
             build.env.Append(CCFLAGS = '/MDd')
             build.env.Append(LINKFLAGS = '/DEBUG')
+            build.env.Append(CPPDEFINES = 'DEBUGCONSOLE')
             if build.machine_is_64bit:
                 build.env.Append(CCFLAGS = '/Zi')
                 build.env.Append(LINKFLAGS = '/NODEFAULTLIB:MSVCRT')
