@@ -98,6 +98,14 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel *model) {
 
     Q_ASSERT(model);
     Q_ASSERT(track_model);
+
+    /* If the model has not changed
+     * there's no need to exchange the headers
+     * this will cause a small GUI freeze
+     */
+    if(getTrackModel() == track_model)
+        return;
+
     setVisible(false);
 
     // Save the previous track model's header state

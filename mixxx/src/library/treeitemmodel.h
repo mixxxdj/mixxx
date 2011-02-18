@@ -16,20 +16,22 @@
 
  public:
      TreeItemModel(QObject *parent = 0);
-     ~TreeItemModel();
+     virtual ~TreeItemModel();
 
-     QVariant data(const QModelIndex &index, int role) const;
-     Qt::ItemFlags flags(const QModelIndex &index) const;
-     QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const;
-     QModelIndex index(int row, int column, const QModelIndex &parent = QModelIndex()) const;
-     QModelIndex parent(const QModelIndex &index) const;
+     virtual QVariant data(const QModelIndex &index, int role) const;
+     virtual Qt::ItemFlags flags(const QModelIndex &index) const;
+     virtual QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const;
+     virtual QModelIndex index(int row, int column, const QModelIndex &parent = QModelIndex()) const;
+     virtual QModelIndex parent(const QModelIndex &index) const;
 
-     bool insertRows(QList<QString>& data, int position, int rows, const QModelIndex &parent = QModelIndex());
-     bool removeRows(int position, int rows, const QModelIndex &parent = QModelIndex());
+     virtual bool insertRows(QList<TreeItem*> &data, int position, int rows, const QModelIndex &parent = QModelIndex());
+     virtual bool removeRows(int position, int rows, const QModelIndex &parent = QModelIndex());
 
-     int rowCount(const QModelIndex &parent = QModelIndex()) const;
-     int columnCount(const QModelIndex &parent = QModelIndex()) const;
+     virtual int rowCount(const QModelIndex &parent = QModelIndex()) const;
+     virtual int columnCount(const QModelIndex &parent = QModelIndex()) const;
      void setRootItem(TreeItem *item);
+     /** Return the underlying TreeItem. 
+       * If the index is invalid, the root item is returned. **/
      TreeItem* getItem(const QModelIndex &index) const;
     
 
