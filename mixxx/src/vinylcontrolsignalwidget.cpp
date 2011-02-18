@@ -152,18 +152,21 @@ void VinylControlSignalWidget::paintEvent(QPaintEvent* event)
 	painter.drawLine(0, sizeY * 0.25, sizeX, sizeY * 0.25);
 	painter.drawLine(0, sizeY * 0.75, sizeX, sizeY * 0.75);
 		
-	//sweep
-	if (m_iAngle >= 0)
+	if (m_iTimerId != 0) //if timer is stopped, only draw the BG
 	{
-		//sweep fades along with signal quality
-		painter.setPen(QColor(255, 255, 255, (int)(127.0 * m_fSignalQuality)));
-		painter.setBrush(QColor(255, 255, 255, (int)(127.0 * m_fSignalQuality)));
-		painter.drawPie(0, 0, sizeX, sizeY, m_iAngle*16, 6*16);
-	}
+		//sweep
+		if (m_iAngle >= 0)
+		{
+			//sweep fades along with signal quality
+			painter.setPen(QColor(255, 255, 255, (int)(127.0 * m_fSignalQuality)));
+			painter.setBrush(QColor(255, 255, 255, (int)(127.0 * m_fSignalQuality)));
+			painter.drawPie(0, 0, sizeX, sizeY, m_iAngle*16, 6*16);
+		}
 
-	if (!m_qImage.isNull())
-	{
-		//vinyl signal -- thanks xwax!
-		painter.drawImage(this->rect(), m_qImage);
+		if (!m_qImage.isNull())
+		{
+			//vinyl signal -- thanks xwax!
+			painter.drawImage(this->rect(), m_qImage);
+		}
 	}
 }
