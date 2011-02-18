@@ -388,7 +388,7 @@ void VinylControlXwax::run()
 		                resetSteadyPitch(dVinylPitch, dVinylPosition);
 		            }
 		            else if (iVCMode == MIXXX_VCMODE_ABSOLUTE && m_bNeedleSkipPrevention &&
-				            fabs(dVinylPosition - dOldPos) > 0.4
+				            fabs(dVinylPosition - dOldPos) > 0.4 &&
 				            (tSinceSteadyPitch.elapsed() < 400 || reportedPlayButton))
 			        {
 				    	//red alert, moved wrong direction or jumped forward a lot,
