@@ -685,9 +685,6 @@ class Optimize(Feature):
             build.env.Append(LINKFLAGS = '/OPT:REF')
             build.env.Append(LINKFLAGS = '/OPT:ICF')
 
-            # Don't worry about alining code on 4KB boundaries
-            build.env.Append(LINKFLAGS = '/OPT:NOWIN98')
-
             # http://msdn.microsoft.com/en-us/library/59a3b321.aspx
             # In general, you should pick /O2 over /Ox
             if optimize_level >= 1:
