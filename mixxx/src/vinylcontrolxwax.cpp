@@ -4,7 +4,7 @@
     begin                : Sometime in Summer 2007
     copyright            : (C) 2007 Albert Santoni
                            (C) 2007 Mark Hills
-                           (C) 2010 Owen Williams
+                           (C) 2011 Owen Williams
                            Portions of xwax used under the terms of the GPL
     email                : gamegod \a\t users.sf.net
 ***************************************************************************/
@@ -49,9 +49,11 @@ VinylControlXwax::VinylControlXwax(ConfigObject<ConfigValue> * pConfig, const ch
     iOldMode		= MIXXX_VCMODE_ABSOLUTE;
     dUiUpdateTime   = -1.0f;
     m_bNeedleSkipPrevention = (bool)(m_pConfig->getValueString( ConfigKey( "[VinylControl]", "NeedleSkipPrevention" ) ).toInt());
+
+    tSinceSteadyPitch = QTime();
+    
     iQualPos = 0;
     iQualFilled = 0;
-
     
     //this is all needed because libxwax indexes by C-strings
     //so we go and pass libxwax a pointer into our local stack...
@@ -167,7 +169,8 @@ void VinylControlXwax::run()
     double old_duration = -1.0f;
     int reportedMode = 0;
     bool reportedPlayButton = 0;
-
+    tSinceSteadyPitch.start();
+    
 	float when;
 
     bShouldClose = false;
@@ -201,7 +204,7 @@ void VinylControlXwax::run()
 		    //Notify the UI if the timecode quality is good
 			establishQuality(iPosition != -1);
 		}
-        
+	        
 		//are we even playing and enabled at all?
         if (duration != NULL && bIsEnabled)	
         {
@@ -342,6 +345,7 @@ void VinylControlXwax::run()
 				{
 					//POSITION: YES  PITCH: YES
 					//add a value to the pitch ring (for averaging / smoothing the pitch)
+					//qDebug() << fabs(((dVinylPosition - dOldPos) * (dVinylPitch / fabs(dVinylPitch))));
 					
 					dPitchRing[ringPos] = dVinylPitch;
 					if(ringFilled < RING_SIZE)
@@ -362,53 +366,46 @@ void VinylControlXwax::run()
 	                    }
 	                    bForceResync = false;
 	            	}
-	            	else if (m_bNeedleSkipPrevention &&
-	            		iVCMode == MIXXX_VCMODE_ABSOLUTE &&
-	            		filePosition != dOldFilePos &&
-	                    (
-		                    ((dVinylPosition - dOldPos) * (dVinylPitch / fabs(dVinylPitch)) < 0) ||
-		                    ((dVinylPosition - dOldPos) * (dVinylPitch / fabs(dVinylPitch)) > 0.6)
-	                    ))
+	            	else if (fabs(dVinylPosition - filePosition) > 0.1f &&
+		            		dVinylPosition < -2.0f)
 	                {
-	                	//red alert, moved wrong direction or jumped forward a lot,
-	                	//move to constant mode and keep playing
-	                	//TODO: trigger some sort of UI alert so the dj
-	                	//can clean the needle
-	                	qDebug() << "WARNING: needle skip detected!:";
-	                	qDebug() << filePosition << dOldFilePos << dVinylPosition << dOldPos;
-	                	//try setting the rate to the steadypitch value
-	                	enableConstantMode(dSteadyPitch);
-	                	//resetSteadyPitch(dVinylPitch, dVinylPosition);
-	                	vinylStatus->slotSet(VINYL_STATUS_ERROR);
+	                	//At first I thought it was a bug to resync to leadin in relative mode,
+	                	//but after using it that way it's actually pretty convenient.
+	                	//qDebug() << "Vinyl leadin";
+	                	syncPosition();
+	                    resetSteadyPitch(dVinylPitch, dVinylPosition);
+	                    if (uiUpdateTime(filePosition))
+	                    	rateSlider->slotSet(rateDir->get() * (fabs(dVinylPitch) - 1.0f) / fRateRange);
 	                }
-	                else if (fabs(dVinylPosition - dOldPos) >= 5.0f &&  
-	                    (iVCMode == MIXXX_VCMODE_ABSOLUTE))
+	            	else if (iVCMode == MIXXX_VCMODE_ABSOLUTE && (fabs(dVinylPosition - dOldPos) >= 15.0f))
+		            {
+		            	//If the position from the timecode is more than a few seconds off, resync the position.
+		            	qDebug() << "resync position (>15.0 sec)";
+		            	qDebug() << dVinylPosition << dOldPos << dVinylPosition - dOldPos;
+		                syncPosition();
+		                resetSteadyPitch(dVinylPitch, dVinylPosition);
+		            }
+		            else if (iVCMode == MIXXX_VCMODE_ABSOLUTE && m_bNeedleSkipPrevention &&
+				            fabs(dVinylPosition - dOldPos) > 0.4
+				            (tSinceSteadyPitch.elapsed() < 400 || reportedPlayButton))
+			        {
+				    	//red alert, moved wrong direction or jumped forward a lot,
+				    	//and we were just playing nicely...
+				    	//move to constant mode and keep playing
+				    	qDebug() << "WARNING: needle skip detected!:";
+				    	qDebug() << filePosition << dOldFilePos << dVinylPosition << dOldPos;
+				    	qDebug() << (dVinylPosition - dOldPos) * (dVinylPitch / fabs(dVinylPitch));
+				    	//try setting the rate to the steadypitch value
+				    	enableConstantMode(dOldSteadyPitch);
+				    	vinylStatus->slotSet(VINYL_STATUS_ERROR);
+				    }
+	                else if (iVCMode == MIXXX_VCMODE_ABSOLUTE && !m_bNeedleSkipPrevention &&
+	                	fabs(dVinylPosition - dOldPos) >= 0.1f)
 	                {
-	                	//If the position from the timecode is more than a few seconds off, resync the position.
-	                	qDebug() << "resync position (>5.0 sec)";
-	                	qDebug() << dVinylPosition << dOldPos << dVinylPosition - dOldPos;
-	                    syncPosition();
-	                    resetSteadyPitch(dVinylPitch, dVinylPosition);
+	                	qDebug() << "CDJ resync position (>0.1 sec)";
+	                	syncPosition();
+		                resetSteadyPitch(dVinylPitch, dVinylPosition);
 	                }
-	                else if (fabs(dVinylPosition - filePosition) > 0.1f &&
-                		dVinylPosition < -2.0f)
-                    {
-                    	//At first I thought it was a bug to resync to leadin in relative mode,
-                    	//but after using it that way it's actually pretty convenient.
-                    	//qDebug() << "Vinyl leadin";
-                    	syncPosition();
-                        resetSteadyPitch(dVinylPitch, dVinylPosition);
-                        if (uiUpdateTime(filePosition))
-                        	rateSlider->slotSet(rateDir->get() * (fabs(dVinylPitch) - 1.0f) / fRateRange);
-                    }
-                    else if (!m_bNeedleSkipPrevention &&
-                    	fabs(dVinylPosition - dOldPos) >= 0.1f &&
-                    	iVCMode == MIXXX_VCMODE_ABSOLUTE)
-                    {
-                    	qDebug() << "CDJ resync position (>0.1 sec)";
-                    	syncPosition();
-	                    resetSteadyPitch(dVinylPitch, dVinylPosition);
-                    }
                     else if (playPos->get() == 1.0 && dVinylPitch > 0)
 				    {
 				    	//end of track
@@ -523,6 +520,8 @@ void VinylControlXwax::run()
 			        m_fTimecodeQuality = 0.0f;
 			        ringPos = 0;
 			        ringFilled = 0;
+			        iQualPos = 0;
+    				iQualFilled = 0;
 			        vinylStatus->slotSet(VINYL_STATUS_OK);
 			    }
             }
@@ -577,7 +576,12 @@ void VinylControlXwax::disableRecordEndMode()
 void VinylControlXwax::togglePlayButton(bool on)
 {
 	if (bIsEnabled && playButton->get() != on)
+	{
+		//switching from on to off -- restart counter for checking needleskip
+		if (!on)
+			tSinceSteadyPitch.restart();
 		playButton->slotSet((float)on);  //and we all float on all right
+	}
 }
 
 void VinylControlXwax::resetSteadyPitch(double pitch, double time)
@@ -596,8 +600,14 @@ double VinylControlXwax::checkSteadyPitch(double pitch, double time)
 		return 0.0;
 	}
 	
-	if (fabs(pitch - dSteadyPitch) < 0.2f)
+	if (fabs(pitch - dSteadyPitch) < 0.05f)
 	{
+		if (time - dSteadyPitchTime > 2.0)
+		{
+			dSteadyPitch = pitch;
+			dOldSteadyPitch = dSteadyPitch; //this was a known-good value
+			dSteadyPitchTime += 1.0;
+		}
 		return time - dSteadyPitchTime;
 	}
 	
