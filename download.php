@@ -178,7 +178,7 @@ sudo apt-get install mixxx
 						    (Source)
 						            </td>
 						            <td width="30%">
-						                <a id="getubu" href="#ubuntudlg" onClick="javascript: pageTracker._trackPageview('/downloads/182ubuntu'); ">Mixxx 1.8.2</a><br>(Ubuntu)
+						                <a id="getubu" href="#ubuntudlg" onClick="javascript: pageTracker._trackPageview('/downloads/190ubuntu'); ">Mixxx 1.9.0</a><br>(Ubuntu)
 						    		</td>
 						    		<td><img src="images/ubuntu.png" align="center" border="0px">
 						    		</td>
