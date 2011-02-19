@@ -16,10 +16,7 @@ TraktorPlaylistModel::TraktorPlaylistModel(QObject* parent,
           
 {
     connect(this, SIGNAL(doSearch(const QString&)), this, SLOT(slotSearch(const QString&)));
-    
-    
-    
-    
+    setCaching(false);
 }
 
 TraktorPlaylistModel::~TraktorPlaylistModel() {
