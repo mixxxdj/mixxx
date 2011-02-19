@@ -18,6 +18,7 @@ TraktorTableModel::TraktorTableModel(QObject* parent,
     connect(this, SIGNAL(doSearch(const QString&)), this, SLOT(slotSearch(const QString&)));
     setTable("traktor_library");
     initHeaderData();
+    setCaching(false);
 }
 
 TraktorTableModel::~TraktorTableModel() {

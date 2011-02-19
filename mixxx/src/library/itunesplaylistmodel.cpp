@@ -15,6 +15,7 @@ ITunesPlaylistModel::ITunesPlaylistModel(QObject* parent,
           m_database(m_pTrackCollection->getDatabase())
 {
     connect(this, SIGNAL(doSearch(const QString&)), this, SLOT(slotSearch(const QString&)));
+    setCaching(false);
 }
 
 ITunesPlaylistModel::~ITunesPlaylistModel() {

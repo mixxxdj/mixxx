@@ -16,6 +16,7 @@ RhythmboxTrackModel::RhythmboxTrackModel(QObject* parent,
     connect(this, SIGNAL(doSearch(const QString&)), this, SLOT(slotSearch(const QString&)));
     setTable("rhythmbox_library");
     initHeaderData();
+    setCaching(false);
 }
 
 RhythmboxTrackModel::~RhythmboxTrackModel() {
