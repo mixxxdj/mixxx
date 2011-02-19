@@ -332,8 +332,8 @@ SectionEnd
   LangString DESC_SecAddlSkins ${LANG_ENGLISH} "Additional good-looking skins with varying themes and larger screen sizes."
   LangString DESC_SecNetbookSkins ${LANG_ENGLISH} "Includes Shade and Shade Dark"
   LangString DESC_SecXGASkins ${LANG_ENGLISH} "Includes Shade and Shade Dark"
-  LangString DESC_SecWXGASkins ${LANG_ENGLISH} "Includes Deere, Late Night (Blues) and Campcaster"
-  LangString DESC_SecSXGASkins ${LANG_ENGLISH} "Includes Deere, Late Night (Blues) and Campcaster"
+  LangString DESC_SecWXGASkins ${LANG_ENGLISH} "Includes Deere, Late Night (Blues)"
+  LangString DESC_SecSXGASkins ${LANG_ENGLISH} "Includes Deere, Late Night (Blues)"
   LangString DESC_SecUXGASkins ${LANG_ENGLISH} "Includes Phoney and Phoney Dark"
   LangString DESC_SecWSXGASkins ${LANG_ENGLISH} "Includes Phoney and Phoney Dark"
 

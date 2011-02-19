@@ -48,7 +48,7 @@ CrateFeature::CrateFeature(QObject* parent,
     m_crateListTableModel.select();
     
     //construct child model
-    TreeItem *rootItem = new TreeItem("$root","$root", this);
+    TreeItem *rootItem = new TreeItem();
 
     int idColumn = m_crateListTableModel.record().indexOf("name");
     for (int row = 0; row < m_crateListTableModel.rowCount(); ++row) {
@@ -289,13 +289,19 @@ void CrateFeature::slotRenameCrate() {
 */
 void CrateFeature::constructChildModel()
 {
-    QList<QString> data_list;
+    QList<TreeItem*> data_list;
     int idColumn = m_crateListTableModel.record().indexOf("name");
+    //Access the invisible root item
+    TreeItem* root = m_childModel.getItem(QModelIndex());
+    
     for (int row = 0; row < m_crateListTableModel.rowCount(); ++row) {
             QModelIndex ind = m_crateListTableModel.index(row, idColumn);
             QString crate_name = m_crateListTableModel.data(ind).toString();
-            data_list.append(crate_name);
-    }    
+            //Create the TreeItem whose parent is the invisible root item
+            TreeItem* item = new TreeItem(crate_name, crate_name, this, root);
+            data_list.append(item);
+    }   
+    //Append all the newly created TreeItems in a dynamic way to the childmodel 
     m_childModel.insertRows(data_list, 0, m_crateListTableModel.rowCount());  
 }
 /**

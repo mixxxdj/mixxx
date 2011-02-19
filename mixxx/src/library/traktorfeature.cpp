@@ -351,7 +351,7 @@ void TraktorFeature::parsePlaylists(QXmlStreamReader &xml){
 
     QString delimiter = "-->";
 
-    TreeItem *rootItem = new TreeItem("$root","$root", this);
+    TreeItem *rootItem = new TreeItem();
     TreeItem * parent = rootItem;
 
     bool inPlaylistTag = false;
