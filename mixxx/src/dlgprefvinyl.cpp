@@ -199,4 +199,7 @@ void DlgPrefVinyl::settingsChanged() {
     if (VCProxiesList.value(1) != NULL) {
         m_signalWidget2.setVinylControlProxy(VCProxiesList.value(1));
     }
+    
+    m_signalWidget1.setVinylActive(m_pSoundManager->hasVinylInput(0));
+    m_signalWidget2.setVinylActive(m_pSoundManager->hasVinylInput(1));
 }

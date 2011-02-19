@@ -31,6 +31,7 @@ public:
     void setVinylControlProxy(VinylControlProxy* vc);
     void paintEvent(QPaintEvent* event);
     void setSize(int size);
+    void setVinylActive(bool active);
     
     void resetWidget();
     void startDrawing();
@@ -57,6 +58,7 @@ private:
     unsigned char * m_imageData;
     int m_iAngle;
     float m_fSignalQuality;
+    bool m_bVinylActive;
 };
 
 #endif /* VINYLCONTROLSIGNALWIDGET_H_ */
