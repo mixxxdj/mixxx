@@ -32,7 +32,8 @@ VinylControlSignalWidget::VinylControlSignalWidget()
       m_iTimerId(0),
       m_pVinylControl(NULL),
       m_iSize(128),
-      m_qImage() {
+      m_qImage(),
+      m_bVinylActive(FALSE) {
 }
 
 void VinylControlSignalWidget::setSize(int size)
@@ -64,6 +65,13 @@ void VinylControlSignalWidget::setVinylControlProxy(VinylControlProxy* vc)
     //you change your vinyl type)
     connect(m_pVinylControl, SIGNAL(destroyed()),
             this, SLOT(invalidateVinylControl()));
+}
+
+void VinylControlSignalWidget::setVinylActive(bool active)
+{
+	if (m_bVinylActive != active && !active)
+		resetWidget();
+	m_bVinylActive = active;
 }
 
 void VinylControlSignalWidget::startDrawing() {
@@ -116,7 +124,7 @@ void VinylControlSignalWidget::timerEvent(QTimerEvent *event)
 		}
     }
     else
-    	m_fSignalQuality = 0.0;
+       	m_fSignalQuality = 0.0;
     update();
 }
 
@@ -129,6 +137,7 @@ void VinylControlSignalWidget::resetWidget()
         m_fRMSvolume[type] = 0.0f;
         m_samplesCalculated[type] = 0;
     }
+    memset(m_imageData, 0, sizeof(uchar) * m_iSize * m_iSize * 4);
     m_controlLock.unlock();
 }
 
@@ -140,20 +149,22 @@ void VinylControlSignalWidget::paintEvent(QPaintEvent* event)
 	QPainter painter(this);
 	painter.fillRect(this->rect(), QBrush(QColor(0, 0, 0)));
 
-	//main axes
-	painter.setPen(QColor(0, 255, 0));
-	painter.drawLine(sizeX / 2, 0, sizeX / 2, sizeY);
-	painter.drawLine(0, sizeY / 2, sizeX, sizeY / 2);
-	
-	//quarter axes
-	painter.setPen(QColor(0, 127, 0));
-	painter.drawLine(sizeX * 0.25, 0, sizeX * 0.25, sizeY);
-	painter.drawLine(sizeX * 0.75, 0, sizeX * 0.75, sizeY);
-	painter.drawLine(0, sizeY * 0.25, sizeX, sizeY * 0.25);
-	painter.drawLine(0, sizeY * 0.75, sizeX, sizeY * 0.75);
 		
-	if (m_iTimerId != 0) //if timer is stopped, only draw the BG
+	if (m_bVinylActive) //if timer is stopped, only draw the BG
 	{
+		//main axes
+		painter.setPen(QColor(0, 255, 0));
+		painter.drawLine(sizeX / 2, 0, sizeX / 2, sizeY);
+		painter.drawLine(0, sizeY / 2, sizeX, sizeY / 2);
+	
+		//quarter axes
+		painter.setPen(QColor(0, 127, 0));
+		painter.drawLine(sizeX * 0.25, 0, sizeX * 0.25, sizeY);
+		painter.drawLine(sizeX * 0.75, 0, sizeX * 0.75, sizeY);
+		painter.drawLine(0, sizeY * 0.25, sizeX, sizeY * 0.25);
+		painter.drawLine(0, sizeY * 0.75, sizeX, sizeY * 0.75);
+
+	
 		//sweep
 		if (m_iAngle >= 0)
 		{
