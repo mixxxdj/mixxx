@@ -7,6 +7,9 @@
 #include <QStringListModel>
 #include <QtSql>
 #include <QXmlStreamReader>
+#include <QFuture>
+#include <QtConcurrentRun>
+#include <QFutureWatcher>
 
 #include "library/libraryfeature.h"
 #include "treeitemmodel.h"
@@ -33,30 +36,37 @@ class RhythmboxFeature : public LibraryFeature {
 
     TreeItemModel* getChildModel();
     /** processes the music collection **/
-    bool importMusicCollection();
+    TreeItem* importMusicCollection();
     /** processes the playlist entries **/
-    bool importPlaylists();
-
-public slots:
-    void activate();
-    void activateChild(const QModelIndex& index);
-    void onRightClick(const QPoint& globalPos);
-    void onRightClickChild(const QPoint& globalPos, QModelIndex index);
-
+    TreeItem* importPlaylists();
 private:
     RhythmboxTrackModel* m_pRhythmboxTrackModel;
     RhythmboxPlaylistModel* m_pRhythmboxPlaylistModel;
     TrackCollection* m_pTrackCollection;
-    QSqlDatabase &m_database;
+    //new DB object because of threads
+    QSqlDatabase m_database;
     bool m_isActivated;
-    
+
+    QFutureWatcher<TreeItem*> m_track_watcher;
+    QFuture<TreeItem*> m_track_future;
+
+
     TreeItemModel m_childModel;
+
     /**Removes all rows from a given table **/
     void clearTable(QString table_name);
     /** reads the properties of a track and executes a SQL statement **/
     void importTrack(QXmlStreamReader &xml, QSqlQuery &query);
     /** reads all playlist entries and executes a SQL statement **/
     void importPlaylist(QXmlStreamReader &xml, QSqlQuery &query, int playlist_id);
+
+public slots:
+    void activate();
+    void activateChild(const QModelIndex& index);
+    void onRightClick(const QPoint& globalPos);
+    void onRightClickChild(const QPoint& globalPos, QModelIndex index);
+    void onTrackCollectionLoaded();
+
 };
 
 #endif /* RHYTHMBOXFEATURE_H */
