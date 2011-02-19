@@ -41,7 +41,7 @@ TreeItemModel* RhythmboxFeature::getChildModel() {
 
 void RhythmboxFeature::activate() {
      qDebug() << "RhythmboxFeature::activate()";
-    
+
     if(!m_isActivated){
         if (QMessageBox::question(
             NULL,
@@ -109,7 +109,7 @@ bool RhythmboxFeature::importMusicCollection()
     clearTable("rhythmbox_library");
     clearTable("rhythmbox_playlists");
     m_database.commit();
-    
+
     m_database.transaction();
     QSqlQuery query(m_database);
     query.prepare("INSERT INTO rhythmbox_library (artist, title, album, year, genre, comment, tracknumber,"
@@ -119,8 +119,8 @@ bool RhythmboxFeature::importMusicCollection()
                   "VALUES (:artist, :title, :album, :year, :genre, :comment, :tracknumber,"
                   ":bpm, :bitrate,"
                   ":duration, :location, :rating )");
-    
-    
+
+
     QXmlStreamReader xml(&db);
     while (!xml.atEnd()) {
         xml.readNext();
@@ -129,7 +129,7 @@ bool RhythmboxFeature::importMusicCollection()
             //Check if we really parse a track and not album art information
             if(attr.value("type").toString() == "song"){
                 importTrack(xml, query);
-                
+
             }
         }
     }
@@ -142,8 +142,8 @@ bool RhythmboxFeature::importMusicCollection()
         qDebug() << "XML ERROR: " << xml.errorString();
         return false;
     }
-    
-    
+
+
     db.close();
     return true;
 
@@ -159,7 +159,7 @@ bool RhythmboxFeature::importPlaylists()
     //Open file
      if (!db.open(QIODevice::ReadOnly | QIODevice::Text))
         return false;
-    
+
     QSqlQuery query_insert_to_playlists(m_database);
     query_insert_to_playlists.prepare("INSERT INTO rhythmbox_playlists (id, name) "
                                       "VALUES (:id, :name)");
@@ -168,52 +168,52 @@ bool RhythmboxFeature::importPlaylists()
     query_insert_to_playlist_tracks.prepare("INSERT INTO rhythmbox_playlist_tracks (playlist_id, track_id) "
                                             "VALUES (:playlist_id, :track_id)");
     //The tree structure holding the playlists
-    TreeItem *rootItem = new TreeItem("$root","$root", this);
-                                            
+    TreeItem *rootItem = new TreeItem();
+
     QXmlStreamReader xml(&db);
     while (!xml.atEnd()) {
         xml.readNext();
         if (xml.isStartElement() && xml.name() == "playlist") {
             QXmlStreamAttributes attr = xml.attributes();
-            
+
             //Only parse non build-in playlists
             if(attr.value("type").toString() == "static"){
                 QString playlist_name = attr.value("name").toString();
-                
+
                 //Construct the childmodel
                 TreeItem * item = new TreeItem(playlist_name,playlist_name, this, rootItem);
                 rootItem->appendChild(item);
-                
+
                 //Execute SQL statement
                 query_insert_to_playlists.bindValue(":name", playlist_name);
-                
+
                 bool success = query_insert_to_playlists.exec();
                 if(!success){
-                    qDebug() << "SQL Error in RhythmboxFeature.cpp: line" << __LINE__ << " " 
+                    qDebug() << "SQL Error in RhythmboxFeature.cpp: line" << __LINE__ << " "
                                     << query_insert_to_playlists.lastError();
                     return false;
                 }
                 //get playlist_id
                 int playlist_id = query_insert_to_playlists.lastInsertId().toInt();
-                
+
                 //Process playlist entries
                 importPlaylist(xml, query_insert_to_playlist_tracks, playlist_id);
-                
+
             }
         }
     }
-    
+
     m_database.commit();
     m_childModel.setRootItem(rootItem);
-   
+
     if (xml.hasError()) {
         // do error handling
         qDebug() << "Cannot process Rhythmbox music collection";
         qDebug() << "XML ERROR: " << xml.errorString();
         return false;
     }
-    db.close();                                        
-                                            
+    db.close();
+
 }
 void RhythmboxFeature::importTrack(QXmlStreamReader &xml, QSqlQuery &query)
 {
@@ -232,7 +232,7 @@ void RhythmboxFeature::importTrack(QXmlStreamReader &xml, QSqlQuery &query)
     int rating = 0;
     QString comment;
     QString tracknumber;
-    
+
     while (!xml.atEnd()) {
         xml.readNext();
         if (xml.isStartElement()) {
@@ -285,7 +285,7 @@ void RhythmboxFeature::importTrack(QXmlStreamReader &xml, QSqlQuery &query)
         if (xml.isEndElement() && xml.name() == "entry") {
             break;
         }
-        
+
     }
     query.bindValue(":artist", artist);
     query.bindValue(":title", title);
@@ -314,7 +314,7 @@ void RhythmboxFeature::importPlaylist(QXmlStreamReader &xml, QSqlQuery &query_in
     while(!xml.atEnd())
     {
         //read next XML element
-        xml.readNext(); 
+        xml.readNext();
         if(xml.isStartElement() && xml.name() == "location")
         {
             QString location = xml.readElementText();
@@ -322,28 +322,28 @@ void RhythmboxFeature::importPlaylist(QXmlStreamReader &xml, QSqlQuery &query_in
             QByteArray strlocbytes = location.toUtf8();
             QUrl locationUrl = QUrl::fromEncoded(strlocbytes);
             location = locationUrl.toLocalFile();
-            
+
             //get the ID of the file in the rhythmbox_library table
             int track_id = -1;
             QSqlQuery finder_query(m_database);
-            finder_query.prepare("select id from rhythmbox_library where location=:path"); 
+            finder_query.prepare("select id from rhythmbox_library where location=:path");
             finder_query.bindValue(":path", location);
             bool success = finder_query.exec();
-                    
-                    
+
+
             if(success){
                 while (finder_query.next()) {
                     track_id = finder_query.value(finder_query.record().indexOf("id")).toInt();
                 }
-             }   
+             }
              else
                 qDebug() << "SQL Error in RhythmboxFeature.cpp: line" << __LINE__ << " " << finder_query.lastError();
-            
+
             query_insert_to_playlist_tracks.bindValue(":playlist_id", playlist_id);
             query_insert_to_playlist_tracks.bindValue(":track_id", track_id);
-            
+
             success = query_insert_to_playlist_tracks.exec();
-            
+
             if(!success){
                 qDebug() << "SQL Error in RhythmboxFeature.cpp: line" << __LINE__ << " "
                              << query_insert_to_playlist_tracks.lastError();
@@ -366,7 +366,7 @@ void RhythmboxFeature::clearTable(QString table_name)
     QSqlQuery query(m_database);
     query.prepare("delete from "+table_name);
     bool success = query.exec();
-    
+
     if(!success)
         qDebug() << "Could not delete remove old entries from table " << table_name << " : " << query.lastError();
     else
