@@ -154,6 +154,13 @@ sudo apt-get install mixxx
 						            <td>
 						                <img src="images/downloads_mac.png">
 						            </td>
+						            <td width="100%">
+<a href="http://itunes.apple.com/us/app/mixxx/id413756578?mt=12&ls=1"><img src="images/available-on-mac-app-store-mixxxdownload.png"></a><br>
+		            			    <p style="font-size: 0.6em;margin:0px;padding:0px;">
+Also available for <a href="http://downloads.mixxx.org/mixxx-1.9.0/mixxx-1.9.0-macintel.dmg"  onClick="javascript: pageTracker._trackPageview('/downloads/190osxintel'); ">OS X 10.5+ (32-bit)</a> and <a href="http://downloads.mixxx.org/mixxx-1.9.0/mixxx-1.9.0-macppc.dmg"  onClick="javascript: pageTracker._trackPageview('/downloads/190osxppc'); ">PPC</a>.</p>
+						    		</td>
+							    
+<!--
 						            <td width="50%">
 <a href="http://itunes.apple.com/us/app/mixxx/id413756578?mt=12&ls=1"><img src="images/available-on-mac-app-store-mixxxdownload.png"></a><br>
 (10.6, 64-bit Intel)
@@ -165,6 +172,7 @@ sudo apt-get install mixxx
 <a href="http://downloads.mixxx.org/mixxx-1.9.0/mixxx-1.9.0-macppc.dmg"  onClick="javascript: pageTracker._trackPageview('/downloads/190osxppc'); ">Mixxx 1.9.0</a><br>
 						    		(10.5, PPC)<br>
 						    		</td>
+-->
 						            <td><img src="images/mac.png"></td>
 						        </tr>
 						    </table>						    
