@@ -603,7 +603,7 @@ double VinylControlXwax::checkSteadyPitch(double pitch, double time)
 		return 0.0;
 	}
 	
-	if (fabs(pitch - dSteadyPitch) < 0.05f)
+	if (fabs(pitch - dSteadyPitch) < 0.07f)
 	{
 		if (time - dSteadyPitchTime > 2.0)
 		{
