@@ -78,8 +78,8 @@
     </p>
     <p style="text-indent: 0px;">Reference Screenshots:<br>
     <a href="images/press_art/mixxx_defaultskin.png">Mixxx 1.9 (Default Skin)</a><br>
-    <a href="images/press_art/mixxx_deereskin.png">Mixxx 1.9 (Deere Skin)</a>
-    <a href="images/press_art/mixxx_latenightskin.png">Mixxx 1.9 (Late Night Skin)</a>
+    <a href="images/press_art/mixxx_deereskin.png">Mixxx 1.9 (Deere Skin)</a><br>
+    <a href="images/press_art/mixxx_latenightskin.png">Mixxx 1.9 (Late Night Skin)</a><br>
     <a href="images/press_art/mixxx_latenightbluesskin.png">Mixxx 1.9 (Late Night Blues Skin)</a>
                 
     <h1>Past Press</h1>
