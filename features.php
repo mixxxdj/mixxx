@@ -128,9 +128,10 @@ $(function() {
           <li>MP3, OGG, WAVE, and FLAC playback</li>
           <li>Extra playback formats through plugins</li>
           <li>Fast, database-powered library</li>
+          <li>Shoutcast and Icecast broadcasting</li>
           <li>Automatic crossfading with Auto DJ</li>
           <li>Crates and playlists</li>
-          <li>Reads iTunes and Rhythmbox libraries</li>
+          <li>iTunes and Rhythmbox library access</li>
           <li>Pitch-independent time stretch (key lock)</li>
           <li>Vinyl emulation</li>
           <li>Hot cues</li>

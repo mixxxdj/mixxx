@@ -131,7 +131,7 @@ sudo apt-get install mixxx
 						        	</td>
 						        	<td width="50%"><a href="http://downloads.mixxx.org/mixxx-1.9.0/mixxx-1.9.0-win32.exe"  onClick="javascript: pageTracker._trackPageview('/downloads/190win32'); ">Mixxx 1.9.0</a><br>(32-bit)
 						            </td>
-						            <td width="50%"><a href="http://downloads.mixxx.org/mixxx-1.8.2/mixxx-1.8.2-win64.exe"  onClick="javascript: pageTracker._trackPageview('/downloads/180win64'); ">Mixxx 1.8.2</a><br>(64-bit)
+						            <td width="50%"><a href="http://downloads.mixxx.org/mixxx-1.9.0/mixxx-1.9.0-win64.exe"  onClick="javascript: pageTracker._trackPageview('/downloads/190win64'); ">Mixxx 1.9.0</a><br>(64-bit)
 
                                     <!--
 		            			    <p style="font-size: 0.6em;margin:0px;padding:0px;">
@@ -154,10 +154,15 @@ sudo apt-get install mixxx
 						            <td>
 						                <img src="images/downloads_mac.png">
 						            </td>
-						            <td width="50%"><a href="http://downloads.mixxx.org/mixxx-1.9.0/mixxx-1.9.0-macintel.dmg"  onClick="javascript: pageTracker._trackPageview('/downloads/190osxintel'); ">Mixxx 1.9.0</a><br>
-						    		(10.5+, Intel)<br>
+						            <td width="50%">
+<a href="http://itunes.apple.com/us/app/mixxx/id413756578?mt=12&ls=1"><img src="images/available-on-mac-app-store-mixxxdownload.png"></a><br>
+(10.6, 64-bit Intel)
 						    		</td>
-						            <td width="50%"><a href="http://downloads.mixxx.org/mixxx-1.9.0/mixxx-1.9.0-macppc.dmg"  onClick="javascript: pageTracker._trackPageview('/downloads/190osxppc'); ">Mixxx 1.9.0</a><br>
+						            <td width="50%">
+
+<a href="http://downloads.mixxx.org/mixxx-1.9.0/mixxx-1.9.0-macintel.dmg"  onClick="javascript: pageTracker._trackPageview('/downloads/190osxintel'); ">Mixxx 1.9.0</a><br>
+						    		(10.5+, Intel)<br>
+<a href="http://downloads.mixxx.org/mixxx-1.9.0/mixxx-1.9.0-macppc.dmg"  onClick="javascript: pageTracker._trackPageview('/downloads/190osxppc'); ">Mixxx 1.9.0</a><br>
 						    		(10.5, PPC)<br>
 						    		</td>
 						            <td><img src="images/mac.png"></td>

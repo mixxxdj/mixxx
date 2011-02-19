@@ -183,8 +183,11 @@ $(function() {
                 </p>
             </div>
             <div class="downloadFloat">
-				<img src="images/download_now.png" alt="Download Now" onclick="location.href='downloadlatest.php?os=' + OSName;" border="0px" style="vertical-align: middle; cursor:pointer;" />
-                <br/>
+		<img src="images/download_now.png" alt="Download Now" onclick="location.href='downloadlatest.php?os=' + OSName;" border="0px" style="vertical-align: middle; cursor:pointer; padding-bottom: 5px;" /><br/><script type="text/javascript">
+		if (OSName.search("OS X") >= 0) {
+		    document.write('<a href="http://itunes.apple.com/us/app/mixxx/id413756578?mt=12&ls=1"><img src="images/available-on-mac-app-store-frontpage.png"></a><br>');
+		}
+		</script>
                 <p class="downloadSmall" style="text-align: center;">
                     Mixxx 1.9.0 for 
                 <script type="text/javascript">
