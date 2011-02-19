@@ -238,6 +238,7 @@ href="http://www.mixxx.org"></a>
 								<li><a href="http://downloads.mixxx.org/mixxx-1.9.0/mixxx-1.9.0-src.tar.gz" onClick="javascript: pageTracker._trackPageview('/downloads/190linuxsrc'); ">Mixxx 1.9.0 source code</a></li>
 		           				<li>Checking out from BZR:
 							<pre>bzr branch lp:mixxx</pre></li>
+							<li>Source code for the App Store version is <a href="https://code.launchpad.net/~mixxxdevelopers/mixxx/features_coreaudio">available here</a>, with a <a href="http://downloads.mixxx.org/mess/mixxx-1.9.1-macintel-appstore.dmg">corresponding binary.</a>
 							</ul>
 						</div>
 					</div>
