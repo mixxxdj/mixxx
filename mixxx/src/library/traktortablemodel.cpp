@@ -144,7 +144,7 @@ QItemDelegate* TraktorTableModel::delegateForColumn(const int i) {
 TrackModel::CapabilitiesFlags TraktorTableModel::getCapabilities() const
 {
   
-    return NULL;
+    return TRACKMODELCAPS_NONE;
 }
 
 Qt::ItemFlags TraktorTableModel::flags(const QModelIndex &index) const

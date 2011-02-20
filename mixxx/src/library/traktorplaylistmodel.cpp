@@ -143,7 +143,7 @@ QItemDelegate* TraktorPlaylistModel::delegateForColumn(const int i) {
 TrackModel::CapabilitiesFlags TraktorPlaylistModel::getCapabilities() const
 {
   
-    return NULL;
+    return TRACKMODELCAPS_NONE;
 }
 
 Qt::ItemFlags TraktorPlaylistModel::flags(const QModelIndex &index) const

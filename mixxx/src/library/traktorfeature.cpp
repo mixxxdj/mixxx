@@ -71,6 +71,16 @@ void TraktorFeature::activate() {
     if(!m_isActivated){
 
         m_isActivated =  true;
+        /* Ususally the maximum number of threads
+         * is > 2 depending on the CPU cores
+         * Unfortunately, within VirtualBox
+         * the maximum number of allowed threads
+         * is 1 at all times We'll need to increase
+         * the number to > 1, otherwise importing the music collection
+         * takes place when the GUI threads terminates, i.e., on
+         * Mixxx shutdown.
+         */
+        QThreadPool::globalInstance()->setMaxThreadCount(4); //Tobias decided to use 4
         // Let a worker thread do the XML parsing
         m_future = QtConcurrent::run(this, &TraktorFeature::importLibrary, getTraktorMusicDatabase());
         m_future_watcher.setFuture(m_future);
