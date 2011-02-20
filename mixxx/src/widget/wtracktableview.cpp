@@ -148,6 +148,8 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel *model) {
     connect(horizontalHeader(), SIGNAL(sortIndicatorChanged(int,Qt::SortOrder)),
             this, SLOT(sortByColumn(int)), Qt::AutoConnection);
 
+    sortByColumn(horizontalHeader()->sortIndicatorSection());
+
     // Initialize all column-specific things
     for (int i = 0; i < model->columnCount(); ++i) {
         //Setup delegates according to what the model tells us
