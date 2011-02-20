@@ -21,12 +21,17 @@ class WNumberPos : public WNumber {
     void setValue(double dValue);
     /** Set if the display shows remaining time (true) or position (false) */
     void setRemain(bool bRemain);
+
+  protected:
+    void mousePressEvent(QMouseEvent* pEvent);
+
   private slots:
     void slotSetRemain(double dRemain);
     void slotSetTrackSampleRate(double dSampleRate);
     void slotSetTrackSamples(double dSamples);
     void slotSetTrackDuration(double dDuration);
-private:
+
+  private:
     /** Old value set */
     double m_dOldValue;
     double m_dDuration;
