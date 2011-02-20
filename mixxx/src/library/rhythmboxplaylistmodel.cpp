@@ -132,7 +132,7 @@ QItemDelegate* RhythmboxPlaylistModel::delegateForColumn(const int i) {
 }
 
 TrackModel::CapabilitiesFlags RhythmboxPlaylistModel::getCapabilities() const {
-    return NULL;
+    return TRACKMODELCAPS_NONE;
 }
 
 Qt::ItemFlags RhythmboxPlaylistModel::flags(const QModelIndex &index) const {
@@ -153,7 +153,7 @@ void RhythmboxPlaylistModel::setPlaylist(QString playlist_path) {
         qDebug() << "SQL Error in RhythmboxPlaylistModel.cpp: line" << __LINE__ << " " << finder_query.lastError();
 
 
-    QString playlistID = "ITunesPlaylist_" + QString("%1").arg(playlistId);
+    QString playlistID = "Rhythmboxplaylist_" + QString("%1").arg(playlistId);
     //Escape the playlist name
     QSqlDriver* driver = m_pTrackCollection->getDatabase().driver();
     QSqlField playlistNameField("name", QVariant::String);

@@ -129,7 +129,7 @@ QItemDelegate* RhythmboxTrackModel::delegateForColumn(const int i) {
 }
 
 TrackModel::CapabilitiesFlags RhythmboxTrackModel::getCapabilities() const {
-    return NULL;
+    return TRACKMODELCAPS_NONE;
 }
 
 Qt::ItemFlags RhythmboxTrackModel::flags(const QModelIndex &index) const {

@@ -129,7 +129,7 @@ QItemDelegate* ITunesTrackModel::delegateForColumn(const int i) {
 }
 
 TrackModel::CapabilitiesFlags ITunesTrackModel::getCapabilities() const {
-    return NULL;
+    return TRACKMODELCAPS_NONE;
 }
 
 Qt::ItemFlags ITunesTrackModel::flags(const QModelIndex &index) const {

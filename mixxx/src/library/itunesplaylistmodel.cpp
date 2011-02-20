@@ -132,7 +132,7 @@ QItemDelegate* ITunesPlaylistModel::delegateForColumn(const int i) {
 }
 
 TrackModel::CapabilitiesFlags ITunesPlaylistModel::getCapabilities() const {
-    return NULL;
+    return TRACKMODELCAPS_NONE;
 }
 
 Qt::ItemFlags ITunesPlaylistModel::flags(const QModelIndex &index) const {
