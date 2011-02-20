@@ -7,6 +7,9 @@
 #include <QStringListModel>
 #include <QtSql>
 #include <QXmlStreamReader>
+#include <QFuture>
+#include <QtConcurrentRun>
+#include <QFutureWatcher>
 
 #include "library/libraryfeature.h"
 #include "library/traktortablemodel.h"
@@ -40,12 +43,13 @@ public slots:
     void onRightClick(const QPoint& globalPos);
     void onRightClickChild(const QPoint& globalPos, QModelIndex index);
     void refreshLibraryModels();
+    void onTrackCollectionLoaded();
 private:
-    bool importLibrary(QString file);
+    TreeItem* importLibrary(QString file);
     /** parses a track in the music collection **/
     void parseTrack(QXmlStreamReader &xml, QSqlQuery &query);
     /** Iterates over all playliost and folders and constructs the childmodel **/    
-    void parsePlaylists(QXmlStreamReader &xml);
+    TreeItem* parsePlaylists(QXmlStreamReader &xml);
     /** processes a particular playlist **/
     void parsePlaylistEntries(QXmlStreamReader &xml, QString playlist_path, 
     			QSqlQuery query_insert_into_playlist, QSqlQuery query_insert_into_playlisttracks);
@@ -54,11 +58,15 @@ private:
     //private fields
     TreeItemModel m_childModel;
     TrackCollection* m_pTrackCollection;
-    QSqlDatabase &m_database;
+    //A separate db connection for the worker parsing thread
+    QSqlDatabase m_database;
     TraktorTableModel* m_pTraktorTableModel;
     TraktorPlaylistModel* m_pTraktorPlaylistModel;
 
     bool m_isActivated;
+    QFutureWatcher<TreeItem*> m_future_watcher;
+    QFuture<TreeItem*> m_future;
+    QString m_title;
 
    
 };
