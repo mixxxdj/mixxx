@@ -247,10 +247,15 @@ void VinylControlXwax::run()
 			    else //go ahead and switch
 			    {
 			    	iVCMode = reportedMode;
-			    	bForceResync = true;
-			    	if (vinylStatus->get() == VINYL_STATUS_ERROR)
-	            		vinylStatus->slotSet(VINYL_STATUS_OK);
-		   		}	
+			    	if (reportedMode == MIXXX_VCMODE_ABSOLUTE)
+			    		bForceResync = true;
+		   		}
+
+				//if we are out of error mode...		   		
+		   		if (vinylStatus->get() == VINYL_STATUS_ERROR && iVCMode == MIXXX_VCMODE_RELATIVE)
+		    	{
+            		vinylStatus->slotSet(VINYL_STATUS_OK);
+            	}
 		    }
 
 			//if looping has been enabled, don't allow absolute mode		    
