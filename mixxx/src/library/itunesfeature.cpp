@@ -96,7 +96,6 @@ void ITunesFeature::activate(bool forceReload) {
         }
         m_isActivated =  true;
         // Let a worker thread do the XML parsing
-        qDebug() << "GUI thread " << QThread::currentThread();
         m_future = QtConcurrent::run(this, &ITunesFeature::importLibrary);
         m_future_watcher.setFuture(m_future);
         m_title = tr("iTunes (loading)");
