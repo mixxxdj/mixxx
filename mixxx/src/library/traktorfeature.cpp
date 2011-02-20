@@ -16,14 +16,26 @@
 
 
 TraktorFeature::TraktorFeature(QObject* parent, TrackCollection* pTrackCollection):
-        m_pTrackCollection(pTrackCollection),
-        m_database(m_pTrackCollection->getDatabase())
+        m_pTrackCollection(pTrackCollection)
 {
     
     m_isActivated =  false;
     m_pTraktorTableModel = new TraktorTableModel(this, m_pTrackCollection);
     m_pTraktorPlaylistModel = new TraktorPlaylistModel(this, m_pTrackCollection);
-    
+    m_title = tr("Traktor");
+    if (!m_database.isOpen()) {
+        m_database = QSqlDatabase::addDatabase("QSQLITE", "TRAKTOR_SCANNER");
+        m_database.setHostName("localhost");
+        m_database.setDatabaseName(MIXXX_DB_PATH);
+        m_database.setUserName("mixxx");
+        m_database.setPassword("mixxx");
+
+        //Open the database connection in this thread.
+        if (!m_database.open()) {
+            qDebug() << "Failed to open database for iTunes scanner." << m_database.lastError();
+        }
+    }
+    connect(&m_future_watcher, SIGNAL(finished()), this, SLOT(onTrackCollectionLoaded()));
 }
 
 TraktorFeature::~TraktorFeature() {
@@ -34,7 +46,7 @@ TraktorFeature::~TraktorFeature() {
 }
 
 QVariant TraktorFeature::title() {
-    return tr("Traktor");
+    return m_title;
 }
 
 QIcon TraktorFeature::getIcon() {
@@ -57,19 +69,19 @@ void TraktorFeature::activate() {
     qDebug() << "TraktorFeature::activate()";
     
     if(!m_isActivated){
-        if (QMessageBox::question(
-            NULL,
-            tr("Load Traktor Library?"),
-            tr("Would you like to load your Traktor library?"),
-            QMessageBox::Ok,
-            QMessageBox::Cancel)
-            == QMessageBox::Cancel) {
-            return;
-        }
-        if(importLibrary(getTraktorMusicDatabase()))
-            m_isActivated =  true;
+
+        m_isActivated =  true;
+        // Let a worker thread do the XML parsing
+        m_future = QtConcurrent::run(this, &TraktorFeature::importLibrary, getTraktorMusicDatabase());
+        m_future_watcher.setFuture(m_future);
+        m_title = tr("Traktor (loading)");
+        //calls a slot in the sidebar model such that 'iTunes (isLoading)' is displayed.
+        emit (featureIsLoading(this));
     }
-    emit(showTrackModel(m_pTraktorTableModel));
+    else{
+        emit(showTrackModel(m_pTraktorTableModel));
+    }
+
   
 }
 
@@ -111,8 +123,12 @@ bool TraktorFeature::dragMoveAcceptChild(const QModelIndex& index,
                                               QUrl url) {
     return false;
 }
-bool TraktorFeature::importLibrary(QString file){
-
+TreeItem* TraktorFeature::importLibrary(QString file){
+    //Give thread a low priority
+    QThread* thisThread = QThread::currentThread();
+    thisThread->setPriority(QThread::LowestPriority);
+    //Invisible root item of Traktor's child model
+    TreeItem* root = NULL;
     //Delete all table entries of Traktor feature
     m_database.transaction();
     clearTable("traktor_playlist_tracks");
@@ -180,7 +196,7 @@ bool TraktorFeature::importLibrary(QString file){
                 
                 if(nodetype == "FOLDER" && name == "$ROOT"){                
                     //process all playlists
-                    parsePlaylists(xml);
+                    root = parsePlaylists(xml);
                     isRootFolderParsed = true;
                 } 
             }
@@ -208,14 +224,16 @@ bool TraktorFeature::importLibrary(QString file){
     if (xml.hasError()) {
          // do error handling
          qDebug() << "Cannot process Traktor music collection";
+         if(root)
+             delete root;
          return false;
     }
     
     qDebug() << "Found: " << nAudioFiles << " audio files in Traktor";
     //initialize TraktorTableModel
     m_database.commit();
-    m_pTraktorTableModel->select();
-    return true;
+
+    return root;
 
 }
 void TraktorFeature::parseTrack(QXmlStreamReader &xml, QSqlQuery &query){
@@ -342,7 +360,7 @@ void TraktorFeature::parseTrack(QXmlStreamReader &xml, QSqlQuery &query){
  * In other words, Traktor uses a tree structure to organize music. Inner nodes represent folders while
  * leaves are playlists.
  */
-void TraktorFeature::parsePlaylists(QXmlStreamReader &xml){
+TreeItem* TraktorFeature::parsePlaylists(QXmlStreamReader &xml){
 
     qDebug() << "Process RootFolder";
     //Each playlist is unique and can be identified by a path in the tree structure.
@@ -441,11 +459,7 @@ void TraktorFeature::parsePlaylists(QXmlStreamReader &xml){
         }
 
     }
-    
-
-    m_childModel.setRootItem(rootItem);
-    
-    
+    return rootItem;
 }
 void TraktorFeature::parsePlaylistEntries(QXmlStreamReader &xml,QString playlist_path, QSqlQuery query_insert_into_playlist, QSqlQuery query_insert_into_playlisttracks)
 {
@@ -567,4 +581,24 @@ QString TraktorFeature::getTraktorMusicDatabase()
     return musicFolder;
 
 
+}
+void TraktorFeature::onTrackCollectionLoaded()
+{
+    TreeItem* root = m_future.result();
+    if(root){
+        m_childModel.setRootItem(root);
+        m_pTraktorTableModel->select();
+        emit(showTrackModel(m_pTraktorTableModel));
+        qDebug() << "Traktor library loaded successfully";
+    }
+    else{
+        QMessageBox::warning(
+            NULL,
+            tr("Error Loading Traktor Library"),
+            tr("There was an error loading your Traktor library. Some of "
+               "your Traktor tracks or playlists may not have loaded."));
+    }
+    //calls a slot in the sidebarmodel such that 'isLoading' is removed from the feature title.
+    m_title = tr("Traktor");
+    emit(featureLoadingFinished(this));
 }
