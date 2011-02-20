@@ -19,6 +19,11 @@ SidebarModel::~SidebarModel() {
 void SidebarModel::addLibraryFeature(LibraryFeature* feature) {
     m_sFeatures.push_back(feature);
     connect(feature, SIGNAL(featureUpdated()), this, SLOT(refreshData()));
+    connect(feature, SIGNAL(featureIsLoading(LibraryFeature*)),
+            this, SLOT(slotFeatureIsLoading(LibraryFeature*)));
+    connect(feature, SIGNAL(featureLoadingFinished(LibraryFeature*)),
+            this,SLOT(slotFeatureLoadingFinished(LibraryFeature*)));
+
     QAbstractItemModel* model = feature->getChildModel();
 
     connect(model, SIGNAL(modelReset()),
@@ -344,4 +349,29 @@ void SidebarModel::slotModelReset() {
     // If a child model is reset, we can't really do anything but reset(). This
     // will close any open items.
     reset();
+}
+/*
+ * Call this slot whenever the title of the feature has changed.
+ * See RhythmboxFeature for an example.
+ * While the rhythmbox music collection is parsed
+ * the title becomes 'Rhythmbox (loading)'
+ */
+void SidebarModel::slotFeatureIsLoading(LibraryFeature * feature)
+{
+    featureRenamed(feature);
+}
+/* Tobias: This slot is somewhat redundant but I decided
+ * to leave it for code readability reasons
+ */
+void SidebarModel::slotFeatureLoadingFinished(LibraryFeature * feature){
+    featureRenamed(feature);
+}
+void SidebarModel::featureRenamed(LibraryFeature * feature){
+    for(int i=0; i < rowCount(); ++i)
+    {
+        QModelIndex index = this->index(i,0);
+        if(index.internalPointer() == feature){
+            emit dataChanged(index, index);
+        }
+    }
 }

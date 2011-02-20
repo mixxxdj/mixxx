@@ -14,6 +14,7 @@ RhythmboxFeature::RhythmboxFeature(QObject* parent, TrackCollection* pTrackColle
     m_pRhythmboxTrackModel = new RhythmboxTrackModel(this, m_pTrackCollection);
     m_pRhythmboxPlaylistModel = new RhythmboxPlaylistModel(this, m_pTrackCollection);
     m_isActivated =  false;
+    m_title = tr("Rhythmbox");
 
     if (!m_database.isOpen()) {
         m_database = QSqlDatabase::addDatabase("QSQLITE", "RHYTHMBOX_SCANNER");
@@ -43,7 +44,7 @@ bool RhythmboxFeature::isSupported() {
 }
 
 QVariant RhythmboxFeature::title() {
-    return tr("Rhythmbox");
+    return m_title;
 }
 
 QIcon RhythmboxFeature::getIcon() {
@@ -59,10 +60,22 @@ void RhythmboxFeature::activate() {
 
     if(!m_isActivated){
         m_isActivated =  true;
-        //Note
+        /* Ususally the maximum number of threads
+         * is > 2 depending on the CPU cores
+         * Unfortunately, within VirtualBox
+         * the maximum number of allowed threads
+         * is 1 at all times, which is related to
+         * the GUI thread. We'll need to increase
+         * the number to > 1, otherwise importing the music collection
+         * takes place when the GUI threads terminates, i.e., on
+         * Mixxx shutdown.
+         */
         QThreadPool::globalInstance()->setMaxThreadCount(5);
         m_track_future = QtConcurrent::run(this, &RhythmboxFeature::importMusicCollection);
         m_track_watcher.setFuture(m_track_future);
+        m_title = "Rhythmbox (loading)";
+        //calls a slot in the sidebar model such that 'Rhythmbox (isLoading)' is displayed.
+        emit (featureIsLoading(this));
     }
     else
         emit(showTrackModel(m_pRhythmboxTrackModel));
@@ -391,17 +404,16 @@ void RhythmboxFeature::clearTable(QString table_name)
 void RhythmboxFeature::onTrackCollectionLoaded(){
     TreeItem* root = m_track_future.result();
     if(root){
-        qDebug() << "Rhythmbox Playlists loaded: true";
-        qDebug() << "GUI Thread Id: " << QThread::currentThread();
-
         m_childModel.setRootItem(root);
         m_pRhythmboxTrackModel->select();
-        //m_childModel.setRootItem(root);
+
     }
     else{
          qDebug() << "Rhythmbox Playlists loaded: false";
     }
-
+    //calls a slot in the sidebarmodel such that 'isLoading' is removed from the feature title.
+    m_title = tr("Rhythmbox");
+    emit featureLoadingFinished(this);
 
 }
 

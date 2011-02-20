@@ -46,6 +46,7 @@ private:
     //new DB object because of threads
     QSqlDatabase m_database;
     bool m_isActivated;
+    QString m_title;
 
     QFutureWatcher<TreeItem*> m_track_watcher;
     QFuture<TreeItem*> m_track_future;
