@@ -19,7 +19,7 @@
      * In case of no arguments, the standard constructor creates a
      * root item that is not visible in the sidebar.
      *
-     * Once the TreeItem objects are inserted to models, the models take care of their 
+     * Once the TreeItem objects are inserted to models, the models take care of their
      * deletion.
      *
      * Examples on how to use TreeItem and TreeItemModels can be found in
@@ -126,3 +126,11 @@ bool TreeItem::setData(const QVariant &data, const QVariant &data_path)
     m_dataPath = data_path.toString();
     return true;
  }
+
+QIcon TreeItem::getIcon() {
+    return m_icon;
+}
+
+void TreeItem::setIcon(const QIcon& icon) {
+    m_icon = icon;
+}
