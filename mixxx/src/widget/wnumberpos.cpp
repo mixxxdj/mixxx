@@ -56,6 +56,15 @@ WNumberPos::WNumberPos(const char * group, QWidget * parent)
 WNumberPos::~WNumberPos() {
 }
 
+void WNumberPos::mousePressEvent(QMouseEvent* pEvent) {
+    bool leftClick = pEvent->buttons() & Qt::LeftButton;
+
+    if (leftClick) {
+        setRemain(!m_bRemain);
+        m_pShowDurationRemaining->slotSet(m_bRemain ? 1.0f : 0.0f);
+    }
+}
+
 void WNumberPos::slotSetTrackDuration(double dDuration) {
     m_dDuration = dDuration;
     setValue(m_dOldValue);
@@ -98,7 +107,7 @@ void WNumberPos::setValue(double dValue) {
 }
 
 void WNumberPos::slotSetRemain(double remain) {
-    setRemain(remain == 1.0f);
+    setRemain(remain > 0.0f);
 }
 
 void WNumberPos::setRemain(bool bRemain)
