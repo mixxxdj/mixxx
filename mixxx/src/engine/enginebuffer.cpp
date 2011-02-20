@@ -373,8 +373,12 @@ void EngineBuffer::slotControlSeekAbs(double abs)
     slotControlSeek(abs/file_length_old);
 }
 
-void EngineBuffer::slotControlPlay(double)
+void EngineBuffer::slotControlPlay(double v)
 {
+    // If no track is currently loaded, turn play off.
+    if (!m_pCurrentTrack) {
+        playButton->set(0.0f);
+    }
 }
 
 void EngineBuffer::slotControlStart(double)
