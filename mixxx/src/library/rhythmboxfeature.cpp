@@ -25,8 +25,7 @@ RhythmboxFeature::RhythmboxFeature(QObject* parent, TrackCollection* pTrackColle
 
         //Open the database connection in this thread.
         if (!m_database.open()) {
-            qDebug() << "Failed to open database from Rhythmbox scanner thread." << m_database.lastError();
-            return;
+            qDebug() << "Failed to open database for Rhythmbox scanner." << m_database.lastError();
         }
     }
     connect(&m_track_watcher, SIGNAL(finished()), this, SLOT(onTrackCollectionLoaded()), Qt::QueuedConnection);
