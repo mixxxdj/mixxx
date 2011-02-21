@@ -370,8 +370,8 @@ int SoundDevicePortAudio::callbackProcess(unsigned long framesPerBuffer, float *
 
                     //Input audio pass-through (useful for debugging)
                     //if (in)
-                    //    output[iFrameBase + src.channelBase + iChannel] +=
-                    //    in[iFrameBase + src.channelBase + iChannel] * SHRT_CONVERSION_FACTOR;
+                    //    output[iFrameBase + iChannelBase + iChannel] +=
+                    //    in[iFrameBase + iChannelBase + iChannel] * SHRT_CONVERSION_FACTOR;
                 }
             }
         }

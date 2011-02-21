@@ -46,6 +46,7 @@ public:
     // be called by SoundManager.
     const CSAMPLE* getMasterBuffer() const;
     const CSAMPLE* getHeadphoneBuffer() const;
+    void pushPassthroughBuffer(int c, short *input, int len);
     int numChannels() const;
     const CSAMPLE* getChannelBuffer(unsigned int i) const;
 
@@ -65,6 +66,9 @@ public:
 
     CSAMPLE *m_pMaster, *m_pHead;
     QList<CSAMPLE*> m_channelBuffers;
+    QList<CSAMPLE*> m_passthroughBuffers;
+    //int m_iRingBufPos[2];
+    QMutex passthroughBufferMutex;
 
     EngineWorkerScheduler *m_pWorkerScheduler;
 
@@ -78,6 +82,7 @@ public:
 
     ControlPotmeter *crossfader, *head_mix,
         *m_pBalance, *xFaderCurve, *xFaderCalibration;
+    QList<ControlPushButton*>m_passthrough;
 };
 
 #endif

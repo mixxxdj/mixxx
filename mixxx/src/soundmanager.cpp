@@ -493,6 +493,8 @@ SoundManagerConfig SoundManager::getConfig() const {
 #ifdef __VINYLCONTROL__        
 bool SoundManager::hasVinylInput(int deck)
 {
+	if (deck >= m_VinylControl.length())
+		return false;
 	VinylControlProxy* vinyl_control = m_VinylControl[deck];
 	
 	return m_VinylControl[deck] && 
@@ -632,7 +634,6 @@ void SoundManager::pushBuffer(QList<AudioInput> inputs, short * inputBuffer,
     }
 */
     else { //More than two channels of input (iFrameSize > 2)
-
         // Do crazy deinterleaving of the audio into the correct m_inputBuffers.
 
         for (QList<AudioInput>::const_iterator i = inputs.begin(),
@@ -691,6 +692,15 @@ void SoundManager::pushBuffer(QList<AudioInput> inputs, short * inputBuffer,
 				}
 			}
         }
+        
+        //loop through again and push to the engine for passthrough
+		QListIterator<AudioInput> inputItr(inputs);
+		while (inputItr.hasNext())
+		{
+			AudioInput in = inputItr.next();
+			m_pMaster->pushPassthroughBuffer(in.getIndex(), m_inputBuffers[in], sizeof(*m_inputBuffers[in]) * iFrameSize * iFramesPerBuffer);	
+		}
+
 #endif
     }
     //TODO: Add pass-through option here (and push it into EngineMaster)...

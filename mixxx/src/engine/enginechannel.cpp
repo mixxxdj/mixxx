@@ -66,13 +66,22 @@ bool EngineChannel::isPFL() {
     return m_pPFL->get() == 1.0;
 }
 
-void EngineChannel::process(const CSAMPLE*, const CSAMPLE * pOut, const int iBufferSize) {
-    // Process the raw audio
-    m_pBuffer->process(0, pOut, iBufferSize);
-    // Emulate vinyl sounds
-    m_pVinylSoundEmu->process(pOut, pOut, iBufferSize);
-    // Apply pregain
-    m_pPregain->process(pOut, pOut, iBufferSize);
+void EngineChannel::process(const CSAMPLE* pIn, const CSAMPLE * pOut, const int iBufferSize) {
+	if (!pIn)
+	{
+    	// Process the raw audio
+    	m_pBuffer->process(0, pOut, iBufferSize);
+    	// Emulate vinyl sounds
+    	m_pVinylSoundEmu->process(pOut, pOut, iBufferSize);
+	    // Apply pregain
+    	m_pPregain->process(pOut, pOut, iBufferSize);
+    }
+    else
+    {
+    	// Just apply pregain
+    	m_pPregain->process(pIn, pOut, iBufferSize);
+    }
+    
     // Filter the channel with EQs
     m_pFilter->process(pOut, pOut, iBufferSize);
     // TODO(XXX) LADSPA

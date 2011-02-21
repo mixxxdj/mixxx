@@ -83,13 +83,22 @@ EngineMaster::EngineMaster(ConfigObject<ConfigValue> * _config,
 
     // Headphone Clipping
     head_clipping = new EngineClipping("");
+    
+	m_passthrough.append(new ControlPushButton(ConfigKey("[Channel1]","inputpassthrough")));
+	m_passthrough.append(new ControlPushButton(ConfigKey("[Channel2]","inputpassthrough")));
+	m_passthrough[0]->setToggleButton(true);
+	m_passthrough[1]->setToggleButton(true);
 
     // Allocate buffers
     m_pHead = SampleUtil::alloc(MAX_BUFFER_LEN);
     m_pMaster = SampleUtil::alloc(MAX_BUFFER_LEN);
     memset(m_pHead, 0, sizeof(CSAMPLE) * MAX_BUFFER_LEN);
     memset(m_pMaster, 0, sizeof(CSAMPLE) * MAX_BUFFER_LEN);
-
+	m_passthroughBuffers.append(SampleUtil::alloc(MAX_BUFFER_LEN));
+	m_passthroughBuffers.append(SampleUtil::alloc(MAX_BUFFER_LEN));
+	memset(m_passthroughBuffers[0], 0, sizeof(CSAMPLE) * MAX_BUFFER_LEN);
+	memset(m_passthroughBuffers[1], 0, sizeof(CSAMPLE) * MAX_BUFFER_LEN);
+	    
     sidechain = new EngineSideChain(_config);
 
     //X-Fader Setup
@@ -167,15 +176,29 @@ void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
     // applied but the master channels do -- bkgood
     SampleUtil::applyGain(m_pHead, 0.0f, iBufferSize);
 
+	passthroughBufferMutex.lock();
+	
     for (int channel_number = 0; channel_number < m_channels.size(); ++channel_number) {
         EngineChannel* channel = m_channels[channel_number];
 
-        if (!channel->isActive()) {
-            continue;
-        }
+        
+        CSAMPLE* buffer;
+    	if(m_passthrough[channel_number]->get())
+    	{
+    		buffer = m_passthroughBuffers[channel_number];
+	    	channel->process(buffer, buffer, iBufferSize);
+	    }
+	    else
+	    {
+	    	//if we're passing through, we don't care if channel
+	    	//is active or not
+   	        if (!channel->isActive()) {
+				continue;
+    		}
 
-        CSAMPLE* buffer = m_channelBuffers[channel_number];
-        channel->process(NULL, buffer, iBufferSize);
+	    	buffer = m_channelBuffers[channel_number];
+			channel->process(NULL, buffer, iBufferSize);
+	    }
 
         // If the channel is enabled for previewing in headphones, copy it
         // over to the headphone buffer
@@ -242,6 +265,9 @@ void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
         }
     }
 
+    passthroughBufferMutex.unlock();
+
+	
     // Master volume
     volume->process(m_pMaster, m_pMaster, iBufferSize);
 
@@ -252,7 +278,7 @@ void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
 
     // Clipping
     clipping->process(m_pMaster, m_pMaster, iBufferSize);
-
+    
     // Balance values
     float balright = 1.;
     float balleft = 1.;
@@ -305,6 +331,22 @@ void EngineMaster::addChannel(EngineChannel* pChannel) {
         pBuffer1->setOtherEngineBuffer(pBuffer2);
         pBuffer2->setOtherEngineBuffer(pBuffer1);
     }
+}
+
+void EngineMaster::pushPassthroughBuffer(int c, short *input, int len)
+{
+	Q_ASSERT(c<2); // really, now.
+	if(passthroughBufferMutex.tryLock())
+	{
+		for (int i=0; i<len; i++)
+		{
+			//why don't we need to divide by SHRT_MAX???
+			m_passthroughBuffers[c][i] = (CSAMPLE)input[i];// / (float)SHRT_MAX;
+		}
+		passthroughBufferMutex.unlock();
+	}
+	else
+		qDebug() << "WARNING: input passthrough lock failed (dropouts ahoy)";
 }
 
 int EngineMaster::numChannels() const {
