@@ -12,9 +12,9 @@
 #include <QFutureWatcher>
 
 #include "library/libraryfeature.h"
-#include "treeitemmodel.h"
-#include "library/rhythmboxtrackmodel.h"
-#include "library/rhythmboxplaylistmodel.h"
+#include "library/treeitemmodel.h"
+#include "library/rhythmbox/rhythmboxtrackmodel.h"
+#include "library/rhythmbox/rhythmboxplaylistmodel.h"
 #include "library/trackcollection.h"
 
 

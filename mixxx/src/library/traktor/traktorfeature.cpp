@@ -7,12 +7,12 @@
 #include <QMap>
 #include <QSettings>
 
-#include "library/traktorfeature.h"
+#include "library/traktor/traktorfeature.h"
 
 #include "library/librarytablemodel.h"
 #include "library/missingtablemodel.h"
 #include "library/trackcollection.h"
-#include "treeitem.h"
+#include "library/treeitem.h"
 
 
 TraktorFeature::TraktorFeature(QObject* parent, TrackCollection* pTrackCollection):
