@@ -1,28 +1,10 @@
-/***************************************************************************
-                           rhythmboxtracksource.h
-                              -------------------
-     begin                : 8/15/2009
-     copyright            : (C) 2011 Tobias Rafreider
-     email                : alberts@mixxx.org
-***************************************************************************/
-
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
-
-#ifndef RHYTHMBOXTRACKMODEL_H
-#define RHYTHMBOXTRACKMODEL_H
-
+#ifndef ITUNES_PLAYLIST_MODEL_H
+#define ITUNES_PLAYLIST_MODEL_H
 
 #include <QtSql>
 #include <QItemDelegate>
 #include <QtCore>
-#include "trackmodel.h"
+#include "library/trackmodel.h"
 #include "library/basesqltablemodel.h"
 #include "library/librarytablemodel.h"
 #include "library/dao/playlistdao.h"
@@ -30,12 +12,12 @@
 
 class TrackCollection;
 
-class RhythmboxTrackModel : public BaseSqlTableModel, public virtual TrackModel
+class ITunesPlaylistModel : public BaseSqlTableModel, public virtual TrackModel
 {
     Q_OBJECT
   public:
-    RhythmboxTrackModel(QObject* parent, TrackCollection* pTrackCollection);
-    virtual ~RhythmboxTrackModel();
+    ITunesPlaylistModel(QObject* parent, TrackCollection* pTrackCollection);
+    virtual ~ITunesPlaylistModel();
 
     virtual TrackPointer getTrack(const QModelIndex& index) const;
     virtual QString getTrackLocation(const QModelIndex& index) const;
@@ -53,6 +35,8 @@ class RhythmboxTrackModel : public BaseSqlTableModel, public virtual TrackModel
 
     QItemDelegate* delegateForColumn(const int i);
     TrackModel::CapabilitiesFlags getCapabilities() const;
+    /** sets the playlist **/
+    void setPlaylist(QString path_name);
 
   private slots:
     void slotSearch(const QString& searchText);
@@ -66,4 +50,4 @@ class RhythmboxTrackModel : public BaseSqlTableModel, public virtual TrackModel
     QString m_currentSearch;
 };
 
-#endif
+#endif /* ITUNES_PLAYLIST_MODEL_H */

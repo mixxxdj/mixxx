@@ -12,8 +12,8 @@
 
 #include "library/libraryfeature.h"
 #include "library/trackcollection.h"
-#include "treeitemmodel.h"
-#include "treeitem.h"
+#include "library/treeitemmodel.h"
+#include "library/treeitem.h"
 
 //class ITunesPlaylistModel;
 class ITunesTrackModel;

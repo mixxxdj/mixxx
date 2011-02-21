@@ -2,7 +2,7 @@
 #include <QtGui>
 #include <QtSql>
 #include "library/trackcollection.h"
-#include "library/itunesplaylistmodel.h"
+#include "library/itunes/itunesplaylistmodel.h"
 
 #include "mixxxutils.cpp"
 

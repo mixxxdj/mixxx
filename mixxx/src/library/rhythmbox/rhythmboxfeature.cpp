@@ -2,10 +2,10 @@
 #include <QtDebug>
 #include <QStringList>
 
-#include "library/rhythmboxtrackmodel.h"
-#include "library/rhythmboxplaylistmodel.h"
-#include "library/rhythmboxfeature.h"
-#include "treeitem.h"
+#include "library/rhythmbox/rhythmboxtrackmodel.h"
+#include "library/rhythmbox/rhythmboxplaylistmodel.h"
+#include "library/rhythmbox/rhythmboxfeature.h"
+#include "library/treeitem.h"
 
 RhythmboxFeature::RhythmboxFeature(QObject* parent, TrackCollection* pTrackCollection)
     : LibraryFeature(parent),

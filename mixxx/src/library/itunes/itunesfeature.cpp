@@ -5,10 +5,11 @@
 #include <QFileDialog>
 #include <QMenu>
 #include <QAction>
-#include "library/itunesfeature.h"
 
-#include "library/itunestrackmodel.h"
-#include "library/itunesplaylistmodel.h"
+#include "library/itunes/itunesfeature.h"
+
+#include "library/itunes/itunestrackmodel.h"
+#include "library/itunes/itunesplaylistmodel.h"
 #include "library/dao/settingsdao.h"
 
 const QString ITunesFeature::ITDB_PATH_KEY = "mixxx.itunesfeature.itdbpath";

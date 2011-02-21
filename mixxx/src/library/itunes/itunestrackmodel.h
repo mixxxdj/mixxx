@@ -1,10 +1,10 @@
-#ifndef TRAKTOR_TABLE_MODEL_H
-#define TRAKTOR_TABLE_MODEL_H
+#ifndef ITUNES_TABLE_MODEL_H
+#define ITUNES_TABLE_MODEL_H
 
 #include <QtSql>
 #include <QItemDelegate>
 #include <QtCore>
-#include "trackmodel.h"
+#include "library/trackmodel.h"
 #include "library/basesqltablemodel.h"
 #include "library/librarytablemodel.h"
 #include "library/dao/playlistdao.h"
@@ -12,13 +12,13 @@
 
 class TrackCollection;
 
-class TraktorTableModel : public BaseSqlTableModel, public virtual TrackModel
+class ITunesTrackModel : public BaseSqlTableModel, public virtual TrackModel
 {
     Q_OBJECT
   public:
-    TraktorTableModel(QObject* parent, TrackCollection* pTrackCollection);
-    virtual ~TraktorTableModel();
-    
+    ITunesTrackModel(QObject* parent, TrackCollection* pTrackCollection);
+    virtual ~ITunesTrackModel();
+
     virtual TrackPointer getTrack(const QModelIndex& index) const;
     virtual QString getTrackLocation(const QModelIndex& index) const;
     virtual void search(const QString& searchText);
@@ -29,10 +29,10 @@ class TraktorTableModel : public BaseSqlTableModel, public virtual TrackModel
     virtual void removeTracks(const QModelIndexList& indices);
     virtual bool addTrack(const QModelIndex& index, QString location);
     virtual void moveTrack(const QModelIndex& sourceIndex, const QModelIndex& destIndex);
-	
+
     virtual Qt::ItemFlags flags(const QModelIndex &index) const;
     QMimeData* mimeData(const QModelIndexList &indexes) const;
-   
+
     QItemDelegate* delegateForColumn(const int i);
     TrackModel::CapabilitiesFlags getCapabilities() const;
 
@@ -44,10 +44,8 @@ class TraktorTableModel : public BaseSqlTableModel, public virtual TrackModel
 
   private:
     TrackCollection* m_pTrackCollection;
-	QSqlDatabase &m_database;
-    
-    
+    QSqlDatabase &m_database;
     QString m_currentSearch;
 };
 
-#endif /* TRAKTOR_TABLE_MODEL_H */
+#endif /* ITUNES_TABLE_MODEL_H */

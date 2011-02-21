@@ -2,33 +2,36 @@
 #include <QtGui>
 #include <QtSql>
 #include "library/trackcollection.h"
-#include "library/rhythmboxplaylistmodel.h"
+#include "library/traktor/traktorplaylistmodel.h"
 
 #include "mixxxutils.cpp"
 
-RhythmboxPlaylistModel::RhythmboxPlaylistModel(QObject* parent,
-                                         TrackCollection* pTrackCollection)
+TraktorPlaylistModel::TraktorPlaylistModel(QObject* parent,
+                                       TrackCollection* pTrackCollection)
         : TrackModel(pTrackCollection->getDatabase(),
-                     "mixxx.db.model.rhythmbox_playlist"),
+                     "mixxx.db.model.traktor.playlistmodel"),
           BaseSqlTableModel(parent, pTrackCollection, pTrackCollection->getDatabase()),
           m_pTrackCollection(pTrackCollection),
           m_database(m_pTrackCollection->getDatabase())
+
 {
     connect(this, SIGNAL(doSearch(const QString&)), this, SLOT(slotSearch(const QString&)));
     setCaching(false);
 }
 
-RhythmboxPlaylistModel::~RhythmboxPlaylistModel() {
+TraktorPlaylistModel::~TraktorPlaylistModel() {
 }
 
-bool RhythmboxPlaylistModel::addTrack(const QModelIndex& index, QString location)
+bool TraktorPlaylistModel::addTrack(const QModelIndex& index, QString location)
 {
 
     return false;
 }
 
-TrackPointer RhythmboxPlaylistModel::getTrack(const QModelIndex& index) const
+TrackPointer TraktorPlaylistModel::getTrack(const QModelIndex& index) const
 {
+	//qDebug() << "getTraktorTrack";
+
     QString artist = index.sibling(index.row(), fieldIndex("artist")).data().toString();
     QString title = index.sibling(index.row(), fieldIndex("title")).data().toString();
     QString album = index.sibling(index.row(), fieldIndex("album")).data().toString();
@@ -46,34 +49,38 @@ TrackPointer RhythmboxPlaylistModel::getTrack(const QModelIndex& index) const
     pTrack->setGenre(genre);
     pTrack->setBpm(bpm);
 
+
     return TrackPointer(pTrack, &QObject::deleteLater);
 }
 
-QString RhythmboxPlaylistModel::getTrackLocation(const QModelIndex& index) const {
+QString TraktorPlaylistModel::getTrackLocation(const QModelIndex& index) const
+{
     QString location = index.sibling(index.row(), fieldIndex("location")).data().toString();
     return location;
 }
 
-void RhythmboxPlaylistModel::removeTrack(const QModelIndex& index) {
+void TraktorPlaylistModel::removeTrack(const QModelIndex& index)
+{
 
 }
 
-void RhythmboxPlaylistModel::removeTracks(const QModelIndexList& indices) {
+void TraktorPlaylistModel::removeTracks(const QModelIndexList& indices) {
+
+}
+void TraktorPlaylistModel::moveTrack(const QModelIndex& sourceIndex, const QModelIndex& destIndex)
+{
 
 }
 
-void RhythmboxPlaylistModel::moveTrack(const QModelIndex& sourceIndex, const QModelIndex& destIndex) {
-
-}
-
-void RhythmboxPlaylistModel::search(const QString& searchText) {
-    // qDebug() << "RhythmboxPlaylistModel::search()" << searchText
+void TraktorPlaylistModel::search(const QString& searchText) {
+    // qDebug() << "TraktorPlaylistModel::search()" << searchText
     //          << QThread::currentThread();
     emit(doSearch(searchText));
 }
 
-void RhythmboxPlaylistModel::slotSearch(const QString& searchText) {
-    if (!m_currentSearch.isNull() && m_currentSearch == searchText)
+void TraktorPlaylistModel::slotSearch(const QString& searchText)
+{
+   if (!m_currentSearch.isNull() && m_currentSearch == searchText)
         return;
     m_currentSearch = searchText;
 
@@ -82,16 +89,16 @@ void RhythmboxPlaylistModel::slotSearch(const QString& searchText) {
     search.setValue("%" + searchText + "%");
     QString escapedText = database().driver()->formatValue(search);
     filter = "(artist LIKE " + escapedText + " OR " +
-            "album LIKE " + escapedText + " OR " +
-            "title  LIKE " + escapedText + ")";
+                "album LIKE " + escapedText + " OR " +
+                "title  LIKE " + escapedText + ")";
     setFilter(filter);
 }
 
-const QString RhythmboxPlaylistModel::currentSearch() {
+const QString TraktorPlaylistModel::currentSearch() {
     return m_currentSearch;
 }
 
-bool RhythmboxPlaylistModel::isColumnInternal(int column) {
+bool TraktorPlaylistModel::isColumnInternal(int column) {
     if (column == fieldIndex(LIBRARYTABLE_ID) ||
         column == fieldIndex(LIBRARYTABLE_MIXXXDELETED) ||
         column == fieldIndex(TRACKLOCATIONSTABLE_FSDELETED) ||
@@ -101,8 +108,9 @@ bool RhythmboxPlaylistModel::isColumnInternal(int column) {
     return false;
 }
 
-QMimeData* RhythmboxPlaylistModel::mimeData(const QModelIndexList &indexes) const {
-    QMimeData *mimeData = new QMimeData();
+QMimeData* TraktorPlaylistModel::mimeData(const QModelIndexList &indexes) const {
+
+   QMimeData *mimeData = new QMimeData();
     QList<QUrl> urls;
 
     //Ok, so the list of indexes we're given contains separates indexes for
@@ -124,25 +132,29 @@ QMimeData* RhythmboxPlaylistModel::mimeData(const QModelIndexList &indexes) cons
     }
     mimeData->setUrls(urls);
     return mimeData;
+
 }
 
 
-QItemDelegate* RhythmboxPlaylistModel::delegateForColumn(const int i) {
+QItemDelegate* TraktorPlaylistModel::delegateForColumn(const int i) {
     return NULL;
 }
 
-TrackModel::CapabilitiesFlags RhythmboxPlaylistModel::getCapabilities() const {
+TrackModel::CapabilitiesFlags TraktorPlaylistModel::getCapabilities() const
+{
+
     return TRACKMODELCAPS_NONE;
 }
 
-Qt::ItemFlags RhythmboxPlaylistModel::flags(const QModelIndex &index) const {
+Qt::ItemFlags TraktorPlaylistModel::flags(const QModelIndex &index) const
+{
     return readOnlyFlags(index);
 }
-
-void RhythmboxPlaylistModel::setPlaylist(QString playlist_path) {
+void TraktorPlaylistModel::setPlaylist(QString playlist_path)
+{
     int playlistId = -1;
     QSqlQuery finder_query(m_database);
-    finder_query.prepare("SELECT id from rhythmbox_playlists where name='"+playlist_path+"'");
+    finder_query.prepare("SELECT id from traktor_playlists where name='"+playlist_path+"'");
 
     if(finder_query.exec()){
         while (finder_query.next()) {
@@ -150,10 +162,10 @@ void RhythmboxPlaylistModel::setPlaylist(QString playlist_path) {
         }
     }
     else
-        qDebug() << "SQL Error in RhythmboxPlaylistModel.cpp: line" << __LINE__ << " " << finder_query.lastError();
+        qDebug() << "SQL Error in TraktorPlaylistModel.cpp: line" << __LINE__ << " " << finder_query.lastError();
 
 
-    QString playlistID = "Rhythmboxplaylist_" + QString("%1").arg(playlistId);
+    QString playlistID = "TraktorPlaylist_" + QString("%1").arg(playlistId);
     //Escape the playlist name
     QSqlDriver* driver = m_pTrackCollection->getDatabase().driver();
     QSqlField playlistNameField("name", QVariant::String);
@@ -162,48 +174,53 @@ void RhythmboxPlaylistModel::setPlaylist(QString playlist_path) {
     QSqlQuery query(m_database);
     query.prepare("CREATE TEMPORARY VIEW IF NOT EXISTS "+ driver->formatValue(playlistNameField) + " AS "
                   "SELECT "
-                  "rhythmbox_library.id,"
-                  "rhythmbox_library.artist,"
-                  "rhythmbox_library.title,"
-                  "rhythmbox_library.album,"
-                  "rhythmbox_library.year,"
-                  "rhythmbox_library.genre,"
-                  "rhythmbox_library.tracknumber,"
-                  "rhythmbox_library.location,"
-                  "rhythmbox_library.comment,"
-                  "rhythmbox_library.rating,"
-                  "rhythmbox_library.duration,"
-                  "rhythmbox_library.bitrate,"
-                  "rhythmbox_library.bpm,"
-                  "rhythmbox_playlist_tracks.track_id, "
-                  "rhythmbox_playlists.name "
-                  "FROM rhythmbox_library "
-                  "INNER JOIN rhythmbox_playlist_tracks "
-                  "ON rhythmbox_playlist_tracks.track_id = rhythmbox_library.id "
-                  "INNER JOIN rhythmbox_playlists "
-                  "ON rhythmbox_playlist_tracks.playlist_id = rhythmbox_playlists.id "
-                  "where rhythmbox_playlists.name='"+playlist_path+"'"
+                  "traktor_library.id,"
+                  "traktor_library.artist,"
+                  "traktor_library.title,"
+                  "traktor_library.album,"
+                  "traktor_library.year,"
+                  "traktor_library.genre,"
+                  "traktor_library.tracknumber,"
+                  "traktor_library.location,"
+                  "traktor_library.comment,"
+                  "traktor_library.rating,"
+                  "traktor_library.duration,"
+                  "traktor_library.bitrate,"
+                  "traktor_library.bpm,"
+                  "traktor_library.key,"
+                  "traktor_playlist_tracks.track_id, "
+                  "traktor_playlists.name "
+                  "FROM traktor_library "
+                  "INNER JOIN traktor_playlist_tracks "
+                  "ON traktor_playlist_tracks.track_id = traktor_library.id "
+                  "INNER JOIN traktor_playlists "
+                  "ON traktor_playlist_tracks.playlist_id = traktor_playlists.id "
+                  "where traktor_playlists.name='"+playlist_path+"'"
                   );
 
 
     if (!query.exec()) {
 
-        qDebug() << "Error creating temporary view for rhythmbox playlists. RhythmboxPlaylistModel --> line: " << __LINE__ << " " << query.lastError();
+        qDebug() << "Error creating temporary view for traktor playlists. TraktorPlaylistModel --> line: " << __LINE__ << " " << query.lastError();
         qDebug() << "Executed Query: " <<  query.executedQuery();
         return;
     }
-    setTable(playlistID);
+	setTable(playlistID);
 
-    //removeColumn(fieldIndex("track_id"));
-    //removeColumn(fieldIndex("name"));
-    //removeColumn(fieldIndex("id"));
+	//removeColumn(fieldIndex("track_id"));
+	//removeColumn(fieldIndex("name"));
+	//removeColumn(fieldIndex("id"));
 
     slotSearch("");
 
     select(); //Populate the data model.
     initHeaderData();
 }
+bool TraktorPlaylistModel::isColumnHiddenByDefault(int column) {
+    if (column == fieldIndex(LIBRARYTABLE_KEY))
+        return true;
+    if(column == fieldIndex(LIBRARYTABLE_BITRATE))
+    	return true;
 
-bool RhythmboxPlaylistModel::isColumnHiddenByDefault(int column) {
     return false;
 }
