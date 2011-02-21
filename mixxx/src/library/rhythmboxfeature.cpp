@@ -109,6 +109,7 @@ bool RhythmboxFeature::dragMoveAccept(QUrl url) {
 bool RhythmboxFeature::dragMoveAcceptChild(const QModelIndex& index, QUrl url) {
     return false;
 }
+
 TreeItem* RhythmboxFeature::importMusicCollection()
 {
     qDebug() << "importMusicCollection Thread Id: " << QThread::currentThread();
@@ -172,6 +173,7 @@ TreeItem* RhythmboxFeature::importMusicCollection()
 
 
 }
+
 TreeItem* RhythmboxFeature::importPlaylists()
 {
     QFile db(QDir::homePath() + "/.gnome2/rhythmbox/playlists.xml");
@@ -241,6 +243,7 @@ TreeItem* RhythmboxFeature::importPlaylists()
     return rootItem;
 
 }
+
 void RhythmboxFeature::importTrack(QXmlStreamReader &xml, QSqlQuery &query)
 {
     QString title;
@@ -334,6 +337,7 @@ void RhythmboxFeature::importTrack(QXmlStreamReader &xml, QSqlQuery &query)
     }
 
 }
+
 /** reads all playlist entries and executes a SQL statement **/
 void RhythmboxFeature::importPlaylist(QXmlStreamReader &xml, QSqlQuery &query_insert_to_playlist_tracks, int playlist_id)
 {
@@ -387,6 +391,7 @@ void RhythmboxFeature::importPlaylist(QXmlStreamReader &xml, QSqlQuery &query_in
     }
 
 }
+
 void RhythmboxFeature::clearTable(QString table_name)
 {
     qDebug() << "clearTable Thread Id: " << QThread::currentThread();
@@ -399,20 +404,20 @@ void RhythmboxFeature::clearTable(QString table_name)
     else
         qDebug() << "Rhythmbox table entries of '" << table_name <<"' have been cleared.";
 }
-void RhythmboxFeature::onTrackCollectionLoaded(){
+
+void RhythmboxFeature::onTrackCollectionLoaded() {
     TreeItem* root = m_track_future.result();
-    if(root){
+    if (root) {
         m_childModel.setRootItem(root);
         m_pRhythmboxTrackModel->select();
-
     }
-    else{
+    else {
          qDebug() << "Rhythmbox Playlists loaded: false";
     }
     //calls a slot in the sidebarmodel such that 'isLoading' is removed from the feature title.
     m_title = tr("Rhythmbox");
-    emit featureLoadingFinished(this);
-
+    emit(featureLoadingFinished(this));
+    activate();
 }
 
 

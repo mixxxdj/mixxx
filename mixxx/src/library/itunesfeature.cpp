@@ -583,6 +583,6 @@ void ITunesFeature::onTrackCollectionLoaded(){
     //calls a slot in the sidebarmodel such that 'isLoading' is removed from the feature title.
     m_title = tr("iTunes");
     emit(featureLoadingFinished(this));
-
+    activate();
 }
 
