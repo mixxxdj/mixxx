@@ -190,6 +190,13 @@ void VinylControlXwax::run()
         //TODO: Move all these config object get*() calls to an "updatePrefs()" function,
         //		and make that get called when any options get changed in the preferences dialog, rather than
         //		polling everytime we get a buffer.
+        
+        if (inputPassthrough->get())
+        {
+        	//set status and moveon
+        	vinylStatus->slotSet(VINYL_STATUS_PASSTHROUGH);
+        	continue;
+        }
 
         
         //Check if vinyl control is enabled...
@@ -209,7 +216,7 @@ void VinylControlXwax::run()
 		//are we even playing and enabled at all?
         if (duration != NULL && bIsEnabled)	
         {
-        	
+        	vinylStatus->slotSet(VINYL_STATUS_OK);
         	//qDebug() << group << id << iPosition;
 	        
         	double cur_duration = duration->get();

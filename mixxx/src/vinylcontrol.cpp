@@ -25,6 +25,7 @@ VinylControl::VinylControl(ConfigObject<ConfigValue> * pConfig, const char * _gr
     //a midi knob to tweak the vinyl pitch for decks with crappy sliders
     m_pVinylPitchTweakKnob = new ControlObjectThread(ControlObject::getControl(ConfigKey(group,  "vinylpitchtweak")));
     loopEnabled		= new ControlObjectThread(ControlObject::getControl(ConfigKey(group, "loop_enabled")));
+    inputPassthrough	= new ControlObjectThread(ControlObject::getControl(ConfigKey(group, "inputpassthrough")));
 
     dVinylPitch = 0.0f;
     dVinylPosition = 0.0f;

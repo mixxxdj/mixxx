@@ -84,10 +84,13 @@ EngineMaster::EngineMaster(ConfigObject<ConfigValue> * _config,
     // Headphone Clipping
     head_clipping = new EngineClipping("");
     
+    //set up input passthrough o
 	m_passthrough.append(new ControlPushButton(ConfigKey("[Channel1]","inputpassthrough")));
 	m_passthrough.append(new ControlPushButton(ConfigKey("[Channel2]","inputpassthrough")));
 	m_passthrough[0]->setToggleButton(true);
 	m_passthrough[1]->setToggleButton(true);
+	m_bPassthroughWasActive[0] = false;
+	m_bPassthroughWasActive[1] = false;
 
     // Allocate buffers
     m_pHead = SampleUtil::alloc(MAX_BUFFER_LEN);
@@ -183,8 +186,11 @@ void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
 
         
         CSAMPLE* buffer;
-    	if(m_passthrough[channel_number]->get())
+        bool isactive = m_passthrough[channel_number]->get();
+    	if(isactive)
     	{
+    		//if we're passing through, we don't care if channel
+	    	//is active or not
     		//overwrite the channel buffer with the input so the decks, 
     		//not just the master get output
     		buffer = m_channelBuffers[channel_number];
@@ -193,15 +199,21 @@ void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
 	    }
 	    else
 	    {
-	    	//if we're passing through, we don't care if channel
-	    	//is active or not
    	        if (!channel->isActive()) {
+   	        	//if it was active last time, zero out
+   	        	if (m_bPassthroughWasActive[channel_number])
+   	        	{
+   	        		SampleUtil::applyGain(m_channelBuffers[channel_number], 0.0f, iBufferSize);
+   	        	}
+   	        	m_bPassthroughWasActive[channel_number] = false;
 				continue;
     		}
 
 	    	buffer = m_channelBuffers[channel_number];
 			channel->process(NULL, buffer, iBufferSize);
 	    }
+	    m_bPassthroughWasActive[channel_number] = isactive;
+	    
 
         // If the channel is enabled for previewing in headphones, copy it
         // over to the headphone buffer
