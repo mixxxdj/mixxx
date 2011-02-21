@@ -176,12 +176,15 @@ QVariant SidebarModel::data(const QModelIndex& index, int role) const {
             } else if (role == Qt::DecorationRole) {
                 return m_sFeatures[index.row()]->getIcon();
             }
-        }
-        else {
-            if (role == Qt::DisplayRole) {
-                TreeItem* tree_item = (TreeItem*)index.internalPointer();
-                if (tree_item)
+        } else {
+            TreeItem* tree_item = (TreeItem*)index.internalPointer();
+
+            if (tree_item) {
+                if (role == Qt::DisplayRole) {
                     return tree_item->data();
+                } else if (role == Qt::DecorationRole) {
+                    return tree_item->getIcon();
+                }
             }
         }
     }
