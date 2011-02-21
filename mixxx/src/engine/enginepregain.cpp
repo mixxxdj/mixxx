@@ -29,7 +29,7 @@
    ----------------------------------------------------------------*/
 EnginePregain::EnginePregain(const char * group)
 {
-    potmeterPregain = new ControlLogpotmeter(ConfigKey(group, "pregain"), 4.);
+    potmeterPregain = new ControlLogpotmeter(ConfigKey(group, "pregain"), 6.);
     //Replay Gain things
     m_pControlReplayGain = new ControlObject(ConfigKey(group, "replaygain"));
     m_pTotalGain = new ControlObject(ConfigKey(group, "total_gain"));

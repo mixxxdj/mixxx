@@ -185,7 +185,10 @@ void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
         CSAMPLE* buffer;
     	if(m_passthrough[channel_number]->get())
     	{
-    		buffer = m_passthroughBuffers[channel_number];
+    		//overwrite the channel buffer with the input so the decks, 
+    		//not just the master get output
+    		buffer = m_channelBuffers[channel_number];
+    		SampleUtil::copyWithGain(buffer, m_passthroughBuffers[channel_number], 1.0f, iBufferSize);
 	    	channel->process(buffer, buffer, iBufferSize);
 	    }
 	    else
