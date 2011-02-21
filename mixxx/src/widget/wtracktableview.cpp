@@ -338,20 +338,24 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent * event)
 
     if (modelHasCapabilities(TrackModel::TRACKMODELCAPS_ADDTOPLAYLIST)) {
         m_pPlaylistMenu->clear();
-
         PlaylistDAO& playlistDao = m_pTrackCollection->getPlaylistDAO();
         int numPlaylists = playlistDao.playlistCount();
+
         for (int i = 0; i < numPlaylists; ++i) {
             int iPlaylistId = playlistDao.getPlaylistId(i);
-            if (playlistDao.isHidden(iPlaylistId))
-                continue;
-            QString playlistName = playlistDao.getPlaylistName(iPlaylistId);
-            // No leak because making the menu the parent means they will be
-            // auto-deleted
-            QAction* pAction = new QAction(playlistName, m_pPlaylistMenu);
-            m_pPlaylistMenu->addAction(pAction);
-            m_playlistMapper.setMapping(pAction, iPlaylistId);
-            connect(pAction, SIGNAL(triggered()), &m_playlistMapper, SLOT(map()));
+
+            if (!playlistDao.isHidden(iPlaylistId)) {
+                
+                QString playlistName = playlistDao.getPlaylistName(iPlaylistId);
+                // No leak because making the menu the parent means they will be
+                // auto-deleted
+                QAction* pAction = new QAction(playlistName, m_pPlaylistMenu);
+                bool locked = playlistDao.isPlaylistLocked(iPlaylistId);
+                pAction->setEnabled(!locked);
+                m_pPlaylistMenu->addAction(pAction);
+                m_playlistMapper.setMapping(pAction, iPlaylistId);
+                connect(pAction, SIGNAL(triggered()), &m_playlistMapper, SLOT(map()));
+            }
         }
 
         m_pMenu->addMenu(m_pPlaylistMenu);
@@ -359,7 +363,6 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent * event)
 
     if (modelHasCapabilities(TrackModel::TRACKMODELCAPS_ADDTOCRATE)) {
         m_pCrateMenu->clear();
-
         CrateDAO& crateDao = m_pTrackCollection->getCrateDAO();
         int numCrates = crateDao.crateCount();
         for (int i = 0; i < numCrates; ++i) {
@@ -367,6 +370,8 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent * event)
             // No leak because making the menu the parent means they will be
             // auto-deleted
             QAction* pAction = new QAction(crateDao.crateName(iCrateId), m_pCrateMenu);
+            bool locked = crateDao.isCrateLocked(iCrateId);
+            pAction->setEnabled(!locked);
             m_pCrateMenu->addAction(pAction);
             m_crateMapper.setMapping(pAction, iCrateId);
             connect(pAction, SIGNAL(triggered()), &m_crateMapper, SLOT(map()));
@@ -375,9 +380,10 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent * event)
         m_pMenu->addMenu(m_pCrateMenu);
     }
 
+    bool locked = modelHasCapabilities(TrackModel::TRACKMODELCAPS_LOCKED);
+    m_pRemoveAct->setEnabled(!locked);
     m_pMenu->addSeparator();
     m_pMenu->addAction(m_pRemoveAct);
-
     m_pPropertiesAct->setEnabled(oneSongSelected);
     m_pMenu->addAction(m_pPropertiesAct);
 
