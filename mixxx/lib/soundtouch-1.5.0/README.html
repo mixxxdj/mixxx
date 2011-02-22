@@ -18,7 +18,7 @@
 </head>
 <body class="normal">
 <hr>
-<h1>SoundTouch audio processing library v1.4.1
+<h1>SoundTouch audio processing library v1.5.0
 </h1>
 <p class="normal">SoundTouch library Copyright (c) Olli
 Parviainen 2002-2009 </p>
@@ -61,9 +61,8 @@ and perform a search with keywords &quot;processor pack&quot;. </p>
 <p>To build the binaries with Visual C++
 compiler, either run &quot;make-win.bat&quot; script, or open the
 appropriate project files in source code directories with Visual
-Studio. The final executable will appear under the "SoundTouch\bin"
-directory. If using the Visual Studio IDE instead of the
-make-win.bat script, directories bin and
+Studio. The final executable will appear under the &quot;SoundTouch\bin&quot;
+directory. If using the Visual Studio IDE instead of the make-win.bat script, directories bin and
 lib may need to be created manually to the SoundTouch
 package root for the final executables. The make-win.bat script
 creates these directories automatically.
@@ -111,17 +110,40 @@ binaries to the destination locations.</p>
     </tr>
   </tbody>
 </table>
-<p><b>NOTE:</b> At the release time the SoundTouch package has been
-tested
-to compile in GNU/Linux platform. However, in past it's happened that
-new
-gcc versions aren't necessarily compatible with the assembler setttings
-used in the optimized routines. <b>If you have problems getting the
-SoundTouch library compiled, try the workaround of disabling the optimizations</b> by editing the file "include/STTypes.h" and removing
-the following definition there:</p>
+<h4><b>2.2.1 Required GNU tools</b>&nbsp;</h4>
+<p> Bash shell, GNU C++ compiler, libtool, autoconf and automake tools are required
+for compiling
+the SoundTouch library. These are usually included with the GNU/Linux distribution, but if
+not, install these packages first. For example, in Ubuntu Linux these can be acquired and
+installed with the following command:</p>
+<pre><b>sudo apt-get install <font SIZE="2">automake autoconf libtool build-essential</font></b></pre>
+<h4><b>2.2.2 Problems with GCC compiler compatibility</b></h4>
+<p>At the release time the SoundTouch package has been tested to compile in
+GNU/Linux platform. However, in past it's happened that new gcc versions aren't
+necessarily compatible with the assembler settings used in the optimized
+routines. <b>If you have problems getting the
+SoundTouch library compiled, try the workaround of disabling the optimizations</b> 
+by editing the file &quot;include/STTypes.h&quot; and removing the following
+definition there:</p>
 <blockquote>
   <pre>#define ALLOW_OPTIMIZATIONS 1</pre>
 </blockquote>
+<h4><b>2.2.3 Problems with configure script or build process</b>&nbsp;</h4>
+<p>Incompatibilities between various GNU toolchain versions may cause errors when running the &quot;configure&quot; script or building the source
+codes, if your GNU tool versions are not compatible with the versions used for
+preparing the SoundTouch kit.&nbsp;</p>
+<p>To resolve the issue, regenerate the configure scripts with your local tool
+set by running
+the &quot;<b>./bootstrap</b>&quot; script included in the SoundTouch source code
+kit. After that, run the <b>configure</b> script and <b>make</b> as usually.</p>
+<h4><b>2.2.4 Compiler issues with non-x86 processors</b></h4>
+<p>SoundTouch library works also on non-x86 processors.</p>
+<p>However, in case that you get compiler errors when trying to compile for non-Intel processor, edit the file
+&quot;<b>source\SoundTouch\Makefile.am</b>&quot; and remove the &quot;<b>-msse2</b>&quot;
+flag on the <b>AM_CXXFLAGS </b>line:</p>
+<pre><b>AM_CXXFLAGS=-O3 -fcheck-new -I../../include&nbsp;&nbsp;&nbsp; # Note: -msse2 flag removed!</b></pre>
+<p>After that, run &quot;<b>./bootstrap</b>&quot; script, and then run <b>configure</b>
+and <b>make</b> again.</p>
 <hr>
 <h2>3. About implementation &amp; Usage tips</h2>
 <h3>3.1. Supported sample data formats</h3>
@@ -224,11 +246,11 @@ processing, but in applications processing different kind of
 sound the default parameter set may result into a sub-optimal
 result.</p>
 <p>The time-stretch algorithm default
-parameter values are set by these #defines in file &quot;TDStretch.h&quot;:</p>
+parameter values are set by the following #defines in file &quot;TDStretch.h&quot;:</p>
 <blockquote>
   <pre>#define DEFAULT_SEQUENCE_MS     AUTOMATIC
 #define DEFAULT_SEEKWINDOW_MS   AUTOMATIC
-#define DEFAULT_OVERLAP_MS      12</pre>
+#define DEFAULT_OVERLAP_MS      8</pre>
 </blockquote>
 <p>These parameters affect to the time-stretch
 algorithm as follows:</p>
@@ -355,30 +377,6 @@ implemented for Win32 platform only. These optimizations are used in
 AMD K6-2 and Athlon (classic) CPU's; better performing SSE routines are
 used with AMD processor starting from Athlon XP. </li>
 </ul>
-<h3>3.6 GNU compilation issues </h3>
-<h4><b>3.6.1 Required GNU tools</b>&nbsp;</h4>
-<p> Bash shell, GNU C++ compiler, libtool, autoconf and automake tools are required
-for compiling
-the SoundTouch library. These are usually included with the GNU/Linux distribution, but if
-not, install these packages first. For example, in Ubuntu Linux these can be acquired and
-installed with the following command:</p>
-<pre><b>sudo apt-get install <font SIZE="2">automake autoconf libtool build-essential</font></b></pre>
-<h4><b>3.6.2 Problems with configure script or build process</b>&nbsp;</h4>
-<p>Incompatibilities between various GNU toolchain versions may cause errors when running the &quot;configure&quot; script or building the source
-codes, if your GNU tool versions are not compatible with the versions used for
-preparing the SoundTouch kit.&nbsp;</p>
-<p>To resolve the issue, regenerate the configure scripts with your local tool
-set by running
-the &quot;<b>./bootstrap</b>&quot; script included in the SoundTouch source code
-kit. After that, run the <b>configure</b> script and <b>make</b> as usually.</p>
-<h4><b>3.6.3 Compiler issues with non-x86 processors</b></h4>
-<p>SoundTouch library works also on non-x86 processors.</p>
-<p>However, in case that you get compiler errors when trying to compile for non-Intel processor, edit the file
-&quot;<b>source\SoundTouch\Makefile.am</b>&quot; and remove the &quot;<b>-msse2</b>&quot;
-flag on the <b>AM_CXXFLAGS </b>line:</p>
-<pre><b>AM_CXXFLAGS=-O3 -fcheck-new -I../../include&nbsp;&nbsp;&nbsp; # Note: -msse2 flag removed!</b></pre>
-<p>After that, run &quot;<b>./bootstrap</b>&quot; script, and then run <b>configure</b>
-and <b>make</b> again.</p>
 <hr>
 <h2><a name="SoundStretch"></a>4. SoundStretch audio processing utility
 </h2>
@@ -538,6 +536,30 @@ estimates the BPM rate:</p>
 <h2>5. Change History</h2>
 <h3>5.1. SoundTouch library Change History </h3>
 
+<p><strong>1.5.0:</strong></p>
+<ul>
+<li>Added normalization to correlation calculation and improvement automatic seek/sequence parameter calculation to improve sound quality</li>
+
+<li>Bugfixes:&nbsp;
+  <ul>
+    <li>Fixed negative array indexing in quick seek algorithm</li>
+    <li>FIR autoalias filter running too far in processing buffer</li>
+    <li>Check against zero sample count in rate transposing</li>
+    <li>Fix for x86-64 support: Removed pop/push instructions from the cpu detection algorithm.&nbsp;</li>
+    <li>Check against empty buffers in FIFOSampleBuffer</li>
+    <li>Other minor fixes &amp; code cleanup</li>
+  </ul>
+</li>
+
+<li>Fixes in compilation scripts for non-Intel platforms</li>
+<li>Added Dynamic-Link-Library (DLL) version of SoundTouch library build,
+  provided with Delphi/Pascal wrapper for calling the dll routines</li>
+<li>Added #define PREVENT_CLICK_AT_RATE_CROSSOVER that prevents a click artifact
+  when crossing the nominal pitch from either positive to negative side or vice
+  versa</li>
+
+</ul>
+
 <p><strong>1.4.1:</strong></p>
 <ul>
 <li>Fixed a buffer overflow bug in BPM detect algorithm routines if processing
@@ -695,9 +717,14 @@ SoundTouch v1.3.1: </p>
   <li>Stanislav Brabec</li>
   <li>Christian Budde</li>
   <li>Brian Cameron</li>
+  <li>Jason Champion</li>
+  <li>Patrick Colis</li>
   <li>Justin Frankel</li>
   <li>Jason Garland</li>
   <li>Takashi Iwai</li>
+  <li>Paulo Pizarro</li>
+  <li>RJ Ryan</li>
+  <li>John Sheehy</li>
 </ul>
 <p >Moral greetings to all other contributors and users also!</p>
 <hr>
@@ -719,7 +746,7 @@ write to the Free Software Foundation, Inc., 59 Temple Place,
 Suite 330, Boston, MA 02111-1307 USA</p>
 <hr>
 <!--
-$Id: README.html 66 2009-02-24 14:32:44Z oparviai $
+$Id: README.html 81 2009-12-28 20:51:18Z oparviai $
 -->
 </body>
 </html>

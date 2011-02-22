@@ -17,10 +17,10 @@
 ///
 ////////////////////////////////////////////////////////////////////////////////
 //
-// Last changed  : $Date: 2009-02-21 11:00:14 -0500 (Sat, 21 Feb 2009) $
+// Last changed  : $Date: 2009-04-13 16:18:48 +0300 (Mon, 13 Apr 2009) $
 // File revision : $Revision: 4 $
 //
-// $Id: FIFOSamplePipe.h 63 2009-02-21 16:00:14Z oparviai $
+// $Id: FIFOSamplePipe.h 69 2009-04-13 13:18:48Z oparviai $
 //
 ////////////////////////////////////////////////////////////////////////////////
 //
@@ -59,6 +59,10 @@ namespace soundtouch
 class FIFOSamplePipe
 {
 public:
+    // virtual default destructor
+    virtual ~FIFOSamplePipe() {}
+
+
     /// Returns a pointer to the beginning of the output samples. 
     /// This function is provided for accessing the output samples directly. 
     /// Please be careful for not to corrupt the book-keeping!
