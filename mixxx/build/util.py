@@ -39,16 +39,27 @@ def get_build_dir(platformString, bitwidth):
 
 def get_mixxx_version():
     """
-    Parses defs.h to figure out the current Mixxx version.
+    Figures out the current mixxx version:
+        First parses build.h which will have the version number if this is not a release branch.
+        If nothing there, uses defs_version.h.
     """
     #have to handle out-of-tree building, that's why the '#' :(
+    buld = Script.File('#src/build.h')
     defs = Script.File('#src/defs_version.h')
+    version = ""
 
-    for line in open(str(defs)).readlines():
+    for line in open(str(buld)).readlines():
         if line.strip().startswith("#define VERSION"):
             version = line
             break
-    else:
+            
+    if version == "":
+        for line in open(str(defs)).readlines():
+            if line.strip().startswith("#define VERSION"):
+                version = line
+                break
+
+    if version == "":
         raise ValueError("Version not found")
 
     version = version.split()[-1].replace('"', '')

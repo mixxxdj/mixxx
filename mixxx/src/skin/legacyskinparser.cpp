@@ -135,8 +135,11 @@ QList<QString> LegacySkinParser::getSchemeList(QString qSkinPath) {
 // static
 void LegacySkinParser::freeChannelStrings() {
     QMutexLocker lock(&s_safeStringMutex);
-    foreach (const char *s, s_channelStrs) {
-        free((void*) s); // created using strdup/malloc so use free
+    for (int i = 0; i < s_channelStrs.length(); ++i) {
+        if (s_channelStrs[i]) {
+            delete [] s_channelStrs[i];
+        }
+        s_channelStrs[i] = NULL;
     }
 }
 
@@ -806,7 +809,9 @@ const char* LegacySkinParser::safeChannelString(QString channelStr) {
         }
     }
     QByteArray qba(channelStr.toAscii());
-    const char *safe(strdup(qba.constData()));
+    char *safe = new char[qba.size() + 1]; // +1 for \0
+    int i = 0;
+    while (safe[i] = qba[i]) ++i;
     s_channelStrs.append(safe);
     return safe;
 }

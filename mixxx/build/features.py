@@ -39,7 +39,7 @@ class HSS1394(Feature):
             if not conf.CheckLib(['libHSS1394', 'HSS1394']):
                 raise Exception('Did not find HSS1394 development library, exiting!')
                 return
-            build.env.Append(LIBS = 'hss1394')
+
         build.env.Append(CPPDEFINES = '__HSS1394__')
 
     def sources(self, build):
@@ -179,6 +179,7 @@ class MSVCDebug(Feature):
             # for sndfile w/ flac support on windows.
             build.env.Append(CCFLAGS = '/MDd')
             build.env.Append(LINKFLAGS = '/DEBUG')
+            build.env.Append(CPPDEFINES = 'DEBUGCONSOLE')
             if build.machine_is_64bit:
                 build.env.Append(CCFLAGS = '/Zi')
                 build.env.Append(LINKFLAGS = '/NODEFAULTLIB:MSVCRT')
@@ -686,9 +687,6 @@ class Optimize(Feature):
             build.env.Append(CCFLAGS = '/Gy')
             build.env.Append(LINKFLAGS = '/OPT:REF')
             build.env.Append(LINKFLAGS = '/OPT:ICF')
-
-            # Don't worry about alining code on 4KB boundaries
-            build.env.Append(LINKFLAGS = '/OPT:NOWIN98')
 
             # http://msdn.microsoft.com/en-us/library/59a3b321.aspx
             # In general, you should pick /O2 over /Ox

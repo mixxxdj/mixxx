@@ -33,12 +33,13 @@ class SidebarModel : public QAbstractItemModel {
     bool dropAccept(const QModelIndex& index, QUrl url);
     bool dragMoveAccept(const QModelIndex& index, QUrl url);
     virtual bool hasChildren ( const QModelIndex & parent = QModelIndex() ) const;
+
   public slots:
     void clicked(const QModelIndex& index);
     void rightClicked(const QPoint& globalPos, const QModelIndex& index);
     void refreshData();
+    void selectFeature(LibraryFeature* pFeature);
 
-  public slots:
     // Slots for every single QAbstractItemModel signal
     // void slotColumnsAboutToBeInserted(const QModelIndex& parent, int start, int end);
     // void slotColumnsAboutToBeRemoved(const QModelIndex & parent, int start, int end);
@@ -55,9 +56,15 @@ class SidebarModel : public QAbstractItemModel {
     void slotRowsInserted(const QModelIndex& parent, int start, int end);
     void slotRowsRemoved(const QModelIndex& parent, int start, int end);
     void slotModelReset();
+    void slotFeatureIsLoading(LibraryFeature*);
+    void slotFeatureLoadingFinished(LibraryFeature*);
+
+  signals:
+    void selectIndex(const QModelIndex& index);
 
   private:
     QModelIndex translateSourceIndex(const QModelIndex& parent);
+    void featureRenamed(LibraryFeature*);
     QList<LibraryFeature*> m_sFeatures;
     unsigned int m_iDefaultSelectedIndex; /** Index of the item in the sidebar model to select at startup. */
 };
