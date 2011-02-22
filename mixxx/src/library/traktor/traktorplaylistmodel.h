@@ -1,10 +1,10 @@
-#ifndef ITUNES_PLAYLIST_MODEL_H
-#define ITUNES_PLAYLIST_MODEL_H
+#ifndef TRAKTOR_PLAYLIST_MODEL_H
+#define TRAKTOR_PLAYLIST_MODEL_H
 
 #include <QtSql>
 #include <QItemDelegate>
 #include <QtCore>
-#include "trackmodel.h"
+#include "library/trackmodel.h"
 #include "library/basesqltablemodel.h"
 #include "library/librarytablemodel.h"
 #include "library/dao/playlistdao.h"
@@ -12,12 +12,12 @@
 
 class TrackCollection;
 
-class ITunesPlaylistModel : public BaseSqlTableModel, public virtual TrackModel
+class TraktorPlaylistModel : public BaseSqlTableModel, public virtual TrackModel
 {
     Q_OBJECT
   public:
-    ITunesPlaylistModel(QObject* parent, TrackCollection* pTrackCollection);
-    virtual ~ITunesPlaylistModel();
+    TraktorPlaylistModel(QObject* parent, TrackCollection* pTrackCollection);
+    virtual ~TraktorPlaylistModel();
 
     virtual TrackPointer getTrack(const QModelIndex& index) const;
     virtual QString getTrackLocation(const QModelIndex& index) const;
@@ -46,8 +46,10 @@ class ITunesPlaylistModel : public BaseSqlTableModel, public virtual TrackModel
 
   private:
     TrackCollection* m_pTrackCollection;
-    QSqlDatabase &m_database;
+	QSqlDatabase &m_database;
+
+
     QString m_currentSearch;
 };
 
-#endif /* ITUNES_PLAYLIST_MODEL_H */
+#endif /* TRAKTOR_TABLE_MODEL_H */

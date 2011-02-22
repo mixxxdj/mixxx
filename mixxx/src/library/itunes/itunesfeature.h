@@ -1,16 +1,19 @@
-// rhythmboxfeature.h
+// itunesfeaturefeature.h
 // Created 8/23/2009 by RJ Ryan (rryan@mit.edu)
 
 #ifndef ITUNESFEATURE_H
-#define ITUNESBOXFEATURE_H
+#define ITUNESFEATURE_H
 
 #include <QStringListModel>
 #include <QtSql>
+#include <QFuture>
+#include <QtConcurrentRun>
+#include <QFutureWatcher>
 
 #include "library/libraryfeature.h"
 #include "library/trackcollection.h"
-#include "treeitemmodel.h"
-#include "treeitem.h"
+#include "library/treeitemmodel.h"
+#include "library/treeitem.h"
 
 //class ITunesPlaylistModel;
 class ITunesTrackModel;
@@ -36,18 +39,20 @@ class ITunesFeature : public LibraryFeature {
 
   public slots:
     void activate();
-    void activate(bool forceReload, bool askToLoad = true);
+    void activate(bool forceReload);
     void activateChild(const QModelIndex& index);
     void onRightClick(const QPoint& globalPos);
     void onRightClickChild(const QPoint& globalPos, QModelIndex index);
+    void onTrackCollectionLoaded();
 
   private:
     static QString getiTunesMusicPath();
-    bool importLibrary(QString file);
+    //returns the invisible rootItem for the sidebar model
+    TreeItem* importLibrary();
     void parseTracks(QXmlStreamReader &xml);
     void parseTrack(QXmlStreamReader &xml, QSqlQuery &query);
-    void parsePlaylists(QXmlStreamReader &xml);
-    void parsePlaylist(QXmlStreamReader &xml, QSqlQuery &query1, QSqlQuery &query2);
+    TreeItem* parsePlaylists(QXmlStreamReader &xml);
+    void parsePlaylist(QXmlStreamReader &xml, QSqlQuery &query1, QSqlQuery &query2, TreeItem*);
     void clearTable(QString table_name);
     bool readNextStartElement(QXmlStreamReader& xml);
 
@@ -56,10 +61,14 @@ class ITunesFeature : public LibraryFeature {
     TreeItemModel m_childModel;
     QStringList m_playlists;
     TrackCollection* m_pTrackCollection;
-    QSqlDatabase &m_database;
+    //a new DB connection for the worker thread
+    QSqlDatabase m_database;
     bool m_isActivated;
-    //The root of the childmodel
-    TreeItem *m_rootItem;
+    QString m_dbfile;
+
+    QFutureWatcher<TreeItem*> m_future_watcher;
+    QFuture<TreeItem*> m_future;
+    QString m_title;
 
     static const QString ITDB_PATH_KEY;
 };
