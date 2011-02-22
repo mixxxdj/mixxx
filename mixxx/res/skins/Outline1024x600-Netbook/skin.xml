@@ -19,20 +19,23 @@
 
 	<!--
 	CHANGELOG
-	v1.4	(14/12/2010)
+	v1.05	(20/02/2011)
+	* Changed Playing position tooltips to reflect new toggle functionality
+
+	v1.04	(14/12/2010)
 	* Added custom images for splitter in library
 	* Added custom images for branch triangle in treeview
 
-	v1.3	(12/12/2010)
+	v1.03	(12/12/2010)
 	* Added BPM Tap button
 	* Added visual feedback when searchbox has focus
 	* Updated text alignments
 
-	v1.2	(02/12/2010)
+	v1.02	(02/12/2010)
 	* Added custom images for checkboxes in library
 	* Updated styles
 
-	v1.1	(11/22/2010)
+	v1.01	(11/22/2010)
 	* Redraw skin, using png's from svg template now
 	* Complete XML re-organisation, on par with other skins now
 	* Added Mixxx 1.9 features: Keylock & Repeat buttons
@@ -1059,7 +1062,7 @@
 	**********************************************
 	-->
 	<NumberPos>
-		<Tooltip>Time information&#10;Displays the current playback position (or remaining time) and the duration of the loaded track.&#10;Depends on your settings in Preferences→Interface→Position display.&#10;</Tooltip>
+		<Tooltip>Time information&#10;Displays the elapsed or remaining time and the duration of the track loaded.&#10;Click to toggle between time elapsed/remaining time.&#10;</Tooltip>
 		<Style>QLabel { font: 12px/14px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 		background-color: transparent; text-align: right; }
 		QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
@@ -1076,7 +1079,7 @@
 		</Connection>
 	</NumberPos>
 	<NumberPos>
-		<Tooltip>Time information&#10;Displays the current playback position (or remaining time) and the duration of the loaded track.&#10;Depends on your settings in Preferences→Interface→Position display.&#10;</Tooltip>
+		<Tooltip>Time information&#10;Displays the elapsed or remaining time and the duration of the track loaded.&#10;Click to toggle between time elapsed/remaining time.&#10;</Tooltip>
 		<Style>QLabel { font: 12px/14px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 		background-color: transparent; text-align: right; }
 		QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
