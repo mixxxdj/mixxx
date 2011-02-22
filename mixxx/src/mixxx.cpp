@@ -1297,6 +1297,7 @@ void MixxxApp::slotHelpAbout()
 "Irwin C&eacute;spedes B<br>"
 "Micz Flor<br>"
 "Daniel James<br>"
+"Mika Haulo<br>"
 
 "</p>"
 "<p align=\"center\"><b>And special thanks to:</b></p>"
