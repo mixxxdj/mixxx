@@ -68,8 +68,7 @@ public:
     QList<CSAMPLE*> m_channelBuffers;
     QList<CSAMPLE*> m_passthroughBuffers;
     bool m_bPassthroughWasActive[2];
-    //int m_iRingBufPos[2];
-    QMutex passthroughBufferMutex;
+    QMutex passthroughBufferMutex[2];
 
     EngineWorkerScheduler *m_pWorkerScheduler;
 

@@ -179,12 +179,9 @@ void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
     // applied but the master channels do -- bkgood
     SampleUtil::applyGain(m_pHead, 0.0f, iBufferSize);
 
-	passthroughBufferMutex.lock();
-	
     for (int channel_number = 0; channel_number < m_channels.size(); ++channel_number) {
         EngineChannel* channel = m_channels[channel_number];
 
-        
         CSAMPLE* buffer;
         bool isactive = m_passthrough[channel_number]->get();
     	if(isactive)
@@ -193,8 +190,11 @@ void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
 	    	//is active or not
     		//overwrite the channel buffer with the input so the decks, 
     		//not just the master get output
+    		
     		buffer = m_channelBuffers[channel_number];
+    		passthroughBufferMutex[channel_number].lock();
     		SampleUtil::copyWithGain(buffer, m_passthroughBuffers[channel_number], 1.0f, iBufferSize);
+    		passthroughBufferMutex[channel_number].unlock();
 	    	channel->process(buffer, buffer, iBufferSize);
 	    }
 	    else
@@ -204,8 +204,8 @@ void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
    	        	if (m_bPassthroughWasActive[channel_number])
    	        	{
    	        		SampleUtil::applyGain(m_channelBuffers[channel_number], 0.0f, iBufferSize);
+   	        		m_bPassthroughWasActive[channel_number] = false;
    	        	}
-   	        	m_bPassthroughWasActive[channel_number] = false;
 				continue;
     		}
 
@@ -280,9 +280,6 @@ void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
         }
     }
 
-    passthroughBufferMutex.unlock();
-
-	
     // Master volume
     volume->process(m_pMaster, m_pMaster, iBufferSize);
 
@@ -351,14 +348,14 @@ void EngineMaster::addChannel(EngineChannel* pChannel) {
 void EngineMaster::pushPassthroughBuffer(int c, short *input, int len)
 {
 	Q_ASSERT(c<2); // really, now.
-	if(passthroughBufferMutex.tryLock())
+	if(passthroughBufferMutex[c].tryLock())
 	{
 		for (int i=0; i<len; i++)
 		{
 			//why don't we need to divide by SHRT_MAX???
 			m_passthroughBuffers[c][i] = (CSAMPLE)input[i];// / (float)SHRT_MAX;
 		}
-		passthroughBufferMutex.unlock();
+		passthroughBufferMutex[c].unlock();
 	}
 	else
 		qDebug() << "WARNING: input passthrough lock failed (dropouts ahoy)";
