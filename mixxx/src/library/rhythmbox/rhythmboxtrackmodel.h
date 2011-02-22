@@ -1,10 +1,28 @@
-#ifndef ITUNES_TABLE_MODEL_H
-#define ITUNES_TABLE_MODEL_H
+/***************************************************************************
+                           rhythmboxtracksource.h
+                              -------------------
+     begin                : 8/15/2009
+     copyright            : (C) 2011 Tobias Rafreider
+     email                : alberts@mixxx.org
+***************************************************************************/
+
+/***************************************************************************
+ *                                                                         *
+ *   This program is free software; you can redistribute it and/or modify  *
+ *   it under the terms of the GNU General Public License as published by  *
+ *   the Free Software Foundation; either version 2 of the License, or     *
+ *   (at your option) any later version.                                   *
+ *                                                                         *
+ ***************************************************************************/
+
+#ifndef RHYTHMBOXTRACKMODEL_H
+#define RHYTHMBOXTRACKMODEL_H
+
 
 #include <QtSql>
 #include <QItemDelegate>
 #include <QtCore>
-#include "trackmodel.h"
+#include "library/trackmodel.h"
 #include "library/basesqltablemodel.h"
 #include "library/librarytablemodel.h"
 #include "library/dao/playlistdao.h"
@@ -12,12 +30,12 @@
 
 class TrackCollection;
 
-class ITunesTrackModel : public BaseSqlTableModel, public virtual TrackModel
+class RhythmboxTrackModel : public BaseSqlTableModel, public virtual TrackModel
 {
     Q_OBJECT
   public:
-    ITunesTrackModel(QObject* parent, TrackCollection* pTrackCollection);
-    virtual ~ITunesTrackModel();
+    RhythmboxTrackModel(QObject* parent, TrackCollection* pTrackCollection);
+    virtual ~RhythmboxTrackModel();
 
     virtual TrackPointer getTrack(const QModelIndex& index) const;
     virtual QString getTrackLocation(const QModelIndex& index) const;
@@ -48,4 +66,4 @@ class ITunesTrackModel : public BaseSqlTableModel, public virtual TrackModel
     QString m_currentSearch;
 };
 
-#endif /* ITUNES_TABLE_MODEL_H */
+#endif

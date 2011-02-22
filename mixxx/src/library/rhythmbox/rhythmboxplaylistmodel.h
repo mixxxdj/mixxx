@@ -1,10 +1,27 @@
-#ifndef TRAKTOR_PLAYLIST_MODEL_H
-#define TRAKTOR_PLAYLIST_MODEL_H
+/***************************************************************************
+                           rhythmboxplaylistmodel.h
+                              -------------------
+     begin                : 01/09/2011
+     copyright            : (C) 2011 Tobias Rafreider
+
+***************************************************************************/
+
+/***************************************************************************
+ *                                                                         *
+ *   This program is free software; you can redistribute it and/or modify  *
+ *   it under the terms of the GNU General Public License as published by  *
+ *   the Free Software Foundation; either version 2 of the License, or     *
+ *   (at your option) any later version.                                   *
+ *                                                                         *
+ ***************************************************************************/
+
+#ifndef RHYTHMBOXPLAYLISTMODEL_H
+#define RHYTHMBOXPLAYLISTMODEL_H
 
 #include <QtSql>
 #include <QItemDelegate>
 #include <QtCore>
-#include "trackmodel.h"
+#include "library/trackmodel.h"
 #include "library/basesqltablemodel.h"
 #include "library/librarytablemodel.h"
 #include "library/dao/playlistdao.h"
@@ -12,13 +29,13 @@
 
 class TrackCollection;
 
-class TraktorPlaylistModel : public BaseSqlTableModel, public virtual TrackModel
+class RhythmboxPlaylistModel : public BaseSqlTableModel, public virtual TrackModel
 {
     Q_OBJECT
   public:
-    TraktorPlaylistModel(QObject* parent, TrackCollection* pTrackCollection);
-    virtual ~TraktorPlaylistModel();
-    
+    RhythmboxPlaylistModel(QObject* parent, TrackCollection* pTrackCollection);
+    virtual ~RhythmboxPlaylistModel();
+
     virtual TrackPointer getTrack(const QModelIndex& index) const;
     virtual QString getTrackLocation(const QModelIndex& index) const;
     virtual void search(const QString& searchText);
@@ -29,13 +46,13 @@ class TraktorPlaylistModel : public BaseSqlTableModel, public virtual TrackModel
     virtual void removeTracks(const QModelIndexList& indices);
     virtual bool addTrack(const QModelIndex& index, QString location);
     virtual void moveTrack(const QModelIndex& sourceIndex, const QModelIndex& destIndex);
-	
+
     virtual Qt::ItemFlags flags(const QModelIndex &index) const;
     QMimeData* mimeData(const QModelIndexList &indexes) const;
-   
+
     QItemDelegate* delegateForColumn(const int i);
     TrackModel::CapabilitiesFlags getCapabilities() const;
-    /** sets the playlist **/    
+    /** sets the playlist **/
     void setPlaylist(QString path_name);
 
   private slots:
@@ -46,10 +63,7 @@ class TraktorPlaylistModel : public BaseSqlTableModel, public virtual TrackModel
 
   private:
     TrackCollection* m_pTrackCollection;
-	QSqlDatabase &m_database;
-    
-    
+    QSqlDatabase &m_database;
     QString m_currentSearch;
 };
-
-#endif /* TRAKTOR_TABLE_MODEL_H */
+#endif

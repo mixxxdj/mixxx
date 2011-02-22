@@ -2,32 +2,36 @@
 #include <QtGui>
 #include <QtSql>
 #include "library/trackcollection.h"
-#include "library/itunesplaylistmodel.h"
+#include "library/traktor/traktorplaylistmodel.h"
 
 #include "mixxxutils.cpp"
 
-ITunesPlaylistModel::ITunesPlaylistModel(QObject* parent,
-                                         TrackCollection* pTrackCollection)
+TraktorPlaylistModel::TraktorPlaylistModel(QObject* parent,
+                                       TrackCollection* pTrackCollection)
         : TrackModel(pTrackCollection->getDatabase(),
-                     "mixxx.db.model.itunes_playlist"),
+                     "mixxx.db.model.traktor.playlistmodel"),
           BaseSqlTableModel(parent, pTrackCollection, pTrackCollection->getDatabase()),
           m_pTrackCollection(pTrackCollection),
           m_database(m_pTrackCollection->getDatabase())
+
 {
     connect(this, SIGNAL(doSearch(const QString&)), this, SLOT(slotSearch(const QString&)));
+    setCaching(false);
 }
 
-ITunesPlaylistModel::~ITunesPlaylistModel() {
+TraktorPlaylistModel::~TraktorPlaylistModel() {
 }
 
-bool ITunesPlaylistModel::addTrack(const QModelIndex& index, QString location)
+bool TraktorPlaylistModel::addTrack(const QModelIndex& index, QString location)
 {
 
     return false;
 }
 
-TrackPointer ITunesPlaylistModel::getTrack(const QModelIndex& index) const
+TrackPointer TraktorPlaylistModel::getTrack(const QModelIndex& index) const
 {
+	//qDebug() << "getTraktorTrack";
+
     QString artist = index.sibling(index.row(), fieldIndex("artist")).data().toString();
     QString title = index.sibling(index.row(), fieldIndex("title")).data().toString();
     QString album = index.sibling(index.row(), fieldIndex("album")).data().toString();
@@ -45,34 +49,38 @@ TrackPointer ITunesPlaylistModel::getTrack(const QModelIndex& index) const
     pTrack->setGenre(genre);
     pTrack->setBpm(bpm);
 
+
     return TrackPointer(pTrack, &QObject::deleteLater);
 }
 
-QString ITunesPlaylistModel::getTrackLocation(const QModelIndex& index) const {
+QString TraktorPlaylistModel::getTrackLocation(const QModelIndex& index) const
+{
     QString location = index.sibling(index.row(), fieldIndex("location")).data().toString();
     return location;
 }
 
-void ITunesPlaylistModel::removeTrack(const QModelIndex& index) {
+void TraktorPlaylistModel::removeTrack(const QModelIndex& index)
+{
 
 }
 
-void ITunesPlaylistModel::removeTracks(const QModelIndexList& indices) {
+void TraktorPlaylistModel::removeTracks(const QModelIndexList& indices) {
+
+}
+void TraktorPlaylistModel::moveTrack(const QModelIndex& sourceIndex, const QModelIndex& destIndex)
+{
 
 }
 
-void ITunesPlaylistModel::moveTrack(const QModelIndex& sourceIndex, const QModelIndex& destIndex) {
-
-}
-
-void ITunesPlaylistModel::search(const QString& searchText) {
-    // qDebug() << "ITunesPlaylistModel::search()" << searchText
+void TraktorPlaylistModel::search(const QString& searchText) {
+    // qDebug() << "TraktorPlaylistModel::search()" << searchText
     //          << QThread::currentThread();
     emit(doSearch(searchText));
 }
 
-void ITunesPlaylistModel::slotSearch(const QString& searchText) {
-    if (!m_currentSearch.isNull() && m_currentSearch == searchText)
+void TraktorPlaylistModel::slotSearch(const QString& searchText)
+{
+   if (!m_currentSearch.isNull() && m_currentSearch == searchText)
         return;
     m_currentSearch = searchText;
 
@@ -81,16 +89,16 @@ void ITunesPlaylistModel::slotSearch(const QString& searchText) {
     search.setValue("%" + searchText + "%");
     QString escapedText = database().driver()->formatValue(search);
     filter = "(artist LIKE " + escapedText + " OR " +
-            "album LIKE " + escapedText + " OR " +
-            "title  LIKE " + escapedText + ")";
+                "album LIKE " + escapedText + " OR " +
+                "title  LIKE " + escapedText + ")";
     setFilter(filter);
 }
 
-const QString ITunesPlaylistModel::currentSearch() {
+const QString TraktorPlaylistModel::currentSearch() {
     return m_currentSearch;
 }
 
-bool ITunesPlaylistModel::isColumnInternal(int column) {
+bool TraktorPlaylistModel::isColumnInternal(int column) {
     if (column == fieldIndex(LIBRARYTABLE_ID) ||
         column == fieldIndex(LIBRARYTABLE_MIXXXDELETED) ||
         column == fieldIndex(TRACKLOCATIONSTABLE_FSDELETED) ||
@@ -100,8 +108,9 @@ bool ITunesPlaylistModel::isColumnInternal(int column) {
     return false;
 }
 
-QMimeData* ITunesPlaylistModel::mimeData(const QModelIndexList &indexes) const {
-    QMimeData *mimeData = new QMimeData();
+QMimeData* TraktorPlaylistModel::mimeData(const QModelIndexList &indexes) const {
+
+   QMimeData *mimeData = new QMimeData();
     QList<QUrl> urls;
 
     //Ok, so the list of indexes we're given contains separates indexes for
@@ -123,25 +132,29 @@ QMimeData* ITunesPlaylistModel::mimeData(const QModelIndexList &indexes) const {
     }
     mimeData->setUrls(urls);
     return mimeData;
+
 }
 
 
-QItemDelegate* ITunesPlaylistModel::delegateForColumn(const int i) {
+QItemDelegate* TraktorPlaylistModel::delegateForColumn(const int i) {
     return NULL;
 }
 
-TrackModel::CapabilitiesFlags ITunesPlaylistModel::getCapabilities() const {
-    return NULL;
+TrackModel::CapabilitiesFlags TraktorPlaylistModel::getCapabilities() const
+{
+
+    return TRACKMODELCAPS_NONE;
 }
 
-Qt::ItemFlags ITunesPlaylistModel::flags(const QModelIndex &index) const {
+Qt::ItemFlags TraktorPlaylistModel::flags(const QModelIndex &index) const
+{
     return readOnlyFlags(index);
 }
-
-void ITunesPlaylistModel::setPlaylist(QString playlist_path) {
+void TraktorPlaylistModel::setPlaylist(QString playlist_path)
+{
     int playlistId = -1;
     QSqlQuery finder_query(m_database);
-    finder_query.prepare("SELECT id from itunes_playlists where name='"+playlist_path+"'");
+    finder_query.prepare("SELECT id from traktor_playlists where name='"+playlist_path+"'");
 
     if(finder_query.exec()){
         while (finder_query.next()) {
@@ -149,10 +162,10 @@ void ITunesPlaylistModel::setPlaylist(QString playlist_path) {
         }
     }
     else
-        qDebug() << "SQL Error in ITunesPlaylistModel.cpp: line" << __LINE__ << " " << finder_query.lastError();
+        qDebug() << "SQL Error in TraktorPlaylistModel.cpp: line" << __LINE__ << " " << finder_query.lastError();
 
 
-    QString playlistID = "ITunesPlaylist_" + QString("%1").arg(playlistId);
+    QString playlistID = "TraktorPlaylist_" + QString("%1").arg(playlistId);
     //Escape the playlist name
     QSqlDriver* driver = m_pTrackCollection->getDatabase().driver();
     QSqlField playlistNameField("name", QVariant::String);
@@ -161,48 +174,53 @@ void ITunesPlaylistModel::setPlaylist(QString playlist_path) {
     QSqlQuery query(m_database);
     query.prepare("CREATE TEMPORARY VIEW IF NOT EXISTS "+ driver->formatValue(playlistNameField) + " AS "
                   "SELECT "
-                  "itunes_library.id,"
-                  "itunes_library.artist,"
-                  "itunes_library.title,"
-                  "itunes_library.album,"
-                  "itunes_library.year,"
-                  "itunes_library.genre,"
-                  "itunes_library.tracknumber,"
-                  "itunes_library.location,"
-                  "itunes_library.comment,"
-                  "itunes_library.rating,"
-                  "itunes_library.duration,"
-                  "itunes_library.bitrate,"
-                  "itunes_library.bpm,"
-                  "itunes_playlist_tracks.track_id, "
-                  "itunes_playlists.name "
-                  "FROM itunes_library "
-                  "INNER JOIN itunes_playlist_tracks "
-                  "ON itunes_playlist_tracks.track_id = itunes_library.id "
-                  "INNER JOIN itunes_playlists "
-                  "ON itunes_playlist_tracks.playlist_id = itunes_playlists.id "
-                  "where itunes_playlists.name='"+playlist_path+"'"
+                  "traktor_library.id,"
+                  "traktor_library.artist,"
+                  "traktor_library.title,"
+                  "traktor_library.album,"
+                  "traktor_library.year,"
+                  "traktor_library.genre,"
+                  "traktor_library.tracknumber,"
+                  "traktor_library.location,"
+                  "traktor_library.comment,"
+                  "traktor_library.rating,"
+                  "traktor_library.duration,"
+                  "traktor_library.bitrate,"
+                  "traktor_library.bpm,"
+                  "traktor_library.key,"
+                  "traktor_playlist_tracks.track_id, "
+                  "traktor_playlists.name "
+                  "FROM traktor_library "
+                  "INNER JOIN traktor_playlist_tracks "
+                  "ON traktor_playlist_tracks.track_id = traktor_library.id "
+                  "INNER JOIN traktor_playlists "
+                  "ON traktor_playlist_tracks.playlist_id = traktor_playlists.id "
+                  "where traktor_playlists.name='"+playlist_path+"'"
                   );
 
 
     if (!query.exec()) {
 
-        qDebug() << "Error creating temporary view for itunes playlists. ITunesPlaylistModel --> line: " << __LINE__ << " " << query.lastError();
+        qDebug() << "Error creating temporary view for traktor playlists. TraktorPlaylistModel --> line: " << __LINE__ << " " << query.lastError();
         qDebug() << "Executed Query: " <<  query.executedQuery();
         return;
     }
-    setTable(playlistID);
+	setTable(playlistID);
 
-    //removeColumn(fieldIndex("track_id"));
-    //removeColumn(fieldIndex("name"));
-    //removeColumn(fieldIndex("id"));
+	//removeColumn(fieldIndex("track_id"));
+	//removeColumn(fieldIndex("name"));
+	//removeColumn(fieldIndex("id"));
 
     slotSearch("");
 
     select(); //Populate the data model.
     initHeaderData();
 }
+bool TraktorPlaylistModel::isColumnHiddenByDefault(int column) {
+    if (column == fieldIndex(LIBRARYTABLE_KEY))
+        return true;
+    if(column == fieldIndex(LIBRARYTABLE_BITRATE))
+    	return true;
 
-bool ITunesPlaylistModel::isColumnHiddenByDefault(int column) {
     return false;
 }
