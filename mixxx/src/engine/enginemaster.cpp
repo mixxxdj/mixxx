@@ -348,17 +348,13 @@ void EngineMaster::addChannel(EngineChannel* pChannel) {
 void EngineMaster::pushPassthroughBuffer(int c, short *input, int len)
 {
 	Q_ASSERT(c<2); // really, now.
-	if(passthroughBufferMutex[c].tryLock())
+	passthroughBufferMutex[c].lock();
+	for (int i=0; i<len; i++)
 	{
-		for (int i=0; i<len; i++)
-		{
-			//why don't we need to divide by SHRT_MAX???
-			m_passthroughBuffers[c][i] = (CSAMPLE)input[i];// / (float)SHRT_MAX;
-		}
-		passthroughBufferMutex[c].unlock();
+		//why don't we need to divide by SHRT_MAX???
+		m_passthroughBuffers[c][i] = (CSAMPLE)input[i];// / (float)SHRT_MAX;
 	}
-	else
-		qDebug() << "WARNING: input passthrough lock failed (dropouts ahoy)";
+	passthroughBufferMutex[c].unlock();
 }
 
 int EngineMaster::numChannels() const {
