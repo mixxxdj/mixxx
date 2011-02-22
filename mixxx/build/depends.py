@@ -188,7 +188,7 @@ class Qt(Dependence):
                                       '$QTDIR/include/QtWebKit',
                                       '$QTDIR/include/Qt'])
 
-        # Set the rpath for linux/bsd/osx. 
+        # Set the rpath for linux/bsd/osx.
         # This is not support on OS X before the 10.5 SDK.
         using_104_sdk = (str(build.env["CCFLAGS"]).find("10.4") >= 0)
         compiling_on_104 = False
@@ -237,7 +237,7 @@ class ReplayGain(Dependence):
         build.env.Append(CPPPATH="#lib/replaygain")
 
 class SoundTouch(Dependence):
-    SOUNDTOUCH_PATH = 'soundtouch/source/SoundTouch'
+    SOUNDTOUCH_PATH = 'soundtouch-1.5.0'
 
     def sources(self, build):
         sources = ['engine/enginebufferscalest.cpp',
@@ -453,20 +453,30 @@ class MixxxCore(Feature):
                    "library/preparelibrarytablemodel.cpp",
                    "library/browsetablemodel.cpp",
                    "library/missingtablemodel.cpp",
+
                    "library/proxytrackmodel.cpp",
-                   "library/abstractxmltrackmodel.cpp",
-                   "library/rhythmboxtrackmodel.cpp",
-                   "library/rhythmboxplaylistmodel.cpp",
-                   "library/itunestrackmodel.cpp",
-                   "library/itunesplaylistmodel.cpp",
+
+
                    "library/playlisttablemodel.cpp",
                    "library/libraryfeature.cpp",
                    "library/preparefeature.cpp",
                    "library/autodjfeature.cpp",
                    "library/mixxxlibraryfeature.cpp",
                    "library/playlistfeature.cpp",
-                   "library/rhythmboxfeature.cpp",
-                   "library/itunesfeature.cpp",
+
+                   # External Library Features
+                   "library/rhythmbox/rhythmboxfeature.cpp",
+                   "library/rhythmbox/rhythmboxtrackmodel.cpp",
+                   "library/rhythmbox/rhythmboxplaylistmodel.cpp",
+
+                   "library/itunes/itunesfeature.cpp",
+                   "library/itunes/itunestrackmodel.cpp",
+                   "library/itunes/itunesplaylistmodel.cpp",
+
+                   "library/traktor/traktorfeature.cpp",
+                   "library/traktor/traktortablemodel.cpp",
+                   "library/traktor/traktorplaylistmodel.cpp",
+
                    "library/browsefeature.cpp",
                    "library/cratefeature.cpp",
                    "library/sidebarmodel.cpp",
@@ -493,13 +503,10 @@ class MixxxCore(Feature):
                    "library/stardelegate.cpp",
                    "library/stareditor.cpp",
                    "audiotagger.cpp",
-                   
+
                    "library/treeitemmodel.cpp",
                    "library/treeitem.cpp",
                    "library/foldertreemodel.cpp",
-                   "library/traktorfeature.cpp",
-                   "library/traktortablemodel.cpp",
-                   "library/traktorplaylistmodel.cpp",
                    "library/browsethread.cpp",
 
                    "xmlparse.cpp",
@@ -588,7 +595,8 @@ class MixxxCore(Feature):
             # force manifest file creation, apparently not necessary for all
             # people but necessary for this committers handicapped windows
             # installation -- bkgood
-            build.env.Append(LINKFLAGS="/MANIFEST")
+            if build.toolchain_is_msvs:
+                build.env.Append(LINKFLAGS="/MANIFEST")
         elif build.platform_is_osx:
             build.env.Append(LINKFLAGS="-headerpad=ffff"); #Need extra room for code signing (App Store)
             build.env.Append(LINKFLAGS="-headerpad_max_install_names"); #Need extra room for code signing (App Store)
@@ -729,12 +737,13 @@ class MixxxCore(Feature):
         """Sets up additional things in the Environment that must happen
         after the Configure checks run."""
         if build.platform_is_windows:
-            build.env.Append(LINKFLAGS = ['/nodefaultlib:LIBCMT.lib',
-                                          '/nodefaultlib:LIBCMTd.lib',
-                                          '/entry:mainCRTStartup'])
-            # Makes the program not launch a shell first
             if build.toolchain_is_msvs:
+                build.env.Append(LINKFLAGS = ['/nodefaultlib:LIBCMT.lib',
+                                              '/nodefaultlib:LIBCMTd.lib',
+                                              '/entry:mainCRTStartup'])
+                # Makes the program not launch a shell first
                 build.env.Append(LINKFLAGS = '/subsystem:windows')
             elif build.toolchain_is_gnu:
+                # Makes the program not launch a shell first
                 build.env.Append(LINKFLAGS = '--subsystem,windows')
                 build.env.Append(LINKFLAGS = '-mwindows')

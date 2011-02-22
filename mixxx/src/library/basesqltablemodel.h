@@ -34,11 +34,14 @@ class BaseSqlTableModel : public QSqlTableModel {
   protected:
     virtual QString orderByClause() const;
     virtual void initHeaderData();
+    void setCaching(bool isActive);
   private slots:
     void trackChanged(int trackId);
   private:
     QVariant getBaseValue(const QModelIndex& index, int role = Qt::DisplayRole) const;
 
+
+    bool m_isCachedModel;
     QString m_qTableName;
     int m_iSortColumn;
     Qt::SortOrder m_eSortOrder;

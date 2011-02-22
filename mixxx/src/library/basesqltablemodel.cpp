@@ -18,6 +18,7 @@ BaseSqlTableModel::BaseSqlTableModel(QObject* parent,
         m_trackDAO(m_pTrackCollection->getTrackDAO()) {
     connect(&m_trackDAO, SIGNAL(trackChanged(int)),
             this, SLOT(trackChanged(int)));
+    m_isCachedModel = true;
     m_iSortColumn = 0;
     m_eSortOrder = Qt::AscendingOrder;
 }
@@ -100,10 +101,13 @@ QVariant BaseSqlTableModel::getBaseValue(const QModelIndex& index, int role) con
     int col = index.column();
 
     Q_ASSERT(m_rowToTrackId.contains(row));
-    if (!m_rowToTrackId.contains(row)) {
+    if (!m_isCachedModel // iTunes and Rhythmbox are not cached
+                || !m_rowToTrackId.contains(row)) {
+        //look-up data from the database directly
         return QSqlTableModel::data(index, role);
     }
-
+    // This is only ececuted for cached models where
+    // view and underlying database have diverged
     int trackId = m_rowToTrackId[row];
 
     /*
@@ -386,4 +390,12 @@ void BaseSqlTableModel::setLibraryPrefix(QString sPrefix)
 	m_sPrefix = sPrefix;
 	if (sPrefix[sPrefix.length()-1] == '/' || sPrefix[sPrefix.length()-1] == '\\')
 		m_sPrefix.chop(1);
+}
+
+void BaseSqlTableModel::setCaching(bool isCachedModel){
+    m_isCachedModel = isCachedModel;
+    if(!m_isCachedModel){
+        disconnect(&m_trackDAO, SIGNAL(trackChanged(int)),
+                this, SLOT(trackChanged(int)));
+    }
 }
