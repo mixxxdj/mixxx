@@ -498,6 +498,7 @@ class MixxxCore(Feature):
                    "library/traktorfeature.cpp",
                    "library/traktortablemodel.cpp",
                    "library/traktorplaylistmodel.cpp",
+                   "library/browsethread.cpp",
 
                    "xmlparse.cpp",
                    "library/parser.cpp",
