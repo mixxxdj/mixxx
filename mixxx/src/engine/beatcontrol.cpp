@@ -13,7 +13,7 @@
 #include "cachingreader.h"
 
 #include "trackinfoobject.h"
-#include "trackbeats.h"
+#include "beats.h"
 
 
 double BeatControl::s_dBeatSizes[] = { 0.0625, 0.125, 0.25, 0.5, 1, 2, 4, 8, 16, 32, 64, -1 };
@@ -128,16 +128,16 @@ void BeatControl::slotTrackLoaded(TrackPointer tio,
                             int iTrackSampleRate, int iTrackNumSamples)
 {
     m_pTrack = tio;
-    m_pTrackBeats = m_pTrack->getTrackBeats();
+    m_pBeats = m_pTrack->getBeats();
 
     connect(m_pTrack.data(), SIGNAL(trackBeatsUpdated(int)),
-                    this, SLOT(slotUpdatedTrackBeats(int)));
+                    this, SLOT(beatsUpdated(int)));
 }
 
 void BeatControl::slotUpdatedTrackBeats(int updated)
 {
-    m_pTrackBeats = m_pTrack->getTrackBeats();
-    if ( !m_pTrackBeats )
+    m_pBeats = m_pTrack->getBeats();
+    if ( !m_pBeats )
         return;
 }
 
@@ -149,7 +149,7 @@ void BeatControl::slotBeatLoop(double beats)
     int loop_out;
 
 
-    if ( ! m_pTrackBeats ) {
+    if ( ! m_pBeats ) {
         qDebug() << "BeatLoop: No Beats to work with";
         return;
     }
@@ -158,12 +158,12 @@ void BeatControl::slotBeatLoop(double beats)
     // around X beats from there.
     if ( beats > 0 )
     {
-        loop_in = m_pTrackBeats->findBeatOffsetSamples(m_iCurrentSample/2, -1);
+        loop_in = m_pBeats->findNthBeat(m_iCurrentSample/2, -1);
         if ( beats >= 1 )
-            loop_out = m_pTrackBeats->findBeatOffsetSamples(m_iCurrentSample/2, (int)floor(beats));
+            loop_out = m_pBeats->findNthBeat(m_iCurrentSample/2, (int)floor(beats));
         else
         {
-            loop_out = m_pTrackBeats->findBeatOffsetSamples(m_iCurrentSample/2, 1);
+            loop_out = m_pBeats->findNthBeat(m_iCurrentSample/2, 1);
             loop_out -= ((loop_out - loop_in) * beats);
         }
     }
@@ -171,12 +171,12 @@ void BeatControl::slotBeatLoop(double beats)
     // around X beats before there.
     else
     {
-        loop_out = m_pTrackBeats->findBeatOffsetSamples(m_iCurrentSample/2, 0);
+        loop_out = m_pBeats->findNthBeat(m_iCurrentSample/2, 0);
         if ( beats <= -1 )
-            loop_in = m_pTrackBeats->findBeatOffsetSamples(m_iCurrentSample/2, (int)floor(beats));
+            loop_in = m_pBeats->findNthBeat(m_iCurrentSample/2, (int)floor(beats));
         else
         {
-            loop_in = m_pTrackBeats->findBeatOffsetSamples(m_iCurrentSample/2, 1);
+            loop_in = m_pBeats->findNthBeat(m_iCurrentSample/2, 1);
             loop_in += ((loop_out - loop_in) * beats);
         }
     }
@@ -201,7 +201,7 @@ void BeatControl::slotBeatLoopSize(int i)
 // ... Really lousy way to implement quantization.
 void BeatControl::slotBeatSeek(double beats)
 {
-    if ( m_pTrackBeats == NULL ) {
+    if ( m_pBeats == NULL ) {
         qDebug() << "BeatSeek: No Beats to work with";
         return;
     }
@@ -215,8 +215,8 @@ void BeatControl::slotBeatSeek(double beats)
     }
 
     // Set some properties to refer to inside BeatControl::process()
-    m_iNextJump = (double)m_pTrackBeats->findBeatOffsetSamples(m_iCurrentSample, 0);
-    m_iJumpBeat = (double)m_pTrackBeats->findBeatOffsetSamples(m_iNextJump, (int)floor(beats));
+    m_iNextJump = (double)m_pBeats->findNthBeat(m_iCurrentSample, 0);
+    m_iJumpBeat = (double)m_pBeats->findNthBeat(m_iNextJump, (int)floor(beats));
 }
 
 void BeatControl::slotBeatSeekSize(int i)
