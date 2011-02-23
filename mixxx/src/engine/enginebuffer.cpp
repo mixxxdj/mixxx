@@ -116,14 +116,15 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
     rateEngine = new ControlObject(ConfigKey(group, "rateEngine"));
 
     // Slider to show and change song position
-    playposSlider = new ControlPotmeter(ConfigKey(group, "playposition"), -1., 1.);
+    //these bizarre choice map conveniently to the 0-127 range of midi
+    playposSlider = new ControlPotmeter(ConfigKey(group, "playposition"), -0.14, 1.14);
     connect(playposSlider, SIGNAL(valueChanged(double)),
             this, SLOT(slotControlSeek(double)),
             Qt::DirectConnection);
 
     // Control used to communicate ratio playpos to GUI thread
     visualPlaypos =
-        new ControlPotmeter(ConfigKey(group, "visual_playposition"), -1., 1.);
+        new ControlPotmeter(ConfigKey(group, "visual_playposition"), -0.14, 1.14);
 
     // m_pTrackEnd is used to signal when at end of file during
     // playback. TODO(XXX) This should not even be a control object because it
