@@ -135,8 +135,11 @@ QList<QString> LegacySkinParser::getSchemeList(QString qSkinPath) {
 // static
 void LegacySkinParser::freeChannelStrings() {
     QMutexLocker lock(&s_safeStringMutex);
-    foreach (const char *s, s_channelStrs) {
-        free((void*) s); // created using strdup/malloc so use free
+    for (int i = 0; i < s_channelStrs.length(); ++i) {
+        if (s_channelStrs[i]) {
+            delete [] s_channelStrs[i];
+        }
+        s_channelStrs[i] = NULL;
     }
 }
 
@@ -743,8 +746,9 @@ QWidget* LegacySkinParser::parseTableView(QDomElement node) {
             // disappears when we do background-color. I suspect they use
             // background-image instead of border-image, against their own
             // documentation's recommendation.
-
-            // styleHack.append(QString("QTreeView::branch:has-children {  background-color: %1; }\n ").arg(color.name()));
+            // EDIT: Un-commented next line cause it works if we use custom images as triangle,
+            // see https://bugs.launchpad.net/mixxx/+bug/690280 --jus 12/2010
+            styleHack.append(QString("QTreeView::branch:has-children {  background-color: %1; }\n ").arg(color.name()));
         } else {
             styleHack.append(QString("WLibraryTableView {  background-color: %1; }\n ").arg(color.name()));
             styleHack.append(QString("WLibrarySidebar {  background-color: %1; }\n ").arg(color.name()));
@@ -805,7 +809,9 @@ const char* LegacySkinParser::safeChannelString(QString channelStr) {
         }
     }
     QByteArray qba(channelStr.toAscii());
-    const char *safe(strdup(qba.constData()));
+    char *safe = new char[qba.size() + 1]; // +1 for \0
+    int i = 0;
+    while (safe[i] = qba[i]) ++i;
     s_channelStrs.append(safe);
     return safe;
 }
