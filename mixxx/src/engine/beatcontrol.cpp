@@ -23,9 +23,9 @@ ConfigKey BeatControl::keyForControl(const char *_group, QString ctrlName, doubl
     ConfigKey key;
     key.group = _group;
     key.item = QString("%1_%2").arg(ctrlName).arg(num);
-    qDebug() << "Adding:" << key.group << "," << key.item << "to BeatControl CO's";
     return key;
 }
+
 
 BeatControl::BeatControl(const char *_group, 
                     ConfigObject<ConfigValue> * _config, CachingReader *reader, double beats) : 
@@ -35,7 +35,7 @@ BeatControl::BeatControl(const char *_group,
 {
     m_pReader = reader;
     m_iCurrentSample = 0.;
-    m_dBeats = beats;
+
 
     m_smBeatLoop = new QSignalMapper(this);
     m_smBeatSeek = new QSignalMapper(this);
@@ -72,16 +72,6 @@ BeatControl::BeatControl(const char *_group,
             SLOT(slotBeatLoopSize(int)),
             Qt::DirectConnection);
 
-    qDebug() << "Testing Sized BeatLoop CO's";
-
-    for (i = 0; i < m_pCOBeatLoops.size(); i++)
-    {
-        qDebug() << "Testing Sized BeatLoop CO:" << i;
-        m_pCOBeatLoops.at(i)->set(1.0);
-        m_pCOBeatLoops.at(i)->set(1.5);
-        m_pCOBeatLoops.at(i)->set(0.0);
-    }
-
     // Connect beatseek, which can flexibly handle different values.
     // Using this CO directly is meant more for internal and script use.
     m_pCOBeatSeek = new ControlObject(ConfigKey(_group, "beatseek"), 0);
@@ -106,17 +96,6 @@ BeatControl::BeatControl(const char *_group,
     connect(m_smBeatSeek, SIGNAL(mapped(int)), 
             this, SLOT(slotBeatSeekSize(int)),
             Qt::DirectConnection);
-
-    qDebug() << "Testing Sized BeatSeek CO's";
-
-    for (i = 0; i < m_pCOBeatSeeks.size(); i++)
-    {
-        qDebug() << "Testing Sized BeatSeek CO:" << i;
-        m_pCOBeatSeeks.at(i)->set(1.0);
-        m_pCOBeatSeeks.at(i)->set(1.5);
-        m_pCOBeatSeeks.at(i)->set(0.0);
-    }
-
 
     // Piggy back on top of the existent loop control for this deck.
     m_pCOLoopStart = new ControlObjectThread(ControlObject::getControl(ConfigKey(_group, "loop_start_position")));
@@ -151,7 +130,6 @@ void BeatControl::slotTrackLoaded(TrackPointer tio,
     m_pTrack = tio;
     m_pTrackBeats = m_pTrack->getTrackBeats();
 
-    qDebug() << "Beatloop: Track is loaded";
     connect(m_pTrack.data(), SIGNAL(trackBeatsUpdated(int)),
                     this, SLOT(slotUpdatedTrackBeats(int)));
 }
@@ -163,23 +141,21 @@ void BeatControl::slotUpdatedTrackBeats(int updated)
         return;
 }
 
+// Generate a loop of 'beats' length. It can also do fractions for a beatslicing
+// effect.
 void BeatControl::slotBeatLoop(double beats)
 {
     int loop_in;
     int loop_out;
 
 
-    qDebug() << "slotBeatLoop:" << beats;
-
-    if ( m_pTrackBeats == NULL ) {
+    if ( ! m_pTrackBeats ) {
         qDebug() << "BeatLoop: No Beats to work with";
         return;
     }
 
-    // TrackBeats generates mono sample numbers, so we have to account 
-    // for that here. Probably should just generate stereo sample numbers
-    // though, from the get go 
-    // - Phillip Whelan
+    // For positive numbers we start from the beat before us and create the loop
+    // around X beats from there.
     if ( beats > 0 )
     {
         loop_in = m_pTrackBeats->findBeatOffsetSamples(m_iCurrentSample/2, -1);
@@ -191,6 +167,8 @@ void BeatControl::slotBeatLoop(double beats)
             loop_out -= ((loop_out - loop_in) * beats);
         }
     }
+    // For negative numbers we start from the beat after us and start the loop
+    // around X beats before there.
     else
     {
         loop_out = m_pTrackBeats->findBeatOffsetSamples(m_iCurrentSample/2, 0);
@@ -203,8 +181,12 @@ void BeatControl::slotBeatLoop(double beats)
         }
     }
 
-    qDebug() << "Current:" << m_iCurrentSample << "IN:" << loop_in << "OUT:" << loop_out;
+    qDebug() << "Current:" << m_iCurrentSample << "IN:" << (loop_in*2) << "OUT:" << (loop_out*2);
 
+    // TrackBeats generates mono sample numbers, so we have to account 
+    // for that here. Probably should just generate stereo sample numbers
+    // though, from the get go 
+    // - Phillip Whelan
     m_pCOLoopStart->slotSet((double)loop_in * 2);
     m_pCOLoopEnd->slotSet((double)loop_out * 2);
     m_pCOLoopEnabled->slotSet(1);
@@ -212,18 +194,18 @@ void BeatControl::slotBeatLoop(double beats)
 
 void BeatControl::slotBeatLoopSize(int i)
 {
-    qDebug() << "BEAT LOOP SIZE:" << i << "=" << s_dBeatSizes[i];
     return slotBeatLoop(s_dBeatSizes[i]);
 }
 
-
+// Jump a number of beats back or forward as soon as we hit the next beat.
+// ... Really lousy way to implement quantization.
 void BeatControl::slotBeatSeek(double beats)
 {
     if ( m_pTrackBeats == NULL ) {
         qDebug() << "BeatSeek: No Beats to work with";
         return;
     }
-    
+
     // Reset and turn off if we are passed 0
     if ( beats == 0 ) {
         m_iNextJump = -1;
@@ -231,9 +213,10 @@ void BeatControl::slotBeatSeek(double beats)
         
         return;
     }
-    
-    m_iNextJump = m_pTrackBeats->findBeatOffsetSamples(m_iCurrentSample, 0);
-    m_iJumpBeat = m_pTrackBeats->findBeatOffsetSamples(m_iNextJump, (int)floor(beats));
+
+    // Set some properties to refer to inside BeatControl::process()
+    m_iNextJump = (double)m_pTrackBeats->findBeatOffsetSamples(m_iCurrentSample, 0);
+    m_iJumpBeat = (double)m_pTrackBeats->findBeatOffsetSamples(m_iNextJump, (int)floor(beats));
 }
 
 void BeatControl::slotBeatSeekSize(int i)
@@ -247,23 +230,23 @@ double BeatControl::process(const double dRate,
                                const int iBufferSize)
 {
     bool reverse = dRate < 0;
-    
-    
+
+
     m_iCurrentSample = (int)round(currentSample);
     if (!even(m_iCurrentSample))
         m_iCurrentSample--;
     
     if ( m_iNextJump >= 0 && 0) {
         if ( m_iCurrentSample >= m_iNextJump ) {
-            
+
             // Do not Jump outside of an active loop
-            if ( 0 /* m_COReloopExit->get() */ && m_iNextJump > (unsigned long)m_pCOLoopEnd->get())
+            if (m_pCOLoopEnabled->get() && (m_iNextJump > m_pCOLoopEnd->get()))
                 return currentSample;
-            
+
             m_iNextJump = -1;
             return m_iJumpBeat;
         }
     }
-    
+
     return currentSample;
 }

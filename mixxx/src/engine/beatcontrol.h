@@ -25,7 +25,7 @@ public:
                    const double currentSample,
                    const double totalSamples,
                    const int iBufferSize);
-    
+
 public slots:
 	void slotTrackLoaded(TrackPointer tio, 
                             int iTrackSampleRate, int iTrackNumSamples);
@@ -40,31 +40,31 @@ private:
 
 
     int m_iCurrentSample;
-	
+
     ControlObject* m_pCOBeatLoop;
     QList<ControlPushButton*> m_pCOBeatLoops;
     QSignalMapper* m_smBeatLoop;
 
     CachingReader *m_pReader;
-    
+
     TrackPointer m_pTrack;
     TrackBeatsPointer m_pTrackBeats;
-    
+
     ControlObjectThread *m_pCOLoopStart;
     ControlObjectThread *m_pCOLoopEnd;
     ControlObjectThread *m_pCOLoopEnabled;
-    
+
     ControlObject *m_pCOBeatSeek;
     QList<ControlPushButton*> m_pCOBeatSeeks;
     QSignalMapper* m_smBeatSeek;
 
     // The next beat to jump from
-    unsigned long m_iNextJump;
+    double m_iNextJump;
     // The next beat to jump to
-    unsigned long m_iJumpBeat;
+    double m_iJumpBeat;
     // Different sizes for Beat Loops/Seeks
     static double s_dBeatSizes[];
 };
 
 
-#endif // __BEATJUGGLING_CONTROL__
+#endif // __BEAT_CONTROL__
