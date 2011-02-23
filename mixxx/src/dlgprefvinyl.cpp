@@ -53,19 +53,36 @@ DlgPrefVinyl::DlgPrefVinyl(QWidget * parent, SoundManager * soundman,
     groupBoxSignalQuality->setLayout(layout);
 
     // Add vinyl types
-    ComboBoxVinylType->addItem(MIXXX_VINYL_SERATOCV02VINYLSIDEA);
-    ComboBoxVinylType->addItem(MIXXX_VINYL_SERATOCV02VINYLSIDEB);
-    ComboBoxVinylType->addItem(MIXXX_VINYL_SERATOCD);
-    ComboBoxVinylType->addItem(MIXXX_VINYL_TRAKTORSCRATCHSIDEA);
-    ComboBoxVinylType->addItem(MIXXX_VINYL_TRAKTORSCRATCHSIDEB);
-    ComboBoxVinylType->addItem(MIXXX_VINYL_FINALSCRATCH);
-    ComboBoxVinylType->addItem(MIXXX_VINYL_MIXVIBESDVSCD);
+    ComboBoxVinylType1->addItem(MIXXX_VINYL_SERATOCV02VINYLSIDEA);
+    ComboBoxVinylType1->addItem(MIXXX_VINYL_SERATOCV02VINYLSIDEB);
+    ComboBoxVinylType1->addItem(MIXXX_VINYL_SERATOCD);
+    ComboBoxVinylType1->addItem(MIXXX_VINYL_TRAKTORSCRATCHSIDEA);
+    ComboBoxVinylType1->addItem(MIXXX_VINYL_TRAKTORSCRATCHSIDEB);
+    ComboBoxVinylType1->addItem(MIXXX_VINYL_FINALSCRATCH);
+    ComboBoxVinylType1->addItem(MIXXX_VINYL_MIXVIBESDVSCD);
+    
+    ComboBoxVinylType2->addItem(MIXXX_VINYL_SERATOCV02VINYLSIDEA);
+    ComboBoxVinylType2->addItem(MIXXX_VINYL_SERATOCV02VINYLSIDEB);
+    ComboBoxVinylType2->addItem(MIXXX_VINYL_SERATOCD);
+    ComboBoxVinylType2->addItem(MIXXX_VINYL_TRAKTORSCRATCHSIDEA);
+    ComboBoxVinylType2->addItem(MIXXX_VINYL_TRAKTORSCRATCHSIDEB);
+    ComboBoxVinylType2->addItem(MIXXX_VINYL_FINALSCRATCH);
+    ComboBoxVinylType2->addItem(MIXXX_VINYL_MIXVIBESDVSCD);
+    
+    ComboBoxVinylSpeed1->addItem(MIXXX_VINYL_SPEED_33);
+    ComboBoxVinylSpeed1->addItem(MIXXX_VINYL_SPEED_45);
+    
+    ComboBoxVinylSpeed2->addItem(MIXXX_VINYL_SPEED_33);
+    ComboBoxVinylSpeed2->addItem(MIXXX_VINYL_SPEED_45);
 
     connect(VinylGain, SIGNAL(sliderReleased()), this, SLOT(VinylGainSlotApply()));
     //connect(ComboBoxDeviceDeck1, SIGNAL(currentIndexChanged()), this, SLOT(()));
 
     connect(VinylGain, SIGNAL(sliderReleased()), this, SLOT(settingsChanged()));
-    connect(ComboBoxVinylType, SIGNAL(currentIndexChanged(int)), this, SLOT(settingsChanged()));
+    connect(ComboBoxVinylType1, SIGNAL(currentIndexChanged(int)), this, SLOT(settingsChanged()));
+    connect(ComboBoxVinylType2, SIGNAL(currentIndexChanged(int)), this, SLOT(settingsChanged()));
+    connect(ComboBoxVinylSpeed1, SIGNAL(currentIndexChanged(int)), this, SLOT(settingsChanged()));
+    connect(ComboBoxVinylSpeed2, SIGNAL(currentIndexChanged(int)), this, SLOT(settingsChanged()));
     connect(LeadinTime, SIGNAL(textChanged(const QString&)), this, SLOT(settingsChanged()));
     connect(NeedleSkipEnable, SIGNAL(stateChanged(int)), this, SLOT(settingsChanged()));
     connect(AbsoluteMode, SIGNAL(toggled(bool)), this, SLOT(settingsChanged()));
@@ -107,9 +124,21 @@ void DlgPrefVinyl::slotUpdate()
     m_dontForce = true; // otherwise all the signals fired in here will cause
                         // DlgPrefSound to call setupDevices needlessly :) -- bkgood
     // Set vinyl control types in the comboboxes
-    int combo_index = ComboBoxVinylType->findText(config->getValueString(ConfigKey("[VinylControl]","strVinylType")));
+    int combo_index = ComboBoxVinylType1->findText(config->getValueString(ConfigKey("[Channel1]","strVinylType")));
     if (combo_index != -1)
-        ComboBoxVinylType->setCurrentIndex(combo_index);
+        ComboBoxVinylType1->setCurrentIndex(combo_index);
+        
+    combo_index = ComboBoxVinylType2->findText(config->getValueString(ConfigKey("[Channel2]","strVinylType")));
+    if (combo_index != -1)
+        ComboBoxVinylType2->setCurrentIndex(combo_index);
+        
+    combo_index = ComboBoxVinylSpeed1->findText(config->getValueString(ConfigKey("[Channel1]","strVinylSpeed")));
+    if (combo_index != -1)
+        ComboBoxVinylSpeed1->setCurrentIndex(combo_index);
+        
+    combo_index = ComboBoxVinylSpeed2->findText(config->getValueString(ConfigKey("[Channel2]","strVinylSpeed")));
+    if (combo_index != -1)
+        ComboBoxVinylSpeed2->setCurrentIndex(combo_index);
 
     // set lead-in time
     LeadinTime->setText (config->getValueString(ConfigKey("[VinylControl]","LeadInTime")) );
@@ -170,7 +199,10 @@ void DlgPrefVinyl::EnableRelativeModeSlotApply()
 
 void DlgPrefVinyl::VinylTypeSlotApply()
 {
-    config->set(ConfigKey("[VinylControl]","strVinylType"), ConfigValue(ComboBoxVinylType->currentText()));
+    config->set(ConfigKey("[Channel1]","strVinylType"), ConfigValue(ComboBoxVinylType1->currentText()));
+    config->set(ConfigKey("[Channel2]","strVinylType"), ConfigValue(ComboBoxVinylType2->currentText()));
+    config->set(ConfigKey("[Channel1]","strVinylSpeed"), ConfigValue(ComboBoxVinylSpeed1->currentText()));
+    config->set(ConfigKey("[Channel2]","strVinylSpeed"), ConfigValue(ComboBoxVinylSpeed2->currentText()));
 }
 
 void DlgPrefVinyl::VinylGainSlotApply()
