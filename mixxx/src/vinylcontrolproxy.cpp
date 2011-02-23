@@ -23,7 +23,7 @@ VinylControlProxy::VinylControlProxy(ConfigObject<ConfigValue> * pConfig, const 
     scratchlib_timecodes.push_back(MIXXX_VINYL_MIXVIBESDVSCD);
 
     //Figure out which type of timecoded vinyl we're using.
-    strVinylType = m_pConfig->getValueString(ConfigKey("[VinylControl]","strVinylType"));
+    strVinylType = m_pConfig->getValueString(ConfigKey(_group,"strVinylType"));
 
     //Create the VinylControl object that matches the type of vinyl selected in the prefs...
     if (scratchlib_timecodes.contains(strVinylType))
@@ -39,7 +39,7 @@ VinylControlProxy::VinylControlProxy(ConfigObject<ConfigValue> * pConfig, const 
         qDebug() << "VinylControlProxy: Unknown vinyl type " << strVinylType;
         qDebug() << "Defaulting to Serato...";
         strVinylType = MIXXX_VINYL_SERATOCV02VINYLSIDEA;
-        pConfig->set(ConfigKey("[VinylControl]","strVinylType"), ConfigValue(MIXXX_VINYL_SERATOCV02VINYLSIDEA));
+        pConfig->set(ConfigKey(_group,"strVinylType"), ConfigValue(MIXXX_VINYL_SERATOCV02VINYLSIDEA));
         m_pVinylControl = new VinylControlXwax(pConfig, _group);
     }
 }
