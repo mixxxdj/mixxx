@@ -6,6 +6,7 @@
 #include <QDragEnterEvent>
 #include <QUrl>
 #include <QPainter>
+#include <QGLContext>
 
 
 #include "mixxx.h"
@@ -13,7 +14,15 @@
 #include "wglwaveformviewer.h"
 #include "waveform/waveformrenderer.h"
 
-WGLWaveformViewer::WGLWaveformViewer(const char *group, WaveformRenderer *pWaveformRenderer, QWidget * pParent, const QGLWidget * pShareWidget, Qt::WFlags f) : QGLWidget(QGLFormat(QGL::SampleBuffers), pParent, pShareWidget)
+WGLWaveformViewer::WGLWaveformViewer(
+        const char *group, 
+        WaveformRenderer *pWaveformRenderer, 
+        QWidget * pParent, 
+        const QGLWidget * pShareWidget,
+        QGLContext *ctxt,
+        Qt::WFlags f
+    ) : 
+    QGLWidget(ctxt, pParent, pShareWidget)
 {
 
     m_pWaveformRenderer = pWaveformRenderer;

@@ -2,12 +2,35 @@
 
  #include "treeitem.h"
  #include "treeitemmodel.h"
-
-  TreeItemModel::TreeItemModel(QObject *parent)
+    /*
+     * Just a word about how the TreeItem objects and TreeItemModels are used in general:
+     * TreeItems are used by the TreeItemModel class to display tree
+     * structures in the sidebar.
+     *
+     * The constructor has 4 arguments:
+     * 1. argument represents a name shown in the sidebar view later on
+     * 2. argument represents the absolute path of this tree item
+     * 3. argument is a library feature object.
+     *    This is necessary because in sidebar.cpp we hanlde 'activateChid' events
+     * 4. the parent TreeItem object
+     *    The constructor does not add this TreeItem object to the parent's child list
+     *
+     * In case of no arguments, the standard constructor creates a
+     * root item that is not visible in the sidebar.
+     *
+     * Once the TreeItem objects are inserted to models, the models take care of their 
+     * deletion.
+     *
+     * Examples on how to use TreeItem and TreeItemModels can be found in
+     * - playlistfeature.cpp
+     * - cratefeature.cpp
+     * - *feature.cpp
+     */
+ TreeItemModel::TreeItemModel(QObject *parent)
      : QAbstractItemModel(parent)
  {
     
-     m_rootItem = new TreeItem("$root","$root");
+     m_rootItem = new TreeItem();
      
  }
 
@@ -22,7 +45,7 @@
  }
 
  QVariant TreeItemModel::data(const QModelIndex &index, int role) const
- {
+ {   
      if (!index.isValid())
          return QVariant();
 
@@ -30,7 +53,7 @@
          return QVariant();
 
      TreeItem *item = static_cast<TreeItem*>(index.internalPointer());
-
+     
      return item->data();
  }
 
@@ -116,7 +139,7 @@
   * Before you can resize the data model dynamically by using 'insertRows' and 'removeRows' 
   * make sure you have initialized 
   */ 
-bool TreeItemModel::insertRows(QList<QString>& data, int position, int rows, const QModelIndex &parent)
+bool TreeItemModel::insertRows(QList<TreeItem*> &data, int position, int rows, const QModelIndex &parent)
  {  
      TreeItem *parentItem = getItem(parent);
      bool success;
@@ -128,7 +151,7 @@ bool TreeItemModel::insertRows(QList<QString>& data, int position, int rows, con
      return success;
  }
  bool TreeItemModel::removeRows(int position, int rows, const QModelIndex &parent)
- {
+ { 
      TreeItem *parentItem = getItem(parent);
      bool success = true;
 
@@ -146,6 +169,3 @@ TreeItem* TreeItemModel::getItem(const QModelIndex &index) const
      }
      return m_rootItem;
  }
-
-
-

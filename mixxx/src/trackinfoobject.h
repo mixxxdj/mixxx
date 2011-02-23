@@ -28,7 +28,7 @@
 #include <QWeakPointer>
 
 #include "defs.h"
-
+#include "beats.h"
 #include "library/dao/cue.h"
 
 class QString;
@@ -40,11 +40,9 @@ class TrackPlaylist;
 class Cue;
 
 class TrackInfoObject;
-class TrackBeats;
 
 typedef QSharedPointer<TrackInfoObject> TrackPointer;
 typedef QWeakPointer<TrackInfoObject> TrackWeakPointer;
-typedef QSharedPointer<TrackBeats> TrackBeatsPointer;
 
 #include "segmentation.h"
 
@@ -244,11 +242,11 @@ public:
     /** Set the track's full file path */
     void setLocation(QString location);
 
-    /** Get the Track's Beats list */
-    TrackBeatsPointer getTrackBeats() const;
+    // Get the track's Beats list
+    BeatsPointer getBeats() const;
 
-    /** Set the Track's Beats */
-    void setTrackBeats(TrackBeatsPointer beats, bool isDirty);
+    // Set the track's Beats
+    void setBeats(BeatsPointer beats);
 
     const Segmentation<QString>* getChordData();
     void setChordData(Segmentation<QString> cd);
@@ -259,13 +257,16 @@ public:
   signals:
     void wavesummaryUpdated(TrackInfoObject*);
     void bpmUpdated(double bpm);
-    void trackBeatsUpdated(int);
+    void beatsUpdated();
     void ReplayGainUpdated(double replaygain);
     void cuesUpdated();
     void changed();
     void dirty();
     void clean();
     void save();
+
+  private slots:
+    void slotBeatsUpdated();
 
   private:
 
@@ -379,8 +380,8 @@ public:
     double m_dVisualResampleRate;
     Segmentation<QString> m_chordData;
 
-    // Storage for the Track's detected beats
-    TrackBeatsPointer m_pTrackBeatsPointer;
+    // Storage for the track's beats
+    BeatsPointer m_pBeats;
 
     friend class TrackDAO;
 };

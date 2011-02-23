@@ -28,7 +28,7 @@ class WaveformRenderer : public QThread {
     Q_OBJECT
 public:
     WaveformRenderer(const char* group);
-    ~WaveformRenderer();
+    virtual ~WaveformRenderer();
 
     void resize(int w, int h);
     void draw(QPainter* pPainter, QPaintEvent *pEvent);
