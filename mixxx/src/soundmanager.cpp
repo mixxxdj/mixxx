@@ -53,6 +53,16 @@ SoundManager::SoundManager(ConfigObject<ConfigValue> * pConfig, EngineMaster * _
     ControlObjectThreadMain* pControlObjectVinylControlMode1 = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[Channel1]", "VinylMode")));
     ControlObjectThreadMain* pControlObjectVinylControlMode2 = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[Channel2]", "VinylMode")));
     ControlObjectThreadMain* pControlObjectVinylControlGain = new ControlObjectThreadMain(new ControlObject(ConfigKey("[VinylControl]", "VinylControlGain")));
+    m_pControlObjectInputPassthrough1 = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[Channel1]", "inputpassthrough")));
+    m_pControlObjectInputPassthrough2 = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[Channel2]", "inputpassthrough")));
+    
+    connect(m_pControlObjectInputPassthrough1, SIGNAL(valueChanged(double)),
+            this, SLOT(slotInputPassthrough1(double)),
+            Qt::DirectConnection);
+            
+	connect(m_pControlObjectInputPassthrough2, SIGNAL(valueChanged(double)),
+            this, SLOT(slotInputPassthrough2(double)),
+            Qt::DirectConnection);            	
 
     //Hack because PortAudio samplerate enumeration is slow as hell on Linux (ALSA dmix sucks, so we can't blame PortAudio)
     m_samplerates.push_back(44100);
@@ -565,6 +575,40 @@ void SoundManager::sync()
 
 }
 
+void SoundManager::slotInputPassthrough1(double toggle)
+{
+	if ((bool)toggle)
+	{
+		//iterate through inputs.  if none for deck 0, then toggle it back again
+		//this is separate from hasvinylinput because it has to work even if
+		//vinyl support is not compiled
+		foreach (AudioInput in, m_inputBuffers.keys())
+		{
+			if (in.getIndex() == 0)
+				return;
+		}
+		//didn't find it
+		m_pControlObjectInputPassthrough1->slotSet(false);
+	}
+}
+
+void SoundManager::slotInputPassthrough2(double toggle)
+{
+	if (toggle)
+	{
+		//iterate through inputs.  if none for deck 0, then toggle it back again
+		//this is separate from hasvinylinput because it has to work even if
+		//vinyl support is not compiled
+		foreach (AudioInput in, m_inputBuffers.keys())
+		{
+			if (in.getIndex() == 1)
+				return;
+		}
+		//didn't find it
+		m_pControlObjectInputPassthrough2->slotSet(false);
+	}
+}
+
 //Requests a buffer in the proper format, if we're prepared to give one.
 QHash<AudioOutput, const CSAMPLE*>
 SoundManager::requestBuffer(QList<AudioOutput> outputs, unsigned long iFramesPerBuffer, SoundDevice* device, double streamTime)
@@ -734,16 +778,14 @@ void SoundManager::pushBuffer(QList<AudioInput> inputs, short * inputBuffer,
 				}
 			}
         }
-        
-        //loop through again and push to the engine for passthrough
+#endif
+		//loop through again and push to the engine for passthrough
 		QListIterator<AudioInput> inputItr(inputs);
 		while (inputItr.hasNext())
 		{
 			AudioInput in = inputItr.next();
 			m_pMaster->pushPassthroughBuffer(in.getIndex(), m_inputBuffers[in], sizeof(*m_inputBuffers[in]) * iFrameSize * iFramesPerBuffer);	
 		}
-
-#endif
     }
     //TODO: Add pass-through option here (and push it into EngineMaster)...
     //      (or maybe save it, and then have requestBuffer() push it into EngineMaster)...

@@ -72,11 +72,15 @@ class SoundManager : public QObject
         void devicesSetup(); // emitted when the sound devices have been set up
     public slots:
         void sync();
+    private slots:
+    	void slotInputPassthrough1(double);
+    	void slotInputPassthrough2(double);
     private:
         void clearOperativeVariables();
         
         EngineMaster *m_pMaster;
         ConfigObject<ConfigValue> *m_pConfig;
+        ControlObjectThreadMain *m_pControlObjectInputPassthrough1, *m_pControlObjectInputPassthrough2;
         QList<SoundDevice*> m_devices;
         QList<unsigned int> m_samplerates;
         QString m_hostAPI;
