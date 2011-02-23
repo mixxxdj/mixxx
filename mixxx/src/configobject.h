@@ -19,10 +19,7 @@
 #define CONFIGOBJECT_H
 
 #include <qstring.h>
-#include <q3ptrlist.h>
-#include <q3valuelist.h>
 #include <qfile.h>
-#include <q3textstream.h>
 #include <qkeysequence.h>
 #include <qdom.h>
 #include <qmap.h>
@@ -123,7 +120,7 @@ template <class ValueType> class ConfigObject
     QString getConfigPath();
 
   protected:
-    Q3PtrList< ConfigOption<ValueType> > list;
+    QList< ConfigOption<ValueType>* > list;
     QString filename;
 
     /** Loads and parses the configuration file. Returns false if the file could

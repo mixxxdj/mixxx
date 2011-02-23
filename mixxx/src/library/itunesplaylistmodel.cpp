@@ -1,43 +1,103 @@
-// itunesplaylistmodel.cpp
-// Created 12/19/2009 by RJ Ryan (rryan@mit.edu)
-// Adapted from Philip Whelan's RhythmboxPlaylistModel
-
 #include <QtCore>
 #include <QtGui>
 #include <QtSql>
-#include <QtDebug>
-#include <QtXmlPatterns/QXmlQuery>
-
+#include "library/trackcollection.h"
 #include "library/itunesplaylistmodel.h"
-#include "library/itunestrackmodel.h"
-#include "xmlparse.h"
-#include "trackinfoobject.h"
-#include "defs.h"
 
 #include "mixxxutils.cpp"
 
-ITunesPlaylistModel::ITunesPlaylistModel(ITunesTrackModel *pTrackModel) :
-        TrackModel(QSqlDatabase::database("QSQLITE"), "mixxx.db.model.itunes_playlist"),
-        m_pTrackModel(pTrackModel),
-        m_sCurrentPlaylist("")
+ITunesPlaylistModel::ITunesPlaylistModel(QObject* parent,
+                                         TrackCollection* pTrackCollection)
+        : TrackModel(pTrackCollection->getDatabase(),
+                     "mixxx.db.model.itunes_playlist"),
+          BaseSqlTableModel(parent, pTrackCollection, pTrackCollection->getDatabase()),
+          m_pTrackCollection(pTrackCollection),
+          m_database(m_pTrackCollection->getDatabase())
 {
+    connect(this, SIGNAL(doSearch(const QString&)), this, SLOT(slotSearch(const QString&)));
+}
+
+ITunesPlaylistModel::~ITunesPlaylistModel() {
+}
+
+bool ITunesPlaylistModel::addTrack(const QModelIndex& index, QString location)
+{
+
+    return false;
+}
+
+TrackPointer ITunesPlaylistModel::getTrack(const QModelIndex& index) const
+{
+    QString artist = index.sibling(index.row(), fieldIndex("artist")).data().toString();
+    QString title = index.sibling(index.row(), fieldIndex("title")).data().toString();
+    QString album = index.sibling(index.row(), fieldIndex("album")).data().toString();
+    QString year = index.sibling(index.row(), fieldIndex("year")).data().toString();
+    QString genre = index.sibling(index.row(), fieldIndex("genre")).data().toString();
+    float bpm = index.sibling(index.row(), fieldIndex("bpm")).data().toString().toFloat();
+
+    QString location = index.sibling(index.row(), fieldIndex("location")).data().toString();
+
+    TrackInfoObject* pTrack = new TrackInfoObject(location);
+    pTrack->setArtist(artist);
+    pTrack->setTitle(title);
+    pTrack->setAlbum(album);
+    pTrack->setYear(year);
+    pTrack->setGenre(genre);
+    pTrack->setBpm(bpm);
+
+    return TrackPointer(pTrack, &QObject::deleteLater);
+}
+
+QString ITunesPlaylistModel::getTrackLocation(const QModelIndex& index) const {
+    QString location = index.sibling(index.row(), fieldIndex("location")).data().toString();
+    return location;
+}
+
+void ITunesPlaylistModel::removeTrack(const QModelIndex& index) {
 
 }
 
-ITunesPlaylistModel::~ITunesPlaylistModel()
-{
+void ITunesPlaylistModel::removeTracks(const QModelIndexList& indices) {
+
 }
 
-Qt::ItemFlags ITunesPlaylistModel::flags ( const QModelIndex & index ) const
-{
-    Qt::ItemFlags defaultFlags = QAbstractTableModel::flags(index);
+void ITunesPlaylistModel::moveTrack(const QModelIndex& sourceIndex, const QModelIndex& destIndex) {
 
-    if (!index.isValid())
-        return Qt::ItemIsEnabled;
+}
 
-    defaultFlags |= Qt::ItemIsDragEnabled;
+void ITunesPlaylistModel::search(const QString& searchText) {
+    // qDebug() << "ITunesPlaylistModel::search()" << searchText
+    //          << QThread::currentThread();
+    emit(doSearch(searchText));
+}
 
-    return defaultFlags;
+void ITunesPlaylistModel::slotSearch(const QString& searchText) {
+    if (!m_currentSearch.isNull() && m_currentSearch == searchText)
+        return;
+    m_currentSearch = searchText;
+
+    QString filter;
+    QSqlField search("search", QVariant::String);
+    search.setValue("%" + searchText + "%");
+    QString escapedText = database().driver()->formatValue(search);
+    filter = "(artist LIKE " + escapedText + " OR " +
+            "album LIKE " + escapedText + " OR " +
+            "title  LIKE " + escapedText + ")";
+    setFilter(filter);
+}
+
+const QString ITunesPlaylistModel::currentSearch() {
+    return m_currentSearch;
+}
+
+bool ITunesPlaylistModel::isColumnInternal(int column) {
+    if (column == fieldIndex(LIBRARYTABLE_ID) ||
+        column == fieldIndex(LIBRARYTABLE_MIXXXDELETED) ||
+        column == fieldIndex(TRACKLOCATIONSTABLE_FSDELETED) ||
+        column == fieldIndex("name") ||
+        column == fieldIndex("track_id"))
+        return true;
+    return false;
 }
 
 QMimeData* ITunesPlaylistModel::mimeData(const QModelIndexList &indexes) const {
@@ -65,191 +125,84 @@ QMimeData* ITunesPlaylistModel::mimeData(const QModelIndexList &indexes) const {
     return mimeData;
 }
 
-QVariant ITunesPlaylistModel::data ( const QModelIndex & index, int role ) const
-{
-    if ( m_sCurrentPlaylist == "" )
-        return QVariant();
-
-    if (!index.isValid())
-        return QVariant();
-
-    // OwenB - attempting to make this more efficient, don't create a new
-    // TIO for every row
-	if (role == Qt::DisplayRole || role == Qt::ToolTipRole) {
-		  // get track id
-	    QList<QString> playlistTrackList = m_pTrackModel->m_mPlaylists[m_sCurrentPlaylist];
-	    QString id = playlistTrackList.at(index.row());
-
-          // use this to get DOM node from the TrackModel
-        QDomNode songNode = m_pTrackModel->getTrackNodeById(id);
-
-          // use node to return the data item that was asked for.
-        return m_pTrackModel->getTrackColumnData(songNode, index);
-    }
-
-    return QVariant();
-}
-
-bool ITunesPlaylistModel::isColumnInternal(int column) {
-    return false;
-}
-
-QVariant ITunesPlaylistModel::headerData ( int section, Qt::Orientation orientation, int role ) const
-{
-    /* Only respond to requests for column header display names */
-    if ( role != Qt::DisplayRole )
-        return QVariant();
-
-    if (orientation == Qt::Horizontal)
-    {
-        switch (section)
-        {
-            case ITunesPlaylistModel::COLUMN_ARTIST:
-                return QString(tr("Artist"));
-
-            case ITunesPlaylistModel::COLUMN_TITLE:
-                return QString(tr("Title"));
-
-            case ITunesPlaylistModel::COLUMN_ALBUM:
-                return QString(tr("Album"));
-
-            case ITunesPlaylistModel::COLUMN_DATE:
-                return QString(tr("Date"));
-
-            case ITunesPlaylistModel::COLUMN_BPM:
-                return QString(tr("BPM"));
-
-            case ITunesPlaylistModel::COLUMN_GENRE:
-                return QString(tr("Genre"));
-
-            case ITunesPlaylistModel::COLUMN_LOCATION:
-                return QString(tr("Location"));
-
-            case ITunesPlaylistModel::COLUMN_DURATION:
-                return QString(tr("Duration"));
-
-            default:
-                return QString(tr("Unknown"));
-        }
-    }
-
-    return QVariant();
-}
-
-int ITunesPlaylistModel::rowCount ( const QModelIndex & parent ) const
-{
-    // FIXME
-    //if ( !m_mPlaylists.containts(m_sCurrentPlaylist))
-    //    return 0;
-
-    if (!m_pTrackModel || m_sCurrentPlaylist == "" )
-        return 0;
-
-    return m_pTrackModel->m_mPlaylists[m_sCurrentPlaylist].size();
-}
-
-int ITunesPlaylistModel::columnCount(const QModelIndex& parent) const
-{
-    if (parent != QModelIndex()) //Some weird thing for table-based models.
-        return 0;
-    return ITunesPlaylistModel::NUM_COLUMNS;
-}
-
-bool ITunesPlaylistModel::addTrack(const QModelIndex& index, QString location)
-{
-    //Should do nothing... hmmm
-    return false;
-}
-
-/** Removes a track from the library track collection. */
-void ITunesPlaylistModel::removeTrack(const QModelIndex& index)
-{
-    //Should do nothing... hmmm
-}
-
-void ITunesPlaylistModel::removeTracks(const QModelIndexList& indices)
-{
-}
-
-void ITunesPlaylistModel::moveTrack(const QModelIndex& sourceIndex, const QModelIndex& destIndex)
-{
-    //Should do nothing... hmmm
-}
-
-QString ITunesPlaylistModel::getTrackLocation(const QModelIndex& index) const
-{
-    TrackPointer track = getTrack(index);
-    QString location = track->getLocation();
-    // track is auto-deleted
-    return location;
-}
-
-TrackPointer ITunesPlaylistModel::getTrack(const QModelIndex& index) const
-{
-    int row = index.row();
-
-    if (!m_pTrackModel ||
-        !m_pTrackModel->m_mPlaylists.contains(m_sCurrentPlaylist)) {
-        return TrackPointer();
-    }
-
-    // Qt should do this by reference for us so we aren't actually making a copy
-    // of the list.
-    QList<QString> songIds = m_pTrackModel->m_mPlaylists[m_sCurrentPlaylist];
-
-    if (row < 0 || row >= songIds.length()) {
-        return TrackPointer();
-    }
-
-    return m_pTrackModel->getTrackById(songIds.at(row));
-}
 
 QItemDelegate* ITunesPlaylistModel::delegateForColumn(const int i) {
     return NULL;
 }
 
-QList<QString> ITunesPlaylistModel::getPlaylists()
-{
-    if (!m_pTrackModel) {
-        return QList<QString>();
-    }
-    return m_pTrackModel->m_mPlaylists.keys();
+TrackModel::CapabilitiesFlags ITunesPlaylistModel::getCapabilities() const {
+    return NULL;
 }
 
-int ITunesPlaylistModel::numPlaylists() {
-    if (!m_pTrackModel) {
-            return 0;
-    }
-    return m_pTrackModel->m_mPlaylists.size();
+Qt::ItemFlags ITunesPlaylistModel::flags(const QModelIndex &index) const {
+    return readOnlyFlags(index);
 }
 
-QString ITunesPlaylistModel::playlistTitle(int n) {
-    if (!m_pTrackModel) {
-        return "";
-    }
-    return m_pTrackModel->m_mPlaylists.keys().at(n);
-}
+void ITunesPlaylistModel::setPlaylist(QString playlist_path) {
+    int playlistId = -1;
+    QSqlQuery finder_query(m_database);
+    finder_query.prepare("SELECT id from itunes_playlists where name='"+playlist_path+"'");
 
-void ITunesPlaylistModel::setPlaylist(QString playlist)
-{
-    if (m_pTrackModel && m_pTrackModel->m_mPlaylists.contains(playlist))
-        m_sCurrentPlaylist = playlist;
+    if(finder_query.exec()){
+        while (finder_query.next()) {
+            playlistId = finder_query.value(finder_query.record().indexOf("id")).toInt();
+        }
+    }
     else
-        m_sCurrentPlaylist = "";
+        qDebug() << "SQL Error in ITunesPlaylistModel.cpp: line" << __LINE__ << " " << finder_query.lastError();
 
-    // force the layout to update
-    emit(layoutChanged());
+
+    QString playlistID = "ITunesPlaylist_" + QString("%1").arg(playlistId);
+    //Escape the playlist name
+    QSqlDriver* driver = m_pTrackCollection->getDatabase().driver();
+    QSqlField playlistNameField("name", QVariant::String);
+    playlistNameField.setValue(playlistID);
+
+    QSqlQuery query(m_database);
+    query.prepare("CREATE TEMPORARY VIEW IF NOT EXISTS "+ driver->formatValue(playlistNameField) + " AS "
+                  "SELECT "
+                  "itunes_library.id,"
+                  "itunes_library.artist,"
+                  "itunes_library.title,"
+                  "itunes_library.album,"
+                  "itunes_library.year,"
+                  "itunes_library.genre,"
+                  "itunes_library.tracknumber,"
+                  "itunes_library.location,"
+                  "itunes_library.comment,"
+                  "itunes_library.rating,"
+                  "itunes_library.duration,"
+                  "itunes_library.bitrate,"
+                  "itunes_library.bpm,"
+                  "itunes_playlist_tracks.track_id, "
+                  "itunes_playlists.name "
+                  "FROM itunes_library "
+                  "INNER JOIN itunes_playlist_tracks "
+                  "ON itunes_playlist_tracks.track_id = itunes_library.id "
+                  "INNER JOIN itunes_playlists "
+                  "ON itunes_playlist_tracks.playlist_id = itunes_playlists.id "
+                  "where itunes_playlists.name='"+playlist_path+"'"
+                  );
+
+
+    if (!query.exec()) {
+
+        qDebug() << "Error creating temporary view for itunes playlists. ITunesPlaylistModel --> line: " << __LINE__ << " " << query.lastError();
+        qDebug() << "Executed Query: " <<  query.executedQuery();
+        return;
+    }
+    setTable(playlistID);
+
+    //removeColumn(fieldIndex("track_id"));
+    //removeColumn(fieldIndex("name"));
+    //removeColumn(fieldIndex("id"));
+
+    slotSearch("");
+
+    select(); //Populate the data model.
+    initHeaderData();
 }
 
-void ITunesPlaylistModel::search(const QString& searchText)
-{
-    m_currentSearch = searchText;
-}
-
-const QString ITunesPlaylistModel::currentSearch() {
-    return m_currentSearch;
-}
-
-const QList<int>& ITunesPlaylistModel::searchColumns() const {
-    return m_pTrackModel->searchColumns();
+bool ITunesPlaylistModel::isColumnHiddenByDefault(int column) {
+    return false;
 }

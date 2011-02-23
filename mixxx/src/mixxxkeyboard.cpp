@@ -17,12 +17,10 @@
 
 #include "mixxxkeyboard.h"
 #include "controlobject.h"
-#ifdef QT3_SUPPORT
-#include <Q3ValueList>
+#include <QList>
 #include <QtDebug>
 #include <QKeyEvent>
 #include <QEvent>
-#endif
 
 MixxxKeyboard::MixxxKeyboard(ConfigObject<ConfigValueKbd> * pKbdConfigObject, QObject * parent, const char * name) : QObject(parent)
 {
@@ -56,14 +54,13 @@ bool MixxxKeyboard::eventFilter(QObject *, QEvent * e)
         QKeyEvent * ke = (QKeyEvent *)e;
 
         // Run through list of active keys to see if the released key is active
-        #ifdef QT3_SUPPORT
-        Q3ValueList<int>::iterator it = m_qActiveKeyList.begin();
-        #else
-        Q3ValueList<int>::iterator it = m_qActiveKeyList.begin();
-                #endif
-        while (it!=m_qActiveKeyList.end())
+        int key = -1;
+        QListIterator<int> it(m_qActiveKeyList);
+
+        while (it.hasNext())
         {
-            if ((*it) == ke->key())
+            key = it.next();
+            if (key == ke->key())
             {
                 //qDebug() << "release";
 
@@ -71,13 +68,12 @@ bool MixxxKeyboard::eventFilter(QObject *, QEvent * e)
                 if (kbdPress(getKeySeq(ke), true, autoRepeat)) {
                     if (!autoRepeat) {
                         //qDebug() << "release else";
-                        m_qActiveKeyList.remove(it);
+                        m_qActiveKeyList.removeOne(key);
                     }
                     return true;
                 }
                 return false;
             }
-            ++it;
         }
     }
 
@@ -113,25 +109,25 @@ bool MixxxKeyboard::kbdPress(QKeySequence k, bool release, bool autoRepeat)
 
 QKeySequence MixxxKeyboard::getKeySeq(QKeyEvent * e)
 {
-    QString s = QKeySequence(e->key());
-        #ifdef QT3_SUPPORT
-    if (e->modifiers() & Qt::ShiftModifier)
-        s = "Shift+" + s;
-    if (e->modifiers() & Qt::ControlModifier)
-        s = "Ctrl+" + s;
-    if (e->modifiers() & Qt::AltModifier)
-        s = "Alt+" + s;
-    #else
-    if (e->modifiers() & ShiftButton)
-        s = "Shift+" + s;
-    if (e->modifiers() & ControlButton)
-        s = "Ctrl+" + s;
-    if (e->modifiers() & AltButton)
-        s = "Alt+" + s;
-    #endif
+    //XXX: If you want Mixxx to handle multiple modifiers,
+    //     eg. Ctrl+Alt+G, then you'll need to change the
+    //     code below a bit.
+    QKeySequence s;
+    int modifier = (int)e->modifiers() & Qt::ShiftModifier;
+    if ((e->modifiers() & Qt::ShiftModifier) > 0)
+        s = QKeySequence("Shift+" + e->text());
+    else if ((e->modifiers() & Qt::ControlModifier) > 0)
+        s = QKeySequence("Ctrl+" + e->text());
+    else if ((e->modifiers() & Qt::AltModifier) > 0)
+        s = QKeySequence("Alt+" + e->text());
+    else
+        s = QKeySequence(e->key());
 
     //qDebug() << "keyboard press: " << s;
+    return s;
 
-    return QKeySequence(s);
 }
 
+ConfigObject<ConfigValueKbd>* MixxxKeyboard::getKeyboardConfig() {
+    return m_pKbdConfigObject;
+}

@@ -1,11 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<MixxxMIDIPreset schemaVersion="1" mixxxVersion="1.6.2+">
+<MixxxMIDIPreset schemaVersion="1" mixxxVersion="1.8.0+">
   <info>
     <name>Vestax VCI-100.midi.xml</name>
-    <author>Auto-converted by madjesta's PHP script</author>
-    <description>Automatic conversion of the file Vestax VCI-100.midi.xml for Mixxx 1.6.2</description>
+    <author>Anders Gunnarsson</author>
+    <description>Preliminary controller mapping for Vestax VCI-100 with scripts</description>
   </info>
-  <controller id="Vestax VCI-100" port="Port">
+  <controller id="Vestax VCI-100">
+    <scriptfiles>
+       <file filename="Vestax-VCI-100-scripts.js" functionprefix="VestaxVCI100"/>
+    </scriptfiles>
     <controls>
       <control>
         <group>[Master]</group>
@@ -37,6 +40,154 @@
         <status>0xB0</status>
         <midino>0x1f</midino>
       </control>
+      
+      <!-- Loop & Hotcues -->
+      <control>
+        <group>[Master]</group>
+        <key>VestaxVCI100.key1</key>
+        <status>0x90</status>
+        <midino>0x62</midino>
+        <options>
+           <Script-Binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Master]</group>
+        <key>VestaxVCI100.key1</key>
+        <status>0x80</status>
+        <midino>0x62</midino>
+        <options>
+           <Script-Binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Master]</group>
+        <key>VestaxVCI100.key2</key>
+        <status>0x90</status>
+        <midino>0x63</midino>
+        <options>
+           <Script-Binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Master]</group>
+        <key>VestaxVCI100.key2</key>
+        <status>0x80</status>
+        <midino>0x63</midino>
+        <options>
+           <Script-Binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Master]</group>
+        <key>VestaxVCI100.key3</key>
+        <status>0x90</status>
+        <midino>0x64</midino>
+        <options>
+           <Script-Binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Master]</group>
+        <key>VestaxVCI100.key3</key>
+        <status>0x80</status>
+        <midino>0x64</midino>
+        <options>
+           <Script-Binding/>
+        </options>
+      </control>
+      
+      <control>
+        <group>[Channel1]</group>
+        <key>VestaxVCI100.loopMode</key>
+        <status>0x90</status>
+        <midino>0x65</midino>
+        <options>
+           <Script-Binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>VestaxVCI100.loopMode</key>
+        <status>0x80</status>
+        <midino>0x65</midino>
+        <options>
+           <Script-Binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>VestaxVCI100.hotcueMode</key>
+        <status>0x90</status>
+        <midino>0x66</midino>
+        <options>
+           <Script-Binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>VestaxVCI100.hotcueMode</key>
+        <status>0x80</status>
+        <midino>0x66</midino>
+        <options>
+           <Script-Binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>VestaxVCI100.loopMode</key>
+        <status>0x90</status>
+        <midino>0x67</midino>
+        <options>
+           <Script-Binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>VestaxVCI100.loopMode</key>
+        <status>0x80</status>
+        <midino>0x67</midino>
+        <options>
+           <Script-Binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>VestaxVCI100.hotcueMode</key>
+        <status>0x90</status>
+        <midino>0x68</midino>
+        <options>
+           <Script-Binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>VestaxVCI100.hotcueMode</key>
+        <status>0x80</status>
+        <midino>0x68</midino>
+        <options>
+           <Script-Binding/>
+        </options>
+      </control>
+      
+      <control>
+        <group>[Flanger]</group>
+        <key>lfoDepth</key>
+        <status>0xB0</status>
+        <midino>0x46</midino>
+      </control>
+      <control>
+        <group>[Flanger]</group>
+        <key>lfoDelay</key>
+        <status>0xB0</status>
+        <midino>0x47</midino>
+      </control>
+      <control>
+        <group>[Flanger]</group>
+        <key>lfoPeriod</key>
+        <status>0xB0</status>
+        <midino>0x48</midino>
+      </control>
       <control>
         <group>[Channel1]</group>
         <key>volume</key>
@@ -47,19 +198,19 @@
         <group>[Channel1]</group>
         <key>pregain</key>
         <status>0xB0</status>
-        <midino>0x1c</midino>
+        <midino>0x14</midino>
       </control>
       <control>
         <group>[Channel1]</group>
         <key>filterHigh</key>
         <status>0xB0</status>
-        <midino>0x14</midino>
+        <midino>0x15</midino>
       </control>
       <control>
         <group>[Channel1]</group>
         <key>filterMid</key>
         <status>0xB0</status>
-        <midino>0x15</midino>
+        <midino>0x16</midino>
       </control>
       <control>
         <group>[Channel1]</group>
@@ -72,16 +223,36 @@
         <key>rate</key>
         <status>0xB0</status>
         <midino>0x0e</midino>
-        <options/>
+        <options>
+          <invert/>
+        </options>
       </control>
       <control>
         <group>[Channel1]</group>
-        <key>wheel</key>
-        <status>0xB0</status>
-        <midino>0x10</midino>
-        <options/>
-        <sensitivity>50</sensitivity>
-        <translations/>
+        <key>VestaxVCI100.jog_touch</key>
+        <status>0x90</status>
+        <midino>0x30</midino>
+        <options>
+           <Script-Binding/>
+        </options>
+      </control>
+      <control>
+          <group>[Channel1]</group>
+          <key>VestaxVCI100.jog_wheel_scratch</key>
+          <status>0xB0</status>
+          <midino>0x10</midino>
+          <options>
+              <Script-Binding/>
+          </options>
+      </control>
+      <control>
+          <group>[Channel1]</group>
+          <key>VestaxVCI100.jog_wheel</key>
+          <status>0xB0</status>
+          <midino>0x12</midino>
+          <options>
+              <Script-Binding/>
+          </options>
       </control>
       <control>
         <group>[Channel1]</group>
@@ -237,19 +408,19 @@
         <group>[Channel2]</group>
         <key>pregain</key>
         <status>0xB0</status>
-        <midino>0x1d</midino>
+        <midino>0x18</midino>
       </control>
       <control>
         <group>[Channel2]</group>
         <key>filterHigh</key>
         <status>0xB0</status>
-        <midino>0x18</midino>
+        <midino>0x19</midino>
       </control>
       <control>
         <group>[Channel2]</group>
         <key>filterMid</key>
         <status>0xB0</status>
-        <midino>0x19</midino>
+        <midino>0x1a</midino>
       </control>
       <control>
         <group>[Channel2]</group>
@@ -262,16 +433,36 @@
         <key>rate</key>
         <status>0xB0</status>
         <midino>0x0f</midino>
-        <options/>
+        <options>
+          <invert/>
+        </options>
       </control>
       <control>
-        <group>[Channel2]</group>
-        <key>wheel</key>
-        <status>0xB0</status>
-        <midino>0x11</midino>
-        <options/>
-        <sensitivity>50</sensitivity>
-        <translations/>
+         <group>[Channel2]</group>
+         <key>VestaxVCI100.jog_touch</key>
+         <status>0x90</status>
+         <midino>0x31</midino>
+         <options>
+            <Script-Binding/>
+         </options>
+      </control>
+      <control>
+         <group>[Channel2]</group>
+         <key>VestaxVCI100.jog_wheel_scratch</key>
+         <status>0xB0</status>
+         <midino>0x11</midino>
+         <options>
+            <Script-Binding/>
+         </options>
+      </control>
+      <control>
+         <group>[Channel2]</group>
+         <key>VestaxVCI100.jog_wheel</key>
+         <status>0xB0</status>
+         <midino>0x13</midino>
+         <options>
+            <Script-Binding/>
+         </options>
       </control>
       <control>
         <group>[Channel2]</group>

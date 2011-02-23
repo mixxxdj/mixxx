@@ -38,7 +38,7 @@ RhythmboxTrackModel::RhythmboxTrackModel()
      * the XPath query to make sure it is the schema we expect.
      */
     query.setFocus(&db);
-    query.setQuery("rhythmdb[@version='1.4' or @version='1.6']/entry[@type='song']");
+    query.setQuery("rhythmdb[@version='1.4' or @version='1.6' or @version='1.7']/entry[@type='song']");
     if ( ! query.isValid())
         return;
 
@@ -106,6 +106,9 @@ QVariant RhythmboxTrackModel::data(const QModelIndex& item, int role) const {
 bool RhythmboxTrackModel::isColumnInternal(int column) {
     return false;
 }
+bool RhythmboxTrackModel::isColumnHiddenByDefault(int column) {
+    return false;
+}
 
 QVariant RhythmboxTrackModel::getTrackColumnData(QDomNode songNode, const QModelIndex& index) const
 {
@@ -138,7 +141,11 @@ QVariant RhythmboxTrackModel::getTrackColumnData(QDomNode songNode, const QModel
 
 TrackPointer RhythmboxTrackModel::parseTrackNode(QDomNode songNode) const
 {
-    QString trackLocation = QUrl(songNode.firstChildElement("location").text()).toLocalFile();
+    QString strloc = songNode.firstChildElement("location").text();
+    QByteArray strlocbytes = strloc.toUtf8();
+    QUrl location = QUrl::fromEncoded(strlocbytes);
+    QString trackLocation = location.toLocalFile();
+
     TrackInfoObject *pTrack = new TrackInfoObject(trackLocation);
 
     pTrack->setArtist(songNode.firstChildElement("artist").text());
@@ -155,6 +162,9 @@ TrackPointer RhythmboxTrackModel::parseTrackNode(QDomNode songNode) const
     }
     pTrack->setGenre(songNode.firstChildElement("genre").text());
     pTrack->setDuration(songNode.firstChildElement("duration").text().toUInt());
+
+    // TODO(ywwg) why was this added? constructor above does the same -- rryan
+    pTrack->setLocation(trackLocation);
 
     // Have QObject handle deleting this track
     return TrackPointer(pTrack, &QObject::deleteLater);

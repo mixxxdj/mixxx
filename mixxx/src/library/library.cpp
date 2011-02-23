@@ -18,13 +18,15 @@
 #include "library/playlistfeature.h"
 #include "library/preparefeature.h"
 #include "library/promotracksfeature.h"
+#include "library/traktorfeature.h"
 
-#include "wtracktableview.h"
+#include "widget/wtracktableview.h"
 #include "widget/wlibrary.h"
 #include "widget/wlibrarysidebar.h"
 
 #include "mixxxkeyboard.h"
 #include "librarymidicontrol.h"
+
 
 // This is is the name which we use to register the WTrackTableView with the
 // WLibrary
@@ -62,7 +64,9 @@ Library::Library(QObject* parent, ConfigObject<ConfigValue>* pConfig, bool first
     if (RhythmboxFeature::isSupported())
         addFeature(new RhythmboxFeature(this));
     if (ITunesFeature::isSupported())
-        addFeature(new ITunesFeature(this));
+        addFeature(new ITunesFeature(this, m_pTrackCollection));
+    if (TraktorFeature::isSupported())
+        addFeature(new TraktorFeature(this, m_pTrackCollection));
 
     //Show the promo tracks view on first run, otherwise show the library
     if (firstRun) {
@@ -101,8 +105,8 @@ void Library::bindWidget(WLibrarySidebar* pSidebarWidget,
             pTrackTableView, SLOT(loadTrackModel(QAbstractItemModel*)));
     connect(pTrackTableView, SIGNAL(loadTrack(TrackPointer)),
             this, SLOT(slotLoadTrack(TrackPointer)));
-    connect(pTrackTableView, SIGNAL(loadTrackToPlayer(TrackPointer, int)),
-            this, SLOT(slotLoadTrackToPlayer(TrackPointer, int)));
+    connect(pTrackTableView, SIGNAL(loadTrackToPlayer(TrackPointer, QString)),
+            this, SLOT(slotLoadTrackToPlayer(TrackPointer, QString)));
     pLibraryWidget->registerView(m_sTrackViewName, pTrackTableView);
 
     connect(this, SIGNAL(switchToView(const QString&)),
@@ -114,6 +118,10 @@ void Library::bindWidget(WLibrarySidebar* pSidebarWidget,
     pSidebarWidget->setModel(m_pSidebarModel);
     connect(pSidebarWidget, SIGNAL(pressed(const QModelIndex&)),
             m_pSidebarModel, SLOT(clicked(const QModelIndex&)));
+    // Lazy model: Let triange symbol increment the model
+    connect(pSidebarWidget, SIGNAL(expanded(const QModelIndex&)),
+            m_pSidebarModel, SLOT(clicked(const QModelIndex&)));
+
     connect(pSidebarWidget, SIGNAL(rightClicked(const QPoint&, const QModelIndex&)),
             m_pSidebarModel, SLOT(rightClicked(const QPoint&, const QModelIndex&)));
 
@@ -141,8 +149,8 @@ void Library::addFeature(LibraryFeature* feature) {
             this, SLOT(slotSwitchToView(const QString&)));
     connect(feature, SIGNAL(loadTrack(TrackPointer)),
             this, SLOT(slotLoadTrack(TrackPointer)));
-    connect(feature, SIGNAL(loadTrackToPlayer(TrackPointer, int)),
-            this, SLOT(slotLoadTrackToPlayer(TrackPointer, int)));
+    connect(feature, SIGNAL(loadTrackToPlayer(TrackPointer, QString)),
+            this, SLOT(slotLoadTrackToPlayer(TrackPointer, QString)));
     connect(feature, SIGNAL(restoreSearch(const QString&)),
             this, SLOT(slotRestoreSearch(const QString&)));
 }
@@ -165,8 +173,8 @@ void Library::slotLoadTrack(TrackPointer pTrack) {
     emit(loadTrack(pTrack));
 }
 
-void Library::slotLoadTrackToPlayer(TrackPointer pTrack, int player) {
-    emit(loadTrackToPlayer(pTrack, player));
+void Library::slotLoadTrackToPlayer(TrackPointer pTrack, QString group) {
+    emit(loadTrackToPlayer(pTrack, group));
 }
 
 void Library::slotRestoreSearch(const QString& text) {

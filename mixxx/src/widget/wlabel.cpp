@@ -24,7 +24,7 @@
 
 WLabel::WLabel(QWidget * parent) : WWidget(parent)
 {
-    m_pLabel = new QLabel(parent);
+    m_pLabel = new QLabel(this);
     m_qsText = "";
 }
 
@@ -35,8 +35,6 @@ WLabel::~WLabel()
 
 void WLabel::setup(QDomNode node)
 {
-    WWidget::setup(node);
-
     // Colors
     QPalette palette = m_pLabel->palette(); //we have to copy out the palette to edit it since it's const (probably for threadsafety)
 
@@ -52,6 +50,8 @@ void WLabel::setup(QDomNode node)
 
     m_pLabel->setPalette(palette);
 
+    m_pLabel->setToolTip(toolTip());
+
     // Text
     if (!selectNode(node, "Text").isNull())
         m_qsText = selectNodeQString(node, "Text");
@@ -61,7 +61,7 @@ void WLabel::setup(QDomNode node)
     QString size = selectNodeQString(node, "Size");
     int x = size.left(size.indexOf(",")).toInt();
     int y = size.mid(size.indexOf(",")+1).toInt();
-    setFixedSize(x,y);
+    m_pLabel->setFixedSize(x,y);
 
     // Alignment
     if (!selectNode(node, "Alignment").isNull())
@@ -76,20 +76,7 @@ void WLabel::setup(QDomNode node)
     }
 }
 
-void WLabel::setFixedSize(int x,int y)
-{
-    WWidget::setFixedSize(x,y);
-    m_pLabel->setFixedSize(x,y);
-}
-
-void WLabel::move(int x, int y)
-{
-    WWidget::move(x,y);
-    m_pLabel->move(x,y);
-}
-
 void WLabel::setAlignment(Qt::Alignment i)
 {
     m_pLabel->setAlignment(i);
 }
-

@@ -26,15 +26,14 @@
   *@author Tue Haste Andersen
   */
 
-class WLabel : public WWidget  
+class WLabel : public WWidget
 {
     Q_OBJECT
 public:
     WLabel(QWidget *parent=0);
-    ~WLabel();
+    virtual ~WLabel();
     void setup(QDomNode node);
-    void move(int, int);
-    void setFixedSize(int, int);
+
     void setAlignment(Qt::Alignment);
     void setConstFactor(double);
 

@@ -12,9 +12,7 @@
 
 #include <QBrush>
 #include <QtDebug>
-#include <Q3MemArray>
 #include <QMouseEvent>
-#include <Q3ValueList>
 #include <QPaintEvent>
 #include <qpainter.h>
 #include <QtDebug>
@@ -97,15 +95,6 @@ WOverview::~WOverview()
 
 void WOverview::setup(QDomNode node)
 {
-    // Setup position and connections
-    WWidget::setup(node);
-
-    // Size
-    QString size = selectNodeQString(node, "Size");
-    int x = size.left(size.indexOf(",")).toInt();
-    int y = size.mid(size.indexOf(",")+1).toInt();
-    setFixedSize(x,y);
-
     // Set constants for line drawing
 /*
     m_qMarkerPos1.setX(x/2);
@@ -163,6 +152,10 @@ void WOverview::setValue(double fValue)
 
 void WOverview::slotLoadNewWaveform(TrackPointer pTrack)
 {
+    // Connect wavesummaryUpdated signals to our update slots.
+    connect(pTrack.data(), SIGNAL(wavesummaryUpdated(TrackInfoObject*)),
+            this, SLOT(slotLoadNewWaveform(TrackInfoObject*)));
+    // Now in case the track's wavesummary is already done, load it.
     slotLoadNewWaveform(pTrack.data());
 }
 
@@ -197,14 +190,17 @@ void WOverview::cueChanged(double v) {
 
 void WOverview::loopStartChanged(double v) {
     m_dLoopStart = v;
+    update();
 }
 
 void WOverview::loopEndChanged(double v) {
     m_dLoopEnd = v;
+    update();
 }
 
 void WOverview::loopEnabledChanged(double v) {
     m_bLoopEnabled = !(v == 0.0f);
+    update();
 }
 
 void WOverview::setData(const QByteArray* pWaveformSummary, long liSampleDuration)
@@ -355,71 +351,68 @@ void WOverview::paintEvent(QPaintEvent *)
     // Draw waveform, then playpos
     paint.drawPixmap(0, 0, *m_pScreenBuffer);
 
-    {
+    if (m_liSampleDuration > 0) {
         // Draw play position
         paint.setPen(m_qColorMarker);
         paint.drawLine(m_iPos,   0, m_iPos,   height());
         paint.drawLine(m_iPos+1, 0, m_iPos+1, height());
         //paint.drawLine(m_iPos-1, 0, m_iPos-1, height());
 
+        float fPos;
+
+        // Draw loop markers
+        QColor loopColor = m_qColorMarker;
+        if (!m_bLoopEnabled) {
+            loopColor = m_qColorSignal;
+        }
+        paint.setPen(loopColor);
+        if (m_dLoopStart != -1.0) {
+            fPos = m_dLoopStart * (width() - 2) / m_liSampleDuration;
+            paint.drawLine(fPos, 0, fPos, height());
+        }
+        if (m_dLoopEnd != -1.0) {
+            fPos = m_dLoopEnd * (width() - 2) / m_liSampleDuration;
+            paint.drawLine(fPos, 0, fPos, height());
+        }
+
+        if (m_dLoopStart != -1.0 && m_dLoopEnd != -1.0) {
+            //loopColor.setAlphaF(0.5);
+            paint.setOpacity(0.5);
+            //paint.setPen(loopColor);
+            paint.setBrush(QBrush(loopColor));
+            float sPos = m_dLoopStart * (width() - 2) / m_liSampleDuration;
+            float ePos = m_dLoopEnd * (width() - 2) / m_liSampleDuration;
+            QRectF rect(QPointF(sPos, 0), QPointF(ePos, height()-1));
+            paint.drawRect(rect);
+            paint.setOpacity(1.0);
+        }
+
+        QFont font;
+        font.setBold(false);
+        int textWidth = 8;
+        int textHeight = 10;
+        font.setPixelSize(2*textHeight);
+        paint.setPen(m_qColorMarker);
+        paint.setFont(font);
+
         // Draw hotcues
+        for (int i = 0; i < m_hotcues.size(); ++i) {
+            int position = m_hotcues[i];
+            if (position == -1)
+                continue;
+            fPos = float(position) * (width()-2) / m_liSampleDuration;
+            //qDebug() << "Drawing cue" << i << "at" << fPos;
 
-        if (m_liSampleDuration > 0) {
-            float fPos;
+            paint.drawLine(fPos, 0,
+                           fPos, height());
+            // paint.drawLine(fPos+1, 0,
+            //                fPos+1, height());
 
-            // Draw loop markers
-            QColor loopColor = m_qColorMarker;
-            if (!m_bLoopEnabled) {
-                loopColor = m_qColorSignal;
-            }
-            paint.setPen(loopColor);
-            if (m_dLoopStart != -1.0) {
-                fPos = m_dLoopStart * (width() - 2) / m_liSampleDuration;
-                paint.drawLine(fPos, 0, fPos, height());
-            }
-            if (m_dLoopEnd != -1.0) {
-                fPos = m_dLoopEnd * (width() - 2) / m_liSampleDuration;
-                paint.drawLine(fPos, 0, fPos, height());
-            }
+            // int halfHeight = height()/2;
+            // QRectF rect(QPointF(fPos-textWidth, halfHeight-textHeight),
+            //             QPointF(fPos+textWidth, halfHeight+textHeight));
 
-            if (m_dLoopStart != -1.0 && m_dLoopEnd != -1.0) {
-                //loopColor.setAlphaF(0.5);
-                paint.setOpacity(0.5);
-                //paint.setPen(loopColor);
-                paint.setBrush(QBrush(loopColor));
-                float sPos = m_dLoopStart * (width() - 2) / m_liSampleDuration;
-                float ePos = m_dLoopEnd * (width() - 2) / m_liSampleDuration;
-                QRectF rect(QPointF(sPos, 0), QPointF(ePos, height()-1));
-                paint.drawRect(rect);
-                paint.setOpacity(1.0);
-            }
-
-            QFont font;
-            font.setBold(false);
-            int textWidth = 8;
-            int textHeight = 10;
-            font.setPixelSize(2*textHeight);
-            paint.setPen(m_qColorMarker);
-            paint.setFont(font);
-
-            for (int i = 0; i < m_hotcues.size(); ++i) {
-                int position = m_hotcues[i];
-                if (position == -1)
-                    continue;
-                fPos = float(position) * (width()-2) / m_liSampleDuration;
-                //qDebug() << "Drawing cue" << i << "at" << fPos;
-
-                paint.drawLine(fPos, 0,
-                               fPos, height());
-                // paint.drawLine(fPos+1, 0,
-                //                fPos+1, height());
-
-                // int halfHeight = height()/2;
-                // QRectF rect(QPointF(fPos-textWidth, halfHeight-textHeight),
-                //             QPointF(fPos+textWidth, halfHeight+textHeight));
-
-                // paint.drawText(rect, Qt::AlignCenter, QString("%1").arg(i+1));
-            }
+            // paint.drawText(rect, Qt::AlignCenter, QString("%1").arg(i+1));
         }
     }
     paint.end();

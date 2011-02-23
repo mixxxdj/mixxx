@@ -17,6 +17,8 @@
 
 #include <QtCore>
 #include <QtDebug>
+#include <QDesktopServices>
+
 #include "soundsourceproxy.h"
 #include "library/legacylibraryimporter.h"
 #include "libraryscanner.h"
@@ -34,14 +36,13 @@ LibraryScanner::LibraryScanner(TrackCollection* collection) :
     nameFilters(SoundSourceProxy::supportedFileExtensionsString().split(" "))
 {
 
-    qDebug() << "Constructed LibraryScanner!!!";
+    qDebug() << "Constructed LibraryScanner";
     resetCancel();
 
-    //Force the GUI thread's TrackInfoObject cache to be cleared
-    //when a library scan is finished, because we might have
-    //modified the database directly when we detected moved files,
-    //and the TIOs corresponding to the moved files would then have the
-    //wrong track location.
+    // Force the GUI thread's TrackInfoObject cache to be cleared when a library
+    // scan is finished, because we might have modified the database directly
+    // when we detected moved files, and the TIOs corresponding to the moved
+    // files would then have the wrong track location.
     connect(this, SIGNAL(scanFinished()),
             &(collection->getTrackDAO()), SLOT(clearCache()));
 
@@ -51,15 +52,20 @@ LibraryScanner::LibraryScanner(TrackCollection* collection) :
      * On Windows, the iTunes folder is contained within the standard music folder
      * Hence, Mixxx will scan the "Album Arts folder" for standard users which is wasting time
      */
-    m_iTunesArtFolder = "";
+    QString iTunesArtFolder = "";
 #if defined(__WINDOWS__)
-		QSettings settings("HKEY_CURRENT_USER\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Shell Folders", QSettings::NativeFormat);
-		// if the value method fails it returns QTDir::homePath
-		m_iTunesArtFolder = settings.value("My Music", QDir::homePath()).toString();
-		m_iTunesArtFolder += "\\iTunes\\Album Artwork";
-		m_iTunesArtFolder.replace(QString("\\"), QString("/"));
+    iTunesArtFolder = QDesktopServices::storageLocation(QDesktopServices::MusicLocation) + "\\iTunes\\Album Artwork";
+    iTunesArtFolder.replace(QString("\\"), QString("/"));
 #elif defined(__APPLE__)
-		m_iTunesArtFolder = QDir::homePath() + "/Music/iTunes/Album Artwork";
+    iTunesArtFolder = QDesktopServices::storageLocation(QDesktopServices::MusicLocation) + "/iTunes/Album Artwork";
+#endif
+    m_directoriesBlacklist << iTunesArtFolder;
+    qDebug() << "iTunes Album Art path is:" << iTunesArtFolder;
+
+#ifdef __WINDOWS__
+    //Blacklist the _Serato_ directory that pollutes "My Music" on Windows.
+    QString seratoDir = QDesktopServices::storageLocation(QDesktopServices::MusicLocation) + "\\_Serato_";
+    m_directoriesBlacklist << seratoDir;
 #endif
 }
 
@@ -102,7 +108,7 @@ LibraryScanner::~LibraryScanner()
 
     //Print out any SQL error, if there was one.
     if (query.lastError().isValid()) {
-     	qDebug() << query.lastError();
+        qDebug() << query.lastError();
     }
 
     QString dir;
@@ -160,15 +166,25 @@ void LibraryScanner::run()
 
     QTime t2;
     t2.start();
-    //Try to upgrade the library from 1.7 (XML) to 1.8+ (DB) if needed
-    LegacyLibraryImporter libImport(m_trackDao, m_playlistDao);
-    connect(&libImport, SIGNAL(progress(QString)),
-            m_pProgress, SLOT(slotUpdate(QString)),
-            Qt::BlockingQueuedConnection);
-    m_database.transaction();
-    libImport.import();
-    m_database.commit();
-    qDebug("Legacy importer took %d ms", t2.elapsed());
+
+    //Try to upgrade the library from 1.7 (XML) to 1.8+ (DB) if needed. If the
+    //upgrade_filename already exists, then do not try to upgrade since we have
+    //already done it.
+    QString upgrade_filename = QDir::homePath().append("/").append(SETTINGS_PATH).append("DBUPGRADED");
+    qDebug() << "upgrade filename is " << upgrade_filename;
+    QFile upgradefile(upgrade_filename);
+    if (!upgradefile.exists())
+    {
+        LegacyLibraryImporter libImport(m_trackDao, m_playlistDao);
+        connect(&libImport, SIGNAL(progress(QString)),
+                m_pProgress, SLOT(slotUpdate(QString)),
+                Qt::BlockingQueuedConnection);
+        m_database.transaction();
+        libImport.import();
+        m_database.commit();
+        qDebug("Legacy importer took %d ms", t2.elapsed());
+
+    }
 
     //Refresh the name filters in case we loaded new
     //SoundSource plugins.
@@ -409,7 +425,7 @@ bool LibraryScanner::recursiveScan(QString dirPath, QList<TrackInfoObject*>& tra
 
         // Skip the iTunes Album Art Folder since it is probably a waste of
         // time.
-        if (nextPath == m_iTunesArtFolder)
+        if (m_directoriesBlacklist.contains(nextPath))
             continue;
 
         if (!recursiveScan(nextPath, tracksToAdd))

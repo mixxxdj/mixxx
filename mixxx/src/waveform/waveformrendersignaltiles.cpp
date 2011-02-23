@@ -144,7 +144,7 @@ void drawTile(Tile* tile, QVector<float>* buffer) {
     }
     painter.end();
 
-    QImage image(tile->pixmap);
+    QImage image = tile->pixmap.toImage();
     image.save(QString("/home/rryan/%1.jpg").arg(tile->start_subpixel));
 
 }

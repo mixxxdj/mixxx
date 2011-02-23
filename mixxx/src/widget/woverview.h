@@ -14,11 +14,9 @@
 
 #include <QPaintEvent>
 #include <QMouseEvent>
-#include <Q3MemArray>
 #include <QPixmap>
 #include <QColor>
 #include <QList>
-#include <q3valuelist.h>
 
 #include "trackinfoobject.h"
 #include "widget/wwidget.h"

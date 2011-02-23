@@ -23,16 +23,18 @@
 #include "configobject.h"
 #include "trackinfoobject.h"
 #include "library/libraryview.h"
+class TrackCollection;
 
 #define MIXXX_PROMO_HTML_LOCATION "promo/promotracks.html"
 
 class BundledSongsWebView : public QWebView, public LibraryView
 {
-    Q_OBJECT 
+    Q_OBJECT
     Q_PROPERTY(bool m_statTracking READ statTracking WRITE setStatTracking)
     Q_PROPERTY(bool m_bFirstRun READ firstRun WRITE setFirstRun)
     public:
-        BundledSongsWebView(QWidget* parent, QString promoBundlePath, 
+        BundledSongsWebView(QWidget* parent, TrackCollection* trackCollection,
+                           QString promoBundlePath,
                            QString localURL, bool firstRun,
                            ConfigObject<ConfigValue>* config);
         ~BundledSongsWebView();
@@ -46,7 +48,7 @@ class BundledSongsWebView : public QWebView, public LibraryView
 
         bool firstRun() const;
 
-    public slots: 
+    public slots:
         void handleClickedLink(const QUrl& url);
         void attachObjects();
         void setStatTracking(bool statTracking);
@@ -56,7 +58,7 @@ class BundledSongsWebView : public QWebView, public LibraryView
 
     signals:
         void loadTrack(TrackPointer pTrack);
-        void loadTrackToPlayer(TrackPointer pTrack, int player);
+        void loadTrackToPlayer(TrackPointer pTrack, QString group);
     protected:
         //virtual QString userAgentForUrl (const QUrl & url) const;
 
@@ -67,7 +69,8 @@ class BundledSongsWebView : public QWebView, public LibraryView
         bool m_statTracking;
         bool m_bFirstRun;
         ConfigObject<ConfigValue>* m_pConfig;
+        TrackCollection* m_pTrackCollection;
 };
 
 
-#endif //__BUNDLEDSONGSWEBVIEW_H_ 
+#endif //__BUNDLEDSONGSWEBVIEW_H_

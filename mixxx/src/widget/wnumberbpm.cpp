@@ -24,7 +24,7 @@
 
 WNumberBpm::WNumberBpm(const char * group, QWidget * parent) : WNumber(parent)
 {
-    m_qsText = "BPM: ";
+    m_qsText = "";
     m_pRateControl = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey(group, "rate")));
     m_pRateDirControl = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey(group, "rate_dir")));
     m_pRateRangeControl = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey(group, "rateRange")));
@@ -61,3 +61,15 @@ void WNumberBpm::setValue(double)
     WNumber::setValue(bpm*rate);
 }
 
+
+void WNumberBpm::slotTrackLoaded(TrackPointer track) {
+    connect(track.data(), SIGNAL(bpmUpdated(double)),
+            this, SLOT(setValue(double)));
+    float fBpm = track->getBpm();
+    if (fBpm > 0)
+        setValue(fBpm);
+}
+
+void WNumberBpm::slotTrackUnloaded(TrackPointer track) {
+    setValue(0);
+}

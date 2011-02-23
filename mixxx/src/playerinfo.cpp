@@ -14,8 +14,9 @@
  *                                                                         *
  ***************************************************************************/
 
+#include <QMutexLocker>
+
 #include "playerinfo.h"
-#include "trackinfoobject.h"
 
 PlayerInfo &PlayerInfo::Instance()
 {
@@ -23,45 +24,27 @@ PlayerInfo &PlayerInfo::Instance()
     return playerInfo;
 }
 
-PlayerInfo::PlayerInfo()
-        : m_pTrack1(),
-          m_pTrack2() {
+PlayerInfo::PlayerInfo() {
 }
 
 PlayerInfo::~PlayerInfo()
 {
+    m_loadedTrackMap.clear();
 }
 
-TrackPointer PlayerInfo::getTrackInfo(int track)
+TrackPointer PlayerInfo::getTrackInfo(QString group)
 {
-    TrackPointer pRet;
-    m_mutex.lock();
-    switch (track)
-    {
-    case 1:
-        pRet = m_pTrack1;
-        break;
-    case 2:
-        pRet = m_pTrack2;
-        break;
-    default:
-        // incorrect track number
-        break;
+    QMutexLocker locker(&m_mutex);
+
+    if (m_loadedTrackMap.contains(group)) {
+        return m_loadedTrackMap[group];
     }
-    m_mutex.unlock();
-    return pRet;
+
+    return TrackPointer();
 }
 
-void PlayerInfo::setTrackInfo(int track, TrackPointer trackInfoObj)
+void PlayerInfo::setTrackInfo(QString group, TrackPointer track)
 {
-    m_mutex.lock();
-    switch (track) {
-        case 1:
-            m_pTrack1 = trackInfoObj;
-            break;
-        case 2:
-            m_pTrack2 = trackInfoObj;
-            break;
-    };
-    m_mutex.unlock();
+    QMutexLocker locker(&m_mutex);
+    m_loadedTrackMap[group] = track;
 }

@@ -1,4 +1,4 @@
-Mixxx 1.8.0
+Mixxx 1.9.0
 
 * HOMEPAGE *************************************************
 http://www.mixxx.org
@@ -39,6 +39,7 @@ Mixxx has the following dependencies:
 - libvorbis
 - libvorbisfile
 - libsndfile
+- taglib (New in 1.9!)
 - PortAudio-v19
 - portmidi
 - QT 4.5+

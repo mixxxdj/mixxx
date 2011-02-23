@@ -36,8 +36,6 @@ WDisplay::~WDisplay()
 
 void WDisplay::setup(QDomNode node)
 {
-    WWidget::setup(node);
-
     // Number of states
     setPositions(selectNodeInt(node, "NumberStates"));
 

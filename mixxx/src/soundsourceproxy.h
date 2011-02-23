@@ -18,7 +18,11 @@
 #ifndef SOUNDSOURCEPROXY_H
 #define SOUNDSOURCEPROXY_H
 
+#include <QMap>
 #include <QMutex>
+#include <QString>
+#include <QLibrary>
+
 #include "soundsource.h"
 #include "trackinfoobject.h"
 
@@ -49,6 +53,7 @@ public:
     /** Returns filename */
     QString getFilename();
     static QList<QString> supportedFileExtensions();
+    static QList<QString> supportedFileExtensionsByPlugins();
     static QString supportedFileExtensionsString();
     static QString supportedFileExtensionsRegex();
 
@@ -59,6 +64,7 @@ private:
 
     SoundSource *m_pSoundSource;
     TrackPointer m_pTrack;
+
     static QMap<QString, QLibrary*> m_plugins;
     static QMap<QString, getSoundSourceFunc> m_extensionsSupportedByPlugins;
     static QMutex m_extensionsMutex;

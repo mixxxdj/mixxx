@@ -14,6 +14,8 @@
 *                                                                         *
 ***************************************************************************/
 
+#include <taglib/vorbisfile.h>
+
 #include "trackinfoobject.h"
 #include "soundsourceoggvorbis.h"
 #include <QtDebug>
@@ -225,94 +227,22 @@ unsigned SoundSourceOggVorbis::read(volatile unsigned long size, const SAMPLE * 
  */
 int SoundSourceOggVorbis::parseHeader()
 {
-    QString filename = this->getFilename();
-    QByteArray qBAFilename = filename.toUtf8();
-    vorbis_comment *comment = NULL;
+    setType("ogg");
+    TagLib::Ogg::Vorbis::File f(getFilename().toUtf8().constData());
 
-#ifdef __WINDOWS__
-    if (ov_fopen(qBAFilename.data(), &vf) < 0) {
-        qDebug() << "oggvorbis::ParseHeader : Input does not appear to be an Ogg bitstream.";
-        return ERR;
-    }
-#else
-    FILE * vorbisfile = fopen(qBAFilename.data(), "r");
+    // Takes care of all the default metadata
+    bool result = processTaglibFile(f);
 
-    if (!vorbisfile) {
-        qDebug() << "oggvorbis::ParseHeader : file cannot be opened.\n";
-        return ERR;
+
+    TagLib::Ogg::XiphComment *tag = f.tag();
+
+    if (tag) {
+        processXiphComment(tag);
     }
 
-    if (ov_open(vorbisfile, &vf, NULL, 0) < 0) {
-        qDebug() << "oggvorbis::ParseHeader : Input does not appear to be an Ogg bitstream.\n";
-		fclose(vorbisfile);	//should be closed if ov_open fails
-        return ERR;
-    }
-#endif
-
-    comment = ov_comment(&vf, -1);
-    if (comment == NULL) {
-        qDebug() << "oggvorbis: fatal error reading file.";
-        ov_clear(&vf);
-        return ERR;
-    }
-
-    //precache
-    const char* title_p = vorbis_comment_query(comment, (char*)"title", 0); //the char* cast is to shut up the compiler; libvorbis should take `const char*` here but I don't expect us to get them to change that -kousu 2009/02
-    const char* artist_p = vorbis_comment_query(comment, (char*)"artist", 0);
-    const char* bpm_p = vorbis_comment_query(comment, (char*)"TBPM", 0);
-    const char* album_p = vorbis_comment_query(comment, (char*)"album", 0);
-    const char* year_p = vorbis_comment_query(comment, (char*)"date", 0);
-    const char* genre_p = vorbis_comment_query(comment, (char*)"genre", 0);
-    const char* track_p = vorbis_comment_query(comment, (char*)"tracknumber", 0);
-    const char* comment_p = vorbis_comment_query(comment, (char*)"description", 0);
-
-    if(title_p)
-        setTitle(QString::fromUtf8(title_p));
-    if(artist_p)
-        setArtist(QString::fromUtf8(artist_p));
-    if(album_p)
-        setAlbum(QString::fromUtf8(album_p));
-    if(year_p)
-        setYear(QString::fromUtf8(year_p));
-    if(genre_p)
-        setGenre(QString::fromUtf8(genre_p));
-    if(track_p)
-        setTrackNumber(QString::fromUtf8(track_p));
-    if (comment_p)
-        setComment(QString::fromUtf8(comment_p));
-    if (bpm_p) {
-        float bpm = str2bpm(bpm_p);
-        if(bpm > 0.0f) {
-            this->setBPM(bpm);
-            //Track->setBpmConfirm(true);
-        }
-    }
-    //this->setHeaderParsed(true);
-
-    this->setType("ogg");
-    int duration = (int)ov_time_total(&vf, -1);
-    if (duration == OV_EINVAL) {
-		ov_clear(&vf);	//close on return !
-        return ERR;
-    }
-    this->setDuration(duration);
-    this->setBitrate(ov_bitrate(&vf, -1)/1000);
-
-    vorbis_info *vi=ov_info(&vf,-1);
-    if (vi)
-    {
-        this->setSampleRate(vi->rate);
-        this->setChannels(vi->channels);
-    }
-    else
-    {
-        qDebug() << "oggvorbis::parseHeader : fatal error reading file.";
-        ov_clear(&vf);
-        return ERR;
-    }
-
-    ov_clear(&vf);
-    return OK;
+    if (result)
+        return OK;
+    return ERR;
 }
 
 /*

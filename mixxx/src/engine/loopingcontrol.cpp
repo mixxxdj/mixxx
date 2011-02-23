@@ -24,17 +24,20 @@ LoopingControl::LoopingControl(const char * _group,
     //Create loop-in, loop-out, and reloop/exit ControlObjects
     m_pLoopInButton = new ControlPushButton(ConfigKey(_group, "loop_in"));
     connect(m_pLoopInButton, SIGNAL(valueChanged(double)),
-            this, SLOT(slotLoopIn(double)));
+            this, SLOT(slotLoopIn(double)),
+            Qt::DirectConnection);
     m_pLoopInButton->set(0);
 
     m_pLoopOutButton = new ControlPushButton(ConfigKey(_group, "loop_out"));
     connect(m_pLoopOutButton, SIGNAL(valueChanged(double)),
-            this, SLOT(slotLoopOut(double)));
+            this, SLOT(slotLoopOut(double)),
+            Qt::DirectConnection);
     m_pLoopOutButton->set(0);
 
     m_pReloopExitButton = new ControlPushButton(ConfigKey(_group, "reloop_exit"));
     connect(m_pReloopExitButton, SIGNAL(valueChanged(double)),
-            this, SLOT(slotReloopExit(double)));
+            this, SLOT(slotReloopExit(double)),
+            Qt::DirectConnection);
     m_pReloopExitButton->set(0);
 
 
@@ -45,13 +48,15 @@ LoopingControl::LoopingControl(const char * _group,
             new ControlObject(ConfigKey(_group, "loop_start_position"));
     m_pCOLoopStartPosition->set(kNoTrigger);
     connect(m_pCOLoopStartPosition, SIGNAL(valueChanged(double)),
-            this, SLOT(slotLoopStartPos(double)));
+            this, SLOT(slotLoopStartPos(double)),
+            Qt::DirectConnection);
 
     m_pCOLoopEndPosition =
             new ControlObject(ConfigKey(_group, "loop_end_position"));
     m_pCOLoopEndPosition->set(kNoTrigger);
     connect(m_pCOLoopEndPosition, SIGNAL(valueChanged(double)),
-            this, SLOT(slotLoopEndPos(double)));
+            this, SLOT(slotLoopEndPos(double)),
+            Qt::DirectConnection);
 }
 
 LoopingControl::~LoopingControl() {

@@ -16,7 +16,7 @@ TrackCollection::TrackCollection(ConfigObject<ConfigValue>* pConfig)
           m_db(QSqlDatabase::addDatabase("QSQLITE")),
           m_playlistDao(m_db),
           m_cueDao(m_db),
-          m_trackDao(m_db, m_cueDao),
+          m_trackDao(m_db, m_cueDao, pConfig),
           m_crateDao(m_db),
           m_supportedFileExtensionsRegex(SoundSourceProxy::supportedFileExtensionsRegex(),
                                          Qt::CaseInsensitive)
@@ -44,6 +44,9 @@ TrackCollection::~TrackCollection()
 {
     // Save all tracks that haven't been saved yet.
     m_trackDao.saveDirtyTracks();
+    // TODO(XXX) Maybe fold saveDirtyTracks into TrackDAO::finish now that it
+    // exists? -- rryan 10/2010
+    m_trackDao.finish();
 
     Q_ASSERT(!m_db.rollback()); //Rollback any uncommitted transaction
     //The above is an ASSERT because there should never be an outstanding
@@ -56,24 +59,23 @@ TrackCollection::~TrackCollection()
 bool TrackCollection::checkForTables()
 {
     if (!m_db.open()) {
-        QMessageBox::critical(0, qApp->tr("Cannot open database"),
-                              qApp->tr("Unable to establish a database connection.\n"
-                                       "Mixxx requires QT with SQLite support. Please read "
-                                       "the Qt SQL driver documentation for information on how "
-                                       "to build it.\n\n"
-                                       "Click OK to exit."), QMessageBox::Ok);
+        QMessageBox::critical(0, tr("Cannot open database"),
+                              tr("Unable to establish a database connection.\n"
+                                 "Mixxx requires QT with SQLite support. Please read "
+                                 "the Qt SQL driver documentation for information on how "
+                                 "to build it.\n\n"
+                                 "Click OK to exit."), QMessageBox::Ok);
         return false;
     }
 
-    int requiredSchemaVersion = 5;
+    int requiredSchemaVersion = 10;
     if (!SchemaManager::upgradeToSchemaVersion(m_pConfig, m_db,
                                                requiredSchemaVersion)) {
-        QMessageBox::warning(0, qApp->tr("Cannot upgrade database schema"),
-                              qApp->tr(QString(
-                                  "Unable to upgrade your database schema to version %1.\n"
-                                  "Your mixxx.db file may be corrupt.\n"
-                                  "Try renaming it and restarting Mixxx.\n\n"
-                                  "Click OK to exit.").arg(requiredSchemaVersion)),
+        QMessageBox::warning(0, tr("Cannot upgrade database schema"),
+                             tr("Unable to upgrade your database schema to version %1.\n"
+                                "Your mixxx.db file may be corrupt.\n"
+                                "Try renaming it and restarting Mixxx.\n\n"
+                                "Click OK to exit.").arg(requiredSchemaVersion),
                              QMessageBox::Ok);
         return false;
     }

@@ -40,8 +40,6 @@ WKnob::~WKnob()
 
 void WKnob::setup(QDomNode node)
 {
-    WWidget::setup(node);
-
     // Set background pixmap if available
     if (!selectNode(node, "BackPath").isNull())
         setPixmapBackground(getPath(selectNodeQString(node, "BackPath")));
@@ -152,7 +150,7 @@ void WKnob::mouseReleaseEvent(QMouseEvent * e)
 }
 
 void WKnob::wheelEvent(QWheelEvent *e)
-{   
+{
     double wheelDirection = ((QWheelEvent *)e)->delta() / 120.;
     double newValue = getValue() + (wheelDirection);
     this->updateValue(newValue);

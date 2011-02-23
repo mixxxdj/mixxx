@@ -7,8 +7,6 @@
 #include "controlobject.h"
 #include "mididevice.h"
 
-#include <q3ptrlist.h>
-
 class MidiLedHandler : QObject
 {
     Q_OBJECT
@@ -19,7 +17,7 @@ public:
 
 	static void createHandlers(QDomNode node, MidiDevice & midi);
 	static void destroyHandlers();
-	static Q3PtrList<MidiLedHandler> allhandlers;
+	static QList<MidiLedHandler*> allhandlers;
 
 public slots:
 	void controlChanged(double value);

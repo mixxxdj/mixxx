@@ -19,6 +19,8 @@
 #define WNUMBERBPM_H
 
 #include "wnumber.h"
+#include "trackinfoobject.h"
+
 class ControlObjectThreadMain;
 
 /**
@@ -29,11 +31,13 @@ class WNumberBpm : public WNumber
     Q_OBJECT
 public:
     WNumberBpm(const char *group, QWidget *parent = 0);
-    ~WNumberBpm();
+    virtual ~WNumberBpm();
 
 public slots:
     /** Sets the value */
     void setValue(double dValue);
+    void slotTrackLoaded(TrackPointer track);
+    void slotTrackUnloaded(TrackPointer track);
 
 private:
     /** Pointer to control object for rate */

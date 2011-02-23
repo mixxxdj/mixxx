@@ -22,7 +22,7 @@
 #include <qobject.h>
 #include <qmutex.h>
 #include <qwaitcondition.h>
-#include <q3ptrqueue.h>
+#include <QQueue>
 
 class ControlObject;
 
@@ -93,7 +93,7 @@ private:
     /** Wait condition, used to wait for changes */
     static QWaitCondition m_sqWait;
     /** Queue used to keep changes */
-    static Q3PtrQueue<ControlObjectThread> m_sqQueue;
+    static QQueue<ControlObjectThread*> m_sqQueue;
 };
 
 #endif

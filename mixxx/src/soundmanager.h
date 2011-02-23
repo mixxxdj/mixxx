@@ -24,10 +24,13 @@
 #ifdef __VINYLCONTROL__
 #include "vinylcontrolproxy.h"
 #endif
+#include "soundmanagerconfig.h"
 #include <QTimer>
 
 class SoundDevice;
 class EngineMaster;
+class AudioOutput;
+class AudioInput;
 
 #define MIXXX_PORTAUDIO_JACK_STRING "JACK Audio Connection Kit"
 #define MIXXX_PORTAUDIO_ALSA_STRING "ALSA"
@@ -36,33 +39,6 @@ class EngineMaster;
 #define MIXXX_PORTAUDIO_DIRECTSOUND_STRING "Windows DirectSound"
 #define MIXXX_PORTAUDIO_COREAUDIO_STRING "Core Audio"
 
-#define MAX_AUDIOSOURCE_TYPES 4	//Keep this up to date with the enum below... I don't know how to do this automagically
-enum AudioSourceType { 
-    SOURCE_MASTER = 0,
-    SOURCE_HEADPHONES = 1,
-	SOURCE_PLAYER1 = 2,
-	SOURCE_PLAYER2 = 3
-};
-
-typedef struct _AudioSource {
-	AudioSourceType type;
-	int channelBase;	//Base channel on the audio device
-	int channels;		//total channels (e.g. 2 for stereo)
-} AudioSource;
-
-#define MAX_AUDIORECEIVER_TYPES 3	//Keep this up to date with the enum below... I don't know how to do this automagically
-enum AudioReceiverType {
-    RECEIVER_VINYLCONTROL_ONE = 0,
-    RECEIVER_VINYLCONTROL_TWO = 1,
-    RECEIVER_MICROPHONE = 2
-};
-
-typedef struct _AudioReceiver {
-	AudioReceiverType type;
-	int channelBase;	//Base channel on the audio device
-	int channels;		//total channels (e.g. 2 for stereo)
-} AudioReceiver;
-
 class SoundManager : public QObject
 {
     Q_OBJECT
@@ -70,39 +46,48 @@ class SoundManager : public QObject
     public:
         SoundManager(ConfigObject<ConfigValue> *pConfig, EngineMaster *_master);
         ~SoundManager();
+        const EngineMaster* getEngine() const;
         QList<SoundDevice*> getDeviceList(QString filterAPI, bool bOutputDevices, bool bInputDevices);
         void closeDevices();
         void clearDeviceList();
         void queryDevices();
         int setupDevices();
-        void setDefaults(bool api=true, bool devices=true, bool other=true);
-        QList<QString> getSamplerateList();
-        QList<QString> getHostAPIList();
-        int setHostAPI(QString api);
-        QString getHostAPI();
-        CSAMPLE** requestBuffer(QList<AudioSource> srcs, unsigned long iFramesPerBuffer);
-        CSAMPLE* pushBuffer(QList<AudioReceiver> recvs, short *inputBuffer, 
-                            unsigned long iFramesPerBuffer, unsigned int iFrameSize);
+        SoundDevice* getErrorDevice() const;
+        QList<unsigned int> getSampleRates(QString api) const;
+        QList<unsigned int> getSampleRates() const;
+        QList<QString> getHostAPIList() const;
+        SoundManagerConfig getConfig() const;
+        int setConfig(SoundManagerConfig config);
+        void checkConfig();
+        QHash<AudioOutput, const CSAMPLE*>
+            requestBuffer(QList<AudioOutput> outputs, unsigned long iFramesPerBuffer);
+        void pushBuffer(QList<AudioInput> inputs, short *inputBuffer, 
+                        unsigned long iFramesPerBuffer, unsigned int iFrameSize);
+    signals:
+        void devicesUpdated(); // emitted when all the pointers to SoundDevices go stale
     public slots:
         void sync();
     private:
         EngineMaster *m_pMaster;
         ConfigObject<ConfigValue> *m_pConfig;
         QList<SoundDevice*> m_devices;
-        QList<QString> m_samplerates;
+        QList<unsigned int> m_samplerates;
         QString m_hostAPI;
-        //CSAMPLE *m_pMasterBuffer;
-        //CSAMPLE *m_pHeadphonesBuffer;
-        CSAMPLE *m_pStreamBuffers[MAX_AUDIOSOURCE_TYPES];
-        short *m_pReceiverBuffers[MAX_AUDIORECEIVER_TYPES]; /** Audio received from input */
+        QHash<AudioOutput, const CSAMPLE*> m_outputBuffers;
+        QHash<AudioInput, short*> m_inputBuffers; /** Audio received from input */
 #ifdef __VINYLCONTROL__
-        VinylControlProxy *m_VinylControl[2];
+        QList<VinylControlProxy*> m_VinylControl;
 #endif        
         unsigned int iNumDevicesOpenedForOutput;
         unsigned int iNumDevicesOpenedForInput;
         unsigned int iNumDevicesHaveRequestedBuffer;
         QMutex requestBufferMutex;
-        QTimer m_controlObjSyncTimer;
+        SoundManagerConfig m_config;
+        SoundDevice *m_pErrorDevice;
+#ifdef __PORTAUDIO__
+        bool m_paInitialized;
+        unsigned int m_jackSampleRate;
+#endif
 };
 
 #endif

@@ -16,6 +16,11 @@ HerculesMk2.buttons123used = {"[Channel1]": false, "[Channel1]": false};
 // should directed to each group without thinking about specific controls 
 // to allow for easy rebinding.
 
+HerculesMk2.cueLastDate1 = {"[Channel1]": 0, "[Channel2]" : 0};
+HerculesMk2.cueLastDate2 = {"[Channel1]": 0, "[Channel2]" : 0};
+HerculesMk2.cueLastDate3 = {"[Channel1]": 0, "[Channel2]" : 0};
+HerculesMk2.cueLongTime = 500;
+
 HerculesMk2.controls = {
     "inputs": {
 	0x09: { "channel": 1, "name": "cue", "type": "button" },
@@ -250,6 +255,45 @@ HerculesMk2.buttons123 = function (group, control, value, status) {
 	break; // End fx mode
 
     case "cue": 
+	if (value){
+		switch (HerculesMk2.controls.inputs[control].name) {
+		    case "fx 1":
+			HerculesMk2.cueLastDate1[group] = new Date().getTime();
+			break;
+		    case "fx 2":
+			HerculesMk2.cueLastDate2[group] = new Date().getTime();
+			break;
+		    case "fx 3":
+			HerculesMk2.cueLastDate3[group] = new Date().getTime();
+			break;
+		}
+	}
+	if (!value){
+		currentDate = new Date().getTime();
+		switch (HerculesMk2.controls.inputs[control].name) {
+		    case "fx 1":
+			if (currentDate - HerculesMk2.cueLastDate1[group] < HerculesMk2.cueLongTime)
+				engine.setValue(group,"hotcue_1_activate",1)
+			else
+				engine.setValue(group,"hotcue_1_clear",1)
+			break;
+		    case "fx 2":
+			if (currentDate - HerculesMk2.cueLastDate2[group] < HerculesMk2.cueLongTime)
+				engine.setValue(group,"hotcue_2_activate",1)
+			else
+				engine.setValue(group,"hotcue_2_clear",1)
+			break;
+		    case "fx 3":
+			if (currentDate - HerculesMk2.cueLastDate3[group] < HerculesMk2.cueLongTime)
+				engine.setValue(group,"hotcue_3_activate",1)
+			else
+				engine.setValue(group,"hotcue_3_clear",1)
+			break;
+		}
+
+	}
+	break;
+
     case "loop":
         if (value) { // Button pressed.
             switch (HerculesMk2.controls.inputs[control].name) {
@@ -289,8 +333,10 @@ HerculesMk2.buttons123mode = function (group, control, value, status) {
 	    print("HerculesMk2.buttons123mode: Switching to " + sNextMode + " mode");
 	    break;
 	case "cue": 
+	    print("HerculesMk2.buttons123mode: Switching to " + sNextMode + " mode");
+	    break;
 	case "loop":
-	    print("HerculesMk2.buttons123mode: " + sNextMode + " mode not supported yet");
+	    print("HerculesMk2.buttons123mode: Switching to " + sNextMode + " mode");
 	    break;
 	default:
 	    print("HerculesMk2.buttons123mode: Switching to " + sNextMode + " mode");

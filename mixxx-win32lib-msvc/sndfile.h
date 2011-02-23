@@ -1,5 +1,5 @@
 /*
-** Copyright (C) 1999-2009 Erik de Castro Lopo <erikd@mega-nerd.com>
+** Copyright (C) 1999-2010 Erik de Castro Lopo <erikd@mega-nerd.com>
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU Lesser General Public License as published by
@@ -221,7 +221,9 @@ enum
 	SF_STR_COMMENT					= 0x05,
 	SF_STR_DATE						= 0x06,
 	SF_STR_ALBUM					= 0x07,
-	SF_STR_LICENSE					= 0x08
+	SF_STR_LICENSE					= 0x08,
+	SF_STR_TRACKNUMBER				= 0x09,
+	SF_STR_GENRE					= 0x10
 } ;
 
 /*
@@ -294,7 +296,7 @@ enum
 	SF_CHANNEL_MAP_AMBISONIC_B_Y,
 	SF_CHANNEL_MAP_AMBISONIC_B_Z,
 
-	SF_CHANNEL_MAP_MAX,
+	SF_CHANNEL_MAP_MAX
 } ;
 
 
@@ -303,7 +305,7 @@ enum
 typedef	struct SNDFILE_tag	SNDFILE ;
 
 /* The following typedef is system specific and is defined when libsndfile is
-** compiled. sf_count_t can be one of loff_t (Linux), off_t (*BSD), off64_t 
+** compiled. sf_count_t can be one of loff_t (Linux), off_t (*BSD), off64_t
 ** (Solaris), __int64 (Win32) etc. On windows, we need to allow the same
 ** header file to be compiler by both GCC and the microsoft compiler.
 */

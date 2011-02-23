@@ -62,9 +62,8 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
     file_length_old(-1),
     file_srate_old(0),
     m_iSamplesCalculated(0),
-    m_dAbsPlaypos(0.),
     m_pTrackEnd(NULL),
-    m_pTrackEndMode(NULL),
+    m_pRepeat(NULL),
     startButton(NULL),
     endButton(NULL),
     m_pScale(NULL),
@@ -72,46 +71,55 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
     m_pScaleST(NULL),
     m_bScalerChanged(false),
     m_fLastSampleValue(0.),
-    m_bLastBufferPaused(true),
-    m_bResetPitchIndpTimeStretch(true) {
+    m_bLastBufferPaused(true) {
+
 
     // Play button
     playButton = new ControlPushButton(ConfigKey(group, "play"));
     playButton->setToggleButton(true);
     connect(playButton, SIGNAL(valueChanged(double)),
-            this, SLOT(slotControlPlay(double)));
-    playButton->set(0);
+            this, SLOT(slotControlPlay(double)),
+            Qt::DirectConnection);
     playButtonCOT = new ControlObjectThreadMain(playButton);
+
+    //Play from Start Button (for sampler)
+    playStartButton = new ControlPushButton(ConfigKey(group, "playstart"));
+    connect(playStartButton, SIGNAL(valueChanged(double)),
+            this, SLOT(slotControlPlayFromStart(double)),
+            Qt::DirectConnection);
+    playStartButton->set(0);
+    playStartButtonCOT = new ControlObjectThreadMain(playStartButton);
+
+    //Stop playback (for sampler)
+    stopButton = new ControlPushButton(ConfigKey(group, "stop"));
+    connect(stopButton, SIGNAL(valueChanged(double)),
+            this, SLOT(slotControlStop(double)),
+            Qt::DirectConnection);
+    stopButton->set(0);
+    stopButtonCOT = new ControlObjectThreadMain(stopButton);
 
     // Start button
     startButton = new ControlPushButton(ConfigKey(group, "start"));
     connect(startButton, SIGNAL(valueChanged(double)),
-            this, SLOT(slotControlStart(double)));
-    startButton->set(0);
+            this, SLOT(slotControlStart(double)),
+            Qt::DirectConnection);
 
     // End button
     endButton = new ControlPushButton(ConfigKey(group, "end"));
     connect(endButton, SIGNAL(valueChanged(double)),
-            this, SLOT(slotControlEnd(double)));
-    endButton->set(0);
+            this, SLOT(slotControlEnd(double)),
+            Qt::DirectConnection);
 
     m_pMasterRate = ControlObject::getControl(ConfigKey("[Master]", "rate"));
 
     // Actual rate (used in visuals, not for control)
     rateEngine = new ControlObject(ConfigKey(group, "rateEngine"));
 
-    // BJW Wheel touch sensor (makes wheel act as scratch)
-    wheelTouchSensor = new ControlPushButton(ConfigKey(group, "wheel_touch_sensor"));
-    // BJW Wheel touch-sens switch (toggles ignoring touch sensor)
-    wheelTouchSwitch = new ControlPushButton(ConfigKey(group, "wheel_touch_switch"));
-    wheelTouchSwitch->setToggleButton(true);
-    // BJW Whether to revert to PitchIndpTimeStretch after scratching
-    m_bResetPitchIndpTimeStretch = false;
-
     // Slider to show and change song position
     playposSlider = new ControlPotmeter(ConfigKey(group, "playposition"), 0., 1.);
     connect(playposSlider, SIGNAL(valueChanged(double)),
-            this, SLOT(slotControlSeek(double)));
+            this, SLOT(slotControlSeek(double)),
+            Qt::DirectConnection);
 
     // Control used to communicate ratio playpos to GUI thread
     visualPlaypos =
@@ -124,20 +132,14 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
     //A COTM for use in slots that are called by the GUI thread.
     m_pTrackEndCOT = new ControlObjectThreadMain(m_pTrackEnd);
 
-    // TrackEndMode determines what to do at the end of a track
-    m_pTrackEndMode = new ControlObject(ConfigKey(group,"TrackEndMode"));
-
-#ifdef __VINYLCONTROL__
-    // Vinyl Control status indicator
-    //Disabled because it's not finished yet
-    //m_pVinylControlIndicator =
-    //    new ControlObject(ConfigKey(group, "VinylControlIndicator"));
-#endif
+    m_pRepeat = new ControlPushButton(ConfigKey(group, "repeat"));
+    m_pRepeat->setToggleButton(true);
 
     // Sample rate
     m_pSampleRate = ControlObject::getControl(ConfigKey("[Master]","samplerate"));
 
     m_pTrackSamples = new ControlObject(ConfigKey(group, "track_samples"));
+    m_pTrackSampleRate = new ControlObject(ConfigKey(group, "track_samplerate"));
 
     // Create the Loop Controller
     m_pLoopingControl = new LoopingControl(_group, _config);
@@ -156,9 +158,11 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
 
     m_pReader = new CachingReader(_group, _config);
     connect(m_pReader, SIGNAL(trackLoaded(TrackPointer, int, int)),
-            this, SLOT(slotTrackLoaded(TrackPointer, int, int)));
+            this, SLOT(slotTrackLoaded(TrackPointer, int, int)),
+            Qt::DirectConnection);
     connect(m_pReader, SIGNAL(trackLoadFailed(TrackPointer, QString)),
-            this, SLOT(slotTrackLoadFailed(TrackPointer, QString)));
+            this, SLOT(slotTrackLoadFailed(TrackPointer, QString)),
+            Qt::DirectConnection);
 
     m_pReadAheadManager = new ReadAheadManager(m_pReader);
     m_pReadAheadManager->addEngineControl(m_pLoopingControl);
@@ -168,12 +172,19 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
 
     m_pScaleST = new EngineBufferScaleST(m_pReadAheadManager);
     //m_pScaleST = (EngineBufferScaleST*)new EngineBufferScaleDummy(m_pReadAheadManager);
-    //Figure out which one to use (setPitchIndpTimeStretch does this)
-    int iPitchIndpTimeStretch =
-        _config->getValueString(ConfigKey("[Soundcard]","PitchIndpTimeStretch")).toInt();
-    this->setPitchIndpTimeStretch(iPitchIndpTimeStretch);
+    setPitchIndpTimeStretch(false); // default to VE, let the user specify PITS in their mix
 
     setNewPlaypos(0.);
+
+    m_pKeylock = new ControlPushButton(ConfigKey(group, "keylock"));
+    m_pKeylock->setToggleButton(true);
+    m_pKeylock->set(false);
+
+    m_pEject = new ControlPushButton(ConfigKey(group, "eject"));
+    connect(m_pEject, SIGNAL(valueChanged(double)),
+            this, SLOT(slotEjectTrack(double)),
+            Qt::DirectConnection);
+
 }
 
 EngineBuffer::~EngineBuffer()
@@ -185,27 +196,30 @@ EngineBuffer::~EngineBuffer()
     delete m_pReader;
 
     delete playButton;
+    delete playStartButton;
     delete startButton;
     delete endButton;
     delete rateEngine;
-    delete wheelTouchSensor;
-    delete wheelTouchSwitch;
     delete playposSlider;
     delete visualPlaypos;
 
     delete m_pTrackEnd;
-    delete m_pTrackEndMode;
+
+    delete m_pRepeat;
 
     delete m_pTrackSamples;
+    delete m_pTrackSampleRate;
 
     delete m_pScaleLinear;
     delete m_pScaleST;
 
+    delete m_pKeylock;
+    delete m_pEject;
 }
 
 void EngineBuffer::setPitchIndpTimeStretch(bool b)
 {
-    pause.lock(); //Just to be safe - Albert
+    // MUST ACQUIRE THE PAUSE MUTEX BEFORE CALLING THIS METHOD
 
     // Change sound scale mode
 
@@ -227,7 +241,6 @@ void EngineBuffer::setPitchIndpTimeStretch(bool b)
         m_pScale = m_pScaleLinear;
     }
     m_bScalerChanged = true;
-    pause.unlock();
 }
 
 double EngineBuffer::getBpm()
@@ -278,14 +291,18 @@ double EngineBuffer::getRate()
     return m_pRateControl->getRawRate();
 }
 
+// WARNING: Always called from the EngineWorker thread pool
 void EngineBuffer::slotTrackLoaded(TrackPointer pTrack,
                                    int iTrackSampleRate,
                                    int iTrackNumSamples) {
     pause.lock();
+    m_pCurrentTrack = pTrack;
     file_srate_old = iTrackSampleRate;
     file_length_old = iTrackNumSamples;
     m_pTrackSamples->set(iTrackNumSamples);
+    m_pTrackSampleRate->set(iTrackSampleRate);
     slotControlSeek(0.);
+
 
     // Let the engine know that a track is loaded now.
     m_pTrackEndCOT->slotSet(0.0f); //XXX: Not sure if to use the COT or CO here
@@ -295,19 +312,30 @@ void EngineBuffer::slotTrackLoaded(TrackPointer pTrack,
     emit(trackLoaded(pTrack));
 }
 
+// WARNING: Always called from the EngineWorker thread pool
 void EngineBuffer::slotTrackLoadFailed(TrackPointer pTrack,
                                        QString reason) {
+    ejectTrack();
+    emit(trackLoadFailed(pTrack, reason));
+}
+
+void EngineBuffer::ejectTrack() {
     pause.lock();
+    TrackPointer pTrack = m_pCurrentTrack;
+    m_pCurrentTrack.clear();
     file_srate_old = 0;
     file_length_old = 0;
     playButton->set(0.0);
     slotControlSeek(0.);
     m_pTrackSamples->set(0);
+    m_pTrackSampleRate->set(0);
     pause.unlock();
-    emit(trackLoadFailed(pTrack, reason));
+
+    emit(trackUnloaded(pTrack));
 }
 
 
+// WARNING: This method runs in both the GUI thread and the Engine Thread
 void EngineBuffer::slotControlSeek(double change)
 {
     if(isnan(change) || change > 1.0 || change < 0.0) {
@@ -339,6 +367,7 @@ void EngineBuffer::slotControlSeek(double change)
     setNewPlaypos(new_playpos);
 }
 
+// WARNING: This method runs in both the GUI thread and the Engine Thread
 void EngineBuffer::slotControlSeekAbs(double abs)
 {
     slotControlSeek(abs/file_length_old);
@@ -358,6 +387,17 @@ void EngineBuffer::slotControlEnd(double)
     slotControlSeek(1.);
 }
 
+void EngineBuffer::slotControlPlayFromStart(double)
+{
+    slotControlSeek(0.);
+    playButton->set(1);
+}
+
+void EngineBuffer::slotControlStop(double)
+{
+    playButton->set(0);
+}
+
 void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBufferSize)
 {
 
@@ -367,7 +407,7 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
     // - Scale the audio with m_pScale, copy the resulting samples into the
     //   output buffer
     // - Give EngineControl's a chance to do work / request seeks, etc
-    // - Process EndOfTrack mode if we're at the end of a track
+    // - Process repeat mode if we're at the end or beginning of a track
     // - Set last sample value (m_fLastSampleValue) so that rampOut works? Other
     //   miscellaneous upkeep issues.
 
@@ -376,49 +416,20 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
     bool bCurBufferPaused = false;
 
     if (!m_pTrackEnd->get() && pause.tryLock()) {
+
+        if (m_pKeylock->get() && m_pScale != m_pScaleST) {
+            setPitchIndpTimeStretch(true);
+        } else if (!m_pKeylock->get() && m_pScale == m_pScaleST) {
+            setPitchIndpTimeStretch(false);
+        }
+
         float sr = m_pSampleRate->get();
+
         double baserate = 0.0f;
         if (sr > 0)
             baserate = ((double)file_srate_old/sr);
 
-        // Is a touch sensitive wheel being touched?
-        bool wheelTouchSensorEnabled = wheelTouchSwitch->get() && wheelTouchSensor->get();
-
-        bool paused = false;
-
-        if (!playButton->get())
-            paused = true;
-
-        if (wheelTouchSensorEnabled) {
-            paused = true;
-        }
-
-        // TODO(rryan) : review this touch sensitive business with the Mixxx
-        // team to see if this is what we actually want.
-
-        // BJW: Touch sensitive wheels: If enabled via the Switch, while the top of the wheel is touched it acts
-        // as a "vinyl-like" scratch controller. Playback stops, pitch-independent time stretch is disabled, and
-        // the wheel's motion is amplified to produce a scrub effect. Also note that playback speed factors like
-        // rateSlider and reverseButton are ignored so that the feel of the wheel is always consistent.
-        // TODO: Configurable vinyl stop effect.
-        if (wheelTouchSensorEnabled) {
-            // Act as scratch controller
-            if (m_pConfig->getValueString(ConfigKey("[Soundcard]","PitchIndpTimeStretch")).toInt()) {
-                // Use vinyl-style pitch bending
-                // qDebug() << "Disabling Pitch-Independent Time Stretch for scratching";
-                m_bResetPitchIndpTimeStretch = true;
-                setPitchIndpTimeStretch(false);
-            }
-        } else if (!paused) {
-            // BJW: Reset timestretch mode if required. NB it's intentional that this should not
-            // get reset until playing; this enables released spinbacks in stop mode.
-            if (m_bResetPitchIndpTimeStretch) {
-                setPitchIndpTimeStretch(true);
-                m_bResetPitchIndpTimeStretch = false;
-                // qDebug() << "Re-enabling Pitch-Independent Time Stretch";
-            }
-        }
-
+        bool paused = playButton->get() != 0.0f ? false : true;
 
         double rate = m_pRateControl->calculateRate(baserate, paused);
         //qDebug() << "rate" << rate << " paused" << paused;
@@ -429,7 +440,7 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
 
             //XXX: Trying to force RAMAN to read from correct
             //     playpos when rate changes direction - Albert
-            if ((rate_old <= 0 && rate > 0) ||
+            if (m_bScalerChanged || (rate_old <= 0 && rate > 0) ||
                 (rate_old >= 0 && rate < 0))
             {
                 setNewPlaypos(filepos_play);
@@ -454,14 +465,8 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
             (at_start && backwards) ||
             (at_end && !backwards);
 
-        // If paused, then ramp out.
-        if (bCurBufferPaused) {
-            // If this is the first process() since being paused, then ramp out.
-            if (!m_bLastBufferPaused) {
-                rampOut(pOut, iBufferSize);
-            }
-        // Otherwise, scale the audio.
-        } else { // if (bCurBufferPaused)
+        // If the buffer is not paused, then scale the audio.
+        if (!bCurBufferPaused) {
             CSAMPLE *output;
             double idx;
 
@@ -557,63 +562,30 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
         // external parts of Mixxx to observe its status.
         updateIndicators(rate, iBufferSize);
 
-        // Handle End-Of-Track mode
+        // Handle repeat mode
         at_start = filepos_play <= 0;
         at_end = filepos_play >= file_length_old;
+
+        bool repeat_enabled = m_pRepeat->get() != 0.0f;
 
         bool end_of_track = (at_start && backwards) ||
             (at_end && !backwards);
 
         // If playbutton is pressed, check if we are at start or end of track
-        if ((playButton->get() || (fwdButton->get() || backButton->get())) &&
-            !m_pTrackEnd->get() &&
-            ((at_start && backwards) ||
-             (at_end && !backwards))) {
-
-            // If end of track mode is set to next, signal EndOfTrack to TrackList,
-            // otherwise start looping, pingpong or stop the track
-            int m = (int)m_pTrackEndMode->get();
-            //qDebug() << "end mode " << m;
-            switch (m)
-            {
-            case TRACK_END_MODE_STOP:
-                //qDebug() << "stop";
+        if ((playButton->get() || (fwdButton->get() || backButton->get()))
+            && end_of_track) {
+            if (repeat_enabled) {
+                double seekPosition = at_start ? file_length_old : 0;
+                slotControlSeek(seekPosition);
+            } else {
                 playButton->set(0.);
-                break;
-            case TRACK_END_MODE_NEXT:
-                //m_pTrackEnd->set(1.);
-                playButton->set(0.);
-                emit(loadNextTrack());
-                break;
-
-            case TRACK_END_MODE_LOOP:
-                //qDebug() << "loop";
-                if(filepos_play <= 0)
-                    slotControlSeek(file_length_old);
-                else
-                    slotControlSeek(0.);
-                break;
-/*
-            case TRACK_END_MODE_PING:
-                qDebug() << "Ping not implemented yet";
-
-                if (reverseButton->get())
-                reverseButton->set(0.);
-                else
-                reverseButton->set(1.);
-
-                break;
- */
-            default:
-                qDebug() << "Invalid track end mode: " << m;
             }
         }
 
         // release the pauselock
         pause.unlock();
     } else { // if (!m_pTrackEnd->get() && pause.tryLock()) {
-        if (!m_bLastBufferPaused)
-            rampOut(pOut, iBufferSize);
+        // If we can't get the pause lock then this buffer will be silence.
         bCurBufferPaused = true;
     }
 
@@ -628,6 +600,16 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
         float fStep = pOutput[iLen-1]/(float)iLen;
         for (int i=0; i<iLen; ++i)
             pOutput[i] = fStep*i;
+
+    }
+    // Force ramp out if this is the first buffer to be paused.
+    else if (!m_bLastBufferPaused && bCurBufferPaused) {
+        rampOut(pOut, iBufferSize);
+    }
+    // If the previous buffer was paused and we are currently paused, then
+    // memset the output to zero.
+    else if (m_bLastBufferPaused && bCurBufferPaused) {
+        memset(pOutput, 0, sizeof(pOutput[0])*iBufferSize);
     }
 
     m_bLastBufferPaused = bCurBufferPaused;
@@ -712,6 +694,7 @@ void EngineBuffer::hintReader(const double dRate,
     m_engineLock.unlock();
 }
 
+// WARNING: This method runs in the GUI thread
 void EngineBuffer::slotLoadTrack(TrackPointer pTrack) {
     // Raise the track end flag so the EngineBuffer stops processing frames
     m_pTrackEndCOT->slotSet(1.0);
@@ -731,11 +714,26 @@ void EngineBuffer::addControl(EngineControl* pControl) {
     m_engineControls.push_back(pControl);
     m_engineLock.unlock();
     connect(pControl, SIGNAL(seek(double)),
-            this, SLOT(slotControlSeek(double)));
+            this, SLOT(slotControlSeek(double)),
+            Qt::DirectConnection);
     connect(pControl, SIGNAL(seekAbs(double)),
-            this, SLOT(slotControlSeekAbs(double)));
+            this, SLOT(slotControlSeekAbs(double)),
+            Qt::DirectConnection);
 }
 
 void EngineBuffer::bindWorkers(EngineWorkerScheduler* pWorkerScheduler) {
     pWorkerScheduler->bindWorker(m_pReader);
+}
+
+bool EngineBuffer::isTrackLoaded() {
+    if (m_pCurrentTrack) {
+        return true;
+    }
+    return false;
+}
+
+void EngineBuffer::slotEjectTrack(double v) {
+    if (v > 0) {
+        ejectTrack();
+    }
 }

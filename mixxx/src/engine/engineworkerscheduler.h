@@ -18,18 +18,13 @@ class EngineWorkerScheduler : public QThreadPool {
     void bindWorker(EngineWorker* pWorker);
 
   private slots:
-    void workerReady(QObject* pWorker);
-    void workerStarted(QObject* pWorker);
-    void workerFinished(QObject* pWorker);
+    void workerReady(EngineWorker* worker);
+    void workerStarted(EngineWorker* worker);
+    void workerFinished(EngineWorker* worker);
 
   private:
     QSet<EngineWorker*> m_scheduledWorkers;
-    QSet<EngineWorker*> m_activeWorkers;
     QMutex m_mutex;
-
-    QSignalMapper m_readyMapper;
-    QSignalMapper m_startedMapper;
-    QSignalMapper m_finishedMapper;
 };
 
 

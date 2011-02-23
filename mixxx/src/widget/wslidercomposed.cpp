@@ -49,9 +49,6 @@ WSliderComposed::~WSliderComposed()
 
 void WSliderComposed::setup(QDomNode node)
 {
-    // Setup position
-    WWidget::setup(node);
-
     // Setup pixmaps
     QString pathSlider = getPath(selectNodeQString(node, "Slider"));
     QString pathHandle = getPath(selectNodeQString(node, "Handle"));
@@ -143,7 +140,7 @@ void WSliderComposed::mouseMoveEvent(QMouseEvent * e)
 }
 
 void WSliderComposed::wheelEvent(QWheelEvent *e)
-{   
+{
     double wheelDirection = ((QWheelEvent *)e)->delta() / 120.;
     double newValue = getValue() + (wheelDirection);
     this->updateValue(newValue);

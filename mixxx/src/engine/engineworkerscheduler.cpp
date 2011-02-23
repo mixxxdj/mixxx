@@ -9,13 +9,6 @@
 
 EngineWorkerScheduler::EngineWorkerScheduler(QObject* pParent)
         : QThreadPool(pParent) {
-
-    connect(&m_readyMapper, SIGNAL(mapped(QObject*)),
-            this, SLOT(workerReady(QObject*)));
-    connect(&m_startedMapper, SIGNAL(mapped(QObject*)),
-            this, SLOT(workerStarted(QObject*)));
-    connect(&m_finishedMapper, SIGNAL(mapped(QObject*)),
-            this, SLOT(workerFinished(QObject*)));
 }
 
 EngineWorkerScheduler::~EngineWorkerScheduler() {
@@ -23,37 +16,28 @@ EngineWorkerScheduler::~EngineWorkerScheduler() {
 }
 
 void EngineWorkerScheduler::bindWorker(EngineWorker* pWorker) {
-    m_readyMapper.setMapping(pWorker, pWorker);
-    m_startedMapper.setMapping(pWorker, pWorker);
-    m_finishedMapper.setMapping(pWorker, pWorker);
-
-    connect(pWorker, SIGNAL(workReady()),
-            &m_readyMapper, SLOT(map()));
-    connect(pWorker, SIGNAL(workStarting()),
-            &m_startedMapper, SLOT(map()));
-    connect(pWorker, SIGNAL(workDone()),
-            &m_finishedMapper, SLOT(map()));
+    connect(pWorker, SIGNAL(workReady(EngineWorker*)),
+            this, SLOT(workerReady(EngineWorker*)),
+            Qt::DirectConnection);
+    connect(pWorker, SIGNAL(workStarting(EngineWorker*)),
+            this, SLOT(workerStarted(EngineWorker*)),
+            Qt::DirectConnection);
+    connect(pWorker, SIGNAL(workDone(EngineWorker*)),
+            this, SLOT(workerFinished(EngineWorker*)),
+            Qt::DirectConnection);
 }
 
-void EngineWorkerScheduler::workerReady(QObject* pObject) {
-    EngineWorker* pWorker = dynamic_cast<EngineWorker*>(pObject);
-    Q_ASSERT(pWorker);
-    QMutexLocker locker(&m_mutex);
-    m_scheduledWorkers.insert(pWorker);
+void EngineWorkerScheduler::workerReady(EngineWorker* pWorker) {
+    if (pWorker) {
+        QMutexLocker locker(&m_mutex);
+        m_scheduledWorkers.insert(pWorker);
+    }
 }
 
-void EngineWorkerScheduler::workerStarted(QObject* pObject) {
-    EngineWorker* pWorker = dynamic_cast<EngineWorker*>(pObject);
-    Q_ASSERT(pWorker);
-    QMutexLocker locker(&m_mutex);
-    m_activeWorkers.insert(pWorker);
+void EngineWorkerScheduler::workerStarted(EngineWorker* pWorker) {
 }
 
-void EngineWorkerScheduler::workerFinished(QObject* pObject) {
-    EngineWorker* pWorker = dynamic_cast<EngineWorker*>(pObject);
-    Q_ASSERT(pWorker);
-    QMutexLocker locker(&m_mutex);
-    m_activeWorkers.remove(pWorker);
+void EngineWorkerScheduler::workerFinished(EngineWorker* pWorker) {
 }
 
 

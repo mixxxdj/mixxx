@@ -18,7 +18,6 @@
 #ifndef CONTROLPUSHBUTTON_H
 #define CONTROLPUSHBUTTON_H
 
-#include <Q3Action>
 #include "controlobject.h"
 #include "defs.h"
 

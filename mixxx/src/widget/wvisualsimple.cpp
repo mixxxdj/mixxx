@@ -19,8 +19,6 @@
 #include "wskincolor.h"
 #include <qpainter.h>
 #include <qpixmap.h>
-#include <q3dragobject.h>
-//Added by qt3to4:
 #include <QDragEnterEvent>
 #include <QDropEvent>
 #include <QMouseEvent>
@@ -47,7 +45,6 @@ void WVisualSimple::dragEnterEvent(QDragEnterEvent * event)
 {
   if (event->mimeData()->hasUrls())
       event->acceptProposedAction();
-  //    event->accept(Q3UriDrag::canDecode(event));
 }
 
 void WVisualSimple::dropEvent(QDropEvent * event)
@@ -65,25 +62,18 @@ void WVisualSimple::dropEvent(QDropEvent * event)
 
 void WVisualSimple::setup(QDomNode node)
 {
-    // Setup position and connections
-    WWidget::setup(node);
+    int w = width(), h = height();
 
-    // Size
-    QString size = selectNodeQString(node, "Size");
-    int x = size.left(size.indexOf(",")).toInt();
-    int y = size.mid(size.indexOf(",")+1).toInt();
-    setFixedSize(x,y);
-
-    m_pWaveformRenderer->resize(x,y);
+    m_pWaveformRenderer->resize(w,h);
     m_pWaveformRenderer->setup(node);
 
     // Set constants for line drawing
-    m_qMarkerPos1.setX(x/2);
+    m_qMarkerPos1.setX(w/2);
     m_qMarkerPos1.setY(0);
-    m_qMarkerPos2.setX(x/2);
-    m_qMarkerPos2.setY(y);
-    m_qMousePos.setX(x/2);
-    m_qMousePos.setY(y/2);
+    m_qMarkerPos2.setX(w/2);
+    m_qMarkerPos2.setY(h);
+    m_qMousePos.setX(w/2);
+    m_qMousePos.setY(h/2);
 
     // Background color
     QColor c(255,255,255);

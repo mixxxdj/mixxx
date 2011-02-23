@@ -22,7 +22,7 @@
 
 QWaitCondition ControlObjectThread::m_sqWait;
 QMutex ControlObjectThread::m_sqMutex;
-Q3PtrQueue<ControlObjectThread> ControlObjectThread::m_sqQueue;
+QQueue<ControlObjectThread*> ControlObjectThread::m_sqQueue;
 
 ControlObjectThread::ControlObjectThread(ControlObject * pControlObject)
 : m_dValue          (0.0)
@@ -42,7 +42,7 @@ ControlObjectThread::ControlObjectThread(ControlObject * pControlObject)
 
 ControlObjectThread::~ControlObjectThread()
 {
-    if (m_pControlObject) 
+    if (m_pControlObject)
     {
         // Our parent is still around, make sure it doesn't send us any more events
         m_pControlObject->removeProxy(this);
@@ -83,10 +83,10 @@ bool ControlObjectThread::setExtern(double v)
     //     {
     //         m_sqQueue.enqueue(this);
     //         m_dValue = v;
-            
+
     //         m_dataMutex.unlock();
     //         m_sqMutex.unlock();
-            
+
     //         result = true;
     //     }
     //     else
@@ -103,15 +103,17 @@ bool ControlObjectThread::update()
     bool result = false;
 
     m_sqMutex.lock();
-    ControlObjectThread* p = m_sqQueue.dequeue();
+    ControlObjectThread* p = NULL;
+    if (!m_sqQueue.isEmpty())
+        p = m_sqQueue.dequeue();
     m_sqMutex.unlock();
-    
+
     if (p)
     {
         p->emitValueChanged();
         result = true;
     }
-    
+
     return result;
 }
 
@@ -143,14 +145,14 @@ void ControlObjectThread::updateControlObject()
     m_pControlObject->queueFromThread(get(), this);
 }
 
-void ControlObjectThread::slotParentDead() 
+void ControlObjectThread::slotParentDead()
 {
     // Now we've got a chance of avoiding segfaults with judicious
     // use of if(m_pControlObject)
     m_pControlObject = 0;
 }
 
-ControlObject* ControlObjectThread::getControlObject() 
+ControlObject* ControlObjectThread::getControlObject()
 {
    return m_pControlObject;
 }

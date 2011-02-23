@@ -50,61 +50,70 @@ RateControl::RateControl(const char* _group,
     // Reverse button
     m_pReverseButton = new ControlPushButton(ConfigKey(_group, "reverse"));
     m_pReverseButton->set(0);
-    m_pReverseButton->setToggleButton(true);
 
     // Forward button
     m_pForwardButton = new ControlPushButton(ConfigKey(_group, "fwd"));
     connect(m_pForwardButton, SIGNAL(valueChanged(double)),
-            this, SLOT(slotControlFastForward(double)));
+            this, SLOT(slotControlFastForward(double)),
+            Qt::DirectConnection);
     m_pForwardButton->set(0);
 
     // Back button
     m_pBackButton = new ControlPushButton(ConfigKey(_group, "back"));
     connect(m_pBackButton, SIGNAL(valueChanged(double)),
-            this, SLOT(slotControlFastBack(double)));
+            this, SLOT(slotControlFastBack(double)),
+            Qt::DirectConnection);
     m_pBackButton->set(0);
 
     // Permanent rate-change buttons
     buttonRatePermDown =
         new ControlPushButton(ConfigKey(_group,"rate_perm_down"));
     connect(buttonRatePermDown, SIGNAL(valueChanged(double)),
-            this, SLOT(slotControlRatePermDown(double)));
+            this, SLOT(slotControlRatePermDown(double)),
+            Qt::DirectConnection);
 
     buttonRatePermDownSmall =
         new ControlPushButton(ConfigKey(_group,"rate_perm_down_small"));
     connect(buttonRatePermDownSmall, SIGNAL(valueChanged(double)),
-            this, SLOT(slotControlRatePermDownSmall(double)));
+            this, SLOT(slotControlRatePermDownSmall(double)),
+            Qt::DirectConnection);
 
     buttonRatePermUp =
         new ControlPushButton(ConfigKey(_group,"rate_perm_up"));
     connect(buttonRatePermUp, SIGNAL(valueChanged(double)),
-            this, SLOT(slotControlRatePermUp(double)));
+            this, SLOT(slotControlRatePermUp(double)),
+            Qt::DirectConnection);
 
     buttonRatePermUpSmall =
         new ControlPushButton(ConfigKey(_group,"rate_perm_up_small"));
     connect(buttonRatePermUpSmall, SIGNAL(valueChanged(double)),
-            this, SLOT(slotControlRatePermUpSmall(double)));
+            this, SLOT(slotControlRatePermUpSmall(double)),
+            Qt::DirectConnection);
 
     // Temporary rate-change buttons
     buttonRateTempDown =
         new ControlPushButton(ConfigKey(_group,"rate_temp_down"));
     connect(buttonRateTempDown, SIGNAL(valueChanged(double)),
-            this, SLOT(slotControlRateTempDown(double)));
+            this, SLOT(slotControlRateTempDown(double)),
+            Qt::DirectConnection);
 
     buttonRateTempDownSmall =
         new ControlPushButton(ConfigKey(_group,"rate_temp_down_small"));
     connect(buttonRateTempDownSmall, SIGNAL(valueChanged(double)),
-            this, SLOT(slotControlRateTempDownSmall(double)));
+            this, SLOT(slotControlRateTempDownSmall(double)),
+            Qt::DirectConnection);
 
     buttonRateTempUp =
         new ControlPushButton(ConfigKey(_group,"rate_temp_up"));
     connect(buttonRateTempUp, SIGNAL(valueChanged(double)),
-            this, SLOT(slotControlRateTempUp(double)));
+            this, SLOT(slotControlRateTempUp(double)),
+            Qt::DirectConnection);
 
     buttonRateTempUpSmall =
         new ControlPushButton(ConfigKey(_group,"rate_temp_up_small"));
     connect(buttonRateTempUpSmall, SIGNAL(valueChanged(double)),
-            this, SLOT(slotControlRateTempUpSmall(double)));
+            this, SLOT(slotControlRateTempUpSmall(double)),
+            Qt::DirectConnection);
 
     // We need the sample rate so we can guesstimate something close
     // what latency is.
@@ -126,7 +135,7 @@ RateControl::RateControl(const char* _group,
     m_pJog = new ControlObject(ConfigKey(_group, "jog"));
     m_pJogFilter = new Rotary();
     // FIXME: This should be dependent on sample rate/block size or something
-    m_pJogFilter->setFilterLength(5);
+    m_pJogFilter->setFilterLength(25);
 
     // Update Internal Settings
     // Set Pitchbend Mode
@@ -316,8 +325,7 @@ double RateControl::getRawRate() {
 }
 
 double RateControl::getWheelFactor() {
-    // Calculate wheel (experimental formula)
-    return 40 * m_pWheel->get();
+    return m_pWheel->get();
 }
 
 double RateControl::getJogFactor() {
@@ -361,8 +369,8 @@ double RateControl::calculateRate(double baserate, bool paused) {
     } else if (paused) {
         // Stopped. Wheel, jog and scratch controller all scrub through audio.
         // New scratch behavior overrides old
-        if (scratchEnable) rate = scratchFactor + jogFactor + wheelFactor*10.;
-        else rate = oldScratchFactor + jogFactor*18 + wheelFactor*10.; // Just remove oldScratchFactor in future
+        if (scratchEnable) rate = scratchFactor + jogFactor + wheelFactor*40.0;
+        else rate = oldScratchFactor + jogFactor*18 + wheelFactor; // Just remove oldScratchFactor in future
     } else {
         // The buffer is playing, so calculate the buffer rate.
 
@@ -373,7 +381,7 @@ double RateControl::calculateRate(double baserate, bool paused) {
         // Temp: pitch bend
 
         rate = 1. + getRawRate() + getTempRate();
-        rate += wheelFactor * 10.;
+        rate += wheelFactor;
 
         // New scratch behavior - overrides playback speed (and old behavior)
         if (scratchEnable) rate = scratchFactor;

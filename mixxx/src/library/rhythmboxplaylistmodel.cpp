@@ -149,6 +149,10 @@ QVariant RhythmboxPlaylistModel::data ( const QModelIndex & index, int role ) co
 bool RhythmboxPlaylistModel::isColumnInternal(int column) {
     return false;
 }
+bool RhythmboxPlaylistModel::isColumnHiddenByDefault(int column) {
+    return false;
+}
+
 
 QVariant RhythmboxPlaylistModel::headerData ( int section, Qt::Orientation orientation, int role ) const
 {

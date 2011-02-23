@@ -26,16 +26,19 @@
 #include "configobject.h"
 #include "controlobject.h"
 #include "controlobjectthreadmain.h"
-#include "mixxxview.h"
 #include "widget/wnumberpos.h"
 #include "engine/enginebuffer.h"
 #include "engine/ratecontrol.h"
+#include "skin/skinloader.h"
+#include "skin/legacyskinparser.h"
 
-DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxView * pView, MixxxApp * mixxx, ConfigObject<ConfigValue> * pConfig) :  QWidget(parent), Ui::DlgPrefControlsDlg()
-{
-    m_pView = pView;
+DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxApp * mixxx,
+                                 SkinLoader* pSkinLoader,
+                                 ConfigObject<ConfigValue> * pConfig)
+        :  QWidget(parent), Ui::DlgPrefControlsDlg() {
     m_pConfig = pConfig;
     m_mixxx = mixxx;
+    m_pSkinLoader = pSkinLoader;
 
     setupUi(this);
 
@@ -55,19 +58,20 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxView * pView, MixxxApp *
         m_pConfig->set(ConfigKey("[Controls]","RateDir"),ConfigValue(0));
 
     // Position display configuration
-    ComboBoxPosition->addItem("Position");
-    ComboBoxPosition->addItem("Remaining");
+    m_pControlPositionDisplay = new ControlObject(ConfigKey("[Controls]", "ShowDurationRemaining"));
+    ComboBoxPosition->addItem(tr("Position"));
+    ComboBoxPosition->addItem(tr("Remaining"));
     if (m_pConfig->getValueString(ConfigKey("[Controls]","PositionDisplay")).length() == 0)
         m_pConfig->set(ConfigKey("[Controls]","PositionDisplay"),ConfigValue(0));
     if (m_pConfig->getValueString(ConfigKey("[Controls]","PositionDisplay")).toInt() == 1)
     {
-        pView->slotSetDurationRemaining(true);
         ComboBoxPosition->setCurrentIndex(1);
+        m_pControlPositionDisplay->set(1.0f);
     }
     else
     {
-        pView->slotSetDurationRemaining(false);
         ComboBoxPosition->setCurrentIndex(0);
+        m_pControlPositionDisplay->set(0.0f);
     }
     connect(ComboBoxPosition,   SIGNAL(activated(int)), this, SLOT(slotSetPositionDisplay(int)));
 
@@ -122,8 +126,8 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxView * pView, MixxxApp *
         m_pConfig->set(ConfigKey("[Controls]","Visuals"), ConfigValue(0));
 
     // Update combo box
-    ComboBoxVisuals->addItem("On");
-    ComboBoxVisuals->addItem("Off");
+    ComboBoxVisuals->addItem(tr("On"));
+    ComboBoxVisuals->addItem(tr("Off"));
     ComboBoxVisuals->setCurrentIndex(m_pConfig->getValueString(ConfigKey("[Controls]","Visuals")).toInt());
 
     connect(ComboBoxVisuals,   SIGNAL(activated(int)), this, SLOT(slotSetVisuals(int)));
@@ -156,8 +160,8 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxView * pView, MixxxApp *
     m_pControlCueDefault2->slotSet(cueDefaultValue);
 
     // Update combo box
-    ComboBoxCueDefault->addItem("CDJ Mode");
-    ComboBoxCueDefault->addItem("Simple");
+    ComboBoxCueDefault->addItem(tr("CDJ Mode"));
+    ComboBoxCueDefault->addItem(tr("Simple"));
     ComboBoxCueDefault->setCurrentIndex(m_pConfig->getValueString(ConfigKey("[Controls]","CueDefault")).toInt());
 
     connect(ComboBoxCueDefault,   SIGNAL(activated(int)), this, SLOT(slotSetCueDefault(int)));
@@ -207,13 +211,13 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxView * pView, MixxxApp *
 // #endif
 
    // Detect small display and prompt user to use small skin.
-   if (QApplication::desktop()->width() >= 800 && QApplication::desktop()->height() == 480 && pConfig->getValueString(ConfigKey("[Config]","Skin"))!= "outlineMini") {
+   if (QApplication::desktop()->width() >= 800 && QApplication::desktop()->height() == 480 && pConfig->getValueString(ConfigKey("[Config]","Skin"))!= "Outline800x480-WVGA") {
       int ret = QMessageBox::warning(this, tr("Mixxx Detected a WVGA Screen"), tr("Mixxx has detected that your screen has a resolution of ") +
                    QString::number(QApplication::desktop()->width()) + " x " + QString::number(QApplication::desktop()->height()) + ".  " +
-                   tr("The only skin compatiable with this size display is OutlineMini (800x480).  Would you like to use that skin?"),
+                   tr("The only skin compatiable with this size display is Outline800x480-WVGA.  Would you like to use that skin?"),
                    QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes);
       if (ret == QMessageBox::Yes) {
-         pConfig->set(ConfigKey("[Config]","Skin"), ConfigValue("outlineMini"));
+         pConfig->set(ConfigKey("[Config]","Skin"), ConfigValue("Outline800x480-WVGA"));
          pConfig->Save();
          ComboBoxSkinconf->setCurrentIndex(ComboBoxSkinconf->findText(pConfig->getValueString(ConfigKey("[Config]","Skin"))));
          qDebug() << "Retrieved skin:" << pConfig->getValueString(ConfigKey("[Config]","Skin")) << "ComboBoxSkinconf:" << ComboBoxSkinconf->currentText();
@@ -266,13 +270,14 @@ DlgPrefControls::~DlgPrefControls()
 void DlgPrefControls::slotUpdateSchemes()
 {
     // Since this involves opening a file we won't do this as part of regular slotUpdate
-    QList<QString> schlist = MixxxView::getSchemeList(m_mixxx->getSkinPath());
+    QList<QString> schlist = LegacySkinParser::getSchemeList(
+        m_pSkinLoader->getConfiguredSkinPath());
 
     ComboBoxSchemeconf->clear();
 
     if (schlist.size() == 0) {
         ComboBoxSchemeconf->setEnabled(false);
-        ComboBoxSchemeconf->addItem("This skin does not support schemes", 0);
+        ComboBoxSchemeconf->addItem(tr("This skin does not support schemes", 0));
         ComboBoxSchemeconf->setCurrentIndex(0);
     } else {
         ComboBoxSchemeconf->setEnabled(true);
@@ -307,8 +312,8 @@ void DlgPrefControls::slotUpdate()
     ComboBoxRateRange->setCurrentIndex((int)idx);
 
     ComboBoxRateDir->clear();
-    ComboBoxRateDir->addItem("Up increases speed");
-    ComboBoxRateDir->addItem("Down increases speed (Technics SL1210)");
+    ComboBoxRateDir->addItem(tr("Up increases speed"));
+    ComboBoxRateDir->addItem(tr("Down increases speed (Technics SL1210)"));
 
     if (m_pControlRateDir1->get()==1)
         ComboBoxRateDir->setCurrentIndex(0);
@@ -399,8 +404,9 @@ void DlgPrefControls::slotSetSkin(int)
 
 void DlgPrefControls::slotSetPositionDisplay(int)
 {
-    m_pConfig->set(ConfigKey("[Controls]","PositionDisplay"), ConfigValue(ComboBoxPosition->currentIndex()));
-    m_pView->slotSetDurationRemaining(ComboBoxPosition->currentIndex() == 1);
+    int positionDisplay = ComboBoxPosition->currentIndex();
+    m_pConfig->set(ConfigKey("[Controls]","PositionDisplay"), ConfigValue(positionDisplay));
+    m_pControlPositionDisplay->set(positionDisplay);
 }
 
 void DlgPrefControls::slotSetRateTempLeft(double v)

@@ -13,7 +13,7 @@
    inkscape:export-filename=""
    style="display:inline"
    sodipodi:docname="ic_template_library_and_preferences.svg"
-   inkscape:version="0.47+devel r9568"
+   inkscape:version="0.48+devel r9889"
    id="svg2"
    height="32"
    width="32"
@@ -31,13 +31,13 @@
      inkscape:window-height="1028"
      id="namedview26"
      showgrid="true"
-     inkscape:zoom="11.930556"
-     inkscape:cx="15.240709"
-     inkscape:cy="16.417549"
+     inkscape:zoom="10"
+     inkscape:cx="11.595312"
+     inkscape:cy="29.45"
      inkscape:window-x="1280"
      inkscape:window-y="0"
      inkscape:window-maximized="0"
-     inkscape:current-layer="g4255"
+     inkscape:current-layer="svg2"
      inkscape:object-paths="true"
      showguides="true"
      inkscape:guide-bbox="true"
@@ -60,7 +60,7 @@
        dotted="false" />
   </sodipodi:namedview>
   <title
-     id="title5647">Mixxx 1.8 iconset</title>
+     id="title5647">Mixxx 1.8+ iconset</title>
   <defs
      id="defs28">
     <linearGradient
@@ -728,15 +728,62 @@
        id="linearGradient7738"
        xlink:href="#linearGradient5695-890"
        inkscape:collect="always" />
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient5695-26"
+       id="linearGradient4041"
+       gradientUnits="userSpaceOnUse"
+       x1="4"
+       y1="-20"
+       x2="32"
+       y2="8"
+       gradientTransform="translate(0,16)" />
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient5695-26"
+       id="linearGradient4045"
+       gradientUnits="userSpaceOnUse"
+       x1="4"
+       y1="-20"
+       x2="32"
+       y2="8" />
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient5695-26"
+       id="linearGradient4057"
+       gradientUnits="userSpaceOnUse"
+       x1="4"
+       y1="-20"
+       x2="32"
+       y2="8"
+       gradientTransform="translate(-0.19676903,15)" />
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient5695-26"
+       id="linearGradient4063"
+       gradientUnits="userSpaceOnUse"
+       x1="4"
+       y1="-20"
+       x2="32"
+       y2="8" />
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient5695-26"
+       id="linearGradient4067"
+       gradientUnits="userSpaceOnUse"
+       x1="4"
+       y1="-20"
+       x2="32"
+       y2="8" />
   </defs>
   <metadata
      id="metadata4">
     <rdf:RDF>
       <rdf:Description
-         rdf:about="http://likethought.com/opacity/">
-        <dc:title>Crates</dc:title>
-        <dc:creator>Maxi Mausezahn</dc:creator>
-        <dc:rights>Copyright 2010 Maxi Mausezahn</dc:rights>
+         rdf:about="">
+        <dc:title />
+        <dc:creator />
+        <dc:rights />
         <dc:description />
         <dc:format>image/svg+xml</dc:format>
         <dc:language>en</dc:language>
@@ -746,7 +793,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title>Mixxx 1.8 iconset</dc:title>
+        <dc:title>Mixxx 1.8+ iconset</dc:title>
         <dc:subject>
           <rdf:Bag>
             <rdf:li>Mixxx</rdf:li>
@@ -788,18 +835,37 @@ Grid based on suggestions from http://techbase.kde.org/Projects/Oxygen/Style</dc
      sodipodi:insensitive="true">
     <g
        inkscape:groupmode="layer"
+       id="layer4"
+       inkscape:label="rhythmbox2.png"
+       style="display:none"
+       sodipodi:insensitive="true">
+      <path
+         style="color:#000000;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:2;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
+         d="M 6,2 C 4.892,2 4,2.892 4,4 l 0,24 c 0,1.108 0.892,2 2,2 l 20,0 c 1.108,0 2,-0.892 2,-2 L 28,4 C 28,2.892 27.108,2 26,2 L 6,2 z m 10,2 c 4.418278,0 8,3.581722 8,8 0,4.418278 -3.581722,8 -8,8 -4.418278,0 -8,-3.581722 -8,-8 0,-4.418278 3.581722,-8 8,-8 z m -5,18 c 1.656858,0 3,1.343143 3,3 0,1.656859 -1.343141,3 -3,3 -1.656859,0 -3,-1.343142 -3,-3 0,-1.656857 1.343141,-3 3,-3 z m 10,0 c 1.656858,0 3,1.343143 3,3 0,1.656859 -1.343141,3 -3,3 -1.656859,0 -3,-1.343142 -3,-3 0,-1.656857 1.343141,-3 3,-3 z"
+         id="rect3993-6"
+         sodipodi:nodetypes="ccccccccccsssccsssccsssc"
+         inkscape:connector-curvature="0" />
+      <path
+         style="color:#000000;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:2;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
+         d="m 16,8 c -2.209145,0 -4,1.790858 -4,4 0,2.209144 1.790855,4 4,4 2.209145,0 4,-1.790855 4,-4 0,-2.209142 -1.790856,-4 -4,-4 z"
+         id="path3903"
+         sodipodi:nodetypes="csssc"
+         inkscape:connector-curvature="0" />
+    </g>
+    <g
+       inkscape:groupmode="layer"
        id="layer1"
        inkscape:label="rhythmbox.png"
        style="display:none"
        sodipodi:insensitive="true">
       <path
-         style="color:#000000;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:#b3b3b3;stroke-width:0;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
+         style="color:#000000;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:2;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
          d="M 6,2 C 4.892,2 4,2.892 4,4 l 0,24 c 0,1.108 0.892,2 2,2 l 20,0 c 1.108,0 2,-0.892 2,-2 L 28,4 C 28,2.892 27.108,2 26,2 L 6,2 z m 2,2 4,0 c 1.108,0 2,0.892 2,2 0,1.108 -0.892,2 -2,2 L 8,8 C 6.892,8 6,7.108 6,6 6,4.892 6.892,4 8,4 z m 12,0 4,0 c 1.108,0 2,0.892 2,2 0,1.108 -0.892,2 -2,2 L 20,8 C 18.892,8 18,7.108 18,6 18,4.892 18.892,4 20,4 z m -4,7 c 4.418278,0 8,3.581722 8,8 0,4.418278 -3.581722,8 -8,8 -4.418278,0 -8,-3.581722 -8,-8 0,-4.418278 3.581722,-8 8,-8 z"
          id="rect3993"
          inkscape:connector-curvature="0" />
       <path
          sodipodi:type="arc"
-         style="fill:#000000;fill-opacity:1;stroke:none;display:inline"
+         style="color:#000000;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:3.82970834;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
          id="path4671-4"
          sodipodi:cx="17.5"
          sodipodi:cy="19"
@@ -864,6 +930,29 @@ Grid based on suggestions from http://techbase.kde.org/Projects/Oxygen/Style</dc
            inkscape:connector-curvature="0"
            sodipodi:nodetypes="cccccccccccccccccccccccccccc" />
       </g>
+    </g>
+    <g
+       inkscape:groupmode="layer"
+       id="layer5"
+       inkscape:label="locked.png"
+       style="display:none"
+       sodipodi:insensitive="true">
+      <path
+         style="fill:none;stroke:#000000;stroke-width:3;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+         d="m 9.5,14 c 0,0 0.012953,-3 0,-4.5 -0.012957,-1.5004487 0.4612148,-5.9608363 6.5,-6 6,-0.038912 6.495685,4.4997009 6.5,7 0.0026,1.5 0,3.5 0,3.5"
+         id="path8889"
+         inkscape:connector-curvature="0"
+         sodipodi:nodetypes="csssc" />
+      <path
+         style="font-size:medium;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-indent:0;text-align:start;text-decoration:none;line-height:normal;letter-spacing:normal;word-spacing:normal;text-transform:none;direction:ltr;block-progression:tb;writing-mode:lr-tb;text-anchor:start;baseline-shift:baseline;color:#000000;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:2;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate;font-family:Sans;-inkscape-font-specification:Sans"
+         d="m 6,14 c -1,0 -2,1 -2,2 l 0,12 c 0,1 1,2 2,2 l 20,0 c 1,0 2,-1 2,-2 l 0,-12 c 0,-1 -1,-2 -2,-2 z M 9.03125,18 23,18 c 0.522127,0 0.997189,0.476401 0.997189,1 0,0.523599 -0.475062,1 -0.997189,1 L 9.03125,20 C 8.4410263,20 8,19.478827 8,19 8,18.521173 8.4261918,18 9.03125,18 z m 0,4 L 23,22 c 0.522127,0 0.997189,0.476401 0.997189,1 0,0.523599 -0.475062,1 -0.997189,1 L 9.03125,24 C 8.4896665,24 8,23.478827 8,23 8,22.521173 8.4836539,22 9.03125,22 z m 0,4 L 23,26 c 0.522127,0 0.997189,0.476401 0.997189,1 0,0.523599 -0.475062,1 -0.997189,1 L 9.03125,28 C 8.4799385,28 8,27.478827 8,27 8,26.521173 8.4473629,26 9.03125,26 z"
+         id="rect8885"
+         inkscape:connector-curvature="0"
+         sodipodi:nodetypes="ssssssssscssscaccssscaccssscac" />
+      <g
+         id="g8895"
+         style="fill:#0e232e;stroke:#0e232e;stroke-width:0.99776536"
+         transform="matrix(1.0044843,0,0,1,26.044843,18)" />
     </g>
     <g
        inkscape:groupmode="layer"
@@ -1226,6 +1315,47 @@ Grid based on suggestions from http://techbase.kde.org/Projects/Oxygen/Style</dc
     </g>
     <g
        inkscape:groupmode="layer"
+       id="layer6"
+       inkscape:label="replaygain.png"
+       style="display:none"
+       sodipodi:insensitive="true">
+      <path
+         sodipodi:nodetypes="cc"
+         id="path4032"
+         d="m 23.053232,27.892646 c 11.729079,-12.988154 8e-6,-23.785292 8e-6,-23.785292"
+         style="fill:none;stroke:url(#linearGradient4057);stroke-width:3;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;display:inline;filter:url(#filter6108)"
+         inkscape:connector-curvature="0" />
+      <path
+         inkscape:connector-curvature="0"
+         style="fill:none;stroke:url(#linearGradient4041);stroke-width:3.33333325;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;display:inline;filter:url(#filter6108)"
+         d="m 23.25,28.892646 c 11.729079,-12.988154 8e-6,-23.785292 8e-6,-23.785292"
+         id="path4039"
+         sodipodi:nodetypes="cc"
+         transform="matrix(0.75,0,0,0.75,-0.48568231,3.25)" />
+      <path
+         inkscape:connector-curvature="0"
+         style="fill:none;stroke:url(#linearGradient4045);stroke-width:4;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;display:inline;filter:url(#filter6108)"
+         d="m 23.25,12.892646 c 11.729079,-12.9881542 8e-6,-23.785292 8e-6,-23.785292"
+         id="path4043"
+         sodipodi:nodetypes="cc"
+         transform="matrix(0.5,0,0,0.5,-0.54919212,15.5)" />
+      <path
+         transform="matrix(0.25,0,0,0.25,-0.38729803,15.75)"
+         sodipodi:nodetypes="cc"
+         id="path4059"
+         d="m 23.25,12.892646 c 11.729079,-12.9881542 8e-6,-23.785292 8e-6,-23.785292"
+         style="fill:none;stroke:url(#linearGradient4063);stroke-width:6;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;display:inline;filter:url(#filter6108)"
+         inkscape:connector-curvature="0" />
+      <path
+         inkscape:connector-curvature="0"
+         style="fill:none;stroke:url(#linearGradient4067);stroke-width:12;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;display:inline;filter:url(#filter6108)"
+         d="m 23.25,12.892646 c 11.729079,-12.9881542 8e-6,-23.785292 8e-6,-23.785292"
+         id="path4065"
+         sodipodi:nodetypes="cc"
+         transform="matrix(0.125,0,0,0.125,-2.089012,15.875)" />
+    </g>
+    <g
+       inkscape:groupmode="layer"
        id="layer33"
        inkscape:label="recording.png"
        style="display:none"
@@ -1424,7 +1554,7 @@ Grid based on suggestions from http://techbase.kde.org/Projects/Oxygen/Style</dc
       <g
          id="g4974-1"
          style="fill:url(#linearGradient6582);fill-opacity:1;display:inline;filter:url(#filter6108)"
-         inkscape:export-filename="/Users/bas/Dropbox/Programming/Mixxx 1.8/skins/mixxx/res/images/preferences/ic_preferences_effects.png"
+         inkscape:export-filename=""
          inkscape:export-xdpi="135"
          inkscape:export-ydpi="135">
         <path
@@ -1631,7 +1761,7 @@ Grid based on suggestions from http://techbase.kde.org/Projects/Oxygen/Style</dc
          inkscape:flatsided="false"
          inkscape:rounded="0"
          inkscape:randomized="0"
-         d="M 8.9999997,29 3.0000001,25.12132 -2.9999997,29 0.87867975,23 -2.9999997,17 2.9999999,20.87868 8.9999997,17 5.1213202,23 8.9999997,29 z"
+         d="M 8.9999997,29 3.0000001,25.12132 -2.9999997,29 0.87867975,23 -2.9999997,17 2.9999999,20.87868 8.9999997,17 5.1213202,23 z"
          transform="translate(2.9999999,0.99999896)" />
       <path
          style="fill:url(#linearGradient4386-1);fill-opacity:1;stroke:none;display:inline;filter:url(#filter6108)"
@@ -1661,64 +1791,64 @@ Grid based on suggestions from http://techbase.kde.org/Projects/Oxygen/Style</dc
     <text
        xml:space="preserve"
        style="font-size:4px;font-style:normal;font-weight:normal;line-height:120.00000477%;letter-spacing:0;word-spacing:0;fill:#000000;fill-opacity:1;stroke:none;font-family:Bitstream Vera Sans"
-       x="-9.5625"
-       y="-16.056643"
+       x="3.2128906"
+       y="4.745605"
        id="text4261"
        sodipodi:linespacing="120%"><tspan
          sodipodi:role="line"
-         x="-9.5625"
-         y="-16.056643"
+         x="3.2128906"
+         y="4.745605"
          id="tspan4265"
-         style="font-weight:bold;line-height:120.00000477%;-inkscape-font-specification:Bitstream Vera Sans Bold">Iconset Template</tspan><tspan
+         style="font-size:2px;font-weight:bold;line-height:120.00000477%;-inkscape-font-specification:Bitstream Vera Sans Bold">Iconset Template</tspan><tspan
          sodipodi:role="line"
-         x="-9.5625"
-         y="-11.256642"
+         x="3.2128906"
+         y="7.1456051"
          id="tspan4269"
-         style="font-weight:bold;line-height:120.00000477%;-inkscape-font-specification:Bitstream Vera Sans Bold">for Mixxx 1.8+</tspan><tspan
+         style="font-size:2px;font-weight:bold;line-height:120.00000477%;-inkscape-font-specification:Bitstream Vera Sans Bold">for Mixxx 1.8+</tspan><tspan
          sodipodi:role="line"
-         x="-9.5625"
-         y="-6.4566422"
-         style="font-weight:bold;line-height:120.00000477%;-inkscape-font-specification:Bitstream Vera Sans Bold"
+         x="3.2128906"
+         y="9.5456047"
+         style="font-size:2px;font-weight:bold;line-height:120.00000477%;-inkscape-font-specification:Bitstream Vera Sans Bold"
          id="tspan10674"> </tspan><tspan
          sodipodi:role="line"
-         x="-9.5625"
-         y="-1.656642"
-         style="line-height:120.00000477%"
+         x="3.2128906"
+         y="11.945605"
+         style="font-size:2px;line-height:120.00000477%"
          id="tspan4279">*48(16)px icons</tspan><tspan
          sodipodi:role="line"
-         x="-9.5625"
-         y="3.1433582"
-         style="line-height:120.00000477%"
+         x="3.2128906"
+         y="14.345606"
+         style="font-size:2px;line-height:120.00000477%"
          id="tspan4311">*see hidden layers</tspan><tspan
          sodipodi:role="line"
-         x="-9.5625"
-         y="7.9433584"
-         style="line-height:120.00000477%"
+         x="3.2128906"
+         y="16.745605"
+         style="font-size:2px;line-height:120.00000477%"
          id="tspan7798">*ic_preferences_</tspan><tspan
          sodipodi:role="line"
-         x="-9.5625"
-         y="12.743359"
-         style="line-height:120.00000477%"
+         x="3.2128906"
+         y="19.145605"
+         style="font-size:2px;line-height:120.00000477%"
          id="tspan4309">-gradient #5695 for </tspan><tspan
          sodipodi:role="line"
-         x="-9.5625"
-         y="17.543358"
-         style="line-height:120.00000477%"
+         x="3.2128906"
+         y="21.545605"
+         style="font-size:2px;line-height:120.00000477%"
          id="tspan4315">fill &amp; stroke</tspan><tspan
          sodipodi:role="line"
-         x="-9.5625"
-         y="22.343359"
-         style="line-height:120.00000477%"
+         x="3.2128906"
+         y="23.945606"
+         style="font-size:2px;line-height:120.00000477%"
          id="tspan7804">-Drop shadow filter</tspan><tspan
          sodipodi:role="line"
-         x="-9.5625"
-         y="27.14336"
-         style="line-height:120.00000477%"
+         x="3.2128906"
+         y="26.345606"
+         style="font-size:2px;line-height:120.00000477%"
          id="tspan7806">*ic_library_ </tspan><tspan
          sodipodi:role="line"
-         x="-9.5625"
-         y="31.943359"
-         style="line-height:120.00000477%"
+         x="3.2128906"
+         y="28.745605"
+         style="font-size:2px;line-height:120.00000477%"
          id="tspan5883">*see document metadata </tspan></text>
   </g>
 </svg>

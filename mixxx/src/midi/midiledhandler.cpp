@@ -1,10 +1,9 @@
 #include "midiledhandler.h"
 #include "widget/wwidget.h"
-//Added by qt3to4:
-#include <Q3PtrList>
+#include <QList>
 #include <QDebug>
 
-Q3PtrList<MidiLedHandler> MidiLedHandler::allhandlers = Q3PtrList<MidiLedHandler>();
+QList<MidiLedHandler*> MidiLedHandler::allhandlers = QList<MidiLedHandler*>();
 
 MidiLedHandler::MidiLedHandler(QString group, QString key, MidiDevice & midi, double min,
                                double max, unsigned char status, unsigned char midino, unsigned char on, unsigned char off)
@@ -87,7 +86,9 @@ void MidiLedHandler::createHandlers(QDomNode node, MidiDevice & midi) {
 }
 
 void MidiLedHandler::destroyHandlers() {
-    allhandlers.setAutoDelete(true);
+    for (int i = 0; i < allhandlers.count(); i++) {
+        delete allhandlers[i];
+    }
     allhandlers.clear();
 }
 

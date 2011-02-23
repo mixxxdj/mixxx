@@ -21,8 +21,8 @@
 #include "dlgprefshoutcast.h"
 
 
-#include "../recording/encodervorbis.h"
-#include "../recording/encodermp3.h"
+#include "recording/encodervorbis.h"
+#include "recording/encodermp3.h"
 
 #include "playerinfo.h"
 #include "trackinfoobject.h"
@@ -53,35 +53,35 @@ EngineShoutcast::EngineShoutcast(ConfigObject<ConfigValue> *_config)
           m_pVolume1(NULL),
           m_pVolume2(NULL),
           m_shoutMutex(QMutex::Recursive) {
-	
+
     m_pShout = 0;
     m_iShoutStatus = 0;
     m_pShoutcastNeedUpdateFromPrefs = new ControlObject(ConfigKey("[Shoutcast]","update_from_prefs"));
     m_pUpdateShoutcastFromPrefs = new ControlObjectThreadMain(m_pShoutcastNeedUpdateFromPrefs);
-  
+
     m_bQuit = false;
 
     m_pCrossfader = new ControlObjectThread(ControlObject::getControl(ConfigKey("[Master]","crossfader")));
     m_pVolume1 = new ControlObjectThread(ControlObject::getControl(ConfigKey("[Channel1]","volume")));
     m_pVolume2 = new ControlObjectThread(ControlObject::getControl(ConfigKey("[Channel2]","volume")));
-    
-    
 
-	m_firstCall = false;
+
+
+    m_firstCall = false;
     // Initialize libshout
     shout_init();
 
     if (!(m_pShout = shout_new())) {
-		errorDialog("Mixxx encountered a problem", "Could not allocate shout_t");
+        errorDialog(tr("Mixxx encountered a problem"), tr("Could not allocate shout_t"));
         return;
     }
 
     if (!(m_pShoutMetaData = shout_metadata_new())) {
-		errorDialog("Mixxx encountered a problem", "Could not allocate shout_metadata_t");
+        errorDialog(tr("Mixxx encountered a problem"), tr("Could not allocate shout_metadata_t"));
         return;
     }
     if (shout_set_nonblocking(m_pShout, 1) != SHOUTERR_SUCCESS) {
-		errorDialog("Error setting non-blocking mode:", shout_get_error(m_pShout));
+        errorDialog(tr("Error setting non-blocking mode:"), shout_get_error(m_pShout));
         return;
     }
 }
@@ -92,13 +92,13 @@ EngineShoutcast::EngineShoutcast(ConfigObject<ConfigValue> *_config)
 EngineShoutcast::~EngineShoutcast()
 {
     QMutexLocker locker(&m_shoutMutex);
-	
-    if (m_encoder){ 
+
+    if (m_encoder){
 		m_encoder->flush();
 
 		delete m_encoder;
 	}
-	
+
     delete m_pUpdateShoutcastFromPrefs;
     delete m_pShoutcastNeedUpdateFromPrefs;
     delete m_pCrossfader;
@@ -116,7 +116,7 @@ EngineShoutcast::~EngineShoutcast()
 bool EngineShoutcast::serverDisconnect()
 {
     QMutexLocker locker(&m_shoutMutex);
-    if (m_encoder){ 
+    if (m_encoder){
 		m_encoder->flush();
 		delete m_encoder;
 		m_encoder = NULL;
@@ -133,7 +133,7 @@ bool EngineShoutcast::isConnected()
     QMutexLocker locker(&m_shoutMutex);
 	if (m_pShout) {
 		m_iShoutStatus = shout_get_connected(m_pShout);
-    	if (m_iShoutStatus == SHOUTERR_CONNECTED) 
+    	if (m_iShoutStatus == SHOUTERR_CONNECTED)
     		return true;
 	}
 	return false;
@@ -161,12 +161,12 @@ void EngineShoutcast::updateFromPreferences()
     QByteArray baStreamGenre = m_pConfig->getValueString(ConfigKey(SHOUTCAST_PREF_KEY,"stream_genre")).toLatin1();
     QByteArray baStreamPublic = m_pConfig->getValueString(ConfigKey(SHOUTCAST_PREF_KEY,"stream_public")).toLatin1();
     QByteArray baBitrate    = m_pConfig->getValueString(ConfigKey(SHOUTCAST_PREF_KEY,"bitrate")).toLatin1();
-    
+
 	m_baFormat    = m_pConfig->getValueString(ConfigKey(SHOUTCAST_PREF_KEY,"format")).toLatin1();
-	
+
 	m_custom_metadata = (bool)m_pConfig->getValueString(ConfigKey(SHOUTCAST_PREF_KEY,"enable_metadata")).toInt();
-	m_baCustom_title = m_pConfig->getValueString(ConfigKey(SHOUTCAST_PREF_KEY,"custom_title"));
-	m_baCustom_artist = m_pConfig->getValueString(ConfigKey(SHOUTCAST_PREF_KEY,"custom_artist"));
+	m_baCustom_title = m_pConfig->getValueString(ConfigKey(SHOUTCAST_PREF_KEY,"custom_title")).toLatin1();
+	m_baCustom_artist = m_pConfig->getValueString(ConfigKey(SHOUTCAST_PREF_KEY,"custom_artist")).toLatin1();
 
     int format;
     int len;
@@ -265,25 +265,25 @@ void EngineShoutcast::updateFromPreferences()
         return;
     }
 
-    // Initialize m_encoder 	
+    // Initialize m_encoder
 	if(m_encoder) {
 		delete m_encoder;		//delete m_encoder if it has been initalized (with maybe) different bitrate
 	}
     if ( ! qstrcmp(m_baFormat, "MP3")) {
-        m_encoder = new EncoderMp3(m_pConfig, this);
+        m_encoder = new EncoderMp3(this);
 
     }
     else if ( ! qstrcmp(m_baFormat, "Ogg Vorbis")) {
-        m_encoder = new EncoderVorbis(m_pConfig, this);
+        m_encoder = new EncoderVorbis(this);
     }
     else {
         qDebug() << "**** Unknown Encoder Format";
         return;
     }
     if (m_encoder->initEncoder(baBitrate.toInt()) < 0) {
-		//e.g., if lame is not found 
-		//init m_encoder itself will display a message box        
-		qDebug() << "**** Encoder init failed"; 
+		//e.g., if lame is not found
+		//init m_encoder itself will display a message box
+		qDebug() << "**** Encoder init failed";
 		delete m_encoder;
 		m_encoder = NULL;
     }
@@ -292,7 +292,7 @@ void EngineShoutcast::updateFromPreferences()
 
 /*
  * Reset the Server state and Connect to the Server.
- *  
+ *
  */
 bool EngineShoutcast::serverConnect()
 {
@@ -306,12 +306,12 @@ bool EngineShoutcast::serverConnect()
     // on the first change
     m_pMetaDataLife = 31337;
 	//If static metadata is available, we only need to send metadata one time
-	m_firstCall = false; 
+	m_firstCall = false;
 
 	/*Check if m_encoder is initalized
-	 * Encoder is initalized in updateFromPreferences which is called always before serverConnect()	
+	 * Encoder is initalized in updateFromPreferences which is called always before serverConnect()
 	 * If m_encoder is NULL, then we propably want to use MP3 streaming, however, lame could not be found
-	 * It does not make sense to connect 
+	 * It does not make sense to connect
 	 */
 	 if(m_encoder == NULL){
 		m_pConfig->set(ConfigKey("[Shoutcast]","enabled"),ConfigValue("0"));
@@ -339,7 +339,7 @@ bool EngineShoutcast::serverConnect()
         if (m_pShout)
             shout_close(m_pShout);
 		m_pConfig->set(ConfigKey("[Shoutcast]","enabled"),ConfigValue("0"));
-		errorDialog("Shoutcast aborted connect after 3 tries", "Please check your connection to the Internet and verify that your username and password are correct.");
+		
     }
     if (m_bQuit) {
         if (m_pShout)
@@ -363,7 +363,7 @@ bool EngineShoutcast::serverConnect()
 	m_pConfig->set(ConfigKey("[Shoutcast]","enabled"),ConfigValue("0"));
 	if(m_pShout){
 		shout_close(m_pShout);
-		errorDialog("Mixxx could not connect to the server", "Please check your connection to the Internet and verify that your username and password are correct.");
+		//errorDialog(tr("Mixxx could not connect to the server"), tr("Please check your connection to the Internet and verify that your username and password are correct."));
 	}
 
     return false;
@@ -387,10 +387,13 @@ void EngineShoutcast::write(unsigned char *header, unsigned char *body,
             ret = shout_send(m_pShout, header, headerLen);
             if (ret != SHOUTERR_SUCCESS) {
                 qDebug() << "DEBUG: Send error: " << shout_get_error(m_pShout);
-                if ( m_iShoutFailures > 3 )
-                    serverConnect();
-                else
+                if ( m_iShoutFailures > 3 ){
+                    if(!serverConnect())
+                        errorDialog(tr("Lost connection to streaming server"), tr("Please check your connection to the Internet and verify that your username and password are correct."));
+                 }                       
+                 else{
                     m_iShoutFailures++;
+                 }
 
                 return;
             } else {
@@ -401,10 +404,13 @@ void EngineShoutcast::write(unsigned char *header, unsigned char *body,
         ret = shout_send(m_pShout, body, bodyLen);
         if (ret != SHOUTERR_SUCCESS) {
             qDebug() << "DEBUG: Send error: " << shout_get_error(m_pShout);
-            if ( m_iShoutFailures > 3 )
-                    serverConnect();
-                else
-                    m_iShoutFailures++;
+            if ( m_iShoutFailures > 3 ){
+                    if(!serverConnect())
+                        errorDialog(tr("Lost connection to streaming server"), tr("Please check your connection to the Internet and verify that your username and password are correct."));
+             }                       
+             else{
+                m_iShoutFailures++;
+             }
 
             return;
         } else {
@@ -414,6 +420,7 @@ void EngineShoutcast::write(unsigned char *header, unsigned char *body,
             printf("DEBUG: queue length: %d\n", (int)shout_queuelen(m_pShout));
     } else {
         qDebug() << "Error connecting to Shoutcast server:" << shout_get_error(m_pShout);
+       // errorDialog(tr("Shoutcast aborted connect after 3 tries"), tr("Please check your connection to the Internet and verify that your username and password are correct."));
     }
 }
 
@@ -426,7 +433,7 @@ void EngineShoutcast::process(const CSAMPLE *, const CSAMPLE *pOut, const int iB
     QMutexLocker locker(&m_shoutMutex);
 	 //Check to see if Shoutcast is enabled, and pass the samples off to be broadcast if necessary.
      bool prefEnabled = (m_pConfig->getValueString(ConfigKey("[Shoutcast]","enabled")).toInt() == 1);
-     
+
     if (prefEnabled) {
 	    if(!isConnected()){
 			//Initialize the m_pShout structure with the info from Mixxx's m_shoutcast preferences.
@@ -436,9 +443,13 @@ void EngineShoutcast::process(const CSAMPLE *, const CSAMPLE *pOut, const int iB
 				ErrorDialogProperties* props = ErrorDialogHandler::instance()->newDialogProperties();
 				props->setType(DLG_INFO);
 				props->setTitle(tr("Live broadcasting"));
-				props->setText(tr("Mixxx has successfully connected to the shoutcast server"));  
+				props->setText(tr("Mixxx has successfully connected to the shoutcast server"));
 				ErrorDialogHandler::instance()->requestErrorDialog(props);
-			}	
+			}
+            else{
+                errorDialog(tr("Mixxx could not connect to streaming server"), tr("Please check your connection to the Internet and verify that your username and password are correct."));
+
+            }
 		}
         //send to shoutcast, if connection has been established
         if (m_iShoutStatus != SHOUTERR_CONNECTED)
@@ -450,28 +461,28 @@ void EngineShoutcast::process(const CSAMPLE *, const CSAMPLE *pOut, const int iB
         //Check if track has changed and submit its new metadata to shoutcast
         if (metaDataHasChanged())
             updateMetaData();
- 
+
         if (m_pUpdateShoutcastFromPrefs->get() > 0.0f){
 	        /*
 			 * You cannot change bitrate, hostname, etc while connected to a stream
 		     */
-			serverDisconnect(); 
+			serverDisconnect();
 			updateFromPreferences();
-			serverConnect();  
+			serverConnect();
 		}
      }
-    //if shoutcast is disabled	
+    //if shoutcast is disabled
 	else{
 		if(isConnected()){
-			serverDisconnect(); 
+			serverDisconnect();
 			ErrorDialogProperties* props = ErrorDialogHandler::instance()->newDialogProperties();
 			props->setType(DLG_INFO);
 			props->setTitle(tr("Live broadcasting"));
 			props->setText(tr("Mixxx has successfully disconnected to the shoutcast server"));
-				    
+
 			ErrorDialogHandler::instance()->requestErrorDialog(props);
 		}
-	} 
+	}
 }
 
 /*
@@ -557,7 +568,7 @@ bool EngineShoutcast::metaDataHasChanged()
         break;
     case 1:
         // track 1 is active
-        newMetaData = PlayerInfo::Instance().getTrackInfo(1);
+        newMetaData = PlayerInfo::Instance().getTrackInfo("[Channel1]");
         if (newMetaData != m_pMetaData)
         {
             m_pMetaData = newMetaData;
@@ -565,8 +576,8 @@ bool EngineShoutcast::metaDataHasChanged()
         }
         break;
     case 2:
-        // track 2 is active   
-		newMetaData = PlayerInfo::Instance().getTrackInfo(2);
+        // track 2 is active
+		newMetaData = PlayerInfo::Instance().getTrackInfo("[Channel2]");
 		if (newMetaData != m_pMetaData)
         {
             m_pMetaData = newMetaData;
@@ -598,9 +609,9 @@ void EngineShoutcast::updateMetaData()
      * This works only for MP3 streams properly as stated in comments, see shout.h
 	 * WARNING: Changing OGG metadata dynamically by using shout_set_metadata
 	 * will cause stream interruptions to listeners
-	 * 
+	 *
 	 * Also note: Do not try to include Vorbis comments in OGG packages and send them to stream.
-	 * This was done in EncoderVorbis previously and caused interruptions on track change as well 
+	 * This was done in EncoderVorbis previously and caused interruptions on track change as well
 	 * which sounds awful to listeners.
 
 	 * To conlcude: Only write OGG metadata one time, i.e., if static metadata is used.
@@ -613,7 +624,12 @@ void EngineShoutcast::updateMetaData()
 		    // convert QStrings to char*s
 		    QByteArray baArtist = m_pMetaData->getArtist().toLatin1();
 		    QByteArray baTitle = m_pMetaData->getTitle().toLatin1();
-		    baSong = baArtist + " - " + baTitle;
+		    
+		    if (baArtist.isEmpty())
+		        baSong = baTitle;
+		    else
+		        baSong = baArtist + " - " + baTitle;
+
 			/** Update metadata */
 			shout_metadata_add(m_pShoutMetaData, "song",  baSong.data());
     		shout_set_metadata(m_pShout, m_pShoutMetaData);
@@ -630,8 +646,8 @@ void EngineShoutcast::updateMetaData()
 			m_firstCall = true;
 		}
 	}
-	
-    
+
+
 }
 /* -------- ------------------------------------------------------
 Purpose: Common error dialog creation code for run-time exceptions
@@ -644,13 +660,13 @@ void EngineShoutcast::errorDialog(QString text, QString detailedError) {
     ErrorDialogProperties* props = ErrorDialogHandler::instance()->newDialogProperties();
     props->setType(DLG_WARNING);
     props->setTitle(tr("Live broadcasting"));
-    props->setText(tr(text));
-    props->setDetails(tr(detailedError));
-    props->setKey(tr(detailedError));   // To prevent multiple windows for the same error
+    props->setText(text);
+    props->setDetails(detailedError);
+    props->setKey(detailedError);   // To prevent multiple windows for the same error
     props->setDefaultButton(QMessageBox::Close);
-    
+
     props->setModal(false);
-    
+
     ErrorDialogHandler::instance()->requestErrorDialog(props);
 }
 

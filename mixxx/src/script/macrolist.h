@@ -1,8 +1,6 @@
 #ifndef SCRIPT_MACROLIST_H
 #define SCRIPT_MACROLIST_H
 
-#include <q3listview.h>
-
 #include "scriptengine.h"
 
 class ScriptEngine;

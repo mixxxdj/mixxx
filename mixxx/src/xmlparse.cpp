@@ -11,10 +11,6 @@
 //
 
 #include "xmlparse.h"
-#ifdef QT3_SUPPORT
-#include <Q3ValueList>
-#include <Q3MemArray>
-#endif
 
 XmlParse::XmlParse()
 {
@@ -57,11 +53,7 @@ QString XmlParse::selectNodeQString(const QDomNode &nodeHeader, const QString sN
     return ret;
 }
 
-#ifdef QT3_SUPPORT
-Q3MemArray<long> * XmlParse::selectNodeLongArray(const QDomNode &nodeHeader, const QString sNode)
-#else
-Q3MemArray<long> * XmlParse::selectNodeLongArray(const QDomNode &nodeHeader, const QString sNode)
-#endif
+QVector<long> * XmlParse::selectNodeLongArray(const QDomNode &nodeHeader, const QString sNode)
 {
     QString s;
     QDomNode node = selectNode(nodeHeader, sNode);
@@ -75,11 +67,7 @@ Q3MemArray<long> * XmlParse::selectNodeLongArray(const QDomNode &nodeHeader, con
         
         }
     }
-#ifdef QT3_SUPPORT
-    Q3MemArray<long> *data = new Q3MemArray<long>(s.length()/4);
-#else
-    Q3MemArray<long> *data = new Q3MemArray<long>(s.length()/4);
-#endif
+    QVector<long> *data = new QVector<long>(s.length()/4);
     for (unsigned int i=0; i<s.length()/4; ++i)
     {
         unsigned char c4 = s.at(i*4).toLatin1();
@@ -89,16 +77,12 @@ Q3MemArray<long> * XmlParse::selectNodeLongArray(const QDomNode &nodeHeader, con
 
         long v = (long)(c1) + (long)(c2)*0x100 + (long)(c3)*0x10000 + (long)(c4)*0x1000000;
 
-        data->at(i) = v;
+        (*data)[i] = v;
     }
     return data;
 }
 
-#ifdef QT3_SUPPORT
-Q3MemArray<char> * XmlParse::selectNodeCharArray(const QDomNode &nodeHeader, const QString sNode)
-#else
-Q3MemArray<char> * XmlParse::selectNodeCharArray(const QDomNode &nodeHeader, const QString sNode)
-#endif
+QVector<char> * XmlParse::selectNodeCharArray(const QDomNode &nodeHeader, const QString sNode)
 {
     QString s;
     QDomNode node = selectNode(nodeHeader, sNode);
@@ -112,18 +96,14 @@ Q3MemArray<char> * XmlParse::selectNodeCharArray(const QDomNode &nodeHeader, con
         }
     }
     
-    Q3MemArray<char> *data = new Q3MemArray<char>(s.length());
+    QVector<char> *data = new QVector<char>(s.length());
     for (unsigned int i=0; i<s.length(); ++i)
-        data->at(i) = s.at(i).toLatin1();
+        (*data)[i] = s.at(i).toLatin1();
     
     return data;
 }
 
-#ifdef QT3_SUPPORT
-Q3MemArray<char> * XmlParse::selectNodeHexCharArray(const QDomNode &nodeHeader, const QString sNode)
-#else
-Q3MemArray<char> * XmlParse::selectNodeHexCharArray(const QDomNode &nodeHeader, const QString sNode)
-#endif
+QVector<char> * XmlParse::selectNodeHexCharArray(const QDomNode &nodeHeader, const QString sNode)
 {
     QString hexdata;
     QDomNode node = selectNode(nodeHeader, sNode);
@@ -133,33 +113,20 @@ Q3MemArray<char> * XmlParse::selectNodeHexCharArray(const QDomNode &nodeHeader, 
     int wavebytes = hexdata.length() / 2;
     if (wavebytes == 0) { return 0; }
 
-#ifdef QT3_SUPPORT
-    Q3MemArray<char> *data = new Q3MemArray<char>(wavebytes);
-#else
-    Q3MemArray<char> *data = new Q3MemArray<char>(wavebytes);
-#endif
+    QVector<char> *data = new QVector<char>(wavebytes);
 
     bool ok = true;
     for (int i=0; i<wavebytes; ++i) {
         int byte = hexdata.mid(i*2, 2).toInt(&ok, 16);
-        data->at(i) = (char)byte;
+        (*data)[i] = (char)byte;
     }
     return data;
 }
 
-#ifdef QT3_SUPPORT
-Q3ValueList<long> * XmlParse::selectNodeLongList(const QDomNode &nodeHeader, const QString sNode)
-#else
-Q3ValueList<long> * XmlParse::selectNodeLongList(const QDomNode &nodeHeader, const QString sNode)
-#endif
+QList<long> * XmlParse::selectNodeLongList(const QDomNode &nodeHeader, const QString sNode)
 {
-#ifdef QT3_SUPPORT
-    Q3MemArray<long> *p = selectNodeLongArray(nodeHeader, sNode);
-    Q3ValueList<long> *data = new Q3ValueList<long>;
-#else
-    Q3MemArray<long> *p = selectNodeLongArray(nodeHeader, sNode);
-    Q3ValueList<long> *data = new Q3ValueList<long>;
-#endif
+    QVector<long> *p = selectNodeLongArray(nodeHeader, sNode);
+    QList<long> *data = new QList<long>;
     for (unsigned int i=0; i<p->size(); ++i)
         data->append(p->at(i));
     return data;
@@ -173,18 +140,14 @@ QDomElement XmlParse::addElement(QDomDocument &doc, QDomElement &header, QString
     return element;
 }
 
-#ifdef QT3_SUPPORT
-QDomElement XmlParse::addElement(QDomDocument &doc, QDomElement &header, QString sElementName, Q3ValueList<long> * pData)
-#else
-QDomElement XmlParse::addElement(QDomDocument &doc, QDomElement &header, QString sElementName, Q3ValueList<long> * pData)
-#endif
+QDomElement XmlParse::addElement(QDomDocument &doc, QDomElement &header, QString sElementName, QList<long> * pData)
 {
     // Create a string, binstring, that contains the data contained pointet to by pData, and save it in XML
     // by use of QDomCDATASection
     QString binstring;
     for (unsigned int i=0; i<pData->size(); ++i)
     {
-        long v = (*pData->at(i));
+        long v = (pData->at(i));
 
         // Split long value into four chars
         unsigned char c1 = v&0x000000ff;
@@ -204,11 +167,7 @@ QDomElement XmlParse::addElement(QDomDocument &doc, QDomElement &header, QString
     return element;
 }
 
-#ifdef QT3_SUPPORT
-QDomElement XmlParse::addElement(QDomDocument &doc, QDomElement &header, QString sElementName, Q3MemArray<char> * pData)
-#else
-QDomElement XmlParse::addElement(QDomDocument &doc, QDomElement &header, QString sElementName, Q3MemArray<char> * pData)
-#endif
+QDomElement XmlParse::addElement(QDomDocument &doc, QDomElement &header, QString sElementName, QVector<char> * pData)
 {
     // Create a string, binstring, that contains the data contained pointet to by pData, and save it in XML
     // by use of QDomCDATASection
@@ -222,20 +181,12 @@ QDomElement XmlParse::addElement(QDomDocument &doc, QDomElement &header, QString
     return element;
 }
 
-#ifdef QT3_SUPPORT
-QDomElement XmlParse::addHexElement(QDomDocument &doc, QDomElement &header, QString sElementName, Q3MemArray<char> * pData)
-#else
-QDomElement XmlParse::addHexElement(QDomDocument &doc, QDomElement &header, QString sElementName, Q3MemArray<char> * pData)
-#endif
+QDomElement XmlParse::addHexElement(QDomDocument &doc, QDomElement &header, QString sElementName, QVector<char> * pData)
 {
     QDomElement element = doc.createElement(sElementName);
 
     QString hexdata("");
-#ifdef QT3_SUPPORT
-    Q3MemArray<char>::ConstIterator ci;
-#else
-    Q3MemArray<char>::ConstIterator ci;
-#endif
+    QVector<char>::ConstIterator ci;
     for (ci = pData->begin(); ci != pData->end(); ci++) {
         char raw = *ci;
         hexdata.append(QString::number((raw & 0xf0) >> 4, 16));

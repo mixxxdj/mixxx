@@ -87,11 +87,11 @@ bool ErrorDialogHandler::requestErrorDialog(DialogType type, QString message) {
     props->setType(type);
     props->setText(message);
     switch (type) {
-        case DLG_FATAL:     props->setTitle("Fatal error"); break;
-        case DLG_CRITICAL:  props->setTitle("Critical error"); break;
-        case DLG_WARNING:   props->setTitle("Warning"); break;
-        case DLG_INFO:      props->setTitle("Information"); break;
-        case DLG_QUESTION:  props->setTitle("Question"); break;
+        case DLG_FATAL:     props->setTitle(tr("Fatal error")); break;
+        case DLG_CRITICAL:  props->setTitle(tr("Critical error")); break;
+        case DLG_WARNING:   props->setTitle(tr("Warning")); break;
+        case DLG_INFO:      props->setTitle(tr("Information")); break;
+        case DLG_QUESTION:  props->setTitle(tr("Question")); break;
         case DLG_NONE:
         default:
             // Default title & (lack of) icon is fine

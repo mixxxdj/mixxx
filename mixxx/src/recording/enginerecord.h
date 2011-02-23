@@ -36,6 +36,7 @@ class ConfigKey;
 class ControlObject;
 
 class EngineRecord : public EngineAbstractRecord {
+    Q_OBJECT
   public:
     EngineRecord(ConfigObject<ConfigValue> *_config);
     virtual ~EngineRecord();
@@ -67,6 +68,8 @@ class EngineRecord : public EngineAbstractRecord {
 
     ControlObjectThread* m_recReady;
     ControlObject* m_recReadyCO;
+
+    ControlObjectThread* m_samplerate;
 };
 
 #endif

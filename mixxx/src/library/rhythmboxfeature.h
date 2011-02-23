@@ -7,6 +7,7 @@
 #include <QStringListModel>
 
 #include "library/libraryfeature.h"
+#include "treeitemmodel.h"
 
 class RhythmboxPlaylistModel;
 class RhythmboxTrackModel;
@@ -27,7 +28,7 @@ class RhythmboxFeature : public LibraryFeature {
     bool dragMoveAccept(QUrl url);
     bool dragMoveAcceptChild(const QModelIndex& index, QUrl url);
 
-    QAbstractItemModel* getChildModel();
+    TreeItemModel* getChildModel();
 
 public slots:
     void activate();
@@ -40,7 +41,7 @@ private:
     RhythmboxPlaylistModel* m_pRhythmboxPlaylistModel;
     ProxyTrackModel* m_pTrackModelProxy;
     ProxyTrackModel* m_pPlaylistModelProxy;
-    QStringListModel m_childModel;
+    TreeItemModel m_childModel;
 };
 
 #endif /* RHYTHMBOXFEATURE_H */

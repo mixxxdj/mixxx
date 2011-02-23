@@ -17,5 +17,5 @@ class MacroListItem : public Q3ListViewItem {
 	private:
 		Macro* m_macro;
 };
-	
+
 #endif

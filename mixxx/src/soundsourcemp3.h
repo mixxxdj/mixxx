@@ -35,7 +35,6 @@
 //#include <sys/stat.h>
 //#include <unistd.h>
 #include <id3tag.h>
-#include <q3ptrlist.h>
 
 #define READLENGTH 5000
 
@@ -96,7 +95,9 @@ private:
       * of past decodeded frame, and their exact position. If a seek occours and it is within the
       * range of frames we keep track of a precise seek occours, otherwise an unprecise seek is performed
       */
-    Q3PtrList<MadSeekFrameType> m_qSeekList;
+    QList<MadSeekFrameType*> m_qSeekList;
+    /** Index iterator for m_qSeekList. Helps us keep track of where we are in the file. */
+    long m_currentSeekFrameIndex;
     /** Average frame size used when searching for a frame*/
     int m_iAvgFrameSize;
 };

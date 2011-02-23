@@ -19,23 +19,27 @@
 #include <QDebug>
 #include <QDesktopServices>
 #include <QWebFrame>
+#include "library/trackcollection.h"
+#include "library/dao/trackdao.h"
 #include "bundledsongswebview.h"
 
 #define CONFIG_KEY "[Promo]"
 
-BundledSongsWebView::BundledSongsWebView(QWidget* parent, QString promoBundlePath, 
+BundledSongsWebView::BundledSongsWebView(QWidget* parent,
+                                         TrackCollection* trackCollection,
+                                         QString promoBundlePath,
                                          QString localURL, bool firstRun,
-                                         ConfigObject<ConfigValue>* config) : 
-                             
-    QWebView(parent), 
-    LibraryView(), 
+                                         ConfigObject<ConfigValue>* config) :
+    QWebView(parent),
+    LibraryView(),
+    m_pTrackCollection(trackCollection),
     m_bFirstRun(firstRun),
     m_pConfig(config)
 {
     m_sPromoBundlePath = promoBundlePath;
     m_sLocalURL = localURL;
     m_statTracking = (int)m_pConfig->getValueString(ConfigKey(CONFIG_KEY,"StatTracking")).toInt();
-    
+
     //Disable right-click
     QWidget::setContextMenuPolicy(Qt::PreventContextMenu);
 
@@ -44,8 +48,8 @@ BundledSongsWebView::BundledSongsWebView(QWidget* parent, QString promoBundlePat
     connect(page()->mainFrame(), SIGNAL(loadStarted()), this, SLOT(attachObjects()));
     attachObjects();
     connect(page()->mainFrame(), SIGNAL(javaScriptWindowObjectCleared()), this, SLOT(attachObjects()) );
-    
-    //Load the promo tracks webpage 
+
+    //Load the promo tracks webpage
     QWebView::load(QUrl(m_sLocalURL));
 
     //Let us manually handle links that are clicked via the linkClicked()
@@ -83,7 +87,7 @@ void BundledSongsWebView::loadFinished(bool ok)
 
 void BundledSongsWebView::onShow()
 {
-    qDebug() << ">>>>>>BundledSongsWebView::onShow()";
+    //qDebug() << ">>>>>>BundledSongsWebView::onShow()";
     //Trigger the splash() function that's defined in our HTML page's javascript
     //Qt rocks!
     //if (firstRun())
@@ -103,17 +107,32 @@ void BundledSongsWebView::handleClickedLink(const QUrl& url)
 {
     //qDebug() << "link clicked!" << url;
 
-    if (url.scheme() == "deck1")
+    if (url.scheme().startsWith("deck"))
     {
-        TrackInfoObject* track = new TrackInfoObject(m_sPromoBundlePath + "/" + url.path());
-        TrackPointer pTrack = TrackPointer(track, &QObject::deleteLater);
-        emit(loadTrackToPlayer(pTrack, 1));
-    }
-    else if (url.scheme() == "deck2")
-    {
-        TrackInfoObject* track = new TrackInfoObject(m_sPromoBundlePath + "/" + url.path());
-        TrackPointer pTrack = TrackPointer(track, &QObject::deleteLater);
-        emit(loadTrackToPlayer(pTrack, 2));
+        QString location = m_sPromoBundlePath + "/" + url.path();
+        QFileInfo fileInfo(location);
+        location = fileInfo.absoluteFilePath();
+
+        // Try to get TrackInfoObject* from library, identified by location.
+        TrackDAO& trackDao = m_pTrackCollection->getTrackDAO();
+        TrackPointer pTrack = trackDao.getTrack(trackDao.getTrackId(location));
+        // If not, create a new TrackInfoObject*
+        if (pTrack == NULL)
+        {
+            qDebug () << "Didn't find promo track in the library";
+            pTrack = TrackPointer(new TrackInfoObject(location), &QObject::deleteLater);
+            //Let's immediately save the track so that the FIXME
+            trackDao.saveTrack(pTrack);
+        }
+
+        if (url.scheme() == "deck1")
+        {
+            emit(loadTrackToPlayer(pTrack, "[Channel1]"));
+        }
+        else if (url.scheme() == "deck2")
+        {
+            emit(loadTrackToPlayer(pTrack, "[Channel2]"));
+        }
     }
     else
     {
@@ -131,25 +150,25 @@ void BundledSongsWebView::keyPressEvent(QKeyEvent* event)
     //code to start with...
 }
 
-bool BundledSongsWebView::statTracking() const 
-{ 
-    return m_statTracking; 
+bool BundledSongsWebView::statTracking() const
+{
+    return m_statTracking;
 };
 
-void BundledSongsWebView::setStatTracking(bool statTracking) 
-{ 
-    qDebug() << "setStatTracking" << statTracking;
+void BundledSongsWebView::setStatTracking(bool statTracking)
+{
+    //qDebug() << "setStatTracking" << statTracking;
     m_statTracking = statTracking;
     m_pConfig->set(ConfigKey(CONFIG_KEY,"StatTracking"), ConfigValue(m_statTracking));
 };
 
 
-bool BundledSongsWebView::firstRun() const 
-{ 
-    return m_bFirstRun; 
+bool BundledSongsWebView::firstRun() const
+{
+    return m_bFirstRun;
 };
 
-void BundledSongsWebView::setFirstRun(bool firstRun) 
-{ 
+void BundledSongsWebView::setFirstRun(bool firstRun)
+{
     m_bFirstRun = firstRun;
 };
