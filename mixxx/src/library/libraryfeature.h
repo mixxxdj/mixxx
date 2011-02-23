@@ -53,6 +53,10 @@ class LibraryFeature : public QObject {
     void loadTrack(TrackPointer pTrack);
     void loadTrackToPlayer(TrackPointer pTrack, QString group);
     void restoreSearch(const QString&);
+    void featureIsLoading(LibraryFeature*);
+    void featureLoadingFinished(LibraryFeature*s);
+
+
 };
 
 #endif /* LIBRARYFEATURE_H */

@@ -11,7 +11,7 @@
  ********************************************************************
 
  function: stdio-based convenience library for opening/seeking/decoding
- last mod: $Id: vorbisfile.h 16243 2009-07-10 02:49:31Z xiphmont $
+ last mod: $Id: vorbisfile.h 17182 2010-04-29 03:48:32Z xiphmont $
 
  ********************************************************************/
 
@@ -47,7 +47,7 @@ typedef struct {
 
 /* a few sets of convenient callbacks, especially for use under
  * Windows where ov_open_callbacks() should always be used instead of
- * ov_open() to avoid problems with incompatable crt.o version linking
+ * ov_open() to avoid problems with incompatible crt.o version linking
  * issues. */
 
 static int _ov_header_fseek_wrap(FILE *f,ogg_int64_t off,int whence){
@@ -122,7 +122,7 @@ typedef struct OggVorbis_File {
   ogg_int64_t     *dataoffsets;
   long            *serialnos;
   ogg_int64_t     *pcmlengths; /* overloaded to maintain binary
-                                  compatability; x2 size, stores both
+                                  compatibility; x2 size, stores both
                                   beginning and end values */
   vorbis_info     *vi;
   vorbis_comment  *vc;
@@ -147,14 +147,14 @@ typedef struct OggVorbis_File {
 
 
 extern int ov_clear(OggVorbis_File *vf);
-extern int ov_fopen(char *path,OggVorbis_File *vf);
-extern int ov_open(FILE *f,OggVorbis_File *vf,char *initial,long ibytes);
+extern int ov_fopen(const char *path,OggVorbis_File *vf);
+extern int ov_open(FILE *f,OggVorbis_File *vf,const char *initial,long ibytes);
 extern int ov_open_callbacks(void *datasource, OggVorbis_File *vf,
-                char *initial, long ibytes, ov_callbacks callbacks);
+                const char *initial, long ibytes, ov_callbacks callbacks);
 
-extern int ov_test(FILE *f,OggVorbis_File *vf,char *initial,long ibytes);
+extern int ov_test(FILE *f,OggVorbis_File *vf,const char *initial,long ibytes);
 extern int ov_test_callbacks(void *datasource, OggVorbis_File *vf,
-                char *initial, long ibytes, ov_callbacks callbacks);
+                const char *initial, long ibytes, ov_callbacks callbacks);
 extern int ov_test_open(OggVorbis_File *vf);
 
 extern long ov_bitrate(OggVorbis_File *vf,int i);

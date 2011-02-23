@@ -8,3 +8,4 @@
 LibraryFeature::LibraryFeature(QObject* parent)
     : QObject(parent) {
 }
+
