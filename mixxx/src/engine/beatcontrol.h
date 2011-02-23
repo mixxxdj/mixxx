@@ -8,7 +8,7 @@
 #include "engine/enginecontrol.h"
 
 #include "trackinfoobject.h"
-#include "trackbeats.h"
+#include "beats.h"
 
 class ControlPushButton;
 class ControlObject;
@@ -19,17 +19,16 @@ class CachingReader;
 class BeatControl : public EngineControl {
     Q_OBJECT
 public:
-	BeatControl(const char * _group, ConfigObject<ConfigValue> * _config, CachingReader *, double beats = 0);
-	virtual ~BeatControl();
-	double process(const double dRate,
+    BeatControl(const char * _group, ConfigObject<ConfigValue> * _config, CachingReader *, double beats = 0);
+    virtual ~BeatControl();
+    double process(const double dRate,
                    const double currentSample,
                    const double totalSamples,
                    const int iBufferSize);
 
 public slots:
-	void slotTrackLoaded(TrackPointer tio, 
-                            int iTrackSampleRate, int iTrackNumSamples);
-	void slotUpdatedTrackBeats(int);
+    void slotTrackLoaded(TrackPointer tio, int iSampleRate, int iNumSamples);
+    void slotUpdatedTrackBeats(int);
     void slotBeatLoop(double);
     void slotBeatSeek(double);
     void slotBeatLoopSize(int);
@@ -37,7 +36,6 @@ public slots:
 
 private:
     ConfigKey keyForControl(const char * _group, QString ctrlName, double num);
-
 
     int m_iCurrentSample;
 
@@ -48,7 +46,7 @@ private:
     CachingReader *m_pReader;
 
     TrackPointer m_pTrack;
-    TrackBeatsPointer m_pTrackBeats;
+    BeatsPointer m_pBeats;
 
     ControlObjectThread *m_pCOLoopStart;
     ControlObjectThread *m_pCOLoopEnd;
