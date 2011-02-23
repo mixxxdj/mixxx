@@ -145,7 +145,7 @@ void WOverview::setValue(double fValue)
     if (!m_bDrag)
     {
         // Calculate handle position
-        m_iPos = (int)(((fValue-64.)/64.)*((double)width()-2.));
+        m_iPos = (int)(((fValue-14.)/100.)*((double)width()-2.));
         update();
     }
 }
@@ -319,7 +319,8 @@ void WOverview::mouseReleaseEvent(QMouseEvent * e)
     mouseMoveEvent(e);
 
     // value ranges from 0 to 127 map to -1 to 1
-    float fValue = ((double)m_iPos*(64./(double)(width()-2))) + 64.;
+    float fValue = ((double)m_iPos*(100./(double)(width()-2))) + 14.;
+    qDebug() << "mouse release" << m_iPos << fValue;
 
     if (e->button()==Qt::RightButton)
         emit(valueChangedRightUp(fValue));
