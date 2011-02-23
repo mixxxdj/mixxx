@@ -74,15 +74,19 @@ VinylControlXwax::VinylControlXwax(ConfigObject<ConfigValue> * pConfig, const ch
         qDebug() << "Unknown vinyl type, defaulting to serato_2a";
         timecode = (char*)"serato_2a";
     }
+    
+    double speed = 1.0f;
+    if (strVinylSpeed == MIXXX_VINYL_SPEED_45)
+    	speed = 1.35f;
 
     //qDebug() << "Xwax Vinyl control starting with a sample rate of:" << iSampleRate;
-    qDebug() << "Building timecode lookup tables...";
+    qDebug() << "Building timecode lookup tables for" << strVinylType << "with speed" << strVinylSpeed;
 
     
     //Initialize the timecoder structure.
     m_xwaxLUTMutex.lock(); //Static mutex! We don't want two threads doing this!
-   
-    timecoder_init(&timecoder, timecode, 1.0f, iSampleRate);
+    
+    timecoder_init(&timecoder, timecode, speed, iSampleRate);
     timecoder_monitor_init(&timecoder, MIXXX_VINYL_SCOPE_SIZE);
     //Note that timecoder_init will not double-malloc the LUTs, and after this we are guaranteed
     //that the LUT has been generated unless we ran out of memory.

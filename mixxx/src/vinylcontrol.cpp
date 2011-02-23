@@ -35,7 +35,10 @@ VinylControl::VinylControl(ConfigObject<ConfigValue> * pConfig, const char * _gr
     m_fTimecodeQuality = 0.0f;
 
     //Get the vinyl type
-    strVinylType = m_pConfig->getValueString(ConfigKey("[VinylControl]","strVinylType"));
+    strVinylType = m_pConfig->getValueString(ConfigKey(group,"strVinylType"));
+    
+    //Get the vinyl speed
+    strVinylSpeed = m_pConfig->getValueString(ConfigKey(group,"strVinylSpeed"));
 
     //Get the lead-in time
     iLeadInTime = m_pConfig->getValueString(ConfigKey("[VinylControl]","LeadInTime")).toInt();

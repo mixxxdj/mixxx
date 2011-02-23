@@ -18,6 +18,9 @@ class ControlObjectThread;
 #define MIXXX_VINYL_TRAKTORSCRATCHSIDEA "Traktor Scratch, side A"
 #define MIXXX_VINYL_TRAKTORSCRATCHSIDEB "Traktor Scratch, side B"
 
+#define MIXXX_VINYL_SPEED_33 "33.3 RPM"
+#define MIXXX_VINYL_SPEED_45 "45 RPM"
+
 #define MIXXX_VCMODE_ABSOLUTE 0
 #define MIXXX_VCMODE_RELATIVE 1
 #define MIXXX_VCMODE_CONSTANT  2
@@ -47,6 +50,7 @@ class VinylControl : public QThread
 	    virtual void run() = 0;						// main thread loop
 
 	    QString strVinylType;
+	    QString strVinylSpeed;
         ConfigObject<ConfigValue> *m_pConfig;	/** Pointer to config database */
         const char* group;
     	ControlObjectThread *playButton;		//The ControlObject used to start/stop playback of the song.
