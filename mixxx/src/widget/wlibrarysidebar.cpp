@@ -1,5 +1,6 @@
 #include <QtCore>
 #include <QtGui>
+
 #include "library/sidebarmodel.h"
 #include "widget/wlibrarysidebar.h"
 
@@ -160,4 +161,10 @@ void WLibrarySidebar::keyPressEvent(QKeyEvent* event)
     }
     else
         QTreeView::keyPressEvent(event);
+}
+
+void WLibrarySidebar::selectIndex(const QModelIndex& index) {
+    QItemSelectionModel* pModel = new QItemSelectionModel(model());
+    pModel->select(index, QItemSelectionModel::Select);
+    setSelectionModel(pModel);
 }
