@@ -229,9 +229,10 @@ void LoopingControl::slotLoopEndPos(double pos) {
         newpos--;
     }
 
-    // Reject if the loop-in is not set, or if this is before the start point.
+    // Reject if the loop-in is not set, or if the new position is before the
+    // start point (but not -1).
     if (m_iLoopStartSample == -1 ||
-        newpos < m_iLoopStartSample) {
+        (newpos >= 0 && newpos < m_iLoopStartSample)) {
         return;
     }
 

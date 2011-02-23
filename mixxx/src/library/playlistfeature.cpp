@@ -38,6 +38,10 @@ PlaylistFeature::PlaylistFeature(QObject* parent, TrackCollection* pTrackCollect
     connect(m_pRenamePlaylistAction, SIGNAL(triggered()),
             this, SLOT(slotRenamePlaylist()));
 
+    m_pLockPlaylistAction = new QAction(tr("Lock"),this);
+    connect(m_pLockPlaylistAction, SIGNAL(triggered()),
+            this, SLOT(slotTogglePlaylistLock()));
+
     m_pImportPlaylistAction = new QAction(tr("Import Playlist"),this);
     connect(m_pImportPlaylistAction, SIGNAL(triggered()),
             this, SLOT(slotImportPlaylist()));
@@ -45,26 +49,14 @@ PlaylistFeature::PlaylistFeature(QObject* parent, TrackCollection* pTrackCollect
     // Setup the sidebar playlist model
     m_playlistTableModel.setTable("Playlists");
     m_playlistTableModel.setFilter("hidden=0");
-    m_playlistTableModel.removeColumn(m_playlistTableModel.fieldIndex("id"));
-    m_playlistTableModel.removeColumn(m_playlistTableModel.fieldIndex("position"));
-    m_playlistTableModel.removeColumn(m_playlistTableModel.fieldIndex("date_created"));
-    m_playlistTableModel.removeColumn(m_playlistTableModel.fieldIndex("date_modified"));
     m_playlistTableModel.setSort(m_playlistTableModel.fieldIndex("name"),
                                  Qt::AscendingOrder);
     m_playlistTableModel.select();
-    
-	//construct child model
-    TreeItem *rootItem = new TreeItem("$root","$root", this);
 
-    int idColumn = m_playlistTableModel.record().indexOf("name");
-    for (int row = 0; row < m_playlistTableModel.rowCount(); ++row) {
-            QModelIndex ind = m_playlistTableModel.index(row, idColumn);
-            QString playlist_name = m_playlistTableModel.data(ind).toString();
-            TreeItem *playlist_item = new TreeItem(playlist_name, playlist_name, this, rootItem);
-            rootItem->appendChild(playlist_item);
-            
-    }
+    //construct child model
+    TreeItem *rootItem = new TreeItem();
     m_childModel.setRootItem(rootItem);
+    constructChildModel();
 }
 
 PlaylistFeature::~PlaylistFeature() {
@@ -73,6 +65,7 @@ PlaylistFeature::~PlaylistFeature() {
     delete m_pDeletePlaylistAction;
     delete m_pImportPlaylistAction;
     delete m_pRenamePlaylistAction;
+    delete m_pLockPlaylistAction;
 }
 
 QVariant PlaylistFeature::title() {
@@ -120,6 +113,16 @@ void PlaylistFeature::onRightClick(const QPoint& globalPos) {
 void PlaylistFeature::onRightClickChild(const QPoint& globalPos, QModelIndex index) {
     //Save the model index so we can get it in the action slots...
     m_lastRightClickedIndex = index;
+    QString playlistName = index.data().toString();
+    int playlistId = m_playlistDao.getPlaylistIdFromName(playlistName);
+
+
+    bool locked = m_playlistDao.isPlaylistLocked(playlistId);
+    m_pDeletePlaylistAction->setEnabled(!locked);
+    m_pRenamePlaylistAction->setEnabled(!locked);
+
+    m_pLockPlaylistAction->setText(locked ? tr("Unlock") : tr("Lock"));
+
 
     //Create the right-click menu
     QMenu menu(NULL);
@@ -127,6 +130,7 @@ void PlaylistFeature::onRightClickChild(const QPoint& globalPos, QModelIndex ind
     menu.addSeparator();
     menu.addAction(m_pRenamePlaylistAction);
     menu.addAction(m_pDeletePlaylistAction);
+    menu.addAction(m_pLockPlaylistAction);
     menu.addSeparator();
     menu.addAction(m_pImportPlaylistAction);
     menu.exec(globalPos);
@@ -144,12 +148,12 @@ void PlaylistFeature::slotCreatePlaylist() {
                                      QLineEdit::Normal,
                                      tr("New Playlist"),
                                      &ok).trimmed();
-                                             
+
         if (!ok)
             return;
 
         int existingId = m_playlistDao.getPlaylistIdFromName(name);
-        
+
         if (existingId != -1) {
             QMessageBox::warning(NULL,
                                  tr("Playlist Creation Failed"),
@@ -163,7 +167,7 @@ void PlaylistFeature::slotCreatePlaylist() {
         else {
             validNameGiven = true;
         }
-                                             
+
     } while (!validNameGiven);
 
     bool playlistCreated = m_playlistDao.createPlaylist(name);
@@ -193,10 +197,16 @@ void PlaylistFeature::slotRenamePlaylist()
 
     QString oldName = m_lastRightClickedIndex.data().toString();
     int playlistId = m_playlistDao.getPlaylistIdFromName(oldName);
-    
+    bool locked = m_playlistDao.isPlaylistLocked(playlistId);
+
+    if (locked) {
+        qDebug() << "Skipping playlist rename because playlist" << playlistId << "is locked.";
+        return;
+    }
+
     QString newName;
     bool validNameGiven = false;
-    
+
     do {
         bool ok = false;
         newName = QInputDialog::getText(NULL,
@@ -205,13 +215,13 @@ void PlaylistFeature::slotRenamePlaylist()
                                         QLineEdit::Normal,
                                         oldName,
                                         &ok).trimmed();
-  
+
         if (!ok || oldName == newName) {
             return;
         }
 
         int existingId = m_playlistDao.getPlaylistIdFromName(newName);
-        
+
         if (existingId != -1) {
             QMessageBox::warning(NULL,
                                 tr("Renaming Playlist Failed"),
@@ -235,20 +245,43 @@ void PlaylistFeature::slotRenamePlaylist()
     m_pPlaylistTableModel->setPlaylist(playlistId);
 }
 
+
+void PlaylistFeature::slotTogglePlaylistLock()
+{
+    QString playlistName = m_lastRightClickedIndex.data().toString();
+    int playlistId = m_playlistDao.getPlaylistIdFromName(playlistName);
+    bool locked = !m_playlistDao.isPlaylistLocked(playlistId);
+
+    if (!m_playlistDao.setPlaylistLocked(playlistId, locked)) {
+        qDebug() << "Failed to toggle lock of playlistId " << playlistId;
+    }
+
+    TreeItem* playlistItem = m_childModel.getItem(m_lastRightClickedIndex);
+    playlistItem->setIcon(locked ? QIcon(":/images/library/ic_library_locked.png") : QIcon());
+}
+
 void PlaylistFeature::slotDeletePlaylist()
 {
     //qDebug() << "slotDeletePlaylist() row:" << m_lastRightClickedIndex.data();
-    if (m_lastRightClickedIndex.isValid()) {
-        int playlistId = m_playlistDao.getPlaylistIdFromName(m_lastRightClickedIndex.data().toString());
+    int playlistId = m_playlistDao.getPlaylistIdFromName(m_lastRightClickedIndex.data().toString());
+    bool locked = m_playlistDao.isPlaylistLocked(playlistId);
+
+    if (locked) {
+        qDebug() << "Skipping playlist deletion because playlist" << playlistId << "is locked.";
+        return;
+    }
+
+    if (m_lastRightClickedIndex.isValid() &&
+        !m_playlistDao.isPlaylistLocked(playlistId)) {
         Q_ASSERT(playlistId >= 0);
-        
+
         clearChildModel();
         m_playlistDao.deletePlaylist(playlistId);
         m_playlistTableModel.select();
         constructChildModel();
+        emit(featureUpdated());
     }
 
-    emit(featureUpdated());
 }
 
 bool PlaylistFeature::dropAccept(QUrl url) {
@@ -295,7 +328,12 @@ bool PlaylistFeature::dragMoveAccept(QUrl url) {
 
 bool PlaylistFeature::dragMoveAcceptChild(const QModelIndex& index, QUrl url) {
     //TODO: Filter by supported formats regex and reject anything that doesn't match.
-    return true;
+
+    QString playlistName = index.data().toString();
+    int playlistId = m_playlistDao.getPlaylistIdFromName(playlistName);
+    bool locked = m_playlistDao.isPlaylistLocked(playlistId);
+
+    return !locked;
 }
 
 TreeItemModel* PlaylistFeature::getChildModel() {
@@ -304,22 +342,36 @@ TreeItemModel* PlaylistFeature::getChildModel() {
 /**
   * Purpose: When inserting or removing playlists,
   * we require the sidebar model not to reset.
-  * This method queries the database and does dynamic insertion 
+  * This method queries the database and does dynamic insertion
 */
 void PlaylistFeature::constructChildModel()
 {
-    QList<QString> data_list;
+    QList<TreeItem*> data_list;
+    int nameColumn = m_playlistTableModel.record().indexOf("name");
     int idColumn = m_playlistTableModel.record().indexOf("name");
+
+    //Access the invisible root item
+    TreeItem* root = m_childModel.getItem(QModelIndex());
+    //Create new TreeItems for the playlists in the database
     for (int row = 0; row < m_playlistTableModel.rowCount(); ++row) {
-            QModelIndex ind = m_playlistTableModel.index(row, idColumn);
-            QString playlist_name = m_playlistTableModel.data(ind).toString();
-            data_list.insert(row,playlist_name);
+        QModelIndex ind = m_playlistTableModel.index(row, nameColumn);
+        QString playlist_name = m_playlistTableModel.data(ind).toString();
+        ind = m_playlistTableModel.index(row, idColumn);
+        int playlist_id = m_playlistTableModel.data(ind).toInt();
+        bool locked = m_playlistDao.isPlaylistLocked(playlist_id);
+
+        //Create the TreeItem whose parent is the invisible root item
+        TreeItem* item = new TreeItem(playlist_name, playlist_name, this, root);
+        item->setIcon(locked ? QIcon(":/images/library/ic_library_locked.png") : QIcon());
+        data_list.append(item);
     }
-    
-    m_childModel.insertRows(data_list, 0, m_playlistTableModel.rowCount());  
+
+    //Append all the newly created TreeItems in a dynamic way to the childmodel
+    m_childModel.insertRows(data_list, 0, m_playlistTableModel.rowCount());
 }
+
 /**
-  * Clears the child model dynamically
+  * Clears the child model dynamically, but the invisible root item remains
   */
 void PlaylistFeature::clearChildModel()
 {
@@ -329,19 +381,18 @@ void PlaylistFeature::slotImportPlaylist()
 {
     qDebug() << "slotImportPlaylist() row:" ; //<< m_lastRightClickedIndex.data();
 
-
     QString playlist_file = QFileDialog::getOpenFileName
             (
             NULL,
             tr("Import Playlist"),
             QDesktopServices::storageLocation(QDesktopServices::MusicLocation),
-            tr("Playlist Files (*.m3u *.pls)") 
+            tr("Playlist Files (*.m3u *.pls)")
             );
     //Exit method if user cancelled the open dialog.
     if (playlist_file.isNull() || playlist_file.isEmpty() ) return;
 
     Parser* playlist_parser = NULL;
-    
+
     if(playlist_file.endsWith(".m3u", Qt::CaseInsensitive))
     {
         playlist_parser = new ParserM3u();
@@ -355,13 +406,13 @@ void PlaylistFeature::slotImportPlaylist()
         return;
     }
     QList<QString> entries = playlist_parser->parse(playlist_file);
-    
+
     //Iterate over the List that holds URLs of playlist entires
     for (int i = 0; i < entries.size(); ++i) {
         m_pPlaylistTableModel->addTrack(QModelIndex(), entries[i]);
-        
+
     }
- 
+
     //delete the parser object
-    if(playlist_parser) delete playlist_parser;  
+    if(playlist_parser) delete playlist_parser;
 }

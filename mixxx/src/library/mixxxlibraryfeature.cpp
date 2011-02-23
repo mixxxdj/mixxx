@@ -7,7 +7,7 @@
 
 #include "library/librarytablemodel.h"
 #include "library/missingtablemodel.h"
-#include "library/proxytrackmodel.h"
+
 #include "library/trackcollection.h"
 #include "treeitem.h"
 
@@ -19,7 +19,7 @@ MixxxLibraryFeature::MixxxLibraryFeature(QObject* parent,
       m_pLibraryTableModel(new LibraryTableModel(this, pTrackCollection)),
       m_pMissingTableModel(new MissingTableModel(this, pTrackCollection)) {
     
-    TreeItem *rootItem = new TreeItem("$root","$root", this);
+    TreeItem *rootItem = new TreeItem();
     TreeItem *childItem = new TreeItem(CHILD_MISSING,CHILD_MISSING, this,rootItem);
     rootItem->appendChild(childItem);
     m_childModel.setRootItem(rootItem);    

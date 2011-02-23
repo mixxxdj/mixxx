@@ -172,6 +172,10 @@ class Qt(Dependence):
             build.env.Append(LIBS = 'QtWebKit4');
             build.env.Append(LIBS = 'QtNetwork4')
             build.env.Append(LIBS = 'QtOpenGL4');
+            # Tobias: Don't remove this line
+            # I used the Windows API in foldertreemodel.cpp
+            # to quickly test if a folder has subfolders
+            build.env.Append(LIBS = 'shell32');
 
         # Set Qt include paths for non-OSX
         if not build.platform_is_osx:
@@ -184,11 +188,14 @@ class Qt(Dependence):
                                       '$QTDIR/include/QtWebKit',
                                       '$QTDIR/include/Qt'])
 
-        # Set the rpath for linux/bsd/osx. TODO(XXX) is this supposed to be done
-        # for OSX?
-        if not build.platform_is_windows:
+        # Set the rpath for linux/bsd/osx.
+        # This is not support on OS X before the 10.5 SDK.
+        using_104_sdk = (str(build.env["CCFLAGS"]).find("10.4") >= 0)
+        compiling_on_104 = False
+        if build.platform_is_osx:
+            compiling_on_104 = (os.popen('sw_vers').readlines()[1].find('10.4') >= 0)
+        if not build.platform_is_windows and not (using_104_sdk or compiling_on_104):
             build.env.Append(LINKFLAGS = "-Wl,-rpath,$QTDIR/lib")
-
 
 
 class FidLib(Dependence):
@@ -230,7 +237,7 @@ class ReplayGain(Dependence):
         build.env.Append(CPPPATH="#lib/replaygain")
 
 class SoundTouch(Dependence):
-    SOUNDTOUCH_PATH = 'soundtouch-1.4.1'
+    SOUNDTOUCH_PATH = 'soundtouch-1.5.0'
 
     def sources(self, build):
         sources = ['engine/enginebufferscalest.cpp',
@@ -297,6 +304,12 @@ class TagLib(Dependence):
     def configure(self, build, conf):
         if not conf.CheckLib('tag'):
             raise Exception("Could not find libtag or its development headers.")
+
+        # Karmic seems to have an issue with mp4tag.h where they don't include
+        # the files correctly. Adding this folder ot the include path should fix
+        # it, though might cause issues. This is safe to remove once we
+        # deprecate Karmic support. rryan 2/2011
+        build.env.Append(CPPPATH='/usr/include/taglib/')
 class MixxxCore(Feature):
 
     def description(self):
@@ -430,7 +443,6 @@ class MixxxCore(Feature):
                    "widget/wlibrarytableview.cpp",
                    "widget/wpreparelibrarytableview.cpp",
                    "widget/wpreparecratestableview.cpp",
-                   "widget/wbrowsetableview.cpp",
                    "widget/wlibrarytextbrowser.cpp",
                    "library/preparecratedelegate.cpp",
                    "library/trackcollection.cpp",
@@ -439,23 +451,32 @@ class MixxxCore(Feature):
                    "library/preparelibrarytablemodel.cpp",
                    "library/browsetablemodel.cpp",
                    "library/missingtablemodel.cpp",
+
                    "library/proxytrackmodel.cpp",
-                   "library/abstractxmltrackmodel.cpp",
-                   "library/rhythmboxtrackmodel.cpp",
-                   "library/rhythmboxplaylistmodel.cpp",
-                   "library/itunestrackmodel.cpp",
-                   "library/itunesplaylistmodel.cpp",
+
+
                    "library/playlisttablemodel.cpp",
                    "library/libraryfeature.cpp",
                    "library/preparefeature.cpp",
                    "library/autodjfeature.cpp",
                    "library/mixxxlibraryfeature.cpp",
                    "library/playlistfeature.cpp",
-                   "library/rhythmboxfeature.cpp",
-                   "library/itunesfeature.cpp",
+
+                   # External Library Features
+                   "library/rhythmbox/rhythmboxfeature.cpp",
+                   "library/rhythmbox/rhythmboxtrackmodel.cpp",
+                   "library/rhythmbox/rhythmboxplaylistmodel.cpp",
+
+                   "library/itunes/itunesfeature.cpp",
+                   "library/itunes/itunestrackmodel.cpp",
+                   "library/itunes/itunesplaylistmodel.cpp",
+
+                   "library/traktor/traktorfeature.cpp",
+                   "library/traktor/traktortablemodel.cpp",
+                   "library/traktor/traktorplaylistmodel.cpp",
+
                    "library/browsefeature.cpp",
                    "library/cratefeature.cpp",
-                   "library/browsefilter.cpp",
                    "library/sidebarmodel.cpp",
                    "library/libraryscanner.cpp",
                    "library/libraryscannerdlg.cpp",
@@ -483,9 +504,8 @@ class MixxxCore(Feature):
 
                    "library/treeitemmodel.cpp",
                    "library/treeitem.cpp",
-                   "library/traktorfeature.cpp",
-                   "library/traktortablemodel.cpp",
-                   "library/traktorplaylistmodel.cpp",
+                   "library/foldertreemodel.cpp",
+                   "library/browsethread.cpp",
 
                    "xmlparse.cpp",
                    "library/parser.cpp",
@@ -576,14 +596,11 @@ class MixxxCore(Feature):
             # force manifest file creation, apparently not necessary for all
             # people but necessary for this committers handicapped windows
             # installation -- bkgood
-            build.env.Append(LINKFLAGS="/MANIFEST")
-            build.env.RES('#src/mixxx.rc')
-            # Tobias Rafreider: What is the purpose of the following line, if
-            # the file doesn't exist?
-            #
-            # I think this file is auto-generated on Windows, as qrc_mixxx.cc is
-            # auto-generated above. Leaving uncommented.
-            #sources.append("mixxx.res")
+            if build.toolchain_is_msvs:
+                build.env.Append(LINKFLAGS="/MANIFEST")
+        elif build.platform_is_osx:
+            build.env.Append(LINKFLAGS="-headerpad=ffff"); #Need extra room for code signing (App Store)
+            build.env.Append(LINKFLAGS="-headerpad_max_install_names"); #Need extra room for code signing (App Store)
 
         return sources
 
@@ -642,6 +659,10 @@ class MixxxCore(Feature):
 
 
         elif build.platform_is_osx:
+            #Stuff you may have compiled by hand
+            build.env.Append(LIBPATH = ['/usr/local/lib'])
+            build.env.Append(CPPPATH = ['/usr/local/include'])
+
             #Non-standard libpaths for fink and certain (most?) darwin ports
             build.env.Append(LIBPATH = ['/sw/lib'])
             build.env.Append(CPPPATH = ['/sw/include'])
@@ -717,12 +738,13 @@ class MixxxCore(Feature):
         """Sets up additional things in the Environment that must happen
         after the Configure checks run."""
         if build.platform_is_windows:
-            build.env.Append(LINKFLAGS = ['/nodefaultlib:LIBCMT.lib',
-                                          '/nodefaultlib:LIBCMTd.lib',
-                                          '/entry:mainCRTStartup'])
-            # Makes the program not launch a shell first
             if build.toolchain_is_msvs:
+                build.env.Append(LINKFLAGS = ['/nodefaultlib:LIBCMT.lib',
+                                              '/nodefaultlib:LIBCMTd.lib',
+                                              '/entry:mainCRTStartup'])
+                # Makes the program not launch a shell first
                 build.env.Append(LINKFLAGS = '/subsystem:windows')
             elif build.toolchain_is_gnu:
+                # Makes the program not launch a shell first
                 build.env.Append(LINKFLAGS = '--subsystem,windows')
                 build.env.Append(LINKFLAGS = '-mwindows')

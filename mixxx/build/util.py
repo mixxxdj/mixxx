@@ -1,11 +1,37 @@
 from SCons import Script
 import os, sys, platform
+import re
 
 def get_bzr_revision():
     return os.popen("bzr revno").readline().strip()
 
 def get_bzr_branch_name():
-    return os.popen("bzr nick -q").readline().strip()
+    output_lines = os.popen("bzr info").read().splitlines()
+
+    matcher = re.compile(
+        '\s*parent branch: http://bazaar.launchpad.net/(?P<owner>.*?)/mixxx/(?P<branch_name>.*?)/$')
+
+    for line in output_lines:
+        match = matcher.match(line)
+        if match:
+            match = match.groupdict()
+            owner = match['owner']
+            branch_name = match['branch_name']
+
+            # Strip ~ from owner name
+            owner = owner.replace('~', '')
+
+            # Underscores are not ok in version names, dashes are fine though.
+            branch_name = branch_name.replace('_', '-')
+
+            # Don't include the default owner
+            if owner == 'mixxxdevelopers':
+                return branch_name
+
+            return "%s~%s" % (owner, branch_name)
+    # Fall back on branch nick.
+    return os.popen('bzr nick').readline().strip()
+
 
 def get_build_dir(platformString, bitwidth):
     build_dir = '%s%s_build' % (platformString[0:3],bitwidth)
@@ -13,16 +39,27 @@ def get_build_dir(platformString, bitwidth):
 
 def get_mixxx_version():
     """
-    Parses defs.h to figure out the current Mixxx version.
+    Figures out the current mixxx version:
+        First parses build.h which will have the version number if this is not a release branch.
+        If nothing there, uses defs_version.h.
     """
     #have to handle out-of-tree building, that's why the '#' :(
+    buld = Script.File('#src/build.h')
     defs = Script.File('#src/defs_version.h')
+    version = ""
 
-    for line in open(str(defs)).readlines():
+    for line in open(str(buld)).readlines():
         if line.strip().startswith("#define VERSION"):
             version = line
             break
-    else:
+            
+    if version == "":
+        for line in open(str(defs)).readlines():
+            if line.strip().startswith("#define VERSION"):
+                version = line
+                break
+
+    if version == "":
         raise ValueError("Version not found")
 
     version = version.split()[-1].replace('"', '')
