@@ -134,6 +134,7 @@ DlgPreferences::DlgPreferences(MixxxApp * mixxx, SkinLoader* pSkinLoader,
 
 #ifdef __VINYLCONTROL__
     connect(wvinylcontrol, SIGNAL(refreshVCProxies()), wsound, SLOT(forceApply()));
+    connect(wvinylcontrol, SIGNAL(applySound()), wsound, SLOT(slotApply()));
     connect(buttonBox, SIGNAL(accepted()), wvinylcontrol,    SLOT(slotApply())); //It's important for this to be before the
                                                                                  //connect for wsound...
 #endif
