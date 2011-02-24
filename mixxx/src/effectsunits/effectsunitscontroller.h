@@ -1,7 +1,7 @@
 #ifndef EFFECTSUNITSCONTROLLER_H
 #define EFFECTSUNITSCONTROLLER_H
 
-#include "../engine/engineeffectsunits.h"
+#include "engine/engineeffectsunits.h"
 #include "debugbackend.h"
 #include "ladspabackend.h"
 #include "effectsunitsinstance.h"

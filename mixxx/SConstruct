@@ -44,6 +44,7 @@ available_features = [features.HifiEq,
                       features.WavPack,
                       features.TestSuite,
                       features.LADSPA,
+                      features.Effects,
                       features.MSVCDebug,
                       features.MSVSHacks,
 

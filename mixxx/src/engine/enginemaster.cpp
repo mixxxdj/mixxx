@@ -40,11 +40,7 @@
 #ifdef __FXUNITS__
 #include "engineeffectsunits.h"
 #endif
-#ifdef __VINYLCONTROL__
-#include "enginevinylcontrol.h"
-#endif
-// #include "enginebuffermasterrate.h"
-#include <QDebug>
+
 
 EngineMaster::EngineMaster(ConfigObject<ConfigValue> * _config,
                            const char * group) {

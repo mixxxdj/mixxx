@@ -26,7 +26,7 @@ EffectsUnitsView::EffectsUnitsView(QWidget * parent) : QWidget(parent)
     /* Opens up our skin file */
     QDomDocument skin("EffectsUnitsSkin");
     QFile file(WWidget::getPath("skin_fx.xml"));
-    if (!file.open(IO_ReadOnly))
+    if (!file.open(QIODevice::ReadOnly))
     {
         qDebug() << "FXUNITS: Could not open skin definition file: " << file.fileName();
     }

@@ -27,7 +27,7 @@ LADSPAView::LADSPAView(QWidget * parent) : QWidget(parent)
 
     QDomDocument skin("LADSPASkin");
     QFile file(WWidget::getPath("ladspa_skin.xml"));
-    if (!file.open(IO_ReadOnly))
+    if (!file.open(QIODevice::ReadOnly))
     {
         qDebug() << "Could not open skin definition file: " << file.fileName();
     }
@@ -48,7 +48,7 @@ LADSPAView::LADSPAView(QWidget * parent) : QWidget(parent)
     //bg->lower();
     //this->setFixedSize(background->width(), background->height());
     //parent->setMinimumSize(background->width(), background->height());
-    
+
     QDomElement bgColorNode = docElement.firstChildElement("BgColor");
     QDomElement fgColorNode = docElement.firstChildElement("FgColor");
 
@@ -97,13 +97,13 @@ LADSPAView::LADSPAView(QWidget * parent) : QWidget(parent)
     if (height <= 0)
     {
         height = this->height() + height;
-    }    
-    
+    }
+
     //m_pPresetList->resize(width, height);
     m_pPresetList->setMinimumSize(65, 200);
     m_pPresetList->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::MinimumExpanding);
-    
-    
+
+
     m_pPresetManager = new LADSPAPresetManager();
 
     for (unsigned int i = 0; i < m_pPresetManager->getPresetCount(); i++)
@@ -112,13 +112,13 @@ LADSPAView::LADSPAView(QWidget * parent) : QWidget(parent)
 	if (preset->isValid())
 	    m_pPresetList->addItem(preset->getName());
 	else
-	    m_pPresetList->addItem("-" + preset->getName());	    
+	    m_pPresetList->addItem("-" + preset->getName());
     }
 
     m_pSlotTable = new QWidget(this);
-    
+
     QDomElement slotTableElement = docElement.firstChildElement("SlotTable");
-    
+
     posElement = slotTableElement.firstChildElement("Pos");
     pos = posElement.text();
     x = pos.left(pos.indexOf(",")).toInt();
@@ -144,7 +144,7 @@ LADSPAView::LADSPAView(QWidget * parent) : QWidget(parent)
     if (height <= 0)
     {
         height = this->height() + height;
-    }    
+    }
     //m_pSlotTable->resize(width, height);
     m_pSlotTable->setMinimumSize(400, 200);
     m_pSlotTable->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);

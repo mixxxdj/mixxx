@@ -5,17 +5,17 @@
  *      Author: bruno
  */
 
-#ifndef EFFECTSUNITSPORT_H_
-#define EFFECTSUNITSPORT_H_
+#ifndef EFFECTSUNITSPORT_H
+#define EFFECTSUNITSPORT_H
 
-#include "../controlobject.h"
+#include "controlobject.h"
 
 typedef struct _EffectsUnitsPort{
-		QString * Name;
-        float Min;
-        float Max;
-        float Def;
-        bool isAudio;
+		QString* Name;
+    float Min;
+    float Max;
+    float Def;
+    bool isAudio;
 } EffectsUnitsPort;
 
-#endif /* EFFECTSUNITSPORT_H_ */
+#endif /* EFFECTSUNITSPORT_H */
