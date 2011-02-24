@@ -787,9 +787,9 @@ void SoundManager::pushBuffer(QList<AudioInput> inputs, short * inputBuffer,
 		while (inputItr.hasNext())
 		{
 			AudioInput in = inputItr.next();
-			m_pMaster->pushPassthroughBuffer(in.getIndex(), m_inputBuffers[in], sizeof(*m_inputBuffers[in]) * iFrameSize * iFramesPerBuffer);	
+			if ((in.getIndex() == 0 && m_pControlObjectInputPassthrough1->get()) ||
+				(in.getIndex() == 1 && m_pControlObjectInputPassthrough2->get()))
+				m_pMaster->pushPassthroughBuffer(in.getIndex(), m_inputBuffers[in], sizeof(*m_inputBuffers[in]) * iFrameSize * iFramesPerBuffer);
 		}
     }
-    //TODO: Add pass-through option here (and push it into EngineMaster)...
-    //      (or maybe save it, and then have requestBuffer() push it into EngineMaster)...
 }
