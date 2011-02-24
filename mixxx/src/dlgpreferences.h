@@ -42,6 +42,7 @@ class DlgPrefCrossfader;
 class DlgPrefRecord;
 class DlgPrefBpm;
 class DlgPrefVinyl;
+class DlgPrefNoVinyl;
 class DlgPrefShoutcast;
 class DlgPrefReplayGain;
 class PowerMate;
@@ -86,6 +87,7 @@ private:
     DlgPrefRecord *wrecord;
     DlgPrefBpm *wbpm;
     DlgPrefVinyl *wvinylcontrol;
+    DlgPrefNoVinyl *wnovinylcontrol;
     DlgPrefShoutcast *wshoutcast;
     DlgPrefReplayGain *wreplaygain;
 
