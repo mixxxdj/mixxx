@@ -109,6 +109,10 @@ class Effects(Feature):
 			         effectsunitsslot.cpp
 			         effectsunitsview.cpp
 			         effectsunitswidget.cpp
+
+                                 effects/effectsbackend.cpp
+                                 effects/effect.cpp
+                                 effects/native/nativebackend.cpp
                                  """)
         return sources
 
