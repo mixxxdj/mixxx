@@ -52,6 +52,7 @@ public slots:
 signals:
     void apply();
     void refreshVCProxies();
+    void applySound();
 private slots:
     void settingsChanged();
 private:

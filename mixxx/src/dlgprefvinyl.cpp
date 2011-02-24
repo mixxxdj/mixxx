@@ -74,10 +74,12 @@ DlgPrefVinyl::DlgPrefVinyl(QWidget * parent, SoundManager * soundman,
     
     ComboBoxVinylSpeed2->addItem(MIXXX_VINYL_SPEED_33);
     ComboBoxVinylSpeed2->addItem(MIXXX_VINYL_SPEED_45);
+    
+    connect(applyButton, SIGNAL(clicked()), this, SLOT(slotApply()));
 
     connect(VinylGain, SIGNAL(sliderReleased()), this, SLOT(VinylGainSlotApply()));
     //connect(ComboBoxDeviceDeck1, SIGNAL(currentIndexChanged()), this, SLOT(()));
-
+    
     connect(VinylGain, SIGNAL(sliderReleased()), this, SLOT(settingsChanged()));
     connect(ComboBoxVinylType1, SIGNAL(currentIndexChanged(int)), this, SLOT(settingsChanged()));
     connect(ComboBoxVinylType2, SIGNAL(currentIndexChanged(int)), this, SLOT(settingsChanged()));
@@ -203,6 +205,7 @@ void DlgPrefVinyl::VinylTypeSlotApply()
     config->set(ConfigKey("[Channel2]","strVinylType"), ConfigValue(ComboBoxVinylType2->currentText()));
     config->set(ConfigKey("[Channel1]","strVinylSpeed"), ConfigValue(ComboBoxVinylSpeed1->currentText()));
     config->set(ConfigKey("[Channel2]","strVinylSpeed"), ConfigValue(ComboBoxVinylSpeed2->currentText()));
+    emit(applySound());
 }
 
 void DlgPrefVinyl::VinylGainSlotApply()
