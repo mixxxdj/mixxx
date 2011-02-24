@@ -24,8 +24,11 @@
 #include "sounddeviceportaudio.h"
 #include "engine/enginemaster.h"
 #include "controlobjectthreadmain.h"
-#include "vinylcontrolxwax.h"
 #include "audiopath.h"
+
+#ifdef __VINYLCONTROL__
+#include "vinylcontrolxwax.h"
+#endif
 
 /** Initializes Mixxx's audio core
  *  @param pConfig The config key table
