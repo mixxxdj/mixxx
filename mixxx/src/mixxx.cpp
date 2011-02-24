@@ -336,10 +336,12 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
 
     //ControlObject::getControl(ConfigKey("[Channel1]","TrackEndMode"))->queueFromThread(m_pConfig->getValueString(ConfigKey("[Controls]","TrackEndModeCh1")).toDouble());
     //ControlObject::getControl(ConfigKey("[Channel2]","TrackEndMode"))->queueFromThread(m_pConfig->getValueString(ConfigKey("[Controls]","TrackEndModeCh2")).toDouble());
+#ifdef __VINYLCONTROL__    
     ControlObject::getControl(ConfigKey("[Channel1]","vinylcontrol"))->queueFromThread(m_pConfig->getValueString(ConfigKey("[VinylControl]","EnabledCh1")).toDouble());
     ControlObject::getControl(ConfigKey("[Channel2]","vinylcontrol"))->queueFromThread(m_pConfig->getValueString(ConfigKey("[VinylControl]","EnabledCh2")).toDouble());
     ControlObject::getControl(ConfigKey("[Channel1]","VinylMode"))->queueFromThread(m_pConfig->getValueString(ConfigKey("[VinylControl]","Mode")).toDouble());
     ControlObject::getControl(ConfigKey("[Channel2]","VinylMode"))->queueFromThread(m_pConfig->getValueString(ConfigKey("[VinylControl]","Mode")).toDouble());
+#endif 
 
     qRegisterMetaType<MidiMessage>("MidiMessage");
     qRegisterMetaType<MidiStatusByte>("MidiStatusByte");
@@ -491,10 +493,13 @@ MixxxApp::~MixxxApp()
     // Save state of End of track controls in config database
     //m_pConfig->set(ConfigKey("[Controls]","TrackEndModeCh1"), ConfigValue((int)ControlObject::getControl(ConfigKey("[Channel1]","TrackEndMode"))->get()));
     //m_pConfig->set(ConfigKey("[Controls]","TrackEndModeCh2"), ConfigValue((int)ControlObject::getControl(ConfigKey("[Channel2]","TrackEndMode"))->get()));
+#ifdef __VINYLCONTROL__    
     m_pConfig->set(ConfigKey("[VinylControl]","EnabledCh1"), ConfigValue((int)ControlObject::getControl(ConfigKey("[Channel1]","vinylcontrol"))->get()));
     m_pConfig->set(ConfigKey("[VinylControl]","EnabledCh2"), ConfigValue((int)ControlObject::getControl(ConfigKey("[Channel2]","vinylcontrol"))->get()));
     m_pConfig->set(ConfigKey("[VinylControl]","Mode"), ConfigValue((int)ControlObject::getControl(ConfigKey("[Channel1]","VinylMode"))->get()));
     m_pConfig->set(ConfigKey("[VinylControl]","Mode"), ConfigValue((int)ControlObject::getControl(ConfigKey("[Channel2]","VinylMode"))->get()));
+#endif 
+
     qDebug() << "delete SkinLoader";
     delete m_pSkinLoader;
 

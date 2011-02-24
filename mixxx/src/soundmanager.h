@@ -20,6 +20,7 @@
 
 #include "configobject.h"
 #include "controlobject.h"
+#include "controlobjectthreadmain.h"
 #include "defs.h"
 #ifdef __VINYLCONTROL__
 #include "vinylcontrolproxy.h"
