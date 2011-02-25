@@ -58,6 +58,8 @@ SoundManager::SoundManager(ConfigObject<ConfigValue> * pConfig, EngineMaster * _
     ControlObjectThreadMain* pControlObjectVinylControlGain = new ControlObjectThreadMain(new ControlObject(ConfigKey("[VinylControl]", "VinylControlGain")));
     m_pControlObjectInputPassthrough1 = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[Channel1]", "inputpassthrough")));
     m_pControlObjectInputPassthrough2 = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[Channel2]", "inputpassthrough")));
+    m_bPassthroughActive[0] = false;
+    m_bPassthroughActive[1] = false;
     
     connect(m_pControlObjectInputPassthrough1, SIGNAL(valueChanged(double)),
             this, SLOT(slotInputPassthrough1(double)),
@@ -580,6 +582,8 @@ void SoundManager::sync()
 
 void SoundManager::slotInputPassthrough1(double toggle)
 {
+	if (m_bPassthroughActive[0] != (bool)toggle)
+		m_bPassthroughActive[0] = (bool)toggle;
 	if ((bool)toggle)
 	{
 		//iterate through inputs.  if none for deck 0, then toggle it back again
@@ -597,6 +601,8 @@ void SoundManager::slotInputPassthrough1(double toggle)
 
 void SoundManager::slotInputPassthrough2(double toggle)
 {
+	if (m_bPassthroughActive[1] != (bool)toggle)
+		m_bPassthroughActive[1] = (bool)toggle;
 	if (toggle)
 	{
 		//iterate through inputs.  if none for deck 0, then toggle it back again
@@ -775,9 +781,12 @@ void SoundManager::pushBuffer(QList<AudioInput> inputs, short * inputBuffer,
 					//asked to process
 					if (m_inputBuffers[m_VinylMapping[vinyl_control]] == 
 						m_inputBuffers[in])
-						vinyl_control->AnalyseSamples(
-							m_inputBuffers[m_VinylMapping[vinyl_control]], 
-							iFramesPerBuffer);
+					{
+						if (m_bPassthroughActive[in.getIndex()] == 0)
+							vinyl_control->AnalyseSamples(
+								m_inputBuffers[m_VinylMapping[vinyl_control]], 
+								iFramesPerBuffer);
+					}
 				}
 			}
         }
@@ -787,8 +796,7 @@ void SoundManager::pushBuffer(QList<AudioInput> inputs, short * inputBuffer,
 		while (inputItr.hasNext())
 		{
 			AudioInput in = inputItr.next();
-			if ((in.getIndex() == 0 && m_pControlObjectInputPassthrough1->get()) ||
-				(in.getIndex() == 1 && m_pControlObjectInputPassthrough2->get()))
+			if (m_bPassthroughActive[in.getIndex()])
 				m_pMaster->pushPassthroughBuffer(in.getIndex(), m_inputBuffers[in], sizeof(*m_inputBuffers[in]) * iFrameSize * iFramesPerBuffer);
 		}
     }
