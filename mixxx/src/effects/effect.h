@@ -5,6 +5,8 @@
 
 #include "effects/effectmanifest.h"
 
+class EffectsBackend;
+
 class Effect;
 typedef QSharedPointer<Effect> EffectPointer;
 
@@ -15,7 +17,7 @@ class Effect : public QObject {
     virtual ~Effect();
 
     virtual const EffectManifest& getManifest() const {
-        return m_pEffectManifest;
+        return m_effectManifest;
     }
 
     virtual EffectsBackend* getBackend() const {
@@ -24,7 +26,7 @@ class Effect : public QObject {
 
   private:
     EffectsBackend* m_pEffectsBackend;
-    EffectManifest& m_pEffectManifest;
+    EffectManifest& m_effectManifest;
 };
 
 #endif /* EFFECT_H */

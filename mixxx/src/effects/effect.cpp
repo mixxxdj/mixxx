@@ -1,10 +1,11 @@
 
 #include "effects/effect.h"
+#include "effects/effectsbackend.h"
 
-Effect::Effect(EffectsBackend* pBackend, EffectManifest* pManifest)
-        : QOBject(pBackend),
+Effect::Effect(EffectsBackend* pBackend, EffectManifest& effectManifest)
+        : QObject(pBackend),
           m_pEffectsBackend(pBackend),
-          m_pEffectManifest(pManifest) {
+          m_effectManifest(effectManifest) {
 
 }
 

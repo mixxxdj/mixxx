@@ -5,11 +5,11 @@
 
 class NativeBackend : public EffectsBackend {
   public:
-    NativeBackend();
+    NativeBackend(QObject* pParent=NULL);
     virtual ~NativeBackend();
 
     const QList<EffectManifest> getAvailableEffects() const;
-    EffectPointer instantiateEffect(const EffectManifest& manifest) const;
+    EffectPointer instantiateEffect(const EffectManifest& manifest);
 };
 
 #endif /* NATIVEBACKEND_H */

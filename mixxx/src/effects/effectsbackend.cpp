@@ -10,6 +10,6 @@ EffectsBackend::~EffectsBackend() {
 
 }
 
-const QString& EffectsBackend::getName() const {
+const QString EffectsBackend::getName() const {
     return m_name;
 }
