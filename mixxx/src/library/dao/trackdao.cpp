@@ -4,8 +4,8 @@
 #include <QtSql>
 
 #include "trackinfoobject.h"
-#include "beats.h"
-#include "beatfactory.h"
+#include "track/beats.h"
+#include "track/beatfactory.h"
 #include "library/dao/trackdao.h"
 #include "audiotagger.h"
 

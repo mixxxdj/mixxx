@@ -1,7 +1,7 @@
 #include <QMutexLocker>
 #include <QDebug>
 
-#include "beatgrid.h"
+#include "track/beatgrid.h"
 
 BeatGrid::BeatGrid(TrackPointer pTrack, QByteArray* pByteArray)
         : QObject(),

@@ -3,8 +3,8 @@
 
 #include "BPMDetect.h"
 #include "trackinfoobject.h"
-#include "beatgrid.h"
-#include "beatfactory.h"
+#include "track/beatgrid.h"
+#include "track/beatfactory.h"
 #include "analyserbpm.h"
 
 

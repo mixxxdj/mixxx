@@ -28,7 +28,7 @@
 #include <QWeakPointer>
 
 #include "defs.h"
-#include "beats.h"
+#include "track/beats.h"
 #include "library/dao/cue.h"
 
 class QString;
