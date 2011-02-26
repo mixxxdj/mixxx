@@ -1,7 +1,7 @@
 #include <QtDebug>
 #include <QMutexLocker>
 
-#include "beatmatrix.h"
+#include "track/beatmatrix.h"
 
 BeatMatrix::BeatMatrix(TrackPointer pTrack, QByteArray* pByteArray)
         : QObject(),
