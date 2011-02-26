@@ -21,6 +21,8 @@
 #include "engine/engineobject.h"
 #include "engine/enginechannel.h"
 
+#include <QtCore>
+
 class EngineWorkerScheduler;
 class EngineBuffer;
 class EngineVolume;
@@ -83,6 +85,13 @@ public:
     ControlPotmeter *crossfader, *head_mix,
         *m_pBalance, *xFaderCurve, *xFaderCalibration;
     QList<ControlPushButton*>m_passthrough;
+    int m_iLastThruRead[2];
+    int m_iLastThruWrote[2];
+    int m_iThruBufferCount[2];
+    int m_iThruFill[2];
+    bool m_bFilling[2];
+    QFile df;
+    QTextStream writer;
 };
 
 #endif

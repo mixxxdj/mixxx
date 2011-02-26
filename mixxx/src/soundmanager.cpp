@@ -708,6 +708,7 @@ void SoundManager::pushBuffer(QList<AudioInput> inputs, short * inputBuffer,
             const AudioInput& in = *i;
             memcpy(m_inputBuffers[in], inputBuffer,
                    sizeof(*inputBuffer) * iFrameSize * iFramesPerBuffer);
+           // qDebug() << "samples size" << sizeof(*inputBuffer) << iFrameSize << iFramesPerBuffer;
         }
     }
 
@@ -797,7 +798,9 @@ void SoundManager::pushBuffer(QList<AudioInput> inputs, short * inputBuffer,
 		{
 			AudioInput in = inputItr.next();
 			if (m_bPassthroughActive[in.getIndex()])
-				m_pMaster->pushPassthroughBuffer(in.getIndex(), m_inputBuffers[in], sizeof(*m_inputBuffers[in]) * iFrameSize * iFramesPerBuffer);
+				m_pMaster->pushPassthroughBuffer(in.getIndex(), m_inputBuffers[in], iFrameSize * iFramesPerBuffer);
+			//qDebug() << "passthrough size" << sizeof(*m_inputBuffers[in]) << iFrameSize << iFramesPerBuffer;
 		}
+		
     }
 }

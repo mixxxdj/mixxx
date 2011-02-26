@@ -91,6 +91,11 @@ EngineMaster::EngineMaster(ConfigObject<ConfigValue> * _config,
 	m_passthrough[1]->setToggleButton(true);
 	m_bPassthroughWasActive[0] = false;
 	m_bPassthroughWasActive[1] = false;
+	m_iLastThruRead[0] = m_iLastThruRead[1] = -1;
+    m_iLastThruWrote[0] = m_iLastThruWrote[1] = -1;
+    m_iThruFill[0] = m_iThruFill[1] = 0;
+    m_iThruBufferCount[0] = m_iThruBufferCount[1] = 1;
+    m_bFilling[0] = m_bFilling[1] = true;
 
     // Allocate buffers
     m_pHead = SampleUtil::alloc(MAX_BUFFER_LEN);
@@ -103,6 +108,10 @@ EngineMaster::EngineMaster(ConfigObject<ConfigValue> * _config,
 	memset(m_passthroughBuffers[1], 0, sizeof(CSAMPLE) * MAX_BUFFER_LEN);
 	    
     sidechain = new EngineSideChain(_config);
+
+	//df.setFileName("mixxx-debug.csv");
+	//df.open(QIODevice::WriteOnly | QIODevice::Text);
+	//writer.setDevice(&df);
 
     //X-Fader Setup
     xFaderCurve = new ControlPotmeter(
@@ -193,7 +202,48 @@ void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
     		
     		buffer = m_channelBuffers[channel_number];
     		passthroughBufferMutex[channel_number].lock();
-    		SampleUtil::copyWithGain(buffer, m_passthroughBuffers[channel_number], 1.0f, iBufferSize);
+    		
+    		//currently playing silence while filling up the buffer
+    		if (m_bFilling[channel_number])
+    		{
+    			if (m_iThruFill[channel_number] < math_max(1, m_iThruBufferCount[channel_number] - 2))
+				{
+					qDebug() << "Buffer filling" << m_iThruFill[channel_number] << math_max(1, m_iThruBufferCount[channel_number] - 2);
+					SampleUtil::applyGain(buffer, 0.0f, iBufferSize);
+				}
+				else
+				{
+					qDebug() << "Buffer filled";
+					m_bFilling[channel_number] = false;
+				}
+			}
+    		
+    		if (!m_bFilling[channel_number])
+    		{
+    			if (m_iThruFill[channel_number] == 0)
+				{
+					qDebug() << "ERROR: input passthrough buffer underrun";
+					SampleUtil::applyGain(buffer, 0.0f, iBufferSize);
+					m_bFilling[channel_number] = true;
+				}
+				else
+				{
+					if (m_iLastThruRead[channel_number] >= m_iThruBufferCount[channel_number] - 1)
+						m_iLastThruRead[channel_number] = 0;
+					else
+						m_iLastThruRead[channel_number]++;
+					m_iThruFill[channel_number]--;
+					//qDebug() << "read" << m_iLastThruRead[channel_number] << "fill" << m_iThruFill[channel_number] << m_passthroughBuffers[channel_number]+m_iLastThruRead[channel_number]*iBufferSize;
+					//SampleUtil::applyGain(buffer, 0.0f, iBufferSize);
+					SampleUtil::copyWithGain(buffer,
+											m_passthroughBuffers[channel_number]+m_iLastThruRead[channel_number]*iBufferSize, 
+											1.0f, iBufferSize);
+					//qDebug() << buffer[0] << buffer[iBufferSize-1];
+					//for (int i=0; i<iBufferSize; i++)
+					//	buffer[i] = m_passthroughBuffers[channel_number][i+(m_iLastThruRead[channel_number]*iBufferSize)];
+					//qDebug() << "read " << m_iLastThruRead[channel_number] << (m_iLastThruRead[channel_number]*iBufferSize) << iBufferSize-1 + (m_iLastThruRead[channel_number]*iBufferSize);
+				}
+			}
     		passthroughBufferMutex[channel_number].unlock();
 	    	channel->process(buffer, buffer, iBufferSize);
 	    }
@@ -348,12 +398,59 @@ void EngineMaster::addChannel(EngineChannel* pChannel) {
 void EngineMaster::pushPassthroughBuffer(int c, short *input, int len)
 {
 	Q_ASSERT(c<2); // really, now.
+
 	passthroughBufferMutex[c].lock();
+
+	//check that we aren't overflowing.	
+	if (m_iThruFill[c] == m_iThruBufferCount[c])
+	{
+		if ((m_iThruBufferCount[c] + 1) * len > MAX_BUFFER_LEN)
+		{
+			qDebug() << "ERROR: Input Passthrough buffer overflow -- can't add buffers";
+		}
+		else
+		{
+			qDebug() << "WARNING: Input Passthrough buffer overflow, adding another. total:" << m_iThruBufferCount[c]+1;
+			m_bFilling[c]=true;
+			m_iThruBufferCount[c]++;
+			//move the read pointer ahead too -- since my "pointers" are going
+			//to be equal when buffer overflows, this is not really necessary
+			if (m_iLastThruRead[c] >= m_iLastThruWrote[c])
+				m_iLastThruRead[c]++;
+		
+			//move memory:
+			// destination is two buffers away from last written
+			// source is one away from last written
+			// length is distance from end of everything to the destination
+		
+			//no need to move if we're at the end of the old buffers
+			if(m_iLastThruWrote[c] < m_iThruBufferCount[c] - 2)
+				memmove(m_passthroughBuffers[c]+ (m_iLastThruWrote[c] + 2) * len, 
+						m_passthroughBuffers[c]+ (m_iLastThruWrote[c] + 1) * len, 
+						(int)(m_iThruBufferCount[c] - (m_iLastThruWrote[c] + 2)) * len * sizeof(m_passthroughBuffers[c]));
+		
+			//now we can write to 3, say, and it will read from, say, 4.			
+		}
+	}
+
+	if (m_iLastThruWrote[c] >= m_iThruBufferCount[c] - 1)
+		m_iLastThruWrote[c] = 0;
+	else
+		m_iLastThruWrote[c]++;
+	m_iThruFill[c]++;
+
+	//qDebug() << "writ" << m_iLastThruWrote[c] << "fill" << m_iThruFill[c]  << &m_passthroughBuffers[c][(m_iLastThruWrote[c]*len)];
+
 	for (int i=0; i<len; i++)
 	{
 		//why don't we need to divide by SHRT_MAX???
-		m_passthroughBuffers[c][i] = (CSAMPLE)input[i];// / (float)SHRT_MAX;
+		m_passthroughBuffers[c][(m_iLastThruWrote[c]*len) + i] = (CSAMPLE)input[i];// / (float)SHRT_MAX;
+		//qDebug() << i << (CSAMPLE)input[i] << m_passthroughBuffers[c][(m_iLastThruWrote[c]*len) + i];
+		//if (i % 2 == 0)
+			//writer << i << "," <<(CSAMPLE)input[i] << "\n";
 	}
+	//qDebug() << "write" << m_iLastThruWrote[c] << (m_iLastThruWrote[c]*len) << (m_iLastThruWrote[c]*len) + len - 1;
+
 	passthroughBufferMutex[c].unlock();
 }
 
