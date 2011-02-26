@@ -58,6 +58,8 @@ SoundManager::SoundManager(ConfigObject<ConfigValue> * pConfig, EngineMaster * _
     ControlObjectThreadMain* pControlObjectVinylControlGain = new ControlObjectThreadMain(new ControlObject(ConfigKey("[VinylControl]", "VinylControlGain")));
     m_pControlObjectInputPassthrough1 = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[Channel1]", "inputpassthrough")));
     m_pControlObjectInputPassthrough2 = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[Channel2]", "inputpassthrough")));
+    m_pControlObjectVinylStatus1 = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[Channel1]", "VinylStatus")));
+    m_pControlObjectVinylStatus2 = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[Channel2]", "VinylStatus")));
     m_bPassthroughActive[0] = false;
     m_bPassthroughActive[1] = false;
     
@@ -592,10 +594,14 @@ void SoundManager::slotInputPassthrough1(double toggle)
 		foreach (AudioInput in, m_inputBuffers.keys())
 		{
 			if (in.getIndex() == 0)
+			{
+				m_pControlObjectVinylStatus1->slotSet(VINYL_STATUS_PASSTHROUGH);
 				return;
+			}
 		}
 		//didn't find it
 		m_pControlObjectInputPassthrough1->slotSet(false);
+		
 	}
 }
 
@@ -611,7 +617,10 @@ void SoundManager::slotInputPassthrough2(double toggle)
 		foreach (AudioInput in, m_inputBuffers.keys())
 		{
 			if (in.getIndex() == 1)
+			{
+				m_pControlObjectVinylStatus2->slotSet(VINYL_STATUS_PASSTHROUGH);
 				return;
+			}
 		}
 		//didn't find it
 		m_pControlObjectInputPassthrough2->slotSet(false);
@@ -783,7 +792,8 @@ void SoundManager::pushBuffer(QList<AudioInput> inputs, short * inputBuffer,
 					if (m_inputBuffers[m_VinylMapping[vinyl_control]] == 
 						m_inputBuffers[in])
 					{
-						if (m_bPassthroughActive[in.getIndex()] == 0)
+						//if (m_bPassthroughActive[in.getIndex()] == 0)
+							//vinyl gets unhappy if we don't provide samples						
 							vinyl_control->AnalyseSamples(
 								m_inputBuffers[m_VinylMapping[vinyl_control]], 
 								iFramesPerBuffer);

@@ -244,6 +244,9 @@ void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
 					//qDebug() << "read " << m_iLastThruRead[channel_number] << (m_iLastThruRead[channel_number]*iBufferSize) << iBufferSize-1 + (m_iLastThruRead[channel_number]*iBufferSize);
 				}
 			}
+			/*SampleUtil::copyWithGain(buffer,
+											m_passthroughBuffers[channel_number], 
+											1.0f, iBufferSize);*/
     		passthroughBufferMutex[channel_number].unlock();
 	    	channel->process(buffer, buffer, iBufferSize);
 	    }
@@ -255,6 +258,12 @@ void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
    	        	{
    	        		SampleUtil::applyGain(m_channelBuffers[channel_number], 0.0f, iBufferSize);
    	        		m_bPassthroughWasActive[channel_number] = false;
+					m_iLastThruRead[channel_number] = -1;
+					m_iLastThruWrote[channel_number] = -1;
+					m_iThruFill[channel_number] = 0;
+					m_iThruBufferCount[channel_number] = 1;
+					m_bFilling[channel_number] = true;
+
    	        	}
 				continue;
     		}
@@ -445,6 +454,7 @@ void EngineMaster::pushPassthroughBuffer(int c, short *input, int len)
 	{
 		//why don't we need to divide by SHRT_MAX???
 		m_passthroughBuffers[c][(m_iLastThruWrote[c]*len) + i] = (CSAMPLE)input[i];// / (float)SHRT_MAX;
+		/*m_passthroughBuffers[c][i] = (CSAMPLE)input[i];// / (float)SHRT_MAX;*/
 		//qDebug() << i << (CSAMPLE)input[i] << m_passthroughBuffers[c][(m_iLastThruWrote[c]*len) + i];
 		//if (i % 2 == 0)
 			//writer << i << "," <<(CSAMPLE)input[i] << "\n";

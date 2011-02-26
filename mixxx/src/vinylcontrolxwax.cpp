@@ -195,16 +195,13 @@ void VinylControlXwax::run()
         //		and make that get called when any options get changed in the preferences dialog, rather than
         //		polling everytime we get a buffer.
         
-        if (inputPassthrough->get())
-        {
-        	//set status and moveon
-        	vinylStatus->slotSet(VINYL_STATUS_PASSTHROUGH);
-        	continue;
-        }
-
-        
         //Check if vinyl control is enabled...
         bIsEnabled = checkEnabled(bIsEnabled, enabled->get());
+        
+        if (inputPassthrough->get())
+        	//don't process
+        	continue;
+
     
     	//Get the pitch range from the prefs.
         fRateRange = rateRange->get();
@@ -220,7 +217,7 @@ void VinylControlXwax::run()
 		//are we even playing and enabled at all?
         if (duration != NULL && bIsEnabled)	
         {
-        	vinylStatus->slotSet(VINYL_STATUS_OK);
+        	//vinylStatus->slotSet(VINYL_STATUS_OK);
         	//qDebug() << group << id << iPosition;
 	        
         	double cur_duration = duration->get();
@@ -660,11 +657,15 @@ bool VinylControlXwax::checkEnabled(bool was, bool is)
 		iVCMode = mode->get();
 		atRecordEnd = false;
 	}
-	if (is && !was)
+	if (inputPassthrough->get())
+	{
+		vinylStatus->slotSet(VINYL_STATUS_PASSTHROUGH);
+	}
+	else if (is && (vinylStatus->get() == VINYL_STATUS_PASSTHROUGH || !was))
 	{
 		vinylStatus->slotSet(VINYL_STATUS_OK);
 	}
-	if (!is)
+	else if (!is)
 		vinylStatus->slotSet(VINYL_STATUS_DISABLED);
 		
 	return is;
