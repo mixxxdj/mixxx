@@ -908,7 +908,7 @@
  
  <StatusLight>
   <Tooltip>Vinyl Status</Tooltip>
-  <NumberPos>3</NumberPos>
+  <NumberPos>4</NumberPos>
   <PathStatusLight>vinyl_green_t.png</PathStatusLight>
   <PathStatusLight2>vinyl_yellow_t.png</PathStatusLight2>
   <PathStatusLight3>vinyl_red_t.png</PathStatusLight3>
@@ -919,7 +919,7 @@
  </StatusLight>
  <StatusLight>
   <Tooltip>Vinyl Status</Tooltip>
-  <NumberPos>3</NumberPos>
+  <NumberPos>4</NumberPos>
   <PathStatusLight>vinyl_green_l.png</PathStatusLight>
   <PathStatusLight2>vinyl_yellow_l.png</PathStatusLight2>
   <PathStatusLight3>vinyl_red_l.png</PathStatusLight3>
@@ -930,7 +930,7 @@
  </StatusLight>
  <StatusLight>
   <Tooltip>Vinyl Status</Tooltip>
-  <NumberPos>3</NumberPos>
+  <NumberPos>4</NumberPos>
   <PathStatusLight>vinyl_green_r.png</PathStatusLight>
   <PathStatusLight2>vinyl_yellow_r.png</PathStatusLight2>
   <PathStatusLight3>vinyl_red_r.png</PathStatusLight3>
@@ -941,7 +941,7 @@
  </StatusLight>
  <StatusLight>
   <Tooltip>Vinyl Status</Tooltip>
-  <NumberPos>3</NumberPos>
+  <NumberPos>4</NumberPos>
   <PathStatusLight>vinyl_green_b.png</PathStatusLight>
   <PathStatusLight2>vinyl_yellow_b.png</PathStatusLight2>
   <PathStatusLight3>vinyl_red_b.png</PathStatusLight3>
@@ -953,7 +953,7 @@
  
  <StatusLight>
   <Tooltip>Vinyl Status</Tooltip>
-  <NumberPos>3</NumberPos>
+  <NumberPos>4</NumberPos>
   <PathStatusLight>vinyl_green_t.png</PathStatusLight>
   <PathStatusLight2>vinyl_yellow_t.png</PathStatusLight2>
   <PathStatusLight3>vinyl_red_t.png</PathStatusLight3>
@@ -964,7 +964,7 @@
  </StatusLight>
   <StatusLight>
   <Tooltip>Vinyl Status</Tooltip>
-  <NumberPos>3</NumberPos>
+  <NumberPos>4</NumberPos>
   <PathStatusLight>vinyl_green_l.png</PathStatusLight>
   <PathStatusLight2>vinyl_yellow_l.png</PathStatusLight2>
   <PathStatusLight3>vinyl_red_l.png</PathStatusLight3>
@@ -975,7 +975,7 @@
  </StatusLight>
   <StatusLight>
   <Tooltip>Vinyl Status</Tooltip>
-  <NumberPos>3</NumberPos>
+  <NumberPos>4</NumberPos>
   <PathStatusLight>vinyl_green_r.png</PathStatusLight>
   <PathStatusLight2>vinyl_yellow_r.png</PathStatusLight2>
   <PathStatusLight3>vinyl_red_r.png</PathStatusLight3>
@@ -986,7 +986,7 @@
  </StatusLight>
   <StatusLight>
   <Tooltip>Vinyl Status</Tooltip>
-  <NumberPos>3</NumberPos>
+  <NumberPos>4</NumberPos>
   <PathStatusLight>vinyl_green_b.png</PathStatusLight>
   <PathStatusLight2>vinyl_yellow_b.png</PathStatusLight2>
   <PathStatusLight3>vinyl_red_b.png</PathStatusLight3>
