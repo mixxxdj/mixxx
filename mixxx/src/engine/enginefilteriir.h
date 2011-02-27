@@ -24,15 +24,10 @@ class EngineFilterIIR : public EngineObject
 {
 public:
     EngineFilterIIR(const double *pCoefs, int iOrder);
-    ~EngineFilterIIR();
+    virtual ~EngineFilterIIR();
     void process(const CSAMPLE *pIn, const CSAMPLE *pOut, const int iBufferSize);
 protected:
-    int order;
-    const double *coefs;
-    #define MAXNZEROS 8 
-    #define MAXNPOLES 8 
-    double xv1[MAXNZEROS+1], yv1[MAXNPOLES+1];
-    double xv2[MAXNZEROS+1], yv2[MAXNPOLES+1];
+    EngineObject * _d;
 };
 
 //
