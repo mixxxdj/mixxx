@@ -18,8 +18,8 @@
 #ifndef MIDIDEVICEHSS1394_H
 #define MIDIDEVICEHSS1394_H
 
-#include <hss1394/hss1394.h>
 #include <QtCore>
+#include <HSS1394/HSS1394.h>
 #include "mididevice.h"
 
 #define MIXXX_HSS1394_BUFFER_LEN 64 /**Number of MIDI messages to buffer*/
@@ -43,8 +43,8 @@ class DeviceChannelListener : public hss1394::ChannelListener {
 /** An HSS1394-based implementation of MidiDevice */
 class MidiDeviceHss1394 : public MidiDevice {
     public:
-        MidiDeviceHss1394(MidiMapping* mapping, 
-                           const hss1394::TNodeInfo deviceInfo, 
+        MidiDeviceHss1394(MidiMapping* mapping,
+                           const hss1394::TNodeInfo deviceInfo,
                            int deviceIndex);
         ~MidiDeviceHss1394();
         int open();

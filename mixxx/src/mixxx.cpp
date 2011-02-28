@@ -395,7 +395,7 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
             m_pLibrary->getTracksToAutoLoad();
         for (int i = 0; i < (int)m_pPlayerManager->numDecks()
                 && i < tracksToAutoLoad.count(); i++) {
-            m_pPlayerManager->slotLoadToDeck(args.qlMusicFiles.at(i), i+1);
+            m_pPlayerManager->slotLoadToDeck(tracksToAutoLoad.at(i)->getLocation(), i+1);
         }
     }
 
@@ -1198,6 +1198,7 @@ void MixxxApp::slotHelpAbout()
 "Irwin C&eacute;spedes B<br>"
 "Micz Flor<br>"
 "Daniel James<br>"
+"Mika Haulo<br>"
 
 "</p>"
 "<p align=\"center\"><b>And special thanks to:</b></p>"

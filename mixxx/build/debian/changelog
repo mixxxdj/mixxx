@@ -1,3 +1,9 @@
+mixxx (1.9.0-0ubuntu1) karmic; urgency=low
+
+  * New upstream release
+
+ -- Albert Santoni <alberts@mixxx.org>  Thu, 17 Feb 2011 01:17:59 -0500
+
 mixxx (1.8.0-0ubuntu1) karmic; urgency=low
 
   * New upstream release 

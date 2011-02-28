@@ -45,7 +45,7 @@
  }
 
  QVariant TreeItemModel::data(const QModelIndex &index, int role) const
- {
+ {   
      if (!index.isValid())
          return QVariant();
 
@@ -53,7 +53,7 @@
          return QVariant();
 
      TreeItem *item = static_cast<TreeItem*>(index.internalPointer());
-
+     
      return item->data();
  }
 

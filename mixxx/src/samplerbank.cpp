@@ -13,9 +13,9 @@ SamplerBank::SamplerBank(PlayerManager* pPlayerManager)
           m_pPlayerManager(pPlayerManager) {
     Q_ASSERT(pPlayerManager);
     m_pLoadControl = new ControlPushButton(ConfigKey("[Sampler]", "LoadSamplerBank"));
-    connect(m_pLoadControl, SIGNAL(valueChanged(double)), this, SLOT(loadSamplerBank(double)));
+    connect(m_pLoadControl, SIGNAL(valueChanged(double)), this, SLOT(slotLoadSamplerBank(double)));
     m_pSaveControl = new ControlPushButton(ConfigKey("[Sampler]", "SaveSamplerBank"));
-    connect(m_pSaveControl, SIGNAL(valueChanged(double)), this, SLOT(saveSamplerBank(double)));
+    connect(m_pSaveControl, SIGNAL(valueChanged(double)), this, SLOT(slotSaveSamplerBank(double)));
 }
 
 SamplerBank::~SamplerBank() {
