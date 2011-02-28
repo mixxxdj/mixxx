@@ -8,10 +8,13 @@
 #include <QSortFilterProxyModel>
 
 #include "configobject.h"
-#include "library/browsefilter.h"
 #include "library/browsetablemodel.h"
 #include "library/libraryfeature.h"
-#include "treeitemmodel.h"
+#include "library/foldertreemodel.h"
+#include "library/proxytrackmodel.h"
+
+#define QUICK_LINK_NODE "::mixxx_quick_lnk_node::"
+#define DEVICE_NODE "::mixxx_device_node::"
 
 class TrackCollection;
 
@@ -31,9 +34,6 @@ class BrowseFeature : public LibraryFeature {
     bool dragMoveAccept(QUrl url);
     bool dragMoveAcceptChild(const QModelIndex& index, QUrl url);
 
-    virtual void bindWidget(WLibrarySidebar* sidebarWidget,
-                            WLibrary* libraryWidget,
-                            MixxxKeyboard* keyboard);
     TreeItemModel* getChildModel();
 
   public slots:
@@ -41,22 +41,15 @@ class BrowseFeature : public LibraryFeature {
     void activateChild(const QModelIndex& index);
     void onRightClick(const QPoint& globalPos);
     void onRightClickChild(const QPoint& globalPos, QModelIndex index);
-
-    // Called when a file in browse view is selected to be loaded into a player.
-    void loadToPlayer(const QModelIndex& index, QString group);
-    // Called when a file in the browse view is activated.
-    void onFileActivate(const QModelIndex& index);
-    void searchStarting();
-    void search(const QString&);
-    void searchCleared();
-  signals:
+   
+    signals:
     void setRootIndex(const QModelIndex&);
   private:
     ConfigObject<ConfigValue>* m_pConfig;
     BrowseTableModel m_browseModel;
-    BrowseFilter m_proxyModel;
+    ProxyTrackModel m_proxyModel;
     TrackCollection* m_pTrackCollection;
-    TreeItemModel m_childModel;
+    FolderTreeModel m_childModel;
     QString m_currentSearch;
 };
 

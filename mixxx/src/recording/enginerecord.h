@@ -80,6 +80,8 @@ class EngineRecord : public EngineAbstractRecord {
 
     TrackPointer m_pMetaData;
     int m_pMetaDataLife;
+    int m_iNumChannels;
+    double m_dLatency;
 
     QByteArray m_cuefilename;
     unsigned long m_cuesamplepos;

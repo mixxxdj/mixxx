@@ -12,7 +12,11 @@
  class TreeItem
  {
  public:
-     TreeItem(const QString &data, const QString &data_path, LibraryFeature* feature = 0, TreeItem* parent = 0);
+     TreeItem(); //creates an invisible root item for the tree
+     TreeItem(const QString &data, 
+              const QString &data_path, 
+              LibraryFeature* feature, 
+              TreeItem* parent);
      ~TreeItem();
      /** appends a child item to this object **/ 
      void appendChild(TreeItem *child);
@@ -26,9 +30,10 @@
      TreeItem *parent();
      
     /** for dynamic resizing models **/
-     bool insertChildren(QList<QString>& data, int position, int count);
+     bool insertChildren(QList<TreeItem*> &data, int position, int count);
+     /** Removes <count> children from the child list starting at index <position> **/
      bool removeChildren(int position, int count);
-    
+     
      /** sets data **/ 
      bool setData(const QVariant &data, const QVariant &data_path);
      /** simple name of the playlist **/
@@ -39,7 +44,7 @@
      bool isPlaylist() const;
      /** returns true if we have an inner node **/
      bool isFolder() const;
-     
+
      /* Returns the Library feature object to which an item belongs to */ 
      LibraryFeature* getFeature();
 
