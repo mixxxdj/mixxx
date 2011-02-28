@@ -190,7 +190,7 @@ bool EngineRecord::metaDataHasChanged()
     bool changed = false;
 
 
-    if ( m_pMetaDataLife < 4 ) {
+    if (((m_pMetaDataLife * m_dLatency)) < 5000) {
         m_pMetaDataLife++;
         return false;
     }
@@ -233,6 +233,9 @@ bool EngineRecord::metaDataHasChanged()
 
 void EngineRecord::process(const CSAMPLE * pIn, const CSAMPLE * pOut, const int iBufferSize)
 {
+    // Calculate the latency of this buffer
+    m_dLatency = (double)iBufferSize / m_samplerate->get();
+
     //if recording is disabled
     if(m_recReady->get() == RECORD_OFF){
         if(fileOpen()){

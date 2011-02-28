@@ -20,6 +20,12 @@
 
 	<!--
 	CHANGELOG
+	v1.08	(14/12/2010)
+	* Added custom images for splitter in library
+	* Added custom images for branch triangle in treeview
+	* Added visual feedback when searchbox has focus
+	* Small colour adjustments for library
+
 	v1.07	(02/12/2010)
 	* Added custom images for checkboxes in library
 	* Updated styles
@@ -105,23 +111,38 @@
 		QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
 
-		QTableView, QTextBrowser, QTreeView , QLineEdit { font: 13px/15px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-		background: #191F24; alternate-background-color: #191F24; color: #E4E4E4; }
+		QTableView, QTextBrowser, QTreeView { border: 1px solid #636F87; font: 13px/15px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+		background: #191919; alternate-background-color: #191919; color: #E4E4E4; }
 		QTableView::indicator { width: 12px; height: 12px;}
 		QTableView::indicator:checked { background: url(skin:/style_checkbox_checked.png);}
 		QTableView::indicator:unchecked { background: url(skin:/style_checkbox_unchecked.png);}
 
 		QHeaderView { font: 11px/13px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; }
 
+		WSearchLineEdit { padding: 2px; border: 1px solid #636F87; font: 13px/15px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; background: #191919; color: #E4E4E4; }
+		WSearchLineEdit:focus {padding: 2px; border: 2px solid #FF6600; font: 13px/15px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; background: #191919; color: #E4E4E4; }
+
+		QSplitter::handle { image: url(skin:/style_handle_unchecked.png); background: none; }
+		QSplitter::handle:pressed { image: url(skin:/style_handle_checked.png); background: none; }
+		QSplitter::handle:horizontal { width: 6px; }
+		QSplitter::handle:vertical { height: 6px; }
+
 		QLabel, QPushButton { font: 13px/15px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; }
-		QRadioButton { font: 13px/15px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; background: transparent; color: #E4E4E4; }
+		<!--Extra declaration for QRadionButton otherwise it shows up with wrong colors in Linux with Gnome -->
+		QRadioButton { font: 13px/15px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; background: transparent; }
+
+		<!--Workaround for QT4.7.0 background color bug in Linux with Gnome https://bugs.launchpad.net/mixxx/+bug/690280-->
+		QTreeView::branch:has-children:!has-siblings:closed,
+		QTreeView::branch:closed:has-children:has-siblings { border-image: none; image: url(skin:/style_branch_closed.png);}
+		QTreeView::branch:open:has-children:!has-siblings,
+		QTreeView::branch:open:has-children:has-siblings { border-image: none; image: url(skin:/style_branch_open.png);}
 		</Style>
-		<Pos>11,267</Pos>
-		<Size>986,390</Size>
-		<BgColor>#191F24</BgColor>
+		<Pos>10,265</Pos>
+		<Size>988,393</Size>
+		<BgColor>#191919</BgColor>
 		<FgColor>#E4E4E4</FgColor>
-		<BgColorRowEven>#191F24</BgColorRowEven>
-		<BgColorRowUneven>#191F24</BgColorRowUneven>
+		<BgColorRowEven>#191919</BgColorRowEven>
+		<BgColorRowUneven>#191919</BgColorRowUneven>
 	</TableView>
 
 	<!--
@@ -859,7 +880,7 @@
 	<Text>
 		<Tooltip>Track information&#10;Displays the Name and Title of the loaded track.&#10;Informations are extracted from the tracks tags.&#10;</Tooltip>
 		<Style>QLabel { font: bold 13px/15px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-		background-color: transparent; color: #191F24; text-align: left; padding-left: 1%; }
+		background-color: transparent; color: #191919; text-align: left; padding-left: 1%; }
 		QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
 		</Style>
@@ -870,7 +891,7 @@
 	<Text>
 		<Tooltip>Track information&#10;Displays the Name and Title of the loaded track.&#10;Informations are extracted from the tracks tags.&#10;</Tooltip>
 		<Style>QLabel { font: bold 13px/15px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-		background-color: transparent; color: #191F24; text-align: left;padding-left: 1%; }
+		background-color: transparent; color: #191919; text-align: left;padding-left: 1%; }
 		QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
 		</Style>
@@ -887,7 +908,7 @@
 	<NumberBpm>
 		<Tooltip>Tempo information&#10;Displays the tempo of the loaded track in BPM (beats per minute)&#10;</Tooltip>
 		<Style>QLabel { font: bold 13px/15px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-		background-color: transparent; color: #191F24; text-align: left;padding-left: 1%; }
+		background-color: transparent; color: #191919; text-align: left;padding-left: 1%; }
 		QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
 		</Style>
@@ -902,7 +923,7 @@
 	<NumberBpm>
 		<Tooltip>Tempo information&#10;Displays the tempo of the loaded track in BPM (beats per minute)&#10;</Tooltip>
 		<Style>QLabel { font: bold 13px/15px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-		background-color: transparent; color: #191F24; text-align: left;padding-left: 1%; }
+		background-color: transparent; color: #191919; text-align: left;padding-left: 1%; }
 		QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
 		</Style>
@@ -923,7 +944,7 @@
 	<NumberPos>
 		<Tooltip>Time information&#10;Displays the current playback position (or remaining time) and the duration of the loaded track.&#10;Depends on your settings in Preferences→Interface→Position display.&#10;</Tooltip>
 		<Style>QLabel { font: bold 13px/15px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-		background-color: transparent; color: #191F24; text-align: left;padding-left: 1%; }
+		background-color: transparent; color: #191919; text-align: left;padding-left: 1%; }
 		QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
 		</Style>
@@ -938,7 +959,7 @@
 	<NumberPos>
 		<Tooltip>Time information&#10;Displays the current playback position (or remaining time) and the duration of the loaded track.&#10;Depends on your settings in Preferences→Interface→Position display.&#10;</Tooltip>
 		<Style>QLabel { font: bold 13px/15px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-		background-color: transparent; color: #191F24; text-align: left;padding-left: 1%; }
+		background-color: transparent; color: #191919; text-align: left;padding-left: 1%; }
 		QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
 		</Style>
@@ -959,7 +980,7 @@
 	<NumberRate>
 		<Tooltip>Pitch rate information&#10;Displays the current pitch of the track based on the original tempo.&#10;</Tooltip>
 		<Style>QLabel { font: bold 13px/15px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-		background-color: transparent; color: #191F24; text-align: right; padding-right: 1%; }
+		background-color: transparent; color: #191919; text-align: right; padding-right: 1%; }
 		QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
 		</Style>
@@ -974,7 +995,7 @@
 	<NumberRate>
 		<Tooltip>Pitch rate information&#10;Displays the current pitch of the track based on the original tempo.&#10;</Tooltip>
 		<Style>QLabel { font: bold 13px/15px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-		background-color: transparent; color: #191F24; text-align: right; padding-right: 1%; }
+		background-color: transparent; color: #191919; text-align: right; padding-right: 1%; }
 		QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
 		</Style>

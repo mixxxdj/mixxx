@@ -554,14 +554,14 @@ class Shoutcast(Feature):
 
         if not libshout_found:
             raise Exception('Could not find libshout or its development headers. Please install it or compile Mixxx without Shoutcast support using the shoutcast=0 flag.')
-        
+
         # libvorbisenc does only exist on Linux and OSX, on Windows it is
         # included in vorbisfile.dll
         if not build.platform_is_windows:
             vorbisenc_found = conf.CheckLib(['vorbisenc'])
             if not vorbisenc_found:
                 raise Exception("libvorbisenc was not found! Please install it or compile Mixxx without Shoutcast support using the shoutcast=0 flag.")
-            
+
     def sources(self, build):
         build.env.Uic4('dlgprefshoutcastdlg.ui')
         return ['dlgprefshoutcast.cpp',
@@ -675,7 +675,7 @@ class Optimize(Feature):
             # Should we turn on PGO ?
             # http://msdn.microsoft.com/en-us/library/xbf3tbeh.aspx
             build.env.Append(LINKFLAGS = '/LTCG:STATUS')
-            
+
             # Suggested for unused code removal
             # http://msdn.microsoft.com/en-us/library/ms235601.aspx
             # http://msdn.microsoft.com/en-us/library/xsa71f43.aspx
@@ -683,7 +683,7 @@ class Optimize(Feature):
             build.env.Append(CCFLAGS = '/Gy')
             build.env.Append(LINKFLAGS = '/OPT:REF')
             build.env.Append(LINKFLAGS = '/OPT:ICF')
-            
+
             # Don't worry about alining code on 4KB boundaries
             build.env.Append(LINKFLAGS = '/OPT:NOWIN98')
 
@@ -709,7 +709,10 @@ class Optimize(Feature):
                 self.status = "Disabled (Overriden by tuned=1)"
                 return
 
-            # Common flags to all optimizations
+            # Common flags to all optimizations. Consider dropping -O3 to -O2
+            # and getting rid of -fomit-frame-pointer, -ffast-math, and
+            # -funroll-loops. We need to justify our use of these aggressive
+            # optimizations with data.
             build.env.Append(CCFLAGS='-O3 -fomit-frame-pointer -ffast-math -funroll-loops')
 
             if optimize_level == 1:
@@ -736,6 +739,26 @@ class Optimize(Feature):
             elif optimize_level == 8:
                 self.status = "Enabled (Generic SSE/SSE2/SSE3)"
                 build.env.Append(CCFLAGS = '-mmmx -msse2 -msse3 -mfpmath=sse')
+            elif optimize_level == 9:
+                self.status = "Enabled (Tuned Generic)"
+                # This option is for release builds packaged for 64-bit. We
+                # don't know what kind of 64-bit CPU they'll have, so let
+                # -mtune=generic pick the best options. Used by the debian rules
+                # script.
+
+                # It's a little sketchy, but I'm turning on SSE and MMX by
+                # default. opt=9 is a distribution mode, we don't really support
+                # CPU's earlier than Pentium 3, which is the class of CPUs this
+                # decision affects. The downside of this is that we aren't truly
+                # i386 compatible, so builds that claim 'i386' will crash.
+                # -- rryan 2/2011
+
+                # TODO(XXX) check the soundtouch package in Ubuntu to see what they do about this.
+                build.env.Append(CCFLAGS = '-mtune=generic -mmmx -msse -mfpmath=sse')
+
+                # Enable SSE2 on 64-bit machines. SSE3 is not a sure thing on 64-bit
+                if build.machine_is_64bit:
+                    build.env.Append(CCFLAGS = '-msse2')
 
 
 class Tuned(Feature):
