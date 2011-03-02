@@ -3,6 +3,12 @@
 
 #include "track/beatgrid.h"
 
+
+typedef struct beatgrid_blob {
+	double bpm;
+	double firstBeat;
+} BEATGRIDBLOB;
+
 BeatGrid::BeatGrid(TrackPointer pTrack, QByteArray* pByteArray)
         : QObject(),
           m_mutex(QMutex::Recursive),
@@ -20,7 +26,7 @@ BeatGrid::BeatGrid(TrackPointer pTrack, QByteArray* pByteArray)
 }
 
 BeatGrid::~BeatGrid() {
-
+	
 }
 
 void BeatGrid::setGrid(double dBpm, double dFirstBeatSample) {
@@ -32,20 +38,16 @@ void BeatGrid::setGrid(double dBpm, double dFirstBeatSample) {
 
 QByteArray* BeatGrid::toByteArray() const {
     QMutexLocker locker(&m_mutex);
-    double* pBuffer = new double[2];
-    pBuffer[0] = m_dBpm;
-    pBuffer[1] = m_dFirstBeat;
-    QByteArray* pByteArray = new QByteArray((char*)pBuffer, sizeof(double) * 2);
-    delete [] pBuffer;
+    BEATGRIDBLOB blob = { m_dBpm, m_dFirstBeat };
+    QByteArray* pByteArray = new QByteArray((char *)&blob, sizeof(blob));
     return pByteArray;
 }
 
 void BeatGrid::readByteArray(QByteArray* pByteArray) {
-    if (pByteArray->size() != sizeof(double) * 2) {
+    if ( pByteArray->size() != sizeof(BEATGRIDBLOB))
         return;
-    }
-    double* pBuffer = (double*)pByteArray->data();
-    setGrid(pBuffer[0], pBuffer[1]);
+    BEATGRIDBLOB *blob = (BEATGRIDBLOB *)pByteArray->data();
+    setGrid(blob->bpm, blob->firstBeat);
 }
 
 QString BeatGrid::getVersion() const {
