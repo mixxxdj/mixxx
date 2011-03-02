@@ -164,7 +164,7 @@ void BeatControl::slotBeatLoop(double beats)
         else
         {
             loop_out = m_pBeats->findNthBeat(m_iCurrentSample/2, 1);
-            loop_out -= ((loop_out - loop_in) * beats);
+            loop_out = loop_in + ((loop_out - loop_in) * beats);
         }
     }
     // For negative numbers we start from the beat after us and start the loop
