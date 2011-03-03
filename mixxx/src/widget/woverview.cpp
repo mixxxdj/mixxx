@@ -320,7 +320,6 @@ void WOverview::mouseReleaseEvent(QMouseEvent * e)
 
     // value ranges from 0 to 127 map to -1 to 1
     float fValue = ((double)m_iPos*(100./(double)(width()-2))) + 14.;
-    qDebug() << "mouse release" << m_iPos << fValue;
 
     if (e->button()==Qt::RightButton)
         emit(valueChangedRightUp(fValue));
