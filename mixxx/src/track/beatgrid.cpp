@@ -9,7 +9,7 @@ typedef struct beatgrid_blob {
 	double firstBeat;
 } BEATGRIDBLOB;
 
-BeatGrid::BeatGrid(TrackPointer pTrack, QByteArray* pByteArray)
+BeatGrid::BeatGrid(TrackPointer pTrack, const QByteArray* pByteArray)
         : QObject(),
           m_mutex(QMutex::Recursive),
           m_iSampleRate(pTrack->getSampleRate()),
@@ -43,7 +43,7 @@ QByteArray* BeatGrid::toByteArray() const {
     return pByteArray;
 }
 
-void BeatGrid::readByteArray(QByteArray* pByteArray) {
+void BeatGrid::readByteArray(const QByteArray* pByteArray) {
     if ( pByteArray->size() != sizeof(BEATGRIDBLOB))
         return;
     BEATGRIDBLOB *blob = (BEATGRIDBLOB *)pByteArray->data();
