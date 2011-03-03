@@ -898,7 +898,7 @@
 	
 	<StatusLight>
 	  <Tooltip>Vinyl Status</Tooltip>
-	  <NumberPos>3</NumberPos>
+	  <NumberPos>4</NumberPos>
 	  <PathBack>vinyl-status-disabled.png</PathBack>
 	  <PathStatusLight>vinyl-status-green.png</PathStatusLight>
 	  <PathStatusLight2>vinyl-status-yellow.png</PathStatusLight2>
@@ -910,7 +910,7 @@
 	</StatusLight>
 	<StatusLight>
 	  <Tooltip>Vinyl Status</Tooltip>
-	  <NumberPos>3</NumberPos>
+	  <NumberPos>4</NumberPos>
 	  <PathBack>vinyl-status-disabled.png</PathBack>
 	  <PathStatusLight>vinyl-status-green.png</PathStatusLight>
 	  <PathStatusLight2>vinyl-status-yellow.png</PathStatusLight2>
