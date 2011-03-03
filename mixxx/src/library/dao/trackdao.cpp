@@ -116,12 +116,23 @@ void TrackDAO::saveTrack(TrackInfoObject* pTrack) {
     int trackId = pTrack->getId();
     if (trackId != -1) {
         if (pTrack->isDirty()) {
-            updateTrack(pTrack);
-            m_dirtyTracks.remove(trackId);
-
+            
+            
             //Write audio meta data, if enabled in the preferences
-            writeAudioMetaData(pTrack);
-
+            if (m_pConfig && m_pConfig->getValueString(ConfigKey("[Library]","WriteAudioTags")).toInt() == 1) 
+            {
+    			if (pTrack->isLoaded())
+    			{
+    				qDebug() << "Track reports it is currently loaded, not saving metadata:" << pTrack->getTitle();
+    				//don't remove from dirtytracks or call it clean
+    				return;
+    			}
+    			else
+		            writeAudioMetaData(pTrack);
+		    }
+		    
+		    updateTrack(pTrack);
+		    m_dirtyTracks.remove(trackId);
             emit(trackClean(trackId));
         } else {
             // We don't know why this is happening right now, but this assert is
@@ -132,10 +143,22 @@ void TrackDAO::saveTrack(TrackInfoObject* pTrack) {
             // Q_ASSERT(!m_dirtyTracks.contains(trackId));
             if (!m_dirtyTracks.contains(trackId)) {
                 qDebug() << "WARNING: Inconsistent state in TrackDAO. Track is clean while TrackDAO thinks it is dirty. Correcting. (updating anyway)";
-                updateTrack(pTrack);
+                
+                
                 //Write audio meta data, if enabled in the preferences
-            	writeAudioMetaData(pTrack);
-            	emit(trackClean(trackId));
+		        if (m_pConfig && m_pConfig->getValueString(ConfigKey("[Library]","WriteAudioTags")).toInt() == 1) 
+		        {
+					if (pTrack->isLoaded())
+					{
+						qDebug() << "Track reports it is currently loaded, not saving metadata:" << pTrack->getTitle();
+						return;
+					}
+					else
+				        writeAudioMetaData(pTrack);
+				}
+				
+				updateTrack(pTrack);
+		        emit(trackClean(trackId));
             }
 
             //qDebug() << "Skipping track update for track" << pTrack->getId();
@@ -905,24 +928,15 @@ void TrackDAO::clearCache()
 }
 
 void TrackDAO::writeAudioMetaData(TrackInfoObject* pTrack){
-    if (m_pConfig && m_pConfig->getValueString(ConfigKey("[Library]","WriteAudioTags")).toInt() == 1) {
-    	if (pTrack->isLoaded())
-    	{
-    		qDebug() << "Track reports it is currently loaded, not saving metadata:" << pTrack->getTitle();
-    	}
-    	else
-    	{
-		    AudioTagger tagger(pTrack->getLocation());
+    AudioTagger tagger(pTrack->getLocation());
 
-		    tagger.setArtist(pTrack->getArtist());
-		    tagger.setTitle(pTrack->getTitle());
-		    tagger.setGenre(pTrack->getGenre());
-		    tagger.setAlbum(pTrack->getAlbum());
-		    tagger.setComment(pTrack->getComment());
-		    tagger.setTracknumber(pTrack->getTrackNumber());
-		    tagger.setBpm(pTrack->getBpmStr());
+    tagger.setArtist(pTrack->getArtist());
+    tagger.setTitle(pTrack->getTitle());
+    tagger.setGenre(pTrack->getGenre());
+    tagger.setAlbum(pTrack->getAlbum());
+    tagger.setComment(pTrack->getComment());
+    tagger.setTracknumber(pTrack->getTrackNumber());
+    tagger.setBpm(pTrack->getBpmStr());
 
-		    tagger.save();
-		}
-    }
+    tagger.save();
 }
