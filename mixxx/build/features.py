@@ -714,7 +714,9 @@ class Optimize(Feature):
             # and getting rid of -fomit-frame-pointer, -ffast-math, and
             # -funroll-loops. We need to justify our use of these aggressive
             # optimizations with data.
-            build.env.Append(CCFLAGS='-O3 -fomit-frame-pointer -ffast-math -funroll-loops')
+            #build.env.Append(CCFLAGS='-O3 -fomit-frame-pointer -ffast-math -funroll-loops')
+            #build.env.Append(CCFLAGS='-O0 -g')# -fomit-frame-pointer -ffast-math -funroll-loops')
+            build.env.Append(CCFLAGS='-O2')# -fomit-frame-pointer -ffast-math -funroll-loops')
 
             if optimize_level == 1:
                 # only includes what we already applied
@@ -727,7 +729,7 @@ class Optimize(Feature):
                 build.env.Append(CCFLAGS = '-march=prescott -mmmx -msse3 -mfpmath=sse')
             elif optimize_level == 4:
                 self.status = "Enabled (Intel Core 2)"
-                build.env.Append(CCFLAGS = '-march=nocona -mmmx -msse -msse2 -msse3 -mfpmath=sse -ffast-math -funroll-loops')
+                build.env.Append(CCFLAGS = '-march=nocona -mmmx -msse -msse2 -msse3 -mfpmath=sse')
             elif optimize_level == 5:
                 self.status = "Enabled (Athlon Athlon-4/XP/MP)"
                 build.env.Append(CCFLAGS = '-march=athlon-4 -mmmx -msse -m3dnow -mfpmath=sse')
