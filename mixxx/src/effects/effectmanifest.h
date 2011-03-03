@@ -4,7 +4,7 @@
 #include <QList>
 #include <QString>
 
-#include "effects/effectparameter.h"
+#include "effects/effectmanifestparameter.h"
 
 // An EffectManifest is a full description of the metadata associated with an
 // effect (e.g. name, author, version, description, etc.) and the parameters of
@@ -35,15 +35,15 @@ class EffectManifest {
     virtual const QString& description() const;
     virtual void setDescription(QString description);
 
-    virtual const QList<EffectParameter> parameters() const;
-    virtual EffectParameter& addParameter();
+    virtual const QList<EffectManifestParameter> parameters() const;
+    virtual EffectManifestParameter& addParameter();
 
   private:
     QString m_name;
     QString m_author;
     QString m_version;
     QString m_description;
-    QList<EffectParameter> m_parameters;
+    QList<EffectManifestParameter> m_parameters;
 };
 
 #endif /* EFFECTMANIFEST_H */

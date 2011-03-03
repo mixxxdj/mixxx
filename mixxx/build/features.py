@@ -113,7 +113,11 @@ class Effects(Feature):
                                  effects/effectsbackend.cpp
                                  effects/effect.cpp
                                  effects/effectmanifest.cpp
-                                 effects/effectparameter.cpp
+                                 effects/effectmanifestparameter.cpp
+                                 effects/effectsmanager.cpp
+                                 effects/effectchain.cpp
+                                 effects/effectslot.cpp
+                                 effects/effectparameterslot.cpp
                                  effects/native/nativebackend.cpp
                                  """)
         return sources

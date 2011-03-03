@@ -1,9 +1,14 @@
 #ifndef EFFECTSMANAGER_H
 #define EFFECTSMANAGER_H
 
+#include <QObject>
+#include <QMutex>
+#include <QList>
+
 #include "util.h"
 #include "effects/effect.h"
 #include "effects/effectsbackend.h"
+#include "effects/effectchain.h"
 
 class EffectsManager : public QObject {
     Q_OBJECT
@@ -16,18 +21,15 @@ class EffectsManager : public QObject {
     // being deleted. Not thread safe -- use only from the GUI thread.
     void addEffectsBackend(EffectsBackend* pEffectsBackend);
 
-    unsigned int numEffectSlots() const;
-    void addEffectSlot();
-    EffectSlot& getEffectSlot(unsigned int i);
-
     unsigned int numEffectChains() const;
     void addEffectChain();
-    EffectChain& getEffectChain(unsigned int i);
+    EffectChainPointer getEffectChain(unsigned int i);
 
   private:
     DISALLOW_COPY_AND_ASSIGN(EffectsManager);
-
+    mutable QMutex m_mutex;
     QList<EffectsBackend*> m_effectsBackends;
+    QList<EffectChainPointer> m_effectChains;
 };
 
 

@@ -1,10 +1,10 @@
-#ifndef EFFECTPARAMETER_H
-#define EFFECTPARAMETER_H
+#ifndef EFFECTMANIFESTPARAMETER_H
+#define EFFECTMANIFESTPARAMETER_H
 
 #include <QVariant>
 #include <QString>
 
-class EffectParameter {
+class EffectManifestParameter {
   public:
     enum ValueHint {
         VALUE_UNKNOWN = 0,
@@ -33,8 +33,8 @@ class EffectParameter {
         UNITS_SAMPLERATE, // fraction of the samplerate
     };
 
-    EffectParameter();
-    virtual ~EffectParameter();
+    EffectManifestParameter();
+    virtual ~EffectManifestParameter();
 
     ////////////////////////////////////////////////////////////////////////////////
     // Parameter Information
@@ -92,4 +92,4 @@ class EffectParameter {
     QVariant m_maximum;
 };
 
-#endif /* EFFECTPARAMETER_H */
+#endif /* EFFECTMANIFESTPARAMETER_H */

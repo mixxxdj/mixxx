@@ -38,11 +38,11 @@ void EffectManifest::setDescription(QString description) {
     m_description = description;
 }
 
-const QList<EffectParameter> EffectManifest::parameters() const {
+const QList<EffectManifestParameter> EffectManifest::parameters() const {
     return m_parameters;
 }
 
-EffectParameter& EffectManifest::addParameter() {
-    m_parameters.append(EffectParameter());
+EffectManifestParameter& EffectManifest::addParameter() {
+    m_parameters.append(EffectManifestParameter());
     return m_parameters.last();
 }
