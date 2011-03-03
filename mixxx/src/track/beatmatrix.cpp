@@ -3,7 +3,7 @@
 
 #include "track/beatmatrix.h"
 
-BeatMatrix::BeatMatrix(TrackPointer pTrack, QByteArray* pByteArray)
+BeatMatrix::BeatMatrix(TrackPointer pTrack, const QByteArray* pByteArray)
         : QObject(),
           m_mutex(QMutex::Recursive),
           m_iSampleRate(pTrack->getSampleRate()) {
@@ -32,7 +32,7 @@ QByteArray* BeatMatrix::toByteArray() const {
     return pByteArray;
 }
 
-void BeatMatrix::readByteArray(QByteArray* pByteArray) {
+void BeatMatrix::readByteArray(const QByteArray* pByteArray) {
     if (pByteArray->size() % sizeof(double) != 0) {
         qDebug() << "ERROR: Could not parse BeatMatrix from QByteArray of size" << pByteArray->size();
         return;
