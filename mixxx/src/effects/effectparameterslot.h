@@ -18,8 +18,6 @@ class EffectParameterSlot : QObject {
 
     // Load the parameter of the given effect into this EffectParameterSlot
     void loadEffect(EffectPointer pEffect);
-    // Clear the currently loaded effect
-    void clear();
 
     // bool isEnabled() const;
 
@@ -59,9 +57,12 @@ class EffectParameterSlot : QObject {
         return QString("EffectParameterSlot(%1,%2)").arg(m_group).arg(m_iParameterNumber);
     }
 
+    // Clear the currently loaded effect
+    void clear();
+
     mutable QMutex m_mutex;
+    const unsigned int m_iParameterNumber;
     QString m_group;
-    unsigned int m_iParameterNumber;
     EffectPointer m_pEffect;
 
     ////////////////////////////////////////////////////////////////////////////////

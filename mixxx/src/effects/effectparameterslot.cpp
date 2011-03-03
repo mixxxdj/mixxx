@@ -7,8 +7,8 @@
 EffectParameterSlot::EffectParameterSlot(QObject* pParent, QString group, unsigned int parameterNumber)
         : QObject(pParent),
           m_mutex(QMutex::Recursive),
-          m_group(group),
-          m_iParameterNumber(parameterNumber) {
+          m_iParameterNumber(parameterNumber),
+          m_group(group) {
     QString basename = QString("parameter%1").arg(parameterNumber);
 
     m_pControlEnabled = new ControlObject(ConfigKey(group, QString("%1_enabled").arg(basename)));
@@ -77,7 +77,6 @@ void EffectParameterSlot::loadEffect(EffectPointer pEffect) {
 
 void EffectParameterSlot::clear() {
     qDebug() << debugString() << "clear";
-    QMutexLocker locker(&m_mutex);
     m_pEffect.clear();
     m_pControlEnabled->set(0.0f);
     m_pControlValue->set(0.0f);
