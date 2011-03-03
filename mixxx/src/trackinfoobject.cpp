@@ -109,6 +109,7 @@ void TrackInfoObject::populateLocation(QFileInfo& fileInfo) {
 
 void TrackInfoObject::initialize(bool parseHeader) {
     m_bDirty = false;
+    m_bIsLoaded = false;
     m_bLocationChanged = false;
 
     m_sArtist = "";
@@ -152,6 +153,18 @@ void TrackInfoObject::doSave() {
 bool TrackInfoObject::isValid() const {
     QMutexLocker lock(&m_qMutex);
     return m_bIsValid;
+}
+
+bool TrackInfoObject::isLoaded() const
+{
+	QMutexLocker lock(&m_qMutex);
+	return m_bIsLoaded;
+}
+
+void TrackInfoObject::setLoaded(bool val)
+{
+	QMutexLocker lock(&m_qMutex);
+	m_bIsLoaded = val;
 }
 
 /*

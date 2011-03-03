@@ -906,16 +906,23 @@ void TrackDAO::clearCache()
 
 void TrackDAO::writeAudioMetaData(TrackInfoObject* pTrack){
     if (m_pConfig && m_pConfig->getValueString(ConfigKey("[Library]","WriteAudioTags")).toInt() == 1) {
-        AudioTagger tagger(pTrack->getLocation());
+    	if (pTrack->isLoaded())
+    	{
+    		qDebug() << "Track reports it is currently loaded, not saving metadata:" << pTrack->getTitle();
+    	}
+    	else
+    	{
+		    AudioTagger tagger(pTrack->getLocation());
 
-        tagger.setArtist(pTrack->getArtist());
-        tagger.setTitle(pTrack->getTitle());
-        tagger.setGenre(pTrack->getGenre());
-        tagger.setAlbum(pTrack->getAlbum());
-        tagger.setComment(pTrack->getComment());
-        tagger.setTracknumber(pTrack->getTrackNumber());
-        tagger.setBpm(pTrack->getBpmStr());
+		    tagger.setArtist(pTrack->getArtist());
+		    tagger.setTitle(pTrack->getTitle());
+		    tagger.setGenre(pTrack->getGenre());
+		    tagger.setAlbum(pTrack->getAlbum());
+		    tagger.setComment(pTrack->getComment());
+		    tagger.setTracknumber(pTrack->getTrackNumber());
+		    tagger.setBpm(pTrack->getBpmStr());
 
-        tagger.save();
+		    tagger.save();
+		}
     }
 }

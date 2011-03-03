@@ -88,6 +88,7 @@ BaseTrackPlayer::BaseTrackPlayer(QObject* pParent,
 BaseTrackPlayer::~BaseTrackPlayer()
 {
     if (m_pLoadedTrack) {
+    	m_pLoadedTrack->setLoaded(false);
         emit(unloadingTrack(m_pLoadedTrack));
         m_pLoadedTrack.clear();
     }
@@ -133,6 +134,7 @@ void BaseTrackPlayer::slotLoadTrack(TrackPointer track, bool bStartFromEndPos)
         // thing.
         m_pLoadedTrack->disconnect();
         // Causes the track's data to be saved back to the library database.
+        m_pLoadedTrack->setLoaded(false);
         emit(unloadingTrack(m_pLoadedTrack));
     }
 
@@ -151,6 +153,7 @@ void BaseTrackPlayer::slotLoadTrack(TrackPointer track, bool bStartFromEndPos)
 }
 
 void BaseTrackPlayer::slotLoadFailed(TrackPointer track, QString reason) {
+	m_pLoadedTrack->setLoaded(false);
     qDebug() << "Failed to load track" << track->getLocation() << reason;
     // Alert user.
     QMessageBox::warning(NULL, tr("Couldn't load track."), reason);
@@ -165,6 +168,7 @@ void BaseTrackPlayer::slotUnloadTrack(TrackPointer) {
         m_pLoadedTrack->disconnect();
         // Causes the track's data to be saved back to the library database and
         // for all the widgets to unload the track and blank themselves.
+        m_pLoadedTrack->setLoaded(false);
         emit(unloadingTrack(m_pLoadedTrack));
     }
     m_pDuration->set(0);

@@ -565,6 +565,10 @@ void CachingReader::loadTrack(TrackPointer pTrack) {
             pTrack, QString("The file '%1' could not be found.").arg(filename)));
         return;
     }
+    
+    //doing this the moment the track is mapped because we don't want any
+    //races
+    pTrack->setLoaded(true);
 
     m_pCurrentSoundSource = new SoundSourceProxy(pTrack);
     m_pCurrentSoundSource->open(); //Open the song for reading
@@ -573,6 +577,7 @@ void CachingReader::loadTrack(TrackPointer pTrack) {
     m_iTrackNumSamples = m_pCurrentSoundSource->length();
 
     if (m_iTrackNumSamples == 0 || m_iTrackSampleRate == 0) {
+    	pTrack->setLoaded(false);
         // Must unlock before emitting to avoid deadlock
         qDebug() << m_pGroup << "CachingReader::loadTrack() load failed for\""
                  << filename << "\", file invalid, unlocked reader lock";

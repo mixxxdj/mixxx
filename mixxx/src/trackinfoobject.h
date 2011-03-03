@@ -241,6 +241,9 @@ public:
 
     /** Set the track's full file path */
     void setLocation(QString location);
+    
+    bool isLoaded() const;
+	void setLoaded(bool val);
 
     const Segmentation<QString>* getChordData();
     void setChordData(Segmentation<QString> cd);
@@ -366,6 +369,9 @@ public:
 
     /** True if object contains valid information */
     bool m_bIsValid;
+    
+    /** True if the track is currently in a player */
+    bool m_bIsLoaded;
 
     double m_dVisualResampleRate;
     Segmentation<QString> m_chordData;
