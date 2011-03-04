@@ -111,6 +111,7 @@ public:
     void slotControlStart(double);
     void slotControlEnd(double);
     void slotControlSeek(double);
+    void slotControlVinylSeek(double);
     void slotControlSeekAbs(double);
 
     // Request that the EngineBuffer load a track. Since the process is
@@ -212,6 +213,7 @@ private:
     ControlPushButton* m_pRepeat;
 
 	ControlObject *m_pVinylStatus;  //Status of vinyl control
+	ControlObject *m_pVinylSeek;
 	
     /** Fwd and back controls, start and end of track control */
     ControlPushButton *startButton, *endButton;

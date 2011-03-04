@@ -54,7 +54,8 @@ class VinylControl : public QThread
         ConfigObject<ConfigValue> *m_pConfig;	/** Pointer to config database */
         const char* group;
     	ControlObjectThread *playButton;		//The ControlObject used to start/stop playback of the song.
-    	ControlObjectThread *playPos;			//The ControlObject used to change the playback position in the song.
+    	ControlObjectThread *playPos;			//The ControlObject used to read the playback position in the song.
+    	ControlObjectThread *vinylSeek;			//The ControlObject used to change the playback position in the song.
     	ControlObjectThread *controlScratch;	//The ControlObject used to seek when the record is spinning fast.
     	ControlObjectThread *rateSlider;		//The ControlObject used to change the speed/pitch of the song.
     	ControlObjectThread *reverseButton;	//The ControlObject used to reverse playback of the song.
