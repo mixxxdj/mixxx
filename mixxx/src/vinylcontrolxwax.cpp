@@ -368,7 +368,9 @@ void VinylControlXwax::run()
 	            	{
 	            		//if forceresync was set but we're no longer absolute,
 	            		//it no longer applies
-	            		if (iVCMode == MIXXX_VCMODE_ABSOLUTE)
+	            		//if we're in relative mode then we'll do a sync
+	            		//because it might select a cue
+	            		if (iVCMode == MIXXX_VCMODE_ABSOLUTE || iVCMode==MIXXX_VCMODE_RELATIVE)
 	            		{
 		            		syncPosition();
 	                    	resetSteadyPitch(dVinylPitch, dVinylPosition);
@@ -531,6 +533,7 @@ void VinylControlXwax::run()
 			        ringFilled = 0;
 			        iQualPos = 0;
     				iQualFilled = 0;
+    				bForceResync=true;
 			        vinylStatus->slotSet(VINYL_STATUS_OK);
 			    }
             }
@@ -628,8 +631,8 @@ double VinylControlXwax::checkSteadyPitch(double pitch, double time)
 //Synchronize Mixxx's position to the position of the timecoded vinyl.
 void VinylControlXwax::syncPosition()
 {
-	//qDebug() << "sync position";
-   	playPos->slotSet(dVinylPosition / duration->get());     //VinylPos in seconds / total length of song
+	//qDebug() << "sync position" << dVinylPosition / duration->get();
+   	vinylSeek->slotSet(dVinylPosition / duration->get());	//VinylPos in seconds / total length of song
 }
 
 bool VinylControlXwax::checkEnabled(bool was, bool is)
