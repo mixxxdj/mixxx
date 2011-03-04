@@ -112,6 +112,7 @@ class Effects(Feature):
 
                                  effects/effectsbackend.cpp
                                  effects/effect.cpp
+                                 effects/effectparameter.cpp
                                  effects/effectmanifest.cpp
                                  effects/effectmanifestparameter.cpp
                                  effects/effectsmanager.cpp

@@ -4,6 +4,7 @@
 #include <QSharedPointer>
 
 #include "effects/effectmanifest.h"
+#include "effects/effectparameter.h"
 
 class EffectsBackend;
 
@@ -16,17 +17,15 @@ class Effect : public QObject {
     Effect(EffectsBackend* pBackend, EffectManifest& pManifest);
     virtual ~Effect();
 
-    virtual const EffectManifest& getManifest() const {
-        return m_effectManifest;
-    }
+    virtual const EffectManifest& getManifest() const;
 
-    virtual EffectsBackend* getBackend() const {
-        return m_pEffectsBackend;
-    }
+    unsigned int numParameters() const;
+    EffectParameterPointer getParameter(unsigned int parameterNumber);
 
   private:
     EffectsBackend* m_pEffectsBackend;
     EffectManifest& m_effectManifest;
+    QList<EffectParameterPointer> m_parameters;
 };
 
 #endif /* EFFECT_H */
