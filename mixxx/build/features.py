@@ -117,7 +117,7 @@ class Effects(Feature):
                                  effects/effectsmanager.cpp
                                  effects/effectchain.cpp
                                  effects/effectslot.cpp
-                                 effects/effectparameterslot.cpp
+                                 effects/effectslotparameter.cpp
                                  effects/native/nativebackend.cpp
                                  """)
         return sources
