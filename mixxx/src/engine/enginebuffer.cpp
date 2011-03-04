@@ -368,21 +368,21 @@ void EngineBuffer::slotControlVinylSeek(double change)
     ControlObject *m_pVinylMode = ControlObject::getControl(ConfigKey(group,"VinylMode"));
     ControlObject *m_pVinylEnabled = ControlObject::getControl(ConfigKey(group,"vinylcontrol"));
 
-    if (m_pVinylEnabled != NULL && m_pVinylMode != NULL)
+    if (m_pCurrentTrack != NULL && m_pVinylEnabled != NULL && m_pVinylMode != NULL)
     {
 		if (m_pVinylEnabled->get() && m_pVinylMode->get() == MIXXX_VCMODE_RELATIVE)
 		{
-			double nearest_playpos = -1;
+			int nearest_playpos = -1;
 			
 			QList<Cue*> cuePoints = m_pCurrentTrack->getCuePoints();
 			QListIterator<Cue*> it(cuePoints);
 			while (it.hasNext()) {
 				Cue* pCue = it.next();
-				if (pCue->getType() != Cue::CUE)
+				if (pCue->getType() != Cue::CUE || pCue->getHotCue() == -1)
 					continue;
-				double cue_position = pCue->getPosition();
+				int cue_position = pCue->getPosition();
 				//pick cues closest to new_playpos without going over
-				if (cue_position > nearest_playpos && cue_position <= new_playpos)
+				if (cue_position > nearest_playpos && cue_position <= (int)new_playpos)
 					nearest_playpos = cue_position;
 			}
 			
@@ -394,12 +394,14 @@ void EngineBuffer::slotControlVinylSeek(double change)
 				//if negative, allow a seek
 			}
 			else
-				new_playpos = nearest_playpos;
+			{
+				slotControlSeekAbs((float)nearest_playpos);
+				return;
+			}
 		}
 	}
-	//slotControlSeek(new_playpos / (float)file_length_old);
-	qDebug() << "vinyl wants to seek to" << new_playpos;
-	slotControlSeekAbs(new_playpos);
+	//just seek where it wanted to originally
+	slotControlSeek(change);
 #endif
 }
 
