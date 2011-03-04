@@ -518,6 +518,8 @@ SoundManagerConfig SoundManager::getConfig() const {
 #ifdef __VINYLCONTROL__        
 bool SoundManager::hasVinylInput(int deck)
 {
+	if (deck >= m_VinylControl.length())
+		return false;
 	VinylControlProxy* vinyl_control = m_VinylControl[deck];
 	
 	return m_VinylControl[deck] && 
