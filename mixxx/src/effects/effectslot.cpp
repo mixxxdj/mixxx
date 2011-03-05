@@ -35,6 +35,11 @@ EffectSlot::~EffectSlot() {
     }
 }
 
+EffectPointer EffectSlot::getEffect() const {
+    QMutexLocker locker(&m_mutex);
+    return m_pEffect;
+}
+
 void EffectSlot::loadEffect(EffectPointer pEffect) {
     qDebug() << debugString() << "loadEffect" << (pEffect ? pEffect->getManifest().name() : "(null)");
     QMutexLocker locker(&m_mutex);

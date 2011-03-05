@@ -38,6 +38,22 @@ EffectChain::EffectChain(QObject* pParent, unsigned int iChainNumber)
 EffectChain::~EffectChain() {
 }
 
+void EffectChain::process(const QString channelId,
+                          const CSAMPLE* pInput,
+                          CSAMPLE* pOutput,
+                          const unsigned int numSamples) {
+    qDebug() << debugString() << "process" << channelId << numSamples;
+    QMutexLocker locker(&m_mutex);
+    foreach (EffectSlotPointer effectSlot, m_slots) {
+        EffectPointer pEffect = effectSlot->getEffect();
+
+        if (pEffect) {
+            pEffect->process(channelId, pInput, pOutput, numSamples);
+        }
+    }
+}
+
+
 unsigned int EffectChain::numSlots() const {
     qDebug() << debugString() << "numSlots";
     QMutexLocker locker(&m_mutex);

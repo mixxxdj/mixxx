@@ -20,6 +20,10 @@ class EffectSlot : public QObject {
     EffectSlot(QObject* pParent, const unsigned int iChainNumber, const unsigned int iSlotNumber);
     virtual ~EffectSlot();
 
+    // Return the currently loaded effect, if any. If no effect is loaded,
+    // returns a null EffectPointer.
+    EffectPointer getEffect() const;
+
   public slots:
     // Request that this EffectSlot load the given Effect
     void loadEffect(EffectPointer pEffect);

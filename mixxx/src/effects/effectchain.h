@@ -22,12 +22,31 @@ class EffectChain : public QObject {
     void addEffectSlot();
     EffectSlotPointer getEffectSlot(unsigned int slotNumber);
 
+    // Take a buffer of numSamples samples of audio from channel channelId,
+    // provided as pInput, and apply each Effect in this EffectChain to it,
+    // putting the resulting output in pOutput. If pInput is equal to pOutput,
+    // then the operation must occur in-place. Both pInput and pOutput are
+    // represented as stereo interleaved samples. There are numSamples total
+    // samples, so numSamples/2 left channel samples and numSamples/2 right
+    // channel samples. The channelId provided allows the effects to maintain
+    // state on a per-channel basis. This is important because one Effect
+    // instance may be used to process the audio of multiple channels.
+    virtual void process(const QString channelId,
+                         const CSAMPLE* pInput, CSAMPLE* pOutput,
+                         const unsigned int numSamples);
+
   signals:
     // Indicates that the effect pEffect has been loaded into slotNumber of
     // EffectChain chainNumber. pEffect may be an invalid pointer, which
     // indicates that a previously loaded effect was removed from the slot.
     void effectLoaded(EffectPointer pEffect, unsigned int chainNumber, unsigned int slotNumber);
+
+    // Signal that whoever is in charge of this EffectChain should load the next
+    // preset into it.
     void nextPreset(unsigned int chainNumber);
+
+    // Signal that whoever is in charge of this EffectChain should load the
+    // previous preset into it.
     void prevPreset(unsigned int chainNumber);
 
   private slots:

@@ -14,8 +14,6 @@ Effect::Effect(EffectsBackend* pBackend, EffectManifest& effectManifest)
 }
 
 Effect::~Effect() {
-
-
 }
 
 const EffectManifest& Effect::getManifest() const {
