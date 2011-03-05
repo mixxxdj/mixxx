@@ -79,7 +79,7 @@ EffectManifest FlangerEffect::getEffectManifest() {
     manifest.setVersion("1.0");
     manifest.setDescription("TODO");
 
-    EffectManifestParameter depth = manifest.addParameter();
+    EffectManifestParameter& depth = manifest.addParameter();
     depth.setId("depth");
     depth.setName(QObject::tr("Depth"));
     depth.setDescription("TODO");
@@ -91,7 +91,7 @@ EffectManifest FlangerEffect::getEffectManifest() {
     depth.setMinimum(0.0f);
     depth.setMaximum(1.0f);
 
-    EffectManifestParameter delay = manifest.addParameter();
+    EffectManifestParameter& delay = manifest.addParameter();
     delay.setId("delay");
     delay.setName(QObject::tr("Delay"));
     delay.setDescription("TODO");
@@ -103,7 +103,7 @@ EffectManifest FlangerEffect::getEffectManifest() {
     delay.setMinimum(50.0f);
     delay.setMaximum(10000.0f);
 
-    EffectManifestParameter period = manifest.addParameter();
+    EffectManifestParameter& period = manifest.addParameter();
     period.setId("period");
     period.setName(QObject::tr("Period"));
     period.setDescription("TODO");
