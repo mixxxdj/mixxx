@@ -30,6 +30,9 @@ class FlangerEffect : public Effect {
                  const unsigned int numSamples);
 
   private:
+    QString debugString() const {
+        return "FlangerEffect";
+    }
     FlangerState* getStateForChannel(const QString channelId);
 
     EffectParameterPointer m_periodParameter;

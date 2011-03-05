@@ -45,11 +45,12 @@ void EffectSlot::loadEffect(EffectPointer pEffect) {
     qDebug() << debugString() << "loadEffect" << (pEffect ? pEffect->getManifest().name() : "(null)");
     QMutexLocker locker(&m_mutex);
     if (pEffect) {
+        m_pEffect = pEffect;
         m_pControlEnabled->set(1.0f);
-        m_pControlNumParameters->set(pEffect->getManifest().parameters().size());
+        m_pControlNumParameters->set(m_pEffect->getManifest().parameters().size());
 
         foreach (EffectSlotParameter* pParameter, m_parameters) {
-            pParameter->loadEffect(pEffect);
+            pParameter->loadEffect(m_pEffect);
         }
 
         // Always unlock before signalling to prevent deadlock

@@ -82,7 +82,9 @@ EffectParameter::EffectParameter(QObject* pParent, const EffectManifestParameter
 }
 
 EffectParameter::~EffectParameter() {
-    qDebug() << debugString() << "destroyed";
+    // TODO(rryan) fix segfaulting
+    qDebug() << "EffectParameter() destroyed";
+    //qDebug() << debugString() << "destroyed";
 }
 
 const QString EffectParameter::name() const {

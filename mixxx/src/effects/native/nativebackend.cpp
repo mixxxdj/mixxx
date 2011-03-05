@@ -1,6 +1,6 @@
+#include <QtDebug>
 
 #include "effects/native/nativebackend.h"
-
 #include "effects/native/flangereffect.h"
 
 NativeBackend::NativeBackend(QObject* pParent)
@@ -9,7 +9,8 @@ NativeBackend::NativeBackend(QObject* pParent)
 }
 
 NativeBackend::~NativeBackend() {
-
+    qDebug() << debugString() << "destroyed";
+    m_instantiatedEffects.clear();
 }
 
 const QList<EffectManifest> NativeBackend::getAvailableEffects() const {

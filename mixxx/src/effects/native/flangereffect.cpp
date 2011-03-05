@@ -1,3 +1,5 @@
+#include <QtDebug>
+
 #include "effects/native/flangereffect.h"
 
 #include "mathstuff.h"
@@ -11,6 +13,8 @@ FlangerEffect::FlangerEffect(NativeBackend* pBackend, const EffectManifest& pMan
 }
 
 FlangerEffect::~FlangerEffect() {
+    qDebug() << debugString() << "destroyed";
+
     QMutableMapIterator<QString, FlangerState*> it(m_flangerStates);
 
     while (it.hasNext()) {

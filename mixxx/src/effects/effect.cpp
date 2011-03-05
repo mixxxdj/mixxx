@@ -21,7 +21,9 @@ Effect::Effect(EffectsBackend* pBackend, const EffectManifest& effectManifest)
 }
 
 Effect::~Effect() {
-    qDebug() << debugString() << "destroyed";
+    // TODO(rryan)
+    qDebug() << "Effect() destroyed";
+    // qDebug() << debugString() << "destroyed";
     m_parameters.clear();
     m_parametersById.clear();
 }

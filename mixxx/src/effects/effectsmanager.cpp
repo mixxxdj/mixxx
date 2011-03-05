@@ -6,6 +6,7 @@ EffectsManager::EffectsManager(QObject* pParent)
 }
 
 EffectsManager::~EffectsManager() {
+    m_effectChains.clear();
     while (!m_effectsBackends.isEmpty()) {
         EffectsBackend* pBackend = m_effectsBackends.takeLast();
         delete pBackend;
