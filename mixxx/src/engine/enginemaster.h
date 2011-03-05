@@ -39,10 +39,12 @@ class ControlPushButton;
 class ControlObject;
 class EngineVinylSoundEmu;
 class EngineSideChain;
+class EffectsManager;
 
 class EngineMaster : public EngineObject {
 public:
-    EngineMaster(ConfigObject<ConfigValue>* pConfig, const char* pGroup);
+    EngineMaster(ConfigObject<ConfigValue>* pConfig, const char* pGroup,
+                 EffectsManager* pEffectsManager);
     virtual ~EngineMaster();
 
     // Get access to the sample buffers. None of these are thread safe. Only to
@@ -64,6 +66,7 @@ public:
                               double rightGain);
 
   private:
+    EffectsManager* m_pEffectsManager;
     QList<EngineChannel*> m_channels;
 
     CSAMPLE *m_pMaster, *m_pHead;
@@ -79,6 +82,7 @@ public:
 #ifdef __FXUNITS__
     EngineEffectsUnits *fxunits;
 #endif
+
     EngineVuMeter *vumeter;
     EngineSideChain *sidechain;
 

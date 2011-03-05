@@ -38,6 +38,9 @@
 #include "waveform/waveformrenderer.h"
 #include "soundsourceproxy.h"
 
+#include "effects/effectsmanager.h"
+#include "effects/native/nativebackend.h"
+
 #include "analyserqueue.h"
 #include "playermanager.h"
 
@@ -232,8 +235,15 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
     // initialization into MixxxKeyboard
     m_pKeyboard = new MixxxKeyboard(pKbdConfig);
 
+    m_pEffectsManager = new EffectsManager(this);
+
     // Starting the master (mixing of the channels and effects):
-    m_pEngine = new EngineMaster(m_pConfig, "[Master]");
+    m_pEngine = new EngineMaster(m_pConfig, "[Master]", m_pEffectsManager);
+
+    // TODO(rryan) the only reason I'm creating the effects backends here is
+    // that I'm not totally confident some effect backend is going to want to
+    // look up a control that is produced by the engine.
+    m_pEffectsManager->addEffectsBackend(new NativeBackend(m_pEffectsManager));
 
     // Initialize player device
     // while this is created here, setupDevices needs to be called sometime

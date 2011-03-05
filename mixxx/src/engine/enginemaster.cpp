@@ -33,6 +33,7 @@
 #include "enginexfader.h"
 #include "enginesidechain.h"
 #include "sampleutil.h"
+#include "effects/effectsmanager.h"
 
 #ifdef __LADSPA__
 #include "engineladspa.h"
@@ -43,7 +44,9 @@
 
 
 EngineMaster::EngineMaster(ConfigObject<ConfigValue> * _config,
-                           const char * group) {
+                           const char * group,
+                           EffectsManager* pEffectsManager)
+        : m_pEffectsManager(pEffectsManager) {
 
     m_pWorkerScheduler = new EngineWorkerScheduler(this);
 
@@ -118,10 +121,8 @@ EngineMaster::~EngineMaster()
     delete head_clipping;
     delete sidechain;
 
-
     SampleUtil::free(m_pHead);
     SampleUtil::free(m_pMaster);
-
 
     QMutableListIterator<CSAMPLE*> buffer_it(m_channelBuffers);
     while (buffer_it.hasNext()) {
@@ -130,16 +131,12 @@ EngineMaster::~EngineMaster()
         SampleUtil::free(buffer);
     }
 
-
     QMutableListIterator<EngineChannel*> channel_it(m_channels);
     while (channel_it.hasNext()) {
         EngineChannel* channel = channel_it.next();
         channel_it.remove();
         delete channel;
     }
-
-
-
 }
 
 const CSAMPLE* EngineMaster::getMasterBuffer() const

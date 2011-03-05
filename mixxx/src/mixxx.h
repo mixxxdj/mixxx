@@ -65,6 +65,7 @@ class Library;
 class MidiDeviceManager;
 class MixxxKeyboard;
 class SkinLoader;
+class EffectsManager;
 
 /**
   * This Class is the base class for Mixxx. It sets up the main
@@ -127,14 +128,10 @@ class MixxxApp : public QMainWindow
     /** toggles Livebroadcasting **/
     void slotOptionsShoutcast(bool value);
 
-
-
   protected:
     /** Event filter to block certain events (eg. tooltips if tooltips are disabled) */
     bool eventFilter(QObject *obj, QEvent *event);
     void closeEvent(QCloseEvent *event);
-
-
 
   private:
     void checkDirectRendering();
@@ -145,6 +142,9 @@ class MixxxApp : public QMainWindow
     QWidget* m_pWidgetParent;
 
     QApplication *m_pApp;
+
+    // The effects processing system
+    EffectsManager* m_pEffectsManager;
 
     // The mixing engine.
     EngineMaster *m_pEngine;
@@ -159,10 +159,11 @@ class MixxxApp : public QMainWindow
     // Keeps track of players
     PlayerManager* m_pPlayerManager;
 
-    MidiDeviceManager *m_pMidiDeviceManager;
+    MidiDeviceManager* m_pMidiDeviceManager;
 
-    ConfigObject<ConfigValue> *m_pConfig;
 
+
+    ConfigObject<ConfigValue>* m_pConfig;
 
     MixxxKeyboard* m_pKeyboard;
     /** Library scanner object */
