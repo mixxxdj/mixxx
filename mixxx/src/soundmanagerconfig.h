@@ -22,10 +22,10 @@
 
 #include <QtCore>
 
+#include "soundmanagerutil.h"
+
 class SoundDevice;
 class SoundManager;
-class AudioOutput;
-class AudioInput;
 
 #define DEFAULT_API "None"
 

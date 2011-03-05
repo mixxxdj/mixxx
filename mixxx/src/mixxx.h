@@ -45,7 +45,6 @@
 #ifdef __VINYLCONTROL__
 #include "vinylcontrol.h"
 #endif
-#include "audiopath.h"
 
 #ifdef __SCRIPT__
 #include "script/scriptengine.h"
