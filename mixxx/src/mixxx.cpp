@@ -41,6 +41,12 @@
 #include "effects/effectsmanager.h"
 #include "effects/native/nativebackend.h"
 
+// TODO(rryan) REMOVE THESE LATER
+#include "effects/effectchain.h"
+#include "effects/effectslot.h"
+#include "effects/effect.h"
+// TODO(rryan) REMOVE THESE LATER
+
 #include "analyserqueue.h"
 #include "playermanager.h"
 
@@ -243,7 +249,24 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
     // TODO(rryan) the only reason I'm creating the effects backends here is
     // that I'm not totally confident some effect backend is going to want to
     // look up a control that is produced by the engine.
-    m_pEffectsManager->addEffectsBackend(new NativeBackend(m_pEffectsManager));
+    NativeBackend* pNativeBackend = new NativeBackend(m_pEffectsManager);
+    m_pEffectsManager->addEffectsBackend(pNativeBackend);
+
+    // Setup one effects chain with one EngineFlanger
+    m_pEffectsManager->addEffectChain();
+
+    EffectChainPointer effectChain = m_pEffectsManager->getEffectChain(0);
+    effectChain->addEffectSlot();
+    effectChain->addEffectSlot();
+    effectChain->addEffectSlot();
+    effectChain->addEffectSlot();
+    EffectSlotPointer effectSlot = effectChain->getEffectSlot(0);
+
+
+    const EffectManifest& flangerManifest = pNativeBackend->getAvailableEffects()[0];
+    EffectPointer flanger = pNativeBackend->instantiateEffect(flangerManifest);
+
+
 
     // Initialize player device
     // while this is created here, setupDevices needs to be called sometime

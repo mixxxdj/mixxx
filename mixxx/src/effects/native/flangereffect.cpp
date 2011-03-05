@@ -3,7 +3,7 @@
 #include "mathstuff.h"
 #include "sampleutil.h"
 
-FlangerEffect::FlangerEffect(NativeBackend* pBackend, EffectManifest& pManifest)
+FlangerEffect::FlangerEffect(NativeBackend* pBackend, const EffectManifest& pManifest)
         : Effect(pBackend, pManifest) {
     m_periodParameter = getParameterFromId("period");
     m_depthParameter = getParameterFromId("depth");

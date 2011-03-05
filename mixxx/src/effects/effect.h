@@ -16,7 +16,7 @@ typedef QSharedPointer<Effect> EffectPointer;
 class Effect : public QObject {
     Q_OBJECT
   public:
-    Effect(EffectsBackend* pBackend, EffectManifest& pManifest);
+    Effect(EffectsBackend* pBackend, const EffectManifest& pManifest);
     virtual ~Effect();
 
     virtual const EffectManifest& getManifest() const;
@@ -46,7 +46,7 @@ class Effect : public QObject {
     }
 
     EffectsBackend* m_pEffectsBackend;
-    EffectManifest& m_effectManifest;
+    const EffectManifest& m_effectManifest;
     QList<EffectParameterPointer> m_parameters;
     QMap<QString, EffectParameterPointer> m_parametersById;
 

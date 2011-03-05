@@ -54,7 +54,7 @@ class EffectChain : public QObject {
   private slots:
     void slotEffectLoaded(EffectPointer pEffect, unsigned int slotNumber);
 
-    void slotControlNumEffectsSlots(double v);
+    void slotControlNumEffectSlots(double v);
     void slotControlChainEnabled(double v);
     void slotControlChainMix(double v);
     void slotControlChainParameter(double v);

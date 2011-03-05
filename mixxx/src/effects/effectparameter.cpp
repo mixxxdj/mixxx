@@ -6,7 +6,7 @@
 EffectParameter::EffectParameter(QObject* pParent, const EffectManifestParameter& parameter)
         : QObject(pParent),
           m_parameter(parameter) {
-
+    qDebug() << debugString() << "Constructing new EffectParameter from EffectManifestParameter:" << m_parameter.id();
     switch (m_parameter.valueHint()) {
         case EffectManifestParameter::VALUE_BOOLEAN:
             // Minimum and maximum are undefined for a boolean.

@@ -3,7 +3,7 @@
 #include "effects/effect.h"
 #include "effects/effectsbackend.h"
 
-Effect::Effect(EffectsBackend* pBackend, EffectManifest& effectManifest)
+Effect::Effect(EffectsBackend* pBackend, const EffectManifest& effectManifest)
         : QObject(pBackend),
           m_pEffectsBackend(pBackend),
           m_effectManifest(effectManifest) {

@@ -19,7 +19,7 @@ struct FlangerState {
 class FlangerEffect : public Effect {
     Q_OBJECT
   public:
-    FlangerEffect(NativeBackend* pBackend, EffectManifest& pManifest);
+    FlangerEffect(NativeBackend* pBackend, const EffectManifest& pManifest);
     virtual ~FlangerEffect();
 
     static EffectManifest getEffectManifest();

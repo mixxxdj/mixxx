@@ -102,7 +102,7 @@ EffectSlotPointer EffectChain::getEffectSlot(unsigned int slotNumber) {
     return m_slots[slotNumber];
 }
 
-void EffectChain::slotControlNumEffectsSlots(double v) {
+void EffectChain::slotControlNumEffectSlots(double v) {
     qDebug() << debugString() << "slotControlNumEffectSlots" << v;
     QMutexLocker locker(&m_mutex);
     qDebug() << "WARNING: Somebody has set a read-only control. Stability may be compromised.";
