@@ -16,6 +16,12 @@
 #include <QtCore>
 #include "audiopath.h"
 
+
+QHash<AudioOutput, const AudioSource*> AudioOutput::s_registration;
+QMutex AudioOutput::s_registrationMutex;
+QHash<AudioInput, AudioDestination*> AudioInput::s_registration;
+QMutex AudioInput::s_registrationMutex;
+
 /**
  * Constructs a ChannelGroup.
  * @param channelBase the first channel in the group.

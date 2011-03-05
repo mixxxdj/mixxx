@@ -18,6 +18,12 @@
 
 #include <QString>
 #include <QtXml>
+#include <QMutex>
+
+#include "defs.h" // for CSAMPLE (???)
+
+class AudioSource;
+class AudioDestination;
 
 /**
  * @class ChannelGroup
@@ -33,7 +39,7 @@ public:
     bool clashesWith(const ChannelGroup &other) const;
     unsigned int getHash() const;
 private:
-    unsigned char m_channelBase; // base (first) channel used on device 
+    unsigned char m_channelBase; // base (first) channel used on device
     unsigned char m_channels; // number of channels used (s/b 2 in most cases)
 };
 
@@ -91,8 +97,12 @@ public:
     QDomElement toXML(QDomElement *element) const;
     static AudioOutput fromXML(const QDomElement &xml);
     static QList<AudioPathType> getSupportedTypes();
+    static void registerOutput(AudioOutput output, const AudioSource *src);
 protected:
     void setType(AudioPathType type);
+private:
+    static QHash<AudioOutput, const AudioSource*> s_registration;
+    static QMutex s_registrationMutex;
 };
 
 /**
@@ -108,8 +118,22 @@ public:
     QDomElement toXML(QDomElement *element) const;
     static AudioInput fromXML(const QDomElement &xml);
     static QList<AudioPathType> getSupportedTypes();
+    static void registerInput(AudioInput input, AudioDestination *dest);
 protected:
     void setType(AudioPathType type);
+private:
+    static QHash<AudioInput, AudioDestination*> s_registration;
+    static QMutex s_registrationMutex;
+};
+
+class AudioSource {
+public:
+    virtual const CSAMPLE* buffer(AudioOutput output) const = 0;
+};
+
+class AudioDestination {
+public:
+    virtual void receiveBuffer(AudioInput input, const CSAMPLE *buffer) = 0;
 };
 
 typedef AudioPath::AudioPathType AudioPathType;
