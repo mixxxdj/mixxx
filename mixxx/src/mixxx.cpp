@@ -533,6 +533,9 @@ MixxxApp::~MixxxApp()
     qDebug() << "delete view, " << qTime.elapsed();
     delete m_pView;
 
+    qDebug() << "deleting effects manager, " << qTime.elapsed();
+    delete m_pEffectsManager;
+
     qDebug() << "delete library scanner" <<  qTime.elapsed();
     delete m_pLibraryScanner;
 
