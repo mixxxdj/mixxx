@@ -74,14 +74,14 @@ FlangerState* FlangerEffect::getStateForChannel(const QString channelId) {
 EffectManifest FlangerEffect::getEffectManifest() {
     EffectManifest manifest;
     manifest.setId("org.mixxx.effects.flanger");
-    manifest.setName("Flanger");
+    manifest.setName(QObject::tr("Flanger"));
     manifest.setAuthor("The Mixxx Team");
     manifest.setVersion("1.0");
     manifest.setDescription("TODO");
 
     EffectManifestParameter depth = manifest.addParameter();
     depth.setId("depth");
-    depth.setName("Depth");
+    depth.setName(QObject::tr("Depth"));
     depth.setDescription("TODO");
     depth.setControlHint(EffectManifestParameter::CONTROL_KNOB_LINEAR);
     depth.setValueHint(EffectManifestParameter::VALUE_FLOAT);
@@ -93,7 +93,7 @@ EffectManifest FlangerEffect::getEffectManifest() {
 
     EffectManifestParameter delay = manifest.addParameter();
     delay.setId("delay");
-    delay.setName("Delay");
+    delay.setName(QObject::tr("Delay"));
     delay.setDescription("TODO");
     delay.setControlHint(EffectManifestParameter::CONTROL_KNOB_LINEAR);
     delay.setValueHint(EffectManifestParameter::VALUE_FLOAT);
@@ -105,7 +105,7 @@ EffectManifest FlangerEffect::getEffectManifest() {
 
     EffectManifestParameter period = manifest.addParameter();
     period.setId("period");
-    period.setName("Period");
+    period.setName(QObject::tr("Period"));
     period.setDescription("TODO");
     period.setControlHint(EffectManifestParameter::CONTROL_KNOB_LINEAR);
     period.setValueHint(EffectManifestParameter::VALUE_FLOAT);

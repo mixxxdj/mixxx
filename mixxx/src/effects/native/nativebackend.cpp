@@ -1,9 +1,11 @@
 
 #include "effects/native/nativebackend.h"
 
+#include "effects/native/flangereffect.h"
+
 NativeBackend::NativeBackend(QObject* pParent)
         : EffectsBackend(pParent, tr("Native")) {
-
+    m_effectManifests.append(FlangerEffect::getEffectManifest());
 }
 
 NativeBackend::~NativeBackend() {
