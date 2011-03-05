@@ -22,9 +22,6 @@
 
 #include "defs.h" // for CSAMPLE (???)
 
-class AudioSource;
-class AudioDestination;
-
 /**
  * @class ChannelGroup
  * @brief Describes a group of channels, typically a pair for stereo sound in
@@ -98,12 +95,8 @@ public:
     QDomElement toXML(QDomElement *element) const;
     static AudioOutput fromXML(const QDomElement &xml);
     static QList<AudioPathType> getSupportedTypes();
-    static void registerOutput(AudioOutput output, const AudioSource *src);
 protected:
     void setType(AudioPathType type);
-private:
-    static QHash<AudioOutput, const AudioSource*> s_registration;
-    static QMutex s_registrationMutex;
 };
 
 /**
@@ -119,12 +112,8 @@ public:
     QDomElement toXML(QDomElement *element) const;
     static AudioInput fromXML(const QDomElement &xml);
     static QList<AudioPathType> getSupportedTypes();
-    static void registerInput(AudioInput input, AudioDestination *dest);
 protected:
     void setType(AudioPathType type);
-private:
-    static QHash<AudioInput, AudioDestination*> s_registration;
-    static QMutex s_registrationMutex;
 };
 
 class AudioSource {
