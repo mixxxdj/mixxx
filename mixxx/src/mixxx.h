@@ -53,12 +53,6 @@
 
 class EngineMaster;
 class PlayerManager;
-class TrackInfoObject;
-class PlayerProxy;
-class BpmDetector;
-class QSplashScreen;
-class ScriptEngine;
-class Player;
 class LibraryScanner;
 class AnalyserQueue;
 class Library;
