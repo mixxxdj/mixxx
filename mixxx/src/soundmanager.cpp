@@ -26,6 +26,10 @@
 #include "controlobjectthreadmain.h"
 #include "audiopath.h"
 
+QHash<AudioOutput, const AudioSource*> SoundManager::s_sources;
+QHash<AudioInput, AudioDestination*> SoundManager::s_destinations;
+QMutex SoundManager::s_registrationMutex;
+
 /** Initializes Mixxx's audio core
  *  @param pConfig The config key table
  *  @param _master A pointer to the audio engine's mastering class.
