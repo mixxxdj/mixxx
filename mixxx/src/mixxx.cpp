@@ -294,11 +294,20 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
 
     //Scan the library for new files and directories
     bool rescan = (bool)m_pConfig->getValueString(ConfigKey("[Library]","RescanOnStartup")).toInt();
+    // rescan the library if we get a new plugin
+    QSet<QString> prev_plugins = QSet<QString>::fromList(m_pConfig->getValueString(
+        ConfigKey("[Library]", "SupportedFileExtensions")).split(",", QString::SkipEmptyParts));
+    QSet<QString> curr_plugins = QSet<QString>::fromList(
+        SoundSourceProxy::supportedFileExtensions());
+    rescan = rescan || (prev_plugins != curr_plugins);
+
     if(rescan || hasChanged_MusicDir){
         m_pLibraryScanner->scan(
             m_pConfig->getValueString(ConfigKey("[Playlist]", "Directory")));
         qDebug() << "Rescan finished";
     }
+    m_pConfig->set(ConfigKey("[Library]", "SupportedFileExtensions"),
+        QStringList(SoundSourceProxy::supportedFileExtensions()).join(","));
 
     // Call inits to invoke all other construction parts
 
