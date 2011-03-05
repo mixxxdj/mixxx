@@ -50,9 +50,14 @@ void BrowseThread::populateModel() {
     QStringList nameFilters(SoundSourceProxy::supportedFileExtensionsString().split(" "));
     QDirIterator fileIt(m_path, nameFilters, QDir::Files | QDir::NoDotAndDotDot);
     QString thisPath(m_path);
-    //remove all rows
+
+    /*
+     * remove all rows
+     * This is a blocking operation
+     * see signal/slot connection in BrowseTableModel
+     */
     emit(clearModel());
-    QCoreApplication::processEvents();
+
 
     int row = 0;
     //Iterate over the files
@@ -114,9 +119,11 @@ void BrowseThread::populateModel() {
         item = new QStandardItem(filepath);
         column_data.insert(COLUMN_LOCATION, item);
 
+        // this is a blocking operation
+        // see signal/slot connection in BrowseTableModel
         emit(rowDataAppended(column_data));
 
-        QCoreApplication::processEvents();
+        //QCoreApplication::processEvents();
         ++row;
 
         //Sleep for 50ms which prevents us from GUI freezes

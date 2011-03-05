@@ -43,11 +43,13 @@ BrowseTableModel::BrowseTableModel(QObject* parent)
     m_backgroundThread.start(QThread::LowestPriority);
 
     setHorizontalHeaderLabels(header_data);
+    //register the QList<T> as a metatype since we use QueuedConnection below
+    qRegisterMetaType< QList<QStandardItem*> >("QList<QStandardItem*>");
 
     QObject::connect(&m_backgroundThread, SIGNAL(clearModel()),
-            this, SLOT(slotClear()), Qt::DirectConnection);
+                     this, SLOT(slotClear()), Qt::BlockingQueuedConnection);
     QObject::connect(&m_backgroundThread, SIGNAL(rowDataAppended(const QList<QStandardItem*>&)),
-            this, SLOT(slotInsert(const QList<QStandardItem*>&)), Qt::DirectConnection);
+            this, SLOT(slotInsert(const QList<QStandardItem*>&)), Qt::BlockingQueuedConnection);
 
 }
 
