@@ -3,6 +3,7 @@
 
 #include <QMap>
 
+#include "util.h"
 #include "effects/effect.h"
 #include "effects/native/nativebackend.h"
 
@@ -41,6 +42,7 @@ class FlangerEffect : public Effect {
 
     QMap<QString, FlangerState*> m_flangerStates;
 
+    DISALLOW_COPY_AND_ASSIGN(FlangerEffect);
 };
 
 

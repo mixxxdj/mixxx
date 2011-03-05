@@ -30,10 +30,17 @@ void FlangerEffect::process(const QString channelId,
                             const unsigned int numSamples) {
     FlangerState* pState = getStateForChannel(channelId);
 
+    if (!pState) {
+        qDebug() << debugString() << "WARNING: Couldn't get flanger state for channel" << channelId;
+        return;
+    }
+
     CSAMPLE lfoPeriod = m_periodParameter ? m_periodParameter->getValue().toDouble() : 0.0f;
     CSAMPLE lfoDepth = m_depthParameter ? m_depthParameter->getValue().toDouble() : 0.0f;
     // Unused in EngineFlanger
     CSAMPLE lfoDelay = m_delayParameter ? m_delayParameter->getValue().toDouble() : 0.0f;
+
+    qDebug() << debugString() << "period" << lfoPeriod << "depth" << lfoDepth << "delay" << lfoDelay;
 
     // TODO(rryan) check ranges
     // period needs to be >=0
@@ -70,6 +77,8 @@ FlangerState* FlangerEffect::getStateForChannel(const QString channelId) {
         SampleUtil::applyGain(pState->delayBuffer, 0.0f, kMaxDelay);
         pState->delayPos = 0;
         pState->time = 0;
+    } else {
+        pState = m_flangerStates[channelId];
     }
     return pState;
 }

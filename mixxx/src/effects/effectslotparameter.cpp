@@ -168,8 +168,7 @@ void EffectSlotParameter::slotValueNormalized(double v) {
     m_pControlValue->set(dRaw);
 
     if (m_pEffectParameter) {
-        m_pEffectParameter->getValue();
-        //m_pEffectParameter->setValue(dRaw);
+        m_pEffectParameter->setValue(dRaw);
     }
 }
 

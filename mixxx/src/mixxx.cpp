@@ -257,9 +257,7 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
 
     EffectChainPointer effectChain = m_pEffectsManager->getEffectChain(0);
     effectChain->addEffectSlot();
-    effectChain->addEffectSlot();
-    effectChain->addEffectSlot();
-    effectChain->addEffectSlot();
+
     EffectSlotPointer effectSlot = effectChain->getEffectSlot(0);
 
     EffectManifestPointer flangerManifest = pNativeBackend->getAvailableEffects()[0];
