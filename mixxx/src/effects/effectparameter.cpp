@@ -317,7 +317,7 @@ void EffectParameter::setMinimum(QVariant minimum) {
 
 QVariant EffectParameter::getMaximum() const {
     QMutexLocker locker(&m_mutex);
-    return m_default;
+    return m_maximum;
 }
 
 void EffectParameter::setMaximum(QVariant maximum) {

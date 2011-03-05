@@ -266,6 +266,7 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
     const EffectManifest& flangerManifest = pNativeBackend->getAvailableEffects()[0];
     EffectPointer flanger = pNativeBackend->instantiateEffect(flangerManifest);
 
+    effectSlot->loadEffect(flanger);
 
 
     // Initialize player device

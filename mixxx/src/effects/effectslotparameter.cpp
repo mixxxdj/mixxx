@@ -9,7 +9,7 @@ EffectSlotParameter::EffectSlotParameter(QObject* pParent, QString group, unsign
           m_mutex(QMutex::Recursive),
           m_iParameterNumber(parameterNumber),
           m_group(group) {
-    QString basename = QString("parameter%1").arg(parameterNumber);
+    QString basename = QString("parameter%1").arg(parameterNumber+1);
 
     m_pControlEnabled = new ControlObject(ConfigKey(group, QString("%1_enabled").arg(basename)));
     m_pControlValue = new ControlObject(ConfigKey(group, QString("%1_value").arg(basename)));
@@ -69,7 +69,37 @@ void EffectSlotParameter::loadEffect(EffectPointer pEffect) {
     QMutexLocker locker(&m_mutex);
     if (pEffect) {
         m_pEffect = pEffect;
-        // TODO(XXX) setup control values
+
+        // Returns null if it doesn't have a parameter for that number
+        EffectParameterPointer parameter = m_pEffect->getParameter(m_iParameterNumber);
+
+        if (parameter) {
+            qDebug() << debugString() << "Loading effect parameter" << parameter->name();
+            double dValue = parameter->getValue().toDouble();
+            double dMinimum = parameter->getMinimum().toDouble();
+            double dMinimumLimit = dMinimum; // TODO(rryan) expose limit from EffectParameter
+            double dMaximum = parameter->getMaximum().toDouble();
+            double dMaximumLimit = dMaximum; // TODO(rryan) expose limit from EffectParameter
+            double dDefault = parameter->getDefault().toDouble();
+
+            if (dValue > dMaximum || dValue < dMinimum ||
+                dMinimum < dMinimumLimit || dMaximum > dMaximumLimit ||
+                dDefault > dMaximum || dDefault < dMinimum) {
+                qDebug() << debugString() << "WARNING: EffectParameter does not satisfy basic sanity checks.";
+            }
+            double dNormalized = (dValue - dMinimum) / (dMaximum - dMinimum);
+
+            qDebug() << debugString() << QString("Val: %1 Min: %2 MinLimit: %3 Max: %4 MaxLimit: %5 Default: %6 Norm: %7").arg(dValue).arg(dMinimum).arg(dMinimumLimit).arg(dMaximum).arg(dMaximumLimit).arg(dDefault).arg(dNormalized);
+
+            m_pControlValue->set(dValue);
+            m_pControlValueNormalized->set(dNormalized);
+            m_pControlValueMinimum->set(dMinimum);
+            m_pControlValueMinimumLimit->set(dMinimumLimit);
+            m_pControlValueMaximum->set(dMaximum);
+            m_pControlValueMaximumLimit->set(dMaximumLimit);
+            m_pControlValueType->set(0); // TODO(rryan) expose this from EffectParameter
+            m_pControlValueDefault->set(dDefault);
+        }
     } else {
         clear();
     }
@@ -108,14 +138,23 @@ void EffectSlotParameter::slotValue(double v) {
         m_pControlValue->set(v);
     }
     double dNormalized = (dMax - dMin > 0) ? (v - dMin) / (dMax - dMin) : 0.0f;
-    m_pControlValueNormalized->set(0.0f);
+    m_pControlValueNormalized->set(dNormalized);
+
+    if (m_pEffect) {
+
+    }
 }
 
 void EffectSlotParameter::slotValueNormalized(double v) {
     qDebug() << debugString() << "slotValueNormalized" << v;
     QMutexLocker locker(&m_mutex);
+
+    // Convert from stupid control system
+    v = v / 127.0f;
+
     // Clamp to [0.0, 1.0]
     if (v < 0.0f || v > 1.0f) {
+        qDebug() << debugString() << "value out of limits";
         v = math_clamp(v, 0.0f, 1.0f);
         m_pControlValueNormalized->set(v);
     }
@@ -125,6 +164,7 @@ void EffectSlotParameter::slotValueNormalized(double v) {
     double dMax = m_pControlValueMaximum->get();
     // TODO(rryan) implement curve types, just linear for now.
     double dRaw = dMin + v * (dMax - dMin);
+    qDebug() << debugString() << "Normalized set of" << v << "produces raw value of" << dRaw;
     m_pControlValue->set(dRaw);
 }
 
