@@ -58,6 +58,9 @@ public slots:
     void slotAddOutputBinding();
     void slotClearAllOutputBindings();
     void slotRemoveOutputBinding();
+
+    //Mark that we need to apply the settings.
+    void slotDirty ();
     
 signals:
     void deviceStateChanged(DlgPrefMidiBindings*, bool);
@@ -71,6 +74,7 @@ private:
     void enableDevice();
     void disableDevice();
     
+    bool m_bDirty;
     int currentGroupRow;
     MidiChannelDelegate* m_pMidiChannelDelegate;
     MidiStatusDelegate* m_pMidiStatusDelegate;

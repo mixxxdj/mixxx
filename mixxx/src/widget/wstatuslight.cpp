@@ -37,8 +37,6 @@ WStatusLight::~WStatusLight()
 
 void WStatusLight::setup(QDomNode node)
 {
-    WWidget::setup(node);
-
     // Set pixmaps
     bool bHorizontal = false;
     if (!selectNode(node, "Horizontal").isNull() && selectNodeQString(node, "Horizontal")=="true")

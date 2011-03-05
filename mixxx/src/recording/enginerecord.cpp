@@ -45,6 +45,7 @@ EngineRecord::EngineRecord(ConfigObject<ConfigValue> * _config)
 
     m_recReadyCO = new ControlObject(ConfigKey("[Master]", "Record"));
     m_recReady = new ControlObjectThread(m_recReadyCO);
+    m_samplerate = new ControlObjectThread(ControlObject::getControl(ConfigKey("[Master]", "samplerate")));
 
 }
 
@@ -53,6 +54,7 @@ EngineRecord::~EngineRecord()
     closeFile();
     if(m_recReadyCO)    delete m_recReadyCO;
     if(m_recReady)      delete m_recReady;
+    if(m_samplerate)    delete m_samplerate;
 
 }
 void EngineRecord::updateFromPreferences()
@@ -73,7 +75,7 @@ void EngineRecord::updateFromPreferences()
 
     if(m_Encoding == ENCODING_MP3){
 #ifdef __SHOUTCAST__
-        m_encoder = new EncoderMp3(m_config, this);
+        m_encoder = new EncoderMp3(this);
         m_encoder->updateMetaData(m_baAuthor.data(),m_baTitle.data(),m_baAlbum.data());
 
         if(m_encoder->initEncoder(Encoder::convertToBitrate(m_MP3quality.toInt())) < 0){
@@ -88,7 +90,7 @@ void EngineRecord::updateFromPreferences()
     }
     if(m_Encoding == ENCODING_OGG){
 #ifdef __SHOUTCAST__
-        m_encoder = new EncoderVorbis(m_config, this);
+        m_encoder = new EncoderVorbis(this);
         m_encoder->updateMetaData(m_baAuthor.data(),m_baTitle.data(),m_baAlbum.data());
 
         if(m_encoder->initEncoder(Encoder::convertToBitrate(m_OGGquality.toInt())) < 0){
@@ -175,9 +177,9 @@ bool EngineRecord::openFile(){
 
     //Unfortunately, we cannot use QFile for writing WAV and AIFF audio
     if(m_Encoding == ENCODING_WAVE || m_Encoding == ENCODING_AIFF){
-
+        unsigned long samplerate = m_samplerate->get();
         //set sfInfo
-        m_sfInfo.samplerate = m_config->getValueString(ConfigKey("[Soundcard]","Samplerate")).toULong();
+        m_sfInfo.samplerate = samplerate;
         m_sfInfo.channels = 2;
 
         if (m_Encoding == ENCODING_WAVE)

@@ -49,9 +49,6 @@ WSliderComposed::~WSliderComposed()
 
 void WSliderComposed::setup(QDomNode node)
 {
-    // Setup position
-    WWidget::setup(node);
-
     // Setup pixmaps
     QString pathSlider = getPath(selectNodeQString(node, "Slider"));
     QString pathHandle = getPath(selectNodeQString(node, "Handle"));

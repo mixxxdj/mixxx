@@ -36,8 +36,8 @@ FeaturedArtistsWebView::FeaturedArtistsWebView(QWidget* parent, QString libraryP
     //fails, and display a local copy instead.
     connect(this, SIGNAL(loadFinished(bool)),
             this, SLOT(handleLoadFinished(bool)));
-    
-    //Load the promo tracks webpage 
+
+    //Load the promo tracks webpage
     QWebView::load(QUrl(m_sRemoteURL));
 
     //Let us manually handle links that are clicked via the linkClicked()
@@ -45,11 +45,11 @@ FeaturedArtistsWebView::FeaturedArtistsWebView(QWidget* parent, QString libraryP
     QWebPage* page = QWebView::page();
     page->setLinkDelegationPolicy(QWebPage::DelegateAllLinks);
 
-    connect(this, SIGNAL(linkClicked(const QUrl&)), 
+    connect(this, SIGNAL(linkClicked(const QUrl&)),
             this, SLOT(handleClickedLink(const QUrl&)));
 
     QTimer* loadingTimer = new QTimer(this);
-    connect(loadingTimer, SIGNAL(timeout()), 
+    connect(loadingTimer, SIGNAL(timeout()),
             this, SLOT(checkWebpageLoadingProgress()));
     loadingTimer->start(LOAD_TIMEOUT);
 }
@@ -99,18 +99,18 @@ void FeaturedArtistsWebView::setup(QDomNode node)
 
 void FeaturedArtistsWebView::handleClickedLink(const QUrl& url)
 {
-    qDebug() << "link clicked!" << url; 
+    qDebug() << "link clicked!" << url;
 
     /*
     if (url.scheme() == "deck1")
     {
         TrackInfoObject* track = new TrackInfoObject(m_sMixxxPath + "/" + url.path());
-        emit(loadTrackToPlayer(track, 1));
+        emit(loadTrackToPlayer(track, "[Channel1]"));
     }
     else if (url.scheme() == "deck2")
     {
         TrackInfoObject* track = new TrackInfoObject(m_sMixxxPath + "/" + url.path());
-        emit(loadTrackToPlayer(track, 2));
+        emit(loadTrackToPlayer(track, "[Channel2]"));
     }
     */
     if (url.host().contains("mixxx.org")) {

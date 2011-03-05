@@ -102,6 +102,8 @@ void WaveformRenderMarkRange::newTrack(TrackPointer pTrack) {
         slotUpdateMarkStartPoint(m_pMarkStartPoint->get());
     if (m_pMarkEndPoint)
         slotUpdateMarkEndPoint(m_pMarkEndPoint->get());
+    if (m_pMarkEnabled)
+        slotUpdateMarkEnabled(m_pMarkEnabled->get());
 }
 
 void WaveformRenderMarkRange::setup(QDomNode node) {

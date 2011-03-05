@@ -8,7 +8,7 @@ class WTrackText : public WLabel {
     Q_OBJECT
   public:
     WTrackText(QWidget *parent);
-    ~WTrackText();
+    virtual ~WTrackText();
 
   public slots:
     void slotTrackLoaded(TrackPointer track);

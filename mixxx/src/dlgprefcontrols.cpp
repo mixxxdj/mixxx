@@ -59,6 +59,8 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxApp * mixxx,
 
     // Position display configuration
     m_pControlPositionDisplay = new ControlObject(ConfigKey("[Controls]", "ShowDurationRemaining"));
+    connect(m_pControlPositionDisplay, SIGNAL(valueChanged(double)),
+            this, SLOT(slotSetPositionDisplay(double)));
     ComboBoxPosition->addItem(tr("Position"));
     ComboBoxPosition->addItem(tr("Remaining"));
     if (m_pConfig->getValueString(ConfigKey("[Controls]","PositionDisplay")).length() == 0)
@@ -211,13 +213,13 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxApp * mixxx,
 // #endif
 
    // Detect small display and prompt user to use small skin.
-   if (QApplication::desktop()->width() >= 800 && QApplication::desktop()->height() == 480 && pConfig->getValueString(ConfigKey("[Config]","Skin"))!= "outlineMini") {
+   if (QApplication::desktop()->width() >= 800 && QApplication::desktop()->height() == 480 && pConfig->getValueString(ConfigKey("[Config]","Skin"))!= "Outline800x480-WVGA") {
       int ret = QMessageBox::warning(this, tr("Mixxx Detected a WVGA Screen"), tr("Mixxx has detected that your screen has a resolution of ") +
                    QString::number(QApplication::desktop()->width()) + " x " + QString::number(QApplication::desktop()->height()) + ".  " +
-                   tr("The only skin compatiable with this size display is OutlineMini (800x480).  Would you like to use that skin?"),
+                   tr("The only skin compatiable with this size display is Outline800x480-WVGA.  Would you like to use that skin?"),
                    QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes);
       if (ret == QMessageBox::Yes) {
-         pConfig->set(ConfigKey("[Config]","Skin"), ConfigValue("outlineMini"));
+         pConfig->set(ConfigKey("[Config]","Skin"), ConfigValue("Outline800x480-WVGA"));
          pConfig->Save();
          ComboBoxSkinconf->setCurrentIndex(ComboBoxSkinconf->findText(pConfig->getValueString(ConfigKey("[Config]","Skin"))));
          qDebug() << "Retrieved skin:" << pConfig->getValueString(ConfigKey("[Config]","Skin")) << "ComboBoxSkinconf:" << ComboBoxSkinconf->currentText();
@@ -407,6 +409,18 @@ void DlgPrefControls::slotSetPositionDisplay(int)
     int positionDisplay = ComboBoxPosition->currentIndex();
     m_pConfig->set(ConfigKey("[Controls]","PositionDisplay"), ConfigValue(positionDisplay));
     m_pControlPositionDisplay->set(positionDisplay);
+}
+
+void DlgPrefControls::slotSetPositionDisplay(double v) {
+    if (v > 0) {
+        // remaining
+        ComboBoxPosition->setCurrentIndex(1);
+        m_pConfig->set(ConfigKey("[Controls]","PositionDisplay"), ConfigValue(1));
+    } else {
+        // position
+        ComboBoxPosition->setCurrentIndex(0);
+        m_pConfig->set(ConfigKey("[Controls]","PositionDisplay"), ConfigValue(0));
+    }
 }
 
 void DlgPrefControls::slotSetRateTempLeft(double v)

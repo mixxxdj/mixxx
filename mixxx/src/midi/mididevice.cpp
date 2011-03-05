@@ -46,11 +46,11 @@ MidiDevice::MidiDevice(MidiMapping* mapping) : QThread()
     if (m_pMidiMapping == NULL) {
         m_pMidiMapping = new MidiMapping(this);
     }
-        
+
     // Get --midiDebug command line option
     QStringList commandLineArgs = QApplication::arguments();
     m_midiDebug = commandLineArgs.contains("--midiDebug", Qt::CaseInsensitive);
-    
+
     connect(m_pMidiMapping, SIGNAL(midiLearningStarted()), this, SLOT(enableMidiLearn()));
     connect(m_pMidiMapping, SIGNAL(midiLearningFinished()), this, SLOT(disableMidiLearn()));
 }
@@ -60,40 +60,55 @@ MidiDevice::~MidiDevice()
     QMutexLocker locker(&m_mutex);
 
     qDebug() << "MidiDevice: Deleting MidiMapping...";
-    m_mappingMutex.lock();
+    m_mappingPtrMutex.lock();
     delete m_pMidiMapping;
-    m_mappingMutex.unlock();
+    m_mappingPtrMutex.unlock();
 }
 
 void MidiDevice::startup()
 {
-    m_mappingMutex.lock();
+    QMutexLocker locker(&m_mappingPtrMutex);
 #ifdef __MIDISCRIPT__
+    setReceiveInhibit(true);
     m_pMidiMapping->startupScriptEngine();
+    setReceiveInhibit(false);
 #endif
-    m_mappingMutex.unlock();
 }
 
 void MidiDevice::shutdown()
 {
-    m_mappingMutex.lock();
+    QMutexLocker locker(&m_mappingPtrMutex);
+    //Stop us from processing any MIDI messages that are
+    //received while we're trying to shut down the scripting engine.
+    //This prevents a deadlock that can happen because we've locked
+    //the MIDI mapping pointer mutex (in the line above). If a
+    //MIDI message is received while this is locked, the script
+    //engine can end up waiting for the MIDI message to be
+    //mapped and we end up with a deadlock.
+    //Similarly, if a MIDI message is sent from the scripting
+    //engine while we've held this lock, we'll end up with
+    //a similar deadlock. (Note that shutdownScriptEngine()
+    //waits for the scripting engine thread to terminate,
+    //which will never happen if it's stuck waiting for
+    //m_mappingPtrMutex to unlock.
+    setReceiveInhibit(true);
 #ifdef __MIDISCRIPT__
     m_pMidiMapping->shutdownScriptEngine();
 #endif
-    m_mappingMutex.unlock();
+    setReceiveInhibit(false);
 }
 
 void MidiDevice::setMidiMapping(MidiMapping* mapping)
 {
     m_mutex.lock();
-    m_mappingMutex.lock();
+    m_mappingPtrMutex.lock();
     m_pMidiMapping = mapping;
-    
+
     if (m_pCorrespondingOutputDevice)
     {
         m_pCorrespondingOutputDevice->setMidiMapping(m_pMidiMapping);
     }
-    m_mappingMutex.unlock();
+    m_mappingPtrMutex.unlock();
     m_mutex.unlock();
 }
 
@@ -111,7 +126,7 @@ void MidiDevice::sendShortMsg(unsigned int word) {
 
 void MidiDevice::sendSysexMsg(QList<int> data, unsigned int length) {
     m_mutex.lock();
-    
+
     unsigned char * sysexMsg;
     sysexMsg = new unsigned char [length];
 
@@ -141,9 +156,9 @@ void MidiDevice::enableMidiLearn() {
     m_bMidiLearn = true;
     m_mutex.unlock();
 
-    m_mappingMutex.lock();
+    m_mappingPtrMutex.lock();
     connect(this, SIGNAL(midiEvent(MidiMessage)), m_pMidiMapping, SLOT(finishMidiLearn(MidiMessage)));
-    m_mappingMutex.unlock();
+    m_mappingPtrMutex.unlock();
 }
 
 void MidiDevice::disableMidiLearn() {
@@ -151,13 +166,27 @@ void MidiDevice::disableMidiLearn() {
     m_bMidiLearn = false;
     m_mutex.unlock();
 
-    m_mappingMutex.lock();
+    m_mappingPtrMutex.lock();
     disconnect(this, SIGNAL(midiEvent(MidiMessage)), m_pMidiMapping, SLOT(finishMidiLearn(MidiMessage)));
-    m_mappingMutex.unlock();
+    m_mappingPtrMutex.unlock();
 }
 
 void MidiDevice::receive(MidiStatusByte status, char channel, char control, char value)
 {
+    // some status bytes can have the channel encoded in them. Take out the
+    // channel when necessary. We do this because later bits of this
+    // function (and perhaps its callchain) assume the channel nibble to be
+    // zero in its comparisons -- bkgood
+    switch (status & 0xF0) {
+    case MIDI_STATUS_NOTE_OFF:
+    case MIDI_STATUS_NOTE_ON:
+    case MIDI_STATUS_AFTERTOUCH:
+    case MIDI_STATUS_CC:
+    case MIDI_STATUS_PROGRAM_CH:
+    case MIDI_STATUS_CH_AFTERTOUCH:
+    case MIDI_STATUS_PITCH_BEND:
+        status = (MidiStatusByte) (status & 0xF0);
+    }
     QMutexLocker locker(&m_mutex); //Lots of returns in this function. Keeps things simple.
     if (midiDebugging()) qDebug() << QString("MIDI ch %1: opcode: %2, ctrl: %3, val: %4")
         .arg(QString::number(channel+1, 16).toUpper())
@@ -183,12 +212,12 @@ void MidiDevice::receive(MidiStatusByte status, char channel, char control, char
         return; // Don't process midi messages further when MIDI learning
     }
 
-    QMutexLocker mappingLocker(&m_mappingMutex);
+    QMutexLocker mappingLocker(&m_mappingPtrMutex);
 
     // Only check for a mapping if the status byte is one we know how to handle
-    if (status == MIDI_STATUS_NOTE_ON 
+    if (status == MIDI_STATUS_NOTE_ON
          || status == MIDI_STATUS_NOTE_OFF
-         || status == MIDI_STATUS_PITCH_BEND 
+         || status == MIDI_STATUS_PITCH_BEND
          || status == MIDI_STATUS_CC) {
         // If there was no control bound to that MIDI command, return;
         if (!m_pMidiMapping->isMidiMessageMapped(inputCommand)) {
@@ -203,9 +232,9 @@ void MidiDevice::receive(MidiStatusByte status, char channel, char control, char
 
 #ifdef __MIDISCRIPT__
     // Custom MixxxScript (QtScript) handler
-    
+
     if (mixxxControl.getMidiOption() == MIDI_OPT_SCRIPT) {
-        // qDebug() << "MidiDevice: Calling script function" << configKey.item << "with" 
+        // qDebug() << "MidiDevice: Calling script function" << configKey.item << "with"
         //          << (int)channel << (int)control <<  (int)value << (int)status;
 
         //Unlock the mutex here to prevent a deadlock if a script needs to send a MIDI message
@@ -214,7 +243,7 @@ void MidiDevice::receive(MidiStatusByte status, char channel, char control, char
 
         // This needs to be a signal because the MIDI Script Engine thread must execute
         //  script functions, not this MidiDevice one
-        emit(callMidiScriptFunction(configKey.item, channel, control, value, status, 
+        emit(callMidiScriptFunction(configKey.item, channel, control, value, status,
                                 mixxxControl.getControlObjectGroup()));
         return;
     }
@@ -226,13 +255,13 @@ void MidiDevice::receive(MidiStatusByte status, char channel, char control, char
     {
         double newValue = m_pMidiMapping->ComputeValue(mixxxControl.getMidiOption(), p->GetMidiValue(), value);
 
-        // ControlPushButton ControlObjects only accept NOTE_ON, so if the midi 
+        // ControlPushButton ControlObjects only accept NOTE_ON, so if the midi
         // mapping is <button> we override the Midi 'status' appropriately.
         switch (mixxxControl.getMidiOption()) {
             case MIDI_OPT_BUTTON:
-            case MIDI_OPT_SWITCH: status = MIDI_STATUS_NOTE_ON; break; // Buttons and Switches are 
-                                                                       // treated the same, except 
-                                                                       // that their values are 
+            case MIDI_OPT_SWITCH: status = MIDI_STATUS_NOTE_ON; break; // Buttons and Switches are
+                                                                       // treated the same, except
+                                                                       // that their values are
                                                                        // computed differently.
             default: break;
         }
@@ -245,6 +274,61 @@ void MidiDevice::receive(MidiStatusByte status, char channel, char control, char
 
     return;
 }
+
+#ifdef __MIDISCRIPT__
+// SysEx reception requires scripting
+void MidiDevice::receive(const unsigned char data[], unsigned int length) {
+    QMutexLocker locker(&m_mutex); //Lots of returns in this function. Keeps things simple.
+
+    QString message = m_strDeviceName+": [";
+    for(int i=0; i<length; i++) {
+        message += QString("%1%2")
+                    .arg(data[i], 2, 16, QChar('0')).toUpper()
+                    .arg((i<(length-1))?' ':']');
+    }
+
+    if (midiDebugging()) qDebug()<< message;
+
+    MidiMessage inputCommand((MidiStatusByte)data[0]);
+
+    //If the receive inhibit flag is true, then we don't process any midi messages
+    //that are received from the device. This is done in order to prevent a race
+    //condition where the MidiMapping is accessed via isMidiMessageMapped() below
+    //but it is already locked because it is being modified by the GUI thread.
+    //(This happens when you hit apply in the preferences and then quickly push
+    // a button on your controller.)
+    if (m_bReceiveInhibit)
+        return;
+
+    if (m_bMidiLearn)
+        return; // Don't process custom midi messages when MIDI learning
+
+    QMutexLocker mappingLocker(&m_mappingPtrMutex);
+
+    MixxxControl mixxxControl = m_pMidiMapping->getInputMixxxControl(inputCommand);
+    //qDebug() << "MidiDevice: " << mixxxControl.getControlObjectGroup() << mixxxControl.getControlObjectValue();
+
+    ConfigKey configKey(mixxxControl.getControlObjectGroup(), mixxxControl.getControlObjectValue());
+
+    // Custom MixxxScript (QtScript) handler
+
+    if (mixxxControl.getMidiOption() == MIDI_OPT_SCRIPT) {
+        // qDebug() << "MidiDevice: Calling script function" << configKey.item << "with"
+        //          << (int)channel << (int)control <<  (int)value << (int)status;
+
+        //Unlock the mutex here to prevent a deadlock if a script needs to send a MIDI message
+        //to the device. (sendShortMessage() would try to lock m_mutex...)
+        locker.unlock();
+
+        if (!m_pMidiMapping->getMidiScriptEngine()->execute(configKey.item, data, length)) {
+            qDebug() << "MidiDevice: Invalid script function" << configKey.item;
+        }
+        return;
+    }
+    qDebug() << "MidiDevice: No MIDI Script function found for" << message;
+    return;
+}
+#endif
 
 bool MidiDevice::midiDebugging()
 {

@@ -40,6 +40,8 @@ public:
     /** Event filter */
     bool eventFilter(QObject *obj, QEvent *e);
 
+    ConfigObject<ConfigValueKbd>* getKeyboardConfig();
+
 private:
     bool kbdPress(QKeySequence k, bool release, bool autoRepeat);
     /** Returns a valid QKeySequency with modifier keys from a QKeyEvent */

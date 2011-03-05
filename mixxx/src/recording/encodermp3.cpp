@@ -29,7 +29,7 @@
 #include "defs_recording.h"
 #include "errordialoghandler.h"
 
-EncoderMp3::EncoderMp3(ConfigObject<ConfigValue> *_config, EngineAbstractRecord *engine) {
+EncoderMp3::EncoderMp3(EngineAbstractRecord *engine) {
     m_pEngine = engine;
     m_metaDataTitle = NULL;
     m_metaDataArtist = NULL;
@@ -41,7 +41,8 @@ EncoderMp3::EncoderMp3(ConfigObject<ConfigValue> *_config, EngineAbstractRecord 
     m_bufferOutSize = 0;
     m_lameFlags = NULL;
     m_library = NULL;
-    m_pConfig = _config;
+    m_samplerate = NULL;
+   
     //These are the function pointers for lame
     lame_init =  0;
     lame_set_num_channels = 0;
@@ -91,6 +92,8 @@ EncoderMp3::EncoderMp3(ConfigObject<ConfigValue> *_config, EngineAbstractRecord 
     libnames << "lame_enc.dll";
 #elif __APPLE__
     libnames << "/usr/local/lib/libmp3lame.dylib";
+    //Using MacPorts (former DarwinPorts) results in ...
+    libnames << "/opt/local/lib/libmp3lame.dylib"; 
 #endif
 
     foreach (QString libname, libnames) {
@@ -100,7 +103,7 @@ EncoderMp3::EncoderMp3(ConfigObject<ConfigValue> *_config, EngineAbstractRecord 
         delete m_library;
         m_library = NULL;
     }
-
+    
     if(!m_library || !m_library->isLoaded()) {
         ErrorDialogProperties* props = ErrorDialogHandler::instance()->newDialogProperties();
         props->setType(DLG_WARNING);
@@ -200,6 +203,7 @@ EncoderMp3::EncoderMp3(ConfigObject<ConfigValue> *_config, EngineAbstractRecord 
         return;
     }
     qDebug() << "Loaded libmp3lame version " << get_lame_version();
+    m_samplerate = new ControlObjectThread(ControlObject::getControl(ConfigKey("[Master]", "samplerate")));
 }
 
 // Destructor
@@ -233,6 +237,8 @@ EncoderMp3::~EncoderMp3() {
     id3tag_set_title = 0;
     id3tag_set_artist = 0;
     id3tag_set_album = 0;
+    //Delete control object
+    if(m_samplerate) delete  m_samplerate;
 }
 
 /*
@@ -323,8 +329,8 @@ void EncoderMp3::initStream() {
 int EncoderMp3::initEncoder(int bitrate) {
     if(m_library == NULL || !m_library->isLoaded())
         return -1;
-
-    unsigned long samplerate_in = m_pConfig->getValueString(ConfigKey("[Soundcard]","Samplerate")).toULong();
+    
+    unsigned long samplerate_in = m_samplerate->get();
     unsigned long samplerate_out = (samplerate_in>48000?48000:samplerate_in);
 
     m_lameFlags = lame_init();
