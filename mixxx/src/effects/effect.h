@@ -37,6 +37,9 @@ class Effect : public QObject {
                          const CSAMPLE* pInput, CSAMPLE* pOutput,
                          const unsigned int numSamples) = 0;
 
+  protected:
+    EffectParameterPointer getParameterFromId(const QString id) const;
+
   private:
     QString debugString() const {
         return QString("Effect(%1)").arg(m_effectManifest.name());
@@ -45,6 +48,7 @@ class Effect : public QObject {
     EffectsBackend* m_pEffectsBackend;
     EffectManifest& m_effectManifest;
     QList<EffectParameterPointer> m_parameters;
+    QMap<QString, EffectParameterPointer> m_parametersById;
 
     DISALLOW_COPY_AND_ASSIGN(Effect);
 };
