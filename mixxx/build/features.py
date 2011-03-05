@@ -119,7 +119,9 @@ class Effects(Feature):
                                  effects/effectchain.cpp
                                  effects/effectslot.cpp
                                  effects/effectslotparameter.cpp
+
                                  effects/native/nativebackend.cpp
+                                 effects/native/flangereffect.cpp
                                  """)
         return sources
 
