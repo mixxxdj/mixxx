@@ -39,8 +39,8 @@
 #include "soundsourceproxy.h"
 
 #include "analyserqueue.h"
-#include "player.h"
 #include "playermanager.h"
+
 #include "library/library.h"
 #include "library/librarytablemodel.h"
 #include "library/libraryscanner.h"
@@ -63,10 +63,6 @@
 // force a rebuild of everything
 
 #include "defs_version.h"
-
-#ifdef __IPOD__
-#include "gpod/itdb.h"
-#endif
 
 #ifdef __C_METRICS__
 #include <cmetrics.h>
@@ -109,7 +105,9 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
 
     QCoreApplication::setApplicationName("Mixxx");
     QCoreApplication::setApplicationVersion(VERSION);
-#if defined(AMD64) || defined(EM64T) || defined(x86_64)
+#ifdef __APPLE__
+    setWindowTitle(tr("Mixxx")); //App Store
+#elif defined(AMD64) || defined(EM64T) || defined(x86_64)
     setWindowTitle(tr("Mixxx " VERSION " x64"));
 #elif defined(IA64)
     setWindowTitle(tr("Mixxx " VERSION " Itanium"));
@@ -211,26 +209,28 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
     // Store the path in the config database
     m_pConfig->set(ConfigKey("[Config]", "Path"), ConfigValue(qConfigPath));
 
-    // Instantiate a ControlObject, and set static parent widget
-    m_pControl = new ControlNull();
-
     // Read keyboard configuration and set kdbConfig object in WWidget
     // Check first in user's Mixxx directory
     QString userKeyboard =
         QDir::homePath().append("/").append(SETTINGS_PATH)
             .append("Custom.kbd.cfg");
+
+    ConfigObject<ConfigValueKbd>* pKbdConfig = NULL;
+
     if (QFile::exists(userKeyboard)) {
         qDebug() << "Found and will use custom keyboard preset" << userKeyboard;
-        m_pKbdConfig = new ConfigObject<ConfigValueKbd>(userKeyboard);
+        pKbdConfig = new ConfigObject<ConfigValueKbd>(userKeyboard);
     }
     else
         // Otherwise use the default
-        m_pKbdConfig =
-            new ConfigObject<ConfigValueKbd>(QString(qConfigPath)
-                .append("keyboard/").append("Standard.kbd.cfg"));
-    WWidget::setKeyboardConfig(m_pKbdConfig);
+        pKbdConfig =
+                new ConfigObject<ConfigValueKbd>(
+                    QString(qConfigPath)
+                    .append("keyboard/").append("Standard.kbd.cfg"));
 
-    m_pKeyboard = new MixxxKeyboard(m_pKbdConfig);
+    // TODO(XXX) leak pKbdConfig, MixxxKeyboard owns it? Maybe roll all keyboard
+    // initialization into MixxxKeyboard
+    m_pKeyboard = new MixxxKeyboard(pKbdConfig);
 
     // Starting the master (mixing of the channels and effects):
     m_pEngine = new EngineMaster(m_pConfig, "[Master]");
@@ -241,10 +241,18 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
     m_pSoundManager = new SoundManager(m_pConfig, m_pEngine);
 
     // Get Music dir
+    bool hasChanged_MusicDir = false;
     QDir dir(m_pConfig->getValueString(ConfigKey("[Playlist]","Directory")));
     if (m_pConfig->getValueString(
         ConfigKey("[Playlist]","Directory")).length() < 1 || !dir.exists())
     {
+        // TODO this needs to be smarter, we can't distinguish between an empty
+        // path return value (not sure if this is normally possible, but it is
+        // possible with the Windows 7 "Music" library, which is what
+        // QDesktopServices::storageLocation(QDesktopServices::MusicLocation)
+        // resolves to) and a user hitting 'cancel'. If we get a blank return
+        // but the user didn't hit cancel, we need to know this and let the
+        // user take some course of action -- bkgood
         QString fd = QFileDialog::getExistingDirectory(
             this, tr("Choose music library directory"),
             QDesktopServices::storageLocation(QDesktopServices::MusicLocation));
@@ -253,18 +261,29 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
         {
             m_pConfig->set(ConfigKey("[Playlist]","Directory"), fd);
             m_pConfig->Save();
+            hasChanged_MusicDir = true;
         }
     }
-    // Needed for Search class and Simple skin
-    new ControlPotmeter(ConfigKey("[Channel1]", "virtualplayposition"),0.,1.);
+
+    // library dies in seemingly unrelated qtsql error about not having a
+    // sqlite driver if this path doesn't exist. Normally config->Save()
+    // above would make it but if it doesn't get run for whatever reason
+    // we get hosed -- bkgood
+    if (!QDir(QDir::homePath().append("/").append(SETTINGS_PATH)).exists()) {
+        QDir().mkpath(QDir::homePath().append("/").append(SETTINGS_PATH));
+    }
 
     m_pLibrary = new Library(this, m_pConfig, bFirstRun || bUpgraded);
     qRegisterMetaType<TrackPointer>("TrackPointer");
 
     // Create the player manager.
     m_pPlayerManager = new PlayerManager(m_pConfig, m_pEngine, m_pLibrary);
-    m_pPlayerManager->addPlayer();
-    m_pPlayerManager->addPlayer();
+    m_pPlayerManager->addDeck();
+    m_pPlayerManager->addDeck();
+    // m_pPlayerManager->addSampler();
+    // m_pPlayerManager->addSampler();
+    // m_pPlayerManager->addSampler();
+    // m_pPlayerManager->addSampler();
 
     //Scan the library directory.
     m_pLibraryScanner = new LibraryScanner(m_pLibrary->getTrackCollection());
@@ -273,9 +292,22 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
     connect(m_pLibraryScanner, SIGNAL(scanFinished()),
             m_pLibrary, SLOT(slotRefreshLibraryModels()));
 
-    //Scan the library for new files and directories.
-    m_pLibraryScanner->scan(
-        m_pConfig->getValueString(ConfigKey("[Playlist]", "Directory")));
+    //Scan the library for new files and directories
+    bool rescan = (bool)m_pConfig->getValueString(ConfigKey("[Library]","RescanOnStartup")).toInt();
+    // rescan the library if we get a new plugin
+    QSet<QString> prev_plugins = QSet<QString>::fromList(m_pConfig->getValueString(
+        ConfigKey("[Library]", "SupportedFileExtensions")).split(",", QString::SkipEmptyParts));
+    QSet<QString> curr_plugins = QSet<QString>::fromList(
+        SoundSourceProxy::supportedFileExtensions());
+    rescan = rescan || (prev_plugins != curr_plugins);
+
+    if(rescan || hasChanged_MusicDir){
+        m_pLibraryScanner->scan(
+            m_pConfig->getValueString(ConfigKey("[Playlist]", "Directory")));
+        qDebug() << "Rescan finished";
+    }
+    m_pConfig->set(ConfigKey("[Library]", "SupportedFileExtensions"),
+        QStringList(SoundSourceProxy::supportedFileExtensions()).join(","));
 
     // Call inits to invoke all other construction parts
 
@@ -310,10 +342,12 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
         m_pConfig->set(ConfigKey("[BPM]", "AnalyzeEntireSong"),ConfigValue(1));
     }
 
+
+    qRegisterMetaType<MidiMessage>("MidiMessage");
+    qRegisterMetaType<MidiStatusByte>("MidiStatusByte");
+
     // Initialise midi
     m_pMidiDeviceManager = new MidiDeviceManager(m_pConfig);
-    //TODO: Try to open MIDI devices?
-    m_pMidiDeviceManager->queryDevices();
     m_pMidiDeviceManager->setupDevices();
 
     m_pSkinLoader = new SkinLoader(m_pConfig);
@@ -359,18 +393,18 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
 
     // Load tracks in args.qlMusicFiles (command line arguments) into player
     // 1 and 2:
-    for (int i = 0; i < m_pPlayerManager->numPlayers()
+    for (int i = 0; i < (int)m_pPlayerManager->numDecks()
             && i < args.qlMusicFiles.count(); ++i) {
-        m_pPlayerManager->slotLoadToPlayer(args.qlMusicFiles.at(i), i+1);
+        m_pPlayerManager->slotLoadToDeck(args.qlMusicFiles.at(i), i+1);
     }
 
     //Automatically load specially marked promotional tracks on first run
     if (bFirstRun || bUpgraded) {
         QList<TrackPointer> tracksToAutoLoad =
             m_pLibrary->getTracksToAutoLoad();
-        for (int i = 0; i < m_pPlayerManager->numPlayers()
+        for (int i = 0; i < (int)m_pPlayerManager->numDecks()
                 && i < tracksToAutoLoad.count(); i++) {
-            m_pPlayerManager->slotLoadTrackToPlayer(tracksToAutoLoad.at(i), i+1);
+            m_pPlayerManager->slotLoadToDeck(tracksToAutoLoad.at(i)->getLocation(), i+1);
         }
     }
 
@@ -384,11 +418,13 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
     // Use frame as container for view, needed for fullscreen display
     m_pView = new QFrame;
 
+    m_pWidgetParent = NULL;
     // Loads the skin as a child of m_pView
-    if (!m_pSkinLoader->loadDefaultSkin(m_pView,
+    // assignment itentional in next line
+    if (!(m_pWidgetParent = m_pSkinLoader->loadDefaultSkin(m_pView,
                                         m_pKeyboard,
                                         m_pPlayerManager,
-                                        m_pLibrary)) {
+                                        m_pLibrary))) {
         qDebug() << "Could not load default skin.";
     }
 
@@ -396,6 +432,12 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
     // million different variables the first waveform may be horribly
     // corrupted. See bug 521509 -- bkgood
     setCentralWidget(m_pView);
+
+    // keep gui centered (esp for fullscreen)
+    // the layout will be deleted whenever m_pView gets deleted
+    QHBoxLayout *pLayout = new QHBoxLayout(m_pView);
+    pLayout->addWidget(m_pWidgetParent);
+    pLayout->setContentsMargins(0, 0, 0, 0); // don't want margins
 
     // Check direct rendering and warn user if they don't have it
     checkDirectRendering();
@@ -448,6 +490,9 @@ MixxxApp::~MixxxApp()
     m_pSoundManager->closeDevices();
     qDebug() << "soundmanager->close() done";
 
+    qDebug() << "delete SkinLoader";
+    delete m_pSkinLoader;
+
     qDebug() << "delete MidiDeviceManager";
     delete m_pMidiDeviceManager;
 
@@ -459,9 +504,6 @@ MixxxApp::~MixxxApp()
 
     qDebug() << "delete m_pEngine, " << qTime.elapsed();
     delete m_pEngine;
-
-//    qDebug() << "delete prefDlg";
-//    delete m_pControlEngine;
 
     qDebug() << "delete view, " << qTime.elapsed();
     delete m_pView;
@@ -655,7 +697,7 @@ void MixxxApp::initActions()
 
     m_pOptionsFullScreen->setShortcutContext(Qt::ApplicationShortcut);
     // QShortcut * shortcut = new QShortcut(QKeySequence(tr("Esc")),  this);
-    // connect(shortcut, SIGNAL(activated()), this, SLOT(slotQuitFullScreen()));
+    // connect(shortcut, SIGNAL(triggered()), this, SLOT(slotQuitFullScreen()));
 
     m_pOptionsPreferences = new QAction(tr("&Preferences"), this);
     m_pOptionsPreferences->setShortcut(tr("Ctrl+P"));
@@ -687,41 +729,41 @@ void MixxxApp::initActions()
     m_pFileLoadSongPlayer1->setStatusTip(tr("Opens a song in player 1"));
     m_pFileLoadSongPlayer1->setWhatsThis(
         tr("Open\n\nOpens a song in player 1"));
-    connect(m_pFileLoadSongPlayer1, SIGNAL(activated()),
+    connect(m_pFileLoadSongPlayer1, SIGNAL(triggered()),
             this, SLOT(slotFileLoadSongPlayer1()));
 
     m_pFileLoadSongPlayer2->setStatusTip(tr("Opens a song in player 2"));
     m_pFileLoadSongPlayer2->setWhatsThis(
         tr("Open\n\nOpens a song in player 2"));
-    connect(m_pFileLoadSongPlayer2, SIGNAL(activated()),
+    connect(m_pFileLoadSongPlayer2, SIGNAL(triggered()),
             this, SLOT(slotFileLoadSongPlayer2()));
 
     m_pFileQuit->setStatusTip(tr("Quits the application"));
     m_pFileQuit->setWhatsThis(tr("Exit\n\nQuits the application"));
-    connect(m_pFileQuit, SIGNAL(activated()), this, SLOT(slotFileQuit()));
+    connect(m_pFileQuit, SIGNAL(triggered()), this, SLOT(slotFileQuit()));
 
     m_pLibraryRescan->setStatusTip(tr("Rescans the song library"));
     m_pLibraryRescan->setWhatsThis(
         tr("Rescan library\n\nRescans the song library"));
     m_pLibraryRescan->setCheckable(false);
-    connect(m_pLibraryRescan, SIGNAL(activated()),
+    connect(m_pLibraryRescan, SIGNAL(triggered()),
             this, SLOT(slotScanLibrary()));
     connect(m_pLibraryScanner, SIGNAL(scanFinished()),
             this, SLOT(slotEnableRescanLibraryAction()));
 
     m_pPlaylistsNew->setStatusTip(tr("Create a new playlist"));
     m_pPlaylistsNew->setWhatsThis(tr("New playlist\n\nCreate a new playlist"));
-    connect(m_pPlaylistsNew, SIGNAL(activated()),
+    connect(m_pPlaylistsNew, SIGNAL(triggered()),
             m_pLibrary, SLOT(slotCreatePlaylist()));
 
     m_pCratesNew->setStatusTip(tr("Create a new crate"));
     m_pCratesNew->setWhatsThis(tr("New crate\n\nCreate a new crate."));
-    connect(m_pCratesNew, SIGNAL(activated()),
+    connect(m_pCratesNew, SIGNAL(triggered()),
             m_pLibrary, SLOT(slotCreateCrate()));
 
     m_pPlaylistsImport->setStatusTip(tr("Import playlist"));
     m_pPlaylistsImport->setWhatsThis(tr("Import playlist"));
-    //connect(playlistsImport, SIGNAL(activated()),
+    //connect(playlistsImport, SIGNAL(triggered()),
     //        m_pTrack, SLOT(slotImportPlaylist()));
     //FIXME: Disabled due to library rework
 
@@ -782,22 +824,22 @@ void MixxxApp::initActions()
     m_pOptionsPreferences->setStatusTip(tr("Preferences"));
     m_pOptionsPreferences->setWhatsThis(
         tr("Preferences\nPlayback and MIDI preferences"));
-    connect(m_pOptionsPreferences, SIGNAL(activated()),
+    connect(m_pOptionsPreferences, SIGNAL(triggered()),
             this, SLOT(slotOptionsPreferences()));
 
     m_pHelpSupport->setStatusTip(tr("Support..."));
     m_pHelpSupport->setWhatsThis(tr("Support\n\nGet help with Mixxx"));
-    connect(m_pHelpSupport, SIGNAL(activated()), this, SLOT(slotHelpSupport()));
+    connect(m_pHelpSupport, SIGNAL(triggered()), this, SLOT(slotHelpSupport()));
 
     m_pHelpAboutApp->setStatusTip(tr("About the application"));
     m_pHelpAboutApp->setWhatsThis(tr("About\n\nAbout the application"));
-    connect(m_pHelpAboutApp, SIGNAL(activated()), this, SLOT(slotHelpAbout()));
+    connect(m_pHelpAboutApp, SIGNAL(triggered()), this, SLOT(slotHelpAbout()));
 
 #ifdef __SCRIPT__
     macroStudio->setStatusTip(tr("Shows the macro studio window"));
     macroStudio->setWhatsThis(
         tr("Show Studio\n\nMakes the macro studio visible"));
-     connect(macroStudio, SIGNAL(activated()),
+     connect(macroStudio, SIGNAL(triggered()),
              scriptEng->getStudio(), SLOT(showStudio()));
 #endif
 }
@@ -913,7 +955,7 @@ void MixxxApp::slotFileLoadSongPlayer1()
                 .arg(SoundSourceProxy::supportedFileExtensionsString()));
 
     if (s != QString::null) {
-        m_pPlayerManager->slotLoadToPlayer(s, 1);
+        m_pPlayerManager->slotLoadToDeck(s, 1);
     }
 }
 
@@ -943,12 +985,16 @@ void MixxxApp::slotFileLoadSongPlayer2()
                 .arg(SoundSourceProxy::supportedFileExtensionsString()));
 
     if (s != QString::null) {
-        m_pPlayerManager->slotLoadToPlayer(s, 2);
+        m_pPlayerManager->slotLoadToDeck(s, 2);
     }
 }
 
 void MixxxApp::slotFileQuit()
 {
+    if (!confirmExit()) {
+        return;
+    }
+    hide();
     qApp->quit();
 }
 
@@ -962,55 +1008,25 @@ void MixxxApp::slotOptionsFullScreen(bool toggle)
     if (m_pOptionsFullScreen)
         m_pOptionsFullScreen->setChecked(toggle);
 
-    // Making a fullscreen window on linux and windows is harder than you
-    // could possibly imagine...
-    if (toggle)
-    {
+    if (toggle) {
 #if defined(__LINUX__) || defined(__APPLE__)
-         m_winpos = pos();
-         // Can't set max to -1,-1 or 0,0 for unbounded?
-         setMaximumSize(32767,32767);
+         // this and the later move(m_winpos) doesn't seem necessary
+         // here on kwin, if it's necessary with some other x11 wm, re-enable
+         // it, I guess -bkgood
+         //m_winpos = pos();
+         // fix some x11 silliness -- for some reason the move(m_winpos)
+         // is moving the currentWindow to (0, 0), not the frame (as it's
+         // supposed to, I might add)
+         // if this messes stuff up on your distro yell at me -bkgood
+         //m_winpos.setX(m_winpos.x() + (geometry().x() - x()));
+         //m_winpos.setY(m_winpos.y() + (geometry().y() - y()));
 #endif
-
         showFullScreen();
-        //menuBar()->hide();
-        // FWI: Begin of fullscreen patch
-#if defined(__LINUX__) || defined(__APPLE__)
-        // Crazy X window managers break this so I'm told by Qt docs
-        //         int deskw = app->desktop()->width();
-        //         int deskh = app->desktop()->height();
-
-        //support for xinerama
-        int deskw = m_pApp->desktop()->screenGeometry(m_pView).width();
-        int deskh = m_pApp->desktop()->screenGeometry(m_pView).height();
-#else
-        int deskw = width();
-        int deskh = height();
-#endif
-        if (m_pView)
-            m_pView->move((deskw - m_pView->width())/2,
-                          (deskh - m_pView->height())/2);
-        // FWI: End of fullscreen patch
-    }
-    else
-    {
-        // FWI: Begin of fullscreen patch
-        if (m_pView)
-            m_pView->move(0,0);
-
-        menuBar()->show();
+    } else {
         showNormal();
-
 #ifdef __LINUX__
-        if (size().width() != m_pView->width() ||
-            size().height() != m_pView->height() + menuBar()->height()) {
-          setFixedSize(m_pView->width(),
-                  m_pView->height() + menuBar()->height());
-        }
-        move(m_winpos);
+        //move(m_winpos);
 #endif
-
-        // FWI: End of fullscreen patch
     }
 }
 
@@ -1036,7 +1052,7 @@ void MixxxApp::slotOptionsVinylControl(bool toggle)
     if (countVCIns == 0 && toggle)
     {
         QMessageBox::warning(this, tr("Mixxx"),
-            tr("No input device(s) select.\nPlease select your soundcard(s) "
+            tr("No input device(s) selected.\nPlease select your soundcard(s) "
                 "in the sound hardware preferences."),
             QMessageBox::Ok,
             QMessageBox::Ok);
@@ -1152,6 +1168,11 @@ void MixxxApp::slotHelpAbout()
 "Phillip Whelan<br>"
 "Tobias Rafreider<br>"
 "S. Brandt<br>"
+"Bill Good<br>"
+"Owen Williams<br>"
+"Bruno Buccolo<br>"
+"Ryan Baker<br>"
+"Vittorio Colao<br>"
 
 "</p>"
 "<p align=\"center\"><b>With contributions from:</b></p>"
@@ -1163,7 +1184,6 @@ void MixxxApp::slotHelpAbout()
 "Mathieu Rene<br>"
 "Miko Kiiski<br>"
 "Brian Jackson<br>"
-"Owen Williams<br>"
 "Andreas Pflug<br>"
 "Bas van Schaik<br>"
 "J&aacute;n Jockusch<br>"
@@ -1173,14 +1193,21 @@ void MixxxApp::slotHelpAbout()
 "Bill Egert<br>"
 "Zach Shutters<br>"
 "Owen Bullock<br>"
-"Bill Good<br>"
 "Graeme Mathieson<br>"
 "Sebastian Actist<br>"
 "Jussi Sainio<br>"
 "David Gnedt<br>"
 "Antonio Passamani<br>"
 "Guy Martin<br>"
-"Anders Gunnarson<br>"
+"Anders Gunnarsson<br>"
+"Alex Barker<br>"
+"Mikko Jania<br>"
+"Juan Pedro Bol&iacute;var Puente<br>"
+"Linus Amvall<br>"
+"Irwin C&eacute;spedes B<br>"
+"Micz Flor<br>"
+"Daniel James<br>"
+"Mika Haulo<br>"
 
 "</p>"
 "<p align=\"center\"><b>And special thanks to:</b></p>"
@@ -1189,6 +1216,7 @@ void MixxxApp::slotHelpAbout()
 "Hercules<br>"
 "EKS<br>"
 "Echo Digital Audio<br>"
+"JP Disco<br>"
 "Adam Bellinson<br>"
 "Alexandre Bancel<br>"
 "Melanie Thielker<br>"
@@ -1239,7 +1267,6 @@ void MixxxApp::slotHelpAbout()
 "quil0m80<br>"
 "Martin Sakm&#225;r<br>"
 "Ilian Persson<br>"
-"Alex Barker<br>"
 "Dave Jarvis<br>"
 "Thomas Baag<br>"
 "Karlis Kalnins<br>"
@@ -1275,13 +1302,9 @@ void MixxxApp::slotHelpSupport()
 
 void MixxxApp::rebootMixxxView() {
 
-    if (!m_pView)
+    if (!m_pWidgetParent || !m_pView)
         return;
 
-    // Ok, so wierdly if you call setFixedSize with the same value twice, Qt
-    // breaks. So we check and if the size hasn't changed we don't make the call
-    int oldh = m_pView->height();
-    int oldw = m_pView->width();
     qDebug() << "Now in Rebootmixxview...";
 
     // Workaround for changing skins while fullscreen, just go out of fullscreen
@@ -1297,22 +1320,30 @@ void MixxxApp::rebootMixxxView() {
     delete m_pView;
     m_pView = new QFrame();
 
-    if (!m_pSkinLoader->loadDefaultSkin(m_pView,
+    // assignment in next line intentional
+    if (!(m_pWidgetParent = m_pSkinLoader->loadDefaultSkin(m_pView,
                                         m_pKeyboard,
                                         m_pPlayerManager,
-                                        m_pLibrary)) {
+                                        m_pLibrary))) {
         qDebug() << "Could not reload the skin.";
     }
 
     // don't move this before loadDefaultSkin above. bug 521509 --bkgood
     setCentralWidget(m_pView);
 
-    qDebug() << "rebootgui DONE";
+    // keep gui centered (esp for fullscreen)
+    // the layout will be deleted whenever m_pView gets deleted
+    QHBoxLayout *pLayout = new QHBoxLayout(m_pView);
+    pLayout->addWidget(m_pWidgetParent);
+    pLayout->setContentsMargins(0, 0, 0, 0); // don't want margins
 
-    if (oldw != m_pView->width()
-            || oldh != m_pView->height() + menuBar()->height()) {
-      setFixedSize(m_pView->width(), m_pView->height() + menuBar()->height());
-    }
+    // if we move from big skin to smaller skin, size the window down to fit
+    // (qt scales up for us if we go the other way) -bkgood
+    // this doesn't always seem to snap down tight on Windows... sigh -bkgood
+    setFixedSize(m_pView->width(), m_pView->height());
+    setFixedSize(QSize(QWIDGETSIZE_MAX, QWIDGETSIZE_MAX));
+
+    qDebug() << "rebootgui DONE";
 }
 
 /** Event filter to block certain events. For example, this function is used
@@ -1335,7 +1366,12 @@ bool MixxxApp::eventFilter(QObject *obj, QEvent *event)
         // standard event processing
         return QObject::eventFilter(obj, event);
     }
+}
 
+void MixxxApp::closeEvent(QCloseEvent *event) {
+    if (!confirmExit()) {
+        event->ignore();
+    }
 }
 
 void MixxxApp::slotScanLibrary()
@@ -1397,4 +1433,30 @@ void MixxxApp::checkDirectRendering() {
                              "Direct rendering is not enabled on your machine.\n\nThis means that the waveform displays will be very\nslow and take a lot of CPU time. Either update your\nconfiguration to enable direct rendering, or disable\nthe waveform displays in the control panel by\nselecting \"Simple\" under waveform displays.\nNOTE: In case you run on NVidia hardware,\ndirect rendering may not be present, but you will\nnot experience a degradation in performance.");
         m_pConfig->set(ConfigKey("[Direct Rendering]", "Warned"), ConfigValue(QString("yes")));
     }
+}
+
+bool MixxxApp::confirmExit() {
+    bool playing(false);
+    unsigned int deckCount = m_pPlayerManager->numDecks();
+    for (unsigned int i = 0; i < deckCount; ++i) {
+        ControlObject *pPlayCO(
+            ControlObject::getControl(
+                ConfigKey(QString("[Channel%1]").arg(i + 1), "play")
+            )
+        );
+        if (pPlayCO && pPlayCO->get()) {
+            playing = true;
+            break;
+        }
+    }
+    if (playing) {
+        QMessageBox::StandardButton btn = QMessageBox::question(this,
+            tr("Confirm Exit"),
+            tr("A deck is currently playing. Exit Mixxx?"),
+            QMessageBox::Yes | QMessageBox::No, QMessageBox::No);
+        if (btn == QMessageBox::No) {
+            return false;
+        }
+    }
+    return true;
 }

@@ -19,5 +19,5 @@
 // We define the version to be the branch name in Sconscript.env, unless it's a release branch
 #ifndef VERSION
     // In that case, this value is used
-    #define VERSION "Trunk"
+    #define VERSION "1.9.0"
 #endif

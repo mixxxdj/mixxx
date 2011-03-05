@@ -13,9 +13,9 @@ AnalyserWaveform::AnalyserWaveform() {
 
 void AnalyserWaveform::initialise(TrackPointer tio, int sampleRate, int totalSamples) {
 
-    if(tio->getVisualWaveform() != NULL) {
-        return;
-    }
+  if(tio->getVisualWaveform() != NULL) {
+       return;
+   }
 
     if(totalSamples == 0) {
         return;  //?
@@ -25,10 +25,11 @@ void AnalyserWaveform::initialise(TrackPointer tio, int sampleRate, int totalSam
     double n = double(sampleRate) / mz;
 
     QByteArray err_tmp = QString("TrackPointer %1 returned bad data: VisualResampleRate=%2, n=%3") .arg(tio->getId()).arg(mz).arg(n).toAscii();
-    Q_ASSERT_X(mz != 0 && n > 0,"AnalyserWaveform::initialise",err_tmp);
 
     if (mz == 0 || n <= 0) {
-        qDebug() << "TrackPointer" << tio->getId() << "returned bad data: tio->getVisualResampleRate()=" << mz << "n=" << n << "Aborting analysis";
+        qDebug() << err_tmp
+                 << "Track must not be loaded to a player with a waveform display."
+                 << "Skipping analysis.";
         return;
     }
 
@@ -58,8 +59,10 @@ void AnalyserWaveform::initialise(TrackPointer tio, int sampleRate, int totalSam
     m_iStrideLength = samplesPerDownsample*2;
     m_iCurPos = 0;
     m_iBufferPos = 0;
-    m_fLMax = -1.0;
-    m_fRMax = -1.0;
+    m_fLMax = 0.0;
+    m_fRMax = 0.0;
+    m_fOldLMax = 0.0f;
+    m_fOldRMax = 0.0f;
 
     m_iStartTime = clock();
 }
@@ -70,26 +73,32 @@ void AnalyserWaveform::process(const CSAMPLE *pIn, const int iLen) {
         return;
     }
 
+    const float fAlpha = 0.5f;
+
     //qDebug() << "AnalyserWaveform::process() processing " << iLen << " samples";
     for(int i=0; i<iLen; i+=2) {
 
         if(m_iBufferPos >= m_iStrideLength) {
             //(*downsample)[m_iCurPos] = m_fLMax;
-            *(downsampleVector++) = m_fLMax;
+            *(downsampleVector++) = m_fOldLMax + fAlpha * (m_fLMax - m_fOldLMax);
             m_iCurPos++;
 
             //(*downsample)[m_iCurPos] = m_fRMax;
-            *(downsampleVector++) = m_fRMax;
+            *(downsampleVector++) = m_fOldRMax + fAlpha * (m_fRMax - m_fOldRMax);
             m_iCurPos++;
+
+            m_fOldRMax = m_fRMax;
+            m_fOldLMax = m_fLMax;
 
             m_iBufferPos = 0;
             m_fLMax = -1.0f;
             m_fRMax = -1.0f;
-        }
-        CSAMPLE sl = fabs(pIn[i]);
-        CSAMPLE sr = fabs(pIn[i+1]);
 
-        if(m_iBufferPos <= 20) {
+        }
+
+        if(m_iBufferPos < m_iStrideLength/4) { //m_iStrideLength) {
+            CSAMPLE sl = fabs(pIn[i]);
+            CSAMPLE sr = fabs(pIn[i+1]);
             if(sl > m_fLMax)
                 m_fLMax = sl;
             if(sr > m_fRMax)

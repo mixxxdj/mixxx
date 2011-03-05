@@ -19,24 +19,24 @@
 
 #include <QObject>
 #include <QMutex>
+#include <QMap>
 
 #include "trackinfoobject.h"
 
 class PlayerInfo : public QObject
 {
     Q_OBJECT
-public:
+  public:
     static PlayerInfo &Instance();
-    TrackPointer getTrackInfo(int track);
-    void setTrackInfo(int track, TrackPointer trackInfoObj);
-private:
+    TrackPointer getTrackInfo(QString group);
+    void setTrackInfo(QString group, TrackPointer trackInfoObj);
+  private:
     PlayerInfo();
     ~PlayerInfo();
     PlayerInfo(PlayerInfo const&);
     PlayerInfo &operator= (PlayerInfo const&);
     QMutex m_mutex;
-    TrackPointer m_pTrack1;
-    TrackPointer m_pTrack2;
+    QMap<QString, TrackPointer> m_loadedTrackMap;
 };
 
 #endif

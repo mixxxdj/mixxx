@@ -33,7 +33,7 @@ DlgMidiLearning::DlgMidiLearning(QWidget * parent, MidiMapping* mapping) :  QDia
     QWidget::setAttribute(Qt::WA_DeleteOnClose);
 
     m_pSkipShortcut = new QShortcut(QKeySequence(Qt::Key_Space), this);
-    connect(m_pSkipShortcut, SIGNAL(activated()), pushButtonSkip, SLOT(click()));
+    connect(m_pSkipShortcut, SIGNAL(triggered()), pushButtonSkip, SLOT(click()));
     //pushButtonSkip->setShortcut(QKeySequence(Qt::Key_Space));    
 
     connect(pushButtonBegin, SIGNAL(clicked()), this, SLOT(begin()));

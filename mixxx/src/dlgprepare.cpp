@@ -25,8 +25,8 @@ DlgPrepare::DlgPrepare(QWidget* parent, ConfigObject<ConfigValue>* pConfig, Trac
                                                             ConfigKey(), ConfigKey());
     connect(m_pPrepareLibraryTableView, SIGNAL(loadTrack(TrackPointer)),
             this, SIGNAL(loadTrack(TrackPointer)));
-    connect(m_pPrepareLibraryTableView, SIGNAL(loadTrackToPlayer(TrackPointer, int)),
-            this, SIGNAL(loadTrackToPlayer(TrackPointer, int)));
+    connect(m_pPrepareLibraryTableView, SIGNAL(loadTrackToPlayer(TrackPointer, QString)),
+            this, SIGNAL(loadTrackToPlayer(TrackPointer, QString)));
 
     QBoxLayout* box = dynamic_cast<QBoxLayout*>(layout());
     Q_ASSERT(box); //Assumes the form layout is a QVBox/QHBoxLayout!

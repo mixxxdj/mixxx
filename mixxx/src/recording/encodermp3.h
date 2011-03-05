@@ -38,7 +38,7 @@ class TrackInfoObject;
 class EncoderMp3 : public Encoder {
     Q_OBJECT
   public:
-    EncoderMp3(ConfigObject<ConfigValue> *_config, EngineAbstractRecord *engine=0);
+    EncoderMp3(EngineAbstractRecord *engine=0);
     virtual ~EncoderMp3();
     int initEncoder(int bitrate);
     /** encodes audio and calls engine->write to send it a file or over a network **/
@@ -53,7 +53,7 @@ class EncoderMp3 : public Encoder {
     int bufferOutGrow(int size);
     int bufferInGrow(int size);
 
-    ConfigObject<ConfigValue> *m_pConfig; /* provides ConfigKey access */
+   
     //For lame
     struct lame_global_struct;
     typedef struct lame_global_struct lame_global_flags;
@@ -130,6 +130,7 @@ class EncoderMp3 : public Encoder {
     TrackPointer m_pMetaData;
     QLibrary* m_library;
     QFile m_mp3file;
+    ControlObjectThread* m_samplerate;
 };
 
 #endif

@@ -6,6 +6,7 @@
 #include <QDragEnterEvent>
 #include <QUrl>
 #include <QPainter>
+#include <QGLContext>
 
 
 #include "mixxx.h"
@@ -13,7 +14,15 @@
 #include "wglwaveformviewer.h"
 #include "waveform/waveformrenderer.h"
 
-WGLWaveformViewer::WGLWaveformViewer(const char *group, WaveformRenderer *pWaveformRenderer, QWidget * pParent, const QGLWidget * pShareWidget, Qt::WFlags f) : QGLWidget(QGLFormat(QGL::SampleBuffers), pParent, pShareWidget)
+WGLWaveformViewer::WGLWaveformViewer(
+        const char *group, 
+        WaveformRenderer *pWaveformRenderer, 
+        QWidget * pParent, 
+        const QGLWidget * pShareWidget,
+        QGLContext *ctxt,
+        Qt::WFlags f
+    ) : 
+    QGLWidget(ctxt, pParent, pShareWidget)
 {
 
     m_pWaveformRenderer = pWaveformRenderer;
@@ -38,32 +47,9 @@ WGLWaveformViewer::~WGLWaveformViewer() {
 }
 
 void WGLWaveformViewer::setup(QDomNode node) {
-
-    // Acquire position
-    QString pos = WWidget::selectNodeQString(node, "Pos");
-    int sep = pos.indexOf(",");
-    int x = pos.left(sep).toInt();
-    int y = pos.mid(sep+1).toInt();
-    move(x,y);
-
-    // Acquire size
-    QString size = WWidget::selectNodeQString(node, "Size");
-    sep = size.indexOf(",");
-    x = size.left(sep).toInt();
-    y = size.mid(sep+1).toInt();
-    setFixedSize(x,y);
-
-    // Get tooltip
-    QString tooltip = WWidget::selectNodeQString(node, "Tooltip");
-    setToolTip(tooltip);
-
-    QString style = WWidget::selectNodeQString(node, "Style");
-    if (style != "")
-        setStyleSheet(style);
-
+    int w = width(), h = height();
     m_pWaveformRenderer->setup(node);
-
-    m_pWaveformRenderer->resize(x,y);
+    m_pWaveformRenderer->resize(w, h);
 }
 
 void WGLWaveformViewer::paintEvent(QPaintEvent *event) {
@@ -141,9 +127,17 @@ bool WGLWaveformViewer::eventFilter(QObject *o, QEvent *e) {
 
 void WGLWaveformViewer::dragEnterEvent(QDragEnterEvent * event)
 {
-    // Accept the enter event if the thing is a filepath.
-    if (event->mimeData()->hasUrls())
-        event->acceptProposedAction();
+    // Accept the enter event if the thing is a filepath and nothing's playing
+    // in this deck.
+    if (event->mimeData()->hasUrls()) {
+        ControlObject *pPlayCO = ControlObject::getControl(
+            ConfigKey(m_pGroup, "play"));
+        if (pPlayCO && pPlayCO->get()) {
+            event->ignore();
+        } else {
+            event->acceptProposedAction();
+        }
+    }
 }
 
 void WGLWaveformViewer::dropEvent(QDropEvent * event)

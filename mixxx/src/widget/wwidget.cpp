@@ -26,7 +26,6 @@
 
 // Static member variable definition
 QString WWidget::m_qPath;
-ConfigObject<ConfigValueKbd> *WWidget::m_spKbdConfigObject = 0;
 
 WWidget::WWidget(QWidget * parent, Qt::WFlags flags) : QWidget(parent, flags)
 {
@@ -53,90 +52,10 @@ bool WWidget::event(QEvent *event)
   if(event->type() == QEvent::ToolTip)
     {
       QHelpEvent *tooltip = static_cast<QHelpEvent *>(event);
-      QToolTip::showText(tooltip->globalPos(), m_Tooltip, this);
+      QToolTip::showText(tooltip->globalPos(), toolTip(), this);
       //http://doc.trolltech.com/4.3/widgets-tooltips-sortingbox-cpp.html suggests you should use QToolTip::hideText in certain cases; it works well enough on OS X with just this code though...
     }
   return QWidget::event(event);
-}
-
-
-void WWidget::setKeyboardConfig(ConfigObject<ConfigValueKbd> * pKbdConfigObject)
-{
-    m_spKbdConfigObject = pKbdConfigObject;
-}
-
-void WWidget::setup(QDomNode node)
-{
-    // Set position
-    QString pos = selectNodeQString(node, "Pos");
-    int x = pos.left(pos.indexOf(",")).toInt();
-    int y = pos.mid(pos.indexOf(",")+1).toInt();
-    move(x,y);
-
-    // Get tooltip
-    m_Tooltip = selectNodeQString(node, "Tooltip");
-
-    QString style = selectNodeQString(node, "Style");
-    if (style != "")
-        setStyleSheet(style);
-
-    // For each connection
-    QDomNode con = selectNode(node, "Connection");
-    while (!con.isNull())
-    {
-        // Get ConfigKey
-        QString key = selectNodeQString(con, "ConfigKey");
-
-        ConfigKey configKey = ConfigKey::parseCommaSeparated(key);
-
-        // Check that the control exists
-        ControlObject * control = ControlObject::getControl(configKey);
-        if (control == NULL) {
-            qWarning() << "Requested control does not exist:" << key;
-            con = con.nextSibling();
-            continue;
-        }
-
-        if (!selectNode(con, "OnOff").isNull() && selectNodeQString(con, "OnOff")=="true")
-        {
-            // Connect control proxy to widget
-            (new ControlObjectThreadWidget(control))->setWidgetOnOff(this);
-        }
-        else
-        {
-            // Get properties from XML, or use defaults
-            bool bEmitOnDownPress = true;
-            if (selectNodeQString(con, "EmitOnDownPress").contains("false",Qt::CaseInsensitive))
-                bEmitOnDownPress = false;
-
-            bool connectValueFromWidget = true;
-            if (selectNodeQString(con, "ConnectValueFromWidget").contains("false",Qt::CaseInsensitive))
-                connectValueFromWidget = false;
-
-            bool connectValueToWidget = true;
-            if (selectNodeQString(con, "ConnectValueToWidget").contains("false",Qt::CaseInsensitive))
-                connectValueToWidget = false;
-
-            Qt::MouseButton state = Qt::NoButton;
-            if (!selectNode(con, "ButtonState").isNull())
-            {
-	      if (selectNodeQString(con, "ButtonState").contains("LeftButton", Qt::CaseInsensitive))
-                    state = Qt::LeftButton;
-	      else if (selectNodeQString(con, "ButtonState").contains("RightButton", Qt::CaseInsensitive))
-                    state = Qt::RightButton;
-            }
-
-            // Connect control proxy to widget
-            (new ControlObjectThreadWidget(control))->setWidget(this, connectValueFromWidget, connectValueToWidget, bEmitOnDownPress, state);
-
-            // Add keyboard shortcut info to tooltip string
-            QString shortcut = QString("\nShortcut: %1").arg(m_spKbdConfigObject->getValueString(configKey));
-            if (!m_spKbdConfigObject->getValueString(configKey).isEmpty() && !m_Tooltip.contains(shortcut,Qt::CaseInsensitive))
-                m_Tooltip += shortcut;
-        }
-        con = con.nextSibling();
-    }
-
 }
 
 void WWidget::setValue(double fValue)

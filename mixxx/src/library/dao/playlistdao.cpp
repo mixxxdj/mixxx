@@ -145,6 +145,61 @@ void PlaylistDAO::deletePlaylist(int playlistId)
     //TODO: Crap, we need to shuffle the positions of all the playlists?
 }
 
+
+void PlaylistDAO::renamePlaylist(int playlistId, const QString& newName) {
+    m_database.transaction();
+    QSqlQuery query(m_database);
+    query.prepare("UPDATE Playlists SET name = :name WHERE id = :id");
+    query.bindValue(":name", newName);
+    query.bindValue(":id", playlistId);
+
+    if (!query.exec()) {
+        qDebug() << query.executedQuery() << query.lastError();
+        m_database.rollback();
+    }
+    else {
+        m_database.commit();
+    }
+}
+
+
+bool PlaylistDAO::setPlaylistLocked(int playlistId, bool locked) {
+    // SQLite3 doesn't support boolean value. Using integer instead.
+    int lock = locked ? 1 : 0;
+
+    Q_ASSERT(m_database.transaction());
+    QSqlQuery query;
+    query.prepare("UPDATE Playlists SET locked = :lock WHERE id = :id");
+    query.bindValue(":lock", lock);
+    query.bindValue(":id", playlistId);
+
+    if (!query.exec()) {
+        qDebug() << query.executedQuery() << query.lastError();
+        Q_ASSERT(m_database.rollback());
+        return false;
+    }
+
+    Q_ASSERT(m_database.commit());
+    return true;
+}
+
+bool PlaylistDAO::isPlaylistLocked(int playlistId) {
+    QSqlQuery query;
+    query.prepare("SELECT locked FROM Playlists WHERE id = :id");
+    query.bindValue(":id", playlistId);
+
+    if (query.exec()) {
+        if (query.next()) {
+            int lockValue = query.value(0).toInt();
+            return lockValue == 1;
+        }
+    } else {
+        qDebug() << query.lastError();
+    }
+
+    return false;
+}
+
 /** Append a track to a playlist */
 void PlaylistDAO::appendTrackToPlaylist(int trackId, int playlistId)
 {

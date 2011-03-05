@@ -18,12 +18,27 @@
 #include "trackinfoobject.h"
 
 WaveformRenderSignal::WaveformRenderSignal(const char* group, WaveformRenderer *parent)
-        : m_pParent(parent),
-          m_iWidth(0),
-          m_iHeight(0),
-          m_lines(0),
-          m_pTrack(NULL),
-          signalColor(255,255,255) {
+  : m_pParent(parent),
+    m_iWidth(0),
+    m_iHeight(0),
+    m_fGain(1),
+    m_lines(0),
+    m_pTrack(NULL),
+
+    signalColor(255,255,255) {
+
+    m_pGain = new ControlObjectThreadMain(
+        ControlObject::getControl(ConfigKey(group, "total_gain")));
+    if(m_pGain != NULL) {
+        connect(m_pGain, SIGNAL(valueChanged(double)),
+                this, SLOT(slotUpdateGain(double)));
+    }
+}
+
+WaveformRenderSignal::~WaveformRenderSignal() {
+    if(m_pGain)
+        delete m_pGain;
+    m_pGain = NULL;
 }
 
 void WaveformRenderSignal::resize(int w, int h) {
@@ -35,10 +50,15 @@ void WaveformRenderSignal::newTrack(TrackPointer pTrack) {
     m_pTrack = pTrack;
 }
 
+void WaveformRenderSignal::slotUpdateGain(double v) {
+    m_fGain = v;
+}
+
 void WaveformRenderSignal::setup(QDomNode node) {
     signalColor.setNamedColor(WWidget::selectNodeQString(node, "SignalColor"));
     signalColor = WSkinColor::getCorrectColor(signalColor);
 }
+
 
 void WaveformRenderSignal::draw(QPainter *pPainter, QPaintEvent *event, QVector<float> *buffer, double dPlayPos, double rateAdjust) {
     if(buffer == NULL)
@@ -74,11 +94,10 @@ void WaveformRenderSignal::draw(QPainter *pPainter, QPaintEvent *event, QVector<
         // Start at curPos minus half the waveform viewer
         int thisIndex = iCurPos+2*(i-halfw);
         if(thisIndex >= 0 && (thisIndex+1) < numBufferSamples) {
-            float sampl = baseBuffer[thisIndex];
-            float sampr = baseBuffer[thisIndex+1];
+            float sampl = baseBuffer[thisIndex] * m_fGain * m_iHeight * 0.5f;
+            float sampr = -baseBuffer[thisIndex+1] * m_fGain * m_iHeight * 0.5f;
             const qreal xPos = i/subpixelsPerPixel;
-            m_lines[i].setLine(xPos, -sampr*0.40*m_iHeight,
-                               xPos, sampl*0.40*m_iHeight);
+            m_lines[i].setLine(xPos, sampr, xPos, sampl);
         } else {
             m_lines[i].setLine(0,0,0,0);
         }
@@ -88,4 +107,5 @@ void WaveformRenderSignal::draw(QPainter *pPainter, QPaintEvent *event, QVector<
     pPainter->drawLines(m_lines.data(), subpixelWidth);
 
     pPainter->restore();
+
 }

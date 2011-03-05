@@ -8,15 +8,17 @@
 #include <QVBoxLayout>
 #include <QLabel>
 #include <QGridLayout>
+#include <QMutexLocker>
 
 #include "controlobject.h"
 #include "controlobjectthreadwidget.h"
 
 #include "mixxxkeyboard.h"
 #include "playermanager.h"
-#include "player.h"
+#include "basetrackplayer.h"
 #include "library/library.h"
 #include "waveformviewerfactory.h"
+#include "xmlparse.h"
 
 #include "skin/legacyskinparser.h"
 #include "skin/colorschemeparser.h"
@@ -49,7 +51,8 @@
 #include "widget/wskincolor.h"
 #include "widget/wpixmapstore.h"
 
-
+QList<const char*> LegacySkinParser::s_channelStrs;
+QMutex LegacySkinParser::s_safeStringMutex;
 
 LegacySkinParser::LegacySkinParser(ConfigObject<ConfigValue>* pConfig,
                                    MixxxKeyboard* pKeyboard,
@@ -58,12 +61,12 @@ LegacySkinParser::LegacySkinParser(ConfigObject<ConfigValue>* pConfig,
         : m_pConfig(pConfig),
           m_pKeyboard(pKeyboard),
           m_pPlayerManager(pPlayerManager),
-          m_pLibrary(pLibrary) {
+          m_pLibrary(pLibrary),
+          m_pParent(NULL) {
 
 }
 
 LegacySkinParser::~LegacySkinParser() {
-
 }
 
 bool LegacySkinParser::canParse(QString skinPath) {
@@ -120,13 +123,24 @@ QList<QString> LegacySkinParser::getSchemeList(QString qSkinPath) {
         QDomNode sch = colsch.firstChild();
 
         while (!sch.isNull()) {
-            QString thisname = WWidget::selectNodeQString(sch, "Name");
+            QString thisname = XmlParse::selectNodeQString(sch, "Name");
             schlist.append(thisname);
             sch = sch.nextSibling();
         }
     }
 
     return schlist;
+}
+
+// static
+void LegacySkinParser::freeChannelStrings() {
+    QMutexLocker lock(&s_safeStringMutex);
+    for (int i = 0; i < s_channelStrs.length(); ++i) {
+        if (s_channelStrs[i]) {
+            delete [] s_channelStrs[i];
+        }
+        s_channelStrs[i] = NULL;
+    }
 }
 
 bool LegacySkinParser::compareConfigKeys(QDomNode node, QString key)
@@ -136,10 +150,10 @@ bool LegacySkinParser::compareConfigKeys(QDomNode node, QString key)
     // Loop over each <Connection>, check if it's ConfigKey matches key
     while (!n.isNull())
     {
-        n = WWidget::selectNode(n, "Connection");
+        n = XmlParse::selectNode(n, "Connection");
         if (!n.isNull())
         {
-            if  (WWidget::selectNodeQString(n, "ConfigKey").contains(key))
+            if  (XmlParse::selectNodeQString(n, "ConfigKey").contains(key))
                 return true;
         }
     }
@@ -159,6 +173,18 @@ void LegacySkinParser::setControlDefaults(QDomNode node, WAbstractControl* pCont
 }
 
 QWidget* LegacySkinParser::parseSkin(QString skinPath, QWidget* pParent) {
+    Q_ASSERT(!m_pParent);
+    /*
+     * Long explaination because this took too long to figure:
+     * Parent all the mixxx widgets (subclasses of wwidget) to
+     * some anonymous QWidget (this was MixxxView in <=1.8, MixxxView
+     * was a subclass of QWidget), and then feed its parent to the background
+     * tag parser. The background tag parser does stuff to the anon widget, as
+     * everything else does, but then it colors the parent widget with some
+     * color that shows itself in fullscreen. Having all these mixxx widgets
+     * with their own means they're easy to move to boot -- bkgood
+     */
+    m_pParent = new QWidget; // this'll get deleted with pParent
     QDomElement skinDocument = openSkin(skinPath);
 
     if (skinDocument.isNull()) {
@@ -169,11 +195,20 @@ QWidget* LegacySkinParser::parseSkin(QString skinPath, QWidget* pParent) {
 
     ColorSchemeParser::setupLegacyColorSchemes(skinDocument, m_pConfig);
 
-    return parseNode(skinDocument, pParent);
+    QStringList skinPaths(skinPath);
+    QDir::setSearchPaths("skin", skinPaths);
+
+    // don't parent till here so the first opengl waveform doesn't screw
+    // up --bkgood
+    // I'm disregarding this return value because I want to return the
+    // created parent so MixxxApp can use it for nefarious purposes (
+    // fullscreen mostly) --bkgood
+    parseNode(skinDocument, pParent);
+    m_pParent->setParent(pParent);
+    return m_pParent;
 }
 
-
-QWidget* LegacySkinParser::parseNode(QDomElement node, QWidget* pParent) {
+QWidget* LegacySkinParser::parseNode(QDomElement node, QWidget *pGrandparent) {
     QString nodeName = node.nodeName();
     //qDebug() << "parseNode" << node.nodeName();
 
@@ -183,41 +218,43 @@ QWidget* LegacySkinParser::parseNode(QDomElement node, QWidget* pParent) {
 
     // TODO(rryan) replace with a map to function pointers?
     if (nodeName == "Background") {
-        return parseBackground(node, pParent);
+        return parseBackground(node, pGrandparent);
     } else if (nodeName == "SliderComposed") {
-        return parseSliderComposed(node, pParent);
+        return parseSliderComposed(node);
     } else if (nodeName == "PushButton") {
-        return parsePushButton(node, pParent);
+        return parsePushButton(node);
     } else if (nodeName == "Overview") {
-        return parseOverview(node, pParent);
+        return parseOverview(node);
     } else if (nodeName == "Visual") {
-        return parseVisual(node, pParent);
+        return parseVisual(node);
     } else if (nodeName == "Text") {
-        return parseText(node, pParent);
+        return parseText(node);
     } else if (nodeName == "TrackProperty") {
-        return parseTrackProperty(node, pParent);
+        return parseTrackProperty(node);
     } else if (nodeName == "VuMeter") {
-        return parseVuMeter(node, pParent);
+        return parseVuMeter(node);
     } else if (nodeName == "StatusLight") {
-        return parseStatusLight(node, pParent);
+        return parseStatusLight(node);
     } else if (nodeName == "Display") {
-        return parseDisplay(node, pParent);
+        return parseDisplay(node);
     } else if (nodeName == "NumberRate") {
-        return parseNumberRate(node, pParent);
+        return parseNumberRate(node);
     } else if (nodeName == "NumberPos") {
-        return parseNumberPos(node, pParent);
+        return parseNumberPos(node);
     } else if (nodeName == "NumberBpm") {
-        return parseNumberBpm(node, pParent);
+        return parseNumberBpm(node);
     } else if (nodeName == "Number") {
-        return parseNumber(node, pParent);
+        return parseNumber(node);
     } else if (nodeName == "Label") {
-        return parseLabel(node, pParent);
+        return parseLabel(node);
     } else if (nodeName == "Knob") {
-        return parseKnob(node, pParent);
+        return parseKnob(node);
     } else if (nodeName == "TableView") {
-        return parseTableView(node, pParent);
+        return parseTableView(node);
     } else if (nodeName == "WidgetGroup") {
-        return parseWidgetGroup(node, pParent);
+        return parseWidgetGroup(node);
+    } else if (nodeName == "Style") {
+        return parseStyle(node);
     }
 
     // Descend chilren, should only happen for the root node
@@ -227,36 +264,20 @@ QWidget* LegacySkinParser::parseNode(QDomElement node, QWidget* pParent) {
         QDomNode node = children.at(i);
 
         if (node.isElement()) {
-            parseNode(node.toElement(), pParent);
+            parseNode(node.toElement(), pGrandparent);
         }
     }
 
-    return pParent;
+    return pGrandparent;
 }
 
-QWidget* LegacySkinParser::parseWidgetGroup(QDomElement node, QWidget* pParent) {
-    QWidget* pGroup = new QGroupBox(pParent);
+QWidget* LegacySkinParser::parseWidgetGroup(QDomElement node) {
+    QWidget* pGroup = new QGroupBox(m_pParent);
 
-    // Position
-    if (!WWidget::selectNode(node, "Pos").isNull())
-    {
-        QString pos = WWidget::selectNodeQString(node, "Pos");
-        int x = pos.left(pos.indexOf(",")).toInt();
-        int y = pos.mid(pos.indexOf(",")+1).toInt();
-        pGroup->move(x,y);
-    }
+    setupWidget(node, pGroup);
 
-    // Size
-    if (!WWidget::selectNode(node, "Size").isNull())
-    {
-        QString size = WWidget::selectNodeQString(node, "Size");
-        int x = size.left(size.indexOf(",")).toInt();
-        int y = size.mid(size.indexOf(",")+1).toInt();
-        pGroup->setFixedSize(x,y);
-    }
-
-    if (!WWidget::selectNode(node, "Layout").isNull()) {
-        QString layout = WWidget::selectNodeQString(node, "Layout");
+    if (!XmlParse::selectNode(node, "Layout").isNull()) {
+        QString layout = XmlParse::selectNodeQString(node, "Layout");
         if (layout == "vertical") {
 
         } else if (layout == "horizontal") {
@@ -264,7 +285,7 @@ QWidget* LegacySkinParser::parseWidgetGroup(QDomElement node, QWidget* pParent) 
         }
     }
 
-    QDomNode childrenNode = WWidget::selectNode(node, "Children");
+    QDomNode childrenNode = XmlParse::selectNode(node, "Children");
     if (!childrenNode.isNull()) {
         // Descend chilren
         QDomNodeList children = childrenNode.childNodes();
@@ -281,69 +302,79 @@ QWidget* LegacySkinParser::parseWidgetGroup(QDomElement node, QWidget* pParent) 
     return pGroup;
 }
 
-QWidget* LegacySkinParser::parseBackground(QDomElement node, QWidget* pParent) {
-    QLabel* bg = new QLabel(pParent);
+QWidget* LegacySkinParser::parseBackground(QDomElement node, QWidget* pGrandparent) {
+    QLabel* bg = new QLabel(m_pParent);
 
-    QString filename = WWidget::selectNodeQString(node, "Path");
+    QString filename = XmlParse::selectNodeQString(node, "Path");
     QPixmap* background = WPixmapStore::getPixmapNoCache(WWidget::getPath(filename));
 
     bg->move(0, 0);
-    if (background != NULL)
+    if (background != NULL) {
         bg->setPixmap(*background);
+    }
+
     bg->lower();
 
-    pParent->move(0,0);
-    pParent->setFixedSize(background->width(), background->height());
-		pParent->setMinimumSize(background->width(), background->height());
+    // yes, this is confusing. Sorry. See ::parseSkin.
+    m_pParent->move(0,0);
+    if (background != NULL) {
+        m_pParent->setFixedSize(background->width(), background->height());
+        pGrandparent->setMinimumSize(background->width(), background->height());
+    }
 
     QColor c(0,0,0); // Default background color is now black, if people want to do <invert/> filters they'll have to figure something out for this.
-    if (!WWidget::selectNode(node, "BgColor").isNull()) {
-        c.setNamedColor(WWidget::selectNodeQString(node, "BgColor"));
+    if (!XmlParse::selectNode(node, "BgColor").isNull()) {
+        c.setNamedColor(XmlParse::selectNodeQString(node, "BgColor"));
     }
 
     QPalette palette;
     palette.setBrush(QPalette::Window, WSkinColor::getCorrectColor(c));
-    pParent->setBackgroundRole(QPalette::Window);
-    pParent->setPalette(palette);
-    pParent->setAutoFillBackground(true);
+    pGrandparent->setBackgroundRole(QPalette::Window);
+    pGrandparent->setPalette(palette);
+    pGrandparent->setAutoFillBackground(true);
+
+    // WPixmapStore::getPixmapNoCache() allocated background and gave us
+    // ownership. QLabel::setPixmap makes a copy, so we have to delete this.
+    delete background;
 
     return bg;
 }
 
-QWidget* LegacySkinParser::parsePushButton(QDomElement node, QWidget* pParent) {
-    WPushButton* p = new WPushButton(pParent);
+QWidget* LegacySkinParser::parsePushButton(QDomElement node) {
+    WPushButton* p = new WPushButton(m_pParent);
+    setupWidget(node, p);
     p->setup(node);
+    setupConnections(node, p);
     p->installEventFilter(m_pKeyboard);
     return p;
 }
 
-QWidget* LegacySkinParser::parseSliderComposed(QDomElement node, QWidget* pParent) {
-    WSliderComposed* p = new WSliderComposed(pParent);
+QWidget* LegacySkinParser::parseSliderComposed(QDomElement node) {
+    WSliderComposed* p = new WSliderComposed(m_pParent);
+    setupWidget(node, p);
     p->setup(node);
+    setupConnections(node, p);
     p->installEventFilter(m_pKeyboard);
     setControlDefaults(node, p);
     return p;
 }
 
-QWidget* LegacySkinParser::parseOverview(QDomElement node, QWidget* pParent) {
-    int channel = WWidget::selectNodeInt(node, "Channel");
-    QString channelStr = QString("[Channel%1]").arg(channel);
+QWidget* LegacySkinParser::parseOverview(QDomElement node) {
+    QString channelStr = lookupNodeGroup(node);
 
-    // TODO(XXX) This is a memory leak, but it's tiny. We have to do this for
-    // now while everything expects groups as const char* because otherwise
-    // we'll be providing a pointer to QString's internal memory, which might
-    // get free'd at some point.
-    const char* pSafeChannelStr = strdup(channelStr.toAscii().constData());
+    const char* pSafeChannelStr = safeChannelString(channelStr);
 
-    Player* pPlayer = m_pPlayerManager->getPlayer(channel);
+    BaseTrackPlayer* pPlayer = m_pPlayerManager->getPlayer(channelStr);
 
     if (pPlayer == NULL)
         return NULL;
 
-    WOverview* p = new WOverview(pSafeChannelStr, pParent);
-    p->installEventFilter(m_pKeyboard);
+    WOverview* p = new WOverview(pSafeChannelStr, m_pParent);
 
+    setupWidget(node, p);
     p->setup(node);
+    setupConnections(node, p);
+    p->installEventFilter(m_pKeyboard);
 
     // Connect the player's load and unload signals to the overview widget.
     connect(pPlayer, SIGNAL(newTrackLoaded(TrackPointer)),
@@ -351,19 +382,19 @@ QWidget* LegacySkinParser::parseOverview(QDomElement node, QWidget* pParent) {
     connect(pPlayer, SIGNAL(unloadingTrack(TrackPointer)),
             p, SLOT(slotUnloadTrack(TrackPointer)));
 
+    TrackPointer pTrack = pPlayer->getLoadedTrack();
+    if (pTrack) {
+        p->slotLoadNewWaveform(pTrack);
+    }
+
     return p;
 }
 
-QWidget* LegacySkinParser::parseVisual(QDomElement node, QWidget* pParent) {
-    int channel = WWidget::selectNodeInt(node, "Channel");
-    QString channelStr = QString("[Channel%1]").arg(channel);
-    Player* pPlayer = m_pPlayerManager->getPlayer(channel);
+QWidget* LegacySkinParser::parseVisual(QDomElement node) {
+    QString channelStr = lookupNodeGroup(node);
+    BaseTrackPlayer* pPlayer = m_pPlayerManager->getPlayer(channelStr);
 
-    // TODO(XXX) This is a memory leak, but it's tiny. We have to do this for
-    // now while everything expects groups as const char* because otherwise
-    // we'll be providing a pointer to QString's internal memory, which might
-    // get free'd at some point.
-    const char* pSafeChannelStr = strdup(channelStr.toAscii().constData());
+    const char* pSafeChannelStr = safeChannelString(channelStr);
 
     if (pPlayer == NULL)
         return NULL;
@@ -372,7 +403,7 @@ QWidget* LegacySkinParser::parseVisual(QDomElement node, QWidget* pParent) {
 
     WaveformViewerType type;
     QWidget* widget = NULL;
-    type = WaveformViewerFactory::createWaveformViewer(pSafeChannelStr, pParent,
+    type = WaveformViewerFactory::createWaveformViewer(pSafeChannelStr, m_pParent,
                                                        m_pConfig, &widget, pWaveformRenderer);
     widget->installEventFilter(m_pKeyboard);
 
@@ -382,6 +413,7 @@ QWidget* LegacySkinParser::parseVisual(QDomElement node, QWidget* pParent) {
 
     p->setWidget((QWidget *)widget, true, true, true, Qt::LeftButton);
 
+    setupWidget(node, widget);
     if (type == WAVEFORM_GL) {
         ((WGLWaveformViewer*)widget)->setup(node);
     } else if (type == WAVEFORM_WIDGET) {
@@ -389,6 +421,7 @@ QWidget* LegacySkinParser::parseVisual(QDomElement node, QWidget* pParent) {
     } else if (type == WAVEFORM_SIMPLE) {
         ((WVisualSimple*)widget)->setup(node);
     }
+    setupConnections(node, widget);
 
     connect(widget, SIGNAL(trackDropped(QString, QString)),
             m_pPlayerManager, SLOT(slotLoadToPlayer(QString, QString)));
@@ -396,80 +429,96 @@ QWidget* LegacySkinParser::parseVisual(QDomElement node, QWidget* pParent) {
     return widget;
 }
 
-QWidget* LegacySkinParser::parseText(QDomElement node, QWidget* pParent) {
-    int channel = WWidget::selectNodeInt(node, "Channel");
-    QString channelStr = QString("[Channel%1]").arg(channel);
+QWidget* LegacySkinParser::parseText(QDomElement node) {
+    QString channelStr = lookupNodeGroup(node);
 
-    Player* pPlayer = m_pPlayerManager->getPlayer(channel);
+    BaseTrackPlayer* pPlayer = m_pPlayerManager->getPlayer(channelStr);
 
     if (!pPlayer)
         return NULL;
 
-    WTrackText* p = new WTrackText(pParent);
+    WTrackText* p = new WTrackText(m_pParent);
+    setupWidget(node, p);
     p->setup(node);
+    setupConnections(node, p);
     p->installEventFilter(m_pKeyboard);
 
     connect(pPlayer, SIGNAL(newTrackLoaded(TrackPointer)),
             p, SLOT(slotTrackLoaded(TrackPointer)));
     connect(pPlayer, SIGNAL(unloadingTrack(TrackPointer)),
             p, SLOT(slotTrackUnloaded(TrackPointer)));
+
+    TrackPointer pTrack = pPlayer->getLoadedTrack();
+    if (pTrack) {
+        p->slotTrackLoaded(pTrack);
+    }
+
     return p;
 }
 
-QWidget* LegacySkinParser::parseTrackProperty(QDomElement node, QWidget* pParent) {
-    int channel = WWidget::selectNodeInt(node, "Channel");
-    QString channelStr = QString("[Channel%1]").arg(channel);
+QWidget* LegacySkinParser::parseTrackProperty(QDomElement node) {
+    QString channelStr = lookupNodeGroup(node);
 
-    Player* pPlayer = m_pPlayerManager->getPlayer(channel);
+
+    BaseTrackPlayer* pPlayer = m_pPlayerManager->getPlayer(channelStr);
 
     if (!pPlayer)
         return NULL;
 
-    WTrackProperty* p = new WTrackProperty(pParent);
+    WTrackProperty* p = new WTrackProperty(m_pParent);
+    setupWidget(node, p);
     p->setup(node);
+    setupConnections(node, p);
     p->installEventFilter(m_pKeyboard);
 
     connect(pPlayer, SIGNAL(newTrackLoaded(TrackPointer)),
             p, SLOT(slotTrackLoaded(TrackPointer)));
     connect(pPlayer, SIGNAL(unloadingTrack(TrackPointer)),
             p, SLOT(slotTrackUnloaded(TrackPointer)));
+
+    TrackPointer pTrack = pPlayer->getLoadedTrack();
+    if (pTrack) {
+        p->slotTrackLoaded(pTrack);
+    }
+
     return p;
 }
 
-QWidget* LegacySkinParser::parseVuMeter(QDomElement node, QWidget* pParent) {
-    WVuMeter * p = new WVuMeter(pParent);
+QWidget* LegacySkinParser::parseVuMeter(QDomElement node) {
+    WVuMeter * p = new WVuMeter(m_pParent);
+    setupWidget(node, p);
     p->setup(node);
+    setupConnections(node, p);
     p->installEventFilter(m_pKeyboard);
     return p;
 }
 
-QWidget* LegacySkinParser::parseStatusLight(QDomElement node, QWidget* pParent) {
-    WStatusLight * p = new WStatusLight(pParent);
+QWidget* LegacySkinParser::parseStatusLight(QDomElement node) {
+    WStatusLight * p = new WStatusLight(m_pParent);
+    setupWidget(node, p);
     p->setup(node);
+    setupConnections(node, p);
     p->installEventFilter(m_pKeyboard);
     return p;
 }
 
-QWidget* LegacySkinParser::parseDisplay(QDomElement node, QWidget* pParent) {
-    WDisplay * p = new WDisplay(pParent);
+QWidget* LegacySkinParser::parseDisplay(QDomElement node) {
+    WDisplay * p = new WDisplay(m_pParent);
+    setupWidget(node, p);
     p->setup(node);
+    setupConnections(node, p);
     p->installEventFilter(m_pKeyboard);
     return p;
 }
 
-QWidget* LegacySkinParser::parseNumberRate(QDomElement node, QWidget* pParent) {
-    int channel = WWidget::selectNodeInt(node, "Channel");
-    QString channelStr = QString("[Channel%1]").arg(channel);
+QWidget* LegacySkinParser::parseNumberRate(QDomElement node) {
+    QString channelStr = lookupNodeGroup(node);
 
-    // TODO(XXX) This is a memory leak, but it's tiny. We have to do this for
-    // now while everything expects groups as const char* because otherwise
-    // we'll be providing a pointer to QString's internal memory, which might
-    // get free'd at some point.
-    const char* pSafeChannelStr = strdup(channelStr.toAscii().constData());
+    const char* pSafeChannelStr = safeChannelString(channelStr);
 
     QColor c(255,255,255);
-    if (!WWidget::selectNode(node, "BgColor").isNull()) {
-        c.setNamedColor(WWidget::selectNodeQString(node, "BgColor"));
+    if (!XmlParse::selectNode(node, "BgColor").isNull()) {
+        c.setNamedColor(XmlParse::selectNodeQString(node, "BgColor"));
     }
 
     QPalette palette;
@@ -477,47 +526,43 @@ QWidget* LegacySkinParser::parseNumberRate(QDomElement node, QWidget* pParent) {
     palette.setBrush(QPalette::Button, Qt::NoBrush);
 
 
-    WNumberRate * p = new WNumberRate(pSafeChannelStr, pParent);
+    WNumberRate * p = new WNumberRate(pSafeChannelStr, m_pParent);
+    setupWidget(node, p);
     p->setup(node);
+    setupConnections(node, p);
     p->installEventFilter(m_pKeyboard);
     p->setPalette(palette);
 
     return p;
 }
 
-QWidget* LegacySkinParser::parseNumberPos(QDomElement node, QWidget* pParent) {
-    int channel = WWidget::selectNodeInt(node, "Channel");
-    QString channelStr = QString("[Channel%1]").arg(channel);
+QWidget* LegacySkinParser::parseNumberPos(QDomElement node) {
+    QString channelStr = lookupNodeGroup(node);
 
-    // TODO(XXX) This is a memory leak, but it's tiny. We have to do this for
-    // now while everything expects groups as const char* because otherwise
-    // we'll be providing a pointer to QString's internal memory, which might
-    // get free'd at some point.
-    const char* pSafeChannelStr = strdup(channelStr.toAscii().constData());
+    const char* pSafeChannelStr = safeChannelString(channelStr);
 
-    WNumberPos* p = new WNumberPos(pSafeChannelStr, pParent);
+    WNumberPos* p = new WNumberPos(pSafeChannelStr, m_pParent);
     p->installEventFilter(m_pKeyboard);
+    setupWidget(node, p);
     p->setup(node);
+    setupConnections(node, p);
     return p;
 }
 
-QWidget* LegacySkinParser::parseNumberBpm(QDomElement node, QWidget* pParent) {
-    int channel = WWidget::selectNodeInt(node, "Channel");
-    QString channelStr = QString("[Channel%1]").arg(channel);
+QWidget* LegacySkinParser::parseNumberBpm(QDomElement node) {
+    QString channelStr = lookupNodeGroup(node);
 
-    // TODO(XXX) This is a memory leak, but it's tiny. We have to do this for
-    // now while everything expects groups as const char* because otherwise
-    // we'll be providing a pointer to QString's internal memory, which might
-    // get free'd at some point.
-    const char* pSafeChannelStr = strdup(channelStr.toAscii().constData());
+    const char* pSafeChannelStr = safeChannelString(channelStr);
 
-    Player* pPlayer = m_pPlayerManager->getPlayer(channel);
+    BaseTrackPlayer* pPlayer = m_pPlayerManager->getPlayer(channelStr);
 
     if (!pPlayer)
         return NULL;
 
-    WNumberBpm * p = new WNumberBpm(pSafeChannelStr, pParent);
+    WNumberBpm * p = new WNumberBpm(pSafeChannelStr, m_pParent);
+    setupWidget(node, p);
     p->setup(node);
+    setupConnections(node, p);
     p->installEventFilter(m_pKeyboard);
 
     connect(pPlayer, SIGNAL(newTrackLoaded(TrackPointer)),
@@ -525,47 +570,58 @@ QWidget* LegacySkinParser::parseNumberBpm(QDomElement node, QWidget* pParent) {
     connect(pPlayer, SIGNAL(unloadingTrack(TrackPointer)),
             p, SLOT(slotTrackUnloaded(TrackPointer)));
 
+    TrackPointer pTrack = pPlayer->getLoadedTrack();
+    if (pTrack) {
+        p->slotTrackLoaded(pTrack);
+    }
+
     return p;
 }
 
-QWidget* LegacySkinParser::parseNumber(QDomElement node, QWidget* pParent) {
-    WNumber* p = new WNumber(pParent);
+QWidget* LegacySkinParser::parseNumber(QDomElement node) {
+    WNumber* p = new WNumber(m_pParent);
+    setupWidget(node, p);
     p->setup(node);
+    setupConnections(node, p);
     p->installEventFilter(m_pKeyboard);
     return p;
 }
 
-QWidget* LegacySkinParser::parseLabel(QDomElement node, QWidget* pParent) {
-    WLabel * p = new WLabel(pParent);
+QWidget* LegacySkinParser::parseLabel(QDomElement node) {
+    WLabel * p = new WLabel(m_pParent);
+    setupWidget(node, p);
     p->setup(node);
+    setupConnections(node, p);
     p->installEventFilter(m_pKeyboard);
     return p;
 }
 
-QWidget* LegacySkinParser::parseKnob(QDomElement node, QWidget* pParent) {
-    WKnob * p = new WKnob(pParent);
+QWidget* LegacySkinParser::parseKnob(QDomElement node) {
+    WKnob * p = new WKnob(m_pParent);
+    setupWidget(node, p);
     p->setup(node);
+    setupConnections(node, p);
     p->installEventFilter(m_pKeyboard);
     setControlDefaults(node, p);
     return p;
 }
 
-QWidget* LegacySkinParser::parseTableView(QDomElement node, QWidget* pParent) {
-    QStackedWidget* pTabWidget = new QStackedWidget(pParent);
+QWidget* LegacySkinParser::parseTableView(QDomElement node) {
+    QStackedWidget* pTabWidget = new QStackedWidget(m_pParent);
 
     // Position
-    if (!WWidget::selectNode(node, "Pos").isNull())
+    if (!XmlParse::selectNode(node, "Pos").isNull())
     {
-        QString pos = WWidget::selectNodeQString(node, "Pos");
+        QString pos = XmlParse::selectNodeQString(node, "Pos");
         int x = pos.left(pos.indexOf(",")).toInt();
         int y = pos.mid(pos.indexOf(",")+1).toInt();
         pTabWidget->move(x,y);
     }
 
     // Size
-    if (!WWidget::selectNode(node, "Size").isNull())
+    if (!XmlParse::selectNode(node, "Size").isNull())
     {
-        QString size = WWidget::selectNodeQString(node, "Size");
+        QString size = XmlParse::selectNodeQString(node, "Size");
         int x = size.left(size.indexOf(",")).toInt();
         int y = size.mid(size.indexOf(",")+1).toInt();
         pTabWidget->setFixedSize(x,y);
@@ -633,7 +689,7 @@ QWidget* LegacySkinParser::parseTableView(QDomElement node, QWidget* pParent) {
 
     pTabWidget->addWidget(pLibraryPage);
 
-    QString style = WWidget::selectNodeQString(node, "Style");
+    QString style = XmlParse::selectNodeQString(node, "Style");
 
     // Workaround to support legacy color styling
     QColor color(0,0,0);
@@ -653,8 +709,8 @@ QWidget* LegacySkinParser::parseTableView(QDomElement node, QWidget* pParent) {
 
     QString styleHack = "";
 
-    if (!WWidget::selectNode(node, "FgColor").isNull()) {
-        color.setNamedColor(WWidget::selectNodeQString(node, "FgColor"));
+    if (!XmlParse::selectNode(node, "FgColor").isNull()) {
+        color.setNamedColor(XmlParse::selectNodeQString(node, "FgColor"));
         color = WSkinColor::getCorrectColor(color);
 
         if (hasQtKickedUsInTheNuts) {
@@ -672,8 +728,8 @@ QWidget* LegacySkinParser::parseTableView(QDomElement node, QWidget* pParent) {
         styleHack.append(QString("QRadioButton { color: %1; }\n ").arg(color.name()));
     }
 
-    if (!WWidget::selectNode(node, "BgColor").isNull()) {
-        color.setNamedColor(WWidget::selectNodeQString(node, "BgColor"));
+    if (!XmlParse::selectNode(node, "BgColor").isNull()) {
+        color.setNamedColor(XmlParse::selectNodeQString(node, "BgColor"));
         color = WSkinColor::getCorrectColor(color);
         if (hasQtKickedUsInTheNuts) {
             styleHack.append(QString("QTreeView {  background-color: %1; }\n ").arg(color.name()));
@@ -690,8 +746,9 @@ QWidget* LegacySkinParser::parseTableView(QDomElement node, QWidget* pParent) {
             // disappears when we do background-color. I suspect they use
             // background-image instead of border-image, against their own
             // documentation's recommendation.
-
-            // styleHack.append(QString("QTreeView::branch:has-children {  background-color: %1; }\n ").arg(color.name()));
+            // EDIT: Un-commented next line cause it works if we use custom images as triangle,
+            // see https://bugs.launchpad.net/mixxx/+bug/690280 --jus 12/2010
+            styleHack.append(QString("QTreeView::branch:has-children {  background-color: %1; }\n ").arg(color.name()));
         } else {
             styleHack.append(QString("WLibraryTableView {  background-color: %1; }\n ").arg(color.name()));
             styleHack.append(QString("WLibrarySidebar {  background-color: %1; }\n ").arg(color.name()));
@@ -701,8 +758,8 @@ QWidget* LegacySkinParser::parseTableView(QDomElement node, QWidget* pParent) {
         styleHack.append(QString("QTextBrowser {  background-color: %1; }\n ").arg(color.name()));
     }
 
-    if (!WWidget::selectNode(node, "BgColorRowEven").isNull()) {
-        color.setNamedColor(WWidget::selectNodeQString(node, "BgColorRowEven"));
+    if (!XmlParse::selectNode(node, "BgColorRowEven").isNull()) {
+        color.setNamedColor(XmlParse::selectNodeQString(node, "BgColorRowEven"));
         color = WSkinColor::getCorrectColor(color);
 
         if (hasQtKickedUsInTheNuts) {
@@ -712,8 +769,8 @@ QWidget* LegacySkinParser::parseTableView(QDomElement node, QWidget* pParent) {
         }
     }
 
-    if (!WWidget::selectNode(node, "BgColorRowUneven").isNull()) {
-        color.setNamedColor(WWidget::selectNodeQString(node, "BgColorRowUneven"));
+    if (!XmlParse::selectNode(node, "BgColorRowUneven").isNull()) {
+        color.setNamedColor(XmlParse::selectNodeQString(node, "BgColorRowUneven"));
         color = WSkinColor::getCorrectColor(color);
 
         if (hasQtKickedUsInTheNuts) {
@@ -728,4 +785,137 @@ QWidget* LegacySkinParser::parseTableView(QDomElement node, QWidget* pParent) {
     pTabWidget->setStyleSheet(style);
 
     return pTabWidget;
+}
+
+QString LegacySkinParser::lookupNodeGroup(QDomElement node) {
+    QString group = XmlParse::selectNodeQString(node, "Group");
+
+    // If the group is not present, then check for a Channel, since legacy skins
+    // will specify the channel as either 1 or 2.
+    if (group.size() == 0) {
+        int channel = XmlParse::selectNodeInt(node, "Channel");
+        group = QString("[Channel%1]").arg(channel);
+    }
+
+    return group;
+}
+
+// static
+const char* LegacySkinParser::safeChannelString(QString channelStr) {
+    QMutexLocker lock(&s_safeStringMutex);
+    foreach (const char *s, s_channelStrs) {
+        if (channelStr == s) { // calls QString::operator==(const char*)
+            return s;
+        }
+    }
+    QByteArray qba(channelStr.toAscii());
+    char *safe = new char[qba.size() + 1]; // +1 for \0
+    int i = 0;
+    while (safe[i] = qba[i]) ++i;
+    s_channelStrs.append(safe);
+    return safe;
+}
+
+QWidget* LegacySkinParser::parseStyle(QDomElement node) {
+    QString style = node.text();
+    m_pParent->setStyleSheet(style);
+    return m_pParent;
+}
+
+void LegacySkinParser::setupWidget(QDomNode node, QWidget* pWidget) {
+    // Position
+    if (!XmlParse::selectNode(node, "Pos").isNull())
+    {
+        QString pos = XmlParse::selectNodeQString(node, "Pos");
+        int x = pos.left(pos.indexOf(",")).toInt();
+        int y = pos.mid(pos.indexOf(",")+1).toInt();
+        pWidget->move(x,y);
+    }
+
+    // Size
+    if (!XmlParse::selectNode(node, "Size").isNull())
+    {
+        QString size = XmlParse::selectNodeQString(node, "Size");
+        int x = size.left(size.indexOf(",")).toInt();
+        int y = size.mid(size.indexOf(",")+1).toInt();
+        pWidget->setFixedSize(x,y);
+    }
+
+    // Tooltip
+    if (!XmlParse::selectNode(node, "Tooltip").isNull()) {
+        QString toolTip = XmlParse::selectNodeQString(node, "Tooltip");
+        pWidget->setToolTip(toolTip);
+    }
+
+    QString style = XmlParse::selectNodeQString(node, "Style");
+    if (style != "")
+        pWidget->setStyleSheet(style);
+
+}
+
+void LegacySkinParser::setupConnections(QDomNode node, QWidget* pWidget) {
+    // For each connection
+    QDomNode con = XmlParse::selectNode(node, "Connection");
+
+    while (!con.isNull())
+    {
+        // Get ConfigKey
+        QString key = XmlParse::selectNodeQString(con, "ConfigKey");
+
+        ConfigKey configKey = ConfigKey::parseCommaSeparated(key);
+
+        // Check that the control exists
+        ControlObject * control = ControlObject::getControl(configKey);
+
+        if (control == NULL) {
+            qWarning() << "Requested control does not exist:" << key;
+            con = con.nextSibling();
+            continue;
+        }
+
+        if (!XmlParse::selectNode(con, "OnOff").isNull() &&
+            XmlParse::selectNodeQString(con, "OnOff")=="true")
+        {
+            // Connect control proxy to widget
+            (new ControlObjectThreadWidget(control))->setWidgetOnOff(pWidget);
+        }
+        else
+        {
+            // Get properties from XML, or use defaults
+            bool bEmitOnDownPress = true;
+            if (XmlParse::selectNodeQString(con, "EmitOnDownPress").contains("false", Qt::CaseInsensitive))
+                bEmitOnDownPress = false;
+
+            bool connectValueFromWidget = true;
+            if (XmlParse::selectNodeQString(con, "ConnectValueFromWidget").contains("false", Qt::CaseInsensitive))
+                connectValueFromWidget = false;
+
+            bool connectValueToWidget = true;
+            if (XmlParse::selectNodeQString(con, "ConnectValueToWidget").contains("false", Qt::CaseInsensitive))
+                connectValueToWidget = false;
+
+            Qt::MouseButton state = Qt::NoButton;
+            if (!XmlParse::selectNode(con, "ButtonState").isNull())
+            {
+                if (XmlParse::selectNodeQString(con, "ButtonState").contains("LeftButton", Qt::CaseInsensitive))
+                    state = Qt::LeftButton;
+                else if (XmlParse::selectNodeQString(con, "ButtonState").contains("RightButton", Qt::CaseInsensitive))
+                    state = Qt::RightButton;
+            }
+
+            // Connect control proxy to widget
+            (new ControlObjectThreadWidget(control))->setWidget(
+                pWidget, connectValueFromWidget, connectValueToWidget,
+                bEmitOnDownPress, state);
+
+            // Add keyboard shortcut info to tooltip string
+            QString tooltip = pWidget->toolTip();
+            QString shortcut = m_pKeyboard->getKeyboardConfig()->getValueString(configKey);
+            if (!shortcut.isEmpty() && !tooltip.contains(shortcut, Qt::CaseInsensitive)) {
+                tooltip.append(QString("\nShortcut: %1").arg(shortcut));
+                pWidget->setToolTip(tooltip);
+            }
+        }
+        con = con.nextSibling();
+    }
 }

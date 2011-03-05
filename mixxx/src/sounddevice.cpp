@@ -109,12 +109,9 @@ void SoundDevice::clearOutputs()
 
 SoundDeviceError SoundDevice::addInput(const AudioInput &in)
 {
-    //Check if the input channels are already used
-    foreach (AudioInput myIn, m_audioInputs) {
-        if (in.channelsClash(myIn)) {
-            return SOUNDDEVICE_ERROR_DUPLICATE_INPUT_CHANNEL;
-        }
-    }
+    // DON'T check if the input channels are already used, there's no reason
+    // we can't send the same inputted samples to different places in mixxx.
+    // -- bkgood 20101108
     if (in.getChannelGroup().getChannelBase()
             + in.getChannelGroup().getChannelCount() > getNumInputChannels()) {
         return SOUNDDEVICE_ERROR_EXCESSIVE_INPUT_CHANNEL;

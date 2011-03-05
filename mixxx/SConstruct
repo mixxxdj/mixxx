@@ -33,6 +33,7 @@ toolchain = ARGUMENTS.get('toolchain', None)
 
 available_features = [features.HifiEq,
                       features.MIDIScript,
+                      features.HSS1394,
                       features.VinylControl,
                       features.Shoutcast,
                       features.Profiling,

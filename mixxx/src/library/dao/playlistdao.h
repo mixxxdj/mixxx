@@ -17,6 +17,12 @@ class PlaylistDAO : public virtual DAO {
     bool createPlaylist(QString name, bool hidden = false);
     /** Delete a playlist */
     void deletePlaylist(int playlistId);
+    /** Rename a playlist */
+    void renamePlaylist(int playlistId, const QString& newName);
+    /** Lock or unlock a playlist */
+    bool setPlaylistLocked(int playlistId, bool locked);
+    /** Find out the state of a playlist lock */
+    bool isPlaylistLocked(int playlistId);
     /** Append a track to a playlist */
     void appendTrackToPlaylist(int trackId, int playlistId);
     /** Find out how many playlists exist. */

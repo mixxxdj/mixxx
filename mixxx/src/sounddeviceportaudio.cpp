@@ -102,19 +102,12 @@ int SoundDevicePortAudio::open()
     if (m_dSampleRate <= 0) {
         m_dSampleRate = 44100.0f;
     }
-    qDebug() << "m_dSampleRate" << m_dSampleRate;
-
-    //XXX Workaround for PortAudio crashing when our samplerate doesn't match
-    //    the JACK samplerate:
-    if (m_hostAPI == MIXXX_PORTAUDIO_JACK_STRING) {
-        m_dSampleRate = m_deviceInfo->defaultSampleRate;
-        //Sure hope that's the right samplerate
-    }
+    qDebug() << "Requested sample rate:" << m_dSampleRate;
 
     //Get latency in milleseconds
     qDebug() << "framesPerBuffer:" << m_framesPerBuffer;
     double latencyMSec = m_framesPerBuffer / m_dSampleRate * 1000;
-    qDebug() << "latency in milliseconds:" << latencyMSec;
+    qDebug() << "Mixxx latency in milliseconds:" << latencyMSec;
 
     qDebug() << "output channels:" << m_outputParams.channelCount << "| input channels:"
         << m_inputParams.channelCount;
@@ -217,6 +210,12 @@ int SoundDevicePortAudio::open()
     }
     else
         qDebug() << "PortAudio: Started stream successfully";
+    
+    // Get the actual details of the stream & update Mixxx's data
+    const PaStreamInfo* streamDetails = Pa_GetStreamInfo(m_pStream);
+    m_dSampleRate = streamDetails->sampleRate;
+    latencyMSec = streamDetails->outputLatency*1000;
+    qDebug() << "Actual sample rate: " << m_dSampleRate << "Hz, latency:" << latencyMSec << "ms";
 
     //Update the samplerate and latency ControlObjects, which allow the waveform view to properly correct
     //for the latency.
@@ -226,15 +225,9 @@ int SoundDevicePortAudio::open()
     ControlObjectThreadMain* pControlObjectLatency =
         new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[Master]","latency")));
 
-    //The latency ControlObject value MUST BE ZERO, otherwise the waveform view gets out of whack.
-    //Yes, this is confusing. Fortunately, the latency ControlObject is ONLY used in the waveform view
-    //code. Here's my theory of what's happened: There's some code in the waveform view (visualbuffer.cpp) to
-    //adjust the waveform for the latency, so it always lines up perfectly with the audio. I don't think that
-    //code was ever properly finished though, which is why we need this hack. So, fixing the waveform code is
-    //a TODO:
-    pControlObjectLatency->slotSet(0);
-
+    pControlObjectLatency->slotSet(latencyMSec);
     pControlObjectSampleRate->slotSet(m_dSampleRate);
+
     //qDebug() << "SampleRate" << pControlObjectSampleRate->get();
     //qDebug() << "Latency" << pControlObjectLatency->get();
 
@@ -313,7 +306,7 @@ int SoundDevicePortAudio::callbackProcess(unsigned long framesPerBuffer, float *
 
     // Turn on TimeCritical priority for the callback thread. If we are running
     // in Linux userland, for example, this will have no effect.
-    if(!m_bSetThreadPriority) {
+    if (!m_bSetThreadPriority) {
         QThread::currentThread()->setPriority(QThread::TimeCriticalPriority);
         m_bSetThreadPriority = true;
     }
@@ -347,33 +340,40 @@ int SoundDevicePortAudio::callbackProcess(unsigned long framesPerBuffer, float *
     {
         assert(iFrameSize > 0);
         QHash<AudioOutput, const CSAMPLE*> outputAudio
-            = m_pSoundManager->requestBuffer(m_audioOutputs, framesPerBuffer);
+            = m_pSoundManager->requestBuffer(m_audioOutputs, framesPerBuffer, this, Pa_GetStreamTime(m_pStream));
 
-        //qDebug() << framesPerBuffer;
-
-        //Reset sample for each open channel
+        // Reset sample for each open channel
         memset(output, 0, framesPerBuffer * iFrameSize * sizeof(*output));
 
-        //iFrameBase is the "base sample" in a frame (ie. the first sample in a frame)
+        // Interlace Audio data onto portaudio buffer.  We iterate through the
+        // source list to find out what goes in the buffer data is interlaced in
+        // the order of the list
 
-        for (unsigned int iFrameBase=0; iFrameBase < framesPerBuffer*iFrameSize; iFrameBase += iFrameSize)
-        {
-            //Interlace Audio data onto portaudio buffer
-            //We iterate through the source list to find out what goes in the buffer
-            //data is interlaced in the order of the list
-            int iChannel;
-            for (int i = 0; i < m_audioOutputs.length(); ++i) {
-                const AudioOutput &out = m_audioOutputs.at(i);
-                ChannelGroup outChans = out.getChannelGroup();
-                int iLocalFrameBase = (iFrameBase/iFrameSize) * outChans.getChannelCount();
-                for (iChannel = 0; iChannel < outChans.getChannelCount(); iChannel++)
-                    //this will make sure a sample from each channel is copied
-                {
-                    // note that if QHash gets request for a value with a key it doesn't know, it
-                    // will return a default value (NULL is the likely choice here), but the old system
-                    // would've done something similar (it would have gone over the bounds of the array)
-                    output[iFrameBase + outChans.getChannelBase() + iChannel] +=
-                        outputAudio[out][iLocalFrameBase + iChannel] * SHRT_CONVERSION_FACTOR;
+        for (QList<AudioOutput>::const_iterator i = m_audioOutputs.begin(),
+                     e = m_audioOutputs.end(); i != e; ++i) {
+            const AudioOutput &out = *i;
+            const CSAMPLE* input = outputAudio[out];
+            ChannelGroup outChans = out.getChannelGroup();
+            int iChannelCount = outChans.getChannelCount();
+            int iChannelBase = outChans.getChannelBase();
+
+            for (unsigned int iFrameNo=0; iFrameNo < framesPerBuffer; ++iFrameNo) {
+                // this will make sure a sample from each channel is copied
+                for (int iChannel = 0; iChannel < iChannelCount; ++iChannel) {
+                    // iFrameBase is the "base sample" in a frame (ie. the first
+                    // sample in a frame)
+                    unsigned int iFrameBase = iFrameNo * iFrameSize;
+                    unsigned int iLocalFrameBase = iFrameNo * iChannelCount;
+
+                    // note that if QHash gets request for a value with a key it
+                    // doesn't know, it will return a default value (NULL is the
+                    // likely choice here), but the old system would've done
+                    // something similar (it would have gone over the bounds of
+                    // the array)
+
+                    output[iFrameBase + iChannelBase + iChannel] +=
+                            input[iLocalFrameBase + iChannel] * SHRT_CONVERSION_FACTOR;
+
                     //Input audio pass-through (useful for debugging)
                     //if (in)
                     //    output[iFrameBase + src.channelBase + iChannel] +=
@@ -384,8 +384,8 @@ int SoundDevicePortAudio::callbackProcess(unsigned long framesPerBuffer, float *
     }
 
     return paContinue;
-
 }
+
 /* -------- ------------------------------------------------------
    Purpose: Wrapper function to call processing loop function,
             implemented as a method in a class. Used in PortAudio,

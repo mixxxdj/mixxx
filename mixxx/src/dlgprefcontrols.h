@@ -48,9 +48,10 @@ public slots:
     void slotSetVisuals(int pos);
     void slotSetTooltips(int pos);
     void slotSetSkin(int);
-	void slotSetScheme(int);
-	void slotUpdateSchemes();
+    void slotSetScheme(int);
+    void slotUpdateSchemes();
     void slotSetPositionDisplay(int);
+    void slotSetPositionDisplay(double);
     void slotSetCueDefault(int);
     void slotSetCueRecall(int);
     void slotSetRateRamp(bool);
