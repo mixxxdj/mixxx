@@ -666,3 +666,16 @@ void SoundManager::pushBuffer(QList<AudioInput> inputs, short * inputBuffer,
     //TODO: Add pass-through option here (and push it into EngineMaster)...
     //      (or maybe save it, and then have requestBuffer() push it into EngineMaster)...
 }
+
+
+//static
+void SoundManager::registerOutput(AudioOutput output, const AudioSource *src) {
+    QMutexLocker lock(&s_registrationMutex);
+    s_sources[output] = src;
+}
+
+//static
+void SoundManager::registerInput(AudioInput input, AudioDestination *dest) {
+    QMutexLocker lock(&s_registrationMutex);
+    s_destinations[input] = dest;
+}
