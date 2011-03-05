@@ -52,7 +52,6 @@ class EffectSlotParameter : QObject {
     void slotValueMinimumLimit(double v);
 
   private:
-    DISALLOW_COPY_AND_ASSIGN(EffectSlotParameter);
     QString debugString() const {
         return QString("EffectSlotParameter(%1,%2)").arg(m_group).arg(m_iParameterNumber);
     }
@@ -78,6 +77,8 @@ class EffectSlotParameter : QObject {
     ControlObject* m_pControlValueMaximumLimit;
     ControlObject* m_pControlValueMinimum;
     ControlObject* m_pControlValueMinimumLimit;
+
+    DISALLOW_COPY_AND_ASSIGN(EffectSlotParameter);
 };
 
 #endif /* EFFECTPARAMETERSLOT_H */

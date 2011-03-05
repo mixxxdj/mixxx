@@ -1,6 +1,7 @@
 #include <QMutexLocker>
 
 #include "effects/effectchain.h"
+#include "sampleutil.h"
 
 EffectChain::EffectChain(QObject* pParent, unsigned int iChainNumber)
         : QObject(pParent),
@@ -38,12 +39,27 @@ EffectChain::EffectChain(QObject* pParent, unsigned int iChainNumber)
 EffectChain::~EffectChain() {
 }
 
+bool EffectChain::isEnabled() const {
+    QMutexLocker locker(&m_mutex);
+    return privateIsEnabled();
+}
+
+bool EffectChain::privateIsEnabled() const {
+    return m_pControlChainEnabled->get() > 0.0f;
+}
+
 void EffectChain::process(const QString channelId,
                           const CSAMPLE* pInput,
                           CSAMPLE* pOutput,
                           const unsigned int numSamples) {
     qDebug() << debugString() << "process" << channelId << numSamples;
     QMutexLocker locker(&m_mutex);
+
+    if (!privateIsEnabled()) {
+        // SampleUtil handles shortcuts when aliased, and gains of 1.0, etc.
+        return SampleUtil::copyWithGain(pOutput, pInput, 1.0f, numSamples);
+    }
+
     foreach (EffectSlotPointer effectSlot, m_slots) {
         EffectPointer pEffect = effectSlot->getEffect();
 
@@ -52,7 +68,6 @@ void EffectChain::process(const QString channelId,
         }
     }
 }
-
 
 unsigned int EffectChain::numSlots() const {
     qDebug() << debugString() << "numSlots";

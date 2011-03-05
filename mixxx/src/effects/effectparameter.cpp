@@ -28,7 +28,7 @@ EffectParameter::EffectParameter(QObject* pParent, const EffectManifestParameter
 
             // Sanity check the maximum and minimum
             if (clampRanges()) {
-                qDebug() << "WARNING: Parameter maximum is less than the minimum.";
+                qDebug() << debugString() << "WARNING: Parameter maximum is less than the minimum.";
             }
 
             // If the parameter specifies a default, set that. Otherwise use the minimum
@@ -36,7 +36,7 @@ EffectParameter::EffectParameter(QObject* pParent, const EffectManifestParameter
             if (m_parameter.hasDefault() && m_parameter.getDefault().canConvert<int>()) {
                 m_default = m_parameter.getDefault();
                 if (m_default.toInt() < m_minimum.toInt() || m_default.toInt() > m_maximum.toInt()) {
-                    qDebug() << "WARNING: Parameter default is outside of minimum/maximum range.";
+                    qDebug() << debugString() << "WARNING: Parameter default is outside of minimum/maximum range.";
                     m_default = m_minimum;
                 }
             } else {
@@ -54,7 +54,7 @@ EffectParameter::EffectParameter(QObject* pParent, const EffectManifestParameter
                     m_parameter.getMaximum() : QVariant(1.0f);
             // Sanity check the maximum and minimum
             if (m_minimum.toDouble() > m_maximum.toDouble()) {
-                qDebug() << "WARNING: Parameter maximum is less than the minimum.";
+                qDebug() << debugString() << "WARNING: Parameter maximum is less than the minimum.";
                 m_maximum = m_minimum;
             }
 
@@ -63,7 +63,7 @@ EffectParameter::EffectParameter(QObject* pParent, const EffectManifestParameter
             if (m_parameter.hasDefault() && m_parameter.getDefault().canConvert<double>()) {
                 m_default = m_parameter.getDefault();
                 if (m_default.toDouble() < m_minimum.toDouble() || m_default.toDouble() > m_maximum.toDouble()) {
-                    qDebug() << "WARNING: Parameter default is outside of minimum/maximum range.";
+                    qDebug() << debugString() << "WARNING: Parameter default is outside of minimum/maximum range.";
                     m_default = m_minimum;
                 }
             } else {
@@ -74,7 +74,7 @@ EffectParameter::EffectParameter(QObject* pParent, const EffectManifestParameter
             m_value = m_default;
             break;
         default:
-            qDebug() << "ERROR: Unhandled valueHint";
+            qDebug() << debugString() << "ERROR: Unhandled valueHint";
             break;
     }
 }
@@ -143,7 +143,7 @@ bool EffectParameter::checkType(const QVariant& value) const {
         case EffectManifestParameter::VALUE_UNKNOWN:
             return value.canConvert<double>();
         default:
-            qDebug() << "ERROR: Unhandled valueHint";
+            qDebug() << debugString() << "ERROR: Unhandled valueHint";
             break;
     }
     return false;
@@ -167,7 +167,7 @@ bool EffectParameter::clampRanges() {
             }
             break;
         default:
-            qDebug() << "ERROR: Unhandled valueHint";
+            qDebug() << debugString() << "ERROR: Unhandled valueHint";
             break;
     }
     return false;
@@ -181,7 +181,7 @@ QVariant EffectParameter::getValue() const {
 void EffectParameter::setValue(QVariant value) {
     QMutexLocker locker(&m_mutex);
     if (!checkType(value)) {
-        qDebug() << "WARNING: Value for minimum cannot be converted to suitable value, ignoring.";
+        qDebug() << debugString() << "WARNING: Value for minimum cannot be converted to suitable value, ignoring.";
         return;
     }
 
@@ -198,12 +198,12 @@ void EffectParameter::setValue(QVariant value) {
             m_value = value.toDouble();
             break;
         default:
-            qDebug() << "ERROR: Unhandled valueHint";
+            qDebug() << debugString() << "ERROR: Unhandled valueHint";
             break;
     }
 
     if (clampValue()) {
-        qDebug() << "WARNING: Value was outside of limits, clamped.";
+        qDebug() << debugString() << "WARNING: Value was outside of limits, clamped.";
     }
 }
 
@@ -215,7 +215,7 @@ QVariant EffectParameter::getDefault() const {
 void EffectParameter::setDefault(QVariant dflt) {
     QMutexLocker locker(&m_mutex);
     if (!checkType(dflt)) {
-        qDebug() << "WARNING: Value for maximum cannot be converted to suitable value, ignoring.";
+        qDebug() << debugString() << "WARNING: Value for maximum cannot be converted to suitable value, ignoring.";
         return;
     }
 
@@ -231,12 +231,12 @@ void EffectParameter::setDefault(QVariant dflt) {
             m_default = dflt.toDouble();
             break;
         default:
-            qDebug() << "ERROR: Unhandled valueHint";
+            qDebug() << debugString() << "ERROR: Unhandled valueHint";
             break;
     }
 
     if (clampDefault()) {
-        qDebug() << "WARNING: Default parameter value was outside of range, clamped.";
+        qDebug() << debugString() << "WARNING: Default parameter value was outside of range, clamped.";
     }
 }
 
@@ -248,7 +248,7 @@ QVariant EffectParameter::getMinimum() const {
 void EffectParameter::setMinimum(QVariant minimum) {
     QMutexLocker locker(&m_mutex);
     if (!checkType(minimum)) {
-        qDebug() << "WARNING: Value for minimum cannot be converted to suitable value, ignoring.";
+        qDebug() << debugString() << "WARNING: Value for minimum cannot be converted to suitable value, ignoring.";
         return;
     }
 
@@ -260,12 +260,12 @@ void EffectParameter::setMinimum(QVariant minimum) {
             m_minimum = minimum.toInt();
 
             if (m_parameter.hasMinimum() && m_minimum.toInt() < m_parameter.getMinimum().toInt()) {
-                qDebug() << "WARNING: Minimum value is less than plugin's absolute minimum, clamping.";
+                qDebug() << debugString() << "WARNING: Minimum value is less than plugin's absolute minimum, clamping.";
                 m_minimum = m_parameter.getMinimum();
             }
 
             if (m_minimum.toInt() > m_maximum.toInt()) {
-                qDebug() << "WARNING: New minimum was above maximum, clamped.";
+                qDebug() << debugString() << "WARNING: New minimum was above maximum, clamped.";
                 m_minimum = m_maximum;
             }
 
@@ -283,12 +283,12 @@ void EffectParameter::setMinimum(QVariant minimum) {
             m_minimum = minimum.toDouble();
 
             if (m_parameter.hasMinimum() && m_minimum.toDouble() < m_parameter.getMinimum().toDouble()) {
-                qDebug() << "WARNING: Minimum value is less than plugin's absolute minimum, clamping.";
+                qDebug() << debugString() << "WARNING: Minimum value is less than plugin's absolute minimum, clamping.";
                 m_minimum = m_parameter.getMinimum();
             }
 
             if (m_minimum.toDouble() > m_maximum.toDouble()) {
-                qDebug() << "WARNING: New minimum was above maximum, clamped.";
+                qDebug() << debugString() << "WARNING: New minimum was above maximum, clamped.";
                 m_minimum = m_maximum;
             }
 
@@ -302,16 +302,16 @@ void EffectParameter::setMinimum(QVariant minimum) {
             }
             break;
         default:
-            qDebug() << "ERROR: Unhandled valueHint";
+            qDebug() << debugString() << "ERROR: Unhandled valueHint";
             break;
     }
 
     if (clampValue()) {
-        qDebug() << "WARNING: Value was outside of new minimum, clamped.";
+        qDebug() << debugString() << "WARNING: Value was outside of new minimum, clamped.";
     }
 
     if (clampDefault()) {
-        qDebug() << "WARNING: Default was outside of new minimum, clamped.";
+        qDebug() << debugString() << "WARNING: Default was outside of new minimum, clamped.";
     }
 }
 
@@ -323,7 +323,7 @@ QVariant EffectParameter::getMaximum() const {
 void EffectParameter::setMaximum(QVariant maximum) {
     QMutexLocker locker(&m_mutex);
     if (!checkType(maximum)) {
-        qDebug() << "WARNING: Value for maximum cannot be converted to suitable value, ignoring.";
+        qDebug() << debugString() << "WARNING: Value for maximum cannot be converted to suitable value, ignoring.";
         return;
     }
 
@@ -335,12 +335,12 @@ void EffectParameter::setMaximum(QVariant maximum) {
             m_maximum = maximum.toInt();
 
             if (m_parameter.hasMaximum() && m_maximum.toInt() > m_parameter.getMaximum().toInt()) {
-                qDebug() << "WARNING: Maximum value is less than plugin's absolute maximum, clamping.";
+                qDebug() << debugString() << "WARNING: Maximum value is less than plugin's absolute maximum, clamping.";
                 m_maximum = m_parameter.getMaximum();
             }
 
             if (m_maximum.toInt() < m_minimum.toInt()) {
-                qDebug() << "WARNING: New maximum was below the minimum, clamped.";
+                qDebug() << debugString() << "WARNING: New maximum was below the minimum, clamped.";
                 m_maximum = m_minimum;
             }
 
@@ -358,12 +358,12 @@ void EffectParameter::setMaximum(QVariant maximum) {
             m_maximum = maximum.toDouble();
 
             if (m_parameter.hasMaximum() && m_maximum.toDouble() > m_parameter.getMaximum().toDouble()) {
-                qDebug() << "WARNING: Maximum value is less than plugin's absolute maximum, clamping.";
+                qDebug() << debugString() << "WARNING: Maximum value is less than plugin's absolute maximum, clamping.";
                 m_maximum = m_parameter.getMaximum();
             }
 
             if (m_maximum.toDouble() < m_minimum.toDouble()) {
-                qDebug() << "WARNING: New maximum was below the minimum, clamped.";
+                qDebug() << debugString() << "WARNING: New maximum was below the minimum, clamped.";
                 m_maximum = m_minimum;
             }
 
@@ -377,16 +377,16 @@ void EffectParameter::setMaximum(QVariant maximum) {
             }
             break;
         default:
-            qDebug() << "ERROR: Unhandled valueHint";
+            qDebug() << debugString() << "ERROR: Unhandled valueHint";
             break;
     }
 
     if (clampValue()) {
-        qDebug() << "WARNING: Value was outside of new maximum, clamped.";
+        qDebug() << debugString() << "WARNING: Value was outside of new maximum, clamped.";
     }
 
     if (clampDefault()) {
-        qDebug() << "WARNING: Default was outside of new maximum, clamped.";
+        qDebug() << debugString() << "WARNING: Default was outside of new maximum, clamped.";
     }
 }
 

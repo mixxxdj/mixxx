@@ -36,7 +36,6 @@ class EffectSlot : public QObject {
     void effectLoaded(EffectPointer pEffect, unsigned int slotNumber);
 
   private:
-    DISALLOW_COPY_AND_ASSIGN(EffectSlot);
     QString debugString() const {
         return QString("EffectChain(%1)").arg(m_iChainNumber);
     }
@@ -53,6 +52,8 @@ class EffectSlot : public QObject {
     ControlObject* m_pControlEnabled;
     ControlObject* m_pControlNumParameters;
     QList<EffectSlotParameter*> m_parameters;
+
+    DISALLOW_COPY_AND_ASSIGN(EffectSlot);
 };
 
 #endif /* EFFECTSLOT_H */

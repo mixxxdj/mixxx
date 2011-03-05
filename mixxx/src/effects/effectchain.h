@@ -22,6 +22,8 @@ class EffectChain : public QObject {
     void addEffectSlot();
     EffectSlotPointer getEffectSlot(unsigned int slotNumber);
 
+    bool isEnabled() const;
+
     // Take a buffer of numSamples samples of audio from channel channelId,
     // provided as pInput, and apply each Effect in this EffectChain to it,
     // putting the resulting output in pOutput. If pInput is equal to pOutput,
@@ -60,10 +62,11 @@ class EffectChain : public QObject {
     void slotControlChainPrevPreset(double v);
 
   private:
-    DISALLOW_COPY_AND_ASSIGN(EffectChain);
     QString debugString() const {
         return QString("EffectChain(%1)").arg(m_iChainNumber);
     }
+
+    bool privateIsEnabled() const;
 
     mutable QMutex m_mutex;
     const unsigned int m_iChainNumber;
@@ -77,6 +80,8 @@ class EffectChain : public QObject {
     ControlObject* m_pControlChainPrevPreset;
 
     QList<EffectSlotPointer> m_slots;
+
+    DISALLOW_COPY_AND_ASSIGN(EffectChain);
 };
 
 

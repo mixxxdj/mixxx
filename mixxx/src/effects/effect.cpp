@@ -26,7 +26,7 @@ unsigned int Effect::numParameters() const {
 
 EffectParameterPointer Effect::getParameter(unsigned int parameterNumber) {
     if (parameterNumber >= m_parameters.size()) {
-        qDebug() << "WARNING: Invalid parameter index.";
+        qDebug() << debugString() << "WARNING: Invalid parameter index.";
         return EffectParameterPointer();
     }
     return m_parameters[parameterNumber];

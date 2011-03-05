@@ -46,6 +46,10 @@ class EffectParameter : public QObject {
     void setMaximum(QVariant maximum);
 
   private:
+    QString debugString() const {
+        return QString("EffectParameter(%1)").arg(m_parameter.name());
+    }
+
     static bool clampValue(EffectManifestParameter::ValueHint valueHint, QVariant& value,
                            const QVariant& minimum, const QVariant& maximum);
     bool clampValue();

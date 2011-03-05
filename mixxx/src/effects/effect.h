@@ -4,6 +4,7 @@
 #include <QSharedPointer>
 
 #include "defs.h"
+#include "util.h"
 #include "effects/effectmanifest.h"
 #include "effects/effectparameter.h"
 
@@ -37,9 +38,15 @@ class Effect : public QObject {
                          const unsigned int numSamples) = 0;
 
   private:
+    QString debugString() const {
+        return QString("Effect(%1)").arg(m_effectManifest.name());
+    }
+
     EffectsBackend* m_pEffectsBackend;
     EffectManifest& m_effectManifest;
     QList<EffectParameterPointer> m_parameters;
+
+    DISALLOW_COPY_AND_ASSIGN(Effect);
 };
 
 #endif /* EFFECT_H */

@@ -26,10 +26,11 @@ class EffectsManager : public QObject {
     EffectChainPointer getEffectChain(unsigned int i);
 
   private:
-    DISALLOW_COPY_AND_ASSIGN(EffectsManager);
     mutable QMutex m_mutex;
     QList<EffectsBackend*> m_effectsBackends;
     QList<EffectChainPointer> m_effectChains;
+
+    DISALLOW_COPY_AND_ASSIGN(EffectsManager);
 };
 
 
