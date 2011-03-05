@@ -1,10 +1,15 @@
 #ifndef EFFECTMANIFEST_H
 #define EFFECTMANIFEST_H
 
+#include <QObject>
 #include <QList>
 #include <QString>
+#include <QSharedPointer>
 
 #include "effects/effectmanifestparameter.h"
+
+class EffectManifest;
+typedef QSharedPointer<const EffectManifest> EffectManifestPointer;
 
 // An EffectManifest is a full description of the metadata associated with an
 // effect (e.g. name, author, version, description, etc.) and the parameters of
@@ -18,9 +23,10 @@
 // the no-argument constructor be non-explicit. All methods are left virtual to
 // allow a backend to replace the entire functionality with its own (for
 // example, a database-backed manifest)
-class EffectManifest {
+class EffectManifest : public QObject {
+    Q_OBJECT
   public:
-    EffectManifest();
+    EffectManifest(QObject* pParent = NULL);
     virtual ~EffectManifest();
 
     virtual const QString id() const;
@@ -38,16 +44,20 @@ class EffectManifest {
     virtual const QString& description() const;
     virtual void setDescription(QString description);
 
-    virtual const QList<EffectManifestParameter> parameters() const;
-    virtual EffectManifestParameter& addParameter();
+    virtual const QList<EffectManifestParameterPointer> parameters() const;
+    virtual EffectManifestParameter* addParameter();
 
   private:
+    QString debugString() const {
+        return QString("EffectManifest(%1)").arg(m_id);
+    }
+
     QString m_id;
     QString m_name;
     QString m_author;
     QString m_version;
     QString m_description;
-    QList<EffectManifestParameter> m_parameters;
+    QList<EffectManifestParameterPointer> m_parameters;
 };
 
 #endif /* EFFECTMANIFEST_H */

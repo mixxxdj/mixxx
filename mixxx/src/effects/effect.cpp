@@ -4,33 +4,32 @@
 #include "effects/effect.h"
 #include "effects/effectsbackend.h"
 
-Effect::Effect(EffectsBackend* pBackend, const EffectManifest& effectManifest)
-        : QObject(pBackend),
+Effect::Effect(EffectsBackend* pBackend, EffectManifestPointer pEffectManifest)
+        : QObject(),
           m_mutex(QMutex::Recursive),
           m_pEffectsBackend(pBackend),
-          m_effectManifest(effectManifest) {
-    foreach (const EffectManifestParameter& parameter, m_effectManifest.parameters()) {
+          m_pEffectManifest(pEffectManifest) {
+    foreach (EffectManifestParameterPointer parameter, m_pEffectManifest->parameters()) {
         EffectParameterPointer pParameter(new EffectParameter(this, parameter),
                                           &QObject::deleteLater);
         m_parameters.append(pParameter);
-        if (m_parametersById.contains(parameter.id())) {
+        if (m_parametersById.contains(parameter->id())) {
             qDebug() << debugString() << "WARNING: Loaded EffectManifest that had parameters with duplicate IDs. Dropping one of them.";
         }
-        m_parametersById[parameter.id()] = pParameter;
+        m_parametersById[parameter->id()] = pParameter;
     }
 }
 
 Effect::~Effect() {
-    // TODO(rryan)
-    qDebug() << "Effect() destroyed";
-    // qDebug() << debugString() << "destroyed";
+     qDebug() << debugString() << "destroyed";
     m_parameters.clear();
     m_parametersById.clear();
+    m_pEffectManifest.clear();
 }
 
-const EffectManifest& Effect::getManifest() const {
+EffectManifestPointer Effect::getManifest() const {
     QMutexLocker locker(&m_mutex);
-    return m_effectManifest;
+    return m_pEffectManifest;
 }
 
 unsigned int Effect::numParameters() const {

@@ -10,18 +10,17 @@ NativeBackend::NativeBackend(QObject* pParent)
 
 NativeBackend::~NativeBackend() {
     qDebug() << debugString() << "destroyed";
-    m_instantiatedEffects.clear();
+    m_effectManifests.clear();
 }
 
-const QList<EffectManifest> NativeBackend::getAvailableEffects() const {
+const QList<EffectManifestPointer> NativeBackend::getAvailableEffects() const {
     return m_effectManifests;
 }
 
-EffectPointer NativeBackend::instantiateEffect(const EffectManifest& manifest) {
-    if (manifest.id() == "org.mixxx.effects.flanger") {
+EffectPointer NativeBackend::instantiateEffect(EffectManifestPointer manifest) {
+    if (manifest->id() == "org.mixxx.effects.flanger") {
         EffectPointer flanger = EffectPointer(new FlangerEffect(this, manifest),
                                               &QObject::deleteLater);
-        m_instantiatedEffects.append(flanger);
         return flanger;
     }
     return EffectPointer();

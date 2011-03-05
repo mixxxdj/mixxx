@@ -263,7 +263,7 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
     EffectSlotPointer effectSlot = effectChain->getEffectSlot(0);
 
 
-    const EffectManifest& flangerManifest = pNativeBackend->getAvailableEffects()[0];
+    EffectManifestPointer flangerManifest = pNativeBackend->getAvailableEffects()[0];
     EffectPointer flanger = pNativeBackend->instantiateEffect(flangerManifest);
 
     effectSlot->loadEffect(flanger);

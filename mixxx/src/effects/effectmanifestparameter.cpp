@@ -1,10 +1,13 @@
+#include <QtDebug>
 
 #include "effects/effectmanifestparameter.h"
 
-EffectManifestParameter::EffectManifestParameter() {
+EffectManifestParameter::EffectManifestParameter(QObject* pParent)
+        : QObject() {
 }
 
 EffectManifestParameter::~EffectManifestParameter() {
+    qDebug() << debugString() << "destroyed";
 }
 
 const QString EffectManifestParameter::id() const {

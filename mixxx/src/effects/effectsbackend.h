@@ -18,8 +18,8 @@ class EffectsBackend : public QObject {
 
     virtual const QString getName() const;
 
-    virtual const QList<EffectManifest> getAvailableEffects() const = 0;
-    virtual EffectPointer instantiateEffect(const EffectManifest& manifest) = 0;
+    virtual const QList<EffectManifestPointer> getAvailableEffects() const = 0;
+    virtual EffectPointer instantiateEffect(EffectManifestPointer manifest) = 0;
 
   private:
     QString m_name;

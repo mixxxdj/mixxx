@@ -37,7 +37,7 @@ class EffectSlot : public QObject {
 
   private:
     QString debugString() const {
-        return QString("EffectChain(%1)").arg(m_iChainNumber);
+        return QString("EffectSlot(%1,%2)").arg(m_iChainNumber).arg(m_iSlotNumber);
     }
 
     // Unload the currently loaded effect

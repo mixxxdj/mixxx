@@ -9,15 +9,14 @@ class NativeBackend : public EffectsBackend {
     NativeBackend(QObject* pParent=NULL);
     virtual ~NativeBackend();
 
-    const QList<EffectManifest> getAvailableEffects() const;
-    EffectPointer instantiateEffect(const EffectManifest& manifest);
+    const QList<EffectManifestPointer> getAvailableEffects() const;
+    EffectPointer instantiateEffect(EffectManifestPointer manifest);
   private:
     QString debugString() const {
         return "NativeBackend";
     }
 
-    QList<EffectManifest> m_effectManifests;
-    QList<EffectPointer> m_instantiatedEffects;
+    QList<EffectManifestPointer> m_effectManifests;
 };
 
 #endif /* NATIVEBACKEND_H */

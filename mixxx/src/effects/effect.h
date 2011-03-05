@@ -17,10 +17,10 @@ typedef QSharedPointer<Effect> EffectPointer;
 class Effect : public QObject {
     Q_OBJECT
   public:
-    Effect(EffectsBackend* pBackend, const EffectManifest& pManifest);
+    Effect(EffectsBackend* pBackend, EffectManifestPointer pManifest);
     virtual ~Effect();
 
-    virtual const EffectManifest& getManifest() const;
+    virtual EffectManifestPointer getManifest() const;
 
     unsigned int numParameters() const;
     EffectParameterPointer getParameter(unsigned int parameterNumber);
@@ -43,12 +43,12 @@ class Effect : public QObject {
 
   private:
     QString debugString() const {
-        return QString("Effect(%1)").arg(m_effectManifest.name());
+        return QString("Effect(%1)").arg(m_pEffectManifest->name());
     }
 
     mutable QMutex m_mutex;
     EffectsBackend* m_pEffectsBackend;
-    const EffectManifest& m_effectManifest;
+    EffectManifestPointer m_pEffectManifest;
     QList<EffectParameterPointer> m_parameters;
     QMap<QString, EffectParameterPointer> m_parametersById;
 

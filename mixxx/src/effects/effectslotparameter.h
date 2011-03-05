@@ -61,7 +61,7 @@ class EffectSlotParameter : QObject {
 
     mutable QMutex m_mutex;
     const unsigned int m_iParameterNumber;
-    QString m_group;
+    const QString m_group;
     EffectParameterPointer m_pEffectParameter;
 
     ////////////////////////////////////////////////////////////////////////////////

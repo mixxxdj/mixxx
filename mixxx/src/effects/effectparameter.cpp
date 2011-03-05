@@ -3,19 +3,21 @@
 
 #include "effects/effectparameter.h"
 
-EffectParameter::EffectParameter(QObject* pParent, const EffectManifestParameter& parameter)
-        : QObject(pParent),
+EffectParameter::EffectParameter(QObject* pParent, EffectManifestParameterPointer pParameter)
+        : QObject(),
           m_mutex(QMutex::Recursive),
-          m_parameter(parameter) {
+          m_pParameter(pParameter) {
+    Q_ASSERT(pParameter); // Should never happen.
+
     qDebug() << debugString() << "Constructing new EffectParameter from EffectManifestParameter:"
-             << m_parameter.id();
-    switch (m_parameter.valueHint()) {
+             << m_pParameter->id();
+    switch (m_pParameter->valueHint()) {
         case EffectManifestParameter::VALUE_BOOLEAN:
             // Minimum and maximum are undefined for a boolean.
             m_minimum = QVariant();
             m_maximum = QVariant();
-            if (m_parameter.hasDefault() && m_parameter.getDefault().canConvert<bool>()) {
-                m_default = m_parameter.getDefault();
+            if (m_pParameter->hasDefault() && m_pParameter->getDefault().canConvert<bool>()) {
+                m_default = m_pParameter->getDefault();
             } else {
                 // Default to false if no default is given.
                 m_default = QVariant(false);
@@ -23,10 +25,10 @@ EffectParameter::EffectParameter(QObject* pParent, const EffectManifestParameter
             m_value = m_default;
             break;
         case EffectManifestParameter::VALUE_INTEGRAL:
-            m_minimum = m_parameter.hasMinimum() && m_parameter.getMinimum().canConvert<int>() ?
-                    m_parameter.getMinimum() : QVariant(0);
-            m_maximum = m_parameter.hasMaximum() && m_parameter.getMinimum().canConvert<int>() ?
-                    m_parameter.getMaximum() : QVariant(1);
+            m_minimum = m_pParameter->hasMinimum() && m_pParameter->getMinimum().canConvert<int>() ?
+                    m_pParameter->getMinimum() : QVariant(0);
+            m_maximum = m_pParameter->hasMaximum() && m_pParameter->getMinimum().canConvert<int>() ?
+                    m_pParameter->getMaximum() : QVariant(1);
 
             // Sanity check the maximum and minimum
             if (clampRanges()) {
@@ -35,8 +37,8 @@ EffectParameter::EffectParameter(QObject* pParent, const EffectManifestParameter
 
             // If the parameter specifies a default, set that. Otherwise use the minimum
             // value.
-            if (m_parameter.hasDefault() && m_parameter.getDefault().canConvert<int>()) {
-                m_default = m_parameter.getDefault();
+            if (m_pParameter->hasDefault() && m_pParameter->getDefault().canConvert<int>()) {
+                m_default = m_pParameter->getDefault();
                 if (m_default.toInt() < m_minimum.toInt() || m_default.toInt() > m_maximum.toInt()) {
                     qDebug() << debugString() << "WARNING: Parameter default is outside of minimum/maximum range.";
                     m_default = m_minimum;
@@ -50,10 +52,10 @@ EffectParameter::EffectParameter(QObject* pParent, const EffectManifestParameter
             break;
         case EffectManifestParameter::VALUE_UNKNOWN: // Treat unknown like float
         case EffectManifestParameter::VALUE_FLOAT:
-            m_minimum = m_parameter.hasMinimum() && m_parameter.getMinimum().canConvert<double>() ?
-                    m_parameter.getMinimum() : QVariant(0.0f);
-            m_maximum = m_parameter.hasMaximum() && m_parameter.getMinimum().canConvert<double>() ?
-                    m_parameter.getMaximum() : QVariant(1.0f);
+            m_minimum = m_pParameter->hasMinimum() && m_pParameter->getMinimum().canConvert<double>() ?
+                    m_pParameter->getMinimum() : QVariant(0.0f);
+            m_maximum = m_pParameter->hasMaximum() && m_pParameter->getMinimum().canConvert<double>() ?
+                    m_pParameter->getMaximum() : QVariant(1.0f);
             // Sanity check the maximum and minimum
             if (m_minimum.toDouble() > m_maximum.toDouble()) {
                 qDebug() << debugString() << "WARNING: Parameter maximum is less than the minimum.";
@@ -62,8 +64,8 @@ EffectParameter::EffectParameter(QObject* pParent, const EffectManifestParameter
 
             // If the parameter specifies a default, set that. Otherwise use the minimum
             // value.
-            if (m_parameter.hasDefault() && m_parameter.getDefault().canConvert<double>()) {
-                m_default = m_parameter.getDefault();
+            if (m_pParameter->hasDefault() && m_pParameter->getDefault().canConvert<double>()) {
+                m_default = m_pParameter->getDefault();
                 if (m_default.toDouble() < m_minimum.toDouble() || m_default.toDouble() > m_maximum.toDouble()) {
                     qDebug() << debugString() << "WARNING: Parameter default is outside of minimum/maximum range.";
                     m_default = m_minimum;
@@ -82,19 +84,17 @@ EffectParameter::EffectParameter(QObject* pParent, const EffectManifestParameter
 }
 
 EffectParameter::~EffectParameter() {
-    // TODO(rryan) fix segfaulting
-    qDebug() << "EffectParameter() destroyed";
-    //qDebug() << debugString() << "destroyed";
+    qDebug() << debugString() << "destroyed";
 }
 
 const QString EffectParameter::name() const {
     QMutexLocker locker(&m_mutex);
-    return m_parameter.name();
+    return m_pParameter->name();
 }
 
 const QString EffectParameter::description() const {
     QMutexLocker locker(&m_mutex);
-    return m_parameter.description();
+    return m_pParameter->description();
 }
 
 // static
@@ -130,15 +130,15 @@ bool EffectParameter::clampValue(EffectManifestParameter::ValueHint valueHint, Q
 }
 
 bool EffectParameter::clampValue() {
-    return clampValue(m_parameter.valueHint(), m_value, m_minimum, m_maximum);
+    return clampValue(m_pParameter->valueHint(), m_value, m_minimum, m_maximum);
 }
 
 bool EffectParameter::clampDefault() {
-    return clampValue(m_parameter.valueHint(), m_default, m_minimum, m_maximum);
+    return clampValue(m_pParameter->valueHint(), m_default, m_minimum, m_maximum);
 }
 
 bool EffectParameter::checkType(const QVariant& value) const {
-    switch (m_parameter.valueHint()) {
+    switch (m_pParameter->valueHint()) {
         case EffectManifestParameter::VALUE_BOOLEAN:
             return value.canConvert<bool>();
         case EffectManifestParameter::VALUE_INTEGRAL:
@@ -154,7 +154,7 @@ bool EffectParameter::checkType(const QVariant& value) const {
 }
 
 bool EffectParameter::clampRanges() {
-    switch (m_parameter.valueHint()) {
+    switch (m_pParameter->valueHint()) {
         case EffectManifestParameter::VALUE_BOOLEAN:
             break;
         case EffectManifestParameter::VALUE_INTEGRAL:
@@ -190,7 +190,7 @@ void EffectParameter::setValue(QVariant value) {
         return;
     }
 
-    switch (m_parameter.valueHint()) {
+    switch (m_pParameter->valueHint()) {
         case EffectManifestParameter::VALUE_BOOLEAN:
             m_value = value.toBool();
             break;
@@ -224,7 +224,7 @@ void EffectParameter::setDefault(QVariant dflt) {
         return;
     }
 
-    switch (m_parameter.valueHint()) {
+    switch (m_pParameter->valueHint()) {
         case EffectManifestParameter::VALUE_BOOLEAN:
             m_default = dflt.toBool();
             break;
@@ -257,16 +257,16 @@ void EffectParameter::setMinimum(QVariant minimum) {
         return;
     }
 
-    switch (m_parameter.valueHint()) {
+    switch (m_pParameter->valueHint()) {
         case EffectManifestParameter::VALUE_BOOLEAN:
             // Minimum doesn't apply to booleans
             break;
         case EffectManifestParameter::VALUE_INTEGRAL:
             m_minimum = minimum.toInt();
 
-            if (m_parameter.hasMinimum() && m_minimum.toInt() < m_parameter.getMinimum().toInt()) {
+            if (m_pParameter->hasMinimum() && m_minimum.toInt() < m_pParameter->getMinimum().toInt()) {
                 qDebug() << debugString() << "WARNING: Minimum value is less than plugin's absolute minimum, clamping.";
-                m_minimum = m_parameter.getMinimum();
+                m_minimum = m_pParameter->getMinimum();
             }
 
             if (m_minimum.toInt() > m_maximum.toInt()) {
@@ -279,17 +279,17 @@ void EffectParameter::setMinimum(QVariant minimum) {
             // value is currently below the manifest minimum. Since similar
             // guards exist in the setMaximum call, this should not be able to
             // happen.
-            if (m_parameter.hasMinimum()) {
-                Q_ASSERT(m_minimum.toInt() >= m_parameter.getMinimum().toInt());
+            if (m_pParameter->hasMinimum()) {
+                Q_ASSERT(m_minimum.toInt() >= m_pParameter->getMinimum().toInt());
             }
             break;
         case EffectManifestParameter::VALUE_UNKNOWN:
         case EffectManifestParameter::VALUE_FLOAT:
             m_minimum = minimum.toDouble();
 
-            if (m_parameter.hasMinimum() && m_minimum.toDouble() < m_parameter.getMinimum().toDouble()) {
+            if (m_pParameter->hasMinimum() && m_minimum.toDouble() < m_pParameter->getMinimum().toDouble()) {
                 qDebug() << debugString() << "WARNING: Minimum value is less than plugin's absolute minimum, clamping.";
-                m_minimum = m_parameter.getMinimum();
+                m_minimum = m_pParameter->getMinimum();
             }
 
             if (m_minimum.toDouble() > m_maximum.toDouble()) {
@@ -302,8 +302,8 @@ void EffectParameter::setMinimum(QVariant minimum) {
             // value is currently below the manifest minimum. Since similar
             // guards exist in the setMaximum call, this should not be able to
             // happen.
-            if (m_parameter.hasMinimum()) {
-                Q_ASSERT(m_minimum.toDouble() >= m_parameter.getMinimum().toDouble());
+            if (m_pParameter->hasMinimum()) {
+                Q_ASSERT(m_minimum.toDouble() >= m_pParameter->getMinimum().toDouble());
             }
             break;
         default:
@@ -332,16 +332,16 @@ void EffectParameter::setMaximum(QVariant maximum) {
         return;
     }
 
-    switch (m_parameter.valueHint()) {
+    switch (m_pParameter->valueHint()) {
         case EffectManifestParameter::VALUE_BOOLEAN:
             // Maximum doesn't apply to booleans
             break;
         case EffectManifestParameter::VALUE_INTEGRAL:
             m_maximum = maximum.toInt();
 
-            if (m_parameter.hasMaximum() && m_maximum.toInt() > m_parameter.getMaximum().toInt()) {
+            if (m_pParameter->hasMaximum() && m_maximum.toInt() > m_pParameter->getMaximum().toInt()) {
                 qDebug() << debugString() << "WARNING: Maximum value is less than plugin's absolute maximum, clamping.";
-                m_maximum = m_parameter.getMaximum();
+                m_maximum = m_pParameter->getMaximum();
             }
 
             if (m_maximum.toInt() < m_minimum.toInt()) {
@@ -354,17 +354,17 @@ void EffectParameter::setMaximum(QVariant maximum) {
             // value is currently above the manifest maximum. Since similar
             // guards exist in the setMinimum call, this should not be able to
             // happen.
-            if (m_parameter.hasMaximum()) {
-                Q_ASSERT(m_maximum.toInt() <= m_parameter.getMaximum().toInt());
+            if (m_pParameter->hasMaximum()) {
+                Q_ASSERT(m_maximum.toInt() <= m_pParameter->getMaximum().toInt());
             }
             break;
         case EffectManifestParameter::VALUE_UNKNOWN:
         case EffectManifestParameter::VALUE_FLOAT:
             m_maximum = maximum.toDouble();
 
-            if (m_parameter.hasMaximum() && m_maximum.toDouble() > m_parameter.getMaximum().toDouble()) {
+            if (m_pParameter->hasMaximum() && m_maximum.toDouble() > m_pParameter->getMaximum().toDouble()) {
                 qDebug() << debugString() << "WARNING: Maximum value is less than plugin's absolute maximum, clamping.";
-                m_maximum = m_parameter.getMaximum();
+                m_maximum = m_pParameter->getMaximum();
             }
 
             if (m_maximum.toDouble() < m_minimum.toDouble()) {
@@ -377,8 +377,8 @@ void EffectParameter::setMaximum(QVariant maximum) {
             // value is currently above the manifest maximum. Since similar
             // guards exist in the setMinimum call, this should not be able to
             // happen.
-            if (m_parameter.hasMaximum()) {
-                Q_ASSERT(m_maximum.toDouble() <= m_parameter.getMaximum().toDouble());
+            if (m_pParameter->hasMaximum()) {
+                Q_ASSERT(m_maximum.toDouble() <= m_pParameter->getMaximum().toDouble());
             }
             break;
         default:

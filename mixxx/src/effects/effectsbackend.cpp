@@ -7,7 +7,6 @@ EffectsBackend::EffectsBackend(QObject* pParent, QString name)
 }
 
 EffectsBackend::~EffectsBackend() {
-
 }
 
 const QString EffectsBackend::getName() const {

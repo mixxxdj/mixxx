@@ -5,7 +5,7 @@
 #include "mathstuff.h"
 #include "sampleutil.h"
 
-FlangerEffect::FlangerEffect(NativeBackend* pBackend, const EffectManifest& pManifest)
+FlangerEffect::FlangerEffect(NativeBackend* pBackend, EffectManifestPointer pManifest)
         : Effect(pBackend, pManifest) {
     m_periodParameter = getParameterFromId("period");
     m_depthParameter = getParameterFromId("depth");
@@ -75,49 +75,52 @@ FlangerState* FlangerEffect::getStateForChannel(const QString channelId) {
 }
 
 // static
-EffectManifest FlangerEffect::getEffectManifest() {
-    EffectManifest manifest;
-    manifest.setId("org.mixxx.effects.flanger");
-    manifest.setName(QObject::tr("Flanger"));
-    manifest.setAuthor("The Mixxx Team");
-    manifest.setVersion("1.0");
-    manifest.setDescription("TODO");
+EffectManifestPointer FlangerEffect::getEffectManifest() {
+    EffectManifest* manifest = new EffectManifest();
+    manifest->setId("org.mixxx.effects.flanger");
+    manifest->setName(QObject::tr("Flanger"));
+    manifest->setAuthor("The Mixxx Team");
+    manifest->setVersion("1.0");
+    manifest->setDescription("TODO");
 
-    EffectManifestParameter& depth = manifest.addParameter();
-    depth.setId("depth");
-    depth.setName(QObject::tr("Depth"));
-    depth.setDescription("TODO");
-    depth.setControlHint(EffectManifestParameter::CONTROL_KNOB_LINEAR);
-    depth.setValueHint(EffectManifestParameter::VALUE_FLOAT);
-    depth.setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
-    depth.setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
-    depth.setDefault(0.0f);
-    depth.setMinimum(0.0f);
-    depth.setMaximum(1.0f);
+    EffectManifestParameter* depth = manifest->addParameter();
+    depth->setId("depth");
+    depth->setName(QObject::tr("Depth"));
+    depth->setDescription("TODO");
+    depth->setControlHint(EffectManifestParameter::CONTROL_KNOB_LINEAR);
+    depth->setValueHint(EffectManifestParameter::VALUE_FLOAT);
+    depth->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
+    depth->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
+    depth->setDefault(0.0f);
+    depth->setMinimum(0.0f);
+    depth->setMaximum(1.0f);
 
-    EffectManifestParameter& delay = manifest.addParameter();
-    delay.setId("delay");
-    delay.setName(QObject::tr("Delay"));
-    delay.setDescription("TODO");
-    delay.setControlHint(EffectManifestParameter::CONTROL_KNOB_LINEAR);
-    delay.setValueHint(EffectManifestParameter::VALUE_FLOAT);
-    delay.setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
-    delay.setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
-    delay.setDefault(50.0f);
-    delay.setMinimum(50.0f);
-    delay.setMaximum(10000.0f);
+    EffectManifestParameter* delay = manifest->addParameter();
+    delay->setId("delay");
+    delay->setName(QObject::tr("Delay"));
+    delay->setDescription("TODO");
+    delay->setControlHint(EffectManifestParameter::CONTROL_KNOB_LINEAR);
+    delay->setValueHint(EffectManifestParameter::VALUE_FLOAT);
+    delay->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
+    delay->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
+    delay->setDefault(50.0f);
+    delay->setMinimum(50.0f);
+    delay->setMaximum(10000.0f);
 
-    EffectManifestParameter& period = manifest.addParameter();
-    period.setId("period");
-    period.setName(QObject::tr("Period"));
-    period.setDescription("TODO");
-    period.setControlHint(EffectManifestParameter::CONTROL_KNOB_LINEAR);
-    period.setValueHint(EffectManifestParameter::VALUE_FLOAT);
-    period.setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
-    period.setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
-    period.setDefault(50000.0f);
-    period.setMinimum(50000.0f);
-    period.setMaximum(2000000.0f);
+    EffectManifestParameter* period = manifest->addParameter();
+    period->setId("period");
+    period->setName(QObject::tr("Period"));
+    period->setDescription("TODO");
+    period->setControlHint(EffectManifestParameter::CONTROL_KNOB_LINEAR);
+    period->setValueHint(EffectManifestParameter::VALUE_FLOAT);
+    period->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
+    period->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
+    period->setDefault(50000.0f);
+    period->setMinimum(50000.0f);
+    period->setMaximum(2000000.0f);
 
-    return manifest;
+    // We don't use EffectManifestPointer here because that specifies const
+    // EffectManifestParameter as the type, which does not work with
+    // QObject::deleteLater.
+    return QSharedPointer<EffectManifest>(manifest, &QObject::deleteLater);
 }

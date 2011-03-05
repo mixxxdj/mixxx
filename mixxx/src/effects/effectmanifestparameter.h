@@ -1,10 +1,15 @@
 #ifndef EFFECTMANIFESTPARAMETER_H
 #define EFFECTMANIFESTPARAMETER_H
 
+#include <QObject>
 #include <QVariant>
 #include <QString>
+#include <QSharedPointer>
 
-class EffectManifestParameter {
+class EffectManifestParameter;
+typedef QSharedPointer<const EffectManifestParameter> EffectManifestParameterPointer;
+
+class EffectManifestParameter : public QObject {
   public:
     enum ValueHint {
         VALUE_UNKNOWN = 0,
@@ -33,7 +38,7 @@ class EffectManifestParameter {
         UNITS_SAMPLERATE, // fraction of the samplerate
     };
 
-    EffectManifestParameter();
+    EffectManifestParameter(QObject* pParent = NULL);
     virtual ~EffectManifestParameter();
 
     ////////////////////////////////////////////////////////////////////////////////
@@ -82,6 +87,9 @@ class EffectManifestParameter {
     virtual void setMaximum(QVariant maximum);
 
   private:
+    QString debugString() const {
+        return QString("EffectManifestParameter(%1)").arg(m_id);
+    }
     QString m_id;
     QString m_name;
     QString m_description;

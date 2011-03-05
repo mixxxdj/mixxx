@@ -19,7 +19,7 @@ typedef QSharedPointer<EffectParameter> EffectParameterPointer;
 class EffectParameter : public QObject {
     Q_OBJECT
   public:
-    EffectParameter(QObject* pParent, const EffectManifestParameter& parameter);
+    EffectParameter(QObject* pParent, EffectManifestParameterPointer pParameter);
     virtual ~EffectParameter();
 
     ///////////////////////////////////////////////////////////////////////////
@@ -47,7 +47,7 @@ class EffectParameter : public QObject {
 
   private:
     QString debugString() const {
-        return QString("EffectParameter(%1)").arg(m_parameter.name());
+        return QString("EffectParameter(%1)").arg(m_pParameter->name());
     }
 
     static bool clampValue(EffectManifestParameter::ValueHint valueHint, QVariant& value,
@@ -58,7 +58,7 @@ class EffectParameter : public QObject {
     bool checkType(const QVariant& value) const;
 
     mutable QMutex m_mutex;
-    const EffectManifestParameter& m_parameter;
+    EffectManifestParameterPointer m_pParameter;
     QVariant m_minimum;
     QVariant m_maximum;
     QVariant m_default;

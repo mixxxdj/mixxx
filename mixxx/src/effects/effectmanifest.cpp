@@ -1,9 +1,13 @@
+#include <QtDebug>
+
 #include "effects/effectmanifest.h"
 
-EffectManifest::EffectManifest() {
+EffectManifest::EffectManifest(QObject* pParent)
+        : QObject() {
 }
 
 EffectManifest::~EffectManifest() {
+    qDebug() << debugString() << "deleted";
 }
 
 const QString EffectManifest::id() const {
@@ -46,11 +50,16 @@ void EffectManifest::setDescription(QString description) {
     m_description = description;
 }
 
-const QList<EffectManifestParameter> EffectManifest::parameters() const {
+const QList<EffectManifestParameterPointer> EffectManifest::parameters() const {
     return m_parameters;
 }
 
-EffectManifestParameter& EffectManifest::addParameter() {
-    m_parameters.append(EffectManifestParameter());
-    return m_parameters.last();
+EffectManifestParameter* EffectManifest::addParameter() {
+    EffectManifestParameter* pParameter = new EffectManifestParameter();
+
+    // We don't use EffectManifestPointer here because that specifies const
+    // EffectManifestParameter as the type, which does not work with
+    // QObject::deleteLater.
+    m_parameters.append(QSharedPointer<EffectManifestParameter>(pParameter, &QObject::deleteLater));
+    return pParameter;
 }
