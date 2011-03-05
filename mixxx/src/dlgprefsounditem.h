@@ -18,7 +18,7 @@
 
 #include <QtCore>
 #include "ui_dlgprefsounditem.h"
-#include "audiopath.h"
+#include "soundmanagerutil.h"
 
 class SoundDevice;
 class SoundManagerConfig;

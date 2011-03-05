@@ -549,7 +549,7 @@ class MixxxCore(Feature):
                    "sounddevice.cpp",
                    "soundmanager.cpp",
                    "soundmanagerconfig.cpp",
-                   "audiopath.cpp",
+                   "soundmanagerutil.cpp",
                    "dlgprefrecord.cpp",
                    "playerinfo.cpp",
 

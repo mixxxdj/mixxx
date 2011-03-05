@@ -1,5 +1,5 @@
 /**
- * @file audiopath.cpp
+ * @file soundmanagerutil.cpp
  * @author Bill Good <bkgood at gmail dot com>
  * @date 20100611
  */
@@ -14,7 +14,7 @@
  ***************************************************************************/
 
 #include <QtCore>
-#include "audiopath.h"
+#include "soundmanagerutil.h"
 
 /**
  * Constructs a ChannelGroup.

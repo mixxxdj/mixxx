@@ -24,7 +24,7 @@
 #include "sounddeviceportaudio.h"
 #include "engine/enginemaster.h"
 #include "controlobjectthreadmain.h"
-#include "audiopath.h"
+#include "soundmanagerutil.h"
 
 QHash<AudioOutput, const AudioSource*> SoundManager::s_sources;
 QHash<AudioInput, AudioDestination*> SoundManager::s_destinations;

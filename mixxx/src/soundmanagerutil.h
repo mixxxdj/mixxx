@@ -1,5 +1,5 @@
 /**
- * @file audiopath.h
+ * @file soundmanagerutil.h
  * @author Bill Good <bkgood at gmail dot com>
  * @date 20100611
  */
@@ -13,8 +13,8 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef AUDIOPATH_H
-#define AUDIOPATH_H
+#ifndef SOUNDMANAGERUTIL_U
+#define SOUNDMANAGERUTIL_U
 
 #include <QString>
 #include <QtXml>
