@@ -66,7 +66,7 @@ class SoundManager : public QObject
         void pushBuffer(QList<AudioInput> inputs, short *inputBuffer,
                         unsigned long iFramesPerBuffer, unsigned int iFrameSize);
         static void registerOutput(AudioOutput output, const AudioSource *src);
-        static void registerInput(AudioInput input, const AudioDestination *dest);
+        static void registerInput(AudioInput input, AudioDestination *dest);
     signals:
         void devicesUpdated(); // emitted when all the pointers to SoundDevices go stale
     public slots:
