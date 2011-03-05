@@ -6,6 +6,14 @@ EffectManifest::EffectManifest() {
 EffectManifest::~EffectManifest() {
 }
 
+const QString EffectManifest::id() const {
+    return m_id;
+}
+
+void EffectManifest::setId(QString id) {
+    m_id = id;
+}
+
 const QString EffectManifest::name() const {
     return m_name;
 }

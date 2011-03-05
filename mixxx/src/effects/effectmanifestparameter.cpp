@@ -7,6 +7,14 @@ EffectManifestParameter::EffectManifestParameter() {
 EffectManifestParameter::~EffectManifestParameter() {
 }
 
+const QString EffectManifestParameter::id() const {
+    return m_id;
+}
+
+void EffectManifestParameter::setId(QString id) {
+    m_id = id;
+}
+
 const QString EffectManifestParameter::name() const {
     return m_name;
 }

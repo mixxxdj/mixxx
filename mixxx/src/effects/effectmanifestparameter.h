@@ -40,6 +40,9 @@ class EffectManifestParameter {
     // Parameter Information
     ////////////////////////////////////////////////////////////////////////////////
 
+    virtual const QString id() const;
+    virtual void setId(QString id);
+
     virtual const QString name() const;
     virtual void setName(QString name);
 
@@ -79,6 +82,7 @@ class EffectManifestParameter {
     virtual void setMaximum(QVariant maximum);
 
   private:
+    QString m_id;
     QString m_name;
     QString m_description;
 

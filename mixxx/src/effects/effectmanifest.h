@@ -23,6 +23,9 @@ class EffectManifest {
     EffectManifest();
     virtual ~EffectManifest();
 
+    virtual const QString id() const;
+    virtual void setId(QString id);
+
     virtual const QString name() const;
     virtual void setName(QString name);
 
@@ -39,6 +42,7 @@ class EffectManifest {
     virtual EffectManifestParameter& addParameter();
 
   private:
+    QString m_id;
     QString m_name;
     QString m_author;
     QString m_version;
