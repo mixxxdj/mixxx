@@ -27,7 +27,7 @@ unsigned int EffectsManager::numEffectChains() const {
 void EffectsManager::addEffectChain() {
     QMutexLocker locker(&m_mutex);
     EffectChain* pChain = new EffectChain(this, m_effectChains.size());
-    m_effectChains.append(EffectChainPointer(pChain, &QObject::deleteLater));
+    m_effectChains.append(EffectChainPointer(pChain));
 }
 
 EffectChainPointer EffectsManager::getEffectChain(unsigned int i) {

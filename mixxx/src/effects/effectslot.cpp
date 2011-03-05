@@ -6,7 +6,7 @@
 const unsigned int kMaxParameters = 20;
 
 EffectSlot::EffectSlot(QObject* pParent, const unsigned int iChainNumber, const unsigned int iSlotNumber)
-        : QObject(pParent),
+        : QObject(),
           m_mutex(QMutex::Recursive),
           m_iChainNumber(iChainNumber),
           m_iSlotNumber(iSlotNumber),

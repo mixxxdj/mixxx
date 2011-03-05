@@ -18,9 +18,10 @@ const QList<EffectManifestPointer> NativeBackend::getAvailableEffects() const {
 }
 
 EffectPointer NativeBackend::instantiateEffect(EffectManifestPointer manifest) {
+    // TODO(rryan) effect instantiation sucks. should fix this before we commit
+    // to it being this way.
     if (manifest->id() == "org.mixxx.effects.flanger") {
-        EffectPointer flanger = EffectPointer(new FlangerEffect(this, manifest),
-                                              &QObject::deleteLater);
+        EffectPointer flanger = EffectPointer(new FlangerEffect(this, manifest));
         return flanger;
     }
     return EffectPointer();

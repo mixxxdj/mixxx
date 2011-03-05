@@ -122,5 +122,5 @@ EffectManifestPointer FlangerEffect::getEffectManifest() {
     // We don't use EffectManifestPointer here because that specifies const
     // EffectManifestParameter as the type, which does not work with
     // QObject::deleteLater.
-    return QSharedPointer<EffectManifest>(manifest, &QObject::deleteLater);
+    return QSharedPointer<EffectManifest>(manifest);
 }

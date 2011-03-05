@@ -4,7 +4,7 @@
 #include "sampleutil.h"
 
 EffectChain::EffectChain(QObject* pParent, unsigned int iChainNumber)
-        : QObject(pParent),
+        : QObject(),
           m_mutex(QMutex::Recursive),
           m_iChainNumber(iChainNumber),
           // The control group names are 1-indexed while internally everything is 0-indexed.
@@ -44,6 +44,7 @@ EffectChain::~EffectChain() {
     delete m_pControlChainParameter;
     delete m_pControlChainPrevPreset;
     delete m_pControlChainNextPreset;
+    m_slots.clear();
 }
 
 bool EffectChain::isEnabled() const {
@@ -90,7 +91,7 @@ void EffectChain::addEffectSlot() {
     // Rebroadcast effectLoaded signals
     connect(pEffectSlot, SIGNAL(effectLoaded(EffectPointer, unsigned int)),
             this, SLOT(slotEffectLoaded(EffectPointer, unsigned int)));
-    m_slots.append(EffectSlotPointer(pEffectSlot, &QObject::deleteLater));
+    m_slots.append(EffectSlotPointer(pEffectSlot));
     m_pControlNumEffectSlots->add(1.0f);
 }
 

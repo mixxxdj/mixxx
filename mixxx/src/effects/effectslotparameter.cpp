@@ -5,7 +5,7 @@
 #include "effects/effectslotparameter.h"
 
 EffectSlotParameter::EffectSlotParameter(QObject* pParent, QString group, unsigned int parameterNumber)
-        : QObject(pParent),
+        : QObject(),
           m_mutex(QMutex::Recursive),
           m_iParameterNumber(parameterNumber),
           m_group(group) {

@@ -54,12 +54,16 @@ const QList<EffectManifestParameterPointer> EffectManifest::parameters() const {
     return m_parameters;
 }
 
+void deleteManifestParameter(EffectManifestParameter* pParameter) {
+    delete pParameter;
+}
+
 EffectManifestParameter* EffectManifest::addParameter() {
     EffectManifestParameter* pParameter = new EffectManifestParameter();
 
     // We don't use EffectManifestPointer here because that specifies const
     // EffectManifestParameter as the type, which does not work with
     // QObject::deleteLater.
-    m_parameters.append(QSharedPointer<EffectManifestParameter>(pParameter, &QObject::deleteLater));
+    m_parameters.append(QSharedPointer<EffectManifestParameter>(pParameter, &deleteManifestParameter));
     return pParameter;
 }

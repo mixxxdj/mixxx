@@ -10,8 +10,7 @@ Effect::Effect(EffectsBackend* pBackend, EffectManifestPointer pEffectManifest)
           m_pEffectsBackend(pBackend),
           m_pEffectManifest(pEffectManifest) {
     foreach (EffectManifestParameterPointer parameter, m_pEffectManifest->parameters()) {
-        EffectParameterPointer pParameter(new EffectParameter(this, parameter),
-                                          &QObject::deleteLater);
+        EffectParameterPointer pParameter(new EffectParameter(this, parameter));
         m_parameters.append(pParameter);
         if (m_parametersById.contains(parameter->id())) {
             qDebug() << debugString() << "WARNING: Loaded EffectManifest that had parameters with duplicate IDs. Dropping one of them.";
@@ -21,7 +20,7 @@ Effect::Effect(EffectsBackend* pBackend, EffectManifestPointer pEffectManifest)
 }
 
 Effect::~Effect() {
-     qDebug() << debugString() << "destroyed";
+    qDebug() << debugString() << "destroyed";
     m_parameters.clear();
     m_parametersById.clear();
     m_pEffectManifest.clear();
