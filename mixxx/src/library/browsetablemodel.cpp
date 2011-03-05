@@ -40,13 +40,12 @@ BrowseTableModel::BrowseTableModel(QObject* parent)
     addSearchColumn(COLUMN_KEY);
     addSearchColumn(COLUMN_COMMENT);
 
-    //m_backgroundThread.moveToThread(&m_backgroundThread);
     m_backgroundThread.start(QThread::LowestPriority);
 
     setHorizontalHeaderLabels(header_data);
 
     QObject::connect(&m_backgroundThread, SIGNAL(clearModel()),
-            this, SLOT(slotClear()));
+            this, SLOT(slotClear()), Qt::DirectConnection);
     QObject::connect(&m_backgroundThread, SIGNAL(rowDataAppended(const QList<QStandardItem*>&)),
             this, SLOT(slotInsert(const QList<QStandardItem*>&)), Qt::DirectConnection);
 
