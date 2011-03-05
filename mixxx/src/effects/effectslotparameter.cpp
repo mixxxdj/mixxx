@@ -53,6 +53,7 @@ EffectSlotParameter::EffectSlotParameter(QObject* pParent, QString group, unsign
 }
 
 EffectSlotParameter::~EffectSlotParameter() {
+    qDebug() << debugString() << "destroyed";
     delete m_pControlEnabled;
     delete m_pControlValue;
     delete m_pControlValueNormalized;
@@ -68,19 +69,17 @@ void EffectSlotParameter::loadEffect(EffectPointer pEffect) {
     qDebug() << debugString() << "loadEffect" << (pEffect ? pEffect->getManifest().name() : "(null)");
     QMutexLocker locker(&m_mutex);
     if (pEffect) {
-        m_pEffect = pEffect;
-
         // Returns null if it doesn't have a parameter for that number
-        EffectParameterPointer parameter = m_pEffect->getParameter(m_iParameterNumber);
+        m_pEffectParameter = pEffect->getParameter(m_iParameterNumber);
 
-        if (parameter) {
-            qDebug() << debugString() << "Loading effect parameter" << parameter->name();
-            double dValue = parameter->getValue().toDouble();
-            double dMinimum = parameter->getMinimum().toDouble();
+        if (m_pEffectParameter) {
+            qDebug() << debugString() << "Loading effect parameter" << m_pEffectParameter->name();
+            double dValue = m_pEffectParameter->getValue().toDouble();
+            double dMinimum = m_pEffectParameter->getMinimum().toDouble();
             double dMinimumLimit = dMinimum; // TODO(rryan) expose limit from EffectParameter
-            double dMaximum = parameter->getMaximum().toDouble();
+            double dMaximum = m_pEffectParameter->getMaximum().toDouble();
             double dMaximumLimit = dMaximum; // TODO(rryan) expose limit from EffectParameter
-            double dDefault = parameter->getDefault().toDouble();
+            double dDefault = m_pEffectParameter->getDefault().toDouble();
 
             if (dValue > dMaximum || dValue < dMinimum ||
                 dMinimum < dMinimumLimit || dMaximum > dMaximumLimit ||
@@ -107,7 +106,7 @@ void EffectSlotParameter::loadEffect(EffectPointer pEffect) {
 
 void EffectSlotParameter::clear() {
     qDebug() << debugString() << "clear";
-    m_pEffect.clear();
+    m_pEffectParameter.clear();
     m_pControlEnabled->set(0.0f);
     m_pControlValue->set(0.0f);
     m_pControlValueNormalized->set(0.0f);
@@ -140,8 +139,8 @@ void EffectSlotParameter::slotValue(double v) {
     double dNormalized = (dMax - dMin > 0) ? (v - dMin) / (dMax - dMin) : 0.0f;
     m_pControlValueNormalized->set(dNormalized);
 
-    if (m_pEffect) {
-
+    if (m_pEffectParameter) {
+        m_pEffectParameter->setValue(v);
     }
 }
 
@@ -166,6 +165,11 @@ void EffectSlotParameter::slotValueNormalized(double v) {
     double dRaw = dMin + v * (dMax - dMin);
     qDebug() << debugString() << "Normalized set of" << v << "produces raw value of" << dRaw;
     m_pControlValue->set(dRaw);
+
+    if (m_pEffectParameter) {
+        m_pEffectParameter->getValue();
+        //m_pEffectParameter->setValue(dRaw);
+    }
 }
 
 void EffectSlotParameter::slotValueType(double v) {
@@ -186,7 +190,11 @@ void EffectSlotParameter::slotValueMaximum(double v) {
     double dMaxLimit = m_pControlValueMaximumLimit->get();
     if (v > dMaxLimit) {
         qDebug() << "WARNING: Maximum parameter value is out of limits.";
-        m_pControlValueMaximum->set(dMaxLimit);
+        v = dMaxLimit;
+        m_pControlValueMaximum->set(v);
+    }
+    if (m_pEffectParameter) {
+        m_pEffectParameter->setMaximum(v);
     }
 }
 
@@ -202,7 +210,12 @@ void EffectSlotParameter::slotValueMinimum(double v) {
     double dMinLimit = m_pControlValueMinimumLimit->get();
     if (v < dMinLimit) {
         qDebug() << "WARNING: Minimum parameter value is out of limits.";
-        m_pControlValueMinimum->set(dMinLimit);
+        v = dMinLimit;
+        m_pControlValueMinimum->set(v);
+    }
+
+    if (m_pEffectParameter) {
+        m_pEffectParameter->setMinimum(v);
     }
 }
 

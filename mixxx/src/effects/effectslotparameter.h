@@ -62,7 +62,7 @@ class EffectSlotParameter : QObject {
     mutable QMutex m_mutex;
     const unsigned int m_iParameterNumber;
     QString m_group;
-    EffectPointer m_pEffect;
+    EffectParameterPointer m_pEffectParameter;
 
     ////////////////////////////////////////////////////////////////////////////////
     // Controls exposed to the rest of Mixxx

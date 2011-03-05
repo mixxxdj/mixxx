@@ -5,8 +5,10 @@
 
 EffectParameter::EffectParameter(QObject* pParent, const EffectManifestParameter& parameter)
         : QObject(pParent),
+          m_mutex(QMutex::Recursive),
           m_parameter(parameter) {
-    qDebug() << debugString() << "Constructing new EffectParameter from EffectManifestParameter:" << m_parameter.id();
+    qDebug() << debugString() << "Constructing new EffectParameter from EffectManifestParameter:"
+             << m_parameter.id();
     switch (m_parameter.valueHint()) {
         case EffectManifestParameter::VALUE_BOOLEAN:
             // Minimum and maximum are undefined for a boolean.
@@ -80,7 +82,7 @@ EffectParameter::EffectParameter(QObject* pParent, const EffectManifestParameter
 }
 
 EffectParameter::~EffectParameter() {
-
+    qDebug() << debugString() << "destroyed";
 }
 
 const QString EffectParameter::name() const {
@@ -180,6 +182,7 @@ QVariant EffectParameter::getValue() const {
 
 void EffectParameter::setValue(QVariant value) {
     QMutexLocker locker(&m_mutex);
+
     if (!checkType(value)) {
         qDebug() << debugString() << "WARNING: Value for minimum cannot be converted to suitable value, ignoring.";
         return;

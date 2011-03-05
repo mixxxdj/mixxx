@@ -2,6 +2,7 @@
 #define EFFECT_H
 
 #include <QSharedPointer>
+#include <QMutex>
 
 #include "defs.h"
 #include "util.h"
@@ -45,6 +46,7 @@ class Effect : public QObject {
         return QString("Effect(%1)").arg(m_effectManifest.name());
     }
 
+    mutable QMutex m_mutex;
     EffectsBackend* m_pEffectsBackend;
     const EffectManifest& m_effectManifest;
     QList<EffectParameterPointer> m_parameters;

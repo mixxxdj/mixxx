@@ -24,6 +24,7 @@ EffectSlot::EffectSlot(QObject* pParent, const unsigned int iChainNumber, const 
 }
 
 EffectSlot::~EffectSlot() {
+    qDebug() << debugString() << "destroyed";
     clear();
 
     delete m_pControlEnabled;

@@ -18,8 +18,10 @@ const QList<EffectManifest> NativeBackend::getAvailableEffects() const {
 
 EffectPointer NativeBackend::instantiateEffect(const EffectManifest& manifest) {
     if (manifest.id() == "org.mixxx.effects.flanger") {
-        return EffectPointer(new FlangerEffect(this, manifest),
-                             &QObject::deleteLater);
+        EffectPointer flanger = EffectPointer(new FlangerEffect(this, manifest),
+                                              &QObject::deleteLater);
+        m_instantiatedEffects.append(flanger);
+        return flanger;
     }
     return EffectPointer();
 }

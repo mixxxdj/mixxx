@@ -13,6 +13,7 @@ class NativeBackend : public EffectsBackend {
     EffectPointer instantiateEffect(const EffectManifest& manifest);
   private:
     QList<EffectManifest> m_effectManifests;
+    QList<EffectPointer> m_instantiatedEffects;
 };
 
 #endif /* NATIVEBACKEND_H */

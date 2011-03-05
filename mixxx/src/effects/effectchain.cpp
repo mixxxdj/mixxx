@@ -37,6 +37,13 @@ EffectChain::EffectChain(QObject* pParent, unsigned int iChainNumber)
 }
 
 EffectChain::~EffectChain() {
+    qDebug() << debugString() << "destroyed";
+    delete m_pControlNumEffectSlots;
+    delete m_pControlChainEnabled;
+    delete m_pControlChainMix;
+    delete m_pControlChainParameter;
+    delete m_pControlChainPrevPreset;
+    delete m_pControlChainNextPreset;
 }
 
 bool EffectChain::isEnabled() const {
