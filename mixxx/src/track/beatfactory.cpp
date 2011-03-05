@@ -1,8 +1,8 @@
 #include <QtDebug>
 
-#include "beatgrid.h"
-#include "beatmatrix.h"
-#include "beatfactory.h"
+#include "track/beatgrid.h"
+#include "track/beatmatrix.h"
+#include "track/beatfactory.h"
 
 BeatsPointer BeatFactory::loadBeatsFromByteArray(TrackPointer pTrack, QString beatsVersion,
                                                  QByteArray* beatsSerialized) {

@@ -14,7 +14,7 @@
 #include "widget/wskincolor.h"
 #include "widget/wwidget.h"
 #include "trackinfoobject.h"
-#include "beats.h"
+#include "track/beats.h"
 
 
 WaveformRenderBeat::WaveformRenderBeat(const char* group, WaveformRenderer *parent)

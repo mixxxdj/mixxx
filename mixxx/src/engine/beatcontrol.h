@@ -8,7 +8,7 @@
 #include "engine/enginecontrol.h"
 
 #include "trackinfoobject.h"
-#include "beats.h"
+#include "track/beats.h"
 
 class ControlPushButton;
 class ControlObject;

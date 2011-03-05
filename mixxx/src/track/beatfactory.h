@@ -1,9 +1,9 @@
 #ifndef BEATFACTORY_H
 #define BEATFACTORY_H
 
-#include "beats.h"
-#include "beatgrid.h"
-#include "beatmatrix.h"
+#include "track/beats.h"
+#include "track/beatgrid.h"
+#include "track/beatmatrix.h"
 
 class BeatFactory {
   public:

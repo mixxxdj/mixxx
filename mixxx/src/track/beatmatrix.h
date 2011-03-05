@@ -5,14 +5,14 @@
 #include <QMutex>
 
 #include "trackinfoobject.h"
-#include "beats.h"
+#include "track/beats.h"
 
 // BeatMatrix is an implementation of the Beats interface that implements a list
 // of finite beats that have been extracted or otherwise annotated for a track.
 class BeatMatrix : public QObject, public Beats {
     Q_OBJECT
   public:
-    BeatMatrix(TrackPointer pTrack, QByteArray* pByteArray=NULL);
+    BeatMatrix(TrackPointer pTrack, const QByteArray* pByteArray=NULL);
     virtual ~BeatMatrix();
 
     // See method comments in beats.h
@@ -54,7 +54,7 @@ class BeatMatrix : public QObject, public Beats {
     void slotTrackBpmUpdated(double bpm);
 
   private:
-    void readByteArray(QByteArray* pByteArray);
+    void readByteArray(const QByteArray* pByteArray);
     // For internal use only.
     bool isValid() const;
     unsigned int numBeats() const;

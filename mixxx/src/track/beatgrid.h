@@ -5,7 +5,7 @@
 #include <QObject>
 
 #include "trackinfoobject.h"
-#include "beats.h"
+#include "track/beats.h"
 
 // BeatGrid is an implementation of the Beats interface that implements an
 // infinite grid of beats, aligned to a song simply by a starting offset of the
@@ -13,7 +13,7 @@
 class BeatGrid : public QObject, public virtual Beats {
     Q_OBJECT
   public:
-    BeatGrid(TrackPointer pTrack, QByteArray* pByteArray=NULL);
+    BeatGrid(TrackPointer pTrack, const QByteArray* pByteArray=NULL);
     virtual ~BeatGrid();
 
     // Initializes the BeatGrid to have a BPM of dBpm and the first beat offset
@@ -61,7 +61,7 @@ class BeatGrid : public QObject, public virtual Beats {
     void slotTrackBpmUpdated(double bpm);
 
   private:
-    void readByteArray(QByteArray* pByteArray);
+    void readByteArray(const QByteArray* pByteArray);
     // For internal use only.
     bool isValid() const;
 
