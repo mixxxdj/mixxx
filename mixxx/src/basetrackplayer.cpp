@@ -28,8 +28,8 @@ BaseTrackPlayer::BaseTrackPlayer(QObject* pParent,
     // pSafeGroupName is leaked. It's like 5 bytes so whatever.
     const char* pSafeGroupName = strdup(getGroup().toAscii().constData());
 
-    EngineChannel* pChannel = new EngineChannel(pSafeGroupName,
-                                                pConfig, defaultOrientation);
+    EngineChannel* pChannel = pMixingEngine->createChannel(
+        pSafeGroupName, pConfig, defaultOrientation);
     EngineBuffer* pEngineBuffer = pChannel->getEngineBuffer();
     pMixingEngine->addChannel(pChannel);
 
@@ -184,7 +184,7 @@ void BaseTrackPlayer::slotFinishLoading(TrackPointer pTrackInfoObject)
     // Read the tags if required
     if(!m_pLoadedTrack->getHeaderParsed())
         SoundSourceProxy::ParseHeader(m_pLoadedTrack.data());
-    
+
     m_pLoadedTrack->incTimesPlayed();
 
     // Generate waveform summary

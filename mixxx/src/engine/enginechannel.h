@@ -27,10 +27,10 @@ class EngineBuffer;
 class EngineFilterBlock;
 class EngineClipping;
 class EngineVolume;
-class EngineFlanger;
 class EngineVuMeter;
 class EngineVinylSoundEmu;
 class ControlPushButton;
+class EffectsManager;
 
 class EngineChannel : public EngineObject {
 public:
@@ -41,6 +41,7 @@ public:
     };
 
     EngineChannel(const char *group, ConfigObject<ConfigValue>* pConfig,
+                  EffectsManager* pEffectsManager,
                   ChannelOrientation defaultOrientation = CENTER);
     virtual ~EngineChannel();
 
@@ -64,11 +65,11 @@ private:
     EngineBuffer* m_pBuffer;
     EngineClipping* m_pClipping;
     EngineFilterBlock* m_pFilter;
-    EngineFlanger* m_pFlanger;
     EnginePregain* m_pPregain;
     EngineVinylSoundEmu* m_pVinylSoundEmu;
     EngineVolume* m_pVolume;
     EngineVuMeter* m_pVUMeter;
+    EffectsManager* m_pEffectsManager;
 };
 
 #endif

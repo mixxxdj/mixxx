@@ -2,6 +2,7 @@
 #define EFFECTCHAIN_H
 
 #include <QObject>
+#include <QMap>
 #include <QMutex>
 #include <QList>
 
@@ -23,6 +24,7 @@ class EffectChain : public QObject {
     EffectSlotPointer getEffectSlot(unsigned int slotNumber);
 
     bool isEnabled() const;
+    bool isEnabledForChannel(QString channelId) const;
 
     // Take a buffer of numSamples samples of audio from channel channelId,
     // provided as pInput, and apply each Effect in this EffectChain to it,
@@ -36,6 +38,8 @@ class EffectChain : public QObject {
     virtual void process(const QString channelId,
                          const CSAMPLE* pInput, CSAMPLE* pOutput,
                          const unsigned int numSamples);
+
+    void registerChannel(const QString channelId);
 
   signals:
     // Indicates that the effect pEffect has been loaded into slotNumber of
@@ -78,6 +82,8 @@ class EffectChain : public QObject {
     ControlObject* m_pControlChainParameter;
     ControlObject* m_pControlChainNextPreset;
     ControlObject* m_pControlChainPrevPreset;
+
+    QMap<QString, ControlObject*> m_channelEnableControls;
 
     QList<EffectSlotPointer> m_slots;
 

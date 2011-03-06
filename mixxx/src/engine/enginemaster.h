@@ -54,6 +54,14 @@ public:
     int numChannels() const;
     const CSAMPLE* getChannelBuffer(unsigned int i) const;
 
+    const QString getMasterChannelId() const {
+        return QString("[Master]");
+    }
+
+    const QString getHeadphoneChannelId() const {
+        return QString("[Headphone]");
+    }
+
     void process(const CSAMPLE *, const CSAMPLE *pOut, const int iBufferSize);
 
     // Add an EngineChannel to the mixing engine. This is not thread safe --
@@ -64,6 +72,9 @@ public:
                               double leftGain,
                               double centerGain,
                               double rightGain);
+
+    EngineChannel* createChannel(const char* pGroup, ConfigObject<ConfigValue> *pConfig,
+                                 EngineChannel::ChannelOrientation defaultOrientation);
 
   private:
     EffectsManager* m_pEffectsManager;

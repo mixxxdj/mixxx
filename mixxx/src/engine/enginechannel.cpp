@@ -22,19 +22,20 @@
 #include "engineclipping.h"
 #include "enginepregain.h"
 #include "enginevolume.h"
-#include "engineflanger.h"
 #include "enginefilterblock.h"
 #include "enginevumeter.h"
 #include "enginefilteriir.h"
+#include "effects/effectsmanager.h"
 
 EngineChannel::EngineChannel(const char* group,
                              ConfigObject<ConfigValue>* pConfig,
+                             EffectsManager* pEffectsManager,
                              EngineChannel::ChannelOrientation defaultOrientation)
         : m_group(group),
-          m_pConfig(pConfig) {
+          m_pConfig(pConfig),
+          m_pEffectsManager(pEffectsManager) {
     m_pPregain = new EnginePregain(group);
     m_pFilter = new EngineFilterBlock(group);
-    m_pFlanger = new EngineFlanger(group);
     m_pClipping = new EngineClipping(group);
     m_pBuffer = new EngineBuffer(group, pConfig);
     m_pVinylSoundEmu = new EngineVinylSoundEmu(pConfig, group);
@@ -50,12 +51,12 @@ EngineChannel::~EngineChannel() {
     delete m_pBuffer;
     delete m_pClipping;
     delete m_pFilter;
-    delete m_pFlanger;
     delete m_pPregain;
     delete m_pVinylSoundEmu;
     delete m_pVolume;
     delete m_pVUMeter;
     delete m_pPFL;
+    delete m_pOrientation;
 }
 
 const QString& EngineChannel::getGroup() {
@@ -67,6 +68,7 @@ bool EngineChannel::isPFL() {
 }
 
 void EngineChannel::process(const CSAMPLE*, const CSAMPLE * pOut, const int iBufferSize) {
+    CSAMPLE* pOutput = const_cast<CSAMPLE*>(pOut);
     // Process the raw audio
     m_pBuffer->process(0, pOut, iBufferSize);
     // Emulate vinyl sounds
@@ -75,8 +77,8 @@ void EngineChannel::process(const CSAMPLE*, const CSAMPLE * pOut, const int iBuf
     m_pPregain->process(pOut, pOut, iBufferSize);
     // Filter the channel with EQs
     m_pFilter->process(pOut, pOut, iBufferSize);
-    // TODO(XXX) LADSPA
-    m_pFlanger->process(pOut, pOut, iBufferSize);
+    // Process effects enabled for this channel
+    m_pEffectsManager->process(m_group, pOut, pOutput, iBufferSize);
     // Apply clipping
     m_pClipping->process(pOut, pOut, iBufferSize);
     // Update VU meter

@@ -99,6 +99,8 @@ void EffectSlotParameter::loadEffect(EffectPointer pEffect) {
             m_pControlValueMaximumLimit->set(dMaximumLimit);
             m_pControlValueType->set(0); // TODO(rryan) expose this from EffectParameter
             m_pControlValueDefault->set(dDefault);
+            // Default loaded controls to enabled.
+            m_pControlEnabled->set(1.0f);
         }
     } else {
         clear();

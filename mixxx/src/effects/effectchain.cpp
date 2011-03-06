@@ -18,6 +18,8 @@ EffectChain::EffectChain(QObject* pParent, unsigned int iChainNumber)
     m_pControlChainEnabled = new ControlObject(ConfigKey(m_group, "enabled"));
     connect(m_pControlChainEnabled, SIGNAL(valueChanged(double)),
             this, SLOT(slotControlChainEnabled(double)));
+    // Default chain to enabled.
+    m_pControlChainEnabled->set(1.0f);
 
     m_pControlChainMix = new ControlObject(ConfigKey(m_group, "mix"));
     connect(m_pControlChainMix, SIGNAL(valueChanged(double)),
@@ -50,6 +52,15 @@ EffectChain::~EffectChain() {
 bool EffectChain::isEnabled() const {
     QMutexLocker locker(&m_mutex);
     return privateIsEnabled();
+}
+
+bool EffectChain::isEnabledForChannel(QString channelId) const {
+    QMutexLocker locker(&m_mutex);
+    if (!m_channelEnableControls.contains(channelId)) {
+        qDebug() << "WARNING: Checking whether chain is enabled for channel that hasn't been registered.";
+        return false;
+    }
+    return m_channelEnableControls[channelId]->get() > 0.0f;
 }
 
 bool EffectChain::privateIsEnabled() const {
@@ -93,6 +104,17 @@ void EffectChain::addEffectSlot() {
             this, SLOT(slotEffectLoaded(EffectPointer, unsigned int)));
     m_slots.append(EffectSlotPointer(pEffectSlot));
     m_pControlNumEffectSlots->add(1.0f);
+}
+
+void EffectChain::registerChannel(const QString channelId) {
+    if (m_channelEnableControls.contains(channelId)) {
+        qDebug() << debugString() << "WARNING: registerChannel already has channel registered:" << channelId;
+        return;
+    }
+    ControlObject* pEnableControl = new ControlObject(
+        ConfigKey(m_group, QString("channel_%1").arg(channelId)));
+    pEnableControl->set(0.0f);
+    m_channelEnableControls[channelId] = pEnableControl;
 }
 
 void EffectChain::slotEffectLoaded(EffectPointer pEffect, unsigned int slotNumber) {

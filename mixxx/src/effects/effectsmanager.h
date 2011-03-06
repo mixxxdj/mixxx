@@ -25,10 +25,28 @@ class EffectsManager : public QObject {
     void addEffectChain();
     EffectChainPointer getEffectChain(unsigned int i);
 
+    // Take a buffer of numSamples samples of audio from channel channelId,
+    // provided as pInput, and apply each EffectChain enabled for this channel
+    // to it, putting the resulting output in pOutput. If pInput is equal to
+    // pOutput, then the operation must occur in-place. Both pInput and pOutput
+    // are represented as stereo interleaved samples. There are numSamples total
+    // samples, so numSamples/2 left channel samples and numSamples/2 right
+    // channel samples.
+    virtual void process(const QString channelId,
+                         const CSAMPLE* pInput, CSAMPLE* pOutput,
+                         const unsigned int numSamples);
+
+    void registerChannel(const QString channelID);
+
   private:
+    QString debugString() const {
+        return "EffectsManager";
+    }
+
     mutable QMutex m_mutex;
     QList<EffectsBackend*> m_effectsBackends;
     QList<EffectChainPointer> m_effectChains;
+    QSet<QString> m_registeredChannels;
 
     DISALLOW_COPY_AND_ASSIGN(EffectsManager);
 };

@@ -47,8 +47,10 @@ EngineMaster::EngineMaster(ConfigObject<ConfigValue> * _config,
                            const char * group,
                            EffectsManager* pEffectsManager)
         : m_pEffectsManager(pEffectsManager) {
-
     m_pWorkerScheduler = new EngineWorkerScheduler(this);
+
+    m_pEffectsManager->registerChannel(getMasterChannelId());
+    m_pEffectsManager->registerChannel(getHeadphoneChannelId());
 
     // Master sample rate
     ControlObject * sr = new ControlObject(ConfigKey(group, "samplerate"));
@@ -255,6 +257,9 @@ void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
         }
     }
 
+    // Process master channel effects
+    m_pEffectsManager->process(getMasterChannelId(), m_pMaster, m_pMaster, iBufferSize);
+
     // Master volume
     volume->process(m_pMaster, m_pMaster, iBufferSize);
 
@@ -289,6 +294,9 @@ void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
 
     // Add master to headphone with appropriate gain
     SampleUtil::addWithGain(m_pHead, m_pMaster, cmaster_gain, iBufferSize);
+
+    // Process headphone channel effects
+    m_pEffectsManager->process(getHeadphoneChannelId(), m_pHead, m_pHead, iBufferSize);
 
     // Head volume and clipping
     head_volume->process(m_pHead, m_pHead, iBufferSize);
@@ -342,4 +350,12 @@ double EngineMaster::gainForOrientation(EngineChannel::ChannelOrientation orient
         return rightGain;
     }
     return centerGain;
+}
+
+EngineChannel* EngineMaster::createChannel(const char* pGroup,
+                                           ConfigObject<ConfigValue>* pConfig,
+                                           EngineChannel::ChannelOrientation defaultOrientation) {
+    // Register the new channel with the Effects system.
+    m_pEffectsManager->registerChannel(pGroup);
+    return new EngineChannel(pGroup, pConfig, m_pEffectsManager, defaultOrientation);
 }
