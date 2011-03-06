@@ -20,6 +20,10 @@ class EffectSlot : public QObject {
     EffectSlot(QObject* pParent, const unsigned int iChainNumber, const unsigned int iSlotNumber);
     virtual ~EffectSlot();
 
+    static QString formatGroupString(const unsigned int iChainNumber, const unsigned int iSlotNumber) {
+        return QString("[EffectChain%1_Effect%2]").arg(iChainNumber+1).arg(iSlotNumber+1);
+    }
+
     // Return the currently loaded effect, if any. If no effect is loaded,
     // returns a null EffectPointer.
     EffectPointer getEffect() const;

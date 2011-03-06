@@ -4,24 +4,30 @@
 #include "defs.h"
 #include "effects/effectslotparameter.h"
 
-EffectSlotParameter::EffectSlotParameter(QObject* pParent, QString group, unsigned int parameterNumber)
+EffectSlotParameter::EffectSlotParameter(QObject* pParent, const unsigned int iChainNumber,
+                                         const unsigned int iSlotNumber,
+                                         const unsigned int iParameterNumber)
         : QObject(),
           m_mutex(QMutex::Recursive),
-          m_iParameterNumber(parameterNumber),
-          m_group(group) {
-    QString basename = QString("parameter%1").arg(parameterNumber+1);
-
-    m_pControlEnabled = new ControlObject(ConfigKey(group, QString("%1_enabled").arg(basename)));
-    m_pControlValue = new ControlObject(ConfigKey(group, QString("%1_value").arg(basename)));
-    m_pControlValueNormalized = new ControlObject(ConfigKey(group, QString("%1_value_normalized").arg(basename)));
-    m_pControlValueType = new ControlObject(ConfigKey(group, QString("%1_value_type").arg(basename)));
-    m_pControlValueDefault = new ControlObject(ConfigKey(group, QString("%1_value_default").arg(basename)));
-    m_pControlValueMaximum = new ControlObject(ConfigKey(group, QString("%1_value_max").arg(basename)));
-    m_pControlValueMaximumLimit = new ControlObject(ConfigKey(group, QString("%1_value_max_limit").arg(basename)));
-    m_pControlValueMinimum = new ControlObject(ConfigKey(group, QString("%1_value_min").arg(basename)));
-    m_pControlValueMinimumLimit = new ControlObject(ConfigKey(group, QString("%1_value_min_limit").arg(basename)));
+          m_iChainNumber(iChainNumber),
+          m_iSlotNumber(iSlotNumber),
+          m_iParameterNumber(iParameterNumber),
+          m_group(formatGroupString(iChainNumber, iSlotNumber, iParameterNumber)) {
+    m_pControlEnabled = new ControlObject(ConfigKey(m_group, QString("enabled")));
+    m_pControlLinked = new ControlObject(ConfigKey(m_group, QString("linked")));
+    m_pControlValue = new ControlObject(ConfigKey(m_group, QString("value")));
+    m_pControlValueNormalized = new ControlObject(ConfigKey(m_group, QString("value_normalized")));
+    m_pControlValueType = new ControlObject(ConfigKey(m_group, QString("value_type")));
+    m_pControlValueDefault = new ControlObject(ConfigKey(m_group, QString("value_default")));
+    m_pControlValueMaximum = new ControlObject(ConfigKey(m_group, QString("value_max")));
+    m_pControlValueMaximumLimit = new ControlObject(ConfigKey(m_group, QString("value_max_limit")));
+    m_pControlValueMinimum = new ControlObject(ConfigKey(m_group, QString("value_min")));
+    m_pControlValueMinimumLimit = new ControlObject(ConfigKey(m_group, QString("value_min_limit")));
 
     connect(m_pControlEnabled, SIGNAL(valueChanged(double)),
+            this, SLOT(slotEnabled(double)),
+            Qt::DirectConnection);
+    connect(m_pControlLinked, SIGNAL(valueChanged(double)),
             this, SLOT(slotEnabled(double)),
             Qt::DirectConnection);
     connect(m_pControlValue, SIGNAL(valueChanged(double)),
@@ -56,6 +62,7 @@ EffectSlotParameter::~EffectSlotParameter() {
     qDebug() << debugString() << "destroyed";
     m_pEffectParameter.clear();
     delete m_pControlEnabled;
+    delete m_pControlLinked;
     delete m_pControlValue;
     delete m_pControlValueNormalized;
     delete m_pControlValueType;
@@ -99,8 +106,9 @@ void EffectSlotParameter::loadEffect(EffectPointer pEffect) {
             m_pControlValueMaximumLimit->set(dMaximumLimit);
             m_pControlValueType->set(0); // TODO(rryan) expose this from EffectParameter
             m_pControlValueDefault->set(dDefault);
-            // Default loaded controls to enabled.
+            // Default loaded parameters to enabled and unlinked
             m_pControlEnabled->set(1.0f);
+            m_pControlLinked->set(0.0f);
         }
     } else {
         clear();
@@ -126,6 +134,11 @@ void EffectSlotParameter::slotEnabled(double v) {
     QMutexLocker locker(&m_mutex);
     qDebug() << "WARNING: Somebody has set a read-only control. Stability may be compromised.";
     // TODO(rryan) add protection
+}
+
+void EffectSlotParameter::slotLinked(double v) {
+    qDebug() << debugString() << "slotLinked" << v;
+    QMutexLocker locker(&m_mutex);
 }
 
 void EffectSlotParameter::slotValue(double v) {
@@ -226,4 +239,3 @@ void EffectSlotParameter::slotValueMinimumLimit(double v) {
     QMutexLocker locker(&m_mutex);
     qDebug() << debugString() << "WARNING: Somebody has set a read-only control. Stability may be compromised.";
 }
-

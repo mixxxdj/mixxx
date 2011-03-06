@@ -19,6 +19,10 @@ class EffectChain : public QObject {
     EffectChain(QObject* pParent, const unsigned int iChainNumber);
     virtual ~EffectChain();
 
+    static QString formatGroupString(const unsigned int iChainNumber) {
+        return QString("[EffectChain%1]").arg(iChainNumber+1);
+    }
+
     // The ID of an EffectChain is a unique ID given to it to help associate it
     // with the preset from which it was loaded.
     QString id() const;

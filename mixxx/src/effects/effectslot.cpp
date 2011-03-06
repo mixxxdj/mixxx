@@ -11,12 +11,13 @@ EffectSlot::EffectSlot(QObject* pParent, const unsigned int iChainNumber, const 
           m_iChainNumber(iChainNumber),
           m_iSlotNumber(iSlotNumber),
           // The control group names are 1-indexed while internally everything is 0-indexed.
-          m_group(QString("[EffectChain%1_Effect%2]").arg(m_iChainNumber+1).arg(m_iSlotNumber+1)) {
+          m_group(formatGroupString(m_iChainNumber, m_iSlotNumber)) {
     m_pControlEnabled = new ControlObject(ConfigKey(m_group, "enabled"));
     m_pControlNumParameters = new ControlObject(ConfigKey(m_group, "num_parameters"));
 
     for (unsigned int i = 0; i < kMaxParameters; ++i) {
-        EffectSlotParameter* pParameter = new EffectSlotParameter(this, m_group, m_parameters.size());
+        EffectSlotParameter* pParameter = new EffectSlotParameter(this, m_iChainNumber,
+                                                                  m_iSlotNumber, m_parameters.size());
         m_parameters.append(pParameter);
     }
 

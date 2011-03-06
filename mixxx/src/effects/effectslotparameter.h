@@ -13,35 +13,25 @@
 class EffectSlotParameter : QObject {
     Q_OBJECT
   public:
-    EffectSlotParameter(QObject* pParent, QString group, unsigned int parameterNumber);
+    EffectSlotParameter(QObject* pParent, const unsigned int iChainNumber,
+                        const unsigned int iSlotNumber, const unsigned int iParameterNumber);
     virtual ~EffectSlotParameter();
+
+    static QString formatGroupString(const unsigned int iChainNumber, const unsigned int iSlotNumber,
+                              const unsigned int iParameterNumber) {
+        return QString("[EffectChain%1_Effect%2_Parameter%3]")
+                .arg(iChainNumber+1)
+                .arg(iSlotNumber+1)
+                .arg(iParameterNumber+1);
+    }
 
     // Load the parameter of the given effect into this EffectSlotParameter
     void loadEffect(EffectPointer pEffect);
 
-    // bool isEnabled() const;
-
-    // double getValue() const;
-    // void setValue(double value);
-
-    // double getValueNormalized() const;
-    // void setValueNormalized(double value);
-
-    // double getDefault() const;
-    // void setDefault(double defaultValue);
-
-    // double getMinimum() const;
-    // void setMinimum(double minimum);
-
-    // double getMaximum() const;
-    // void setMaximum(double maximum);
-
-    // double getMaximumLimit() const;
-    // double getMinimumLimit() const;
-
   private slots:
     // Solely for handling control changes
     void slotEnabled(double v);
+    void slotLinked(double v);
     void slotValue(double v);
     void slotValueNormalized(double v);
     void slotValueType(double v);
@@ -60,6 +50,8 @@ class EffectSlotParameter : QObject {
     void clear();
 
     mutable QMutex m_mutex;
+    const unsigned int m_iChainNumber;
+    const unsigned int m_iSlotNumber;
     const unsigned int m_iParameterNumber;
     const QString m_group;
     EffectParameterPointer m_pEffectParameter;
@@ -69,6 +61,7 @@ class EffectSlotParameter : QObject {
     ////////////////////////////////////////////////////////////////////////////////
 
     ControlObject* m_pControlEnabled;
+    ControlObject* m_pControlLinked;
     ControlObject* m_pControlValue;
     ControlObject* m_pControlValueNormalized;
     ControlObject* m_pControlValueType;

@@ -8,7 +8,7 @@ EffectChain::EffectChain(QObject* pParent, unsigned int iChainNumber)
           m_mutex(QMutex::Recursive),
           m_iChainNumber(iChainNumber),
           // The control group names are 1-indexed while internally everything is 0-indexed.
-          m_group(QString("[EffectChain%1]").arg(iChainNumber+1)),
+          m_group(formatGroupString(iChainNumber)),
           m_id(""),
           m_name("") {
 
@@ -172,7 +172,17 @@ void EffectChain::slotControlChainMix(double v) {
 
 void EffectChain::slotControlChainParameter(double v) {
     qDebug() << debugString() << "slotControlChainParameter" << v;
-    //QMutexLocker locker(&m_mutex);
+    QMutexLocker locker(&m_mutex);
+
+    // Convert from stupid control system
+    v = v / 127.0f;
+
+    // Clamp to [0.0, 1.0]
+    if (v < 0.0f || v > 1.0f) {
+        qDebug() << debugString() << "value out of limits";
+        v = math_clamp(v, 0.0f, 1.0f);
+        m_pControlChainParameter->set(v);
+    }
 }
 
 void EffectChain::slotControlChainNextPreset(double v) {
