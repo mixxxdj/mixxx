@@ -372,7 +372,7 @@ void TrackInfoObject::setHeaderParsed(bool parsed)
 QString TrackInfoObject::getInfo()  const
 {
     QMutexLocker lock(&m_qMutex);
-    QString artist = m_sArtist.trimmed() == "" ? "" : m_sArtist + ", ";
+    QString artist = m_sArtist.trimmed() == "" ? "" : m_sArtist + "\n";
     QString sInfo = artist + m_sTitle;
     return sInfo;
 }
