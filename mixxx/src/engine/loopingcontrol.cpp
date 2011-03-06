@@ -50,6 +50,8 @@ LoopingControl::LoopingControl(const char * _group,
     connect(m_pCOLoopStartPosition, SIGNAL(valueChanged(double)),
             this, SLOT(slotLoopStartPos(double)),
             Qt::DirectConnection);
+    connect(m_pCOLoopStartPosition, SIGNAL(valueChangedFromEngine(double)),
+            this, SLOT(slotLoopStartPos(double)));
 
     m_pCOLoopEndPosition =
             new ControlObject(ConfigKey(_group, "loop_end_position"));
@@ -57,6 +59,14 @@ LoopingControl::LoopingControl(const char * _group,
     connect(m_pCOLoopEndPosition, SIGNAL(valueChanged(double)),
             this, SLOT(slotLoopEndPos(double)),
             Qt::DirectConnection);
+    connect(m_pCOLoopEndPosition, SIGNAL(valueChangedFromEngine(double)),
+            this, SLOT(slotLoopEndPos(double)));
+
+    connect(m_pCOLoopEnabled, SIGNAL(valueChanged(double)),
+            this, SLOT(slotLoopEnabled(double)),
+            Qt::DirectConnection);
+    connect(m_pCOLoopEnabled, SIGNAL(valueChangedFromEngine(double)),
+            this, SLOT(slotLoopEnabled(double)));
 }
 
 LoopingControl::~LoopingControl() {
@@ -240,6 +250,10 @@ void LoopingControl::slotLoopEndPos(double pos) {
         setLoopingEnabled(false);
     }
     m_iLoopEndSample = newpos;
+}
+
+void LoopingControl::slotLoopEnabled(double value) {
+    m_bLoopingEnabled = value == 1.0 ? true : false;
 }
 
 void LoopingControl::notifySeek(double dNewPlaypos) {
