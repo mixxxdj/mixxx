@@ -102,7 +102,7 @@ namespace soundtouch
 /// by a large amount, you might wish to try a smaller value on this.
 ///
 /// Increasing this value increases computational burden & vice versa.
-#define DEFAULT_OVERLAP_MS      8
+#define DEFAULT_OVERLAP_MS      12
 
 
 /// Class that does the time-stretch (tempo change) effect for the processed
