@@ -28,7 +28,7 @@ public:
 
 public slots:
     void slotTrackLoaded(TrackPointer tio, int iSampleRate, int iNumSamples);
-    void slotUpdatedTrackBeats(int);
+    void slotUpdatedTrackBeats();
     void slotBeatLoop(double);
     void slotBeatSeek(double);
     void slotBeatLoopSize(int);

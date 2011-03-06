@@ -130,11 +130,11 @@ void BeatControl::slotTrackLoaded(TrackPointer tio,
     m_pTrack = tio;
     m_pBeats = m_pTrack->getBeats();
 
-    connect(m_pTrack.data(), SIGNAL(trackBeatsUpdated(int)),
-                    this, SLOT(beatsUpdated(int)));
+    connect(m_pTrack.data(), SIGNAL(beatsUpdated()),
+                    this, SLOT(slotUpdatedTrackBeats()));
 }
 
-void BeatControl::slotUpdatedTrackBeats(int updated)
+void BeatControl::slotUpdatedTrackBeats()
 {
     m_pBeats = m_pTrack->getBeats();
     if ( !m_pBeats )
