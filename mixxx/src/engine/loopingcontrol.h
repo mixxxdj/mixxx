@@ -68,6 +68,8 @@ class LoopingControl : public EngineControl {
     int m_iLoopEndSample;
     int m_iLoopStartSample;
     int m_iCurrentSample;
+    ControlObject* m_pQuantizeEnabled;
+    ControlObject* m_pQuantizeBeat;
 };
 
 #endif /* LOOPINGCONTROL_H */

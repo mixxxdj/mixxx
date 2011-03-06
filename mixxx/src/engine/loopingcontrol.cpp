@@ -67,6 +67,9 @@ LoopingControl::LoopingControl(const char * _group,
             Qt::DirectConnection);
     connect(m_pCOLoopEnabled, SIGNAL(valueChangedFromEngine(double)),
             this, SLOT(slotLoopEnabled(double)));
+
+    m_pQuantizeEnabled = ControlObject::getControl(ConfigKey(_group, "quantize"));
+    m_pQuantizeBeat = ControlObject::getControl(ConfigKey(_group, "quantize_beat"));
 }
 
 LoopingControl::~LoopingControl() {
@@ -161,7 +164,12 @@ void LoopingControl::hintReader(QList<Hint>& hintList) {
 void LoopingControl::slotLoopIn(double val) {
     if (val) {
         // set loop in position
-        m_iLoopStartSample = m_iCurrentSample;
+        if ( m_pQuantizeEnabled->get()) {
+            m_iLoopStartSample = m_pQuantizeBeat->get() * 2.0f;
+        }
+        else {
+            m_iLoopStartSample = m_iCurrentSample;
+        }
         m_pCOLoopStartPosition->set(m_iLoopStartSample);
 
         // Reset the loop out position if it is before the loop in so that loops
@@ -175,17 +183,24 @@ void LoopingControl::slotLoopIn(double val) {
 }
 
 void LoopingControl::slotLoopOut(double val) {
-    if (val) {
+    int pos;
 
+    if ( m_pQuantizeEnabled->get()) {
+        pos = m_pQuantizeBeat->get() * 2.0f;
+    }
+    else {
+        pos = m_iCurrentSample;
+    }
+
+    if (val) {
         // If the user is trying to set a loop-out before the loop in or without
         // having a loop-in, then ignore it.
-        if (m_iLoopStartSample == -1 ||
-            m_iCurrentSample < m_iLoopStartSample) {
+        if (m_iLoopStartSample == -1 || pos < m_iLoopStartSample) {
             return;
         }
 
         //set loop out position and start looping
-        m_iLoopEndSample = m_iCurrentSample;
+        m_iLoopEndSample = pos;
         m_pCOLoopEndPosition->set(m_iLoopEndSample);
 
         if (m_iLoopStartSample != -1 &&
