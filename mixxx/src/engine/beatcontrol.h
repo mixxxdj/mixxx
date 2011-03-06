@@ -1,5 +1,5 @@
-#ifndef __BEATJUGGLING_CONTROL__
-#define __BEATJUGGLING_CONTROL__
+#ifndef __BEAT_CONTROL__
+#define __BEAT_CONTROL__
 
 #include <QObject>
 #include <QSignalMapper>
@@ -48,11 +48,11 @@ private:
     TrackPointer m_pTrack;
     BeatsPointer m_pBeats;
 
-    ControlObjectThread *m_pCOLoopStart;
-    ControlObjectThread *m_pCOLoopEnd;
-    ControlObjectThread *m_pCOLoopEnabled;
+    ControlObject* m_pCOLoopStart;
+    ControlObject* m_pCOLoopEnd;
+    ControlObject* m_pCOLoopEnabled;
 
-    ControlObject *m_pCOBeatSeek;
+    ControlObject* m_pCOBeatSeek;
     QList<ControlPushButton*> m_pCOBeatSeeks;
     QSignalMapper* m_smBeatSeek;
 

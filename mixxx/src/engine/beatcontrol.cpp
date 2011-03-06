@@ -98,9 +98,9 @@ BeatControl::BeatControl(const char *_group,
             Qt::DirectConnection);
 
     // Piggy back on top of the existent loop control for this deck.
-    m_pCOLoopStart = new ControlObjectThread(ControlObject::getControl(ConfigKey(_group, "loop_start_position")));
-    m_pCOLoopEnd = new ControlObjectThread(ControlObject::getControl(ConfigKey(_group, "loop_end_position")));
-    m_pCOLoopEnabled = new ControlObjectThread(ControlObject::getControl(ConfigKey(_group, "reloop_exit")));
+    m_pCOLoopStart = ControlObject::getControl(ConfigKey(_group, "loop_start_position"));
+    m_pCOLoopEnd = ControlObject::getControl(ConfigKey(_group, "loop_end_position"));
+    m_pCOLoopEnabled = ControlObject::getControl(ConfigKey(_group, "loop_enabled"));
 }
 
 BeatControl::~BeatControl()
@@ -187,9 +187,9 @@ void BeatControl::slotBeatLoop(double beats)
     // for that here. Probably should just generate stereo sample numbers
     // though, from the get go 
     // - Phillip Whelan
-    m_pCOLoopStart->slotSet((double)loop_in * 2);
-    m_pCOLoopEnd->slotSet((double)loop_out * 2);
-    m_pCOLoopEnabled->slotSet(1);
+    m_pCOLoopStart->set((double)loop_in * 2);
+    m_pCOLoopEnd->set((double)loop_out * 2);
+    m_pCOLoopEnabled->set(1);
 }
 
 void BeatControl::slotBeatLoopSize(int i)

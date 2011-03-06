@@ -53,6 +53,7 @@ class LoopingControl : public EngineControl {
     void slotReloopExit(double);
     void slotLoopStartPos(double);
     void slotLoopEndPos(double);
+    void slotLoopEnabled(double);
 
   private:
     void setLoopingEnabled(bool enabled);
