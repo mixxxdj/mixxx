@@ -9,6 +9,7 @@
 #include "skin/legacyskinparser.h"
 
 #include "library/library.h"
+#include "effects/effectsmanager.h"
 #include "playermanager.h"
 
 SkinLoader::SkinLoader(ConfigObject<ConfigValue>* pConfig) :
@@ -50,12 +51,13 @@ QString SkinLoader::getConfiguredSkinPath() {
 }
 
 QWidget* SkinLoader::loadDefaultSkin(QWidget* pParent,
-                                       MixxxKeyboard* pKeyboard,
-                                       PlayerManager* pPlayerManager,
-                                       Library* pLibrary) {
+                                     MixxxKeyboard* pKeyboard,
+                                     PlayerManager* pPlayerManager,
+                                     Library* pLibrary,
+                                     EffectsManager* pEffectsManager) {
     QString skinPath = getConfiguredSkinPath();
 
-    LegacySkinParser legacy(m_pConfig, pKeyboard, pPlayerManager, pLibrary);
+    LegacySkinParser legacy(m_pConfig, pKeyboard, pPlayerManager, pLibrary, pEffectsManager);
     qDebug() << "Legacy can parse:" << legacy.canParse(skinPath);
     return legacy.parseSkin(skinPath, pParent);
 }

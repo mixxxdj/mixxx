@@ -8,7 +8,9 @@ EffectChain::EffectChain(QObject* pParent, unsigned int iChainNumber)
           m_mutex(QMutex::Recursive),
           m_iChainNumber(iChainNumber),
           // The control group names are 1-indexed while internally everything is 0-indexed.
-          m_group(QString("[EffectChain%1]").arg(iChainNumber+1)) {
+          m_group(QString("[EffectChain%1]").arg(iChainNumber+1)),
+          m_id(""),
+          m_name("") {
 
     m_pControlNumEffectSlots = new ControlObject(ConfigKey(m_group, "num_effectslots"));
     m_pControlNumEffectSlots->set(0.0f);
@@ -49,6 +51,26 @@ EffectChain::~EffectChain() {
     m_slots.clear();
 }
 
+QString EffectChain::id() const {
+    QMutexLocker locker(&m_mutex);
+    return m_id;
+}
+
+void EffectChain::setId(const QString id) {
+    QMutexLocker locker(&m_mutex);
+    m_id = id;
+}
+
+QString EffectChain::name() const {
+    QMutexLocker locker(&m_mutex);
+    return m_name;
+}
+
+void EffectChain::setName(const QString name) {
+    QMutexLocker locker(&m_mutex);
+    m_name = name;
+}
+
 bool EffectChain::isEnabled() const {
     QMutexLocker locker(&m_mutex);
     return privateIsEnabled();
@@ -60,7 +82,7 @@ bool EffectChain::isEnabledForChannel(QString channelId) const {
         qDebug() << "WARNING: Checking whether chain is enabled for channel that hasn't been registered.";
         return false;
     }
-    return m_channelEnableControls[channelId]->get() > 0.0f;
+    return m_channelEnableControls[channelId]->get() > 0.0f && privateIsEnabled();
 }
 
 bool EffectChain::privateIsEnabled() const {
@@ -157,12 +179,14 @@ void EffectChain::slotControlChainNextPreset(double v) {
     qDebug() << debugString() << "slotControlChainNextPreset" << v;
     //QMutexLocker locker(&m_mutex);
     // const int read is not worth locking for
-    emit(nextPreset(m_iChainNumber));
+    if (v > 0)
+        emit(nextPreset(m_iChainNumber));
 }
 
 void EffectChain::slotControlChainPrevPreset(double v) {
     qDebug() << debugString() << "slotControlChainPrevPreset" << v;
     //QMutexLocker locker(&m_mutex);
     // const int read is not worth locking for
-    emit(prevPreset(m_iChainNumber));
+    if (v > 0)
+        emit(prevPreset(m_iChainNumber));
 }

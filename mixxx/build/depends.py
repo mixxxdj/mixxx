@@ -432,6 +432,7 @@ class MixxxCore(Feature):
                    "widget/wpixmapstore.cpp",
                    "widget/hexspinbox.cpp",
                    "widget/wtrackproperty.cpp",
+                   "widget/weffectchain.cpp",
 
                    "mathstuff.cpp",
 

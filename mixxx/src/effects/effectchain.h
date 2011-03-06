@@ -19,6 +19,15 @@ class EffectChain : public QObject {
     EffectChain(QObject* pParent, const unsigned int iChainNumber);
     virtual ~EffectChain();
 
+    // The ID of an EffectChain is a unique ID given to it to help associate it
+    // with the preset from which it was loaded.
+    QString id() const;
+    void setId(const QString id);
+
+    // Get the human-readable name of the EffectChain
+    QString name() const;
+    void setName(const QString name);
+
     unsigned int numSlots() const;
     void addEffectSlot();
     EffectSlotPointer getEffectSlot(unsigned int slotNumber);
@@ -55,6 +64,9 @@ class EffectChain : public QObject {
     // previous preset into it.
     void prevPreset(unsigned int chainNumber);
 
+    // Signal that indicates that the EffectChain has been updated.
+    void updated();
+
   private slots:
     void slotEffectLoaded(EffectPointer pEffect, unsigned int slotNumber);
 
@@ -75,6 +87,9 @@ class EffectChain : public QObject {
     mutable QMutex m_mutex;
     const unsigned int m_iChainNumber;
     const QString m_group;
+
+    QString m_id;
+    QString m_name;
 
     ControlObject* m_pControlNumEffectSlots;
     ControlObject* m_pControlChainEnabled;

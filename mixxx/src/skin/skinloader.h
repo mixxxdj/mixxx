@@ -9,15 +9,17 @@ class MixxxKeyboard;
 class PlayerManager;
 class Library;
 class MixxxView;
+class EffectsManager;
 
 class SkinLoader {
   public:
     SkinLoader(ConfigObject<ConfigValue>* pConfig);
     ~SkinLoader();
     QWidget* loadDefaultSkin(QWidget* pParent,
-                               MixxxKeyboard* pKeyboard,
-                               PlayerManager* pPlayerManager,
-                               Library* pLibrary);
+                             MixxxKeyboard* pKeyboard,
+                             PlayerManager* pPlayerManager,
+                             Library* pLibrary,
+                             EffectsManager* pEffectsManager);
 
     QString getConfiguredSkinPath();
 

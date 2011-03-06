@@ -256,6 +256,7 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
     m_pEffectsManager->addEffectChain();
 
     EffectChainPointer effectChain = m_pEffectsManager->getEffectChain(0);
+    effectChain->setName("Flanger");
     effectChain->addEffectSlot();
 
     EffectSlotPointer effectSlot = effectChain->getEffectSlot(0);
@@ -443,9 +444,10 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
     // Loads the skin as a child of m_pView
     // assignment itentional in next line
     if (!(m_pWidgetParent = m_pSkinLoader->loadDefaultSkin(m_pView,
-                                        m_pKeyboard,
-                                        m_pPlayerManager,
-                                        m_pLibrary))) {
+                                                           m_pKeyboard,
+                                                           m_pPlayerManager,
+                                                           m_pLibrary,
+                                                           m_pEffectsManager))) {
         qDebug() << "Could not load default skin.";
     }
 
@@ -1346,9 +1348,10 @@ void MixxxApp::rebootMixxxView() {
 
     // assignment in next line intentional
     if (!(m_pWidgetParent = m_pSkinLoader->loadDefaultSkin(m_pView,
-                                        m_pKeyboard,
-                                        m_pPlayerManager,
-                                        m_pLibrary))) {
+                                                           m_pKeyboard,
+                                                           m_pPlayerManager,
+                                                           m_pLibrary,
+                                                           m_pEffectsManager))) {
         qDebug() << "Could not reload the skin.";
     }
 
