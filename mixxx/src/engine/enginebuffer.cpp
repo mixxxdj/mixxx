@@ -37,6 +37,7 @@
 #include "beatcontrol.h"
 #include "ratecontrol.h"
 #include "bpmcontrol.h"
+#include "quantizecontrol.h"
 
 #include "trackinfoobject.h"
 
@@ -142,6 +143,14 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
     m_pTrackSamples = new ControlObject(ConfigKey(group, "track_samples"));
     m_pTrackSampleRate = new ControlObject(ConfigKey(group, "track_samplerate"));
 
+    m_pReader = new CachingReader(_group, _config);
+
+    // Quantization Controller for enabling and disabling the
+    // quantization (alignment) of loop in/out positions and (hot)cues with
+    // beats.
+    m_pQuantizeControl = new QuantizeControl(_group, _config, m_pReader);
+    appendControl(m_pQuantizeControl);
+
     // Create the Loop Controller
     m_pLoopingControl = new LoopingControl(_group, _config);
     appendControl(m_pLoopingControl);
@@ -157,7 +166,6 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
     m_pBpmControl = new BpmControl(_group, _config);
     appendControl(m_pBpmControl);
 
-    m_pReader = new CachingReader(_group, _config);
     connect(m_pReader, SIGNAL(trackLoaded(TrackPointer, int, int)),
             this, SLOT(slotTrackLoaded(TrackPointer, int, int)),
             Qt::DirectConnection);
