@@ -47,6 +47,7 @@ class ITunesFeature : public LibraryFeature {
     void parsePlaylists(QXmlStreamReader &xml);
     void parsePlaylist(QXmlStreamReader &xml, QSqlQuery &query1, QSqlQuery &query2);
     void clearTable(QString table_name);
+    bool readNextStartElement(QXmlStreamReader& xml);
 
     ITunesTrackModel* m_pITunesTrackModel;
     ITunesPlaylistModel* m_pITunesPlaylistModel;

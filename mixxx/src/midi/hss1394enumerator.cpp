@@ -17,9 +17,11 @@
 *                                                                         *
 ***************************************************************************/
 
+#include <HSS1394/HSS1394.h>
+
 #include "mididevicehss1394.h"
 #include "hss1394enumerator.h"
-#include "HSS1394/HSS1394.h"
+
 
 Hss1394Enumerator::Hss1394Enumerator() : MidiDeviceEnumerator() {
 }
@@ -34,7 +36,7 @@ Hss1394Enumerator::~Hss1394Enumerator() {
 	Node::Shutdown();
 }
 
-// Enumerate the HSS1394 MIDI devices 
+// Enumerate the HSS1394 MIDI devices
 QList<MidiDevice*> Hss1394Enumerator::queryDevices() {
     qDebug() << "Scanning HSS1394 devices:";
     using namespace hss1394;
@@ -56,7 +58,7 @@ QList<MidiDevice*> Hss1394Enumerator::queryDevices() {
             qDebug() << " " << message;
             MidiDeviceHss1394 *currentDevice = new MidiDeviceHss1394(/*new MidiControlProcessor(NULL)*/ NULL,
                                                                           tNodeInfo,
-                                                                          i); 
+                                                                          i);
             m_devices.push_back((MidiDevice*)currentDevice);
 		}
 
