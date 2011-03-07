@@ -258,9 +258,7 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
     EffectChainPointer pChain = EffectChainPointer(new EffectChain());
     pChain->setId("org.mixxx.effectchain.flanger");
     pChain->setName("Flanger");
-    pChain->setEnabled(true);
     pChain->setParameter(0.0f);
-    pChain->setMix(1.0f);
 
     EffectManifestPointer flangerManifest = pNativeBackend->getAvailableEffects()[0];
     EffectPointer flanger = pNativeBackend->instantiateEffect(flangerManifest);

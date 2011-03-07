@@ -28,12 +28,6 @@ class EffectChain : public QObject {
     QString name() const;
     void setName(const QString name);
 
-    bool enabled() const;
-    void setEnabled(bool bEnabled);
-
-    double mix() const;
-    void setMix(double dMix);
-
     double parameter() const;
     void setParameter(double dParameter);
 
@@ -56,9 +50,9 @@ class EffectChain : public QObject {
                          const unsigned int numSamples);
 
   signals:
-    // Signal that indicates that the EffectChain has been updated.
+    // Signal that indicates that the EffectChain has changed (i.e. an Effect
+    // has been added or removed).
     void updated();
-
   private:
     QString debugString() const {
         return QString("EffectChain(%1)").arg(m_id);

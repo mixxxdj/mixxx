@@ -34,26 +34,6 @@ void EffectChain::setName(const QString name) {
     m_name = name;
 }
 
-bool EffectChain::enabled() const {
-    QMutexLocker locker(&m_mutex);
-    return m_bEnabled;
-}
-
-void EffectChain::setEnabled(bool bEnabled) {
-    QMutexLocker locker(&m_mutex);
-    m_bEnabled = bEnabled;
-}
-
-double EffectChain::mix() const {
-    QMutexLocker locker(&m_mutex);
-    return m_dMix;
-}
-
-void EffectChain::setMix(double dMix) {
-    QMutexLocker locker(&m_mutex);
-    m_dMix = dMix;
-}
-
 double EffectChain::parameter() const {
     QMutexLocker locker(&m_mutex);
     return m_dParameter;

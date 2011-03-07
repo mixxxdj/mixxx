@@ -10,10 +10,10 @@ EffectChainSlot::EffectChainSlot(QObject* pParent, unsigned int iChainNumber)
           // The control group names are 1-indexed while internally everything is 0-indexed.
           m_group(formatGroupString(iChainNumber)) {
 
-    m_pControlNumEffectSlots = new ControlObject(ConfigKey(m_group, "num_effectslots"));
-    m_pControlNumEffectSlots->set(0.0f);
-    connect(m_pControlNumEffectSlots, SIGNAL(valueChanged(double)),
-            this, SLOT(slotControlNumEffectSlots(double)));
+    m_pControlNumEffects = new ControlObject(ConfigKey(m_group, "num_effects"));
+    m_pControlNumEffects->set(0.0f);
+    connect(m_pControlNumEffects, SIGNAL(valueChanged(double)),
+            this, SLOT(slotControlNumEffects(double)));
 
     m_pControlChainEnabled = new ControlObject(ConfigKey(m_group, "enabled"));
     connect(m_pControlChainEnabled, SIGNAL(valueChanged(double)),
@@ -40,7 +40,7 @@ EffectChainSlot::EffectChainSlot(QObject* pParent, unsigned int iChainNumber)
 
 EffectChainSlot::~EffectChainSlot() {
     qDebug() << debugString() << "destroyed";
-    delete m_pControlNumEffectSlots;
+    delete m_pControlNumEffects;
     delete m_pControlChainEnabled;
     delete m_pControlChainMix;
     delete m_pControlChainParameter;
@@ -61,17 +61,13 @@ QString EffectChainSlot::name() const {
     QMutexLocker locker(&m_mutex);
     if (m_pEffectChain)
         return m_pEffectChain->name();
-    return "";
+    return tr("None");
 }
 
-void EffectChainSlot::loadEffectChain(EffectChainPointer pEffectChain) {
-    qDebug() << debugString() << "loadEffectChain" << pEffectChain->id();
-    QMutexLocker locker(&m_mutex);
-
-    if (pEffectChain) {
-        m_pEffectChain = pEffectChain;
-
-        QList<EffectPointer> effects = pEffectChain->getEffects();
+void EffectChainSlot::slotChainUpdated() {
+    qDebug() << debugString() << "slotChainUpdated";
+    if (m_pEffectChain) {
+        QList<EffectPointer> effects = m_pEffectChain->getEffects();
         for (int i = 0; i < effects.size(); ++i) {
             EffectPointer pEffect = effects[i];
             while (i >= m_slots.size()) {
@@ -83,12 +79,31 @@ void EffectChainSlot::loadEffectChain(EffectChainPointer pEffectChain) {
             }
         }
 
-        m_pControlNumEffectSlots->set(m_pEffectChain->numEffects());
-        m_pControlChainEnabled->set(m_pEffectChain->enabled() ? 1.0 : 0.0);
-        m_pControlChainMix->set(m_pEffectChain->mix());
+        m_pControlNumEffects->set(m_pEffectChain->numEffects());
         m_pControlChainParameter->set(m_pEffectChain->parameter());
-    } else {
-        clear();
+
+        // TODO(rryan) is this a reasonable decision? Keep the enabled and mix
+        // values the same because a) it keeps the controls from getting out of
+        // sync with your MIDI controller, and b) they aren't something you'd
+        // care about saving as an attribute of your prototypical EffectChain.
+
+        //m_pControlChainEnabled->set()
+        //m_pControlChainMix->set()
+    }
+}
+
+void EffectChainSlot::loadEffectChain(EffectChainPointer pEffectChain) {
+    qDebug() << debugString() << "loadEffectChain" << pEffectChain->id();
+    QMutexLocker locker(&m_mutex);
+
+    // Clear any loaded EffectChain
+    clear();
+
+    if (pEffectChain) {
+        m_pEffectChain = pEffectChain;
+        connect(m_pEffectChain.data(), SIGNAL(updated()),
+                this, SLOT(slotChainUpdated()));
+        slotChainUpdated();
     }
 
     locker.unlock();
@@ -100,8 +115,12 @@ EffectChainPointer EffectChainSlot::getEffectChain() const {
 }
 
 void EffectChainSlot::clear() {
-    m_pEffectChain.clear();
-    m_pControlNumEffectSlots->set(0.0f);
+    // Stop listening to signals from any loaded effect
+    if (m_pEffectChain) {
+        m_pEffectChain->disconnect(this);
+        m_pEffectChain.clear();
+    }
+    m_pControlNumEffects->set(0.0f);
     m_pControlChainEnabled->set(0.0f);
     m_pControlChainMix->set(0.0f);
     m_pControlChainParameter->set(0.0f);
@@ -162,7 +181,6 @@ void EffectChainSlot::addEffectSlot() {
     connect(pEffectSlot, SIGNAL(effectLoaded(EffectPointer, unsigned int)),
             this, SLOT(slotEffectLoaded(EffectPointer, unsigned int)));
     m_slots.append(EffectSlotPointer(pEffectSlot));
-    m_pControlNumEffectSlots->add(1.0f);
 }
 
 void EffectChainSlot::registerChannel(const QString channelId) {
@@ -191,20 +209,32 @@ EffectSlotPointer EffectChainSlot::getEffectSlot(unsigned int slotNumber) {
     return m_slots[slotNumber];
 }
 
-void EffectChainSlot::slotControlNumEffectSlots(double v) {
-    qDebug() << debugString() << "slotControlNumEffectSlots" << v;
+void EffectChainSlot::slotControlNumEffects(double v) {
+    qDebug() << debugString() << "slotControlNumEffects" << v;
     QMutexLocker locker(&m_mutex);
     qDebug() << "WARNING: Somebody has set a read-only control. Stability may be compromised.";
 }
 
 void EffectChainSlot::slotControlChainEnabled(double v) {
     qDebug() << debugString() << "slotControlChainEnabled" << v;
-    //QMutexLocker locker(&m_mutex);
+    QMutexLocker locker(&m_mutex);
+
+    bool bEnabled = v > 0.0f;
 }
 
 void EffectChainSlot::slotControlChainMix(double v) {
     qDebug() << debugString() << "slotControlChainMix" << v;
-    //QMutexLocker locker(&m_mutex);
+    QMutexLocker locker(&m_mutex);
+
+    // Convert from stupid control system
+    v = v / 127.0f;
+
+    // Clamp to [0.0, 1.0]
+    if (v < 0.0f || v > 1.0f) {
+        qDebug() << debugString() << "value out of limits";
+        v = math_clamp(v, 0.0f, 1.0f);
+        m_pControlChainMix->set(v);
+    }
 }
 
 void EffectChainSlot::slotControlChainParameter(double v) {
@@ -220,6 +250,7 @@ void EffectChainSlot::slotControlChainParameter(double v) {
         v = math_clamp(v, 0.0f, 1.0f);
         m_pControlChainParameter->set(v);
     }
+    m_pEffectChain->setParameter(v);
 }
 
 void EffectChainSlot::slotControlChainNextPreset(double v) {
