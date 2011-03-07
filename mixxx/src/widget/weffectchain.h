@@ -4,7 +4,7 @@
 #include <QWidget>
 #include <QLabel>
 
-#include "effects/effectchain.h"
+#include "effects/effectchainslot.h"
 
 class WEffectChain : public QLabel {
     Q_OBJECT
@@ -13,13 +13,13 @@ class WEffectChain : public QLabel {
     virtual ~WEffectChain();
 
     // Set the EffectChain that should be monitored by this WEffectChain
-    void setEffectChain(EffectChainPointer effectChain);
+    void setEffectChainSlot(EffectChainSlotPointer pEffectChainSlot);
 
   private slots:
     void chainUpdated();
 
   private:
-    EffectChainPointer m_pEffectChain;
+    EffectChainSlotPointer m_pEffectChainSlot;
 };
 
 #endif /* WEFFECTCHAIN_H */

@@ -253,18 +253,22 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
     m_pEffectsManager->addEffectsBackend(pNativeBackend);
 
     // Setup one effects chain with one EngineFlanger
-    m_pEffectsManager->addEffectChain();
+    m_pEffectsManager->addEffectChainSlot();
 
-    EffectChainPointer effectChain = m_pEffectsManager->getEffectChain(0);
-    effectChain->setName("Flanger");
-    effectChain->addEffectSlot();
-
-    EffectSlotPointer effectSlot = effectChain->getEffectSlot(0);
+    EffectChainPointer pChain = EffectChainPointer(new EffectChain());
+    pChain->setId("org.mixxx.effectchain.flanger");
+    pChain->setName("Flanger");
+    pChain->setEnabled(true);
+    pChain->setParameter(0.0f);
+    pChain->setMix(1.0f);
 
     EffectManifestPointer flangerManifest = pNativeBackend->getAvailableEffects()[0];
     EffectPointer flanger = pNativeBackend->instantiateEffect(flangerManifest);
-    effectSlot->loadEffect(flanger);
+    pChain->addEffect(flanger);
 
+    EffectChainSlotPointer effectChain = m_pEffectsManager->getEffectChainSlot(0);
+    effectChain->addEffectSlot();
+    effectChain->loadEffectChain(pChain);
 
     // Initialize player device
     // while this is created here, setupDevices needs to be called sometime

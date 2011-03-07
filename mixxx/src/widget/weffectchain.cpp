@@ -7,17 +7,17 @@ WEffectChain::WEffectChain(QWidget* pParent)
 WEffectChain::~WEffectChain() {
 }
 
-void WEffectChain::setEffectChain(EffectChainPointer effectChain) {
-    if (effectChain) {
-        m_pEffectChain = effectChain;
-        connect(effectChain.data(), SIGNAL(updated()),
+void WEffectChain::setEffectChainSlot(EffectChainSlotPointer effectChainSlot) {
+    if (effectChainSlot) {
+        m_pEffectChainSlot = effectChainSlot;
+        connect(effectChainSlot.data(), SIGNAL(updated()),
                 this, SLOT(chainUpdated()));
         chainUpdated();
     }
 }
 
 void WEffectChain::chainUpdated() {
-    if (m_pEffectChain) {
-        setText(m_pEffectChain->name());
+    if (m_pEffectChainSlot) {
+        setText(m_pEffectChainSlot->name());
     }
 }

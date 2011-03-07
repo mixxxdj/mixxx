@@ -6,7 +6,7 @@ EffectsManager::EffectsManager(QObject* pParent)
 }
 
 EffectsManager::~EffectsManager() {
-    m_effectChains.clear();
+    m_effectChainSlots.clear();
     while (!m_effectsBackends.isEmpty()) {
         EffectsBackend* pBackend = m_effectsBackends.takeLast();
         delete pBackend;
@@ -19,30 +19,30 @@ void EffectsManager::addEffectsBackend(EffectsBackend* pBackend) {
     m_effectsBackends.append(pBackend);
 }
 
-unsigned int EffectsManager::numEffectChains() const {
+unsigned int EffectsManager::numEffectChainSlots() const {
     QMutexLocker locker(&m_mutex);
-    return m_effectChains.size();
+    return m_effectChainSlots.size();
 }
 
-void EffectsManager::addEffectChain() {
+void EffectsManager::addEffectChainSlot() {
     QMutexLocker locker(&m_mutex);
-    EffectChain* pChain = new EffectChain(this, m_effectChains.size());
+    EffectChainSlot* pChainSlot = new EffectChainSlot(this, m_effectChainSlots.size());
 
     // Register all the existing channels with the new EffectChain
     foreach (QString channelId, m_registeredChannels) {
-        pChain->registerChannel(channelId);
+        pChainSlot->registerChannel(channelId);
     }
 
-    m_effectChains.append(EffectChainPointer(pChain));
+    m_effectChainSlots.append(EffectChainSlotPointer(pChainSlot));
 }
 
-EffectChainPointer EffectsManager::getEffectChain(unsigned int i) {
+EffectChainSlotPointer EffectsManager::getEffectChainSlot(unsigned int i) {
     QMutexLocker locker(&m_mutex);
-    if (i >= m_effectChains.size()) {
-        qDebug() << "WARNING: Invalid index for getEffectChain";
-        return EffectChainPointer();
+    if (i >= m_effectChainSlots.size()) {
+        qDebug() << "WARNING: Invalid index for getEffectChainSlot";
+        return EffectChainSlotPointer();
     }
-    return m_effectChains[i];
+    return m_effectChainSlots[i];
 }
 
 void EffectsManager::process(const QString channelId,
@@ -52,10 +52,10 @@ void EffectsManager::process(const QString channelId,
 
     QList<EffectChainPointer> enabledEffects;
 
-    for (int i = 0; i < m_effectChains.size(); ++i) {
-        EffectChainPointer pChain = m_effectChains[i];
-        if (pChain->isEnabledForChannel(channelId))
-            enabledEffects.append(pChain);
+    for (int i = 0; i < m_effectChainSlots.size(); ++i) {
+        EffectChainSlotPointer pChainSlot = m_effectChainSlots[i];
+        if (pChainSlot->isEnabledForChannel(channelId))
+            enabledEffects.append(pChainSlot->getEffectChain());
     }
 
     ////////////////////////////////////////////////////////////////////////////
@@ -66,6 +66,9 @@ void EffectsManager::process(const QString channelId,
     bool inPlace = pInput == pOutput;
     for (int i = 0; i < enabledEffects.size(); ++i) {
         EffectChainPointer pChain = enabledEffects[i];
+
+        if (!pChain)
+            continue;
 
         if (inPlace) {
             // Since we're doing this in-place, using a temporary buffer doesn't
@@ -87,7 +90,7 @@ void EffectsManager::registerChannel(const QString channelId) {
     }
 
     m_registeredChannels.insert(channelId);
-    foreach (EffectChainPointer effectChain, m_effectChains) {
-        effectChain->registerChannel(channelId);
+    foreach (EffectChainSlotPointer pEffectChainSlot, m_effectChainSlots) {
+        pEffectChainSlot->registerChannel(channelId);
     }
 }

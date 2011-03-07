@@ -16,12 +16,8 @@ typedef QSharedPointer<EffectChain> EffectChainPointer;
 class EffectChain : public QObject {
     Q_OBJECT
   public:
-    EffectChain(QObject* pParent, const unsigned int iChainNumber);
+    EffectChain(QObject* pParent=NULL);
     virtual ~EffectChain();
-
-    static QString formatGroupString(const unsigned int iChainNumber) {
-        return QString("[EffectChain%1]").arg(iChainNumber+1);
-    }
 
     // The ID of an EffectChain is a unique ID given to it to help associate it
     // with the preset from which it was loaded.
@@ -32,12 +28,19 @@ class EffectChain : public QObject {
     QString name() const;
     void setName(const QString name);
 
-    unsigned int numSlots() const;
-    void addEffectSlot();
-    EffectSlotPointer getEffectSlot(unsigned int slotNumber);
+    bool enabled() const;
+    void setEnabled(bool bEnabled);
 
-    bool isEnabled() const;
-    bool isEnabledForChannel(QString channelId) const;
+    double mix() const;
+    void setMix(double dMix);
+
+    double parameter() const;
+    void setParameter(double dParameter);
+
+    void addEffect(EffectPointer pEffect);
+    EffectPointer getEffect(unsigned int i) const;
+    QList<EffectPointer> getEffects() const;
+    unsigned int numEffects() const;
 
     // Take a buffer of numSamples samples of audio from channel channelId,
     // provided as pInput, and apply each Effect in this EffectChain to it,
@@ -52,59 +55,24 @@ class EffectChain : public QObject {
                          const CSAMPLE* pInput, CSAMPLE* pOutput,
                          const unsigned int numSamples);
 
-    void registerChannel(const QString channelId);
-
   signals:
-    // Indicates that the effect pEffect has been loaded into slotNumber of
-    // EffectChain chainNumber. pEffect may be an invalid pointer, which
-    // indicates that a previously loaded effect was removed from the slot.
-    void effectLoaded(EffectPointer pEffect, unsigned int chainNumber, unsigned int slotNumber);
-
-    // Signal that whoever is in charge of this EffectChain should load the next
-    // preset into it.
-    void nextPreset(unsigned int chainNumber);
-
-    // Signal that whoever is in charge of this EffectChain should load the
-    // previous preset into it.
-    void prevPreset(unsigned int chainNumber);
-
     // Signal that indicates that the EffectChain has been updated.
     void updated();
 
-  private slots:
-    void slotEffectLoaded(EffectPointer pEffect, unsigned int slotNumber);
-
-    void slotControlNumEffectSlots(double v);
-    void slotControlChainEnabled(double v);
-    void slotControlChainMix(double v);
-    void slotControlChainParameter(double v);
-    void slotControlChainNextPreset(double v);
-    void slotControlChainPrevPreset(double v);
-
   private:
     QString debugString() const {
-        return QString("EffectChain(%1)").arg(m_iChainNumber);
+        return QString("EffectChain(%1)").arg(m_id);
     }
 
-    bool privateIsEnabled() const;
-
     mutable QMutex m_mutex;
-    const unsigned int m_iChainNumber;
-    const QString m_group;
 
+    bool m_bEnabled;
     QString m_id;
     QString m_name;
+    double m_dMix;
+    double m_dParameter;
 
-    ControlObject* m_pControlNumEffectSlots;
-    ControlObject* m_pControlChainEnabled;
-    ControlObject* m_pControlChainMix;
-    ControlObject* m_pControlChainParameter;
-    ControlObject* m_pControlChainNextPreset;
-    ControlObject* m_pControlChainPrevPreset;
-
-    QMap<QString, ControlObject*> m_channelEnableControls;
-
-    QList<EffectSlotPointer> m_slots;
+    QList<EffectPointer> m_effects;
 
     DISALLOW_COPY_AND_ASSIGN(EffectChain);
 };

@@ -840,12 +840,12 @@ QWidget* LegacySkinParser::parseEffectChainName(QDomElement node) {
     // 0-indexed.
     unsigned int chainNumber = XmlParse::selectNodeInt(node, "EffectChain") - 1;
 
-    EffectChainPointer pChain = m_pEffectsManager->getEffectChain(chainNumber);
+    EffectChainSlotPointer pChainSlot = m_pEffectsManager->getEffectChainSlot(chainNumber);
 
-    if (pChain) {
-        pEffectChain->setEffectChain(pChain);
+    if (pChainSlot) {
+        pEffectChain->setEffectChainSlot(pChainSlot);
     } else {
-        qDebug() << "EffectChainName node had invalid EffectChain number.";
+        qDebug() << "EffectChainName node had invalid EffectChainSlot number.";
     }
 
     setupWidget(node, pEffectChain);
