@@ -84,6 +84,9 @@ double BeatGrid::findClosestBeat(double dSamples) const {
 }
 
 double BeatGrid::findNthBeat(double dSamples, int n) const {
+    // Reduce the Sample Offset to a frame offset.
+    dSamples = floorf(dSamples/2);
+
     QMutexLocker locker(&m_mutex);
     if (!isValid() || n == 0) {
         return -1;
@@ -102,7 +105,10 @@ double BeatGrid::findNthBeat(double dSamples, int n) const {
         n = n + 1;
     }
 
-    return dClosestBeat + n * m_dBeatLength;
+    // Sample offset points to interleaved stereo audio.
+    // This just follow the standard adhered to by the
+    // rest of the code. -Phillip Whelan
+    return (dClosestBeat + n * m_dBeatLength) * 2;
 }
 
 void BeatGrid::findBeats(double startSample, double stopSample, QList<double>* pBeatsList) const {
@@ -113,7 +119,8 @@ void BeatGrid::findBeats(double startSample, double stopSample, QList<double>* p
     double curBeat = findNextBeat(startSample);
     while (curBeat <= stopSample) {
         pBeatsList->append(curBeat);
-        curBeat += m_dBeatLength;
+        // We also have to follow up and make this sample offset size.
+        curBeat += (m_dBeatLength * 2);
     }
 }
 
@@ -165,7 +172,8 @@ void BeatGrid::translate(double dNumSamples) {
     if (!isValid()) {
         return;
     }
-    m_dFirstBeat += dNumSamples;
+    // Adjust the samples number to account for it being a samples offset.
+    m_dFirstBeat += floorf(dNumSamples/2);
     locker.unlock();
     emit(updated());
 }
