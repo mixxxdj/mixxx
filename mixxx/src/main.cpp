@@ -37,12 +37,6 @@
 #include <ladspa/ladspaloader.h>
 #endif
 
-//App Store hack
-/*
-extern "C++" {
-	void qt_force_trolltech_settings_to_app_area(bool bVal);
-} */
-
 #ifdef __WINDOWS__
 #ifdef DEBUGCONSOLE
 #include <io.h> // Debug Console
@@ -145,10 +139,6 @@ int main(int argc, char * argv[])
 {
     // Check if an instance of Mixxx is already running
     // See http://qt.nokia.com/products/appdev/add-on-products/catalog/4/Utilities/qtsingleapplication
-#ifdef __APPLE__
-	//XXX: App Store-only hack until Qt is fixed
-	//qt_force_trolltech_settings_to_app_area(true);
-#endif
 
 //it seems like this code should be inline in MessageHandler() but for some reason having it there corrupts the messages sometimes -kousu 2/2009
 
