@@ -298,7 +298,7 @@ void ITunesFeature::parseTrack(QXmlStreamReader &xml, QSqlQuery &query) {
                 QString key = xml.readElementText();
                 QString content =  "";
 
-                if (xml.readNextStartElement()) {
+                if (readNextStartElement(xml)) {
                     content = xml.readElementText();
                 }
 
@@ -424,6 +424,17 @@ void ITunesFeature::parsePlaylists(QXmlStreamReader &xml) {
     }
 }
 
+bool ITunesFeature::readNextStartElement(QXmlStreamReader& xml) {
+    QXmlStreamReader::TokenType token = QXmlStreamReader::NoToken;
+    while (token != QXmlStreamReader::EndDocument && token != QXmlStreamReader::Invalid) {
+        token = xml.readNext();
+        if (token == QXmlStreamReader::StartElement) {
+            return true;
+        }
+    }
+    return false;
+}
+
 void ITunesFeature::parsePlaylist(QXmlStreamReader &xml, QSqlQuery &query_insert_to_playlists,
                                   QSqlQuery &query_insert_to_playlist_tracks) {
     //qDebug() << "Parse Playlist";
@@ -452,13 +463,13 @@ void ITunesFeature::parsePlaylist(QXmlStreamReader &xml, QSqlQuery &query_insert
                  * Afterwars the playlist entries occur
                  */
                 if (key == "Name") {
-                    xml.readNextStartElement();
+                    readNextStartElement(xml);
                     playlistname = xml.readElementText();
                     continue;
                 }
                 //When parsing the ID, the playlistname has already been found
                 if (key == "Playlist ID") {
-                    xml.readNextStartElement();
+                    readNextStartElement(xml);
                     playlist_id = xml.readElementText().toInt();
                     continue;
                 }
@@ -491,7 +502,7 @@ void ITunesFeature::parsePlaylist(QXmlStreamReader &xml, QSqlQuery &query_insert
                 if (key == "Track ID") {
                     track_reference = -1;
 
-                    xml.readNextStartElement();
+                    readNextStartElement(xml);
                     track_reference = xml.readElementText().toInt();
 
                     query_insert_to_playlist_tracks.bindValue(":playlist_id", playlist_id);

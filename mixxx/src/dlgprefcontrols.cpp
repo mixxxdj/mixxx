@@ -59,6 +59,8 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxApp * mixxx,
 
     // Position display configuration
     m_pControlPositionDisplay = new ControlObject(ConfigKey("[Controls]", "ShowDurationRemaining"));
+    connect(m_pControlPositionDisplay, SIGNAL(valueChanged(double)),
+            this, SLOT(slotSetPositionDisplay(double)));
     ComboBoxPosition->addItem(tr("Position"));
     ComboBoxPosition->addItem(tr("Remaining"));
     if (m_pConfig->getValueString(ConfigKey("[Controls]","PositionDisplay")).length() == 0)
@@ -407,6 +409,18 @@ void DlgPrefControls::slotSetPositionDisplay(int)
     int positionDisplay = ComboBoxPosition->currentIndex();
     m_pConfig->set(ConfigKey("[Controls]","PositionDisplay"), ConfigValue(positionDisplay));
     m_pControlPositionDisplay->set(positionDisplay);
+}
+
+void DlgPrefControls::slotSetPositionDisplay(double v) {
+    if (v > 0) {
+        // remaining
+        ComboBoxPosition->setCurrentIndex(1);
+        m_pConfig->set(ConfigKey("[Controls]","PositionDisplay"), ConfigValue(1));
+    } else {
+        // position
+        ComboBoxPosition->setCurrentIndex(0);
+        m_pConfig->set(ConfigKey("[Controls]","PositionDisplay"), ConfigValue(0));
+    }
 }
 
 void DlgPrefControls::slotSetRateTempLeft(double v)
