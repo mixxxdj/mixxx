@@ -18,9 +18,13 @@
 
 #include "trackinfoobject.h"
 #include "soundsourceproxy.h"
-//#include "soundsourcemp3.h"
+#ifdef __MAD__
+#include "soundsourcemp3.h"
+#endif
 #include "soundsourceoggvorbis.h"
+#ifdef __COREAUDIO__
 #include "soundsourcecoreaudio.h"
+#endif 
 #ifdef __SNDFILE__
 #include "soundsourcesndfile.h"
 #endif
@@ -114,16 +118,18 @@ SoundSource* SoundSourceProxy::initialize(QString qFilename) {
 #ifdef __FFMPEGFILE__
     return new SoundSourceFFmpeg(qFilename);
 #endif
-
-    //if (SoundSourceMp3::supportedFileExtensions().contains(extension)) {
-	//    return new SoundSourceMp3(qFilename);
-    //} 
     if (SoundSourceOggVorbis::supportedFileExtensions().contains(extension)) {
 	    return new SoundSourceOggVorbis(qFilename);
+#ifdef __MAD__
+    } else if (SoundSourceMp3::supportedFileExtensions().contains(extension)) {
+	    return new SoundSourceMp3(qFilename);
+#endif
     } else if (SoundSourceFLAC::supportedFileExtensions().contains(extension)) {
         return new SoundSourceFLAC(qFilename);
+#ifdef __COREAUDIO__
     } else if (SoundSourceCoreAudio::supportedFileExtensions().contains(extension)) {
         return new SoundSourceCoreAudio(qFilename);
+#endif
     } else if (m_extensionsSupportedByPlugins.contains(extension)) {
         getSoundSourceFunc getter = m_extensionsSupportedByPlugins.value(extension);
         if (getter)
@@ -316,10 +322,16 @@ QList<QString> SoundSourceProxy::supportedFileExtensions()
 {
     QMutexLocker locker(&m_extensionsMutex);
     QList<QString> supportedFileExtensions;
-    //supportedFileExtensions.append(SoundSourceMp3::supportedFileExtensions());
+#ifdef __MAD__
+    supportedFileExtensions.append(SoundSourceMp3::supportedFileExtensions());
+#endif
     supportedFileExtensions.append(SoundSourceOggVorbis::supportedFileExtensions());
+#ifdef __SNDFILE__
     supportedFileExtensions.append(SoundSourceSndFile::supportedFileExtensions());
+#endif 
+#ifdef __COREAUDIO__
     supportedFileExtensions.append(SoundSourceCoreAudio::supportedFileExtensions());
+#endif
     supportedFileExtensions.append(m_extensionsSupportedByPlugins.keys());
 
     return supportedFileExtensions;
