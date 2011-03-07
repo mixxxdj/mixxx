@@ -260,8 +260,8 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
     pChain->setName("Flanger");
     pChain->setParameter(0.0f);
 
-    EffectManifestPointer flangerManifest = pNativeBackend->getAvailableEffects()[0];
-    EffectPointer flanger = pNativeBackend->instantiateEffect(flangerManifest);
+    QString flangerId = pNativeBackend->getEffectIds()[0];
+    EffectPointer flanger = pNativeBackend->instantiateEffect(flangerId);
     pChain->addEffect(flanger);
 
     EffectChainSlotPointer effectChain = m_pEffectsManager->getEffectChainSlot(0);

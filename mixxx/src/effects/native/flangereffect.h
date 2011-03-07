@@ -20,10 +20,12 @@ struct FlangerState {
 class FlangerEffect : public Effect {
     Q_OBJECT
   public:
-    FlangerEffect(NativeBackend* pBackend, EffectManifestPointer pManifest);
+    FlangerEffect(EffectsBackend* pBackend, EffectManifestPointer pManifest);
     virtual ~FlangerEffect();
 
+    static QString getId();
     static EffectManifestPointer getEffectManifest();
+    static EffectPointer create(EffectsBackend* pBackend, EffectManifestPointer pManifest);
 
     // See effect.h
     void process(const QString channelId,

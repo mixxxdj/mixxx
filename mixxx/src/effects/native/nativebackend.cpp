@@ -3,9 +3,17 @@
 #include "effects/native/nativebackend.h"
 #include "effects/native/flangereffect.h"
 
+// void registerEffect(QString id,
+//                     EffectManifestPointer (*manifest)(),
+//                     EffectPointer (*create)(EffectsBackend*, EffectManifestPointer)) {
+//     qDebug() << "register" << id;
+// }
+
 NativeBackend::NativeBackend(QObject* pParent)
         : EffectsBackend(pParent, tr("Native")) {
-    m_effectManifests.append(FlangerEffect::getEffectManifest());
+    EffectManifestPointer flanger = FlangerEffect::getEffectManifest();
+    m_effectManifests.append(flanger);
+    registerEffect(FlangerEffect::getId(), flanger, &FlangerEffect::create);
 }
 
 NativeBackend::~NativeBackend() {
@@ -13,16 +21,16 @@ NativeBackend::~NativeBackend() {
     m_effectManifests.clear();
 }
 
-const QList<EffectManifestPointer> NativeBackend::getAvailableEffects() const {
-    return m_effectManifests;
-}
+// const QList<QString> NativeBackend::getAvailableEffects() const {
+//     return m_effectManifests;
+// }
 
-EffectPointer NativeBackend::instantiateEffect(EffectManifestPointer manifest) {
-    // TODO(rryan) effect instantiation sucks. should fix this before we commit
-    // to it being this way.
-    if (manifest->id() == "org.mixxx.effects.flanger") {
-        EffectPointer flanger = EffectPointer(new FlangerEffect(this, manifest));
-        return flanger;
-    }
-    return EffectPointer();
-}
+// EffectPointer NativeBackend::instantiateEffect(EffectManifestPointer manifest) {
+//     // TODO(rryan) effect instantiation sucks. should fix this before we commit
+//     // to it being this way.
+//     if (manifest->id() == "org.mixxx.effects.flanger") {
+//         EffectPointer flanger = EffectPointer(new FlangerEffect(this, manifest));
+//         return flanger;
+//     }
+//     return EffectPointer();
+// }

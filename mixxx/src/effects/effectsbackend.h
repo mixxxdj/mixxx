@@ -7,6 +7,8 @@
 
 #include "effects/effect.h"
 
+typedef EffectPointer (*EffectInstantiator)(EffectsBackend*, EffectManifestPointer);
+
 // An EffectsBackend is an implementation of a provider of Effect's for use
 // within the rest of Mixxx. The job of the EffectsBackend is to both enumerate
 // and instantiate effects.
@@ -18,11 +20,19 @@ class EffectsBackend : public QObject {
 
     virtual const QString getName() const;
 
-    virtual const QList<EffectManifestPointer> getAvailableEffects() const = 0;
-    virtual EffectPointer instantiateEffect(EffectManifestPointer manifest) = 0;
+    virtual const QList<QString> getEffectIds() const;
+    virtual EffectManifestPointer getManifest(const QString effectId) const;
+    virtual EffectPointer instantiateEffect(const QString effectId);
+
+  protected:
+    void registerEffect(const QString id,
+                        EffectManifestPointer pManifest,
+                        EffectInstantiator pInstantiator);
 
   private:
     QString m_name;
+    QMap<QString, QPair<EffectManifestPointer, EffectInstantiator> > m_registeredEffects;
+
 };
 
 #endif /* EFFECTSBACKEND_H */
