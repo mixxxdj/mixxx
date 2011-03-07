@@ -29,11 +29,11 @@ EffectChainSlot::EffectChainSlot(QObject* pParent, unsigned int iChainNumber)
     connect(m_pControlChainParameter, SIGNAL(valueChanged(double)),
             this, SLOT(slotControlChainParameter(double)));
 
-    m_pControlChainNextPreset = new ControlObject(ConfigKey(m_group, "next_preset"));
+    m_pControlChainNextPreset = new ControlObject(ConfigKey(m_group, "next_chain"));
     connect(m_pControlChainNextPreset, SIGNAL(valueChanged(double)),
             this, SLOT(slotControlChainNextPreset(double)));
 
-    m_pControlChainPrevPreset = new ControlObject(ConfigKey(m_group, "prev_preset"));
+    m_pControlChainPrevPreset = new ControlObject(ConfigKey(m_group, "prev_chain"));
     connect(m_pControlChainPrevPreset, SIGNAL(valueChanged(double)),
             this, SLOT(slotControlChainPrevPreset(double)));
 }
