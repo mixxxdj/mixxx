@@ -1,3 +1,6 @@
+// BeatControl.cpp
+// Author: pwhelan
+
 #include <QtDebug>
 #include <QObject>
 #include <QSignalMapper>
@@ -29,16 +32,12 @@ ConfigKey BeatControl::keyForControl(const char *_group, QString ctrlName, doubl
 
 BeatControl::BeatControl(const char *_group, 
                     ConfigObject<ConfigValue> * _config, CachingReader *reader, double beats) : 
-    EngineControl(_group, _config),
-    m_iNextJump(-1),
-    m_iJumpBeat(0)
+    EngineControl(_group, _config)
 {
     m_pReader = reader;
     m_iCurrentSample = 0.;
-
-
     m_smBeatLoop = new QSignalMapper(this);
-    m_smBeatSeek = new QSignalMapper(this);
+
     int i;
 
 
@@ -72,31 +71,6 @@ BeatControl::BeatControl(const char *_group,
             SLOT(slotBeatLoopSize(int)),
             Qt::DirectConnection);
 
-    // Connect beatseek, which can flexibly handle different values.
-    // Using this CO directly is meant more for internal and script use.
-    m_pCOBeatSeek = new ControlObject(ConfigKey(_group, "beatseek"), 0);
-    connect(m_pCOBeatSeek, SIGNAL(valueChanged(double)), this, 
-            SLOT(slotBeatSeek(double)),
-            Qt::DirectConnection);
-
-    // Here we create corresponding beatseek_(SIZE) CO's which all call the same
-    // BeatControl, but with a set value (all thanks to QSignalMapper).
-    for (i = 0; s_dBeatSizes[i] > 0; i++) {
-        ControlPushButton* coBeatseek;
-        coBeatseek = new ControlPushButton(keyForControl(_group, "beatseek", s_dBeatSizes[i]));
-        
-        connect(coBeatseek, SIGNAL(valueChanged(double)), m_smBeatSeek, 
-                SLOT(map()));
-
-        m_smBeatSeek->setMapping(coBeatseek, i);
-        m_pCOBeatSeeks.append(coBeatseek);
-    }
-
-    // Connect the Signal Mapper, and here we complete the magic...
-    connect(m_smBeatSeek, SIGNAL(mapped(int)), 
-            this, SLOT(slotBeatSeekSize(int)),
-            Qt::DirectConnection);
-
     // Piggy back on top of the existent loop control for this deck.
     m_pCOLoopStart = ControlObject::getControl(ConfigKey(_group, "loop_start_position"));
     m_pCOLoopEnd = ControlObject::getControl(ConfigKey(_group, "loop_end_position"));
@@ -113,13 +87,6 @@ BeatControl::~BeatControl()
     while (m_pCOBeatLoops.size() > 0)
     {
         co = m_pCOBeatLoops.takeLast();
-        delete co;
-    }
-
-    delete m_smBeatSeek;
-    while (m_pCOBeatSeeks.size() > 0)
-    {
-        co = m_pCOBeatSeeks.takeLast();
         delete co;
     }
 }
@@ -197,33 +164,6 @@ void BeatControl::slotBeatLoopSize(int i)
     return slotBeatLoop(s_dBeatSizes[i]);
 }
 
-// Jump a number of beats back or forward as soon as we hit the next beat.
-// ... Really lousy way to implement quantization.
-void BeatControl::slotBeatSeek(double beats)
-{
-    if ( m_pBeats == NULL ) {
-        qDebug() << "BeatSeek: No Beats to work with";
-        return;
-    }
-
-    // Reset and turn off if we are passed 0
-    if ( beats == 0 ) {
-        m_iNextJump = -1;
-        m_iJumpBeat = 0;
-        
-        return;
-    }
-
-    // Set some properties to refer to inside BeatControl::process()
-    m_iNextJump = (double)m_pBeats->findNthBeat(m_iCurrentSample, 0);
-    m_iJumpBeat = (double)m_pBeats->findNthBeat(m_iNextJump, (int)floor(beats));
-}
-
-void BeatControl::slotBeatSeekSize(int i)
-{
-    return slotBeatSeek(s_dBeatSizes[i]);
-}
-
 double BeatControl::process(const double dRate,
                                const double currentSample,
                                const double totalSamples,
@@ -235,18 +175,7 @@ double BeatControl::process(const double dRate,
     m_iCurrentSample = (int)round(currentSample);
     if (!even(m_iCurrentSample))
         m_iCurrentSample--;
-    
-    if ( m_iNextJump >= 0 && 0) {
-        if ( m_iCurrentSample >= m_iNextJump ) {
-
-            // Do not Jump outside of an active loop
-            if (m_pCOLoopEnabled->get() && (m_iNextJump > m_pCOLoopEnd->get()))
-                return currentSample;
-
-            m_iNextJump = -1;
-            return m_iJumpBeat;
-        }
-    }
 
     return currentSample;
 }
+
