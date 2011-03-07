@@ -1,6 +1,6 @@
 // QuantizeControl.cpp
-// Created on Sep 23, 2008
-// Author: asantoni, rryan
+// Created on Sat 5, 2011
+// Author: pwhelan
 
 #include <QtDebug>
 #include <QObject>
@@ -39,13 +39,11 @@ void QuantizeControl::slotTrackLoaded(TrackPointer tio,
 {
     m_pTrack = tio;
     m_pBeats = m_pTrack->getBeats();
-    qDebug() << "Quantize Track beats:" << m_pBeats.data();
     connect(m_pTrack.data(), SIGNAL(beatsUpdated()), this, SLOT(slotBeatsUpdated()));
 }
 
 void QuantizeControl::slotBeatsUpdated()
 {
-    qDebug() << "Updated Track Beats.";
     m_pBeats = m_pTrack->getBeats();
 }
 
