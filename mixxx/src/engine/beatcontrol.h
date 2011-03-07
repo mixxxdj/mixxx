@@ -30,9 +30,7 @@ public slots:
     void slotTrackLoaded(TrackPointer tio, int iSampleRate, int iNumSamples);
     void slotUpdatedTrackBeats();
     void slotBeatLoop(double);
-    void slotBeatSeek(double);
     void slotBeatLoopSize(int);
-    void slotBeatSeekSize(int);
 
 private:
     ConfigKey keyForControl(const char * _group, QString ctrlName, double num);
@@ -52,14 +50,6 @@ private:
     ControlObject* m_pCOLoopEnd;
     ControlObject* m_pCOLoopEnabled;
 
-    ControlObject* m_pCOBeatSeek;
-    QList<ControlPushButton*> m_pCOBeatSeeks;
-    QSignalMapper* m_smBeatSeek;
-
-    // The next beat to jump from
-    double m_iNextJump;
-    // The next beat to jump to
-    double m_iJumpBeat;
     // Different sizes for Beat Loops/Seeks
     static double s_dBeatSizes[];
 };
