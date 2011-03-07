@@ -259,7 +259,6 @@ void TrackDAO::bindTrackToLibraryInsert(QSqlQuery& query, TrackInfoObject* pTrac
     query.bindValue(":mixxx_deleted", 0);
     query.bindValue(":header_parsed", pTrack->getHeaderParsed() ? 1 : 0);
 
-    // TODO(XXX) we're leaking the QByteArray
     const QByteArray* pBeatsBlob = NULL;
     QString blobVersion = "";
     BeatsPointer pBeats = pTrack->getBeats();
@@ -275,6 +274,7 @@ void TrackDAO::bindTrackToLibraryInsert(QSqlQuery& query, TrackInfoObject* pTrac
     query.bindValue(":bpm", dBpm);
     query.bindValue(":beats_version", blobVersion);
     query.bindValue(":beats", pBeatsBlob ? *pBeatsBlob : QVariant(QVariant::ByteArray));
+    delete pBeatsBlob;
 }
 
 void TrackDAO::addTracks(QList<TrackInfoObject*> tracksToAdd) {

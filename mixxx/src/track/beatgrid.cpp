@@ -4,10 +4,10 @@
 #include "track/beatgrid.h"
 
 
-typedef struct beatgrid_blob {
+struct BeatGridData {
 	double bpm;
 	double firstBeat;
-} BEATGRIDBLOB;
+};
 
 BeatGrid::BeatGrid(TrackPointer pTrack, const QByteArray* pByteArray)
         : QObject(),
@@ -38,15 +38,15 @@ void BeatGrid::setGrid(double dBpm, double dFirstBeatSample) {
 
 QByteArray* BeatGrid::toByteArray() const {
     QMutexLocker locker(&m_mutex);
-    BEATGRIDBLOB blob = { m_dBpm, m_dFirstBeat };
+    BeatGridData blob = { m_dBpm, m_dFirstBeat };
     QByteArray* pByteArray = new QByteArray((char *)&blob, sizeof(blob));
     return pByteArray;
 }
 
 void BeatGrid::readByteArray(const QByteArray* pByteArray) {
-    if ( pByteArray->size() != sizeof(BEATGRIDBLOB))
+    if ( pByteArray->size() != sizeof(BeatGridData))
         return;
-    BEATGRIDBLOB *blob = (BEATGRIDBLOB *)pByteArray->data();
+    BeatGridData *blob = (BeatGridData *)pByteArray->data();
     setGrid(blob->bpm, blob->firstBeat);
 }
 
