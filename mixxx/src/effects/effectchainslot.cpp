@@ -93,7 +93,7 @@ void EffectChainSlot::slotChainUpdated() {
 }
 
 void EffectChainSlot::loadEffectChain(EffectChainPointer pEffectChain) {
-    qDebug() << debugString() << "loadEffectChain" << pEffectChain->id();
+    qDebug() << debugString() << "loadEffectChain" << (pEffectChain ? pEffectChain->id() : "(null)");
     QMutexLocker locker(&m_mutex);
 
     // Clear any loaded EffectChain
@@ -108,6 +108,7 @@ void EffectChainSlot::loadEffectChain(EffectChainPointer pEffectChain) {
 
     locker.unlock();
     emit(effectChainLoaded(pEffectChain));
+    emit(updated());
 }
 
 EffectChainPointer EffectChainSlot::getEffectChain() const {
@@ -119,6 +120,11 @@ void EffectChainSlot::clear() {
     if (m_pEffectChain) {
         m_pEffectChain->disconnect(this);
         m_pEffectChain.clear();
+
+        foreach (EffectSlotPointer pSlot, m_slots) {
+            pSlot->loadEffect(EffectPointer());
+        }
+
     }
     m_pControlNumEffects->set(0.0f);
     m_pControlChainEnabled->set(0.0f);
@@ -258,7 +264,7 @@ void EffectChainSlot::slotControlChainNextPreset(double v) {
     //QMutexLocker locker(&m_mutex);
     // const int read is not worth locking for
     if (v > 0)
-        emit(nextPreset(m_iChainNumber));
+        emit(nextChain(m_iChainNumber, m_pEffectChain));
 }
 
 void EffectChainSlot::slotControlChainPrevPreset(double v) {
@@ -266,5 +272,5 @@ void EffectChainSlot::slotControlChainPrevPreset(double v) {
     //QMutexLocker locker(&m_mutex);
     // const int read is not worth locking for
     if (v > 0)
-        emit(prevPreset(m_iChainNumber));
+        emit(prevChain(m_iChainNumber, m_pEffectChain));
 }

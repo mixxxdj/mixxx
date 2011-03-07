@@ -1,8 +1,11 @@
 
 #include "effects/effectsmanager.h"
 
+#include "effects/effectchainmanager.h"
+
 EffectsManager::EffectsManager(QObject* pParent)
         : QObject(pParent) {
+    m_pEffectChainManager = new EffectChainManager(this);
 }
 
 EffectsManager::~EffectsManager() {
@@ -11,6 +14,7 @@ EffectsManager::~EffectsManager() {
         EffectsBackend* pBackend = m_effectsBackends.takeLast();
         delete pBackend;
     }
+    delete m_pEffectChainManager;
 }
 
 void EffectsManager::addEffectsBackend(EffectsBackend* pBackend) {
@@ -27,6 +31,11 @@ unsigned int EffectsManager::numEffectChainSlots() const {
 void EffectsManager::addEffectChainSlot() {
     QMutexLocker locker(&m_mutex);
     EffectChainSlot* pChainSlot = new EffectChainSlot(this, m_effectChainSlots.size());
+
+    connect(pChainSlot, SIGNAL(nextChain(const unsigned int, EffectChainPointer)),
+            this, SLOT(loadNextChain(const unsigned int, EffectChainPointer)));
+    connect(pChainSlot, SIGNAL(prevChain(const unsigned int, EffectChainPointer)),
+            this, SLOT(loadPrevChain(const unsigned int, EffectChainPointer)));
 
     // Register all the existing channels with the new EffectChain
     foreach (QString channelId, m_registeredChannels) {
@@ -93,4 +102,15 @@ void EffectsManager::registerChannel(const QString channelId) {
     foreach (EffectChainSlotPointer pEffectChainSlot, m_effectChainSlots) {
         pEffectChainSlot->registerChannel(channelId);
     }
+}
+
+void EffectsManager::loadNextChain(const unsigned int iChainSlotNumber, EffectChainPointer pLoadedChain) {
+    EffectChainPointer pNextChain = m_pEffectChainManager->getNextEffectChain(pLoadedChain);
+    m_effectChainSlots[iChainSlotNumber]->loadEffectChain(pNextChain);
+}
+
+
+void EffectsManager::loadPrevChain(const unsigned int iChainSlotNumber, EffectChainPointer pLoadedChain) {
+    EffectChainPointer pPrevChain = m_pEffectChainManager->getPrevEffectChain(pLoadedChain);
+    m_effectChainSlots[iChainSlotNumber]->loadEffectChain(pPrevChain);
 }

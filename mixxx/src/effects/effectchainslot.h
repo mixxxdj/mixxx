@@ -66,12 +66,12 @@ class EffectChainSlot : public QObject {
     void effectChainLoaded(EffectChainPointer pEffectChain);
 
     // Signal that whoever is in charge of this EffectChainSlot should load the next
-    // preset into it.
-    void nextPreset(unsigned int chainNumber);
+    // EffectChain into it.
+    void nextChain(const unsigned int iChainSlotNumber, EffectChainPointer pEffectChain);
 
     // Signal that whoever is in charge of this EffectChainSlot should load the
-    // previous preset into it.
-    void prevPreset(unsigned int chainNumber);
+    // previous EffectChain into it.
+    void prevChain(const unsigned int iChainSlotNumber, EffectChainPointer pEffectChain);
 
     // Signal that indicates that the EffectChainSlot has been updated.
     void updated();

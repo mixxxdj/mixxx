@@ -11,6 +11,8 @@
 #include "effects/effectchainslot.h"
 #include "effects/effectchain.h"
 
+class EffectChainManager;
+
 class EffectsManager : public QObject {
     Q_OBJECT
   public:
@@ -39,12 +41,17 @@ class EffectsManager : public QObject {
 
     void registerChannel(const QString channelID);
 
+  private slots:
+    void loadNextChain(const unsigned int iChainSlotNumber, EffectChainPointer pLoadedChain);
+    void loadPrevChain(const unsigned int iChainSlotNumber, EffectChainPointer pLoadedChain);
+
   private:
     QString debugString() const {
         return "EffectsManager";
     }
 
     mutable QMutex m_mutex;
+    EffectChainManager* m_pEffectChainManager;
     QList<EffectsBackend*> m_effectsBackends;
     QList<EffectChainSlotPointer> m_effectChainSlots;
     QSet<QString> m_registeredChannels;
