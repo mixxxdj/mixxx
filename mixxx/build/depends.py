@@ -364,6 +364,7 @@ class MixxxCore(Feature):
                    "effects/effectslotparameter.cpp",
 
                    "effects/effectsmanager.cpp",
+                   "effects/effectchainmanager.cpp",
                    "effects/effectsbackend.cpp",
 
                    "effects/native/nativebackend.cpp",
