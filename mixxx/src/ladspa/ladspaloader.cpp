@@ -40,9 +40,9 @@ LADSPALoader::LADSPALoader()
             plugin_paths.push_back ("/usr/lib/ladspa/");
             plugin_paths.push_back ("/usr/lib64/ladspa/");
     #elif __APPLE__
-          QDir dir(a->applicationDirPath());
-         dir.cdUp();
-         dir.cd("PlugIns");
+            QDir dir(QCoreApplication::applicationDirPath());
+            dir.cdUp();
+            dir.cd("PlugIns");
              plugin_paths.push_back ("/Library/Audio/Plug-ins/LADSPA");
              plugin_paths.push_back (dir.absolutePath()); //ladspa_plugins directory in Mixxx.app bundle //XXX work in QApplication::appdir()
     #elif __WINDOWS__
