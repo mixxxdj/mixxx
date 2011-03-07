@@ -54,13 +54,13 @@ class Mad(Feature):
         return "MAD MP3 Decoder"
 
     def enabled(self, build):
-        build.flags['mad'] = util.get_flags(build.env, 'mad', 0)
+        build.flags['mad'] = util.get_flags(build.env, 'mad', 1)
         if int(build.flags['mad']):
             return True
         return False
 
     def add_options(self, build, vars):
-        vars.Add('mad', 'Set to 1 to enable MAD MP3 decoder support.', 0)
+        vars.Add('mad', 'Set to 1 to enable MAD MP3 decoder support.', 1)
 
     def configure(self, build, conf):
         if not self.enabled(build):
