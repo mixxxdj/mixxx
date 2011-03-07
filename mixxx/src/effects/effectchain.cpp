@@ -8,8 +8,6 @@ EffectChain::EffectChain(QObject* pParent)
           m_mutex(QMutex::Recursive),
           m_id(""),
           m_name("") {
-
-
 }
 
 EffectChain::~EffectChain() {

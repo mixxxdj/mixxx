@@ -352,6 +352,23 @@ class MixxxCore(Feature):
                    "dlgprepare.cpp",
                    "dlgautodj.cpp",
 
+                   "effects/effectmanifest.cpp",
+                   "effects/effectmanifestparameter.cpp",
+
+                   "effects/effectchain.cpp",
+                   "effects/effect.cpp",
+                   "effects/effectparameter.cpp",
+
+                   "effects/effectchainslot.cpp",
+                   "effects/effectslot.cpp",
+                   "effects/effectslotparameter.cpp",
+
+                   "effects/effectsmanager.cpp",
+                   "effects/effectsbackend.cpp",
+
+                   "effects/native/nativebackend.cpp",
+                   "effects/native/flangereffect.cpp",
+
                    "engine/engineworker.cpp",
                    "engine/engineworkerscheduler.cpp",
                    "engine/enginebuffer.cpp",

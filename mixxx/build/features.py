@@ -109,23 +109,6 @@ class Effects(Feature):
 			         effectsunitsslot.cpp
 			         effectsunitsview.cpp
 			         effectsunitswidget.cpp
-
-                                 effects/effectsmanager.cpp
-                                 effects/effectsbackend.cpp
-
-                                 effects/effectmanifest.cpp
-                                 effects/effectmanifestparameter.cpp
-
-                                 effects/effectchain.cpp
-                                 effects/effect.cpp
-                                 effects/effectparameter.cpp
-
-                                 effects/effectchainslot.cpp
-                                 effects/effectslot.cpp
-                                 effects/effectslotparameter.cpp
-
-                                 effects/native/nativebackend.cpp
-                                 effects/native/flangereffect.cpp
                                  """)
         return sources
 
