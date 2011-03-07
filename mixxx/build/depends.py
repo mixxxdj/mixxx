@@ -73,17 +73,6 @@ class OggVorbis(Dependence):
     def sources(self, build):
         return ['soundsourceoggvorbis.cpp']
 
-class Mad(Dependence):
-
-    def configure(self, build, conf):
-        if not conf.CheckLib(['libmad','mad']):
-            raise Exception('Did not find libmad.a, libmad.lib, or the libmad development header files - exiting!')
-        if not conf.CheckLib(['libid3tag', 'id3tag','libid3tag-release']):
-            raise Exception('Did not find libid3tag.a, libid3tag.lib, or the libid3tag development header files - exiting!')
-
-    def sources(self, build):
-        return ['soundsourcemp3.cpp']
-
 
 class SndFile(Dependence):
 
@@ -107,22 +96,6 @@ class FLAC(Dependence):
     def sources(self, build):
         return ['soundsourceflac.cpp',]
 
-class CoreAudio(Dependence):
-    def configure(self, build, conf):
-        if build.platform_is_osx:
-            build.env.Append(CPPPATH='/System/Library/Frameworks/AudioToolbox.framework/Headers/')
-            build.env.Append(LINKFLAGS='-framework AudioToolbox -framework CoreFoundation')
-        """blah"""
-        """
-        if not conf.CheckHeader('CoreAudio.h'):
-            raise Exception('Did not find CoreAudio development headers, exiting!')
-        if not conf.CheckLib(['CoreAudio']):
-            raise Exception('Did not find CoreAudio development libraries, exiting!')
-        return"""
-
-    def sources(self, build):
-        if build.platform_is_osx:
-            return ['soundsourcecoreaudio.cpp', '/Developer/Examples/CoreAudio/PublicUtility/CAStreamBasicDescription.h']
 
 class Qt(Dependence):
     DEFAULT_QTDIRS = {'linux': '/usr/share/qt4',
@@ -720,7 +693,7 @@ class MixxxCore(Feature):
             build.env.Append(CPPDEFINES=('UNIX_SHARE_PATH', r'\"%s\"' % share_path))
 
     def depends(self, build):
-        return [SoundTouch, CoreAudio, KissFFT, ReplayGain, PortAudio, PortMIDI, Qt,
+        return [SoundTouch, KissFFT, ReplayGain, PortAudio, PortMIDI, Qt,
                 FidLib, SndFile, FLAC, OggVorbis, OpenGL, TagLib]
 
     def post_dependency_check_configure(self, build, conf):

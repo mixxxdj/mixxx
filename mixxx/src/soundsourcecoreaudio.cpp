@@ -68,6 +68,7 @@ int SoundSourceCoreAudio::open() {
 		return ERR;
 	}    
     
+    //Debugging:
     //printf ("Source File format: "); inputFormat.Print();
     //printf ("Dest File format: "); outputFormat.Print();
 
@@ -274,6 +275,8 @@ QList<QString> SoundSourceCoreAudio::supportedFileExtensions() {
     //Can add mp3, mp2, ac3, and others here if you want.
     //See:
     //  http://developer.apple.com/library/mac/documentation/MusicAudio/Reference/AudioFileConvertRef/Reference/reference.html#//apple_ref/doc/c_ref/AudioFileTypeID
+    
+    //XXX: ... but make sure you implement handling for any new format in ParseHeader!!!!!! -- asantoni  
     return list;
 }
 
