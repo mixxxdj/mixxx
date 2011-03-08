@@ -266,4 +266,13 @@ METADATA
         );
     </sql>
   </revision>
+  <revision version="12" min_compatible="3">
+    <description>
+      Add beats column to library table.
+    </description>
+    <sql>
+      ALTER TABLE Library ADD COLUMN beats BLOB;
+      ALTER TABLE Library ADD COLUMN beats_version TEXT;
+    </sql>
+  </revision>
 </schema>
