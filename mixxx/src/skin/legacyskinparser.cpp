@@ -280,7 +280,7 @@ QWidget* LegacySkinParser::parseNode(QDomElement node, QWidget *pGrandparent) {
 
 QWidget* LegacySkinParser::parseWidgetGroup(QDomElement node) {
     QWidget* pGroup = new QGroupBox(m_pParent);
-
+    pGroup->setContentsMargins(0, 0, 0, 0);
     setupWidget(node, pGroup);
 
     QBoxLayout* pLayout = NULL;
@@ -288,8 +288,14 @@ QWidget* LegacySkinParser::parseWidgetGroup(QDomElement node) {
         QString layout = XmlParse::selectNodeQString(node, "Layout");
         if (layout == "vertical") {
             pLayout = new QVBoxLayout();
+            pLayout->setSpacing(0);
+            pLayout->setContentsMargins(0, 0, 0, 0);
+            pLayout->setAlignment(Qt::AlignCenter);
         } else if (layout == "horizontal") {
             pLayout = new QHBoxLayout();
+            pLayout->setSpacing(0);
+            pLayout->setContentsMargins(0, 0, 0, 0);
+            pLayout->setAlignment(Qt::AlignCenter);
         }
     }
 
@@ -306,6 +312,7 @@ QWidget* LegacySkinParser::parseWidgetGroup(QDomElement node) {
 
             if (node.isElement()) {
                 QWidget* pChild = parseNode(node.toElement(), pGroup);
+                //pChild->setContentsMargins(0, 0, 0, 0);
                 if (pLayout) {
                     pLayout->addWidget(pChild);
                 }
