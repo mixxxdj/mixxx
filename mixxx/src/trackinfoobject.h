@@ -28,7 +28,7 @@
 #include <QWeakPointer>
 
 #include "defs.h"
-
+#include "track/beats.h"
 #include "library/dao/cue.h"
 
 class QString;
@@ -245,6 +245,12 @@ public:
     bool isLoaded() const;
 	void setLoaded(bool val);
 
+    // Get the track's Beats list
+    BeatsPointer getBeats() const;
+
+    // Set the track's Beats
+    void setBeats(BeatsPointer beats);
+
     const Segmentation<QString>* getChordData();
     void setChordData(Segmentation<QString> cd);
 
@@ -254,12 +260,16 @@ public:
   signals:
     void wavesummaryUpdated(TrackInfoObject*);
     void bpmUpdated(double bpm);
+    void beatsUpdated();
     void ReplayGainUpdated(double replaygain);
     void cuesUpdated();
     void changed();
     void dirty();
     void clean();
     void save();
+
+  private slots:
+    void slotBeatsUpdated();
 
   private:
 
@@ -375,6 +385,9 @@ public:
 
     double m_dVisualResampleRate;
     Segmentation<QString> m_chordData;
+
+    // Storage for the track's beats
+    BeatsPointer m_pBeats;
 
     friend class TrackDAO;
 };

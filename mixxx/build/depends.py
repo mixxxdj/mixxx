@@ -532,6 +532,10 @@ class MixxxCore(Feature):
 
                    "sampleutil.cpp",
                    "trackinfoobject.cpp",
+                   "track/beatgrid.cpp",
+                   "track/beatmatrix.cpp",
+                   "track/beatfactory.cpp",
+
                    "baseplayer.cpp",
                    "basetrackplayer.cpp",
                    "deck.cpp",
@@ -598,7 +602,8 @@ class MixxxCore(Feature):
         # Evaluate this define. There are a lot of different things around the
         # codebase that use different defines. (AMD64, x86_64, x86, i386, i686,
         # EM64T). We need to unify them together.
-        build.env.Append(CPPDEFINES=build.machine)
+        if not build.machine=='alpha':
+            build.env.Append(CPPDEFINES=build.machine)
 
         if build.toolchain_is_gnu:
             # Default GNU Options

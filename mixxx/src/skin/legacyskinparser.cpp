@@ -276,16 +276,21 @@ QWidget* LegacySkinParser::parseWidgetGroup(QDomElement node) {
 
     setupWidget(node, pGroup);
 
+    QBoxLayout* pLayout = NULL;
     if (!XmlParse::selectNode(node, "Layout").isNull()) {
         QString layout = XmlParse::selectNodeQString(node, "Layout");
         if (layout == "vertical") {
-
+            pLayout = new QVBoxLayout();
         } else if (layout == "horizontal") {
-
+            pLayout = new QHBoxLayout();
         }
     }
 
     QDomNode childrenNode = XmlParse::selectNode(node, "Children");
+
+    QWidget* pOldParent = m_pParent;
+    m_pParent = pGroup;
+
     if (!childrenNode.isNull()) {
         // Descend chilren
         QDomNodeList children = childrenNode.childNodes();
@@ -294,9 +299,17 @@ QWidget* LegacySkinParser::parseWidgetGroup(QDomElement node) {
             QDomNode node = children.at(i);
 
             if (node.isElement()) {
-                parseNode(node.toElement(), pGroup);
+                QWidget* pChild = parseNode(node.toElement(), pGroup);
+                if (pLayout) {
+                    pLayout->addWidget(pChild);
+                }
             }
         }
+    }
+    m_pParent = pOldParent;
+
+    if (pLayout) {
+        pGroup->setLayout(pLayout);
     }
 
     return pGroup;
