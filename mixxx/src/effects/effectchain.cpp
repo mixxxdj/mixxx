@@ -40,8 +40,10 @@ double EffectChain::parameter() const {
 }
 
 void EffectChain::setParameter(double dParameter) {
+    qDebug() << debugString() << "setParameter" << dParameter;
     QMutexLocker locker(&m_mutex);
     m_dParameter = dParameter;
+
 }
 
 void EffectChain::process(const QString channelId,

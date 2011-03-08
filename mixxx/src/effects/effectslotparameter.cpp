@@ -99,7 +99,8 @@ void EffectSlotParameter::loadEffect(EffectPointer pEffect) {
             qDebug() << debugString() << QString("Val: %1 Min: %2 MinLimit: %3 Max: %4 MaxLimit: %5 Default: %6 Norm: %7").arg(dValue).arg(dMinimum).arg(dMinimumLimit).arg(dMaximum).arg(dMaximumLimit).arg(dDefault).arg(dNormalized);
 
             m_pControlValue->set(dValue);
-            m_pControlValueNormalized->set(dNormalized);
+            // Convert to stupid GUI widget convention
+            m_pControlValueNormalized->set(dNormalized * 127.0);
             m_pControlValueMinimum->set(dMinimum);
             m_pControlValueMinimumLimit->set(dMinimumLimit);
             m_pControlValueMaximum->set(dMaximum);
@@ -171,7 +172,8 @@ void EffectSlotParameter::slotValueNormalized(double v) {
     if (v < 0.0f || v > 1.0f) {
         qDebug() << debugString() << "value out of limits";
         v = math_clamp(v, 0.0f, 1.0f);
-        m_pControlValueNormalized->set(v);
+        // Convert back to stupid control system format
+        m_pControlValueNormalized->set(v * 127.0f);
     }
 
     // Now set the raw value to match the interpolated equivalent.

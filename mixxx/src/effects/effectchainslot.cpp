@@ -68,19 +68,22 @@ void EffectChainSlot::slotChainUpdated() {
     qDebug() << debugString() << "slotChainUpdated";
     if (m_pEffectChain) {
         QList<EffectPointer> effects = m_pEffectChain->getEffects();
-        for (int i = 0; i < effects.size(); ++i) {
-            EffectPointer pEffect = effects[i];
-            while (i >= m_slots.size()) {
-                addEffectSlot();
-            }
+        while (effects.size() > m_slots.size()) {
+            addEffectSlot();
+        }
+
+        for (int i = 0; i < m_slots.size(); ++i) {
             EffectSlotPointer pSlot = m_slots[i];
-            if (pSlot && pEffect) {
-                pSlot->loadEffect(pEffect);
+            EffectPointer pEffect;
+            if (i < effects.size()) {
+                pEffect = effects[i];
             }
+            if (pSlot)
+                pSlot->loadEffect(pEffect);
         }
 
         m_pControlNumEffects->set(m_pEffectChain->numEffects());
-        m_pControlChainParameter->set(m_pEffectChain->parameter());
+        m_pControlChainParameter->set(m_pEffectChain->parameter() * 127.0f);
 
         // TODO(rryan) is this a reasonable decision? Keep the enabled and mix
         // values the same because a) it keeps the controls from getting out of
@@ -97,13 +100,21 @@ void EffectChainSlot::loadEffectChain(EffectChainPointer pEffectChain) {
     QMutexLocker locker(&m_mutex);
 
     // Clear any loaded EffectChain
-    clear();
+    // -- causes a lot of signal changes just to go and load the next effect chain
+    //clear();
+
+    if (m_pEffectChain) {
+        m_pEffectChain->disconnect(this);
+        m_pEffectChain.clear();
+    }
 
     if (pEffectChain) {
         m_pEffectChain = pEffectChain;
         connect(m_pEffectChain.data(), SIGNAL(updated()),
                 this, SLOT(slotChainUpdated()));
         slotChainUpdated();
+    } else {
+        clear();
     }
 
     locker.unlock();
@@ -239,7 +250,7 @@ void EffectChainSlot::slotControlChainMix(double v) {
     if (v < 0.0f || v > 1.0f) {
         qDebug() << debugString() << "value out of limits";
         v = math_clamp(v, 0.0f, 1.0f);
-        m_pControlChainMix->set(v);
+        m_pControlChainMix->set(v * 127.0);
     }
 }
 
@@ -254,9 +265,11 @@ void EffectChainSlot::slotControlChainParameter(double v) {
     if (v < 0.0f || v > 1.0f) {
         qDebug() << debugString() << "value out of limits";
         v = math_clamp(v, 0.0f, 1.0f);
-        m_pControlChainParameter->set(v);
+        m_pControlChainParameter->set(v * 127.0);
     }
-    m_pEffectChain->setParameter(v);
+    if (m_pEffectChain) {
+        m_pEffectChain->setParameter(v);
+    }
 }
 
 void EffectChainSlot::slotControlChainNextPreset(double v) {
