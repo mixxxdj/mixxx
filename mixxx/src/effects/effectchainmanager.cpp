@@ -49,7 +49,7 @@ EffectChainPointer EffectChainManager::getPrevEffectChain(EffectChainPointer pEf
         return m_effectChains[m_effectChains.size()-1];
     }
 
-    return m_effectChains[(indexOf - 1) % m_effectChains.size()];
+    return m_effectChains[(indexOf - 1 + m_effectChains.size()) % m_effectChains.size()];
 }
 
 void EffectChainManager::saveEffectChains() {

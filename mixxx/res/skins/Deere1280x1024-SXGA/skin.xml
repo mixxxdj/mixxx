@@ -1396,7 +1396,7 @@
             <EffectChainName>
               <Pos>20,5</Pos>
               <Size>70,25</Size>
-              <EffectChain>1</EffectChain>
+              <EffectChain>2</EffectChain>
               <Style>QLabel { color: white; vertical-align: middle; margin-left: 5px; margin-right: 5px;}</Style>
             </EffectChainName>
             <PushButton>
