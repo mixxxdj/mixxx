@@ -1191,6 +1191,310 @@
 		</Connection>
 	</PushButton>
 
+        <!-- EffectChain1 -->
+        <WidgetGroup>
+          <Pos>20,305</Pos>
+          <Size>350,43</Size>
+          <Layout>horizontal</Layout>
+          <Style> QGroupBox { border: 1px solid red; } QWidget { margin: 0; padding: 0; }</Style>
+          <Children>
+            <WidgetGroup>
+              <Pos>0,0</Pos>
+              <Size>22,43</Size>
+              <Layout>vertical</Layout>
+              <Children>
+                <PushButton>
+                  <NumberStates>1</NumberStates>
+		  <State>
+		    <Number>0</Number>
+		    <Pressed>btn_nudge_up2_over.png</Pressed>
+		    <Unpressed>btn_nudge_up2.png</Unpressed>
+		  </State>
+		  <Connection>
+		    <ConfigKey>[EffectChain1],next_chain</ConfigKey>
+		    <EmitOnDownPress>true</EmitOnDownPress>
+		    <ButtonState>LeftButton</ButtonState>
+		  </Connection>
+		  <Connection>
+		    <ConfigKey>[EffectChain1],next_chain</ConfigKey>
+		    <EmitOnDownPress>false</EmitOnDownPress>
+		    <ButtonState>LeftButton</ButtonState>
+		  </Connection>
+	        </PushButton>
+                <PushButton>
+                  <NumberStates>1</NumberStates>
+		  <State>
+		    <Number>0</Number>
+		    <Pressed>btn_nudge_down2_over.png</Pressed>
+		    <Unpressed>btn_nudge_down2.png</Unpressed>
+		  </State>
+		  <Connection>
+		    <ConfigKey>[EffectChain1],prev_chain</ConfigKey>
+		    <EmitOnDownPress>true</EmitOnDownPress>
+		    <ButtonState>LeftButton</ButtonState>
+		  </Connection>
+		  <Connection>
+		    <ConfigKey>[EffectChain1],prev_chain</ConfigKey>
+		    <EmitOnDownPress>false</EmitOnDownPress>
+		    <ButtonState>LeftButton</ButtonState>
+		  </Connection>
+	        </PushButton>
+              </Children>
+            </WidgetGroup>
+            <EffectChainName>
+              <Pos>20,5</Pos>
+              <Size>70,25</Size>
+              <EffectChain>1</EffectChain>
+              <Style>QLabel { color: white; vertical-align: middle; margin-left: 5px; margin-right: 5px;}</Style>
+            </EffectChainName>
+            <PushButton>
+              <Pos>70,5</Pos>
+	      <NumberStates>2</NumberStates>
+              <State>
+		<Number>0</Number>
+		<Pressed>btn_hotcue1_over.png</Pressed>
+		<Unpressed>btn_hotcue1.png</Unpressed>
+	      </State>
+	      <State>
+		<Number>1</Number>
+		<Pressed>btn_hotcue1.png</Pressed>
+		<Unpressed>btn_hotcue1_over.png</Unpressed>
+	      </State>
+	      <Connection>
+		<ConfigKey>[EffectChain1],channel_[Channel1]</ConfigKey>
+	      </Connection>
+	    </PushButton>
+            <PushButton>
+              <Pos>90,5</Pos>
+	      <NumberStates>2</NumberStates>
+              <State>
+		<Number>0</Number>
+		<Pressed>btn_hotcue2_over.png</Pressed>
+		<Unpressed>btn_hotcue2.png</Unpressed>
+	      </State>
+	      <State>
+		<Number>1</Number>
+		<Pressed>btn_hotcue2.png</Pressed>
+		<Unpressed>btn_hotcue2_over.png</Unpressed>
+	      </State>
+	      <Connection>
+		<ConfigKey>[EffectChain1],channel_[Channel2]</ConfigKey>
+	      </Connection>
+            </PushButton>
+            <PushButton>
+              <Pos>115,5</Pos>
+	      <NumberStates>2</NumberStates>
+              <State>
+		<Number>0</Number>
+		<Pressed>btn_pfl1.png</Pressed>
+		<Unpressed>btn_pfl1.png</Unpressed>
+	      </State>
+	      <State>
+		<Number>1</Number>
+		<Pressed>btn_pfl1_over.png</Pressed>
+		<Unpressed>btn_pfl1_over.png</Unpressed>
+	      </State>
+	      <Connection>
+		<ConfigKey>[EffectChain1],channel_[Headphone]</ConfigKey>
+	      </Connection>
+            </PushButton>
+            <PushButton>
+              <Pos>160,5</Pos>
+	      <NumberStates>2</NumberStates>
+              <State>
+		<Number>0</Number>
+		<Pressed>btn_play1.png</Pressed>
+		<Unpressed>btn_play1.png</Unpressed>
+	      </State>
+	      <State>
+		<Number>1</Number>
+		<Pressed>btn_play1_over.png</Pressed>
+		<Unpressed>btn_play1_over.png</Unpressed>
+	      </State>
+	      <Connection>
+		<ConfigKey>[EffectChain1],channel_[Master]</ConfigKey>
+	      </Connection>
+            </PushButton>
+            <PushButton>
+              <Pos>205,5</Pos>
+	      <NumberStates>2</NumberStates>
+              <State>
+		<Number>0</Number>
+		<Pressed>btn_fx1.png</Pressed>
+		<Unpressed>btn_fx1.png</Unpressed>
+	      </State>
+	      <State>
+		<Number>1</Number>
+		<Pressed>btn_fx1_over.png</Pressed>
+		<Unpressed>btn_fx1_over.png</Unpressed>
+	      </State>
+	      <Connection>
+		<ConfigKey>[EffectChain1],enabled</ConfigKey>
+	      </Connection>
+	    </PushButton>
+            <Knob>
+	      <NumberStates>39</NumberStates>
+	      <Path>knob_rotary_s%1.png</Path>
+	      <Pos>250,0</Pos>
+	      <Connection>
+		<ConfigKey>[EffectChain1],parameter</ConfigKey>
+	      </Connection>
+	</Knob>
+          </Children>
+        </WidgetGroup>
+
+        <!-- EffectChain2 -->
+        <WidgetGroup>
+          <Pos>875,305</Pos>
+          <Size>350,43</Size>
+          <Layout>horizontal</Layout>
+          <Style> QGroupBox { border: 1px solid red; } QWidget { margin: 0; padding: 0; }</Style>
+          <Children>
+            <WidgetGroup>
+              <Pos>0,0</Pos>
+              <Size>22,43</Size>
+              <Layout>vertical</Layout>
+              <Children>
+                <PushButton>
+                  <NumberStates>1</NumberStates>
+		  <State>
+		    <Number>0</Number>
+		    <Pressed>btn_nudge_up2_over.png</Pressed>
+		    <Unpressed>btn_nudge_up2.png</Unpressed>
+		  </State>
+		  <Connection>
+		    <ConfigKey>[EffectChain2],next_chain</ConfigKey>
+		    <EmitOnDownPress>true</EmitOnDownPress>
+		    <ButtonState>LeftButton</ButtonState>
+		  </Connection>
+		  <Connection>
+		    <ConfigKey>[EffectChain2],next_chain</ConfigKey>
+		    <EmitOnDownPress>false</EmitOnDownPress>
+		    <ButtonState>LeftButton</ButtonState>
+		  </Connection>
+	        </PushButton>
+                <PushButton>
+                  <NumberStates>1</NumberStates>
+		  <State>
+		    <Number>0</Number>
+		    <Pressed>btn_nudge_down2_over.png</Pressed>
+		    <Unpressed>btn_nudge_down2.png</Unpressed>
+		  </State>
+		  <Connection>
+		    <ConfigKey>[EffectChain2],prev_chain</ConfigKey>
+		    <EmitOnDownPress>true</EmitOnDownPress>
+		    <ButtonState>LeftButton</ButtonState>
+		  </Connection>
+		  <Connection>
+		    <ConfigKey>[EffectChain2],prev_chain</ConfigKey>
+		    <EmitOnDownPress>false</EmitOnDownPress>
+		    <ButtonState>LeftButton</ButtonState>
+		  </Connection>
+	        </PushButton>
+              </Children>
+            </WidgetGroup>
+            <EffectChainName>
+              <Pos>20,5</Pos>
+              <Size>70,25</Size>
+              <EffectChain>1</EffectChain>
+              <Style>QLabel { color: white; vertical-align: middle; margin-left: 5px; margin-right: 5px;}</Style>
+            </EffectChainName>
+            <PushButton>
+              <Pos>70,5</Pos>
+	      <NumberStates>2</NumberStates>
+              <State>
+		<Number>0</Number>
+		<Pressed>btn_hotcue1_over.png</Pressed>
+		<Unpressed>btn_hotcue1.png</Unpressed>
+	      </State>
+	      <State>
+		<Number>1</Number>
+		<Pressed>btn_hotcue1.png</Pressed>
+		<Unpressed>btn_hotcue1_over.png</Unpressed>
+	      </State>
+	      <Connection>
+		<ConfigKey>[EffectChain2],channel_[Channel1]</ConfigKey>
+	      </Connection>
+	    </PushButton>
+            <PushButton>
+              <Pos>90,5</Pos>
+	      <NumberStates>2</NumberStates>
+              <State>
+		<Number>0</Number>
+		<Pressed>btn_hotcue2_over.png</Pressed>
+		<Unpressed>btn_hotcue2.png</Unpressed>
+	      </State>
+	      <State>
+		<Number>1</Number>
+		<Pressed>btn_hotcue2.png</Pressed>
+		<Unpressed>btn_hotcue2_over.png</Unpressed>
+	      </State>
+	      <Connection>
+		<ConfigKey>[EffectChain2],channel_[Channel2]</ConfigKey>
+	      </Connection>
+            </PushButton>
+            <PushButton>
+              <Pos>115,5</Pos>
+	      <NumberStates>2</NumberStates>
+              <State>
+		<Number>0</Number>
+		<Pressed>btn_pfl1.png</Pressed>
+		<Unpressed>btn_pfl1.png</Unpressed>
+	      </State>
+	      <State>
+		<Number>1</Number>
+		<Pressed>btn_pfl1_over.png</Pressed>
+		<Unpressed>btn_pfl1_over.png</Unpressed>
+	      </State>
+	      <Connection>
+		<ConfigKey>[EffectChain2],channel_[Headphone]</ConfigKey>
+	      </Connection>
+            </PushButton>
+            <PushButton>
+              <Pos>160,5</Pos>
+	      <NumberStates>2</NumberStates>
+              <State>
+		<Number>0</Number>
+		<Pressed>btn_play1.png</Pressed>
+		<Unpressed>btn_play1.png</Unpressed>
+	      </State>
+	      <State>
+		<Number>1</Number>
+		<Pressed>btn_play1_over.png</Pressed>
+		<Unpressed>btn_play1_over.png</Unpressed>
+	      </State>
+	      <Connection>
+		<ConfigKey>[EffectChain2],channel_[Master]</ConfigKey>
+	      </Connection>
+            </PushButton>
+            <PushButton>
+              <Pos>205,5</Pos>
+	      <NumberStates>2</NumberStates>
+              <State>
+		<Number>0</Number>
+		<Pressed>btn_fx1.png</Pressed>
+		<Unpressed>btn_fx1.png</Unpressed>
+	      </State>
+	      <State>
+		<Number>1</Number>
+		<Pressed>btn_fx1_over.png</Pressed>
+		<Unpressed>btn_fx1_over.png</Unpressed>
+	      </State>
+	      <Connection>
+		<ConfigKey>[EffectChain2],enabled</ConfigKey>
+	      </Connection>
+	    </PushButton>
+            <Knob>
+	      <NumberStates>39</NumberStates>
+	      <Path>knob_rotary_s%1.png</Path>
+	      <Pos>250,0</Pos>
+	      <Connection>
+		<ConfigKey>[EffectChain2],parameter</ConfigKey>
+	      </Connection>
+	</Knob>
+          </Children>
+        </WidgetGroup>
+
 	<!--
 	**********************************************
 	Button- Cue
@@ -2065,7 +2369,7 @@
 
 	<!--
 	**********************************************
-	Button- BPM Tap 
+	Button- BPM Tap
 	**********************************************
 	-->
 
@@ -2495,7 +2799,7 @@
 		</State>
 		<Pos>491,67</Pos>
 		<Connection>
-			<ConfigKey>[Channel1],flanger</ConfigKey>
+			<ConfigKey>[EffectChain1],enabled</ConfigKey>
 		</Connection>
 	</PushButton>
 	<PushButton>
@@ -2516,7 +2820,7 @@
 		</State>
 		<Pos>734,67</Pos>
 		<Connection>
-			<ConfigKey>[Channel2],flanger</ConfigKey>
+			<ConfigKey>[EffectChain1_Effect1],enabled</ConfigKey>
 		</Connection>
 	</PushButton>
 
@@ -2716,7 +3020,7 @@
 		<Path>knob_rotary_s%1.png</Path>
 		<Pos>673,64</Pos>
 		<Connection>
-			<ConfigKey>[Flanger],lfoDelay</ConfigKey>
+			<ConfigKey>[EffectChain1_Effect1_Parameter1],value_normalized</ConfigKey>
 		</Connection>
 	</Knob>
 	<Knob>
@@ -2728,7 +3032,7 @@
 		<Path>knob_rotary_s%1.png</Path>
 		<Pos>614,64</Pos>
 		<Connection>
-			<ConfigKey>[Flanger],lfoDepth</ConfigKey>
+			<ConfigKey>[EffectChain1_Effect1_Parameter2],value_normalized</ConfigKey>
 		</Connection>
 	</Knob>
 	<Knob>
@@ -2740,7 +3044,7 @@
 		<Path>knob_rotary_s%1.png</Path>
 		<Pos>554,64</Pos>
 		<Connection>
-			<ConfigKey>[Flanger],lfoPeriod</ConfigKey>
+			<ConfigKey>[EffectChain1_Effect1_Parameter3],value_normalized</ConfigKey>
 		</Connection>
 	</Knob>
 
