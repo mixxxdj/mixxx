@@ -3,8 +3,12 @@
 
 #include "effects/effectchainmanager.h"
 
+// TODO(rryan) REMOVE
+#include "effects/native/flangereffect.h"
+
 EffectsManager::EffectsManager(QObject* pParent)
-        : QObject(pParent) {
+        : QObject(pParent),
+          m_mutex(QMutex::Recursive) {
     m_pEffectChainManager = new EffectChainManager(this);
 }
 
@@ -31,6 +35,14 @@ unsigned int EffectsManager::numEffectChainSlots() const {
 void EffectsManager::addEffectChainSlot() {
     QMutexLocker locker(&m_mutex);
     EffectChainSlot* pChainSlot = new EffectChainSlot(this, m_effectChainSlots.size());
+
+    // TODO(rryan) How many should we make default? They create controls that
+    // the GUI may rely on, so the choice is important to communicate to skin
+    // designers.
+    pChainSlot->addEffectSlot();
+    pChainSlot->addEffectSlot();
+    pChainSlot->addEffectSlot();
+    pChainSlot->addEffectSlot();
 
     connect(pChainSlot, SIGNAL(nextChain(const unsigned int, EffectChainPointer)),
             this, SLOT(loadNextChain(const unsigned int, EffectChainPointer)));
@@ -105,12 +117,83 @@ void EffectsManager::registerChannel(const QString channelId) {
 }
 
 void EffectsManager::loadNextChain(const unsigned int iChainSlotNumber, EffectChainPointer pLoadedChain) {
+    QMutexLocker locker(&m_mutex);
     EffectChainPointer pNextChain = m_pEffectChainManager->getNextEffectChain(pLoadedChain);
     m_effectChainSlots[iChainSlotNumber]->loadEffectChain(pNextChain);
 }
 
 
 void EffectsManager::loadPrevChain(const unsigned int iChainSlotNumber, EffectChainPointer pLoadedChain) {
+    QMutexLocker locker(&m_mutex);
     EffectChainPointer pPrevChain = m_pEffectChainManager->getPrevEffectChain(pLoadedChain);
     m_effectChainSlots[iChainSlotNumber]->loadEffectChain(pPrevChain);
+}
+
+const QSet<QString> EffectsManager::getAvailableEffects() const {
+    QMutexLocker locker(&m_mutex);
+    QSet<QString> availableEffects;
+
+    foreach (EffectsBackend* pBackend, m_effectsBackends) {
+        QSet<QString> backendEffects = pBackend->getEffectIds();
+        foreach (QString effectId, backendEffects) {
+            if (availableEffects.contains(effectId)) {
+                qDebug() << "WARNING: Duplicate effect ID" << effectId;
+                continue;
+            }
+            availableEffects.insert(effectId);
+        }
+    }
+
+    return availableEffects;
+}
+
+EffectManifestPointer EffectsManager::getEffectManifest(const QString effectId) const {
+    QMutexLocker locker(&m_mutex);
+
+    foreach (EffectsBackend* pBackend, m_effectsBackends) {
+        if (pBackend->canInstantiateEffect(effectId)) {
+            return pBackend->getManifest(effectId);
+        }
+    }
+
+    return EffectManifestPointer();
+}
+
+EffectPointer EffectsManager::instantiateEffect(const QString effectId) {
+    QMutexLocker locker(&m_mutex);
+
+    foreach (EffectsBackend* pBackend, m_effectsBackends) {
+        if (pBackend->canInstantiateEffect(effectId)) {
+            return pBackend->instantiateEffect(effectId);
+        }
+    }
+
+    return EffectPointer();
+}
+
+void EffectsManager::setupDefaultChains() {
+    QMutexLocker locker(&m_mutex);
+    QSet<QString> effects = getAvailableEffects();
+
+    QString flangerId = FlangerEffect::getId();
+
+    if (effects.contains(flangerId)) {
+        EffectChainPointer pChain = EffectChainPointer(new EffectChain());
+        pChain->setId("org.mixxx.effectchain.flanger");
+        pChain->setName("Flanger");
+        pChain->setParameter(0.0f);
+
+        EffectPointer flanger = instantiateEffect(flangerId);
+        pChain->addEffect(flanger);
+        m_pEffectChainManager->addEffectChain(pChain);
+
+        pChain = EffectChainPointer(new EffectChain());
+        pChain->setId("org.mixxx.effectchain.flanger2");
+        pChain->setName("Flanger2");
+        pChain->setParameter(0.0f);
+
+        flanger = instantiateEffect(flangerId);
+        pChain->addEffect(flanger);
+        m_pEffectChainManager->addEffectChain(pChain);
+    }
 }

@@ -241,7 +241,12 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
     // initialization into MixxxKeyboard
     m_pKeyboard = new MixxxKeyboard(pKbdConfig);
 
+    // Setup the effects manager with four effects chains
     m_pEffectsManager = new EffectsManager(this);
+    m_pEffectsManager->addEffectChainSlot();
+    m_pEffectsManager->addEffectChainSlot();
+    m_pEffectsManager->addEffectChainSlot();
+    m_pEffectsManager->addEffectChainSlot();
 
     // Starting the master (mixing of the channels and effects):
     m_pEngine = new EngineMaster(m_pConfig, "[Master]", m_pEffectsManager);
@@ -252,21 +257,8 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
     NativeBackend* pNativeBackend = new NativeBackend(m_pEffectsManager);
     m_pEffectsManager->addEffectsBackend(pNativeBackend);
 
-    // Setup one effects chain with one EngineFlanger
-    m_pEffectsManager->addEffectChainSlot();
 
-    EffectChainPointer pChain = EffectChainPointer(new EffectChain());
-    pChain->setId("org.mixxx.effectchain.flanger");
-    pChain->setName("Flanger");
-    pChain->setParameter(0.0f);
-
-    QString flangerId = pNativeBackend->getEffectIds()[0];
-    EffectPointer flanger = pNativeBackend->instantiateEffect(flangerId);
-    pChain->addEffect(flanger);
-
-    EffectChainSlotPointer effectChain = m_pEffectsManager->getEffectChainSlot(0);
-    effectChain->addEffectSlot();
-    effectChain->loadEffectChain(pChain);
+    m_pEffectsManager->setupDefaultChains();
 
     // Initialize player device
     // while this is created here, setupDevices needs to be called sometime

@@ -4,6 +4,7 @@
 #include <QObject>
 #include <QMutex>
 #include <QList>
+#include <QSet>
 
 #include "util.h"
 #include "effects/effect.h"
@@ -40,6 +41,13 @@ class EffectsManager : public QObject {
                          const unsigned int numSamples);
 
     void registerChannel(const QString channelID);
+
+    const QSet<QString> getAvailableEffects() const;
+    EffectManifestPointer getEffectManifest(const QString effectId) const;
+    EffectPointer instantiateEffect(const QString effectId);
+
+    // Temporary, but for setting up all the default EffectChains
+    void setupDefaultChains();
 
   private slots:
     void loadNextChain(const unsigned int iChainSlotNumber, EffectChainPointer pLoadedChain);

@@ -3,6 +3,8 @@
 
 #include <QObject>
 #include <QList>
+#include <QMutex>
+#include <QSet>
 #include <QString>
 
 #include "effects/effect.h"
@@ -20,8 +22,9 @@ class EffectsBackend : public QObject {
 
     virtual const QString getName() const;
 
-    virtual const QList<QString> getEffectIds() const;
+    virtual const QSet<QString> getEffectIds() const;
     virtual EffectManifestPointer getManifest(const QString effectId) const;
+    virtual bool canInstantiateEffect(const QString effectId) const;
     virtual EffectPointer instantiateEffect(const QString effectId);
 
   protected:
@@ -30,9 +33,9 @@ class EffectsBackend : public QObject {
                         EffectInstantiator pInstantiator);
 
   private:
+    mutable QMutex m_mutex;
     QString m_name;
     QMap<QString, QPair<EffectManifestPointer, EffectInstantiator> > m_registeredEffects;
-
 };
 
 #endif /* EFFECTSBACKEND_H */
