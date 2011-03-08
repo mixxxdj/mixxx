@@ -16,7 +16,7 @@ EffectSlot::EffectSlot(QObject* pParent, const unsigned int iChainNumber, const 
     m_pControlNumParameters = new ControlObject(ConfigKey(m_group, "num_parameters"));
 
     for (unsigned int i = 0; i < kMaxParameters; ++i) {
-        EffectSlotParameter* pParameter = new EffectSlotParameter(this, m_iChainNumber,
+        EffectParameterSlot* pParameter = new EffectParameterSlot(this, m_iChainNumber,
                                                                   m_iSlotNumber, m_parameters.size());
         m_parameters.append(pParameter);
     }
@@ -32,7 +32,7 @@ EffectSlot::~EffectSlot() {
     delete m_pControlNumParameters;
 
     while (!m_parameters.isEmpty()) {
-        EffectSlotParameter* pParameter = m_parameters.takeLast();
+        EffectParameterSlot* pParameter = m_parameters.takeLast();
         delete pParameter;
     }
 }
@@ -50,7 +50,7 @@ void EffectSlot::loadEffect(EffectPointer pEffect) {
         m_pControlEnabled->set(1.0f);
         m_pControlNumParameters->set(m_pEffect->getManifest()->parameters().size());
 
-        foreach (EffectSlotParameter* pParameter, m_parameters) {
+        foreach (EffectParameterSlot* pParameter, m_parameters) {
             pParameter->loadEffect(m_pEffect);
         }
 
@@ -69,7 +69,7 @@ void EffectSlot::clear() {
     m_pEffect.clear();
     m_pControlEnabled->set(0.0f);
     m_pControlNumParameters->set(0.0f);
-    foreach (EffectSlotParameter* pParameter, m_parameters) {
+    foreach (EffectParameterSlot* pParameter, m_parameters) {
         pParameter->loadEffect(EffectPointer());
     }
 }

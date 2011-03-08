@@ -10,12 +10,12 @@
 #include "controlobject.h"
 #include "effects/effect.h"
 
-class EffectSlotParameter : QObject {
+class EffectParameterSlot : QObject {
     Q_OBJECT
   public:
-    EffectSlotParameter(QObject* pParent, const unsigned int iChainNumber,
+    EffectParameterSlot(QObject* pParent, const unsigned int iChainNumber,
                         const unsigned int iSlotNumber, const unsigned int iParameterNumber);
-    virtual ~EffectSlotParameter();
+    virtual ~EffectParameterSlot();
 
     static QString formatGroupString(const unsigned int iChainNumber, const unsigned int iSlotNumber,
                               const unsigned int iParameterNumber) {
@@ -25,7 +25,7 @@ class EffectSlotParameter : QObject {
                 .arg(iParameterNumber+1);
     }
 
-    // Load the parameter of the given effect into this EffectSlotParameter
+    // Load the parameter of the given effect into this EffectParameterSlot
     void loadEffect(EffectPointer pEffect);
 
   private slots:
@@ -43,7 +43,7 @@ class EffectSlotParameter : QObject {
 
   private:
     QString debugString() const {
-        return QString("EffectSlotParameter(%1,%2)").arg(m_group).arg(m_iParameterNumber);
+        return QString("EffectParameterSlot(%1,%2)").arg(m_group).arg(m_iParameterNumber);
     }
 
     // Clear the currently loaded effect
@@ -71,7 +71,7 @@ class EffectSlotParameter : QObject {
     ControlObject* m_pControlValueMinimum;
     ControlObject* m_pControlValueMinimumLimit;
 
-    DISALLOW_COPY_AND_ASSIGN(EffectSlotParameter);
+    DISALLOW_COPY_AND_ASSIGN(EffectParameterSlot);
 };
 
 #endif /* EFFECTPARAMETERSLOT_H */

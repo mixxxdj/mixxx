@@ -9,7 +9,7 @@
 #include "util.h"
 #include "controlobject.h"
 #include "effects/effect.h"
-#include "effects/effectslotparameter.h"
+#include "effects/effectparameterslot.h"
 
 class EffectSlot;
 typedef QSharedPointer<EffectSlot> EffectSlotPointer;
@@ -55,7 +55,7 @@ class EffectSlot : public QObject {
 
     ControlObject* m_pControlEnabled;
     ControlObject* m_pControlNumParameters;
-    QList<EffectSlotParameter*> m_parameters;
+    QList<EffectParameterSlot*> m_parameters;
 
     DISALLOW_COPY_AND_ASSIGN(EffectSlot);
 };

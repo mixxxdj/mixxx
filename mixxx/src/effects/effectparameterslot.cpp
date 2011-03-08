@@ -3,9 +3,9 @@
 
 #include "defs.h"
 #include "controlpotmeter.h"
-#include "effects/effectslotparameter.h"
+#include "effects/effectparameterslot.h"
 
-EffectSlotParameter::EffectSlotParameter(QObject* pParent, const unsigned int iChainNumber,
+EffectParameterSlot::EffectParameterSlot(QObject* pParent, const unsigned int iChainNumber,
                                          const unsigned int iSlotNumber,
                                          const unsigned int iParameterNumber)
         : QObject(),
@@ -59,7 +59,7 @@ EffectSlotParameter::EffectSlotParameter(QObject* pParent, const unsigned int iC
     clear();
 }
 
-EffectSlotParameter::~EffectSlotParameter() {
+EffectParameterSlot::~EffectParameterSlot() {
     qDebug() << debugString() << "destroyed";
     m_pEffectParameter.clear();
     delete m_pControlEnabled;
@@ -74,7 +74,7 @@ EffectSlotParameter::~EffectSlotParameter() {
     delete m_pControlValueMinimumLimit;
 }
 
-void EffectSlotParameter::loadEffect(EffectPointer pEffect) {
+void EffectParameterSlot::loadEffect(EffectPointer pEffect) {
     qDebug() << debugString() << "loadEffect" << (pEffect ? pEffect->getManifest()->name() : "(null)");
     QMutexLocker locker(&m_mutex);
     if (pEffect) {
@@ -117,7 +117,7 @@ void EffectSlotParameter::loadEffect(EffectPointer pEffect) {
     }
 }
 
-void EffectSlotParameter::clear() {
+void EffectParameterSlot::clear() {
     qDebug() << debugString() << "clear";
     m_pEffectParameter.clear();
     m_pControlEnabled->set(0.0f);
@@ -131,19 +131,19 @@ void EffectSlotParameter::clear() {
     m_pControlValueMinimumLimit->set(0.0f);
 }
 
-void EffectSlotParameter::slotEnabled(double v) {
+void EffectParameterSlot::slotEnabled(double v) {
     qDebug() << debugString() << "slotEnabled" << v;
     QMutexLocker locker(&m_mutex);
     qDebug() << "WARNING: Somebody has set a read-only control. Stability may be compromised.";
     // TODO(rryan) add protection
 }
 
-void EffectSlotParameter::slotLinked(double v) {
+void EffectParameterSlot::slotLinked(double v) {
     qDebug() << debugString() << "slotLinked" << v;
     QMutexLocker locker(&m_mutex);
 }
 
-void EffectSlotParameter::slotValue(double v) {
+void EffectParameterSlot::slotValue(double v) {
     qDebug() << debugString() << "slotValue" << v;
     QMutexLocker locker(&m_mutex);
 
@@ -162,7 +162,7 @@ void EffectSlotParameter::slotValue(double v) {
     }
 }
 
-void EffectSlotParameter::slotValueNormalized(double v) {
+void EffectParameterSlot::slotValueNormalized(double v) {
     qDebug() << debugString() << "slotValueNormalized" << v;
     QMutexLocker locker(&m_mutex);
 
@@ -187,19 +187,19 @@ void EffectSlotParameter::slotValueNormalized(double v) {
     }
 }
 
-void EffectSlotParameter::slotValueType(double v) {
+void EffectParameterSlot::slotValueType(double v) {
     qDebug() << debugString() << "slotValueType" << v;
     QMutexLocker locker(&m_mutex);
     qDebug() << debugString() << "WARNING: Somebody has set a read-only control. Stability may be compromised.";
 }
 
-void EffectSlotParameter::slotValueDefault(double v) {
+void EffectParameterSlot::slotValueDefault(double v) {
     qDebug() << debugString() << "slotValueDefault" << v;
     QMutexLocker locker(&m_mutex);
     qDebug() << debugString() << "WARNING: Somebody has set a read-only control. Stability may be compromised.";
 }
 
-void EffectSlotParameter::slotValueMaximum(double v) {
+void EffectParameterSlot::slotValueMaximum(double v) {
     qDebug() << debugString() << "slotValueMaximum" << v;
     QMutexLocker locker(&m_mutex);
     double dMaxLimit = m_pControlValueMaximumLimit->get();
@@ -213,13 +213,13 @@ void EffectSlotParameter::slotValueMaximum(double v) {
     }
 }
 
-void EffectSlotParameter::slotValueMaximumLimit(double v) {
+void EffectParameterSlot::slotValueMaximumLimit(double v) {
     qDebug() << debugString() << "slotValueMaximumLimit" << v;
     QMutexLocker locker(&m_mutex);
     qDebug() << "WARNING: Somebody has set a read-only control. Stability may be compromised.";
 }
 
-void EffectSlotParameter::slotValueMinimum(double v) {
+void EffectParameterSlot::slotValueMinimum(double v) {
     qDebug() << debugString() << "slotValueMinimum" << v;
     QMutexLocker locker(&m_mutex);
     double dMinLimit = m_pControlValueMinimumLimit->get();
@@ -234,7 +234,7 @@ void EffectSlotParameter::slotValueMinimum(double v) {
     }
 }
 
-void EffectSlotParameter::slotValueMinimumLimit(double v) {
+void EffectParameterSlot::slotValueMinimumLimit(double v) {
     qDebug() << debugString() << "slotValueMinimumLimit" << v;
     QMutexLocker locker(&m_mutex);
     qDebug() << debugString() << "WARNING: Somebody has set a read-only control. Stability may be compromised.";
