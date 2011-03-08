@@ -58,16 +58,12 @@ DlgPrefVinyl::DlgPrefVinyl(QWidget * parent, SoundManager * soundman,
     ComboBoxVinylType1->addItem(MIXXX_VINYL_SERATOCD);
     ComboBoxVinylType1->addItem(MIXXX_VINYL_TRAKTORSCRATCHSIDEA);
     ComboBoxVinylType1->addItem(MIXXX_VINYL_TRAKTORSCRATCHSIDEB);
-    ComboBoxVinylType1->addItem(MIXXX_VINYL_FINALSCRATCH);
-    ComboBoxVinylType1->addItem(MIXXX_VINYL_MIXVIBESDVSCD);
     
     ComboBoxVinylType2->addItem(MIXXX_VINYL_SERATOCV02VINYLSIDEA);
     ComboBoxVinylType2->addItem(MIXXX_VINYL_SERATOCV02VINYLSIDEB);
     ComboBoxVinylType2->addItem(MIXXX_VINYL_SERATOCD);
     ComboBoxVinylType2->addItem(MIXXX_VINYL_TRAKTORSCRATCHSIDEA);
     ComboBoxVinylType2->addItem(MIXXX_VINYL_TRAKTORSCRATCHSIDEB);
-    ComboBoxVinylType2->addItem(MIXXX_VINYL_FINALSCRATCH);
-    ComboBoxVinylType2->addItem(MIXXX_VINYL_MIXVIBESDVSCD);
     
     ComboBoxVinylSpeed1->addItem(MIXXX_VINYL_SPEED_33);
     ComboBoxVinylSpeed1->addItem(MIXXX_VINYL_SPEED_45);
@@ -76,7 +72,6 @@ DlgPrefVinyl::DlgPrefVinyl(QWidget * parent, SoundManager * soundman,
     ComboBoxVinylSpeed2->addItem(MIXXX_VINYL_SPEED_45);
     
     connect(applyButton, SIGNAL(clicked()), this, SLOT(slotApply()));
-
     connect(VinylGain, SIGNAL(sliderReleased()), this, SLOT(VinylGainSlotApply()));
     //connect(ComboBoxDeviceDeck1, SIGNAL(currentIndexChanged()), this, SLOT(()));
     
