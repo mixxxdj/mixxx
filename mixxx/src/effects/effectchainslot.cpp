@@ -3,6 +3,8 @@
 #include "effects/effectchainslot.h"
 #include "sampleutil.h"
 
+#include "controlpotmeter.h"
+
 EffectChainSlot::EffectChainSlot(QObject* pParent, unsigned int iChainNumber)
         : QObject(),
           m_mutex(QMutex::Recursive),
@@ -21,11 +23,11 @@ EffectChainSlot::EffectChainSlot(QObject* pParent, unsigned int iChainNumber)
     // Default chain to enabled.
     m_pControlChainEnabled->set(1.0f);
 
-    m_pControlChainMix = new ControlObject(ConfigKey(m_group, "mix"));
+    m_pControlChainMix = new ControlPotmeter(ConfigKey(m_group, "mix"), 0.0, 1.0);
     connect(m_pControlChainMix, SIGNAL(valueChanged(double)),
             this, SLOT(slotControlChainMix(double)));
 
-    m_pControlChainParameter = new ControlObject(ConfigKey(m_group, "parameter"));
+    m_pControlChainParameter = new ControlPotmeter(ConfigKey(m_group, "parameter"), 0.0, 1.0);
     connect(m_pControlChainParameter, SIGNAL(valueChanged(double)),
             this, SLOT(slotControlChainParameter(double)));
 
@@ -83,7 +85,7 @@ void EffectChainSlot::slotChainUpdated() {
         }
 
         m_pControlNumEffects->set(m_pEffectChain->numEffects());
-        m_pControlChainParameter->set(m_pEffectChain->parameter() * 127.0f);
+        m_pControlChainParameter->set(m_pEffectChain->parameter());
 
         // TODO(rryan) is this a reasonable decision? Keep the enabled and mix
         // values the same because a) it keeps the controls from getting out of
@@ -243,14 +245,11 @@ void EffectChainSlot::slotControlChainMix(double v) {
     qDebug() << debugString() << "slotControlChainMix" << v;
     QMutexLocker locker(&m_mutex);
 
-    // Convert from stupid control system
-    v = v / 127.0f;
-
     // Clamp to [0.0, 1.0]
     if (v < 0.0f || v > 1.0f) {
         qDebug() << debugString() << "value out of limits";
         v = math_clamp(v, 0.0f, 1.0f);
-        m_pControlChainMix->set(v * 127.0);
+        m_pControlChainMix->set(v);
     }
 }
 
@@ -258,14 +257,11 @@ void EffectChainSlot::slotControlChainParameter(double v) {
     qDebug() << debugString() << "slotControlChainParameter" << v;
     QMutexLocker locker(&m_mutex);
 
-    // Convert from stupid control system
-    v = v / 127.0f;
-
     // Clamp to [0.0, 1.0]
     if (v < 0.0f || v > 1.0f) {
         qDebug() << debugString() << "value out of limits";
         v = math_clamp(v, 0.0f, 1.0f);
-        m_pControlChainParameter->set(v * 127.0);
+        m_pControlChainParameter->set(v);
     }
     if (m_pEffectChain) {
         m_pEffectChain->setParameter(v);

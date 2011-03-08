@@ -2,6 +2,7 @@
 #include <QMutexLocker>
 
 #include "defs.h"
+#include "controlpotmeter.h"
 #include "effects/effectslotparameter.h"
 
 EffectSlotParameter::EffectSlotParameter(QObject* pParent, const unsigned int iChainNumber,
@@ -16,7 +17,7 @@ EffectSlotParameter::EffectSlotParameter(QObject* pParent, const unsigned int iC
     m_pControlEnabled = new ControlObject(ConfigKey(m_group, QString("enabled")));
     m_pControlLinked = new ControlObject(ConfigKey(m_group, QString("linked")));
     m_pControlValue = new ControlObject(ConfigKey(m_group, QString("value")));
-    m_pControlValueNormalized = new ControlObject(ConfigKey(m_group, QString("value_normalized")));
+    m_pControlValueNormalized = new ControlPotmeter(ConfigKey(m_group, QString("value_normalized")), 0.0, 1.0);
     m_pControlValueType = new ControlObject(ConfigKey(m_group, QString("value_type")));
     m_pControlValueDefault = new ControlObject(ConfigKey(m_group, QString("value_default")));
     m_pControlValueMaximum = new ControlObject(ConfigKey(m_group, QString("value_max")));
@@ -100,7 +101,7 @@ void EffectSlotParameter::loadEffect(EffectPointer pEffect) {
 
             m_pControlValue->set(dValue);
             // Convert to stupid GUI widget convention
-            m_pControlValueNormalized->set(dNormalized * 127.0);
+            m_pControlValueNormalized->set(dNormalized);
             m_pControlValueMinimum->set(dMinimum);
             m_pControlValueMinimumLimit->set(dMinimumLimit);
             m_pControlValueMaximum->set(dMaximum);
@@ -165,15 +166,12 @@ void EffectSlotParameter::slotValueNormalized(double v) {
     qDebug() << debugString() << "slotValueNormalized" << v;
     QMutexLocker locker(&m_mutex);
 
-    // Convert from stupid control system
-    v = v / 127.0f;
-
     // Clamp to [0.0, 1.0]
     if (v < 0.0f || v > 1.0f) {
         qDebug() << debugString() << "value out of limits";
         v = math_clamp(v, 0.0f, 1.0f);
         // Convert back to stupid control system format
-        m_pControlValueNormalized->set(v * 127.0f);
+        m_pControlValueNormalized->set(v);
     }
 
     // Now set the raw value to match the interpolated equivalent.
