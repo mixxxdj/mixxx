@@ -4,6 +4,8 @@
 #include "track/beatgrid.h"
 
 
+static int kFrameSize = 2;
+
 struct BeatGridData {
 	double bpm;
 	double firstBeat;
@@ -33,12 +35,13 @@ void BeatGrid::setGrid(double dBpm, double dFirstBeatSample) {
     QMutexLocker lock(&m_mutex);
     m_dBpm = dBpm;
     m_dFirstBeat = dFirstBeatSample;
-    m_dBeatLength = 60.0 * m_iSampleRate / m_dBpm;
+    // Calculate beat length as sample offsets
+    m_dBeatLength = (60.0 * m_iSampleRate / m_dBpm) * kFrameSize;
 }
 
 QByteArray* BeatGrid::toByteArray() const {
     QMutexLocker locker(&m_mutex);
-    BeatGridData blob = { m_dBpm, m_dFirstBeat };
+    BeatGridData blob = { (m_dBpm / kFrameSize), (m_dFirstBeat / kFrameSize) };
     QByteArray* pByteArray = new QByteArray((char *)&blob, sizeof(blob));
     return pByteArray;
 }
@@ -47,7 +50,8 @@ void BeatGrid::readByteArray(const QByteArray* pByteArray) {
     if ( pByteArray->size() != sizeof(BeatGridData))
         return;
     BeatGridData *blob = (BeatGridData *)pByteArray->data();
-    setGrid(blob->bpm, blob->firstBeat);
+    // We serialize into frame offsets but use sample offsets at runtime
+    setGrid(blob->bpm, blob->firstBeat * kFrameSize);
 }
 
 QString BeatGrid::getVersion() const {
@@ -84,8 +88,7 @@ double BeatGrid::findClosestBeat(double dSamples) const {
 }
 
 double BeatGrid::findNthBeat(double dSamples, int n) const {
-    // Reduce the Sample Offset to a frame offset.
-    dSamples = floorf(dSamples/2);
+    dSamples = dSamples;
 
     QMutexLocker locker(&m_mutex);
     if (!isValid() || n == 0) {
@@ -108,7 +111,7 @@ double BeatGrid::findNthBeat(double dSamples, int n) const {
     // Sample offset points to interleaved stereo audio.
     // This just follow the standard adhered to by the
     // rest of the code. -Phillip Whelan
-    return (dClosestBeat + n * m_dBeatLength) * 2;
+    return dClosestBeat + n * m_dBeatLength;
 }
 
 void BeatGrid::findBeats(double startSample, double stopSample, QList<double>* pBeatsList) const {
@@ -120,7 +123,7 @@ void BeatGrid::findBeats(double startSample, double stopSample, QList<double>* p
     while (curBeat <= stopSample) {
         pBeatsList->append(curBeat);
         // We also have to follow up and make this sample offset size.
-        curBeat += (m_dBeatLength * 2);
+        curBeat += m_dBeatLength;
     }
 }
 
@@ -173,7 +176,7 @@ void BeatGrid::translate(double dNumSamples) {
         return;
     }
     // Adjust the samples number to account for it being a samples offset.
-    m_dFirstBeat += floorf(dNumSamples/2);
+    m_dFirstBeat += dNumSamples;
     locker.unlock();
     emit(updated());
 }
