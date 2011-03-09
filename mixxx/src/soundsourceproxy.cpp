@@ -51,7 +51,7 @@ QMutex SoundSourceProxy::m_extensionsMutex;
 
 //Constructor
 SoundSourceProxy::SoundSourceProxy(QString qFilename)
-	: SoundSource(qFilename),
+	: Mixxx::SoundSource(qFilename),
 	  m_pSoundSource(NULL),
 	  m_pTrack() {
     m_pSoundSource = initialize(qFilename);
@@ -108,9 +108,9 @@ void SoundSourceProxy::loadPlugins()
     }
 }
 
-SoundSource* SoundSourceProxy::initialize(QString qFilename) {
+Mixxx::SoundSource* SoundSourceProxy::initialize(QString qFilename) {
 
-    SoundSource* sndsrc = NULL;
+    Mixxx::SoundSource* sndsrc = NULL;
     QString extension = qFilename;
     extension.remove(0, (qFilename.lastIndexOf(".")+1));
     extension = extension.toLower();

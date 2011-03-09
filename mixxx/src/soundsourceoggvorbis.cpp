@@ -48,7 +48,7 @@
  */
 
 SoundSourceOggVorbis::SoundSourceOggVorbis(QString qFilename)
-: SoundSource(qFilename)
+: Mixxx::SoundSource(qFilename)
 {
     filelength = 0;
 }

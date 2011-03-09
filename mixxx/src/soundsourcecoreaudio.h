@@ -42,7 +42,7 @@
 #include "defs.h"
 #include "soundsource.h"
 
-class SoundSourceCoreAudio : public SoundSource {
+class SoundSourceCoreAudio : public Mixxx::SoundSource {
 public:
     SoundSourceCoreAudio(QString filename);
     ~SoundSourceCoreAudio();
