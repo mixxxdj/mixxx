@@ -96,6 +96,7 @@ class CoreAudio(Feature):
             raise Exception('CoreAudio is only supported on OS X!');
         else:
             build.env.Append(CPPPATH='/System/Library/Frameworks/AudioToolbox.framework/Headers/')
+            build.env.Append(CPPPATH='#lib/apple/')
             build.env.Append(LINKFLAGS='-framework AudioToolbox -framework CoreFoundation')
             build.env.Append(CPPDEFINES = '__COREAUDIO__')
 
