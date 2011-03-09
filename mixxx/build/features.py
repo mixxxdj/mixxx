@@ -101,7 +101,7 @@ class CoreAudio(Feature):
 
     def sources(self, build):
         return ['soundsourcecoreaudio.cpp', 
-                '/Developer/Examples/CoreAudio/PublicUtility/CAStreamBasicDescription.h']
+                '#lib/apple/CAStreamBasicDescription.h']
 
 
 class MIDIScript(Feature):
