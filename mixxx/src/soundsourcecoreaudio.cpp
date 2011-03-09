@@ -21,7 +21,7 @@
 #include "soundsourcecoreaudio.h"
 
 SoundSourceCoreAudio::SoundSourceCoreAudio(QString filename)
-    : SoundSource(filename)
+    : Mixxx::SoundSource(filename)
     , m_file(filename)
     , m_samples(0)
     , m_headerFrames(0)
