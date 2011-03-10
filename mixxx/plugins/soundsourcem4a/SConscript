@@ -12,13 +12,13 @@ Import('build')
 
 m4a_sources = [
     "soundsource.cpp", # required to subclass soundsource
-    "soundsourcem4a.cpp",  # MP4/M4A Support
+    "soundsourcem4a.cpp",  # MP4/M4A Support through FAAD/libmp4v2
 ]
 
 
 #Tell SCons to build the SoundSourceM4A plugin
 #=========================
-if int(build.flags['m4a']):
+if int(build.flags['faad']):
     env = build.env.Clone()
 
     conf = Configure(env)

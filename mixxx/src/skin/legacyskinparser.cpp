@@ -135,8 +135,11 @@ QList<QString> LegacySkinParser::getSchemeList(QString qSkinPath) {
 // static
 void LegacySkinParser::freeChannelStrings() {
     QMutexLocker lock(&s_safeStringMutex);
-    foreach (const char *s, s_channelStrs) {
-        free((void*) s); // created using strdup/malloc so use free
+    for (int i = 0; i < s_channelStrs.length(); ++i) {
+        if (s_channelStrs[i]) {
+            delete [] s_channelStrs[i];
+        }
+        s_channelStrs[i] = NULL;
     }
 }
 
@@ -273,16 +276,21 @@ QWidget* LegacySkinParser::parseWidgetGroup(QDomElement node) {
 
     setupWidget(node, pGroup);
 
+    QBoxLayout* pLayout = NULL;
     if (!XmlParse::selectNode(node, "Layout").isNull()) {
         QString layout = XmlParse::selectNodeQString(node, "Layout");
         if (layout == "vertical") {
-
+            pLayout = new QVBoxLayout();
         } else if (layout == "horizontal") {
-
+            pLayout = new QHBoxLayout();
         }
     }
 
     QDomNode childrenNode = XmlParse::selectNode(node, "Children");
+
+    QWidget* pOldParent = m_pParent;
+    m_pParent = pGroup;
+
     if (!childrenNode.isNull()) {
         // Descend chilren
         QDomNodeList children = childrenNode.childNodes();
@@ -291,9 +299,17 @@ QWidget* LegacySkinParser::parseWidgetGroup(QDomElement node) {
             QDomNode node = children.at(i);
 
             if (node.isElement()) {
-                parseNode(node.toElement(), pGroup);
+                QWidget* pChild = parseNode(node.toElement(), pGroup);
+                if (pLayout) {
+                    pLayout->addWidget(pChild);
+                }
             }
         }
+    }
+    m_pParent = pOldParent;
+
+    if (pLayout) {
+        pGroup->setLayout(pLayout);
     }
 
     return pGroup;
@@ -806,7 +822,9 @@ const char* LegacySkinParser::safeChannelString(QString channelStr) {
         }
     }
     QByteArray qba(channelStr.toAscii());
-    const char *safe(strdup(qba.constData()));
+    char *safe = new char[qba.size() + 1]; // +1 for \0
+    int i = 0;
+    while (safe[i] = qba[i]) ++i;
     s_channelStrs.append(safe);
     return safe;
 }
