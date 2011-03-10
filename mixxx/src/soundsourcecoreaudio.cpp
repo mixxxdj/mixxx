@@ -43,6 +43,8 @@ int SoundSourceCoreAudio::open() {
 	//QUrl blah(m_qFilename);
     QString qurlStr = m_qFilename;//blah.toString();
     qDebug() << qurlStr;
+
+    /** This code blocks works with OS X 10.5+ only. DO NOT DELETE IT for now. */
     CFStringRef urlStr = CFStringCreateWithCharacters(0,
    				reinterpret_cast<const UniChar *>(
                 qurlStr.unicode()), qurlStr.size());
@@ -50,6 +52,14 @@ int SoundSourceCoreAudio::open() {
     err = ExtAudioFileOpenURL(urlRef, &m_audioFile);
     CFRelease(urlStr);
     CFRelease(urlRef);
+
+    /** TODO: Use FSRef for compatibility with 10.4 Tiger. 
+        Note that ExtAudioFileOpen() is deprecated above Tiger, so we must maintain
+        both code paths if someone finishes this part of the code.
+    FSRef fsRef;
+    CFURLGetFSRef(reinterpret_cast<CFURLRef>(url.get()), &fsRef);
+    err = ExtAudioFileOpen(&fsRef, &m_audioFile);
+    */
 
 	if (err != noErr)
 	{
