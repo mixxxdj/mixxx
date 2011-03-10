@@ -416,3 +416,6 @@ void PlaylistFeature::slotImportPlaylist()
     //delete the parser object
     if(playlist_parser) delete playlist_parser;
 }
+void PlaylistFeature::onLazyChildExpandation(const QModelIndex &index){
+    //Nothing to do because the childmodel is not of lazy nature.
+}

@@ -609,3 +609,6 @@ void TraktorFeature::onTrackCollectionLoaded()
     emit(featureLoadingFinished(this));
     activate();
 }
+void TraktorFeature::onLazyChildExpandation(const QModelIndex &index){
+    //Nothing to do because the childmodel is not of lazy nature.
+}

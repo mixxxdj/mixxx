@@ -405,4 +405,6 @@ void CrateFeature::slotImportPlaylist()
     if(playlist_parser)
         delete playlist_parser;
 }
-
+void CrateFeature::onLazyChildExpandation(const QModelIndex &index){
+    //Nothing to do because the childmodel is not of lazy nature.
+}
