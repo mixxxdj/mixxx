@@ -3,6 +3,8 @@
 
 #include <QMutexLocker>
 
+#include <QDebug>
+
 #include "engine/cuecontrol.h"
 
 #include "controlobject.h"
@@ -23,8 +25,10 @@ CueControl::CueControl(const char * _group,
         m_iCurrentlyPreviewingHotcues(0),
         m_iNumHotCues(NUM_HOT_CUES),
         m_pLoadedTrack(),
-        m_mutex(QMutex::Recursive) {
+        m_mutex(QMutex::Recursive),
+        m_bHotcueCancel(false) {
     createControls();
+
 
     m_pTrackSamples = ControlObject::getControl(ConfigKey(_group, "track_samples"));
 
@@ -67,6 +71,12 @@ CueControl::CueControl(const char * _group,
     connect(m_pCueDefault, SIGNAL(valueChanged(double)),
             this, SLOT(cueDefault(double)),
             Qt::DirectConnection);
+
+    connect(m_pPlayButton, SIGNAL(valueChanged(double)),
+            this, SLOT(cuePlay(double)),
+            Qt::DirectConnection);
+
+
 }
 
 CueControl::~CueControl() {
@@ -342,6 +352,7 @@ void CueControl::hotcueActivate(HotcueControl* pControl, double v) {
 
     if (pCue) {
         if (v) {
+            m_bHotcueCancel = false;
             if (pCue->getPosition() == -1) {
                 hotcueSet(pControl, v);
             } else {
@@ -358,6 +369,8 @@ void CueControl::hotcueActivate(HotcueControl* pControl, double v) {
         }
     } else {
         if (v) {
+            // just in case
+            m_bHotcueCancel = false;
             hotcueSet(pControl, v);
         }
     }
@@ -383,15 +396,25 @@ void CueControl::hotcueActivatePreview(HotcueControl* pControl, double v) {
         }
     } else {
         if (m_bPreviewingHotcue && pCue && pCue->getPosition() != -1) {
-            if (--m_iCurrentlyPreviewingHotcues == 0) {
-                int iPosition = pCue->getPosition();
-                m_pPlayButton->set(0.0);
-                m_bPreviewingHotcue = false;
+            if (m_bHotcueCancel) { // we want to keep playing from where we are
+                if (--m_iCurrentlyPreviewingHotcues == 0) {
+                    m_bPreviewingHotcue = false;
+                    m_bHotcueCancel = false;
+    
+                    lock.unlock();
+                }
+            } else {
+                if (--m_iCurrentlyPreviewingHotcues == 0) {
+                    int iPosition = pCue->getPosition();
+                    m_pPlayButton->set(0.0);
+                    m_bPreviewingHotcue = false;
+    
+                    // Need to unlock before emitting any signals to prevent deadlock.
+                    lock.unlock();
+    
+                    emit(seekAbs(iPosition));
+                }
 
-                // Need to unlock before emitting any signals to prevent deadlock.
-                lock.unlock();
-
-                emit(seekAbs(iPosition));
             }
         }
     }
@@ -595,6 +618,24 @@ void CueControl::cueCDJ(double v) {
 
         emit(seekAbs(cuePoint));
     }
+}
+
+void CueControl::cuePlay(double v) {
+//    qDebug() << "cuePlay activated";
+    QMutexLocker lock(&m_mutex);
+
+    if (m_bPreviewing && !v) {
+    // we're previewing? Then stop previewing and go into normal play mode.
+        m_pPlayButton->set(1.0);
+        m_bPreviewing = false;
+    } 
+    
+    if (m_bPreviewingHotcue && !v) {
+        m_pPlayButton->set(1.0);
+        m_bHotcueCancel = true;
+    }
+
+    lock.unlock();
 }
 
 void CueControl::cueDefault(double v) {

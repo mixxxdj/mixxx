@@ -253,7 +253,20 @@ void MidiDevice::receive(MidiStatusByte status, char channel, char control, char
 
     if (p) //Only pass values on to valid ControlObjects.
     {
-        double newValue = m_pMidiMapping->ComputeValue(mixxxControl.getMidiOption(), p->GetMidiValue(), value);
+        double newValue;
+       
+        // compute LSB and MSB for pitch bend messages
+        if (status == MIDI_STATUS_PITCH_BEND) {
+            unsigned int ivalue;
+            ivalue = (value << 7) + control;
+
+            newValue = m_pMidiMapping->ComputeValue(mixxxControl.getMidiOption(), p->GetMidiValue(), ivalue);
+
+            // normalize our value to 0-127
+            newValue = (newValue / 0x3FFF) * 0x7F;
+        } else {
+            newValue = m_pMidiMapping->ComputeValue(mixxxControl.getMidiOption(), p->GetMidiValue(), value);
+        }
 
         // ControlPushButton ControlObjects only accept NOTE_ON, so if the midi
         // mapping is <button> we override the Midi 'status' appropriately.
