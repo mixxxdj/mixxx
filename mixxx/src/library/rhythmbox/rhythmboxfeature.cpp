@@ -419,5 +419,7 @@ void RhythmboxFeature::onTrackCollectionLoaded() {
     emit(featureLoadingFinished(this));
     activate();
 }
-
+void RhythmboxFeature::onLazyChildExpandation(const QModelIndex &index){
+    //Nothing to do because the childmodel is not of lazy nature.
+}
 

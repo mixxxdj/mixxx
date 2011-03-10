@@ -212,6 +212,19 @@ void SidebarModel::clicked(const QModelIndex& index) {
         }
     }
 }
+void SidebarModel::doubleClicked(const QModelIndex& index) {
+    if (index.isValid()) {
+        if (index.internalPointer() == this) {
+           return;
+        } else {
+            TreeItem* tree_item = (TreeItem*)index.internalPointer();
+            if (tree_item) {
+                LibraryFeature* feature = tree_item->getFeature();
+                feature->onLazyChildExpandation(index);
+            }
+        }
+    }
+}
 
 void SidebarModel::rightClicked(const QPoint& globalPos, const QModelIndex& index) {
     //qDebug() << "SidebarModel::rightClicked() index=" << index;
