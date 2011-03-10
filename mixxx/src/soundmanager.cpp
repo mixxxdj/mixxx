@@ -42,9 +42,7 @@ SoundManager::SoundManager(ConfigObject<ConfigValue> * pConfig, EngineMaster * _
     m_pConfig = pConfig;
     m_pMaster = _master;
 
-    iNumDevicesOpenedForOutput = 0;
-    iNumDevicesOpenedForInput = 0;
-    iNumDevicesHaveRequestedBuffer = 0;
+    clearOperativeVariables();
 
     //These are ControlObjectThreadMains because all the code that
     //uses them is called from the GUI thread (stuff like opening soundcards).
@@ -97,6 +95,17 @@ SoundManager::~SoundManager()
     }
     // vinyl control proxies and input buffers are freed in closeDevices, called
     // by clearDeviceList -- bkgood
+}
+
+/**
+ * Clears all variables used in operation.
+ * @note This is in a function because it's done in a few places
+ */
+void SoundManager::clearOperativeVariables()
+{
+    iNumDevicesOpenedForOutput = 0;
+    iNumDevicesOpenedForInput = 0;
+    m_pClkRefDevice = NULL;
 }
 
 /**
@@ -196,7 +205,7 @@ void SoundManager::closeDevices()
 {
     //qDebug() << "SoundManager::closeDevices()";
     QListIterator<SoundDevice*> dev_it(m_devices);
-
+    
     //requestBufferMutex.lock(); //Ensures we don't kill a stream in the middle of a callback call.
                                  //Note: if we're using Pa_StopStream() (like now), we don't need
                                  //      to lock. PortAudio stops the threads nicely.
@@ -208,9 +217,7 @@ void SoundManager::closeDevices()
     //requestBufferMutex.unlock();
 
     //requestBufferMutex.lock();
-    iNumDevicesOpenedForOutput = 0;
-    iNumDevicesOpenedForInput = 0;
-    iNumDevicesHaveRequestedBuffer = 0;
+    clearOperativeVariables();
     //requestBufferMutex.unlock();
 
     m_outputBuffers.clear(); // anti-cruft (safe because outputs only have
@@ -351,7 +358,7 @@ int SoundManager::setupDevices()
 {
     qDebug() << "SoundManager::setupDevices()";
     int err = 0;
-    iNumDevicesOpenedForOutput = iNumDevicesOpenedForInput = 0;
+    clearOperativeVariables();
     int devicesAttempted = 0;
     int devicesOpened = 0;
 
@@ -402,12 +409,19 @@ int SoundManager::setupDevices()
             switch (out.getType()) {
             case AudioPath::MASTER:
                 m_outputBuffers[out] = m_pMaster->getMasterBuffer();
+                // Set the master output device's clock as the reference
+                //  to avoid any clock-related disturbances to the public address
+                m_pClkRefDevice = device;
                 break;
             case AudioPath::HEADPHONES:
                 m_outputBuffers[out] = m_pMaster->getHeadphoneBuffer();
                 break;
             case AudioPath::DECK:
                 m_outputBuffers[out] = m_pMaster->getChannelBuffer(out.getIndex());
+                // If a reference device has not yet been set (such as when the Master output
+                //  isn't being used with an external mixer,) use the first deck output
+                //  to avoid any clock-related disturbances on at least one public output
+                if (!m_pClkRefDevice) m_pClkRefDevice = device;
                 break;
             default:
                 break;
@@ -429,9 +443,17 @@ int SoundManager::setupDevices()
             }
         }
     }
+    
+    if (!m_pClkRefDevice) {
+        QList<SoundDevice*> outputDevices = getDeviceList(m_config.getAPI(), true, false);
+        SoundDevice* device = outputDevices.first();
+        qWarning() << "Output sound device clock reference not set! Using" << device->getDisplayName();
+        m_pClkRefDevice = device;
+    }
+    else qDebug() << "Using" << m_pClkRefDevice->getDisplayName() << "as output sound device clock reference";
 
-    qDebug() << "iNumDevicesOpenedForOutput:" << iNumDevicesOpenedForOutput;
-    qDebug() << "iNumDevicesOpenedForInput:" << iNumDevicesOpenedForInput;
+    qDebug() << iNumDevicesOpenedForOutput << "output sound devices opened";
+    qDebug() << iNumDevicesOpenedForInput << "input sound devices opened";
 
     // returns OK if we were able to open all the devices the user
     // wanted
@@ -485,33 +507,53 @@ void SoundManager::sync()
 
 //Requests a buffer in the proper format, if we're prepared to give one.
 QHash<AudioOutput, const CSAMPLE*>
-SoundManager::requestBuffer(QList<AudioOutput> outputs, unsigned long iFramesPerBuffer)
+SoundManager::requestBuffer(QList<AudioOutput> outputs, unsigned long iFramesPerBuffer, SoundDevice* device, double streamTime)
 {
     Q_UNUSED(outputs); // unused, we just give the caller the full hash -bkgood
     //qDebug() << "SoundManager::requestBuffer()";
-
-    //qDebug() << "numOpenedDevices" << iNumOpenedDevices;
-    //qDebug() << "iNumDevicesHaveRequestedBuffer" << iNumDevicesHaveRequestedBuffer;
-
-    //When the first device requests a buffer...
-    if (requestBufferMutex.tryLock())
-    {
-        if (iNumDevicesHaveRequestedBuffer == 0)
-        {
-            //First, sync control parameters with changes from GUI thread
-            sync();
-
-            //Process a block of samples for output. iFramesPerBuffer is the
-            //number of samples for one channel, but the EngineObject
-            //architecture expects number of samples for two channels
-            //as input (buffer size) so...
-            m_pMaster->process(0, 0, iFramesPerBuffer*2);
-
+    
+    /*
+    // Display when sound cards drop or duplicate buffers (use for testing only)
+    if (iNumDevicesOpenedForOutput>1) {
+        // Running total of requested frames
+        long currentFrameCount = 0;
+        if (m_deviceFrameCount.contains(device)) currentFrameCount=m_deviceFrameCount.value(device);
+        m_deviceFrameCount.insert(device, currentFrameCount+iFramesPerBuffer);  // Overwrites existing value if already present
+        // Get current time in milliseconds
+//         uint t = QDateTime::currentDateTime().toTime_t()*1000+QDateTime::currentDateTime().toString("zzz").toUint();
+        
+        if (device != m_pClkRefDevice) {  // If not the reference device,
+            // Detect dropped frames/buffers
+            long sdifference = m_deviceFrameCount.value(m_pClkRefDevice)-m_deviceFrameCount.value(device);
+            QString message = "dropped";
+            if (sdifference < 0) message = "duplicated";
+            if (sdifference != 0) {
+                m_deviceFrameCount.clear();
+                message = QString("%1 %2 %3 frames (%4 buffers)")
+                            .arg(device->getDisplayName())
+                            .arg(message)
+                            .arg(fabs(sdifference))
+                            .arg(fabs(sdifference)/iFramesPerBuffer);
+                qWarning() << message;
+            }
         }
-        iNumDevicesHaveRequestedBuffer++;
+    }
+    //  End dropped/duped buffer display
+    */
 
-        if (iNumDevicesHaveRequestedBuffer >= iNumDevicesOpenedForOutput)
-            iNumDevicesHaveRequestedBuffer = 0;
+    //When the clock reference device requests a buffer...
+    if (device == m_pClkRefDevice && requestBufferMutex.tryLock())
+    {
+        // Only generate a new buffer for the clock reference card
+//         qDebug() << "New buffer for" << device->getDisplayName() << "of size" << iFramesPerBuffer;
+        //First, sync control parameters with changes from GUI thread
+        sync();
+
+        //Process a block of samples for output. iFramesPerBuffer is the
+        //number of samples for one channel, but the EngineObject
+        //architecture expects number of samples for two channels
+        //as input (buffer size) so...
+        m_pMaster->process(0, 0, iFramesPerBuffer*2);
 
         requestBufferMutex.unlock();
     }

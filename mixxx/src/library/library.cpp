@@ -11,14 +11,14 @@
 #include "library/trackmodel.h"
 #include "library/browsefeature.h"
 #include "library/cratefeature.h"
-#include "library/rhythmboxfeature.h"
-#include "library/itunesfeature.h"
+#include "library/rhythmbox/rhythmboxfeature.h"
+#include "library/itunes/itunesfeature.h"
 #include "library/mixxxlibraryfeature.h"
 #include "library/autodjfeature.h"
 #include "library/playlistfeature.h"
 #include "library/preparefeature.h"
 #include "library/promotracksfeature.h"
-#include "library/traktorfeature.h"
+#include "library/traktor/traktorfeature.h"
 
 #include "widget/wtracktableview.h"
 #include "widget/wlibrary.h"
@@ -62,7 +62,7 @@ Library::Library(QObject* parent, ConfigObject<ConfigValue>* pConfig, bool first
     //messagebox popup when you select them. (This forces you to reach for your
     //mouse or keyboard if you're using MIDI control and you scroll through them...)
     if (RhythmboxFeature::isSupported())
-        addFeature(new RhythmboxFeature(this));
+        addFeature(new RhythmboxFeature(this, m_pTrackCollection));
     if (ITunesFeature::isSupported())
         addFeature(new ITunesFeature(this, m_pTrackCollection));
     if (TraktorFeature::isSupported())
@@ -70,9 +70,9 @@ Library::Library(QObject* parent, ConfigObject<ConfigValue>* pConfig, bool first
 
     //Show the promo tracks view on first run, otherwise show the library
     if (firstRun) {
-        qDebug() << "First Run, switching to PROMO view!";
+        //qDebug() << "First Run, switching to PROMO view!";
         //This doesn't trigger onShow()... argh
-        m_pSidebarModel->setDefaultSelection(1);
+        //m_pSidebarModel->setDefaultSelection(1);
         //slotSwitchToView(tr("Bundled Songs"));
         //Note the promo tracks item has index=1... hardcoded hack. :/
     }
@@ -116,6 +116,8 @@ void Library::bindWidget(WLibrarySidebar* pSidebarWidget,
 
     // Setup the sources view
     pSidebarWidget->setModel(m_pSidebarModel);
+    connect(m_pSidebarModel, SIGNAL(selectIndex(const QModelIndex&)),
+            pSidebarWidget, SLOT(selectIndex(const QModelIndex&)));
     connect(pSidebarWidget, SIGNAL(pressed(const QModelIndex&)),
             m_pSidebarModel, SLOT(clicked(const QModelIndex&)));
     // Lazy model: Let triange symbol increment the model

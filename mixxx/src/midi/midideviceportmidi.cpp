@@ -63,7 +63,7 @@ MidiDevicePortMidi::~MidiDevicePortMidi()
 {
     int success = close();
 
-    // Wait until run() has actually finished before letting the 
+    // Wait until run() has actually finished before letting the
     //  destructor finish up
     if (success == 0) this->wait();
     //Otherwise the stream was already closed, so we don't have to wait.
@@ -159,10 +159,10 @@ int MidiDevicePortMidi::close()
     }
 
     shutdown();
-    
+
     //shutdown() locks so we must lock after it.
     QMutexLocker Locker(&m_mutex);
-    
+
     m_bStopRequested = true;
 
     if (m_pInputStream)
@@ -222,31 +222,36 @@ void MidiDevicePortMidi::run()
                 // Don't process anything, continue to loop
                 numEvents = 0;
             }
-            
+
             for (int i = 0; i < numEvents; i++)
             {
                 unsigned char status = Pm_MessageStatus(m_midiBuffer[i].message);
-                
+
                 if ((status & 0xF8) == 0xF8) {
                     // Handle real-time MIDI messages at any time
                     MidiDevice::receive((MidiStatusByte)status, 0, 0, 0);
                 }
-                
+
                 if (!inSysex) {
                     if (status == 0xF0) {
                         inSysex=true;
                         status = 0;
                     }
                     else {
-                        unsigned char opcode = status & 0xF0;
                         unsigned char channel = status & 0x0F;
                         unsigned char note = Pm_MessageData1(m_midiBuffer[i].message);
                         unsigned char velocity = Pm_MessageData2(m_midiBuffer[i].message);
 
-                        MidiDevice::receive((MidiStatusByte)opcode, channel, note, velocity);
+                        // mini-rant: this is WRONG. The MidiStatusByte enum does not
+                        // contain the full range of possible MIDI status bytes (for
+                        // example, 0x91) but the local 'status' could very well be
+                        // '0x91', making the MidiStatusByte type meaningless (at least
+                        // C enums aren't anything more than glorified constants, otherwise
+                        // this would be bloody murder) -bkgood XXX FIXME TODO(bkgood)
+                        MidiDevice::receive((MidiStatusByte)status, channel, note, velocity);
                     }
                 }
-                
+
                 if (inSysex) {
                     int data = 0;
                     // Collect bytes from PmMessage
@@ -259,7 +264,7 @@ void MidiDevicePortMidi::run()
                     if (data == MIDI_STATUS_EOX || status > 0x7F) endSysex=true;
                 }
             }
-            
+
             if (inSysex && endSysex) {
                 MidiDevice::receive(receive_msg, receive_msg_index);
                 inSysex=false;

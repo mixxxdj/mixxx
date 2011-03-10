@@ -14,8 +14,7 @@
 BrowseTableModel::BrowseTableModel(QObject* parent)
         : QStandardItemModel(parent),
           TrackModel(QSqlDatabase::database("QSQLITE"),
-                     "mixxx.db.model.browse")
-{
+                     "mixxx.db.model.browse") {
     QStringList header_data;
 
     header_data.insert(COLUMN_FILENAME, tr("Filename"));
@@ -32,7 +31,7 @@ BrowseTableModel::BrowseTableModel(QObject* parent)
     header_data.insert(COLUMN_TYPE, tr("Type"));
     header_data.insert(COLUMN_BITRATE, tr("Bitrate"));
     header_data.insert(COLUMN_LOCATION, tr("Location"));
-    
+
     addSearchColumn(COLUMN_FILENAME);
     addSearchColumn(COLUMN_ARTIST);
     addSearchColumn(COLUMN_ALBUM);
@@ -41,15 +40,16 @@ BrowseTableModel::BrowseTableModel(QObject* parent)
     addSearchColumn(COLUMN_KEY);
     addSearchColumn(COLUMN_COMMENT);
 
-    //m_backgroundThread.moveToThread(&m_backgroundThread);
     m_backgroundThread.start(QThread::LowestPriority);
 
     setHorizontalHeaderLabels(header_data);
+    //register the QList<T> as a metatype since we use QueuedConnection below
+    qRegisterMetaType< QList<QStandardItem*> >("QList<QStandardItem*>");
 
     QObject::connect(&m_backgroundThread, SIGNAL(clearModel()),
-            this, SLOT(slotClear()));
+                     this, SLOT(slotClear()), Qt::BlockingQueuedConnection);
     QObject::connect(&m_backgroundThread, SIGNAL(rowDataAppended(const QList<QStandardItem*>&)),
-            this, SLOT(slotInsert(const QList<QStandardItem*>&)), Qt::DirectConnection);
+            this, SLOT(slotInsert(const QList<QStandardItem*>&)), Qt::BlockingQueuedConnection);
 
 }
 
@@ -79,10 +79,10 @@ TrackPointer BrowseTableModel::getTrack(const QModelIndex& index) const
 QString BrowseTableModel::getTrackLocation(const QModelIndex& index) const
 {
     int row = index.row();
-            
+
     QModelIndex index2 = this->index(row, COLUMN_LOCATION);
     return data(index2).toString();
-    
+
 }
 
 void BrowseTableModel::search(const QString& searchText)
@@ -156,6 +156,7 @@ void BrowseTableModel::slotClear()
 {
     removeRows(0, rowCount());
 }
+
 void BrowseTableModel::slotInsert(const QList<QStandardItem*> &column_data)
 {
     qDebug() << "BrowseTableModel::slotInsert";

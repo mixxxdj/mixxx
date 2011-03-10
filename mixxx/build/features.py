@@ -39,7 +39,7 @@ class HSS1394(Feature):
             if not conf.CheckLib(['libHSS1394', 'HSS1394']):
                 raise Exception('Did not find HSS1394 development library, exiting!')
                 return
-            build.env.Append(LIBS = 'hss1394')
+
         build.env.Append(CPPDEFINES = '__HSS1394__')
 
     def sources(self, build):
@@ -47,6 +47,62 @@ class HSS1394(Feature):
                             midi/hss1394enumerator.cpp
                             """)
         return sources
+
+
+class Mad(Feature):
+    def description(self):
+        return "MAD MP3 Decoder"
+
+    def enabled(self, build):
+        build.flags['mad'] = util.get_flags(build.env, 'mad', 1)
+        if int(build.flags['mad']):
+            return True
+        return False
+
+    def add_options(self, build, vars):
+        vars.Add('mad', 'Set to 1 to enable MAD MP3 decoder support.', 1)
+
+    def configure(self, build, conf):
+        if not self.enabled(build):
+            return
+        if not conf.CheckLib(['libmad','mad']):
+            raise Exception('Did not find libmad.a, libmad.lib, or the libmad development header files - exiting!')
+        if not conf.CheckLib(['libid3tag', 'id3tag','libid3tag-release']):
+            raise Exception('Did not find libid3tag.a, libid3tag.lib, or the libid3tag development header files - exiting!')
+        build.env.Append(CPPDEFINES = '__MAD__')
+
+    def sources(self, build):
+        return ['soundsourcemp3.cpp']
+
+
+class CoreAudio(Feature):
+
+    def description(self):
+        return "CoreAudio MP3/AAC Decoder"
+
+    def enabled(self, build):
+        build.flags['coreaudio'] = util.get_flags(build.env, 'coreaudio', 0)
+        if int(build.flags['coreaudio']):
+            return True
+        return False
+
+    def add_options(self, build, vars):
+        vars.Add('coreaudio', 'Set to 1 to enable CoreAudio MP3/AAC decoder support.', 0)
+
+    def configure(self, build, conf):
+        if not self.enabled(build):
+            return
+        if not build.platform_is_osx:
+            raise Exception('CoreAudio is only supported on OS X!');
+        else:
+            build.env.Append(CPPPATH='/System/Library/Frameworks/AudioToolbox.framework/Headers/')
+            build.env.Append(LINKFLAGS='-framework AudioToolbox -framework CoreFoundation')
+            build.env.Append(CPPDEFINES = '__COREAUDIO__')
+
+    def sources(self, build):
+        return ['soundsourcecoreaudio.cpp', 
+                '/Developer/Examples/CoreAudio/PublicUtility/CAStreamBasicDescription.h']
+
 
 class MIDIScript(Feature):
     def description(self):
@@ -179,6 +235,7 @@ class MSVCDebug(Feature):
             # for sndfile w/ flac support on windows.
             build.env.Append(CCFLAGS = '/MDd')
             build.env.Append(LINKFLAGS = '/DEBUG')
+            build.env.Append(CPPDEFINES = 'DEBUGCONSOLE')
             if build.machine_is_64bit:
                 build.env.Append(CCFLAGS = '/Zi')
                 build.env.Append(LINKFLAGS = '/NODEFAULTLIB:MSVCRT')
@@ -213,7 +270,7 @@ class VinylControl(Feature):
         return "Vinyl Control"
 
     def enabled(self, build):
-        build.flags['vinylcontrol'] = util.get_flags(build.env, 'vinylcontrol', 1)
+        build.flags['vinylcontrol'] = util.get_flags(build.env, 'vinylcontrol', 0)
         if int(build.flags['vinylcontrol']):
             return True
         return False
@@ -231,11 +288,9 @@ class VinylControl(Feature):
     def sources(self, build):
         sources = ['vinylcontrol.cpp',
                    'vinylcontrolproxy.cpp',
-                   'vinylcontrolscratchlib.cpp',
                    'vinylcontrolxwax.cpp',
                    'dlgprefvinyl.cpp',
-                   'vinylcontrolsignalwidget.cpp',
-                   '#lib/scratchlib/DAnalyse.cpp']
+                   'vinylcontrolsignalwidget.cpp']
         if build.platform_is_windows:
             sources.append("#lib/xwax/timecoder_win32.c")
         else:
@@ -267,25 +322,25 @@ class Tonal(Feature):
                    'tonal/ConstantQFolder.cxx']
         return sources
 
-class M4A(Feature):
+class FAAD(Feature):
     def description(self):
-        return "Apple M4A audio file support plugin"
+        return "FAAD AAC audio file decoder plugin"
 
     def enabled(self, build):
-        build.flags['m4a'] = util.get_flags(build.env, 'm4a', 0)
-        if int(build.flags['m4a']):
+        build.flags['faad'] = util.get_flags(build.env, 'faad', 0)
+        if int(build.flags['faad']):
             return True
         return False
 
     def add_options(self, build, vars):
-        vars.Add('m4a', 'Set to 1 to enable building the Apple M4A support plugin.', 0)
+        vars.Add('faad', 'Set to 1 to enable building the FAAD AAC decoder plugin.', 0)
 
     def configure(self, build, conf):
         if not self.enabled(build):
             return
 
         have_mp4v2_h = conf.CheckHeader('mp4v2/mp4v2.h')
-        have_mp4v2 = conf.CheckLib('mp4v2', autoadd=False)
+        have_mp4v2 = conf.CheckLib(['mp4v2','libmp4v2'], autoadd=False)
         have_mp4 = conf.CheckLib('mp4', autoadd=False)
 
         # Either mp4 or mp4v2 works
@@ -294,7 +349,7 @@ class M4A(Feature):
         if not have_mp4:
             raise Exception('Could not find libmp4, libmp4v2 or the libmp4v2 development headers.')
 
-        have_faad = conf.CheckLib('faad', autoadd=False)
+        have_faad = conf.CheckLib(['faad','libfaad'], autoadd=False)
 
         if not have_faad:
             raise Exception('Could not find libfaad or the libfaad development headers.')
@@ -683,9 +738,6 @@ class Optimize(Feature):
             build.env.Append(CCFLAGS = '/Gy')
             build.env.Append(LINKFLAGS = '/OPT:REF')
             build.env.Append(LINKFLAGS = '/OPT:ICF')
-
-            # Don't worry about alining code on 4KB boundaries
-            build.env.Append(LINKFLAGS = '/OPT:NOWIN98')
 
             # http://msdn.microsoft.com/en-us/library/59a3b321.aspx
             # In general, you should pick /O2 over /Ox

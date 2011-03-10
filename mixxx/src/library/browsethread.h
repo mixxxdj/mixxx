@@ -7,31 +7,24 @@
 #include <QStandardItem>
 #include <QList>
 
-class BrowseThread : public QThread
-{
+class BrowseThread : public QThread {
     Q_OBJECT
-public:
+  public:
     BrowseThread(QObject *parent = 0);
     ~BrowseThread();
     void setPath(QString& path);
     void run();
-signals:
+  signals:
     void rowDataAppended(const QList<QStandardItem*>&);
     void clearModel();
-private:
+  private:
      void populateModel();
+
      QMutex m_mutex;
      QWaitCondition m_locationUpdated;
-
-
      QList<int> m_searchColumns;
      QString m_path;
-
      bool m_bStopThread;
-
-
-
-
 };
 
 #endif // BROWSETHREAD_H

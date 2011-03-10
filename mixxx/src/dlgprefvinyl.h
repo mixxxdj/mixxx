@@ -46,7 +46,6 @@ public slots:
 	void EnableRelativeModeSlotApply();
 	void EnableScratchModeSlotApply();
 	void VinylTypeSlotApply();
-	void AutoCalibrationSlotApply();
     void VinylGainSlotApply();
     void updateSignalQuality1(double value);
     void updateSignalQuality2(double value);

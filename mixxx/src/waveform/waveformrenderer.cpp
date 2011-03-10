@@ -1,9 +1,3 @@
-/**
-
-  A license and other info goes here!
-
- */
-
 #include <QDebug>
 #include <QDomNode>
 #include <QImage>
@@ -126,6 +120,8 @@ WaveformRenderer::WaveformRenderer(const char* group) :
 
 
 WaveformRenderer::~WaveformRenderer() {
+    qDebug() << "~WaveformRenderer()";
+
     // Wait for the thread to quit
     m_bQuit = true;
     QThread::wait();
@@ -165,6 +161,13 @@ WaveformRenderer::~WaveformRenderer() {
     if(m_pRenderBeat)
         delete m_pRenderBeat;
     m_pRenderBeat = NULL;
+
+    QMutableListIterator<RenderObject*> iter(m_renderObjects);
+    while (iter.hasNext()) {
+        RenderObject* ro = iter.next();
+        iter.remove();
+        delete ro;
+    }
 }
 
 void WaveformRenderer::slotUpdatePlayPos(double v) {

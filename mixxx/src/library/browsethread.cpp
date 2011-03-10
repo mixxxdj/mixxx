@@ -7,16 +7,13 @@
 #include <QDirIterator>
 #include <QtCore>
 
-
-BrowseThread::BrowseThread(QObject *parent) : QThread(parent)
-{
-    //start thread
-    m_bStopThread = false;
-
+BrowseThread::BrowseThread(QObject *parent)
+        : QThread(parent),
+          m_bStopThread(false) {
     //QObject::moveToThread(this);
 }
-BrowseThread::~BrowseThread()
-{
+
+BrowseThread::~BrowseThread() {
     qDebug() << "Wait to finish browser background thread";
     m_bStopThread = true;
     //wake up thread since it might wait for user input
@@ -25,20 +22,15 @@ BrowseThread::~BrowseThread()
     //terminate();
     wait();
     qDebug() << "Browser background thread terminated!";
-
 }
 
-void BrowseThread::setPath(QString& path)
-{
+void BrowseThread::setPath(QString& path) {
     m_path = path;
     m_locationUpdated.wakeAll();
-
 }
 
-void BrowseThread::run()
-{
-
-    while(1){
+void BrowseThread::run() {
+    while(!m_bStopThread) {
         m_mutex.lock();
         //Wait until the user has selected a folder
         m_locationUpdated.wait(&m_mutex);
@@ -46,26 +38,26 @@ void BrowseThread::run()
         //Terminate thread if Mixxx closes
         if(m_bStopThread)
             return;
-
-        /*
-         * Populate the model
-         */
+        // Populate the model
         populateModel();
         m_mutex.unlock();
-
     }
-
 }
-void BrowseThread::populateModel()
-{
+
+void BrowseThread::populateModel() {
     //Refresh the name filters in case we loaded new
     //SoundSource plugins.
     QStringList nameFilters(SoundSourceProxy::supportedFileExtensionsString().split(" "));
     QDirIterator fileIt(m_path, nameFilters, QDir::Files | QDir::NoDotAndDotDot);
     QString thisPath(m_path);
-    //remove all rows
+
+    /*
+     * remove all rows
+     * This is a blocking operation
+     * see signal/slot connection in BrowseTableModel
+     */
     emit(clearModel());
-    QCoreApplication::processEvents();
+
 
     int row = 0;
     //Iterate over the files
@@ -86,7 +78,6 @@ void BrowseThread::populateModel()
 
         QStandardItem* item = new QStandardItem(tio.getFilename());
         column_data.insert(COLUMN_FILENAME, item);
-
 
         item = new QStandardItem(tio.getArtist());
         column_data.insert(COLUMN_ARTIST, item);
@@ -128,13 +119,14 @@ void BrowseThread::populateModel()
         item = new QStandardItem(filepath);
         column_data.insert(COLUMN_LOCATION, item);
 
+        // this is a blocking operation
+        // see signal/slot connection in BrowseTableModel
         emit(rowDataAppended(column_data));
 
-        QCoreApplication::processEvents();
+        //QCoreApplication::processEvents();
         ++row;
 
         //Sleep for 50ms which prevents us from GUI freezes
         msleep(50);
     }
-
 }

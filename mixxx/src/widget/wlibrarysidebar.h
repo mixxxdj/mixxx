@@ -15,6 +15,8 @@ class WLibrarySidebar : public QTreeView {
     void dragEnterEvent(QDragEnterEvent * event);
     void dropEvent(QDropEvent * event);
     void keyPressEvent(QKeyEvent* event);
+  public slots:
+    void selectIndex(const QModelIndex&);
 
   signals:
     void rightClicked(const QPoint&, const QModelIndex&);
