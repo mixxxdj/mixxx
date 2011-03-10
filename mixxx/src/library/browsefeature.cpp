@@ -137,7 +137,7 @@ void BrowseFeature::activate() {
     emit(restoreSearch(m_currentSearch));
 }
 /*
- * Note: This is executed whenever you single lick on an child item
+ * Note: This is executed whenever you single click on an child item
  * Single clicks will not populate sub folders
  */
 void BrowseFeature::activateChild(const QModelIndex& index) {
