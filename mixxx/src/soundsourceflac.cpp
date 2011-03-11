@@ -20,7 +20,7 @@
 #include "soundsourceflac.h"
 
 SoundSourceFLAC::SoundSourceFLAC(QString filename)
-    : SoundSource(filename)
+    : Mixxx::SoundSource(filename)
     , m_file(filename)
     , m_decoder(NULL)
     , m_samples(0)
