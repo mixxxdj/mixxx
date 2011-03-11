@@ -85,9 +85,10 @@ private:
 	short*  m_samples;
 	size_t  m_SamplesSize;
 
-	bool		   bShouldClose;
-	bool		   bIsRunning;
-    bool           m_bNeedleSkipPrevention;      /**< needle skip prevention is now optional (still CD mode force this to be false) */
+	bool bShouldClose;
+	bool bIsRunning;
+    bool m_bNeedleSkipPrevention; 
+    bool m_bCDControl;
 };        
 
 #endif
