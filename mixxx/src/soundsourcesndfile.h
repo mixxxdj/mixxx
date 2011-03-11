@@ -21,7 +21,7 @@
 #include <stdio.h>
 #include <sndfile.h>
 
-class SoundSourceSndFile : public SoundSource
+class SoundSourceSndFile : public Mixxx::SoundSource
 {
 public:
     SoundSourceSndFile(QString qFilename);

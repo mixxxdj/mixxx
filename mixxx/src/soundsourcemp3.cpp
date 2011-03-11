@@ -20,8 +20,9 @@
 #include <QtDebug>
 
 
-SoundSourceMp3::SoundSourceMp3(QString qFilename) : SoundSource(qFilename),
-                                                    m_file(qFilename)
+SoundSourceMp3::SoundSourceMp3(QString qFilename) : 
+        Mixxx::SoundSource(qFilename),
+        m_file(qFilename)
 {
     inputbuf = NULL;
     Stream = new mad_stream;

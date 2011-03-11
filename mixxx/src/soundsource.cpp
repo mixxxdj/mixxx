@@ -28,8 +28,10 @@
 #include <taglib/textidentificationframe.h>
 #include <taglib/wavpackfile.h>
 
-
 #include "soundsource.h"
+
+namespace Mixxx
+{
 
 // static
 const bool SoundSource::s_bDebugMetadata = false;
@@ -435,3 +437,5 @@ bool SoundSource::processMP4Tag(TagLib::MP4::Tag* mp4) {
 
     return true;
 }
+
+} //namespace Mixxx
