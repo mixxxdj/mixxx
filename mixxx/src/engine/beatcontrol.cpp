@@ -125,12 +125,12 @@ void BeatControl::slotBeatLoop(double beats)
     // around X beats from there.
     if ( beats > 0 )
     {
-        loop_in = m_pBeats->findNthBeat(m_iCurrentSample/2, -1);
+        loop_in = m_pBeats->findNthBeat(m_iCurrentSample, -1);
         if ( beats >= 1 )
-            loop_out = m_pBeats->findNthBeat(m_iCurrentSample/2, (int)floor(beats));
+            loop_out = m_pBeats->findNthBeat(m_iCurrentSample, (int)floor(beats));
         else
         {
-            loop_out = m_pBeats->findNthBeat(m_iCurrentSample/2, 1);
+            loop_out = m_pBeats->findNthBeat(m_iCurrentSample, 1);
             loop_out = loop_in + ((loop_out - loop_in) * beats);
         }
     }
@@ -138,24 +138,24 @@ void BeatControl::slotBeatLoop(double beats)
     // around X beats before there.
     else
     {
-        loop_out = m_pBeats->findNthBeat(m_iCurrentSample/2, 0);
+        loop_out = m_pBeats->findNthBeat(m_iCurrentSample, 0);
         if ( beats <= -1 )
-            loop_in = m_pBeats->findNthBeat(m_iCurrentSample/2, (int)floor(beats));
+            loop_in = m_pBeats->findNthBeat(m_iCurrentSample, (int)floor(beats));
         else
         {
-            loop_in = m_pBeats->findNthBeat(m_iCurrentSample/2, 1);
+            loop_in = m_pBeats->findNthBeat(m_iCurrentSample, 1);
             loop_in += ((loop_out - loop_in) * beats);
         }
     }
 
-    qDebug() << "Current:" << m_iCurrentSample << "IN:" << (loop_in*2) << "OUT:" << (loop_out*2);
+    qDebug() << "Current:" << m_iCurrentSample << "IN:" << (loop_in) << "OUT:" << (loop_out);
 
     // TrackBeats generates mono sample numbers, so we have to account 
     // for that here. Probably should just generate stereo sample numbers
     // though, from the get go 
     // - Phillip Whelan
-    m_pCOLoopStart->set((double)loop_in * 2);
-    m_pCOLoopEnd->set((double)loop_out * 2);
+    m_pCOLoopStart->set((double)loop_in);
+    m_pCOLoopEnd->set((double)loop_out);
     m_pCOLoopEnabled->set(1);
 }
 
