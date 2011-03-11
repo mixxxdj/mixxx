@@ -38,6 +38,7 @@ private:
 	void syncPosition();
 	void togglePlayButton(bool on);
 	bool checkEnabled(bool was, bool is);
+	void doTrackSelection(bool valid_pos, double pitch, double position);
 	void resetSteadyPitch(double pitch, double time);
 	double checkSteadyPitch(double pitch, double time);
 	void enableRecordEndMode();
@@ -69,6 +70,12 @@ private:
 	double dSteadyPitchTime;
 	QTime tSinceSteadyPitch;
 	double dUiUpdateTime;
+	
+	ControlObjectThread *trackSelector, *trackLoader;
+	double dLastTrackSelectPos;
+	double dCurTrackSelectPos;
+	QTime tSinceTrackSelect;
+	bool bTrackSelectMode;
 
     //Contains information that xwax's code needs internally about the timecode and how to process it.
     struct timecoder_t timecoder;

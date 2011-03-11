@@ -49,6 +49,13 @@ VinylControlXwax::VinylControlXwax(ConfigObject<ConfigValue> * pConfig, const ch
     iOldMode		= MIXXX_VCMODE_ABSOLUTE;
     dUiUpdateTime   = -1.0f;
     m_bNeedleSkipPrevention = (bool)(m_pConfig->getValueString( ConfigKey( "[VinylControl]", "NeedleSkipPrevention" ) ).toInt());
+    
+    dLastTrackSelectPos = 0.0;
+    dCurTrackSelectPos = 0.0;
+    trackSelector = trackLoader = NULL;
+//    trackSelector = new ControlObjectThread(ControlObject::getControl(ConfigKey("[Playlist]","SelectTrackKnob")));
+//    trackLoader = new ControlObjectThread(ControlObject::getControl(ConfigKey("[Playlist]","LoadSelectedIntoFirstStopped")));
+    bTrackSelectMode = false;
 
     tSinceSteadyPitch = QTime();
     
@@ -210,333 +217,404 @@ void VinylControlXwax::run()
 		}
 	        
 		//are we even playing and enabled at all?
-        if (duration != NULL && bIsEnabled)	
-        {
-        	
-        	//qDebug() << group << id << iPosition;
-	        
-        	double cur_duration = duration->get();
-        	//FIXME? we should really sync on all track changes
-        	if (cur_duration != old_duration)
-        	{
-        		bForceResync=true;
-        		old_duration = cur_duration;
-        	}
+		if (!bIsEnabled)
+			continue;
+			
+		dVinylPitch = timecoder_get_pitch(&timecoder);
+			
+		//if no track loaded, let track selection work but that's it
+		if (duration == NULL)
+		{
+			bTrackSelectMode = true; 
+			doTrackSelection(false, dVinylPitch, iPosition);
+			continue;
+		}
+    	//qDebug() << group << id << iPosition;
         
-		    dVinylPosition = iPosition;
-		    dVinylPosition = dVinylPosition / 1000.0f;
-		    //qDebug() << "dVinylPosition1" << dVinylPosition << iLeadInTime;
-		    dVinylPosition -= iLeadInTime;
-		    //qDebug() << "dVinylPosition2" << dVinylPosition;
-		    
-        	//Initialize drift control to zero in case we don't get any position data to calculate it with.
-        	dDriftControl = 0.0f;
-        	dVinylPitch = timecoder_get_pitch(&timecoder);
-            filePosition = playPos->get() * cur_duration;             //Get the playback position in the file in seconds.
-            
-            reportedMode = mode->get();
-            //qDebug() << "cur mode" << reportedMode;
-            reportedPlayButton = playButton->get();
-            
-			if (iVCMode != reportedMode)
-		    {
-		    	//qDebug() << "cur mode" << iVCMode << "new mode" << reportedMode;
-		    	//if we are playing, don't allow change 
-		    	//to absolute mode (would cause sudden track skip)
-		    	if (reportedPlayButton && reportedMode == MIXXX_VCMODE_ABSOLUTE)
-		    	{
-		    		iVCMode = MIXXX_VCMODE_RELATIVE;
-		    		mode->slotSet((double)iVCMode);
-			    }
-			    else //go ahead and switch
-			    {
-			    	iVCMode = reportedMode;
-			    	if (reportedMode == MIXXX_VCMODE_ABSOLUTE)
-			    		bForceResync = true;
-		   		}
-
-				//if we are out of error mode...		   		
-		   		if (vinylStatus->get() == VINYL_STATUS_ERROR && iVCMode == MIXXX_VCMODE_RELATIVE)
-		    	{
-            		vinylStatus->slotSet(VINYL_STATUS_OK);
-            	}
+    	double cur_duration = duration->get();
+    	//FIXME? we should really sync on all track changes
+    	if (cur_duration != old_duration)
+    	{
+    		bForceResync=true;
+    		old_duration = cur_duration;
+    	}
+    
+	    dVinylPosition = iPosition;
+	    dVinylPosition = dVinylPosition / 1000.0f;
+	    dVinylPosition -= iLeadInTime;
+	    
+    	//Initialize drift control to zero in case we don't get any position data to calculate it with.
+    	dDriftControl = 0.0f;
+    	
+        filePosition = playPos->get() * cur_duration;             //Get the playback position in the file in seconds.
+        
+        reportedMode = mode->get();
+        reportedPlayButton = playButton->get();
+        
+		if (iVCMode != reportedMode)
+	    {
+	    	//qDebug() << "cur mode" << iVCMode << "new mode" << reportedMode;
+	    	//if we are playing, don't allow change 
+	    	//to absolute mode (would cause sudden track skip)
+	    	if (reportedPlayButton && reportedMode == MIXXX_VCMODE_ABSOLUTE)
+	    	{
+	    		iVCMode = MIXXX_VCMODE_RELATIVE;
+	    		mode->slotSet((double)iVCMode);
 		    }
-
-			//if looping has been enabled, don't allow absolute mode		    
-		    if (loopEnabled->get() && iVCMode == MIXXX_VCMODE_ABSOLUTE)
+		    else //go ahead and switch
 		    {
-		    	iVCMode = MIXXX_VCMODE_RELATIVE;
-		    	mode->slotSet((double)iVCMode);
-		    }
-		    
-            //are we newly playing near the end of the record?  (in absolute mode, this happens
-            //when the filepos is past safe (more accurate), 
-            //but it can also happen in relative mode if the vinylpos is nearing the end
-            //If so, change to constant mode so DJ can move the needle safely
-			
-			if (!atRecordEnd && reportedPlayButton)
+		    	iVCMode = reportedMode;
+		    	if (reportedMode == MIXXX_VCMODE_ABSOLUTE)
+		    		bForceResync = true;
+	   		}
+
+			//if we are out of error mode...		   		
+	   		if (vinylStatus->get() == VINYL_STATUS_ERROR && iVCMode == MIXXX_VCMODE_RELATIVE)
+	    	{
+        		vinylStatus->slotSet(VINYL_STATUS_OK);
+        	}
+	    }
+
+		//if looping has been enabled, don't allow absolute mode		    
+	    if (loopEnabled->get() && iVCMode == MIXXX_VCMODE_ABSOLUTE)
+	    {
+	    	iVCMode = MIXXX_VCMODE_RELATIVE;
+	    	mode->slotSet((double)iVCMode);
+	    }
+	    
+        //are we newly playing near the end of the record?  (in absolute mode, this happens
+        //when the filepos is past safe (more accurate), 
+        //but it can also happen in relative mode if the vinylpos is nearing the end
+        //If so, change to constant mode so DJ can move the needle safely
+		
+		if (!atRecordEnd && reportedPlayButton)
+		{
+			if (iVCMode == MIXXX_VCMODE_ABSOLUTE)
 			{
-				if (iVCMode == MIXXX_VCMODE_ABSOLUTE)
-				{
-					if ((filePosition + iLeadInTime) * 1000.0f  > timecoder_get_safe(&timecoder) &&
-						!bForceResync) //corner case: we are waiting for resync so don't enable just yet
-						enableRecordEndMode();
-				}
-				else if (iVCMode == MIXXX_VCMODE_RELATIVE || iVCMode == MIXXX_VCMODE_CONSTANT)
-				{
-					if (iPosition != -1 && iPosition > timecoder_get_safe(&timecoder))
-						enableRecordEndMode();
-				}
+				if ((filePosition + iLeadInTime) * 1000.0f  > timecoder_get_safe(&timecoder) &&
+					!bForceResync) //corner case: we are waiting for resync so don't enable just yet
+					enableRecordEndMode();
 			}
-			
-            if (atRecordEnd)
-            { 
-            	//if atRecordEnd was true, maybe it no longer applies:
-            	
-            	if ((iVCMode == MIXXX_VCMODE_ABSOLUTE && 
-						(filePosition + iLeadInTime) * 1000.0f  <= timecoder_get_safe(&timecoder)))
-				{
-					//if we are in absolute mode and the file position is in a safe zone now
-					disableRecordEndMode();
-				}
-				else if (!reportedPlayButton) 
-				{
-					//if we turned off play button, also disable
-					disableRecordEndMode();
-				}
-				else if (iPosition != -1) 
-				{
-					//if relative mode, and vinylpos is safe
-					if (iVCMode == MIXXX_VCMODE_RELATIVE && 
-		            	iPosition <= timecoder_get_safe(&timecoder))
-		            {
-			            disableRecordEndMode();
-			        }
-			    }
-			    
-			    if (atRecordEnd)
-			    {
-		        	//ok, it's still valid, blink
-					if ((reportedPlayButton && (int)(filePosition * 2.0f) % 2) ||
-						(!reportedPlayButton && (int)(iPosition / 500.0f) % 2))
-						vinylStatus->slotSet(VINYL_STATUS_WARNING);
-					else
-						vinylStatus->slotSet(VINYL_STATUS_DISABLED);
-				}
-			}	
-			
-			if (iVCMode == MIXXX_VCMODE_CONSTANT)
+			else if (iVCMode == MIXXX_VCMODE_RELATIVE || iVCMode == MIXXX_VCMODE_CONSTANT)
 			{
-				//when we enabled constant mode we set the rate slider
-				//now we just either set scratch val to 0 (stops playback)
-				//or 1 (plays back at that rate)
-				
-				if (reportedPlayButton)
-					controlScratch->slotSet(rateDir->get() * (rateSlider->get() * fRateRange) + 1.0f);
+				if (iPosition != -1 && iPosition > timecoder_get_safe(&timecoder))
+					enableRecordEndMode();
+			}
+		}
+		
+        if (atRecordEnd)
+        { 
+        	//if atRecordEnd was true, maybe it no longer applies:
+        	
+        	if ((iVCMode == MIXXX_VCMODE_ABSOLUTE && 
+					(filePosition + iLeadInTime) * 1000.0f  <= timecoder_get_safe(&timecoder)))
+			{
+				//if we are in absolute mode and the file position is in a safe zone now
+				disableRecordEndMode();
+			}
+			else if (!reportedPlayButton) 
+			{
+				//if we turned off play button, also disable
+				disableRecordEndMode();
+			}
+			else if (iPosition != -1) 
+			{
+				//if relative mode, and vinylpos is safe
+				if (iVCMode == MIXXX_VCMODE_RELATIVE && 
+	            	iPosition <= timecoder_get_safe(&timecoder))
+	            {
+		            disableRecordEndMode();
+		        }
+		    }
+		    
+		    if (atRecordEnd)
+		    {
+	        	//ok, it's still valid, blink
+				if ((reportedPlayButton && (int)(filePosition * 2.0f) % 2) ||
+					(!reportedPlayButton && (int)(iPosition / 500.0f) % 2))
+					vinylStatus->slotSet(VINYL_STATUS_WARNING);
 				else
-					controlScratch->slotSet(0.0f);
-					
-				//is there any reason we'd need to do anything else?
+					vinylStatus->slotSet(VINYL_STATUS_DISABLED);
+			}
+		}
+		
+		//check here for position > safe, and if no record end mode,
+		//then trigger track selection mode.  just pass position to it
+		//and ignore pitch
+
+		if (!atRecordEnd)
+		{
+			if (iPosition != -1 && iPosition > timecoder_get_safe(&timecoder))
+			{
+				if (!bTrackSelectMode)
+				{
+					qDebug() << "position greater than safe, select mode" << iPosition << timecoder_get_safe(&timecoder);
+					bTrackSelectMode = true;
+					togglePlayButton(FALSE);
+				   	resetSteadyPitch(0.0f, 0.0f);
+				    controlScratch->slotSet(0.0f);
+				}
+				doTrackSelection(true, dVinylPitch, iPosition);
+				
+				//hm I wonder if track will keep playing while this happens?
+				//not sure what we want to do here...  probably enforce
+				//stopped deck.
+				
+				//but if constant mode...  nah, force stop.
 				continue;
 			}
-			
-			//CONSTANT MODE NO LONGER APPLIES...
-			
-            // When there's a timecode signal available
-            // This is set when we analyze samples (no need for lock I think)
-            if(bHaveSignal)
-            {
-            	//POSITION: MAYBE  PITCH: YES
-
-				//We have pitch, but not position.  so okay signal but not great (scratching / cueing?)
-				//qDebug() << "Pitch" << dVinylPitch;
-				if (iPosition != -1)
+			else 
+			{
+				//so we're not unsafe.... but
+				//if no position, but we were in select mode, do select mode
+				if (iPosition == -1 && bTrackSelectMode)
 				{
-					//POSITION: YES  PITCH: YES
-					//add a value to the pitch ring (for averaging / smoothing the pitch)
-					//qDebug() << fabs(((dVinylPosition - dOldPos) * (dVinylPitch / fabs(dVinylPitch))));
+					//qDebug() << "no position, but were in select mode";
+					doTrackSelection(false, dVinylPitch, iPosition);
 					
-					dPitchRing[ringPos] = dVinylPitch;
-					if(ringFilled < RING_SIZE)
-			        	ringFilled++;
-			        	
-			        //save the absolute amount of drift for when we need to estimate vinyl position
-					dDriftAmt = dVinylPosition - filePosition;
-					
-	            	//qDebug() << "vinyl" << dVinylPosition << "file" << filePosition;
-	            	if (bForceResync)
-	            	{
-	            		//if forceresync was set but we're no longer absolute,
-	            		//it no longer applies
-	            		//if we're in relative mode then we'll do a sync
-	            		//because it might select a cue
-	            		if (iVCMode == MIXXX_VCMODE_ABSOLUTE || iVCMode==MIXXX_VCMODE_RELATIVE)
-	            		{
-		            		syncPosition();
-	                    	resetSteadyPitch(dVinylPitch, dVinylPosition);
-	                    }
-	                    bForceResync = false;
-	            	}
-	            	else if (fabs(dVinylPosition - filePosition) > 0.1f &&
-		            		dVinylPosition < -2.0f)
-	                {
-	                	//At first I thought it was a bug to resync to leadin in relative mode,
-	                	//but after using it that way it's actually pretty convenient.
-	                	//qDebug() << "Vinyl leadin";
-	                	syncPosition();
-	                    resetSteadyPitch(dVinylPitch, dVinylPosition);
-	                    if (uiUpdateTime(filePosition))
-	                    	rateSlider->slotSet(rateDir->get() * (fabs(dVinylPitch) - 1.0f) / fRateRange);
-	                }
-	            	else if (iVCMode == MIXXX_VCMODE_ABSOLUTE && (fabs(dVinylPosition - dOldPos) >= 15.0f))
-		            {
-		            	//If the position from the timecode is more than a few seconds off, resync the position.
-		            	qDebug() << "resync position (>15.0 sec)";
-		            	qDebug() << dVinylPosition << dOldPos << dVinylPosition - dOldPos;
-		                syncPosition();
-		                resetSteadyPitch(dVinylPitch, dVinylPosition);
-		            }
-		            else if (iVCMode == MIXXX_VCMODE_ABSOLUTE && m_bNeedleSkipPrevention &&
-				            fabs(dVinylPosition - dOldPos) > 0.4 &&
-				            (tSinceSteadyPitch.elapsed() < 400 || reportedPlayButton))
-			        {
-				    	//red alert, moved wrong direction or jumped forward a lot,
-				    	//and we were just playing nicely...
-				    	//move to constant mode and keep playing
-				    	qDebug() << "WARNING: needle skip detected!:";
-				    	qDebug() << filePosition << dOldFilePos << dVinylPosition << dOldPos;
-				    	qDebug() << (dVinylPosition - dOldPos) * (dVinylPitch / fabs(dVinylPitch));
-				    	//try setting the rate to the steadypitch value
-				    	enableConstantMode(dOldSteadyPitch);
-				    	vinylStatus->slotSet(VINYL_STATUS_ERROR);
-				    }
-	                else if (iVCMode == MIXXX_VCMODE_ABSOLUTE && !m_bNeedleSkipPrevention &&
-	                	fabs(dVinylPosition - dOldPos) >= 0.1f)
-	                {
-	                	qDebug() << "CDJ resync position (>0.1 sec)";
-	                	syncPosition();
-		                resetSteadyPitch(dVinylPitch, dVinylPosition);
-	                }
-                    else if (playPos->get() == 1.0 && dVinylPitch > 0)
-				    {
-				    	//end of track
-				    	togglePlayButton(false);
-				    	resetSteadyPitch(0.0f, 0.0f);
-						controlScratch->slotSet(0.0f);
-						ringPos = 0;
-						ringFilled = 0;
-				    	continue;
-				    }
-	                else 
-	                {
-	                	togglePlayButton(checkSteadyPitch(dVinylPitch, filePosition) > 0.5);
-	                }
-	                		                    
-	                //Calculate how much the vinyl's position has drifted from it's timecode and compensate for it.
-	                //(This is caused by the manufacturing process of the vinyl.)
-	                dDriftControl = ((filePosition - dVinylPosition)  / dVinylPosition) / 100 * 4.0f;
-	                
-	                //if we hit the end of the ring, loop around
-                    ringPos++;
-	                if(ringPos >= RING_SIZE)
-       				 	ringPos = 0;
-		            dOldPos = dVinylPosition;
-		        }
-		        else
-		        {
-		        	//POSITION: NO  PITCH: YES
-		        	//if we don't have valid position, we're not playing so reset time to current
-		            //estimate vinyl position
-		            
-		            if (playPos->get() == 1.0 && dVinylPitch > 0)
-				    {
-				    	//end of track
-				    	togglePlayButton(false);
-				    	resetSteadyPitch(0.0f, 0.0f);
-						controlScratch->slotSet(0.0f);
-						ringPos = 0;
-						ringFilled = 0;
-				    	continue;
-				    }
-		            
-		            dOldPos = filePosition + dDriftAmt;
-		        	
-		        	if (dVinylPitch > 0.2)
-		        	{	
-	                	togglePlayButton(checkSteadyPitch(dVinylPitch, filePosition) > 0.5);
-					}		            	
-		        }
-		        
-		        //playbutton status may have changed
-		        reportedPlayButton = playButton->get();
-		        
-				//only smooth when we have good position (no smoothing for scratching)
-				double averagePitch = 0.0f;
-				if (iPosition != -1 && reportedPlayButton)
-				{
-					for (int i=0; i<ringFilled; i++)
-					{
-						averagePitch += dPitchRing[i];
-					}
-					averagePitch /= ringFilled;
-					//round out some of the noise
-					averagePitch = (double)(int)(averagePitch * 10000.0f);
-					averagePitch /= 10000.0f;
+					//again, force stop?
+					continue;
 				}
-				else
-					averagePitch = dVinylPitch;
+				else if (bTrackSelectMode)
+				{
+					qDebug() << "discontinuing select mode";
+					//if position is known and safe then no track select mode
+					bTrackSelectMode = false; 
+				}
+			}
+		}
+		
+		if (iVCMode == MIXXX_VCMODE_CONSTANT)
+		{
+			//when we enabled constant mode we set the rate slider
+			//now we just either set scratch val to 0 (stops playback)
+			//or 1 (plays back at that rate)
+			
+			if (reportedPlayButton)
+				controlScratch->slotSet(rateDir->get() * (rateSlider->get() * fRateRange) + 1.0f);
+			else
+				controlScratch->slotSet(0.0f);
 				
-				
-	            if (iVCMode == MIXXX_VCMODE_ABSOLUTE)
-	            {
-	            	controlScratch->slotSet(averagePitch + dDriftControl);
-	            	if (iPosition != -1 && reportedPlayButton && uiUpdateTime(filePosition))
-	            	{
-	                	rateSlider->slotSet(rateDir->get() * (fabs(averagePitch + dDriftControl) - 1.0f) / fRateRange);
-	                	dUiUpdateTime = filePosition;
-	                }
-	            }
-	            else if (iVCMode == MIXXX_VCMODE_RELATIVE)
-	            {
-	                controlScratch->slotSet(averagePitch);
-	                if (iPosition != -1 && reportedPlayButton && uiUpdateTime(filePosition))
-	            	{
-	                	rateSlider->slotSet(rateDir->get() * (fabs(averagePitch) - 1.0f) / fRateRange);
-	                	dUiUpdateTime = filePosition;
-	                }
-	            }
-	            
-				dOldPitch = dVinylPitch;
-				dOldFilePos = filePosition;
-            }
-            else //No pitch data available (the needle is up/stopped.... or *really* crappy signal)
-            {
-            	//POSITION: NO  PITCH: NO
-            	//if it's been a long time, we're stopped.
-            	//if it hasn't been long, and we're preventing needle skips,
-            	//let the track play a wee bit more before deciding we've stopped
-            	
-            	rateSlider->slotSet(0.0f);
+			//is there any reason we'd need to do anything else?
+			continue;
+		}
+		
+		//CONSTANT MODE NO LONGER APPLIES...
+		
+        // When there's a timecode signal available
+        // This is set when we analyze samples (no need for lock I think)
+        if(bHaveSignal)
+        {
+        	//POSITION: MAYBE  PITCH: YES
 
-	        	if(fabs(filePosition - dOldFilePos) >= 0.1 ||
-	        		!m_bNeedleSkipPrevention ||
-	        		filePosition == dOldFilePos)
-	        	{
-	        		//We are not playing any more
-			       	togglePlayButton(FALSE);
-			       	resetSteadyPitch(0.0f, 0.0f);
-			        controlScratch->slotSet(0.0f);
-			        //resetSteadyPitch(dVinylPitch, filePosition);
-			        //Notify the UI that the timecode quality is garbage/missing.
-			        m_fTimecodeQuality = 0.0f;
-			        ringPos = 0;
-			        ringFilled = 0;
-			        iQualPos = 0;
-    				iQualFilled = 0;
-    				bForceResync=true;
-			        vinylStatus->slotSet(VINYL_STATUS_OK);
+			//We have pitch, but not position.  so okay signal but not great (scratching / cueing?)
+			//qDebug() << "Pitch" << dVinylPitch;
+			if (iPosition != -1)
+			{
+				//POSITION: YES  PITCH: YES
+				//add a value to the pitch ring (for averaging / smoothing the pitch)
+				//qDebug() << fabs(((dVinylPosition - dOldPos) * (dVinylPitch / fabs(dVinylPitch))));
+				
+				/*if (iPosition > timecoder_get_safe(&timecoder))
+				{
+					//record is past safe zone... I guess we will do the
+					//track-selection thing
+					doTrackSelection(iPosition);
+					continue;
+				}*/
+				
+				dPitchRing[ringPos] = dVinylPitch;
+				if(ringFilled < RING_SIZE)
+		        	ringFilled++;
+		        	
+		        //save the absolute amount of drift for when we need to estimate vinyl position
+				dDriftAmt = dVinylPosition - filePosition;
+				
+            	//qDebug() << "vinyl" << dVinylPosition << "file" << filePosition;
+            	if (bForceResync)
+            	{
+            		//if forceresync was set but we're no longer absolute,
+            		//it no longer applies
+            		//if we're in relative mode then we'll do a sync
+            		//because it might select a cue
+            		if (iVCMode == MIXXX_VCMODE_ABSOLUTE || iVCMode==MIXXX_VCMODE_RELATIVE)
+            		{
+	            		syncPosition();
+                    	resetSteadyPitch(dVinylPitch, dVinylPosition);
+                    }
+                    bForceResync = false;
+            	}
+            	else if (fabs(dVinylPosition - filePosition) > 0.1f &&
+	            		dVinylPosition < -2.0f)
+                {
+                	//At first I thought it was a bug to resync to leadin in relative mode,
+                	//but after using it that way it's actually pretty convenient.
+                	//qDebug() << "Vinyl leadin";
+                	syncPosition();
+                    resetSteadyPitch(dVinylPitch, dVinylPosition);
+                    if (uiUpdateTime(filePosition))
+                    	rateSlider->slotSet(rateDir->get() * (fabs(dVinylPitch) - 1.0f) / fRateRange);
+                }
+            	else if (iVCMode == MIXXX_VCMODE_ABSOLUTE && (fabs(dVinylPosition - dOldPos) >= 15.0f))
+	            {
+	            	//If the position from the timecode is more than a few seconds off, resync the position.
+	            	qDebug() << "resync position (>15.0 sec)";
+	            	qDebug() << dVinylPosition << dOldPos << dVinylPosition - dOldPos;
+	                syncPosition();
+	                resetSteadyPitch(dVinylPitch, dVinylPosition);
+	            }
+	            else if (iVCMode == MIXXX_VCMODE_ABSOLUTE && m_bNeedleSkipPrevention &&
+			            fabs(dVinylPosition - dOldPos) > 0.4 &&
+			            (tSinceSteadyPitch.elapsed() < 400 || reportedPlayButton))
+		        {
+			    	//red alert, moved wrong direction or jumped forward a lot,
+			    	//and we were just playing nicely...
+			    	//move to constant mode and keep playing
+			    	qDebug() << "WARNING: needle skip detected!:";
+			    	qDebug() << filePosition << dOldFilePos << dVinylPosition << dOldPos;
+			    	qDebug() << (dVinylPosition - dOldPos) * (dVinylPitch / fabs(dVinylPitch));
+			    	//try setting the rate to the steadypitch value
+			    	enableConstantMode(dOldSteadyPitch);
+			    	vinylStatus->slotSet(VINYL_STATUS_ERROR);
 			    }
+                else if (iVCMode == MIXXX_VCMODE_ABSOLUTE && !m_bNeedleSkipPrevention &&
+                	fabs(dVinylPosition - dOldPos) >= 0.1f)
+                {
+                	qDebug() << "CDJ resync position (>0.1 sec)";
+                	syncPosition();
+	                resetSteadyPitch(dVinylPitch, dVinylPosition);
+                }
+                else if (playPos->get() == 1.0 && dVinylPitch > 0)
+			    {
+			    	//end of track
+			    	togglePlayButton(false);
+			    	resetSteadyPitch(0.0f, 0.0f);
+					controlScratch->slotSet(0.0f);
+					ringPos = 0;
+					ringFilled = 0;
+			    	continue;
+			    }
+                else 
+                {
+                	togglePlayButton(checkSteadyPitch(dVinylPitch, filePosition) > 0.5);
+                }
+                		                    
+                //Calculate how much the vinyl's position has drifted from it's timecode and compensate for it.
+                //(This is caused by the manufacturing process of the vinyl.)
+                dDriftControl = ((filePosition - dVinylPosition)  / dVinylPosition) / 100 * 4.0f;
+                
+                //if we hit the end of the ring, loop around
+                ringPos++;
+                if(ringPos >= RING_SIZE)
+   				 	ringPos = 0;
+	            dOldPos = dVinylPosition;
+	        }
+	        else
+	        {
+	        	//POSITION: NO  PITCH: YES
+	        	//if we don't have valid position, we're not playing so reset time to current
+	            //estimate vinyl position
+	            
+	            /*if (dLastTrackSelectPos > timecoder_get_safe(&timecoder))
+	            {
+	            	if (!tSinceTrackSelect.isNull())
+	            	{
+	            		if(tSinceTrackSelect.elapsed() < 5.0)
+	            		{
+	            			qDebug() << "calling track selector with last known value";
+	            			doTrackSelection(dLastTrackSelectPos);
+	            		}
+	            	}
+	            }*/
+	            
+	            if (playPos->get() == 1.0 && dVinylPitch > 0)
+			    {
+			    	//end of track
+			    	togglePlayButton(false);
+			    	resetSteadyPitch(0.0f, 0.0f);
+					controlScratch->slotSet(0.0f);
+					ringPos = 0;
+					ringFilled = 0;
+			    	continue;
+			    }
+	            
+	            dOldPos = filePosition + dDriftAmt;
+	        	
+	        	if (dVinylPitch > 0.2)
+	        	{	
+                	togglePlayButton(checkSteadyPitch(dVinylPitch, filePosition) > 0.5);
+				}		            	
+	        }
+	        
+	        //playbutton status may have changed
+	        reportedPlayButton = playButton->get();
+	        
+			//only smooth when we have good position (no smoothing for scratching)
+			double averagePitch = 0.0f;
+			if (iPosition != -1 && reportedPlayButton)
+			{
+				for (int i=0; i<ringFilled; i++)
+				{
+					averagePitch += dPitchRing[i];
+				}
+				averagePitch /= ringFilled;
+				//round out some of the noise
+				averagePitch = (double)(int)(averagePitch * 10000.0f);
+				averagePitch /= 10000.0f;
+			}
+			else
+				averagePitch = dVinylPitch;
+			
+			
+            if (iVCMode == MIXXX_VCMODE_ABSOLUTE)
+            {
+            	controlScratch->slotSet(averagePitch + dDriftControl);
+            	if (iPosition != -1 && reportedPlayButton && uiUpdateTime(filePosition))
+            	{
+                	rateSlider->slotSet(rateDir->get() * (fabs(averagePitch + dDriftControl) - 1.0f) / fRateRange);
+                	dUiUpdateTime = filePosition;
+                }
             }
+            else if (iVCMode == MIXXX_VCMODE_RELATIVE)
+            {
+                controlScratch->slotSet(averagePitch);
+                if (iPosition != -1 && reportedPlayButton && uiUpdateTime(filePosition))
+            	{
+                	rateSlider->slotSet(rateDir->get() * (fabs(averagePitch) - 1.0f) / fRateRange);
+                	dUiUpdateTime = filePosition;
+                }
+            }
+            
+			dOldPitch = dVinylPitch;
+			dOldFilePos = filePosition;
+        }
+        else //No pitch data available (the needle is up/stopped.... or *really* crappy signal)
+        {
+        	//POSITION: NO  PITCH: NO
+        	//if it's been a long time, we're stopped.
+        	//if it hasn't been long, and we're preventing needle skips,
+        	//let the track play a wee bit more before deciding we've stopped
+        	
+        	rateSlider->slotSet(0.0f);
+
+        	if(fabs(filePosition - dOldFilePos) >= 0.1 ||
+        		!m_bNeedleSkipPrevention ||
+        		filePosition == dOldFilePos)
+        	{
+        		//We are not playing any more
+		       	togglePlayButton(FALSE);
+		       	resetSteadyPitch(0.0f, 0.0f);
+		        controlScratch->slotSet(0.0f);
+		        //resetSteadyPitch(dVinylPitch, filePosition);
+		        //Notify the UI that the timecode quality is garbage/missing.
+		        m_fTimecodeQuality = 0.0f;
+		        ringPos = 0;
+		        ringFilled = 0;
+		        iQualPos = 0;
+				iQualFilled = 0;
+				bForceResync=true;
+		        vinylStatus->slotSet(VINYL_STATUS_OK);
+		    }
         }
     }
 }
@@ -593,6 +671,90 @@ void VinylControlXwax::togglePlayButton(bool on)
 		if (!on)
 			tSinceSteadyPitch.restart();
 		playButton->slotSet((float)on);  //and we all float on all right
+	}
+}
+
+void VinylControlXwax::doTrackSelection(bool valid_pos, double pitch, double position)
+{
+	//ok we keep track of a vinyl position
+	//so that we can trigger track selections
+	
+	//we also keep a timer and reset it every time we change the selector
+	
+	//when user has been sitting on a track for a while, we select it.
+	
+	//oh shit, we have to figure out when the vinyl isn't moving at all....
+	
+	//we really need a "track select mode" that's turned on when we sync
+	//past the safe zone, and turned off when we sync back into regular territory
+	
+	//when it's triggered on:
+	// * have position: select tracks for every .5 secs pos  elapsed.  reset
+	//   counter every time we do this  
+	// * have pitch or no pitch:  same situation:  check the counter
+	//   and after 3 secs, select track
+	
+	if (trackSelector == NULL)
+	{
+		//qDebug() << "harumph, it was null";
+		trackSelector = new ControlObjectThread(ControlObject::getControl(ConfigKey("[Playlist]","SelectTrackKnob")));
+		//qDebug() << "still null?" << trackSelector;
+	}
+	if (trackLoader == NULL)
+	{
+    	trackLoader = new ControlObjectThread(ControlObject::getControl(ConfigKey(group,"LoadSelectedTrack")));
+    }
+    //qDebug() << "so what" << trackSelector;
+	
+	if (!valid_pos)
+	{
+		if (fabs(pitch) < 0.1)
+		{
+			//turntable is stopped.  So select the track
+			//or start the timer, but either way nothing else to do so
+			//return
+			if (tSinceTrackSelect.isNull())
+				tSinceTrackSelect.start();
+			else if (tSinceTrackSelect.elapsed() > 3000)
+			{
+				qDebug() << "selecting track";
+				trackSelector->slotSet(1.0);
+				trackSelector->slotSet(0.0); //I think I have to do this...
+				tSinceTrackSelect.restart();
+			}
+			return;  //don't need to waste time below updating position
+		}
+		else
+		{
+			//how to estimate how far the record has moved when we don't have a valid
+			//position and no mp3 track to compare with???  just add a bullshit amount?	
+			dCurTrackSelectPos += pitch * 0.05; //MADE UP CONSTANT, needs to be based on frames per second I think
+		}
+	}	
+	else
+		dCurTrackSelectPos = position; //if we have valid pos, use it
+		
+		
+	//we have position or at least record is moving, so check if we should
+	//change location
+	
+	if (fabs(dCurTrackSelectPos - dLastTrackSelectPos) > 10.0 * 1000)
+	{
+		//yeah probably not a valid value
+		qDebug() << "large change in track position, resetting";
+		dLastTrackSelectPos = dCurTrackSelectPos;
+	}
+	else if (fabs(dCurTrackSelectPos - dLastTrackSelectPos) > 0.5 * 1000)
+	{
+		//difference of at least 1, so trigger the track selector
+		//*2 because each half second
+		qDebug() << "adjusting selector" << (int)(dCurTrackSelectPos - dLastTrackSelectPos) / 500 << "places";
+		trackSelector->slotSet((int)(dCurTrackSelectPos - dLastTrackSelectPos) / 500);
+		dLastTrackSelectPos = dCurTrackSelectPos;
+		if (tSinceTrackSelect.isNull())
+			tSinceTrackSelect.start();
+		else
+			tSinceTrackSelect.restart();
 	}
 }
 
