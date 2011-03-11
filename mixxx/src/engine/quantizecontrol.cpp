@@ -57,7 +57,7 @@ double QuantizeControl::process(const double dRate,
         m_iCurrentSample--;
 
     if ( m_pCOQuantizeEnabled->get() ) {
-        	if ((m_iCurrentSample > (m_pCOQuantizeBeat->get()*2)) || (m_iCurrentSample <= (m_dQuantizePrevBeat*2))) {
+        	if ((m_iCurrentSample > m_pCOQuantizeBeat->get()) || (m_iCurrentSample <= m_dQuantizePrevBeat)) {
             double newpos;
             
         	    if ( ! m_pBeats ) {
@@ -65,12 +65,12 @@ double QuantizeControl::process(const double dRate,
         	        return kNoTrigger;
         	    }
 
-        	    newpos = floorf(m_pBeats->findNextBeat(m_iCurrentSample/2));
+        	    newpos = floorf(m_pBeats->findNextBeat(m_iCurrentSample));
         	    if ( !even(newpos))
         	        newpos--;
         	    
         	    m_pCOQuantizeBeat->set(newpos);
-        	    m_dQuantizePrevBeat = m_pBeats->findPrevBeat(m_iCurrentSample/2);
+        	    m_dQuantizePrevBeat = m_pBeats->findPrevBeat(m_iCurrentSample);
         	}
     }
     	
