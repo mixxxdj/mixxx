@@ -100,7 +100,6 @@ void WaveformRenderBeat::draw(QPainter *pPainter, QPaintEvent *event,
         return;
 
     int iCurPos = (int)(dPlayPos * m_iNumSamples);
-
     if(iCurPos % 2 != 0)
         iCurPos--;
 
@@ -127,12 +126,9 @@ void WaveformRenderBeat::draw(QPainter *pPainter, QPaintEvent *event,
     double halfw = m_iWidth/2;
     double halfh = m_iHeight/2;
 
-    // NOTE: converting curpos from stereo samples to mono samples
-    iCurPos = iCurPos >> 1;
-
     // basePos and endPos are in samples
-    double basePos = iCurPos - m_dSamplesPerPixel*halfw*(1.0+rateAdjust);
-    double endPos = basePos + m_iWidth*m_dSamplesPerPixel*(1.0+rateAdjust);
+    double basePos = iCurPos - m_dSamplesPerPixel * m_iWidth * (1.0+rateAdjust);
+    double endPos = basePos + (2 * m_iWidth) * m_dSamplesPerPixel * (1.0+rateAdjust);
 
 
     m_beatList.clear();
@@ -144,7 +140,7 @@ void WaveformRenderBeat::draw(QPainter *pPainter, QPaintEvent *event,
             continue;
 
         // i relative to the current play position in subpixels
-        double i = (curPos - iCurPos)/m_dSamplesPerDownsample;
+        double i = (((curPos) - iCurPos)/2)/m_dSamplesPerDownsample;
 
         // If i is less than 20 subpixels from center, highlight it.
         if(abs(i) < 20) {
