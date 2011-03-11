@@ -62,6 +62,8 @@ VinylControlXwax::VinylControlXwax(ConfigObject<ConfigValue> * pConfig, const ch
     iQualPos = 0;
     iQualFilled = 0;
     
+    m_bCDControl = false;
+    
     //this is all needed because libxwax indexes by C-strings
     //so we go and pass libxwax a pointer into our local stack...
     if (strVinylType == MIXXX_VINYL_SERATOCV02VINYLSIDEA)
@@ -71,6 +73,7 @@ VinylControlXwax::VinylControlXwax(ConfigObject<ConfigValue> * pConfig, const ch
     else if (strVinylType == MIXXX_VINYL_SERATOCD) {
         timecode = (char*)"serato_cd";
         m_bNeedleSkipPrevention = false;
+        m_bCDControl = true;
     }
     else if (strVinylType == MIXXX_VINYL_TRAKTORSCRATCHSIDEA)
         timecode = (char*)"traktor_a";
@@ -437,7 +440,7 @@ void VinylControlXwax::run()
             		//it no longer applies
             		//if we're in relative mode then we'll do a sync
             		//because it might select a cue
-            		if (iVCMode == MIXXX_VCMODE_ABSOLUTE || iVCMode==MIXXX_VCMODE_RELATIVE)
+            		if (iVCMode == MIXXX_VCMODE_ABSOLUTE || (iVCMode == MIXXX_VCMODE_RELATIVE && cueing->get()))
             		{
 	            		syncPosition();
                     	resetSteadyPitch(dVinylPitch, dVinylPosition);
@@ -477,7 +480,7 @@ void VinylControlXwax::run()
 			    	enableConstantMode(dOldSteadyPitch);
 			    	vinylStatus->slotSet(VINYL_STATUS_ERROR);
 			    }
-                else if (iVCMode == MIXXX_VCMODE_ABSOLUTE && !m_bNeedleSkipPrevention &&
+                else if (iVCMode == MIXXX_VCMODE_ABSOLUTE && !m_bCDControl &&
                 	fabs(dVinylPosition - dOldPos) >= 0.1f)
                 {
                 	qDebug() << "CDJ resync position (>0.1 sec)";
