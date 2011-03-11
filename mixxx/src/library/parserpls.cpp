@@ -13,6 +13,7 @@
 #include "parserpls.h"
 #include <QDebug>
 #include <QTextStream>
+#include <QMessageBox>
 #include <QFile>
 #include <QUrl>
 
@@ -140,4 +141,22 @@ QString ParserPls::getFilepath(QTextStream *stream, QString basepath)
     // Signal we reached the end
     return 0;
 
+}
+bool ParserPls::writePLSFile(QString &file_str, QList<QString> &items)
+{
+    QFile file(file_str);
+    if (!file.open(QIODevice::WriteOnly | QIODevice::Text)){
+        QMessageBox::warning(NULL,tr("Playlist Export Failed"),
+                             tr("Could not create file")+" "+file_str);
+        return false;
+    }
+
+    QTextStream out(&file);
+    out << "[playlist]\n";
+    out << "NumberOfEntries=" << items.size() << "\n";
+    for(int i =0; i < items.size(); ++i){
+        out << "File" << i << "=" << items.at(i) << "\n";
+    }
+
+    return true;
 }
