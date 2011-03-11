@@ -76,6 +76,8 @@ double BeatMatrix::findClosestBeat(double dSamples) const {
 
 double BeatMatrix::findNthBeat(double dSamples, int n) const {
     QMutexLocker locker(&m_mutex);
+    // Reduce the Sample Offset to a frame offset.
+    dSamples = floorf(dSamples/2);
     BeatList::const_iterator it;
     int i;
 
@@ -89,7 +91,8 @@ double BeatMatrix::findNthBeat(double dSamples, int n) const {
         // Count down until n=1
         while (it != m_beatList.end()) {
             if (n == 1) {
-                return *it;
+                // Return a Sample Offset
+                return (*it * 2);
             }
             it++; n--;
         }
@@ -106,7 +109,8 @@ double BeatMatrix::findNthBeat(double dSamples, int n) const {
             // not put us before the start of the loop.
             it--;
             if (n == -1) {
-                return *it;
+                // Return a Sample Offset
+                return (*it * 2);
             }
             n++;
         }

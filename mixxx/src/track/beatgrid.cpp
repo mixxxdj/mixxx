@@ -4,10 +4,12 @@
 #include "track/beatgrid.h"
 
 
-typedef struct beatgrid_blob {
+static int kFrameSize = 2;
+
+struct BeatGridData {
 	double bpm;
 	double firstBeat;
-} BEATGRIDBLOB;
+};
 
 BeatGrid::BeatGrid(TrackPointer pTrack, const QByteArray* pByteArray)
         : QObject(),
@@ -33,21 +35,23 @@ void BeatGrid::setGrid(double dBpm, double dFirstBeatSample) {
     QMutexLocker lock(&m_mutex);
     m_dBpm = dBpm;
     m_dFirstBeat = dFirstBeatSample;
-    m_dBeatLength = 60.0 * m_iSampleRate / m_dBpm;
+    // Calculate beat length as sample offsets
+    m_dBeatLength = (60.0 * m_iSampleRate / m_dBpm) * kFrameSize;
 }
 
 QByteArray* BeatGrid::toByteArray() const {
     QMutexLocker locker(&m_mutex);
-    BEATGRIDBLOB blob = { m_dBpm, m_dFirstBeat };
+    BeatGridData blob = { (m_dBpm / kFrameSize), (m_dFirstBeat / kFrameSize) };
     QByteArray* pByteArray = new QByteArray((char *)&blob, sizeof(blob));
     return pByteArray;
 }
 
 void BeatGrid::readByteArray(const QByteArray* pByteArray) {
-    if ( pByteArray->size() != sizeof(BEATGRIDBLOB))
+    if ( pByteArray->size() != sizeof(BeatGridData))
         return;
-    BEATGRIDBLOB *blob = (BEATGRIDBLOB *)pByteArray->data();
-    setGrid(blob->bpm, blob->firstBeat);
+    BeatGridData *blob = (BeatGridData *)pByteArray->data();
+    // We serialize into frame offsets but use sample offsets at runtime
+    setGrid(blob->bpm, blob->firstBeat * kFrameSize);
 }
 
 QString BeatGrid::getVersion() const {
