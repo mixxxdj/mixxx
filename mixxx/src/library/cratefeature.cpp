@@ -42,6 +42,9 @@ CrateFeature::CrateFeature(QObject* parent,
     m_pImportPlaylistAction = new QAction(tr("Import Playlist"),this);
     connect(m_pImportPlaylistAction, SIGNAL(triggered()),
             this, SLOT(slotImportPlaylist()));
+    m_pExportPlaylistAction = new QAction(tr("Export Playlist"), this);
+    connect(m_pExportPlaylistAction, SIGNAL(triggered()),
+            this, SLOT(slotExportPlaylist()));
 
     m_crateListTableModel.setTable("crates");
     m_crateListTableModel.setSort(m_crateListTableModel.fieldIndex("name"),
@@ -171,6 +174,7 @@ void CrateFeature::onRightClickChild(const QPoint& globalPos, QModelIndex index)
     menu.addAction(m_pLockCrateAction);
     menu.addSeparator();
     menu.addAction(m_pImportPlaylistAction);
+    menu.addAction(m_pExportPlaylistAction);
     menu.exec(globalPos);
 }
 
@@ -407,4 +411,36 @@ void CrateFeature::slotImportPlaylist()
 }
 void CrateFeature::onLazyChildExpandation(const QModelIndex &index){
     //Nothing to do because the childmodel is not of lazy nature.
+}
+void CrateFeature::slotExportPlaylist(){
+    qDebug() << "Export playlist" << m_lastRightClickedIndex.data();
+    QString file_location = QFileDialog::getSaveFileName(NULL,
+                                        tr("Export Playlist"),
+                                        QDesktopServices::storageLocation(QDesktopServices::MusicLocation),
+                                        tr("Playlist Files (*.m3u *.pls)"));
+    //Exit method if user cancelled the open dialog.
+    if(file_location.isNull() || file_location.isEmpty()) return;
+    //create and populate a list of files of the playlist
+    QList<QString> playlist_items;
+    int rows = m_crateTableModel.rowCount();
+    for(int i = 0; i < rows; ++i){
+        QModelIndex index = m_crateTableModel.index(i,0);
+        playlist_items << m_crateTableModel.getTrackLocation(index);
+    }
+
+    if(file_location.endsWith(".m3u", Qt::CaseInsensitive))
+    {
+        ParserM3u::writeM3UFile(file_location, playlist_items);
+    }
+    else if(file_location.endsWith(".pls", Qt::CaseInsensitive))
+    {
+        ParserPls::writePLSFile(file_location,playlist_items);
+    }
+    else
+    {
+        QMessageBox::warning(NULL,tr("Playlist Export Failed"),
+                             tr("Mixxx only supports playlist exports to M3U and PLS."
+                                "Please make sure your file extension is m3u or pls"));
+
+    }
 }

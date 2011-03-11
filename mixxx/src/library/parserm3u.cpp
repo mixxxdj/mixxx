@@ -11,6 +11,7 @@
 //
 #include <QTextStream>
 #include <QDebug>
+#include <QMessageBox>
 #include "parserm3u.h"
 #include <QUrl>
 
@@ -118,5 +119,24 @@ QString ParserM3u::getFilepath(QTextStream *stream, QString basepath)
 
     // Signal we reached the end
     return 0;
+
+}
+bool ParserM3u::writeM3UFile(QString &file_str, QList<QString> &items)
+{
+    QFile file(file_str);
+    if (!file.open(QIODevice::WriteOnly | QIODevice::Text)){
+        QMessageBox::warning(NULL,tr("Playlist Export Failed"),
+                             tr("Could not create file")+" "+file_str);
+        return false;
+    }
+
+    QTextStream out(&file);
+    out << "#EXTM3U\n";
+    for(int i =0; i < items.size(); ++i){
+        out << "#EXTINF\n";
+        out << items.at(i) << "\n";
+    }
+
+    return true;
 
 }

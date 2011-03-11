@@ -24,6 +24,8 @@ public:
     ~ParserM3u();
     /**Overwriting function parse in class Parser**/
     QList<QString> parse(QString);
+    //Playlist Export
+    static bool writeM3UFile(QString &file, QList<QString> &items);
 
 private:
     /**Reads a line from the file and returns filepath if a valid file**/
