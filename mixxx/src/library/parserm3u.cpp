@@ -142,8 +142,11 @@ bool ParserM3u::writeM3UFile(const QString &file_str, QList<QString> &items, boo
         out << "#EXTINF\n";
 
         //Write relative path if possible
-        if(useRelativePath)
+        if(useRelativePath){
+            //QDir::relativePath() will return the absolutePath if it cannot compute the
+            //relative Path
             out << base_dir.relativeFilePath(items.at(i)) << "\n";
+        }
         else
             out << items.at(i) << "\n";
     }

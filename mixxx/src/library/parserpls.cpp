@@ -160,8 +160,12 @@ bool ParserPls::writePLSFile(QString &file_str, QList<QString> &items, bool useR
     out << "[playlist]\n";
     out << "NumberOfEntries=" << items.size() << "\n";
     for(int i =0; i < items.size(); ++i){
-        if(useRelativePath)
+        //Write relative path if possible
+        if(useRelativePath){
+            //QDir::relativePath() will return the absolutePath if it cannot compute the
+            //relative Path
             out << "File" << i << "=" << base_dir.relativeFilePath(items.at(i)) << "\n";
+        }
         else
             out << "File" << i << "=" << items.at(i) << "\n";
     }
