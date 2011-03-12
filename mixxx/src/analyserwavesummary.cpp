@@ -21,7 +21,7 @@ void AnalyserWavesummary::initialise(TrackPointer tio, int sampleRate, int total
     Q_UNUSED(sampleRate);
     // Check if the preview has already been generated
     const QByteArray* p = tio->getWaveSummary();
-   if(p != NULL && p->size() > 0) {
+    if(p != NULL && p->size() > 0) {
         return;
     }
 
@@ -47,9 +47,8 @@ void AnalyserWavesummary::process(const CSAMPLE *pIn, const int iLen) {
 
     //qDebug() << "AnalyserWavesummary::process() processing " << iLen << " samples";
 
-    for(int i=0; i<iLen; i++) {
+    for(int i=0; i<iLen && m_iCurPos+2 < m_pData->size() ; i++) {
         if(m_iBufferPos >= m_iStrideLength) {
-
             (*m_pData)[m_iCurPos] = (char)(m_fMin*127);
             (*m_pData)[m_iCurPos+1] = (char)(m_fMax*127);
             (*m_pData)[m_iCurPos+2] = 0;
