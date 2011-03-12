@@ -5,12 +5,14 @@
 //
 //
 // Author: Ingo Kossyk <kossyki@cs.tu-berlin.de>, (C) 2004
+// Author: Tobias Rafreider trafreider@mixxx.org, (C) 2011
 //
 // Copyright: See COPYING file that comes with this distribution
 //
 //
 
 #include <QtDebug>
+#include <QStringList>
 #include "parser.h"
 
 /**
@@ -74,3 +76,4 @@ bool Parser::isBinary(QString filename){
     file.close();
     return false;
 }
+
