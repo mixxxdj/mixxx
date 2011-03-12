@@ -7,7 +7,7 @@
 #include "analyserbpm.h"
 
 #define BIGBUF_SIZE (1024 * 1024)  //Megabyte
-#define CANARY_SIZE (1024*4)
+#define CANARY_SIZE (1024*64) // Make it one block size (32768*2)
 #define MAGIC_FLOAT 1234.567890f
 #define CANARY_FLOAT 0.0f
 
