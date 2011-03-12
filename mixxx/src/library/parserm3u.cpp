@@ -5,12 +5,14 @@
 //
 //
 // Author: Ingo Kossyk <kossyki@cs.tu-berlin.de>, (C) 2004
+// Author: Tobias Rafreider trafreider@mixxx.org, (C) 2011
 //
 // Copyright: See COPYING file that comes with this distribution
 //
 //
 #include <QTextStream>
 #include <QDebug>
+#include <QDir>
 #include <QMessageBox>
 #include "parserm3u.h"
 #include <QUrl>
@@ -121,7 +123,7 @@ QString ParserM3u::getFilepath(QTextStream *stream, QString basepath)
     return 0;
 
 }
-bool ParserM3u::writeM3UFile(QString &file_str, QList<QString> &items)
+bool ParserM3u::writeM3UFile(const QString &file_str, QList<QString> &items)
 {
     QFile file(file_str);
     if (!file.open(QIODevice::WriteOnly | QIODevice::Text)){
@@ -129,12 +131,17 @@ bool ParserM3u::writeM3UFile(QString &file_str, QList<QString> &items)
                              tr("Could not create file")+" "+file_str);
         return false;
     }
+    //Base folder of file
+    QString base = file_str.section('/', 0, -2);
+    QDir base_dir(base);
 
+    qDebug() << "Basepath: " << base;
     QTextStream out(&file);
     out << "#EXTM3U\n";
     for(int i =0; i < items.size(); ++i){
         out << "#EXTINF\n";
-        out << items.at(i) << "\n";
+        //Write relative path if possible
+        out << base_dir.relativeFilePath(items.at(i)) << "\n";
     }
 
     return true;

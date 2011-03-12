@@ -5,6 +5,7 @@
 //
 //
 // Author: Ingo Kossyk <kossyki@cs.tu-berlin.de>, (C) 2004
+// Author: Tobias Rafreider trafreider@mixxx.org, (C) 2011
 //
 // Copyright: See COPYING file that comes with this distribution
 //
@@ -14,6 +15,7 @@
 #include <QDebug>
 #include <QTextStream>
 #include <QMessageBox>
+#include <QDir>
 #include <QFile>
 #include <QUrl>
 
@@ -150,12 +152,15 @@ bool ParserPls::writePLSFile(QString &file_str, QList<QString> &items)
                              tr("Could not create file")+" "+file_str);
         return false;
     }
+    //Base folder of file
+    QString base = file_str.section('/', 0, -2);
+    QDir base_dir(base);
 
     QTextStream out(&file);
     out << "[playlist]\n";
     out << "NumberOfEntries=" << items.size() << "\n";
     for(int i =0; i < items.size(); ++i){
-        out << "File" << i << "=" << items.at(i) << "\n";
+        out << "File" << i << "=" << base_dir.relativeFilePath(items.at(i)) << "\n";
     }
 
     return true;
