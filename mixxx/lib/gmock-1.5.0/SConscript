@@ -1,0 +1,33 @@
+# Modified from gtest-1.3.0 by RJ Ryan
+
+Import('env')
+env = env.Clone()
+
+gmock_src_dir = env.Dir("./src")
+
+sources = [env.File(f, gmock_src_dir) for f in
+           ["gmock-all.cc",
+            "gmock-cardinalities.cc",
+            "gmock.cc",
+            "gmock-internal-utils.cc",
+            "gmock-matchers.cc",
+            "gmock-printers.cc",
+            "gmock-spec-builders.cc",]]
+
+gmock_main_sources = [env.File("gmock_main.cc", gmock_src_dir)] + sources
+
+# Add the root and include/ directory
+env.Prepend(CPPPATH = ['.', './include'])
+
+gmock = env.StaticLibrary(target='gmock',
+                          source=sources)
+
+# gmock_main.lib can be used if you just want a basic main function;
+# it is also used by the tests for Google Mock itself.
+gmock_main = env.StaticLibrary(target='gmock_main',
+                               source=gmock_main_sources)
+
+# Install the libraries if needed.
+if 'LIB_OUTPUT' in env.Dictionary():
+    env.Install('$LIB_OUTPUT', source=[gmock, gmock_main])
+
