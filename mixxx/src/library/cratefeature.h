@@ -9,13 +9,14 @@
 #include "library/cratetablemodel.h"
 
 #include "treeitemmodel.h"
+#include "configobject.h"
 
 class TrackCollection;
 
 class CrateFeature : public LibraryFeature {
     Q_OBJECT
   public:
-    CrateFeature(QObject* parent, TrackCollection* pTrackCollection);
+    CrateFeature(QObject* parent, TrackCollection* pTrackCollection, ConfigObject<ConfigValue>* pConfig);
     virtual ~CrateFeature();
 
     QVariant title();
@@ -63,6 +64,7 @@ class CrateFeature : public LibraryFeature {
     CrateTableModel m_crateTableModel;
     QModelIndex m_lastRightClickedIndex;
     TreeItemModel m_childModel;
+    ConfigObject<ConfigValue>* m_pConfig;
 };
 
 #endif /* CRATEFEATURE_H */

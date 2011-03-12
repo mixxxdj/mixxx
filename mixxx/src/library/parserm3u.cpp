@@ -123,7 +123,7 @@ QString ParserM3u::getFilepath(QTextStream *stream, QString basepath)
     return 0;
 
 }
-bool ParserM3u::writeM3UFile(const QString &file_str, QList<QString> &items)
+bool ParserM3u::writeM3UFile(const QString &file_str, QList<QString> &items, bool useRelativePath)
 {
     QFile file(file_str);
     if (!file.open(QIODevice::WriteOnly | QIODevice::Text)){
@@ -140,8 +140,12 @@ bool ParserM3u::writeM3UFile(const QString &file_str, QList<QString> &items)
     out << "#EXTM3U\n";
     for(int i =0; i < items.size(); ++i){
         out << "#EXTINF\n";
+
         //Write relative path if possible
-        out << base_dir.relativeFilePath(items.at(i)) << "\n";
+        if(useRelativePath)
+            out << base_dir.relativeFilePath(items.at(i)) << "\n";
+        else
+            out << items.at(i) << "\n";
     }
 
     return true;

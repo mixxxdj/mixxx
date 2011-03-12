@@ -12,6 +12,7 @@
 #include "library/dao/playlistdao.h"
 #include "library/dao/trackdao.h"
 #include "treeitemmodel.h"
+#include "configobject.h"
 
 
 class PlaylistTableModel;
@@ -20,7 +21,7 @@ class TrackCollection;
 class PlaylistFeature : public LibraryFeature {
     Q_OBJECT
 public:
-    PlaylistFeature(QObject* parent, TrackCollection* pTrackCollection);
+    PlaylistFeature(QObject* parent, TrackCollection* pTrackCollection, ConfigObject<ConfigValue>* pConfig);
     virtual ~PlaylistFeature();
 
     QVariant title();
@@ -69,6 +70,7 @@ public slots:
     QSqlTableModel m_playlistTableModel;
     QModelIndex m_lastRightClickedIndex;
     TreeItemModel m_childModel;
+    ConfigObject<ConfigValue>* m_pConfig;
 };
 
 #endif /* PLAYLISTFEATURE_H */

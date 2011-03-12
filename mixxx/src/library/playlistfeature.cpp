@@ -18,11 +18,12 @@
 #include "mixxxkeyboard.h"
 #include "treeitem.h"
 
-PlaylistFeature::PlaylistFeature(QObject* parent, TrackCollection* pTrackCollection)
+PlaylistFeature::PlaylistFeature(QObject* parent, TrackCollection* pTrackCollection, ConfigObject<ConfigValue>* pConfig)
         : LibraryFeature(parent),
          // m_pTrackCollection(pTrackCollection),
           m_playlistDao(pTrackCollection->getPlaylistDAO()),
           m_trackDao(pTrackCollection->getTrackDAO()),
+          m_pConfig(pConfig),
           m_playlistTableModel(this, pTrackCollection->getDatabase()) {
     m_pPlaylistTableModel = new PlaylistTableModel(this, pTrackCollection);
 
@@ -438,14 +439,16 @@ void PlaylistFeature::slotExportPlaylist(){
         QModelIndex index = m_pPlaylistTableModel->index(i,0);
         playlist_items << m_pPlaylistTableModel->getTrackLocation(index);
     }
+    //check config if relative paths are desired
+    bool useRelativePath = (bool)m_pConfig->getValueString(ConfigKey("[Library]","UseRelativePathOnExport")).toInt();
 
     if(file_location.endsWith(".m3u", Qt::CaseInsensitive))
     {
-        ParserM3u::writeM3UFile(file_location, playlist_items);
+        ParserM3u::writeM3UFile(file_location, playlist_items, useRelativePath);
     }
     else if(file_location.endsWith(".pls", Qt::CaseInsensitive))
     {
-        ParserPls::writePLSFile(file_location,playlist_items);
+        ParserPls::writePLSFile(file_location,playlist_items, useRelativePath);
     }
     else
     {
