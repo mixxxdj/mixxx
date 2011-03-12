@@ -144,7 +144,7 @@ QString ParserPls::getFilepath(QTextStream *stream, QString basepath)
     return 0;
 
 }
-bool ParserPls::writePLSFile(QString &file_str, QList<QString> &items)
+bool ParserPls::writePLSFile(QString &file_str, QList<QString> &items, bool useRelativePath)
 {
     QFile file(file_str);
     if (!file.open(QIODevice::WriteOnly | QIODevice::Text)){
@@ -160,7 +160,10 @@ bool ParserPls::writePLSFile(QString &file_str, QList<QString> &items)
     out << "[playlist]\n";
     out << "NumberOfEntries=" << items.size() << "\n";
     for(int i =0; i < items.size(); ++i){
-        out << "File" << i << "=" << base_dir.relativeFilePath(items.at(i)) << "\n";
+        if(useRelativePath)
+            out << "File" << i << "=" << base_dir.relativeFilePath(items.at(i)) << "\n";
+        else
+            out << "File" << i << "=" << items.at(i) << "\n";
     }
 
     return true;

@@ -19,9 +19,10 @@
 #include "treeitem.h"
 
 CrateFeature::CrateFeature(QObject* parent,
-                           TrackCollection* pTrackCollection)
+                           TrackCollection* pTrackCollection, ConfigObject<ConfigValue>* pConfig)
         : m_pTrackCollection(pTrackCollection),
           m_crateListTableModel(this, pTrackCollection->getDatabase()),
+          m_pConfig(pConfig),
           m_crateTableModel(this, pTrackCollection) {
     m_pCreateCrateAction = new QAction(tr("New Crate"),this);
     connect(m_pCreateCrateAction, SIGNAL(triggered()),
@@ -427,14 +428,16 @@ void CrateFeature::slotExportPlaylist(){
         QModelIndex index = m_crateTableModel.index(i,0);
         playlist_items << m_crateTableModel.getTrackLocation(index);
     }
+    //check config if relative paths are desired
+    bool useRelativePath = (bool)m_pConfig->getValueString(ConfigKey("[Library]","UseRelativePathOnExport")).toInt();
 
     if(file_location.endsWith(".m3u", Qt::CaseInsensitive))
     {
-        ParserM3u::writeM3UFile(file_location, playlist_items);
+        ParserM3u::writeM3UFile(file_location, playlist_items, useRelativePath);
     }
     else if(file_location.endsWith(".pls", Qt::CaseInsensitive))
     {
-        ParserPls::writePLSFile(file_location,playlist_items);
+        ParserPls::writePLSFile(file_location,playlist_items, useRelativePath);
     }
     else
     {
