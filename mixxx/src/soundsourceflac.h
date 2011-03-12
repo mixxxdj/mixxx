@@ -25,7 +25,7 @@
 #include "defs.h"
 #include "soundsource.h"
 
-class SoundSourceFLAC : public SoundSource {
+class SoundSourceFLAC : public Mixxx::SoundSource {
 public:
     SoundSourceFLAC(QString filename);
     ~SoundSourceFLAC();
