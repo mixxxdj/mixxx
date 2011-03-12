@@ -1,0 +1,40 @@
+#!/usr/bin/python2.4
+
+Import('env')
+env = env.Clone()
+
+# Add root and include folders
+env.Prepend(CPPPATH = ['.', '../include'])
+
+# Sources used by base library and library that includes main.
+gtest_source = 'src/gtest-all.cc'
+gtest_main_source = 'src/gtest_main.cc'
+
+# gtest.lib to be used by most apps (if you have your own main
+# function)
+gtest = env.StaticLibrary(target='gtest',
+                          source=[gtest_source])
+
+# gtest_main.lib can be used if you just want a basic main function;
+# it is also used by the tests for Google Test itself.
+gtest_main = env.StaticLibrary(target='gtest_main',
+                               source=[gtest_source, gtest_main_source])
+
+env_with_exceptions = env.Clone()
+platform = env_with_exceptions['PLATFORM']
+if platform == 'win32':
+  env_with_exceptions.Append(CCFLAGS = ['/EHsc'])
+  env_with_exceptions.Append(CPPDEFINES = '_HAS_EXCEPTIONS=1')
+
+gtest_ex_obj = env_with_exceptions.Object(target='gtest_ex',
+                                          source=gtest_source)
+gtest_main_ex_obj = env_with_exceptions.Object(target='gtest_main_ex',
+                                               source=gtest_main_source)
+
+gtest_ex_main = env_with_exceptions.StaticLibrary(
+    target='gtest_ex_main',
+    source=gtest_ex_obj + gtest_main_ex_obj)
+
+# Install the libraries if needed.
+if 'LIB_OUTPUT' in env.Dictionary():
+  env.Install('$LIB_OUTPUT', source=[gtest, gtest_main, gtest_ex_main])
