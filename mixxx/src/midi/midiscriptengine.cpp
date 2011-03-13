@@ -34,8 +34,10 @@
 
 MidiScriptEngine::MidiScriptEngine(MidiDevice* midiDevice) :
     m_pEngine(NULL),
-    m_pMidiDevice(midiDevice)
-{
+    m_pMidiDevice(midiDevice),
+    m_midiDebug(false),
+    m_midiPopups(false) {
+
     // Handle error dialog buttons
     qRegisterMetaType<QMessageBox::StandardButton>("QMessageBox::StandardButton");
 
@@ -88,13 +90,14 @@ void MidiScriptEngine::gracefulShutdown(QList<QString> scriptFunctionPrefixes) {
     m_connectedControls.clear();
 
     // Disconnect the function call signal
-    disconnect(m_pMidiDevice, SIGNAL(callMidiScriptFunction(QString, char, char,
-                                                            char, MidiStatusByte, QString)),
-                                this, SLOT(execute(QString, char, char, char, MidiStatusByte, QString)));
+    if (m_pMidiDevice)
+        disconnect(m_pMidiDevice, SIGNAL(callMidiScriptFunction(QString, char, char,
+                                                                char, MidiStatusByte, QString)),
+                   this, SLOT(execute(QString, char, char, char, MidiStatusByte, QString)));
 
     // Stop all timers
     stopAllTimers();
-    
+
     // Call each script's shutdown function if it exists
     QListIterator<QString> prefixIt(scriptFunctionPrefixes);
     while (prefixIt.hasNext()) {
@@ -106,7 +109,7 @@ void MidiScriptEngine::gracefulShutdown(QList<QString> scriptFunctionPrefixes) {
                 qWarning() << "MidiScriptEngine: No" << shutName << "function in script";
         }
     }
-    
+
     // Prevents leaving decks in an unstable state
     //  if the controller is shut down while scratching
     QHashIterator<int, int> i(m_scratchTimers);
@@ -118,7 +121,7 @@ void MidiScriptEngine::gracefulShutdown(QList<QString> scriptFunctionPrefixes) {
         ControlObjectThread *cot = getControlObjectThread(group, "scratch2_enable");
         if(cot != NULL) cot->slotSet(0);
     }
-    
+
     // Free all the control object threads
     QList<ConfigKey> keys = m_controlCache.keys();
     QList<ConfigKey>::iterator it = keys.begin();
@@ -153,23 +156,22 @@ void MidiScriptEngine::initializeScriptEngine() {
     //qDebug() << "MidiScriptEngine::run() m_pEngine->parent() is " << m_pEngine->parent();
     //qDebug() << "MidiScriptEngine::run() m_pEngine->thread() is " << m_pEngine->thread();
 
-    if (m_pMidiDevice)
-        qDebug() << "MIDI Device in script engine is:" << m_pMidiDevice->getName();
-
     // Make this MidiScriptEngine instance available to scripts as
     // 'engine'.
     QScriptValue engineGlobalObject = m_pEngine->globalObject();
     engineGlobalObject.setProperty("engine", m_pEngine->newQObject(this));
 
-    // Make the MidiDevice instance available to scripts as
-    // 'midi'.
-    if (m_pMidiDevice)
+    if (m_pMidiDevice) {
+        qDebug() << "MIDI Device in script engine is:" << m_pMidiDevice->getName();
+
+        // Make the MidiDevice instance available to scripts as 'midi'.
         engineGlobalObject.setProperty("midi", m_pEngine->newQObject(m_pMidiDevice));
 
-    // Allow the MidiDevice to signal script function calls
-    connect(m_pMidiDevice, SIGNAL(callMidiScriptFunction(QString, char, char,
-                                                char, MidiStatusByte, QString)),
-            this, SLOT(execute(QString, char, char, char, MidiStatusByte, QString)));
+        // Allow the MidiDevice to signal script function calls
+        connect(m_pMidiDevice, SIGNAL(callMidiScriptFunction(QString, char, char,
+                                                             char, MidiStatusByte, QString)),
+                this, SLOT(execute(QString, char, char, char, MidiStatusByte, QString)));
+    }
 }
 
 /* -------- ------------------------------------------------------
@@ -831,7 +833,7 @@ void MidiScriptEngine::slotValueChanged(double value) {
         QMultiHash<ConfigKey, QString>::iterator i = m_connectedControls.find(key);
         while (i != m_connectedControls.end() && i.key() == key) {
             QString function = i.value();
-            
+
 //             qDebug() << "MidiScriptEngine::slotValueChanged() received signal from " << key.group << key.item << " ... firing : " << function;
 
             // Could branch to safeExecute from here, but for now do it this way.
@@ -890,19 +892,27 @@ bool MidiScriptEngine::safeEvaluate(QString scriptName, QList<QString> scriptPat
                 .arg(input.error())
                 .arg(input.errorString());
 
-        if (m_midiDebug) qCritical() << errorLog;
-        else {
+        // GUI actions do not belong in the MSE. They should be passed to
+        // the above layers, along with input.errorString(), and that layer
+        // can take care of notifying the user. The script engine should do
+        // one thign and one thign alone -- run the scripts.
+        if (m_midiDebug) {
+            qCritical() << errorLog;
+        } else {
             qWarning() << errorLog;
-            ErrorDialogProperties* props = ErrorDialogHandler::instance()->newDialogProperties();
-            props->setType(DLG_WARNING);
-            props->setTitle("MIDI script file problem");
-            props->setText(QString("There was a problem opening the MIDI script file %1.").arg(filename));
-            props->setInfoText(input.errorString());
+            if (m_midiPopups) {
+                ErrorDialogProperties* props = ErrorDialogHandler::instance()->newDialogProperties();
+                props->setType(DLG_WARNING);
+                props->setTitle("MIDI script file problem");
+                props->setText(QString("There was a problem opening the MIDI script file %1.").arg(filename));
+                props->setInfoText(input.errorString());
 
-            ErrorDialogHandler::instance()->requestErrorDialog(props);
-            return false;
+                ErrorDialogHandler::instance()->requestErrorDialog(props);
+            }
         }
+        return false;
     }
+
     QString scriptCode = "";
     scriptCode.append(input.readAll());
     scriptCode.append('\n');
@@ -931,14 +941,16 @@ bool MidiScriptEngine::safeEvaluate(QString scriptName, QList<QString> scriptPat
         if (m_midiDebug) qCritical() << "MidiScriptEngine:" << error;
         else {
             qWarning() << "MidiScriptEngine:" << error;
-            ErrorDialogProperties* props = ErrorDialogHandler::instance()->newDialogProperties();
-            props->setType(DLG_WARNING);
-            props->setTitle("MIDI script file error");
-            props->setText(QString("There was an error in the MIDI script file %1.").arg(filename));
-            props->setInfoText("The functionality provided by this script file will be disabled.");
-            props->setDetails(error);
+            if (m_midiPopups) {
+                ErrorDialogProperties* props = ErrorDialogHandler::instance()->newDialogProperties();
+                props->setType(DLG_WARNING);
+                props->setTitle("MIDI script file error");
+                props->setText(QString("There was an error in the MIDI script file %1.").arg(filename));
+                props->setInfoText("The functionality provided by this script file will be disabled.");
+                props->setDetails(error);
 
-            ErrorDialogHandler::instance()->requestErrorDialog(props);
+                ErrorDialogHandler::instance()->requestErrorDialog(props);
+            }
         }
         return false;
     }

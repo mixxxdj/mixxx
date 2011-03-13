@@ -21,6 +21,7 @@
 #include "engineobject.h"
 #include "configobject.h"
 
+class ControlObject;
 class EngineBuffer;
 class EnginePregain;
 class EngineBuffer;
@@ -44,17 +45,17 @@ public:
                   ChannelOrientation defaultOrientation = CENTER);
     virtual ~EngineChannel();
 
-    bool isPFL();
-    ChannelOrientation getOrientation();
-    const QString& getGroup();
+    virtual bool isPFL();
+    virtual ChannelOrientation getOrientation();
+    virtual const QString& getGroup();
 
-    void process(const CSAMPLE *pIn, const CSAMPLE *pOut, const int iBufferSize);
-    void applyVolume(CSAMPLE *pBuff, const int iBufferSize) const;
+    virtual void process(const CSAMPLE *pIn, const CSAMPLE *pOut, const int iBufferSize);
+    virtual void applyVolume(CSAMPLE *pBuff, const int iBufferSize) const;
 
     // TODO(XXX) This hack needs to be removed.
-    EngineBuffer* getEngineBuffer();
+    virtual EngineBuffer* getEngineBuffer();
 
-    bool isActive();
+    virtual bool isActive();
 private:
     const QString m_group;
     ConfigObject<ConfigValue>* m_pConfig;

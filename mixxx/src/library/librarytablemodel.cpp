@@ -34,6 +34,7 @@ LibraryTableModel::LibraryTableModel(QObject* parent,
                   "library." + LIBRARYTABLE_KEY + "," +
                   "library." + LIBRARYTABLE_DATETIMEADDED + "," +
                   "library." + LIBRARYTABLE_BPM + "," +
+                  "library." + LIBRARYTABLE_BITRATE + "," +
                   "track_locations.location," +
                   "track_locations.fs_deleted," +
                   "library." + LIBRARYTABLE_COMMENT + "," +

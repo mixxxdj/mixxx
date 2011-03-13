@@ -19,8 +19,10 @@
 #include "trackinfoobject.h"
 #include "engine/engineworker.h"
 
-class SoundSource;
 class ControlObjectThread;
+namespace Mixxx {
+    class SoundSource;
+}
 
 // A Hint is an indication to the CachingReader that a certain section of a
 // SoundSource will be used 'soon' and so it should be brought into memory by
@@ -191,7 +193,7 @@ class CachingReader : public EngineWorker {
     // The current track loaded
     TrackPointer m_pCurrentTrack;
     // The current sound source of the track loaded
-    SoundSource* m_pCurrentSoundSource;
+    Mixxx::SoundSource* m_pCurrentSoundSource;
     int m_iTrackSampleRate;
     int m_iTrackNumSamples;
 

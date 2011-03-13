@@ -2073,7 +2073,9 @@ StantonSCS1d.circleBars = function (value) {
 TODO:
 - Motor calibration option (would be really nice to have GUI interaction for this)
 - Wait for motor to stop in-between mode/deck changes
+- Wait for motor to get to speed before latching on when pressing CUE or PLAY (soft-takeover! :) )
 - Stop motor on FF/REW? If not, FF/REW only at motor speed?
+- Connect cross-fader signal?
 
 BUGS:
 - Dragging the window/tooltips screw up speed - use timestamps

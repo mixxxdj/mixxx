@@ -22,7 +22,8 @@
 #include <QFile>
 #include <QString>
 #include <AudioToolbox/AudioToolbox.h>
-#include "/Developer/Examples/CoreAudio/PublicUtility/CAStreamBasicDescription.h"
+//In our tree at lib/apple/
+#include "CAStreamBasicDescription.h" 
 
 #if !defined(__COREAUDIO_USE_FLAT_INCLUDES__)
 #include <CoreServices/CoreServices.h>
@@ -41,7 +42,7 @@
 #include "defs.h"
 #include "soundsource.h"
 
-class SoundSourceCoreAudio : public SoundSource {
+class SoundSourceCoreAudio : public Mixxx::SoundSource {
 public:
     SoundSourceCoreAudio(QString filename);
     ~SoundSourceCoreAudio();
