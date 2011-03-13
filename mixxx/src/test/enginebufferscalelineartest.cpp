@@ -64,6 +64,23 @@ class EngineBufferScaleLinearTest : public testing::Test {
         }
     }
 
+    void AssertBufferMonotonicallyProgresses(const CSAMPLE* pBuffer,
+                                             CSAMPLE start, CSAMPLE finish,
+                                             int iBufferLen) {
+        CSAMPLE currentLimit = start;
+        bool increasing = (finish - start) > 0;
+
+        for (int i = 0; i < iBufferLen; ++i) {
+            if (increasing) {
+                EXPECT_GE(pBuffer[i], currentLimit);
+                currentLimit = pBuffer[i];
+            } else {
+                EXPECT_LE(pBuffer[i], currentLimit);
+                currentLimit = pBuffer[i];
+            }
+        }
+    }
+
     ConfigObject<ConfigValue>* m_pConfig;
     StrictMock<ReadAheadManagerMock>* m_pReadAheadMock;
     EngineBufferScaleLinear* m_pScaler;
@@ -82,6 +99,22 @@ TEST_F(EngineBufferScaleLinearTest, ScaleConstant) {
 
     CSAMPLE* pOutput = m_pScaler->scale(0, kiLinearScaleReadAheadLength, 0, 0);
     AssertWholeBufferEquals(pOutput, 1.0f, kiLinearScaleReadAheadLength);
+}
+
+TEST_F(EngineBufferScaleLinearTest, TestLERPOnCreation) {
+    // We created the EBSL and its rate is at 0. We're going to start up to 1.0
+    // so it should LERP the first buffer.
+    m_pScaler->setTempo(1.0f);
+    m_pScaler->setBaseRate(1.0f);
+
+    // Tell the RAMAN mock to invoke getNextSamplesFake
+    EXPECT_CALL(*m_pReadAheadMock, getNextSamples(_, _, _))
+            .WillRepeatedly(Invoke(m_pReadAheadMock, &ReadAheadManagerMock::getNextSamplesFake));
+
+    CSAMPLE* pOutput = m_pScaler->scale(0, kiLinearScaleReadAheadLength, 0, 0);
+
+
+    AssertBufferMonotonicallyProgresses(pOutput, 0.0f, 1.0f, kiLinearScaleReadAheadLength);
 }
 
 }  // namespace
