@@ -10,7 +10,8 @@ VinylControl::VinylControl(ConfigObject<ConfigValue> * pConfig, const char * _gr
     iSampleRate = m_pConfig->getValueString(ConfigKey("[Soundcard]","Samplerate")).toULong();
 
     // Get Control objects
-    playPos             = new ControlObjectThread(ControlObject::getControl(ConfigKey(group, "playposition")));    //Range: 0.0 to 1.0
+    playPos             = new ControlObjectThread(ControlObject::getControl(ConfigKey(group, "playposition")));    //Range: -.14 to 1.14
+    vinylSeek           = new ControlObjectThread(ControlObject::getControl(ConfigKey(group, "VinylSeek")));
     controlScratch      = new ControlObjectThread(ControlObject::getControl(ConfigKey(group, "scratch2")));
     rateSlider          = new ControlObjectThread(ControlObject::getControl(ConfigKey(group, "rate")));    //Range -1.0 to 1.0
     playButton          = new ControlObjectThread(ControlObject::getControl(ConfigKey(group, "play")));

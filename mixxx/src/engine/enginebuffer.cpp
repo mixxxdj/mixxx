@@ -37,6 +37,11 @@
 #include "ratecontrol.h"
 #include "bpmcontrol.h"
 
+#ifdef __VINYLCONTROL__
+#include "vinylcontrol.h"
+#include "library/dao/cue.h"
+#endif
+
 #include "trackinfoobject.h"
 
 #ifdef _MSC_VER
@@ -116,7 +121,7 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
     rateEngine = new ControlObject(ConfigKey(group, "rateEngine"));
 
     // Slider to show and change song position
-    //these bizarre choice map conveniently to the 0-127 range of midi
+    //these bizarre choices map conveniently to the 0-127 range of midi
     playposSlider = new ControlPotmeter(ConfigKey(group, "playposition"), -0.14, 1.14);
     connect(playposSlider, SIGNAL(valueChanged(double)),
             this, SLOT(slotControlSeek(double)),
@@ -140,6 +145,10 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
     m_pVinylStatus = new ControlObject(ConfigKey(group,"VinylStatus"));
     //a midi knob to tweak the vinyl pitch for decks with crappy sliders
     m_pVinylPitchTweakKnob = new ControlPotmeter(ConfigKey(_group, "vinylpitchtweak"), -0.005, 0.005);
+    m_pVinylSeek = new ControlObject(ConfigKey(group,"VinylSeek"));
+    connect(m_pVinylSeek, SIGNAL(valueChanged(double)),
+            this, SLOT(slotControlVinylSeek(double)),
+            Qt::DirectConnection);
 #endif
 
     // Sample rate
@@ -347,17 +356,67 @@ void EngineBuffer::ejectTrack() {
     emit(trackUnloaded(pTrack));
 }
 
+void EngineBuffer::slotControlVinylSeek(double change)
+{
+#ifdef __VINYLCONTROL__
+	if(isnan(change) || change > 1.14 || change < -1.14) {
+        // This seek is ridiculous.
+        return;
+    }
+    
+	double new_playpos = round(change*file_length_old);
+	
+    ControlObject *m_pVinylMode = ControlObject::getControl(ConfigKey(group,"VinylMode"));
+    ControlObject *m_pVinylEnabled = ControlObject::getControl(ConfigKey(group,"vinylcontrol"));
+
+    if (m_pCurrentTrack != NULL && m_pVinylEnabled != NULL && m_pVinylMode != NULL)
+    {
+		if (m_pVinylEnabled->get() && m_pVinylMode->get() == MIXXX_VCMODE_RELATIVE)
+		{
+			int nearest_playpos = -1;
+			
+			QList<Cue*> cuePoints = m_pCurrentTrack->getCuePoints();
+			QListIterator<Cue*> it(cuePoints);
+			while (it.hasNext()) {
+				Cue* pCue = it.next();
+				if (pCue->getType() != Cue::CUE || pCue->getHotCue() == -1)
+					continue;
+				int cue_position = pCue->getPosition();
+				//pick cues closest to new_playpos without going over
+				if (cue_position > nearest_playpos && cue_position <= (int)new_playpos)
+					nearest_playpos = cue_position;
+			}
+			
+			if (nearest_playpos == -1)
+			{
+				if (new_playpos >= 0)
+					//never found an appropriate cue, so don't seek?
+					return;
+				//if negative, allow a seek
+			}
+			else
+			{
+				slotControlSeekAbs((float)nearest_playpos);
+				return;
+			}
+		}
+	}
+	//just seek where it wanted to originally
+	slotControlSeek(change);
+#endif
+}
 
 // WARNING: This method runs in both the GUI thread and the Engine Thread
 void EngineBuffer::slotControlSeek(double change)
 {
-    if(isnan(change) || change > 1.0 || change < -1.0) {
+    if(isnan(change) || change > 1.14 || change < -1.14) {
         // This seek is ridiculous.
         return;
     }
-
+    
     // Find new playpos, restrict to valid ranges.
     double new_playpos = round(change*file_length_old);
+
     if (new_playpos > file_length_old)
         new_playpos = file_length_old;
     //if (new_playpos < 0.)
