@@ -365,13 +365,31 @@ void EngineBuffer::slotControlVinylSeek(double change)
     
 	double new_playpos = round(change*file_length_old);
 	
-    ControlObject *m_pVinylMode = ControlObject::getControl(ConfigKey(group,"VinylMode"));
-    ControlObject *m_pVinylEnabled = ControlObject::getControl(ConfigKey(group,"vinylcontrol"));
+    ControlObject *pVinylMode = ControlObject::getControl(ConfigKey(group,"VinylMode"));
+    ControlObject *pVinylEnabled = ControlObject::getControl(ConfigKey(group,"vinylcontrol"));
 
-    if (m_pCurrentTrack != NULL && m_pVinylEnabled != NULL && m_pVinylMode != NULL)
+    if (m_pCurrentTrack != NULL && pVinylEnabled != NULL && pVinylMode != NULL)
     {
-		if (m_pVinylEnabled->get() && m_pVinylMode->get() == MIXXX_VCMODE_RELATIVE)
+		if (pVinylEnabled->get() && pVinylMode->get() == MIXXX_VCMODE_RELATIVE)
 		{
+			int cuemode = (int)ControlObject::getControl(ConfigKey(group,"VinylCueing"))->get();
+
+			//if in preroll, always seek
+			if (new_playpos < 0)
+			{
+				slotControlSeek(change);
+				return;
+			}
+			else if (cuemode == MIXXX_RELATIVE_CUE_OFF)
+				return;  //if off, do nothing
+			else if (cuemode == MIXXX_RELATIVE_CUE_ONECUE)
+			{
+				//if onecue, just seek to the regular cue
+				slotControlSeekAbs(m_pCurrentTrack->getCuePoint());
+				return; 
+			}
+	
+			double distance = 0;			
 			int nearest_playpos = -1;
 			
 			QList<Cue*> cuePoints = m_pCurrentTrack->getCuePoints();
@@ -380,10 +398,15 @@ void EngineBuffer::slotControlVinylSeek(double change)
 				Cue* pCue = it.next();
 				if (pCue->getType() != Cue::CUE || pCue->getHotCue() == -1)
 					continue;
+
 				int cue_position = pCue->getPosition();
-				//pick cues closest to new_playpos without going over
-				if (cue_position > nearest_playpos && cue_position <= (int)new_playpos)
+				//pick cues closest to new_playpos
+				if ((nearest_playpos == -1) ||
+					(fabs(new_playpos - cue_position) < distance))
+				{
 					nearest_playpos = cue_position;
+					distance = fabs(new_playpos - cue_position);
+				}
 			}
 			
 			if (nearest_playpos == -1)
@@ -391,7 +414,7 @@ void EngineBuffer::slotControlVinylSeek(double change)
 				if (new_playpos >= 0)
 					//never found an appropriate cue, so don't seek?
 					return;
-				//if negative, allow a seek
+				//if negative, allow a seek by falling down to the bottom
 			}
 			else
 			{
