@@ -3,8 +3,6 @@
 
 #include <QMutexLocker>
 
-#include <QDebug>
-
 #include "engine/cuecontrol.h"
 
 #include "controlobject.h"
@@ -400,7 +398,10 @@ void CueControl::hotcueActivatePreview(HotcueControl* pControl, double v) {
                 if (--m_iCurrentlyPreviewingHotcues == 0) {
                     m_bPreviewingHotcue = false;
                     m_bHotcueCancel = false;
-    
+                    // Re-trigger the play button value so controllers get the correct one
+                    // after cuePlay() changes it.
+                    m_pPlayButton->set(m_pPlayButton->get());
+                    
                     lock.unlock();
                 }
             } else {
@@ -581,7 +582,7 @@ void CueControl::cueCDJ(double v) {
      * If pressed while playing, stop playback at go to cue.
      * If pressed while stopped and at cue, play while pressed.
      * If pressed while stopped and not at cue, set new cue point.
-     * TODO: If play is pressed while holding cue, the deck is now playing.
+     * If play is pressed while holding cue, the deck is now playing. (Handled in cuePlay().)
      */
 
     QMutexLocker lock(&m_mutex);
@@ -618,10 +619,14 @@ void CueControl::cueCDJ(double v) {
 
         emit(seekAbs(cuePoint));
     }
+    else {
+        // Re-trigger the play button value so controllers get the correct one
+        // after cuePlay() changes it.
+        m_pPlayButton->set(m_pPlayButton->get());
+    }
 }
 
 void CueControl::cuePlay(double v) {
-//    qDebug() << "cuePlay activated";
     QMutexLocker lock(&m_mutex);
 
     if (m_bPreviewing && !v) {

@@ -1,5 +1,5 @@
 /****************************************************************/
-/*      Stanton SCS.3d MIDI controller script v1.61             */
+/*      Stanton SCS.3d MIDI controller script v1.62             */
 /*          Copyright (C) 2009-2010, Sean M. Pappalardo         */
 /*      but feel free to tweak this to your heart's content!    */
 /*      For Mixxx version 1.9.x                                 */
@@ -482,12 +482,8 @@ StantonSCS3d.playButton = function (channel, control, value, status) {
             return
         }
         StantonSCS3d.modifier["play"]=1;
-        if (StantonSCS3d.modifier["cue"]==1) engine.setValue("[Channel"+StantonSCS3d.deck+"]","play",1);
-        else {
-            var currentlyPlaying = engine.getValue("[Channel"+StantonSCS3d.deck+"]","play");
-            if (currentlyPlaying && engine.getValue("[Channel"+StantonSCS3d.deck+"]","cue_default")==1) engine.setValue("[Channel"+StantonSCS3d.deck+"]","cue_default",0);
-            engine.setValue("[Channel"+StantonSCS3d.deck+"]","play", !currentlyPlaying);
-        }
+        var currentlyPlaying = engine.getValue("[Channel"+StantonSCS3d.deck+"]","play");
+        engine.setValue("[Channel"+StantonSCS3d.deck+"]","play", !currentlyPlaying);
         return;
     }
     StantonSCS3d.modifier["play"]=0;
@@ -511,8 +507,7 @@ StantonSCS3d.cueButton = function (channel, control, value, status) {
         StantonSCS3d.modifier["cue"]=1;   // Set button modifier flag
         return;
     }
-    if (StantonSCS3d.modifier["play"]==0 && !StantonSCS3d.modifier["vinyl2"])
-        engine.setValue("[Channel"+StantonSCS3d.deck+"]","cue_default",0);
+    engine.setValue("[Channel"+StantonSCS3d.deck+"]","cue_default",0);
     StantonSCS3d.modifier["cue"]=0;   // Clear button modifier flag
 }
 
