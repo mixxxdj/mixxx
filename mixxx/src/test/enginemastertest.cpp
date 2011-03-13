@@ -91,6 +91,242 @@ TEST_F(EngineMasterTest, SingleChannelOutputWorks) {
     AssertWholeBufferEquals(pHeadphoneBuffer, 0.0f, MAX_BUFFER_LEN);
 }
 
+TEST_F(EngineMasterTest, TwoChannelOutputWorks) {
+    EngineChannelMock* pChannel1 = new EngineChannelMock("[Channel1]", m_pConfig,
+                                                         EngineChannel::CENTER);
+    m_pMaster->addChannel(pChannel1);
+    EngineChannelMock* pChannel2 = new EngineChannelMock("[Channel2]", m_pConfig,
+                                                         EngineChannel::CENTER);
+    m_pMaster->addChannel(pChannel2);
+
+    // Pretend that the channel processed the buffer by stuffing it with 1.0's
+    CSAMPLE* pChannel1Buffer = const_cast<CSAMPLE*>(m_pMaster->getChannelBuffer(0));
+    CSAMPLE* pChannel2Buffer = const_cast<CSAMPLE*>(m_pMaster->getChannelBuffer(1));
+
+    // We assume it uses MAX_BUFFER_LEN. This should probably be fixed.
+    FillBuffer(pChannel1Buffer, 1.0f, MAX_BUFFER_LEN);
+    FillBuffer(pChannel2Buffer, 2.0f, MAX_BUFFER_LEN);
+
+    // Instruct channel 1 to claim it is active and not PFL.
+    EXPECT_CALL(*pChannel1, isActive())
+            .Times(1)
+            .WillOnce(Return(true));
+    EXPECT_CALL(*pChannel1, isPFL())
+            .Times(1)
+            .WillOnce(Return(false));
+
+    // Instruct channel 2 to claim it is active and not PFL.
+    EXPECT_CALL(*pChannel2, isActive())
+            .Times(1)
+            .WillOnce(Return(true));
+    EXPECT_CALL(*pChannel2, isPFL())
+            .Times(1)
+            .WillOnce(Return(false));
+
+    // Instruct the mock to just return when process() gets called.
+    EXPECT_CALL(*pChannel1, process(_, _, MAX_BUFFER_LEN))
+            .Times(1)
+            .WillOnce(Return());
+    EXPECT_CALL(*pChannel2, process(_, _, MAX_BUFFER_LEN))
+            .Times(1)
+            .WillOnce(Return());
+
+    m_pMaster->process(NULL, NULL, MAX_BUFFER_LEN);
+
+    // Check that the master output contains the sum of the channel data.
+    const CSAMPLE* pMasterBuffer = m_pMaster->getMasterBuffer();
+    AssertWholeBufferEquals(pMasterBuffer, 3.0f, MAX_BUFFER_LEN);
+
+    // Check that the headphone output does not contain any channel data.
+    const CSAMPLE* pHeadphoneBuffer = m_pMaster->getHeadphoneBuffer();
+    AssertWholeBufferEquals(pHeadphoneBuffer, 0.0f, MAX_BUFFER_LEN);
+}
+
+TEST_F(EngineMasterTest, TwoChannelPFLOutputWorks) {
+    EngineChannelMock* pChannel1 = new EngineChannelMock("[Channel1]", m_pConfig,
+                                                         EngineChannel::CENTER);
+    m_pMaster->addChannel(pChannel1);
+    EngineChannelMock* pChannel2 = new EngineChannelMock("[Channel2]", m_pConfig,
+                                                         EngineChannel::CENTER);
+    m_pMaster->addChannel(pChannel2);
+
+    // Pretend that the channel processed the buffer by stuffing it with 1.0's
+    CSAMPLE* pChannel1Buffer = const_cast<CSAMPLE*>(m_pMaster->getChannelBuffer(0));
+    CSAMPLE* pChannel2Buffer = const_cast<CSAMPLE*>(m_pMaster->getChannelBuffer(1));
+
+    // We assume it uses MAX_BUFFER_LEN. This should probably be fixed.
+    FillBuffer(pChannel1Buffer, 1.0f, MAX_BUFFER_LEN);
+    FillBuffer(pChannel2Buffer, 2.0f, MAX_BUFFER_LEN);
+
+    // Instruct channel 1 to claim it is active and not PFL.
+    EXPECT_CALL(*pChannel1, isActive())
+            .Times(1)
+            .WillOnce(Return(true));
+    EXPECT_CALL(*pChannel1, isPFL())
+            .Times(1)
+            .WillOnce(Return(true));
+
+    // Instruct channel 2 to claim it is active and not PFL.
+    EXPECT_CALL(*pChannel2, isActive())
+            .Times(1)
+            .WillOnce(Return(true));
+    EXPECT_CALL(*pChannel2, isPFL())
+            .Times(1)
+            .WillOnce(Return(true));
+
+    // Instruct the mock to just return when process() gets called.
+    EXPECT_CALL(*pChannel1, process(_, _, MAX_BUFFER_LEN))
+            .Times(1)
+            .WillOnce(Return());
+    EXPECT_CALL(*pChannel2, process(_, _, MAX_BUFFER_LEN))
+            .Times(1)
+            .WillOnce(Return());
+
+    m_pMaster->process(NULL, NULL, MAX_BUFFER_LEN);
+
+    // Check that the master output contains the sum of the channel data.
+    const CSAMPLE* pMasterBuffer = m_pMaster->getMasterBuffer();
+    AssertWholeBufferEquals(pMasterBuffer, 3.0f, MAX_BUFFER_LEN);
+
+    // Check that the headphone output does not contain any channel data.
+    const CSAMPLE* pHeadphoneBuffer = m_pMaster->getHeadphoneBuffer();
+    AssertWholeBufferEquals(pHeadphoneBuffer, 3.0f, MAX_BUFFER_LEN);
+}
+
+TEST_F(EngineMasterTest, ThreeChannelOutputWorks) {
+    EngineChannelMock* pChannel1 = new EngineChannelMock("[Channel1]", m_pConfig,
+                                                         EngineChannel::CENTER);
+    m_pMaster->addChannel(pChannel1);
+    EngineChannelMock* pChannel2 = new EngineChannelMock("[Channel2]", m_pConfig,
+                                                         EngineChannel::CENTER);
+    m_pMaster->addChannel(pChannel2);
+    EngineChannelMock* pChannel3 = new EngineChannelMock("[Channel3]", m_pConfig,
+                                                         EngineChannel::CENTER);
+    m_pMaster->addChannel(pChannel3);
+
+    // Pretend that the channel processed the buffer by stuffing it with 1.0's
+    CSAMPLE* pChannel1Buffer = const_cast<CSAMPLE*>(m_pMaster->getChannelBuffer(0));
+    CSAMPLE* pChannel2Buffer = const_cast<CSAMPLE*>(m_pMaster->getChannelBuffer(1));
+    CSAMPLE* pChannel3Buffer = const_cast<CSAMPLE*>(m_pMaster->getChannelBuffer(2));
+
+    // We assume it uses MAX_BUFFER_LEN. This should probably be fixed.
+    FillBuffer(pChannel1Buffer, 1.0f, MAX_BUFFER_LEN);
+    FillBuffer(pChannel2Buffer, 2.0f, MAX_BUFFER_LEN);
+    FillBuffer(pChannel3Buffer, 3.0f, MAX_BUFFER_LEN);
+
+    // Instruct channel 1 to claim it is active and not PFL.
+    EXPECT_CALL(*pChannel1, isActive())
+            .Times(1)
+            .WillOnce(Return(true));
+    EXPECT_CALL(*pChannel1, isPFL())
+            .Times(1)
+            .WillOnce(Return(false));
+
+    // Instruct channel 2 to claim it is active and not PFL.
+    EXPECT_CALL(*pChannel2, isActive())
+            .Times(1)
+            .WillOnce(Return(true));
+    EXPECT_CALL(*pChannel2, isPFL())
+            .Times(1)
+            .WillOnce(Return(false));
+
+    // Instruct channel 3 to claim it is active and not PFL.
+    EXPECT_CALL(*pChannel3, isActive())
+            .Times(1)
+            .WillOnce(Return(true));
+    EXPECT_CALL(*pChannel3, isPFL())
+            .Times(1)
+            .WillOnce(Return(false));
+
+    // Instruct the mock to just return when process() gets called.
+    EXPECT_CALL(*pChannel1, process(_, _, MAX_BUFFER_LEN))
+            .Times(1)
+            .WillOnce(Return());
+    EXPECT_CALL(*pChannel2, process(_, _, MAX_BUFFER_LEN))
+            .Times(1)
+            .WillOnce(Return());
+    EXPECT_CALL(*pChannel3, process(_, _, MAX_BUFFER_LEN))
+            .Times(1)
+            .WillOnce(Return());
+
+    m_pMaster->process(NULL, NULL, MAX_BUFFER_LEN);
+
+    // Check that the master output contains the sum of the channel data.
+    const CSAMPLE* pMasterBuffer = m_pMaster->getMasterBuffer();
+    AssertWholeBufferEquals(pMasterBuffer, 6.0f, MAX_BUFFER_LEN);
+
+    // Check that the headphone output does not contain any channel data.
+    const CSAMPLE* pHeadphoneBuffer = m_pMaster->getHeadphoneBuffer();
+    AssertWholeBufferEquals(pHeadphoneBuffer, 0.0f, MAX_BUFFER_LEN);
+}
+
+TEST_F(EngineMasterTest, ThreeChannelPFLOutputWorks) {
+    EngineChannelMock* pChannel1 = new EngineChannelMock("[Channel1]", m_pConfig,
+                                                         EngineChannel::CENTER);
+    m_pMaster->addChannel(pChannel1);
+    EngineChannelMock* pChannel2 = new EngineChannelMock("[Channel2]", m_pConfig,
+                                                         EngineChannel::CENTER);
+    m_pMaster->addChannel(pChannel2);
+    EngineChannelMock* pChannel3 = new EngineChannelMock("[Channel3]", m_pConfig,
+                                                         EngineChannel::CENTER);
+    m_pMaster->addChannel(pChannel3);
+
+    // Pretend that the channel processed the buffer by stuffing it with 1.0's
+    CSAMPLE* pChannel1Buffer = const_cast<CSAMPLE*>(m_pMaster->getChannelBuffer(0));
+    CSAMPLE* pChannel2Buffer = const_cast<CSAMPLE*>(m_pMaster->getChannelBuffer(1));
+    CSAMPLE* pChannel3Buffer = const_cast<CSAMPLE*>(m_pMaster->getChannelBuffer(2));
+
+    // We assume it uses MAX_BUFFER_LEN. This should probably be fixed.
+    FillBuffer(pChannel1Buffer, 1.0f, MAX_BUFFER_LEN);
+    FillBuffer(pChannel2Buffer, 2.0f, MAX_BUFFER_LEN);
+    FillBuffer(pChannel3Buffer, 3.0f, MAX_BUFFER_LEN);
+
+    // Instruct channel 1 to claim it is active and not PFL.
+    EXPECT_CALL(*pChannel1, isActive())
+            .Times(1)
+            .WillOnce(Return(true));
+    EXPECT_CALL(*pChannel1, isPFL())
+            .Times(1)
+            .WillOnce(Return(true));
+
+    // Instruct channel 2 to claim it is active and not PFL.
+    EXPECT_CALL(*pChannel2, isActive())
+            .Times(1)
+            .WillOnce(Return(true));
+    EXPECT_CALL(*pChannel2, isPFL())
+            .Times(1)
+            .WillOnce(Return(true));
+
+    // Instruct channel 3 to claim it is active and not PFL.
+    EXPECT_CALL(*pChannel3, isActive())
+            .Times(1)
+            .WillOnce(Return(true));
+    EXPECT_CALL(*pChannel3, isPFL())
+            .Times(1)
+            .WillOnce(Return(true));
+
+    // Instruct the mock to just return when process() gets called.
+    EXPECT_CALL(*pChannel1, process(_, _, MAX_BUFFER_LEN))
+            .Times(1)
+            .WillOnce(Return());
+    EXPECT_CALL(*pChannel2, process(_, _, MAX_BUFFER_LEN))
+            .Times(1)
+            .WillOnce(Return());
+    EXPECT_CALL(*pChannel3, process(_, _, MAX_BUFFER_LEN))
+            .Times(1)
+            .WillOnce(Return());
+
+    m_pMaster->process(NULL, NULL, MAX_BUFFER_LEN);
+
+    // Check that the master output contains the sum of the channel data.
+    const CSAMPLE* pMasterBuffer = m_pMaster->getMasterBuffer();
+    AssertWholeBufferEquals(pMasterBuffer, 6.0f, MAX_BUFFER_LEN);
+
+    // Check that the headphone output does not contain any channel data.
+    const CSAMPLE* pHeadphoneBuffer = m_pMaster->getHeadphoneBuffer();
+    AssertWholeBufferEquals(pHeadphoneBuffer, 6.0f, MAX_BUFFER_LEN);
+}
+
 TEST_F(EngineMasterTest, SingleChannelPFLOutputWorks) {
     EngineChannelMock* pChannel = new EngineChannelMock("[Channel1]", m_pConfig,
                                                         EngineChannel::CENTER);
