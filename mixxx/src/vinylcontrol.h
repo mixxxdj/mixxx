@@ -28,6 +28,10 @@ class ControlObjectThread;
 
 #define MIXXX_VC_DEFAULT_LEADINTIME 30
 
+#define MIXXX_RELATIVE_CUE_OFF 0
+#define MIXXX_RELATIVE_CUE_ONECUE 1
+#define MIXXX_RELATIVE_CUE_HOTCUE 2
+
 #define MIXXX_VINYL_SCOPE_SIZE 128
 
 //TODO: Make this an EngineObject instead one day? (need to route all the input audio through the engine that way too...)
@@ -62,6 +66,7 @@ class VinylControl : public QThread
     	ControlObjectThread *duration;		//The ControlObject used to get the duration of the current song.
     	ControlObjectThread *mode;            //The ControlObject used to get the vinyl control mode (absolute/relative/scratch)
     	ControlObjectThread *enabled;         //The ControlObject used to get if the vinyl control is enabled or disabled.
+    	ControlObjectThread *cueing;		//Should cueing mode be active?
     	ControlObjectThread *rateRange;         //The ControlObject used to the get the pitch range from the prefs.
         ControlObjectThread *vinylStatus;
         ControlObjectThread *rateDir; //direction of rate

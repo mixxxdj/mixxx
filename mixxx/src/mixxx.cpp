@@ -350,7 +350,9 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
     ControlObject::getControl(ConfigKey("[Channel2]","vinylcontrol"))->queueFromThread(m_pConfig->getValueString(ConfigKey("[VinylControl]","EnabledCh2")).toDouble());
     ControlObject::getControl(ConfigKey("[Channel1]","VinylMode"))->queueFromThread(m_pConfig->getValueString(ConfigKey("[VinylControl]","Mode")).toDouble());
     ControlObject::getControl(ConfigKey("[Channel2]","VinylMode"))->queueFromThread(m_pConfig->getValueString(ConfigKey("[VinylControl]","Mode")).toDouble());
-#endif 
+    ControlObject::getControl(ConfigKey("[Channel1]","VinylCueing"))->queueFromThread(m_pConfig->getValueString(ConfigKey("[VinylControl]","CueingCh1")).toDouble());
+    ControlObject::getControl(ConfigKey("[Channel2]","VinylCueing"))->queueFromThread(m_pConfig->getValueString(ConfigKey("[VinylControl]","CueingCh2")).toDouble());
+#endif
 
     qRegisterMetaType<MidiMessage>("MidiMessage");
     qRegisterMetaType<MidiStatusByte>("MidiStatusByte");
@@ -502,13 +504,14 @@ MixxxApp::~MixxxApp()
     // Save state of End of track controls in config database
     //m_pConfig->set(ConfigKey("[Controls]","TrackEndModeCh1"), ConfigValue((int)ControlObject::getControl(ConfigKey("[Channel1]","TrackEndMode"))->get()));
     //m_pConfig->set(ConfigKey("[Controls]","TrackEndModeCh2"), ConfigValue((int)ControlObject::getControl(ConfigKey("[Channel2]","TrackEndMode"))->get()));
-#ifdef __VINYLCONTROL__    
+#ifdef __VINYLCONTROL__
     m_pConfig->set(ConfigKey("[VinylControl]","EnabledCh1"), ConfigValue((int)ControlObject::getControl(ConfigKey("[Channel1]","vinylcontrol"))->get()));
     m_pConfig->set(ConfigKey("[VinylControl]","EnabledCh2"), ConfigValue((int)ControlObject::getControl(ConfigKey("[Channel2]","vinylcontrol"))->get()));
     m_pConfig->set(ConfigKey("[VinylControl]","Mode"), ConfigValue((int)ControlObject::getControl(ConfigKey("[Channel1]","VinylMode"))->get()));
     m_pConfig->set(ConfigKey("[VinylControl]","Mode"), ConfigValue((int)ControlObject::getControl(ConfigKey("[Channel2]","VinylMode"))->get()));
-#endif 
-
+    m_pConfig->set(ConfigKey("[VinylControl]","CueingCh1"), ConfigValue((int)ControlObject::getControl(ConfigKey("[Channel1]","VinylCueing"))->get()));
+    m_pConfig->set(ConfigKey("[VinylControl]","CueingCh2"), ConfigValue((int)ControlObject::getControl(ConfigKey("[Channel2]","VinylCueing"))->get()));
+#endif    
     qDebug() << "delete SkinLoader";
     delete m_pSkinLoader;
 
@@ -726,7 +729,7 @@ void MixxxApp::initActions()
     m_pHelpSupport = new QAction(tr("&Community Support..."), this);
 
 #ifdef __VINYLCONTROL__
-    m_pOptionsVinylControl = new QAction(tr("Enable &Vinyl Control"), this);
+    m_pOptionsVinylControl = new QAction(tr("Enable &Vinyl Control 1"), this);
     m_pOptionsVinylControl->setShortcut(tr("Ctrl+Y"));
     m_pOptionsVinylControl->setShortcutContext(Qt::ApplicationShortcut);
     

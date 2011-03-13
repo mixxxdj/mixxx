@@ -38,6 +38,7 @@ private:
 	void syncPosition();
 	void togglePlayButton(bool on);
 	bool checkEnabled(bool was, bool is);
+	void doTrackSelection(bool valid_pos, double pitch, double position);
 	void resetSteadyPitch(double pitch, double time);
 	double checkSteadyPitch(double pitch, double time);
 	void enableRecordEndMode();
@@ -70,6 +71,12 @@ private:
 	QTime tSinceSteadyPitch;
 	double dUiUpdateTime;
 	double m_dKnobTweak;
+	
+	ControlObjectThread *trackSelector, *trackLoader;
+	double dLastTrackSelectPos;
+	double dCurTrackSelectPos;
+	QTime tSinceTrackSelect;
+	bool bTrackSelectMode;
 
     //Contains information that xwax's code needs internally about the timecode and how to process it.
     struct timecoder_t timecoder;
@@ -79,9 +86,10 @@ private:
 	short*  m_samples;
 	size_t  m_SamplesSize;
 
-	bool		   bShouldClose;
-	bool		   bIsRunning;
-    bool           m_bNeedleSkipPrevention;      /**< needle skip prevention is now optional (still CD mode force this to be false) */
+	bool bShouldClose;
+	bool bIsRunning;
+    bool m_bNeedleSkipPrevention; 
+    bool m_bCDControl;
 };        
 
 #endif

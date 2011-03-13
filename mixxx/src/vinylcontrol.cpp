@@ -19,6 +19,7 @@ VinylControl::VinylControl(ConfigObject<ConfigValue> * pConfig, const char * _gr
     duration            = new ControlObjectThread(ControlObject::getControl(ConfigKey(group, "duration")));
     mode                = new ControlObjectThread(ControlObject::getControl(ConfigKey(group, "VinylMode")));
 	enabled     		= new ControlObjectThread(ControlObject::getControl(ConfigKey(group, "vinylcontrol")));
+	cueing              = new ControlObjectThread(ControlObject::getControl(ConfigKey(group, "VinylCueing")));
     rateRange           = new ControlObjectThread(ControlObject::getControl(ConfigKey(group, "rateRange")));
     //vinylStatus			= new ControlObject(ConfigKey(group,"VinylStatus"));
     vinylStatus     = new ControlObjectThread(ControlObject::getControl(ConfigKey(group, "VinylStatus")));

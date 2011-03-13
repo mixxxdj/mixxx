@@ -93,6 +93,7 @@ private:
         *buttonRatePermUp, *buttonRatePermUpSmall;
 	ControlPushButton *m_pVinylControl;
 	ControlPushButton *m_pVinylMode;
+	ControlPushButton *m_pVinylCueing;
     ControlObject *m_pRateDir, *m_pRateRange;
     ControlPotmeter* m_pRateSlider;
     ControlPotmeter* m_pRateSearch;

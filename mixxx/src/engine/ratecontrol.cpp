@@ -162,6 +162,8 @@ RateControl::RateControl(const char* _group,
     m_pVinylControl->setToggleButton(true);
     m_pVinylMode = new ControlPushButton(ConfigKey(_group,"VinylMode"));
     m_pVinylMode->setStates(3);
+    m_pVinylCueing = new ControlPushButton(ConfigKey(_group,"VinylCueing"));
+    m_pVinylCueing->setStates(3);
     connect(m_pVinylControl, SIGNAL(valueChanged(double)), this, SLOT(slotControlVinyl(double)));
     connect(m_pVinylControl, SIGNAL(valueChangedFromEngine(double)), this, SLOT(slotControlVinyl(double)));
 #endif
