@@ -61,7 +61,6 @@ class SampleUtilTest : public testing::Test {
     QList<int> evenBuffers;
 
     int sseAvailable;
-
 };
 
 TEST_F(SampleUtilTest, applyGain1DoesNothing) {
