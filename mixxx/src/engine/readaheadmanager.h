@@ -33,20 +33,20 @@ public:
     // direction the audio is progressing in. Returns the total number of
     // samples read into buffer. Note that it is very common that the total
     // samples read is less than the requested number of samples.
-    int getNextSamples(double dRate, CSAMPLE* buffer, int requested_samples);
+    virtual int getNextSamples(double dRate, CSAMPLE* buffer, int requested_samples);
 
     // Used to add a new EngineControl that ReadAheadManager will use to decide
     // which samples to return.
-    void addEngineControl(EngineControl* control);
+    virtual void addEngineControl(EngineControl* control);
 
     // Notify the ReadAheadManager that the current playposition has changed
-    void setNewPlaypos(int iNewPlaypos);
+    virtual void setNewPlaypos(int iNewPlaypos);
 
-    void notifySeek(int iSeekPosition);
+    virtual void notifySeek(int iSeekPosition);
 
     // hintReader allows the ReadAheadManager to provide hints to the reader to
     // indicate that the given portion of a song is about to be read.
-    void hintReader(QList<Hint>& hintList, int iSamplesPerBuffer);
+    virtual void hintReader(QList<Hint>& hintList, int iSamplesPerBuffer);
 
 private:
     // A broken method for choosing which EngineControl to trust for determining
