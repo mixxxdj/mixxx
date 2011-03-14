@@ -66,9 +66,10 @@ class BeatGrid : public QObject, public virtual Beats {
     bool isValid() const;
 
     mutable QMutex m_mutex;
-    int m_iSampleRate;
-    double m_dBpm, m_dFirstBeat;
-    double m_dBeatLength;
+    int m_iSampleRate;      /** The number of samples per second */
+    double m_dBpm;          /** The number of beats per minute */
+    double m_dFirstBeat;    /** The sample offset of the first beat */
+    double m_dBeatLength;   /** The length of a beat in samples */
 };
 
 
