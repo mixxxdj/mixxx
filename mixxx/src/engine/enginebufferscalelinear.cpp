@@ -16,8 +16,9 @@
 ***************************************************************************/
 
 #include <QtCore>
-#include "enginebufferscalelinear.h"
+#include "engine/enginebufferscalelinear.h"
 #include "mathstuff.h"
+#include "sampleutil.h"
 
 EngineBufferScaleLinear::EngineBufferScaleLinear(ReadAheadManager *pReadAheadManager) :
     EngineBufferScale(),
@@ -40,6 +41,7 @@ EngineBufferScaleLinear::EngineBufferScaleLinear(ReadAheadManager *pReadAheadMan
 	df.open(QIODevice::WriteOnly | QIODevice::Text);
 	writer.setDevice(&df);
 	buffer_count=0;*/
+    SampleUtil::applyGain(buffer_int, 0.0, kiLinearScaleReadAheadLength);
 }
 
 EngineBufferScaleLinear::~EngineBufferScaleLinear()
@@ -177,7 +179,7 @@ CSAMPLE * EngineBufferScaleLinear::scale(double playpos, unsigned long buf_size,
 }
                                          
 /** Stretch a specified buffer worth of audio using linear interpolation */
-CSAMPLE * EngineBufferScaleLinear::do_scale(CSAMPLE* buf, double playpos, unsigned long buf_size,
+CSAMPLE * EngineBufferScaleLinear::do_scale(CSAMPLE* buf, unsigned long buf_size,
                                          CSAMPLE* pBase, unsigned long iBaseLength)                                         
 {
 
@@ -194,7 +196,7 @@ CSAMPLE * EngineBufferScaleLinear::do_scale(CSAMPLE* buf, double playpos, unsign
     
     // Determine position in read_buffer to start from. (This is always 0 with
     // the new EngineBuffer implementation)
-    new_playpos = playpos;
+    new_playpos = 0.0;
 
     int iRateLerpLength = (int)buf_size;
 
@@ -235,17 +237,11 @@ CSAMPLE * EngineBufferScaleLinear::do_scale(CSAMPLE* buf, double playpos, unsign
     //0 is never the right answer
     unscaled_samples_needed = math_max(2,unscaled_samples_needed);
     
-    //Q_ASSERT(unscaled_samples_needed >= 0);
-    //Q_ASSERT(unscaled_samples_needed != 0);
-
     bool last_read_failed = false;
     CSAMPLE prev_sample[2];
     CSAMPLE cur_sample[2];
     double prevIndex=0;
 
-    // Use new_playpos to count the new samples we touch.
-    new_playpos = 0;
-    
     prev_sample[0]=0;
     prev_sample[1]=0;
     cur_sample[0]=0;
@@ -384,12 +380,13 @@ CSAMPLE * EngineBufferScaleLinear::do_scale(CSAMPLE* buf, double playpos, unsign
     }
     // If we broke out of the loop, zero the remaining samples
     // TODO(XXX) memset
-    for (; i < buf_size; i += 2) {
-        buf[i] = 0.0f;
-        buf[i+1] = 0.0f;
-    }
+    //for (; i < buf_size; i += 2) {
+    //    buf[i] = 0.0f;
+    //    buf[i+1] = 0.0f;
+    //}
     
-	Q_ASSERT(i>=buf_size);
+	//Q_ASSERT(i>=buf_size);
+    SampleUtil::applyGain(&buf[i], 0.0f, buf_size-i);
 
     // It's possible that we will exit this function without having satisfied
     // this requirement. We may be trying to read past the end of the file.
