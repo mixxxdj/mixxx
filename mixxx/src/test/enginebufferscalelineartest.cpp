@@ -22,16 +22,19 @@ class ReadAheadManagerMock : public ReadAheadManager {
             : ReadAheadManager(NULL),
               m_pBuffer(NULL),
               m_iBufferSize(0),
-              m_iReadPosition(0) {
+              m_iReadPosition(0),
+              m_iSamplesRead(0) {
     }
 
     int getNextSamplesFake(double dRate, CSAMPLE* buffer, int requested_samples) {
+        bool hasBuffer = m_pBuffer != NULL;
         // You forgot to set the mock read buffer.
-        EXPECT_TRUE(m_pBuffer != NULL);
+        EXPECT_TRUE(hasBuffer);
 
         for (int i = 0; i < requested_samples; ++i) {
-            buffer[i] = m_pBuffer[m_iReadPosition++ % m_iBufferSize];
+            buffer[i] = hasBuffer ? m_pBuffer[m_iReadPosition++ % m_iBufferSize] : 0;
         }
+        m_iSamplesRead += requested_samples;
         return requested_samples;
     }
 
@@ -41,12 +44,16 @@ class ReadAheadManagerMock : public ReadAheadManager {
         m_iReadPosition = 0;
     }
 
+    int getSamplesRead() {
+        return m_iSamplesRead;
+    }
+
     MOCK_METHOD3(getNextSamples, int(double dRate, CSAMPLE* buffer, int requested_samples));
 
-    CSAMPLE m_fillValue;
     CSAMPLE* m_pBuffer;
     int m_iBufferSize;
     int m_iReadPosition;
+    int m_iSamplesRead;
 };
 
 class EngineBufferScaleLinearTest : public testing::Test {
@@ -129,6 +136,10 @@ TEST_F(EngineBufferScaleLinearTest, ScaleConstant) {
     // TODO(rryan) the LERP w/ the previous buffer causes samples 0 and 1 to be
     // 0, for now skip the first two.
     AssertWholeBufferEquals(pOutput+2, 1.0f, kiLinearScaleReadAheadLength-2);
+
+    // Check that the total samples read from the RAMAN is equal to the samples
+    // we requested.
+    ASSERT_EQ(kiLinearScaleReadAheadLength, m_pReadAheadMock->getSamplesRead());
 }
 
 TEST_F(EngineBufferScaleLinearTest, UnityRateIsSamplePerfect) {
@@ -147,11 +158,17 @@ TEST_F(EngineBufferScaleLinearTest, UnityRateIsSamplePerfect) {
     }
     m_pReadAheadMock->setReadBuffer(readBuffer.data(), readBuffer.size());
 
-    CSAMPLE* pOutput = m_pScaler->scale(0, kiLinearScaleReadAheadLength, 0, 0);
+    const int totalSamples = kiLinearScaleReadAheadLength;
+    CSAMPLE* pOutput = m_pScaler->scale(0, totalSamples, 0, 0);
 
     // TODO(rryan) the LERP w/ the previous buffer causes samples 0 and 1 to be
     // 0, for now skip the first two.
-    AssertBufferCycles(pOutput+2, kiLinearScaleReadAheadLength-2, readBuffer.data(), readBuffer.size());
+    const int skip = 2;
+    AssertBufferCycles(pOutput+skip, totalSamples-skip, readBuffer.data(), readBuffer.size());
+
+    // Check that the total samples read from the RAMAN is equal to the samples
+    // we requested.
+    ASSERT_EQ(totalSamples, m_pReadAheadMock->getSamplesRead());
 }
 
 TEST_F(EngineBufferScaleLinearTest, TestRateLERPMonotonicallyProgresses) {
@@ -210,6 +227,10 @@ TEST_F(EngineBufferScaleLinearTest, TestDoubleSpeedSmoothlyHalvesSamples) {
     // 0, for now skip the first two.
     const int skip = 2;
     AssertBufferCycles(pOutput+skip, bufferSize-skip, expectedResult, 4);
+
+    // Check that the total samples read from the RAMAN is double the samples
+    // we requested.
+    ASSERT_EQ(bufferSize*2, m_pReadAheadMock->getSamplesRead());
 }
 
 TEST_F(EngineBufferScaleLinearTest, TestHalfSpeedSmoothlyDoublesSamples) {
@@ -245,6 +266,10 @@ TEST_F(EngineBufferScaleLinearTest, TestHalfSpeedSmoothlyDoublesSamples) {
     // the desired cycle. Need to investigate this.
     const int skip = 12;
     AssertBufferCycles(pOutput+skip, bufferSize-skip, expectedResult, 8);
+
+    // Check that the total samples read from the RAMAN is half the samples
+    // we requested.
+    ASSERT_EQ(bufferSize/2, m_pReadAheadMock->getSamplesRead());
 }
 
 TEST_F(EngineBufferScaleLinearTest, TestRepeatedScaleCalls) {
@@ -287,35 +312,5 @@ TEST_F(EngineBufferScaleLinearTest, TestRepeatedScaleCalls) {
         AssertBufferCycles(pOutput, toRead, expectedResult, toRead);
     }
 }
-
-// TEST_F(EngineBufferScaleLinearTest, TestIncreasingLERP) {
-
-//     QVector<CSAMPLE> rates;
-//     //rates.append(1.0f);
-//     rates.append(2.0f);
-//     //rates.append(3.0f);
-
-//     // Tell the RAMAN mock to invoke getNextSamplesFake
-//     EXPECT_CALL(*m_pReadAheadMock, getNextSamples(_, _, _))
-//             .WillRepeatedly(Invoke(m_pReadAheadMock, &ReadAheadManagerMock::getNextSamplesFake));
-
-//     // Read all 1's
-//     CSAMPLE readBuffer[] = { 1.0f, 1.0, 2.0, 2.0, 3.0, 3.0 };
-//     m_pReadAheadMock->setReadBuffer(readBuffer, 6);
-
-//     CSAMPLE oldValue = 0;
-//     for (int i = 0; i < rates.size(); ++i) {
-//         CSAMPLE rate = rates[i];
-//         m_pScaler->setTempo(1.0);
-//         m_pScaler->setBaseRate(rate);
-//         m_pScaler->setTempo(1.0);
-//         m_pScaler->setBaseRate(rate);
-
-//         CSAMPLE* pOutput = m_pScaler->scale(0, 1000, 0, 0);
-//         AssertBufferMonotonicallyProgresses(pOutput, oldValue, rate, 1000);
-//         oldValue = rate;
-//     }
-
-// }
 
 }  // namespace
