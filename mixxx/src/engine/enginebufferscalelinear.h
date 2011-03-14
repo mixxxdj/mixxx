@@ -42,7 +42,7 @@ public:
     void clear();
 
 private:
-	CSAMPLE *do_scale(CSAMPLE* buf, double playpos, unsigned long buf_size, 
+	CSAMPLE *do_scale(CSAMPLE* buf, unsigned long buf_size, 
                    CSAMPLE* pBase, unsigned long iBaseLength);
 
     /** Holds playback direction */
