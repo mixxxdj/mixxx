@@ -338,7 +338,7 @@ void MidiDevice::receive(const unsigned char data[], unsigned int length) {
         }
         return;
     }
-    qDebug() << "MidiDevice: No MIDI Script function found for" << message;
+    qWarning() << "MidiDevice: No MIDI Script function found for" << message;
     return;
 }
 #endif
