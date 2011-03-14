@@ -118,7 +118,7 @@ CSAMPLE * EngineBufferScaleLinear::scale(double playpos, unsigned long buf_size,
     	//first half: rate goes from old rate to zero
     	m_fOldBaseRate = rate_add_old;
     	m_dBaseRate = 0.0;
-    	pOldRate = do_scale(pOldRate, 0, buf_size/2, pBase, iBaseLength);
+    	pOldRate = do_scale(pOldRate, buf_size/2, pBase, iBaseLength);
     	
     	//reset prev sample so we can now read in the other direction
     	//(may not be necessary?)
@@ -150,7 +150,7 @@ CSAMPLE * EngineBufferScaleLinear::scale(double playpos, unsigned long buf_size,
     	//second half: rate goes from zero to new rate
     	m_fOldBaseRate = 0.0;
     	m_dBaseRate = rate_add_new;
-    	pNewRate = do_scale(pNewRate, 0, buf_size/2, pBase, iBaseLength);
+    	pNewRate = do_scale(pNewRate, buf_size/2, pBase, iBaseLength);
     	
     	//write it to the real buffer
     	//TODO: mmap it
@@ -175,7 +175,7 @@ CSAMPLE * EngineBufferScaleLinear::scale(double playpos, unsigned long buf_size,
 		return buffer;
     }
     
-    return do_scale(buffer, playpos, buf_size, pBase, iBaseLength);
+    return do_scale(buffer, buf_size, pBase, iBaseLength);
 }
                                          
 /** Stretch a specified buffer worth of audio using linear interpolation */
@@ -355,6 +355,8 @@ CSAMPLE * EngineBufferScaleLinear::do_scale(CSAMPLE* buf, unsigned long buf_size
         
         //at extremely low speeds, dampen the gain to hide pops and clicks
         //this does cause odd-looking linear waveforms that go to zero and back
+        
+        //hm this is really doing what enginevinylsoundemu does... so remove this?
        	if (fabs(rate_add) < 0.5)
        	{
        		float dither = (float)(rand() % 32768) / 32768 - 0.5; // dither
