@@ -212,8 +212,8 @@ private:
     // Whether or not to repeat the track when at the end
     ControlPushButton* m_pRepeat;
 
-	ControlObject *m_pVinylStatus;  //Status of vinyl control
-	ControlObject *m_pVinylSeek;
+    ControlObject *m_pVinylStatus;  //Status of vinyl control
+    ControlObject *m_pVinylSeek;
 	
     /** Fwd and back controls, start and end of track control */
     ControlPushButton *startButton, *endButton;

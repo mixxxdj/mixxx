@@ -496,6 +496,7 @@ void WaveformRenderer::draw(QPainter* pPainter, QPaintEvent *pEvent) {
 
     // Limit our rate adjustment to < 99%, "Bad Things" might happen otherwise.
     double rateAdjust = m_dRateDir * math_min(0.99, m_dRate * m_dRateRange);
+
     if(m_pSampleBuffer == NULL) {
         fetchWaveformFromTrack();
     }

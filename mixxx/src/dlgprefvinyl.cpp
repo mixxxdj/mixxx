@@ -43,8 +43,8 @@ DlgPrefVinyl::DlgPrefVinyl(QWidget * parent, SoundManager * soundman,
     vinylControlMode.addButton(AbsoluteMode);
     vinylControlMode.addButton(RelativeMode);
 
-	m_signalWidget1.setSize(MIXXX_VINYL_SCOPE_SIZE);
-	m_signalWidget2.setSize(MIXXX_VINYL_SCOPE_SIZE);
+    m_signalWidget1.setSize(MIXXX_VINYL_SCOPE_SIZE);
+    m_signalWidget2.setSize(MIXXX_VINYL_SCOPE_SIZE);
 
     delete groupBoxSignalQuality->layout();
     QHBoxLayout *layout = new QHBoxLayout;
