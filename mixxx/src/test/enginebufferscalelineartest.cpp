@@ -212,7 +212,7 @@ TEST_F(EngineBufferScaleLinearTest, TestDoubleSpeedSmoothlyHalvesSamples) {
     AssertBufferCycles(pOutput+skip, bufferSize-skip, expectedResult, 4);
 }
 
-TEST_F(EngineBufferScaleLinearTest, TestHafSpeedSmoothlyDoublesSamples) {
+TEST_F(EngineBufferScaleLinearTest, TestHalfSpeedSmoothlyDoublesSamples) {
     // Starting from a rate of 0.0, we'll go to a rate of 1.0
     m_pScaler->setTempo(1.0f);
     m_pScaler->setBaseRate(0.5f);
@@ -245,6 +245,47 @@ TEST_F(EngineBufferScaleLinearTest, TestHafSpeedSmoothlyDoublesSamples) {
     // the desired cycle. Need to investigate this.
     const int skip = 12;
     AssertBufferCycles(pOutput+skip, bufferSize-skip, expectedResult, 8);
+}
+
+TEST_F(EngineBufferScaleLinearTest, TestRepeatedScaleCalls) {
+    // Starting from a rate of 0.0, we'll go to a rate of 1.0
+    m_pScaler->setTempo(1.0f);
+    m_pScaler->setBaseRate(0.5f);
+
+    // Do it twice to eliminate rate LERPing
+    m_pScaler->setTempo(1.0f);
+    m_pScaler->setBaseRate(0.5f);
+
+    const int bufferSize = 1000; // kiLinearScaleReadAheadLength;
+
+    // To prove that the channels don't touch each other, we're using negative
+    // values on the first channel and positive values on the second channel. If
+    // a fraction of either channel were mixed into either, then we would see a
+    // big shift in our desired values.
+    CSAMPLE readBuffer[] = { -101.0, 101.0,
+                             -99.0, 99.0 };
+    m_pReadAheadMock->setReadBuffer(readBuffer, 4);
+
+    // Tell the RAMAN mock to invoke getNextSamplesFake
+    EXPECT_CALL(*m_pReadAheadMock, getNextSamples(_, _, _))
+            .WillRepeatedly(Invoke(m_pReadAheadMock, &ReadAheadManagerMock::getNextSamplesFake));
+
+    CSAMPLE expectedResult[] = { -101.0, 101.0,
+                                 -100.0, 100.0,
+                                 -99.0, 99.0,
+                                 -100.0, 100.0 };
+
+    // Process 12 off the bat, strange hysteresis happens so get that over with here.
+    const int skip = 12;
+    CSAMPLE* pOutput = m_pScaler->scale(0, skip, 0, 0);
+
+    int samplesRemaining = bufferSize - skip;
+    while (samplesRemaining > 0) {
+        int toRead = math_min(8, samplesRemaining);
+        pOutput = m_pScaler->scale(0, 8, 0, 0);
+        samplesRemaining -= toRead;
+        AssertBufferCycles(pOutput, toRead, expectedResult, toRead);
+    }
 }
 
 // TEST_F(EngineBufferScaleLinearTest, TestIncreasingLERP) {
