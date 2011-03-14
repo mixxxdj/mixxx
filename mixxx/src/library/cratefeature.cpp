@@ -418,7 +418,7 @@ void CrateFeature::slotExportPlaylist(){
     QString file_location = QFileDialog::getSaveFileName(NULL,
                                         tr("Export Playlist"),
                                         QDesktopServices::storageLocation(QDesktopServices::MusicLocation),
-                                        tr("Playlist Files (*.m3u *.pls)"));
+                                        tr("M3U Playlist (*.m3u);;PLS Playlist (*.pls)"));
     //Exit method if user cancelled the open dialog.
     if(file_location.isNull() || file_location.isEmpty()) return;
     //create and populate a list of files of the playlist
