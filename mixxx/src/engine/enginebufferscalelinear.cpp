@@ -136,7 +136,7 @@ CSAMPLE * EngineBufferScaleLinear::scale(double, unsigned long buf_size,
     if ( samples != unscaled_samples_needed)
         m_scaleRemainder += (double)unscaled_samples_needed - samples;
 
-    bool carry_remainder = FALSE;
+    bool carry_remainder = false;
     if ((m_scaleRemainder > 1) || (m_scaleRemainder < 1))
     {
         long rem = (long)floor(m_scaleRemainder);
@@ -146,7 +146,7 @@ CSAMPLE * EngineBufferScaleLinear::scale(double, unsigned long buf_size,
         // back into unscaled_samples_needed
 		if ((unscaled_samples_needed - rem) >= 1)
 		{
-            carry_remainder = TRUE;
+            carry_remainder = true;
             m_scaleRemainder -= rem;
         }
     }
