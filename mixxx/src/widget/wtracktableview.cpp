@@ -155,8 +155,6 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel *model) {
     //setSortingEnabled(true);
     connect(horizontalHeader(), SIGNAL(sortIndicatorChanged(int,Qt::SortOrder)),
             this, SLOT(sortByColumn(int)), Qt::AutoConnection);
-            
-    sortByColumn(horizontalHeader()->sortIndicatorSection());
 
     sortByColumn(horizontalHeader()->sortIndicatorSection());
 
