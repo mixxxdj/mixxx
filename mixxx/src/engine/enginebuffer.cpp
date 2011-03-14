@@ -76,8 +76,8 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
     m_bScalerChanged(false),
     m_bLastBufferPaused(true) {
 
-	m_fLastSampleValue[0] = 0;
-	m_fLastSampleValue[1] = 0;
+    m_fLastSampleValue[0] = 0;
+    m_fLastSampleValue[1] = 0;
 
     // Play button
     playButton = new ControlPushButton(ConfigKey(group, "play"));
@@ -539,18 +539,18 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
             // The rate returned by the scale object can be different from the wanted rate!
             // Make sure new scaler has proper position
             if (m_bScalerChanged)
-				setNewPlaypos(filepos_play);
+                setNewPlaypos(filepos_play);
 			//linear scaler does this part for us now
 			else if (m_pScale != m_pScaleLinear)
             {
-		        //XXX: Trying to force RAMAN to read from correct
-		        //     playpos when rate changes direction - Albert	
-		        if ((rate_old <= 0 && rate > 0) ||
-		            (rate_old >= 0 && rate < 0))
-		        {
-		            setNewPlaypos(filepos_play);
-		        }
-		    }
+                //XXX: Trying to force RAMAN to read from correct
+                //     playpos when rate changes direction - Albert	
+                if ((rate_old <= 0 && rate > 0) ||
+                    (rate_old >= 0 && rate < 0))
+                {
+                    setNewPlaypos(filepos_play);
+                }
+            }
 
             rate_old = rate;
             if (baserate > 0) //Prevent division by 0
@@ -700,6 +700,11 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
     // (hopefully) before the next callback.
     m_pReader->wake();
 
+
+	//Disaster below!  I am trying to fix clicking on quick startup,
+	//and this stuff didn't work.  
+	
+	
     // Force ramp in if this is the first buffer during a play
    // if (m_iRampIter == 0)
     //{

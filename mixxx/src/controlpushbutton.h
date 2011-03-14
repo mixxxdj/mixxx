@@ -32,7 +32,7 @@ public:
     ControlPushButton(ConfigKey key);
     ~ControlPushButton();
     void setToggleButton(bool bIsToggleButton);
-	void setStates(int num_states);
+    void setStates(int num_states);
 
 protected:
     void setValueFromMidi(MidiCategory c, double v);
