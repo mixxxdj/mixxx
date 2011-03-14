@@ -70,6 +70,17 @@ class EngineBufferScaleLinearTest : public testing::Test {
         delete m_pReadAheadMock;
     }
 
+    void SetRate(double rate) {
+        m_pScaler->setTempo(1.0);
+        m_pScaler->setBaseRate(rate);
+    }
+
+    void SetRateNoLerp(double rate) {
+        // Set it twice to prevent rate LERP'ing
+        SetRate(rate);
+        SetRate(rate);
+    }
+
     void ClearBuffer(CSAMPLE* pBuffer, int length) {
         memset(pBuffer, 0, sizeof(pBuffer[0])*length);
     }
@@ -119,11 +130,7 @@ class EngineBufferScaleLinearTest : public testing::Test {
 };
 
 TEST_F(EngineBufferScaleLinearTest, ScaleConstant) {
-    m_pScaler->setTempo(1.0f);
-    m_pScaler->setBaseRate(1.0f);
-    // Twice to get rid of LERPing
-    m_pScaler->setTempo(1.0f);
-    m_pScaler->setBaseRate(1.0f);
+    SetRateNoLerp(1.0);
 
     CSAMPLE readBuffer[1] = { 1.0f };
     m_pReadAheadMock->setReadBuffer(readBuffer, 1);
@@ -143,10 +150,7 @@ TEST_F(EngineBufferScaleLinearTest, ScaleConstant) {
 }
 
 TEST_F(EngineBufferScaleLinearTest, UnityRateIsSamplePerfect) {
-    m_pScaler->setTempo(1.0f);
-    m_pScaler->setBaseRate(1.0f);
-    m_pScaler->setTempo(1.0f);
-    m_pScaler->setBaseRate(1.0f);
+    SetRateNoLerp(1.0);
 
     // Tell the RAMAN mock to invoke getNextSamplesFake
     EXPECT_CALL(*m_pReadAheadMock, getNextSamples(_, _, _))
@@ -173,11 +177,8 @@ TEST_F(EngineBufferScaleLinearTest, UnityRateIsSamplePerfect) {
 
 TEST_F(EngineBufferScaleLinearTest, TestRateLERPMonotonicallyProgresses) {
     // Starting from a rate of 0.0, we'll go to a rate of 1.0
-    m_pScaler->setTempo(0.0f);
-    m_pScaler->setBaseRate(0.0f);
-
-    m_pScaler->setTempo(1.0f);
-    m_pScaler->setBaseRate(1.0f);
+    SetRate(0.0f);
+    SetRate(1.0f);
 
     const int bufferSize = 1000; // kiLinearScaleReadAheadLength;
 
@@ -195,13 +196,7 @@ TEST_F(EngineBufferScaleLinearTest, TestRateLERPMonotonicallyProgresses) {
 }
 
 TEST_F(EngineBufferScaleLinearTest, TestDoubleSpeedSmoothlyHalvesSamples) {
-    // Starting from a rate of 0.0, we'll go to a rate of 1.0
-    m_pScaler->setTempo(1.0f);
-    m_pScaler->setBaseRate(2.0f);
-
-    m_pScaler->setTempo(1.0f);
-    m_pScaler->setBaseRate(2.0f);
-
+    SetRateNoLerp(2.0f);
     const int bufferSize = 1000; // kiLinearScaleReadAheadLength;
 
     // To prove that the channels don't touch each other, we're using negative
@@ -234,13 +229,7 @@ TEST_F(EngineBufferScaleLinearTest, TestDoubleSpeedSmoothlyHalvesSamples) {
 }
 
 TEST_F(EngineBufferScaleLinearTest, TestHalfSpeedSmoothlyDoublesSamples) {
-    // Starting from a rate of 0.0, we'll go to a rate of 1.0
-    m_pScaler->setTempo(1.0f);
-    m_pScaler->setBaseRate(0.5f);
-
-    m_pScaler->setTempo(1.0f);
-    m_pScaler->setBaseRate(0.5f);
-
+    SetRateNoLerp(0.5f);
     const int bufferSize = 1000; // kiLinearScaleReadAheadLength;
 
     // To prove that the channels don't touch each other, we're using negative
@@ -273,14 +262,7 @@ TEST_F(EngineBufferScaleLinearTest, TestHalfSpeedSmoothlyDoublesSamples) {
 }
 
 TEST_F(EngineBufferScaleLinearTest, TestRepeatedScaleCalls) {
-    // Starting from a rate of 0.0, we'll go to a rate of 1.0
-    m_pScaler->setTempo(1.0f);
-    m_pScaler->setBaseRate(0.5f);
-
-    // Do it twice to eliminate rate LERPing
-    m_pScaler->setTempo(1.0f);
-    m_pScaler->setBaseRate(0.5f);
-
+    SetRateNoLerp(0.5f);
     const int bufferSize = 1000; // kiLinearScaleReadAheadLength;
 
     // To prove that the channels don't touch each other, we're using negative
