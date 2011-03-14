@@ -143,7 +143,7 @@ void TrackInfoObject::initialize(bool parseHeader) {
 }
 
 TrackInfoObject::~TrackInfoObject() {
-    qDebug() << "~TrackInfoObject()";
+    //qDebug() << "~TrackInfoObject()";
 }
 
 void TrackInfoObject::doSave() {
