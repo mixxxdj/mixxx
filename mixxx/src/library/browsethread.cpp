@@ -58,6 +58,7 @@ void BrowseThread::populateModel() {
      */
     emit(clearModel());
 
+    QList< QList<QStandardItem*> > rows;
 
     int row = 0;
     //Iterate over the files
@@ -74,59 +75,63 @@ void BrowseThread::populateModel() {
 
         QString filepath = fileIt.next();
         TrackInfoObject tio(filepath);
-        QList<QStandardItem*> column_data;
+        QList<QStandardItem*> row_data;
 
         QStandardItem* item = new QStandardItem(tio.getFilename());
-        column_data.insert(COLUMN_FILENAME, item);
+        row_data.insert(COLUMN_FILENAME, item);
 
         item = new QStandardItem(tio.getArtist());
-        column_data.insert(COLUMN_ARTIST, item);
+        row_data.insert(COLUMN_ARTIST, item);
 
         item = new QStandardItem(tio.getTitle());
-        column_data.insert(COLUMN_TITLE, item);
+        row_data.insert(COLUMN_TITLE, item);
 
         item = new QStandardItem(tio.getAlbum());
-        column_data.insert(COLUMN_ALBUM, item);
+        row_data.insert(COLUMN_ALBUM, item);
 
         item = new QStandardItem(tio.getTrackNumber());
-        column_data.insert(COLUMN_TRACK_NUMBER, item);
+        row_data.insert(COLUMN_TRACK_NUMBER, item);
 
         item = new QStandardItem(tio.getYear());
-        column_data.insert(COLUMN_YEAR, item);
+        row_data.insert(COLUMN_YEAR, item);
 
         item = new QStandardItem(tio.getGenre());
-        column_data.insert(COLUMN_GENRE, item);
+        row_data.insert(COLUMN_GENRE, item);
 
         item = new QStandardItem(tio.getComment());
-        column_data.insert(COLUMN_COMMENT, item);
+        row_data.insert(COLUMN_COMMENT, item);
 
         QString duration = MixxxUtils::secondsToMinutes(qVariantValue<int>(tio.getDuration()));
         item = new QStandardItem(duration);
-        column_data.insert(COLUMN_DURATION, item);
+        row_data.insert(COLUMN_DURATION, item);
 
         item = new QStandardItem(tio.getBpmStr());
-        column_data.insert(COLUMN_BPM, item);
+        row_data.insert(COLUMN_BPM, item);
 
         item = new QStandardItem(tio.getKey());
-        column_data.insert(COLUMN_KEY, item);
+        row_data.insert(COLUMN_KEY, item);
 
         item = new QStandardItem(tio.getType());
-        column_data.insert(COLUMN_TYPE, item);
+        row_data.insert(COLUMN_TYPE, item);
 
         item = new QStandardItem(tio.getBitrateStr());
-        column_data.insert(COLUMN_BITRATE, item);
+        row_data.insert(COLUMN_BITRATE, item);
 
         item = new QStandardItem(filepath);
-        column_data.insert(COLUMN_LOCATION, item);
+        row_data.insert(COLUMN_LOCATION, item);
 
-        // this is a blocking operation
-        // see signal/slot connection in BrowseTableModel
-        emit(rowDataAppended(column_data));
-
-        //QCoreApplication::processEvents();
+        rows.append(row_data);
         ++row;
+        //If 10 tracks have been analyzed, send it to GUI
+        //Will limit GUI freezing
+        if(row % 10 == 0){
+            //this is a blocking operation
+            emit(rowsAppended(rows));
 
-        //Sleep for 50ms which prevents us from GUI freezes
-        msleep(50);
+            rows.clear();
+        }
+        //Sleep additionally for 10ms which prevents us from GUI freezes
+        msleep(20);
     }
+    emit(rowsAppended(rows));
 }

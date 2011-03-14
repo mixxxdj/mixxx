@@ -49,11 +49,11 @@ class BrowseTableModel : public QStandardItemModel, public TrackModel
     private:
        void addSearchColumn(int index);
 
-    BrowseThread m_backgroundThread;
-    QList<int> m_searchColumns;
-public slots:
+        BrowseThread m_backgroundThread;
+        QList<int> m_searchColumns;
+    public slots:
        void slotClear();
-       void slotInsert(const QList<QStandardItem*> &item);
+       void slotInsert(const QList< QList<QStandardItem*> >&);
 };
 
 #endif

@@ -44,12 +44,13 @@ BrowseTableModel::BrowseTableModel(QObject* parent)
 
     setHorizontalHeaderLabels(header_data);
     //register the QList<T> as a metatype since we use QueuedConnection below
-    qRegisterMetaType< QList<QStandardItem*> >("QList<QStandardItem*>");
+    qRegisterMetaType< QList< QList<QStandardItem*> > >("QList< QList<QStandardItem*> >");
 
     QObject::connect(&m_backgroundThread, SIGNAL(clearModel()),
                      this, SLOT(slotClear()), Qt::BlockingQueuedConnection);
-    QObject::connect(&m_backgroundThread, SIGNAL(rowDataAppended(const QList<QStandardItem*>&)),
-            this, SLOT(slotInsert(const QList<QStandardItem*>&)), Qt::BlockingQueuedConnection);
+
+    QObject::connect(&m_backgroundThread, SIGNAL(rowsAppended(const QList< QList<QStandardItem*> >&)),
+            this, SLOT(slotInsert(const QList< QList<QStandardItem*> >&)), Qt::BlockingQueuedConnection);
 
 }
 
@@ -157,10 +158,10 @@ void BrowseTableModel::slotClear()
     removeRows(0, rowCount());
 }
 
-void BrowseTableModel::slotInsert(const QList<QStandardItem*> &column_data)
-{
-    //qDebug() << "BrowseTableModel::slotInsert";
-    appendRow(column_data);
-    //Does not work for some reason
-    //setItem(row, column, item);
+
+void BrowseTableModel::slotInsert(const QList< QList<QStandardItem*> >& rows){
+    qDebug() << "BrowseTableModel::slotInsert";
+    for(int i=0; i < rows.size(); ++i){
+        appendRow(rows.at(i));
+    }
 }
