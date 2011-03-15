@@ -29,3 +29,21 @@ Using a MIDI Controller
 
 Using Vinyl Timecode Records
 ----------------------------
+
+Common Configurations
+=====================
+
+Laptop Only
+-----------
+
+Laptop and a USB Soundcard
+--------------------------
+
+Laptop, MIDI Controller, and USB Soundcard
+------------------------------------------
+
+Laptop, Two Turntables, and a Hardware Mixer
+-----------------------------------
+
+
+
