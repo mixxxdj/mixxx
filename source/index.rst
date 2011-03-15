@@ -8,7 +8,7 @@
 ..    :alt: The Mixxx Logo
 
 Welcome to Mixxx!
-=================
+*****************
 
 Mixxx is Free [#f1]_ DJ software for Windows, Mac OSX, and Linux.  **Mixxx gives
 you everything you need to become a superstar DJ.** Using Mixxx, you can rock
@@ -27,7 +27,17 @@ Let's Get Started
 If you're new to DJing, this is the section for you. We've got some tutorials
 for you that cover the basics of DJing with Mixxx. If you already you already
 know how to DJ and are just looking for an overview of how to get your groove on
-with Mixxx, you can skip to the toc_.
+with Mixxx, you can skip to the `Table of Contents`_.
+
+.. _tutorials:
+
+.. toctree::
+   :maxdepth: 2
+   :glob:
+
+   tutorials/dj_basics
+   tutorials/tutorial*
+
 
 .. note:: Example of a note
 
@@ -35,20 +45,10 @@ with Mixxx, you can skip to the toc_.
 
 .. todo:: Example of a todo
 
-Tutorials
-~~~~~~~~~
-.. _tutorials:
-
-.. toctree::
-   :maxdepth: 2
-   :glob:
-
-   tutorials/tutorial*
 
 
-.. _toc:
 Table of Contents
-~~~~~~~~~~~~~~~~~
+-----------------
 
 Think you've got the basics down? Great. Go wild! If you still need some
 practice learning how to use Mixxx, you can read the rest of the manual, which
@@ -63,11 +63,11 @@ use them.
 
    chapters/introduction
    chapters/installation
-   chapters/dj_basics
    chapters/setup
    chapters/user_interface
    chapters/configuration
    chapters/djing_with_mixxx
+   chapters/advanced_topics
    chapters/getting_involved
 
    glossary
