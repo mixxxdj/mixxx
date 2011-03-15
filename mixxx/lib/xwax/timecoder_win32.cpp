@@ -55,33 +55,33 @@ static struct timecode_def_t timecode_def[] = {
     {
         "serato_2a",
         "Serato 2nd Ed., side A",
+        20,
         1000,
         0,
-        20,
         0x59017,
         0x361e4,
         712000,
-        707000,
+        625000,
         false
     },
     {
         "serato_2b",
         "Serato 2nd Ed., side B",
+        20,
         1000,
         0,
-        20,
         0x8f3c6,
         0x4f0d8, /* reverse of side A */
         922000,
-        917000,
+        905000,
         false
     },
     {
         "serato_cd",
         "Serato CD",
+        20,
         1000,
         0,
-        20,
         0xd8b40,
         0x34d54,
         950000,
@@ -91,9 +91,9 @@ static struct timecode_def_t timecode_def[] = {
     {
         "traktor_a",
         "Traktor Scratch, side A",
+        23,
         2000,
         SWITCH_PRIMARY | SWITCH_POLARITY | SWITCH_PHASE,
-        23,
         0x134503,
         0x041040,
         1500000,
@@ -103,9 +103,9 @@ static struct timecode_def_t timecode_def[] = {
     {
         "traktor_b",
         "Traktor Scratch, side B",
+        23,
         2000,
         SWITCH_PRIMARY | SWITCH_POLARITY | SWITCH_PHASE,
-        23,
         0x32066c,
         0x041040, /* same as side A */
         2110000,
@@ -115,9 +115,9 @@ static struct timecode_def_t timecode_def[] = {
     {
         "mixvibes_v2",
         "MixVibes V2",
+        20,
         1300,
         SWITCH_PHASE,
-        20,
         0x22c90,
         0x00008,
         950000,
@@ -127,9 +127,9 @@ static struct timecode_def_t timecode_def[] = {
     {
         "mixvibes_7inch",
         "MixVibes 7\"",
+        20,
         1300,
         SWITCH_PHASE,
-        20,
         0x22c90,
         0x00008,
         312000,
