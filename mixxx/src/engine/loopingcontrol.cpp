@@ -165,7 +165,7 @@ void LoopingControl::slotLoopIn(double val) {
     if (val) {
         // set loop in position
         if ( m_pQuantizeEnabled->get()) {
-            m_iLoopStartSample = m_pQuantizeBeat->get() * 2.0f;
+            m_iLoopStartSample = m_pQuantizeBeat->get();
         }
         else {
             m_iLoopStartSample = m_iCurrentSample;
@@ -186,7 +186,7 @@ void LoopingControl::slotLoopOut(double val) {
     int pos;
 
     if ( m_pQuantizeEnabled->get()) {
-        pos = m_pQuantizeBeat->get() * 2.0f;
+        pos = m_pQuantizeBeat->get();
     }
     else {
         pos = m_iCurrentSample;

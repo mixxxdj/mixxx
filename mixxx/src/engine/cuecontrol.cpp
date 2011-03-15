@@ -281,7 +281,7 @@ void CueControl::hotcueSet(HotcueControl* pControl, double v) {
     detachCue(hotcue);
     Cue* pCue = m_pLoadedTrack->addCue();
     if ( m_pQuantizeEnabled->get()) {
-        pCue->setPosition(m_pQuantizeBeat->get() * 2.0);
+        pCue->setPosition(m_pQuantizeBeat->get());
     }
     else {
         pCue->setPosition(getCurrentSample());
