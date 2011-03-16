@@ -16,6 +16,7 @@ That's right, this is you after learning how to DJ with Mixxx:
 .. image:: _static/armin-jesus.jpg
    :width: 400px
    :alt: Armin van Buuren doing the Jesus pose.
+   :align: center
 
 Let's Get Started
 -----------------
