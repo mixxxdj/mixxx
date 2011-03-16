@@ -3,10 +3,6 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-.. .. image:: _static/mixxx_logo_color_medium.png
-..    :align: center
-..    :alt: The Mixxx Logo
-
 Welcome to Mixxx!
 *****************
 
