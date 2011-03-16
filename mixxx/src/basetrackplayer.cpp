@@ -98,6 +98,7 @@ BaseTrackPlayer::~BaseTrackPlayer()
     delete m_pPlayPosition;
     delete m_pBPM;
     delete m_pReplayGain;
+    delete m_pWaveformRenderer;
 }
 
 void BaseTrackPlayer::slotLoadTrack(TrackPointer track, bool bStartFromEndPos)
@@ -184,6 +185,8 @@ void BaseTrackPlayer::slotFinishLoading(TrackPointer pTrackInfoObject)
     // Read the tags if required
     if(!m_pLoadedTrack->getHeaderParsed())
         SoundSourceProxy::ParseHeader(m_pLoadedTrack.data());
+
+    m_pLoadedTrack->incTimesPlayed();
 
     // Generate waveform summary
     //TODO: Consider reworking this visual resample stuff... need to ask rryan about this -- Albert.

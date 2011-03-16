@@ -102,19 +102,12 @@ int SoundDevicePortAudio::open()
     if (m_dSampleRate <= 0) {
         m_dSampleRate = 44100.0f;
     }
-    qDebug() << "m_dSampleRate" << m_dSampleRate;
-
-    //XXX Workaround for PortAudio crashing when our samplerate doesn't match
-    //    the JACK samplerate:
-    if (m_hostAPI == MIXXX_PORTAUDIO_JACK_STRING) {
-        m_dSampleRate = m_deviceInfo->defaultSampleRate;
-        //Sure hope that's the right samplerate
-    }
+    qDebug() << "Requested sample rate:" << m_dSampleRate;
 
     //Get latency in milleseconds
     qDebug() << "framesPerBuffer:" << m_framesPerBuffer;
     double latencyMSec = m_framesPerBuffer / m_dSampleRate * 1000;
-    qDebug() << "latency in milliseconds:" << latencyMSec;
+    qDebug() << "Mixxx latency in milliseconds:" << latencyMSec;
 
     qDebug() << "output channels:" << m_outputParams.channelCount << "| input channels:"
         << m_inputParams.channelCount;
@@ -217,6 +210,12 @@ int SoundDevicePortAudio::open()
     }
     else
         qDebug() << "PortAudio: Started stream successfully";
+    
+    // Get the actual details of the stream & update Mixxx's data
+    const PaStreamInfo* streamDetails = Pa_GetStreamInfo(m_pStream);
+    m_dSampleRate = streamDetails->sampleRate;
+    latencyMSec = streamDetails->outputLatency*1000;
+    qDebug() << "Actual sample rate: " << m_dSampleRate << "Hz, latency:" << latencyMSec << "ms";
 
     //Update the samplerate and latency ControlObjects, which allow the waveform view to properly correct
     //for the latency.
@@ -341,7 +340,7 @@ int SoundDevicePortAudio::callbackProcess(unsigned long framesPerBuffer, float *
     {
         assert(iFrameSize > 0);
         QHash<AudioOutput, const CSAMPLE*> outputAudio
-            = m_pSoundManager->requestBuffer(m_audioOutputs, framesPerBuffer);
+            = m_pSoundManager->requestBuffer(m_audioOutputs, framesPerBuffer, this, Pa_GetStreamTime(m_pStream));
 
         // Reset sample for each open channel
         memset(output, 0, framesPerBuffer * iFrameSize * sizeof(*output));
@@ -358,10 +357,9 @@ int SoundDevicePortAudio::callbackProcess(unsigned long framesPerBuffer, float *
             int iChannelCount = outChans.getChannelCount();
             int iChannelBase = outChans.getChannelBase();
 
-            // this will make sure a sample from each channel is copied
-            for (int iChannel = 0; iChannel < iChannelCount; ++iChannel) {
-
-                for (unsigned int iFrameNo=0; iFrameNo < framesPerBuffer; ++iFrameNo) {
+            for (unsigned int iFrameNo=0; iFrameNo < framesPerBuffer; ++iFrameNo) {
+                // this will make sure a sample from each channel is copied
+                for (int iChannel = 0; iChannel < iChannelCount; ++iChannel) {
                     // iFrameBase is the "base sample" in a frame (ie. the first
                     // sample in a frame)
                     unsigned int iFrameBase = iFrameNo * iFrameSize;

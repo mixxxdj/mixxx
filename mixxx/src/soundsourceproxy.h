@@ -36,7 +36,7 @@ class QLibrary;
 /*
   Base class for sound sources.
 */
-class SoundSourceProxy : public SoundSource
+class SoundSourceProxy : public Mixxx::SoundSource
 {
 public:
     SoundSourceProxy(QString qFilename);
@@ -53,6 +53,7 @@ public:
     /** Returns filename */
     QString getFilename();
     static QList<QString> supportedFileExtensions();
+    static QList<QString> supportedFileExtensionsByPlugins();
     static QString supportedFileExtensionsString();
     static QString supportedFileExtensionsRegex();
 

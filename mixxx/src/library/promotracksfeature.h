@@ -20,11 +20,13 @@
 
 #include <QStringListModel>
 
+#include "treeitemmodel.h"
 #include "trackinfoobject.h"
 #include "library/libraryfeature.h"
 #include "library/dao/playlistdao.h"
 #include "library/cratetablemodel.h"
 #include "configobject.h"
+
 
 class PlaylistTableModel;
 class ProxyTrackModel;
@@ -57,7 +59,7 @@ class PromoTracksFeature : public LibraryFeature {
                     WLibrary* libraryWidget,
                     MixxxKeyboard* keyboard);
 
-    QAbstractItemModel* getChildModel();
+    TreeItemModel* getChildModel();
 
 public slots:
     void activate();
@@ -76,7 +78,7 @@ private:
     const static QString m_sFeaturedArtistsViewName;
     const static QString m_sBundledSongsViewName;
     const static QString m_sMyDownloadsViewName;
-    QStringListModel m_childModel;
+    TreeItemModel m_childModel;
     CrateTableModel m_downloadsTableModel;
     SongDownloader* m_pSongDownloader;
     bool m_bFirstRun;

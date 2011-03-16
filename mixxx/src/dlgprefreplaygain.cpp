@@ -16,11 +16,9 @@
 #define CONFIG_KEY "[ReplayGain]"
 
 
-DlgPrefReplayGain::DlgPrefReplayGain(QWidget * parent, ConfigObject<ConfigValue> * _config) :  QWidget(parent), Ui::DlgPrefReplayGainDlg()
-{
-
+DlgPrefReplayGain::DlgPrefReplayGain(QWidget * parent, ConfigObject<ConfigValue> * _config)
+        :  QWidget(parent), Ui::DlgPrefReplayGainDlg() {
     config = _config;
-
 
     setupUi(this);
 
@@ -34,74 +32,68 @@ DlgPrefReplayGain::DlgPrefReplayGain(QWidget * parent, ConfigObject<ConfigValue>
     loadSettings();
 }
 
-DlgPrefReplayGain::~DlgPrefReplayGain()
-{
+DlgPrefReplayGain::~DlgPrefReplayGain() {
 }
 
-void DlgPrefReplayGain::loadSettings()
-{
-    if(config->getValueString(ConfigKey(CONFIG_KEY,"ReplayGainEnabled"))==QString(""))
+void DlgPrefReplayGain::loadSettings() {
+    if(config->getValueString(ConfigKey(CONFIG_KEY,"ReplayGainEnabled"))==QString("")) {
         setDefaults();
-    else
-    {
-        SliderBoost->setValue(config->getValueString(ConfigKey(CONFIG_KEY, "InitialReplayGainBoost")).toInt());
-        lcddB->display(config->getValueString(ConfigKey(CONFIG_KEY, "InitialReplayGainBoost")).toInt());
-        EnableGain->setChecked(false);
-        if(config->getValueString(ConfigKey(CONFIG_KEY, "ReplayGainEnabled")).toInt()==1)EnableGain->setChecked(true);
-        EnableAnalyser->setChecked(false);
-        if(config->getValueString(ConfigKey(CONFIG_KEY, "ReplayGainAnalyserEnabled")).toInt())EnableAnalyser->setChecked(true);
+    } else {
+        int iReplayGainBoost =
+                config->getValueString(ConfigKey(CONFIG_KEY, "InitialReplayGainBoost")).toInt();
+        SliderBoost->setValue(iReplayGainBoost);
+        lcddB->display(iReplayGainBoost);
+
+        bool gainEnabled =
+                config->getValueString(ConfigKey(CONFIG_KEY, "ReplayGainEnabled")).toInt() == 1;
+        EnableGain->setChecked(gainEnabled);
+
+        bool analyserEnabled =
+                config->getValueString(ConfigKey(CONFIG_KEY, "ReplayGainAnalyserEnabled")).toInt();
+        EnableAnalyser->setChecked(analyserEnabled);
     }
     slotUpdate();
-    slotApply();
+    slotUpdateBoost();
 }
 
-void DlgPrefReplayGain::setDefaults()
-{
+void DlgPrefReplayGain::setDefaults() {
     EnableGain->setChecked(true);
-    // Turn ReplayGain Analyser on by default as it does not give appreciable delay on recent hardware (<5 years old).
+    // Turn ReplayGain Analyser on by default as it does not give appreciable
+    // delay on recent hardware (<5 years old).
     EnableAnalyser->setChecked(true);
     SliderBoost->setValue(6);
-    lcddB -> display(6);
+    lcddB->display(6);
     slotUpdate();
     slotApply();
 }
 
-
-void DlgPrefReplayGain::slotSetRGEnabled()
-{
-    if (EnableGain->isChecked())
+void DlgPrefReplayGain::slotSetRGEnabled() {
+    if (EnableGain->isChecked()) {
         config->set(ConfigKey(CONFIG_KEY,"ReplayGainEnabled"), ConfigValue(1));
-
-    else
-    {
+    } else {
         config->set(ConfigKey(CONFIG_KEY,"ReplayGainEnabled"), ConfigValue(0));
-        config->set(ConfigKey(CONFIG_KEY,"ReplayGainAnalyserEnabled"), ConfigValue(0));
+        config->set(ConfigKey(CONFIG_KEY,"ReplayGainAnalyserEnabled"),
+                    ConfigValue(0));
     }
 
-
     slotUpdate();
     slotApply();
 }
 
-void DlgPrefReplayGain::slotSetRGAnalyserEnabled()
-{
-    if (EnableAnalyser->isChecked())
-        config->set(ConfigKey(CONFIG_KEY,"ReplayGainAnalyserEnabled"), ConfigValue(1));
-    else
-        config->set(ConfigKey(CONFIG_KEY,"ReplayGainAnalyserEnabled"), ConfigValue(0));
+void DlgPrefReplayGain::slotSetRGAnalyserEnabled() {
+    int enabled = EnableAnalyser->isChecked() ? 1 : 0;
+    config->set(ConfigKey(CONFIG_KEY,"ReplayGainAnalyserEnabled"),
+                ConfigValue(enabled));
     slotApply();
 }
 
-
-void DlgPrefReplayGain::slotUpdateBoost()
-{
-    config->set(ConfigKey(CONFIG_KEY, "InitialReplayGainBoost"), ConfigValue(SliderBoost->value()));
+void DlgPrefReplayGain::slotUpdateBoost() {
+    config->set(ConfigKey(CONFIG_KEY, "InitialReplayGainBoost"),
+                ConfigValue(SliderBoost->value()));
     slotApply();
 }
 
-
-void DlgPrefReplayGain::slotUpdate()
-{
+void DlgPrefReplayGain::slotUpdate() {
     if (config->getValueString(ConfigKey(CONFIG_KEY,"ReplayGainEnabled")).toInt()==1)
     {
         EnableAnalyser->setEnabled(true);
@@ -117,8 +109,7 @@ void DlgPrefReplayGain::slotUpdate()
     }
 }
 
-void DlgPrefReplayGain::slotApply()
-{
+void DlgPrefReplayGain::slotApply() {
     ControlObject::getControl(ConfigKey(CONFIG_KEY, "InitialReplayGainBoost"))->set(SliderBoost->value());
     int iRGenabled = 0;
     int iRGAnalyserEnabled = 0;

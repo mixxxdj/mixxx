@@ -84,13 +84,17 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
 
     //Play from Start Button (for sampler)
     playStartButton = new ControlPushButton(ConfigKey(group, "playstart"));
-    connect(playStartButton, SIGNAL(valueChanged(double)), this, SLOT(slotControlPlayFromStart(double)));
+    connect(playStartButton, SIGNAL(valueChanged(double)),
+            this, SLOT(slotControlPlayFromStart(double)),
+            Qt::DirectConnection);
     playStartButton->set(0);
     playStartButtonCOT = new ControlObjectThreadMain(playStartButton);
 
     //Stop playback (for sampler)
     stopButton = new ControlPushButton(ConfigKey(group, "stop"));
-    connect(stopButton, SIGNAL(valueChanged(double)), this, SLOT(slotControlStop(double)));
+    connect(stopButton, SIGNAL(valueChanged(double)),
+            this, SLOT(slotControlStop(double)),
+            Qt::DirectConnection);
     stopButton->set(0);
     stopButtonCOT = new ControlObjectThreadMain(stopButton);
 
@@ -168,7 +172,7 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
 
     m_pScaleST = new EngineBufferScaleST(m_pReadAheadManager);
     //m_pScaleST = (EngineBufferScaleST*)new EngineBufferScaleDummy(m_pReadAheadManager);
-    this->setPitchIndpTimeStretch(false); // default to VE, let the user specify PITS in their mix
+    setPitchIndpTimeStretch(false); // default to VE, let the user specify PITS in their mix
 
     setNewPlaypos(0.);
 
@@ -369,8 +373,12 @@ void EngineBuffer::slotControlSeekAbs(double abs)
     slotControlSeek(abs/file_length_old);
 }
 
-void EngineBuffer::slotControlPlay(double)
+void EngineBuffer::slotControlPlay(double v)
 {
+    // If no track is currently loaded, turn play off.
+    if (!m_pCurrentTrack) {
+        playButton->set(0.0f);
+    }
 }
 
 void EngineBuffer::slotControlStart(double)

@@ -53,7 +53,7 @@ DlgPrefEQ::DlgPrefEQ(QWidget * parent, ConfigObject<ConfigValue> * _config) :  Q
 	slotLoFiChanged();
 	CheckBoxLoFi->setEnabled(false);
 #endif
-	connect(PushButtonReset,	  SIGNAL(clicked(bool)), this,	SLOT(setDefaults()));
+	connect(PushButtonReset,	  SIGNAL(clicked(bool)), this,	SLOT(reset()));
 
 	m_lowEqFreq = 0;
 	m_highEqFreq = 0;
@@ -67,30 +67,34 @@ DlgPrefEQ::~DlgPrefEQ()
 
 void DlgPrefEQ::loadSettings()
 {
-	QString val = config->getValueString(ConfigKey(CONFIG_KEY, "HiEQFrequency"));
-	if(config->getValueString(ConfigKey(CONFIG_KEY, "HiEQFrequency")) == QString(""))
-		setDefaults();
-	else
-	{
-		SliderHiEQ->setValue( getSliderPosition(config->getValueString(ConfigKey(CONFIG_KEY, "HiEQFrequency")).toInt()));
-		SliderLoEQ->setValue( getSliderPosition(config->getValueString(ConfigKey(CONFIG_KEY, "LoEQFrequency")).toInt()));
+    if(config->getValueString(ConfigKey(CONFIG_KEY, "HiEQFrequency")) == QString("")) {
+        // apparently we don't have any settings, set defaults
+        CheckBoxLoFi->setChecked(true);
+        setDefaultShelves();
+    }
+    SliderHiEQ->setValue(getSliderPosition(config->getValueString(ConfigKey(CONFIG_KEY, "HiEQFrequency")).toInt()));
+    SliderLoEQ->setValue(getSliderPosition(config->getValueString(ConfigKey(CONFIG_KEY, "LoEQFrequency")).toInt()));
 
-		if(config->getValueString(ConfigKey(CONFIG_KEY, "LoFiEQs")) == QString("yes"))
-			CheckBoxLoFi->setChecked(true);
-		else
-			CheckBoxLoFi->setChecked(false);
+    if(config->getValueString(ConfigKey(CONFIG_KEY, "LoFiEQs")) == QString("yes"))
+        CheckBoxLoFi->setChecked(true);
+    else
+        CheckBoxLoFi->setChecked(false);
 
-		slotUpdate();
-		slotApply();
-	}
+    slotUpdate();
+    slotApply();
 }
 
-void DlgPrefEQ::setDefaults()
+void DlgPrefEQ::setDefaultShelves()
 {
-	CheckBoxLoFi->setChecked(true);
+    config->set(ConfigKey(CONFIG_KEY, "HiEQFrequency"), ConfigValue(2500));
+    config->set(ConfigKey(CONFIG_KEY, "LoEQFrequency"), ConfigValue(250));
+}
 
-	slotUpdate();
-	slotApply();
+/** Resets settings, leaves LOFI box checked asis.
+ */
+void DlgPrefEQ::reset() {
+    setDefaultShelves();
+    loadSettings();
 }
 
 void DlgPrefEQ::slotLoFiChanged()

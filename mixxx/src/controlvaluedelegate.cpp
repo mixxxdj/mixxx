@@ -45,6 +45,10 @@ ControlValueDelegate::ControlValueDelegate(QObject *parent)
         m_channelControlValues.append("rate");
         m_channelControlValues.append("rate_perm_down_small");
         m_channelControlValues.append("rate_perm_up_small");
+        m_channelControlValues.append("rate_perm_down");
+        m_channelControlValues.append("rate_perm_up");
+        m_channelControlValues.append("rate_temp_down");
+        m_channelControlValues.append("rate_temp_up");
         m_channelControlValues.append("rateRange");
         m_channelControlValues.append("scratch");
         m_channelControlValues.append("scratch_enable");

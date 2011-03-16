@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import logging
 import platform
 import sys
@@ -39,8 +40,11 @@ class MixxxBuild(object):
             raise Exception("invalid target platform")
 
         if machine not in ['x86_64', 'x86', 'i686', 'i586',
+                           'alpha', 'hppa', 'mips', 'mipsel', 's390',
+                           'sparc', 'ia64', 'armel', 'hurd-i386',
+                           'kfreebsd-amd64', 'kfreebsd-i386',
                            'i486', 'i386', 'powerpc', 'powerpc64',
-                           'AMD64', 'EM64T', 'INTEL64']:
+                           'amd64', 'AMD64', 'EM64T', 'INTEL64']:
             raise Exception("invalid machine type")
 
         if toolchain not in ['gnu', 'msvs']:
@@ -58,6 +62,8 @@ class MixxxBuild(object):
 
         self.machine = machine
         self.build = build
+        self.build_is_debug = build == 'debug'
+        self.build_is_release = build == 'release'
 
         self.toolchain = toolchain
         self.toolchain_is_gnu = self.toolchain == 'gnu'
@@ -150,6 +156,18 @@ class MixxxBuild(object):
                 self.env.Append(CCFLAGS = '-m32')
             elif flags_force64:
                 self.env.Append(CCFLAGS = '-m64')
+
+        if self.platform == 'osx':
+            if self.machine == 'powerpc':
+                self.env.Append(CCFLAGS = '-arch ppc')
+                self.env.Append(LINKFLAGS = '-arch ppc')
+            else:
+                if self.bitwidth == 32:
+                    self.env.Append(CCFLAGS = '-arch i386')
+                    self.env.Append(LINKFLAGS = '-arch i386')
+                elif self.bitwidth == 64:
+                    self.env.Append(CCFLAGS = '-arch x86_64')
+                    self.env.Append(LINKFLAGS = '-arch x86_64')
 
         if self.crosscompile:
             crosscompile_root = Script.ARGUMENTS.get('crosscompile_root', '')

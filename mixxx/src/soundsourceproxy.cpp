@@ -18,8 +18,13 @@
 
 #include "trackinfoobject.h"
 #include "soundsourceproxy.h"
+#ifdef __MAD__
 #include "soundsourcemp3.h"
+#endif
 #include "soundsourceoggvorbis.h"
+#ifdef __COREAUDIO__
+#include "soundsourcecoreaudio.h"
+#endif 
 #ifdef __SNDFILE__
 #include "soundsourcesndfile.h"
 #endif
@@ -46,7 +51,7 @@ QMutex SoundSourceProxy::m_extensionsMutex;
 
 //Constructor
 SoundSourceProxy::SoundSourceProxy(QString qFilename)
-	: SoundSource(qFilename),
+	: Mixxx::SoundSource(qFilename),
 	  m_pSoundSource(NULL),
 	  m_pTrack() {
     m_pSoundSource = initialize(qFilename);
@@ -103,9 +108,9 @@ void SoundSourceProxy::loadPlugins()
     }
 }
 
-SoundSource* SoundSourceProxy::initialize(QString qFilename) {
+Mixxx::SoundSource* SoundSourceProxy::initialize(QString qFilename) {
 
-    SoundSource* sndsrc = NULL;
+    Mixxx::SoundSource* sndsrc = NULL;
     QString extension = qFilename;
     extension.remove(0, (qFilename.lastIndexOf(".")+1));
     extension = extension.toLower();
@@ -113,13 +118,18 @@ SoundSource* SoundSourceProxy::initialize(QString qFilename) {
 #ifdef __FFMPEGFILE__
     return new SoundSourceFFmpeg(qFilename);
 #endif
-
-    if (SoundSourceMp3::supportedFileExtensions().contains(extension)) {
-	    return new SoundSourceMp3(qFilename);
-    } else if (SoundSourceOggVorbis::supportedFileExtensions().contains(extension)) {
+    if (SoundSourceOggVorbis::supportedFileExtensions().contains(extension)) {
 	    return new SoundSourceOggVorbis(qFilename);
+#ifdef __MAD__
+    } else if (SoundSourceMp3::supportedFileExtensions().contains(extension)) {
+	    return new SoundSourceMp3(qFilename);
+#endif
     } else if (SoundSourceFLAC::supportedFileExtensions().contains(extension)) {
         return new SoundSourceFLAC(qFilename);
+#ifdef __COREAUDIO__
+    } else if (SoundSourceCoreAudio::supportedFileExtensions().contains(extension)) {
+        return new SoundSourceCoreAudio(qFilename);
+#endif
     } else if (m_extensionsSupportedByPlugins.contains(extension)) {
         getSoundSourceFunc getter = m_extensionsSupportedByPlugins.value(extension);
         if (getter)
@@ -296,6 +306,7 @@ int SoundSourceProxy::ParseHeader(TrackInfoObject* p)
         p->setBitrate(sndsrc->getBitrate());
         p->setSampleRate(sndsrc->getSampleRate());
         p->setChannels(sndsrc->getChannels());
+	p->setKey(sndsrc->getKey());
         p->setHeaderParsed(true);
     }
     else
@@ -311,9 +322,25 @@ QList<QString> SoundSourceProxy::supportedFileExtensions()
 {
     QMutexLocker locker(&m_extensionsMutex);
     QList<QString> supportedFileExtensions;
+#ifdef __MAD__
     supportedFileExtensions.append(SoundSourceMp3::supportedFileExtensions());
+#endif
     supportedFileExtensions.append(SoundSourceOggVorbis::supportedFileExtensions());
+#ifdef __SNDFILE__
     supportedFileExtensions.append(SoundSourceSndFile::supportedFileExtensions());
+#endif 
+#ifdef __COREAUDIO__
+    supportedFileExtensions.append(SoundSourceCoreAudio::supportedFileExtensions());
+#endif
+    supportedFileExtensions.append(m_extensionsSupportedByPlugins.keys());
+
+    return supportedFileExtensions;
+}
+
+QList<QString> SoundSourceProxy::supportedFileExtensionsByPlugins()
+{
+    QMutexLocker locker(&m_extensionsMutex);
+    QList<QString> supportedFileExtensions;
     supportedFileExtensions.append(m_extensionsSupportedByPlugins.keys());
 
     return supportedFileExtensions;

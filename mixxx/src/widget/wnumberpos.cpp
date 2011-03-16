@@ -1,97 +1,113 @@
-//
-// C++ Implementation: wnumberpos
-//
-// Description:
-//
-//
-// Author: Tue Haste Andersen <haste@diku.dk>, (C) 2003
-//
-// Copyright: See COPYING file that comes with this distribution
-//
-//
-#include "wnumberpos.h"
+// Tue Haste Andersen <haste@diku.dk>, (C) 2003
+
+#include <QTime>
 #include <math.h>
+
+#include "wnumberpos.h"
+#include "mathstuff.h"
 #include "controlobject.h"
 #include "controlobjectthreadwidget.h"
 #include "controlobjectthreadmain.h"
 
-WNumberPos::WNumberPos(const char * group, QWidget * parent) : WNumber(parent)
-{
-    m_dDuration = 0.;
-    m_dOldValue = 0.;
-    m_qsText = "Pos: ";
-    m_bRemain = false;
+WNumberPos::WNumberPos(const char * group, QWidget * parent)
+        : WNumber(parent),
+          m_dOldValue(0.0f),
+          m_dDuration(0.0f),
+          m_dTrackSamples(0.0),
+          m_dTrackSampleRate(0.0f),
+          m_bRemain(false) {
+    m_qsText = "";
 
     m_pShowDurationRemaining = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[Controls]", "ShowDurationRemaining")));
     connect(m_pShowDurationRemaining, SIGNAL(valueChanged(double)),
             this, SLOT(slotSetRemain(double)));
     slotSetRemain(m_pShowDurationRemaining->get());
 
-    m_pRateControl = new ControlObjectThreadWidget(ControlObject::getControl(ConfigKey(group, "rate")));
-    m_pRateDirControl = new ControlObjectThreadWidget(ControlObject::getControl(ConfigKey(group, "rate_dir")));
-    m_pDurationControl = new ControlObjectThreadWidget(ControlObject::getControl(ConfigKey(group, "duration")));
-    connect(m_pDurationControl, SIGNAL(valueChanged(double)), this, SLOT(slotSetDuration(double)));
+    m_pRateControl = new ControlObjectThreadWidget(
+        ControlObject::getControl(ConfigKey(group, "rate")));
+    m_pRateDirControl = new ControlObjectThreadWidget(
+        ControlObject::getControl(ConfigKey(group, "rate_dir")));
 
-    // Tell the duration CO to signal us the update because we might be created
-    // after it is set on load.
-    m_pDurationControl->emitValueChanged();
+    m_pDuration = new ControlObjectThreadWidget(
+        ControlObject::getControl(ConfigKey(group, "duration")));
+    connect(m_pDuration, SIGNAL(valueChanged(double)),
+            this, SLOT(slotSetTrackDuration(double)));
+    // Tell the CO to re-emit its value since we could be created after it was
+    // set to a valid value.
+    m_pDuration->emitValueChanged();
 
+    m_pTrackSamples = new ControlObjectThreadWidget(
+        ControlObject::getControl(ConfigKey(group, "track_samples")));
+    connect(m_pTrackSamples, SIGNAL(valueChanged(double)),
+            this, SLOT(slotSetTrackSamples(double)));
+    // Tell the CO to re-emit its value since we could be created after it was
+    // set to a valid value.
+    m_pTrackSamples->emitValueChanged();
+
+    m_pTrackSampleRate = new ControlObjectThreadWidget(
+        ControlObject::getControl(ConfigKey(group, "track_samplerate")));
+    connect(m_pTrackSampleRate, SIGNAL(valueChanged(double)),
+            this, SLOT(slotSetTrackSampleRate(double)));
+    // Tell the CO to re-emit its value since we could be created after it was
+    // set to a valid value.
+    m_pTrackSampleRate->emitValueChanged();
 }
 
-WNumberPos::~WNumberPos()
-{
+WNumberPos::~WNumberPos() {
 }
 
-void WNumberPos::slotSetDuration(double dDuration)
-{
+void WNumberPos::mousePressEvent(QMouseEvent* pEvent) {
+    bool leftClick = pEvent->buttons() & Qt::LeftButton;
+
+    if (leftClick) {
+        setRemain(!m_bRemain);
+        m_pShowDurationRemaining->slotSet(m_bRemain ? 1.0f : 0.0f);
+    }
+}
+
+void WNumberPos::slotSetTrackDuration(double dDuration) {
     m_dDuration = dDuration;
     setValue(m_dOldValue);
 }
 
-void WNumberPos::setValue(double dValue)
-{
+void WNumberPos::slotSetTrackSamples(double dSamples) {
+    m_dTrackSamples = dSamples;
+    setValue(m_dOldValue);
+}
+
+void WNumberPos::slotSetTrackSampleRate(double dSampleRate) {
+    m_dTrackSampleRate = dSampleRate;
+    setValue(m_dOldValue);
+}
+
+void WNumberPos::setValue(double dValue) {
     m_dOldValue = dValue;
 
-    double v  = dValue*(m_dDuration/127.);
-    double v2 = m_dDuration;
-
-    if (m_bRemain)
-        v = m_dDuration-v;
-
-    int min1=0,min2=0,sec1=0,sec2=0,msec1=0,msec2=0;
-    int minv21=0,minv22=0,secv21=0,secv22=0;
-    if (v>0.)
-    {
-        min1 = (int)(floor(v/600.))%100;
-        min2 = (int)(floor(v/60.))%10;
-        sec1 = (int)(floor(v/10.))%6;
-        sec2 = (int)(floor(v))%10;
-        msec1 = (int)floor((v-floor(v))*10.);
-        msec2 = (int)(floor((v-floor(v))*100.))%10;
+    double valueMillis = 0.0f;
+    double durationMillis = 0.0f;
+    if (m_dTrackSamples > 0 && m_dTrackSampleRate > 0 && m_dDuration > 0) {
+        valueMillis = dValue * 1000.0f * m_dTrackSamples / 2.0f / 127.0f / m_dTrackSampleRate;
+        durationMillis = m_dDuration * 1000.0f;
+        if (m_bRemain)
+            valueMillis = math_max(durationMillis - valueMillis, 0.0f);
     }
 
-    if (v2>0.)
-    {
-        minv21 = (int)(floor(v2/600.))%100;
-        minv22 = (int)(floor(v2/60.))%10;
-        secv21 = (int)(floor(v2/10.))%6;
-        secv22 = (int)(floor(v2))%10;
-    }
+    QTime valueTime = QTime().addMSecs(valueMillis);
+    QTime durationTime = QTime().addMSecs(durationMillis);
 
-/*
-    if (v<30. && v>0.)
-        m_pLabel->setPaletteForegroundColor(QColor(255,0,0));
-    else
-        m_pLabel->setPaletteForegroundColor(m_qFgColor);
- */
+    QString valueString = valueTime.toString((valueTime.hour() >= 1) ? "hh:mm:ss.zzz" : "mm:ss.zzz");
+    QString durationString = durationTime.toString((durationTime.hour() >= 1) ? "hh:mm:ss.zzz" : "mm:ss.zzz");
 
-    m_pLabel->setText(QString(m_qsText).append("%1%2:%3%4, Dur: %5%6:%7%8")
-                      .arg(min1,1,10).arg(min2,1,10).arg(sec1,1,10).arg(sec2,1,10)
-                      .arg(minv21,1,10).arg(minv22,1,10).arg(secv21,1,10).arg(secv22,1,10));
+    // The format string gives us one extra digit of millisecond precision than
+    // we care about. Slice it off.
+    valueString = valueString.left(valueString.length() - 1);
+    durationString = durationString.left(durationString.length() - 1);
+
+    m_pLabel->setText(QString("%1%2   %3").arg(m_qsText).arg(valueString).arg(durationString));
 }
 
 void WNumberPos::slotSetRemain(double remain) {
-    setRemain(remain == 1.0f);
+    setRemain(remain > 0.0f);
 }
 
 void WNumberPos::setRemain(bool bRemain)
@@ -100,9 +116,9 @@ void WNumberPos::setRemain(bool bRemain)
 
     // Shift display state between showing position and remaining
     if (m_bRemain)
-        m_qsText = "Rem: ";
+        m_qsText = "-";
     else
-        m_qsText = "Pos: ";
+        m_qsText = "";
 
     // Have the widget redraw itself with its current value.
     setValue(m_dOldValue);

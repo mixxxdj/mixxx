@@ -23,7 +23,7 @@
 
 #include <sys/types.h>
 #ifdef WIN32
-#include <os.h>
+#include "os.h"
 #endif
 
 #define SHOUTERR_SUCCESS	(0)

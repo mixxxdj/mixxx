@@ -141,9 +141,6 @@ void DlgPrefSound::slotApply() {
         case SOUNDDEVICE_ERROR_DUPLICATE_OUTPUT_CHANNEL:
             error = QString(tr("Two outputs cannot share channels on %1")).arg(deviceName);
             break;
-        case SOUNDDEVICE_ERROR_DUPLICATE_INPUT_CHANNEL:
-            error = QString(tr("Two inputs cannot share channels on %1")).arg(deviceName);
-            break;
         default:
             error = QString(tr("Error opening %1\n%2")).arg(deviceName).arg(detailedError);
             break;
@@ -249,6 +246,12 @@ void DlgPrefSound::loadSettings(const SoundManagerConfig &config) {
     int sampleRateIndex = sampleRateComboBox->findData(m_config.getSampleRate());
     if (sampleRateIndex != -1) {
         sampleRateComboBox->setCurrentIndex(sampleRateIndex);
+        if (latencyComboBox->count() <= 0) {
+            updateLatencies(sampleRateIndex); // so the latency combo box is
+            // sure to be populated, if setCurrentIndex is called with the 
+            // currentIndex, the currentIndexChanged signal won't fire and
+            // the updateLatencies slot won't run -- bkgood lp bug 689373
+        }
     }
     int latencyIndex = latencyComboBox->findData(m_config.getLatency());
     if (latencyIndex != -1) {

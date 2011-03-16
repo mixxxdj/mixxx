@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<MixxxMIDIPreset schemaVersion="1" mixxxVersion="1.7.0+">
+<MixxxMIDIPreset schemaVersion="1" mixxxVersion="1.9.0+">
     <info>
         <name>Stanton SCS.3d</name>
         <author>Sean M. Pappalardo</author>
@@ -11,6 +11,14 @@
         </scriptfiles>
         
         <controls>
+            <control>   <!-- Device status inquiry response -->
+                <status>0xf0</status>
+                <group>[Master]</group>
+                <key>StantonSCS3d.statusResponse</key>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
             <control>    <!--    Gain slider    -->
                 <group>[Master]</group>
                 <key>StantonSCS3d.gain</key>
