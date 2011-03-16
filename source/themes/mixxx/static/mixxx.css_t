@@ -15,7 +15,8 @@
 /* -- page layout ----------------------------------------------------------- */
 
 body {
-    font-family: Arial, sans-serif;
+    /* font-family: Arial, sans-serif;*/
+    font-family: verdana,helvetica,arial,sans-serif;
     font-size: 100%;
     background-color: #000;
     color: #AAA;
@@ -24,8 +25,8 @@ body {
 }
 
 div.documentwrapper {
-    float: left;
-    width: 100%;
+    width: 760px;
+    margin: auto auto;
 }
 
 div.bodywrapper {
@@ -248,4 +249,153 @@ div.viewcode-block:target {
     background-color: #f4debf;
     border-top: 1px solid #ac9;
     border-bottom: 1px solid #ac9;
+}
+
+
+/* ##### Header ##### */
+
+.superHeader {
+  color: #a6a5a5;
+  background-color: #a6a5a5;
+  text-align: right;
+  margin: 0;
+  padding: 0.5ex 10px;
+}
+
+.superHeader span {
+  color: #a6a5a5;
+  background-color: transparent;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+.superHeader a {
+  color: rgb(195,196,210);
+  background-color: transparent;
+  text-decoration: none;
+  margin: 0;
+  padding: 0 0.25ex 0 0;
+}
+
+.superHeader a:hover {
+  color: rgb(193,102,90);
+  background-color: transparent;
+  text-decoration: none;
+}
+
+.midHeader {
+  color: #707070;
+  background-color: #000000;
+  margin: 0;
+  padding: 0.26ex 15px;
+}
+
+
+#header {
+  background-image:url('http://mixxx.org/images/header_mixxx_bg.png');
+  background-repeat: repeat-x;
+  font-size: 73%;
+  margin: 0px;
+  padding: 0px;
+  height: 80px;
+  width: 760px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.headerTitle {
+  font-size: 300%;
+  margin: 0;
+  padding: 0;
+}
+
+.headerSubTitle {
+  font-size: 151%;
+  font-weight: normal;
+  margin: 0 0 1ex 0;
+  padding: 0;
+}
+
+.headerLinks {
+  text-align: right;
+  margin: 0;
+  padding: 0 0 2ex 0;
+  position: absolute;
+  right: 1.5em;
+  top: 3.5em;
+}
+
+.headerLinks a {
+  color: white;
+  background-color: transparent;
+  text-decoration: none;
+  margin: 0;
+  padding: 0 0 0.5ex 0;
+  display: block;
+}
+
+.headerLinks a:hover {
+  color: rgb(61,92,122);
+  background-color: transparent;
+  text-decoration: underline;
+}
+
+.subHeader {
+  color: white;
+  /*background-color: #1e1e1e;  Solid colour from top of gradient */
+  /*background-color: #3b3b3c; Solid colour from bottom of gradient */
+  margin: 0;
+  padding: 2ex 32px;
+}
+
+.subHeaderCommunity {
+  color: white;
+  /*background-color: #1e1e1e;  Solid colour from top of gradient */
+  /*background-color: #3b3b3c;  Solid colour from bottom of gradient */
+  /*background-image:url('http://mixxx.org/images/navbarcommunity_bg.png');*/
+  /*background-repeat: repeat-x;*/
+  margin: 0;
+  padding: 1.2ex;
+  /*height: 20px; Trying to fix stripe alignment -- Albert */
+}
+
+.subHeaderCommunity a {
+  color: #cecece;
+  background-color: transparent;
+  font-size: 1.0em;
+  /*font-weight: bold; */
+  text-decoration: none;
+  margin: 0;
+  padding: 0ex 0.9ex 0px 12px;
+}
+
+.subHeaderFloatLeft {
+  position: relative;
+  width: 290px;
+  background-image:url('http://mixxx.org/images/logo_mixxx_bg.png');
+  background-position: right;
+  float: left;
+  padding-left: 10px;
+  padding-right: 0px;
+  margin-left: 0;
+  padding-top: 0px;
+  margin-top: 0;
+  height: 80px;
+  /*clear: left; */
+}
+
+.subHeader a, .subHeader .highlight {
+  color: #cecece;
+  background-color: transparent;
+  font-size: 1.5em;
+  /*font-weight: bold; */
+  text-decoration: none;
+  margin: 0;
+  padding: 0ex 0.7ex 0 0.7ex;
+}
+
+.subHeader a:hover, .subHeader .highlight, .subHeaderCommunity a:hover {
+  color: #ffffff;
+  background-color: transparent;
+  text-decoration: none;
 }
