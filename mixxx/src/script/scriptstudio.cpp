@@ -6,9 +6,9 @@
 ScriptStudio::ScriptStudio(ScriptEngine *eng) : QMainWindow(), Ui::ScriptStudio(), m_eng(eng) {
     setupUi(this);
 
-	connect(actionRun_Macro, SIGNAL(activated()), this, SLOT(runPressed()));
-    connect(actionImport, SIGNAL(activated()), this, SLOT(importScript()));
-    connect(actionExport, SIGNAL(activated()), this, SLOT(exportScript()));
+	connect(actionRun_Macro, SIGNAL(triggered()), this, SLOT(runPressed()));
+    connect(actionImport, SIGNAL(triggered()), this, SLOT(importScript()));
+    connect(actionExport, SIGNAL(triggered()), this, SLOT(exportScript()));
 }
 
 void ScriptStudio::showStudio() {

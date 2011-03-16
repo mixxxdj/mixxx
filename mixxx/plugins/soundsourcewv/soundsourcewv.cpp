@@ -11,6 +11,8 @@
 
 void format_samples(int bps, char *dst, int32_t *src, uint32_t count);
 
+namespace Mixxx {
+
 SoundSourceWV::SoundSourceWV(QString qFilename) : SoundSource(qFilename)
 {
 	// Initialize variables to invalid values in case loading fails.
@@ -175,3 +177,5 @@ void format_samples(int Bps, char *dst, int32_t *src, uint32_t count)
 
 	return;
 }
+
+}  // namespace Mixxx

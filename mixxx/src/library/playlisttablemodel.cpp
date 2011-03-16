@@ -44,16 +44,21 @@ void PlaylistTableModel::setPlaylist(int playlistId)
                   "PlaylistTracks." + PLAYLISTTRACKSTABLE_POSITION + "," +
                   //"playlist_id, " + //DEBUG
                   "library." + LIBRARYTABLE_ID + "," +
+                  "library." + LIBRARYTABLE_PLAYED + "," +
+                  "library." + LIBRARYTABLE_TIMESPLAYED + "," +
                   "library." + LIBRARYTABLE_ARTIST + "," +
                   "library." + LIBRARYTABLE_TITLE + "," +
                   "library." + LIBRARYTABLE_ALBUM + "," +
                   "library." + LIBRARYTABLE_YEAR + "," +
                   "library." + LIBRARYTABLE_DURATION + "," +
+                  "library." + LIBRARYTABLE_RATING + "," +
                   "library." + LIBRARYTABLE_GENRE + "," +
                   "library." + LIBRARYTABLE_FILETYPE + "," +
                   "library." + LIBRARYTABLE_TRACKNUMBER + "," +
+                  "library." + LIBRARYTABLE_KEY + "," +
                   "library." + LIBRARYTABLE_DATETIMEADDED + "," +
                   "library." + LIBRARYTABLE_BPM + ","
+                  "library." + LIBRARYTABLE_BITRATE + "," +
                   "track_locations.location,"
                   "track_locations.fs_deleted," +
                   "library." + LIBRARYTABLE_COMMENT + "," +
@@ -79,36 +84,7 @@ void PlaylistTableModel::setPlaylist(int playlistId)
 
     setTable(playlistTableName);
 
-    //Set the column heading labels, rename them for translations and have
-    //proper capitalization
-    setHeaderData(fieldIndex(PLAYLISTTRACKSTABLE_POSITION),
-                  Qt::Horizontal, tr("#"));
-    setHeaderData(fieldIndex(LIBRARYTABLE_ARTIST),
-                  Qt::Horizontal, tr("Artist"));
-    setHeaderData(fieldIndex(LIBRARYTABLE_TITLE),
-                  Qt::Horizontal, tr("Title"));
-    setHeaderData(fieldIndex(LIBRARYTABLE_ALBUM),
-                  Qt::Horizontal, tr("Album"));
-    setHeaderData(fieldIndex(LIBRARYTABLE_GENRE),
-                  Qt::Horizontal, tr("Genre"));
-    setHeaderData(fieldIndex(LIBRARYTABLE_YEAR),
-                  Qt::Horizontal, tr("Year"));
-    setHeaderData(fieldIndex(LIBRARYTABLE_FILETYPE),
-                  Qt::Horizontal, tr("Type"));
-    setHeaderData(fieldIndex("location"),
-                  Qt::Horizontal, tr("Location"));
-    setHeaderData(fieldIndex(LIBRARYTABLE_COMMENT),
-                  Qt::Horizontal, tr("Comment"));
-    setHeaderData(fieldIndex(LIBRARYTABLE_DURATION),
-                  Qt::Horizontal, tr("Duration"));
-    setHeaderData(fieldIndex(LIBRARYTABLE_TRACKNUMBER),
-                  Qt::Horizontal, tr("Track #"));
-    setHeaderData(fieldIndex(LIBRARYTABLE_BITRATE),
-                  Qt::Horizontal, tr("Bitrate"));
-    setHeaderData(fieldIndex(LIBRARYTABLE_DATETIMEADDED),
-                  Qt::Horizontal, tr("Date Added"));
-    setHeaderData(fieldIndex(LIBRARYTABLE_BPM),
-                  Qt::Horizontal, tr("BPM"));
+    initHeaderData();    //derived from BaseSqlModel
 
     slotSearch("");
 
@@ -164,26 +140,38 @@ QString PlaylistTableModel::getTrackLocation(const QModelIndex& index) const
 
 void PlaylistTableModel::removeTrack(const QModelIndex& index)
 {
-    const int positionColumnIndex = fieldIndex(PLAYLISTTRACKSTABLE_POSITION);
-    int position = index.sibling(index.row(), positionColumnIndex).data().toInt();
-    m_playlistDao.removeTrackFromPlaylist(m_iPlaylistId, position);
-    select(); //Repopulate the data model.
+    bool locked = m_playlistDao.isPlaylistLocked(m_iPlaylistId);
+
+    if (!locked) {
+        const int positionColumnIndex = fieldIndex(PLAYLISTTRACKSTABLE_POSITION);
+        int position = index.sibling(index.row(), positionColumnIndex).data().toInt();
+        m_playlistDao.removeTrackFromPlaylist(m_iPlaylistId, position);
+        select(); //Repopulate the data model.
+    }
 }
 
 void PlaylistTableModel::removeTracks(const QModelIndexList& indices) {
-    const int positionColumnIndex = fieldIndex(PLAYLISTTRACKSTABLE_POSITION);
+    bool locked = m_playlistDao.isPlaylistLocked(m_iPlaylistId);
 
-    QList<int> trackPositions;
-    foreach (QModelIndex index, indices) {
-        int trackPosition = index.sibling(index.row(), positionColumnIndex).data().toInt();
-        trackPositions.append(trackPosition);
+    if (!locked) {
+        const int positionColumnIndex = fieldIndex(PLAYLISTTRACKSTABLE_POSITION);
+
+        QList<int> trackPositions;
+        foreach (QModelIndex index, indices) {
+            int trackPosition = index.sibling(index.row(), positionColumnIndex).data().toInt();
+            trackPositions.append(trackPosition);
+        }
+
+        qSort(trackPositions);
+        QListIterator<int> iterator(trackPositions);
+        iterator.toBack();
+
+        while (iterator.hasPrevious()) {
+            m_playlistDao.removeTrackFromPlaylist(m_iPlaylistId, iterator.previous());
+        }
+
+        select();
     }
-
-    foreach (int trackPosition, trackPositions) {
-        m_playlistDao.removeTrackFromPlaylist(m_iPlaylistId, trackPosition);
-    }
-
-    select();
 }
 
 void PlaylistTableModel::moveTrack(const QModelIndex& sourceIndex, const QModelIndex& destIndex)
@@ -323,8 +311,14 @@ const QString PlaylistTableModel::currentSearch() {
 
 bool PlaylistTableModel::isColumnInternal(int column) {
     if (column == fieldIndex(LIBRARYTABLE_ID) ||
+        column == fieldIndex(LIBRARYTABLE_PLAYED) ||
         column == fieldIndex(LIBRARYTABLE_MIXXXDELETED) ||
         column == fieldIndex(TRACKLOCATIONSTABLE_FSDELETED))
+        return true;
+    return false;
+}
+bool PlaylistTableModel::isColumnHiddenByDefault(int column) {
+    if (column == fieldIndex(LIBRARYTABLE_KEY))    
         return true;
     return false;
 }
@@ -354,41 +348,9 @@ QMimeData* PlaylistTableModel::mimeData(const QModelIndexList &indexes) const {
     return mimeData;
 }
 
-Qt::ItemFlags PlaylistTableModel::flags(const QModelIndex &index) const
-{
-    Qt::ItemFlags defaultFlags = QAbstractItemModel::flags(index);
-    if (!index.isValid())
-      return Qt::ItemIsEnabled;
-
-    //Enable dragging songs from this data model to elsewhere (like the waveform widget to
-    //load a track into a Player).
-    defaultFlags |= Qt::ItemIsDragEnabled;
-
-    return defaultFlags;
-}
 
 QItemDelegate* PlaylistTableModel::delegateForColumn(const int i) {
     return NULL;
-}
-
-QVariant PlaylistTableModel::data(const QModelIndex& item, int role) const {
-    if (!item.isValid())
-        return QVariant();
-
-    QVariant value;
-
-    if (role == Qt::ToolTipRole)
-        value = BaseSqlTableModel::data(item, Qt::DisplayRole);
-    else
-        value = BaseSqlTableModel::data(item, role);
-
-    if ((role == Qt::DisplayRole || role == Qt::ToolTipRole) &&
-        item.column() == fieldIndex(LIBRARYTABLE_DURATION)) {
-        if (qVariantCanConvert<int>(value)) {
-            value = MixxxUtils::secondsToMinutes(qVariantValue<int>(value));
-        }
-    }
-    return value;
 }
 
 TrackModel::CapabilitiesFlags PlaylistTableModel::getCapabilities() const
@@ -398,6 +360,11 @@ TrackModel::CapabilitiesFlags PlaylistTableModel::getCapabilities() const
     // Only allow Add to AutoDJ if we aren't currently showing the AutoDJ queue.
     if (m_iPlaylistId != m_playlistDao.getPlaylistIdFromName(AUTODJ_TABLE))
         caps |= TRACKMODELCAPS_ADDTOAUTODJ;
+
+    bool locked = m_playlistDao.isPlaylistLocked(m_iPlaylistId);
+
+    if (locked)
+        caps |= TRACKMODELCAPS_LOCKED;
 
     return caps;
 }

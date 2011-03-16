@@ -9,13 +9,19 @@ class HSS1394(Feature):
         return "HSS1394 MIDI device support"
 
     def enabled(self, build):
-        build.flags['hss1394'] = util.get_flags(build.env, 'hss1394', 0)
+        if build.platform_is_windows or build.platform_is_osx:
+            build.flags['hss1394'] = util.get_flags(build.env, 'hss1394', 1)
+        else:
+            build.flags['hss1394'] = util.get_flags(build.env, 'hss1394', 0)
         if int(build.flags['hss1394']):
             return True
         return False
 
     def add_options(self, build, vars):
-        vars.Add('hss1394', 'Set to 1 to enable HSS1394 MIDI device support.', 0)
+        if build.platform_is_windows or build.platform_is_osx:
+            vars.Add('hss1394', 'Set to 1 to enable HSS1394 MIDI device support.', 1)
+        else:
+            vars.Add('hss1394', 'Set to 1 to enable HSS1394 MIDI device support.', 0)
 
     def configure(self, build, conf):
         if not self.enabled(build):
@@ -27,12 +33,13 @@ class HSS1394(Feature):
             #if not have_ffado:
             #    raise Exception('Could not find libffado.')
         else:
-            #have_hss1394_h = conf.CheckHeader('hss1394/hss1394.h') # WTF this gives tons of errors on MSVC
-            have_hss1394 = conf.CheckLib('hss1394', autoadd=False)
-            #if not (have_hss1394 and have_hss1394_h):
-            if not have_hss1394:
-                raise Exception('Could not find libhss1394 or its development headers.')
-            build.env.Append(LIBS = 'hss1394')
+#            if not conf.CheckHeader('HSS1394/HSS1394.h'):  # WTF this gives tons of errors on MSVC
+#                raise Exception('Did not find HSS1394 development headers, exiting!')
+#            elif not conf.CheckLib(['libHSS1394', 'HSS1394']):
+            if not conf.CheckLib(['libHSS1394', 'HSS1394']):
+                raise Exception('Did not find HSS1394 development library, exiting!')
+                return
+
         build.env.Append(CPPDEFINES = '__HSS1394__')
 
     def sources(self, build):
@@ -40,6 +47,63 @@ class HSS1394(Feature):
                             midi/hss1394enumerator.cpp
                             """)
         return sources
+
+
+class Mad(Feature):
+    def description(self):
+        return "MAD MP3 Decoder"
+
+    def enabled(self, build):
+        build.flags['mad'] = util.get_flags(build.env, 'mad', 1)
+        if int(build.flags['mad']):
+            return True
+        return False
+
+    def add_options(self, build, vars):
+        vars.Add('mad', 'Set to 1 to enable MAD MP3 decoder support.', 1)
+
+    def configure(self, build, conf):
+        if not self.enabled(build):
+            return
+        if not conf.CheckLib(['libmad','mad']):
+            raise Exception('Did not find libmad.a, libmad.lib, or the libmad development header files - exiting!')
+        if not conf.CheckLib(['libid3tag', 'id3tag','libid3tag-release']):
+            raise Exception('Did not find libid3tag.a, libid3tag.lib, or the libid3tag development header files - exiting!')
+        build.env.Append(CPPDEFINES = '__MAD__')
+
+    def sources(self, build):
+        return ['soundsourcemp3.cpp']
+
+
+class CoreAudio(Feature):
+
+    def description(self):
+        return "CoreAudio MP3/AAC Decoder"
+
+    def enabled(self, build):
+        build.flags['coreaudio'] = util.get_flags(build.env, 'coreaudio', 0)
+        if int(build.flags['coreaudio']):
+            return True
+        return False
+
+    def add_options(self, build, vars):
+        vars.Add('coreaudio', 'Set to 1 to enable CoreAudio MP3/AAC decoder support.', 0)
+
+    def configure(self, build, conf):
+        if not self.enabled(build):
+            return
+        if not build.platform_is_osx:
+            raise Exception('CoreAudio is only supported on OS X!');
+        else:
+            build.env.Append(CPPPATH='/System/Library/Frameworks/AudioToolbox.framework/Headers/')
+            build.env.Append(CPPPATH='#lib/apple/')
+            build.env.Append(LINKFLAGS='-framework AudioToolbox -framework CoreFoundation')
+            build.env.Append(CPPDEFINES = '__COREAUDIO__')
+
+    def sources(self, build):
+        return ['soundsourcecoreaudio.cpp',
+                '#lib/apple/CAStreamBasicDescription.h']
+
 
 class MIDIScript(Feature):
     def description(self):
@@ -172,6 +236,7 @@ class MSVCDebug(Feature):
             # for sndfile w/ flac support on windows.
             build.env.Append(CCFLAGS = '/MDd')
             build.env.Append(LINKFLAGS = '/DEBUG')
+            build.env.Append(CPPDEFINES = 'DEBUGCONSOLE')
             if build.machine_is_64bit:
                 build.env.Append(CCFLAGS = '/Zi')
                 build.env.Append(LINKFLAGS = '/NODEFAULTLIB:MSVCRT')
@@ -206,7 +271,7 @@ class VinylControl(Feature):
         return "Vinyl Control"
 
     def enabled(self, build):
-        build.flags['vinylcontrol'] = util.get_flags(build.env, 'vinylcontrol', 1)
+        build.flags['vinylcontrol'] = util.get_flags(build.env, 'vinylcontrol', 0)
         if int(build.flags['vinylcontrol']):
             return True
         return False
@@ -224,11 +289,9 @@ class VinylControl(Feature):
     def sources(self, build):
         sources = ['vinylcontrol.cpp',
                    'vinylcontrolproxy.cpp',
-                   'vinylcontrolscratchlib.cpp',
                    'vinylcontrolxwax.cpp',
                    'dlgprefvinyl.cpp',
-                   'vinylcontrolsignalwidget.cpp',
-                   '#lib/scratchlib/DAnalyse.cpp']
+                   'vinylcontrolsignalwidget.cpp']
         if build.platform_is_windows:
             sources.append("#lib/xwax/timecoder_win32.c")
         else:
@@ -260,25 +323,25 @@ class Tonal(Feature):
                    'tonal/ConstantQFolder.cxx']
         return sources
 
-class M4A(Feature):
+class FAAD(Feature):
     def description(self):
-        return "Apple M4A audio file support plugin"
+        return "FAAD AAC audio file decoder plugin"
 
     def enabled(self, build):
-        build.flags['m4a'] = util.get_flags(build.env, 'm4a', 0)
-        if int(build.flags['m4a']):
+        build.flags['faad'] = util.get_flags(build.env, 'faad', 0)
+        if int(build.flags['faad']):
             return True
         return False
 
     def add_options(self, build, vars):
-        vars.Add('m4a', 'Set to 1 to enable building the Apple M4A support plugin.', 0)
+        vars.Add('faad', 'Set to 1 to enable building the FAAD AAC decoder plugin.', 0)
 
     def configure(self, build, conf):
         if not self.enabled(build):
             return
 
         have_mp4v2_h = conf.CheckHeader('mp4v2/mp4v2.h')
-        have_mp4v2 = conf.CheckLib('mp4v2', autoadd=False)
+        have_mp4v2 = conf.CheckLib(['mp4v2','libmp4v2'], autoadd=False)
         have_mp4 = conf.CheckLib('mp4', autoadd=False)
 
         # Either mp4 or mp4v2 works
@@ -287,7 +350,7 @@ class M4A(Feature):
         if not have_mp4:
             raise Exception('Could not find libmp4, libmp4v2 or the libmp4v2 development headers.')
 
-        have_faad = conf.CheckLib('faad', autoadd=False)
+        have_faad = conf.CheckLib(['faad','libfaad'], autoadd=False)
 
         if not have_faad:
             raise Exception('Could not find libfaad or the libfaad development headers.')
@@ -513,15 +576,23 @@ class TestSuite(Feature):
         test_env.Append(CCFLAGS = '-pthread')
         test_env.Append(LINKFLAGS = '-pthread')
 
-        test_env.Append(CPPPATH="#lib/gtest-1.3.0/include")
-        gtest_dir = test_env.Dir("#lib/gtest-1.3.0")
-        gtest_dir.addRepository(build.env.Dir('#lib/gtest-1.3.0'))
+        test_env.Append(CPPPATH="#lib/gtest-1.5.0/include")
+        gtest_dir = test_env.Dir("#lib/gtest-1.5.0")
+        #gtest_dir.addRepository(build.env.Dir('#lib/gtest-1.5.0'))
         #build.env['EXE_OUTPUT'] = '#/lib/gtest-1.3.0/bin'  # example, optional
-        test_env['LIB_OUTPUT'] = '#/lib/gtest-1.3.0/lib'
+        test_env['LIB_OUTPUT'] = '#/lib/gtest-1.5.0/lib'
 
         env = test_env
         SCons.Export('env')
-        env.SConscript(env.File('scons/SConscript', gtest_dir))
+        env.SConscript(env.File('SConscript', gtest_dir))
+
+        # build and configure gmock
+        test_env.Append(CPPPATH="#lib/gmock-1.5.0/include")
+        gmock_dir = test_env.Dir("#lib/gmock-1.5.0")
+        #gmock_dir.addRepository(build.env.Dir('#lib/gmock-1.5.0'))
+        test_env['LIB_OUTPUT'] = '#/lib/gmock-1.5.0/lib'
+
+        env.SConscript(env.File('SConscript', gmock_dir))
 
         return []
 
@@ -547,23 +618,14 @@ class Shoutcast(Feature):
 
         if not libshout_found:
             raise Exception('Could not find libshout or its development headers. Please install it or compile Mixxx without Shoutcast support using the shoutcast=0 flag.')
-        
+
         # libvorbisenc does only exist on Linux and OSX, on Windows it is
         # included in vorbisfile.dll
         if not build.platform_is_windows:
             vorbisenc_found = conf.CheckLib(['vorbisenc'])
             if not vorbisenc_found:
                 raise Exception("libvorbisenc was not found! Please install it or compile Mixxx without Shoutcast support using the shoutcast=0 flag.")
-        
-        #pthread library needs to be explicitly linked on Windows
-        if build.platform_is_windows:
-            build.env.Append(LIBS = 'pthreadVC2')
-            build.env.Append(LIBS = 'pthreadVCE2')
-            build.env.Append(LIBS = 'pthreadVSE2')
-            build.env.Append(LIBS = 'Ws2_32')
-            build.env.Append(LIBS = 'winmm')
-            #libshout is stupid and shout be linked against all of these on its own.
-            
+
     def sources(self, build):
         build.env.Uic4('dlgprefshoutcastdlg.ui')
         return ['dlgprefshoutcast.cpp',
@@ -673,28 +735,27 @@ class Optimize(Feature):
             # http://msdn.microsoft.com/en-us/library/ms235601.aspx
             build.env.Append(CCFLAGS = '/fp:fast')
 
-            # Show a progress indicator. Not related to optimization so why is
-            # it here? Should we turn on PGO ?
+            # Do link-time code generation (and show a progress indicator)
+            # Should we turn on PGO ?
             # http://msdn.microsoft.com/en-us/library/xbf3tbeh.aspx
             build.env.Append(LINKFLAGS = '/LTCG:STATUS')
 
-            # Suggested for Code unused code removal
+            # Suggested for unused code removal
             # http://msdn.microsoft.com/en-us/library/ms235601.aspx
             # http://msdn.microsoft.com/en-us/library/xsa71f43.aspx
             # http://msdn.microsoft.com/en-us/library/bxwfs976.aspx
             build.env.Append(CCFLAGS = '/Gy')
             build.env.Append(LINKFLAGS = '/OPT:REF')
-            if build.machine_is_64bit:
-                build.env.Append(LINKFLAGS = '/OPT:ICF')
+            build.env.Append(LINKFLAGS = '/OPT:ICF')
 
-            # WTF? http://msdn.microsoft.com/en-us/library/59a3b321.aspx
+            # http://msdn.microsoft.com/en-us/library/59a3b321.aspx
             # In general, you should pick /O2 over /Ox
-            if optimize_level == 1:
+            if optimize_level >= 1:
                 self.status = "Enabled -- Maximize Speed (/O2)"
                 build.env.Append(CCFLAGS = '/O2')
-            elif optimize_level >= 2:
-                self.status = "Enabled -- Maximum Optimizations (/Ox)"
-                build.env.Append(CCFLAGS = '/Ox')
+            #elif optimize_level >= 2:
+            #    self.status = "Enabled -- Maximum Optimizations (/Ox)"
+            #    build.env.Append(CCFLAGS = '/Ox')
 
             # SSE and SSE2 are core instructions on x64
             if not build.machine_is_64bit:
@@ -709,7 +770,10 @@ class Optimize(Feature):
                 self.status = "Disabled (Overriden by tuned=1)"
                 return
 
-            # Common flags to all optimizations
+            # Common flags to all optimizations. Consider dropping -O3 to -O2
+            # and getting rid of -fomit-frame-pointer, -ffast-math, and
+            # -funroll-loops. We need to justify our use of these aggressive
+            # optimizations with data.
             build.env.Append(CCFLAGS='-O3 -fomit-frame-pointer -ffast-math -funroll-loops')
 
             if optimize_level == 1:
@@ -723,7 +787,7 @@ class Optimize(Feature):
                 build.env.Append(CCFLAGS = '-march=prescott -mmmx -msse3 -mfpmath=sse')
             elif optimize_level == 4:
                 self.status = "Enabled (Intel Core 2)"
-                build.env.Append(CCFLAGS = '-march=nocona -mmmx -msse3 -mfpmath=sse -ffast-math -funroll-loops')
+                build.env.Append(CCFLAGS = '-march=nocona -mmmx -msse -msse2 -msse3 -mfpmath=sse -ffast-math -funroll-loops')
             elif optimize_level == 5:
                 self.status = "Enabled (Athlon Athlon-4/XP/MP)"
                 build.env.Append(CCFLAGS = '-march=athlon-4 -mmmx -msse -m3dnow -mfpmath=sse')
@@ -736,6 +800,26 @@ class Optimize(Feature):
             elif optimize_level == 8:
                 self.status = "Enabled (Generic SSE/SSE2/SSE3)"
                 build.env.Append(CCFLAGS = '-mmmx -msse2 -msse3 -mfpmath=sse')
+            elif optimize_level == 9:
+                self.status = "Enabled (Tuned Generic)"
+                # This option is for release builds packaged for 64-bit. We
+                # don't know what kind of 64-bit CPU they'll have, so let
+                # -mtune=generic pick the best options. Used by the debian rules
+                # script.
+
+                # It's a little sketchy, but I'm turning on SSE and MMX by
+                # default. opt=9 is a distribution mode, we don't really support
+                # CPU's earlier than Pentium 3, which is the class of CPUs this
+                # decision affects. The downside of this is that we aren't truly
+                # i386 compatible, so builds that claim 'i386' will crash.
+                # -- rryan 2/2011
+
+                # TODO(XXX) check the soundtouch package in Ubuntu to see what they do about this.
+                build.env.Append(CCFLAGS = '-mtune=generic -mmmx -msse -mfpmath=sse')
+
+                # Enable SSE2 on 64-bit machines. SSE3 is not a sure thing on 64-bit
+                if build.machine_is_64bit:
+                    build.env.Append(CCFLAGS = '-msse2')
 
 
 class Tuned(Feature):

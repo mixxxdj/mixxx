@@ -14,19 +14,21 @@
         <file>images/preferences/ic_preferences_interface.png</file>
         <file>images/preferences/ic_preferences_library.png</file>
         <file>images/preferences/ic_preferences_recording.png</file>
+        <file>images/preferences/ic_preferences_replaygain.png</file>
         <file>images/preferences/ic_preferences_sampler.png</file>
         <file>images/preferences/ic_preferences_soundhardware.png</file>
         <file>images/preferences/ic_preferences_vinyl.png</file>
-	<file>images/preferences/ic_preferences_replaygain.png</file>
         <file>images/library/crates_art.png</file>
         <file>images/library/ic_library_autodj.png</file>
         <file>images/library/ic_library_browse.png</file>
         <file>images/library/ic_library_crates.png</file>
         <file>images/library/ic_library_itunes.png</file>
         <file>images/library/ic_library_library.png</file>
+        <file>images/library/ic_library_locked.png</file>
         <file>images/library/ic_library_playlist.png</file>
         <file>images/library/ic_library_prepare.png</file>
         <file>images/library/ic_library_promotracks.png</file>
         <file>images/library/ic_library_rhythmbox.png</file>
+        <file>images/library/ic_library_traktor.png</file>
     </qresource>
 </RCC>

@@ -78,17 +78,17 @@ void AnalyserQueue::doAnalysis(TrackPointer tio, SoundSourceProxy *pSoundSource)
 
         // Safety net in case something later barfs on 0 sample input
         if (read == 0) {
-	  break;
+            break;
         }
 
-	// If we get more samples than length, ask the analysers to process
-	// up to the number we promised, then stop reading - AD
-	if (read + processedSamples > totalSamples) {
-	  qDebug() << "While processing track of length " << totalSamples << " actually got "
-		   << read + processedSamples << " samples, truncating analysis at expected length";
-	  read = totalSamples - processedSamples;
-	  dieflag = true;
-	}
+        // If we get more samples than length, ask the analysers to process
+        // up to the number we promised, then stop reading - AD
+        if (read + processedSamples > totalSamples) {
+            qDebug() << "While processing track of length " << totalSamples << " actually got "
+                     << read + processedSamples << " samples, truncating analysis at expected length";
+            read = totalSamples - processedSamples;
+            dieflag = true;
+        }
 
         for (int i = 0; i < read; i++) {
             samples[i] = ((float)data16[i])/32767.0f;
@@ -116,6 +116,7 @@ void AnalyserQueue::doAnalysis(TrackPointer tio, SoundSourceProxy *pSoundSource)
         //QThread::usleep(10);
 
     } while(read == ANALYSISBLOCKSIZE && !dieflag);
+
     delete[] data16;
     delete[] samples;
 }
@@ -133,16 +134,16 @@ void AnalyserQueue::run() {
     if (m_aq.size() == 0)
         return;
 
-	while (!m_exit) {
-      TrackPointer next = dequeueNextBlocking();
+    while (!m_exit) {
+        TrackPointer next = dequeueNextBlocking();
 
-      if (m_exit) //When exit is set, it makes the above unblock first.
-          return;
+        if (m_exit) //When exit is set, it makes the above unblock first.
+            return;
 
-      // If the track is NULL, get the next one. Could happen if the track was
-      // queued but then deleted.
-      if (!next)
-          continue;
+        // If the track is NULL, get the next one. Could happen if the track was
+        // queued but then deleted.
+        if (!next)
+            continue;
 
         // Get the audio
         SoundSourceProxy * pSoundSource = new SoundSourceProxy(next);
@@ -210,12 +211,12 @@ AnalyserQueue* AnalyserQueue::createDefaultAnalyserQueue(ConfigObject<ConfigValu
 }
 
 AnalyserQueue* AnalyserQueue::createPrepareViewAnalyserQueue(ConfigObject<ConfigValue> *_config) {
-	AnalyserQueue* ret = new AnalyserQueue();
+    AnalyserQueue* ret = new AnalyserQueue();
     ret->addAnalyser(new AnalyserWavesummary());
     ret->addAnalyser(new AnalyserBPM(_config));
     ret->addAnalyser(new AnalyserGain(_config));
-	ret->start(QThread::IdlePriority);
-	return ret;
+    ret->start(QThread::IdlePriority);
+    return ret;
 }
 
 AnalyserQueue::~AnalyserQueue() {
@@ -223,15 +224,15 @@ AnalyserQueue::~AnalyserQueue() {
 
     stop();
 
-	m_qm.lock();
-	m_qwait.wakeAll();
-	m_qm.unlock();
+    m_qm.lock();
+    m_qwait.wakeAll();
+    m_qm.unlock();
 
-	wait(); //Wait until thread has actually stopped before proceeding.
+    wait(); //Wait until thread has actually stopped before proceeding.
 
     while (it.hasNext()) {
         Analyser* an = it.next();
-    //qDebug() << "AnalyserQueue: deleting " << typeid(an).name();
-    delete an;
+        //qDebug() << "AnalyserQueue: deleting " << typeid(an).name();
+        delete an;
     }
 }

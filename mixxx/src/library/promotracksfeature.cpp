@@ -21,7 +21,6 @@
 #include "library/promotracksfeature.h"
 #include "library/bundledsongswebview.h"
 #include "library/featuredartistswebview.h"
-#include "library/proxytrackmodel.h"
 #include "library/trackcollection.h"
 #include "library/dao/cratedao.h"
 #include "trackinfoobject.h"
@@ -161,7 +160,7 @@ void PromoTracksFeature::bindWidget(WLibrarySidebar* sidebarWidget,
     */
 }
 
-QAbstractItemModel* PromoTracksFeature::getChildModel() {
+TreeItemModel* PromoTracksFeature::getChildModel() {
     //XXX Promo 3.0:
     //return NULL;
     return &m_childModel;

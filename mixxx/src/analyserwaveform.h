@@ -21,6 +21,8 @@ class AnalyserWaveform : public Analyser {
     int m_iBufferPos;
     float m_fLMax;
     float m_fRMax;
+    float m_fOldLMax;
+    float m_fOldRMax;
 };
 
 #endif

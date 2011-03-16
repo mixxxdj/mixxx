@@ -18,15 +18,15 @@
 #ifndef WSKINCOLOR_H
 #define WSKINCOLOR_H
 
+#include <QSharedPointer>
 #include "skin/imgsource.h"
 
 class WSkinColor {
-
-public:
-	static QColor getCorrectColor(QColor c);
-	static void setLoader(ImgSource* ld);
-private:
-	static ImgSource* loader;
+  public:
+    static QColor getCorrectColor(QColor c);
+    static void setLoader(QSharedPointer<ImgSource> ld);
+  private:
+    static QSharedPointer<ImgSource> loader;
 };
 
 #endif

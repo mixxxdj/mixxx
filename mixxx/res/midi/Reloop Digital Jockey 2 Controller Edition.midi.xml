@@ -27,6 +27,26 @@
                     <script-binding/>
                 </options>
             </control>
+			<!-- Key Lock channel 2 -->
+			<control>
+                <status>0x90</status>
+                <midino>0x3E</midino>
+                <group>[Channel2]</group>
+                <key>DigitalJockey2Controller.KeyLock2</key>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+			<!-- Key Lock channel 1 -->
+			<control>
+                <status>0x90</status>
+                <midino>0x02</midino>
+                <group>[Channel1]</group>
+                <key>DigitalJockey2Controller.KeyLock1</key>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
             <control>
                 <status>0x90</status>
                 <midino>0x03</midino>
@@ -468,6 +488,42 @@
                     <script-binding/>
                 </options>
             </control>
+          <control>
+            <status>0x90</status>
+            <midino>0x1a</midino>
+            <group>[Channel1]</group>
+            <key>DigitalJockey2Controller.Search1</key>
+            <options>
+              <script-binding/>
+            </options>
+          </control>
+          <control>
+            <status>0x90</status>
+            <midino>0x56</midino>
+            <group>[Channel2]</group>
+            <key>DigitalJockey2Controller.Search2</key>
+            <options>
+              <script-binding/>
+            </options>
+          </control>
+          <control>
+            <status>0x90</status>
+            <midino>0xe</midino>
+            <group>[Channel1]</group>
+            <key>DigitalJockey2Controller.Flanger1</key>
+            <options>
+              <script-binding/>
+            </options>
+          </control>
+          <control>
+            <status>0x90</status>
+            <midino>0x45</midino>
+            <group>[Channel2]</group>
+            <key>DigitalJockey2Controller.Flanger2</key>
+            <options>
+              <script-binding/>
+            </options>
+          </control>
         </controls>
         <outputs/>
     </controller>

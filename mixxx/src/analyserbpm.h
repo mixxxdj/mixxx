@@ -8,7 +8,6 @@
 
 
 class AnalyserBPM : public Analyser {
-
   public:
     AnalyserBPM(ConfigObject<ConfigValue> *_config);
     void initialise(TrackPointer tio, int sampleRate, int totalSamples);
@@ -22,7 +21,6 @@ class AnalyserBPM : public Analyser {
     soundtouch::BPMDetect *m_pDetector;
     int m_iMinBpm, m_iMaxBpm;
     bool m_bProcessEntireSong;
-
 };
 
 #endif

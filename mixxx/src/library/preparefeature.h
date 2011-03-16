@@ -8,6 +8,7 @@
 #include <QStringListModel>
 #include "library/libraryfeature.h"
 #include "configobject.h"
+#include "treeitemmodel.h"
 
 class LibraryTableModel;
 class TrackCollection;
@@ -32,7 +33,7 @@ class PrepareFeature : public LibraryFeature {
                     WLibrary* libraryWidget,
                     MixxxKeyboard* keyboard);
 
-    QAbstractItemModel* getChildModel();
+    TreeItemModel* getChildModel();
 
 public slots:
     void activate();
@@ -43,7 +44,7 @@ public slots:
 private:
     ConfigObject<ConfigValue>* m_pConfig;
     TrackCollection* m_pTrackCollection;
-    QStringListModel m_childModel;
+    TreeItemModel m_childModel;
     const static QString m_sPrepareViewName;
 };
 

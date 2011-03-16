@@ -6,7 +6,7 @@
 
 #include "library/autodjfeature.h"
 #include "library/playlisttablemodel.h"
-#include "library/proxytrackmodel.h"
+
 #include "library/trackcollection.h"
 #include "dlgautodj.h"
 #include "widget/wlibrary.h"
@@ -50,8 +50,8 @@ void AutoDJFeature::bindWidget(WLibrarySidebar* sidebarWidget,
             this, SIGNAL(loadTrackToPlayer(TrackPointer, QString)));
 }
 
-QAbstractItemModel* AutoDJFeature::getChildModel() {
-    return &m_childModel;
+TreeItemModel* AutoDJFeature::getChildModel() {
+	return &m_childModel;
 }
 
 void AutoDJFeature::activate() {
