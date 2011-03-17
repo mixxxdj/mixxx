@@ -1,6 +1,8 @@
 // enginemicrophone.cpp
 // created 3/16/2011 by RJ Ryan (rryan@mit.edu)
 
+#include <QtDebug>
+
 #include "engine/enginemicrophone.h"
 
 #include "configobject.h"
@@ -11,12 +13,15 @@ EngineMicrophone::EngineMicrophone(const char* pGroup)
           m_volume(ConfigKey(pGroup, "volume")),
           m_clipping(pGroup),
           m_vuMeter(pGroup),
+          m_pControlTalkover(new ControlPushButton(ConfigKey(pGroup, "talkover"))),
           m_pConversionBuffer(SampleUtil::alloc(MAX_BUFFER_LEN)),
-          m_sampleBuffer(MAX_BUFFER_LEN) {
-
+          // Need a +1 here because the CircularBuffer only allows its size-1
+          // items to be held at once (it keeps a blank spot open persistently)
+          m_sampleBuffer(MAX_BUFFER_LEN+1) {
 }
 
 EngineMicrophone::~EngineMicrophone() {
+    qDebug() << "~EngineMicrophone()";
     SampleUtil::free(m_pConversionBuffer);
 }
 
@@ -36,6 +41,13 @@ void EngineMicrophone::receiveBuffer(AudioInput input, const short* pBuffer, uns
     // Use the conversion buffer to both convert from short and double into
     // stereo.
 
+    // Check that the number of mono samples doesn't exceed MAX_BUFFER_LEN/2
+    // because thats our conversion buffer size.
+    if (iNumSamples > MAX_BUFFER_LEN / 2) {
+        qDebug() << "WARNING: Dropping microphone samples because the input buffer is too large.";
+        iNumSamples = MAX_BUFFER_LEN / 2;
+    }
+
     // There isn't a suitable SampleUtil method that can do mono->stereo and
     // short->float in one pass.
     // SampleUtil::convert(m_pConversionBuffer, pBuffer, iNumSamples);
@@ -48,7 +60,7 @@ void EngineMicrophone::receiveBuffer(AudioInput input, const short* pBuffer, uns
     iNumSamples *= 2;
 
     // TODO(rryan) do we need to verify the input is the one we asked for? Oh well.
-    int samplesWritten = m_sampleBuffer.write(m_pConversionBuffer, iNumSamples);
+    unsigned int samplesWritten = m_sampleBuffer.write(m_pConversionBuffer, iNumSamples);
     if (samplesWritten < iNumSamples) {
         // Buffer overflow. We aren't processing samples fast enough. This
         // shouldn't happen since the mic spits out samples just as fast as they

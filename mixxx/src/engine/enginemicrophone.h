@@ -5,6 +5,7 @@
 #define ENGINEMICROPHONE_H
 
 #include "circularbuffer.h"
+#include "controlpushbutton.h"
 #include "engine/enginechannel.h"
 #include "engine/engineclipping.h"
 #include "engine/enginevolume.h"
@@ -36,6 +37,7 @@ class EngineMicrophone : public EngineChannel, public AudioDestination {
     EngineVolume m_volume;
     EngineClipping m_clipping;
     EngineVuMeter m_vuMeter;
+    ControlPushButton* m_pControlTalkover;
     CSAMPLE* m_pConversionBuffer;
     CircularBuffer<CSAMPLE> m_sampleBuffer;
 };
