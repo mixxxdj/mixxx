@@ -55,7 +55,7 @@ flags = build.flags
 #=========================
 if build.platform_is_windows:
 	dist_dir = 'dist%s' % build.bitwidth
-	mixxx_bin = env.Program('mixxx', 
+	mixxx_bin = env.Program('mixxx',
                             [sources, env.RES('#src/mixxx.rc')],
                             LINKCOM  = [env['LINKCOM'], 'mt.exe -nologo -manifest ${TARGET}.manifest -outputresource:$TARGET;1'])
 else:
@@ -64,16 +64,19 @@ else:
 def build_tests():
         test_files = Glob('test/*.cpp', strings=True)
         test_env = env.Clone()
-        test_env.Append(CPPPATH="#lib/gtest-1.3.0/include")
+        test_env.Append(CPPPATH="#lib/gtest-1.5.0/include")
+        test_env.Append(CPPPATH="#lib/gmock-1.5.0/include")
         test_files = [test_env.StaticObject(filename) \
                               if filename !='main.cpp' else filename
                       for filename in test_files]
-
         mixxx_sources = [filename for filename in sources if filename != 'main.cpp']
         test_sources = (test_files + mixxx_sources)
 
-        env.Append(LIBPATH="#lib/gtest-1.3.0/lib")
+        env.Append(LIBPATH="#lib/gtest-1.5.0/lib")
 	env.Append(LIBS = 'gtest')
+
+        env.Append(LIBPATH="#lib/gmock-1.5.0/lib")
+        env.Append(LIBS = 'gmock')
 
 	env.Program(target='mixxx-test', source=test_sources)
 
@@ -253,7 +256,8 @@ if build.platform_is_osx and 'bundle' in COMMAND_LINE_TARGETS:
 		File('#res/schema.xml'),
 		Dir('#res/midi/'), Dir('#res/keyboard/'),
 		Dir('#res/ladspa_presets'), Dir('#res/doc/'), Dir('#res/promo/'),
-        Dir('/Library/Frameworks/QtGui.framework/Resources/qt_menu.nib')], #qt_menu.nib for Cocoa Qt 4.7+
+        Dir('/Library/Frameworks/QtGui.framework/Resources/qt_menu.nib'),  #qt_menu.nib for Cocoa Qt 4.7+
+        File("#README"), File("#LICENSE")],
 		 PLUGINS=plugins, ##XXX test what happens if we don't pass any plugins
 			#Qt plugins ((Qt *NEEDS* its plugins in specific locations or it refuses to find them, however this is clearly awkward to write out like this.. maybe))
 		 QT_HACK = [(p_tgt_dir, os.path.join("/Developer/Applications/Qt/plugins/", p_tgt_dir, p)) for p_tgt_dir, p in qt_plugins] #sigh :(
@@ -262,7 +266,7 @@ if build.platform_is_osx and 'bundle' in COMMAND_LINE_TARGETS:
 		 #STRIP=(type == 'RELEASE'),
          IDENTIFIER="org.mixxx.mixxx",
          DISPLAY_NAME="Mixxx",
-         SHORT_VERSION="1.9.0", #FIXME: parse defs_version.h???
+         SHORT_VERSION=mixxx_version, #FIXME: parse defs_version.h???
          COPYRIGHT="Copyright © 2011 Mixxx Development Team", #FIXME: datetime.year()
          CATEGORY="public.app-category.music"
 		 )
