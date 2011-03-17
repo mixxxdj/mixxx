@@ -26,10 +26,6 @@
 #include "controlobjectthreadmain.h"
 #include "soundmanagerutil.h"
 
-QHash<AudioOutput, const AudioSource*> SoundManager::s_sources;
-QHash<AudioInput, AudioDestination*> SoundManager::s_destinations;
-QMutex SoundManager::s_registrationMutex;
-
 /** Initializes Mixxx's audio core
  *  @param pConfig The config key table
  *  @param _master A pointer to the audio engine's mastering class.
@@ -670,14 +666,8 @@ void SoundManager::pushBuffer(QList<AudioInput> inputs, short * inputBuffer,
                     m_VinylControl[index]->AnalyseSamples(pInputBuffer, iFramesPerBuffer);
                 }
 #endif
-            } else {
-                // TODO(XXX) why static? should be a member
-                AudioDestination* destination = NULL;
-                s_registrationMutex.lock();
-                if (s_destinations.contains(in)) {
-                    destination = s_destinations[in];
-                }
-                s_registrationMutex.unlock();
+            } else if (m_registeredDestinations.contains(in)) {
+                AudioDestination* destination = m_registeredDestinations[in];
                 if (destination) {
                     destination->receiveBuffer(in, pInputBuffer, iFramesPerBuffer);
                 }
@@ -690,15 +680,16 @@ void SoundManager::pushBuffer(QList<AudioInput> inputs, short * inputBuffer,
     //      (or maybe save it, and then have requestBuffer() push it into EngineMaster)...
 }
 
-
-//static
 void SoundManager::registerOutput(AudioOutput output, const AudioSource *src) {
-    QMutexLocker lock(&s_registrationMutex);
-    s_sources[output] = src;
+    if (m_registeredSources.contains(output)) {
+        qDebug() << "WARNING: AudioOutput already registered!";
+    }
+    m_registeredSources[output] = src;
 }
 
-//static
 void SoundManager::registerInput(AudioInput input, AudioDestination *dest) {
-    QMutexLocker lock(&s_registrationMutex);
-    s_destinations[input] = dest;
+    if (m_registeredDestinations.contains(input)) {
+        qDebug() << "WARNING: AudioInput already registered!";
+    }
+    m_registeredDestinations[input] = dest;
 }
