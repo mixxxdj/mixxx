@@ -209,7 +209,7 @@ void SoundManager::closeDevices()
 {
     //qDebug() << "SoundManager::closeDevices()";
     QListIterator<SoundDevice*> dev_it(m_devices);
-    
+
     //requestBufferMutex.lock(); //Ensures we don't kill a stream in the middle of a callback call.
                                  //Note: if we're using Pa_StopStream() (like now), we don't need
                                  //      to lock. PortAudio stops the threads nicely.
@@ -447,7 +447,7 @@ int SoundManager::setupDevices()
             }
         }
     }
-    
+
     if (!m_pClkRefDevice) {
         QList<SoundDevice*> outputDevices = getDeviceList(m_config.getAPI(), true, false);
         SoundDevice* device = outputDevices.first();
@@ -515,7 +515,7 @@ SoundManager::requestBuffer(QList<AudioOutput> outputs, unsigned long iFramesPer
 {
     Q_UNUSED(outputs); // unused, we just give the caller the full hash -bkgood
     //qDebug() << "SoundManager::requestBuffer()";
-    
+
     /*
     // Display when sound cards drop or duplicate buffers (use for testing only)
     if (iNumDevicesOpenedForOutput>1) {
@@ -525,7 +525,7 @@ SoundManager::requestBuffer(QList<AudioOutput> outputs, unsigned long iFramesPer
         m_deviceFrameCount.insert(device, currentFrameCount+iFramesPerBuffer);  // Overwrites existing value if already present
         // Get current time in milliseconds
 //         uint t = QDateTime::currentDateTime().toTime_t()*1000+QDateTime::currentDateTime().toString("zzz").toUint();
-        
+
         if (device != m_pClkRefDevice) {  // If not the reference device,
             // Detect dropped frames/buffers
             long sdifference = m_deviceFrameCount.value(m_pClkRefDevice)-m_deviceFrameCount.value(device);
@@ -649,19 +649,42 @@ void SoundManager::pushBuffer(QList<AudioInput> inputs, short * inputBuffer,
 
     if (inputBuffer)
     {
-#ifdef __VINYLCONTROL__
         for (QList<AudioInput>::const_iterator i = inputs.begin(),
                      e = inputs.end(); i != e; ++i) {
             const AudioInput& in = *i;
+
+            // Sanity check.
+            if (!m_inputBuffers.contains(in)) {
+                continue;
+            }
+
+            short* pInputBuffer = m_inputBuffers[in];
+
+            // Vinyl control does its own thing, everything else uses the
+            // AudioDestination interface.
             if (in.getType() == AudioInput::VINYLCONTROL) {
+#ifdef __VINYLCONTROL__
                 unsigned int index = in.getIndex();
                 Q_ASSERT(index < 2); // XXX we only do two vc decks atm -- bkgood
-                if (m_VinylControl[index] && m_inputBuffers.contains(in)) {
-                    m_VinylControl[index]->AnalyseSamples(m_inputBuffers[in], iFramesPerBuffer);
+                if (m_VinylControl[index]) {
+                    m_VinylControl[index]->AnalyseSamples(pInputBuffer, iFramesPerBuffer);
+                }
+#endif
+            } else {
+                // TODO(XXX) why static? should be a member
+                AudioDestination* destination = NULL;
+                s_registrationMutex.lock();
+                if (s_destinations.contains(in)) {
+                    destination = s_destinations[in];
+                }
+                s_registrationMutex.unlock();
+                if (destination) {
+                    destination->receiveBuffer(in, pInputBuffer, iFramesPerBuffer);
                 }
             }
         }
-#endif
+
+
     }
     //TODO: Add pass-through option here (and push it into EngineMaster)...
     //      (or maybe save it, and then have requestBuffer() push it into EngineMaster)...

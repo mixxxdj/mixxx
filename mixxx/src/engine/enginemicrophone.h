@@ -30,12 +30,13 @@ class EngineMicrophone : public EngineChannel, public AudioDestination {
 
     // This is called by SoundManager whenever there are new samples from the
     // microphone to be processed
-    virtual void receiveBuffer(AudioInput input, const CSAMPLE* pBuffer, unsigned int iNumSamples);
+    virtual void receiveBuffer(AudioInput input, const short* pBuffer, unsigned int iNumSamples);
 
   private:
     EngineVolume m_volume;
     EngineClipping m_clipping;
     EngineVuMeter m_vuMeter;
+    CSAMPLE* m_pConversionBuffer;
     CircularBuffer<CSAMPLE> m_sampleBuffer;
 };
 

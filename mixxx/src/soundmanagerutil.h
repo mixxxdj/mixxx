@@ -123,7 +123,7 @@ public:
 
 class AudioDestination {
 public:
-    virtual void receiveBuffer(AudioInput input, const CSAMPLE *buffer, unsigned int iNumSamples) = 0;
+    virtual void receiveBuffer(AudioInput input, const short* pBuffer, unsigned int iNumSamples) = 0;
 };
 
 typedef AudioPath::AudioPathType AudioPathType;
