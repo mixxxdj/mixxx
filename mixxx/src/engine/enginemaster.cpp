@@ -294,7 +294,10 @@ void EngineMaster::addChannel(EngineChannel* pChannel) {
     memset(pChannelBuffer, 0, sizeof(CSAMPLE) * MAX_BUFFER_LEN);
     m_channelBuffers.push_back(pChannelBuffer);
     m_channels.push_back(pChannel);
-    pChannel->getEngineBuffer()->bindWorkers(m_pWorkerScheduler);
+    EngineBuffer* pBuffer = pChannel->getEngineBuffer();
+    if (pBuffer != NULL) {
+        pBuffer->bindWorkers(m_pWorkerScheduler);
+    }
 
     // TODO(XXX) WARNING HUGE HACK ALERT In the case of 2-decks, this code hooks
     // the two EngineBuffers together so they can beat-sync off of each other.
@@ -302,8 +305,10 @@ void EngineMaster::addChannel(EngineChannel* pChannel) {
     if (m_channels.length() == 2) {
         EngineBuffer *pBuffer1 = m_channels[0]->getEngineBuffer();
         EngineBuffer *pBuffer2 = m_channels[1]->getEngineBuffer();
-        pBuffer1->setOtherEngineBuffer(pBuffer2);
-        pBuffer2->setOtherEngineBuffer(pBuffer1);
+        if (pBuffer1 != NULL && pBuffer2 != NULL) {
+            pBuffer1->setOtherEngineBuffer(pBuffer2);
+            pBuffer2->setOtherEngineBuffer(pBuffer1);
+        }
     }
 }
 
