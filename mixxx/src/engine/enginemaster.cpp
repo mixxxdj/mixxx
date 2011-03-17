@@ -186,10 +186,13 @@ void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
             channel->applyVolume(buffer, iBufferSize);
         }
 
-        // Add the channel to the list of master output channels.
-        masterChannels.push_back(
-            QPair<CSAMPLE*, EngineChannel::ChannelOrientation>(
-                buffer, channel->getOrientation()));
+        // Add the channel to the list of master output channels if they are
+        // enabled for master output.
+        if (channel->isMaster()) {
+            masterChannels.push_back(
+                QPair<CSAMPLE*, EngineChannel::ChannelOrientation>(
+                    buffer, channel->getOrientation()));
+        }
     }
 
     // Perform the master mix.
