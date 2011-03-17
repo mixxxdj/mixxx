@@ -220,8 +220,8 @@ bool AudioPath::isIndexed(AudioPathType type) {
     case DECK:
     case VINYLCONTROL:
     case EXTPASSTHROUGH:
-    case MICROPHONE:
         return true;
+    case MICROPHONE:
     default:
         break;
     }

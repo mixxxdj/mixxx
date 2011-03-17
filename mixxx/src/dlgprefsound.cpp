@@ -17,23 +17,24 @@
 #include <QMessageBox>
 #include "dlgprefsound.h"
 #include "dlgprefsounditem.h"
+#include "engine/enginemaster.h"
+#include "playermanager.h"
 #include "soundmanager.h"
 #include "sounddevice.h"
-#include "engine/enginemaster.h"
 
 /**
  * Construct a new sound preferences pane. Initializes and populates all the
  * all the controls to the values obtained from SoundManager.
  */
 DlgPrefSound::DlgPrefSound(QWidget *parent, SoundManager *soundManager,
-        ConfigObject<ConfigValue> *config)
+                           PlayerManager* pPlayerManager, ConfigObject<ConfigValue> *config)
     : QWidget(parent)
     , m_pSoundManager(soundManager)
+    , m_pPlayerManager(pPlayerManager)
     , m_pConfig(config)
     , m_settingsModified(false)
     , m_loading(false)
     , m_forceApply(false)
-    , m_deckCount(0)
 {
     setupUi(this);
 
@@ -64,10 +65,6 @@ DlgPrefSound::DlgPrefSound(QWidget *parent, SoundManager *soundManager,
             this, SLOT(updateLatencies(int)));
     connect(latencyComboBox, SIGNAL(currentIndexChanged(int)),
             this, SLOT(latencyChanged(int)));
-
-    // using math_max to give the signed return value of numChannels a lower
-    // bound so we can safely stick it in the unsigned deckCount -bkgood
-    m_deckCount = math_max(m_pSoundManager->getEngine()->numChannels(), 0);
 
     initializePaths();
     loadSettings();
@@ -174,7 +171,8 @@ void DlgPrefSound::initializePaths() {
     foreach (AudioPathType type, AudioOutput::getSupportedTypes()) {
         DlgPrefSoundItem *toInsert;
         if (AudioPath::isIndexed(type)) {
-            for (unsigned int i = 0; i < m_deckCount; ++i) {
+            unsigned int deckCount = m_pPlayerManager->numDecks();
+            for (unsigned int i = 0; i < deckCount; ++i) {
                 toInsert = new DlgPrefSoundItem(outputScrollAreaContents, type,
                         m_outputDevices, false, i);
                 connect(this, SIGNAL(refreshOutputDevices(const QList<SoundDevice*>&)),
@@ -194,7 +192,8 @@ void DlgPrefSound::initializePaths() {
     foreach (AudioPathType type, AudioInput::getSupportedTypes()) {
         DlgPrefSoundItem *toInsert;
         if (AudioPath::isIndexed(type)) {
-            for (unsigned int i = 0; i < m_deckCount; ++i) {
+            unsigned int deckCount = m_pPlayerManager->numDecks();
+            for (unsigned int i = 0; i < deckCount; ++i) {
                 toInsert = new DlgPrefSoundItem(inputScrollAreaContents, type,
                         m_inputDevices, true, i);
                 connect(this, SIGNAL(refreshInputDevices(const QList<SoundDevice*>&)),
@@ -248,7 +247,7 @@ void DlgPrefSound::loadSettings(const SoundManagerConfig &config) {
         sampleRateComboBox->setCurrentIndex(sampleRateIndex);
         if (latencyComboBox->count() <= 0) {
             updateLatencies(sampleRateIndex); // so the latency combo box is
-            // sure to be populated, if setCurrentIndex is called with the 
+            // sure to be populated, if setCurrentIndex is called with the
             // currentIndex, the currentIndexChanged signal won't fire and
             // the updateLatencies slot won't run -- bkgood lp bug 689373
         }

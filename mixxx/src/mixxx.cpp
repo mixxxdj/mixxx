@@ -357,7 +357,7 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
     m_pSkinLoader = new SkinLoader(m_pConfig);
 
     // Initialize preference dialog
-    m_pPrefDlg = new DlgPreferences(this, m_pSkinLoader, m_pSoundManager,
+    m_pPrefDlg = new DlgPreferences(this, m_pSkinLoader, m_pSoundManager, m_pPlayerManager,
                                  m_pMidiDeviceManager, m_pConfig);
     m_pPrefDlg->setHidden(true);
 
