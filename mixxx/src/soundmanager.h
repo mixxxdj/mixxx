@@ -65,8 +65,8 @@ class SoundManager : public QObject
             requestBuffer(QList<AudioOutput> outputs, unsigned long iFramesPerBuffer, SoundDevice*, double streamTime=0);
         void pushBuffer(QList<AudioInput> inputs, short *inputBuffer,
                         unsigned long iFramesPerBuffer, unsigned int iFrameSize);
-        static void registerOutput(AudioOutput output, const AudioSource *src);
-        static void registerInput(AudioInput input, AudioDestination *dest);
+        void registerOutput(AudioOutput output, const AudioSource *src);
+        void registerInput(AudioInput input, AudioDestination *dest);
     signals:
         void devicesUpdated(); // emitted when all the pointers to SoundDevices go stale
     public slots:
@@ -95,9 +95,8 @@ class SoundManager : public QObject
         bool m_paInitialized;
         unsigned int m_jackSampleRate;
 #endif
-        static QHash<AudioOutput, const AudioSource*> s_sources;
-        static QHash<AudioInput, AudioDestination*> s_destinations;
-        static QMutex s_registrationMutex;
+        QHash<AudioOutput, const AudioSource*> m_registeredSources;
+        QHash<AudioInput, AudioDestination*> m_registeredDestinations;
 };
 
 #endif

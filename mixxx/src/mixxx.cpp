@@ -242,7 +242,7 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
     EngineMicrophone* pMicrophone = new EngineMicrophone("[Microphone]");
     AudioInput micInput = AudioInput(AudioPath::MICROPHONE, 0, 0); // What should channelbase be?
     m_pEngine->addChannel(pMicrophone);
-    SoundManager::registerInput(micInput, pMicrophone);
+    m_pSoundManager->registerInput(micInput, pMicrophone);
 
     // Get Music dir
     bool hasChanged_MusicDir = false;
