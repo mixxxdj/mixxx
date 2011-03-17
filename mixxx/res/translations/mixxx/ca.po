@@ -8,18 +8,18 @@ msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2010-10-28 15:35-0400\n"
-"PO-Revision-Date: 2011-02-23 23:55+0000\n"
-"Last-Translator: Ferran Pujol <lambolico@hotmail.com>\n"
+"PO-Revision-Date: 2011-03-16 23:29+0000\n"
+"Last-Translator: Ferran Pujol <ferranpujolcamins@gmail.com>\n"
 "Language-Team: Catalan <ca@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-02-25 04:37+0000\n"
-"X-Generator: Launchpad (build 12351)\n"
+"X-Launchpad-Export-Date: 2011-03-17 04:33+0000\n"
+"X-Generator: Launchpad (build 12559)\n"
 
 #: AutoDJFeature#1
 msgid "Auto DJ"
-msgstr ""
+msgstr "DJ automàtic"
 
 #: BrowseFeature#1
 msgid "Browse"
@@ -31,11 +31,11 @@ msgstr "S'ha denegat el permís"
 
 #: BrowseFeature#3
 msgid "You don't have permission to view this folder."
-msgstr "No tneiu permís per veure aquesta carepta."
+msgstr "No teniu permís per veure aquesta carpeta."
 
 #: CrateFeature#1
 msgid "New Crate"
-msgstr "Nova caixa"
+msgstr "Caixa Nova"
 
 #: CrateFeature#2
 msgctxt "CrateFeature#2"
@@ -44,100 +44,100 @@ msgstr "Elimina"
 
 #: CrateFeature#3
 msgid "Crates"
-msgstr ""
+msgstr "Caixes"
 
 #: CrateFeature#4
 msgid "Crate name:"
-msgstr ""
+msgstr "Nom de la caixa:"
 
 #: CrateFeature#5
 msgid "Crate Creation Failed"
-msgstr ""
+msgstr "No s'ha pogut crear la caixa"
 
 #: CrateFeature#6
 msgid "A crate cannot have a blank name."
-msgstr ""
+msgstr "La caixa ha de tenir un nom"
 
 #: CrateFeature#7
 msgid "Creating Crate Failed"
-msgstr ""
+msgstr "No s'ha pogut crear la caixa"
 
 #: CrateFeature#8
 msgid "A crate by that name already exists."
-msgstr ""
+msgstr "Ja existeix una caixa amb aquest nom"
 
 #: CrateTableModel#1
 msgid "ID"
-msgstr ""
+msgstr "ID"
 
 #: CrateTableModel#2
 msgctxt "CrateTableModel#2"
 msgid "Artist"
-msgstr ""
+msgstr "Artista"
 
 #: CrateTableModel#3
 msgctxt "CrateTableModel#3"
 msgid "Title"
-msgstr ""
+msgstr "Títol"
 
 #: CrateTableModel#4
 msgctxt "CrateTableModel#4"
 msgid "Album"
-msgstr ""
+msgstr "Àlbum"
 
 #: CrateTableModel#5
 msgctxt "CrateTableModel#5"
 msgid "Genre"
-msgstr ""
+msgstr "Gènere"
 
 #: CrateTableModel#6
 msgctxt "CrateTableModel#6"
 msgid "Year"
-msgstr ""
+msgstr "Any"
 
 #: CrateTableModel#7
 msgctxt "CrateTableModel#7"
 msgid "Type"
-msgstr ""
+msgstr "Tipus"
 
 #: CrateTableModel#8
 msgctxt "CrateTableModel#8"
 msgid "Location"
-msgstr ""
+msgstr "Ubicació"
 
 #: CrateTableModel#9
 msgctxt "CrateTableModel#9"
 msgid "Comment"
-msgstr ""
+msgstr "Comentari"
 
 #: CrateTableModel#10
 msgctxt "CrateTableModel#10"
 msgid "Duration"
-msgstr ""
+msgstr "Durada"
 
 #: CrateTableModel#11
 msgctxt "CrateTableModel#11"
 msgid "Track #"
-msgstr ""
+msgstr "Pista #"
 
 #: CrateTableModel#12
 msgctxt "CrateTableModel#12"
 msgid "Bitrate"
-msgstr ""
+msgstr "Taxa de bits"
 
 #: CrateTableModel#13
 msgctxt "CrateTableModel#13"
 msgid "BPM"
-msgstr ""
+msgstr "BPM"
 
 #: CrateTableModel#14
 msgctxt "CrateTableModel#14"
 msgid "Date Added"
-msgstr ""
+msgstr "Data d'addició"
 
 #: DlgAboutDlg#1
 msgid "About Mixxx"
-msgstr ""
+msgstr "Quant al Mixxx"
 
 #: DlgAboutDlg#2
 msgid ""
@@ -158,7 +158,7 @@ msgstr ""
 
 #: DlgAboutDlg#3
 msgid "1.x.x"
-msgstr ""
+msgstr "1.x.x"
 
 #: DlgAboutDlg#4
 msgid "<a href=\"http://mixxx.org/\">Official Website</a>"
@@ -166,16 +166,16 @@ msgstr ""
 
 #: DlgAutoDJ#1
 msgid "Disable Auto DJ"
-msgstr ""
+msgstr "Desactiva el DJ automàtic"
 
 #: DlgAutoDJ#2
 msgid "Enable Auto DJ"
-msgstr ""
+msgstr "Activa el Dj automàtic"
 
 #: DlgAutoDJ#3
 msgctxt "DlgAutoDJ#3"
 msgid "Manage"
-msgstr ""
+msgstr "Gestiona"
 
 #: DlgAutoDJ#4
 msgid "Add tracks to the queue below..."
@@ -195,19 +195,19 @@ msgstr ""
 
 #: DlgBpmSchemeDlg#4
 msgid "Max"
-msgstr ""
+msgstr "Màxim"
 
 #: DlgBpmSchemeDlg#5
 msgid "Min"
-msgstr ""
+msgstr "Mínim"
 
 #: DlgBpmSchemeDlg#6
 msgid "Analyze Entire Song"
-msgstr ""
+msgstr "Analitza la cançó sencera"
 
 #: DlgMidiLearning#1
 msgid "Skip"
-msgstr ""
+msgstr "Omet"
 
 #: DlgMidiLearning#2
 msgid "Successfully mapped to: "
@@ -215,7 +215,7 @@ msgstr ""
 
 #: DlgMidiLearning#3
 msgid "Next"
-msgstr ""
+msgstr "Següent"
 
 #: DlgMidiLearning#4
 msgctxt "DlgMidiLearning#4"
@@ -234,7 +234,7 @@ msgstr ""
 
 #: DlgMidiLearning#7
 msgid "Begin"
-msgstr ""
+msgstr "Comença"
 
 #: DlgMidiLearning#8
 msgid "Please tweak the control for:"
@@ -242,11 +242,11 @@ msgstr ""
 
 #: DlgMidiLearning#9
 msgid "Mixxx Control"
-msgstr ""
+msgstr "Control de Mixxx"
 
 #: DlgMidiLearning#10
 msgid "Previous"
-msgstr ""
+msgstr "Anterior"
 
 #: DlgMidiLearning#11
 msgid "Press spacebar to proceed or skip."
@@ -300,7 +300,7 @@ msgstr ""
 
 #: DlgPrefBPMDlg#6
 msgid "If BPM can be detected but not within specified range"
-msgstr ""
+msgstr "Si el BPM pot detectar-se però fora l'interval especificat"
 
 #: DlgPrefBPMDlg#7
 msgid "Allow BPM above the range"
@@ -313,23 +313,23 @@ msgstr ""
 #: DlgPrefBPMDlg#9
 msgctxt "DlgPrefBPMDlg#9"
 msgid "Add"
-msgstr ""
+msgstr "Afegeix"
 
 #: DlgPrefBPMDlg#10
 msgid "Edit"
-msgstr ""
+msgstr "Edita"
 
 #: DlgPrefBPMDlg#11
 msgid "Delete"
-msgstr ""
+msgstr "Elimina"
 
 #: DlgPrefBPMDlg#12
 msgid "Default"
-msgstr ""
+msgstr "Per defecte"
 
 #: DlgPrefBpm#1
 msgid "Error"
-msgstr ""
+msgstr "Error"
 
 #: DlgPrefBpm#2
 msgid "Cannot open file %1"
