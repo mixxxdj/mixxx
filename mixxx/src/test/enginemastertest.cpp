@@ -19,7 +19,7 @@ class EngineChannelMock : public EngineChannel {
             : EngineChannel(group, defaultOrientation) {
     }
 
-    void applyVolume(CSAMPLE* pBuff, const int iBufferSize) const {
+    void applyVolume(CSAMPLE* pBuff, const int iBufferSize) {
     }
 
     MOCK_METHOD0(isActive, bool());

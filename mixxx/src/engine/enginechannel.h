@@ -53,7 +53,7 @@ class EngineChannel : public EngineObject {
     virtual bool isMaster();
 
     virtual void process(const CSAMPLE *pIn, const CSAMPLE *pOut, const int iBufferSize) = 0;
-    virtual void applyVolume(CSAMPLE *pBuff, const int iBufferSize) const = 0;
+    virtual void applyVolume(CSAMPLE *pBuff, const int iBufferSize) = 0;
 
     // TODO(XXX) This hack needs to be removed.
     virtual EngineBuffer* getEngineBuffer() {

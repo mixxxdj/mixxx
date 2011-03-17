@@ -28,10 +28,8 @@
 #include "controlnull.h"
 #include "controlpotmeter.h"
 #include "controlobjectthreadmain.h"
-#include "engine/enginebuffer.h"
 #include "engine/enginemaster.h"
-#include "engine/enginechannel.h"
-#include "engine/enginevumeter.h"
+#include "engine/enginemicrophone.h"
 #include "trackinfoobject.h"
 #include "dlgabout.h"
 #include "waveformviewerfactory.h"
@@ -46,6 +44,7 @@
 #include "library/libraryscanner.h"
 
 #include "soundmanager.h"
+#include "soundmanagerutil.h"
 #include "defs_urls.h"
 #include "recording/defs_recording.h"
 
@@ -239,6 +238,11 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
     // while this is created here, setupDevices needs to be called sometime
     // after the players are added to the engine (as is done currently) -- bkgood
     m_pSoundManager = new SoundManager(m_pConfig, m_pEngine);
+
+    EngineMicrophone* pMicrophone = new EngineMicrophone("[Microphone]");
+    AudioInput micInput = AudioInput(AudioPath::MICROPHONE, 0, 0); // What should channelbase be?
+    m_pEngine->addChannel(pMicrophone);
+    SoundManager::registerInput(micInput, pMicrophone);
 
     // Get Music dir
     bool hasChanged_MusicDir = false;
