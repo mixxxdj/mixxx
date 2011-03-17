@@ -67,6 +67,16 @@ class CircularBuffer {
         return itemsRead;
     }
 
+    unsigned int skip(const unsigned int itemsToRead) {
+        if (m_pBuffer == NULL)
+            return 0;
+        unsigned int itemsRead = 0;
+        while (!isEmpty() && itemsRead < itemsToRead) {
+            m_iReadPos = (m_iReadPos + 1)  % m_iLength;
+        }
+        return itemsRead;
+    }
+
   private:
     const unsigned int m_iLength;
     T* m_pBuffer;

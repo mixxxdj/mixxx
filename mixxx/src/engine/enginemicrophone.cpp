@@ -75,11 +75,27 @@ void EngineMicrophone::applyVolume(CSAMPLE *pBuff, const int iBufferSize) {
 
 void EngineMicrophone::process(const CSAMPLE* pInput, const CSAMPLE* pOutput, const int iBufferSize) {
     CSAMPLE* pOut = const_cast<CSAMPLE*>(pOutput);
-    int samplesRead = m_sampleBuffer.read(pOut, iBufferSize);
-    if (samplesRead < iBufferSize) {
-        // Buffer underflow. There aren't getting samples fast enough. This
-        // shouldn't happen since PortAudio should feed us samples just as fast
-        // as we consume them, right?
-        Q_ASSERT(false);
+
+
+    // If talkover is enabled, then read into the output buffer. Otherwise, skip
+    // the appropriate number of samples to throw them away.
+    if (m_pControlTalkover->get() > 0.0f) {
+        int samplesRead = m_sampleBuffer.read(pOut, iBufferSize);
+        if (samplesRead < iBufferSize) {
+            // Buffer underflow. There aren't getting samples fast enough. This
+            // shouldn't happen since PortAudio should feed us samples just as fast
+            // as we consume them, right?
+            Q_ASSERT(false);
+        }
+    } else {
+        m_sampleBuffer.skip(iBufferSize);
+    }
+
+    // Apply channel volume if we aren't PFL. TODO(rryan) this is a quirk of
+    // EngineMaster, and we should keep the logic here just in case, even though
+    // isPFL currently just returns true. In the future, the EngineMaster should
+    // deal with volume.
+    if (!isPFL()) {
+        m_volume.process(pOut, pOut, iBufferSize);
     }
 }
