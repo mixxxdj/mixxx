@@ -11,10 +11,13 @@ EngineMicrophone::EngineMicrophone(const char* pGroup)
           m_volume(ConfigKey(pGroup, "volume")),
           m_clipping(pGroup),
           m_vuMeter(pGroup),
+          m_pConversionBuffer(SampleUtil::alloc(MAX_BUFFER_LEN)),
           m_sampleBuffer(MAX_BUFFER_LEN) {
+
 }
 
 EngineMicrophone::~EngineMicrophone() {
+    SampleUtil::free(m_pConversionBuffer);
 }
 
 bool EngineMicrophone::isActive() {
@@ -29,9 +32,23 @@ bool EngineMicrophone::isMaster() {
     return true;
 }
 
-void EngineMicrophone::receiveBuffer(AudioInput input, const CSAMPLE* pBuffer, unsigned int iNumSamples) {
+void EngineMicrophone::receiveBuffer(AudioInput input, const short* pBuffer, unsigned int iNumSamples) {
+    // Use the conversion buffer to both convert from short and double into
+    // stereo.
+
+    // There isn't a suitable SampleUtil method that can do mono->stereo and
+    // short->float in one pass.
+    // SampleUtil::convert(m_pConversionBuffer, pBuffer, iNumSamples);
+    for (int i = 0; i < iNumSamples; ++i) {
+        m_pConversionBuffer[i*2 + 0] = pBuffer[i];
+        m_pConversionBuffer[i*2 + 1] = pBuffer[i];
+    }
+
+    // m_pConversionBuffer is now stereo, so double the number of samples
+    iNumSamples *= 2;
+
     // TODO(rryan) do we need to verify the input is the one we asked for? Oh well.
-    int samplesWritten = m_sampleBuffer.write(pBuffer, iNumSamples);
+    int samplesWritten = m_sampleBuffer.write(m_pConversionBuffer, iNumSamples);
     if (samplesWritten < iNumSamples) {
         // Buffer overflow. We aren't processing samples fast enough. This
         // shouldn't happen since the mic spits out samples just as fast as they
