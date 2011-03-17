@@ -15,6 +15,7 @@
 *                                                                         *
 ***************************************************************************/
 
+#include "controlobject.h"
 #include "controlpushbutton.h"
 #include "enginebuffer.h"
 #include "enginevinylsoundemu.h"

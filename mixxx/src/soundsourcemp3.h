@@ -49,7 +49,7 @@ typedef struct MadSeekFrameType {
   *@author Tue and Ken Haste Andersen
   */
 
-class SoundSourceMp3 : public SoundSource {
+class SoundSourceMp3 : public Mixxx::SoundSource {
 public:
     SoundSourceMp3(QString qFilename);
     ~SoundSourceMp3();
