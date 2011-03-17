@@ -108,7 +108,7 @@ protected:
 class AudioInput : public AudioPath {
 public:
     AudioInput(AudioPathType type = INVALID, unsigned char channelBase = 0,
-                  unsigned char index = 0);
+               unsigned char index = 0);
     QDomElement toXML(QDomElement *element) const;
     static AudioInput fromXML(const QDomElement &xml);
     static QList<AudioPathType> getSupportedTypes();

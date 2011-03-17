@@ -41,7 +41,7 @@ class EngineDeck : public EngineChannel {
     virtual ~EngineDeck();
 
     virtual void process(const CSAMPLE *pIn, const CSAMPLE *pOut, const int iBufferSize);
-    virtual void applyVolume(CSAMPLE *pBuff, const int iBufferSize) const;
+    virtual void applyVolume(CSAMPLE *pBuff, const int iBufferSize);
 
     // TODO(XXX) This hack needs to be removed.
     virtual EngineBuffer* getEngineBuffer();

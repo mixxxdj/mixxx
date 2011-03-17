@@ -17,15 +17,15 @@ EngineMicrophone::EngineMicrophone(const char* pGroup)
 EngineMicrophone::~EngineMicrophone() {
 }
 
-bool EngineMicrophone::isActive() const {
+bool EngineMicrophone::isActive() {
     return !m_sampleBuffer.isEmpty();
 }
 
-bool EngineMicrophone::isPFL() const {
+bool EngineMicrophone::isPFL() {
     return true;
 }
 
-bool EngineMicrophone::isMaster() const {
+bool EngineMicrophone::isMaster() {
     return true;
 }
 
@@ -38,6 +38,10 @@ void EngineMicrophone::receiveBuffer(AudioInput input, const CSAMPLE* pBuffer, u
         // come in, right?
         Q_ASSERT(false);
     }
+}
+
+void EngineMicrophone::applyVolume(CSAMPLE *pBuff, const int iBufferSize) {
+    m_volume.process(pBuff, pBuff, iBufferSize);
 }
 
 void EngineMicrophone::process(const CSAMPLE* pInput, const CSAMPLE* pOutput, const int iBufferSize) {

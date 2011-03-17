@@ -74,7 +74,7 @@ void EngineDeck::process(const CSAMPLE*, const CSAMPLE * pOut, const int iBuffer
     }
 }
 
-void EngineDeck::applyVolume(CSAMPLE *pBuff, const int iBufferSize) const {
+void EngineDeck::applyVolume(CSAMPLE *pBuff, const int iBufferSize) {
     m_pVolume->process(pBuff, pBuff, iBufferSize);
 }
 

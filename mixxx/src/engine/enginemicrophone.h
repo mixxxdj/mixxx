@@ -19,12 +19,14 @@ class EngineMicrophone : public EngineChannel, public AudioDestination {
     EngineMicrophone(const char* pGroup);
     virtual ~EngineMicrophone();
 
-    bool isActive() const;
-    bool isPFL() const;
-    bool isMaster() const;
+    bool isActive();
+    bool isPFL();
+    bool isMaster();
 
     // Called by EngineMaster whenever is requesting a new buffer of audio.
     virtual void process(const CSAMPLE* pInput, const CSAMPLE* pOutput, const int iBufferSize);
+
+    virtual void applyVolume(CSAMPLE* pBuff, const int iBufferSize);
 
     // This is called by SoundManager whenever there are new samples from the
     // microphone to be processed
