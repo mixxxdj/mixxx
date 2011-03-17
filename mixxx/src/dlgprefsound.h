@@ -22,6 +22,7 @@
 #include "soundmanagerconfig.h"
 
 class SoundManager;
+class PlayerManager;
 class ControlObject;
 class SoundDevice;
 
@@ -38,7 +39,8 @@ class DlgPrefSound : public QWidget, public Ui::DlgPrefSoundDlg  {
     Q_OBJECT;
 public:
     DlgPrefSound(QWidget *parent, SoundManager *soundManager,
-            ConfigObject<ConfigValue> *config);
+                 PlayerManager* pPlayerManager,
+                 ConfigObject<ConfigValue> *config);
     ~DlgPrefSound();
 signals:
     void loadPaths(const SoundManagerConfig &config);
@@ -56,6 +58,7 @@ private:
     void loadSettings();
     void loadSettings(const SoundManagerConfig &config);
     SoundManager *m_pSoundManager;
+    PlayerManager *m_pPlayerManager;
     ConfigObject<ConfigValue> *m_pConfig;
     QList<SoundDevice*> m_inputDevices;
     QList<SoundDevice*> m_outputDevices;
@@ -63,7 +66,6 @@ private:
     SoundManagerConfig m_config;
     bool m_loading;
     bool m_forceApply;
-    unsigned int m_deckCount;
 private slots:
     void apiChanged(int index);
     void updateAPIs();
