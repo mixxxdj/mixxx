@@ -364,6 +364,9 @@ class MixxxCore(Feature):
                    "engine/enginesidechain.cpp",
                    "engine/enginefilterbutterworth8.cpp",
                    "engine/enginexfader.cpp",
+                   "engine/enginemicrophone.cpp",
+                   "engine/enginedeck.cpp",
+
                    "engine/enginecontrol.cpp",
                    "engine/ratecontrol.cpp",
                    "engine/loopingcontrol.cpp",
@@ -371,6 +374,7 @@ class MixxxCore(Feature):
                    "engine/cuecontrol.cpp",
                    "engine/readaheadmanager.cpp",
                    "cachingreader.cpp",
+
                    "analyserrg.cpp",
                    "analyserqueue.cpp",
                    "analyserwavesummary.cpp",
