@@ -74,7 +74,7 @@ Q_OBJECT
     void removeTrack(int id);
     void removeTracks(QList<int> ids);
     void unremoveTrack(int trackId);
-    TrackPointer getTrack(int id) const;
+    TrackPointer getTrack(int id, bool cacheOnly=false) const;
     bool isDirty(int trackId);
 
     // Scanning related calls. Should be elsewhere or private somehow.
@@ -109,9 +109,10 @@ Q_OBJECT
     void clearCache();
 
   private slots:
-    void slotTrackDirty();
-    void slotTrackChanged();
-    void slotTrackSave();
+    void slotTrackDirty(TrackInfoObject* pTrack);
+    void slotTrackChanged(TrackInfoObject* pTrack);
+    void slotTrackClean(TrackInfoObject* pTrack);
+    void slotTrackSave(TrackInfoObject* pTrack);
 
   private:
     void saveTrack(TrackInfoObject* pTrack);

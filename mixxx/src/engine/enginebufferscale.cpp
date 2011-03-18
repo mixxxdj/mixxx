@@ -15,7 +15,7 @@
 *                                                                         *
 ***************************************************************************/
 
-#include "enginebufferscale.h"
+#include "engine/enginebufferscale.h"
 
 EngineBufferScale::EngineBufferScale()
 {
