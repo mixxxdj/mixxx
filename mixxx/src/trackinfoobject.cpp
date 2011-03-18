@@ -144,11 +144,12 @@ void TrackInfoObject::initialize(bool parseHeader) {
 }
 
 TrackInfoObject::~TrackInfoObject() {
-    qDebug() << "~TrackInfoObject()";
+    //qDebug() << "~TrackInfoObject()" << m_iId << getInfo();
 }
 
 void TrackInfoObject::doSave() {
-    emit(save());
+    //qDebug() << "TIO::doSave()" << getInfo();
+    emit(save(this));
 }
 
 bool TrackInfoObject::isValid() const {
@@ -822,21 +823,22 @@ void TrackInfoObject::setChordData(Segmentation<QString> cd) {
 }
 
 void TrackInfoObject::setDirty(bool bDirty) {
+
     QMutexLocker lock(&m_qMutex);
     bool change = m_bDirty != bDirty;
     m_bDirty = bDirty;
     lock.unlock();
+    // qDebug() << "Track" << m_iId << getInfo() << (change? "changed" : "unchanged")
+    //          << "set" << (bDirty ? "dirty" : "clean");
     if (change) {
-        //qDebug() << "Track" << m_iId << "set" << (bDirty ? "dirty" : "clean");
         if (m_bDirty)
-            emit(dirty());
+            emit(dirty(this));
         else
-            emit(clean());
+            emit(clean(this));
     }
     // Emit a changed signal regardless if this attempted to set us dirty.
     if (bDirty)
-        emit(changed());
-
+        emit(changed(this));
 
     //qDebug() << QString("TrackInfoObject %1 %2 set to %3").arg(m_iId).arg(m_sLocation).arg(m_bDirty ? "dirty" : "clean");
 }

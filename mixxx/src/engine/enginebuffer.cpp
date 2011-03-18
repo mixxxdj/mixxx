@@ -18,24 +18,24 @@
 #include <QEvent>
 #include <QtDebug>
 
-#include "enginebuffer.h"
+#include "engine/enginebuffer.h"
 #include "cachingreader.h"
 
 #include "controlpushbutton.h"
 #include "controlobjectthreadmain.h"
 #include "configobject.h"
 #include "controlpotmeter.h"
-#include "enginebufferscalest.h"
-#include "enginebufferscalelinear.h"
-#include "enginebufferscalereal.h"
-#include "enginebufferscaledummy.h"
+#include "engine/enginebufferscalest.h"
+#include "engine/enginebufferscalelinear.h"
+#include "engine/enginebufferscalereal.h"
+#include "engine/enginebufferscaledummy.h"
 #include "mathstuff.h"
 #include "engine/engineworkerscheduler.h"
 #include "engine/readaheadmanager.h"
 #include "engine/enginecontrol.h"
-#include "loopingcontrol.h"
-#include "ratecontrol.h"
-#include "bpmcontrol.h"
+#include "engine/loopingcontrol.h"
+#include "engine/ratecontrol.h"
+#include "engine/bpmcontrol.h"
 
 #ifdef __VINYLCONTROL__
 #include "vinylcontrol.h"

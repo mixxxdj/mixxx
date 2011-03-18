@@ -18,7 +18,7 @@
 #pragma intrinsic(fabs)
 #endif
 
-#include "enginevumeter.h"
+#include "engine/enginevumeter.h"
 #include "controlpotmeter.h"
 #include "sampleutil.h"
 

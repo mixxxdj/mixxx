@@ -17,7 +17,7 @@
 #ifndef ENGINEPREGAIN_H
 #define ENGINEPREGAIN_H
 
-#include "engineobject.h"
+#include "engine/engineobject.h"
 #include "controlobject.h"
 
 

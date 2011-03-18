@@ -17,10 +17,10 @@
 #ifndef ENGINEFILTERIIR_H
 #define ENGINEFILTERIIR_H
 
-#include "engineobject.h"
+#include "engine/engineobject.h"
 #include "defs.h"
 
-class EngineFilterIIR : public EngineObject 
+class EngineFilterIIR : public EngineObject
 {
 public:
     EngineFilterIIR(const double *pCoefs, int iOrder);
@@ -29,8 +29,8 @@ public:
 protected:
     int order;
     const double *coefs;
-    #define MAXNZEROS 8 
-    #define MAXNPOLES 8 
+    #define MAXNZEROS 8
+    #define MAXNPOLES 8
     double xv1[MAXNZEROS+1], yv1[MAXNPOLES+1];
     double xv2[MAXNZEROS+1], yv2[MAXNPOLES+1];
 };
@@ -40,9 +40,9 @@ protected:
 //
 
 // 8th order lowpass, corner at 600 Hz
-static const double bessel_lowpass[13] = {  7.444032197e+08, 
+static const double bessel_lowpass[13] = {  7.444032197e+08,
 					    8, 28, 56, 70,
-					    -0.3800297563, 3.4120798629, 
+					    -0.3800297563, 3.4120798629,
 					    -13.4230504610, 30.2214248640,
 					    -42.5938048390, 38.4826057150,
 					    -21.7665031930, 7.0472774638};
@@ -71,7 +71,7 @@ static const double bessel_lowpass2[4] = {3.707141512e+02, 2, -0.8282366449, 1.8
 static const double bessel_bandpass2[7] = {1.596830813e+01, 0, -2, -0.3374389990, 1.7280392126, -3.4124608099, 3.0203698354};
 
 // 2nd order highpass, corner at 4000 Hz:
-static const double bessel_highpass2[4] = {1.451889828e+00, -2, -0.4505643044, 1.3044656722}; 
+static const double bessel_highpass2[4] = {1.451889828e+00, -2, -0.4505643044, 1.3044656722};
 
 // 4th order lowpass, corner 600Hz
 static const double bessel_lowpass4[7] = {6.943736360e+04, 4, 6, -0.6673458737, 2.9444565421, -4.8814113588, 3.6040702669};
