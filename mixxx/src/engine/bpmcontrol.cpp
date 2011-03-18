@@ -66,7 +66,7 @@ void BpmControl::slotSetEngineBpm(double bpm) {
     if (filebpm != 0.0) {
         double newRate = bpm / filebpm - 1.0f;
         newRate = math_max(-1.0f, math_min(1.0f, newRate));
-        m_pRateSlider->set(newRate);
+        m_pRateSlider->set(newRate * m_pRateDir->get());
     }
 }
 
