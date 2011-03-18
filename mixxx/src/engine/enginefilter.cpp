@@ -15,7 +15,7 @@
 *                                                                         *
 ***************************************************************************/
 
-#include "enginefilter.h"
+#include "engine/enginefilter.h"
 #include <QDebug>
 
 

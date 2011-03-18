@@ -14,7 +14,7 @@
  *                                                                         *
  ***************************************************************************/
 
-#include "enginepregain.h"
+#include "engine/enginepregain.h"
 #include "controllogpotmeter.h"
 #include "controlpotmeter.h"
 #include "controlpushbutton.h"

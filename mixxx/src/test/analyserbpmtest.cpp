@@ -102,4 +102,5 @@ TEST_F(AnalyserBPMTest, wrongTotalSamples) {
         EXPECT_FLOAT_EQ(canaryBigBuf[i], CANARY_FLOAT);
     }
 }
+
 }

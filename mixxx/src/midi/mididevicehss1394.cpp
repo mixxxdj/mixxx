@@ -39,19 +39,33 @@ void DeviceChannelListener::Process(const hss1394::uint8 *pBuffer, hss1394::uint
     // Called when data has arrived. 
 	//! This call will occur inside a separate thread.
 
-    unsigned char status = pBuffer[0];
+    unsigned int i = 0;
 
-    if (uBufferSize==3) {
+    // If multiple three-byte messages arrive right next to each other, handle them all
+    while (i<uBufferSize) {
+        unsigned char status = pBuffer[i];
         unsigned char opcode = status & 0xF0;
         unsigned char channel = status & 0x0F;
-        unsigned char note = pBuffer[1];
-        unsigned char velocity = pBuffer[2];
+        unsigned char note;
+        unsigned char velocity;
+        switch (status & 0xF0) {
+            case MIDI_STATUS_NOTE_OFF:
+            case MIDI_STATUS_NOTE_ON:
+            case MIDI_STATUS_AFTERTOUCH:
+            case MIDI_STATUS_CC:
+            case MIDI_STATUS_PITCH_BEND:
+                note = pBuffer[i+1];
+                velocity = pBuffer[i+2];
 
-        m_pMidiDevice->receive((MidiStatusByte)status, channel, note, velocity);
-    }
-    else {
-        // Handle platter messages and any others that are not 3 bytes
-        m_pMidiDevice->receive(pBuffer, uBufferSize);
+                m_pMidiDevice->receive((MidiStatusByte)status, channel, note, velocity);
+                i+=3;
+                break;
+            default:
+                // Handle platter messages and any others that are not 3 bytes
+                m_pMidiDevice->receive(pBuffer, uBufferSize);
+                i=uBufferSize;
+                break;
+        }
     }
 }
 
