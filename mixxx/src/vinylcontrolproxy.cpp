@@ -2,7 +2,6 @@
 
 #include <QtDebug>
 #include "vinylcontrolproxy.h"
-#include "vinylcontrolscratchlib.h"
 #include "vinylcontrolxwax.h"
 #include "controlobjectthreadmain.h"
 
@@ -19,18 +18,12 @@ VinylControlProxy::VinylControlProxy(ConfigObject<ConfigValue> * pConfig, const 
     xwax_timecodes.push_back(MIXXX_VINYL_SERATOCD);
     xwax_timecodes.push_back(MIXXX_VINYL_TRAKTORSCRATCHSIDEA);
     xwax_timecodes.push_back(MIXXX_VINYL_TRAKTORSCRATCHSIDEB);
-    scratchlib_timecodes.push_back(MIXXX_VINYL_FINALSCRATCH);
-    scratchlib_timecodes.push_back(MIXXX_VINYL_MIXVIBESDVSCD);
 
     //Figure out which type of timecoded vinyl we're using.
     strVinylType = m_pConfig->getValueString(ConfigKey("[VinylControl]","strVinylType"));
 
     //Create the VinylControl object that matches the type of vinyl selected in the prefs...
-    if (scratchlib_timecodes.contains(strVinylType))
-    {
-        m_pVinylControl = new VinylControlScratchlib(pConfig, _group);
-    }
-    else if (xwax_timecodes.contains(strVinylType))
+    if (xwax_timecodes.contains(strVinylType))
     {
         m_pVinylControl = new VinylControlXwax(pConfig, _group);
     }

@@ -1,6 +1,6 @@
 /****************************************************************/
-/*      Stanton SCS.3d MIDI controller script v1.60             */
-/*          Copyright (C) 2009-2010, Sean M. Pappalardo         */
+/*      Stanton SCS.3d MIDI controller script v1.62             */
+/*          Copyright (C) 2009-2011, Sean M. Pappalardo         */
 /*      but feel free to tweak this to your heart's content!    */
 /*      For Mixxx version 1.9.x                                 */
 /****************************************************************/
@@ -60,7 +60,7 @@ StantonSCS3d.hotCues = {    1:{ 0x48: 1, 0x4A: 2, 0x4C: 3, 0x4E: 4, 0x4F: 5, 0x5
                             2:{ 0x48:13, 0x4A:14, 0x4C:15, 0x4E:16, 0x4F:17, 0x51:18,
                                 0x53:19, 0x55:20, 0x56:21, 0x58:22, 0x5A:23, 0x5C:24 },
                             3:{ 0x48:25, 0x4A:26, 0x4C:27, 0x4E:28, 0x4F:29, 0x51:30,
-                                0x53:31, 0x55:-1, 0x56:-1, 0x58:-1, 0x5A:-1, 0x5C:-1 } };
+                                0x53:31, 0x55:32, 0x56:33, 0x58:34, 0x5A:35, 0x5C:36 } };
 StantonSCS3d.triggerS4 = 0xFF;
 
 // Signals to (dis)connect by mode: Group, Key, Function name
@@ -137,13 +137,23 @@ StantonSCS3d.modeSignals = {"fx":[    ["[Flanger]", "lfoDepth", "StantonSCS3d.FX
                                       ["CurrentChannel", "hotcue_29_enabled", "StantonSCS3d.BsELED"],
                                       ["CurrentChannel", "hotcue_30_enabled", "StantonSCS3d.BsFLED"],
                                       ["CurrentChannel", "hotcue_31_enabled", "StantonSCS3d.BsGLED"],
+                                      ["CurrentChannel", "hotcue_32_enabled", "StantonSCS3d.BsHLED"],
+                                      ["CurrentChannel", "hotcue_33_enabled", "StantonSCS3d.BsILED"],
+                                      ["CurrentChannel", "hotcue_34_enabled", "StantonSCS3d.BsJLED"],
+                                      ["CurrentChannel", "hotcue_35_enabled", "StantonSCS3d.BsKLED"],
+                                      ["CurrentChannel", "hotcue_36_enabled", "StantonSCS3d.BsLLED"],
                                       ["CurrentChannel", "hotcue_25_activate", "StantonSCS3d.BsAaLED"],
                                       ["CurrentChannel", "hotcue_26_activate", "StantonSCS3d.BsBaLED"],
                                       ["CurrentChannel", "hotcue_27_activate", "StantonSCS3d.BsCaLED"],
                                       ["CurrentChannel", "hotcue_28_activate", "StantonSCS3d.BsDaLED"],
                                       ["CurrentChannel", "hotcue_29_activate", "StantonSCS3d.BsEaLED"],
                                       ["CurrentChannel", "hotcue_30_activate", "StantonSCS3d.BsFaLED"],
-                                      ["CurrentChannel", "hotcue_31_activate", "StantonSCS3d.BsGaLED"] ],
+                                      ["CurrentChannel", "hotcue_31_activate", "StantonSCS3d.BsGaLED"],
+                                      ["CurrentChannel", "hotcue_32_activate", "StantonSCS3d.BsHaLED"],
+                                      ["CurrentChannel", "hotcue_33_activate", "StantonSCS3d.BsIaLED"],
+                                      ["CurrentChannel", "hotcue_34_activate", "StantonSCS3d.BsJaLED"],
+                                      ["CurrentChannel", "hotcue_35_activate", "StantonSCS3d.BsKaLED"],
+                                      ["CurrentChannel", "hotcue_36_activate", "StantonSCS3d.BsLaLED"] ],
                             "vinyl":[ ["CurrentChannel", "pfl", "StantonSCS3d.B11LED"],
                                       ["CurrentChannel", "VuMeter", "StantonSCS3d.VUMeterLEDs"] ],
                             "vinyl2":[["CurrentChannel", "pfl", "StantonSCS3d.B11LED"],
@@ -472,12 +482,8 @@ StantonSCS3d.playButton = function (channel, control, value, status) {
             return
         }
         StantonSCS3d.modifier["play"]=1;
-        if (StantonSCS3d.modifier["cue"]==1) engine.setValue("[Channel"+StantonSCS3d.deck+"]","play",1);
-        else {
-            var currentlyPlaying = engine.getValue("[Channel"+StantonSCS3d.deck+"]","play");
-            if (currentlyPlaying && engine.getValue("[Channel"+StantonSCS3d.deck+"]","cue_default")==1) engine.setValue("[Channel"+StantonSCS3d.deck+"]","cue_default",0);
-            engine.setValue("[Channel"+StantonSCS3d.deck+"]","play", !currentlyPlaying);
-        }
+        var currentlyPlaying = engine.getValue("[Channel"+StantonSCS3d.deck+"]","play");
+        engine.setValue("[Channel"+StantonSCS3d.deck+"]","play", !currentlyPlaying);
         return;
     }
     StantonSCS3d.modifier["play"]=0;
@@ -501,8 +507,7 @@ StantonSCS3d.cueButton = function (channel, control, value, status) {
         StantonSCS3d.modifier["cue"]=1;   // Set button modifier flag
         return;
     }
-    if (StantonSCS3d.modifier["play"]==0 && !StantonSCS3d.modifier["vinyl2"])
-        engine.setValue("[Channel"+StantonSCS3d.deck+"]","cue_default",0);
+    engine.setValue("[Channel"+StantonSCS3d.deck+"]","cue_default",0);
     StantonSCS3d.modifier["cue"]=0;   // Clear button modifier flag
 }
 
@@ -1142,7 +1147,6 @@ StantonSCS3d.S4absolute = function (channel, control, value) {
             var index = currentMode.charAt(currentMode.length-1);
             if (index != "2" && index != "3") index = "1";
             
-            // We support 36 hot cues but Mixxx only has 31 right now
             if (StantonSCS3d.hotCues[index][button] == -1) return;
             
             if (StantonSCS3d.modifier[currentMode]==1) {
@@ -1470,7 +1474,6 @@ StantonSCS3d.SurfaceButton = function (channel, control, value, status) {
             case "trig3":
                 // Multiple cue points
                 
-                // We support 36 hot cues but Mixxx only has 31 right now                
                 if (StantonSCS3d.hotCues[index][control] == -1) return;
                 
                 if (StantonSCS3d.modifier[currentMode]==1) { // Delete a cue point

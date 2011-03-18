@@ -19,12 +19,11 @@
 #define ENGINEBUFFER_H
 
 #include <qapplication.h>
-#include <qmutex.h>
+#include <QMutex>
 #include "defs.h"
-#include "engineobject.h"
+#include "engine/engineobject.h"
 #include "trackinfoobject.h"
 #include "configobject.h"
-// #include "monitor.h"
 #include "rotary.h"
 
 class EngineControl;

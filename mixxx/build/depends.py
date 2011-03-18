@@ -73,17 +73,6 @@ class OggVorbis(Dependence):
     def sources(self, build):
         return ['soundsourceoggvorbis.cpp']
 
-class Mad(Dependence):
-
-    def configure(self, build, conf):
-        if not conf.CheckLib(['libmad','mad']):
-            raise Exception('Did not find libmad.a, libmad.lib, or the libmad development header files - exiting!')
-        if not conf.CheckLib(['libid3tag', 'id3tag','libid3tag-release']):
-            raise Exception('Did not find libid3tag.a, libid3tag.lib, or the libid3tag development header files - exiting!')
-
-    def sources(self, build):
-        return ['soundsourcemp3.cpp']
-
 
 class SndFile(Dependence):
 
@@ -736,7 +725,7 @@ class MixxxCore(Feature):
 
     def depends(self, build):
         return [SoundTouch, KissFFT, ReplayGain, PortAudio, PortMIDI, Qt,
-                FidLib, Mad, SndFile, FLAC, OggVorbis, OpenGL, TagLib]
+                FidLib, SndFile, FLAC, OggVorbis, OpenGL, TagLib]
 
     def post_dependency_check_configure(self, build, conf):
         """Sets up additional things in the Environment that must happen

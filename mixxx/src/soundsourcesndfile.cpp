@@ -27,7 +27,8 @@
 /*
    Class for reading files using libsndfile
  */
-SoundSourceSndFile::SoundSourceSndFile(QString qFilename) : SoundSource(qFilename)
+SoundSourceSndFile::SoundSourceSndFile(QString qFilename) : 
+    Mixxx::SoundSource(qFilename)
 {
     info = new SF_INFO;
     info->format = 0;   // Must be set to 0 per the API for reading (non-RAW files)
