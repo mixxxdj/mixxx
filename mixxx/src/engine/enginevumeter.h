@@ -17,7 +17,7 @@
 #ifndef ENGINEVUMETER_H
 #define ENGINEVUMETER_H
 
-#include "engineobject.h"
+#include "engine/engineobject.h"
 
 // Rate at which the vumeter is updated (using a sample rate of 44100 Hz):
 #define UPDATE_RATE 20
