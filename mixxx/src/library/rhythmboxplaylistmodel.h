@@ -63,6 +63,8 @@ class RhythmboxPlaylistModel : public QAbstractTableModel, public TrackModel
     virtual int columnCount(const QModelIndex& parent) const;
 
     //Playlist Model stuff
+    virtual int getTrackId(const QModelIndex& index) const;
+    virtual int getTrackRow(int trackId) const;
     virtual TrackPointer getTrack(const QModelIndex& index) const;
     virtual QString getTrackLocation(const QModelIndex& index) const;
     virtual void search(const QString& searchText);

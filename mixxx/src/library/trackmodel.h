@@ -34,8 +34,20 @@ public:
 
     typedef int CapabilitiesFlags; /** Enables us to do ORing */
 
+    // Deserialize and return the track at the given QModelIndex in this result
+    // set.
     virtual TrackPointer getTrack(const QModelIndex& index) const = 0;
+
+    // Gets the on-disk location of the track at the given location.
     virtual QString getTrackLocation(const QModelIndex& index) const = 0;
+
+    // Gets the track ID of the track at the given QModelIndex
+    virtual int getTrackId(const QModelIndex& index) const = 0;
+
+    // Gets the row of the track in the current result set. Returns -1 if the
+    // track ID is not present in the result set.
+    virtual int getTrackRow(int trackId) const = 0;
+
     bool isTrackModel() { return true;}
     virtual void search(const QString& searchText) = 0;
     virtual const QString currentSearch() = 0;
