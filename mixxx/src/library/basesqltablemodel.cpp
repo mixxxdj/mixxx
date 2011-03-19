@@ -395,3 +395,10 @@ Qt::ItemFlags BaseSqlTableModel::flags(const QModelIndex &index) const
 {
     return readWriteFlags(index);
 }
+
+int BaseSqlTableModel::getTrackRow(int trackId) const {
+    if (m_trackIdToRow.contains(trackId)) {
+        return m_trackIdToRow[trackId];
+    }
+    return -1;
+}

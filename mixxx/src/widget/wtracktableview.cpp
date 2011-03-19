@@ -146,9 +146,9 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel *model) {
     header->setSortIndicatorShown(true);
     //setSortingEnabled(true);
     connect(horizontalHeader(), SIGNAL(sortIndicatorChanged(int,Qt::SortOrder)),
-            this, SLOT(sortByColumn(int)), Qt::AutoConnection);
+            this, SLOT(doSortByColumn(int)), Qt::AutoConnection);
 
-    sortByColumn(horizontalHeader()->sortIndicatorSection());
+    doSortByColumn(horizontalHeader()->sortIndicatorSection());
 
     // Initialize all column-specific things
     for (int i = 0; i < model->columnCount(); ++i) {
@@ -728,5 +728,53 @@ void WTrackTableView::addSelectionToCrate(int iCrateId) {
                 crateDao.addTrackToCrate(iTrackId, iCrateId);
             }
         }
+    }
+}
+
+void WTrackTableView::doSortByColumn(int headerSection) {
+    TrackModel* trackModel = getTrackModel();
+    QAbstractItemModel* itemModel = model();
+
+    if (trackModel == NULL || itemModel == NULL)
+        return;
+
+    // Save the selection
+    QModelIndexList selection = selectedIndexes();
+    QSet<int> trackIds;
+    QSet<int> rows;
+    foreach (QModelIndex index, selection) {
+        if (rows.contains(index.row()))
+            continue;
+
+        int trackId = trackModel->getTrackId(index);
+        trackIds.insert(trackId);
+        rows.insert(index.row());
+    }
+
+    sortByColumn(headerSection);
+
+    QItemSelectionModel* currentSelection = selectionModel();
+
+    // Find a visible column
+    int visibleColumn = 0;
+    while (isColumnHidden(visibleColumn) && visibleColumn < itemModel->columnCount()) {
+        visibleColumn++;
+    }
+
+    QModelIndex first;
+    foreach (int trackId, trackIds) {
+        int row = trackModel->getTrackRow(trackId);
+        if (row >= 0) {
+            QModelIndex tl = itemModel->index(row, visibleColumn);
+            currentSelection->select(tl, QItemSelectionModel::Rows | QItemSelectionModel::Select);
+
+            if (!first.isValid()) {
+                first = tl;
+            }
+        }
+    }
+
+    if (first.isValid()) {
+        scrollTo(first, QAbstractItemView::PositionAtCenter);
     }
 }

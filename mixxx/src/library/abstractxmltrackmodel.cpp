@@ -164,6 +164,18 @@ QString AbstractXmlTrackModel::getTrackLocation(const QModelIndex& index) const
     return location;
 }
 
+int AbstractXmlTrackModel::getTrackId(const QModelIndex& index) const
+{
+    // No primary keys for these guys
+    return -1;
+}
+
+int AbstractXmlTrackModel::getTrackRow(int trackId) const
+{
+    // No primary keys for these guys
+    return -1;
+}
+
 TrackPointer AbstractXmlTrackModel::getTrack(const QModelIndex& index) const
 {
     QDomNode songNode = m_trackNodes.at(index.row());
