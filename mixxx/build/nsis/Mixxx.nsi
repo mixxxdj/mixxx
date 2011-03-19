@@ -134,11 +134,13 @@ Section "Mixxx (required)" SecMixxx
   ; (Visual C++ 2005 is msvc?80.dll and Microsoft.VC80.CRT.manifest,
   ;  Visual C++ 2008 is msvc?90.dll and Microsoft.VC90.CRT.manifest)
   ;
+  ; All the MSVC files are located here if you have MSVC 2008 installed. (x86)
+  File "C:\Program Files\Microsoft Visual Studio 9.0\VC\redist\x86\Microsoft.VC90.CRT\*"
+  
   ; See http://mixxx.org/wiki/doku.php/build_windows_installer for full details.
   ;
-  ; Update: The Microsoft Visual C++ 2010 Runtime gets rid of the manifest file, so it
-  ;         is no longer necessary.
-  
+  ; NOTE: The Microsoft Visual C++ 2010 Runtime gets rid of the manifest file, so it
+  ;         is no longer necessary if we switch to deploying with MSVC 2010. - Albert 
   ; File ${BASE_BUILD_DIR}\..\..\mixxx-win${BITWIDTH}lib-msvc100-release\msvc*.dll
   ; File /nonfatal ${BASE_BUILD_DIR}\..\..\mixxx-win64lib-msvc100-release\msvcm*.dll
   ; File ${BASE_BUILD_DIR}\..\..\mixxx-win${BITWIDTH}lib-msvc100-release\Microsoft.VC*.CRT.manifest
