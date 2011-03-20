@@ -168,7 +168,6 @@ void BrowseTableModel::slotClear()
 
 void BrowseTableModel::slotInsert(const QList<QStandardItem*> &column_data)
 {
-    qDebug() << "BrowseTableModel::slotInsert";
     appendRow(column_data);
     //Does not work for some reason
     //setItem(row, column, item);
