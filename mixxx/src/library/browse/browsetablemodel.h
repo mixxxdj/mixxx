@@ -2,8 +2,9 @@
 #define BROWSETABLEMODEL_H
 
 #include <QStandardItemModel>
-#include "trackmodel.h"
-#include "browsethread.h"
+
+#include "library/trackmodel.h"
+#include "library/browse/browsethread.h"
 
 class QMimeData;
 

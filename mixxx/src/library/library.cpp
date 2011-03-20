@@ -9,7 +9,7 @@
 #include "library/sidebarmodel.h"
 #include "library/trackcollection.h"
 #include "library/trackmodel.h"
-#include "library/browsefeature.h"
+#include "library/browse/browsefeature.h"
 #include "library/cratefeature.h"
 #include "library/rhythmbox/rhythmboxfeature.h"
 #include "library/itunes/itunesfeature.h"
@@ -26,7 +26,6 @@
 
 #include "mixxxkeyboard.h"
 #include "librarymidicontrol.h"
-
 
 // This is is the name which we use to register the WTrackTableView with the
 // WLibrary

@@ -1,46 +1,40 @@
+#if defined (__WINDOWS__)
+#include <windows.h>
+#include <Shellapi.h>
+#include <Shobjidl.h>
+#else
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <dirent.h>
+#include <unistd.h>
+#include <errno.h>
+#endif
+
 #include <QtGui>
 #include <QDirModel>
 #include <QStringList>
 #include <QFileInfo>
 #include <QDesktopServices>
 
-#include "treeitem.h"
-#include "foldertreemodel.h"
-#include "browsefeature.h"
+#include "library/treeitem.h"
+#include "library/browse/foldertreemodel.h"
+#include "library/browse/browsefeature.h"
 
-#if defined (__WINDOWS__)
-    #include <windows.h>
-    #include <Shellapi.h>
-    #include <Shobjidl.h>
-#else
-    #include <sys/types.h>
-    #include <sys/stat.h>
-    #include <dirent.h>
-    #include <unistd.h>
-    #include <errno.h>
-#endif
-
-
-
- FolderTreeModel::FolderTreeModel(QObject *parent)
-     : TreeItemModel(parent)
-{
-
-
+FolderTreeModel::FolderTreeModel(QObject *parent)
+        : TreeItemModel(parent) {
 }
 
- FolderTreeModel::~FolderTreeModel()
- {
-     
- }
- /* A tree model of the filesystem should be initialized lazy.
-  * It will take the universe to iterate over all files over filesystem
-  * hasChildren() returns true if a folder has subfolders although 
-  * we do not know the precise number of subfolders.
-  *
-  * Note that BrowseFeature inserts folder trees dynamically and rowCount()
-  * is only called if necessary.
-  */
+FolderTreeModel::~FolderTreeModel() {
+}
+
+/* A tree model of the filesystem should be initialized lazy.
+ * It will take the universe to iterate over all files over filesystem
+ * hasChildren() returns true if a folder has subfolders although
+ * we do not know the precise number of subfolders.
+ *
+ * Note that BrowseFeature inserts folder trees dynamically and rowCount()
+ * is only called if necessary.
+ */
 bool FolderTreeModel::hasChildren( const QModelIndex & parent) const
 {
 
@@ -71,7 +65,7 @@ bool FolderTreeModel::hasChildren( const QModelIndex & parent) const
      *  We can benefit from low-level filesystem APIs, i.e.,
      *  Windows API or SystemCalls
      */
-	
+
 #if defined (__WINDOWS__)
     folder.replace("/","\\");
 
@@ -92,17 +86,17 @@ bool FolderTreeModel::hasChildren( const QModelIndex & parent) const
     }
     struct dirent *entry;
     while (!found_subdir && ((entry = readdir(directory)) != NULL)) {
-        if (entry->d_name != dot && entry->d_name != dotdot) 
+        if (entry->d_name != dot && entry->d_name != dotdot)
         {
             found_subdir = (entry->d_type == DT_DIR || entry->d_type == DT_LNK);
-            //qDebug() << "Subfolder of " << folder << " : " << entry->d_name << "type :" << entry->d_type; 
-            
+            //qDebug() << "Subfolder of " << folder << " : " << entry->d_name << "type :" << entry->d_type;
+
         }
     }
     closedir(directory);
     return found_subdir;
 
 #endif
-    
+
 }
 

@@ -8,9 +8,9 @@
 #include <QSortFilterProxyModel>
 
 #include "configobject.h"
-#include "library/browsetablemodel.h"
+#include "library/browse/browsetablemodel.h"
+#include "library/browse/foldertreemodel.h"
 #include "library/libraryfeature.h"
-#include "library/foldertreemodel.h"
 #include "library/proxytrackmodel.h"
 
 #define QUICK_LINK_NODE "::mixxx_quick_lnk_node::"
@@ -41,9 +41,10 @@ class BrowseFeature : public LibraryFeature {
     void activateChild(const QModelIndex& index);
     void onRightClick(const QPoint& globalPos);
     void onRightClickChild(const QPoint& globalPos, QModelIndex index);
-   
-    signals:
+
+  signals:
     void setRootIndex(const QModelIndex&);
+
   private:
     ConfigObject<ConfigValue>* m_pConfig;
     BrowseTableModel m_browseModel;

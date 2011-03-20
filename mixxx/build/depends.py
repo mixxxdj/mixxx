@@ -438,11 +438,8 @@ class MixxxCore(Feature):
                    "library/basesqltablemodel.cpp",
                    "library/librarytablemodel.cpp",
                    "library/preparelibrarytablemodel.cpp",
-                   "library/browsetablemodel.cpp",
                    "library/missingtablemodel.cpp",
-
                    "library/proxytrackmodel.cpp",
-
 
                    "library/playlisttablemodel.cpp",
                    "library/libraryfeature.cpp",
@@ -450,6 +447,11 @@ class MixxxCore(Feature):
                    "library/autodjfeature.cpp",
                    "library/mixxxlibraryfeature.cpp",
                    "library/playlistfeature.cpp",
+
+                   "library/browse/browsetablemodel.cpp",
+                   "library/browse/browsethread.cpp",
+                   "library/browse/browsefeature.cpp",
+                   "library/browse/foldertreemodel.cpp",
 
                    # External Library Features
                    "library/rhythmbox/rhythmboxfeature.cpp",
@@ -464,7 +466,7 @@ class MixxxCore(Feature):
                    "library/traktor/traktortablemodel.cpp",
                    "library/traktor/traktorplaylistmodel.cpp",
 
-                   "library/browsefeature.cpp",
+
                    "library/cratefeature.cpp",
                    "library/sidebarmodel.cpp",
                    "library/libraryscanner.cpp",
@@ -493,8 +495,6 @@ class MixxxCore(Feature):
 
                    "library/treeitemmodel.cpp",
                    "library/treeitem.cpp",
-                   "library/foldertreemodel.cpp",
-                   "library/browsethread.cpp",
 
                    "xmlparse.cpp",
                    "library/parser.cpp",
@@ -617,7 +617,7 @@ class MixxxCore(Feature):
             mixxx_lib_path = SCons.ARGUMENTS.get('winlib', '..\\..\\..\\mixxx-win32lib-msvc100-release')
             if not os.path.exists(mixxx_lib_path):
                 print mixxx_lib_path
-                raise Exception("Winlib path does not exist! Please specify your winlib directory" 
+                raise Exception("Winlib path does not exist! Please specify your winlib directory"
                                 "path by running 'scons winlib=[path]'")
                 Script.Exit(1)
             #mixxx_lib_path = '#/../../mixxx-win%slib-msvc100-release' % build.bitwidth

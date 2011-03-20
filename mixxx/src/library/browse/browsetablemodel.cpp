@@ -5,11 +5,9 @@
 #include <QtConcurrentRun>
 #include <QMetaType>
 
-#include "browsetablemodel.h"
+#include "library/browse/browsetablemodel.h"
 #include "soundsourceproxy.h"
 #include "mixxxutils.cpp"
-
-
 
 BrowseTableModel::BrowseTableModel(QObject* parent)
         : QStandardItemModel(parent),
