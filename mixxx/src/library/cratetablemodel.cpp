@@ -104,6 +104,17 @@ bool CrateTableModel::addTrack(const QModelIndex& index, QString location) {
     }
 }
 
+int CrateTableModel::getTrackId(const QModelIndex& index) const {
+    if (!index.isValid()) {
+        return -1;
+    }
+    return index.sibling(index.row(), fieldIndex(LIBRARYTABLE_ID)).data().toInt();
+}
+
+int CrateTableModel::getTrackRow(int trackId) const {
+    return BaseSqlTableModel::getTrackRow(trackId);
+}
+
 TrackPointer CrateTableModel::getTrack(const QModelIndex& index) const {
     int trackId = index.sibling(index.row(), fieldIndex(LIBRARYTABLE_ID)).data().toInt();
     return m_pTrackCollection->getTrackDAO().getTrack(trackId);
@@ -209,7 +220,7 @@ bool CrateTableModel::isColumnInternal(int column) {
     return false;
 }
 bool CrateTableModel::isColumnHiddenByDefault(int column) {
-    if (column == fieldIndex(LIBRARYTABLE_KEY))    
+    if (column == fieldIndex(LIBRARYTABLE_KEY))
         return true;
     return false;
 }
