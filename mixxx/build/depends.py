@@ -73,17 +73,6 @@ class OggVorbis(Dependence):
     def sources(self, build):
         return ['soundsourceoggvorbis.cpp']
 
-class Mad(Dependence):
-
-    def configure(self, build, conf):
-        if not conf.CheckLib(['libmad','mad']):
-            raise Exception('Did not find libmad.a, libmad.lib, or the libmad development header files - exiting!')
-        if not conf.CheckLib(['libid3tag', 'id3tag','libid3tag-release']):
-            raise Exception('Did not find libid3tag.a, libid3tag.lib, or the libid3tag development header files - exiting!')
-
-    def sources(self, build):
-        return ['soundsourcemp3.cpp']
-
 
 class SndFile(Dependence):
 
@@ -184,7 +173,7 @@ class Qt(Dependence):
                                       '$QTDIR/include/QtWebKit',
                                       '$QTDIR/include/Qt'])
 
-        # Set the rpath for linux/bsd/osx. 
+        # Set the rpath for linux/bsd/osx.
         # This is not support on OS X before the 10.5 SDK.
         using_104_sdk = (str(build.env["CCFLAGS"]).find("10.4") >= 0)
         compiling_on_104 = False
@@ -576,7 +565,8 @@ class MixxxCore(Feature):
             # force manifest file creation, apparently not necessary for all
             # people but necessary for this committers handicapped windows
             # installation -- bkgood
-            build.env.Append(LINKFLAGS="/MANIFEST")
+            if build.toolchain_is_msvs:
+                build.env.Append(LINKFLAGS="/MANIFEST")
         elif build.platform_is_osx:
             build.env.Append(LINKFLAGS="-headerpad=ffff"); #Need extra room for code signing (App Store)
             build.env.Append(LINKFLAGS="-headerpad_max_install_names"); #Need extra room for code signing (App Store)
@@ -587,7 +577,8 @@ class MixxxCore(Feature):
         # Evaluate this define. There are a lot of different things around the
         # codebase that use different defines. (AMD64, x86_64, x86, i386, i686,
         # EM64T). We need to unify them together.
-        build.env.Append(CPPDEFINES=build.machine)
+        if not build.machine=='alpha':
+            build.env.Append(CPPDEFINES=build.machine)
 
         if build.toolchain_is_gnu:
             # Default GNU Options
@@ -704,19 +695,20 @@ class MixxxCore(Feature):
 
     def depends(self, build):
         return [SoundTouch, KissFFT, ReplayGain, PortAudio, PortMIDI, Qt,
-                FidLib, Mad, SndFile, FLAC, OggVorbis, OpenGL, TagLib]
+                FidLib, SndFile, FLAC, OggVorbis, OpenGL, TagLib]
 
     def post_dependency_check_configure(self, build, conf):
         """Sets up additional things in the Environment that must happen
         after the Configure checks run."""
         if build.platform_is_windows:
-            build.env.Append(LINKFLAGS = ['/nodefaultlib:LIBCMT.lib',
-                                          '/nodefaultlib:LIBCMTd.lib',
-                                          '/entry:mainCRTStartup'])
-            # Makes the program not launch a shell first
             if build.toolchain_is_msvs:
+                build.env.Append(LINKFLAGS = ['/nodefaultlib:LIBCMT.lib',
+                                              '/nodefaultlib:LIBCMTd.lib',
+                                              '/entry:mainCRTStartup'])
+                # Makes the program not launch a shell first
                 build.env.Append(LINKFLAGS = '/subsystem:windows')
                 build.env.Append(LINKFLAGS = '/manifest') #Force MSVS to generate a manifest (MSVC2010)
             elif build.toolchain_is_gnu:
+                # Makes the program not launch a shell first
                 build.env.Append(LINKFLAGS = '--subsystem,windows')
                 build.env.Append(LINKFLAGS = '-mwindows')

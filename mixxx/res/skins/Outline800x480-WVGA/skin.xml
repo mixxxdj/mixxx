@@ -19,20 +19,26 @@
 
 	<!--
 	CHANGELOG
-	v1.4	(14/12/2010)
+    v1.06   (13/03/2011)
+    * Expanded to support 36 hot cues
+    
+	v1.05	(20/02/2011)
+	* Changed Playing position tooltips to reflect new toggle functionality
+
+	v1.04	(14/12/2010)
 	* Added custom images for splitter in library
 	* Added custom images for branch triangle in treeview
 
-	v1.3	(12/12/2010)
+	v1.03	(12/12/2010)
 	* Added BPM Tap button
 	* Added visual feedback when searchbox has focus
 	* Updated text alignments
 
-	v1.2	(02/12/2010)
+	v1.02	(02/12/2010)
 	* Added custom images for checkboxes in library
 	* Updated styles
 
-	v1.1	(11/22/2010)
+	v1.01	(11/22/2010)
 	* Redraw skin, using png's from svg template now
 	* Complete XML re-organisation, on par with other skins now
 	* Added Mixxx 1.9 features: Keylock & Repeat buttons
@@ -220,7 +226,8 @@
 			- if a MIDI device which supports more hotcues than buttons are in the current skin has them activated
 			- if you change from a skin which supports more hotcues than buttons are in the current skin (and has them activated)
 		These "special" hotcues share the color #AE5CFF to make them distinguishable (and maintainable) from the hotcues
-		represented by a button in the current skin. Mixxx 1.8+ supports up to 32 hotcue. Current skins uses up to 6 buttons per channel.
+		represented by a button in the current skin. Mixxx 1.8.x-1.9.0 support up to 32 hotcues. v1.9.1+ supports up to 36.
+		Current skins uses up to 6 buttons per channel.
 		-->
 		<Mark>
 			<Control>hotcue_1_position</Control>
@@ -446,6 +453,34 @@
 			<Color>#AE5CFF</Color>
 			<TextColor>#FFFFFF</TextColor>
 		</Mark>
+        <Mark>
+            <Control>hotcue_33_position</Control>
+            <Text> HOTCUE 33 </Text>
+            <Align>center</Align>
+            <Color>#AE5CFF</Color>
+            <TextColor>#FFFFFF</TextColor>
+        </Mark>
+        <Mark>
+            <Control>hotcue_34_position</Control>
+            <Text> HOTCUE 34 </Text>
+            <Align>center</Align>
+            <Color>#AE5CFF</Color>
+            <TextColor>#FFFFFF</TextColor>
+        </Mark>
+        <Mark>
+            <Control>hotcue_35_position</Control>
+            <Text> HOTCUE 35 </Text>
+            <Align>center</Align>
+            <Color>#AE5CFF</Color>
+            <TextColor>#FFFFFF</TextColor>
+        </Mark>
+        <Mark>
+            <Control>hotcue_36_position</Control>
+            <Text> HOTCUE 36 </Text>
+            <Align>center</Align>
+            <Color>#AE5CFF</Color>
+            <TextColor>#FFFFFF</TextColor>
+        </Mark>
 
 		<Mark>
 			<Control>cue_point</Control>
@@ -982,7 +1017,7 @@
 	**********************************************
 	-->
 	<NumberPos>
-		<Tooltip>Time information&#10;Displays the current playback position (or remaining time) and the duration of the loaded track.&#10;Depends on your settings in Preferences→Interface→Position display.&#10;</Tooltip>
+		<Tooltip>Time information&#10;Displays the elapsed or remaining time and the duration of the track loaded.&#10;Click to toggle between time elapsed/remaining time.&#10;</Tooltip>
 		<Style>QLabel { font: 11px/13px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 		background-color: transparent; text-align: right; }
 		QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
@@ -999,7 +1034,7 @@
 		</Connection>
 	</NumberPos>
 	<NumberPos>
-		<Tooltip>Time information&#10;Displays the current playback position (or remaining time) and the duration of the loaded track.&#10;Depends on your settings in Preferences→Interface→Position display.&#10;</Tooltip>
+		<Tooltip>Time information&#10;Displays the elapsed or remaining time and the duration of the track loaded.&#10;Click to toggle between time elapsed/remaining time.&#10;</Tooltip>
 		<Style>QLabel { font: 11px/13px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 		background-color: transparent; text-align: right; }
 		QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;

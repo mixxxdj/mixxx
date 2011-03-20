@@ -30,11 +30,18 @@ class BaseSqlTableModel : public QSqlTableModel {
     virtual Qt::ItemFlags readWriteFlags(const QModelIndex &index) const;
     /** calls readWriteFlags() by default */
     virtual Qt::ItemFlags flags(const QModelIndex &index) const;
+
+    // Returns the row of trackId in this result set. If trackId is not present,
+    // returns -1.
+    virtual int getTrackRow(int trackId) const;
+
   protected:
     virtual QString orderByClause() const;
     virtual void initHeaderData();
+
   private slots:
     void trackChanged(int trackId);
+    void trackClean(int trackId);
   private:
     QVariant getBaseValue(const QModelIndex& index, int role = Qt::DisplayRole) const;
 

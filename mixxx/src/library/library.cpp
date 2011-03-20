@@ -66,9 +66,9 @@ Library::Library(QObject* parent, ConfigObject<ConfigValue>* pConfig, bool first
 
     //Show the promo tracks view on first run, otherwise show the library
     if (firstRun) {
-        qDebug() << "First Run, switching to PROMO view!";
+        //qDebug() << "First Run, switching to PROMO view!";
         //This doesn't trigger onShow()... argh
-        m_pSidebarModel->setDefaultSelection(1);
+        //m_pSidebarModel->setDefaultSelection(1);
         //slotSwitchToView(tr("Bundled Songs"));
         //Note the promo tracks item has index=1... hardcoded hack. :/
     }

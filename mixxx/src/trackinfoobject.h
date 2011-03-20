@@ -253,10 +253,10 @@ public:
     void bpmUpdated(double bpm);
     void ReplayGainUpdated(double replaygain);
     void cuesUpdated();
-    void changed();
-    void dirty();
-    void clean();
-    void save();
+    void changed(TrackInfoObject* pTrack);
+    void dirty(TrackInfoObject* pTrack);
+    void clean(TrackInfoObject* pTrack);
+    void save(TrackInfoObject* pTrack);
 
   private:
 

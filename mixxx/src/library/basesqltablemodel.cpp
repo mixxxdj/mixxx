@@ -18,6 +18,8 @@ BaseSqlTableModel::BaseSqlTableModel(QObject* parent,
         m_trackDAO(m_pTrackCollection->getTrackDAO()) {
     connect(&m_trackDAO, SIGNAL(trackChanged(int)),
             this, SLOT(trackChanged(int)));
+    connect(&m_trackDAO, SIGNAL(trackClean(int)),
+            this, SLOT(trackClean(int)));
     m_iSortColumn = 0;
     m_eSortOrder = Qt::AscendingOrder;
 }
@@ -106,14 +108,19 @@ QVariant BaseSqlTableModel::getBaseValue(const QModelIndex& index, int role) con
 
     int trackId = m_rowToTrackId[row];
 
+    TrackPointer pTrack;
+
+    if (m_trackOverrides.contains(trackId)) {
+        // Only get the track if its in the cache.
+        pTrack = m_trackDAO.getTrack(trackId, true);
+    }
+
     /*
      * The if-block below is only executed when a table item has been edited.
      *
      */
-    if ((role == Qt::DisplayRole || role == Qt::ToolTipRole || role == Qt::EditRole) &&
-        m_trackOverrides.contains(trackId)) {
+    if ((role == Qt::DisplayRole || role == Qt::ToolTipRole || role == Qt::EditRole) && pTrack) {
         //qDebug() << "Returning override for track" << trackId;
-        TrackPointer pTrack = m_trackDAO.getTrack(trackId);
 
         // TODO(XXX) Qt properties could really help here.
         if (fieldIndex(LIBRARYTABLE_ARTIST) == col) {
@@ -280,6 +287,7 @@ bool BaseSqlTableModel::setData(const QModelIndex &index, const QVariant &value,
 }
 
 void BaseSqlTableModel::trackChanged(int trackId) {
+    //qDebug() << "BaseSqlTableModel::trackChanged" << trackId;
     m_trackOverrides.insert(trackId);
     if (m_trackIdToRow.contains(trackId)) {
         int row = m_trackIdToRow[trackId];
@@ -287,6 +295,16 @@ void BaseSqlTableModel::trackChanged(int trackId) {
         QModelIndex left = index(row, 0);
         QModelIndex right = index(row, columnCount());
         emit(dataChanged(left, right));
+    }
+}
+
+void BaseSqlTableModel::trackClean(int trackId) {
+    //qDebug() << "BaseSqlTableModel::trackClean" << trackId;
+    if (m_trackOverrides.contains(trackId)) {
+        m_trackOverrides.remove(trackId);
+        // For now, this is necessary. We can't get a fine-grained update of
+        //what changed without re-selecting.
+        select();
     }
 }
 
@@ -376,4 +394,11 @@ Qt::ItemFlags BaseSqlTableModel::readOnlyFlags(const QModelIndex &index) const
 Qt::ItemFlags BaseSqlTableModel::flags(const QModelIndex &index) const
 {
     return readWriteFlags(index);
+}
+
+int BaseSqlTableModel::getTrackRow(int trackId) const {
+    if (m_trackIdToRow.contains(trackId)) {
+        return m_trackIdToRow[trackId];
+    }
+    return -1;
 }
