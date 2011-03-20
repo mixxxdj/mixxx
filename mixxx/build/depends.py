@@ -592,17 +592,18 @@ class MixxxCore(Feature):
             if os.system("which g++ > /dev/null"): #Checks for non-zero return code
                 raise Exception("Did not find g++.")
         elif build.toolchain_is_msvs:
-            if build.machine == 'x86_64':
-                mixxx_lib_path = '#/../mixxx-win%slib-msvc' % build.bitwidth
-            else:
-                mixxx_lib_path = '#/../mixxx-win%slib-msvc' % build.bitwidth
+            # Validate the specified winlib directory exists
+            mixxx_lib_path = SCons.ARGUMENTS.get('winlib', '..\\..\\..\\mixxx-win32lib-msvc100-release')
+            if not os.path.exists(mixxx_lib_path):
+                print mixxx_lib_path
+                raise Exception("Winlib path does not exist! Please specify your winlib directory" 
+                                "path by running 'scons winlib=[path]'")
+                Script.Exit(1)
+            #mixxx_lib_path = '#/../../mixxx-win%slib-msvc100-release' % build.bitwidth
 
             # Set include and library paths to work with this
             build.env.Append(CPPPATH=mixxx_lib_path)
             build.env.Append(LIBPATH=mixxx_lib_path)
-
-
-
 
             #Ugh, MSVC-only hack :( see
             #http://www.qtforum.org/article/17883/problem-using-qstring-fromstdwstring.html
@@ -658,16 +659,8 @@ class MixxxCore(Feature):
         if build.platform_is_bsd or build.platform_is_linux:
             build.env.Append(CPPDEFINES='__UNIX__')
 
-            # We should not have to do either of these.
-            #build.env.Append(LIBS = 'sndfile')
-            #build.env.Append(LIBS = 'vorbisfile')
-
-        # I disagree with this. rryan 9/2010
-        #env.Append(CPPPATH = ['.', '../', '../../']) #Fun fun fun with paths
-
         # Add the src/ directory to the include path
         build.env.Append(CPPPATH = ['.'])
-
 
         # Set up flags for config/track listing files
         if build.platform_is_linux or \
@@ -714,6 +707,7 @@ class MixxxCore(Feature):
                                               '/entry:mainCRTStartup'])
                 # Makes the program not launch a shell first
                 build.env.Append(LINKFLAGS = '/subsystem:windows')
+                build.env.Append(LINKFLAGS = '/manifest') #Force MSVS to generate a manifest (MSVC2010)
             elif build.toolchain_is_gnu:
                 # Makes the program not launch a shell first
                 build.env.Append(LINKFLAGS = '--subsystem,windows')
