@@ -64,7 +64,6 @@ class WTrackTableView : public WLibraryTableView
     ConfigObject<ConfigValue> * m_pConfig;
     TrackCollection* m_pTrackCollection;
 
-    QModelIndexList m_selectedIndices;
     QSignalMapper m_loadTrackMapper;
 
     DlgTrackInfo* m_pTrackInfo;

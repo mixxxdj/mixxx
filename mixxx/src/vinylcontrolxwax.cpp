@@ -239,6 +239,7 @@ void VinylControlXwax::run()
     	if (cur_duration != old_duration)
     	{
     		bForceResync=true;
+    		bTrackSelectMode = false; //just in case
     		old_duration = cur_duration;
     	}
     
@@ -380,9 +381,19 @@ void VinylControlXwax::run()
 				}
 				else if (bTrackSelectMode)
 				{
-					qDebug() << "discontinuing select mode";
+					qDebug() << "discontinuing select mode, selecting track";
+					if (trackLoader == NULL)
+						trackLoader = new ControlObjectThread(ControlObject::getControl(ConfigKey(group,"LoadSelectedTrack")));
+
+					if (!trackLoader)
+						qDebug() << "ERROR: couldn't get track loading object?";
+					else
+					{
+						trackLoader->slotSet(1.0);
+						trackLoader->slotSet(0.0); //I think I have to do this...
+					}
 					//if position is known and safe then no track select mode
-					bTrackSelectMode = false; 
+					bTrackSelectMode = false;
 				}
 			}
 		}
@@ -517,18 +528,6 @@ void VinylControlXwax::run()
 	        	//POSITION: NO  PITCH: YES
 	        	//if we don't have valid position, we're not playing so reset time to current
 	            //estimate vinyl position
-	            
-	            /*if (dLastTrackSelectPos > timecoder_get_safe(&timecoder))
-	            {
-	            	if (!tSinceTrackSelect.isNull())
-	            	{
-	            		if(tSinceTrackSelect.elapsed() < 5.0)
-	            		{
-	            			qDebug() << "calling track selector with last known value";
-	            			doTrackSelection(dLastTrackSelectPos);
-	            		}
-	            	}
-	            }*/
 	            
 	            if (playPos->get() == 1.0 && dVinylPitch > 0)
 			    {
@@ -679,60 +678,29 @@ void VinylControlXwax::togglePlayButton(bool on)
 
 void VinylControlXwax::doTrackSelection(bool valid_pos, double pitch, double position)
 {
-	//ok we keep track of a vinyl position
-	//so that we can trigger track selections
-	
-	//we also keep a timer and reset it every time we change the selector
-	
-	//when user has been sitting on a track for a while, we select it.
-	
-	//oh shit, we have to figure out when the vinyl isn't moving at all....
-	
-	//we really need a "track select mode" that's turned on when we sync
-	//past the safe zone, and turned off when we sync back into regular territory
-	
-	//when it's triggered on:
-	// * have position: select tracks for every .5 secs pos  elapsed.  reset
-	//   counter every time we do this  
-	// * have pitch or no pitch:  same situation:  check the counter
-	//   and after 3 secs, select track
+	const int SELECT_INTERVAL = 150;
+	const double NOPOS_SPEED = 0.25;
 	
 	if (trackSelector == NULL)
 	{
-		//qDebug() << "harumph, it was null";
 		trackSelector = new ControlObjectThread(ControlObject::getControl(ConfigKey("[Playlist]","SelectTrackKnob")));
-		//qDebug() << "still null?" << trackSelector;
+		if (trackSelector == NULL)
+		{
+			qDebug() << "Warning: Track Selector control object NULL";
+			return;
+		}
 	}
-	if (trackLoader == NULL)
-	{
-    	trackLoader = new ControlObjectThread(ControlObject::getControl(ConfigKey(group,"LoadSelectedTrack")));
-    }
-    //qDebug() << "so what" << trackSelector;
 	
 	if (!valid_pos)
 	{
-		if (fabs(pitch) < 0.1)
-		{
-			//turntable is stopped.  So select the track
-			//or start the timer, but either way nothing else to do so
-			//return
-			if (tSinceTrackSelect.isNull())
-				tSinceTrackSelect.start();
-			else if (tSinceTrackSelect.elapsed() > 3000)
-			{
-				qDebug() << "selecting track";
-				trackSelector->slotSet(1.0);
-				trackSelector->slotSet(0.0); //I think I have to do this...
-				tSinceTrackSelect.restart();
-			}
-			return;  //don't need to waste time below updating position
-		}
-		else
+		if (fabs(pitch) > 0.1)
 		{
 			//how to estimate how far the record has moved when we don't have a valid
 			//position and no mp3 track to compare with???  just add a bullshit amount?	
-			dCurTrackSelectPos += pitch * 0.05; //MADE UP CONSTANT, needs to be based on frames per second I think
+			dCurTrackSelectPos += pitch * NOPOS_SPEED; //MADE UP CONSTANT, needs to be based on frames per second I think
 		}
+		else //too slow, do nothing
+			return;
 	}	
 	else
 		dCurTrackSelectPos = position; //if we have valid pos, use it
@@ -744,20 +712,15 @@ void VinylControlXwax::doTrackSelection(bool valid_pos, double pitch, double pos
 	if (fabs(dCurTrackSelectPos - dLastTrackSelectPos) > 10.0 * 1000)
 	{
 		//yeah probably not a valid value
-		qDebug() << "large change in track position, resetting";
+		//qDebug() << "large change in track position, resetting";
 		dLastTrackSelectPos = dCurTrackSelectPos;
 	}
-	else if (fabs(dCurTrackSelectPos - dLastTrackSelectPos) > 0.5 * 1000)
+	else if (fabs(dCurTrackSelectPos - dLastTrackSelectPos) > SELECT_INTERVAL)
 	{
 		//difference of at least 1, so trigger the track selector
-		//*2 because each half second
-		qDebug() << "adjusting selector" << (int)(dCurTrackSelectPos - dLastTrackSelectPos) / 500 << "places";
-		trackSelector->slotSet((int)(dCurTrackSelectPos - dLastTrackSelectPos) / 500);
+		//qDebug() << "adjusting selector" << (int)(dCurTrackSelectPos - dLastTrackSelectPos) / SELECT_INTERVAL << "places";
+		trackSelector->slotSet((int)(dCurTrackSelectPos - dLastTrackSelectPos) / SELECT_INTERVAL);
 		dLastTrackSelectPos = dCurTrackSelectPos;
-		if (tSinceTrackSelect.isNull())
-			tSinceTrackSelect.start();
-		else
-			tSinceTrackSelect.restart();
 	}
 }
 
