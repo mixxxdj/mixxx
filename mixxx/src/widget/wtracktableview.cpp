@@ -523,8 +523,12 @@ void WTrackTableView::dropEvent(QDropEvent * event)
                 //qSort(m_selectedIndices);
                 //qSort(m_selectedIndices.begin(), m_selectedIndices.end(), qGreater<QModelIndex>());
                 qSort(selectedRows);
-                int maxRow = selectedRows.last();
-                int minRow = selectedRows.first();
+                int maxRow = 0;
+                int minRow = 0;
+                if (!selectedRows.isEmpty()) {
+                    maxRow = selectedRows.last();
+                    minRow = selectedRows.first();
+                }
                 int selectedRowCount = selectedRows.count();
                 int firstRowToSelect = destIndex.row();
 
