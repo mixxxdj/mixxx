@@ -34,7 +34,6 @@
 #include "engine/readaheadmanager.h"
 #include "engine/enginecontrol.h"
 #include "engine/loopingcontrol.h"
-#include "engine/beatcontrol.h"
 #include "engine/ratecontrol.h"
 #include "engine/bpmcontrol.h"
 #include "engine/quantizecontrol.h"
@@ -153,7 +152,7 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
     appendControl(m_pQuantizeControl);
 
     // Create the Loop Controller
-    m_pLoopingControl = new LoopingControl(_group, _config);
+    m_pLoopingControl = new LoopingControl(_group, _config, m_pReader);
     appendControl(m_pLoopingControl);
 
     // Create the Rate Controller
@@ -176,10 +175,6 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
 
     m_pReadAheadManager = new ReadAheadManager(m_pReader);
     m_pReadAheadManager->addEngineControl(m_pLoopingControl);
-
-    // Create the Beat Juggling Controller
-    m_pBeatControl = new BeatControl(_group, _config, m_pReader);
-    prependControl(m_pBeatControl);
 
     // Construct scaling objects
     m_pScaleLinear = new EngineBufferScaleLinear(m_pReadAheadManager);
