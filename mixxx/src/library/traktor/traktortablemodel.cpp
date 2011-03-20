@@ -61,6 +61,17 @@ QString TraktorTableModel::getTrackLocation(const QModelIndex& index) const
     return location;
 }
 
+int TraktorTableModel::getTrackId(const QModelIndex& index) const {
+    if (!index.isValid()) {
+        return -1;
+    }
+    return index.sibling(index.row(), fieldIndex("id")).data().toInt();
+}
+
+int TraktorTableModel::getTrackRow(int trackId) const {
+    return BaseSqlTableModel::getTrackRow(trackId);
+}
+
 void TraktorTableModel::removeTrack(const QModelIndex& index)
 {
 

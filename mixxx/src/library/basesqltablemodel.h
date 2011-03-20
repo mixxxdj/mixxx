@@ -31,13 +31,20 @@ class BaseSqlTableModel : public QSqlTableModel {
     /** calls readWriteFlags() by default */
     virtual Qt::ItemFlags flags(const QModelIndex &index) const;
     virtual void setLibraryPrefix(QString sPrefix);
+
+    // Returns the row of trackId in this result set. If trackId is not present,
+    // returns -1.
+    virtual int getTrackRow(int trackId) const;
+
   protected:
     virtual QString orderByClause() const;
     virtual void initHeaderData();
     void setCaching(bool isActive);
+
   private slots:
     void trackChanged(int trackId);
     void trackClean(int trackId);
+
   private:
     QVariant getBaseValue(const QModelIndex& index, int role = Qt::DisplayRole) const;
 

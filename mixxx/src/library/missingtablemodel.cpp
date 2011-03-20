@@ -81,19 +81,31 @@ bool MissingTableModel::addTrack(const QModelIndex& index, QString location)
     return false;
 }
 
+int MissingTableModel::getTrackId(const QModelIndex& index) const
+{
+    if (!index.isValid()) {
+        return -1;
+    }
+    return index.sibling(index.row(), fieldIndex(LIBRARYTABLE_ID)).data().toInt();
+}
+
+int MissingTableModel::getTrackRow(int trackId) const {
+    return BaseSqlTableModel::getTrackRow(trackId);
+}
+
 TrackPointer MissingTableModel::getTrack(const QModelIndex& index) const
 {
     //FIXME: use position instead of location for playlist tracks?
 
     //const int locationColumnIndex = this->fieldIndex(LIBRARYTABLE_LOCATION);
     //QString location = index.sibling(index.row(), locationColumnIndex).data().toString();
-    int trackId = index.sibling(index.row(), fieldIndex(LIBRARYTABLE_ID)).data().toInt();
+    int trackId = getTrackId(index);
     return m_trackDao.getTrack(trackId);
 }
 
 QString MissingTableModel::getTrackLocation(const QModelIndex& index) const
 {
-    int trackId = index.sibling(index.row(), fieldIndex(LIBRARYTABLE_ID)).data().toInt();
+    int trackId = getTrackId(index);
     QString location = m_trackDao.getTrackLocation(trackId);
     return location;
 }
@@ -154,7 +166,7 @@ bool MissingTableModel::isColumnInternal(int column) {
         return false;
 }
 bool MissingTableModel::isColumnHiddenByDefault(int column) {
-    if (column == fieldIndex(LIBRARYTABLE_KEY))    
+    if (column == fieldIndex(LIBRARYTABLE_KEY))
         return true;
     return false;
 }

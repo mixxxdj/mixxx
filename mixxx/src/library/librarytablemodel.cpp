@@ -106,7 +106,7 @@ bool LibraryTableModel::addTrack(const QModelIndex& index, QString location)
 
 TrackPointer LibraryTableModel::getTrack(const QModelIndex& index) const
 {
-    int trackId = index.sibling(index.row(), fieldIndex(LIBRARYTABLE_ID)).data().toInt();
+    int trackId = getTrackId(index);
     return m_trackDao.getTrack(trackId);
 }
 
@@ -115,6 +115,17 @@ QString LibraryTableModel::getTrackLocation(const QModelIndex& index) const
     const int locationColumnIndex = fieldIndex(LIBRARYTABLE_LOCATION);
     QString location = index.sibling(index.row(), locationColumnIndex).data().toString();
     return location;
+}
+
+int LibraryTableModel::getTrackId(const QModelIndex& index) const {
+    if (!index.isValid()) {
+        return -1;
+    }
+    return index.sibling(index.row(), fieldIndex(LIBRARYTABLE_ID)).data().toInt();
+}
+
+int LibraryTableModel::getTrackRow(int trackId) const {
+    return BaseSqlTableModel::getTrackRow(trackId);
 }
 
 void LibraryTableModel::removeTracks(const QModelIndexList& indices) {
@@ -205,7 +216,7 @@ bool LibraryTableModel::isColumnInternal(int column) {
     return false;
 }
 bool LibraryTableModel::isColumnHiddenByDefault(int column) {
-    if (column == fieldIndex(LIBRARYTABLE_KEY))    
+    if (column == fieldIndex(LIBRARYTABLE_KEY))
         return true;
     return false;
 }

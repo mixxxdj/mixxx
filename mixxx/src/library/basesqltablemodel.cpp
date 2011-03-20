@@ -417,3 +417,10 @@ void BaseSqlTableModel::setCaching(bool isCachedModel){
                 this, SLOT(trackChanged(int)));
     }
 }
+
+int BaseSqlTableModel::getTrackRow(int trackId) const {
+    if (m_trackIdToRow.contains(trackId)) {
+        return m_trackIdToRow[trackId];
+    }
+    return -1;
+}

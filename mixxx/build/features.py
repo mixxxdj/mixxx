@@ -101,7 +101,7 @@ class CoreAudio(Feature):
             build.env.Append(CPPDEFINES = '__COREAUDIO__')
 
     def sources(self, build):
-        return ['soundsourcecoreaudio.cpp',
+        return ['soundsourcecoreaudio.cpp', 
                 '#lib/apple/CAStreamBasicDescription.h']
 
 

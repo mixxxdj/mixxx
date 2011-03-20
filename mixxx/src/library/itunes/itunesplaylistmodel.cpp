@@ -27,8 +27,7 @@ bool ITunesPlaylistModel::addTrack(const QModelIndex& index, QString location)
     return false;
 }
 
-TrackPointer ITunesPlaylistModel::getTrack(const QModelIndex& index) const
-{
+TrackPointer ITunesPlaylistModel::getTrack(const QModelIndex& index) const {
     QString artist = index.sibling(index.row(), fieldIndex("artist")).data().toString();
     QString title = index.sibling(index.row(), fieldIndex("title")).data().toString();
     QString album = index.sibling(index.row(), fieldIndex("album")).data().toString();
@@ -52,6 +51,17 @@ TrackPointer ITunesPlaylistModel::getTrack(const QModelIndex& index) const
 QString ITunesPlaylistModel::getTrackLocation(const QModelIndex& index) const {
     QString location = index.sibling(index.row(), fieldIndex("location")).data().toString();
     return location;
+}
+
+int ITunesPlaylistModel::getTrackId(const QModelIndex& index) const {
+    if (!index.isValid()) {
+        return -1;
+    }
+    return index.sibling(index.row(), fieldIndex("id")).data().toInt();
+}
+
+int ITunesPlaylistModel::getTrackRow(int trackId) const {
+    return BaseSqlTableModel::getTrackRow(trackId);
 }
 
 void ITunesPlaylistModel::removeTrack(const QModelIndex& index) {

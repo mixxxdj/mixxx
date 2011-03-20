@@ -172,3 +172,15 @@ void BundledSongsWebView::setFirstRun(bool firstRun)
 {
     m_bFirstRun = firstRun;
 };
+
+void BundledSongsWebView::loadSelectedTrack() {
+    // Do nothing for now. The web view doesn't have the concept of a selection right now.
+}
+
+void BundledSongsWebView::loadSelectedTrackToGroup(QString group) {
+    // Do nothing for now. The web view doesn't have the concept of a selection right now.
+}
+
+void BundledSongsWebView::moveSelection(int delta) {
+    // Do nothing for now. The web view doesn't have the concept of a selection right now.
+}
