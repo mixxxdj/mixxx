@@ -482,7 +482,7 @@ class MixxxCore(Feature):
                    "library/dao/playlistdao.cpp",
                    "library/dao/libraryhashdao.cpp",
                    "library/dao/settingsdao.cpp",
-                   "library/librarymidicontrol.cpp",
+                   "library/librarycontrol.cpp",
                    "library/schemamanager.cpp",
                    "library/promotracksfeature.cpp",
                    "library/featuredartistswebview.cpp",
