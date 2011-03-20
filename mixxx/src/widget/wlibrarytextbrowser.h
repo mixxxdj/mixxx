@@ -15,11 +15,13 @@ class WLibraryTextBrowser : public QTextBrowser, public virtual LibraryView {
     virtual ~WLibraryTextBrowser();
 
     virtual void setup(QDomNode node);
-    void onSearchStarting();
-    void onSearchCleared();
-    void onSearch(const QString& text);
-    void onShow();
-    QWidget* getWidgetForMIDIControl();
+    virtual void onSearchStarting();
+    virtual void onSearchCleared();
+    virtual void onSearch(const QString& text);
+    virtual void onShow();
+    virtual void loadSelectedTrack();
+    virtual void loadSelectedTrackToGroup(QString group);
+    virtual void moveSelection(int delta);
 };
 
 

@@ -409,11 +409,6 @@ void WTrackTableView::onShow()
 
 }
 
-QWidget* WTrackTableView::getWidgetForMIDIControl()
-{
-    return this;
-}
-
 /** Drag enter event, happens when a dragged item hovers over the track table view*/
 void WTrackTableView::dragEnterEvent(QDragEnterEvent * event)
 {
@@ -680,6 +675,17 @@ void WTrackTableView::keyPressEvent(QKeyEvent* event)
     }
     else
         QTableView::keyPressEvent(event);
+}
+
+void WTrackTableView::loadSelectedTrack() {
+    QModelIndexList indexes = selectedIndexes();
+    if (indexes.size() > 0) {
+        slotMouseDoubleClicked(indexes.at(0));
+    }
+}
+
+void WTrackTableView::loadSelectedTrackToGroup(QString group) {
+    loadSelectionToGroup(group);
 }
 
 void WTrackTableView::slotSendToAutoDJ() {

@@ -468,7 +468,7 @@ class MixxxCore(Feature):
                    "library/dao/playlistdao.cpp",
                    "library/dao/libraryhashdao.cpp",
                    "library/dao/settingsdao.cpp",
-                   "library/librarymidicontrol.cpp",
+                   "library/librarycontrol.cpp",
                    "library/schemamanager.cpp",
                    "library/promotracksfeature.cpp",
                    "library/featuredartistswebview.cpp",
@@ -596,7 +596,7 @@ class MixxxCore(Feature):
             mixxx_lib_path = SCons.ARGUMENTS.get('winlib', '..\\..\\..\\mixxx-win32lib-msvc100-release')
             if not os.path.exists(mixxx_lib_path):
                 print mixxx_lib_path
-                raise Exception("Winlib path does not exist! Please specify your winlib directory" 
+                raise Exception("Winlib path does not exist! Please specify your winlib directory"
                                 "path by running 'scons winlib=[path]'")
                 Script.Exit(1)
             #mixxx_lib_path = '#/../../mixxx-win%slib-msvc100-release' % build.bitwidth
