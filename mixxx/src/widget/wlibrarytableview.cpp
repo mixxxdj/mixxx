@@ -81,24 +81,22 @@ void WLibraryTableView::saveVScrollBarPosState() {
 }
 
 void WLibraryTableView::moveSelection(int delta) {
+    QAbstractItemModel* model = this->model();
+    
     while(delta != 0) {
         if(delta > 0) {
             // i is positive, so we want to move the highlight down
-            QApplication::postEvent(this,
-                                    new QKeyEvent(QEvent::KeyPress, (int)Qt::Key_Down,
-                                                  Qt::NoModifier, QString(), true));
-            QApplication::postEvent(this,
-                                    new QKeyEvent(QEvent::KeyRelease, (int)Qt::Key_Down,
-                                                  Qt::NoModifier, QString(), true));
+            int row = this->currentIndex().row();
+            if (row + 1 < model->rowCount())
+                this->selectRow(row + 1);
+
             delta--;
         } else {
             // i is negative, so we want to move the highlight up
-            QApplication::postEvent(this,
-                                    new QKeyEvent(QEvent::KeyPress, (int)Qt::Key_Up,
-                                                  Qt::NoModifier, QString(), true));
-            QApplication::postEvent(this,
-                                    new QKeyEvent(QEvent::KeyRelease, (int)Qt::Key_Up,
-                                                  Qt::NoModifier, QString(), true));
+            int row = this->currentIndex().row();
+            if (row - 1 >= 0)
+                this->selectRow(row - 1);
+
             delta++;
         }
     }
