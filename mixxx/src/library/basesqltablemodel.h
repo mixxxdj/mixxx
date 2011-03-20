@@ -42,6 +42,7 @@ class BaseSqlTableModel : public QSqlTableModel {
   private slots:
     void trackChanged(int trackId);
     void trackClean(int trackId);
+
   private:
     QVariant getBaseValue(const QModelIndex& index, int role = Qt::DisplayRole) const;
 
