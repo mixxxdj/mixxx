@@ -9,7 +9,7 @@
 #include "library/sidebarmodel.h"
 #include "library/trackcollection.h"
 #include "library/trackmodel.h"
-#include "library/browsefeature.h"
+#include "library/browse/browsefeature.h"
 #include "library/cratefeature.h"
 #include "library/rhythmbox/rhythmboxfeature.h"
 #include "library/itunes/itunesfeature.h"
@@ -19,14 +19,13 @@
 #include "library/preparefeature.h"
 #include "library/promotracksfeature.h"
 #include "library/traktor/traktorfeature.h"
+#include "library/librarycontrol.h"
 
 #include "widget/wtracktableview.h"
 #include "widget/wlibrary.h"
 #include "widget/wlibrarysidebar.h"
 
 #include "mixxxkeyboard.h"
-#include "librarymidicontrol.h"
-
 
 // This is is the name which we use to register the WTrackTableView with the
 // WLibrary
@@ -36,8 +35,7 @@ Library::Library(QObject* parent, ConfigObject<ConfigValue>* pConfig, bool first
     : m_pConfig(pConfig) {
     m_pTrackCollection = new TrackCollection(pConfig);
     m_pSidebarModel = new SidebarModel(parent);
-    m_pLibraryMIDIControl = NULL;  //Initialized in bindWidgets
-
+    m_pLibraryControl = new LibraryControl(this);
 
     // TODO(rryan) -- turn this construction / adding of features into a static
     // method or something -- CreateDefaultLibrary
@@ -49,8 +47,10 @@ Library::Library(QObject* parent, ConfigObject<ConfigValue>* pConfig, bool first
                                                        firstRun);
         addFeature(m_pPromoTracksFeature);
     }
-    else
+    else {
         m_pPromoTracksFeature = NULL;
+    }
+
     addFeature(new AutoDJFeature(this, pConfig, m_pTrackCollection));
     m_pPlaylistFeature = new PlaylistFeature(this, m_pTrackCollection);
     addFeature(m_pPlaylistFeature);
@@ -79,7 +79,7 @@ Library::Library(QObject* parent, ConfigObject<ConfigValue>* pConfig, bool first
 }
 
 Library::~Library() {
-    delete m_pLibraryMIDIControl;
+    delete m_pLibraryControl;
     delete m_pSidebarModel;
     //IMPORTANT: m_pTrackCollection gets destroyed via the QObject hierarchy somehow.
     //           Qt does it for us due to the way RJ wrote all this stuff.
@@ -112,7 +112,7 @@ void Library::bindWidget(WLibrarySidebar* pSidebarWidget,
     connect(this, SIGNAL(switchToView(const QString&)),
             pLibraryWidget, SLOT(switchToView(const QString&)));
 
-    m_pLibraryMIDIControl = new LibraryMIDIControl(pLibraryWidget, pSidebarWidget);
+    m_pLibraryControl->bindWidget(pSidebarWidget, pLibraryWidget, pKeyboard);
 
     // Setup the sources view
     pSidebarWidget->setModel(m_pSidebarModel);

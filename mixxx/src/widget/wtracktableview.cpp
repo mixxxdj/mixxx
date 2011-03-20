@@ -154,7 +154,9 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel *model) {
     header->setSortIndicatorShown(true);
     //setSortingEnabled(true);
     connect(horizontalHeader(), SIGNAL(sortIndicatorChanged(int,Qt::SortOrder)),
-            this, SLOT(sortByColumn(int)), Qt::AutoConnection);
+            this, SLOT(doSortByColumn(int)), Qt::AutoConnection);
+
+    doSortByColumn(horizontalHeader()->sortIndicatorSection());
 
     sortByColumn(horizontalHeader()->sortIndicatorSection());
 
@@ -234,6 +236,12 @@ void WTrackTableView::slotMouseDoubleClicked(const QModelIndex &index)
 
 void WTrackTableView::loadSelectionToGroup(QString group) {
     if (m_selectedIndices.size() > 0) {
+        bool groupPlaying = ControlObject::getControl(
+            ConfigKey(group, "play"))->get() == 1.0f;
+
+        if (groupPlaying)
+            return;
+
         QModelIndex index = m_selectedIndices.at(0);
         TrackModel* trackModel = getTrackModel();
         TrackPointer pTrack;
@@ -415,11 +423,6 @@ void WTrackTableView::onSearchCleared() {
 void WTrackTableView::onShow()
 {
 
-}
-
-QWidget* WTrackTableView::getWidgetForMIDIControl()
-{
-    return this;
 }
 
 /** Drag enter event, happens when a dragged item hovers over the track table view*/
@@ -690,6 +693,17 @@ void WTrackTableView::keyPressEvent(QKeyEvent* event)
         QTableView::keyPressEvent(event);
 }
 
+void WTrackTableView::loadSelectedTrack() {
+    QModelIndexList indexes = selectedIndexes();
+    if (indexes.size() > 0) {
+        slotMouseDoubleClicked(indexes.at(0));
+    }
+}
+
+void WTrackTableView::loadSelectedTrackToGroup(QString group) {
+    loadSelectionToGroup(group);
+}
+
 void WTrackTableView::slotSendToAutoDJ() {
     if (!modelHasCapabilities(TrackModel::TRACKMODELCAPS_ADDTOAUTODJ))
         return;
@@ -742,5 +756,53 @@ void WTrackTableView::addSelectionToCrate(int iCrateId) {
                 crateDao.addTrackToCrate(iTrackId, iCrateId);
             }
         }
+    }
+}
+
+void WTrackTableView::doSortByColumn(int headerSection) {
+    TrackModel* trackModel = getTrackModel();
+    QAbstractItemModel* itemModel = model();
+
+    if (trackModel == NULL || itemModel == NULL)
+        return;
+
+    // Save the selection
+    QModelIndexList selection = selectedIndexes();
+    QSet<int> trackIds;
+    QSet<int> rows;
+    foreach (QModelIndex index, selection) {
+        if (rows.contains(index.row()))
+            continue;
+
+        int trackId = trackModel->getTrackId(index);
+        trackIds.insert(trackId);
+        rows.insert(index.row());
+    }
+
+    sortByColumn(headerSection);
+
+    QItemSelectionModel* currentSelection = selectionModel();
+
+    // Find a visible column
+    int visibleColumn = 0;
+    while (isColumnHidden(visibleColumn) && visibleColumn < itemModel->columnCount()) {
+        visibleColumn++;
+    }
+
+    QModelIndex first;
+    foreach (int trackId, trackIds) {
+        int row = trackModel->getTrackRow(trackId);
+        if (row >= 0) {
+            QModelIndex tl = itemModel->index(row, visibleColumn);
+            currentSelection->select(tl, QItemSelectionModel::Rows | QItemSelectionModel::Select);
+
+            if (!first.isValid()) {
+                first = tl;
+            }
+        }
+    }
+
+    if (first.isValid()) {
+        scrollTo(first, QAbstractItemView::PositionAtCenter);
     }
 }

@@ -399,10 +399,18 @@ Qt::ItemFlags BaseSqlTableModel::flags(const QModelIndex &index) const
 {
     return readWriteFlags(index);
 }
+
 void BaseSqlTableModel::setCaching(bool isCachedModel){
     m_isCachedModel = isCachedModel;
     if(!m_isCachedModel){
         disconnect(&m_trackDAO, SIGNAL(trackChanged(int)),
                 this, SLOT(trackChanged(int)));
     }
+}
+
+int BaseSqlTableModel::getTrackRow(int trackId) const {
+    if (m_trackIdToRow.contains(trackId)) {
+        return m_trackIdToRow[trackId];
+    }
+    return -1;
 }

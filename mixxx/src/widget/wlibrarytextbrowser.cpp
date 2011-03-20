@@ -50,7 +50,14 @@ void WLibraryTextBrowser::onShow() {
 
 }
 
-QWidget* WLibraryTextBrowser::getWidgetForMIDIControl()
-{   
-    return NULL; //No MIDI control for text panes. :)
+void WLibraryTextBrowser::loadSelectedTrack() {
+    // Not applicable to text views
+}
+
+void WLibraryTextBrowser::loadSelectedTrackToGroup(QString group) {
+    // Not applicable to text views
+}
+
+void WLibraryTextBrowser::moveSelection(int delta) {
+    // Not applicable to text views
 }

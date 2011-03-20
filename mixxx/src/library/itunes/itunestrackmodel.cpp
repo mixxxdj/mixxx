@@ -47,6 +47,17 @@ TrackPointer ITunesTrackModel::getTrack(const QModelIndex& index) const {
     return TrackPointer(pTrack, &QObject::deleteLater);
 }
 
+int ITunesTrackModel::getTrackId(const QModelIndex& index) const {
+    if (!index.isValid()) {
+        return -1;
+    }
+    return index.sibling(index.row(), fieldIndex("id")).data().toInt();
+}
+
+int ITunesTrackModel::getTrackRow(int trackId) const {
+    return BaseSqlTableModel::getTrackRow(trackId);
+}
+
 QString ITunesTrackModel::getTrackLocation(const QModelIndex& index) const {
     QString location = index.sibling(index.row(), fieldIndex("location")).data().toString();
     return location;
