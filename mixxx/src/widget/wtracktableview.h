@@ -45,6 +45,7 @@ private slots:
     void addSelectionToPlaylist(int iPlaylistId);
     void addSelectionToCrate(int iCrateId);
     void loadSelectionToGroup(QString group);
+    void doSortByColumn(int headerSection);
 
 private:
     void showTrackInfo(QModelIndex index);
