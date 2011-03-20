@@ -126,7 +126,6 @@ QMimeData* RhythmboxPlaylistModel::mimeData(const QModelIndexList &indexes) cons
     return mimeData;
 }
 
-
 QItemDelegate* RhythmboxPlaylistModel::delegateForColumn(const int i) {
     return NULL;
 }

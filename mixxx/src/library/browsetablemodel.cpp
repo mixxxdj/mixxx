@@ -67,7 +67,6 @@ void BrowseTableModel::addSearchColumn(int index) {
 void BrowseTableModel::setPath(QString absPath)
 {
    m_backgroundThread.setPath(absPath);
-
 }
 
 TrackPointer BrowseTableModel::getTrack(const QModelIndex& index) const
