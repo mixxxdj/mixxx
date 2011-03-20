@@ -12,19 +12,22 @@ class BrowseThread : public QThread {
   public:
     BrowseThread(QObject *parent = 0);
     ~BrowseThread();
+
     void setPath(QString& path);
     void run();
+
   signals:
     void rowDataAppended(const QList<QStandardItem*>&);
     void clearModel();
-  private:
-     void populateModel();
 
-     QMutex m_mutex;
-     QWaitCondition m_locationUpdated;
-     QList<int> m_searchColumns;
-     QString m_path;
-     bool m_bStopThread;
+  private:
+    void populateModel();
+
+    QMutex m_mutex;
+    QWaitCondition m_locationUpdated;
+    QList<int> m_searchColumns;
+    QString m_path;
+    bool m_bStopThread;
 };
 
 #endif // BROWSETHREAD_H

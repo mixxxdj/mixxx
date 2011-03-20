@@ -7,13 +7,12 @@
 #include <QStringList>
 #include <QFileInfo>
 #include <QDesktopServices>
+
 #include "trackinfoobject.h"
 #include "library/treeitem.h"
-#include "library/browsefeature.h"
+#include "library/browse/browsefeature.h"
 #include "library/trackcollection.h"
 #include "library/dao/trackdao.h"
-
-
 
 BrowseFeature::BrowseFeature(QObject* parent, ConfigObject<ConfigValue>* pConfig, TrackCollection* pTrackCollection)
         : LibraryFeature(parent),
@@ -21,10 +20,10 @@ BrowseFeature::BrowseFeature(QObject* parent, ConfigObject<ConfigValue>* pConfig
           m_browseModel(this),
           m_proxyModel(&m_browseModel),
           m_pTrackCollection(pTrackCollection) {
-     
+
     m_proxyModel.setFilterCaseSensitivity(Qt::CaseInsensitive);
     m_proxyModel.setSortCaseSensitivity(Qt::CaseInsensitive);
-               
+
     //The invisible root item of the child model
     TreeItem* rootItem = new TreeItem();
 
@@ -102,7 +101,7 @@ BrowseFeature::BrowseFeature(QObject* parent, ConfigObject<ConfigValue>* pConfig
 }
 
 BrowseFeature::~BrowseFeature() {
-    
+
 }
 
 QVariant BrowseFeature::title() {

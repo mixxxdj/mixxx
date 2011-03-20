@@ -1,11 +1,11 @@
-#include "browsethread.h"
-#include "browsetablemodel.h"
-#include "soundsourceproxy.h"
-#include "mixxxutils.cpp"
-
 #include <QStringList>
 #include <QDirIterator>
 #include <QtCore>
+
+#include "library/browse/browsethread.h"
+#include "library/browse/browsetablemodel.h"
+#include "soundsourceproxy.h"
+#include "mixxxutils.cpp"
 
 BrowseThread::BrowseThread(QObject *parent)
         : QThread(parent),

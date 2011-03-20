@@ -9,7 +9,6 @@
 #include "library/treeitemmodel.h"
 #include "library/treeitem.h"
 
-
 class TreeItem;
 /*
  * This class represents a folder item within the Browse Feature
