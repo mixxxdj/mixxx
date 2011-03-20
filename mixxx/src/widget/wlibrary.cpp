@@ -22,6 +22,10 @@ bool WLibrary::registerView(QString name, QWidget* view) {
     if (m_viewMap.contains(name)) {
         return false;
     }
+    if (dynamic_cast<LibraryView*>(view) == NULL) {
+        qDebug() << "WARNING: Attempted to register a view with WLibrary that does not implement the LibraryView interface. Ignoring.";
+        return false;
+    }
     addWidget(view);
     m_viewMap[name] = view;
     return true;
@@ -74,13 +78,6 @@ void WLibrary::searchStarting() {
     view->onSearchStarting();
 }
 
-QWidget* WLibrary::getWidgetForMIDIControl()
-{
-    LibraryView* view = dynamic_cast<LibraryView*>(currentWidget());
-    if (view)
-    {
-        return view->getWidgetForMIDIControl();
-    }
-    else
-        return NULL;
+LibraryView* WLibrary::getActiveView() const {
+    return dynamic_cast<LibraryView*>(currentWidget());
 }

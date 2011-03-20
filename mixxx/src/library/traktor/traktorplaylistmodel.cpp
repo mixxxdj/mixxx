@@ -59,6 +59,17 @@ QString TraktorPlaylistModel::getTrackLocation(const QModelIndex& index) const
     return location;
 }
 
+int TraktorPlaylistModel::getTrackId(const QModelIndex& index) const {
+    if (!index.isValid()) {
+        return -1;
+    }
+    return index.sibling(index.row(), fieldIndex("id")).data().toInt();
+}
+
+int TraktorPlaylistModel::getTrackRow(int trackId) const {
+    return BaseSqlTableModel::getTrackRow(trackId);
+}
+
 void TraktorPlaylistModel::removeTrack(const QModelIndex& index)
 {
 

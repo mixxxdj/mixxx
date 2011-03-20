@@ -59,10 +59,13 @@ BrandingText " "
 
 ; The file to write and default installation directory
 !ifdef x64
-    OutFile "${PRODUCT_NAME}-${PRODUCT_VERSION}-x64.exe"
+    ;OutFile "${PRODUCT_NAME}-${PRODUCT_VERSION}-x64.exe"
+    ; Need consistency by taking our version number for automated builds. -- Albert
+    OutFile "${PRODUCT_NAME}-x64.exe"
     ;InstallDir "$PROGRAMFILES64\${PRODUCT_NAME}"
 !else
-    OutFile "${PRODUCT_NAME}-${PRODUCT_VERSION}-x86.exe"
+    ;OutFile "${PRODUCT_NAME}-${PRODUCT_VERSION}-x86.exe"
+    OutFile "${PRODUCT_NAME}-x86.exe"
 !endif
 
 ; Registry key to check for directory (so if you install again, it will
@@ -131,12 +134,16 @@ Section "Mixxx (required)" SecMixxx
   ; (Visual C++ 2005 is msvc?80.dll and Microsoft.VC80.CRT.manifest,
   ;  Visual C++ 2008 is msvc?90.dll and Microsoft.VC90.CRT.manifest)
   ;
+  ; All the MSVC files are located here if you have MSVC 2008 installed. (x86)
+  File "C:\Program Files\Microsoft Visual Studio 9.0\VC\redist\x86\Microsoft.VC90.CRT\*"
+  
   ; See http://mixxx.org/wiki/doku.php/build_windows_installer for full details.
-
-  File ${BASE_BUILD_DIR}\..\mixxx-win${BITWIDTH}lib-msvc\msvcr*.dll
-  File ${BASE_BUILD_DIR}\..\mixxx-win${BITWIDTH}lib-msvc\msvcp*.dll
-  File /nonfatal ${BASE_BUILD_DIR}\..\mixxx-win${BITWIDTH}lib-msvc\msvcm*.dll
-  File ${BASE_BUILD_DIR}\..\mixxx-win${BITWIDTH}lib-msvc\Microsoft.VC*.CRT.manifest
+  ;
+  ; NOTE: The Microsoft Visual C++ 2010 Runtime gets rid of the manifest file, so it
+  ;         is no longer necessary if we switch to deploying with MSVC 2010. - Albert 
+  ; File ${BASE_BUILD_DIR}\..\..\mixxx-win${BITWIDTH}lib-msvc100-release\msvc*.dll
+  ; File /nonfatal ${BASE_BUILD_DIR}\..\..\mixxx-win64lib-msvc100-release\msvcm*.dll
+  ; File ${BASE_BUILD_DIR}\..\..\mixxx-win${BITWIDTH}lib-msvc100-release\Microsoft.VC*.CRT.manifest
 
   ; And documentation, licence etc.
   File "${BASE_BUILD_DIR}\Mixxx-Manual.pdf"
@@ -146,6 +153,9 @@ Section "Mixxx (required)" SecMixxx
 
   SetOutPath $INSTDIR\promo\${PRODUCT_VERSION}
   File /nonfatal /r "${BASE_BUILD_DIR}\dist${BITWIDTH}\promo\${PRODUCT_VERSION}\*"
+
+  SetOutPath $INSTDIR\sqldrivers
+  File /nonfatal /r "${BASE_BUILD_DIR}\dist${BITWIDTH}\sqldrivers\*"
 
   SetOutPath $INSTDIR\keyboard
   File "${BASE_BUILD_DIR}\dist${BITWIDTH}\keyboard\Standard.kbd.cfg"
@@ -386,6 +396,7 @@ Section "Uninstall"
   Delete $INSTDIR\LICENSE
   Delete $INSTDIR\README
   Delete $INSTDIR\COPYING
+  Delete $INSTDIR\sqldrivers\*.dll
 
   ; Remove skins, keyboard, midi mappings, promos
   Delete "$INSTDIR\skins\${DEFAULT_SKIN}\*.*"
