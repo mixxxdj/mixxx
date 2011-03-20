@@ -21,14 +21,11 @@ RhythmboxPlaylistModel::RhythmboxPlaylistModel(QObject* parent,
 RhythmboxPlaylistModel::~RhythmboxPlaylistModel() {
 }
 
-bool RhythmboxPlaylistModel::addTrack(const QModelIndex& index, QString location)
-{
-
+bool RhythmboxPlaylistModel::addTrack(const QModelIndex& index, QString location) {
     return false;
 }
 
-TrackPointer RhythmboxPlaylistModel::getTrack(const QModelIndex& index) const
-{
+TrackPointer RhythmboxPlaylistModel::getTrack(const QModelIndex& index) const {
     QString artist = index.sibling(index.row(), fieldIndex("artist")).data().toString();
     QString title = index.sibling(index.row(), fieldIndex("title")).data().toString();
     QString album = index.sibling(index.row(), fieldIndex("album")).data().toString();
@@ -53,6 +50,18 @@ QString RhythmboxPlaylistModel::getTrackLocation(const QModelIndex& index) const
     QString location = index.sibling(index.row(), fieldIndex("location")).data().toString();
     return location;
 }
+
+int RhythmboxPlaylistModel::getTrackId(const QModelIndex& index) const {
+    if (!index.isValid()) {
+        return -1;
+    }
+    return index.sibling(index.row(), fieldIndex("id")).data().toInt();
+}
+
+int RhythmboxPlaylistModel::getTrackRow(int trackId) const {
+    return BaseSqlTableModel::getTrackRow(trackId);
+}
+
 
 void RhythmboxPlaylistModel::removeTrack(const QModelIndex& index) {
 

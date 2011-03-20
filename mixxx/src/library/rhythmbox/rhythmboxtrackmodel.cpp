@@ -52,6 +52,18 @@ QString RhythmboxTrackModel::getTrackLocation(const QModelIndex& index) const {
     return location;
 }
 
+int RhythmboxTrackModel::getTrackId(const QModelIndex& index) const {
+    if (!index.isValid()) {
+        return -1;
+    }
+    return index.sibling(index.row(), fieldIndex("id")).data().toInt();
+}
+
+int RhythmboxTrackModel::getTrackRow(int trackId) const {
+    return BaseSqlTableModel::getTrackRow(trackId);
+}
+
+
 void RhythmboxTrackModel::removeTrack(const QModelIndex& index) {
 
 }
