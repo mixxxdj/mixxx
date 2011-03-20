@@ -66,9 +66,15 @@ void WBrowseTableView::onShow()
 {
 }
 
-QWidget* WBrowseTableView::getWidgetForMIDIControl()
-{
-    return this;
+void WBrowseTableView::loadSelectedTrack() {
+
+}
+
+void WBrowseTableView::loadSelectedTrackToGroup(QString group) {
+    QModelIndexList selectedIndices = selectionModel()->selectedRows();
+    if (selectedIndices.size() > 0) {
+        emit(loadToPlayer(selectedIndices.at(0), group));
+    }
 }
 
 void WBrowseTableView::keyPressEvent(QKeyEvent* event)
