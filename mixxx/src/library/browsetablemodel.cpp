@@ -75,6 +75,16 @@ TrackPointer BrowseTableModel::getTrack(const QModelIndex& index) const
     return TrackPointer(tio, &QObject::deleteLater);
 }
 
+int BrowseTableModel::getTrackId(const QModelIndex& index) const {
+    // We can't implement this as it stands.
+    return -1;
+}
+
+int BrowseTableModel::getTrackRow(int trackId) const {
+    // We can't implement this as it stands.
+    return -1;
+}
+
 QString BrowseTableModel::getTrackLocation(const QModelIndex& index) const
 {
     int row = index.row();

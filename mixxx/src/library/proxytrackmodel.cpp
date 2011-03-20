@@ -20,6 +20,15 @@ ProxyTrackModel::ProxyTrackModel(QAbstractItemModel* pTrackModel,
 ProxyTrackModel::~ProxyTrackModel() {
 }
 
+int ProxyTrackModel::getTrackId(const QModelIndex& index) const {
+    QModelIndex indexSource = mapToSource(index);
+    return m_pTrackModel->getTrackId(indexSource);
+}
+
+int ProxyTrackModel::getTrackRow(int trackId) const {
+    return m_pTrackModel->getTrackRow(trackId);
+}
+
 TrackPointer ProxyTrackModel::getTrack(const QModelIndex& index) const {
     QModelIndex indexSource = mapToSource(index);
     return m_pTrackModel->getTrack(indexSource);
@@ -29,6 +38,8 @@ QString ProxyTrackModel::getTrackLocation(const QModelIndex& index) const {
     QModelIndex indexSource = mapToSource(index);
     return m_pTrackModel->getTrackLocation(indexSource);
 }
+
+
 
 void ProxyTrackModel::search(const QString& searchText) {
     if (m_bHandleSearches) {

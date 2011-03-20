@@ -26,16 +26,6 @@ bool ITunesTrackModel::addTrack(const QModelIndex& index, QString location) {
     return false;
 }
 
-int ITunesTrackModel::getTrackId(const QModelIndex& index) const
-{
-    return -1;
-}
-
-int ITunesTrackModel::getTrackRow(int trackId) const
-{
-    return -1;
-}
-
 TrackPointer ITunesTrackModel::getTrack(const QModelIndex& index) const {
     QString artist = index.sibling(index.row(), fieldIndex("artist")).data().toString();
     QString title = index.sibling(index.row(), fieldIndex("title")).data().toString();
@@ -55,6 +45,17 @@ TrackPointer ITunesTrackModel::getTrack(const QModelIndex& index) const {
     pTrack->setBpm(bpm);
 
     return TrackPointer(pTrack, &QObject::deleteLater);
+}
+
+int ITunesTrackModel::getTrackId(const QModelIndex& index) const {
+    if (!index.isValid()) {
+        return -1;
+    }
+    return index.sibling(index.row(), fieldIndex("id")).data().toInt();
+}
+
+int ITunesTrackModel::getTrackRow(int trackId) const {
+    return BaseSqlTableModel::getTrackRow(trackId);
 }
 
 QString ITunesTrackModel::getTrackLocation(const QModelIndex& index) const {
