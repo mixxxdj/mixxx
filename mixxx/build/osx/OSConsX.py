@@ -80,8 +80,9 @@ def build_dmg(target, source, env):
     assert len(target) == 1 
     target = target[0]
     
-    if os.path.exists(str(target)+".dmg"): #huhh? why do I have to say +.dmg here? I thought scons was supposed to handle that
-        raise Exception(".dmg target already exists.")
+    # I'm going to let us overwrite the .dmg for now - Albert
+    #if os.path.exists(str(target)+".dmg"): #huhh? why do I have to say +.dmg here? I thought scons was supposed to handle that
+    #    raise Exception(".dmg target already exists.")
     
     #if 'DMG_DIR' in env: .... etc fill me in please
     dmg = os.tmpnam()+"-"+env['VOLNAME'].strip()+"-dmg" #create a directory to build the .dmg root from
@@ -115,7 +116,7 @@ def build_dmg(target, source, env):
         system('SetFile -a C "%s"' % dmg) #is there an sconsey way to declare this? Would be nice so that it could write what
     
     
-    if system("hdiutil create -srcfolder %s -format UDBZ -volname %s %s" % (dmg, env['VOLNAME'], target)):
+    if system("hdiutil create -srcfolder %s -format UDBZ -ov -volname %s %s" % (dmg, env['VOLNAME'], target)):
         raise Exception("hdiutil create failed")
     
     shutil.rmtree(dmg)

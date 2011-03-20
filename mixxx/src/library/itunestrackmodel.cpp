@@ -25,6 +25,16 @@ bool ITunesTrackModel::addTrack(const QModelIndex& index, QString location) {
     return false;
 }
 
+int ITunesTrackModel::getTrackId(const QModelIndex& index) const
+{
+    return -1;
+}
+
+int ITunesTrackModel::getTrackRow(int trackId) const
+{
+    return -1;
+}
+
 TrackPointer ITunesTrackModel::getTrack(const QModelIndex& index) const {
     QString artist = index.sibling(index.row(), fieldIndex("artist")).data().toString();
     QString title = index.sibling(index.row(), fieldIndex("title")).data().toString();

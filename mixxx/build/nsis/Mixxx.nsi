@@ -145,7 +145,6 @@ Section "Mixxx (required)" SecMixxx
   ; File /nonfatal ${BASE_BUILD_DIR}\..\..\mixxx-win64lib-msvc100-release\msvcm*.dll
   ; File ${BASE_BUILD_DIR}\..\..\mixxx-win${BITWIDTH}lib-msvc100-release\Microsoft.VC*.CRT.manifest
 
-
   ; And documentation, licence etc.
   File "${BASE_BUILD_DIR}\Mixxx-Manual.pdf"
   File "${BASE_BUILD_DIR}\LICENSE"
@@ -227,7 +226,7 @@ SectionGroup "MIDI controller mappings" SecControllerMappings
 	  File "${BASE_BUILD_DIR}\dist${BITWIDTH}\midi\Stanton-SCS3m-scripts.js"
 	SectionEnd
 	
-    Section /o "Stanton SCS.1d" SecSCS1d
+    Section "Stanton SCS.1d" SecSCS1d
 	  SetOutPath $INSTDIR\midi
 	  File "${BASE_BUILD_DIR}\dist${BITWIDTH}\midi\Stanton SCS.1d.midi.xml"
 	  File "${BASE_BUILD_DIR}\dist${BITWIDTH}\midi\Stanton-SCS1d-scripts.js"
@@ -335,7 +334,7 @@ SectionEnd
   LangString DESC_SecControllerMappings ${LANG_ENGLISH} "Mappings that enable popular MIDI controllers to be used with Mixxx"
   LangString DESC_SecCertifiedMappings ${LANG_ENGLISH} "Mappings developed and supported by the Mixxx team."
   LangString DESC_SecCommunityMappings ${LANG_ENGLISH} "User-developed mappings that the Mixxx team is unable to directly support. Please visit the Mixxx forum for help with these: http://mixxx.org/forums/"
-  LangString DESC_SecSCS1d ${LANG_ENGLISH} "UNFINISHED mapping for the Stanton SCS.1d. DaRouter must be closed to use it."
+  LangString DESC_SecSCS1d ${LANG_ENGLISH} "Mapping for the Stanton SCS.1d. DaRouter must be closed to use it."
   LangString DESC_SecSCS1m ${LANG_ENGLISH} "Mapping for the Stanton SCS.1m. DaRouter must be closed to use it."
   
   ; Skin group descriptions
@@ -343,8 +342,8 @@ SectionEnd
   LangString DESC_SecAddlSkins ${LANG_ENGLISH} "Additional good-looking skins with varying themes and larger screen sizes."
   LangString DESC_SecNetbookSkins ${LANG_ENGLISH} "Includes Shade and Shade Dark"
   LangString DESC_SecXGASkins ${LANG_ENGLISH} "Includes Shade and Shade Dark"
-  LangString DESC_SecWXGASkins ${LANG_ENGLISH} "Includes Deere, Late Night (Blues) and Campcaster"
-  LangString DESC_SecSXGASkins ${LANG_ENGLISH} "Includes Deere, Late Night (Blues) and Campcaster"
+  LangString DESC_SecWXGASkins ${LANG_ENGLISH} "Includes Deere, Late Night (Blues)"
+  LangString DESC_SecSXGASkins ${LANG_ENGLISH} "Includes Deere, Late Night (Blues)"
   LangString DESC_SecUXGASkins ${LANG_ENGLISH} "Includes Phoney and Phoney Dark"
   LangString DESC_SecWSXGASkins ${LANG_ENGLISH} "Includes Phoney and Phoney Dark"
 

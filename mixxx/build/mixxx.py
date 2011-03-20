@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import logging
 import platform
 import sys
@@ -39,8 +40,11 @@ class MixxxBuild(object):
             raise Exception("invalid target platform")
 
         if machine not in ['x86_64', 'x86', 'i686', 'i586',
+                           'alpha', 'hppa', 'mips', 'mipsel', 's390',
+                           'sparc', 'ia64', 'armel', 'hurd-i386',
+                           'kfreebsd-amd64', 'kfreebsd-i386',
                            'i486', 'i386', 'powerpc', 'powerpc64',
-                           'AMD64', 'EM64T', 'INTEL64']:
+                           'amd64', 'AMD64', 'EM64T', 'INTEL64']:
             raise Exception("invalid machine type")
 
         if toolchain not in ['gnu', 'msvs']:

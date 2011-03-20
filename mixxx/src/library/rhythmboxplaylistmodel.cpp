@@ -234,7 +234,13 @@ void RhythmboxPlaylistModel::moveTrack(const QModelIndex& sourceIndex, const QMo
     //Should do nothing... hmmm
 }
 
+int RhythmboxPlaylistModel::getTrackId(const QModelIndex& index) const {
+    return -1;
+}
 
+int RhythmboxPlaylistModel::getTrackRow(int trackId) const {
+    return -1;
+}
 
 QString RhythmboxPlaylistModel::getTrackLocation(const QModelIndex& index) const
 {

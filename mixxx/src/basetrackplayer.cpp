@@ -127,11 +127,13 @@ void BaseTrackPlayer::slotLoadTrack(TrackPointer track, bool bStartFromEndPos)
             pLoopCue->setLength(loopEnd - loopStart);
         }
 
-        // TODO(XXX) This could be a help or a hurt. This should disconnect
-        // every signal connected to the track. Other parts of Mixxx might be
-        // relying on this -- but if it's being unloaded maybe that's a good
-        // thing.
-        m_pLoadedTrack->disconnect();
+        // WARNING: Never. Ever. call bare disconnect() on an object. Mixxx
+        // relies on signals and slots to get tons of things done. Don't
+        // randomly disconnect things.
+        // m_pLoadedTrack->disconnect();
+        disconnect(m_pLoadedTrack.data(), 0, m_pBPM, 0);
+        disconnect(m_pLoadedTrack.data(), 0, m_pReplayGain, 0);
+
         // Causes the track's data to be saved back to the library database.
         emit(unloadingTrack(m_pLoadedTrack));
     }
@@ -158,11 +160,13 @@ void BaseTrackPlayer::slotLoadFailed(TrackPointer track, QString reason) {
 
 void BaseTrackPlayer::slotUnloadTrack(TrackPointer) {
     if (m_pLoadedTrack) {
-        // TODO(XXX) This could be a help or a hurt. This should disconnect
-        // every signal connected to the track. Other parts of Mixxx might be
-        // relying on this -- but if it's being unloaded maybe that's a good
-        // thing.
-        m_pLoadedTrack->disconnect();
+        // WARNING: Never. Ever. call bare disconnect() on an object. Mixxx
+        // relies on signals and slots to get tons of things done. Don't
+        // randomly disconnect things.
+        // m_pLoadedTrack->disconnect();
+        disconnect(m_pLoadedTrack.data(), 0, m_pBPM, 0);
+        disconnect(m_pLoadedTrack.data(), 0, m_pReplayGain, 0);
+
         // Causes the track's data to be saved back to the library database and
         // for all the widgets to unload the track and blank themselves.
         emit(unloadingTrack(m_pLoadedTrack));
@@ -184,7 +188,7 @@ void BaseTrackPlayer::slotFinishLoading(TrackPointer pTrackInfoObject)
     // Read the tags if required
     if(!m_pLoadedTrack->getHeaderParsed())
         SoundSourceProxy::ParseHeader(m_pLoadedTrack.data());
-    
+
     m_pLoadedTrack->incTimesPlayed();
 
     // Generate waveform summary

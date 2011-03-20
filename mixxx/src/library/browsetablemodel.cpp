@@ -20,6 +20,14 @@ BrowseTableModel::~BrowseTableModel()
 
 }
 
+int BrowseTableModel::getTrackId(const QModelIndex& index) const {
+    return -1;
+}
+
+int BrowseTableModel::getTrackRow(int trackId) const {
+    return -1;
+}
+
 TrackPointer BrowseTableModel::getTrack(const QModelIndex& index) const
 {
 	//TODO

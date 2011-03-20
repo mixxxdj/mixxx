@@ -58,6 +58,7 @@ void PlaylistTableModel::setPlaylist(int playlistId)
                   "library." + LIBRARYTABLE_KEY + "," +
                   "library." + LIBRARYTABLE_DATETIMEADDED + "," +
                   "library." + LIBRARYTABLE_BPM + ","
+                  "library." + LIBRARYTABLE_BITRATE + "," +
                   "track_locations.location,"
                   "track_locations.fs_deleted," +
                   "library." + LIBRARYTABLE_COMMENT + "," +
@@ -127,7 +128,7 @@ TrackPointer PlaylistTableModel::getTrack(const QModelIndex& index) const
 
     //const int locationColumnIndex = this->fieldIndex(LIBRARYTABLE_LOCATION);
     //QString location = index.sibling(index.row(), locationColumnIndex).data().toString();
-    int trackId = index.sibling(index.row(), fieldIndex(LIBRARYTABLE_ID)).data().toInt();
+    int trackId = getTrackId(index);
     return m_trackDao.getTrack(trackId);
 }
 
@@ -135,6 +136,18 @@ QString PlaylistTableModel::getTrackLocation(const QModelIndex& index) const
 {
     QString location = index.sibling(index.row(), fieldIndex("location")).data().toString();
     return location;
+}
+
+int PlaylistTableModel::getTrackId(const QModelIndex& index) const
+{
+    if (!index.isValid()) {
+        return -1;
+    }
+    return index.sibling(index.row(), fieldIndex(LIBRARYTABLE_ID)).data().toInt();
+}
+
+int PlaylistTableModel::getTrackRow(int trackId) const {
+    return BaseSqlTableModel::getTrackRow(trackId);
 }
 
 void PlaylistTableModel::removeTrack(const QModelIndex& index)
@@ -309,7 +322,7 @@ bool PlaylistTableModel::isColumnInternal(int column) {
     return false;
 }
 bool PlaylistTableModel::isColumnHiddenByDefault(int column) {
-    if (column == fieldIndex(LIBRARYTABLE_KEY))    
+    if (column == fieldIndex(LIBRARYTABLE_KEY))
         return true;
     return false;
 }
