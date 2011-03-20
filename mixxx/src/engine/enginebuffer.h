@@ -30,7 +30,6 @@ class EngineControl;
 class BpmControl;
 class RateControl;
 class LoopingControl;
-class BeatControl;
 class QuantizeControl;
 class ReadAheadManager;
 class ControlObject;
@@ -153,9 +152,6 @@ private:
     /** Pointer to the loop control object */
     LoopingControl* m_pLoopingControl;
     
-    /** Pointer to the beat juggling control object */
-    BeatControl* m_pBeatControl;
-
     /** Pointer to the rate control object */
     RateControl* m_pRateControl;
 
