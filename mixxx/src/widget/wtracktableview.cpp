@@ -226,6 +226,12 @@ void WTrackTableView::slotMouseDoubleClicked(const QModelIndex &index)
 
 void WTrackTableView::loadSelectionToGroup(QString group) {
     if (m_selectedIndices.size() > 0) {
+        bool groupPlaying = ControlObject::getControl(
+            ConfigKey(group, "play"))->get() == 1.0f;
+
+        if (groupPlaying)
+            return;
+
         QModelIndex index = m_selectedIndices.at(0);
         TrackModel* trackModel = getTrackModel();
         TrackPointer pTrack;
