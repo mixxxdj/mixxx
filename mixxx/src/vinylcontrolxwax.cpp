@@ -429,14 +429,6 @@ void VinylControlXwax::run()
 				//add a value to the pitch ring (for averaging / smoothing the pitch)
 				//qDebug() << fabs(((dVinylPosition - dOldPos) * (dVinylPitch / fabs(dVinylPitch))));
 				
-				/*if (iPosition > timecoder_get_safe(&timecoder))
-				{
-					//record is past safe zone... I guess we will do the
-					//track-selection thing
-					doTrackSelection(iPosition);
-					continue;
-				}*/
-				
 				dPitchRing[ringPos] = dVinylPitch;
 				if(ringFilled < RING_SIZE)
 		        	ringFilled++;
