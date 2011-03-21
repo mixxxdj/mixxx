@@ -75,7 +75,6 @@ private:
 	ControlObjectThread *trackSelector, *trackLoader;
 	double dLastTrackSelectPos;
 	double dCurTrackSelectPos;
-	QTime tSinceTrackSelect;
 	bool bTrackSelectMode;
 
     //Contains information that xwax's code needs internally about the timecode and how to process it.
