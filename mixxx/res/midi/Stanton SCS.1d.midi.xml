@@ -11,7 +11,14 @@
         </scriptfiles>
 
             <controls>
-                
+                <control>   <!-- Firmware version response -->
+                    <status>0xf0</status>
+                    <group>[Master]</group>
+                    <key>StantonSCS1d.firmwareResponse</key>
+                    <options>
+                        <Script-Binding/>
+                    </options>
+                </control>
                 <!--    Encoder section    -->
                 
                 <control>

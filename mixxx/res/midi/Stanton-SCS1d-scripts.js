@@ -182,8 +182,17 @@ StantonSCS1d.init = function (id) {    // called when the MIDI device is opened 
     
     midi.sendSysexMsg(StantonSCS1d.sysex.concat([StantonSCS1d.channel, 14, 0, 0xF7]),8);  // Clear Passive mode
 
-    // TODO: Check firmware version if possible. Platter behaves very differently after v1.25!
-    //StantonSCS1d.fwVersion = 
+    // Ask for firmware version
+    midi.sendSysexMsg(StantonSCS1d.sysex.concat([StantonSCS1d.channel, 0x0C, 0xF7]),7);
+    
+    // TODO: Remove this once the deadlock issue is resolved
+    //  where you have to send something from the controller in order for the init2
+    //  function to run after the .statusResponse() calls it
+    //  The issue also prevents LEDs and scratching from working on startup
+    StantonSCS1d.init2();
+}
+
+StantonSCS1d.init2 = function () {
     
     // Force change to first deck, initializing the LEDs and connecting signals in the process
     StantonSCS1d.state["Oldknob"]=1;
@@ -238,6 +247,22 @@ StantonSCS1d.shutdown = function () {   // called when the MIDI device is closed
     midi.sendSysexMsg(StantonSCS1d.sysex.concat([StantonSCS1d.channel, 17, 0xF7]),7); // Extinguish all LEDs
 
     print ("StantonSCS1d: \""+StantonSCS1d.id+"\" on MIDI channel "+(StantonSCS1d.channel+1)+" shut down.");
+}
+
+StantonSCS1d.firmwareResponse = function (data, length) {
+    //print("-------------------------SCS.1d firmware="+data);
+    var i=0;
+    var out="";
+    while (i<(length-6)) {
+        out+=data[i+5];
+        i++;
+    }
+    print("SCS.1d firmware string: "+out);
+        
+    // TODO: Check firmware version if possible. Platter behaves very differently after v1.25!
+    //StantonSCS1d.fwVersion = 
+
+//     StantonSCS1d.init2();
 }
 
 StantonSCS1d.checkInSetup = function () {
