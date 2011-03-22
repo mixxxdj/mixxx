@@ -504,7 +504,25 @@
                     </options>
                 </control>
                 <control>
+                    <status>0x80</status>
+                    <midino>0x18</midino>
+                    <group>[Playlist]</group>
+                    <key>StantonSCS1m.cancelButton</key>
+                    <options>
+                        <Script-Binding/>
+                    </options>
+                </control>
+                <control>
                     <status>0x90</status>
+                    <midino>0x1A</midino>
+                    <group>[Playlist]</group>
+                    <key>StantonSCS1m.enterButton</key>
+                    <options>
+                        <Script-Binding/>
+                    </options>
+                </control>
+                <control>
+                    <status>0x80</status>
                     <midino>0x1A</midino>
                     <group>[Playlist]</group>
                     <key>StantonSCS1m.enterButton</key>
@@ -521,6 +539,15 @@
                         <Script-Binding/>
                     </options>
                 </control>
+                <control>   <!-- Select knob release -->
+                    <status>0x80</status>
+                    <midino>0x27</midino>
+                    <group>[Master]</group>
+                    <key>StantonSCS1m.pressSelectKnob</key>
+                    <options>
+                        <Script-Binding/>
+                    </options>
+                </control>
                 <control>
                     <status>0x90</status>
                     <midino>0x1F</midino>
@@ -528,7 +555,19 @@
                     <key>SelectPrevPlaylist</key>
                 </control>
                 <control>
+                    <status>0x80</status>
+                    <midino>0x1F</midino>
+                    <group>[Playlist]</group>
+                    <key>SelectPrevPlaylist</key>
+                </control>
+                <control>
                     <status>0x90</status>
+                    <midino>0x21</midino>
+                    <group>[Playlist]</group>
+                    <key>SelectNextPlaylist</key>
+                </control>
+                <control>
+                    <status>0x80</status>
                     <midino>0x21</midino>
                     <group>[Playlist]</group>
                     <key>SelectNextPlaylist</key>
@@ -618,7 +657,7 @@
                     <status>0x90</status>
                     <midino>0x22</midino>
                     <group>[Master]</group>
-                    <key>StantonSCS1m.hotCueDeckToggle</key>
+                    <key>StantonSCS1m.hotCueDeckChange</key>
                     <options>
                         <Script-Binding/>
                     </options>
@@ -627,7 +666,7 @@
                     <status>0x80</status>
                     <midino>0x22</midino>
                     <group>[Master]</group>
-                    <key>StantonSCS1m.hotCueDeckToggle</key>
+                    <key>StantonSCS1m.hotCueDeckChange</key>
                     <options>
                         <Script-Binding/>
                     </options>
@@ -636,6 +675,15 @@
                     <group>[Master]</group>
                     <key>StantonSCS1m.presetButton</key>
                     <status>0x90</status>
+                    <midino>0x23</midino>
+                    <options>
+                        <Script-Binding/>
+                    </options>
+                </control>
+                <control>    <!--    Preset 1   -->
+                    <group>[Master]</group>
+                    <key>StantonSCS1m.presetButton</key>
+                    <status>0x80</status>
                     <midino>0x23</midino>
                     <options>
                         <Script-Binding/>
@@ -650,6 +698,15 @@
                         <Script-Binding/>
                     </options>
                 </control>
+                <control>    <!--    Preset 2   -->
+                    <group>[Master]</group>
+                    <key>StantonSCS1m.presetButton</key>
+                    <status>0x80</status>
+                    <midino>0x24</midino>
+                    <options>
+                        <Script-Binding/>
+                    </options>
+                </control>
                 <control>    <!--    Preset 3   -->
                     <group>[Master]</group>
                     <key>StantonSCS1m.presetButton</key>
@@ -659,10 +716,28 @@
                         <Script-Binding/>
                     </options>
                 </control>
+                <control>    <!--    Preset 3   -->
+                    <group>[Master]</group>
+                    <key>StantonSCS1m.presetButton</key>
+                    <status>0x80</status>
+                    <midino>0x25</midino>
+                    <options>
+                        <Script-Binding/>
+                    </options>
+                </control>
                 <control>    <!--    Preset 4   -->
                     <group>[Master]</group>
                     <key>StantonSCS1m.presetButton</key>
                     <status>0x90</status>
+                    <midino>0x26</midino>
+                    <options>
+                        <Script-Binding/>
+                    </options>
+                </control>
+                <control>    <!--    Preset 4   -->
+                    <group>[Master]</group>
+                    <key>StantonSCS1m.presetButton</key>
+                    <status>0x80</status>
                     <midino>0x26</midino>
                     <options>
                         <Script-Binding/>

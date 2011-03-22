@@ -7,13 +7,13 @@
 ***************************************************************************/
 
 /***************************************************************************
-*                                                                         *
-*   This program is free software; you can redistribute it and/or modify  *
-*   it under the terms of the GNU General Public License as published by  *
-*   the Free Software Foundation; either version 2 of the License, or     *
-*   (at your option) any later version.                                   *
-*                                                                         *
-***************************************************************************/
+ *                                                                         *
+ *   This program is free software; you can redistribute it and/or modify  *
+ *   it under the terms of the GNU General Public License as published by  *
+ *   the Free Software Foundation; either version 2 of the License, or     *
+ *   (at your option) any later version.                                   *
+ *                                                                         *
+ ***************************************************************************/
 
 #ifndef __BUNDLEDSONGSWEBVIEW_H_
 #define __BUNDLEDSONGSWEBVIEW_H_
@@ -31,45 +31,49 @@ class BundledSongsWebView : public QWebView, public LibraryView
 {
     Q_OBJECT
     Q_PROPERTY(bool m_statTracking READ statTracking WRITE setStatTracking)
-    Q_PROPERTY(bool m_bFirstRun READ firstRun WRITE setFirstRun)
-    public:
-        BundledSongsWebView(QWidget* parent, TrackCollection* trackCollection,
-                           QString promoBundlePath,
-                           QString localURL, bool firstRun,
-                           ConfigObject<ConfigValue>* config);
-        ~BundledSongsWebView();
-        virtual void setup(QDomNode node);
-        virtual void onSearchStarting() {};
-        virtual void onSearchCleared()  {};
-        virtual void onSearch(const QString&) {};
-        virtual void onShow();
-        virtual QWidget* getWidgetForMIDIControl() { return this; };
-        virtual void keyPressEvent(QKeyEvent* event);
+            Q_PROPERTY(bool m_bFirstRun READ firstRun WRITE setFirstRun)
 
-        bool firstRun() const;
+            public:
+            BundledSongsWebView(QWidget* parent, TrackCollection* trackCollection,
+                                QString promoBundlePath,
+                                QString localURL, bool firstRun,
+                                ConfigObject<ConfigValue>* config);
+    virtual ~BundledSongsWebView();
 
-    public slots:
-        void handleClickedLink(const QUrl& url);
-        void attachObjects();
-        void setStatTracking(bool statTracking);
-        bool statTracking() const; //has to be a slot to get it into javascript land
-        void setFirstRun(bool firstRun);
-        void loadFinished(bool ok);
+    virtual void setup(QDomNode node);
+    virtual void onSearchStarting() {};
+    virtual void onSearchCleared()  {};
+    virtual void onSearch(const QString&) {};
+    virtual void onShow();
+    virtual void keyPressEvent(QKeyEvent* event);
+    virtual void loadSelectedTrack();
+    virtual void loadSelectedTrackToGroup(QString group);
+    virtual void moveSelection(int delta);
+    bool firstRun() const;
 
-    signals:
-        void loadTrack(TrackPointer pTrack);
-        void loadTrackToPlayer(TrackPointer pTrack, QString group);
-    protected:
-        //virtual QString userAgentForUrl (const QUrl & url) const;
+  public slots:
+    void handleClickedLink(const QUrl& url);
+    void attachObjects();
+    void setStatTracking(bool statTracking);
+    bool statTracking() const; //has to be a slot to get it into javascript land
+    void setFirstRun(bool firstRun);
+    void loadFinished(bool ok);
 
-    private:
-        QString m_sPromoBundlePath; /** Directory that contains the promo bundle, which contains
-                                        the local HTML page and music/ folder. */
-        QString m_sLocalURL; /** URL to local copy of the promo tracks web page. */
-        bool m_statTracking;
-        bool m_bFirstRun;
-        ConfigObject<ConfigValue>* m_pConfig;
-        TrackCollection* m_pTrackCollection;
+  signals:
+    void loadTrack(TrackPointer pTrack);
+    void loadTrackToPlayer(TrackPointer pTrack, QString group);
+
+  protected:
+    //virtual QString userAgentForUrl (const QUrl & url) const;
+
+  private:
+    QString m_sPromoBundlePath; /** Directory that contains the promo bundle, which contains
+                                    the local HTML page and music/ folder. */
+    QString m_sLocalURL; /** URL to local copy of the promo tracks web page. */
+    bool m_statTracking;
+    bool m_bFirstRun;
+    ConfigObject<ConfigValue>* m_pConfig;
+    TrackCollection* m_pTrackCollection;
 };
 
 

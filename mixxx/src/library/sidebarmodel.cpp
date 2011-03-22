@@ -5,7 +5,6 @@
 #include "library/libraryfeature.h"
 #include "library/sidebarmodel.h"
 #include "library/treeitem.h"
-#include "library/browsefeature.h"
 
 SidebarModel::SidebarModel(QObject* parent)
         : QAbstractItemModel(parent),

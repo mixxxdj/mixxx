@@ -39,19 +39,33 @@ void DeviceChannelListener::Process(const hss1394::uint8 *pBuffer, hss1394::uint
     // Called when data has arrived. 
 	//! This call will occur inside a separate thread.
 
-    unsigned char status = pBuffer[0];
+    unsigned int i = 0;
 
-    if (uBufferSize==3) {
+    // If multiple three-byte messages arrive right next to each other, handle them all
+    while (i<uBufferSize) {
+        unsigned char status = pBuffer[i];
         unsigned char opcode = status & 0xF0;
         unsigned char channel = status & 0x0F;
-        unsigned char note = pBuffer[1];
-        unsigned char velocity = pBuffer[2];
+        unsigned char note;
+        unsigned char velocity;
+        switch (status & 0xF0) {
+            case MIDI_STATUS_NOTE_OFF:
+            case MIDI_STATUS_NOTE_ON:
+            case MIDI_STATUS_AFTERTOUCH:
+            case MIDI_STATUS_CC:
+            case MIDI_STATUS_PITCH_BEND:
+                note = pBuffer[i+1];
+                velocity = pBuffer[i+2];
 
-        m_pMidiDevice->receive((MidiStatusByte)status, channel, note, velocity);
-    }
-    else {
-        // Handle platter messages and any others that are not 3 bytes
-        m_pMidiDevice->receive(pBuffer, uBufferSize);
+                m_pMidiDevice->receive((MidiStatusByte)status, channel, note, velocity);
+                i+=3;
+                break;
+            default:
+                // Handle platter messages and any others that are not 3 bytes
+                m_pMidiDevice->receive(pBuffer, uBufferSize);
+                i=uBufferSize;
+                break;
+        }
     }
 }
 
@@ -127,6 +141,20 @@ int MidiDeviceHss1394::open()
         m_pChannelListener = NULL;
 		m_pChannel = NULL;
 	}
+
+    if (m_pChannel != NULL && m_strDeviceName.contains("SCS.1d",Qt::CaseInsensitive)) {
+        // If we are an SCS.1d, set the record encoder event timer to fire at 1ms intervals
+        //  to match the 1ms scratch timer in the MIDI script engine
+        //
+        // By default on f/w version 1.25, a new record encoder event (one new position)
+        //  is sent at 500 Hz max, 2ms. When this event occurs, a second timer is reset.
+        //  By default this second timer expires periodically at 60 Hz max, around 16.6ms.
+
+        int iPeriod = 60000/1000;   // 1000Hz = 1ms. (Internal clock is 60kHz.)
+        int iTimer = 3; // 3 for new event timer, 4 for second “same position repeated” timer
+        if (m_pChannel->SendUserControl(iTimer, (const hss1394::uint8*)&iPeriod, 3) == 0)
+            qWarning() << "Unable to set SCS.1d platter timer period.";
+    }
 
     m_bIsOpen = true;
 

@@ -31,12 +31,15 @@ class WTrackTableView : public WLibraryTableView
     void onSearchCleared();
     void onSearch(const QString& text);
     void onShow();
-    QWidget* getWidgetForMIDIControl();
     virtual void keyPressEvent(QKeyEvent* event);
-public slots:
+    virtual void loadSelectedTrack();
+    virtual void loadSelectedTrackToGroup(QString group);
+
+  public slots:
     void loadTrackModel(QAbstractItemModel* model);
     void slotMouseDoubleClicked(const QModelIndex &);
-private slots:
+
+  private slots:
     void slotRemove();
     void slotShowTrackInfo();
     void slotNextTrackInfo();
@@ -45,8 +48,9 @@ private slots:
     void addSelectionToPlaylist(int iPlaylistId);
     void addSelectionToCrate(int iCrateId);
     void loadSelectionToGroup(QString group);
+    void doSortByColumn(int headerSection);
 
-private:
+  private:
     void showTrackInfo(QModelIndex index);
     void createActions();
     void dragMoveEvent(QDragMoveEvent * event);

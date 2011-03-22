@@ -19,13 +19,17 @@
 #define ENGINEBUFFERSCALE_H
 
 #include "defs.h"
-#include <qobject.h>
+#include <QObject>
 
-#define MAX_SEEK_SPEED 4.0f
-#define MIN_SEEK_SPEED 0.010f 
+// MAX_SEEK_SPEED needs to be good and high to allow room for the very high 
+//  instantaneous velocities of advanced scratching (Uzi) and spin-backs.
+//  (Yes, I can actually spin the SCS.1d faster than 15x nominal.
+//  Why do we even have this parameter? -- Sean)
+#define MAX_SEEK_SPEED 100.0f
+#define MIN_SEEK_SPEED 0.010f
 // I'll hurt you if you change MIN_SEEK_SPEED. SoundTouch freaks out and
 // just gives us stuttering if you set the speed to be lower than this.
-// This took me ages to figure out. 
+// This took me ages to figure out.
 // -- Albert July 17, 2010.
 
 class ReaderExtractWave;
@@ -39,7 +43,7 @@ class EngineBufferScale : public QObject
 public:
     EngineBufferScale();
     virtual ~EngineBufferScale();
-    
+
     /** Set base tempo, ie. normal playback speed. */
     virtual void setBaseRate(double dBaseRate) = 0;
     /** Set tempo */
@@ -49,11 +53,11 @@ public:
     /** Called from EngineBuffer when seeking, to ensure the buffers are flushed */
     virtual void clear() = 0;
     /** Scale buffer */
-    virtual CSAMPLE *scale(double playpos, 
+    virtual CSAMPLE *scale(double playpos,
                            unsigned long buf_size,
                            CSAMPLE* pBase,
                            unsigned long iBaseLength) = 0;
-    
+
 protected:
     /** Tempo and base rate */
     double m_dTempo, m_dBaseRate;
