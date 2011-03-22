@@ -8,13 +8,13 @@ msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2010-10-28 15:35-0400\n"
-"PO-Revision-Date: 2011-03-15 23:35+0000\n"
+"PO-Revision-Date: 2011-03-21 23:22+0000\n"
 "Last-Translator: Mika Haulo <Unknown>\n"
 "Language-Team: Finnish <fi@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-03-17 04:33+0000\n"
+"X-Launchpad-Export-Date: 2011-03-22 04:33+0000\n"
 "X-Generator: Launchpad (build 12559)\n"
 
 #: AutoDJFeature#1
@@ -1419,7 +1419,7 @@ msgstr "Vinyyliohjaus"
 
 #: DlgPreferences#10
 msgid "Live Broadcasting"
-msgstr ""
+msgstr "Suora lähetys"
 
 #: DlgPreferencesDlg#1
 msgctxt "DlgPreferencesDlg#1"
@@ -1458,11 +1458,11 @@ msgstr "Analysoi"
 
 #: DlgTrackInfo#1
 msgid "Track Editor"
-msgstr ""
+msgstr "Kappalemuokkain"
 
 #: DlgTrackInfo#2
 msgid "Song:"
-msgstr ""
+msgstr "Kappale"
 
 #: DlgTrackInfo#3
 msgid "Title:"
@@ -1662,6 +1662,8 @@ msgid ""
 "Please check your connection to the Internet and verify that your username "
 "and password are correct."
 msgstr ""
+"Tarkista verkkoyhteytesi tila ja että käyttäjätunnuksesi ja salasanasi ovat "
+"oikein."
 
 #: EngineShoutcast#7
 msgid "Mixxx could not connect to the server"
@@ -1673,19 +1675,19 @@ msgstr "Suora lähetys"
 
 #: EngineShoutcast#9
 msgid "Mixxx has successfully connected to the shoutcast server"
-msgstr ""
+msgstr "Yhteys Shoutcast-palvelimeen luotu"
 
 #: EngineShoutcast#10
 msgid "Mixxx has successfully disconnected to the shoutcast server"
-msgstr ""
+msgstr "Yhteys Shoutcast-palvelimeen katkaistu"
 
 #: ErrorDialogHandler#1
 msgid "Fatal error"
-msgstr ""
+msgstr "Ylitsepääsemätön virhe"
 
 #: ErrorDialogHandler#2
 msgid "Critical error"
-msgstr ""
+msgstr "Vakava virhe"
 
 #: ErrorDialogHandler#3
 msgid "Warning"
@@ -1710,7 +1712,7 @@ msgstr "Ladataanko iTunes-kokoelma?"
 
 #: ITunesFeature#3
 msgid "Would you like to load your iTunes library?"
-msgstr ""
+msgstr "Ladataanko iTunes-kokoelma?"
 
 #: ITunesPlaylistModel#1
 msgctxt "ITunesPlaylistModel#1"
@@ -1720,7 +1722,7 @@ msgstr "Artisti"
 #: ITunesPlaylistModel#2
 msgctxt "ITunesPlaylistModel#2"
 msgid "Title"
-msgstr ""
+msgstr "Nimi"
 
 #: ITunesPlaylistModel#3
 msgctxt "ITunesPlaylistModel#3"
@@ -1730,7 +1732,7 @@ msgstr "Julkaisu"
 #: ITunesPlaylistModel#4
 msgctxt "ITunesPlaylistModel#4"
 msgid "Date"
-msgstr ""
+msgstr "Päiväys"
 
 #: ITunesPlaylistModel#5
 msgctxt "ITunesPlaylistModel#5"
@@ -1777,7 +1779,7 @@ msgstr "Artisti"
 #: LibraryTableModel#2
 msgctxt "LibraryTableModel#2"
 msgid "Title"
-msgstr ""
+msgstr "Nimi"
 
 #: LibraryTableModel#3
 msgctxt "LibraryTableModel#3"
@@ -1797,7 +1799,7 @@ msgstr "Vuosi"
 #: LibraryTableModel#6
 msgctxt "LibraryTableModel#6"
 msgid "Type"
-msgstr ""
+msgstr "Tyyppi"
 
 #: LibraryTableModel#7
 msgctxt "LibraryTableModel#7"
@@ -1807,7 +1809,7 @@ msgstr "Sijanti"
 #: LibraryTableModel#8
 msgctxt "LibraryTableModel#8"
 msgid "Comment"
-msgstr ""
+msgstr "Kommentti"
 
 #: LibraryTableModel#9
 msgctxt "LibraryTableModel#9"
@@ -1832,7 +1834,7 @@ msgstr "Raita #"
 #: LibraryTableModel#13
 msgctxt "LibraryTableModel#13"
 msgid "Date Added"
-msgstr ""
+msgstr "Lisäyspäivä"
 
 #: MidiInputMappingTableModel#1
 msgid "Midi Status Type"
@@ -1841,22 +1843,22 @@ msgstr ""
 #: MidiInputMappingTableModel#2
 msgctxt "MidiInputMappingTableModel#2"
 msgid "Midi Note"
-msgstr ""
+msgstr "MIDI-nuotti"
 
 #: MidiInputMappingTableModel#3
 msgctxt "MidiInputMappingTableModel#3"
 msgid "Midi Channel"
-msgstr ""
+msgstr "MIDI-kanava"
 
 #: MidiInputMappingTableModel#4
 msgctxt "MidiInputMappingTableModel#4"
 msgid "Control Group"
-msgstr ""
+msgstr "Ohjainryhmä"
 
 #: MidiInputMappingTableModel#5
 msgctxt "MidiInputMappingTableModel#5"
 msgid "Control Value"
-msgstr ""
+msgstr "Ohjainarvo"
 
 #: MidiMapping#1
 msgid "MIDI script function not found"
@@ -1891,7 +1893,7 @@ msgstr ""
 #: MidiOutputMappingTableModel#2
 msgctxt "MidiOutputMappingTableModel#2"
 msgid "Midi Note"
-msgstr ""
+msgstr "MIDI-nuotti"
 
 #: MidiOutputMappingTableModel#3
 msgctxt "MidiOutputMappingTableModel#3"
@@ -1906,19 +1908,19 @@ msgstr "Ohjainryhmä"
 #: MidiOutputMappingTableModel#5
 msgctxt "MidiOutputMappingTableModel#5"
 msgid "Control Value"
-msgstr ""
+msgstr "Ohjainarvo"
 
 #: MidiOutputMappingTableModel#6
 msgid "Threshold Min"
-msgstr ""
+msgstr "Herkkyyden alaraja"
 
 #: MidiOutputMappingTableModel#7
 msgid "Threshold Max"
-msgstr ""
+msgstr "Herkkyyden yläraja"
 
 #: MidiScriptEngine#1
 msgid "Uncaught exception at line %1 in file %2: %3"
-msgstr ""
+msgstr "Käsittelemätön poikkeus rivillä %1 tiedostossa %2; %3"
 
 #: MidiScriptEngine#2
 msgid "Uncaught exception at line %1 in passed code: %2"
@@ -1958,7 +1960,7 @@ msgstr "Artisti"
 #: MissingTableModel#3
 msgctxt "MissingTableModel#3"
 msgid "Title"
-msgstr ""
+msgstr "Nimi"
 
 #: MissingTableModel#4
 msgctxt "MissingTableModel#4"
@@ -1978,12 +1980,12 @@ msgstr "Vuosi"
 #: MissingTableModel#7
 msgctxt "MissingTableModel#7"
 msgid "Type"
-msgstr ""
+msgstr "Tyyppi"
 
 #: MissingTableModel#8
 msgctxt "MissingTableModel#8"
 msgid "Comment"
-msgstr ""
+msgstr "Kommentti"
 
 #: MissingTableModel#9
 msgctxt "MissingTableModel#9"
@@ -2008,11 +2010,11 @@ msgstr "Tempo"
 #: MissingTableModel#13
 msgctxt "MissingTableModel#13"
 msgid "Date Added"
-msgstr ""
+msgstr "Lisäyspäivä"
 
 #: MixxxApp#1
 msgid "Mixxx "
-msgstr ""
+msgstr "Mixxx "
 
 #: MixxxApp#2
 msgctxt "MixxxApp#2"
@@ -2026,22 +2028,25 @@ msgid ""
 "developers. Would you like to help us make Mixxx better by enabling this "
 "feature?"
 msgstr ""
+"Mixxxin kehitystyö hyötyy käyttäjien palautteesta. Halutessasi Mixxx voi "
+"automaattisesti lähettää tietoa käyttökokemuksestasi kehittäjäyhteisölle. "
+"Otetaanko tämä toiminto käyttöön?"
 
 #: MixxxApp#4
 msgid "Yes"
-msgstr ""
+msgstr "Kyllä"
 
 #: MixxxApp#5
 msgid "No"
-msgstr ""
+msgstr "Ei"
 
 #: MixxxApp#6
 msgid "Privacy Policy"
-msgstr ""
+msgstr "Tietosuojakäytäntö"
 
 #: MixxxApp#7
 msgid "Mixxx: Privacy Policy"
-msgstr ""
+msgstr "Mixxx: tietosuojakäytäntö"
 
 #: MixxxApp#8
 msgid ""
@@ -2071,7 +2076,7 @@ msgstr ""
 #: MixxxApp#9
 msgctxt "MixxxApp#9"
 msgid "Choose music library directory"
-msgstr ""
+msgstr "Määritä musiikkikokoelman sijainti"
 
 #: MixxxApp#10
 msgid "Sound Device Busy"
@@ -2103,7 +2108,7 @@ msgstr ""
 
 #: MixxxApp#17
 msgid "Get <b>Help</b> from the Mixxx Wiki."
-msgstr ""
+msgstr "Etsi <b>apua</b> Mixxxin wikistä."
 
 #: MixxxApp#18
 msgid "<b>Exit</b> without saving your settings."
@@ -2111,67 +2116,67 @@ msgstr ""
 
 #: MixxxApp#19
 msgid "Retry"
-msgstr ""
+msgstr "Yritä uudelleen"
 
 #: MixxxApp#20
 msgid "Reconfigure"
-msgstr ""
+msgstr "Määrittele uudelleen"
 
 #: MixxxApp#21
 msgid "Help"
-msgstr ""
+msgstr "Ohje"
 
 #: MixxxApp#22
 msgid "Exit"
-msgstr ""
+msgstr "Sulje"
 
 #: MixxxApp#23
 msgid "&Load Song (Player 1)..."
-msgstr ""
+msgstr "Lataa kappale soittimeen 1"
 
 #: MixxxApp#24
 msgid "Ctrl+O"
-msgstr ""
+msgstr "Ctrl+O"
 
 #: MixxxApp#25
 msgid "&Load Song (Player 2)..."
-msgstr ""
+msgstr "Lataa kappale soittimeen 2"
 
 #: MixxxApp#26
 msgid "Ctrl+Shift+O"
-msgstr ""
+msgstr "Ctrl+Shift+O"
 
 #: MixxxApp#27
 msgid "&Exit"
-msgstr ""
+msgstr "Sulje"
 
 #: MixxxApp#28
 msgid "Ctrl+Q"
-msgstr ""
+msgstr "Ctrl+Q"
 
 #: MixxxApp#29
 msgid "&Rescan Library"
-msgstr ""
+msgstr "Lue kokoelma uudelleen"
 
 #: MixxxApp#30
 msgid "Add &new playlist"
-msgstr ""
+msgstr "Uusi soittolista"
 
 #: MixxxApp#31
 msgid "Ctrl+N"
-msgstr ""
+msgstr "Ctrl+N"
 
 #: MixxxApp#32
 msgid "Add new &crate"
-msgstr ""
+msgstr "Uusi levylaukku"
 
 #: MixxxApp#33
 msgid "Ctrl+C"
-msgstr ""
+msgstr "Ctrl+C"
 
 #: MixxxApp#34
 msgid "&Import playlist"
-msgstr ""
+msgstr "Tuo soittolista"
 
 #: MixxxApp#35
 msgid "Ctrl+I"
@@ -2183,7 +2188,7 @@ msgstr ""
 
 #: MixxxApp#37
 msgid "&Full Screen"
-msgstr ""
+msgstr "Kokoruututila"
 
 #: MixxxApp#38
 msgid "Ctrl+F"
@@ -2195,7 +2200,7 @@ msgstr "F11"
 
 #: MixxxApp#40
 msgid "&Preferences"
-msgstr ""
+msgstr "Asetukset"
 
 #: MixxxApp#41
 msgid "Ctrl+P"
@@ -2203,7 +2208,7 @@ msgstr "Ctrl+P"
 
 #: MixxxApp#42
 msgid "&About..."
-msgstr ""
+msgstr "Tietoja..."
 
 #: MixxxApp#43
 msgid "&Community Support..."
@@ -2211,7 +2216,7 @@ msgstr ""
 
 #: MixxxApp#44
 msgid "Enable &Vinyl Control"
-msgstr ""
+msgstr "Vinyyliohjaus"
 
 #: MixxxApp#45
 msgid "Ctrl+Y"
@@ -2228,7 +2233,7 @@ msgstr "Ctrl+L"
 
 #: MixxxApp#48
 msgid "&Record Mix"
-msgstr ""
+msgstr "Miksauksen äänitys"
 
 #: MixxxApp#49
 msgid "Ctrl+R"
@@ -2240,7 +2245,7 @@ msgstr ""
 
 #: MixxxApp#51
 msgid "Opens a song in player 1"
-msgstr ""
+msgstr "Lataa kappaleen soittimeen 1"
 
 #: MixxxApp#52
 msgid ""
@@ -2248,10 +2253,13 @@ msgid ""
 "\n"
 "Opens a song in player 1"
 msgstr ""
+"Lataa\n"
+"\n"
+"Lataa kappaleen soittimeen 1"
 
 #: MixxxApp#53
 msgid "Opens a song in player 2"
-msgstr ""
+msgstr "Lataa kappaleen soittimeen 2"
 
 #: MixxxApp#54
 msgid ""
@@ -2259,10 +2267,13 @@ msgid ""
 "\n"
 "Opens a song in player 2"
 msgstr ""
+"Lataa\n"
+"\n"
+"Lataa kappaleen soittimeen 2"
 
 #: MixxxApp#55
 msgid "Quits the application"
-msgstr ""
+msgstr "Sulkee sovelluksen"
 
 #: MixxxApp#56
 msgid ""
@@ -2270,6 +2281,9 @@ msgid ""
 "\n"
 "Quits the application"
 msgstr ""
+"Sulje\n"
+"\n"
+"Sulkee sovelluksen"
 
 #: MixxxApp#57
 msgid "Rescans the song library"
@@ -2292,6 +2306,9 @@ msgid ""
 "\n"
 "Create a new playlist"
 msgstr ""
+"Uusi soittolista\n"
+"\n"
+"Luo uuden soittolistan."
 
 #: MixxxApp#61
 msgid "Create a new crate"
@@ -2303,6 +2320,9 @@ msgid ""
 "\n"
 "Create a new crate."
 msgstr ""
+"Uusi levylaukku\n"
+"\n"
+"Luo uuden levylaukun."
 
 #: MixxxApp#63
 msgid "Import playlist"
@@ -2320,11 +2340,11 @@ msgstr ""
 
 #: MixxxApp#66
 msgid "Activate Vinyl Control"
-msgstr ""
+msgstr "Vinyyliohjaus"
 
 #: MixxxApp#67
 msgid "Use timecoded vinyls on external turntables to control Mixxx"
-msgstr ""
+msgstr "Mixxxin ohjaus aikakoodilevyjen avulla"
 
 #: MixxxApp#68
 msgid "Activate live broadcasting"
@@ -2344,7 +2364,7 @@ msgstr ""
 
 #: MixxxApp#72
 msgid "Full Screen"
-msgstr ""
+msgstr "Kokoruututila"
 
 #: MixxxApp#73
 msgid "Display Mixxx using the full screen"
@@ -2374,7 +2394,7 @@ msgstr ""
 
 #: MixxxApp#78
 msgid "About the application"
-msgstr ""
+msgstr "Tietoja sovelluksesta"
 
 #: MixxxApp#79
 msgid ""
@@ -2382,6 +2402,9 @@ msgid ""
 "\n"
 "About the application"
 msgstr ""
+"Tietoja\n"
+"\n"
+"Tietoja sovelluksesta"
 
 #: MixxxApp#80
 msgid "Shows the macro studio window"
@@ -2396,31 +2419,31 @@ msgstr ""
 
 #: MixxxApp#82
 msgid "&File"
-msgstr ""
+msgstr "Tiedosto"
 
 #: MixxxApp#83
 msgid "&Options"
-msgstr ""
+msgstr "Asetukset"
 
 #: MixxxApp#84
 msgid "&Library"
-msgstr ""
+msgstr "Kokoelma"
 
 #: MixxxApp#85
 msgid "&View"
-msgstr ""
+msgstr "Näytä"
 
 #: MixxxApp#86
 msgid "&Help"
-msgstr ""
+msgstr "Ohje"
 
 #: MixxxApp#87
 msgid "&Macro"
-msgstr ""
+msgstr "Makro"
 
 #: MixxxApp#88
 msgid "Quit..."
-msgstr ""
+msgstr "Sulje..."
 
 #: MixxxApp#89
 msgid "Do your really want to quit?"
@@ -2469,7 +2492,7 @@ msgstr ""
 
 #: MixxxLibraryFeature#1
 msgid "Missing Songs"
-msgstr ""
+msgstr "Puuttuvat kappaleet"
 
 #: MixxxLibraryFeature#2
 msgctxt "MixxxLibraryFeature#2"
@@ -2482,7 +2505,7 @@ msgstr ""
 
 #: PlaylistFeature#1
 msgid "New Playlist"
-msgstr ""
+msgstr "Uusi soittolista"
 
 #: PlaylistFeature#2
 msgctxt "PlaylistFeature#2"
@@ -2491,19 +2514,19 @@ msgstr "Poista"
 
 #: PlaylistFeature#3
 msgid "Playlists"
-msgstr ""
+msgstr "Soittolistat"
 
 #: PlaylistFeature#4
 msgid "Playlist name:"
-msgstr ""
+msgstr "Soittolistan nimi:"
 
 #: PlaylistFeature#5
 msgid "Playlist Creation Failed"
-msgstr ""
+msgstr "Soittolistan luominen epäonnistui"
 
 #: PlaylistFeature#6
 msgid "A playlist cannot have a blank name."
-msgstr ""
+msgstr "Nimi ei voi olla tyhjä"
 
 #: PlaylistFeature#7
 msgid "An unknown error occurred while creating playlist: "
@@ -2511,11 +2534,11 @@ msgstr ""
 
 #: PlaylistFeature#8
 msgid "A playlist by that name already exists."
-msgstr ""
+msgstr "Samanniminen soittolista on jo olemassa."
 
 #: PlaylistTableModel#1
 msgid "#"
-msgstr ""
+msgstr "#"
 
 #: PlaylistTableModel#2
 msgctxt "PlaylistTableModel#2"
@@ -2525,7 +2548,7 @@ msgstr "Artisti"
 #: PlaylistTableModel#3
 msgctxt "PlaylistTableModel#3"
 msgid "Title"
-msgstr ""
+msgstr "Kappale"
 
 #: PlaylistTableModel#4
 msgctxt "PlaylistTableModel#4"
@@ -2545,7 +2568,7 @@ msgstr "Vuosi"
 #: PlaylistTableModel#7
 msgctxt "PlaylistTableModel#7"
 msgid "Type"
-msgstr ""
+msgstr "Tyyppi"
 
 #: PlaylistTableModel#8
 msgctxt "PlaylistTableModel#8"
@@ -2555,12 +2578,12 @@ msgstr "Sijanti"
 #: PlaylistTableModel#9
 msgctxt "PlaylistTableModel#9"
 msgid "Comment"
-msgstr ""
+msgstr "Kommentti"
 
 #: PlaylistTableModel#10
 msgctxt "PlaylistTableModel#10"
 msgid "Duration"
-msgstr ""
+msgstr "Kesto"
 
 #: PlaylistTableModel#11
 msgctxt "PlaylistTableModel#11"
@@ -2570,12 +2593,12 @@ msgstr "Raita #"
 #: PlaylistTableModel#12
 msgctxt "PlaylistTableModel#12"
 msgid "Bitrate"
-msgstr ""
+msgstr "Bittinopeus"
 
 #: PlaylistTableModel#13
 msgctxt "PlaylistTableModel#13"
 msgid "Date Added"
-msgstr ""
+msgstr "Lisäyspäivä"
 
 #: PlaylistTableModel#14
 msgctxt "PlaylistTableModel#14"
@@ -2589,11 +2612,11 @@ msgstr "Analysoi"
 
 #: RhythmboxFeature#1
 msgid "Rhythmbox"
-msgstr ""
+msgstr "Rhythmbox"
 
 #: RhythmboxFeature#2
 msgid "Load Rhythmbox Library?"
-msgstr ""
+msgstr "Ladataanko Rhythmboxin kokoelma?"
 
 #: RhythmboxFeature#3
 msgid "Would you like to load your Rhythmbox library?"
@@ -2607,7 +2630,7 @@ msgstr "Artisti"
 #: RhythmboxPlaylistModel#2
 msgctxt "RhythmboxPlaylistModel#2"
 msgid "Title"
-msgstr ""
+msgstr "Kappale"
 
 #: RhythmboxPlaylistModel#3
 msgctxt "RhythmboxPlaylistModel#3"
@@ -2632,12 +2655,12 @@ msgstr "Sijanti"
 #: RhythmboxPlaylistModel#7
 msgctxt "RhythmboxPlaylistModel#7"
 msgid "Duration"
-msgstr ""
+msgstr "Kesto"
 
 #: RhythmboxPlaylistModel#8
 msgctxt "RhythmboxPlaylistModel#8"
 msgid "Unknown"
-msgstr ""
+msgstr "Tuntematon"
 
 #: RhythmboxTrackModel#1
 msgctxt "RhythmboxTrackModel#1"
@@ -2647,7 +2670,7 @@ msgstr "Artisti"
 #: RhythmboxTrackModel#2
 msgctxt "RhythmboxTrackModel#2"
 msgid "Title"
-msgstr ""
+msgstr "Kappale"
 
 #: RhythmboxTrackModel#3
 msgctxt "RhythmboxTrackModel#3"
@@ -2657,7 +2680,7 @@ msgstr "Julkaisu"
 #: RhythmboxTrackModel#4
 msgctxt "RhythmboxTrackModel#4"
 msgid "Date"
-msgstr ""
+msgstr "Päiväys"
 
 #: RhythmboxTrackModel#5
 msgctxt "RhythmboxTrackModel#5"
@@ -2672,7 +2695,7 @@ msgstr "Sijanti"
 #: RhythmboxTrackModel#7
 msgctxt "RhythmboxTrackModel#7"
 msgid "Duration"
-msgstr ""
+msgstr "Kesto"
 
 #: TrackCollection#1
 msgid "Cannot open database"
@@ -2703,29 +2726,29 @@ msgstr ""
 #: Ui#1
 msgctxt "Ui#1"
 msgid "Position"
-msgstr ""
+msgstr "Kohta"
 
 #: Ui#2
 msgid "Remaining"
-msgstr ""
+msgstr "Jäljellä"
 
 #: Ui#3
 msgctxt "Ui#3"
 msgid "On"
-msgstr ""
+msgstr "Päällä"
 
 #: Ui#4
 msgctxt "Ui#4"
 msgid "Off"
-msgstr ""
+msgstr "Pois"
 
 #: Ui#5
 msgid "CDJ Mode"
-msgstr ""
+msgstr "CDJ-tila"
 
 #: Ui#6
 msgid "Simple"
-msgstr ""
+msgstr "Yksinkertainen"
 
 #: Ui#7
 msgid "Mixxx Detected a WVGA Screen"
@@ -2733,13 +2756,15 @@ msgstr ""
 
 #: Ui#8
 msgid "Mixxx has detected that your screen has a resolution of "
-msgstr ""
+msgstr "Mixxx havaitsi näyttötarkkuudeksesi "
 
 #: Ui#9
 msgid ""
 "The only skin compatiable with this size display is OutlineMini (800x480).  "
 "Would you like to use that skin?"
 msgstr ""
+"ainoa tämänkokoiselle näytölle sopiva teema on OutlineMini (800x480). "
+"Otetaanko tämä teema käyttöön?"
 
 #: Ui#10
 msgctxt "Ui#10"
