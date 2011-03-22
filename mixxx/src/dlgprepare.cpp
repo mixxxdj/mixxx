@@ -95,24 +95,34 @@ void DlgPrepare::onShow()
     //m_pCratesTableModel->select();
 }
 
-QWidget* DlgPrepare::getWidgetForMIDIControl()
-{
-    return m_pPrepareLibraryTableView;
-}
-
 void DlgPrepare::setup(QDomNode node)
 {
 
 }
+
 void DlgPrepare::onSearchStarting()
 {
 }
+
 void DlgPrepare::onSearchCleared()
 {
 }
+
 void DlgPrepare::onSearch(const QString& text)
 {
     m_pPrepareLibraryTableModel->search(text);
+}
+
+void DlgPrepare::loadSelectedTrack() {
+    m_pPrepareLibraryTableView->loadSelectedTrack();
+}
+
+void DlgPrepare::loadSelectedTrackToGroup(QString group) {
+    m_pPrepareLibraryTableView->loadSelectedTrackToGroup(group);
+}
+
+void DlgPrepare::moveSelection(int delta) {
+    m_pPrepareLibraryTableView->moveSelection(delta);
 }
 
 void DlgPrepare::tableSelectionChanged(const QItemSelection& selected, const QItemSelection& deselected)

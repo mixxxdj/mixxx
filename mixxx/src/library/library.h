@@ -26,7 +26,7 @@ class MixxxLibraryFeature;
 class PromoTracksFeature;
 class PlaylistFeature;
 class CrateFeature;
-class LibraryMIDIControl;
+class LibraryControl;
 class MixxxKeyboard;
 
 class Library : public QObject {
@@ -80,7 +80,7 @@ private:
     PlaylistFeature* m_pPlaylistFeature;
     CrateFeature* m_pCrateFeature;
     PromoTracksFeature* m_pPromoTracksFeature;
-    LibraryMIDIControl* m_pLibraryMIDIControl;
+    LibraryControl* m_pLibraryControl;
 };
 
 #endif /* LIBRARY_H */

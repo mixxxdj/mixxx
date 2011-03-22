@@ -305,7 +305,7 @@ bool SoundSource::processID3v2Tag(TagLib::ID3v2::Tag* id3v2) {
     TagLib::ID3v2::FrameList keyFrame = id3v2->frameListMap()["TKEY"];
     if (!keyFrame.isEmpty()) {
         QString sKey = TStringToQString(keyFrame.front()->toString());
-        setKey(sKey);   
+        setKey(sKey);
     }
     // Foobar2000-style ID3v2.3.0 tags
     // TODO: Check if everything is ok.
@@ -326,10 +326,6 @@ bool SoundSource::processID3v2Tag(TagLib::ID3v2::Tag* id3v2) {
             }
         }
     }
-
-
-
-
     return true;
 }
 
@@ -337,7 +333,7 @@ bool SoundSource::processAPETag(TagLib::APE::Tag* ape) {
     if (s_bDebugMetadata) {
         for(TagLib::APE::ItemListMap::ConstIterator it = ape->itemListMap().begin();
                 it != ape->itemListMap().end(); ++it) {
-            qDebug() << "APE" << TStringToQString((*it).first) << "-" << TStringToQString((*it).second.toString());
+                qDebug() << "APE" << TStringToQString((*it).first) << "-" << TStringToQString((*it).second.toString());
         }
     }
 
@@ -346,15 +342,14 @@ bool SoundSource::processAPETag(TagLib::APE::Tag* ape) {
         processBpmString("APE", sBpm);
     }
 
-    if ( ape->itemListMap().contains("REPLAYGAIN_ALBUM_GAIN") ) {
+    if (ape->itemListMap().contains("REPLAYGAIN_ALBUM_GAIN")) {
         QString sReplayGain = TStringToQString(ape->itemListMap()["REPLAYGAIN_ALBUM_GAIN"].toString());
         parseReplayGainString(sReplayGain);
     }
 
     //Prefer track gain over album gain.
-    if ( ape->itemListMap().contains("REPLAYGAIN_TRACK_GAIN") ) {
+    if (ape->itemListMap().contains("REPLAYGAIN_TRACK_GAIN")) {
         QString sReplayGain = TStringToQString(ape->itemListMap()["REPLAYGAIN_TRACK_GAIN"].toString());
-        qDebug()<<"APE value" << sReplayGain;
         parseReplayGainString(sReplayGain);
     }
     return true;
@@ -394,20 +389,20 @@ bool SoundSource::processXiphComment(TagLib::Ogg::XiphComment* xiph) {
         parseReplayGainString(sReplayGain);
     }
 
-
     /*
-	 * Reading key code information
-	 * Unlike, ID3 tags, there's no standard or recommendation on how to store 'key' code
-	 * 
-	 * Luckily, there are only a few tools for that, e.g., Rapid Evolution (RE).
-	 * Assuming no distinction between start and end key, RE uses a "INITIALKEY" 
-	 * or a "KEY" vorbis comment. 
-	 */
-     if (xiph->fieldListMap().contains("KEY")) {
+     * Reading key code information
+     * Unlike, ID3 tags, there's no standard or recommendation on how to store 'key' code
+     *
+     * Luckily, there are only a few tools for that, e.g., Rapid Evolution (RE).
+     * Assuming no distinction between start and end key, RE uses a "INITIALKEY"
+     * or a "KEY" vorbis comment.
+     */
+    if (xiph->fieldListMap().contains("KEY")) {
         TagLib::StringList keyStr = xiph->fieldListMap()["KEY"];
         QString key = TStringToQString(keyStr.toString());
         setKey(key);
     }
+
     if (getKey() == "" && xiph->fieldListMap().contains("INITIALKEY")) {
         TagLib::StringList keyStr = xiph->fieldListMap()["INITIALKEY"];
         QString key = TStringToQString(keyStr.toString());
@@ -417,7 +412,7 @@ bool SoundSource::processXiphComment(TagLib::Ogg::XiphComment* xiph) {
 }
 
 bool SoundSource::processMP4Tag(TagLib::MP4::Tag* mp4) {
-    if (!s_bDebugMetadata) {
+    if (s_bDebugMetadata) {
         for(TagLib::MP4::ItemListMap::ConstIterator it = mp4->itemListMap().begin();
             it != mp4->itemListMap().end(); ++it) {
             qDebug() << "MP4" << TStringToQString((*it).first) << "-" << TStringToQString((*it).second.toStringList().toString());

@@ -17,23 +17,29 @@ class ControlObjectThreadMain;
 
 class DlgAutoDJ : public QWidget, public Ui::DlgAutoDJ, public virtual LibraryView {
     Q_OBJECT
-public:
+  public:
     DlgAutoDJ(QWidget *parent, ConfigObject<ConfigValue>* pConfig, TrackCollection* pTrackCollection);
     virtual ~DlgAutoDJ();
+
     virtual void setup(QDomNode node);
     virtual void onSearchStarting();
     virtual void onSearchCleared();
     virtual void onSearch(const QString& text);
     virtual void onShow();
-    virtual QWidget* getWidgetForMIDIControl();
-public slots:
+    virtual void loadSelectedTrack();
+    virtual void loadSelectedTrackToGroup(QString group);
+    virtual void moveSelection(int delta);
+
+  public slots:
     void toggleAutoDJ(bool toggle);
     void player1PositionChanged(double value);
     void player2PositionChanged(double value);
-signals:
+
+  signals:
     void loadTrack(TrackPointer tio);
     void loadTrackToPlayer(TrackPointer tio, QString group);
-private:
+
+  private:
     bool loadNextTrackFromQueue(bool removeTopMostBeforeLoading);
 
     ConfigObject<ConfigValue>* m_pConfig;

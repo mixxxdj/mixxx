@@ -77,11 +77,6 @@ void DlgAutoDJ::onShow()
     m_pAutoDJTableModel->select();
 }
 
-QWidget* DlgAutoDJ::getWidgetForMIDIControl()
-{
-    return m_pTrackTableView;
-}
-
 void DlgAutoDJ::setup(QDomNode node)
 {
 
@@ -121,15 +116,30 @@ void DlgAutoDJ::setup(QDomNode node)
     //m_pTrackTableView->setPalette(pal); //Since we're getting this passed into us already created,
                                           //shouldn't need to set the palette.
 }
+
 void DlgAutoDJ::onSearchStarting()
 {
 }
+
 void DlgAutoDJ::onSearchCleared()
 {
 }
+
 void DlgAutoDJ::onSearch(const QString& text)
 {
     m_pAutoDJTableModel->search(text);
+}
+
+void DlgAutoDJ::loadSelectedTrack() {
+    m_pTrackTableView->loadSelectedTrack();
+}
+
+void DlgAutoDJ::loadSelectedTrackToGroup(QString group) {
+    m_pTrackTableView->loadSelectedTrackToGroup(group);
+}
+
+void DlgAutoDJ::moveSelection(int delta) {
+    m_pTrackTableView->moveSelection(delta);
 }
 
 void DlgAutoDJ::toggleAutoDJ(bool toggle)

@@ -20,6 +20,9 @@
 
 	<!--
 	CHANGELOG
+	v1.10	(13/03/2011)
+	* Expanded to support 36 hot cues
+
 	v1.09	(20/02/2011)
 	* Changed Playing position tooltips to reflect new toggle functionality
 
@@ -200,7 +203,8 @@
 			- if a MIDI device which supports more hotcues than buttons are in the current skin has them activated
 			- if you change from a skin which supports more hotcues than buttons are in the current skin (and has them activated)
 		These "special" hotcues share the color #AE5CFF to make them distinguishable (and maintainable) from the hotcues
-		represented by a button in the current skin. Mixxx 1.8 supports up to 32 hotcue. Current skins uses up to 6 buttons per channel.
+		represented by a button in the current skin. Mixxx 1.8.x-1.9.0 support up to 32 hotcues. v1.9.1+ supports up to 36.
+		Current skins uses up to 6 buttons per channel.
 		-->
 		<Mark>
 			<Control>hotcue_1_position</Control>
@@ -430,6 +434,34 @@
 			<Color>#AE5CFF</Color>
 			<TextColor>#FFFFFF</TextColor>
 		</Mark>
+		<Mark>
+			<Control>hotcue_33_position</Control>
+			<Text> HOTCUE 33 </Text>
+			<Align>center</Align>
+			<Color>#AE5CFF</Color>
+			<TextColor>#FFFFFF</TextColor>
+		</Mark>
+		<Mark>
+			<Control>hotcue_34_position</Control>
+			<Text> HOTCUE 34 </Text>
+			<Align>center</Align>
+			<Color>#AE5CFF</Color>
+			<TextColor>#FFFFFF</TextColor>
+		</Mark>
+		<Mark>
+			<Control>hotcue_35_position</Control>
+			<Text> HOTCUE 35 </Text>
+			<Align>center</Align>
+			<Color>#AE5CFF</Color>
+			<TextColor>#FFFFFF</TextColor>
+		</Mark>
+		<Mark>
+			<Control>hotcue_36_position</Control>
+			<Text> HOTCUE 36 </Text>
+			<Align>center</Align>
+			<Color>#AE5CFF</Color>
+			<TextColor>#FFFFFF</TextColor>
+		</Mark>
 
 		<Mark>
 			<Control>cue_point</Control>
@@ -483,7 +515,8 @@
 			- if a MIDI device which supports more hotcues than buttons are in the current skin has them activated
 			- if you change from a skin which supports more hotcues than buttons are in the current skin (and has them activated)
 		These "special" hotcues share the color #AE5CFF to make them distinguishable (and maintainable) from the hotcues
-		represented by a button in the current skin. Mixxx 1.8 supports up to 32 hotcue. Current skins uses up to 6 buttons per channel.
+		represented by a button in the current skin. Mixxx 1.8.x-1.9.0 support up to 32 hotcues. v1.9.1+ supports up to 36.
+		Current skins uses up to 6 buttons per channel.
 		-->
 		<Mark>
 			<Control>hotcue_1_position</Control>
@@ -709,6 +742,34 @@
 		<Mark>
 			<Control>hotcue_32_position</Control>
 			<Text> HOTCUE 32 </Text>
+			<Align>center</Align>
+			<Color>#AE5CFF</Color>
+			<TextColor>#FFFFFF</TextColor>
+		</Mark>
+		<Mark>
+			<Control>hotcue_33_position</Control>
+			<Text> HOTCUE 33 </Text>
+			<Align>center</Align>
+			<Color>#AE5CFF</Color>
+			<TextColor>#FFFFFF</TextColor>
+		</Mark>
+		<Mark>
+			<Control>hotcue_34_position</Control>
+			<Text> HOTCUE 34 </Text>
+			<Align>center</Align>
+			<Color>#AE5CFF</Color>
+			<TextColor>#FFFFFF</TextColor>
+		</Mark>
+		<Mark>
+			<Control>hotcue_35_position</Control>
+			<Text> HOTCUE 35 </Text>
+			<Align>center</Align>
+			<Color>#AE5CFF</Color>
+			<TextColor>#FFFFFF</TextColor>
+		</Mark>
+		<Mark>
+			<Control>hotcue_36_position</Control>
+			<Text> HOTCUE 36 </Text>
 			<Align>center</Align>
 			<Color>#AE5CFF</Color>
 			<TextColor>#FFFFFF</TextColor>
