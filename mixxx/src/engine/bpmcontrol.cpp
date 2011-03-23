@@ -66,7 +66,7 @@ void BpmControl::slotSetEngineBpm(double bpm) {
     if (filebpm != 0.0) {
         double newRate = bpm / filebpm - 1.0f;
         newRate = math_max(-1.0f, math_min(1.0f, newRate));
-        m_pRateSlider->set(newRate);
+        m_pRateSlider->set(newRate * m_pRateDir->get());
     }
 }
 
@@ -89,7 +89,8 @@ void BpmControl::slotTapFilter(double averageLength, int numSamples) {
     // (60 seconds per minute) * (1000 milliseconds per second) / (X millis per
     // beat) = Y beats/minute
     double averageBpm = 60.0 * 1000.0 / averageLength;
-    slotSetEngineBpm(averageBpm);
+    m_pFileBpm->set(averageBpm);
+    slotFileBpmChanged(averageBpm);
 }
 
 void BpmControl::slotControlBeatSync(double)

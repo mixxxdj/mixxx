@@ -48,6 +48,63 @@ class HSS1394(Feature):
                             """)
         return sources
 
+
+class Mad(Feature):
+    def description(self):
+        return "MAD MP3 Decoder"
+
+    def enabled(self, build):
+        build.flags['mad'] = util.get_flags(build.env, 'mad', 1)
+        if int(build.flags['mad']):
+            return True
+        return False
+
+    def add_options(self, build, vars):
+        vars.Add('mad', 'Set to 1 to enable MAD MP3 decoder support.', 1)
+
+    def configure(self, build, conf):
+        if not self.enabled(build):
+            return
+        if not conf.CheckLib(['libmad','mad']):
+            raise Exception('Did not find libmad.a, libmad.lib, or the libmad development header files - exiting!')
+        if not conf.CheckLib(['libid3tag', 'id3tag','libid3tag-release']):
+            raise Exception('Did not find libid3tag.a, libid3tag.lib, or the libid3tag development header files - exiting!')
+        build.env.Append(CPPDEFINES = '__MAD__')
+
+    def sources(self, build):
+        return ['soundsourcemp3.cpp']
+
+
+class CoreAudio(Feature):
+
+    def description(self):
+        return "CoreAudio MP3/AAC Decoder"
+
+    def enabled(self, build):
+        build.flags['coreaudio'] = util.get_flags(build.env, 'coreaudio', 0)
+        if int(build.flags['coreaudio']):
+            return True
+        return False
+
+    def add_options(self, build, vars):
+        vars.Add('coreaudio', 'Set to 1 to enable CoreAudio MP3/AAC decoder support.', 0)
+
+    def configure(self, build, conf):
+        if not self.enabled(build):
+            return
+        if not build.platform_is_osx:
+            raise Exception('CoreAudio is only supported on OS X!');
+        else:
+            build.env.Append(CPPPATH='/System/Library/Frameworks/AudioToolbox.framework/Headers/')
+            build.env.Append(CPPPATH='#lib/apple/')
+            build.env.Append(LINKFLAGS='-framework AudioToolbox -framework CoreFoundation')
+            build.env.Append(CPPDEFINES = '__COREAUDIO__')
+
+    def sources(self, build):
+        return ['soundsourcecoreaudio.cpp', 
+                '#lib/apple/CAStreamBasicDescription.h']
+
+
 class MIDIScript(Feature):
     def description(self):
         return "MIDI Scripting"
@@ -214,7 +271,7 @@ class VinylControl(Feature):
         return "Vinyl Control"
 
     def enabled(self, build):
-        build.flags['vinylcontrol'] = util.get_flags(build.env, 'vinylcontrol', 1)
+        build.flags['vinylcontrol'] = util.get_flags(build.env, 'vinylcontrol', 0)
         if int(build.flags['vinylcontrol']):
             return True
         return False
@@ -232,11 +289,9 @@ class VinylControl(Feature):
     def sources(self, build):
         sources = ['vinylcontrol.cpp',
                    'vinylcontrolproxy.cpp',
-                   'vinylcontrolscratchlib.cpp',
                    'vinylcontrolxwax.cpp',
                    'dlgprefvinyl.cpp',
-                   'vinylcontrolsignalwidget.cpp',
-                   '#lib/scratchlib/DAnalyse.cpp']
+                   'vinylcontrolsignalwidget.cpp']
         if build.platform_is_windows:
             sources.append("#lib/xwax/timecoder_win32.c")
         else:
@@ -268,18 +323,18 @@ class Tonal(Feature):
                    'tonal/ConstantQFolder.cxx']
         return sources
 
-class M4A(Feature):
+class FAAD(Feature):
     def description(self):
-        return "Apple M4A audio file support plugin"
+        return "FAAD AAC audio file decoder plugin"
 
     def enabled(self, build):
-        build.flags['m4a'] = util.get_flags(build.env, 'm4a', 0)
-        if int(build.flags['m4a']):
+        build.flags['faad'] = util.get_flags(build.env, 'faad', 0)
+        if int(build.flags['faad']):
             return True
         return False
 
     def add_options(self, build, vars):
-        vars.Add('m4a', 'Set to 1 to enable building the Apple M4A support plugin.', 0)
+        vars.Add('faad', 'Set to 1 to enable building the FAAD AAC decoder plugin.', 0)
 
     def configure(self, build, conf):
         if not self.enabled(build):
@@ -521,15 +576,23 @@ class TestSuite(Feature):
         test_env.Append(CCFLAGS = '-pthread')
         test_env.Append(LINKFLAGS = '-pthread')
 
-        test_env.Append(CPPPATH="#lib/gtest-1.3.0/include")
-        gtest_dir = test_env.Dir("#lib/gtest-1.3.0")
-        gtest_dir.addRepository(build.env.Dir('#lib/gtest-1.3.0'))
+        test_env.Append(CPPPATH="#lib/gtest-1.5.0/include")
+        gtest_dir = test_env.Dir("#lib/gtest-1.5.0")
+        #gtest_dir.addRepository(build.env.Dir('#lib/gtest-1.5.0'))
         #build.env['EXE_OUTPUT'] = '#/lib/gtest-1.3.0/bin'  # example, optional
-        test_env['LIB_OUTPUT'] = '#/lib/gtest-1.3.0/lib'
+        test_env['LIB_OUTPUT'] = '#/lib/gtest-1.5.0/lib'
 
         env = test_env
         SCons.Export('env')
-        env.SConscript(env.File('scons/SConscript', gtest_dir))
+        env.SConscript(env.File('SConscript', gtest_dir))
+
+        # build and configure gmock
+        test_env.Append(CPPPATH="#lib/gmock-1.5.0/include")
+        gmock_dir = test_env.Dir("#lib/gmock-1.5.0")
+        #gmock_dir.addRepository(build.env.Dir('#lib/gmock-1.5.0'))
+        test_env['LIB_OUTPUT'] = '#/lib/gmock-1.5.0/lib'
+
+        env.SConscript(env.File('SConscript', gmock_dir))
 
         return []
 

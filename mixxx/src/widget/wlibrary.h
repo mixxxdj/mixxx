@@ -10,6 +10,8 @@
 #include <QStackedWidget>
 #include <QString>
 
+#include "library/libraryview.h"
+
 class MixxxKeyboard;
 
 class WLibrary : public QStackedWidget {
@@ -22,7 +24,8 @@ public:
     // can disply on request via showView(). To switch to a given view, call
     // showView with the name provided here. WLibraryWidget takes ownership of
     // the view and is in charge of deleting it. Returns whether or not the
-    // registration was successful.
+    // registration was successful. Registered widget must implement the
+    // LibraryView interface.
     bool registerView(QString name, QWidget* view);
 
     // Apply skin-specific customizations to the library views. Will not affect
@@ -30,7 +33,7 @@ public:
     // to this widget before calling setup().
     void setup(QDomNode node);
 
-    QWidget* getWidgetForMIDIControl();
+    LibraryView* getActiveView() const;
 
 public slots:
     // Show the view registered with the given name. Does nothing if the current

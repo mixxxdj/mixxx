@@ -99,7 +99,11 @@ namespace soundtouch
         /// routines compiled for whatever reason, you may disable these optimizations 
         /// to make the library compile.
 
-        #define ALLOW_X86_OPTIMIZATIONS     1
+
+// XXX Mixxx change: we define this ourselves, and if we let ST do it here, we
+// have it defined yet we don't compile in the sse/mmx sources when scons gets
+// optimize=1 --bkgood
+//        #define ALLOW_X86_OPTIMIZATIONS     1
 
     #endif
 

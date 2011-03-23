@@ -16,16 +16,20 @@ class CrateView;
 
 class DlgPrepare : public QWidget, public Ui::DlgPrepare, public virtual LibraryView {
     Q_OBJECT
-public:
+  public:
     DlgPrepare(QWidget *parent, ConfigObject<ConfigValue>* pConfig, TrackCollection* pTrackCollection);
     virtual ~DlgPrepare();
+
     virtual void setup(QDomNode node);
     virtual void onSearchStarting();
     virtual void onSearchCleared();
     virtual void onSearch(const QString& text);
     virtual void onShow();
-    virtual QWidget* getWidgetForMIDIControl();
-    public slots:
+    virtual void loadSelectedTrack();
+    virtual void loadSelectedTrackToGroup(QString group);
+    virtual void moveSelection(int delta);
+
+  public slots:
     void tableSelectionChanged(const QItemSelection& selected, const QItemSelection& deselected);
     void selectAll();
     void analyze();
@@ -34,6 +38,7 @@ public:
     void showRecentSongs();
     void showAllSongs();
     void installEventFilter(QObject* pFilter);
+
   signals:
     void loadTrack(TrackPointer pTrack);
     void loadTrackToPlayer(TrackPointer pTrack, QString player);

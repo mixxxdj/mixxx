@@ -1,14 +1,14 @@
 #define MAX_COEFS 17
 #define MAX_INTERNAL_BUF 16
 
-#include "enginefilter.h"
+#include "engine/enginefilter.h"
 
 class EngineFilterButterworth8 : public EngineObject
 {
 public:
 	EngineFilterButterworth8(filterType type, int sampleRate, double freqCorner1, double freqCorner2 = 0);
 	~EngineFilterButterworth8();
-	
+
 	void process(const CSAMPLE *pIn, const CSAMPLE *ppOut, const int iBufferSize);
 
 private:
