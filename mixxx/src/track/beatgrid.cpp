@@ -187,4 +187,5 @@ void BeatGrid::scale(double dScalePercentage) {
 void BeatGrid::slotTrackBpmUpdated(double dBpm) {
     QMutexLocker locker(&m_mutex);
     m_dBpm = dBpm;
+    m_dBeatLength = (60.0 * m_iSampleRate / m_dBpm) * kFrameSize;
 }
