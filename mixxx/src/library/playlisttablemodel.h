@@ -32,6 +32,7 @@ class PlaylistTableModel : public BaseSqlTableModel, public virtual TrackModel
     virtual void removeTracks(const QModelIndexList& indices);
     virtual bool addTrack(const QModelIndex& index, QString location);
     virtual void moveTrack(const QModelIndex& sourceIndex, const QModelIndex& destIndex);
+    virtual void shuffleTracks();
 
     QMimeData* mimeData(const QModelIndexList &indexes) const;
 
