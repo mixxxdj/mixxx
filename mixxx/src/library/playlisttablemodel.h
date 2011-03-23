@@ -21,6 +21,9 @@ class PlaylistTableModel : public BaseSqlTableModel, public virtual TrackModel
     void setPlaylist(int playlistId);
     virtual TrackPointer getTrack(const QModelIndex& index) const;
     virtual QString getTrackLocation(const QModelIndex& index) const;
+    virtual int getTrackId(const QModelIndex& index) const;
+    virtual int getTrackRow(int trackId) const;
+
     virtual void search(const QString& searchText);
     virtual const QString currentSearch();
     virtual bool isColumnInternal(int column);
@@ -29,9 +32,9 @@ class PlaylistTableModel : public BaseSqlTableModel, public virtual TrackModel
     virtual void removeTracks(const QModelIndexList& indices);
     virtual bool addTrack(const QModelIndex& index, QString location);
     virtual void moveTrack(const QModelIndex& sourceIndex, const QModelIndex& destIndex);
-    
+
     QMimeData* mimeData(const QModelIndexList &indexes) const;
-   
+
     QItemDelegate* delegateForColumn(const int i);
     TrackModel::CapabilitiesFlags getCapabilities() const;
 

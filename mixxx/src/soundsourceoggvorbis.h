@@ -22,7 +22,7 @@
 #include <vorbis/codec.h>
 #include <vorbis/vorbisfile.h>
 
-class SoundSourceOggVorbis : public SoundSource {
+class SoundSourceOggVorbis : public Mixxx::SoundSource {
  public:
   SoundSourceOggVorbis(QString qFilename);
   ~SoundSourceOggVorbis();

@@ -16,8 +16,9 @@
 ***************************************************************************/
 
 #include <QtCore>
-#include "enginebufferscalelinear.h"
+#include "engine/enginebufferscalelinear.h"
 #include "mathstuff.h"
+#include "sampleutil.h"
 
 #define RATE_LERP_LENGTH 200
 
@@ -34,6 +35,7 @@ EngineBufferScaleLinear::EngineBufferScaleLinear(ReadAheadManager *pReadAheadMan
     m_scaleRemainder = 0.0f;
 
     buffer_int = new CSAMPLE[kiLinearScaleReadAheadLength];
+    SampleUtil::applyGain(buffer_int, 0.0, kiLinearScaleReadAheadLength);
 }
 
 EngineBufferScaleLinear::~EngineBufferScaleLinear()
@@ -88,8 +90,8 @@ inline float hermite4(float frac_pos, float xm1, float x0, float x1, float x2)
 }
 
 /** Stretch a buffer worth of audio using linear interpolation */
-CSAMPLE * EngineBufferScaleLinear::scale(double playpos, unsigned long buf_size,
-                                         CSAMPLE* pBase, unsigned long iBaseLength)
+CSAMPLE * EngineBufferScaleLinear::scale(double, unsigned long buf_size,
+                                         CSAMPLE*, unsigned long)
 {
 
     long unscaled_samples_needed;
@@ -108,7 +110,7 @@ CSAMPLE * EngineBufferScaleLinear::scale(double playpos, unsigned long buf_size,
 
     // Determine position in read_buffer to start from. (This is always 0 with
     // the new EngineBuffer implementation)
-    new_playpos = playpos;
+    new_playpos = 0.0;
 
     const int iRateLerpLength = math_min(RATE_LERP_LENGTH, buf_size);
 
@@ -131,11 +133,10 @@ CSAMPLE * EngineBufferScaleLinear::scale(double playpos, unsigned long buf_size,
     samples += (rate_add_abs * ((buf_size - iRateLerpLength)/2));
     unscaled_samples_needed = ceil(samples);
 
-
     if ( samples != unscaled_samples_needed)
         m_scaleRemainder += (double)unscaled_samples_needed - samples;
 
-    bool carry_remainder = FALSE;
+    bool carry_remainder = false;
     if ((m_scaleRemainder > 1) || (m_scaleRemainder < 1))
     {
         long rem = (long)floor(m_scaleRemainder);
@@ -145,7 +146,7 @@ CSAMPLE * EngineBufferScaleLinear::scale(double playpos, unsigned long buf_size,
         // back into unscaled_samples_needed
 		if ((unscaled_samples_needed - rem) >= 1)
 		{
-            carry_remainder = TRUE;
+            carry_remainder = true;
             m_scaleRemainder -= rem;
         }
     }
@@ -153,7 +154,7 @@ CSAMPLE * EngineBufferScaleLinear::scale(double playpos, unsigned long buf_size,
     // Multiply by 2 because it is predicting mono rates, while we want a stereo
     // number of samples.
     unscaled_samples_needed *= 2;
-    
+
     Q_ASSERT(unscaled_samples_needed >= 0);
     Q_ASSERT(unscaled_samples_needed != 0);
 
@@ -179,11 +180,11 @@ CSAMPLE * EngineBufferScaleLinear::scale(double playpos, unsigned long buf_size,
 
         Q_ASSERT(current_sample % 2 == 0);
         Q_ASSERT(current_sample >= 0);
-        
+
         //This code is so messed up. These ASSERTs should be enabled, but they actually
-        //fire because of bug(s). 
+        //fire because of bug(s).
         //Q_ASSERT(prev_sample >= 0);
-        //Q_ASSERT(prev_sample-1 < kiLinearScaleReadAheadLength); 
+        //Q_ASSERT(prev_sample-1 < kiLinearScaleReadAheadLength);
         //the prev_sample-1 leaves room for the other sample in the stereo frame
         //Instead, we're going to workaround the bug by just clamping prev_sample
         //to make sure it stays in bounds:
@@ -258,11 +259,7 @@ CSAMPLE * EngineBufferScaleLinear::scale(double playpos, unsigned long buf_size,
     }
 
     // If we broke out of the loop, zero the remaining samples
-    // TODO(XXX) memset
-    for (; i < buf_size; i += 2) {
-        buffer[i] = 0.0f;
-        buffer[i+1] = 0.0f;
-    }
+    SampleUtil::applyGain(&buffer[i], 0.0f, buf_size-i);
 
     // It's possible that we will exit this function without having satisfied
     // this requirement. We may be trying to read past the end of the file.

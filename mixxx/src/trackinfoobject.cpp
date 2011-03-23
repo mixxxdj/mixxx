@@ -143,10 +143,12 @@ void TrackInfoObject::initialize(bool parseHeader) {
 }
 
 TrackInfoObject::~TrackInfoObject() {
+    //qDebug() << "~TrackInfoObject()" << m_iId << getInfo();
 }
 
 void TrackInfoObject::doSave() {
-    emit(save());
+    //qDebug() << "TIO::doSave()" << getInfo();
+    emit(save(this));
 }
 
 bool TrackInfoObject::isValid() const {
@@ -339,6 +341,42 @@ void TrackInfoObject::setBpmConfirm(bool confirm)
 {
     QMutexLocker lock(&m_qMutex);
     m_bBpmConfirm = confirm;
+}
+
+void TrackInfoObject::setBeats(BeatsPointer pBeats) {
+    QMutexLocker lock(&m_qMutex);
+
+    // This whole method is not so great. The fact that Beats is an ABC is
+    // limiting with respect to QObject and signals/slots.
+
+    QObject* pObject = NULL;
+    if (m_pBeats) {
+        pObject = dynamic_cast<QObject*>(m_pBeats.data());
+        if (pObject)
+            pObject->disconnect(this, SIGNAL(updated()));
+    }
+    m_pBeats = pBeats;
+    pObject = dynamic_cast<QObject*>(m_pBeats.data());
+    Q_ASSERT(pObject);
+    if (pObject) {
+        connect(pObject, SIGNAL(updated()),
+                this, SLOT(slotBeatsUpdated()));
+    }
+    setDirty(true);
+    lock.unlock();
+    emit(beatsUpdated());
+}
+
+BeatsPointer TrackInfoObject::getBeats() const {
+    QMutexLocker lock(&m_qMutex);
+    return m_pBeats;
+}
+
+void TrackInfoObject::slotBeatsUpdated() {
+    QMutexLocker lock(&m_qMutex);
+    setDirty(true);
+    lock.unlock();
+    emit(beatsUpdated());
 }
 
 bool TrackInfoObject::getHeaderParsed()  const
@@ -772,21 +810,22 @@ void TrackInfoObject::setChordData(Segmentation<QString> cd) {
 }
 
 void TrackInfoObject::setDirty(bool bDirty) {
+
     QMutexLocker lock(&m_qMutex);
     bool change = m_bDirty != bDirty;
     m_bDirty = bDirty;
     lock.unlock();
+    // qDebug() << "Track" << m_iId << getInfo() << (change? "changed" : "unchanged")
+    //          << "set" << (bDirty ? "dirty" : "clean");
     if (change) {
-        //qDebug() << "Track" << m_iId << "set" << (bDirty ? "dirty" : "clean");
         if (m_bDirty)
-            emit(dirty());
+            emit(dirty(this));
         else
-            emit(clean());
+            emit(clean(this));
     }
     // Emit a changed signal regardless if this attempted to set us dirty.
     if (bDirty)
-        emit(changed());
-
+        emit(changed(this));
 
     //qDebug() << QString("TrackInfoObject %1 %2 set to %3").arg(m_iId).arg(m_sLocation).arg(m_bDirty ? "dirty" : "clean");
 }

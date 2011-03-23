@@ -46,6 +46,7 @@ void CrateTableModel::setCrate(int crateId) {
                                   LIBRARYTABLE_TRACKNUMBER + "," +
                                   LIBRARYTABLE_KEY + "," +
                                   LIBRARYTABLE_BPM + "," +
+                                  LIBRARYTABLE_BITRATE + "," +
                                   LIBRARYTABLE_DATETIMEADDED + ","
                                   "track_locations.location," +
                                   "track_locations.fs_deleted," +
@@ -101,6 +102,17 @@ bool CrateTableModel::addTrack(const QModelIndex& index, QString location) {
                  << location << "to crate" << m_iCrateId;
         return false;
     }
+}
+
+int CrateTableModel::getTrackId(const QModelIndex& index) const {
+    if (!index.isValid()) {
+        return -1;
+    }
+    return index.sibling(index.row(), fieldIndex(LIBRARYTABLE_ID)).data().toInt();
+}
+
+int CrateTableModel::getTrackRow(int trackId) const {
+    return BaseSqlTableModel::getTrackRow(trackId);
 }
 
 TrackPointer CrateTableModel::getTrack(const QModelIndex& index) const {
@@ -208,7 +220,7 @@ bool CrateTableModel::isColumnInternal(int column) {
     return false;
 }
 bool CrateTableModel::isColumnHiddenByDefault(int column) {
-    if (column == fieldIndex(LIBRARYTABLE_KEY))    
+    if (column == fieldIndex(LIBRARYTABLE_KEY))
         return true;
     return false;
 }
