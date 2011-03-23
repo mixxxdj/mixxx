@@ -21,6 +21,7 @@
 #include "configobject.h"
 #include "controlobjectthread.h"
 #include "controlobject.h"
+#include "trackinfoobject.h"
 #include "dlgprefrecord.h"
 #ifdef __SHOUTCAST__
 #include "encodervorbis.h"
@@ -47,7 +48,7 @@ EngineRecord::EngineRecord(ConfigObject<ConfigValue> * _config)
     m_recReady = new ControlObjectThread(m_recReadyCO);
     m_samplerate = new ControlObjectThread(ControlObject::getControl(ConfigKey("[Master]", "samplerate")));
 
-    m_pMetaDataLife = 0;
+    m_iMetaDataLife = 0;
 }
 
 EngineRecord::~EngineRecord()
@@ -117,67 +118,6 @@ void EngineRecord::updateFromPreferences()
 }
 
 /*
- * Algorithm which simply flips the lowest and/or second lowest bits,
- * bits 1 and 2, to represent which track is active and returns the result.
- */
-int EngineRecord::getActiveTracks()
-{
-    int tracks = 0;
-
-
-    if (ControlObject::getControl(ConfigKey("[Channel1]","play"))->get()==1.) tracks |= 1;
-    if (ControlObject::getControl(ConfigKey("[Channel2]","play"))->get()==1.) tracks |= 2;
-
-    if (tracks ==  0) {
-        qDebug() << "No Tracks";
-        return 0;
-    }
-
-    double vol1, vol2, xfader;
-
-
-    vol1 = ControlObject::getControl(ConfigKey("[Channel1]","volume"))->get();
-    vol2 = ControlObject::getControl(ConfigKey("[Channel2]","volume"))->get();
-    xfader = ControlObject::getControl(ConfigKey("[Master]","crossfader"))->get();
-
-    if ( tracks & 1 ) {
-        if (vol1 == 0.)
-            tracks &= ~1;
-    }
-
-    if ( tracks & 2 ) {
-        if (vol2 == 0.)
-            tracks &= ~2;
-    }
-
-    // Detect the dominant track by checking the crossfader and volume levels
-    if ((tracks & (1 | 2))) {
-
-        // allow a bit of leeway with the crossfader
-        if ((xfader < 0.05) && (xfader > -0.05)) {
-
-            if (vol1 > vol2) {
-                tracks = 1;
-            }
-            else if (vol1 < vol2) {
-                tracks = 2;
-            }
-
-        }
-        else if ( xfader < -0.05 ) {
-            tracks = 1;
-        }
-        else if ( xfader > 0.05 ) {
-            tracks = 2;
-        }
-
-    }
-
-    qDebug() << "Tracks:" << tracks;
-    return tracks;
-}
-
-/*
  * Check if the metadata has changed since the previous check.
  * We also check when was the last check performed to avoid using
  * too much CPU and as well to avoid changing the metadata during
@@ -185,50 +125,26 @@ int EngineRecord::getActiveTracks()
  */
 bool EngineRecord::metaDataHasChanged()
 {
-    int tracks;
-    TrackPointer newMetaData;
-    bool changed = false;
+    TrackPointer pTrack;
 
 
-    if (((m_pMetaDataLife * m_dLatency)) < 5000) {
-        m_pMetaDataLife++;
+    if ( m_iMetaDataLife < 16 ) {
+        m_iMetaDataLife++;
         return false;
     }
+    m_iMetaDataLife = 0;
 
-    m_pMetaDataLife = 0;
+    pTrack = PlayerInfo::Instance().getCurrentPlayingTrack();
+    if ( !pTrack )
+        return false;
 
-
-    tracks = getActiveTracks();
-
-    switch (tracks)
-    {
-    case 0:
-        // no tracks are playing
-        // we should set the metadata to nothing
-        break;
-    case 1:
-        // track 1 is active
-        newMetaData = PlayerInfo::Instance().getTrackInfo("[Channel1]");
-        if (newMetaData != m_pMetaData)
-        {
-            m_pMetaData = newMetaData;
-            changed = true;
-        }
-        break;
-    case 2:
-        // track 2 is active
-		newMetaData = PlayerInfo::Instance().getTrackInfo("[Channel2]");
-		if (newMetaData != m_pMetaData)
-        {
-            m_pMetaData = newMetaData;
-            changed = true;
-        }
-        break;
-    case 3:
-        // both tracks are active, just stick with it for now
-        break;
+    if ( m_pCurrentTrack ) {
+        if (pTrack->getId() == m_pCurrentTrack->getId())
+            return false;
     }
-    return changed;
+
+    m_pCurrentTrack = pTrack;
+    return true;
 }
 
 void EngineRecord::process(const CSAMPLE * pIn, const CSAMPLE * pOut, const int iBufferSize)
@@ -295,12 +211,12 @@ void EngineRecord::writeCueLine()
     unsigned long samplerate = m_samplerate->get() * 2;
     // CDDA is specified as having 75 frames a second
     unsigned long frames = ((unsigned long)
-                                        ((m_cuesamplepos / (samplerate / 75)))
-                                        % 75);
+                                ((m_cuesamplepos / (samplerate / 75)))
+                                    % 75);
 
     unsigned long seconds =  ((unsigned long)
                                 (m_cuesamplepos / samplerate)
-                                % 60 );
+                                    % 60 );
 
     unsigned long minutes = m_cuesamplepos / (samplerate * 60);
 
@@ -310,9 +226,9 @@ void EngineRecord::writeCueLine()
     );
 
     m_cuefile.write(QString("    TITLE %1\n")
-        .arg(m_pMetaData->getTitle()).toLatin1());
+        .arg(m_pCurrentTrack->getTitle()).toLatin1());
     m_cuefile.write(QString("    PERFORMER %1\n")
-        .arg(m_pMetaData->getArtist()).toLatin1());
+        .arg(m_pCurrentTrack->getArtist()).toLatin1());
 
     // Woefully inaccurate (at the seconds level anyways). 
     // We'd need a signal fired state tracker

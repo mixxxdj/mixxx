@@ -29,6 +29,8 @@
 #include "encoder.h"
 #include "errordialoghandler.h"
 
+#include "trackinfoobject.h"
+
 #define THRESHOLD_REC 2. //high enough that its not triggered by white noise
 
 class ControlLogpotmeter;
@@ -78,8 +80,8 @@ class EngineRecord : public EngineAbstractRecord {
 
     ControlObjectThread* m_samplerate;
 
-    TrackPointer m_pMetaData;
-    int m_pMetaDataLife;
+    int m_iMetaDataLife;
+    TrackPointer m_pCurrentTrack;
     int m_iNumChannels;
     double m_dLatency;
 
