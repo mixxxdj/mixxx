@@ -81,6 +81,7 @@ void PlayerInfo::setTrackInfo(QString group, TrackPointer track)
 
 int PlayerInfo::getCurrentPlayingDeck()
 {
+    QMutexLocker locker(&m_mutex);
     int MaxVolume = 0;
     int MaxDeck = 0;
     int i;
