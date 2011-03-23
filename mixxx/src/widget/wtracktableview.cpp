@@ -236,6 +236,12 @@ void WTrackTableView::slotMouseDoubleClicked(const QModelIndex &index)
 
 void WTrackTableView::loadSelectionToGroup(QString group) {
     if (m_selectedIndices.size() > 0) {
+        bool groupPlaying = ControlObject::getControl(
+            ConfigKey(group, "play"))->get() == 1.0f;
+
+        if (groupPlaying)
+            return;
+
         QModelIndex index = m_selectedIndices.at(0);
         TrackModel* trackModel = getTrackModel();
         TrackPointer pTrack;
@@ -417,11 +423,6 @@ void WTrackTableView::onSearchCleared() {
 void WTrackTableView::onShow()
 {
 
-}
-
-QWidget* WTrackTableView::getWidgetForMIDIControl()
-{
-    return this;
 }
 
 /** Drag enter event, happens when a dragged item hovers over the track table view*/
@@ -690,6 +691,17 @@ void WTrackTableView::keyPressEvent(QKeyEvent* event)
     }
     else
         QTableView::keyPressEvent(event);
+}
+
+void WTrackTableView::loadSelectedTrack() {
+    QModelIndexList indexes = selectedIndexes();
+    if (indexes.size() > 0) {
+        slotMouseDoubleClicked(indexes.at(0));
+    }
+}
+
+void WTrackTableView::loadSelectedTrackToGroup(QString group) {
+    loadSelectionToGroup(group);
 }
 
 void WTrackTableView::slotSendToAutoDJ() {
