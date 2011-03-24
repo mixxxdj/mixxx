@@ -240,6 +240,9 @@ class MixxxBuild(object):
         vars = Script.Variables(cachefile)
         vars.Add('prefix', 'Set to your install prefix', '/usr/local')
         vars.Add('qtdir', 'Set to your QT4 directory', '/usr/share/qt4')
+        if self.platform_is_windows:
+            vars.Add('sqlitedll', 'Set to 1 to enable including QSQLite.dll.\
+\n           Set to 0 if SQLite support is compiled into QtSQL.dll.', 1)
         vars.Add('target', 'Set the build target for cross-compiling (windows, osx, linux, bsd).', '')
         vars.Add('machine', 'Set the machine type for cross-compiling (x86_64, x86, powerpc, powerpc64).', '')
         vars.Add('toolchain', 'Specify the toolchain to use for building (gnu, msvs). Default is gnu.', 'gnu')
@@ -280,7 +283,7 @@ class Dependence(object):
 
     def configure(self, build, conf):
         pass
-    
+
     def post_dependency_check_configure(self, build, conf):
         pass
 
