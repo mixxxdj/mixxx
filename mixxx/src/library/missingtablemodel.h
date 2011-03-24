@@ -43,7 +43,6 @@ class MissingTableModel : public BaseSqlTableModel, public virtual TrackModel
   private:
     TrackCollection* m_pTrackCollection;
     TrackDAO& m_trackDao;
-    QString m_currentSearch;
     static const QString MISSINGFILTER;
 };
 
