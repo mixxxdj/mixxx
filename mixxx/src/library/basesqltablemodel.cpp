@@ -606,6 +606,12 @@ QVariant BaseSqlTableModel::data(const QModelIndex& index, int role) const {
 }
 
 bool BaseSqlTableModel::setData(const QModelIndex& index, const QVariant& value, int role) {
+
+    if (!m_isCachedModel) {
+        // TODO(XXX) Only cached models know how to update tracks currently.
+        return false;
+    }
+
     if (!index.isValid())
         return false;
 
@@ -750,7 +756,9 @@ int BaseSqlTableModel::compareColumnValues(int iColumnNumber, Qt::SortOrder eSor
 
 TrackPointer BaseSqlTableModel::lookupCachedTrack(int trackId) const {
     // Only get the Track from the TrackDAO if it's in the cache
-    return m_trackDAO.getTrack(trackId, true);
+    if (m_isCachedModel)
+        return m_trackDAO.getTrack(trackId, true);
+    return TrackPointer();
 }
 
 QVariant BaseSqlTableModel::getTrackValueForColumn(int trackId, int column, TrackPointer pTrack) const {
@@ -957,9 +965,11 @@ QString BaseSqlTableModel::orderByClause() const {
 
 void BaseSqlTableModel::setCaching(bool isCachedModel){
     m_isCachedModel = isCachedModel;
-    if(!m_isCachedModel){
+    if (!m_isCachedModel) {
         disconnect(&m_trackDAO, SIGNAL(trackChanged(int)),
                 this, SLOT(trackChanged(int)));
+        disconnect(&m_trackDAO, SIGNAL(trackClean(int)),
+                this, SLOT(trackClean(int)));
     }
 }
 
