@@ -401,7 +401,7 @@ void CueControl::hotcueActivatePreview(HotcueControl* pControl, double v) {
                     // Re-trigger the play button value so controllers get the correct one
                     // after cuePlay() changes it.
                     m_pPlayButton->set(m_pPlayButton->get());
-                    
+
                     lock.unlock();
                 }
             } else {
@@ -409,10 +409,10 @@ void CueControl::hotcueActivatePreview(HotcueControl* pControl, double v) {
                     int iPosition = pCue->getPosition();
                     m_pPlayButton->set(0.0);
                     m_bPreviewingHotcue = false;
-    
+
                     // Need to unlock before emitting any signals to prevent deadlock.
                     lock.unlock();
-    
+
                     emit(seekAbs(iPosition));
                 }
 
@@ -449,7 +449,12 @@ void CueControl::hotcuePositionChanged(HotcueControl* pControl, double newPositi
             pCue->setHotCue(-1);
             detachCue(pControl->getHotcueNumber());
         } else if (newPosition > 0 && newPosition < m_pTrackSamples->get()) {
-            pCue->setPosition(newPosition);
+            int position = newPosition;
+            // People writing from MIDI land, elsewhere might be careless.
+            if (position % 2 != 0) {
+                position--;
+            }
+            pCue->setPosition(position);
         }
     }
 }
@@ -633,8 +638,8 @@ void CueControl::cuePlay(double v) {
     // we're previewing? Then stop previewing and go into normal play mode.
         m_pPlayButton->set(1.0);
         m_bPreviewing = false;
-    } 
-    
+    }
+
     if (m_bPreviewingHotcue && !v) {
         m_pPlayButton->set(1.0);
         m_bHotcueCancel = true;
