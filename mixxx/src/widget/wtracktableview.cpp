@@ -735,7 +735,6 @@ void WTrackTableView::slotSendToAutoDJ() {
 void WTrackTableView::addSelectionToPlaylist(int iPlaylistId) {
     PlaylistDAO& playlistDao = m_pTrackCollection->getPlaylistDAO();
     TrackModel* trackModel = getTrackModel();
-    QModelIndexList selectedIndices = this->selectionModel()->selectedRows();
 
     QModelIndexList indices = selectionModel()->selectedRows();
 
@@ -754,7 +753,6 @@ void WTrackTableView::addSelectionToPlaylist(int iPlaylistId) {
 void WTrackTableView::addSelectionToCrate(int iCrateId) {
     CrateDAO& crateDao = m_pTrackCollection->getCrateDAO();
     TrackModel* trackModel = getTrackModel();
-    QModelIndexList selectedIndices = this->selectionModel()->selectedRows();
 
     QModelIndexList indices = selectionModel()->selectedRows();
     foreach (QModelIndex index, indices) {
