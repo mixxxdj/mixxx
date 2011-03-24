@@ -675,7 +675,7 @@ void VinylControlXwax::togglePlayButton(bool on)
 void VinylControlXwax::doTrackSelection(bool valid_pos, double pitch, double position)
 {
 	const int SELECT_INTERVAL = 150;
-	const double NOPOS_SPEED = 0.25;
+	const double NOPOS_SPEED = 0.50;
 	
 	if (trackSelector == NULL)
 	{
@@ -713,9 +713,8 @@ void VinylControlXwax::doTrackSelection(bool valid_pos, double pitch, double pos
 	}
 	else if (fabs(dCurTrackSelectPos - dLastTrackSelectPos) > SELECT_INTERVAL)
 	{
-		//difference of at least 1, so trigger the track selector
-		//qDebug() << "adjusting selector" << (int)(dCurTrackSelectPos - dLastTrackSelectPos) / SELECT_INTERVAL << "places";
-		trackSelector->slotSet((int)(dCurTrackSelectPos - dLastTrackSelectPos) / SELECT_INTERVAL);
+		//only adjust by one at a time.  It's no help jumping around
+		trackSelector->slotSet((int)(dCurTrackSelectPos - dLastTrackSelectPos) / fabs(dCurTrackSelectPos - dLastTrackSelectPos));
 		dLastTrackSelectPos = dCurTrackSelectPos;
 	}
 }
