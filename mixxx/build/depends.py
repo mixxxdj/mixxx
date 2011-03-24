@@ -186,6 +186,10 @@ class Qt(Dependence):
         if not build.platform_is_windows and not (using_104_sdk or compiling_on_104):
             build.env.Append(LINKFLAGS = "-Wl,-rpath,$QTDIR/lib")
 
+        #QtSQLite DLL
+        if build.platform_is_windows:
+            build.flags['sqlitedll'] = util.get_flags(build.env, 'sqlitedll', 1)
+
 
 class FidLib(Dependence):
 

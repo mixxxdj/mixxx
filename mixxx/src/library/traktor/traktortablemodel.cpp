@@ -7,7 +7,7 @@
 #include "mixxxutils.cpp"
 
 TraktorTableModel::TraktorTableModel(QObject* parent,
-                                       TrackCollection* pTrackCollection)
+                                     TrackCollection* pTrackCollection)
         : TrackModel(pTrackCollection->getDatabase(),
                      "mixxx.db.model.traktor_tablemodel"),
           BaseSqlTableModel(parent, pTrackCollection, pTrackCollection->getDatabase()),
@@ -16,9 +16,23 @@ TraktorTableModel::TraktorTableModel(QObject* parent,
 
 {
     connect(this, SIGNAL(doSearch(const QString&)), this, SLOT(slotSearch(const QString&)));
-    setTable("traktor_library");
-    initHeaderData();
+
+    QStringList columns;
+    columns << "id"
+            << "artist"
+            << "album"
+            << "genre"
+            << "location"
+            << "comment"
+            << "duration"
+            << "bitrate"
+            << "bpm"
+            << "key"
+            << "rating";
     setCaching(false);
+    setTable("traktor_library", columns, "id");
+    initHeaderData();
+    initDefaultSearchColumns();
 }
 
 TraktorTableModel::~TraktorTableModel() {
@@ -93,26 +107,11 @@ void TraktorTableModel::search(const QString& searchText) {
 
 void TraktorTableModel::slotSearch(const QString& searchText)
 {
-   if (!m_currentSearch.isNull() && m_currentSearch == searchText)
-        return;
-    m_currentSearch = searchText;
-
-    //update database so searches reflect updated data
-    m_pTrackCollection->getTrackDAO().saveDirtyTracks();
-    
-    QString filter;
-    QSqlField search("search", QVariant::String);
-    search.setValue("%" + searchText + "%");
-    QString escapedText = database().driver()->formatValue(search);
-    filter = "(artist LIKE " + escapedText + " OR " +
-                "album LIKE " + escapedText + " OR " +
-                "title  LIKE " + escapedText + ")";
-    setFilter(filter);
-
+    BaseSqlTableModel::search(searchText);
 }
 
 const QString TraktorTableModel::currentSearch() {
-    return m_currentSearch;
+    return BaseSqlTableModel::currentSearch();
 }
 
 bool TraktorTableModel::isColumnInternal(int column) {
@@ -124,7 +123,6 @@ bool TraktorTableModel::isColumnInternal(int column) {
 }
 
 QMimeData* TraktorTableModel::mimeData(const QModelIndexList &indexes) const {
-
     QMimeData *mimeData = new QMimeData();
     QList<QUrl> urls;
 
@@ -147,9 +145,7 @@ QMimeData* TraktorTableModel::mimeData(const QModelIndexList &indexes) const {
     }
     mimeData->setUrls(urls);
     return mimeData;
-
 }
-
 
 QItemDelegate* TraktorTableModel::delegateForColumn(const int i) {
     return NULL;
@@ -165,6 +161,7 @@ Qt::ItemFlags TraktorTableModel::flags(const QModelIndex &index) const
 {
     return readOnlyFlags(index);
 }
+
 bool TraktorTableModel::isColumnHiddenByDefault(int column) {
     if (column == fieldIndex(LIBRARYTABLE_KEY))
         return true;

@@ -48,7 +48,6 @@ class CrateTableModel : public BaseSqlTableModel, public virtual TrackModel {
   private:
     TrackCollection* m_pTrackCollection;
     int m_iCrateId;
-    QString m_currentSearch;
 };
 
 
