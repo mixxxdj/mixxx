@@ -11,7 +11,7 @@
 // allows the track reference count to drop to zero. The track cache basically
 // functions to hold a reference to the track so its reference count stays above
 // 0.
-#define TRACK_CACHE_SIZE 50
+#define TRACK_CACHE_SIZE 5
 
 TrackDAO::TrackDAO(QSqlDatabase& database, CueDAO& cueDao, ConfigObject<ConfigValue> * pConfig)
         : m_database(database),
@@ -519,7 +519,7 @@ void TrackDAO::unremoveTrack(int trackId)
 void TrackDAO::deleteTrack(TrackInfoObject* pTrack) {
     Q_ASSERT(pTrack);
 
-    //qDebug() << "Got deletion call for track" << pTrack << "ID" << pTrack->getId() << pTrack->getInfo();
+    qDebug() << "Got deletion call for track" << pTrack << "ID" << pTrack->getId() << pTrack->getInfo();
 
     // Save the track if it is dirty.
     pTrack->doSave();
