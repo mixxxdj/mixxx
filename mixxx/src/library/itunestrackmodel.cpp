@@ -14,8 +14,22 @@ ITunesTrackModel::ITunesTrackModel(QObject* parent,
           m_pTrackCollection(pTrackCollection),
           m_database(m_pTrackCollection->getDatabase()) {
     connect(this, SIGNAL(doSearch(const QString&)), this, SLOT(slotSearch(const QString&)));
-    setTable("itunes_library");
+
+    QStringList columns;
+    columns << "id"
+            << "artist"
+            << "album"
+            << "genre"
+            << "location"
+            << "comment"
+            << "duration"
+            << "bitrate"
+            << "bpm"
+            << "rating";
+    setTable("itunes_library", columns, "id");
     initHeaderData();
+    initDefaultSearchColumns();
+    select();
 }
 
 ITunesTrackModel::~ITunesTrackModel() {
@@ -80,23 +94,11 @@ void ITunesTrackModel::search(const QString& searchText) {
 }
 
 void ITunesTrackModel::slotSearch(const QString& searchText) {
-    if (!m_currentSearch.isNull() && m_currentSearch == searchText)
-        return;
-    m_currentSearch = searchText;
-
-    QString filter;
-    QSqlField search("search", QVariant::String);
-    search.setValue("%" + searchText + "%");
-    QString escapedText = database().driver()->formatValue(search);
-    filter = "(artist LIKE " + escapedText + " OR " +
-            "album LIKE " + escapedText + " OR " +
-            "title  LIKE " + escapedText + ")";
-    setFilter(filter);
-
+    BaseSqlTableModel::search(searchText);
 }
 
 const QString ITunesTrackModel::currentSearch() {
-    return m_currentSearch;
+    return BaseSqlTableModel::currentSearch();
 }
 
 bool ITunesTrackModel::isColumnInternal(int column) {

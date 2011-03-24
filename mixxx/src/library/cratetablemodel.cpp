@@ -30,34 +30,38 @@ void CrateTableModel::setCrate(int crateId) {
     QString tableName = QString("crate_%1").arg(m_iCrateId);
     QSqlQuery query;
 
+    QStringList columns;
+    columns << "library." + LIBRARYTABLE_ID
+            << LIBRARYTABLE_PLAYED
+            << LIBRARYTABLE_TIMESPLAYED
+            << LIBRARYTABLE_ARTIST
+            << LIBRARYTABLE_TITLE
+            << LIBRARYTABLE_ALBUM
+            << LIBRARYTABLE_YEAR
+            << LIBRARYTABLE_DURATION
+            << LIBRARYTABLE_RATING
+            << LIBRARYTABLE_GENRE
+            << LIBRARYTABLE_FILETYPE
+            << LIBRARYTABLE_TRACKNUMBER
+            << LIBRARYTABLE_KEY
+            << LIBRARYTABLE_BPM
+            << LIBRARYTABLE_BITRATE
+            << LIBRARYTABLE_DATETIMEADDED
+            << "track_locations.location"
+            << "track_locations.fs_deleted"
+            << LIBRARYTABLE_COMMENT
+            << LIBRARYTABLE_MIXXXDELETED;
+
     QString queryString = QString("CREATE TEMPORARY VIEW IF NOT EXISTS %1 AS "
                                   "SELECT "
-                                  "library." + LIBRARYTABLE_ID + "," +
-                                  LIBRARYTABLE_PLAYED + "," +
-                                  LIBRARYTABLE_TIMESPLAYED + "," +
-                                  LIBRARYTABLE_ARTIST + "," +
-                                  LIBRARYTABLE_TITLE + "," +
-                                  LIBRARYTABLE_ALBUM + "," +
-                                  LIBRARYTABLE_YEAR + "," +
-                                  LIBRARYTABLE_DURATION + "," +
-                                  LIBRARYTABLE_RATING + "," +
-                                  LIBRARYTABLE_GENRE + "," +
-                                  LIBRARYTABLE_FILETYPE + "," +
-                                  LIBRARYTABLE_TRACKNUMBER + "," +
-                                  LIBRARYTABLE_KEY + "," +
-                                  LIBRARYTABLE_BPM + "," +
-                                  LIBRARYTABLE_BITRATE + "," +
-                                  LIBRARYTABLE_DATETIMEADDED + ","
-                                  "track_locations.location," +
-                                  "track_locations.fs_deleted," +
-                                  LIBRARYTABLE_COMMENT + "," +
-                                  LIBRARYTABLE_MIXXXDELETED + " " +
-                                  "FROM library "
+                                  + columns.join(",") +
+                                  " FROM library "
                                   "INNER JOIN " CRATE_TRACKS_TABLE
                                   " ON library.id = " CRATE_TRACKS_TABLE ".track_id "
                                   "INNER JOIN track_locations "
                                   " ON library.location = track_locations.id "
-                                  "WHERE " CRATE_TRACKS_TABLE ".crate_id = %2");
+                                  "WHERE " CRATE_TRACKS_TABLE ".crate_id = %2 AND ("
+                                  + LibraryTableModel::DEFAULT_LIBRARYFILTER + ")");
     queryString = queryString.arg(tableName).arg(crateId);
     query.prepare(queryString);
 
@@ -67,15 +71,18 @@ void CrateTableModel::setCrate(int crateId) {
                  << crateId << ":" << query.executedQuery() << query.lastError();
     }
 
-    setTable(tableName);
+    // Strip out library. and track_locations.
+    for (int i = 0; i < columns.size(); ++i) {
+        columns[i] = columns[i].replace("library.", "").replace("track_locations.", "");
+    }
 
-    // Enable the basic filters
-    slotSearch("");
-
-    select();
-
+    setTable(tableName, columns, LIBRARYTABLE_ID);
     // BaseSqlTableModel sets up the header names
     initHeaderData();
+    initDefaultSearchColumns();
+    // Enable the basic filters
+    slotSearch("");
+    select();
 }
 
 bool CrateTableModel::addTrack(const QModelIndex& index, QString location) {
@@ -95,6 +102,7 @@ bool CrateTableModel::addTrack(const QModelIndex& index, QString location) {
     }
 
     if (success) {
+        updateTrackInIndex(iTrackId);
         select();
         return true;
     } else {
@@ -167,38 +175,11 @@ void CrateTableModel::search(const QString& searchText) {
 }
 
 void CrateTableModel::slotSearch(const QString& searchText) {
-    if (!m_currentSearch.isNull() && m_currentSearch == searchText)
-        return;
-    m_currentSearch = searchText;
-
-    QString filter;
-    if (searchText == "")
-        filter = "(" + LibraryTableModel::DEFAULT_LIBRARYFILTER + ")";
-    else {
-        QSqlField search("search", QVariant::String);
-
-
-        filter = "(" + LibraryTableModel::DEFAULT_LIBRARYFILTER;
-
-        foreach(QString term, searchText.split(" "))
-        {
-            search.setValue("%" + term + "%");
-            QString escapedText = database().driver()->formatValue(search);
-            filter += " AND (artist LIKE " + escapedText + " OR " +
-                    "album LIKE " + escapedText + " OR " +
-                    "location LIKE " + escapedText + " OR " +
-                    "comment LIKE " + escapedText + " OR " +
-                    "title  LIKE " + escapedText + ")";
-        }
-
-        filter += ")";
-    }
-
-    setFilter(filter);
+    BaseSqlTableModel::search(searchText);
 }
 
 const QString CrateTableModel::currentSearch() {
-    return m_currentSearch;
+    return BaseSqlTableModel::currentSearch();
 }
 
 bool CrateTableModel::isColumnInternal(int column) {

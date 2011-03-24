@@ -790,6 +790,7 @@ void WTrackTableView::doSortByColumn(int headerSection) {
     }
 
     if (first.isValid()) {
-        scrollTo(first, QAbstractItemView::PositionAtCenter);
+        scrollTo(first, QAbstractItemView::EnsureVisible);
+        //scrollTo(first, QAbstractItemView::PositionAtCenter);
     }
 }
