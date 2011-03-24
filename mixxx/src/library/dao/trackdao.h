@@ -12,7 +12,6 @@
 #include <QSharedPointer>
 #include <QWeakPointer>
 #include <QCache>
-#include <QTimer>
 
 #include "trackinfoobject.h"
 #include "library/dao/cuedao.h"
@@ -153,7 +152,6 @@ Q_OBJECT
     mutable QSet<int> m_dirtyTracks;
     mutable QCache<int,TrackPointer> m_trackCache;
     ConfigObject<ConfigValue> * m_pConfig;
-    QTimer *m_librarysavetimer;
 };
 
 #endif //TRACKDAO_H
