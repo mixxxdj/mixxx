@@ -6,7 +6,6 @@
 #define LOOPINGCONTROL_H
 
 #include <QObject>
-#include <QSignalMapper>
 
 #include "configobject.h"
 #include "engine/enginecontrol.h"
@@ -16,6 +15,8 @@
 class ControlPushButton;
 class ControlObject;
 class CachingReader;
+
+class BeatLoopingControl;
 
 class LoopingControl : public EngineControl {
     Q_OBJECT
@@ -60,7 +61,7 @@ class LoopingControl : public EngineControl {
     void slotTrackLoaded(TrackPointer tio, int iSampleRate, int iNumSamples);
     void slotUpdatedTrackBeats();
     void slotBeatLoop(double);
-    void slotBeatLoopSize(int);
+    //void slotBeatLoopSize(int);
 
   private:
     void setLoopingEnabled(bool enabled);
@@ -78,20 +79,33 @@ class LoopingControl : public EngineControl {
     ControlObject* m_pQuantizeEnabled;
     ControlObject* m_pQuantizeBeat;
 
-    // Beatloop properties/methods
-    ConfigKey keyForControl(const char * _group, QString ctrlName, double num);
-
+    // Base BeatLoop Control Object.
     ControlObject* m_pCOBeatLoop;
-    QList<ControlPushButton*> m_pCOBeatLoops;
-    QSignalMapper* m_smBeatLoop;
+    // Different sizes for Beat Loops/Seeks.
+    static double s_dBeatSizes[];
+    // Array of BeatLoopingControls, one for each size.
+    QList<BeatLoopingControl*> m_pBeatLoops;
 
     CachingReader *m_pReader;
 
     TrackPointer m_pTrack;
     BeatsPointer m_pBeats;
+};
 
-    // Different sizes for Beat Loops/Seeks
-    static double s_dBeatSizes[];
+class BeatLoopingControl : public QObject {
+    Q_OBJECT
+  public:
+    BeatLoopingControl(const char *_group, LoopingControl *pLoopingControl, double size);
+    virtual ~BeatLoopingControl();
+
+  public slots:
+    void slotBeatLoopActivate(double value);
+
+  private:
+    ConfigKey keyForControl(const char * _group, QString ctrlName, double num);
+    double m_dBeatLoopSize;
+    LoopingControl* m_pLoopingControl;
+    ControlPushButton* m_pPBActivateBeatLoop;
 };
 
 #endif /* LOOPINGCONTROL_H */
