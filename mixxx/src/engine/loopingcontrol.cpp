@@ -21,14 +21,6 @@
 double LoopingControl::s_dBeatSizes[] = { 0.0625, 0.125, 0.25, 0.5, 1, 2, 4, 8, 16, 32, 64, -1 };
 
 
-// Used simply to generate the beatloop_%SIZE and beatseek_%SIZE CO ConfigKeys.
-ConfigKey LoopingControl::keyForControl(const char *_group, QString ctrlName, double num) {
-    ConfigKey key;
-    key.group = _group;
-    key.item = QString("%1_%2").arg(ctrlName).arg(num);
-    return key;
-}
-
 LoopingControl::LoopingControl(const char * _group,
                                ConfigObject<ConfigValue> * _config,
                                CachingReader *reader)
@@ -41,8 +33,7 @@ LoopingControl::LoopingControl(const char * _group,
     m_iLoopEndSample = kNoTrigger;
     m_pReader = reader;
     m_iCurrentSample = 0.;
-    m_smBeatLoop = new QSignalMapper(this);
-
+    
     //Create loop-in, loop-out, and reloop/exit ControlObjects
     m_pLoopInButton = new ControlPushButton(ConfigKey(_group, "loop_in"));
     connect(m_pLoopInButton, SIGNAL(valueChanged(double)),
@@ -98,34 +89,22 @@ LoopingControl::LoopingControl(const char * _group,
 
     // Here we create corresponding beatloop_(SIZE) CO's which all call the same
     // BeatControl, but with a set value; all thanks to QSignalMapper.
-    for (i = 0; s_dBeatSizes[i] > 0; i++) {
-        ControlPushButton* coBeatloop;
-        coBeatloop = new ControlPushButton(keyForControl(_group, "beatloop", s_dBeatSizes[i]));
-
-        connect(coBeatloop, SIGNAL(valueChanged(double)),
-                m_smBeatLoop, SLOT(map()));
-
-        m_smBeatLoop->setMapping(coBeatloop, i);
-        m_pCOBeatLoops.append(coBeatloop);
+    for (i = 0; i < (sizeof(s_dBeatSizes) / sizeof(&s_dBeatSizes[0])); i++) {
+        BeatLoopingControl* pBeatLoop = new BeatLoopingControl(_group, this, s_dBeatSizes[i]);
+        m_pBeatLoops.append(pBeatLoop);
     }
-
-    // Connect the Signal Mapper, and here we complete the magic...
-    connect(m_smBeatLoop, SIGNAL(mapped(int)), this, 
-            SLOT(slotBeatLoopSize(int)),
-            Qt::DirectConnection);
-
+    
 }
 
 LoopingControl::~LoopingControl() {
-    ControlPushButton* co;
+    BeatLoopingControl* pBeatLoop;
 
     delete m_pCOBeatLoop;
 
-    delete m_smBeatLoop;
-    while (m_pCOBeatLoops.size() > 0)
+    while (m_pBeatLoops.size() > 0)
     {
-        co = m_pCOBeatLoops.takeLast();
-        delete co;
+        pBeatLoop = m_pBeatLoops.takeLast();
+        delete pBeatLoop;
     }
 }
 
@@ -394,13 +373,42 @@ void LoopingControl::slotBeatLoop(double beats)
         }
     }
 
-    slotLoopStartPos((double)loop_in);
-    slotLoopEndPos((double)loop_out);
+    if ( !even(loop_in))
+        loop_in--;
+    if ( !even(loop_out))
+        loop_out--;
+
+    m_iLoopStartSample = loop_in;
+    m_pCOLoopStartPosition->set(loop_in);
+    m_iLoopEndSample = loop_out;
+    m_pCOLoopEndPosition->set(loop_out);
+
     setLoopingEnabled(true);
 }
 
-void LoopingControl::slotBeatLoopSize(int i)
-{
-    return slotBeatLoop(s_dBeatSizes[i]);
+// Class for handling beat loops of a set size. This allows easy access from skins.
+BeatLoopingControl::BeatLoopingControl(const char *_group, LoopingControl *pLoopingControl, double size) {
+    m_dBeatLoopSize = size;
+    m_pLoopingControl = pLoopingControl;
+
+    m_pPBActivateBeatLoop = new ControlPushButton(keyForControl(_group, "beatloop", size));
+    connect(m_pPBActivateBeatLoop, SIGNAL(valueChanged(double)),
+            this, SLOT(slotBeatLoopActivate(double)),
+            Qt::DirectConnection);
+}
+
+BeatLoopingControl::~BeatLoopingControl() {
+}
+
+void BeatLoopingControl::slotBeatLoopActivate(double value) {
+    m_pLoopingControl->slotBeatLoop(m_dBeatLoopSize);
+}
+
+// Used simply to generate the beatloop_%SIZE and beatseek_%SIZE CO ConfigKeys.
+ConfigKey BeatLoopingControl::keyForControl(const char *_group, QString ctrlName, double num) {
+    ConfigKey key;
+    key.group = _group;
+    key.item = QString("%1_%2").arg(ctrlName).arg(num);
+    return key;
 }
 
