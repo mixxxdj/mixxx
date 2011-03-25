@@ -213,12 +213,22 @@ QWidget* LegacySkinParser::parseNode(QDomElement node, QWidget *pGrandparent) {
     QString nodeName = node.nodeName();
     //qDebug() << "parseNode" << node.nodeName();
 
-    if (nodeName == "skin") {
-        // Root of the document
-    }
-
     // TODO(rryan) replace with a map to function pointers?
-    if (nodeName == "Background") {
+
+    // Root of the document
+    if (nodeName == "skin") {
+        // Descend chilren, should only happen for the root node
+        QDomNodeList children = node.childNodes();
+
+        for (int i = 0; i < children.count(); ++i) {
+            QDomNode node = children.at(i);
+
+            if (node.isElement()) {
+                parseNode(node.toElement(), pGrandparent);
+            }
+        }
+        return pGrandparent;
+    } else if (nodeName == "Background") {
         return parseBackground(node, pGrandparent);
     } else if (nodeName == "SliderComposed") {
         return parseSliderComposed(node);
@@ -256,26 +266,18 @@ QWidget* LegacySkinParser::parseNode(QDomElement node, QWidget *pGrandparent) {
         return parseWidgetGroup(node);
     } else if (nodeName == "Style") {
         return parseStyle(node);
+    } else {
+        qDebug() << "Invalid node name in skin:" << nodeName;
     }
 
-    // Descend chilren, should only happen for the root node
-    QDomNodeList children = node.childNodes();
-
-    for (int i = 0; i < children.count(); ++i) {
-        QDomNode node = children.at(i);
-
-        if (node.isElement()) {
-            parseNode(node.toElement(), pGrandparent);
-        }
-    }
-
-    return pGrandparent;
+    return NULL;
 }
 
 QWidget* LegacySkinParser::parseWidgetGroup(QDomElement node) {
     QWidget* pGroup = new QGroupBox(m_pParent);
 
     setupWidget(node, pGroup);
+    setupConnections(node, pGroup);
 
     QBoxLayout* pLayout = NULL;
     if (!XmlParse::selectNode(node, "Layout").isNull()) {
@@ -301,6 +303,10 @@ QWidget* LegacySkinParser::parseWidgetGroup(QDomElement node) {
 
             if (node.isElement()) {
                 QWidget* pChild = parseNode(node.toElement(), pGroup);
+
+                if (pChild == NULL)
+                    continue;
+
                 if (pLayout) {
                     pLayout->addWidget(pChild);
                 }
