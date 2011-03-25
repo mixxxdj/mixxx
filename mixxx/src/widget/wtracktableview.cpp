@@ -235,14 +235,15 @@ void WTrackTableView::slotMouseDoubleClicked(const QModelIndex &index)
 }
 
 void WTrackTableView::loadSelectionToGroup(QString group) {
-    if (m_selectedIndices.size() > 0) {
+    QModelIndexList indices = selectionModel()->selectedRows();
+    if (indices.size() > 0) {
         bool groupPlaying = ControlObject::getControl(
             ConfigKey(group, "play"))->get() == 1.0f;
 
         if (groupPlaying)
             return;
 
-        QModelIndex index = m_selectedIndices.at(0);
+        QModelIndex index = indices.at(0);
         TrackModel* trackModel = getTrackModel();
         TrackPointer pTrack;
         if (trackModel &&
@@ -254,20 +255,22 @@ void WTrackTableView::loadSelectionToGroup(QString group) {
 
 void WTrackTableView::slotRemove()
 {
-    if (m_selectedIndices.size() > 0)
+    QModelIndexList indices = selectionModel()->selectedRows();
+    if (indices.size() > 0)
     {
         TrackModel* trackModel = getTrackModel();
         if (trackModel) {
-            trackModel->removeTracks(m_selectedIndices);
+            trackModel->removeTracks(indices);
         }
     }
 }
 
 void WTrackTableView::slotShowTrackInfo() {
-    if (m_selectedIndices.size() == 0)
-        return;
+    QModelIndexList indices = selectionModel()->selectedRows();
 
-    showTrackInfo(m_selectedIndices[0]);
+    if (indices.size() > 0) {
+        showTrackInfo(indices[0]);
+    }
 }
 
 void WTrackTableView::slotNextTrackInfo() {
@@ -299,11 +302,10 @@ void WTrackTableView::showTrackInfo(QModelIndex index) {
 
 void WTrackTableView::contextMenuEvent(QContextMenuEvent * event)
 {
-    //Get the indices of the selected rows.
-    m_selectedIndices = this->selectionModel()->selectedRows();
+    QModelIndexList indices = selectionModel()->selectedRows();
 
     // Gray out some stuff if multiple songs were selected.
-    bool oneSongSelected = m_selectedIndices.count() == 1;
+    bool oneSongSelected = indices.size() == 1;
 
     m_pMenu->clear();
 
@@ -512,10 +514,11 @@ void WTrackTableView::dropEvent(QDropEvent * event)
             //Save a list of row (just plain ints) so we don't get screwed over
             //when the QModelIndexes all become invalid (eg. after moveTrack()
             //or addTrack())
-            m_selectedIndices = this->selectionModel()->selectedRows();
+            QModelIndexList indices = selectionModel()->selectedRows();
+
             QList<int> selectedRows;
             QModelIndex idx;
-            foreach (idx, m_selectedIndices)
+            foreach (idx, indices)
             {
                 selectedRows.append(idx.row());
             }
@@ -539,8 +542,12 @@ void WTrackTableView::dropEvent(QDropEvent * event)
                 //qSort(m_selectedIndices);
                 //qSort(m_selectedIndices.begin(), m_selectedIndices.end(), qGreater<QModelIndex>());
                 qSort(selectedRows);
-                int maxRow = selectedRows.last();
-                int minRow = selectedRows.first();
+                int maxRow = 0;
+                int minRow = 0;
+                if (!selectedRows.isEmpty()) {
+                    maxRow = selectedRows.last();
+                    minRow = selectedRows.first();
+                }
                 int selectedRowCount = selectedRows.count();
                 int firstRowToSelect = destIndex.row();
 
@@ -668,10 +675,6 @@ bool WTrackTableView::modelHasCapabilities(TrackModel::CapabilitiesFlags capabil
 
 void WTrackTableView::keyPressEvent(QKeyEvent* event)
 {
-    //Update our saved list of selected indices when there's a keypress
-    // (eg. arrow keys!)
-    m_selectedIndices = this->selectionModel()->selectedRows();
-
     if (event->key() == Qt::Key_Return)
     {
 		/*
@@ -694,7 +697,7 @@ void WTrackTableView::keyPressEvent(QKeyEvent* event)
 }
 
 void WTrackTableView::loadSelectedTrack() {
-    QModelIndexList indexes = selectedIndexes();
+    QModelIndexList indexes = selectionModel()->selectedRows();
     if (indexes.size() > 0) {
         slotMouseDoubleClicked(indexes.at(0));
     }
@@ -714,8 +717,10 @@ void WTrackTableView::slotSendToAutoDJ() {
     if (iAutoDJPlaylistId == -1)
         return;
 
+    QModelIndexList indices = selectionModel()->selectedRows();
+
     TrackModel* trackModel = getTrackModel();
-    foreach (QModelIndex index, m_selectedIndices) {
+    foreach (QModelIndex index, indices) {
         TrackPointer pTrack;
         if (trackModel &&
             (pTrack = trackModel->getTrack(index))) {
@@ -731,7 +736,9 @@ void WTrackTableView::addSelectionToPlaylist(int iPlaylistId) {
     PlaylistDAO& playlistDao = m_pTrackCollection->getPlaylistDAO();
     TrackModel* trackModel = getTrackModel();
 
-    foreach (QModelIndex index, m_selectedIndices) {
+    QModelIndexList indices = selectionModel()->selectedRows();
+
+    foreach (QModelIndex index, indices) {
         TrackPointer pTrack;
         if (trackModel &&
             (pTrack = trackModel->getTrack(index))) {
@@ -747,7 +754,8 @@ void WTrackTableView::addSelectionToCrate(int iCrateId) {
     CrateDAO& crateDao = m_pTrackCollection->getCrateDAO();
     TrackModel* trackModel = getTrackModel();
 
-    foreach (QModelIndex index, m_selectedIndices) {
+    QModelIndexList indices = selectionModel()->selectedRows();
+    foreach (QModelIndex index, indices) {
         TrackPointer pTrack;
         if (trackModel &&
             (pTrack = trackModel->getTrack(index))) {
@@ -767,16 +775,11 @@ void WTrackTableView::doSortByColumn(int headerSection) {
         return;
 
     // Save the selection
-    QModelIndexList selection = selectedIndexes();
+    QModelIndexList selection = selectionModel()->selectedRows();
     QSet<int> trackIds;
-    QSet<int> rows;
     foreach (QModelIndex index, selection) {
-        if (rows.contains(index.row()))
-            continue;
-
         int trackId = trackModel->getTrackId(index);
         trackIds.insert(trackId);
-        rows.insert(index.row());
     }
 
     sortByColumn(headerSection);
@@ -803,6 +806,7 @@ void WTrackTableView::doSortByColumn(int headerSection) {
     }
 
     if (first.isValid()) {
-        scrollTo(first, QAbstractItemView::PositionAtCenter);
+        scrollTo(first, QAbstractItemView::EnsureVisible);
+        //scrollTo(first, QAbstractItemView::PositionAtCenter);
     }
 }

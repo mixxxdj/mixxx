@@ -50,10 +50,12 @@ QVariant TraktorFeature::title() {
 QIcon TraktorFeature::getIcon() {
     return QIcon(":/images/library/ic_library_traktor.png");
 }
+
 bool TraktorFeature::isSupported() {
     return (QFile::exists(getTraktorMusicDatabase()));
 
 }
+
 TreeItemModel* TraktorFeature::getChildModel() {
     return &m_childModel;
 }
@@ -130,6 +132,7 @@ bool TraktorFeature::dragMoveAcceptChild(const QModelIndex& index,
                                               QUrl url) {
     return false;
 }
+
 TreeItem* TraktorFeature::importLibrary(QString file){
     //Give thread a low priority
     QThread* thisThread = QThread::currentThread();
@@ -241,8 +244,8 @@ TreeItem* TraktorFeature::importLibrary(QString file){
     m_database.commit();
 
     return root;
-
 }
+
 void TraktorFeature::parseTrack(QXmlStreamReader &xml, QSqlQuery &query){
     QString title;
     QString artist;
@@ -360,6 +363,7 @@ void TraktorFeature::parseTrack(QXmlStreamReader &xml, QSqlQuery &query){
     }
 
 }
+
 /*
  * Purpose: Parsing all the folder and playlists of Traktor
  * This is a complex operation since Traktor uses the concept of folders and playlist.
@@ -468,6 +472,7 @@ TreeItem* TraktorFeature::parsePlaylists(QXmlStreamReader &xml){
     }
     return rootItem;
 }
+
 void TraktorFeature::parsePlaylistEntries(QXmlStreamReader &xml,QString playlist_path, QSqlQuery query_insert_into_playlist, QSqlQuery query_insert_into_playlisttracks)
 {
     // In the database, the name of a playlist is specified by the unique path, e.g., /someFolderA/someFolderB/playlistA"
@@ -558,6 +563,7 @@ void TraktorFeature::parsePlaylistEntries(QXmlStreamReader &xml,QString playlist
     }
 
 }
+
 void TraktorFeature::clearTable(QString table_name)
 {
     QSqlQuery query(m_database);
@@ -569,6 +575,7 @@ void TraktorFeature::clearTable(QString table_name)
     else
         qDebug() << "Traktor table entries of '" << table_name <<"' have been cleared.";
 }
+
 QString TraktorFeature::getTraktorMusicDatabase()
 {
     QString musicFolder;
@@ -586,9 +593,8 @@ QString TraktorFeature::getTraktorMusicDatabase()
 #endif
     qDebug() << "Traktor Library Location=[" << musicFolder << "]";
     return musicFolder;
-
-
 }
+
 void TraktorFeature::onTrackCollectionLoaded()
 {
     TreeItem* root = m_future.result();

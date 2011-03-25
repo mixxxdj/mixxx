@@ -460,8 +460,14 @@ bool MidiScriptEngine::safeExecute(QString function, const unsigned char data[],
     if (!scriptFunction.isFunction())
         return false;
 
-    QByteArray temp((const char*)data, length);
-    QString buffer = QString(temp);
+    // These funky conversions are required in order to
+    //  get the byte array into ECMAScript complete and unharmed.
+    //  Don't change this or I will hurt you -- Sean
+    QVector<QChar> temp(length);
+    for (int i=0; i < length; i++) {
+        temp[i]=data[i];
+    }
+    QString buffer = QString(temp.constData(),length);
     QScriptValueList args;
     args << QScriptValue(buffer);
     args << QScriptValue(length);
