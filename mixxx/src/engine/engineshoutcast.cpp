@@ -498,8 +498,15 @@ bool EngineShoutcast::metaDataHasChanged()
         return false;
 
     if ( m_pMetaData ) {
-        if (pTrack->getId() == m_pMetaData->getId())
+        if ((pTrack->getId() == -1) || (m_pMetaData->getId() == -1)) {
+            if ((pTrack->getArtist() == m_pMetaData->getArtist()) &&
+                (pTrack->getTitle() == m_pMetaData->getArtist())) {
+                return false;
+            }
+        }
+        else if (pTrack->getId() == m_pMetaData->getId()) {
             return false;
+        }
     }
 
     m_pMetaData = pTrack;
