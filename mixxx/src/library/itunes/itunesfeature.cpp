@@ -566,6 +566,7 @@ void ITunesFeature::clearTable(QString table_name) {
     else
         qDebug() << "iTunes table entries of '" << table_name <<"' have been cleared.";
 }
+
 void ITunesFeature::onTrackCollectionLoaded(){
     TreeItem* root = m_future.result();
     if(root){

@@ -186,6 +186,10 @@ class Qt(Dependence):
         if not build.platform_is_windows and not (using_104_sdk or compiling_on_104):
             build.env.Append(LINKFLAGS = "-Wl,-rpath,$QTDIR/lib")
 
+        #QtSQLite DLL
+        if build.platform_is_windows:
+            build.flags['sqlitedll'] = util.get_flags(build.env, 'sqlitedll', 1)
+
 
 class FidLib(Dependence):
 
@@ -525,6 +529,7 @@ class MixxxCore(Feature):
                    "skin/skinloader.cpp",
                    "skin/legacyskinparser.cpp",
                    "skin/colorschemeparser.cpp",
+                   "skin/propertybinder.cpp",
 
 
                    "sampleutil.cpp",

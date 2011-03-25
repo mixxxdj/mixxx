@@ -14,7 +14,7 @@
 // allows the track reference count to drop to zero. The track cache basically
 // functions to hold a reference to the track so its reference count stays above
 // 0.
-#define TRACK_CACHE_SIZE 50
+#define TRACK_CACHE_SIZE 5
 
 TrackDAO::TrackDAO(QSqlDatabase& database, CueDAO& cueDao, ConfigObject<ConfigValue> * pConfig)
         : m_database(database),

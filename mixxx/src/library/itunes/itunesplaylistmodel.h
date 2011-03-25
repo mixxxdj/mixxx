@@ -49,7 +49,6 @@ class ITunesPlaylistModel : public BaseSqlTableModel, public virtual TrackModel
   private:
     TrackCollection* m_pTrackCollection;
     QSqlDatabase &m_database;
-    QString m_currentSearch;
 };
 
 #endif /* ITUNES_PLAYLIST_MODEL_H */
