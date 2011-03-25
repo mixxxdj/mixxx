@@ -19,6 +19,7 @@
 #include "playerinfo.h"
 #include "controlobject.h"
 #include "controlobjectthread.h"
+#include "engine/enginexfader.h"
 
 PlayerInfo::PlayerInfo()
 {
@@ -89,10 +90,10 @@ int PlayerInfo::getCurrentPlayingDeck()
 
     for (i = 1; i <= m_iNumDecks; i++) {
         QString chan = QString("[Channel%1]").arg(i);
-        int fvol;
-        int xfvol;
-        int dvol;
-
+        float fvol;
+        float xfl, xfr, xfvol;
+        float dvol;
+        int orient;
 
         if ( m_listCOPlay[chan]->get() == 0.0 )
             continue;
@@ -102,8 +103,18 @@ int PlayerInfo::getCurrentPlayingDeck()
 
         if ((fvol = m_listCOVolume[chan]->get()) == 0.0 )
             continue;
-        
-        xfvol = abs(1 - m_listCOOrientation[chan]->get() - m_COxfader->get());
+
+        EngineXfader::getXfadeGains(xfl, xfr, m_COxfader->get(), 1.0, 0.0);
+
+        // Orientation goes: left is 0, center is 1, right is 2. 
+        // Leave math out of it...
+        orient = m_listCOOrientation[chan]->get();
+        if ( orient == 0 )
+            xfvol = xfl;
+        else if ( orient == 2 )
+            xfvol = xfr;
+        else
+            xfvol = 1;
 
         dvol = fvol * xfvol;
         if ( dvol > MaxVolume ) {
