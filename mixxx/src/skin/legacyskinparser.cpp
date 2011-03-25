@@ -22,6 +22,7 @@
 
 #include "skin/legacyskinparser.h"
 #include "skin/colorschemeparser.h"
+#include "skin/propertybinder.h"
 
 #include "widget/wwidget.h"
 #include "widget/wabstractcontrol.h"
@@ -861,9 +862,9 @@ void LegacySkinParser::setupWidget(QDomNode node, QWidget* pWidget) {
     }
 
     QString style = XmlParse::selectNodeQString(node, "Style");
-    if (style != "")
+    if (style != "") {
         pWidget->setStyleSheet(style);
-
+    }
 }
 
 void LegacySkinParser::setupConnections(QDomNode node, QWidget* pWidget) {
@@ -881,19 +882,21 @@ void LegacySkinParser::setupConnections(QDomNode node, QWidget* pWidget) {
         ControlObject * control = ControlObject::getControl(configKey);
 
         if (control == NULL) {
-            qWarning() << "Requested control does not exist:" << key;
-            con = con.nextSibling();
-            continue;
+            qWarning() << "Requested control does not exist:" << key << ". Creating it.";
+            control = new ControlObject(configKey);
         }
 
-        if (!XmlParse::selectNode(con, "OnOff").isNull() &&
-            XmlParse::selectNodeQString(con, "OnOff")=="true")
-        {
+        QString property = XmlParse::selectNodeQString(con, "BindProperty");
+        if (property != "") {
+            qDebug() << "Making property binder for" << property;
+            // Bind this control to a property. Not leaked because it is
+            // parented to the widget and so it dies with it.
+            new PropertyBinder(pWidget, property, control);
+        } else if (!XmlParse::selectNode(con, "OnOff").isNull() &&
+            XmlParse::selectNodeQString(con, "OnOff")=="true") {
             // Connect control proxy to widget
             (new ControlObjectThreadWidget(control))->setWidgetOnOff(pWidget);
-        }
-        else
-        {
+        } else {
             // Get properties from XML, or use defaults
             bool bEmitOnDownPress = true;
             if (XmlParse::selectNodeQString(con, "EmitOnDownPress").contains("false", Qt::CaseInsensitive))
