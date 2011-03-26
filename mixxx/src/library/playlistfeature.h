@@ -33,7 +33,7 @@ public:
     bool dragMoveAcceptChild(const QModelIndex& index, QUrl url);
 
     TreeItemModel* getChildModel();
- 
+
     void bindWidget(WLibrarySidebar* sidebarWidget,
                     WLibrary* libraryWidget,
                     MixxxKeyboard* keyboard);
@@ -49,20 +49,23 @@ public slots:
 
     void slotCreatePlaylist();
     void slotDeletePlaylist();
+    void slotAddToAutoDJ();
     void slotRenamePlaylist();
     void slotTogglePlaylistLock();
     void slotImportPlaylist();
     void slotExportPlaylist();
 
+
  private:
     void constructChildModel();
     void clearChildModel();
-    
+
     PlaylistTableModel* m_pPlaylistTableModel;
     PlaylistDAO &m_playlistDao;
     TrackDAO &m_trackDao;
     QAction *m_pCreatePlaylistAction;
     QAction *m_pDeletePlaylistAction;
+    QAction *m_pAddToAutoDJAction;
     QAction *m_pRenamePlaylistAction;
     QAction *m_pLockPlaylistAction;
     QAction *m_pImportPlaylistAction;
