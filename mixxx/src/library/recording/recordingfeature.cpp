@@ -23,12 +23,7 @@ const QString RecordingFeature::m_sRecordingViewName = QString("Recording");
 RecordingFeature::RecordingFeature(QObject* parent, ConfigObject<ConfigValue>* pConfig, TrackCollection* pTrackCollection)
         : LibraryFeature(parent),
           m_pConfig(pConfig),
-          m_browseModel(this),
-          m_proxyModel(&m_browseModel),
           m_pTrackCollection(pTrackCollection) {
-
-    m_proxyModel.setFilterCaseSensitivity(Qt::CaseInsensitive);
-    m_proxyModel.setSortCaseSensitivity(Qt::CaseInsensitive);
 
 }
 
@@ -92,4 +87,7 @@ void RecordingFeature::onRightClick(const QPoint& globalPos) {
 }
 
 void RecordingFeature::onRightClickChild(const QPoint& globalPos, QModelIndex index) {
+}
+void RecordingFeature::onLazyChildExpandation(const QModelIndex &index){
+    //Nothing to do here since we have no child models
 }
