@@ -150,7 +150,7 @@ void DlgAutoDJ::shufflePlaylist(bool buttonChecked)
     Q_UNUSED(buttonChecked);
 
     qDebug() << "Shuffling AutoDJ playlist";
-    m_pAutoDJTableModel->shuffleTracks();
+    m_pAutoDJTableModel->shuffleTracks(m_pAutoDJTableModel->index(0, 0));
     qDebug() << "Shuffling done";
 }
 

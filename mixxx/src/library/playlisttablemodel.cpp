@@ -288,20 +288,22 @@ void PlaylistTableModel::moveTrack(const QModelIndex& sourceIndex, const QModelI
     select();
 }
 
-void PlaylistTableModel::shuffleTracks()
+void PlaylistTableModel::shuffleTracks(const QModelIndex& currentIndex)
 {
     int numOfTracks = rowCount();
     int seed = QDateTime::currentDateTime().toTime_t();
     qsrand(seed);
     QSqlQuery query;
-    int minPosition = 1;
+    const int positionColumnIndex = fieldIndex(PLAYLISTTRACKSTABLE_POSITION);
+    int currentPosition = currentIndex.sibling(currentIndex.row(), positionColumnIndex).data().toInt();
+    int shuffleStartIndex = currentPosition + 1;
     
     m_pTrackCollection->getDatabase().transaction();
 
     // This is a simple Fisher-Yates shuffling algorithm
-    for (int i=numOfTracks-1; i > 0; i--)
+    for (int i=numOfTracks-1; i >= shuffleStartIndex; i--)
     {
-        int random = int(qrand() / (RAND_MAX + 1.0) * (numOfTracks) + minPosition);
+        int random = int(qrand() / (RAND_MAX + 1.0) * (numOfTracks + 1 - shuffleStartIndex) + shuffleStartIndex);
         qDebug() << "Swapping tracks " << i << " and " << random;
         QString swapQuery = "UPDATE PlaylistTracks SET position=%1 WHERE position=%2 AND playlist_id=%3";
         query.exec(swapQuery.arg(-1).arg(i).arg(m_iPlaylistId));
