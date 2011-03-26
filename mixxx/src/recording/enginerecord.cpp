@@ -28,13 +28,13 @@
 #endif
 
 /***************************************************************************
- *									   *
- * Notice To Future Developpers:					   *
- * 	There is code here to write the file in a seperate thread	   *
- * 	however it is unstable and has been abondoned.  Its only use	   *
- * 	was to support low priority recording, however I don't think its   *
- * 	worth the trouble.						   *
- * 									   *
+ *                                                                         *
+ * Notice To Future Developpers:                                           *
+ * 	There is code here to write the file in a seperate thread              *
+ * 	however it is unstable and has been abondoned.  Its only use           *
+ * 	was to support low priority recording, however I don't think its       *
+ * 	worth the trouble.                                                     *
+ *                                                                         *
  ***************************************************************************/
 
 EngineRecord::EngineRecord(ConfigObject<ConfigValue> * _config)
@@ -116,8 +116,9 @@ void EngineRecord::process(const CSAMPLE * pIn, const CSAMPLE * pOut, const int 
 {
     //if recording is disabled
     if(m_recReady->get() == RECORD_OFF){
+        //qDebug("Setting record flag to: OFF");
         if(fileOpen()){
-            closeFile();	//close file and free encoder
+            closeFile();    //close file and free encoder
         }
     }
     //if we are ready for recording, i.e, the output file has been selected, we open a new file
@@ -153,13 +154,13 @@ void EngineRecord::write(unsigned char *header, unsigned char *body,
 {
     if(!fileOpen()){
         return;
-		}
-		//Relevant for OGG
-		if(headerLen > 0){
+    }
+    //Relevant for OGG
+    if(headerLen > 0){
         m_datastream.writeRawData((const char*) header, headerLen);
-		}
-		//always write body
-		m_datastream.writeRawData((const char*) body, bodyLen);
+    }
+    //always write body
+    m_datastream.writeRawData((const char*) body, bodyLen);
 
 }
 bool EngineRecord::fileOpen(){

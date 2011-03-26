@@ -10,7 +10,7 @@
 BrowseThread::BrowseThread(QObject *parent)
         : QThread(parent),
           m_bStopThread(false) {
-    //QObject::moveToThread(this);
+
 }
 
 BrowseThread::~BrowseThread() {
@@ -134,4 +134,5 @@ void BrowseThread::populateModel() {
         msleep(20);
     }
     emit(rowsAppended(rows));
+    m_path = "";
 }
