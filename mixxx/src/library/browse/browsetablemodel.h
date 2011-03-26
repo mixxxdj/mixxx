@@ -23,22 +23,28 @@ const int COLUMN_KEY = 10;
 const int COLUMN_TYPE = 11;
 const int COLUMN_BITRATE = 12;
 const int COLUMN_LOCATION = 13;
-
+/*
+ * The BrowseTable models displays tracks
+ * of given directory on the HDD.
+ * The class is realized as sigleton because
+ * the 'recording' feature uses the BrowseTableModel, too.
+ * This simply does not create two BrowseThreads
+ */
 class BrowseTableModel : public QStandardItemModel, public TrackModel
 {
     
     Q_OBJECT
     public:
-        BrowseTableModel(QObject* parent);
-        ~BrowseTableModel();
-
         void setPath(QString absPath);
         //reimplemented from TrackModel class
         virtual TrackPointer getTrack(const QModelIndex& index) const;
         virtual QString getTrackLocation(const QModelIndex& index) const;
         virtual int getTrackId(const QModelIndex& index) const;
         virtual int getTrackRow(int trackId) const;
-    
+
+        static BrowseTableModel* getInstance();
+        static void destroyInstance();
+
         virtual void search(const QString& searchText);
         virtual void removeTrack(const QModelIndex& index);
         virtual void removeTracks(const QModelIndexList& indices);
@@ -51,10 +57,14 @@ class BrowseTableModel : public QStandardItemModel, public TrackModel
         virtual bool isColumnHiddenByDefault(int column);
         virtual const QList<int>& searchColumns() const;
     private:
-       void addSearchColumn(int index);
+        BrowseTableModel(QObject* parent);
+        virtual ~BrowseTableModel();
+
+        void addSearchColumn(int index);
 
         BrowseThread m_backgroundThread;
         QList<int> m_searchColumns;
+        static BrowseTableModel* m_instance;
     public slots:
        void slotClear();
        void slotInsert(const QList< QList<QStandardItem*> >&);
