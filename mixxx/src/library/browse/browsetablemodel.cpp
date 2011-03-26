@@ -9,6 +9,8 @@
 #include "soundsourceproxy.h"
 #include "mixxxutils.cpp"
 
+BrowseTableModel* BrowseTableModel::m_instance = 0;
+
 BrowseTableModel::BrowseTableModel(QObject* parent)
         : QStandardItemModel(parent),
           TrackModel(QSqlDatabase::database("QSQLITE"),
@@ -42,18 +44,41 @@ BrowseTableModel::BrowseTableModel(QObject* parent)
 
     setHorizontalHeaderLabels(header_data);
     //register the QList<T> as a metatype since we use QueuedConnection below
-    qRegisterMetaType< QList<QStandardItem*> >("QList<QStandardItem*>");
+    qRegisterMetaType< QList< QList<QStandardItem*> > >("QList< QList<QStandardItem*> >");
 
     QObject::connect(&m_backgroundThread, SIGNAL(clearModel()),
                      this, SLOT(slotClear()), Qt::BlockingQueuedConnection);
-    QObject::connect(&m_backgroundThread, SIGNAL(rowDataAppended(const QList<QStandardItem*>&)),
-            this, SLOT(slotInsert(const QList<QStandardItem*>&)), Qt::BlockingQueuedConnection);
+
+    QObject::connect(&m_backgroundThread, SIGNAL(rowsAppended(const QList< QList<QStandardItem*> >&)),
+            this, SLOT(slotInsert(const QList< QList<QStandardItem*> >&)), Qt::BlockingQueuedConnection);
 
 }
 
 BrowseTableModel::~BrowseTableModel()
 {
 
+}
+BrowseTableModel* BrowseTableModel::getInstance()
+{
+    static QMutex mutex;
+    if (!m_instance)
+    {
+        mutex.lock();
+
+        if (!m_instance)
+            m_instance = new BrowseTableModel(0);
+
+        mutex.unlock();
+    }
+    return m_instance;
+}
+void BrowseTableModel::destroyInstance()
+{
+    static QMutex mutex;
+    mutex.lock();
+    delete m_instance;
+    m_instance = 0;
+    mutex.unlock();
 }
 
 const QList<int>& BrowseTableModel::searchColumns() const {
@@ -65,22 +90,13 @@ void BrowseTableModel::addSearchColumn(int index) {
 void BrowseTableModel::setPath(QString absPath)
 {
    m_backgroundThread.setPath(absPath);
+
 }
 
 TrackPointer BrowseTableModel::getTrack(const QModelIndex& index) const
 {
     TrackInfoObject* tio = new TrackInfoObject(getTrackLocation(index));
     return TrackPointer(tio, &QObject::deleteLater);
-}
-
-int BrowseTableModel::getTrackId(const QModelIndex& index) const {
-    // We can't implement this as it stands.
-    return -1;
-}
-
-int BrowseTableModel::getTrackRow(int trackId) const {
-    // We can't implement this as it stands.
-    return -1;
 }
 
 QString BrowseTableModel::getTrackLocation(const QModelIndex& index) const
@@ -91,7 +107,15 @@ QString BrowseTableModel::getTrackLocation(const QModelIndex& index) const
     return data(index2).toString();
 
 }
+int BrowseTableModel::getTrackId(const QModelIndex& index) const {
+    // We can't implement this as it stands.
+    return -1;
+}
 
+int BrowseTableModel::getTrackRow(int trackId) const {
+    // We can't implement this as it stands.
+    return -1;
+}
 void BrowseTableModel::search(const QString& searchText)
 {
 
@@ -164,9 +188,10 @@ void BrowseTableModel::slotClear()
     removeRows(0, rowCount());
 }
 
-void BrowseTableModel::slotInsert(const QList<QStandardItem*> &column_data)
-{
-    appendRow(column_data);
-    //Does not work for some reason
-    //setItem(row, column, item);
+
+void BrowseTableModel::slotInsert(const QList< QList<QStandardItem*> >& rows){
+    qDebug() << "BrowseTableModel::slotInsert";
+    for(int i=0; i < rows.size(); ++i){
+        appendRow(rows.at(i));
+    }
 }

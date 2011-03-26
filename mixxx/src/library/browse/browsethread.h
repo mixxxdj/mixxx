@@ -17,7 +17,7 @@ class BrowseThread : public QThread {
     void run();
 
   signals:
-    void rowDataAppended(const QList<QStandardItem*>&);
+    void rowsAppended(const QList< QList<QStandardItem*> >&);
     void clearModel();
 
   private:

@@ -42,13 +42,15 @@ class BrowseFeature : public LibraryFeature {
     void onRightClick(const QPoint& globalPos);
     void onRightClickChild(const QPoint& globalPos, QModelIndex index);
 
-  signals:
+    void onLazyChildExpandation(const QModelIndex& index);
+  
+   signals:
     void setRootIndex(const QModelIndex&);
 
   private:
     ConfigObject<ConfigValue>* m_pConfig;
-    BrowseTableModel m_browseModel;
-    ProxyTrackModel m_proxyModel;
+    BrowseTableModel* m_browseModel;
+    ProxyTrackModel* m_proxyModel;
     TrackCollection* m_pTrackCollection;
     FolderTreeModel m_childModel;
     QString m_currentSearch;
