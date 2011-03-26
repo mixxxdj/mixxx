@@ -348,7 +348,7 @@ void PlaylistFeature::constructChildModel()
 {
     QList<TreeItem*> data_list;
     int nameColumn = m_playlistTableModel.record().indexOf("name");
-    int idColumn = m_playlistTableModel.record().indexOf("name");
+    int idColumn = m_playlistTableModel.record().indexOf("id");
 
     //Access the invisible root item
     TreeItem* root = m_childModel.getItem(QModelIndex());
