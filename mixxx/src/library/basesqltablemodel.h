@@ -44,6 +44,7 @@ class BaseSqlTableModel : public QAbstractTableModel {
     virtual void setSort(int column, Qt::SortOrder order);
     virtual int fieldIndex(const QString& fieldName) const;
     virtual void select();
+    virtual void setLibraryPrefix(QString sPrefix);
 
   protected:
     // Returns the row of trackId in this result set. If trackId is not present,
@@ -61,8 +62,7 @@ class BaseSqlTableModel : public QAbstractTableModel {
     virtual Qt::ItemFlags readWriteFlags(const QModelIndex &index) const;
     /** calls readWriteFlags() by default */
     virtual Qt::ItemFlags flags(const QModelIndex &index) const;
-    virtual void setLibraryPrefix(QString sPrefix);
-
+    
     // Set the columns used for searching. Names must correspond to the column
     // names in the table provided to setTable. Must be called after setTable is
     // called.
