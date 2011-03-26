@@ -210,6 +210,7 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
 
 EngineBuffer::~EngineBuffer()
 {
+	//close the writer
 	//df.close();
     delete m_pLoopingControl;
     delete m_pRateControl;
@@ -714,54 +715,53 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
     {
     	m_iRampState = ENGINE_RAMP_DOWN;
     }
-    else //we are playing
+    else //we are not changing state
     {
     	//make sure we aren't accidentally ramping down
-    	if (fabs(rate) > 0.005 && m_iRampState == ENGINE_RAMP_DOWN)
+    	//this is how we make sure that ramp value will become 1.0 eventually
+    	if (fabs(rate) > 0.005 && m_iRampState != ENGINE_RAMP_UP && m_fRampValue < 1.0)
     		m_iRampState = ENGINE_RAMP_UP;
     }
     
-    if (m_iRampState != ENGINE_RAMP_NONE)
-    { 
-		//let's try holding the last sample value constant, and pull it
-		//towards zero
-		float ramp_inc = 0;
-		if (m_iRampState == ENGINE_RAMP_UP) 
-			ramp_inc = (m_iRampState * 0.2) / iBufferSize; //ramp up quickly
-		else 
-			ramp_inc = (m_iRampState * 0.08) / iBufferSize; //but down slowly
-		
-		//float fakerate = rate * 30000 == 0 ? -5000 : rate*30000;
-    	for (int i=0; i<iBufferSize; i+=2)
+	//let's try holding the last sample value constant, and pull it
+	//towards zero
+	float ramp_inc = 0;
+	if (m_iRampState == ENGINE_RAMP_UP) 
+		ramp_inc = (m_iRampState * 0.2) / iBufferSize; //ramp up quickly (5 frames)
+	else if (m_iRampState == ENGINE_RAMP_DOWN)
+		ramp_inc = (m_iRampState * 0.08) / iBufferSize; //but down slowly
+	
+	//float fakerate = rate * 30000 == 0 ? -5000 : rate*30000;
+	for (int i=0; i<iBufferSize; i+=2)
+	{
+		if (bCurBufferPaused)
 		{
 			float dither = (float)(rand() % 32768) / 32768 - 0.5; // dither
 			pOutput[i] = m_fLastSampleValue[0] * m_fRampValue + dither;
 			pOutput[i+1] = m_fLastSampleValue[1] * m_fRampValue + dither;
-			
-			//writer << pOutput[i] << "," << fakerate << "," <<  m_fRampValue * 1000 <<"," <<m_iRampState * 10000 <<"\n";
-			m_fRampValue += ramp_inc;
-			if (m_fRampValue >= 1.0)
-			{
-				m_iRampState = ENGINE_RAMP_NONE;
-				m_fRampValue = 1.0;
-			}
-			if (m_fRampValue <= 0.0)
-			{
-				m_iRampState = ENGINE_RAMP_NONE;
-				m_fRampValue = 0.0;
-			}
+		}
+		else
+		{
+			pOutput[i] = pOutput[i] * m_fRampValue;
+			pOutput[i+1] = pOutput[i+1] * m_fRampValue;
+		}
+		
+		//writer << pOutput[i] << "," << fakerate << "," <<  m_fRampValue * 1000 <<"," <<m_iRampState * 10000 << "," << m_fLastSampleValue[0] << "\n";
+		m_fRampValue += ramp_inc;
+		if (m_fRampValue >= 1.0)
+		{
+			m_iRampState = ENGINE_RAMP_NONE;
+			m_fRampValue = 1.0;
+		}
+		if (m_fRampValue <= 0.0)
+		{
+			m_iRampState = ENGINE_RAMP_NONE;
+			m_fRampValue = 0.0;
 		}
 	}
-	/*else
-	{
-		float fakerate = rate * 30000 == 0 ? -5000 : rate*30000;
-		for (int i=0; i<iBufferSize; i+=2)
-		{	
-			writer << pOutput[i] << "," << fakerate << "," <<  m_fRampValue * 1000 << "," << m_iRampState * 10000 <<"\n";
-		}
-	}*/
 	
-	if (m_iRampState == ENGINE_RAMP_NONE)
+	if ((!bCurBufferPaused && m_iRampState == ENGINE_RAMP_NONE) ||
+		(bCurBufferPaused && m_fRampValue == 0.0))
 	{
 		m_fLastSampleValue[0] = pOutput[iBufferSize-2];
     	m_fLastSampleValue[1] = pOutput[iBufferSize-1];
