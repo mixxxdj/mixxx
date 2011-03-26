@@ -20,7 +20,7 @@
 #include <QtDebug>
 
 
-SoundSourceMp3::SoundSourceMp3(QString qFilename) : 
+SoundSourceMp3::SoundSourceMp3(QString qFilename) :
         Mixxx::SoundSource(qFilename),
         m_file(qFilename)
 {
@@ -131,24 +131,21 @@ int SoundSourceMp3::open()
         p->m_pStreamPos = (unsigned char *)Stream->this_frame;
         p->pos = length();
         m_qSeekList.append(p);
-
         currentframe++;
     }
     //qDebug() << "channels " << m_iChannels;
 
-    // Find average frame size
-    if(currentframe)
-        m_iAvgFrameSize = length()/currentframe;
-    else
-        m_iAvgFrameSize = 0;
-
     mad_header_finish (&Header); // This is a macro for nothing.
 
-    if (currentframe==0)
-        bitrate = 0;
-    else
-        bitrate = bitrate/currentframe;
+    // This is not a working MP3 file.
+    if (currentframe == 0) {
+        return ERR;
+    }
 
+    // Find average frame size
+    m_iAvgFrameSize = (currentframe == 0) ? 0 : length()/currentframe;
+    // And average bitrate
+    bitrate = (currentframe == 0) ? 0 : bitrate / currentframe;
     framecount = currentframe;
     currentframe = 0;
 
@@ -179,10 +176,16 @@ int SoundSourceMp3::open()
     return OK;
 }
 
-long SoundSourceMp3::seek(long filepos)
-{
+bool SoundSourceMp3::isValid() const {
+    return framecount > 0;
+}
+
+long SoundSourceMp3::seek(long filepos) {
     // Ensure that we are seeking to an even filepos
     Q_ASSERT(filepos%2==0);
+
+    if (!isValid())
+        return 0;
 
 //     qDebug() << "SEEK " << filepos;
 
@@ -344,6 +347,9 @@ long SoundSourceMp3::seek(long filepos)
 
 inline long unsigned SoundSourceMp3::length()
 {
+    if (!isValid())
+        return 0;
+
     enum mad_units units;
 
     switch (m_iSampleRate)
@@ -391,6 +397,9 @@ inline long unsigned SoundSourceMp3::length()
 
 unsigned long SoundSourceMp3::discard(unsigned long samples_wanted)
 {
+    if (!isValid())
+        return 0;
+
     unsigned long Total_samples_decoded = 0;
     int no;
 
@@ -430,6 +439,9 @@ unsigned long SoundSourceMp3::discard(unsigned long samples_wanted)
  */
 unsigned SoundSourceMp3::read(unsigned long samples_wanted, const SAMPLE * _destination)
 {
+    if (!isValid())
+        return 0;
+
     // Ensure that we are reading an even number of samples. Otherwise this function may
     // go into an infinite loop
     Q_ASSERT(samples_wanted%2==0);
@@ -555,9 +567,9 @@ int SoundSourceMp3::parseHeader()
 		/* From Tobias: A Utf-8 string did not work on my Windows XP (German edition)
 		 * If you try this conversion, f.isValid() will return false in many cases
 		 * and processTaglibFile() will fail
-		 * 
-		 * The method toLocal8Bit() returns the local 8-bit representation of the string as a QByteArray. 
-		 * The returned byte array is undefined if the string contains characters not supported 
+		 *
+		 * The method toLocal8Bit() returns the local 8-bit representation of the string as a QByteArray.
+		 * The returned byte array is undefined if the string contains characters not supported
 		 * by the local 8-bit encoding.
 		 */
 		TagLib::MPEG::File f(getFilename().toLocal8Bit().constData());
@@ -582,50 +594,6 @@ int SoundSourceMp3::parseHeader()
     if (result)
         return OK;
     return ERR;
-}
-
-void SoundSourceMp3::getField(id3_tag * tag, const char * frameid, QString * str)
-{
-    // fetches the 0th frame from tag with frameid
-    id3_frame * frame = id3_tag_findframe(tag, frameid, 0);
-    if (frame)
-    {
-        id3_utf16_t* framestr = NULL;
-
-        // Unicode handling of various fields
-
-        if (strcmp(frameid, "COMM") == 0) {
-            id3_ucs4_t const* comment = id3_field_getfullstring(&frame->fields[3]);
-            if (!comment)
-                return;
-            framestr = id3_ucs4_utf16duplicate(comment);
-        }
-        else if (id3_field_getnstrings(&frame->fields[1])>0)
-        {
-            //Shitty genre tag handling, thanks libid3tag!
-            if (strcmp(frameid, "TCON") == 0)
-            {
-                id3_ucs4_t const* genre = id3_genre_name(id3_field_getstrings(&frame->fields[1], 0));
-                framestr = id3_ucs4_utf16duplicate(genre);
-            }
-            else
-                framestr = id3_ucs4_utf16duplicate(id3_field_getstrings(&frame->fields[1], 0));
-        }
-
-        if (!framestr)
-            return;
-
-        int strlen = 0; while (framestr[strlen]!=0) strlen++;
-        if (strlen>0) {
-            str->setUtf16((ushort *)framestr,strlen);
-            //The ID3 specification says that a tag can contain a UTF-16 byte-order-mark (BOM). If we don't
-            //remove these by hand, they will end up in strange places like our library XML file and
-            //break it. :/ Conclusion: libid3tag sucks.
-            *str = str->remove(QChar(QChar::ByteOrderMark));
-            *str = str->remove(QChar(QChar::ByteOrderSwapped));
-        }
-        free(framestr);
-    }
 }
 
 int SoundSourceMp3::findFrame(int pos)
