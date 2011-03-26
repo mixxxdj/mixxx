@@ -536,6 +536,9 @@ MixxxApp::~MixxxApp()
     // stuff. We only really want to save it here, but the first one was just
     // a precaution. The earlier one can be removed when stuff is more stable
     // at exit.
+
+    //Disable shoutcast so when Mixxx starts again it will not connect
+    m_pConfig->set(ConfigKey("[Shoutcast]", "enabled"),0);
     m_pConfig->Save();
     delete m_pPrefDlg;
 
@@ -1330,8 +1333,12 @@ void MixxxApp::slotOptionsMenuShow(){
 
     if(ctrlRec->get() == RECORD_OFF){
         //uncheck Recording
-    m_pOptionsRecord->setChecked(false);
+        m_pOptionsRecord->setChecked(false);
     }
+    else{
+        m_pOptionsRecord->setChecked(true);
+    }
+    delete ctrlRec;
 
 #ifdef __SHOUTCAST__
     bool broadcastEnabled =
