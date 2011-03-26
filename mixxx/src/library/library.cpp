@@ -12,6 +12,7 @@
 #include "library/browse/browsefeature.h"
 #include "library/cratefeature.h"
 #include "library/rhythmbox/rhythmboxfeature.h"
+#include "library/recording/recordingfeature.h"
 #include "library/itunes/itunesfeature.h"
 #include "library/mixxxlibraryfeature.h"
 #include "library/autodjfeature.h"
@@ -57,6 +58,7 @@ Library::Library(QObject* parent, ConfigObject<ConfigValue>* pConfig, bool first
     m_pCrateFeature = new CrateFeature(this, m_pTrackCollection);
     addFeature(m_pCrateFeature);
     addFeature(new BrowseFeature(this, pConfig, m_pTrackCollection));
+    addFeature(new RecordingFeature(this, pConfig, m_pTrackCollection));
     addFeature(new PrepareFeature(this, pConfig, m_pTrackCollection));
     //iTunes and Rhythmbox should be last until we no longer have an obnoxious
     //messagebox popup when you select them. (This forces you to reach for your

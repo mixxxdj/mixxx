@@ -456,6 +456,8 @@ class MixxxCore(Feature):
                    "library/browse/browsethread.cpp",
                    "library/browse/browsefeature.cpp",
                    "library/browse/foldertreemodel.cpp",
+                   
+                   "library/recording/recordingfeature.cpp",
 
                    # External Library Features
                    "library/rhythmbox/rhythmboxfeature.cpp",
