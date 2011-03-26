@@ -196,8 +196,9 @@ void BeatMatrix::addBeat(double dBeatSample) {
                                         dBeatSample);
     // Don't insert a duplicate beat. TODO(XXX) determine what epsilon to
     // consider a beat identical to another.
-    if (*it == dBeatSample)
-        return;
+    //
+    //if (*it == dBeatSample)
+    //    return;
 
     m_beatList.insert(it, dBeatSample);
     locker.unlock();

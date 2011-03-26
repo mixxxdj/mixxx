@@ -743,6 +743,15 @@ CONFIG(script) {
     DEFINES += __MIDISCRIPT__
 }
 
+CONFIG(Vamp) {
+DEFINES += __VAMP__
+HEADERS += $$BASE_DIR/src/vamp/vampanalyser.h \
+    $$BASE_DIR/src/analyservamptest.h
+SOURCES += $$BASE_DIR/src/vamp/vampanalyser.cpp \
+    $$BASE_DIR/src/analyservamptest.cpp
+LIBS += -lvamp-hostsdk -ldl
+}
+
 CONFIG(tonal) {
 #    DEFINES +=
     HEADERS += $$BASE_DIR/src/tonal/ChordCorrelator.hxx \

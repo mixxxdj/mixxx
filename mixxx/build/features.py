@@ -323,6 +323,46 @@ class Tonal(Feature):
                    'tonal/ConstantQFolder.cxx']
         return sources
 
+class Vamp(Feature):
+    def description(self):
+        return "Experimental Vamp Analysers support"
+
+    def enabled(self, build):
+        build.flags['Vamp'] = util.get_flags(build.env, 'Vamp', 0)
+        if int(build.flags['Vamp']):
+            return True
+        return False
+
+    def add_options(self, build, vars):
+        vars.Add('Vamp', '(EXPERIMENTAL) Set to 1 to enable vamp analysers', 0)
+
+    def configure(self, build, conf):
+        if not self.enabled(build):
+            return
+        
+        #if build.platform_is_windows:
+            #build.env.Append(LIBS = 'gpod');
+            # You must check v-this-v directory out from http://publicsvn.songbirdnest.com/vendor-binaries/trunk/windows-i686-msvc8/libgpod/
+            #build.env.Append(LIBPATH='../../../windows-i686-msvc8/libgpod/release/lib')
+            # Following building the following must be added to the dist folder in order for mixxx to run with ipod support on Windows
+            # \windows-i686-msvc8\libgpod\release\lib\libgpod.dll
+            # \windows-i686-msvc8\glib\release\bin\libgobject-2.0-0.dll
+            # \windows-i686-msvc8\glib\release\bin\libglib-2.0-0.dll
+            # \windows-i686-msvc8\libiconv\release\bin\iconv.dll
+            # \windows-i686-msvc8\gettext\release\binintl.dll
+        if build.platform_is_linux or build.platform_is_osx:
+            build.env.ParseConfig('pkg-config vamp-hostsdk --silence-errors --cflags --libs')
+            
+            have_vamphostsdk = conf.CheckLib(['vamp-hostsdk'], autoadd=False)
+            
+            if not have_vamphostsdk:
+                raise Exception ('Could not find vamp-hostsdk development headers')
+              
+    def sources(self, build):
+        sources = ['vamp/vampanalyser.cpp',
+                   'analyservamptest.cpp']
+        return sources
+
 class FAAD(Feature):
     def description(self):
         return "FAAD AAC audio file decoder plugin"
