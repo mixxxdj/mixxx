@@ -47,7 +47,7 @@ DlgRecording::DlgRecording(QWidget* parent, ConfigObject<ConfigValue>* pConfig, 
     m_pTrackTableView->setSortingEnabled(false);
 
     connect(pushButtonRecording, SIGNAL(toggled(bool)),
-            this,  SLOT(toggleAutoDJ(bool)));
+            this,  SLOT(toggleRecording(bool)));
 
     m_pRecordingCO = new ControlObjectThreadMain(
                             ControlObject::getControl(ConfigKey("[Master]", "Record")));
@@ -130,15 +130,15 @@ void DlgRecording::moveSelection(int delta) {
 
 void DlgRecording::toggleRecording(bool toggle)
 {
-    if (toggle) //Enable Auto DJ
-    {
-        pushButtonRecording->setText(tr("Start Recording"));
-        qDebug() << "Start recording";
-    }
-    else //Disable Auto DJ
+    if (toggle) //If recording is enabled
     {
         pushButtonRecording->setText(tr("Stop Recording"));
         qDebug() << "Stop recording";
+    }
+    else //If recording is disabled
+    {
+        pushButtonRecording->setText(tr("Start Recording"));
+        qDebug() << "Start recording";
 
     }
 }
