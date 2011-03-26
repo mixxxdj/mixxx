@@ -17,18 +17,19 @@ class WaveformRenderer;
 
 class WaveformRenderBackground : public RenderObject {
     Q_OBJECT
-public:
+  public:
     WaveformRenderBackground(const char *group, WaveformRenderer *parent);
     void resize(int w, int h);
     void setup(QDomNode node);
     void draw(QPainter *pPainter, QPaintEvent *event, QVector<float> *buffer, double playPos, double rateAdjust);
     void newTrack(TrackPointer pTrack);
 
-private:
+  private:
     void generatePixmap();
     int m_iWidth, m_iHeight;
     QColor bgColor;
     QPixmap m_backgroundPixmap;
+    QString m_backgroundPixmapPath;
     bool m_bRepaintBackground;
 };
 

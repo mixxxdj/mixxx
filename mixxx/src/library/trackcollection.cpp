@@ -5,7 +5,6 @@
 
 #include "trackcollection.h"
 #include "xmlparse.h"
-#include "trackinfoobject.h"
 #include "defs.h"
 #include "soundsourceproxy.h"
 #include "library/schemamanager.h"
