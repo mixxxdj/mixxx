@@ -72,6 +72,10 @@ const int VINYL_STATUS_OK = 1;
 const int VINYL_STATUS_WARNING = 2;
 const int VINYL_STATUS_ERROR = 3;
 
+const int ENGINE_RAMP_DOWN = -1;
+const int ENGINE_RAMP_NONE = 0;
+const int ENGINE_RAMP_UP = 1;
+
 //const int kiRampLength = 3;
 
 class EngineBuffer : public EngineObject
@@ -231,6 +235,8 @@ private:
     float m_fLastSampleValue[2];
     /** Is true if the previous buffer was silent due to pausing */
     bool m_bLastBufferPaused;
+    float m_fRampValue;
+    int m_iRampState;
     //int m_iRampIter;
 
     TrackPointer m_pCurrentTrack;
