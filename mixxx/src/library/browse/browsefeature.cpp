@@ -17,12 +17,13 @@
 BrowseFeature::BrowseFeature(QObject* parent, ConfigObject<ConfigValue>* pConfig, TrackCollection* pTrackCollection)
         : LibraryFeature(parent),
           m_pConfig(pConfig),
-          m_browseModel(this),
-          m_proxyModel(&m_browseModel),
           m_pTrackCollection(pTrackCollection) {
 
-    m_proxyModel.setFilterCaseSensitivity(Qt::CaseInsensitive);
-    m_proxyModel.setSortCaseSensitivity(Qt::CaseInsensitive);
+    m_browseModel = BrowseTableModel::getInstance();
+    m_proxyModel = new ProxyTrackModel(m_browseModel);
+
+    m_proxyModel->setFilterCaseSensitivity(Qt::CaseInsensitive);
+    m_proxyModel->setSortCaseSensitivity(Qt::CaseInsensitive);
 
     //The invisible root item of the child model
     TreeItem* rootItem = new TreeItem();
@@ -101,7 +102,8 @@ BrowseFeature::BrowseFeature(QObject* parent, ConfigObject<ConfigValue>* pConfig
 }
 
 BrowseFeature::~BrowseFeature() {
-
+    if(m_proxyModel)
+        delete m_proxyModel;
 }
 
 QVariant BrowseFeature::title() {
@@ -135,10 +137,30 @@ bool BrowseFeature::dragMoveAcceptChild(const QModelIndex& index, QUrl url) {
 void BrowseFeature::activate() {
     emit(restoreSearch(m_currentSearch));
 }
-
+/*
+ * Note: This is executed whenever you single click on an child item
+ * Single clicks will not populate sub folders
+ */
 void BrowseFeature::activateChild(const QModelIndex& index) {
     TreeItem *item = static_cast<TreeItem*>(index.internalPointer());
     qDebug() << "BrowseFeature::activateChild " << item->data() << " " << item->dataPath();
+    m_browseModel->setPath(item->dataPath().toString());
+    emit(showTrackModel(m_proxyModel));
+
+}
+
+void BrowseFeature::onRightClick(const QPoint& globalPos) {
+}
+
+void BrowseFeature::onRightClickChild(const QPoint& globalPos, QModelIndex index) {
+}
+/*
+ * This is called whenever you double click or use the triangle symbol to expand
+ * the subtree. The method will read the subfolders.
+ */
+void BrowseFeature::onLazyChildExpandation(const QModelIndex &index){
+    TreeItem *item = static_cast<TreeItem*>(index.internalPointer());
+    qDebug() << "BrowseFeature::onLazyChildExpandation " << item->data() << " " << item->dataPath();
 
     // If the item is a build-in node, e.g., 'QuickLink' return
     if(item->dataPath().toString() == QUICK_LINK_NODE)
@@ -191,13 +213,4 @@ void BrowseFeature::activateChild(const QModelIndex& index) {
     //On Ubuntu 10.04, otherwise, this will draw an icon although the folder has no subfolders
     if(!folders.isEmpty())
        m_childModel.insertRows(folders, 0, folders.size() , index);
-    m_browseModel.setPath(item->dataPath().toString());
-    emit(showTrackModel(&m_proxyModel));
-
-}
-
-void BrowseFeature::onRightClick(const QPoint& globalPos) {
-}
-
-void BrowseFeature::onRightClickChild(const QPoint& globalPos, QModelIndex index) {
 }

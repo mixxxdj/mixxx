@@ -23,41 +23,51 @@ const int COLUMN_KEY = 10;
 const int COLUMN_TYPE = 11;
 const int COLUMN_BITRATE = 12;
 const int COLUMN_LOCATION = 13;
-
-class BrowseTableModel : public QStandardItemModel, public TrackModel {
+/*
+ * The BrowseTable models displays tracks
+ * of given directory on the HDD.
+ * The class is realized as sigleton because
+ * the 'recording' feature uses the BrowseTableModel, too.
+ * This simply does not create two BrowseThreads
+ */
+class BrowseTableModel : public QStandardItemModel, public TrackModel
+{
+    
     Q_OBJECT
-  public:
-    BrowseTableModel(QObject* parent);
-    ~BrowseTableModel();
+    public:
+        void setPath(QString absPath);
+        //reimplemented from TrackModel class
+        virtual TrackPointer getTrack(const QModelIndex& index) const;
+        virtual QString getTrackLocation(const QModelIndex& index) const;
+        virtual int getTrackId(const QModelIndex& index) const;
+        virtual int getTrackRow(int trackId) const;
 
-    void setPath(QString absPath);
-    //reimplemented from TrackModel class
-    virtual TrackPointer getTrack(const QModelIndex& index) const;
-    virtual QString getTrackLocation(const QModelIndex& index) const;
-    virtual int getTrackId(const QModelIndex& index) const;
-    virtual int getTrackRow(int trackId) const;
+        static BrowseTableModel* getInstance();
+        static void destroyInstance();
 
-    virtual void search(const QString& searchText);
-    virtual void removeTrack(const QModelIndex& index);
-    virtual void removeTracks(const QModelIndexList& indices);
-    virtual bool addTrack(const QModelIndex& index, QString location);
-    virtual QMimeData* mimeData(const QModelIndexList &indexes) const;
-    virtual const QString currentSearch();
-    virtual bool isColumnInternal(int);
-    virtual void moveTrack(const QModelIndex&, const QModelIndex&);
-    virtual QItemDelegate* delegateForColumn(const int);
-    virtual bool isColumnHiddenByDefault(int column);
-    virtual const QList<int>& searchColumns() const;
+        virtual void search(const QString& searchText);
+        virtual void removeTrack(const QModelIndex& index);
+        virtual void removeTracks(const QModelIndexList& indices);
+        virtual bool addTrack(const QModelIndex& index, QString location);
+        virtual QMimeData* mimeData(const QModelIndexList &indexes) const;
+        virtual const QString currentSearch();
+        virtual bool isColumnInternal(int);
+        virtual void moveTrack(const QModelIndex&, const QModelIndex&);
+        virtual QItemDelegate* delegateForColumn(const int);
+        virtual bool isColumnHiddenByDefault(int column);
+        virtual const QList<int>& searchColumns() const;
+    private:
+        BrowseTableModel(QObject* parent);
+        virtual ~BrowseTableModel();
 
-  public slots:
-    void slotClear();
-    void slotInsert(const QList<QStandardItem*> &item);
+        void addSearchColumn(int index);
 
-  private:
-    void addSearchColumn(int index);
-
-    BrowseThread m_backgroundThread;
-    QList<int> m_searchColumns;
+        BrowseThread m_backgroundThread;
+        QList<int> m_searchColumns;
+        static BrowseTableModel* m_instance;
+    public slots:
+       void slotClear();
+       void slotInsert(const QList< QList<QStandardItem*> >&);
 };
 
 #endif
