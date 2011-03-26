@@ -90,7 +90,10 @@ EngineMaster::EngineMaster(ConfigObject<ConfigValue> * _config,
     memset(m_pHead, 0, sizeof(CSAMPLE) * MAX_BUFFER_LEN);
     memset(m_pMaster, 0, sizeof(CSAMPLE) * MAX_BUFFER_LEN);
 
+    //Starts a thread for recording and shoutcast
     sidechain = new EngineSideChain(_config);
+    connect(sidechain, SIGNAL(isRecording(bool)),
+            this, SIGNAL(isRecording(bool)));
 
     //X-Fader Setup
     xFaderCurve = new ControlPotmeter(

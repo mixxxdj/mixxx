@@ -32,6 +32,7 @@
 #include "qsplashscreen.h"
 #include "errordialoghandler.h"
 #include "defs_version.h"
+#include "recording/recordingmanager.h"
 
 #ifdef __LADSPA__
 #include <ladspa/ladspaloader.h>

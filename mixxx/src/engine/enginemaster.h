@@ -20,6 +20,7 @@
 
 #include "engine/engineobject.h"
 #include "engine/enginechannel.h"
+#include "recording/recordingmanager.h"
 
 class EngineWorkerScheduler;
 class EngineBuffer;
@@ -38,8 +39,10 @@ class EngineVinylSoundEmu;
 class EngineSideChain;
 
 class EngineMaster : public EngineObject {
+    Q_OBJECT
 public:
-    EngineMaster(ConfigObject<ConfigValue>* pConfig, const char* pGroup);
+    EngineMaster(ConfigObject<ConfigValue>* pConfig,
+                 const char* pGroup);
     virtual ~EngineMaster();
 
     // Get access to the sample buffers. None of these are thread safe. Only to
@@ -59,6 +62,9 @@ public:
                               double leftGain,
                               double centerGain,
                               double rightGain);
+  signals:
+    void bytesRecorded(int);
+    void isRecording(bool);
 
   private:
     QList<EngineChannel*> m_channels;

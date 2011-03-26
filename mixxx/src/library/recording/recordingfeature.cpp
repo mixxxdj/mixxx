@@ -19,10 +19,13 @@
 
 const QString RecordingFeature::m_sRecordingViewName = QString("Recording");
 
-RecordingFeature::RecordingFeature(QObject* parent, ConfigObject<ConfigValue>* pConfig, TrackCollection* pTrackCollection)
+RecordingFeature::RecordingFeature(QObject* parent, ConfigObject<ConfigValue>* pConfig,
+                                   TrackCollection* pTrackCollection,
+                                   RecordingManager* pRecordingManager)
         : LibraryFeature(parent),
           m_pConfig(pConfig), m_pRecordingView(0),
-          m_pTrackCollection(pTrackCollection) {
+          m_pTrackCollection(pTrackCollection),
+          m_pRecordingManager(pRecordingManager){
 
 }
 
@@ -48,7 +51,8 @@ void RecordingFeature::bindWidget(WLibrarySidebar *sidebarWidget,
     //The view will be deleted by LibraryWidget
     m_pRecordingView = new DlgRecording(libraryWidget,
                                            m_pConfig,
-                                           m_pTrackCollection);
+                                           m_pTrackCollection,
+                                           m_pRecordingManager);
 
     m_pRecordingView->installEventFilter(keyboard);
     libraryWidget->registerView(m_sRecordingViewName, m_pRecordingView);

@@ -43,8 +43,8 @@ EngineRecord::EngineRecord(ConfigObject<ConfigValue> * _config)
     m_encoder = NULL;
     m_sndfile = NULL;
 
-    m_recReadyCO = new ControlObject(ConfigKey("[Master]", "Record"));
-    m_recReady = new ControlObjectThread(m_recReadyCO);
+    m_recReady = new ControlObjectThread(
+                               ControlObject::getControl(ConfigKey("[Master]", "Record")));
     m_samplerate = new ControlObjectThread(ControlObject::getControl(ConfigKey("[Master]", "samplerate")));
 
 }
@@ -52,7 +52,6 @@ EngineRecord::EngineRecord(ConfigObject<ConfigValue> * _config)
 EngineRecord::~EngineRecord()
 {
     closeFile();
-    if(m_recReadyCO)    delete m_recReadyCO;
     if(m_recReady)      delete m_recReady;
     if(m_samplerate)    delete m_samplerate;
 
@@ -119,6 +118,7 @@ void EngineRecord::process(const CSAMPLE * pIn, const CSAMPLE * pOut, const int 
         //qDebug("Setting record flag to: OFF");
         if(fileOpen()){
             closeFile();    //close file and free encoder
+            emit(isRecording(false));
         }
     }
     //if we are ready for recording, i.e, the output file has been selected, we open a new file
@@ -127,10 +127,12 @@ void EngineRecord::process(const CSAMPLE * pIn, const CSAMPLE * pOut, const int 
         if(openFile()){
             qDebug("Setting record flag to: ON");
             m_recReady->slotSet(RECORD_ON);
+            emit(isRecording(true));
         }
         else{ //Maybe the encoder could not be initialized
             qDebug("Setting record flag to: OFF");
             m_recReady->slotSet(RECORD_OFF);
+            emit(isRecording(false));
         }
     }
     //If recording is enabled process audio to compressed or uncompressed data.

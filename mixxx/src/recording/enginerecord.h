@@ -49,6 +49,9 @@ class EngineRecord : public EngineAbstractRecord {
     void closeFile();
     void updateFromPreferences();
     bool fileOpen();
+  signals:
+    void bytesRecorded(int);
+    void isRecording(bool);
 
   private:
     ConfigObject<ConfigValue> *m_config;
@@ -67,7 +70,6 @@ class EngineRecord : public EngineAbstractRecord {
     SF_INFO m_sfInfo;
 
     ControlObjectThread* m_recReady;
-    ControlObject* m_recReadyCO;
 
     ControlObjectThread* m_samplerate;
 };
