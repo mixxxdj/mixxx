@@ -851,15 +851,15 @@ void LegacySkinParser::setupSize(QDomNode node, QWidget* pWidget) {
         QSizePolicy sizePolicy;
 
         if (xs.endsWith("e")) {
-            qDebug() << "horizontal expanding";
+            //qDebug() << "horizontal expanding";
             sizePolicy.setHorizontalPolicy(QSizePolicy::Expanding);
             xs = xs.left(xs.size()-1);
         } else if (xs.endsWith("me")) {
-            qDebug() << "horizontal minimum expanding";
+            //qDebug() << "horizontal minimum expanding";
             sizePolicy.setHorizontalPolicy(QSizePolicy::MinimumExpanding);
             xs = xs.left(xs.size()-2);
         } else if (xs.endsWith("i")) {
-            qDebug() << "horizontal ignored";
+            //qDebug() << "horizontal ignored";
             sizePolicy.setHorizontalPolicy(QSizePolicy::Ignored);
             xs = xs.left(xs.size()-1);
         } else {
@@ -869,20 +869,20 @@ void LegacySkinParser::setupSize(QDomNode node, QWidget* pWidget) {
         bool ok;
         int x = xs.toInt(&ok);
         if (ok) {
-            qDebug() << "setting width to" << x;
+            //qDebug() << "setting width to" << x;
             pWidget->setMinimumWidth(x);
         }
 
         if (ys.endsWith("e")) {
-            qDebug() << "vertical expanding";
+            //qDebug() << "vertical expanding";
             sizePolicy.setVerticalPolicy(QSizePolicy::Expanding);
             ys = ys.left(ys.size()-1);
         } else if (ys.endsWith("me")) {
-            qDebug() << "vertical minimum expanding";
+            //qDebug() << "vertical minimum expanding";
             sizePolicy.setVerticalPolicy(QSizePolicy::MinimumExpanding);
             ys = ys.left(ys.size()-2);
         } else if (ys.endsWith("i")) {
-            qDebug() << "vertical ignored";
+            //qDebug() << "vertical ignored";
             sizePolicy.setVerticalPolicy(QSizePolicy::Ignored);
             ys = ys.left(ys.size()-1);
         } else {
@@ -891,11 +891,10 @@ void LegacySkinParser::setupSize(QDomNode node, QWidget* pWidget) {
 
         int y = ys.toInt(&ok);
         if (ok) {
-            qDebug() << "setting height to" << y;
+            //qDebug() << "setting height to" << y;
             pWidget->setMinimumHeight(y);
         }
         pWidget->setSizePolicy(sizePolicy);
-        qDebug() << "sizehint is" << pWidget->sizeHint();
     }
 }
 
