@@ -42,5 +42,3 @@ class MixxxUtils {
         return timeString;
     }
 };
-
-
