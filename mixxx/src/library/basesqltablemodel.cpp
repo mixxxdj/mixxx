@@ -221,6 +221,11 @@ void BaseSqlTableModel::buildIndex() {
 
     int idColumn = query.record().indexOf(m_idColumn);
 
+    // TODO(rryan) for very large tables, it probably makes more sense to NOT
+    // clear the table, and keep track of what IDs we see, then delete the ones
+    // we don't see.
+    m_recordCache.clear();
+
     while (query.next()) {
         int id = query.value(idColumn).toInt();
 
@@ -477,6 +482,11 @@ void BaseSqlTableModel::setTable(const QString& tableName,
     }
 
     m_bInitialized = true;
+
+    // Re-build the index when the table is changed. For e.g. playlists this is
+    // important because the index is used as the base layout of what's in the
+    // table if there were no restrictions on the query.
+    buildIndex();
 }
 
 QString BaseSqlTableModel::currentSearch() const {
