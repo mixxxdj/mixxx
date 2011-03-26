@@ -1,7 +1,7 @@
 	<!--
-	Outline, Skin for Mixxx 1.9.x
+	Outline, Skin for Mixxx 1.10.x
 	www.mixxx.org
-	Copyright (C) 2010 Mixxx
+	Copyright (C) 2010-2011 Mixxx
 	
 	This program is free software: you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by
@@ -19,8 +19,15 @@
 
 	<!--
 	CHANGELOG
+	v1.10.0.01	(21/03/2011)
+	* Introduce new version number scheme for skins that follows the target Mixxx versioning
+	  <Mixxx.major>.<Mixxx.minor>.<Mixxx.patch>.<Skin.patch>
+	* Added Mixxx 1.10.0 feature: 
+	  Tracks duration can be displayed independent from tracks remaining time using Trackproperty
+	* Updated text positioning & tooltips accordingly
+
 	v1.06	(13/03/2011)
-	* Expanded to support 36 hot cues
+	* Added Mixxx 1.9.1 feature: Expanded to support 36 hot cues
 
 	v1.05	(20/02/2011)
 	* Changed Playing position tooltips to reflect new toggle functionality
@@ -963,22 +970,10 @@
 	Text- Track information
 	**********************************************
 	-->
-<!--
-	<TrackProperty>
-		<Pos>2,195</Pos>
-		<Tooltip>Track information&#10;Displays the Name and Title of the loaded track.&#10;Informations are extracted from the tracks tags.&#10;</Tooltip>
-		<Channel>1</Channel>
-		<Property>artist</Property>
-		<Style>QLabel { font: bold 13px/15px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-		background-color: transparent; text-align: left; padding-left: 1%; }
-		QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-		</Style>
-	</TrackProperty>
 -->
 	<Text>
 		<Tooltip>Track information&#10;Displays the Name and Title of the loaded track.&#10;Informations are extracted from the tracks tags.&#10;</Tooltip>
-		<Style>QLabel { font: bold 12px/14px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+		<Style>QLabel { font: 12px/14px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 		background-color: transparent; text-align: left; }
 		QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
@@ -989,7 +984,7 @@
 	</Text>
 	<Text>
 		<Tooltip>Track information&#10;Displays the Name and Title of the loaded track.&#10;Informations are extracted from the tracks tags.&#10;</Tooltip>
-		<Style>QLabel { font: bold 12px/14px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+		<Style>QLabel { font: 12px/14px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 		background-color: transparent; text-align: left; }
 		QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
@@ -1005,7 +1000,7 @@
 	**********************************************
 	-->
 	<NumberBpm>
-		<Tooltip>Tempo information&#10;Displays the tempo of the loaded track in BPM (beats per minute)&#10;</Tooltip>
+		<Tooltip>Tempo&#10;Displays the tempo of the loaded track in BPM (beats per minute)&#10;</Tooltip>
 		<Style>QLabel { font: 11px/13px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 		background-color: transparent; text-align: left; }
 		QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
@@ -1013,7 +1008,7 @@
 		</Style>
 		<Channel>1</Channel>
 		<Pos>80,111</Pos>
-		<Size>75,13</Size>
+		<Size>50,13</Size>
 		<!--CSS alignments not respected see bug lp:605530 , lets call <Alignment>-->
 		<Alignment>left</Alignment>
 		<NumberOfDigits>6</NumberOfDigits>
@@ -1022,7 +1017,7 @@
 		</Connection>
 	</NumberBpm>
 	<NumberBpm>
-		<Tooltip>Tempo information&#10;Displays the tempo of the loaded track in BPM (beats per minute)&#10;</Tooltip>
+		<Tooltip>Tempo&#10;Displays the tempo of the loaded track in BPM (beats per minute)&#10;</Tooltip>
 		<Style>QLabel { font: 11px/13px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 		background-color: transparent; text-align: left; }
 		QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
@@ -1030,7 +1025,7 @@
 		</Style>
 		<Channel>2</Channel>
 		<Pos>458,111</Pos>
-		<Size>75,13</Size>
+		<Size>50,13</Size>
 		<!--CSS alignments not respected see bug lp:605530 , lets call <Alignment>-->
 		<Alignment>left</Alignment>
 		<NumberOfDigits>6</NumberOfDigits>
@@ -1045,15 +1040,15 @@
 	**********************************************
 	-->
 	<NumberPos>
-		<Tooltip>Time information&#10;Displays the elapsed or remaining time and the duration of the track loaded.&#10;Click to toggle between time elapsed/remaining time.&#10;</Tooltip>
+		<Tooltip>Time&#10;Displays the elapsed or remaining time of the track loaded.&#10;Click to toggle between time elapsed/remaining time.&#10;</Tooltip>
 		<Style>QLabel { font: 11px/13px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 		background-color: transparent; text-align: right; }
 		QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
 		</Style>
 		<Channel>1</Channel>
-		<Pos>206,111</Pos>
-		<Size>126,13</Size>
+		<Pos>262,111</Pos>
+		<Size>70,13</Size>
 		<!--CSS alignments not respected see bug lp:605530 , lets call <Alignment>-->
 		<Alignment>right</Alignment>
 		<NumberOfDigits>6</NumberOfDigits>
@@ -1062,15 +1057,15 @@
 		</Connection>
 	</NumberPos>
 	<NumberPos>
-		<Tooltip>Time information&#10;Displays the elapsed or remaining time and the duration of the track loaded.&#10;Click to toggle between time elapsed/remaining time.&#10;</Tooltip>
+		<Tooltip>Time&#10;Displays the elapsed or remaining time of the track loaded.&#10;Click to toggle between time elapsed/remaining time.&#10;</Tooltip>
 		<Style>QLabel { font: 11px/13px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 		background-color: transparent; text-align: right; }
 		QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
 		</Style>
 		<Channel>2</Channel>
-		<Pos>584,111</Pos>
-		<Size>126,13</Size>
+		<Pos>640,111</Pos>
+		<Size>70,13</Size>
 		<!--CSS alignments not respected see bug lp:605530 , lets call <Alignment>-->
 		<Alignment>right</Alignment>
 		<NumberOfDigits>6</NumberOfDigits>
@@ -1081,33 +1076,67 @@
 
 	<!--
 	**********************************************
-	Text- Pitch rate display
+	Text- Duration
 	**********************************************
 	-->
-	<NumberRate>
-		<Tooltip>Pitch rate information&#10;Displays the current pitch of the track based on the original tempo.&#10;</Tooltip>
+	<TrackProperty>
+		<Tooltip>Duration&#10;Displays the duration of the track loaded.&#10;</Tooltip>
 		<Style>QLabel { font: 11px/13px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 		background-color: transparent; text-align: right; }
 		QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
 		</Style>
 		<Channel>1</Channel>
-		<Pos>153,111</Pos>
-		<Size>45,13</Size>
-		<NumberOfDigits>4</NumberOfDigits>
-		<Connection>
-			<ConfigKey>[Channel1],rate</ConfigKey>
-		</Connection>
-	</NumberRate>
-	<NumberRate>
-		<Tooltip>Pitch rate information&#10;Displays the current pitch of the track based on the original tempo.&#10;</Tooltip>
+		<Pos>186,111</Pos>
+		<Size>70,13</Size>
+		<Property>durationFormatted</Property>
+		<!--CSS alignments not respected see bug lp:605530 , lets call <Alignment>-->
+		<Alignment>right</Alignment>
+	</TrackProperty>
+	<TrackProperty>
+		<Tooltip>Duration&#10;Displays the duration of the track loaded.&#10;</Tooltip>
 		<Style>QLabel { font: 11px/13px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 		background-color: transparent; text-align: right; }
 		QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
 		</Style>
 		<Channel>2</Channel>
-		<Pos>531,111</Pos>
+		<Pos>564,111</Pos>
+		<Size>70,13</Size>
+		<Property>durationFormatted</Property>
+		<!--CSS alignments not respected see bug lp:605530 , lets call <Alignment>-->
+		<Alignment>right</Alignment>
+	</TrackProperty>
+
+	<!--
+	**********************************************
+	Text- Pitch rate display
+	**********************************************
+	-->
+	<NumberRate>
+		<Tooltip>Pitch rate&#10;Displays the current pitch of the track based on the original tempo.&#10;</Tooltip>
+		<Style>QLabel { font: 11px/13px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+		background-color: transparent; text-align: right; }
+		QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+		</Style>
+		<Channel>1</Channel>
+		<Pos>131,111</Pos>
+		<Size>50,13</Size>
+		<NumberOfDigits>4</NumberOfDigits>
+		<Connection>
+			<ConfigKey>[Channel1],rate</ConfigKey>
+		</Connection>
+	</NumberRate>
+	<NumberRate>
+		<Tooltip>Pitch rate&#10;Displays the current pitch of the track based on the original tempo.&#10;</Tooltip>
+		<Style>QLabel { font: 11px/13px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+		background-color: transparent; text-align: right; }
+		QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+		</Style>
+		<Channel>2</Channel>
+		<Pos>509,111</Pos>
 		<Size>50,13</Size>
 		<NumberOfDigits>4</NumberOfDigits>
 		<Connection>
