@@ -732,7 +732,7 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
 		else 
 			ramp_inc = (m_iRampState * 0.08) / iBufferSize; //but down slowly
 		
-		float fakerate = rate * 30000 == 0 ? -5000 : rate*30000;
+		//float fakerate = rate * 30000 == 0 ? -5000 : rate*30000;
     	for (int i=0; i<iBufferSize; i+=2)
 		{
 			float dither = (float)(rand() % 32768) / 32768 - 0.5; // dither
