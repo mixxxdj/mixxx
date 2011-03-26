@@ -459,6 +459,7 @@ class MixxxCore(Feature):
                    
                    "library/recording/recordingfeature.cpp",
                    "dlgrecording.cpp",
+                   "recording/recordingmanager.cpp",
 
                    # External Library Features
                    "library/rhythmbox/rhythmboxfeature.cpp",

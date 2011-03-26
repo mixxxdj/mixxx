@@ -24,6 +24,7 @@
 #include "controlobjectthreadmain.h"
 #include "../recording/defs_recording.h"
 #include "errordialoghandler.h"
+#include "recording/recordingmanager.h"
 
 #ifdef __SHOUTCAST__
 class EngineShoutcast;
@@ -32,14 +33,19 @@ class EngineShoutcast;
 class EngineRecord;
 
 #define SIDECHAIN_BUFFER_SIZE 65536
-//#define SIDECHAIN_BUFFER_SIZE 65536*2
-
 
 class EngineSideChain : public QThread {
-  public:
+Q_OBJECT
+
+public:
     EngineSideChain(ConfigObject<ConfigValue> * pConfig);
     virtual ~EngineSideChain();
     void submitSamples(CSAMPLE* buffer, int buffer_size);
+
+  signals:
+    void bytesRecorded(int);
+    void isRecording(bool);
+
 
   private:
     void swapBuffers();
@@ -62,6 +68,8 @@ class EngineSideChain : public QThread {
     EngineShoutcast *m_shoutcast;
 #endif
     EngineRecord* m_rec;
+
+
 };
 
 #endif

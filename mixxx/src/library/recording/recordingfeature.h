@@ -13,6 +13,7 @@
 #include "library/libraryfeature.h"
 #include "library/proxytrackmodel.h"
 #include "dlgrecording.h"
+#include "recording/recordingmanager.h"
 
 class TrackCollection;
 
@@ -21,7 +22,8 @@ class RecordingFeature : public LibraryFeature {
   public:
     RecordingFeature(QObject* parent,
                   ConfigObject<ConfigValue>* pConfig,
-                  TrackCollection* pTrackCollection);
+                  TrackCollection* pTrackCollection,
+                  RecordingManager* pRecordingManager);
     virtual ~RecordingFeature();
 
     QVariant title();
@@ -55,6 +57,7 @@ class RecordingFeature : public LibraryFeature {
     QString m_currentSearch;
     const static QString m_sRecordingViewName;
     DlgRecording* m_pRecordingView;
+    RecordingManager* m_pRecordingManager;
 };
 
 #endif

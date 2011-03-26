@@ -49,6 +49,7 @@
 #include "defs_urls.h"
 #include "recording/defs_recording.h"
 
+
 #include "midi/mididevicemanager.h"
 
 #include "upgrade.h"
@@ -120,6 +121,7 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
     m_pSoundManager = 0;
     m_pPrefDlg = 0;
     m_pMidiDeviceManager = 0;
+    m_pRecordingManager = 0;
 
     // Check to see if this is the first time this version of Mixxx is run
     // after an upgrade and make any needed changes.
@@ -232,8 +234,13 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
     // initialization into MixxxKeyboard
     m_pKeyboard = new MixxxKeyboard(pKbdConfig);
 
+    //create RecordingManager
+    m_pRecordingManager = new RecordingManager(m_pConfig);
+
     // Starting the master (mixing of the channels and effects):
     m_pEngine = new EngineMaster(m_pConfig, "[Master]");
+    connect(m_pEngine, SIGNAL(isRecording(bool)),
+            m_pRecordingManager,SLOT(slotIsRecording(bool)));
 
     // Initialize player device
     // while this is created here, setupDevices needs to be called sometime
@@ -273,7 +280,11 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
         QDir().mkpath(QDir::homePath().append("/").append(SETTINGS_PATH));
     }
 
-    m_pLibrary = new Library(this, m_pConfig, bFirstRun || bUpgraded);
+
+
+    m_pLibrary = new Library(this, m_pConfig,
+                             bFirstRun || bUpgraded,
+                             m_pRecordingManager);
     qRegisterMetaType<TrackPointer>("TrackPointer");
 
     // Create the player manager.
@@ -284,6 +295,8 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
     // m_pPlayerManager->addSampler();
     // m_pPlayerManager->addSampler();
     // m_pPlayerManager->addSampler();
+
+
 
     //Scan the library directory.
     m_pLibraryScanner = new LibraryScanner(m_pLibrary->getTrackCollection());
@@ -501,6 +514,9 @@ MixxxApp::~MixxxApp()
 
     qDebug() << "delete playerManager" << qTime.elapsed();
     delete m_pPlayerManager;
+
+    qDebug() << "delete RecordingManager" << qTime.elapsed();
+    delete m_pRecordingManager;
 
     qDebug() << "delete m_pEngine, " << qTime.elapsed();
     delete m_pEngine;
@@ -1073,77 +1089,10 @@ void MixxxApp::slotOptionsVinylControl(bool toggle)
 //Also can't ifdef this (MOC again)
 void MixxxApp::slotOptionsRecord(bool toggle)
 {
-    ControlObjectThreadMain *recordingControl =
-        new ControlObjectThreadMain(ControlObject::getControl(
-                    ConfigKey("[Master]", "Record")));
-    QString recordPath = m_pConfig->getValueString(
-            ConfigKey("[Recording]", "Path"));
-    QString encodingType = m_pConfig->getValueString(
-            ConfigKey("[Recording]", "Encoding"));
-    QString encodingFileFilter = QString("Audio (*.%1)").arg(encodingType);
-    bool proceedWithRecording = true;
-
-    if (toggle == true)
-    {
-        //If there was no recording path set,
-        if (recordPath == "")
-        {
-            QString selectedFile = QFileDialog::getSaveFileName(NULL,
-                    tr("Save Recording As..."),
-                    recordPath,
-                    encodingFileFilter);
-            if (selectedFile.toLower() != "")
-            {
-                if(!selectedFile.toLower().endsWith(
-                            "." + encodingType.toLower()))
-                {
-                    selectedFile.append("." + encodingType.toLower());
-                }
-                //Update the saved Path
-                m_pConfig->set(
-                    ConfigKey(RECORDING_PREF_KEY, "Path"), selectedFile);
-            }
-            else
-                proceedWithRecording = false; //Empty filename, so don't record
-        }
-        else //If there was already a recording path set
-        {
-            //... and the file already exists, ask the user if they want to over
-            // write it.
-            int result;
-            if(QFile::exists(recordPath))
-            {
-                QFileInfo fi(recordPath);
-                result = QMessageBox::question(this, tr("Mixxx Recording"),
-                    tr("The file %1 already exists. Would you like to overwrite"
-                       " it?\nSelecting \"No\" will abort the recording.")
-                    .arg(fi.fileName()), QMessageBox::Yes | QMessageBox::No);
-                if (result == QMessageBox::Yes)
-                    //If the user selected, "yes, overwrite the recording"...
-                    proceedWithRecording = true;
-                else
-                    proceedWithRecording = false;
-            }
-        }
-
-        if (proceedWithRecording == true)
-        {
-            qDebug() << "Setting record status: READY";
-            recordingControl->slotSet(RECORD_READY);
-        }
-        else
-        {
-            m_pOptionsRecord->setChecked(false);
-        }
-
-    }
+    if(toggle) //start recording
+        m_pRecordingManager->startRecording();
     else
-    {
-        qDebug() << "Setting record status: OFF";
-        recordingControl->slotSet(RECORD_OFF);
-    }
-
-    delete recordingControl;
+        m_pRecordingManager->stopRecording();
 }
 
 void MixxxApp::slotHelpAbout()

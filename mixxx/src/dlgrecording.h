@@ -9,6 +9,7 @@
 #include "library/trackcollection.h"
 #include "library/browse/browsetablemodel.h"
 #include "library/proxytrackmodel.h"
+#include "recording/recordingmanager.h"
 
 class PlaylistTableModel;
 class WTrackTableView;
@@ -19,7 +20,9 @@ class ControlObjectThreadMain;
 class DlgRecording : public QWidget, public Ui::DlgRecording, public virtual LibraryView {
     Q_OBJECT
   public:
-    DlgRecording(QWidget *parent, ConfigObject<ConfigValue>* pConfig, TrackCollection* pTrackCollection);
+    DlgRecording(QWidget *parent, ConfigObject<ConfigValue>* pConfig,
+                 TrackCollection* pTrackCollection,
+                 RecordingManager* pRecManager);
     virtual ~DlgRecording();
 
     virtual void setup(QDomNode node);
@@ -34,6 +37,7 @@ class DlgRecording : public QWidget, public Ui::DlgRecording, public virtual Lib
 
   public slots:
     void toggleRecording(bool toggle);
+    void slotPushButtonText(bool);
 
   signals:
     void loadTrack(TrackPointer tio);
@@ -48,8 +52,7 @@ class DlgRecording : public QWidget, public Ui::DlgRecording, public virtual Lib
     ProxyTrackModel* m_proxyModel;
     QString m_recordingDir;
 
-    bool m_bAutoDJEnabled;
-    ControlObjectThreadMain* m_pRecordingCO;
+    RecordingManager* m_pRecordingManager;
 
 };
 

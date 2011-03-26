@@ -7,21 +7,21 @@
 #include "controlobject.h"
 #include "controlobjectthreadmain.h"
 #include "library/trackcollection.h"
-#include "recording/defs_recording.h"
 
+#
 #include "dlgrecording.h"
 
 
 
-DlgRecording::DlgRecording(QWidget* parent, ConfigObject<ConfigValue>* pConfig, TrackCollection* pTrackCollection)
-    : QWidget(parent), Ui::DlgRecording()
+DlgRecording::DlgRecording(QWidget* parent, ConfigObject<ConfigValue>* pConfig,
+                           TrackCollection* pTrackCollection,
+                           RecordingManager* pRecordingManager)
+            : QWidget(parent), Ui::DlgRecording(),
+            m_pConfig(pConfig),
+            m_pTrackCollection(pTrackCollection),
+            m_pRecordingManager(pRecordingManager)
 {
     setupUi(this);
-
-    // TODO: make browsertable model singleton
-    // There are two broser threads at the moment!!!
-    m_pConfig = pConfig;
-    m_pTrackCollection = pTrackCollection;
     m_pTrackTableView = new WTrackTableView(this, pConfig, m_pTrackCollection);
 
 
@@ -30,42 +30,17 @@ DlgRecording::DlgRecording(QWidget* parent, ConfigObject<ConfigValue>* pConfig, 
     connect(m_pTrackTableView, SIGNAL(loadTrackToPlayer(TrackPointer, QString)),
             this, SIGNAL(loadTrackToPlayer(TrackPointer, QString)));
 
+    connect(m_pRecordingManager, SIGNAL(isRecording(bool)),
+            this, SLOT(slotPushButtonText(bool)));
+
     QBoxLayout* box = dynamic_cast<QBoxLayout*>(layout());
     Q_ASSERT(box); //Assumes the form layout is a QVBox/QHBoxLayout!
     box->removeWidget(m_pTrackTablePlaceholder);
     m_pTrackTablePlaceholder->hide();
     box->insertWidget(1, m_pTrackTableView);
 
-    QDir os_music_folder_dir(QDesktopServices::storageLocation(QDesktopServices::MusicLocation));
-    //Check if there's a folder Mixxx within the music directory
-    QDir mixxxDir(os_music_folder_dir.absolutePath() +"/Mixxx");
 
-    if(!mixxxDir.exists()){
-
-        if(os_music_folder_dir.mkdir("Mixxx")){
-            qDebug() << "Created folder 'Mixxx' within default OS Music directory";
-
-            if(mixxxDir.mkdir("Recordings"))
-                qDebug() << "Created folder 'Recordings' successfully";
-            else
-                qDebug() << "Could not create folder 'Recordings' within 'Mixxx'";
-        }
-        else{
-            qDebug() << "Failed to create folder 'Mixxx'' within default OS Music directory."
-                     << "Please verify that there's no file called 'Mixxx'.";
-        }
-    }
-    else{ // the Mixxx directory already exists
-        qDebug() << "Found folder 'Mixxx' within default OS music directory";
-        QDir recordDir(mixxxDir.absolutePath() +"Recordings");
-        if(!recordDir.exists()){
-            if(mixxxDir.mkdir("Recordings"))
-                qDebug() << "Created folder 'Recordings' successfully";
-            else
-                qDebug() << "Could not create folder 'Recordings' within 'Mixxx'";
-        }
-    }
-    m_recordingDir = os_music_folder_dir.absolutePath() +"/Mixxx/Recordings";
+    m_recordingDir = m_pRecordingManager->getRecordingDir();
 
     m_browseModel = BrowseTableModel::getInstance();
     m_proxyModel = new ProxyTrackModel(m_browseModel);
@@ -86,15 +61,10 @@ DlgRecording::DlgRecording(QWidget* parent, ConfigObject<ConfigValue>* pConfig, 
     connect(pushButtonRecording, SIGNAL(toggled(bool)),
             this,  SLOT(toggleRecording(bool)));
 
-    m_pRecordingCO = new ControlObjectThreadMain(
-                            ControlObject::getControl(ConfigKey("[Master]", "Record")));
-
 }
 
 DlgRecording::~DlgRecording()
 {
-    if(m_pRecordingCO)
-        delete m_pRecordingCO;
     if(m_proxyModel)
         delete m_proxyModel;
 
@@ -175,35 +145,25 @@ void DlgRecording::moveSelection(int delta) {
 
 void DlgRecording::toggleRecording(bool toggle)
 {
-    if (toggle) //If recording is enabled
+    if (toggle && !m_pRecordingManager->isRecordingActive()) //If recording is enabled
     {
-        pushButtonRecording->setText(tr("Stop Recording"));
+        //pushButtonRecording->setText(tr("Stop Recording"));
+        m_pRecordingManager->startRecording();
 
-        QString recordPath = m_pConfig->getValueString(
-                ConfigKey("[Recording]", "Path"));
-        QString encodingType = m_pConfig->getValueString(
-                ConfigKey("[Recording]", "Encoding"));
-
-        //Construct the file pattern
-        // dd_mm_yyyy--hours-minutes-ss   or    mm_dd_yyyy --hours-minutes:seconds
-        QDateTime current_date_time = QDateTime::currentDateTime();
-        QString date_time_str = current_date_time.toString("/dd_MM_yyyy---hh_mm_ss");
-        date_time_str.append(".").append(encodingType.toLower());
-
-        QString filename (m_recordingDir);
-        filename.append("/").append(date_time_str);
-
-        m_pConfig->set(ConfigKey("[Recording]", "Path"), filename);
-        m_pRecordingCO->slotSet(RECORD_READY);
-        m_browseModel->setPath(m_recordingDir);
 
     }
-    else //If we disable recording
+    else if(!toggle && m_pRecordingManager->isRecordingActive()) //If we disable recording
     {
-        pushButtonRecording->setText(tr("Start Recording"));
-        //qDebug() << "Set Recording to OFF";
-        m_pRecordingCO->slotSet(RECORD_OFF);
+        //pushButtonRecording->setText(tr("Start Recording"));
+        m_pRecordingManager->stopRecording();
+
 
     }
 }
-
+void DlgRecording::slotPushButtonText(bool isRecording)
+{
+    if(isRecording)
+        pushButtonRecording->setText((tr("Stop Recording")));
+    else
+        pushButtonRecording->setText((tr("Start Recording")));
+}

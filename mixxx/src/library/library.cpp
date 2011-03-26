@@ -32,8 +32,10 @@
 // WLibrary
 const QString Library::m_sTrackViewName = QString("WTrackTableView");
 
-Library::Library(QObject* parent, ConfigObject<ConfigValue>* pConfig, bool firstRun)
-    : m_pConfig(pConfig) {
+Library::Library(QObject* parent, ConfigObject<ConfigValue>* pConfig, bool firstRun,
+                 RecordingManager* pRecordingManager)
+    : m_pConfig(pConfig),
+      m_pRecordingManager(pRecordingManager){
     m_pTrackCollection = new TrackCollection(pConfig);
     m_pSidebarModel = new SidebarModel(parent);
     m_pLibraryControl = new LibraryControl(this);
@@ -58,7 +60,7 @@ Library::Library(QObject* parent, ConfigObject<ConfigValue>* pConfig, bool first
     m_pCrateFeature = new CrateFeature(this, m_pTrackCollection, pConfig);
     addFeature(m_pCrateFeature);
     addFeature(new BrowseFeature(this, pConfig, m_pTrackCollection));
-    addFeature(new RecordingFeature(this, pConfig, m_pTrackCollection));
+    addFeature(new RecordingFeature(this, pConfig, m_pTrackCollection, m_pRecordingManager));
     addFeature(new PrepareFeature(this, pConfig, m_pTrackCollection));
     //iTunes and Rhythmbox should be last until we no longer have an obnoxious
     //messagebox popup when you select them. (This forces you to reach for your
