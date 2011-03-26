@@ -12,6 +12,7 @@
 #include "library/browse/foldertreemodel.h"
 #include "library/libraryfeature.h"
 #include "library/proxytrackmodel.h"
+#include "dlgrecording.h"
 
 class TrackCollection;
 
@@ -53,6 +54,7 @@ class RecordingFeature : public LibraryFeature {
     FolderTreeModel m_childModel;
     QString m_currentSearch;
     const static QString m_sRecordingViewName;
+    DlgRecording* m_pRecordingView;
 };
 
 #endif

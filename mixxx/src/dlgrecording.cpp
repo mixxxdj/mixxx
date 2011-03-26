@@ -1,4 +1,5 @@
 #include <QDesktopServices>
+#include <QDateTime>
 
 #include "widget/wwidget.h"
 #include "widget/wskincolor.h"
@@ -6,6 +7,7 @@
 #include "controlobject.h"
 #include "controlobjectthreadmain.h"
 #include "library/trackcollection.h"
+#include "recording/defs_recording.h"
 
 #include "dlgrecording.h"
 
@@ -63,7 +65,7 @@ DlgRecording::DlgRecording(QWidget* parent, ConfigObject<ConfigValue>* pConfig, 
                 qDebug() << "Could not create folder 'Recordings' within 'Mixxx'";
         }
     }
-
+    m_recordingDir = os_music_folder_dir.absolutePath() +"/Mixxx/Recordings";
 
     m_browseModel = BrowseTableModel::getInstance();
     m_proxyModel = new ProxyTrackModel(m_browseModel);
@@ -71,7 +73,7 @@ DlgRecording::DlgRecording(QWidget* parent, ConfigObject<ConfigValue>* pConfig, 
     m_proxyModel->setFilterCaseSensitivity(Qt::CaseInsensitive);
     m_proxyModel->setSortCaseSensitivity(Qt::CaseInsensitive);
 
-    m_browseModel->setPath(os_music_folder_dir.absolutePath() +"/Mixxx/Recordings");
+    m_browseModel->setPath(m_recordingDir);
     m_pTrackTableView->loadTrackModel(m_proxyModel);
 
     //Override some playlist-view properties:
@@ -100,7 +102,7 @@ DlgRecording::~DlgRecording()
 
 void DlgRecording::onShow()
 {
-    //m_pAutoDJTableModel->select();
+    m_browseModel->setPath(m_recordingDir);
 }
 
 void DlgRecording::setup(QDomNode node)
@@ -150,6 +152,9 @@ void DlgRecording::onSearchStarting()
 void DlgRecording::onSearchCleared()
 {
 }
+void DlgRecording::refreshBrowseModel(){
+     m_browseModel->setPath(m_recordingDir);
+}
 
 void DlgRecording::onSearch(const QString& text)
 {
@@ -173,12 +178,31 @@ void DlgRecording::toggleRecording(bool toggle)
     if (toggle) //If recording is enabled
     {
         pushButtonRecording->setText(tr("Stop Recording"));
-        qDebug() << "Stop recording";
+
+        QString recordPath = m_pConfig->getValueString(
+                ConfigKey("[Recording]", "Path"));
+        QString encodingType = m_pConfig->getValueString(
+                ConfigKey("[Recording]", "Encoding"));
+
+        //Construct the file pattern
+        // dd_mm_yyyy--hours-minutes-ss   or    mm_dd_yyyy --hours-minutes:seconds
+        QDateTime current_date_time = QDateTime::currentDateTime();
+        QString date_time_str = current_date_time.toString("/dd_MM_yyyy---hh_mm_ss");
+        date_time_str.append(".").append(encodingType.toLower());
+
+        QString filename (m_recordingDir);
+        filename.append("/").append(date_time_str);
+
+        m_pConfig->set(ConfigKey("[Recording]", "Path"), filename);
+        m_pRecordingCO->slotSet(RECORD_READY);
+        m_browseModel->setPath(m_recordingDir);
+
     }
-    else //If recording is disabled
+    else //If we disable recording
     {
         pushButtonRecording->setText(tr("Start Recording"));
-        qDebug() << "Start recording";
+        //qDebug() << "Set Recording to OFF";
+        m_pRecordingCO->slotSet(RECORD_OFF);
 
     }
 }

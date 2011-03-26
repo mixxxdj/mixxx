@@ -30,6 +30,7 @@ class DlgRecording : public QWidget, public Ui::DlgRecording, public virtual Lib
     virtual void loadSelectedTrack();
     virtual void loadSelectedTrackToGroup(QString group);
     virtual void moveSelection(int delta);
+    void refreshBrowseModel();
 
   public slots:
     void toggleRecording(bool toggle);
@@ -45,6 +46,7 @@ class DlgRecording : public QWidget, public Ui::DlgRecording, public virtual Lib
     WTrackTableView* m_pTrackTableView;
     BrowseTableModel* m_browseModel;
     ProxyTrackModel* m_proxyModel;
+    QString m_recordingDir;
 
     bool m_bAutoDJEnabled;
     ControlObjectThreadMain* m_pRecordingCO;

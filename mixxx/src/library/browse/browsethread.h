@@ -27,7 +27,7 @@ class BrowseThread : public QThread {
     QWaitCondition m_locationUpdated;
     QList<int> m_searchColumns;
     QString m_path;
-    bool m_bStopThread;
+    volatile bool m_bStopThread;
 };
 
 #endif // BROWSETHREAD_H
