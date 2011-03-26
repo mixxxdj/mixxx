@@ -72,8 +72,9 @@ void EngineChannel::process(const CSAMPLE* pIn, const CSAMPLE * pOut, const int 
 	{
     	// Process the raw audio
     	m_pBuffer->process(0, pOut, iBufferSize);
-    	// Emulate vinyl sounds
-    	m_pVinylSoundEmu->process(pOut, pOut, iBufferSize);
+    	//// Emulate vinyl sounds
+    	//This causes popping, disable
+    	//m_pVinylSoundEmu->process(pOut, pOut, iBufferSize);
 	    // Apply pregain
     	m_pPregain->process(pOut, pOut, iBufferSize);
     }
