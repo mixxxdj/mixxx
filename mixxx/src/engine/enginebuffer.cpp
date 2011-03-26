@@ -75,7 +75,8 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
     m_pScaleLinear(NULL),
     m_pScaleST(NULL),
     m_bScalerChanged(false),
-    m_bLastBufferPaused(true) {
+    m_bLastBufferPaused(true),
+    m_fRampValue(0.0) {
 
     m_fLastSampleValue[0] = 0;
     m_fLastSampleValue[1] = 0;
@@ -704,59 +705,69 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
     // (hopefully) before the next callback.
     m_pReader->wake();
 
-
-	//Disaster below!  I am trying to fix clicking on quick startup,
-	//and this stuff didn't work.  
-	
-	
-    // Force ramp in if this is the first buffer during a play
-   // if (m_iRampIter == 0)
-    //{
-		if (m_bLastBufferPaused && !bCurBufferPaused)
-	//		m_iRampIter = 0 - kiRampLength;
-   // }
-   // else
+    if (m_bLastBufferPaused && !bCurBufferPaused)
     {
-	    // Ramp from zero over kiRampLength iterations
-	    for (int i=0; i<iBufferSize; i+=2)
-	    {
-	    	//float sigmoid = sigmoid_zero((float)(i + ((m_iRampIter+kiRampLength)*iBufferSize)), (float)(iBufferSize*kiRampLength));
-	    	float sigmoid = sigmoid_zero((float)i, (float)iBufferSize);
-	    	//qDebug() << sigmoid << (float)(i + ((m_iRampIter+kiRampLength)*iBufferSize)) << (float)(iBufferSize*kiRampLength);
-	    	float dither = (float)(rand() % 32768) / 32768 - 0.5; // dither
-	    	pOutput[i] = (float)pOutput[i] * sigmoid + dither;
-	    	pOutput[i+1] = (float)pOutput[i+1] * sigmoid + dither;
-	    }
-	   // m_iRampIter++;
-	}
-	
-	else if (!m_bLastBufferPaused && bCurBufferPaused)
-	// Force ramp out if this is the first buffer to be paused.
-	{
-	    rampOut(pOutput, iBufferSize);
-	}
-	// If the previous buffer was paused and we are currently paused, then
-    // memset the output to zero.
-    else if (m_bLastBufferPaused && bCurBufferPaused)
+    	if (fabs(rate) > 0.005) //at very slow forward rates, don't ramp up
+    		m_iRampState = ENGINE_RAMP_UP;
+    }
+    else if (!m_bLastBufferPaused && bCurBufferPaused)
+    {
+    	m_iRampState = ENGINE_RAMP_DOWN;
+    }
+    else //we are playing
+    {
+    	//make sure we aren't accidentally ramping down
+    	if (fabs(rate) > 0.005 && m_iRampState == ENGINE_RAMP_DOWN)
+    		m_iRampState = ENGINE_RAMP_UP;
+    }
+    
+    if (m_iRampState != ENGINE_RAMP_NONE)
     { 
-		memset(pOutput, 0, sizeof(pOutput[0])*iBufferSize);
+		//let's try holding the last sample value constant, and pull it
+		//towards zero
+		float ramp_inc = 0;
+		if (m_iRampState == ENGINE_RAMP_UP) 
+			ramp_inc = (m_iRampState * 0.2) / iBufferSize; //ramp up quickly
+		else 
+			ramp_inc = (m_iRampState * 0.08) / iBufferSize; //but down slowly
 		
-		//let's try holding the last sample value constant!
-		/*for (int i=0; i<iBufferSize; i+=2)
+		float fakerate = rate * 30000 == 0 ? -5000 : rate*30000;
+    	for (int i=0; i<iBufferSize; i+=2)
 		{
-			pOutput[i] = m_fLastSampleValue[0];
-			pOutput[i+1] = m_fLastSampleValue[1];
-		}*/
+			float dither = (float)(rand() % 32768) / 32768 - 0.5; // dither
+			pOutput[i] = m_fLastSampleValue[0] * m_fRampValue + dither;
+			pOutput[i+1] = m_fLastSampleValue[1] * m_fRampValue + dither;
+			
+			//writer << pOutput[i] << "," << fakerate << "," <<  m_fRampValue * 1000 <<"," <<m_iRampState * 10000 <<"\n";
+			m_fRampValue += ramp_inc;
+			if (m_fRampValue >= 1.0)
+			{
+				m_iRampState = ENGINE_RAMP_NONE;
+				m_fRampValue = 1.0;
+			}
+			if (m_fRampValue <= 0.0)
+			{
+				m_iRampState = ENGINE_RAMP_NONE;
+				m_fRampValue = 0.0;
+			}
+		}
 	}
+	/*else
+	{
+		float fakerate = rate * 30000 == 0 ? -5000 : rate*30000;
+		for (int i=0; i<iBufferSize; i+=2)
+		{	
+			writer << pOutput[i] << "," << fakerate << "," <<  m_fRampValue * 1000 << "," << m_iRampState * 10000 <<"\n";
+		}
+	}*/
+	
+	if (m_iRampState == ENGINE_RAMP_NONE)
+	{
+		m_fLastSampleValue[0] = pOutput[iBufferSize-2];
+    	m_fLastSampleValue[1] = pOutput[iBufferSize-1];
+    }
     
     m_bLastBufferPaused = bCurBufferPaused;
-    m_fLastSampleValue[0] = pOutput[iBufferSize-2];
-    m_fLastSampleValue[1] = pOutput[iBufferSize-1];
-    
-    /*for (int i=0; i<iBufferSize; i+=2)
-    {
-    	writer << pOutput[i] << "," << m_fLastSampleValue[0] <<  "\n";
-    }*/
 }
 
 
