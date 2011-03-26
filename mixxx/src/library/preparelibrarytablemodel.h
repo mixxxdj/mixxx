@@ -13,7 +13,6 @@ class PrepareLibraryTableModel : public LibraryTableModel
 
     virtual void search(const QString& searchText);
     virtual bool isColumnInternal(int column);
-    void updateTracks(QModelIndexList& indices);
 
   public slots:
     void showRecentSongs();
