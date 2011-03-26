@@ -8,6 +8,7 @@
 #include "library/libraryview.h"
 #include "library/trackcollection.h"
 #include "library/browse/browsetablemodel.h"
+#include "library/proxytrackmodel.h"
 
 class PlaylistTableModel;
 class WTrackTableView;
@@ -42,7 +43,8 @@ class DlgRecording : public QWidget, public Ui::DlgRecording, public virtual Lib
     ConfigObject<ConfigValue>* m_pConfig;
     TrackCollection* m_pTrackCollection;
     WTrackTableView* m_pTrackTableView;
-    BrowseTableModel m_browseTableModel;
+    BrowseTableModel* m_browseModel;
+    ProxyTrackModel* m_proxyModel;
 
     bool m_bAutoDJEnabled;
     ControlObjectThreadMain* m_pRecordingCO;

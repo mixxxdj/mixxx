@@ -12,7 +12,7 @@
 
 
 DlgRecording::DlgRecording(QWidget* parent, ConfigObject<ConfigValue>* pConfig, TrackCollection* pTrackCollection)
-    : QWidget(parent), Ui::DlgRecording(), m_browseTableModel(this)
+    : QWidget(parent), Ui::DlgRecording()
 {
     setupUi(this);
 
@@ -36,8 +36,15 @@ DlgRecording::DlgRecording(QWidget* parent, ConfigObject<ConfigValue>* pConfig, 
 
     QString os_music_folder_dir = QDesktopServices::storageLocation(QDesktopServices::MusicLocation);
     os_music_folder_dir.append("/Traktor/Recordings");
-    m_browseTableModel.setPath(os_music_folder_dir);
-    m_pTrackTableView->loadTrackModel(&m_browseTableModel);
+
+    m_browseModel = BrowseTableModel::getInstance();
+    m_proxyModel = new ProxyTrackModel(m_browseModel);
+
+    m_proxyModel->setFilterCaseSensitivity(Qt::CaseInsensitive);
+    m_proxyModel->setSortCaseSensitivity(Qt::CaseInsensitive);
+
+    m_browseModel->setPath(os_music_folder_dir);
+    m_pTrackTableView->loadTrackModel(m_proxyModel);
 
     //Override some playlist-view properties:
     //Prevent drag and drop to the waveform or elsewhere so you can't preempt the Auto DJ queue...
@@ -56,6 +63,11 @@ DlgRecording::DlgRecording(QWidget* parent, ConfigObject<ConfigValue>* pConfig, 
 
 DlgRecording::~DlgRecording()
 {
+    if(m_pRecordingCO)
+        delete m_pRecordingCO;
+    if(m_proxyModel)
+        delete m_proxyModel;
+
 }
 
 void DlgRecording::onShow()
@@ -113,7 +125,7 @@ void DlgRecording::onSearchCleared()
 
 void DlgRecording::onSearch(const QString& text)
 {
-    //m_pAutoDJTableModel->search(text);
+    m_proxyModel->search(text);
 }
 
 void DlgRecording::loadSelectedTrack() {
