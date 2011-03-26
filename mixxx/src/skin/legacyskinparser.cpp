@@ -22,6 +22,7 @@
 
 #include "skin/legacyskinparser.h"
 #include "skin/colorschemeparser.h"
+#include "skin/propertybinder.h"
 
 #include "widget/wwidget.h"
 #include "widget/wabstractcontrol.h"
@@ -933,14 +934,17 @@ void LegacySkinParser::setupConnections(QDomNode node, QWidget* pWidget) {
             control = new ControlObject(configKey);
         }
 
-        if (!XmlParse::selectNode(con, "OnOff").isNull() &&
-            XmlParse::selectNodeQString(con, "OnOff")=="true")
-        {
+        QString property = XmlParse::selectNodeQString(con, "BindProperty");
+        if (property != "") {
+            qDebug() << "Making property binder for" << property;
+            // Bind this control to a property. Not leaked because it is
+            // parented to the widget and so it dies with it.
+            new PropertyBinder(pWidget, property, control);
+        } else if (!XmlParse::selectNode(con, "OnOff").isNull() &&
+            XmlParse::selectNodeQString(con, "OnOff")=="true") {
             // Connect control proxy to widget
             (new ControlObjectThreadWidget(control))->setWidgetOnOff(pWidget);
-        }
-        else
-        {
+        } else {
             // Get properties from XML, or use defaults
             bool bEmitOnDownPress = true;
             if (XmlParse::selectNodeQString(con, "EmitOnDownPress").contains("false", Qt::CaseInsensitive))
