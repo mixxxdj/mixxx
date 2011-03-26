@@ -13,7 +13,7 @@
    inkscape:export-filename=""
    style="display:inline"
    sodipodi:docname="ic_template_library_and_preferences.svg"
-   inkscape:version="0.48+devel r9889"
+   inkscape:version="0.48.1 r9760"
    id="svg2"
    height="32"
    width="32"
@@ -31,13 +31,13 @@
      inkscape:window-height="1028"
      id="namedview26"
      showgrid="true"
-     inkscape:zoom="10"
-     inkscape:cx="11.595312"
-     inkscape:cy="29.45"
+     inkscape:zoom="20"
+     inkscape:cx="13.875849"
+     inkscape:cy="12.673369"
      inkscape:window-x="1280"
      inkscape:window-y="0"
      inkscape:window-maximized="0"
-     inkscape:current-layer="svg2"
+     inkscape:current-layer="g4255"
      inkscape:object-paths="true"
      showguides="true"
      inkscape:guide-bbox="true"
@@ -835,18 +835,52 @@ Grid based on suggestions from http://techbase.kde.org/Projects/Oxygen/Style</dc
      sodipodi:insensitive="true">
     <g
        inkscape:groupmode="layer"
+       id="layer66"
+       inkscape:label="traktor.png"
+       style="display:none"
+       sodipodi:insensitive="true">
+      <path
+         style="color:#000000;fill:none;stroke:#ff6600;stroke-width:4;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
+         d="m 4,16 5,0"
+         id="path4038"
+         inkscape:connector-curvature="0"
+         sodipodi:nodetypes="cc" />
+      <path
+         sodipodi:nodetypes="cc"
+         inkscape:connector-curvature="0"
+         id="path4040"
+         d="m 23,16 5,0"
+         style="color:#000000;fill:none;stroke:#ff6600;stroke-width:4;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate" />
+      <path
+         sodipodi:type="arc"
+         style="color:#000000;fill:none;stroke:#ff6600;stroke-width:4.06178284;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
+         id="path4012"
+         sodipodi:cx="11"
+         sodipodi:cy="13"
+         sodipodi:rx="4.4679608"
+         sodipodi:ry="4.4679608"
+         d="m 15.467961,13 a 4.4679608,4.4679608 0 1 1 -8.9359218,0 4.4679608,4.4679608 0 1 1 8.9359218,0 z"
+         transform="matrix(1.2309866,0,0,1.2309866,2.4591474,-0.0028258)" />
+      <path
+         style="font-size:medium;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-indent:0;text-align:start;text-decoration:none;line-height:normal;letter-spacing:normal;word-spacing:normal;text-transform:none;direction:ltr;block-progression:tb;writing-mode:lr-tb;text-anchor:start;baseline-shift:baseline;color:#000000;fill:#ff6600;fill-opacity:1;stroke:none;stroke-width:1.65274727;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate;font-family:Sans;-inkscape-font-specification:Sans"
+         d="M 16,2 C 10.050165,2 4.962151,5.7471891 2.9375,11 l 3.25,0 C 8.0051259,7.4352737 11.712238,5 16,5 c 4.287762,0 7.994874,2.4352737 9.8125,6 l 3.25,0 C 27.037849,5.7471891 21.949835,2 16,2 z M 2.9375,21 c 2.024651,5.252811 7.112665,9 13.0625,9 5.949835,0 11.037849,-3.747189 13.0625,-9 l -3.25,0 C 23.994874,24.564726 20.287762,27 16,27 11.712238,27 8.0051259,24.564726 6.1875,21 l -3.25,0 z"
+         id="path5925"
+         inkscape:connector-curvature="0" />
+    </g>
+    <g
+       inkscape:groupmode="layer"
        id="layer4"
        inkscape:label="rhythmbox2.png"
        style="display:none"
        sodipodi:insensitive="true">
       <path
-         style="color:#000000;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:2;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
+         style="color:#000000;fill:#ff6600;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:2;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
          d="M 6,2 C 4.892,2 4,2.892 4,4 l 0,24 c 0,1.108 0.892,2 2,2 l 20,0 c 1.108,0 2,-0.892 2,-2 L 28,4 C 28,2.892 27.108,2 26,2 L 6,2 z m 10,2 c 4.418278,0 8,3.581722 8,8 0,4.418278 -3.581722,8 -8,8 -4.418278,0 -8,-3.581722 -8,-8 0,-4.418278 3.581722,-8 8,-8 z m -5,18 c 1.656858,0 3,1.343143 3,3 0,1.656859 -1.343141,3 -3,3 -1.656859,0 -3,-1.343142 -3,-3 0,-1.656857 1.343141,-3 3,-3 z m 10,0 c 1.656858,0 3,1.343143 3,3 0,1.656859 -1.343141,3 -3,3 -1.656859,0 -3,-1.343142 -3,-3 0,-1.656857 1.343141,-3 3,-3 z"
          id="rect3993-6"
          sodipodi:nodetypes="ccccccccccsssccsssccsssc"
          inkscape:connector-curvature="0" />
       <path
-         style="color:#000000;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:2;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
+         style="color:#000000;fill:#ff6600;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:2;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
          d="m 16,8 c -2.209145,0 -4,1.790858 -4,4 0,2.209144 1.790855,4 4,4 2.209145,0 4,-1.790855 4,-4 0,-2.209142 -1.790856,-4 -4,-4 z"
          id="path3903"
          sodipodi:nodetypes="csssc"
@@ -859,13 +893,13 @@ Grid based on suggestions from http://techbase.kde.org/Projects/Oxygen/Style</dc
        style="display:none"
        sodipodi:insensitive="true">
       <path
-         style="color:#000000;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:2;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
+         style="color:#000000;fill:#ff6600;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:2;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
          d="M 6,2 C 4.892,2 4,2.892 4,4 l 0,24 c 0,1.108 0.892,2 2,2 l 20,0 c 1.108,0 2,-0.892 2,-2 L 28,4 C 28,2.892 27.108,2 26,2 L 6,2 z m 2,2 4,0 c 1.108,0 2,0.892 2,2 0,1.108 -0.892,2 -2,2 L 8,8 C 6.892,8 6,7.108 6,6 6,4.892 6.892,4 8,4 z m 12,0 4,0 c 1.108,0 2,0.892 2,2 0,1.108 -0.892,2 -2,2 L 20,8 C 18.892,8 18,7.108 18,6 18,4.892 18.892,4 20,4 z m -4,7 c 4.418278,0 8,3.581722 8,8 0,4.418278 -3.581722,8 -8,8 -4.418278,0 -8,-3.581722 -8,-8 0,-4.418278 3.581722,-8 8,-8 z"
          id="rect3993"
          inkscape:connector-curvature="0" />
       <path
          sodipodi:type="arc"
-         style="color:#000000;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:3.82970834;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
+         style="color:#000000;fill:#ff6600;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:3.82970834;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
          id="path4671-4"
          sodipodi:cx="17.5"
          sodipodi:cy="19"
@@ -876,17 +910,29 @@ Grid based on suggestions from http://techbase.kde.org/Projects/Oxygen/Style</dc
     </g>
     <g
        inkscape:groupmode="layer"
+       id="layer7"
+       inkscape:label="recordings.png"
+       style="display:none"
+       sodipodi:insensitive="true">
+      <path
+         inkscape:connector-curvature="0"
+         id="path3284"
+         d="M 1.875,4 C 0.83625,4 0,4.892 0,6 l 0,18 c 0,1.108 0.83625,2 1.875,2 l 26.25,0 C 29.16375,26 30,25.108 30,24 L 30,6 C 30,4.892 29.16375,4 28.125,4 L 24,4 24,8 6,8 6,4 1.875,4 z M 8,4 8,6 22,6 22,4 8,4 z M 7,14 c 1.6568543,0 3,1.343146 3,3 0,1.656854 -1.3431457,3 -3,3 -1.6568543,0 -3,-1.343146 -3,-3 0,-1.656854 1.3431457,-3 3,-3 z m 16,0 c 1.656854,0 3,1.343146 3,3 0,1.656854 -1.343146,3 -3,3 -1.656854,0 -3,-1.343146 -3,-3 0,-1.656854 1.343146,-3 3,-3 z m -10.5,2 5,0 c 0.277,0 0.5,0.223 0.5,0.5 l 0,1 c 0,0.277 -0.223,0.5 -0.5,0.5 l -5,0 C 12.223,18 12,17.777 12,17.5 l 0,-1 C 12,16.223 12.223,16 12.5,16 z"
+         style="fill:#ff6600;fill-opacity:1;fill-rule:nonzero;stroke:none;display:inline" />
+    </g>
+    <g
+       inkscape:groupmode="layer"
        id="layer2"
        inkscape:label="playlist2.png"
        style="display:none"
        sodipodi:insensitive="true">
       <path
-         style="color:#000000;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:2;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
+         style="color:#000000;fill:#ff6600;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:2;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
          d="M 1,4 C 0.446,4 0,4.446 0,5 l 0,18 c 0,0.554 0.446,1 1,1 l 24,0 c 0.554,0 1,-0.446 1,-1 L 26,5 C 26,4.446 25.554,4 25,4 L 1,4 z M 8.9375,8.03125 C 9.2716216,8.0083571 9.6883986,8.0774079 10.09375,8.25 l 4.625,2.40625 4.6875,2.375 c 0.771083,0.373736 0.885067,1.433886 0.21875,1.9375 -0.07084,0.04305 -0.13991,0.09421 -0.21875,0.125 l -4.75,2.3125 L 10,19.6875 C 9,20.243635 8,20 8,19 L 7.96875,14 8,9 C 8,8.375 8.3806306,8.0694048 8.9375,8.03125 z"
          id="rect10668"
          inkscape:connector-curvature="0" />
       <path
-         style="fill:none;stroke:#000000;stroke-width:1.99948609;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+         style="fill:none;stroke:#ff6600;stroke-width:1.99948609;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
          d="m 2.999743,27.000257 26.000513,0 0,-20.0005137"
          id="path10670"
          inkscape:connector-curvature="0" />
@@ -898,13 +944,13 @@ Grid based on suggestions from http://techbase.kde.org/Projects/Oxygen/Style</dc
        style="display:none"
        sodipodi:insensitive="true">
       <path
-         style="fill:#000000;stroke:none;display:inline"
+         style="fill:#ff6600;stroke:none;display:inline"
          d="M 4,2 4,29.90625 C 4,29.96165 4.03835,30 4.09375,30 l 23.8125,0 C 27.96165,30 28,29.96165 28,29.90625 L 28,10 18,10 18,2 z m 4,12 16,0 0,2 -16,0 z m 0,4 16,0 0,2 -16,0 z m 0,4 16,0 0,2 -16,0 z"
          id="rect4856-6"
          inkscape:connector-curvature="0"
          sodipodi:nodetypes="cssssccccccccccccccccccc" />
       <path
-         style="fill:#000000;stroke:none;display:inline"
+         style="fill:#ff6600;stroke:none;display:inline"
          d="m 20,2 0,6 8,0 0,0 -8,-6 z"
          id="path7782-7"
          inkscape:connector-curvature="0"
@@ -922,13 +968,14 @@ Grid based on suggestions from http://techbase.kde.org/Projects/Oxygen/Style</dc
          id="text10650" />
       <g
          transform="scale(1.0036207,0.99639237)"
-         style="font-size:37.86291122px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;line-height:125%;letter-spacing:0;word-spacing:0;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans;-inkscape-font-specification:Sans Bold"
+         style="font-size:37.86291122px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;line-height:125%;letter-spacing:0;word-spacing:0;fill:#ff6600;fill-opacity:1;stroke:none;font-family:Sans;-inkscape-font-specification:Sans Bold"
          id="text10661">
         <path
            d="m 17.994846,20.072414 -6.674832,0 3.26e-4,-0.187518 c 0,0 0.203358,-1.904226 0.610095,-2.680724 0.406723,-0.788797 1.263322,-1.787134 2.569798,-2.995015 l 1.183216,-1.07229 c 0.702523,-0.640891 1.214016,-1.244823 1.534483,-1.811799 C 17.5507,10.75813 17.717089,10.191173 17.717102,9.624195 17.717089,8.7614547 17.421286,8.0897338 16.82969,7.6090303 16.238071,7.1160466 15.412285,6.8695436 14.352332,6.8695203 13.353985,6.8695436 12.275534,7.0790712 11.116975,7.4981038 9.9584047,7.9048565 8.7505396,8.5149516 7.4933765,9.328391 l 0,-5.8051534 C 8.9847176,3.0056078 10.346647,2.623528 11.579169,2.3769972 c 1.232509,-0.2464754 2.421886,-0.3697269 3.568136,-0.369755 3.007327,2.81e-5 5.299806,0.6162858 6.877443,1.8487749 1.577602,1.2202165 2.366412,3.0073639 2.366432,5.3614474 -2e-5,1.2078865 -0.24036,2.2924995 -0.721023,3.2538435 -0.480699,0.949055 -1.300322,1.972043 -2.45887,3.068967 l -1.183216,1.053802 c -0.838126,0.764173 -1.386595,1.38043 -1.64541,1.848775 -0.258842,0.456042 -0.388256,0.961373 -0.388243,1.515995 l 4.28e-4,0 m -6.674837,4.12805 6.615049,0 0,6.021724 -6.614722,1e-6 -3.27e-4,-6.021725"
            id="path10666"
            inkscape:connector-curvature="0"
-           sodipodi:nodetypes="cccccccccccccccccccccccccccc" />
+           sodipodi:nodetypes="cccccccccccccccccccccccccccc"
+           style="fill:#ff6600" />
       </g>
     </g>
     <g
@@ -938,13 +985,13 @@ Grid based on suggestions from http://techbase.kde.org/Projects/Oxygen/Style</dc
        style="display:none"
        sodipodi:insensitive="true">
       <path
-         style="fill:none;stroke:#000000;stroke-width:3;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+         style="fill:none;stroke:#ff6600;stroke-width:3;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
          d="m 9.5,14 c 0,0 0.012953,-3 0,-4.5 -0.012957,-1.5004487 0.4612148,-5.9608363 6.5,-6 6,-0.038912 6.495685,4.4997009 6.5,7 0.0026,1.5 0,3.5 0,3.5"
          id="path8889"
          inkscape:connector-curvature="0"
          sodipodi:nodetypes="csssc" />
       <path
-         style="font-size:medium;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-indent:0;text-align:start;text-decoration:none;line-height:normal;letter-spacing:normal;word-spacing:normal;text-transform:none;direction:ltr;block-progression:tb;writing-mode:lr-tb;text-anchor:start;baseline-shift:baseline;color:#000000;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:2;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate;font-family:Sans;-inkscape-font-specification:Sans"
+         style="font-size:medium;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-indent:0;text-align:start;text-decoration:none;line-height:normal;letter-spacing:normal;word-spacing:normal;text-transform:none;direction:ltr;block-progression:tb;writing-mode:lr-tb;text-anchor:start;baseline-shift:baseline;color:#000000;fill:#ff6600;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:2;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate;font-family:Sans;-inkscape-font-specification:Sans"
          d="m 6,14 c -1,0 -2,1 -2,2 l 0,12 c 0,1 1,2 2,2 l 20,0 c 1,0 2,-1 2,-2 l 0,-12 c 0,-1 -1,-2 -2,-2 z M 9.03125,18 23,18 c 0.522127,0 0.997189,0.476401 0.997189,1 0,0.523599 -0.475062,1 -0.997189,1 L 9.03125,20 C 8.4410263,20 8,19.478827 8,19 8,18.521173 8.4261918,18 9.03125,18 z m 0,4 L 23,22 c 0.522127,0 0.997189,0.476401 0.997189,1 0,0.523599 -0.475062,1 -0.997189,1 L 9.03125,24 C 8.4896665,24 8,23.478827 8,23 8,22.521173 8.4836539,22 9.03125,22 z m 0,4 L 23,26 c 0.522127,0 0.997189,0.476401 0.997189,1 0,0.523599 -0.475062,1 -0.997189,1 L 9.03125,28 C 8.4799385,28 8,27.478827 8,27 8,26.521173 8.4473629,26 9.03125,26 z"
          id="rect8885"
          inkscape:connector-curvature="0"
@@ -967,10 +1014,10 @@ Grid based on suggestions from http://techbase.kde.org/Projects/Oxygen/Style</dc
          height="14"
          width="4"
          id="rect4131"
-         style="fill:#000000;fill-opacity:1;stroke:none" />
+         style="fill:#ff6600;fill-opacity:1;stroke:none" />
       <rect
          ry="0.5"
-         style="fill:#000000;fill-opacity:1;stroke:none"
+         style="fill:#ff6600;fill-opacity:1;stroke:none"
          id="rect4133"
          width="4"
          height="14"
@@ -978,7 +1025,7 @@ Grid based on suggestions from http://techbase.kde.org/Projects/Oxygen/Style</dc
          y="12" />
       <rect
          ry="0.5"
-         style="fill:#000000;fill-opacity:1;stroke:none"
+         style="fill:#ff6600;fill-opacity:1;stroke:none"
          id="rect4135"
          width="30"
          height="1.9999994"
@@ -991,17 +1038,17 @@ Grid based on suggestions from http://techbase.kde.org/Projects/Oxygen/Style</dc
          height="14"
          width="4"
          id="rect4137"
-         style="fill:#000000;fill-opacity:1;stroke:none" />
+         style="fill:#ff6600;fill-opacity:1;stroke:none" />
       <rect
          ry="0.5"
-         style="fill:#000000;fill-opacity:1;stroke:none"
+         style="fill:#ff6600;fill-opacity:1;stroke:none"
          id="rect4139"
          width="4"
          height="14"
          x="10"
          y="12" />
       <path
-         style="fill:#000000;fill-opacity:1;stroke:#000000;stroke-width:0.99724364;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+         style="fill:#ff6600;fill-opacity:1;stroke:#ff6600;stroke-width:0.99724364;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
          d="m 15,2.4986218 -14.50137818,7.0027564 29.00275618,0 L 15,2.4986218 z m 0,1.0003937 c 1.380844,0 2.500238,1.119729 2.500238,2.5009845 0,1.3812555 -1.119394,2.5009844 -2.500238,2.5009844 -1.380844,0 -2.500238,-1.1197289 -2.500238,-2.5009844 0,-1.3812555 1.119394,-2.5009845 2.500238,-2.5009845 z"
          id="path4141"
          inkscape:connector-curvature="0" />
@@ -1023,11 +1070,11 @@ Grid based on suggestions from http://techbase.kde.org/Projects/Oxygen/Style</dc
            sodipodi:cy="23.5"
            sodipodi:cx="8"
            id="path4775-9"
-           style="fill:#000000;stroke:none"
+           style="fill:#ff6600;stroke:none"
            sodipodi:type="arc" />
         <path
            sodipodi:type="arc"
-           style="fill:#000000;stroke:none"
+           style="fill:#ff6600;stroke:none"
            id="path4777-7"
            sodipodi:cx="8"
            sodipodi:cy="23.5"
@@ -1039,15 +1086,15 @@ Grid based on suggestions from http://techbase.kde.org/Projects/Oxygen/Style</dc
            inkscape:connector-curvature="0"
            id="path8479-3"
            d="m 8.9999998,26.955137 0,-18.9033541"
-           style="fill:none;stroke:#000000;stroke-width:2.02206349;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+           style="fill:none;stroke:#ff6600;stroke-width:2.02206349;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
         <path
            sodipodi:nodetypes="cc"
            inkscape:connector-curvature="0"
            id="path8483-7"
            d="M 10,8 26,4"
-           style="fill:none;stroke:#000000;stroke-width:4;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+           style="fill:none;stroke:#ff6600;stroke-width:4;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
         <path
-           style="fill:none;stroke:#000000;stroke-width:2.03131866;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+           style="fill:none;stroke:#ff6600;stroke-width:2.03131866;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
            d="m 27.003982,24.684436 0,-20.6448043"
            id="path8485-9"
            inkscape:connector-curvature="0" />
@@ -1056,7 +1103,7 @@ Grid based on suggestions from http://techbase.kde.org/Projects/Oxygen/Style</dc
            inkscape:connector-curvature="0"
            id="path8487-7"
            d="M 10,14 26,10"
-           style="fill:none;stroke:#000000;stroke-width:2;stroke-linecap:round;stroke-linejoin:bevel;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+           style="fill:none;stroke:#ff6600;stroke-width:2;stroke-linecap:round;stroke-linejoin:bevel;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
       </g>
     </g>
     <g
@@ -1078,19 +1125,19 @@ Grid based on suggestions from http://techbase.kde.org/Projects/Oxygen/Style</dc
              sodipodi:nodetypes="ccc"
              id="path3964-7"
              d="M 5.1832089,9.892316 8.8773755,5.7973277 12.721903,9.892316"
-             style="fill:none;stroke:#000000;stroke-width:2.135463;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+             style="fill:none;stroke:#ff6600;stroke-width:2.135463;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
         </g>
         <path
            inkscape:connector-curvature="0"
            sodipodi:nodetypes="cccccccccccccc"
            id="rect3928-3"
            d="m 5,-16.5 c -1.1100135,0 -2,1.015111 -2,2 l 0,12 c 0,0.9848889 0.8899865,2 2,2 l 22,0 c 1.110012,0 2,-1.0151111 2,-2 l 0,-12 c 0,-0.984889 -0.889988,-2 -2,-2 z m 0,2 22,0 0,12 -22,0 z"
-           style="fill:#000000;stroke:none" />
+           style="fill:#ff6600;stroke:none" />
         <path
            inkscape:connector-curvature="0"
            id="rect3940-8"
            d="m 1.0004267,-18.5 0,1.777778 c -0.007182,0.07144 0,0.148682 0,0.222222 0,1.108 0.8362381,2 1.8749732,2 l 26.2496261,0 C 30.163763,-14.5 31,-15.392 31,-16.5 c 0,-0.07354 0.0072,-0.150783 0,-0.222222 L 31,-18.5 l -1.874973,0 -26.2496271,0 -1.8749732,0 z"
-           style="fill:#1a1a1a;stroke:none" />
+           style="fill:#ff6600;stroke:none" />
       </g>
     </g>
     <g
@@ -1106,7 +1153,7 @@ Grid based on suggestions from http://techbase.kde.org/Projects/Oxygen/Style</dc
         <title
            id="title4347-8">Layer 1</title>
         <path
-           style="fill:#000000;fill-opacity:1;stroke:none"
+           style="fill:#ff6600;fill-opacity:1;stroke:none"
            id="path4349-3"
            d="M 9.7493474,12.988007 14.528654,4.7100059 6.2506525,-0.06929989 1.4713466,8.2087009 9.7493474,12.988007 z"
            inkscape:connector-curvature="0" />
@@ -1114,7 +1161,7 @@ Grid based on suggestions from http://techbase.kde.org/Projects/Oxygen/Style</dc
       <path
          id="path4351-0"
          d="m 1.9999999,20 0,8.181818 0,1.818182 L 30,30 l 0,-2 0,-8 -4,0 0,8 -20,0 0,-8 z"
-         style="fill:#000000;fill-opacity:1;stroke:none;display:inline"
+         style="fill:#ff6600;fill-opacity:1;stroke:none;display:inline"
          inkscape:connector-curvature="0"
          sodipodi:nodetypes="ccccccccccc" />
     </g>
@@ -1122,7 +1169,8 @@ Grid based on suggestions from http://techbase.kde.org/Projects/Oxygen/Style</dc
        inkscape:groupmode="layer"
        id="layer42"
        inkscape:label="browse.png"
-       style="display:none">
+       style="display:none"
+       sodipodi:insensitive="true">
       <g
          id="g8438">
         <path
@@ -1130,7 +1178,7 @@ Grid based on suggestions from http://techbase.kde.org/Projects/Oxygen/Style</dc
            inkscape:connector-curvature="0"
            id="path8376"
            d="m 19,19 9,9"
-           style="fill:none;stroke:#000000;stroke-width:4;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+           style="fill:none;stroke:#ff6600;stroke-width:4;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
         <path
            transform="matrix(0.67865038,0,0,0.67865038,4.5348458,4.8741712)"
            d="m 22.715375,10.5 a 11.715375,11.715375 0 1 1 -23.43074995,0 11.715375,11.715375 0 1 1 23.43074995,0 z"
@@ -1139,7 +1187,7 @@ Grid based on suggestions from http://techbase.kde.org/Projects/Oxygen/Style</dc
            sodipodi:cy="10.5"
            sodipodi:cx="11"
            id="path8408"
-           style="color:#000000;fill:none;stroke:#000000;stroke-width:6.03950548;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
+           style="color:#000000;fill:none;stroke:#ff6600;stroke-width:6.03950548;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
            sodipodi:type="arc" />
       </g>
     </g>
@@ -1147,10 +1195,11 @@ Grid based on suggestions from http://techbase.kde.org/Projects/Oxygen/Style</dc
        inkscape:groupmode="layer"
        id="layer38"
        inkscape:label="bpmdetect.png"
-       style="display:none">
+       style="display:none"
+       sodipodi:insensitive="true">
       <path
          sodipodi:type="star"
-         style="fill:#000000;fill-opacity:1;stroke:none;display:inline"
+         style="fill:#ff6600;fill-opacity:1;stroke:none;display:inline"
          id="path4430-8-5"
          sodipodi:sides="4"
          sodipodi:cx="3"
@@ -1165,7 +1214,7 @@ Grid based on suggestions from http://techbase.kde.org/Projects/Oxygen/Style</dc
          d="M 8.9999997,29 3.0000001,25.12132 -2.9999997,29 0.87867975,23 -2.9999997,17 2.9999999,20.87868 8.9999997,17 5.1213202,23 z"
          transform="translate(2.9999999,0.9999991)" />
       <path
-         style="fill:#000000;fill-opacity:1;stroke:none;display:inline"
+         style="fill:#ff6600;fill-opacity:1;stroke:none;display:inline"
          d="m 3.9999999,0 -4,4 L 26,30 30,26 z m 1,3 L 12,10 10,12 2.9999999,5 z"
          id="path4365-1-0"
          inkscape:connector-curvature="0"
@@ -1175,14 +1224,15 @@ Grid based on suggestions from http://techbase.kde.org/Projects/Oxygen/Style</dc
        inkscape:groupmode="layer"
        id="layer37"
        inkscape:label="autodj.png"
-       style="display:none">
+       style="display:none"
+       sodipodi:insensitive="true">
       <path
-         style="fill:#000000;stroke:none;display:inline"
+         style="fill:#ff6600;stroke:none;display:inline"
          d="m 16,1.9375 c -4.418278,0 -8,3.596693 -8,8.03125 C 8,9.97935 7.9999591,9.98941 8,10 l 16,0 C 24.000041,9.98941 24,9.97935 24,9.96875 24,5.534193 20.418278,1.9375 16,1.9375 z M 12.5,5 C 13.328427,5 14,5.6715729 14,6.5 14,7.3284271 13.328427,8 12.5,8 11.671573,8 11,7.3284271 11,6.5 11,5.6715729 11.671573,5 12.5,5 z m 7,0 C 20.328427,5 21,5.6715729 21,6.5 21,7.3284271 20.328427,8 19.5,8 18.671573,8 18,7.3284271 18,6.5 18,5.6715729 18.671573,5 19.5,5 z"
          id="path4303"
          inkscape:connector-curvature="0" />
       <rect
-         style="fill:#000000;stroke:none;display:inline"
+         style="fill:#ff6600;stroke:none;display:inline"
          id="rect4796"
          width="4"
          height="6"
@@ -1196,11 +1246,11 @@ Grid based on suggestions from http://techbase.kde.org/Projects/Oxygen/Style</dc
          height="6"
          width="4"
          id="rect4798"
-         style="fill:#000000;stroke:none;display:inline"
+         style="fill:#ff6600;stroke:none;display:inline"
          rx="1"
          ry="1" />
       <rect
-         style="color:#000000;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:2;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
+         style="color:#000000;fill:#ff6600;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:2;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
          id="rect4305"
          width="4"
          height="10"
@@ -1210,7 +1260,7 @@ Grid based on suggestions from http://techbase.kde.org/Projects/Oxygen/Style</dc
          ry="1" />
       <path
          inkscape:connector-curvature="0"
-         style="color:#000000;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:2;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
+         style="color:#000000;fill:#ff6600;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:2;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
          d="M 8,12 8,13.15625 8,14 8,24.84375 C 8,25.490083 8.446,26 9,26 l 14,0 c 0.554,0 1,-0.509917 1,-1.15625 L 24,14 24,13.15625 24,12 23,12 9,12 8,12 z"
          id="rect4319" />
       <rect
@@ -1221,7 +1271,7 @@ Grid based on suggestions from http://techbase.kde.org/Projects/Oxygen/Style</dc
          height="10"
          width="4"
          id="rect4330"
-         style="color:#000000;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:2;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate" />
+         style="color:#000000;fill:#ff6600;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:2;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate" />
     </g>
   </g>
   <g
@@ -1248,7 +1298,7 @@ Grid based on suggestions from http://techbase.kde.org/Projects/Oxygen/Style</dc
            sodipodi:cy="7"
            sodipodi:rx="5"
            sodipodi:ry="5"
-           d="M 12,7 C 12,9.7614237 9.7614237,12 7,12 4.2385763,12 2,9.7614237 2,7 2,4.2385763 4.2385763,2 7,2 c 2.7614237,0 5,2.2385763 5,5 z"
+           d="M 12,7 A 5,5 0 1 1 2,7 5,5 0 1 1 12,7 z"
            transform="matrix(1.9222927,0,0,1.9222927,0.5439511,-13.456048)" />
         <path
            sodipodi:type="arc"
@@ -1258,7 +1308,7 @@ Grid based on suggestions from http://techbase.kde.org/Projects/Oxygen/Style</dc
            sodipodi:cy="6"
            sodipodi:rx="1.4933327"
            sodipodi:ry="1.4933327"
-           d="M 7.4933327,6 C 7.4933327,6.8247449 6.8247449,7.4933327 6,7.4933327 5.1752551,7.4933327 4.5066673,6.8247449 4.5066673,6 4.5066673,5.1752551 5.1752551,4.5066673 6,4.5066673 6.8247449,4.5066673 7.4933327,5.1752551 7.4933327,6 z"
+           d="M 7.4933327,6 A 1.4933327,1.4933327 0 1 1 4.5066673,6 1.4933327,1.4933327 0 1 1 7.4933327,6 z"
            transform="matrix(1.3392862,0,0,1.3392862,5.9642827,-8.0357171)" />
       </g>
     </g>
