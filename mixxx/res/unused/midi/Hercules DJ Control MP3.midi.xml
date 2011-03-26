@@ -8,8 +8,8 @@
 			<midino>0x31</midino>
 		</control>
 
-<!--  SelectPrevTrack should be 0x39 when value = x0, off = x40 -->
-<!--  SelectPrevTrack should be 0x39 when value = x7F, off = x40 -->
+		<!-- SelectPrevTrack should be 0x39 when value = x0, off = x40 -->
+		<!-- SelectPrevTrack should be 0x39 when value = x7F, off = x40 -->
 		<control>
 			<group>[Playlist]</group>
 			<key>SelectPrevTrack</key>
@@ -52,7 +52,7 @@
 			<miditype>Ctrl</miditype>
 			<midino>0x34</midino>
 			<options>
-				<diff/>
+				<diff />
 			</options>
 		</control>
 		<control>
@@ -61,7 +61,7 @@
 			<miditype>Ctrl</miditype>
 			<midino>0x36</midino>
 			<options>
-				<hercjog/>
+				<hercjog />
 			</options>
 		</control>
 		<control>
@@ -70,7 +70,7 @@
 			<miditype>Ctrl</miditype>
 			<midino>0x08</midino>
 			<options>
-				<button/>
+				<button />
 			</options>
 		</control>
 		<control>
@@ -79,20 +79,11 @@
 			<miditype>Ctrl</miditype>
 			<midino>0x09</midino>
 			<options>
-				<switch/>
+				<switch />
 			</options>
 		</control>
-<!--
-		<control>
-			<group>[Channel1]</group>
-			<key>pfl</key>
-			<miditype>Ctrl</miditype>
-			<midino>0x21</midino>
-			<options>
-				<switch/>
-			</options>
-		</control>
--->
+		<!-- <control> <group>[Channel1]</group> <key>pfl</key> <miditype>Ctrl</miditype> 
+			<midino>0x21</midino> <options> <switch/> </options> </control> -->
 		<control>
 			<group>[Channel1]</group>
 			<key>PrevTrack</key>
@@ -111,7 +102,7 @@
 			<miditype>Ctrl</miditype>
 			<midino>0x0A</midino>
 			<options>
-				<switch/>
+				<switch />
 			</options>
 		</control>
 		<control>
@@ -120,7 +111,7 @@
 			<miditype>Ctrl</miditype>
 			<midino>0x13</midino>
 			<options>
-				<switch/>
+				<switch />
 			</options>
 		</control>
 		<control>
@@ -129,7 +120,7 @@
 			<miditype>Ctrl</miditype>
 			<midino>0x14</midino>
 			<options>
-				<switch/>
+				<switch />
 			</options>
 		</control>
 		<control>
@@ -145,7 +136,7 @@
 			<miditype>Ctrl</miditype>
 			<midino>0x07</midino>
 			<options>
-				<switch/>
+				<switch />
 			</options>
 		</control>
 		<!-- AKA 1 -->
@@ -155,7 +146,7 @@
 			<miditype>Ctrl</miditype>
 			<midino>0x0F</midino>
 			<options>
-				<button/>
+				<button />
 			</options>
 		</control>
 		<!-- AKA 2 -->
@@ -165,7 +156,7 @@
 			<miditype>Ctrl</miditype>
 			<midino>0x0E</midino>
 			<options>
-				<button/>
+				<button />
 			</options>
 		</control>
 		<!-- AKA 3 -->
@@ -175,7 +166,7 @@
 			<miditype>Ctrl</miditype>
 			<midino>0x0D</midino>
 			<options>
-				<button/>
+				<button />
 			</options>
 		</control>
 		<control>
@@ -208,7 +199,7 @@
 			<miditype>Ctrl</miditype>
 			<midino>0x35</midino>
 			<options>
-				<diff/>
+				<diff />
 			</options>
 		</control>
 
@@ -218,7 +209,7 @@
 			<miditype>Ctrl</miditype>
 			<midino>0x37</midino>
 			<options>
-				<hercjog/>
+				<hercjog />
 			</options>
 		</control>
 		<control>
@@ -227,7 +218,7 @@
 			<miditype>Ctrl</miditype>
 			<midino>0x02</midino>
 			<options>
-				<button/>
+				<button />
 			</options>
 		</control>
 		<control>
@@ -236,20 +227,11 @@
 			<miditype>Ctrl</miditype>
 			<midino>0x03</midino>
 			<options>
-				<switch/>
+				<switch />
 			</options>
 		</control>
-<!--
-		<control>
-			<group>[Channel2]</group>
-			<key>pfl</key>
-			<miditype>Ctrl</miditype>
-			<midino>0x22</midino>
-			<options>
-				<switch/>
-			</options>
-		</control>
--->
+		<!-- <control> <group>[Channel2]</group> <key>pfl</key> <miditype>Ctrl</miditype> 
+			<midino>0x22</midino> <options> <switch/> </options> </control> -->
 		<control>
 			<group>[Channel2]</group>
 			<key>PrevTrack</key>
@@ -268,7 +250,7 @@
 			<miditype>Ctrl</miditype>
 			<midino>0x04</midino>
 			<options>
-				<switch/>
+				<switch />
 			</options>
 		</control>
 		<control>
@@ -277,7 +259,7 @@
 			<miditype>Ctrl</miditype>
 			<midino>0x17</midino>
 			<options>
-				<switch/>
+				<switch />
 			</options>
 		</control>
 		<control>
@@ -286,7 +268,7 @@
 			<miditype>Ctrl</miditype>
 			<midino>0x18</midino>
 			<options>
-				<switch/>
+				<switch />
 			</options>
 		</control>
 		<control>
@@ -302,7 +284,7 @@
 			<miditype>Ctrl</miditype>
 			<midino>0x01</midino>
 			<options>
-				<switch/>
+				<switch />
 			</options>
 		</control>
 		<control>
@@ -311,7 +293,7 @@
 			<miditype>Ctrl</miditype>
 			<midino>0x10</midino>
 			<options>
-				<button/>
+				<button />
 			</options>
 		</control>
 		<control>
@@ -320,7 +302,7 @@
 			<miditype>Ctrl</miditype>
 			<midino>0x11</midino>
 			<options>
-				<button/>
+				<button />
 			</options>
 		</control>
 		<control>
@@ -329,7 +311,7 @@
 			<miditype>Ctrl</miditype>
 			<midino>0x12</midino>
 			<options>
-				<button/>
+				<button />
 			</options>
 		</control>
 
@@ -339,7 +321,7 @@
 			<miditype>Ctrl</miditype>
 			<midino>0x15</midino>
 			<options>
-				<button/>
+				<button />
 			</options>
 		</control>
 		<control>
@@ -348,7 +330,7 @@
 			<miditype>Ctrl</miditype>
 			<midino>0x19</midino>
 			<options>
-				<button/>
+				<button />
 			</options>
 		</control>
 
@@ -371,18 +353,18 @@
 			<threshold>0.5</threshold>
 		</light>
 		<light>
-                        <group>[Channel1]</group>
-                        <key>pfl</key>
-                        <status>0xB0</status>
-                        <midino>0x7E</midino>
-                        <threshold>0.5</threshold>
-                </light>
-                <light>
-                        <group>[Channel2]</group>
-                        <key>pfl</key>
-                        <status>0xB0</status>
-                        <midino>0x7D</midino>
-                        <threshold>0.5</threshold>
+			<group>[Channel1]</group>
+			<key>pfl</key>
+			<status>0xB0</status>
+			<midino>0x7E</midino>
+			<threshold>0.5</threshold>
+		</light>
+		<light>
+			<group>[Channel2]</group>
+			<key>pfl</key>
+			<status>0xB0</status>
+			<midino>0x7D</midino>
+			<threshold>0.5</threshold>
 
 		</light>
 

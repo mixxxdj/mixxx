@@ -7,17 +7,11 @@
 			<miditype>Ctrl</miditype>
 			<midino>0x39</midino>
 		</control>
-<!-- Scratch -->
-<!-- There is no Master scratch control in Mixxx. -Albert 09/15/2008
-		<control>
-			<group>[Master]</group>
-			<key>scratch</key>
-			<miditype>Key</miditype>
-			<midino>0x29</midino>
-			<midichan>1</midichan>
-		</control>
--->
-<!-- Balance -->
+		<!-- Scratch -->
+		<!-- There is no Master scratch control in Mixxx. -Albert 09/15/2008 <control> 
+			<group>[Master]</group> <key>scratch</key> <miditype>Key</miditype> <midino>0x29</midino> 
+			<midichan>1</midichan> </control> -->
+		<!-- Balance -->
 		<control>
 			<group>[Master]</group>
 			<key>balance</key>
@@ -25,22 +19,22 @@
 			<midino>0x37</midino>
 		</control>
 
-<!-- Main Volume -->
+		<!-- Main Volume -->
 		<control>
 			<group>[Master]</group>
 			<key>volume</key>
 			<miditype>Ctrl</miditype>
 			<midino>0x38</midino>
 		</control>
-		
-<!-- Left Deck = Channel1, Right Deck = Channel2 -->
+
+		<!-- Left Deck = Channel1, Right Deck = Channel2 -->
 		<control>
 			<group>[Channel1]</group>
 			<key>flanger</key>
 			<miditype>Ctrl</miditype>
 			<midino>0x01</midino>
 			<options>
-				<button/>
+				<button />
 			</options>
 		</control>
 		<control>
@@ -49,7 +43,7 @@
 			<miditype>Ctrl</miditype>
 			<midino>0x04</midino>
 			<options>
-				<switch/>
+				<switch />
 			</options>
 		</control>
 		<control>
@@ -58,7 +52,7 @@
 			<miditype>Ctrl</miditype>
 			<midino>0x19</midino>
 			<options>
-				<button/>
+				<button />
 			</options>
 		</control>
 		<control>
@@ -67,7 +61,7 @@
 			<miditype>Ctrl</miditype>
 			<midino>0x1C</midino>
 			<options>
-				<switch/>
+				<switch />
 			</options>
 		</control>
 		<control>
@@ -106,7 +100,7 @@
 			<miditype>Ctrl</miditype>
 			<midino>0x2F</midino>
 			<options>
-				<hercjog/>
+				<hercjog />
 			</options>
 		</control>
 		<control>
@@ -115,7 +109,7 @@
 			<miditype>Ctrl</miditype>
 			<midino>0x0B</midino>
 			<options>
-				<button/>
+				<button />
 			</options>
 		</control>
 		<control>
@@ -124,7 +118,7 @@
 			<miditype>Ctrl</miditype>
 			<midino>0x0C</midino>
 			<options>
-				<button/>
+				<button />
 			</options>
 		</control>
 		<control>
@@ -133,7 +127,7 @@
 			<miditype>Ctrl</miditype>
 			<midino>0x14</midino>
 			<options>
-				<button/>
+				<button />
 			</options>
 		</control>
 		<control>
@@ -148,7 +142,7 @@
 			<miditype>Ctrl</miditype>
 			<midino>0x0A</midino>
 		</control>
-		
+
 		<control>
 			<group>[Channel2]</group>
 			<key>volume</key>
@@ -185,7 +179,7 @@
 			<miditype>Ctrl</miditype>
 			<midino>0x30</midino>
 			<options>
-				<hercjog/>
+				<hercjog />
 			</options>
 		</control>
 		<control>
@@ -194,7 +188,7 @@
 			<miditype>Ctrl</miditype>
 			<midino>0x23</midino>
 			<options>
-				<button/>
+				<button />
 			</options>
 		</control>
 		<control>
@@ -203,7 +197,7 @@
 			<miditype>Ctrl</miditype>
 			<midino>0x24</midino>
 			<options>
-				<button/>
+				<button />
 			</options>
 		</control>
 		<control>
@@ -212,7 +206,7 @@
 			<miditype>Ctrl</miditype>
 			<midino>0x18</midino>
 			<options>
-				<button/>
+				<button />
 			</options>
 		</control>
 		<control>
@@ -228,71 +222,71 @@
 			<midino>0x22</midino>
 		</control>
 
-<!-- New for RMX -->
-<!-- Kill Buttons -->
-    		<control>
-   			<group>[Channel1]</group>
+		<!-- New for RMX -->
+		<!-- Kill Buttons -->
+		<control>
+			<group>[Channel1]</group>
 			<key>filterHighKill</key>
 			<miditype>Ctrl</miditype>
 			<midino>0x0E</midino>
 			<options>
-				<button/>
+				<button />
 			</options>
 		</control>
-    		<control>
-   			<group>[Channel2]</group>
+		<control>
+			<group>[Channel2]</group>
 			<key>filterHighKill</key>
 			<miditype>Ctrl</miditype>
 			<midino>0x26</midino>
 			<options>
-				<button/>
+				<button />
 			</options>
 		</control>
-    		<control>
-   			<group>[Channel1]</group>
+		<control>
+			<group>[Channel1]</group>
 			<key>filterMidKill</key>
 			<miditype>Ctrl</miditype>
 			<midino>0x0F</midino>
 			<options>
-				<button/>
+				<button />
 			</options>
 		</control>
-    		<control>
-   			<group>[Channel2]</group>
+		<control>
+			<group>[Channel2]</group>
 			<key>filterMidKill</key>
 			<miditype>Ctrl</miditype>
 			<midino>0x27</midino>
 			<options>
-				<button/>
+				<button />
 			</options>
 		</control>
-    		<control>
-   			<group>[Channel1]</group>
+		<control>
+			<group>[Channel1]</group>
 			<key>filterLowKill</key>
 			<miditype>Ctrl</miditype>
 			<midino>0x10</midino>
 			<options>
-				<button/>
+				<button />
 			</options>
 		</control>
-    		<control>
-   			<group>[Channel2]</group>
+		<control>
+			<group>[Channel2]</group>
 			<key>filterLowKill</key>
 			<miditype>Ctrl</miditype>
 			<midino>0x28</midino>
 			<options>
-				<button/>
+				<button />
 			</options>
 		</control>
 
-<!-- Sync Buttons -->
+		<!-- Sync Buttons -->
 		<control>
 			<group>[Channel1]</group>
 			<key>beatsync</key>
 			<miditype>Ctrl</miditype>
 			<midino>0x07</midino>
 			<options>
-				<switch/>
+				<switch />
 			</options>
 		</control>
 		<control>
@@ -301,11 +295,11 @@
 			<miditype>Ctrl</miditype>
 			<midino>0x1F</midino>
 			<options>
-				<switch/>
+				<switch />
 			</options>
 		</control>
 
-<!-- Up/Down -->
+		<!-- Up/Down -->
 		<control>
 			<group>[Playlist]</group>
 			<key>SelectPrevTrack</key>
@@ -319,14 +313,14 @@
 			<midino>0x2B</midino>
 		</control>
 
-<!-- Load Deck A/B -->
+		<!-- Load Deck A/B -->
 		<control>
 			<group>[Channel1]</group>
 			<key>LoadSelectedTrack</key>
 			<miditype>Ctrl</miditype>
 			<midino>0x12</midino>
 			<options>
-				<button/>
+				<button />
 			</options>
 		</control>
 		<control>
@@ -335,11 +329,11 @@
 			<miditype>Ctrl</miditype>
 			<midino>0x16</midino>
 			<options>
-				<button/>
+				<button />
 			</options>
 		</control>
 
-<!-- A/B Gain  -->
+		<!-- A/B Gain -->
 		<control>
 			<group>[Channel1]</group>
 			<key>pregain</key>
@@ -352,7 +346,7 @@
 			<miditype>Ctrl</miditype>
 			<midino>0x3D</midino>
 		</control>
-		
+
 	</controls>
 
 	<lights>
@@ -371,17 +365,10 @@
 			<threshold>0.5</threshold>
 		</light>
 
-<!-- Scratch -->
-<!--
-		<light>
-			<group>[Master]</group>
-			<key>scratch</key>
-			<status>0xB0</status>
-			<midino>0x29</midino>
-			<threshold>0.5</threshold>
-		</light>
--->
-<!-- Headphone Cue -->
+		<!-- Scratch -->
+		<!-- <light> <group>[Master]</group> <key>scratch</key> <status>0xB0</status> 
+			<midino>0x29</midino> <threshold>0.5</threshold> </light> -->
+		<!-- Headphone Cue -->
 		<light>
 			<group>[Channel1]</group>
 			<key>pfl</key>
@@ -397,78 +384,21 @@
 			<threshold>0.5</threshold>
 		</light>
 
-<!--
-		<light>
-			<group>[Channel1]</group>
-			<key>VuMeter</key>
-			<status>0xB0</status>
-			<midino>0x0A</midino>
-			<threshold>0.4</threshold>
-		</light>
-		<light>
-			<group>[Channel1]</group>
-			<key>VuMeter</key>
-			<status>0xB0</status>
-			<midino>0x16</midino>
-			<threshold>0.5</threshold>
-		</light>
-		<light>
-			<group>[Channel1]</group>
-			<key>VuMeter</key>
-			<status>0xB0</status>
-			<midino>0x0D</midino>
-			<threshold>0.6</threshold>
-		</light>
-		<light>
-			<group>[Channel1]</group>
-			<key>VuMeter</key>
-			<status>0xB0</status>
-			<midino>0x0E</midino>
-			<threshold>0.7</threshold>
-		</light>
-		<light>
-			<group>[Channel1]</group>
-			<key>VuMeter</key>
-			<status>0xB0</status>
-			<midino>0x0F</midino>
-			<threshold>0.8</threshold>
-		</light>
-
-		<light>
-			<group>[Channel2]</group>
-			<key>VuMeter</key>
-			<status>0xB0</status>
-			<midino>0x04</midino>
-			<threshold>0.4</threshold>
-		</light>
-		<light>
-			<group>[Channel2]</group>
-			<key>VuMeter</key>
-			<status>0xB0</status>
-			<midino>0x1A</midino>
-			<threshold>0.5</threshold>
-		</light>
-		<light>
-			<group>[Channel2]</group>
-			<key>VuMeter</key>
-			<status>0xB0</status>
-			<midino>0x12</midino>
-			<threshold>0.6</threshold>
-		</light>
-		<light>
-			<group>[Channel2]</group>
-			<key>VuMeter</key>
-			<status>0xB0</status>
-			<midino>0x11</midino>
-			<threshold>0.7</threshold>
-		</light>
-		<light>
-			<group>[Channel2]</group>
-			<key>VuMeter</key>
-			<status>0xB0</status>
-			<midino>0x10</midino>
-			<threshold>0.8</threshold>
-		</light>
--->
+		<!-- <light> <group>[Channel1]</group> <key>VuMeter</key> <status>0xB0</status> 
+			<midino>0x0A</midino> <threshold>0.4</threshold> </light> <light> <group>[Channel1]</group> 
+			<key>VuMeter</key> <status>0xB0</status> <midino>0x16</midino> <threshold>0.5</threshold> 
+			</light> <light> <group>[Channel1]</group> <key>VuMeter</key> <status>0xB0</status> 
+			<midino>0x0D</midino> <threshold>0.6</threshold> </light> <light> <group>[Channel1]</group> 
+			<key>VuMeter</key> <status>0xB0</status> <midino>0x0E</midino> <threshold>0.7</threshold> 
+			</light> <light> <group>[Channel1]</group> <key>VuMeter</key> <status>0xB0</status> 
+			<midino>0x0F</midino> <threshold>0.8</threshold> </light> <light> <group>[Channel2]</group> 
+			<key>VuMeter</key> <status>0xB0</status> <midino>0x04</midino> <threshold>0.4</threshold> 
+			</light> <light> <group>[Channel2]</group> <key>VuMeter</key> <status>0xB0</status> 
+			<midino>0x1A</midino> <threshold>0.5</threshold> </light> <light> <group>[Channel2]</group> 
+			<key>VuMeter</key> <status>0xB0</status> <midino>0x12</midino> <threshold>0.6</threshold> 
+			</light> <light> <group>[Channel2]</group> <key>VuMeter</key> <status>0xB0</status> 
+			<midino>0x11</midino> <threshold>0.7</threshold> </light> <light> <group>[Channel2]</group> 
+			<key>VuMeter</key> <status>0xB0</status> <midino>0x10</midino> <threshold>0.8</threshold> 
+			</light> -->
 	</lights>
 </controller>

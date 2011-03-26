@@ -48,6 +48,7 @@ available_features = [features.HifiEq,
                       features.LADSPA,
                       features.MSVCDebug,
                       features.MSVSHacks,
+                      features.Vamp,
 
                       # "Features" of dubious quality
                       features.AsmLib,
