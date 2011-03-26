@@ -13,6 +13,12 @@
 #include "library/recording/recordingfeature.h"
 #include "library/trackcollection.h"
 #include "library/dao/trackdao.h"
+#include "dlgrecording.h"
+#include "widget/wlibrary.h"
+#include "widget/wlibrarysidebar.h"
+#include "mixxxkeyboard.h"
+
+const QString RecordingFeature::m_sRecordingViewName = QString("Recording");
 
 RecordingFeature::RecordingFeature(QObject* parent, ConfigObject<ConfigValue>* pConfig, TrackCollection* pTrackCollection)
         : LibraryFeature(parent),
@@ -41,6 +47,21 @@ QIcon RecordingFeature::getIcon() {
 TreeItemModel* RecordingFeature::getChildModel() {
     return &m_childModel;
 }
+void RecordingFeature::bindWidget(WLibrarySidebar *sidebarWidget,
+                             WLibrary *libraryWidget,
+                             MixxxKeyboard *keyboard)
+{
+    DlgRecording* pRecordingView = new DlgRecording(libraryWidget,
+                                           m_pConfig,
+                                           m_pTrackCollection);
+
+    pRecordingView->installEventFilter(keyboard);
+    libraryWidget->registerView(m_sRecordingViewName, pRecordingView);
+    connect(pRecordingView, SIGNAL(loadTrack(TrackPointer)),
+            this, SIGNAL(loadTrack(TrackPointer)));
+    connect(pRecordingView, SIGNAL(loadTrackToPlayer(TrackPointer, QString)),
+            this, SIGNAL(loadTrackToPlayer(TrackPointer, QString)));
+}
 
 bool RecordingFeature::dropAccept(QUrl url) {
     return false;
@@ -59,8 +80,8 @@ bool RecordingFeature::dragMoveAcceptChild(const QModelIndex& index, QUrl url) {
 }
 
 void RecordingFeature::activate() {
-    qDebug() << "RecordingFeature::activate;
-    emit(showTrackModel(&m_proxyModel));
+    qDebug() << "RecordingFeature::activate";
+    emit(switchToView("Recording"));
 }
 
 void RecordingFeature::activateChild(const QModelIndex& index) {
