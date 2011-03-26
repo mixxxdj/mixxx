@@ -34,8 +34,36 @@ DlgRecording::DlgRecording(QWidget* parent, ConfigObject<ConfigValue>* pConfig, 
     m_pTrackTablePlaceholder->hide();
     box->insertWidget(1, m_pTrackTableView);
 
-    QString os_music_folder_dir = QDesktopServices::storageLocation(QDesktopServices::MusicLocation);
-    os_music_folder_dir.append("/Traktor/Recordings");
+    QDir os_music_folder_dir(QDesktopServices::storageLocation(QDesktopServices::MusicLocation));
+    //Check if there's a folder Mixxx within the music directory
+    QDir mixxxDir(os_music_folder_dir.absolutePath() +"/Mixxx");
+
+    if(!mixxxDir.exists()){
+
+        if(os_music_folder_dir.mkdir("Mixxx")){
+            qDebug() << "Created folder 'Mixxx' within default OS Music directory";
+
+            if(mixxxDir.mkdir("Recordings"))
+                qDebug() << "Created folder 'Recordings' successfully";
+            else
+                qDebug() << "Could not create folder 'Recordings' within 'Mixxx'";
+        }
+        else{
+            qDebug() << "Failed to create folder 'Mixxx'' within default OS Music directory."
+                     << "Please verify that there's no file called 'Mixxx'.";
+        }
+    }
+    else{ // the Mixxx directory already exists
+        qDebug() << "Found folder 'Mixxx' within default OS music directory";
+        QDir recordDir(mixxxDir.absolutePath() +"Recordings");
+        if(!recordDir.exists()){
+            if(mixxxDir.mkdir("Recordings"))
+                qDebug() << "Created folder 'Recordings' successfully";
+            else
+                qDebug() << "Could not create folder 'Recordings' within 'Mixxx'";
+        }
+    }
+
 
     m_browseModel = BrowseTableModel::getInstance();
     m_proxyModel = new ProxyTrackModel(m_browseModel);
@@ -43,7 +71,7 @@ DlgRecording::DlgRecording(QWidget* parent, ConfigObject<ConfigValue>* pConfig, 
     m_proxyModel->setFilterCaseSensitivity(Qt::CaseInsensitive);
     m_proxyModel->setSortCaseSensitivity(Qt::CaseInsensitive);
 
-    m_browseModel->setPath(os_music_folder_dir);
+    m_browseModel->setPath(os_music_folder_dir.absolutePath() +"/Mixxx/Recordings");
     m_pTrackTableView->loadTrackModel(m_proxyModel);
 
     //Override some playlist-view properties:
