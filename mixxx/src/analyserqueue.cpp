@@ -173,6 +173,13 @@ void AnalyserQueue::run() {
 
         delete pSoundSource;
         emit(trackFinished(next));
+
+        m_qm.lock();
+        bool empty = m_tioq.isEmpty();
+        m_qm.unlock();
+        if (empty) {
+            emit(queueEmpty());
+        }
     }
 }
 

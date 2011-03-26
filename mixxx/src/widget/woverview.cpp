@@ -105,17 +105,23 @@ void WOverview::setup(QDomNode node)
     m_qMousePos.setY(y/2);
  */
 
-    // Background color
+    // Background color and pixmap
     QColor c(255,255,255);
     if (!selectNode(node, "BgColor").isNull())
     {
         c.setNamedColor(selectNodeQString(node, "BgColor"));
     }
 
+    // Clear the background pixmap, if it exists.
+    m_backgroundPixmap = QPixmap();
+    m_backgroundPixmapPath = WWidget::selectNodeQString(node, "BgPixmap");
+    if (m_backgroundPixmapPath != "") {
+        m_backgroundPixmap = QPixmap(WWidget::getPath(m_backgroundPixmapPath));
+    }
+
     QPalette palette; //Qt4 update according to http://doc.trolltech.com/4.4/qwidget-qt3.html#setBackgroundColor (this could probably be cleaner maybe?)
     palette.setColor(this->backgroundRole(), WSkinColor::getCorrectColor(c));
-    this->setPalette(palette);
-
+    setPalette(palette);
 
     // If we're doing a warm boot, free the pixmap, and flag it to be regenerated.
     if(m_pScreenBuffer != NULL) {
@@ -131,8 +137,14 @@ void WOverview::setup(QDomNode node)
         waveformChanged = true;
     }
 
-    m_pScreenBuffer = new QPixmap(this->size());
-    m_pScreenBuffer->fill(this->palette().color(QPalette::Background));
+    m_pScreenBuffer = new QPixmap(size());
+    QPainter painter(m_pScreenBuffer);
+    painter.fillRect(m_pScreenBuffer->rect(), this->palette().color(QPalette::Background));
+
+    if (!m_backgroundPixmap.isNull()) {
+        painter.drawTiledPixmap(m_pScreenBuffer->rect(), m_backgroundPixmap, QPoint(0,0));
+    }
+    painter.end();
 
     m_qColorSignal.setNamedColor(selectNodeQString(node, "SignalColor"));
     m_qColorSignal = WSkinColor::getCorrectColor(m_qColorSignal);
@@ -215,14 +227,16 @@ void WOverview::setData(const QByteArray* pWaveformSummary, long liSampleDuratio
 }
 
 void WOverview::redrawPixmap() {
-
-    // Erase background
-    m_pScreenBuffer->fill(this->palette().color(this->backgroundRole()));
-
     if (!m_waveformSummary.size())
         return;
 
     QPainter paint(m_pScreenBuffer);
+
+    paint.fillRect(m_pScreenBuffer->rect(), palette().color(backgroundRole()));
+
+    if (!m_backgroundPixmap.isNull()) {
+        paint.drawTiledPixmap(m_pScreenBuffer->rect(), m_backgroundPixmap, QPoint(0,0));
+    }
 
     float yscale = (((float)(height()-2)/2.)/128.); //32768.;
     float xscale = (float)m_waveformSummary.size()/width();
