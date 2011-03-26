@@ -66,6 +66,5 @@ class RhythmboxPlaylistModel : public BaseSqlTableModel, public virtual TrackMod
   private:
     TrackCollection* m_pTrackCollection;
     QSqlDatabase &m_database;
-    QString m_currentSearch;
 };
 #endif
