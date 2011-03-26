@@ -31,7 +31,7 @@ DlgRecording::DlgRecording(QWidget* parent, ConfigObject<ConfigValue>* pConfig,
             this, SIGNAL(loadTrackToPlayer(TrackPointer, QString)));
 
     connect(m_pRecordingManager, SIGNAL(isRecording(bool)),
-            this, SLOT(slotPushButtonText(bool)));
+            this, SLOT(slotRecordingEnabled(bool)));
 
     QBoxLayout* box = dynamic_cast<QBoxLayout*>(layout());
     Q_ASSERT(box); //Assumes the form layout is a QVBox/QHBoxLayout!
@@ -160,10 +160,13 @@ void DlgRecording::toggleRecording(bool toggle)
 
     }
 }
-void DlgRecording::slotPushButtonText(bool isRecording)
+void DlgRecording::slotRecordingEnabled(bool isRecording)
 {
-    if(isRecording)
+    if(isRecording){
         pushButtonRecording->setText((tr("Stop Recording")));
+        //This will update the recorded track table view
+        m_browseModel->setPath(m_recordingDir);
+    }
     else
         pushButtonRecording->setText((tr("Start Recording")));
 }

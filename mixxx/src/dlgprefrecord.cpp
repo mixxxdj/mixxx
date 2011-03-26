@@ -54,8 +54,7 @@ DlgPrefRecord::DlgPrefRecord(QWidget * parent, ConfigObject<ConfigValue> * _conf
     }
 
     //Connections
-    connect(PushButtonBrowse, SIGNAL(clicked()),        this,   SLOT(slotBrowseSave()));
-    connect(LineEditRecPath,  SIGNAL(returnPressed()),  this,   SLOT(slotApply()));
+
     connect(comboBoxEncoding, SIGNAL(activated(int)),   this,   SLOT(slotRecordPathChange()));
     connect(SliderQuality,    SIGNAL(valueChanged(int)), this,  SLOT(slotSliderQuality()));
     connect(SliderQuality,    SIGNAL(sliderMoved(int)), this,   SLOT(slotSliderQuality()));
@@ -63,21 +62,6 @@ DlgPrefRecord::DlgPrefRecord(QWidget * parent, ConfigObject<ConfigValue> * _conf
 
     slotApply();
     recordControl->slotSet(RECORD_OFF); //make sure a corrupt config file won't cause us to record constantly
-}
-
-void DlgPrefRecord::slotBrowseSave()
-{
-    QString encodingType = comboBoxEncoding->currentText();    
-    QString encodingFileFilter = QString("Audio (*.%1)").arg(encodingType);
-    QString selectedFile = QFileDialog::getSaveFileName(NULL, tr("Save Recording As..."), config->getValueString(ConfigKey(RECORDING_PREF_KEY,"Path")), encodingFileFilter);
-    if (selectedFile.toLower() != "")
-    {
-        if(!selectedFile.toLower().endsWith("." + encodingType.toLower()))
-        {
-            selectedFile.append("." + encodingType.toLower());
-        }        
-        LineEditRecPath->setText( selectedFile );
-    }
 }
 
 void DlgPrefRecord::slotSliderQuality()
@@ -182,16 +166,11 @@ void DlgPrefRecord::slotUpdate()
         comboBoxEncoding->setCurrentIndex(0);
         config->set(ConfigKey(RECORDING_PREF_KEY, "Encoding"), ConfigValue(comboBoxEncoding->currentText()));
     }
-    
-    //Set the path from the saved value.
-    LineEditRecPath->setText(config->getValueString(ConfigKey(RECORDING_PREF_KEY,"Path")));
-    
     loadMetaData();
 }
 
 void DlgPrefRecord::slotApply()
 {
-    config->set(ConfigKey(RECORDING_PREF_KEY, "Path"), LineEditRecPath->text());
     setMetaData();
 
     slotEncoding();

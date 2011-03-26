@@ -37,7 +37,7 @@ class DlgRecording : public QWidget, public Ui::DlgRecording, public virtual Lib
 
   public slots:
     void toggleRecording(bool toggle);
-    void slotPushButtonText(bool);
+    void slotRecordingEnabled(bool);
 
   signals:
     void loadTrack(TrackPointer tio);
