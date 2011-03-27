@@ -7,10 +7,13 @@
 #include "soundsourceproxy.h"
 #include "mixxxutils.cpp"
 
-BrowseThread::BrowseThread(QObject *parent)
-        : QThread(parent),
-          m_bStopThread(false) {
-    //QObject::moveToThread(this);
+BrowseThread* BrowseThread::m_instance = 0;
+
+BrowseThread::BrowseThread(QObject *parent): QThread(parent)
+{
+    m_bStopThread = false;
+    //start Thread
+    start(QThread::LowestPriority);
 }
 
 BrowseThread::~BrowseThread() {
@@ -23,9 +26,33 @@ BrowseThread::~BrowseThread() {
     wait();
     qDebug() << "Browser background thread terminated!";
 }
+BrowseThread* BrowseThread::getInstance(){
+    static QMutex mutex;
+    if (!m_instance)
+    {
+         mutex.lock();
 
-void BrowseThread::setPath(QString& path) {
+         if (!m_instance)
+               m_instance = new BrowseThread();
+
+         mutex.unlock();
+    }
+    return m_instance;
+}
+void BrowseThread::destroyInstance()
+{
+    static QMutex mutex;
+    mutex.lock();
+    if(m_instance){
+        delete m_instance;
+        m_instance = 0;
+    }
+    mutex.unlock();
+}
+
+void BrowseThread::executePopulation(QString& path, BrowseTableModel* client) {
     m_path = path;
+    m_model_observer = client;
     m_locationUpdated.wakeAll();
 }
 
@@ -56,7 +83,7 @@ void BrowseThread::populateModel() {
      * This is a blocking operation
      * see signal/slot connection in BrowseTableModel
      */
-    emit(clearModel());
+    emit(clearModel(m_model_observer));
 
     QList< QList<QStandardItem*> > rows;
 
@@ -126,12 +153,12 @@ void BrowseThread::populateModel() {
         //Will limit GUI freezing
         if(row % 10 == 0){
             //this is a blocking operation
-            emit(rowsAppended(rows));
+            emit(rowsAppended(rows, m_model_observer));
 
             rows.clear();
         }
         //Sleep additionally for 10ms which prevents us from GUI freezes
         msleep(20);
     }
-    emit(rowsAppended(rows));
+    emit(rowsAppended(rows, m_model_observer));
 }
