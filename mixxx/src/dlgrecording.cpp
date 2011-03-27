@@ -19,6 +19,8 @@ DlgRecording::DlgRecording(QWidget* parent, ConfigObject<ConfigValue>* pConfig,
             : QWidget(parent), Ui::DlgRecording(),
             m_pConfig(pConfig),
             m_pTrackCollection(pTrackCollection),
+            m_browseModel(this),
+            m_proxyModel(&m_browseModel),
             m_pRecordingManager(pRecordingManager)
 {
     setupUi(this);
@@ -43,14 +45,11 @@ DlgRecording::DlgRecording(QWidget* parent, ConfigObject<ConfigValue>* pConfig,
 
     m_recordingDir = m_pRecordingManager->getRecordingDir();
 
-    m_browseModel = BrowseTableModel::getInstance();
-    m_proxyModel = new ProxyTrackModel(m_browseModel);
+    m_proxyModel.setFilterCaseSensitivity(Qt::CaseInsensitive);
+    m_proxyModel.setSortCaseSensitivity(Qt::CaseInsensitive);
 
-    m_proxyModel->setFilterCaseSensitivity(Qt::CaseInsensitive);
-    m_proxyModel->setSortCaseSensitivity(Qt::CaseInsensitive);
-
-    m_browseModel->setPath(m_recordingDir);
-    m_pTrackTableView->loadTrackModel(m_proxyModel);
+    m_browseModel.setPath(m_recordingDir);
+    m_pTrackTableView->loadTrackModel(&m_proxyModel);
 
     //Override some playlist-view properties:
     //Prevent drag and drop to the waveform or elsewhere so you can't preempt the Auto DJ queue...
@@ -67,14 +66,12 @@ DlgRecording::DlgRecording(QWidget* parent, ConfigObject<ConfigValue>* pConfig,
 
 DlgRecording::~DlgRecording()
 {
-    if(m_proxyModel)
-        delete m_proxyModel;
 
 }
 
 void DlgRecording::onShow()
 {
-    m_browseModel->setPath(m_recordingDir);
+    m_browseModel.setPath(m_recordingDir);
 }
 
 void DlgRecording::setup(QDomNode node)
@@ -125,12 +122,12 @@ void DlgRecording::onSearchCleared()
 {
 }
 void DlgRecording::refreshBrowseModel(){
-     m_browseModel->setPath(m_recordingDir);
+     m_browseModel.setPath(m_recordingDir);
 }
 
 void DlgRecording::onSearch(const QString& text)
 {
-    m_proxyModel->search(text);
+    m_proxyModel.search(text);
 }
 
 void DlgRecording::loadSelectedTrack() {
@@ -163,7 +160,7 @@ void DlgRecording::slotRecordingEnabled(bool isRecording)
     if(isRecording){
         pushButtonRecording->setText((tr("Stop Recording")));
         //This will update the recorded track table view
-        m_browseModel->setPath(m_recordingDir);
+        m_browseModel.setPath(m_recordingDir);
     }
     else{
         pushButtonRecording->setText((tr("Start Recording")));

@@ -49,8 +49,8 @@ class DlgRecording : public QWidget, public Ui::DlgRecording, public virtual Lib
     ConfigObject<ConfigValue>* m_pConfig;
     TrackCollection* m_pTrackCollection;
     WTrackTableView* m_pTrackTableView;
-    BrowseTableModel* m_browseModel;
-    ProxyTrackModel* m_proxyModel;
+    BrowseTableModel m_browseModel;
+    ProxyTrackModel m_proxyModel;
     QString m_recordingDir;
 
     RecordingManager* m_pRecordingManager;
