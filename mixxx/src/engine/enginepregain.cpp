@@ -38,12 +38,12 @@ EnginePregain::EnginePregain(const char * group)
     if(ControlObject::getControl(ConfigKey("[ReplayGain]", "InitialReplayGainBoost"))==NULL)
     {
         m_pReplayGainBoost = new ControlPotmeter(ConfigKey("[ReplayGain]", "InitialReplayGainBoost"),0., 15.);
-        m_pEnableReplayGain = new ControlPotmeter(ConfigKey("[ReplayGain]", "ReplayGainEnabled"));
+        m_pEnableReplayGain = new ControlObject(ConfigKey("[ReplayGain]", "ReplayGainEnabled"));
     }
     else
     {
         m_pReplayGainBoost = (ControlPotmeter*)ControlObject::getControl(ConfigKey("[ReplayGain]", "InitialReplayGainBoost"));
-        m_pEnableReplayGain = (ControlPotmeter*)ControlObject::getControl(ConfigKey("[ReplayGain]", "ReplayGainEnabled"));
+        m_pEnableReplayGain = (ControlObject*)ControlObject::getControl(ConfigKey("[ReplayGain]", "ReplayGainEnabled"));
     }
 
     m_bSmoothFade = false;
