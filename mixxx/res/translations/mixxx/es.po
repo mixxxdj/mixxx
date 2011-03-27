@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2010-10-28 15:35-0400\n"
-"PO-Revision-Date: 2011-01-07 23:06+0000\n"
-"Last-Translator: Fitoschido <Unknown>\n"
+"PO-Revision-Date: 2011-03-26 09:17+0000\n"
+"Last-Translator: Fitoschido <fitoschido@gmail.com>\n"
 "Language-Team: Spanish <es@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-01-09 04:35+0000\n"
-"X-Generator: Launchpad (build Unknown)\n"
+"X-Launchpad-Export-Date: 2011-03-27 04:34+0000\n"
+"X-Generator: Launchpad (build 12559)\n"
 
 #: AutoDJFeature#1
 msgid "Auto DJ"
@@ -328,7 +328,7 @@ msgstr "Colocar GPM en etiqueta ID3"
 
 #: DlgPrefBPMDlg#6
 msgid "If BPM can be detected but not within specified range"
-msgstr ""
+msgstr "Si los PPM pueden detectarse pero no entre un rango específico"
 
 #: DlgPrefBPMDlg#7
 msgid "Allow BPM above the range"
@@ -1386,11 +1386,11 @@ msgstr ""
 #: DlgPreferences#8
 msgctxt "DlgPreferences#8"
 msgid "BPM Detection"
-msgstr "Detección de GPM"
+msgstr "Detección de PPM"
 
 #: DlgPreferences#9
 msgid "Vinyl Control"
-msgstr ""
+msgstr "Control Vinyl"
 
 #: DlgPreferences#10
 msgid "Live Broadcasting"
