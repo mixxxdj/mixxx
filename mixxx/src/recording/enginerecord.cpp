@@ -21,6 +21,7 @@
 #include "configobject.h"
 #include "controlobjectthread.h"
 #include "controlobject.h"
+#include "trackinfoobject.h"
 #include "dlgprefrecord.h"
 #ifdef __SHOUTCAST__
 #include "encodervorbis.h"
@@ -47,10 +48,12 @@ EngineRecord::EngineRecord(ConfigObject<ConfigValue> * _config)
                                ControlObject::getControl(ConfigKey("[Master]", "Record")));
     m_samplerate = new ControlObjectThread(ControlObject::getControl(ConfigKey("[Master]", "samplerate")));
 
+    m_iMetaDataLife = 0;
 }
 
 EngineRecord::~EngineRecord()
 {
+    closeCueFile();
     closeFile();
     if(m_recReady)      delete m_recReady;
     if(m_samplerate)    delete m_samplerate;
@@ -66,6 +69,8 @@ void EngineRecord::updateFromPreferences()
     m_baTitle = m_config->getValueString(ConfigKey(RECORDING_PREF_KEY, "Title")).toLatin1();
     m_baAuthor = m_config->getValueString(ConfigKey(RECORDING_PREF_KEY, "Author")).toLatin1();
     m_baAlbum = m_config->getValueString(ConfigKey(RECORDING_PREF_KEY, "Album")).toLatin1();
+    m_cuefilename = m_config->getValueString(ConfigKey(RECORDING_PREF_KEY, "CuePath")).toLatin1();
+    m_bCueIsEnabled = m_config->getValueString(ConfigKey(RECORDING_PREF_KEY, "CueEnabled")).toInt();
 
     if(m_encoder){
         delete m_encoder;	//delete m_encoder if it has been initalized (with maybe) different bitrate
@@ -111,8 +116,48 @@ void EngineRecord::updateFromPreferences()
 
 }
 
+/*
+ * Check if the metadata has changed since the previous check.
+ * We also check when was the last check performed to avoid using
+ * too much CPU and as well to avoid changing the metadata during
+ * scratches.
+ */
+bool EngineRecord::metaDataHasChanged()
+{
+    TrackPointer pTrack;
+
+
+    if ( m_iMetaDataLife < 16 ) {
+        m_iMetaDataLife++;
+        return false;
+    }
+    m_iMetaDataLife = 0;
+
+    pTrack = PlayerInfo::Instance().getCurrentPlayingTrack();
+    if ( !pTrack )
+        return false;
+
+    if ( m_pCurrentTrack ) {
+        if ((pTrack->getId() == -1) || (m_pCurrentTrack->getId() == -1)) {
+            if ((pTrack->getArtist() == m_pCurrentTrack->getArtist()) &&
+                (pTrack->getTitle() == m_pCurrentTrack->getArtist())) {
+                return false;
+            }
+        }
+        else if (pTrack->getId() == m_pCurrentTrack->getId()) {
+            return false;
+        }
+    }
+
+    m_pCurrentTrack = pTrack;
+    return true;
+}
+
 void EngineRecord::process(const CSAMPLE * pIn, const CSAMPLE * pOut, const int iBufferSize)
 {
+    // Calculate the latency of this buffer
+    m_dLatency = (double)iBufferSize / m_samplerate->get();
+
     //if recording is disabled
     if(m_recReady->get() == RECORD_OFF){
         //qDebug("Setting record flag to: OFF");
@@ -127,7 +172,13 @@ void EngineRecord::process(const CSAMPLE * pIn, const CSAMPLE * pOut, const int 
         if(openFile()){
             qDebug("Setting record flag to: ON");
             m_recReady->slotSet(RECORD_ON);
-            emit(isRecording(true));
+            emit(isRecording(true)); //will notify the RecordingManager
+
+            if ( m_bCueIsEnabled ) {
+                openCueFile();
+                m_cuesamplepos = 0;
+                m_cuetrack = 0;
+            }
         }
         else{ //Maybe the encoder could not be initialized
             qDebug("Setting record flag to: OFF");
@@ -143,14 +194,65 @@ void EngineRecord::process(const CSAMPLE * pIn, const CSAMPLE * pOut, const int 
                 emit(bytesRecorded(iBufferSize));
         }
         else{
-            if(!m_encoder) return;
-            //Compress audio. Encoder will call method 'write()' below to write a file stream
-            m_encoder->encodeBuffer(pIn, iBufferSize);
+            if ( m_encoder) {
+                //Compress audio. Encoder will call method 'write()' below to write a file stream
+                m_encoder->encodeBuffer(pIn, iBufferSize);
+            }
         }
+
+        if ( m_bCueIsEnabled ) {
+
+            if ( metaDataHasChanged()) {
+                m_cuetrack++;
+                writeCueLine();
+                m_cuefile.flush();
+            }
+            
+            m_cuesamplepos += iBufferSize;
+
+        }
+
   	}
 
+}
+
+void EngineRecord::writeCueLine()
+{
+    // account for multiple channels
+    unsigned long samplerate = m_samplerate->get() * 2;
+    // CDDA is specified as having 75 frames a second
+    unsigned long frames = ((unsigned long)
+                                ((m_cuesamplepos / (samplerate / 75)))
+                                    % 75);
+
+    unsigned long seconds =  ((unsigned long)
+                                (m_cuesamplepos / samplerate)
+                                    % 60 );
+
+    unsigned long minutes = m_cuesamplepos / (samplerate * 60);
+
+    m_cuefile.write(QString("  TRACK %1 AUDIO\n")
+            .arg((double)m_cuetrack, 2, 'f', 0, '0')
+        .toLatin1()
+    );
+
+    m_cuefile.write(QString("    TITLE %1\n")
+        .arg(m_pCurrentTrack->getTitle()).toLatin1());
+    m_cuefile.write(QString("    PERFORMER %1\n")
+        .arg(m_pCurrentTrack->getArtist()).toLatin1());
+
+    // Woefully inaccurate (at the seconds level anyways). 
+    // We'd need a signal fired state tracker
+    // for the track detection code.
+    m_cuefile.write(QString("    INDEX 01 %1:%2:%3\n")
+            .arg((double)minutes, 2, 'f', 0, '0')
+            .arg((double)seconds, 2, 'f', 0, '0')
+            .arg((double)frames, 2, 'f', 0, '0')
+        .toLatin1()
+    );
 
 }
+
 /** encoder will call this method to write compressed audio **/
 void EngineRecord::write(unsigned char *header, unsigned char *body,
                          int headerLen, int bodyLen)
@@ -237,9 +339,44 @@ bool EngineRecord::openFile(){
         ErrorDialogHandler::instance()->requestErrorDialog(props);
         return false;
     }
-    return true;
 
+    return true;
 }
+
+bool EngineRecord::openCueFile() {
+    if ( m_cuefilename.length() <= 0 )
+    {
+        return false;
+    }
+
+    qDebug() << "Opening Cue File:" << m_cuefilename;
+    m_cuefile.setFileName(m_cuefilename);
+    m_cuefile.open(QIODevice::WriteOnly);
+
+    if ( m_baAuthor.length() > 0 ) {
+        m_cuefile.write(QString("PERFORMER \"%1\"\n")
+                .arg(QString(m_baAuthor).replace(QString("\""), QString("\\\"")))
+            .toLatin1()
+        );
+    }
+
+    if ( m_baTitle.length() > 0 ) {
+        m_cuefile.write(QString("TITLE \"%1\"\n")
+                .arg(QString(m_baTitle).replace(QString("\""), QString("\\\"")))
+            .toLatin1()
+        );
+    }
+
+    m_cuefile.write(QString("FILE \"%1\" %2%3\n")
+            .arg(QString(m_filename).replace(QString("\""), QString("\\\"")))
+            .arg(QString(m_Encoding).toUpper())
+                .arg((m_Encoding == ENCODING_WAVE ? 'E' : ' '))
+        .toLatin1()
+    );
+
+    return true;
+}
+
 void EngineRecord::closeFile(){
     if(m_Encoding == ENCODING_WAVE || m_Encoding == ENCODING_AIFF){
         if(m_sndfile != NULL){
@@ -260,3 +397,8 @@ void EngineRecord::closeFile(){
     }
 }
 
+void EngineRecord::closeCueFile() {
+    if ( m_cuefile.handle() != -1) {
+        m_cuefile.close();
+    }
+}

@@ -22,6 +22,7 @@
 #include <QMutex>
 #include <QString>
 #include <QLibrary>
+#include <QRegExp>
 
 #include "soundsource.h"
 #include "trackinfoobject.h"
@@ -52,11 +53,11 @@ public:
     unsigned int getSampleRate();
     /** Returns filename */
     QString getFilename();
-    static QList<QString> supportedFileExtensions();
-    static QList<QString> supportedFileExtensionsByPlugins();
+    static QStringList supportedFileExtensions();
+    static QStringList supportedFileExtensionsByPlugins();
     static QString supportedFileExtensionsString();
     static QString supportedFileExtensionsRegex();
-
+    static bool isFilenameSupported(QString filename);
 private:
     static SoundSource* initialize(QString qFilename);
     //void initPlugin(QString lib_filename, QString track_filename);
@@ -65,6 +66,7 @@ private:
     SoundSource *m_pSoundSource;
     TrackPointer m_pTrack;
 
+    static QRegExp m_supportedFileRegex;
     static QMap<QString, QLibrary*> m_plugins;
     static QMap<QString, getSoundSourceFunc> m_extensionsSupportedByPlugins;
     static QMutex m_extensionsMutex;
