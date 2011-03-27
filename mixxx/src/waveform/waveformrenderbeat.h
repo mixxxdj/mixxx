@@ -20,6 +20,8 @@ class WaveformRenderBeat : public RenderObject {
     Q_OBJECT
   public:
     WaveformRenderBeat(const char *group, WaveformRenderer *parent);
+    virtual ~WaveformRenderBeat();
+
     void resize(int w, int h);
     void setup(QDomNode node);
     void draw(QPainter *pPainter, QPaintEvent *event, QVector<float> *buffer,
