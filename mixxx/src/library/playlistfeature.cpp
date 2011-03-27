@@ -17,6 +17,7 @@
 #include "library/playlisttablemodel.h"
 #include "mixxxkeyboard.h"
 #include "treeitem.h"
+#include "soundsourceproxy.h"
 
 PlaylistFeature::PlaylistFeature(QObject* parent, TrackCollection* pTrackCollection)
         : LibraryFeature(parent),
@@ -319,7 +320,8 @@ bool PlaylistFeature::dropAcceptChild(const QModelIndex& index, QUrl url) {
         trackId = m_trackDao.addTrack(file);
     }
 
-    if (trackId == -1)
+    // Do nothing if the location still isn't in the database.
+    if (trackId < 0)
         return false;
 
     // appendTrackToPlaylist doesn't return whether it succeeded, so assume it
@@ -339,7 +341,9 @@ bool PlaylistFeature::dragMoveAcceptChild(const QModelIndex& index, QUrl url) {
     int playlistId = m_playlistDao.getPlaylistIdFromName(playlistName);
     bool locked = m_playlistDao.isPlaylistLocked(playlistId);
 
-    return !locked;
+    QFileInfo file(url.toLocalFile());
+    bool formatSupported = SoundSourceProxy::isFilenameSupported(file.fileName());
+    return !locked && formatSupported;
 }
 
 TreeItemModel* PlaylistFeature::getChildModel() {
