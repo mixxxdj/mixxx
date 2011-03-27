@@ -118,7 +118,7 @@ bool PlaylistTableModel::addTrack(const QModelIndex& index, QString location)
 
     int trackId = m_trackDao.getTrackId(location);
     if (trackId < 0)
-        trackId = m_trackDao.addTrack(location);
+        trackId = m_trackDao.addTrack(fileInfo);
 
     // Do nothing if the location still isn't in the database.
     if (trackId < 0)

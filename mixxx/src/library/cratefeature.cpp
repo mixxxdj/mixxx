@@ -13,6 +13,7 @@
 #include "widget/wlibrary.h"
 #include "widget/wlibrarysidebar.h"
 #include "mixxxkeyboard.h"
+#include "soundsourceproxy.h"
 
 CrateFeature::CrateFeature(QObject* parent,
                            TrackCollection* pTrackCollection)
@@ -79,8 +80,8 @@ bool CrateFeature::dragMoveAccept(QUrl url) {
 }
 
 bool CrateFeature::dragMoveAcceptChild(const QModelIndex& index, QUrl url) {
-    //TODO: Filter by supported formats regex and reject anything that doesn't match.
-    return true;
+    QFileInfo file(url.toLocalFile());
+    return SoundSourceProxy::isFilenameSupported(file.fileName());
 }
 
 void CrateFeature::bindWidget(WLibrarySidebar* sidebarWidget,
