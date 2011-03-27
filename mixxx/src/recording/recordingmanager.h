@@ -32,14 +32,15 @@ class RecordingManager : public QObject
         RecordingManager(ConfigObject<ConfigValue>* pConfig);
         virtual ~RecordingManager();
 
-        void startRecording();
+        void startRecording(bool generateFileName=true);
         void stopRecording();
         bool isRecordingActive();
         QString& getRecordingDir();
         //return the currently recording file
         QString& getRecordingFile();
     signals:
-        void bytesRecorded(int);
+        //emits the commulated number of bytes being recorded
+        void bytesRecorded(long);
         void isRecording(bool);
 
     public slots:
@@ -50,10 +51,17 @@ class RecordingManager : public QObject
        ControlObjectThread* m_recReady;
        ControlObject* m_recReadyCO;
 
+       long getFileSplitSize();
+
        ConfigObject<ConfigValue>* m_pConfig;
        QString m_recordingDir;
+       QString m_recording_path;
        QString m_recordingFile;
        bool m_isRecording;
+       //will be a very large number
+       long m_iNumberOfBytesRecored;
+       long m_split_size;
+       int m_iNumberSplits;
 
 };
 

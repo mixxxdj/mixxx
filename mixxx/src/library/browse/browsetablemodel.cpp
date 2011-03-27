@@ -190,7 +190,7 @@ void BrowseTableModel::slotClear()
 
 
 void BrowseTableModel::slotInsert(const QList< QList<QStandardItem*> >& rows){
-    qDebug() << "BrowseTableModel::slotInsert";
+    //qDebug() << "BrowseTableModel::slotInsert";
     for(int i=0; i < rows.size(); ++i){
         appendRow(rows.at(i));
     }

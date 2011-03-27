@@ -45,6 +45,7 @@ public slots:
     void slotSliderQuality();
     void slotRecordPathChange();
     void slotEnableCueFile(int);
+    void slotChangeSplitSize();
 signals:
     void apply(const QString &);
 private:

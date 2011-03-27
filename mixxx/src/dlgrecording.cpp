@@ -24,7 +24,6 @@ DlgRecording::DlgRecording(QWidget* parent, ConfigObject<ConfigValue>* pConfig,
     setupUi(this);
     m_pTrackTableView = new WTrackTableView(this, pConfig, m_pTrackCollection);
 
-    m_bytesRecorded = 0;
     connect(m_pTrackTableView, SIGNAL(loadTrack(TrackPointer)),
             this, SIGNAL(loadTrack(TrackPointer)));
     connect(m_pTrackTableView, SIGNAL(loadTrackToPlayer(TrackPointer, QString)),
@@ -32,8 +31,8 @@ DlgRecording::DlgRecording(QWidget* parent, ConfigObject<ConfigValue>* pConfig,
 
     connect(m_pRecordingManager, SIGNAL(isRecording(bool)),
             this, SLOT(slotRecordingEnabled(bool)));
-    connect(m_pRecordingManager, SIGNAL(bytesRecorded(int)),
-            this, SLOT(slotBytesRecorded(int)));
+    connect(m_pRecordingManager, SIGNAL(bytesRecorded(long)),
+            this, SLOT(slotBytesRecorded(long)));
 
     QBoxLayout* box = dynamic_cast<QBoxLayout*>(layout());
     Q_ASSERT(box); //Assumes the form layout is a QVBox/QHBoxLayout!
@@ -162,7 +161,6 @@ void DlgRecording::toggleRecording(bool toggle)
 void DlgRecording::slotRecordingEnabled(bool isRecording)
 {
     if(isRecording){
-        m_bytesRecorded = 0;
         pushButtonRecording->setText((tr("Stop Recording")));
         //This will update the recorded track table view
         m_browseModel->setPath(m_recordingDir);
@@ -172,10 +170,10 @@ void DlgRecording::slotRecordingEnabled(bool isRecording)
         label->setText("Start recording here ...");
     }
 }
-void DlgRecording::slotBytesRecorded(int bytes)
+/** int bytes: the number of recorded bytes within a session **/
+void DlgRecording::slotBytesRecorded(long bytes)
 {
-    m_bytesRecorded += bytes;
-    double megabytes = m_bytesRecorded / 1048575.0f;
+    double megabytes = bytes / 1048575.0f;
     QString byteStr = QString::number(megabytes,'f',2);
     QString text = "Recording to file: " +m_pRecordingManager->getRecordingFile();
     text.append(" (" +byteStr+ " MB written)");

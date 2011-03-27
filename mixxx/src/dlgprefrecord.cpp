@@ -98,9 +98,28 @@ DlgPrefRecord::DlgPrefRecord(QWidget * parent, ConfigObject<ConfigValue> * _conf
     connect(SliderQuality,    SIGNAL(sliderMoved(int)), this,   SLOT(slotSliderQuality()));
     connect(SliderQuality,    SIGNAL(sliderReleased()), this,   SLOT(slotSliderQuality()));
     connect(CheckBoxRecordCueFile, SIGNAL(stateChanged(int)), this, SLOT(slotEnableCueFile(int)));
+    connect(comboBoxSplitting, SIGNAL(activated(int)),   this,   SLOT(slotChangeSplitSize()));
 
     slotApply();
     recordControl->slotSet(RECORD_OFF); //make sure a corrupt config file won't cause us to record constantly
+
+    comboBoxSplitting->addItem(SPLIT_650MB);
+    comboBoxSplitting->addItem(SPLIT_700MB);
+    comboBoxSplitting->addItem(SPLIT_1024MB);
+    comboBoxSplitting->addItem(SPLIT_2048MB);
+    comboBoxSplitting->addItem(SPLIT_4096MB);
+
+    QString fileSizeStr = config->getValueString(ConfigKey("[Recording]","FileSize"));
+    int index = comboBoxSplitting->findText(fileSizeStr);
+    if(index > 0){
+        //set file split size
+        comboBoxSplitting->setCurrentIndex(index);
+    }
+    //Otherwise 650 MB will be default file split size
+
+    //Read CUEfile info
+    CheckBoxRecordCueFile->setChecked((bool) config->getValueString(ConfigKey("[Recording]","CueEnabled")).toInt());
+
 }
 
 void DlgPrefRecord::slotSliderQuality()
@@ -143,10 +162,16 @@ void DlgPrefRecord::slotEncoding()
     groupBoxQuality->setEnabled(true);
     //config->set(ConfigKey(RECORDING_PREF_KEY, "Encoding"), ConfigValue(comboBoxEncoding->currentText()));
 
-    if ( (radioWav && radioWav->isChecked()) ||
-        (radioFlac && radioFlac->isChecked() ) ||
-        (radioAiff && radioAiff->isChecked())  )
-    {
+    if (radioWav && radioWav->isChecked()) {
+        config->set(ConfigKey(RECORDING_PREF_KEY, "Encoding"), ConfigValue(ENCODING_WAVE));
+        groupBoxQuality->setEnabled(false);
+    }
+    else if(radioFlac && radioFlac->isChecked()){
+        config->set(ConfigKey(RECORDING_PREF_KEY, "Encoding"), ConfigValue(ENCODING_FLAC));
+        groupBoxQuality->setEnabled(false);
+    }
+    else if(radioAiff && radioAiff->isChecked()){
+        config->set(ConfigKey(RECORDING_PREF_KEY, "Encoding"), ConfigValue(ENCODING_AIFF));
         groupBoxQuality->setEnabled(false);
     }
     else if (radioOgg && radioOgg->isChecked())
@@ -157,6 +182,7 @@ void DlgPrefRecord::slotEncoding()
             value = 6; // 128kbps
 
         SliderQuality->setValue(value);
+        config->set(ConfigKey(RECORDING_PREF_KEY, "Encoding"), ConfigValue(ENCODING_OGG));
     }
     else if (radioMp3 && radioMp3->isChecked())
     {
@@ -166,6 +192,7 @@ void DlgPrefRecord::slotEncoding()
             value = 6; // 128kbps
 
         SliderQuality->setValue(value);
+        config->set(ConfigKey(RECORDING_PREF_KEY, "Encoding"), ConfigValue(ENCODING_MP3));
     }
     else
         qDebug() << "Invalid recording encoding type in" << __FILE__ << "on line:" << __LINE__;
@@ -230,5 +257,10 @@ void DlgPrefRecord::slotApply()
 void DlgPrefRecord::slotEnableCueFile(int enabled)
 {
     config->set(ConfigKey(RECORDING_PREF_KEY, "CueEnabled"), ConfigValue(CheckBoxRecordCueFile->isChecked()));
+
+}
+void DlgPrefRecord::slotChangeSplitSize()
+{
+        config->set(ConfigKey(RECORDING_PREF_KEY, "FileSize"), ConfigValue(comboBoxSplitting->currentText()));
 
 }
