@@ -34,6 +34,10 @@ WaveformRenderBeat::WaveformRenderBeat(const char* group, WaveformRenderer *pare
             this, SLOT(slotUpdateTrackSamples(double)));
 }
 
+WaveformRenderBeat::~WaveformRenderBeat() {
+    qDebug() << this << "~WaveformRenderBeat()";
+}
+
 void WaveformRenderBeat::slotUpdateTrackSamples(double samples) {
     //qDebug() << "WaveformRenderBeat :: samples = " << int(samples);
     m_iNumSamples = (int)samples;
