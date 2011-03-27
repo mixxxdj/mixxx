@@ -4,6 +4,8 @@
 #include "library/sidebarmodel.h"
 #include "widget/wlibrarysidebar.h"
 
+const int expand_time = 250;
+
 WLibrarySidebar::WLibrarySidebar(QWidget* parent) : QTreeView(parent) {
     //Set some properties
     setHeaderHidden(true);
@@ -35,13 +37,27 @@ void WLibrarySidebar::dragEnterEvent(QDragEnterEvent * event)
     {
         event->acceptProposedAction();
     }
+    //QTreeView::dragEnterEvent(event);
 }
 
 /** Drag move event, happens when a dragged item hovers over the track sources view...
  */
 void WLibrarySidebar::dragMoveEvent(QDragMoveEvent * event)
 {
-    //qDebug() << "dragMoveEvent" << event->mimeData()->formats();
+    qDebug() << "dragMoveEvent" << event->mimeData()->formats();
+
+    // Start a timer to auto-expand sections the user hovers on.
+    QPoint pos = event->pos();
+    QModelIndex index = indexAt(pos);
+    if (m_hoverIndex != index) {
+        m_expandTimer.stop();
+        m_hoverIndex = index;
+        m_expandTimer.start(expand_time, this);
+    }
+
+    // This has to be here instead of after, otherwise all drags will be
+    // rejected -- rryan 3/2011
+    QTreeView::dragMoveEvent(event);
 
     if (event->mimeData()->hasUrls())
     {
@@ -81,11 +97,26 @@ void WLibrarySidebar::dragMoveEvent(QDragMoveEvent * event)
     }
     else
         event->ignore();
+
+}
+
+void WLibrarySidebar::timerEvent(QTimerEvent *event) {
+    if (event->timerId() == m_expandTimer.timerId()) {
+        QPoint pos = viewport()->mapFromGlobal(QCursor::pos());
+        if (viewport()->rect().contains(pos)) {
+            QModelIndex index = indexAt(pos);
+            if (m_hoverIndex == index) {
+                setExpanded(index, !isExpanded(index));
+            }
+        }
+        m_expandTimer.stop();
+        return;
+    }
+    QTreeView::timerEvent(event);
 }
 
 /** Drag-and-drop "drop" event. Occurs when something is dropped onto the track sources view */
-void WLibrarySidebar::dropEvent(QDropEvent * event)
-{
+void WLibrarySidebar::dropEvent(QDropEvent * event) {
     if (event->mimeData()->hasUrls()) {
         QList<QUrl> urls(event->mimeData()->urls());
         QUrl url;
