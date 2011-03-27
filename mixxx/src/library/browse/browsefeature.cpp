@@ -17,13 +17,12 @@
 BrowseFeature::BrowseFeature(QObject* parent, ConfigObject<ConfigValue>* pConfig, TrackCollection* pTrackCollection)
         : LibraryFeature(parent),
           m_pConfig(pConfig),
+          m_browseModel(this),
+          m_proxyModel(&m_browseModel),
           m_pTrackCollection(pTrackCollection) {
 
-    m_browseModel = BrowseTableModel::getInstance();
-    m_proxyModel = new ProxyTrackModel(m_browseModel);
-
-    m_proxyModel->setFilterCaseSensitivity(Qt::CaseInsensitive);
-    m_proxyModel->setSortCaseSensitivity(Qt::CaseInsensitive);
+    m_proxyModel.setFilterCaseSensitivity(Qt::CaseInsensitive);
+    m_proxyModel.setSortCaseSensitivity(Qt::CaseInsensitive);
 
     //The invisible root item of the child model
     TreeItem* rootItem = new TreeItem();
@@ -102,8 +101,7 @@ BrowseFeature::BrowseFeature(QObject* parent, ConfigObject<ConfigValue>* pConfig
 }
 
 BrowseFeature::~BrowseFeature() {
-    if(m_proxyModel)
-        delete m_proxyModel;
+
 }
 
 QVariant BrowseFeature::title() {
@@ -144,8 +142,8 @@ void BrowseFeature::activate() {
 void BrowseFeature::activateChild(const QModelIndex& index) {
     TreeItem *item = static_cast<TreeItem*>(index.internalPointer());
     qDebug() << "BrowseFeature::activateChild " << item->data() << " " << item->dataPath();
-    m_browseModel->setPath(item->dataPath().toString());
-    emit(showTrackModel(m_proxyModel));
+    m_browseModel.setPath(item->dataPath().toString());
+    emit(showTrackModel(&m_proxyModel));
 
 }
 
