@@ -38,17 +38,18 @@ BrowseTableModel::BrowseTableModel(QObject* parent)
     addSearchColumn(COLUMN_KEY);
     addSearchColumn(COLUMN_COMMENT);
 
-    m_backgroundThread.start(QThread::LowestPriority);
+
 
     setHorizontalHeaderLabels(header_data);
     //register the QList<T> as a metatype since we use QueuedConnection below
     qRegisterMetaType< QList< QList<QStandardItem*> > >("QList< QList<QStandardItem*> >");
+    qRegisterMetaType<BrowseTableModel*>("BrowseTableModel*");
 
-    QObject::connect(&m_backgroundThread, SIGNAL(clearModel()),
-                     this, SLOT(slotClear()), Qt::BlockingQueuedConnection);
+    QObject::connect(BrowseThread::getInstance(), SIGNAL(clearModel(BrowseTableModel*)),
+                     this, SLOT(slotClear(BrowseTableModel*)), Qt::BlockingQueuedConnection);
 
-    QObject::connect(&m_backgroundThread, SIGNAL(rowsAppended(const QList< QList<QStandardItem*> >&)),
-            this, SLOT(slotInsert(const QList< QList<QStandardItem*> >&)), Qt::BlockingQueuedConnection);
+    QObject::connect(BrowseThread::getInstance(), SIGNAL(rowsAppended(const QList< QList<QStandardItem*> >&, BrowseTableModel*)),
+            this, SLOT(slotInsert(const QList< QList<QStandardItem*> >&, BrowseTableModel*)), Qt::BlockingQueuedConnection);
 
 }
 
@@ -65,7 +66,7 @@ void BrowseTableModel::addSearchColumn(int index) {
 }
 void BrowseTableModel::setPath(QString absPath)
 {
-   m_backgroundThread.setPath(absPath);
+   BrowseThread::getInstance()->executePopulation(absPath, this);
 
 }
 
@@ -159,15 +160,19 @@ QMimeData* BrowseTableModel::mimeData(const QModelIndexList &indexes) const {
     return mimeData;
 }
 
-void BrowseTableModel::slotClear()
+void BrowseTableModel::slotClear(BrowseTableModel* caller_object)
 {
-    removeRows(0, rowCount());
+    if(caller_object == this)
+        removeRows(0, rowCount());
 }
-
-
-void BrowseTableModel::slotInsert(const QList< QList<QStandardItem*> >& rows){
-    //qDebug() << "BrowseTableModel::slotInsert";
-    for(int i=0; i < rows.size(); ++i){
-        appendRow(rows.at(i));
+void BrowseTableModel::slotInsert(const QList< QList<QStandardItem*> >& rows, BrowseTableModel* caller_object){
+    //There exists more than one BrowseTableModel in Mixxx
+    //We only want to receive items here, this object has 'ordered' by the BrowserThread (singleton)
+    if(caller_object == this){
+        //qDebug() << "BrowseTableModel::slotInsert";
+        for(int i=0; i < rows.size(); ++i){
+            appendRow(rows.at(i));
+        }
     }
+
 }
