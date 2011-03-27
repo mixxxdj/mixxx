@@ -44,7 +44,7 @@ void WLibrarySidebar::dragEnterEvent(QDragEnterEvent * event)
  */
 void WLibrarySidebar::dragMoveEvent(QDragMoveEvent * event)
 {
-    qDebug() << "dragMoveEvent" << event->mimeData()->formats();
+    //qDebug() << "dragMoveEvent" << event->mimeData()->formats();
 
     // Start a timer to auto-expand sections the user hovers on.
     QPoint pos = event->pos();
