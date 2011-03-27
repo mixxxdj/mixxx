@@ -94,6 +94,8 @@ EngineMaster::EngineMaster(ConfigObject<ConfigValue> * _config,
     sidechain = new EngineSideChain(_config);
     connect(sidechain, SIGNAL(isRecording(bool)),
             this, SIGNAL(isRecording(bool)));
+    connect(sidechain, SIGNAL(bytesRecorded(int)),
+            this, SIGNAL(bytesRecorded(int)));
 
     //X-Fader Setup
     xFaderCurve = new ControlPotmeter(

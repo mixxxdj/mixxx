@@ -24,7 +24,7 @@ DlgRecording::DlgRecording(QWidget* parent, ConfigObject<ConfigValue>* pConfig,
     setupUi(this);
     m_pTrackTableView = new WTrackTableView(this, pConfig, m_pTrackCollection);
 
-
+    m_bytesRecorded = 0;
     connect(m_pTrackTableView, SIGNAL(loadTrack(TrackPointer)),
             this, SIGNAL(loadTrack(TrackPointer)));
     connect(m_pTrackTableView, SIGNAL(loadTrackToPlayer(TrackPointer, QString)),
@@ -32,6 +32,8 @@ DlgRecording::DlgRecording(QWidget* parent, ConfigObject<ConfigValue>* pConfig,
 
     connect(m_pRecordingManager, SIGNAL(isRecording(bool)),
             this, SLOT(slotRecordingEnabled(bool)));
+    connect(m_pRecordingManager, SIGNAL(bytesRecorded(int)),
+            this, SLOT(slotBytesRecorded(int)));
 
     QBoxLayout* box = dynamic_cast<QBoxLayout*>(layout());
     Q_ASSERT(box); //Assumes the form layout is a QVBox/QHBoxLayout!
@@ -60,6 +62,7 @@ DlgRecording::DlgRecording(QWidget* parent, ConfigObject<ConfigValue>* pConfig,
 
     connect(pushButtonRecording, SIGNAL(toggled(bool)),
             this,  SLOT(toggleRecording(bool)));
+    label->setText("Start recording here ...");
 
 }
 
@@ -149,24 +152,32 @@ void DlgRecording::toggleRecording(bool toggle)
     {
         //pushButtonRecording->setText(tr("Stop Recording"));
         m_pRecordingManager->startRecording();
-
-
     }
     else if(!toggle && m_pRecordingManager->isRecordingActive()) //If we disable recording
     {
         //pushButtonRecording->setText(tr("Start Recording"));
         m_pRecordingManager->stopRecording();
-
-
     }
 }
 void DlgRecording::slotRecordingEnabled(bool isRecording)
 {
     if(isRecording){
+        m_bytesRecorded = 0;
         pushButtonRecording->setText((tr("Stop Recording")));
         //This will update the recorded track table view
         m_browseModel->setPath(m_recordingDir);
     }
-    else
+    else{
         pushButtonRecording->setText((tr("Start Recording")));
+        label->setText("Start recording here ...");
+    }
+}
+void DlgRecording::slotBytesRecorded(int bytes)
+{
+    m_bytesRecorded += bytes;
+    double megabytes = m_bytesRecorded / 1048575.0f;
+    QString byteStr = QString::number(megabytes,'f',2);
+    QString text = "Recording to file: " +m_pRecordingManager->getRecordingFile();
+    text.append(" (" +byteStr+ " MB written)");
+    label->setText(text);
 }
