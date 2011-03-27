@@ -68,6 +68,7 @@ private:
     int findFrame(int pos);
     /** Scale the mad sample to be in 16 bit range. */
     inline signed int madScale (mad_fixed_t sample);
+    MadSeekFrameType* getSeekFrame(long frameIndex) const;
 
     // Returns true if the loaded file is valid and usable to read audio.
     bool isValid() const;

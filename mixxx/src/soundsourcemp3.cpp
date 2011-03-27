@@ -180,17 +180,24 @@ bool SoundSourceMp3::isValid() const {
     return framecount > 0;
 }
 
+MadSeekFrameType* SoundSourceMp3::getSeekFrame(long frameIndex) const {
+    if (frameIndex < 0 || frameIndex >= m_qSeekList.size()) {
+        return NULL;
+    }
+    return m_qSeekList.at(frameIndex);
+}
+
 long SoundSourceMp3::seek(long filepos) {
     // Ensure that we are seeking to an even filepos
     Q_ASSERT(filepos%2==0);
 
-    if (!isValid())
+    if (!isValid()) {
         return 0;
+    }
 
 //     qDebug() << "SEEK " << filepos;
 
-    MadSeekFrameType * cur;
-    //QListIterator<MadSeekFrameType*> frameIterator(m_qSeekList);
+    MadSeekFrameType* cur = NULL;
 
     if (filepos==0)
     {
@@ -204,8 +211,9 @@ long SoundSourceMp3::seek(long filepos) {
         mad_frame_init(Frame);
         mad_synth_init(Synth);
         rest=-1;
-        cur = m_qSeekList.at(0);
+
         m_currentSeekFrameIndex = 0;
+        cur = getSeekFrame(0);
         //frameIterator.toFront(); //Might not need to do this -- Albert June 19/2010 (during Qt3 purge)
     }
     else
@@ -225,9 +233,6 @@ long SoundSourceMp3::seek(long filepos) {
          */
 
         int framePos = findFrame(filepos);
-
-//         qDebug() << "list length " << m_qSeekList.count();
-
         if (framePos==0 || framePos>filepos || m_currentSeekFrameIndex < 5)
         {
             //qDebug() << "Problem finding good seek frame (wanted " << filepos << ", got " << framePos << "), starting from 0";
@@ -241,7 +246,7 @@ long SoundSourceMp3::seek(long filepos) {
             mad_synth_init(Synth);
             rest = -1;
             m_currentSeekFrameIndex = 0;
-            cur = m_qSeekList.at(m_currentSeekFrameIndex);
+            cur = getSeekFrame(m_currentSeekFrameIndex);
         }
         else
         {
@@ -249,52 +254,40 @@ long SoundSourceMp3::seek(long filepos) {
 
             // Start four frame before wanted frame to get in sync...
             m_currentSeekFrameIndex -= 4;
-            cur = m_qSeekList[m_currentSeekFrameIndex];
-            /*
-            Qt3:
-            m_qSeekList.prev();
-            m_qSeekList.prev();
-            m_qSeekList.prev();
-            cur = m_qSeekList.prev();
-            */
+            cur = getSeekFrame(m_currentSeekFrameIndex);
+            if (cur != NULL) {
+                // Start from the new frame
+                mad_stream_finish(Stream);
+                mad_stream_init(Stream);
+                mad_stream_options(Stream, MAD_OPTION_IGNORECRC);
+                //        qDebug() << "mp3 restore " << cur->m_pStreamPos;
+                mad_stream_buffer(Stream, (const unsigned char *)cur->m_pStreamPos,
+                                  inputbuf_len-(long int)(cur->m_pStreamPos-(unsigned char *)inputbuf));
 
-            // Start from the new frame
-            mad_stream_finish(Stream);
-            mad_stream_init(Stream);
-            mad_stream_options(Stream, MAD_OPTION_IGNORECRC);
-//        qDebug() << "mp3 restore " << cur->m_pStreamPos;
-            mad_stream_buffer(Stream, (const unsigned char *)cur->m_pStreamPos, inputbuf_len-(long int)(cur->m_pStreamPos-(unsigned char *)inputbuf));
+                // Mute'ing is done here to eliminate potential pops/clicks from skipping
+                // Rob Leslie explains why here:
+                // http://www.mars.org/mailman/public/mad-dev/2001-August/000321.html
+                mad_synth_mute(Synth);
+                mad_frame_mute(Frame);
 
-            // Mute'ing is done here to eliminate potential pops/clicks from skipping
-            // Rob Leslie explains why here:
-            // http://www.mars.org/mailman/public/mad-dev/2001-August/000321.html
-            mad_synth_mute(Synth);
-            mad_frame_mute(Frame);
+                // Decode the three frames before
+                mad_frame_decode(Frame,Stream);
+                mad_frame_decode(Frame,Stream);
+                mad_frame_decode(Frame,Stream);
+                mad_frame_decode(Frame,Stream);
 
-            // Decode the three frames before
-            mad_frame_decode(Frame,Stream);
-            mad_frame_decode(Frame,Stream);
-            mad_frame_decode(Frame,Stream);
-            mad_frame_decode(Frame,Stream);
+                // this is also explained in the above mad-dev post
+                mad_synth_frame(Synth, Frame);
 
-            // this is also explained in the above mad-dev post
-            mad_synth_frame(Synth, Frame);
-
-            // Set current position
-            rest = -1;
-            m_currentSeekFrameIndex += 4;
-            cur = m_qSeekList[m_currentSeekFrameIndex];
-            /*
-            Qt3:
-            m_qSeekList.next();
-            m_qSeekList.next();
-            m_qSeekList.next();
-            cur = m_qSeekList.next();
-            */
+                // Set current position
+                rest = -1;
+                m_currentSeekFrameIndex += 4;
+                cur = getSeekFrame(m_currentSeekFrameIndex);
+            }
         }
 
         // Synthesize the the samples from the frame which should be discard to reach the requested position
-        if (cur) //the "if" prevents crashes on bad files.
+        if (cur != NULL) //the "if" prevents crashes on bad files.
             discard(filepos-cur->pos);
     }
 /*
@@ -345,11 +338,7 @@ long SoundSourceMp3::seek(long filepos) {
 
 }
 
-inline long unsigned SoundSourceMp3::length()
-{
-    if (!isValid())
-        return 0;
-
+inline long unsigned SoundSourceMp3::length() {
     enum mad_units units;
 
     switch (m_iSampleRate)
@@ -397,9 +386,6 @@ inline long unsigned SoundSourceMp3::length()
 
 unsigned long SoundSourceMp3::discard(unsigned long samples_wanted)
 {
-    if (!isValid())
-        return 0;
-
     unsigned long Total_samples_decoded = 0;
     int no;
 
@@ -599,8 +585,9 @@ int SoundSourceMp3::parseHeader()
 int SoundSourceMp3::findFrame(int pos)
 {
     // Guess position of frame in m_qSeekList based on average frame size
-    m_currentSeekFrameIndex = math_min(m_qSeekList.count()-1, m_iAvgFrameSize ? (unsigned int)(pos/m_iAvgFrameSize) : 0);
-    MadSeekFrameType * temp = m_qSeekList.at(m_currentSeekFrameIndex);
+    m_currentSeekFrameIndex = math_min(m_qSeekList.count()-1,
+                                       m_iAvgFrameSize ? (unsigned int)(pos/m_iAvgFrameSize) : 0);
+    MadSeekFrameType* temp = getSeekFrame(m_currentSeekFrameIndex);
 
 /*
     if (temp!=0)
@@ -610,33 +597,33 @@ int SoundSourceMp3::findFrame(int pos)
  */
 
     // Ensure that the list element is not at a greater position than pos
-    while (temp!=0 && temp->pos>pos)
+    while (temp != NULL && temp->pos > pos)
     {
         m_currentSeekFrameIndex--;
-        temp = m_qSeekList.at(m_currentSeekFrameIndex);
+        temp = getSeekFrame(m_currentSeekFrameIndex);
 //        if (temp!=0) qDebug() << "backing " << pos << ", got " << temp->pos;
     }
 
     // Ensure that the following position is also not smaller than pos
-    if (temp!=0)
+    if (temp != NULL)
     {
-        temp = m_qSeekList.at(m_currentSeekFrameIndex);
-        while (temp!=0 && temp->pos<pos)
+        temp = getSeekFrame(m_currentSeekFrameIndex);
+        while (temp != NULL && temp->pos < pos)
         {
             m_currentSeekFrameIndex++;
-            temp = m_qSeekList.at(m_currentSeekFrameIndex);
+            temp = getSeekFrame(m_currentSeekFrameIndex);
 //            if (temp!=0) qDebug() << "fwd'ing " << pos << ", got " << temp->pos;
         }
 
-        if (temp==0)
+        if (temp == NULL)
             m_currentSeekFrameIndex = m_qSeekList.count()-1;
         else
             m_currentSeekFrameIndex--;
 
-        temp = m_qSeekList.at(m_currentSeekFrameIndex);
+        temp = getSeekFrame(m_currentSeekFrameIndex);
     }
 
-    if (temp>0)
+    if (temp != NULL)
     {
 //        qDebug() << "ended at " << pos << ", got " << temp->pos;
         return temp->pos;
