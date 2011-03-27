@@ -38,7 +38,7 @@ class DlgRecording : public QWidget, public Ui::DlgRecording, public virtual Lib
   public slots:
     void toggleRecording(bool toggle);
     void slotRecordingEnabled(bool);
-    void slotBytesRecorded(int);
+    void slotBytesRecorded(long);
 
   signals:
     void loadTrack(TrackPointer tio);
@@ -54,7 +54,6 @@ class DlgRecording : public QWidget, public Ui::DlgRecording, public virtual Lib
     QString m_recordingDir;
 
     RecordingManager* m_pRecordingManager;
-    int m_bytesRecorded;
 
 };
 
