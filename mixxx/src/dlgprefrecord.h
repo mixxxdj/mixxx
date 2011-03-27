@@ -20,6 +20,7 @@
 
 #include "ui_dlgprefrecorddlg.h"
 #include "configobject.h"
+#include <QRadioButton>
 
 class ControlObject;
 class ControlObjectThreadMain;
@@ -56,6 +57,11 @@ private:
     ControlObjectThreadMain* recordControl;
     bool confirmOverwrite;
     QString fileTypeExtension;
+    QRadioButton *radioOgg;
+    QRadioButton *radioMp3;
+    QRadioButton *radioAiff;
+    QRadioButton *radioFlac;
+    QRadioButton *radioWav;
 };
 
 #endif
