@@ -10,6 +10,7 @@
 #include "library/trackcollection.h"
 #include "library/playlisttablemodel.h"
 #include "mixxxkeyboard.h"
+#include "soundsourceproxy.h"
 
 PlaylistFeature::PlaylistFeature(QObject* parent, TrackCollection* pTrackCollection)
         : LibraryFeature(parent),
@@ -185,7 +186,8 @@ bool PlaylistFeature::dropAcceptChild(const QModelIndex& index, QUrl url) {
         trackId = m_trackDao.addTrack(file);
     }
 
-    if (trackId == -1)
+    // Do nothing if the location still isn't in the database.
+    if (trackId < 0)
         return false;
 
     // appendTrackToPlaylist doesn't return whether it succeeded, so assume it
@@ -199,8 +201,8 @@ bool PlaylistFeature::dragMoveAccept(QUrl url) {
 }
 
 bool PlaylistFeature::dragMoveAcceptChild(const QModelIndex& index, QUrl url) {
-    //TODO: Filter by supported formats regex and reject anything that doesn't match.
-    return true;
+    QFileInfo file(url.toLocalFile());
+    return SoundSourceProxy::isFilenameSupported(file.fileName());
 }
 
 QAbstractItemModel* PlaylistFeature::getChildModel() {

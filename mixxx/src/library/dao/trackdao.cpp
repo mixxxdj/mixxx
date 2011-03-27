@@ -5,6 +5,7 @@
 #include "trackinfoobject.h"
 #include "library/dao/trackdao.h"
 #include "audiotagger.h"
+#include "soundsourceproxy.h"
 
 // The number of tracks to cache in memory at once. Once the n+1'th track is
 // created, the TrackDAO's QCache deletes its TrackPointer to the track, which
@@ -295,6 +296,10 @@ void TrackDAO::addTracks(QList<TrackInfoObject*> tracksToAdd) {
     prepareTrackLocationsInsert(query);
 
     foreach (TrackInfoObject* pTrack, tracksToAdd) {
+        if (!isTrackFormatSupported(pTrack)) {
+            continue;
+        }
+
         bindTrackToTrackLocationsInsert(query, pTrack);
 
         int trackLocationId = -1;
@@ -381,6 +386,11 @@ void TrackDAO::addTrack(TrackInfoObject* pTrack)
     //qDebug() << "TrackDAO::addTrack" << QThread::currentThread() << m_database.connectionName();
     //qDebug() << "TrackCollection::addTrack(), inserting into DB";
     Q_ASSERT(pTrack); //Why you be giving me NULL pTracks
+
+    // Check that track is a supported extension.
+    if (!isTrackFormatSupported(pTrack)) {
+        return;
+    }
 
     //Start the transaction
     m_database.transaction();
@@ -940,4 +950,8 @@ void TrackDAO::writeAudioMetaData(TrackInfoObject* pTrack){
 
         tagger.save();
     }
+}
+
+bool TrackDAO::isTrackFormatSupported(TrackInfoObject* pTrack) const {
+    return SoundSourceProxy::isFilenameSupported(pTrack->getFilename());
 }
