@@ -44,13 +44,14 @@ public slots:
     void slotEncoding();
     void slotSliderQuality();
     void slotRecordPathChange();
-    int getSliderQualityVal();
-    void updateTextQuality();
+    void slotEnableCueFile(int);
 signals:
     void apply(const QString &);
 private:
     void setMetaData();
     void loadMetaData();
+    int getSliderQualityVal();
+    void updateTextQuality();
     
     /** Pointer to config object */
     ConfigObject<ConfigValue> *config;
