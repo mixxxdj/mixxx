@@ -239,8 +239,11 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
 
     // Starting the master (mixing of the channels and effects):
     m_pEngine = new EngineMaster(m_pConfig, "[Master]");
+
     connect(m_pEngine, SIGNAL(isRecording(bool)),
             m_pRecordingManager,SLOT(slotIsRecording(bool)));
+    connect(m_pEngine, SIGNAL(bytesRecorded(int)),
+            m_pRecordingManager,SLOT(slotBytesRecorded(int)));
 
     // Initialize player device
     // while this is created here, setupDevices needs to be called sometime

@@ -66,7 +66,7 @@ void RecordingManager::startRecording()
     //Construct the file pattern
     // dd_mm_yyyy--hours-minutes-ss   or    mm_dd_yyyy --hours-minutes:seconds
     QDateTime current_date_time = QDateTime::currentDateTime();
-    QString date_time_str = current_date_time.toString("/dd_MM_yyyy---hh_mm_ss");
+    QString date_time_str = current_date_time.toString("/dd_MM_yyyy-hh'h'_mm'm'_ss's'");
     date_time_str.append(".").append(encodingType.toLower());
 
     QString filename (m_recordingDir);
@@ -74,13 +74,14 @@ void RecordingManager::startRecording()
 
     m_pConfig->set(ConfigKey("[Recording]", "Path"), filename);
     m_recReady->slotSet(RECORD_READY);
-    //m_browseModel->setPath(m_recordingDir);
+    m_recordingFile = QFileInfo(filename).fileName();
 
 }
 void RecordingManager::stopRecording()
 {
     qDebug() << "Recording stopped";
     m_recReady->slotSet(RECORD_OFF);
+    m_recordingFile = "";
 
 }
 
@@ -89,7 +90,7 @@ QString& RecordingManager::getRecordingDir(){
 }
 void RecordingManager::slotBytesRecorded(int bytes)
 {
-
+    emit(bytesRecorded(bytes));
 }
 void RecordingManager::slotIsRecording(bool isRecordingActive)
 {
@@ -110,4 +111,7 @@ void RecordingManager::slotIsRecording(bool isRecordingActive)
 bool RecordingManager::isRecordingActive()
 {
     return m_isRecording;
+}
+QString& RecordingManager::getRecordingFile(){
+    return m_recordingFile;
 }

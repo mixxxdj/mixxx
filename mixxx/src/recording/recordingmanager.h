@@ -36,6 +36,8 @@ class RecordingManager : public QObject
         void stopRecording();
         bool isRecordingActive();
         QString& getRecordingDir();
+        //return the currently recording file
+        QString& getRecordingFile();
     signals:
         void bytesRecorded(int);
         void isRecording(bool);
@@ -50,6 +52,7 @@ class RecordingManager : public QObject
 
        ConfigObject<ConfigValue>* m_pConfig;
        QString m_recordingDir;
+       QString m_recordingFile;
        bool m_isRecording;
 
 };

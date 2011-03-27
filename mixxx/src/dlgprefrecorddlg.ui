@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>412</width>
+    <width>565</width>
     <height>411</height>
    </rect>
   </property>
@@ -32,10 +32,7 @@
        </property>
       </widget>
      </item>
-     <item row="0" column="2" colspan="2">
-      <widget class="QComboBox" name="comboBoxEncoding"/>
-     </item>
-     <item row="0" column="1">
+     <item row="0" column="2">
       <spacer>
        <property name="orientation">
         <enum>Qt::Horizontal</enum>
@@ -47,6 +44,19 @@
         </size>
        </property>
       </spacer>
+     </item>
+     <item row="0" column="1">
+      <widget class="QComboBox" name="comboBoxEncoding"/>
+     </item>
+     <item row="0" column="3">
+      <widget class="QLabel" name="label">
+       <property name="text">
+        <string>Split recordings at</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="4">
+      <widget class="QComboBox" name="comboBoxSplitting"/>
      </item>
     </layout>
    </item>

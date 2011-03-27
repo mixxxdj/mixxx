@@ -140,6 +140,7 @@ void EngineRecord::process(const CSAMPLE * pIn, const CSAMPLE * pOut, const int 
         if(m_Encoding == ENCODING_WAVE || m_Encoding == ENCODING_AIFF){
             if(m_sndfile != NULL)
                 sf_write_float(m_sndfile, pIn, iBufferSize);
+                emit(bytesRecorded(iBufferSize));
         }
         else{
             if(!m_encoder) return;
@@ -163,6 +164,7 @@ void EngineRecord::write(unsigned char *header, unsigned char *body,
     }
     //always write body
     m_datastream.writeRawData((const char*) body, bodyLen);
+    emit(bytesRecorded((headerLen+bodyLen)));
 
 }
 bool EngineRecord::fileOpen(){
