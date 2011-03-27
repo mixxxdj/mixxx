@@ -66,13 +66,14 @@ void RecordingManager::startRecording()
     //Construct the file pattern
     // dd_mm_yyyy--hours-minutes-ss   or    mm_dd_yyyy --hours-minutes:seconds
     QDateTime current_date_time = QDateTime::currentDateTime();
-    QString date_time_str = current_date_time.toString("/dd_MM_yyyy-hh'h'_mm'm'_ss's'");
-    date_time_str.append(".").append(encodingType.toLower());
+    QString date_time_str = current_date_time.toString("dd_MM_yyyy-hh'h'_mm'm'_ss's'");
+    date_time_str.append(".");
 
     QString filename (m_recordingDir);
     filename.append("/").append(date_time_str);
 
-    m_pConfig->set(ConfigKey("[Recording]", "Path"), filename);
+    m_pConfig->set(ConfigKey("[Recording]", "Path"), filename + encodingType.toLower());
+    m_pConfig->set(ConfigKey("[Recording]", "CuePath"), filename +"cue");
     m_recReady->slotSet(RECORD_READY);
     m_recordingFile = QFileInfo(filename).fileName();
 
