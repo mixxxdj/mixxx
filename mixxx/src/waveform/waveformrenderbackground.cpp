@@ -17,13 +17,16 @@
 #include "widget/wwidget.h"
 #include "trackinfoobject.h"
 
-WaveformRenderBackground::WaveformRenderBackground(const char* group, WaveformRenderer *parent) :
-    m_iWidth(0),
-    m_iHeight(0),
-    m_backgroundPixmap(),
-    m_bRepaintBackground(true),
-    bgColor(0,0,0)
-{
+WaveformRenderBackground::WaveformRenderBackground(const char* group, WaveformRenderer *parent)
+        : m_iWidth(0),
+          m_iHeight(0),
+          m_backgroundPixmap(),
+          m_bRepaintBackground(true),
+          bgColor(0,0,0) {
+}
+
+WaveformRenderBackground::~WaveformRenderBackground() {
+    qDebug() << this << "~WaveformRenderBackground()";
 }
 
 void WaveformRenderBackground::resize(int w, int h) {

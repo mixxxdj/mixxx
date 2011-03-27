@@ -486,28 +486,31 @@ MixxxApp::~MixxxApp()
     qDebug() << "save config, " << qTime.elapsed();
     m_pConfig->Save();
 
-    qDebug() << "close soundmanager" << qTime.elapsed();
-    m_pSoundManager->closeDevices();
-    qDebug() << "soundmanager->close() done";
-
-    qDebug() << "delete SkinLoader";
-    delete m_pSkinLoader;
-
-    qDebug() << "delete MidiDeviceManager";
-    delete m_pMidiDeviceManager;
-
+    // SoundManager depend on Engine and Config
     qDebug() << "delete soundmanager, " << qTime.elapsed();
     delete m_pSoundManager;
 
-    qDebug() << "delete playerManager" << qTime.elapsed();
-    delete m_pPlayerManager;
-
-    qDebug() << "delete m_pEngine, " << qTime.elapsed();
-    delete m_pEngine;
-
+    // View depends on MixxxKeyboard, PlayerManager, Library
     qDebug() << "delete view, " << qTime.elapsed();
     delete m_pView;
 
+    // SkinLoader depends on Config
+    qDebug() << "delete SkinLoader";
+    delete m_pSkinLoader;
+
+    // MIDIDeviceManager depends on Config
+    qDebug() << "delete MidiDeviceManager";
+    delete m_pMidiDeviceManager;
+
+    // PlayerManager depends on Engine, Library, and Config
+    qDebug() << "delete playerManager" << qTime.elapsed();
+    delete m_pPlayerManager;
+
+    // EngineMaster depends on Config
+    qDebug() << "delete m_pEngine, " << qTime.elapsed();
+    delete m_pEngine;
+
+    // LibraryScanner depends on Library
     qDebug() << "delete library scanner" <<  qTime.elapsed();
     delete m_pLibraryScanner;
 
@@ -1203,6 +1206,7 @@ void MixxxApp::slotHelpAbout()
 "Daniel James<br>"
 "Mika Haulo<br>"
 "Matthew Mikolay<br>"
+"Tom Mast<br>"
 
 "</p>"
 "<p align=\"center\"><b>And special thanks to:</b></p>"
