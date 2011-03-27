@@ -41,6 +41,9 @@ public slots:
     void slotApply();
 	void slotUpdate();
     void slotBrowseSave();
+    void slotBrowseCueSave();
+    void slotEnableCueFile(int);
+    void slotRecordPathChanged(QString);
     void slotEncoding();
     void slotSliderQuality();
     void slotRecordPathChange();

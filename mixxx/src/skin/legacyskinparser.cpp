@@ -37,7 +37,6 @@
 #include "widget/wtrackproperty.h"
 #include "widget/wnumber.h"
 #include "widget/wnumberpos.h"
-#include "widget/wnumberbpm.h"
 #include "widget/wnumberrate.h"
 #include "widget/woverview.h"
 
@@ -252,9 +251,8 @@ QWidget* LegacySkinParser::parseNode(QDomElement node, QWidget *pGrandparent) {
         return parseNumberRate(node);
     } else if (nodeName == "NumberPos") {
         return parseNumberPos(node);
-    } else if (nodeName == "NumberBpm") {
-        return parseNumberBpm(node);
-    } else if (nodeName == "Number") {
+    } else if (nodeName == "Number" || nodeName == "NumberBpm") {
+        // NumberBpm is deprecated, and is now the same as a Number
         return parseNumber(node);
     } else if (nodeName == "Label") {
         return parseLabel(node);
@@ -572,35 +570,6 @@ QWidget* LegacySkinParser::parseNumberPos(QDomElement node) {
     setupWidget(node, p);
     p->setup(node);
     setupConnections(node, p);
-    return p;
-}
-
-QWidget* LegacySkinParser::parseNumberBpm(QDomElement node) {
-    QString channelStr = lookupNodeGroup(node);
-
-    const char* pSafeChannelStr = safeChannelString(channelStr);
-
-    BaseTrackPlayer* pPlayer = m_pPlayerManager->getPlayer(channelStr);
-
-    if (!pPlayer)
-        return NULL;
-
-    WNumberBpm * p = new WNumberBpm(pSafeChannelStr, m_pParent);
-    setupWidget(node, p);
-    p->setup(node);
-    setupConnections(node, p);
-    p->installEventFilter(m_pKeyboard);
-
-    connect(pPlayer, SIGNAL(newTrackLoaded(TrackPointer)),
-            p, SLOT(slotTrackLoaded(TrackPointer)));
-    connect(pPlayer, SIGNAL(unloadingTrack(TrackPointer)),
-            p, SLOT(slotTrackUnloaded(TrackPointer)));
-
-    TrackPointer pTrack = pPlayer->getLoadedTrack();
-    if (pTrack) {
-        p->slotTrackLoaded(pTrack);
-    }
-
     return p;
 }
 
