@@ -35,15 +35,14 @@ class BrowseTableModel : public QStandardItemModel, public TrackModel
     
     Q_OBJECT
     public:
+        BrowseTableModel(QObject* parent);
+        virtual ~BrowseTableModel();
         void setPath(QString absPath);
         //reimplemented from TrackModel class
         virtual TrackPointer getTrack(const QModelIndex& index) const;
         virtual QString getTrackLocation(const QModelIndex& index) const;
         virtual int getTrackId(const QModelIndex& index) const;
         virtual int getTrackRow(int trackId) const;
-
-        static BrowseTableModel* getInstance();
-        static void destroyInstance();
 
         virtual void search(const QString& searchText);
         virtual void removeTrack(const QModelIndex& index);
@@ -57,14 +56,13 @@ class BrowseTableModel : public QStandardItemModel, public TrackModel
         virtual bool isColumnHiddenByDefault(int column);
         virtual const QList<int>& searchColumns() const;
     private:
-        BrowseTableModel(QObject* parent);
-        virtual ~BrowseTableModel();
+
 
         void addSearchColumn(int index);
 
         BrowseThread m_backgroundThread;
         QList<int> m_searchColumns;
-        static BrowseTableModel* m_instance;
+
     public slots:
        void slotClear();
        void slotInsert(const QList< QList<QStandardItem*> >&);
