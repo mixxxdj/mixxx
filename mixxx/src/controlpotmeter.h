@@ -38,6 +38,8 @@ public:
     double getMax();
     /** Sets the step size of the associated PushButtons */
     void setStep(double);
+    /** Sets the small step size of the associated PushButtons */
+    void setSmallStep(double);
     /** Sets the minimum and maximum allowed value. The control value is reset when calling
       * this method */
     void setRange(double dMinValue, double dMaxValue);
@@ -52,11 +54,15 @@ public slots:
     void incValue(double);
     /** Decreases the value. This method is called from an associated PushButton control */
     void decValue(double);
+    /** Increases the value by smaller step. */
+    void incSmallValue(double);
+    /** Decreases the value by smaller step. */
+    void decSmallValue(double);
 
 protected:
     void setValueFromMidi(MidiCategory c, double v);
     
-    double m_dMaxValue, m_dMinValue, m_dValueRange, m_dStep;
+    double m_dMaxValue, m_dMinValue, m_dValueRange, m_dStep, m_dSmallStep;
 
 #define maxPosition 127
 #define minPosition 0

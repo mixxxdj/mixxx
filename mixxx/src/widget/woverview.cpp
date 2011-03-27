@@ -227,12 +227,13 @@ void WOverview::setData(const QByteArray* pWaveformSummary, long liSampleDuratio
 }
 
 void WOverview::redrawPixmap() {
-    if (!m_waveformSummary.size())
-        return;
-
     QPainter paint(m_pScreenBuffer);
-
     paint.fillRect(m_pScreenBuffer->rect(), palette().color(backgroundRole()));
+
+    if (!m_waveformSummary.size()) {
+        update();
+        return;
+    }
 
     if (!m_backgroundPixmap.isNull()) {
         paint.drawTiledPixmap(m_pScreenBuffer->rect(), m_backgroundPixmap, QPoint(0,0));

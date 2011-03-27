@@ -410,7 +410,6 @@ class MixxxCore(Feature):
                    "widget/wnumber.cpp",
                    "widget/wnumberpos.cpp",
                    "widget/wnumberrate.cpp",
-                   "widget/wnumberbpm.cpp",
                    "widget/wknob.cpp",
                    "widget/wdisplay.cpp",
                    "widget/wvumeter.cpp",

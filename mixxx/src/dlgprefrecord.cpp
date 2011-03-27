@@ -32,7 +32,7 @@ DlgPrefRecord::DlgPrefRecord(QWidget * parent, ConfigObject<ConfigValue> * _conf
 
     recordControl = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[Master]", "Record"))); //See RECORD_* #defines in defs_recording.h
 
-	
+
     //Fill up encoding list
     comboBoxEncoding->addItem(ENCODING_WAVE);
 #ifdef SF_FORMAT_FLAC
@@ -44,7 +44,7 @@ DlgPrefRecord::DlgPrefRecord(QWidget * parent, ConfigObject<ConfigValue> * _conf
     comboBoxEncoding->addItem(ENCODING_OGG);
 #endif
 
-	int encodingIndex = comboBoxEncoding->findText(config->getValueString(ConfigKey("[Recording]","Encoding")));
+    int encodingIndex = comboBoxEncoding->findText(config->getValueString(ConfigKey("[Recording]","Encoding")));
     if (encodingIndex >= 0)
         comboBoxEncoding->setCurrentIndex(encodingIndex);
     else //Invalid, so set default and save
@@ -80,11 +80,11 @@ void DlgPrefRecord::slotSliderQuality()
 
 int DlgPrefRecord::getSliderQualityVal()
 {
-	
-	/* Commented by Tobias Rafreider
-	 * We always use the bitrate to denote the quality since it is more common to the users
-	 */
-	return Encoder::convertToBitrate(SliderQuality->value());
+
+    /* Commented by Tobias Rafreider
+     * We always use the bitrate to denote the quality since it is more common to the users
+     */
+    return Encoder::convertToBitrate(SliderQuality->value());
 
 }
 
@@ -92,10 +92,10 @@ void DlgPrefRecord::updateTextQuality()
 {
     int quality = getSliderQualityVal();
     QString encodingType = comboBoxEncoding->currentText();
-    
+
     TextQuality->setText(QString( QString::number(quality) + tr("kbps")));
-    
-    
+
+
 }
 
 void DlgPrefRecord::slotEncoding()
@@ -103,7 +103,7 @@ void DlgPrefRecord::slotEncoding()
     //set defaults
     groupBoxQuality->setEnabled(true);
     config->set(ConfigKey(RECORDING_PREF_KEY, "Encoding"), ConfigValue(comboBoxEncoding->currentText()));
-    if (comboBoxEncoding->currentText() == ENCODING_WAVE || 
+    if (comboBoxEncoding->currentText() == ENCODING_WAVE ||
         comboBoxEncoding->currentText() == ENCODING_FLAC ||
         comboBoxEncoding->currentText() == ENCODING_AIFF)
     {
@@ -115,7 +115,7 @@ void DlgPrefRecord::slotEncoding()
         //if value == 0 then a default value of 128kbps is proposed.
         if(!value)
             value = 6; // 128kbps
-        
+
         SliderQuality->setValue(value);
     }
     else if (comboBoxEncoding->currentText() == ENCODING_MP3)
@@ -124,7 +124,7 @@ void DlgPrefRecord::slotEncoding()
         //if value == 0 then a default value of 128kbps is proposed.
         if(!value)
             value = 6; // 128kbps
-        
+
         SliderQuality->setValue(value);
     }
     else

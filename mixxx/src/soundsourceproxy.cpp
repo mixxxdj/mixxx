@@ -24,7 +24,7 @@
 #include "soundsourceoggvorbis.h"
 #ifdef __COREAUDIO__
 #include "soundsourcecoreaudio.h"
-#endif 
+#endif
 #ifdef __SNDFILE__
 #include "soundsourcesndfile.h"
 #endif
@@ -44,6 +44,7 @@
 
 
 //Static memory allocation
+QRegExp SoundSourceProxy::m_supportedFileRegex;
 QMap<QString, QLibrary*> SoundSourceProxy::m_plugins;
 QMap<QString, getSoundSourceFunc> SoundSourceProxy::m_extensionsSupportedByPlugins;
 QMutex SoundSourceProxy::m_extensionsMutex;
@@ -182,7 +183,7 @@ QLibrary* SoundSourceProxy::getPlugin(QString lib_filename)
                     incompatible = true;
                 }
             } else {
-                //Missing getSoundSourceAPIVersion symbol 
+                //Missing getSoundSourceAPIVersion symbol
                 incompatible = true;
             }
             if (incompatible)
@@ -318,7 +319,7 @@ int SoundSourceProxy::ParseHeader(TrackInfoObject* p)
     return 0;
 }
 
-QList<QString> SoundSourceProxy::supportedFileExtensions()
+QStringList SoundSourceProxy::supportedFileExtensions()
 {
     QMutexLocker locker(&m_extensionsMutex);
     QList<QString> supportedFileExtensions;
@@ -328,7 +329,7 @@ QList<QString> SoundSourceProxy::supportedFileExtensions()
     supportedFileExtensions.append(SoundSourceOggVorbis::supportedFileExtensions());
 #ifdef __SNDFILE__
     supportedFileExtensions.append(SoundSourceSndFile::supportedFileExtensions());
-#endif 
+#endif
 #ifdef __COREAUDIO__
     supportedFileExtensions.append(SoundSourceCoreAudio::supportedFileExtensions());
 #endif
@@ -337,53 +338,42 @@ QList<QString> SoundSourceProxy::supportedFileExtensions()
     return supportedFileExtensions;
 }
 
-QList<QString> SoundSourceProxy::supportedFileExtensionsByPlugins()
-{
+QStringList SoundSourceProxy::supportedFileExtensionsByPlugins() {
     QMutexLocker locker(&m_extensionsMutex);
     QList<QString> supportedFileExtensions;
     supportedFileExtensions.append(m_extensionsSupportedByPlugins.keys());
-
     return supportedFileExtensions;
 }
 
-QString SoundSourceProxy::supportedFileExtensionsString()
-{
-    QList<QString> supportedFileExtList = SoundSourceProxy::supportedFileExtensions();
-    QString supportedFileExtString;
-
-    //Turn the list into a "*.mp3 *.wav *.etc" style string
-    QString ext;
-    QListIterator<QString> it(supportedFileExtList);
-    while (it.hasNext())
-    {
-        ext = it.next();
-        supportedFileExtString.append(QString("*.%1").arg(ext));
-        if (it.hasNext())
-            supportedFileExtString.append(" ");
+QString SoundSourceProxy::supportedFileExtensionsString() {
+    QStringList supportedFileExtList = SoundSourceProxy::supportedFileExtensions();
+    // Turn the list into a "*.mp3 *.wav *.etc" style string
+    for (int i = 0; i < supportedFileExtList.size(); ++i) {
+	supportedFileExtList[i] = QString("*.%1").arg(supportedFileExtList[i]);
     }
-
-    return supportedFileExtString;
+    return supportedFileExtList.join(" ");
 }
 
-QString SoundSourceProxy::supportedFileExtensionsRegex()
-{
-    QList<QString> supportedFileExtList = SoundSourceProxy::supportedFileExtensions();
-    QString supportedFileExtRegex = "\\.(";
+QString SoundSourceProxy::supportedFileExtensionsRegex() {
+    QStringList supportedFileExtList = SoundSourceProxy::supportedFileExtensions();
 
-    //Turn the list into a "\\.(mp3|wav|etc)" style regex string
-    QString ext;
-    QListIterator<QString> it(supportedFileExtList);
-    while (it.hasNext())
-    {
-        ext = it.next();
-        supportedFileExtRegex.append(QString("%1").arg(ext));
-        if (it.hasNext())
-            supportedFileExtRegex.append("|");
+    // Escape every extension appropriately
+    for (int i = 0; i < supportedFileExtList.size(); ++i) {
+	supportedFileExtList[i] = QRegExp::escape(supportedFileExtList[i]);
     }
-    supportedFileExtRegex.append(")");
 
-    return supportedFileExtRegex;
+    //Turn the list into a "\\.(mp3|wav|etc)$" style regex string
+    return QString("\\.(%1)$").arg(supportedFileExtList.join("|"));
 }
+
+bool SoundSourceProxy::isFilenameSupported(QString fileName) {
+    if (m_supportedFileRegex.isValid()) {
+        QString regex = SoundSourceProxy::supportedFileExtensionsRegex();
+        m_supportedFileRegex = QRegExp(regex);
+    }
+    return fileName.contains(m_supportedFileRegex);
+}
+
 
 unsigned int SoundSourceProxy::getSampleRate()
 {
