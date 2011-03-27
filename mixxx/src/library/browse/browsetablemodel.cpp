@@ -9,8 +9,6 @@
 #include "soundsourceproxy.h"
 #include "mixxxutils.cpp"
 
-BrowseTableModel* BrowseTableModel::m_instance = 0;
-
 BrowseTableModel::BrowseTableModel(QObject* parent)
         : QStandardItemModel(parent),
           TrackModel(QSqlDatabase::database("QSQLITE"),
@@ -57,28 +55,6 @@ BrowseTableModel::BrowseTableModel(QObject* parent)
 BrowseTableModel::~BrowseTableModel()
 {
 
-}
-BrowseTableModel* BrowseTableModel::getInstance()
-{
-    static QMutex mutex;
-    if (!m_instance)
-    {
-        mutex.lock();
-
-        if (!m_instance)
-            m_instance = new BrowseTableModel(0);
-
-        mutex.unlock();
-    }
-    return m_instance;
-}
-void BrowseTableModel::destroyInstance()
-{
-    static QMutex mutex;
-    mutex.lock();
-    delete m_instance;
-    m_instance = 0;
-    mutex.unlock();
 }
 
 const QList<int>& BrowseTableModel::searchColumns() const {

@@ -93,8 +93,6 @@ Library::~Library() {
         features_it.remove();
         delete feature;
     }
-    //delete BrowseModel here since it is a singleton
-    BrowseTableModel::destroyInstance();
 }
 
 void Library::bindWidget(WLibrarySidebar* pSidebarWidget,
