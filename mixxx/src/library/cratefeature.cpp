@@ -41,10 +41,10 @@ CrateFeature::CrateFeature(QObject* parent,
     connect(m_pLockCrateAction, SIGNAL(triggered()),
             this, SLOT(slotToggleCrateLock()));
 
-    m_pImportPlaylistAction = new QAction(tr("Import Playlist"),this);
+    m_pImportPlaylistAction = new QAction(tr("Import Crate"),this);
     connect(m_pImportPlaylistAction, SIGNAL(triggered()),
             this, SLOT(slotImportPlaylist()));
-    m_pExportPlaylistAction = new QAction(tr("Export Playlist"), this);
+    m_pExportPlaylistAction = new QAction(tr("Export Crate"), this);
     connect(m_pExportPlaylistAction, SIGNAL(triggered()),
             this, SLOT(slotExportPlaylist()));
 
@@ -445,9 +445,11 @@ void CrateFeature::slotExportPlaylist(){
     }
     else
     {
-        QMessageBox::warning(NULL,tr("Playlist Export Failed"),
-                             tr("Mixxx only supports playlist exports to M3U and PLS."
-                                "Please make sure your file extension is m3u or pls"));
+        //default export to M3U if file extension is missing
 
+        qDebug() << "Crate export: No file extension specified. Appending .m3u "
+                 << "and exporting to M3U.";
+        file_location.append(".m3u");
+        ParserM3u::writeM3UFile(file_location, playlist_items, useRelativePath);
     }
 }
