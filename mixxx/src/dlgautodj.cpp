@@ -148,7 +148,7 @@ void DlgAutoDJ::moveSelection(int delta) {
 void DlgAutoDJ::shufflePlaylist(bool buttonChecked)
 {
     Q_UNUSED(buttonChecked);
-
+    m_pTrackTableView->sortByColumn(0, Qt::AscendingOrder);
     qDebug() << "Shuffling AutoDJ playlist";
     m_pAutoDJTableModel->shuffleTracks(m_pAutoDJTableModel->index(0, 0));
     qDebug() << "Shuffling done";
