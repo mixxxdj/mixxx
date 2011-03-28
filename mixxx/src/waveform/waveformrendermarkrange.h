@@ -21,21 +21,23 @@ class WaveformRenderer;
 
 class WaveformRenderMarkRange : public RenderObject {
     Q_OBJECT
-public:
-    explicit WaveformRenderMarkRange(const char* pGroup,
-                                     WaveformRenderer *parent);
+  public:
+    WaveformRenderMarkRange(const char* pGroup, WaveformRenderer *parent);
+    virtual ~WaveformRenderMarkRange();
+
     void resize(int w, int h);
     void setup(QDomNode node);
     void draw(QPainter *pPainter, QPaintEvent *event,
               QVector<float> *buffer, double playPos, double rateAdjust);
     void newTrack(TrackPointer pTrack);
 
-public slots:
+  public slots:
     void slotUpdateMarkStartPoint(double mark);
     void slotUpdateMarkEndPoint(double mark);
     void slotUpdateMarkEnabled(double mark);
     void slotUpdateTrackSamples(double samples);
-private:
+
+  private:
     const char* m_pGroup;
     WaveformRenderer *m_pParent;
 

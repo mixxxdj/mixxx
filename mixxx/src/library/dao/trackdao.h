@@ -115,6 +115,7 @@ Q_OBJECT
     void slotTrackSave(TrackInfoObject* pTrack);
 
   private:
+    bool isTrackFormatSupported(TrackInfoObject* pTrack) const;
     void saveTrack(TrackInfoObject* pTrack);
     void updateTrack(TrackInfoObject* pTrack);
     void addTrack(TrackInfoObject* pTrack);

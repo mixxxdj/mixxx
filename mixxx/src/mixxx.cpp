@@ -496,10 +496,6 @@ MixxxApp::~MixxxApp()
     qDebug() << "save config, " << qTime.elapsed();
     m_pConfig->Save();
 
-    qDebug() << "close soundmanager" << qTime.elapsed();
-    m_pSoundManager->closeDevices();
-    qDebug() << "soundmanager->close() done";
-
     // Save state of End of track controls in config database
     //m_pConfig->set(ConfigKey("[Controls]","TrackEndModeCh1"), ConfigValue((int)ControlObject::getControl(ConfigKey("[Channel1]","TrackEndMode"))->get()));
     //m_pConfig->set(ConfigKey("[Controls]","TrackEndModeCh2"), ConfigValue((int)ControlObject::getControl(ConfigKey("[Channel2]","TrackEndMode"))->get()));
@@ -511,24 +507,31 @@ MixxxApp::~MixxxApp()
     m_pConfig->set(ConfigKey("[VinylControl]","CueingCh1"), ConfigValue((int)ControlObject::getControl(ConfigKey("[Channel1]","VinylCueing"))->get()));
     m_pConfig->set(ConfigKey("[VinylControl]","CueingCh2"), ConfigValue((int)ControlObject::getControl(ConfigKey("[Channel2]","VinylCueing"))->get()));
 #endif    
-    qDebug() << "delete SkinLoader";
-    delete m_pSkinLoader;
-
-    qDebug() << "delete MidiDeviceManager";
-    delete m_pMidiDeviceManager;
-
+    // SoundManager depend on Engine and Config
     qDebug() << "delete soundmanager, " << qTime.elapsed();
     delete m_pSoundManager;
 
-    qDebug() << "delete playerManager" << qTime.elapsed();
-    delete m_pPlayerManager;
-
-    qDebug() << "delete m_pEngine, " << qTime.elapsed();
-    delete m_pEngine;
-
+    // View depends on MixxxKeyboard, PlayerManager, Library
     qDebug() << "delete view, " << qTime.elapsed();
     delete m_pView;
 
+    // SkinLoader depends on Config
+    qDebug() << "delete SkinLoader";
+    delete m_pSkinLoader;
+
+    // MIDIDeviceManager depends on Config
+    qDebug() << "delete MidiDeviceManager";
+    delete m_pMidiDeviceManager;
+
+    // PlayerManager depends on Engine, Library, and Config
+    qDebug() << "delete playerManager" << qTime.elapsed();
+    delete m_pPlayerManager;
+
+    // EngineMaster depends on Config
+    qDebug() << "delete m_pEngine, " << qTime.elapsed();
+    delete m_pEngine;
+
+    // LibraryScanner depends on Library
     qDebug() << "delete library scanner" <<  qTime.elapsed();
     delete m_pLibraryScanner;
 
@@ -1309,6 +1312,9 @@ void MixxxApp::slotHelpAbout()
 "Micz Flor<br>"
 "Daniel James<br>"
 "Mika Haulo<br>"
+"Matthew Mikolay<br>"
+"Tom Mast<br>"
+"Miko Kiiski<br>"
 
 "</p>"
 "<p align=\"center\"><b>And special thanks to:</b></p>"

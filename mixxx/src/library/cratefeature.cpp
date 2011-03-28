@@ -17,6 +17,7 @@
 #include "widget/wlibrarysidebar.h"
 #include "mixxxkeyboard.h"
 #include "treeitem.h"
+#include "soundsourceproxy.h"
 
 CrateFeature::CrateFeature(QObject* parent,
                            TrackCollection* pTrackCollection)
@@ -111,7 +112,10 @@ bool CrateFeature::dragMoveAcceptChild(const QModelIndex& index, QUrl url) {
     CrateDAO& crateDao = m_pTrackCollection->getCrateDAO();
     int crateId = crateDao.getCrateIdByName(crateName);
     bool locked = crateDao.isCrateLocked(crateId);
-    return !locked;
+
+    QFileInfo file(url.toLocalFile());
+    bool formatSupported = SoundSourceProxy::isFilenameSupported(file.fileName());
+    return !locked && formatSupported;
 }
 
 void CrateFeature::bindWidget(WLibrarySidebar* sidebarWidget,
