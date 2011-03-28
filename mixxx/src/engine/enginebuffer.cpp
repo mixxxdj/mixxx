@@ -189,9 +189,6 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
 
 EngineBuffer::~EngineBuffer()
 {
-    delete m_pLoopingControl;
-    delete m_pRateControl;
-    delete m_pBpmControl;
     delete m_pReadAheadManager;
     delete m_pReader;
 
@@ -215,6 +212,11 @@ EngineBuffer::~EngineBuffer()
 
     delete m_pKeylock;
     delete m_pEject;
+
+    while (m_engineControls.size() > 0) {
+        EngineControl* pControl = m_engineControls.takeLast();
+        delete pControl;
+    }
 }
 
 void EngineBuffer::setPitchIndpTimeStretch(bool b)
