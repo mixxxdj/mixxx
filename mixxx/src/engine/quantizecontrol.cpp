@@ -14,16 +14,10 @@
 #include "mathstuff.h"
 
 QuantizeControl::QuantizeControl(const char * _group,
-                               ConfigObject<ConfigValue> * _config,
-                               CachingReader *reader)
+                               ConfigObject<ConfigValue> * _config)
         : EngineControl(_group, _config) {
 
     m_dQuantizePrevBeat= -1;
-
-    m_pReader = reader;
-    connect(m_pReader, SIGNAL(trackLoaded(TrackPointer, int, int)),
-            this, SLOT(slotTrackLoaded(TrackPointer, int, int)),
-            Qt::DirectConnection);
 
     m_pCOQuantizeEnabled = new ControlPushButton(ConfigKey(_group, "quantize"));
     m_pCOQuantizeEnabled->set(0.0f);
