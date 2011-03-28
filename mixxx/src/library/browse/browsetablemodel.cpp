@@ -46,10 +46,10 @@ BrowseTableModel::BrowseTableModel(QObject* parent)
     qRegisterMetaType<BrowseTableModel*>("BrowseTableModel*");
 
     QObject::connect(BrowseThread::getInstance(), SIGNAL(clearModel(BrowseTableModel*)),
-                     this, SLOT(slotClear(BrowseTableModel*)), Qt::BlockingQueuedConnection);
+                     this, SLOT(slotClear(BrowseTableModel*)), Qt::QueuedConnection);
 
     QObject::connect(BrowseThread::getInstance(), SIGNAL(rowsAppended(const QList< QList<QStandardItem*> >&, BrowseTableModel*)),
-            this, SLOT(slotInsert(const QList< QList<QStandardItem*> >&, BrowseTableModel*)), Qt::BlockingQueuedConnection);
+            this, SLOT(slotInsert(const QList< QList<QStandardItem*> >&, BrowseTableModel*)), Qt::QueuedConnection);
 
 }
 

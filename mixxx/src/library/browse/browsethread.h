@@ -1,3 +1,7 @@
+/*
+ * browsethread.h         (C) 2011 Tobias Rafreider
+ */
+
 #ifndef BROWSETHREAD_H
 #define BROWSETHREAD_H
 
@@ -9,6 +13,15 @@
 
 #include "library/browse/browsetablemodel.h"
 
+/*
+ * This class is a singleton and represents a thread
+ * that is used to read ID3 metadata
+ * from a particular folder.
+ *
+ * The BroseTableModel uses this class.
+ * Note: Don't call getInstance() from places
+ * other than the GUI thread.
+ */
 class BrowseTableModel;
 
 class BrowseThread : public QThread {
