@@ -21,6 +21,9 @@
 #include <QMutex>
 #include <QMap>
 
+
+class ControlObjectThread;
+
 #include "trackinfoobject.h"
 
 class PlayerInfo : public QObject
@@ -30,13 +33,21 @@ class PlayerInfo : public QObject
     static PlayerInfo &Instance();
     TrackPointer getTrackInfo(QString group);
     void setTrackInfo(QString group, TrackPointer trackInfoObj);
+    int getCurrentPlayingDeck();
+    TrackPointer getCurrentPlayingTrack();
   private:
     PlayerInfo();
     ~PlayerInfo();
     PlayerInfo(PlayerInfo const&);
     PlayerInfo &operator= (PlayerInfo const&);
     QMutex m_mutex;
+    int m_iNumDecks;
+    ControlObjectThread* m_COxfader;
     QMap<QString, TrackPointer> m_loadedTrackMap;
+    QMap<QString, ControlObjectThread*> m_listCOPlay;
+    QMap<QString, ControlObjectThread*> m_listCOVolume;
+    QMap<QString, ControlObjectThread*> m_listCOOrientation;
+    QMap<QString, ControlObjectThread*> m_listCOpregain;
 };
 
 #endif

@@ -17,8 +17,28 @@ BpmControl::BpmControl(const char* _group,
         m_tapFilter(this, filterLength, maxInterval) {
 
     m_pRateSlider = ControlObject::getControl(ConfigKey(_group, "rate"));
+    connect(m_pRateSlider, SIGNAL(valueChanged(double)),
+            this, SLOT(slotRateChanged(double)),
+            Qt::DirectConnection);
+    connect(m_pRateSlider, SIGNAL(valueChangedFromEngine(double)),
+            this, SLOT(slotRateChanged(double)),
+            Qt::DirectConnection);
+
     m_pRateRange = ControlObject::getControl(ConfigKey(_group, "rateRange"));
+    connect(m_pRateRange, SIGNAL(valueChanged(double)),
+            this, SLOT(slotRateChanged(double)),
+            Qt::DirectConnection);
+    connect(m_pRateRange, SIGNAL(valueChangedFromEngine(double)),
+            this, SLOT(slotRateChanged(double)),
+            Qt::DirectConnection);
+
     m_pRateDir = ControlObject::getControl(ConfigKey(_group, "rate_dir"));
+    connect(m_pRateDir, SIGNAL(valueChanged(double)),
+            this, SLOT(slotRateChanged(double)),
+            Qt::DirectConnection);
+    connect(m_pRateDir, SIGNAL(valueChangedFromEngine(double)),
+            this, SLOT(slotRateChanged(double)),
+            Qt::DirectConnection);
 
     m_pFileBpm = new ControlObject(ConfigKey(_group, "file_bpm"));
     connect(m_pFileBpm, SIGNAL(valueChanged(double)),
@@ -57,7 +77,10 @@ double BpmControl::getBpm() {
 }
 
 void BpmControl::slotFileBpmChanged(double bpm) {
-    m_pEngineBpm->set(bpm);
+    // Adjust the file-bpm with the current setting of the rate to get the
+    // engine BPM.
+    double dRate = 1.0 + m_pRateDir->get() * m_pRateRange->get() * m_pRateSlider->get();
+    m_pEngineBpm->set(bpm * dRate);
 }
 
 void BpmControl::slotSetEngineBpm(double bpm) {
@@ -93,8 +116,7 @@ void BpmControl::slotTapFilter(double averageLength, int numSamples) {
     slotFileBpmChanged(averageBpm);
 }
 
-void BpmControl::slotControlBeatSync(double)
-{
+void BpmControl::slotControlBeatSync(double) {
     EngineBuffer* pOtherEngineBuffer = getOtherEngineBuffer();
 
     if(!pOtherEngineBuffer)
@@ -129,6 +151,9 @@ void BpmControl::slotControlBeatSync(double)
             // (removed, see older version for this info)
         }
     }
-
 }
 
+void BpmControl::slotRateChanged(double) {
+    double dFileBpm = m_pFileBpm->get();
+    slotFileBpmChanged(dFileBpm);
+}

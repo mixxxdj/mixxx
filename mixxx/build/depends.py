@@ -413,7 +413,6 @@ class MixxxCore(Feature):
                    "widget/wnumber.cpp",
                    "widget/wnumberpos.cpp",
                    "widget/wnumberrate.cpp",
-                   "widget/wnumberbpm.cpp",
                    "widget/wknob.cpp",
                    "widget/wdisplay.cpp",
                    "widget/wvumeter.cpp",
@@ -532,7 +531,7 @@ class MixxxCore(Feature):
                    "skin/skinloader.cpp",
                    "skin/legacyskinparser.cpp",
                    "skin/colorschemeparser.cpp",
-
+                   "skin/propertybinder.cpp",
 
                    "sampleutil.cpp",
                    "trackinfoobject.cpp",
