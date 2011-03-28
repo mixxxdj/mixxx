@@ -839,6 +839,8 @@ void LegacySkinParser::setupSize(QDomNode node, QWidget* pWidget) {
         int x = xs.toInt(&ok);
         if (ok) {
             //qDebug() << "setting width to" << x;
+            if (sizePolicy.horizontalPolicy() == QSizePolicy::Fixed)
+                pWidget->setMaximumWidth(x);
             pWidget->setMinimumWidth(x);
         }
 
@@ -861,6 +863,8 @@ void LegacySkinParser::setupSize(QDomNode node, QWidget* pWidget) {
         int y = ys.toInt(&ok);
         if (ok) {
             //qDebug() << "setting height to" << y;
+            if (sizePolicy.verticalPolicy() == QSizePolicy::Fixed)
+               pWidget->setMaximumHeight(y);
             pWidget->setMinimumHeight(y);
         }
         pWidget->setSizePolicy(sizePolicy);
