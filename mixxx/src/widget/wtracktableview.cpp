@@ -14,6 +14,7 @@
 #include "controlobjectthreadmain.h"
 #include "widget/wtracktableview.h"
 #include "dlgtrackinfo.h"
+#include "soundsourceproxy.h"
 
 WTrackTableView::WTrackTableView(QWidget * parent,
                                  ConfigObject<ConfigValue> * pConfig,
@@ -440,7 +441,18 @@ void WTrackTableView::dragEnterEvent(QDragEnterEvent * event)
                 event->ignore();
             }
         } else {
-            event->acceptProposedAction();
+            QList<QUrl> urls(event->mimeData()->urls());
+            bool anyAccepted = false;
+            foreach (QUrl url, urls) {
+                QFileInfo file(url.toLocalFile());
+                if (SoundSourceProxy::isFilenameSupported(file.fileName()))
+                    anyAccepted = true;
+            }
+            if (anyAccepted) {
+                event->acceptProposedAction();
+            } else {
+                event->ignore();
+            }
         }
     } else {
         event->ignore();

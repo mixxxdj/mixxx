@@ -27,6 +27,7 @@ class BpmControl : public EngineControl {
   private slots:
     void slotTapFilter(double,int);
     void slotBpmTap(double);
+    void slotRateChanged(double);
 
   private:
     // ControlObjects that come from EngineBuffer

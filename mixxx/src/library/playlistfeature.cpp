@@ -17,6 +17,7 @@
 #include "library/playlisttablemodel.h"
 #include "mixxxkeyboard.h"
 #include "treeitem.h"
+#include "soundsourceproxy.h"
 
 PlaylistFeature::PlaylistFeature(QObject* parent, TrackCollection* pTrackCollection)
         : LibraryFeature(parent),
@@ -29,6 +30,10 @@ PlaylistFeature::PlaylistFeature(QObject* parent, TrackCollection* pTrackCollect
     m_pCreatePlaylistAction = new QAction(tr("New Playlist"),this);
     connect(m_pCreatePlaylistAction, SIGNAL(triggered()),
             this, SLOT(slotCreatePlaylist()));
+
+    m_pAddToAutoDJAction = new QAction(tr("Add to Auto-DJ Queue"),this);
+    connect(m_pAddToAutoDJAction, SIGNAL(triggered()),
+            this, SLOT(slotAddToAutoDJ()));
 
     m_pDeletePlaylistAction = new QAction(tr("Remove"),this);
     connect(m_pDeletePlaylistAction, SIGNAL(triggered()),
@@ -64,6 +69,7 @@ PlaylistFeature::~PlaylistFeature() {
     delete m_pCreatePlaylistAction;
     delete m_pDeletePlaylistAction;
     delete m_pImportPlaylistAction;
+    delete m_pAddToAutoDJAction;
     delete m_pRenamePlaylistAction;
     delete m_pLockPlaylistAction;
 }
@@ -128,6 +134,7 @@ void PlaylistFeature::onRightClickChild(const QPoint& globalPos, QModelIndex ind
     QMenu menu(NULL);
     menu.addAction(m_pCreatePlaylistAction);
     menu.addSeparator();
+    menu.addAction(m_pAddToAutoDJAction);
     menu.addAction(m_pRenamePlaylistAction);
     menu.addAction(m_pDeletePlaylistAction);
     menu.addAction(m_pLockPlaylistAction);
@@ -313,7 +320,8 @@ bool PlaylistFeature::dropAcceptChild(const QModelIndex& index, QUrl url) {
         trackId = m_trackDao.addTrack(file);
     }
 
-    if (trackId == -1)
+    // Do nothing if the location still isn't in the database.
+    if (trackId < 0)
         return false;
 
     // appendTrackToPlaylist doesn't return whether it succeeded, so assume it
@@ -333,7 +341,9 @@ bool PlaylistFeature::dragMoveAcceptChild(const QModelIndex& index, QUrl url) {
     int playlistId = m_playlistDao.getPlaylistIdFromName(playlistName);
     bool locked = m_playlistDao.isPlaylistLocked(playlistId);
 
-    return !locked;
+    QFileInfo file(url.toLocalFile());
+    bool formatSupported = SoundSourceProxy::isFilenameSupported(file.fileName());
+    return !locked && formatSupported;
 }
 
 TreeItemModel* PlaylistFeature::getChildModel() {
@@ -348,7 +358,7 @@ void PlaylistFeature::constructChildModel()
 {
     QList<TreeItem*> data_list;
     int nameColumn = m_playlistTableModel.record().indexOf("name");
-    int idColumn = m_playlistTableModel.record().indexOf("name");
+    int idColumn = m_playlistTableModel.record().indexOf("id");
 
     //Access the invisible root item
     TreeItem* root = m_childModel.getItem(QModelIndex());
@@ -415,4 +425,17 @@ void PlaylistFeature::slotImportPlaylist()
 
     //delete the parser object
     if(playlist_parser) delete playlist_parser;
+}
+
+void PlaylistFeature::slotAddToAutoDJ() {
+    //qDebug() << "slotAddToAutoDJ() row:" << m_lastRightClickedIndex.data();
+
+    if (m_lastRightClickedIndex.isValid()) {
+        int playlistId = m_playlistDao.getPlaylistIdFromName(
+            m_lastRightClickedIndex.data().toString());
+        if (playlistId >= 0) {
+            m_playlistDao.addToAutoDJQueue(playlistId);
+        }
+    }
+    emit(featureUpdated());
 }

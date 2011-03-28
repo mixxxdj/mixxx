@@ -20,19 +20,20 @@ class WaveformRenderer;
 
 class WaveformRenderMark : public RenderObject {
     Q_OBJECT
-public:
-    explicit WaveformRenderMark(const char* pGroup,
-                                WaveformRenderer *parent);
+  public:
+    WaveformRenderMark(const char* pGroup, WaveformRenderer *parent);
+    virtual ~WaveformRenderMark();
+
     void resize(int w, int h);
     void setup(QDomNode node);
     void draw(QPainter *pPainter, QPaintEvent *event,
               QVector<float> *buffer, double playPos, double rateAdjust);
     void newTrack(TrackPointer pTrack);
 
-public slots:
+  public slots:
     void slotUpdateMarkPoint(double mark);
     void slotUpdateTrackSamples(double samples);
-private:
+  private:
     void setupMarkPixmap();
 
     enum MarkAlign {
