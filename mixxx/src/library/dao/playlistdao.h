@@ -41,6 +41,8 @@ class PlaylistDAO : public virtual DAO {
     void removeTrackFromPlaylist(int playlistId, int position);
     /** Insert a track into a specific position in a playlist */
     void insertTrackIntoPlaylist(int trackId, int playlistId, int position);
+    /** Add a playlist to the Auto-DJ Queue */
+    void addToAutoDJQueue(int playlistId);
   private:
     QSqlDatabase& m_database;
 };

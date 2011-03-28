@@ -36,6 +36,7 @@ WaveformRenderSignal::WaveformRenderSignal(const char* group, WaveformRenderer *
 }
 
 WaveformRenderSignal::~WaveformRenderSignal() {
+    qDebug() << this << "~WaveformRenderSignal()";
     if(m_pGain)
         delete m_pGain;
     m_pGain = NULL;

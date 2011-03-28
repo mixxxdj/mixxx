@@ -57,13 +57,3 @@ void PrepareLibraryTableModel::showAllSongs()
     m_bShowRecentSongs = false;
     search(currentSearch());
 }
-
-
-void PrepareLibraryTableModel::updateTracks(QModelIndexList& indices)
-{
-    QModelIndex current;
-    foreach(current, indices)
-    {
-        emit(dataChanged(current, current));
-    }
-}

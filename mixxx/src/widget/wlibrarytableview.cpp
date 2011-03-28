@@ -81,21 +81,27 @@ void WLibraryTableView::saveVScrollBarPosState() {
 }
 
 void WLibraryTableView::moveSelection(int delta) {
-    QAbstractItemModel* model = this->model();
-    
+    QAbstractItemModel* pModel = model();
+
+    if (pModel == NULL) {
+        return;
+    }
+
     while(delta != 0) {
+        // TODO(rryan) what happens if there is nothing selected?
+        QModelIndex current = currentIndex();
         if(delta > 0) {
             // i is positive, so we want to move the highlight down
-            int row = this->currentIndex().row();
-            if (row + 1 < model->rowCount())
-                this->selectRow(row + 1);
+            int row = current.row();
+            if (row + 1 < pModel->rowCount())
+                selectRow(row + 1);
 
             delta--;
         } else {
             // i is negative, so we want to move the highlight up
-            int row = this->currentIndex().row();
+            int row = current.row();
             if (row - 1 >= 0)
-                this->selectRow(row - 1);
+                selectRow(row - 1);
 
             delta++;
         }

@@ -22,14 +22,16 @@ class SoundSourceProxy;
 
 class WaveformRenderSignalPixmap : public RenderObject {
     Q_OBJECT
-public:
+  public:
     WaveformRenderSignalPixmap(const char *group, WaveformRenderer *parent);
+    virtual ~WaveformRenderSignalPixmap();
+
     void resize(int w, int h);
     void setup(QDomNode node);
     void draw(QPainter *pPainter, QPaintEvent *event, QVector<float> *buffer, double playPos, double rateAdjust);
     void newTrack(TrackPointer pTrack);
 
-private:
+  private:
     void updatePixmap(QVector<float> *buffer, double playPos, double rateAdjust);
 
     WaveformRenderer *m_pParent;
