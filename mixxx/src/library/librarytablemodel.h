@@ -45,9 +45,6 @@ class LibraryTableModel : public BaseSqlTableModel, public virtual TrackModel
     void slotSearch(const QString& searchText);
   signals:
     void doSearch(const QString& searchText);
-
-  protected:
-    QString m_currentSearch;
 };
 
 #endif

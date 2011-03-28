@@ -48,10 +48,7 @@ class TraktorPlaylistModel : public BaseSqlTableModel, public virtual TrackModel
 
   private:
     TrackCollection* m_pTrackCollection;
-	QSqlDatabase &m_database;
-
-
-    QString m_currentSearch;
+    QSqlDatabase &m_database;
 };
 
 #endif /* TRAKTOR_TABLE_MODEL_H */

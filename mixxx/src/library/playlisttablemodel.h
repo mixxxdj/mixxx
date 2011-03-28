@@ -49,7 +49,6 @@ class PlaylistTableModel : public BaseSqlTableModel, public virtual TrackModel
     PlaylistDAO& m_playlistDao;
     TrackDAO& m_trackDao;
     int m_iPlaylistId;
-    QString m_currentSearch;
 };
 
 #endif

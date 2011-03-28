@@ -82,22 +82,11 @@ void RhythmboxPlaylistModel::search(const QString& searchText) {
 }
 
 void RhythmboxPlaylistModel::slotSearch(const QString& searchText) {
-    if (!m_currentSearch.isNull() && m_currentSearch == searchText)
-        return;
-    m_currentSearch = searchText;
-
-    QString filter;
-    QSqlField search("search", QVariant::String);
-    search.setValue("%" + searchText + "%");
-    QString escapedText = database().driver()->formatValue(search);
-    filter = "(artist LIKE " + escapedText + " OR " +
-            "album LIKE " + escapedText + " OR " +
-            "title  LIKE " + escapedText + ")";
-    setFilter(filter);
+    BaseSqlTableModel::search(searchText);
 }
 
 const QString RhythmboxPlaylistModel::currentSearch() {
-    return m_currentSearch;
+    return BaseSqlTableModel::currentSearch();
 }
 
 bool RhythmboxPlaylistModel::isColumnInternal(int column) {
@@ -167,25 +156,28 @@ void RhythmboxPlaylistModel::setPlaylist(QString playlist_path) {
     QSqlField playlistNameField("name", QVariant::String);
     playlistNameField.setValue(playlistID);
 
+    QStringList columns;
+    columns << "rhythmbox_library.id"
+            << "rhythmbox_library.artist"
+            << "rhythmbox_library.title"
+            << "rhythmbox_library.album"
+            << "rhythmbox_library.year"
+            << "rhythmbox_library.genre"
+            << "rhythmbox_library.tracknumber"
+            << "rhythmbox_library.location"
+            << "rhythmbox_library.comment"
+            << "rhythmbox_library.rating"
+            << "rhythmbox_library.duration"
+            << "rhythmbox_library.bitrate"
+            << "rhythmbox_library.bpm"
+            << "rhythmbox_playlist_tracks.track_id"
+            << "rhythmbox_playlists.name";
+
     QSqlQuery query(m_database);
     query.prepare("CREATE TEMPORARY VIEW IF NOT EXISTS "+ driver->formatValue(playlistNameField) + " AS "
                   "SELECT "
-                  "rhythmbox_library.id,"
-                  "rhythmbox_library.artist,"
-                  "rhythmbox_library.title,"
-                  "rhythmbox_library.album,"
-                  "rhythmbox_library.year,"
-                  "rhythmbox_library.genre,"
-                  "rhythmbox_library.tracknumber,"
-                  "rhythmbox_library.location,"
-                  "rhythmbox_library.comment,"
-                  "rhythmbox_library.rating,"
-                  "rhythmbox_library.duration,"
-                  "rhythmbox_library.bitrate,"
-                  "rhythmbox_library.bpm,"
-                  "rhythmbox_playlist_tracks.track_id, "
-                  "rhythmbox_playlists.name "
-                  "FROM rhythmbox_library "
+                  + columns.join(",") +
+                  " FROM rhythmbox_library "
                   "INNER JOIN rhythmbox_playlist_tracks "
                   "ON rhythmbox_playlist_tracks.track_id = rhythmbox_library.id "
                   "INNER JOIN rhythmbox_playlists "
@@ -200,16 +192,21 @@ void RhythmboxPlaylistModel::setPlaylist(QString playlist_path) {
         qDebug() << "Executed Query: " <<  query.executedQuery();
         return;
     }
-    setTable(playlistID);
 
+    // Strip out library. and track_locations.
+    for (int i = 0; i < columns.size(); ++i) {
+        columns[i] = columns[i].replace("rhythmbox_library.", "")
+                .replace("rhythmbox_playlist_tracks.", "").replace("rhythmbox_playlists.", "");
+    }
+
+    setTable(playlistID, columns, "id");
     //removeColumn(fieldIndex("track_id"));
     //removeColumn(fieldIndex("name"));
     //removeColumn(fieldIndex("id"));
-
-    slotSearch("");
-
-    select(); //Populate the data model.
     initHeaderData();
+    initDefaultSearchColumns();
+    slotSearch("");
+    select(); //Populate the data model.
 }
 
 bool RhythmboxPlaylistModel::isColumnHiddenByDefault(int column) {
