@@ -19,7 +19,7 @@ class CachingReader;
 class QuantizeControl : public EngineControl {
     Q_OBJECT
 public:
-    QuantizeControl(const char * _group, ConfigObject<ConfigValue> * _config, CachingReader *);
+    QuantizeControl(const char * _group, ConfigObject<ConfigValue> * _config);
     virtual ~QuantizeControl();
     double process(const double dRate,
                    const double currentSample,

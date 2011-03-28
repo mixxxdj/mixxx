@@ -22,8 +22,7 @@ double LoopingControl::s_dBeatSizes[] = { 0.0625, 0.125, 0.25, 0.5, 1, 2, 4, 8, 
 
 
 LoopingControl::LoopingControl(const char * _group,
-                               ConfigObject<ConfigValue> * _config,
-                               CachingReader *reader)
+                               ConfigObject<ConfigValue> * _config)
         : EngineControl(_group, _config) {
 
     int i;
@@ -31,7 +30,6 @@ LoopingControl::LoopingControl(const char * _group,
     m_bLoopingEnabled = false;
     m_iLoopStartSample = kNoTrigger;
     m_iLoopEndSample = kNoTrigger;
-    m_pReader = reader;
     m_iCurrentSample = 0.;
     
     //Create loop-in, loop-out, and reloop/exit ControlObjects
@@ -74,14 +72,9 @@ LoopingControl::LoopingControl(const char * _group,
     m_pQuantizeEnabled = ControlObject::getControl(ConfigKey(_group, "quantize"));
     m_pQuantizeBeat = ControlObject::getControl(ConfigKey(_group, "quantize_beat"));
 
-    // Beat Control Objects
-    // Connect to the trackLoaded signal so we can update beat information.
-    connect(m_pReader, SIGNAL(trackLoaded(TrackPointer, int, int)),
-            this, SLOT(slotTrackLoaded(TrackPointer, int, int)),
-            Qt::DirectConnection);
-
     // Connect beatloop, which can flexibly handle different values.
-    // Using this CO directly is meant more for internal and script use.
+    // Using this CO directly is meant to be used internally and by scripts,
+    // or anything else that can pass in arbitrary values.
     m_pCOBeatLoop = new ControlObject(ConfigKey(_group, "beatloop"), 0);
     connect(m_pCOBeatLoop, SIGNAL(valueChanged(double)), this, 
             SLOT(slotBeatLoop(double)),

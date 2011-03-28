@@ -21,7 +21,7 @@ class BeatLoopingControl;
 class LoopingControl : public EngineControl {
     Q_OBJECT
   public:
-    LoopingControl(const char * _group, ConfigObject<ConfigValue> * _config, CachingReader *reader);
+    LoopingControl(const char * _group, ConfigObject<ConfigValue> * _config);
     virtual ~LoopingControl();
 
     // process() updates the internal state of the LoopingControl to reflect the
@@ -85,8 +85,6 @@ class LoopingControl : public EngineControl {
     static double s_dBeatSizes[];
     // Array of BeatLoopingControls, one for each size.
     QList<BeatLoopingControl*> m_pBeatLoops;
-
-    CachingReader *m_pReader;
 
     TrackPointer m_pTrack;
     BeatsPointer m_pBeats;
