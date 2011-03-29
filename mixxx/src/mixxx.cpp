@@ -1315,6 +1315,7 @@ void MixxxApp::slotHelpAbout()
 "Matthew Mikolay<br>"
 "Tom Mast<br>"
 "Miko Kiiski<br>"
+"Vin&iacute;cius Dias dos Santos<br>"
 
 "</p>"
 "<p align=\"center\"><b>And special thanks to:</b></p>"
