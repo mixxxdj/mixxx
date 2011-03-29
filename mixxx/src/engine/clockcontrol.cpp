@@ -16,9 +16,7 @@ ClockControl::~ClockControl() {
     delete m_pCOBeatActive;
 }
 
-void ClockControl::slotTrackLoaded(TrackPointer pTrack,
-                                   int iSampleRate,
-                                   int iNumSamples) {
+void ClockControl::trackLoaded(TrackPointer pTrack) {
     // Clear on-beat control
     m_pCOBeatActive->set(0.0f);
 
@@ -36,6 +34,10 @@ void ClockControl::slotTrackLoaded(TrackPointer pTrack,
         connect(m_pTrack.data(), SIGNAL(beatsUpdated()),
                 this, SLOT(slotBeatsUpdated()));
     }
+}
+
+void ClockControl::trackUnloaded(TrackPointer pTrack) {
+    trackLoaded(TrackPointer());
 }
 
 void ClockControl::slotBeatsUpdated() {
