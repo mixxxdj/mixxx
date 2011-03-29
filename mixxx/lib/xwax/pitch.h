@@ -25,10 +25,6 @@
 #define ALPHA (1.0/512)
 #define BETA (ALPHA/1024)
 
-#ifdef _MSC_VER
-#include "msvccompat.h"
-#endif
-
 /* State of the pitch calculation filter */
 
 struct pitch_t {
