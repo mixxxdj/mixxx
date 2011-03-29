@@ -34,7 +34,6 @@
 #include "engine/readaheadmanager.h"
 #include "engine/enginecontrol.h"
 #include "engine/loopingcontrol.h"
-#include "engine/clockcontrol.h"
 #include "engine/ratecontrol.h"
 #include "engine/bpmcontrol.h"
 
@@ -164,11 +163,6 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
     // Create the BPM Controller
     m_pBpmControl = new BpmControl(_group, _config);
     addControl(m_pBpmControl);
-
-
-
-    ClockControl* pClockControl = new ClockControl(_group, _config);
-    addControl(pClockControl);
 
     m_pReadAheadManager = new ReadAheadManager(m_pReader);
     m_pReadAheadManager->addEngineControl(m_pLoopingControl);
@@ -736,8 +730,11 @@ void EngineBuffer::addControl(EngineControl* pControl) {
     connect(pControl, SIGNAL(seekAbs(double)),
             this, SLOT(slotControlSeekAbs(double)),
             Qt::DirectConnection);
-    connect(m_pReader, SIGNAL(trackLoaded(TrackPointer, int, int)),
-            pControl, SLOT(slotTrackLoaded(TrackPointer, int, int)),
+    connect(this, SIGNAL(trackLoaded(TrackPointer)),
+            pControl, SLOT(trackLoaded(TrackPointer)),
+            Qt::DirectConnection);
+    connect(this, SIGNAL(trackUnloaded(TrackPointer)),
+            pControl, SLOT(trackUnloaded(TrackPointer)),
             Qt::DirectConnection);
 }
 
