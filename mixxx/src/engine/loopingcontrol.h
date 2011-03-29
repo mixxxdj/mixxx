@@ -53,6 +53,9 @@ class LoopingControl : public EngineControl {
     void slotReloopExit(double);
     void slotLoopStartPos(double);
     void slotLoopEndPos(double);
+    void slotLoopScale(double);
+    void slotLoopDouble(double);
+    void slotLoopHalve(double);
 
   private:
     void setLoopingEnabled(bool enabled);
@@ -63,6 +66,10 @@ class LoopingControl : public EngineControl {
     ControlPushButton* m_pLoopInButton;
     ControlPushButton* m_pLoopOutButton;
     ControlPushButton* m_pReloopExitButton;
+    ControlObject* m_pCOLoopScale;
+    ControlPushButton* m_pLoopHalveButton;
+    ControlPushButton* m_pLoopDoubleButton;
+
     bool m_bLoopingEnabled;
     int m_iLoopEndSample;
     int m_iLoopStartSample;
