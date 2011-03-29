@@ -42,7 +42,7 @@ DlgPrefRecord::DlgPrefRecord(QWidget * parent, ConfigObject<ConfigValue> * _conf
 
 
 #ifdef __SHOUTCAST__
-    radioOgg = new QRadioButton(ENCODING_OGG);
+    radioOgg = new QRadioButton("Ogg Vorbis");
     radioMp3 = new QRadioButton(ENCODING_MP3);
     connect(radioOgg,SIGNAL(clicked()),
             this, SLOT(slotApply()));
