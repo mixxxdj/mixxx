@@ -15,6 +15,7 @@ WLibrarySidebar::WLibrarySidebar(QWidget* parent) : QTreeView(parent) {
     setDragDropMode(QAbstractItemView::DragDrop);
     setDropIndicatorShown(true);
     setAcceptDrops(true);
+    setAutoScroll(true);
 }
 
 WLibrarySidebar::~WLibrarySidebar() {

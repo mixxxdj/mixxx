@@ -1,3 +1,7 @@
+/*
+ * browsethread.cpp         (C) 2011 Tobias Rafreider
+ */
+
 #include <QStringList>
 #include <QDirIterator>
 #include <QtCore>
@@ -9,7 +13,19 @@
 
 
 BrowseThread* BrowseThread::m_instance = 0;
+static QMutex s_Mutex;
 
+/*
+ * This class is a singleton and represents a thread
+ * that is used to read ID3 metadata
+ * from a particular folder.
+ *
+ * The BroseTableModel uses this class.
+ * Note: Don't call getInstance() from places
+ * other than the GUI thread. BrowseThreads emit
+ * signals to BrowseModel objects. It does not
+ * make sense to use this class in non-GUI threads
+ */
 BrowseThread::BrowseThread(QObject *parent): QThread(parent)
 {
     m_bStopThread = false;
@@ -29,27 +45,25 @@ BrowseThread::~BrowseThread() {
     qDebug() << "Browser background thread terminated!";
 }
 BrowseThread* BrowseThread::getInstance(){
-    static QMutex mutex;
     if (!m_instance)
     {
-         mutex.lock();
+        s_Mutex.lock();;
 
          if (!m_instance)
                m_instance = new BrowseThread();
 
-         mutex.unlock();
+         s_Mutex.unlock();
     }
     return m_instance;
 }
 void BrowseThread::destroyInstance()
 {
-    static QMutex mutex;
-    mutex.lock();
+    s_Mutex.lock();
     if(m_instance){
         delete m_instance;
         m_instance = 0;
     }
-    mutex.unlock();
+    s_Mutex.unlock();
 }
 
 void BrowseThread::executePopulation(QString& path, BrowseTableModel* client) {

@@ -11,6 +11,7 @@
 #include "engine/enginemaster.h"
 #include "soundsourceproxy.h"
 #include "engine/cuecontrol.h"
+#include "engine/clockcontrol.h"
 #include "mathstuff.h"
 #include "waveform/waveformrenderer.h"
 
@@ -33,8 +34,10 @@ BaseTrackPlayer::BaseTrackPlayer(QObject* pParent,
     EngineBuffer* pEngineBuffer = pChannel->getEngineBuffer();
     pMixingEngine->addChannel(pChannel);
 
-    CueControl* pCueControl = new CueControl(pSafeGroupName, pConfig);
+    ClockControl* pClockControl = new ClockControl(pSafeGroupName, pConfig);
+    pEngineBuffer->addControl(pClockControl);
 
+    CueControl* pCueControl = new CueControl(pSafeGroupName, pConfig);
     connect(this, SIGNAL(newTrackLoaded(TrackPointer)),
             pCueControl, SLOT(loadTrack(TrackPointer)));
     connect(this, SIGNAL(unloadingTrack(TrackPointer)),

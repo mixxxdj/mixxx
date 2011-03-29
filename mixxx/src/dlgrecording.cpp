@@ -144,12 +144,12 @@ void DlgRecording::moveSelection(int delta) {
 
 void DlgRecording::toggleRecording(bool toggle)
 {
-    if (toggle && !m_pRecordingManager->isRecordingActive()) //If recording is enabled
+    if (!m_pRecordingManager->isRecordingActive()) //If recording is enabled
     {
         //pushButtonRecording->setText(tr("Stop Recording"));
         m_pRecordingManager->startRecording();
     }
-    else if(!toggle && m_pRecordingManager->isRecordingActive()) //If we disable recording
+    else if(m_pRecordingManager->isRecordingActive()) //If we disable recording
     {
         //pushButtonRecording->setText(tr("Start Recording"));
         m_pRecordingManager->stopRecording();
@@ -166,6 +166,7 @@ void DlgRecording::slotRecordingEnabled(bool isRecording)
         pushButtonRecording->setText((tr("Start Recording")));
         label->setText("Start recording here ...");
     }
+
 }
 /** int bytes: the number of recorded bytes within a session **/
 void DlgRecording::slotBytesRecorded(long bytes)
