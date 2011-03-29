@@ -35,8 +35,8 @@ public:
 
 private:
     ControlLogpotmeter *potmeterPregain;
-    ControlPotmeter *m_pReplayGainBoost, *m_pEnableReplayGain;
-    ControlObject *m_pControlReplayGain, *m_pTotalGain, *m_pPassthrough;
+    ControlPotmeter *m_pReplayGainBoost;
+    ControlObject *m_pControlReplayGain, *m_pEnableReplayGain, *m_pTotalGain, *m_pPassthrough;
     float m_fReplayGainCorrection;
     bool m_bSmoothFade;
     float m_fClock;
