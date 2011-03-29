@@ -8,6 +8,7 @@
 #include <QList>
 
 #include "configobject.h"
+#include "trackinfoobject.h"
 
 class EngineBuffer;
 struct Hint;
@@ -74,6 +75,9 @@ class EngineControl : public QObject {
 
     // Called whenever a seek occurs to allow the EngineControl to respond.
     virtual void notifySeek(double dNewPlaypo);
+
+  public slots:
+    virtual void slotTrackLoaded(TrackPointer pTrack, int iSampleRate, int iNumSamples);
 
   signals:
     void seek(double fractionalPosition);
