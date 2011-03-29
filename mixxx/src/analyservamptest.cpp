@@ -19,11 +19,15 @@ AnalyserVampTest::AnalyserVampTest(ConfigObject<ConfigValue> *_config) {
     m_pConfigAVT = _config;
     m_bPass = 0;
 
-    //"pluginID", OutputNumber
+    //"pluginID"
     //tested beat tracking features with vamp-plugins:
-    //"vamp-aubio:aubiotempo", 0 (GPLed)
-    //"qm-vamp-plugins:qm-barbeattracker", 0 (best but closed source)
-    mvamp = new VampAnalyser("vamp-aubio:aubiotempo", 0);
+    //"vamp-aubio:aubiotempo"(GPLed)
+    //"qm-vamp-plugins:qm-barbeattracker"
+    //"qm-vamp-plugins:qm-tempotracker" (both closed source even if qm-vamp-plugins may
+    //be used for any purpose, or redistributed for non-commercial purposes only
+    //as stated here: http://isophonics.net/QMVampPlugins)
+    mvamp = new VampAnalyser("vamp-aubio:aubiotempo");
+
 }
 
 AnalyserVampTest::~AnalyserVampTest(){
@@ -45,13 +49,22 @@ void AnalyserVampTest::process(const CSAMPLE *pIn, const int iLen) {
 
 void AnalyserVampTest::finalise(TrackPointer tio) {
     if(!m_bPass) return;
-    m_bPass = mvamp->End();
-    collect = mvamp->GetEventsStartList();
+
+    VampPluginEventList collect = mvamp->GetResults();
+    float bpm = 0;
+    int count = 0;
     BeatMatrix* BeatMat = new BeatMatrix(tio);
     for (int i = 0; i < collect.size(); ++i) {
-        BeatMat->addBeat(collect[i] * 2);
+        if(!(collect[i]).isFromOutput)
+                BeatMat->addBeat((collect[i]).StartingFrame * 2);
+        if((collect[i]).isFromOutput == 2){
+            bpm += collect[i].Values[0];
+            count++;
+        }
     }
+    if(count)qDebug()<<"bpm: "<< bpm/count;
     tio->setBeats(BeatsPointer(BeatMat));
+    m_bPass = mvamp->End();
     if(!collect.isEmpty()) collect.clear();
     //m_iStartTime = clock() - m_iStartTime;
 }

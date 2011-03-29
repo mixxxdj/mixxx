@@ -25,7 +25,6 @@ private:
     bool m_bPass;
     ConfigObject<ConfigValue> *m_pConfigAVT;
     VampAnalyser* mvamp;
-    QList<double> collect;
     //int m_iStartTime;
 };
 
