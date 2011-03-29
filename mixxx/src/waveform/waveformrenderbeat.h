@@ -30,9 +30,11 @@ class WaveformRenderBeat : public RenderObject {
 
   public slots:
     void slotUpdateTrackSamples(double samples);
+    void slotUpdateBeatActive(double beatActive);
   private:
     WaveformRenderer *m_pParent;
-    ControlObjectThreadMain *m_pTrackSamples;
+    ControlObjectThreadMain* m_pTrackSamples;
+    ControlObjectThreadMain* m_pBeatActive;
     TrackPointer m_pTrack;
     int m_iWidth, m_iHeight;
     QColor colorMarks;
@@ -41,6 +43,7 @@ class WaveformRenderBeat : public RenderObject {
     double m_dSamplesPerDownsample;
     int m_iNumSamples;
     int m_iSampleRate;
+    bool m_bBeatActive;
 
     BeatList m_beatList;
 };

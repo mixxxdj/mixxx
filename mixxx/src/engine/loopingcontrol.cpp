@@ -57,9 +57,51 @@ LoopingControl::LoopingControl(const char * _group,
     connect(m_pCOLoopEndPosition, SIGNAL(valueChanged(double)),
             this, SLOT(slotLoopEndPos(double)),
             Qt::DirectConnection);
+
+    m_pCOLoopScale = new ControlObject(ConfigKey(_group, "loop_scale"));
+    connect(m_pCOLoopScale, SIGNAL(valueChanged(double)),
+            this, SLOT(slotLoopScale(double)));
+    m_pLoopHalveButton = new ControlPushButton(ConfigKey(_group, "loop_halve"));
+    connect(m_pLoopHalveButton, SIGNAL(valueChanged(double)),
+            this, SLOT(slotLoopHalve(double)));
+    m_pLoopDoubleButton = new ControlPushButton(ConfigKey(_group, "loop_double"));
+    connect(m_pLoopDoubleButton, SIGNAL(valueChanged(double)),
+            this, SLOT(slotLoopDouble(double)));
+
+
 }
 
 LoopingControl::~LoopingControl() {
+}
+
+void LoopingControl::slotLoopScale(double scale) {
+    int loop_length = m_iLoopEndSample - m_iLoopStartSample;
+    loop_length *= scale;
+    m_iLoopEndSample = m_iLoopStartSample + loop_length;
+
+    if (m_iLoopEndSample % 2 != 0) {
+        m_iLoopEndSample--;
+    }
+
+    // Don't allow 0 samples loop, so one can still manipulate it
+    if (m_iLoopEndSample == m_iLoopStartSample){
+        m_iLoopEndSample = m_iLoopStartSample + 2;
+    }
+
+    // Update CO for loop end marker
+    m_pCOLoopEndPosition->set(m_iLoopEndSample);
+}
+
+void LoopingControl::slotLoopHalve(double v) {
+    if (v > 0.0) {
+        slotLoopScale(0.5);
+    }
+}
+
+void LoopingControl::slotLoopDouble(double v) {
+    if (v > 0.0f) {
+        slotLoopScale(2.0);
+    }
 }
 
 double LoopingControl::process(const double dRate,
