@@ -159,7 +159,7 @@ void ITunesPlaylistModel::setPlaylist(QString playlist_path) {
     playlistNameField.setValue(playlistID);
 
     QStringList columns;
-    columns << "itunes_library.id,"
+    columns << "itunes_library.id"
             << "itunes_library.artist"
             << "itunes_library.title"
             << "itunes_library.album"

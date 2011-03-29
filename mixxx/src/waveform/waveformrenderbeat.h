@@ -20,6 +20,8 @@ class WaveformRenderBeat : public RenderObject {
     Q_OBJECT
   public:
     WaveformRenderBeat(const char *group, WaveformRenderer *parent);
+    virtual ~WaveformRenderBeat();
+
     void resize(int w, int h);
     void setup(QDomNode node);
     void draw(QPainter *pPainter, QPaintEvent *event, QVector<float> *buffer,
@@ -28,9 +30,11 @@ class WaveformRenderBeat : public RenderObject {
 
   public slots:
     void slotUpdateTrackSamples(double samples);
+    void slotUpdateBeatActive(double beatActive);
   private:
     WaveformRenderer *m_pParent;
-    ControlObjectThreadMain *m_pTrackSamples;
+    ControlObjectThreadMain* m_pTrackSamples;
+    ControlObjectThreadMain* m_pBeatActive;
     TrackPointer m_pTrack;
     int m_iWidth, m_iHeight;
     QColor colorMarks;
@@ -39,6 +43,7 @@ class WaveformRenderBeat : public RenderObject {
     double m_dSamplesPerDownsample;
     int m_iNumSamples;
     int m_iSampleRate;
+    bool m_bBeatActive;
 
     BeatList m_beatList;
 };

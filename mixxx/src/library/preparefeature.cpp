@@ -104,6 +104,10 @@ bool PrepareFeature::dragMoveAcceptChild(const QModelIndex& index,
     return false;
 }
 
+void PrepareFeature::onLazyChildExpandation(const QModelIndex &index){
+    //Nothing to do because the childmodel is not of lazy nature.
+}
+
 void PrepareFeature::analyzeTracks(QList<int> trackIds) {
     if (m_pAnalyserQueue == NULL) {
         //Save the old BPM detection prefs setting (on or off)
@@ -155,4 +159,5 @@ void PrepareFeature::cleanupAnalyser() {
         //Restore old BPM detection setting for preferences...
         m_pConfig->set(ConfigKey("[BPM]","BPMDetectionEnabled"), ConfigValue(m_iOldBpmEnabled));
     }
+
 }

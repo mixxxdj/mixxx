@@ -19,6 +19,8 @@ class WaveformRenderBackground : public RenderObject {
     Q_OBJECT
   public:
     WaveformRenderBackground(const char *group, WaveformRenderer *parent);
+    virtual ~WaveformRenderBackground();
+
     void resize(int w, int h);
     void setup(QDomNode node);
     void draw(QPainter *pPainter, QPaintEvent *event, QVector<float> *buffer, double playPos, double rateAdjust);
