@@ -46,6 +46,7 @@ class PrepareFeature : public LibraryFeature {
     void activateChild(const QModelIndex& index);
     void onRightClick(const QPoint& globalPos);
     void onRightClickChild(const QPoint& globalPos, QModelIndex index);
+    void onLazyChildExpandation(const QModelIndex& index);
 
   private slots:
     void analyzeTracks(QList<int> trackIds);

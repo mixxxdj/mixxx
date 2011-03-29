@@ -152,6 +152,7 @@ void DlgPrefPlaylist::slotUpdate()
     checkBoxPromoStats->setChecked((bool)config->getValueString(ConfigKey("[Promo]","StatTracking")).toInt());
     checkBox_library_scan->setChecked((bool)config->getValueString(ConfigKey("[Library]","RescanOnStartup")).toInt());
     checkbox_ID3_sync->setChecked((bool)config->getValueString(ConfigKey("[Library]","WriteAudioTags")).toInt());
+    checkBox_use_relative_path->setChecked((bool)config->getValueString(ConfigKey("[Library]","UseRelativePathOnExport")).toInt());
 
 
 }
@@ -236,6 +237,9 @@ void DlgPrefPlaylist::slotApply()
     
     config->set(ConfigKey("[Library]","WriteAudioTags"), 
                    ConfigValue((int)checkbox_ID3_sync->isChecked()));
+
+    config->set(ConfigKey("[Library]","UseRelativePathOnExport"),
+                   ConfigValue((int)checkBox_use_relative_path->isChecked()));
 
 
     config->Save();
