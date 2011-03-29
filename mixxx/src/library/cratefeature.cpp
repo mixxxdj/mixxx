@@ -20,9 +20,10 @@
 #include "soundsourceproxy.h"
 
 CrateFeature::CrateFeature(QObject* parent,
-                           TrackCollection* pTrackCollection)
+                           TrackCollection* pTrackCollection, ConfigObject<ConfigValue>* pConfig)
         : m_pTrackCollection(pTrackCollection),
           m_crateListTableModel(this, pTrackCollection->getDatabase()),
+          m_pConfig(pConfig),
           m_crateTableModel(this, pTrackCollection) {
     m_pCreateCrateAction = new QAction(tr("New Crate"),this);
     connect(m_pCreateCrateAction, SIGNAL(triggered()),
@@ -40,9 +41,12 @@ CrateFeature::CrateFeature(QObject* parent,
     connect(m_pLockCrateAction, SIGNAL(triggered()),
             this, SLOT(slotToggleCrateLock()));
 
-    m_pImportPlaylistAction = new QAction(tr("Import Playlist"),this);
+    m_pImportPlaylistAction = new QAction(tr("Import Crate"),this);
     connect(m_pImportPlaylistAction, SIGNAL(triggered()),
             this, SLOT(slotImportPlaylist()));
+    m_pExportPlaylistAction = new QAction(tr("Export Crate"), this);
+    connect(m_pExportPlaylistAction, SIGNAL(triggered()),
+            this, SLOT(slotExportPlaylist()));
 
     m_crateListTableModel.setTable("crates");
     m_crateListTableModel.setSort(m_crateListTableModel.fieldIndex("name"),
@@ -175,6 +179,7 @@ void CrateFeature::onRightClickChild(const QPoint& globalPos, QModelIndex index)
     menu.addAction(m_pLockCrateAction);
     menu.addSeparator();
     menu.addAction(m_pImportPlaylistAction);
+    menu.addAction(m_pExportPlaylistAction);
     menu.exec(globalPos);
 }
 
@@ -409,4 +414,42 @@ void CrateFeature::slotImportPlaylist()
     if(playlist_parser)
         delete playlist_parser;
 }
+void CrateFeature::onLazyChildExpandation(const QModelIndex &index){
+    //Nothing to do because the childmodel is not of lazy nature.
+}
+void CrateFeature::slotExportPlaylist(){
+    qDebug() << "Export playlist" << m_lastRightClickedIndex.data();
+    QString file_location = QFileDialog::getSaveFileName(NULL,
+                                        tr("Export Playlist"),
+                                        QDesktopServices::storageLocation(QDesktopServices::MusicLocation),
+                                        tr("M3U Playlist (*.m3u);;PLS Playlist (*.pls)"));
+    //Exit method if user cancelled the open dialog.
+    if(file_location.isNull() || file_location.isEmpty()) return;
+    //create and populate a list of files of the playlist
+    QList<QString> playlist_items;
+    int rows = m_crateTableModel.rowCount();
+    for(int i = 0; i < rows; ++i){
+        QModelIndex index = m_crateTableModel.index(i,0);
+        playlist_items << m_crateTableModel.getTrackLocation(index);
+    }
+    //check config if relative paths are desired
+    bool useRelativePath = (bool)m_pConfig->getValueString(ConfigKey("[Library]","UseRelativePathOnExport")).toInt();
 
+    if(file_location.endsWith(".m3u", Qt::CaseInsensitive))
+    {
+        ParserM3u::writeM3UFile(file_location, playlist_items, useRelativePath);
+    }
+    else if(file_location.endsWith(".pls", Qt::CaseInsensitive))
+    {
+        ParserPls::writePLSFile(file_location,playlist_items, useRelativePath);
+    }
+    else
+    {
+        //default export to M3U if file extension is missing
+
+        qDebug() << "Crate export: No file extension specified. Appending .m3u "
+                 << "and exporting to M3U.";
+        file_location.append(".m3u");
+        ParserM3u::writeM3UFile(file_location, playlist_items, useRelativePath);
+    }
+}
