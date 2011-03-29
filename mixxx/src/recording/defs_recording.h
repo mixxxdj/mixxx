@@ -5,7 +5,7 @@
 #define ENCODING_WAVE "WAV"
 #define ENCODING_FLAC "FLAC"
 #define ENCODING_AIFF "AIFF"
-#define ENCODING_OGG  "Ogg Vorbis"
+#define ENCODING_OGG  "OGG"
 #define ENCODING_MP3 "MP3"
 
 #define RECORD_READY 0.50f
