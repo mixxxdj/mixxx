@@ -38,6 +38,12 @@ double EngineControl::getTrigger(const double,
     return kNoTrigger;
 }
 
+void EngineControl::trackLoaded(TrackPointer) {
+}
+
+void EngineControl::trackUnloaded(TrackPointer) {
+}
+
 void EngineControl::hintReader(QList<Hint>&) {
 }
 
