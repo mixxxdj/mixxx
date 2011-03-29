@@ -73,6 +73,14 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
     m_fLastSampleValue(0.),
     m_bLastBufferPaused(true) {
 
+    m_pReader = new CachingReader(_group, _config);
+    connect(m_pReader, SIGNAL(trackLoaded(TrackPointer, int, int)),
+            this, SLOT(slotTrackLoaded(TrackPointer, int, int)),
+            Qt::DirectConnection);
+    connect(m_pReader, SIGNAL(trackLoadFailed(TrackPointer, QString)),
+            this, SLOT(slotTrackLoadFailed(TrackPointer, QString)),
+            Qt::DirectConnection);
+
 
     // Play button
     playButton = new ControlPushButton(ConfigKey(group, "play"));
@@ -156,14 +164,6 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
     m_pBpmControl = new BpmControl(_group, _config);
     addControl(m_pBpmControl);
 
-    m_pReader = new CachingReader(_group, _config);
-    connect(m_pReader, SIGNAL(trackLoaded(TrackPointer, int, int)),
-            this, SLOT(slotTrackLoaded(TrackPointer, int, int)),
-            Qt::DirectConnection);
-    connect(m_pReader, SIGNAL(trackLoadFailed(TrackPointer, QString)),
-            this, SLOT(slotTrackLoadFailed(TrackPointer, QString)),
-            Qt::DirectConnection);
-
     m_pReadAheadManager = new ReadAheadManager(m_pReader);
     m_pReadAheadManager->addEngineControl(m_pLoopingControl);
 
@@ -189,9 +189,6 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
 
 EngineBuffer::~EngineBuffer()
 {
-    delete m_pLoopingControl;
-    delete m_pRateControl;
-    delete m_pBpmControl;
     delete m_pReadAheadManager;
     delete m_pReader;
 
@@ -215,6 +212,11 @@ EngineBuffer::~EngineBuffer()
 
     delete m_pKeylock;
     delete m_pEject;
+
+    while (m_engineControls.size() > 0) {
+        EngineControl* pControl = m_engineControls.takeLast();
+        delete pControl;
+    }
 }
 
 void EngineBuffer::setPitchIndpTimeStretch(bool b)
@@ -727,6 +729,12 @@ void EngineBuffer::addControl(EngineControl* pControl) {
             Qt::DirectConnection);
     connect(pControl, SIGNAL(seekAbs(double)),
             this, SLOT(slotControlSeekAbs(double)),
+            Qt::DirectConnection);
+    connect(this, SIGNAL(trackLoaded(TrackPointer)),
+            pControl, SLOT(trackLoaded(TrackPointer)),
+            Qt::DirectConnection);
+    connect(this, SIGNAL(trackUnloaded(TrackPointer)),
+            pControl, SLOT(trackUnloaded(TrackPointer)),
             Qt::DirectConnection);
 }
 

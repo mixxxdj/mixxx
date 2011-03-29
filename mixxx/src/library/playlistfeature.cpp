@@ -462,10 +462,12 @@ void PlaylistFeature::slotExportPlaylist(){
     }
     else
     {
-        QMessageBox::warning(NULL,tr("Playlist Export Failed"),
-                             tr("Mixxx only supports playlist exports to M3U and PLS."
-                                "Please make sure your file extension is m3u or pls"));
+        //default export to M3U if file extension is missing
 
+        qDebug() << "Playlist export: No file extension specified. Appending .m3u "
+                 << "and exporting to M3U.";
+        file_location.append(".m3u");
+        ParserM3u::writeM3UFile(file_location, playlist_items, useRelativePath);
     }
 
 }

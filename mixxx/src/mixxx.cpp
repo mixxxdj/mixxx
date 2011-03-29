@@ -1099,9 +1099,11 @@ void MixxxApp::slotOptionsVinylControl(bool toggle)
 //Also can't ifdef this (MOC again)
 void MixxxApp::slotOptionsRecord(bool toggle)
 {
-    if(toggle) //start recording
+    //Only start recording if checkbox was set to true and recording is inactive
+    if(toggle && !m_pRecordingManager->isRecordingActive()) //start recording
         m_pRecordingManager->startRecording();
-    else
+    //Only stop recording if checkbox was set to false and recording is active
+    else if(!toggle && m_pRecordingManager->isRecordingActive())
         m_pRecordingManager->stopRecording();
 }
 
@@ -1336,18 +1338,16 @@ void MixxxApp::slotEnableRescanLibraryAction()
 }
 
 void MixxxApp::slotOptionsMenuShow(){
-    ControlObjectThread* ctrlRec =
-        new ControlObjectThread(ControlObject::getControl(
-                    ConfigKey("[Master]", "Record")));
 
-    if(ctrlRec->get() == RECORD_OFF){
+
+    if(!m_pRecordingManager->isRecordingActive()){
         //uncheck Recording
         m_pOptionsRecord->setChecked(false);
     }
     else{
         m_pOptionsRecord->setChecked(true);
     }
-    delete ctrlRec;
+
 
 #ifdef __SHOUTCAST__
     bool broadcastEnabled =
