@@ -14,9 +14,11 @@
 #include "library/dao/trackdao.h"
 #include <QMessageBox>
 
-BrowseTableModel::BrowseTableModel(QObject* parent, TrackCollection* pTrackCollection)
+BrowseTableModel::BrowseTableModel(QObject* parent, TrackCollection* pTrackCollection,
+                                   RecordingManager* pRecordingManager)
         : QStandardItemModel(parent),
           m_pTrackCollection(pTrackCollection),
+          m_pRecordingManager(pRecordingManager),
           TrackModel(QSqlDatabase::database("QSQLITE"),
                      "mixxx.db.model.browse") {
     QStringList header_data;
@@ -130,10 +132,29 @@ void BrowseTableModel::removeTrack(const QModelIndex& index)
     if(!index.isValid()) return;
 
     QString track_location = getTrackLocation(index);
-    //delete Track
+    int decks = ControlObject::getControl(ConfigKey("[Master]","num_decks"))->get();
+    //check if file is loaded to a deck
+    for(int i=1; i <= decks; ++i){
+        TrackPointer loaded_track = PlayerInfo::Instance().getTrackInfo(QString("[Channel%1]").arg(i));
+        if(loaded_track && (loaded_track->getLocation() == track_location)){
+            QMessageBox::critical(0, tr("Mixxx Library"), tr("Could not delete ")+track_location+
+                                  tr(" because it is currently in use by Mixxx.") );
+            return;
+        }
+    }
+
+    qDebug() << "Recordingmamanger: " << m_pRecordingManager;
+    //Check if file is subject to a current recording operation
+    if(m_pRecordingManager->getRecordingLocation() == track_location){
+        QMessageBox::critical(0, tr("Mixxx Library"), tr("Could not delete ")+track_location+
+                              tr(" because it is currently subject to a recording operation.") );
+        return;
+    }
+
+    // try to delete track
     if(!QFile::remove(track_location)){
-        QMessageBox::critical(0, "Mixxx",
-            "Could not delete "+track_location+ " because it in use by Mixxx or another application" );
+        QMessageBox::critical(0, tr("Mixxx Library"),"Could not delete "+track_location+
+                              tr(" because it in use by Mixxx or another application") );
     }
     else
     {

@@ -23,7 +23,8 @@ class BrowseFeature : public LibraryFeature {
   public:
     BrowseFeature(QObject* parent,
                   ConfigObject<ConfigValue>* pConfig,
-                  TrackCollection* pTrackCollection);
+                  TrackCollection* pTrackCollection,
+                  RecordingManager* pRec);
     virtual ~BrowseFeature();
 
     QVariant title();
