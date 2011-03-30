@@ -38,16 +38,18 @@ BrowseTableModel::BrowseTableModel(QObject* parent)
     addSearchColumn(COLUMN_KEY);
     addSearchColumn(COLUMN_COMMENT);
 
-    m_backgroundThread.start(QThread::LowestPriority);
+
 
     setHorizontalHeaderLabels(header_data);
     //register the QList<T> as a metatype since we use QueuedConnection below
-    qRegisterMetaType< QList<QStandardItem*> >("QList<QStandardItem*>");
+    qRegisterMetaType< QList< QList<QStandardItem*> > >("QList< QList<QStandardItem*> >");
+    qRegisterMetaType<BrowseTableModel*>("BrowseTableModel*");
 
-    QObject::connect(&m_backgroundThread, SIGNAL(clearModel()),
-                     this, SLOT(slotClear()), Qt::BlockingQueuedConnection);
-    QObject::connect(&m_backgroundThread, SIGNAL(rowDataAppended(const QList<QStandardItem*>&)),
-            this, SLOT(slotInsert(const QList<QStandardItem*>&)), Qt::BlockingQueuedConnection);
+    QObject::connect(BrowseThread::getInstance(), SIGNAL(clearModel(BrowseTableModel*)),
+                     this, SLOT(slotClear(BrowseTableModel*)), Qt::QueuedConnection);
+
+    QObject::connect(BrowseThread::getInstance(), SIGNAL(rowsAppended(const QList< QList<QStandardItem*> >&, BrowseTableModel*)),
+            this, SLOT(slotInsert(const QList< QList<QStandardItem*> >&, BrowseTableModel*)), Qt::QueuedConnection);
 
 }
 
@@ -64,23 +66,14 @@ void BrowseTableModel::addSearchColumn(int index) {
 }
 void BrowseTableModel::setPath(QString absPath)
 {
-   m_backgroundThread.setPath(absPath);
+   BrowseThread::getInstance()->executePopulation(absPath, this);
+
 }
 
 TrackPointer BrowseTableModel::getTrack(const QModelIndex& index) const
 {
     TrackInfoObject* tio = new TrackInfoObject(getTrackLocation(index));
     return TrackPointer(tio, &QObject::deleteLater);
-}
-
-int BrowseTableModel::getTrackId(const QModelIndex& index) const {
-    // We can't implement this as it stands.
-    return -1;
-}
-
-int BrowseTableModel::getTrackRow(int trackId) const {
-    // We can't implement this as it stands.
-    return -1;
 }
 
 QString BrowseTableModel::getTrackLocation(const QModelIndex& index) const
@@ -91,7 +84,15 @@ QString BrowseTableModel::getTrackLocation(const QModelIndex& index) const
     return data(index2).toString();
 
 }
+int BrowseTableModel::getTrackId(const QModelIndex& index) const {
+    // We can't implement this as it stands.
+    return -1;
+}
 
+int BrowseTableModel::getTrackRow(int trackId) const {
+    // We can't implement this as it stands.
+    return -1;
+}
 void BrowseTableModel::search(const QString& searchText)
 {
 
@@ -159,14 +160,21 @@ QMimeData* BrowseTableModel::mimeData(const QModelIndexList &indexes) const {
     return mimeData;
 }
 
-void BrowseTableModel::slotClear()
+void BrowseTableModel::slotClear(BrowseTableModel* caller_object)
 {
-    removeRows(0, rowCount());
+    if(caller_object == this)
+        removeRows(0, rowCount());
 }
 
-void BrowseTableModel::slotInsert(const QList<QStandardItem*> &column_data)
-{
-    appendRow(column_data);
-    //Does not work for some reason
-    //setItem(row, column, item);
+
+void BrowseTableModel::slotInsert(const QList< QList<QStandardItem*> >& rows, BrowseTableModel* caller_object){
+    //There exists more than one BrowseTableModel in Mixxx
+    //We only want to receive items here, this object has 'ordered' by the BrowserThread (singleton)
+    if(caller_object == this){
+        //qDebug() << "BrowseTableModel::slotInsert";
+        for(int i=0; i < rows.size(); ++i){
+            appendRow(rows.at(i));
+        }
+    }
+
 }

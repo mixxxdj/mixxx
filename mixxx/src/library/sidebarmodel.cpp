@@ -153,16 +153,18 @@ bool SidebarModel::hasChildren(const QModelIndex& parent) const {
     if (parent.isValid()) {
         if (parent.internalPointer() == this) {
             return QAbstractItemModel::hasChildren(parent);
-        } else {
+        }
+        else
+        {
             TreeItem* tree_item = (TreeItem*)parent.internalPointer();
             if (tree_item) {
                 LibraryFeature* feature = tree_item->getFeature();
                 return feature->getChildModel()->hasChildren(parent);
             }
         }
-    } else {
-        return QAbstractItemModel::hasChildren(parent);
     }
+
+    return QAbstractItemModel::hasChildren(parent);
 }
 
 QVariant SidebarModel::data(const QModelIndex& index, int role) const {
@@ -207,6 +209,19 @@ void SidebarModel::clicked(const QModelIndex& index) {
             if (tree_item) {
                 LibraryFeature* feature = tree_item->getFeature();
                 feature->activateChild(index);
+            }
+        }
+    }
+}
+void SidebarModel::doubleClicked(const QModelIndex& index) {
+    if (index.isValid()) {
+        if (index.internalPointer() == this) {
+           return;
+        } else {
+            TreeItem* tree_item = (TreeItem*)index.internalPointer();
+            if (tree_item) {
+                LibraryFeature* feature = tree_item->getFeature();
+                feature->onLazyChildExpandation(index);
             }
         }
     }
