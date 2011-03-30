@@ -17,7 +17,7 @@
 BrowseFeature::BrowseFeature(QObject* parent, ConfigObject<ConfigValue>* pConfig, TrackCollection* pTrackCollection)
         : LibraryFeature(parent),
           m_pConfig(pConfig),
-          m_browseModel(this),
+          m_browseModel(this, pTrackCollection),
           m_proxyModel(&m_browseModel),
           m_pTrackCollection(pTrackCollection) {
 

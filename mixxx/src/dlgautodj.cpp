@@ -70,6 +70,12 @@ DlgAutoDJ::DlgAutoDJ(QWidget* parent, ConfigObject<ConfigValue>* pConfig, TrackC
 
 DlgAutoDJ::~DlgAutoDJ()
 {
+    delete m_pCOPlayPos1;
+    delete m_pCOPlayPos2;
+    delete m_pCOPlay1;
+    delete m_pCOPlay2;
+    delete m_pCORepeat2;
+    delete m_pCOCrossfader;
 }
 
 void DlgAutoDJ::onShow()

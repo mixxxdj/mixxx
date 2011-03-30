@@ -4,13 +4,19 @@
 #include <QStringList>
 #include <QtConcurrentRun>
 #include <QMetaType>
+#include <QMessageBox>
 
 #include "library/browse/browsetablemodel.h"
 #include "soundsourceproxy.h"
 #include "mixxxutils.cpp"
+#include "playerinfo.h"
+#include "controlobject.h"
+#include "library/dao/trackdao.h"
+#include <QMessageBox>
 
-BrowseTableModel::BrowseTableModel(QObject* parent)
+BrowseTableModel::BrowseTableModel(QObject* parent, TrackCollection* pTrackCollection)
         : QStandardItemModel(parent),
+          m_pTrackCollection(pTrackCollection),
           TrackModel(QSqlDatabase::database("QSQLITE"),
                      "mixxx.db.model.browse") {
     QStringList header_data;
@@ -66,7 +72,8 @@ void BrowseTableModel::addSearchColumn(int index) {
 }
 void BrowseTableModel::setPath(QString absPath)
 {
-   BrowseThread::getInstance()->executePopulation(absPath, this);
+    m_current_path = absPath;
+    BrowseThread::getInstance()->executePopulation(m_current_path = absPath, this);
 
 }
 
@@ -120,12 +127,45 @@ QItemDelegate* BrowseTableModel::delegateForColumn(const int) {
 
 void BrowseTableModel::removeTrack(const QModelIndex& index)
 {
+    if(!index.isValid()) return;
 
+    QString track_location = getTrackLocation(index);
+    //delete Track
+    if(!QFile::remove(track_location)){
+        QMessageBox::critical(0, "Mixxx",
+            "Could not delete "+track_location+ " because it in use by Mixxx or another application" );
+    }
+    else
+    {
+        if(QMessageBox::question(NULL,tr("Mixxx Library"),
+                                 tr("Do you really want to delete the following track from the filesystem?\n ")
+                                 +track_location,
+                                 QMessageBox::Yes, QMessageBox::Abort
+                                 ) == QMessageBox::Abort)
+        {
+            return;
+        }
+
+        qDebug() << "BrowseFeature: User deleted track " << track_location;
+        //repopulate model
+        BrowseThread::getInstance()->executePopulation(m_current_path, this);
+
+        //If the track was contained in the Mixxx library, delete it
+        TrackDAO& track_dao = m_pTrackCollection->getTrackDAO();
+        if(track_dao.trackExistsInDatabase(track_location))
+        {
+            int id = track_dao.getTrackId(track_location);
+            qDebug() << "BrowseFeature: Deletion affected database";
+            track_dao.removeTrack(id);
+        }
+    }
 }
 
 void BrowseTableModel::removeTracks(const QModelIndexList& indices)
 {
-
+    foreach (QModelIndex index, indices) {
+       removeTrack(index);
+    }
 }
 
 bool BrowseTableModel::addTrack(const QModelIndex& index, QString location)
@@ -174,5 +214,32 @@ void BrowseTableModel::slotInsert(const QList< QList<QStandardItem*> >& rows, Br
             appendRow(rows.at(i));
         }
     }
+
+}
+TrackModel::CapabilitiesFlags BrowseTableModel::getCapabilities() const
+{
+    return TRACKMODELCAPS_NONE;
+}
+Qt::ItemFlags BrowseTableModel::flags(const QModelIndex &index) const{
+
+    Qt::ItemFlags defaultFlags = QAbstractItemModel::flags(index);
+
+    //Enable dragging songs from this data model to elsewhere (like the waveform
+    //widget to load a track into a Player).
+    defaultFlags |= Qt::ItemIsDragEnabled;
+
+    int row = index.row();
+    int column = index.column();
+
+    if(column == COLUMN_FILENAME ||
+            column == COLUMN_BITRATE ||
+            column == COLUMN_DURATION ||
+            column == COLUMN_TYPE){
+        return defaultFlags;
+    }
+    else{
+        return defaultFlags | Qt::ItemIsEditable;
+    }
+
 
 }
