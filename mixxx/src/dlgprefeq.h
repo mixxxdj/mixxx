@@ -21,6 +21,7 @@
 #include "ui_dlgprefeqdlg.h"
 #include "configobject.h"
 #include "engine/enginefilterblock.h"
+#include "controlobject.h"
 
 class QWidget;
 /**
@@ -54,7 +55,12 @@ private:
 
 	int m_lowEqFreq, m_highEqFreq;
     /** Pointer to config object */
-    ConfigObject<ConfigValue> *config;
+    ConfigObject<ConfigValue> *m_pConfig;
+#ifndef __LOFI__
+    ControlObjectThread m_COTLoFreq;
+    ControlObjectThread m_COTHiFreq;
+    ControlObjectThread m_COTLoFi;
+#endif
 
 };
 
