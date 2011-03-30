@@ -62,11 +62,11 @@ DlgMidiLearning::DlgMidiLearning(QWidget * parent, MidiMapping* mapping) :  QDia
     setupDeckControl("keylock", tr("Keylock button for Player %1"));
     setupDeckControl("rate", tr("Pitch control slider for Player %1"));
     setupDeckControl("flanger", tr("Flanger effect button for Player %1"));
-    setupDeckControl("volume", tr("Channel 2 volume fader"));
-    setupDeckControl("pregain", tr("Gain knob for Channel 2"));
-    setupDeckControl("filterHigh", tr("High EQ knob for Channel 2"));
-    setupDeckControl("filterMid", tr("Mid EQ knob for Channel 2"));
-    setupDeckControl("filterLow", tr("Low EQ knob for Channel 2"));
+    setupDeckControl("volume", tr("Channel %1 volume fader"));
+    setupDeckControl("pregain", tr("Gain knob for Channel %1"));
+    setupDeckControl("filterHigh", tr("High EQ knob for Channel %1"));
+    setupDeckControl("filterMid", tr("Mid EQ knob for Channel %1"));
+    setupDeckControl("filterLow", tr("Low EQ knob for Channel %1"));
     setupDeckControl("loop_in", tr("Loop In button for Player %1"));
     setupDeckControl("loop_out", tr("Loop Out button for Player %1"));
     setupDeckControl("reloop_exit", tr("Reloop / Exit button for Player %1"));

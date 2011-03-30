@@ -5,6 +5,7 @@
 //
 //
 // Author: Ingo Kossyk <kossyki@cs.tu-berlin.de>, (C) 2004
+// Author: Tobias Rafreider trafreider@mixxx.org, (C) 2011
 //
 // Copyright: See COPYING file that comes with this distribution
 //
@@ -13,6 +14,8 @@
 #include "parserpls.h"
 #include <QDebug>
 #include <QTextStream>
+#include <QMessageBox>
+#include <QDir>
 #include <QFile>
 #include <QUrl>
 
@@ -140,4 +143,32 @@ QString ParserPls::getFilepath(QTextStream *stream, QString basepath)
     // Signal we reached the end
     return 0;
 
+}
+bool ParserPls::writePLSFile(QString &file_str, QList<QString> &items, bool useRelativePath)
+{
+    QFile file(file_str);
+    if (!file.open(QIODevice::WriteOnly | QIODevice::Text)){
+        QMessageBox::warning(NULL,tr("Playlist Export Failed"),
+                             tr("Could not create file")+" "+file_str);
+        return false;
+    }
+    //Base folder of file
+    QString base = file_str.section('/', 0, -2);
+    QDir base_dir(base);
+
+    QTextStream out(&file);
+    out << "[playlist]\n";
+    out << "NumberOfEntries=" << items.size() << "\n";
+    for(int i =0; i < items.size(); ++i){
+        //Write relative path if possible
+        if(useRelativePath){
+            //QDir::relativePath() will return the absolutePath if it cannot compute the
+            //relative Path
+            out << "File" << i << "=" << base_dir.relativeFilePath(items.at(i)) << "\n";
+        }
+        else
+            out << "File" << i << "=" << items.at(i) << "\n";
+    }
+
+    return true;
 }

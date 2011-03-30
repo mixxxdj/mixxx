@@ -52,9 +52,9 @@ Library::Library(QObject* parent, ConfigObject<ConfigValue>* pConfig, bool first
     }
 
     addFeature(new AutoDJFeature(this, pConfig, m_pTrackCollection));
-    m_pPlaylistFeature = new PlaylistFeature(this, m_pTrackCollection);
+    m_pPlaylistFeature = new PlaylistFeature(this, m_pTrackCollection, pConfig);
     addFeature(m_pPlaylistFeature);
-    m_pCrateFeature = new CrateFeature(this, m_pTrackCollection);
+    m_pCrateFeature = new CrateFeature(this, m_pTrackCollection, pConfig);
     addFeature(m_pCrateFeature);
     addFeature(new BrowseFeature(this, pConfig, m_pTrackCollection));
     addFeature(new PrepareFeature(this, pConfig, m_pTrackCollection));
@@ -122,7 +122,7 @@ void Library::bindWidget(WLibrarySidebar* pSidebarWidget,
             m_pSidebarModel, SLOT(clicked(const QModelIndex&)));
     // Lazy model: Let triange symbol increment the model
     connect(pSidebarWidget, SIGNAL(expanded(const QModelIndex&)),
-            m_pSidebarModel, SLOT(clicked(const QModelIndex&)));
+            m_pSidebarModel, SLOT(doubleClicked(const QModelIndex&)));
 
     connect(pSidebarWidget, SIGNAL(rightClicked(const QPoint&, const QModelIndex&)),
             m_pSidebarModel, SLOT(rightClicked(const QPoint&, const QModelIndex&)));

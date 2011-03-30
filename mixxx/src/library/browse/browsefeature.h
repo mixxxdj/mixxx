@@ -42,7 +42,9 @@ class BrowseFeature : public LibraryFeature {
     void onRightClick(const QPoint& globalPos);
     void onRightClickChild(const QPoint& globalPos, QModelIndex index);
 
-  signals:
+    void onLazyChildExpandation(const QModelIndex& index);
+  
+   signals:
     void setRootIndex(const QModelIndex&);
 
   private:
