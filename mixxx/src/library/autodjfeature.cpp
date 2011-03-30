@@ -120,3 +120,6 @@ bool AutoDJFeature::dragMoveAcceptChild(const QModelIndex& index,
                                               QUrl url) {
     return false;
 }
+void AutoDJFeature::onLazyChildExpandation(const QModelIndex &index){
+    //Nothing to do because the childmodel is not of lazy nature.
+}
