@@ -5,12 +5,15 @@
 //
 //
 // Author: Ingo Kossyk <kossyki@cs.tu-berlin.de>, (C) 2004
+// Author: Tobias Rafreider trafreider@mixxx.org, (C) 2011
 //
 // Copyright: See COPYING file that comes with this distribution
 //
 //
 #include <QTextStream>
 #include <QDebug>
+#include <QDir>
+#include <QMessageBox>
 #include "parserm3u.h"
 #include <QUrl>
 
@@ -118,5 +121,36 @@ QString ParserM3u::getFilepath(QTextStream *stream, QString basepath)
 
     // Signal we reached the end
     return 0;
+
+}
+bool ParserM3u::writeM3UFile(const QString &file_str, QList<QString> &items, bool useRelativePath)
+{
+    QFile file(file_str);
+    if (!file.open(QIODevice::WriteOnly | QIODevice::Text)){
+        QMessageBox::warning(NULL,tr("Playlist Export Failed"),
+                             tr("Could not create file")+" "+file_str);
+        return false;
+    }
+    //Base folder of file
+    QString base = file_str.section('/', 0, -2);
+    QDir base_dir(base);
+
+    qDebug() << "Basepath: " << base;
+    QTextStream out(&file);
+    out << "#EXTM3U\n";
+    for(int i =0; i < items.size(); ++i){
+        out << "#EXTINF\n";
+
+        //Write relative path if possible
+        if(useRelativePath){
+            //QDir::relativePath() will return the absolutePath if it cannot compute the
+            //relative Path
+            out << base_dir.relativeFilePath(items.at(i)) << "\n";
+        }
+        else
+            out << items.at(i) << "\n";
+    }
+
+    return true;
 
 }

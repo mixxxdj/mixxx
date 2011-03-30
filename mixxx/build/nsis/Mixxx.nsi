@@ -138,8 +138,8 @@ Section "Mixxx (required)" SecMixxx
   ;
   ; All the MSVC files are located here if you have MSVC 2008 installed. (x86)
   ;File "C:\Program Files\Microsoft Visual Studio 9.0\VC\redist\x86\Microsoft.VC90.CRT\*"
-  ;File "%VCINSTALLDIR%\redist\x86\Microsoft.VC90.CRT\*"
-  File "%VS90COMNTOOLS%\..\..\VC\redist\x86\Microsoft.VC90.CRT\*"
+  ;File "$%VCINSTALLDIR%\redist\x86\Microsoft.VC90.CRT\*"
+  File "$%VS90COMNTOOLS%\..\..\VC\redist\x86\Microsoft.VC90.CRT\*"
   
   ; NOTE: The Microsoft Visual C++ 2010 Runtime gets rid of the manifest file, so it
   ;         is no longer necessary if we switch to deploying with MSVC 2010. - Albert 

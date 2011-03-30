@@ -374,6 +374,7 @@ class MixxxCore(Feature):
                    "engine/bpmcontrol.cpp",
                    "engine/cuecontrol.cpp",
                    "engine/quantizecontrol.cpp",
+                   "engine/clockcontrol.cpp",
                    "engine/readaheadmanager.cpp",
                    "cachingreader.cpp",
                    "analyserrg.cpp",
