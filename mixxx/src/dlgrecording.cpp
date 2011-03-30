@@ -19,7 +19,7 @@ DlgRecording::DlgRecording(QWidget* parent, ConfigObject<ConfigValue>* pConfig,
             : QWidget(parent), Ui::DlgRecording(),
             m_pConfig(pConfig),
             m_pTrackCollection(pTrackCollection),
-            m_browseModel(this),
+            m_browseModel(this, m_pTrackCollection),
             m_proxyModel(&m_browseModel),
             m_pRecordingManager(pRecordingManager)
 {
