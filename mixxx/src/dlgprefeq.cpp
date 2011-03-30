@@ -45,26 +45,26 @@ DlgPrefEQ::DlgPrefEQ(QWidget *pParent, ConfigObject<ConfigValue> *pConfig)
 
     // Connection
 #ifndef __LOFI__
-    connect(SliderHiEQ,         SIGNAL(valueChanged(int)), this, SLOT(slotUpdateHiEQ()));
-    connect(SliderHiEQ,         SIGNAL(sliderMoved(int)), this, SLOT(slotUpdateHiEQ()));
-    connect(SliderHiEQ,         SIGNAL(sliderReleased()), this, SLOT(slotUpdateHiEQ()));
+    connect(SliderHiEQ, SIGNAL(valueChanged(int)), this, SLOT(slotUpdateHiEQ()));
+    connect(SliderHiEQ, SIGNAL(sliderMoved(int)), this, SLOT(slotUpdateHiEQ()));
+    connect(SliderHiEQ, SIGNAL(sliderReleased()), this, SLOT(slotUpdateHiEQ()));
 
-    connect(SliderLoEQ,         SIGNAL(valueChanged(int)), this, SLOT(slotUpdateLoEQ()));
-    connect(SliderLoEQ,         SIGNAL(sliderMoved(int)), this,  SLOT(slotUpdateLoEQ()));
-    connect(SliderLoEQ,         SIGNAL(sliderReleased()), this,  SLOT(slotUpdateLoEQ()));
+    connect(SliderLoEQ, SIGNAL(valueChanged(int)), this, SLOT(slotUpdateLoEQ()));
+    connect(SliderLoEQ, SIGNAL(sliderMoved(int)), this, SLOT(slotUpdateLoEQ()));
+    connect(SliderLoEQ, SIGNAL(sliderReleased()), this, SLOT(slotUpdateLoEQ()));
 
-	connect(CheckBoxLoFi,		SIGNAL(stateChanged(int)), this,	SLOT(slotLoFiChanged()));
+    connect(CheckBoxLoFi, SIGNAL(stateChanged(int)), this, SLOT(slotLoFiChanged()));
 #else
-	CheckBoxLoFi->setChecked(true);
-	slotLoFiChanged();
-	CheckBoxLoFi->setEnabled(false);
+    CheckBoxLoFi->setChecked(true);
+    slotLoFiChanged();
+    CheckBoxLoFi->setEnabled(false);
 #endif
-	connect(PushButtonReset,	  SIGNAL(clicked(bool)), this,	SLOT(reset()));
+    connect(PushButtonReset, SIGNAL(clicked(bool)), this, SLOT(reset()));
 
-	m_lowEqFreq = 0;
-	m_highEqFreq = 0;
+    m_lowEqFreq = 0;
+    m_highEqFreq = 0;
 
-	loadSettings();
+    loadSettings();
 }
 
 DlgPrefEQ::~DlgPrefEQ()
@@ -108,14 +108,14 @@ void DlgPrefEQ::reset() {
 
 void DlgPrefEQ::slotLoFiChanged()
 {
-	GroupBoxHiEQ->setEnabled(!CheckBoxLoFi->isChecked());
-	GroupBoxLoEQ->setEnabled(!CheckBoxLoFi->isChecked());
-	if(CheckBoxLoFi->isChecked()) {
-		m_pConfig->set(ConfigKey(CONFIG_KEY, "LoFiEQs"), ConfigValue(QString("yes")));
+    GroupBoxHiEQ->setEnabled(!CheckBoxLoFi->isChecked());
+    GroupBoxLoEQ->setEnabled(!CheckBoxLoFi->isChecked());
+    if(CheckBoxLoFi->isChecked()) {
+        m_pConfig->set(ConfigKey(CONFIG_KEY, "LoFiEQs"), ConfigValue(QString("yes")));
     } else {
-		m_pConfig->set(ConfigKey(CONFIG_KEY, "LoFiEQs"), ConfigValue(QString("no")));
+        m_pConfig->set(ConfigKey(CONFIG_KEY, "LoFiEQs"), ConfigValue(QString("no")));
     }
-	slotApply();
+    slotApply();
 }
 
 void DlgPrefEQ::slotUpdateHiEQ()
@@ -124,16 +124,16 @@ void DlgPrefEQ::slotUpdateHiEQ()
     {
         SliderHiEQ->setValue(SliderLoEQ->value());
     }
-	m_highEqFreq = getEqFreq(SliderHiEQ->value());
+    m_highEqFreq = getEqFreq(SliderHiEQ->value());
     validate_levels();
-	if (m_highEqFreq < 1000) {
-		TextHiEQ->setText( QString("%1 Hz").arg(m_highEqFreq));
+    if (m_highEqFreq < 1000) {
+        TextHiEQ->setText( QString("%1 Hz").arg(m_highEqFreq));
     } else {
-		TextHiEQ->setText( QString("%1 Khz").arg(m_highEqFreq / 1000.));
+        TextHiEQ->setText( QString("%1 Khz").arg(m_highEqFreq / 1000.));
     }
     m_pConfig->set(ConfigKey(CONFIG_KEY, "HiEQFrequency"), ConfigValue(m_highEqFreq));
 
-	slotApply();
+    slotApply();
 }
 
 void DlgPrefEQ::slotUpdateLoEQ()
@@ -142,16 +142,16 @@ void DlgPrefEQ::slotUpdateLoEQ()
     {
         SliderLoEQ->setValue(SliderHiEQ->value());
     }
-	m_lowEqFreq = getEqFreq(SliderLoEQ->value());
+    m_lowEqFreq = getEqFreq(SliderLoEQ->value());
     validate_levels();
     if (m_lowEqFreq < 1000) {
-		TextLoEQ->setText(QString("%1 Hz").arg(m_lowEqFreq));
+        TextLoEQ->setText(QString("%1 Hz").arg(m_lowEqFreq));
     } else {
-		TextLoEQ->setText(QString("%1 Khz").arg(m_lowEqFreq / 1000.));
+        TextLoEQ->setText(QString("%1 Khz").arg(m_lowEqFreq / 1000.));
     }
     m_pConfig->set(ConfigKey(CONFIG_KEY, "LoEQFrequency"), ConfigValue(m_lowEqFreq));
 
-	slotApply();
+    slotApply();
 }
 
 int DlgPrefEQ::getSliderPosition(int eqFreq)
@@ -176,20 +176,20 @@ void DlgPrefEQ::slotApply()
 
 void DlgPrefEQ::slotUpdate()
 {
-	slotUpdateLoEQ();
-	slotUpdateHiEQ();
-	slotLoFiChanged();
+    slotUpdateLoEQ();
+    slotUpdateHiEQ();
+    slotLoFiChanged();
 }
 
 int DlgPrefEQ::getEqFreq(int sliderVal)
 {
-	if(sliderVal == 480) {
-		return 20050;	//normalize maximum to match label
+    if(sliderVal == 480) {
+        return 20050; //normalize maximum to match label
     } else {
-		double dsliderVal = (double) sliderVal / 40;
-		double result = (dsliderVal * dsliderVal * dsliderVal * dsliderVal);
-		return (int) result;
-	}
+        double dsliderVal = (double) sliderVal / 40;
+        double result = (dsliderVal * dsliderVal * dsliderVal * dsliderVal);
+        return (int) result;
+    }
 }
 
 void DlgPrefEQ::validate_levels() {
