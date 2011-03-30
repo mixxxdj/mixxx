@@ -522,10 +522,6 @@ MixxxApp::~MixxxApp()
     qDebug() << "delete playerManager" << qTime.elapsed();
     delete m_pPlayerManager;
 
-    //RecordingManager depend on config
-    qDebug() << "delete RecordingManager" << qTime.elapsed();
-    delete m_pRecordingManager;
-
     // EngineMaster depends on Config
     qDebug() << "delete m_pEngine, " << qTime.elapsed();
     delete m_pEngine;
@@ -535,9 +531,14 @@ MixxxApp::~MixxxApp()
     delete m_pLibraryScanner;
 
     // Delete the library after the view so there are no dangling pointers to
+    // Depends on RecordingManager
     // the data models.
     qDebug() << "delete library" << qTime.elapsed();
     delete m_pLibrary;
+
+    //RecordingManager depends on config
+    qDebug() << "delete RecordingManager" << qTime.elapsed();
+    delete m_pRecordingManager;
 
     // HACK: Save config again. We saved it once before doing some dangerous
     // stuff. We only really want to save it here, but the first one was just
