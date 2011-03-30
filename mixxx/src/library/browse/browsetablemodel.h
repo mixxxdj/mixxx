@@ -7,6 +7,7 @@
 #include "library/browse/browsethread.h"
 #include "library/dao/trackdao.h"
 #include "library/trackcollection.h"
+#include "recording/recordingmanager.h"
 
 class QMimeData;
 
@@ -35,7 +36,7 @@ class BrowseTableModel : public QStandardItemModel, public virtual TrackModel
     
     Q_OBJECT
     public:
-        BrowseTableModel(QObject* parent,TrackCollection* pTrackCollection);
+        BrowseTableModel(QObject* parent,TrackCollection* pTrackCollection, RecordingManager* pRec);
         virtual ~BrowseTableModel();
         void setPath(QString absPath);
         //reimplemented from TrackModel class
@@ -64,6 +65,8 @@ class BrowseTableModel : public QStandardItemModel, public virtual TrackModel
         QList<int> m_searchColumns;
         QString m_current_path;
         TrackCollection* m_pTrackCollection;
+        int m_iNumDecks;
+        RecordingManager* m_pRecordingManager;
 
     public slots:
        void slotClear(BrowseTableModel*);

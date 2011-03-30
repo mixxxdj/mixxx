@@ -38,6 +38,7 @@ class RecordingManager : public QObject
         QString& getRecordingDir();
         //return the currently recording file
         QString& getRecordingFile();
+        QString& getRecordingLocation();
     signals:
         //emits the commulated number of bytes being recorded
         void bytesRecorded(long);
@@ -55,8 +56,13 @@ class RecordingManager : public QObject
 
        ConfigObject<ConfigValue>* m_pConfig;
        QString m_recordingDir;
-       QString m_recording_path;
+       //the base file
+       QString m_recording_base_file;
+       //filename without path
        QString m_recordingFile;
+       //Absolute file
+       QString m_recordingLocation;
+
        bool m_isRecording;
        //will be a very large number
        long m_iNumberOfBytesRecored;

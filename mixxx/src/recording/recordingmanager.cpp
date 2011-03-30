@@ -15,7 +15,7 @@ RecordingManager::RecordingManager(ConfigObject<ConfigValue>* pConfig) :
     m_isRecording = false;
     m_iNumberOfBytesRecored = 0;
     m_iNumberSplits = 0;
-    m_recording_path = "";
+    m_recording_base_file = "";
 
     m_recReadyCO = new ControlObject(ConfigKey("[Master]", "Record"));
     m_recReady = new ControlObjectThread(m_recReadyCO);
@@ -84,22 +84,30 @@ void RecordingManager::startRecording(bool generateFileName)
         //Construct the file pattern
         // dd_mm_yyyy--hours-minutes-ss   or    mm_dd_yyyy --hours-minutes:seconds
         QDateTime current_date_time = QDateTime::currentDateTime();
-        QString date_time_str = current_date_time.toString("dd_MM_yyyy-hh'h'_mm'm'_ss's'");
+        QString date_time_str = current_date_time.toString("MM_dd_yyyy-hh'h'_mm'm'_ss's'");
+        //Append file extension
+        m_recordingFile = date_time_str + "."+ encodingType.toLower();
 
         QString filename (m_recordingDir);
         filename.append("/").append(date_time_str);
-         //Storing the absolutePath of the recording file
-        m_recording_path = filename;
-        m_pConfig->set(ConfigKey("[Recording]", "Path"), m_recording_path + "."+ encodingType.toLower());
-        m_pConfig->set(ConfigKey("[Recording]", "CuePath"), m_recording_path +".cue");
-        m_recordingFile = QFileInfo(filename).fileName();
+        //Storing the absolutePath of the recording file without file extension
+        m_recording_base_file = filename;
+        //appending file extension to get the filelocation
+        m_recordingLocation = m_recording_base_file + "."+ encodingType.toLower();
+        m_pConfig->set(ConfigKey("[Recording]", "Path"), m_recordingLocation);
+        m_pConfig->set(ConfigKey("[Recording]", "CuePath"), m_recording_base_file +".cue");
+
+
+
     }
     else{ //This is only executed if filesplit occurs
         ++m_iNumberSplits;
-        QString filename = m_recording_path +"part"+QString::number(m_iNumberSplits);
-        m_pConfig->set(ConfigKey("[Recording]", "Path"), filename + "."+ encodingType.toLower());
-        m_pConfig->set(ConfigKey("[Recording]", "CuePath"), filename +".cue");
-        m_recordingFile = QFileInfo(filename).fileName();
+        QString new_base_filename = m_recording_base_file +"part"+QString::number(m_iNumberSplits);
+        m_recordingLocation = new_base_filename + "." +encodingType.toLower();
+
+        m_pConfig->set(ConfigKey("[Recording]", "Path"), m_recordingLocation);
+        m_pConfig->set(ConfigKey("[Recording]", "CuePath"), new_base_filename +".cue");
+        m_recordingFile = QFileInfo(m_recordingLocation).fileName();
     }
     m_recReady->slotSet(RECORD_READY);
 }
@@ -154,6 +162,9 @@ bool RecordingManager::isRecordingActive()
 //returns the name of the file
 QString& RecordingManager::getRecordingFile(){
     return m_recordingFile;
+}
+QString& RecordingManager::getRecordingLocation(){
+    return m_recordingLocation;
 }
 long RecordingManager::getFileSplitSize()
 {
