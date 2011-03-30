@@ -38,7 +38,7 @@ QVariant RecordingFeature::title() {
 }
 
 QIcon RecordingFeature::getIcon() {
-    return QIcon(":/images/library/ic_library_browse.png");
+    return QIcon(":/images/library/ic_library_recordings.png");
 }
 
 TreeItemModel* RecordingFeature::getChildModel() {
