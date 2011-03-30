@@ -26,12 +26,20 @@ class ControlObjectThreadWidget : public ControlObjectThreadMain
 {
     Q_OBJECT
 public:
+
+    enum EmitOption {
+        EMIT_NEVER                = 0x00,
+        EMIT_ON_PRESS             = 0x01,
+        EMIT_ON_RELEASE           = 0x02,
+        EMIT_ON_PRESS_AND_RELEASE = 0x03
+    };
+
     ControlObjectThreadWidget(ControlObject *pControlObject);
     ~ControlObjectThreadWidget();
     /** Associates a QWidget with the ControlObject. */
     void setWidget(QWidget *widget,
                    bool connectValueFromWidget=true, bool connectValueToWidget = true,
-                   bool emitOnDownPress=true, Qt::MouseButton state=Qt::NoButton);
+                   EmitOption emitOption=EMIT_ON_PRESS, Qt::MouseButton state=Qt::NoButton);
     /** Associates a the enabled/disabled state of a widget with the state of a ControlObject. */
     void setWidgetOnOff(QWidget *widget);
     bool setExtern(double v);
