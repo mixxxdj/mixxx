@@ -143,7 +143,7 @@ void BrowseTableModel::removeTrack(const QModelIndex& index)
         }
     }
 
-    qDebug() << "Recordingmamanger: " << m_pRecordingManager;
+    //qDebug() << "Recordingmamanger: " << m_pRecordingManager;
     //Check if file is subject to a current recording operation
     if(m_pRecordingManager->getRecordingLocation() == track_location){
         QMessageBox::critical(0, tr("Mixxx Library"), tr("Could not delete ")+track_location+

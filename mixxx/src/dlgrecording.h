@@ -10,6 +10,7 @@
 #include "library/browse/browsetablemodel.h"
 #include "library/proxytrackmodel.h"
 #include "recording/recordingmanager.h"
+#include "mixxxkeyboard.h"
 
 class PlaylistTableModel;
 class WTrackTableView;
@@ -22,7 +23,7 @@ class DlgRecording : public QWidget, public Ui::DlgRecording, public virtual Lib
   public:
     DlgRecording(QWidget *parent, ConfigObject<ConfigValue>* pConfig,
                  TrackCollection* pTrackCollection,
-                 RecordingManager* pRecManager);
+                 RecordingManager* pRecManager, MixxxKeyboard* pKeyboard);
     virtual ~DlgRecording();
 
     virtual void setup(QDomNode node);
