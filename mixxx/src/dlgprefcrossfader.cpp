@@ -33,7 +33,11 @@
 
 #define CONFIG_KEY "[Mixer Profile]"
 
-DlgPrefCrossfader::DlgPrefCrossfader(QWidget * parent, ConfigObject<ConfigValue> * _config) :  QWidget(parent), Ui::DlgPrefCrossfaderDlg()
+DlgPrefCrossfader::DlgPrefCrossfader(QWidget * parent, ConfigObject<ConfigValue> * _config)
+  : QWidget(parent)
+  , Ui::DlgPrefCrossfaderDlg()
+  , m_COTCurve(ControlObject::getControl(ConfigKey(CONFIG_KEY, "xFaderCurve")))
+  , m_COTCalibration(ControlObject::getControl(ConfigKey(CONFIG_KEY, "xFaderCalibration")))
 {
     config = _config;
 	m_pxfScene = NULL;
@@ -120,9 +124,9 @@ void DlgPrefCrossfader::setDefaults()
 void DlgPrefCrossfader::slotApply()
 {
     config->set(ConfigKey(CONFIG_KEY, "xFaderMode"), ConfigValue(m_xFaderMode));
-	ControlObject::getControl(ConfigKey(CONFIG_KEY, "xFaderCurve"))->set(m_transform);
-	ControlObject::getControl(ConfigKey(CONFIG_KEY, "xFaderCalibration"))->set(m_cal);
-	
+    m_COTCurve.slotSet(m_transform);
+    m_COTCalibration.slotSet(m_cal);
+
 	qDebug() << "slotApply crossfader:" << m_transform << m_xFaderMode;
 }
 
