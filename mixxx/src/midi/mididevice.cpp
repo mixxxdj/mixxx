@@ -229,11 +229,13 @@ void MidiDevice::receive(MidiStatusByte status, char channel, char control, char
     //qDebug() << "MidiDevice: " << mixxxControl.getControlObjectGroup() << mixxxControl.getControlObjectValue();
 
     ConfigKey configKey(mixxxControl.getControlObjectGroup(), mixxxControl.getControlObjectValue());
+    
+    MidiOption currMidiOption = mixxxControl.getMidiOption();
 
 #ifdef __MIDISCRIPT__
     // Custom MixxxScript (QtScript) handler
 
-    if (mixxxControl.getMidiOption() == MIDI_OPT_SCRIPT) {
+    if (currMidiOption == MIDI_OPT_SCRIPT) {
         // qDebug() << "MidiDevice: Calling script function" << configKey.item << "with"
         //          << (int)channel << (int)control <<  (int)value << (int)status;
 
@@ -254,12 +256,21 @@ void MidiDevice::receive(MidiStatusByte status, char channel, char control, char
     if (p) //Only pass values on to valid ControlObjects.
     {
         double currMixxxControlValue = p->GetMidiValue();
-        MidiOption currMidiOption = mixxxControl.getMidiOption();
-        // FIXME: We should accept multiple options, since soft-takeover would apply in addition
-        //  Remove this if clause and newValue=value assignment when that's done
+
         double newValue = value;
-        if (currMidiOption!=MIDI_OPT_SOFT_TAKEOVER)
+
+        // compute LSB and MSB for pitch bend messages
+        if (status == MIDI_STATUS_PITCH_BEND) {
+            unsigned int ivalue;
+            ivalue = (value << 7) + control;
+
+            newValue = m_pMidiMapping->ComputeValue(currMidiOption, currMixxxControlValue, ivalue);
+
+            // normalize our value to 0-127
+            newValue = (newValue / 0x3FFF) * 0x7F;
+        } else {
             newValue = m_pMidiMapping->ComputeValue(currMidiOption, currMixxxControlValue, value);
+        }
 
         // ControlPushButton ControlObjects only accept NOTE_ON, so if the midi
         // mapping is <button> we override the Midi 'status' appropriately.
@@ -337,7 +348,7 @@ void MidiDevice::receive(const unsigned char data[], unsigned int length) {
         }
         return;
     }
-    qDebug() << "MidiDevice: No MIDI Script function found for" << message;
+    qWarning() << "MidiDevice: No MIDI Script function found for" << message;
     return;
 }
 #endif

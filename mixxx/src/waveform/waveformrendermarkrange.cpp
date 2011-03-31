@@ -44,6 +44,14 @@ WaveformRenderMarkRange::WaveformRenderMarkRange(const char* pGroup,
             this, SLOT(slotUpdateTrackSamples(double)));
 }
 
+WaveformRenderMarkRange::~WaveformRenderMarkRange() {
+    qDebug() << this << "~WaveformRenderMarkRange()";
+    delete m_pTrackSamples;
+    delete m_pMarkStartPoint;
+    delete m_pMarkEndPoint;
+    delete m_pMarkEnabled;
+}
+
 void WaveformRenderMarkRange::slotUpdateMarkStartPoint(double v) {
     //qDebug() << "WaveformRenderMarkRange :: MarkStartPoint = " << v;
     m_iMarkStartPoint = (int)v;

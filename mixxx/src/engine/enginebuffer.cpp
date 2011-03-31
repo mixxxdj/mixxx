@@ -18,24 +18,24 @@
 #include <QEvent>
 #include <QtDebug>
 
-#include "enginebuffer.h"
+#include "engine/enginebuffer.h"
 #include "cachingreader.h"
 
 #include "controlpushbutton.h"
 #include "controlobjectthreadmain.h"
 #include "configobject.h"
 #include "controlpotmeter.h"
-#include "enginebufferscalest.h"
-#include "enginebufferscalelinear.h"
-#include "enginebufferscalereal.h"
-#include "enginebufferscaledummy.h"
+#include "engine/enginebufferscalest.h"
+#include "engine/enginebufferscalelinear.h"
+#include "engine/enginebufferscalereal.h"
+#include "engine/enginebufferscaledummy.h"
 #include "mathstuff.h"
 #include "engine/engineworkerscheduler.h"
 #include "engine/readaheadmanager.h"
 #include "engine/enginecontrol.h"
-#include "loopingcontrol.h"
-#include "ratecontrol.h"
-#include "bpmcontrol.h"
+#include "engine/loopingcontrol.h"
+#include "engine/ratecontrol.h"
+#include "engine/bpmcontrol.h"
 
 #include "trackinfoobject.h"
 
@@ -73,6 +73,14 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
     m_fLastSampleValue(0.),
     m_bLastBufferPaused(true) {
 
+    m_pReader = new CachingReader(_group, _config);
+    connect(m_pReader, SIGNAL(trackLoaded(TrackPointer, int, int)),
+            this, SLOT(slotTrackLoaded(TrackPointer, int, int)),
+            Qt::DirectConnection);
+    connect(m_pReader, SIGNAL(trackLoadFailed(TrackPointer, QString)),
+            this, SLOT(slotTrackLoadFailed(TrackPointer, QString)),
+            Qt::DirectConnection);
+
 
     // Play button
     playButton = new ControlPushButton(ConfigKey(group, "play"));
@@ -83,7 +91,7 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
     playButtonCOT = new ControlObjectThreadMain(playButton);
 
     //Play from Start Button (for sampler)
-    playStartButton = new ControlPushButton(ConfigKey(group, "playstart"));
+    playStartButton = new ControlPushButton(ConfigKey(group, "start_play"));
     connect(playStartButton, SIGNAL(valueChanged(double)),
             this, SLOT(slotControlPlayFromStart(double)),
             Qt::DirectConnection);
@@ -156,14 +164,6 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
     m_pBpmControl = new BpmControl(_group, _config);
     addControl(m_pBpmControl);
 
-    m_pReader = new CachingReader(_group, _config);
-    connect(m_pReader, SIGNAL(trackLoaded(TrackPointer, int, int)),
-            this, SLOT(slotTrackLoaded(TrackPointer, int, int)),
-            Qt::DirectConnection);
-    connect(m_pReader, SIGNAL(trackLoadFailed(TrackPointer, QString)),
-            this, SLOT(slotTrackLoadFailed(TrackPointer, QString)),
-            Qt::DirectConnection);
-
     m_pReadAheadManager = new ReadAheadManager(m_pReader);
     m_pReadAheadManager->addEngineControl(m_pLoopingControl);
 
@@ -189,9 +189,6 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
 
 EngineBuffer::~EngineBuffer()
 {
-    delete m_pLoopingControl;
-    delete m_pRateControl;
-    delete m_pBpmControl;
     delete m_pReadAheadManager;
     delete m_pReader;
 
@@ -215,6 +212,11 @@ EngineBuffer::~EngineBuffer()
 
     delete m_pKeylock;
     delete m_pEject;
+
+    while (m_engineControls.size() > 0) {
+        EngineControl* pControl = m_engineControls.takeLast();
+        delete pControl;
+    }
 }
 
 void EngineBuffer::setPitchIndpTimeStretch(bool b)
@@ -320,6 +322,11 @@ void EngineBuffer::slotTrackLoadFailed(TrackPointer pTrack,
 }
 
 void EngineBuffer::ejectTrack() {
+    // Don't allow ejections while playing a track. We don't need to lock to
+    // call ControlObject::get() so this is fine.
+    if (playButton->get() > 0)
+        return;
+
     pause.lock();
     TrackPointer pTrack = m_pCurrentTrack;
     m_pCurrentTrack.clear();
@@ -376,30 +383,38 @@ void EngineBuffer::slotControlSeekAbs(double abs)
 void EngineBuffer::slotControlPlay(double v)
 {
     // If no track is currently loaded, turn play off.
-    if (!m_pCurrentTrack) {
+    if (v > 0.0 && !m_pCurrentTrack) {
         playButton->set(0.0f);
     }
 }
 
-void EngineBuffer::slotControlStart(double)
+void EngineBuffer::slotControlStart(double v)
 {
-    slotControlSeek(0.);
+    if (v > 0.0) {
+        slotControlSeek(0.);
+    }
 }
 
-void EngineBuffer::slotControlEnd(double)
+void EngineBuffer::slotControlEnd(double v)
 {
-    slotControlSeek(1.);
+    if (v > 0.0) {
+        slotControlSeek(1.);
+    }
 }
 
-void EngineBuffer::slotControlPlayFromStart(double)
+void EngineBuffer::slotControlPlayFromStart(double v)
 {
-    slotControlSeek(0.);
-    playButton->set(1);
+    if (v > 0.0) {
+        slotControlSeek(0.);
+        playButton->set(1);
+    }
 }
 
-void EngineBuffer::slotControlStop(double)
+void EngineBuffer::slotControlStop(double v)
 {
-    playButton->set(0);
+    if (v > 0.0) {
+        playButton->set(0);
+    }
 }
 
 void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBufferSize)
@@ -722,6 +737,12 @@ void EngineBuffer::addControl(EngineControl* pControl) {
             Qt::DirectConnection);
     connect(pControl, SIGNAL(seekAbs(double)),
             this, SLOT(slotControlSeekAbs(double)),
+            Qt::DirectConnection);
+    connect(this, SIGNAL(trackLoaded(TrackPointer)),
+            pControl, SLOT(trackLoaded(TrackPointer)),
+            Qt::DirectConnection);
+    connect(this, SIGNAL(trackUnloaded(TrackPointer)),
+            pControl, SLOT(trackUnloaded(TrackPointer)),
             Qt::DirectConnection);
 }
 

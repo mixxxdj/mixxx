@@ -205,3 +205,6 @@ bool PromoTracksFeature::dragMoveAcceptChild(const QModelIndex& index,
                                               QUrl url) {
     return false;
 }
+void PromoTracksFeature::onLazyChildExpandation(const QModelIndex &index){
+    //Nothing to do because the childmodel is not of lazy nature.
+}

@@ -4,6 +4,7 @@
 #include <QtSql>
 #include "trackinfoobject.h"
 #include "library/dao/playlistdao.h"
+#include "library/trackcollection.h"
 
 PlaylistDAO::PlaylistDAO(QSqlDatabase& database)
         : m_database(database) {
@@ -168,7 +169,7 @@ bool PlaylistDAO::setPlaylistLocked(int playlistId, bool locked) {
     int lock = locked ? 1 : 0;
 
     Q_ASSERT(m_database.transaction());
-    QSqlQuery query;
+    QSqlQuery query(m_database);
     query.prepare("UPDATE Playlists SET locked = :lock WHERE id = :id");
     query.bindValue(":lock", lock);
     query.bindValue(":id", playlistId);
@@ -184,7 +185,7 @@ bool PlaylistDAO::setPlaylistLocked(int playlistId, bool locked) {
 }
 
 bool PlaylistDAO::isPlaylistLocked(int playlistId) {
-    QSqlQuery query;
+    QSqlQuery query(m_database);
     query.prepare("SELECT locked FROM Playlists WHERE id = :id");
     query.bindValue(":id", playlistId);
 
@@ -363,4 +364,30 @@ void PlaylistDAO::insertTrackIntoPlaylist(int trackId, int playlistId, int posit
     //query.finish();
 
     m_database.commit();
+}
+
+void PlaylistDAO::addToAutoDJQueue(int playlistId) {
+    //qDebug() << "Adding tracks from playlist " << playlistId << " to the Auto-DJ Queue";
+
+    // Query the PlaylistTracks database to locate tracks in the selected playlist
+    QSqlQuery query(m_database);
+    query.prepare("SELECT track_id FROM PlaylistTracks "
+                  "WHERE playlist_id = :plid");
+    query.bindValue(":plid", playlistId);
+    query.exec();
+
+    //Print out any SQL error, if there was one.
+    if (query.lastError().isValid()) {
+       qDebug() << "addToAutoDJQueue" << query.lastError();
+      // m_database.rollback();
+      // return;
+    }
+
+    // Get the ID of the Auto-DJ playlist
+    int autoDJId = getPlaylistIdFromName(AUTODJ_TABLE);
+
+    // Loop through the tracks, adding them to the Auto-DJ Queue
+    while(query.next()) {
+        appendTrackToPlaylist(query.value(0).toInt(), autoDJId);
+    }
 }

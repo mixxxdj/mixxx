@@ -19,17 +19,17 @@
 #define ENGINEBUFFERSCALEDUMMY_H
 
 #include "defs.h"
-#include <qobject.h>
-#include "enginebufferscale.h"
+#include <QObject>
+#include "engine/enginebufferscale.h"
 
 class ReadAheadManager;
 
-class EngineBufferScaleDummy : public EngineBufferScale 
+class EngineBufferScaleDummy : public EngineBufferScale
 {
 public:
     EngineBufferScaleDummy(ReadAheadManager* pReadAheadManager);
     ~EngineBufferScaleDummy();
-    
+
     /** Set base tempo, ie. normal playback speed. */
     void setBaseRate(double dBaseRate);
     /** Set tempo */
@@ -39,7 +39,7 @@ public:
     /** Called from EngineBuffer when seeking, to ensure the buffers are flushed */
     void clear();
     /** Scale buffer */
-    CSAMPLE* scale(double playpos, 
+    CSAMPLE* scale(double playpos,
                    unsigned long buf_size,
                    CSAMPLE* pBase,
                    unsigned long iBaseLength);

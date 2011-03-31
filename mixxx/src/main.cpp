@@ -154,14 +154,14 @@ int main(int argc, char * argv[])
     //  so if you change it here, change it also in:
     //      * ErrorDialogHandler::errorDialog()
     QThread::currentThread()->setObjectName("Main");
-    a = new QApplication(argc, argv);
+    QApplication a(argc, argv);
 
     // Load the translations for Qt and for Mixxx
 
     QTranslator* qtTranslator = new QTranslator();
     qtTranslator->load("qt_" + QLocale::system().name(),
                       QLibraryInfo::location(QLibraryInfo::TranslationsPath));
-    a->installTranslator(qtTranslator);
+    a.installTranslator(qtTranslator);
 
     //Enumerate and load SoundSource plugins
     SoundSourceProxy::loadPlugins();
@@ -174,7 +174,7 @@ int main(int argc, char * argv[])
     // for development, use "/" to use the english original as
     // .qm files are stored in the base project directory.
     tor.load(QString("mixxx.") + QLocale::system().name(), ".");
-    a->installTranslator(&tor);
+    a.installTranslator(&tor);
 
     // Check if one of the command line arguments is "--no-visuals"
 //    bool bVisuals = true;
@@ -258,7 +258,7 @@ int main(int argc, char * argv[])
         plugin_paths.push_back ("/usr/lib/ladspa/");
         plugin_paths.push_back ("/usr/lib64/ladspa/");
 #elif __APPLE__
-      QDir dir(a->applicationDirPath());
+      QDir dir(a.applicationDirPath());
      dir.cdUp();
      dir.cd("PlugIns");
          plugin_paths.push_back ("/Library/Audio/Plug-ins/LADSPA");
@@ -288,10 +288,10 @@ int main(int argc, char * argv[])
      }
 #endif
 
-    MixxxApp *mixxx = new MixxxApp(a, args);
+    MixxxApp* mixxx = new MixxxApp(&a, args);
 
-    //a->setMainWidget(mixxx);
-    a->connect(a, SIGNAL(lastWindowClosed()), a, SLOT(quit()));
+    //a.setMainWidget(mixxx);
+    QObject::connect(&a, SIGNAL(lastWindowClosed()), &a, SLOT(quit()));
 
     int result = -1;
 
@@ -300,7 +300,7 @@ int main(int argc, char * argv[])
         mixxx->show();
 
         qDebug() << "Running Mixxx";
-        result = a->exec();
+        result = a.exec();
     }
 
     delete mixxx;

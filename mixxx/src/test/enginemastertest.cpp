@@ -13,6 +13,18 @@ using ::testing::_;
 
 namespace {
 
+class EngineChannelMock : public EngineChannel {
+  public:
+    EngineChannelMock(const char* group, ConfigObject<ConfigValue>* pConfig,
+                      ChannelOrientation defaultOrientation)
+            : EngineChannel(group, pConfig, defaultOrientation) {
+    }
+
+    MOCK_METHOD0(isActive, bool());
+    MOCK_METHOD0(isPFL, bool());
+    MOCK_METHOD3(process, void(const CSAMPLE* pIn, const CSAMPLE* pOut, const int iBufferSize));
+};
+
 class EngineMasterTest : public testing::Test {
   protected:
     virtual void SetUp() {
@@ -45,20 +57,8 @@ class EngineMasterTest : public testing::Test {
     EngineMaster* m_pMaster;
 };
 
-class EngineChannelMock : public EngineChannel {
-  public:
-    EngineChannelMock(const char* group, ConfigObject<ConfigValue>* pConfig,
-                      ChannelOrientation defaultOrientation)
-            : EngineChannel(group, pConfig, defaultOrientation) {
-    }
-
-    MOCK_METHOD0(isActive, bool());
-    MOCK_METHOD0(isPFL, bool());
-    MOCK_METHOD3(process, void(const CSAMPLE* pIn, const CSAMPLE* pOut, const int iBufferSize));
-};
-
 TEST_F(EngineMasterTest, SingleChannelOutputWorks) {
-    EngineChannelMock* pChannel = new EngineChannelMock("[Channel1]", m_pConfig,
+    EngineChannelMock* pChannel = new EngineChannelMock("[Test1]", m_pConfig,
                                                         EngineChannel::CENTER);
     m_pMaster->addChannel(pChannel);
 
@@ -92,10 +92,10 @@ TEST_F(EngineMasterTest, SingleChannelOutputWorks) {
 }
 
 TEST_F(EngineMasterTest, TwoChannelOutputWorks) {
-    EngineChannelMock* pChannel1 = new EngineChannelMock("[Channel1]", m_pConfig,
+    EngineChannelMock* pChannel1 = new EngineChannelMock("[Test1]", m_pConfig,
                                                          EngineChannel::CENTER);
     m_pMaster->addChannel(pChannel1);
-    EngineChannelMock* pChannel2 = new EngineChannelMock("[Channel2]", m_pConfig,
+    EngineChannelMock* pChannel2 = new EngineChannelMock("[Test2]", m_pConfig,
                                                          EngineChannel::CENTER);
     m_pMaster->addChannel(pChannel2);
 
@@ -143,10 +143,10 @@ TEST_F(EngineMasterTest, TwoChannelOutputWorks) {
 }
 
 TEST_F(EngineMasterTest, TwoChannelPFLOutputWorks) {
-    EngineChannelMock* pChannel1 = new EngineChannelMock("[Channel1]", m_pConfig,
+    EngineChannelMock* pChannel1 = new EngineChannelMock("[Test1]", m_pConfig,
                                                          EngineChannel::CENTER);
     m_pMaster->addChannel(pChannel1);
-    EngineChannelMock* pChannel2 = new EngineChannelMock("[Channel2]", m_pConfig,
+    EngineChannelMock* pChannel2 = new EngineChannelMock("[Test2]", m_pConfig,
                                                          EngineChannel::CENTER);
     m_pMaster->addChannel(pChannel2);
 
@@ -194,13 +194,13 @@ TEST_F(EngineMasterTest, TwoChannelPFLOutputWorks) {
 }
 
 TEST_F(EngineMasterTest, ThreeChannelOutputWorks) {
-    EngineChannelMock* pChannel1 = new EngineChannelMock("[Channel1]", m_pConfig,
+    EngineChannelMock* pChannel1 = new EngineChannelMock("[Test1]", m_pConfig,
                                                          EngineChannel::CENTER);
     m_pMaster->addChannel(pChannel1);
-    EngineChannelMock* pChannel2 = new EngineChannelMock("[Channel2]", m_pConfig,
+    EngineChannelMock* pChannel2 = new EngineChannelMock("[Test2]", m_pConfig,
                                                          EngineChannel::CENTER);
     m_pMaster->addChannel(pChannel2);
-    EngineChannelMock* pChannel3 = new EngineChannelMock("[Channel3]", m_pConfig,
+    EngineChannelMock* pChannel3 = new EngineChannelMock("[Test3]", m_pConfig,
                                                          EngineChannel::CENTER);
     m_pMaster->addChannel(pChannel3);
 
@@ -261,13 +261,13 @@ TEST_F(EngineMasterTest, ThreeChannelOutputWorks) {
 }
 
 TEST_F(EngineMasterTest, ThreeChannelPFLOutputWorks) {
-    EngineChannelMock* pChannel1 = new EngineChannelMock("[Channel1]", m_pConfig,
+    EngineChannelMock* pChannel1 = new EngineChannelMock("[Test1]", m_pConfig,
                                                          EngineChannel::CENTER);
     m_pMaster->addChannel(pChannel1);
-    EngineChannelMock* pChannel2 = new EngineChannelMock("[Channel2]", m_pConfig,
+    EngineChannelMock* pChannel2 = new EngineChannelMock("[Test2]", m_pConfig,
                                                          EngineChannel::CENTER);
     m_pMaster->addChannel(pChannel2);
-    EngineChannelMock* pChannel3 = new EngineChannelMock("[Channel3]", m_pConfig,
+    EngineChannelMock* pChannel3 = new EngineChannelMock("[Test3]", m_pConfig,
                                                          EngineChannel::CENTER);
     m_pMaster->addChannel(pChannel3);
 
@@ -328,7 +328,7 @@ TEST_F(EngineMasterTest, ThreeChannelPFLOutputWorks) {
 }
 
 TEST_F(EngineMasterTest, SingleChannelPFLOutputWorks) {
-    EngineChannelMock* pChannel = new EngineChannelMock("[Channel1]", m_pConfig,
+    EngineChannelMock* pChannel = new EngineChannelMock("[Test1]", m_pConfig,
                                                         EngineChannel::CENTER);
     m_pMaster->addChannel(pChannel);
 

@@ -566,6 +566,7 @@ void ITunesFeature::clearTable(QString table_name) {
     else
         qDebug() << "iTunes table entries of '" << table_name <<"' have been cleared.";
 }
+
 void ITunesFeature::onTrackCollectionLoaded(){
     TreeItem* root = m_future.result();
     if(root){
@@ -586,4 +587,6 @@ void ITunesFeature::onTrackCollectionLoaded(){
     emit(featureLoadingFinished(this));
     activate();
 }
-
+void ITunesFeature::onLazyChildExpandation(const QModelIndex &index){
+    //Nothing to do because the childmodel is not of lazy nature.
+}
