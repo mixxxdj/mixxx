@@ -62,6 +62,7 @@ class BrowseTableModel : public QStandardItemModel, public virtual TrackModel
 
 
         void addSearchColumn(int index);
+        bool isTrackInUse(QString& file) const;
         QList<int> m_searchColumns;
         QString m_current_path;
         TrackCollection* m_pTrackCollection;
