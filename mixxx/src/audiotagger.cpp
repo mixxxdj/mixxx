@@ -96,7 +96,7 @@ void AudioTagger::setTracknumber (QString tracknumber )
 {
     m_tracknumber = tracknumber;
 }
-void AudioTagger::save ()
+bool AudioTagger::save ()
 {
     TagLib::File* file = NULL;
     
@@ -163,11 +163,17 @@ void AudioTagger::save ()
            
         }
         //write audio tags to file
-        if(file->save())
+        int success = false;
+        if(file->save()){
             qDebug() << "Successfully updated metadata of track " << m_file;
-        else
+            success = true;
+        }
+        else{
              qDebug() << "Could not update metadata of track " << m_file;
+         }
+        //delete file and return
         delete file;
+        return success;
     }
 
    

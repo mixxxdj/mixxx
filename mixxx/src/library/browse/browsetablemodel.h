@@ -58,6 +58,7 @@ class BrowseTableModel : public QStandardItemModel, public virtual TrackModel
         virtual bool isColumnHiddenByDefault(int column);
         virtual const QList<int>& searchColumns() const;
         virtual Qt::ItemFlags flags(const QModelIndex &index) const;
+        virtual bool setData(const QModelIndex& index, const QVariant& value, int role=Qt::EditRole);
     private:
 
 
