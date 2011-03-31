@@ -315,13 +315,18 @@ void EngineMaster::addChannel(EngineChannel* pChannel) {
     }
 }
 
-int EngineMaster::numChannels() const {
-    return m_channels.size();
+const CSAMPLE* EngineMaster::getDeckBuffer(unsigned int i) const {
+    return getChannelBuffer(QString("[Channel%1]").arg(i+1));
 }
 
-const CSAMPLE* EngineMaster::getChannelBuffer(unsigned int i) const {
-    if (i < numChannels()) {
-        return m_channelBuffers[i];
+const CSAMPLE* EngineMaster::getChannelBuffer(QString group) const {
+    int channel_number = 0;
+    for (QList<EngineChannel*>::ConstIterator i = m_channels.constBegin();
+            i != m_channels.constEnd(); ++i, ++channel_number) {
+        EngineChannel *c = *i;
+        if (c->getGroup() == group) {
+            return m_channelBuffers[channel_number];
+        }
     }
     return NULL;
 }
