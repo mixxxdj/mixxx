@@ -33,10 +33,22 @@ class EngineMicrophone : public EngineChannel, public AudioDestination {
     // microphone to be processed
     virtual void receiveBuffer(AudioInput input, const short* pBuffer, unsigned int iNumSamples);
 
+    // Called by SoundManager whenever the microphone input is connected to a
+    // soundcard input.
+    virtual void onInputConnected(AudioInput input);
+
+    // Called by SoundManager whenever the microphone input is disconnected from
+    // a soundcard input.
+    virtual void onInputDisconnected(AudioInput input);
+
+    bool isSolo();
+    double getSoloDamping();
+
   private:
     EngineVolume m_volume;
     EngineClipping m_clipping;
     EngineVuMeter m_vuMeter;
+    ControlObject* m_pEnabled;
     ControlPushButton* m_pControlTalkover;
     CSAMPLE* m_pConversionBuffer;
     CircularBuffer<CSAMPLE> m_sampleBuffer;
