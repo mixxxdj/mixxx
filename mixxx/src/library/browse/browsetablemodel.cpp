@@ -12,7 +12,8 @@
 #include "playerinfo.h"
 #include "controlobject.h"
 #include "library/dao/trackdao.h"
-#include <QMessageBox>
+#include "audiotagger.h"
+
 
 BrowseTableModel::BrowseTableModel(QObject* parent, TrackCollection* pTrackCollection,
                                    RecordingManager* pRecordingManager)
@@ -245,10 +246,13 @@ Qt::ItemFlags BrowseTableModel::flags(const QModelIndex &index) const{
     //widget to load a track into a Player).
     defaultFlags |= Qt::ItemIsDragEnabled;
 
+    QString track_location = getTrackLocation(index);
+
     int row = index.row();
     int column = index.column();
 
-    if(column == COLUMN_FILENAME ||
+    if(isTrackInUse(track_location) ||
+            column == COLUMN_FILENAME ||
             column == COLUMN_BITRATE ||
             column == COLUMN_DURATION ||
             column == COLUMN_TYPE){
@@ -274,4 +278,63 @@ bool BrowseTableModel::isTrackInUse(QString &track_location) const
     }
 
     return false;
+}
+bool BrowseTableModel::setData(const QModelIndex &index, const QVariant &value, int role)
+{
+    if(!index.isValid())
+        return false;
+    qDebug() << "BrowseTableModel::setData(" << index.data() << ")";
+    int row = index.row();
+    int col = index.column();
+    QString track_location = getTrackLocation(index);
+    AudioTagger tagger(track_location);
+
+    //set tagger information
+    tagger.setArtist(this->index(row,COLUMN_ARTIST).data().toString());
+    tagger.setTitle(this->index(row,COLUMN_TITLE).data().toString());
+    tagger.setAlbum(this->index(row,COLUMN_ALBUM).data().toString());
+    tagger.setKey(this->index(row,COLUMN_KEY).data().toString());
+    tagger.setBpm(this->index(row,COLUMN_BPM).data().toString());
+    tagger.setComment(this->index(row,COLUMN_COMMENT).data().toString());
+    tagger.setTracknumber(this->index(row,COLUMN_TRACK_NUMBER).data().toString());
+    tagger.setYear(this->index(row,COLUMN_YEAR).data().toString());
+    tagger.setGenre(this->index(row,COLUMN_GENRE).data().toString());
+
+    //check if one the item were edited
+    if(col == COLUMN_ARTIST){
+        tagger.setArtist(value.toString());
+    } else if(col == COLUMN_TITLE){
+        tagger.setTitle(value.toString());
+    } else if(col == COLUMN_ALBUM){
+        tagger.setAlbum(value.toString());
+    } else if(col == COLUMN_BPM){
+        tagger.setBpm(value.toString());
+    } else if(col == COLUMN_KEY){
+        tagger.setKey(value.toString());
+    } else if(col == COLUMN_TRACK_NUMBER){
+        tagger.setTracknumber(value.toString());
+    } else if(col == COLUMN_COMMENT){
+        tagger.setComment(value.toString());
+    } else if(col == COLUMN_GENRE){
+        tagger.setGenre(value.toString());
+    } else if(col == COLUMN_YEAR){
+        tagger.setYear(value.toString());
+    }
+
+
+    QStandardItem* item = itemFromIndex(index);
+    if(tagger.save()){
+        //Modify underlying interalPointer object
+        item->setText(value.toString());
+        return true;
+    }
+    else{
+        //reset to old value in error
+        item->setText(index.data().toString());
+        QMessageBox::critical(0, tr("Mixxx Library"),tr("Could not update ID3 rag of file")
+                                    + "\n" +track_location);
+        return false;
+    }
+
+
 }
