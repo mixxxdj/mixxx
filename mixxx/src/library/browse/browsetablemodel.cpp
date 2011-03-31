@@ -81,7 +81,15 @@ void BrowseTableModel::setPath(QString absPath)
 
 TrackPointer BrowseTableModel::getTrack(const QModelIndex& index) const
 {
-    TrackInfoObject* tio = new TrackInfoObject(getTrackLocation(index));
+    QString track_location = getTrackLocation(index);
+    if(isTrackInUse(track_location)){
+        QMessageBox::critical(0, tr("Mixxx Library"),tr("Could not load the following file because"
+                                    " it is in use by Mixxx or another application.")
+                                     + "\n" +track_location);
+        return TrackPointer();
+    }
+
+    TrackInfoObject* tio = new TrackInfoObject(track_location);
     return TrackPointer(tio, &QObject::deleteLater);
 }
 
@@ -132,41 +140,29 @@ void BrowseTableModel::removeTrack(const QModelIndex& index)
     if(!index.isValid()) return;
 
     QString track_location = getTrackLocation(index);
-    int decks = ControlObject::getControl(ConfigKey("[Master]","num_decks"))->get();
-    //check if file is loaded to a deck
-    for(int i=1; i <= decks; ++i){
-        TrackPointer loaded_track = PlayerInfo::Instance().getTrackInfo(QString("[Channel%1]").arg(i));
-        if(loaded_track && (loaded_track->getLocation() == track_location)){
-            QMessageBox::critical(0, tr("Mixxx Library"), tr("Could not delete ")+track_location+
-                                  tr(" because it is currently in use by Mixxx.") );
-            return;
-        }
-    }
-
-    //qDebug() << "Recordingmamanger: " << m_pRecordingManager;
-    //Check if file is subject to a current recording operation
-    if(m_pRecordingManager->getRecordingLocation() == track_location){
-        QMessageBox::critical(0, tr("Mixxx Library"), tr("Could not delete ")+track_location+
-                              tr(" because it is currently subject to a recording operation.") );
+    //Ask user if he/she is sure
+    if(QMessageBox::question(NULL,tr("Mixxx Library"),
+                             tr("Do you really want to delete the following track from the filesystem?")
+                             + "\n" +track_location,
+                             QMessageBox::Yes, QMessageBox::Abort
+                             ) == QMessageBox::Abort)
+    {
         return;
     }
 
+
+    if(isTrackInUse(track_location)){
+        QMessageBox::critical(0, tr("Mixxx Library"),tr("Could not delete the following file because"
+                                    " it is in use by Mixxx or another application.") + "\n" +track_location);
+        return;
+    }
     // try to delete track
     if(!QFile::remove(track_location)){
-        QMessageBox::critical(0, tr("Mixxx Library"),"Could not delete "+track_location+
-                              tr(" because it in use by Mixxx or another application") );
+        QMessageBox::critical(0, tr("Mixxx Library"),tr("Could not delete the following file because"
+                                    " it is in use by Mixxx or another application.") + "\n" +track_location);
     }
     else
     {
-        if(QMessageBox::question(NULL,tr("Mixxx Library"),
-                                 tr("Do you really want to delete the following track from the filesystem?\n ")
-                                 +track_location,
-                                 QMessageBox::Yes, QMessageBox::Abort
-                                 ) == QMessageBox::Abort)
-        {
-            return;
-        }
-
         qDebug() << "BrowseFeature: User deleted track " << track_location;
         //repopulate model
         BrowseThread::getInstance()->executePopulation(m_current_path, this);
@@ -261,6 +257,21 @@ Qt::ItemFlags BrowseTableModel::flags(const QModelIndex &index) const{
     else{
         return defaultFlags | Qt::ItemIsEditable;
     }
+}
+bool BrowseTableModel::isTrackInUse(QString &track_location) const
+{
+    int decks = ControlObject::getControl(ConfigKey("[Master]","num_decks"))->get();
+    //check if file is loaded to a deck
+    for(int i=1; i <= decks; ++i){
+        TrackPointer loaded_track = PlayerInfo::Instance().getTrackInfo(QString("[Channel%1]").arg(i));
+        if(loaded_track && (loaded_track->getLocation() == track_location)){
+            return true;
+        }
+    }
 
+    if(m_pRecordingManager->getRecordingLocation() == track_location){
+        return true;
+    }
 
+    return false;
 }
