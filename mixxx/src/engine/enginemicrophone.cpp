@@ -13,6 +13,7 @@ EngineMicrophone::EngineMicrophone(const char* pGroup)
           m_volume(ConfigKey(pGroup, "volume")),
           m_clipping(pGroup),
           m_vuMeter(pGroup),
+          m_pEnabled(new ControlObject(ConfigKey(pGroup, "enabled"))),
           m_pControlTalkover(new ControlPushButton(ConfigKey(pGroup, "talkover"))),
           m_pConversionBuffer(SampleUtil::alloc(MAX_BUFFER_LEN)),
           // Need a +1 here because the CircularBuffer only allows its size-1
@@ -26,7 +27,8 @@ EngineMicrophone::~EngineMicrophone() {
 }
 
 bool EngineMicrophone::isActive() {
-    return !m_sampleBuffer.isEmpty();
+    bool enabled = m_pEnabled->get() > 0.0;
+    return enabled && !m_sampleBuffer.isEmpty();
 }
 
 bool EngineMicrophone::isPFL() {
@@ -37,9 +39,33 @@ bool EngineMicrophone::isMaster() {
     return true;
 }
 
-void EngineMicrophone::receiveBuffer(AudioInput input, const short* pBuffer, unsigned int iNumSamples) {
+void EngineMicrophone::onInputConnected(AudioInput input) {
+    qDebug() << this << "onInputConnected";
 
-    int numChannels =
+    if (input.getType() != AudioPath::MICROPHONE ||
+        AudioInput::channelsNeededForType(input.getType()) != 1) {
+        // This is an error!
+        qDebug() << "WARNING: EngineMicrophone connected to AudioInput for a non-Microphone type or a non-mono buffer!";
+        return;
+    }
+
+    m_pEnabled->set(1.0f);
+}
+
+void EngineMicrophone::onInputDisconnected(AudioInput input) {
+    qDebug() << this << "onInputDisconnected";
+
+    if (input.getType() != AudioPath::MICROPHONE ||
+        AudioInput::channelsNeededForType(input.getType()) != 1) {
+        // This is an error!
+        qDebug() << "WARNING: EngineMicrophone connected to AudioInput for a non-Microphone type or a non-mono buffer!";
+        return;
+    }
+
+    m_pEnabled->set(0.0f);
+}
+
+void EngineMicrophone::receiveBuffer(AudioInput input, const short* pBuffer, unsigned int iNumSamples) {
 
     if (input.getType() != AudioPath::MICROPHONE ||
         AudioInput::channelsNeededForType(input.getType()) != 1) {
@@ -85,7 +111,6 @@ void EngineMicrophone::applyVolume(CSAMPLE *pBuff, const int iBufferSize) {
 
 void EngineMicrophone::process(const CSAMPLE* pInput, const CSAMPLE* pOutput, const int iBufferSize) {
     CSAMPLE* pOut = const_cast<CSAMPLE*>(pOutput);
-
 
     // If talkover is enabled, then read into the output buffer. Otherwise, skip
     // the appropriate number of samples to throw them away.
