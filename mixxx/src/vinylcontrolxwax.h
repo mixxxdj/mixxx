@@ -51,14 +51,12 @@ private:
 	double dFileLength; 			//The length (in samples) of the current song.
 
 	double dOldPos;   				//The position read last time it was polled.
-	double dOldDiff;  				//The old difference between the positions. (used to check if the needle's on the record...)
 	double dOldPitch;
 	
 	bool bQualityRing[QUALITY_RING_SIZE];
     int iQualPos;
     int iQualFilled;
 
-	bool bNeedleDown; 				//Is the needle on the record? (used for needle dropping)
 	bool bSeeking; 					//Are we seeking through the record? (ie. is it moving really fast?)
 	bool bHaveSignal;					//Any signal at all?
 	bool bAtRecordEnd;
