@@ -20,15 +20,18 @@ TraktorTableModel::TraktorTableModel(QObject* parent,
     QStringList columns;
     columns << "id"
             << "artist"
+            << "title"
             << "album"
+            << "year"
             << "genre"
+            << "tracknumber"
             << "location"
             << "comment"
+            << "rating"
             << "duration"
             << "bitrate"
             << "bpm"
-            << "key"
-            << "rating";
+            << "key";
     setCaching(false);
     setTable("traktor_library", columns, "id");
     initHeaderData();

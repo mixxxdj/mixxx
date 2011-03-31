@@ -83,7 +83,7 @@ void BrowseTableModel::setPath(QString absPath)
 TrackPointer BrowseTableModel::getTrack(const QModelIndex& index) const
 {
     QString track_location = getTrackLocation(index);
-    if(isTrackInUse(track_location)){
+    if(m_pRecordingManager->getRecordingLocation() == track_location){
         QMessageBox::critical(0, tr("Mixxx Library"),tr("Could not load the following file because"
                                     " it is in use by Mixxx or another application.")
                                      + "\n" +track_location);
