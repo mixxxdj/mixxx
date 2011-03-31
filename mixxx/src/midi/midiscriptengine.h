@@ -23,7 +23,8 @@
 #include "configobject.h"
 #include "midimessage.h"
 #include "pitchfilter.h"
-#include "mixxxcontrol.h"
+#include "softtakeover.h"
+
 class MidiDevice;
 
 //Forward declaration(s)
@@ -121,7 +122,7 @@ class MidiScriptEngine : public QThread {
     QMutex m_scriptEngineLock;
     QHash<ConfigKey, ControlObjectThread*> m_controlCache;
     QHash<int, QPair<QString, bool> > m_timers;
-    QHash<MixxxControl,uint> m_softTakeoverTimes;
+    SoftTakeover m_st;
 
     // Scratching functions & variables
     void scratchProcess(int timerId);

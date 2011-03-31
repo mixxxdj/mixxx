@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 
 import os
 import util
@@ -389,6 +390,7 @@ class MixxxCore(Feature):
                    "midi/midioptiondelegate.cpp",
                    "midi/midimessage.cpp",
                    "midi/midiledhandler.cpp",
+                   "softtakeover.cpp",
 
                    "main.cpp",
                    "controlgroupdelegate.cpp",
