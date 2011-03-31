@@ -398,7 +398,7 @@ int SoundManager::setupDevices()
             // following keeps us from asking for a channel buffer EngineMaster
             // doesn't have -- bkgood
             if (out.getType() == AudioOutput::DECK
-                    && out.getIndex() >= m_pMaster->numChannels()) continue;
+                    && m_pMaster->getDeckBuffer(out.getIndex()) == NULL) continue;
             err = device->addOutput(out);
             if (err != OK)
                 return err;
@@ -417,7 +417,7 @@ int SoundManager::setupDevices()
                 m_outputBuffers[out] = m_pMaster->getHeadphoneBuffer();
                 break;
             case AudioPath::DECK:
-                m_outputBuffers[out] = m_pMaster->getChannelBuffer(out.getIndex());
+                m_outputBuffers[out] = m_pMaster->getDeckBuffer(out.getIndex());
                 // If a reference device has not yet been set (such as when the Master output
                 //  isn't being used with an external mixer,) use the first deck output
                 //  to avoid any clock-related disturbances on at least one public output

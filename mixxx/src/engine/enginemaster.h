@@ -46,8 +46,8 @@ public:
     // be called by SoundManager.
     const CSAMPLE* getMasterBuffer() const;
     const CSAMPLE* getHeadphoneBuffer() const;
-    int numChannels() const;
-    const CSAMPLE* getChannelBuffer(unsigned int i) const;
+    const CSAMPLE* getDeckBuffer(unsigned int i) const;
+    const CSAMPLE* getChannelBuffer(QString name) const;
 
     void process(const CSAMPLE *, const CSAMPLE *pOut, const int iBufferSize);
 
