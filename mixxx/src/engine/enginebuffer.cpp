@@ -91,7 +91,7 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
     playButtonCOT = new ControlObjectThreadMain(playButton);
 
     //Play from Start Button (for sampler)
-    playStartButton = new ControlPushButton(ConfigKey(group, "playstart"));
+    playStartButton = new ControlPushButton(ConfigKey(group, "start_play"));
     connect(playStartButton, SIGNAL(valueChanged(double)),
             this, SLOT(slotControlPlayFromStart(double)),
             Qt::DirectConnection);
@@ -383,30 +383,38 @@ void EngineBuffer::slotControlSeekAbs(double abs)
 void EngineBuffer::slotControlPlay(double v)
 {
     // If no track is currently loaded, turn play off.
-    if (!m_pCurrentTrack) {
+    if (v > 0.0 && !m_pCurrentTrack) {
         playButton->set(0.0f);
     }
 }
 
-void EngineBuffer::slotControlStart(double)
+void EngineBuffer::slotControlStart(double v)
 {
-    slotControlSeek(0.);
+    if (v > 0.0) {
+        slotControlSeek(0.);
+    }
 }
 
-void EngineBuffer::slotControlEnd(double)
+void EngineBuffer::slotControlEnd(double v)
 {
-    slotControlSeek(1.);
+    if (v > 0.0) {
+        slotControlSeek(1.);
+    }
 }
 
-void EngineBuffer::slotControlPlayFromStart(double)
+void EngineBuffer::slotControlPlayFromStart(double v)
 {
-    slotControlSeek(0.);
-    playButton->set(1);
+    if (v > 0.0) {
+        slotControlSeek(0.);
+        playButton->set(1);
+    }
 }
 
-void EngineBuffer::slotControlStop(double)
+void EngineBuffer::slotControlStop(double v)
 {
-    playButton->set(0);
+    if (v > 0.0) {
+        playButton->set(0);
+    }
 }
 
 void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBufferSize)
