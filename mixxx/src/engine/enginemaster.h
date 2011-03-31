@@ -18,12 +18,13 @@
 #ifndef ENGINEMASTER_H
 #define ENGINEMASTER_H
 
+#include <QMap>
+
 #include "engine/engineobject.h"
 #include "engine/enginechannel.h"
 
 class EngineWorkerScheduler;
 class EngineBuffer;
-class EngineVolume;
 class EngineChannel;
 class EngineClipping;
 class EngineFlanger;
@@ -56,19 +57,28 @@ public:
     void addChannel(EngineChannel* pChannel);
 
     static double gainForOrientation(EngineChannel::ChannelOrientation orientation,
-                              double leftGain,
-                              double centerGain,
-                              double rightGain);
+                                     double leftGain,
+                                     double centerGain,
+                                     double rightGain);
 
   private:
-    QList<EngineChannel*> m_channels;
+    struct ChannelInfo {
+        EngineChannel* m_pChannel;
+        CSAMPLE* m_pBuffer;
+        ControlObject* m_pVolumeControl;
+    };
+
+    void mixChannels(unsigned int channelBitvector, unsigned int maxChannels,
+                     CSAMPLE* pOutput, unsigned int iBufferSize);
+
+
+    QList<ChannelInfo*> m_channels;
 
     CSAMPLE *m_pMaster, *m_pHead;
-    QList<CSAMPLE*> m_channelBuffers;
 
     EngineWorkerScheduler *m_pWorkerScheduler;
 
-    EngineVolume *volume, *head_volume;
+    ControlObject *m_pMasterVolume, *m_pHeadVolume;
     EngineClipping *clipping, *head_clipping;
 #ifdef __LADSPA__
     EngineLADSPA *ladspa;
