@@ -14,8 +14,21 @@ RhythmboxTrackModel::RhythmboxTrackModel(QObject* parent,
           m_pTrackCollection(pTrackCollection),
           m_database(m_pTrackCollection->getDatabase()) {
     connect(this, SIGNAL(doSearch(const QString&)), this, SLOT(slotSearch(const QString&)));
-    setTable("rhythmbox_library");
+
+    QStringList columns;
+    columns << "id"
+            << "artist"
+            << "album"
+            << "genre"
+            << "location"
+            << "comment"
+            << "duration"
+            << "bitrate"
+            << "bpm"
+            << "rating";
+    setTable("rhythmbox_library", columns, "id");
     initHeaderData();
+    initDefaultSearchColumns();
     setCaching(false);
 }
 
@@ -52,6 +65,18 @@ QString RhythmboxTrackModel::getTrackLocation(const QModelIndex& index) const {
     return location;
 }
 
+int RhythmboxTrackModel::getTrackId(const QModelIndex& index) const {
+    if (!index.isValid()) {
+        return -1;
+    }
+    return index.sibling(index.row(), fieldIndex("id")).data().toInt();
+}
+
+int RhythmboxTrackModel::getTrackRow(int trackId) const {
+    return BaseSqlTableModel::getTrackRow(trackId);
+}
+
+
 void RhythmboxTrackModel::removeTrack(const QModelIndex& index) {
 
 }
@@ -71,23 +96,11 @@ void RhythmboxTrackModel::search(const QString& searchText) {
 }
 
 void RhythmboxTrackModel::slotSearch(const QString& searchText) {
-    if (!m_currentSearch.isNull() && m_currentSearch == searchText)
-        return;
-    m_currentSearch = searchText;
-
-    QString filter;
-    QSqlField search("search", QVariant::String);
-    search.setValue("%" + searchText + "%");
-    QString escapedText = database().driver()->formatValue(search);
-    filter = "(artist LIKE " + escapedText + " OR " +
-            "album LIKE " + escapedText + " OR " +
-            "title  LIKE " + escapedText + ")";
-    setFilter(filter);
-
+    BaseSqlTableModel::search(searchText);
 }
 
 const QString RhythmboxTrackModel::currentSearch() {
-    return m_currentSearch;
+    return BaseSqlTableModel::currentSearch();
 }
 
 bool RhythmboxTrackModel::isColumnInternal(int column) {

@@ -17,7 +17,7 @@
 #ifndef ENGINEPREGAIN_H
 #define ENGINEPREGAIN_H
 
-#include "engineobject.h"
+#include "engine/engineobject.h"
 #include "controlobject.h"
 
 
@@ -35,8 +35,8 @@ public:
 
 private:
     ControlLogpotmeter *potmeterPregain;
-    ControlPotmeter *m_pReplayGainBoost, *m_pEnableReplayGain;
-    ControlObject *m_pControlReplayGain, *m_pTotalGain;
+    ControlPotmeter *m_pReplayGainBoost;
+    ControlObject *m_pControlReplayGain, *m_pEnableReplayGain, *m_pTotalGain;
     float m_fReplayGainCorrection;
     bool m_bSmoothFade;
     float m_fClock;

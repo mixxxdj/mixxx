@@ -20,6 +20,8 @@
 
 #include <QtCore>
 #include <QtGui>
+#include <QPair>
+
 #include "ui_dlgmidilearning.h"
 #include "configobject.h"
 #include "mixxxcontrol.h"
@@ -33,21 +35,21 @@ class MidiMapping;
 
 class DlgMidiLearning : public QDialog, public Ui::DlgMidiLearning {
     Q_OBJECT
-public:
+  public:
     DlgMidiLearning(QWidget *parent, MidiMapping* mapping);
     ~DlgMidiLearning();
-public slots:
+  public slots:
     void begin();   /** Begin the MIDI learning phase */
     void next();    /** Ask to map the next control */
     void prev();    /** Ask to map the previous control */
     void controlMapped(MidiMessage); /** Gets called when a control has just been mapped successfully */
-private:
+  private:
+    void setupControl(QString group, QString control, QString helpText);
+    void setupDeckControl(QString control, QString helpText);
     MidiMapping* m_pMidiMapping;
-    QList<MixxxControl> m_controlsToBind;
-    QList<QString> m_controlDescriptions;
+    QList<QPair<MixxxControl, QString> > m_controlsToBind;
     int iCurrentControl; /** Used to iterate through the controls list */
     QShortcut* m_pSkipShortcut;
-
 };
 
 #endif
