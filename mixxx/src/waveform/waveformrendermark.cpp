@@ -31,12 +31,18 @@ WaveformRenderMark::WaveformRenderMark(const char* pGroup,
           m_dSamplesPerDownsample(-1),
           m_iNumSamples(0),
           m_iSampleRate(-1) {
-
     m_pTrackSamples = new ControlObjectThreadMain(
         ControlObject::getControl(ConfigKey(pGroup,"track_samples")));
     slotUpdateTrackSamples(m_pTrackSamples->get());
     connect(m_pTrackSamples, SIGNAL(valueChanged(double)),
             this, SLOT(slotUpdateTrackSamples(double)));
+}
+
+WaveformRenderMark::~WaveformRenderMark() {
+    qDebug() << this << "~WaveformRenderMark()";
+    //m_markPixmap = QPixmap();
+    delete m_pTrackSamples;
+    delete m_pMarkPoint;
 }
 
 void WaveformRenderMark::slotUpdateMarkPoint(double v) {

@@ -22,31 +22,34 @@ MissingTableModel::MissingTableModel(QObject* parent,
     //query.exec();
     QString tableName("missing_songs");
 
+    QStringList columns;
+    columns << "library." + LIBRARYTABLE_ID
+            << "library." + LIBRARYTABLE_PLAYED
+            << "library." + LIBRARYTABLE_TIMESPLAYED
+            << "library." + LIBRARYTABLE_ARTIST
+            << "library." + LIBRARYTABLE_TITLE
+            << "library." + LIBRARYTABLE_ALBUM
+            << "library." + LIBRARYTABLE_YEAR
+            << "library." + LIBRARYTABLE_DURATION
+            << "library." + LIBRARYTABLE_RATING
+            << "library." + LIBRARYTABLE_GENRE
+            << "library." + LIBRARYTABLE_FILETYPE
+            << "library." + LIBRARYTABLE_TRACKNUMBER
+            << "library." + LIBRARYTABLE_KEY
+            << "library." + LIBRARYTABLE_DATETIMEADDED
+            << "library." + LIBRARYTABLE_BPM
+            << "track_locations.location"
+            << "track_locations.fs_deleted"
+            << "library." + LIBRARYTABLE_COMMENT
+            << "library." + LIBRARYTABLE_MIXXXDELETED;
+
     query.prepare("CREATE TEMPORARY VIEW IF NOT EXISTS " + tableName + " AS "
-                  "SELECT " +
-                  "library." + LIBRARYTABLE_ID + "," +
-                  "library." + LIBRARYTABLE_PLAYED + "," +
-                  "library." + LIBRARYTABLE_TIMESPLAYED + "," +
-                  "library." + LIBRARYTABLE_ARTIST + "," +
-                  "library." + LIBRARYTABLE_TITLE + "," +
-                  "library." + LIBRARYTABLE_ALBUM + "," +
-                  "library." + LIBRARYTABLE_YEAR + "," +
-                  "library." + LIBRARYTABLE_DURATION + "," +
-                  "library." + LIBRARYTABLE_RATING + "," +
-                  "library." + LIBRARYTABLE_GENRE + "," +
-                  "library." + LIBRARYTABLE_FILETYPE + "," +
-                  "library." + LIBRARYTABLE_TRACKNUMBER + "," +
-                  "library." + LIBRARYTABLE_KEY + "," +
-                  "library." + LIBRARYTABLE_DATETIMEADDED + "," +
-                  "library." + LIBRARYTABLE_BPM + "," +
-                  "track_locations.location," +
-                  "track_locations.fs_deleted," +
-                  "library." + LIBRARYTABLE_COMMENT + "," +
-                  "library." + LIBRARYTABLE_MIXXXDELETED + " "
-                  "FROM library "
+                  "SELECT "
+                  + columns.join(",") +
+                  " FROM library "
                   "INNER JOIN track_locations "
                   "ON library.location=track_locations.id "
-                  "WHERE track_locations.fs_deleted=1 ");
+                  "WHERE " + MissingTableModel::MISSINGFILTER);
     //query.bindValue(":playlist_name", playlistTableName);
     //query.bindValue(":playlist_id", m_iPlaylistId);
     if (!query.exec()) {
@@ -58,14 +61,18 @@ MissingTableModel::MissingTableModel(QObject* parent,
      	qDebug() << __FILE__ << __LINE__ << query.lastError();
     }
 
-    setTable(tableName);
+    // Strip out library. and track_locations.
+    for (int i = 0; i < columns.size(); ++i) {
+        columns[i] = columns[i].replace("library.", "").replace("track_locations.", "");
+    }
+
+    setTable(tableName, columns, LIBRARYTABLE_ID);
 
     qDebug() << "Created MissingTracksModel!";
 
     initHeaderData();    //derived from BaseSqlModel
-
+    initDefaultSearchColumns();
     slotSearch("");
-
     select(); //Populate the data model.
 
     connect(this, SIGNAL(doSearch(const QString&)),
@@ -81,19 +88,31 @@ bool MissingTableModel::addTrack(const QModelIndex& index, QString location)
     return false;
 }
 
+int MissingTableModel::getTrackId(const QModelIndex& index) const
+{
+    if (!index.isValid()) {
+        return -1;
+    }
+    return index.sibling(index.row(), fieldIndex(LIBRARYTABLE_ID)).data().toInt();
+}
+
+int MissingTableModel::getTrackRow(int trackId) const {
+    return BaseSqlTableModel::getTrackRow(trackId);
+}
+
 TrackPointer MissingTableModel::getTrack(const QModelIndex& index) const
 {
     //FIXME: use position instead of location for playlist tracks?
 
     //const int locationColumnIndex = this->fieldIndex(LIBRARYTABLE_LOCATION);
     //QString location = index.sibling(index.row(), locationColumnIndex).data().toString();
-    int trackId = index.sibling(index.row(), fieldIndex(LIBRARYTABLE_ID)).data().toInt();
+    int trackId = getTrackId(index);
     return m_trackDao.getTrack(trackId);
 }
 
 QString MissingTableModel::getTrackLocation(const QModelIndex& index) const
 {
-    int trackId = index.sibling(index.row(), fieldIndex(LIBRARYTABLE_ID)).data().toInt();
+    int trackId = getTrackId(index);
     QString location = m_trackDao.getTrackLocation(trackId);
     return location;
 }
@@ -118,27 +137,11 @@ void MissingTableModel::search(const QString& searchText)
 }
 
 void MissingTableModel::slotSearch(const QString& searchText) {
-    if (!m_currentSearch.isNull() && m_currentSearch == searchText)
-        return;
-    m_currentSearch = searchText;
-
-    QString filter;
-    if (searchText == "")
-        filter = "(" + MissingTableModel::MISSINGFILTER + ")";
-    else {
-        QSqlField search("search", QVariant::String);
-        search.setValue("%" + searchText + "%");
-        QString escapedText = database().driver()->formatValue(search);
-        filter = "(" + MissingTableModel::MISSINGFILTER + " AND " +
-                "(artist LIKE " + escapedText + " OR " +
-                "album LIKE " + escapedText + " OR " +
-                "title LIKE " + escapedText + "))";
-    }
-    setFilter(filter);
+    BaseSqlTableModel::search(searchText);
 }
 
 const QString MissingTableModel::currentSearch() {
-    return m_currentSearch;
+    return BaseSqlTableModel::currentSearch();
 }
 
 bool MissingTableModel::isColumnInternal(int column) {
@@ -151,7 +154,7 @@ bool MissingTableModel::isColumnInternal(int column) {
         return false;
 }
 bool MissingTableModel::isColumnHiddenByDefault(int column) {
-    if (column == fieldIndex(LIBRARYTABLE_KEY))    
+    if (column == fieldIndex(LIBRARYTABLE_KEY))
         return true;
     return false;
 }

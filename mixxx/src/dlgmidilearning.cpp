@@ -34,7 +34,7 @@ DlgMidiLearning::DlgMidiLearning(QWidget * parent, MidiMapping* mapping) :  QDia
 
     m_pSkipShortcut = new QShortcut(QKeySequence(Qt::Key_Space), this);
     connect(m_pSkipShortcut, SIGNAL(triggered()), pushButtonSkip, SLOT(click()));
-    //pushButtonSkip->setShortcut(QKeySequence(Qt::Key_Space));    
+    //pushButtonSkip->setShortcut(QKeySequence(Qt::Key_Space));
 
     connect(pushButtonBegin, SIGNAL(clicked()), this, SLOT(begin()));
     connect(pushButtonSkip, SIGNAL(clicked()), this, SLOT(next()));
@@ -42,105 +42,64 @@ DlgMidiLearning::DlgMidiLearning(QWidget * parent, MidiMapping* mapping) :  QDia
     connect(m_pMidiMapping, SIGNAL(midiLearningFinished(MidiMessage)), this, SLOT(controlMapped(MidiMessage)));
     connect(pushButtonFinish, SIGNAL(clicked()), this, SLOT(close()));
 
-    m_controlsToBind.append(MixxxControl("[Master]", "crossfader"));
-    m_controlDescriptions.append("Crossfader");
 
-    m_controlsToBind.append(MixxxControl("[Master]", "volume"));
-    m_controlDescriptions.append("Master volume");
+    // Master Controls
+    setupControl("[Master]", "crossfader", tr("Crossfader"));
+    setupControl("[Master]", "volume", tr("Master volume"));
+    setupControl("[Master]", "balance", tr("Master balance"));
+    setupControl("[Master]", "headVolume", tr("Headphones volume"));
+    setupControl("[Master]", "headMix", tr("Headphones mix (pre/main)"));
 
-    m_controlsToBind.append(MixxxControl("[Master]", "headVolume"));
-    m_controlDescriptions.append("Headphones volume");
+    // Deck Controls
+    setupDeckControl("cue_default", tr("Cue button for Player %1"));
+    setupDeckControl("play", tr("Play button for Player %1"));
+    setupDeckControl("back", tr("Fast rewind button for Player %1"));
+    setupDeckControl("fwd", tr("Fast forward button for Player %1"));
+    setupDeckControl("reverse", tr("Play reverse button for Player %1"));
+    setupDeckControl("pfl", tr("Headphone listen button for Player %1"));
+    setupDeckControl("beatsync", tr("Beat sync button for Player %1"));
+    setupDeckControl("bpm", tr("BPM tap button for Player %1"));
+    setupDeckControl("keylock", tr("Keylock button for Player %1"));
+    setupDeckControl("rate", tr("Pitch control slider for Player %1"));
+    setupDeckControl("flanger", tr("Flanger effect button for Player %1"));
+    setupDeckControl("volume", tr("Channel %1 volume fader"));
+    setupDeckControl("pregain", tr("Gain knob for Channel %1"));
+    setupDeckControl("filterHigh", tr("High EQ knob for Channel %1"));
+    setupDeckControl("filterMid", tr("Mid EQ knob for Channel %1"));
+    setupDeckControl("filterLow", tr("Low EQ knob for Channel %1"));
+    setupDeckControl("loop_in", tr("Loop In button for Player %1"));
+    setupDeckControl("loop_out", tr("Loop Out button for Player %1"));
+    setupDeckControl("reloop_exit", tr("Reloop / Exit button for Player %1"));
+    setupDeckControl("hotcue_1_activate", tr("Hotcue 1 button for Player %1"));
+    setupDeckControl("hotcue_2_activate", tr("Hotcue 2 button for Player %1"));
+    setupDeckControl("hotcue_3_activate", tr("Hotcue 3 button for Player %1"));
+    setupDeckControl("hotcue_4_activate", tr("Hotcue 4 button for Player %1"));
+    setupDeckControl("hotcue_1_clear", tr("Hotcue 1 delete button for Player %1"));
+    setupDeckControl("hotcue_2_clear", tr("Hotcue 2 delete button for Player %1"));
+    setupDeckControl("hotcue_3_clear", tr("Hotcue 3 delete button for Player %1"));
+    setupDeckControl("hotcue_4_clear", tr("Hotcue 4 delete button for Player %1"));
 
-    m_controlsToBind.append(MixxxControl("[Master]", "headMix"));
-    m_controlDescriptions.append("Headphones mix (pre/main)");
+    // Library Controls
+    setupControl("[Playlist]", "SelectNextPlaylist", tr("Switch to the next view (library, playlist..)"));
+    setupControl("[Playlist]", "SelectPrevPlaylist", tr("Switch to the previous view (library, playlist..)"));
+    setupControl("[Playlist]", "SelectNextTrack", tr("Scroll to next track in library/playlist"));
+    setupControl("[Playlist]", "SelectPrevTrack", tr("Scroll to previous track in library/playlist"));
+    setupControl("[Playlist]", "LoadSelectedIntoFirstStopped", tr("Load selected track into first stopped player"));
+    setupDeckControl("LoadSelectedTrack", tr("Load selected track into Player %1"));
+    setupDeckControl("LoadSelectedTrack", tr("Load selected track into Player %1"));
+}
 
-    m_controlsToBind.append(MixxxControl("[Channel1]", "play"));
-    m_controlDescriptions.append("Play button for Player 1");
+void DlgMidiLearning::setupControl(QString group, QString control, QString description) {
+    m_controlsToBind.append(qMakePair(MixxxControl(group, control), description));
+}
 
-    m_controlsToBind.append(MixxxControl("[Channel2]", "play"));
-    m_controlDescriptions.append("Play button for Player 2");
-
-    m_controlsToBind.append(MixxxControl("[Channel1]", "back"));
-    m_controlDescriptions.append("Rewind button for Player 1");
-
-    m_controlsToBind.append(MixxxControl("[Channel2]", "back"));
-    m_controlDescriptions.append("Rewind button for Player 2");
-
-    m_controlsToBind.append(MixxxControl("[Channel1]", "fwd"));
-    m_controlDescriptions.append("Seek forwards button for Player 1");
-
-    m_controlsToBind.append(MixxxControl("[Channel2]", "fwd"));
-    m_controlDescriptions.append("Seek forward button for Player 2");
-
-    m_controlsToBind.append(MixxxControl("[Channel1]", "cue_default"));
-    m_controlDescriptions.append("Cue button for Player 1");
-
-    m_controlsToBind.append(MixxxControl("[Channel2]", "cue_default"));
-    m_controlDescriptions.append("Cue button for Player 2");
-
-    m_controlsToBind.append(MixxxControl("[Channel1]", "volume"));
-    m_controlDescriptions.append("Channel 1 volume");
-
-    m_controlsToBind.append(MixxxControl("[Channel2]", "volume"));
-    m_controlDescriptions.append("Channel 2 volume");
-
-    m_controlsToBind.append(MixxxControl("[Channel1]", "rate"));
-    m_controlDescriptions.append("Pitch control for Player 1");
-
-    m_controlsToBind.append(MixxxControl("[Channel2]", "rate"));
-    m_controlDescriptions.append("Pitch control for Player 2");
-
-    m_controlsToBind.append(MixxxControl("[Channel1]", "pfl"));
-    m_controlDescriptions.append("Headphone listen button for Player 1");
-
-    m_controlsToBind.append(MixxxControl("[Channel2]", "pfl"));
-    m_controlDescriptions.append("Headphone listen button for Player 2");
-
-    m_controlsToBind.append(MixxxControl("[Channel1]", "filterLow"));
-    m_controlDescriptions.append("Low EQ knob for Channel 1");
-
-    m_controlsToBind.append(MixxxControl("[Channel2]", "filterLow"));
-    m_controlDescriptions.append("Low EQ knob for Channel 2");
-
-    m_controlsToBind.append(MixxxControl("[Channel1]", "filterMid"));
-    m_controlDescriptions.append("Mid EQ knob for Channel 1");
-
-    m_controlsToBind.append(MixxxControl("[Channel2]", "filterMid"));
-    m_controlDescriptions.append("Mid EQ knob for Channel 2");
-
-    m_controlsToBind.append(MixxxControl("[Channel1]", "filterHigh"));
-    m_controlDescriptions.append("High EQ knob for Channel 1");
-
-    m_controlsToBind.append(MixxxControl("[Channel2]", "filterHigh"));
-    m_controlDescriptions.append("High EQ knob for Channel 2");
-    
-    m_controlsToBind.append(MixxxControl("[Channel1]", "pregain"));
-    m_controlDescriptions.append("Gain for Channel 1");
-
-    m_controlsToBind.append(MixxxControl("[Channel2]", "pregain"));
-    m_controlDescriptions.append("Gain for Channel 2");
-    
-    m_controlsToBind.append(MixxxControl("[Channel1]", "loop_in"));
-    m_controlDescriptions.append("Loop In for Player 1");
-
-    m_controlsToBind.append(MixxxControl("[Channel2]", "loop_in"));
-    m_controlDescriptions.append("Loop In for Player 2");
-
-    m_controlsToBind.append(MixxxControl("[Channel1]", "loop_out"));
-    m_controlDescriptions.append("Loop Out for Player 1");
-
-    m_controlsToBind.append(MixxxControl("[Channel2]", "loop_out"));
-    m_controlDescriptions.append("Loop Out for Player 2");
-
-    m_controlsToBind.append(MixxxControl("[Channel1]", "reloop_exit"));
-    m_controlDescriptions.append("Reloop / Exit for Player 1");
-
-    m_controlsToBind.append(MixxxControl("[Channel2]", "reloop_exit"));
-    m_controlDescriptions.append("Reloop / Exit for Player 2");
-
-    //Should be same number of controls as descriptions.
-    Q_ASSERT(m_controlsToBind.size() == m_controlDescriptions.size());
-
+void DlgMidiLearning::setupDeckControl(QString control, QString description) {
+    // TODO(rryan) get this from the PlayerManager
+    const int iNumDecks = 2;
+    for (int i = 1; i <= iNumDecks; ++i) {
+        QString group = QString("[Channel%1]").arg(i);
+        m_controlsToBind.append(qMakePair(MixxxControl(group, control), description.arg(i)));
+    }
 }
 
 DlgMidiLearning::~DlgMidiLearning()
@@ -158,8 +117,9 @@ void DlgMidiLearning::begin()
 
     //Tell the MIDI mapping to start learning the first control.
     iCurrentControl = 0;
-    m_pMidiMapping->beginMidiLearn(m_controlsToBind[iCurrentControl]);
-    labelMixxxControl->setText(m_controlDescriptions[iCurrentControl]);
+    QPair<MixxxControl, QString>& control = m_controlsToBind[iCurrentControl];
+    m_pMidiMapping->beginMidiLearn(control.first);
+    labelMixxxControl->setText(control.second);
 }
 
 void DlgMidiLearning::next()
@@ -167,9 +127,12 @@ void DlgMidiLearning::next()
     iCurrentControl++;
     if (iCurrentControl < m_controlsToBind.size())
     {
-        m_pMidiMapping->beginMidiLearn(m_controlsToBind[iCurrentControl]);
-        labelMixxxControl->setText(m_controlDescriptions[iCurrentControl]);
+
+        QPair<MixxxControl, QString>& control = m_controlsToBind[iCurrentControl];
+        m_pMidiMapping->beginMidiLearn(control.first);
+        labelMixxxControl->setText(control.second);
         pushButtonSkip->setText(tr("Skip"));
+
         labelMappedTo->setText("");
         pushButtonPrevious->setEnabled(true);
     }
@@ -185,11 +148,12 @@ void DlgMidiLearning::prev()
     iCurrentControl--;
     if (iCurrentControl >= 0)
     {
-        m_pMidiMapping->beginMidiLearn(m_controlsToBind[iCurrentControl]);
-        labelMixxxControl->setText(m_controlDescriptions[iCurrentControl]);
+        QPair<MixxxControl, QString>& control = m_controlsToBind[iCurrentControl];
+        m_pMidiMapping->beginMidiLearn(control.first);
+        labelMixxxControl->setText(control.second);
         pushButtonSkip->setText(tr("Skip"));
         labelMappedTo->setText("");
-        
+
         //We've hit the start, don't let the user go back anymore.
         if (iCurrentControl == 0)
             pushButtonPrevious->setEnabled(false);

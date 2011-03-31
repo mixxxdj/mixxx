@@ -143,11 +143,12 @@ void TrackInfoObject::initialize(bool parseHeader) {
 }
 
 TrackInfoObject::~TrackInfoObject() {
-    qDebug() << "~TrackInfoObject()";
+    //qDebug() << "~TrackInfoObject()" << m_iId << getInfo();
 }
 
 void TrackInfoObject::doSave() {
-    emit(save());
+    //qDebug() << "TIO::doSave()" << getInfo();
+    emit(save(this));
 }
 
 bool TrackInfoObject::isValid() const {
@@ -236,7 +237,7 @@ QString TrackInfoObject::getDurationStr() const
     int iDuration = m_iDuration;
     lock.unlock();
 
-    return MixxxUtils::secondsToMinutes(iDuration);
+    return MixxxUtils::secondsToMinutes(iDuration, true);
 }
 
 void TrackInfoObject::setLocation(QString location)
@@ -530,7 +531,6 @@ void TrackInfoObject::setTimesPlayed(int t)
 void TrackInfoObject::incTimesPlayed()
 {
     QMutexLocker lock(&m_qMutex);
-    qDebug() << "Track Played:" << m_sArtist << " - " << m_sTitle;
     m_bPlayed = true;
     ++m_iTimesPlayed;
     setDirty(true);
@@ -548,16 +548,7 @@ void TrackInfoObject::setPlayed(bool bPlayed)
     QMutexLocker lock(&m_qMutex);
     bool dirty = bPlayed != m_bPlayed;
     m_bPlayed = bPlayed;
-    if (dirty)
-    {
-        if (bPlayed)
-        {
-            qDebug() << "Track Played:" << m_sArtist << " - " << m_sTitle;
-        }
-        else
-        {
-            qDebug() << "Track Unplayed:" << m_sArtist << " - " << m_sTitle;
-        }
+    if (dirty) {
         setDirty(true);
     }
 }
@@ -809,21 +800,22 @@ void TrackInfoObject::setChordData(Segmentation<QString> cd) {
 }
 
 void TrackInfoObject::setDirty(bool bDirty) {
+
     QMutexLocker lock(&m_qMutex);
     bool change = m_bDirty != bDirty;
     m_bDirty = bDirty;
     lock.unlock();
+    // qDebug() << "Track" << m_iId << getInfo() << (change? "changed" : "unchanged")
+    //          << "set" << (bDirty ? "dirty" : "clean");
     if (change) {
-        //qDebug() << "Track" << m_iId << "set" << (bDirty ? "dirty" : "clean");
         if (m_bDirty)
-            emit(dirty());
+            emit(dirty(this));
         else
-            emit(clean());
+            emit(clean(this));
     }
     // Emit a changed signal regardless if this attempted to set us dirty.
     if (bDirty)
-        emit(changed());
-
+        emit(changed(this));
 
     //qDebug() << QString("TrackInfoObject %1 %2 set to %3").arg(m_iId).arg(m_sLocation).arg(m_bDirty ? "dirty" : "clean");
 }

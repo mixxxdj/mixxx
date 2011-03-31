@@ -21,6 +21,7 @@ class WLibraryTableView : public QTableView, public virtual LibraryView {
                       ConfigKey vScrollBarPosKey);
     virtual ~WLibraryTableView();
     virtual void setup(QDomNode node);
+    virtual void moveSelection(int delta);
 
   signals:
     void loadTrack(TrackPointer pTrack);

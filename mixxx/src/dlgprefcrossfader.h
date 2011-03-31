@@ -20,6 +20,7 @@
 
 #include "ui_dlgprefcrossfaderdlg.h"
 #include "configobject.h"
+#include "controlobjectthread.h"
 
 #define MIXXX_XFADER_SLOWFADE   "SlowFade"
 #define MIXXX_XFADER_FASTCUT    "FastCut"
@@ -60,6 +61,9 @@ private:
 	
 	/** X-fader mode*/
 	QString m_xFaderMode;
+
+    ControlObjectThread m_COTCurve;
+    ControlObjectThread m_COTCalibration;
 };
 
 #endif

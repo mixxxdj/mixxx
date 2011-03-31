@@ -36,6 +36,7 @@ class SidebarModel : public QAbstractItemModel {
 
   public slots:
     void clicked(const QModelIndex& index);
+    void doubleClicked(const QModelIndex& index);
     void rightClicked(const QPoint& globalPos, const QModelIndex& index);
     void refreshData();
     void selectFeature(LibraryFeature* pFeature);
