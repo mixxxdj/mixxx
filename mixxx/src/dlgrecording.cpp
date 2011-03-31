@@ -52,9 +52,6 @@ DlgRecording::DlgRecording(QWidget* parent, ConfigObject<ConfigValue>* pConfig,
     m_browseModel.setPath(m_recordingDir);
     m_pTrackTableView->loadTrackModel(&m_proxyModel);
 
-    //Override some playlist-view properties:
-    //Prevent drag and drop to the waveform or elsewhere so you can't preempt the Auto DJ queue...
-    m_pTrackTableView->setDragDropMode(QAbstractItemView::InternalMove);
     //Sort by the position column and lock it
     m_pTrackTableView->sortByColumn(0, Qt::AscendingOrder);
     m_pTrackTableView->setSortingEnabled(false);
