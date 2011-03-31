@@ -52,7 +52,8 @@ void RecordingFeature::bindWidget(WLibrarySidebar *sidebarWidget,
     m_pRecordingView = new DlgRecording(libraryWidget,
                                            m_pConfig,
                                            m_pTrackCollection,
-                                           m_pRecordingManager);
+                                           m_pRecordingManager,
+                                           keyboard);
 
     m_pRecordingView->installEventFilter(keyboard);
     libraryWidget->registerView(m_sRecordingViewName, m_pRecordingView);

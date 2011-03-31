@@ -15,7 +15,7 @@
 
 DlgRecording::DlgRecording(QWidget* parent, ConfigObject<ConfigValue>* pConfig,
                            TrackCollection* pTrackCollection,
-                           RecordingManager* pRecordingManager)
+                           RecordingManager* pRecordingManager, MixxxKeyboard* pKeyboard)
             : QWidget(parent), Ui::DlgRecording(),
             m_pConfig(pConfig),
             m_pTrackCollection(pTrackCollection),
@@ -25,6 +25,7 @@ DlgRecording::DlgRecording(QWidget* parent, ConfigObject<ConfigValue>* pConfig,
 {
     setupUi(this);
     m_pTrackTableView = new WTrackTableView(this, pConfig, m_pTrackCollection);
+    m_pTrackTableView->installEventFilter(pKeyboard);
 
     connect(m_pTrackTableView, SIGNAL(loadTrack(TrackPointer)),
             this, SIGNAL(loadTrack(TrackPointer)));
