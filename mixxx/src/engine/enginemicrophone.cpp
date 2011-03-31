@@ -38,6 +38,16 @@ bool EngineMicrophone::isMaster() {
 }
 
 void EngineMicrophone::receiveBuffer(AudioInput input, const short* pBuffer, unsigned int iNumSamples) {
+
+    int numChannels =
+
+    if (input.getType() != AudioPath::MICROPHONE ||
+        AudioInput::channelsNeededForType(input.getType()) != 1) {
+        // This is an error!
+        qDebug() << "WARNING: EngineMicrophone receieved an AudioInput for a non-Microphone type or a non-mono buffer!";
+        return;
+    }
+
     // Use the conversion buffer to both convert from short and double into
     // stereo.
 

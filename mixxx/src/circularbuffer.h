@@ -4,8 +4,12 @@
 #include <stdlib.h>
 
 // CircularBuffer is a basic implementation of a constant-length circular
-// buffer. On platforms which have atomic reads and writes of 64-bit data types,
-// CircularBuffer is lock-free and thread safe.
+// buffer.
+//
+// WARNING: CircularBuffer IS NOT THREAD SAFE! It is "sort of" thread safe on
+// platforms with atomic writes and aligned memory locations, but it is most
+// definitely not safe on x86 without memory barriers that could re-order reads
+// and writes.
 template <typename T>
 class CircularBuffer {
   public:
@@ -38,7 +42,7 @@ class CircularBuffer {
         return m_iLength;
     }
 
-    // Write numSamples into the CircularBuffer. Returns the total number of
+    // Write numItems into the CircularBuffer. Returns the total number of
     // items written, which could be less than numItems if the buffer becomes
     // full.
     unsigned int write(const T* pBuffer, const unsigned int numItems) {
