@@ -22,9 +22,6 @@
 #include "midiscriptengine.h"
 #include "errordialoghandler.h"
 
-// HACK: remove this after Control 2.0 is here
-#include "controlpotmeter.h"
-
 // #include <QScriptSyntaxCheckResult>
 
 #ifdef _MSC_VER
@@ -718,39 +715,7 @@ void MidiScriptEngine::setValue(QString group, QString name, double newValue) {
     ControlObjectThread *cot = getControlObjectThread(group, name);
 
     if(cot != NULL) {
-        // Soft-takeover
-        bool ignore = false;
-        MixxxControl mixxxControl = MixxxControl(group,name);
-        if (m_softTakeoverTimes.contains(mixxxControl)) {
-            // We only want to ignore the MIDI controller when all of the following are true:
-            //  - its new value is far away from the MixxxControl
-            //  - it's been awhile since the last MIDI message for this control affected it
-            
-            double difference = getValue(group,name) - newValue;
-            uint currentTime = QDateTime::currentDateTime().toTime_t()*1000+QDateTime::currentDateTime().toString("zzz").toUInt();
-            // FIXME: Argh, need a way to find out the max & min values of the
-            //  ControlObject in question instead of hard-coding the difference threshold
-            float threshold = 0.05; // default
-            
-            // HACK until we have Control 2.0. It can't come soon enough...
-            ControlObject* temp = cot->getControlObject();
-            ControlPotmeter* cpo = dynamic_cast<ControlPotmeter*>(temp);
-            if (cpo != NULL) threshold = (fabs(cpo->getMax())-fabs(cpo->getMin()))/128*3;
-            // End hack
-            
-            if (fabs(difference)>threshold
-                && (currentTime - m_softTakeoverTimes.value(mixxxControl)) > 50) {
-                ignore = true;
-            }
-            if (!ignore) {
-                //  Update the time only if the value is not ignored
-                //qint64 t = QDateTime::currentDateTime().toMSecsSinceEpoch();  // Requires Qt 4.7
-                uint t = QDateTime::currentDateTime().toTime_t()*1000+QDateTime::currentDateTime().toString("zzz").toUInt();
-                m_softTakeoverTimes.insert(mixxxControl,t); // Replaces any previous value for this MixxxControl
-            }
-        }
-        
-        if (!ignore) cot->slotSet(newValue);
+        if (!m_st.ignore(group,name,newValue)) cot->slotSet(newValue);
     }
 
 }
@@ -1303,10 +1268,6 @@ void MidiScriptEngine::scratchDisable(int deck) {
     -------- ------------------------------------------------------ */
 void MidiScriptEngine::softTakeover(QString group, QString name, bool set) {
     MixxxControl mc = MixxxControl(group,name);
-    if (set) {
-        //qint64 t = QDateTime::currentDateTime().toMSecsSinceEpoch();  // Requires Qt 4.7
-        uint t = QDateTime::currentDateTime().toTime_t()*1000+QDateTime::currentDateTime().toString("zzz").toUInt();
-        m_softTakeoverTimes.insert(mc,t);
-    }
-    else m_softTakeoverTimes.remove(mc);
+    if (set) m_st.enable(mc);
+    else m_st.disable(mc);
 }

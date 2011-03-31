@@ -274,29 +274,10 @@ void MidiDevice::receive(MidiStatusByte status, char channel, char control, char
         
         // Soft-takeover is processed in addition to any other options
         if (currMidiOption == MIDI_OPT_SOFT_TAKEOVER) {
-            bool ignore = false;
-            if (!m_softTakeoverTimes.contains(mixxxControl)) {
-                uint t = QDateTime::currentDateTime().toTime_t()*1000+QDateTime::currentDateTime().toString("zzz").toUInt();
-                m_softTakeoverTimes.insert(mixxxControl,t);
-            }
-            
-            // We only want to ignore the MIDI controller when all of the following are true:
-            //  - its new value is far away from the MixxxControl
-            //  - it's been awhile since the last MIDI message for this control affected it
-            
-            double newDifference = currMixxxControlValue - newValue;
-            uint currentTime = QDateTime::currentDateTime().toTime_t()*1000+QDateTime::currentDateTime().toString("zzz").toUInt();
-            if (fabs(newDifference)>3
-                && (currentTime - m_softTakeoverTimes.value(mixxxControl)) > 50) {
-                ignore = true;
-            }
-            if (ignore) return;
-            //  Update the time only if the value is not ignored
-            //qint64 t = QDateTime::currentDateTime().toMSecsSinceEpoch();  // Requires Qt 4.7
-            uint t = QDateTime::currentDateTime().toTime_t()*1000+QDateTime::currentDateTime().toString("zzz").toUInt();
-            m_softTakeoverTimes.insert(mixxxControl,t); // Replaces any previous value for this MixxxControl
+            m_st.enable(mixxxControl);  // This is the only place to enable it if it isn't already.
+            if (m_st.ignore(mixxxControl,newValue,true)) return;
         }
-
+        
         ControlObject::sync();
 
         //Super dangerous cast here... Should be fine once MidiCategory is replaced with MidiStatusByte permanently.
