@@ -26,17 +26,32 @@ WaveformRenderBeat::WaveformRenderBeat(const char* group, WaveformRenderer *pare
           m_dSamplesPerPixel(-1),
           m_dSamplesPerDownsample(-1),
           m_iNumSamples(0),
-          m_iSampleRate(-1) {
+          m_iSampleRate(-1),
+          m_bBeatActive(false) {
     m_pTrackSamples = new ControlObjectThreadMain(
         ControlObject::getControl(ConfigKey(group,"track_samples")));
     slotUpdateTrackSamples(m_pTrackSamples->get());
     connect(m_pTrackSamples, SIGNAL(valueChanged(double)),
             this, SLOT(slotUpdateTrackSamples(double)));
+
+    m_pBeatActive = new ControlObjectThreadMain(
+        ControlObject::getControl(ConfigKey(group,"beat_active")));
+    slotUpdateBeatActive(m_pBeatActive->get());
+    connect(m_pBeatActive, SIGNAL(valueChanged(double)),
+            this, SLOT(slotUpdateBeatActive(double)));
+}
+
+WaveformRenderBeat::~WaveformRenderBeat() {
+    qDebug() << this << "~WaveformRenderBeat()";
 }
 
 void WaveformRenderBeat::slotUpdateTrackSamples(double samples) {
     //qDebug() << "WaveformRenderBeat :: samples = " << int(samples);
     m_iNumSamples = (int)samples;
+}
+
+void WaveformRenderBeat::slotUpdateBeatActive(double beatActive) {
+    m_bBeatActive = beatActive > 0;
 }
 
 void WaveformRenderBeat::resize(int w, int h) {
@@ -142,9 +157,9 @@ void WaveformRenderBeat::draw(QPainter *pPainter, QPaintEvent *event,
         // i relative to the current play position in subpixels
         double i = (((curPos) - iCurPos)/2)/m_dSamplesPerDownsample;
 
-        // If i is less than 20 subpixels from center, highlight it.
-        if(abs(i) < 20) {
-            pPainter->setPen(QColor(255,255,255));
+        // If a beat is active, highlight the marker.
+        if(m_bBeatActive && abs(i) < 20) {
+            pPainter->setPen(colorHighlight);
             reset = true;
         }
 

@@ -41,7 +41,7 @@ void BeatGrid::setGrid(double dBpm, double dFirstBeatSample) {
 
 QByteArray* BeatGrid::toByteArray() const {
     QMutexLocker locker(&m_mutex);
-    BeatGridData blob = { (m_dBpm / kFrameSize), (m_dFirstBeat / kFrameSize) };
+    BeatGridData blob = { m_dBpm, (m_dFirstBeat / kFrameSize) };
     QByteArray* pByteArray = new QByteArray((char *)&blob, sizeof(blob));
     return pByteArray;
 }
@@ -187,4 +187,5 @@ void BeatGrid::scale(double dScalePercentage) {
 void BeatGrid::slotTrackBpmUpdated(double dBpm) {
     QMutexLocker locker(&m_mutex);
     m_dBpm = dBpm;
+    m_dBeatLength = (60.0 * m_iSampleRate / m_dBpm) * kFrameSize;
 }
