@@ -30,7 +30,8 @@
 #include "dlgprefvinyl.h"
 
 DlgPrefVinyl::DlgPrefVinyl(QWidget * parent, SoundManager * soundman,
-                           ConfigObject<ConfigValue> * _config) : QWidget(parent), Ui::DlgPrefVinylDlg()
+                           ConfigObject<ConfigValue> * _config) : QWidget(parent), Ui::DlgPrefVinylDlg(),
+    m_COTMode(ControlObject::getControl(ConfigKey("[VinylControl]", "Mode")))
 {
     m_pSoundManager = soundman;
     config = _config;
@@ -180,9 +181,9 @@ void DlgPrefVinyl::slotApply()
     if (RelativeMode->isChecked())
         iMode = MIXXX_VCMODE_RELATIVE;
 
-    ControlObject::getControl(ConfigKey("[VinylControl]", "Mode"))->set(iMode);
     ControlObject::getControl(ConfigKey("[Channel1]", "VinylMode"))->set(iMode);
     ControlObject::getControl(ConfigKey("[Channel2]", "VinylMode"))->set(iMode);
+    m_COTMode.slotSet(iMode);
     config->set(ConfigKey("[VinylControl]","Mode"), ConfigValue(iMode));
     config->set(ConfigKey("[VinylControl]","NeedleSkipPrevention" ), ConfigValue( (int)(NeedleSkipEnable->isChecked( )) ) );
 
