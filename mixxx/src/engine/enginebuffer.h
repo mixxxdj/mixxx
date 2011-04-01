@@ -81,10 +81,7 @@ public:
     void bindWorkers(EngineWorkerScheduler* pWorkerScheduler);
 
     // Add an engine control to the EngineBuffer
-    void appendControl(EngineControl* pControl);
-
-    // Add an engine control to the EngineBuffer
-    void prependControl(EngineControl* pControl);
+    void addControl(EngineControl* pControl);
 
     /** Return the current rate (not thread-safe) */
     double getRate();
