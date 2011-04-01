@@ -17,7 +17,7 @@ class WTrackProperty : public WLabel {
     void slotTrackUnloaded(TrackPointer track);
 
   private slots:
-    void updateLabel();
+    void updateLabel(TrackInfoObject*);
 
   private:
     TrackPointer m_pCurrentTrack;
