@@ -77,7 +77,6 @@ double BpmControl::getBpm() {
 }
 
 void BpmControl::slotFileBpmChanged(double bpm) {
-    qDebug() << this << "slotFileBpmChanged" << bpm;
     // Adjust the file-bpm with the current setting of the rate to get the
     // engine BPM.
     double dRate = 1.0 + m_pRateDir->get() * m_pRateRange->get() * m_pRateSlider->get();
