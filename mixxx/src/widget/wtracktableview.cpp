@@ -238,11 +238,15 @@ void WTrackTableView::slotMouseDoubleClicked(const QModelIndex &index)
 void WTrackTableView::loadSelectionToGroup(QString group) {
     QModelIndexList indices = selectionModel()->selectedRows();
     if (indices.size() > 0) {
-        bool groupPlaying = ControlObject::getControl(
-            ConfigKey(group, "play"))->get() == 1.0f;
+        // If the track load override is disabled, check to see if a track is
+        // playing before trying to load it
+        if ( !(m_pConfig->getValueString(ConfigKey("[Controls]","TrackLoad")).toInt()) ) {
+            bool groupPlaying = ControlObject::getControl(
+                ConfigKey(group, "play"))->get() == 1.0f;
 
-        if (groupPlaying)
-            return;
+            if (groupPlaying)
+                return;
+        }
 
         QModelIndex index = indices.at(0);
         TrackModel* trackModel = getTrackModel();

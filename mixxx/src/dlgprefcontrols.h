@@ -52,6 +52,7 @@ public slots:
     void slotUpdateSchemes();
     void slotSetPositionDisplay(int);
     void slotSetPositionDisplay(double);
+    void slotSetTrackLoad(int);
     void slotSetCueDefault(int);
     void slotSetCueRecall(int);
     void slotSetRateRamp(bool);
