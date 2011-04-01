@@ -3,13 +3,13 @@ msgstr ""
 "Project-Id-Version: Mixxx 1.8\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2011-03-27 03:32-0400\n"
-"PO-Revision-Date: 2011-03-27 23:45+0000\n"
+"PO-Revision-Date: 2011-04-01 01:00+0000\n"
 "Last-Translator: Dylan A. <bob.dybian@gmail.com>\n"
 "Language-Team: <tezalprod@gmail.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-03-29 04:36+0000\n"
+"X-Launchpad-Export-Date: 2011-04-01 04:45+0000\n"
 "X-Generator: Launchpad (build 12559)\n"
 "X-Poedit-Country: FRANCE\n"
 "X-Poedit-Language: French\n"
@@ -20,7 +20,7 @@ msgstr "Auto DJ"
 
 #: BaseSqlTableModel#1
 msgid "Played"
-msgstr ""
+msgstr "Joués"
 
 #: BaseSqlTableModel#2
 msgctxt "BaseSqlTableModel#2"
@@ -55,7 +55,7 @@ msgstr ""
 #: BaseSqlTableModel#8
 msgctxt "BaseSqlTableModel#8"
 msgid "Location"
-msgstr ""
+msgstr "Emplacement"
 
 #: BaseSqlTableModel#9
 msgctxt "BaseSqlTableModel#9"
@@ -69,7 +69,7 @@ msgstr "Durée"
 
 #: BaseSqlTableModel#11
 msgid "Rating"
-msgstr ""
+msgstr "Note"
 
 #: BaseSqlTableModel#12
 msgctxt "BaseSqlTableModel#12"
@@ -84,7 +84,7 @@ msgstr "BPM"
 #: BaseSqlTableModel#14
 msgctxt "BaseSqlTableModel#14"
 msgid "Track #"
-msgstr ""
+msgstr "Numéro de la piste"
 
 #: BaseSqlTableModel#15
 msgid "Date Added"
@@ -105,7 +105,7 @@ msgstr "Impossible de charger la piste."
 
 #: BrowseFeature#1
 msgid "Quick Links"
-msgstr ""
+msgstr "Liens Rapides"
 
 #: BrowseFeature#2
 msgid "Devices"
@@ -117,7 +117,7 @@ msgstr "Périphériques Amovibles"
 
 #: BrowseFeature#4
 msgid "Mixxx Library"
-msgstr ""
+msgstr "Bibliothèque Mixxx"
 
 #: BrowseFeature#5
 msgid "Home"
@@ -161,7 +161,7 @@ msgstr "Album"
 #: BrowseTableModel#5
 msgctxt "BrowseTableModel#5"
 msgid "Track #"
-msgstr ""
+msgstr "Numéro de la piste"
 
 #: BrowseTableModel#6
 msgctxt "BrowseTableModel#6"
@@ -206,7 +206,7 @@ msgstr "Débit"
 #: BrowseTableModel#14
 msgctxt "BrowseTableModel#14"
 msgid "Location"
-msgstr ""
+msgstr "Emplacement"
 
 #: CrateFeature#1
 msgid "New Crate"
@@ -264,7 +264,7 @@ msgstr ""
 #: CrateFeature#13
 msgctxt "CrateFeature#13"
 msgid "Playlist Files (*.m3u *.pls)"
-msgstr ""
+msgstr "Liste de lecture (*.m3u *.pls)"
 
 #: CrateFeature#6
 msgid "A crate cannot have a blank name."
@@ -335,7 +335,7 @@ msgstr "Configurer"
 
 #: DlgAutoDJ#4
 msgid "Add tracks to the queue below..."
-msgstr "Ajouter une piste dans la queue ci-dessous..."
+msgstr "Ajouter une piste dans la queue ci-dessous…"
 
 #: DlgBpmSchemeDlg#1
 msgid "BPM Scheme"
@@ -577,7 +577,7 @@ msgstr ""
 #: DlgPrefBPMDlg#1
 msgctxt "DlgPrefBPMDlg#1"
 msgid "BPM Detection Settings"
-msgstr ""
+msgstr "Paramètres de détection de BPM"
 
 #: DlgPrefBPMDlg#2
 msgctxt "DlgPrefBPMDlg#2"
@@ -1015,11 +1015,11 @@ msgstr "Form3"
 
 #: DlgPrefPlaylistDlg#2
 msgid "Audio File Formats"
-msgstr ""
+msgstr "Formats de fichiers audio"
 
 #: DlgPrefPlaylistDlg#3
 msgid "Additional Format Plugins:"
-msgstr ""
+msgstr "Plugins de Format complémentaire :"
 
 #: DlgPrefPlaylistDlg#4
 msgid "MP3, Ogg Vorbis, FLAC, WAVe, AIFF"
@@ -1027,7 +1027,7 @@ msgstr "MP3, Ogg Vorbis, FLAC, WAVe, AIFF"
 
 #: DlgPrefPlaylistDlg#5
 msgid "Loaded Plugins:"
-msgstr ""
+msgstr "Plugins chargés :"
 
 #: DlgPrefPlaylistDlg#6
 msgctxt "DlgPrefPlaylistDlg#6"
@@ -1036,7 +1036,7 @@ msgstr "Aucun"
 
 #: DlgPrefPlaylistDlg#7
 msgid "Miscellaneous"
-msgstr ""
+msgstr "Divers"
 
 #: DlgPrefPlaylistDlg#8
 msgid "Synchronize ID3 tags on track modifications"
@@ -1044,7 +1044,7 @@ msgstr ""
 
 #: DlgPrefPlaylistDlg#9
 msgid "Rescan library on start-up"
-msgstr ""
+msgstr "Réanalyser la bibliothèque au démarrage"
 
 #: DlgPrefPlaylistDlg#10
 msgid "iPod"
@@ -1057,7 +1057,7 @@ msgstr "Point de montage iPod"
 #: DlgPrefPlaylistDlg#12
 msgctxt "DlgPrefPlaylistDlg#12"
 msgid "Browse..."
-msgstr "Parcourir..."
+msgstr "Parcourir…"
 
 #: DlgPrefPlaylistDlg#13
 msgid "Detect"
@@ -1078,7 +1078,7 @@ msgstr "Intégré"
 
 #: DlgPrefPlaylistDlg#17
 msgid "Available Online..."
-msgstr "Disponible en ligne..."
+msgstr "Disponible en ligne…"
 
 #: DlgPrefPlaylistDlg#18
 msgid "Bundled Songs"
@@ -1095,11 +1095,11 @@ msgstr ""
 #: DlgPrefRecord#1
 msgctxt "DlgPrefRecord#1"
 msgid "Save Recording As..."
-msgstr "Enregistrer sous..."
+msgstr "Enregistrer sous…"
 
 #: DlgPrefRecord#2
 msgid "Save Cue File As..."
-msgstr ""
+msgstr "Enregistrer le fichier .cue sous…"
 
 #: DlgPrefRecord#2
 msgid "kbps"
@@ -1118,7 +1118,7 @@ msgstr "Fichier"
 #: DlgPrefRecordDlg#3
 msgctxt "DlgPrefRecordDlg#3"
 msgid "Browse..."
-msgstr "Chercher..."
+msgstr "Parcourir…"
 
 #: DlgPrefRecordDlg#4
 msgctxt "DlgPrefRecordDlg#4"
@@ -1157,16 +1157,16 @@ msgstr "Album"
 
 #: DlgPrefRecordDlg#12
 msgid "Create a CUE file"
-msgstr ""
+msgstr "Créer un fichier .cue"
 
 #: DlgPrefRecordDlg#13
 msgid "Cue File"
-msgstr ""
+msgstr "Fichier .cue"
 
 #: DlgPrefReplayGainDlg#1
 msgctxt "DlgPrefReplayGainDlg#1"
 msgid "BPM Detection Settings"
-msgstr ""
+msgstr "Paramètres de détection de BPM"
 
 #: DlgPrefReplayGainDlg#2
 msgid "ReplayGain Normalization"
@@ -1468,7 +1468,7 @@ msgstr "%1 Hz"
 
 #: DlgPrefSound#3
 msgid "Mixxx Error"
-msgstr ""
+msgstr "Erreur Mixxx"
 
 #: DlgPrefSound#4
 msgid ""
@@ -1476,6 +1476,9 @@ msgid ""
 "rate.\n"
 "The sample rate has been reset to 44100 Hz."
 msgstr ""
+"Actuellement, l'enregistrement FinalScratch ne fonctionnent correctement "
+"qu'avec un taux d'échantillonnage de 44100 Hz.\n"
+"Le taux d'échantillonnage a été remis à 44100 Hz."
 
 #: DlgPrefSound#5
 msgid "a device"
@@ -1483,7 +1486,7 @@ msgstr ""
 
 #: DlgPrefSound#6
 msgid "An unknown error occurred"
-msgstr ""
+msgstr "Une erreur inconnue est survenue"
 
 #: DlgPrefSound#7
 msgid "sound device \"%1\""
@@ -1505,7 +1508,7 @@ msgstr "%1 ms"
 
 #: DlgPrefSound#11
 msgid "Configuration error"
-msgstr ""
+msgstr "Erreur de configuration"
 
 #: DlgPrefSoundDlg#1
 msgid "Sound API"
@@ -1593,6 +1596,17 @@ msgid ""
 "weight:600;\">Select sound devices for vinyl control in the Sound Hardware "
 "pane.</span></p></body></html>"
 msgstr ""
+"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" "
+"\"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+"<html><head><meta name=\"qrichtext\" content=\"1\" /><style "
+"type=\"text/css\">\n"
+"p, li { white-space: pre-wrap; }\n"
+"</style></head><body style=\" font-family:'DejaVu Sans'; font-size:9pt; font-"
+"weight:400; font-style:normal;\">\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-"
+"right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-"
+"weight:600;\">Sélectionnez les périphériques audio pour le contrôle de "
+"vinyle dans le volet de matériel audio.</span></p></body></html>"
 
 #: DlgPrefVinylDlg#4
 msgid ""
@@ -1702,7 +1716,7 @@ msgstr "Détection BPM"
 
 #: DlgPreferences#9
 msgid "Normalization"
-msgstr ""
+msgstr "Normalisation"
 
 #: DlgPreferences#10
 msgctxt "DlgPreferences#10"
@@ -2000,7 +2014,7 @@ msgstr "Mixxx c'est connecté avec succès au serveur shoutcast"
 
 #: EngineShoutcast#9
 msgid "Mixxx could not connect to streaming server"
-msgstr ""
+msgstr "Mixxx ne peut se connecter au serveur de streaming"
 
 #: EngineShoutcast#10
 msgid "Mixxx has successfully disconnected to the shoutcast server"
@@ -2033,29 +2047,31 @@ msgstr "iTunes"
 
 #: ITunesFeature#4
 msgid "Select your iTunes library"
-msgstr ""
+msgstr "Sélectionnez votre bibliothèque iTunes"
 
 #: ITunesFeature#3
 msgid "iTunes (loading)"
-msgstr ""
+msgstr "iTunes (chargement)"
 
 #: ITunesFeature#7
 msgid "Use Default Library"
-msgstr ""
+msgstr "Utiliser la Bibliothèque par défaut"
 
 #: ITunesFeature#8
 msgid "Choose Library..."
-msgstr ""
+msgstr "Choisissez la Bibliothèque…"
 
 #: ITunesFeature#5
 msgid "Error Loading iTunes Library"
-msgstr ""
+msgstr "Erreur lors du chargement de la Bibliothèque iTunes"
 
 #: ITunesFeature#6
 msgid ""
 "There was an error loading your iTunes library. Some of your iTunes tracks "
 "or playlists may not have loaded."
 msgstr ""
+"Il y a eu une erreur de chargement de votre bibliothèque iTunes. Certains de "
+"vos morceaux iTunes ou listes de lecture peuvent ne pas avoir été chargé."
 
 #: LADSPAPresetSlot#1
 msgid "Drag a preset from the list & drop it here"
@@ -2064,8 +2080,8 @@ msgstr "Cliquez sur un preset depuis la liste & déposez le ici"
 #: LibraryScannerDlg#1
 msgid "It's taking Mixxx a minute to scan your music library, please wait..."
 msgstr ""
-"cela prend une minute a Mixxx pour scanner votre librairie musicale. "
-"attendez svp..."
+"Cela prend une minute à Mixxx pour analyser votre bibliothèque musicale, "
+"veuillez patienter…"
 
 #: LibraryScannerDlg#2
 msgid "Cancel"
@@ -2335,7 +2351,7 @@ msgstr "Continuer"
 
 #: MixxxApp#21
 msgid "&Load Song (Player 1)..."
-msgstr "&Charger chanson (Lecteur 1)..."
+msgstr "&Charger chanson (Lecteur 1)…"
 
 #: MixxxApp#22
 msgid "Ctrl+O"
@@ -2343,7 +2359,7 @@ msgstr "Ctrl+O"
 
 #: MixxxApp#23
 msgid "&Load Song (Player 2)..."
-msgstr "&Charger chanson (Lecteur2)..."
+msgstr "&Charger chanson (Lecteur2)…"
 
 #: MixxxApp#24
 msgid "Ctrl+Shift+O"
@@ -2411,11 +2427,11 @@ msgstr "Ctrl+P"
 
 #: MixxxApp#40
 msgid "&About..."
-msgstr "&A propos..."
+msgstr "&À propos…"
 
 #: MixxxApp#41
 msgid "&Community Support..."
-msgstr "&Assistance Communautaire"
+msgstr "&Assistance Communautaire…"
 
 #: MixxxApp#42
 msgid "Enable &Vinyl Control"
@@ -2593,7 +2609,7 @@ msgstr "Écoute et préférences MIDI"
 
 #: MixxxApp#74
 msgid "Support..."
-msgstr "Assistance"
+msgstr "Assistance…"
 
 #: MixxxApp#75
 msgid ""
@@ -2656,7 +2672,7 @@ msgstr "&Macro"
 
 #: MixxxApp#86
 msgid "Quit..."
-msgstr "Quitter..."
+msgstr "Quitter…"
 
 #: MixxxApp#87
 msgid "Do your really want to quit?"
@@ -2703,7 +2719,7 @@ msgstr ""
 #: MixxxApp#95
 msgctxt "MixxxApp#95"
 msgid "Save Recording As..."
-msgstr "Enregistrer l'enregistrement sous..."
+msgstr "Enregistrer l'enregistrement sous…"
 
 #: MixxxApp#96
 msgid "Mixxx Recording"
@@ -2782,7 +2798,7 @@ msgstr "Renommer la liste de lecture"
 
 #: PlaylistFeature#14
 msgid "New playlist name:"
-msgstr ""
+msgstr "Nouveau nom de la liste de lecture :"
 
 #: PlaylistFeature#15
 msgid "Renaming Playlist Failed"
@@ -2791,7 +2807,7 @@ msgstr ""
 #: PlaylistFeature#16
 msgctxt "PlaylistFeature#16"
 msgid "Playlist Files (*.m3u *.pls)"
-msgstr ""
+msgstr "Liste de lecture (*.m3u *.pls)"
 
 #: PlaylistFeature#8
 msgid "A playlist by that name already exists."
@@ -2841,7 +2857,7 @@ msgstr "Rhythmbox"
 
 #: SamplerBank#1
 msgid "Save Sampler Bank"
-msgstr ""
+msgstr "Sauvegarder la Banque d'échantillon"
 
 #: SamplerBank#2
 msgid "Error Saving Sampler Bank"
@@ -2853,7 +2869,7 @@ msgstr ""
 
 #: SamplerBank#4
 msgid "Load Sampler Bank"
-msgstr ""
+msgstr "Charger la Banque d'échantillon"
 
 #: SamplerBank#5
 msgid "Error Reading Sampler Bank"
@@ -2903,11 +2919,11 @@ msgstr "Supprimer la macro"
 
 #: ScriptStudio#9
 msgid "New Macro..."
-msgstr ""
+msgstr "Nouvelle Macro…"
 
 #: ScriptStudio#10
 msgid "Run Macro"
-msgstr ""
+msgstr "Exécuter la Macro"
 
 #: TrackCollection#1
 msgid "Cannot open database"
@@ -2952,17 +2968,19 @@ msgstr ""
 
 #: TraktorFeature#2
 msgid "Traktor (loading)"
-msgstr ""
+msgstr "Traktor (chargement)"
 
 #: TraktorFeature#3
 msgid "Error Loading Traktor Library"
-msgstr ""
+msgstr "Erreur lors du chargement de la Bibliothèque Traktor"
 
 #: TraktorFeature#4
 msgid ""
 "There was an error loading your Traktor library. Some of your Traktor tracks "
 "or playlists may not have loaded."
 msgstr ""
+"Il y a eu une erreur de chargement de votre bibliothèque Traktor. Certaines "
+"de vos pistes Traktor ou listes de lecture peuvent ne pas avoir été chargé."
 
 #: Ui#1
 msgctxt "Ui#1"
@@ -3025,7 +3043,7 @@ msgstr ""
 
 #: Ui#14
 msgid "Headphones volume"
-msgstr ""
+msgstr "Volume du casque audio"
 
 #: Ui#15
 msgid "Headphones mix (pre/main)"
@@ -3169,7 +3187,7 @@ msgstr "OK"
 
 #: WSearchLineEdit#1
 msgid "Search..."
-msgstr "Chercher..."
+msgstr "Chercher…"
 
 #: WTrackTableView#1
 msgid "Add to Playlist"
@@ -3190,7 +3208,7 @@ msgstr "Supprimer"
 
 #: WTrackTableView#5
 msgid "Properties..."
-msgstr "Propriétés"
+msgstr "Propriétés…"
 
 #: WTrackTableView#6
 msgid "Add to Auto DJ Queue"
