@@ -95,7 +95,7 @@ static struct timecode_def_t timecode_def[] = {
         .seed = 0x134503,
         .taps = 0x041040,
         .length = 1500000,
-        .safe = 1480000,
+        .safe = 1463000,
         .lookup = false        
     },
     {
@@ -107,7 +107,7 @@ static struct timecode_def_t timecode_def[] = {
         .seed = 0x32066c,
         .taps = 0x041040, /* same as side A */
         .length = 2110000,
-        .safe = 2090000,
+        .safe = 2068000,
         .lookup = false
     },
     {
