@@ -120,4 +120,8 @@ void EngineMicrophone::process(const CSAMPLE* pInput, const CSAMPLE* pOutput, co
     } else {
         m_sampleBuffer.skip(iBufferSize);
     }
+    // Apply clipping
+    m_clipping.process(pOut, pOut, iBufferSize);
+    // Update VU meter
+    m_vuMeter.process(pOut, pOut, iBufferSize);
 }
