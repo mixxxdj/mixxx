@@ -151,23 +151,15 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
     m_pTrackSamples = new ControlObject(ConfigKey(group, "track_samples"));
     m_pTrackSampleRate = new ControlObject(ConfigKey(group, "track_samplerate"));
 
-    m_pReader = new CachingReader(_group, _config);
-
     // Quantization Controller for enabling and disabling the
     // quantization (alignment) of loop in/out positions and (hot)cues with
     // beats.
     m_pQuantizeControl = new QuantizeControl(_group, _config);
     addControl(m_pQuantizeControl);
-    connect(m_pReader, SIGNAL(trackLoaded(TrackPointer, int, int)),
-            m_pQuantizeControl, SLOT(slotTrackLoaded(TrackPointer, int, int)),
-            Qt::DirectConnection);
 
     // Create the Loop Controller
     m_pLoopingControl = new LoopingControl(_group, _config);
     addControl(m_pLoopingControl);
-    connect(m_pReader, SIGNAL(trackLoaded(TrackPointer, int, int)),
-            m_pLoopingControl, SLOT(slotTrackLoaded(TrackPointer, int, int)),
-            Qt::DirectConnection);
 
     // Create the Rate Controller
     m_pRateControl = new RateControl(_group, _config);

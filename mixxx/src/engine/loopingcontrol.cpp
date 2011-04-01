@@ -348,8 +348,7 @@ void LoopingControl::setLoopingEnabled(bool enabled) {
 }
 
 // Beat Looping Methods
-void LoopingControl::slotTrackLoaded(TrackPointer tio, 
-                            int iTrackSampleRate, int iTrackNumSamples)
+void LoopingControl::trackLoaded(TrackPointer tio)
 {
     m_pTrack = tio;
     m_pBeats = m_pTrack->getBeats();

@@ -28,8 +28,7 @@ QuantizeControl::QuantizeControl(const char * _group,
 QuantizeControl::~QuantizeControl() {
 }
 
-void QuantizeControl::slotTrackLoaded(TrackPointer tio, 
-                            int iTrackSampleRate, int iTrackNumSamples)
+void QuantizeControl::trackLoaded(TrackPointer tio)
 {
     m_pTrack = tio;
     m_pBeats = m_pTrack->getBeats();
