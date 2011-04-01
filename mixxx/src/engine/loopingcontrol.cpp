@@ -358,8 +358,9 @@ void LoopingControl::slotUpdatedTrackBeats()
 // effect.
 void LoopingControl::slotBeatLoop(double beats)
 {
-    int loop_in;
-    int loop_out;
+    // give loop_in and loop_out defaults so we can detect problems
+    int loop_in = -1;
+    int loop_out = -1;
 
 
     if ( ! m_pBeats ) {
@@ -393,6 +394,9 @@ void LoopingControl::slotBeatLoop(double beats)
             loop_in += ((loop_out - loop_in) * beats);
         }
     }
+
+    if ((loop_in == -1) || ( loop_out == -1))
+        return;
 
     if ( !even(loop_in))
         loop_in--;
