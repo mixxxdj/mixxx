@@ -157,28 +157,28 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
     // quantization (alignment) of loop in/out positions and (hot)cues with
     // beats.
     m_pQuantizeControl = new QuantizeControl(_group, _config);
-    appendControl(m_pQuantizeControl);
+    addControl(m_pQuantizeControl);
     connect(m_pReader, SIGNAL(trackLoaded(TrackPointer, int, int)),
             m_pQuantizeControl, SLOT(slotTrackLoaded(TrackPointer, int, int)),
             Qt::DirectConnection);
 
     // Create the Loop Controller
     m_pLoopingControl = new LoopingControl(_group, _config);
-    appendControl(m_pLoopingControl);
+    addControl(m_pLoopingControl);
     connect(m_pReader, SIGNAL(trackLoaded(TrackPointer, int, int)),
             m_pLoopingControl, SLOT(slotTrackLoaded(TrackPointer, int, int)),
             Qt::DirectConnection);
 
     // Create the Rate Controller
     m_pRateControl = new RateControl(_group, _config);
-    appendControl(m_pRateControl);
+    addControl(m_pRateControl);
 
     fwdButton = ControlObject::getControl(ConfigKey(_group, "fwd"));
     backButton = ControlObject::getControl(ConfigKey(_group, "back"));
 
     // Create the BPM Controller
     m_pBpmControl = new BpmControl(_group, _config);
-    appendControl(m_pBpmControl);
+    addControl(m_pBpmControl);
 
     connect(m_pReader, SIGNAL(trackLoaded(TrackPointer, int, int)),
             this, SLOT(slotTrackLoaded(TrackPointer, int, int)),
@@ -742,7 +742,7 @@ void EngineBuffer::slotLoadTrack(TrackPointer pTrack) {
     m_pReader->wake();
 }
 
-void EngineBuffer::appendControl(EngineControl* pControl) {
+void EngineBuffer::addControl(EngineControl* pControl) {
     // Connect to signals from EngineControl here...
     m_engineLock.lock();
     m_engineControls.push_back(pControl);
@@ -758,17 +758,6 @@ void EngineBuffer::appendControl(EngineControl* pControl) {
             Qt::DirectConnection);
     connect(this, SIGNAL(trackUnloaded(TrackPointer)),
             pControl, SLOT(trackUnloaded(TrackPointer)),
-            Qt::DirectConnection);
-}
-
-void EngineBuffer::prependControl(EngineControl* pControl) {
-    // Connect to signals from EngineControl here...
-    m_engineControls.push_front(pControl);
-    connect(pControl, SIGNAL(seek(double)),
-            this, SLOT(slotControlSeek(double)),
-            Qt::DirectConnection);
-    connect(pControl, SIGNAL(seekAbs(double)),
-            this, SLOT(slotControlSeekAbs(double)),
             Qt::DirectConnection);
 }
 
