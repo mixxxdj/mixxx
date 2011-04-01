@@ -27,7 +27,7 @@ public:
                    const int iBufferSize);
 
 public slots:
-    void slotTrackLoaded(TrackPointer tio, int iSampleRate, int iNumSamples);
+    virtual void trackLoaded(TrackPointer pTrack);
     void slotBeatsUpdated();
 
 private:
