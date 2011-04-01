@@ -75,7 +75,7 @@ public:
     class ConstantGainCalculator : public GainCalculator {
       public:
         inline double getGain(ChannelInfo* pChannelInfo) {
-
+            return m_dGain;
         }
         inline double setGain(double dGain) {
             m_dGain = dGain;
