@@ -82,7 +82,7 @@ LoopingControl::LoopingControl(const char * _group,
 
     // Here we create corresponding beatloop_(SIZE) CO's which all call the same
     // BeatControl, but with a set value; all thanks to QSignalMapper.
-    for (i = 0; i < (sizeof(s_dBeatSizes) / sizeof(&s_dBeatSizes[0])); i++) {
+    for (i = 0; i < (sizeof(s_dBeatSizes) / sizeof(s_dBeatSizes[0])); i++) {
         BeatLoopingControl* pBeatLoop = new BeatLoopingControl(_group, this, s_dBeatSizes[i]);
         m_pBeatLoops.append(pBeatLoop);
     }
