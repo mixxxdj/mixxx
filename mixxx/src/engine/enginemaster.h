@@ -20,6 +20,7 @@
 
 #include <QMap>
 
+#include "controlobject.h"
 #include "engine/engineobject.h"
 #include "engine/enginechannel.h"
 
@@ -34,7 +35,6 @@ class EngineLADSPA;
 class EngineVuMeter;
 class ControlPotmeter;
 class ControlPushButton;
-class ControlObject;
 class EngineVinylSoundEmu;
 class EngineSideChain;
 
@@ -56,10 +56,10 @@ public:
     // only call it before the engine has started mixing.
     void addChannel(EngineChannel* pChannel);
 
-    static double gainForOrientation(EngineChannel::ChannelOrientation orientation,
-                                     double leftGain,
-                                     double centerGain,
-                                     double rightGain);
+    static inline double gainForOrientation(EngineChannel::ChannelOrientation orientation,
+                                            double leftGain,
+                                            double centerGain,
+                                            double rightGain);
 
   private:
     struct ChannelInfo {
@@ -68,8 +68,43 @@ public:
         ControlObject* m_pVolumeControl;
     };
 
+    class GainCalculator {
+      public:
+        virtual double getGain(ChannelInfo* pChannelInfo) = 0;
+    };
+    class ConstantGainCalculator : public GainCalculator {
+      public:
+        inline double getGain(ChannelInfo* pChannelInfo) {
+
+        }
+        inline double setGain(double dGain) {
+            m_dGain = dGain;
+        }
+      private:
+        double m_dGain;
+    };
+    class OrientationVolumeGainCalculator : public GainCalculator {
+      public:
+        inline double getGain(ChannelInfo* pChannelInfo) {
+            double channelVolume = pChannelInfo->m_pVolumeControl->get();
+            double orientationGain = EngineMaster::gainForOrientation(
+                pChannelInfo->m_pChannel->getOrientation(),
+                m_dLeftGain, m_dCenterGain, m_dRightGain);
+            return m_dVolume * channelVolume * orientationGain;
+        }
+
+        inline void setGains(double dVolume, double leftGain, double centerGain, double rightGain) {
+            m_dVolume = dVolume;
+            m_dLeftGain = leftGain;
+            m_dCenterGain = centerGain;
+            m_dRightGain = rightGain;
+        }
+      private:
+        double m_dVolume, m_dLeftGain, m_dCenterGain, m_dRightGain;
+    };
+
     void mixChannels(unsigned int channelBitvector, unsigned int maxChannels,
-                     CSAMPLE* pOutput, unsigned int iBufferSize);
+                     CSAMPLE* pOutput, unsigned int iBufferSize, GainCalculator* pGainCalculator);
 
 
     QList<ChannelInfo*> m_channels;
@@ -88,6 +123,9 @@ public:
 
     ControlPotmeter *crossfader, *head_mix,
         *m_pBalance, *xFaderCurve, *xFaderCalibration;
+
+    ConstantGainCalculator m_headphoneGain;
+    OrientationVolumeGainCalculator m_masterGain;
 };
 
 #endif
