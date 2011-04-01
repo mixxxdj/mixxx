@@ -27,7 +27,6 @@ class EnginePregain;
 class EngineBuffer;
 class EngineFilterBlock;
 class EngineClipping;
-class EngineVolume;
 class EngineFlanger;
 class EngineVuMeter;
 class EngineVinylSoundEmu;
@@ -41,7 +40,6 @@ class EngineDeck : public EngineChannel {
     virtual ~EngineDeck();
 
     virtual void process(const CSAMPLE *pIn, const CSAMPLE *pOut, const int iBufferSize);
-    virtual void applyVolume(CSAMPLE *pBuff, const int iBufferSize);
 
     // TODO(XXX) This hack needs to be removed.
     virtual EngineBuffer* getEngineBuffer();
@@ -55,7 +53,6 @@ class EngineDeck : public EngineChannel {
     EngineFlanger* m_pFlanger;
     EnginePregain* m_pPregain;
     EngineVinylSoundEmu* m_pVinylSoundEmu;
-    EngineVolume* m_pVolume;
     EngineVuMeter* m_pVUMeter;
 };
 
