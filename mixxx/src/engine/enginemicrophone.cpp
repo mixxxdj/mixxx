@@ -10,7 +10,6 @@
 
 EngineMicrophone::EngineMicrophone(const char* pGroup)
         : EngineChannel(pGroup, EngineChannel::CENTER),
-          m_volume(ConfigKey(pGroup, "volume")),
           m_clipping(pGroup),
           m_vuMeter(pGroup),
           m_pEnabled(new ControlObject(ConfigKey(pGroup, "enabled"))),
@@ -105,10 +104,6 @@ void EngineMicrophone::receiveBuffer(AudioInput input, const short* pBuffer, uns
     }
 }
 
-void EngineMicrophone::applyVolume(CSAMPLE *pBuff, const int iBufferSize) {
-    m_volume.process(pBuff, pBuff, iBufferSize);
-}
-
 void EngineMicrophone::process(const CSAMPLE* pInput, const CSAMPLE* pOutput, const int iBufferSize) {
     CSAMPLE* pOut = const_cast<CSAMPLE*>(pOutput);
 
@@ -124,13 +119,5 @@ void EngineMicrophone::process(const CSAMPLE* pInput, const CSAMPLE* pOutput, co
         }
     } else {
         m_sampleBuffer.skip(iBufferSize);
-    }
-
-    // Apply channel volume if we aren't PFL. TODO(rryan) this is a quirk of
-    // EngineMaster, and we should keep the logic here just in case, even though
-    // isPFL currently just returns true. In the future, the EngineMaster should
-    // deal with volume.
-    if (!isPFL()) {
-        m_volume.process(pOut, pOut, iBufferSize);
     }
 }

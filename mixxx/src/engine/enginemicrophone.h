@@ -8,7 +8,6 @@
 #include "controlpushbutton.h"
 #include "engine/enginechannel.h"
 #include "engine/engineclipping.h"
-#include "engine/enginevolume.h"
 #include "engine/enginevumeter.h"
 #include "soundmanagerutil.h"
 
@@ -27,8 +26,6 @@ class EngineMicrophone : public EngineChannel, public AudioDestination {
     // Called by EngineMaster whenever is requesting a new buffer of audio.
     virtual void process(const CSAMPLE* pInput, const CSAMPLE* pOutput, const int iBufferSize);
 
-    virtual void applyVolume(CSAMPLE* pBuff, const int iBufferSize);
-
     // This is called by SoundManager whenever there are new samples from the
     // microphone to be processed
     virtual void receiveBuffer(AudioInput input, const short* pBuffer, unsigned int iNumSamples);
@@ -45,7 +42,6 @@ class EngineMicrophone : public EngineChannel, public AudioDestination {
     double getSoloDamping();
 
   private:
-    EngineVolume m_volume;
     EngineClipping m_clipping;
     EngineVuMeter m_vuMeter;
     ControlObject* m_pEnabled;
