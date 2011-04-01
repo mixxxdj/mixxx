@@ -229,12 +229,7 @@ void LoopingControl::hintReader(QList<Hint>& hintList) {
 void LoopingControl::slotLoopIn(double val) {
     if (val) {
         // set loop in position
-        if ( m_pQuantizeEnabled->get()) {
-            m_iLoopStartSample = m_pQuantizeBeat->get();
-        }
-        else {
-            m_iLoopStartSample = m_iCurrentSample;
-        }
+        m_iLoopStartSample = m_pQuantizeEnabled->get() ? m_pQuantizeBeat->get() :  m_iCurrentSample;
         m_pCOLoopStartPosition->set(m_iLoopStartSample);
 
         // Reset the loop out position if it is before the loop in so that loops
@@ -250,14 +245,9 @@ void LoopingControl::slotLoopIn(double val) {
 void LoopingControl::slotLoopOut(double val) {
     int pos;
 
-    if ( m_pQuantizeEnabled->get()) {
-        pos = m_pQuantizeBeat->get();
-    }
-    else {
-        pos = m_iCurrentSample;
-    }
 
     if (val) {
+        pos = m_pQuantizeEnabled->get() ? m_pQuantizeBeat->get() : m_iCurrentSample;
         // If the user is trying to set a loop-out before the loop in or without
         // having a loop-in, then ignore it.
         if (m_iLoopStartSample == -1 || pos < m_iLoopStartSample) {
