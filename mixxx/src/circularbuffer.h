@@ -37,6 +37,11 @@ class CircularBuffer {
         return m_iReadPos == m_iWritePos;
     }
 
+    inline void clear() {
+        m_iReadPos = 0;
+        m_iWritePos = 0;
+    }
+
     // Returns the total capacity of the CircularBuffer in units of T
     inline unsigned int length() const {
         return m_iLength;
