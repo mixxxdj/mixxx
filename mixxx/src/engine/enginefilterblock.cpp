@@ -131,6 +131,7 @@ void EngineFilterBlock::setFilters(bool forceSetting)
             low = new EngineFilterButterworth8(FILTER_LOWPASS, 44100, m_loEqFreq->get());
             band = new EngineFilterButterworth8(FILTER_BANDPASS, 44100, m_loEqFreq->get(), m_hiEqFreq->get());
             high = new EngineFilterButterworth8(FILTER_HIGHPASS, 44100, m_hiEqFreq->get());
+            qDebug() << "m_loEqFreq" << m_loEqFreq->get() << "m_hiEqFreq" << m_hiEqFreq->get();
         }
 
     }
