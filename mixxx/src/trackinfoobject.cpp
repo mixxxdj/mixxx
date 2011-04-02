@@ -28,6 +28,7 @@
 #include "soundsourceproxy.h"
 #include "xmlparse.h"
 #include "controlobject.h"
+#include "waveform/waveform.h"
 
 #include "mixxxutils.cpp"
 
@@ -36,6 +37,7 @@ TrackInfoObject::TrackInfoObject(const QString sLocation, bool parseHeader)
     QFileInfo fileInfo(sLocation);
     populateLocation(fileInfo);
     initialize(parseHeader);
+    m_waveform = new Waveform;
 }
 
 TrackInfoObject::TrackInfoObject(QFileInfo& fileInfo, bool parseHeader)
@@ -144,6 +146,7 @@ void TrackInfoObject::initialize(bool parseHeader) {
 
 TrackInfoObject::~TrackInfoObject() {
     qDebug() << "~TrackInfoObject()";
+    delete m_waveform;
 }
 
 void TrackInfoObject::doSave() {

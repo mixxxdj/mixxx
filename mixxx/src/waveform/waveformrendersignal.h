@@ -20,6 +20,8 @@ class ControlObjectThreadMain;
 class WaveformRenderer;
 class SoundSourceProxy;
 
+class QTime;
+
 class WaveformRenderSignal : public RenderObject {
     Q_OBJECT
 public:
@@ -27,7 +29,13 @@ public:
     ~WaveformRenderSignal();
     void resize(int w, int h);
     void setup(QDomNode node);
+
+    void draw_old(QPainter *pPainter, QPaintEvent *event, QVector<float> *buffer, double playPos, double rateAdjust);
+
     void draw(QPainter *pPainter, QPaintEvent *event, QVector<float> *buffer, double playPos, double rateAdjust);
+
+    void draw_point(QPainter *pPainter, QPaintEvent *event, QVector<float> *buffer, double playPos, double rateAdjust);
+
     void newTrack(TrackPointer pTrack);
 
 public slots:
@@ -43,6 +51,13 @@ private:
     QVector<QLineF> m_lines;
     TrackPointer m_pTrack;
     QColor signalColor;
+
+    QColor lowColor;
+    QColor midColor;
+    QColor highColor;
+
+    QTime timer;
+    QVector<int> elapsed;
 };
 
 #endif

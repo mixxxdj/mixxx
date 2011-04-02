@@ -22,6 +22,9 @@ class RenderObject : public QObject {
                       QVector<float> *buffer, double playpos,
                       double rateAdjust) = 0;
     virtual void newTrack(TrackPointer pTrack) = 0;
+
+private:
+
 };
 
 #endif

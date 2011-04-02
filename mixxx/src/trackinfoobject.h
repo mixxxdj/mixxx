@@ -38,6 +38,7 @@ class QDomNode;
 class ControlObject;
 class TrackPlaylist;
 class Cue;
+class Waveform;
 
 class TrackInfoObject;
 
@@ -216,6 +217,9 @@ public:
     /** Returns a pointer to waveform summary */
     const QByteArray* getWaveSummary();
 
+
+    Waveform* getWaveForm() { return m_waveform;}
+
     /** Set pointer to ControlObject holding BPM value in engine */
     void setBpmControlObject(ControlObject *p);
 
@@ -382,6 +386,14 @@ public:
 
     // Storage for the track's beats
     BeatsPointer m_pBeats;
+
+    //Visual power
+    Waveform* m_waveform;
+
+    QVector<float> m_power;
+    QVector<unsigned char> m_lowPower;
+    QVector<unsigned char> m_midPower;
+    QVector<unsigned char> m_highPower;
 
     friend class TrackDAO;
 };

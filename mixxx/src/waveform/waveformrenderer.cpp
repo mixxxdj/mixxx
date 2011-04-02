@@ -461,6 +461,7 @@ void WaveformRenderer::draw(QPainter* pPainter, QPaintEvent *pEvent) {
         return;
 
 
+
     /*
     if(m_dPlayPos != -1 && m_dPlayPosOld != -1 && m_iNumSamples != 0) {
         static double elatency = ControlObject::getControl(ConfigKey("[Master]","latency"))->get();
@@ -519,7 +520,7 @@ void WaveformRenderer::draw(QPainter* pPainter, QPaintEvent *pEvent) {
     m_pRenderSignal->draw(pPainter, pEvent, m_pSampleBuffer, playpos, rateAdjust);
 
     // Draw various markers.
-    m_pRenderBeat->draw(pPainter, pEvent, m_pSampleBuffer, playpos, rateAdjust);
+    //m_pRenderBeat->draw(pPainter, pEvent, m_pSampleBuffer, playpos, rateAdjust);
 
     QListIterator<RenderObject*> iter(m_renderObjects);
     while (iter.hasNext()) {
