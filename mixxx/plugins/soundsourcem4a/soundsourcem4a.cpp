@@ -32,6 +32,8 @@
 #include "soundsourcem4a.h"
 #include "m4a/mp4-mixxx.cpp"
 
+namespace Mixxx {
+
 SoundSourceM4A::SoundSourceM4A(QString qFileName)
   : SoundSource(qFileName) {
 
@@ -206,4 +208,6 @@ QList<QString> SoundSourceM4A::supportedFileExtensions()
     list.push_back("m4a");
     list.push_back("mp4");
     return list;
+}
+
 }
