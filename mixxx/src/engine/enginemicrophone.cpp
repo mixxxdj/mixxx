@@ -39,28 +39,24 @@ bool EngineMicrophone::isMaster() {
 }
 
 void EngineMicrophone::onInputConnected(AudioInput input) {
-    qDebug() << this << "onInputConnected";
-
     if (input.getType() != AudioPath::MICROPHONE ||
         AudioInput::channelsNeededForType(input.getType()) != 1) {
         // This is an error!
         qDebug() << "WARNING: EngineMicrophone connected to AudioInput for a non-Microphone type or a non-mono buffer!";
         return;
     }
-
+    m_sampleBuffer.clear();
     m_pEnabled->set(1.0f);
 }
 
 void EngineMicrophone::onInputDisconnected(AudioInput input) {
-    qDebug() << this << "onInputDisconnected";
-
     if (input.getType() != AudioPath::MICROPHONE ||
         AudioInput::channelsNeededForType(input.getType()) != 1) {
         // This is an error!
         qDebug() << "WARNING: EngineMicrophone connected to AudioInput for a non-Microphone type or a non-mono buffer!";
         return;
     }
-
+    m_sampleBuffer.clear();
     m_pEnabled->set(0.0f);
 }
 
@@ -120,6 +116,7 @@ void EngineMicrophone::process(const CSAMPLE* pInput, const CSAMPLE* pOutput, co
     } else {
         m_sampleBuffer.skip(iBufferSize);
     }
+
     // Apply clipping
     m_clipping.process(pOut, pOut, iBufferSize);
     // Update VU meter

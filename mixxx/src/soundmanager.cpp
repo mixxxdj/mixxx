@@ -224,6 +224,12 @@ void SoundManager::closeDevices()
                              // pointers to memory owned by EngineMaster)
 
     foreach (AudioInput in, m_inputBuffers.keys()) {
+        // Need to tell all registered AudioDestinations for this AudioInput
+        // that the input was disconnected.
+        if (m_registeredDestinations.contains(in)) {
+            m_registeredDestinations[in]->onInputDisconnected(in);
+        }
+
         short *buffer = m_inputBuffers[in];
         if (buffer != NULL) {
             delete [] buffer;
@@ -391,6 +397,12 @@ int SoundManager::setupDevices()
                 // TODO(bkgood) look into allocating this with the frames per
                 // buffer value from SMConfig
                 m_inputBuffers[in] = new short[MAX_BUFFER_LEN];
+            }
+
+            // Check if any AudioDestination is registered for this AudioInput,
+            // and call the onInputConnected method.
+            if (m_registeredDestinations.contains(in)) {
+                m_registeredDestinations[in]->onInputConnected(in);
             }
         }
         foreach (AudioOutput out, m_config.getOutputs().values(device->getInternalName())) {
