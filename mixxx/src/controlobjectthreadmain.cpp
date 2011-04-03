@@ -24,9 +24,7 @@ ControlObjectThreadMain::ControlObjectThreadMain(ControlObject * pControlObject,
     installEventFilter(this);
 }
 
-ControlObjectThreadMain::~ControlObjectThreadMain()
-{
-    qDebug() << this << "ControlObjectThreadMain()";
+ControlObjectThreadMain::~ControlObjectThreadMain() {
 }
 
 bool ControlObjectThreadMain::eventFilter(QObject * o, QEvent * e)
