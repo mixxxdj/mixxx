@@ -18,6 +18,11 @@
 #include <math.h>
 #include "controllogpotmeter.h"
 
+#define maxPosition 127
+#define minPosition 0
+#define middlePosition ((maxPosition-minPosition)/2)
+#define positionrange (maxPosition-minPosition)
+
 /* -------- ------------------------------------------------------
    Purpose: Creates a new logarithmic potmeter, where the value is
             given by:
