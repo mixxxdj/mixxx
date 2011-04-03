@@ -81,7 +81,8 @@ class CircularBuffer {
             return 0;
         unsigned int itemsRead = 0;
         while (!isEmpty() && itemsRead < itemsToRead) {
-            m_iReadPos = (m_iReadPos + 1)  % m_iLength;
+            m_iReadPos = (m_iReadPos + 1) % m_iLength;
+            itemsRead++;
         }
         return itemsRead;
     }
