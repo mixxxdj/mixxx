@@ -429,16 +429,3 @@ const CSAMPLE* EngineMaster::getChannelBuffer(unsigned int i) const {
     }
     return NULL;
 }
-
-// static
-double EngineMaster::gainForOrientation(EngineChannel::ChannelOrientation orientation,
-                                        double leftGain,
-                                        double centerGain,
-                                        double rightGain) {
-    if (orientation == EngineChannel::LEFT) {
-        return leftGain;
-    } else if (orientation == EngineChannel::RIGHT) {
-        return rightGain;
-    }
-    return centerGain;
-}
