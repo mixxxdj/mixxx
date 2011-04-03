@@ -54,6 +54,7 @@ EngineChannel::~EngineChannel() {
     delete m_pVinylSoundEmu;
     delete m_pVUMeter;
     delete m_pPFL;
+    delete m_pOrientation;
 }
 
 const QString& EngineChannel::getGroup() {
