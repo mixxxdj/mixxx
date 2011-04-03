@@ -1,7 +1,7 @@
 //
 // C++ Interface: controlobjecthreadmain.h
 //
-// Description: 
+// Description:
 //
 //
 // Author: Tue Haste Andersen <haste@diku.dk>, (C) 2004
@@ -26,7 +26,7 @@ class ControlObjectThreadMain : public ControlObjectThread
 {
     Q_OBJECT
 public:
-    ControlObjectThreadMain(ControlObject *pControlObject);
+    ControlObjectThreadMain(ControlObject *pControlObject, QObject* pParent=NULL);
     ~ControlObjectThreadMain();
     /** Event filter */
     bool eventFilter(QObject *o, QEvent *e);

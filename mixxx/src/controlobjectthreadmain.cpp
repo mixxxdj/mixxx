@@ -10,7 +10,7 @@
 //
 //
 
-#include <qapplication.h>
+#include <QApplication>
 #include <QtDebug>
 //Added by qt3to4:
 #include <QEvent>
@@ -18,14 +18,15 @@
 #include "controlobject.h"
 #include "controlevent.h"
 
-ControlObjectThreadMain::ControlObjectThreadMain(ControlObject * pControlObject) : ControlObjectThread(pControlObject)
-{
+ControlObjectThreadMain::ControlObjectThreadMain(ControlObject * pControlObject, QObject* pParent)
+        : ControlObjectThread(pControlObject, pParent) {
     setObjectName("ControlObjectThreadMain");
     installEventFilter(this);
 }
 
 ControlObjectThreadMain::~ControlObjectThreadMain()
 {
+    qDebug() << this << "ControlObjectThreadMain()";
 }
 
 bool ControlObjectThreadMain::eventFilter(QObject * o, QEvent * e)

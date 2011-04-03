@@ -34,7 +34,7 @@ public:
         EMIT_ON_PRESS_AND_RELEASE = 0x03
     };
 
-    ControlObjectThreadWidget(ControlObject *pControlObject);
+    ControlObjectThreadWidget(ControlObject *pControlObject, QObject* pParent=NULL);
     ~ControlObjectThreadWidget();
     /** Associates a QWidget with the ControlObject. */
     void setWidget(QWidget *widget,
