@@ -114,6 +114,7 @@ void EngineMicrophone::process(const CSAMPLE* pInput, const CSAMPLE* pOutput, co
             Q_ASSERT(false);
         }
     } else {
+        SampleUtil::applyGain(pOut, 0.0, iBufferSize);
         m_sampleBuffer.skip(iBufferSize);
     }
 
