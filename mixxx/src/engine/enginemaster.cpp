@@ -108,8 +108,12 @@ EngineMaster::~EngineMaster()
     delete m_pMasterVolume;
     delete m_pHeadVolume;
     delete clipping;
+    delete vumeter;
     delete head_clipping;
     delete sidechain;
+
+    delete xFaderCalibration;
+    delete xFaderCurve;
 
     SampleUtil::free(m_pHead);
     SampleUtil::free(m_pMaster);
@@ -402,7 +406,7 @@ void EngineMaster::addChannel(EngineChannel* pChannel) {
     ChannelInfo* pChannelInfo = new ChannelInfo();
     pChannelInfo->m_pChannel = pChannel;
     pChannelInfo->m_pVolumeControl = new ControlLogpotmeter(
-        ConfigKey(pChannel->getGroup(), pChannel->getGroup()), 1.0);
+        ConfigKey(pChannel->getGroup(), "volume"), 1.0);
     pChannelInfo->m_pBuffer = SampleUtil::alloc(MAX_BUFFER_LEN);
     memset(pChannelInfo->m_pBuffer, 0, sizeof(CSAMPLE) * MAX_BUFFER_LEN);
     m_channels.push_back(pChannelInfo);
