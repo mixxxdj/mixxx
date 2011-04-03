@@ -78,6 +78,10 @@ CueControl::CueControl(const char * _group,
 }
 
 CueControl::~CueControl() {
+    while (m_hotcueControl.size() > 0) {
+        HotcueControl* pControl = m_hotcueControl.takeLast();
+        delete pControl;
+    }
 }
 
 void CueControl::createControls() {
