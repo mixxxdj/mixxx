@@ -36,6 +36,7 @@
 #define MY_EXPORT
 #endif
 
+namespace Mixxx {
 
 class SoundSourceM4A : public SoundSource {
     public:
@@ -84,6 +85,8 @@ extern "C" MY_EXPORT char** supportedFileExtensions()
     c_exts[exts.count()] = NULL; //NULL terminate the list
 
     return c_exts; //It's up to the caller to free this array
+}
+
 }
 
 #endif
