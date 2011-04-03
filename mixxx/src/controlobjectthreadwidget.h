@@ -35,7 +35,7 @@ public:
     };
 
     ControlObjectThreadWidget(ControlObject *pControlObject, QObject* pParent=NULL);
-    ~ControlObjectThreadWidget();
+    virtual ~ControlObjectThreadWidget();
     /** Associates a QWidget with the ControlObject. */
     void setWidget(QWidget *widget,
                    bool connectValueFromWidget=true, bool connectValueToWidget = true,

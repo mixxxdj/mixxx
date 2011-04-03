@@ -27,7 +27,7 @@ class ControlObjectThreadMain : public ControlObjectThread
     Q_OBJECT
 public:
     ControlObjectThreadMain(ControlObject *pControlObject, QObject* pParent=NULL);
-    ~ControlObjectThreadMain();
+    virtual ~ControlObjectThreadMain();
     /** Event filter */
     bool eventFilter(QObject *o, QEvent *e);
     /** Notify this object through events */
