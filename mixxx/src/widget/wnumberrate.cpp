@@ -19,11 +19,6 @@ WNumberRate::WNumberRate(const char * group, QWidget * parent) : WNumber(parent)
     m_pRateRangeControl = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey(group, "rateRange")));
     m_pRateDirControl = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey(group, "rate_dir")));
     m_pRateControl = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey(group, "rate")));
-  
-    m_tLabelUpdateTimer = new QTimer(this);
-	connect(m_tLabelUpdateTimer, SIGNAL(timeout()), this, SLOT(updateLabel()));
-	m_tLabelUpdateTimer->start(250); //update BPM every quarter second
-	m_sLabelText = QString("");
 }
 
 WNumberRate::~WNumberRate()
@@ -42,11 +37,5 @@ void WNumberRate::setValue(double)
         sign = '-';
     }
 
-    m_sLabelText = QString(m_qsText).append(sign).append("%1").arg(fabs(vsign)*100., 0, 'f', 2);
+    m_pLabel->setText(QString(m_qsText).append(sign).append("%1").arg(fabs(vsign)*100., 0, 'f', 2));
 }
-
-void WNumberRate::updateLabel()
-{
-	m_pLabel->setText(m_sLabelText);
-}
-
