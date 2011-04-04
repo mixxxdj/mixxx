@@ -315,7 +315,7 @@ void PlaylistTableModel::shuffleTracks(const QModelIndex& currentIndex)
     int numOfTracks = rowCount();
     int seed = QDateTime::currentDateTime().toTime_t();
     qsrand(seed);
-    QSqlQuery query;
+    QSqlQuery query(m_pTrackCollection->getDatabase());
     const int positionColumnIndex = fieldIndex(PLAYLISTTRACKSTABLE_POSITION);
     int currentPosition = currentIndex.sibling(currentIndex.row(), positionColumnIndex).data().toInt();
     int shuffleStartIndex = currentPosition + 1;
