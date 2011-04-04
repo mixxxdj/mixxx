@@ -28,14 +28,9 @@ public:
     virtual ~WNumberRate();
     void setValue(double dValue);
     
-private slots:
-	void updateLabel();    
-
 private:
     /** Pointer to control object for rate */
     ControlObjectThreadMain *m_pRateControl, *m_pRateRangeControl, *m_pRateDirControl;
-    QTimer *m_tLabelUpdateTimer;
-    QString m_sLabelText;
 };
 
 #endif
