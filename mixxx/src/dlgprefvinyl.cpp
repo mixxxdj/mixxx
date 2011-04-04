@@ -31,7 +31,7 @@
 
 DlgPrefVinyl::DlgPrefVinyl(QWidget * parent, SoundManager * soundman,
                            ConfigObject<ConfigValue> * _config) : QWidget(parent), Ui::DlgPrefVinylDlg(),
-    m_COTMode(ControlObject::getControl(ConfigKey("[VinylControl]", "Mode")))
+    m_COTMode(ControlObject::getControl(ConfigKey("[VinylControl]", "mode")))
 {
     m_pSoundManager = soundman;
     config = _config;
@@ -122,37 +122,37 @@ void DlgPrefVinyl::slotUpdate()
     m_dontForce = true; // otherwise all the signals fired in here will cause
                         // DlgPrefSound to call setupDevices needlessly :) -- bkgood
     // Set vinyl control types in the comboboxes
-    int combo_index = ComboBoxVinylType1->findText(config->getValueString(ConfigKey("[Channel1]","strVinylType")));
+    int combo_index = ComboBoxVinylType1->findText(config->getValueString(ConfigKey("[Channel1]","vinylcontrol_vinyl_type")));
     if (combo_index != -1)
         ComboBoxVinylType1->setCurrentIndex(combo_index);
         
-    combo_index = ComboBoxVinylType2->findText(config->getValueString(ConfigKey("[Channel2]","strVinylType")));
+    combo_index = ComboBoxVinylType2->findText(config->getValueString(ConfigKey("[Channel2]","vinylcontrol_vinyl_type")));
     if (combo_index != -1)
         ComboBoxVinylType2->setCurrentIndex(combo_index);
         
-    combo_index = ComboBoxVinylSpeed1->findText(config->getValueString(ConfigKey("[Channel1]","strVinylSpeed")));
+    combo_index = ComboBoxVinylSpeed1->findText(config->getValueString(ConfigKey("[Channel1]","vinylcontrol_speed_type")));
     if (combo_index != -1)
         ComboBoxVinylSpeed1->setCurrentIndex(combo_index);
         
-    combo_index = ComboBoxVinylSpeed2->findText(config->getValueString(ConfigKey("[Channel2]","strVinylSpeed")));
+    combo_index = ComboBoxVinylSpeed2->findText(config->getValueString(ConfigKey("[Channel2]","vinylcontrol_speed_type")));
     if (combo_index != -1)
         ComboBoxVinylSpeed2->setCurrentIndex(combo_index);
 
     // set lead-in time
-    LeadinTime->setText (config->getValueString(ConfigKey("[VinylControl]","LeadInTime")) );
+    LeadinTime->setText (config->getValueString(ConfigKey("[VinylControl]","lead_in_time")) );
 
     // set Relative mode
-    int iMode = config->getValueString(ConfigKey("[VinylControl]","Mode")).toInt();
+    int iMode = config->getValueString(ConfigKey("[VinylControl]","mode")).toInt();
     if (iMode == MIXXX_VCMODE_ABSOLUTE)
         AbsoluteMode->setChecked(true);
     else if (iMode == MIXXX_VCMODE_RELATIVE)
         RelativeMode->setChecked(true);
 
     // Honour the Needle Skip Prevention setting.
-    NeedleSkipEnable->setChecked( (bool)config->getValueString( ConfigKey("[VinylControl]", "NeedleSkipPrevention") ).toInt() );
+    NeedleSkipEnable->setChecked( (bool)config->getValueString( ConfigKey("[VinylControl]", "needle_skip_prevention") ).toInt() );
 
     //set vinyl control gain
-    VinylGain->setValue( config->getValueString(ConfigKey("[VinylControl]","VinylControlGain")).toInt());
+    VinylGain->setValue( config->getValueString(ConfigKey("[VinylControl]","gain")).toInt());
     m_dontForce = false;
 }
 
@@ -167,9 +167,9 @@ void DlgPrefVinyl::slotApply()
     bool isInteger;
     strLeadIn.toInt(&isInteger);
     if (isInteger)
-        config->set(ConfigKey("[VinylControl]","LeadInTime"), strLeadIn);
+        config->set(ConfigKey("[VinylControl]","lead_in_time"), strLeadIn);
     else
-        config->set(ConfigKey("[VinylControl]","LeadInTime"), MIXXX_VC_DEFAULT_LEADINTIME);
+        config->set(ConfigKey("[VinylControl]","lead_in_time"), MIXXX_VC_DEFAULT_LEADINTIME);
 
     //Apply updates for everything else...
     VinylTypeSlotApply();
@@ -181,11 +181,11 @@ void DlgPrefVinyl::slotApply()
     if (RelativeMode->isChecked())
         iMode = MIXXX_VCMODE_RELATIVE;
 
-    ControlObject::getControl(ConfigKey("[Channel1]", "VinylMode"))->set(iMode);
-    ControlObject::getControl(ConfigKey("[Channel2]", "VinylMode"))->set(iMode);
+    ControlObject::getControl(ConfigKey("[Channel1]", "vinylcontrol_mode"))->set(iMode);
+    ControlObject::getControl(ConfigKey("[Channel2]", "vinylcontrol_mode"))->set(iMode);
     m_COTMode.slotSet(iMode);
-    config->set(ConfigKey("[VinylControl]","Mode"), ConfigValue(iMode));
-    config->set(ConfigKey("[VinylControl]","NeedleSkipPrevention" ), ConfigValue( (int)(NeedleSkipEnable->isChecked( )) ) );
+    config->set(ConfigKey("[VinylControl]","mode"), ConfigValue(iMode));
+    config->set(ConfigKey("[VinylControl]","needle_skip_prevention" ), ConfigValue( (int)(NeedleSkipEnable->isChecked( )) ) );
 
     slotUpdate();
 }
@@ -197,10 +197,10 @@ void DlgPrefVinyl::EnableRelativeModeSlotApply()
 
 void DlgPrefVinyl::VinylTypeSlotApply()
 {
-    config->set(ConfigKey("[Channel1]","strVinylType"), ConfigValue(ComboBoxVinylType1->currentText()));
-    config->set(ConfigKey("[Channel2]","strVinylType"), ConfigValue(ComboBoxVinylType2->currentText()));
-    config->set(ConfigKey("[Channel1]","strVinylSpeed"), ConfigValue(ComboBoxVinylSpeed1->currentText()));
-    config->set(ConfigKey("[Channel2]","strVinylSpeed"), ConfigValue(ComboBoxVinylSpeed2->currentText()));
+    config->set(ConfigKey("[Channel1]","vinylcontrol_vinyl_type"), ConfigValue(ComboBoxVinylType1->currentText()));
+    config->set(ConfigKey("[Channel2]","vinylcontrol_vinyl_type"), ConfigValue(ComboBoxVinylType2->currentText()));
+    config->set(ConfigKey("[Channel1]","vinylcontrol_speed_type"), ConfigValue(ComboBoxVinylSpeed1->currentText()));
+    config->set(ConfigKey("[Channel2]","vinylcontrol_speed_type"), ConfigValue(ComboBoxVinylSpeed2->currentText()));
     emit(applySound());
 }
 
@@ -208,14 +208,11 @@ void DlgPrefVinyl::VinylGainSlotApply()
 {
     qDebug() << "in VinylGainSlotApply()" << "with gain:" << VinylGain->value();
     //Update the config key...
-    config->set(ConfigKey("[VinylControl]","VinylControlGain"), ConfigValue(VinylGain->value()));
+    config->set(ConfigKey("[VinylControl]","gain"), ConfigValue(VinylGain->value()));
 
     //Update the ControlObject...
-    ControlObject* pControlObjectVinylControlGain = ControlObject::getControl(ConfigKey("[VinylControl]", "VinylControlGain"));
+    ControlObject* pControlObjectVinylControlGain = ControlObject::getControl(ConfigKey("[VinylControl]", "gain"));
     pControlObjectVinylControlGain->set(VinylGain->value());
-
-    //qDebug() << "Setting Gain Text";
-    //gain->setText(config->getValueString(ConfigKey("[VinylControl]","VinylControlGain")));        //this is probably ineffecient...
 }
 
 void DlgPrefVinyl::settingsChanged() {

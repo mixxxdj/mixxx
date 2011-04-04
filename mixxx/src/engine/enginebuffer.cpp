@@ -152,8 +152,8 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
     m_pRepeat->setToggleButton(true);
 
 #ifdef __VINYLCONTROL__
-    m_pVinylStatus = new ControlObject(ConfigKey(group,"VinylStatus"));
-    m_pVinylSeek = new ControlObject(ConfigKey(group,"VinylSeek"));
+    m_pVinylStatus = new ControlObject(ConfigKey(group,"vinylcontrol_status"));
+    m_pVinylSeek = new ControlObject(ConfigKey(group,"vinylcontrol_seek"));
     connect(m_pVinylSeek, SIGNAL(valueChanged(double)),
             this, SLOT(slotControlVinylSeek(double)),
             Qt::DirectConnection);
@@ -374,14 +374,14 @@ void EngineBuffer::slotControlVinylSeek(double change)
     
 	double new_playpos = round(change*file_length_old);
 	
-    ControlObject *pVinylMode = ControlObject::getControl(ConfigKey(group,"VinylMode"));
-    ControlObject *pVinylEnabled = ControlObject::getControl(ConfigKey(group,"vinylcontrol"));
+    ControlObject *pVinylMode = ControlObject::getControl(ConfigKey(group,"vinylcontrol_mode"));
+    ControlObject *pVinylEnabled = ControlObject::getControl(ConfigKey(group,"vinylcontrol_enabled"));
 
     if (m_pCurrentTrack != NULL && pVinylEnabled != NULL && pVinylMode != NULL)
     {
 		if (pVinylEnabled->get() && pVinylMode->get() == MIXXX_VCMODE_RELATIVE)
 		{
-			int cuemode = (int)ControlObject::getControl(ConfigKey(group,"VinylCueing"))->get();
+			int cuemode = (int)ControlObject::getControl(ConfigKey(group,"vinylcontrol_cueing"))->get();
 
 			//if in preroll, always seek
 			if (new_playpos < 0)
