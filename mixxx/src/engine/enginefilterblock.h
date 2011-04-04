@@ -49,8 +49,9 @@ private:
     ControlLogpotmeter *filterpotLow, *filterpotMid, *filterpotHigh;
     ControlPushButton *filterKillLow, *filterKillMid, *filterKillHigh;
 
-	ControlPotmeter *m_loEqFreq, *m_hiEqFreq;
-	ControlPushButton *m_lofiEq;
+	static ControlPotmeter *s_loEqFreq, *s_hiEqFreq;
+	static ControlPushButton *s_lofiEq;
+
 	int ilowFreq, ihighFreq;
 	bool blofi;
 };

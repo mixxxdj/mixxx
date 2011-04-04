@@ -59,7 +59,17 @@ public:
     static inline double gainForOrientation(EngineChannel::ChannelOrientation orientation,
                                             double leftGain,
                                             double centerGain,
-                                            double rightGain);
+                                            double rightGain) {
+        switch (orientation) {
+            case EngineChannel::LEFT:
+                return leftGain;
+            case EngineChannel::RIGHT:
+                return rightGain;
+            case EngineChannel::CENTER:
+            default:
+                return centerGain;
+        }
+    }
 
   private:
     struct ChannelInfo {
@@ -77,7 +87,7 @@ public:
         inline double getGain(ChannelInfo* pChannelInfo) {
             return m_dGain;
         }
-        inline double setGain(double dGain) {
+        inline void setGain(double dGain) {
             m_dGain = dGain;
         }
       private:

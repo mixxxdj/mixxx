@@ -114,7 +114,6 @@ class CueControl : public EngineControl {
 
     const int m_iNumHotCues;
     QList<HotcueControl*> m_hotcueControl;
-    QList<Cue*> m_hotcue;
 
     ControlObject* m_pTrackSamples;
     ControlObject* m_pCuePoint;

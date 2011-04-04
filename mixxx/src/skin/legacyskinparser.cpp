@@ -911,8 +911,9 @@ void LegacySkinParser::setupConnections(QDomNode node, QWidget* pWidget) {
             new PropertyBinder(pWidget, property, control);
         } else if (!XmlParse::selectNode(con, "OnOff").isNull() &&
             XmlParse::selectNodeQString(con, "OnOff")=="true") {
-            // Connect control proxy to widget
-            (new ControlObjectThreadWidget(control))->setWidgetOnOff(pWidget);
+            // Connect control proxy to widget. Parented to pWidget so it is not
+            // leaked.
+            (new ControlObjectThreadWidget(control, pWidget))->setWidgetOnOff(pWidget);
         } else {
             // Default to emit on press
             ControlObjectThreadWidget::EmitOption emitOption = ControlObjectThreadWidget::EMIT_ON_PRESS;
@@ -941,8 +942,9 @@ void LegacySkinParser::setupConnections(QDomNode node, QWidget* pWidget) {
                     state = Qt::RightButton;
             }
 
-            // Connect control proxy to widget
-            (new ControlObjectThreadWidget(control))->setWidget(
+            // Connect control proxy to widget. Parented to pWidget so it is not
+            // leaked.
+            (new ControlObjectThreadWidget(control, pWidget))->setWidget(
                 pWidget, connectValueFromWidget, connectValueToWidget,
                 emitOption, state);
 

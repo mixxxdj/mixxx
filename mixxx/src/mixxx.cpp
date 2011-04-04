@@ -537,6 +537,18 @@ MixxxApp::~MixxxApp()
 
     qDebug() << "delete config, " << qTime.elapsed();
     delete m_pConfig;
+
+    // Check for leaked ControlObjects and give warnings.
+    QList<ControlObject*> leakedControls;
+    ControlObject::getControls(&leakedControls);
+
+    if (leakedControls.size() > 0) {
+        qDebug() << "WARNING: The following controls were leaked:";
+        foreach (ControlObject* pControl, leakedControls) {
+            ConfigKey key = pControl->getKey();
+            qDebug() << key.group << key.item;
+        }
+    }
 }
 
 int MixxxApp::noSoundDlg(void)
