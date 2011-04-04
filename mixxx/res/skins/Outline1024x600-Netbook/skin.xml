@@ -965,7 +965,7 @@
 	  <PathStatusLight3>vinyl-status-red.png</PathStatusLight3>
 	  <Pos>357,194</Pos>
 	  <Connection>
-	   <ConfigKey>[Channel1],VinylStatus</ConfigKey>
+	   <ConfigKey>[Channel1],vinylcontrol_status</ConfigKey>
 	  </Connection>
 	</StatusLight>
 	<StatusLight>
@@ -977,7 +977,7 @@
 	  <PathStatusLight3>vinyl-status-red.png</PathStatusLight3>
 	  <Pos>597,194</Pos>
 	  <Connection>
-	   <ConfigKey>[Channel2],VinylStatus</ConfigKey>
+	   <ConfigKey>[Channel2],vinylcontrol_status</ConfigKey>
 	  </Connection>
 	</StatusLight>
 	<PushButton>
@@ -1000,7 +1000,7 @@
 	  </State>
 	  <Pos>380,192</Pos>
 	  <Connection>
-	  	 	<ConfigKey>[Channel1],VinylMode</ConfigKey>
+	  	 	<ConfigKey>[Channel1],vinylcontrol_mode</ConfigKey>
 	  </Connection>
  	</PushButton>
  	<PushButton>
@@ -1023,7 +1023,7 @@
 	  </State>
 	  <Pos>621,192</Pos>
 	  <Connection>
-	  	 	<ConfigKey>[Channel2],VinylMode</ConfigKey>
+	  	 	<ConfigKey>[Channel2],vinylcontrol_mode</ConfigKey>
 	  </Connection>
  	</PushButton>
 
