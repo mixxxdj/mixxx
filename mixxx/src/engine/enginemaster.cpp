@@ -108,8 +108,12 @@ EngineMaster::~EngineMaster()
     delete m_pMasterVolume;
     delete m_pHeadVolume;
     delete clipping;
+    delete vumeter;
     delete head_clipping;
     delete sidechain;
+
+    delete xFaderCalibration;
+    delete xFaderCurve;
 
     SampleUtil::free(m_pHead);
     SampleUtil::free(m_pMaster);
@@ -402,7 +406,7 @@ void EngineMaster::addChannel(EngineChannel* pChannel) {
     ChannelInfo* pChannelInfo = new ChannelInfo();
     pChannelInfo->m_pChannel = pChannel;
     pChannelInfo->m_pVolumeControl = new ControlLogpotmeter(
-        ConfigKey(pChannel->getGroup(), pChannel->getGroup()), 1.0);
+        ConfigKey(pChannel->getGroup(), "volume"), 1.0);
     pChannelInfo->m_pBuffer = SampleUtil::alloc(MAX_BUFFER_LEN);
     memset(pChannelInfo->m_pBuffer, 0, sizeof(CSAMPLE) * MAX_BUFFER_LEN);
     m_channels.push_back(pChannelInfo);
@@ -428,17 +432,4 @@ const CSAMPLE* EngineMaster::getChannelBuffer(unsigned int i) const {
         return m_channels[i]->m_pBuffer;
     }
     return NULL;
-}
-
-// static
-double EngineMaster::gainForOrientation(EngineChannel::ChannelOrientation orientation,
-                                        double leftGain,
-                                        double centerGain,
-                                        double rightGain) {
-    if (orientation == EngineChannel::LEFT) {
-        return leftGain;
-    } else if (orientation == EngineChannel::RIGHT) {
-        return rightGain;
-    }
-    return centerGain;
 }
