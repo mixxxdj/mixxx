@@ -3,13 +3,13 @@ msgstr ""
 "Project-Id-Version: Mixxx 1.8\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2011-03-27 03:32-0400\n"
-"PO-Revision-Date: 2011-04-01 01:00+0000\n"
+"PO-Revision-Date: 2011-04-04 21:44+0000\n"
 "Last-Translator: Dylan A. <bob.dybian@gmail.com>\n"
 "Language-Team: <tezalprod@gmail.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-04-02 04:39+0000\n"
+"X-Launchpad-Export-Date: 2011-04-05 04:44+0000\n"
 "X-Generator: Launchpad (build 12559)\n"
 "X-Poedit-Country: FRANCE\n"
 "X-Poedit-Language: French\n"
@@ -50,7 +50,7 @@ msgstr "Année"
 #: BaseSqlTableModel#7
 msgctxt "BaseSqlTableModel#7"
 msgid "Type"
-msgstr ""
+msgstr "Type"
 
 #: BaseSqlTableModel#8
 msgctxt "BaseSqlTableModel#8"
@@ -196,7 +196,7 @@ msgstr "Clé"
 #: BrowseTableModel#12
 msgctxt "BrowseTableModel#12"
 msgid "Type"
-msgstr ""
+msgstr "Type"
 
 #: BrowseTableModel#13
 msgctxt "BrowseTableModel#13"
@@ -360,7 +360,7 @@ msgstr "Min"
 #: DlgBpmSchemeDlg#6
 msgctxt "DlgBpmSchemeDlg#6"
 msgid "Analyze Entire Song"
-msgstr ""
+msgstr "Analyser la chanson entière"
 
 #: DlgBpmTapDlg#1
 msgctxt "DlgBpmTapDlg#1"
@@ -379,7 +379,7 @@ msgstr ""
 #: DlgBpmTapDlg#4
 msgctxt "DlgBpmTapDlg#4"
 msgid "Song:"
-msgstr ""
+msgstr "Chanson :"
 
 #: DlgBpmTapDlg#5
 msgid "Next >>"
@@ -421,7 +421,7 @@ msgstr "Alt+G"
 #: DlgBpmTapDlg#14
 msgctxt "DlgBpmTapDlg#14"
 msgid "Analyze Entire Song"
-msgstr ""
+msgstr "Analyser la chanson entière"
 
 #: DlgBpmTapDlg#15
 msgid "BPM:"
@@ -1562,7 +1562,7 @@ msgstr "Aucune"
 
 #: DlgPrefSoundItem#2
 msgid "Channels %1 - %2"
-msgstr ""
+msgstr "Canaux %1 - %2"
 
 #: DlgPrefSoundItem#3
 msgid "Form"
@@ -1768,7 +1768,7 @@ msgstr ""
 
 #: DlgPrepare#8
 msgid "Analyzing %1%"
-msgstr ""
+msgstr "Analyse %1%"
 
 #: DlgTrackInfo#1
 msgctxt "DlgTrackInfo#1"
@@ -1778,7 +1778,7 @@ msgstr ""
 #: DlgTrackInfo#2
 msgctxt "DlgTrackInfo#2"
 msgid "Song:"
-msgstr ""
+msgstr "Chanson :"
 
 #: DlgTrackInfo#3
 msgctxt "DlgTrackInfo#3"
@@ -1994,7 +1994,7 @@ msgstr "Erreur de configuration en mode non-bloquant:"
 
 #: EngineShoutcast#5
 msgid "Lost connection to streaming server"
-msgstr ""
+msgstr "Perte de la connexion au serveur de streaming"
 
 #: EngineShoutcast#6
 msgid ""
@@ -2444,7 +2444,7 @@ msgstr "Ctrl+Y"
 #: MixxxApp#44
 msgctxt "MixxxApp#44"
 msgid "Enable live broadcasting"
-msgstr ""
+msgstr "Activer la diffusion en direct"
 
 #: MixxxApp#45
 msgid "Ctrl+L"
@@ -2744,7 +2744,7 @@ msgstr "Nouvelle liste de lecture"
 
 #: PlaylistFeature#2
 msgid "Add to Auto-DJ Queue"
-msgstr ""
+msgstr "Ajouter à la liste Auto-DJ"
 
 #: PlaylistFeature#3
 msgctxt "PlaylistFeature#3"
@@ -3022,6 +3022,8 @@ msgid ""
 "The only skin compatiable with this size display is Outline800x480-WVGA.  "
 "Would you like to use that skin?"
 msgstr ""
+"Le seul thème compatible avec cette taille d'affichage est Outline800x480-"
+"WVGA. Souhaitez-vous utiliser ce thème?"
 
 #: Ui#10
 msgctxt "Ui#10"
@@ -3095,7 +3097,7 @@ msgstr ""
 
 #: Ui#27
 msgid "Channel 2 volume fader"
-msgstr ""
+msgstr "Fader volume canal 2"
 
 #: Ui#28
 msgid "Gain knob for Channel 2"
@@ -3199,7 +3201,7 @@ msgstr "Ajouter au container"
 
 #: WTrackTableView#3
 msgid "Load to Sampler"
-msgstr ""
+msgstr "Charger dans l'échantillonneur"
 
 #: WTrackTableView#4
 msgctxt "WTrackTableView#4"
