@@ -113,9 +113,9 @@ void DlgPrefSound::slotApply() {
 #ifdef __VINYLCONTROL__
     // Scratchlib sucks, throw rocks at it
     // XXX(bkgood) HACKS DELETE THIS WHEN SCRATCHLIB GETS NUKED KTHX
-    if ((m_pConfig->getValueString(ConfigKey("[Channel1]", "strVinylType"))
+    if ((m_pConfig->getValueString(ConfigKey("[Channel1]", "vinylcontrol_vinyl_type"))
             == MIXXX_VINYL_FINALSCRATCH  ||
-            m_pConfig->getValueString(ConfigKey("[Channel2]", "strVinylType"))
+            m_pConfig->getValueString(ConfigKey("[Channel2]", "vinylcontrol_vinyl_type"))
             == MIXXX_VINYL_FINALSCRATCH)
             &&
         sampleRateComboBox->itemData(sampleRateComboBox->currentIndex()).toUInt()

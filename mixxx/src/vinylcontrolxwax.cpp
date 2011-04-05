@@ -40,8 +40,6 @@ QMutex VinylControlXwax::m_xwaxLUTMutex;
 VinylControlXwax::VinylControlXwax(ConfigObject<ConfigValue> * pConfig, const char * _group) : VinylControl(pConfig, _group)
 {
     dOldPos                 = 0.0f;
-    dOldDiff                = 0.0f;
-    bNeedleDown             = true;
     m_samples               = NULL;
     char * timecode  =  NULL;
     bShouldClose    = false;
@@ -49,7 +47,7 @@ VinylControlXwax::VinylControlXwax(ConfigObject<ConfigValue> * pConfig, const ch
     iOldMode		= MIXXX_VCMODE_ABSOLUTE;
     dUiUpdateTime   = -1.0f;
     m_dKnobTweak = 0.0f;
-    m_bNeedleSkipPrevention = (bool)(m_pConfig->getValueString( ConfigKey( "[VinylControl]", "NeedleSkipPrevention" ) ).toInt());
+    m_bNeedleSkipPrevention = (bool)(m_pConfig->getValueString( ConfigKey( "[VinylControl]", "needle_skip_prevention" ) ).toInt());
     
     dLastTrackSelectPos = 0.0;
     dCurTrackSelectPos = 0.0;
@@ -57,6 +55,7 @@ VinylControlXwax::VinylControlXwax(ConfigObject<ConfigValue> * pConfig, const ch
     bTrackSelectMode = false;
 
     tSinceSteadyPitch = QTime();
+    dOldSteadyPitch = 1.0f;
     
     iQualPos = 0;
     iQualFilled = 0;
@@ -184,7 +183,7 @@ void VinylControlXwax::run()
     bool reportedPlayButton = 0;
     tSinceSteadyPitch.start();
     
-	float when;
+	float when; //unused, needed for calling xwax
 
     bShouldClose = false;
     
@@ -487,16 +486,16 @@ void VinylControlXwax::run()
 			    	enableConstantMode(dOldSteadyPitch);
 			    	vinylStatus->slotSet(VINYL_STATUS_ERROR);
 			    }
-                else if (iVCMode == MIXXX_VCMODE_ABSOLUTE && !m_bCDControl &&
+                else if (iVCMode == MIXXX_VCMODE_ABSOLUTE && m_bCDControl &&
                 	fabs(dVinylPosition - dOldPos) >= 0.1f)
                 {
                 	qDebug() << "CDJ resync position (>0.1 sec)";
                 	syncPosition();
 	                resetSteadyPitch(dVinylPitch, dVinylPosition);
                 }
-                else if (playPos->get() == 1.0 && dVinylPitch > 0)
+                else if (playPos->get() >= 1.0 && dVinylPitch > 0)
 			    {
-			    	//end of track
+			    	//end of track, force stop
 			    	togglePlayButton(false);
 			    	resetSteadyPitch(0.0f, 0.0f);
 					controlScratch->slotSet(0.0f);
@@ -504,7 +503,7 @@ void VinylControlXwax::run()
 					ringFilled = 0;
 			    	continue;
 			    }
-                else 
+                else
                 {
                 	togglePlayButton(checkSteadyPitch(dVinylPitch, filePosition) > 0.5);
                 }
@@ -525,9 +524,9 @@ void VinylControlXwax::run()
 	        	//if we don't have valid position, we're not playing so reset time to current
 	            //estimate vinyl position
 	            
-	            if (playPos->get() == 1.0 && dVinylPitch > 0)
+	            if (playPos->get() >= 1.0 && dVinylPitch > 0)
 			    {
-			    	//end of track
+			    	//end of track, force stop
 			    	togglePlayButton(false);
 			    	resetSteadyPitch(0.0f, 0.0f);
 					controlScratch->slotSet(0.0f);
@@ -674,11 +673,18 @@ void VinylControlXwax::togglePlayButton(bool on)
 
 void VinylControlXwax::doTrackSelection(bool valid_pos, double pitch, double position)
 {
+	//compare positions, fabricating if we don't have position data, and
+	//move the selector every so often
+	//track will be selected when the needle is moved back to play area
+	//track selection can be cancelled by loading a track manually
+	
 	const int SELECT_INTERVAL = 150;
 	const double NOPOS_SPEED = 0.50;
 	
 	if (trackSelector == NULL)
 	{
+		//this isn't done in the constructor because this object
+		//doesn't seem to be created yet
 		trackSelector = new ControlObjectThread(ControlObject::getControl(ConfigKey("[Playlist]","SelectTrackKnob")));
 		if (trackSelector == NULL)
 		{
@@ -727,15 +733,29 @@ void VinylControlXwax::resetSteadyPitch(double pitch, double time)
 
 double VinylControlXwax::checkSteadyPitch(double pitch, double time)
 {
-	//return TRUE if we have established 0.5 secs of steady pitch
+	//return length of time pitch has been steady, 0 if not steady
+	const double PITCH_THRESHOLD = 0.07f;
 	
 	if (time < dSteadyPitchTime) //bad values, often happens during resync
 	{
-		resetSteadyPitch(pitch, time);
-		return 0.0;
+		if (loopEnabled->get())
+		{
+			//if looping, fake it since we don't know where the loop
+			//actually is
+			if (fabs(pitch - dSteadyPitch) < PITCH_THRESHOLD)
+			{
+				dSteadyPitchTime = time - 2.0;
+				return 2.0;
+			}
+		}
+		else
+		{
+			resetSteadyPitch(pitch, time);
+			return 0.0;
+		}
 	}
 	
-	if (fabs(pitch - dSteadyPitch) < 0.07f)
+	if (fabs(pitch - dSteadyPitch) < PITCH_THRESHOLD)
 	{
 		if (time - dSteadyPitchTime > 2.0)
 		{

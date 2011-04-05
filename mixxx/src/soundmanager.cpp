@@ -52,14 +52,10 @@ SoundManager::SoundManager(ConfigObject<ConfigValue> * pConfig, EngineMaster * _
     //uses them is called from the GUI thread (stuff like opening soundcards).
     ControlObjectThreadMain* pControlObjectLatency = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[Master]", "latency")));
     ControlObjectThreadMain* pControlObjectSampleRate = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[Master]", "samplerate")));
-    ControlObjectThreadMain* pControlObjectVinylControlMode = new ControlObjectThreadMain(new ControlObject(ConfigKey("[VinylControl]", "Mode")));
-    ControlObjectThreadMain* pControlObjectVinylControlMode1 = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[Channel1]", "VinylMode")));
-    ControlObjectThreadMain* pControlObjectVinylControlMode2 = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[Channel2]", "VinylMode")));
-    ControlObjectThreadMain* pControlObjectVinylControlGain = new ControlObjectThreadMain(new ControlObject(ConfigKey("[VinylControl]", "VinylControlGain")));
     m_pControlObjectInputPassthrough1 = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[Channel1]", "inputpassthrough")));
     m_pControlObjectInputPassthrough2 = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[Channel2]", "inputpassthrough")));
-    m_pControlObjectVinylStatus1 = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[Channel1]", "VinylStatus")));
-    m_pControlObjectVinylStatus2 = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[Channel2]", "VinylStatus")));
+    m_pControlObjectVinylStatus1 = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[Channel1]", "vinylcontrol_status")));
+    m_pControlObjectVinylStatus2 = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[Channel2]", "vinylcontrol_status")));
     m_bPassthroughActive[0] = false;
     m_bPassthroughActive[1] = false;
     
@@ -70,6 +66,11 @@ SoundManager::SoundManager(ConfigObject<ConfigValue> * pConfig, EngineMaster * _
 	connect(m_pControlObjectInputPassthrough2, SIGNAL(valueChanged(double)),
             this, SLOT(slotInputPassthrough2(double)),
             Qt::DirectConnection);            	
+
+    ControlObjectThreadMain* pControlObjectVinylControlMode = new ControlObjectThreadMain(new ControlObject(ConfigKey("[VinylControl]", "mode")));
+    ControlObjectThreadMain* pControlObjectVinylControlMode1 = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[Channel1]", "vinylcontrol_mode")));
+    ControlObjectThreadMain* pControlObjectVinylControlMode2 = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[Channel2]", "vinylcontrol_mode")));
+    ControlObjectThreadMain* pControlObjectVinylControlGain = new ControlObjectThreadMain(new ControlObject(ConfigKey("[VinylControl]", "gain")));
 
     //Hack because PortAudio samplerate enumeration is slow as hell on Linux (ALSA dmix sucks, so we can't blame PortAudio)
     m_samplerates.push_back(44100);
@@ -599,7 +600,7 @@ void SoundManager::slotInputPassthrough1(double toggle)
 				return;
 			}
 		}
-		//didn't find it
+		//didn't find itm_pControlObjectVinylStatus1 = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[Channel1]", "VinylStatus")));
 		m_pControlObjectInputPassthrough1->slotSet(false);
 		
 	}

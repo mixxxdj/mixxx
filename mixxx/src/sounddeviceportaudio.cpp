@@ -297,7 +297,7 @@ int SoundDevicePortAudio::callbackProcess(unsigned long framesPerBuffer, float *
     int iFrameSize;
     int iVCGain;
     static ControlObject* pControlObjectVinylControlGain =
-        ControlObject::getControl(ConfigKey("[VinylControl]", "VinylControlGain"));
+        ControlObject::getControl(ConfigKey("[VinylControl]", "gain"));
     static const float SHRT_CONVERSION_FACTOR = 1.0f/SHRT_MAX;
 
     //Initialize some variables.
