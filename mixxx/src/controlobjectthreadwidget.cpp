@@ -15,15 +15,14 @@
 #include "controlobject.h"
 #include "controlevent.h"
 
-ControlObjectThreadWidget::ControlObjectThreadWidget(ControlObject * pControlObject) : ControlObjectThreadMain(pControlObject)
-{
+ControlObjectThreadWidget::ControlObjectThreadWidget(ControlObject * pControlObject, QObject* pParent)
+        : ControlObjectThreadMain(pControlObject, pParent) {
     // Initialize value
     m_dValue = m_pControlObject->getValueToWidget(m_pControlObject->get());
     emitValueChanged();
 }
 
-ControlObjectThreadWidget::~ControlObjectThreadWidget()
-{
+ControlObjectThreadWidget::~ControlObjectThreadWidget() {
 }
 
 void ControlObjectThreadWidget::setWidget(QWidget * widget, bool connectValueFromWidget,

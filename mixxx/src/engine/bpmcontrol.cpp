@@ -70,6 +70,7 @@ BpmControl::~BpmControl() {
     delete m_pEngineBpm;
     delete m_pFileBpm;
     delete m_pButtonSync;
+    delete m_pButtonTap;
 }
 
 double BpmControl::getBpm() {
