@@ -25,6 +25,7 @@
 #include "trackinfoobject.h"
 #include "configobject.h"
 #include "rotary.h"
+//for the writer
 //#include <QtCore>
 
 class EngineControl;

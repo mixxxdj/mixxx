@@ -211,7 +211,7 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
 EngineBuffer::~EngineBuffer()
 {
 	//close the writer
-	//df.close();
+	/*df.close();*/
     delete m_pReadAheadManager;
     delete m_pReader;
 
@@ -756,7 +756,7 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
 			pOutput[i+1] = pOutput[i+1] * m_fRampValue;
 		}
 		
-		//writer << pOutput[i] << "," << fakerate << "," <<  m_fRampValue * 1000 <<"," <<m_iRampState * 10000 << "," << m_fLastSampleValue[0] << "\n";
+		//writer << pOutput[i] <<  "\n";
 		m_fRampValue += ramp_inc;
 		if (m_fRampValue >= 1.0)
 		{

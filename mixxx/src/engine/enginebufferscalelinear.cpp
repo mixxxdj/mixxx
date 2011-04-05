@@ -112,13 +112,10 @@ CSAMPLE * EngineBufferScaleLinear::scale(double playpos, unsigned long buf_size,
     	//calculate half buffer going one way, and half buffer going
     	//the other way.
     	
-    	CSAMPLE *pOldRate = new CSAMPLE[buf_size/2];
-    	CSAMPLE *pNewRate = new CSAMPLE[buf_size/2];
-    	
     	//first half: rate goes from old rate to zero
     	m_fOldBaseRate = rate_add_old;
     	m_dBaseRate = 0.0;
-    	pOldRate = do_scale(pOldRate, buf_size/2, pBase, iBaseLength);
+    	buffer = do_scale(buffer, buf_size/2, pBase, iBaseLength);
     	
     	//reset prev sample so we can now read in the other direction
     	//(may not be necessary?)
@@ -150,27 +147,8 @@ CSAMPLE * EngineBufferScaleLinear::scale(double playpos, unsigned long buf_size,
     	//second half: rate goes from zero to new rate
     	m_fOldBaseRate = 0.0;
     	m_dBaseRate = rate_add_new;
-    	pNewRate = do_scale(pNewRate, buf_size/2, pBase, iBaseLength);
-    	
-    	//write it to the real buffer
-    	//TODO: mmap it
-    	int crossover = buf_size / 2;
-    	for (int i=0; i<buf_size; i+=2)
-    	{
-    		if (i<crossover)
-    		{
-    			buffer[i] = pOldRate[i];
-    			buffer[i+1] = pOldRate[i+1];
-    		}
-    		else 
-    		{
-    			buffer[i] = pNewRate[i-crossover];
-    			buffer[i+1] = pNewRate[i+1-crossover];
-    		}
-    	}
-    	
-    	delete pOldRate;
-    	delete pNewRate;
+    	CSAMPLE *halfbuf = &buffer[buf_size/2];
+    	halfbuf = do_scale(halfbuf, buf_size/2, pBase, iBaseLength);
     	
 		return buffer;
     }
