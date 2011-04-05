@@ -19,6 +19,8 @@ SamplerBank::SamplerBank(PlayerManager* pPlayerManager)
 }
 
 SamplerBank::~SamplerBank() {
+    delete m_pLoadControl;
+    delete m_pSaveControl;
 }
 
 void SamplerBank::slotSaveSamplerBank(double v) {
