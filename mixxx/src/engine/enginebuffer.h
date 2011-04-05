@@ -26,6 +26,7 @@
 #include "configobject.h"
 #include "rotary.h"
 /*#include <QtCore>*/
+//for the writer
 
 class EngineControl;
 class BpmControl;
