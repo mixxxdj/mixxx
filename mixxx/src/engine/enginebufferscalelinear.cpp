@@ -147,8 +147,8 @@ CSAMPLE * EngineBufferScaleLinear::scale(double playpos, unsigned long buf_size,
     	//second half: rate goes from zero to new rate
     	m_fOldBaseRate = 0.0;
     	m_dBaseRate = rate_add_new;
-    	CSAMPLE *halfbuf = &buffer[buf_size/2];
-    	halfbuf = do_scale(halfbuf, buf_size/2, pBase, iBaseLength);
+    	//pass the address of the sample at the halfway point
+    	do_scale(&buffer[buf_size/2], buf_size/2, pBase, iBaseLength);
     	
 		return buffer;
     }
