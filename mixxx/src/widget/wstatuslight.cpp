@@ -38,6 +38,7 @@ WStatusLight::~WStatusLight()
     for (int i = 0; i < m_iNoPos; i++) {
         WPixmapStore::deletePixmap(m_pPixmapSLs[i]);
     }
+    delete [] m_pPixmapSLs;
 }
 
 void WStatusLight::setNoPos(int iNoPos)
@@ -49,7 +50,12 @@ void WStatusLight::setNoPos(int iNoPos)
 
     // If pixmap array is already allocated, delete it
     if (m_pPixmapSLs)
+    {
+    	for (int i = 0; i < m_iNoPos; i++) {
+		    WPixmapStore::deletePixmap(m_pPixmapSLs[i]);
+		}
         delete [] m_pPixmapSLs;
+    }
 
     if (m_iNoPos>0)
     {
@@ -96,9 +102,11 @@ void WStatusLight::setPixmap(int iState, const QString &filename)
     m_pPixmapSLs[pixIdx] = WPixmapStore::getPixmap(filename);
     if (!m_pPixmapSLs[pixIdx] || m_pPixmapSLs[pixIdx]->size()==QSize(0,0))
         qDebug() << "WPushButton: Error loading pixmap:" << filename << iState;
-
-    // Set size of widget equal to pixmap size
-    setFixedSize(m_pPixmapSLs[pixIdx]->size());
+	else
+	{
+		// Set size of widget equal to pixmap size
+		setFixedSize(m_pPixmapSLs[pixIdx]->size());
+	}
 }
 
 void WStatusLight::setValue(double v)
