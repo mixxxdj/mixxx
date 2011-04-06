@@ -24,10 +24,10 @@ QWaitCondition ControlObjectThread::m_sqWait;
 QMutex ControlObjectThread::m_sqMutex;
 QQueue<ControlObjectThread*> ControlObjectThread::m_sqQueue;
 
-ControlObjectThread::ControlObjectThread(ControlObject * pControlObject)
-: m_dValue          (0.0)
-, m_pControlObject  (pControlObject)
-{
+ControlObjectThread::ControlObjectThread(ControlObject* pControlObject, QObject* pParent)
+        : QObject(pParent),
+          m_dValue(0.0)
+        , m_pControlObject(pControlObject) {
     // Update associated ControlObject
     if (m_pControlObject == NULL) return;
     Q_ASSERT(m_pControlObject);

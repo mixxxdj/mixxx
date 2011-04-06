@@ -117,6 +117,10 @@ template <class ValueType> ConfigObject<ValueType>::ConfigObject(QString file)
 
 template <class ValueType> ConfigObject<ValueType>::~ConfigObject()
 {
+    while (list.size() > 0) {
+        ConfigOption<ValueType>* pConfigOption = list.takeLast();
+        delete pConfigOption;
+    }
 }
 
 template <class ValueType>
