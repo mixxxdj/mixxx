@@ -45,7 +45,7 @@ WaveformRenderMarkRange::WaveformRenderMarkRange(const char* pGroup,
 }
 
 WaveformRenderMarkRange::~WaveformRenderMarkRange() {
-    qDebug() << this << "~WaveformRenderMarkRange()";
+    //qDebug() << this << "~WaveformRenderMarkRange()";
     delete m_pTrackSamples;
     delete m_pMarkStartPoint;
     delete m_pMarkEndPoint;

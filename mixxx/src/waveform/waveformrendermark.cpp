@@ -39,7 +39,7 @@ WaveformRenderMark::WaveformRenderMark(const char* pGroup,
 }
 
 WaveformRenderMark::~WaveformRenderMark() {
-    qDebug() << this << "~WaveformRenderMark()";
+    //qDebug() << this << "~WaveformRenderMark()";
     //m_markPixmap = QPixmap();
     delete m_pTrackSamples;
     delete m_pMarkPoint;
