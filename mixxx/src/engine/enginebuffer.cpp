@@ -192,14 +192,19 @@ EngineBuffer::~EngineBuffer()
     delete m_pReadAheadManager;
     delete m_pReader;
 
+    delete playButtonCOT;
     delete playButton;
+    delete playStartButtonCOT;
     delete playStartButton;
     delete startButton;
     delete endButton;
+    delete stopButtonCOT;
+    delete stopButton;
     delete rateEngine;
     delete playposSlider;
     delete visualPlaypos;
 
+    delete m_pTrackEndCOT;
     delete m_pTrackEnd;
 
     delete m_pRepeat;
