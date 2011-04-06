@@ -1221,6 +1221,7 @@ void MixxxApp::slotHelpAbout()
 "Tom Mast<br>"
 "Miko Kiiski<br>"
 "Vin&iacute;cius Dias dos Santos<br>"
+"Joe Colosimo<br>"
 
 "</p>"
 "<p align=\"center\"><b>And special thanks to:</b></p>"
