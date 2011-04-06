@@ -18,12 +18,14 @@
 #ifndef ENGINEMASTER_H
 #define ENGINEMASTER_H
 
+#include <QMap>
+
+#include "controlobject.h"
 #include "engine/engineobject.h"
 #include "engine/enginechannel.h"
 
 class EngineWorkerScheduler;
 class EngineBuffer;
-class EngineVolume;
 class EngineChannel;
 class EngineClipping;
 class EngineFlanger;
@@ -33,7 +35,6 @@ class EngineLADSPA;
 class EngineVuMeter;
 class ControlPotmeter;
 class ControlPushButton;
-class ControlObject;
 class EngineVinylSoundEmu;
 class EngineSideChain;
 
@@ -55,20 +56,74 @@ public:
     // only call it before the engine has started mixing.
     void addChannel(EngineChannel* pChannel);
 
-    static double gainForOrientation(EngineChannel::ChannelOrientation orientation,
-                              double leftGain,
-                              double centerGain,
-                              double rightGain);
+    static inline double gainForOrientation(EngineChannel::ChannelOrientation orientation,
+                                            double leftGain,
+                                            double centerGain,
+                                            double rightGain) {
+        switch (orientation) {
+            case EngineChannel::LEFT:
+                return leftGain;
+            case EngineChannel::RIGHT:
+                return rightGain;
+            case EngineChannel::CENTER:
+            default:
+                return centerGain;
+        }
+    }
 
   private:
-    QList<EngineChannel*> m_channels;
+    struct ChannelInfo {
+        EngineChannel* m_pChannel;
+        CSAMPLE* m_pBuffer;
+        ControlObject* m_pVolumeControl;
+    };
+
+    class GainCalculator {
+      public:
+        virtual double getGain(ChannelInfo* pChannelInfo) = 0;
+    };
+    class ConstantGainCalculator : public GainCalculator {
+      public:
+        inline double getGain(ChannelInfo* pChannelInfo) {
+            return m_dGain;
+        }
+        inline void setGain(double dGain) {
+            m_dGain = dGain;
+        }
+      private:
+        double m_dGain;
+    };
+    class OrientationVolumeGainCalculator : public GainCalculator {
+      public:
+        inline double getGain(ChannelInfo* pChannelInfo) {
+            double channelVolume = pChannelInfo->m_pVolumeControl->get();
+            double orientationGain = EngineMaster::gainForOrientation(
+                pChannelInfo->m_pChannel->getOrientation(),
+                m_dLeftGain, m_dCenterGain, m_dRightGain);
+            return m_dVolume * channelVolume * orientationGain;
+        }
+
+        inline void setGains(double dVolume, double leftGain, double centerGain, double rightGain) {
+            m_dVolume = dVolume;
+            m_dLeftGain = leftGain;
+            m_dCenterGain = centerGain;
+            m_dRightGain = rightGain;
+        }
+      private:
+        double m_dVolume, m_dLeftGain, m_dCenterGain, m_dRightGain;
+    };
+
+    void mixChannels(unsigned int channelBitvector, unsigned int maxChannels,
+                     CSAMPLE* pOutput, unsigned int iBufferSize, GainCalculator* pGainCalculator);
+
+
+    QList<ChannelInfo*> m_channels;
 
     CSAMPLE *m_pMaster, *m_pHead;
-    QList<CSAMPLE*> m_channelBuffers;
 
     EngineWorkerScheduler *m_pWorkerScheduler;
 
-    EngineVolume *volume, *head_volume;
+    ControlObject *m_pMasterVolume, *m_pHeadVolume;
     EngineClipping *clipping, *head_clipping;
 #ifdef __LADSPA__
     EngineLADSPA *ladspa;
@@ -78,6 +133,9 @@ public:
 
     ControlPotmeter *crossfader, *head_mix,
         *m_pBalance, *xFaderCurve, *xFaderCalibration;
+
+    ConstantGainCalculator m_headphoneGain;
+    OrientationVolumeGainCalculator m_masterGain;
 };
 
 #endif

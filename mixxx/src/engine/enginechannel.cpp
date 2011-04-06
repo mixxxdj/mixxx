@@ -22,7 +22,6 @@
 #include "enginechannel.h"
 #include "engineclipping.h"
 #include "enginepregain.h"
-#include "enginevolume.h"
 #include "engineflanger.h"
 #include "enginefilterblock.h"
 #include "enginevumeter.h"
@@ -39,7 +38,6 @@ EngineChannel::EngineChannel(const char* group,
     m_pClipping = new EngineClipping(group);
     m_pBuffer = new EngineBuffer(group, pConfig);
     m_pVinylSoundEmu = new EngineVinylSoundEmu(pConfig, group);
-    m_pVolume = new EngineVolume(ConfigKey(group, "volume"));
     m_pVUMeter = new EngineVuMeter(group);
     m_pPFL = new ControlPushButton(ConfigKey(group, "pfl"));
     m_pPFL->setToggleButton(true);
@@ -54,9 +52,9 @@ EngineChannel::~EngineChannel() {
     delete m_pFlanger;
     delete m_pPregain;
     delete m_pVinylSoundEmu;
-    delete m_pVolume;
     delete m_pVUMeter;
     delete m_pPFL;
+    delete m_pOrientation;
 }
 
 const QString& EngineChannel::getGroup() {
@@ -83,14 +81,6 @@ void EngineChannel::process(const CSAMPLE*, const CSAMPLE * pOut, const int iBuf
     m_pClipping->process(pOut, pOut, iBufferSize);
     // Update VU meter
     m_pVUMeter->process(pOut, pOut, iBufferSize);
-    // Apply channel volume if we aren't PFL
-    if (!isPFL()) {
-        m_pVolume->process(pOut, pOut, iBufferSize);
-    }
-}
-
-void EngineChannel::applyVolume(CSAMPLE *pBuff, const int iBufferSize) const {
-    m_pVolume->process(pBuff, pBuff, iBufferSize);
 }
 
 EngineBuffer* EngineChannel::getEngineBuffer() {

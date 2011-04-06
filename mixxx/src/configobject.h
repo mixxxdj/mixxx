@@ -93,21 +93,24 @@ public:
 template <class ValueType> class ConfigOption
 {
   public:
-    ConfigOption() {};
+    ConfigOption() { val = NULL; key = NULL;};
     ConfigOption(ConfigKey *_key, ValueType *_val) { key = _key ; val = _val; };
+    virtual ~ConfigOption() {
+        delete key;
+        delete val;
+    }
     ValueType *val;
     ConfigKey *key;
 };
 
-template <class ValueType> class ConfigObject
-{
+template <class ValueType> class ConfigObject {
   public:
     ConfigKey key;
     ValueType value;
     ConfigOption<ValueType> option;
 
     ConfigObject(QString file);
-	ConfigObject(QDomNode node);
+    ConfigObject(QDomNode node);
     ~ConfigObject();
     ConfigOption<ValueType> *set(ConfigKey, ValueType);
     ConfigOption<ValueType> *get(ConfigKey key);

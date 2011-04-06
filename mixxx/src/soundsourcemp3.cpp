@@ -41,13 +41,18 @@ SoundSourceMp3::SoundSourceMp3(QString qFilename) :
 SoundSourceMp3::~SoundSourceMp3()
 {
     mad_stream_finish(Stream);
-    mad_frame_finish(Frame);
-    mad_synth_finish(Synth);
-    m_file.unmap(inputbuf);
-    m_file.close();
+    delete Stream;
 
-    //Don't delete because we're using mmapped i/o now.... right?
-    //delete [] inputbuf;
+    mad_frame_finish(Frame);
+    delete Frame;
+
+    mad_synth_finish(Synth);
+    delete Synth;
+
+    // Unmap inputbuf.
+    m_file.unmap(inputbuf);
+    inputbuf = NULL;
+    m_file.close();
 
     //Free the pointers in our seek list, LIBERATE THEM!!!
     for (int i = 0; i < m_qSeekList.count(); i++)
