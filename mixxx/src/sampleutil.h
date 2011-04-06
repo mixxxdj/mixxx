@@ -73,19 +73,55 @@ class SampleUtil {
     static void copyWithGain(CSAMPLE* pDest, const CSAMPLE* pSrc,
                              CSAMPLE gain, int iNumSamples);
 
-    // Copy to pDest, each sample of pSrc1 multiplied by gain1 plus pSrc2
-    // multiplied by gain2
+    // Copies the sum of each channel, multiplied by its gain into pDest
     static void copy2WithGain(CSAMPLE* pDest,
                               const CSAMPLE* pSrc1, CSAMPLE gain1,
                               const CSAMPLE* pSrc2, CSAMPLE gain2,
                               int iNumSamples);
 
-    // Copy to pDest, each sample of pSrc1 multiplied by gain1 plus pSrc2
-    // multiplied by gain2 plus pSrc3 multiplied by gain3
+    // Copies the sum of each channel, multiplied by its gain into pDest
     static void copy3WithGain(CSAMPLE* pDest,
                               const CSAMPLE* pSrc1, CSAMPLE gain1,
                               const CSAMPLE* pSrc2, CSAMPLE gain2,
                               const CSAMPLE* pSrc3, CSAMPLE gain3,
+                              int iNumSamples);
+
+    // Copies the sum of each channel, multiplied by its gain into pDest
+    static void copy4WithGain(CSAMPLE* pDest,
+                              const CSAMPLE* pSrc1, CSAMPLE gain1,
+                              const CSAMPLE* pSrc2, CSAMPLE gain2,
+                              const CSAMPLE* pSrc3, CSAMPLE gain3,
+                              const CSAMPLE* pSrc4, CSAMPLE gain4,
+                              int iNumSamples);
+
+    // Copies the sum of each channel, multiplied by its gain into pDest
+    static void copy5WithGain(CSAMPLE* pDest,
+                              const CSAMPLE* pSrc1, CSAMPLE gain1,
+                              const CSAMPLE* pSrc2, CSAMPLE gain2,
+                              const CSAMPLE* pSrc3, CSAMPLE gain3,
+                              const CSAMPLE* pSrc4, CSAMPLE gain4,
+                              const CSAMPLE* pSrc5, CSAMPLE gain5,
+                              int iNumSamples);
+
+    // Copies the sum of each channel, multiplied by its gain into pDest
+    static void copy6WithGain(CSAMPLE* pDest,
+                              const CSAMPLE* pSrc1, CSAMPLE gain1,
+                              const CSAMPLE* pSrc2, CSAMPLE gain2,
+                              const CSAMPLE* pSrc3, CSAMPLE gain3,
+                              const CSAMPLE* pSrc4, CSAMPLE gain4,
+                              const CSAMPLE* pSrc5, CSAMPLE gain5,
+                              const CSAMPLE* pSrc6, CSAMPLE gain6,
+                              int iNumSamples);
+
+    // Copies the sum of each channel, multiplied by its gain into pDest
+    static void copy7WithGain(CSAMPLE* pDest,
+                              const CSAMPLE* pSrc1, CSAMPLE gain1,
+                              const CSAMPLE* pSrc2, CSAMPLE gain2,
+                              const CSAMPLE* pSrc3, CSAMPLE gain3,
+                              const CSAMPLE* pSrc4, CSAMPLE gain4,
+                              const CSAMPLE* pSrc5, CSAMPLE gain5,
+                              const CSAMPLE* pSrc6, CSAMPLE gain6,
+                              const CSAMPLE* pSrc7, CSAMPLE gain7,
                               int iNumSamples);
 
     // Convert a buffer of SAMPLEs to a buffer of CSAMPLEs. Does not work

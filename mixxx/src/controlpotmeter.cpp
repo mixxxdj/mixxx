@@ -34,18 +34,22 @@ ControlPotmeter::ControlPotmeter(ConfigKey key, double dMinValue, double dMaxVal
     setSmallStep(m_dValueRange/100.f);
 
     ControlPushButton * p;
-    p = new ControlPushButton(ConfigKey(key.group, QString(key.item)+"_up"));
-    connect(p, SIGNAL(valueChanged(double)), this, SLOT(incValue(double)));
-    p = new ControlPushButton(ConfigKey(key.group, QString(key.item)+"_down"));
-    connect(p, SIGNAL(valueChanged(double)), this, SLOT(decValue(double)));
-    p = new ControlPushButton(ConfigKey(key.group, QString(key.item)+"_up_small"));
-    connect(p, SIGNAL(valueChanged(double)), this, SLOT(incSmallValue(double)));
-    p = new ControlPushButton(ConfigKey(key.group, QString(key.item)+"_down_small"));
-    connect(p, SIGNAL(valueChanged(double)), this, SLOT(decSmallValue(double)));
+    m_pControlUp = new ControlPushButton(ConfigKey(key.group, QString(key.item)+"_up"));
+    connect(m_pControlUp, SIGNAL(valueChanged(double)), this, SLOT(incValue(double)));
+    m_pControlDown = new ControlPushButton(ConfigKey(key.group, QString(key.item)+"_down"));
+    connect(m_pControlDown, SIGNAL(valueChanged(double)), this, SLOT(decValue(double)));
+    m_pControlUpSmall = new ControlPushButton(ConfigKey(key.group, QString(key.item)+"_up_small"));
+    connect(m_pControlUpSmall, SIGNAL(valueChanged(double)), this, SLOT(incSmallValue(double)));
+    m_pControlDownSmall = new ControlPushButton(ConfigKey(key.group, QString(key.item)+"_down_small"));
+    connect(m_pControlDownSmall, SIGNAL(valueChanged(double)), this, SLOT(decSmallValue(double)));
 }
 
 ControlPotmeter::~ControlPotmeter()
 {
+    delete m_pControlUp;
+    delete m_pControlDown;
+    delete m_pControlUpSmall;
+    delete m_pControlDownSmall;
 }
 
 double ControlPotmeter::getMin()

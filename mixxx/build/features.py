@@ -101,7 +101,7 @@ class CoreAudio(Feature):
             build.env.Append(CPPDEFINES = '__COREAUDIO__')
 
     def sources(self, build):
-        return ['soundsourcecoreaudio.cpp', 
+        return ['soundsourcecoreaudio.cpp',
                 '#lib/apple/CAStreamBasicDescription.h']
 
 
@@ -413,6 +413,30 @@ class ScriptStudio(Feature):
                 'script/signalrecorder.cpp',
                 'script/macrolistitem.cpp',
                 'script/qtscriptinterface.cpp']
+
+class PerfTools(Feature):
+    def description(self):
+        return "Google PerfTools"
+
+    def enabled(self, build):
+        build.flags['perftools'] = util.get_flags(build.env, 'perftools', 0)
+        build.flags['perftools_profiler'] = util.get_flags(build.env, 'perftools_profiler', 0)
+        if int(build.flags['perftools']):
+            return True
+        return False
+
+    def add_options(self, build, vars):
+        vars.Add("perftools", "Set to 1 to enable linking against libtcmalloc and Google's performance tools. You must install libtcmalloc from google-perftools to use this option.", 0)
+        vars.Add("perftools_profiler", "Set to 1 to enable linking against libprofiler, Google's CPU profiler. You must install libprofiler from google-perftools to use this option.", 0)
+
+    def configure(self, build, conf):
+        if not self.enabled(build):
+            return
+
+        build.env.Append(LIBS = "tcmalloc")
+
+        if int(build.flags['perftools_profiler']):
+            build.env.Append(LIBS = "profiler")
 
 class AsmLib(Feature):
     def description(self):

@@ -144,6 +144,14 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxApp * mixxx,
     dir.setFilter(QDir::Dirs);
 
     //
+    // Override Playing Track on Track Load
+    //
+    ComboBoxAllowTrackLoadToPlayingDeck->addItem(tr("Don't load tracks into a playing deck"));
+    ComboBoxAllowTrackLoadToPlayingDeck->addItem(tr("Load tracks into playing decks"));
+    ComboBoxAllowTrackLoadToPlayingDeck->setCurrentIndex(m_pConfig->getValueString(ConfigKey("[Controls]", "AllowTrackLoadToPlayingDeck")).toInt());
+    connect(ComboBoxAllowTrackLoadToPlayingDeck, SIGNAL(activated(int)), this, SLOT(slotSetAllowTrackLoadToPlayingDeck(int)));
+
+    //
     // Default Cue Behavior
     //
 
@@ -353,6 +361,11 @@ void DlgPrefControls::slotSetVisuals(int)
 {
     m_pConfig->set(ConfigKey("[Controls]","Visuals"), ConfigValue(ComboBoxVisuals->currentIndex()));
     m_mixxx->rebootMixxxView();
+}
+
+void DlgPrefControls::slotSetAllowTrackLoadToPlayingDeck(int)
+{
+    m_pConfig->set(ConfigKey("[Controls]","AllowTrackLoadToPlayingDeck"), ConfigValue(ComboBoxAllowTrackLoadToPlayingDeck->currentIndex()));
 }
 
 void DlgPrefControls::slotSetCueDefault(int)
