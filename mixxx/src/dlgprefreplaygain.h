@@ -9,6 +9,7 @@
 #define DLGPREFREPLAYGAIN_H_
 #include "ui_dlgprefreplaygaindlg.h"
 #include "configobject.h"
+#include "controlobjectthread.h"
 
 
 class QWidget;
@@ -36,6 +37,9 @@ void loadSettings();
 
 /** Pointer to config object */
 ConfigObject<ConfigValue> *config;
+
+ControlObjectThread m_COTInitialBoost;
+ControlObjectThread m_COTEnabled;
 
 };
 

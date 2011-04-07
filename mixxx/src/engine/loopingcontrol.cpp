@@ -95,6 +95,15 @@ LoopingControl::LoopingControl(const char * _group,
 }
 
 LoopingControl::~LoopingControl() {
+    delete m_pLoopOutButton;
+    delete m_pLoopInButton;
+    delete m_pReloopExitButton;
+    delete m_pCOLoopEnabled;
+    delete m_pCOLoopStartPosition;
+    delete m_pCOLoopEndPosition;
+    delete m_pCOLoopScale;
+    delete m_pLoopHalveButton;
+    delete m_pLoopDoubleButton;
     delete m_pCOBeatLoop;
 
     while (m_beatLoops.size() > 0) {
@@ -240,7 +249,7 @@ void LoopingControl::slotLoopOut(double val) {
 
 
     if (val) {
-        pos = m_pQuantizeEnabled->get() ? m_pQuantizeBeat->get() : m_iCurrentSample;
+        pos = m_pQuantizeEnabled->get() ? m_pNextBeat->get() : m_iCurrentSample;
         // If the user is trying to set a loop-out before the loop in or without
         // having a loop-in, then ignore it.
         if (m_iLoopStartSample == -1 || pos < m_iLoopStartSample) {

@@ -21,6 +21,7 @@
 #include "ui_dlgprefvinyldlg.h"
 #include "configobject.h"
 #include "vinylcontrolsignalwidget.h"
+#include "controlobjectthread.h"
 
 class QWidget;
 class PlayerProxy;
@@ -78,6 +79,7 @@ private:
     ControlObjectThreadMain* m_vinylControlInput1R;
     ControlObjectThreadMain* m_vinylControlInput2L;
     ControlObjectThreadMain* m_vinylControlInput2R;
+    ControlObjectThread m_COTMode;
     bool m_dontForce;
 };
 

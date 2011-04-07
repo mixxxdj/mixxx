@@ -489,6 +489,155 @@ void SampleUtil::sseCopy3WithGain(CSAMPLE* pDest,
 }
 
 // static
+void SampleUtil::copy4WithGain(CSAMPLE* pDest,
+                               const CSAMPLE* pSrc1, CSAMPLE gain1,
+                               const CSAMPLE* pSrc2, CSAMPLE gain2,
+                               const CSAMPLE* pSrc3, CSAMPLE gain3,
+                               const CSAMPLE* pSrc4, CSAMPLE gain4,
+                               int iNumSamples) {
+    if (gain1 == 0.0f) {
+        return copy3WithGain(pDest, pSrc2, gain2, pSrc3, gain3, pSrc4, gain4, iNumSamples);
+    }
+    if (gain2 == 0.0f) {
+        return copy3WithGain(pDest, pSrc1, gain1, pSrc3, gain3, pSrc4, gain4, iNumSamples);
+    }
+    if (gain3 == 0.0f) {
+        return copy3WithGain(pDest, pSrc1, gain1, pSrc2, gain2, pSrc4, gain4, iNumSamples);
+    }
+    if (gain4 == 0.0f) {
+        return copy3WithGain(pDest, pSrc1, gain1, pSrc2, gain2, pSrc3, gain3, iNumSamples);
+    }
+    if (m_sOptimizationsOn) {
+        // TODO(rryan) implement SSE for this? worth it?
+    }
+    for (int i = 0; i < iNumSamples; ++i) {
+        pDest[i] = pSrc1[i] * gain1 + pSrc2[i] * gain2 + pSrc3[i] * gain3 + pSrc4[i] * gain4;
+    }
+}
+
+// static
+void SampleUtil::copy5WithGain(CSAMPLE* pDest,
+                               const CSAMPLE* pSrc1, CSAMPLE gain1,
+                               const CSAMPLE* pSrc2, CSAMPLE gain2,
+                               const CSAMPLE* pSrc3, CSAMPLE gain3,
+                               const CSAMPLE* pSrc4, CSAMPLE gain4,
+                               const CSAMPLE* pSrc5, CSAMPLE gain5,
+                               int iNumSamples) {
+    if (gain1 == 0.0f) {
+        return copy4WithGain(pDest, pSrc2, gain2, pSrc3, gain3, pSrc4, gain4, pSrc5, gain5, iNumSamples);
+    }
+    if (gain2 == 0.0f) {
+        return copy4WithGain(pDest, pSrc1, gain1, pSrc3, gain3, pSrc4, gain4, pSrc5, gain5, iNumSamples);
+    }
+    if (gain3 == 0.0f) {
+        return copy4WithGain(pDest, pSrc1, gain1, pSrc2, gain2, pSrc4, gain4, pSrc5, gain5, iNumSamples);
+    }
+    if (gain4 == 0.0f) {
+        return copy4WithGain(pDest, pSrc1, gain1, pSrc2, gain2, pSrc3, gain3, pSrc5, gain5, iNumSamples);
+    }
+    if (gain5 == 0.0f) {
+        return copy4WithGain(pDest, pSrc1, gain1, pSrc2, gain2, pSrc3, gain3, pSrc4, gain4, iNumSamples);
+    }
+
+    if (m_sOptimizationsOn) {
+        // TODO(rryan) implement SSE for this? worth it?
+    }
+
+    for (int i = 0; i < iNumSamples; ++i) {
+        pDest[i] = pSrc1[i] * gain1 + pSrc2[i] * gain2 + pSrc3[i] * gain3 + pSrc4[i] * gain4 + pSrc5[i] * gain5;
+    }
+}
+
+// static
+void SampleUtil::copy6WithGain(CSAMPLE* pDest,
+                               const CSAMPLE* pSrc1, CSAMPLE gain1,
+                               const CSAMPLE* pSrc2, CSAMPLE gain2,
+                               const CSAMPLE* pSrc3, CSAMPLE gain3,
+                               const CSAMPLE* pSrc4, CSAMPLE gain4,
+                               const CSAMPLE* pSrc5, CSAMPLE gain5,
+                               const CSAMPLE* pSrc6, CSAMPLE gain6,
+                               int iNumSamples) {
+    if (gain1 == 0.0f) {
+        return copy5WithGain(pDest, pSrc2, gain2, pSrc3, gain3, pSrc4, gain4,
+                             pSrc5, gain5, pSrc6, gain6, iNumSamples);
+    }
+    if (gain2 == 0.0f) {
+        return copy5WithGain(pDest, pSrc1, gain1, pSrc3, gain3, pSrc4, gain4,
+                             pSrc5, gain5, pSrc6, gain6, iNumSamples);
+    }
+    if (gain3 == 0.0f) {
+        return copy5WithGain(pDest, pSrc1, gain1, pSrc2, gain2, pSrc4, gain4,
+                             pSrc5, gain5, pSrc6, gain6, iNumSamples);
+    }
+    if (gain4 == 0.0f) {
+        return copy5WithGain(pDest, pSrc1, gain1, pSrc2, gain2, pSrc3, gain3,
+                             pSrc5, gain5, pSrc6, gain6, iNumSamples);
+    }
+    if (gain5 == 0.0f) {
+        return copy5WithGain(pDest, pSrc1, gain1, pSrc2, gain2, pSrc3, gain3,
+                             pSrc4, gain4, pSrc6, gain6, iNumSamples);
+    }
+    if (gain6 == 0.0f) {
+        return copy5WithGain(pDest, pSrc1, gain1, pSrc2, gain2, pSrc3, gain3,
+                             pSrc4, gain4, pSrc5, gain5, iNumSamples);
+    }
+    if (m_sOptimizationsOn) {
+        // TODO(rryan) implement SSE for this? worth it?
+    }
+    for (int i = 0; i < iNumSamples; ++i) {
+        pDest[i] = pSrc1[i] * gain1 + pSrc2[i] * gain2 + pSrc3[i] * gain3 +
+                pSrc4[i] * gain4 + pSrc5[i] * gain5 + pSrc6[i] * gain6;
+    }
+}
+
+// static
+void SampleUtil::copy7WithGain(CSAMPLE* pDest,
+                               const CSAMPLE* pSrc1, CSAMPLE gain1,
+                               const CSAMPLE* pSrc2, CSAMPLE gain2,
+                               const CSAMPLE* pSrc3, CSAMPLE gain3,
+                               const CSAMPLE* pSrc4, CSAMPLE gain4,
+                               const CSAMPLE* pSrc5, CSAMPLE gain5,
+                               const CSAMPLE* pSrc6, CSAMPLE gain6,
+                               const CSAMPLE* pSrc7, CSAMPLE gain7,
+                               int iNumSamples) {
+    if (gain1 == 0.0f) {
+        return copy6WithGain(pDest, pSrc2, gain2, pSrc3, gain3, pSrc4, gain4,
+                             pSrc5, gain5, pSrc6, gain6, pSrc7, gain7, iNumSamples);
+    }
+    if (gain2 == 0.0f) {
+        return copy6WithGain(pDest, pSrc1, gain1, pSrc3, gain3, pSrc4, gain4,
+                             pSrc5, gain5, pSrc6, gain6, pSrc7, gain7, iNumSamples);
+    }
+    if (gain3 == 0.0f) {
+        return copy6WithGain(pDest, pSrc1, gain1, pSrc2, gain2, pSrc4, gain4,
+                             pSrc5, gain5, pSrc6, gain6, pSrc7, gain7, iNumSamples);
+    }
+    if (gain4 == 0.0f) {
+        return copy6WithGain(pDest, pSrc1, gain1, pSrc2, gain2, pSrc3, gain3,
+                             pSrc5, gain5, pSrc6, gain6, pSrc7, gain7, iNumSamples);
+    }
+    if (gain5 == 0.0f) {
+        return copy6WithGain(pDest, pSrc1, gain1, pSrc2, gain2, pSrc3, gain3,
+                             pSrc4, gain4, pSrc6, gain6, pSrc7, gain7, iNumSamples);
+    }
+    if (gain6 == 0.0f) {
+        return copy6WithGain(pDest, pSrc1, gain1, pSrc2, gain2, pSrc3, gain3,
+                             pSrc4, gain4, pSrc5, gain5, pSrc7, gain7, iNumSamples);
+    }
+    if (gain7 == 0.0f) {
+        return copy6WithGain(pDest, pSrc1, gain1, pSrc2, gain2, pSrc3, gain3,
+                             pSrc4, gain4, pSrc5, gain5, pSrc6, gain6, iNumSamples);
+    }
+    if (m_sOptimizationsOn) {
+        // TODO(rryan) implement SSE for this? worth it?
+    }
+    for (int i = 0; i < iNumSamples; ++i) {
+        pDest[i] = pSrc1[i] * gain1 + pSrc2[i] * gain2 + pSrc3[i] * gain3 +
+                pSrc4[i] * gain4 + pSrc5[i] * gain5 + pSrc6[i] * gain6 + pSrc7[i] * gain7;
+    }
+}
+
+// static
 void SampleUtil::convert(CSAMPLE* pDest, const SAMPLE* pSrc,
                          int iNumSamples) {
     if (m_sOptimizationsOn) {
