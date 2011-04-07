@@ -156,6 +156,15 @@ bool ControlObject::updateProxies(ControlObjectThread * pProxyNoUpdate)
     return bUpdateSuccess;
 }
 
+void ControlObject::getControls(QList<ControlObject*>* pControlList) {
+    m_sqCOHashMutex.lock();
+    for (QHash<ConfigKey, ControlObject*>::const_iterator it = m_sqCOHash.constBegin();
+         it != m_sqCOHash.constEnd(); ++it) {
+        pControlList->push_back(it.value());
+    }
+    m_sqCOHashMutex.unlock();
+}
+
 ControlObject * ControlObject::getControl(ConfigKey key)
 {
     //qDebug() << "ControlObject::getControl for (" << key.group << "," << key.item << ")";

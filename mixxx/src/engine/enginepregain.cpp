@@ -24,6 +24,9 @@
 #include "sampleutil.h"
 #include <time.h>   // for clock() and CLOCKS_PER_SEC
 
+ControlPotmeter* EnginePregain::s_pReplayGainBoost = NULL;
+ControlObject* EnginePregain::s_pEnableReplayGain = NULL;
+
 /*----------------------------------------------------------------
    A pregaincontrol is ... a pregain.
    ----------------------------------------------------------------*/
@@ -35,22 +38,14 @@ EnginePregain::EnginePregain(const char * group)
     m_pTotalGain = new ControlObject(ConfigKey(group, "total_gain"));
     m_pPassthrough = ControlObject::getControl(ConfigKey(group, "inputpassthrough"));
 
-
-    if(ControlObject::getControl(ConfigKey("[ReplayGain]", "InitialReplayGainBoost"))==NULL)
-    {
-        m_pReplayGainBoost = new ControlPotmeter(ConfigKey("[ReplayGain]", "InitialReplayGainBoost"),0., 15.);
-        m_pEnableReplayGain = new ControlObject(ConfigKey("[ReplayGain]", "ReplayGainEnabled"));
-    }
-    else
-    {
-        m_pReplayGainBoost = (ControlPotmeter*)ControlObject::getControl(ConfigKey("[ReplayGain]", "InitialReplayGainBoost"));
-        m_pEnableReplayGain = (ControlObject*)ControlObject::getControl(ConfigKey("[ReplayGain]", "ReplayGainEnabled"));
+    if (s_pReplayGainBoost == NULL) {
+        s_pReplayGainBoost = new ControlPotmeter(ConfigKey("[ReplayGain]", "InitialReplayGainBoost"),0., 15.);
+        s_pEnableReplayGain = new ControlObject(ConfigKey("[ReplayGain]", "ReplayGainEnabled"));
     }
 
     m_bSmoothFade = false;
     m_fClock=0;
     m_fSumClock=0;
-
 }
 
 EnginePregain::~EnginePregain()
@@ -58,16 +53,20 @@ EnginePregain::~EnginePregain()
     delete potmeterPregain;
     delete m_pControlReplayGain;
     delete m_pTotalGain;
+
+    delete s_pEnableReplayGain;
+    s_pEnableReplayGain = NULL;
+    delete s_pReplayGainBoost;
+    s_pReplayGainBoost = NULL;
 }
 
 void EnginePregain::process(const CSAMPLE * pIn, const CSAMPLE * pOut, const int iBufferSize)
 {
-    float fEnableReplayGain = m_pEnableReplayGain->get();
+    float fEnableReplayGain = s_pEnableReplayGain->get();
     //if passthrough is on, ignore replaygain
 	if(m_pPassthrough->get())
 		fEnableReplayGain=0.0f;
-    
-    float fReplayGainBoost = m_pReplayGainBoost->get();
+    float fReplayGainBoost = s_pReplayGainBoost->get();
     CSAMPLE * pOutput = (CSAMPLE *)pOut;
     float fGain = potmeterPregain->get();
     float fReplayGain = m_pControlReplayGain->get();
@@ -116,7 +115,7 @@ void EnginePregain::process(const CSAMPLE * pIn, const CSAMPLE * pOut, const int
         }
     }
     fGain = fGain*m_fReplayGainCorrection;
-    m_pTotalGain -> set(fGain);
+    m_pTotalGain->set(fGain);
 
     //qDebug()<<"Clock"<<(float)clock()/CLOCKS_PER_SEC;
     // SampleUtil deals with aliased buffers and gains of 1 or 0.

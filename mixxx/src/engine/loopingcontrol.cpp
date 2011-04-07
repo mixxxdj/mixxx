@@ -72,6 +72,15 @@ LoopingControl::LoopingControl(const char * _group,
 }
 
 LoopingControl::~LoopingControl() {
+    delete m_pLoopOutButton;
+    delete m_pLoopInButton;
+    delete m_pReloopExitButton;
+    delete m_pCOLoopEnabled;
+    delete m_pCOLoopStartPosition;
+    delete m_pCOLoopEndPosition;
+    delete m_pCOLoopScale;
+    delete m_pLoopHalveButton;
+    delete m_pLoopDoubleButton;
 }
 
 void LoopingControl::slotLoopScale(double scale) {

@@ -179,11 +179,11 @@ WaveformRenderer::~WaveformRenderer() {
 
 void WaveformRenderer::slotUpdatePlayPos(double v) {
     m_iPlayPosTimeOld = m_iPlayPosTime;
-    m_playPosTimeOld = m_playPosTime;
+    //m_playPosTimeOld = m_playPosTime;
     m_dPlayPosOld = m_dPlayPos;
     m_dPlayPos = v;
     m_iPlayPosTime = clock();
-    m_playPosTime = QTime::currentTime();
+    //m_playPosTime = QTime::currentTime();
 
     m_iDupes = 0;
     m_dPlayPosAdjust = 0;

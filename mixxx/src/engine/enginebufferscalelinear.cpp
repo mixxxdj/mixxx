@@ -47,6 +47,7 @@ EngineBufferScaleLinear::EngineBufferScaleLinear(ReadAheadManager *pReadAheadMan
 EngineBufferScaleLinear::~EngineBufferScaleLinear()
 {
 	//df.close();
+    delete [] buffer_int;
 }
 
 double EngineBufferScaleLinear::setTempo(double _tempo)

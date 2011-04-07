@@ -46,6 +46,8 @@ PlayerManager::~PlayerManager() {
     m_decks.clear();
     m_samplers.clear();
 
+    delete m_pCONumSamplers;
+    delete m_pCONumDecks;
     delete m_pAnalyserQueue;
 }
 

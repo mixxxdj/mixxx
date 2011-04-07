@@ -559,6 +559,18 @@ MixxxApp::~MixxxApp()
 
     qDebug() << "delete config, " << qTime.elapsed();
     delete m_pConfig;
+
+    // Check for leaked ControlObjects and give warnings.
+    QList<ControlObject*> leakedControls;
+    ControlObject::getControls(&leakedControls);
+
+    if (leakedControls.size() > 0) {
+        qDebug() << "WARNING: The following controls were leaked:";
+        foreach (ControlObject* pControl, leakedControls) {
+            ConfigKey key = pControl->getKey();
+            qDebug() << key.group << key.item;
+        }
+    }
 }
 
 int MixxxApp::noSoundDlg(void)
@@ -1397,6 +1409,7 @@ void MixxxApp::slotHelpAbout()
 "Tom Mast<br>"
 "Miko Kiiski<br>"
 "Vin&iacute;cius Dias dos Santos<br>"
+"Joe Colosimo<br>"
 
 "</p>"
 "<p align=\"center\"><b>And special thanks to:</b></p>"

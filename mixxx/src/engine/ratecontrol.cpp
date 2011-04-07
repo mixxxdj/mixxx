@@ -192,6 +192,7 @@ RateControl::~RateControl() {
     delete m_pWheel;
     delete m_pScratch;
     delete m_pOldScratch;
+    delete m_pScratchToggle;
     delete m_pJog;
     delete m_pJogFilter;
 }

@@ -27,6 +27,7 @@ VinylControl::VinylControl(ConfigObject<ConfigValue> * pConfig, const char * _gr
     m_pVinylPitchTweakKnob = new ControlObjectThread(ControlObject::getControl(ConfigKey(group,  "vinylpitchtweak")));
     loopEnabled		= new ControlObjectThread(ControlObject::getControl(ConfigKey(group, "loop_enabled")));
     inputPassthrough	= new ControlObjectThread(ControlObject::getControl(ConfigKey(group, "inputpassthrough")));
+    vinylStatus     = new ControlObjectThread(ControlObject::getControl(ConfigKey(group, "vinylcontrol_status")));
 
     dVinylPitch = 0.0f;
     dVinylPosition = 0.0f;
@@ -36,6 +37,7 @@ VinylControl::VinylControl(ConfigObject<ConfigValue> * pConfig, const char * _gr
     m_fTimecodeQuality = 0.0f;
 
     //Get the vinyl type
+
     strVinylType = m_pConfig->getValueString(ConfigKey(group,"vinylcontrol_vinyl_type"));
     
     //Get the vinyl speed

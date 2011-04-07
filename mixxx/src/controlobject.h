@@ -68,6 +68,10 @@ public:
     static bool disconnectControl(ConfigKey key);
     /** Returns a pointer to the ControlObject matching the given ConfigKey */
     static ControlObject *getControl(ConfigKey key);
+
+    // Adds all ControlObjects that currently exist to pControlList
+    static void getControls(QList<ControlObject*>* pControlsList);
+
     /** Used to add a pointer to the corresponding ControlObjectThread of this ControlObject */
     void addProxy(ControlObjectThread *pControlObjectThread);
     // To get rid of a proxy when the corresponding object is being deleted for example
