@@ -347,8 +347,6 @@ void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
         ChannelInfo* pChannelInfo = *it;
         EngineChannel* pChannel = pChannelInfo->m_pChannel;
         
-        CSAMPLE* buffer;
-        
         bool isactive = m_passthrough[channel_number]->get();
         if(isactive)
     	{
@@ -357,7 +355,6 @@ void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
     		//overwrite the channel buffer with the input so the decks, 
     		//not just the master get output
     		
-    		buffer = pChannelInfo->m_pBuffer;
     		passthroughBufferMutex[channel_number].lock();
     		
     		//currently playing silence while filling up the buffer
@@ -366,7 +363,7 @@ void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
     			if (m_iThruFill[channel_number] < math_max(1, m_iThruBufferCount[channel_number] - 2))
 				{
 					qDebug() << "Buffer filling" << m_iThruFill[channel_number] << math_max(1, m_iThruBufferCount[channel_number] - 2);
-					SampleUtil::applyGain(buffer, 0.0f, iBufferSize);
+					SampleUtil::applyGain(pChannelInfo->m_pBuffer, 0.0f, iBufferSize);
 				}
 				else
 				{
@@ -380,7 +377,7 @@ void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
     			if (m_iThruFill[channel_number] == 0)
 				{
 					qDebug() << "ERROR: input passthrough buffer underrun";
-					SampleUtil::applyGain(buffer, 0.0f, iBufferSize);
+					SampleUtil::applyGain(pChannelInfo->m_pBuffer, 0.0f, iBufferSize);
 					m_bFilling[channel_number] = true;
 				}
 				else
@@ -390,13 +387,13 @@ void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
 					else
 						m_iLastThruRead[channel_number]++;
 					m_iThruFill[channel_number]--;
-					SampleUtil::copyWithGain(buffer,
+					SampleUtil::copyWithGain(pChannelInfo->m_pBuffer,
 											m_passthroughBuffers[channel_number]+m_iLastThruRead[channel_number]*iBufferSize, 
 											1.0f, iBufferSize);
 				}
 			}
     		passthroughBufferMutex[channel_number].unlock();
-	    	pChannel->process(buffer, buffer, iBufferSize);
+	    	pChannel->process(pChannelInfo->m_pBuffer, pChannelInfo->m_pBuffer, iBufferSize);
 	    }
 	    else
 	    {
@@ -404,7 +401,7 @@ void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
    	        	//if it was active last time, zero out
    	        	if (m_bPassthroughWasActive[channel_number])
    	        	{
-   	        		//SampleUtil::applyGain(m_channelBuffers[channel_number], 0.0f, iBufferSize);
+   	        		SampleUtil::applyGain(pChannelInfo->m_pBuffer, 0.0f, iBufferSize);
    	        		m_bPassthroughWasActive[channel_number] = false;
 					m_iLastThruRead[channel_number] = -1;
 					m_iLastThruWrote[channel_number] = -1;
@@ -416,20 +413,13 @@ void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
 				continue;
     		}
 
-	    	buffer = m_channelBuffers[channel_number];
-			//channel->process(NULL, buffer, iBufferSize);
-			pChannel->process(NULL, buffer, iBufferSize);
+			pChannel->process(NULL, pChannelInfo->m_pBuffer, iBufferSize);
 	    }
 	    m_bPassthroughWasActive[channel_number] = isactive;
-
-        masterOutput |= (1 << channel_number);
 
         //// Process the buffer
         //pChannel->process(NULL, pChannelInfo->m_pBuffer, iBufferSize);
         masterOutput |= (1 << channel_number);
-
-        // Process the buffer
-        pChannel->process(NULL, pChannelInfo->m_pBuffer, iBufferSize);
 
         // If the channel is enabled for previewing in headphones, copy it
         // over to the headphone buffer
