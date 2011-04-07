@@ -1,8 +1,7 @@
-#ifndef __QUANTIZE_CONTROL__
-#define __QUANTIZE_CONTROL__
+#ifndef QUANTIZECONTROL_H
+#define QUANTIZECONTROL_H
 
 #include <QObject>
-#include <QSignalMapper>
 
 #include "configobject.h"
 #include "engine/enginecontrol.h"
@@ -13,36 +12,32 @@
 class ControlObject;
 class ControlPushButton;
 class ControlObjectThread;
-class CachingReader;
-
 
 class QuantizeControl : public EngineControl {
     Q_OBJECT
-public:
-    QuantizeControl(const char * _group, ConfigObject<ConfigValue> * _config);
+  public:
+    QuantizeControl(const char* pGroup, ConfigObject<ConfigValue>* pConfig);
     virtual ~QuantizeControl();
+
     double process(const double dRate,
                    const double currentSample,
                    const double totalSamples,
                    const int iBufferSize);
 
-public slots:
+  public slots:
     virtual void trackLoaded(TrackPointer pTrack);
+    virtual void trackUnloaded(TrackPointer pTrack);
+
+  private slots:
     void slotBeatsUpdated();
 
-private:
-    int m_iCurrentSample;
-    double m_dQuantizePrevBeat;
-
+  private:
     ControlPushButton* m_pCOQuantizeEnabled;
-    ControlObject* m_pCOQuantizeBeat;
-    
-    CachingReader *m_pReader;
+    ControlObject* m_pCONextBeat;
+    ControlObject* m_pCOPrevBeat;
 
     TrackPointer m_pTrack;
     BeatsPointer m_pBeats;
 };
 
-
-#endif // __QUANTIZE_CONTROL__
-
+#endif // QUANTIZECONTROL_H
