@@ -53,13 +53,13 @@ public:
     // channelsNeededForType (if necessary), the subclasses' getSupportedTypes
     // (if necessary), etc. -- bkgood
     enum AudioPathType {
-        INVALID,
         MASTER,
         HEADPHONES,
         DECK,
         VINYLCONTROL,
         MICROPHONE,
         EXTPASSTHROUGH,
+        INVALID, // if this isn't last bad things will happen -bkgood
     };
     AudioPath(unsigned char channelBase, unsigned char channels);
     AudioPathType getType() const;
