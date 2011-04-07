@@ -14,7 +14,6 @@
 
 class ControlPushButton;
 class ControlObject;
-class CachingReader;
 
 class BeatLoopingControl;
 
