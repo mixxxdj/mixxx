@@ -59,6 +59,7 @@ class LoopingControl : public EngineControl {
     void slotLoopStartPos(double);
     void slotLoopEndPos(double);
     virtual void trackLoaded(TrackPointer pTrack);
+    virtual void trackUnloaded(TrackPointer pTrack);
     void slotUpdatedTrackBeats();
     void slotBeatLoop(double);
     void slotLoopScale(double);

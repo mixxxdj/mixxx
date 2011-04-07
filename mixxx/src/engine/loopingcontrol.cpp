@@ -245,11 +245,8 @@ void LoopingControl::slotLoopIn(double val) {
 }
 
 void LoopingControl::slotLoopOut(double val) {
-    int pos;
-
-
     if (val) {
-        pos = m_pQuantizeEnabled->get() ? m_pNextBeat->get() : m_iCurrentSample;
+        int pos = m_pQuantizeEnabled->get() ? m_pNextBeat->get() : m_iCurrentSample;
         // If the user is trying to set a loop-out before the loop in or without
         // having a loop-in, then ignore it.
         if (m_iLoopStartSample == -1 || pos < m_iLoopStartSample) {
@@ -339,21 +336,33 @@ void LoopingControl::setLoopingEnabled(bool enabled) {
     m_pCOLoopEnabled->set(enabled);
 }
 
-// Beat Looping Methods
-void LoopingControl::trackLoaded(TrackPointer tio)
-{
-    m_pTrack = tio;
-    m_pBeats = m_pTrack->getBeats();
+void LoopingControl::trackLoaded(TrackPointer pTrack) {
+    if (m_pTrack) {
+        trackUnloaded(m_pTrack);
+    }
 
-    connect(m_pTrack.data(), SIGNAL(beatsUpdated()),
-                    this, SLOT(slotUpdatedTrackBeats()));
+    if (pTrack) {
+        m_pTrack = pTrack;
+        m_pBeats = m_pTrack->getBeats();
+        connect(m_pTrack.data(), SIGNAL(beatsUpdated()),
+                this, SLOT(slotUpdatedTrackBeats()));
+    }
+}
+
+void LoopingControl::trackUnloaded(TrackPointer pTrack) {
+    if (m_pTrack) {
+        disconnect(m_pTrack.data(), SIGNAL(beatsUpdated()),
+                   this, SLOT(slotBeatsUpdated()));
+    }
+    m_pTrack.clear();
+    m_pBeats.clear();
 }
 
 void LoopingControl::slotUpdatedTrackBeats()
 {
-    m_pBeats = m_pTrack->getBeats();
-    if ( !m_pBeats )
-        return;
+    if (m_pTrack) {
+        m_pBeats = m_pTrack->getBeats();
+    }
 }
 
 // Generate a loop of 'beats' length. It can also do fractions for a beatslicing
@@ -417,6 +426,7 @@ BeatLoopingControl::BeatLoopingControl(const char* pGroup, LoopingControl* pLoop
 }
 
 BeatLoopingControl::~BeatLoopingControl() {
+    delete m_pPBActivateBeatLoop;
 }
 
 void BeatLoopingControl::slotBeatLoopActivate(double) {
