@@ -393,7 +393,7 @@ void LoopingControl::slotBeatLoop(double beats)
     // around X beats before there.
     else
     {
-        loop_out = m_pBeats->findNthBeat(m_iCurrentSample, 0);
+        loop_out = m_pBeats->findNthBeat(m_iCurrentSample, 1);
         if ( beats <= -1 )
             loop_in = m_pBeats->findNthBeat(m_iCurrentSample, (int)floor(beats));
         else
