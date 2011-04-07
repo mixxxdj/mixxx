@@ -233,22 +233,10 @@ bool AudioPath::isIndexed(AudioPathType type) {
  * @note This method is static.
  */
 AudioPathType AudioPath::getTypeFromInt(int typeInt) {
-    switch (typeInt) {
-    case AudioPath::MASTER:
-        return AudioPath::MASTER;
-    case AudioPath::HEADPHONES:
-        return AudioPath::HEADPHONES;
-    case AudioPath::DECK:
-        return AudioPath::DECK;
-    case AudioPath::VINYLCONTROL:
-        return AudioPath::VINYLCONTROL;
-    case AudioPath::EXTPASSTHROUGH:
-        return AudioPath::EXTPASSTHROUGH;
-    case AudioPath::MICROPHONE:
-        return AudioPath::MICROPHONE;
-    default:
+    if (typeInt < 0 || typeInt >= AudioPath::INVALID) {
         return AudioPath::INVALID;
     }
+    return static_cast<AudioPathType>(typeInt);
 }
 
 /**
