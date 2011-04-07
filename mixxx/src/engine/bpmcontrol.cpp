@@ -70,6 +70,7 @@ BpmControl::~BpmControl() {
     delete m_pEngineBpm;
     delete m_pFileBpm;
     delete m_pButtonSync;
+    delete m_pButtonTap;
 }
 
 double BpmControl::getBpm() {
@@ -77,6 +78,7 @@ double BpmControl::getBpm() {
 }
 
 void BpmControl::slotFileBpmChanged(double bpm) {
+    qDebug() << this << "slotFileBpmChanged" << bpm;
     // Adjust the file-bpm with the current setting of the rate to get the
     // engine BPM.
     double dRate = 1.0 + m_pRateDir->get() * m_pRateRange->get() * m_pRateSlider->get();
@@ -116,36 +118,87 @@ void BpmControl::slotTapFilter(double averageLength, int numSamples) {
     slotFileBpmChanged(averageBpm);
 }
 
-void BpmControl::slotControlBeatSync(double) {
+void BpmControl::slotControlBeatSync(double v) {
+    if (!v)
+        return;
+
     EngineBuffer* pOtherEngineBuffer = getOtherEngineBuffer();
 
     if(!pOtherEngineBuffer)
         return;
 
-    double fOtherBpm = pOtherEngineBuffer->getBpm();
     double fThisBpm  = m_pEngineBpm->get();
-    double fRateScale;
+    double fThisRate = m_pRateDir->get() * m_pRateSlider->get() * m_pRateRange->get();
+    double fThisFileBpm = m_pFileBpm->get();
 
-    if (fOtherBpm>0. && fThisBpm>0.)
-    {
-        float fOtherRate = pOtherEngineBuffer->getRate();
-        float fBpmDelta = fabs(fThisBpm-fOtherBpm);
+    double fOtherBpm = pOtherEngineBuffer->getBpm();
+    double fOtherRate = pOtherEngineBuffer->getRate();
+    double fOtherFileBpm = fOtherBpm / (1.0 + fOtherRate);
 
-        // Test if this buffers bpm is the double of the other one, and find
-        // rate scale:
-        if (fabs(fThisBpm*2.-fOtherBpm) < fBpmDelta)
-            fRateScale = fOtherBpm/(2*fThisBpm) * (1.+fOtherRate);
-        else if ( fabs(fThisBpm-2.*fOtherBpm) < fBpmDelta)
-            fRateScale = 2.*fOtherBpm/fThisBpm * (1.+fOtherRate);
-        else
-            fRateScale = (fOtherBpm*(1.+fOtherRate))/fThisBpm;
+    ////////////////////////////////////////////////////////////////////////////
+    // Rough proof of how syncing works -- rryan 3/2011
+    // ------------------------------------------------
+    //
+    // Let this and other denote this deck versus the sync-target deck.
+    //
+    // The goal is for this deck's effective BPM to equal the other decks.
+    //
+    // thisBpm = otherBpm
+    //
+    // The overall rate is the product of range, direction, and scale plus 1:
+    //
+    // rate = 1.0 + rateDir * rateRange * rateScale
+    //
+    // An effective BPM is the file-bpm times the rate:
+    //
+    // bpm = fileBpm * rate
+    //
+    // So our goal is to tweak thisRate such that this equation is true:
+    //
+    // thisFileBpm * (1.0 + thisRate) = otherFileBpm * (1.0 + otherRate)
+    //
+    // so rearrange this equation in terms of thisRate:
+    //
+    // thisRate = (otherFileBpm * (1.0 + otherRate)) / thisFileBpm - 1.0
+    //
+    // So the new rateScale to set is:
+    //
+    // thisRateScale = ((otherFileBpm * (1.0 + otherRate)) / thisFileBpm - 1.0) / (thisRateDir * thisRateRange)
 
-        // Ensure the rate is within resonable boundaries
-        if (fRateScale<2. && fRateScale>0.5)
+    if (fOtherBpm > 0.0 && fThisBpm > 0.0) {
+        // The desired rate is the other decks effective rate divided by this
+        // deck's file BPM. This gives us the playback rate that will produe an
+        // effective BPM equivalent to the other decks.
+        double fDesiredRate = fOtherBpm / fThisFileBpm;
+
+        // Test if this buffers bpm is the double of the other one, and adjust
+        // the rate scale. I believe this is intended to account for our BPM
+        // algorithm sometimes finding double or half BPMs. This avoid drastic
+        // scales.
+        float fFileBpmDelta = fabs(fThisFileBpm-fOtherFileBpm);
+        if (fabs(fThisFileBpm*2.0 - fOtherFileBpm) < fFileBpmDelta) {
+            fDesiredRate /= 2.0;
+        } else if (fabs(fThisFileBpm - 2.0*fOtherFileBpm) < fFileBpmDelta) {
+            fDesiredRate *= 2.0;
+        }
+
+        // Subtract the base 1.0, now fDesiredRate is the percentage
+        // increase/decrease in playback rate, not the playback rate.
+        fDesiredRate -= 1.0;
+
+        // Ensure the rate is within resonable boundaries. Remember, this is the
+        // percent to scale the rate, not the rate itself. If fDesiredRate was -1,
+        // that would mean the deck would be completely stopped. If fDesiredRate
+        // is 1, that means it is playing at 2x speed. This limit enforces that
+        // we are scaled between 0.5x and 2x.
+        if (fDesiredRate < 1.0 && fDesiredRate > -0.5)
         {
-            // Adjust the rate:
-            fRateScale = (fRateScale-1.)/m_pRateRange->get();
-            m_pRateSlider->set(fRateScale * m_pRateDir->get());
+            // Adjust the rateScale. We have to divide by the range and
+            // direction to get the correct rateScale.
+            fDesiredRate = fDesiredRate/(m_pRateRange->get() * m_pRateDir->get());
+
+            // And finally, set the slider
+            m_pRateSlider->set(fDesiredRate);
 
             // Adjust the phase:
             // (removed, see older version for this info)

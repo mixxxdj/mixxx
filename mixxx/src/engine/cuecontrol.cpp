@@ -27,7 +27,6 @@ CueControl::CueControl(const char * _group,
         m_bHotcueCancel(false) {
     createControls();
 
-
     m_pTrackSamples = ControlObject::getControl(ConfigKey(_group, "track_samples"));
 
     m_pQuantizeEnabled = ControlObject::getControl(ConfigKey(_group, "quantize"));
@@ -76,11 +75,22 @@ CueControl::CueControl(const char * _group,
     connect(m_pPlayButton, SIGNAL(valueChanged(double)),
             this, SLOT(cuePlay(double)),
             Qt::DirectConnection);
-
-
 }
 
 CueControl::~CueControl() {
+    delete m_pCuePoint;
+    delete m_pCueMode;
+    delete m_pCueSet;
+    delete m_pCueGoto;
+    delete m_pCueGotoAndStop;
+    delete m_pCueSimple;
+    delete m_pCuePreview;
+    delete m_pCueCDJ;
+    delete m_pCueDefault;
+    while (m_hotcueControl.size() > 0) {
+        HotcueControl* pControl = m_hotcueControl.takeLast();
+        delete pControl;
+    }
 }
 
 void CueControl::createControls() {
@@ -715,6 +725,14 @@ HotcueControl::HotcueControl(const char* pGroup, int i)
 }
 
 HotcueControl::~HotcueControl() {
+    delete m_hotcuePosition;
+    delete m_hotcueEnabled;
+    delete m_hotcueSet;
+    delete m_hotcueGoto;
+    delete m_hotcueGotoAndStop;
+    delete m_hotcueActivate;
+    delete m_hotcueActivatePreview;
+    delete m_hotcueClear;
 }
 
 void HotcueControl::slotHotcueSet(double v) {
