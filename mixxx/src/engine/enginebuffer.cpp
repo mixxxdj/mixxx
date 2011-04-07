@@ -154,8 +154,7 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
     // Quantization Controller for enabling and disabling the
     // quantization (alignment) of loop in/out positions and (hot)cues with
     // beats.
-    m_pQuantizeControl = new QuantizeControl(_group, _config);
-    addControl(m_pQuantizeControl);
+    addControl(new QuantizeControl(_group, _config));
 
     // Create the Loop Controller
     m_pLoopingControl = new LoopingControl(_group, _config);
@@ -171,13 +170,6 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
     // Create the BPM Controller
     m_pBpmControl = new BpmControl(_group, _config);
     addControl(m_pBpmControl);
-
-    connect(m_pReader, SIGNAL(trackLoaded(TrackPointer, int, int)),
-            this, SLOT(slotTrackLoaded(TrackPointer, int, int)),
-            Qt::DirectConnection);
-    connect(m_pReader, SIGNAL(trackLoadFailed(TrackPointer, QString)),
-            this, SLOT(slotTrackLoadFailed(TrackPointer, QString)),
-            Qt::DirectConnection);
 
     m_pReadAheadManager = new ReadAheadManager(m_pReader);
     m_pReadAheadManager->addEngineControl(m_pLoopingControl);
