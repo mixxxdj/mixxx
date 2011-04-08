@@ -30,7 +30,6 @@ class EngineControl;
 class BpmControl;
 class RateControl;
 class LoopingControl;
-class QuantizeControl;
 class ReadAheadManager;
 class ControlObject;
 class ControlPushButton;
@@ -148,15 +147,12 @@ private:
 
     /** Pointer to the loop control object */
     LoopingControl* m_pLoopingControl;
-    
+
     /** Pointer to the rate control object */
     RateControl* m_pRateControl;
 
     /** Pointer to the BPM control object */
     BpmControl* m_pBpmControl;
-
-    /** Pointer to the Quantize control object */
-    QuantizeControl* m_pQuantizeControl;
 
     QList<EngineControl*> m_engineControls;
 

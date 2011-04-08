@@ -13,60 +13,78 @@
 #include "engine/enginecontrol.h"
 #include "mathstuff.h"
 
-QuantizeControl::QuantizeControl(const char * _group,
-                               ConfigObject<ConfigValue> * _config)
-        : EngineControl(_group, _config) {
-
-    m_dQuantizePrevBeat= -1;
-
-    m_pCOQuantizeEnabled = new ControlPushButton(ConfigKey(_group, "quantize"));
+QuantizeControl::QuantizeControl(const char* pGroup,
+                                 ConfigObject<ConfigValue>* pConfig)
+        : EngineControl(pGroup, pConfig) {
+    m_pCOQuantizeEnabled = new ControlPushButton(ConfigKey(pGroup, "quantize"));
     m_pCOQuantizeEnabled->set(0.0f);
-    m_pCOQuantizeBeat = new ControlObject(ConfigKey(_group, "quantize_beat"));
-    m_pCOQuantizeBeat->set(0.0f);
+    m_pCONextBeat = new ControlObject(ConfigKey(pGroup, "beat_next"));
+    m_pCONextBeat->set(0.0f);
+    m_pCOPrevBeat = new ControlObject(ConfigKey(pGroup, "beat_prev"));
+    m_pCOPrevBeat->set(0.0f);
 }
 
 QuantizeControl::~QuantizeControl() {
 }
 
-void QuantizeControl::trackLoaded(TrackPointer tio)
+void QuantizeControl::trackLoaded(TrackPointer pTrack)
 {
-    m_pTrack = tio;
-    m_pBeats = m_pTrack->getBeats();
-    connect(m_pTrack.data(), SIGNAL(beatsUpdated()), this, SLOT(slotBeatsUpdated()));
+    if (m_pTrack) {
+        trackUnloaded(m_pTrack);
+    }
+
+    if (pTrack) {
+        m_pTrack = pTrack;
+        m_pBeats = m_pTrack->getBeats();
+        connect(m_pTrack.data(), SIGNAL(beatsUpdated()),
+                this, SLOT(slotBeatsUpdated()));
+    }
 }
 
-void QuantizeControl::slotBeatsUpdated()
-{
-    m_pBeats = m_pTrack->getBeats();
+void QuantizeControl::trackUnloaded(TrackPointer pTrack) {
+    if (m_pTrack) {
+        disconnect(m_pTrack.data(), SIGNAL(beatsUpdated()),
+                   this, SLOT(slotBeatsUpdated()));
+    }
+    m_pTrack.clear();
+    m_pBeats.clear();
+}
+
+void QuantizeControl::slotBeatsUpdated() {
+    if (m_pTrack) {
+        m_pBeats = m_pTrack->getBeats();
+    }
 }
 
 double QuantizeControl::process(const double dRate,
-                               const double currentSample,
-                               const double totalSamples,
-                               const int iBufferSize) {
-
-    m_iCurrentSample = currentSample;
-    if (!even(m_iCurrentSample))
-        m_iCurrentSample--;
-
-    if ( m_pCOQuantizeEnabled->get() ) {
-        	if ((m_iCurrentSample > m_pCOQuantizeBeat->get()) || (m_iCurrentSample <= m_dQuantizePrevBeat)) {
-            double newpos;
-            
-        	    if ( ! m_pBeats ) {
-        	        qDebug() << "No Beats to Quantize With";
-        	        return kNoTrigger;
-        	    }
-
-        	    newpos = floorf(m_pBeats->findNextBeat(m_iCurrentSample));
-        	    if ( !even(newpos))
-        	        newpos--;
-        	    
-        	    m_pCOQuantizeBeat->set(newpos);
-        	    m_dQuantizePrevBeat = m_pBeats->findPrevBeat(m_iCurrentSample);
-        	}
+                                const double currentSample,
+                                const double totalSamples,
+                                const int iBufferSize) {
+    int iCurrentSample = currentSample;
+    if (!even(iCurrentSample)) {
+        iCurrentSample--;
     }
-    	
+
+    if (!m_pBeats) {
+        return kNoTrigger;
+    }
+
+    double prevBeat = m_pCOPrevBeat->get();
+    double nextBeat = m_pCONextBeat->get();
+
+    if (currentSample >= nextBeat || currentSample <= prevBeat) {
+        // TODO(XXX) are the floor and even checks necessary?
+        nextBeat = floorf(m_pBeats->findNextBeat(iCurrentSample));
+        prevBeat = floorf(m_pBeats->findPrevBeat(iCurrentSample));
+
+        if (!even(nextBeat))
+            nextBeat--;
+        if (!even(prevBeat))
+            prevBeat--;
+
+        m_pCONextBeat->set(nextBeat);
+        m_pCOPrevBeat->set(prevBeat);
+    }
+
     return kNoTrigger;
 }
-

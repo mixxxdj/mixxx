@@ -14,7 +14,6 @@
 
 class ControlPushButton;
 class ControlObject;
-class CachingReader;
 
 class BeatLoopingControl;
 
@@ -59,6 +58,7 @@ class LoopingControl : public EngineControl {
     void slotLoopStartPos(double);
     void slotLoopEndPos(double);
     virtual void trackLoaded(TrackPointer pTrack);
+    virtual void trackUnloaded(TrackPointer pTrack);
     void slotUpdatedTrackBeats();
     void slotBeatLoop(double);
     void slotLoopScale(double);
@@ -83,14 +83,14 @@ class LoopingControl : public EngineControl {
     int m_iLoopStartSample;
     int m_iCurrentSample;
     ControlObject* m_pQuantizeEnabled;
-    ControlObject* m_pQuantizeBeat;
+    ControlObject* m_pNextBeat;
 
     // Base BeatLoop Control Object.
     ControlObject* m_pCOBeatLoop;
     // Different sizes for Beat Loops/Seeks.
     static double s_dBeatSizes[];
     // Array of BeatLoopingControls, one for each size.
-    QList<BeatLoopingControl*> m_pBeatLoops;
+    QList<BeatLoopingControl*> m_beatLoops;
 
     TrackPointer m_pTrack;
     BeatsPointer m_pBeats;
@@ -99,7 +99,7 @@ class LoopingControl : public EngineControl {
 class BeatLoopingControl : public QObject {
     Q_OBJECT
   public:
-    BeatLoopingControl(const char *_group, LoopingControl *pLoopingControl, double size);
+    BeatLoopingControl(const char* pGroup, LoopingControl* pLoopingControl, double size);
     virtual ~BeatLoopingControl();
 
   public slots:
