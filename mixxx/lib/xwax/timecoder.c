@@ -330,7 +330,7 @@ static int detect_zero_crossing(struct timecoder_channel_t *ch,
 
 /* Submit and decode a block of PCM audio data to the timecoder */
 
-int timecoder_submit(struct timecoder_t *tc, signed short *pcm, int samples)
+int timecoder_submit(struct timecoder_t *tc, const signed short *pcm, int samples)
 {
     int b, l, /* bitstream and timecode bits */
         s, c,

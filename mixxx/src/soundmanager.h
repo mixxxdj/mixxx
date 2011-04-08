@@ -67,8 +67,12 @@ class SoundManager : public QObject
                         unsigned long iFramesPerBuffer, unsigned int iFrameSize);
         void registerOutput(AudioOutput output, const AudioSource *src);
         void registerInput(AudioInput input, AudioDestination *dest);
+        QList<AudioOutput> registeredOutputs() const;
+        QList<AudioInput> registeredInputs() const;
     signals:
         void devicesUpdated(); // emitted when all the pointers to SoundDevices go stale
+        void outputRegistered(AudioOutput output, const AudioSource *src);
+        void inputRegistered(AudioInput input, AudioDestination *dest);
     public slots:
         void sync();
     private:

@@ -109,7 +109,7 @@ VinylControlXwax::~VinylControlXwax()
 
 
 
-void VinylControlXwax::AnalyseSamples(short *samples, size_t size)
+void VinylControlXwax::AnalyseSamples(const short *samples, size_t size)
 {
     if (lockSamples.tryLock())
     {

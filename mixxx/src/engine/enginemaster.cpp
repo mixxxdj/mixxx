@@ -448,6 +448,22 @@ const CSAMPLE* EngineMaster::getChannelBuffer(QString group) const {
     return NULL;
 }
 
+const CSAMPLE* EngineMaster::buffer(AudioOutput output) const {
+    switch (output.getType()) {
+    case AudioOutput::MASTER:
+        return getMasterBuffer();
+        break;
+    case AudioOutput::HEADPHONES:
+        return getHeadphoneBuffer();
+        break;
+    case AudioOutput::DECK:
+        return getDeckBuffer(output.getIndex());
+        break;
+    default:
+        return NULL;
+    }
+}
+
 // static
 double EngineMaster::gainForOrientation(EngineChannel::ChannelOrientation orientation,
                                         double leftGain,

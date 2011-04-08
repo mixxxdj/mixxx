@@ -23,6 +23,7 @@
 #include "controlobject.h"
 #include "engine/engineobject.h"
 #include "engine/enginechannel.h"
+#include "soundmanagerutil.h"
 
 class EngineWorkerScheduler;
 class EngineBuffer;
@@ -38,17 +39,14 @@ class ControlPushButton;
 class EngineVinylSoundEmu;
 class EngineSideChain;
 
-class EngineMaster : public EngineObject {
+class EngineMaster : public EngineObject, public AudioSource {
 public:
     EngineMaster(ConfigObject<ConfigValue>* pConfig, const char* pGroup);
     virtual ~EngineMaster();
 
     // Get access to the sample buffers. None of these are thread safe. Only to
     // be called by SoundManager.
-    const CSAMPLE* getMasterBuffer() const;
-    const CSAMPLE* getHeadphoneBuffer() const;
-    const CSAMPLE* getDeckBuffer(unsigned int i) const;
-    const CSAMPLE* getChannelBuffer(QString name) const;
+    const CSAMPLE* buffer(AudioOutput output) const;
 
     void process(const CSAMPLE *, const CSAMPLE *pOut, const int iBufferSize);
 
@@ -105,6 +103,10 @@ public:
 
     void mixChannels(unsigned int channelBitvector, unsigned int maxChannels,
                      CSAMPLE* pOutput, unsigned int iBufferSize, GainCalculator* pGainCalculator);
+    const CSAMPLE* getMasterBuffer() const;
+    const CSAMPLE* getHeadphoneBuffer() const;
+    const CSAMPLE* getDeckBuffer(unsigned int i) const;
+    const CSAMPLE* getChannelBuffer(QString name) const;
 
 
     QList<ChannelInfo*> m_channels;

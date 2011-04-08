@@ -25,6 +25,7 @@ class SoundManager;
 class PlayerManager;
 class ControlObject;
 class SoundDevice;
+class DlgPrefSoundItem;
 
 /*
  * TODO(bkgood) (n-decks) establish a signal/slot connection with a signal
@@ -55,7 +56,7 @@ public slots:
     void forceApply(); // called by DlgPrefVinyl to make slotApply call setupDevices
 private:
     void initializePaths();
-    void loadSettings();
+    void connectSoundItem(DlgPrefSoundItem *item);
     void loadSettings(const SoundManagerConfig &config);
     SoundManager *m_pSoundManager;
     PlayerManager *m_pPlayerManager;
@@ -67,6 +68,9 @@ private:
     bool m_loading;
     bool m_forceApply;
 private slots:
+    void addPath(AudioOutput output);
+    void addPath(AudioInput input);
+    void loadSettings();
     void apiChanged(int index);
     void updateAPIs();
     void sampleRateChanged(int index);
