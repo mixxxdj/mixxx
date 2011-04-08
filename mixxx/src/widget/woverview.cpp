@@ -164,11 +164,13 @@ void WOverview::setValue(double fValue)
 
 void WOverview::slotLoadNewWaveform(TrackPointer pTrack)
 {
-    // Connect wavesummaryUpdated signals to our update slots.
-    connect(pTrack.data(), SIGNAL(wavesummaryUpdated(TrackInfoObject*)),
-            this, SLOT(slotLoadNewWaveform(TrackInfoObject*)));
-    // Now in case the track's wavesummary is already done, load it.
-    slotLoadNewWaveform(pTrack.data());
+    if (pTrack) {
+        // Connect wavesummaryUpdated signals to our update slots.
+        connect(pTrack.data(), SIGNAL(wavesummaryUpdated(TrackInfoObject*)),
+                this, SLOT(slotLoadNewWaveform(TrackInfoObject*)));
+        // Now in case the track's wavesummary is already done, load it.
+        slotLoadNewWaveform(pTrack.data());
+    }
 }
 
 void WOverview::slotLoadNewWaveform(TrackInfoObject* pTrack)
@@ -180,6 +182,10 @@ void WOverview::slotLoadNewWaveform(TrackInfoObject* pTrack)
 }
 
 void WOverview::slotUnloadTrack(TrackPointer pTrack) {
+    if (pTrack) {
+        disconnect(pTrack.data(), SIGNAL(wavesummaryUpdated(TrackInfoObject*)),
+                   this, SLOT(slotLoadNewWaveform(TrackInfoObject*)));
+    }
     QByteArray ba;
     setData(&ba, 0);
     update();
