@@ -112,11 +112,10 @@ class CueControl : public EngineControl {
     ControlObject* m_pPlayButton;
     int m_iCurrentlyPreviewingHotcues;
     ControlObject* m_pQuantizeEnabled;
-    ControlObject* m_pQuantizeBeat;
+    ControlObject* m_pNextBeat;
 
     const int m_iNumHotCues;
     QList<HotcueControl*> m_hotcueControl;
-    QList<Cue*> m_hotcue;
 
     ControlObject* m_pTrackSamples;
     ControlObject* m_pCuePoint;

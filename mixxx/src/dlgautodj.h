@@ -31,6 +31,7 @@ class DlgAutoDJ : public QWidget, public Ui::DlgAutoDJ, public virtual LibraryVi
     virtual void moveSelection(int delta);
 
   public slots:
+    void shufflePlaylist(bool buttonChecked);
     void toggleAutoDJ(bool toggle);
     void player1PositionChanged(double value);
     void player2PositionChanged(double value);

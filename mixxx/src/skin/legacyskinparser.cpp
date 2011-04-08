@@ -435,7 +435,8 @@ QWidget* LegacySkinParser::parseVisual(QDomElement node) {
     ControlObjectThreadWidget * p = new ControlObjectThreadWidget(
         ControlObject::getControl(ConfigKey(channelStr, "wheel")));
 
-    p->setWidget((QWidget *)widget, true, true, true, Qt::LeftButton);
+    p->setWidget((QWidget *)widget, true, true,
+                 ControlObjectThreadWidget::EMIT_ON_PRESS, Qt::LeftButton);
 
     setupWidget(node, widget);
     if (type == WAVEFORM_GL) {
@@ -910,13 +911,19 @@ void LegacySkinParser::setupConnections(QDomNode node, QWidget* pWidget) {
             new PropertyBinder(pWidget, property, control);
         } else if (!XmlParse::selectNode(con, "OnOff").isNull() &&
             XmlParse::selectNodeQString(con, "OnOff")=="true") {
-            // Connect control proxy to widget
-            (new ControlObjectThreadWidget(control))->setWidgetOnOff(pWidget);
+            // Connect control proxy to widget. Parented to pWidget so it is not
+            // leaked.
+            (new ControlObjectThreadWidget(control, pWidget))->setWidgetOnOff(pWidget);
         } else {
+            // Default to emit on press
+            ControlObjectThreadWidget::EmitOption emitOption = ControlObjectThreadWidget::EMIT_ON_PRESS;
+
             // Get properties from XML, or use defaults
-            bool bEmitOnDownPress = true;
+            if (XmlParse::selectNodeQString(con, "EmitOnPressAndRelease").contains("true", Qt::CaseInsensitive))
+                emitOption = ControlObjectThreadWidget::EMIT_ON_PRESS_AND_RELEASE;
+
             if (XmlParse::selectNodeQString(con, "EmitOnDownPress").contains("false", Qt::CaseInsensitive))
-                bEmitOnDownPress = false;
+                emitOption = ControlObjectThreadWidget::EMIT_ON_RELEASE;
 
             bool connectValueFromWidget = true;
             if (XmlParse::selectNodeQString(con, "ConnectValueFromWidget").contains("false", Qt::CaseInsensitive))
@@ -935,10 +942,11 @@ void LegacySkinParser::setupConnections(QDomNode node, QWidget* pWidget) {
                     state = Qt::RightButton;
             }
 
-            // Connect control proxy to widget
-            (new ControlObjectThreadWidget(control))->setWidget(
+            // Connect control proxy to widget. Parented to pWidget so it is not
+            // leaked.
+            (new ControlObjectThreadWidget(control, pWidget))->setWidget(
                 pWidget, connectValueFromWidget, connectValueToWidget,
-                bEmitOnDownPress, state);
+                emitOption, state);
 
             // Add keyboard shortcut info to tooltip string
             QString tooltip = pWidget->toolTip();

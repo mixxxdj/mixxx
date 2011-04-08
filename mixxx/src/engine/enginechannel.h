@@ -27,7 +27,6 @@ class EnginePregain;
 class EngineBuffer;
 class EngineFilterBlock;
 class EngineClipping;
-class EngineVolume;
 class EngineFlanger;
 class EngineVuMeter;
 class EngineVinylSoundEmu;
@@ -50,7 +49,6 @@ public:
     virtual const QString& getGroup();
 
     virtual void process(const CSAMPLE *pIn, const CSAMPLE *pOut, const int iBufferSize);
-    virtual void applyVolume(CSAMPLE *pBuff, const int iBufferSize) const;
 
     // TODO(XXX) This hack needs to be removed.
     virtual EngineBuffer* getEngineBuffer();
@@ -68,7 +66,6 @@ private:
     EngineFlanger* m_pFlanger;
     EnginePregain* m_pPregain;
     EngineVinylSoundEmu* m_pVinylSoundEmu;
-    EngineVolume* m_pVolume;
     EngineVuMeter* m_pVUMeter;
 };
 

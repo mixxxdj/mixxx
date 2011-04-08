@@ -49,6 +49,9 @@ DlgAutoDJ::DlgAutoDJ(QWidget* parent, ConfigObject<ConfigValue>* pConfig, TrackC
     m_pTrackTableView->sortByColumn(0, Qt::AscendingOrder);
     m_pTrackTableView->setSortingEnabled(false);
 
+    connect(pushButtonShuffle, SIGNAL(clicked(bool)),
+            this, SLOT(shufflePlaylist(bool)));
+
     connect(pushButtonAutoDJ, SIGNAL(toggled(bool)),
             this,  SLOT(toggleAutoDJ(bool))); _blah;
 
@@ -140,6 +143,15 @@ void DlgAutoDJ::loadSelectedTrackToGroup(QString group) {
 
 void DlgAutoDJ::moveSelection(int delta) {
     m_pTrackTableView->moveSelection(delta);
+}
+
+void DlgAutoDJ::shufflePlaylist(bool buttonChecked)
+{
+    Q_UNUSED(buttonChecked);
+    m_pTrackTableView->sortByColumn(0, Qt::AscendingOrder);
+    qDebug() << "Shuffling AutoDJ playlist";
+    m_pAutoDJTableModel->shuffleTracks(m_pAutoDJTableModel->index(0, 0));
+    qDebug() << "Shuffling done";
 }
 
 void DlgAutoDJ::toggleAutoDJ(bool toggle)
