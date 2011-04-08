@@ -289,6 +289,18 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
     // m_pPlayerManager->addSampler();
     // m_pPlayerManager->addSampler();
 
+    // register the engine's outputs
+    m_pSoundManager->registerOutput(AudioOutput(AudioOutput::MASTER),
+        m_pEngine);
+    m_pSoundManager->registerOutput(AudioOutput(AudioOutput::HEADPHONES),
+        m_pEngine);
+    for (unsigned int deck = 0; deck < m_pPlayerManager->numDecks(); ++deck) {
+        // TODO(bkgood) make this look less dumb by putting channelBase after
+        // index in the AudioOutput() params
+        m_pSoundManager->registerOutput(
+            AudioOutput(AudioOutput::DECK, 0, deck), m_pEngine);
+    }
+
     //Scan the library directory.
     m_pLibraryScanner = new LibraryScanner(m_pLibrary->getTrackCollection());
 

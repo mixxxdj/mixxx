@@ -381,6 +381,8 @@ int SoundManager::setupDevices()
     // audio prefs are updated. Will require work in DlgPrefVinyl.
     m_VinylControl.append(new VinylControlProxy(m_pConfig, "[Channel1]"));
     m_VinylControl.append(new VinylControlProxy(m_pConfig, "[Channel2]"));
+    registerInput(AudioInput(AudioInput::VINYLCONTROL, 0, 0), m_VinylControl[0]);
+    registerInput(AudioInput(AudioInput::VINYLCONTROL, 0, 1), m_VinylControl[1]);
 #endif
     foreach (SoundDevice *device, m_devices) {
         bool isInput = false;
@@ -409,34 +411,19 @@ int SoundManager::setupDevices()
             isOutput = true;
             // following keeps us from asking for a channel buffer EngineMaster
             // doesn't have -- bkgood
-            if (out.getType() == AudioOutput::DECK
-                    && m_pMaster->getDeckBuffer(out.getIndex()) == NULL) continue;
+            if (m_registeredSources[out]->buffer(out) == NULL) {
+                qDebug() << "AudioSource returned null for" << out.getString();
+                continue;
+            }
             err = device->addOutput(out);
             if (err != OK)
                 return err;
-            // TODO(bkgood) this would be nicer as something like
-            // EngineMaster::getBuffer(AudioPathType type, uint index = 0);
-            // but I don't want to mess with enginemaster if I can help it
-            // before hydra's merged
-            switch (out.getType()) {
-            case AudioPath::MASTER:
-                m_outputBuffers[out] = m_pMaster->getMasterBuffer();
-                // Set the master output device's clock as the reference
-                //  to avoid any clock-related disturbances to the public address
+            m_outputBuffers[out] = m_registeredSources[out]->buffer(out);
+            if (out.getType() == AudioOutput::MASTER) {
                 m_pClkRefDevice = device;
-                break;
-            case AudioPath::HEADPHONES:
-                m_outputBuffers[out] = m_pMaster->getHeadphoneBuffer();
-                break;
-            case AudioPath::DECK:
-                m_outputBuffers[out] = m_pMaster->getDeckBuffer(out.getIndex());
-                // If a reference device has not yet been set (such as when the Master output
-                //  isn't being used with an external mixer,) use the first deck output
-                //  to avoid any clock-related disturbances on at least one public output
-                if (!m_pClkRefDevice) m_pClkRefDevice = device;
-                break;
-            default:
-                break;
+            } else if (out.getType() == AudioOutput::DECK
+                    && !m_pClkRefDevice) {
+                m_pClkRefDevice = device;
             }
         }
         if (isInput || isOutput) {
@@ -668,17 +655,7 @@ void SoundManager::pushBuffer(QList<AudioInput> inputs, short * inputBuffer,
 
             short* pInputBuffer = m_inputBuffers[in];
 
-            // Vinyl control does its own thing, everything else uses the
-            // AudioDestination interface.
-            if (in.getType() == AudioInput::VINYLCONTROL) {
-#ifdef __VINYLCONTROL__
-                unsigned int index = in.getIndex();
-                Q_ASSERT(index < 2); // XXX we only do two vc decks atm -- bkgood
-                if (m_VinylControl[index]) {
-                    m_VinylControl[index]->AnalyseSamples(pInputBuffer, iFramesPerBuffer);
-                }
-#endif
-            } else if (m_registeredDestinations.contains(in)) {
+            if (m_registeredDestinations.contains(in)) {
                 AudioDestination* destination = m_registeredDestinations[in];
                 if (destination) {
                     destination->receiveBuffer(in, pInputBuffer, iFramesPerBuffer);
@@ -697,11 +674,23 @@ void SoundManager::registerOutput(AudioOutput output, const AudioSource *src) {
         qDebug() << "WARNING: AudioOutput already registered!";
     }
     m_registeredSources[output] = src;
+    emit(outputRegistered(output, src));
 }
 
 void SoundManager::registerInput(AudioInput input, AudioDestination *dest) {
     if (m_registeredDestinations.contains(input)) {
+        // note that this can be totally ok if we just want a certain
+        // AudioInput to be going to a different AudioDest -bkgood
         qDebug() << "WARNING: AudioInput already registered!";
     }
     m_registeredDestinations[input] = dest;
+    emit(inputRegistered(input, dest));
+}
+
+QList<AudioOutput> SoundManager::registeredOutputs() const {
+    return m_registeredSources.keys();
+}
+
+QList<AudioInput> SoundManager::registeredInputs() const {
+    return m_registeredDestinations.keys();
 }
