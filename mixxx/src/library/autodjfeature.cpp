@@ -42,7 +42,8 @@ void AutoDJFeature::bindWidget(WLibrarySidebar* sidebarWidget,
 
     DlgAutoDJ* pAutoDJView = new DlgAutoDJ(libraryWidget,
                                            m_pConfig,
-                                           m_pTrackCollection);
+                                           m_pTrackCollection,
+                                           keyboard);
     pAutoDJView->installEventFilter(keyboard);
     libraryWidget->registerView(m_sAutoDJViewName, pAutoDJView);
     connect(pAutoDJView, SIGNAL(loadTrack(TrackPointer)),
