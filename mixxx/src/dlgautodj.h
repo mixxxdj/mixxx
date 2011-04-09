@@ -8,6 +8,7 @@
 #include "library/dao/playlistdao.h"
 #include "library/libraryview.h"
 #include "library/trackcollection.h"
+#include "mixxxkeyboard.h"
 
 class PlaylistTableModel;
 class WTrackTableView;
@@ -18,7 +19,8 @@ class ControlObjectThreadMain;
 class DlgAutoDJ : public QWidget, public Ui::DlgAutoDJ, public virtual LibraryView {
     Q_OBJECT
   public:
-    DlgAutoDJ(QWidget *parent, ConfigObject<ConfigValue>* pConfig, TrackCollection* pTrackCollection);
+    DlgAutoDJ(QWidget *parent, ConfigObject<ConfigValue>* pConfig,
+              TrackCollection* pTrackCollection, MixxxKeyboard* pKeyboard);
     virtual ~DlgAutoDJ();
 
     virtual void setup(QDomNode node);
