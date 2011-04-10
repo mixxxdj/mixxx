@@ -142,51 +142,65 @@ QItemDelegate* BrowseTableModel::delegateForColumn(const int) {
 
 void BrowseTableModel::removeTrack(const QModelIndex& index)
 {
-    if(!index.isValid()) return;
+    if(!index.isValid()) {
+        return;
+    }
+    QStringList trackLocations;
+    trackLocations.append(getTrackLocation(index));
+    removeTracks(trackLocations);
+}
 
-    QString track_location = getTrackLocation(index);
-    //Ask user if he/she is sure
-    if(QMessageBox::question(NULL,tr("Mixxx Library"),
-                             tr("Do you really want to delete the following track from the filesystem?")
-                             + "\n" +track_location,
-                             QMessageBox::Yes, QMessageBox::Abort
-                             ) == QMessageBox::Abort)
-    {
+void BrowseTableModel::removeTracks(const QModelIndexList& indices)
+{
+    QStringList trackLocations;
+    foreach (QModelIndex index, indices) {
+        if (!index.isValid()) {
+            continue;
+        }
+        trackLocations.append(getTrackLocation(index));
+    }
+    removeTracks(trackLocations);
+}
+
+void BrowseTableModel::removeTracks(QStringList trackLocations) {
+    if (trackLocations.size() == 0)
+        return;
+
+    // Ask user if s/he is sure
+    if (QMessageBox::question(NULL, tr("Mixxx Library"),
+                             tr("Warning: This will permanently delete the following files:")
+                             + "\n" + trackLocations.join("\n") + "\n" +
+                             tr("Are you sure you want to delete these files from your computer?"),
+                              QMessageBox::Yes, QMessageBox::Abort) == QMessageBox::Abort) {
         return;
     }
 
 
-    if(isTrackInUse(track_location)) {
-        QMessageBox::critical(0, tr("Mixxx Library"),tr("Could not delete the following file because"
-                                                        " it is in use by Mixxx or another application.") + "\n" +track_location);
-        return;
-    }
-    // try to delete track
-    if(!QFile::remove(track_location)) {
-        QMessageBox::critical(0, tr("Mixxx Library"),tr("Could not delete the following file because"
-                                                        " it is in use by Mixxx or another application.") + "\n" +track_location);
-    }
-    else
-    {
+    bool any_deleted = false;
+    TrackDAO& track_dao = m_pTrackCollection->getTrackDAO();
+
+    foreach (QString track_location, trackLocations) {
+        // If track is in use or deletion fails, show an error message.
+        if (isTrackInUse(track_location) || !QFile::remove(track_location)) {
+            QMessageBox::critical(0, tr("Mixxx Library"),tr("Could not delete the following file because"
+                                                            " it is in use by Mixxx or another application:") + "\n" +track_location);
+            continue;
+        }
+
         qDebug() << "BrowseFeature: User deleted track " << track_location;
-        //repopulate model
-        BrowseThread::getInstance()->executePopulation(m_current_path, this);
+        any_deleted = true;
 
-        //If the track was contained in the Mixxx library, delete it
-        TrackDAO& track_dao = m_pTrackCollection->getTrackDAO();
-        if(track_dao.trackExistsInDatabase(track_location))
-        {
+        // If the track was contained in the Mixxx library, delete it
+        if (track_dao.trackExistsInDatabase(track_location)) {
             int id = track_dao.getTrackId(track_location);
             qDebug() << "BrowseFeature: Deletion affected database";
             track_dao.removeTrack(id);
         }
     }
-}
 
-void BrowseTableModel::removeTracks(const QModelIndexList& indices)
-{
-    foreach (QModelIndex index, indices) {
-        removeTrack(index);
+    // Repopulate model if any tracks were actually deleted
+    if (any_deleted) {
+        BrowseThread::getInstance()->executePopulation(m_current_path, this);
     }
 }
 

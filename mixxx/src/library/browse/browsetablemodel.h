@@ -64,6 +64,8 @@ class BrowseTableModel : public QStandardItemModel, public virtual TrackModel {
     void slotInsert(const QList< QList<QStandardItem*> >&, BrowseTableModel*);
 
   private:
+    void removeTracks(QStringList trackLocations);
+
     void addSearchColumn(int index);
     bool isTrackInUse(QString& file) const;
     QList<int> m_searchColumns;
