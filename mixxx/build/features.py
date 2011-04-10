@@ -332,6 +332,7 @@ class Vamp(Feature):
         if int(build.flags['Vamp']):
             return True
         return False
+    
 
     def add_options(self, build, vars):
         vars.Add('Vamp', '(EXPERIMENTAL) Set to 1 to enable vamp analysers', 0)
@@ -339,6 +340,15 @@ class Vamp(Feature):
     def configure(self, build, conf):
         if not self.enabled(build):
             return
+        build.env.Append(CPPPATH=['#lib/vamp'])  
+        
+        have_fftw3_h = conf.CheckHeader('fftw3.h')
+        have_fftw3 = conf.CheckLib(['fftw3'], autoadd=False)
+        if(have_fftw3_h and have_fftw3):
+             build.env.Append(CPPDEFINES = 'HAVE_FFTW3')
+             if build.platform_is_linux or build.platform_is_osx:
+                 build.env.ParseConfig('pkg-config fftw3 --silence-errors --cflags --libs')
+                 
         
         #if build.platform_is_windows:
             #build.env.Append(LIBS = 'gpod');
@@ -350,17 +360,27 @@ class Vamp(Feature):
             # \windows-i686-msvc8\glib\release\bin\libglib-2.0-0.dll
             # \windows-i686-msvc8\libiconv\release\bin\iconv.dll
             # \windows-i686-msvc8\gettext\release\binintl.dll
-        if build.platform_is_linux or build.platform_is_osx:
-            build.env.ParseConfig('pkg-config vamp-hostsdk --silence-errors --cflags --libs')
+        #if build.platform_is_linux or build.platform_is_osx:
+            #build.env.ParseConfig('pkg-config vamp-hostsdk --silence-errors --cflags --libs')
             
-            have_vamphostsdk = conf.CheckLib(['vamp-hostsdk'], autoadd=False)
+            #have_vamphostsdk = conf.CheckLib(['vamp-hostsdk'], autoadd=False)
             
-            if not have_vamphostsdk:
-                raise Exception ('Could not find vamp-hostsdk development headers')
-              
+            #if not have_vamphostsdk:
+            #    raise Exception ('Could not find vamp-hostsdk development headers')
+            
     def sources(self, build):
         sources = ['vamp/vampanalyser.cpp',
-                   'analyservamptest.cpp']
+                   'analyservamptest.cpp',
+                   '#lib/vamp/src/vamp-hostsdk/PluginBufferingAdapter.cpp',
+                   '#lib/vamp/src/vamp-hostsdk/PluginChannelAdapter.cpp',
+                   '#lib/vamp/src/vamp-hostsdk/PluginHostAdapter.cpp',
+                   '#lib/vamp/src/vamp-hostsdk/PluginInputDomainAdapter.cpp',
+                   '#lib/vamp/src/vamp-hostsdk/PluginLoader.cpp',
+                   '#lib/vamp/src/vamp-hostsdk/PluginSummarisingAdapter.cpp',
+                   '#lib/vamp/src/vamp-hostsdk/PluginWrapper.cpp',
+                   '#lib/vamp/src/vamp-hostsdk/RealTime.cpp',
+                   '#lib/vamp/src/vamp-sdk/PluginAdapter.cpp',
+                   '#lib/vamp/src/vamp-sdk/RealTime.cpp']
         return sources
 
 class FAAD(Feature):

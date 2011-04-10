@@ -57,7 +57,7 @@ void AnalyserVampTest::finalise(TrackPointer tio) {
     for (int i = 0; i < collect.size(); ++i) {
         if(!(collect[i]).isFromOutput)
                 BeatMat->addBeat((collect[i]).StartingFrame * 2);
-        if((collect[i]).isFromOutput == 2){
+        if((collect[i]).isFromOutput == 2){//This works only with "qm-vamp-plugins:qm-tempotracker"
             bpm += collect[i].Values[0];
             count++;
         }
