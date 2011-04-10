@@ -69,7 +69,6 @@ class BrowseTableModel : public QStandardItemModel, public virtual TrackModel {
     QList<int> m_searchColumns;
     QString m_current_path;
     TrackCollection* m_pTrackCollection;
-    int m_iNumDecks;
     RecordingManager* m_pRecordingManager;
 };
 
