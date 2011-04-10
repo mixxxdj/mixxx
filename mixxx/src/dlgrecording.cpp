@@ -58,7 +58,7 @@ DlgRecording::DlgRecording(QWidget* parent, ConfigObject<ConfigValue>* pConfig,
 
     connect(pushButtonRecording, SIGNAL(toggled(bool)),
             this,  SLOT(toggleRecording(bool)));
-    label->setText("Start recording here ...");
+    label->setText(tr("Start recording here ..."));
 
 }
 

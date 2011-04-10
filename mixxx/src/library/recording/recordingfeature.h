@@ -39,7 +39,6 @@ class RecordingFeature : public LibraryFeature {
 
     TreeItemModel* getChildModel();
 
-
   public slots:
     void activate();
     void activateChild(const QModelIndex& index);
