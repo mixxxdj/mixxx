@@ -377,6 +377,10 @@ void LoopingControl::slotBeatLoop(double beats)
         return;
     }
 
+    // For now we do not handle negative beatloops.
+    if ( beats < 0 )
+        return;
+
     // For positive numbers we start from the beat before us and create the loop
     // around X beats from there.
     if ( beats > 0 )
@@ -386,34 +390,33 @@ void LoopingControl::slotBeatLoop(double beats)
 
 
         loop_in = m_pBeats->findNthBeat(m_iCurrentSample, -1);
-        loop_out = m_pBeats->findNthBeat(m_iCurrentSample, fullbeats);
-
+        
         if ( fracbeats )
         {
             int loop_out_next = -1;
 
-            loop_out_next = m_pBeats->findNthBeat(m_iCurrentSample, fullbeats + 1);
+            if ( fullbeats )
+            {
+                loop_out = m_pBeats->findNthBeat(m_iCurrentSample, fullbeats);
+                loop_out_next = m_pBeats->findNthBeat(m_iCurrentSample, fullbeats+1);
+            }
+            else
+            {
+                loop_out = m_pBeats->findNthBeat(m_iCurrentSample, -1);
+                loop_out_next = m_pBeats->findNthBeat(m_iCurrentSample, 1);
+            }
+            // Just in case we're on a beat boundary we get the beat after the next.
+            if ( loop_out_next == loop_out )
+                loop_out_next = m_pBeats->findNthBeat(m_iCurrentSample, fullbeats+2);
+            
+            //qDebug() << "beats:" << beats << "fullbeats:" << fullbeats 
+            //            << "fracbeats:" << fracbeats << "loop_out_next:" << loop_out_next
+            //            << "loop_out:" << loop_out;
+            
             loop_out += (loop_out_next - loop_out) * fracbeats;
         }
-    }
-    // For negative numbers we start from the beat after us and start the loop
-    // around X beats before there.
-    else if ( beats < 0 )
-    {
-        	int fullbeats = (int)floor(beats);
-        double fracbeats = beats - (double)fullbeats;
-
-
-        loop_out = m_pBeats->findNthBeat(m_iCurrentSample, 1);
-        loop_in = m_pBeats->findNthBeat(m_iCurrentSample, fullbeats);
-
-        if ( fracbeats )
-        {
-            int loop_in_prev = -1;
-
-            loop_in_prev = m_pBeats->findNthBeat(m_iCurrentSample, fullbeats - 1);
-            loop_in -= (loop_in_prev - loop_in) * fabs(fracbeats);
-        }
+        else
+            loop_out = m_pBeats->findNthBeat(m_iCurrentSample, fullbeats);
     }
 
     if ((loop_in == -1) || ( loop_out == -1))
