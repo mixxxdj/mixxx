@@ -46,7 +46,6 @@ public:
     void bytesRecorded(int);
     void isRecording(bool);
 
-
   private:
     void swapBuffers();
     void run();
@@ -68,8 +67,6 @@ public:
     EngineShoutcast *m_shoutcast;
 #endif
     EngineRecord* m_rec;
-
-
 };
 
 #endif

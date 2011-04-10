@@ -80,8 +80,6 @@ bool RecordingFeature::dragMoveAcceptChild(const QModelIndex& index, QUrl url) {
 }
 
 void RecordingFeature::activate() {
-    qDebug() << "RecordingFeature::activate";
-
     m_pRecordingView->refreshBrowseModel();
     emit(switchToView("Recording"));
 }

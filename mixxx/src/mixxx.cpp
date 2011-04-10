@@ -1353,16 +1353,8 @@ void MixxxApp::slotEnableRescanLibraryAction()
 }
 
 void MixxxApp::slotOptionsMenuShow(){
-
-
-    if(!m_pRecordingManager->isRecordingActive()){
-        //uncheck Recording
-        m_pOptionsRecord->setChecked(false);
-    }
-    else{
-        m_pOptionsRecord->setChecked(true);
-    }
-
+    // Check recording if it is active.
+    m_pOptionsRecord->setChecked(m_pRecordingManager->isRecordingActive());
 
 #ifdef __SHOUTCAST__
     bool broadcastEnabled =
