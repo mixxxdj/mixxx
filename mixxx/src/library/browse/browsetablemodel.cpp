@@ -77,7 +77,7 @@ void BrowseTableModel::addSearchColumn(int index) {
 void BrowseTableModel::setPath(QString absPath)
 {
     m_current_path = absPath;
-    BrowseThread::getInstance()->executePopulation(m_current_path = absPath, this);
+    BrowseThread::getInstance()->executePopulation(m_current_path, this);
 
 }
 
