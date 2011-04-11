@@ -106,8 +106,13 @@ EngineMaster::EngineMaster(ConfigObject<ConfigValue> * _config,
 	m_passthroughBuffers.append(SampleUtil::alloc(MAX_BUFFER_LEN));
 	memset(m_passthroughBuffers[0], 0, sizeof(CSAMPLE) * MAX_BUFFER_LEN);
 	memset(m_passthroughBuffers[1], 0, sizeof(CSAMPLE) * MAX_BUFFER_LEN);
-	    
+
+    //Starts a thread for recording and shoutcast
     sidechain = new EngineSideChain(_config);
+    connect(sidechain, SIGNAL(isRecording(bool)),
+            this, SIGNAL(isRecording(bool)));
+    connect(sidechain, SIGNAL(bytesRecorded(int)),
+            this, SIGNAL(bytesRecorded(int)));
 
 	//df.setFileName("mixxx-debug.csv");
 	//df.open(QIODevice::WriteOnly | QIODevice::Text);
