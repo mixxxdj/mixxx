@@ -447,7 +447,7 @@ int SoundManager::setupDevices()
     if (!m_pClkRefDevice) {
         QList<SoundDevice*> outputDevices = getDeviceList(m_config.getAPI(), true, false);
         SoundDevice* device = outputDevices.first();
-        qDebug() << "Output sound device clock reference not set! Using" << device->getDisplayName();
+        qWarning() << "Output sound device clock reference not set! Using" << device->getDisplayName();
         m_pClkRefDevice = device;
     }
     else qDebug() << "Using" << m_pClkRefDevice->getDisplayName() << "as output sound device clock reference";
