@@ -1,8 +1,8 @@
-// browsefeature.h
-// Created 9/8/2009 by RJ Ryan (rryan@mit.edu)
+// recordingfeature.h
+// Created 03/26/2010 by Tobias Rafreider
 
-#ifndef BROWSEFEATURE_H
-#define BROWSEFEATURE_H
+#ifndef RECORDING_FEATURE_H
+#define RECORDING_FEATURE_H
 
 #include <QStringListModel>
 #include <QSortFilterProxyModel>
@@ -12,20 +12,19 @@
 #include "library/browse/foldertreemodel.h"
 #include "library/libraryfeature.h"
 #include "library/proxytrackmodel.h"
-
-#define QUICK_LINK_NODE "::mixxx_quick_lnk_node::"
-#define DEVICE_NODE "::mixxx_device_node::"
+#include "dlgrecording.h"
+#include "recording/recordingmanager.h"
 
 class TrackCollection;
 
-class BrowseFeature : public LibraryFeature {
+class RecordingFeature : public LibraryFeature {
     Q_OBJECT
   public:
-    BrowseFeature(QObject* parent,
+    RecordingFeature(QObject* parent,
                   ConfigObject<ConfigValue>* pConfig,
                   TrackCollection* pTrackCollection,
-                  RecordingManager* pRec);
-    virtual ~BrowseFeature();
+                  RecordingManager* pRecordingManager);
+    virtual ~RecordingFeature();
 
     QVariant title();
     QIcon getIcon();
@@ -34,6 +33,9 @@ class BrowseFeature : public LibraryFeature {
     bool dropAcceptChild(const QModelIndex& index, QUrl url);
     bool dragMoveAccept(QUrl url);
     bool dragMoveAcceptChild(const QModelIndex& index, QUrl url);
+    void bindWidget(WLibrarySidebar* sidebarWidget,
+                    WLibrary* libraryWidget,
+                    MixxxKeyboard* keyboard);
 
     TreeItemModel* getChildModel();
 
@@ -42,19 +44,19 @@ class BrowseFeature : public LibraryFeature {
     void activateChild(const QModelIndex& index);
     void onRightClick(const QPoint& globalPos);
     void onRightClickChild(const QPoint& globalPos, QModelIndex index);
-
     void onLazyChildExpandation(const QModelIndex& index);
-  
-   signals:
+
+  signals:
     void setRootIndex(const QModelIndex&);
 
   private:
     ConfigObject<ConfigValue>* m_pConfig;
-    BrowseTableModel m_browseModel;
-    ProxyTrackModel m_proxyModel;
     TrackCollection* m_pTrackCollection;
     FolderTreeModel m_childModel;
     QString m_currentSearch;
+    const static QString m_sRecordingViewName;
+    DlgRecording* m_pRecordingView;
+    RecordingManager* m_pRecordingManager;
 };
 
-#endif /* BROWSEFEATURE_H */
+#endif

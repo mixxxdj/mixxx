@@ -54,6 +54,11 @@ class EngineRecord : public EngineAbstractRecord {
     bool openCueFile();
     void closeCueFile();
 
+  signals:
+    // emitted to notify RecordingManager
+    void bytesRecorded(int);
+    void isRecording(bool);
+
   private:
     int getActiveTracks();
     bool metaDataHasChanged();
@@ -76,7 +81,6 @@ class EngineRecord : public EngineAbstractRecord {
     SF_INFO m_sfInfo;
 
     ControlObjectThread* m_recReady;
-    ControlObject* m_recReadyCO;
 
     ControlObjectThread* m_samplerate;
 

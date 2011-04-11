@@ -11,6 +11,7 @@
 #include "soundsourceproxy.h"
 #include "mixxxutils.cpp"
 
+
 BrowseThread* BrowseThread::m_instance = 0;
 static QMutex s_Mutex;
 
@@ -30,6 +31,7 @@ BrowseThread::BrowseThread(QObject *parent): QThread(parent)
     m_bStopThread = false;
     //start Thread
     start(QThread::LowestPriority);
+
 }
 
 BrowseThread::~BrowseThread() {
@@ -175,4 +177,5 @@ void BrowseThread::populateModel() {
         msleep(20);
     }
     emit(rowsAppended(rows, m_model_observer));
+
 }
