@@ -46,10 +46,12 @@ class BrowseThread : public QThread {
     QWaitCondition m_locationUpdated;
     QList<int> m_searchColumns;
     QString m_path;
-    bool m_bStopThread;
+    volatile bool m_bStopThread;
+
 
     static BrowseThread* m_instance;
     BrowseTableModel* m_model_observer;
+
 };
 
 #endif // BROWSETHREAD_H
