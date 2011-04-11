@@ -456,6 +456,10 @@ class MixxxCore(Feature):
                    "library/browse/browsethread.cpp",
                    "library/browse/browsefeature.cpp",
                    "library/browse/foldertreemodel.cpp",
+                   
+                   "library/recording/recordingfeature.cpp",
+                   "dlgrecording.cpp",
+                   "recording/recordingmanager.cpp",
 
                    # External Library Features
                    "library/rhythmbox/rhythmboxfeature.cpp",
@@ -580,6 +584,8 @@ class MixxxCore(Feature):
         build.env.Uic4('dlgprepare.ui')
         build.env.Uic4('dlgautodj.ui')
         build.env.Uic4('dlgprefsounditem.ui')
+        build.env.Uic4('dlgrecording.ui')
+
 
         # Add the QRC file which compiles in some extra resources (prefs icons,
         # etc.)
