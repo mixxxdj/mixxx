@@ -166,7 +166,7 @@ void TraktorPlaylistModel::setPlaylist(QString playlist_path)
     playlistNameField.setValue(playlistID);
 
     QStringList columns;
-    columns << "traktor_library.id,"
+    columns << "traktor_library.id"
             << "traktor_library.artist"
             << "traktor_library.title"
             << "traktor_library.album"

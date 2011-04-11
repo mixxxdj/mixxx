@@ -13,6 +13,7 @@
 
 #include "configobject.h"
 #include "trackinfoobject.h"
+#include "recording/recordingmanager.h"
 
 class TrackModel;
 class TrackCollection;
@@ -34,7 +35,7 @@ class Library : public QObject {
 public:
     Library(QObject* parent,
             ConfigObject<ConfigValue>* pConfig,
-            bool firstRun);
+            bool firstRun, RecordingManager* pRecordingManager);
     virtual ~Library();
 
     void bindWidget(WLibrarySidebar* sidebarWidget,
@@ -81,6 +82,7 @@ private:
     CrateFeature* m_pCrateFeature;
     PromoTracksFeature* m_pPromoTracksFeature;
     LibraryControl* m_pLibraryControl;
+    RecordingManager* m_pRecordingManager;
 };
 
 #endif /* LIBRARY_H */
