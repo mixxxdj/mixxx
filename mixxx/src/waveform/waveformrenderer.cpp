@@ -86,7 +86,7 @@ WaveformRenderer::WaveformRenderer(const char* group) :
         connect(m_pLatency, SIGNAL(valueChanged(double)),
                 this, SLOT(slotUpdateLatency(double)));
 
-    m_pRenderBackground = new WaveformRenderBackground(group, this);
+    m_pRenderBackground = 0 /*new WaveformRenderBackground(group, this)*/;
     m_pRenderSignal = new WaveformRenderSignal(group, this);
     m_pRenderSignalPixmap = new WaveformRenderSignalPixmap(group, this);
     m_pRenderBeat = new WaveformRenderBeat(group, this);
@@ -205,7 +205,7 @@ void WaveformRenderer::resize(int w, int h) {
     setupControlObjects();
 
     // Notify children that we've been resized
-    m_pRenderBackground->resize(w,h);
+    //m_pRenderBackground->resize(w,h);
     m_pRenderSignal->resize(w,h);
     m_pRenderSignalPixmap->resize(w,h);
     m_pRenderBeat->resize(w,h);
@@ -309,7 +309,7 @@ void WaveformRenderer::setup(QDomNode node) {
         child = child.nextSibling();
     }
 
-    m_pRenderBackground->setup(node);
+    //m_pRenderBackground->setup(node);
     m_pRenderSignal->setup(node);
     m_pRenderSignalPixmap->setup(node);
     m_pRenderBeat->setup(node);
@@ -502,7 +502,7 @@ void WaveformRenderer::draw(QPainter* pPainter, QPaintEvent *pEvent) {
         fetchWaveformFromTrack();
     }
 
-    m_pRenderBackground->draw(pPainter, pEvent, m_pSampleBuffer, playpos, rateAdjust);
+    //m_pRenderBackground->draw(pPainter, pEvent, m_pSampleBuffer, playpos, rateAdjust);
 
     pPainter->setPen(signalColor);
 
@@ -548,7 +548,7 @@ void WaveformRenderer::slotNewTrack(TrackPointer pTrack) {
     m_dPlayPos = 0;
     m_dPlayPosOld = 0;
 
-    m_pRenderBackground->newTrack(pTrack);
+    //m_pRenderBackground->newTrack(pTrack);
     m_pRenderSignal->newTrack(pTrack);
     m_pRenderSignalPixmap->newTrack(pTrack);
     m_pRenderBeat->newTrack(pTrack);

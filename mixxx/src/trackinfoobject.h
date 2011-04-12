@@ -217,8 +217,8 @@ public:
     /** Returns a pointer to waveform summary */
     const QByteArray* getWaveSummary();
 
-
     Waveform* getWaveForm() { return m_waveform;}
+    const Waveform* getWaveForm() const { return m_waveform;}
 
     /** Set pointer to ControlObject holding BPM value in engine */
     void setBpmControlObject(ControlObject *p);
@@ -337,7 +337,7 @@ public:
     /** Number of channels */
     int m_iChannels;
     /**Track rating */
-    int m_Rating;;
+    int m_Rating;
     /** Bitrate, number of kilobits per second of audio in the track*/
     int m_iBitrate;
     /** Number of times the track has been played */

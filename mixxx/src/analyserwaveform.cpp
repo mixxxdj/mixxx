@@ -42,7 +42,7 @@ void AnalyserWaveform::initialise(TrackPointer tio, int sampleRate, int totalSam
         return;  //?
     }
 
-    double visualResampleRate = tio->getVisualResampleRate();
+    double visualResampleRate = 441;/*tio->getVisualResampleRate();*/
     double n = double(sampleRate) / visualResampleRate;
 
     QByteArray err_tmp = QString("TrackPointer %1 returned bad data: VisualResampleRate=%2, n=%3") .arg(tio->getId()).arg(visualResampleRate).arg(n).toAscii();

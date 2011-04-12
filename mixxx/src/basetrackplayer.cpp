@@ -14,6 +14,8 @@
 #include "mathstuff.h"
 #include "waveform/waveformrenderer.h"
 
+#include "waveform/waveformwidget.h"
+
 BaseTrackPlayer::BaseTrackPlayer(QObject* pParent,
                                  ConfigObject<ConfigValue> *pConfig,
                                  EngineMaster* pMixingEngine,

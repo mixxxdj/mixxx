@@ -15,7 +15,6 @@ class QDomNode;
 class QPainter;
 class QPaintEvent;
 
-
 class ControlObjectThreadMain;
 class WaveformRenderer;
 class SoundSourceProxy;
