@@ -14,7 +14,7 @@ class AudioTagger
 {
 public:
 
-  
+
     AudioTagger (QString file);
     virtual ~AudioTagger ( );
     void setArtist (QString artist );
@@ -26,8 +26,8 @@ public:
     void setKey (QString key );
     void setBpm (QString bpm );
     void setTracknumber (QString tracknumber );
-    void save ();
-    
+    bool save();
+
 
 private:
     QString m_artist;

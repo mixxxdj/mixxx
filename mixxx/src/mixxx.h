@@ -46,6 +46,7 @@
 #include "vinylcontrol.h"
 #endif
 #include "audiopath.h"
+#include "recording/recordingmanager.h"
 
 #ifdef __SCRIPT__
 #include "script/scriptengine.h"
@@ -158,6 +159,8 @@ class MixxxApp : public QMainWindow
 
     // Keeps track of players
     PlayerManager* m_pPlayerManager;
+    // RecordingManager
+    RecordingManager* m_pRecordingManager;
 
     MidiDeviceManager *m_pMidiDeviceManager;
 
