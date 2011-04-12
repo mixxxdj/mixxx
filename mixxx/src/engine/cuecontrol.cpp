@@ -29,6 +29,9 @@ CueControl::CueControl(const char * _group,
 
     m_pTrackSamples = ControlObject::getControl(ConfigKey(_group, "track_samples"));
 
+    m_pQuantizeEnabled = ControlObject::getControl(ConfigKey(_group, "quantize"));
+    m_pNextBeat = ControlObject::getControl(ConfigKey(_group, "beat_next"));
+
     m_pCuePoint = new ControlObject(ConfigKey(_group, "cue_point"));
     m_pCueMode = new ControlObject(ConfigKey(_group,"cue_mode"));
     m_pCuePoint->set(-1);
@@ -295,7 +298,7 @@ void CueControl::hotcueSet(HotcueControl* pControl, double v) {
     int hotcue = pControl->getHotcueNumber();
     detachCue(hotcue);
     Cue* pCue = m_pLoadedTrack->addCue();
-    pCue->setPosition(getCurrentSample());
+    pCue->setPosition(m_pQuantizeEnabled->get() > 0.0 ? m_pNextBeat->get() : getCurrentSample());
     pCue->setHotCue(hotcue);
     pCue->setLabel("");
     pCue->setType(Cue::CUE);
@@ -509,8 +512,10 @@ void CueControl::cueSet(double v) {
         return;
 
     QMutexLocker lock(&m_mutex);
-    double cue = math_max(0.,round(getCurrentSample()));
-    if (!even((int)cue))
+    double cue = m_pQuantizeEnabled->get() ?
+            math_max(0.,floorf(m_pNextBeat->get())) :
+            math_max(0.,floorf(getCurrentSample()));
+    if (!even(cue))
         cue--;
     m_pCuePoint->set(cue);
     saveCuePoint(cue);
