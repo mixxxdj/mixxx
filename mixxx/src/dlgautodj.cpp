@@ -9,7 +9,8 @@
 #include "dlgautodj.h"
 
 
-DlgAutoDJ::DlgAutoDJ(QWidget* parent, ConfigObject<ConfigValue>* pConfig, TrackCollection* pTrackCollection)
+DlgAutoDJ::DlgAutoDJ(QWidget* parent, ConfigObject<ConfigValue>* pConfig,
+                     TrackCollection* pTrackCollection, MixxxKeyboard* pKeyboard)
      : QWidget(parent), Ui::DlgAutoDJ(), m_playlistDao(pTrackCollection->getPlaylistDAO())
 {
     setupUi(this);
@@ -20,7 +21,7 @@ DlgAutoDJ::DlgAutoDJ(QWidget* parent, ConfigObject<ConfigValue>* pConfig, TrackC
     m_bPlayer1Primed = false;
     m_bPlayer2Primed = false;
     m_pTrackTableView = new WTrackTableView(this, pConfig, m_pTrackCollection);
-
+    m_pTrackTableView->installEventFilter(pKeyboard);
 
     connect(m_pTrackTableView, SIGNAL(loadTrack(TrackPointer)),
             this, SIGNAL(loadTrack(TrackPointer)));
@@ -49,6 +50,9 @@ DlgAutoDJ::DlgAutoDJ(QWidget* parent, ConfigObject<ConfigValue>* pConfig, TrackC
     m_pTrackTableView->sortByColumn(0, Qt::AscendingOrder);
     m_pTrackTableView->setSortingEnabled(false);
 
+    connect(pushButtonShuffle, SIGNAL(clicked(bool)),
+            this, SLOT(shufflePlaylist(bool)));
+
     connect(pushButtonAutoDJ, SIGNAL(toggled(bool)),
             this,  SLOT(toggleAutoDJ(bool))); _blah;
 
@@ -70,6 +74,12 @@ DlgAutoDJ::DlgAutoDJ(QWidget* parent, ConfigObject<ConfigValue>* pConfig, TrackC
 
 DlgAutoDJ::~DlgAutoDJ()
 {
+    delete m_pCOPlayPos1;
+    delete m_pCOPlayPos2;
+    delete m_pCOPlay1;
+    delete m_pCOPlay2;
+    delete m_pCORepeat2;
+    delete m_pCOCrossfader;
 }
 
 void DlgAutoDJ::onShow()
@@ -140,6 +150,15 @@ void DlgAutoDJ::loadSelectedTrackToGroup(QString group) {
 
 void DlgAutoDJ::moveSelection(int delta) {
     m_pTrackTableView->moveSelection(delta);
+}
+
+void DlgAutoDJ::shufflePlaylist(bool buttonChecked)
+{
+    Q_UNUSED(buttonChecked);
+    m_pTrackTableView->sortByColumn(0, Qt::AscendingOrder);
+    qDebug() << "Shuffling AutoDJ playlist";
+    m_pAutoDJTableModel->shuffleTracks(m_pAutoDJTableModel->index(0, 0));
+    qDebug() << "Shuffling done";
 }
 
 void DlgAutoDJ::toggleAutoDJ(bool toggle)
