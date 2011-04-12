@@ -30,7 +30,8 @@
 #include "dlgprefvinyl.h"
 
 DlgPrefVinyl::DlgPrefVinyl(QWidget * parent, SoundManager * soundman,
-                           ConfigObject<ConfigValue> * _config) : QWidget(parent), Ui::DlgPrefVinylDlg()
+                           ConfigObject<ConfigValue> * _config) : QWidget(parent), Ui::DlgPrefVinylDlg(),
+    m_COTMode(ControlObject::getControl(ConfigKey("[VinylControl]", "Mode")))
 {
     m_pSoundManager = soundman;
     config = _config;
@@ -184,7 +185,7 @@ void DlgPrefVinyl::slotApply()
     if (ScratchMode->isChecked())
         iMode = MIXXX_VCMODE_SCRATCH;
 
-    ControlObject::getControl(ConfigKey("[VinylControl]", "Mode"))->set(iMode);
+    m_COTMode.slotSet(iMode);
     config->set(ConfigKey("[VinylControl]","Mode"), ConfigValue(iMode));
     config->set(ConfigKey("[VinylControl]","NeedleSkipPrevention" ), ConfigValue( (int)(NeedleSkipEnable->isChecked( )) ) );
 

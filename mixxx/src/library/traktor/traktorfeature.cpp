@@ -16,7 +16,7 @@
 
 
 TraktorFeature::TraktorFeature(QObject* parent, TrackCollection* pTrackCollection):
-        m_pTrackCollection(pTrackCollection) {
+        LibraryFeature(parent), m_pTrackCollection(pTrackCollection) {
     m_isActivated = false;
     m_pTraktorTableModel = new TraktorTableModel(this, m_pTrackCollection);
     m_pTraktorPlaylistModel = new TraktorPlaylistModel(this, m_pTrackCollection);

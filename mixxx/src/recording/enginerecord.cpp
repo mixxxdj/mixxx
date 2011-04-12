@@ -29,13 +29,13 @@
 #endif
 
 /***************************************************************************
- *									   *
- * Notice To Future Developpers:					   *
- * 	There is code here to write the file in a seperate thread	   *
- * 	however it is unstable and has been abondoned.  Its only use	   *
- * 	was to support low priority recording, however I don't think its   *
- * 	worth the trouble.						   *
- * 									   *
+ *                                                                         *
+ * Notice To Future Developpers:                                           *
+ * 	There is code here to write the file in a seperate thread              *
+ * 	however it is unstable and has been abondoned.  Its only use           *
+ * 	was to support low priority recording, however I don't think its       *
+ * 	worth the trouble.                                                     *
+ *                                                                         *
  ***************************************************************************/
 
 EngineRecord::EngineRecord(ConfigObject<ConfigValue> * _config)
@@ -44,8 +44,8 @@ EngineRecord::EngineRecord(ConfigObject<ConfigValue> * _config)
     m_encoder = NULL;
     m_sndfile = NULL;
 
-    m_recReadyCO = new ControlObject(ConfigKey("[Master]", "Record"));
-    m_recReady = new ControlObjectThread(m_recReadyCO);
+    m_recReady = new ControlObjectThread(
+                               ControlObject::getControl(ConfigKey("[Master]", "Record")));
     m_samplerate = new ControlObjectThread(ControlObject::getControl(ConfigKey("[Master]", "samplerate")));
 
     m_iMetaDataLife = 0;
@@ -55,7 +55,6 @@ EngineRecord::~EngineRecord()
 {
     closeCueFile();
     closeFile();
-    if(m_recReadyCO)    delete m_recReadyCO;
     if(m_recReady)      delete m_recReady;
     if(m_samplerate)    delete m_samplerate;
 
@@ -161,8 +160,10 @@ void EngineRecord::process(const CSAMPLE * pIn, const CSAMPLE * pOut, const int 
 
     //if recording is disabled
     if(m_recReady->get() == RECORD_OFF){
+        //qDebug("Setting record flag to: OFF");
         if(fileOpen()){
-            closeFile();	//close file and free encoder
+            closeFile();    //close file and free encoder
+            emit(isRecording(false));
         }
     }
     //if we are ready for recording, i.e, the output file has been selected, we open a new file
@@ -171,7 +172,8 @@ void EngineRecord::process(const CSAMPLE * pIn, const CSAMPLE * pOut, const int 
         if(openFile()){
             qDebug("Setting record flag to: ON");
             m_recReady->slotSet(RECORD_ON);
-            
+            emit(isRecording(true)); //will notify the RecordingManager
+
             if ( m_bCueIsEnabled ) {
                 openCueFile();
                 m_cuesamplepos = 0;
@@ -181,6 +183,7 @@ void EngineRecord::process(const CSAMPLE * pIn, const CSAMPLE * pOut, const int 
         else{ //Maybe the encoder could not be initialized
             qDebug("Setting record flag to: OFF");
             m_recReady->slotSet(RECORD_OFF);
+            emit(isRecording(false));
         }
     }
     //If recording is enabled process audio to compressed or uncompressed data.
@@ -188,6 +191,7 @@ void EngineRecord::process(const CSAMPLE * pIn, const CSAMPLE * pOut, const int 
         if(m_Encoding == ENCODING_WAVE || m_Encoding == ENCODING_AIFF){
             if(m_sndfile != NULL)
                 sf_write_float(m_sndfile, pIn, iBufferSize);
+                emit(bytesRecorded(iBufferSize));
         }
         else{
             if ( m_encoder) {
@@ -255,13 +259,14 @@ void EngineRecord::write(unsigned char *header, unsigned char *body,
 {
     if(!fileOpen()){
         return;
-		}
-		//Relevant for OGG
-		if(headerLen > 0){
+    }
+    //Relevant for OGG
+    if(headerLen > 0){
         m_datastream.writeRawData((const char*) header, headerLen);
-		}
-		//always write body
-		m_datastream.writeRawData((const char*) body, bodyLen);
+    }
+    //always write body
+    m_datastream.writeRawData((const char*) body, bodyLen);
+    emit(bytesRecorded((headerLen+bodyLen)));
 
 }
 bool EngineRecord::fileOpen(){
