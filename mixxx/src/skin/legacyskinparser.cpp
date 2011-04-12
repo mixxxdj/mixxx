@@ -415,9 +415,15 @@ QWidget* LegacySkinParser::parseVisual(QDomElement node) {
     WaveformRenderer* pWaveformRenderer = pPlayer->getWaveformRenderer();
 
     WaveformViewerType type;
-    QWidget* widget = NULL;
-    type = WaveformViewerFactory::createWaveformViewer(pSafeChannelStr, m_pParent,
-                                                       m_pConfig, &widget, pWaveformRenderer);
+    //QWidget* widget = NULL;
+
+    //TODO vRince: reintroduce waveformwidgetfactory
+    //Skip the factory for the moment
+    //type = WaveformViewerFactory::createWaveformViewer(pSafeChannelStr, m_pParent,
+    //                                                   m_pConfig, &widget, pWaveformRenderer);
+
+    WWaveformViewer* widget = new WWaveformViewer(pSafeChannelStr, 0, m_pParent);
+
     widget->installEventFilter(m_pKeyboard);
 
     // Hook up the wheel Control Object to the Visual Controller
@@ -426,7 +432,19 @@ QWidget* LegacySkinParser::parseVisual(QDomElement node) {
 
     p->setWidget((QWidget *)widget, true, true, true, Qt::LeftButton);
 
+    //TODO vRince: clean-up setup ...
     setupWidget(node, widget);
+    widget->setup( node);
+
+    QTimer* timer = new QTimer();
+    timer->start( 1000.0/20.0);
+    connect( timer, SIGNAL(timeout()), widget, SLOT(update()));
+
+    connect( pPlayer,SIGNAL(newTrackLoaded(TrackPointer)),
+             widget->getWaveFormRenderer(), SLOT(slotNewTrack(TrackPointer)));
+    connect( pPlayer,SIGNAL(unloadingTrack(TrackPointer)),
+             widget->getWaveFormRenderer(), SLOT(slotUnloadTrack(TrackPointer)));
+    /*
     if (type == WAVEFORM_GL) {
         ((WGLWaveformViewer*)widget)->setup(node);
     } else if (type == WAVEFORM_WIDGET) {
@@ -434,6 +452,7 @@ QWidget* LegacySkinParser::parseVisual(QDomElement node) {
     } else if (type == WAVEFORM_SIMPLE) {
         ((WVisualSimple*)widget)->setup(node);
     }
+    */
     setupConnections(node, widget);
 
     connect(widget, SIGNAL(trackDropped(QString, QString)),

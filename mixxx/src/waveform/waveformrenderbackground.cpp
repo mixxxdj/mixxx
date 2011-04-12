@@ -10,6 +10,9 @@
 #include <QPixmap>
 
 #include "waveformrenderbackground.h"
+
+#include "waveformwidget.h"
+
 #include "waveformrenderer.h"
 #include "controlobjectthreadmain.h"
 #include "controlobject.h"
@@ -17,56 +20,48 @@
 #include "widget/wwidget.h"
 #include "trackinfoobject.h"
 
-WaveformRenderBackground::WaveformRenderBackground(const char* group, WaveformRenderer *parent) :
-    m_iWidth(0),
-    m_iHeight(0),
-    m_backgroundPixmap(),
-    m_bRepaintBackground(true),
-    bgColor(0,0,0)
+WaveformRenderBackground::WaveformRenderBackground( WaveformWidgetRenderer* waveformWidget) :
+    WaveformRendererAbstract(waveformWidget),
+    m_backgroungColor(0,0,0)
+{
+    m_backgroundPixmap = QPixmap();
+}
+
+void WaveformRenderBackground::init()
 {
 }
 
-void WaveformRenderBackground::resize(int w, int h) {
-    m_iWidth = w;
-    m_iHeight = h;
-    // Need to repaint the background if we've been resized.
-    m_backgroundPixmap = QPixmap(w,h);
-    m_bRepaintBackground = true;
+void WaveformRenderBackground::setup( const QDomNode& node)
+{
+    m_backgroungColor.setNamedColor(WWidget::selectNodeQString(node, "BgColor"));
+    m_backgroungColor = WSkinColor::getCorrectColor(m_backgroungColor);
 }
 
-void WaveformRenderBackground::newTrack(TrackPointer pTrack) {
-}
-
-void WaveformRenderBackground::setup(QDomNode node) {
-    bgColor.setNamedColor(WWidget::selectNodeQString(node, "BgColor"));
-    bgColor = WSkinColor::getCorrectColor(bgColor);
-}
-
-void WaveformRenderBackground::draw(QPainter *pPainter, QPaintEvent *pEvent, QVector<float> *buffer, double dPlayPos, double rateAdjust) {
-    if(m_bRepaintBackground) {
+void WaveformRenderBackground::draw( QPainter* painter, QPaintEvent* /*event*/)
+{
+    if( isDirty())
         generatePixmap();
-    }
 
-    // Paint the background
-    pPainter->drawPixmap(m_backgroundPixmap.rect(), m_backgroundPixmap, pEvent->rect());
+    painter->drawPixmap( QPoint(0,0), m_backgroundPixmap);
 }
 
-void WaveformRenderBackground::generatePixmap() {
-    QLinearGradient linearGrad(QPointF(0,0), QPointF(0,m_iHeight));
-    linearGrad.setColorAt(0.0, bgColor);
-    linearGrad.setColorAt(0.5, bgColor.light(180));
-    linearGrad.setColorAt(1.0, bgColor);
+void WaveformRenderBackground::generatePixmap()
+{
+    qDebug() << "WaveformRenderBackground::generatePixmap";
 
-    // linearGrad.setColorAt(0.0, Qt::black);
-    // linearGrad.setColorAt(0.3, bgColor);
-    // linearGrad.setColorAt(0.7, bgColor);
-    // linearGrad.setColorAt(1.0, Qt::black);
+    m_backgroundPixmap = QPixmap( m_waveformWidget->getWidth(), m_waveformWidget->getHeight());
+
+    QLinearGradient linearGrad(QPointF(0,0), QPointF(0,m_waveformWidget->getHeight()));
+    linearGrad.setColorAt(0.0, m_backgroungColor);
+    linearGrad.setColorAt(0.5, m_backgroungColor.lighter(200));
+    linearGrad.setColorAt(1.0, m_backgroungColor);
+
     QBrush brush(linearGrad);
 
-    QPainter newPainter;
-    newPainter.begin(&m_backgroundPixmap);
-    newPainter.fillRect(m_backgroundPixmap.rect(), brush);
-    newPainter.end();
+    QPainter painter;
+    painter.begin(&m_backgroundPixmap);
+    painter.fillRect(m_backgroundPixmap.rect(), brush);
+    painter.end();
 
-    m_bRepaintBackground = false;
+    setDirty(false);
 }

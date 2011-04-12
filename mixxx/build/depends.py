@@ -519,7 +519,10 @@ class MixxxCore(Feature):
                    "waveform/waveformrendermarkrange.cpp",
                    "waveform/waveformrenderbeat.cpp",
 		   "waveform/waveform.cpp",
-                   "waveform/visualwaveform.cpp",
+                   "waveform/glwaveformwidget.cpp",
+                   "waveform/waveformrendererabstract.cpp",
+                   "waveform/waveformwidget.cpp",
+                   "waveform/waveformrendererfilteredsignal.cpp",
 
                    "skin/imginvert.cpp",
                    "skin/imgloader.cpp",
@@ -527,7 +530,6 @@ class MixxxCore(Feature):
                    "skin/skinloader.cpp",
                    "skin/legacyskinparser.cpp",
                    "skin/colorschemeparser.cpp",
-
 
                    "sampleutil.cpp",
                    "trackinfoobject.cpp",

@@ -13,7 +13,8 @@ class QPaintEvent;
 
 class RenderObject : public QObject {
     Q_OBJECT
-    public:
+
+public:
     explicit RenderObject();
     virtual ~RenderObject();
     virtual void resize(int w, int h) = 0;

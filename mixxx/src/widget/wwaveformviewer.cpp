@@ -13,11 +13,15 @@
 #include "wwaveformviewer.h"
 #include "waveform/waveformrenderer.h"
 
+#include "waveform/waveformwidget.h"
+#include "waveform/waveformrenderbackground.h"
+#include "waveform/waveformrendererfilteredsignal.h"
 
-WWaveformViewer::WWaveformViewer(const char *group, WaveformRenderer *pWaveformRenderer, QWidget * parent, Qt::WFlags f) : QWidget(parent, f)
+WWaveformViewer::WWaveformViewer(const char *group, WaveformRenderer *pWaveformRenderer, QWidget * parent, Qt::WFlags f) :
+    QWidget(parent)
 {
     m_pWaveformRenderer = pWaveformRenderer;
-    Q_ASSERT(m_pWaveformRenderer);
+    //Q_ASSERT(m_pWaveformRenderer);
 
     m_pGroup = group;
 
@@ -25,29 +29,34 @@ WWaveformViewer::WWaveformViewer(const char *group, WaveformRenderer *pWaveformR
 
     installEventFilter(this);
     m_painting = false;
+
+    setAttribute(Qt::WA_OpaquePaintEvent,true);
+
+    m_waveformWidgetRenderer = new WaveformWidgetRenderer( m_pGroup);
+    m_waveformWidgetRenderer->init();
+    m_waveformWidgetRenderer->addRenderer<WaveformRenderBackground>();
+    m_waveformWidgetRenderer->addRenderer<WaveformRendererFilteredSignal>();
 }
 
 WWaveformViewer::~WWaveformViewer() {
+    delete m_waveformWidgetRenderer;
 }
 
 void WWaveformViewer::setup(QDomNode node) {
-    int w = width(), h = height();
-    m_pWaveformRenderer->setup(node);
-    m_pWaveformRenderer->resize(w, h);
+    m_waveformWidgetRenderer->setup( node);
+    m_waveformWidgetRenderer->resize( width(), height());
 }
+
 
 void WWaveformViewer::paintEvent(QPaintEvent *event) {
     QPainter painter;
     painter.begin(this);
-
-    painter.setRenderHint(QPainter::Antialiasing);
-
-    m_pWaveformRenderer->draw(&painter, event);
-
+    //painter.setRenderHint(QPainter::Antialiasing);
+    m_waveformWidgetRenderer->draw(&painter,event);
     painter.end();
     m_painting = false;
-    // QPainter goes out of scope and is destructed
 }
+
 
 void WWaveformViewer::refresh() {
     //m_paintMutex.lock();
@@ -55,7 +64,7 @@ void WWaveformViewer::refresh() {
         m_painting = true;
 
         // The docs say update is better than repaint.
-        update();
+       update();
     }
     //m_paintMutex.unlock();
 }

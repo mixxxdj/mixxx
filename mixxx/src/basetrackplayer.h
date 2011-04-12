@@ -11,6 +11,8 @@ class ControlObject;
 class ControlObjectThreadMain;
 class WaveformRenderer;
 
+class WaveformWidgetRenderer;
+
 class BaseTrackPlayer : public BasePlayer {
     Q_OBJECT
   public:
@@ -46,6 +48,7 @@ class BaseTrackPlayer : public BasePlayer {
     ControlObject* m_pDuration;
     ControlObjectThreadMain* m_pBPM;
     ControlObjectThreadMain* m_pReplayGain;
+
     WaveformRenderer* m_pWaveformRenderer;
 };
 

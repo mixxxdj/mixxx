@@ -1,4 +1,3 @@
-
 #ifndef WAVEFORMRENDERBACKGROUND_H
 #define WAVEFORMRENDERBACKGROUND_H
 
@@ -7,7 +6,8 @@
 #include <QVector>
 #include <QPixmap>
 
-#include "renderobject.h"
+//#include "renderobject.h"
+#include "waveformrendererabstract.h"
 
 class QDomNode;
 class QPainter;
@@ -15,21 +15,20 @@ class QPaintEvent;
 
 class WaveformRenderer;
 
-class WaveformRenderBackground : public RenderObject {
-    Q_OBJECT
+class WaveformRenderBackground : public WaveformRendererAbstract {
+
 public:
-    WaveformRenderBackground(const char *group, WaveformRenderer *parent);
-    void resize(int w, int h);
-    void setup(QDomNode node);
-    void draw(QPainter *pPainter, QPaintEvent *event, QVector<float> *buffer, double playPos, double rateAdjust);
-    void newTrack(TrackPointer pTrack);
+    WaveformRenderBackground( WaveformWidgetRenderer* waveformWidget);
+
+    virtual void init();
+    virtual void setup( const QDomNode& node);
+    virtual void draw( QPainter* painter, QPaintEvent* event);
 
 private:
     void generatePixmap();
-    int m_iWidth, m_iHeight;
-    QColor bgColor;
+
+    QColor m_backgroungColor;
     QPixmap m_backgroundPixmap;
-    bool m_bRepaintBackground;
 };
 
 #endif

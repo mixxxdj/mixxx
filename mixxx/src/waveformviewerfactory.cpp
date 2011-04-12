@@ -22,6 +22,24 @@ QGLContext* WaveformViewerFactory::s_pSharedOGLCtxt = (QGLContext *)NULL;
 
 WaveformViewerType WaveformViewerFactory::createWaveformViewer(const char *group, QWidget *parent, ConfigObject<ConfigValue> *pConfig, QWidget **target, WaveformRenderer* pWaveformRenderer) {
     
+    // If the waveform update timer is not active, start it.
+    if (!s_waveformUpdateTimer.isActive()) {
+        int desired_fps = 40;
+        float update_interval = 1000.0f / desired_fps;
+        s_waveformUpdateTimer.start(update_interval);
+    }
+
+    qDebug() << "Making a nongl viewer";
+    WWaveformViewer *nongl = new WWaveformViewer(group,pWaveformRenderer,parent);
+    m_visualViewers.append(nongl);
+    m_viewers.append(nongl);
+    *target = nongl;
+
+    QObject::connect(&s_waveformUpdateTimer, SIGNAL(timeout()), *target, SLOT(update()));
+
+    return WAVEFORM_WIDGET;
+
+
     QGLContext *ctxt;
     
     if ( s_pSharedOGLCtxt == (QGLContext*)NULL ) {

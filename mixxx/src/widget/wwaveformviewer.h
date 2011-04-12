@@ -11,16 +11,19 @@
 #include <QDropEvent>
 #include <QTimerEvent>
 
+#include "waveform/waveformwidget.h"
 #include "wwidget.h"
 #include "defs.h"
 
 class EngineBuffer;
 class WaveformRenderer;
 
+class WaveformWidgetRenderer;
+
 class WWaveformViewer : public QWidget
 {
     Q_OBJECT
-  public:
+public:
     WWaveformViewer(const char *group, WaveformRenderer* pWaveformRenderer, QWidget *parent=0, Qt::WFlags f = 0);
     virtual ~WWaveformViewer();
 
@@ -29,16 +32,18 @@ class WWaveformViewer : public QWidget
     void setup(QDomNode node);
     bool eventFilter(QObject *o, QEvent *e);
 
-  public slots:
+    WaveformWidgetRenderer* getWaveFormRenderer() { return m_waveformWidgetRenderer;}
+
+public slots:
     void refresh();
 
-  signals:
+signals:
     void valueChangedLeftDown(double);
     void valueChangedRightDown(double);
     void trackDropped(QString filename, QString group);
 
-  protected:
-    void paintEvent(QPaintEvent* event);
+protected:
+    virtual void paintEvent( QPaintEvent* event);
 
 private:
     /** Used in mouse event handler */
@@ -46,6 +51,8 @@ private:
 
     /** Waveform Renderer does all the work for us */
     WaveformRenderer *m_pWaveformRenderer;
+
+    WaveformWidgetRenderer* m_waveformWidgetRenderer;
 
     bool m_painting;
     QMutex m_paintMutex;
