@@ -7,6 +7,7 @@
 
 #include <QtDebug>
 #include <QList>
+#include <QVector>
 #include <QString>
 #include <time.h>
 #include <math.h>
@@ -14,6 +15,7 @@
 #include "trackinfoobject.h"
 #include "analyservamptest.h"
 #include "track/beatmatrix.h"
+#include "track/beatfactory.h"
 
 AnalyserVampTest::AnalyserVampTest(ConfigObject<ConfigValue> *_config) {
     m_pConfigAVT = _config;
@@ -22,11 +24,9 @@ AnalyserVampTest::AnalyserVampTest(ConfigObject<ConfigValue> *_config) {
     //"pluginID"
     //tested beat tracking features with vamp-plugins:
     //"vamp-aubio:aubiotempo"(GPLed)
-    //"qm-vamp-plugins:qm-barbeattracker"
-    //"qm-vamp-plugins:qm-tempotracker" (both closed source even if qm-vamp-plugins may
-    //be used for any purpose, or redistributed for non-commercial purposes only
-    //as stated here: http://isophonics.net/QMVampPlugins)
-    mvamp = new VampAnalyser("vamp-aubio:aubiotempo");
+    //"qm-vamp-plugins:qm-barbeattracker" (now released under GPL)
+    //"qm-vamp-plugins:qm-tempotracker" (now released under GPL)
+    mvamp = new VampAnalyser("qm-vamp-plugins:qm-barbeattracker");
 
 }
 
@@ -53,19 +53,27 @@ void AnalyserVampTest::finalise(TrackPointer tio) {
     VampPluginEventList collect = mvamp->GetResults();
     float bpm = 0;
     int count = 0;
-    BeatMatrix* BeatMat = new BeatMatrix(tio);
+//    BeatMatrix* BeatMat = new BeatMatrix(tio);
+//    for (int i = 0; i < collect.size(); ++i) {
+//        if(!(collect[i]).isFromOutput)
+//                BeatMat->addBeat((collect[i]).StartingFrame * 2);
+//        if((collect[i]).isFromOutput == 2){//This works only with "qm-vamp-plugins:qm-tempotracker"
+//            bpm += collect[i].Values[0];
+//            count++;
+//        }
+//    }
+//    if(count)qDebug()<<"bpm: "<< bpm/count;
+    QVector <double> results;
     for (int i = 0; i < collect.size(); ++i) {
-        if(!(collect[i]).isFromOutput)
-                BeatMat->addBeat((collect[i]).StartingFrame * 2);
-        if((collect[i]).isFromOutput == 2){//This works only with "qm-vamp-plugins:qm-tempotracker"
-            bpm += collect[i].Values[0];
-            count++;
-        }
+           if(!(collect[i]).isFromOutput)
+               results << ((collect[i]).StartingFrame * 2);
     }
-    if(count)qDebug()<<"bpm: "<< bpm/count;
-    tio->setBeats(BeatsPointer(BeatMat));
+    BeatsPointer pBeats = BeatFactory::makeBeatMatrix(tio, results);
+    tio->setBeats(pBeats);
     m_bPass = mvamp->End();
+    results.clear();
     if(!collect.isEmpty()) collect.clear();
+    //delete BeatMat;
     //m_iStartTime = clock() - m_iStartTime;
 }
 
