@@ -1,4 +1,5 @@
 #include <QtDebug>
+#include <QVectorIterator>
 
 #include "track/beatgrid.h"
 #include "track/beatmatrix.h"
@@ -28,6 +29,15 @@ BeatsPointer BeatFactory::makeBeatGrid(TrackPointer pTrack, double dBpm, double 
     BeatGrid* pGrid = new BeatGrid(pTrack);
     pGrid->setGrid(dBpm, dFirstBeatSample);
     return BeatsPointer(pGrid, &BeatFactory::deleteBeats);
+}
+
+BeatsPointer BeatFactory::makeBeatMatrix (TrackPointer pTrack, QVector <double> beats) {
+    BeatMatrix* pMatrix = new BeatMatrix(pTrack);
+    QVectorIterator<double> i(beats);
+    while (i.hasNext())
+        pMatrix->addBeat(i.next());
+    return BeatsPointer(pMatrix,&BeatFactory::deleteBeats);
+
 }
 
 void BeatFactory::deleteBeats(Beats* pBeats) {
