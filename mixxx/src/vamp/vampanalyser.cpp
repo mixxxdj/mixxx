@@ -206,3 +206,41 @@ VampPluginEventList VampAnalyser::GetResults() {
     return m_Results;
 }
 
+bool SetParameter (QString parameter, double value){
+
+}
+
+QVector <double> GetInitFramesVector( int FromOutput ){
+
+}
+
+QVector <double> GetEndFramesVector( int FromOutput ){
+
+}
+
+QVector <QString> GetLabelsVector ( int FromOutput){
+
+}
+
+QVector <double> GetValuesVector ( int FromOutput){
+
+}
+double GetFirstValue ( int FromOutput){
+
+}
+
+double GetLastValue ( int FromOutput){
+
+}
+
+double GetMeanValue ( int FromOutput){
+
+}
+
+double GetMinValue ( int FromOutput){
+
+}
+
+double GetMaxValue ( int FromOutput){
+
+}

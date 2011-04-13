@@ -47,11 +47,30 @@ public:
 
     bool Init(int samplerate, const int TotalSamples);
 
-    //virtual bool SetPluginParameter(QString parameter, QString value);
-
     virtual bool Process(const CSAMPLE *pIn, const int iLen);
 
     virtual VampPluginEventList GetResults();
+
+    virtual bool SetParameter (QString parameter, double value);
+
+    virtual QVector <double> GetInitFramesVector( int FromOutput );
+
+    virtual QVector <double> GetEndFramesVector( int FromOutput );
+
+    virtual QVector <QString> GetLabelsVector ( int FromOutput);
+
+    virtual QVector <double> GetValuesVector ( int FromOutput);
+
+    virtual double GetFirstValue ( int FromOutput);
+
+    virtual double GetLastValue ( int FromOutput);
+
+    virtual double GetMeanValue ( int FromOutput);
+
+    virtual double GetMinValue ( int FromOutput);
+
+    virtual double GetMaxValue ( int FromOutput);
+
 
     bool End();
 
