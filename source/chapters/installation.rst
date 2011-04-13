@@ -18,7 +18,7 @@ versions. (It may also run on Windows 2000.)
 Mac OS X
 ========
 
-OSX users on Snow Leopard or greater can install Mixxx from the Mac App
+OS X users on Snow Leopard or greater can install Mixxx from the Mac App
 Store. Alternatively, Intel and PPC users can install Mixxx by downloading and
 double-clicking the Mixxx DMG archive, and then dragging-and-dropping the Mixxx
 bundle into their Applications folder. Mixxx requires an Intel or PPC Mac
