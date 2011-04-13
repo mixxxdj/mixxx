@@ -51,6 +51,11 @@ EngineSideChain::EngineSideChain(ConfigObject<ConfigValue> * pConfig) {
 #endif
 
     m_rec = new EngineRecord(m_pConfig);
+    connect(m_rec, SIGNAL(bytesRecorded(int)),
+            this, SIGNAL(bytesRecorded(int)));
+    connect(m_rec, SIGNAL(isRecording(bool)),
+            this, SIGNAL(isRecording(bool)));
+
 
    	start(QThread::LowPriority);    //Starts the thread and goes to the "run()" function below.
 }

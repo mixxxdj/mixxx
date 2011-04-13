@@ -3,7 +3,7 @@
                              -------------------
     begin                : Wed Feb 20 2002
     copyright            : (C) 2002 by Tue and Ken Haste Andersen
-    email                : 
+    email                :
  ***************************************************************************/
 
 /***************************************************************************
@@ -26,6 +26,8 @@
   *@author Tue and Ken Haste Andersen
   */
 
+class ControlPushButton;
+
 class ControlPotmeter : public ControlObject
 {
   Q_OBJECT
@@ -46,7 +48,7 @@ public:
     double getValueFromWidget(double dValue);
     double getValueToWidget(double dValue);
     double GetMidiValue();
-    
+
 public slots:
     void setValueFromThread(double dValue);
     void setValueFromEngine(double dValue);
@@ -61,14 +63,13 @@ public slots:
 
 protected:
     void setValueFromMidi(MidiCategory c, double v);
-    
+
     double m_dMaxValue, m_dMinValue, m_dValueRange, m_dStep, m_dSmallStep;
 
-#define maxPosition 127
-#define minPosition 0
-#define middlePosition ((maxPosition-minPosition)/2)
-#define positionrange (maxPosition-minPosition)
-
+    ControlPushButton* m_pControlUp;
+    ControlPushButton* m_pControlDown;
+    ControlPushButton* m_pControlUpSmall;
+    ControlPushButton* m_pControlDownSmall;
 };
 
 #endif

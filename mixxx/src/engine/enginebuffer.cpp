@@ -36,6 +36,8 @@
 #include "engine/loopingcontrol.h"
 #include "engine/ratecontrol.h"
 #include "engine/bpmcontrol.h"
+#include "engine/quantizecontrol.h"
+
 
 #include "trackinfoobject.h"
 
@@ -149,6 +151,11 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
     m_pTrackSamples = new ControlObject(ConfigKey(group, "track_samples"));
     m_pTrackSampleRate = new ControlObject(ConfigKey(group, "track_samplerate"));
 
+    // Quantization Controller for enabling and disabling the
+    // quantization (alignment) of loop in/out positions and (hot)cues with
+    // beats.
+    addControl(new QuantizeControl(_group, _config));
+
     // Create the Loop Controller
     m_pLoopingControl = new LoopingControl(_group, _config);
     addControl(m_pLoopingControl);
@@ -192,14 +199,19 @@ EngineBuffer::~EngineBuffer()
     delete m_pReadAheadManager;
     delete m_pReader;
 
+    delete playButtonCOT;
     delete playButton;
+    delete playStartButtonCOT;
     delete playStartButton;
     delete startButton;
     delete endButton;
+    delete stopButtonCOT;
+    delete stopButton;
     delete rateEngine;
     delete playposSlider;
     delete visualPlaypos;
 
+    delete m_pTrackEndCOT;
     delete m_pTrackEnd;
 
     delete m_pRepeat;

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>DlgAutoDJ</class>
- <widget class="QWidget" name="DlgAutoDJ">
+ <class>DlgRecording</class>
+ <widget class="QWidget" name="DlgRecording">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -26,16 +26,6 @@
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout">
      <item>
-      <widget class="QPushButton" name="pushButtonShuffle">
-       <property name="text">
-        <string>Shuffle playlist</string>
-       </property>
-       <property name="checkable">
-        <bool>false</bool>
-       </property>
-      </widget>
-     </item>
-     <item>
       <spacer name="horizontalSpacer">
        <property name="orientation">
         <enum>Qt::Horizontal</enum>
@@ -51,14 +41,14 @@
      <item>
       <widget class="QLabel" name="label">
        <property name="text">
-        <string>Add tracks to the queue below...</string>
+        <string>Status:</string>
        </property>
       </widget>
      </item>
      <item>
-      <widget class="QPushButton" name="pushButtonAutoDJ">
+      <widget class="QPushButton" name="pushButtonRecording">
        <property name="text">
-        <string>Enable Auto DJ</string>
+        <string>Start Recording</string>
        </property>
        <property name="checkable">
         <bool>true</bool>

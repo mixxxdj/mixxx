@@ -14,10 +14,12 @@
 #include "library/trackcollection.h"
 #include "library/dao/trackdao.h"
 
-BrowseFeature::BrowseFeature(QObject* parent, ConfigObject<ConfigValue>* pConfig, TrackCollection* pTrackCollection)
+BrowseFeature::BrowseFeature(QObject* parent, ConfigObject<ConfigValue>* pConfig,
+                             TrackCollection* pTrackCollection,
+                             RecordingManager* pRecordingManager)
         : LibraryFeature(parent),
           m_pConfig(pConfig),
-          m_browseModel(this),
+          m_browseModel(this, pTrackCollection, pRecordingManager),
           m_proxyModel(&m_browseModel),
           m_pTrackCollection(pTrackCollection) {
 

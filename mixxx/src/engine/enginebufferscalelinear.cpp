@@ -40,6 +40,7 @@ EngineBufferScaleLinear::EngineBufferScaleLinear(ReadAheadManager *pReadAheadMan
 
 EngineBufferScaleLinear::~EngineBufferScaleLinear()
 {
+    delete [] buffer_int;
 }
 
 double EngineBufferScaleLinear::setTempo(double _tempo)
