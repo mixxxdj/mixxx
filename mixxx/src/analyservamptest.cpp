@@ -53,16 +53,7 @@ void AnalyserVampTest::finalise(TrackPointer tio) {
     VampPluginEventList collect = mvamp->GetResults();
     float bpm = 0;
     int count = 0;
-//    BeatMatrix* BeatMat = new BeatMatrix(tio);
-//    for (int i = 0; i < collect.size(); ++i) {
-//        if(!(collect[i]).isFromOutput)
-//                BeatMat->addBeat((collect[i]).StartingFrame * 2);
-//        if((collect[i]).isFromOutput == 2){//This works only with "qm-vamp-plugins:qm-tempotracker"
-//            bpm += collect[i].Values[0];
-//            count++;
-//        }
-//    }
-//    if(count)qDebug()<<"bpm: "<< bpm/count;
+
     QVector <double> results;
     for (int i = 0; i < collect.size(); ++i) {
            if(!(collect[i]).isFromOutput)
@@ -70,10 +61,10 @@ void AnalyserVampTest::finalise(TrackPointer tio) {
     }
     BeatsPointer pBeats = BeatFactory::makeBeatMatrix(tio, results);
     tio->setBeats(pBeats);
+    tio->setBpm(pBeats->getBpm());
     m_bPass = mvamp->End();
     results.clear();
     if(!collect.isEmpty()) collect.clear();
-    //delete BeatMat;
     //m_iStartTime = clock() - m_iStartTime;
 }
 

@@ -34,6 +34,10 @@
     authorization.
 */
 
+#include <QDesktopServices>
+#include <QCoreApplication>
+#include <QString>
+
 #include <vamp-hostsdk/PluginHostAdapter.h>
 #include <cstdlib>
 
@@ -70,22 +74,22 @@ PluginHostAdapter::getPluginPath()
     std::vector<std::string> path;
     std::string envPath;
 
-    char *cpath = getenv("VAMP_PATH");
-    if (cpath) envPath = cpath;
+//    char *cpath = getenv("VAMP_PATH");
+//    if (cpath) envPath = cpath;
 
 #ifdef __WINDOWS__
 #define PATH_SEPARATOR ';'
-#define DEFAULT_VAMP_PATH "%ProgramFiles%\\Vamp Plugins"
+#define DEFAULT_VAMP_PATH "%ProgramFiles%\\Vamp Plugins;"+(QCoreApplication::applicationDirPath()).toStdString() + "/plugins/Vamp"
 #else
 #define PATH_SEPARATOR ':'
 #ifdef __APPLE__
-#define DEFAULT_VAMP_PATH "$HOME/Library/Audio/Plug-Ins/Vamp:/Library/Audio/Plug-Ins/Vamp"
+#define DEFAULT_VAMP_PATH "$HOME/Library/Audio/Plug-Ins/Vamp:/Library/Audio/Plug-Ins/Vamp:/Library/Application Support/Mixxx/Plugins/Vamp/" + ((QCoreApplication::applicationDirPath()).remove("MacOS")).toStdString()
 #else
-#define DEFAULT_VAMP_PATH "$HOME/vamp:$HOME/.vamp:/usr/local/lib/vamp:/usr/lib/vamp"
+#define DEFAULT_VAMP_PATH "$HOME/vamp:$HOME/.vamp:/usr/local/lib/vamp:/usr/lib/vamp:/usr/local/lib/mixxx/plugins/vamp:/usr/lib/mixxx/plugins/vamp:"+(QDesktopServices::storageLocation(QDesktopServices::HomeLocation)).toStdString() + "plugins/vamp"
 #endif
 #endif
 
-    if (envPath == "") {
+    //if (envPath == "") {
         envPath = DEFAULT_VAMP_PATH;
         char *chome = getenv("HOME");
         if (chome) {
@@ -106,7 +110,7 @@ PluginHostAdapter::getPluginPath()
             envPath.replace(f, 14, pfiles);
         }
 #endif
-    }
+    //}
 
     std::string::size_type index = 0, newindex = 0;
 
