@@ -24,6 +24,7 @@
 #include "engine/engineobject.h"
 #include "engine/enginechannel.h"
 #include "soundmanagerutil.h"
+#include "recording/recordingmanager.h"
 
 class EngineWorkerScheduler;
 class EngineBuffer;
@@ -40,8 +41,10 @@ class EngineVinylSoundEmu;
 class EngineSideChain;
 
 class EngineMaster : public EngineObject, public AudioSource {
-public:
-    EngineMaster(ConfigObject<ConfigValue>* pConfig, const char* pGroup);
+    Q_OBJECT
+  public:
+    EngineMaster(ConfigObject<ConfigValue>* pConfig,
+                 const char* pGroup);
     virtual ~EngineMaster();
 
     // Get access to the sample buffers. None of these are thread safe. Only to
@@ -53,11 +56,25 @@ public:
     // Add an EngineChannel to the mixing engine. This is not thread safe --
     // only call it before the engine has started mixing.
     void addChannel(EngineChannel* pChannel);
-
     static inline double gainForOrientation(EngineChannel::ChannelOrientation orientation,
                                             double leftGain,
                                             double centerGain,
-                                            double rightGain);
+                                            double rightGain) {
+        switch (orientation) {
+            case EngineChannel::LEFT:
+                return leftGain;
+            case EngineChannel::RIGHT:
+                return rightGain;
+            case EngineChannel::CENTER:
+            default:
+                return centerGain;
+        }
+    }
+
+
+  signals:
+    void bytesRecorded(int);
+    void isRecording(bool);
 
   private:
     struct ChannelInfo {

@@ -90,7 +90,12 @@ EngineMaster::EngineMaster(ConfigObject<ConfigValue> * _config,
     memset(m_pHead, 0, sizeof(CSAMPLE) * MAX_BUFFER_LEN);
     memset(m_pMaster, 0, sizeof(CSAMPLE) * MAX_BUFFER_LEN);
 
+    //Starts a thread for recording and shoutcast
     sidechain = new EngineSideChain(_config);
+    connect(sidechain, SIGNAL(isRecording(bool)),
+            this, SIGNAL(isRecording(bool)));
+    connect(sidechain, SIGNAL(bytesRecorded(int)),
+            this, SIGNAL(bytesRecorded(int)));
 
     //X-Fader Setup
     xFaderCurve = new ControlPotmeter(
@@ -108,8 +113,12 @@ EngineMaster::~EngineMaster()
     delete m_pMasterVolume;
     delete m_pHeadVolume;
     delete clipping;
+    delete vumeter;
     delete head_clipping;
     delete sidechain;
+
+    delete xFaderCalibration;
+    delete xFaderCurve;
 
     SampleUtil::free(m_pHead);
     SampleUtil::free(m_pMaster);
@@ -462,17 +471,4 @@ const CSAMPLE* EngineMaster::buffer(AudioOutput output) const {
     default:
         return NULL;
     }
-}
-
-// static
-double EngineMaster::gainForOrientation(EngineChannel::ChannelOrientation orientation,
-                                        double leftGain,
-                                        double centerGain,
-                                        double rightGain) {
-    if (orientation == EngineChannel::LEFT) {
-        return leftGain;
-    } else if (orientation == EngineChannel::RIGHT) {
-        return rightGain;
-    }
-    return centerGain;
 }
