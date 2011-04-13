@@ -15,8 +15,8 @@ versions. (It may also run on Windows 2000.)
 
 .. note:: If you aren't sure about 32-bit versus 64-bit, pick the 32-bit version.
 
-Mac OSX
-=======
+Mac OS X
+========
 
 OSX users on Snow Leopard or greater can install Mixxx from the Mac App
 Store. Alternatively, Intel and PPC users can install Mixxx by downloading and
@@ -28,6 +28,10 @@ running OS 10.4 or newer.
 
 GNU/Linux
 =========
+
+Official packages of Mixxx are only offered for Ubuntu Linux. However,
+Mixxx can build on almost any Linux distribution.
+
 
 Installation on Ubuntu
 ----------------------
@@ -42,7 +46,7 @@ Package Archive (ppa). Open a terminal and type the following commands::
 Installation on Other Distributions
 -----------------------------------
 
-Official packages of Mixxx are only offered for Ubuntu Linux. Your distribution
+Your distribution
 may maintain a non-official build that you may use. Alternatively, you can build
 Mixxx from source. This should not be a terrible process, and it's certainly
 easiest on GNU/Linux. For more information, see the `Compiling on Linux

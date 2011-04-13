@@ -1,16 +1,12 @@
 Introduction to Mixxx
 *********************
 
-What Is Mixxx?
-==============
-
-* Mixxx allows you to perform live DJ mixes with your digital music collection.
-* Mixxx helps you rock the party with MIDI controllers, vinyl turntables, or even just your keyboard.
-* Mixxx is open-source software -- just like Mozilla Firefox.
+Mixxx allows you to perform live DJ mixes with your digital music collection.
+It helps you rock the party with MIDI controllers, vinyl turntables, or even just your keyboard.
 
 Mixxx is used by professional DJs and bedroom DJs alike. It is designed by an
 international team of volunteer DJs who want to bring the joy of DJing to
-everyone. The project is non-profit and community driven. Together and with your
+everyone. The project is non-profit, open-source and community driven. Together and with your
 help we aim to build the best DJ software ever created.
 
 Project History
