@@ -14,7 +14,7 @@
  ***************************************************************************/
 
 #include "soundmanagerconfig.h"
-#include "audiopath.h"
+#include "soundmanagerutil.h"
 #include "sounddevice.h"
 #include "soundmanager.h"
 

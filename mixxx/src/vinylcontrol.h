@@ -32,7 +32,7 @@ class VinylControl : public QThread
     	virtual bool isEnabled() = 0;
     	/*virtual void syncPitch(double pitch) = 0;
     	virtual void syncPosition() = 0; */
-    	virtual void AnalyseSamples(short* samples, size_t size) = 0;
+    	virtual void AnalyseSamples(const short* samples, size_t size) = 0;
     	virtual float getSpeed();
     	//virtual float getTimecodeStrength();
     protected:

@@ -18,7 +18,7 @@
 
 #include <QtCore>
 #include "ui_dlgprefsounditem.h"
-#include "audiopath.h"
+#include "soundmanagerutil.h"
 
 class SoundDevice;
 class SoundManagerConfig;
@@ -35,6 +35,8 @@ public:
     DlgPrefSoundItem(QWidget *parent, AudioPathType type,
             QList<SoundDevice*> &devices, bool isInput, unsigned int index = 0);
     ~DlgPrefSoundItem();
+    AudioPathType type() const { return m_type; };
+    unsigned int index() const { return m_index; };
 signals:
     void settingChanged();
 public slots:
