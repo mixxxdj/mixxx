@@ -18,7 +18,7 @@ class VinylControlXwax : public VinylControl
         virtual ~VinylControlXwax();
     	void ToggleVinylControl(bool enable);
     	bool isEnabled();
-    	void AnalyseSamples(short* samples, size_t size);      
+    	void AnalyseSamples(const short* samples, size_t size);      
 protected:
 	void run();						// main thread loop
 
