@@ -71,6 +71,11 @@ class EngineMaster : public EngineObject, public AudioSource {
         }
     }
 
+    // These are really only exposed for tests to use.
+    const CSAMPLE* getMasterBuffer() const;
+    const CSAMPLE* getHeadphoneBuffer() const;
+    const CSAMPLE* getDeckBuffer(unsigned int i) const;
+    const CSAMPLE* getChannelBuffer(QString name) const;
 
   signals:
     void bytesRecorded(int);
@@ -120,11 +125,6 @@ class EngineMaster : public EngineObject, public AudioSource {
 
     void mixChannels(unsigned int channelBitvector, unsigned int maxChannels,
                      CSAMPLE* pOutput, unsigned int iBufferSize, GainCalculator* pGainCalculator);
-    const CSAMPLE* getMasterBuffer() const;
-    const CSAMPLE* getHeadphoneBuffer() const;
-    const CSAMPLE* getDeckBuffer(unsigned int i) const;
-    const CSAMPLE* getChannelBuffer(QString name) const;
-
 
     QList<ChannelInfo*> m_channels;
 
