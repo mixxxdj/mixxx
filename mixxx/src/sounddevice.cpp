@@ -17,7 +17,7 @@
 
 #include <QtDebug>
 #include <QtCore>
-#include "audiopath.h"
+#include "soundmanagerutil.h"
 #include "soundmanager.h"
 #include "sounddevice.h"
 
