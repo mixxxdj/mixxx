@@ -36,6 +36,8 @@
 #include "engine/loopingcontrol.h"
 #include "engine/ratecontrol.h"
 #include "engine/bpmcontrol.h"
+#include "engine/quantizecontrol.h"
+
 
 #ifdef __VINYLCONTROL__
 #include "vinylcontrol.h"
@@ -164,6 +166,11 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
 
     m_pTrackSamples = new ControlObject(ConfigKey(group, "track_samples"));
     m_pTrackSampleRate = new ControlObject(ConfigKey(group, "track_samplerate"));
+
+    // Quantization Controller for enabling and disabling the
+    // quantization (alignment) of loop in/out positions and (hot)cues with
+    // beats.
+    addControl(new QuantizeControl(_group, _config));
 
     // Create the Loop Controller
     m_pLoopingControl = new LoopingControl(_group, _config);
