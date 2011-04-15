@@ -24,7 +24,6 @@
 #include "engine/engineobject.h"
 #include "engine/enginechannel.h"
 #include "recording/recordingmanager.h"
-
 #include <QtCore>
 
 class EngineWorkerScheduler;
