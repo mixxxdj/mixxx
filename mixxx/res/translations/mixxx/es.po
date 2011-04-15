@@ -8,13 +8,13 @@ msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2011-03-27 03:32-0400\n"
-"PO-Revision-Date: 2011-04-07 16:11+0000\n"
-"Last-Translator: Irwin Céspedes B <Unknown>\n"
+"PO-Revision-Date: 2011-04-14 06:33+0000\n"
+"Last-Translator: Fitoschido <fitoschido@gmail.com>\n"
 "Language-Team: Spanish <es@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-04-08 04:43+0000\n"
+"X-Launchpad-Export-Date: 2011-04-15 04:53+0000\n"
 "X-Generator: Launchpad (build 12735)\n"
 
 #: AutoDJFeature#1
@@ -580,7 +580,7 @@ msgstr ""
 #: DlgPrefBPMDlg#1
 msgctxt "DlgPrefBPMDlg#1"
 msgid "BPM Detection Settings"
-msgstr ""
+msgstr "Opciones de detección de BPM"
 
 #: DlgPrefBPMDlg#2
 msgctxt "DlgPrefBPMDlg#2"
@@ -661,7 +661,7 @@ msgstr "Mixxx debe reiniciarse para que los cambios surtan efecto."
 #: DlgPrefControlsDlg#1
 msgctxt "DlgPrefControlsDlg#1"
 msgid "Form1"
-msgstr ""
+msgstr "Formulario1"
 
 #: DlgPrefControlsDlg#2
 msgid "Skin"
@@ -756,7 +756,7 @@ msgstr ""
 #: DlgPrefCrossfaderDlg#1
 msgctxt "DlgPrefCrossfaderDlg#1"
 msgid "Form1"
-msgstr ""
+msgstr "Formulario1"
 
 #: DlgPrefCrossfaderDlg#2
 msgid "Crossfader Curve"
@@ -798,11 +798,11 @@ msgstr "Restablecer"
 #: DlgPrefEQDlg#1
 msgctxt "DlgPrefEQDlg#1"
 msgid "Form1"
-msgstr ""
+msgstr "Formulario1"
 
 #: DlgPrefEQDlg#2
 msgid "Static EQs (for slower CPUs)"
-msgstr ""
+msgstr "EQs estáticos (para CPUs lentas)"
 
 #: DlgPrefEQDlg#3
 msgid "High Shelf EQ"
@@ -810,7 +810,7 @@ msgstr ""
 
 #: DlgPrefEQDlg#4
 msgid "textLabel1"
-msgstr ""
+msgstr "etiquetaTexto1"
 
 #: DlgPrefEQDlg#5
 msgid "16 Hz"
@@ -857,7 +857,7 @@ msgstr ""
 
 #: DlgPrefMidiBindings#4
 msgid "Overwrite existing mapping?"
-msgstr ""
+msgstr "¿Sobreescribir mapeo existente?"
 
 #: DlgPrefMidiBindings#5
 msgid ""
@@ -951,14 +951,17 @@ msgid ""
 "href=\"http://mixxx.org/wiki/doku.php/midi_controller_mapping_file_format\">T"
 "roubleshooting</a>"
 msgstr ""
+"<a "
+"href=\"http://mixxx.org/wiki/doku.php/midi_controller_mapping_file_format\">S"
+"olución de problemas</a>"
 
 #: DlgPrefMidiBindingsDlg#13
 msgid "MIDI Input"
-msgstr ""
+msgstr "Entrada MIDI"
 
 #: DlgPrefMidiBindingsDlg#14
 msgid "Outputs"
-msgstr ""
+msgstr "Salidas"
 
 #: DlgPrefMidiBindingsDlg#15
 msgid "MIDI Output"
@@ -967,7 +970,7 @@ msgstr "Salida MIDI"
 #: DlgPrefNoMidiDlg#1
 msgctxt "DlgPrefNoMidiDlg#1"
 msgid "Form3"
-msgstr ""
+msgstr "Formulario3"
 
 #: DlgPrefNoMidiDlg#2
 msgid "No MIDI devices available"
@@ -976,7 +979,7 @@ msgstr "No hay dispositivos MIDI disponibles"
 #: DlgPrefPlaylist#1
 msgctxt "DlgPrefPlaylist#1"
 msgid "Choose music library directory"
-msgstr ""
+msgstr "Elija el directorio de biblioteca de música"
 
 #: DlgPrefPlaylist#2
 msgid "Multiple iPods Detected"
@@ -992,11 +995,11 @@ msgstr ""
 
 #: DlgPrefPlaylist#4
 msgid "Choose Yes to use the newly found iPod @ "
-msgstr ""
+msgstr "Elija Sí para usar el iPod encontrado @ "
 
 #: DlgPrefPlaylist#5
 msgid " or to continue to search for other iPods. \n"
-msgstr ""
+msgstr " o para continuar buscando otros iPods. \n"
 
 #: DlgPrefPlaylist#6
 msgid "Choose No to use the existing iPod @ "
@@ -1013,36 +1016,36 @@ msgstr "Elegir punto de montaje del iPod"
 #: DlgPrefPlaylistDlg#1
 msgctxt "DlgPrefPlaylistDlg#1"
 msgid "Form3"
-msgstr ""
+msgstr "Formulario3"
 
 #: DlgPrefPlaylistDlg#2
 msgid "Audio File Formats"
-msgstr ""
+msgstr "Formatos de archivo de sonido"
 
 #: DlgPrefPlaylistDlg#3
 msgid "Additional Format Plugins:"
-msgstr ""
+msgstr "Complementos para formatos adicionales:"
 
 #: DlgPrefPlaylistDlg#4
 msgid "MP3, Ogg Vorbis, FLAC, WAVe, AIFF"
-msgstr ""
+msgstr "MP3, Ogg Vorbis, FLAC, WAVe, AIFF"
 
 #: DlgPrefPlaylistDlg#5
 msgid "Loaded Plugins:"
-msgstr ""
+msgstr "Complementos cargados:"
 
 #: DlgPrefPlaylistDlg#6
 msgctxt "DlgPrefPlaylistDlg#6"
 msgid "None"
-msgstr ""
+msgstr "Ninguno"
 
 #: DlgPrefPlaylistDlg#7
 msgid "Miscellaneous"
-msgstr ""
+msgstr "Varios"
 
 #: DlgPrefPlaylistDlg#8
 msgid "Synchronize ID3 tags on track modifications"
-msgstr ""
+msgstr "Sincronizar etiquetas ID3 entre modificaciones de pista"
 
 #: DlgPrefPlaylistDlg#9
 msgid "Rescan library on start-up"
@@ -1059,7 +1062,7 @@ msgstr "Punto de montaje de iPod"
 #: DlgPrefPlaylistDlg#12
 msgctxt "DlgPrefPlaylistDlg#12"
 msgid "Browse..."
-msgstr ""
+msgstr "Examinar..."
 
 #: DlgPrefPlaylistDlg#13
 msgid "Detect"
@@ -1068,7 +1071,7 @@ msgstr "Detectar"
 #: DlgPrefPlaylistDlg#14
 msgctxt "DlgPrefPlaylistDlg#14"
 msgid "Library"
-msgstr ""
+msgstr "Biblioteca"
 
 #: DlgPrefPlaylistDlg#15
 msgid "Music Directory:"
@@ -1108,12 +1111,12 @@ msgstr "kbps"
 #: DlgPrefRecordDlg#1
 msgctxt "DlgPrefRecordDlg#1"
 msgid "Form3"
-msgstr ""
+msgstr "Formulario3"
 
 #: DlgPrefRecordDlg#2
 msgctxt "DlgPrefRecordDlg#2"
 msgid "File"
-msgstr ""
+msgstr "Archivo"
 
 #: DlgPrefRecordDlg#3
 msgctxt "DlgPrefRecordDlg#3"
@@ -1166,19 +1169,19 @@ msgstr ""
 #: DlgPrefReplayGainDlg#1
 msgctxt "DlgPrefReplayGainDlg#1"
 msgid "BPM Detection Settings"
-msgstr ""
+msgstr "Opciones de detección de BPM"
 
 #: DlgPrefReplayGainDlg#2
 msgid "ReplayGain Normalization"
-msgstr ""
+msgstr "Normalización ReplayGain"
 
 #: DlgPrefReplayGainDlg#3
 msgid "Apply volume normalization to loaded songs."
-msgstr ""
+msgstr "Aplicar normatización de volumen a las canciones cargadas."
 
 #: DlgPrefReplayGainDlg#4
 msgid "Enable Replay Gain"
-msgstr ""
+msgstr "Activar Replay Gain"
 
 #: DlgPrefReplayGainDlg#5
 msgid ""
@@ -1207,17 +1210,17 @@ msgstr ""
 
 #: DlgPrefReplayGainDlg#10
 msgid "dB"
-msgstr ""
+msgstr "dB"
 
 #: DlgPrefReplayGainDlg#11
 msgctxt "DlgPrefReplayGainDlg#11"
 msgid "Reset"
-msgstr ""
+msgstr "Restablecer"
 
 #: DlgPrefShoutcastDlg#1
 msgctxt "DlgPrefShoutcastDlg#1"
 msgid "Form3"
-msgstr ""
+msgstr "Formulario3"
 
 #: DlgPrefShoutcastDlg#2
 msgctxt "DlgPrefShoutcastDlg#2"
@@ -1303,7 +1306,7 @@ msgstr "Sitio web"
 
 #: DlgPrefShoutcastDlg#22
 msgid "http://www.mixxx.org"
-msgstr ""
+msgstr "http://www.mixxx.org"
 
 #: DlgPrefShoutcastDlg#23
 msgid "Description"
@@ -1446,15 +1449,15 @@ msgstr ""
 #: DlgPrefSound#1
 msgctxt "DlgPrefSound#1"
 msgid "None"
-msgstr ""
+msgstr "Ninguno"
 
 #: DlgPrefSound#2
 msgid "%1 Hz"
-msgstr ""
+msgstr "%1 Hz"
 
 #: DlgPrefSound#3
 msgid "Mixxx Error"
-msgstr ""
+msgstr "Error en Mixxx"
 
 #: DlgPrefSound#4
 msgid ""
@@ -1465,7 +1468,7 @@ msgstr ""
 
 #: DlgPrefSound#5
 msgid "a device"
-msgstr ""
+msgstr "un dispositivo"
 
 #: DlgPrefSound#6
 msgid "An unknown error occurred"
@@ -1491,7 +1494,7 @@ msgstr "%1 ms"
 
 #: DlgPrefSound#11
 msgid "Configuration error"
-msgstr ""
+msgstr "Error de configuración"
 
 #: DlgPrefSoundDlg#1
 msgid "Sound API"
@@ -1499,7 +1502,7 @@ msgstr "API de sonido"
 
 #: DlgPrefSoundDlg#2
 msgid "Sample Rate"
-msgstr ""
+msgstr "Tasa de muestreo"
 
 #: DlgPrefSoundDlg#3
 msgid "Latency Tips"
@@ -1515,12 +1518,12 @@ msgstr ""
 
 #: DlgPrefSoundDlg#5
 msgid "Output"
-msgstr ""
+msgstr "Salida"
 
 #: DlgPrefSoundDlg#6
 msgctxt "DlgPrefSoundDlg#6"
 msgid "Input"
-msgstr ""
+msgstr "Entrada"
 
 #: DlgPrefSoundDlg#7
 msgid "Query Devices"
@@ -1528,11 +1531,11 @@ msgstr ""
 
 #: DlgPrefSoundDlg#8
 msgid "Reset to Defaults"
-msgstr ""
+msgstr "Restablecer valores predeterminados"
 
 #: DlgPrefSoundDlg#9
 msgid "Apply"
-msgstr ""
+msgstr "Aplicar"
 
 #: DlgPrefSoundDlg#10
 msgid "Latency"
@@ -1541,15 +1544,15 @@ msgstr "Latencia"
 #: DlgPrefSoundItem#1
 msgctxt "DlgPrefSoundItem#1"
 msgid "None"
-msgstr ""
+msgstr "Ninguno"
 
 #: DlgPrefSoundItem#2
 msgid "Channels %1 - %2"
-msgstr ""
+msgstr "Canales %1 - %2"
 
 #: DlgPrefSoundItem#3
 msgid "Form"
-msgstr ""
+msgstr "Formulario"
 
 #: DlgPrefSoundItem#4
 msgid "Type (#)"
@@ -1558,12 +1561,12 @@ msgstr "Tipo (#)"
 #: DlgPrefVinylDlg#1
 msgctxt "DlgPrefVinylDlg#1"
 msgid "Form1"
-msgstr ""
+msgstr "Formulario1"
 
 #: DlgPrefVinylDlg#2
 msgctxt "DlgPrefVinylDlg#2"
 msgid "Input"
-msgstr ""
+msgstr "Entrada"
 
 #: DlgPrefVinylDlg#3
 msgid ""
