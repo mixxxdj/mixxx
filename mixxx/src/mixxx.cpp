@@ -298,10 +298,10 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
     m_pPlayerManager = new PlayerManager(m_pConfig, m_pEngine, m_pLibrary);
     m_pPlayerManager->addDeck();
     m_pPlayerManager->addDeck();
-    // m_pPlayerManager->addSampler();
-    // m_pPlayerManager->addSampler();
-    // m_pPlayerManager->addSampler();
-    // m_pPlayerManager->addSampler();
+    m_pPlayerManager->addSampler();
+    m_pPlayerManager->addSampler();
+    m_pPlayerManager->addSampler();
+    m_pPlayerManager->addSampler();
 
     // register the engine's outputs
     m_pSoundManager->registerOutput(AudioOutput(AudioOutput::MASTER),
