@@ -103,6 +103,7 @@ void RecordingManager::stopRecording()
     qDebug() << "Recording stopped";
     m_recReady->slotSet(RECORD_OFF);
     m_recordingFile = "";
+    m_recordingLocation = "";
     m_iNumberOfBytesRecored = 0;
 }
 
