@@ -1,5 +1,5 @@
 /**
- * @file audiopath.cpp
+ * @file soundmanagerutil.cpp
  * @author Bill Good <bkgood at gmail dot com>
  * @date 20100611
  */
@@ -14,7 +14,7 @@
  ***************************************************************************/
 
 #include <QtCore>
-#include "audiopath.h"
+#include "soundmanagerutil.h"
 
 /**
  * Constructs a ChannelGroup.
@@ -228,8 +228,8 @@ bool AudioPath::isIndexed(AudioPathType type) {
     case DECK:
     case VINYLCONTROL:
     case EXTPASSTHROUGH:
-    case MICROPHONE:
         return true;
+    case MICROPHONE:
     default:
         break;
     }
@@ -241,22 +241,10 @@ bool AudioPath::isIndexed(AudioPathType type) {
  * @note This method is static.
  */
 AudioPathType AudioPath::getTypeFromInt(int typeInt) {
-    switch (typeInt) {
-    case AudioPath::MASTER:
-        return AudioPath::MASTER;
-    case AudioPath::HEADPHONES:
-        return AudioPath::HEADPHONES;
-    case AudioPath::DECK:
-        return AudioPath::DECK;
-    case AudioPath::VINYLCONTROL:
-        return AudioPath::VINYLCONTROL;
-    case AudioPath::EXTPASSTHROUGH:
-        return AudioPath::EXTPASSTHROUGH;
-    case AudioPath::MICROPHONE:
-        return AudioPath::MICROPHONE;
-    default:
+    if (typeInt < 0 || typeInt >= AudioPath::INVALID) {
         return AudioPath::INVALID;
     }
+    return static_cast<AudioPathType>(typeInt);
 }
 
 /**
@@ -385,6 +373,7 @@ QList<AudioPathType> AudioInput::getSupportedTypes() {
     // (prefs, etc), minimal ifdefs :) -- bkgood
     types.append(VINYLCONTROL);
 #endif
+    types.append(MICROPHONE);
     return types;
 }
 

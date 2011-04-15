@@ -28,10 +28,8 @@
 #include "controlnull.h"
 #include "controlpotmeter.h"
 #include "controlobjectthreadmain.h"
-#include "engine/enginebuffer.h"
 #include "engine/enginemaster.h"
-#include "engine/enginechannel.h"
-#include "engine/enginevumeter.h"
+#include "engine/enginemicrophone.h"
 #include "trackinfoobject.h"
 #include "dlgabout.h"
 #include "waveformviewerfactory.h"
@@ -46,6 +44,7 @@
 #include "library/libraryscanner.h"
 
 #include "soundmanager.h"
+#include "soundmanagerutil.h"
 #include "defs_urls.h"
 #include "recording/defs_recording.h"
 
@@ -250,6 +249,11 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
     // after the players are added to the engine (as is done currently) -- bkgood
     m_pSoundManager = new SoundManager(m_pConfig, m_pEngine);
 
+    EngineMicrophone* pMicrophone = new EngineMicrophone("[Microphone]");
+    AudioInput micInput = AudioInput(AudioPath::MICROPHONE, 0, 0); // What should channelbase be?
+    m_pEngine->addChannel(pMicrophone);
+    m_pSoundManager->registerInput(micInput, pMicrophone);
+
     // Get Music dir
     bool hasChanged_MusicDir = false;
     QDir dir(m_pConfig->getValueString(ConfigKey("[Playlist]","Directory")));
@@ -294,12 +298,22 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
     m_pPlayerManager = new PlayerManager(m_pConfig, m_pEngine, m_pLibrary);
     m_pPlayerManager->addDeck();
     m_pPlayerManager->addDeck();
-    // m_pPlayerManager->addSampler();
-    // m_pPlayerManager->addSampler();
-    // m_pPlayerManager->addSampler();
-    // m_pPlayerManager->addSampler();
+    m_pPlayerManager->addSampler();
+    m_pPlayerManager->addSampler();
+    m_pPlayerManager->addSampler();
+    m_pPlayerManager->addSampler();
 
-
+    // register the engine's outputs
+    m_pSoundManager->registerOutput(AudioOutput(AudioOutput::MASTER),
+        m_pEngine);
+    m_pSoundManager->registerOutput(AudioOutput(AudioOutput::HEADPHONES),
+        m_pEngine);
+    for (unsigned int deck = 0; deck < m_pPlayerManager->numDecks(); ++deck) {
+        // TODO(bkgood) make this look less dumb by putting channelBase after
+        // index in the AudioOutput() params
+        m_pSoundManager->registerOutput(
+            AudioOutput(AudioOutput::DECK, 0, deck), m_pEngine);
+    }
 
     //Scan the library directory.
     m_pLibraryScanner = new LibraryScanner(m_pLibrary->getTrackCollection());
@@ -379,7 +393,7 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
     m_pSkinLoader = new SkinLoader(m_pConfig);
 
     // Initialize preference dialog
-    m_pPrefDlg = new DlgPreferences(this, m_pSkinLoader, m_pSoundManager,
+    m_pPrefDlg = new DlgPreferences(this, m_pSkinLoader, m_pSoundManager, m_pPlayerManager,
                                  m_pMidiDeviceManager, m_pConfig);
     m_pPrefDlg->setHidden(true);
 

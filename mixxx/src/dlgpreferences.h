@@ -48,6 +48,7 @@ class DlgPrefReplayGain;
 class PowerMate;
 class MidiDeviceManager;
 class SkinLoader;
+class PlayerManager;
 
 /**
   *@author Tue & Ken Haste Andersen
@@ -58,7 +59,9 @@ class DlgPreferences : public QDialog, public Ui::DlgPreferencesDlg
     Q_OBJECT
 public:
     DlgPreferences(MixxxApp *mixxx, SkinLoader* pSkinLoader, SoundManager *soundman,
-                   MidiDeviceManager* midi, ConfigObject<ConfigValue> *config);
+                   PlayerManager* pPlayerManager, MidiDeviceManager* midi,
+                   ConfigObject<ConfigValue> *config);
+
     ~DlgPreferences();
     void createIcons();
 public slots:

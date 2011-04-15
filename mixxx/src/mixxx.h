@@ -45,7 +45,6 @@
 #ifdef __VINYLCONTROL__
 #include "vinylcontrol.h"
 #endif
-#include "audiopath.h"
 #include "recording/recordingmanager.h"
 
 #ifdef __SCRIPT__
@@ -159,7 +158,6 @@ class MixxxApp : public QMainWindow
 
     // The sound manager
     SoundManager *m_pSoundManager;
-
 
     // Keeps track of players
     PlayerManager* m_pPlayerManager;

@@ -368,6 +368,10 @@ class MixxxCore(Feature):
                    "engine/enginesidechain.cpp",
                    "engine/enginefilterbutterworth8.cpp",
                    "engine/enginexfader.cpp",
+                   "engine/enginemicrophone.cpp",
+                   "engine/enginedeck.cpp",
+                   "engine/enginepassthrough.cpp",
+
                    "engine/enginecontrol.cpp",
                    "engine/ratecontrol.cpp",
                    "engine/loopingcontrol.cpp",
@@ -377,6 +381,7 @@ class MixxxCore(Feature):
                    "engine/clockcontrol.cpp",
                    "engine/readaheadmanager.cpp",
                    "cachingreader.cpp",
+
                    "analyserrg.cpp",
                    "analyserqueue.cpp",
                    "analyserwavesummary.cpp",
@@ -551,7 +556,7 @@ class MixxxCore(Feature):
                    "sounddevice.cpp",
                    "soundmanager.cpp",
                    "soundmanagerconfig.cpp",
-                   "audiopath.cpp",
+                   "soundmanagerutil.cpp",
                    "dlgprefrecord.cpp",
                    "playerinfo.cpp",
 
