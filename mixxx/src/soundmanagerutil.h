@@ -1,5 +1,5 @@
 /**
- * @file audiopath.h
+ * @file soundmanagerutil.h
  * @author Bill Good <bkgood at gmail dot com>
  * @date 20100611
  */
@@ -13,11 +13,14 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef AUDIOPATH_H
-#define AUDIOPATH_H
+#ifndef SOUNDMANAGERUTIL_U
+#define SOUNDMANAGERUTIL_U
 
 #include <QString>
 #include <QtXml>
+#include <QMutex>
+
+#include "defs.h" // for CSAMPLE (???)
 
 /**
  * @class ChannelGroup
@@ -33,7 +36,7 @@ public:
     bool clashesWith(const ChannelGroup &other) const;
     unsigned int getHash() const;
 private:
-    unsigned char m_channelBase; // base (first) channel used on device 
+    unsigned char m_channelBase; // base (first) channel used on device
     unsigned char m_channels; // number of channels used (s/b 2 in most cases)
 };
 
@@ -50,13 +53,13 @@ public:
     // channelsNeededForType (if necessary), the subclasses' getSupportedTypes
     // (if necessary), etc. -- bkgood
     enum AudioPathType {
-        INVALID,
         MASTER,
         HEADPHONES,
         DECK,
         VINYLCONTROL,
         MICROPHONE,
         EXTPASSTHROUGH,
+        INVALID, // if this isn't last bad things will happen -bkgood
     };
     AudioPath(unsigned char channelBase, unsigned char channels);
     AudioPathType getType() const;
@@ -105,12 +108,24 @@ protected:
 class AudioInput : public AudioPath {
 public:
     AudioInput(AudioPathType type = INVALID, unsigned char channelBase = 0,
-                  unsigned char index = 0);
+               unsigned char index = 0);
     QDomElement toXML(QDomElement *element) const;
     static AudioInput fromXML(const QDomElement &xml);
     static QList<AudioPathType> getSupportedTypes();
 protected:
     void setType(AudioPathType type);
+};
+
+class AudioSource {
+public:
+    virtual const CSAMPLE* buffer(AudioOutput output) const = 0;
+};
+
+class AudioDestination {
+public:
+    virtual void receiveBuffer(AudioInput input, const short* pBuffer, unsigned int iNumFrames) = 0;
+    virtual void onInputConnected(AudioInput input) { };
+    virtual void onInputDisconnected(AudioInput input) { };
 };
 
 typedef AudioPath::AudioPathType AudioPathType;

@@ -70,7 +70,7 @@ void VinylControlProxy::ToggleVinylControl(bool enable)
 
    } */
 
-void VinylControlProxy::AnalyseSamples(short * samples, size_t size)
+void VinylControlProxy::AnalyseSamples(const short * samples, size_t size)
 {
     if (m_pVinylControl && samples)
         m_pVinylControl->AnalyseSamples(samples, size);
@@ -90,7 +90,7 @@ float VinylControlProxy::getSpeed()
         return 0.0f;
 }
 
-/** Returns some sort of indication of the vinyl's signal quality. 
+/** Returns some sort of indication of the vinyl's signal quality.
     Range of m_fTimecodeQuality should be 0.0 to 1.0 */
 float VinylControlProxy::getTimecodeQuality()
 {
@@ -102,16 +102,26 @@ float VinylControlProxy::getTimecodeQuality()
 
 unsigned char* VinylControlProxy::getScopeBytemap()
 {
-	if (m_pVinylControl)
-		return m_pVinylControl->getScopeBytemap();
-	else
-		return NULL;
+    if (m_pVinylControl)
+        return m_pVinylControl->getScopeBytemap();
+    else
+        return NULL;
 }
 
 float VinylControlProxy::getAngle()
 {
-	if (m_pVinylControl)
-		return m_pVinylControl->getAngle();
-	else
-		return -1.0;
+    if (m_pVinylControl)
+        return m_pVinylControl->getAngle();
+    else
+        return -1.0;
+}
+
+void VinylControlProxy::receiveBuffer(AudioInput input, const short* pBuffer,
+        unsigned int iNumFrames) {
+    if (input.getType() != AudioPath::VINYLCONTROL ||
+        QString("[Channel%1]").arg(input.getIndex()) != this->group) {
+        qDebug() << "WARNING: vinyl control proxy got a buffer for an "
+            "AudioInput it doesn't own";
+    }
+    AnalyseSamples(pBuffer, iNumFrames);
 }
