@@ -36,6 +36,7 @@ AnalyserVampTest::~AnalyserVampTest(){
 void AnalyserVampTest::initialise(TrackPointer tio, int sampleRate,
         int totalSamples) {
     m_bPass = mvamp->Init(sampleRate, totalSamples);
+    mvamp->SelectOutput(0);
     if (!m_bPass)
         qDebug() << "Failed to init";
 
@@ -50,21 +51,15 @@ void AnalyserVampTest::process(const CSAMPLE *pIn, const int iLen) {
 void AnalyserVampTest::finalise(TrackPointer tio) {
     if(!m_bPass) return;
 
-    VampPluginEventList collect = mvamp->GetResults();
-    float bpm = 0;
-    int count = 0;
-
-    QVector <double> results;
-    for (int i = 0; i < collect.size(); ++i) {
-           if(!(collect[i]).isFromOutput)
-               results << ((collect[i]).StartingFrame * 2);
+   QVector <double> beats;
+    if(mvamp->GetInitFramesVector(&beats)){
+        BeatsPointer pBeats = BeatFactory::makeBeatMatrix(tio, beats);
+        tio->setBeats(pBeats);
+        tio->setBpm(pBeats->getBpm());
     }
-    BeatsPointer pBeats = BeatFactory::makeBeatMatrix(tio, results);
-    tio->setBeats(pBeats);
-    tio->setBpm(pBeats->getBpm());
     m_bPass = mvamp->End();
-    results.clear();
-    if(!collect.isEmpty()) collect.clear();
+    beats.clear();
+    if(m_bPass) qDebug()<<"Beat Calculation complete";
     //m_iStartTime = clock() - m_iStartTime;
 }
 

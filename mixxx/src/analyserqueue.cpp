@@ -13,6 +13,7 @@
 #include "analyserbpm.h"
 #include "analyserrg.h"
 #include "analyservamptest.h"
+#include "analyservampkeytest.h"
 
 AnalyserQueue::AnalyserQueue() : m_aq(),
                                  m_tioq(),
@@ -214,6 +215,7 @@ AnalyserQueue* AnalyserQueue::createDefaultAnalyserQueue(ConfigObject<ConfigValu
     //ret->addAnalyser(new AnalyserBPM(_config));
     ret->addAnalyser(new AnalyserGain(_config));
     ret->addAnalyser(new AnalyserVampTest(_config));
+    ret->addAnalyser(new AnalyserVampKeyTest(_config));
 
     ret->start(QThread::IdlePriority);
     return ret;
@@ -222,7 +224,7 @@ AnalyserQueue* AnalyserQueue::createDefaultAnalyserQueue(ConfigObject<ConfigValu
 AnalyserQueue* AnalyserQueue::createPrepareViewAnalyserQueue(ConfigObject<ConfigValue> *_config) {
     AnalyserQueue* ret = new AnalyserQueue();
     ret->addAnalyser(new AnalyserWavesummary());
-    //ret->addAnalyser(new AnalyserBPM(_config));
+    ret->addAnalyser(new AnalyserBPM(_config));
     ret->addAnalyser(new AnalyserGain(_config));
     ret->addAnalyser(new AnalyserVampTest(_config));
     ret->start(QThread::IdlePriority);

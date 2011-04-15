@@ -163,7 +163,7 @@ double BeatMatrix::getBpm() const {
     double startSample = *m_beatList.begin();
     double stopSample = *(m_beatList.end()-1);
     double songDurationMinutes =
-            (stopSample - startSample) / (60.0f * m_iSampleRate);
+            (stopSample - startSample) / (2 * 60.0f * m_iSampleRate);
     return m_beatList.size() / songDurationMinutes;
 }
 

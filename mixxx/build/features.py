@@ -371,6 +371,7 @@ class Vamp(Feature):
     def sources(self, build):
         sources = ['vamp/vampanalyser.cpp',
                    'analyservamptest.cpp',
+                   'analyservampkeytest.cpp',
                    '#lib/vamp/src/vamp-hostsdk/PluginBufferingAdapter.cpp',
                    '#lib/vamp/src/vamp-hostsdk/PluginChannelAdapter.cpp',
                    '#lib/vamp/src/vamp-hostsdk/PluginHostAdapter.cpp',
