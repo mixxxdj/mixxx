@@ -9,32 +9,13 @@
 #define VAMPANALYSER_H_
 
 #include <vamp-hostsdk/PluginLoader.h>
+#include <vamp-hostsdk/vamp-hostsdk.h>
+#include <vamp-hostsdk/Plugin.h>
 #include <QString>
 #include <QList>
 #include <QVector>
 #include "sampleutil.h"
 
-
- struct VampPluginEvent
-        {
-        int isFromOutput;
-
-        bool hasStartingFrame;
-
-        double StartingFrame;
-
-        bool hasEndingFrame;
-
-        double EndingFrame;
-
-        int VectorValuesSize;
-
-        QVector<float> Values;
-
-        QString Label;
-        };
-
- typedef QList<VampPluginEvent> VampPluginEventList;
 
 
 class VampAnalyser {
@@ -49,30 +30,30 @@ public:
 
     virtual bool Process(const CSAMPLE *pIn, const int iLen);
 
-    virtual VampPluginEventList GetResults();
+    bool End();
 
     virtual bool SetParameter (QString parameter, double value);
 
-    virtual QVector <double> GetInitFramesVector( int FromOutput );
+    virtual void SelectOutput (int outputnumber);
 
-    virtual QVector <double> GetEndFramesVector( int FromOutput );
+    virtual bool GetInitFramesVector( QVector<double>* vectout );
 
-    virtual QVector <QString> GetLabelsVector ( int FromOutput);
+    virtual bool GetEndFramesVector( QVector<double>* vectout );
 
-    virtual QVector <double> GetValuesVector ( int FromOutput);
+    virtual bool GetLabelsVector ( QVector<QString>* vectout);
 
-    virtual double GetFirstValue ( int FromOutput);
+    virtual bool GetFirstValuesVector ( QVector<double>* vectout);
 
-    virtual double GetLastValue ( int FromOutput);
+    virtual bool GetLastValuesVector ( QVector<double>* vectout);
 
-    virtual double GetMeanValue ( int FromOutput);
+//    virtual QVector <double> GetMeanValueVector ( int FromOutput);
+//
+//    virtual QVector <double> GetMinValueVector ( int FromOutput);
+//
+//    virtual QVector <double> GetMaxValueVector ( int FromOutput);
 
-    virtual double GetMinValue ( int FromOutput);
-
-    virtual double GetMaxValue ( int FromOutput);
 
 
-    bool End();
 
 
 
@@ -83,12 +64,18 @@ private:
     Vamp::HostExt::PluginLoader::PluginKey mKey;
 
     int m_iSampleCount, m_iOUT, m_iRemainingSamples,
-        m_iBlockSize, m_iStepSize, mRate, m_iOutputs;
+        m_iBlockSize, m_iStepSize, mRate, m_iOutput;
     CSAMPLE ** m_pluginbuf;
     Vamp::Plugin *mPlugin;
     Vamp::Plugin::ParameterList mParameters;
-    VampPluginEventList m_Results;
-
+    QVector <double> m_InitFrameVector;
+    QVector <double> m_EndFrameVector;
+    QVector <QString> m_LabelsVector;
+    QVector <double> m_FirstValueVector;
+    QVector <double> m_LastValueVector;
+    QVector <double> m_MeanValueVector;
+    QVector <double> m_MinValueVector;
+    Vamp::Plugin::FeatureList m_Results;
 };
 
 #endif /* VAMPANALYSER_H_ */
