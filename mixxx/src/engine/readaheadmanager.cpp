@@ -63,9 +63,9 @@ int ReadAheadManager::getNextSamples(double dRate, CSAMPLE* buffer,
 
     int samples_read = m_pReader->read(start_sample, samples_needed,
                                        base_buffer);
-                                       
-	if (samples_read != samples_needed)
-		qDebug() << "didn't get what we wanted" << samples_read << samples_needed;
+
+    if (samples_read != samples_needed)
+        qDebug() << "didn't get what we wanted" << samples_read << samples_needed;
 
     // Increment or decrement current read-ahead position
     if (in_reverse) {
@@ -103,7 +103,7 @@ int ReadAheadManager::getNextSamples(double dRate, CSAMPLE* buffer,
         }
     }
 
-	//qDebug() << "read" << m_iCurrentPosition << samples_read;
+    //qDebug() << "read" << m_iCurrentPosition << samples_read;
     return samples_read;
 }
 
@@ -133,7 +133,7 @@ void ReadAheadManager::hintReader(QList<Hint>& hintList, int iSamplesPerBuffer) 
     // If we are trying to cache before the start of the track,
     // Then we don't need to cache because it's all zeros!
     if (current_position.sample < 0)
-    	return;
+        return;
 
     // top priority, we need to read this data immediately
     current_position.priority = 1;

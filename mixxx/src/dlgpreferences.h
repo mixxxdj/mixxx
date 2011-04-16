@@ -94,16 +94,16 @@ private:
     DlgPrefShoutcast *wshoutcast;
     DlgPrefReplayGain *wreplaygain;
 
-	QTreeWidgetItem* m_pSoundButton;
-	QTreeWidgetItem* m_pPlaylistButton;
-	QTreeWidgetItem* m_pControlsButton;
-	QTreeWidgetItem* m_pEqButton;
-	QTreeWidgetItem* m_pCrossfaderButton;
-	QTreeWidgetItem* m_pRecordingButton;
-	QTreeWidgetItem* m_pBPMdetectButton;
-	QTreeWidgetItem* m_pVinylControlButton;
-	QTreeWidgetItem* m_pShoutcastButton;
-	QTreeWidgetItem* m_pReplayGainButton;
+    QTreeWidgetItem* m_pSoundButton;
+    QTreeWidgetItem* m_pPlaylistButton;
+    QTreeWidgetItem* m_pControlsButton;
+    QTreeWidgetItem* m_pEqButton;
+    QTreeWidgetItem* m_pCrossfaderButton;
+    QTreeWidgetItem* m_pRecordingButton;
+    QTreeWidgetItem* m_pBPMdetectButton;
+    QTreeWidgetItem* m_pVinylControlButton;
+    QTreeWidgetItem* m_pShoutcastButton;
+    QTreeWidgetItem* m_pReplayGainButton;
     QTreeWidgetItem* m_pMIDITreeItem;
     QList<QTreeWidgetItem*> m_midiBindingsButtons;
 

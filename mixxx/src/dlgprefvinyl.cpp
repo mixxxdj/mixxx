@@ -59,23 +59,23 @@ DlgPrefVinyl::DlgPrefVinyl(QWidget * parent, SoundManager * soundman,
     ComboBoxVinylType1->addItem(MIXXX_VINYL_SERATOCD);
     ComboBoxVinylType1->addItem(MIXXX_VINYL_TRAKTORSCRATCHSIDEA);
     ComboBoxVinylType1->addItem(MIXXX_VINYL_TRAKTORSCRATCHSIDEB);
-    
+
     ComboBoxVinylType2->addItem(MIXXX_VINYL_SERATOCV02VINYLSIDEA);
     ComboBoxVinylType2->addItem(MIXXX_VINYL_SERATOCV02VINYLSIDEB);
     ComboBoxVinylType2->addItem(MIXXX_VINYL_SERATOCD);
     ComboBoxVinylType2->addItem(MIXXX_VINYL_TRAKTORSCRATCHSIDEA);
     ComboBoxVinylType2->addItem(MIXXX_VINYL_TRAKTORSCRATCHSIDEB);
-    
+
     ComboBoxVinylSpeed1->addItem(MIXXX_VINYL_SPEED_33);
     ComboBoxVinylSpeed1->addItem(MIXXX_VINYL_SPEED_45);
-    
+
     ComboBoxVinylSpeed2->addItem(MIXXX_VINYL_SPEED_33);
     ComboBoxVinylSpeed2->addItem(MIXXX_VINYL_SPEED_45);
-    
+
     connect(applyButton, SIGNAL(clicked()), this, SLOT(slotApply()));
     connect(VinylGain, SIGNAL(sliderReleased()), this, SLOT(VinylGainSlotApply()));
     //connect(ComboBoxDeviceDeck1, SIGNAL(currentIndexChanged()), this, SLOT(()));
-    
+
     connect(VinylGain, SIGNAL(sliderReleased()), this, SLOT(settingsChanged()));
     connect(ComboBoxVinylType1, SIGNAL(currentIndexChanged(int)), this, SLOT(settingsChanged()));
     connect(ComboBoxVinylType2, SIGNAL(currentIndexChanged(int)), this, SLOT(settingsChanged()));
@@ -125,15 +125,15 @@ void DlgPrefVinyl::slotUpdate()
     int combo_index = ComboBoxVinylType1->findText(config->getValueString(ConfigKey("[Channel1]","vinylcontrol_vinyl_type")));
     if (combo_index != -1)
         ComboBoxVinylType1->setCurrentIndex(combo_index);
-        
+
     combo_index = ComboBoxVinylType2->findText(config->getValueString(ConfigKey("[Channel2]","vinylcontrol_vinyl_type")));
     if (combo_index != -1)
         ComboBoxVinylType2->setCurrentIndex(combo_index);
-        
+
     combo_index = ComboBoxVinylSpeed1->findText(config->getValueString(ConfigKey("[Channel1]","vinylcontrol_speed_type")));
     if (combo_index != -1)
         ComboBoxVinylSpeed1->setCurrentIndex(combo_index);
-        
+
     combo_index = ComboBoxVinylSpeed2->findText(config->getValueString(ConfigKey("[Channel2]","vinylcontrol_speed_type")));
     if (combo_index != -1)
         ComboBoxVinylSpeed2->setCurrentIndex(combo_index);
@@ -159,7 +159,7 @@ void DlgPrefVinyl::slotUpdate()
 // Update the config object with parameters from dialog
 void DlgPrefVinyl::slotApply()
 {
-	QString device2;
+    QString device2;
     qDebug() << "DlgPrefVinyl::Apply";
 
     // Lead-in time
@@ -227,7 +227,7 @@ void DlgPrefVinyl::settingsChanged() {
     if (VCProxiesList.value(1) != NULL) {
         m_signalWidget2.setVinylControlProxy(VCProxiesList.value(1));
     }
-    
+
     m_signalWidget1.setVinylActive(m_pSoundManager->hasVinylInput(0));
     m_signalWidget2.setVinylActive(m_pSoundManager->hasVinylInput(1));
 }
