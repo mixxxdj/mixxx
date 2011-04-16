@@ -394,8 +394,6 @@ int SoundManager::setupDevices()
     // audio prefs are updated. Will require work in DlgPrefVinyl.
     m_vinylControl.append(new VinylControlProxy(m_pConfig, "[Channel1]"));
     m_vinylControl.append(new VinylControlProxy(m_pConfig, "[Channel2]"));
-    qDebug() << "Created VinylControlProxies" <<
-                m_vinylControl[0] << m_vinylControl[1];
     registerInput(AudioInput(AudioInput::VINYLCONTROL, 0, 0), m_vinylControl[0]);
     registerInput(AudioInput(AudioInput::VINYLCONTROL, 0, 1), m_vinylControl[1]);
 #endif
@@ -747,6 +745,8 @@ void SoundManager::pushBuffer(QList<AudioInput> inputs, short * inputBuffer,
                 }
             }
         }
+
+
     }
 }
 
