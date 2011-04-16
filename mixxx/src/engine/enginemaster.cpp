@@ -85,6 +85,7 @@ EngineMaster::EngineMaster(ConfigObject<ConfigValue> * _config,
     head_clipping = new EngineClipping("");
     
     //set up input passthrough o
+    //TODO: we should set up n passthroughs for n decks
 	m_passthrough.append(new ControlPushButton(ConfigKey("[Channel1]","inputpassthrough")));
 	m_passthrough.append(new ControlPushButton(ConfigKey("[Channel2]","inputpassthrough")));
 	m_passthrough[0]->setToggleButton(true);
@@ -352,85 +353,99 @@ void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
         ChannelInfo* pChannelInfo = *it;
         EngineChannel* pChannel = pChannelInfo->m_pChannel;
         
-        bool isactive = m_passthrough[channel_number]->get();
-        if(isactive)
+        bool needsProcessing = false;
+        if (pChannel->isMaster()) {
+            masterOutput |= (1 << channel_number);
+            needsProcessing = true;
+        }
+
+        // If the channel is enabled for previewing in headphones, copy it
+        // over to the headphone buffer
+        if (pChannel->isPFL()) {
+            headphoneOutput |= (1 << channel_number);
+            needsProcessing = true;
+        }
+
+        //FIXME: this assumes second two decks are passthrough
+        bool isPassthroughActive = false;
+        int deck_index = channel_number-1;
+        if (deck_index >= 0 && deck_index < 2)
+        	isPassthroughActive = m_passthrough[deck_index]->get();
+        	
+        if(isPassthroughActive)
     	{
     		//if we're passing through, we don't care if channel
 	    	//is active or not
     		//overwrite the channel buffer with the input so the decks, 
     		//not just the master get output
     		
-    		passthroughBufferMutex[channel_number].lock();
+    		passthroughBufferMutex[deck_index].lock();
     		
     		//currently playing silence while filling up the buffer
-    		if (m_bFilling[channel_number])
+    		if (m_bFilling[deck_index])
     		{
-    			if (m_iThruFill[channel_number] < math_max(1, m_iThruBufferCount[channel_number] - 2))
+    			if (m_iThruFill[deck_index] < math_max(1, m_iThruBufferCount[deck_index] - 2))
 				{
-					qDebug() << "Buffer filling" << m_iThruFill[channel_number] << math_max(1, m_iThruBufferCount[channel_number] - 2);
+					qDebug() << "Buffer filling" << m_iThruFill[deck_index] << math_max(1, m_iThruBufferCount[deck_index] - 2);
 					SampleUtil::applyGain(pChannelInfo->m_pBuffer, 0.0f, iBufferSize);
 				}
 				else
 				{
 					qDebug() << "Buffer filled";
-					m_bFilling[channel_number] = false;
+					m_bFilling[deck_index] = false;
 				}
 			}
     		
-    		if (!m_bFilling[channel_number])
+    		if (!m_bFilling[deck_index])
     		{
-    			if (m_iThruFill[channel_number] == 0)
+    			if (m_iThruFill[deck_index] < 1)
 				{
 					qDebug() << "ERROR: input passthrough buffer underrun";
 					SampleUtil::applyGain(pChannelInfo->m_pBuffer, 0.0f, iBufferSize);
-					m_bFilling[channel_number] = true;
+					m_bFilling[deck_index] = true;
 				}
 				else
 				{
-					if (m_iLastThruRead[channel_number] >= m_iThruBufferCount[channel_number] - 1)
-						m_iLastThruRead[channel_number] = 0;
+					if (m_iLastThruRead[deck_index] >= m_iThruBufferCount[deck_index] - 1)
+						m_iLastThruRead[deck_index] = 0;
 					else
-						m_iLastThruRead[channel_number]++;
-					m_iThruFill[channel_number]--;
+						m_iLastThruRead[deck_index]++;
+					m_iThruFill[deck_index]--;
 					SampleUtil::copyWithGain(pChannelInfo->m_pBuffer,
-											m_passthroughBuffers[channel_number]+m_iLastThruRead[channel_number]*iBufferSize, 
+											m_passthroughBuffers[deck_index]+m_iLastThruRead[deck_index]*iBufferSize, 
 											1.0f, iBufferSize);
 				}
 			}
-    		passthroughBufferMutex[channel_number].unlock();
+    		passthroughBufferMutex[deck_index].unlock();
 	    	pChannel->process(pChannelInfo->m_pBuffer, pChannelInfo->m_pBuffer, iBufferSize);
 	    }
 	    else
 	    {
    	        if (!pChannel->isActive()) {
    	        	//if it was active last time, zero out
-   	        	if (m_bPassthroughWasActive[channel_number])
+   	        	if (deck_index >=0 && deck_index < 2)
    	        	{
-   	        		SampleUtil::applyGain(pChannelInfo->m_pBuffer, 0.0f, iBufferSize);
-   	        		m_bPassthroughWasActive[channel_number] = false;
-					m_iLastThruRead[channel_number] = -1;
-					m_iLastThruWrote[channel_number] = -1;
-					m_iThruFill[channel_number] = 0;
-					m_iThruBufferCount[channel_number] = 1;
-					m_bFilling[channel_number] = true;
+	   	        	if (m_bPassthroughWasActive[deck_index])
+	   	        	{
+	   	        		SampleUtil::applyGain(pChannelInfo->m_pBuffer, 0.0f, iBufferSize);
+	   	        		m_bPassthroughWasActive[deck_index] = false;
+						m_iLastThruRead[deck_index] = -1;
+						m_iLastThruWrote[deck_index] = -1;
+						m_iThruFill[deck_index] = 0;
+						m_iThruBufferCount[deck_index] = 1;
+						m_bFilling[deck_index] = true;
 
-   	        	}
+	   	        	}
+	   	        }
 				continue;
     		}
-
-			pChannel->process(NULL, pChannelInfo->m_pBuffer, iBufferSize);
+    		if (needsProcessing)
+    		{
+				pChannel->process(NULL, pChannelInfo->m_pBuffer, iBufferSize);
+			}
 	    }
-	    m_bPassthroughWasActive[channel_number] = isactive;
-
-        //// Process the buffer
-        //pChannel->process(NULL, pChannelInfo->m_pBuffer, iBufferSize);
-        masterOutput |= (1 << channel_number);
-
-        // If the channel is enabled for previewing in headphones, copy it
-        // over to the headphone buffer
-        if (pChannel->isPFL()) {
-            headphoneOutput |= (1 << channel_number);
-        }
+	    if (deck_index >=0 && deck_index < 2)
+	    	m_bPassthroughWasActive[deck_index] = isPassthroughActive;
     }
 
     // Mix all the enabled headphone channels together.
@@ -501,7 +516,11 @@ void EngineMaster::addChannel(EngineChannel* pChannel) {
     pChannelInfo->m_pBuffer = SampleUtil::alloc(MAX_BUFFER_LEN);
     memset(pChannelInfo->m_pBuffer, 0, sizeof(CSAMPLE) * MAX_BUFFER_LEN);
     m_channels.push_back(pChannelInfo);
-    pChannelInfo->m_pChannel->getEngineBuffer()->bindWorkers(m_pWorkerScheduler);
+
+    EngineBuffer* pBuffer = pChannelInfo->m_pChannel->getEngineBuffer();
+    if (pBuffer != NULL) {
+        pBuffer->bindWorkers(m_pWorkerScheduler);
+    }
 
     // TODO(XXX) WARNING HUGE HACK ALERT In the case of 2-decks, this code hooks
     // the two EngineBuffers together so they can beat-sync off of each other.
@@ -509,8 +528,10 @@ void EngineMaster::addChannel(EngineChannel* pChannel) {
     if (m_channels.length() == 2) {
         EngineBuffer *pBuffer1 = m_channels[0]->m_pChannel->getEngineBuffer();
         EngineBuffer *pBuffer2 = m_channels[1]->m_pChannel->getEngineBuffer();
-        pBuffer1->setOtherEngineBuffer(pBuffer2);
-        pBuffer2->setOtherEngineBuffer(pBuffer1);
+        if (pBuffer1 != NULL && pBuffer2 != NULL) {
+            pBuffer1->setOtherEngineBuffer(pBuffer2);
+            pBuffer2->setOtherEngineBuffer(pBuffer1);
+        }
     }
 }
 
@@ -521,11 +542,13 @@ void EngineMaster::pushPassthroughBuffer(int c, short *input, int len)
 	passthroughBufferMutex[c].lock();
 
 	//check that we aren't overflowing.	
-	if (m_iThruFill[c] == m_iThruBufferCount[c])
+	if (m_iThruFill[c] >= m_iThruBufferCount[c])
 	{
 		if ((m_iThruBufferCount[c] + 1) * len > MAX_BUFFER_LEN)
 		{
 			qDebug() << "ERROR: Input Passthrough buffer overflow -- can't add buffers";
+			passthroughBufferMutex[c].unlock();
+			return;	
 		}
 		else
 		{
@@ -577,10 +600,34 @@ void EngineMaster::pushPassthroughBuffer(int c, short *input, int len)
 int EngineMaster::numChannels() const {
     return m_channels.size();
 }
+const CSAMPLE* EngineMaster::getDeckBuffer(unsigned int i) const {
+    return getChannelBuffer(QString("[Channel%1]").arg(i+1));
+}
 
-const CSAMPLE* EngineMaster::getChannelBuffer(unsigned int i) const {
-    if (i < numChannels()) {
-        return m_channels[i]->m_pBuffer;
+const CSAMPLE* EngineMaster::getChannelBuffer(QString group) const {
+    int channel_number = 0;
+    for (QList<ChannelInfo*>::const_iterator i = m_channels.constBegin();
+         i != m_channels.constEnd(); ++i, ++channel_number) {
+        const ChannelInfo* pChannelInfo = *i;
+        if (pChannelInfo->m_pChannel->getGroup() == group) {
+            return pChannelInfo->m_pBuffer;
+        }
     }
     return NULL;
+}
+
+const CSAMPLE* EngineMaster::buffer(AudioOutput output) const {
+    switch (output.getType()) {
+    case AudioOutput::MASTER:
+        return getMasterBuffer();
+        break;
+    case AudioOutput::HEADPHONES:
+        return getHeadphoneBuffer();
+        break;
+    case AudioOutput::DECK:
+        return getDeckBuffer(output.getIndex());
+        break;
+    default:
+        return NULL;
+    }
 }

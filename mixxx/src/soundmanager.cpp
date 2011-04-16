@@ -24,7 +24,7 @@
 #include "sounddeviceportaudio.h"
 #include "engine/enginemaster.h"
 #include "controlobjectthreadmain.h"
-#include "audiopath.h"
+#include "soundmanagerutil.h"
 
 #ifdef __VINYLCONTROL__
 #include "vinylcontrolxwax.h"
@@ -215,7 +215,7 @@ void SoundManager::closeDevices()
 {
     //qDebug() << "SoundManager::closeDevices()";
     QListIterator<SoundDevice*> dev_it(m_devices);
-    
+
     //requestBufferMutex.lock(); //Ensures we don't kill a stream in the middle of a callback call.
                                  //Note: if we're using Pa_StopStream() (like now), we don't need
                                  //      to lock. PortAudio stops the threads nicely.
@@ -234,6 +234,12 @@ void SoundManager::closeDevices()
                              // pointers to memory owned by EngineMaster)
 
     foreach (AudioInput in, m_inputBuffers.keys()) {
+        // Need to tell all registered AudioDestinations for this AudioInput
+        // that the input was disconnected.
+        if (m_registeredDestinations.contains(in)) {
+            m_registeredDestinations[in]->onInputDisconnected(in);
+        }
+
         short *buffer = m_inputBuffers[in];
         if (buffer != NULL) {
             delete [] buffer;
@@ -246,8 +252,8 @@ void SoundManager::closeDevices()
     // TODO(bkgood) see comment where these objects are created in setupDevices,
     // this should probably be in the dtor or at least somewhere other
     // than here.
-    while (!m_VinylControl.empty()) {
-        VinylControlProxy *vc = m_VinylControl.takeLast();
+    while (!m_vinylControl.empty()) {
+        VinylControlProxy *vc = m_vinylControl.takeLast();
         if (vc != NULL) {
             delete vc;
         }
@@ -255,7 +261,6 @@ void SoundManager::closeDevices()
         //vinyl control threads because it's not thread-safe.
         VinylControlXwax::freeLUTs();
     }
-    m_VinylMapping.clear();
 #endif
 }
 
@@ -387,12 +392,12 @@ int SoundManager::setupDevices()
     // TODO(bkgood) this ought to be done in the ctor or something. Not here. Really
     // shouldn't be any reason for these to be reinitialized every time the
     // audio prefs are updated. Will require work in DlgPrefVinyl.
-    QHash<QString, VinylControlProxy*> vinyl_inputs;
-    m_VinylControl.append(new VinylControlProxy(m_pConfig, "[Channel1]"));
-    m_VinylControl.append(new VinylControlProxy(m_pConfig, "[Channel2]"));
-    qDebug() << "Created VinylControlProxies" << 
-                m_VinylControl[0] << m_VinylControl[1];
-	m_VinylMapping.clear();
+    m_vinylControl.append(new VinylControlProxy(m_pConfig, "[Channel1]"));
+    m_vinylControl.append(new VinylControlProxy(m_pConfig, "[Channel2]"));
+    qDebug() << "Created VinylControlProxies" <<
+                m_vinylControl[0] << m_vinylControl[1];
+    registerInput(AudioInput(AudioInput::VINYLCONTROL, 0, 0), m_vinylControl[0]);
+    registerInput(AudioInput(AudioInput::VINYLCONTROL, 0, 1), m_vinylControl[1]);
 #endif
     foreach (SoundDevice *device, m_devices) {
         bool isInput = false;
@@ -402,86 +407,37 @@ int SoundManager::setupDevices()
         m_pErrorDevice = device;
         foreach (AudioInput in, m_config.getInputs().values(device->getInternalName())) {
             isInput = true;
-            err = device->addInput(in);            
-            if (in.getType() == AudioInput::VINYLCONTROL)
-            {
-#ifdef __VINYLCONTROL__
-            	if (err == OK)
-            	{
-            		//it's awkward here to map vinylcontrolproxy pointers
-            		//instead of indexes, but in the processing loop it's a 
-            		//lot cleaner
-            		
-            		//vinyl_inputs keeps track of which channel groups were 
-            		//originally assigned to which vinyl threads
-            		
-            		//ugh, this is an ugly way to get a hash, but we need
-            		//both the device and the channel group here
-            		QString channel_hash = QString("%1 -- %2")
-            			.arg(device->getInternalName())
-            			.arg(in.getChannelGroup().getHash());
-            		
-            		if (vinyl_inputs.contains(channel_hash))
-            		{
-            			//this set of inputs already exists, map it
-            			m_VinylMapping[m_VinylControl[in.getIndex()]] = 
-            				m_VinylMapping[vinyl_inputs[channel_hash]];
-            		}
-            		else
-            		{
-            			//this is a new set of inputs
-            			vinyl_inputs[channel_hash] = 
-            				m_VinylControl[in.getIndex()];
-		        		//m_VinylMapping keeps track of which AudioInputs
-		        		//should be assigned to which vinyl threads
-		        		m_VinylMapping[m_VinylControl[in.getIndex()]] = in;
-            		}
-            	}
-            	else
-            		return err;
-#endif
-            }
-            else
-		        if (err != OK)
-                	return err;
+            err = device->addInput(in);
+            if (err != OK) return err;
             if (!m_inputBuffers.contains(in)) {
                 // TODO(bkgood) look into allocating this with the frames per
                 // buffer value from SMConfig
                 m_inputBuffers[in] = new short[MAX_BUFFER_LEN];
+            }
+
+            // Check if any AudioDestination is registered for this AudioInput,
+            // and call the onInputConnected method.
+            if (m_registeredDestinations.contains(in)) {
+                m_registeredDestinations[in]->onInputConnected(in);
             }
         }
         foreach (AudioOutput out, m_config.getOutputs().values(device->getInternalName())) {
             isOutput = true;
             // following keeps us from asking for a channel buffer EngineMaster
             // doesn't have -- bkgood
-            if (out.getType() == AudioOutput::DECK
-                    && out.getIndex() >= m_pMaster->numChannels()) continue;
+            if (m_registeredSources[out]->buffer(out) == NULL) {
+                qDebug() << "AudioSource returned null for" << out.getString();
+                continue;
+            }
             err = device->addOutput(out);
             if (err != OK)
                 return err;
-            // TODO(bkgood) this would be nicer as something like
-            // EngineMaster::getBuffer(AudioPathType type, uint index = 0);
-            // but I don't want to mess with enginemaster if I can help it
-            // before hydra's merged
-            switch (out.getType()) {
-            case AudioPath::MASTER:
-                m_outputBuffers[out] = m_pMaster->getMasterBuffer();
-                // Set the master output device's clock as the reference
-                //  to avoid any clock-related disturbances to the public address
+            m_outputBuffers[out] = m_registeredSources[out]->buffer(out);
+            if (out.getType() == AudioOutput::MASTER) {
                 m_pClkRefDevice = device;
-                break;
-            case AudioPath::HEADPHONES:
-                m_outputBuffers[out] = m_pMaster->getHeadphoneBuffer();
-                break;
-            case AudioPath::DECK:
-                m_outputBuffers[out] = m_pMaster->getChannelBuffer(out.getIndex());
-                // If a reference device has not yet been set (such as when the Master output
-                //  isn't being used with an external mixer,) use the first deck output
-                //  to avoid any clock-related disturbances on at least one public output
-                if (!m_pClkRefDevice) m_pClkRefDevice = device;
-                break;
-            default:
-                break;
+            } else if (out.getType() == AudioOutput::DECK
+                    && !m_pClkRefDevice) {
+                m_pClkRefDevice = device;
             }
         }
         if (isInput || isOutput) {
@@ -500,7 +456,7 @@ int SoundManager::setupDevices()
             }
         }
     }
-    
+
     if (!m_pClkRefDevice) {
         QList<SoundDevice*> outputDevices = getDeviceList(m_config.getAPI(), true, false);
         SoundDevice* device = outputDevices.first();
@@ -515,7 +471,7 @@ int SoundManager::setupDevices()
     // returns OK if we were able to open all the devices the user
     // wanted
     if (devicesAttempted == devicesOpened) {
-    	emit(devicesSetup());
+        emit(devicesSetup());
         return OK;
     }
     m_pErrorDevice = NULL;
@@ -530,20 +486,19 @@ SoundManagerConfig SoundManager::getConfig() const {
     return m_config;
 }
 
-#ifdef __VINYLCONTROL__        
+#ifdef __VINYLCONTROL__
 bool SoundManager::hasVinylInput(int deck)
 {
-	if (deck >= m_VinylControl.length())
-		return false;
-	VinylControlProxy* vinyl_control = m_VinylControl[deck];
-	
-	return m_VinylControl[deck] && 
-		m_inputBuffers.contains(m_VinylMapping[vinyl_control]);
+    if (deck >= m_vinylControl.length())
+        return false;
+    VinylControlProxy* vinyl_control = m_vinylControl[deck];
+
+    return vinyl_control != NULL;
 }
 
 QList<VinylControlProxy*> SoundManager::getVinylControlProxies()
 {
-    return m_VinylControl;
+    return m_vinylControl;
 }
 #endif
 
@@ -551,12 +506,12 @@ int SoundManager::setConfig(SoundManagerConfig config) {
     int err = OK;
     m_config = config;
     checkConfig();
-    
+
     // certain parts of mixxx rely on this being here, for the time being, just
     // letting those be -- bkgood
     // Do this first so vinyl control gets the right samplerate -- Owen W.
     m_pConfig->set(ConfigKey("[Soundcard]","Samplerate"), ConfigValue(m_config.getSampleRate()));
-    
+
     err = setupDevices();
     if (err == OK) {
         m_config.writeToDisk();
@@ -634,7 +589,7 @@ SoundManager::requestBuffer(QList<AudioOutput> outputs, unsigned long iFramesPer
 {
     Q_UNUSED(outputs); // unused, we just give the caller the full hash -bkgood
     //qDebug() << "SoundManager::requestBuffer()";
-    
+
     /*
     // Display when sound cards drop or duplicate buffers (use for testing only)
     if (iNumDevicesOpenedForOutput>1) {
@@ -644,7 +599,7 @@ SoundManager::requestBuffer(QList<AudioOutput> outputs, unsigned long iFramesPer
         m_deviceFrameCount.insert(device, currentFrameCount+iFramesPerBuffer);  // Overwrites existing value if already present
         // Get current time in milliseconds
 //         uint t = QDateTime::currentDateTime().toTime_t()*1000+QDateTime::currentDateTime().toString("zzz").toUint();
-        
+
         if (device != m_pClkRefDevice) {  // If not the reference device,
             // Detect dropped frames/buffers
             long sdifference = m_deviceFrameCount.value(m_pClkRefDevice)-m_deviceFrameCount.value(device);
@@ -687,9 +642,9 @@ SoundManager::requestBuffer(QList<AudioOutput> outputs, unsigned long iFramesPer
 void SoundManager::pushBuffer(QList<AudioInput> inputs, short * inputBuffer,
                               unsigned long iFramesPerBuffer, unsigned int iFrameSize)
 {
-	//This function is called a *lot* and is a big source of CPU usage.
-	//It needs to be very fast.
-	
+    //This function is called a *lot* and is a big source of CPU usage.
+    //It needs to be very fast.
+
 //    m_inputBuffers[RECEIVER_VINYLCONTROL_ONE]
 
     //short vinylControlBuffer1[iFramesPerBuffer * 2];
@@ -770,48 +725,53 @@ void SoundManager::pushBuffer(QList<AudioInput> inputs, short * inputBuffer,
 
     if (inputBuffer)
     {
-#ifdef __VINYLCONTROL__
-		//TODO: it would be nicer to loop through the inputs and find out
-		//what vinyl controls are associated with each one, but 
-		//I don't know how to do a Hash of Lists in C++
-		//(ie, given an AudioInput, return an iterable list of pointers
-		//to vinylcontrol objects that should analyze those samples)
-      	QListIterator<VinylControlProxy*> vinylItr(m_VinylControl);
-    	while(vinylItr.hasNext())
-    	{
-    		VinylControlProxy* vinyl_control = vinylItr.next();
-    		
-    		if (vinyl_control && 
-    			m_inputBuffers.contains(m_VinylMapping[vinyl_control]))
-    		{
-				QListIterator<AudioInput> inputItr(inputs);
-				while (inputItr.hasNext())
-				{
-					AudioInput in = inputItr.next();
-					//make sure that the mapped buffer is the one we've been
-					//asked to process
-					if (m_inputBuffers[m_VinylMapping[vinyl_control]] == 
-						m_inputBuffers[in])
-					{
-						//if (m_bPassthroughActive[in.getIndex()] == 0)
-							//vinyl gets unhappy if we don't provide samples						
-							vinyl_control->AnalyseSamples(
-								m_inputBuffers[m_VinylMapping[vinyl_control]], 
-								iFramesPerBuffer);
-					}
-				}
-			}
+        for (QList<AudioInput>::ConstIterator i = inputs.begin(),
+                     e = inputs.end(); i != e; ++i) {
+            const AudioInput& in = *i;
+
+            // Sanity check.
+            if (!m_inputBuffers.contains(in)) {
+                continue;
+            }
+
+            short* pInputBuffer = m_inputBuffers[in];
+            
+            if (in.getIndex() >=0 && in.getIndex() < 2)
+            	if (m_bPassthroughActive[in.getIndex()])
+					m_pMaster->pushPassthroughBuffer(in.getIndex(), m_inputBuffers[in], iFrameSize * iFramesPerBuffer);
+
+            if (m_registeredDestinations.contains(in)) {
+                AudioDestination* destination = m_registeredDestinations[in];
+                if (destination) {
+                    destination->receiveBuffer(in, pInputBuffer, iFramesPerBuffer);
+                }
+            }
         }
-#endif
-		//loop through again and push to the engine for passthrough
-		QListIterator<AudioInput> inputItr(inputs);
-		while (inputItr.hasNext())
-		{
-			AudioInput in = inputItr.next();
-			if (m_bPassthroughActive[in.getIndex()])
-				m_pMaster->pushPassthroughBuffer(in.getIndex(), m_inputBuffers[in], iFrameSize * iFramesPerBuffer);
-			//qDebug() << "passthrough size" << sizeof(*m_inputBuffers[in]) << iFrameSize << iFramesPerBuffer;
-		}
-		
     }
+}
+
+void SoundManager::registerOutput(AudioOutput output, const AudioSource *src) {
+    if (m_registeredSources.contains(output)) {
+        qDebug() << "WARNING: AudioOutput already registered!";
+    }
+    m_registeredSources[output] = src;
+    emit(outputRegistered(output, src));
+}
+
+void SoundManager::registerInput(AudioInput input, AudioDestination *dest) {
+    if (m_registeredDestinations.contains(input)) {
+        // note that this can be totally ok if we just want a certain
+        // AudioInput to be going to a different AudioDest -bkgood
+        qDebug() << "WARNING: AudioInput already registered!";
+    }
+    m_registeredDestinations[input] = dest;
+    emit(inputRegistered(input, dest));
+}
+
+QList<AudioOutput> SoundManager::registeredOutputs() const {
+    return m_registeredSources.keys();
+}
+
+QList<AudioInput> SoundManager::registeredInputs() const {
+    return m_registeredDestinations.keys();
 }

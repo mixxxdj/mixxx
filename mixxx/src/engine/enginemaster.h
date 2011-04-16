@@ -23,6 +23,7 @@
 #include "controlobject.h"
 #include "engine/engineobject.h"
 #include "engine/enginechannel.h"
+#include "soundmanagerutil.h"
 #include "recording/recordingmanager.h"
 #include <QtCore>
 
@@ -40,20 +41,18 @@ class ControlPushButton;
 class EngineVinylSoundEmu;
 class EngineSideChain;
 
-class EngineMaster : public EngineObject {
+class EngineMaster : public EngineObject, public AudioSource {
     Q_OBJECT
-public:
+  public:
     EngineMaster(ConfigObject<ConfigValue>* pConfig,
                  const char* pGroup);
     virtual ~EngineMaster();
 
     // Get access to the sample buffers. None of these are thread safe. Only to
     // be called by SoundManager.
-    const CSAMPLE* getMasterBuffer() const;
-    const CSAMPLE* getHeadphoneBuffer() const;
     void pushPassthroughBuffer(int c, short *input, int len);
     int numChannels() const;
-    const CSAMPLE* getChannelBuffer(unsigned int i) const;
+    const CSAMPLE* buffer(AudioOutput output) const;
 
     void process(const CSAMPLE *, const CSAMPLE *pOut, const int iBufferSize);
 
@@ -75,11 +74,16 @@ public:
         }
     }
 
+    // These are really only exposed for tests to use.
+    const CSAMPLE* getMasterBuffer() const;
+    const CSAMPLE* getHeadphoneBuffer() const;
+    const CSAMPLE* getDeckBuffer(unsigned int i) const;
+    const CSAMPLE* getChannelBuffer(QString name) const;
 
   signals:
     void bytesRecorded(int);
     void isRecording(bool);
-    
+
   private:
     struct ChannelInfo {
         EngineChannel* m_pChannel;
@@ -125,11 +129,9 @@ public:
     void mixChannels(unsigned int channelBitvector, unsigned int maxChannels,
                      CSAMPLE* pOutput, unsigned int iBufferSize, GainCalculator* pGainCalculator);
 
-
     QList<ChannelInfo*> m_channels;
 
     CSAMPLE *m_pMaster, *m_pHead;
-    QList<CSAMPLE*> m_channelBuffers;
     QList<CSAMPLE*> m_passthroughBuffers;
     bool m_bPassthroughWasActive[2];
     QMutex passthroughBufferMutex[2];

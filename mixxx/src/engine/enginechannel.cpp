@@ -15,49 +15,26 @@
 *                                                                         *
 ***************************************************************************/
 
+#include "engine/enginechannel.h"
+
 #include "controlobject.h"
 #include "controlpushbutton.h"
-#include "enginebuffer.h"
-#include "enginevinylsoundemu.h"
-#include "enginechannel.h"
-#include "engineclipping.h"
-#include "enginepregain.h"
-#include "engineflanger.h"
-#include "enginefilterblock.h"
-#include "enginevumeter.h"
-#include "enginefilteriir.h"
 
-EngineChannel::EngineChannel(const char* group,
-                             ConfigObject<ConfigValue>* pConfig,
+EngineChannel::EngineChannel(const char* pGroup,
                              EngineChannel::ChannelOrientation defaultOrientation)
-        : m_group(group),
-          m_pConfig(pConfig) {
-    m_pPregain = new EnginePregain(group);
-    m_pFilter = new EngineFilterBlock(group);
-    m_pFlanger = new EngineFlanger(group);
-    m_pClipping = new EngineClipping(group);
-    m_pBuffer = new EngineBuffer(group, pConfig);
-    m_pVinylSoundEmu = new EngineVinylSoundEmu(pConfig, group);
-    m_pVUMeter = new EngineVuMeter(group);
-    m_pPFL = new ControlPushButton(ConfigKey(group, "pfl"));
+        : m_group(pGroup) {
+    m_pPFL = new ControlPushButton(ConfigKey(m_group, "pfl"));
     m_pPFL->setToggleButton(true);
-    m_pOrientation = new ControlObject(ConfigKey(group, "orientation"));
+    m_pOrientation = new ControlObject(ConfigKey(m_group, "orientation"));
     m_pOrientation->set(defaultOrientation);
 }
 
 EngineChannel::~EngineChannel() {
-    delete m_pBuffer;
-    delete m_pClipping;
-    delete m_pFilter;
-    delete m_pFlanger;
-    delete m_pPregain;
-    delete m_pVinylSoundEmu;
-    delete m_pVUMeter;
     delete m_pPFL;
     delete m_pOrientation;
 }
 
-const QString& EngineChannel::getGroup() {
+const QString& EngineChannel::getGroup() const {
     return m_group;
 }
 
@@ -65,35 +42,8 @@ bool EngineChannel::isPFL() {
     return m_pPFL->get() == 1.0;
 }
 
-void EngineChannel::process(const CSAMPLE* pIn, const CSAMPLE * pOut, const int iBufferSize) {
-	if (!pIn)
-	{
-    	// Process the raw audio
-    	m_pBuffer->process(0, pOut, iBufferSize);
-    	//// Emulate vinyl sounds
-    	//This causes popping, disable
-    	//m_pVinylSoundEmu->process(pOut, pOut, iBufferSize);
-	    // Apply pregain
-    	m_pPregain->process(pOut, pOut, iBufferSize);
-    }
-    else
-    {
-    	// Just apply pregain
-    	m_pPregain->process(pIn, pOut, iBufferSize);
-    }
-    
-    // Filter the channel with EQs
-    m_pFilter->process(pOut, pOut, iBufferSize);
-    // TODO(XXX) LADSPA
-    m_pFlanger->process(pOut, pOut, iBufferSize);
-    // Apply clipping
-    m_pClipping->process(pOut, pOut, iBufferSize);
-    // Update VU meter
-    m_pVUMeter->process(pOut, pOut, iBufferSize);
-}
-
-EngineBuffer* EngineChannel::getEngineBuffer() {
-    return m_pBuffer;
+bool EngineChannel::isMaster() {
+    return true;
 }
 
 EngineChannel::ChannelOrientation EngineChannel::getOrientation() {
@@ -106,8 +56,4 @@ EngineChannel::ChannelOrientation EngineChannel::getOrientation() {
         return RIGHT;
     }
     return CENTER;
-}
-
-bool EngineChannel::isActive() {
-    return m_pBuffer->isTrackLoaded();
 }

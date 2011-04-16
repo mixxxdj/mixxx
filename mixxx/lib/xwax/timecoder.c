@@ -484,7 +484,7 @@ static void process_sample(struct timecoder_t *tc,
 
 /* Submit and decode a block of PCM audio data to the timecoder */
 
-void timecoder_submit(struct timecoder_t *tc, signed short *pcm, size_t npcm)
+void timecoder_submit(struct timecoder_t *tc, const signed short *pcm, size_t npcm)
 {
     while (npcm--) {
 	signed int primary, secondary;

@@ -49,7 +49,7 @@
 #include <QEvent>
 
 DlgPreferences::DlgPreferences(MixxxApp * mixxx, SkinLoader* pSkinLoader,
-                               SoundManager * soundman,
+                               SoundManager * soundman, PlayerManager* pPlayerManager,
                                MidiDeviceManager * midi, ConfigObject<ConfigValue> * _config)
         :  QDialog(), Ui::DlgPreferencesDlg() {
     m_pMixxx = mixxx;
@@ -67,7 +67,7 @@ DlgPreferences::DlgPreferences(MixxxApp * mixxx, SkinLoader* pSkinLoader,
     //contentsTreeWidget->setCurrentRow(0);
 
     // Construct widgets for use in tabs
-    wsound = new DlgPrefSound(this, soundman, config);
+    wsound = new DlgPrefSound(this, soundman, pPlayerManager, config);
     wplaylist = new DlgPrefPlaylist(this, config);
     wcontrols = new DlgPrefControls(this, mixxx, pSkinLoader, config);
     weq = new DlgPrefEQ(this, config);
@@ -177,7 +177,7 @@ void DlgPreferences::createIcons()
     m_pSoundButton->setText(0, tr("Sound Hardware"));
     m_pSoundButton->setTextAlignment(0, Qt::AlignLeft | Qt::AlignVCenter);
     m_pSoundButton->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
-    
+
 /*
     QTreeWidgetItem * midiButton = new QTreeWidgetItem(contentsTreeWidget);
     midiButton->setIcon(0, QIcon(":/images/preferences/controllers.png"));
