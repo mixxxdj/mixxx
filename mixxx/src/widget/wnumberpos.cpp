@@ -86,7 +86,7 @@ void WNumberPos::setValue(double dValue) {
     double valueMillis = 0.0f;
     double durationMillis = 0.0f;
     if (m_dTrackSamples > 0 && m_dTrackSampleRate > 0 && m_dDuration > 0) {
-    	//map midi value taking in to account 14 = 0 and 114 = 1
+        //map midi value taking in to account 14 = 0 and 114 = 1
         valueMillis = (dValue - 14) * 1000.0f * m_dTrackSamples / 2.0f / 100.0f / m_dTrackSampleRate;
         durationMillis = m_dDuration * 1000.0f;
         if (m_bRemain)

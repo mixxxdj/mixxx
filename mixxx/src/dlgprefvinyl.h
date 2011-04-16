@@ -44,8 +44,8 @@ public slots:
     /** Update widget */
     void slotUpdate();
     void slotApply();
-	void EnableRelativeModeSlotApply();
-	void VinylTypeSlotApply();
+    void EnableRelativeModeSlotApply();
+    void VinylTypeSlotApply();
     void VinylGainSlotApply();
     void slotClose();
     void slotShow();

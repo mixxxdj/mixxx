@@ -34,7 +34,7 @@ class EngineBufferScaleLinear : public EngineBufferScale  {
 public:
     EngineBufferScaleLinear(ReadAheadManager *pReadAheadManager);
     ~EngineBufferScaleLinear();
-    CSAMPLE *scale(double playpos, unsigned long buf_size, 
+    CSAMPLE *scale(double playpos, unsigned long buf_size,
                    CSAMPLE* pBase, unsigned long iBaseLength);
 
     void setBaseRate(double dBaseRate);
@@ -42,7 +42,7 @@ public:
     void clear();
 
 private:
-	CSAMPLE *do_scale(CSAMPLE* buf, unsigned long buf_size, 
+    CSAMPLE *do_scale(CSAMPLE* buf, unsigned long buf_size,
                    CSAMPLE* pBase, unsigned long iBaseLength);
 
     /** Holds playback direction */
@@ -60,7 +60,7 @@ private:
     ReadAheadManager* m_pReadAheadManager;
     double m_dCurSampleIndex;
     double m_dNextSampleIndex;
-    
+
     /*QFile df;
     QTextStream writer;
     int buffer_count;*/
