@@ -9,7 +9,7 @@
 class VinylControlProxy : public VinylControl, public AudioDestination
 {
     public:
-        VinylControlProxy(ConfigObject<ConfigValue> *pConfig, const char *_group);
+        VinylControlProxy(ConfigObject<ConfigValue> *pConfig, QString group);
         ~VinylControlProxy();
         bool isEnabled();
         void AnalyseSamples(const short* samples, size_t size);

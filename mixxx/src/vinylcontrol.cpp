@@ -1,10 +1,10 @@
 #include "vinylcontrol.h"
 #include "controlobjectthread.h"
 
-VinylControl::VinylControl(ConfigObject<ConfigValue> * pConfig, const char * _group)
+VinylControl::VinylControl(ConfigObject<ConfigValue> * pConfig, QString group)
 {
     m_pConfig = pConfig;
-    group = _group;
+    m_group = group;
     iRIAACorrection = 0;
     
     iSampleRate = m_pConfig->getValueString(ConfigKey("[Soundcard]","Samplerate")).toULong();
@@ -59,7 +59,7 @@ void VinylControl::ToggleVinylControl(bool enable)
 {
     bIsEnabled = enable;
     if (m_pConfig)
-        m_pConfig->set(ConfigKey(group,"vinylcontrol_enabled"), ConfigValue((int)enable));
+        m_pConfig->set(ConfigKey(m_group,"vinylcontrol_enabled"), ConfigValue((int)enable));
 
     enabled->slotSet(enable);
 

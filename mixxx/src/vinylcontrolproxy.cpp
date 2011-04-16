@@ -8,7 +8,7 @@
 
 //IVinylControl *VinylControlProxy::m_pVinylControl = 0;
 
-VinylControlProxy::VinylControlProxy(ConfigObject<ConfigValue> * pConfig, const char * _group) : VinylControl(pConfig, _group)
+VinylControlProxy::VinylControlProxy(ConfigObject<ConfigValue> * pConfig, QString group) : VinylControl(pConfig, group)
 {
     QList<QString> xwax_timecodes;
     QList<QString> scratchlib_timecodes;
@@ -20,20 +20,20 @@ VinylControlProxy::VinylControlProxy(ConfigObject<ConfigValue> * pConfig, const 
     xwax_timecodes.push_back(MIXXX_VINYL_TRAKTORSCRATCHSIDEB);
 
     //Figure out which type of timecoded vinyl we're using.
-    strVinylType = m_pConfig->getValueString(ConfigKey(_group,"vinylcontrol_vinyl_type"));
+    strVinylType = m_pConfig->getValueString(ConfigKey(m_group,"vinylcontrol_vinyl_type"));
 
     //Create the VinylControl object that matches the type of vinyl selected in the prefs...
     if (xwax_timecodes.contains(strVinylType))
     {
-        m_pVinylControl = new VinylControlXwax(pConfig, _group);
+        m_pVinylControl = new VinylControlXwax(pConfig, m_group);
     }
     else
     {
         qDebug() << "VinylControlProxy: Unknown vinyl type " << strVinylType;
         qDebug() << "Defaulting to Serato...";
         strVinylType = MIXXX_VINYL_SERATOCV02VINYLSIDEA;
-        pConfig->set(ConfigKey(_group,"vinylcontrol_vinyl_type"), ConfigValue(MIXXX_VINYL_SERATOCV02VINYLSIDEA));
-        m_pVinylControl = new VinylControlXwax(pConfig, _group);
+        pConfig->set(ConfigKey(m_group,"vinylcontrol_vinyl_type"), ConfigValue(MIXXX_VINYL_SERATOCV02VINYLSIDEA));
+        m_pVinylControl = new VinylControlXwax(pConfig, m_group);
     }
 }
 
@@ -119,7 +119,7 @@ float VinylControlProxy::getAngle()
 void VinylControlProxy::receiveBuffer(AudioInput input, const short* pBuffer,
         unsigned int iNumFrames) {
     if (input.getType() != AudioPath::VINYLCONTROL ||
-        QString("[Channel%1]").arg(input.getIndex()+1) != this->group) {
+        QString("[Channel%1]").arg(input.getIndex()+1) != m_group) {
         qDebug() << "WARNING: vinyl control proxy got a buffer for an "
             "AudioInput it doesn't own";
     }
