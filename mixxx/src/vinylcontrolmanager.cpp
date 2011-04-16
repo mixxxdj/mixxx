@@ -7,8 +7,10 @@
 #include "vinylcontrolmanager.h"
 #include "vinylcontrolproxy.h"
 
-VinylControlManager::VinylControlManager(QObject *pParent)
-  : QObject(pParent) {
+VinylControlManager::VinylControlManager(QObject *pParent,
+        ConfigObject<ConfigValue> *pConfig)
+  : QObject(pParent)
+  , m_pConfig(pConfig) {
 
 }
 
