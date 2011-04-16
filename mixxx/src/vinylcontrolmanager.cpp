@@ -26,8 +26,11 @@ VinylControlManager::~VinylControlManager() {
 
 void VinylControlManager::receiveBuffer(AudioInput input,
         const short *pBuffer, unsigned int nFrames) {
+    Q_ASSERT(input.getIndex() < m_proxies.size());
     if (m_listLock.tryAcquire(1)) {
-        // pass samples on to proxies
+        VinylControlProxy *pProxy(m_proxies.at(input.getIndex()));
+        Q_ASSERT(pProxy);
+        pProxy->AnalyseSamples(pBuffer, nFrames);
         m_listLock.release(1);
     }
 }
