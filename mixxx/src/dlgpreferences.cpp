@@ -78,8 +78,8 @@ DlgPreferences::DlgPreferences(MixxxApp * mixxx, SkinLoader* pSkinLoader,
 #ifdef __VINYLCONTROL__
     wvinylcontrol = new DlgPrefVinyl(this, soundman, config);
 #else
-	wnovinylcontrol = new DlgPrefNoVinyl(this, soundman, config);
-#endif	
+    wnovinylcontrol = new DlgPrefNoVinyl(this, soundman, config);
+#endif
 #ifdef __SHOUTCAST__
     wshoutcast = new DlgPrefShoutcast(this, config);
 #endif
@@ -101,7 +101,7 @@ DlgPreferences::DlgPreferences(MixxxApp * mixxx, SkinLoader* pSkinLoader,
 #ifdef __VINYLCONTROL__
     pagesWidget->addWidget(wvinylcontrol);
 #else
-	pagesWidget->addWidget(wnovinylcontrol);
+    pagesWidget->addWidget(wnovinylcontrol);
 #endif
 #ifdef __SHOUTCAST__
     pagesWidget->addWidget(wshoutcast);
@@ -250,7 +250,7 @@ void DlgPreferences::createIcons()
     m_pVinylControlButton->setTextAlignment(0, Qt::AlignLeft | Qt::AlignVCenter);
     m_pVinylControlButton->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
 #else
-	m_pVinylControlButton = new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type);
+    m_pVinylControlButton = new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type);
     //QT screws up my nice vinyl svg for some reason, so we'll use a PNG version
     //instead...
     m_pVinylControlButton->setIcon(0, QIcon(":/images/preferences/ic_preferences_vinyl.png"));
@@ -292,13 +292,13 @@ void DlgPreferences::changePage(QTreeWidgetItem * current, QTreeWidgetItem * pre
        else if (current == m_pBPMdetectButton)
            pagesWidget->setCurrentWidget(wbpm);
        else if (current == m_pReplayGainButton)
-    	   pagesWidget->setCurrentWidget(wreplaygain);
+           pagesWidget->setCurrentWidget(wreplaygain);
 
 #ifdef __VINYLCONTROL__
        else if (current == m_pVinylControlButton)
            pagesWidget->setCurrentWidget(wvinylcontrol);
 #else
-	   else if (current == m_pVinylControlButton)
+       else if (current == m_pVinylControlButton)
            pagesWidget->setCurrentWidget(wnovinylcontrol);
 #endif
 #ifdef __SHOUTCAST__
