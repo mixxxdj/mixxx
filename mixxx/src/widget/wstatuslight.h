@@ -32,14 +32,14 @@
 
 class WStatusLight : public WWidget  {
    Q_OBJECT
-public: 
+public:
     WStatusLight(QWidget *parent=0);
     ~WStatusLight();
     void setup(QDomNode node);
     void setPixmap(int iState, const QString &filename);
     void setNoPos(int iNoPos);
 public slots:
-    void setValue(double v);    
+    void setValue(double v);
 private:
     void paintEvent(QPaintEvent *);
 
