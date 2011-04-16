@@ -2301,6 +2301,11 @@
  </StatusLight>
 
  <Text>
+ <Style>QLabel { font: bold 14px/16px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+		background-color: transparent; color: #9d9d9d; text-align: left;  vertical-align: text-top;  padding-left: 1%; }
+		QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+		</Style>
   <Channel>1</Channel>
   <Pos>373,200</Pos>
   <Size>200,27</Size>
@@ -2309,6 +2314,11 @@
  </Text>
 
  <Text>
+ <Style>QLabel { font: bold 14px/16px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+		background-color: transparent; color: #9d9d9d; text-align: left;  vertical-align: text-top;  padding-left: 1%; }
+		QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+		</Style>
   <Channel>2</Channel>
   <Pos>652,200</Pos>
   <Size>200,27</Size>
