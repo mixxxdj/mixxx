@@ -24,7 +24,8 @@ VinylControlManager::~VinylControlManager() {
     m_listLock.release(m_proxies.size());
 }
 
-void VinylControlManager::receiveBuffer(AudioInput input, const short *pBuffer, unsigned int nFrames) {
+void VinylControlManager::receiveBuffer(AudioInput input,
+        const short *pBuffer, unsigned int nFrames) {
     if (m_listLock.tryAcquire(1)) {
         // pass samples on to proxies
         m_listLock.release(1);
