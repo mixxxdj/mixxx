@@ -146,7 +146,7 @@ RateControl::RateControl(const char* _group,
     m_iRateRampSensitivity =
         m_pConfig->getValueString(ConfigKey("[Controls]","RateRampSensitivity")).toInt();
 
-#ifdef __VINYLCONTROL__         
+#ifdef __VINYLCONTROL__
     m_pVinylControl = new ControlPushButton(ConfigKey(_group,"vinylcontrol_enabled"));
     m_pVinylControl->set(0);
     m_pVinylControl->setToggleButton(true);
@@ -407,7 +407,7 @@ double RateControl::calculateRate(double baserate, bool paused) {
                 rate *= (oldScratchFactor+1.);
             }
         }
-        
+
         rate += jogFactor;
 
         // If we are reversing (and not scratching,) flip the rate.
@@ -572,6 +572,6 @@ void RateControl::resetRateTemp(void)
 
 void RateControl::slotControlVinyl(double toggle)
 {
-	m_bVinylControlEnabled = (bool)toggle;
+    m_bVinylControlEnabled = (bool)toggle;
 }
 

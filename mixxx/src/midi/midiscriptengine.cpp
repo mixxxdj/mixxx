@@ -761,13 +761,13 @@ void MidiScriptEngine::trigger(QString group, QString name) {
    -------- ------------------------------------------------------ */
 bool MidiScriptEngine::connectControl(QString group, QString name, QString function, bool disconnect) {
     ControlObject* cobj = ControlObject::getControl(ConfigKey(group,name));
-    
+
     if (cobj == NULL) {
         qWarning() << "MidiScriptEngine: script connecting [" << group << "," << name
                    << "], which is non-existent. ignoring.";
         return false;
     }
-    
+
     // Don't add duplicates
     if (!disconnect && m_connectedControls.contains(cobj->getKey(), function)) return true;
 

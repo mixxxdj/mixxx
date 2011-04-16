@@ -309,30 +309,26 @@ int CachingReader::read(int sample, int num_samples, CSAMPLE* buffer) {
         m_iTrackSampleRate == 0) {
         return 0;
     }
-    
+
     // TODO: is it possible to move this code out of caching reader
     // and into enginebuffer?  It doesn't quite make sense here, although
     // it makes preroll completely transparent to the rest of the code
-    
+
     //if we're in preroll...
-    if (sample < 0)
-    {
-    	if (sample + num_samples <= 0)
-   		{
-   			//everything is zeros, easy
-    		memset(buffer, 0, sizeof(*buffer) * num_samples);
-    		return num_samples;
-    	}
-    	else
-    	{
-    		//some of the buffer is zeros, some is from the file
-    		memset(buffer, 0, sizeof(*buffer) * (0 - sample));
-    		buffer += (0 - sample);
-    		num_samples = sample + num_samples;
-	   		zerosWritten = (0 - sample);
-    		sample = 0;
-    		//continue processing the rest of the chunks normally
-    	}
+    if (sample < 0) {
+        if (sample + num_samples <= 0) {
+            //everything is zeros, easy
+            memset(buffer, 0, sizeof(*buffer) * num_samples);
+            return num_samples;
+        } else {
+            //some of the buffer is zeros, some is from the file
+            memset(buffer, 0, sizeof(*buffer) * (0 - sample));
+            buffer += (0 - sample);
+            num_samples = sample + num_samples;
+            zerosWritten = (0 - sample);
+            sample = 0;
+            //continue processing the rest of the chunks normally
+        }
     }
 
     int start_chunk = chunkForSample(sample);
