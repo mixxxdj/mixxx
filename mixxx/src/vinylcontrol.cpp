@@ -6,7 +6,7 @@ VinylControl::VinylControl(ConfigObject<ConfigValue> * pConfig, const char * _gr
     m_pConfig = pConfig;
     group = _group;
     iRIAACorrection = 0;
-    
+
     iSampleRate = m_pConfig->getValueString(ConfigKey("[Soundcard]","Samplerate")).toULong();
 
     // Get Control objects
@@ -18,12 +18,12 @@ VinylControl::VinylControl(ConfigObject<ConfigValue> * pConfig, const char * _gr
     reverseButton       = new ControlObjectThread(ControlObject::getControl(ConfigKey(group, "reverse")));
     duration            = new ControlObjectThread(ControlObject::getControl(ConfigKey(group, "duration")));
     mode                = new ControlObjectThread(ControlObject::getControl(ConfigKey(group, "vinylcontrol_mode")));
-	enabled     		= new ControlObjectThread(ControlObject::getControl(ConfigKey(group, "vinylcontrol_enabled")));
-	cueing              = new ControlObjectThread(ControlObject::getControl(ConfigKey(group, "vinylcontrol_cueing")));
+    enabled             = new ControlObjectThread(ControlObject::getControl(ConfigKey(group, "vinylcontrol_enabled")));
+    cueing              = new ControlObjectThread(ControlObject::getControl(ConfigKey(group, "vinylcontrol_cueing")));
     rateRange           = new ControlObjectThread(ControlObject::getControl(ConfigKey(group, "rateRange")));
     vinylStatus     = new ControlObjectThread(ControlObject::getControl(ConfigKey(group, "vinylcontrol_status")));
     rateDir         = new ControlObjectThread(ControlObject::getControl(ConfigKey(group, "rate_dir")));
-    loopEnabled		= new ControlObjectThread(ControlObject::getControl(ConfigKey(group, "loop_enabled")));
+    loopEnabled     = new ControlObjectThread(ControlObject::getControl(ConfigKey(group, "loop_enabled")));
 
     dVinylPitch = 0.0f;
     dVinylPosition = 0.0f;
@@ -34,7 +34,7 @@ VinylControl::VinylControl(ConfigObject<ConfigValue> * pConfig, const char * _gr
 
     //Get the vinyl type
     strVinylType = m_pConfig->getValueString(ConfigKey(group,"vinylcontrol_vinyl_type"));
-    
+
     //Get the vinyl speed
     strVinylSpeed = m_pConfig->getValueString(ConfigKey(group,"vinylcontrol_speed_type"));
 
@@ -49,10 +49,10 @@ VinylControl::VinylControl(ConfigObject<ConfigValue> * pConfig, const char * _gr
 
     //Enabled or not
     bIsEnabled = m_pConfig->getValueString(ConfigKey(group,"vinylcontrol_enabled")).toInt();
-    
+
     //Gain
     ControlObject::getControl(ConfigKey("[VinylControl]", "gain"))->set(
-    	m_pConfig->getValueString(ConfigKey("[VinylControl]","gain")).toInt());
+        m_pConfig->getValueString(ConfigKey("[VinylControl]","gain")).toInt());
 }
 
 void VinylControl::ToggleVinylControl(bool enable)
@@ -79,7 +79,7 @@ float VinylControl::getSpeed()
     return dVinylScratch;
 }
 
-/** Returns some sort of indication of the vinyl's signal quality. 
+/** Returns some sort of indication of the vinyl's signal quality.
     Range of m_fTimecodeQuality should be 0.0 to 1.0 */
 float VinylControl::getTimecodeQuality()
 {
@@ -88,10 +88,10 @@ float VinylControl::getTimecodeQuality()
 
 unsigned char* VinylControl::getScopeBytemap()
 {
-	return NULL;
+    return NULL;
 }
 
 float VinylControl::getAngle()
 {
-	return -1.0;
+    return -1.0;
 }
