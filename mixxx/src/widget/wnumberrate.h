@@ -27,7 +27,7 @@ public:
     WNumberRate(const char *group, QWidget *parent=0);
     virtual ~WNumberRate();
     void setValue(double dValue);
-    
+
 private:
     /** Pointer to control object for rate */
     ControlObjectThreadMain *m_pRateControl, *m_pRateRangeControl, *m_pRateDirControl;
