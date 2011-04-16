@@ -124,8 +124,8 @@ public:
 class AudioDestination {
 public:
     virtual void receiveBuffer(AudioInput input, const short* pBuffer, unsigned int iNumFrames) = 0;
-    virtual void onInputConnected(AudioInput input) { };
-    virtual void onInputDisconnected(AudioInput input) { };
+    virtual void onInputConnected(AudioInput input) { Q_UNUSED(input); };
+    virtual void onInputDisconnected(AudioInput input) { Q_UNUSED(input); };
 };
 
 typedef AudioPath::AudioPathType AudioPathType;
