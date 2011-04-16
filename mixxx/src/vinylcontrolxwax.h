@@ -23,7 +23,7 @@ extern "C" {
 class VinylControlXwax : public VinylControl
 {
     public:
-        VinylControlXwax(ConfigObject<ConfigValue> *pConfig, const char *_group);
+        VinylControlXwax(ConfigObject<ConfigValue> *pConfig, QString group);
         virtual ~VinylControlXwax();
         void ToggleVinylControl(bool enable);
         bool isEnabled();

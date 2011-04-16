@@ -39,7 +39,7 @@ class ControlObjectThread;
 class VinylControl : public QThread
 {
     public:
-        VinylControl(ConfigObject<ConfigValue> *pConfig, const char *_group);
+        VinylControl(ConfigObject<ConfigValue> *pConfig, QString group);
         virtual ~VinylControl();
     	virtual void ToggleVinylControl(bool enable) = 0;
     	virtual bool isEnabled() = 0;
@@ -56,7 +56,7 @@ class VinylControl : public QThread
 	    QString strVinylType;
 	    QString strVinylSpeed;
         ConfigObject<ConfigValue> *m_pConfig;	/** Pointer to config database */
-        const char* group;
+        QString m_group;
     	ControlObjectThread *playButton;		//The ControlObject used to start/stop playback of the song.
     	ControlObjectThread *playPos;			//The ControlObject used to read the playback position in the song.
     	ControlObjectThread *vinylSeek;			//The ControlObject used to change the playback position in the song.
