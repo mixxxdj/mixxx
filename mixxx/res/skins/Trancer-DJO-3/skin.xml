@@ -2369,7 +2369,7 @@
  <NumberPos>
   <Tooltip>Play position/remaining time</Tooltip>
   <Channel>1</Channel>
-  <Pos>171,250</Pos>
+  <Pos>171,254</Pos>
   <Size>110,16</Size>
   <Alignment>right</Alignment>
   <NumberOfDigits>6</NumberOfDigits>
@@ -2383,7 +2383,7 @@
  <NumberPos>
   <Tooltip>Play position/remaining time</Tooltip>
   <Channel>2</Channel>
-  <Pos>450,250</Pos>
+  <Pos>450,254</Pos>
   <Size>110,16</Size>
   <Alignment>right</Alignment>
   <NumberOfDigits>6</NumberOfDigits>
