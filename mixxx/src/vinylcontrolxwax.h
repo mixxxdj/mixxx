@@ -22,19 +22,18 @@ extern "C" {
 
 class VinylControlXwax : public VinylControl
 {
-    public:
-        VinylControlXwax(ConfigObject<ConfigValue> *pConfig, const char *_group);
-        virtual ~VinylControlXwax();
-        void ToggleVinylControl(bool enable);
-        bool isEnabled();
-        static void freeLUTs();
-        unsigned char* getScopeBytemap();
-        float getAngle();
-        void AnalyseSamples(const short* samples, size_t size);
-protected:
-    void run();                        // main thread loop
-
-private:
+  public:
+    VinylControlXwax(ConfigObject<ConfigValue> *pConfig, const char *_group);
+    virtual ~VinylControlXwax();
+    void ToggleVinylControl(bool enable);
+    bool isEnabled();
+    static void freeLUTs();
+    unsigned char* getScopeBytemap();
+    float getAngle();
+    void AnalyseSamples(const short* samples, size_t size);
+  protected:
+    void run(); // main thread loop
+  private:
     void syncPosition();
     void togglePlayButton(bool on);
     bool checkEnabled(bool was, bool is);
@@ -48,17 +47,17 @@ private:
     bool uiUpdateTime(double time);
     void establishQuality(bool quality_sample);
 
-    double dFileLength;             //The length (in samples) of the current song.
+    double dFileLength; // The length (in samples) of the current song.
 
-    double dOldPos;                   //The position read last time it was polled.
+    double dOldPos; // The position read last time it was polled.
     double dOldPitch;
 
     bool bQualityRing[QUALITY_RING_SIZE];
     int iQualPos;
     int iQualFilled;
 
-    bool bSeeking;                     //Are we seeking through the record? (ie. is it moving really fast?)
-    bool bHaveSignal;                    //Any signal at all?
+    bool bSeeking; // Are we seeking through the record? (ie. is it moving really fast?)
+    bool bHaveSignal; // Any signal at all?
     bool bAtRecordEnd;
     bool bForceResync;
     int iOldMode;
@@ -74,7 +73,7 @@ private:
     double dCurTrackSelectPos;
     bool bTrackSelectMode;
 
-    //Contains information that xwax's code needs internally about the timecode and how to process it.
+    // Contains information that xwax's code needs internally about the timecode and how to process it.
     struct timecoder_t timecoder;
     static QMutex s_xwaxLUTMutex; /** Static mutex that protects our creation/destruction of the xwax LUTs */
     static bool m_bLUTInitialized;
