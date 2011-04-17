@@ -67,6 +67,10 @@ class MidiDeviceManager;
 class MixxxKeyboard;
 class SkinLoader;
 
+#ifdef __VINYLCONTROL__
+class VinylControlManager;
+#endif
+
 /**
   * This Class is the base class for Mixxx. It sets up the main
   * window and providing a menubar.
@@ -106,7 +110,6 @@ class MixxxApp : public QMainWindow
     /** toggle vinyl control - Don't #ifdef this because MOC is dumb**/
     void slotControlVinylControl(double toggle);
     void slotCheckboxVinylControl(bool toggle);
-    int tryToggleVinylControl(int deck);
     void slotControlVinylControl2(double toggle);
     void slotCheckboxVinylControl2(bool toggle);
     /** toggle recording - Don't #ifdef this because MOC is dumb**/
@@ -169,6 +172,9 @@ class MixxxApp : public QMainWindow
 
     ConfigObject<ConfigValue> *m_pConfig;
 
+#ifdef __VINYLCONTROL__
+    VinylControlManager *m_pVCManager;
+#endif
 
     MixxxKeyboard* m_pKeyboard;
     /** Library scanner object */

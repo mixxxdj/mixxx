@@ -315,6 +315,18 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
             AudioOutput(AudioOutput::DECK, 0, deck), m_pEngine);
     }
 
+#ifdef __VINYLCONTROL__
+    m_pVCManager = new VinylControlManager(this, m_pConfig, m_pSoundManager,
+            m_pPlayerManager->numDecks());
+    for (unsigned int deck = 0; deck < m_pPlayerManager->numDecks(); ++deck) {
+        m_pSoundManager->registerInput(
+            AudioInput(AudioInput::VINYLCONTROL, 0, deck),
+            m_pVCManager);
+    }
+#else
+    m_pVCManager = NULL;
+#endif
+
     //Scan the library directory.
     m_pLibraryScanner = new LibraryScanner(m_pLibrary->getTrackCollection());
 
@@ -394,7 +406,7 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
 
     // Initialize preference dialog
     m_pPrefDlg = new DlgPreferences(this, m_pSkinLoader, m_pSoundManager, m_pPlayerManager,
-                                 m_pMidiDeviceManager, m_pConfig);
+                                 m_pMidiDeviceManager, m_pVCManager, m_pConfig);
     m_pPrefDlg->setHidden(true);
 
     // Try open player device If that fails, the preference panel is opened.
@@ -1143,7 +1155,7 @@ void MixxxApp::slotOptionsPreferences()
 void MixxxApp::slotControlVinylControl(double toggle)
 {
 #ifdef __VINYLCONTROL__
-    if (tryToggleVinylControl(0)) {
+    if (m_pVCManager->vinylInputEnabled(1)) {
         m_pConfig->set(
             ConfigKey("[VinylControl]", "enabled_ch1"), ConfigValue((int)toggle));
         m_pOptionsVinylControl->setChecked((bool)toggle);
@@ -1180,18 +1192,11 @@ void MixxxApp::slotCheckboxVinylControl(bool toggle)
 #endif
 }
 
-int MixxxApp::tryToggleVinylControl(int deck)
-{
-#ifdef __VINYLCONTROL__
-    return m_pSoundManager->hasVinylInput(deck);
-#endif
-}
-
 void MixxxApp::slotControlVinylControl2(double toggle)
 {
 #ifdef __VINYLCONTROL__
     //we just need at least 1 input (deck 1) because of single deck mode
-    if (tryToggleVinylControl(1)) {
+    if (m_pVCManager->vinylInputEnabled(2)) {
         m_pConfig->set(
             ConfigKey("[VinylControl]", "enabled_ch2"), ConfigValue((int)toggle));
            m_pOptionsVinylControl2->setChecked((bool)toggle);

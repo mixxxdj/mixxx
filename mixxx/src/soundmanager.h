@@ -59,10 +59,6 @@ class SoundManager : public QObject
         QList<unsigned int> getSampleRates() const;
         QList<QString> getHostAPIList() const;
         SoundManagerConfig getConfig() const;
-#ifdef __VINYLCONTROL__
-        bool hasVinylInput(int deck);
-        QList<VinylControlProxy*> getVinylControlProxies();
-#endif
         int setConfig(SoundManagerConfig config);
         void checkConfig();
         QHash<AudioOutput, const CSAMPLE*>
