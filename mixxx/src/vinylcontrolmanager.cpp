@@ -10,10 +10,12 @@
 #include "soundmanager.h"
 
 VinylControlManager::VinylControlManager(QObject *pParent,
-        ConfigObject<ConfigValue> *pConfig, unsigned int nDecks)
+        ConfigObject<ConfigValue> *pConfig, SoundManager *pSoundManager,
+        unsigned int nDecks)
   : QObject(pParent)
   , m_pConfig(pConfig)
-  , m_listLock(nDecks) {
+  , m_listLock(nDecks)
+  , m_pSoundManager(pSoundManager) {
     while (m_proxies.size() < static_cast<int>(nDecks)) m_proxies.append(NULL);
 }
 
@@ -84,9 +86,8 @@ QList<VinylControlProxy*> VinylControlManager::vinylControlProxies() const {
     return m_proxies;
 }
 
-//static
-bool VinylControlManager::vinylInputEnabled(SoundManager *pSoundManager, int deck) {
-    QList<AudioInput> inputs(pSoundManager->getConfig().getInputs().values());
+bool VinylControlManager::vinylInputEnabled(int deck) {
+    QList<AudioInput> inputs(m_pSoundManager->getConfig().getInputs().values());
 
     foreach (AudioInput in, inputs) {
         if (in.getType() == AudioInput::VINYLCONTROL

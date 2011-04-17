@@ -27,7 +27,7 @@ class QWidget;
 class PlayerProxy;
 class ControlObject;
 class ControlObjectThreadMain;
-class SoundManager;
+class VinylControlManager;
 
 /**
   *@author Stefan Langhammer
@@ -37,7 +37,7 @@ class SoundManager;
 class DlgPrefVinyl : public QWidget, Ui::DlgPrefVinylDlg  {
     Q_OBJECT
 public:
-    DlgPrefVinyl(QWidget *parent, SoundManager* soundman, ConfigObject<ConfigValue> *_config);
+    DlgPrefVinyl(QWidget *pParent, VinylControlManager *m_pVCMan, ConfigObject<ConfigValue> *_config);
     ~DlgPrefVinyl();
 
 public slots:
@@ -51,11 +51,6 @@ public slots:
     void slotShow();
 
 signals:
-    void apply();
-    void refreshVCProxies();
-    void applySound();
-private slots:
-    void settingsChanged();
 private:
     VinylControlSignalWidget m_signalWidget1;
     VinylControlSignalWidget m_signalWidget2;
@@ -63,7 +58,7 @@ private:
 
     /** Pointer to player device */
     //PlayerProxy *player;
-    SoundManager* m_pSoundManager;
+    VinylControlManager* m_pVCManager;
     /** Pointer to config object */
     ConfigObject<ConfigValue> *config;
     /** Indicates the strength of the timecode signal on each input */
@@ -74,7 +69,6 @@ private:
     ControlObjectThreadMain* m_vinylControlInput2L;
     ControlObjectThreadMain* m_vinylControlInput2R;
     ControlObjectThread m_COTMode;
-    bool m_dontForce;
 };
 
 #endif
