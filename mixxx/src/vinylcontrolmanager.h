@@ -22,6 +22,7 @@ class VinylControlManager : public QObject, public AudioDestination {
     virtual void receiveBuffer(AudioInput input, const short *pBuffer, unsigned int nFrames);
     virtual void onInputConnected(AudioInput input);
     virtual void onInputDisconnected(AudioInput input);
+    QList<VinylControlProxy*> vinylControlProxies() const;
   public slots:
     void reloadConfig();
   private:
