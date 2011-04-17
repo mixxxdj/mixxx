@@ -23,6 +23,8 @@ EngineMicrophone::EngineMicrophone(const char* pGroup)
 EngineMicrophone::~EngineMicrophone() {
     qDebug() << "~EngineMicrophone()";
     SampleUtil::free(m_pConversionBuffer);
+    delete m_pEnabled;
+    delete m_pControlTalkover;
 }
 
 bool EngineMicrophone::isActive() {
