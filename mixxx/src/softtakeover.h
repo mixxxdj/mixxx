@@ -35,6 +35,12 @@ class SoftTakeover {
         bool ignore(QString group, QString name, float newValue);
     
     private:
+        /** If a new value is received within this amount of time,
+            jump to it regardless. This allows quickly whipping controls to work
+            while retaining the benefits of soft-takeover for slower movements.
+            
+            Setting this too high will defeat the purpose of soft-takeover.*/        
+        static const uint SUBSEQUENT_VALUE_OVERRIDE_TIME = 50;   // Milliseconds
         //qint64 currentTimeMsecs();
         //QHash<MixxxControl,qint64> m_times;
         uint currentTimeMsecs();
