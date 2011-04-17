@@ -18,7 +18,7 @@ class VinylControlManager : public QObject, public AudioDestination {
     Q_OBJECT;
   public:
     VinylControlManager(QObject *pParent, ConfigObject<ConfigValue> *pConfig,
-            SoundManager *pSoundManager, unsigned int nDecks);
+            unsigned int nDecks);
     virtual ~VinylControlManager();
     virtual void receiveBuffer(AudioInput input, const short *pBuffer, unsigned int nFrames);
     virtual void onInputConnected(AudioInput input);
@@ -32,7 +32,6 @@ class VinylControlManager : public QObject, public AudioDestination {
     ConfigObject<ConfigValue> *m_pConfig;
     QVector<VinylControlProxy*> m_proxies;
     QSemaphore m_proxiesLock;
-    SoundManager *m_pSoundManager;
 };
 
 #endif // VINYLCONTROLMANAGER_H

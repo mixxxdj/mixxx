@@ -10,13 +10,11 @@
 #include "soundmanager.h"
 
 VinylControlManager::VinylControlManager(QObject *pParent,
-        ConfigObject<ConfigValue> *pConfig, SoundManager *pSoundManager,
-        unsigned int nDecks)
+        ConfigObject<ConfigValue> *pConfig, unsigned int nDecks)
   : QObject(pParent)
   , m_pConfig(pConfig)
   , m_proxies(nDecks, NULL)
-  , m_proxiesLock(nDecks)
-  , m_pSoundManager(pSoundManager) {
+  , m_proxiesLock(nDecks) {
     // load a bunch of stuff
     ControlObject::getControl(ConfigKey("[Channel1]","vinylcontrol_enabled"))
         ->queueFromThread(m_pConfig->getValueString(
@@ -132,13 +130,7 @@ QList<VinylControlProxy*> VinylControlManager::vinylControlProxies() {
 }
 
 bool VinylControlManager::vinylInputEnabled(int deck) {
-    QList<AudioInput> inputs(m_pSoundManager->getConfig().getInputs().values());
-
-    foreach (AudioInput in, inputs) {
-        if (in.getType() == AudioInput::VINYLCONTROL
-                && in.getIndex() == (deck - 1)) {
-            return true;
-        }
-    }
-    return false;
+    // a vinylcontrolproxy is only created if vinyl control is enabled for
+    // a deck, so...
+    return (deck - 1) < m_proxies.size() && m_proxies[deck-1];
 }
