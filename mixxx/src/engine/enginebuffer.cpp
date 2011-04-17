@@ -38,10 +38,8 @@
 #include "engine/bpmcontrol.h"
 #include "engine/quantizecontrol.h"
 
-
 #ifdef __VINYLCONTROL__
-#include "vinylcontrol.h"
-#include "library/dao/cue.h"
+#include "engine/vinylcontrolcontrol.h"
 #endif
 
 #include "trackinfoobject.h"
@@ -155,11 +153,11 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
 #ifdef __VINYLCONTROL__
     //a midi knob to tweak the vinyl pitch for decks with crappy sliders
     m_pVinylPitchTweakKnob = new ControlPotmeter(ConfigKey(_group, "vinylpitchtweak"), -0.005, 0.005);
-    m_pVinylStatus = new ControlObject(ConfigKey(group,"vinylcontrol_status"));
+    /*m_pVinylStatus = new ControlObject(ConfigKey(group,"vinylcontrol_status"));
     m_pVinylSeek = new ControlObject(ConfigKey(group,"vinylcontrol_seek"));
     connect(m_pVinylSeek, SIGNAL(valueChanged(double)),
             this, SLOT(slotControlVinylSeek(double)),
-            Qt::DirectConnection);
+            Qt::DirectConnection);*/
 #endif
 
     // Sample rate
@@ -176,6 +174,12 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
     // Create the Loop Controller
     m_pLoopingControl = new LoopingControl(_group, _config);
     addControl(m_pLoopingControl);
+
+#ifdef __VINYLCONTROL__
+    // If VinylControl is enabled, add a VinylControlControl. This must be done
+    // before RateControl is created.
+    addControl(new VinylControlControl(group, _config));
+#endif
 
     // Create the Rate Controller
     m_pRateControl = new RateControl(_group, _config);
@@ -377,70 +381,6 @@ void EngineBuffer::ejectTrack() {
     emit(trackUnloaded(pTrack));
 }
 
-void EngineBuffer::slotControlVinylSeek(double change)
-{
-#ifdef __VINYLCONTROL__
-    if(isnan(change) || change > 1.14 || change < -1.14) {
-        // This seek is ridiculous.
-        return;
-    }
-
-    double new_playpos = round(change*file_length_old);
-
-    ControlObject *pVinylMode = ControlObject::getControl(ConfigKey(group,"vinylcontrol_mode"));
-    ControlObject *pVinylEnabled = ControlObject::getControl(ConfigKey(group,"vinylcontrol_enabled"));
-
-    if (m_pCurrentTrack != NULL && pVinylEnabled != NULL && pVinylMode != NULL) {
-        if (pVinylEnabled->get() && pVinylMode->get() == MIXXX_VCMODE_RELATIVE) {
-            int cuemode = (int)ControlObject::getControl(ConfigKey(group,"vinylcontrol_cueing"))->get();
-
-            //if in preroll, always seek
-            if (new_playpos < 0) {
-                slotControlSeek(change);
-                return;
-            } else if (cuemode == MIXXX_RELATIVE_CUE_OFF) {
-                return;  //if off, do nothing
-            } else if (cuemode == MIXXX_RELATIVE_CUE_ONECUE) {
-                //if onecue, just seek to the regular cue
-                slotControlSeekAbs(m_pCurrentTrack->getCuePoint());
-                return;
-            }
-
-            double distance = 0;
-            int nearest_playpos = -1;
-
-            QList<Cue*> cuePoints = m_pCurrentTrack->getCuePoints();
-            QListIterator<Cue*> it(cuePoints);
-            while (it.hasNext()) {
-                Cue* pCue = it.next();
-                if (pCue->getType() != Cue::CUE || pCue->getHotCue() == -1)
-                    continue;
-
-                int cue_position = pCue->getPosition();
-                //pick cues closest to new_playpos
-                if ((nearest_playpos == -1) ||
-                    (fabs(new_playpos - cue_position) < distance)) {
-                    nearest_playpos = cue_position;
-                    distance = fabs(new_playpos - cue_position);
-                }
-            }
-
-            if (nearest_playpos == -1) {
-                if (new_playpos >= 0)
-                    //never found an appropriate cue, so don't seek?
-                    return;
-                //if negative, allow a seek by falling down to the bottom
-            } else {
-                slotControlSeekAbs((float)nearest_playpos);
-                return;
-            }
-        }
-    }
-    //just seek where it wanted to originally
-    slotControlSeek(change);
-#endif
-}
-
 // WARNING: This method runs in both the GUI thread and the Engine Thread
 void EngineBuffer::slotControlSeek(double change)
 {
@@ -640,7 +580,7 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
         QListIterator<EngineControl*> it(m_engineControls);
         while (it.hasNext()) {
             EngineControl* pControl = it.next();
-            pControl->setCurrentSample(filepos_play);
+            pControl->setCurrentSample(filepos_play, file_length_old);
             double control_seek = pControl->process(rate, filepos_play,
                                                     file_length_old, iBufferSize);
 

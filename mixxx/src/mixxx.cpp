@@ -277,7 +277,6 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
             m_pConfig->Save();
             hasChanged_MusicDir = true;
         }
-        
     }
 
     // library dies in seemingly unrelated qtsql error about not having a
@@ -373,9 +372,9 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
         m_pConfig->set(ConfigKey("[BPM]", "AnalyzeEntireSong"),ConfigValue(1));
     }
 
+#ifdef __VINYLCONTROL__
     //ControlObject::getControl(ConfigKey("[Channel1]","TrackEndMode"))->queueFromThread(m_pConfig->getValueString(ConfigKey("[Controls]","TrackEndModeCh1")).toDouble());
     //ControlObject::getControl(ConfigKey("[Channel2]","TrackEndMode"))->queueFromThread(m_pConfig->getValueString(ConfigKey("[Controls]","TrackEndModeCh2")).toDouble());
-#ifdef __VINYLCONTROL__    
     ControlObject::getControl(ConfigKey("[Channel1]","vinylcontrol_enabled"))->queueFromThread(m_pConfig->getValueString(ConfigKey("[VinylControl]","enabled_ch1")).toDouble());
     ControlObject::getControl(ConfigKey("[Channel2]","vinylcontrol_enabled"))->queueFromThread(m_pConfig->getValueString(ConfigKey("[VinylControl]","enabled_ch2")).toDouble());
     ControlObject::getControl(ConfigKey("[Channel1]","vinylcontrol_mode"))->queueFromThread(m_pConfig->getValueString(ConfigKey("[VinylControl]","mode")).toDouble());

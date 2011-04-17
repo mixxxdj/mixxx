@@ -140,6 +140,7 @@ void VinylControlXwax::freeLUTs()
     s_xwaxLUTMutex.unlock();
 }
 
+
 void VinylControlXwax::AnalyseSamples(const short *samples, size_t size)
 {
     if (lockSamples.tryLock())

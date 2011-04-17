@@ -76,9 +76,9 @@ TrackInfoObject::TrackInfoObject(const QDomNode &nodeHeader)
     m_bHeaderParsed = false;
     create_date = XmlParse::selectNodeQString(nodeHeader, "CreateDate");
     if (create_date == "")
-    	m_dCreateDate = fileInfo.created();
+        m_dCreateDate = fileInfo.created();
     else
-    	m_dCreateDate = QDateTime::fromString(create_date);
+        m_dCreateDate = QDateTime::fromString(create_date);
 
     // Mixxx <1.8 recorded track IDs in mixxxtrack.xml, but we are going to
     // ignore those. Tracks will get a new ID from the database.

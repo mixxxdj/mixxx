@@ -54,8 +54,6 @@ SoundManager::SoundManager(ConfigObject<ConfigValue> * pConfig, EngineMaster * _
     ControlObjectThreadMain* pControlObjectSampleRate = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[Master]", "samplerate")));
     m_pControlObjectInputPassthrough1 = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[Channel1]", "inputpassthrough")));
     m_pControlObjectInputPassthrough2 = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[Channel2]", "inputpassthrough")));
-    m_pControlObjectVinylStatus1 = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[Channel1]", "vinylcontrol_status")));
-    m_pControlObjectVinylStatus2 = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[Channel2]", "vinylcontrol_status")));
     m_bPassthroughActive[0] = false;
     m_bPassthroughActive[1] = false;
     
@@ -394,6 +392,8 @@ int SoundManager::setupDevices()
     // audio prefs are updated. Will require work in DlgPrefVinyl.
     m_vinylControl.append(new VinylControlProxy(m_pConfig, "[Channel1]"));
     m_vinylControl.append(new VinylControlProxy(m_pConfig, "[Channel2]"));
+    qDebug() << "Created VinylControlProxies" <<
+                m_vinylControl[0] << m_vinylControl[1];
     registerInput(AudioInput(AudioInput::VINYLCONTROL, 0, 0), m_vinylControl[0]);
     registerInput(AudioInput(AudioInput::VINYLCONTROL, 0, 1), m_vinylControl[1]);
 #endif
@@ -681,7 +681,6 @@ void SoundManager::pushBuffer(QList<AudioInput> inputs, short * inputBuffer,
             const AudioInput& in = *i;
             memcpy(m_inputBuffers[in], inputBuffer,
                    sizeof(*inputBuffer) * iFrameSize * iFramesPerBuffer);
-           // qDebug() << "samples size" << sizeof(*inputBuffer) << iFrameSize << iFramesPerBuffer;
         }
     }
 
@@ -703,6 +702,7 @@ void SoundManager::pushBuffer(QList<AudioInput> inputs, short * inputBuffer,
     }
 */
     else { //More than two channels of input (iFrameSize > 2)
+
         // Do crazy deinterleaving of the audio into the correct m_inputBuffers.
 
         for (QList<AudioInput>::const_iterator i = inputs.begin(),
@@ -755,8 +755,6 @@ void SoundManager::pushBuffer(QList<AudioInput> inputs, short * inputBuffer,
                 }
             }
         }
-
-
     }
 }
 

@@ -26,8 +26,7 @@
 #include "configobject.h"
 #include "rotary.h"
 //for the writer
-/*#include <QtCore>*/
-
+//#include <QtCore>
 
 class EngineControl;
 class BpmControl;
@@ -117,7 +116,6 @@ public:
     void slotControlStart(double);
     void slotControlEnd(double);
     void slotControlSeek(double);
-    void slotControlVinylSeek(double);
     void slotControlSeekAbs(double);
 
     // Request that the EngineBuffer load a track. Since the process is
@@ -221,7 +219,7 @@ private:
     ControlObject *m_pVinylStatus;  //Status of vinyl control
     ControlObject *m_pVinylPitchTweakKnob; // vinyl rate tweaker
     ControlObject *m_pVinylSeek;
-	
+
     /** Fwd and back controls, start and end of track control */
     ControlPushButton *startButton, *endButton;
 

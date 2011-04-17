@@ -155,17 +155,16 @@ RateControl::RateControl(const char* _group,
         m_pConfig->getValueString(ConfigKey("[Controls]","RateRampSensitivity")).toInt();
 
 #ifdef __VINYLCONTROL__
-    m_pVinylControl = new ControlPushButton(ConfigKey(_group,"vinylcontrol_enabled"));
-    m_pVinylControl->set(0);
-    m_pVinylControl->setToggleButton(true);
-    m_pVinylMode = new ControlPushButton(ConfigKey(_group,"vinylcontrol_mode"));
-    m_pVinylMode->setStates(3);
-    m_pVinylMode->setToggleButton(true);
-    m_pVinylCueing = new ControlPushButton(ConfigKey(_group,"vinylcontrol_cueing"));
-    m_pVinylCueing->setStates(3);
-    m_pVinylCueing->setToggleButton(true);
-    connect(m_pVinylControl, SIGNAL(valueChanged(double)), this, SLOT(slotControlVinyl(double)));
-    connect(m_pVinylControl, SIGNAL(valueChangedFromEngine(double)), this, SLOT(slotControlVinyl(double)));
+    ControlObject* pVCEnabled = ControlObject::getControl(ConfigKey(_group, "vinylcontrol_enabled"));
+    // Throw a hissy fit if somebody moved us such that the vinylcontrol_enabled
+    // control doesn't exist yet. This will blow up immediately, won't go unnoticed.
+    Q_ASSERT(pVCEnabled);
+    connect(pVCEnabled, SIGNAL(valueChanged(double)),
+            this, SLOT(slotControlVinyl(double)),
+            Qt::DirectConnection);
+    connect(pVCEnabled, SIGNAL(valueChangedFromEngine(double)),
+            this, SLOT(slotControlVinyl(double)),
+            Qt::DirectConnection);
 #endif
 }
 
@@ -594,3 +593,4 @@ void RateControl::slotControlVinyl(double toggle)
 {
     m_bVinylControlEnabled = (bool)toggle;
 }
+

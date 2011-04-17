@@ -323,11 +323,7 @@ int SoundDevicePortAudio::callbackProcess(unsigned long framesPerBuffer, float *
         //only for output buffers...
         // TODO(bkgood) move this to vcproxy or something, once we have other
         // inputs we don't want every input getting the vc gain
-#ifdef __VINYLCONTROL
         iVCGain = pControlObjectVinylControlGain->get();
-#else
-		iVCGain = 1.0f;
-#endif        
         for (unsigned int i = 0; i < framesPerBuffer * m_inputParams.channelCount; ++i)
             in[i] *= iVCGain;
 
@@ -380,8 +376,8 @@ int SoundDevicePortAudio::callbackProcess(unsigned long framesPerBuffer, float *
 
                     //Input audio pass-through (useful for debugging)
                     //if (in)
-                    //    output[iFrameBase + iChannelBase + iChannel] +=
-                    //    in[iFrameBase + iChannelBase + iChannel] * SHRT_CONVERSION_FACTOR;
+                    //    output[iFrameBase + src.channelBase + iChannel] +=
+                    //    in[iFrameBase + src.channelBase + iChannel] * SHRT_CONVERSION_FACTOR;
                 }
             }
         }

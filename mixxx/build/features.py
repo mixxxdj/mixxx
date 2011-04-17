@@ -291,14 +291,15 @@ class VinylControl(Feature):
                    'vinylcontrolproxy.cpp',
                    'vinylcontrolxwax.cpp',
                    'dlgprefvinyl.cpp',
-                   'vinylcontrolsignalwidget.cpp']
+                   'vinylcontrolsignalwidget.cpp',
+                   'engine/vinylcontrolcontrol.cpp']
         if build.platform_is_windows:
             sources.append("#lib/xwax/timecoder_win32.cpp")
             sources.append("#lib/xwax/lut.cpp")
         else:
             sources.append("#lib/xwax/timecoder.c")
             sources.append("#lib/xwax/lut.c")
-        
+
         return sources
 
 class Tonal(Feature):
@@ -817,6 +818,7 @@ class Optimize(Feature):
             elif optimize_level == 4:
                 self.status = "Enabled (Intel Core 2)"
                 build.env.Append(CCFLAGS = '-march=nocona -mmmx -msse -msse2 -msse3 -mfpmath=sse')
+                #build.env.Append(CCFLAGS = '-march=nocona -mmmx -msse -msse2 -msse3 -mfpmath=sse -ffast-math -funroll-loops')
             elif optimize_level == 5:
                 self.status = "Enabled (Athlon Athlon-4/XP/MP)"
                 build.env.Append(CCFLAGS = '-march=athlon-4 -mmmx -msse -m3dnow -mfpmath=sse')

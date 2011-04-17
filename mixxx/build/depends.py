@@ -268,11 +268,9 @@ class SoundTouch(Dependence):
                 (build.toolchain_is_msvs and optimize > 1) or \
                 (build.toolchain_is_gnu and optimize > 2):
             sources.extend(
-	            ['#lib/%s/mmx_optimized.cpp' % self.SOUNDTOUCH_PATH,
-	             '#lib/%s/sse_optimized.cpp' % self.SOUNDTOUCH_PATH,
-	            ])
-        else:
-            print ("In this tree, you must have optimize= at least 2 (windows) or 3 (gnu)")
+                ['#lib/%s/mmx_optimized.cpp' % self.SOUNDTOUCH_PATH,
+                 '#lib/%s/sse_optimized.cpp' % self.SOUNDTOUCH_PATH,
+                 ])
         if build.toolchain_is_msvs and not build.machine_is_64bit:
             sources.append('#lib/%s/3dnow_win.cpp' % self.SOUNDTOUCH_PATH)
         else:
