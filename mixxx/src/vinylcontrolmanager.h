@@ -12,6 +12,7 @@
 #include "configobject.h"
 
 class VinylControlProxy;
+class SoundManager;
 
 class VinylControlManager : public QObject, public AudioDestination {
     Q_OBJECT;
@@ -23,6 +24,7 @@ class VinylControlManager : public QObject, public AudioDestination {
     virtual void onInputConnected(AudioInput input);
     virtual void onInputDisconnected(AudioInput input);
     QList<VinylControlProxy*> vinylControlProxies() const;
+    static bool vinylInputEnabled(SoundManager *pSoundManager, int deck);
   public slots:
     void reloadConfig();
   private:

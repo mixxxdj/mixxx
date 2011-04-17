@@ -6,6 +6,8 @@
 
 #include "vinylcontrolmanager.h"
 #include "vinylcontrolproxy.h"
+#include "vinylcontrolxwax.h"
+#include "soundmanager.h"
 
 VinylControlManager::VinylControlManager(QObject *pParent,
         ConfigObject<ConfigValue> *pConfig, unsigned int nDecks)
@@ -22,6 +24,10 @@ VinylControlManager::~VinylControlManager() {
         delete pProxy;
     }
     m_listLock.release(m_proxies.size());
+
+    // xwax has a global LUT that we need to free after we've shut down our
+    // vinyl control threads because it's not thread-safe.
+    VinylControlXwax::freeLUTs();
 }
 
 void VinylControlManager::receiveBuffer(AudioInput input,
@@ -76,4 +82,17 @@ void VinylControlManager::reloadConfig() {
 
 QList<VinylControlProxy*> VinylControlManager::vinylControlProxies() const {
     return m_proxies;
+}
+
+//static
+bool VinylControlManager::vinylInputEnabled(SoundManager *pSoundManager, int deck) {
+    QList<AudioInput> inputs(pSoundManager->getConfig().getInputs().values());
+
+    foreach (AudioInput in, inputs) {
+        if (in.getType() == AudioInput::VINYLCONTROL
+                && in.getIndex() == (deck - 1)) {
+            return true;
+        }
+    }
+    return false;
 }
