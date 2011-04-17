@@ -44,6 +44,7 @@
 //#include "trackplaylist.h"
 #ifdef __VINYLCONTROL__
 #include "vinylcontrol.h"
+#include "vinylcontrolmanager.h"
 #endif
 #include "recording/recordingmanager.h"
 

@@ -73,3 +73,7 @@ void VinylControlManager::reloadConfig() {
     }
     m_listLock.release(m_proxies.size());
 }
+
+QList<VinylControlProxy*> VinylControlManager::vinylControlProxies() const {
+    return m_proxies;
+}
