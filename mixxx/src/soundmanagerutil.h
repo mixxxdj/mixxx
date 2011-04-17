@@ -124,13 +124,14 @@ public:
 class AudioDestination {
 public:
     virtual void receiveBuffer(AudioInput input, const short* pBuffer, unsigned int iNumFrames) = 0;
-    virtual void onInputConnected(AudioInput input) { };
-    virtual void onInputDisconnected(AudioInput input) { };
+    virtual void onInputConnected(AudioInput input) { Q_UNUSED(input); };
+    virtual void onInputDisconnected(AudioInput input) { Q_UNUSED(input); };
 };
 
 typedef AudioPath::AudioPathType AudioPathType;
 
 // globals for QHash
+unsigned int qHash(const ChannelGroup &group);
 unsigned int qHash(const AudioOutput &output);
 unsigned int qHash(const AudioInput &input);
 

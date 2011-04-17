@@ -26,6 +26,10 @@
 #include "controlobjectthreadmain.h"
 #include "soundmanagerutil.h"
 
+#ifdef __VINYLCONTROL__
+#include "vinylcontrolxwax.h"
+#endif
+
 /** Initializes Mixxx's audio core
  *  @param pConfig The config key table
  *  @param _master A pointer to the audio engine's mastering class.
@@ -48,19 +52,10 @@ SoundManager::SoundManager(ConfigObject<ConfigValue> * pConfig, EngineMaster * _
     //uses them is called from the GUI thread (stuff like opening soundcards).
     ControlObjectThreadMain* pControlObjectLatency = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[Master]", "latency")));
     ControlObjectThreadMain* pControlObjectSampleRate = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[Master]", "samplerate")));
-    ControlObjectThreadMain* pControlObjectVinylControlMode = new ControlObjectThreadMain(new ControlObject(ConfigKey("[VinylControl]", "Mode")));
-    ControlObjectThreadMain* pControlObjectVinylControlEnabled = new ControlObjectThreadMain(new ControlObject(ConfigKey("[VinylControl]", "Enabled")));
-    ControlObjectThreadMain* pControlObjectVinylControlGain = new ControlObjectThreadMain(new ControlObject(ConfigKey("[VinylControl]", "VinylControlGain")));
-    ControlObjectThreadMain* pControlObjectVinylControlSignalQuality1 = new ControlObjectThreadMain(new ControlObject(ConfigKey("[Channel1]", "VinylControlQuality")));
-    ControlObjectThreadMain* pControlObjectVinylControlSignalQuality2 = new ControlObjectThreadMain(new ControlObject(ConfigKey("[Channel2]", "VinylControlQuality")));
-    ControlObjectThreadMain* pControlObjectVinylControlInputStrengthL1 = new ControlObjectThreadMain(new ControlObject(ConfigKey("[Channel1]", "VinylControlInputL")));
-    ControlObjectThreadMain* pControlObjectVinylControlInputStrengthR1 = new ControlObjectThreadMain(new ControlObject(ConfigKey("[Channel1]", "VinylControlInputR")));
-    ControlObjectThreadMain* pControlObjectVinylControlInputStrengthL2 = new ControlObjectThreadMain(new ControlObject(ConfigKey("[Channel2]", "VinylControlInputL")));
-    ControlObjectThreadMain* pControlObjectVinylControlInputStrengthR2 = new ControlObjectThreadMain(new ControlObject(ConfigKey("[Channel2]", "VinylControlInputR")));
-
-    pControlObjectVinylControlMode->slotSet(m_pConfig->getValueString(ConfigKey("[VinylControl]","Mode")).toInt());
-    pControlObjectVinylControlEnabled->slotSet(m_pConfig->getValueString(ConfigKey("[VinylControl]","Enabled")).toInt());
-    pControlObjectVinylControlGain->slotSet(m_pConfig->getValueString(ConfigKey("[VinylControl]","VinylControlGain")).toInt());
+    ControlObjectThreadMain* pControlObjectVinylControlMode = new ControlObjectThreadMain(new ControlObject(ConfigKey("[VinylControl]", "mode")));
+    ControlObjectThreadMain* pControlObjectVinylControlMode1 = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[Channel1]", "vinylcontrol_mode")));
+    ControlObjectThreadMain* pControlObjectVinylControlMode2 = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[Channel2]", "vinylcontrol_mode")));
+    ControlObjectThreadMain* pControlObjectVinylControlGain = new ControlObjectThreadMain(new ControlObject(ConfigKey("[VinylControl]", "gain")));
 
     //Hack because PortAudio samplerate enumeration is slow as hell on Linux (ALSA dmix sucks, so we can't blame PortAudio)
     m_samplerates.push_back(44100);
@@ -242,11 +237,14 @@ void SoundManager::closeDevices()
     // TODO(bkgood) see comment where these objects are created in setupDevices,
     // this should probably be in the dtor or at least somewhere other
     // than here.
-    while (!m_VinylControl.empty()) {
-        VinylControlProxy *vc = m_VinylControl.takeLast();
+    while (!m_vinylControl.empty()) {
+        VinylControlProxy *vc = m_vinylControl.takeLast();
         if (vc != NULL) {
             delete vc;
         }
+        //xwax has a global LUT that we need to free after we've shut down our
+        //vinyl control threads because it's not thread-safe.
+        VinylControlXwax::freeLUTs();
     }
 #endif
 }
@@ -379,10 +377,12 @@ int SoundManager::setupDevices()
     // TODO(bkgood) this ought to be done in the ctor or something. Not here. Really
     // shouldn't be any reason for these to be reinitialized every time the
     // audio prefs are updated. Will require work in DlgPrefVinyl.
-    m_VinylControl.append(new VinylControlProxy(m_pConfig, "[Channel1]"));
-    m_VinylControl.append(new VinylControlProxy(m_pConfig, "[Channel2]"));
-    registerInput(AudioInput(AudioInput::VINYLCONTROL, 0, 0), m_VinylControl[0]);
-    registerInput(AudioInput(AudioInput::VINYLCONTROL, 0, 1), m_VinylControl[1]);
+    m_vinylControl.append(new VinylControlProxy(m_pConfig, "[Channel1]"));
+    m_vinylControl.append(new VinylControlProxy(m_pConfig, "[Channel2]"));
+    qDebug() << "Created VinylControlProxies" <<
+                m_vinylControl[0] << m_vinylControl[1];
+    registerInput(AudioInput(AudioInput::VINYLCONTROL, 0, 0), m_vinylControl[0]);
+    registerInput(AudioInput(AudioInput::VINYLCONTROL, 0, 1), m_vinylControl[1]);
 #endif
     foreach (SoundDevice *device, m_devices) {
         bool isInput = false;
@@ -393,8 +393,7 @@ int SoundManager::setupDevices()
         foreach (AudioInput in, m_config.getInputs().values(device->getInternalName())) {
             isInput = true;
             err = device->addInput(in);
-            if (err != OK)
-                return err;
+            if (err != OK) return err;
             if (!m_inputBuffers.contains(in)) {
                 // TODO(bkgood) look into allocating this with the frames per
                 // buffer value from SMConfig
@@ -457,6 +456,7 @@ int SoundManager::setupDevices()
     // returns OK if we were able to open all the devices the user
     // wanted
     if (devicesAttempted == devicesOpened) {
+        emit(devicesSetup());
         return OK;
     }
     m_pErrorDevice = NULL;
@@ -471,17 +471,46 @@ SoundManagerConfig SoundManager::getConfig() const {
     return m_config;
 }
 
+#ifdef __VINYLCONTROL__
+bool SoundManager::hasVinylInput(int deck)
+{
+    if (deck >= m_vinylControl.length())
+        return false;
+    VinylControlProxy* vinyl_control = m_vinylControl[deck];
+
+    bool hasInput = false;
+    QList<AudioInput> inputs = getConfig().getInputs().values();
+    foreach (AudioInput in, inputs) {
+        if (in.getType() == AudioInput::VINYLCONTROL
+                && in.getIndex() == deck) {
+            hasInput = true;
+            break;
+        }
+    }
+
+    return vinyl_control != NULL && hasInput;
+}
+
+QList<VinylControlProxy*> SoundManager::getVinylControlProxies()
+{
+    return m_vinylControl;
+}
+#endif
+
 int SoundManager::setConfig(SoundManagerConfig config) {
     int err = OK;
     m_config = config;
     checkConfig();
+
+    // certain parts of mixxx rely on this being here, for the time being, just
+    // letting those be -- bkgood
+    // Do this first so vinyl control gets the right samplerate -- Owen W.
+    m_pConfig->set(ConfigKey("[Soundcard]","Samplerate"), ConfigValue(m_config.getSampleRate()));
+
     err = setupDevices();
     if (err == OK) {
         m_config.writeToDisk();
     }
-    // certain parts of mixxx rely on this being here, for the time being, just
-    // letting those be -- bkgood
-    m_pConfig->set(ConfigKey("[Soundcard]","Samplerate"), ConfigValue(m_config.getSampleRate()));
     return err;
 }
 
@@ -563,6 +592,8 @@ SoundManager::requestBuffer(QList<AudioOutput> outputs, unsigned long iFramesPer
 void SoundManager::pushBuffer(QList<AudioInput> inputs, short * inputBuffer,
                               unsigned long iFramesPerBuffer, unsigned int iFrameSize)
 {
+    //This function is called a *lot* and is a big source of CPU usage.
+    //It needs to be very fast.
 
 //    m_inputBuffers[RECEIVER_VINYLCONTROL_ONE]
 
@@ -644,7 +675,7 @@ void SoundManager::pushBuffer(QList<AudioInput> inputs, short * inputBuffer,
 
     if (inputBuffer)
     {
-        for (QList<AudioInput>::const_iterator i = inputs.begin(),
+        for (QList<AudioInput>::ConstIterator i = inputs.begin(),
                      e = inputs.end(); i != e; ++i) {
             const AudioInput& in = *i;
 
@@ -662,8 +693,6 @@ void SoundManager::pushBuffer(QList<AudioInput> inputs, short * inputBuffer,
                 }
             }
         }
-
-
     }
     //TODO: Add pass-through option here (and push it into EngineMaster)...
     //      (or maybe save it, and then have requestBuffer() push it into EngineMaster)...

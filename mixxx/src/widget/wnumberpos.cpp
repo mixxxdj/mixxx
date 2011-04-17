@@ -86,15 +86,21 @@ void WNumberPos::setValue(double dValue) {
     double valueMillis = 0.0f;
     double durationMillis = 0.0f;
     if (m_dTrackSamples > 0 && m_dTrackSampleRate > 0 && m_dDuration > 0) {
-        valueMillis = dValue * 1000.0f * m_dTrackSamples / 2.0f / 127.0f / m_dTrackSampleRate;
+        //map midi value taking in to account 14 = 0 and 114 = 1
+        valueMillis = (dValue - 14) * 1000.0f * m_dTrackSamples / 2.0f / 100.0f / m_dTrackSampleRate;
         durationMillis = m_dDuration * 1000.0f;
         if (m_bRemain)
             valueMillis = math_max(durationMillis - valueMillis, 0.0f);
     }
 
-    QTime valueTime = QTime().addMSecs(valueMillis);
-
-    QString valueString = valueTime.toString((valueTime.hour() >= 1) ? "hh:mm:ss.zzz" : "mm:ss.zzz");
+    QString valueString;
+    if (valueMillis >= 0) {
+        QTime valueTime = QTime().addMSecs(valueMillis);
+        valueString = valueTime.toString((valueTime.hour() >= 1) ? "hh:mm:ss.zzz" : "mm:ss.zzz");
+    } else {
+        QTime valueTime = QTime().addMSecs(0 - valueMillis);
+        valueString = valueTime.toString((valueTime.hour() >= 1) ? "-hh:mm:ss.zzz" : "-mm:ss.zzz");
+    }
 
     // The format string gives us one extra digit of millisecond precision than
     // we care about. Slice it off.

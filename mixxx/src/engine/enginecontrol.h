@@ -70,8 +70,9 @@ class EngineControl : public QObject {
     virtual void hintReader(QList<Hint>& hintList);
 
     void setOtherEngineBuffer(EngineBuffer* pOtherEngineBuffer);
-    void setCurrentSample(const double dCurrentSample);
-    double getCurrentSample();
+    void setCurrentSample(const double dCurrentSample, const double dTotalSamples);
+    double getCurrentSample() const;
+    double getTotalSamples() const;
 
     // Called whenever a seek occurs to allow the EngineControl to respond.
     virtual void notifySeek(double dNewPlaypo);
@@ -93,6 +94,7 @@ class EngineControl : public QObject {
     const char* m_pGroup;
     ConfigObject<ConfigValue>* m_pConfig;
     double m_dCurrentSample;
+    double m_dTotalSamples;
     EngineBuffer* m_pOtherEngineBuffer;
 };
 
