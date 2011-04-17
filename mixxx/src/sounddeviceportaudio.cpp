@@ -210,7 +210,7 @@ int SoundDevicePortAudio::open()
     }
     else
         qDebug() << "PortAudio: Started stream successfully";
-    
+
     // Get the actual details of the stream & update Mixxx's data
     const PaStreamInfo* streamDetails = Pa_GetStreamInfo(m_pStream);
     m_dSampleRate = streamDetails->sampleRate;
