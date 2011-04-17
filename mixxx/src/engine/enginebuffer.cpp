@@ -822,9 +822,9 @@ void EngineBuffer::updateIndicators(double rate, int iBufferSize) {
     }
 
     // Update indicators that are only updated after every
-    // sampleRate/UPDATE_RATE samples processed.  (e.g. playposSlider,
+    // sampleRate/kiUpdateRate samples processed.  (e.g. playposSlider,
     // rateEngine)
-    if (m_iSamplesCalculated > (m_pSampleRate->get()/UPDATE_RATE)) {
+    if (m_iSamplesCalculated > (m_pSampleRate->get()/kiUpdateRate)) {
         playposSlider->set(fFractionalPlaypos);
 
         if(rate != rateEngine->get())
