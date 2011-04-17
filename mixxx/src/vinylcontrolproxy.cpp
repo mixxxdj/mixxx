@@ -116,12 +116,3 @@ float VinylControlProxy::getAngle()
         return -1.0;
 }
 
-void VinylControlProxy::receiveBuffer(AudioInput input, const short* pBuffer,
-        unsigned int iNumFrames) {
-    if (input.getType() != AudioPath::VINYLCONTROL ||
-        QString("[Channel%1]").arg(input.getIndex()+1) != m_group) {
-        qDebug() << "WARNING: vinyl control proxy got a buffer for an "
-            "AudioInput it doesn't own";
-    }
-    AnalyseSamples(pBuffer, iNumFrames);
-}
