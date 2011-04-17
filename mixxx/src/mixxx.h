@@ -42,10 +42,6 @@
 #include "controlobject.h"
 #include "dlgpreferences.h"
 //#include "trackplaylist.h"
-#ifdef __VINYLCONTROL__
-#include "vinylcontrol.h"
-#include "vinylcontrolmanager.h"
-#endif
 #include "recording/recordingmanager.h"
 
 #ifdef __SCRIPT__

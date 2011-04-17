@@ -64,6 +64,11 @@
 
 #include "defs_version.h"
 
+#ifdef __VINYLCONTROL__
+#include "vinylcontrol/vinylcontrol.h"
+#include "vinylcontrol/vinylcontrolmanager.h"
+#endif
+
 #ifdef __C_METRICS__
 #include <cmetrics.h>
 #include "defs_mixxxcmetrics.h"

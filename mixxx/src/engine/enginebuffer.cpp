@@ -40,7 +40,7 @@
 
 
 #ifdef __VINYLCONTROL__
-#include "vinylcontrol.h"
+#include "vinylcontrol/vinylcontrol.h"
 #include "library/dao/cue.h"
 #endif
 

@@ -20,7 +20,7 @@
 
 #include "ui_dlgprefvinyldlg.h"
 #include "configobject.h"
-#include "vinylcontrolsignalwidget.h"
+#include "vinylcontrol/vinylcontrolsignalwidget.h"
 #include "controlobjectthread.h"
 
 class QWidget;
