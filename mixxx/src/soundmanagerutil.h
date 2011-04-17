@@ -131,6 +131,7 @@ public:
 typedef AudioPath::AudioPathType AudioPathType;
 
 // globals for QHash
+unsigned int qHash(const ChannelGroup &group);
 unsigned int qHash(const AudioOutput &output);
 unsigned int qHash(const AudioInput &input);
 

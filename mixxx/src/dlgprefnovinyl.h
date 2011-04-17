@@ -1,9 +1,9 @@
 /***************************************************************************
-                          controlpushbutton.h  -  description
+                          dlgprefnovinyl.h  -  description
                              -------------------
-    begin                : Wed Feb 20 2002
-    copyright            : (C) 2002 by Tue and Ken Haste Andersen
-    email                :
+    begin                : Thu Feb 24 2011
+    copyright            : (C) 2011 by Owen Williams
+    email                : owen-bugs@ywwg.com
  ***************************************************************************/
 
 /***************************************************************************
@@ -15,31 +15,25 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef CONTROLPUSHBUTTON_H
-#define CONTROLPUSHBUTTON_H
+#ifndef DLGPREFNOVINYL_H
+#define DLGPREFNOVINYL_H
 
-#include "controlobject.h"
-#include "defs.h"
+#include "ui_dlgprefnovinyldlg.h"
+#include "configobject.h"
+
+class QWidget;
+class SoundManager;
 
 /**
-  *@author Tue and Ken Haste Andersen
+  *@author Stefan Langhammer
+  *@author Albert Santoni
   */
 
-class ControlPushButton : public ControlObject
-{
+class DlgPrefNoVinyl : public QWidget, Ui::DlgPrefNoVinylDlg  {
     Q_OBJECT
 public:
-    ControlPushButton(ConfigKey key);
-    ~ControlPushButton();
-    void setToggleButton(bool bIsToggleButton);
-    void setStates(int num_states);
-
-protected:
-    void setValueFromMidi(MidiCategory c, double v);
-
-private:
-    bool m_bIsToggleButton;
-    int m_iNoStates;
+    DlgPrefNoVinyl(QWidget *parent, SoundManager* soundman, ConfigObject<ConfigValue> *_config);
+    ~DlgPrefNoVinyl();
 };
 
 #endif

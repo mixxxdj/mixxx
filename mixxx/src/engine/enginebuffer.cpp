@@ -39,6 +39,11 @@
 #include "engine/quantizecontrol.h"
 
 
+#ifdef __VINYLCONTROL__
+#include "vinylcontrol.h"
+#include "library/dao/cue.h"
+#endif
+
 #include "trackinfoobject.h"
 
 #ifdef _MSC_VER
@@ -72,8 +77,11 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
     m_pScaleLinear(NULL),
     m_pScaleST(NULL),
     m_bScalerChanged(false),
-    m_fLastSampleValue(0.),
-    m_bLastBufferPaused(true) {
+    m_bLastBufferPaused(true),
+    m_fRampValue(0.0) {
+
+    m_fLastSampleValue[0] = 0;
+    m_fLastSampleValue[1] = 0;
 
     m_pReader = new CachingReader(_group, _config);
     connect(m_pReader, SIGNAL(trackLoaded(TrackPointer, int, int)),
@@ -82,7 +90,6 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
     connect(m_pReader, SIGNAL(trackLoadFailed(TrackPointer, QString)),
             this, SLOT(slotTrackLoadFailed(TrackPointer, QString)),
             Qt::DirectConnection);
-
 
     // Play button
     playButton = new ControlPushButton(ConfigKey(group, "play"));
@@ -126,14 +133,15 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
     rateEngine = new ControlObject(ConfigKey(group, "rateEngine"));
 
     // Slider to show and change song position
-    playposSlider = new ControlPotmeter(ConfigKey(group, "playposition"), 0., 1.);
+    //these bizarre choices map conveniently to the 0-127 range of midi
+    playposSlider = new ControlPotmeter(ConfigKey(group, "playposition"), -0.14, 1.14);
     connect(playposSlider, SIGNAL(valueChanged(double)),
             this, SLOT(slotControlSeek(double)),
             Qt::DirectConnection);
 
     // Control used to communicate ratio playpos to GUI thread
     visualPlaypos =
-        new ControlPotmeter(ConfigKey(group, "visual_playposition"), 0., 1.);
+        new ControlPotmeter(ConfigKey(group, "visual_playposition"), -0.14, 1.14);
 
     // m_pTrackEnd is used to signal when at end of file during
     // playback. TODO(XXX) This should not even be a control object because it
@@ -144,6 +152,14 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
 
     m_pRepeat = new ControlPushButton(ConfigKey(group, "repeat"));
     m_pRepeat->setToggleButton(true);
+
+#ifdef __VINYLCONTROL__
+    m_pVinylStatus = new ControlObject(ConfigKey(group,"vinylcontrol_status"));
+    m_pVinylSeek = new ControlObject(ConfigKey(group,"vinylcontrol_seek"));
+    connect(m_pVinylSeek, SIGNAL(valueChanged(double)),
+            this, SLOT(slotControlVinylSeek(double)),
+            Qt::DirectConnection);
+#endif
 
     // Sample rate
     m_pSampleRate = ControlObject::getControl(ConfigKey("[Master]","samplerate"));
@@ -192,10 +208,17 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
             this, SLOT(slotEjectTrack(double)),
             Qt::DirectConnection);
 
+    //m_iRampIter = 0;
+
+    /*df.setFileName("mixxx-debug.csv");
+    df.open(QIODevice::WriteOnly | QIODevice::Text);
+    writer.setDevice(&df);*/
 }
 
 EngineBuffer::~EngineBuffer()
 {
+    //close the writer
+    /*df.close();*/
     delete m_pReadAheadManager;
     delete m_pReader;
 
@@ -353,21 +376,85 @@ void EngineBuffer::ejectTrack() {
     emit(trackUnloaded(pTrack));
 }
 
+void EngineBuffer::slotControlVinylSeek(double change)
+{
+#ifdef __VINYLCONTROL__
+    if(isnan(change) || change > 1.14 || change < -1.14) {
+        // This seek is ridiculous.
+        return;
+    }
+
+    double new_playpos = round(change*file_length_old);
+
+    ControlObject *pVinylMode = ControlObject::getControl(ConfigKey(group,"vinylcontrol_mode"));
+    ControlObject *pVinylEnabled = ControlObject::getControl(ConfigKey(group,"vinylcontrol_enabled"));
+
+    if (m_pCurrentTrack != NULL && pVinylEnabled != NULL && pVinylMode != NULL) {
+        if (pVinylEnabled->get() && pVinylMode->get() == MIXXX_VCMODE_RELATIVE) {
+            int cuemode = (int)ControlObject::getControl(ConfigKey(group,"vinylcontrol_cueing"))->get();
+
+            //if in preroll, always seek
+            if (new_playpos < 0) {
+                slotControlSeek(change);
+                return;
+            } else if (cuemode == MIXXX_RELATIVE_CUE_OFF) {
+                return;  //if off, do nothing
+            } else if (cuemode == MIXXX_RELATIVE_CUE_ONECUE) {
+                //if onecue, just seek to the regular cue
+                slotControlSeekAbs(m_pCurrentTrack->getCuePoint());
+                return;
+            }
+
+            double distance = 0;
+            int nearest_playpos = -1;
+
+            QList<Cue*> cuePoints = m_pCurrentTrack->getCuePoints();
+            QListIterator<Cue*> it(cuePoints);
+            while (it.hasNext()) {
+                Cue* pCue = it.next();
+                if (pCue->getType() != Cue::CUE || pCue->getHotCue() == -1)
+                    continue;
+
+                int cue_position = pCue->getPosition();
+                //pick cues closest to new_playpos
+                if ((nearest_playpos == -1) ||
+                    (fabs(new_playpos - cue_position) < distance)) {
+                    nearest_playpos = cue_position;
+                    distance = fabs(new_playpos - cue_position);
+                }
+            }
+
+            if (nearest_playpos == -1) {
+                if (new_playpos >= 0)
+                    //never found an appropriate cue, so don't seek?
+                    return;
+                //if negative, allow a seek by falling down to the bottom
+            } else {
+                slotControlSeekAbs((float)nearest_playpos);
+                return;
+            }
+        }
+    }
+    //just seek where it wanted to originally
+    slotControlSeek(change);
+#endif
+}
 
 // WARNING: This method runs in both the GUI thread and the Engine Thread
 void EngineBuffer::slotControlSeek(double change)
 {
-    if(isnan(change) || change > 1.0 || change < 0.0) {
+    if(isnan(change) || change > 1.14 || change < -1.14) {
         // This seek is ridiculous.
         return;
     }
 
     // Find new playpos, restrict to valid ranges.
     double new_playpos = round(change*file_length_old);
+
     if (new_playpos > file_length_old)
         new_playpos = file_length_old;
-    if (new_playpos < 0.)
-        new_playpos = 0.;
+    //if (new_playpos < 0.)
+    //   new_playpos = 0.;
 
     // Ensure that the file position is even (remember, stereo channel files...)
     if (!even((int)new_playpos))
@@ -445,6 +532,7 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
     CSAMPLE * pOutput = (CSAMPLE *)pOut;
 
     bool bCurBufferPaused = false;
+    double rate;
 
     if (!m_pTrackEnd->get() && pause.tryLock()) {
 
@@ -462,19 +550,22 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
 
         bool paused = playButton->get() != 0.0f ? false : true;
 
-        double rate = m_pRateControl->calculateRate(baserate, paused);
+        rate = m_pRateControl->calculateRate(baserate, paused);
         //qDebug() << "rate" << rate << " paused" << paused;
 
         // If the rate has changed, set it in the scale object
         if (rate != rate_old || m_bScalerChanged) {
             // The rate returned by the scale object can be different from the wanted rate!
-
-            //XXX: Trying to force RAMAN to read from correct
-            //     playpos when rate changes direction - Albert
-            if (m_bScalerChanged || (rate_old <= 0 && rate > 0) ||
-                (rate_old >= 0 && rate < 0))
-            {
+            // Make sure new scaler has proper position
+            if (m_bScalerChanged) {
                 setNewPlaypos(filepos_play);
+            } else if (m_pScale != m_pScaleLinear) { //linear scaler does this part for us now
+                //XXX: Trying to force RAMAN to read from correct
+                //     playpos when rate changes direction - Albert
+                if ((rate_old <= 0 && rate > 0) ||
+                    (rate_old >= 0 && rate < 0)) {
+                    setNewPlaypos(filepos_play);
+                }
             }
 
             rate_old = rate;
@@ -493,8 +584,9 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
         // If we're playing past the end, playing before the start, or standing
         // still then by definition the buffer is paused.
         bCurBufferPaused = rate == 0 ||
-            (at_start && backwards) ||
+            //(at_start && backwards) ||
             (at_end && !backwards);
+
 
         // If the buffer is not paused, then scale the audio.
         if (!bCurBufferPaused) {
@@ -531,9 +623,9 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
 
             // Adjust filepos_play by the amount we processed.
             filepos_play += idx;
-            filepos_play = math_max(0, filepos_play);
-            // We need the above protection against negative playpositions
-            // in case SoundTouch/EngineBufferSoundTouch gives us too many samples.
+            //filepos_play = math_max(0, filepos_play);
+            //// We need the above protection against negative playpositions
+            //// in case SoundTouch/EngineBufferSoundTouch gives us too many samples.
 
             // Get rid of annoying decimals that the scaler sometimes produces
             filepos_play = round(filepos_play);
@@ -599,7 +691,7 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
 
         bool repeat_enabled = m_pRepeat->get() != 0.0f;
 
-        bool end_of_track = (at_start && backwards) ||
+        bool end_of_track = //(at_start && backwards) ||
             (at_end && !backwards);
 
         // If playbutton is pressed, check if we are at start or end of track
@@ -624,27 +716,57 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
     // (hopefully) before the next callback.
     m_pReader->wake();
 
-    // Force ramp in if this is the first buffer during a play
     if (m_bLastBufferPaused && !bCurBufferPaused) {
-        // Ramp from zero
-        int iLen = math_min(iBufferSize, kiRampLength);
-        float fStep = pOutput[iLen-1]/(float)iLen;
-        for (int i=0; i<iLen; ++i)
-            pOutput[i] = fStep*i;
+        if (fabs(rate) > 0.005) //at very slow forward rates, don't ramp up
+            m_iRampState = ENGINE_RAMP_UP;
+    } else if (!m_bLastBufferPaused && bCurBufferPaused) {
+        m_iRampState = ENGINE_RAMP_DOWN;
+    } else { //we are not changing state
+        //make sure we aren't accidentally ramping down
+        //this is how we make sure that ramp value will become 1.0 eventually
+        if (fabs(rate) > 0.005 && m_iRampState != ENGINE_RAMP_UP && m_fRampValue < 1.0)
+            m_iRampState = ENGINE_RAMP_UP;
+    }
 
+    //let's try holding the last sample value constant, and pull it
+    //towards zero
+    float ramp_inc = 0;
+    if (m_iRampState == ENGINE_RAMP_UP) {
+        ramp_inc = (m_iRampState * 0.2) / iBufferSize; //ramp up quickly (5 frames)
+    } else if (m_iRampState == ENGINE_RAMP_DOWN) {
+        ramp_inc = (m_iRampState * 0.08) / iBufferSize; //but down slowly
     }
-    // Force ramp out if this is the first buffer to be paused.
-    else if (!m_bLastBufferPaused && bCurBufferPaused) {
-        rampOut(pOut, iBufferSize);
+
+    //float fakerate = rate * 30000 == 0 ? -5000 : rate*30000;
+    for (int i=0; i<iBufferSize; i+=2) {
+        if (bCurBufferPaused) {
+            float dither = (float)(rand() % 32768) / 32768 - 0.5; // dither
+            pOutput[i] = m_fLastSampleValue[0] * m_fRampValue + dither;
+            pOutput[i+1] = m_fLastSampleValue[1] * m_fRampValue + dither;
+        } else {
+            pOutput[i] = pOutput[i] * m_fRampValue;
+            pOutput[i+1] = pOutput[i+1] * m_fRampValue;
+        }
+
+        //writer << pOutput[i] <<  "\n";
+        m_fRampValue += ramp_inc;
+        if (m_fRampValue >= 1.0) {
+            m_iRampState = ENGINE_RAMP_NONE;
+            m_fRampValue = 1.0;
+        }
+        if (m_fRampValue <= 0.0) {
+            m_iRampState = ENGINE_RAMP_NONE;
+            m_fRampValue = 0.0;
+        }
     }
-    // If the previous buffer was paused and we are currently paused, then
-    // memset the output to zero.
-    else if (m_bLastBufferPaused && bCurBufferPaused) {
-        memset(pOutput, 0, sizeof(pOutput[0])*iBufferSize);
+
+    if ((!bCurBufferPaused && m_iRampState == ENGINE_RAMP_NONE) ||
+        (bCurBufferPaused && m_fRampValue == 0.0)) {
+        m_fLastSampleValue[0] = pOutput[iBufferSize-2];
+        m_fLastSampleValue[1] = pOutput[iBufferSize-1];
     }
 
     m_bLastBufferPaused = bCurBufferPaused;
-    m_fLastSampleValue = pOutput[iBufferSize-1];
 }
 
 
@@ -656,15 +778,24 @@ void EngineBuffer::rampOut(const CSAMPLE* pOut, int iBufferSize)
 
     // Ramp to zero
     int i=0;
-    if (m_fLastSampleValue!=0.)
-    {
-        int iLen = math_min(iBufferSize, kiRampLength);
-        float fStep = m_fLastSampleValue/(float)iLen;
+    if (m_fLastSampleValue[0]!=0.) {
         // TODO(XXX) SSE
-        while (i<iLen)
-        {
-            pOutput[i] = fStep*(iLen-(i+1));
-            ++i;
+        if (pOutput[0] == 0) {
+            while (i<iBufferSize) {
+                float sigmoid = sigmoid_zero((float)(iBufferSize - i), (float)iBufferSize);
+                float dither = (float)(rand() % 32768) / 32768 - 0.5; // dither
+                pOutput[i] = (float)m_fLastSampleValue[0] * sigmoid + dither;
+                pOutput[i+1] = (float)m_fLastSampleValue[1] * sigmoid + dither;
+                i+=2;
+            }
+        } else {
+            while (i<iBufferSize) {
+                float sigmoid = sigmoid_zero((float)(iBufferSize - i), (float)iBufferSize);
+                float dither = (float)(rand() % 32768) / 32768 - 0.5; // dither
+                pOutput[i] = (float)pOutput[i] * sigmoid + dither;
+                pOutput[i+1] = (float)pOutput[i+1] * sigmoid + dither;
+                i+=2;
+               }
         }
     }
 
@@ -684,7 +815,7 @@ void EngineBuffer::updateIndicators(double rate, int iBufferSize) {
 
     double fFractionalPlaypos = 0.0;
     if (file_length_old!=0.) {
-        fFractionalPlaypos = math_max(0.,math_min(filepos_play,file_length_old));
+        fFractionalPlaypos = math_min(filepos_play,file_length_old);
         fFractionalPlaypos /= file_length_old;
     } else {
         fFractionalPlaypos = 0.;

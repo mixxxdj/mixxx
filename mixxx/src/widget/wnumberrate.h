@@ -13,6 +13,7 @@
 #define WNUMBERRATE_H
 
 #include "wnumber.h"
+#include <QTimer>
 class ControlObjectThreadMain;
 
 /**
