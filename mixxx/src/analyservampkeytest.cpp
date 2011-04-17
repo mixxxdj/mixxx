@@ -14,8 +14,6 @@
 
 #include "trackinfoobject.h"
 #include "analyservampkeytest.h"
-#include "track/beatmatrix.h"
-#include "track/beatfactory.h"
 
 AnalyserVampKeyTest::AnalyserVampKeyTest(ConfigObject<ConfigValue> *_config) {
     m_pConfigAVT = _config;
@@ -38,6 +36,7 @@ void AnalyserVampKeyTest::initialise(TrackPointer tio, int sampleRate,
     if (!m_bPass)
         qDebug() << "Failed to init";
 
+
     //   m_iStartTime = clock();
 }
 
@@ -45,20 +44,22 @@ void AnalyserVampKeyTest::process(const CSAMPLE *pIn, const int iLen) {
     if(!m_bPass) return;
     m_bPass = mvamp->Process(pIn, iLen);
 
+
 }
 
 void AnalyserVampKeyTest::finalise(TrackPointer tio) {
     if(!m_bPass) return;
-
-    if(mvamp->GetInitFramesVector(&m_frames)){
-        if(mvamp->GetLastValuesVector(&m_keys))
-            for (int i=0; i<m_frames.size(); i++){
-                qDebug()<<"Key changes to "<<m_keys[i]<<" at frame "<<m_frames[i];
-            }
-    }
+    QVector <QString> labels;
+        if(mvamp->GetInitFramesVector(&m_frames)){
+               if(mvamp->GetLastValuesVector(&m_keys))
+                   mvamp->GetLabelsVector(&labels);
+               for (int i=0; i<m_frames.size(); i++){
+                   qDebug()<<"Key changes to "<< m_keys[i] <<" ("<<labels[i]<<")" << " at frame "<< m_frames[i];
+               }
+           }
+           m_frames.clear();
+           m_keys.clear();
     m_bPass = mvamp->End();
-    m_frames.clear();
-    m_keys.clear();
     qDebug()<<"Key detection complete";
     //m_iStartTime = clock() - m_iStartTime;
 }
