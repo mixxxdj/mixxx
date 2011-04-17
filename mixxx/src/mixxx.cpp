@@ -543,6 +543,13 @@ MixxxApp::~MixxxApp()
     qDebug() << "delete soundmanager, " << qTime.elapsed();
     delete m_pSoundManager;
 
+#ifdef __VINYLCONTROL__
+    // VinylControlManager depends on a CO the engine owns
+    // (vinylcontrol_enabled in VinylControlControl)
+    qDebug() << "delete vinylcontrolmanager, " << qTime.elapsed();
+    delete m_pVCManager;
+#endif
+
     // View depends on MixxxKeyboard, PlayerManager, Library
     qDebug() << "delete view, " << qTime.elapsed();
     delete m_pView;
