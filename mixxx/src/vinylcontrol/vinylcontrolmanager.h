@@ -23,15 +23,15 @@ class VinylControlManager : public QObject, public AudioDestination {
     virtual void receiveBuffer(AudioInput input, const short *pBuffer, unsigned int nFrames);
     virtual void onInputConnected(AudioInput input);
     virtual void onInputDisconnected(AudioInput input);
-    QList<VinylControlProxy*> vinylControlProxies() const;
+    QList<VinylControlProxy*> vinylControlProxies();
     bool vinylInputEnabled(int deck);
   public slots:
     void reloadConfig();
   signals:
   private:
     ConfigObject<ConfigValue> *m_pConfig;
-    QList<VinylControlProxy*> m_proxies;
-    QSemaphore m_listLock;
+    QVector<VinylControlProxy*> m_proxies;
+    QSemaphore m_proxiesLock;
     SoundManager *m_pSoundManager;
 };
 
