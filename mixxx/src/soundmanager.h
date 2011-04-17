@@ -59,6 +59,10 @@ class SoundManager : public QObject
         QList<unsigned int> getSampleRates() const;
         QList<QString> getHostAPIList() const;
         SoundManagerConfig getConfig() const;
+#ifdef __VINYLCONTROL__
+        bool hasVinylInput(int deck);
+        QList<VinylControlProxy*> getVinylControlProxies();
+#endif
         int setConfig(SoundManagerConfig config);
         void checkConfig();
         QHash<AudioOutput, const CSAMPLE*>
@@ -71,6 +75,7 @@ class SoundManager : public QObject
         QList<AudioInput> registeredInputs() const;
     signals:
         void devicesUpdated(); // emitted when all the pointers to SoundDevices go stale
+        void devicesSetup(); // emitted when the sound devices have been set up
         void outputRegistered(AudioOutput output, const AudioSource *src);
         void inputRegistered(AudioInput input, AudioDestination *dest);
     public slots:
@@ -88,7 +93,7 @@ class SoundManager : public QObject
         QHash<SoundDevice*, long> m_deviceFrameCount;   /** Sound card sync */
         SoundDevice* m_pClkRefDevice;  /** Sound card sync */
 #ifdef __VINYLCONTROL__
-        QList<VinylControlProxy*> m_VinylControl;
+        QList<VinylControlProxy*> m_vinylControl;
 #endif
         unsigned int iNumDevicesOpenedForOutput;
         unsigned int iNumDevicesOpenedForInput;

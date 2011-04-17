@@ -18,6 +18,8 @@
 
 #ifdef __VINYLCONTROL__
 #include "dlgprefvinyl.h"
+#else
+#include "dlgprefnovinyl.h"
 #endif
 
 #ifdef __SHOUTCAST__
@@ -75,6 +77,8 @@ DlgPreferences::DlgPreferences(MixxxApp * mixxx, SkinLoader* pSkinLoader,
     wrecord = new DlgPrefRecord(this, config);
 #ifdef __VINYLCONTROL__
     wvinylcontrol = new DlgPrefVinyl(this, soundman, config);
+#else
+    wnovinylcontrol = new DlgPrefNoVinyl(this, soundman, config);
 #endif
 #ifdef __SHOUTCAST__
     wshoutcast = new DlgPrefShoutcast(this, config);
@@ -96,6 +100,8 @@ DlgPreferences::DlgPreferences(MixxxApp * mixxx, SkinLoader* pSkinLoader,
     pagesWidget->addWidget(wreplaygain);
 #ifdef __VINYLCONTROL__
     pagesWidget->addWidget(wvinylcontrol);
+#else
+    pagesWidget->addWidget(wnovinylcontrol);
 #endif
 #ifdef __SHOUTCAST__
     pagesWidget->addWidget(wshoutcast);
@@ -134,6 +140,7 @@ DlgPreferences::DlgPreferences(MixxxApp * mixxx, SkinLoader* pSkinLoader,
 
 #ifdef __VINYLCONTROL__
     connect(wvinylcontrol, SIGNAL(refreshVCProxies()), wsound, SLOT(forceApply()));
+    connect(wvinylcontrol, SIGNAL(applySound()), wsound, SLOT(slotApply()));
     connect(buttonBox, SIGNAL(accepted()), wvinylcontrol,    SLOT(slotApply())); //It's important for this to be before the
                                                                                  //connect for wsound...
 #endif
@@ -242,6 +249,14 @@ void DlgPreferences::createIcons()
     m_pVinylControlButton->setText(0, tr("Vinyl Control"));
     m_pVinylControlButton->setTextAlignment(0, Qt::AlignLeft | Qt::AlignVCenter);
     m_pVinylControlButton->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
+#else
+    m_pVinylControlButton = new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type);
+    //QT screws up my nice vinyl svg for some reason, so we'll use a PNG version
+    //instead...
+    m_pVinylControlButton->setIcon(0, QIcon(":/images/preferences/ic_preferences_vinyl.png"));
+    m_pVinylControlButton->setText(0, tr("Vinyl Control"));
+    m_pVinylControlButton->setTextAlignment(0, Qt::AlignLeft | Qt::AlignVCenter);
+    m_pVinylControlButton->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
 #endif
 
 #ifdef __SHOUTCAST__
@@ -277,11 +292,14 @@ void DlgPreferences::changePage(QTreeWidgetItem * current, QTreeWidgetItem * pre
        else if (current == m_pBPMdetectButton)
            pagesWidget->setCurrentWidget(wbpm);
        else if (current == m_pReplayGainButton)
-    	   pagesWidget->setCurrentWidget(wreplaygain);
+           pagesWidget->setCurrentWidget(wreplaygain);
 
 #ifdef __VINYLCONTROL__
        else if (current == m_pVinylControlButton)
            pagesWidget->setCurrentWidget(wvinylcontrol);
+#else
+       else if (current == m_pVinylControlButton)
+           pagesWidget->setCurrentWidget(wnovinylcontrol);
 #endif
 #ifdef __SHOUTCAST__
        else if (current == m_pShoutcastButton)
