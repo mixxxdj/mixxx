@@ -146,6 +146,18 @@ RateControl::RateControl(const char* _group,
     m_iRateRampSensitivity =
         m_pConfig->getValueString(ConfigKey("[Controls]","RateRampSensitivity")).toInt();
 
+#ifdef __VINYLCONTROL__
+    ControlObject* pVCEnabled = ControlObject::getControl(ConfigKey(_group, "vinylcontrol_enabled"));
+    // Throw a hissy fit if somebody moved us such that the vinylcontrol_enabled
+    // control doesn't exist yet. This will blow up immediately, won't go unnoticed.
+    Q_ASSERT(pVCEnabled);
+    connect(pVCEnabled, SIGNAL(valueChanged(double)),
+            this, SLOT(slotControlVinyl(double)),
+            Qt::DirectConnection);
+    connect(pVCEnabled, SIGNAL(valueChangedFromEngine(double)),
+            this, SLOT(slotControlVinyl(double)),
+            Qt::DirectConnection);
+#endif
 }
 
 RateControl::~RateControl() {
@@ -353,7 +365,7 @@ double RateControl::calculateRate(double baserate, bool paused) {
     double wheelFactor = getWheelFactor();
     double jogFactor = getJogFactor();
     bool searching = m_pRateSearch->get() != 0.;
-    bool scratchEnable = m_pScratchToggle->get() != 0;
+    bool scratchEnable = m_pScratchToggle->get() != 0 || m_bVinylControlEnabled;
     double scratchFactor = m_pScratch->get();
     double oldScratchFactor = m_pOldScratch->get(); // Deprecated
     // Don't trust values from m_pScratch
@@ -556,3 +568,9 @@ void RateControl::resetRateTemp(void)
 {
     setRateTemp(0.0);
 }
+
+void RateControl::slotControlVinyl(double toggle)
+{
+    m_bVinylControlEnabled = (bool)toggle;
+}
+
