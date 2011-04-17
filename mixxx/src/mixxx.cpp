@@ -321,7 +321,7 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
     }
 
 #ifdef __VINYLCONTROL__
-    m_pVCManager = new VinylControlManager(this, m_pConfig, m_pSoundManager,
+    m_pVCManager = new VinylControlManager(this, m_pConfig,
             m_pPlayerManager->numDecks());
     for (unsigned int deck = 0; deck < m_pPlayerManager->numDecks(); ++deck) {
         m_pSoundManager->registerInput(
