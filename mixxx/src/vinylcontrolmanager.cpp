@@ -17,6 +17,28 @@ VinylControlManager::VinylControlManager(QObject *pParent,
   , m_listLock(nDecks)
   , m_pSoundManager(pSoundManager) {
     while (m_proxies.size() < static_cast<int>(nDecks)) m_proxies.append(NULL);
+
+    // load a bunch of stuff
+    //ControlObject::getControl(ConfigKey("[Channel1]","TrackEndMode"))->queueFromThread(m_pConfig->getValueString(ConfigKey("[Controls]","TrackEndModeCh1")).toDouble());
+    //ControlObject::getControl(ConfigKey("[Channel2]","TrackEndMode"))->queueFromThread(m_pConfig->getValueString(ConfigKey("[Controls]","TrackEndModeCh2")).toDouble());
+    ControlObject::getControl(ConfigKey("[Channel1]","vinylcontrol_enabled"))
+        ->queueFromThread(m_pConfig->getValueString(
+                ConfigKey("[VinylControl]","enabled_ch1")).toDouble());
+    ControlObject::getControl(ConfigKey("[Channel2]","vinylcontrol_enabled"))
+        ->queueFromThread(m_pConfig->getValueString(
+                ConfigKey("[VinylControl]","enabled_ch2")).toDouble());
+    ControlObject::getControl(ConfigKey("[Channel1]","vinylcontrol_mode"))
+        ->queueFromThread(m_pConfig->getValueString(
+                ConfigKey("[VinylControl]","mode")).toDouble());
+    ControlObject::getControl(ConfigKey("[Channel2]","vinylcontrol_mode"))
+        ->queueFromThread(m_pConfig->getValueString(
+                ConfigKey("[VinylControl]","mode")).toDouble());
+    ControlObject::getControl(ConfigKey("[Channel1]","vinylcontrol_cueing"))
+        ->queueFromThread(m_pConfig->getValueString(
+                ConfigKey("[VinylControl]","cueing_ch1")).toDouble());
+    ControlObject::getControl(ConfigKey("[Channel2]","vinylcontrol_cueing"))
+        ->queueFromThread(m_pConfig->getValueString(
+                ConfigKey("[VinylControl]","cueing_ch2")).toDouble());
 }
 
 VinylControlManager::~VinylControlManager() {
@@ -30,6 +52,26 @@ VinylControlManager::~VinylControlManager() {
     // xwax has a global LUT that we need to free after we've shut down our
     // vinyl control threads because it's not thread-safe.
     VinylControlXwax::freeLUTs();
+
+    // save a bunch of stuff to config
+    m_pConfig->set(ConfigKey("[VinylControl]","enabled_ch1"),
+        ConfigValue((int)ControlObject::getControl(
+            ConfigKey("[Channel1]","vinylcontrol_enabled"))->get()));
+    m_pConfig->set(ConfigKey("[VinylControl]","enabled_ch2"),
+        ConfigValue((int)ControlObject::getControl(
+            ConfigKey("[Channel2]","vinylcontrol_enabled"))->get()));
+    m_pConfig->set(ConfigKey("[VinylControl]","mode"),
+        ConfigValue((int)ControlObject::getControl(
+            ConfigKey("[Channel1]","vinylcontrol_mode"))->get()));
+    m_pConfig->set(ConfigKey("[VinylControl]","mode"),
+        ConfigValue((int)ControlObject::getControl(
+            ConfigKey("[Channel2]","vinylcontrol_mode"))->get()));
+    m_pConfig->set(ConfigKey("[VinylControl]","cueing_ch1"),
+        ConfigValue((int)ControlObject::getControl(
+            ConfigKey("[Channel1]","vinylcontrol_cueing"))->get()));
+    m_pConfig->set(ConfigKey("[VinylControl]","cueing_ch2"),
+        ConfigValue((int)ControlObject::getControl(
+            ConfigKey("[Channel2]","vinylcontrol_cueing"))->get()));
 }
 
 void VinylControlManager::receiveBuffer(AudioInput input,

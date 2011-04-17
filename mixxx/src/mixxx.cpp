@@ -384,16 +384,8 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
         m_pConfig->set(ConfigKey("[BPM]", "AnalyzeEntireSong"),ConfigValue(1));
     }
 
-#ifdef __VINYLCONTROL__
     //ControlObject::getControl(ConfigKey("[Channel1]","TrackEndMode"))->queueFromThread(m_pConfig->getValueString(ConfigKey("[Controls]","TrackEndModeCh1")).toDouble());
     //ControlObject::getControl(ConfigKey("[Channel2]","TrackEndMode"))->queueFromThread(m_pConfig->getValueString(ConfigKey("[Controls]","TrackEndModeCh2")).toDouble());
-    ControlObject::getControl(ConfigKey("[Channel1]","vinylcontrol_enabled"))->queueFromThread(m_pConfig->getValueString(ConfigKey("[VinylControl]","enabled_ch1")).toDouble());
-    ControlObject::getControl(ConfigKey("[Channel2]","vinylcontrol_enabled"))->queueFromThread(m_pConfig->getValueString(ConfigKey("[VinylControl]","enabled_ch2")).toDouble());
-    ControlObject::getControl(ConfigKey("[Channel1]","vinylcontrol_mode"))->queueFromThread(m_pConfig->getValueString(ConfigKey("[VinylControl]","mode")).toDouble());
-    ControlObject::getControl(ConfigKey("[Channel2]","vinylcontrol_mode"))->queueFromThread(m_pConfig->getValueString(ConfigKey("[VinylControl]","mode")).toDouble());
-    ControlObject::getControl(ConfigKey("[Channel1]","vinylcontrol_cueing"))->queueFromThread(m_pConfig->getValueString(ConfigKey("[VinylControl]","cueing_ch1")).toDouble());
-    ControlObject::getControl(ConfigKey("[Channel2]","vinylcontrol_cueing"))->queueFromThread(m_pConfig->getValueString(ConfigKey("[VinylControl]","cueing_ch2")).toDouble());
-#endif
 
     qRegisterMetaType<MidiMessage>("MidiMessage");
     qRegisterMetaType<MidiStatusByte>("MidiStatusByte");
@@ -541,14 +533,7 @@ MixxxApp::~MixxxApp()
     // Save state of End of track controls in config database
     //m_pConfig->set(ConfigKey("[Controls]","TrackEndModeCh1"), ConfigValue((int)ControlObject::getControl(ConfigKey("[Channel1]","TrackEndMode"))->get()));
     //m_pConfig->set(ConfigKey("[Controls]","TrackEndModeCh2"), ConfigValue((int)ControlObject::getControl(ConfigKey("[Channel2]","TrackEndMode"))->get()));
-#ifdef __VINYLCONTROL__
-    m_pConfig->set(ConfigKey("[VinylControl]","enabled_ch1"), ConfigValue((int)ControlObject::getControl(ConfigKey("[Channel1]","vinylcontrol_enabled"))->get()));
-    m_pConfig->set(ConfigKey("[VinylControl]","enabled_ch2"), ConfigValue((int)ControlObject::getControl(ConfigKey("[Channel2]","vinylcontrol_enabled"))->get()));
-    m_pConfig->set(ConfigKey("[VinylControl]","mode"), ConfigValue((int)ControlObject::getControl(ConfigKey("[Channel1]","vinylcontrol_mode"))->get()));
-    m_pConfig->set(ConfigKey("[VinylControl]","mode"), ConfigValue((int)ControlObject::getControl(ConfigKey("[Channel2]","vinylcontrol_mode"))->get()));
-    m_pConfig->set(ConfigKey("[VinylControl]","cueing_ch1"), ConfigValue((int)ControlObject::getControl(ConfigKey("[Channel1]","vinylcontrol_cueing"))->get()));
-    m_pConfig->set(ConfigKey("[VinylControl]","cueing_ch2"), ConfigValue((int)ControlObject::getControl(ConfigKey("[Channel2]","vinylcontrol_cueing"))->get()));
-#endif
+
     // SoundManager depend on Engine and Config
     qDebug() << "delete soundmanager, " << qTime.elapsed();
     delete m_pSoundManager;
