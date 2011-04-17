@@ -19,8 +19,6 @@ VinylControlManager::VinylControlManager(QObject *pParent,
     while (m_proxies.size() < static_cast<int>(nDecks)) m_proxies.append(NULL);
 
     // load a bunch of stuff
-    //ControlObject::getControl(ConfigKey("[Channel1]","TrackEndMode"))->queueFromThread(m_pConfig->getValueString(ConfigKey("[Controls]","TrackEndModeCh1")).toDouble());
-    //ControlObject::getControl(ConfigKey("[Channel2]","TrackEndMode"))->queueFromThread(m_pConfig->getValueString(ConfigKey("[Controls]","TrackEndModeCh2")).toDouble());
     ControlObject::getControl(ConfigKey("[Channel1]","vinylcontrol_enabled"))
         ->queueFromThread(m_pConfig->getValueString(
                 ConfigKey("[VinylControl]","enabled_ch1")).toDouble());
