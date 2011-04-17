@@ -157,7 +157,7 @@ void WOverview::setValue(double fValue)
     if (!m_bDrag)
     {
         // Calculate handle position
-        m_iPos = (int)((fValue/127.)*((double)width()-2.));
+        m_iPos = (int)(((fValue-14.)/100.)*((double)width()-2.));
         update();
     }
 }
@@ -339,8 +339,8 @@ void WOverview::mouseReleaseEvent(QMouseEvent * e)
 {
     mouseMoveEvent(e);
 
-    // value ranges from 0 to 127
-    float fValue = (double)m_iPos*(127./(double)(width()-2));
+    // value ranges from 0 to 127 map to -1 to 1
+    float fValue = ((double)m_iPos*(100./(double)(width()-2))) + 14.;
 
     if (e->button()==Qt::RightButton)
         emit(valueChangedRightUp(fValue));
@@ -447,3 +447,4 @@ QColor WOverview::getMarkerColor() {
 QColor WOverview::getSignalColor() {
    return m_qColorSignal;
 }
+

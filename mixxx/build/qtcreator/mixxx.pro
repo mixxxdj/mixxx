@@ -110,6 +110,7 @@ HEADERS += $$UI_DIR/ui_dlgaboutdlg.h \
     $$UI_DIR/ui_dlgprefrecorddlg.h \
     $$UI_DIR/ui_dlgprefsounddlg.h \
     $$UI_DIR/ui_dlgprefvinyldlg.h \
+    $$UI_DIR/ui_dlgprefnovinyldlg.h \
     $$UI_DIR/ui_dlgprefnomididlg.h
 
 INCLUDEPATH += src \

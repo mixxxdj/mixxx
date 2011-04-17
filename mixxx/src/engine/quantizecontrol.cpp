@@ -25,6 +25,9 @@ QuantizeControl::QuantizeControl(const char* pGroup,
 }
 
 QuantizeControl::~QuantizeControl() {
+    delete m_pCOQuantizeEnabled;
+    delete m_pCONextBeat;
+    delete m_pCOPrevBeat;
 }
 
 void QuantizeControl::trackLoaded(TrackPointer pTrack)

@@ -291,11 +291,15 @@ class VinylControl(Feature):
                    'vinylcontrolproxy.cpp',
                    'vinylcontrolxwax.cpp',
                    'dlgprefvinyl.cpp',
-                   'vinylcontrolsignalwidget.cpp']
+                   'vinylcontrolsignalwidget.cpp',
+                   'engine/vinylcontrolcontrol.cpp']
         if build.platform_is_windows:
-            sources.append("#lib/xwax/timecoder_win32.c")
+            sources.append("#lib/xwax/timecoder_win32.cpp")
+            sources.append("#lib/xwax/lut.cpp")
         else:
             sources.append("#lib/xwax/timecoder.c")
+            sources.append("#lib/xwax/lut.c")
+
         return sources
 
 class Tonal(Feature):

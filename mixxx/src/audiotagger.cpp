@@ -173,6 +173,9 @@ bool AudioTagger::save ()
         delete file;
         return success;
     }
+    else{
+        return false;
+    }
 
 
 }

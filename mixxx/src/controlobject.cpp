@@ -293,8 +293,11 @@ void ControlObject::sync()
         {
             obj = m_sqQueueThread.dequeue();
 
-            obj->pControlObject->setValueFromThread(obj->value);
-            obj->pControlObject->updateProxies(obj->pControlObjectThread);
+            if (obj->pControlObject)
+            {
+                obj->pControlObject->setValueFromThread(obj->value);
+                obj->pControlObject->updateProxies(obj->pControlObjectThread);
+            }
             delete obj;
         }
 
