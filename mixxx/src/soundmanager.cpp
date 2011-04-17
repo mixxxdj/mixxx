@@ -54,6 +54,8 @@ SoundManager::SoundManager(ConfigObject<ConfigValue> * pConfig, EngineMaster * _
     ControlObjectThreadMain* pControlObjectSampleRate = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[Master]", "samplerate")));
     m_pControlObjectInputPassthrough1 = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[Channel1]", "inputpassthrough")));
     m_pControlObjectInputPassthrough2 = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[Channel2]", "inputpassthrough")));
+    m_pControlObjectVinylStatus1 = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[Channel1]", "vinylcontrol_status")));
+    m_pControlObjectVinylStatus2 = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[Channel2]", "vinylcontrol_status")));
     m_bPassthroughActive[0] = false;
     m_bPassthroughActive[1] = false;
     

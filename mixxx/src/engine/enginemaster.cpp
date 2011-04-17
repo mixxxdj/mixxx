@@ -421,22 +421,22 @@ void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
 	    }
 	    else
 	    {
-   	        if (!pChannel->isActive()) {
-   	        	//if it was active last time, zero out
-   	        	if (deck_index >=0 && deck_index < 2)
+	        if (deck_index >=0 && deck_index < 2)
+        	{
+        	    //if it was active last time, zero out
+   	        	if (m_bPassthroughWasActive[deck_index])
    	        	{
-	   	        	if (m_bPassthroughWasActive[deck_index])
-	   	        	{
-	   	        		SampleUtil::applyGain(pChannelInfo->m_pBuffer, 0.0f, iBufferSize);
-	   	        		m_bPassthroughWasActive[deck_index] = false;
-						m_iLastThruRead[deck_index] = -1;
-						m_iLastThruWrote[deck_index] = -1;
-						m_iThruFill[deck_index] = 0;
-						m_iThruBufferCount[deck_index] = 1;
-						m_bFilling[deck_index] = true;
+   	        		SampleUtil::applyGain(pChannelInfo->m_pBuffer, 0.0f, iBufferSize);
+   	        		m_bPassthroughWasActive[deck_index] = false;
+					m_iLastThruRead[deck_index] = -1;
+					m_iLastThruWrote[deck_index] = -1;
+					m_iThruFill[deck_index] = 0;
+					m_iThruBufferCount[deck_index] = 1;
+					m_bFilling[deck_index] = true;
 
-	   	        	}
-	   	        }
+   	        	}
+   	        }
+   	        if (!pChannel->isActive()) {
 				continue;
     		}
     		if (needsProcessing)
