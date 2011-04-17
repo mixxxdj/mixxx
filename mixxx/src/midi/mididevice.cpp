@@ -268,7 +268,7 @@ void MidiDevice::receive(MidiStatusByte status, char channel, char control, char
 
             // normalize our value to 0-127
             newValue = (newValue / 0x3FFF) * 0x7F;
-        } else {
+        } else if (currMidiOption != MIDI_OPT_SOFT_TAKEOVER) {
             newValue = m_pMidiMapping->ComputeValue(currMidiOption, currMixxxControlValue, value);
         }
 

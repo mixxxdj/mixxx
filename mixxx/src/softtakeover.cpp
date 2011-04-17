@@ -68,14 +68,22 @@ bool SoftTakeover::ignore(MixxxControl mc, float newValue, bool midiVal) {
         //  - its new value is far away from the MixxxControl
         //  - it's been awhile since the last MIDI message for this control affected it
         
+        // 3/128 units away from the current is enough to catch fast non-sequential moves
+        //  but not cause an audially noticeable jump.
         float threshold = 3;
         
         ControlObject* temp = ControlObject::getControl(
             ConfigKey(mc.getControlObjectGroup(), mc.getControlObjectValue()));
-        
-        double maxValue, minValue;
+
+        if (temp == NULL) return ignore;
         
         if (!midiVal) {
+            // These defaults will effectively disable soft-takeover for this pass
+            //  (causing the control to jump to the new value regardless)
+            //  if there's a problem with the below CO being NULL
+            double maxValue=10000000;   // Anything, just higher than any CO can go
+            double minValue=0;
+            
             // HACK until we have Control 2.0. It can't come soon enough...
             ControlPotmeter* cpo = dynamic_cast<ControlPotmeter*>(temp);    // for getMax/getMin
             if (cpo != NULL) {
@@ -84,8 +92,8 @@ bool SoftTakeover::ignore(MixxxControl mc, float newValue, bool midiVal) {
             }
             // End hack
             
-            double scaleFactor = (fabs(maxValue)-fabs(minValue))/128;
-            threshold = scaleFactor*3;
+            double scaleFactor = maxValue-minValue;
+            threshold = scaleFactor*(threshold/128);
         }
         
         double oldValue;
@@ -95,7 +103,7 @@ bool SoftTakeover::ignore(MixxxControl mc, float newValue, bool midiVal) {
         
         uint currentTime = currentTimeMsecs();
         if (fabs(difference)>threshold
-            && (currentTime - m_times.value(mc)) > 50) {
+            && (currentTime - m_times.value(mc)) > SUBSEQUENT_VALUE_OVERRIDE_TIME) {
             ignore = true;
         }
         if (!ignore) {
