@@ -22,35 +22,35 @@ class VampAnalyser {
 
 public:
 
-    VampAnalyser(Vamp::HostExt::PluginLoader::PluginKey key);
-    virtual ~VampAnalyser();
+    VampAnalyser(const Vamp::HostExt::PluginLoader::PluginKey key);
+    ~VampAnalyser();
 
 
-    bool Init(int samplerate, const int TotalSamples);
+    bool Init(const int samplerate, const int TotalSamples);
 
-    virtual bool Process(const CSAMPLE *pIn, const int iLen);
+    bool Process(const CSAMPLE *pIn, const int iLen);
 
     bool End();
 
-    virtual bool SetParameter (QString parameter, double value);
+    bool SetParameter (const QString parameter,const double value);
 
-    virtual void SelectOutput (int outputnumber);
+    void SelectOutput (const int outputnumber);
 
-    virtual bool GetInitFramesVector( QVector<double>* vectout );
+    bool GetInitFramesVector( QVector<double>* vectout );
 
-    virtual bool GetEndFramesVector( QVector<double>* vectout );
+    bool GetEndFramesVector( QVector<double>* vectout );
 
-    virtual bool GetLabelsVector ( QVector<QString>* vectout);
+    bool GetLabelsVector ( QVector<QString>* vectout);
 
-    virtual bool GetFirstValuesVector ( QVector<double>* vectout);
+    bool GetFirstValuesVector ( QVector<double>* vectout);
 
-    virtual bool GetLastValuesVector ( QVector<double>* vectout);
+    bool GetLastValuesVector ( QVector<double>* vectout);
 
-//    virtual QVector <double> GetMeanValueVector ( int FromOutput);
+//   QVector <double> GetMeanValueVector ( int FromOutput);
 //
-//    virtual QVector <double> GetMinValueVector ( int FromOutput);
+//   QVector <double> GetMinValueVector ( int FromOutput);
 //
-//    virtual QVector <double> GetMaxValueVector ( int FromOutput);
+//    QVector <double> GetMaxValueVector ( int FromOutput);
 
 
 
@@ -68,13 +68,13 @@ private:
     CSAMPLE ** m_pluginbuf;
     Vamp::Plugin *mPlugin;
     Vamp::Plugin::ParameterList mParameters;
-    QVector <double> m_InitFrameVector;
-    QVector <double> m_EndFrameVector;
-    QVector <QString> m_LabelsVector;
-    QVector <double> m_FirstValueVector;
-    QVector <double> m_LastValueVector;
-    QVector <double> m_MeanValueVector;
-    QVector <double> m_MinValueVector;
+//    QVector <double> m_InitFrameVector;
+//    QVector <double> m_EndFrameVector;
+//    QVector <QString> m_LabelsVector;
+//    QVector <double> m_FirstValueVector;
+//    QVector <double> m_LastValueVector;
+//    QVector <double> m_MeanValueVector;
+//    QVector <double> m_MinValueVector;
     Vamp::Plugin::FeatureList m_Results;
 };
 

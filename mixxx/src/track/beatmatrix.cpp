@@ -191,16 +191,18 @@ double BeatMatrix::getBpmRange(double startSample, double stopSample) const {
 void BeatMatrix::addBeat(double dBeatSample) {
     QMutexLocker locker(&m_mutex);
 
-    BeatList::iterator it = qLowerBound(m_beatList.begin(),
-                                        m_beatList.end(),
-                                        dBeatSample);
-    // Don't insert a duplicate beat. TODO(XXX) determine what epsilon to
-    // consider a beat identical to another.
-    //
-    //if (*it == dBeatSample)
-    //    return;
 
-    m_beatList.insert(it, dBeatSample);
+        BeatList::iterator it = qLowerBound(m_beatList.begin(),
+                                            m_beatList.end(),
+                                            dBeatSample);
+        // Don't insert a duplicate beat. TODO(XXX) determine what epsilon to
+        // consider a beat identical to another.
+        //
+        //if (*it == dBeatSample)
+        //    return;
+
+        m_beatList.insert(it, dBeatSample);
+
     locker.unlock();
     emit(updated());
 }
@@ -218,6 +220,7 @@ void BeatMatrix::removeBeat(double dBeatSample) {
     }
     locker.unlock();
     emit(updated());
+
 }
 
 void BeatMatrix::moveBeat(double dBeatSample, double dNewBeatSample) {

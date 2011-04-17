@@ -17,11 +17,12 @@
 
 using Vamp::Plugin;
 
-VampAnalyser::VampAnalyser(Vamp::HostExt::PluginLoader::PluginKey key) :
+VampAnalyser::VampAnalyser(const Vamp::HostExt::PluginLoader::PluginKey key) :
     mKey(key) {
     m_pluginbuf = new CSAMPLE*[2];
     mPlugin = 0;
     mRate = 0;
+    m_iOutput = 0;
 }
 
 VampAnalyser::~VampAnalyser() {
@@ -29,11 +30,9 @@ VampAnalyser::~VampAnalyser() {
     m_pluginbuf = NULL;
     delete mPlugin;
     mPlugin = 0;
-    m_iOutput=0;
-
 }
 
-bool VampAnalyser::Init(int samplerate, int TotalSamples) {
+bool VampAnalyser::Init(const int samplerate,const int TotalSamples) {
 
     m_iRemainingSamples = TotalSamples;
     m_iSampleCount = 0;
@@ -41,6 +40,11 @@ bool VampAnalyser::Init(int samplerate, int TotalSamples) {
 
     if (samplerate <= 0.0) {
         qDebug() << "Track has incorrect samplerate";
+        return false;
+    }
+
+    if (m_iRemainingSamples <= 0){
+        qDebug() << "VampAnalyser cowardly refuses to process an empty track";
         return false;
     }
 
@@ -167,12 +171,11 @@ bool VampAnalyser::End() {
 //            }
 //        }
 //    }
-//    qDebug()<<"size of vectout[2].initframe "<<(vectout[2].initframe).size
 //
 //}
 
 
-bool VampAnalyser::SetParameter(QString parameter, double value) {
+bool VampAnalyser::SetParameter(const QString parameter,const double value) {
 return true;
 }
 
