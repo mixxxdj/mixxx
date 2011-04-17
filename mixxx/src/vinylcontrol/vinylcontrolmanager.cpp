@@ -14,10 +14,9 @@ VinylControlManager::VinylControlManager(QObject *pParent,
         unsigned int nDecks)
   : QObject(pParent)
   , m_pConfig(pConfig)
-  , m_listLock(nDecks)
+  , m_proxies(nDecks, NULL)
+  , m_proxiesLock(nDecks)
   , m_pSoundManager(pSoundManager) {
-    while (m_proxies.size() < static_cast<int>(nDecks)) m_proxies.append(NULL);
-
     // load a bunch of stuff
     ControlObject::getControl(ConfigKey("[Channel1]","vinylcontrol_enabled"))
         ->queueFromThread(m_pConfig->getValueString(
@@ -40,12 +39,14 @@ VinylControlManager::VinylControlManager(QObject *pParent,
 }
 
 VinylControlManager::~VinylControlManager() {
-    m_listLock.acquire(m_proxies.size());
-    while (m_proxies.size() > 0) {
-        VinylControlProxy *pProxy = m_proxies.takeFirst();
-        delete pProxy;
+    m_proxiesLock.acquire(m_proxies.size());
+    for (int i = 0; i < m_proxies.size(); ++i) {
+        if (m_proxies.at(i)) {
+            delete m_proxies.at(i);
+            m_proxies.replace(i, NULL);
+        }
     }
-    m_listLock.release(m_proxies.size());
+    m_proxiesLock.release(m_proxies.size());
 
     // xwax has a global LUT that we need to free after we've shut down our
     // vinyl control threads because it's not thread-safe.
@@ -76,11 +77,11 @@ void VinylControlManager::receiveBuffer(AudioInput input,
         const short *pBuffer, unsigned int nFrames) {
     Q_ASSERT(input.getIndex() < m_proxies.size());
     Q_ASSERT(input.getType() == AudioInput::VINYLCONTROL);
-    if (m_listLock.tryAcquire(1)) {
+    if (m_proxiesLock.tryAcquire(1)) {
         VinylControlProxy *pProxy(m_proxies.at(input.getIndex()));
         Q_ASSERT(pProxy);
         pProxy->AnalyseSamples(pBuffer, nFrames);
-        m_listLock.release(1);
+        m_proxiesLock.release(1);
     }
 }
 
@@ -90,27 +91,27 @@ void VinylControlManager::onInputConnected(AudioInput input) {
     Q_ASSERT(index < m_proxies.size());
     VinylControlProxy *pNewVC = new VinylControlProxy(m_pConfig,
             QString("[Channel%1]").arg(index + 1));
-    m_listLock.acquire(m_proxies.size());
+    m_proxiesLock.acquire(m_proxies.size());
     if (m_proxies.at(index)) {
         delete m_proxies.at(index);
     }
     m_proxies.replace(index, pNewVC);
-    m_listLock.release(m_proxies.size());
+    m_proxiesLock.release(m_proxies.size());
 }
 
 void VinylControlManager::onInputDisconnected(AudioInput input) {
     Q_ASSERT(input.getType() == AudioInput::VINYLCONTROL);
     Q_ASSERT(input.getIndex() < m_proxies.size());
-    m_listLock.acquire(m_proxies.size());
+    m_proxiesLock.acquire(m_proxies.size());
     Q_ASSERT(m_proxies.at(input.getIndex()));
 
     delete m_proxies.at(input.getIndex());
     m_proxies.replace(input.getIndex(), NULL);
-    m_listLock.release(m_proxies.size());
+    m_proxiesLock.release(m_proxies.size());
 }
 
 void VinylControlManager::reloadConfig() {
-    m_listLock.acquire(m_proxies.size());
+    m_proxiesLock.acquire(m_proxies.size());
 
     for (int i = 0; i < m_proxies.size(); ++i) {
         if (!m_proxies.at(i)) continue;
@@ -120,11 +121,14 @@ void VinylControlManager::reloadConfig() {
         pProxy = new VinylControlProxy(m_pConfig, group);
         m_proxies.replace(i, pProxy);
     }
-    m_listLock.release(m_proxies.size());
+    m_proxiesLock.release(m_proxies.size());
 }
 
-QList<VinylControlProxy*> VinylControlManager::vinylControlProxies() const {
-    return m_proxies;
+QList<VinylControlProxy*> VinylControlManager::vinylControlProxies() {
+    m_proxiesLock.acquire(m_proxies.size());
+    QList<VinylControlProxy*> list(m_proxies.toList());
+    m_proxiesLock.release(m_proxies.size());
+    return list;
 }
 
 bool VinylControlManager::vinylInputEnabled(int deck) {
