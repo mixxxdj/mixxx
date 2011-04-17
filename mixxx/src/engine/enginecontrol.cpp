@@ -9,6 +9,7 @@ EngineControl::EngineControl(const char * _group,
     m_pGroup(_group),
     m_pConfig(_config),
     m_dCurrentSample(0),
+    m_dTotalSamples(0),
     m_pOtherEngineBuffer(NULL) {
 }
 
@@ -51,12 +52,17 @@ void EngineControl::setOtherEngineBuffer(EngineBuffer* pOtherEngineBuffer) {
     m_pOtherEngineBuffer = pOtherEngineBuffer;
 }
 
-void EngineControl::setCurrentSample(const double dCurrentSample) {
+void EngineControl::setCurrentSample(const double dCurrentSample, const double dTotalSamples) {
     m_dCurrentSample = dCurrentSample;
+    m_dTotalSamples = dTotalSamples;
 }
 
-double EngineControl::getCurrentSample() {
+double EngineControl::getCurrentSample() const {
     return m_dCurrentSample;
+}
+
+double EngineControl::getTotalSamples() const {
+    return m_dTotalSamples;
 }
 
 const char* EngineControl::getGroup() {
