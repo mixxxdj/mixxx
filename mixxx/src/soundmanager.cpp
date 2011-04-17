@@ -478,7 +478,17 @@ bool SoundManager::hasVinylInput(int deck)
         return false;
     VinylControlProxy* vinyl_control = m_vinylControl[deck];
 
-    return vinyl_control != NULL;
+    bool hasInput = false;
+    QList<AudioInput> inputs = getConfig().getInputs().values();
+    foreach (AudioInput in, inputs) {
+        if (in.getType() == AudioInput::VINYLCONTROL
+                && in.getIndex() == deck) {
+            hasInput = true;
+            break;
+        }
+    }
+
+    return vinyl_control != NULL && hasInput;
 }
 
 QList<VinylControlProxy*> SoundManager::getVinylControlProxies()
