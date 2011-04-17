@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>DlgPrefVinylDlg</class>
- <widget class="QWidget" name="DlgPrefVinylDlg">
+ <class>DlgPrefNoVinylDlg</class>
+ <widget class="QWidget" name="DlgPrefNoVinylDlg">
+  <property name="enabled">
+   <bool>true</bool>
+  </property>
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -16,6 +19,9 @@
   <layout class="QGridLayout" name="gridLayout_3">
    <item row="0" column="0" colspan="3">
     <widget class="QGroupBox" name="groupBox_2">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
      <property name="title">
       <string>Input</string>
      </property>
@@ -132,6 +138,9 @@ p, li { white-space: pre-wrap; }
    </item>
    <item row="1" column="0" colspan="3">
     <widget class="QGroupBox" name="groupBox_3">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
      <property name="title">
       <string>Vinyl Configuration</string>
      </property>
@@ -139,7 +148,7 @@ p, li { white-space: pre-wrap; }
       <item row="0" column="0">
        <widget class="QLabel" name="TextLabel29">
         <property name="enabled">
-         <bool>true</bool>
+         <bool>false</bool>
         </property>
         <property name="sizePolicy">
          <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
@@ -161,7 +170,7 @@ p, li { white-space: pre-wrap; }
       <item row="0" column="2">
        <widget class="QComboBox" name="ComboBoxVinylType1">
         <property name="enabled">
-         <bool>true</bool>
+         <bool>false</bool>
         </property>
         <property name="sizePolicy">
          <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
@@ -177,7 +186,7 @@ p, li { white-space: pre-wrap; }
       <item row="0" column="3">
        <widget class="QComboBox" name="ComboBoxVinylSpeed1">
         <property name="enabled">
-         <bool>true</bool>
+         <bool>false</bool>
         </property>
         <property name="sizePolicy">
          <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
@@ -193,7 +202,7 @@ p, li { white-space: pre-wrap; }
       <item row="1" column="0">
        <widget class="QLabel" name="TextLabel28">
         <property name="enabled">
-         <bool>true</bool>
+         <bool>false</bool>
         </property>
         <property name="sizePolicy">
          <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
@@ -215,7 +224,7 @@ p, li { white-space: pre-wrap; }
       <item row="1" column="2">
        <widget class="QComboBox" name="ComboBoxVinylType2">
         <property name="enabled">
-         <bool>true</bool>
+         <bool>false</bool>
         </property>
         <property name="sizePolicy">
          <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
@@ -231,7 +240,7 @@ p, li { white-space: pre-wrap; }
       <item row="1" column="3">
        <widget class="QComboBox" name="ComboBoxVinylSpeed2">
         <property name="enabled">
-         <bool>true</bool>
+         <bool>false</bool>
         </property>
         <property name="sizePolicy">
          <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
@@ -247,7 +256,7 @@ p, li { white-space: pre-wrap; }
       <item row="2" column="0">
        <widget class="QLabel" name="TextLabel2_2">
         <property name="enabled">
-         <bool>true</bool>
+         <bool>false</bool>
         </property>
         <property name="sizePolicy">
          <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
@@ -279,7 +288,7 @@ p, li { white-space: pre-wrap; }
       <item row="2" column="3">
        <widget class="QLabel" name="TextLabel2_2_2">
         <property name="enabled">
-         <bool>true</bool>
+         <bool>false</bool>
         </property>
         <property name="font">
          <font/>
@@ -310,6 +319,9 @@ p, li { white-space: pre-wrap; }
    </item>
    <item row="2" column="0" rowspan="3">
     <widget class="QGroupBox" name="groupBox">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
      <property name="sizePolicy">
       <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
        <horstretch>0</horstretch>
@@ -368,6 +380,9 @@ p, li { white-space: pre-wrap; }
    </item>
    <item row="2" column="1" colspan="2">
     <widget class="QGroupBox" name="groupBoxSignalQuality">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
      <property name="title">
       <string>Signal Quality</string>
      </property>
@@ -409,6 +424,9 @@ p, li { white-space: pre-wrap; }
    </item>
    <item row="4" column="2">
     <widget class="QPushButton" name="applyButton">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
      <property name="sizePolicy">
       <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
        <horstretch>0</horstretch>
@@ -438,6 +456,16 @@ p, li { white-space: pre-wrap; }
       </size>
      </property>
     </spacer>
+   </item>
+   <item row="5" column="0" colspan="2">
+    <widget class="QLabel" name="label_3">
+     <property name="text">
+      <string>&lt;b&gt;This version of Mixxx does not support vinyl control.&lt;/b&gt; &lt;br&gt; Please visit &lt;a href=&quot;http://mixxx.org&quot;&gt;Mixxx.org&lt;/a&gt; for more information.</string>
+     </property>
+     <property name="wordWrap">
+      <bool>true</bool>
+     </property>
+    </widget>
    </item>
   </layout>
  </widget>

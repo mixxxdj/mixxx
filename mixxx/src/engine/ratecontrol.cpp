@@ -146,6 +146,19 @@ RateControl::RateControl(const char* _group,
     m_iRateRampSensitivity =
         m_pConfig->getValueString(ConfigKey("[Controls]","RateRampSensitivity")).toInt();
 
+#ifdef __VINYLCONTROL__
+    m_pVinylControl = new ControlPushButton(ConfigKey(_group,"vinylcontrol_enabled"));
+    m_pVinylControl->set(0);
+    m_pVinylControl->setToggleButton(true);
+    m_pVinylMode = new ControlPushButton(ConfigKey(_group,"vinylcontrol_mode"));
+    m_pVinylMode->setStates(3);
+    m_pVinylMode->setToggleButton(true);
+    m_pVinylCueing = new ControlPushButton(ConfigKey(_group,"vinylcontrol_cueing"));
+    m_pVinylCueing->setStates(3);
+    m_pVinylCueing->setToggleButton(true);
+    connect(m_pVinylControl, SIGNAL(valueChanged(double)), this, SLOT(slotControlVinyl(double)));
+    connect(m_pVinylControl, SIGNAL(valueChangedFromEngine(double)), this, SLOT(slotControlVinyl(double)));
+#endif
 }
 
 RateControl::~RateControl() {
@@ -353,7 +366,7 @@ double RateControl::calculateRate(double baserate, bool paused) {
     double wheelFactor = getWheelFactor();
     double jogFactor = getJogFactor();
     bool searching = m_pRateSearch->get() != 0.;
-    bool scratchEnable = m_pScratchToggle->get() != 0;
+    bool scratchEnable = m_pScratchToggle->get() != 0 || m_bVinylControlEnabled;
     double scratchFactor = m_pScratch->get();
     double oldScratchFactor = m_pOldScratch->get(); // Deprecated
     // Don't trust values from m_pScratch
@@ -556,3 +569,9 @@ void RateControl::resetRateTemp(void)
 {
     setRateTemp(0.0);
 }
+
+void RateControl::slotControlVinyl(double toggle)
+{
+    m_bVinylControlEnabled = (bool)toggle;
+}
+
