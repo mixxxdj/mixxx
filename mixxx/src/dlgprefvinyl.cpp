@@ -23,10 +23,9 @@
 #include <QtGui>
 #include "dlgprefvinyl.h"
 #include "controlobject.h"
-#include "vinylcontrolmanager.h"
-#include "vinylcontrol.h" //For vinyl type string constants
+#include "vinylcontrol/vinylcontrolmanager.h"
+#include "vinylcontrol/vinylcontrol.h" //For vinyl type string constants
 #include "controlobjectthreadmain.h"
-#include "vinylcontrolsignalwidget.h"
 #include "dlgprefvinyl.h"
 
 DlgPrefVinyl::DlgPrefVinyl(QWidget * parent, VinylControlManager *pVCMan,

@@ -1,5 +1,5 @@
-#ifndef __VINYLCONTROL_H__
-#define __VINYLCONTROL_H__
+#ifndef VINYLCONTROL_H
+#define VINYLCONTROL_H
 
 #include <qthread.h>
 #include "configobject.h"
