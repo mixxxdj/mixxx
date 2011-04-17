@@ -75,6 +75,7 @@ VinylControlManager::~VinylControlManager() {
 void VinylControlManager::receiveBuffer(AudioInput input,
         const short *pBuffer, unsigned int nFrames) {
     Q_ASSERT(input.getIndex() < m_proxies.size());
+    Q_ASSERT(input.getType() == AudioInput::VINYLCONTROL);
     if (m_listLock.tryAcquire(1)) {
         VinylControlProxy *pProxy(m_proxies.at(input.getIndex()));
         Q_ASSERT(pProxy);
