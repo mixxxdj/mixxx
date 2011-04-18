@@ -1,6 +1,6 @@
 #include "engine/vinylcontrolcontrol.h"
 
-#include "vinylcontrol.h"
+#include "vinylcontrol/vinylcontrol.h"
 #include "library/dao/cue.h"
 
 VinylControlControl::VinylControlControl(const char* pGroup, ConfigObject<ConfigValue>* pConfig)

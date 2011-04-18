@@ -50,7 +50,8 @@
 
 DlgPreferences::DlgPreferences(MixxxApp * mixxx, SkinLoader* pSkinLoader,
                                SoundManager * soundman, PlayerManager* pPlayerManager,
-                               MidiDeviceManager * midi, ConfigObject<ConfigValue> * _config)
+                               MidiDeviceManager * midi, VinylControlManager *pVCManager,
+                               ConfigObject<ConfigValue> * _config)
         :  QDialog(), Ui::DlgPreferencesDlg() {
     m_pMixxx = mixxx;
     m_pMidiDeviceManager = midi;
@@ -76,7 +77,7 @@ DlgPreferences::DlgPreferences(MixxxApp * mixxx, SkinLoader* pSkinLoader,
     wreplaygain = new DlgPrefReplayGain(this, config);
     wrecord = new DlgPrefRecord(this, config);
 #ifdef __VINYLCONTROL__
-    wvinylcontrol = new DlgPrefVinyl(this, soundman, config);
+    wvinylcontrol = new DlgPrefVinyl(this, pVCManager, config);
 #else
     wnovinylcontrol = new DlgPrefNoVinyl(this, soundman, config);
 #endif
@@ -139,8 +140,6 @@ DlgPreferences::DlgPreferences(MixxxApp * mixxx, SkinLoader* pSkinLoader,
 #endif
 
 #ifdef __VINYLCONTROL__
-    connect(wvinylcontrol, SIGNAL(refreshVCProxies()), wsound, SLOT(forceApply()));
-    connect(wvinylcontrol, SIGNAL(applySound()), wsound, SLOT(slotApply()));
     connect(buttonBox, SIGNAL(accepted()), wvinylcontrol,    SLOT(slotApply())); //It's important for this to be before the
                                                                                  //connect for wsound...
 #endif
