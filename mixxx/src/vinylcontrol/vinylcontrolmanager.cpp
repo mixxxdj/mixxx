@@ -9,11 +9,18 @@
 #include "vinylcontrolxwax.h"
 #include "soundmanager.h"
 
+const int kNumberOfDecks = 4; // set to 4 because it will ideally not be more
+// or less than the number of vinyl-controlled decks but will probably be
+// forgotten in any 2->4 deck switchover. Only real consequence is
+// sizeof(void*)*2 bytes of wasted memory if we're only using 2 decks -bkgood
+
+const QString kVCProxyGroup = QString("[Channel%1]");
+
 VinylControlManager::VinylControlManager(QObject *pParent,
-        ConfigObject<ConfigValue> *pConfig, unsigned int nDecks)
+        ConfigObject<ConfigValue> *pConfig)
   : QObject(pParent)
   , m_pConfig(pConfig)
-  , m_proxies(nDecks, NULL) {
+  , m_proxies(kNumberOfDecks, NULL) {
     // load a bunch of stuff
     ControlObject::getControl(ConfigKey("[Channel1]","vinylcontrol_enabled"))
         ->queueFromThread(m_pConfig->getValueString(
@@ -72,9 +79,9 @@ VinylControlManager::~VinylControlManager() {
 
 void VinylControlManager::receiveBuffer(AudioInput input,
         const short *pBuffer, unsigned int nFrames) {
-    Q_ASSERT(input.getIndex() < m_proxies.size());
     Q_ASSERT(input.getType() == AudioInput::VINYLCONTROL);
     if (m_proxiesLock.tryLockForRead()) {
+        Q_ASSERT(input.getIndex() < m_proxies.size());
         VinylControlProxy *pProxy(m_proxies.at(input.getIndex()));
         Q_ASSERT(pProxy);
         pProxy->AnalyseSamples(pBuffer, nFrames);
@@ -86,13 +93,17 @@ void VinylControlManager::onInputConnected(AudioInput input) {
     Q_ASSERT(input.getType() == AudioInput::VINYLCONTROL);
     unsigned char index = input.getIndex();
     VinylControlProxy *pNewVC = new VinylControlProxy(m_pConfig,
-            QString("[Channel%1]").arg(index + 1));
+            kVCProxyGroup.arg(index + 1));
     m_proxiesLock.lockForWrite();
-    Q_ASSERT(index < m_proxies.size());
-    if (m_proxies.at(index)) {
-        delete m_proxies.at(index);
+    if (index < m_proxies.size()) {
+        if (m_proxies.at(index)) {
+            delete m_proxies.at(index);
+        }
+        m_proxies.replace(index, pNewVC);
+    } else {
+        m_proxies.resize(index + 1);
+        m_proxies.replace(index, pNewVC);
     }
-    m_proxies.replace(index, pNewVC);
     m_proxiesLock.unlock();
 }
 
@@ -112,7 +123,7 @@ void VinylControlManager::reloadConfig() {
     for (int i = 0; i < m_proxies.size(); ++i) {
         if (!m_proxies.at(i)) continue;
         VinylControlProxy *pProxy = m_proxies.at(i);
-        QString group = QString("[Channel%1]").arg(i + 1);
+        QString group = kVCProxyGroup.arg(i + 1);
         delete pProxy;
         pProxy = new VinylControlProxy(m_pConfig, group);
         m_proxies.replace(i, pProxy);
