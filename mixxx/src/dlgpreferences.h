@@ -49,6 +49,7 @@ class PowerMate;
 class MidiDeviceManager;
 class SkinLoader;
 class PlayerManager;
+class VinylControlManager;
 
 /**
   *@author Tue & Ken Haste Andersen
@@ -60,7 +61,7 @@ class DlgPreferences : public QDialog, public Ui::DlgPreferencesDlg
 public:
     DlgPreferences(MixxxApp *mixxx, SkinLoader* pSkinLoader, SoundManager *soundman,
                    PlayerManager* pPlayerManager, MidiDeviceManager* midi,
-                   ConfigObject<ConfigValue> *config);
+                   VinylControlManager *pVCManager, ConfigObject<ConfigValue> *config);
 
     ~DlgPreferences();
     void createIcons();
