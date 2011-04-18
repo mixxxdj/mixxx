@@ -63,9 +63,7 @@ class MidiDeviceManager;
 class MixxxKeyboard;
 class SkinLoader;
 
-#ifdef __VINYLCONTROL__
 class VinylControlManager;
-#endif
 
 /**
   * This Class is the base class for Mixxx. It sets up the main
@@ -168,9 +166,7 @@ class MixxxApp : public QMainWindow
 
     ConfigObject<ConfigValue> *m_pConfig;
 
-#ifdef __VINYLCONTROL__
     VinylControlManager *m_pVCManager;
-#endif
 
     MixxxKeyboard* m_pKeyboard;
     /** Library scanner object */
