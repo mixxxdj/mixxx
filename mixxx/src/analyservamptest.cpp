@@ -21,12 +21,7 @@ AnalyserVampTest::AnalyserVampTest(ConfigObject<ConfigValue> *_config) {
     m_pConfigAVT = _config;
     m_bPass = 0;
 
-    //"pluginID"
-    //tested beat tracking features with vamp-plugins:
-    //"vamp-aubio:aubiotempo"(GPLed)
-    //"qm-vamp-plugins:qm-barbeattracker" (now released under GPL)
-    //"qm-vamp-plugins:qm-tempotracker" (now released under GPL)
-    mvamp = new VampAnalyser("qm-vamp-plugins:qm-barbeattracker");
+    mvamp = new VampAnalyser();
 
 }
 
@@ -35,8 +30,12 @@ AnalyserVampTest::~AnalyserVampTest(){
 }
 void AnalyserVampTest::initialise(TrackPointer tio, int sampleRate,
         int totalSamples) {
-    m_bPass = mvamp->Init(sampleRate, totalSamples);
-    mvamp->SelectOutput(0);
+    //usage mvamp->Init(plugin key, output number, samplerate, totalsamples);
+    //tested beat tracking features with vamp-plugins:
+    //"vamp-aubio:aubiotempo"(GPLed)
+    //"qm-vamp-plugins:qm-barbeattracker" (now released under GPL)
+    //"qm-vamp-plugins:qm-tempotracker" (now released under GPL)
+    m_bPass = mvamp->Init("qm-subset:qm-barbeattracker",0,sampleRate, totalSamples);
     if (!m_bPass)
         qDebug() << "Failed to init";
 

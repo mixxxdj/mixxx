@@ -17,12 +17,9 @@
 
 using Vamp::Plugin;
 
-VampAnalyser::VampAnalyser(const Vamp::HostExt::PluginLoader::PluginKey key) :
-    mKey(key) {
+VampAnalyser::VampAnalyser()
+    {
     m_pluginbuf = new CSAMPLE*[2];
-    mPlugin = 0;
-    mRate = 0;
-    m_iOutput = 0;
 }
 
 VampAnalyser::~VampAnalyser() {
@@ -32,7 +29,13 @@ VampAnalyser::~VampAnalyser() {
     mPlugin = 0;
 }
 
-bool VampAnalyser::Init(const int samplerate,const int TotalSamples) {
+bool VampAnalyser::Init(const Vamp::HostExt::PluginLoader::PluginKey key, int outputnumber,
+        const int samplerate,const int TotalSamples) {
+
+    mKey = key;
+    m_iOutput = 0;
+    mPlugin = 0;
+    mRate = 0;
 
     m_iRemainingSamples = TotalSamples;
     m_iSampleCount = 0;
@@ -43,8 +46,8 @@ bool VampAnalyser::Init(const int samplerate,const int TotalSamples) {
         return false;
     }
 
-    if (m_iRemainingSamples <= 0){
-        qDebug() << "VampAnalyser cowardly refuses to process an empty track";
+    if (TotalSamples <= 0){
+        qDebug() << "VampAnalyser cowardly refused to process an empty track";
         return false;
     }
 
@@ -66,7 +69,7 @@ bool VampAnalyser::Init(const int samplerate,const int TotalSamples) {
         qDebug() << "Plugin has no outputs!";
         return false;
     }
-
+    this->SelectOutput(outputnumber);
     m_iBlockSize = mPlugin->getPreferredBlockSize();
 
     if (m_iBlockSize == 0) {
