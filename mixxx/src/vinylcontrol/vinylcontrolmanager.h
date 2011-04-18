@@ -31,7 +31,7 @@ class VinylControlManager : public QObject, public AudioDestination {
   private:
     ConfigObject<ConfigValue> *m_pConfig;
     QVector<VinylControlProxy*> m_proxies;
-    QSemaphore m_proxiesLock;
+    QReadWriteLock m_proxiesLock;
 };
 
 #endif // VINYLCONTROLMANAGER_H
