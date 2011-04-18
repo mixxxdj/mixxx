@@ -17,8 +17,7 @@ class SoundManager;
 class VinylControlManager : public QObject, public AudioDestination {
     Q_OBJECT;
   public:
-    VinylControlManager(QObject *pParent, ConfigObject<ConfigValue> *pConfig,
-            unsigned int nDecks);
+    VinylControlManager(QObject *pParent, ConfigObject<ConfigValue> *pConfig);
     virtual ~VinylControlManager();
     virtual void receiveBuffer(AudioInput input, const short *pBuffer, unsigned int nFrames);
     virtual void onInputConnected(AudioInput input);
