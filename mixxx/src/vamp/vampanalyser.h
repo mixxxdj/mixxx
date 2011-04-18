@@ -22,11 +22,12 @@ class VampAnalyser {
 
 public:
 
-    VampAnalyser(const Vamp::HostExt::PluginLoader::PluginKey key);
+    VampAnalyser();
+
     ~VampAnalyser();
 
-
-    bool Init(const int samplerate, const int TotalSamples);
+    bool Init(const Vamp::HostExt::PluginLoader::PluginKey key, int outputnumber,
+            const int samplerate, const int TotalSamples);
 
     bool Process(const CSAMPLE *pIn, const int iLen);
 
@@ -34,7 +35,6 @@ public:
 
     bool SetParameter (const QString parameter,const double value);
 
-    void SelectOutput (const int outputnumber);
 
     bool GetInitFramesVector( QVector<double>* vectout );
 
@@ -60,6 +60,8 @@ public:
 private:
 
     void AddFeatures(Vamp::Plugin::FeatureSet &features);
+
+    void SelectOutput (const int outputnumber);
 
     Vamp::HostExt::PluginLoader::PluginKey mKey;
 

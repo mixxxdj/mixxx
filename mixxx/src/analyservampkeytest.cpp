@@ -11,18 +11,12 @@
 #include <QString>
 #include <time.h>
 #include <math.h>
-
-#include "trackinfoobject.h"
 #include "analyservampkeytest.h"
 
 AnalyserVampKeyTest::AnalyserVampKeyTest(ConfigObject<ConfigValue> *_config) {
     m_pConfigAVT = _config;
     m_bPass = 0;
-
-    //"pluginID"
-    //tested key detection features with vamp-plugins:
-    // qm-vamp-plugins:qm-keydetector (GPLed)
-    mvamp = new VampAnalyser("qm-vamp-plugins:qm-keydetector");
+    mvamp = new VampAnalyser();
 
 }
 
@@ -31,8 +25,10 @@ AnalyserVampKeyTest::~AnalyserVampKeyTest(){
 }
 void AnalyserVampKeyTest::initialise(TrackPointer tio, int sampleRate,
         int totalSamples) {
-    m_bPass = mvamp->Init(sampleRate, totalSamples);
-    mvamp->SelectOutput(2);
+    //usage mvamp->Init(plugin key, output number, samplerate, totalsamples);
+    //tested key detection features with vamp-plugins:
+   // qm-vamp-plugins:qm-keydetector (GPLed)
+    m_bPass = mvamp->Init("qm-subset:qm-keydetector",2,sampleRate, totalSamples);
     if (!m_bPass)
         qDebug() << "Failed to init";
 
@@ -51,16 +47,17 @@ void AnalyserVampKeyTest::finalise(TrackPointer tio) {
     if(!m_bPass) return;
     QVector <QString> labels;
         if(mvamp->GetInitFramesVector(&m_frames)){
-               if(mvamp->GetLastValuesVector(&m_keys))
+               if(mvamp->GetFirstValuesVector(&m_keys))
                    mvamp->GetLabelsVector(&labels);
                for (int i=0; i<m_frames.size(); i++){
-                   qDebug()<<"Key changes to "<< m_keys[i] <<" ("<<labels[i]<<")" << " at frame "<< m_frames[i];
+                   qDebug()<<"Key changes to "<< m_keys[i] <<"("<<labels[i]<<")" << " at frame "<< m_frames[i];
                }
            }
            m_frames.clear();
            m_keys.clear();
     m_bPass = mvamp->End();
     qDebug()<<"Key detection complete";
+
     //m_iStartTime = clock() - m_iStartTime;
 }
 
