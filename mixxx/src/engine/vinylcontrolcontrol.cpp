@@ -1,5 +1,5 @@
 #include "engine/vinylcontrolcontrol.h"
-
+#include "mathstuff.h"
 #include "vinylcontrol/vinylcontrol.h"
 #include "library/dao/cue.h"
 
