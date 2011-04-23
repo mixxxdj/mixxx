@@ -37,7 +37,7 @@
 bool VinylControlXwax::m_bLUTInitialized = false;
 QMutex VinylControlXwax::s_xwaxLUTMutex;
 
-VinylControlXwax::VinylControlXwax(ConfigObject<ConfigValue> * pConfig, const char * _group) : VinylControl(pConfig, _group)
+VinylControlXwax::VinylControlXwax(ConfigObject<ConfigValue> * pConfig, QString group) : VinylControl(pConfig, group)
 {
     dOldPos                 = 0.0f;
     m_samples               = NULL;
@@ -386,7 +386,7 @@ void VinylControlXwax::run()
                 {
                     qDebug() << "discontinuing select mode, selecting track";
                     if (trackLoader == NULL)
-                        trackLoader = new ControlObjectThread(ControlObject::getControl(ConfigKey(group,"LoadSelectedTrack")));
+                        trackLoader = new ControlObjectThread(ControlObject::getControl(ConfigKey(m_group,"LoadSelectedTrack")));
 
                     if (!trackLoader)
                         qDebug() << "ERROR: couldn't get track loading object?";

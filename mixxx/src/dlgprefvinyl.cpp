@@ -23,19 +23,17 @@
 #include <QtGui>
 #include "dlgprefvinyl.h"
 #include "controlobject.h"
-#include "soundmanager.h"
-#include "vinylcontrol.h" //For vinyl type string constants
+#include "vinylcontrol/vinylcontrolmanager.h"
+#include "vinylcontrol/vinylcontrol.h" //For vinyl type string constants
 #include "controlobjectthreadmain.h"
-#include "vinylcontrolsignalwidget.h"
 #include "dlgprefvinyl.h"
 
-DlgPrefVinyl::DlgPrefVinyl(QWidget * parent, SoundManager * soundman,
+DlgPrefVinyl::DlgPrefVinyl(QWidget * parent, VinylControlManager *pVCMan,
                            ConfigObject<ConfigValue> * _config) : QWidget(parent), Ui::DlgPrefVinylDlg(),
     m_COTMode(ControlObject::getControl(ConfigKey("[VinylControl]", "mode")))
 {
-    m_pSoundManager = soundman;
+    m_pVCManager = pVCMan;
     config = _config;
-    m_dontForce = false;
 
     setupUi(this);
 
@@ -75,17 +73,6 @@ DlgPrefVinyl::DlgPrefVinyl(QWidget * parent, SoundManager * soundman,
     connect(applyButton, SIGNAL(clicked()), this, SLOT(slotApply()));
     connect(VinylGain, SIGNAL(sliderReleased()), this, SLOT(VinylGainSlotApply()));
     //connect(ComboBoxDeviceDeck1, SIGNAL(currentIndexChanged()), this, SLOT(()));
-
-    connect(VinylGain, SIGNAL(sliderReleased()), this, SLOT(settingsChanged()));
-    connect(ComboBoxVinylType1, SIGNAL(currentIndexChanged(int)), this, SLOT(settingsChanged()));
-    connect(ComboBoxVinylType2, SIGNAL(currentIndexChanged(int)), this, SLOT(settingsChanged()));
-    connect(ComboBoxVinylSpeed1, SIGNAL(currentIndexChanged(int)), this, SLOT(settingsChanged()));
-    connect(ComboBoxVinylSpeed2, SIGNAL(currentIndexChanged(int)), this, SLOT(settingsChanged()));
-    connect(LeadinTime, SIGNAL(textChanged(const QString&)), this, SLOT(settingsChanged()));
-    connect(NeedleSkipEnable, SIGNAL(stateChanged(int)), this, SLOT(settingsChanged()));
-    connect(AbsoluteMode, SIGNAL(toggled(bool)), this, SLOT(settingsChanged()));
-    connect(RelativeMode, SIGNAL(toggled(bool)), this, SLOT(settingsChanged()));
-    connect(m_pSoundManager, SIGNAL(devicesSetup()), this, SLOT(settingsChanged()));
 }
 
 DlgPrefVinyl::~DlgPrefVinyl()
@@ -95,7 +82,7 @@ DlgPrefVinyl::~DlgPrefVinyl()
 /** @brief Performs any necessary actions that need to happen when the prefs dialog is opened */
 void DlgPrefVinyl::slotShow()
 {
-    QList<VinylControlProxy*> VCProxiesList = m_pSoundManager->getVinylControlProxies();
+    QList<VinylControlProxy*> VCProxiesList = m_pVCManager->vinylControlProxies();
     if (VCProxiesList.value(0) != NULL)
         m_signalWidget1.setVinylControlProxy(VCProxiesList.value(0));
     if (VCProxiesList.value(1) != NULL)
@@ -119,8 +106,6 @@ void DlgPrefVinyl::slotClose()
 
 void DlgPrefVinyl::slotUpdate()
 {
-    m_dontForce = true; // otherwise all the signals fired in here will cause
-                        // DlgPrefSound to call setupDevices needlessly :) -- bkgood
     // Set vinyl control types in the comboboxes
     int combo_index = ComboBoxVinylType1->findText(config->getValueString(ConfigKey("[Channel1]","vinylcontrol_vinyl_type")));
     if (combo_index != -1)
@@ -153,17 +138,26 @@ void DlgPrefVinyl::slotUpdate()
 
     //set vinyl control gain
     VinylGain->setValue( config->getValueString(ConfigKey("[VinylControl]","gain")).toInt());
-    m_dontForce = false;
+
+    QList<VinylControlProxy*> VCProxiesList = m_pVCManager->vinylControlProxies();
+    if (VCProxiesList.value(0) != NULL) {
+        m_signalWidget1.setVinylControlProxy(VCProxiesList.value(0));
+    }
+    if (VCProxiesList.value(1) != NULL) {
+        m_signalWidget2.setVinylControlProxy(VCProxiesList.value(1));
+    }
+
+    m_signalWidget1.setVinylActive(m_pVCManager->vinylInputEnabled(1));
+    m_signalWidget2.setVinylActive(m_pVCManager->vinylInputEnabled(2));
 }
 
 // Update the config object with parameters from dialog
 void DlgPrefVinyl::slotApply()
 {
-    QString device2;
     qDebug() << "DlgPrefVinyl::Apply";
 
     // Lead-in time
-    QString strLeadIn      = LeadinTime->text();
+    QString strLeadIn = LeadinTime->text();
     bool isInteger;
     strLeadIn.toInt(&isInteger);
     if (isInteger)
@@ -187,6 +181,7 @@ void DlgPrefVinyl::slotApply()
     config->set(ConfigKey("[VinylControl]","mode"), ConfigValue(iMode));
     config->set(ConfigKey("[VinylControl]","needle_skip_prevention" ), ConfigValue( (int)(NeedleSkipEnable->isChecked( )) ) );
 
+    m_pVCManager->reloadConfig();
     slotUpdate();
 }
 
@@ -201,7 +196,6 @@ void DlgPrefVinyl::VinylTypeSlotApply()
     config->set(ConfigKey("[Channel2]","vinylcontrol_vinyl_type"), ConfigValue(ComboBoxVinylType2->currentText()));
     config->set(ConfigKey("[Channel1]","vinylcontrol_speed_type"), ConfigValue(ComboBoxVinylSpeed1->currentText()));
     config->set(ConfigKey("[Channel2]","vinylcontrol_speed_type"), ConfigValue(ComboBoxVinylSpeed2->currentText()));
-    emit(applySound());
 }
 
 void DlgPrefVinyl::VinylGainSlotApply()
@@ -213,21 +207,4 @@ void DlgPrefVinyl::VinylGainSlotApply()
     //Update the ControlObject...
     ControlObject* pControlObjectVinylControlGain = ControlObject::getControl(ConfigKey("[VinylControl]", "gain"));
     pControlObjectVinylControlGain->set(VinylGain->value());
-}
-
-void DlgPrefVinyl::settingsChanged() {
-    if (!m_dontForce) {
-        emit(refreshVCProxies());
-    }
-
-    QList<VinylControlProxy*> VCProxiesList = m_pSoundManager->getVinylControlProxies();
-    if (VCProxiesList.value(0) != NULL) {
-        m_signalWidget1.setVinylControlProxy(VCProxiesList.value(0));
-    }
-    if (VCProxiesList.value(1) != NULL) {
-        m_signalWidget2.setVinylControlProxy(VCProxiesList.value(1));
-    }
-
-    m_signalWidget1.setVinylActive(m_pSoundManager->hasVinylInput(0));
-    m_signalWidget2.setVinylActive(m_pSoundManager->hasVinylInput(1));
 }

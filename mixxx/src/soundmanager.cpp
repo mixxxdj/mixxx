@@ -26,10 +26,6 @@
 #include "controlobjectthreadmain.h"
 #include "soundmanagerutil.h"
 
-#ifdef __VINYLCONTROL__
-#include "vinylcontrolxwax.h"
-#endif
-
 /** Initializes Mixxx's audio core
  *  @param pConfig The config key table
  *  @param _master A pointer to the audio engine's mastering class.
@@ -247,21 +243,6 @@ void SoundManager::closeDevices()
         }
     }
     m_inputBuffers.clear();
-
-#ifdef __VINYLCONTROL__
-    // TODO(bkgood) see comment where these objects are created in setupDevices,
-    // this should probably be in the dtor or at least somewhere other
-    // than here.
-    while (!m_vinylControl.empty()) {
-        VinylControlProxy *vc = m_vinylControl.takeLast();
-        if (vc != NULL) {
-            delete vc;
-        }
-        //xwax has a global LUT that we need to free after we've shut down our
-        //vinyl control threads because it's not thread-safe.
-        VinylControlXwax::freeLUTs();
-    }
-#endif
 }
 
 /** Closes all the devices and empties the list of devices we have. */
@@ -387,18 +368,6 @@ int SoundManager::setupDevices()
 
     // close open devices, close running vinyl control proxies
     closeDevices();
-#ifdef __VINYLCONTROL__
-    //Initialize vinyl control
-    // TODO(bkgood) this ought to be done in the ctor or something. Not here. Really
-    // shouldn't be any reason for these to be reinitialized every time the
-    // audio prefs are updated. Will require work in DlgPrefVinyl.
-    m_vinylControl.append(new VinylControlProxy(m_pConfig, "[Channel1]"));
-    m_vinylControl.append(new VinylControlProxy(m_pConfig, "[Channel2]"));
-    qDebug() << "Created VinylControlProxies" <<
-                m_vinylControl[0] << m_vinylControl[1];
-    registerInput(AudioInput(AudioInput::VINYLCONTROL, 0, 0), m_vinylControl[0]);
-    registerInput(AudioInput(AudioInput::VINYLCONTROL, 0, 1), m_vinylControl[1]);
-#endif
     foreach (SoundDevice *device, m_devices) {
         bool isInput = false;
         bool isOutput = false;
@@ -485,32 +454,6 @@ SoundDevice* SoundManager::getErrorDevice() const {
 SoundManagerConfig SoundManager::getConfig() const {
     return m_config;
 }
-
-#ifdef __VINYLCONTROL__
-bool SoundManager::hasVinylInput(int deck)
-{
-    if (deck >= m_vinylControl.length())
-        return false;
-    VinylControlProxy* vinyl_control = m_vinylControl[deck];
-
-    bool hasInput = false;
-    QList<AudioInput> inputs = getConfig().getInputs().values();
-    foreach (AudioInput in, inputs) {
-        if (in.getType() == AudioInput::VINYLCONTROL
-                && in.getIndex() == deck) {
-            hasInput = true;
-            break;
-        }
-    }
-
-    return vinyl_control != NULL && hasInput;
-}
-
-QList<VinylControlProxy*> SoundManager::getVinylControlProxies()
-{
-    return m_vinylControl;
-}
-#endif
 
 int SoundManager::setConfig(SoundManagerConfig config) {
     int err = OK;
