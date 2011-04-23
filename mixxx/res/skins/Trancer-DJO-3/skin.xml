@@ -2311,6 +2311,13 @@
 			<Color>#AE5CFF</Color>
 			<TextColor>#FFFFFF</TextColor>
 		</Mark>
+        <Mark>
+			<Control>cue_point</Control>
+			<Text> CUE </Text>
+			<Align>top</Align>
+			<Color>#FFFF00</Color>
+			<TextColor>#FFFFFF</TextColor>
+		</Mark>
 
  </Visual>
 
@@ -2321,8 +2328,8 @@
 		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
 		</Style>
   <Channel>1</Channel>
-  <Pos>171,176</Pos>
-  <Size>200,27</Size>
+  <Pos>171,186</Pos>
+  <Size>200,40</Size>
   <BgColor>#000000</BgColor>
   <FgColor>#9d9d9d</FgColor>
  </Text>
@@ -2334,8 +2341,8 @@
 		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
 		</Style>
   <Channel>2</Channel>
-  <Pos>450,176</Pos>
-  <Size>200,27</Size>
+  <Pos>450,186</Pos>
+  <Size>200,40</Size>
   <BgColor>#000000</BgColor>
   <FgColor>#9d9d9d</FgColor>
  </Text>
@@ -2343,9 +2350,8 @@
  <NumberBpm>
   <Tooltip>Tempo display (Beat Per Minute)</Tooltip>
   <Channel>1</Channel>
-  <!--<Pos>171,236</Pos>-->
-  <Pos>171,236</Pos>
-  <Size>50,10</Size>
+  <Pos>171,233</Pos>
+  <Size>75,16</Size>
   <NumberOfDigits>6</NumberOfDigits>
   <BgColor>#000000</BgColor>
   <FgColor>#9d9d9d</FgColor>
@@ -2357,7 +2363,7 @@
  <NumberBpm>
   <Tooltip>Tempo display (Beat Per Minute)</Tooltip>
   <Channel>2</Channel>
-  <Pos>450,236</Pos>
+  <Pos>450,233</Pos>
   <Size>75,16</Size>
   <NumberOfDigits>6</NumberOfDigits>
   <BgColor>#000000</BgColor>
@@ -2370,7 +2376,7 @@
  <NumberPos>
   <Tooltip>Play position/remaining time</Tooltip>
   <Channel>1</Channel>
-  <Pos>171,254</Pos>
+  <Pos>171,249</Pos>
   <Size>110,16</Size>
   <Alignment>right</Alignment>
   <NumberOfDigits>6</NumberOfDigits>
@@ -2384,7 +2390,7 @@
  <NumberPos>
   <Tooltip>Play position/remaining time</Tooltip>
   <Channel>2</Channel>
-  <Pos>450,254</Pos>
+  <Pos>450,249</Pos>
   <Size>110,16</Size>
   <Alignment>right</Alignment>
   <NumberOfDigits>6</NumberOfDigits>
@@ -2398,7 +2404,7 @@
  <NumberRate>
   <Tooltip>Playback rate factor</Tooltip>
   <Channel>1</Channel>
-  <Pos>247,236</Pos>
+  <Pos>247,234</Pos>
   <Size>47,16</Size>
   <Alignment>left</Alignment>
   <NumberOfDigits>3</NumberOfDigits>
@@ -2412,7 +2418,7 @@
  <NumberRate>
   <Tooltip>Playback rate factor</Tooltip>
   <Channel>2</Channel>
-  <Pos>537,236</Pos>
+  <Pos>537,234</Pos>
   <Size>47,16</Size>
   <Alignment>left</Alignment>
   <NumberOfDigits>3</NumberOfDigits>
