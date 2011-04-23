@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2011-03-27 03:32-0400\n"
-"PO-Revision-Date: 2011-02-16 22:34+0000\n"
-"Last-Translator: Pavel <kitchenknif@Gmail.com>\n"
+"PO-Revision-Date: 2011-04-22 14:23+0000\n"
+"Last-Translator: Eugene Marshal <Unknown>\n"
 "Language-Team: Russian <ru@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-03-28 04:34+0000\n"
-"X-Generator: Launchpad (build 12559)\n"
+"X-Launchpad-Export-Date: 2011-04-23 04:33+0000\n"
+"X-Generator: Launchpad (build 12758)\n"
 
 #: AutoDJFeature#1
 msgid "Auto DJ"
@@ -23,75 +23,75 @@ msgstr "Автоматический диджеинг"
 
 #: BaseSqlTableModel#1
 msgid "Played"
-msgstr ""
+msgstr "Воспроизведённые"
 
 #: BaseSqlTableModel#2
 msgctxt "BaseSqlTableModel#2"
 msgid "Artist"
-msgstr ""
+msgstr "Исполнитель"
 
 #: BaseSqlTableModel#3
 msgctxt "BaseSqlTableModel#3"
 msgid "Title"
-msgstr ""
+msgstr "Название"
 
 #: BaseSqlTableModel#4
 msgctxt "BaseSqlTableModel#4"
 msgid "Album"
-msgstr ""
+msgstr "Альбом"
 
 #: BaseSqlTableModel#5
 msgctxt "BaseSqlTableModel#5"
 msgid "Genre"
-msgstr ""
+msgstr "Жанр"
 
 #: BaseSqlTableModel#6
 msgctxt "BaseSqlTableModel#6"
 msgid "Year"
-msgstr ""
+msgstr "Год"
 
 #: BaseSqlTableModel#7
 msgctxt "BaseSqlTableModel#7"
 msgid "Type"
-msgstr ""
+msgstr "Тип"
 
 #: BaseSqlTableModel#8
 msgctxt "BaseSqlTableModel#8"
 msgid "Location"
-msgstr ""
+msgstr "Размещение"
 
 #: BaseSqlTableModel#9
 msgctxt "BaseSqlTableModel#9"
 msgid "Comment"
-msgstr ""
+msgstr "Описание"
 
 #: BaseSqlTableModel#10
 msgctxt "BaseSqlTableModel#10"
 msgid "Duration"
-msgstr ""
+msgstr "Длительность"
 
 #: BaseSqlTableModel#11
 msgid "Rating"
-msgstr ""
+msgstr "Оценка"
 
 #: BaseSqlTableModel#12
 msgctxt "BaseSqlTableModel#12"
 msgid "Bitrate"
-msgstr ""
+msgstr "Частота бит"
 
 #: BaseSqlTableModel#13
 msgctxt "BaseSqlTableModel#13"
 msgid "BPM"
-msgstr ""
+msgstr "Ударов в минуту"
 
 #: BaseSqlTableModel#14
 msgctxt "BaseSqlTableModel#14"
 msgid "Track #"
-msgstr ""
+msgstr "Номер дорожки"
 
 #: BaseSqlTableModel#15
 msgid "Date Added"
-msgstr ""
+msgstr "Дата добавления"
 
 #: BaseSqlTableModel#16
 msgid "#"
@@ -108,35 +108,35 @@ msgstr "Невозможно загрузить дорожку."
 
 #: BrowseFeature#1
 msgid "Quick Links"
-msgstr ""
+msgstr "Быстрые ссылки"
 
 #: BrowseFeature#2
 msgid "Devices"
-msgstr ""
+msgstr "Оборудование"
 
 #: BrowseFeature#3
 msgid "Removable Devices"
-msgstr ""
+msgstr "Съёмные устройства"
 
 #: BrowseFeature#4
 msgid "Mixxx Library"
-msgstr ""
+msgstr "Библиотека Mixxx"
 
 #: BrowseFeature#5
 msgid "Home"
-msgstr ""
+msgstr "Главная"
 
 #: BrowseFeature#6
 msgid "Music"
-msgstr ""
+msgstr "Музыка"
 
 #: BrowseFeature#7
 msgid "Documents"
-msgstr ""
+msgstr "Документы"
 
 #: BrowseFeature#8
 msgid "Desktop"
-msgstr ""
+msgstr "Рабочий стол"
 
 #: BrowseFeature#1
 msgid "Browse"
@@ -144,52 +144,52 @@ msgstr "Обзор"
 
 #: BrowseTableModel#1
 msgid "Filename"
-msgstr ""
+msgstr "Имя файла"
 
 #: BrowseTableModel#2
 msgctxt "BrowseTableModel#2"
 msgid "Artist"
-msgstr ""
+msgstr "Исполнитель"
 
 #: BrowseTableModel#3
 msgctxt "BrowseTableModel#3"
 msgid "Title"
-msgstr ""
+msgstr "Название"
 
 #: BrowseTableModel#4
 msgctxt "BrowseTableModel#4"
 msgid "Album"
-msgstr ""
+msgstr "Альбом"
 
 #: BrowseTableModel#5
 msgctxt "BrowseTableModel#5"
 msgid "Track #"
-msgstr ""
+msgstr "Номер дорожки"
 
 #: BrowseTableModel#6
 msgctxt "BrowseTableModel#6"
 msgid "Year"
-msgstr ""
+msgstr "Год"
 
 #: BrowseTableModel#7
 msgctxt "BrowseTableModel#7"
 msgid "Genre"
-msgstr ""
+msgstr "Жанр"
 
 #: BrowseTableModel#8
 msgctxt "BrowseTableModel#8"
 msgid "Comment"
-msgstr ""
+msgstr "Описание"
 
 #: BrowseTableModel#9
 msgctxt "BrowseTableModel#9"
 msgid "Duration"
-msgstr ""
+msgstr "Длительность"
 
 #: BrowseTableModel#10
 msgctxt "BrowseTableModel#10"
 msgid "BPM"
-msgstr ""
+msgstr "Ударов в минуту"
 
 #: BrowseTableModel#11
 msgctxt "BrowseTableModel#11"
@@ -199,17 +199,17 @@ msgstr ""
 #: BrowseTableModel#12
 msgctxt "BrowseTableModel#12"
 msgid "Type"
-msgstr ""
+msgstr "Тип"
 
 #: BrowseTableModel#13
 msgctxt "BrowseTableModel#13"
 msgid "Bitrate"
-msgstr ""
+msgstr "Частота бит"
 
 #: BrowseTableModel#14
 msgctxt "BrowseTableModel#14"
 msgid "Location"
-msgstr ""
+msgstr "Размещение"
 
 #: CrateFeature#1
 msgid "New Crate"
@@ -223,17 +223,17 @@ msgstr "Удалить"
 #: CrateFeature#3
 msgctxt "CrateFeature#3"
 msgid "Rename"
-msgstr ""
+msgstr "Переменовать"
 
 #: CrateFeature#4
 msgctxt "CrateFeature#4"
 msgid "Lock"
-msgstr ""
+msgstr "Заблокировать"
 
 #: CrateFeature#5
 msgctxt "CrateFeature#5"
 msgid "Import Playlist"
-msgstr ""
+msgstr "Импортировать список воспроизведения"
 
 #: CrateFeature#3
 msgid "Crates"
@@ -242,7 +242,7 @@ msgstr "Списки"
 #: CrateFeature#7
 msgctxt "CrateFeature#7"
 msgid "Unlock"
-msgstr ""
+msgstr "Разблокировать"
 
 #: CrateFeature#4
 msgid "Crate name:"
@@ -250,24 +250,24 @@ msgstr "Наименование списка:"
 
 #: CrateFeature#9
 msgid "An unknown error occurred while creating crate: "
-msgstr ""
+msgstr "Обнаружена неизвестная ошибка при создании группы: "
 
 #: CrateFeature#10
 msgid "Rename Crate"
-msgstr ""
+msgstr "Переименовать группу"
 
 #: CrateFeature#11
 msgid "New crate name:"
-msgstr ""
+msgstr "Новое название группы:"
 
 #: CrateFeature#12
 msgid "Renaming Crate Failed"
-msgstr ""
+msgstr "Ошибка переименования группы"
 
 #: CrateFeature#13
 msgctxt "CrateFeature#13"
 msgid "Playlist Files (*.m3u *.pls)"
-msgstr ""
+msgstr "Списки воспроизведения (*.m3u *.pls)"
 
 #: CrateFeature#6
 msgid "A crate cannot have a blank name."
@@ -363,16 +363,16 @@ msgstr "Мин."
 #: DlgBpmSchemeDlg#6
 msgctxt "DlgBpmSchemeDlg#6"
 msgid "Analyze Entire Song"
-msgstr ""
+msgstr "Выполнить анализ всей композиции"
 
 #: DlgBpmTapDlg#1
 msgctxt "DlgBpmTapDlg#1"
 msgid "Track Editor"
-msgstr ""
+msgstr "Редактор дорожек"
 
 #: DlgBpmTapDlg#2
 msgid "&Close"
-msgstr ""
+msgstr "&Закрыть"
 
 #: DlgBpmTapDlg#3
 msgctxt "DlgBpmTapDlg#3"
@@ -382,40 +382,40 @@ msgstr ""
 #: DlgBpmTapDlg#4
 msgctxt "DlgBpmTapDlg#4"
 msgid "Song:"
-msgstr ""
+msgstr "Композиция:"
 
 #: DlgBpmTapDlg#5
 msgid "Next >>"
-msgstr ""
+msgstr "Следующая >>"
 
 #: DlgBpmTapDlg#6
 msgid "<< Prev"
-msgstr ""
+msgstr "<< Предыдущая"
 
 #: DlgBpmTapDlg#7
 msgid "BPM Editor (Click to Expand)"
-msgstr ""
+msgstr "Редактор темпа (Щёлкните чтобы развернуть)"
 
 #: DlgBpmTapDlg#8
 msgctxt "DlgBpmTapDlg#8"
 msgid "BPM Detection"
-msgstr ""
+msgstr "Определение темпа"
 
 #: DlgBpmTapDlg#9
 msgid "BPM Scheme:"
-msgstr ""
+msgstr "Профиль темпа:"
 
 #: DlgBpmTapDlg#10
 msgid "to"
-msgstr ""
+msgstr "до"
 
 #: DlgBpmTapDlg#11
 msgid "BPM Range:"
-msgstr ""
+msgstr "Диапазон темпа:"
 
 #: DlgBpmTapDlg#12
 msgid "&Go"
-msgstr ""
+msgstr "П&ерейти"
 
 #: DlgBpmTapDlg#13
 msgid "Alt+G"
@@ -424,11 +424,11 @@ msgstr ""
 #: DlgBpmTapDlg#14
 msgctxt "DlgBpmTapDlg#14"
 msgid "Analyze Entire Song"
-msgstr ""
+msgstr "Выполнить анализ всей композиции"
 
 #: DlgBpmTapDlg#15
 msgid "BPM:"
-msgstr ""
+msgstr "Удар./мин:"
 
 #: DlgBpmTapDlg#16
 msgid "&Push to tap tempo"
@@ -441,27 +441,27 @@ msgstr ""
 #: DlgBpmTapDlg#18
 msgctxt "DlgBpmTapDlg#18"
 msgid "Track Information (Click to Expand)"
-msgstr ""
+msgstr "Сведения о дорожке (Щёлкните, чтобы развернуть)"
 
 #: DlgBpmTapDlg#19
 msgctxt "DlgBpmTapDlg#19"
 msgid "Title:"
-msgstr ""
+msgstr "Название:"
 
 #: DlgBpmTapDlg#20
 msgctxt "DlgBpmTapDlg#20"
 msgid "Artist:"
-msgstr ""
+msgstr "Исполнитель:"
 
 #: DlgBpmTapDlg#21
 msgctxt "DlgBpmTapDlg#21"
 msgid "Comments:"
-msgstr ""
+msgstr "Описания:"
 
 #: DlgBpmTapDlg#22
 msgctxt "DlgBpmTapDlg#22"
 msgid "Filename:"
-msgstr ""
+msgstr "Имя файла:"
 
 #: DlgBpmTapDlg#23
 msgctxt "DlgBpmTapDlg#23"
@@ -470,12 +470,12 @@ msgstr ""
 
 #: DlgBpmTapDlg#24
 msgid "Play Time:"
-msgstr ""
+msgstr "Время воспроизведения:"
 
 #: DlgBpmTapDlg#25
 msgctxt "DlgBpmTapDlg#25"
 msgid "File Type:"
-msgstr ""
+msgstr "Тип файла:"
 
 #: DlgBpmTapDlg#26
 msgctxt "DlgBpmTapDlg#26"
@@ -513,7 +513,7 @@ msgstr ""
 
 #: DlgMidiLearning#7
 msgid "Begin"
-msgstr ""
+msgstr "Начать"
 
 #: DlgMidiLearning#8
 msgid "Please tweak the control for:"
@@ -571,16 +571,16 @@ msgstr "Конец!"
 
 #: DlgPluginDownloader#1
 msgid "Missing Audio Plugin Downloader"
-msgstr ""
+msgstr "Отсутствует программа загрузки звуковой надстройки"
 
 #: DlgPluginDownloader#2
 msgid "Mixxx has detected th"
-msgstr ""
+msgstr "Mixxx обнаружил"
 
 #: DlgPrefBPMDlg#1
 msgctxt "DlgPrefBPMDlg#1"
 msgid "BPM Detection Settings"
-msgstr ""
+msgstr "Настройки определения темпа"
 
 #: DlgPrefBPMDlg#2
 msgctxt "DlgPrefBPMDlg#2"
@@ -619,7 +619,7 @@ msgstr "Добавить"
 #: DlgPrefBPMDlg#10
 msgctxt "DlgPrefBPMDlg#10"
 msgid "Edit"
-msgstr ""
+msgstr "Правка"
 
 #: DlgPrefBPMDlg#11
 msgid "Delete"
@@ -773,7 +773,7 @@ msgstr "Медленное замирание"
 
 #: DlgPrefCrossfaderDlg#4
 msgid "Fast cut"
-msgstr ""
+msgstr "Быстрое вырезание"
 
 #: DlgPrefCrossfaderDlg#5
 msgid "Constant power"
@@ -957,6 +957,9 @@ msgid ""
 "href=\"http://mixxx.org/wiki/doku.php/midi_controller_mapping_file_format\">T"
 "roubleshooting</a>"
 msgstr ""
+"<a "
+"href=\"http://mixxx.org/wiki/doku.php/midi_controller_mapping_file_format\">П"
+"оиск и устранение неисправностей</a>"
 
 #: DlgPrefMidiBindingsDlg#13
 msgid "MIDI Input"
@@ -1023,11 +1026,11 @@ msgstr ""
 
 #: DlgPrefPlaylistDlg#2
 msgid "Audio File Formats"
-msgstr ""
+msgstr "Форматы звуковых файлов"
 
 #: DlgPrefPlaylistDlg#3
 msgid "Additional Format Plugins:"
-msgstr ""
+msgstr "Надстройки дополнительных форматов:"
 
 #: DlgPrefPlaylistDlg#4
 msgid "MP3, Ogg Vorbis, FLAC, WAVe, AIFF"
@@ -1035,24 +1038,24 @@ msgstr ""
 
 #: DlgPrefPlaylistDlg#5
 msgid "Loaded Plugins:"
-msgstr ""
+msgstr "Задействованные надстройки:"
 
 #: DlgPrefPlaylistDlg#6
 msgctxt "DlgPrefPlaylistDlg#6"
 msgid "None"
-msgstr ""
+msgstr "Нет"
 
 #: DlgPrefPlaylistDlg#7
 msgid "Miscellaneous"
-msgstr ""
+msgstr "Разные"
 
 #: DlgPrefPlaylistDlg#8
 msgid "Synchronize ID3 tags on track modifications"
-msgstr ""
+msgstr "Синхронизировать тэги ID3 при изменении дорожек"
 
 #: DlgPrefPlaylistDlg#9
 msgid "Rescan library on start-up"
-msgstr ""
+msgstr "Сканировать библиотеку при запуске"
 
 #: DlgPrefPlaylistDlg#10
 msgid "iPod"
@@ -1065,7 +1068,7 @@ msgstr "Место подключения iPod"
 #: DlgPrefPlaylistDlg#12
 msgctxt "DlgPrefPlaylistDlg#12"
 msgid "Browse..."
-msgstr ""
+msgstr "Обзор..."
 
 #: DlgPrefPlaylistDlg#13
 msgid "Detect"
@@ -1074,7 +1077,7 @@ msgstr "Определить"
 #: DlgPrefPlaylistDlg#14
 msgctxt "DlgPrefPlaylistDlg#14"
 msgid "Library"
-msgstr ""
+msgstr "Библиотека"
 
 #: DlgPrefPlaylistDlg#15
 msgid "Music Directory:"
@@ -1105,7 +1108,7 @@ msgstr "Сохранить запись как..."
 
 #: DlgPrefRecord#2
 msgid "Save Cue File As..."
-msgstr ""
+msgstr "Сохранить файл метаданных Cue как..."
 
 #: DlgPrefRecord#2
 msgid "kbps"
@@ -1119,7 +1122,7 @@ msgstr ""
 #: DlgPrefRecordDlg#2
 msgctxt "DlgPrefRecordDlg#2"
 msgid "File"
-msgstr ""
+msgstr "Файл"
 
 #: DlgPrefRecordDlg#3
 msgctxt "DlgPrefRecordDlg#3"
@@ -1137,11 +1140,11 @@ msgstr "Качество"
 
 #: DlgPrefRecordDlg#6
 msgid "High"
-msgstr ""
+msgstr "Высокий"
 
 #: DlgPrefRecordDlg#7
 msgid "Low"
-msgstr ""
+msgstr "Низкий"
 
 #: DlgPrefRecordDlg#8
 msgid "Tags"
@@ -1163,38 +1166,40 @@ msgstr "Альбом"
 
 #: DlgPrefRecordDlg#12
 msgid "Create a CUE file"
-msgstr ""
+msgstr "Создать файл метаданных CUE"
 
 #: DlgPrefRecordDlg#13
 msgid "Cue File"
-msgstr ""
+msgstr "Cue-файл"
 
 #: DlgPrefReplayGainDlg#1
 msgctxt "DlgPrefReplayGainDlg#1"
 msgid "BPM Detection Settings"
-msgstr ""
+msgstr "Настройки определения темпа"
 
 #: DlgPrefReplayGainDlg#2
 msgid "ReplayGain Normalization"
-msgstr ""
+msgstr "Нормализация выравниванием громкости"
 
 #: DlgPrefReplayGainDlg#3
 msgid "Apply volume normalization to loaded songs."
-msgstr ""
+msgstr "Применить нормализацию громкости для всех загруженных композиций."
 
 #: DlgPrefReplayGainDlg#4
 msgid "Enable Replay Gain"
-msgstr ""
+msgstr "Использовать выравнивание громкости"
 
 #: DlgPrefReplayGainDlg#5
 msgid ""
 "Calculate ReplayGain normalization for songs which are missing ReplayGain "
 "metadata."
 msgstr ""
+"Определить степень нормализации выравниванием громкости для композиций в "
+"которых отсутствую необходимые данные."
 
 #: DlgPrefReplayGainDlg#6
 msgid "Enable Replay Gain Analysis"
-msgstr ""
+msgstr "Использовать анализатор выравнивания громкости"
 
 #: DlgPrefReplayGainDlg#7
 msgid ""
@@ -1202,23 +1207,26 @@ msgid ""
 "applied to a new song. You may wish to wait before adjusting the pregain and "
 "volume."
 msgstr ""
+"На слабых компьютерах, применение для новой композиции нормализации "
+"громкости может занять несколько секунд.  Вы можете подождать настройки "
+"предварительного усиления и громкости."
 
 #: DlgPrefReplayGainDlg#8
 msgid "Initial Boost"
-msgstr ""
+msgstr "Начальное усиление"
 
 #: DlgPrefReplayGainDlg#9
 msgid "Initial Gain Boost"
-msgstr ""
+msgstr "Начальное усиление громкости"
 
 #: DlgPrefReplayGainDlg#10
 msgid "dB"
-msgstr ""
+msgstr "дБ"
 
 #: DlgPrefReplayGainDlg#11
 msgctxt "DlgPrefReplayGainDlg#11"
 msgid "Reset"
-msgstr ""
+msgstr "Сбросить"
 
 #: DlgPrefShoutcastDlg#1
 msgctxt "DlgPrefShoutcastDlg#1"
@@ -1469,11 +1477,11 @@ msgstr "Нет"
 
 #: DlgPrefSound#2
 msgid "%1 Hz"
-msgstr ""
+msgstr "%1 Гц"
 
 #: DlgPrefSound#3
 msgid "Mixxx Error"
-msgstr ""
+msgstr "Ошибка Mixxx"
 
 #: DlgPrefSound#4
 msgid ""
@@ -1481,28 +1489,32 @@ msgid ""
 "rate.\n"
 "The sample rate has been reset to 44100 Hz."
 msgstr ""
+"FinalScratch правильно записывает, только с частотой выборки 44100 Гц.\n"
+"Частота выборки была назначена до 44100 Гц."
 
 #: DlgPrefSound#5
 msgid "a device"
-msgstr ""
+msgstr "устройство"
 
 #: DlgPrefSound#6
 msgid "An unknown error occurred"
-msgstr ""
+msgstr "Обнаружена неизвестная ошибка"
 
 #: DlgPrefSound#7
 msgid "sound device \"%1\""
-msgstr ""
+msgstr "звуковое устройство \"%1\""
 
 #: DlgPrefSound#8
 msgid "Two outputs cannot share channels on %1"
-msgstr ""
+msgstr "Невозможно обобщить каналы для двух выводов на %1"
 
 #: DlgPrefSound#9
 msgid ""
 "Error opening %1\n"
 "%2"
 msgstr ""
+"Ошибка открытия %1\n"
+"%2"
 
 #: DlgPrefSound#10
 msgid "%1 ms"
@@ -1510,7 +1522,7 @@ msgstr "%1 мс"
 
 #: DlgPrefSound#11
 msgid "Configuration error"
-msgstr ""
+msgstr "Ошибка настройки"
 
 #: DlgPrefSoundDlg#1
 msgid "Sound API"
@@ -1518,7 +1530,7 @@ msgstr "Звуковой API"
 
 #: DlgPrefSoundDlg#2
 msgid "Sample Rate"
-msgstr ""
+msgstr "Частота выборки"
 
 #: DlgPrefSoundDlg#3
 msgid "Latency Tips"
@@ -1531,27 +1543,32 @@ msgid ""
 "<li>Reduce your latency to improve Mixxx's responsiveness</li>\n"
 "</ul>"
 msgstr ""
+"<ul>\n"
+"<li>Увеличьте значение задержки, если вы слышите треск во время "
+"воспроизведения</li>\n"
+"<li>Уменьшите значение задержки для повышения производительности Mixxx</li>\n"
+"</ul>"
 
 #: DlgPrefSoundDlg#5
 msgid "Output"
-msgstr ""
+msgstr "Вывод"
 
 #: DlgPrefSoundDlg#6
 msgctxt "DlgPrefSoundDlg#6"
 msgid "Input"
-msgstr ""
+msgstr "Вход"
 
 #: DlgPrefSoundDlg#7
 msgid "Query Devices"
-msgstr ""
+msgstr "Запрашивающие устройство"
 
 #: DlgPrefSoundDlg#8
 msgid "Reset to Defaults"
-msgstr ""
+msgstr "По умолчанию"
 
 #: DlgPrefSoundDlg#9
 msgid "Apply"
-msgstr ""
+msgstr "Применить"
 
 #: DlgPrefSoundDlg#10
 msgid "Latency"
@@ -1564,7 +1581,7 @@ msgstr "Нет"
 
 #: DlgPrefSoundItem#2
 msgid "Channels %1 - %2"
-msgstr ""
+msgstr "Каналы %1 - %2"
 
 #: DlgPrefSoundItem#3
 msgid "Form"
@@ -1582,7 +1599,7 @@ msgstr ""
 #: DlgPrefVinylDlg#2
 msgctxt "DlgPrefVinylDlg#2"
 msgid "Input"
-msgstr ""
+msgstr "Вход"
 
 #: DlgPrefVinylDlg#3
 msgid ""
@@ -1598,6 +1615,17 @@ msgid ""
 "weight:600;\">Select sound devices for vinyl control in the Sound Hardware "
 "pane.</span></p></body></html>"
 msgstr ""
+"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" "
+"\"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+"<html><head><meta name=\"qrichtext\" content=\"1\" /><style "
+"type=\"text/css\">\n"
+"p, li { white-space: pre-wrap; }\n"
+"</style></head><body style=\" font-family:'DejaVu Sans'; font-size:9pt; font-"
+"weight:400; font-style:normal;\">\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-"
+"right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-"
+"weight:600;\">Выберите звуковые устройства для управления винилом в окне "
+"звукового обрудования.</span></p></body></html>"
 
 #: DlgPrefVinylDlg#4
 msgid ""
@@ -1615,7 +1643,7 @@ msgstr "Проигрыватель предуселитель"
 
 #: DlgPrefVinylDlg#6
 msgid "1 (Off)"
-msgstr ""
+msgstr "1 (Выкл.)"
 
 #: DlgPrefVinylDlg#7
 msgid "150"
@@ -1693,7 +1721,7 @@ msgstr "Эквалайзеры"
 #: DlgPreferences#6
 msgctxt "DlgPreferences#6"
 msgid "Crossfader"
-msgstr ""
+msgstr "Плавное микширование"
 
 #: DlgPreferences#7
 msgctxt "DlgPreferences#7"
@@ -1707,12 +1735,12 @@ msgstr "Определение уд./мин."
 
 #: DlgPreferences#9
 msgid "Normalization"
-msgstr ""
+msgstr "Нормализация"
 
 #: DlgPreferences#10
 msgctxt "DlgPreferences#10"
 msgid "Vinyl Control"
-msgstr ""
+msgstr "Управление винилом"
 
 #: DlgPreferences#11
 msgid "Live Broadcasting"
@@ -1755,31 +1783,31 @@ msgstr "Анализировать"
 
 #: DlgPrepare#7
 msgid "Stop Analysis"
-msgstr ""
+msgstr "Остановить анализатор"
 
 #: DlgPrepare#8
 msgid "Analyzing %1%"
-msgstr ""
+msgstr "Анализирование %1%"
 
 #: DlgTrackInfo#1
 msgctxt "DlgTrackInfo#1"
 msgid "Track Editor"
-msgstr ""
+msgstr "Редактор дорожек"
 
 #: DlgTrackInfo#2
 msgctxt "DlgTrackInfo#2"
 msgid "Song:"
-msgstr ""
+msgstr "Композиция:"
 
 #: DlgTrackInfo#3
 msgctxt "DlgTrackInfo#3"
 msgid "Title:"
-msgstr ""
+msgstr "Название:"
 
 #: DlgTrackInfo#4
 msgctxt "DlgTrackInfo#4"
 msgid "Artist:"
-msgstr ""
+msgstr "Исполнитель:"
 
 #: DlgTrackInfo#5
 msgid "Album:"
@@ -1800,7 +1828,7 @@ msgstr "Жанр:"
 #: DlgTrackInfo#9
 msgctxt "DlgTrackInfo#9"
 msgid "Filename:"
-msgstr ""
+msgstr "Имя файла:"
 
 #: DlgTrackInfo#10
 msgid "Duration:"
@@ -1814,7 +1842,7 @@ msgstr ""
 #: DlgTrackInfo#12
 msgctxt "DlgTrackInfo#12"
 msgid "File Type:"
-msgstr ""
+msgstr "Тип файла:"
 
 #: DlgTrackInfo#13
 msgctxt "DlgTrackInfo#13"
@@ -1824,7 +1852,7 @@ msgstr ""
 #: DlgTrackInfo#14
 msgctxt "DlgTrackInfo#14"
 msgid "Comments:"
-msgstr ""
+msgstr "Описания:"
 
 #: DlgTrackInfo#15
 msgid "Reload track metadata from file."
@@ -1833,7 +1861,7 @@ msgstr "Обновить метаданные дорожки из файла."
 #: DlgTrackInfo#16
 msgctxt "DlgTrackInfo#16"
 msgid "Track Information (Click to Expand)"
-msgstr ""
+msgstr "Сведения о дорожке (Щёлкните, чтобы развернуть)"
 
 #: DlgTrackInfo#17
 msgid "Track BPM: "
@@ -1984,7 +2012,7 @@ msgstr "Ошибка установки неблокирующего режим�
 
 #: EngineShoutcast#5
 msgid "Lost connection to streaming server"
-msgstr ""
+msgstr "Соединение с потоковым сервером прервано"
 
 #: EngineShoutcast#6
 msgid ""
@@ -2004,7 +2032,7 @@ msgstr "Mixxx успешно подключён к серверу shoutcast"
 
 #: EngineShoutcast#9
 msgid "Mixxx could not connect to streaming server"
-msgstr ""
+msgstr "Mixxx не может подключиться к потоковому серверу"
 
 #: EngineShoutcast#10
 msgid "Mixxx has successfully disconnected to the shoutcast server"
@@ -2037,29 +2065,31 @@ msgstr "iTunes"
 
 #: ITunesFeature#4
 msgid "Select your iTunes library"
-msgstr ""
+msgstr "Выберите вашу библиотеку iTunes"
 
 #: ITunesFeature#3
 msgid "iTunes (loading)"
-msgstr ""
+msgstr "iTunes (загрузка)"
 
 #: ITunesFeature#7
 msgid "Use Default Library"
-msgstr ""
+msgstr "Использовать библиотеку по умолчанию"
 
 #: ITunesFeature#8
 msgid "Choose Library..."
-msgstr ""
+msgstr "Выбрать библиотеку..."
 
 #: ITunesFeature#5
 msgid "Error Loading iTunes Library"
-msgstr ""
+msgstr "Ошибка загрузки библиотеки iTunes"
 
 #: ITunesFeature#6
 msgid ""
 "There was an error loading your iTunes library. Some of your iTunes tracks "
 "or playlists may not have loaded."
 msgstr ""
+"Произошла ошибка при загрузке вашей библиотеки iTunes. Некоторые из ваших "
+"дорожек и списков воспроизведений iTunes могли быть не загружены."
 
 #: LADSPAPresetSlot#1
 msgid "Drag a preset from the list & drop it here"
@@ -2194,7 +2224,7 @@ msgstr ""
 
 #: MidiStatusDelegate#1
 msgid "Unknown"
-msgstr ""
+msgstr "Неизвестно"
 
 #: MixxxApp#1
 msgid "Mixxx "
@@ -2299,20 +2329,25 @@ msgid ""
 "application is using a sound device Mixxx is configured to use or a device "
 "is not plugged in."
 msgstr ""
+"У Mixxx отсутствует доступ ко всем настроенным звуковым устройствам. Другая "
+"программа использует звуковое устройство предназначенное для Mixxx или "
+"устройство не подсоединено."
 
 #: MixxxApp#13
 msgid ""
 "<b>Retry</b> after closing the other application or reconnecting a sound "
 "device"
 msgstr ""
+"<b>Повторите</b> после закрытия использующей программы или переподключения "
+"звукового устройства"
 
 #: MixxxApp#14
 msgid "<b>Reconfigure</b> Mixxx's sound device settings."
-msgstr ""
+msgstr "<b>Изменить</b> настройки звукового устройства Mixxx."
 
 #: MixxxApp#15
 msgid "<b>Exit</b> Mixxx."
-msgstr ""
+msgstr "<b>Выйти из</b> Mixxx."
 
 #: MixxxApp#16
 msgid "Retry"
@@ -2332,7 +2367,7 @@ msgstr "Выйти"
 
 #: MixxxApp#20
 msgid "Continue"
-msgstr ""
+msgstr "Продолжить"
 
 #: MixxxApp#21
 msgid "&Load Song (Player 1)..."
@@ -2429,7 +2464,7 @@ msgstr ""
 #: MixxxApp#44
 msgctxt "MixxxApp#44"
 msgid "Enable live broadcasting"
-msgstr ""
+msgstr "Использовать вещание в прямом эфире"
 
 #: MixxxApp#45
 msgid "Ctrl+L"
@@ -2582,7 +2617,7 @@ msgstr "Разворачивать Mixxx на весь экран"
 #: MixxxApp#72
 msgctxt "MixxxApp#72"
 msgid "Preferences"
-msgstr ""
+msgstr "Параметры"
 
 #: MixxxApp#73
 msgid ""
@@ -2692,14 +2727,17 @@ msgid ""
 "No input device(s) selected.\n"
 "Please select your soundcard(s) in the sound hardware preferences."
 msgstr ""
+"Устройства ввода не выбраны.\n"
+"Пожалуйста, выберите вашу звуковую карту в параметрах звукового оборудования."
 
 #: MixxxApp#93
 msgid "Confirm Exit"
-msgstr ""
+msgstr "Подтвердите выход"
 
 #: MixxxApp#94
 msgid "A deck is currently playing. Exit Mixxx?"
 msgstr ""
+"В данный момент дека используется для воспроизведения. Выйти из Mixxx?"
 
 #: MixxxApp#95
 msgctxt "MixxxApp#95"
@@ -2721,7 +2759,7 @@ msgstr ""
 #: MixxxLibraryFeature#1
 msgctxt "MixxxLibraryFeature#1"
 msgid "Library"
-msgstr ""
+msgstr "Библиотека"
 
 #: PlaylistFeature#1
 msgid "New Playlist"
@@ -2729,27 +2767,27 @@ msgstr "Создать список воспроизведения"
 
 #: PlaylistFeature#2
 msgid "Add to Auto-DJ Queue"
-msgstr ""
+msgstr "Добавить в очередь для автоматического диджеинга"
 
 #: PlaylistFeature#3
 msgctxt "PlaylistFeature#3"
 msgid "Remove"
-msgstr ""
+msgstr "Удалить"
 
 #: PlaylistFeature#4
 msgctxt "PlaylistFeature#4"
 msgid "Rename"
-msgstr ""
+msgstr "Переменовать"
 
 #: PlaylistFeature#5
 msgctxt "PlaylistFeature#5"
 msgid "Lock"
-msgstr ""
+msgstr "Заблокировать"
 
 #: PlaylistFeature#6
 msgctxt "PlaylistFeature#6"
 msgid "Import Playlist"
-msgstr ""
+msgstr "Импортировать список воспроизведения"
 
 #: PlaylistFeature#3
 msgid "Playlists"
@@ -2758,7 +2796,7 @@ msgstr "Списки воспроизведения"
 #: PlaylistFeature#8
 msgctxt "PlaylistFeature#8"
 msgid "Unlock"
-msgstr ""
+msgstr "Разблокировать"
 
 #: PlaylistFeature#4
 msgid "Playlist name:"
@@ -2778,20 +2816,20 @@ msgstr "Обнаружена неизвестная ошибка при созд
 
 #: PlaylistFeature#13
 msgid "Rename Playlist"
-msgstr ""
+msgstr "Переименовать список воспроизведения"
 
 #: PlaylistFeature#14
 msgid "New playlist name:"
-msgstr ""
+msgstr "Название нового списка воспроизведения:"
 
 #: PlaylistFeature#15
 msgid "Renaming Playlist Failed"
-msgstr ""
+msgstr "Ошибка переименования списка воспроизведения"
 
 #: PlaylistFeature#16
 msgctxt "PlaylistFeature#16"
 msgid "Playlist Files (*.m3u *.pls)"
-msgstr ""
+msgstr "Списки воспроизведения (*.m3u *.pls)"
 
 #: PlaylistFeature#8
 msgid "A playlist by that name already exists."
@@ -2804,7 +2842,7 @@ msgstr "Анализировать"
 
 #: QObject#1
 msgid "Invalid"
-msgstr ""
+msgstr "Недействительный"
 
 #: QObject#2
 msgid "Master"
@@ -2816,24 +2854,24 @@ msgstr "Наушники"
 
 #: QObject#4
 msgid "Deck"
-msgstr ""
+msgstr "Дека"
 
 #: QObject#5
 msgctxt "QObject#5"
 msgid "Vinyl Control"
-msgstr ""
+msgstr "Управление винилом"
 
 #: QObject#6
 msgid "Microphone"
-msgstr ""
+msgstr "Микрофон"
 
 #: QObject#7
 msgid "Passthrough"
-msgstr ""
+msgstr "Пересылка"
 
 #: QObject#8
 msgid "Unknown path type %1"
-msgstr ""
+msgstr "Неизвестный тип размещение %1"
 
 #: RhythmboxFeature#1
 msgid "Rhythmbox"
@@ -2841,31 +2879,31 @@ msgstr ""
 
 #: SamplerBank#1
 msgid "Save Sampler Bank"
-msgstr ""
+msgstr "Сохранить контейнер сэмплера"
 
 #: SamplerBank#2
 msgid "Error Saving Sampler Bank"
-msgstr ""
+msgstr "Ошибка сохранения контейнера сэмплера"
 
 #: SamplerBank#3
 msgid "Could not write the sampler bank to '%1'."
-msgstr ""
+msgstr "Невозможно записать контейнер сэмплера в '%1'."
 
 #: SamplerBank#4
 msgid "Load Sampler Bank"
-msgstr ""
+msgstr "Загрузить контейнер сэмплера"
 
 #: SamplerBank#5
 msgid "Error Reading Sampler Bank"
-msgstr ""
+msgstr "Ошибка чтения контейнера сэмплера"
 
 #: SamplerBank#6
 msgid "Could not open the sampler bank file '%1'."
-msgstr ""
+msgstr "Невозможно открыть файл контейнера сэмплера '%1'."
 
 #: SamplerBank#7
 msgid "Could not read the sampler bank file '%1'."
-msgstr ""
+msgstr "Невозможно прочитать файл контейнера сэмплера '%1'."
 
 #: ScriptStudio#1
 msgid "Mixxx Script Studio"
@@ -2874,40 +2912,40 @@ msgstr ""
 #: ScriptStudio#2
 msgctxt "ScriptStudio#2"
 msgid "File"
-msgstr ""
+msgstr "Файл"
 
 #: ScriptStudio#3
 msgctxt "ScriptStudio#3"
 msgid "Edit"
-msgstr ""
+msgstr "Правка"
 
 #: ScriptStudio#4
 msgid "Run"
-msgstr ""
+msgstr "Выполнить"
 
 #: ScriptStudio#5
 msgid "Close"
-msgstr ""
+msgstr "Закрыть"
 
 #: ScriptStudio#6
 msgid "Import..."
-msgstr ""
+msgstr "Импортировать..."
 
 #: ScriptStudio#7
 msgid "Export..."
-msgstr ""
+msgstr "Экспортировать..."
 
 #: ScriptStudio#8
 msgid "Delete Macro"
-msgstr ""
+msgstr "Удалить макрос"
 
 #: ScriptStudio#9
 msgid "New Macro..."
-msgstr ""
+msgstr "Создать макрос..."
 
 #: ScriptStudio#10
 msgid "Run Macro"
-msgstr ""
+msgstr "Выполнить макрос"
 
 #: TrackCollection#1
 msgid "Cannot open database"
@@ -2951,17 +2989,19 @@ msgstr ""
 
 #: TraktorFeature#2
 msgid "Traktor (loading)"
-msgstr ""
+msgstr "Traktor (загрузка)"
 
 #: TraktorFeature#3
 msgid "Error Loading Traktor Library"
-msgstr ""
+msgstr "Ошибка загрузки библиотеки Traktor"
 
 #: TraktorFeature#4
 msgid ""
 "There was an error loading your Traktor library. Some of your Traktor tracks "
 "or playlists may not have loaded."
 msgstr ""
+"Произошла ошибка при загрузке библиотеки Traktor. Некоторые композиции и "
+"списки воспроизведения Traktor могут быть не загружены."
 
 #: Ui#1
 msgctxt "Ui#1"
@@ -3003,6 +3043,8 @@ msgid ""
 "The only skin compatiable with this size display is Outline800x480-WVGA.  "
 "Would you like to use that skin?"
 msgstr ""
+"Совместимая обложка доступная для этого экрана Outline800x480-WVGA.  Вы "
+"действительно хотите использовать эту обложку?"
 
 #: Ui#10
 msgctxt "Ui#10"
@@ -3012,19 +3054,19 @@ msgstr "Параметры"
 #: Ui#11
 msgctxt "Ui#11"
 msgid "Crossfader"
-msgstr ""
+msgstr "Плавное микширование"
 
 #: Ui#12
 msgid "Master volume"
-msgstr ""
+msgstr "Общая громкость"
 
 #: Ui#13
 msgid "Master balance"
-msgstr ""
+msgstr "Общий баланс"
 
 #: Ui#14
 msgid "Headphones volume"
-msgstr ""
+msgstr "Громкость наушников"
 
 #: Ui#15
 msgid "Headphones mix (pre/main)"
@@ -3032,31 +3074,31 @@ msgstr ""
 
 #: Ui#16
 msgid "Cue button for Player %1"
-msgstr ""
+msgstr "Кнопка Cue для проигрывателя %1"
 
 #: Ui#17
 msgid "Play button for Player %1"
-msgstr ""
+msgstr "Кнопка воспроизведения для проигрывателя %1"
 
 #: Ui#18
 msgid "Fast rewind button for Player %1"
-msgstr ""
+msgstr "Кнопка назад для проигрывателя %1"
 
 #: Ui#19
 msgid "Fast forward button for Player %1"
-msgstr ""
+msgstr "Кнопка вперёд для проигрывателя %1"
 
 #: Ui#20
 msgid "Play reverse button for Player %1"
-msgstr ""
+msgstr "Кнопка обратного воспроизведения для проигрывателя %1"
 
 #: Ui#21
 msgid "Headphone listen button for Player %1"
-msgstr ""
+msgstr "Кнопка прослушивания в наушниках для проигрывателя %1"
 
 #: Ui#22
 msgid "Beat sync button for Player %1"
-msgstr ""
+msgstr "Кнопка синхронизации удара для проигрывателя %1"
 
 #: Ui#23
 msgid "BPM tap button for Player %1"
@@ -3064,23 +3106,23 @@ msgstr ""
 
 #: Ui#24
 msgid "Keylock button for Player %1"
-msgstr ""
+msgstr "Кнопка блокировки клавиатуры для проигрывателя %1"
 
 #: Ui#25
 msgid "Pitch control slider for Player %1"
-msgstr ""
+msgstr "Слайдер высоты тона для проигрывателя %1"
 
 #: Ui#26
 msgid "Flanger effect button for Player %1"
-msgstr ""
+msgstr "Кнопка эффекта фланджера для проигрывателя %1"
 
 #: Ui#27
 msgid "Channel 2 volume fader"
-msgstr ""
+msgstr "Микшер громкости 2-го канала"
 
 #: Ui#28
 msgid "Gain knob for Channel 2"
-msgstr ""
+msgstr "Ручка регулировки усиления для 2-го канала"
 
 #: Ui#29
 msgid "High EQ knob for Channel 2"
@@ -3096,15 +3138,15 @@ msgstr ""
 
 #: Ui#32
 msgid "Loop In button for Player %1"
-msgstr ""
+msgstr "Кнопка петли для проигрывателя %1"
 
 #: Ui#33
 msgid "Loop Out button for Player %1"
-msgstr ""
+msgstr "Кнопка петличного выхода для проигрывателя %1"
 
 #: Ui#34
 msgid "Reloop / Exit button for Player %1"
-msgstr ""
+msgstr "Кнопка повтора петли / выхода для проигрывателя %1"
 
 #: Ui#35
 msgid "Hotcue 1 button for Player %1"
@@ -3141,26 +3183,28 @@ msgstr ""
 #: Ui#43
 msgid "Switch to the next view (library, playlist..)"
 msgstr ""
+"Переключиться на следующий вид (библиотека, список воспроизведения..)"
 
 #: Ui#44
 msgid "Switch to the previous view (library, playlist..)"
 msgstr ""
+"Переключиться на предыдущий вид (библиотека, список воспроизведения..)"
 
 #: Ui#45
 msgid "Scroll to next track in library/playlist"
-msgstr ""
+msgstr "Перейти на следующую дорожку в библиотеке/списке воспроизведения"
 
 #: Ui#46
 msgid "Scroll to previous track in library/playlist"
-msgstr ""
+msgstr "Перейти на предыдущую дорожку в библиотеке/списке воспроизведения"
 
 #: Ui#47
 msgid "Load selected track into first stopped player"
-msgstr ""
+msgstr "Загрузить выбранную дорожку в первый остановленный проигрыватель"
 
 #: Ui#48
 msgid "Load selected track into Player %1"
-msgstr ""
+msgstr "Загрузить выбранную дорожку в проигрыватель %1"
 
 #: VinylControlSignalWidget#1
 msgid "OK"
@@ -3176,36 +3220,36 @@ msgstr "Добавить в список воспроизведения"
 
 #: WTrackTableView#2
 msgid "Add to Crate"
-msgstr ""
+msgstr "Добавить в группу"
 
 #: WTrackTableView#3
 msgid "Load to Sampler"
-msgstr ""
+msgstr "Загрузить в сэмплер"
 
 #: WTrackTableView#4
 msgctxt "WTrackTableView#4"
 msgid "Remove"
-msgstr ""
+msgstr "Удалить"
 
 #: WTrackTableView#5
 msgid "Properties..."
-msgstr ""
+msgstr "Свойства..."
 
 #: WTrackTableView#6
 msgid "Add to Auto DJ Queue"
-msgstr ""
+msgstr "Добавить в очередь автоматического диджеинга"
 
 #: WTrackTableView#7
 msgid "Load to Deck %1"
-msgstr ""
+msgstr "Загрузить в деку %1"
 
 #: WTrackTableView#8
 msgid "Sampler %1"
-msgstr ""
+msgstr "Сэмплер %1"
 
 #: WTrackTableViewHeader#1
 msgid "Show or hide columns."
-msgstr ""
+msgstr "Показать или скрыть столбцы."
 
 #~ msgid "You don't have permission to view this folder."
 #~ msgstr "У вас не достаточно прав для просмотра этого каталога."
