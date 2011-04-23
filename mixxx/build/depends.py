@@ -519,10 +519,11 @@ class MixxxCore(Feature):
                    "waveform/waveformrendermarkrange.cpp",
                    "waveform/waveformrenderbeat.cpp",
 		   "waveform/waveform.cpp",
-                   "waveform/glwaveformwidget.cpp",
                    "waveform/waveformrendererabstract.cpp",
                    "waveform/waveformwidget.cpp",
                    "waveform/waveformrendererfilteredsignal.cpp",
+                   "waveform/glwaveformrendererfilteredsignal.cpp",
+                   "waveform/glwaveformwidget.cpp",
 
                    "skin/imginvert.cpp",
                    "skin/imgloader.cpp",
