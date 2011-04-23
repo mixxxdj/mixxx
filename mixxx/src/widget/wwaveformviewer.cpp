@@ -17,6 +17,8 @@
 #include "waveform/waveformrenderbackground.h"
 #include "waveform/waveformrendererfilteredsignal.h"
 
+#include "waveform/glwaveformwidget.h"
+
 WWaveformViewer::WWaveformViewer(const char *group, WaveformRenderer *pWaveformRenderer, QWidget * parent, Qt::WFlags f) :
     QWidget(parent)
 {
@@ -33,9 +35,16 @@ WWaveformViewer::WWaveformViewer(const char *group, WaveformRenderer *pWaveformR
     setAttribute(Qt::WA_OpaquePaintEvent,true);
 
     m_waveformWidgetRenderer = new WaveformWidgetRenderer( m_pGroup);
-    m_waveformWidgetRenderer->init();
-    m_waveformWidgetRenderer->addRenderer<WaveformRenderBackground>();
-    m_waveformWidgetRenderer->addRenderer<WaveformRendererFilteredSignal>();
+
+    //m_waveformWidgetRenderer->init();
+    //m_waveformWidgetRenderer->addRenderer<WaveformRenderBackground>();
+    //m_waveformWidgetRenderer->addRenderer<WaveformRendererFilteredSignal>();
+
+    m_zoomZoneWidth = 20;
+
+    m_waveformWidget = new GLWaveformWidget( m_pGroup, this);
+    GLWaveformWidget* waveformWidget = (GLWaveformWidget*)m_waveformWidget;
+    waveformWidget->getRenderer()->init();
 }
 
 WWaveformViewer::~WWaveformViewer() {
@@ -43,20 +52,29 @@ WWaveformViewer::~WWaveformViewer() {
 }
 
 void WWaveformViewer::setup(QDomNode node) {
-    m_waveformWidgetRenderer->setup( node);
-    m_waveformWidgetRenderer->resize( width(), height());
+    GLWaveformWidget* waveformWidget = (GLWaveformWidget*)m_waveformWidget;
+    waveformWidget->getRenderer()->setup( node);
+
+    //m_waveformWidgetRenderer->setup( node);
+    //m_waveformWidgetRenderer->resize( width(), height());
 }
 
-
+void WWaveformViewer::resizeEvent(QResizeEvent* /*event*/)
+{
+    m_waveformWidget->resize(size());
+    //m_waveformWidgetRenderer->resize(width(),height());
+    //QWidget::resizeEvent(event);
+}
+/*
 void WWaveformViewer::paintEvent(QPaintEvent *event) {
-    QPainter painter;
+ QPainter painter;
     painter.begin(this);
     //painter.setRenderHint(QPainter::Antialiasing);
     m_waveformWidgetRenderer->draw(&painter,event);
     painter.end();
     m_painting = false;
 }
-
+*/
 
 void WWaveformViewer::refresh() {
     //m_paintMutex.lock();
@@ -64,7 +82,7 @@ void WWaveformViewer::refresh() {
         m_painting = true;
 
         // The docs say update is better than repaint.
-       update();
+        update();
     }
     //m_paintMutex.unlock();
 }
@@ -104,8 +122,20 @@ bool WWaveformViewer::eventFilter(QObject *o, QEvent *e) {
     return true;
 }
 
-/** DRAG AND DROP **/
+void WWaveformViewer::wheelEvent(QWheelEvent *event)
+{
+    update();
+    if( event->x() > width() - m_zoomZoneWidth)
+    {
+        GLWaveformWidget* waveformWidget = (GLWaveformWidget*)m_waveformWidget;
+        if( event->delta() > 0)
+            waveformWidget->getRenderer()->zoomIn();
+        else
+            waveformWidget->getRenderer()->zoomOut();
+    }
+}
 
+/** DRAG AND DROP **/
 
 void WWaveformViewer::dragEnterEvent(QDragEnterEvent * event)
 {

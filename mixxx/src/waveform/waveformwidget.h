@@ -29,7 +29,14 @@ public:
 
     const char* getGroup() const { return m_group;}
     const TrackPointer getTrackInfo() const { return m_trackInfoObject;}
+
+    bool zoomIn();
+    bool zoomOut();
+    float getVisualSamplePerPixel();
+
     double getPlayPos() const { return m_playPos;}
+    double getZoomFactor() const { m_zoomFactor;}
+    double getRateAdjust() const { return m_rateAdjust;}
 
     void resize( int width, int height);
     int getHeight() const { return m_height;}
@@ -52,14 +59,27 @@ protected:
     int m_height;
     int m_width;
 
-    //TODO vRince cerate some class to manage control/value
+    double m_rateAdjust;
+    double m_zoomFactor;
+
+    //TODO vRince create some class to manage control/value
     //ControlConnection
     ControlObject* m_playPosControlObject;
     double m_playPos;
+    ControlObject* m_rateControlObject;
+    double m_rate;
+    ControlObject* m_rateRangeControlObject;
+    double m_rateRange;
+    ControlObject* m_rateDirControlObject;
+    double m_rateDir;
 
+    //Debug
     QTime* m_timer;
     int m_lastFrameTime;
+    int m_lastFramesTime[100];
     int m_lastSystemFrameTime;
+    int m_lastSystemFramesTime[100];
+    int currentFrame;
 
 };
 

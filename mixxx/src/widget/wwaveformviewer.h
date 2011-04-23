@@ -12,6 +12,7 @@
 #include <QTimerEvent>
 
 #include "waveform/waveformwidget.h"
+
 #include "wwidget.h"
 #include "defs.h"
 
@@ -30,8 +31,10 @@ public:
     void dragEnterEvent(QDragEnterEvent *event);
     void dropEvent(QDropEvent *event);
     void setup(QDomNode node);
+
     bool eventFilter(QObject *o, QEvent *e);
 
+    QWidget* getWaveformWidget() { return m_waveformWidget;}
     WaveformWidgetRenderer* getWaveFormRenderer() { return m_waveformWidgetRenderer;}
 
 public slots:
@@ -43,9 +46,12 @@ signals:
     void trackDropped(QString filename, QString group);
 
 protected:
-    virtual void paintEvent( QPaintEvent* event);
+    virtual void resizeEvent(QResizeEvent *event);
+    virtual void wheelEvent(QWheelEvent *event);
 
 private:
+    int m_zoomZoneWidth;
+
     /** Used in mouse event handler */
     int m_iMouseStart;
 
@@ -53,6 +59,8 @@ private:
     WaveformRenderer *m_pWaveformRenderer;
 
     WaveformWidgetRenderer* m_waveformWidgetRenderer;
+
+    QWidget* m_waveformWidget;
 
     bool m_painting;
     QMutex m_paintMutex;

@@ -43,6 +43,7 @@
 #include "widget/wvisualsimple.h"
 #include "widget/wglwaveformviewer.h"
 #include "widget/wwaveformviewer.h"
+#include "waveform/glwaveformwidget.h"
 
 #include "widget/wsearchlineedit.h"
 #include "widget/wlibrary.h"
@@ -436,14 +437,19 @@ QWidget* LegacySkinParser::parseVisual(QDomElement node) {
     setupWidget(node, widget);
     widget->setup( node);
 
-    QTimer* timer = new QTimer();
-    timer->start( 1000.0/20.0);
-    connect( timer, SIGNAL(timeout()), widget, SLOT(update()));
+    GLWaveformWidget* waveformWidget = (GLWaveformWidget*)widget->getWaveformWidget();
 
     connect( pPlayer,SIGNAL(newTrackLoaded(TrackPointer)),
-             widget->getWaveFormRenderer(), SLOT(slotNewTrack(TrackPointer)));
+             waveformWidget->getRenderer(), SLOT(slotNewTrack(TrackPointer)));
     connect( pPlayer,SIGNAL(unloadingTrack(TrackPointer)),
-             widget->getWaveFormRenderer(), SLOT(slotUnloadTrack(TrackPointer)));
+             waveformWidget->getRenderer(), SLOT(slotUnloadTrack(TrackPointer)));
+
+    //TODO vRince remove this ugly thing ... only for development
+    //We really need a render manager if should call the renders from the main loop !
+
+    QTimer* timer = new QTimer();
+    timer->start(1000.0/30.0);
+    connect( timer, SIGNAL(timeout()), waveformWidget, SLOT(update()));
     /*
     if (type == WAVEFORM_GL) {
         ((WGLWaveformViewer*)widget)->setup(node);

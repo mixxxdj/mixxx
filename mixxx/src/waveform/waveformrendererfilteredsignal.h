@@ -16,7 +16,9 @@ public:
     virtual void setup( const QDomNode& node);
     virtual void draw( QPainter* painter, QPaintEvent* event);
 
-private:
+    virtual void onResize();
+
+protected:
     QColor m_signalColor;
     QColor m_lowColor;
     QColor m_midColor;

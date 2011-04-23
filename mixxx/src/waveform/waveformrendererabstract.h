@@ -20,6 +20,8 @@ public:
     virtual void setup( const QDomNode& node) = 0;
     virtual void draw( QPainter* painter, QPaintEvent* event) = 0;
 
+    virtual void onResize() {}
+
 protected:
     WaveformWidgetRenderer* m_waveformWidget;
     bool m_dirty;

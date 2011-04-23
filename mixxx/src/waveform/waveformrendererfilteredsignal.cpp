@@ -15,9 +15,14 @@ WaveformRendererFilteredSignal::WaveformRendererFilteredSignal( WaveformWidgetRe
 
 void WaveformRendererFilteredSignal::init()
 {
-    m_lowLines.resize(4*m_waveformWidget->getWidth());
-    m_midLines.resize(4*m_waveformWidget->getWidth());
-    m_highLines.resize(4*m_waveformWidget->getWidth());
+}
+
+void WaveformRendererFilteredSignal::onResize()
+{
+    qDebug() << "WaveformRendererFilteredSignal::onResize";
+    m_lowLines.resize(2*m_waveformWidget->getWidth());
+    m_midLines.resize(2*m_waveformWidget->getWidth());
+    m_highLines.resize(2*m_waveformWidget->getWidth());
 }
 
 void WaveformRendererFilteredSignal::setup( const QDomNode& node)
@@ -43,7 +48,7 @@ void WaveformRendererFilteredSignal::draw( QPainter* painter, QPaintEvent* /*eve
     const Waveform* waveform = trackInfo->getWaveForm();
     const QVector<unsigned char>& waveformData = waveform->getConstData();
 
-    int samplesPerPixel = 3;/*m_pParent->getSubpixelsPerPixel() * (1.0 + rateAdjust);*/
+    int samplesPerPixel = 2;/*m_pParent->getSubpixelsPerPixel() * (1.0 + rateAdjust);*/
     int numberOfSamples = m_waveformWidget->getWidth() * samplesPerPixel;
 
     int currentPosition = 0;
@@ -59,11 +64,10 @@ void WaveformRendererFilteredSignal::draw( QPainter* painter, QPaintEvent* /*eve
 
     for( int i = 0; i < numberOfSamples; i += samplesPerPixel)
     {
+        int xPos = i/samplesPerPixel;
         int thisIndex = currentPosition + 2*i - numberOfSamples;
         if(thisIndex >= 0 && (thisIndex+1) < waveformData.size())
         {
-            const float xPos = i/samplesPerPixel;
-
             unsigned char maxLow[2] = {0,0};
             unsigned char maxBand[2] = {0,0};
             unsigned char maxHigh[2] = {0,0};
@@ -78,9 +82,15 @@ void WaveformRendererFilteredSignal::draw( QPainter* painter, QPaintEvent* /*eve
                 maxHigh[1] = std::max( maxHigh[1], waveform->getConstHighData()[thisIndex+sampleIndex+1]);
             }
 
-            m_lowLines[i].setLine( xPos, (float)-maxLow[0], xPos, (float)maxLow[1]);
-            m_midLines[i].setLine( xPos, (float)-maxBand[0] * 2.0f, xPos, (float)maxBand[1] * 2.0f);
-            m_highLines[i].setLine( xPos, (float)-maxHigh[0] * 4.0f, xPos, (float)maxHigh[1] * 4.0f);
+            m_lowLines[xPos].setLine( xPos, (float)-maxLow[0], xPos, (float)maxLow[1]);
+            m_midLines[xPos].setLine( xPos, (float)-maxBand[0] * 2.0f, xPos, (float)maxBand[1] * 2.0f);
+            m_highLines[xPos].setLine( xPos, (float)-maxHigh[0] * 4.0f, xPos, (float)maxHigh[1] * 4.0f);
+        }
+        else
+        {
+            m_lowLines[xPos].setLine( xPos, 0, xPos, 0);
+            m_midLines[xPos].setLine( xPos, 0, xPos, 0);
+            m_highLines[xPos].setLine( xPos, 0, xPos, 0);
         }
     }
 
