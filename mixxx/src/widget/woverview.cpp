@@ -229,6 +229,7 @@ void WOverview::setData(const QByteArray* pWaveformSummary, long liSampleDuratio
 void WOverview::redrawPixmap() {
     // Fill with transparent pixels
     m_pScreenBuffer->fill(m_qColorBackground);
+
     QPainter paint(m_pScreenBuffer);
     if (!m_backgroundPixmap.isNull()) {
         paint.drawTiledPixmap(m_pScreenBuffer->rect(), m_backgroundPixmap, QPoint(0,0));
