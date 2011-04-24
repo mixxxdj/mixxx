@@ -107,11 +107,11 @@ void WOverview::setup(QDomNode node)
     m_qMousePos.setY(y/2);
  */
 
-    // Background color and pixmap
-    QColor c(255,255,255);
-    if (!selectNode(node, "BgColor").isNull())
-    {
-        c.setNamedColor(selectNodeQString(node, "BgColor"));
+    // Background color and pixmap, default background color to transparent
+    m_qColorBackground = QColor(0, 0, 0, 0);
+    if (!selectNode(node, "BgColor").isNull()) {
+        m_qColorBackground.setNamedColor(selectNodeQString(node, "BgColor"));
+        m_qColorBackground = WSkinColor::getCorrectColor(m_qColorBackground);
     }
 
     // Clear the background pixmap, if it exists.
@@ -121,7 +121,6 @@ void WOverview::setup(QDomNode node)
         m_backgroundPixmap = QPixmap(WWidget::getPath(m_backgroundPixmapPath));
     }
 
-    m_qColorBackground = WSkinColor::getCorrectColor(c);
     QPalette palette; //Qt4 update according to http://doc.trolltech.com/4.4/qwidget-qt3.html#setBackgroundColor (this could probably be cleaner maybe?)
     palette.setColor(this->backgroundRole(), m_qColorBackground);
     setPalette(palette);
@@ -135,19 +134,11 @@ void WOverview::setup(QDomNode node)
         // is therefore safe to delete.
 
         delete m_pScreenBuffer;
-
-        // Flag the pixmap for regeneration.
-        waveformChanged = true;
     }
 
     m_pScreenBuffer = new QPixmap(size());
-    QPainter painter(m_pScreenBuffer);
-    painter.fillRect(m_pScreenBuffer->rect(), m_qColorBackground);
-
-    if (!m_backgroundPixmap.isNull()) {
-        painter.drawTiledPixmap(m_pScreenBuffer->rect(), m_backgroundPixmap, QPoint(0,0));
-    }
-    painter.end();
+    // Flag the pixmap for regeneration.
+    waveformChanged = true;
 
     m_qColorSignal.setNamedColor(selectNodeQString(node, "SignalColor"));
     m_qColorSignal = WSkinColor::getCorrectColor(m_qColorSignal);
@@ -236,11 +227,13 @@ void WOverview::setData(const QByteArray* pWaveformSummary, long liSampleDuratio
 }
 
 void WOverview::redrawPixmap() {
+    // Fill with transparent pixels
+    m_pScreenBuffer->fill(m_qColorBackground);
     QPainter paint(m_pScreenBuffer);
-    paint.fillRect(m_pScreenBuffer->rect(), m_qColorBackground);
-
     if (!m_backgroundPixmap.isNull()) {
         paint.drawTiledPixmap(m_pScreenBuffer->rect(), m_backgroundPixmap, QPoint(0,0));
+    } else {
+        paint.fillRect(m_pScreenBuffer->rect(), m_qColorBackground);
     }
 
     if (!m_waveformSummary.size()) {
@@ -372,8 +365,11 @@ void WOverview::paintEvent(QPaintEvent *)
     }
 
     QPainter paint(this);
+    // Fill with transparent pixels
+    paint.fillRect(rect(), QColor(0,0,0,0));
+
     // Draw waveform, then playpos
-    paint.drawPixmap(0, 0, *m_pScreenBuffer);
+    paint.drawPixmap(rect(), *m_pScreenBuffer, m_pScreenBuffer->rect());
 
     if (m_liSampleDuration > 0) {
         // Draw play position
