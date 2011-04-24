@@ -23,6 +23,21 @@ body {
     margin: 0;
     padding: 0;
 }
+/* Override  basic table layout in basic.css */
+table.docutils {
+    border: 1px solid;
+    width: 100%;
+    border-collapse: collapse;
+}
+
+table.docutils td, table.docutils th {
+    padding: 1px 8px 1px 5px;
+    border-top: 1px solid;
+    border-left: 1px solid;
+    border-right: 1px solid;
+    border-bottom: 1px solid #aaa;
+}
+
 
 div.documentwrapper {
     width: 760px;
