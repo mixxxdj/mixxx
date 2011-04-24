@@ -6,7 +6,6 @@
 #include "controlpotmeter.h"
 #include "controlttrotary.h"
 #include "rotary.h"
-#include "vinylcontrol.h"
 
 #include "engine/enginecontrol.h"
 #include "engine/ratecontrol.h"
