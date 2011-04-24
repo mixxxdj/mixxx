@@ -107,14 +107,13 @@ void WOverview::setup(QDomNode node)
     m_qMousePos.setY(y/2);
  */
 
-    // Background color
-    QColor c(255,255,255);
-    if (!selectNode(node, "BgColor").isNull())
-    {
-        c.setNamedColor(selectNodeQString(node, "BgColor"));
+    // Background color and pixmap, default background color to transparent
+    m_qColorBackground = QColor(0, 0, 0, 0);
+    if (!selectNode(node, "BgColor").isNull()) {
+        m_qColorBackground.setNamedColor(selectNodeQString(node, "BgColor"));
+        m_qColorBackground = WSkinColor::getCorrectColor(m_qColorBackground);
     }
 
-    m_qColorBackground = WSkinColor::getCorrectColor(c);
     QPalette palette; //Qt4 update according to http://doc.trolltech.com/4.4/qwidget-qt3.html#setBackgroundColor (this could probably be cleaner maybe?)
     palette.setColor(this->backgroundRole(), m_qColorBackground);
     this->setPalette(palette);
@@ -223,8 +222,6 @@ void WOverview::redrawPixmap() {
 
     if (!m_waveformSummary.size())
         return;
-
-    qDebug() << "Drawing waveform summary";
 
     QPainter paint(m_pScreenBuffer);
 
