@@ -43,6 +43,7 @@ void WaveformRenderBackground::setup(QDomNode node) {
     bgColor.setNamedColor(WWidget::selectNodeQString(node, "BgColor"));
     bgColor = WSkinColor::getCorrectColor(bgColor);
     m_backgroundPixmapPath = WWidget::selectNodeQString(node, "BgPixmap");
+    m_bRepaintBackground = true;
 }
 
 void WaveformRenderBackground::draw(QPainter *pPainter, QPaintEvent *pEvent,
@@ -62,6 +63,8 @@ void WaveformRenderBackground::draw(QPainter *pPainter, QPaintEvent *pEvent,
 void WaveformRenderBackground::generatePixmap() {
     if (m_backgroundPixmapPath != "") {
         m_backgroundPixmap = QPixmap(WWidget::getPath(m_backgroundPixmapPath));
+    } else {
+        m_backgroundPixmap = QPixmap();
     }
     m_bRepaintBackground = false;
 }
