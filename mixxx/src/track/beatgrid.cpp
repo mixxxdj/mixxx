@@ -2,7 +2,7 @@
 #include <QDebug>
 
 #include "track/beatgrid.h"
-
+#include "mathstuff.h"
 
 static int kFrameSize = 2;
 
@@ -95,21 +95,38 @@ double BeatGrid::findNthBeat(double dSamples, int n) const {
         return -1;
     }
 
+    double beatFraction = (dSamples - m_dFirstBeat) / m_dBeatLength;
+    double prevBeat = floorf(beatFraction);
+    double nextBeat = ceilf(beatFraction);
+
+    // If the position is within 1/100th of the next or previous beat, treat it
+    // as if it is that beat.
+    const double kEpsilon = .01;
+
+    if (fabs(nextBeat - beatFraction) < kEpsilon) {
+        beatFraction = nextBeat;
+    } else if (fabs(prevBeat - beatFraction) < kEpsilon) {
+        beatFraction = prevBeat;
+    }
+
     double dClosestBeat;
     if (n > 0) {
         // We're going forward, so use ceilf to round up to the next multiple of
         // m_dBeatLength
-        dClosestBeat = ceilf(dSamples/m_dBeatLength) * m_dBeatLength + m_dFirstBeat;
+        dClosestBeat = ceilf(beatFraction) * m_dBeatLength + m_dFirstBeat;
         n = n - 1;
     } else {
-        // We're going backward, so use floorf to round up to the next multiple
+        // We're going backward, so use floorf to round down to the next multiple
         // of m_dBeatLength
-
-        dClosestBeat = floorf(dSamples/m_dBeatLength) * m_dBeatLength + m_dFirstBeat;
+        dClosestBeat = floorf(beatFraction) * m_dBeatLength + m_dFirstBeat;
         n = n + 1;
     }
 
-    return dClosestBeat + n * m_dBeatLength;
+    double dResult = dClosestBeat + n * m_dBeatLength;
+    if (!even(dResult)) {
+        dResult--;
+    }
+    return dResult;
 }
 
 void BeatGrid::findBeats(double startSample, double stopSample, QList<double>* pBeatsList) const {
