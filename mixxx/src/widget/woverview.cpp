@@ -112,10 +112,10 @@ void WOverview::setup(QDomNode node)
         c.setNamedColor(selectNodeQString(node, "BgColor"));
     }
 
+    m_qColorBackground = WSkinColor::getCorrectColor(c);
     QPalette palette; //Qt4 update according to http://doc.trolltech.com/4.4/qwidget-qt3.html#setBackgroundColor (this could probably be cleaner maybe?)
-    palette.setColor(this->backgroundRole(), WSkinColor::getCorrectColor(c));
+    palette.setColor(this->backgroundRole(), m_qColorBackground);
     this->setPalette(palette);
-
 
     // If we're doing a warm boot, free the pixmap, and flag it to be regenerated.
     if(m_pScreenBuffer != NULL) {
@@ -132,7 +132,7 @@ void WOverview::setup(QDomNode node)
     }
 
     m_pScreenBuffer = new QPixmap(this->size());
-    m_pScreenBuffer->fill(this->palette().color(QPalette::Background));
+    m_pScreenBuffer->fill(m_qColorBackground);
 
     m_qColorSignal.setNamedColor(selectNodeQString(node, "SignalColor"));
     m_qColorSignal = WSkinColor::getCorrectColor(m_qColorSignal);
@@ -217,10 +217,12 @@ void WOverview::setData(const QByteArray* pWaveformSummary, long liSampleDuratio
 void WOverview::redrawPixmap() {
 
     // Erase background
-    m_pScreenBuffer->fill(this->palette().color(this->backgroundRole()));
+    m_pScreenBuffer->fill(m_qColorBackground);
 
     if (!m_waveformSummary.size())
         return;
+
+    qDebug() << "Drawing waveform summary";
 
     QPainter paint(m_pScreenBuffer);
 

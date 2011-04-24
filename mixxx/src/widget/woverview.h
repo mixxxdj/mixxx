@@ -82,6 +82,7 @@ class WOverview : public WWidget
     int m_iPos, m_iStartMousePos;
     /** Pointer to screen buffer */
     QPixmap *m_pScreenBuffer;
+    QColor m_qColorBackground;
     QColor m_qColorMarker;
     QColor m_qColorSignal;
 };
