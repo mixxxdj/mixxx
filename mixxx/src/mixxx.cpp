@@ -20,10 +20,6 @@
 #include <QtGui>
 #include <QTranslator>
 
-#include "widget/wknob.h"
-#include "widget/wslider.h"
-#include "widget/wpushbutton.h"
-#include "widget/woverview.h"
 #include "mixxx.h"
 #include "controlnull.h"
 #include "controlpotmeter.h"
