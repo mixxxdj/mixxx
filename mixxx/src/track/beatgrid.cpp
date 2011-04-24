@@ -15,11 +15,13 @@ BeatGrid::BeatGrid(TrackPointer pTrack, const QByteArray* pByteArray)
         : QObject(),
           m_mutex(QMutex::Recursive),
           m_iSampleRate(pTrack->getSampleRate()),
-          m_dBpm(0.0f),
+          m_dBpm(0.0),
           m_dFirstBeat(0.0f),
           m_dBeatLength(0.0f) {
     connect(pTrack.data(), SIGNAL(bpmUpdated(double)),
-            this, SLOT(slotTrackBpmUpdated(double)));
+            this, SLOT(slotTrackBpmUpdated(double)),
+            Qt::DirectConnection);
+    slotTrackBpmUpdated(pTrack->getBpm());
 
     qDebug() << "New BeatGrid";
     if (pByteArray != NULL) {
@@ -28,7 +30,7 @@ BeatGrid::BeatGrid(TrackPointer pTrack, const QByteArray* pByteArray)
 }
 
 BeatGrid::~BeatGrid() {
-	
+
 }
 
 void BeatGrid::setGrid(double dBpm, double dFirstBeatSample) {
@@ -102,6 +104,7 @@ double BeatGrid::findNthBeat(double dSamples, int n) const {
     } else {
         // We're going backward, so use floorf to round up to the next multiple
         // of m_dBeatLength
+
         dClosestBeat = floorf(dSamples/m_dBeatLength) * m_dBeatLength + m_dFirstBeat;
         n = n + 1;
     }
