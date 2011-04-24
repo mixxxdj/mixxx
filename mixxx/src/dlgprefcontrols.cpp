@@ -311,16 +311,16 @@ void DlgPrefControls::slotUpdateSchemes()
 void DlgPrefControls::slotUpdate()
 {
     ComboBoxRateRange->clear();
-    ComboBoxRateRange->addItem(" 8% (Technics SL1210)");
-    ComboBoxRateRange->addItem("10% ");
-    ComboBoxRateRange->addItem("20%");
-    ComboBoxRateRange->addItem("30%");
-    ComboBoxRateRange->addItem("40%");
-    ComboBoxRateRange->addItem("50%");
-    ComboBoxRateRange->addItem("60%");
-    ComboBoxRateRange->addItem("70%");
-    ComboBoxRateRange->addItem("80%");
-    ComboBoxRateRange->addItem("90%");
+    ComboBoxRateRange->addItem(tr("8% (Technics SL1210)"));
+    ComboBoxRateRange->addItem(tr("10%"));
+    ComboBoxRateRange->addItem(tr("20%"));
+    ComboBoxRateRange->addItem(tr("30%"));
+    ComboBoxRateRange->addItem(tr("40%"));
+    ComboBoxRateRange->addItem(tr("50%"));
+    ComboBoxRateRange->addItem(tr("60%"));
+    ComboBoxRateRange->addItem(tr("70%"));
+    ComboBoxRateRange->addItem(tr("80%"));
+    ComboBoxRateRange->addItem(tr("90%"));
 
     double deck1RateRange = m_rateRangeControls[0]->get();
     double deck1RateDir = m_rateDirControls[0]->get();
