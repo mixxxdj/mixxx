@@ -35,6 +35,8 @@ WOverview::WOverview(const char *pGroup, QWidget * parent)
     m_bDrag = false;
     m_pScreenBuffer = 0;
 
+    setAcceptDrops(true);
+
     m_pLoopStart = ControlObject::getControl(
         ConfigKey(m_pGroup, "loop_start_position"));
     connect(m_pLoopStart, SIGNAL(valueChanged(double)),
@@ -427,4 +429,34 @@ QColor WOverview::getMarkerColor() {
 
 QColor WOverview::getSignalColor() {
    return m_qColorSignal;
+}
+
+void WOverview::dragEnterEvent(QDragEnterEvent* event) {
+    // Accept the enter event if the thing is a filepath and nothing's playing
+    // in this deck.
+    if (event->mimeData()->hasUrls()) {
+        ControlObject *pPlayCO = ControlObject::getControl(
+            ConfigKey(m_pGroup, "play"));
+        if (pPlayCO && pPlayCO->get()) {
+            event->ignore();
+        } else {
+            event->acceptProposedAction();
+        }
+    }
+}
+
+void WOverview::dropEvent(QDropEvent* event) {
+    if (event->mimeData()->hasUrls()) {
+        QList<QUrl> urls(event->mimeData()->urls());
+        QUrl url = urls.first();
+        QString name = url.toLocalFile();
+        //If the file is on a network share, try just converting the URL to a string...
+        if (name == "") {
+            name = url.toString();
+        }
+        event->accept();
+        emit(trackDropped(name, m_pGroup));
+    } else {
+        event->ignore();
+    }
 }
