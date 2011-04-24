@@ -35,6 +35,8 @@ WOverview::WOverview(const char *pGroup, QWidget * parent)
     m_bDrag = false;
     m_pScreenBuffer = 0;
 
+    setAcceptDrops(true);
+
     m_pLoopStart = ControlObject::getControl(
         ConfigKey(m_pGroup, "loop_start_position"));
     connect(m_pLoopStart, SIGNAL(valueChanged(double)),
@@ -119,8 +121,9 @@ void WOverview::setup(QDomNode node)
         m_backgroundPixmap = QPixmap(WWidget::getPath(m_backgroundPixmapPath));
     }
 
+    m_qColorBackground = WSkinColor::getCorrectColor(c);
     QPalette palette; //Qt4 update according to http://doc.trolltech.com/4.4/qwidget-qt3.html#setBackgroundColor (this could probably be cleaner maybe?)
-    palette.setColor(this->backgroundRole(), WSkinColor::getCorrectColor(c));
+    palette.setColor(this->backgroundRole(), m_qColorBackground);
     setPalette(palette);
 
     // If we're doing a warm boot, free the pixmap, and flag it to be regenerated.
@@ -139,7 +142,7 @@ void WOverview::setup(QDomNode node)
 
     m_pScreenBuffer = new QPixmap(size());
     QPainter painter(m_pScreenBuffer);
-    painter.fillRect(m_pScreenBuffer->rect(), this->palette().color(QPalette::Background));
+    painter.fillRect(m_pScreenBuffer->rect(), m_qColorBackground);
 
     if (!m_backgroundPixmap.isNull()) {
         painter.drawTiledPixmap(m_pScreenBuffer->rect(), m_backgroundPixmap, QPoint(0,0));
@@ -234,15 +237,15 @@ void WOverview::setData(const QByteArray* pWaveformSummary, long liSampleDuratio
 
 void WOverview::redrawPixmap() {
     QPainter paint(m_pScreenBuffer);
-    paint.fillRect(m_pScreenBuffer->rect(), palette().color(backgroundRole()));
+    paint.fillRect(m_pScreenBuffer->rect(), m_qColorBackground);
+
+    if (!m_backgroundPixmap.isNull()) {
+        paint.drawTiledPixmap(m_pScreenBuffer->rect(), m_backgroundPixmap, QPoint(0,0));
+    }
 
     if (!m_waveformSummary.size()) {
         update();
         return;
-    }
-
-    if (!m_backgroundPixmap.isNull()) {
-        paint.drawTiledPixmap(m_pScreenBuffer->rect(), m_backgroundPixmap, QPoint(0,0));
     }
 
     float yscale = (((float)(height()-2)/2.)/128.); //32768.;
@@ -448,3 +451,32 @@ QColor WOverview::getSignalColor() {
    return m_qColorSignal;
 }
 
+void WOverview::dragEnterEvent(QDragEnterEvent* event) {
+    // Accept the enter event if the thing is a filepath and nothing's playing
+    // in this deck.
+    if (event->mimeData()->hasUrls()) {
+        ControlObject *pPlayCO = ControlObject::getControl(
+            ConfigKey(m_pGroup, "play"));
+        if (pPlayCO && pPlayCO->get()) {
+            event->ignore();
+        } else {
+            event->acceptProposedAction();
+        }
+    }
+}
+
+void WOverview::dropEvent(QDropEvent* event) {
+    if (event->mimeData()->hasUrls()) {
+        QList<QUrl> urls(event->mimeData()->urls());
+        QUrl url = urls.first();
+        QString name = url.toLocalFile();
+        //If the file is on a network share, try just converting the URL to a string...
+        if (name == "") {
+            name = url.toString();
+        }
+        event->accept();
+        emit(trackDropped(name, m_pGroup));
+    } else {
+        event->ignore();
+    }
+}
