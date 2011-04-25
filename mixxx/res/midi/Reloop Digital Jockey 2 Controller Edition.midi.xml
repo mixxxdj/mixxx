@@ -108,6 +108,26 @@
                     <script-binding/>
                 </options>
             </control>
+            <!-- Beat Loops -->
+            <control>
+                <status>0x90</status>
+                <midino>0x11</midino>
+                <group>[Channel1]</group>
+                <key>DigitalJockey2Controller.BeatLoop</key>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <status>0x90</status>
+                <midino>0x4D</midino>
+                <group>[Channel2]</group>
+                <key>DigitalJockey2Controller.BeatLoop</key>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+             <!-- pitch and tempo controls -->
             <control>
                 <status>0xe0</status>
                 <midino>0x20</midino>
