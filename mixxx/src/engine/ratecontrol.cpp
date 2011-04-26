@@ -380,7 +380,7 @@ double RateControl::calculateRate(double baserate, bool paused, int iSamplesPerB
     }
 
     double currentSample = getCurrentSample();
-    m_pScratchController->process(currentSample, iSamplesPerBuffer);
+    m_pScratchController->process(currentSample, paused, iSamplesPerBuffer);
 
     // If position control is enabled, override scratchFactor
     if (m_pScratchController->isEnabled()) {
