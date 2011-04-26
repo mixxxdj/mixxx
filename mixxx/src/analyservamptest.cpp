@@ -39,7 +39,7 @@ void AnalyserVampTest::initialise(TrackPointer tio, int sampleRate,
     //
     //Choose:
     //"libmixxxminimal:mixxxbeatdetection" with output 0 to activate standard Mixxx bpm detection via soundtouch
-    //"libmixxxminimal:qm-barbeattracker" with output 0 to activate Queens Mary beat detection
+    //"libmixxxminimal:qm-barbeattracker" with output 0 to activate Queens Mary plugin beat detection
 
     mvamp = new VampAnalyser();
     //usage               "plugin key"                         output  samplerate  totalsamples
