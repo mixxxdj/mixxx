@@ -112,6 +112,7 @@ PositionScratchController::PositionScratchController(const char* pGroup)
     m_pVelocityController = new VelocityController();
     m_bScratching = false;
     m_iScratchTime = 0;
+    m_bEnableInertia = false;
 
     //m_pVelocityController->setPID(0.2, 1.0, 5.0);
     //m_pVelocityController->setPID(0.1, 0.0, 5.0);
@@ -124,29 +125,63 @@ PositionScratchController::~PositionScratchController() {
     delete m_pVelocityController;
 }
 
-void PositionScratchController::process(double currentSample, int iBufferSize) {
+void PositionScratchController::process(double currentSample, bool paused, int iBufferSize) {
     bool scratchEnable = m_pScratchEnable->get() != 0;
     double scratchPosition = m_pScratchPosition->get();
     m_pVelocityController->setSamplesPerBuffer(iBufferSize);
 
+    // The rate threshold above which disabling position scratching will enable
+    // an 'inertia' mode.
+    const double kThrowThreshold = 2.5;
+    // The exponential decay factor that the rate will undergo if inertia mode
+    // is triggered.
+    const double kInertiaDecay = 0.9;
+    // If we're playing, then do not decay rate below 1. If we're not playing,
+    // then we want to decay all the way down to below 0.1
+    const double kDecayThreshold = paused ? 1.0 : 0.1;
+
     if (m_bScratching) {
-        if (scratchEnable) {
-            // We were previously in scratch mode and are still in scratch mode.
+        if (scratchEnable || m_bEnableInertia) {
+            // We were previously in scratch mode and are still in scratch mode
+            // OR we are in inertia mode.
 
-            // Increment processing timer by one.
-            m_iScratchTime += 1;
+            if (scratchEnable) {
+                // If we're scratching, clear the inertia flag. This case should
+                // have been caught by the 'enable' case below, but just to make
+                // sure.
+                m_bEnableInertia = false;
 
-            // Set the scratch target to the current set position
-            m_pVelocityController->setTarget(scratchPosition);
+                // Increment processing timer by one.
+                m_iScratchTime += 1;
 
-            m_dRate = m_pVelocityController->observation(currentSample, m_iScratchTime);
-            //qDebug() << "continue" << m_dRate << iBufferSize;
+                // Set the scratch target to the current set position
+                m_pVelocityController->setTarget(scratchPosition);
+
+                m_dRate = m_pVelocityController->observation(currentSample, m_iScratchTime);
+                //qDebug() << "continue" << m_dRate << iBufferSize;
+            } else {
+                // If we got here then we're not scratching and we're in inertia
+                // mode. Take the previous rate that was set and apply an
+                // exponential decay.
+                m_dRate *= kInertiaDecay;
+
+                // If the rate has decayed below the threshold, then leave
+                // inertia mode.
+                if (fabs(m_dRate) < kDecayThreshold) {
+                    m_bEnableInertia = false;
+                }
+            }
         } else {
             // We were previously in scratch mode and are no longer in scratch
-            // mode. Disable everything.
-            m_bScratching = false;
-            m_dRate = 0;
-            m_iScratchTime = 0;
+            // mode. Disable everything, or optionally enable inertia mode if
+            // the previous rate was high enough to count as a 'throw'
+            if (fabs(m_dRate) > kThrowThreshold) {
+                m_bEnableInertia = true;
+            } else {
+                m_dRate = 0;
+                m_bScratching = false;
+                m_iScratchTime = 0;
+            }
             //qDebug() << "disable";
         }
     } else {
@@ -154,6 +189,7 @@ void PositionScratchController::process(double currentSample, int iBufferSize) {
             // We were not previously in scratch mode but now are in scratch
             // mode. Enable scratching.
             m_bScratching = true;
+            m_bEnableInertia = false;
             m_iScratchTime = 0;
             m_pVelocityController->reset(currentSample, m_iScratchTime, scratchPosition);
             m_dRate = m_pVelocityController->observation(currentSample, m_iScratchTime);
