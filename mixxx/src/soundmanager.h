@@ -21,9 +21,6 @@
 #include "configobject.h"
 #include "controlobject.h"
 #include "defs.h"
-#ifdef __VINYLCONTROL__
-#include "vinylcontrolproxy.h"
-#endif
 #include "soundmanagerconfig.h"
 #include <QTimer>
 
@@ -59,10 +56,6 @@ class SoundManager : public QObject
         QList<unsigned int> getSampleRates() const;
         QList<QString> getHostAPIList() const;
         SoundManagerConfig getConfig() const;
-#ifdef __VINYLCONTROL__
-        bool hasVinylInput(int deck);
-        QList<VinylControlProxy*> getVinylControlProxies();
-#endif
         int setConfig(SoundManagerConfig config);
         void checkConfig();
         QHash<AudioOutput, const CSAMPLE*>
@@ -92,9 +85,6 @@ class SoundManager : public QObject
         QHash<AudioInput, short*> m_inputBuffers; /** Audio received from input */
         QHash<SoundDevice*, long> m_deviceFrameCount;   /** Sound card sync */
         SoundDevice* m_pClkRefDevice;  /** Sound card sync */
-#ifdef __VINYLCONTROL__
-        QList<VinylControlProxy*> m_vinylControl;
-#endif
         unsigned int iNumDevicesOpenedForOutput;
         unsigned int iNumDevicesOpenedForInput;
         QMutex requestBufferMutex;

@@ -395,6 +395,9 @@ QWidget* LegacySkinParser::parseOverview(QDomElement node) {
 
     WOverview* p = new WOverview(pSafeChannelStr, m_pParent);
 
+    connect(p, SIGNAL(trackDropped(QString, QString)),
+            m_pPlayerManager, SLOT(slotLoadToPlayer(QString, QString)));
+
     setupWidget(node, p);
     p->setup(node);
     setupConnections(node, p);

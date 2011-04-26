@@ -20,10 +20,6 @@
 #include <QtGui>
 #include <QTranslator>
 
-#include "widget/wknob.h"
-#include "widget/wslider.h"
-#include "widget/wpushbutton.h"
-#include "widget/woverview.h"
 #include "mixxx.h"
 #include "controlnull.h"
 #include "controlpotmeter.h"
@@ -64,6 +60,11 @@
 // force a rebuild of everything
 
 #include "defs_version.h"
+
+#ifdef __VINYLCONTROL__
+#include "vinylcontrol/vinylcontrol.h"
+#include "vinylcontrol/vinylcontrolmanager.h"
+#endif
 
 #ifdef __C_METRICS__
 #include <cmetrics.h>
@@ -316,6 +317,17 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
             AudioOutput(AudioOutput::DECK, 0, deck), m_pEngine);
     }
 
+#ifdef __VINYLCONTROL__
+    m_pVCManager = new VinylControlManager(this, m_pConfig);
+    for (unsigned int deck = 0; deck < m_pPlayerManager->numDecks(); ++deck) {
+        m_pSoundManager->registerInput(
+            AudioInput(AudioInput::VINYLCONTROL, 0, deck),
+            m_pVCManager);
+    }
+#else
+    m_pVCManager = NULL;
+#endif
+
     //Scan the library directory.
     m_pLibraryScanner = new LibraryScanner(m_pLibrary->getTrackCollection());
 
@@ -373,16 +385,8 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
         m_pConfig->set(ConfigKey("[BPM]", "AnalyzeEntireSong"),ConfigValue(1));
     }
 
-#ifdef __VINYLCONTROL__
     //ControlObject::getControl(ConfigKey("[Channel1]","TrackEndMode"))->queueFromThread(m_pConfig->getValueString(ConfigKey("[Controls]","TrackEndModeCh1")).toDouble());
     //ControlObject::getControl(ConfigKey("[Channel2]","TrackEndMode"))->queueFromThread(m_pConfig->getValueString(ConfigKey("[Controls]","TrackEndModeCh2")).toDouble());
-    ControlObject::getControl(ConfigKey("[Channel1]","vinylcontrol_enabled"))->queueFromThread(m_pConfig->getValueString(ConfigKey("[VinylControl]","enabled_ch1")).toDouble());
-    ControlObject::getControl(ConfigKey("[Channel2]","vinylcontrol_enabled"))->queueFromThread(m_pConfig->getValueString(ConfigKey("[VinylControl]","enabled_ch2")).toDouble());
-    ControlObject::getControl(ConfigKey("[Channel1]","vinylcontrol_mode"))->queueFromThread(m_pConfig->getValueString(ConfigKey("[VinylControl]","mode")).toDouble());
-    ControlObject::getControl(ConfigKey("[Channel2]","vinylcontrol_mode"))->queueFromThread(m_pConfig->getValueString(ConfigKey("[VinylControl]","mode")).toDouble());
-    ControlObject::getControl(ConfigKey("[Channel1]","vinylcontrol_cueing"))->queueFromThread(m_pConfig->getValueString(ConfigKey("[VinylControl]","cueing_ch1")).toDouble());
-    ControlObject::getControl(ConfigKey("[Channel2]","vinylcontrol_cueing"))->queueFromThread(m_pConfig->getValueString(ConfigKey("[VinylControl]","cueing_ch2")).toDouble());
-#endif
 
     qRegisterMetaType<MidiMessage>("MidiMessage");
     qRegisterMetaType<MidiStatusByte>("MidiStatusByte");
@@ -395,7 +399,7 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
 
     // Initialize preference dialog
     m_pPrefDlg = new DlgPreferences(this, m_pSkinLoader, m_pSoundManager, m_pPlayerManager,
-                                 m_pMidiDeviceManager, m_pConfig);
+                                 m_pMidiDeviceManager, m_pVCManager, m_pConfig);
     m_pPrefDlg->setHidden(true);
 
     // Try open player device If that fails, the preference panel is opened.
@@ -530,17 +534,17 @@ MixxxApp::~MixxxApp()
     // Save state of End of track controls in config database
     //m_pConfig->set(ConfigKey("[Controls]","TrackEndModeCh1"), ConfigValue((int)ControlObject::getControl(ConfigKey("[Channel1]","TrackEndMode"))->get()));
     //m_pConfig->set(ConfigKey("[Controls]","TrackEndModeCh2"), ConfigValue((int)ControlObject::getControl(ConfigKey("[Channel2]","TrackEndMode"))->get()));
-#ifdef __VINYLCONTROL__
-    m_pConfig->set(ConfigKey("[VinylControl]","enabled_ch1"), ConfigValue((int)ControlObject::getControl(ConfigKey("[Channel1]","vinylcontrol_enabled"))->get()));
-    m_pConfig->set(ConfigKey("[VinylControl]","enabled_ch2"), ConfigValue((int)ControlObject::getControl(ConfigKey("[Channel2]","vinylcontrol_enabled"))->get()));
-    m_pConfig->set(ConfigKey("[VinylControl]","mode"), ConfigValue((int)ControlObject::getControl(ConfigKey("[Channel1]","vinylcontrol_mode"))->get()));
-    m_pConfig->set(ConfigKey("[VinylControl]","mode"), ConfigValue((int)ControlObject::getControl(ConfigKey("[Channel2]","vinylcontrol_mode"))->get()));
-    m_pConfig->set(ConfigKey("[VinylControl]","cueing_ch1"), ConfigValue((int)ControlObject::getControl(ConfigKey("[Channel1]","vinylcontrol_cueing"))->get()));
-    m_pConfig->set(ConfigKey("[VinylControl]","cueing_ch2"), ConfigValue((int)ControlObject::getControl(ConfigKey("[Channel2]","vinylcontrol_cueing"))->get()));
-#endif
+
     // SoundManager depend on Engine and Config
     qDebug() << "delete soundmanager, " << qTime.elapsed();
     delete m_pSoundManager;
+
+#ifdef __VINYLCONTROL__
+    // VinylControlManager depends on a CO the engine owns
+    // (vinylcontrol_enabled in VinylControlControl)
+    qDebug() << "delete vinylcontrolmanager, " << qTime.elapsed();
+    delete m_pVCManager;
+#endif
 
     // View depends on MixxxKeyboard, PlayerManager, Library
     qDebug() << "delete view, " << qTime.elapsed();
@@ -1144,7 +1148,7 @@ void MixxxApp::slotOptionsPreferences()
 void MixxxApp::slotControlVinylControl(double toggle)
 {
 #ifdef __VINYLCONTROL__
-    if (tryToggleVinylControl(0)) {
+    if (m_pVCManager->vinylInputEnabled(1)) {
         m_pConfig->set(
             ConfigKey("[VinylControl]", "enabled_ch1"), ConfigValue((int)toggle));
         m_pOptionsVinylControl->setChecked((bool)toggle);
@@ -1181,18 +1185,11 @@ void MixxxApp::slotCheckboxVinylControl(bool toggle)
 #endif
 }
 
-int MixxxApp::tryToggleVinylControl(int deck)
-{
-#ifdef __VINYLCONTROL__
-    return m_pSoundManager->hasVinylInput(deck);
-#endif
-}
-
 void MixxxApp::slotControlVinylControl2(double toggle)
 {
 #ifdef __VINYLCONTROL__
     //we just need at least 1 input (deck 1) because of single deck mode
-    if (tryToggleVinylControl(1)) {
+    if (m_pVCManager->vinylInputEnabled(2)) {
         m_pConfig->set(
             ConfigKey("[VinylControl]", "enabled_ch2"), ConfigValue((int)toggle));
            m_pOptionsVinylControl2->setChecked((bool)toggle);
@@ -1301,6 +1298,7 @@ void MixxxApp::slotHelpAbout()
 "Miko Kiiski<br>"
 "Vin&iacute;cius Dias dos Santos<br>"
 "Joe Colosimo<br>"
+"Shashank Kumar<br>"
 
 "</p>"
 "<p align=\"center\"><b>And special thanks to:</b></p>"

@@ -31,31 +31,44 @@
 #include "engine/ratecontrol.h"
 #include "skin/skinloader.h"
 #include "skin/legacyskinparser.h"
+#include "playermanager.h"
 
 DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxApp * mixxx,
                                  SkinLoader* pSkinLoader,
+                                 PlayerManager* pPlayerManager,
                                  ConfigObject<ConfigValue> * pConfig)
         :  QWidget(parent), Ui::DlgPrefControlsDlg() {
     m_pConfig = pConfig;
     m_mixxx = mixxx;
     m_pSkinLoader = pSkinLoader;
+    m_pPlayerManager = pPlayerManager;
 
     setupUi(this);
 
-    //
-    // Rate slider configuration
-    //
+    for (int i = 0; i < m_pPlayerManager->numDecks(); ++i) {
+        QString group = QString("[Channel%1]").arg(i+1);
+        m_rateControls.push_back(new ControlObjectThreadMain(
+            ControlObject::getControl(ConfigKey(group, "rate"))));
+        m_rateRangeControls.push_back(new ControlObjectThreadMain(
+            ControlObject::getControl(ConfigKey(group, "rateRange"))));
+        m_rateDirControls.push_back(new ControlObjectThreadMain(
+            ControlObject::getControl(ConfigKey(group, "rate_dir"))));
+        m_cueControls.push_back(new ControlObjectThreadMain(
+            ControlObject::getControl(ConfigKey(group, "cue_mode"))));
+    }
 
-    m_pControlRate1 = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[Channel1]","rate")));
-    m_pControlRate2 = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[Channel2]","rate")));
-    m_pControlRateDir1 = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[Channel1]","rate_dir")));
-    m_pControlRateDir2 = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[Channel2]","rate_dir")));
-    m_pControlRateRange1 = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[Channel1]","rateRange")));
-    m_pControlRateRange2 = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[Channel2]","rateRange")));
+    for (int i = 0; i < m_pPlayerManager->numSamplers(); ++i) {
+        QString group = QString("[Sampler%1]").arg(i+1);
+        m_rateControls.push_back(new ControlObjectThreadMain(
+            ControlObject::getControl(ConfigKey(group, "rate"))));
+        m_rateRangeControls.push_back(new ControlObjectThreadMain(
+            ControlObject::getControl(ConfigKey(group, "rateRange"))));
+        m_rateDirControls.push_back(new ControlObjectThreadMain(
+            ControlObject::getControl(ConfigKey(group, "rate_dir"))));
+        m_cueControls.push_back(new ControlObjectThreadMain(
+            ControlObject::getControl(ConfigKey(group, "cue_mode"))));
 
-    // Set default direction as stored in config file
-    if (m_pConfig->getValueString(ConfigKey("[Controls]","RateDir")).length() == 0)
-        m_pConfig->set(ConfigKey("[Controls]","RateDir"),ConfigValue(0));
+    }
 
     // Position display configuration
     m_pControlPositionDisplay = new ControlObject(ConfigKey("[Controls]", "ShowDurationRemaining"));
@@ -77,12 +90,11 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxApp * mixxx,
     }
     connect(ComboBoxPosition,   SIGNAL(activated(int)), this, SLOT(slotSetPositionDisplay(int)));
 
-    float fDir = 1.;
-    if (m_pConfig->getValueString(ConfigKey("[Controls]","RateDir")).toInt()==1.)
-        fDir = -1.;
-    m_pControlRateDir1->slotSet(fDir);
-    m_pControlRateDir2->slotSet(fDir);
+    // Set default direction as stored in config file
+    if (m_pConfig->getValueString(ConfigKey("[Controls]","RateDir")).length() == 0)
+        m_pConfig->set(ConfigKey("[Controls]","RateDir"),ConfigValue(0));
 
+    slotSetRateDir(m_pConfig->getValueString(ConfigKey("[Controls]","RateDir")).toInt());
     connect(ComboBoxRateDir,   SIGNAL(activated(int)), this, SLOT(slotSetRateDir(int)));
 
     // Set default range as stored in config file
@@ -155,9 +167,6 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxApp * mixxx,
     // Default Cue Behavior
     //
 
-    m_pControlCueDefault1 = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[Channel1]","cue_mode")));
-    m_pControlCueDefault2 = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[Channel2]","cue_mode")));
-
     // Set default value in config file and control objects, if not present
     QString cueDefault = m_pConfig->getValueString(ConfigKey("[Controls]","CueDefault"));
     if(cueDefault.length() == 0) {
@@ -166,14 +175,12 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxApp * mixxx,
     }
     int cueDefaultValue = cueDefault.toInt();
 
-    m_pControlCueDefault1->slotSet(cueDefaultValue);
-    m_pControlCueDefault2->slotSet(cueDefaultValue);
-
     // Update combo box
     ComboBoxCueDefault->addItem(tr("CDJ Mode"));
     ComboBoxCueDefault->addItem(tr("Simple"));
-    ComboBoxCueDefault->setCurrentIndex(m_pConfig->getValueString(ConfigKey("[Controls]","CueDefault")).toInt());
+    ComboBoxCueDefault->setCurrentIndex(cueDefaultValue);
 
+    slotSetCueDefault(cueDefaultValue);
     connect(ComboBoxCueDefault,   SIGNAL(activated(int)), this, SLOT(slotSetCueDefault(int)));
 
     //Cue recall
@@ -304,19 +311,22 @@ void DlgPrefControls::slotUpdateSchemes()
 void DlgPrefControls::slotUpdate()
 {
     ComboBoxRateRange->clear();
-    ComboBoxRateRange->addItem(" 8% (Technics SL1210)");
-    ComboBoxRateRange->addItem("10% ");
-    ComboBoxRateRange->addItem("20%");
-    ComboBoxRateRange->addItem("30%");
-    ComboBoxRateRange->addItem("40%");
-    ComboBoxRateRange->addItem("50%");
-    ComboBoxRateRange->addItem("60%");
-    ComboBoxRateRange->addItem("70%");
-    ComboBoxRateRange->addItem("80%");
-    ComboBoxRateRange->addItem("90%");
+    ComboBoxRateRange->addItem(tr("8% (Technics SL1210)"));
+    ComboBoxRateRange->addItem(tr("10%"));
+    ComboBoxRateRange->addItem(tr("20%"));
+    ComboBoxRateRange->addItem(tr("30%"));
+    ComboBoxRateRange->addItem(tr("40%"));
+    ComboBoxRateRange->addItem(tr("50%"));
+    ComboBoxRateRange->addItem(tr("60%"));
+    ComboBoxRateRange->addItem(tr("70%"));
+    ComboBoxRateRange->addItem(tr("80%"));
+    ComboBoxRateRange->addItem(tr("90%"));
 
-    float idx = 10.*m_pControlRateRange1->get();
-    if (m_pControlRateRange1->get()==0.08)
+    double deck1RateRange = m_rateRangeControls[0]->get();
+    double deck1RateDir = m_rateDirControls[0]->get();
+
+    float idx = 10. * deck1RateRange;
+    if (deck1RateRange == 0.08)
         idx = 0.;
 
     ComboBoxRateRange->setCurrentIndex((int)idx);
@@ -325,7 +335,7 @@ void DlgPrefControls::slotUpdate()
     ComboBoxRateDir->addItem(tr("Up increases speed"));
     ComboBoxRateDir->addItem(tr("Down increases speed (Technics SL1210)"));
 
-    if (m_pControlRateDir1->get()==1)
+    if (deck1RateDir == 1)
         ComboBoxRateDir->setCurrentIndex(0);
     else
         ComboBoxRateDir->setCurrentIndex(1);
@@ -337,24 +347,27 @@ void DlgPrefControls::slotSetRateRange(int pos)
     if (pos==0)
         range = 0.08f;
 
-    // Set the rate range
-    m_pControlRateRange1->slotSet(range);
-    m_pControlRateRange2->slotSet(range);
+    // Set rate range for every group
+    foreach (ControlObjectThreadMain* pControl, m_rateRangeControls) {
+        pControl->slotSet(range);
+    }
 
-    // Reset rate
-    m_pControlRate1->slotSet(0.);
-    m_pControlRate2->slotSet(0.);
+    // Reset rate for every group
+    foreach (ControlObjectThreadMain* pControl, m_rateControls) {
+        pControl->slotSet(0);
+    }
 }
 
-void DlgPrefControls::slotSetRateDir(int)
+void DlgPrefControls::slotSetRateDir(int index)
 {
     float dir = 1.;
-    if (ComboBoxRateDir->currentIndex()==1)
+    if (index == 1)
         dir = -1.;
 
-    // Set rate dir
-    m_pControlRateDir1->slotSet(dir);
-    m_pControlRateDir2->slotSet(dir);
+    // Set rate direction for every group
+    foreach (ControlObjectThreadMain* pControl, m_rateDirControls) {
+        pControl->slotSet(dir);
+    }
 }
 
 void DlgPrefControls::slotSetVisuals(int)
@@ -370,9 +383,13 @@ void DlgPrefControls::slotSetAllowTrackLoadToPlayingDeck(int)
 
 void DlgPrefControls::slotSetCueDefault(int)
 {
-    m_pConfig->set(ConfigKey("[Controls]","CueDefault"), ConfigValue(ComboBoxCueDefault->currentIndex()));
-    m_pControlCueDefault1->slotSet(ComboBoxCueDefault->currentIndex());
-    m_pControlCueDefault2->slotSet(ComboBoxCueDefault->currentIndex());
+    int cueIndex = ComboBoxCueDefault->currentIndex();
+    m_pConfig->set(ConfigKey("[Controls]","CueDefault"), ConfigValue(cueIndex));
+
+    // Set cue behavior for every group
+    foreach (ControlObjectThreadMain* pControl, m_cueControls) {
+        pControl->slotSet(cueIndex);
+    }
 }
 
 void DlgPrefControls::slotSetCueRecall(int)
@@ -496,15 +513,17 @@ void DlgPrefControls::slotSetRateRamp(bool mode)
 
 void DlgPrefControls::slotApply()
 {
+    double deck1RateRange = m_rateRangeControls[0]->get();
+    double deck1RateDir = m_rateDirControls[0]->get();
     // Write rate range to config file
-    float idx = 10.*m_pControlRateRange1->get();
+    float idx = 10. * deck1RateRange;
     if (idx==0.8)
         idx = 0.;
 
     m_pConfig->set(ConfigKey("[Controls]","RateRange"), ConfigValue((int)idx));
 
     // Write rate direction to config file
-    if (m_pControlRateDir1->get()==1)
+    if (deck1RateDir == 1)
         m_pConfig->set(ConfigKey("[Controls]","RateDir"), ConfigValue(0));
     else
         m_pConfig->set(ConfigKey("[Controls]","RateDir"), ConfigValue(1));
