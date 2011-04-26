@@ -108,6 +108,9 @@ bool WGLWaveformViewer::eventFilter(QObject *o, QEvent *e) {
             m_pScratch->slotSet(m_dInitialPlaypos);
             m_pScratchEnable->slotSet(1.0f);
             //qDebug() << "m_dInitialPlaypos" << m_dInitialPlaypos;
+
+            // Set the cursor to a hand while the mouse is down.
+            setCursor(Qt::OpenHandCursor);
         }
     } else if(e->type() == QEvent::MouseMove) {
         // Only send signals for mouse moving if the left button is pressed
@@ -126,6 +129,9 @@ bool WGLWaveformViewer::eventFilter(QObject *o, QEvent *e) {
         if (m_bScratching) {
             m_pScratchEnable->slotSet(0.0f);
             m_bScratching = false;
+
+            // Set the cursor back to an arrow.
+            setCursor(Qt::ArrowCursor);
         }
         m_iMouseStart = -1;
     } else {
