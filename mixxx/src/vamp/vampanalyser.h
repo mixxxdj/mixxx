@@ -8,9 +8,9 @@
 #ifndef VAMPANALYSER_H_
 #define VAMPANALYSER_H_
 
-#include <vamp-hostsdk/PluginLoader.h>
-#include <vamp-hostsdk/vamp-hostsdk.h>
-#include <vamp-hostsdk/Plugin.h>
+#include "vamp-hostsdk/PluginLoader.h"
+#include "vamp-hostsdk/vamp-hostsdk.h"
+#include "vamp-hostsdk/Plugin.h"
 #include <QString>
 #include <QList>
 #include <QVector>
@@ -36,15 +36,15 @@ public:
     bool SetParameter (const QString parameter,const double value);
 
 
-    bool GetInitFramesVector( QVector<double>* vectout );
+    QVector <double> GetInitFramesVector();
 
-    bool GetEndFramesVector( QVector<double>* vectout );
+    QVector <double> GetEndFramesVector();
 
-    bool GetLabelsVector ( QVector<QString>* vectout);
+    QVector<QString> GetLabelsVector ();
 
-    bool GetFirstValuesVector ( QVector<double>* vectout);
+    QVector <double> GetFirstValuesVector ();
 
-    bool GetLastValuesVector ( QVector<double>* vectout);
+    QVector <double> GetLastValuesVector ();
 
 //   QVector <double> GetMeanValueVector ( int FromOutput);
 //
@@ -59,7 +59,7 @@ public:
 
 private:
 
-    void AddFeatures(Vamp::Plugin::FeatureSet &features);
+    //void AddFeatures(Vamp::Plugin::FeatureSet &features);
 
     void SelectOutput (const int outputnumber);
 
@@ -70,13 +70,6 @@ private:
     CSAMPLE ** m_pluginbuf;
     Vamp::Plugin *mPlugin;
     Vamp::Plugin::ParameterList mParameters;
-//    QVector <double> m_InitFrameVector;
-//    QVector <double> m_EndFrameVector;
-//    QVector <QString> m_LabelsVector;
-//    QVector <double> m_FirstValueVector;
-//    QVector <double> m_LastValueVector;
-//    QVector <double> m_MeanValueVector;
-//    QVector <double> m_MinValueVector;
     Vamp::Plugin::FeatureList m_Results;
 };
 

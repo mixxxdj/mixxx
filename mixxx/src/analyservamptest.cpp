@@ -6,11 +6,9 @@
  */
 
 #include <QtDebug>
-#include <QList>
 #include <QVector>
 #include <QString>
 #include <time.h>
-#include <math.h>
 
 #include "trackinfoobject.h"
 #include "analyservamptest.h"
@@ -21,24 +19,30 @@ AnalyserVampTest::AnalyserVampTest(ConfigObject<ConfigValue> *_config) {
     m_pConfigAVT = _config;
     m_bPass = 0;
 
-    mvamp = new VampAnalyser();
+
 
 }
 
 AnalyserVampTest::~AnalyserVampTest(){
-    delete mvamp;
+
 }
 void AnalyserVampTest::initialise(TrackPointer tio, int sampleRate,
         int totalSamples) {
-    //usage mvamp->Init(plugin key, output number, samplerate, totalsamples);
+
+//    if(tio->getBpm() != 0)
+//        return;
+
     //tested beat tracking features with vamp-plugins:
     //"vamp-aubio:aubiotempo"(GPLed)
     //"qm-vamp-plugins:qm-barbeattracker" (now released under GPL)
     //"qm-vamp-plugins:qm-tempotracker" (now released under GPL)
-    m_bPass = mvamp->Init("qm-subset:qm-barbeattracker",0,sampleRate, totalSamples);
-    if (!m_bPass)
-        qDebug() << "Failed to init";
-
+    mvamp = new VampAnalyser();
+    //usage               "plugin key"                        output  samplerate  totalsamples
+    m_bPass = mvamp->Init("libmixxxminimal:qm-barbeattracker",0     , sampleRate, totalSamples);
+    if (!m_bPass){
+        qDebug() << "Cannot initialise vamp plugin";
+        return;
+    }
     //   m_iStartTime = clock();
 }
 
@@ -51,7 +55,8 @@ void AnalyserVampTest::finalise(TrackPointer tio) {
     if(!m_bPass) return;
 
    QVector <double> beats;
-    if(mvamp->GetInitFramesVector(&beats)){
+   beats = mvamp->GetInitFramesVector();
+    if(!beats.isEmpty()){
         BeatsPointer pBeats = BeatFactory::makeBeatMatrix(tio, beats);
         tio->setBeats(pBeats);
         tio->setBpm(pBeats->getBpm());
@@ -60,5 +65,6 @@ void AnalyserVampTest::finalise(TrackPointer tio) {
     beats.clear();
     if(m_bPass) qDebug()<<"Beat Calculation complete";
     //m_iStartTime = clock() - m_iStartTime;
+    delete mvamp;
 }
 

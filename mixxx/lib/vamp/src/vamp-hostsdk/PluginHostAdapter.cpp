@@ -37,6 +37,7 @@
 #include <QDesktopServices>
 #include <QCoreApplication>
 #include <QString>
+#include <QtDebug>
 
 #include <vamp-hostsdk/PluginHostAdapter.h>
 #include <cstdlib>
@@ -88,6 +89,7 @@ PluginHostAdapter::getPluginPath()
 #define DEFAULT_VAMP_PATH "$HOME/vamp:$HOME/.vamp:/usr/local/lib/vamp:/usr/lib/vamp:/usr/local/lib/mixxx/plugins/vamp:/usr/lib/mixxx/plugins/vamp:"+(QDesktopServices::storageLocation(QDesktopServices::HomeLocation)).toStdString() + "/.mixxx/plugins/vamp"
 #endif
 #endif
+    qDebug()<<"QCore :"<< QCoreApplication::applicationDirPath();
     //if (envPath == "") {
         envPath = DEFAULT_VAMP_PATH;
         char *chome = getenv("HOME");

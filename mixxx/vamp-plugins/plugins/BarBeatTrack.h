@@ -12,23 +12,23 @@
     COPYING included with this distribution for more information.
 */
 
-#ifndef _BEAT_TRACK_PLUGIN_H_
-#define _BEAT_TRACK_PLUGIN_H_
+#ifndef _BAR_BEAT_TRACK_PLUGIN_H_
+#define _BAR_BEAT_TRACK_PLUGIN_H_
 
-#include <vamp-sdk/Plugin.h>
+#include "vamp-sdk/Plugin.h"
 
-class BeatTrackerData;
+class BarBeatTrackerData;
 
-class BeatTracker : public Vamp::Plugin
+class BarBeatTracker : public Vamp::Plugin
 {
 public:
-    BeatTracker(float inputSampleRate);
-    virtual ~BeatTracker();
+    BarBeatTracker(float inputSampleRate);
+    virtual ~BarBeatTracker();
 
     bool initialise(size_t channels, size_t stepSize, size_t blockSize);
     void reset();
 
-    InputDomain getInputDomain() const { return FrequencyDomain; }
+    InputDomain getInputDomain() const { return TimeDomain; }
 
     std::string getIdentifier() const;
     std::string getName() const;
@@ -52,13 +52,10 @@ public:
     FeatureSet getRemainingFeatures();
 
 protected:
-    BeatTrackerData *m_d;
-    int m_method;
-    int m_dfType;
-    bool m_whiten;
+    BarBeatTrackerData *m_d;
     static float m_stepSecs;
-    FeatureSet beatTrackOld();
-    FeatureSet beatTrackNew();
+    int m_bpb;
+    FeatureSet barBeatTrack();
 };
 
 

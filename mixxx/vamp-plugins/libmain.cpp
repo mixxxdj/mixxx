@@ -1,9 +1,9 @@
 /* -*- c-basic-offset: 4 indent-tabs-mode: nil -*-  vi:set ts=8 sts=4 sw=4: */
 
 /*
-    Mixxx BPM detection and ReplayGain Analysis plugin for VAMP.
+    QM Vamp Plugin Set
 
-    Vittorio Colao (l0rdt@gmx.it)
+    Centre for Digital Music, Queen Mary, University of London.
 
     This program is free software; you can redistribute it and/or
     modify it under the terms of the GNU General Public License as
@@ -12,13 +12,19 @@
     COPYING included with this distribution for more information.
 */
 
-#include <vamp/vamp.h>
-#include <vamp-sdk/PluginAdapter.h>
+#include "vamp/vamp.h"
+#include "vamp-sdk/PluginAdapter.h"
+#include "plugins/BeatTrack.h"
+#include "plugins/BarBeatTrack.h"
+#include "plugins/MixxxBpmDetection.h"
 #include "plugins/replaygain.h"
 
 
+static Vamp::PluginAdapter<BeatTracker> beatTrackerAdapter;
+static Vamp::PluginAdapter<BarBeatTracker> barBeatTrackPluginAdapter;
+static Vamp::PluginAdapter<MixxxBpmDetection> MixxxBpmDetection;
 static Vamp::PluginAdapter<ReplayGain> ReplayGain;
-s
+
 
 const VampPluginDescriptor *vampGetPluginDescriptor(unsigned int vampApiVersion,
                                                     unsigned int index)
@@ -26,7 +32,11 @@ const VampPluginDescriptor *vampGetPluginDescriptor(unsigned int vampApiVersion,
     if (vampApiVersion < 1) return 0;
 
     switch (index) {
-    case  0: return ReplayGain.getDescriptor();
+    case  0: return beatTrackerAdapter.getDescriptor();
+    case  1: return barBeatTrackPluginAdapter.getDescriptor();
+    case  2: return MixxxBpmDetection.getDescriptor();
+    case  3: return ReplayGain.getDescriptor();
+
     default: return 0;
     }
 }

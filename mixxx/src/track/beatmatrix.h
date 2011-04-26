@@ -23,7 +23,7 @@ class BeatMatrix : public QObject, public Beats {
 
     virtual QByteArray* toByteArray() const;
     virtual QString getVersion() const;
-
+    void createFromVector(QVector <double> beats);
     ////////////////////////////////////////////////////////////////////////////
     // Beat calculations
     ////////////////////////////////////////////////////////////////////////////

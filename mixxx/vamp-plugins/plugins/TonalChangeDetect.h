@@ -12,18 +12,24 @@
     COPYING included with this distribution for more information.
 */
 
-#ifndef _BAR_BEAT_TRACK_PLUGIN_H_
-#define _BAR_BEAT_TRACK_PLUGIN_H_
+#ifndef _TONALCHANGEDETECT_
+#define _TONALCHANGEDETECT_
 
-#include <vamp-sdk/Plugin.h>
+#include "vamp-sdk/Plugin.h"
 
-class BarBeatTrackerData;
+#include "../dsp/Chromagram.h"
+#include "../dsp//TonalEstimator.h"
+#include "../dsp/TCSgram.h"
 
-class BarBeatTracker : public Vamp::Plugin
+#include <queue>
+#include <vector>
+#include <valarray>
+
+class TonalChangeDetect : public Vamp::Plugin
 {
 public:
-    BarBeatTracker(float inputSampleRate);
-    virtual ~BarBeatTracker();
+	TonalChangeDetect(float fInputSampleRate);
+	virtual ~TonalChangeDetect();
 
     bool initialise(size_t channels, size_t stepSize, size_t blockSize);
     void reset();
@@ -41,6 +47,7 @@ public:
     float getParameter(std::string) const;
     void setParameter(std::string, float);
 
+
     size_t getPreferredStepSize() const;
     size_t getPreferredBlockSize() const;
 
@@ -50,13 +57,28 @@ public:
                        Vamp::RealTime timestamp);
 
     FeatureSet getRemainingFeatures();
+	
+private:
+    void setupConfig();
 
-protected:
-    BarBeatTrackerData *m_d;
-    static float m_stepSecs;
-    int m_bpb;
-    FeatureSet barBeatTrack();
+    ChromaConfig m_config;
+    Chromagram *m_chromagram;
+    TonalEstimator m_TonalEstimator;
+    mutable size_t m_step;
+    mutable size_t m_block;
+    size_t m_stepDelay;
+    std::queue<ChromaVector> m_pending;
+    ChromaVector m_vaCurrentVector;
+    TCSGram m_TCSGram;
+	
+    int m_iSmoothingWidth;  // smoothing window size
+    int m_minMIDIPitch;     // chromagram parameters
+    int m_maxMIDIPitch;
+    float m_tuningFrequency;
+
+    Vamp::RealTime m_origin;
+    bool m_haveOrigin;
 };
 
 
-#endif
+#endif // _TONALCHANGEDETECT_

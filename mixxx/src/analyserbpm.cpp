@@ -73,8 +73,8 @@ void AnalyserBPM::finalise(TrackPointer tio) {
         // Currently, the BPM is only analyzed if the track has no BPM. This
         // means we don't have to worry that the track already has an existing
         // BeatGrid.
-        //BeatsPointer pBeats = BeatFactory::makeBeatGrid(tio, newbpm, 0.0f);
-        //tio->setBeats(pBeats);
+        BeatsPointer pBeats = BeatFactory::makeBeatGrid(tio, newbpm, 0.0f);
+        tio->setBeats(pBeats);
 
         //if(pBpmReceiver) {
         //pBpmReceiver->setComplete(tio, false, bpm);

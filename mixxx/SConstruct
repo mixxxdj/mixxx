@@ -75,11 +75,16 @@ Import('sources')
 # and link properly. This sucks but it's the best way I can find -- bkgood
 VariantDir("plugins/soundsourcem4a", "src", duplicate=0)
 VariantDir("plugins/soundsourcewv", "src", duplicate=0)
+
 #Build our soundsource plugins
 soundsource_plugins = SConscript(File('plugins/SConscript'), build_dir=Dir(build.build_dir + "/plugins"), duplicate=0, exports=['build'])
 
+#Build Vamp minimal plugins
+#VariantDir("vamp-plugins", "src", duplicate=0)
+mixxxminimal_plugins = SConscript(File('vamp-plugins/SConscript'), build_dir=Dir(build.build_dir + "/vamp-plugins"), duplicate=0, exports=['build'])
+
 #Setup and build the "mixxx" executable target. Also sets up our install targets for each platform.
-SConscript(File('src/SConscript'), build_dir=Dir(build.build_dir), duplicate=0, exports=['build', 'sources', 'soundsource_plugins'])
+SConscript(File('src/SConscript'), build_dir=Dir(build.build_dir), duplicate=0, exports=['build', 'sources', 'soundsource_plugins', 'mixxxminimal_plugins'])
 
 #Conveniece - Copy over the Mixxx executable out of the build directory and into the bottom of the source
 #             tree. (That should be the directory where you run "scons".)

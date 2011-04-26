@@ -60,7 +60,6 @@
 #include "FIFOSampleBuffer.h"
 #include "PeakFinder.h"
 #include "BPMDetect.h"
-
 using namespace soundtouch;
 
 #define INPUT_BLOCK_SAMPLES       2048

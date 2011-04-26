@@ -345,6 +345,7 @@ class Vamp(Feature):
         if not self.enabled(build):
             return
         build.env.Append(CPPPATH=['#lib/vamp'])  
+        build.env.Append(CPPDEFINES = '__VAMP__')
         
         have_fftw3_h = conf.CheckHeader('fftw3.h')
         have_fftw3 = conf.CheckLib(['fftw3'], autoadd=False)
@@ -352,30 +353,12 @@ class Vamp(Feature):
              build.env.Append(CPPDEFINES = 'HAVE_FFTW3')
              if build.platform_is_linux or build.platform_is_osx:
                  build.env.ParseConfig('pkg-config fftw3 --silence-errors --cflags --libs')
-                 
-        
-        #if build.platform_is_windows:
-            #build.env.Append(LIBS = 'gpod');
-            # You must check v-this-v directory out from http://publicsvn.songbirdnest.com/vendor-binaries/trunk/windows-i686-msvc8/libgpod/
-            #build.env.Append(LIBPATH='../../../windows-i686-msvc8/libgpod/release/lib')
-            # Following building the following must be added to the dist folder in order for mixxx to run with ipod support on Windows
-            # \windows-i686-msvc8\libgpod\release\lib\libgpod.dll
-            # \windows-i686-msvc8\glib\release\bin\libgobject-2.0-0.dll
-            # \windows-i686-msvc8\glib\release\bin\libglib-2.0-0.dll
-            # \windows-i686-msvc8\libiconv\release\bin\iconv.dll
-            # \windows-i686-msvc8\gettext\release\binintl.dll
-        #if build.platform_is_linux or build.platform_is_osx:
-            #build.env.ParseConfig('pkg-config vamp-hostsdk --silence-errors --cflags --libs')
-            
-            #have_vamphostsdk = conf.CheckLib(['vamp-hostsdk'], autoadd=False)
-            
-            #if not have_vamphostsdk:
-            #    raise Exception ('Could not find vamp-hostsdk development headers')
             
     def sources(self, build):
         sources = ['vamp/vampanalyser.cpp',
                    'analyservamptest.cpp',
                    'analyservampkeytest.cpp',
+                   'analyserrgain.cpp',
                    '#lib/vamp/src/vamp-hostsdk/PluginBufferingAdapter.cpp',
                    '#lib/vamp/src/vamp-hostsdk/PluginChannelAdapter.cpp',
                    '#lib/vamp/src/vamp-hostsdk/PluginHostAdapter.cpp',
