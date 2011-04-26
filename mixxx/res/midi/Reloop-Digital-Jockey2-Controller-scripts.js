@@ -22,6 +22,8 @@ DigitalJockey2Controller.searchModeChannel2 = false;
 DigitalJockey2Controller.CUP_Button1_IsActive = false;
 DigitalJockey2Controller.CUP_Button2_IsActive = false;
 
+
+
 DigitalJockey2Controller.init = function(id){
     //print ("Initalizing Reloop Digital Jockey 2 Controler Edition.");
 	DigitalJockey2Controller.resetLEDs();
@@ -779,6 +781,19 @@ DigitalJockey2Controller.ReloopExit = function (channel, control, value, status,
 		engine.setValue(group,"reloop_exit",0);
 	}
 }
+DigitalJockey2Controller.BeatLoop = function (channel, control, value, status, group) {
+	if(value == DigitalJockey2Controller.keyPressed){
+		midi.sendShortMsg(status, control, DigitalJockey2Controller.ledOn); //Turn LED on
+		if(channel == 1)
+		    engine.setValue(group,"beatloop_4",1);
+		else
+		    engine.setValue(group,"beatloop_4",1);
+	}
+	else{
+		midi.sendShortMsg(status, control, DigitalJockey2Controller.ledOff); //Turn LED on
+	}
+}
+
 DigitalJockey2Controller.LoopActiveLED1 = function (value){
 	//if loop is active, we exit the loop
 	if(value == 1){

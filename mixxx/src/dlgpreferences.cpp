@@ -70,7 +70,7 @@ DlgPreferences::DlgPreferences(MixxxApp * mixxx, SkinLoader* pSkinLoader,
     // Construct widgets for use in tabs
     wsound = new DlgPrefSound(this, soundman, pPlayerManager, config);
     wplaylist = new DlgPrefPlaylist(this, config);
-    wcontrols = new DlgPrefControls(this, mixxx, pSkinLoader, config);
+    wcontrols = new DlgPrefControls(this, mixxx, pSkinLoader, pPlayerManager, config);
     weq = new DlgPrefEQ(this, config);
     wcrossfader = new DlgPrefCrossfader(this, config);
     wbpm = new DlgPrefBpm(this, config);
