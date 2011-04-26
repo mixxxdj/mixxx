@@ -3,6 +3,11 @@
 #include "engine/positionscratchcontroller.h"
 #include "mathstuff.h"
 
+#ifdef _MSC_VER
+#include <float.h>  // for _finite() on VC++
+#define isinf(x) (!_finite(x))
+#endif
+
 class VelocityController {
   public:
     VelocityController() {
@@ -40,7 +45,7 @@ class VelocityController {
     }
 
     double observation(double position, double time) {
-        double dt = fmax(time - m_last_time, .001); // limit dt blowup
+        double dt = math_max(time - m_last_time, .001); // limit dt blowup
         dt = 1; // TODO(rryan) all time stuff disabled for now
 
         const double error = m_target_position - position;
