@@ -11,12 +11,14 @@
 #include <QDropEvent>
 #include <QTimerEvent>
 #include <QGLContext>
+#include <QtDebug>
 
 #include "wwidget.h"
 #include "defs.h"
 
 class EngineBuffer;
 class WaveformRenderer;
+class ControlObjectThreadMain;
 
 class WGLWaveformViewer : public QGLWidget
 {
@@ -53,11 +55,18 @@ class WGLWaveformViewer : public QGLWidget
     /** Waveform Renderer does all the work for us */
     WaveformRenderer *m_pWaveformRenderer;
 
+    ControlObjectThreadMain* m_pScratchEnable;
+    ControlObjectThreadMain* m_pScratch;
+    ControlObjectThreadMain* m_pPlayPosition;
+    ControlObjectThreadMain* m_pTrackSamples;
+    ControlObjectThreadMain* m_pTrackSampleRate;
+    bool m_bScratching;
+    double m_dInitialPlaypos;
+
     bool m_painting;
     QMutex m_paintMutex;
 
     const char *m_pGroup;
-
 };
 
 #endif
