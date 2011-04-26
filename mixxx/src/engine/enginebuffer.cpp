@@ -482,7 +482,7 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
 
         bool paused = playButton->get() != 0.0f ? false : true;
 
-        rate = m_pRateControl->calculateRate(baserate, paused);
+        rate = m_pRateControl->calculateRate(baserate, paused, iBufferSize);
         //qDebug() << "rate" << rate << " paused" << paused;
 
         // If the rate has changed, set it in the scale object
@@ -754,9 +754,9 @@ void EngineBuffer::updateIndicators(double rate, int iBufferSize) {
     }
 
     // Update indicators that are only updated after every
-    // sampleRate/UPDATE_RATE samples processed.  (e.g. playposSlider,
+    // sampleRate/kiUpdateRate samples processed.  (e.g. playposSlider,
     // rateEngine)
-    if (m_iSamplesCalculated > (m_pSampleRate->get()/UPDATE_RATE)) {
+    if (m_iSamplesCalculated > (m_pSampleRate->get()/kiUpdateRate)) {
         playposSlider->set(fFractionalPlaypos);
 
         if(rate != rateEngine->get())

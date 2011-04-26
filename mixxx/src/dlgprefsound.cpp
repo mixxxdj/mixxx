@@ -117,22 +117,6 @@ void DlgPrefSound::slotApply() {
     if (!m_settingsModified && !m_forceApply) {
         return;
     }
-#ifdef __VINYLCONTROL__
-    // Scratchlib sucks, throw rocks at it
-    // XXX(bkgood) HACKS DELETE THIS WHEN SCRATCHLIB GETS NUKED KTHX
-    if ((m_pConfig->getValueString(ConfigKey("[Channel1]", "vinylcontrol_vinyl_type"))
-            == MIXXX_VINYL_FINALSCRATCH  ||
-            m_pConfig->getValueString(ConfigKey("[Channel2]", "vinylcontrol_vinyl_type"))
-            == MIXXX_VINYL_FINALSCRATCH)
-            &&
-        sampleRateComboBox->itemData(sampleRateComboBox->currentIndex()).toUInt()
-            != 44100) {
-        QMessageBox::warning(this, tr("Mixxx Error"),
-            tr("FinalScratch records currently only work properly with a "
-            "44100 Hz sample rate.\nThe sample rate has been reset to 44100 Hz."));
-        sampleRateComboBox->setCurrentIndex(sampleRateComboBox->findData(44100));
-    }
-#endif
     m_forceApply = false;
     m_config.clearInputs();
     m_config.clearOutputs();
