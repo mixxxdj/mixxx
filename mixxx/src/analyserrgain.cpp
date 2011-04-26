@@ -61,8 +61,6 @@ void AnalyserrGain::finalise(TrackPointer tio) {
     values.clear();
     m_bPass = mvamprg->End();
     qDebug()<<"ReplayGain detection complete";
-    if(mvamprg == NULL)
-        qDebug()<<"RaceCondition";
     delete mvamprg;
     mvamprg = NULL;
     //m_iStartTime = clock() - m_iStartTime;
