@@ -17,7 +17,7 @@ WaveformWidgetRenderer::WaveformWidgetRenderer( const char* group) :
 {
     m_timer = new QTime();
 
-    m_zoomFactor = 1.0;
+    m_zoomFactor = 2.0;
     m_rateAdjust = 0.0;
 
     //Realy create some to manage those
@@ -29,6 +29,20 @@ WaveformWidgetRenderer::WaveformWidgetRenderer( const char* group) :
     m_rateRange = 0.0;
     m_rateDirControlObject = 0;
     m_rateDir = 0.0;
+    m_gainControlObject = 0;
+    m_gain = 1.0;
+    m_lowFilterControlObject = 0;
+    m_lowFilterGain = 1.0;
+    m_midFilterControlObject = 0;
+    m_midFilterGain = 1.0;
+    m_highFilterControlObject = 0;
+    m_highFilterGain = 1.0;
+    m_lowKillControlObject = 0;
+    m_lowKill = false;
+    m_midKillControlObject = 0;
+    m_midKill = false;
+    m_highKillControlObject = 0;
+    m_highKill = false;
 
     //debug
     currentFrame = 0;
@@ -58,6 +72,13 @@ void WaveformWidgetRenderer::init()
     m_rateControlObject = ControlObject::getControl( ConfigKey(m_group,"rate"));
     m_rateRangeControlObject = ControlObject::getControl( ConfigKey(m_group,"rate_dir"));
     m_rateDirControlObject = ControlObject::getControl( ConfigKey(m_group,"rateRange"));
+    m_gainControlObject = ControlObject::getControl( ConfigKey(m_group,"total_gain"));
+    m_lowFilterControlObject = ControlObject::getControl( ConfigKey(m_group,"filterLow"));
+    m_midFilterControlObject = ControlObject::getControl( ConfigKey(m_group,"filterMid"));
+    m_highFilterControlObject = ControlObject::getControl( ConfigKey(m_group,"filterHigh"));
+    m_lowKillControlObject = ControlObject::getControl( ConfigKey(m_group,"filterLowKill"));
+    m_midKillControlObject = ControlObject::getControl( ConfigKey(m_group,"filterMidKill"));
+    m_highKillControlObject = ControlObject::getControl( ConfigKey(m_group,"filterHighKill"));
 
     for( int i = 0; i < m_rendererStack.size(); ++i)
         m_rendererStack[i]->init();
@@ -73,6 +94,13 @@ void WaveformWidgetRenderer::draw( QPainter* painter, QPaintEvent* event)
     m_rate = m_rateControlObject->get();
     m_rateDir = m_rateDirControlObject->get();
     m_rateRange = m_rateRangeControlObject->get();
+    m_gain = m_gainControlObject->get();
+    m_lowFilterGain = m_lowFilterControlObject->get();
+    m_midFilterGain = m_midFilterControlObject->get();
+    m_highFilterGain = m_highFilterControlObject->get();
+    m_lowKill = m_lowKillControlObject->get() > 0.1;
+    m_midKill = m_midKillControlObject->get() > 0.1;
+    m_highKill = m_highKillControlObject->get() > 0.1;
 
     //Legacy stuff (Ryan it that OK?)
     //Limit our rate adjustment to < 99%, "Bad Things" might happen otherwise.
@@ -100,7 +128,13 @@ void WaveformWidgetRenderer::draw( QPainter* painter, QPaintEvent* event)
                       QString::number(m_lastSystemFrameTime) + "(" +
                       QString::number(systemMax) + ")");
 
-    painter->drawText(1,m_height-1,QString::number(m_playPos) + " | " + QString::number(m_rate));
+    painter->drawText(1,m_height-1,
+                      QString::number(m_playPos) + " | " +
+                      QString::number(m_rate) + " | " +
+                      QString::number(m_gain) + " | " +
+                      QString::number(m_lowFilterGain) + " | " +
+                      QString::number(m_midFilterGain) + " | " +
+                      QString::number(m_highFilterGain));
 
     m_lastFrameTime = m_timer->elapsed();
     m_timer->restart();

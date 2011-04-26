@@ -37,6 +37,13 @@ public:
     double getPlayPos() const { return m_playPos;}
     double getZoomFactor() const { m_zoomFactor;}
     double getRateAdjust() const { return m_rateAdjust;}
+    double getGain() const { return m_gain;}
+    double getLowFilterGain() const { return m_lowFilterGain;}
+    double getMidFilterGain() const { return m_midFilterGain;}
+    double getHighFilterGain() const { return m_highFilterGain;}
+    bool isLowKilled() const { return m_lowKill;}
+    bool isMidKilled() const { return m_midKill;}
+    bool isHighKilled() const { return m_highKill;}
 
     void resize( int width, int height);
     int getHeight() const { return m_height;}
@@ -72,6 +79,21 @@ protected:
     double m_rateRange;
     ControlObject* m_rateDirControlObject;
     double m_rateDir;
+    //gain
+    ControlObject* m_gainControlObject;
+    double m_gain;
+    ControlObject* m_lowFilterControlObject;
+    double m_lowFilterGain;
+    ControlObject* m_lowKillControlObject;
+    bool m_lowKill;
+    ControlObject* m_midFilterControlObject;
+    double m_midFilterGain;
+    ControlObject* m_midKillControlObject;
+    bool m_midKill;
+    ControlObject* m_highFilterControlObject;
+    double m_highFilterGain;
+    ControlObject* m_highKillControlObject;
+    bool m_highKill;
 
     //Debug
     QTime* m_timer;
