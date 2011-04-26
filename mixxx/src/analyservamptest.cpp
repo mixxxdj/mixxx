@@ -36,9 +36,14 @@ void AnalyserVampTest::initialise(TrackPointer tio, int sampleRate,
     //"vamp-aubio:aubiotempo"(GPLed)
     //"qm-vamp-plugins:qm-barbeattracker" (now released under GPL)
     //"qm-vamp-plugins:qm-tempotracker" (now released under GPL)
+    //
+    //Choose:
+    //"libmixxxminimal:mixxxbeatdetection" with output 0 to activate standard Mixxx bpm detection via soundtouch
+    //"libmixxxminimal:qm-barbeattracker" with output 0 to activate Queens Mary beat detection
+
     mvamp = new VampAnalyser();
-    //usage               "plugin key"                        output  samplerate  totalsamples
-    m_bPass = mvamp->Init("libmixxxminimal:qm-barbeattracker",0     , sampleRate, totalSamples);
+    //usage               "plugin key"                         output  samplerate  totalsamples
+    m_bPass = mvamp->Init("libmixxxminimal:qm-barbeattracker", 0     , sampleRate, totalSamples);
     if (!m_bPass){
         qDebug() << "Cannot initialise vamp plugin";
         return;
