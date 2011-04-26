@@ -374,6 +374,7 @@ class MixxxCore(Feature):
 
                    "engine/enginecontrol.cpp",
                    "engine/ratecontrol.cpp",
+                   "engine/positionscratchcontroller.cpp",
                    "engine/loopingcontrol.cpp",
                    "engine/bpmcontrol.cpp",
                    "engine/cuecontrol.cpp",
@@ -462,7 +463,7 @@ class MixxxCore(Feature):
                    "library/browse/browsethread.cpp",
                    "library/browse/browsefeature.cpp",
                    "library/browse/foldertreemodel.cpp",
-                   
+
                    "library/recording/recordingfeature.cpp",
                    "dlgrecording.cpp",
                    "recording/recordingmanager.cpp",
