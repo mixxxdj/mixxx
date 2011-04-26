@@ -12,29 +12,23 @@
     COPYING included with this distribution for more information.
 */
 
-#ifndef _TONALCHANGEDETECT_
-#define _TONALCHANGEDETECT_
+#ifndef _BEAT_TRACK_PLUGIN_H_
+#define _BEAT_TRACK_PLUGIN_H_
 
-#include <vamp-sdk/Plugin.h>
+#include "vamp-sdk/Plugin.h"
 
-#include "../dsp/Chromagram.h"
-#include "../dsp//TonalEstimator.h"
-#include "../dsp/TCSgram.h"
+class BeatTrackerData;
 
-#include <queue>
-#include <vector>
-#include <valarray>
-
-class TonalChangeDetect : public Vamp::Plugin
+class BeatTracker : public Vamp::Plugin
 {
 public:
-	TonalChangeDetect(float fInputSampleRate);
-	virtual ~TonalChangeDetect();
+    BeatTracker(float inputSampleRate);
+    virtual ~BeatTracker();
 
     bool initialise(size_t channels, size_t stepSize, size_t blockSize);
     void reset();
 
-    InputDomain getInputDomain() const { return TimeDomain; }
+    InputDomain getInputDomain() const { return FrequencyDomain; }
 
     std::string getIdentifier() const;
     std::string getName() const;
@@ -47,7 +41,6 @@ public:
     float getParameter(std::string) const;
     void setParameter(std::string, float);
 
-
     size_t getPreferredStepSize() const;
     size_t getPreferredBlockSize() const;
 
@@ -57,28 +50,16 @@ public:
                        Vamp::RealTime timestamp);
 
     FeatureSet getRemainingFeatures();
-	
-private:
-    void setupConfig();
 
-    ChromaConfig m_config;
-    Chromagram *m_chromagram;
-    TonalEstimator m_TonalEstimator;
-    mutable size_t m_step;
-    mutable size_t m_block;
-    size_t m_stepDelay;
-    std::queue<ChromaVector> m_pending;
-    ChromaVector m_vaCurrentVector;
-    TCSGram m_TCSGram;
-	
-    int m_iSmoothingWidth;  // smoothing window size
-    int m_minMIDIPitch;     // chromagram parameters
-    int m_maxMIDIPitch;
-    float m_tuningFrequency;
-
-    Vamp::RealTime m_origin;
-    bool m_haveOrigin;
+protected:
+    BeatTrackerData *m_d;
+    int m_method;
+    int m_dfType;
+    bool m_whiten;
+    static float m_stepSecs;
+    FeatureSet beatTrackOld();
+    FeatureSet beatTrackNew();
 };
 
 
-#endif // _TONALCHANGEDETECT_
+#endif

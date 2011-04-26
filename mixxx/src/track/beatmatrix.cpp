@@ -51,6 +51,27 @@ QString BeatMatrix::getVersion() const {
     return "BeatMatrix-1.0";
 }
 
+void BeatMatrix::createFromVector(QVector <double> beats){
+    QMutexLocker locker(&m_mutex);
+    double previous_beat = -1;
+    QVectorIterator<double> i(beats);
+    while (i.hasNext()){
+        double beat = i.next();
+        if(beat<=previous_beat){
+            qDebug()<<"BeatMatrix::createFromeVector: beats not in increasing order";
+            locker.unlock();
+            return;
+        }
+        else{
+            m_beatList.append(beat);
+            previous_beat = beat;
+        }
+    }
+    locker.unlock();
+    emit(updated());
+}
+
+
 // internal use only
 bool BeatMatrix::isValid() const {
     return m_iSampleRate > 0 && m_beatList.size() > 0;

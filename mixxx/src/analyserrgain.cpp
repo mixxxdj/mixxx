@@ -1,0 +1,69 @@
+/*
+ * analyserrgain.cpp
+ *
+ *  Created on: 19/apr/2011
+ *      Author: vittorio
+ */
+
+#include <QtDebug>
+#include <QList>
+#include <QVector>
+#include <QString>
+#include <time.h>
+#include <math.h>
+#include "analyserrgain.h"
+
+AnalyserrGain::AnalyserrGain(ConfigObject<ConfigValue> *_config) {
+    m_pConfigAVR = _config;
+    m_bPass = 0;
+
+
+}
+
+AnalyserrGain::~AnalyserrGain(){
+
+}
+
+void AnalyserrGain::initialise(TrackPointer tio, int sampleRate, int totalSamples) {
+    mvamprg = new VampAnalyser();
+    bool bAnalyserEnabled = (bool)m_pConfigAVR->getValueString(ConfigKey("[ReplayGain]","ReplayGainAnalyserEnabled")).toInt();
+    float fReplayGain = tio->getReplayGain();
+    if(totalSamples == 0 || fReplayGain != 0 || !bAnalyserEnabled) {
+        //qDebug() << "Replaygain Analyser will not start.";
+        //if (fReplayGain != 0 ) qDebug() << "Found a ReplayGain value of " << 20*log10(fReplayGain) << "dB for track :" <<(tio->getFilename());
+        return;
+   }
+
+    m_bPass = mvamprg->Init("libmixxxminimal:replaygain",0,sampleRate, totalSamples);
+    if (!m_bPass)
+        qDebug() << "Failed to init";
+
+
+}
+
+void AnalyserrGain::process(const CSAMPLE *pIn, const int iLen) {
+    if(!m_bPass) return;
+    m_bPass = mvamprg->Process(pIn, iLen);
+
+
+}
+
+void AnalyserrGain::finalise(TrackPointer tio) {
+    if(!m_bPass) return;
+    QVector <double> values;
+    values = mvamprg->GetFirstValuesVector();
+    if(!values.isEmpty())
+    {
+        qDebug()<<"Found a ReplayGain value of"<<pow(10,values[0]/20);
+        float fReplayGain_Result = pow(10,values[0]/20);
+        tio->setReplayGain(fReplayGain_Result);
+    }
+    values.clear();
+    m_bPass = mvamprg->End();
+    qDebug()<<"ReplayGain detection complete";
+    if(mvamprg == NULL)
+        qDebug()<<"RaceCondition";
+    delete mvamprg;
+    mvamprg = NULL;
+    //m_iStartTime = clock() - m_iStartTime;
+}

@@ -12,8 +12,11 @@
 #include "analyserwavesummary.h"
 #include "analyserbpm.h"
 #include "analyserrg.h"
+#ifdef __VAMP__
 #include "analyservamptest.h"
 #include "analyservampkeytest.h"
+#include "analyserrgain.h";
+#endif
 
 AnalyserQueue::AnalyserQueue() : m_aq(),
                                  m_tioq(),
@@ -212,11 +215,15 @@ AnalyserQueue* AnalyserQueue::createDefaultAnalyserQueue(ConfigObject<ConfigValu
 
     ret->addAnalyser(new AnalyserWavesummary());
     ret->addAnalyser(new AnalyserWaveform());
-    //ret->addAnalyser(new AnalyserBPM(_config));
-    ret->addAnalyser(new AnalyserGain(_config));
-    ret->addAnalyser(new AnalyserVampTest(_config));
-    ret->addAnalyser(new AnalyserVampKeyTest(_config));
 
+#ifdef __VAMP__
+    ret->addAnalyser(new AnalyserrGain(_config));
+    ret->addAnalyser(new AnalyserVampTest(_config));
+    //ret->addAnalyser(new AnalyserVampKeyTest(_config));
+#else
+    ret->addAnalyser(new AnalyserBPM(_config));
+    ret->addAnalyser(new AnalyserGain(_config));
+#endif
     ret->start(QThread::IdlePriority);
     return ret;
 }
@@ -224,9 +231,14 @@ AnalyserQueue* AnalyserQueue::createDefaultAnalyserQueue(ConfigObject<ConfigValu
 AnalyserQueue* AnalyserQueue::createPrepareViewAnalyserQueue(ConfigObject<ConfigValue> *_config) {
     AnalyserQueue* ret = new AnalyserQueue();
     ret->addAnalyser(new AnalyserWavesummary());
+#ifdef __VAMP__
+    ret->addAnalyser(new AnalyserrGain(_config));
+    ret->addAnalyser(new AnalyserVampTest(_config));
+    //ret->addAnalyser(new AnalyserVampKeyTest(_config));
+#else
     ret->addAnalyser(new AnalyserBPM(_config));
     ret->addAnalyser(new AnalyserGain(_config));
-    ret->addAnalyser(new AnalyserVampTest(_config));
+#endif
     ret->start(QThread::IdlePriority);
     return ret;
 }

@@ -16,19 +16,19 @@
 AnalyserVampKeyTest::AnalyserVampKeyTest(ConfigObject<ConfigValue> *_config) {
     m_pConfigAVT = _config;
     m_bPass = 0;
-    mvamp = new VampAnalyser();
+
 
 }
 
 AnalyserVampKeyTest::~AnalyserVampKeyTest(){
-    delete mvamp;
 }
 void AnalyserVampKeyTest::initialise(TrackPointer tio, int sampleRate,
         int totalSamples) {
+    mvamp = new VampAnalyser();
     //usage mvamp->Init(plugin key, output number, samplerate, totalsamples);
     //tested key detection features with vamp-plugins:
    // qm-vamp-plugins:qm-keydetector (GPLed)
-    m_bPass = mvamp->Init("qm-subset:qm-keydetector",2,sampleRate, totalSamples);
+    m_bPass = mvamp->Init("libmixxxminimal:qm-keydetector",2,sampleRate, totalSamples);
     if (!m_bPass)
         qDebug() << "Failed to init";
 
@@ -46,16 +46,18 @@ void AnalyserVampKeyTest::process(const CSAMPLE *pIn, const int iLen) {
 void AnalyserVampKeyTest::finalise(TrackPointer tio) {
     if(!m_bPass) return;
     QVector <QString> labels;
-        if(mvamp->GetInitFramesVector(&m_frames)){
-               if(mvamp->GetFirstValuesVector(&m_keys))
-                   mvamp->GetLabelsVector(&labels);
-               for (int i=0; i<m_frames.size(); i++){
-                   qDebug()<<"Key changes to "<< m_keys[i] <<"("<<labels[i]<<")" << " at frame "<< m_frames[i];
-               }
-           }
-           m_frames.clear();
-           m_keys.clear();
+    m_frames = mvamp->GetInitFramesVector();
+    if(!m_frames.isEmpty()){
+        m_keys = mvamp->GetFirstValuesVector();
+        labels = mvamp->GetLabelsVector();
+        for (int i=0; i<m_frames.size(); i++){
+            qDebug()<<"Key changes to "<< m_keys[i] <<"("<<labels[i]<<")" << " at frame "<< m_frames[i];
+        }
+    }
+    m_frames.clear();
+    m_keys.clear();
     m_bPass = mvamp->End();
+    delete mvamp;
     qDebug()<<"Key detection complete";
 
     //m_iStartTime = clock() - m_iStartTime;

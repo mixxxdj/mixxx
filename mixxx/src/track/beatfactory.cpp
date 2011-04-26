@@ -33,9 +33,7 @@ BeatsPointer BeatFactory::makeBeatGrid(TrackPointer pTrack, double dBpm, double 
 
 BeatsPointer BeatFactory::makeBeatMatrix (TrackPointer pTrack, QVector <double> beats) {
     BeatMatrix* pMatrix = new BeatMatrix(pTrack);
-    QVectorIterator<double> i(beats);
-    while (i.hasNext())
-        pMatrix->addBeat(i.next());
+    pMatrix->createFromVector(beats);
     return BeatsPointer(pMatrix,&BeatFactory::deleteBeats);
 
 }
