@@ -138,7 +138,7 @@ void PositionScratchController::process(double currentSample, bool paused, int i
     const double kInertiaDecay = 0.9;
     // If we're playing, then do not decay rate below 1. If we're not playing,
     // then we want to decay all the way down to below 0.1
-    const double kDecayThreshold = paused ? 1.0 : 0.1;
+    const double kDecayThreshold = paused ? 0.1 : 1.0;
 
     if (m_bScratching) {
         if (scratchEnable || m_bEnableInertia) {
