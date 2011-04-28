@@ -717,8 +717,8 @@ void MidiScriptEngine::setValue(QString group, QString name, double newValue) {
 
     ControlObjectThread *cot = getControlObjectThread(group, name);
 
-    if(cot != NULL) {
-        if (!m_st.ignore(group,name,newValue)) cot->slotSet(newValue);
+    if(cot != NULL && !m_st.ignore(group,name,newValue)) {
+        cot->slotSet(newValue);
     }
 
 }
