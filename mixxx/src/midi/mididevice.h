@@ -33,6 +33,7 @@
 
 #include <QtCore>
 #include "midimessage.h"
+#include "softtakeover.h"
 
 //Forward declarations
 class MidiMapping;
@@ -106,6 +107,7 @@ Q_OBJECT
             a race condition when a MIDI message is received and looked up in the MidiMapping while
             the MidiMapping is being modified (and is already locked).  */
         bool m_bReceiveInhibit;
+        SoftTakeover m_st;
 };
 
 #endif
