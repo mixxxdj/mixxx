@@ -39,6 +39,7 @@
 #include "widget/wnumberpos.h"
 #include "widget/wnumberrate.h"
 #include "widget/woverview.h"
+#include "widget/wspinny.h"
 
 #include "widget/wvisualsimple.h"
 #include "widget/wglwaveformviewer.h"
@@ -264,6 +265,8 @@ QWidget* LegacySkinParser::parseNode(QDomElement node, QWidget *pGrandparent) {
         return parseWidgetGroup(node);
     } else if (nodeName == "Style") {
         return parseStyle(node);
+    } else if (nodeName == "Spinny") {
+        return parseSpinny(node);
     } else {
         qDebug() << "Invalid node name in skin:" << nodeName;
     }
@@ -604,6 +607,16 @@ QWidget* LegacySkinParser::parseKnob(QDomElement node) {
     setControlDefaults(node, p);
     return p;
 }
+
+QWidget* LegacySkinParser::parseSpinny(QDomElement node) {
+    WSpinny* p = new WSpinny(m_pParent);
+    setupWidget(node, p);
+    p->setup(node);
+    setupConnections(node, p);
+    p->installEventFilter(m_pKeyboard);
+    return p;
+}
+
 
 QWidget* LegacySkinParser::parseTableView(QDomElement node) {
     QStackedWidget* pTabWidget = new QStackedWidget(m_pParent);
