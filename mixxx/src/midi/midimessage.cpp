@@ -28,6 +28,7 @@ MidiMessage::MidiMessage(QDomElement& parentNode)
     QString midiNo = parentNode.firstChildElement("midino").text();
     QString midiOn = parentNode.firstChildElement("on").text();
     QString midiOff = parentNode.firstChildElement("off").text();
+    QString midiDescr = parentNode.firstChildElement("description").text();
 
     bool ok = false;
 
