@@ -552,7 +552,11 @@ void EngineMaster::pushPassthroughBuffer(int c, short *input, int len)
 		}
 		else
 		{
-			qDebug() << "WARNING: Input Passthrough buffer overflow, adding another. total:" << m_iThruBufferCount[c]+1;
+		    //sigh, this just isn't working.
+		    qDebug() << "WARNING: Input Passthrough buffer overflow";
+		    passthroughBufferMutex[c].unlock();
+			return;
+			/*qDebug() << "WARNING: Input Passthrough buffer overflow, adding another. total:" << m_iThruBufferCount[c]+1;
 			m_bFilling[c]=true;
 			m_iThruBufferCount[c]++;
 			//move the read pointer ahead too -- since my "pointers" are going
@@ -571,7 +575,7 @@ void EngineMaster::pushPassthroughBuffer(int c, short *input, int len)
 						m_passthroughBuffers[c]+ (m_iLastThruWrote[c] + 1) * len, 
 						(int)(m_iThruBufferCount[c] - (m_iLastThruWrote[c] + 2)) * len * sizeof(m_passthroughBuffers[c]));
 		
-			//now we can write to 3, say, and it will read from, say, 4.			
+			//now we can write to 3, say, and it will read from, say, 4.		*/	
 		}
 	}
 
