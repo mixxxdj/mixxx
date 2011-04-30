@@ -115,8 +115,7 @@ class BaseSqlTableModel : public QAbstractTableModel {
     QVector<QHash<int, QVariant> > m_headerInfo;
 
     TrackCollection* m_pTrackCollection;
-    // TrackDAO isn't very const-correct
-    mutable TrackDAO& m_trackDAO;
+    TrackDAO& m_trackDAO;
     QSqlDatabase m_database;
 };
 
