@@ -861,12 +861,10 @@ void MixxxApp::initActions()
     // Either check or uncheck the vinyl control menu item depending on what
     // it was saved as.
     m_pOptionsVinylControl->setCheckable(true);
-    if ((bool)m_pConfig->getValueString(
-        ConfigKey("[VinylControl]","enabled_ch1")).toInt() == true) {
-        m_pOptionsVinylControl->setChecked(true);
-    } else {
-        m_pOptionsVinylControl->setChecked(false);
-    }
+    //make sure control is off on startup (this is redundant to vinylcontrolmanager.cpp)
+    m_pConfig->set(
+            ConfigKey("[VinylControl]", "enabled_ch1"), false);
+    m_pOptionsVinylControl->setChecked(false);
     m_pOptionsVinylControl->setStatusTip(tr("Activate Vinyl Control"));
     m_pOptionsVinylControl->setWhatsThis(
         tr("Use timecoded vinyls on external turntables to control Mixxx"));
@@ -879,12 +877,9 @@ void MixxxApp::initActions()
         SLOT(slotControlVinylControl(double)));
 
     m_pOptionsVinylControl2->setCheckable(true);
-    if ((bool)m_pConfig->getValueString(
-        ConfigKey("[VinylControl]","enabled_ch2")).toInt() == true) {
-        m_pOptionsVinylControl2->setChecked(true);
-    } else {
-        m_pOptionsVinylControl2->setChecked(false);
-    }
+    m_pConfig->set(
+            ConfigKey("[VinylControl]", "enabled_ch2"), false);
+    m_pOptionsVinylControl2->setChecked(false);
     m_pOptionsVinylControl2->setStatusTip(tr("Activate Vinyl Control"));
     m_pOptionsVinylControl2->setWhatsThis(
         tr("Use timecoded vinyls on external turntables to control Mixxx"));
@@ -1377,6 +1372,7 @@ void MixxxApp::slotHelpAbout()
 "Miko Kiiski<br>"
 "Vin&iacute;cius Dias dos Santos<br>"
 "Joe Colosimo<br>"
+"Shashank Kumar<br>"
 
 "</p>"
 "<p align=\"center\"><b>And special thanks to:</b></p>"

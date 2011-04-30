@@ -74,7 +74,8 @@ void VinylControl::ToggleVinylControl(bool enable)
 
 VinylControl::~VinylControl()
 {
-
+    enabled->slotSet(false);
+    vinylStatus->slotSet(VINYL_STATUS_DISABLED);
 }
 
 float VinylControl::getSpeed()

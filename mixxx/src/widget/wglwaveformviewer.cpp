@@ -9,20 +9,20 @@
 #include <QFile>
 #include <QGLContext>
 
-
 #include "mixxx.h"
 #include "trackinfoobject.h"
 #include "wglwaveformviewer.h"
 #include "waveform/waveformrenderer.h"
+#include "controlobjectthreadmain.h"
 
 WGLWaveformViewer::WGLWaveformViewer(
-        const char *group, 
-        WaveformRenderer *pWaveformRenderer, 
-        QWidget * pParent, 
+        const char *group,
+        WaveformRenderer *pWaveformRenderer,
+        QWidget * pParent,
         const QGLWidget * pShareWidget,
         QGLContext *ctxt,
         Qt::WFlags f
-    ) : 
+    ) :
     QGLWidget(ctxt, pParent, pShareWidget)
 {
 
@@ -30,6 +30,17 @@ WGLWaveformViewer::WGLWaveformViewer(
     Q_ASSERT(m_pWaveformRenderer);
 
     m_pGroup = group;
+
+    m_pScratchEnable = new ControlObjectThreadMain(
+        ControlObject::getControl(ConfigKey(group, "scratch_position_enable")));
+    m_pScratch = new ControlObjectThreadMain(
+        ControlObject::getControl(ConfigKey(group, "scratch_position")));
+    m_pPlayPosition = new ControlObjectThreadMain(
+        ControlObject::getControl(ConfigKey(group, "visual_playposition")));
+    m_pTrackSamples = new ControlObjectThreadMain(
+        ControlObject::getControl(ConfigKey(group, "track_samples")));
+    m_pTrackSampleRate = new ControlObjectThreadMain(
+        ControlObject::getControl(ConfigKey(group, "track_samplerate")));
 
     setAcceptDrops(true);
 
@@ -88,35 +99,42 @@ void WGLWaveformViewer::setValue(double) {
     // unused, stops a bad connect from happening
 }
 
-
-
 bool WGLWaveformViewer::eventFilter(QObject *o, QEvent *e) {
+    QMouseEvent* m = dynamic_cast<QMouseEvent*>(e);
     if(e->type() == QEvent::MouseButtonPress) {
-        QMouseEvent *m = (QMouseEvent*)e;
-        m_iMouseStart= -1;
+        m_iMouseStart = m->x();
         if(m->button() == Qt::LeftButton) {
-            // The left button went down, so store the start position
-            m_iMouseStart = m->x();
-            emit(valueChangedLeftDown(64));
+            m_dInitialPlaypos = m_pPlayPosition->get() * m_pTrackSamples->get();
+            m_bScratching = true;
+            m_pScratch->slotSet(m_dInitialPlaypos);
+            m_pScratchEnable->slotSet(1.0f);
+            //qDebug() << "m_dInitialPlaypos" << m_dInitialPlaypos;
+
+            // Set the cursor to a hand while the mouse is down.
+            setCursor(Qt::OpenHandCursor);
         }
     } else if(e->type() == QEvent::MouseMove) {
         // Only send signals for mouse moving if the left button is pressed
-        if(m_iMouseStart != -1) {
-            QMouseEvent *m = (QMouseEvent*)e;
+        if (m_iMouseStart != -1 && m_bScratching) {
+            int curX = m->x();
 
-            // start at the middle of 0-127, and emit values based on
-            // how far the mouse has travelled horizontally
-            double v = 64 + (double)(m->x()-m_iMouseStart)/10;
-            // clamp to 0-127
-            if(v<0)
-                v = 0;
-            else if(v > 127)
-                v = 127;
-            emit(valueChangedLeftDown(v));
-
+            // Adjusts for one-to-one movement. Track sample rate in hundreds of
+            // samples times two is the number of samples per pixel.  rryan
+            // 4/2011
+            double samplesPerPixel = m_pTrackSampleRate->get() / 100.0 * 2;
+            double targetPosition = m_dInitialPlaypos - (curX - m_iMouseStart) * samplesPerPixel;
+            //qDebug() << "Start:" << m_dInitialPlaypos << "Target:" << targetPosition;
+            m_pScratch->slotSet(targetPosition);
         }
     } else if(e->type() == QEvent::MouseButtonRelease) {
-        emit(valueChangedLeftDown(64));
+        if (m_bScratching) {
+            m_pScratchEnable->slotSet(0.0f);
+            m_bScratching = false;
+
+            // Set the cursor back to an arrow.
+            setCursor(Qt::ArrowCursor);
+        }
+        m_iMouseStart = -1;
     } else {
         return QObject::eventFilter(o,e);
     }

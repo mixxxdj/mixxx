@@ -9,6 +9,7 @@
 
 #include "engine/enginecontrol.h"
 #include "engine/ratecontrol.h"
+#include "engine/positionscratchcontroller.h"
 
 #ifdef _MSC_VER
 #include <float.h>  // for _isnan() on VC++
@@ -39,8 +40,9 @@ RateControl::RateControl(const char* _group,
     m_eRampBackMode(RATERAMP_RAMPBACK_NONE),
     m_dRateTempRampbackChange(0.0),
     m_dOldRate(0.0f),
-    m_pConfig(_config)
-{
+    m_pConfig(_config) {
+    m_pScratchController = new PositionScratchController(_group);
+
     m_pRateDir = new ControlObject(ConfigKey(_group, "rate_dir"));
     m_pRateRange = new ControlObject(ConfigKey(_group, "rateRange"));
     m_pRateSlider = new ControlPotmeter(ConfigKey(_group, "rate"), -1.f, 1.f);
@@ -372,7 +374,7 @@ double RateControl::getJogFactor() {
     return jogFactor * m_dWheelSensitivity;
 }
 
-double RateControl::calculateRate(double baserate, bool paused) {
+double RateControl::calculateRate(double baserate, bool paused, int iSamplesPerBuffer) {
     double rate = 0.0;
     double wheelFactor = getWheelFactor();
     double jogFactor = getJogFactor();
@@ -380,12 +382,22 @@ double RateControl::calculateRate(double baserate, bool paused) {
     bool scratchEnable = m_pScratchToggle->get() != 0 || m_bVinylControlEnabled;
     double scratchFactor = m_pScratch->get();
     double oldScratchFactor = m_pOldScratch->get(); // Deprecated
+
     // Don't trust values from m_pScratch
     if(isnan(scratchFactor)) {
         scratchFactor = 0.0;
     }
     if(isnan(oldScratchFactor)) {
         oldScratchFactor = 0.0;
+    }
+
+    double currentSample = getCurrentSample();
+    m_pScratchController->process(currentSample, paused, iSamplesPerBuffer);
+
+    // If position control is enabled, override scratchFactor
+    if (m_pScratchController->isEnabled()) {
+        scratchEnable = true;
+        scratchFactor = m_pScratchController->getRate();
     }
 
     if (searching) {
