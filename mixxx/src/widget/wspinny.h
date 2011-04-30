@@ -37,6 +37,7 @@ class WSpinny : public WWidget
         ControlObjectThreadMain* m_pPlayPos;
         ControlObjectThreadMain* m_pVisualPlayPos;
         ControlObjectThreadMain* m_pDuration;
+        ControlObjectThreadMain* m_pTrackSamples;
         ControlObjectThreadMain* m_pBPM;
         ControlObjectThreadMain* m_pScratch;
         ControlObjectThreadMain* m_pScratchToggle;

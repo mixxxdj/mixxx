@@ -229,11 +229,13 @@ void MidiDevice::receive(MidiStatusByte status, char channel, char control, char
     //qDebug() << "MidiDevice: " << mixxxControl.getControlObjectGroup() << mixxxControl.getControlObjectValue();
 
     ConfigKey configKey(mixxxControl.getControlObjectGroup(), mixxxControl.getControlObjectValue());
+    
+    MidiOption currMidiOption = mixxxControl.getMidiOption();
 
 #ifdef __MIDISCRIPT__
     // Custom MixxxScript (QtScript) handler
 
-    if (mixxxControl.getMidiOption() == MIDI_OPT_SCRIPT) {
+    if (currMidiOption == MIDI_OPT_SCRIPT) {
         // qDebug() << "MidiDevice: Calling script function" << configKey.item << "with"
         //          << (int)channel << (int)control <<  (int)value << (int)status;
 
@@ -253,24 +255,26 @@ void MidiDevice::receive(MidiStatusByte status, char channel, char control, char
 
     if (p) //Only pass values on to valid ControlObjects.
     {
-        double newValue;
-       
+        double currMixxxControlValue = p->GetMidiValue();
+
+        double newValue = value;
+
         // compute LSB and MSB for pitch bend messages
         if (status == MIDI_STATUS_PITCH_BEND) {
             unsigned int ivalue;
             ivalue = (value << 7) + control;
 
-            newValue = m_pMidiMapping->ComputeValue(mixxxControl.getMidiOption(), p->GetMidiValue(), ivalue);
+            newValue = m_pMidiMapping->ComputeValue(currMidiOption, currMixxxControlValue, ivalue);
 
             // normalize our value to 0-127
             newValue = (newValue / 0x3FFF) * 0x7F;
-        } else {
-            newValue = m_pMidiMapping->ComputeValue(mixxxControl.getMidiOption(), p->GetMidiValue(), value);
+        } else if (currMidiOption != MIDI_OPT_SOFT_TAKEOVER) {
+            newValue = m_pMidiMapping->ComputeValue(currMidiOption, currMixxxControlValue, value);
         }
 
         // ControlPushButton ControlObjects only accept NOTE_ON, so if the midi
         // mapping is <button> we override the Midi 'status' appropriately.
-        switch (mixxxControl.getMidiOption()) {
+        switch (currMidiOption) {
             case MIDI_OPT_BUTTON:
             case MIDI_OPT_SWITCH: status = MIDI_STATUS_NOTE_ON; break; // Buttons and Switches are
                                                                        // treated the same, except
@@ -278,7 +282,13 @@ void MidiDevice::receive(MidiStatusByte status, char channel, char control, char
                                                                        // computed differently.
             default: break;
         }
-
+        
+        // Soft-takeover is processed in addition to any other options
+        if (currMidiOption == MIDI_OPT_SOFT_TAKEOVER) {
+            m_st.enable(mixxxControl);  // This is the only place to enable it if it isn't already.
+            if (m_st.ignore(mixxxControl,newValue,true)) return;
+        }
+        
         ControlObject::sync();
 
         //Super dangerous cast here... Should be fine once MidiCategory is replaced with MidiStatusByte permanently.
@@ -294,7 +304,7 @@ void MidiDevice::receive(const unsigned char data[], unsigned int length) {
     QMutexLocker locker(&m_mutex); //Lots of returns in this function. Keeps things simple.
 
     QString message = m_strDeviceName+": [";
-    for(int i=0; i<length; i++) {
+    for(uint i=0; i<length; i++) {
         message += QString("%1%2")
                     .arg(data[i], 2, 16, QChar('0')).toUpper()
                     .arg((i<(length-1))?' ':']');

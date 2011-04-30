@@ -16,6 +16,7 @@ WSpinny::WSpinny(QWidget* parent) : WWidget(parent)
     m_pPlayPos = NULL;
     m_pVisualPlayPos = NULL;
     m_pDuration = NULL;
+    m_pTrackSamples = NULL;
     m_pBPM = NULL;
     m_pScratch = NULL;
     m_pScratchToggle = NULL;
@@ -33,8 +34,8 @@ WSpinny::WSpinny(QWidget* parent) : WWidget(parent)
 #define PHYSICS_TIMER_PERIOD 30 //milliseconds
     m_pitchFilter.init(PHYSICS_TIMER_PERIOD, 0, 1, 1); //XXX: should be set to latency
     m_pitchFilterTimer.start(PHYSICS_TIMER_PERIOD);
-    connect(&m_pitchFilterTimer, SIGNAL(timeout()),
-            this, SLOT(updatePitchFilter()));
+    //connect(&m_pitchFilterTimer, SIGNAL(timeout()),
+    //        this, SLOT(updatePitchFilter()));
     m_dVelocity = 0.;
     m_dPrevVelocity = 0.;
     m_dAcceleration = 0.;
@@ -51,6 +52,7 @@ WSpinny::~WSpinny()
     delete m_pPlayPos;
     delete m_pVisualPlayPos;
     delete m_pDuration;
+    delete m_pTrackSamples;
     delete m_pBPM;
     delete m_pScratch;
     delete m_pScratchToggle;
@@ -89,14 +91,17 @@ void WSpinny::setup(QDomNode node)
                         ConfigKey(group, "visual_playposition")));
     m_pDuration = new ControlObjectThreadMain(ControlObject::getControl(
                         ConfigKey(group, "duration")));
+    m_pTrackSamples = new ControlObjectThreadMain(ControlObject::getControl(
+                        ConfigKey(group, "track_samples")));
     m_pBPM = new ControlObjectThreadMain(ControlObject::getControl(
                         ConfigKey(group, "bpm")));
+
     m_pScratch = new ControlObjectThreadMain(ControlObject::getControl(
                         ConfigKey(group, "scratch2")));
     m_pScratchToggle = new ControlObjectThreadMain(ControlObject::getControl(
-                        ConfigKey(group, "scratch2_enable")));
+                        ConfigKey(group, "scratch_position_enable")));
     m_pScratchPos = new ControlObjectThreadMain(ControlObject::getControl(
-                        ConfigKey(group, "scratch2_position")));
+                        ConfigKey(group, "scratch_position")));
     Q_ASSERT(m_pPlayPos);
     Q_ASSERT(m_pDuration);
     connect(m_pVisualPlayPos, SIGNAL(valueChanged(double)),
@@ -229,7 +234,7 @@ void WSpinny::updatePitchFilter()
 
         //Apply drift control
         double screenPos = calculatePositionFromAngle(m_fAngle);
-        double drift = screenPos - m_pPlayPos->get();
+        //double drift = screenPos - m_pPlayPos->get();
         //m_dVelocity -= drift*0.05;
 
         //Remember the drift is a change in relative position,
@@ -280,20 +285,23 @@ void WSpinny::mouseMoveEvent(QMouseEvent * e)
 
     if (e->buttons() & Qt::LeftButton)
     {
-        //Convert deltaTheta into a percentage of playback rate.
+        //Convert deltaTheta into a percentage of song length.
         double posOffset = calculatePositionFromAngle(deltaTheta);
         
         //Step 1: Get abs position of movement (y).
         //double absPos = m_pPlayPos->get() + posOffset;
 
         //Calculate change in song time for the given change in angle.
-        m_dDeltaPosInSeconds = deltaTheta / 180.; //33 RPM
-        //m_dDeltaPosInSeconds = deltaY / 400.;
+        //m_dDeltaPosInSeconds = deltaTheta / 180.; //33 RPM
 
         //m_dPrevPosOffset is fed into the pitchFilter on a timer.
         //float velocity = m_pitchFilter.currentPitch()*100000.;
         //qDebug() << "velocity:" << velocity;
         //m_pScratch->slotSet(velocity);
+        double absPosInSamples = (m_pPlayPos->get() + posOffset) * m_pTrackSamples->get();
+        m_pScratchPos->slotSet(posOffset * m_pTrackSamples->get());
+
+        qDebug() << "ap:" << posOffset << posOffset * m_pTrackSamples->get();
 
         //Save these values for next time.
         m_dPrevPosOffset = posOffset;
@@ -324,6 +332,8 @@ void WSpinny::mousePressEvent(QMouseEvent * e)
     if (e->button() == Qt::LeftButton)
     {
         //QApplication::setOverrideCursor( QCursor( Qt::BlankCursor ) );
+        double initialPosInSamples = m_pVisualPlayPos->get() * m_pTrackSamples->get();
+        m_pScratchPos->slotSet(initialPosInSamples);
         m_pScratchToggle->slotSet(1.0f);
         m_bScratchPlayback = true;
         //For Y-axis scratching only:
