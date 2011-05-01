@@ -57,12 +57,11 @@ VinylControlManager::~VinylControlManager() {
     VinylControlXwax::freeLUTs();
 
     // save a bunch of stuff to config
-    m_pConfig->set(ConfigKey("[VinylControl]","enabled_ch1"),
-        ConfigValue((int)ControlObject::getControl(
-            ConfigKey("[Channel1]","vinylcontrol_enabled"))->get()));
-    m_pConfig->set(ConfigKey("[VinylControl]","enabled_ch2"),
-        ConfigValue((int)ControlObject::getControl(
-            ConfigKey("[Channel2]","vinylcontrol_enabled"))->get()));
+    // turn off vinyl control so it won't be enabled on load (this is redundant to mixxx.cpp)
+    m_pConfig->set(ConfigKey("[VinylControl]","enabled_ch1"), false);
+    m_pConfig->set(ConfigKey("[VinylControl]","enabled_ch2"), false);
+    m_pConfig->set(ConfigKey("[Channel 1]","vinylcontrol_enabled"), false);
+    m_pConfig->set(ConfigKey("[Channel 2]","vinylcontrol_enabled"), false);
     m_pConfig->set(ConfigKey("[VinylControl]","mode"),
         ConfigValue((int)ControlObject::getControl(
             ConfigKey("[Channel1]","vinylcontrol_mode"))->get()));
@@ -112,7 +111,7 @@ void VinylControlManager::onInputDisconnected(AudioInput input) {
     m_proxiesLock.lockForWrite();
     Q_ASSERT(input.getIndex() < m_proxies.size());
     Q_ASSERT(m_proxies.at(input.getIndex()));
-
+    
     delete m_proxies.at(input.getIndex());
     m_proxies.replace(input.getIndex(), NULL);
     m_proxiesLock.unlock();
