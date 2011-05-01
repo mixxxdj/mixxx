@@ -119,8 +119,8 @@ int CrateTableModel::getTrackId(const QModelIndex& index) const {
     return index.sibling(index.row(), fieldIndex(LIBRARYTABLE_ID)).data().toInt();
 }
 
-int CrateTableModel::getTrackRow(int trackId) const {
-    return BaseSqlTableModel::getTrackRow(trackId);
+const QLinkedList<int> CrateTableModel::getTrackRows(int trackId) const {
+    return BaseSqlTableModel::getTrackRows(trackId);
 }
 
 TrackPointer CrateTableModel::getTrack(const QModelIndex& index) const {
