@@ -402,7 +402,7 @@ void BaseSqlTableModel::select() {
     QStringList searchTokens = m_currentSearch.split(" ");
     // Escape every token to stuff in a regular expression
     for (int i = 0; i < searchTokens.size(); ++i) {
-        searchTokens[i] = QRegExp::escape(searchTokens[i]);
+        searchTokens[i] = QRegExp::escape(searchTokens[i].trimmed());
     }
     QRegExp searchMatcher(searchTokens.join("|"), Qt::CaseInsensitive);
 
@@ -1016,6 +1016,7 @@ QString BaseSqlTableModel::filterClause() const {
 
         QStringList tokenFragments;
         foreach (QString token, tokens) {
+            token = token.trimmed();
             search.setValue("%" + token + "%");
             QString escapedToken = database().driver()->formatValue(search);
 
