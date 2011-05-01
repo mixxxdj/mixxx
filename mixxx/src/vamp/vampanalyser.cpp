@@ -14,6 +14,7 @@
 #include "vamp-hostsdk/PluginInputDomainAdapter.h"
 #include "vamp-hostsdk/PluginLoader.h"
 #include <QtDebug>
+#include <QStringList>
 
 using Vamp::Plugin;
 using Vamp::PluginHostAdapter;
@@ -35,10 +36,8 @@ VampAnalyser::~VampAnalyser() {
     }
 }
 
-bool VampAnalyser::Init(const Vamp::HostExt::PluginLoader::PluginKey key, int outputnumber,
-        const int samplerate,const int TotalSamples) {
-
-    mKey = key;
+bool VampAnalyser::Init(const QString pluginlibrary, const QString pluginid,
+        const int samplerate, const int TotalSamples) {
     m_iOutput = 0;
     mPlugin = 0;
     mRate = 0;
@@ -62,6 +61,13 @@ bool VampAnalyser::Init(const Vamp::HostExt::PluginLoader::PluginKey key, int ou
         delete mPlugin;
     Vamp::HostExt::PluginLoader *loader =
             Vamp::HostExt::PluginLoader::getInstance();
+
+    QStringList pluginlist = pluginid.split(":");
+    QString plugin = pluginlist.at(0);
+    mKey = loader->composePluginKey(pluginlibrary.toStdString(),plugin.toStdString());
+    int outputnumber = (pluginlist.at(1)).toInt();
+
+
     mPlugin = loader->loadPlugin(mKey, mRate,
                                  Vamp::HostExt::PluginLoader::ADAPT_ALL);
 
@@ -112,8 +118,8 @@ bool VampAnalyser::Process(const CSAMPLE *pIn, const int iLen) {
         return false;
     }
     while (iIN < iLen / 2) {
-        m_pluginbuf[0][m_iOUT] = pIn[2 * iIN] * 32767;
-        m_pluginbuf[1][m_iOUT] = pIn[2 * iIN + 1] * 32767;
+        m_pluginbuf[0][m_iOUT] = pIn[2 * iIN]; //* 32767;
+        m_pluginbuf[1][m_iOUT] = pIn[2 * iIN + 1]; //* 32767;
 
 
         m_iOUT++;

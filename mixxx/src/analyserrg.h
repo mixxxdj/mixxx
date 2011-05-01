@@ -11,10 +11,10 @@
 #include "analyser.h"
 #include "configobject.h"
 
-class AnalyserGain : public Analyser {
+class AnalyserReplayGain : public Analyser {
 
 public:
-    AnalyserGain(ConfigObject<ConfigValue> *_config);
+    AnalyserReplayGain(ConfigObject<ConfigValue> *_config);
     void initialise(TrackPointer tio, int sampleRate, int totalSamples);
     void process(const CSAMPLE *pIn, const int iLen);
     void finalise(TrackPointer tio);

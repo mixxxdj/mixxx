@@ -11,11 +11,11 @@
 #include "configobject.h"
 #include "vamp/vampanalyser.h"
 
-class AnalyserrGain: public Analyser {
+class AnalyserGain: public Analyser {
 
 public:
-    AnalyserrGain(ConfigObject<ConfigValue> *_config);
-    ~AnalyserrGain();
+    AnalyserGain(ConfigObject<ConfigValue> *_config);
+    ~AnalyserGain();
     void initialise(TrackPointer tio, int sampleRate, int totalSamples);
     void process(const CSAMPLE *pIn, const int iLen);
     void finalise(TrackPointer tio);

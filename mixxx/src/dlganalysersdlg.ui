@@ -1,0 +1,269 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>DlgAnalysersDlg</class>
+ <widget class="QWidget" name="DlgAnalysersDlg">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>634</width>
+    <height>480</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Analysers Settings</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <item>
+    <widget class="QGroupBox" name="grpRP">
+     <property name="minimumSize">
+      <size>
+       <width>409</width>
+       <height>200</height>
+      </size>
+     </property>
+     <property name="title">
+      <string/>
+     </property>
+     <layout class="QGridLayout">
+      <item row="0" column="0">
+       <layout class="QHBoxLayout" name="_5">
+        <item>
+         <widget class="QTabWidget" name="tabWidget">
+          <property name="locale">
+           <locale language="English" country="UnitedStates"/>
+          </property>
+          <property name="currentIndex">
+           <number>0</number>
+          </property>
+          <widget class="QWidget" name="Beat">
+           <attribute name="title">
+            <string>Beat Analysis</string>
+           </attribute>
+           <widget class="QCheckBox" name="Analyser enabled">
+            <property name="geometry">
+             <rect>
+              <x>10</x>
+              <y>20</y>
+              <width>98</width>
+              <height>22</height>
+             </rect>
+            </property>
+            <property name="text">
+             <string>Enabled</string>
+            </property>
+           </widget>
+           <widget class="QLabel" name="label">
+            <property name="geometry">
+             <rect>
+              <x>10</x>
+              <y>60</y>
+              <width>51</width>
+              <height>21</height>
+             </rect>
+            </property>
+            <property name="text">
+             <string>Plugin:</string>
+            </property>
+           </widget>
+           <widget class="QComboBox" name="plugincombo">
+            <property name="geometry">
+             <rect>
+              <x>70</x>
+              <y>60</y>
+              <width>501</width>
+              <height>27</height>
+             </rect>
+            </property>
+            <property name="layoutDirection">
+             <enum>Qt::LeftToRight</enum>
+            </property>
+           </widget>
+           <widget class="QPushButton" name="apply">
+            <property name="geometry">
+             <rect>
+              <x>480</x>
+              <y>360</y>
+              <width>98</width>
+              <height>27</height>
+             </rect>
+            </property>
+            <property name="text">
+             <string>Apply</string>
+            </property>
+           </widget>
+           <widget class="QCheckBox" name="Rescan">
+            <property name="geometry">
+             <rect>
+              <x>100</x>
+              <y>20</y>
+              <width>98</width>
+              <height>22</height>
+             </rect>
+            </property>
+            <property name="text">
+             <string>Rescan</string>
+            </property>
+           </widget>
+           <widget class="QLabel" name="name">
+            <property name="geometry">
+             <rect>
+              <x>10</x>
+              <y>120</y>
+              <width>561</width>
+              <height>17</height>
+             </rect>
+            </property>
+            <property name="text">
+             <string>Name:</string>
+            </property>
+            <property name="wordWrap">
+             <bool>true</bool>
+            </property>
+           </widget>
+           <widget class="QLabel" name="version">
+            <property name="geometry">
+             <rect>
+              <x>10</x>
+              <y>150</y>
+              <width>561</width>
+              <height>17</height>
+             </rect>
+            </property>
+            <property name="text">
+             <string>Version:</string>
+            </property>
+            <property name="wordWrap">
+             <bool>true</bool>
+            </property>
+           </widget>
+           <widget class="QLabel" name="label_4">
+            <property name="geometry">
+             <rect>
+              <x>10</x>
+              <y>180</y>
+              <width>561</width>
+              <height>16</height>
+             </rect>
+            </property>
+            <property name="text">
+             <string>Maker:</string>
+            </property>
+            <property name="wordWrap">
+             <bool>true</bool>
+            </property>
+           </widget>
+           <widget class="QLabel" name="label_5">
+            <property name="geometry">
+             <rect>
+              <x>10</x>
+              <y>210</y>
+              <width>561</width>
+              <height>17</height>
+             </rect>
+            </property>
+            <property name="text">
+             <string>Copyright:</string>
+            </property>
+            <property name="wordWrap">
+             <bool>true</bool>
+            </property>
+           </widget>
+           <widget class="QLabel" name="label_6">
+            <property name="geometry">
+             <rect>
+              <x>10</x>
+              <y>240</y>
+              <width>561</width>
+              <height>16</height>
+             </rect>
+            </property>
+            <property name="text">
+             <string>Output:</string>
+            </property>
+            <property name="wordWrap">
+             <bool>true</bool>
+            </property>
+           </widget>
+           <widget class="QLabel" name="label_7">
+            <property name="geometry">
+             <rect>
+              <x>10</x>
+              <y>270</y>
+              <width>561</width>
+              <height>17</height>
+             </rect>
+            </property>
+            <property name="text">
+             <string>Description:</string>
+            </property>
+            <property name="wordWrap">
+             <bool>true</bool>
+            </property>
+           </widget>
+           <widget class="QPushButton" name="configure">
+            <property name="geometry">
+             <rect>
+              <x>100</x>
+              <y>300</y>
+              <width>81</width>
+              <height>21</height>
+             </rect>
+            </property>
+            <property name="text">
+             <string>Configure</string>
+            </property>
+           </widget>
+           <widget class="QPushButton" name="reset">
+            <property name="geometry">
+             <rect>
+              <x>360</x>
+              <y>360</y>
+              <width>98</width>
+              <height>27</height>
+             </rect>
+            </property>
+            <property name="text">
+             <string>Reset</string>
+            </property>
+           </widget>
+           <widget class="Line" name="line">
+            <property name="geometry">
+             <rect>
+              <x>0</x>
+              <y>40</y>
+              <width>591</width>
+              <height>20</height>
+             </rect>
+            </property>
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+           </widget>
+           <widget class="QLabel" name="label_2">
+            <property name="geometry">
+             <rect>
+              <x>10</x>
+              <y>300</y>
+              <width>91</width>
+              <height>21</height>
+             </rect>
+            </property>
+            <property name="text">
+             <string>Parameters:</string>
+            </property>
+           </widget>
+          </widget>
+         </widget>
+        </item>
+       </layout>
+      </item>
+     </layout>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <layoutdefault spacing="6" margin="11"/>
+ <resources/>
+ <connections/>
+</ui>

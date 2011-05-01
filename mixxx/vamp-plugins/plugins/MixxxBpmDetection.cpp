@@ -28,13 +28,13 @@ MixxxBpmDetection::~MixxxBpmDetection()
 string
 MixxxBpmDetection::getIdentifier() const
 {
-    return "mixxxbeatdetection";
+    return "mixxxbpmdetection";
 }
 
 string
 MixxxBpmDetection::getName() const
 {
-    return "Beat Detection";
+    return "Mixxx Legacy Bpm Detector";
 }
 
 string

@@ -8,7 +8,7 @@
 #include "analyserrg.h"
 #include "../lib/replaygain/replaygain_analysis.h"
 
-AnalyserGain::AnalyserGain(ConfigObject<ConfigValue> *_config) {
+AnalyserReplayGain::AnalyserReplayGain(ConfigObject<ConfigValue> *_config) {
     m_pConfigReplayGain = _config;
     m_iStepControl = 0;
 }
@@ -17,7 +17,7 @@ AnalyserGain::AnalyserGain(ConfigObject<ConfigValue> *_config) {
 //		On the other hand, every other ReplayGain tagger uses exactly these methods so that we do not have problems about
 //		values to coincide.
 
-void AnalyserGain::initialise(TrackPointer tio, int sampleRate, int totalSamples) {
+void AnalyserReplayGain::initialise(TrackPointer tio, int sampleRate, int totalSamples) {
 
     bool bAnalyserEnabled = (bool)m_pConfigReplayGain->getValueString(ConfigKey("[ReplayGain]","ReplayGainAnalyserEnabled")).toInt();
     float fReplayGain = tio->getReplayGain();
@@ -34,7 +34,7 @@ void AnalyserGain::initialise(TrackPointer tio, int sampleRate, int totalSamples
 
 
 
-void AnalyserGain::process(const CSAMPLE *pIn, const int iLen) {
+void AnalyserReplayGain::process(const CSAMPLE *pIn, const int iLen) {
 
     if(m_iStepControl!=1) return;
 
@@ -60,7 +60,7 @@ void AnalyserGain::process(const CSAMPLE *pIn, const int iLen) {
 
 
 
-void AnalyserGain::finalise(TrackPointer tio) {
+void AnalyserReplayGain::finalise(TrackPointer tio) {
 
     if(m_iStepControl!=1) return;
 

@@ -11,11 +11,11 @@
 #include <time.h>
 
 #include "trackinfoobject.h"
-#include "analyservamptest.h"
 #include "track/beatmatrix.h"
 #include "track/beatfactory.h"
+#include "analyserbeats.h"
 
-AnalyserVampTest::AnalyserVampTest(ConfigObject<ConfigValue> *_config) {
+AnalyserBeats::AnalyserBeats(ConfigObject<ConfigValue> *_config) {
     m_pConfigAVT = _config;
     m_bPass = 0;
 
@@ -23,10 +23,10 @@ AnalyserVampTest::AnalyserVampTest(ConfigObject<ConfigValue> *_config) {
 
 }
 
-AnalyserVampTest::~AnalyserVampTest(){
+AnalyserBeats::~AnalyserBeats(){
 
 }
-void AnalyserVampTest::initialise(TrackPointer tio, int sampleRate,
+void AnalyserBeats::initialise(TrackPointer tio, int sampleRate,
         int totalSamples) {
 
 //    if(tio->getBpm() != 0)
@@ -41,22 +41,25 @@ void AnalyserVampTest::initialise(TrackPointer tio, int sampleRate,
     //"libmixxxminimal:mixxxbeatdetection" with output 0 to activate standard Mixxx bpm detection via soundtouch
     //"libmixxxminimal:qm-barbeattracker" with output 0 to activate Queens Mary plugin beat detection
 
+    m_bPass = false;
     mvamp = new VampAnalyser();
+    QString library = m_pConfigAVT->getValueString(ConfigKey("[Vamp]","AnalyserBeatLibrary"));
+    QString pluginID = m_pConfigAVT->getValueString(ConfigKey("[Vamp]","AnalyserBeatPluginID"));
     //usage               "plugin key"                         output  samplerate  totalsamples
-    m_bPass = mvamp->Init("libmixxxminimal:qm-barbeattracker", 0     , sampleRate, totalSamples);
+    m_bPass = mvamp->Init(library, pluginID, sampleRate, totalSamples);
     if (!m_bPass){
-        qDebug() << "Cannot initialise vamp plugin";
+        qDebug() << "Cannot initialize vamp plugin";
         return;
     }
     //   m_iStartTime = clock();
 }
 
-void AnalyserVampTest::process(const CSAMPLE *pIn, const int iLen) {
+void AnalyserBeats::process(const CSAMPLE *pIn, const int iLen) {
     if(!m_bPass) return;
     m_bPass = mvamp->Process(pIn, iLen);
 }
 
-void AnalyserVampTest::finalise(TrackPointer tio) {
+void AnalyserBeats::finalise(TrackPointer tio) {
     if(!m_bPass) return;
 
    QVector <double> beats;
@@ -72,4 +75,3 @@ void AnalyserVampTest::finalise(TrackPointer tio) {
     //m_iStartTime = clock() - m_iStartTime;
     delete mvamp;
 }
-

@@ -26,8 +26,11 @@ public:
 
     ~VampAnalyser();
 
-    bool Init(const Vamp::HostExt::PluginLoader::PluginKey key, int outputnumber,
-            const int samplerate, const int TotalSamples);
+    //bool Init(const Vamp::HostExt::PluginLoader::PluginKey key, int outputnumber,
+    //        const int samplerate, const int TotalSamples);
+
+    bool Init(const QString pluginlibrary, const QString pluginid,
+                const int samplerate, const int TotalSamples);
 
     bool Process(const CSAMPLE *pIn, const int iLen);
 

@@ -26,6 +26,10 @@
 #include "dlgprefshoutcast.h"
 #endif
 
+#ifdef __VAMP__
+#include "dlgprefanalysers.h"
+#endif
+
 #include "dlgprefbpm.h"
 #include "dlgpreferences.h"
 #include "dlgprefsound.h"
@@ -73,7 +77,11 @@ DlgPreferences::DlgPreferences(MixxxApp * mixxx, SkinLoader* pSkinLoader,
     wcontrols = new DlgPrefControls(this, mixxx, pSkinLoader, pPlayerManager, config);
     weq = new DlgPrefEQ(this, config);
     wcrossfader = new DlgPrefCrossfader(this, config);
+#ifdef __VAMP__
+    wbeats = new DlgPrefAnalysers(this, config);
+#else
     wbpm = new DlgPrefBpm(this, config);
+#endif
     wreplaygain = new DlgPrefReplayGain(this, config);
     wrecord = new DlgPrefRecord(this, config);
 #ifdef __VINYLCONTROL__
@@ -81,6 +89,7 @@ DlgPreferences::DlgPreferences(MixxxApp * mixxx, SkinLoader* pSkinLoader,
 #else
     wnovinylcontrol = new DlgPrefNoVinyl(this, soundman, config);
 #endif
+
 #ifdef __SHOUTCAST__
     wshoutcast = new DlgPrefShoutcast(this, config);
 #endif
@@ -97,7 +106,11 @@ DlgPreferences::DlgPreferences(MixxxApp * mixxx, SkinLoader* pSkinLoader,
     pagesWidget->addWidget(weq);
     pagesWidget->addWidget(wcrossfader);
     pagesWidget->addWidget(wrecord);
+#ifdef __VAMP__
+    pagesWidget->addWidget(wbeats);
+#else
     pagesWidget->addWidget(wbpm);
+#endif
     pagesWidget->addWidget(wreplaygain);
 #ifdef __VINYLCONTROL__
     pagesWidget->addWidget(wvinylcontrol);
@@ -125,7 +138,11 @@ DlgPreferences::DlgPreferences(MixxxApp * mixxx, SkinLoader* pSkinLoader,
     connect(this, SIGNAL(showDlg()), wcontrols,  SLOT(slotUpdate()));
     connect(this, SIGNAL(showDlg()), weq,        SLOT(slotUpdate()));
     connect(this, SIGNAL(showDlg()),wcrossfader, SLOT(slotUpdate()));
+#ifdef __VAMP__
+    connect(this, SIGNAL(showDlg()), wbeats,       SLOT(slotUpdate()));
+#else
     connect(this, SIGNAL(showDlg()), wbpm,       SLOT(slotUpdate()));
+#endif
     connect(this, SIGNAL(showDlg()), wreplaygain,SLOT(slotUpdate()));
 
     connect(this, SIGNAL(showDlg()), wrecord,    SLOT(slotUpdate()));
@@ -149,7 +166,11 @@ DlgPreferences::DlgPreferences(MixxxApp * mixxx, SkinLoader* pSkinLoader,
     connect(buttonBox, SIGNAL(accepted()), weq,       SLOT(slotApply()));
     connect(buttonBox, SIGNAL(accepted()),wcrossfader,SLOT(slotApply()));
     connect(buttonBox, SIGNAL(accepted()), this,      SLOT(slotApply()));
+#ifdef __VAMP__
+    connect(buttonBox, SIGNAL(accepted()), wbeats,       SLOT(slotApply()));
+#else
     connect(buttonBox, SIGNAL(accepted()), wbpm,      SLOT(slotApply()));
+#endif
     connect(buttonBox, SIGNAL(accepted()),wreplaygain,SLOT(slotApply()));
     connect(buttonBox, SIGNAL(accepted()), wrecord,   SLOT(slotApply()));
 #ifdef __SHOUTCAST__
@@ -227,12 +248,19 @@ void DlgPreferences::createIcons()
     m_pRecordingButton->setText(0, tr("Recording"));
     m_pRecordingButton->setTextAlignment(0, Qt::AlignLeft | Qt::AlignVCenter);
     m_pRecordingButton->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
-
+#ifdef __VAMP__
+    m_pBeatsdetectButton = new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type);
+    m_pBeatsdetectButton->setIcon(0, QIcon(":/images/preferences/ic_preferences_bpmdetect.png"));
+    m_pBeatsdetectButton->setText(0, tr("Beats Detection"));
+    m_pBeatsdetectButton->setTextAlignment(0, Qt::AlignLeft | Qt::AlignVCenter);
+    m_pBeatsdetectButton->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
+#else
     m_pBPMdetectButton = new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type);
     m_pBPMdetectButton->setIcon(0, QIcon(":/images/preferences/ic_preferences_bpmdetect.png"));
     m_pBPMdetectButton->setText(0, tr("BPM Detection"));
     m_pBPMdetectButton->setTextAlignment(0, Qt::AlignLeft | Qt::AlignVCenter);
     m_pBPMdetectButton->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
+#endif
 
     m_pReplayGainButton = new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type);
     m_pReplayGainButton->setIcon(0, QIcon(":/images/preferences/ic_preferences_replaygain.png"));
@@ -288,8 +316,14 @@ void DlgPreferences::changePage(QTreeWidgetItem * current, QTreeWidgetItem * pre
            pagesWidget->setCurrentWidget(wcrossfader);
        else if (current == m_pRecordingButton)
            pagesWidget->setCurrentWidget(wrecord);
+#ifdef __VAMP__
+       else if (current == m_pBeatsdetectButton)
+
+           pagesWidget->setCurrentWidget(wbeats);
+#else
        else if (current == m_pBPMdetectButton)
            pagesWidget->setCurrentWidget(wbpm);
+#endif
        else if (current == m_pReplayGainButton)
            pagesWidget->setCurrentWidget(wreplaygain);
 
