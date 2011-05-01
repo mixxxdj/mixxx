@@ -24,8 +24,8 @@ int BrowseTableModel::getTrackId(const QModelIndex& index) const {
     return -1;
 }
 
-int BrowseTableModel::getTrackRow(int trackId) const {
-    return -1;
+const QLinkedList<int> BrowseTableModel::getTrackRows(int trackId) const {
+    return QLinkedList<int>();
 }
 
 TrackPointer BrowseTableModel::getTrack(const QModelIndex& index) const

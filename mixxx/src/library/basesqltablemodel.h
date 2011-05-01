@@ -48,9 +48,12 @@ class BaseSqlTableModel : public QAbstractTableModel {
   protected:
     // Returns the row of trackId in this result set. If trackId is not present,
     // returns -1.
-    virtual int getTrackRow(int trackId) const;
+    virtual const QLinkedList<int> getTrackRows(int trackId) const;
 
-    virtual void setTable(const QString& tableName, const QStringList& columnNames, const QString& idColumn);
+    virtual void setTable(const QString& tableName,
+                          const QStringList& columnNames,
+                          const QString& idColumn,
+                          const QStringList tableColumns = QStringList());
 
     virtual void buildIndex();
     QSqlDatabase database() const;
@@ -88,12 +91,16 @@ class BaseSqlTableModel : public QAbstractTableModel {
 
     virtual int compareColumnValues(int iColumnNumber, Qt::SortOrder eSortOrder, QVariant val1, QVariant val2);
     virtual int findSortInsertionPoint(int trackId, TrackPointer pTrack,
-                                       const QVector<int>& rowToTrack);
+                                       const QVector<QPair<int, QHash<int, QVariant> > >& rowInfo);
 
     QString m_tableName;
     QStringList m_columnNames;
     QString m_columnNamesJoined;
     QHash<QString, int> m_columnIndex;
+    QSet<QString> m_tableColumns;
+    QString m_tableColumnsJoined;
+    QSet<int> m_tableColumnIndices;
+
     QStringList m_searchColumns;
     QVector<int> m_searchColumnIndices;
     QString m_idColumn;
@@ -105,8 +112,8 @@ class BaseSqlTableModel : public QAbstractTableModel {
     bool m_bIndexBuilt;
     QSqlRecord m_queryRecord;
     QHash<int, QVector<QVariant> > m_recordCache;
-    QVector<int> m_rowToTrackId;
-    QHash<int, int> m_trackIdToRow;
+    QVector<QPair<int, QHash<int, QVariant> > > m_rowInfo;
+    QHash<int, QLinkedList<int> > m_trackIdToRows;
     QSet<int> m_trackOverrides;
 
     QString m_currentSearch;

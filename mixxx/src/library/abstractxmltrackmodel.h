@@ -53,7 +53,7 @@ class AbstractXmlTrackModel : public QAbstractTableModel, public TrackModel
     //Track Model stuff
     virtual TrackPointer getTrack(const QModelIndex& index) const;
     virtual int getTrackId(const QModelIndex& index) const;
-    virtual int getTrackRow(int trackId) const;
+    virtual const QLinkedList<int> getTrackRows(int trackId) const;
     virtual QString getTrackLocation(const QModelIndex& index) const;
     virtual TrackPointer getTrackByLocation(const QString& location) const;
     virtual void search(const QString& searchText);

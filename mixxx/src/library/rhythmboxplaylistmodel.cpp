@@ -238,8 +238,8 @@ int RhythmboxPlaylistModel::getTrackId(const QModelIndex& index) const {
     return -1;
 }
 
-int RhythmboxPlaylistModel::getTrackRow(int trackId) const {
-    return -1;
+const QLinkedList<int> RhythmboxPlaylistModel::getTrackRows(int trackId) const {
+    return QLinkedList<int>();
 }
 
 QString RhythmboxPlaylistModel::getTrackLocation(const QModelIndex& index) const

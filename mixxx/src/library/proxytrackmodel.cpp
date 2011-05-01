@@ -25,8 +25,8 @@ int ProxyTrackModel::getTrackId(const QModelIndex& index) const {
     return m_pTrackModel->getTrackId(indexSource);
 }
 
-int ProxyTrackModel::getTrackRow(int trackId) const {
-    return m_pTrackModel->getTrackRow(trackId);
+const QLinkedList<int> ProxyTrackModel::getTrackRows(int trackId) const {
+    return m_pTrackModel->getTrackRows(trackId);
 }
 
 TrackPointer ProxyTrackModel::getTrack(const QModelIndex& index) const {
