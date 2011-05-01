@@ -44,9 +44,9 @@ int ITunesTrackModel::getTrackId(const QModelIndex& index) const
     return -1;
 }
 
-int ITunesTrackModel::getTrackRow(int trackId) const
+const QLinkedList<int> ITunesTrackModel::getTrackRows(int trackId) const
 {
-    return -1;
+    return QLinkedList<int>();
 }
 
 TrackPointer ITunesTrackModel::getTrack(const QModelIndex& index) const {

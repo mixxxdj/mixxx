@@ -170,10 +170,10 @@ int AbstractXmlTrackModel::getTrackId(const QModelIndex& index) const
     return -1;
 }
 
-int AbstractXmlTrackModel::getTrackRow(int trackId) const
+const QLinkedList<int> AbstractXmlTrackModel::getTrackRows(int trackId) const
 {
     // No primary keys for these guys
-    return -1;
+    return QLinkedList<int>();
 }
 
 TrackPointer AbstractXmlTrackModel::getTrack(const QModelIndex& index) const

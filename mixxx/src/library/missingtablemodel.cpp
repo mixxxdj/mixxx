@@ -96,8 +96,8 @@ int MissingTableModel::getTrackId(const QModelIndex& index) const
     return index.sibling(index.row(), fieldIndex(LIBRARYTABLE_ID)).data().toInt();
 }
 
-int MissingTableModel::getTrackRow(int trackId) const {
-    return BaseSqlTableModel::getTrackRow(trackId);
+const QLinkedList<int> MissingTableModel::getTrackRows(int trackId) const {
+    return BaseSqlTableModel::getTrackRows(trackId);
 }
 
 TrackPointer MissingTableModel::getTrack(const QModelIndex& index) const

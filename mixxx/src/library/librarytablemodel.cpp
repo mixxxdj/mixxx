@@ -135,8 +135,8 @@ int LibraryTableModel::getTrackId(const QModelIndex& index) const {
     return index.sibling(index.row(), fieldIndex(LIBRARYTABLE_ID)).data().toInt();
 }
 
-int LibraryTableModel::getTrackRow(int trackId) const {
-    return BaseSqlTableModel::getTrackRow(trackId);
+const QLinkedList<int> LibraryTableModel::getTrackRows(int trackId) const {
+    return BaseSqlTableModel::getTrackRows(trackId);
 }
 
 void LibraryTableModel::removeTracks(const QModelIndexList& indices) {

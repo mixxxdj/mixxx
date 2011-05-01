@@ -1,6 +1,7 @@
 // basesqltablemodel.h
 // Created by RJ Ryan (rryan@mit.edu) 1/29/2010
 
+#include <QtAlgorithms>
 #include <QtDebug>
 #include <QTime>
 
@@ -174,16 +175,17 @@ void BaseSqlTableModel::updateTracksInIndex(QList<int> trackIds) {
         int id = query.value(idColumn).toInt();
 
         QVector<QVariant>& record = m_recordCache[id];
-        record.resize(m_columnNames.size());
+        int numColumns = m_columnNames.size();
+        record.resize(numColumns);
 
-        for (int i = 0; i < m_columnNames.size(); ++i) {
+        for (int i = 0; i < numColumns; ++i) {
             record[i] = query.value(i);
         }
     }
 
     foreach (int trackId, trackIds) {
-        int row = getTrackRow(trackId);
-        if (row >= 0) {
+        QLinkedList<int> rows = getTrackRows(trackId);
+        foreach (int row, rows) {
             //qDebug() << "Row in this result set was updated. Signalling update. track:" << trackId << "row:" << row;
             QModelIndex left = index(row, 0);
             QModelIndex right = index(row, columnCount());
@@ -225,13 +227,14 @@ void BaseSqlTableModel::buildIndex() {
     // we don't see.
     m_recordCache.clear();
 
+    int numColumns = m_columnNames.size();
     while (query.next()) {
         int id = query.value(idColumn).toInt();
 
         QVector<QVariant>& record = m_recordCache[id];
-        record.resize(m_columnNames.size());
+        record.resize(numColumns);
 
-        for (int i = 0; i < m_columnNames.size(); ++i) {
+        for (int i = 0; i < numColumns; ++i) {
             record[i] = query.value(i);
         }
     }
@@ -241,11 +244,11 @@ void BaseSqlTableModel::buildIndex() {
 }
 
 int BaseSqlTableModel::findSortInsertionPoint(int trackId, TrackPointer pTrack,
-                                              const QVector<int>& rowToTrack) {
+                                              const QVector<QPair<int, QHash<int, QVariant> > >& rowInfo) {
     QVariant trackValue = getTrackValueForColumn(trackId, m_iSortColumn, pTrack);
 
     int min = 0;
-    int max = rowToTrack.size()-1;
+    int max = rowInfo.size()-1;
 
     if (sDebug) {
         qDebug() << this << "Trying to insertion sort:"
@@ -254,7 +257,10 @@ int BaseSqlTableModel::findSortInsertionPoint(int trackId, TrackPointer pTrack,
 
     while (min <= max) {
         int mid = min + (max - min) / 2;
-        int otherTrackId = rowToTrack[mid];
+        const QPair<int, QHash<int, QVariant> >& otherRowInfo = rowInfo[mid];
+        int otherTrackId = otherRowInfo.first;
+        const QHash<int, QVariant>& otherRowCache = otherRowInfo.second;
+
 
         // This should not happen, but it's a recoverable error so we should only log it.
         if (!m_recordCache.contains(otherTrackId)) {
@@ -302,17 +308,22 @@ void BaseSqlTableModel::select() {
     }
 
     // Remove all the rows from the table.
-    if (m_rowToTrackId.size() > 0) {
-        beginRemoveRows(QModelIndex(), 0, m_rowToTrackId.size()-1);
-        m_rowToTrackId.clear();
-        m_trackIdToRow.clear();
+    if (m_rowInfo.size() > 0) {
+        beginRemoveRows(QModelIndex(), 0, m_rowInfo.size()-1);
+        m_rowInfo.clear();
+        m_trackIdToRows.clear();
         endRemoveRows();
+    }
+
+    QString columns = m_idColumn;
+    if (m_tableColumns.size() > 0) {
+        columns += "," + m_tableColumnsJoined;
     }
 
     QString filter = filterClause();
     QString orderBy = orderByClause();
     QString queryString = QString("SELECT %1 FROM %2 %3 %4")
-            .arg(m_idColumn).arg(m_tableName).arg(filter).arg(orderBy);
+            .arg(columns).arg(m_tableName).arg(filter).arg(orderBy);
 
     if (sDebug) {
         qDebug() << this << "select() executing:" << queryString;
@@ -329,20 +340,38 @@ void BaseSqlTableModel::select() {
                  << query.executedQuery() << query.lastError();
     }
 
-    int idColumn = query.record().indexOf(m_idColumn);
+    QSqlRecord record = query.record();
+    int idColumn = record.indexOf(m_idColumn);
+    QLinkedList<int> tableColumnIndices;
+    foreach (QString column, m_tableColumns) {
+        tableColumnIndices.push_back(record.indexOf(column));
+    }
     int rows = query.size();
 
     if (sDebug) {
-        qDebug() << "Rows returned" << rows << m_rowToTrackId.size();
+        qDebug() << "Rows returned" << rows << m_rowInfo.size();
     }
 
-    QVector<int> rowToTrack;
-    QHash<int, int> trackToRow;
+    QVector<QPair<int, QHash<int, QVariant> > > rowInfo;
+    QHash<int, QLinkedList<int> > trackToRows;
     QList<int> missingTracks;
     while (query.next()) {
         int id = query.value(idColumn).toInt();
-        trackToRow[id] = rowToTrack.size();
-        rowToTrack.push_back(id);
+        QLinkedList<int>& rows = trackToRows[id];
+        rows.append(rowInfo.size());
+
+        QPair<int, QHash<int, QVariant> > thisRowInfo;
+        thisRowInfo.first = id;
+
+        // Get all the table columns and store them in the hash for this
+        // row-info section.
+        QLinkedList<int>::const_iterator query_it = tableColumnIndices.begin();
+        QSet<int>::const_iterator rowinfo_it = m_tableColumnIndices.begin();
+        while (query_it != tableColumnIndices.end() && rowinfo_it != m_tableColumnIndices.end()) {
+            thisRowInfo.second[*rowinfo_it] = query.value(*query_it);
+            query_it++; rowinfo_it++;
+        }
+        rowInfo.push_back(thisRowInfo);
 
         if (!m_recordCache.contains(id)) {
             missingTracks.push_back(id);
@@ -418,7 +447,7 @@ void BaseSqlTableModel::select() {
         }
 
         // If the track is in this result set.
-        bool isInResultSet = trackToRow.contains(trackId);
+        bool isInResultSet = trackToRows.contains(trackId);
 
         if (shouldBeInResultSet) {
             // Track should be in result set...
@@ -426,41 +455,89 @@ void BaseSqlTableModel::select() {
             // Remove the track from the results first (we have to do this or it
             // will sort wrong).
             if (isInResultSet) {
-                int row = trackToRow[trackId];
-                rowToTrack.remove(row);
-                // Don't update trackToRow, since we do it below.
+                QLinkedList<int> rows = trackToRows[trackId];
+
+                if (rows.size() > 1) {
+                    QVector<int> sortedRows(rows.size());
+                    // NOTE(rryan) yes, I did this terrible thing. It doesn't
+                    // actually matter unless you have the same track in a
+                    // playlist hundreds of times. Using a linked list is a
+                    // memory win so stick with it for now.
+                    int i = 0;
+                    foreach (int row, rows) {
+                        sortedRows[i++] = row;
+                    }
+
+                    // Sort the rows in descending order so that we do not disturb
+                    // the order when iteratively removing rows.
+                    qSort(sortedRows.begin(), sortedRows.end(), qGreater<int>());
+
+                    foreach (int row, sortedRows) {
+                        rowInfo.remove(row);
+                    }
+                } else if (rows.size() == 1) {
+                    rowInfo.remove(rows.front());
+                }
+                // Don't update trackToRows, since we do it below.
             }
 
             // Figure out where it is supposed to sort. The table is sorted by
             // the sort column, so we can binary search.
-            int insertRow = findSortInsertionPoint(trackId, pTrack, rowToTrack);
+            int insertRow = findSortInsertionPoint(trackId, pTrack, rowInfo);
 
             if (sDebug) {
                 qDebug() << this << "Insertion sort says it should be inserted at:" << insertRow;
             }
 
             // The track should sort at insertRow
-            trackToRow[trackId] = insertRow;
-            rowToTrack.insert(insertRow, trackId);
+            // TODO(rryan) YOU HAVE TO SORT ROWS !
+            trackToRows[trackId].append(insertRow);
+            QPair<int, QHash<int, QVariant> > thisRowInfo;
+            thisRowInfo.first = trackId;
+            rowInfo.insert(insertRow, thisRowInfo);
 
+            trackToRows.clear();
             // Fix the index. TODO(rryan) find a non-stupid way to do this.
-            for (int i = 0; i < rowToTrack.size(); ++i) {
-                trackToRow[rowToTrack[i]] = i;
-
+            for (int i = 0; i < rowInfo.size(); ++i) {
+                trackToRows[rowInfo[i].first].append(i);
             }
         } else if (isInResultSet) {
             // Track should not be in this result set, but it is. We need to
             // remove it.
-            int row = trackToRow.take(trackId);
-            // It's O(n) to remove an item from a QVector. Sucks to be you.
-            rowToTrack.remove(row);
+            QLinkedList<int> rows = trackToRows.take(trackId);
+
+            // Sort the rows in descending order so that we do not disturb
+            // the order when iteratively removing rows.
+            if (rows.size() > 1) {
+                QVector<int> sortedRows(rows.size());
+                // NOTE(rryan) yes, I did this terrible thing. It doesn't
+                // actually matter unless you have the same track in a
+                // playlist hundreds of times. Using a linked list is a
+                // memory
+                int i = 0;
+                foreach (int row, rows) {
+                    sortedRows[i++] = row;
+                }
+
+                // Sort the rows in descending order so that we do not disturb
+                // the order when iteratively removing rows.
+                qSort(sortedRows.begin(), sortedRows.end(), qGreater<int>());
+
+                foreach (int row, sortedRows) {
+                    // It's O(n) to remove an item from a QVector. Sucks to be you.
+                    rowInfo.remove(row);
+                }
+            } else if (rows.size() == 1) {
+                // It's O(n) to remove an item from a QVector. Sucks to be you.
+                rowInfo.remove(rows.front());
+            }
         }
     }
 
     // We're done! Issue the update signals and replace the master maps.
-    beginInsertRows(QModelIndex(), 0, rowToTrack.size()-1);
-    m_rowToTrackId = rowToTrack;
-    m_trackIdToRow = trackToRow;
+    beginInsertRows(QModelIndex(), 0, rowInfo.size()-1);
+    m_rowInfo = rowInfo;
+    m_trackIdToRows = trackToRows;
     endInsertRows();
 
     int elapsed = time.elapsed();
@@ -469,16 +546,29 @@ void BaseSqlTableModel::select() {
 
 void BaseSqlTableModel::setTable(const QString& tableName,
                                  const QStringList& columnNames,
-                                 const QString& idColumn) {
+                                 const QString& idColumn,
+                                 const QStringList tableColumns) {
     qDebug() << this << "setTable" << tableName << columnNames << idColumn;
     m_tableName = tableName;
     m_columnNames = columnNames;
     m_columnNamesJoined = m_columnNames.join(",");
     m_idColumn = idColumn;
+
+    // Build a map from the column names to their indices, used by fieldIndex()
     m_columnIndex.clear();
     for (int i = 0; i < m_columnNames.size(); ++i) {
         m_columnIndex[m_columnNames[i]] = i;
     }
+
+    // After building m_columnIndex, we can use fieldIndex to populate the
+    // tableColumns set.
+    m_tableColumns.clear();
+    m_tableColumnIndices.clear();
+    foreach (QString column, tableColumns) {
+        m_tableColumns.insert(column);
+        m_tableColumnIndices.insert(fieldIndex(column));
+    }
+    m_tableColumnsJoined = tableColumns.join(",");
 
     m_bInitialized = true;
 
@@ -538,7 +628,7 @@ void BaseSqlTableModel::sort(int column, Qt::SortOrder order) {
 }
 
 int BaseSqlTableModel::rowCount(const QModelIndex& parent) const {
-    return parent.isValid() ? 0 : m_rowToTrackId.size();
+    return parent.isValid() ? 0 : m_rowInfo.size();
 }
 
 int BaseSqlTableModel::columnCount(const QModelIndex& parent) const {
@@ -635,11 +725,20 @@ bool BaseSqlTableModel::setData(const QModelIndex& index, const QVariant& value,
         return false;
     }
 
-    if (row < 0 || row >= m_rowToTrackId.size()) {
+    if (row < 0 || row >= m_rowInfo.size()) {
         return false;
     }
 
-    int trackId = m_rowToTrackId[row];
+    const QPair<int, QHash<int, QVariant> >& rowInfo = m_rowInfo[row];
+    int trackId = rowInfo.first;
+
+    // You can't set something in the table columns because we have no way of
+    // persisting it.
+    const QHash<int, QVariant>& columns = rowInfo.second;
+    if (columns.contains(column)) {
+        return false;
+    }
+
     TrackPointer pTrack = m_trackDAO.getTrack(trackId);
     setTrackValueForColumn(pTrack, column, value);
 
@@ -694,11 +793,11 @@ Qt::ItemFlags BaseSqlTableModel::readOnlyFlags(const QModelIndex &index) const
     return defaultFlags;
 }
 
-int BaseSqlTableModel::getTrackRow(int trackId) const {
-    if (m_trackIdToRow.contains(trackId)) {
-        return m_trackIdToRow[trackId];
+const QLinkedList<int> BaseSqlTableModel::getTrackRows(int trackId) const {
+    if (m_trackIdToRows.contains(trackId)) {
+        return m_trackIdToRows[trackId];
     }
-    return -1;
+    return QLinkedList<int>();
 }
 
 void BaseSqlTableModel::trackChanged(int trackId) {
@@ -706,8 +805,8 @@ void BaseSqlTableModel::trackChanged(int trackId) {
         qDebug() << this << "trackChanged" << trackId;
     }
     m_trackOverrides.insert(trackId);
-    int row = getTrackRow(trackId);
-    if (row >= 0) {
+    QLinkedList<int> rows = getTrackRows(trackId);
+    foreach (int row, rows) {
         //qDebug() << "Row in this result set was updated. Signalling update. track:" << trackId << "row:" << row;
         QModelIndex left = index(row, 0);
         QModelIndex right = index(row, columnCount());
@@ -778,6 +877,10 @@ QVariant BaseSqlTableModel::getTrackValueForColumn(int trackId, int column, Trac
     // If the track lookup failed (could happen for track properties we dont
     // keep track of in Track, like playlist position) look up the value in
     // their SQL record.
+
+    // TODO(rryan) this code is flawed for columns that contains row-specific
+    // metadata. Currently the upper-levels will not delegate row-specific
+    // columns to this method, but there should still be a check here I think.
     if (!result.isValid()) {
         QHash<int, QVector<QVariant> >::const_iterator it =
                 m_recordCache.find(trackId);
@@ -879,12 +982,24 @@ QVariant BaseSqlTableModel::getBaseValue(const QModelIndex& index, int role) con
     int row = index.row();
     int column = index.column();
 
-    if (row < 0 || row >= m_rowToTrackId.size()) {
+    if (row < 0 || row >= m_rowInfo.size()) {
         return QVariant();
     }
 
-    int trackId = m_rowToTrackId[row];
+    const QPair<int, QHash<int, QVariant> >& rowInfo = m_rowInfo[row];
+    int trackId = rowInfo.first;
 
+    // If the row info has the row-specific column, return that.
+    const QHash<int, QVariant>& columns = rowInfo.second;
+    if (columns.contains(column)) {
+        if (sDebug) {
+            qDebug() << "Returning table-column value" << columns[column] << "for column" << column;
+        }
+        return columns[column];
+    }
+
+    // Otherwise, return the information from the track record cache for the
+    // given track ID
     return getTrackValueForColumn(trackId, column);
 }
 
