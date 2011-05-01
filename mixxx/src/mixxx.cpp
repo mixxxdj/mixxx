@@ -699,8 +699,9 @@ void MixxxApp::initActions()
     m_pOptionsPreferences->setShortcut(tr("Ctrl+P"));
     m_pOptionsPreferences->setShortcutContext(Qt::ApplicationShortcut);
 
-    m_pHelpAboutApp = new QAction(tr("&About..."), this);
-    m_pHelpSupport = new QAction(tr("&Community Support..."), this);
+    m_pHelpAboutApp = new QAction(tr("&About"), this);
+    m_pHelpSupport = new QAction(tr("&Community Support"), this);
+    m_pHelpFeedback = new QAction(tr("Send Us &Feedback"), this);
 
 #ifdef __VINYLCONTROL__
     m_pOptionsVinylControl = new QAction(tr("Enable &Vinyl Control"), this);
@@ -827,6 +828,10 @@ void MixxxApp::initActions()
     m_pHelpSupport->setWhatsThis(tr("Support\n\nGet help with Mixxx"));
     connect(m_pHelpSupport, SIGNAL(triggered()), this, SLOT(slotHelpSupport()));
 
+    m_pHelpFeedback->setStatusTip(tr("Send feedback to the Mixxx team."));
+    m_pHelpFeedback->setWhatsThis(tr("Support\n\nSend feedback to the Mixxx team."));
+    connect(m_pHelpFeedback, SIGNAL(triggered()), this, SLOT(slotHelpFeedback()));
+
     m_pHelpAboutApp->setStatusTip(tr("About the application"));
     m_pHelpAboutApp->setWhatsThis(tr("About\n\nAbout the application"));
     connect(m_pHelpAboutApp, SIGNAL(triggered()), this, SLOT(slotHelpAbout()));
@@ -885,6 +890,7 @@ void MixxxApp::initMenuBar()
 
     // menuBar entry helpMenu
     m_pHelpMenu->addAction(m_pHelpSupport);
+    m_pHelpMenu->addAction(m_pHelpFeedback);
     m_pHelpMenu->addSeparator();
     m_pHelpMenu->addAction(m_pHelpAboutApp);
 
@@ -1282,6 +1288,12 @@ void MixxxApp::slotHelpSupport()
     QUrl qSupportURL;
     qSupportURL.setUrl(MIXXX_SUPPORT_URL);
     QDesktopServices::openUrl(qSupportURL);
+}
+
+void MixxxApp::slotHelpFeedback() {
+    QUrl qFeedbackUrl;
+    qFeedbackUrl.setUrl(MIXXX_FEEDBACK_URL);
+    QDesktopServices::openUrl(qFeedbackUrl);
 }
 
 void MixxxApp::rebootMixxxView() {
