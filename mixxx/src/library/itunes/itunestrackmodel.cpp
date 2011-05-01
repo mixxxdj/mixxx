@@ -69,8 +69,8 @@ int ITunesTrackModel::getTrackId(const QModelIndex& index) const {
     return index.sibling(index.row(), fieldIndex("id")).data().toInt();
 }
 
-int ITunesTrackModel::getTrackRow(int trackId) const {
-    return BaseSqlTableModel::getTrackRow(trackId);
+const QLinkedList<int> ITunesTrackModel::getTrackRows(int trackId) const {
+    return BaseSqlTableModel::getTrackRows(trackId);
 }
 
 QString ITunesTrackModel::getTrackLocation(const QModelIndex& index) const {
