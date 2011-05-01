@@ -810,8 +810,17 @@ void WTrackTableView::doSortByColumn(int headerSection) {
 
     QModelIndex first;
     foreach (int trackId, trackIds) {
-        int row = trackModel->getTrackRow(trackId);
-        if (row >= 0) {
+
+        // TODO(rryan) slowly fixing the issues with BaseSqlTableModel. This
+        // code is broken for playlists because it assumes each trackid is in
+        // the table once. This will erroneously select all instances of the
+        // track for playlists, but it works fine for every other view. The way
+        // to fix this that we should do is to delegate the selection saving to
+        // the TrackModel. This will allow the playlist table model to use the
+        // table index as the unique id instead of this code stupidly using
+        // trackid.
+        QLinkedList<int> rows = trackModel->getTrackRows(trackId);
+        foreach (int row, rows) {
             QModelIndex tl = itemModel->index(row, visibleColumn);
             currentSelection->select(tl, QItemSelectionModel::Rows | QItemSelectionModel::Select);
 
