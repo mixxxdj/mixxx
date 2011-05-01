@@ -9,8 +9,8 @@ Import('build')
 
 
 mixxxminimal_sources = [
-    "#lib/soundtouch-1.5.0/FIFOSampleBuffer.cpp",
-    "#lib/soundtouch-1.5.0/PeakFinder.cpp",
+	"#lib/soundtouch-1.5.0/FIFOSampleBuffer.cpp",
+	"#lib/soundtouch-1.5.0/PeakFinder.cpp",
     "#lib/soundtouch-1.5.0/BPMDetect.cpp",    
 	"#lib/vamp/src/vamp-sdk/PluginAdapter.cpp",
 	"#lib/vamp/src/vamp-sdk/RealTime.cpp",

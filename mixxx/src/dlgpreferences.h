@@ -40,7 +40,11 @@ class DlgPrefControls;
 class DlgPrefEQ;
 class DlgPrefCrossfader;
 class DlgPrefRecord;
+#ifdef __VAMP__
+class DlgPrefAnalysers;
+#else
 class DlgPrefBpm;
+#endif
 class DlgPrefVinyl;
 class DlgPrefNoVinyl;
 class DlgPrefShoutcast;
@@ -89,7 +93,11 @@ private:
     DlgPrefEQ *weq;
     DlgPrefCrossfader *wcrossfader;
     DlgPrefRecord *wrecord;
+#ifdef __VAMP__
+    DlgPrefAnalysers *wbeats;
+#else
     DlgPrefBpm *wbpm;
+#endif
     DlgPrefVinyl *wvinylcontrol;
     DlgPrefNoVinyl *wnovinylcontrol;
     DlgPrefShoutcast *wshoutcast;
@@ -101,7 +109,12 @@ private:
     QTreeWidgetItem* m_pEqButton;
     QTreeWidgetItem* m_pCrossfaderButton;
     QTreeWidgetItem* m_pRecordingButton;
+#ifdef __VAMP__
+    QTreeWidgetItem* m_pBeatsdetectButton;
+#else
     QTreeWidgetItem* m_pBPMdetectButton;
+#endif
+
     QTreeWidgetItem* m_pVinylControlButton;
     QTreeWidgetItem* m_pShoutcastButton;
     QTreeWidgetItem* m_pReplayGainButton;

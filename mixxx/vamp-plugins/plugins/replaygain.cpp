@@ -218,20 +218,20 @@ ReplayGain::process(const float *const *inputBuffers, Vamp::RealTime timestamp)
                return fs;
        switch ( numchannels) {
        case  1: {
-//           for(int i=0; i<BlockSize; i++){
-//               left_samples[i] = inputBuffers[0][i];
-//               right_samples[i] = inputBuffers[0][i];
-//           }
-           memcpy(left_samples, inputBuffers[0], BlockSize * sizeof(float));
-           memcpy(right_samples, inputBuffers[0], BlockSize* sizeof(float));
+           for(int i=0; i<BlockSize; i++){
+               left_samples[i] = 32767*inputBuffers[0][i];
+               right_samples[i] = 32767*inputBuffers[0][i];
+           }
+//           memcpy(left_samples, inputBuffers[0], BlockSize * sizeof(float));
+//           memcpy(right_samples, inputBuffers[0], BlockSize* sizeof(float));
        };
        case  2: {
-//           for(int i=0; i<BlockSize; i++){
-//                          left_samples[i] = inputBuffers[0][i];
-//                          right_samples[i] = inputBuffers[1][i];
-//                      }
-           memcpy(left_samples, inputBuffers[0], BlockSize * sizeof(float));
-           memcpy(right_samples, inputBuffers[1], BlockSize* sizeof(float));
+           for(int i=0; i<BlockSize; i++){
+                          left_samples[i] = 32767*inputBuffers[0][i];
+                          right_samples[i] = 32767*inputBuffers[1][i];
+                      }
+//           memcpy(left_samples, inputBuffers[0], BlockSize * sizeof(float));
+//           memcpy(right_samples, inputBuffers[1], BlockSize* sizeof(float));
        }break;
        default: return fs;
        }

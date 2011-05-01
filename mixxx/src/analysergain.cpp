@@ -11,21 +11,22 @@
 #include <QString>
 #include <time.h>
 #include <math.h>
-#include "analyserrgain.h"
+#include "analysergain.h"
 
-AnalyserrGain::AnalyserrGain(ConfigObject<ConfigValue> *_config) {
+AnalyserGain::AnalyserGain(ConfigObject<ConfigValue> *_config) {
     m_pConfigAVR = _config;
     m_bPass = 0;
 
 
 }
 
-AnalyserrGain::~AnalyserrGain(){
+AnalyserGain::~AnalyserGain(){
 
 }
 
-void AnalyserrGain::initialise(TrackPointer tio, int sampleRate, int totalSamples) {
+void AnalyserGain::initialise(TrackPointer tio, int sampleRate, int totalSamples) {
     mvamprg = new VampAnalyser();
+    m_bPass = false;
     bool bAnalyserEnabled = (bool)m_pConfigAVR->getValueString(ConfigKey("[ReplayGain]","ReplayGainAnalyserEnabled")).toInt();
     float fReplayGain = tio->getReplayGain();
     if(totalSamples == 0 || fReplayGain != 0 || !bAnalyserEnabled) {
@@ -34,21 +35,21 @@ void AnalyserrGain::initialise(TrackPointer tio, int sampleRate, int totalSample
         return;
    }
 
-    m_bPass = mvamprg->Init("libmixxxminimal:replaygain",0,sampleRate, totalSamples);
+    m_bPass = mvamprg->Init("libmixxxminimal","replaygain:0",sampleRate, totalSamples);
     if (!m_bPass)
         qDebug() << "Failed to init";
 
 
 }
 
-void AnalyserrGain::process(const CSAMPLE *pIn, const int iLen) {
+void AnalyserGain::process(const CSAMPLE *pIn, const int iLen) {
     if(!m_bPass) return;
     m_bPass = mvamprg->Process(pIn, iLen);
 
 
 }
 
-void AnalyserrGain::finalise(TrackPointer tio) {
+void AnalyserGain::finalise(TrackPointer tio) {
     if(!m_bPass) return;
     QVector <double> values;
     values = mvamprg->GetFirstValuesVector();
@@ -60,7 +61,11 @@ void AnalyserrGain::finalise(TrackPointer tio) {
     }
     values.clear();
     m_bPass = mvamprg->End();
-    qDebug()<<"ReplayGain detection complete";
+    if(m_bPass)
+        qDebug()<<"Optimal Gain detection complete";
+    else
+        qDebug()<<"Error in Optimal Gain detection";
+
     delete mvamprg;
     mvamprg = NULL;
     //m_iStartTime = clock() - m_iStartTime;
