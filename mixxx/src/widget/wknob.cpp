@@ -116,8 +116,21 @@ void WKnob::setPixmapBackground(const QString &filename)
 void WKnob::mouseMoveEvent(QMouseEvent * e)
 {
     if (!m_bRightButtonPressed) {
-        m_fValue += (m_dStartValue-e->y());
-        m_dStartValue = e->y();
+        QPoint cur(e->globalPos());
+        QPoint diff(cur - m_startPos);
+        double dist = sqrt(diff.x() * diff.x() + diff.y() * diff.y());
+        bool y_dominant = fabs(diff.y()) > fabs(diff.x());
+
+        // if y is dominant, then thread an increase in dy as negative (y is
+        // pointed downward). Otherwise, if y is not dominant and x has
+        // decreased, then thread it as negative.
+        if ((y_dominant && diff.y() > 0) || (!y_dominant && diff.x() < 0)) {
+            dist = -dist;
+        }
+
+        m_fValue += dist;
+        QCursor::setPos(m_startPos);
+
         if (m_fValue>127.)
             m_fValue = 127.;
         else if (m_fValue<0.)
@@ -129,22 +142,27 @@ void WKnob::mouseMoveEvent(QMouseEvent * e)
 
 void WKnob::mousePressEvent(QMouseEvent * e)
 {
-    m_dStartValue = e->y();
+    m_startPos = e->globalPos();
 
     if (e->button() == Qt::RightButton)
     {
         reset();
         m_bRightButtonPressed = true;
+    } else {
+        QApplication::setOverrideCursor(Qt::BlankCursor);
     }
 }
 
 void WKnob::mouseReleaseEvent(QMouseEvent * e)
 {
-    if (e->button()==Qt::LeftButton)
+    if (e->button() == Qt::LeftButton) {
+        QCursor::setPos(m_startPos);
+        QApplication::restoreOverrideCursor();
         emit(valueChangedLeftUp(m_fValue));
-    else if (e->button()==Qt::RightButton)
+    } else if (e->button()==Qt::RightButton) {
         m_bRightButtonPressed = false;
         //emit(valueChangedRightUp(m_fValue));
+    }
 
     update();
 }
