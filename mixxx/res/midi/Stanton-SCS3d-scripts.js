@@ -1,5 +1,5 @@
 /****************************************************************/
-/*      Stanton SCS.3d MIDI controller script v1.62             */
+/*      Stanton SCS.3d MIDI controller script v1.70             */
 /*          Copyright (C) 2009-2011, Sean M. Pappalardo         */
 /*      but feel free to tweak this to your heart's content!    */
 /*      For Mixxx version 1.9.x                                 */
@@ -21,6 +21,9 @@ StantonSCS3d.globalMode = false;        // Stay in the current mode on deck chan
 StantonSCS3d.singleDeck = false;        // When using more than one controller, set to true to avoid easy deck changes.
                                         //  Toggle with DECK + SYNC.
 StantonSCS3d.deckChangeWait = 1000;     // Time in milliseconds to hold the DECK button down to avoid changing decks (multi deck mode)
+StantonSCS3d.pitchAdjustment = 3;       // Pitch slider coarseness (1 = coarse, 3 = normal, 5 = fine)
+StantonSCS3d.finePitchAdjustment = 3;   // Fine-mode pitch slider coarseness (1 = coarser, 3 = normal, 5 = finer)
+StantonSCS3d.finePitchDefault = false;  // Swap normal and fine pitch modes
 
 // ----------   Other global variables    ----------
 StantonSCS3d.debug = false;  // Enable/disable debugging messages to the console
@@ -396,11 +399,20 @@ StantonSCS3d.pitch = function (channel, control, value) {   // Lower the sensiti
     // If in DECK mode, ignore this.
     if (StantonSCS3d.mode_store["[Channel"+StantonSCS3d.deck+"]"]=="deck") return;
     
+    // Ignore if doing pitch bend
+    if (engine.getValue("[Channel"+StantonSCS3d.deck+"]","rate_temp_up")!=0
+        || engine.getValue("[Channel"+StantonSCS3d.deck+"]","rate_temp_down")!=0) return;
+    
     var currentValue = engine.getValue("[Channel"+StantonSCS3d.deck+"]","rate");
     var newValue;
-    if (StantonSCS3d.modifier[StantonSCS3d.mode_store["[Channel"+StantonSCS3d.deck+"]"]]==1)
-        newValue = currentValue+(value-64)/1024;    // Fine pitch adjust
-    else newValue = currentValue+(value-64)/256;
+    var modDeck = StantonSCS3d.modifier[StantonSCS3d.mode_store["[Channel"+StantonSCS3d.deck+"]"]]==1;
+    var swap = StantonSCS3d.finePitchDefault;
+    if ((modDeck && !swap) || (!modDeck && swap)) {
+        // Fine pitch adjust
+        var pitchRange = engine.getValue("[Channel"+StantonSCS3d.deck+"]","rateRange");
+        newValue = currentValue+(value-64)/(20000*StantonSCS3d.finePitchAdjustment*pitchRange);
+    }
+    else newValue = currentValue+(value-64)/(86*StantonSCS3d.pitchAdjustment);
     if (newValue<-1) newValue=-1.0;
     if (newValue>1) newValue=1.0;
     engine.setValue("[Channel"+StantonSCS3d.deck+"]","rate",newValue);
@@ -416,6 +428,10 @@ StantonSCS3d.pitchAbsolute = function (channel, control, value) {
     
     // Disable if doing fine adjustments (holding down the current mode button)
     if (StantonSCS3d.modifier[StantonSCS3d.mode_store["[Channel"+StantonSCS3d.deck+"]"]]==1) return;
+    
+    // Ignore if we're already bending
+    if (engine.getValue("[Channel"+StantonSCS3d.deck+"]","rate_temp_up")!=0
+        || engine.getValue("[Channel"+StantonSCS3d.deck+"]","rate_temp_down")!=0) return;
     
     // --- Pitch bending at the edges of the slider ---
     if (StantonSCS3d.state["pitchAbs"]==0) StantonSCS3d.state["pitchAbs"]=value;    // Log the initial value
@@ -785,8 +801,7 @@ StantonSCS3d.modeButton = function (channel, control, status, modeName) {
     }
     StantonSCS3d.connectSurfaceSignals(channel,true);  // Disconnect previous ones
     StantonSCS3d.softButtonsColor(channel,0x02);  // Make the soft buttons blue
-    switch (currentMode) {    // Special recovery from certain modes
-        case "vinyl":
+    switch (currentMode) {    // Special recovery from certain modesZ
         case "vinyl2":
             // So we don't get stuck at some strange speed when switching from a scratching mode
             engine.scratchDisable(StantonSCS3d.deck);
@@ -1070,10 +1085,14 @@ StantonSCS3d.DeckChangeP2 = function (channel, value) {
 
 StantonSCS3d.S4relative = function (channel, control, value) {
     var currentMode = StantonSCS3d.mode_store["[Channel"+StantonSCS3d.deck+"]"];
-    if (currentMode=="deck") return;   // Skip if in DECK mode
-    if (currentMode=="vinyl" || currentMode=="vinyl2") {
-        var newValue = (value-64);
-        engine.scratchTick(StantonSCS3d.deck,newValue);
+    var newValue=(value-64);
+    switch (currentMode) {
+        case "vinyl":
+            engine.setValue("[Channel"+StantonSCS3d.deck+"]","jog",newValue);
+            break;
+        case "vinyl2":
+            engine.scratchTick(StantonSCS3d.deck,newValue);
+            break;
     }
 }
 
@@ -1244,7 +1263,6 @@ StantonSCS3d.S4touch = function (channel, control, value, status) {
     }
     if ((status & 0xF0) == 0x90) {    // If button down
         switch (currentMode) {
-            case "vinyl":  
             case "vinyl2":
                 engine.scratchEnable(StantonSCS3d.deck, 512, 33+1/3, 1.0/8, (1.0/8)/32);
                     // Recall the cue point if in "scratch & cue" mode only when playing
@@ -1277,9 +1295,9 @@ StantonSCS3d.S4touch = function (channel, control, value, status) {
     }
     // If button up
     switch (currentMode) {
-        case "vinyl":   
         case "vinyl2":
             engine.scratchDisable(StantonSCS3d.deck);
+        case "vinyl":
             var byte1a = 0xB0 + channel;
             midi.sendShortMsg(byte1a,0x01,0x00); //S4 LEDs off
             if (!StantonSCS3d.VUMeters || StantonSCS3d.deck!=1) midi.sendShortMsg(byte1a,0x0C,0x00); //S3 LEDs off
