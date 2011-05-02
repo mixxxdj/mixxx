@@ -118,8 +118,8 @@ void WKnob::mouseMoveEvent(QMouseEvent * e)
     if (!m_bRightButtonPressed) {
         QPoint cur(e->globalPos());
         QPoint diff(cur - m_startPos);
-        double dist = sqrt(diff.x() * diff.x() + diff.y() * diff.y());
-        bool y_dominant = fabs(diff.y()) > fabs(diff.x());
+        double dist = sqrt(static_cast<double>(diff.x() * diff.x() + diff.y() * diff.y()));
+        bool y_dominant = abs(diff.y()) > abs(diff.x());
 
         // if y is dominant, then thread an increase in dy as negative (y is
         // pointed downward). Otherwise, if y is not dominant and x has
