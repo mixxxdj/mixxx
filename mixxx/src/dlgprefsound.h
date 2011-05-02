@@ -19,6 +19,7 @@
 #include <QtCore>
 #include "ui_dlgprefsounddlg.h"
 #include "configobject.h"
+#include "controlobjectthreadmain.h"
 #include "soundmanagerconfig.h"
 
 class SoundManager;
@@ -61,6 +62,7 @@ private:
     SoundManager *m_pSoundManager;
     PlayerManager *m_pPlayerManager;
     ConfigObject<ConfigValue> *m_pConfig;
+    ControlObjectThreadMain* m_pflDelay;
     QList<SoundDevice*> m_inputDevices;
     QList<SoundDevice*> m_outputDevices;
     bool m_settingsModified;
@@ -75,6 +77,7 @@ private slots:
     void updateAPIs();
     void sampleRateChanged(int index);
     void latencyChanged(int index);
+    void pflDelayChanged(int delay_fraction);
     void updateLatencies(int sampleRateIndex);
     void refreshDevices();
     void settingChanged();

@@ -1,5 +1,5 @@
 /***************************************************************************
-                          enginedelay.h  -  description
+                          enginepfldelay.h  -  description
                              -------------------
     copyright            : (C) 2002 by Tue and Ken Haste Andersen
     email                :
@@ -14,23 +14,28 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef ENGINEDELAY_H
-#define ENGINEDELAY_H
+#ifndef ENGINEPFLDELAY_H
+#define ENGINEPFLDELAY_H
 
 #include "engineobject.h"
 
 class ControlPotmeter;
 
-const int kiMaxDelay = 20000; 
+const int kiMaxDelay = MAX_BUFFER_LEN; 
 
-class EngineDelay : public EngineObject
+class EnginePflDelay : public EngineObject
 {
+    Q_OBJECT
 public:
-    EngineDelay(const char *group);
-    ~EngineDelay();
+    EnginePflDelay();
+    ~EnginePflDelay();
     void process(const CSAMPLE *pIn, const CSAMPLE *pOut, const int iBufferSize);
+    
+public slots:
+    void slotDelayChanged(double);
+    
 private:
-    ControlPotmeter *m_pPotmeter;
+    ControlPotmeter *m_pDelayPot;
     CSAMPLE *m_pDelayBuffer;
     int m_iDelay, m_iDelayPos;
 };

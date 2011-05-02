@@ -362,7 +362,7 @@ class MixxxCore(Feature):
                    "engine/enginepregain.cpp",
                    "engine/enginechannel.cpp",
                    "engine/enginemaster.cpp",
-                   "engine/enginedelay.cpp",
+                   "engine/enginepfldelay.cpp",
                    "engine/engineflanger.cpp",
                    "engine/enginevumeter.cpp",
                    "engine/enginevinylsoundemu.cpp",

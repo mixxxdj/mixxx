@@ -59,12 +59,17 @@ DlgPrefSound::DlgPrefSound(QWidget *pParent, SoundManager *pSoundManager,
             sampleRateComboBox->addItem(QString(tr("%1 Hz")).arg(srate), srate);
         }
     }
+    
+    m_pflDelay = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[Master]", "pfl_delay")));
+    
     connect(sampleRateComboBox, SIGNAL(currentIndexChanged(int)),
             this, SLOT(sampleRateChanged(int)));
     connect(sampleRateComboBox, SIGNAL(currentIndexChanged(int)),
             this, SLOT(updateLatencies(int)));
     connect(latencyComboBox, SIGNAL(currentIndexChanged(int)),
             this, SLOT(latencyChanged(int)));
+    connect(pflDelaySlider, SIGNAL(valueChanged(int)),
+            this, SLOT(pflDelayChanged(int)));
 
     initializePaths();
     loadSettings();
@@ -338,6 +343,16 @@ void DlgPrefSound::sampleRateChanged(int index) {
 void DlgPrefSound::latencyChanged(int index) {
     m_config.setLatency(
             latencyComboBox->itemData(index).toUInt());
+}
+
+/**
+ * Slot called when the headphone delay slider is changed to update the
+ * delay in the config.
+ */
+void DlgPrefSound::pflDelayChanged(int delay_fraction)
+{
+    float fraction = (float)delay_fraction / 1000.0;
+    m_pflDelay->slotSet(fraction);
 }
 
 /**

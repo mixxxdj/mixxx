@@ -40,6 +40,7 @@ class ControlPotmeter;
 class ControlPushButton;
 class EngineVinylSoundEmu;
 class EngineSideChain;
+class EnginePflDelay;
 
 class EngineMaster : public EngineObject, public AudioSource {
     Q_OBJECT
@@ -140,6 +141,7 @@ class EngineMaster : public EngineObject, public AudioSource {
 
     ControlObject *m_pMasterVolume, *m_pHeadVolume;
     EngineClipping *clipping, *head_clipping;
+    EnginePflDelay *m_pHeadDelay;
 #ifdef __LADSPA__
     EngineLADSPA *ladspa;
 #endif

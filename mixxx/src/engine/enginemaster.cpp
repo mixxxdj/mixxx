@@ -32,6 +32,7 @@
 #include "enginevumeter.h"
 #include "enginexfader.h"
 #include "enginesidechain.h"
+#include "enginepfldelay.h"
 #include "sampleutil.h"
 
 #ifdef __LADSPA__
@@ -41,7 +42,6 @@
 
 EngineMaster::EngineMaster(ConfigObject<ConfigValue> * _config,
                            const char * group) {
-
     m_pWorkerScheduler = new EngineWorkerScheduler(this);
 
     // Master sample rate
@@ -83,6 +83,9 @@ EngineMaster::EngineMaster(ConfigObject<ConfigValue> * _config,
 
     // Headphone Clipping
     head_clipping = new EngineClipping("");
+    
+    // Headphone Delay
+    m_pHeadDelay = new EnginePflDelay();
     
     //set up input passthrough o
     //TODO: we should set up n passthroughs for n decks
@@ -451,7 +454,7 @@ void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
     // Mix all the enabled headphone channels together.
     m_headphoneGain.setGain(chead_gain);
     mixChannels(headphoneOutput, maxChannels, m_pHead, iBufferSize, &m_headphoneGain);
-
+    
     // Calculate the crossfader gains for left and right side of the crossfader
     float c1_gain, c2_gain;
     EngineXfader::getXfadeGains(c1_gain, c2_gain,
@@ -499,6 +502,9 @@ void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
     // Head volume and clipping
     SampleUtil::applyGain(m_pHead, m_pHeadVolume->get(), iBufferSize);
     head_clipping->process(m_pHead, m_pHead, iBufferSize);
+    
+    //delay the headphone sound by the appropriate amount
+    m_pHeadDelay->process(m_pHead, m_pHead, iBufferSize);
 
     //Master/headphones interleaving is now done in
     //SoundManager::requestBuffer() - Albert Nov 18/07

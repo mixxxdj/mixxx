@@ -134,6 +134,7 @@ ControlValueDelegate::ControlValueDelegate(QObject *parent)
         m_masterControlValues.append("crossfader");
         m_masterControlValues.append("volume");
         m_masterControlValues.append("wheelsensitivity");
+        m_masterControlValues.append("pfl_delay");
     }
     if (m_playlistControlValues.isEmpty())
     {

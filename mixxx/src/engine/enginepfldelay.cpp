@@ -1,5 +1,5 @@
 /***************************************************************************
-                          enginedelay.cpp  -  description
+                          enginepfldelay.cpp  -  description
                              -------------------
     copyright            : (C) 2002 by Tue and Ken Haste Andersen
     email                :
@@ -14,25 +14,44 @@
 *                                                                         *
 ***************************************************************************/
 
-#include "enginedelay.h"
+#include "enginepfldelay.h"
 #include "controlpotmeter.h"
+#include "sampleutil.h"
 
 /*----------------------------------------------------------------
 
    ----------------------------------------------------------------*/
-EngineDelay::EngineDelay(const char * group)
+EnginePflDelay::EnginePflDelay()
 {
     m_pDelayBuffer = new CSAMPLE[kiMaxDelay];
+    //make sure it's zeroed out
+    SampleUtil::applyGain(m_pDelayBuffer, 0.0f, kiMaxDelay);
     m_iDelayPos = 0;
-    new ControlPotmeter(ConfigKey(group, "delay"), 0, kiMaxDelay);
+    
+    m_pDelayPot = new ControlPotmeter(ConfigKey("[Master]", "pfl_delay"), 0, 1);
+    connect(m_pDelayPot, SIGNAL(valueChanged(double)),
+            this, SLOT(slotDelayChanged(double)),
+            Qt::DirectConnection);
+            
+    m_iDelay = 0;
 }
 
-EngineDelay::~EngineDelay()
+EnginePflDelay::~EnginePflDelay()
 {
     delete [] m_pDelayBuffer;
 }
 
-void EngineDelay::process(const CSAMPLE * pIn, const CSAMPLE * pOut, const int iBufferSize)
+void EnginePflDelay::slotDelayChanged(double new_delay)
+{
+    //if we actually pick a value of kiMaxDelay, it wraps around to zero
+    m_iDelay = (int)(new_delay * (kiMaxDelay-2));
+    if (m_iDelay % 2)
+        m_iDelay++;
+    //zero out the buffer to prevent noise
+    SampleUtil::applyGain(m_pDelayBuffer, 0.0f, kiMaxDelay);
+}
+
+void EnginePflDelay::process(const CSAMPLE * pIn, const CSAMPLE * pOut, const int iBufferSize)
 {
     int iDelaySourcePos = (m_iDelayPos+kiMaxDelay-m_iDelay)%kiMaxDelay;
     CSAMPLE * pOutput = (CSAMPLE *)pOut;
@@ -46,8 +65,8 @@ void EngineDelay::process(const CSAMPLE * pIn, const CSAMPLE * pOut, const int i
         m_pDelayBuffer[m_iDelayPos] = pIn[i];
         m_iDelayPos = (m_iDelayPos+1)%kiMaxDelay;
 
-        // Take "old" sample from delay buffer and mix it with the source buffer:
-        pOutput[i] = 0.5*(m_pDelayBuffer[iDelaySourcePos] + pIn[i]);
+        // Take delayed sample from delay buffer and copy it to dest buffer:
+        pOutput[i] = m_pDelayBuffer[iDelaySourcePos];
         iDelaySourcePos = (iDelaySourcePos+1)%kiMaxDelay;
     }
 }
