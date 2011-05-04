@@ -243,6 +243,7 @@ struct CmdlineArgs
 {
     QList<QString> qlMusicFiles;    /* List of files to load into players at startup */
     bool bStartInFullscreen;        /* Start in fullscreen mode */
+    QString locale;
 };
 
 
