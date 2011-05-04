@@ -159,25 +159,11 @@ int main(int argc, char * argv[])
     QThread::currentThread()->setObjectName("Main");
     QApplication a(argc, argv);
 
-    // Load the translations for Qt and for Mixxx
-
-    QTranslator* qtTranslator = new QTranslator();
-    qtTranslator->load("qt_" + QLocale::system().name(),
-                      QLibraryInfo::location(QLibraryInfo::TranslationsPath));
-    a.installTranslator(qtTranslator);
-
     //Enumerate and load SoundSource plugins
     SoundSourceProxy::loadPlugins();
 #ifdef __LADSPA__
     //LADSPALoader ladspaloader;
 #endif
-
-    QTranslator tor(0);
-    // set the location where your .qm files are in load() below as the last parameter instead of "."
-    // for development, use "/" to use the english original as
-    // .qm files are stored in the base project directory.
-    tor.load(QString("mixxx.") + QLocale::system().name(), ".");
-    a.installTranslator(&tor);
 
     // Check if one of the command line arguments is "--no-visuals"
 //    bool bVisuals = true;
@@ -222,6 +208,8 @@ int main(int argc, char * argv[])
     --midiDebug             Causes Mixxx to display/log all of the MIDI\n\
                             messages it receives and script functions it loads\n\
 \n\
+    --locale LOCALE         Use a custom locale for loading translations (e.g 'fr')\n\
+\n\
     -f, --fullScreen        Starts Mixxx in full-screen mode\n\
 \n\
     -h, --help              Display this help message and exit");
@@ -233,11 +221,12 @@ int main(int argc, char * argv[])
         if (argv[i]==QString("-f").toLower() || argv[i]==QString("--f") || argv[i]==QString("--fullScreen"))
         {
             args.bStartInFullscreen = true;
-        }
-        else if (fileRx.indexIn(argv[i]) != -1)
+        } else if (argv[i] == QString("--locale") && i+1 < argc) {
+            args.locale = argv[i+1];
+        } else if (fileRx.indexIn(argv[i]) != -1) {
             args.qlMusicFiles += argv[i];
+        }
     }
-
 
     // set up the plugin paths...
     /*
