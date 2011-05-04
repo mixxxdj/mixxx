@@ -130,11 +130,24 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
     bool bFirstRun = upgrader.isFirstRun();
     bool bUpgraded = upgrader.isUpgraded();
     QString qConfigPath = m_pConfig->getConfigPath();
-
     QString translationsFolder = qConfigPath + "translations/";
+
+    // Load Qt base translations
+    QString locale = args.locale;
+    if (locale == "") {
+        locale = QLocale::system().name();
+    }
+
+    QTranslator* qtTranslator = new QTranslator();
+    qtTranslator->load("qt_" + locale,
+                      QLibraryInfo::location(QLibraryInfo::TranslationsPath));
+    a->installTranslator(qtTranslator);
+
+    // Load Mixxx specific translations for this locale
     QTranslator* mixxxTranslator = new QTranslator();
-    mixxxTranslator->load("mixxx_" + QLocale::system().name(),
-                          translationsFolder);
+    bool mixxxLoaded = mixxxTranslator->load("mixxx_" + locale, translationsFolder);
+    qDebug() << "Loading translations for locale" << locale
+             << "from translations folder" << translationsFolder << ":" << (mixxxLoaded ? "success" : "fail");
     a->installTranslator(mixxxTranslator);
 
 #ifdef __C_METRICS__
