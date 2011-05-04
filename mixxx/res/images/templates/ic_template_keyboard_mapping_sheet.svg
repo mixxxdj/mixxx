@@ -31,9 +31,9 @@
    inkscape:window-height="1028"
    id="namedview8739"
    showgrid="false"
-   inkscape:zoom="1"
-   inkscape:cx="223.91173"
-   inkscape:cy="374.11803"
+   inkscape:zoom="1.0115386"
+   inkscape:cx="403.73252"
+   inkscape:cy="414.2205"
    inkscape:window-x="1288"
    inkscape:window-y="0"
    inkscape:window-maximized="0"
@@ -3336,6 +3336,8 @@
 
 
 
+
+
 <use
    style="display:inline"
    x="0"
@@ -3392,6 +3394,8 @@
      id="tspan15120"
      x="441.75781"
      y="284.81519"> * for de-de keyboard layout - für Deutsche Tastatur </tspan></text>
+
+
 
 
 
@@ -3873,6 +3877,8 @@
      x="417.60385"
      sodipodi:role="line">You can make your own custom keyboard mapping. For a list of all controls available inside Mixxx goto:</tspan></text>
 
+
+
 <text
    onclick="http://www.mixxx.org/wiki/doku.php/midi_controller_mapping_file_format#ui_midi_controls_and_names"
    sodipodi:linespacing="125%"
@@ -3888,6 +3894,8 @@
      id="tspan21053"
      sodipodi:role="line">http://www.mixxx.org/wiki/doku.php/midi_controller_mapping_file_format</tspan></text>
 
+
+
 <text
    xml:space="preserve"
    style="font-size:9px;font-style:normal;font-variant:normal;font-weight:500;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Futura;-inkscape-font-specification:Futura Medium"
@@ -3900,6 +3908,8 @@
      y="548.70465"
      id="tspan23514"
      style="font-size:10px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:Sans;-inkscape-font-specification:Sans">Share your custom keyboard mapping with others in the Mixxx user customizations forum:</tspan></text>
+
+
 
 <text
    xml:space="preserve"
@@ -3915,6 +3925,8 @@
      x="219.33723"
      y="562.60492"
      style="font-size:10px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;fill:#005c94;font-family:Sans;-inkscape-font-specification:Sans Bold">http://mixxx.org/forums/viewforum.php?f=6</tspan></text>
+
+
 
 </g></g><g
    inkscape:groupmode="layer"
@@ -4320,6 +4332,8 @@
 
 
 
+
+
 </g>
 
 
@@ -4338,6 +4352,8 @@
      x="604.46503"
      id="tspan22784"
      sodipodi:role="line"> * for en-us keyboard layout</tspan></text>
+
+
 
 </g><g
    inkscape:groupmode="layer"
@@ -4366,6 +4382,8 @@
      id="tspan12779"
      y="643.82068"
      x="60.89463">sync </tspan></text>
+
+
 
 
 
@@ -4402,6 +4420,8 @@
 
 
 
+
+
 </g><g
    style="display:inline"
    id="g7018"
@@ -4428,6 +4448,8 @@
      id="tspan12890"
      y="726.62415"
      x="153.12766">cue set</tspan></text>
+
+
 
 
 
@@ -4460,6 +4482,8 @@
 
 
 
+
+
 </g><g
    style="display:inline"
    id="g7012"
@@ -4489,6 +4513,8 @@
 
 
 
+
+
 </g><g
    style="display:inline"
    id="g9490"
@@ -4511,6 +4537,8 @@
      id="tspan12947"
      y="709.36572"
      x="120.26166">fwd </tspan></text>
+
+
 
 
 
@@ -4545,6 +4573,8 @@
 
 
 
+
+
 </g><g
    style="display:inline"
    id="g9473"
@@ -4567,6 +4597,8 @@
      y="643.82068"
      id="tspan12980"
      style="font-size:9px;font-style:normal;font-variant:normal;font-weight:500;font-stretch:normal;line-height:225%;font-family:Futura;-inkscape-font-specification:Futura Medium">fx</tspan></text>
+
+
 
 
 
@@ -4605,6 +4637,8 @@
 
 
 
+
+
 </g><g
    style="display:inline"
    id="g9505"
@@ -4631,6 +4665,8 @@
      y="655.07068"
      id="tspan13004"
      style="font-size:9px;font-style:normal;font-variant:normal;font-weight:500;font-stretch:normal;line-height:125%;font-family:Futura;-inkscape-font-specification:Futura Medium">kill</tspan></text>
+
+
 
 
 
@@ -4669,6 +4705,8 @@
 
 
 
+
+
 </g><g
    style="display:inline"
    id="g6823"
@@ -4695,6 +4733,8 @@
      id="tspan13032"
      y="759.62415"
      x="137.8739">clear</tspan></text>
+
+
 
 
 
@@ -4727,6 +4767,8 @@
 
 
 
+
+
 </g><g
    style="display:inline"
    id="g6693"
@@ -4753,6 +4795,8 @@
      id="tspan13074"
      y="612.62415"
      x="93.760674">small</tspan></text>
+
+
 
 
 
@@ -4785,6 +4829,8 @@
 
 
 
+
+
 </g><g
    style="display:inline"
    id="g6681"
@@ -4811,6 +4857,8 @@
      id="tspan13102"
      y="612.62415"
      x="159.56067">small</tspan></text>
+
+
 
 
 
@@ -4844,6 +4892,8 @@
 
 
 
+
+
 </g><g
    style="display:inline"
    id="g9558"
@@ -4872,6 +4922,8 @@
 
 
 
+
+
 </g><g
    style="display:inline"
    id="g9540"
@@ -4894,6 +4946,8 @@
      id="tspan13236"
      y="643.82068"
      x="356.99463">sync </tspan></text>
+
+
 
 
 
@@ -4929,6 +4983,8 @@
 
 
 
+
+
 </g><g
    style="display:inline"
    id="g6705"
@@ -4955,6 +5011,8 @@
      id="tspan13264"
      y="612.62415"
      x="279.16068">small</tspan></text>
+
+
 
 
 
@@ -4987,6 +5045,8 @@
 
 
 
+
+
 </g><g
    style="display:inline"
    id="g6675"
@@ -5013,6 +5073,8 @@
      id="tspan13116"
      y="612.62415"
      x="192.46068">small</tspan></text>
+
+
 
 
 
@@ -5045,6 +5107,8 @@
 
 
 
+
+
 </g><g
    style="display:inline"
    id="g9500"
@@ -5067,6 +5131,8 @@
      y="677.05463"
      id="tspan13304"
      style="font-size:9px;font-style:normal;font-variant:normal;font-weight:500;font-stretch:normal;line-height:225%;font-family:Futura;-inkscape-font-specification:Futura Medium">head </tspan></text>
+
+
 
 
 
@@ -5105,6 +5171,8 @@
 
 
 
+
+
 </g><g
    style="display:inline"
    id="g9523"
@@ -5131,6 +5199,8 @@
      y="655.07068"
      id="tspan13338"
      style="font-size:9px;font-style:normal;font-variant:normal;font-weight:500;font-stretch:normal;line-height:125%;font-family:Futura;-inkscape-font-specification:Futura Medium">kill</tspan></text>
+
+
 
 
 
@@ -5180,6 +5250,8 @@
 
 
 
+
+
 </g><path
    style="fill:none;stroke:#0e232e;stroke-width:4;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;display:inline"
    id="path13314"
@@ -5216,6 +5288,8 @@
 
 
 
+
+
 </g><g
    style="display:inline"
    id="g9535"
@@ -5238,6 +5312,8 @@
      y="643.82068"
      id="tspan13360"
      style="font-size:9px;font-style:normal;font-variant:normal;font-weight:500;font-stretch:normal;line-height:225%;font-family:Futura;-inkscape-font-specification:Futura Medium">fx</tspan></text>
+
+
 
 
 
@@ -5270,6 +5346,8 @@
      y="688.30463"
      id="tspan13372"
      style="font-size:9px;font-style:normal;font-variant:normal;font-weight:500;font-stretch:normal;line-height:125%;font-family:Futura;-inkscape-font-specification:Futura Medium">tap</tspan></text>
+
+
 
 
 
@@ -5328,6 +5406,8 @@
 
 
 
+
+
 </g><use
    style="display:inline"
    x="0"
@@ -5365,6 +5445,8 @@
 
 
 
+
+
 </g><g
    style="display:inline"
    id="g6817-0"
@@ -5391,6 +5473,8 @@
      id="tspan12910-1"
      y="759.62451"
      x="105.29468">clear</tspan></text>
+
+
 
 
 
@@ -5423,6 +5507,8 @@
 
 
 
+
+
 </g><g
    style="display:inline"
    id="g6829-6"
@@ -5449,6 +5535,8 @@
      id="tspan13046-5"
      y="759.62415"
      x="170.45312">clear</tspan></text>
+
+
 
 
 
@@ -5481,6 +5569,8 @@
 
 
 
+
+
 </g><g
    style="display:inline"
    id="g7018-7"
@@ -5510,6 +5600,8 @@
 
 
 
+
+
 </g><g
    style="display:inline"
    id="g7012-7"
@@ -5536,6 +5628,8 @@
      id="tspan12924-5"
      y="726.62415"
      x="87.060677">rev</tspan></text>
+
+
 
 
 
@@ -5582,6 +5676,8 @@
 
 
 
+
+
 </g><text
    xml:space="preserve"
    style="font-size:9px;font-style:normal;font-variant:normal;font-weight:500;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#0e232e;fill-opacity:1;stroke:none;display:inline;font-family:Futura;-inkscape-font-specification:Futura Medium"
@@ -5594,6 +5690,8 @@
      x="15.64332"
      y="285.16754"
      style="font-size:12px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;fill:#0e232e;font-family:Sans;-inkscape-font-specification:Sans Bold">Mixxx 1.9 keyboard mapping </tspan></text>
+
+
 
 </g><g
    inkscape:groupmode="layer"
@@ -5658,6 +5756,8 @@
 
 
 
+
+
 <flowRoot
    xml:space="preserve"
    id="flowRoot9889"
@@ -5690,6 +5790,8 @@
    y="742.67664"
    x="75.878143"
    sodipodi:linespacing="225%" />
+
+
 
 
 
@@ -5858,6 +5960,8 @@
      style="line-height:100%;fill:#000000">tap</tspan></text>
 
 
+
+
 </g><g
    style="fill:#dc0000;display:inline"
    id="g6781-8"
@@ -5885,6 +5989,8 @@
      id="tspan12823-6"
      y="694.37952"
      x="142.79402">cue go</tspan></text>
+
+
 
 
 </g><g
@@ -5915,6 +6021,8 @@
      x="153.12766">cue set</tspan></text>
 
 
+
+
 </g><g
    style="display:inline"
    id="g6817-1"
@@ -5941,6 +6049,8 @@
      id="tspan12910-6"
      y="759.62451"
      x="105.29468">clear</tspan></text>
+
+
 
 
 </g><g
@@ -5971,6 +6081,8 @@
      x="87.060677">rev</tspan></text>
 
 
+
+
 </g><g
    style="display:inline"
    id="g9490-6"
@@ -5993,6 +6105,8 @@
      id="tspan12947-1"
      y="709.36572"
      x="120.26166">fwd </tspan></text>
+
+
 
 
 </g><g
@@ -6019,6 +6133,8 @@
      style="font-size:9px;font-style:normal;font-variant:normal;font-weight:500;font-stretch:normal;line-height:225%;font-family:Futura;-inkscape-font-specification:Futura Medium">head </tspan></text>
 
 
+
+
 </g><g
    transform="translate(98.412908,-280.00001)"
    style="fill:#dc0000;display:inline"
@@ -6042,6 +6158,8 @@
      y="643.82068"
      id="tspan12980-8"
      style="font-size:9px;font-style:normal;font-variant:normal;font-weight:500;font-stretch:normal;line-height:225%;fill:#000000;font-family:Futura;-inkscape-font-specification:Futura Medium">fx</tspan></text>
+
+
 
 
 </g><g
@@ -6073,6 +6191,8 @@
      style="font-size:9px;font-style:normal;font-variant:normal;font-weight:500;font-stretch:normal;line-height:125%;fill:#000000;font-family:Futura;-inkscape-font-specification:Futura Medium">kill</tspan></text>
 
 
+
+
 </g><g
    style="display:inline"
    id="g6823-4"
@@ -6099,6 +6219,8 @@
      id="tspan13032-4"
      y="759.62415"
      x="137.8739">clear</tspan></text>
+
+
 
 
 </g><g
@@ -6129,6 +6251,8 @@
      x="170.45312">clear</tspan></text>
 
 
+
+
 </g><g
    transform="translate(0,-280.00001)"
    style="display:inline"
@@ -6155,6 +6279,8 @@
      id="tspan13074-2"
      y="612.62415"
      x="93.760674">small</tspan></text>
+
+
 
 
 </g><g
@@ -6185,6 +6311,8 @@
      x="126.66068">small</tspan></text>
 
 
+
+
 </g><g
    transform="translate(0,-280.00001)"
    style="display:inline"
@@ -6211,6 +6339,8 @@
      id="tspan13102-7"
      y="612.62415"
      x="159.56067">small</tspan></text>
+
+
 
 
 </g><g
@@ -6242,6 +6372,8 @@
      x="339.99368">cue go</tspan></text>
 
 
+
+
 </g><g
    style="display:inline"
    id="g9558-0"
@@ -6264,6 +6396,8 @@
      id="tspan13228-8"
      y="709.36572"
      x="317.36166">fwd </tspan></text>
+
+
 
 
 </g><g
@@ -6294,6 +6428,8 @@
      x="246.26068">small</tspan></text>
 
 
+
+
 </g><g
    transform="translate(0,-280.00001)"
    style="display:inline"
@@ -6320,6 +6456,8 @@
      id="tspan13264-9"
      y="612.62415"
      x="279.16068">small</tspan></text>
+
+
 
 
 </g><g
@@ -6350,6 +6488,8 @@
      x="312.06067">small</tspan></text>
 
 
+
+
 </g><g
    transform="translate(0,-280.00001)"
    style="display:inline"
@@ -6376,6 +6516,8 @@
      id="tspan13116-1"
      y="612.62415"
      x="192.46068">small</tspan></text>
+
+
 
 
 </g><g
@@ -6406,6 +6548,8 @@
      x="344.96069">small</tspan></text>
 
 
+
+
 </g><g
    style="display:inline"
    id="g9500-3"
@@ -6428,6 +6572,8 @@
      y="677.05463"
      id="tspan13304-3"
      style="font-size:9px;font-style:normal;font-variant:normal;font-weight:500;font-stretch:normal;line-height:225%;font-family:Futura;-inkscape-font-specification:Futura Medium">head </tspan></text>
+
+
 
 
 </g><g
@@ -6456,6 +6602,8 @@
      y="655.07068"
      id="tspan13326-2"
      style="font-size:9px;font-style:normal;font-variant:normal;font-weight:500;font-stretch:normal;line-height:125%;fill:#000000;font-family:Futura;-inkscape-font-specification:Futura Medium">kill</tspan></text>
+
+
 
 
 </g><g
@@ -6500,6 +6648,8 @@
      sodipodi:role="line">small</tspan></text>
 
 
+
+
 </g><g
    transform="translate(163.77304,-560)"
    style="display:inline"
@@ -6535,6 +6685,8 @@
      y="938.8219"
      id="tspan87501-3"
      style="line-height:100%;fill:#000000">tap</tspan></text>
+
+
 
 
 </g><use
@@ -6584,6 +6736,8 @@
      sodipodi:role="line">over</tspan></text>
 
 
+
+
 </g><use
    style="display:inline"
    x="0"
@@ -6620,6 +6774,8 @@
      x="170.45312">clear</tspan></text>
 
 
+
+
 </g><g
    style="display:inline"
    id="g6817-0-6"
@@ -6646,6 +6802,8 @@
      id="tspan12910-1-0"
      y="759.62451"
      x="105.29468">clear</tspan></text>
+
+
 
 
 </g><g
@@ -6676,6 +6834,8 @@
      x="137.8739">clear</tspan></text>
 
 
+
+
 </g><g
    style="display:inline"
    id="g6829-6-5"
@@ -6702,6 +6862,8 @@
      id="tspan13046-5-7"
      y="759.62415"
      x="170.45312">clear</tspan></text>
+
+
 
 
 </g><g
@@ -6732,6 +6894,8 @@
      x="170.45312">clear</tspan></text>
 
 
+
+
 </g><g
    style="display:inline"
    id="g7018-7-2"
@@ -6760,6 +6924,8 @@
      x="153.12766">cue set</tspan></text>
 
 
+
+
 </g><g
    style="display:inline"
    id="g7012-7-5"
@@ -6786,6 +6952,8 @@
      id="tspan12924-5-3"
      y="726.62415"
      x="87.060677">rev</tspan></text>
+
+
 
 
 </g><g
@@ -6822,6 +6990,8 @@
      sodipodi:role="line">eject 1</tspan></text>
 
 
+
+
 </g><g
    transform="translate(0,-280.00001)"
    style="display:inline"
@@ -6854,6 +7024,8 @@
      y="794.21332"
      x="606.57812"
      sodipodi:role="line">eject 2</tspan></text>
+
+
 
 
 </g><g
@@ -6898,6 +7070,8 @@
      sodipodi:role="line">small</tspan></text>
 
 
+
+
 </g><g
    transform="translate(-16.592988,310.06879)"
    style="display:inline"
@@ -6930,62 +7104,6 @@
      sodipodi:role="line">loop 4</tspan></text>
 
 
-</g><g
-   id="g87699"
-   transform="translate(174.23053,-473.06557)"
-   style="fill:#dc0000"><use
-   height="828.44098"
-   width="807.46503"
-   id="use87656"
-   transform="translate(232.40458,449.82166)"
-   xlink:href="#rect39344"
-   inkscape:tiled-clone-of="#rect39344"
-   y="0"
-   x="0"
-   style="fill:#dc0000" /><text
-   sodipodi:linespacing="125%"
-   id="text87668"
-   y="870.18292"
-   x="-64.028893"
-   style="font-size:9px;font-style:normal;font-variant:normal;font-weight:500;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Futura;-inkscape-font-specification:Futura Medium"
-   xml:space="preserve"><tspan
-     y="870.18292"
-     x="-64.028893"
-     id="tspan87670"
-     sodipodi:role="line">loop</tspan><tspan
-     id="tspan87672"
-     y="881.43292"
-     x="-64.028893"
-     sodipodi:role="line">x2</tspan></text>
-
-
-</g><g
-   id="g87693"
-   transform="translate(276.7019,-518.55992)"
-   style="fill:#dc0000"><use
-   transform="translate(162.68321,495.31601)"
-   height="828.44098"
-   width="807.46503"
-   id="use87654"
-   xlink:href="#rect39344"
-   inkscape:tiled-clone-of="#rect39344"
-   y="0"
-   x="0"
-   style="fill:#dc0000" /><text
-   sodipodi:linespacing="125%"
-   id="text87674"
-   y="915.67731"
-   x="-134.13698"
-   style="font-size:9px;font-style:normal;font-variant:normal;font-weight:500;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Futura;-inkscape-font-specification:Futura Medium"
-   xml:space="preserve"><tspan
-     y="915.67731"
-     x="-134.13698"
-     id="tspan87676"
-     sodipodi:role="line">loop</tspan><tspan
-     id="tspan87682"
-     y="926.92731"
-     x="-134.13698"
-     sodipodi:role="line">÷2</tspan></text>
 
 
 </g><g
@@ -7017,6 +7135,8 @@
      sodipodi:role="line">in</tspan></text>
 
 
+
+
 </g><g
    style="fill:#dc0000;display:inline"
    id="g87693-6"
@@ -7044,6 +7164,8 @@
      y="926.92731"
      x="-134.13698"
      sodipodi:role="line">out</tspan></text>
+
+
 
 
 </g><g
@@ -7075,6 +7197,8 @@
      id="tspan87872">exit</tspan></text>
 
 
+
+
 </g><g
    transform="translate(261.91291,-280.00001)"
    style="fill:#dc0000;display:inline"
@@ -7098,6 +7222,8 @@
      y="643.82068"
      id="tspan12980-8-36"
      style="font-size:9px;font-style:normal;font-variant:normal;font-weight:500;font-stretch:normal;line-height:225%;fill:#000000;font-family:Futura;-inkscape-font-specification:Futura Medium">fx</tspan></text>
+
+
 
 
 </g><g
@@ -7129,6 +7255,8 @@
      sodipodi:role="line">in</tspan></text>
 
 
+
+
 </g><g
    style="fill:#dc0000;display:inline"
    id="g87693-6-7"
@@ -7156,6 +7284,8 @@
      y="926.92731"
      x="-134.13698"
      sodipodi:role="line">out</tspan></text>
+
+
 
 
 </g><g
@@ -7187,6 +7317,8 @@
      id="tspan87872-9">exit</tspan></text>
 
 
+
+
 </g><g
    id="g87686-4"
    transform="translate(393.55868,-447.09095)"
@@ -7216,62 +7348,6 @@
      sodipodi:role="line">loop 4</tspan></text>
 
 
-</g><g
-   id="g87699-7"
-   transform="translate(370.39586,-473.06557)"
-   style="fill:#dc0000;display:inline"><use
-   height="828.44098"
-   width="807.46503"
-   id="use87656-7"
-   transform="translate(232.40458,449.82166)"
-   xlink:href="#rect39344"
-   inkscape:tiled-clone-of="#rect39344"
-   y="0"
-   x="0"
-   style="fill:#dc0000" /><text
-   sodipodi:linespacing="125%"
-   id="text87668-3"
-   y="870.18292"
-   x="-64.028893"
-   style="font-size:9px;font-style:normal;font-variant:normal;font-weight:500;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Futura;-inkscape-font-specification:Futura Medium"
-   xml:space="preserve"><tspan
-     y="870.18292"
-     x="-64.028893"
-     id="tspan87670-4"
-     sodipodi:role="line">loop</tspan><tspan
-     id="tspan87672-0"
-     y="881.43292"
-     x="-64.028893"
-     sodipodi:role="line">x2</tspan></text>
-
-
-</g><g
-   id="g87693-8"
-   transform="translate(473.20191,-518.55992)"
-   style="fill:#dc0000;display:inline"><use
-   transform="translate(162.68321,495.31601)"
-   height="828.44098"
-   width="807.46503"
-   id="use87654-0"
-   xlink:href="#rect39344"
-   inkscape:tiled-clone-of="#rect39344"
-   y="0"
-   x="0"
-   style="fill:#dc0000" /><text
-   sodipodi:linespacing="125%"
-   id="text87674-1"
-   y="915.67731"
-   x="-134.13698"
-   style="font-size:9px;font-style:normal;font-variant:normal;font-weight:500;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Futura;-inkscape-font-specification:Futura Medium"
-   xml:space="preserve"><tspan
-     y="915.67731"
-     x="-134.13698"
-     id="tspan87676-5"
-     sodipodi:role="line">loop</tspan><tspan
-     id="tspan87682-65"
-     y="926.92731"
-     x="-134.13698"
-     sodipodi:role="line">÷2</tspan></text>
 
 
 </g><text
@@ -7287,9 +7363,137 @@
      id="tspan22778"
      sodipodi:role="line">Mixxx 1.10 keyboard mapping </tspan></text>
 
+
+
 <path
    style="fill:none;stroke:#0e232e;stroke-width:3;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;display:inline"
    id="path13314-1-7"
    d="m 266.96423,483.35667 -0.35356,-30.77845 -17.85445,-0.19609 -0.03,-32.70368 -10.45986,-0.17678 0,-32.54376 -16.02623,10e-6 0.17677,-31.39459"
    inkscape:connector-curvature="0"
-   sodipodi:nodetypes="cccccccc" /></g></svg>
+   sodipodi:nodetypes="cccccccc" /><g
+   style="fill:#dc0000"
+   transform="translate(206.98053,-473.06557)"
+   id="g5975"><use
+   style="fill:#dc0000"
+   x="0"
+   y="0"
+   inkscape:tiled-clone-of="#rect39344"
+   xlink:href="#rect39344"
+   transform="translate(232.40458,449.82166)"
+   id="use5977"
+   width="807.46503"
+   height="828.44098" /><text
+   xml:space="preserve"
+   style="font-size:9px;font-style:normal;font-variant:normal;font-weight:500;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Futura;-inkscape-font-specification:Futura Medium"
+   x="-64.028893"
+   y="870.18292"
+   id="text5979"
+   sodipodi:linespacing="125%"><tspan
+     sodipodi:role="line"
+     id="tspan5981"
+     x="-64.028893"
+     y="870.18292">loop</tspan><tspan
+     sodipodi:role="line"
+     x="-64.028893"
+     y="881.43292"
+     id="tspan5983">x2</tspan></text>
+
+
+
+
+</g><g
+   style="fill:#dc0000"
+   transform="translate(243.9519,-518.55992)"
+   id="g5985"><use
+   style="fill:#dc0000"
+   x="0"
+   y="0"
+   inkscape:tiled-clone-of="#rect39344"
+   xlink:href="#rect39344"
+   id="use5987"
+   width="807.46503"
+   height="828.44098"
+   transform="translate(162.68321,495.31601)" /><text
+   xml:space="preserve"
+   style="font-size:9px;font-style:normal;font-variant:normal;font-weight:500;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Futura;-inkscape-font-specification:Futura Medium"
+   x="-134.13698"
+   y="915.67731"
+   id="text5989"
+   sodipodi:linespacing="125%"><tspan
+     sodipodi:role="line"
+     id="tspan5991"
+     x="-134.13698"
+     y="915.67731">loop</tspan><tspan
+     sodipodi:role="line"
+     x="-134.13698"
+     y="926.92731"
+     id="tspan5993">÷2</tspan></text>
+
+
+
+
+</g><g
+   id="g6009"
+   transform="translate(403.48054,-473.06557)"
+   style="fill:#dc0000"><use
+   height="828.44098"
+   width="807.46503"
+   id="use6011"
+   transform="translate(232.40458,449.82166)"
+   xlink:href="#rect39344"
+   inkscape:tiled-clone-of="#rect39344"
+   y="0"
+   x="0"
+   style="fill:#dc0000" /><text
+   sodipodi:linespacing="125%"
+   id="text6013"
+   y="870.18292"
+   x="-64.028893"
+   style="font-size:9px;font-style:normal;font-variant:normal;font-weight:500;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Futura;-inkscape-font-specification:Futura Medium"
+   xml:space="preserve"><tspan
+     y="870.18292"
+     x="-64.028893"
+     id="tspan6015"
+     sodipodi:role="line">loop</tspan><tspan
+     id="tspan6017"
+     y="881.43292"
+     x="-64.028893"
+     sodipodi:role="line">x2</tspan></text>
+
+
+
+
+</g><g
+   id="g6019"
+   transform="translate(440.45191,-518.55992)"
+   style="fill:#dc0000"
+   inkscape:export-xdpi="135"
+   inkscape:export-ydpi="135"><use
+   transform="translate(162.68321,495.31601)"
+   height="828.44098"
+   width="807.46503"
+   id="use6021"
+   xlink:href="#rect39344"
+   inkscape:tiled-clone-of="#rect39344"
+   y="0"
+   x="0"
+   style="fill:#dc0000" /><text
+   sodipodi:linespacing="125%"
+   id="text6023"
+   y="915.67731"
+   x="-134.13698"
+   style="font-size:9px;font-style:normal;font-variant:normal;font-weight:500;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Futura;-inkscape-font-specification:Futura Medium"
+   xml:space="preserve"><tspan
+     y="915.67731"
+     x="-134.13698"
+     id="tspan6025"
+     sodipodi:role="line">loop</tspan><tspan
+     id="tspan6027"
+     y="926.92731"
+     x="-134.13698"
+     sodipodi:role="line">÷2</tspan></text>
+
+
+
+
+</g></g></svg>
