@@ -8,22 +8,22 @@ msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2011-03-27 03:32-0400\n"
-"PO-Revision-Date: 2011-05-01 03:47+0000\n"
+"PO-Revision-Date: 2011-05-02 13:00+0000\n"
 "Last-Translator: Joey Dodson <Unknown>\n"
 "Language-Team: Chinese (Simplified) <zh_CN@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-05-01 04:33+0000\n"
+"X-Launchpad-Export-Date: 2011-05-03 04:36+0000\n"
 "X-Generator: Launchpad (build 12758)\n"
 
 #: AutoDJFeature#1
 msgid "Auto DJ"
-msgstr ""
+msgstr "自动切换曲目"
 
 #: BaseSqlTableModel#1
 msgid "Played"
-msgstr ""
+msgstr "已播放过"
 
 #: BaseSqlTableModel#2
 msgctxt "BaseSqlTableModel#2"
@@ -43,7 +43,7 @@ msgstr "专辑"
 #: BaseSqlTableModel#5
 msgctxt "BaseSqlTableModel#5"
 msgid "Genre"
-msgstr ""
+msgstr "曲风"
 
 #: BaseSqlTableModel#6
 msgctxt "BaseSqlTableModel#6"
@@ -53,22 +53,22 @@ msgstr "年"
 #: BaseSqlTableModel#7
 msgctxt "BaseSqlTableModel#7"
 msgid "Type"
-msgstr ""
+msgstr "文件格式"
 
 #: BaseSqlTableModel#8
 msgctxt "BaseSqlTableModel#8"
 msgid "Location"
-msgstr ""
+msgstr "路径"
 
 #: BaseSqlTableModel#9
 msgctxt "BaseSqlTableModel#9"
 msgid "Comment"
-msgstr ""
+msgstr "评论"
 
 #: BaseSqlTableModel#10
 msgctxt "BaseSqlTableModel#10"
 msgid "Duration"
-msgstr ""
+msgstr "歌长"
 
 #: BaseSqlTableModel#11
 msgid "Rating"
@@ -77,7 +77,7 @@ msgstr ""
 #: BaseSqlTableModel#12
 msgctxt "BaseSqlTableModel#12"
 msgid "Bitrate"
-msgstr ""
+msgstr "比特率"
 
 #: BaseSqlTableModel#13
 msgctxt "BaseSqlTableModel#13"
@@ -91,7 +91,7 @@ msgstr ""
 
 #: BaseSqlTableModel#15
 msgid "Date Added"
-msgstr ""
+msgstr "加入日期"
 
 #: BaseSqlTableModel#16
 msgid "#"
@@ -104,15 +104,15 @@ msgstr "调"
 
 #: BaseTrackPlayer#1
 msgid "Couldn't load track."
-msgstr ""
+msgstr "无法播放"
 
 #: BrowseFeature#1
 msgid "Quick Links"
-msgstr ""
+msgstr "快速链接"
 
 #: BrowseFeature#2
 msgid "Devices"
-msgstr ""
+msgstr "设备"
 
 #: BrowseFeature#3
 msgid "Removable Devices"
@@ -120,23 +120,23 @@ msgstr ""
 
 #: BrowseFeature#4
 msgid "Mixxx Library"
-msgstr ""
+msgstr "Mixxx歌曲库"
 
 #: BrowseFeature#5
 msgid "Home"
-msgstr ""
+msgstr "主目录"
 
 #: BrowseFeature#6
 msgid "Music"
-msgstr ""
+msgstr "音乐"
 
 #: BrowseFeature#7
 msgid "Documents"
-msgstr ""
+msgstr "文档"
 
 #: BrowseFeature#8
 msgid "Desktop"
-msgstr ""
+msgstr "桌面"
 
 #: BrowseFeature#1
 msgid "Browse"
@@ -154,12 +154,12 @@ msgstr "艺术家"
 #: BrowseTableModel#3
 msgctxt "BrowseTableModel#3"
 msgid "Title"
-msgstr ""
+msgstr "歌曲标题"
 
 #: BrowseTableModel#4
 msgctxt "BrowseTableModel#4"
 msgid "Album"
-msgstr ""
+msgstr "专辑"
 
 #: BrowseTableModel#5
 msgctxt "BrowseTableModel#5"
@@ -174,17 +174,17 @@ msgstr "年"
 #: BrowseTableModel#7
 msgctxt "BrowseTableModel#7"
 msgid "Genre"
-msgstr ""
+msgstr "曲风"
 
 #: BrowseTableModel#8
 msgctxt "BrowseTableModel#8"
 msgid "Comment"
-msgstr ""
+msgstr "评论"
 
 #: BrowseTableModel#9
 msgctxt "BrowseTableModel#9"
 msgid "Duration"
-msgstr ""
+msgstr "歌长"
 
 #: BrowseTableModel#10
 msgctxt "BrowseTableModel#10"
@@ -199,17 +199,17 @@ msgstr "调"
 #: BrowseTableModel#12
 msgctxt "BrowseTableModel#12"
 msgid "Type"
-msgstr ""
+msgstr "文件格式"
 
 #: BrowseTableModel#13
 msgctxt "BrowseTableModel#13"
 msgid "Bitrate"
-msgstr ""
+msgstr "比特率"
 
 #: BrowseTableModel#14
 msgctxt "BrowseTableModel#14"
 msgid "Location"
-msgstr ""
+msgstr "路径"
 
 #: CrateFeature#1
 msgid "New Crate"
@@ -223,7 +223,7 @@ msgstr "删除"
 #: CrateFeature#3
 msgctxt "CrateFeature#3"
 msgid "Rename"
-msgstr ""
+msgstr "重命名"
 
 #: CrateFeature#4
 msgctxt "CrateFeature#4"
@@ -233,7 +233,7 @@ msgstr ""
 #: CrateFeature#5
 msgctxt "CrateFeature#5"
 msgid "Import Playlist"
-msgstr ""
+msgstr "导入播放列表"
 
 #: CrateFeature#3
 msgid "Crates"
@@ -267,7 +267,7 @@ msgstr ""
 #: CrateFeature#13
 msgctxt "CrateFeature#13"
 msgid "Playlist Files (*.m3u *.pls)"
-msgstr ""
+msgstr "播放列表文件 (*.m3u *.pls)"
 
 #: CrateFeature#6
 msgid "A crate cannot have a blank name."
@@ -364,7 +364,7 @@ msgstr ""
 #: DlgBpmTapDlg#3
 msgctxt "DlgBpmTapDlg#3"
 msgid "Alt+O"
-msgstr ""
+msgstr "Alt+O"
 
 #: DlgBpmTapDlg#4
 msgctxt "DlgBpmTapDlg#4"
@@ -373,11 +373,11 @@ msgstr ""
 
 #: DlgBpmTapDlg#5
 msgid "Next >>"
-msgstr ""
+msgstr "下一步 >>"
 
 #: DlgBpmTapDlg#6
 msgid "<< Prev"
-msgstr ""
+msgstr "上一步"
 
 #: DlgBpmTapDlg#7
 msgid "BPM Editor (Click to Expand)"
@@ -386,7 +386,7 @@ msgstr ""
 #: DlgBpmTapDlg#8
 msgctxt "DlgBpmTapDlg#8"
 msgid "BPM Detection"
-msgstr ""
+msgstr "BPM 探测"
 
 #: DlgBpmTapDlg#9
 msgid "BPM Scheme:"
@@ -406,7 +406,7 @@ msgstr ""
 
 #: DlgBpmTapDlg#13
 msgid "Alt+G"
-msgstr ""
+msgstr "Alt+G"
 
 #: DlgBpmTapDlg#14
 msgctxt "DlgBpmTapDlg#14"
@@ -415,7 +415,7 @@ msgstr ""
 
 #: DlgBpmTapDlg#15
 msgid "BPM:"
-msgstr ""
+msgstr "BPM："
 
 #: DlgBpmTapDlg#16
 msgid "&Push to tap tempo"
@@ -423,7 +423,7 @@ msgstr ""
 
 #: DlgBpmTapDlg#17
 msgid "Alt+P"
-msgstr ""
+msgstr "Alt+P"
 
 #: DlgBpmTapDlg#18
 msgctxt "DlgBpmTapDlg#18"
