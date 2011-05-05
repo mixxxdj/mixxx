@@ -259,17 +259,60 @@ to use CDs, you can download a free copy from `Rane`_.
 Common Configurations
 =====================
 
+Unlike some commercial DJ systems, Mixxx can control up to 2 sound devices simultaneously. 
+Depending on your budget and application area your sound setup and requirements may vary. 
+This section provides useful information for club, hobby and radio DJs alike.
+
+
 Laptop Only
 -----------
 
-Laptop and a USB Soundcard
---------------------------
+There is absolutely no need to buy an additional, expensive soundcard **if you do not require 
+headphone cueing**. Most laptops and computers come with a build-in soundcard having a single 
+line-out where you can plug your sound box or headphone.
 
-Laptop, MIDI Controller, and USB Soundcard
-------------------------------------------
+ .. image:: ../_static/mixxx_standalone-setup_dlg.png
+   :width: 80%
+   :alt: Using Mixxx together with your build-in soundcard
+   :align: center
+
+The figure above depicts how the configuration is supposed to look like.  
+Please note that Mixxx can use your microphone input if you soundcard has one. Just select "Input" as 
+shown in the figure for configuration.
+
+.. note:: This setup may be suitable for radio DJs.
+
+
+
+
+
+Laptop and an External USB Soundcard
+------------------------------------
+
+.. image:: ../_static/mixxx_setup_ext_soundcard.png
+   :width: 100%
+   :alt: Using Mixxx together with an external soundcard
+   :align: center
+
+Laptop, MIDI Controller, and External USB Soundcard
+---------------------------------------------------
+
+.. image:: ../_static/mixxx_setup_midi_with_ext_sound.png
+   :width: 100%
+   :alt: Using Mixxx together with a MIDI controller and external soundcard
+   :align: center
 
 Laptop, Two Turntables, and a Hardware Mixer
 --------------------------------------------
 
+.. image:: ../_static/mixxx_setup_timecode_vc.png
+   :width: 100%
+   :alt: Using Mixxx together with a MIDI controller and external soundcard
+   :align: center
+   
+.. image:: ../_static/mixxx_setup_timecode_cdj.png
+   :width: 100%
+   :alt: Using Mixxx together with a MIDI controller and external soundcard
+   :align: center
 
 
