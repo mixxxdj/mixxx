@@ -3,14 +3,14 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2011-05-03 21:42-0400\n"
-"PO-Revision-Date: 2011-03-27 18:16+0000\n"
+"PO-Revision-Date: 2011-05-04 06:39+0000\n"
 "Last-Translator: jus <Unknown>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-05-04 04:32+0000\n"
-"X-Generator: Launchpad (build 12758)\n"
+"X-Launchpad-Export-Date: 2011-05-05 04:35+0000\n"
+"X-Generator: Launchpad (build 12959)\n"
 
 #: AutoDJFeature#1
 msgid "Auto DJ"
@@ -99,7 +99,7 @@ msgstr "Tonart"
 
 #: BaseTrackPlayer#1
 msgid "Couldn't load track."
-msgstr "Konnte Titel nicht laden."
+msgstr "Titel konnte nicht geladen werden."
 
 #: BrowseFeature#1
 msgid "Quick Links"
@@ -116,7 +116,7 @@ msgstr "Wechselmedien"
 #: BrowseFeature#4
 msgctxt "BrowseFeature#4"
 msgid "Mixxx Library"
-msgstr ""
+msgstr "Mixxx Bibliothek"
 
 #: BrowseFeature#5
 msgid "Home"
@@ -210,31 +210,35 @@ msgstr "Ort"
 #: BrowseTableModel#15
 msgctxt "BrowseTableModel#15"
 msgid "Mixxx Library"
-msgstr ""
+msgstr "Mixxx Bibliothek"
 
 #: BrowseTableModel#16
 msgid ""
 "Could not load the following file because it is in use by Mixxx or another "
 "application."
 msgstr ""
+"Folgende Datei konnten nicht geladen werden da sie in Mixxx oder einer "
+"anderen Anwendung in Benutzung ist:"
 
 #: BrowseTableModel#17
 msgid "Warning: This will permanently delete the following files:"
-msgstr ""
+msgstr "Warnung: Folgende Dateien werden dauerhaft gelöscht:"
 
 #: BrowseTableModel#18
 msgid "Are you sure you want to delete these files from your computer?"
-msgstr ""
+msgstr "Wollen Sie diese Dateien wirklich von Ihrem Computer löschen?"
 
 #: BrowseTableModel#19
 msgid ""
 "Could not delete the following file because it is in use by Mixxx or another "
 "application:"
 msgstr ""
+"Folgende Datei konnten nicht gelöscht werden da sie in Mixxx oder einer "
+"anderen Anwendung in Benutzung ist:"
 
 #: BrowseTableModel#20
 msgid "Could not update file metadata."
-msgstr ""
+msgstr "Die Metadaten der Datei konnten nicht aktualisiert werden."
 
 #: CrateFeature#1
 msgid "New Crate"
@@ -266,16 +270,16 @@ msgstr "Crates"
 
 #: CrateFeature#7
 msgid "Import Crate"
-msgstr ""
+msgstr "Crate importieren"
 
 #: CrateFeature#8
 msgid "Export Crate"
-msgstr ""
+msgstr "Crate exportieren"
 
 #: CrateFeature#9
 msgctxt "CrateFeature#9"
 msgid "Unlock"
-msgstr ""
+msgstr "Entsprerren"
 
 #: CrateFeature#10
 msgid "Crate name:"
@@ -300,17 +304,17 @@ msgstr "Umbenennen der Crate fehlgeschlagen"
 #: CrateFeature#15
 msgctxt "CrateFeature#15"
 msgid "Playlist Files (*.m3u *.pls)"
-msgstr ""
+msgstr "Wiedergabelisten (*.m3u *.pls)"
 
 #: CrateFeature#16
 msgctxt "CrateFeature#16"
 msgid "Export Playlist"
-msgstr ""
+msgstr "Wiedergabeliste exportieren"
 
 #: CrateFeature#17
 msgctxt "CrateFeature#17"
 msgid "M3U Playlist (*.m3u);;PLS Playlist (*.pls)"
-msgstr ""
+msgstr "M3U Wiedergabeliste (*.m3u);;PLS Wiedergabeliste (*.pls)"
 
 #: CrateFeature#18
 msgid "A crate cannot have a blank name."
@@ -381,7 +385,7 @@ msgstr "Verwalten"
 
 #: DlgAutoDJ#4
 msgid "Shuffle playlist"
-msgstr ""
+msgstr "Wiedergabeliste mischen"
 
 #: DlgAutoDJ#5
 msgid "Add tracks to the queue below..."
@@ -479,7 +483,7 @@ msgstr "BPM:"
 
 #: DlgBpmTapDlg#16
 msgid "&Push to tap tempo"
-msgstr ""
+msgstr "&Drücken um die Geschwindigkeit einzustellen"
 
 #: DlgBpmTapDlg#17
 msgid "Alt+P"
@@ -686,43 +690,43 @@ msgstr "Dieses Skin unterstützt keine Farbschemen"
 
 #: DlgPrefControls#2
 msgid "8% (Technics SL1210)"
-msgstr ""
+msgstr "8% (Technics SL1210)"
 
 #: DlgPrefControls#3
 msgid "10%"
-msgstr ""
+msgstr "10%"
 
 #: DlgPrefControls#4
 msgid "20%"
-msgstr ""
+msgstr "20%"
 
 #: DlgPrefControls#5
 msgid "30%"
-msgstr ""
+msgstr "30%"
 
 #: DlgPrefControls#6
 msgid "40%"
-msgstr ""
+msgstr "40%"
 
 #: DlgPrefControls#7
 msgid "50%"
-msgstr ""
+msgstr "50%"
 
 #: DlgPrefControls#8
 msgid "60%"
-msgstr ""
+msgstr "60%"
 
 #: DlgPrefControls#9
 msgid "70%"
-msgstr ""
+msgstr "70%"
 
 #: DlgPrefControls#10
 msgid "80%"
-msgstr ""
+msgstr "80%"
 
 #: DlgPrefControls#11
 msgid "90%"
-msgstr ""
+msgstr "90%"
 
 #: DlgPrefControls#12
 msgid "Up increases speed"
@@ -735,7 +739,7 @@ msgstr "Runter erhöht Geschwindigkeit (Technics SL1210)"
 #: DlgPrefControls#14
 msgctxt "DlgPrefControls#14"
 msgid "Information"
-msgstr ""
+msgstr "Information"
 
 #: DlgPrefControls#15
 msgid "Mixxx must be restarted before the changes will take effect."
@@ -786,7 +790,7 @@ msgstr "Richtungsregler für Tonhöhen-/Geschwindigkeitsbereich"
 
 #: DlgPrefControlsDlg#11
 msgid "Track load behaviour"
-msgstr ""
+msgstr "Verhalten beim Laden von Titeln"
 
 #: DlgPrefControlsDlg#12
 msgid "Cue behaviour"
@@ -1076,12 +1080,12 @@ msgstr "Keine MIDI-Geräte verfügbar"
 #: DlgPrefNoVinylDlg#1
 msgctxt "DlgPrefNoVinylDlg#1"
 msgid "Form1"
-msgstr ""
+msgstr "Form1"
 
 #: DlgPrefNoVinylDlg#2
 msgctxt "DlgPrefNoVinylDlg#2"
 msgid "Input"
-msgstr ""
+msgstr "Eingang"
 
 #: DlgPrefNoVinylDlg#3
 msgctxt "DlgPrefNoVinylDlg#3"
@@ -1098,6 +1102,17 @@ msgid ""
 "weight:600;\">Select sound devices for vinyl control in the Sound Hardware "
 "pane.</span></p></body></html>"
 msgstr ""
+"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" "
+"\"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+"<html><head><meta name=\"qrichtext\" content=\"1\" /><style "
+"type=\"text/css\">\n"
+"p, li { white-space: pre-wrap; }\n"
+"</style></head><body style=\" font-family:'DejaVu Sans'; font-size:9pt; font-"
+"weight:400; font-style:normal;\">\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-"
+"right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-"
+"weight:600;\">Wählen Sie Audio-Geräte für die Vinyl-Steuerung in den Sound "
+"Hardware-Einstellungen aus.</span></p></body></html>"
 
 #: DlgPrefNoVinylDlg#4
 msgctxt "DlgPrefNoVinylDlg#4"
@@ -1106,61 +1121,64 @@ msgid ""
 "href=\"http://www.mixxx.org/wiki/doku.php/vinyl_control#troubleshooting\">Tro"
 "ubleshooting</a>"
 msgstr ""
+"<a "
+"href=\"http://www.mixxx.org/wiki/doku.php/vinyl_control#troubleshooting\">Feh"
+"lerbehebung</a>"
 
 #: DlgPrefNoVinylDlg#5
 msgctxt "DlgPrefNoVinylDlg#5"
 msgid "Turntable Preamp"
-msgstr ""
+msgstr "Plattenspieler Vorverstärker"
 
 #: DlgPrefNoVinylDlg#6
 msgctxt "DlgPrefNoVinylDlg#6"
 msgid "1 (Off)"
-msgstr ""
+msgstr "1 (Aus)"
 
 #: DlgPrefNoVinylDlg#7
 msgctxt "DlgPrefNoVinylDlg#7"
 msgid "150"
-msgstr ""
+msgstr "150"
 
 #: DlgPrefNoVinylDlg#8
 msgctxt "DlgPrefNoVinylDlg#8"
 msgid "Vinyl Configuration"
-msgstr ""
+msgstr "Vinyl Konfiguration"
 
 #: DlgPrefNoVinylDlg#9
 msgctxt "DlgPrefNoVinylDlg#9"
 msgid "Deck 1 Vinyl Type"
-msgstr ""
+msgstr "Deck 1 Vinyl-Typ"
 
 #: DlgPrefNoVinylDlg#10
 msgctxt "DlgPrefNoVinylDlg#10"
 msgid "Deck 2 Vinyl Type"
-msgstr ""
+msgstr "Deck 2 Vinyl-Typ"
 
 #: DlgPrefNoVinylDlg#11
 msgctxt "DlgPrefNoVinylDlg#11"
 msgid "Lead-in time"
-msgstr ""
+msgstr "Vorlaufzeit (Lead-In)"
 
 #: DlgPrefNoVinylDlg#12
 msgctxt "DlgPrefNoVinylDlg#12"
 msgid "seconds"
-msgstr ""
+msgstr "Sekunden"
 
 #: DlgPrefNoVinylDlg#13
 msgctxt "DlgPrefNoVinylDlg#13"
 msgid "Control Mode"
-msgstr ""
+msgstr "Kontrollmodus"
 
 #: DlgPrefNoVinylDlg#14
 msgctxt "DlgPrefNoVinylDlg#14"
 msgid "Absolute Mode"
-msgstr ""
+msgstr "Absoluter Modus"
 
 #: DlgPrefNoVinylDlg#15
 msgctxt "DlgPrefNoVinylDlg#15"
 msgid "Relative Mode"
-msgstr ""
+msgstr "Relativer Modus"
 
 #: DlgPrefNoVinylDlg#16
 msgctxt "DlgPrefNoVinylDlg#16"
@@ -1170,28 +1188,31 @@ msgstr ""
 #: DlgPrefNoVinylDlg#17
 msgctxt "DlgPrefNoVinylDlg#17"
 msgid "Signal Quality"
-msgstr ""
+msgstr "Signalqualität"
 
 #: DlgPrefNoVinylDlg#18
 msgctxt "DlgPrefNoVinylDlg#18"
 msgid "http://www.xwax.co.uk"
-msgstr ""
+msgstr "http://www.xwax.co.uk"
 
 #: DlgPrefNoVinylDlg#19
 msgctxt "DlgPrefNoVinylDlg#19"
 msgid "Powered by xwax"
-msgstr ""
+msgstr "Powered by xwax"
 
 #: DlgPrefNoVinylDlg#20
 msgctxt "DlgPrefNoVinylDlg#20"
 msgid "Apply"
-msgstr ""
+msgstr "Anwenden"
 
 #: DlgPrefNoVinylDlg#21
 msgid ""
 "<b>This version of Mixxx does not support vinyl control.</b> <br> Please "
 "visit <a href=\"http://mixxx.org\">Mixxx.org</a> for more information."
 msgstr ""
+"<b>Diese Version von Mixxx unterstützt keine Vinyl-Steuerung.</b> <br> Bitte "
+"besuchen Sie <a href=\"http://mixxx.org\">Mixxx.org</a> für weitere "
+"Informationen."
 
 #: DlgPrefPlaylist#1
 msgctxt "DlgPrefPlaylist#1"
@@ -1259,7 +1280,7 @@ msgstr "Keine"
 #: DlgPrefPlaylistDlg#7
 msgctxt "DlgPrefPlaylistDlg#7"
 msgid "Miscellaneous"
-msgstr ""
+msgstr "Diverses"
 
 #: DlgPrefPlaylistDlg#8
 msgid "Synchronize ID3 tags on track modifications"
@@ -1272,6 +1293,7 @@ msgstr "Bibliothek beim Start neu einlesen"
 #: DlgPrefPlaylistDlg#10
 msgid "Use relative paths for playlist export if possible"
 msgstr ""
+"Wenn möglich relative Pfade für den den Export von Wiedergabelisten verwenden"
 
 #: DlgPrefPlaylistDlg#11
 msgid "iPod"
@@ -1283,7 +1305,7 @@ msgstr "iPod-Einhängepunkt"
 
 #: DlgPrefPlaylistDlg#13
 msgid "Browse..."
-msgstr ""
+msgstr "Durchsuchen..."
 
 #: DlgPrefPlaylistDlg#14
 msgid "Detect"
@@ -1292,7 +1314,7 @@ msgstr "Detect"
 #: DlgPrefPlaylistDlg#15
 msgctxt "DlgPrefPlaylistDlg#15"
 msgid "Library"
-msgstr ""
+msgstr "Bibliothek"
 
 #: DlgPrefPlaylistDlg#16
 msgid "Music Directory:"
@@ -1331,7 +1353,7 @@ msgstr "Form3"
 #: DlgPrefRecordDlg#2
 msgctxt "DlgPrefRecordDlg#2"
 msgid "Encoding"
-msgstr ""
+msgstr "Kodierung"
 
 #: DlgPrefRecordDlg#3
 msgid "Quality"
@@ -1352,7 +1374,7 @@ msgstr "Tags"
 #: DlgPrefRecordDlg#7
 msgctxt "DlgPrefRecordDlg#7"
 msgid "Title"
-msgstr ""
+msgstr "Titel"
 
 #: DlgPrefRecordDlg#8
 msgid "Author"
@@ -1361,12 +1383,12 @@ msgstr "Autor"
 #: DlgPrefRecordDlg#9
 msgctxt "DlgPrefRecordDlg#9"
 msgid "Album"
-msgstr ""
+msgstr "Album"
 
 #: DlgPrefRecordDlg#10
 msgctxt "DlgPrefRecordDlg#10"
 msgid "Miscellaneous"
-msgstr ""
+msgstr "Diverses"
 
 #: DlgPrefRecordDlg#11
 msgid "Create a CUE file"
@@ -1374,11 +1396,11 @@ msgstr "Neue Cue-Datei erstellen"
 
 #: DlgPrefRecordDlg#12
 msgid "File Splitting"
-msgstr ""
+msgstr "Datei Aufteilung"
 
 #: DlgPrefRecordDlg#13
 msgid "Split recordings at"
-msgstr ""
+msgstr "Aufnahmen aufteilen bei"
 
 #: DlgPrefReplayGainDlg#1
 msgctxt "DlgPrefReplayGainDlg#1"
@@ -1545,6 +1567,17 @@ msgid ""
 "family:'DejaVu Sans'; font-size:9pt; font-style:italic;\">This stream is on "
 "line for testing purposes!</span></p></body></html>"
 msgstr ""
+"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" "
+"\"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+"<html><head><meta name=\"qrichtext\" content=\"1\" /><style "
+"type=\"text/css\">\n"
+"p, li { white-space: pre-wrap; }\n"
+"</style></head><body style=\" font-family:'Lucida Grande'; font-size:13pt; "
+"font-weight:400; font-style:normal;\">\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-"
+"right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-"
+"family:'DejaVu Sans'; font-size:9pt; font-style:italic;\">Dieser Stream ist "
+"nur zum Test online!</span></p></body></html>"
 
 #: DlgPrefShoutcastDlg#25
 msgctxt "DlgPrefShoutcastDlg#25"
@@ -1755,7 +1788,7 @@ msgstr "Auf Standard zurücksetzen"
 #: DlgPrefSoundDlg#9
 msgctxt "DlgPrefSoundDlg#9"
 msgid "Apply"
-msgstr ""
+msgstr "Anwenden"
 
 #: DlgPrefSoundDlg#10
 msgid "Latency"
@@ -1803,6 +1836,17 @@ msgid ""
 "weight:600;\">Select sound devices for vinyl control in the Sound Hardware "
 "pane.</span></p></body></html>"
 msgstr ""
+"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" "
+"\"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+"<html><head><meta name=\"qrichtext\" content=\"1\" /><style "
+"type=\"text/css\">\n"
+"p, li { white-space: pre-wrap; }\n"
+"</style></head><body style=\" font-family:'DejaVu Sans'; font-size:9pt; font-"
+"weight:400; font-style:normal;\">\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-"
+"right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-"
+"weight:600;\">Wählen Sie Audio-Geräte für die Vinyl-Steuerung in den Sound "
+"Hardware-Einstellungen aus.</span></p></body></html>"
 
 #: DlgPrefVinylDlg#4
 msgctxt "DlgPrefVinylDlg#4"
@@ -1811,66 +1855,69 @@ msgid ""
 "href=\"http://www.mixxx.org/wiki/doku.php/vinyl_control#troubleshooting\">Tro"
 "ubleshooting</a>"
 msgstr ""
+"<a "
+"href=\"http://www.mixxx.org/wiki/doku.php/vinyl_control#troubleshooting\">Feh"
+"lerbehebung</a>"
 
 #: DlgPrefVinylDlg#5
 msgctxt "DlgPrefVinylDlg#5"
 msgid "Turntable Preamp"
-msgstr ""
+msgstr "Plattenspieler Vorverstärker"
 
 #: DlgPrefVinylDlg#6
 msgctxt "DlgPrefVinylDlg#6"
 msgid "1 (Off)"
-msgstr ""
+msgstr "1 (Aus)"
 
 #: DlgPrefVinylDlg#7
 msgctxt "DlgPrefVinylDlg#7"
 msgid "150"
-msgstr ""
+msgstr "150"
 
 #: DlgPrefVinylDlg#8
 msgctxt "DlgPrefVinylDlg#8"
 msgid "Vinyl Configuration"
-msgstr ""
+msgstr "Vinyl Konfiguration"
 
 #: DlgPrefVinylDlg#9
 msgctxt "DlgPrefVinylDlg#9"
 msgid "Deck 1 Vinyl Type"
-msgstr ""
+msgstr "Deck 1 Vinyl-Typ"
 
 #: DlgPrefVinylDlg#10
 msgctxt "DlgPrefVinylDlg#10"
 msgid "Deck 2 Vinyl Type"
-msgstr ""
+msgstr "Deck 2 Vinyl-Typ"
 
 #: DlgPrefVinylDlg#11
 msgctxt "DlgPrefVinylDlg#11"
 msgid "Apply"
-msgstr ""
+msgstr "Anwenden"
 
 #: DlgPrefVinylDlg#12
 msgctxt "DlgPrefVinylDlg#12"
 msgid "Lead-in time"
-msgstr ""
+msgstr "Lead-In (Vorlaufzeit)"
 
 #: DlgPrefVinylDlg#13
 msgctxt "DlgPrefVinylDlg#13"
 msgid "seconds"
-msgstr ""
+msgstr "Sekunden"
 
 #: DlgPrefVinylDlg#14
 msgctxt "DlgPrefVinylDlg#14"
 msgid "Control Mode"
-msgstr ""
+msgstr "Kontrollmodus"
 
 #: DlgPrefVinylDlg#15
 msgctxt "DlgPrefVinylDlg#15"
 msgid "Absolute Mode"
-msgstr ""
+msgstr "Absoluter Modus"
 
 #: DlgPrefVinylDlg#16
 msgctxt "DlgPrefVinylDlg#16"
 msgid "Relative Mode"
-msgstr ""
+msgstr "Relativer Modus"
 
 #: DlgPrefVinylDlg#17
 msgctxt "DlgPrefVinylDlg#17"
@@ -1880,17 +1927,17 @@ msgstr ""
 #: DlgPrefVinylDlg#18
 msgctxt "DlgPrefVinylDlg#18"
 msgid "Signal Quality"
-msgstr ""
+msgstr "Signalqualität"
 
 #: DlgPrefVinylDlg#19
 msgctxt "DlgPrefVinylDlg#19"
 msgid "http://www.xwax.co.uk"
-msgstr ""
+msgstr "http://www.xwax.co.uk"
 
 #: DlgPrefVinylDlg#20
 msgctxt "DlgPrefVinylDlg#20"
 msgid "Powered by xwax"
-msgstr ""
+msgstr "Powered by xwax"
 
 #: DlgPreferences#1
 msgid "Sound Hardware"
@@ -1987,23 +2034,23 @@ msgstr "Analysiere %1%"
 #: DlgRecording#1
 msgctxt "DlgRecording#1"
 msgid "Manage"
-msgstr ""
+msgstr "Verwalten"
 
 #: DlgRecording#2
 msgid "Status:"
-msgstr ""
+msgstr "Status:"
 
 #: DlgRecording#3
 msgid "Start Recording"
-msgstr ""
+msgstr "Aufnahme starten"
 
 #: DlgRecording#4
 msgid "Start recording here ..."
-msgstr ""
+msgstr "Aufnahme hier starten..."
 
 #: DlgRecording#5
 msgid "Stop Recording"
-msgstr ""
+msgstr "Aufnahme stoppen"
 
 #: DlgTrackInfo#1
 msgctxt "DlgTrackInfo#1"
@@ -2209,8 +2256,9 @@ msgid ""
 "<html>Could not create audio file for recording!<p><br>Maybe you do not have "
 "enough free disk space or file permissions.</html>"
 msgstr ""
-"<html>Konnte keine Audiodatei für die Aufnahme erstellen!<p><br>Vielleicht "
-"haben Sie nicht genug Speicherplatz oder keine Zugriffsberechtigung</html>"
+"<html>Die Audiodatei für die Aufnahme konnte nicht erstellt "
+"erstellen!<p><br>Vielleicht haben Sie nicht genug Speicherplatz oder keine "
+"Zugriffsberechtigung</html>"
 
 #: EngineShoutcast#1
 msgid "Mixxx encountered a problem"
@@ -2218,11 +2266,11 @@ msgstr "Mixxx hat ein Problem festgestellt"
 
 #: EngineShoutcast#2
 msgid "Could not allocate shout_t"
-msgstr "Konnte shout_t nicht zuweisen"
+msgstr "shout_t konnte nicht zugewiesen werden"
 
 #: EngineShoutcast#3
 msgid "Could not allocate shout_metadata_t"
-msgstr "Konnte shout_metadata_t nicht zuweisen"
+msgstr "shout_metadata_t konnte nicht zugewiesen werden"
 
 #: EngineShoutcast#4
 msgid "Error setting non-blocking mode:"
@@ -2673,7 +2721,7 @@ msgstr "&Community Unterstützung..."
 
 #: MixxxApp#42
 msgid "Enable &Vinyl Control 1"
-msgstr ""
+msgstr "&Vinyl-Steuerung 1 aktivieren"
 
 #: MixxxApp#43
 msgid "Ctrl+Y"
@@ -2681,11 +2729,11 @@ msgstr "Strg+Y"
 
 #: MixxxApp#44
 msgid "Enable &Vinyl Control 2"
-msgstr ""
+msgstr "&Vinyl-Steuerung 2 aktivieren"
 
 #: MixxxApp#45
 msgid "Ctrl+U"
-msgstr ""
+msgstr "Ctrl+U"
 
 #: MixxxApp#46
 msgctxt "MixxxApp#46"
@@ -2915,7 +2963,7 @@ msgstr "&Makro"
 
 #: MixxxApp#88
 msgid "&Vinyl Control"
-msgstr ""
+msgstr "&Vinyl-Steuerung"
 
 #: MixxxApp#89
 msgid "Quit..."
@@ -2954,6 +3002,9 @@ msgid ""
 "No input device(s) select.\n"
 "Please select your soundcard(s) in the sound hardware preferences."
 msgstr ""
+"Kein(e) Eingabegerät(e) ausgewählt.\n"
+"Bitte wählen Sie die Soundkarte(n) für die Vinyl-Steuerung in den Sound "
+"Hardware-Einstellungen aus."
 
 #: MixxxApp#96
 msgid "Confirm Exit"
@@ -2971,22 +3022,22 @@ msgstr "Bibliothek"
 #: ParserM3u#1
 msgctxt "ParserM3u#1"
 msgid "Playlist Export Failed"
-msgstr ""
+msgstr "Exportieren der Wiedergabeliste fehlgeschlagen"
 
 #: ParserM3u#2
 msgctxt "ParserM3u#2"
 msgid "Could not create file"
-msgstr ""
+msgstr "Datei konnte nicht erstellt werden"
 
 #: ParserPls#1
 msgctxt "ParserPls#1"
 msgid "Playlist Export Failed"
-msgstr ""
+msgstr "Exportieren der Wiedergabeliste fehlgeschlagen"
 
 #: ParserPls#2
 msgctxt "ParserPls#2"
 msgid "Could not create file"
-msgstr ""
+msgstr "Datei konnte nicht erstellt werden"
 
 #: PlaylistFeature#1
 msgid "New Playlist"
@@ -3019,7 +3070,7 @@ msgstr "Wiedergabeliste importieren"
 #: PlaylistFeature#7
 msgctxt "PlaylistFeature#7"
 msgid "Export Playlist"
-msgstr ""
+msgstr "Wiedergabeliste exportieren"
 
 #: PlaylistFeature#8
 msgid "Playlists"
@@ -3028,7 +3079,7 @@ msgstr "Wiedergabelisten"
 #: PlaylistFeature#9
 msgctxt "PlaylistFeature#9"
 msgid "Unlock"
-msgstr ""
+msgstr "Entsprerren"
 
 #: PlaylistFeature#10
 msgid "Playlist name:"
@@ -3061,12 +3112,12 @@ msgstr "Umbenennen der Wiedergabeliste fehlgeschlagen"
 #: PlaylistFeature#17
 msgctxt "PlaylistFeature#17"
 msgid "Playlist Files (*.m3u *.pls)"
-msgstr ""
+msgstr "Wiedergabelisten (*.m3u *.pls)"
 
 #: PlaylistFeature#18
 msgctxt "PlaylistFeature#18"
 msgid "M3U Playlist (*.m3u);;PLS Playlist (*.pls)"
-msgstr ""
+msgstr "M3U Wiedergabeliste (*.m3u);;PLS Wiedergabeliste (*.pls)"
 
 #: PlaylistFeature#19
 msgid "A playlist by that name already exists."
@@ -3112,7 +3163,7 @@ msgstr "Unbekannter Pfad-Typ %1"
 
 #: RecordingFeature#1
 msgid "Recordings"
-msgstr ""
+msgstr "Aufnahmen"
 
 #: RhythmboxFeature#1
 msgid "Rhythmbox"
@@ -3128,7 +3179,7 @@ msgstr "Fehler beim Speichern der Sampler Bank"
 
 #: SamplerBank#3
 msgid "Could not write the sampler bank to '%1'."
-msgstr "Konnte Sampler Bank nicht nach '%1' schreiben."
+msgstr "Die Sampler-Bank konnte nicht nach '%1' geschrieben werden."
 
 #: SamplerBank#4
 msgid "Load Sampler Bank"
@@ -3140,11 +3191,11 @@ msgstr "Fehler beim Lesen der Sampler Bank"
 
 #: SamplerBank#6
 msgid "Could not open the sampler bank file '%1'."
-msgstr "Konnte Sampler Bank-Datei '%1' nicht öffnen."
+msgstr "Die Sampler-Bank '%1' konnte nicht geöffnet werden."
 
 #: SamplerBank#7
 msgid "Could not read the sampler bank file '%1'."
-msgstr "Konnte Sampler Bank-Datei '%1' nicht lesen."
+msgstr "Die Sampler-Bank '%1' konnte nicht gelesen werden."
 
 #: ScriptStudio#1
 msgid "Mixxx Script Studio"
@@ -3264,11 +3315,11 @@ msgstr "Aus"
 
 #: Ui#5
 msgid "Don't load tracks into a playing deck"
-msgstr ""
+msgstr "Titel nicht in laufende Decks laden"
 
 #: Ui#6
 msgid "Load tracks into playing decks"
-msgstr ""
+msgstr "Titel in laufende Decks laden"
 
 #: Ui#7
 msgid "CDJ Mode"
@@ -3297,12 +3348,12 @@ msgstr ""
 #: Ui#12
 msgctxt "Ui#12"
 msgid "Preferences"
-msgstr ""
+msgstr "Einstellungen"
 
 #: Ui#13
 msgctxt "Ui#13"
 msgid "Crossfader"
-msgstr ""
+msgstr "Crossfader"
 
 #: Ui#14
 msgid "Master volume"
@@ -3366,23 +3417,23 @@ msgstr "Flanger Effekt-Button für Player %1"
 
 #: Ui#29
 msgid "Channel %1 volume fader"
-msgstr ""
+msgstr "Kanal %1 Lautstärke-Fader"
 
 #: Ui#30
 msgid "Gain knob for Channel %1"
-msgstr ""
+msgstr "Gain-Regler für Kanal %1"
 
 #: Ui#31
 msgid "High EQ knob for Channel %1"
-msgstr ""
+msgstr "Höhen-Regler für Kanal %1"
 
 #: Ui#32
 msgid "Mid EQ knob for Channel %1"
-msgstr ""
+msgstr "Mitten-Regler für Kanal %1"
 
 #: Ui#33
 msgid "Low EQ knob for Channel %1"
-msgstr ""
+msgstr "Tiefen-Regler für Kanal %1"
 
 #: Ui#34
 msgid "Loop In button for Player %1"
