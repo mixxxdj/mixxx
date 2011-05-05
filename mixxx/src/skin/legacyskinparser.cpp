@@ -609,9 +609,15 @@ QWidget* LegacySkinParser::parseKnob(QDomElement node) {
 }
 
 QWidget* LegacySkinParser::parseSpinny(QDomElement node) {
+    QString channelStr = lookupNodeGroup(node);
+    const char* pSafeChannelStr = safeChannelString(channelStr);
     WSpinny* p = new WSpinny(m_pParent);
     setupWidget(node, p);
-    p->setup(node);
+
+    connect(p, SIGNAL(trackDropped(QString, QString)),
+            m_pPlayerManager, SLOT(slotLoadToPlayer(QString, QString)));
+
+    p->setup(node, pSafeChannelStr);
     setupConnections(node, p);
     p->installEventFilter(m_pKeyboard);
     return p;
