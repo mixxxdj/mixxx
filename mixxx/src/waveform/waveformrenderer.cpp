@@ -190,7 +190,7 @@ void WaveformRenderer::slotUpdatePlayPos(double v) {
 }
 
 void WaveformRenderer::slotUpdateRate(double v) {
-    m_dRate = v;
+    m_dTargetRate = v;
 }
 
 void WaveformRenderer::slotUpdateRateRange(double v) {
@@ -501,6 +501,14 @@ void WaveformRenderer::draw(QPainter* pPainter, QPaintEvent *pEvent) {
 
     //qDebug() << m_dPlayPosAdjust;
 
+    // Gradually stretch the waveform
+    if (fabs(m_dTargetRate - m_dRate) > MAX_RATE_INCREMENT)
+    {
+        m_dRate += (m_dTargetRate - m_dRate) > 0 ? MAX_RATE_INCREMENT : 0 - MAX_RATE_INCREMENT;
+    }
+    else
+        m_dRate = m_dTargetRate;
+        
     // Limit our rate adjustment to < 99%, "Bad Things" might happen otherwise.
     double rateAdjust = m_dRateDir * math_min(0.99, m_dRate * m_dRateRange);
 
