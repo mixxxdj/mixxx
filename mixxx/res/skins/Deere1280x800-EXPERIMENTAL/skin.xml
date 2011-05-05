@@ -2106,7 +2106,8 @@
 						background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
 
 						QTableView, QTextBrowser, QTreeView { border: 1px solid #656565; font: 13px/15px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-						background: transparent; color: #ACACAC; 
+						background: transparent; color: #ACACAC;
+						<!--we use  "background: transparent" as workaround, else "alternate-background-color" wont work, QT 4.7.x bug?--> 
 						alternate-background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:0, y2:1, stop:0 rgba(43, 43, 43, 255), stop:0.049 rgba(43, 43, 43, 255), stop:0.050 rgba(43, 43, 43, 100), stop:0.949 rgba(43, 43, 43, 100), stop:0.95 rgba(43, 43, 43, 255), stop:1 rgba(43, 43, 43, 255));}
 						QTableView::indicator { width: 12px; height: 12px;}
 						QTableView::indicator:checked { background: url(skin:/style/style_checkbox_checked.png);}
@@ -2127,7 +2128,7 @@
 						QLabel, QRadioButton { font: 13px/15px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; background: transparent; color: #C1C1C1;}
 
 						<!--Workaround for QT4.7.0 background color bug in Linux with Gnome https://bugs.launchpad.net/mixxx/+bug/690280-->
-						QTreeView::branch: {background: transparent;}
+						QTreeView::branch {background: transparent;}
 						QTreeView::branch:has-children:!has-siblings:closed,
 						QTreeView::branch:closed:has-children:has-siblings { border-image: none; image: url(skin:/style/style_branch_closed.png);}
 						QTreeView::branch:open:has-children:!has-siblings,
