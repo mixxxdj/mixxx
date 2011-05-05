@@ -3,12 +3,13 @@
 #include "wpixmapstore.h"
 #include "controlobject.h"
 #include "controlobjectthreadmain.h"
-#include "midi/pitchfilter.h"
 #include "wspinny.h"
+
+/** Speed of the vinyl rotation. */
+const double ROTATIONS_PER_SECOND = 0.50f; //Roughly 33 RPM 
 
 WSpinny::WSpinny(QWidget* parent) : WWidget(parent)
 {
-    qDebug() << "Creating a spinny widget!";
     m_pBG = NULL;
     m_pFG = NULL;
     m_pGhost = NULL;
@@ -25,61 +26,46 @@ WSpinny::WSpinny(QWidget* parent) : WWidget(parent)
     m_fGhostAngle = 0.0f;
     m_dPausedPosition = 0.0f;
     m_bGhostPlayback = false;
-    m_bScratchPlayback = false;
     m_iStartMouseX = -1;
     m_iStartMouseY = -1;
     m_iCompleteRotations = 0;
     m_dPrevTheta = 0.;
-    m_dPrevPosOffset = 0.;
-#define PHYSICS_TIMER_PERIOD 30 //milliseconds
-    m_pitchFilter.init(PHYSICS_TIMER_PERIOD, 0, 1, 1); //XXX: should be set to latency
-    m_pitchFilterTimer.start(PHYSICS_TIMER_PERIOD);
-    //connect(&m_pitchFilterTimer, SIGNAL(timeout()),
-    //        this, SLOT(updatePitchFilter()));
-    m_dVelocity = 0.;
-    m_dPrevVelocity = 0.;
-    m_dAcceleration = 0.;
-    m_dDeltaPosInSeconds = 0.;
-    m_dPrevY = 0.;
+   
+    //Drag and drop
+    setAcceptDrops(true);
 }
 
 WSpinny::~WSpinny()
 {
-    delete m_pBG;
-    delete m_pFG;
-    delete m_pGhost;
+    //Don't delete these because the pixmap store takes care of them.
+    //delete m_pBG;
+    //delete m_pFG;
+    //delete m_pGhost;
+    WPixmapStore::deletePixmap(m_pBG);
+    WPixmapStore::deletePixmap(m_pFG);
+    WPixmapStore::deletePixmap(m_pGhost);
     delete m_pPlay;
     delete m_pPlayPos;
     delete m_pVisualPlayPos;
     delete m_pDuration;
     delete m_pTrackSamples;
+    delete m_pTrackSampleRate;
     delete m_pBPM;
     delete m_pScratch;
     delete m_pScratchToggle;
     delete m_pScratchPos;
 }
 
-void WSpinny::setup(QDomNode node)
+void WSpinny::setup(QDomNode node, QString group)
 {
+    m_group = group;
+
     // Set pixmaps
-    /*
-    bool bHorizontal = false;
-    if (!selectNode(node, "Horizontal").isNull() &&
-        selectNodeQString(node, "Horizontal")=="true")
-        bHorizontal = true;
-    */
-
-    QString group = "[Channel1]";
-
-    qDebug() << getPath(selectNodeQString(node, "PathBackground"));
-    qDebug() << getPath(selectNodeQString(node, "PathBackground"));
-    qDebug() << getPath(selectNodeQString(node, "PathGhost"));
-
-    m_pBG = WPixmapStore::getPixmap(getPath(selectNodeQString(node, 
+    m_pBG = WPixmapStore::getPixmap(WWidget::getPath(WWidget::selectNodeQString(node, 
                                                     "PathBackground")));
-    m_pFG = WPixmapStore::getPixmap(getPath(selectNodeQString(node, 
+    m_pFG = WPixmapStore::getPixmap(WWidget::getPath(WWidget::selectNodeQString(node, 
                                                     "PathForeground")));
-    m_pGhost = WPixmapStore::getPixmap(getPath(selectNodeQString(node, 
+    m_pGhost = WPixmapStore::getPixmap(WWidget::getPath(WWidget::selectNodeQString(node, 
                                                     "PathGhost")));
     setFixedSize(m_pBG->size());
 
@@ -93,6 +79,9 @@ void WSpinny::setup(QDomNode node)
                         ConfigKey(group, "duration")));
     m_pTrackSamples = new ControlObjectThreadMain(ControlObject::getControl(
                         ConfigKey(group, "track_samples")));
+    m_pTrackSampleRate = new ControlObjectThreadMain(
+                                    ControlObject::getControl(
+                                    ConfigKey(group, "track_samplerate")));
     m_pBPM = new ControlObjectThreadMain(ControlObject::getControl(
                         ConfigKey(group, "bpm")));
 
@@ -104,6 +93,8 @@ void WSpinny::setup(QDomNode node)
                         ConfigKey(group, "scratch_position")));
     Q_ASSERT(m_pPlayPos);
     Q_ASSERT(m_pDuration);
+
+    //Repaint when visual_playposition changes.
     connect(m_pVisualPlayPos, SIGNAL(valueChanged(double)),
             this, SLOT(updateAngle(double)));
 }
@@ -115,11 +106,15 @@ void WSpinny::paintEvent(QPaintEvent *e)
     p.drawPixmap(0, 0, *m_pBG);
 
     //To rotate the foreground pixmap around the center of the image,
-    //we use the classic trick of translatin the coordinate system such that
+    //we use the classic trick of translating the coordinate system such that
     //the origin is at the center of the image. We then rotate the coordinate system,
     //and draw the pixmap at the corner.
     p.translate(width() / 2, height() / 2);
-    p.save();
+
+    if (m_bGhostPlayback)
+        p.save();
+
+    //Now rotate the pixmap and draw it on the screen.
     p.rotate(m_fAngle);
     p.drawPixmap(-(width() / 2), -(height() / 2), *m_pFG);
     
@@ -130,10 +125,12 @@ void WSpinny::paintEvent(QPaintEvent *e)
         p.rotate(m_fGhostAngle);
         p.drawPixmap(-(width() / 2), -(height() / 2), *m_pGhost);
 
-        //Rotate back to the playback position (not the ghost positon), and draw the 
-        //beat marks from there.
+        //Rotate back to the playback position (not the ghost positon), 
+        //and draw the beat marks from there.
         p.restore();
-        //Draw a dot in 4 beats
+
+        /*
+        //Draw a line where the next 4 beats are 
         double bpm = m_pBPM->get();
         double duration = m_pDuration->get();
         if (bpm <= 0. || duration <= 0.) {
@@ -151,10 +148,7 @@ void WSpinny::paintEvent(QPaintEvent *e)
             //p.drawPoint(-(width()*0.5 / 2), -(height()*0.5 / 2));
             p.drawLine(beatLine);
             p.rotate(beatAngle);
-        }
-    } else {
-        //Have to do this
-        p.restore(); 
+        } */
     }
 }
 
@@ -163,12 +157,17 @@ void WSpinny::paintEvent(QPaintEvent *e)
    Returns an angle clamped between -180 and 180 degrees. */
 double WSpinny::calculateAngle(double playpos)
 {
+    if (isnan(playpos))
+        return 0.0f;
+
     //Convert playpos to seconds.
-    double t = playpos * m_pDuration->get();
+    //double t = playpos * m_pDuration->get();
+    double t = playpos * (m_pTrackSamples->get()/2 /  // Stereo audio!
+                          m_pTrackSampleRate->get());
 
     //33 RPM is approx. 0.5 rotations per second.
     //qDebug() << t;
-    double angle = 180*t;
+    double angle = 360*ROTATIONS_PER_SECOND*t;
     //Clamp within -180 and 180 degrees
     //qDebug() << "pc:" << angle;
     //angle = ((angle + 180) % 360.) - 180;
@@ -188,19 +187,38 @@ double WSpinny::calculateAngle(double playpos)
     return angle; 
 }
 
+/** Given a normalized playpos, calculate the integer number of rotations
+    that it would take to wind the vinyl to that position. */
+int WSpinny::calculateFullRotations(double playpos)
+{
+    //Convert playpos to seconds.
+    //double t = playpos * m_pDuration->get();
+    double t = playpos * (m_pTrackSamples->get()/2 /  // Stereo audio!
+                          m_pTrackSampleRate->get());
+
+    //33 RPM is approx. 0.5 rotations per second.
+    //qDebug() << t;
+    double angle = 360*ROTATIONS_PER_SECOND*t;
+
+    return (((int)angle+180) / 360);
+}
+
 //Inverse of calculateAngle()
 double WSpinny::calculatePositionFromAngle(double angle)
 {
     //33 RPM is approx. 0.5 rotations per second.
-    double t = angle/180.; //time in seconds
-    //qDebug() << t;
+    double t = angle/(360*ROTATIONS_PER_SECOND); //time in seconds
 
     //Convert t from seconds into a normalized playposition value.
-    double playpos = t / m_pDuration->get();
-
+    //double playpos = t / m_pDuration->get();
+    double playpos = t / (m_pTrackSamples->get()/2 /  // Stereo audio!
+                          m_pTrackSampleRate->get());
     return playpos; 
 }
 
+/** Update the playback angle saved in the widget and repaint.
+    @param playpos A normalized (0.0-1.0) playback position. (Not an angle!)
+*/
 void WSpinny::updateAngle(double playpos)
 {
     m_fAngle = calculateAngle(playpos);
@@ -211,112 +229,63 @@ void WSpinny::updateAngle(double playpos)
 void WSpinny::updateAngleForGhost()
 {
     qint64 elapsed = m_time.elapsed();
-    //qDebug() << "ghost elapsed:" << elapsed;
     double duration = m_pDuration->get();
-    double newPlayPos = m_dPausedPosition + (((double)elapsed)/1000.)/duration;
+    double newPlayPos = m_dPausedPosition + 
+                         (((double)elapsed)/1000.)/duration;
     m_fGhostAngle = calculateAngle(newPlayPos);
     update();
 }
 
-void WSpinny::updatePitchFilter()
-{
-    //if (m_dPrevPosOffset != 0.0f)
-   //     qDebug() << "upf" << m_dPrevPosOffset;
-
-    m_pitchFilter.observation(m_dPrevPosOffset);
-    //Only feed changes in position into the filter once.
-   // m_dPrevPosOffset = 0.;
-
-        //Step 2: Measure elapsed time since previous mouse movement or click
-        qint64 elapsed = m_velocityTime.elapsed();
-        
-        m_dVelocity = 0;
-
-        //Apply drift control
-        double screenPos = calculatePositionFromAngle(m_fAngle);
-        //double drift = screenPos - m_pPlayPos->get();
-        //m_dVelocity -= drift*0.05;
-
-        //Remember the drift is a change in relative position,
-        //so we have to convert it to a duration and do something to get a velocity!
-        //XXX(TODO)
-        
-        m_dVelocity += (m_dDeltaPosInSeconds*1000 / elapsed); //- drift*0.005; 
-        //qDebug() << "v:" << m_dVelocity << "d:" << drift << 
-        //            "pppo:" << m_fAngle << "pp:" << m_dPrevTheta;
-
-        m_pScratch->slotSet(m_dVelocity);
-        m_pScratchPos->slotSet(screenPos);
-
-        //Reset the velocity
-        m_dVelocity = 0.0f;
-        m_dDeltaPosInSeconds = 0.;
-
-        //Start timer again.
-        m_velocityTime.start();
-    
-}
 
 void WSpinny::mouseMoveEvent(QMouseEvent * e)
 {
     int y = e->y();
     int x = e->x();
-    
-    double deltaY = m_dPrevY - y;
-    m_dPrevY = y;
-    //int dX = x-m_iStartMouseX;
-    //int dY = y-m_iStartMouseY;
-    int c_x = x - width()/2;  //Coordinates from center of widget
-    int c_y = y - height()/2;
-    double theta = (180./M_PI)*atan2(c_x, -c_y);
-    //NOTE: There is a 90 degree rotation between the polar coords of the screen
-    //      and the mouse, therefore the +90 in the above.
-    //qDebug() << "c_x:" << c_x << "c_y:" << c_y << "dX:" << dX << "dY:" << dY;
 
-    double deltaTheta = theta - m_dPrevTheta;
-    qDebug() << "theta:" << theta; 
-    qDebug() << "prev theta:" << m_dPrevTheta << "delta:" << deltaTheta;
-    if (m_dPrevTheta > 100 && theta < 0)
-        deltaTheta += 360;
-    else if (m_dPrevTheta < -100 && theta > 0)
-        deltaTheta -= 360;
-   
+    //Keeping these around in case we want to switch to control relative
+    //to the original mouse position.
+    int dX = x-m_iStartMouseX;
+    int dY = y-m_iStartMouseY;
+
+    //Coordinates from center of widget
+    int c_x = x - width()/2;
+    int c_y = y - height()/2;
+    double theta = (180.0f/M_PI)*atan2(c_x, -c_y);
+
+    //qDebug() << "c_x:" << c_x << "c_y:" << c_y << 
+    //            "dX:" << dX << "dY:" << dY;
+
+    //When we finish one full rotation (clockwise or anticlockwise), 
+    //we'll need to manually add/sub 360 degrees because atan2()'s range is
+    //only within -180 to 180 degrees. We need a wider range so your position
+    //in the song can be tracked.
+    if (m_dPrevTheta > 100 && theta < 0) {
+        m_iCompleteRotations++;
+    }
+    else if (m_dPrevTheta < -100 && theta > 0) {
+        m_iCompleteRotations--;
+    }
+
     m_dPrevTheta = theta;
+    theta += m_iCompleteRotations*360;
+   
+    qDebug() << "c t:" << theta << "pt:" << m_dPrevTheta << 
+                "icr" << m_iCompleteRotations;
 
     if (e->buttons() & Qt::LeftButton)
     {
         //Convert deltaTheta into a percentage of song length.
-        double posOffset = calculatePositionFromAngle(deltaTheta);
-        
-        //Step 1: Get abs position of movement (y).
-        //double absPos = m_pPlayPos->get() + posOffset;
+        double absPos = calculatePositionFromAngle(theta);
 
-        //Calculate change in song time for the given change in angle.
-        //m_dDeltaPosInSeconds = deltaTheta / 180.; //33 RPM
-
-        //m_dPrevPosOffset is fed into the pitchFilter on a timer.
-        //float velocity = m_pitchFilter.currentPitch()*100000.;
-        //qDebug() << "velocity:" << velocity;
-        //m_pScratch->slotSet(velocity);
-        double absPosInSamples = (m_pPlayPos->get() + posOffset) * m_pTrackSamples->get();
-        m_pScratchPos->slotSet(posOffset * m_pTrackSamples->get());
-
-        qDebug() << "ap:" << posOffset << posOffset * m_pTrackSamples->get();
-
-        //Save these values for next time.
-        m_dPrevPosOffset = posOffset;
-        m_dPrevVelocity = m_dVelocity;
-
-
+        double absPosInSamples = absPos * m_pTrackSamples->get();
+        m_pScratchPos->slotSet(absPosInSamples);
     }
     else if (e->buttons() & Qt::MiddleButton)
     {
-        //Absolute movement
-        double posOffset = calculatePositionFromAngle(deltaTheta);
-        //qDebug() << "dtheta:" << deltaTheta << "ppo:" << posOffset;
-                    //"icr:" << m_iCompleteRotations;
-
-        m_pPlayPos->slotSet(m_pPlayPos->get() + posOffset);
+    }
+    else if (e->buttons() & Qt::NoButton)
+    {
+        setCursor(QCursor(Qt::OpenHandCursor));
     }
 }
 
@@ -327,41 +296,39 @@ void WSpinny::mousePressEvent(QMouseEvent * e)
 
     m_iStartMouseX = x;
     m_iStartMouseY = y;
-        
 
     if (e->button() == Qt::LeftButton)
     {
-        //QApplication::setOverrideCursor( QCursor( Qt::BlankCursor ) );
-        double initialPosInSamples = m_pVisualPlayPos->get() * m_pTrackSamples->get();
+        QApplication::setOverrideCursor(QCursor(Qt::ClosedHandCursor));
+
+        double initialPosInSamples = m_pPlayPos->get() * m_pTrackSamples->get();
         m_pScratchPos->slotSet(initialPosInSamples);
         m_pScratchToggle->slotSet(1.0f);
-        m_bScratchPlayback = true;
-        //For Y-axis scratching only:
-        //m_dPrevY = e->y();
 
-        //Angular scratching:
-        m_dPrevTheta = calculateAngle(m_dPausedPosition);
+        qDebug() << "cfr:" << calculateFullRotations(m_pPlayPos->get());
+        m_iCompleteRotations = calculateFullRotations(m_pPlayPos->get());
+
+        m_dPrevTheta = /*(m_iCompleteRotations)*360 +*/ calculateAngle(m_pPlayPos->get());
+
+        //Trigger a mouse move to immediately line up the vinyl with the cursor
+        mouseMoveEvent(e);
     }
     else if (e->button() == Qt::MiddleButton)
     {
-        //Trigger a seek to this position.
-        m_dPausedPosition = m_pPlayPos->get();
-        m_dPrevTheta = calculateAngle(m_dPausedPosition);
-        mouseMoveEvent(e);
     }
     else if (e->button() == Qt::RightButton)
     {
-        qDebug() << "mousePressEvent"; 
         //Stop playback and start the timer for ghost playback
         m_time.start();
         m_dPausedPosition = m_pPlayPos->get();
         updateAngleForGhost(); //Need to recalc the ghost angle right away
         m_bGhostPlayback = true;
-        m_ghostTimer.start(30);
-        connect(&m_ghostTimer, SIGNAL(timeout()), 
+        m_ghostPaintTimer.start(30);
+        connect(&m_ghostPaintTimer, SIGNAL(timeout()), 
                 this, SLOT(updateAngleForGhost()));
 
-        //TODO: Ramp down (brake) over a period of 1 beat instead? Would be sweet.
+        //TODO: Ramp down (brake) over a period of 1 beat 
+        //      instead? Would be sweet.
         m_pPlay->slotSet(0.0f);
     }
 }
@@ -370,19 +337,17 @@ void WSpinny::mouseReleaseEvent(QMouseEvent * e)
 {
     if (e->button() == Qt::LeftButton)
     {
-        //QApplication::restoreOverrideCursor();
+        QApplication::restoreOverrideCursor();
         m_pScratchToggle->slotSet(0.0f);
-        m_bScratchPlayback = false;
         m_iCompleteRotations = 0;
-        //m_dPrevTheta = 0; //XXX: Why would we set this to zero?
     }
     else if (e->button() == Qt::RightButton)
     {
-        //Start playback by jumping forwards in the song as if playback was never
-        //paused. (useful for bleeping or adding silence breaks)
+        //Start playback by jumping forwards in the song as if playback 
+        //was never paused. (useful for bleeping or adding silence breaks)
         qint64 elapsed = m_time.elapsed();
-        qDebug() << "elapsed:" << elapsed;
-        m_ghostTimer.stop();
+        //qDebug() << "elapsed:" << elapsed;
+        m_ghostPaintTimer.stop();
         m_bGhostPlayback = false;
 
         //Convert elapsed to seconds, then normalize it to the duration so we can
@@ -405,4 +370,35 @@ void WSpinny::wheelEvent(QWheelEvent *e)
 
     e->accept();
     */
+}
+
+/** DRAG AND DROP **/
+void WSpinny::dragEnterEvent(QDragEnterEvent * event)
+{
+    // Accept the enter event if the thing is a filepath and nothing's playing
+    // in this deck.
+    if (event->mimeData()->hasUrls()) {
+        if (m_pPlay && m_pPlay->get()) {
+            event->ignore();
+        } else {
+            event->acceptProposedAction();
+        }
+    }
+}
+
+void WSpinny::dropEvent(QDropEvent * event)
+{
+    if (event->mimeData()->hasUrls()) {
+        QList<QUrl> urls(event->mimeData()->urls());
+        QUrl url = urls.first();
+        QString name = url.toLocalFile();
+        //If the file is on a network share, try just converting the URL to a string...
+        if (name == "")
+            name = url.toString();
+
+        event->accept();
+        emit(trackDropped(name, m_group));
+    } else {
+        event->ignore();
+    }
 }

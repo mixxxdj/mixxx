@@ -2,9 +2,8 @@
 #ifndef _WSPINNY_H
 #define _WSPINNY_H
 
+//#include <QGLWidget>
 #include "wwidget.h"
-#include "midi/pitchfilter.h"
-//TODO: Use a pointer to pitchfilter and get rid of include. (fwd decl)
 
 class ControlObjectThreadMain;
 
@@ -14,11 +13,14 @@ class WSpinny : public WWidget
     public:
         WSpinny(QWidget* parent);
         ~WSpinny();
-        void setup(QDomNode node);
+        void setup(QDomNode node, QString group);
+        void dragEnterEvent(QDragEnterEvent *event);
+        void dropEvent(QDropEvent *event);
     public slots:
         void updateAngle(double);
         void updateAngleForGhost();
-        void updatePitchFilter();
+    signals:
+        void trackDropped(QString filename, QString group);
     protected:
         //QWidget:
         void paintEvent(QPaintEvent*);
@@ -28,6 +30,7 @@ class WSpinny : public WWidget
         void wheelEvent(QWheelEvent *e);
 
         double calculateAngle(double playpos);
+        int calculateFullRotations(double playpos);
         double calculatePositionFromAngle(double angle);
     private:
         QPixmap* m_pBG;
@@ -38,31 +41,23 @@ class WSpinny : public WWidget
         ControlObjectThreadMain* m_pVisualPlayPos;
         ControlObjectThreadMain* m_pDuration;
         ControlObjectThreadMain* m_pTrackSamples;
+        ControlObjectThreadMain* m_pTrackSampleRate;
         ControlObjectThreadMain* m_pBPM;
         ControlObjectThreadMain* m_pScratch;
         ControlObjectThreadMain* m_pScratchToggle;
         ControlObjectThreadMain* m_pScratchPos;
+        QString m_group;
         float m_fAngle; //Degrees
         float m_fGhostAngle; 
         QElapsedTimer m_time;
-        QElapsedTimer m_velocityTime;
         double m_dPausedPosition;
         bool m_bGhostPlayback;
-        bool m_bScratchPlayback;
-        QTimer m_ghostTimer;
+        QTimer m_ghostPaintTimer;
         int m_iStartMouseX;
         int m_iStartMouseY;
         int m_iCompleteRotations;
         double m_dPrevTheta;
-        PitchFilter m_pitchFilter;
-        double m_dPrevPosOffset; /** Used for the pitch filter */
-        QTimer m_pitchFilterTimer; 
-        double m_dVelocity;
-        double m_dPrevVelocity;
-        double m_dAcceleration;
-        double m_dDeltaPosInSeconds;
         double m_dTheta;
-        double m_dPrevY;
 };
 
 #endif //_WSPINNY_H

@@ -2938,16 +2938,16 @@
 	</Knob>
 	<Spinny>
 		<Channel>1</Channel>
-		<Tooltip>Low EQ&#10;Adjusts the gain of the low EQ filter.&#10;Right-click: Reset to default value&#10;</Tooltip>
-		<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-		</Style>
 		<PathBackground>vinyl_bg1.png</PathBackground>
 		<PathForeground>vinyl_fg1.png</PathForeground>
 		<PathGhost>vinyl_ghost1.png</PathGhost>
 		<Pos>200, 300</Pos>
-		<Connection>
-			<ConfigKey>[Channel2],filterLow</ConfigKey>
-		</Connection>
+	</Spinny>
+	<Spinny>
+		<Channel>2</Channel>
+		<PathBackground>vinyl_bg2.png</PathBackground>
+		<PathForeground>vinyl_fg2.png</PathForeground>
+		<PathGhost>vinyl_ghost1.png</PathGhost>
+		<Pos>500, 300</Pos>
 	</Spinny>
 </skin>
