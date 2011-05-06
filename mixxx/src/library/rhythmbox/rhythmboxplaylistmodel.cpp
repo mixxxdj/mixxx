@@ -58,10 +58,9 @@ int RhythmboxPlaylistModel::getTrackId(const QModelIndex& index) const {
     return index.sibling(index.row(), fieldIndex("id")).data().toInt();
 }
 
-int RhythmboxPlaylistModel::getTrackRow(int trackId) const {
-    return BaseSqlTableModel::getTrackRow(trackId);
+const QLinkedList<int> RhythmboxPlaylistModel::getTrackRows(int trackId) const {
+    return BaseSqlTableModel::getTrackRows(trackId);
 }
-
 
 void RhythmboxPlaylistModel::removeTrack(const QModelIndex& index) {
 

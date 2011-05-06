@@ -28,7 +28,7 @@ class ProxyTrackModel : public QSortFilterProxyModel, public virtual TrackModel 
     virtual TrackPointer getTrack(const QModelIndex& index) const;
     virtual QString getTrackLocation(const QModelIndex& index) const;
     virtual int getTrackId(const QModelIndex& index) const;
-    virtual int getTrackRow(int trackId) const;
+    virtual const QLinkedList<int> getTrackRows(int trackId) const;
     virtual void search(const QString& searchText);
     virtual const QString currentSearch();
     virtual bool isColumnInternal(int column);

@@ -66,10 +66,11 @@ void WNumber::setup(QDomNode node)
     m_pLabel->setFixedSize(x,y);
 
     // FWI: Begin of font size patch
-    int fontsize = 9;
-    if (!selectNode(node, "FontSize").isNull())
+    if (!selectNode(node, "FontSize").isNull()) {
+        int fontsize = 9;
         fontsize = selectNodeQString(node, "FontSize").toInt();
-    m_pLabel->setFont( QFont("Helvetica",fontsize,QFont::Normal) );
+        m_pLabel->setFont( QFont("Helvetica",fontsize,QFont::Normal) );
+    }
     // FWI: End of font size patch
 
     // Alignment
