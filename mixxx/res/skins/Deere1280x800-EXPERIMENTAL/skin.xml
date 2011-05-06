@@ -4018,7 +4018,7 @@
 				</Style>
 				<Channel>1</Channel>
 				<Pos>0,170</Pos>
-				<Size>353,43</Size>
+				<Size>337,43</Size>
 				<BgColor>#1C1C1C</BgColor>
 				<BgPixmap>style/style_bg_woverview.png</BgPixmap>
 				<SignalColor>#0099FF</SignalColor>
@@ -4114,7 +4114,7 @@
 			Button- BPM Tap 
 			**********************************************
 			-->
-			<!-- Little tickery here: 
+			<!-- Little trickery here: 
 				 BPM tap is transparent png directly over BPM display, so it became BPM and TAP at once,
 				 changed tooltip accordingly
 			-->
@@ -4142,6 +4142,59 @@
 
 			<!--
 			**********************************************
+			Button - Show spinning Vinyl widget //TODO: Add functionality & tooltip dummy only so far
+			**********************************************
+			-->
+			<PushButton>
+				<Tooltip>Show spinning Vinyl widget&#10;TODO&#10;</Tooltip>
+				<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+				background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+				</Style>
+				<NumberStates>2</NumberStates>
+				<State>
+					<Number>0</Number>
+					<Pressed>btn_spinny1.png</Pressed>
+					<Unpressed>btn_spinny1.png</Unpressed>
+				</State>
+				<State>
+					<Number>1</Number>
+					<Pressed>btn_spinny1_over.png</Pressed>
+					<Unpressed>btn_spinny1_over.png</Unpressed>
+				</State>
+				<Pos>338,171</Pos>
+				<Connection>
+					<ConfigKey>[Channel1],TODO</ConfigKey>
+					<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+					<ButtonState>LeftButton</ButtonState>
+				</Connection>
+			</PushButton>
+
+			<!--
+			**********************************************
+			Button - Beatgrid
+			**********************************************
+			-->
+			<PushButton>
+				<Tooltip>Adjust beatgrid&#10;Adjust beatgrid so closest beat is aligned with the current playposition.&#10;</Tooltip>
+				<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+				background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+				</Style>
+				<NumberStates>1</NumberStates>
+				<State>
+					<Number>0</Number>
+					<Pressed>btn_beatgrid1_over.png</Pressed>
+					<Unpressed>btn_beatgrid1.png</Unpressed>
+				</State>
+				<Pos>338,193</Pos>
+				<Connection>
+					<ConfigKey>[Channel1],beats_translate_curpos</ConfigKey>
+					<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+					<ButtonState>LeftButton</ButtonState>
+				</Connection>
+			</PushButton>
+
+			<!--
+			**********************************************
 			Button- Key lock
 			**********************************************
 			-->
@@ -4161,7 +4214,7 @@
 					<Pressed>btn_keylock1_over.png</Pressed>
 					<Unpressed>btn_keylock1_over.png</Unpressed>
 				</State>
-				<Pos>385,192</Pos>
+				<Pos>390,193</Pos>
 				<Connection>
 					<ConfigKey>[Channel1],keylock</ConfigKey>
 				</Connection>
@@ -4188,7 +4241,7 @@
 					<Pressed>btn_quantize1_over.png</Pressed>
 					<Unpressed>btn_quantize1_over.png</Unpressed>
 				</State>
-				<Pos>354,192</Pos>
+				<Pos>364,193</Pos>
 				<Connection>
 					<ConfigKey>[Channel1],quantize</ConfigKey>
 					<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
@@ -4217,7 +4270,7 @@
 					<Pressed>btn_repeat1_over.png</Pressed>
 					<Unpressed>btn_repeat1_over.png</Unpressed>
 				</State>
-				<Pos>385,170</Pos>
+				<Pos>364,171</Pos>
 				<Connection>
 					<ConfigKey>[Channel1],repeat</ConfigKey>
 				</Connection>
@@ -4239,7 +4292,7 @@
 					<Pressed>btn_eject1_over.png</Pressed>
 					<Unpressed>btn_eject1.png</Unpressed>
 				</State>
-				<Pos>354,170</Pos>
+				<Pos>390,171</Pos>
 				<Connection>
 					<ConfigKey>[Channel1],eject</ConfigKey>
 					<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
@@ -5134,7 +5187,7 @@
 				</Style>
 				<Channel>2</Channel>
 				<Pos>0,170</Pos>
-				<Size>352,43</Size>
+				<Size>336,43</Size>
 				<BgColor>#1C1C1C</BgColor>
 				<BgPixmap>style/style_bg_woverview.png</BgPixmap>
 				<SignalColor>#E17800</SignalColor>
@@ -5230,7 +5283,7 @@
 			Button- BPM Tap 
 			**********************************************
 			-->
-			<!-- Little tickery here: 
+			<!-- Little trickery here: 
 				 BPM tap is transparent png directly over BPM display, so it became BPM and TAP at once,
 				 changed tooltip accordingly
 			-->
@@ -5258,6 +5311,59 @@
 
 			<!--
 			**********************************************
+			Button - Show spinning Vinyl widget //TODO: Add functionality & tooltip dummy only so far
+			**********************************************
+			-->
+			<PushButton>
+				<Tooltip>Show spinning Vinyl widget&#10;TODO&#10;</Tooltip>
+				<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+				background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+				</Style>
+				<NumberStates>2</NumberStates>
+				<State>
+					<Number>0</Number>
+					<Pressed>btn_spinny1.png</Pressed>
+					<Unpressed>btn_spinny1.png</Unpressed>
+				</State>
+				<State>
+					<Number>1</Number>
+					<Pressed>btn_spinny1_over.png</Pressed>
+					<Unpressed>btn_spinny1_over.png</Unpressed>
+				</State>
+				<Pos>338,171</Pos>
+				<Connection>
+					<ConfigKey>[Channel2],TODO</ConfigKey>
+					<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+					<ButtonState>LeftButton</ButtonState>
+				</Connection>
+			</PushButton>
+
+			<!--
+			**********************************************
+			Button - Beatgrid
+			**********************************************
+			-->
+			<PushButton>
+				<Tooltip>Adjust beatgrid&#10;Adjust beatgrid so closest beat is aligned with the current playposition.&#10;</Tooltip>
+				<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+				background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+				</Style>
+				<NumberStates>1</NumberStates>
+				<State>
+					<Number>0</Number>
+					<Pressed>btn_beatgrid1_over.png</Pressed>
+					<Unpressed>btn_beatgrid1.png</Unpressed>
+				</State>
+				<Pos>338,193</Pos>
+				<Connection>
+					<ConfigKey>[Channel2],beats_translate_curpos</ConfigKey>
+					<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+					<ButtonState>LeftButton</ButtonState>
+				</Connection>
+			</PushButton>
+
+			<!--
+			**********************************************
 			Button- Key lock
 			**********************************************
 			-->
@@ -5269,15 +5375,15 @@
 				<NumberStates>2</NumberStates>
 				<State>
 					<Number>0</Number>
-					<Pressed>btn_keylock2.png</Pressed>
-					<Unpressed>btn_keylock2.png</Unpressed>
+					<Pressed>btn_keylock1.png</Pressed>
+					<Unpressed>btn_keylock1.png</Unpressed>
 				</State>
 				<State>
 					<Number>1</Number>
-					<Pressed>btn_keylock2_over.png</Pressed>
-					<Unpressed>btn_keylock2_over.png</Unpressed>
+					<Pressed>btn_keylock1_over.png</Pressed>
+					<Unpressed>btn_keylock1_over.png</Unpressed>
 				</State>
-				<Pos>385,192</Pos>
+				<Pos>390,193</Pos>
 				<Connection>
 					<ConfigKey>[Channel2],keylock</ConfigKey>
 				</Connection>
@@ -5296,15 +5402,15 @@
 				<NumberStates>2</NumberStates>
 				<State>
 					<Number>0</Number>
-					<Pressed>btn_quantize2.png</Pressed>
-					<Unpressed>btn_quantize2.png</Unpressed>
+					<Pressed>btn_quantize1.png</Pressed>
+					<Unpressed>btn_quantize1.png</Unpressed>
 				</State>
 				<State>
 					<Number>1</Number>
-					<Pressed>btn_quantize2_over.png</Pressed>
-					<Unpressed>btn_quantize2_over.png</Unpressed>
+					<Pressed>btn_quantize1_over.png</Pressed>
+					<Unpressed>btn_quantize1_over.png</Unpressed>
 				</State>
-				<Pos>354,192</Pos>
+				<Pos>364,193</Pos>
 				<Connection>
 					<ConfigKey>[Channel2],quantize</ConfigKey>
 					<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
@@ -5325,15 +5431,15 @@
 				<NumberStates>2</NumberStates>
 				<State>
 					<Number>0</Number>
-					<Pressed>btn_repeat2.png</Pressed>
-					<Unpressed>btn_repeat2.png</Unpressed>
+					<Pressed>btn_repeat1.png</Pressed>
+					<Unpressed>btn_repeat1.png</Unpressed>
 				</State>
 				<State>
 					<Number>1</Number>
-					<Pressed>btn_repeat2_over.png</Pressed>
-					<Unpressed>btn_repeat2_over.png</Unpressed>
+					<Pressed>btn_repeat1_over.png</Pressed>
+					<Unpressed>btn_repeat1_over.png</Unpressed>
 				</State>
-				<Pos>385,170</Pos>
+				<Pos>364,171</Pos>
 				<Connection>
 					<ConfigKey>[Channel2],repeat</ConfigKey>
 				</Connection>
@@ -5352,10 +5458,10 @@
 				<NumberStates>1</NumberStates>
 				<State>
 					<Number>0</Number>
-					<Pressed>btn_eject2_over.png</Pressed>
-					<Unpressed>btn_eject2.png</Unpressed>
+					<Pressed>btn_eject1_over.png</Pressed>
+					<Unpressed>btn_eject1.png</Unpressed>
 				</State>
-				<Pos>354,170</Pos>
+				<Pos>390,171</Pos>
 				<Connection>
 					<ConfigKey>[Channel2],eject</ConfigKey>
 					<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
