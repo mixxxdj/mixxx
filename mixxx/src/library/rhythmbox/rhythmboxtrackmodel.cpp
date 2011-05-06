@@ -72,8 +72,8 @@ int RhythmboxTrackModel::getTrackId(const QModelIndex& index) const {
     return index.sibling(index.row(), fieldIndex("id")).data().toInt();
 }
 
-int RhythmboxTrackModel::getTrackRow(int trackId) const {
-    return BaseSqlTableModel::getTrackRow(trackId);
+const QLinkedList<int> RhythmboxTrackModel::getTrackRows(int trackId) const {
+    return BaseSqlTableModel::getTrackRows(trackId);
 }
 
 

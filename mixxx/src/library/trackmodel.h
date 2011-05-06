@@ -2,6 +2,7 @@
 #define TRACKMODEL_H
 
 #include <QList>
+#include <QLinkedList>
 #include <QItemDelegate>
 #include <QtSql>
 
@@ -47,7 +48,7 @@ public:
 
     // Gets the row of the track in the current result set. Returns -1 if the
     // track ID is not present in the result set.
-    virtual int getTrackRow(int trackId) const = 0;
+    virtual const QLinkedList<int> getTrackRows(int trackId) const = 0;
 
     bool isTrackModel() { return true;}
     virtual void search(const QString& searchText) = 0;

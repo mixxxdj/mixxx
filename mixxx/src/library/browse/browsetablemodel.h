@@ -42,11 +42,10 @@ class BrowseTableModel : public QStandardItemModel, public virtual TrackModel {
     virtual TrackPointer getTrack(const QModelIndex& index) const;
     virtual QString getTrackLocation(const QModelIndex& index) const;
     virtual int getTrackId(const QModelIndex& index) const;
-    virtual int getTrackRow(int trackId) const;
     TrackModel::CapabilitiesFlags getCapabilities() const;
-
-    virtual void search(const QString& searchText);
-    virtual void removeTrack(const QModelIndex& index);
+    virtual const QLinkedList<int> getTrackRows(int trackId) const;
+		virtual void search(const QString& searchText);
+		virtual void removeTrack(const QModelIndex& index);
     virtual void removeTracks(const QModelIndexList& indices);
     virtual bool addTrack(const QModelIndex& index, QString location);
     virtual QMimeData* mimeData(const QModelIndexList &indexes) const;
