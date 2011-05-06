@@ -61,6 +61,10 @@ BpmControl::BpmControl(const char* _group,
             this, SLOT(slotControlBeatSync(double)),
             Qt::DirectConnection);
 
+    m_pTranslateBeats = new ControlPushButton(ConfigKey(_group, "beats_translate_curpos"));
+    connect(m_pTranslateBeats, SIGNAL(valueChanged(double)),
+            this, SLOT(slotBeatsTranslate(double)));
+
     connect(&m_tapFilter, SIGNAL(tapped(double,int)),
             this, SLOT(slotTapFilter(double,int)),
             Qt::DirectConnection);
@@ -287,5 +291,17 @@ void BpmControl::slotUpdatedTrackBeats()
 {
     if (m_pTrack) {
         m_pBeats = m_pTrack->getBeats();
+    }
+}
+
+void BpmControl::slotBeatsTranslate(double v) {
+    if (v > 0 && m_pBeats && (m_pBeats->getCapabilities() & Beats::BEATSCAP_TRANSLATE)) {
+        double currentSample = getCurrentSample();
+        double closestBeat = m_pBeats->findClosestBeat(currentSample);
+        int delta = currentSample - closestBeat;
+        if (delta % 2 != 0) {
+            delta--;
+        }
+        m_pBeats->translate(delta);
     }
 }
