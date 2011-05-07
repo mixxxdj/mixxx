@@ -874,9 +874,6 @@ void MixxxApp::initActions()
     // Either check or uncheck the vinyl control menu item depending on what
     // it was saved as.
     m_pOptionsVinylControl->setCheckable(true);
-    //make sure control is off on startup (this is redundant to vinylcontrolmanager.cpp)
-    m_pConfig->set(
-            ConfigKey("[VinylControl]", "enabled_ch1"), false);
     m_pOptionsVinylControl->setChecked(false);
     m_pOptionsVinylControl->setStatusTip(tr("Activate Vinyl Control"));
     m_pOptionsVinylControl->setWhatsThis(
@@ -890,8 +887,6 @@ void MixxxApp::initActions()
         SLOT(slotControlVinylControl(double)));
 
     m_pOptionsVinylControl2->setCheckable(true);
-    m_pConfig->set(
-            ConfigKey("[VinylControl]", "enabled_ch2"), false);
     m_pOptionsVinylControl2->setChecked(false);
     m_pOptionsVinylControl2->setStatusTip(tr("Activate Vinyl Control"));
     m_pOptionsVinylControl2->setWhatsThis(
@@ -1236,15 +1231,9 @@ void MixxxApp::slotControlVinylControl(double toggle)
 {
 #ifdef __VINYLCONTROL__
     if (m_pVCManager->vinylInputEnabled(1)) {
-        m_pConfig->set(
-            ConfigKey("[VinylControl]", "enabled_ch1"), ConfigValue((int)toggle));
         m_pOptionsVinylControl->setChecked((bool)toggle);
-        if (toggle) {
-            ControlObject::getControl(ConfigKey("[Channel1]", "vinylcontrol_status"))->set(VINYL_STATUS_OK);
-        } else {
-            ControlObject::getControl(ConfigKey("[Channel1]", "vinylcontrol_status"))->set(VINYL_STATUS_DISABLED);
-        }
     } else {
+        m_pOptionsVinylControl->setChecked(false);
         if (toggle) {
             QMessageBox::warning(this, tr("Mixxx"),
                 tr("No input device(s) select.\nPlease select your soundcard(s) "
@@ -1253,8 +1242,6 @@ void MixxxApp::slotControlVinylControl(double toggle)
                 QMessageBox::Ok);
             m_pPrefDlg->show();
             m_pPrefDlg->showSoundHardwarePage();
-            m_pOptionsVinylControl->setChecked(false);
-            m_pConfig->set(ConfigKey("[VinylControl]","enabled_ch1"), ConfigValue(0));
             ControlObject::getControl(ConfigKey("[Channel1]", "vinylcontrol_status"))->set(VINYL_STATUS_DISABLED);
             ControlObject::getControl(ConfigKey("[Channel1]", "vinylcontrol_enabled"))->set(0);
         }
@@ -1265,27 +1252,17 @@ void MixxxApp::slotControlVinylControl(double toggle)
 void MixxxApp::slotCheckboxVinylControl(bool toggle)
 {
 #ifdef __VINYLCONTROL__
-    bool current = (bool)m_pConfig->getValueString(ConfigKey("[VinylControl]","enabled_ch1")).toInt();
-    if (current != toggle) {
-        ControlObject::getControl(ConfigKey("[Channel1]", "vinylcontrol_enabled"))->set((double)toggle);
-    }
+    ControlObject::getControl(ConfigKey("[Channel1]", "vinylcontrol_enabled"))->set((double)toggle);
 #endif
 }
 
 void MixxxApp::slotControlVinylControl2(double toggle)
 {
 #ifdef __VINYLCONTROL__
-    //we just need at least 1 input (deck 1) because of single deck mode
     if (m_pVCManager->vinylInputEnabled(2)) {
-        m_pConfig->set(
-            ConfigKey("[VinylControl]", "enabled_ch2"), ConfigValue((int)toggle));
-           m_pOptionsVinylControl2->setChecked((bool)toggle);
-       if (toggle) {
-           ControlObject::getControl(ConfigKey("[Channel2]", "vinylcontrol_status"))->set(VINYL_STATUS_OK);
-       } else {
-           ControlObject::getControl(ConfigKey("[Channel2]", "vinylcontrol_status"))->set(VINYL_STATUS_DISABLED);
-       }
+        m_pOptionsVinylControl2->setChecked((bool)toggle);
     } else {
+        m_pOptionsVinylControl2->setChecked(false);
         if (toggle) {
             QMessageBox::warning(this, tr("Mixxx"),
                 tr("No input device(s) select.\nPlease select your soundcard(s) "
@@ -1294,8 +1271,6 @@ void MixxxApp::slotControlVinylControl2(double toggle)
                 QMessageBox::Ok);
             m_pPrefDlg->show();
             m_pPrefDlg->showSoundHardwarePage();
-            m_pOptionsVinylControl2->setChecked(false);
-            m_pConfig->set(ConfigKey("[VinylControl]","enabled_ch2"), ConfigValue(0));
             ControlObject::getControl(ConfigKey("[Channel2]", "vinylcontrol_status"))->set(VINYL_STATUS_DISABLED);
             ControlObject::getControl(ConfigKey("[Channel2]", "vinylcontrol_enabled"))->set(0);
         }
@@ -1306,10 +1281,7 @@ void MixxxApp::slotControlVinylControl2(double toggle)
 void MixxxApp::slotCheckboxVinylControl2(bool toggle)
 {
 #ifdef __VINYLCONTROL__
-    bool current = (bool)m_pConfig->getValueString(ConfigKey("[VinylControl]","enabled_ch2")).toInt();
-    if (current != toggle) {
-        ControlObject::getControl(ConfigKey("[Channel2]", "vinylcontrol_enabled"))->set((double)toggle);
-    }
+    ControlObject::getControl(ConfigKey("[Channel2]", "vinylcontrol_enabled"))->set((double)toggle);
 #endif
 }
 

@@ -790,6 +790,14 @@ void VinylControlXwax::syncPosition()
 
 bool VinylControlXwax::checkEnabled(bool was, bool is)
 {
+    // if we're not enabled, but the last object was, try turning ourselves on
+    // XXX: is this just a race that's working right now?
+    if (!is and wantenabled->get())
+    {
+        enabled->slotSet(true);
+        wantenabled->slotSet(false); //don't try to do this over and over
+        return true; //optimism!
+    }
 	if (was != is)
 	{
 		//we reset the scratch value, but we don't reset the rate slider.

@@ -14,6 +14,9 @@ VinylControlControl::VinylControlControl(const char* pGroup, ConfigObject<Config
     m_pControlVinylEnabled = new ControlPushButton(ConfigKey(pGroup, "vinylcontrol_enabled"));
     m_pControlVinylEnabled->set(0);
     m_pControlVinylEnabled->setToggleButton(true);
+    m_pControlVinylWantEnabled = new ControlPushButton(ConfigKey(pGroup, "vinylcontrol_wantenabled"));
+    m_pControlVinylWantEnabled->set(0);
+    m_pControlVinylWantEnabled->setToggleButton(true);
     m_pControlVinylMode = new ControlPushButton(ConfigKey(pGroup, "vinylcontrol_mode"));
     m_pControlVinylMode->setStates(3);
     m_pControlVinylMode->setToggleButton(true);

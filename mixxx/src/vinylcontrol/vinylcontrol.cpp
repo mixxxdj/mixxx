@@ -19,6 +19,7 @@ VinylControl::VinylControl(ConfigObject<ConfigValue> * pConfig, QString group)
     duration            = new ControlObjectThread(ControlObject::getControl(ConfigKey(group, "duration")));
     mode                = new ControlObjectThread(ControlObject::getControl(ConfigKey(group, "vinylcontrol_mode")));
     enabled             = new ControlObjectThread(ControlObject::getControl(ConfigKey(group, "vinylcontrol_enabled")));
+    wantenabled         = new ControlObjectThread(ControlObject::getControl(ConfigKey(group, "vinylcontrol_wantenabled")));
     cueing              = new ControlObjectThread(ControlObject::getControl(ConfigKey(group, "vinylcontrol_cueing")));
     rateRange           = new ControlObjectThread(ControlObject::getControl(ConfigKey(group, "rateRange")));
     vinylStatus     = new ControlObjectThread(ControlObject::getControl(ConfigKey(group, "vinylcontrol_status")));
@@ -50,8 +51,8 @@ VinylControl::VinylControl(ConfigObject<ConfigValue> * pConfig, QString group)
     //Vinyl control mode
     iVCMode = m_pConfig->getValueString(ConfigKey("[VinylControl]","mode")).toInt();
 
-    //Enabled or not
-    bIsEnabled = m_pConfig->getValueString(ConfigKey(group,"vinylcontrol_enabled")).toInt();
+    //Enabled or not -- load from saved value in case vinyl control is restarting 
+    bIsEnabled = wantenabled->get();
 
     //Gain
     ControlObject::getControl(ConfigKey("[VinylControl]", "gain"))->set(
@@ -62,7 +63,9 @@ void VinylControl::ToggleVinylControl(bool enable)
 {
     bIsEnabled = enable;
     if (m_pConfig)
+    {
         m_pConfig->set(ConfigKey(m_group,"vinylcontrol_enabled"), ConfigValue((int)enable));
+    }
 
     enabled->slotSet(enable);
 
@@ -74,8 +77,15 @@ void VinylControl::ToggleVinylControl(bool enable)
 
 VinylControl::~VinylControl()
 {
+    bool wasEnabled = bIsEnabled;
     enabled->slotSet(false);
     vinylStatus->slotSet(VINYL_STATUS_DISABLED);
+    if (wasEnabled)
+    {
+        //if vinyl control is just restarting, indicate that it should
+        //be enabled
+        wantenabled->slotSet(true);
+    }
 }
 
 float VinylControl::getSpeed()

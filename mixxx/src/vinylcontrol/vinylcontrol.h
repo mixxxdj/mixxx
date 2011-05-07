@@ -66,6 +66,7 @@ class VinylControl : public QThread
     ControlObjectThread *duration; //The ControlObject used to get the duration of the current song.
     ControlObjectThread *mode; //The ControlObject used to get the vinyl control mode (absolute/relative/scratch)
     ControlObjectThread *enabled; //The ControlObject used to get if the vinyl control is enabled or disabled.
+    ControlObjectThread *wantenabled; //The ControlObject used to get if the vinyl control should try to enable itself
     ControlObjectThread *cueing; //Should cueing mode be active?
     ControlObjectThread *rateRange; //The ControlObject used to the get the pitch range from the prefs.
     ControlObjectThread *vinylStatus;
