@@ -3,13 +3,13 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2011-05-03 21:42-0400\n"
-"PO-Revision-Date: 2011-05-05 20:33+0000\n"
-"Last-Translator: Alexander Haack <Unknown>\n"
+"PO-Revision-Date: 2011-05-06 06:00+0000\n"
+"Last-Translator: jus <Unknown>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-05-06 04:33+0000\n"
+"X-Launchpad-Export-Date: 2011-05-07 04:35+0000\n"
 "X-Generator: Launchpad (build 12959)\n"
 
 #: AutoDJFeature#1
@@ -753,7 +753,7 @@ msgstr "Form1"
 
 #: DlgPrefControlsDlg#2
 msgid "Skin"
-msgstr "Aussehen"
+msgstr "Skin"
 
 #: DlgPrefControlsDlg#3
 msgid "Scheme"
@@ -803,7 +803,7 @@ msgstr "Cue automatisch wiederherstellen"
 
 #: DlgPrefControlsDlg#14
 msgid "Permanent Pitch/Rate Buttons"
-msgstr "Permanente Tasten für Tonhöhen-/Geschwindigkeitsbereich"
+msgstr "Knopf für permanente Tonhöhe/Geschwindigkeit"
 
 #: DlgPrefControlsDlg#15
 msgid "Left click"
@@ -831,7 +831,7 @@ msgstr ""
 
 #: DlgPrefControlsDlg#20
 msgid "Temporary Pitch/Rate Buttons"
-msgstr "Vorübergehende Tasten für Tonhöhe/Geschwindigkeit"
+msgstr "Knopf für vorübergehende Tonhöhe/Geschwindigkeit"
 
 #: DlgPrefControlsDlg#21
 msgid "Temporary rate change (between 1 and 8000) when left clicking"
@@ -843,7 +843,7 @@ msgstr ""
 msgid "Temporary rate change (between 1 and 8000) when right clicking"
 msgstr ""
 "Vorübergehende Veränderung der Geschwindigkeit (zwischen 1 und 8000) beim "
-"Linksklick"
+"Rechtsklick"
 
 #: DlgPrefControlsDlg#23
 msgid "Ramping Pitchbend"
@@ -2864,7 +2864,7 @@ msgstr "Vinyl-Steuerung aktivieren"
 #: MixxxApp#67
 msgid "Use timecoded vinyls on external turntables to control Mixxx"
 msgstr ""
-"Zeitcode-Vinyls benutzen um Mixxx mit externen Plattenspielern zu steuern"
+"Timecode-Vinyls benutzen um Mixxx mit externen Plattenspielern zu steuern"
 
 #: MixxxApp#68
 msgid "Activate live broadcasting"
@@ -3365,7 +3365,7 @@ msgstr "Crossfader"
 
 #: Ui#14
 msgid "Master volume"
-msgstr "Amarok-Lautstärke"
+msgstr "Master-Lautstärke"
 
 #: Ui#15
 msgid "Master balance"
@@ -3385,7 +3385,7 @@ msgstr "Cue-Knopf für Player %1"
 
 #: Ui#19
 msgid "Play button for Player %1"
-msgstr "Abspiel-Knopf für Player %1"
+msgstr "Wiedergabe-Knopf for Player %1"
 
 #: Ui#20
 msgid "Fast rewind button for Player %1"
@@ -3413,7 +3413,7 @@ msgstr "BPM Tipp-Knopf für Player %1"
 
 #: Ui#26
 msgid "Keylock button for Player %1"
-msgstr "Tastensperre-Knopf für Player %1"
+msgstr "Keylock-Knopf für Player %1"
 
 #: Ui#27
 msgid "Pitch control slider for Player %1"
