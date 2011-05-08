@@ -2936,18 +2936,4 @@
 			<ConfigKey>[Channel2],filterLow</ConfigKey>
 		</Connection>
 	</Knob>
-	<Spinny>
-		<Channel>1</Channel>
-		<PathBackground>vinyl_bg1.png</PathBackground>
-		<PathForeground>vinyl_fg1.png</PathForeground>
-		<PathGhost>vinyl_ghost1.png</PathGhost>
-		<Pos>200, 300</Pos>
-	</Spinny>
-	<Spinny>
-		<Channel>2</Channel>
-		<PathBackground>vinyl_bg2.png</PathBackground>
-		<PathForeground>vinyl_fg2.png</PathForeground>
-		<PathGhost>vinyl_ghost1.png</PathGhost>
-		<Pos>500, 300</Pos>
-	</Spinny>
 </skin>
