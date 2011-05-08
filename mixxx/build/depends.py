@@ -414,6 +414,7 @@ class MixxxCore(Feature):
 
                    "soundsource.cpp",
 
+                   "sharedglcontext.cpp",
                    "widget/wwidget.cpp",
                    "widget/wlabel.cpp",
                    "widget/wtracktext.cpp",
