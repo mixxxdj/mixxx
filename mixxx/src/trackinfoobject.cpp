@@ -543,11 +543,7 @@ void TrackInfoObject::setTimesPlayed(int t)
 
 void TrackInfoObject::incTimesPlayed()
 {
-    QMutexLocker lock(&m_qMutex);
-	qDebug() << "Track Played:" << m_sArtist << " - " << m_sTitle;
-    m_bPlayed = true;
-    ++m_iTimesPlayed;
-    setDirty(true);
+    setPlayed(true); //setPlayed increases play count
 }
 
 bool TrackInfoObject::getPlayed() const
@@ -560,17 +556,25 @@ bool TrackInfoObject::getPlayed() const
 void TrackInfoObject::setPlayed(bool bPlayed)
 {
     QMutexLocker lock(&m_qMutex);
-    bool dirty = bPlayed != m_bPlayed;
+    bool dirty;
+    if (bPlayed) {
+        ++m_iTimesPlayed;
+	    dirty = true;
+    }
+    else if (m_bPlayed && !bPlayed) {
+        --m_iTimesPlayed;
+	    dirty = true;
+    } 
     m_bPlayed = bPlayed;
 	if (dirty)
    	{
 		if (bPlayed)
 		{
-			qDebug() << "Track Played:" << m_sArtist << " - " << m_sTitle;
+			qDebug() << "Track Played:" << m_sArtist << " - " << m_sTitle << " - " << m_sFilename;
 		}
 		else
 		{
-			qDebug() << "Track Unplayed:" << m_sArtist << " - " << m_sTitle;
+			qDebug() << "Track Unplayed:" << m_sArtist << " - " << m_sTitle << " - " << m_sFilename;
 	    }
 		setDirty(true);
 	}

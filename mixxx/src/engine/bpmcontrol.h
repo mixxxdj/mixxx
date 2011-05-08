@@ -31,6 +31,7 @@ class BpmControl : public EngineControl {
     void slotBpmTap(double);
     void slotRateChanged(double);
     void slotUpdatedTrackBeats();
+    void slotBeatsTranslate(double);
 
   private:
     void adjustPhase();
@@ -51,6 +52,10 @@ class BpmControl : public EngineControl {
 
     /** Button for sync'ing with the other EngineBuffer */
     ControlPushButton* m_pButtonSync;
+
+    // Button that translates the beats so the nearest beat is on the current
+    // playposition.
+    ControlPushButton* m_pTranslateBeats;
 
     TapFilter m_tapFilter;
 
