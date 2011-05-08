@@ -3,34 +3,35 @@
 #include "wpixmapstore.h"
 #include "controlobject.h"
 #include "controlobjectthreadmain.h"
+#include "sharedglcontext.h"
 #include "wspinny.h"
 
 /** Speed of the vinyl rotation. */
 const double ROTATIONS_PER_SECOND = 0.50f; //Roughly 33 RPM 
 
-WSpinny::WSpinny(QWidget* parent) : WWidget(parent)
+WSpinny::WSpinny(QWidget* parent) : 
+    m_pBG(NULL), 
+    m_pFG(NULL),
+    m_pGhost(NULL),
+    m_pPlay(NULL),
+    m_pPlayPos(NULL),
+    m_pVisualPlayPos(NULL),
+    m_pDuration(NULL),
+    m_pTrackSamples(NULL),
+    m_pBPM(NULL),
+    m_pScratch(NULL),
+    m_pScratchToggle(NULL),
+    m_pScratchPos(NULL),
+    m_fAngle(0.0f),
+    m_fGhostAngle(0.0f),
+    m_dPausedPosition(0.0f),
+    m_bGhostPlayback(false),
+    m_iStartMouseX(-1),
+    m_iStartMouseY(-1),
+    m_iCompleteRotations(0),
+    m_dPrevTheta(0.),
+    QGLWidget(SharedGLContext::getContext(), parent)
 {
-    m_pBG = NULL;
-    m_pFG = NULL;
-    m_pGhost = NULL;
-    m_pPlay = NULL;
-    m_pPlayPos = NULL;
-    m_pVisualPlayPos = NULL;
-    m_pDuration = NULL;
-    m_pTrackSamples = NULL;
-    m_pBPM = NULL;
-    m_pScratch = NULL;
-    m_pScratchToggle = NULL;
-    m_pScratchPos = NULL;
-    m_fAngle = 0.0f;
-    m_fGhostAngle = 0.0f;
-    m_dPausedPosition = 0.0f;
-    m_bGhostPlayback = false;
-    m_iStartMouseX = -1;
-    m_iStartMouseY = -1;
-    m_iCompleteRotations = 0;
-    m_dPrevTheta = 0.;
-   
     //Drag and drop
     setAcceptDrops(true);
 }

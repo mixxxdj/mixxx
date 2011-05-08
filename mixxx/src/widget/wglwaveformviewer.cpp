@@ -13,6 +13,7 @@
 #include "wglwaveformviewer.h"
 #include "waveform/waveformrenderer.h"
 #include "controlobjectthreadmain.h"
+#include "sharedglcontext.h"
 
 WGLWaveformViewer::WGLWaveformViewer(
         const char *group,
@@ -24,7 +25,6 @@ WGLWaveformViewer::WGLWaveformViewer(
     ) :
     QGLWidget(ctxt, pParent, pShareWidget)
 {
-
     m_pWaveformRenderer = pWaveformRenderer;
     Q_ASSERT(m_pWaveformRenderer);
 

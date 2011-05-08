@@ -2,12 +2,12 @@
 #ifndef _WSPINNY_H
 #define _WSPINNY_H
 
-//#include <QGLWidget>
+#include <QGLWidget>
 #include "wwidget.h"
 
 class ControlObjectThreadMain;
 
-class WSpinny : public WWidget
+class WSpinny : public QGLWidget
 {
     Q_OBJECT
     public:
