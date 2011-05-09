@@ -6,16 +6,6 @@
 
 QGLContext* SharedGLContext::s_pSharedGLContext = (QGLContext*)NULL;
 
-SharedGLContext::SharedGLContext()
-{
-
-}
-
-SharedGLContext::~SharedGLContext()
-{
-
-}
-
 QGLContext* SharedGLContext::getContext()
 {
     QGLContext *ctxt;
