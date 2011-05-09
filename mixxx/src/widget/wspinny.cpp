@@ -68,7 +68,9 @@ void WSpinny::setup(QDomNode node, QString group)
                                                     "PathForeground")));
     m_pGhost = WPixmapStore::getPixmap(WWidget::getPath(WWidget::selectNodeQString(node, 
                                                     "PathGhost")));
-    setFixedSize(m_pBG->size());
+    if (m_pBG && !m_pBG->isNull()) {
+        setFixedSize(m_pBG->size());
+    }
 
     m_pPlay = new ControlObjectThreadMain(ControlObject::getControl(
                         ConfigKey(group, "play")));
@@ -103,8 +105,10 @@ void WSpinny::setup(QDomNode node, QString group)
 void WSpinny::paintEvent(QPaintEvent *e)
 {
     QPainter p(this);
-
-    p.drawPixmap(0, 0, *m_pBG);
+    
+    if (m_pBG) {
+        p.drawPixmap(0, 0, *m_pBG);
+    }
 
     //To rotate the foreground pixmap around the center of the image,
     //we use the classic trick of translating the coordinate system such that
@@ -115,11 +119,13 @@ void WSpinny::paintEvent(QPaintEvent *e)
     if (m_bGhostPlayback)
         p.save();
 
-    //Now rotate the pixmap and draw it on the screen.
-    p.rotate(m_fAngle);
-    p.drawPixmap(-(width() / 2), -(height() / 2), *m_pFG);
+    if (m_pFG && !m_pFG->isNull()) {
+        //Now rotate the pixmap and draw it on the screen.
+        p.rotate(m_fAngle);
+        p.drawPixmap(-(width() / 2), -(height() / 2), *m_pFG);
+    }
     
-    if (m_bGhostPlayback)
+    if (m_bGhostPlayback && m_pGhost && !m_pGhost->isNull())
     {
         p.restore();
         p.save();
@@ -166,6 +172,9 @@ double WSpinny::calculateAngle(double playpos)
     double t = playpos * (m_pTrackSamples->get()/2 /  // Stereo audio!
                           m_pTrackSampleRate->get());
 
+    if (isnan(t)) //Bad samplerate or number of track samples.
+        return 0.0f;
+
     //33 RPM is approx. 0.5 rotations per second.
     //qDebug() << t;
     double angle = 360*ROTATIONS_PER_SECOND*t;
@@ -182,7 +191,8 @@ double WSpinny::calculateAngle(double playpos)
         int x = (angle-180)/360;
         angle = angle - (360*x);
     }
-    //qDebug() << "poc:" << angle;
+    qDebug() << "poc:" << angle;
+    qDebug() << playpos;
 
     Q_ASSERT(angle <= 180 && angle >= -180);
     return angle; 
@@ -192,6 +202,8 @@ double WSpinny::calculateAngle(double playpos)
     that it would take to wind the vinyl to that position. */
 int WSpinny::calculateFullRotations(double playpos)
 {
+    if (isnan(playpos))
+        return 0.0f;
     //Convert playpos to seconds.
     //double t = playpos * m_pDuration->get();
     double t = playpos * (m_pTrackSamples->get()/2 /  // Stereo audio!
@@ -207,6 +219,9 @@ int WSpinny::calculateFullRotations(double playpos)
 //Inverse of calculateAngle()
 double WSpinny::calculatePositionFromAngle(double angle)
 {
+    if (isnan(angle))
+        return 0.0f;
+
     //33 RPM is approx. 0.5 rotations per second.
     double t = angle/(360*ROTATIONS_PER_SECOND); //time in seconds
 
@@ -281,7 +296,7 @@ void WSpinny::mouseMoveEvent(QMouseEvent * e)
         double absPosInSamples = absPos * m_pTrackSamples->get();
         m_pScratchPos->slotSet(absPosInSamples);
     }
-    else if (e->buttons() & Qt::MiddleButton)
+    else if (e->buttons() & Qt::MidButton)
     {
     }
     else if (e->buttons() & Qt::NoButton)
@@ -314,7 +329,7 @@ void WSpinny::mousePressEvent(QMouseEvent * e)
         //Trigger a mouse move to immediately line up the vinyl with the cursor
         mouseMoveEvent(e);
     }
-    else if (e->button() == Qt::MiddleButton)
+    else if (e->button() == Qt::MidButton)
     {
     }
     else if (e->button() == Qt::RightButton)

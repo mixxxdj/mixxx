@@ -6,11 +6,10 @@ class QGLContext;
 class SharedGLContext 
 {
     public:
-       ~SharedGLContext();
         static QGLContext* getContext();
     private:
-       SharedGLContext();
-       static QGLContext* s_pSharedGLContext;
+        SharedGLContext() { };
+        static QGLContext* s_pSharedGLContext;
 };
 
 #endif //SHAREDGLCONTEXT_H_

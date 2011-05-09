@@ -49,7 +49,7 @@ class WSpinny : public QGLWidget
         QString m_group;
         float m_fAngle; //Degrees
         float m_fGhostAngle; 
-        QElapsedTimer m_time;
+        QTime m_time;
         double m_dPausedPosition;
         bool m_bGhostPlayback;
         QTimer m_ghostPaintTimer;
