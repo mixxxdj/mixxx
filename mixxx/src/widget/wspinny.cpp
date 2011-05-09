@@ -9,7 +9,7 @@
 /** Speed of the vinyl rotation. */
 const double ROTATIONS_PER_SECOND = 0.50f; //Roughly 33 RPM 
 
-WSpinny::WSpinny(QWidget* parent) : 
+WSpinny::WSpinny(QWidget* parent) : QGLWidget(SharedGLContext::getContext(), parent),
     m_pBG(NULL), 
     m_pFG(NULL),
     m_pGhost(NULL),
@@ -28,9 +28,8 @@ WSpinny::WSpinny(QWidget* parent) :
     m_bGhostPlayback(false),
     m_iStartMouseX(-1),
     m_iStartMouseY(-1),
-    m_iCompleteRotations(0),
-    m_dPrevTheta(0.),
-    QGLWidget(SharedGLContext::getContext(), parent)
+    m_iFullRotations(0),
+    m_dPrevTheta(0.)
 {
     //Drag and drop
     setAcceptDrops(true);
@@ -104,6 +103,8 @@ void WSpinny::setup(QDomNode node, QString group)
 
 void WSpinny::paintEvent(QPaintEvent *e)
 {
+    Q_UNUSED(e); //ditch unused param warning
+
     QPainter p(this);
     
     if (m_pBG) {
@@ -176,7 +177,6 @@ double WSpinny::calculateAngle(double playpos)
         return 0.0f;
 
     //33 RPM is approx. 0.5 rotations per second.
-    //qDebug() << t;
     double angle = 360*ROTATIONS_PER_SECOND*t;
     //Clamp within -180 and 180 degrees
     //qDebug() << "pc:" << angle;
@@ -191,8 +191,6 @@ double WSpinny::calculateAngle(double playpos)
         int x = (angle-180)/360;
         angle = angle - (360*x);
     }
-    qDebug() << "poc:" << angle;
-    qDebug() << playpos;
 
     Q_ASSERT(angle <= 180 && angle >= -180);
     return angle; 
@@ -260,8 +258,8 @@ void WSpinny::mouseMoveEvent(QMouseEvent * e)
 
     //Keeping these around in case we want to switch to control relative
     //to the original mouse position.
-    int dX = x-m_iStartMouseX;
-    int dY = y-m_iStartMouseY;
+    //int dX = x-m_iStartMouseX;
+    //int dY = y-m_iStartMouseY;
 
     //Coordinates from center of widget
     int c_x = x - width()/2;
@@ -276,17 +274,17 @@ void WSpinny::mouseMoveEvent(QMouseEvent * e)
     //only within -180 to 180 degrees. We need a wider range so your position
     //in the song can be tracked.
     if (m_dPrevTheta > 100 && theta < 0) {
-        m_iCompleteRotations++;
+        m_iFullRotations++;
     }
     else if (m_dPrevTheta < -100 && theta > 0) {
-        m_iCompleteRotations--;
+        m_iFullRotations--;
     }
 
     m_dPrevTheta = theta;
-    theta += m_iCompleteRotations*360;
+    theta += m_iFullRotations*360;
    
-    qDebug() << "c t:" << theta << "pt:" << m_dPrevTheta << 
-                "icr" << m_iCompleteRotations;
+    //qDebug() << "c t:" << theta << "pt:" << m_dPrevTheta << 
+    //            "icr" << m_iFullRotations;
 
     if (e->buttons() & Qt::LeftButton)
     {
@@ -321,10 +319,9 @@ void WSpinny::mousePressEvent(QMouseEvent * e)
         m_pScratchPos->slotSet(initialPosInSamples);
         m_pScratchToggle->slotSet(1.0f);
 
-        qDebug() << "cfr:" << calculateFullRotations(m_pPlayPos->get());
-        m_iCompleteRotations = calculateFullRotations(m_pPlayPos->get());
+        m_iFullRotations = calculateFullRotations(m_pPlayPos->get());
 
-        m_dPrevTheta = /*(m_iCompleteRotations)*360 +*/ calculateAngle(m_pPlayPos->get());
+        m_dPrevTheta = calculateAngle(m_pPlayPos->get());
 
         //Trigger a mouse move to immediately line up the vinyl with the cursor
         mouseMoveEvent(e);
@@ -355,7 +352,7 @@ void WSpinny::mouseReleaseEvent(QMouseEvent * e)
     {
         QApplication::restoreOverrideCursor();
         m_pScratchToggle->slotSet(0.0f);
-        m_iCompleteRotations = 0;
+        m_iFullRotations = 0;
     }
     else if (e->button() == Qt::RightButton)
     {
@@ -379,6 +376,8 @@ void WSpinny::mouseReleaseEvent(QMouseEvent * e)
 
 void WSpinny::wheelEvent(QWheelEvent *e)
 {
+    Q_UNUSED(e); //ditch unused param warning
+
     /*
     double wheelDirection = ((QWheelEvent *)e)->delta() / 120.;
     double newValue = getValue() + (wheelDirection);

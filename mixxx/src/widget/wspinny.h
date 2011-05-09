@@ -55,7 +55,7 @@ class WSpinny : public QGLWidget
         QTimer m_ghostPaintTimer;
         int m_iStartMouseX;
         int m_iStartMouseY;
-        int m_iCompleteRotations;
+        int m_iFullRotations;
         double m_dPrevTheta;
         double m_dTheta;
 };
