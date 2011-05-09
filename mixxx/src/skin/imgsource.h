@@ -52,6 +52,10 @@ public:
     inline virtual QImage* getImage(QString img) {
         QImage* i = m_parent->getImage(img);
 
+        if (i == NULL || i->isNull()) {
+            return i;
+        }
+
         QColor col;
 
         int bytesPerPixel = 4;
@@ -89,13 +93,13 @@ public:
           break;
         }
 
-        //qDebug() << "ImgColorProcessor working on " 
-        //         << img << " bpp: " 
+        //qDebug() << "ImgColorProcessor working on "
+        //         << img << " bpp: "
         //         << bytesPerPixel << " format: " << i->format();
 
         if(bytesPerPixel < 4) {
           // Handling Indexed color or mono colors requires different logic
-          qDebug() << "ImgColorProcessor aborting on unsupported color format:" 
+          qDebug() << "ImgColorProcessor aborting on unsupported color format:"
                    << i->format();
           return i;
         }
@@ -114,7 +118,7 @@ public:
             *line = col.rgb();
             line++;
           }
-          
+
         }
 
         return i;
