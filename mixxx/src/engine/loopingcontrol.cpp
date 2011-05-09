@@ -398,7 +398,7 @@ void LoopingControl::trackLoaded(TrackPointer pTrack) {
 void LoopingControl::trackUnloaded(TrackPointer pTrack) {
     if (m_pTrack) {
         disconnect(m_pTrack.data(), SIGNAL(beatsUpdated()),
-                   this, SLOT(slotBeatsUpdated()));
+                   this, SLOT(slotUpdatedTrackBeats()));
     }
     m_pTrack.clear();
     m_pBeats.clear();
