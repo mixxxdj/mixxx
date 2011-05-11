@@ -62,8 +62,11 @@ bool VampAnalyser::Init(const QString pluginlibrary, const QString pluginid,
     }
     Vamp::HostExt::PluginLoader *loader =
             Vamp::HostExt::PluginLoader::getInstance();
-
     QStringList pluginlist = pluginid.split(":");
+    if(pluginlist.size()!=2){
+        qDebug()<<"VampAnalyser: got malformed pluginid: "<<pluginid;
+        return false;
+    }
     QString plugin = pluginlist.at(0);
     mKey = loader->composePluginKey(pluginlibrary.toStdString(),plugin.toStdString());
     int outputnumber = (pluginlist.at(1)).toInt();
