@@ -39,6 +39,7 @@ public:
     bool SetParameter (const QString parameter,const double value);
 
 
+
     QVector <double> GetInitFramesVector();
 
     QVector <double> GetEndFramesVector();
