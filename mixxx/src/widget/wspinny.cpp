@@ -7,7 +7,7 @@
 #include "wspinny.h"
 
 /** Speed of the vinyl rotation. */
-const double ROTATIONS_PER_SECOND = 0.50f; //Roughly 33 RPM 
+const double ROTATIONS_PER_SECOND = 5./9.; //33.3 RPM 
 
 WSpinny::WSpinny(QWidget* parent) : QGLWidget(SharedGLContext::getContext(), parent),
     m_pBG(NULL), 
