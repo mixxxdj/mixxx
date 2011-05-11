@@ -18,6 +18,8 @@
 #include <cmath>
 #include <cstdlib>
 #include <iostream>
+//Using Mixxx's mathstuff.h to get round() function
+#include "../../src/mathstuff.h"
 
 #include "MathUtilities.h"
 

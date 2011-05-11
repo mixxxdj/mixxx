@@ -19,15 +19,34 @@
 #include "../dsp/TempoTrackV2.h"
 #include "../dsp/DownBeat.h"
 #include "../dsp/MathUtilities.h"
+#include "../dsp/GetKeyMode.h"
 
 using std::string;
 using std::vector;
 using std::cerr;
 using std::endl;
 
-#ifndef __GNUC__
-#include <alloca.h>
-#endif
+/*
+ * The Autoconf manual (section 5.5.2, "Particular Function Checks")
+ *recommends the following check for source files that use the alloca()
+ *function
+ */
+#ifdef HAVE_ALLOCA_H
+    # include <alloca.h>
+    #elif defined __GNUC__
+    # define alloca __builtin_alloca
+    #elif defined _AIX
+    # define alloca __alloca
+    #elif defined _MSC_VER
+    # include <malloc.h>
+    # define alloca _alloca
+    #else
+    # include <stddef.h>
+    # ifdef  __cplusplus
+    extern "C"
+    # endif
+    void *alloca (size_t);
+ #endif
 
 float BarBeatTracker::m_stepSecs = 0.01161; // 512 samples at 44100
 

@@ -17,6 +17,7 @@
 #include "../dsp/Pitch.h"
 #include "../dsp/Chromagram.h"
 #include "../dsp/ChangeDetectionFunction.h"
+#include "../dsp/GetKeyMode.h"
 
 TonalChangeDetect::TonalChangeDetect(float fInputSampleRate)	
     : Vamp::Plugin(fInputSampleRate),

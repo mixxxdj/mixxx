@@ -20,7 +20,51 @@
 
 #include "Decimator.h"
 #include "Chromagram.h"
+/*
+ * Win32 and the Visual C++ compiler combination do not implement the lrint or lrintf functions. 
+ * The float_cast.h header file from http://www.mega-nerd.com/FPcast/
+ * contains these functions. 
+ * The following define statement is copyrighted by
+ * (C) 2001 Erik de Castro Lopo <erikd AT mega-nerd DOT com>
+ * The author states
+ * "Permission to use, copy, modify, distribute, and sell this file for any 
+ *  purpose is hereby granted without fee, provided that the above copyright 
+ *  and this permission notice appear in all copies.  No representations are
+ *  made about the suitability of this software for any purpose.  It is 
+ *  provided "as is" without express or implied warranty."
+ */
+#if (defined (__WINDOWS__))
 
+	#include	<math.h>
+
+	/*	Win32 doesn't seem to have these functions. 
+	**	Therefore implement inline versions of these functions here.
+	*/
+	
+	__inline long int 
+	lrint (double flt) 
+	{	int intgr;
+
+		_asm
+		{	fld flt
+			fistp intgr
+			} ;
+			
+		return intgr ;
+	} 
+	
+	__inline long int 
+	lrintf (float flt)
+	{	int intgr;
+
+		_asm
+		{	fld flt
+			fistp intgr
+			} ;
+			
+		return intgr ;
+	}
+#endif
 
 class GetKeyMode  
 {
