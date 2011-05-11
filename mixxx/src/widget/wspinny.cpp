@@ -6,9 +6,6 @@
 #include "sharedglcontext.h"
 #include "wspinny.h"
 
-/** Speed of the vinyl rotation. */
-const double ROTATIONS_PER_SECOND = 5./9.; //33.3 RPM 
-
 WSpinny::WSpinny(QWidget* parent) : QGLWidget(SharedGLContext::getContext(), parent),
     m_pBG(NULL), 
     m_pFG(NULL),
@@ -22,6 +19,7 @@ WSpinny::WSpinny(QWidget* parent) : QGLWidget(SharedGLContext::getContext(), par
     m_pScratch(NULL),
     m_pScratchToggle(NULL),
     m_pScratchPos(NULL),
+    m_pVinylControlSpeedType(NULL),
     m_fAngle(0.0f),
     m_fGhostAngle(0.0f),
     m_dPausedPosition(0.0f),
@@ -54,6 +52,7 @@ WSpinny::~WSpinny()
     delete m_pScratch;
     delete m_pScratchToggle;
     delete m_pScratchPos;
+    delete m_pVinylControlSpeedType;
 }
 
 void WSpinny::setup(QDomNode node, QString group)
@@ -93,12 +92,24 @@ void WSpinny::setup(QDomNode node, QString group)
                         ConfigKey(group, "scratch_position_enable")));
     m_pScratchPos = new ControlObjectThreadMain(ControlObject::getControl(
                         ConfigKey(group, "scratch_position")));
+    m_pVinylControlSpeedType = new ControlObjectThreadMain(ControlObject::getControl(
+                        ConfigKey(group, "vinylcontrol_speed_type")));
+    if (m_pVinylControlSpeedType)
+    {
+        //Initialize the rotational speed.
+        this->updateVinylControlSpeed(m_pVinylControlSpeedType->get());
+    }
     Q_ASSERT(m_pPlayPos);
     Q_ASSERT(m_pDuration);
 
     //Repaint when visual_playposition changes.
     connect(m_pVisualPlayPos, SIGNAL(valueChanged(double)),
             this, SLOT(updateAngle(double)));
+
+    //Match the vinyl control's set RPM so that the spinny widget rotates at the same 
+    //speed as your physical decks, if you're using vinyl control.
+    connect(m_pVinylControlSpeedType, SIGNAL(valueChanged(double)),
+            this, SLOT(updateVinylControlSpeed(double)));
 }
 
 void WSpinny::paintEvent(QPaintEvent *e)
@@ -177,7 +188,7 @@ double WSpinny::calculateAngle(double playpos)
         return 0.0f;
 
     //33 RPM is approx. 0.5 rotations per second.
-    double angle = 360*ROTATIONS_PER_SECOND*t;
+    double angle = 360*m_dRotationsPerSecond*t;
     //Clamp within -180 and 180 degrees
     //qDebug() << "pc:" << angle;
     //angle = ((angle + 180) % 360.) - 180;
@@ -209,7 +220,7 @@ int WSpinny::calculateFullRotations(double playpos)
 
     //33 RPM is approx. 0.5 rotations per second.
     //qDebug() << t;
-    double angle = 360*ROTATIONS_PER_SECOND*t;
+    double angle = 360*m_dRotationsPerSecond*t;
 
     return (((int)angle+180) / 360);
 }
@@ -221,7 +232,7 @@ double WSpinny::calculatePositionFromAngle(double angle)
         return 0.0f;
 
     //33 RPM is approx. 0.5 rotations per second.
-    double t = angle/(360*ROTATIONS_PER_SECOND); //time in seconds
+    double t = angle/(360*m_dRotationsPerSecond); //time in seconds
 
     //Convert t from seconds into a normalized playposition value.
     //double playpos = t / m_pDuration->get();
@@ -250,6 +261,10 @@ void WSpinny::updateAngleForGhost()
     update();
 }
 
+void WSpinny::updateVinylControlSpeed(double rpm)
+{
+    m_dRotationsPerSecond = rpm/60.;
+}
 
 void WSpinny::mouseMoveEvent(QMouseEvent * e)
 {
