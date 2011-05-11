@@ -50,7 +50,7 @@
 	v1.10.0.01	(21/03/2011)
 	* Introduce new version number scheme for skins that follows the target Mixxx versioning
 	  <Mixxx.major>.<Mixxx.minor>.<Mixxx.patch>.<Skin.patch>
-	* Added Mixxx 1.10.0 feature: 
+	* Added Mixxx 1.10.0 feature:
 	  Tracks duration can be displayed independent from tracks remaining time using Trackproperty
 	* Updated text positioning & tooltips accordingly
 
@@ -116,17 +116,17 @@
 	<!--
 	############################################################################################
 	############################################################################################
-	Mixxx skin documentation: 
+	Mixxx skin documentation:
 	http://mixxx.org/wiki/doku.php/creating_skins
 
-	List of controls: 
+	List of controls:
 	http://www.mixxx.org/wiki/doku.php/midi_controller_mapping_file_format#ui_midi_controls_and_names
 
 	Qt Style Sheets documentation:
 	http://doc.qt.nokia.com/latest/stylesheet.html
 
 	Debugging:
-	To outline WidgetGroups change all occurrences (exept this one ;-) of 
+	To outline WidgetGroups change all occurrences (exept this one ;-) of
 	"QGroupBox { border: 0px solid" to "QGroupBox { border: 1px solid"
 	
 	Parent WidgedGroups are outlined one pixel solid red;
@@ -189,16 +189,7 @@
 	<!--
 	############################################################################################
 	############################################################################################
-	WidgetGroup : Show/hide Vinylcontrol 
-	############################################################################################
-	############################################################################################
-	-->      
-
-
-	<!--
-	############################################################################################
-	############################################################################################
-	WidgetGroup : Show/hide Samplers and shrink Library 
+	WidgetGroup : Show/hide Samplers and shrink Library
 	############################################################################################
 	############################################################################################
 	-->
@@ -210,7 +201,7 @@
 		-->
 		<Size>1280,336</Size>
 		<Layout>vertical</Layout>
-		<!--deactivate the standard 
+		<!--deactivate the standard
 		<Style>QGroupBox { border: 0px solid red; } QWidget { margin: 0; padding: 0; }</Style>
 		cause push buttons in library will show up with wrong margin/padding -->
 		<Style>QGroupBox { border: 0px solid red; }</Style>
@@ -230,7 +221,7 @@
 						<Children>
 							<!--
 							**********************************************
-							Text- Track Title 
+							Text- Track Title
 							**********************************************
 							-->
 							<Text>
@@ -264,7 +255,6 @@
 							Visual- Waveform overview
 							**********************************************
 							-->
-
 							<Overview>
 								<Tooltip>Waveform overview&#10;Shows information about the track currently loaded in this channel.&#10;Jump around in the track by clicking somewhere on the waveform.&#10;</Tooltip>
 								<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
@@ -574,7 +564,7 @@
 
 							<!--
 							**********************************************
-							Button- Eject 
+							Button- Eject
 							**********************************************
 							-->
 							<PushButton>
@@ -588,7 +578,7 @@
 									<Pressed>btn_eject_sampler_over.png</Pressed>
 									<Unpressed>btn_eject_sampler.png</Unpressed>
 								</State>
-								<Pos>216,24</Pos>
+								<Pos>240,24</Pos>
 								<Connection>
 									<ConfigKey>[Sampler1],eject</ConfigKey>
 									<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
@@ -618,7 +608,7 @@
 									<Pressed>btn_repeat_sampler_over.png</Pressed>
 									<Unpressed>btn_repeat_sampler_over.png</Unpressed>
 								</State>
-								<Pos>240,24</Pos>
+								<Pos>216,24</Pos>
 								<Connection>
 									<ConfigKey>[Sampler1],repeat</ConfigKey>
 								</Connection>
@@ -694,7 +684,7 @@
 						<Children>
 							<!--
 							**********************************************
-							Text- Track Title 
+							Text- Track Title
 							**********************************************
 							-->
 							<Text>
@@ -728,7 +718,6 @@
 							Visual- Waveform overview
 							**********************************************
 							-->
-
 							<Overview>
 								<Tooltip>Waveform overview&#10;Shows information about the track currently loaded in this channel.&#10;Jump around in the track by clicking somewhere on the waveform.&#10;</Tooltip>
 								<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
@@ -1038,7 +1027,7 @@
 
 							<!--
 							**********************************************
-							Button- Eject 
+							Button- Eject
 							**********************************************
 							-->
 							<PushButton>
@@ -1052,7 +1041,7 @@
 									<Pressed>btn_eject_sampler_over.png</Pressed>
 									<Unpressed>btn_eject_sampler.png</Unpressed>
 								</State>
-								<Pos>216,24</Pos>
+								<Pos>240,24</Pos>
 								<Connection>
 									<ConfigKey>[Sampler2],eject</ConfigKey>
 									<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
@@ -1082,7 +1071,7 @@
 									<Pressed>btn_repeat_sampler_over.png</Pressed>
 									<Unpressed>btn_repeat_sampler_over.png</Unpressed>
 								</State>
-								<Pos>240,24</Pos>
+								<Pos>216,24</Pos>
 								<Connection>
 									<ConfigKey>[Sampler2],repeat</ConfigKey>
 								</Connection>
@@ -1158,7 +1147,7 @@
 						<Children>
 							<!--
 							**********************************************
-							Text- Track Title 
+							Text- Track Title
 							**********************************************
 							-->
 							<Text>
@@ -1192,7 +1181,6 @@
 							Visual- Waveform overview
 							**********************************************
 							-->
-
 							<Overview>
 								<Tooltip>Waveform overview&#10;Shows information about the track currently loaded in this channel.&#10;Jump around in the track by clicking somewhere on the waveform.&#10;</Tooltip>
 								<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
@@ -1502,7 +1490,7 @@
 
 							<!--
 							**********************************************
-							Button- Eject 
+							Button- Eject
 							**********************************************
 							-->
 							<PushButton>
@@ -1516,7 +1504,7 @@
 									<Pressed>btn_eject_sampler_over.png</Pressed>
 									<Unpressed>btn_eject_sampler.png</Unpressed>
 								</State>
-								<Pos>216,24</Pos>
+								<Pos>240,24</Pos>
 								<Connection>
 									<ConfigKey>[Sampler3],eject</ConfigKey>
 									<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
@@ -1546,7 +1534,7 @@
 									<Pressed>btn_repeat_sampler_over.png</Pressed>
 									<Unpressed>btn_repeat_sampler_over.png</Unpressed>
 								</State>
-								<Pos>240,24</Pos>
+								<Pos>216,24</Pos>
 								<Connection>
 									<ConfigKey>[Sampler3],repeat</ConfigKey>
 								</Connection>
@@ -1622,7 +1610,7 @@
 						<Children>
 							<!--
 							**********************************************
-							Text- Track Title 
+							Text- Track Title
 							**********************************************
 							-->
 							<Text>
@@ -1656,7 +1644,6 @@
 							Visual- Waveform overview
 							**********************************************
 							-->
-
 							<Overview>
 								<Tooltip>Waveform overview&#10;Shows information about the track currently loaded in this channel.&#10;Jump around in the track by clicking somewhere on the waveform.&#10;</Tooltip>
 								<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
@@ -1966,7 +1953,7 @@
 
 							<!--
 							**********************************************
-							Button- Eject 
+							Button- Eject
 							**********************************************
 							-->
 							<PushButton>
@@ -1980,7 +1967,7 @@
 									<Pressed>btn_eject_sampler_over.png</Pressed>
 									<Unpressed>btn_eject_sampler.png</Unpressed>
 								</State>
-								<Pos>216,24</Pos>
+								<Pos>240,24</Pos>
 								<Connection>
 									<ConfigKey>[Sampler4],eject</ConfigKey>
 									<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
@@ -2010,7 +1997,7 @@
 									<Pressed>btn_repeat_sampler_over.png</Pressed>
 									<Unpressed>btn_repeat_sampler_over.png</Unpressed>
 								</State>
-								<Pos>240,24</Pos>
+								<Pos>216,24</Pos>
 								<Connection>
 									<ConfigKey>[Sampler4],repeat</ConfigKey>
 								</Connection>
@@ -2107,7 +2094,7 @@
 
 						QTableView, QTextBrowser, QTreeView { border: 1px solid #656565; font: 13px/15px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 						background: transparent; color: #ACACAC;
-						<!--we use  "background: transparent" as workaround, else "alternate-background-color" wont work, QT 4.7.x bug?--> 
+						<!--we use  "background: transparent" as workaround, else "alternate-background-color" wont work, QT 4.7.x bug?-->
 						alternate-background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:0, y2:1, stop:0 rgba(43, 43, 43, 255), stop:0.049 rgba(43, 43, 43, 255), stop:0.050 rgba(43, 43, 43, 100), stop:0.949 rgba(43, 43, 43, 100), stop:0.95 rgba(43, 43, 43, 255), stop:1 rgba(43, 43, 43, 255));}
 						QTableView::indicator { width: 12px; height: 12px;}
 						QTableView::indicator:checked { background: url(skin:/style/style_checkbox_checked.png);}
@@ -2149,7 +2136,7 @@
 	<!--
 	############################################################################################
 	############################################################################################
-	WidgetGroup: Tabs to toggle the visibility of different widget groups 
+	WidgetGroup: Tabs to toggle the visibility of different widget groups
 	############################################################################################
 	############################################################################################
 	-->
@@ -2218,7 +2205,7 @@
 			Tab- Show/hide Vinyl Control widget group
 			**********************************************
 			-->
-			<!-- The Mac App Store Version of Mixxx does not support vinyl control. 
+			<!-- The Mac App Store Version of Mixxx does not support vinyl control.
 			Comment out this tabs that no broken widget are displayed to the user
 			-->
 			<PushButton>
@@ -2267,10 +2254,10 @@
 			<!--
 			############################################################################################
 			############################################################################################
-			WidgetGroup : Microphone 
+			WidgetGroup : Microphone
 			############################################################################################
 			############################################################################################
-			-->      
+			-->     
 			<WidgetGroup>
 				<Pos>870,0</Pos>
 				<Size>i,60</Size>
@@ -2374,7 +2361,7 @@
 			WidgetGroup : Vinylcontrol 1
 			############################################################################################
 			############################################################################################
-			-->      
+			-->     
 			<WidgetGroup>
 				<Pos>125,0</Pos>
 				<Size>i,60</Size>
@@ -2491,7 +2478,7 @@
 			WidgetGroup : Vinylcontrol 2
 			############################################################################################
 			############################################################################################
-			-->      
+			-->     
 			<WidgetGroup>
 				<Pos>1009,0</Pos>
 				<Size>i,60</Size>
@@ -2607,7 +2594,7 @@
 	<!--
 	############################################################################################
 	############################################################################################
-	WidgetGroup : Mixer panel 
+	WidgetGroup : Mixer panel
 	############################################################################################
 	############################################################################################
 	-->
@@ -3678,7 +3665,7 @@
 	<!--
 	############################################################################################
 	############################################################################################
-	WidgetGroup : Player 1 
+	WidgetGroup : Player 1
 	############################################################################################
 	############################################################################################
 	-->
@@ -4031,7 +4018,7 @@
 
 			<!--
 			**********************************************
-			Text- Track Title 
+			Text- Track Title
 			**********************************************
 			-->
 			<TrackProperty>
@@ -4049,7 +4036,7 @@
 
 			<!--
 			**********************************************
-			Text- Track Artist 
+			Text- Track Artist
 			**********************************************
 			-->
 			<TrackProperty>
@@ -4111,15 +4098,15 @@
 
 			<!--
 			**********************************************
-			Button- BPM Tap 
+			Button- BPM Tap
 			**********************************************
 			-->
-			<!-- Little trickery here: 
+			<!-- Little trickery here:
 				 BPM tap is transparent png directly over BPM display, so it became BPM and TAP at once,
 				 changed tooltip accordingly
 			-->
 			<PushButton>
-			<!-- Original: 
+			<!-- Original:
 				<Tooltip>BPM Tap&#10;When tapped repeatedly, adjusts the BPM to match the tapped BPM&#10;</Tooltip>
 			-->
 				<Tooltip>Tempo and BPM tap&#10;Displays the tempo of the loaded track in BPM (beats per minute)&#10;When tapped repeatedly, adjusts the BPM to match the tapped BPM&#10;</Tooltip>
@@ -4278,7 +4265,7 @@
 
 			<!--
 			**********************************************
-			Button- Eject 
+			Button- Eject
 			**********************************************
 			-->
 			<PushButton>
@@ -4846,7 +4833,7 @@
 	<!--
 	############################################################################################
 	############################################################################################
-	WidgetGroup : Player 2 
+	WidgetGroup : Player 2
 	############################################################################################
 	############################################################################################
 	-->
@@ -5200,7 +5187,7 @@
 
 			<!--
 			**********************************************
-			Text- Track Title 
+			Text- Track Title
 			**********************************************
 			-->
 			<TrackProperty>
@@ -5218,7 +5205,7 @@
 
 			<!--
 			**********************************************
-			Text- Track Artist 
+			Text- Track Artist
 			**********************************************
 			-->
 			<TrackProperty>
@@ -5280,15 +5267,15 @@
 
 			<!--
 			**********************************************
-			Button- BPM Tap 
+			Button- BPM Tap
 			**********************************************
 			-->
-			<!-- Little trickery here: 
+			<!-- Little trickery here:
 				 BPM tap is transparent png directly over BPM display, so it became BPM and TAP at once,
 				 changed tooltip accordingly
 			-->
 			<PushButton>
-			<!-- Original: 
+			<!-- Original:
 				<Tooltip>BPM Tap&#10;When tapped repeatedly, adjusts the BPM to match the tapped BPM&#10;</Tooltip>
 			-->
 				<Tooltip>Tempo and BPM tap&#10;Displays the tempo of the loaded track in BPM (beats per minute)&#10;When tapped repeatedly, adjusts the BPM to match the tapped BPM&#10;</Tooltip>
@@ -5447,7 +5434,7 @@
 
 			<!--
 			**********************************************
-			Button- Eject 
+			Button- Eject
 			**********************************************
 			-->
 			<PushButton>
