@@ -56,6 +56,8 @@ bool VampAnalyser::Init(const QString pluginlibrary, const QString pluginid,
     }
 
     mRate = samplerate;
+
+    //mRate = 11025;
     if (mPlugin != NULL){
         delete mPlugin;
         qDebug()<<"VampAnalyser: kill plugin";
@@ -73,7 +75,7 @@ bool VampAnalyser::Init(const QString pluginlibrary, const QString pluginid,
 
 
     mPlugin = loader->loadPlugin(mKey, mRate,
-                                 Vamp::HostExt::PluginLoader::ADAPT_ALL);
+                                 Vamp::HostExt::PluginLoader::ADAPT_ALL_SAFE);
 
     if (!mPlugin) {
         qDebug() << "VampAnalyser: Cannot load Vamp Plug-in.";
@@ -95,10 +97,13 @@ bool VampAnalyser::Init(const QString pluginlibrary, const QString pluginid,
     if (m_iBlockSize == 0) {
         m_iBlockSize = 1024;
     }
-
-    m_iStepSize = m_iBlockSize;
-
-    if (!mPlugin->initialise(2, m_iBlockSize, m_iStepSize)){
+    m_iStepSize = mPlugin->getPreferredStepSize();
+    qDebug()<<"Vampanalyser BlockSize: "<<m_iBlockSize;
+    qDebug()<<"Vampanalyser StepSize: "<<m_iStepSize;
+   if(m_iStepSize==0 || m_iStepSize > m_iBlockSize/2){
+       m_iStepSize = m_iBlockSize/2;
+    }
+    if (!mPlugin->initialise(2, m_iStepSize, m_iBlockSize)){
         qDebug()<<"VampAnalyser: Cannot initialise plugin";
         return false;
     }
@@ -152,6 +157,13 @@ bool VampAnalyser::Process(const CSAMPLE *pIn, const int iLen) {
             }
             m_iSampleCount += m_iBlockSize;
             m_iOUT = 0;
+            while(m_iOUT<(m_iBlockSize-m_iStepSize)){
+                CSAMPLE lframe = m_pluginbuf[0][m_iOUT+m_iStepSize];
+                CSAMPLE rframe = m_pluginbuf[1][m_iOUT+m_iStepSize];
+                m_pluginbuf[0][m_iOUT] = lframe;
+                m_pluginbuf[1][m_iOUT] = rframe;
+                m_iOUT++;
+            }
 
         }
 

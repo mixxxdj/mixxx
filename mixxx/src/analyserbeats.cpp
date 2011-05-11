@@ -37,10 +37,10 @@ void AnalyserBeats::initialise(TrackPointer tio, int sampleRate,
     BeatsPointer pBeats = tio->getBeats();
     if(pBeats)
         m_bPass = !(pBeats->getVersion()).contains("BeatMatrix");
-    if(!m_bPass){
-        qDebug()<<"BeatMatrix already exists: calculation will not start";
-        return;
-    }
+//    if(!m_bPass){
+//        qDebug()<<"BeatMatrix already exists: calculation will not start";
+//        return;
+//    }
     QString library = m_pConfigAVT->getValueString(ConfigKey("[Vamp]","AnalyserBeatLibrary"));
     QString pluginID = m_pConfigAVT->getValueString(ConfigKey("[Vamp]","AnalyserBeatPluginID"));
 
@@ -50,16 +50,14 @@ void AnalyserBeats::initialise(TrackPointer tio, int sampleRate,
 }
 
 void AnalyserBeats::process(const CSAMPLE *pIn, const int iLen) {
-    if(!m_bPass) {
-        qDebug()<<"AnalyserBeats: init passed m_bPass = false";
-        return;}
+    if(!m_bPass)
+        return;
     m_bPass = mvamp->Process(pIn, iLen);
 }
 
 void AnalyserBeats::finalise(TrackPointer tio) {
-    if(!m_bPass) {
-        qDebug()<<"AnalyserBeats: process passed m_bPass = false";
-        return;}
+    if(!m_bPass)
+        return;
 
    QVector <double> beats;
    beats = mvamp->GetInitFramesVector();

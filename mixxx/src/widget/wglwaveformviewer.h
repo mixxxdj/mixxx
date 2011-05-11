@@ -47,6 +47,7 @@ class WGLWaveformViewer : public QGLWidget
 
   protected:
     void paintEvent(QPaintEvent* event);
+    void resizeEvent(QResizeEvent* e);
 
   private:
     /** Used in mouse event handler */

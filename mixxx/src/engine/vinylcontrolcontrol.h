@@ -21,6 +21,7 @@ class VinylControlControl : public EngineControl {
 
   private:
     ControlObject* m_pControlVinylSeek;
+    ControlObject* m_pControlVinylSpeedType;
     ControlObject* m_pControlVinylStatus;
     ControlPushButton* m_pControlVinylMode;
     ControlPushButton* m_pControlVinylEnabled;
