@@ -19,6 +19,7 @@ class WSpinny : public QGLWidget
     public slots:
         void updateAngle(double);
         void updateAngleForGhost();
+        void updateVinylControlSpeed(double rpm);
     signals:
         void trackDropped(QString filename, QString group);
     protected:
@@ -46,6 +47,7 @@ class WSpinny : public QGLWidget
         ControlObjectThreadMain* m_pScratch;
         ControlObjectThreadMain* m_pScratchToggle;
         ControlObjectThreadMain* m_pScratchPos;
+        ControlObjectThreadMain* m_pVinylControlSpeedType;
         QString m_group;
         float m_fAngle; //Degrees
         float m_fGhostAngle; 
@@ -58,6 +60,8 @@ class WSpinny : public QGLWidget
         int m_iFullRotations;
         double m_dPrevTheta;
         double m_dTheta;
+        /** Speed of the vinyl rotation. */
+        double m_dRotationsPerSecond;
 };
 
 #endif //_WSPINNY_H
