@@ -1,0 +1,42 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+import os
+import sys
+import SCons
+import shutil
+
+Import('build')
+
+
+# On Posix default SCons.LIBPREFIX = 'lib', on Windows default SCons.LIBPREFIX = ''
+
+wv_sources = [
+    "soundsource.cpp", # required to subclass soundsource
+    "soundsourcewv.cpp",  # Wavpack support
+]
+
+
+#Tell SCons to build the SoundSourceWV plugin
+#=========================
+if int(build.flags['wv']):
+    SHLIBPREFIX='lib' #Makes the filename "libsoundsourcewv" consistently across platforms to make our lives easier.
+
+    env = build.env.Clone()
+    conf = Configure(env)
+    have_wv = conf.CheckLib(['wavpack', 'wv'])
+    env = conf.Finish()
+
+    if build.platform_is_windows:
+        env["LINKFLAGS"].remove("/entry:mainCRTStartup")
+        env["LINKFLAGS"].remove("/subsystem:windows")
+        sswv_bin = env.SharedLibrary('soundsourcewv', wv_sources, LINKCOM  = [env['LINKCOM'], 'mt.exe -nologo -manifest ${TARGET}.manifest -outputresource:$TARGET;1'])
+    else:
+        sswv_bin = env.SharedLibrary('soundsourcewv', wv_sources)
+
+    #Pass this soundsourcewv library object file back to the SConscript above us.
+    Return("sswv_bin")
+else:
+    Return("")
+
+
+

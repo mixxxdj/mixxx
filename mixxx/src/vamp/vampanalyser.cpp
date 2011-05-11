@@ -22,7 +22,7 @@ using Vamp::PluginHostAdapter;
 VampAnalyser::VampAnalyser()
     {
     m_pluginbuf = new CSAMPLE*[2];
-    mPlugin = 0;
+    mPlugin = NULL;
 }
 
 VampAnalyser::~VampAnalyser() {
@@ -30,16 +30,15 @@ VampAnalyser::~VampAnalyser() {
     delete[] m_pluginbuf;
     m_pluginbuf = NULL;
     }
-    if(mPlugin){
+    if(mPlugin!=NULL){
         delete mPlugin;
-        mPlugin = 0;
+        mPlugin = NULL;
     }
 }
 
 bool VampAnalyser::Init(const QString pluginlibrary, const QString pluginid,
         const int samplerate, const int TotalSamples) {
     m_iOutput = 0;
-    mPlugin = 0;
     mRate = 0;
 
     m_iRemainingSamples = TotalSamples;
@@ -57,8 +56,10 @@ bool VampAnalyser::Init(const QString pluginlibrary, const QString pluginid,
     }
 
     mRate = samplerate;
-    if (mPlugin)
+    if (mPlugin != NULL){
         delete mPlugin;
+        qDebug()<<"VampAnalyser: kill plugin";
+    }
     Vamp::HostExt::PluginLoader *loader =
             Vamp::HostExt::PluginLoader::getInstance();
 
@@ -171,6 +172,8 @@ bool VampAnalyser::End() {
 
 
 bool VampAnalyser::SetParameter(const QString parameter,const double value) {
+
+
 return true;
 }
 

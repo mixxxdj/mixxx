@@ -26,8 +26,13 @@ public slots:
 
     void slotApply();
     void slotUpdate();
-    void pluginSelected(int i);
+
+private slots:
+
+    void pluginSelected(QString i);
     void setDefaults();
+    void setAdvanced();
+
 signals:
     void apply(const QString &);
 private:
@@ -38,7 +43,8 @@ private:
     QList<QString> m_listName, m_listVersion, m_listMaker,
         m_listCopyright, m_listOutput, m_listDescription;
     QList<QString> m_listLibrary, m_listIdentifier;
-    int m_iselectedAnalyser;
+    QString m_moreless, m_selectedAnalyser;
+    bool m_bShowAll;
 };
 
 
