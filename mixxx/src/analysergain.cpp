@@ -15,9 +15,6 @@
 
 AnalyserGain::AnalyserGain(ConfigObject<ConfigValue> *_config) {
     m_pConfigAVR = _config;
-    m_bPass = 0;
-
-
 }
 
 AnalyserGain::~AnalyserGain(){
@@ -55,7 +52,7 @@ void AnalyserGain::finalise(TrackPointer tio) {
     values = mvamprg->GetFirstValuesVector();
     if(!values.isEmpty())
     {
-        qDebug()<<"Found a ReplayGain value of"<<pow(10,values[0]/20);
+        //qDebug()<<"Found a ReplayGain value of"<<pow(10,values[0]/20);
         float fReplayGain_Result = pow(10,values[0]/20);
         tio->setReplayGain(fReplayGain_Result);
     }
