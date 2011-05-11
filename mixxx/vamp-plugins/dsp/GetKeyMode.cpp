@@ -7,7 +7,8 @@
 #include "GetKeyMode.h"
 #include "MathUtilities.h"
 #include "Pitch.h"
-
+#include <math.h>
+#include <cmath>
 #include <iostream>
 
 #include <cstring>

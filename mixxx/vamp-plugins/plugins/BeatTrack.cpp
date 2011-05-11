@@ -18,6 +18,7 @@
 #include "../dsp/PeakPicking.h"
 #include "../dsp/TempoTrack.h"
 #include "../dsp/TempoTrackV2.h"
+#include "../dsp/GetKeyMode.h"
 
 using std::string;
 using std::vector;

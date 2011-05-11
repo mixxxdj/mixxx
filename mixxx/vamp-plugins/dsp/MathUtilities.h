@@ -16,6 +16,11 @@
 #ifndef MATHUTILITIES_H
 #define MATHUTILITIES_H
 
+// M_PI needs to be difined for Windows builds
+#ifndef M_PI
+#define M_PI    3.14159265358979323846f
+#endif
+
 #include <vector>
 
 #include "nan-inf.h"
