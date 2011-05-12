@@ -163,7 +163,6 @@ void BpmControl::slotControlBeatSync(double v) {
     double fThisBpm = m_pBeats->getBpmRange(thisstartpos,thisendpos);
     double fThisRate = m_pRateDir->get() * m_pRateSlider->get() * m_pRateRange->get();
         if(fThisTrackBpm == 0){
-            qDebug()<<"TrackBpm is zero";
             return;
         }
 
@@ -185,8 +184,9 @@ void BpmControl::slotControlBeatSync(double v) {
     if(otherendpos<0){
         otherendpos = othercurrentSample;
     }
-    double fOtherBpm = otherBeats->getBpmRange(otherstartpos,otherendpos);
+
     double fOtherRate = pOtherEngineBuffer->getRate();
+    double fOtherBpm = otherBeats->getBpmRange(otherstartpos,otherendpos) * (1.0 + fOtherRate);
     double fOtherFileBpm = fOtherBpm / (1.0 + fOtherRate);
 
     //qDebug() << "this" << "bpm" << fThisBpm << "filebpm" << fThisFileBpm << "rate" << fThisRate;
@@ -314,6 +314,7 @@ void BpmControl::adjustPhase() {
 void BpmControl::slotRateChanged(double) {
     double dFileBpm = m_pFileBpm->get();
     slotFileBpmChanged(dFileBpm);
+    slotUpdatedTrackBeats();
 }
 
 void BpmControl::trackLoaded(TrackPointer pTrack) {
