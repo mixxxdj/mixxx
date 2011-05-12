@@ -55,11 +55,10 @@ if int(build.flags['Vamp']):
     env = build.env.Clone()
     conf = Configure(env)
     env = conf.Finish()
-	
     if build.platform_is_windows:
         env["LINKFLAGS"].remove("/entry:mainCRTStartup")
         env["LINKFLAGS"].remove("/subsystem:windows")
-        mixxxminimal_bin = env.SharedLibrary('mixxxminimal', mixxxminimal_sources, LINKCOM  = [env['LINKCOM'], 'mt.exe -nologo -manifest ${TARGET}.manifest -outputresource:$TARGET;1'])
+        mixxxminimal_bin = env.SharedLibrary('libmixxxminimal', mixxxminimal_sources)
     else:
         mixxxminimal_bin = env.SharedLibrary('mixxxminimal', mixxxminimal_sources)
     

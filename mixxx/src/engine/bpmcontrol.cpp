@@ -127,15 +127,65 @@ void BpmControl::slotControlBeatSync(double v) {
         return;
 
     EngineBuffer* pOtherEngineBuffer = getOtherEngineBuffer();
-
+    TrackPointer otherTrack = pOtherEngineBuffer->getLoadedTrack();
+    BeatsPointer otherBeats = otherTrack ? otherTrack->getBeats() : BeatsPointer();
     if(!pOtherEngineBuffer)
         return;
+    if (!m_pBeats || !otherBeats) {
+            return;
+        }
 
-    double fThisBpm  = m_pEngineBpm->get();
+    // vittorio: Fix for variable bpm (i.e. when we store beats, so that bpm is not a constant through the track).
+    // Question: To calculate Bpm, I am taking an interval which begins before current position.
+    //           But nobody care on what happened in the past. Is it better to take an interval
+    //           starting from current position to say n beats?
+    // numbeats = n  means that we are taking a sample of 2*n beats with center in our getCurrentSample position:
+    const double numBeats = 4;
+
+    // at first we take Bpm directly from Beats:
+    // Note: as far as we use qm-tempotracker, mixxxbpmdetection or qm-beattracker plugin,  this pretty coincides
+    // with bpm calculated through soundtouch
+    //double fThisTrackBpm  = m_pEngineBpm->get();
+    double fThisTrackBpm  = m_pBeats->getBpm();
+    // get actual position
+    double thiscurrentSample = getCurrentSample();
+    // go numBeats beats backward...
+    double thisstartpos = m_pBeats->findNthBeat(thiscurrentSample, -numBeats);
+    if(thisstartpos<0){
+        thisstartpos = 0;
+    }
+    // ... numBeats forward
+    double thisendpos =  m_pBeats->findNthBeat(thiscurrentSample, numBeats);
+    if(thisendpos<0){
+        thisendpos = thiscurrentSample;
+    }
+    // get Bpm only in the range we chose:
+    double fThisBpm = m_pBeats->getBpmRange(thisstartpos,thisendpos);
     double fThisRate = m_pRateDir->get() * m_pRateSlider->get() * m_pRateRange->get();
-    double fThisFileBpm = m_pFileBpm->get();
+        if(fThisTrackBpm == 0){
+            qDebug()<<"TrackBpm is zero";
+            return;
+        }
 
-    double fOtherBpm = pOtherEngineBuffer->getBpm();
+    // correct fThisFileBpm so that it takes into account "local" differences.
+    // Note that fThisBpm/fThisTrackBpm does not depend on rate:
+
+    double fThisFileBpm = m_pFileBpm->get() * (fThisBpm/fThisTrackBpm);
+    // do pretty the same with the other track.
+    //double fOtherBpm = pOtherEngineBuffer->getBpm();
+    double OtherLength = ControlObject::getControl(
+            ConfigKey(pOtherEngineBuffer->getGroup(), "track_samples"))->get();
+    double othercurrentSample = OtherLength * ControlObject::getControl(
+            ConfigKey(pOtherEngineBuffer->getGroup(), "visual_playposition"))->get();
+    double otherstartpos = otherBeats->findNthBeat(othercurrentSample, -numBeats);
+    if(otherstartpos<0){
+        otherstartpos = 0;
+    }
+    double otherendpos =  otherBeats->findNthBeat(othercurrentSample, numBeats);
+    if(otherendpos<0){
+        otherendpos = othercurrentSample;
+    }
+    double fOtherBpm = otherBeats->getBpmRange(otherstartpos,otherendpos);
     double fOtherRate = pOtherEngineBuffer->getRate();
     double fOtherFileBpm = fOtherBpm / (1.0 + fOtherRate);
 
@@ -182,12 +232,13 @@ void BpmControl::slotControlBeatSync(double v) {
         // the rate scale. I believe this is intended to account for our BPM
         // algorithm sometimes finding double or half BPMs. This avoid drastic
         // scales.
-        float fFileBpmDelta = fabs(fThisFileBpm-fOtherFileBpm);
-        if (fabs(fThisFileBpm*2.0 - fOtherFileBpm) < fFileBpmDelta) {
-            fDesiredRate /= 2.0;
-        } else if (fabs(fThisFileBpm - 2.0*fOtherFileBpm) < fFileBpmDelta) {
-            fDesiredRate *= 2.0;
-        }
+        // vittorio: commenting this, it does not behave well:
+//        float fFileBpmDelta = fabs(fThisFileBpm-fOtherFileBpm);
+//        if (fabs(fThisFileBpm*2.0 - fOtherFileBpm) < fFileBpmDelta) {
+//            fDesiredRate /= 2.0;
+//        } else if (fabs(fThisFileBpm - 2.0*fOtherFileBpm) < fFileBpmDelta) {
+//            fDesiredRate *= 2.0;
+//        }
 
         // Subtract the base 1.0, now fDesiredRate is the percentage
         // increase/decrease in playback rate, not the playback rate.

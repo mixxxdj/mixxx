@@ -35,8 +35,8 @@ void AnalyserBeats::initialise(TrackPointer tio, int sampleRate,
     qDebug()<<"Beat calculation started";
     m_bPass = false;
     BeatsPointer pBeats = tio->getBeats();
-    if(pBeats)
-        m_bPass = !(pBeats->getVersion()).contains("BeatMatrix");
+    //if(pBeats)
+    //    m_bPass = !(pBeats->getVersion()).contains("BeatMatrix");
 //    if(!m_bPass){
 //        qDebug()<<"BeatMatrix already exists: calculation will not start";
 //        return;
