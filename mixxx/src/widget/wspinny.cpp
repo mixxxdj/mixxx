@@ -277,8 +277,8 @@ void WSpinny::mouseMoveEvent(QMouseEvent * e)
     //int dY = y-m_iStartMouseY;
 
     //Coordinates from center of widget
-    int c_x = x - width()/2;
-    int c_y = y - height()/2;
+    double c_x = x - width()/2;
+    double c_y = y - height()/2;
     double theta = (180.0f/M_PI)*atan2(c_x, -c_y);
 
     //qDebug() << "c_x:" << c_x << "c_y:" << c_y << 
