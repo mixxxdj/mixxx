@@ -66,6 +66,7 @@ LoopingControl::LoopingControl(const char * _group,
 
     m_pQuantizeEnabled = ControlObject::getControl(ConfigKey(_group, "quantize"));
     m_pNextBeat = ControlObject::getControl(ConfigKey(_group, "beat_next"));
+    m_pTrackSamples = ControlObject::getControl(ConfigKey(_group,"track_samples"));
 
     // Connect beatloop, which can flexibly handle different values.
     // Using this CO directly is meant to be used internally and by scripts,
@@ -119,10 +120,11 @@ LoopingControl::~LoopingControl() {
 
 void LoopingControl::slotLoopScale(double scale) {
     int loop_length = m_iLoopEndSample - m_iLoopStartSample;
+    int samples = m_pTrackSamples->get();
     loop_length *= scale;
     m_iLoopEndSample = m_iLoopStartSample + loop_length;
 
-    if (m_iLoopEndSample % 2 != 0) {
+    if (!even(m_iLoopEndSample)) {
         m_iLoopEndSample--;
     }
 
@@ -132,9 +134,15 @@ void LoopingControl::slotLoopScale(double scale) {
     clearActiveBeatLoop();
 
     // Don't allow 0 samples loop, so one can still manipulate it
-    if (m_iLoopEndSample == m_iLoopStartSample){
-        m_iLoopEndSample = m_iLoopStartSample + 2;
+    if (m_iLoopEndSample == m_iLoopStartSample) {
+        if ((m_iLoopEndSample+2) >= samples)
+            m_iLoopStartSample -= 2;
+        else
+            m_iLoopEndSample += 2;
     }
+    // Do not allow loops to go past the end of the song
+    else if (m_iLoopEndSample > samples)
+        m_iLoopEndSample = samples;
 
     // Update CO for loop end marker
     m_pCOLoopEndPosition->set(m_iLoopEndSample);
@@ -441,6 +449,7 @@ void LoopingControl::slotBeatLoop(double beats, bool keepStartPoint)
     // give loop_in and loop_out defaults so we can detect problems
     int loop_in = -1;
     int loop_out = -1;
+    int samples = m_pTrackSamples->get();
 
     if ( !m_pBeats ) {
         return;
@@ -495,6 +504,16 @@ void LoopingControl::slotBeatLoop(double beats, bool keepStartPoint)
         loop_in--;
     if (!even(loop_out))
         loop_out--;
+
+    if ( loop_in == loop_out ) {
+        if ((loop_out+2) > samples)
+            loop_in -= 2;
+        else
+            loop_out += 2;
+    }
+    // Do not allow beat loops to go beyond the end of the track
+    else if (loop_out > samples)
+        loop_out = samples;
 
     m_iLoopStartSample = loop_in;
     m_pCOLoopStartPosition->set(loop_in);

@@ -91,6 +91,7 @@ class LoopingControl : public EngineControl {
     int m_iCurrentSample;
     ControlObject* m_pQuantizeEnabled;
     ControlObject* m_pNextBeat;
+    ControlObject* m_pTrackSamples;
     BeatLoopingControl* m_pActiveBeatLoop;
 
     // Base BeatLoop Control Object.
