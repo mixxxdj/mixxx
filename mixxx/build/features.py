@@ -349,11 +349,14 @@ class Vamp(Feature):
         build.env.Append(CPPDEFINES = '__VAMP__')
         
         have_fftw3_h = conf.CheckHeader('fftw3.h')
-        have_fftw3 = conf.CheckLib(['fftw3'], autoadd=False)
-        if(have_fftw3_h and have_fftw3):
+        have_fftw3 = conf.CheckLib('fftw3', autoadd=False)
+
+        if(have_fftw3_h and have_fftw3 and build.platform_is_linux):
              build.env.Append(CPPDEFINES = 'HAVE_FFTW3')
-             if build.platform_is_linux or build.platform_is_osx:
-                 build.env.ParseConfig('pkg-config fftw3 --silence-errors --cflags --libs')
+             build.env.ParseConfig('pkg-config fftw3 --silence-errors --cflags --libs')
+            
+                 
+
             
     def sources(self, build):
         sources = ['vamp/vampanalyser.cpp',

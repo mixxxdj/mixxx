@@ -373,7 +373,7 @@ typedef struct _VampPluginDescriptor
     accompanying documentation for notes on how to achieve this with
     certain compilers.
 */
-#if (defined (__WINDOWS__))
+#ifdef __WINDOWS__
   /* 
    * Note from Tobias Rafreider: Exporting a function to a dll
    * requires to add '__declspec(dllexport)'
@@ -381,7 +381,7 @@ typedef struct _VampPluginDescriptor
 __declspec(dllexport) const VampPluginDescriptor *vampGetPluginDescriptor
     (unsigned int hostApiVersion, unsigned int index);
 #else
-	__declspec(dllexport) const VampPluginDescriptor *vampGetPluginDescriptor
+	const VampPluginDescriptor *vampGetPluginDescriptor
     (unsigned int hostApiVersion, unsigned int index);
 #endif
 
