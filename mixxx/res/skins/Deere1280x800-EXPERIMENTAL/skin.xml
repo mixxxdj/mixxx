@@ -2662,7 +2662,7 @@
 						</Style>
 						<Handle>knob_volume1.png</Handle>
 						<Slider>slider_volume1.png</Slider>
-						<Pos>150,112</Pos>
+						<Pos>150,131</Pos>
 						<Horizontal>false</Horizontal>
 						<Connection>
 							<ConfigKey>[Channel1],volume</ConfigKey>
@@ -2676,7 +2676,7 @@
 						</Style>
 						<Handle>knob_volume2.png</Handle>
 						<Slider>slider_volume2.png</Slider>
-						<Pos>252,112</Pos>
+						<Pos>252,131</Pos>
 						<Horizontal>false</Horizontal>
 						<Connection>
 							<ConfigKey>[Channel2],volume</ConfigKey>
@@ -3213,7 +3213,7 @@
 							<Pressed>btn_kill.png</Pressed>
 							<Unpressed>btn_kill_over.png</Unpressed>
 						</State>
-						<Pos>73,155</Pos>
+						<Pos>73,159</Pos>
 						<Connection>
 							<ConfigKey>[Channel1],filterHighKill</ConfigKey>
 							<EmitOnDownPress>true</EmitOnDownPress>
@@ -3236,7 +3236,7 @@
 							<Pressed>btn_kill.png</Pressed>
 							<Unpressed>btn_kill_over.png</Unpressed>
 						</State>
-						<Pos>73,194</Pos>
+						<Pos>73,198</Pos>
 						<Connection>
 							<ConfigKey>[Channel1],filterMidKill</ConfigKey>
 							<EmitOnDownPress>true</EmitOnDownPress>
@@ -3259,7 +3259,7 @@
 							<Pressed>btn_kill.png</Pressed>
 							<Unpressed>btn_kill_over.png</Unpressed>
 						</State>
-						<Pos>73,233</Pos>
+						<Pos>73,236</Pos>
 						<Connection>
 							<ConfigKey>[Channel1],filterLowKill</ConfigKey>
 							<EmitOnDownPress>true</EmitOnDownPress>
@@ -3283,7 +3283,7 @@
 							<Pressed>btn_kill.png</Pressed>
 							<Unpressed>btn_kill_over.png</Unpressed>
 						</State>
-						<Pos>358,155</Pos>
+						<Pos>358,159</Pos>
 						<Connection>
 							<ConfigKey>[Channel2],filterHighKill</ConfigKey>
 							<EmitOnDownPress>true</EmitOnDownPress>
@@ -3306,7 +3306,7 @@
 							<Pressed>btn_kill.png</Pressed>
 							<Unpressed>btn_kill_over.png</Unpressed>
 						</State>
-						<Pos>358,194</Pos>
+						<Pos>358,198</Pos>
 						<Connection>
 							<ConfigKey>[Channel2],filterMidKill</ConfigKey>
 							<EmitOnDownPress>true</EmitOnDownPress>
@@ -3329,7 +3329,7 @@
 							<Pressed>btn_kill.png</Pressed>
 							<Unpressed>btn_kill_over.png</Unpressed>
 						</State>
-						<Pos>358,233</Pos>
+						<Pos>358,236</Pos>
 						<Connection>
 							<ConfigKey>[Channel2],filterLowKill</ConfigKey>
 							<EmitOnDownPress>true</EmitOnDownPress>
@@ -3554,7 +3554,7 @@
 						</Style>
 						<PathVu>btn_volume_display1_over.png</PathVu>
 						<PathBack>btn_volume_display1.png</PathBack>
-						<Pos>200,131</Pos>
+						<Pos>200,146</Pos>
 						<Horizontal>false</Horizontal>
 						<PeakHoldSize>5</PeakHoldSize>
 						<PeakHoldTime>500</PeakHoldTime>
@@ -3571,7 +3571,7 @@
 						</Style>
 						<PathVu>btn_volume_display2_over.png</PathVu>
 						<PathBack>btn_volume_display2.png</PathBack>
-						<Pos>239,131</Pos>
+						<Pos>239,146</Pos>
 						<Horizontal>false</Horizontal>
 						<PeakHoldSize>5</PeakHoldSize>
 						<PeakHoldTime>500</PeakHoldTime>
@@ -3589,7 +3589,7 @@
 						</Style>
 						<PathVu>btn_volume_display_master1_over.png</PathVu>
 						<PathBack>btn_volume_display_master1.png</PathBack>
-						<Pos>215,131</Pos>
+						<Pos>215,146</Pos>
 						<PeakHoldSize>5</PeakHoldSize>
 						<PeakHoldTime>500</PeakHoldTime>
 						<PeakFallTime>50</PeakFallTime>
@@ -3605,7 +3605,7 @@
 						</Style>
 						<PathVu>btn_volume_display_master2_over.png</PathVu>
 						<PathBack>btn_volume_display_master2.png</PathBack>
-						<Pos>224,131</Pos>
+						<Pos>224,146</Pos>
 						<PeakHoldSize>5</PeakHoldSize>
 						<PeakHoldTime>500</PeakHoldTime>
 						<PeakFallTime>50</PeakFallTime>
@@ -3627,7 +3627,7 @@
 						</Style>
 						<PathStatusLight>btn_clipping1_over.png</PathStatusLight>
 						<PathBack>btn_clipping1.png</PathBack>
-						<Pos>200,117</Pos>
+						<Pos>200,132</Pos>
 						<Connection>
 							<ConfigKey>[Channel1],PeakIndicator</ConfigKey>
 						</Connection>
@@ -3639,7 +3639,7 @@
 						</Style>
 						<PathStatusLight>btn_clipping2_over.png</PathStatusLight>
 						<PathBack>btn_clipping2.png</PathBack>
-						<Pos>239,117</Pos>
+						<Pos>239,132</Pos>
 						<Connection>
 							<ConfigKey>[Channel2],PeakIndicator</ConfigKey>
 						</Connection>
@@ -3651,7 +3651,7 @@
 						</Style>
 						<PathStatusLight>btn_clipping_master_over.png</PathStatusLight>
 						<PathBack>btn_clipping_master.png</PathBack>
-						<Pos>215,117</Pos>
+						<Pos>215,132</Pos>
 						<Connection>
 							<ConfigKey>[Master],PeakIndicator</ConfigKey>
 						</Connection>
