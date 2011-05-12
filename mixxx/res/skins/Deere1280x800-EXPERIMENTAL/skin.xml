@@ -18,6 +18,12 @@
 	the resulting work only under the same or similar license to this one.
 
 	CHANGELOG
+	v1.10.0.08	(12/05/2011)
+	* Feature: Added mix orientation for microphone
+	* Update: Vinylcontrol & microphone widget positioning & graphics
+	* Update: Vinylcontrol indicator positioning & graphics
+	* Update: Tabs to show/hide widgets positioning & graphics
+
 	v1.10.0.07	(03/05/2011)
 	* Update: Graphics for more consistent look
 	* Update: Use 64 pictures for smooth knob animation (derived fom 128 midi note numbers)
@@ -131,7 +137,7 @@
 	
 	Parent WidgedGroups are outlined one pixel solid red;
 		Child WidgedGroups are outlined one pixel solid yellow;
-			Childs of Child WidgedGroups are outlined one pixel solid green;
+			Grandchild WidgedGroups are outlined one pixel solid green;
 	############################################################################################
 	############################################################################################
 	-->
@@ -147,44 +153,6 @@
 		<Path>background1280x800.png</Path>
 		<BgColor>#000000</BgColor>
 	</Background>
-
-	<!--
-	############################################################################################
-	############################################################################################
-	Vinyl- Status // more vinyl stuff sitting in the vinyl control widget
-	############################################################################################
-	############################################################################################
-	-->
-	<StatusLight>
-		<Tooltip>Vinyl Status&#10;Provides visual feedback with regards to vinyl control status&#10;Green for control enabled&#10;Blinking yellow for when the needle reaches the end of the record&#10;Red for needle skip detected&#10;</Tooltip>
-		<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-		</Style>
-		<NumberPos>4</NumberPos>
-		<PathStatusLight>btn_vinylcontrol_indicator1.png</PathStatusLight>
-		<PathStatusLight2>btn_vinylcontrol_indicator2.png</PathStatusLight2>
-		<PathStatusLight3>btn_vinylcontrol_indicator3.png</PathStatusLight3>
-		<PathStatusLight4>btn_vinylcontrol_indicator4.png</PathStatusLight4>
-		<Pos>1,1</Pos>
-		<Connection>
-			<ConfigKey>[Channel1],vinylcontrol_status</ConfigKey>
-		</Connection>
-	</StatusLight>
-	<StatusLight>
-		<Tooltip>Vinyl Status&#10;Provides visual feedback with regards to vinyl control status&#10;Green for control enabled&#10;Blinking yellow for when the needle reaches the end of the record&#10;Red for needle skip detected&#10;</Tooltip>
-		<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-		</Style>
-		<NumberPos>4</NumberPos>
-		<PathStatusLight>btn_vinylcontrol_indicator1.png</PathStatusLight>
-		<PathStatusLight2>btn_vinylcontrol_indicator2.png</PathStatusLight2>
-		<PathStatusLight3>btn_vinylcontrol_indicator3.png</PathStatusLight3>
-		<PathStatusLight4>btn_vinylcontrol_indicator4.png</PathStatusLight4>
-		<Pos>865,1</Pos>
-		<Connection>
-			<ConfigKey>[Channel2],vinylcontrol_status</ConfigKey>
-		</Connection>
-	</StatusLight>
 
 	<!--
 	############################################################################################
@@ -206,7 +174,6 @@
 		cause push buttons in library will show up with wrong margin/padding -->
 		<Style>QGroupBox { border: 0px solid red; }</Style>
 		<Children>
-
 			<!-- Sampler Bank sub-widget -->
 			<WidgetGroup>
 				<Size>i,110</Size>
@@ -620,7 +587,7 @@
 							**********************************************
 							-->
 							<PushButton>
-								<Tooltip>Mix orientation&#10;Choose where to have the output routed to.&#10;L = left side of crossfader, R = right side of crossfader, M = center (default)&#10;</Tooltip>
+								<Tooltip>Mix orientation&#10;Set the channel's mix orientation.&#10;L = left side of crossfader, R = right side of crossfader, M = center (default)&#10;</Tooltip>
 								<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 								background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
 								</Style>
@@ -674,9 +641,9 @@
 									<ConfigKey>[Sampler1],keylock</ConfigKey>
 								</Connection>
 							</PushButton>
-
 						</Children>
 					</WidgetGroup>
+
 					<WidgetGroup>
 						<Pos>0,0</Pos>
 						<Size>312,110</Size>
@@ -1083,7 +1050,7 @@
 							**********************************************
 							-->
 							<PushButton>
-								<Tooltip>Mix orientation&#10;Choose where to have the output routed to.&#10;L = left side of crossfader, R = right side of crossfader, M = center (default)&#10;</Tooltip>
+								<Tooltip>Mix orientation&#10;Set the channel's mix orientation.&#10;L = left side of crossfader, R = right side of crossfader, M = center (default)&#10;</Tooltip>
 								<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 								background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
 								</Style>
@@ -1137,9 +1104,9 @@
 									<ConfigKey>[Sampler2],keylock</ConfigKey>
 								</Connection>
 							</PushButton>
-
 						</Children>
 					</WidgetGroup>
+
 					<WidgetGroup>
 						<Pos>0,0</Pos>
 						<Size>312,110</Size>
@@ -1546,7 +1513,7 @@
 							**********************************************
 							-->
 							<PushButton>
-								<Tooltip>Mix orientation&#10;Choose where to have the output routed to.&#10;L = left side of crossfader, R = right side of crossfader, M = center (default)&#10;</Tooltip>
+								<Tooltip>Mix orientation&#10;Set the channel's mix orientation.&#10;L = left side of crossfader, R = right side of crossfader, M = center (default)&#10;</Tooltip>
 								<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 								background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
 								</Style>
@@ -1600,9 +1567,9 @@
 									<ConfigKey>[Sampler3],keylock</ConfigKey>
 								</Connection>
 							</PushButton>
-
 						</Children>
 					</WidgetGroup>
+
 					<WidgetGroup>
 						<Pos>0,0</Pos>
 						<Size>312,110</Size>
@@ -2009,7 +1976,7 @@
 							**********************************************
 							-->
 							<PushButton>
-								<Tooltip>Mix orientation&#10;Choose where to have the output routed to.&#10;L = left side of crossfader, R = right side of crossfader, M = center (default)&#10;</Tooltip>
+								<Tooltip>Mix orientation&#10;Set the channel's mix orientation.&#10;L = left side of crossfader, R = right side of crossfader, M = center (default)&#10;</Tooltip>
 								<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 								background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
 								</Style>
@@ -2063,17 +2030,14 @@
 									<ConfigKey>[Sampler4],keylock</ConfigKey>
 								</Connection>
 							</PushButton>
-
 						</Children>
 					</WidgetGroup>
-
 				</Children>
 				<Connection>
 					<ConfigKey>[Samplers],show_samplers</ConfigKey>
 					<BindProperty>visible</BindProperty>
 				</Connection>
 			</WidgetGroup>
-
 
 			<!-- Library sub-widget -->
 			<WidgetGroup>
@@ -2136,31 +2100,198 @@
 	<!--
 	############################################################################################
 	############################################################################################
-	WidgetGroup: Tabs to toggle the visibility of different widget groups
+	WidgetGroup : Vinylcontrol
 	############################################################################################
 	############################################################################################
 	-->
 	<WidgetGroup>
-		<Pos>0,296</Pos>
-		<Size>i,60</Size>
+		<Pos>0,0</Pos>
+		<Size>1280,20</Size>
 		<Style>QGroupBox { border: 0px solid red; } QWidget { margin: 0; padding: 0; }</Style>
 		<!--<Layout>horizontal</Layout>-->
 		<Children>
-			<!--
-			############################################################################################
-			############################################################################################
-			WidgetGroup : Microphone
-			############################################################################################
-			############################################################################################
-			-->     
-			<WidgetGroup>
-				<Pos>870,0</Pos>
-				<Size>i,60</Size>
+    		<WidgetGroup>
+				<Pos>0,0</Pos>
+				<Size>i,i</Size>
 				<Style>QGroupBox { border: 0px solid yellow;} QWidget { margin: 0; padding: 0; }</Style>
 				<!--<Layout>horizontal</Layout>-->
 				<Children>
-				<!-- sub-widget for the mic -->
-		
+					<!--
+					**********************************************
+					Vinyl- Enabled 
+					//This control is disabled to prevent turning vinylcontrol(VC) off
+					by accident. Only way to activate VC is Menu->Options (or shortcut)
+					Leaving example in here for reference
+					**********************************************
+					-->
+					<!--
+					<PushButton>
+						<Tooltip>Vinyl status&#10;Toggles whether a deck is being controlled by digital timecode vinyl/CD&#10;When enabled, a indication should appear onscreen indicating green for Enabled.&#10;</Tooltip>
+						<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+						background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+						</Style>
+						<NumberStates>2</NumberStates>
+						<State>
+							<Number>0</Number>
+							<Pressed>btn_vinylcontrol_enabled.png</Pressed>
+							<Unpressed>btn_vinylcontrol_enabled.png</Unpressed>
+						</State>
+						<State>
+							<Number>1</Number>
+							<Pressed>btn_vinylcontrol_enabled_over.png</Pressed>
+							<Unpressed>btn_vinylcontrol_enabled_over.png</Unpressed>
+						</State>
+						<Pos>0,600</Pos>
+						<Connection>
+							<ConfigKey>[ChannelX],vinylcontrol_enabled</ConfigKey>
+						</Connection>
+					</PushButton>
+					-->
+
+					<!--
+					**********************************************
+					Vinyl- Status 
+					// Vinyl status indicators are inside the players WidgetGroups
+					**********************************************
+					-->
+
+					<!--
+					**********************************************
+					Vinyl- Control Mode
+					**********************************************
+					-->
+					<PushButton>
+						<Tooltip>Vinyl Control Mode&#10;Absolute mode - track position equals needle position and speed&#10;Relative mode - track speed equals needle speed regardless of needle position&#10;Constant mode - track speed equals last known-steady speed regardless of needle input&#10;</Tooltip>
+						<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+						background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+						</Style>
+						<NumberStates>3</NumberStates>
+						<State>
+							<Number>0</Number>
+							<Pressed>btn_vinylcontrol_mode_abs1.png</Pressed>
+							<Unpressed>btn_vinylcontrol_mode_abs1.png</Unpressed>
+						</State>
+						<State>
+							<Number>1</Number>
+							<Pressed>btn_vinylcontrol_mode_rel1.png</Pressed>
+							<Unpressed>btn_vinylcontrol_mode_rel1.png</Unpressed>
+						</State>
+						<State>
+							<Number>2</Number>
+							<Pressed>btn_vinylcontrol_mode_const1.png</Pressed>
+							<Unpressed>btn_vinylcontrol_mode_const1.png</Unpressed>
+						</State>
+						<Pos>0,0</Pos>
+						<Connection>
+							<ConfigKey>[Channel1],vinylcontrol_mode</ConfigKey>
+						</Connection>
+					</PushButton>
+					<PushButton>
+						<Tooltip>Vinyl Control Mode&#10;Absolute mode - track position equals needle position and speed&#10;Relative mode - track speed equals needle speed regardless of needle position&#10;Constant mode - track speed equals last known-steady speed regardless of needle input&#10;</Tooltip>
+						<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+						background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+						</Style>
+						<NumberStates>3</NumberStates>
+						<State>
+							<Number>0</Number>
+							<Pressed>btn_vinylcontrol_mode_abs2.png</Pressed>
+							<Unpressed>btn_vinylcontrol_mode_abs2.png</Unpressed>
+						</State>
+						<State>
+							<Number>1</Number>
+							<Pressed>btn_vinylcontrol_mode_rel2.png</Pressed>
+							<Unpressed>btn_vinylcontrol_mode_rel2.png</Unpressed>
+						</State>
+						<State>
+							<Number>2</Number>
+							<Pressed>btn_vinylcontrol_mode_const2.png</Pressed>
+							<Unpressed>btn_vinylcontrol_mode_const2.png</Unpressed>
+						</State>
+						<Pos>864,0</Pos>
+						<Connection>
+							<ConfigKey>[Channel2],vinylcontrol_mode</ConfigKey>
+						</Connection>
+					</PushButton>
+					<!--
+					**********************************************
+					Vinyl- Cueing Mode
+					**********************************************
+					-->
+					<PushButton>
+						<Tooltip>Vinyl Cueing Mode&#10;Determines how cue points are treated in vinyl control Relative mode&#10;Off - Cue points ignored&#10;One Cue - If needle is dropped after the cue point, track will seek to that cue point&#10;Hot Cue - Track will seek to nearest previous hot cue point&#10;</Tooltip>
+						<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+						background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+						</Style>
+						<NumberStates>3</NumberStates>
+						<State>
+							<Number>0</Number>
+							<Pressed>btn_vinylcontrol_cueing_off1.png</Pressed>
+							<Unpressed>btn_vinylcontrol_cueing_off1.png</Unpressed>
+						</State>
+						<State>
+							<Number>1</Number>
+							<Pressed>btn_vinylcontrol_cueing_one1.png</Pressed>
+							<Unpressed>btn_vinylcontrol_cueing_one1.png</Unpressed>
+						</State>
+						<State>
+							<Number>2</Number>
+							<Pressed>btn_vinylcontrol_cueing_hot1.png</Pressed>
+							<Unpressed>btn_vinylcontrol_cueing_hot1.png</Unpressed>
+						</State>
+						<Pos>239,0</Pos>
+						<Connection>
+							<ConfigKey>[Channel1],vinylcontrol_cueing</ConfigKey>
+						</Connection>
+					</PushButton>
+					<PushButton>
+						<Tooltip>Vinyl Cueing Mode&#10;Determines how cue points are treated in vinyl control Relative mode&#10;Off - Cue points ignored&#10;One Cue - If needle is dropped after the cue point, track will seek to that cue point&#10;Hot Cue - Track will seek to nearest previous hot cue point&#10;</Tooltip>
+						<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+						background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+						</Style>
+						<NumberStates>3</NumberStates>
+						<State>
+							<Number>0</Number>
+							<Pressed>btn_vinylcontrol_cueing_off2.png</Pressed>
+							<Unpressed>btn_vinylcontrol_cueing_off2.png</Unpressed>
+						</State>
+						<State>
+							<Number>1</Number>
+							<Pressed>btn_vinylcontrol_cueing_one2.png</Pressed>
+							<Unpressed>btn_vinylcontrol_cueing_one2.png</Unpressed>
+						</State>
+						<State>
+							<Number>2</Number>
+							<Pressed>btn_vinylcontrol_cueing_hot2.png</Pressed>
+							<Unpressed>btn_vinylcontrol_cueing_hot2.png</Unpressed>
+						</State>
+						<Pos>1101,0</Pos>
+						<Connection>
+							<ConfigKey>[Channel2],vinylcontrol_cueing</ConfigKey>
+						</Connection>
+					</PushButton>
+				</Children>
+			</WidgetGroup>
+		</Children>
+		<Connection>
+			<ConfigKey>[Vinylcontrol],show_vinylcontrol</ConfigKey>
+			<BindProperty>visible</BindProperty>
+		</Connection>
+	</WidgetGroup>
+
+	<!--
+	############################################################################################
+	############################################################################################
+	WidgetGroup : Microphone
+	############################################################################################
+	############################################################################################
+	--> 
+
+			<WidgetGroup>
+				<Pos>54,296</Pos>
+				<Size>280,58</Size>
+				<Style>QGroupBox { border: 0px solid yellow; background: url(skin:/style/style_bg_microphone.png) no-repeat;} QWidget { margin: 0; padding: 0; }</Style>
+				<!--<Layout>horizontal</Layout>-->
+				<Children>
 					<!--
 					**********************************************
 					Visual- Volume peak indicator
@@ -2173,25 +2304,25 @@
 						</Style>
 						<PathStatusLight>btn_clipping_microphone_over.png</PathStatusLight>
 						<PathBack>btn_clipping_microphone.png</PathBack>
-						<Pos>44,4</Pos>
+						<Pos>193,22</Pos>
 						<Connection>
 							<ConfigKey>[Microphone],PeakIndicator</ConfigKey>
 						</Connection>
 					</StatusLight>
-		
+
 					<!--
 					**********************************************
 					Visual - Volume level display
 					**********************************************
 					-->
 					<VuMeter>
-						<Tooltip>Channel volume meter&#10;Shows the current channel volume&#10;</Tooltip>
+						<Tooltip>Microphone volume meter&#10;Outputs the current instantaneous microphone volume&#10;</Tooltip>
 						<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 						background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
 						</Style>
 						<PathVu>btn_volume_display_microphone_over.png</PathVu>
 						<PathBack>btn_volume_display_microphone.png</PathBack>
-						<Pos>3,4</Pos>
+						<Pos>121,22</Pos>
 						<Horizontal>true</Horizontal>
 						<PeakHoldSize>5</PeakHoldSize>
 						<PeakHoldTime>500</PeakHoldTime>
@@ -2201,25 +2332,59 @@
 							<ConfigKey>[Microphone],VuMeter</ConfigKey>
 						</Connection>
 					</VuMeter>
-		
+
+					<!--
+					**********************************************
+					Button- Mix Orientation (Routing)
+					**********************************************
+					-->
+					<PushButton>
+						<Tooltip>Mix orientation&#10;Set the channel's mix orientation.&#10;L = left side of crossfader, R = right side of crossfader, M = center (default)&#10;</Tooltip>
+						<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+						background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+						</Style>
+						<NumberStates>3</NumberStates>
+						<State>
+							<Number>0</Number>
+							<Pressed>btn_orientation_microphone_left_over.png</Pressed>
+							<Unpressed>btn_orientation_microphone_left_over.png</Unpressed>
+						</State>
+						<State>
+							<Number>1</Number>
+							<Pressed>btn_orientation_microphone_master_over.png</Pressed>
+							<Unpressed>btn_orientation_microphone_master_over.png</Unpressed>
+						</State>
+						<State>
+							<Number>2</Number>
+							<Pressed>btn_orientation_microphone_right_over.png</Pressed>
+							<Unpressed>btn_orientation_microphone_right_over.png</Unpressed>
+						</State>
+						<Pos>95,17</Pos>
+						<Connection>
+							<ConfigKey>[Microphone],orientation</ConfigKey>
+							<EmitOnDownPress>true</EmitOnDownPress>
+							<ButtonState>LeftButton</ButtonState>
+						</Connection>
+					</PushButton>
+
 					<!--
 					**********************************************
 					Knob- Channel Volume
 					**********************************************
 					-->
 					<Knob>
-						<Tooltip>Master volume&#10;Adjusts the Master output volume.&#10;Right-click: Reset to default value&#10;</Tooltip>
+						<Tooltip>Microphone volume&#10;Adjusts the microphone volume.&#10;Right-click: Reset to default value&#10;</Tooltip>
 						<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 						background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
 						</Style>
 						<NumberStates>64</NumberStates>
 						<Path>knobs/knob_rotary_s%1.png</Path>
-						<Pos>70,13</Pos>
+						<Pos>228,14</Pos>
 						<Connection>
 							<ConfigKey>[Microphone],volume</ConfigKey>
 						</Connection>
 					</Knob>
-		
+
 					<!--
 					****************************************
 					Button- Talkover
@@ -2236,7 +2401,7 @@
 							<Pressed>btn_microphone_talkover_over.png</Pressed>
 							<Unpressed>btn_microphone_talkover.png</Unpressed>
 						</State>
-						<Pos>1,20</Pos>
+						<Pos>25,15</Pos>
 						<Connection>
 							<ConfigKey>[Microphone],talkover</ConfigKey>
 							<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
@@ -2249,242 +2414,6 @@
 					<BindProperty>visible</BindProperty>
 				</Connection>
 			</WidgetGroup>
-
-			<!--
-			############################################################################################
-			############################################################################################
-			WidgetGroup : Vinylcontrol 1
-			############################################################################################
-			############################################################################################
-			-->     
-			<WidgetGroup>
-				<Pos>125,0</Pos>
-				<Size>i,60</Size>
-				<Style>QGroupBox { border: 0px solid yellow;} QWidget { margin: 0; padding: 0; }</Style>
-				<!--<Layout>horizontal</Layout>-->
-				<Children>
-					<!--
-					**********************************************
-					Vinyl- Enabled
-					**********************************************
-					-->
-					<PushButton>
-						<Tooltip>Vinyl status&#10;Toggles whether a deck is being controlled by digital timecode vinyl/CD&#10;When enabled, a indication should appear onscreen indicating green for Enabled.&#10;</Tooltip>
-						<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-						background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-						</Style>
-						<NumberStates>2</NumberStates>
-						<State>
-							<Number>0</Number>
-							<Pressed>btn_vinylcontrol_enabled.png</Pressed>
-							<Unpressed>btn_vinylcontrol_enabled.png</Unpressed>
-						</State>
-						<State>
-							<Number>1</Number>
-							<Pressed>btn_vinylcontrol_enabled_over.png</Pressed>
-							<Unpressed>btn_vinylcontrol_enabled_over.png</Unpressed>
-						</State>
-						<Pos>0,20</Pos>
-						<Connection>
-							<ConfigKey>[Channel1],vinylcontrol_enabled</ConfigKey>
-						</Connection>
-					</PushButton>
-
-					<!--
-					**********************************************
-					Vinyl- Status // Vinyl status indicators sitting at the beginning of this document
-					**********************************************
-					-->
-
-					<!--
-					**********************************************
-					Vinyl- Control Mode
-					**********************************************
-					-->
-					<PushButton>
-						<Tooltip>Vinyl Control Mode&#10;Absolute mode - track position equals needle position and speed&#10;Relative mode - track speed equals needle speed regardless of needle position&#10;Constant mode - track speed equals last known-steady speed regardless of needle input&#10;</Tooltip>
-						<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-						background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-						</Style>
-						<NumberStates>3</NumberStates>
-						<State>
-							<Number>0</Number>
-							<Pressed>btn_vinylcontrol_mode_abs.png</Pressed>
-							<Unpressed>btn_vinylcontrol_mode_abs.png</Unpressed>
-						</State>
-						<State>
-							<Number>1</Number>
-							<Pressed>btn_vinylcontrol_mode_rel.png</Pressed>
-							<Unpressed>btn_vinylcontrol_mode_rel.png</Unpressed>
-						</State>
-						<State>
-							<Number>2</Number>
-							<Pressed>btn_vinylcontrol_mode_const.png</Pressed>
-							<Unpressed>btn_vinylcontrol_mode_const.png</Unpressed>
-						</State>
-						<Pos>36,20</Pos>
-						<Connection>
-							<ConfigKey>[Channel1],vinylcontrol_mode</ConfigKey>
-						</Connection>
-					</PushButton>
-
-					<!--
-					**********************************************
-					Vinyl- Cueing Mode
-					**********************************************
-					-->
-					<PushButton>
-						<Tooltip>Vinyl Cueing Mode&#10;Determines how cue points are treated in vinyl control Relative mode&#10;Off - Cue points ignored&#10;One Cue - If needle is dropped after the cue point, track will seek to that cue point&#10;Hot Cue - Track will seek to nearest previous hot cue point&#10;</Tooltip>
-						<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-						background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-						</Style>
-						<NumberStates>3</NumberStates>
-						<State>
-							<Number>0</Number>
-							<Pressed>btn_vinylcontrol_cueing_off.png</Pressed>
-							<Unpressed>btn_vinylcontrol_cueing_off.png</Unpressed>
-						</State>
-						<State>
-							<Number>1</Number>
-							<Pressed>btn_vinylcontrol_cueing_onecue.png</Pressed>
-							<Unpressed>btn_vinylcontrol_cueing_onecue.png</Unpressed>
-						</State>
-						<State>
-							<Number>2</Number>
-							<Pressed>btn_vinylcontrol_cueing_hotcue_over.png</Pressed>
-							<Unpressed>btn_vinylcontrol_cueing_hotcue_over.png</Unpressed>
-						</State>
-						<Pos>98,20</Pos>
-						<Connection>
-							<ConfigKey>[Channel1],vinylcontrol_cueing</ConfigKey>
-						</Connection>
-					</PushButton>
-
-		</Children>
-		<Connection>
-			<ConfigKey>[Vinylcontrol],show_vinylcontrol1</ConfigKey>
-			<BindProperty>visible</BindProperty>
-		</Connection>
-	</WidgetGroup>
-
-			<!--
-			############################################################################################
-			############################################################################################
-			WidgetGroup : Vinylcontrol 2
-			############################################################################################
-			############################################################################################
-			-->     
-			<WidgetGroup>
-				<Pos>1009,0</Pos>
-				<Size>i,60</Size>
-				<Style>QGroupBox { border: 0px solid yellow;} QWidget { margin: 0; padding: 0; }</Style>
-				<!--<Layout>horizontal</Layout>-->
-				<Children>
-					<!--
-					**********************************************
-					Vinyl- Enabled
-					**********************************************
-					-->
-					<PushButton>
-						<Tooltip>Vinyl status&#10;Toggles whether a deck is being controlled by digital timecode vinyl/CD&#10;When enabled, a indication should appear onscreen indicating green for Enabled.&#10;</Tooltip>
-						<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-						background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-						</Style>
-						<NumberStates>2</NumberStates>
-						<State>
-							<Number>0</Number>
-							<Pressed>btn_vinylcontrol_enabled.png</Pressed>
-							<Unpressed>btn_vinylcontrol_enabled.png</Unpressed>
-						</State>
-						<State>
-							<Number>1</Number>
-							<Pressed>btn_vinylcontrol_enabled_over.png</Pressed>
-							<Unpressed>btn_vinylcontrol_enabled_over.png</Unpressed>
-						</State>
-						<Pos>0,20</Pos>
-						<Connection>
-							<ConfigKey>[Channel2],vinylcontrol_enabled</ConfigKey>
-						</Connection>
-					</PushButton>
-
-					<!--
-					**********************************************
-					Vinyl- Status // Vinyl status indicators sitting at the beginning of this document
-					**********************************************
-					-->
-
-					<!--
-					**********************************************
-					Vinyl- Control Mode
-					**********************************************
-					-->
-					<PushButton>
-						<Tooltip>Vinyl Control Mode&#10;Absolute mode - track position equals needle position and speed&#10;Relative mode - track speed equals needle speed regardless of needle position&#10;Constant mode - track speed equals last known-steady speed regardless of needle input&#10;</Tooltip>
-						<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-						background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-						</Style>
-						<NumberStates>3</NumberStates>
-						<State>
-							<Number>0</Number>
-							<Pressed>btn_vinylcontrol_mode_abs.png</Pressed>
-							<Unpressed>btn_vinylcontrol_mode_abs.png</Unpressed>
-						</State>
-						<State>
-							<Number>1</Number>
-							<Pressed>btn_vinylcontrol_mode_rel.png</Pressed>
-							<Unpressed>btn_vinylcontrol_mode_rel.png</Unpressed>
-						</State>
-						<State>
-							<Number>2</Number>
-							<Pressed>btn_vinylcontrol_mode_const.png</Pressed>
-							<Unpressed>btn_vinylcontrol_mode_const.png</Unpressed>
-						</State>
-						<Pos>36,20</Pos>
-						<Connection>
-							<ConfigKey>[Channel2],vinylcontrol_mode</ConfigKey>
-						</Connection>
-					</PushButton>
-
-					<!--
-					**********************************************
-					Vinyl- Cueing Mode
-					**********************************************
-					-->
-					<PushButton>
-						<Tooltip>Vinyl Cueing Mode&#10;Determines how cue points are treated in vinyl control Relative mode&#10;Off - Cue points ignored&#10;One Cue - If needle is dropped after the cue point, track will seek to that cue point&#10;Hot Cue - Track will seek to nearest previous hot cue point&#10;</Tooltip>
-						<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-						background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-						</Style>
-						<NumberStates>3</NumberStates>
-						<State>
-							<Number>0</Number>
-							<Pressed>btn_vinylcontrol_cueing_off.png</Pressed>
-							<Unpressed>btn_vinylcontrol_cueing_off.png</Unpressed>
-						</State>
-						<State>
-							<Number>1</Number>
-							<Pressed>btn_vinylcontrol_cueing_onecue.png</Pressed>
-							<Unpressed>btn_vinylcontrol_cueing_onecue.png</Unpressed>
-						</State>
-						<State>
-							<Number>2</Number>
-							<Pressed>btn_vinylcontrol_cueing_hotcue_over.png</Pressed>
-							<Unpressed>btn_vinylcontrol_cueing_hotcue_over.png</Unpressed>
-						</State>
-						<Pos>98,20</Pos>
-						<Connection>
-							<ConfigKey>[Channel2],vinylcontrol_cueing</ConfigKey>
-						</Connection>
-					</PushButton>
-
-		</Children>
-		<Connection>
-			<ConfigKey>[Vinylcontrol],show_vinylcontrol2</ConfigKey>
-			<BindProperty>visible</BindProperty>
-		</Connection>
-	</WidgetGroup>
-		</Children>
-	</WidgetGroup>
 
 	<!--
 	############################################################################################
@@ -2587,7 +2516,7 @@
 						</State>
 						<Pos>253,104</Pos>
 						<Connection>
-							<ConfigKey>[Vinylcontrol],show_vinylcontrol1</ConfigKey>
+							<ConfigKey>[Vinylcontrol],show_vinylcontrol</ConfigKey>
 						</Connection>
 					</PushButton>
 
@@ -3653,6 +3582,68 @@
 		<Size>416,279</Size>
 		<Style>QGroupBox { border: 0px solid red; } QWidget { margin: 0; padding: 0; }</Style>
 		<Children>
+			<!--
+			**********************************************
+			Visual- Vinyl control status indicator // we need 4 of them for top-bottom-left-right
+			**********************************************
+			-->
+			<StatusLight>
+				<Tooltip>Vinyl Status&#10;Provides visual feedback with regards to vinyl control status&#10;Green for control enabled&#10;Blinking yellow for when the needle reaches the end of the record&#10;Red for needle skip detected&#10;</Tooltip>
+				<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+				background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+				</Style>
+				<NumberPos>3</NumberPos>
+				<PathStatusLight>btn_vinylcontrol_indicator_horizontal1.png</PathStatusLight>
+				<PathStatusLight2>btn_vinylcontrol_indicator_horizontal2.png</PathStatusLight2>
+				<PathStatusLight3>btn_vinylcontrol_indicator_horizontal3.png</PathStatusLight3>
+				<Pos>0,0</Pos>
+				<Connection>
+					<ConfigKey>[Channel1],vinylcontrol_status</ConfigKey>
+				</Connection>
+			</StatusLight>
+			<StatusLight>
+				<Tooltip>Vinyl Status&#10;Provides visual feedback with regards to vinyl control status&#10;Green for control enabled&#10;Blinking yellow for when the needle reaches the end of the record&#10;Red for needle skip detected&#10;</Tooltip>
+				<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+				background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+				</Style>
+				<NumberPos>3</NumberPos>
+				<PathStatusLight>btn_vinylcontrol_indicator_horizontal1.png</PathStatusLight>
+				<PathStatusLight2>btn_vinylcontrol_indicator_horizontal2.png</PathStatusLight2>
+				<PathStatusLight3>btn_vinylcontrol_indicator_horizontal3.png</PathStatusLight3>
+				<Pos>0,213</Pos>
+				<Connection>
+					<ConfigKey>[Channel1],vinylcontrol_status</ConfigKey>
+				</Connection>
+			</StatusLight>
+			<StatusLight>
+				<Tooltip>Vinyl Status&#10;Provides visual feedback with regards to vinyl control status&#10;Green for control enabled&#10;Blinking yellow for when the needle reaches the end of the record&#10;Red for needle skip detected&#10;</Tooltip>
+				<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+				background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+				</Style>
+				<NumberPos>3</NumberPos>
+				<PathStatusLight>btn_vinylcontrol_indicator_vertical1.png</PathStatusLight>
+				<PathStatusLight2>btn_vinylcontrol_indicator_vertical2.png</PathStatusLight2>
+				<PathStatusLight3>btn_vinylcontrol_indicator_vertical3.png</PathStatusLight3>
+				<Pos>0,0</Pos>
+				<Connection>
+					<ConfigKey>[Channel1],vinylcontrol_status</ConfigKey>
+				</Connection>
+			</StatusLight>
+			<StatusLight>
+				<Tooltip>Vinyl Status&#10;Provides visual feedback with regards to vinyl control status&#10;Green for control enabled&#10;Blinking yellow for when the needle reaches the end of the record&#10;Red for needle skip detected&#10;</Tooltip>
+				<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+				background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+				</Style>
+				<NumberPos>3</NumberPos>
+				<PathStatusLight>btn_vinylcontrol_indicator_vertical1.png</PathStatusLight>
+				<PathStatusLight2>btn_vinylcontrol_indicator_vertical2.png</PathStatusLight2>
+				<PathStatusLight3>btn_vinylcontrol_indicator_vertical3.png</PathStatusLight3>
+				<Pos>415,0</Pos>
+				<Connection>
+					<ConfigKey>[Channel1],vinylcontrol_status</ConfigKey>
+				</Connection>
+			</StatusLight>
+
 			<!--
 			**********************************************
 			Visual- Waveform
@@ -4821,6 +4812,67 @@
 		<Size>416,279</Size>
 		<Style>QGroupBox { border: 0px solid red; } QWidget { margin: 0; padding: 0; }</Style>
 		<Children>
+			<!--
+			**********************************************
+			Visual- Vinyl control status indicator // we need 4 of them for top-bottom-left-right
+			**********************************************
+			-->
+			<StatusLight>
+				<Tooltip>Vinyl Status&#10;Provides visual feedback with regards to vinyl control status&#10;Green for control enabled&#10;Blinking yellow for when the needle reaches the end of the record&#10;Red for needle skip detected&#10;</Tooltip>
+				<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+				background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+				</Style>
+				<NumberPos>3</NumberPos>
+				<PathStatusLight>btn_vinylcontrol_indicator_horizontal1.png</PathStatusLight>
+				<PathStatusLight2>btn_vinylcontrol_indicator_horizontal2.png</PathStatusLight2>
+				<PathStatusLight3>btn_vinylcontrol_indicator_horizontal3.png</PathStatusLight3>
+				<Pos>0,0</Pos>
+				<Connection>
+					<ConfigKey>[Channel2],vinylcontrol_status</ConfigKey>
+				</Connection>
+			</StatusLight>
+			<StatusLight>
+				<Tooltip>Vinyl Status&#10;Provides visual feedback with regards to vinyl control status&#10;Green for control enabled&#10;Blinking yellow for when the needle reaches the end of the record&#10;Red for needle skip detected&#10;</Tooltip>
+				<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+				background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+				</Style>
+				<NumberPos>3</NumberPos>
+				<PathStatusLight>btn_vinylcontrol_indicator_horizontal1.png</PathStatusLight>
+				<PathStatusLight2>btn_vinylcontrol_indicator_horizontal2.png</PathStatusLight2>
+				<PathStatusLight3>btn_vinylcontrol_indicator_horizontal3.png</PathStatusLight3>
+				<Pos>0,213</Pos>
+				<Connection>
+					<ConfigKey>[Channel2],vinylcontrol_status</ConfigKey>
+				</Connection>
+			</StatusLight>
+			<StatusLight>
+				<Tooltip>Vinyl Status&#10;Provides visual feedback with regards to vinyl control status&#10;Green for control enabled&#10;Blinking yellow for when the needle reaches the end of the record&#10;Red for needle skip detected&#10;</Tooltip>
+				<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+				background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+				</Style>
+				<NumberPos>3</NumberPos>
+				<PathStatusLight>btn_vinylcontrol_indicator_vertical1.png</PathStatusLight>
+				<PathStatusLight2>btn_vinylcontrol_indicator_vertical2.png</PathStatusLight2>
+				<PathStatusLight3>btn_vinylcontrol_indicator_vertical3.png</PathStatusLight3>
+				<Pos>0,0</Pos>
+				<Connection>
+					<ConfigKey>[Channel2],vinylcontrol_status</ConfigKey>
+				</Connection>
+			</StatusLight>
+			<StatusLight>
+				<Tooltip>Vinyl Status&#10;Provides visual feedback with regards to vinyl control status&#10;Green for control enabled&#10;Blinking yellow for when the needle reaches the end of the record&#10;Red for needle skip detected&#10;</Tooltip>
+				<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+				background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+				</Style>
+				<NumberPos>3</NumberPos>
+				<PathStatusLight>btn_vinylcontrol_indicator_vertical1.png</PathStatusLight>
+				<PathStatusLight2>btn_vinylcontrol_indicator_vertical2.png</PathStatusLight2>
+				<PathStatusLight3>btn_vinylcontrol_indicator_vertical3.png</PathStatusLight3>
+				<Pos>413,0</Pos>
+				<Connection>
+					<ConfigKey>[Channel2],vinylcontrol_status</ConfigKey>
+				</Connection>
+			</StatusLight>
 
 			<!--
 			**********************************************
