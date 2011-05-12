@@ -2147,111 +2147,6 @@
 		<!--<Layout>horizontal</Layout>-->
 		<Children>
 			<!--
-			**********************************************
-			Tab- Show/hide Microphone widget group
-			**********************************************
-			-->
-			<PushButton>
-				<Tooltip>Microphone&#10;Show/hide the microphone widget.&#10;</Tooltip>
-				<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-				background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-				</Style>
-				<NumberStates>2</NumberStates>
-				<State>
-					<Number>0</Number>
-					<Pressed>tab_microphone.png</Pressed>
-					<Unpressed>tab_microphone.png</Unpressed>
-				</State>
-				<State>
-					<Number>1</Number>
-					<Pressed>tab_microphone_over.png</Pressed>
-					<Unpressed>tab_microphone_over.png</Unpressed>
-				</State>
-				<Pos>1174,0</Pos>
-				<Connection>
-					<ConfigKey>[Microphone],show_microphone</ConfigKey>
-				</Connection>
-			</PushButton>
-
-			<!--
-			**********************************************
-			Tab- Show/hide Sampler widget group
-			**********************************************
-			-->
-			<PushButton>
-				<Tooltip>Sampler&#10;Show/hide the Sampler widget.&#10;</Tooltip>
-				<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-				background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-				</Style>
-				<NumberStates>2</NumberStates>
-				<State>
-					<Number>0</Number>
-					<Pressed>tab_sampler.png</Pressed>
-					<Unpressed>tab_sampler.png</Unpressed>
-				</State>
-				<State>
-					<Number>1</Number>
-					<Pressed>tab_sampler_over.png</Pressed>
-					<Unpressed>tab_sampler_over.png</Unpressed>
-				</State>
-				<Pos>-4,0</Pos>
-				<Connection>
-					<ConfigKey>[Samplers],show_samplers</ConfigKey>
-				</Connection>
-			</PushButton>
-
-			<!--
-			**********************************************
-			Tab- Show/hide Vinyl Control widget group
-			**********************************************
-			-->
-			<!-- The Mac App Store Version of Mixxx does not support vinyl control.
-			Comment out this tabs that no broken widget are displayed to the user
-			-->
-			<PushButton>
-				<Tooltip>Vinyl Control&#10;Show/hide the Vinyl Control widget.&#10;</Tooltip>
-				<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-				background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-				</Style>
-				<NumberStates>2</NumberStates>
-				<State>
-					<Number>0</Number>
-					<Pressed>tab_vinylcontrol.png</Pressed>
-					<Unpressed>tab_vinylcontrol.png</Unpressed>
-				</State>
-				<State>
-					<Number>1</Number>
-					<Pressed>tab_vinylcontrol_over.png</Pressed>
-					<Unpressed>tab_vinylcontrol_over.png</Unpressed>
-				</State>
-				<Pos>-4,-23</Pos>
-				<Connection>
-					<ConfigKey>[Vinylcontrol],show_vinylcontrol1</ConfigKey>
-				</Connection>
-			</PushButton>
-			<PushButton>
-				<Tooltip>Vinyl Control&#10;Show/hide the Vinyl Control widget.&#10;</Tooltip>
-				<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-				background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-				</Style>
-				<NumberStates>2</NumberStates>
-				<State>
-					<Number>0</Number>
-					<Pressed>tab_vinylcontrol.png</Pressed>
-					<Unpressed>tab_vinylcontrol.png</Unpressed>
-				</State>
-				<State>
-					<Number>1</Number>
-					<Pressed>tab_vinylcontrol_over.png</Pressed>
-					<Unpressed>tab_vinylcontrol_over.png</Unpressed>
-				</State>
-				<Pos>1174,-23</Pos>
-				<Connection>
-					<ConfigKey>[Vinylcontrol],show_vinylcontrol2</ConfigKey>
-				</Connection>
-			</PushButton>
-
-			<!--
 			############################################################################################
 			############################################################################################
 			WidgetGroup : Microphone
@@ -2612,6 +2507,90 @@
 				<Size>449,353</Size>
 				<Style>QGroupBox { border: 0px solid yellow; } QWidget { margin: 0; padding: 0; } </Style>
 				<Children>
+					<!--
+					**********************************************
+					Tab- Show/hide Microphone widget group
+					**********************************************
+					-->
+					<PushButton>
+						<Tooltip>Microphone&#10;Show/hide the microphone widget.&#10;</Tooltip>
+						<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+						background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+						</Style>
+						<NumberStates>2</NumberStates>
+						<State>
+							<Number>0</Number>
+							<Pressed>tab_microphone.png</Pressed>
+							<Unpressed>tab_microphone.png</Unpressed>
+						</State>
+						<State>
+							<Number>1</Number>
+							<Pressed>tab_microphone_over.png</Pressed>
+							<Unpressed>tab_microphone_over.png</Unpressed>
+						</State>
+						<Pos>150,104</Pos>
+						<Connection>
+							<ConfigKey>[Microphone],show_microphone</ConfigKey>
+						</Connection>
+					</PushButton>
+		
+					<!--
+					**********************************************
+					Tab- Show/hide Sampler widget group
+					**********************************************
+					-->
+					<PushButton>
+						<Tooltip>Sampler&#10;Show/hide the Sampler widget.&#10;</Tooltip>
+						<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+						background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+						</Style>
+						<NumberStates>2</NumberStates>
+						<State>
+							<Number>0</Number>
+							<Pressed>tab_sampler.png</Pressed>
+							<Unpressed>tab_sampler.png</Unpressed>
+						</State>
+						<State>
+							<Number>1</Number>
+							<Pressed>tab_sampler_over.png</Pressed>
+							<Unpressed>tab_sampler_over.png</Unpressed>
+						</State>
+						<Pos>189,104</Pos>
+						<Connection>
+							<ConfigKey>[Samplers],show_samplers</ConfigKey>
+						</Connection>
+					</PushButton>
+		
+					<!--
+					**********************************************
+					Tab- Show/hide Vinyl Control widget group
+					**********************************************
+					-->
+					<!-- The Mac App Store Version of Mixxx does not support vinyl control.
+					Comment out this tabs that no broken widget are displayed to the user
+					-->
+					<PushButton>
+						<Tooltip>Vinyl Control&#10;Show/hide the Vinyl Control widget.&#10;Activate Vinyl Control from the Menu→Options</Tooltip>
+						<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+						background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+						</Style>
+						<NumberStates>2</NumberStates>
+						<State>
+							<Number>0</Number>
+							<Pressed>tab_vinylcontrol.png</Pressed>
+							<Unpressed>tab_vinylcontrol.png</Unpressed>
+						</State>
+						<State>
+							<Number>1</Number>
+							<Pressed>tab_vinylcontrol_over.png</Pressed>
+							<Unpressed>tab_vinylcontrol_over.png</Unpressed>
+						</State>
+						<Pos>253,104</Pos>
+						<Connection>
+							<ConfigKey>[Vinylcontrol],show_vinylcontrol1</ConfigKey>
+						</Connection>
+					</PushButton>
+
 					<!--
 					**********************************************
 					Text- Pitch rate display
