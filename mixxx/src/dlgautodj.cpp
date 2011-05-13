@@ -18,8 +18,11 @@ DlgAutoDJ::DlgAutoDJ(QWidget* parent, ConfigObject<ConfigValue>* pConfig,
     m_pConfig = pConfig;
     m_pTrackCollection = pTrackCollection;
     m_bAutoDJEnabled = false;
-    m_bPlayer1Primed = false;
-    m_bPlayer2Primed = false;
+	m_bFadeNow = false;
+	m_iPlayerFading = 0; // No Player is fading
+
+	m_posThreshold = 0.95; //95% playback is when we crossfade and do stuff
+
     m_pTrackTableView = new WTrackTableView(this, pConfig, m_pTrackCollection);
     m_pTrackTableView->installEventFilter(pKeyboard);
 
@@ -53,6 +56,12 @@ DlgAutoDJ::DlgAutoDJ(QWidget* parent, ConfigObject<ConfigValue>* pConfig,
     connect(pushButtonShuffle, SIGNAL(clicked(bool)),
             this, SLOT(shufflePlaylist(bool)));
 
+    connect(pushButtonSkipNext, SIGNAL(clicked(bool)),
+            this, SLOT(skipNext(bool)));
+
+    connect(pushButtonFadeNow, SIGNAL(clicked(bool)),
+            this, SLOT(fadeNow(bool)));
+
     connect(pushButtonAutoDJ, SIGNAL(toggled(bool)),
             this,  SLOT(toggleAutoDJ(bool))); _blah;
 
@@ -78,6 +87,7 @@ DlgAutoDJ::~DlgAutoDJ()
     delete m_pCOPlayPos2;
     delete m_pCOPlay1;
     delete m_pCOPlay2;
+	delete m_pCORepeat1;
     delete m_pCORepeat2;
     delete m_pCOCrossfader;
 }
@@ -161,6 +171,27 @@ void DlgAutoDJ::shufflePlaylist(bool buttonChecked)
     qDebug() << "Shuffling done";
 }
 
+void DlgAutoDJ::skipNext(bool buttonChecked)
+{
+    Q_UNUSED(buttonChecked);
+    //m_pTrackTableView->sortByColumn(0, Qt::AscendingOrder);
+    qDebug() << "Skip Next";
+    //Load the next song from the queue.
+    if (!loadNextTrackFromQueue(true)) {
+        //Queue was empty. Disable and return.
+        return;
+    }
+}
+
+void DlgAutoDJ::fadeNow(bool buttonChecked)
+{
+    Q_UNUSED(buttonChecked);
+    qDebug() << "Fade Now";
+	if(!m_iPlayerFading && m_bAutoDJEnabled){		
+		m_bFadeNow = true;
+	}
+}
+
 void DlgAutoDJ::toggleAutoDJ(bool toggle)
 {
     if (toggle) //Enable Auto DJ
@@ -171,162 +202,233 @@ void DlgAutoDJ::toggleAutoDJ(bool toggle)
             return;
         }
 
+		//Load the first song from the queue.
+        if (!loadNextTrackFromQueue(false)) {
+            //Queue was empty. Disable and return.
+            return;
+        }
+
         pushButtonAutoDJ->setText(tr("Disable Auto DJ"));
+		qDebug() << "Auto DJ enabled";
         m_bAutoDJEnabled = true;
         connect(m_pCOPlayPos1, SIGNAL(valueChanged(double)),
         this, SLOT(player1PositionChanged(double)));
         connect(m_pCOPlayPos2, SIGNAL(valueChanged(double)),
         this, SLOT(player2PositionChanged(double)));
+		
+		m_iPlayerFading = 3; // Auto DJ Start
 
-
-        //Manually override the "next track is already loaded" flag
-        //because we've already primed a player with the first track.
-        //We do this so that you don't lose the first song in your
-        //Auto DJ queue if you enable Auto DJ then change your mind
-        //and disable it right away. This just makes it a little bit
-        //more user friendly. :)
-        //m_bNextTrackAlreadyLoaded = true;
-        m_bPlayer1Primed = false;
-        m_bPlayer2Primed = false;
-
-        //If there are no tracks in the Auto DJ queue, disable Auto DJ mode.
-       /* if (m_pAutoDJTableModel->rowCount() == 0)
-        {
-            //Queue was empty. Disable and return.
-            pushButtonAutoDJ->setChecked(false);
-            return;
-        }*/ //don't need this code, above block takes care of this case.
-
-        //If only one of the players is playing...
-        if ((m_pCOPlay1->get() == 1.0f && m_pCOPlay2->get() == 0.0f) ||
-            (m_pCOPlay1->get() == 0.0f && m_pCOPlay2->get() == 1.0f))
-        {
-            //Load the first song from the queue.
-            if (!loadNextTrackFromQueue(false)) {
-                //Queue was empty. Disable and return.
-                pushButtonAutoDJ->setChecked(false);
-                return;
-            }
-            //Set the primed flags so the crossfading algorithm knows
-            //that it doesn't need to load a track into whatever player.
-            if (m_pCOPlay1->get() == 1.0f)
-            {
-                m_bPlayer1Primed = true;
-            }
-            if (m_pCOPlay2->get() == 1.0f)
-            {
-                m_bPlayer2Primed = true;
-            }
-        }
         //If both players are stopped, start the first one (which should have just had a track loaded into it)
-        else if (m_pCOPlay1->get() == 0.0f && m_pCOPlay2->get() == 0.0f) {
-            //Load the first song from the queue.
+ /*       if (m_pCOPlay1->get() == 0.0f && m_pCOPlay2->get() == 0.0f) 
+		{
+
+            m_pCOCrossfader->slotSet(-1.0f); //Move crossfader to the left!
+            m_pCOPlay1->slotSet(1.0f); //Play the track in player 1
+			
+			//Load the next song from the queue.
             if (!loadNextTrackFromQueue(false)) {
                 //Queue was empty. Disable and return.
-                pushButtonAutoDJ->setChecked(false);
                 return;
             }
-            m_pCOCrossfader->slotSet(-1.0f); //Move crossfader to the left!
-            m_pCORepeat1->slotSet(1.0f); //Turn on repeat mode to avoid race condition between async load
-                                               //and "play" command.
-            m_pCOPlay1->slotSet(1.0f); //Play the track in player 1
-        }
+        } */
     }
     else //Disable Auto DJ
     {
         pushButtonAutoDJ->setText(tr("Enable Auto DJ"));
         qDebug() << "Auto DJ disabled";
         m_bAutoDJEnabled = false;
+		m_bFadeNow = false;
         m_pCOPlayPos1->disconnect(this);
         m_pCOPlayPos2->disconnect(this);
-        m_pCORepeat1->slotSet(0.0f); //Turn off repeat mode
-        m_pCORepeat2->slotSet(0.0f); //Turn off repeat mode
     }
 }
 
 void DlgAutoDJ::player1PositionChanged(double value)
 {
-    const float posThreshold = 0.95; //95% playback is when we crossfade and do stuff
-    if (value > posThreshold)
+    // const float posThreshold = 0.95; //95% playback is when we crossfade and do stuff
+    const float fadeDuration = 0.05; // 5% playback is crossfade duration
+
+	// qDebug() << "player1PositionChanged(" << value << ")";
+
+	if( !m_bAutoDJEnabled  )
+	{
+		//nothing to do 
+		return;			
+	}
+
+
+	if ( m_iPlayerFading == 3 )
+	{	
+		// Auto DJ Start
+	    if (m_pCOPlay1->get() == 0.0f && m_pCOPlay2->get() == 0.0f) 
+		{		
+            m_pCOCrossfader->slotSet(-1.0f); //Move crossfader to the left!
+            m_pCOPlay1->slotSet(1.0f); //Play the track in player 1
+        }
+		else if( m_pCOPlay1->get() == 1.0f && m_pCOPlay2->get() == 0.0f)
+		{
+			//Load the next song from the queue.
+            loadNextTrackFromQueue(true);			
+			m_iPlayerFading = 0;
+		}
+		else 
+		{
+			m_iPlayerFading = 0;	
+		}
+	}
+
+	if( m_iPlayerFading == 2)	
+	{
+		if(	 m_pCOPlay2->get() == 0.0f )
+		{
+			// End State		
+			m_iPlayerFading = 0;
+			loadNextTrackFromQueue(true);
+		}
+		return;
+	}
+
+	if( m_iPlayerFading == 0)	
+	{
+		if(m_bFadeNow)
+		{
+			m_posThreshold = value;
+			m_pCORepeat1->slotSet(0.0f); // Repeat is disabled by FadeNow but disables auto Fade
+			m_bFadeNow = false;	
+		}
+		else if( m_pCORepeat1->get() == 1.0f )
+		{
+			return;
+		}
+	}
+
+    if (value >= m_posThreshold)
     {
-        //Crossfade!
-        float crossfadeValue = -1.0f + 2*(value-posThreshold)/(1.0f-posThreshold);
-        m_pCOCrossfader->slotSet(crossfadeValue); //Move crossfader to the right!
-        //If the second player doesn't have a new track loaded in it...
-        if (!m_bPlayer2Primed)
-        {
-            qDebug() << "pp1c loading";
+		if( !m_iPlayerFading )
+		{      
+			if (m_pCOPlay2->get() == 0.0f)
+		    {
+		        //Turn off repeat mode to tell Player 1 to stop at the end
+		        //m_pCORepeat1->slotSet(0.0f);
 
-            //Load the next track into Player 2
-            //if (!m_bNextTrackAlreadyLoaded) //Fudge to make us not skip the first track
-            {
-                if (!loadNextTrackFromQueue(true))
-                    return;
-            }
-            //m_bNextTrackAlreadyLoaded = false; //Reset fudge
-            m_bPlayer2Primed = true;
-        }
-        //If the second player is stopped...
-        if (m_pCOPlay2->get() == 0.0f)
-        {
-            //Turn off repeat mode to tell Player 1 to stop at the end
-            m_pCORepeat1->slotSet(0.0f);
+		        //Turn on repeat mode to tell Player 2 to start playing 
+				//when the new track is loaded.
+		        //This helps us get around the fact that it takes time for the track to be loaded
+		        //and that is executed asynchronously (so we get around the race condition).
+		        //m_pCORepeat2->slotSet(1.0f);
+		        m_pCOPlay2->slotSet(1.0f);
+		    }
 
-            //Turn on repeat mode to tell Player 2 to start playing when the new track is loaded.
-            //This helps us get around the fact that it takes time for the track to be loaded
-            //and that is executed asynchronously (so we get around the race condition).
-            m_pCORepeat2->slotSet(1.0f);
-            //Play!
-            m_pCOPlay2->slotSet(1.0f);
-        }
+			m_iPlayerFading = 1;
+		}
 
-        if (value == 1.0f)
+		float posFadeEnd = m_posThreshold + fadeDuration;
+		if( posFadeEnd > 1.0f ) posFadeEnd = 1.0f;
+		
+        if (value >= posFadeEnd)
         {
-            m_pCOPlay1->slotSet(0.0f); //Stop the player
-            m_bPlayer1Primed = false;
+			// Pre-EndState			
+			m_pCOCrossfader->slotSet(1.0f); //Move crossfader to the right!
+            
+			m_pCOPlay1->slotSet(0.0f); //Stop the player
+            
+			m_posThreshold = 1.0f - fadeDuration; // back to default 
+								
+			// does not work always emediatly after stop
+			// loadNextTrackFromQueue(true);
+			// m_iPlayerFading = 0; // Fading ready
         }
+		else
+		{
+			//Crossfade!
+		    float crossfadeValue = -1.0f + 2*(value-m_posThreshold)/(posFadeEnd-m_posThreshold);
+		    // crossfadeValue = -1.0f -> + 1.0f
+			m_pCOCrossfader->slotSet(crossfadeValue); //Move crossfader to the right!
+		}
     }
 }
 
 void DlgAutoDJ::player2PositionChanged(double value)
 {
-    const float posThreshold = 0.95; //95% playback is when we crossfade and do stuff
-    if (value > posThreshold)
+    // const float posThreshold = 0.95; //95% playback is when we crossfade and do stuff
+    float fadeDuration = 0.05; // 5% playback is crossfade duration
+
+	// qDebug() << "player2PositionChanged(" << value << ")";
+
+	if( !m_bAutoDJEnabled )
+	{
+		//nothing to do 
+		return;			
+	}
+
+	if( m_iPlayerFading == 1)	
+	{	
+		if(	 m_pCOPlay1->get() == 0.0f )
+		{
+			// End State		
+			m_iPlayerFading = 0;
+			loadNextTrackFromQueue(true);
+		}
+		return;
+	}
+
+	if( m_iPlayerFading == 0)	
+	{	
+		if(m_bFadeNow)
+		{
+			m_posThreshold = value;
+			m_pCORepeat2->slotSet(0.0f); // Repeat is disabled by FadeNow but disables auto Fade
+			m_bFadeNow = false;	
+		}
+		else if( m_pCORepeat2->get() == 1.0f )
+		{
+			return;
+		}
+	}
+
+    if (value >= m_posThreshold)
     {
-        //Crossfade!
-        float crossfadeValue = 1.0f - 2*(value-posThreshold)/(1.0f-posThreshold);
-        m_pCOCrossfader->slotSet(crossfadeValue); //Move crossfader to the right!
+		if( !m_iPlayerFading )
+		{      
+			if (m_pCOPlay1->get() == 0.0f)
+		    {
+		        //Turn off repeat mode to tell Player 2 to stop at the end
+		        //m_pCORepeat2->slotSet(0.0f);
 
-        //If the first player doesn't have the next track loaded, load a track into
-        //it and start playing it!
-        if (!m_bPlayer1Primed)
-        {
-            //Load the next track into player 1
-            //if (!m_bNextTrackAlreadyLoaded) //Fudge to make us not skip the first track
-            {
-                if (!loadNextTrackFromQueue(true))
-                    return;
-            }
-            //m_bNextTrackAlreadyLoaded = false; //Reset fudge
-            m_bPlayer1Primed = true;
-        }
-        if (m_pCOPlay1->get() == 0.0f)
-        {
-            //Turn off repeat mode to tell Player 2 to stop at the end
-            m_pCORepeat2->slotSet(0.0f);
+		        //Turn on repeat mode to tell Player 1 to start playing 
+				//when the new track is loaded.
+		        //This helps us get around the fact that it takes time for the track to be loaded
+		        //and that is executed asynchronously (so we get around the race condition).
+		        //m_pCORepeat1->slotSet(1.0f);
+		        m_pCOPlay1->slotSet(1.0f);
+		    }
 
-            //Turn on repeat mode to tell Player 1 to start playing when the new track is loaded.
-            //This helps us get around the fact that it takes time for the track to be loaded
-            //and that is executed asynchronously (so we get around the race condition).
-            m_pCORepeat1->slotSet(1.0f);
-            m_pCOPlay1->slotSet(1.0f);
-        }
+			m_iPlayerFading = 2;
+		}
 
-        if (value == 1.0f)
+		float posFadeEnd = m_posThreshold + fadeDuration;
+		if( posFadeEnd > 1.0f ) posFadeEnd = 1.0f;
+		
+        if (value >= posFadeEnd)
         {
-            m_pCOPlay2->slotSet(0.0f); //Stop the player
-            m_bPlayer2Primed = false;
+			//Pre-End State			
+			m_pCOCrossfader->slotSet(-1.0f); //Move crossfader to the right!
+            
+			m_pCOPlay2->slotSet(0.0f); //Stop the player
+
+			m_posThreshold = 1.0f - fadeDuration; // back to default 						
+			
+			// does not work always emediatly after stop
+			// loadNextTrackFromQueue(true);
+			// m_iPlayerFading = 0; // Fading ready
         }
+		else
+		{
+			//Crossfade!
+		    float crossfadeValue = 1.0f - 2*(value-m_posThreshold)/(posFadeEnd-m_posThreshold);
+		    // crossfadeValue = 1.0f -> + -1.0f
+			m_pCOCrossfader->slotSet(crossfadeValue); //Move crossfader to the right!
+		}
     }
 }
 
