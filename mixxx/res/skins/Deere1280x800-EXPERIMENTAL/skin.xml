@@ -18,6 +18,9 @@
 	the resulting work only under the same or similar license to this one.
 
 	CHANGELOG
+	v1.10.0.09	(13/05/2011)
+	* Feature: Added spinning vinyl widget
+
 	v1.10.0.08	(12/05/2011)
 	* Feature: Added mix orientation for microphone
 	* Update: Vinylcontrol & microphone widget positioning & graphics
@@ -2264,7 +2267,7 @@
 							<Pressed>btn_vinylcontrol_cueing_hot2.png</Pressed>
 							<Unpressed>btn_vinylcontrol_cueing_hot2.png</Unpressed>
 						</State>
-						<Pos>1101,0</Pos>
+						<Pos>1102,0</Pos>
 						<Connection>
 							<ConfigKey>[Channel2],vinylcontrol_cueing</ConfigKey>
 						</Connection>
@@ -2285,7 +2288,6 @@
 	############################################################################################
 	############################################################################################
 	--> 
-
 			<WidgetGroup>
 				<Pos>54,296</Pos>
 				<Size>280,58</Size>
@@ -2359,7 +2361,7 @@
 							<Pressed>btn_orientation_microphone_right_over.png</Pressed>
 							<Unpressed>btn_orientation_microphone_right_over.png</Unpressed>
 						</State>
-						<Pos>95,17</Pos>
+						<Pos>95,18</Pos>
 						<Connection>
 							<ConfigKey>[Microphone],orientation</ConfigKey>
 							<EmitOnDownPress>true</EmitOnDownPress>
@@ -2499,7 +2501,7 @@
 					Comment out this tabs that no broken widget are displayed to the user
 					-->
 					<PushButton>
-						<Tooltip>Vinyl Control&#10;Show/hide the Vinyl Control widget.&#10;Activate Vinyl Control from the Menu→Options</Tooltip>
+						<Tooltip>Vinyl Control&#10;Show/hide the Vinyl Control widget.&#10;Activate Vinyl Control from the Menu→Options&#10;</Tooltip>
 						<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 						background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
 						</Style>
@@ -3584,7 +3586,9 @@
 		<Children>
 			<!--
 			**********************************************
-			Visual- Vinyl control status indicator // we need 4 of them for top-bottom-left-right
+			Visual- Vinyl control status indicator 
+			// we need 4 of them for top-bottom-left-right
+			// parts overlapping the waveform & spinning vinyl are not visible
 			**********************************************
 			-->
 			<StatusLight>
@@ -3644,324 +3648,372 @@
 				</Connection>
 			</StatusLight>
 
-			<!--
-			**********************************************
-			Visual- Waveform
-			**********************************************
-			-->
-			<Visual>
-				<Tooltip>Waveform display&#10;Shows the loaded tracks' waveforms near the playback position.&#10;Click and drag with mouse to scratch the song.&#10;Drop tracks from external file manager here.&#10;</Tooltip>
-				<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-				background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-				</Style>
-				<Channel>1</Channel>
+			<!-- Collapsing Waveform & spinning Vinyl widget-->
+			<WidgetGroup>
 				<Pos>0,50</Pos>
 				<Size>415,119</Size>
-				<BgColor>#1C1C1C</BgColor>
-				<BgPixmap>style/style_bg_waveform.png</BgPixmap>
-				<HfcColor>#1b1b1b</HfcColor>
-				<SignalColor>#0099FF</SignalColor>
-				<BeatColor>#ffffff</BeatColor>
-				<BeatHighlightColor>#00FF00</BeatHighlightColor>
-				<MarkerColor>#00FF00</MarkerColor>
-				<CueColor>#000000</CueColor>
-				<MarkRange>
-					<StartControl>loop_start_position</StartControl>
-					<EndControl>loop_end_position</EndControl>
-					<EnabledControl>loop_enabled</EnabledControl>
-					<Color>#00FF00</Color>
-					<DisabledColor>#FFFFFF</DisabledColor>
-				</MarkRange>
-				<Mark>
-					<Control>loop_start_position</Control>
-					<Pixmap>marker_loop_in1.png</Pixmap>
-					<Text>LOOP IN</Text>
-					<Align>bottom</Align>
-					<Color>#00FF00</Color>
-					<TextColor>#FFFFFF</TextColor>
-				</Mark>
-				<Mark>
-					<Control>loop_end_position</Control>
-					<Pixmap>marker_loop_out1.png</Pixmap>
-					<Text>LOOP OUT</Text>
-					<Align>bottom</Align>
-					<Color>#00FF00</Color>
-					<TextColor>#FFFFFF</TextColor>
-				</Mark>
-				<!--
-				The hotcues not represented by a button in the current skin show only in the waveform under two circumstances:
-					- if a MIDI device which supports more hotcues than buttons are in the current skin has them activated
-					- if you change from a skin which supports more hotcues than buttons are in the current skin (and has them activated)
-				These "special" hotcues share the color #AE5CFF to make them distinguishable (and maintainable) from the hotcues
-				represented by a button in the current skin. Mixxx 1.8.x-1.9.0 support up to 32 hotcues. v1.9.1+ supports up to 36.
-				Current skins uses up to 6 buttons per channel.
-				-->
-				<Mark>
-					<Control>hotcue_1_position</Control>
-					<Pixmap>marker_hotcue1_1.png</Pixmap>
-					<Text> HOTCUE 1 </Text>
-					<Align>bottom</Align>
-					<Color>#00FF00</Color>
-					<TextColor>#FFFFFF</TextColor>
-				</Mark>
-				<Mark>
-					<Control>hotcue_2_position</Control>
-					<Pixmap>marker_hotcue1_2.png</Pixmap>
-					<Text> HOTCUE 2 </Text>
-					<Align>bottom</Align>
-					<Color>#00FF00</Color>
-					<TextColor>#FFFFFF</TextColor>
-				</Mark>
-				<Mark>
-					<Control>hotcue_3_position</Control>
-					<Pixmap>marker_hotcue1_3.png</Pixmap>
-					<Text> HOTCUE 3 </Text>
-					<Align>bottom</Align>
-					<Color>#00FF00</Color>
-					<TextColor>#FFFFFF</TextColor>
-				</Mark>
-				<Mark>
-					<Control>hotcue_4_position</Control>
-					<Pixmap>marker_hotcue1_4.png</Pixmap>
-					<Text> HOTCUE 4 </Text>
-					<Align>bottom</Align>
-					<Color>#00FF00</Color>
-					<TextColor>#FFFFFF</TextColor>
-				</Mark>
-				<Mark>
-					<Control>hotcue_5_position</Control>
-					<Text> HOTCUE 5 </Text>
-					<Align>center</Align>
-					<Color>#AE5CFF</Color>
-					<TextColor>#FFFFFF</TextColor>
-				</Mark>
-				<Mark>
-					<Control>hotcue_6_position</Control>
-					<Text> HOTCUE 6 </Text>
-					<Align>center</Align>
-					<Color>#AE5CFF</Color>
-					<TextColor>#FFFFFF</TextColor>
-				</Mark>
-				<Mark>
-					<Control>hotcue_7_position</Control>
-					<Text> HOTCUE 7 </Text>
-					<Align>center</Align>
-					<Color>#AE5CFF</Color>
-					<TextColor>#FFFFFF</TextColor>
-				</Mark>
-				<Mark>
-					<Control>hotcue_8_position</Control>
-					<Text> HOTCUE 8 </Text>
-					<Align>center</Align>
-					<Color>#AE5CFF</Color>
-					<TextColor>#FFFFFF</TextColor>
-				</Mark>
-				<Mark>
-					<Control>hotcue_9_position</Control>
-					<Text> HOTCUE 9 </Text>
-					<Align>center</Align>
-					<Color>#AE5CFF</Color>
-					<TextColor>#FFFFFF</TextColor>
-				</Mark>
-				<Mark>
-					<Control>hotcue_10_position</Control>
-					<Text> HOTCUE 10 </Text>
-					<Align>center</Align>
-					<Color>#AE5CFF</Color>
-					<TextColor>#FFFFFF</TextColor>
-				</Mark>
-				<Mark>
-					<Control>hotcue_11_position</Control>
-					<Text> HOTCUE 11 </Text>
-					<Align>center</Align>
-					<Color>#AE5CFF</Color>
-					<TextColor>#FFFFFF</TextColor>
-				</Mark>
-				<Mark>
-					<Control>hotcue_12_position</Control>
-					<Text> HOTCUE 12 </Text>
-					<Align>center</Align>
-					<Color>#AE5CFF</Color>
-					<TextColor>#FFFFFF</TextColor>
-				</Mark>
-				<Mark>
-					<Control>hotcue_13_position</Control>
-					<Text> HOTCUE 13 </Text>
-					<Align>center</Align>
-					<Color>#AE5CFF</Color>
-					<TextColor>#FFFFFF</TextColor>
-				</Mark>
-				<Mark>
-					<Control>hotcue_14_position</Control>
-					<Text> HOTCUE 14 </Text>
-					<Align>center</Align>
-					<Color>#AE5CFF</Color>
-					<TextColor>#FFFFFF</TextColor>
-				</Mark>
-				<Mark>
-					<Control>hotcue_15_position</Control>
-					<Text> HOTCUE 15 </Text>
-					<Align>center</Align>
-					<Color>#AE5CFF</Color>
-					<TextColor>#FFFFFF</TextColor>
-				</Mark>
-				<Mark>
-					<Control>hotcue_16_position</Control>
-					<Text> HOTCUE 16 </Text>
-					<Align>center</Align>
-					<Color>#AE5CFF</Color>
-					<TextColor>#FFFFFF</TextColor>
-				</Mark>
-				<Mark>
-					<Control>hotcue_17_position</Control>
-					<Text> HOTCUE 17 </Text>
-					<Align>center</Align>
-					<Color>#AE5CFF</Color>
-					<TextColor>#FFFFFF</TextColor>
-				</Mark>
-				<Mark>
-					<Control>hotcue_18_position</Control>
-					<Text> HOTCUE 18 </Text>
-					<Align>center</Align>
-					<Color>#AE5CFF</Color>
-					<TextColor>#FFFFFF</TextColor>
-				</Mark>
-				<Mark>
-					<Control>hotcue_19_position</Control>
-					<Text> HOTCUE 19 </Text>
-					<Align>center</Align>
-					<Color>#AE5CFF</Color>
-					<TextColor>#FFFFFF</TextColor>
-				</Mark>
-				<Mark>
-					<Control>hotcue_20_position</Control>
-					<Text> HOTCUE 20 </Text>
-					<Align>center</Align>
-					<Color>#AE5CFF</Color>
-					<TextColor>#FFFFFF</TextColor>
-				</Mark>
-				<Mark>
-					<Control>hotcue_21_position</Control>
-					<Text> HOTCUE 21 </Text>
-					<Align>center</Align>
-					<Color>#AE5CFF</Color>
-					<TextColor>#FFFFFF</TextColor>
-				</Mark>
-				<Mark>
-					<Control>hotcue_22_position</Control>
-					<Text> HOTCUE 22 </Text>
-					<Align>center</Align>
-					<Color>#AE5CFF</Color>
-					<TextColor>#FFFFFF</TextColor>
-				</Mark>
-				<Mark>
-					<Control>hotcue_23_position</Control>
-					<Text> HOTCUE 23 </Text>
-					<Align>center</Align>
-					<Color>#AE5CFF</Color>
-					<TextColor>#FFFFFF</TextColor>
-				</Mark>
-				<Mark>
-					<Control>hotcue_24_position</Control>
-					<Text> HOTCUE 24 </Text>
-					<Align>center</Align>
-					<Color>#AE5CFF</Color>
-					<TextColor>#FFFFFF</TextColor>
-				</Mark>
-				<Mark>
-					<Control>hotcue_25_position</Control>
-					<Text> HOTCUE 25 </Text>
-					<Align>center</Align>
-					<Color>#AE5CFF</Color>
-					<TextColor>#FFFFFF</TextColor>
-				</Mark>
-				<Mark>
-					<Control>hotcue_26_position</Control>
-					<Text> HOTCUE 26 </Text>
-					<Align>center</Align>
-					<Color>#AE5CFF</Color>
-					<TextColor>#FFFFFF</TextColor>
-				</Mark>
-				<Mark>
-					<Control>hotcue_27_position</Control>
-					<Text> HOTCUE 27 </Text>
-					<Align>center</Align>
-					<Color>#AE5CFF</Color>
-					<TextColor>#FFFFFF</TextColor>
-				</Mark>
-				<Mark>
-					<Control>hotcue_28_position</Control>
-					<Text> HOTCUE 28 </Text>
-					<Align>center</Align>
-					<Color>#AE5CFF</Color>
-					<TextColor>#FFFFFF</TextColor>
-				</Mark>
-				<Mark>
-					<Control>hotcue_29_position</Control>
-					<Text> HOTCUE 29 </Text>
-					<Align>center</Align>
-					<Color>#AE5CFF</Color>
-					<TextColor>#FFFFFF</TextColor>
-				</Mark>
-				<Mark>
-					<Control>hotcue_30_position</Control>
-					<Text> HOTCUE 30 </Text>
-					<Align>center</Align>
-					<Color>#AE5CFF</Color>
-					<TextColor>#FFFFFF</TextColor>
-				</Mark>
-				<Mark>
-					<Control>hotcue_31_position</Control>
-					<Text> HOTCUE 31 </Text>
-					<Align>center</Align>
-					<Color>#AE5CFF</Color>
-					<TextColor>#FFFFFF</TextColor>
-				</Mark>
-				<Mark>
-					<Control>hotcue_32_position</Control>
-					<Text> HOTCUE 32 </Text>
-					<Align>center</Align>
-					<Color>#AE5CFF</Color>
-					<TextColor>#FFFFFF</TextColor>
-				</Mark>
-				<Mark>
-					<Control>hotcue_33_position</Control>
-					<Text> HOTCUE 33 </Text>
-					<Align>center</Align>
-					<Color>#AE5CFF</Color>
-					<TextColor>#FFFFFF</TextColor>
-				</Mark>
-				<Mark>
-					<Control>hotcue_34_position</Control>
-					<Text> HOTCUE 34 </Text>
-					<Align>center</Align>
-					<Color>#AE5CFF</Color>
-					<TextColor>#FFFFFF</TextColor>
-				</Mark>
-				<Mark>
-					<Control>hotcue_35_position</Control>
-					<Text> HOTCUE 35 </Text>
-					<Align>center</Align>
-					<Color>#AE5CFF</Color>
-					<TextColor>#FFFFFF</TextColor>
-				</Mark>
-				<Mark>
-					<Control>hotcue_36_position</Control>
-					<Text> HOTCUE 36 </Text>
-					<Align>center</Align>
-					<Color>#AE5CFF</Color>
-					<TextColor>#FFFFFF</TextColor>
-				</Mark>
+				<Layout>horizontal</Layout>
+				<Style>QGroupBox { border: 0px solid yellow; } QWidget { margin: 0; padding: 0; }</Style>
+				<Children>
+					<!--If you want the waveforms center to adjust when resizing in a collapsing widget 
+					(e.g. to display rotating record widget like in this skin) don't put the Waveform in a widget group, 
+					and don't specify the Waveform's <Size>. So you would have:
+					Parent WidgetGroup
+						Waveform Widget (no Widgetgroup)
+						Child WidgetGroup for Spinny
+							Spinny Widget
+					-->
 
-				<Mark>
-					<Control>cue_point</Control>
-					<Pixmap>marker_cue1.png</Pixmap>
-					<Text> CUE </Text>
-					<Align>bottom</Align>
-					<Color>#FF001C</Color>
-					<TextColor>#FFFFFF</TextColor>
-				</Mark>
-			</Visual>
+					<!--
+					**********************************************
+					Visual- Waveform
+					**********************************************
+					-->
+					<Visual>
+						<Tooltip>Waveform display&#10;Shows the loaded tracks' waveforms near the playback position.&#10;Click and drag with mouse to scratch the song.&#10;Drop tracks from external file manager here.&#10;</Tooltip>
+						<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+						background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+						</Style>
+						<Channel>1</Channel>
+						<Pos>0,0</Pos>
+						<!--See comment about <Size> above-->
+						<!--<Size>415,119</Size>-->
+						<BgColor>#1C1C1C</BgColor>
+						<BgPixmap>style/style_bg_waveform.png</BgPixmap>
+						<HfcColor>#1b1b1b</HfcColor>
+						<SignalColor>#0099FF</SignalColor>
+						<BeatColor>#ffffff</BeatColor>
+						<BeatHighlightColor>#00FF00</BeatHighlightColor>
+						<MarkerColor>#00FF00</MarkerColor>
+						<CueColor>#000000</CueColor>
+						<MarkRange>
+							<StartControl>loop_start_position</StartControl>
+							<EndControl>loop_end_position</EndControl>
+							<EnabledControl>loop_enabled</EnabledControl>
+							<Color>#00FF00</Color>
+							<DisabledColor>#FFFFFF</DisabledColor>
+						</MarkRange>
+						<Mark>
+							<Control>loop_start_position</Control>
+							<Pixmap>marker_loop_in1.png</Pixmap>
+							<Text>LOOP IN</Text>
+							<Align>bottom</Align>
+							<Color>#00FF00</Color>
+							<TextColor>#FFFFFF</TextColor>
+						</Mark>
+						<Mark>
+							<Control>loop_end_position</Control>
+							<Pixmap>marker_loop_out1.png</Pixmap>
+							<Text>LOOP OUT</Text>
+							<Align>bottom</Align>
+							<Color>#00FF00</Color>
+							<TextColor>#FFFFFF</TextColor>
+						</Mark>
+						<!--
+						The hotcues not represented by a button in the current skin show only in the waveform under two circumstances:
+							- if a MIDI device which supports more hotcues than buttons are in the current skin has them activated
+							- if you change from a skin which supports more hotcues than buttons are in the current skin (and has them activated)
+						These "special" hotcues share the color #AE5CFF to make them distinguishable (and maintainable) from the hotcues
+						represented by a button in the current skin. Mixxx 1.8.x-1.9.0 support up to 32 hotcues. v1.9.1+ supports up to 36.
+						Current skins uses up to 6 buttons per channel.
+						-->
+						<Mark>
+							<Control>hotcue_1_position</Control>
+							<Pixmap>marker_hotcue1_1.png</Pixmap>
+							<Text> HOTCUE 1 </Text>
+							<Align>bottom</Align>
+							<Color>#00FF00</Color>
+							<TextColor>#FFFFFF</TextColor>
+						</Mark>
+						<Mark>
+							<Control>hotcue_2_position</Control>
+							<Pixmap>marker_hotcue1_2.png</Pixmap>
+							<Text> HOTCUE 2 </Text>
+							<Align>bottom</Align>
+							<Color>#00FF00</Color>
+							<TextColor>#FFFFFF</TextColor>
+						</Mark>
+						<Mark>
+							<Control>hotcue_3_position</Control>
+							<Pixmap>marker_hotcue1_3.png</Pixmap>
+							<Text> HOTCUE 3 </Text>
+							<Align>bottom</Align>
+							<Color>#00FF00</Color>
+							<TextColor>#FFFFFF</TextColor>
+						</Mark>
+						<Mark>
+							<Control>hotcue_4_position</Control>
+							<Pixmap>marker_hotcue1_4.png</Pixmap>
+							<Text> HOTCUE 4 </Text>
+							<Align>bottom</Align>
+							<Color>#00FF00</Color>
+							<TextColor>#FFFFFF</TextColor>
+						</Mark>
+						<Mark>
+							<Control>hotcue_5_position</Control>
+							<Text> HOTCUE 5 </Text>
+							<Align>center</Align>
+							<Color>#AE5CFF</Color>
+							<TextColor>#FFFFFF</TextColor>
+						</Mark>
+						<Mark>
+							<Control>hotcue_6_position</Control>
+							<Text> HOTCUE 6 </Text>
+							<Align>center</Align>
+							<Color>#AE5CFF</Color>
+							<TextColor>#FFFFFF</TextColor>
+						</Mark>
+						<Mark>
+							<Control>hotcue_7_position</Control>
+							<Text> HOTCUE 7 </Text>
+							<Align>center</Align>
+							<Color>#AE5CFF</Color>
+							<TextColor>#FFFFFF</TextColor>
+						</Mark>
+						<Mark>
+							<Control>hotcue_8_position</Control>
+							<Text> HOTCUE 8 </Text>
+							<Align>center</Align>
+							<Color>#AE5CFF</Color>
+							<TextColor>#FFFFFF</TextColor>
+						</Mark>
+						<Mark>
+							<Control>hotcue_9_position</Control>
+							<Text> HOTCUE 9 </Text>
+							<Align>center</Align>
+							<Color>#AE5CFF</Color>
+							<TextColor>#FFFFFF</TextColor>
+						</Mark>
+						<Mark>
+							<Control>hotcue_10_position</Control>
+							<Text> HOTCUE 10 </Text>
+							<Align>center</Align>
+							<Color>#AE5CFF</Color>
+							<TextColor>#FFFFFF</TextColor>
+						</Mark>
+						<Mark>
+							<Control>hotcue_11_position</Control>
+							<Text> HOTCUE 11 </Text>
+							<Align>center</Align>
+							<Color>#AE5CFF</Color>
+							<TextColor>#FFFFFF</TextColor>
+						</Mark>
+						<Mark>
+							<Control>hotcue_12_position</Control>
+							<Text> HOTCUE 12 </Text>
+							<Align>center</Align>
+							<Color>#AE5CFF</Color>
+							<TextColor>#FFFFFF</TextColor>
+						</Mark>
+						<Mark>
+							<Control>hotcue_13_position</Control>
+							<Text> HOTCUE 13 </Text>
+							<Align>center</Align>
+							<Color>#AE5CFF</Color>
+							<TextColor>#FFFFFF</TextColor>
+						</Mark>
+						<Mark>
+							<Control>hotcue_14_position</Control>
+							<Text> HOTCUE 14 </Text>
+							<Align>center</Align>
+							<Color>#AE5CFF</Color>
+							<TextColor>#FFFFFF</TextColor>
+						</Mark>
+						<Mark>
+							<Control>hotcue_15_position</Control>
+							<Text> HOTCUE 15 </Text>
+							<Align>center</Align>
+							<Color>#AE5CFF</Color>
+							<TextColor>#FFFFFF</TextColor>
+						</Mark>
+						<Mark>
+							<Control>hotcue_16_position</Control>
+							<Text> HOTCUE 16 </Text>
+							<Align>center</Align>
+							<Color>#AE5CFF</Color>
+							<TextColor>#FFFFFF</TextColor>
+						</Mark>
+						<Mark>
+							<Control>hotcue_17_position</Control>
+							<Text> HOTCUE 17 </Text>
+							<Align>center</Align>
+							<Color>#AE5CFF</Color>
+							<TextColor>#FFFFFF</TextColor>
+						</Mark>
+						<Mark>
+							<Control>hotcue_18_position</Control>
+							<Text> HOTCUE 18 </Text>
+							<Align>center</Align>
+							<Color>#AE5CFF</Color>
+							<TextColor>#FFFFFF</TextColor>
+						</Mark>
+						<Mark>
+							<Control>hotcue_19_position</Control>
+							<Text> HOTCUE 19 </Text>
+							<Align>center</Align>
+							<Color>#AE5CFF</Color>
+							<TextColor>#FFFFFF</TextColor>
+						</Mark>
+						<Mark>
+							<Control>hotcue_20_position</Control>
+							<Text> HOTCUE 20 </Text>
+							<Align>center</Align>
+							<Color>#AE5CFF</Color>
+							<TextColor>#FFFFFF</TextColor>
+						</Mark>
+						<Mark>
+							<Control>hotcue_21_position</Control>
+							<Text> HOTCUE 21 </Text>
+							<Align>center</Align>
+							<Color>#AE5CFF</Color>
+							<TextColor>#FFFFFF</TextColor>
+						</Mark>
+						<Mark>
+							<Control>hotcue_22_position</Control>
+							<Text> HOTCUE 22 </Text>
+							<Align>center</Align>
+							<Color>#AE5CFF</Color>
+							<TextColor>#FFFFFF</TextColor>
+						</Mark>
+						<Mark>
+							<Control>hotcue_23_position</Control>
+							<Text> HOTCUE 23 </Text>
+							<Align>center</Align>
+							<Color>#AE5CFF</Color>
+							<TextColor>#FFFFFF</TextColor>
+						</Mark>
+						<Mark>
+							<Control>hotcue_24_position</Control>
+							<Text> HOTCUE 24 </Text>
+							<Align>center</Align>
+							<Color>#AE5CFF</Color>
+							<TextColor>#FFFFFF</TextColor>
+						</Mark>
+						<Mark>
+							<Control>hotcue_25_position</Control>
+							<Text> HOTCUE 25 </Text>
+							<Align>center</Align>
+							<Color>#AE5CFF</Color>
+							<TextColor>#FFFFFF</TextColor>
+						</Mark>
+						<Mark>
+							<Control>hotcue_26_position</Control>
+							<Text> HOTCUE 26 </Text>
+							<Align>center</Align>
+							<Color>#AE5CFF</Color>
+							<TextColor>#FFFFFF</TextColor>
+						</Mark>
+						<Mark>
+							<Control>hotcue_27_position</Control>
+							<Text> HOTCUE 27 </Text>
+							<Align>center</Align>
+							<Color>#AE5CFF</Color>
+							<TextColor>#FFFFFF</TextColor>
+						</Mark>
+						<Mark>
+							<Control>hotcue_28_position</Control>
+							<Text> HOTCUE 28 </Text>
+							<Align>center</Align>
+							<Color>#AE5CFF</Color>
+							<TextColor>#FFFFFF</TextColor>
+						</Mark>
+						<Mark>
+							<Control>hotcue_29_position</Control>
+							<Text> HOTCUE 29 </Text>
+							<Align>center</Align>
+							<Color>#AE5CFF</Color>
+							<TextColor>#FFFFFF</TextColor>
+						</Mark>
+						<Mark>
+							<Control>hotcue_30_position</Control>
+							<Text> HOTCUE 30 </Text>
+							<Align>center</Align>
+							<Color>#AE5CFF</Color>
+							<TextColor>#FFFFFF</TextColor>
+						</Mark>
+						<Mark>
+							<Control>hotcue_31_position</Control>
+							<Text> HOTCUE 31 </Text>
+							<Align>center</Align>
+							<Color>#AE5CFF</Color>
+							<TextColor>#FFFFFF</TextColor>
+						</Mark>
+						<Mark>
+							<Control>hotcue_32_position</Control>
+							<Text> HOTCUE 32 </Text>
+							<Align>center</Align>
+							<Color>#AE5CFF</Color>
+							<TextColor>#FFFFFF</TextColor>
+						</Mark>
+						<Mark>
+							<Control>hotcue_33_position</Control>
+							<Text> HOTCUE 33 </Text>
+							<Align>center</Align>
+							<Color>#AE5CFF</Color>
+							<TextColor>#FFFFFF</TextColor>
+						</Mark>
+						<Mark>
+							<Control>hotcue_34_position</Control>
+							<Text> HOTCUE 34 </Text>
+							<Align>center</Align>
+							<Color>#AE5CFF</Color>
+							<TextColor>#FFFFFF</TextColor>
+						</Mark>
+						<Mark>
+							<Control>hotcue_35_position</Control>
+							<Text> HOTCUE 35 </Text>
+							<Align>center</Align>
+							<Color>#AE5CFF</Color>
+							<TextColor>#FFFFFF</TextColor>
+						</Mark>
+						<Mark>
+							<Control>hotcue_36_position</Control>
+							<Text> HOTCUE 36 </Text>
+							<Align>center</Align>
+							<Color>#AE5CFF</Color>
+							<TextColor>#FFFFFF</TextColor>
+						</Mark>
+						<Mark>
+							<Control>cue_point</Control>
+							<Pixmap>marker_cue1.png</Pixmap>
+							<Text> CUE </Text>
+							<Align>bottom</Align>
+							<Color>#FF001C</Color>
+							<TextColor>#FFFFFF</TextColor>
+						</Mark>
+					</Visual>
+
+					<!-- Rotating Vinyl sub-widget -->
+					<WidgetGroup>
+						<!--<Pos>296,0</Pos>-->
+						<Size>119,119</Size>
+						<Style>QGroupBox { border: 0px solid green; } QWidget { margin: 0; padding: 0;} </Style>
+						<Children>
+							<!--
+							**********************************************
+							Visual- Rotating record
+							**********************************************
+							-->
+							<Spinny>
+								<Tooltip>Rotating record&#10;Show/hide the rotating record widget&#10;</Tooltip>
+								<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+								background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+								</Style>
+								<Channel>1</Channel>
+								<Pos>0,0</Pos>
+								<Size>i,i</Size>
+								<PathBackground>vinyl_spinny1_background.png</PathBackground>
+								<PathForeground>vinyl_spinny1_foreground.png</PathForeground>
+								<PathGhost>vinyl_spinny1_foreground_ghost.png</PathGhost>
+							</Spinny>
+						</Children>
+						<Connection>
+							<ConfigKey>[Spinny1],show_spinny</ConfigKey>
+							<BindProperty>visible</BindProperty>
+						</Connection>
+					</WidgetGroup>
+				</Children>
+			</WidgetGroup>
 
 			<!--
 			**********************************************
@@ -4099,11 +4151,11 @@
 
 			<!--
 			**********************************************
-			Button - Show spinning Vinyl widget //TODO: Add functionality & tooltip dummy only so far
+			Button - Show spinning Vinyl widget
 			**********************************************
 			-->
 			<PushButton>
-				<Tooltip>Show spinning Vinyl widget&#10;TODO&#10;</Tooltip>
+				<Tooltip>Rotating record&#10;Show/hide the rotating record widget&#10;</Tooltip>
 				<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 				background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
 				</Style>
@@ -4120,7 +4172,7 @@
 				</State>
 				<Pos>338,171</Pos>
 				<Connection>
-					<ConfigKey>[Channel1],TODO</ConfigKey>
+					<ConfigKey>[Spinny1],show_spinny</ConfigKey>
 					<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 					<ButtonState>LeftButton</ButtonState>
 				</Connection>
@@ -4814,7 +4866,9 @@
 		<Children>
 			<!--
 			**********************************************
-			Visual- Vinyl control status indicator // we need 4 of them for top-bottom-left-right
+			Visual- Vinyl control status indicator 
+			// we need 4 of them for top-bottom-left-right
+			// parts overlapping the waveform & spinning vinyl are not visible
 			**********************************************
 			-->
 			<StatusLight>
@@ -4874,324 +4928,372 @@
 				</Connection>
 			</StatusLight>
 
-			<!--
-			**********************************************
-			Visual- Waveform
-			**********************************************
-			-->
-			<Visual>
-				<Tooltip>Waveform display&#10;Shows the loaded tracks' waveforms near the playback position.&#10;Click and drag with mouse to scratch the song.&#10;Drop tracks from external file manager here.&#10;</Tooltip>
-				<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-				background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-				</Style>
-				<Channel>2</Channel>
+			<!-- Collapsing Waveform & spinning Vinyl widget-->
+			<WidgetGroup>
 				<Pos>0,50</Pos>
 				<Size>413,119</Size>
-				<BgColor>#1C1C1C</BgColor>
-				<BgPixmap>style/style_bg_waveform.png</BgPixmap>
-				<HfcColor>#1b1b1b</HfcColor>
-				<SignalColor>#E17800</SignalColor>
-				<BeatColor>#ffffff</BeatColor>
-				<BeatHighlightColor>#00FF00</BeatHighlightColor>
-				<MarkerColor>#00FF00</MarkerColor>
-				<CueColor>#000000</CueColor>
-				<MarkRange>
-					<StartControl>loop_start_position</StartControl>
-					<EndControl>loop_end_position</EndControl>
-					<EnabledControl>loop_enabled</EnabledControl>
-					<Color>#00FF00</Color>
-					<DisabledColor>#FFFFFF</DisabledColor>
-				</MarkRange>
-				<Mark>
-					<Control>loop_start_position</Control>
-					<Pixmap>marker_loop_in2.png</Pixmap>
-					<Text>LOOP IN</Text>
-					<Align>bottom</Align>
-					<Color>#00FF00</Color>
-					<TextColor>#FFFFFF</TextColor>
-				</Mark>
-				<Mark>
-					<Control>loop_end_position</Control>
-					<Pixmap>marker_loop_out2.png</Pixmap>
-					<Text>LOOP OUT</Text>
-					<Align>bottom</Align>
-					<Color>#00FF00</Color>
-					<TextColor>#FFFFFF</TextColor>
-				</Mark>
-				<!--
-				The hotcues not represented by a button in the current skin show only in the waveform under two circumstances:
-					- if a MIDI device which supports more hotcues than buttons are in the current skin has them activated
-					- if you change from a skin which supports more hotcues than buttons are in the current skin (and has them activated)
-				These "special" hotcues share the color #AE5CFF to make them distinguishable (and maintainable) from the hotcues
-				represented by a button in the current skin. Mixxx 1.8.x-1.9.0 support up to 32 hotcues. v1.9.1+ supports up to 36.
-				Current skins uses up to 6 buttons per channel.
-				-->
-				<Mark>
-					<Control>hotcue_1_position</Control>
-					<Pixmap>marker_hotcue1_1.png</Pixmap>
-					<Text> HOTCUE 1 </Text>
-					<Align>bottom</Align>
-					<Color>#00FF00</Color>
-					<TextColor>#FFFFFF</TextColor>
-				</Mark>
-				<Mark>
-					<Control>hotcue_2_position</Control>
-					<Pixmap>marker_hotcue1_2.png</Pixmap>
-					<Text> HOTCUE 2 </Text>
-					<Align>bottom</Align>
-					<Color>#00FF00</Color>
-					<TextColor>#FFFFFF</TextColor>
-				</Mark>
-				<Mark>
-					<Control>hotcue_3_position</Control>
-					<Pixmap>marker_hotcue1_3.png</Pixmap>
-					<Text> HOTCUE 3 </Text>
-					<Align>bottom</Align>
-					<Color>#00FF00</Color>
-					<TextColor>#FFFFFF</TextColor>
-				</Mark>
-				<Mark>
-					<Control>hotcue_4_position</Control>
-					<Pixmap>marker_hotcue1_4.png</Pixmap>
-					<Text> HOTCUE 4 </Text>
-					<Align>bottom</Align>
-					<Color>#00FF00</Color>
-					<TextColor>#FFFFFF</TextColor>
-				</Mark>
-				<Mark>
-					<Control>hotcue_5_position</Control>
-					<Text> HOTCUE 5 </Text>
-					<Align>center</Align>
-					<Color>#AE5CFF</Color>
-					<TextColor>#FFFFFF</TextColor>
-				</Mark>
-				<Mark>
-					<Control>hotcue_6_position</Control>
-					<Text> HOTCUE 6 </Text>
-					<Align>center</Align>
-					<Color>#AE5CFF</Color>
-					<TextColor>#FFFFFF</TextColor>
-				</Mark>
-				<Mark>
-					<Control>hotcue_7_position</Control>
-					<Text> HOTCUE 7 </Text>
-					<Align>center</Align>
-					<Color>#AE5CFF</Color>
-					<TextColor>#FFFFFF</TextColor>
-				</Mark>
-				<Mark>
-					<Control>hotcue_8_position</Control>
-					<Text> HOTCUE 8 </Text>
-					<Align>center</Align>
-					<Color>#AE5CFF</Color>
-					<TextColor>#FFFFFF</TextColor>
-				</Mark>
-				<Mark>
-					<Control>hotcue_9_position</Control>
-					<Text> HOTCUE 9 </Text>
-					<Align>center</Align>
-					<Color>#AE5CFF</Color>
-					<TextColor>#FFFFFF</TextColor>
-				</Mark>
-				<Mark>
-					<Control>hotcue_10_position</Control>
-					<Text> HOTCUE 10 </Text>
-					<Align>center</Align>
-					<Color>#AE5CFF</Color>
-					<TextColor>#FFFFFF</TextColor>
-				</Mark>
-				<Mark>
-					<Control>hotcue_11_position</Control>
-					<Text> HOTCUE 11 </Text>
-					<Align>center</Align>
-					<Color>#AE5CFF</Color>
-					<TextColor>#FFFFFF</TextColor>
-				</Mark>
-				<Mark>
-					<Control>hotcue_12_position</Control>
-					<Text> HOTCUE 12 </Text>
-					<Align>center</Align>
-					<Color>#AE5CFF</Color>
-					<TextColor>#FFFFFF</TextColor>
-				</Mark>
-				<Mark>
-					<Control>hotcue_13_position</Control>
-					<Text> HOTCUE 13 </Text>
-					<Align>center</Align>
-					<Color>#AE5CFF</Color>
-					<TextColor>#FFFFFF</TextColor>
-				</Mark>
-				<Mark>
-					<Control>hotcue_14_position</Control>
-					<Text> HOTCUE 14 </Text>
-					<Align>center</Align>
-					<Color>#AE5CFF</Color>
-					<TextColor>#FFFFFF</TextColor>
-				</Mark>
-				<Mark>
-					<Control>hotcue_15_position</Control>
-					<Text> HOTCUE 15 </Text>
-					<Align>center</Align>
-					<Color>#AE5CFF</Color>
-					<TextColor>#FFFFFF</TextColor>
-				</Mark>
-				<Mark>
-					<Control>hotcue_16_position</Control>
-					<Text> HOTCUE 16 </Text>
-					<Align>center</Align>
-					<Color>#AE5CFF</Color>
-					<TextColor>#FFFFFF</TextColor>
-				</Mark>
-				<Mark>
-					<Control>hotcue_17_position</Control>
-					<Text> HOTCUE 17 </Text>
-					<Align>center</Align>
-					<Color>#AE5CFF</Color>
-					<TextColor>#FFFFFF</TextColor>
-				</Mark>
-				<Mark>
-					<Control>hotcue_18_position</Control>
-					<Text> HOTCUE 18 </Text>
-					<Align>center</Align>
-					<Color>#AE5CFF</Color>
-					<TextColor>#FFFFFF</TextColor>
-				</Mark>
-				<Mark>
-					<Control>hotcue_19_position</Control>
-					<Text> HOTCUE 19 </Text>
-					<Align>center</Align>
-					<Color>#AE5CFF</Color>
-					<TextColor>#FFFFFF</TextColor>
-				</Mark>
-				<Mark>
-					<Control>hotcue_20_position</Control>
-					<Text> HOTCUE 20 </Text>
-					<Align>center</Align>
-					<Color>#AE5CFF</Color>
-					<TextColor>#FFFFFF</TextColor>
-				</Mark>
-				<Mark>
-					<Control>hotcue_21_position</Control>
-					<Text> HOTCUE 21 </Text>
-					<Align>center</Align>
-					<Color>#AE5CFF</Color>
-					<TextColor>#FFFFFF</TextColor>
-				</Mark>
-				<Mark>
-					<Control>hotcue_22_position</Control>
-					<Text> HOTCUE 22 </Text>
-					<Align>center</Align>
-					<Color>#AE5CFF</Color>
-					<TextColor>#FFFFFF</TextColor>
-				</Mark>
-				<Mark>
-					<Control>hotcue_23_position</Control>
-					<Text> HOTCUE 23 </Text>
-					<Align>center</Align>
-					<Color>#AE5CFF</Color>
-					<TextColor>#FFFFFF</TextColor>
-				</Mark>
-				<Mark>
-					<Control>hotcue_24_position</Control>
-					<Text> HOTCUE 24 </Text>
-					<Align>center</Align>
-					<Color>#AE5CFF</Color>
-					<TextColor>#FFFFFF</TextColor>
-				</Mark>
-				<Mark>
-					<Control>hotcue_25_position</Control>
-					<Text> HOTCUE 25 </Text>
-					<Align>center</Align>
-					<Color>#AE5CFF</Color>
-					<TextColor>#FFFFFF</TextColor>
-				</Mark>
-				<Mark>
-					<Control>hotcue_26_position</Control>
-					<Text> HOTCUE 26 </Text>
-					<Align>center</Align>
-					<Color>#AE5CFF</Color>
-					<TextColor>#FFFFFF</TextColor>
-				</Mark>
-				<Mark>
-					<Control>hotcue_27_position</Control>
-					<Text> HOTCUE 27 </Text>
-					<Align>center</Align>
-					<Color>#AE5CFF</Color>
-					<TextColor>#FFFFFF</TextColor>
-				</Mark>
-				<Mark>
-					<Control>hotcue_28_position</Control>
-					<Text> HOTCUE 28 </Text>
-					<Align>center</Align>
-					<Color>#AE5CFF</Color>
-					<TextColor>#FFFFFF</TextColor>
-				</Mark>
-				<Mark>
-					<Control>hotcue_29_position</Control>
-					<Text> HOTCUE 29 </Text>
-					<Align>center</Align>
-					<Color>#AE5CFF</Color>
-					<TextColor>#FFFFFF</TextColor>
-				</Mark>
-				<Mark>
-					<Control>hotcue_30_position</Control>
-					<Text> HOTCUE 30 </Text>
-					<Align>center</Align>
-					<Color>#AE5CFF</Color>
-					<TextColor>#FFFFFF</TextColor>
-				</Mark>
-				<Mark>
-					<Control>hotcue_31_position</Control>
-					<Text> HOTCUE 31 </Text>
-					<Align>center</Align>
-					<Color>#AE5CFF</Color>
-					<TextColor>#FFFFFF</TextColor>
-				</Mark>
-				<Mark>
-					<Control>hotcue_32_position</Control>
-					<Text> HOTCUE 32 </Text>
-					<Align>center</Align>
-					<Color>#AE5CFF</Color>
-					<TextColor>#FFFFFF</TextColor>
-				</Mark>
-				<Mark>
-					<Control>hotcue_33_position</Control>
-					<Text> HOTCUE 33 </Text>
-					<Align>center</Align>
-					<Color>#AE5CFF</Color>
-					<TextColor>#FFFFFF</TextColor>
-				</Mark>
-				<Mark>
-					<Control>hotcue_34_position</Control>
-					<Text> HOTCUE 34 </Text>
-					<Align>center</Align>
-					<Color>#AE5CFF</Color>
-					<TextColor>#FFFFFF</TextColor>
-				</Mark>
-				<Mark>
-					<Control>hotcue_35_position</Control>
-					<Text> HOTCUE 35 </Text>
-					<Align>center</Align>
-					<Color>#AE5CFF</Color>
-					<TextColor>#FFFFFF</TextColor>
-				</Mark>
-				<Mark>
-					<Control>hotcue_36_position</Control>
-					<Text> HOTCUE 36 </Text>
-					<Align>center</Align>
-					<Color>#AE5CFF</Color>
-					<TextColor>#FFFFFF</TextColor>
-				</Mark>
+				<Layout>horizontal</Layout>
+				<Style>QGroupBox { border: 0px solid yellow; } QWidget { margin: 0; padding: 0; }</Style>
+				<Children>
+					<!--If you want the waveforms center to adjust when resizing in a collapsing widget 
+					(e.g. to display rotating record widget like in this skin) don't put the Waveform in a widget group, 
+					and don't specify the Waveform's <Size>. So you would have:
+					Parent WidgetGroup
+						Waveform Widget (no Widgetgroup)
+						Child WidgetGroup for Spinny
+							Spinny Widget
+					-->
 
-				<Mark>
-					<Control>cue_point</Control>
-					<Pixmap>marker_cue1.png</Pixmap>
-					<Text> CUE </Text>
-					<Align>bottom</Align>
-					<Color>#FF001C</Color>
-					<TextColor>#FFFFFF</TextColor>
-				</Mark>
-			</Visual>
+					<!--
+					**********************************************
+					Visual- Waveform
+					**********************************************
+					-->
+					<Visual>
+						<Tooltip>Waveform display&#10;Shows the loaded tracks' waveforms near the playback position.&#10;Click and drag with mouse to scratch the song.&#10;Drop tracks from external file manager here.&#10;</Tooltip>
+						<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+						background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+						</Style>
+						<Channel>2</Channel>
+						<Pos>0,0</Pos>
+						<!--See comment about <Size> above-->
+						<!--<Size>413,119</Size>-->
+						<BgColor>#1C1C1C</BgColor>
+						<BgPixmap>style/style_bg_waveform.png</BgPixmap>
+						<HfcColor>#1b1b1b</HfcColor>
+						<SignalColor>#E17800</SignalColor>
+						<BeatColor>#ffffff</BeatColor>
+						<BeatHighlightColor>#00FF00</BeatHighlightColor>
+						<MarkerColor>#00FF00</MarkerColor>
+						<CueColor>#000000</CueColor>
+						<MarkRange>
+							<StartControl>loop_start_position</StartControl>
+							<EndControl>loop_end_position</EndControl>
+							<EnabledControl>loop_enabled</EnabledControl>
+							<Color>#00FF00</Color>
+							<DisabledColor>#FFFFFF</DisabledColor>
+						</MarkRange>
+						<Mark>
+							<Control>loop_start_position</Control>
+							<Pixmap>marker_loop_in2.png</Pixmap>
+							<Text>LOOP IN</Text>
+							<Align>bottom</Align>
+							<Color>#00FF00</Color>
+							<TextColor>#FFFFFF</TextColor>
+						</Mark>
+						<Mark>
+							<Control>loop_end_position</Control>
+							<Pixmap>marker_loop_out2.png</Pixmap>
+							<Text>LOOP OUT</Text>
+							<Align>bottom</Align>
+							<Color>#00FF00</Color>
+							<TextColor>#FFFFFF</TextColor>
+						</Mark>
+						<!--
+						The hotcues not represented by a button in the current skin show only in the waveform under two circumstances:
+							- if a MIDI device which supports more hotcues than buttons are in the current skin has them activated
+							- if you change from a skin which supports more hotcues than buttons are in the current skin (and has them activated)
+						These "special" hotcues share the color #AE5CFF to make them distinguishable (and maintainable) from the hotcues
+						represented by a button in the current skin. Mixxx 1.8.x-1.9.0 support up to 32 hotcues. v1.9.1+ supports up to 36.
+						Current skins uses up to 6 buttons per channel.
+						-->
+						<Mark>
+							<Control>hotcue_1_position</Control>
+							<Pixmap>marker_hotcue1_1.png</Pixmap>
+							<Text> HOTCUE 1 </Text>
+							<Align>bottom</Align>
+							<Color>#00FF00</Color>
+							<TextColor>#FFFFFF</TextColor>
+						</Mark>
+						<Mark>
+							<Control>hotcue_2_position</Control>
+							<Pixmap>marker_hotcue1_2.png</Pixmap>
+							<Text> HOTCUE 2 </Text>
+							<Align>bottom</Align>
+							<Color>#00FF00</Color>
+							<TextColor>#FFFFFF</TextColor>
+						</Mark>
+						<Mark>
+							<Control>hotcue_3_position</Control>
+							<Pixmap>marker_hotcue1_3.png</Pixmap>
+							<Text> HOTCUE 3 </Text>
+							<Align>bottom</Align>
+							<Color>#00FF00</Color>
+							<TextColor>#FFFFFF</TextColor>
+						</Mark>
+						<Mark>
+							<Control>hotcue_4_position</Control>
+							<Pixmap>marker_hotcue1_4.png</Pixmap>
+							<Text> HOTCUE 4 </Text>
+							<Align>bottom</Align>
+							<Color>#00FF00</Color>
+							<TextColor>#FFFFFF</TextColor>
+						</Mark>
+						<Mark>
+							<Control>hotcue_5_position</Control>
+							<Text> HOTCUE 5 </Text>
+							<Align>center</Align>
+							<Color>#AE5CFF</Color>
+							<TextColor>#FFFFFF</TextColor>
+						</Mark>
+						<Mark>
+							<Control>hotcue_6_position</Control>
+							<Text> HOTCUE 6 </Text>
+							<Align>center</Align>
+							<Color>#AE5CFF</Color>
+							<TextColor>#FFFFFF</TextColor>
+						</Mark>
+						<Mark>
+							<Control>hotcue_7_position</Control>
+							<Text> HOTCUE 7 </Text>
+							<Align>center</Align>
+							<Color>#AE5CFF</Color>
+							<TextColor>#FFFFFF</TextColor>
+						</Mark>
+						<Mark>
+							<Control>hotcue_8_position</Control>
+							<Text> HOTCUE 8 </Text>
+							<Align>center</Align>
+							<Color>#AE5CFF</Color>
+							<TextColor>#FFFFFF</TextColor>
+						</Mark>
+						<Mark>
+							<Control>hotcue_9_position</Control>
+							<Text> HOTCUE 9 </Text>
+							<Align>center</Align>
+							<Color>#AE5CFF</Color>
+							<TextColor>#FFFFFF</TextColor>
+						</Mark>
+						<Mark>
+							<Control>hotcue_10_position</Control>
+							<Text> HOTCUE 10 </Text>
+							<Align>center</Align>
+							<Color>#AE5CFF</Color>
+							<TextColor>#FFFFFF</TextColor>
+						</Mark>
+						<Mark>
+							<Control>hotcue_11_position</Control>
+							<Text> HOTCUE 11 </Text>
+							<Align>center</Align>
+							<Color>#AE5CFF</Color>
+							<TextColor>#FFFFFF</TextColor>
+						</Mark>
+						<Mark>
+							<Control>hotcue_12_position</Control>
+							<Text> HOTCUE 12 </Text>
+							<Align>center</Align>
+							<Color>#AE5CFF</Color>
+							<TextColor>#FFFFFF</TextColor>
+						</Mark>
+						<Mark>
+							<Control>hotcue_13_position</Control>
+							<Text> HOTCUE 13 </Text>
+							<Align>center</Align>
+							<Color>#AE5CFF</Color>
+							<TextColor>#FFFFFF</TextColor>
+						</Mark>
+						<Mark>
+							<Control>hotcue_14_position</Control>
+							<Text> HOTCUE 14 </Text>
+							<Align>center</Align>
+							<Color>#AE5CFF</Color>
+							<TextColor>#FFFFFF</TextColor>
+						</Mark>
+						<Mark>
+							<Control>hotcue_15_position</Control>
+							<Text> HOTCUE 15 </Text>
+							<Align>center</Align>
+							<Color>#AE5CFF</Color>
+							<TextColor>#FFFFFF</TextColor>
+						</Mark>
+						<Mark>
+							<Control>hotcue_16_position</Control>
+							<Text> HOTCUE 16 </Text>
+							<Align>center</Align>
+							<Color>#AE5CFF</Color>
+							<TextColor>#FFFFFF</TextColor>
+						</Mark>
+						<Mark>
+							<Control>hotcue_17_position</Control>
+							<Text> HOTCUE 17 </Text>
+							<Align>center</Align>
+							<Color>#AE5CFF</Color>
+							<TextColor>#FFFFFF</TextColor>
+						</Mark>
+						<Mark>
+							<Control>hotcue_18_position</Control>
+							<Text> HOTCUE 18 </Text>
+							<Align>center</Align>
+							<Color>#AE5CFF</Color>
+							<TextColor>#FFFFFF</TextColor>
+						</Mark>
+						<Mark>
+							<Control>hotcue_19_position</Control>
+							<Text> HOTCUE 19 </Text>
+							<Align>center</Align>
+							<Color>#AE5CFF</Color>
+							<TextColor>#FFFFFF</TextColor>
+						</Mark>
+						<Mark>
+							<Control>hotcue_20_position</Control>
+							<Text> HOTCUE 20 </Text>
+							<Align>center</Align>
+							<Color>#AE5CFF</Color>
+							<TextColor>#FFFFFF</TextColor>
+						</Mark>
+						<Mark>
+							<Control>hotcue_21_position</Control>
+							<Text> HOTCUE 21 </Text>
+							<Align>center</Align>
+							<Color>#AE5CFF</Color>
+							<TextColor>#FFFFFF</TextColor>
+						</Mark>
+						<Mark>
+							<Control>hotcue_22_position</Control>
+							<Text> HOTCUE 22 </Text>
+							<Align>center</Align>
+							<Color>#AE5CFF</Color>
+							<TextColor>#FFFFFF</TextColor>
+						</Mark>
+						<Mark>
+							<Control>hotcue_23_position</Control>
+							<Text> HOTCUE 23 </Text>
+							<Align>center</Align>
+							<Color>#AE5CFF</Color>
+							<TextColor>#FFFFFF</TextColor>
+						</Mark>
+						<Mark>
+							<Control>hotcue_24_position</Control>
+							<Text> HOTCUE 24 </Text>
+							<Align>center</Align>
+							<Color>#AE5CFF</Color>
+							<TextColor>#FFFFFF</TextColor>
+						</Mark>
+						<Mark>
+							<Control>hotcue_25_position</Control>
+							<Text> HOTCUE 25 </Text>
+							<Align>center</Align>
+							<Color>#AE5CFF</Color>
+							<TextColor>#FFFFFF</TextColor>
+						</Mark>
+						<Mark>
+							<Control>hotcue_26_position</Control>
+							<Text> HOTCUE 26 </Text>
+							<Align>center</Align>
+							<Color>#AE5CFF</Color>
+							<TextColor>#FFFFFF</TextColor>
+						</Mark>
+						<Mark>
+							<Control>hotcue_27_position</Control>
+							<Text> HOTCUE 27 </Text>
+							<Align>center</Align>
+							<Color>#AE5CFF</Color>
+							<TextColor>#FFFFFF</TextColor>
+						</Mark>
+						<Mark>
+							<Control>hotcue_28_position</Control>
+							<Text> HOTCUE 28 </Text>
+							<Align>center</Align>
+							<Color>#AE5CFF</Color>
+							<TextColor>#FFFFFF</TextColor>
+						</Mark>
+						<Mark>
+							<Control>hotcue_29_position</Control>
+							<Text> HOTCUE 29 </Text>
+							<Align>center</Align>
+							<Color>#AE5CFF</Color>
+							<TextColor>#FFFFFF</TextColor>
+						</Mark>
+						<Mark>
+							<Control>hotcue_30_position</Control>
+							<Text> HOTCUE 30 </Text>
+							<Align>center</Align>
+							<Color>#AE5CFF</Color>
+							<TextColor>#FFFFFF</TextColor>
+						</Mark>
+						<Mark>
+							<Control>hotcue_31_position</Control>
+							<Text> HOTCUE 31 </Text>
+							<Align>center</Align>
+							<Color>#AE5CFF</Color>
+							<TextColor>#FFFFFF</TextColor>
+						</Mark>
+						<Mark>
+							<Control>hotcue_32_position</Control>
+							<Text> HOTCUE 32 </Text>
+							<Align>center</Align>
+							<Color>#AE5CFF</Color>
+							<TextColor>#FFFFFF</TextColor>
+						</Mark>
+						<Mark>
+							<Control>hotcue_33_position</Control>
+							<Text> HOTCUE 33 </Text>
+							<Align>center</Align>
+							<Color>#AE5CFF</Color>
+							<TextColor>#FFFFFF</TextColor>
+						</Mark>
+						<Mark>
+							<Control>hotcue_34_position</Control>
+							<Text> HOTCUE 34 </Text>
+							<Align>center</Align>
+							<Color>#AE5CFF</Color>
+							<TextColor>#FFFFFF</TextColor>
+						</Mark>
+						<Mark>
+							<Control>hotcue_35_position</Control>
+							<Text> HOTCUE 35 </Text>
+							<Align>center</Align>
+							<Color>#AE5CFF</Color>
+							<TextColor>#FFFFFF</TextColor>
+						</Mark>
+						<Mark>
+							<Control>hotcue_36_position</Control>
+							<Text> HOTCUE 36 </Text>
+							<Align>center</Align>
+							<Color>#AE5CFF</Color>
+							<TextColor>#FFFFFF</TextColor>
+						</Mark>
+						<Mark>
+							<Control>cue_point</Control>
+							<Pixmap>marker_cue1.png</Pixmap>
+							<Text> CUE </Text>
+							<Align>bottom</Align>
+							<Color>#FF001C</Color>
+							<TextColor>#FFFFFF</TextColor>
+						</Mark>
+					</Visual>
+
+					<!-- Rotating Vinyl sub-widget -->
+					<WidgetGroup>
+						<!--<Pos>296,0</Pos>-->
+						<Size>119,119</Size>
+						<Style>QGroupBox { border: 0px solid green; } QWidget { margin: 0; padding: 0;} </Style>
+						<Children>
+							<!--
+							**********************************************
+							Visual- Rotating record
+							**********************************************
+							-->
+							<Spinny>
+								<Tooltip>Rotating record&#10;Show/hide the rotating record widget&#10;</Tooltip>
+								<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+								background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+								</Style>
+								<Channel>2</Channel>
+								<Pos>0,0</Pos>
+								<Size>i,i</Size>
+								<PathBackground>vinyl_spinny2_background.png</PathBackground>
+								<PathForeground>vinyl_spinny2_foreground.png</PathForeground>
+								<PathGhost>vinyl_spinny2_foreground_ghost.png</PathGhost>
+							</Spinny>
+						</Children>
+						<Connection>
+							<ConfigKey>[Spinny2],show_spinny</ConfigKey>
+							<BindProperty>visible</BindProperty>
+						</Connection>
+					</WidgetGroup>
+				</Children>
+			</WidgetGroup>
 
 			<!--
 			**********************************************
@@ -5329,19 +5431,19 @@
 
 			<!--
 			**********************************************
-			Button - Show spinning Vinyl widget //TODO: Add functionality & tooltip dummy only so far
+			Button - Show spinning Vinyl widget
 			**********************************************
 			-->
 			<PushButton>
-				<Tooltip>Show spinning Vinyl widget&#10;TODO&#10;</Tooltip>
+				<Tooltip>Rotating record&#10;Show/hide the rotating record widget&#10;</Tooltip>
 				<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 				background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
 				</Style>
 				<NumberStates>2</NumberStates>
 				<State>
 					<Number>0</Number>
-					<Pressed>btn_spinny1.png</Pressed>
-					<Unpressed>btn_spinny1.png</Unpressed>
+					<Pressed>btn_spinny2.png</Pressed>
+					<Unpressed>btn_spinny2.png</Unpressed>
 				</State>
 				<State>
 					<Number>1</Number>
@@ -5350,7 +5452,7 @@
 				</State>
 				<Pos>338,171</Pos>
 				<Connection>
-					<ConfigKey>[Channel2],TODO</ConfigKey>
+					<ConfigKey>[Spinny2],show_spinny</ConfigKey>
 					<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 					<ButtonState>LeftButton</ButtonState>
 				</Connection>
