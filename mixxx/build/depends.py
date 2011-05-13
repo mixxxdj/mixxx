@@ -414,6 +414,7 @@ class MixxxCore(Feature):
 
                    "soundsource.cpp",
 
+                   "sharedglcontext.cpp",
                    "widget/wwidget.cpp",
                    "widget/wlabel.cpp",
                    "widget/wtracktext.cpp",
@@ -428,6 +429,7 @@ class MixxxCore(Feature):
                    "widget/wslider.cpp",
                    "widget/wstatuslight.cpp",
                    "widget/woverview.cpp",
+                   "widget/wspinny.cpp",
                    "widget/wskincolor.cpp",
                    "widget/wabstractcontrol.cpp",
                    "widget/wsearchlineedit.cpp",

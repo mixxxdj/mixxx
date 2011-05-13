@@ -14,6 +14,7 @@
 #include "wglwaveformviewer.h"
 #include "waveform/waveformrenderer.h"
 #include "controlobjectthreadmain.h"
+#include "sharedglcontext.h"
 
 WGLWaveformViewer::WGLWaveformViewer(
         const char *group,
@@ -25,7 +26,6 @@ WGLWaveformViewer::WGLWaveformViewer(
     ) :
     QGLWidget(ctxt, pParent, pShareWidget)
 {
-
     m_pWaveformRenderer = pWaveformRenderer;
     Q_ASSERT(m_pWaveformRenderer);
 
@@ -47,6 +47,9 @@ WGLWaveformViewer::WGLWaveformViewer(
     installEventFilter(this);
 
     m_painting = false;
+
+    setSizePolicy(QSizePolicy::MinimumExpanding,
+                  QSizePolicy::MinimumExpanding);
 }
 
 bool WGLWaveformViewer::directRendering()
@@ -63,6 +66,14 @@ void WGLWaveformViewer::setup(QDomNode node) {
     m_pWaveformRenderer->setup(node);
     m_pWaveformRenderer->resize(w, h);
 }
+
+void WGLWaveformViewer::resizeEvent(QResizeEvent* e)
+{
+    const QSize newSize = e->size();
+    m_pWaveformRenderer->resize(newSize.width(),
+                                newSize.height());
+}
+
 
 void WGLWaveformViewer::paintEvent(QPaintEvent *event) {
     QPainter painter;
@@ -111,7 +122,7 @@ bool WGLWaveformViewer::eventFilter(QObject *o, QEvent *e) {
             //qDebug() << "m_dInitialPlaypos" << m_dInitialPlaypos;
 
             // Set the cursor to a hand while the mouse is down.
-            setCursor(Qt::OpenHandCursor);
+            setCursor(Qt::ClosedHandCursor);
         }
     } else if(e->type() == QEvent::MouseMove) {
         // Only send signals for mouse moving if the left button is pressed

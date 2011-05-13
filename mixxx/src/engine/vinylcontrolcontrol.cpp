@@ -6,6 +6,19 @@
 VinylControlControl::VinylControlControl(const char* pGroup, ConfigObject<ConfigValue>* pConfig)
         : EngineControl(pGroup, pConfig) {
     m_pControlVinylStatus = new ControlObject(ConfigKey(pGroup, "vinylcontrol_status"));
+    m_pControlVinylSpeedType = new ControlObject(ConfigKey(pGroup, "vinylcontrol_speed_type"));
+
+    //Convert the ConfigKey's value into a double for the CO (for fast reads).
+    QString strVinylSpeedType = pConfig->getValueString(ConfigKey(pGroup,
+                                                      "vinylcontrol_speed_type"));
+    if (strVinylSpeedType == MIXXX_VINYL_SPEED_33) {
+        m_pControlVinylSpeedType->set(MIXXX_VINYL_SPEED_33_NUM);
+    } else if (strVinylSpeedType == MIXXX_VINYL_SPEED_45) {
+        m_pControlVinylSpeedType->set(MIXXX_VINYL_SPEED_45_NUM);
+    } else {
+        m_pControlVinylSpeedType->set(MIXXX_VINYL_SPEED_33_NUM);
+    }
+
     m_pControlVinylSeek = new ControlObject(ConfigKey(pGroup, "vinylcontrol_seek"));
     connect(m_pControlVinylSeek, SIGNAL(valueChanged(double)),
             this, SLOT(slotControlVinylSeek(double)),
