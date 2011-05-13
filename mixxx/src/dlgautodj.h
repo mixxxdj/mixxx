@@ -34,6 +34,8 @@ class DlgAutoDJ : public QWidget, public Ui::DlgAutoDJ, public virtual LibraryVi
 
   public slots:
     void shufflePlaylist(bool buttonChecked);
+	void skipNext(bool buttonChecked);
+	void fadeNow(bool buttonChecked);
     void toggleAutoDJ(bool toggle);
     void player1PositionChanged(double value);
     void player2PositionChanged(double value);
@@ -57,7 +59,9 @@ class DlgAutoDJ : public QWidget, public Ui::DlgAutoDJ, public virtual LibraryVi
                                         make our first-track-gets-loaded-but-
                                         not-removed-from-the-queue behaviour
                                         work. */
-    bool m_bPlayer1Primed, m_bPlayer2Primed;
+    bool m_bFadeNow;
+	int m_iPlayerFading;
+    float m_posThreshold;
     ControlObjectThreadMain* m_pCOPlayPos1;
     ControlObjectThreadMain* m_pCOPlayPos2;
     ControlObjectThreadMain* m_pCOPlay1;

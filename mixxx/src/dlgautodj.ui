@@ -36,17 +36,27 @@
       </widget>
      </item>
      <item>
-      <spacer name="horizontalSpacer">
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
+      <widget class="QPushButton" name="pushButtonSkipNext">
+       <property name="text">
+        <string>Skip Next</string>
        </property>
-       <property name="sizeHint" stdset="0">
+       <property name="checkable">
+        <bool>false</bool>
+       </property>
+       <property name="size" stdset="0">
         <size>
-         <width>40</width>
+         <width>12</width>
          <height>20</height>
         </size>
        </property>
-      </spacer>
+      </widget>
+     </item>
+	<item>
+      <widget class="QPushButton" name="pushButtonFadeNow">
+       <property name="text">
+        <string>Fade Now</string>
+       </property>
+      </widget>
      </item>
      <item>
       <widget class="QLabel" name="label">
