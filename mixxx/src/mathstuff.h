@@ -23,7 +23,6 @@
 #include <math.h>
 #include <algorithm>
 
-static CSAMPLE two_pi = (2.f*acos(-1.f));
 
 CSAMPLE besseli(CSAMPLE);
 int sign(CSAMPLE);
@@ -44,6 +43,7 @@ double qip(CSAMPLE x, unsigned int n);
 float sigmoid_zero(double t, double max_t);
 
 static CSAMPLE pi     = acos(-1.0f);
+static CSAMPLE two_pi = (2.f*acos(-1.f));
 
 #ifdef _MSC_VER
 #include <float.h>  // for _isnan() on VC++
