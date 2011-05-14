@@ -153,11 +153,11 @@ class EngineMaster : public EngineObject, public AudioSource {
     QList<ControlPushButton*>m_passthrough;
     int m_iLastThruRead[2];
     int m_iLastThruWrote[2];
-    int m_iThruBufferCount[2];
+    int m_iThruBufferCount;
     int m_iThruFill[2];
     bool m_bFilling[2];
-    QFile df;
-    QTextStream writer;
+    //QFile df;
+    //QTextStream writer;
 
     ConstantGainCalculator m_headphoneGain;
     OrientationVolumeGainCalculator m_masterGain;
