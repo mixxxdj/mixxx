@@ -744,7 +744,7 @@ void VinylControlXwax::resetSteadyPitch(double pitch, double time)
 double VinylControlXwax::checkSteadyPitch(double pitch, double time)
 {
     //return length of time pitch has been steady, 0 if not steady
-    const double PITCH_THRESHOLD = 0.07f;
+    const double PITCH_THRESHOLD = 0.08f;
 
     if (time < dSteadyPitchTime) //bad values, often happens during resync
     {
