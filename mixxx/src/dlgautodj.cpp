@@ -6,7 +6,9 @@
 #include "controlobjectthreadmain.h"
 #include "library/trackcollection.h"
 #include "library/playlisttablemodel.h"
+#include "playerinfo.h"
 #include "dlgautodj.h"
+
 
 
 DlgAutoDJ::DlgAutoDJ(QWidget* parent, ConfigObject<ConfigValue>* pConfig,
@@ -19,7 +21,7 @@ DlgAutoDJ::DlgAutoDJ(QWidget* parent, ConfigObject<ConfigValue>* pConfig,
     m_pTrackCollection = pTrackCollection;
     m_bAutoDJEnabled = false;
 	m_bFadeNow = false;
-	m_iPlayerFading = 0; // No Player is fading
+	m_eState = ADJ_IDLE;
 
 	m_posThreshold = 0.95; //95% playback is when we crossfade and do stuff
 
@@ -177,7 +179,7 @@ void DlgAutoDJ::skipNext(bool buttonChecked)
     //m_pTrackTableView->sortByColumn(0, Qt::AscendingOrder);
     qDebug() << "Skip Next";
     //Load the next song from the queue.
-    if (!loadNextTrackFromQueue(true)) {
+    if (!loadNextTrackFromQueue()) {
         //Queue was empty. Disable and return.
         return;
     }
@@ -187,7 +189,7 @@ void DlgAutoDJ::fadeNow(bool buttonChecked)
 {
     Q_UNUSED(buttonChecked);
     qDebug() << "Fade Now";
-	if(!m_iPlayerFading && m_bAutoDJEnabled){		
+	if(m_eState == ADJ_IDLE && m_bAutoDJEnabled){		
 		m_bFadeNow = true;
 	}
 }
@@ -203,7 +205,7 @@ void DlgAutoDJ::toggleAutoDJ(bool toggle)
         }
 
 		//Load the first song from the queue.
-        if (!loadNextTrackFromQueue(false)) {
+        if (!loadNextTrackFromQueue()) {
             //Queue was empty. Disable and return.
             return;
         }
@@ -216,21 +218,15 @@ void DlgAutoDJ::toggleAutoDJ(bool toggle)
         connect(m_pCOPlayPos2, SIGNAL(valueChanged(double)),
         this, SLOT(player2PositionChanged(double)));
 		
-		m_iPlayerFading = 3; // Auto DJ Start
-
-        //If both players are stopped, start the first one (which should have just had a track loaded into it)
- /*       if (m_pCOPlay1->get() == 0.0f && m_pCOPlay2->get() == 0.0f) 
+		if (m_pCOPlay1->get() == 0.0f )
 		{
-
-            m_pCOCrossfader->slotSet(-1.0f); //Move crossfader to the left!
-            m_pCOPlay1->slotSet(1.0f); //Play the track in player 1
-			
-			//Load the next song from the queue.
-            if (!loadNextTrackFromQueue(false)) {
-                //Queue was empty. Disable and return.
-                return;
-            }
-        } */
+			m_eState = ADJ_ENABLE_P1LOADED;
+		}
+		else
+		{
+			//m_eState = ADJ_ENABLE_P2LOADED;
+			m_eState = ADJ_IDLE;
+		}
     }
     else //Disable Auto DJ
     {
@@ -257,38 +253,39 @@ void DlgAutoDJ::player1PositionChanged(double value)
 	}
 
 
-	if ( m_iPlayerFading == 3 )
+	if ( m_eState == ADJ_ENABLE_P1LOADED )
 	{	
 		// Auto DJ Start
 	    if (m_pCOPlay1->get() == 0.0f && m_pCOPlay2->get() == 0.0f) 
 		{		
             m_pCOCrossfader->slotSet(-1.0f); //Move crossfader to the left!
             m_pCOPlay1->slotSet(1.0f); //Play the track in player 1
+			removePlayingTrackFromQueue("[Channel1]");
         }
 		else if( m_pCOPlay1->get() == 1.0f && m_pCOPlay2->get() == 0.0f)
 		{
 			//Load the next song from the queue.
-            loadNextTrackFromQueue(true);			
-			m_iPlayerFading = 0;
+            loadNextTrackFromQueue();			
+			m_eState = ADJ_IDLE;
 		}
 		else 
 		{
-			m_iPlayerFading = 0;	
+			m_eState = ADJ_IDLE;
 		}
 	}
 
-	if( m_iPlayerFading == 2)	
+	if( m_eState == ADJ_P2FADING )	
 	{
 		if(	 m_pCOPlay2->get() == 0.0f )
 		{
 			// End State		
-			m_iPlayerFading = 0;
-			loadNextTrackFromQueue(true);
+			m_eState = ADJ_IDLE;
+			loadNextTrackFromQueue();
 		}
 		return;
 	}
 
-	if( m_iPlayerFading == 0)	
+	if( m_eState == ADJ_IDLE )	
 	{
 		if(m_bFadeNow)
 		{
@@ -304,22 +301,15 @@ void DlgAutoDJ::player1PositionChanged(double value)
 
     if (value >= m_posThreshold)
     {
-		if( !m_iPlayerFading )
+		if( m_eState == ADJ_IDLE )
 		{      
 			if (m_pCOPlay2->get() == 0.0f)
 		    {
-		        //Turn off repeat mode to tell Player 1 to stop at the end
-		        //m_pCORepeat1->slotSet(0.0f);
-
-		        //Turn on repeat mode to tell Player 2 to start playing 
-				//when the new track is loaded.
-		        //This helps us get around the fact that it takes time for the track to be loaded
-		        //and that is executed asynchronously (so we get around the race condition).
-		        //m_pCORepeat2->slotSet(1.0f);
 		        m_pCOPlay2->slotSet(1.0f);
 		    }
+			removePlayingTrackFromQueue("[Channel2]");
 
-			m_iPlayerFading = 1;
+			m_eState = ADJ_P1FADING;
 		}
 
 		float posFadeEnd = m_posThreshold + fadeDuration;
@@ -335,8 +325,8 @@ void DlgAutoDJ::player1PositionChanged(double value)
 			m_posThreshold = 1.0f - fadeDuration; // back to default 
 								
 			// does not work always emediatly after stop
-			// loadNextTrackFromQueue(true);
-			// m_iPlayerFading = 0; // Fading ready
+			// loadNextTrackFromQueue();
+			// m_eState = ADJ_IDLE; // Fading ready
         }
 		else
 		{
@@ -361,18 +351,18 @@ void DlgAutoDJ::player2PositionChanged(double value)
 		return;			
 	}
 
-	if( m_iPlayerFading == 1)	
+	if( m_eState == ADJ_P1FADING )	
 	{	
 		if(	 m_pCOPlay1->get() == 0.0f )
 		{
 			// End State		
-			m_iPlayerFading = 0;
-			loadNextTrackFromQueue(true);
+			m_eState = ADJ_IDLE;
+			loadNextTrackFromQueue();
 		}
 		return;
 	}
 
-	if( m_iPlayerFading == 0)	
+	if( m_eState == ADJ_IDLE )	
 	{	
 		if(m_bFadeNow)
 		{
@@ -388,22 +378,14 @@ void DlgAutoDJ::player2PositionChanged(double value)
 
     if (value >= m_posThreshold)
     {
-		if( !m_iPlayerFading )
+		if( m_eState == ADJ_IDLE )
 		{      
 			if (m_pCOPlay1->get() == 0.0f)
 		    {
-		        //Turn off repeat mode to tell Player 2 to stop at the end
-		        //m_pCORepeat2->slotSet(0.0f);
-
-		        //Turn on repeat mode to tell Player 1 to start playing 
-				//when the new track is loaded.
-		        //This helps us get around the fact that it takes time for the track to be loaded
-		        //and that is executed asynchronously (so we get around the race condition).
-		        //m_pCORepeat1->slotSet(1.0f);
 		        m_pCOPlay1->slotSet(1.0f);
 		    }
-
-			m_iPlayerFading = 2;
+			removePlayingTrackFromQueue("[Channel1]");
+			m_eState = ADJ_P2FADING;
 		}
 
 		float posFadeEnd = m_posThreshold + fadeDuration;
@@ -419,8 +401,8 @@ void DlgAutoDJ::player2PositionChanged(double value)
 			m_posThreshold = 1.0f - fadeDuration; // back to default 						
 			
 			// does not work always emediatly after stop
-			// loadNextTrackFromQueue(true);
-			// m_iPlayerFading = 0; // Fading ready
+			// loadNextTrackFromQueue();
+			// m_eState = ADJ_IDLE; // Fading ready
         }
 		else
 		{
@@ -433,13 +415,8 @@ void DlgAutoDJ::player2PositionChanged(double value)
 }
 
 
-bool DlgAutoDJ::loadNextTrackFromQueue(bool removeTopMostBeforeLoading)
+bool DlgAutoDJ::loadNextTrackFromQueue()
 {
-    if (removeTopMostBeforeLoading) {
-        //Only remove the top track if this isn't the start of Auto DJ mode.
-        m_pAutoDJTableModel->removeTrack(m_pAutoDJTableModel->index(0, 0));
-    }
-
     //Get the track at the top of the playlist...
     TrackPointer nextTrack = m_pAutoDJTableModel->getTrack(m_pAutoDJTableModel->index(0, 0));
 
@@ -456,3 +433,41 @@ bool DlgAutoDJ::loadNextTrackFromQueue(bool removeTopMostBeforeLoading)
 
     return true;
 }
+
+bool DlgAutoDJ::removePlayingTrackFromQueue(QString group)
+{
+	TrackPointer nextTrack, loadedTrack;
+	int nextId = 0, loadedId = 0;
+	
+
+	//Get the track at the top of the playlist...
+    nextTrack = m_pAutoDJTableModel->getTrack(m_pAutoDJTableModel->index(0, 0));
+	if ( nextTrack )
+	{
+		nextId = nextTrack->getId();
+	}	
+
+	//Get loaded track
+	loadedTrack = PlayerInfo::Instance().getTrackInfo(group);
+	if (loadedTrack )
+	{	
+		loadedId = loadedTrack->getId();
+	}
+
+	//When enable auto DJ and Topmost Song is already on second deck, nothing to do  
+	//  BaseTrackPlayer::getLoadedTrack()   
+	//  pTrack = PlayerInfo::Instance().getCurrentPlayingTrack(); 
+
+	
+	if ( loadedId != nextId )
+	{
+		// Do not remove when the user has loaded a track manualy
+		return false;
+    }
+
+    // remove the top track 
+	m_pAutoDJTableModel->removeTrack(m_pAutoDJTableModel->index(0, 0));	
+
+    return true;
+}
+

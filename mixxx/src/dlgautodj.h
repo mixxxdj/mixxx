@@ -45,7 +45,17 @@ class DlgAutoDJ : public QWidget, public Ui::DlgAutoDJ, public virtual LibraryVi
     void loadTrackToPlayer(TrackPointer tio, QString group);
 
   private:
-    bool loadNextTrackFromQueue(bool removeTopMostBeforeLoading);
+	enum ADJstates
+    {
+      ADJ_IDLE = 0,
+      ADJ_P1FADING,
+      ADJ_P2FADING,
+      ADJ_ENABLE_P1LOADED,
+	  ADJ_ENABLE_P1PLAYING
+    };
+
+    bool loadNextTrackFromQueue();
+	bool removePlayingTrackFromQueue(QString group);
 
     ConfigObject<ConfigValue>* m_pConfig;
     TrackCollection* m_pTrackCollection;
@@ -60,7 +70,7 @@ class DlgAutoDJ : public QWidget, public Ui::DlgAutoDJ, public virtual LibraryVi
                                         not-removed-from-the-queue behaviour
                                         work. */
     bool m_bFadeNow;
-	int m_iPlayerFading;
+	enum ADJstates m_eState;
     float m_posThreshold;
     ControlObjectThreadMain* m_pCOPlayPos1;
     ControlObjectThreadMain* m_pCOPlayPos2;
