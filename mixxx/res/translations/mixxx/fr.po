@@ -3,13 +3,13 @@ msgstr ""
 "Project-Id-Version: Mixxx 1.8\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2011-05-03 21:42-0400\n"
-"PO-Revision-Date: 2011-04-04 21:44+0000\n"
+"PO-Revision-Date: 2011-05-15 21:13+0000\n"
 "Last-Translator: Dylan A. <bob.dybian@gmail.com>\n"
 "Language-Team: <tezalprod@gmail.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-05-05 04:35+0000\n"
+"X-Launchpad-Export-Date: 2011-05-16 04:37+0000\n"
 "X-Generator: Launchpad (build 12959)\n"
 "X-Poedit-Country: FRANCE\n"
 "X-Poedit-Language: French\n"
@@ -118,7 +118,7 @@ msgstr "Périphériques Amovibles"
 #: BrowseFeature#4
 msgctxt "BrowseFeature#4"
 msgid "Mixxx Library"
-msgstr ""
+msgstr "Bibliothèque Mixxx"
 
 #: BrowseFeature#5
 msgid "Home"
@@ -212,7 +212,7 @@ msgstr "Emplacement"
 #: BrowseTableModel#15
 msgctxt "BrowseTableModel#15"
 msgid "Mixxx Library"
-msgstr ""
+msgstr "Bibliothèque Mixxx"
 
 #: BrowseTableModel#16
 msgid ""
@@ -277,7 +277,7 @@ msgstr ""
 #: CrateFeature#9
 msgctxt "CrateFeature#9"
 msgid "Unlock"
-msgstr ""
+msgstr "Débloquer"
 
 #: CrateFeature#10
 msgid "Crate name:"
