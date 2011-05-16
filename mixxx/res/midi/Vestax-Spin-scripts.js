@@ -326,7 +326,7 @@ VestaxSpin.Button.prototype.handleWheelTouch = function() {
             engine.stopTimer(this.timer);
             this.timer = 0;
         }
-       engine.scratchEnable(this.parent.deckNum, 128*3, 33+(1.0/3), 1.0/8, (1.0/8)/32);
+       engine.scratchEnable(this.parent.deckNum, 300, 33+(1.0/3), 1.0/8, (1.0/8)/32);
    } else {
         this.callback = function() {
             var last_fire = (new Date()).valueOf() - VestaxSpin.SCRATCH_TIMER_PERIOD;
