@@ -15,6 +15,8 @@ VestaxSpin = new function() {
 VestaxSpin.DECK_LIGHTS = [0x32, 0x35, 0x33, 0x24, 0x25, 0x46, 0x42, 0x21, 0x20, 0x29, 0x2a, 0x2b,
     0x2c, 0x2d];
 VestaxSpin.MISC_LIGHTS = [0x26, 0x29, 0x28, 0x2a];
+VestaxSpin.SCRATCH_TIMER_PERIOD = 20; // timer period in milliseconds,
+// mixxx enforces a minimum of 20.
 
 VestaxSpin.init = function(id) {
     VestaxSpin.decks = {
@@ -175,8 +177,8 @@ VestaxSpin.Deck = function(deckNum, group) {
     this.addButton("wheeltouch", new VestaxSpin.Button(deckNum-1, 0x2e), "handleWheelTouch");
     // is this needed on the spin? I don't think we get a different control number
     // from touch if the scratch button light is active like on typhoon
-    this.addButton("wheeltouchfilter", new VestaxSpin.Button(deckNum-1, 0x2f), "handleWheelTouchFilter");
-    this.addButton("jog", new VestaxSpin.Button(deckNum-1, 0x10), "handleJog");
+    //this.addButton("wheeltouchfilter", new VestaxSpin.Button(deckNum-1, 0x2f), "handleWheelTouchFilter");
+    this.addButton("jog", new VestaxSpin.Button(deckNum-1, 0x10), "handleWheel");
     // spin doesn't send different control number when the scratch button light
     // is enabled like the typhoon does
     //this.addButton("scratch", new VestaxSpin.Button(deckNum-1, 0x11), "handleScratch");
@@ -277,6 +279,12 @@ VestaxSpin.Button.prototype.handleFilter = function() {
     } else {
        this.parent.vinylMode = false;
        this.light.off();
+        // kill scratch
+        if (this.parent.buttons["wheeltouch"].timer > 0) {
+            engine.stopTimer(this.parent.buttons["wheeltouch"].timer);
+            this.parent.buttons["wheeltouch"].timer = 0;
+        }
+        engine.scratchDisable(this.parent.deckNum);
     }
 }
 
@@ -314,25 +322,29 @@ VestaxSpin.Button.prototype.handleWheelTouch = function() {
    if (this.parent.vinylMode && this.state == VestaxSpin.ButtonState.pressed) {
        // disable keylock on scratch
        //this.keylock = engine.getValue(this.group, "keylock");
-       engine.scratchEnable(this.parent.deckNum, 128*3, 33+(1.0/3), 1.0/8, (1.0/8)/32);
+        if (this.timer > 0) {
+            engine.stopTimer(this.timer);
+            this.timer = 0;
+        }
+       engine.scratchEnable(this.parent.deckNum, 300, 33+(1.0/3), 1.0/8, (1.0/8)/32);
    } else {
-       engine.scratchDisable(this.parent.deckNum);
+        this.callback = function() {
+            var last_fire = (new Date()).valueOf() - VestaxSpin.SCRATCH_TIMER_PERIOD;
+            if (this.lastTick < last_fire) {
+                engine.scratchDisable(this.parent.deckNum);
+                engine.stopTimer(this.timer);
+                this.timer = 0;
+            }
+        }
+        this.timer = engine.beginTimer(VestaxSpin.SCRATCH_TIMER_PERIOD,
+            "VestaxSpin.GetDeck(\"" + this.group + "\").buttons[\"wheeltouch\"].callback()");
    }
 }
 
-VestaxSpin.Button.prototype.handleWheelTouchFilter = function() {
-    if (this.state == VestaxSpin.ButtonState.pressed) {
-        // disable keylock on scratch
-        //this.keylock = engine.getValue(this.group, "keylock");
-        engine.scratchEnable(this.parent.deckNum, 300, 33+(1.0/3), 1.0/8, (1.0/8)/32);
-    } else {
-        engine.scratchDisable(this.parent.deckNum);
-    }
-}
-
-VestaxSpin.Button.prototype.handleJog = function() {
+VestaxSpin.Button.prototype.handleWheel = function() {
     if (engine.getValue(this.group, "scratch2_enable")) {
         engine.scratchTick(this.parent.deckNum, this.state - 0x40);
+        this.parent.buttons["wheeltouch"].lastTick = (new Date()).valueOf();
     } else {
         engine.setValue(this.group, "jog", this.state - 0x40);
     }
