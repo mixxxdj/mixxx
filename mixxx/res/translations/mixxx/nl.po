@@ -8,13 +8,13 @@ msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2011-05-03 21:42-0400\n"
-"PO-Revision-Date: 2011-05-08 15:12+0000\n"
-"Last-Translator: sv244 <Unknown>\n"
+"PO-Revision-Date: 2011-05-16 12:32+0000\n"
+"Last-Translator: P Griffioen <Unknown>\n"
 "Language-Team: Dutch <nl@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-05-09 04:32+0000\n"
+"X-Launchpad-Export-Date: 2011-05-17 04:36+0000\n"
 "X-Generator: Launchpad (build 12959)\n"
 
 #: AutoDJFeature#1
@@ -225,7 +225,7 @@ msgstr "Het bestand kan niet geladen worden omdat het in gebruik is."
 
 #: BrowseTableModel#17
 msgid "Warning: This will permanently delete the following files:"
-msgstr ""
+msgstr "Waarschuwing: Dit zal de volgende bestanden permanent verwijderen"
 
 #: BrowseTableModel#18
 msgid "Are you sure you want to delete these files from your computer?"
@@ -790,7 +790,7 @@ msgstr ""
 
 #: DlgPrefControlsDlg#10
 msgid "Pitch/Rate slider direction"
-msgstr ""
+msgstr "Pitch/ Rate schuif richting"
 
 #: DlgPrefControlsDlg#11
 msgid "Track load behaviour"
@@ -798,7 +798,7 @@ msgstr ""
 
 #: DlgPrefControlsDlg#12
 msgid "Cue behaviour"
-msgstr ""
+msgstr "Cue gedrag"
 
 #: DlgPrefControlsDlg#13
 msgid "Auto Recall Cue"
@@ -814,7 +814,7 @@ msgstr "Linkerklik"
 
 #: DlgPrefControlsDlg#16
 msgid "Right click"
-msgstr ""
+msgstr "Rechterklik"
 
 #: DlgPrefControlsDlg#17
 msgid "Permanent rate change (between 1 and 8000) when left clicking"
@@ -905,7 +905,7 @@ msgstr ""
 
 #: DlgPrefEQDlg#4
 msgid "textLabel1"
-msgstr ""
+msgstr "tekstLabel1"
 
 #: DlgPrefEQDlg#5
 msgid "16 Hz"
@@ -939,7 +939,7 @@ msgstr "Geen"
 
 #: DlgPrefMidiBindings#2
 msgid "Apply MIDI device settings?"
-msgstr ""
+msgstr "Toepassen van MIDI apparaat instellingen?"
 
 #: DlgPrefMidiBindings#3
 msgid ""
@@ -1019,26 +1019,26 @@ msgstr "Ingeschakeld"
 
 #: DlgPrefMidiBindingsDlg#7
 msgid "Controls"
-msgstr ""
+msgstr "Besturing"
 
 #: DlgPrefMidiBindingsDlg#8
 msgctxt "DlgPrefMidiBindingsDlg#8"
 msgid "Add"
-msgstr ""
+msgstr "Toevoegen"
 
 #: DlgPrefMidiBindingsDlg#9
 msgctxt "DlgPrefMidiBindingsDlg#9"
 msgid "Remove"
-msgstr ""
+msgstr "Verwijder"
 
 #: DlgPrefMidiBindingsDlg#10
 msgctxt "DlgPrefMidiBindingsDlg#10"
 msgid "MIDI Learning Wizard"
-msgstr ""
+msgstr "MIDI leermodus"
 
 #: DlgPrefMidiBindingsDlg#11
 msgid "Clear All"
-msgstr ""
+msgstr "Alles wissen"
 
 #: DlgPrefMidiBindingsDlg#12
 msgid ""
@@ -1049,34 +1049,34 @@ msgstr ""
 
 #: DlgPrefMidiBindingsDlg#13
 msgid "MIDI Input"
-msgstr ""
+msgstr "MIDI Invoer"
 
 #: DlgPrefMidiBindingsDlg#14
 msgid "Outputs"
-msgstr ""
+msgstr "Uitgangen"
 
 #: DlgPrefMidiBindingsDlg#15
 msgid "MIDI Output"
-msgstr ""
+msgstr "MIDI Uitvoer"
 
 #: DlgPrefNoMidiDlg#1
 msgctxt "DlgPrefNoMidiDlg#1"
 msgid "Form3"
-msgstr ""
+msgstr "Form3"
 
 #: DlgPrefNoMidiDlg#2
 msgid "No MIDI devices available"
-msgstr ""
+msgstr "Geen MIDI apparaten beschikbaar"
 
 #: DlgPrefNoVinylDlg#1
 msgctxt "DlgPrefNoVinylDlg#1"
 msgid "Form1"
-msgstr ""
+msgstr "Formulier1"
 
 #: DlgPrefNoVinylDlg#2
 msgctxt "DlgPrefNoVinylDlg#2"
 msgid "Input"
-msgstr ""
+msgstr "Invoer"
 
 #: DlgPrefNoVinylDlg#3
 msgctxt "DlgPrefNoVinylDlg#3"
@@ -1105,22 +1105,22 @@ msgstr ""
 #: DlgPrefNoVinylDlg#5
 msgctxt "DlgPrefNoVinylDlg#5"
 msgid "Turntable Preamp"
-msgstr ""
+msgstr "Draaitafel voorversterker"
 
 #: DlgPrefNoVinylDlg#6
 msgctxt "DlgPrefNoVinylDlg#6"
 msgid "1 (Off)"
-msgstr ""
+msgstr "1 (Uit)"
 
 #: DlgPrefNoVinylDlg#7
 msgctxt "DlgPrefNoVinylDlg#7"
 msgid "150"
-msgstr ""
+msgstr "150"
 
 #: DlgPrefNoVinylDlg#8
 msgctxt "DlgPrefNoVinylDlg#8"
 msgid "Vinyl Configuration"
-msgstr ""
+msgstr "Vinyl configuratie"
 
 #: DlgPrefNoVinylDlg#9
 msgctxt "DlgPrefNoVinylDlg#9"
@@ -1140,7 +1140,7 @@ msgstr ""
 #: DlgPrefNoVinylDlg#12
 msgctxt "DlgPrefNoVinylDlg#12"
 msgid "seconds"
-msgstr ""
+msgstr "seconden"
 
 #: DlgPrefNoVinylDlg#13
 msgctxt "DlgPrefNoVinylDlg#13"
@@ -1165,12 +1165,12 @@ msgstr ""
 #: DlgPrefNoVinylDlg#17
 msgctxt "DlgPrefNoVinylDlg#17"
 msgid "Signal Quality"
-msgstr ""
+msgstr "Signaalkwaliteit"
 
 #: DlgPrefNoVinylDlg#18
 msgctxt "DlgPrefNoVinylDlg#18"
 msgid "http://www.xwax.co.uk"
-msgstr ""
+msgstr "http://www.xwax.co.uk"
 
 #: DlgPrefNoVinylDlg#19
 msgctxt "DlgPrefNoVinylDlg#19"
@@ -1180,7 +1180,7 @@ msgstr ""
 #: DlgPrefNoVinylDlg#20
 msgctxt "DlgPrefNoVinylDlg#20"
 msgid "Apply"
-msgstr ""
+msgstr "Doorvoeren"
 
 #: DlgPrefNoVinylDlg#21
 msgid ""
@@ -1191,11 +1191,11 @@ msgstr ""
 #: DlgPrefPlaylist#1
 msgctxt "DlgPrefPlaylist#1"
 msgid "Choose music library directory"
-msgstr ""
+msgstr "Kies een muziek bibliotheek map"
 
 #: DlgPrefPlaylist#2
 msgid "Multiple iPods Detected"
-msgstr ""
+msgstr "Meerdere iPods gedetecteerd"
 
 #: DlgPrefPlaylist#3
 msgid ""
@@ -1205,19 +1205,19 @@ msgstr ""
 
 #: DlgPrefPlaylist#4
 msgid "Choose Yes to use the newly found iPod @ "
-msgstr ""
+msgstr "Kies Ja om de nieuw gevonden iPod te gebruiken "
 
 #: DlgPrefPlaylist#5
 msgid " or to continue to search for other iPods. \n"
-msgstr ""
+msgstr " of om verder te gaan met zoeken naar andere iPods. \n"
 
 #: DlgPrefPlaylist#6
 msgid "Choose No to use the existing iPod @ "
-msgstr ""
+msgstr "Kies Nee om de bestaande iPod te gebruiken @ "
 
 #: DlgPrefPlaylist#7
 msgid " and end detection. \n"
-msgstr ""
+msgstr " en beëindig detectie \n"
 
 #: DlgPrefPlaylist#8
 msgid "Choose iPod mount point"
@@ -1226,49 +1226,49 @@ msgstr ""
 #: DlgPrefPlaylistDlg#1
 msgctxt "DlgPrefPlaylistDlg#1"
 msgid "Form3"
-msgstr ""
+msgstr "Form3"
 
 #: DlgPrefPlaylistDlg#2
 msgid "Audio File Formats"
-msgstr ""
+msgstr "Audio bestandformaten"
 
 #: DlgPrefPlaylistDlg#3
 msgid "Additional Format Plugins:"
-msgstr ""
+msgstr "Extra formaat Plugins:"
 
 #: DlgPrefPlaylistDlg#4
 msgid "MP3, Ogg Vorbis, FLAC, WAVe, AIFF"
-msgstr ""
+msgstr "MP3, Ogg Vorbis, FLAC, WAVe, AIFF"
 
 #: DlgPrefPlaylistDlg#5
 msgid "Loaded Plugins:"
-msgstr ""
+msgstr "Geladen plugins:"
 
 #: DlgPrefPlaylistDlg#6
 msgctxt "DlgPrefPlaylistDlg#6"
 msgid "None"
-msgstr ""
+msgstr "Geen"
 
 #: DlgPrefPlaylistDlg#7
 msgctxt "DlgPrefPlaylistDlg#7"
 msgid "Miscellaneous"
-msgstr ""
+msgstr "Overige"
 
 #: DlgPrefPlaylistDlg#8
 msgid "Synchronize ID3 tags on track modifications"
-msgstr ""
+msgstr "Synchroniseer ID3-tags op nummer modificaties"
 
 #: DlgPrefPlaylistDlg#9
 msgid "Rescan library on start-up"
-msgstr ""
+msgstr "Scan bibliotheek opnieuw bij opstarten"
 
 #: DlgPrefPlaylistDlg#10
 msgid "Use relative paths for playlist export if possible"
-msgstr ""
+msgstr "Gebruik indien mogelijk relatieve paden voor speellijst uitvoer"
 
 #: DlgPrefPlaylistDlg#11
 msgid "iPod"
-msgstr ""
+msgstr "iPod"
 
 #: DlgPrefPlaylistDlg#12
 msgid "iPod mountpoint"
@@ -1276,32 +1276,32 @@ msgstr ""
 
 #: DlgPrefPlaylistDlg#13
 msgid "Browse..."
-msgstr ""
+msgstr "Bladeren..."
 
 #: DlgPrefPlaylistDlg#14
 msgid "Detect"
-msgstr ""
+msgstr "Detecteren"
 
 #: DlgPrefPlaylistDlg#15
 msgctxt "DlgPrefPlaylistDlg#15"
 msgid "Library"
-msgstr ""
+msgstr "Bibliotheek"
 
 #: DlgPrefPlaylistDlg#16
 msgid "Music Directory:"
-msgstr ""
+msgstr "Muziekmap:"
 
 #: DlgPrefPlaylistDlg#17
 msgid "Built-in"
-msgstr ""
+msgstr "Ingebouwd"
 
 #: DlgPrefPlaylistDlg#18
 msgid "Available Online..."
-msgstr ""
+msgstr "Beschikbaar online"
 
 #: DlgPrefPlaylistDlg#19
 msgid "Bundled Songs"
-msgstr ""
+msgstr "Gebundelde nummers"
 
 #: DlgPrefPlaylistDlg#20
 msgid ""
@@ -1311,69 +1311,69 @@ msgstr ""
 
 #: DlgPrefRecord#1
 msgid "kbps"
-msgstr ""
+msgstr "kbps"
 
 #: DlgPrefRecordDlg#1
 msgctxt "DlgPrefRecordDlg#1"
 msgid "Form3"
-msgstr ""
+msgstr "Form3"
 
 #: DlgPrefRecordDlg#2
 msgctxt "DlgPrefRecordDlg#2"
 msgid "Encoding"
-msgstr ""
+msgstr "Encoderen"
 
 #: DlgPrefRecordDlg#3
 msgid "Quality"
-msgstr ""
+msgstr "Kwaliteit"
 
 #: DlgPrefRecordDlg#4
 msgid "High"
-msgstr ""
+msgstr "Hoog"
 
 #: DlgPrefRecordDlg#5
 msgid "Low"
-msgstr ""
+msgstr "Lage"
 
 #: DlgPrefRecordDlg#6
 msgid "Tags"
-msgstr ""
+msgstr "Labels"
 
 #: DlgPrefRecordDlg#7
 msgctxt "DlgPrefRecordDlg#7"
 msgid "Title"
-msgstr ""
+msgstr "Titel"
 
 #: DlgPrefRecordDlg#8
 msgid "Author"
-msgstr ""
+msgstr "Auteur"
 
 #: DlgPrefRecordDlg#9
 msgctxt "DlgPrefRecordDlg#9"
 msgid "Album"
-msgstr ""
+msgstr "Album"
 
 #: DlgPrefRecordDlg#10
 msgctxt "DlgPrefRecordDlg#10"
 msgid "Miscellaneous"
-msgstr ""
+msgstr "Overige"
 
 #: DlgPrefRecordDlg#11
 msgid "Create a CUE file"
-msgstr ""
+msgstr "Maak een CUE bestand"
 
 #: DlgPrefRecordDlg#12
 msgid "File Splitting"
-msgstr ""
+msgstr "Bestand splitsen"
 
 #: DlgPrefRecordDlg#13
 msgid "Split recordings at"
-msgstr ""
+msgstr "Splits opname op"
 
 #: DlgPrefReplayGainDlg#1
 msgctxt "DlgPrefReplayGainDlg#1"
 msgid "BPM Detection Settings"
-msgstr ""
+msgstr "BPM detectie instellingen"
 
 #: DlgPrefReplayGainDlg#2
 msgid "ReplayGain Normalization"
@@ -1381,21 +1381,23 @@ msgstr ""
 
 #: DlgPrefReplayGainDlg#3
 msgid "Apply volume normalization to loaded songs."
-msgstr ""
+msgstr "Pas volume normalisatie toe op naar geladen nummers."
 
 #: DlgPrefReplayGainDlg#4
 msgid "Enable Replay Gain"
-msgstr ""
+msgstr "Replay Gain activeren"
 
 #: DlgPrefReplayGainDlg#5
 msgid ""
 "Calculate ReplayGain normalization for songs which are missing ReplayGain "
 "metadata."
 msgstr ""
+"Bereken ReplayGain normalisering voor nummers die ontbreken in de Replay "
+"Gain meta gegevens."
 
 #: DlgPrefReplayGainDlg#6
 msgid "Enable Replay Gain Analysis"
-msgstr ""
+msgstr "Schakel Replay Gain analyse in"
 
 #: DlgPrefReplayGainDlg#7
 msgid ""
@@ -1403,66 +1405,69 @@ msgid ""
 "applied to a new song. You may wish to wait before adjusting the pregain and "
 "volume."
 msgstr ""
+"Op oudere computers, kan het enkele seconden duren voordat volume "
+"normalisatie wordt toegepast op een nieuw nummer. Wellicht wenst u te "
+"wachten voor de aanpassing van de pregain en volume."
 
 #: DlgPrefReplayGainDlg#8
 msgid "Initial Boost"
-msgstr ""
+msgstr "Eerste impuls"
 
 #: DlgPrefReplayGainDlg#9
 msgid "Initial Gain Boost"
-msgstr ""
+msgstr "Initiële Gain impuls"
 
 #: DlgPrefReplayGainDlg#10
 msgid "dB"
-msgstr ""
+msgstr "dB"
 
 #: DlgPrefReplayGainDlg#11
 msgctxt "DlgPrefReplayGainDlg#11"
 msgid "Reset"
-msgstr ""
+msgstr "Reset"
 
 #: DlgPrefShoutcastDlg#1
 msgctxt "DlgPrefShoutcastDlg#1"
 msgid "Form3"
-msgstr ""
+msgstr "Form3"
 
 #: DlgPrefShoutcastDlg#2
 msgctxt "DlgPrefShoutcastDlg#2"
 msgid "Enable live broadcasting"
-msgstr ""
+msgstr "Schakel live uitzending in"
 
 #: DlgPrefShoutcastDlg#3
 msgid "Server connection"
-msgstr ""
+msgstr "Serververbinding"
 
 #: DlgPrefShoutcastDlg#4
 msgctxt "DlgPrefShoutcastDlg#4"
 msgid "Type"
-msgstr ""
+msgstr "Type"
 
 #: DlgPrefShoutcastDlg#5
 msgid "Icecast 2"
-msgstr ""
+msgstr "Icecast 2"
 
 #: DlgPrefShoutcastDlg#6
 msgid "Shoutcast"
-msgstr ""
+msgstr "Shoutcast"
 
 #: DlgPrefShoutcastDlg#7
 msgid "Icecast 1"
-msgstr ""
+msgstr "Icecast 1"
 
 #: DlgPrefShoutcastDlg#8
 msgid "Mount"
-msgstr ""
+msgstr "Aankoppelen (mount)"
 
 #: DlgPrefShoutcastDlg#9
 msgid "/mixxx.ogg"
-msgstr ""
+msgstr "/mixxx.ogg"
 
 #: DlgPrefShoutcastDlg#10
 msgid "Host"
-msgstr ""
+msgstr "Host"
 
 #: DlgPrefShoutcastDlg#11
 msgid "192.168.123.8"
@@ -1470,23 +1475,23 @@ msgstr ""
 
 #: DlgPrefShoutcastDlg#12
 msgid "Port"
-msgstr ""
+msgstr "Poort"
 
 #: DlgPrefShoutcastDlg#13
 msgid "8000"
-msgstr ""
+msgstr "8000"
 
 #: DlgPrefShoutcastDlg#14
 msgid "Login"
-msgstr ""
+msgstr "Aanmelden"
 
 #: DlgPrefShoutcastDlg#15
 msgid "source"
-msgstr ""
+msgstr "bron"
 
 #: DlgPrefShoutcastDlg#16
 msgid "Password"
-msgstr ""
+msgstr "Wachtwoord"
 
 #: DlgPrefShoutcastDlg#17
 msgid "test1234"
@@ -1494,27 +1499,27 @@ msgstr ""
 
 #: DlgPrefShoutcastDlg#18
 msgid "Stream settings"
-msgstr ""
+msgstr "Stream instellingen"
 
 #: DlgPrefShoutcastDlg#19
 msgid "Stream name"
-msgstr ""
+msgstr "Stream naam"
 
 #: DlgPrefShoutcastDlg#20
 msgid "Mixxx Icecast Testing"
-msgstr ""
+msgstr "Mixxx Icecast testen"
 
 #: DlgPrefShoutcastDlg#21
 msgid "Website"
-msgstr ""
+msgstr "Website"
 
 #: DlgPrefShoutcastDlg#22
 msgid "http://www.mixxx.org"
-msgstr ""
+msgstr "http://www.mixxx.org"
 
 #: DlgPrefShoutcastDlg#23
 msgid "Description"
-msgstr ""
+msgstr "Beschrijving"
 
 #: DlgPrefShoutcastDlg#24
 msgid ""
@@ -1534,102 +1539,102 @@ msgstr ""
 #: DlgPrefShoutcastDlg#25
 msgctxt "DlgPrefShoutcastDlg#25"
 msgid "Genre"
-msgstr ""
+msgstr "Genre"
 
 #: DlgPrefShoutcastDlg#26
 msgid "Live mix"
-msgstr ""
+msgstr "Live mix"
 
 #: DlgPrefShoutcastDlg#27
 msgid "Public stream"
-msgstr ""
+msgstr "Openbare stream"
 
 #: DlgPrefShoutcastDlg#28
 msgctxt "DlgPrefShoutcastDlg#28"
 msgid "Encoding"
-msgstr ""
+msgstr "Encoderen"
 
 #: DlgPrefShoutcastDlg#29
 msgctxt "DlgPrefShoutcastDlg#29"
 msgid "Bitrate"
-msgstr ""
+msgstr "Bitsnelheid"
 
 #: DlgPrefShoutcastDlg#30
 msgid "320 kbps"
-msgstr ""
+msgstr "320 kbps"
 
 #: DlgPrefShoutcastDlg#31
 msgid "256 kbps"
-msgstr ""
+msgstr "256 kbps"
 
 #: DlgPrefShoutcastDlg#32
 msgid "224 kbps"
-msgstr ""
+msgstr "224 kbps"
 
 #: DlgPrefShoutcastDlg#33
 msgid "192 kbps"
-msgstr ""
+msgstr "192 kbps"
 
 #: DlgPrefShoutcastDlg#34
 msgid "160 kbps"
-msgstr ""
+msgstr "160 kbps"
 
 #: DlgPrefShoutcastDlg#35
 msgid "128 kbps"
-msgstr ""
+msgstr "128 kbps"
 
 #: DlgPrefShoutcastDlg#36
 msgid "112 kbps"
-msgstr ""
+msgstr "112 kbps"
 
 #: DlgPrefShoutcastDlg#37
 msgid "96 kbps"
-msgstr ""
+msgstr "96 kbps"
 
 #: DlgPrefShoutcastDlg#38
 msgid "80 kbps"
-msgstr ""
+msgstr "80 kbps"
 
 #: DlgPrefShoutcastDlg#39
 msgid "64 kbps"
-msgstr ""
+msgstr "64 kbps"
 
 #: DlgPrefShoutcastDlg#40
 msgid "48 kbps"
-msgstr ""
+msgstr "48 kbps"
 
 #: DlgPrefShoutcastDlg#41
 msgid "Format"
-msgstr ""
+msgstr "Opmaak"
 
 #: DlgPrefShoutcastDlg#42
 msgid "Ogg Vorbis"
-msgstr ""
+msgstr "Ogg Vorbis"
 
 #: DlgPrefShoutcastDlg#43
 msgid "MP3"
-msgstr ""
+msgstr "MP3"
 
 #: DlgPrefShoutcastDlg#44
 msgid "Channels"
-msgstr ""
+msgstr "Kanalen"
 
 #: DlgPrefShoutcastDlg#45
 msgid "Stereo"
-msgstr ""
+msgstr "Stereo"
 
 #: DlgPrefShoutcastDlg#46
 msgid "Custom metadata"
-msgstr ""
+msgstr "Aangepaste metagegevens"
 
 #: DlgPrefShoutcastDlg#47
 msgid "Enable custom metadata"
-msgstr ""
+msgstr "Aangepaste metagegevens inschakelen"
 
 #: DlgPrefShoutcastDlg#48
 msgctxt "DlgPrefShoutcastDlg#48"
 msgid "Artist"
-msgstr ""
+msgstr "Artiest"
 
 #: DlgPrefShoutcastDlg#49
 msgid "%mainartist"
@@ -1638,7 +1643,7 @@ msgstr ""
 #: DlgPrefShoutcastDlg#50
 msgctxt "DlgPrefShoutcastDlg#50"
 msgid "Title"
-msgstr ""
+msgstr "Titel"
 
 #: DlgPrefShoutcastDlg#51
 msgid "%maintitle"
@@ -1653,49 +1658,51 @@ msgstr ""
 #: DlgPrefSound#1
 msgctxt "DlgPrefSound#1"
 msgid "None"
-msgstr ""
+msgstr "Geen"
 
 #: DlgPrefSound#2
 msgid "%1 Hz"
-msgstr ""
+msgstr "%1 Hz"
 
 #: DlgPrefSound#3
 msgid "a device"
-msgstr ""
+msgstr "een apparaat"
 
 #: DlgPrefSound#4
 msgid "An unknown error occurred"
-msgstr ""
+msgstr "Er is een onbekende fout opgetreden"
 
 #: DlgPrefSound#5
 msgid "sound device \"%1\""
-msgstr ""
+msgstr "geluidsapparaat \"%1\""
 
 #: DlgPrefSound#6
 msgid "Two outputs cannot share channels on %1"
-msgstr ""
+msgstr "Twee uitgangen kunnen geen kanalen delen op %1"
 
 #: DlgPrefSound#7
 msgid ""
 "Error opening %1\n"
 "%2"
 msgstr ""
+"Fout bij openen %1\n"
+"%2"
 
 #: DlgPrefSound#8
 msgid "%1 ms"
-msgstr ""
+msgstr "%1 ms"
 
 #: DlgPrefSound#9
 msgid "Configuration error"
-msgstr ""
+msgstr "Configuratiefout"
 
 #: DlgPrefSoundDlg#1
 msgid "Sound API"
-msgstr ""
+msgstr "Geluid API"
 
 #: DlgPrefSoundDlg#2
 msgid "Sample Rate"
-msgstr ""
+msgstr "Sample-ratio"
 
 #: DlgPrefSoundDlg#3
 msgid "Latency Tips"
@@ -1711,56 +1718,56 @@ msgstr ""
 
 #: DlgPrefSoundDlg#5
 msgid "Output"
-msgstr ""
+msgstr "Uitvoer"
 
 #: DlgPrefSoundDlg#6
 msgctxt "DlgPrefSoundDlg#6"
 msgid "Input"
-msgstr ""
+msgstr "Invoer"
 
 #: DlgPrefSoundDlg#7
 msgid "Query Devices"
-msgstr ""
+msgstr "Query-apparaten"
 
 #: DlgPrefSoundDlg#8
 msgid "Reset to Defaults"
-msgstr ""
+msgstr "Standaardinstellingen herstellen"
 
 #: DlgPrefSoundDlg#9
 msgctxt "DlgPrefSoundDlg#9"
 msgid "Apply"
-msgstr ""
+msgstr "Pas toe"
 
 #: DlgPrefSoundDlg#10
 msgid "Latency"
-msgstr ""
+msgstr "Latentie"
 
 #: DlgPrefSoundItem#1
 msgctxt "DlgPrefSoundItem#1"
 msgid "None"
-msgstr ""
+msgstr "Geen"
 
 #: DlgPrefSoundItem#2
 msgid "Channels %1 - %2"
-msgstr ""
+msgstr "Kanalen %1 - %2"
 
 #: DlgPrefSoundItem#3
 msgid "Form"
-msgstr ""
+msgstr "Formulier"
 
 #: DlgPrefSoundItem#4
 msgid "Type (#)"
-msgstr ""
+msgstr "Type (#)"
 
 #: DlgPrefVinylDlg#1
 msgctxt "DlgPrefVinylDlg#1"
 msgid "Form1"
-msgstr ""
+msgstr "Formulier1"
 
 #: DlgPrefVinylDlg#2
 msgctxt "DlgPrefVinylDlg#2"
 msgid "Input"
-msgstr ""
+msgstr "Invoer"
 
 #: DlgPrefVinylDlg#3
 msgctxt "DlgPrefVinylDlg#3"
@@ -1785,26 +1792,29 @@ msgid ""
 "href=\"http://www.mixxx.org/wiki/doku.php/vinyl_control#troubleshooting\">Tro"
 "ubleshooting</a>"
 msgstr ""
+"<a "
+"href=\"http://www.mixxx.org/wiki/doku.php/vinyl_control#troubleshooting\">Pro"
+"bleemoplossing</a>"
 
 #: DlgPrefVinylDlg#5
 msgctxt "DlgPrefVinylDlg#5"
 msgid "Turntable Preamp"
-msgstr ""
+msgstr "Draaitafel voorversterker"
 
 #: DlgPrefVinylDlg#6
 msgctxt "DlgPrefVinylDlg#6"
 msgid "1 (Off)"
-msgstr ""
+msgstr "1 (Uit)"
 
 #: DlgPrefVinylDlg#7
 msgctxt "DlgPrefVinylDlg#7"
 msgid "150"
-msgstr ""
+msgstr "150"
 
 #: DlgPrefVinylDlg#8
 msgctxt "DlgPrefVinylDlg#8"
 msgid "Vinyl Configuration"
-msgstr ""
+msgstr "Vinyl configuratie"
 
 #: DlgPrefVinylDlg#9
 msgctxt "DlgPrefVinylDlg#9"
@@ -1819,92 +1829,92 @@ msgstr ""
 #: DlgPrefVinylDlg#11
 msgctxt "DlgPrefVinylDlg#11"
 msgid "Apply"
-msgstr ""
+msgstr "Pas toe"
 
 #: DlgPrefVinylDlg#12
 msgctxt "DlgPrefVinylDlg#12"
 msgid "Lead-in time"
-msgstr ""
+msgstr "Lead-in tijd"
 
 #: DlgPrefVinylDlg#13
 msgctxt "DlgPrefVinylDlg#13"
 msgid "seconds"
-msgstr ""
+msgstr "seconden"
 
 #: DlgPrefVinylDlg#14
 msgctxt "DlgPrefVinylDlg#14"
 msgid "Control Mode"
-msgstr ""
+msgstr "Controle modus"
 
 #: DlgPrefVinylDlg#15
 msgctxt "DlgPrefVinylDlg#15"
 msgid "Absolute Mode"
-msgstr ""
+msgstr "Absolute modus"
 
 #: DlgPrefVinylDlg#16
 msgctxt "DlgPrefVinylDlg#16"
 msgid "Relative Mode"
-msgstr ""
+msgstr "Relatieve modus"
 
 #: DlgPrefVinylDlg#17
 msgctxt "DlgPrefVinylDlg#17"
 msgid "Enable Needle Skip Prevention"
-msgstr ""
+msgstr "Zet naald overslaan preventie aan"
 
 #: DlgPrefVinylDlg#18
 msgctxt "DlgPrefVinylDlg#18"
 msgid "Signal Quality"
-msgstr ""
+msgstr "Signaalkwaliteit"
 
 #: DlgPrefVinylDlg#19
 msgctxt "DlgPrefVinylDlg#19"
 msgid "http://www.xwax.co.uk"
-msgstr ""
+msgstr "http://www.xwax.co.uk"
 
 #: DlgPrefVinylDlg#20
 msgctxt "DlgPrefVinylDlg#20"
 msgid "Powered by xwax"
-msgstr ""
+msgstr "Powered by xwax"
 
 #: DlgPreferences#1
 msgid "Sound Hardware"
-msgstr ""
+msgstr "Geluidhardware"
 
 #: DlgPreferences#2
 msgid "MIDI Controllers"
-msgstr ""
+msgstr "MIDI Controllers"
 
 #: DlgPreferences#3
 msgctxt "DlgPreferences#3"
 msgid "Library"
-msgstr ""
+msgstr "Bibliotheek"
 
 #: DlgPreferences#4
 msgid "Interface"
-msgstr ""
+msgstr "Interface"
 
 #: DlgPreferences#5
 msgid "Equalizers"
-msgstr ""
+msgstr "Equalizers"
 
 #: DlgPreferences#6
 msgctxt "DlgPreferences#6"
 msgid "Crossfader"
-msgstr ""
+msgstr "Crossfader"
 
 #: DlgPreferences#7
 msgctxt "DlgPreferences#7"
 msgid "Recording"
-msgstr ""
+msgstr "Opnemen"
 
 #: DlgPreferences#8
 msgctxt "DlgPreferences#8"
 msgid "BPM Detection"
-msgstr ""
+msgstr "BPM-detectie"
 
 #: DlgPreferences#9
 msgid "Normalization"
-msgstr ""
+msgstr "Normaliseren"
 
 #: DlgPreferences#10
 msgctxt "DlgPreferences#10"
@@ -1918,11 +1928,11 @@ msgstr ""
 #: DlgPreferencesDlg#1
 msgctxt "DlgPreferencesDlg#1"
 msgid "Dialog"
-msgstr ""
+msgstr "Dialoogvenster"
 
 #: DlgPreferencesDlg#2
 msgid "1"
-msgstr ""
+msgstr "1"
 
 #: DlgPrepare#1
 msgctxt "DlgPrepare#1"
@@ -1931,7 +1941,7 @@ msgstr ""
 
 #: DlgPrepare#2
 msgid "Recently Added"
-msgstr ""
+msgstr "Recentelijk toegevoegd"
 
 #: DlgPrepare#3
 msgid "All Songs"
@@ -1939,24 +1949,24 @@ msgstr ""
 
 #: DlgPrepare#4
 msgid "Progress"
-msgstr ""
+msgstr "Voortgang"
 
 #: DlgPrepare#5
 msgid "Select All"
-msgstr ""
+msgstr "Alles selecteren"
 
 #: DlgPrepare#6
 msgctxt "DlgPrepare#6"
 msgid "Analyze"
-msgstr ""
+msgstr "Analyseren"
 
 #: DlgPrepare#7
 msgid "Stop Analysis"
-msgstr ""
+msgstr "Analyse stoppen"
 
 #: DlgPrepare#8
 msgid "Analyzing %1%"
-msgstr ""
+msgstr "Geanalyseerd %1%"
 
 #: DlgRecording#1
 msgctxt "DlgRecording#1"
@@ -1965,105 +1975,105 @@ msgstr ""
 
 #: DlgRecording#2
 msgid "Status:"
-msgstr ""
+msgstr "Status:"
 
 #: DlgRecording#3
 msgid "Start Recording"
-msgstr ""
+msgstr "Opname starten"
 
 #: DlgRecording#4
 msgid "Start recording here ..."
-msgstr ""
+msgstr "Start opname hier..."
 
 #: DlgRecording#5
 msgid "Stop Recording"
-msgstr ""
+msgstr "Opname stoppen"
 
 #: DlgTrackInfo#1
 msgctxt "DlgTrackInfo#1"
 msgid "Track Editor"
-msgstr ""
+msgstr "Nummer-editor"
 
 #: DlgTrackInfo#2
 msgctxt "DlgTrackInfo#2"
 msgid "Song:"
-msgstr ""
+msgstr "Nummer:"
 
 #: DlgTrackInfo#3
 msgctxt "DlgTrackInfo#3"
 msgid "Title:"
-msgstr ""
+msgstr "Titel:"
 
 #: DlgTrackInfo#4
 msgctxt "DlgTrackInfo#4"
 msgid "Artist:"
-msgstr ""
+msgstr "Artiest:"
 
 #: DlgTrackInfo#5
 msgid "Album:"
-msgstr ""
+msgstr "Album:"
 
 #: DlgTrackInfo#6
 msgid "Date:"
-msgstr ""
+msgstr "Datum:"
 
 #: DlgTrackInfo#7
 msgid "Track #:"
-msgstr ""
+msgstr "Nummer #;"
 
 #: DlgTrackInfo#8
 msgid "Genre:"
-msgstr ""
+msgstr "Genre:"
 
 #: DlgTrackInfo#9
 msgctxt "DlgTrackInfo#9"
 msgid "Filename:"
-msgstr ""
+msgstr "Bestandsnaam:"
 
 #: DlgTrackInfo#10
 msgid "Duration:"
-msgstr ""
+msgstr "Duur:"
 
 #: DlgTrackInfo#11
 msgctxt "DlgTrackInfo#11"
 msgid "3:00"
-msgstr ""
+msgstr "3:00"
 
 #: DlgTrackInfo#12
 msgctxt "DlgTrackInfo#12"
 msgid "File Type:"
-msgstr ""
+msgstr "Bestandstype:"
 
 #: DlgTrackInfo#13
 msgctxt "DlgTrackInfo#13"
 msgid "77"
-msgstr ""
+msgstr "77"
 
 #: DlgTrackInfo#14
 msgctxt "DlgTrackInfo#14"
 msgid "Comments:"
-msgstr ""
+msgstr "Opmerkingen:"
 
 #: DlgTrackInfo#15
 msgid "Reload track metadata from file."
-msgstr ""
+msgstr "Herlaad nummer metagegevens van bestand"
 
 #: DlgTrackInfo#16
 msgctxt "DlgTrackInfo#16"
 msgid "Track Information (Click to Expand)"
-msgstr ""
+msgstr "Nummer informatie (Klik om te vergroten)"
 
 #: DlgTrackInfo#17
 msgid "Track BPM: "
-msgstr ""
+msgstr "Nummer BPM: "
 
 #: DlgTrackInfo#18
 msgid "x2"
-msgstr ""
+msgstr "x2"
 
 #: DlgTrackInfo#19
 msgid "/2"
-msgstr ""
+msgstr "/2"
 
 #: DlgTrackInfo#20
 msgid "Tap to Beat"
