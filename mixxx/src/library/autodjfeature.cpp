@@ -36,7 +36,7 @@ QIcon AutoDJFeature::getIcon() {
     return QIcon(":/images/library/ic_library_autodj.png");
 }
 
-void AutoDJFeature::bindWidget(WLibrarySidebar* sidebarWidget,
+void AutoDJFeature::bindWidget(WLibrarySidebar* /*sidebarWidget*/,
                                WLibrary* libraryWidget,
                                MixxxKeyboard* keyboard) {
 
@@ -62,15 +62,14 @@ void AutoDJFeature::activate() {
     emit(switchToView("Auto DJ"));
 }
 
-void AutoDJFeature::activateChild(const QModelIndex& index) {
-
+void AutoDJFeature::activateChild(const QModelIndex& /*index*/) {
 }
 
-void AutoDJFeature::onRightClick(const QPoint& globalPos) {
+void AutoDJFeature::onRightClick(const QPoint& /*globalPos*/) {
 }
 
-void AutoDJFeature::onRightClickChild(const QPoint& globalPos,
-                                            QModelIndex index) {
+void AutoDJFeature::onRightClickChild(const QPoint& /*globalPos*/,
+                                            QModelIndex /*index*/) {
 }
 
 bool AutoDJFeature::dropAccept(QUrl url) {
@@ -108,7 +107,7 @@ bool AutoDJFeature::dropAccept(QUrl url) {
     return true;
 }
 
-bool AutoDJFeature::dropAcceptChild(const QModelIndex& index, QUrl url) {
+bool AutoDJFeature::dropAcceptChild(const QModelIndex& /*index*/, QUrl /*url*/) {
     return false;
 }
 
@@ -117,10 +116,10 @@ bool AutoDJFeature::dragMoveAccept(QUrl url) {
     return SoundSourceProxy::isFilenameSupported(file.fileName());
 }
 
-bool AutoDJFeature::dragMoveAcceptChild(const QModelIndex& index,
-                                              QUrl url) {
+bool AutoDJFeature::dragMoveAcceptChild(const QModelIndex& /*index*/,
+                                              QUrl /*url*/) {
     return false;
 }
-void AutoDJFeature::onLazyChildExpandation(const QModelIndex &index){
+void AutoDJFeature::onLazyChildExpandation(const QModelIndex& /*index*/){
     //Nothing to do because the childmodel is not of lazy nature.
 }
