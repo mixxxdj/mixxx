@@ -187,7 +187,7 @@ void DlgAutoDJ::skipNext(bool buttonChecked)
 
 void DlgAutoDJ::fadeNow(bool buttonChecked)
 {
-    Q_UNUSED(buttonChecked);
+	Q_UNUSED(buttonChecked);
     qDebug() << "Fade Now";
 	if(m_eState == ADJ_IDLE && m_bAutoDJEnabled){		
 		m_bFadeNow = true;
@@ -394,7 +394,7 @@ void DlgAutoDJ::player2PositionChanged(double value)
         if (value >= posFadeEnd)
         {
 			//Pre-End State			
-			m_pCOCrossfader->slotSet(-1.0f); //Move crossfader to the right!
+			m_pCOCrossfader->slotSet(-1.0f); //Move crossfader to the left!
             
 			m_pCOPlay2->slotSet(0.0f); //Stop the player
 
