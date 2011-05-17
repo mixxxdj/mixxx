@@ -2745,7 +2745,7 @@
 						<!--See comment about <Size> above-->
 						<!--<Size>i,73</Size>-->
 						<BgColor>#1C1C1C</BgColor>
-						<BgPixmap>style/style_bg_waveform1.png</BgPixmap>
+						<BgPixmap>style/style_bg_waveform2.png</BgPixmap>
 						<HfcColor>#1b1b1b</HfcColor>
 						<SignalColor>#E17800</SignalColor>
 						<BeatColor>#ffffff</BeatColor>
