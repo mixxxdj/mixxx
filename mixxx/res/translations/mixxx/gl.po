@@ -9,18 +9,18 @@ msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2011-05-03 21:42-0400\n"
-"PO-Revision-Date: 2011-05-14 19:24+0000\n"
-"Last-Translator: bassball93 <bassball93@gmail.com>\n"
+"PO-Revision-Date: 2011-05-17 08:11+0000\n"
+"Last-Translator: Miguel Anxo Bouzada <mbouzada@gmail.com>\n"
 "Language-Team: Galician <gl@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-05-15 04:36+0000\n"
+"X-Launchpad-Export-Date: 2011-05-18 04:33+0000\n"
 "X-Generator: Launchpad (build 12959)\n"
 
 #: AutoDJFeature#1
 msgid "Auto DJ"
-msgstr "Auto Dj"
+msgstr "Auto DJ"
 
 #: BaseSqlTableModel#1
 msgid "Played"
@@ -39,7 +39,7 @@ msgstr "Título"
 #: BaseSqlTableModel#4
 msgctxt "BaseSqlTableModel#4"
 msgid "Album"
-msgstr "Álbume"
+msgstr "Álbum"
 
 #: BaseSqlTableModel#5
 msgctxt "BaseSqlTableModel#5"
@@ -59,7 +59,7 @@ msgstr "Formato"
 #: BaseSqlTableModel#8
 msgctxt "BaseSqlTableModel#8"
 msgid "Location"
-msgstr "Ubicación"
+msgstr "Localización"
 
 #: BaseSqlTableModel#9
 msgctxt "BaseSqlTableModel#9"
@@ -266,7 +266,7 @@ msgstr "Trancar"
 #: CrateFeature#5
 msgctxt "CrateFeature#5"
 msgid "Import Playlist"
-msgstr "Importar lista de reprodución"
+msgstr "Importar a lista de reprodución"
 
 #: CrateFeature#6
 msgid "Crates"
@@ -308,17 +308,17 @@ msgstr ""
 #: CrateFeature#15
 msgctxt "CrateFeature#15"
 msgid "Playlist Files (*.m3u *.pls)"
-msgstr ""
+msgstr "Ficheiros da lista de reprodución (*.m3u *.pls)"
 
 #: CrateFeature#16
 msgctxt "CrateFeature#16"
 msgid "Export Playlist"
-msgstr "Exportar lista de reprodución"
+msgstr "Exportar a lista de reprodución"
 
 #: CrateFeature#17
 msgctxt "CrateFeature#17"
 msgid "M3U Playlist (*.m3u);;PLS Playlist (*.pls)"
-msgstr ""
+msgstr "Lista de reprodución M3U (*.m3u);;Lista de reprodución PLS (*.pls)"
 
 #: CrateFeature#18
 msgid "A crate cannot have a blank name."
@@ -389,7 +389,7 @@ msgstr "Xestionar"
 
 #: DlgAutoDJ#4
 msgid "Shuffle playlist"
-msgstr ""
+msgstr "Lista de reprodución aleatoria"
 
 #: DlgAutoDJ#5
 msgid "Add tracks to the queue below..."
@@ -427,25 +427,25 @@ msgstr ""
 
 #: DlgBpmTapDlg#2
 msgid "&Close"
-msgstr ""
+msgstr "&Pechar"
 
 #: DlgBpmTapDlg#3
 msgctxt "DlgBpmTapDlg#3"
 msgid "Alt+O"
-msgstr ""
+msgstr "Alt+O"
 
 #: DlgBpmTapDlg#4
 msgctxt "DlgBpmTapDlg#4"
 msgid "Song:"
-msgstr ""
+msgstr "Canción:"
 
 #: DlgBpmTapDlg#5
 msgid "Next >>"
-msgstr ""
+msgstr "Seguinte>>"
 
 #: DlgBpmTapDlg#6
 msgid "<< Prev"
-msgstr ""
+msgstr "<<Anterior"
 
 #: DlgBpmTapDlg#7
 msgid "BPM Editor (Click to Expand)"
@@ -466,7 +466,7 @@ msgstr ""
 
 #: DlgBpmTapDlg#11
 msgid "BPM Range:"
-msgstr ""
+msgstr "Rango BPM:"
 
 #: DlgBpmTapDlg#12
 msgid "&Go"
@@ -474,7 +474,7 @@ msgstr ""
 
 #: DlgBpmTapDlg#13
 msgid "Alt+G"
-msgstr ""
+msgstr "Alt+G"
 
 #: DlgBpmTapDlg#14
 msgctxt "DlgBpmTapDlg#14"
@@ -483,7 +483,7 @@ msgstr ""
 
 #: DlgBpmTapDlg#15
 msgid "BPM:"
-msgstr ""
+msgstr "BPM:"
 
 #: DlgBpmTapDlg#16
 msgid "&Push to tap tempo"
@@ -491,7 +491,7 @@ msgstr ""
 
 #: DlgBpmTapDlg#17
 msgid "Alt+P"
-msgstr ""
+msgstr "Alt+P"
 
 #: DlgBpmTapDlg#18
 msgctxt "DlgBpmTapDlg#18"
@@ -511,7 +511,7 @@ msgstr ""
 #: DlgBpmTapDlg#21
 msgctxt "DlgBpmTapDlg#21"
 msgid "Comments:"
-msgstr ""
+msgstr "Comentarios:"
 
 #: DlgBpmTapDlg#22
 msgctxt "DlgBpmTapDlg#22"
@@ -521,7 +521,7 @@ msgstr ""
 #: DlgBpmTapDlg#23
 msgctxt "DlgBpmTapDlg#23"
 msgid "3:00"
-msgstr ""
+msgstr "3:00"
 
 #: DlgBpmTapDlg#24
 msgid "Play Time:"
@@ -535,7 +535,7 @@ msgstr ""
 #: DlgBpmTapDlg#26
 msgctxt "DlgBpmTapDlg#26"
 msgid "77"
-msgstr ""
+msgstr "77"
 
 #: DlgMidiLearning#1
 msgid "Skip"
@@ -696,39 +696,39 @@ msgstr ""
 
 #: DlgPrefControls#3
 msgid "10%"
-msgstr ""
+msgstr "10%"
 
 #: DlgPrefControls#4
 msgid "20%"
-msgstr ""
+msgstr "20%"
 
 #: DlgPrefControls#5
 msgid "30%"
-msgstr ""
+msgstr "30%"
 
 #: DlgPrefControls#6
 msgid "40%"
-msgstr ""
+msgstr "40%"
 
 #: DlgPrefControls#7
 msgid "50%"
-msgstr ""
+msgstr "50%"
 
 #: DlgPrefControls#8
 msgid "60%"
-msgstr ""
+msgstr "60%"
 
 #: DlgPrefControls#9
 msgid "70%"
-msgstr ""
+msgstr "70%"
 
 #: DlgPrefControls#10
 msgid "80%"
-msgstr ""
+msgstr "80%"
 
 #: DlgPrefControls#11
 msgid "90%"
-msgstr ""
+msgstr "90%"
 
 #: DlgPrefControls#12
 msgid "Up increases speed"
@@ -1110,7 +1110,7 @@ msgstr ""
 #: DlgPrefNoVinylDlg#7
 msgctxt "DlgPrefNoVinylDlg#7"
 msgid "150"
-msgstr ""
+msgstr "150"
 
 #: DlgPrefNoVinylDlg#8
 msgctxt "DlgPrefNoVinylDlg#8"
@@ -1135,7 +1135,7 @@ msgstr ""
 #: DlgPrefNoVinylDlg#12
 msgctxt "DlgPrefNoVinylDlg#12"
 msgid "seconds"
-msgstr ""
+msgstr "segundos"
 
 #: DlgPrefNoVinylDlg#13
 msgctxt "DlgPrefNoVinylDlg#13"
@@ -1235,7 +1235,7 @@ msgstr ""
 
 #: DlgPrefPlaylistDlg#4
 msgid "MP3, Ogg Vorbis, FLAC, WAVe, AIFF"
-msgstr ""
+msgstr "MP3, Ogg Vorbis, FLAC, WAVe, AIFF"
 
 #: DlgPrefPlaylistDlg#5
 msgid "Loaded Plugins:"
@@ -1273,7 +1273,7 @@ msgstr "Punto de montaxe do iPod"
 
 #: DlgPrefPlaylistDlg#13
 msgid "Browse..."
-msgstr ""
+msgstr "Buscar..."
 
 #: DlgPrefPlaylistDlg#14
 msgid "Detect"
@@ -1282,7 +1282,7 @@ msgstr "Detectar"
 #: DlgPrefPlaylistDlg#15
 msgctxt "DlgPrefPlaylistDlg#15"
 msgid "Library"
-msgstr ""
+msgstr "Librería"
 
 #: DlgPrefPlaylistDlg#16
 msgid "Music Directory:"
@@ -1339,7 +1339,7 @@ msgstr "Etiquetas"
 #: DlgPrefRecordDlg#7
 msgctxt "DlgPrefRecordDlg#7"
 msgid "Title"
-msgstr ""
+msgstr "Título"
 
 #: DlgPrefRecordDlg#8
 msgid "Author"
@@ -1348,7 +1348,7 @@ msgstr "Autor"
 #: DlgPrefRecordDlg#9
 msgctxt "DlgPrefRecordDlg#9"
 msgid "Album"
-msgstr ""
+msgstr "Álbume"
 
 #: DlgPrefRecordDlg#10
 msgctxt "DlgPrefRecordDlg#10"
@@ -1411,7 +1411,7 @@ msgstr ""
 
 #: DlgPrefReplayGainDlg#10
 msgid "dB"
-msgstr ""
+msgstr "dB"
 
 #: DlgPrefReplayGainDlg#11
 msgctxt "DlgPrefReplayGainDlg#11"
@@ -1626,7 +1626,7 @@ msgstr "Activar metadatos personalizados"
 #: DlgPrefShoutcastDlg#48
 msgctxt "DlgPrefShoutcastDlg#48"
 msgid "Artist"
-msgstr "Artista"
+msgstr "Intérprete"
 
 #: DlgPrefShoutcastDlg#49
 msgid "%mainartist"
@@ -1796,7 +1796,7 @@ msgstr ""
 #: DlgPrefVinylDlg#7
 msgctxt "DlgPrefVinylDlg#7"
 msgid "150"
-msgstr ""
+msgstr "150"
 
 #: DlgPrefVinylDlg#8
 msgctxt "DlgPrefVinylDlg#8"
@@ -1826,7 +1826,7 @@ msgstr ""
 #: DlgPrefVinylDlg#13
 msgctxt "DlgPrefVinylDlg#13"
 msgid "seconds"
-msgstr ""
+msgstr "segundos"
 
 #: DlgPrefVinylDlg#14
 msgctxt "DlgPrefVinylDlg#14"
@@ -1887,7 +1887,7 @@ msgstr "Ecualizadores"
 #: DlgPreferences#6
 msgctxt "DlgPreferences#6"
 msgid "Crossfader"
-msgstr ""
+msgstr "Crossfader"
 
 #: DlgPreferences#7
 msgctxt "DlgPreferences#7"
@@ -1953,7 +1953,7 @@ msgstr ""
 
 #: DlgPrepare#8
 msgid "Analyzing %1%"
-msgstr ""
+msgstr "Analizando %1%"
 
 #: DlgRecording#1
 msgctxt "DlgRecording#1"
@@ -1984,17 +1984,17 @@ msgstr ""
 #: DlgTrackInfo#2
 msgctxt "DlgTrackInfo#2"
 msgid "Song:"
-msgstr ""
+msgstr "Canción:"
 
 #: DlgTrackInfo#3
 msgctxt "DlgTrackInfo#3"
 msgid "Title:"
-msgstr ""
+msgstr "Título:"
 
 #: DlgTrackInfo#4
 msgctxt "DlgTrackInfo#4"
 msgid "Artist:"
-msgstr ""
+msgstr "Intérprete:"
 
 #: DlgTrackInfo#5
 msgid "Album:"
@@ -2024,7 +2024,7 @@ msgstr "Duración:"
 #: DlgTrackInfo#11
 msgctxt "DlgTrackInfo#11"
 msgid "3:00"
-msgstr ""
+msgstr "3:00"
 
 #: DlgTrackInfo#12
 msgctxt "DlgTrackInfo#12"
@@ -2034,12 +2034,12 @@ msgstr ""
 #: DlgTrackInfo#13
 msgctxt "DlgTrackInfo#13"
 msgid "77"
-msgstr ""
+msgstr "77"
 
 #: DlgTrackInfo#14
 msgctxt "DlgTrackInfo#14"
 msgid "Comments:"
-msgstr ""
+msgstr "Comentarios:"
 
 #: DlgTrackInfo#15
 msgid "Reload track metadata from file."
@@ -2118,7 +2118,7 @@ msgstr "&Cancelar"
 #: DlgTrackInfo#33
 msgctxt "DlgTrackInfo#33"
 msgid "Alt+O"
-msgstr ""
+msgstr "Alt+O"
 
 #: DlgTrackInfo#34
 msgid "&Next >>"
@@ -2389,7 +2389,7 @@ msgstr "Mixxx "
 
 #: MixxxApp#2
 msgid "Mixxx"
-msgstr ""
+msgstr "Mixxx"
 
 #: MixxxApp#3
 msgid ""
@@ -2592,7 +2592,7 @@ msgstr ""
 
 #: MixxxApp#45
 msgid "Ctrl+U"
-msgstr ""
+msgstr "Ctrl+U"
 
 #: MixxxApp#46
 msgctxt "MixxxApp#46"
@@ -2853,7 +2853,7 @@ msgstr ""
 
 #: MixxxApp#96
 msgid "Confirm Exit"
-msgstr ""
+msgstr "Confirmar saída"
 
 #: MixxxApp#97
 msgid "A deck is currently playing. Exit Mixxx?"
@@ -2862,7 +2862,7 @@ msgstr ""
 #: MixxxLibraryFeature#1
 msgctxt "MixxxLibraryFeature#1"
 msgid "Library"
-msgstr ""
+msgstr "Librería"
 
 #: ParserM3u#1
 msgctxt "ParserM3u#1"
@@ -2895,27 +2895,27 @@ msgstr ""
 #: PlaylistFeature#3
 msgctxt "PlaylistFeature#3"
 msgid "Remove"
-msgstr ""
+msgstr "Eliminar"
 
 #: PlaylistFeature#4
 msgctxt "PlaylistFeature#4"
 msgid "Rename"
-msgstr ""
+msgstr "Mudar o nome"
 
 #: PlaylistFeature#5
 msgctxt "PlaylistFeature#5"
 msgid "Lock"
-msgstr ""
+msgstr "Bloquear"
 
 #: PlaylistFeature#6
 msgctxt "PlaylistFeature#6"
 msgid "Import Playlist"
-msgstr ""
+msgstr "Importar lista de reprodución"
 
 #: PlaylistFeature#7
 msgctxt "PlaylistFeature#7"
 msgid "Export Playlist"
-msgstr ""
+msgstr "Exportar lista de reprodución"
 
 #: PlaylistFeature#8
 msgid "Playlists"
@@ -2924,7 +2924,7 @@ msgstr "Listas de reprodución"
 #: PlaylistFeature#9
 msgctxt "PlaylistFeature#9"
 msgid "Unlock"
-msgstr ""
+msgstr "Desatrancar"
 
 #: PlaylistFeature#10
 msgid "Playlist name:"
@@ -2945,7 +2945,7 @@ msgstr ""
 
 #: PlaylistFeature#14
 msgid "Rename Playlist"
-msgstr ""
+msgstr "Renomear lista de reprodución"
 
 #: PlaylistFeature#15
 msgid "New playlist name:"
@@ -2958,12 +2958,12 @@ msgstr ""
 #: PlaylistFeature#17
 msgctxt "PlaylistFeature#17"
 msgid "Playlist Files (*.m3u *.pls)"
-msgstr ""
+msgstr "Ficheiros da lista de reprodución (*.m3u *.pls)"
 
 #: PlaylistFeature#18
 msgctxt "PlaylistFeature#18"
 msgid "M3U Playlist (*.m3u);;PLS Playlist (*.pls)"
-msgstr ""
+msgstr "Lista de reprodución M3U (*.m3u);;Lista de reprodución PLS (*.pls)"
 
 #: PlaylistFeature#19
 msgid "A playlist by that name already exists."
@@ -3054,7 +3054,7 @@ msgstr "Ficheiro"
 #: ScriptStudio#3
 msgctxt "ScriptStudio#3"
 msgid "Edit"
-msgstr ""
+msgstr "Editar"
 
 #: ScriptStudio#4
 msgid "Run"
@@ -3062,27 +3062,27 @@ msgstr ""
 
 #: ScriptStudio#5
 msgid "Close"
-msgstr ""
+msgstr "Pechar"
 
 #: ScriptStudio#6
 msgid "Import..."
-msgstr ""
+msgstr "importar..."
 
 #: ScriptStudio#7
 msgid "Export..."
-msgstr ""
+msgstr "Exportar..."
 
 #: ScriptStudio#8
 msgid "Delete Macro"
-msgstr ""
+msgstr "Eliminar macro"
 
 #: ScriptStudio#9
 msgid "New Macro..."
-msgstr ""
+msgstr "Nova macro"
 
 #: ScriptStudio#10
 msgid "Run Macro"
-msgstr ""
+msgstr "Executar macro"
 
 #: TrackCollection#1
 msgid "Cannot open database"
@@ -3180,12 +3180,12 @@ msgstr ""
 #: Ui#12
 msgctxt "Ui#12"
 msgid "Preferences"
-msgstr ""
+msgstr "Preferencias"
 
 #: Ui#13
 msgctxt "Ui#13"
 msgid "Crossfader"
-msgstr ""
+msgstr "Crossfader"
 
 #: Ui#14
 msgid "Master volume"
@@ -3374,7 +3374,7 @@ msgstr ""
 
 #: WTrackTableViewHeader#1
 msgid "Show or hide columns."
-msgstr "Mostrar ou agochar columnas,"
+msgstr "Mostrar ou agochar columnas."
 
 #~ msgid "Permission Denied"
 #~ msgstr "Permiso denegado"
