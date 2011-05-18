@@ -602,8 +602,8 @@
 								</State>
 								<State>
 									<Number>1</Number>
-									<Pressed>btn_orientation_sampler_master_over.png</Pressed>
-									<Unpressed>btn_orientation_sampler_master_over.png</Unpressed>
+									<Pressed>btn_orientation_sampler_master.png</Pressed>
+									<Unpressed>btn_orientation_sampler_master.png</Unpressed>
 								</State>
 								<State>
 									<Number>2</Number>
@@ -1065,8 +1065,8 @@
 								</State>
 								<State>
 									<Number>1</Number>
-									<Pressed>btn_orientation_sampler_master_over.png</Pressed>
-									<Unpressed>btn_orientation_sampler_master_over.png</Unpressed>
+									<Pressed>btn_orientation_sampler_master.png</Pressed>
+									<Unpressed>btn_orientation_sampler_master.png</Unpressed>
 								</State>
 								<State>
 									<Number>2</Number>
@@ -1528,8 +1528,8 @@
 								</State>
 								<State>
 									<Number>1</Number>
-									<Pressed>btn_orientation_sampler_master_over.png</Pressed>
-									<Unpressed>btn_orientation_sampler_master_over.png</Unpressed>
+									<Pressed>btn_orientation_sampler_master.png</Pressed>
+									<Unpressed>btn_orientation_sampler_master.png</Unpressed>
 								</State>
 								<State>
 									<Number>2</Number>
@@ -1991,8 +1991,8 @@
 								</State>
 								<State>
 									<Number>1</Number>
-									<Pressed>btn_orientation_sampler_master_over.png</Pressed>
-									<Unpressed>btn_orientation_sampler_master_over.png</Unpressed>
+									<Pressed>btn_orientation_sampler_master.png</Pressed>
+									<Unpressed>btn_orientation_sampler_master.png</Unpressed>
 								</State>
 								<State>
 									<Number>2</Number>
@@ -3419,8 +3419,8 @@
 						</State>
 						<State>
 							<Number>1</Number>
-							<Pressed>btn_orientation_microphone_master_over.png</Pressed>
-							<Unpressed>btn_orientation_microphone_master_over.png</Unpressed>
+							<Pressed>btn_orientation_microphone_master.png</Pressed>
+							<Unpressed>btn_orientation_microphone_master.png</Unpressed>
 						</State>
 						<State>
 							<Number>2</Number>
