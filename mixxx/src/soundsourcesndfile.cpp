@@ -177,6 +177,13 @@ int SoundSourceSndFile::parseHeader()
         if (id3v2) {
             processID3v2Tag(id3v2);
         }
+        if (getDuration() <= 0) {
+            // we're using a taglib version which doesn't know how to do wav
+            // durations, set it with info from sndfile -bkgood
+            // XXX remove this when ubuntu ships with an sufficiently
+            // intelligent version of taglib, should happen in 11.10
+            setDuration(info->frames / info->samplerate);
+        }
     } else {
         // Try AIFF
         TagLib::RIFF::AIFF::File f(location.toUtf8().constData());
