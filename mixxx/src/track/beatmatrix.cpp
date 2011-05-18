@@ -19,6 +19,32 @@ unsigned int BeatMatrix::numBeats() const {
     return m_beatList.size();
 }
 
+double BeatMatrix::calculateBpm(double dStartSample, double dEndSample) const {
+    BeatList::const_iterator it = qLowerBound(m_beatList.begin(),
+                                                   m_beatList.end(),
+                                                   dStartSample);
+    BeatList::const_iterator EndBeat = qUpperBound(m_beatList.begin(),
+                                                        m_beatList.end(),
+                                                        dEndSample);
+    double HarmonicSum = 0;
+    double N = 0;
+    while(it != EndBeat){
+        double diff = 0;
+        diff -= *it;
+        it++;
+        diff += *it;
+        if (diff){
+            HarmonicSum += 1/diff;
+            N++;
+        }
+    }
+    if (HarmonicSum)
+        return (120*m_iSampleRate)*(HarmonicSum/N);
+    else
+        return 0;
+}
+
+
 QByteArray* BeatMatrix::toByteArray() const {
     QMutexLocker locker(&m_mutex);
     // No guarantees BeatLists are made of a data type which located adjacent
@@ -183,9 +209,12 @@ double BeatMatrix::getBpm() const {
     // TODO(XXX) not actually correct. We need the true song length.
     double startSample = *m_beatList.begin();
     double stopSample = *(m_beatList.end()-1);
-    double songDurationMinutes =
-            (stopSample - startSample) / (2 * 60.0f * m_iSampleRate);
-    return m_beatList.size() / songDurationMinutes;
+//    double songDurationMinutes =
+//            (stopSample - startSample) / (2 * 60.0f * m_iSampleRate);
+//    return m_beatList.size() / songDurationMinutes;
+    double bpm = calculateBpm(startSample, stopSample);
+    return bpm;
+
 }
 
 double BeatMatrix::getBpmRange(double startSample, double stopSample) const {
@@ -194,19 +223,24 @@ double BeatMatrix::getBpmRange(double startSample, double stopSample) const {
         return -1;
     }
 
-    BeatList::const_iterator startBeat = qLowerBound(m_beatList.begin(),
-                                               m_beatList.end(),
-                                               startSample);
-    BeatList::const_iterator stopBeat = qUpperBound(m_beatList.begin(),
-                                                    m_beatList.end(),
-                                                    stopSample);
-    double rangeDurationMinutes =
-            (stopSample - startSample) / (2 * 60.0f * m_iSampleRate);
-    // Subtracting returns the number of beats between the samples referred to
-    // by the start and end.
-    double beatsInRange = stopBeat - startBeat;
-
-    return beatsInRange / rangeDurationMinutes;
+//    BeatList::const_iterator startBeat = qLowerBound(m_beatList.begin(),
+//                                               m_beatList.end(),
+//                                               startSample);
+//    BeatList::const_iterator stopBeat = qUpperBound(m_beatList.begin(),
+//                                                    m_beatList.end(),
+//                                                    stopSample);
+//
+//    double rangeDurationMinutes =
+//            (stopSample - startSample) / (2 * 60.0f * m_iSampleRate);
+//    //double rangeDurationMinutes =
+//    //            (m_beatList[stopBeat] - m_beatList[startBeat]) / (2 * 60.0f * m_iSampleRate);
+//    // Subtracting returns the number of beats between the samples referred to
+//    // by the start and end.
+//    double beatsInRange = stopBeat - startBeat;
+//
+//    return beatsInRange / rangeDurationMinutes;
+    double bpm = calculateBpm(startSample, stopSample);
+    return bpm;
 }
 
 void BeatMatrix::addBeat(double dBeatSample) {
@@ -219,8 +253,8 @@ void BeatMatrix::addBeat(double dBeatSample) {
         // Don't insert a duplicate beat. TODO(XXX) determine what epsilon to
         // consider a beat identical to another.
         //
-        //if (*it == dBeatSample)
-        //    return;
+        if (*it == dBeatSample)
+            return;
 
         m_beatList.insert(it, dBeatSample);
 

@@ -58,6 +58,7 @@ class BeatMatrix : public QObject, public Beats {
     // For internal use only.
     bool isValid() const;
     unsigned int numBeats() const;
+    double calculateBpm(double dStartSample, double dEndSample) const;
 
     mutable QMutex m_mutex;
     int m_iSampleRate;
