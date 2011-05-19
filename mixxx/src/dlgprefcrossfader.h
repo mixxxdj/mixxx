@@ -45,6 +45,7 @@ public slots:
     void slotApply();
 	void slotUpdate();
 	void setDefaults();
+	void slotTransitionValueChanged(int value);
 signals:
     void apply(const QString &);
 private:

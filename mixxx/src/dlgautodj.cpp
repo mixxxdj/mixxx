@@ -9,7 +9,7 @@
 #include "playerinfo.h"
 #include "dlgautodj.h"
 
-
+#define CONFIG_KEY "[Mixer Profile]"
 
 DlgAutoDJ::DlgAutoDJ(QWidget* parent, ConfigObject<ConfigValue>* pConfig,
                      TrackCollection* pTrackCollection, MixxxKeyboard* pKeyboard)
@@ -213,19 +213,25 @@ void DlgAutoDJ::toggleAutoDJ(bool toggle)
         pushButtonAutoDJ->setText(tr("Disable Auto DJ"));
 		qDebug() << "Auto DJ enabled";
         m_bAutoDJEnabled = true;
+
         connect(m_pCOPlayPos1, SIGNAL(valueChanged(double)),
         this, SLOT(player1PositionChanged(double)));
         connect(m_pCOPlayPos2, SIGNAL(valueChanged(double)),
         this, SLOT(player2PositionChanged(double)));
 		
+        connect(m_pCOPlay1, SIGNAL(valueChanged(double)),
+        this, SLOT(player1PlayChanged(double)));
+        connect(m_pCOPlay2, SIGNAL(valueChanged(double)),
+        this, SLOT(player2PlayChanged(double)));
+
 		if (m_pCOPlay1->get() == 0.0f )
 		{
 			m_eState = ADJ_ENABLE_P1LOADED;
 		}
 		else
 		{
-			//m_eState = ADJ_ENABLE_P2LOADED;
 			m_eState = ADJ_IDLE;
+	        player1PlayChanged(1.0f);
 		}
     }
     else //Disable Auto DJ
@@ -236,13 +242,15 @@ void DlgAutoDJ::toggleAutoDJ(bool toggle)
 		m_bFadeNow = false;
         m_pCOPlayPos1->disconnect(this);
         m_pCOPlayPos2->disconnect(this);
+        m_pCOPlay1->disconnect(this);
+        m_pCOPlay2->disconnect(this);
     }
 }
 
 void DlgAutoDJ::player1PositionChanged(double value)
 {
     // const float posThreshold = 0.95; //95% playback is when we crossfade and do stuff
-    const float fadeDuration = 0.05; // 5% playback is crossfade duration
+    const float fadeDuration = m_fadeDuration1;  // 0.05; // 5% playback is crossfade duration
 
 	// qDebug() << "player1PositionChanged(" << value << ")";
 
@@ -267,10 +275,12 @@ void DlgAutoDJ::player1PositionChanged(double value)
 			//Load the next song from the queue.
             loadNextTrackFromQueue();			
 			m_eState = ADJ_IDLE;
+			player1PlayChanged(1.0f);
 		}
 		else 
 		{
 			m_eState = ADJ_IDLE;
+			player2PlayChanged(1.0f);
 		}
 	}
 
@@ -305,7 +315,9 @@ void DlgAutoDJ::player1PositionChanged(double value)
 		{      
 			if (m_pCOPlay2->get() == 0.0f)
 		    {
-		        m_pCOPlay2->slotSet(1.0f);
+		        // Start Deck 2
+				m_pCOPlay2->slotSet(1.0f);
+		        player2PlayChanged(1.0f);
 		    }
 			removePlayingTrackFromQueue("[Channel2]");
 
@@ -341,9 +353,10 @@ void DlgAutoDJ::player1PositionChanged(double value)
 void DlgAutoDJ::player2PositionChanged(double value)
 {
     // const float posThreshold = 0.95; //95% playback is when we crossfade and do stuff
-    float fadeDuration = 0.05; // 5% playback is crossfade duration
+    float fadeDuration = m_fadeDuration2; // 0.05; // 5% playback is crossfade duration
 
 	// qDebug() << "player2PositionChanged(" << value << ")";
+
 
 	if( !m_bAutoDJEnabled )
 	{
@@ -383,6 +396,7 @@ void DlgAutoDJ::player2PositionChanged(double value)
 			if (m_pCOPlay1->get() == 0.0f)
 		    {
 		        m_pCOPlay1->slotSet(1.0f);
+		        player1PlayChanged(1.0f);
 		    }
 			removePlayingTrackFromQueue("[Channel1]");
 			m_eState = ADJ_P2FADING;
@@ -418,20 +432,28 @@ void DlgAutoDJ::player2PositionChanged(double value)
 bool DlgAutoDJ::loadNextTrackFromQueue()
 {
     //Get the track at the top of the playlist...
-    TrackPointer nextTrack = m_pAutoDJTableModel->getTrack(m_pAutoDJTableModel->index(0, 0));
 
-    if (!nextTrack) //We ran out of tracks in the queue...
-    {
-        //Disable auto DJ and return...
-        pushButtonAutoDJ->setChecked(false);
-        return false;
+    TrackPointer nextTrack;
+
+    for(;;){
+		nextTrack = m_pAutoDJTableModel->getTrack(m_pAutoDJTableModel->index(0, 0));
+
+		if (!nextTrack) //We ran out of tracks in the queue...
+		{
+			//Disable auto DJ and return...
+			pushButtonAutoDJ->setChecked(false);
+			return false;
+		}
+
+		//m_bNextTrackAlreadyLoaded = false;
+
+		if( nextTrack->exists()){
+			emit(loadTrack(nextTrack));
+			return true;
+		}
+		// Remove missing song from auto DJ plalist
+		m_pAutoDJTableModel->removeTrack(m_pAutoDJTableModel->index(0, 0));
     }
-
-    //m_bNextTrackAlreadyLoaded = false;
-
-    emit(loadTrack(nextTrack));
-
-    return true;
 }
 
 bool DlgAutoDJ::removePlayingTrackFromQueue(QString group)
@@ -469,5 +491,65 @@ bool DlgAutoDJ::removePlayingTrackFromQueue(QString group)
 	m_pAutoDJTableModel->removeTrack(m_pAutoDJTableModel->index(0, 0));	
 
     return true;
+}
+
+void DlgAutoDJ::player1PlayChanged(double value){
+	qDebug() << "player1PlayChanged(" << value << ")";
+
+	if( value == 1.0f && m_eState == ADJ_IDLE ){
+		TrackPointer loadedTrack  = PlayerInfo::Instance().getTrackInfo("[Channel1]");
+		if (loadedTrack )
+		{
+			int TrackDuration = loadedTrack->getDuration();
+			qDebug() << "TrackDuration = " << TrackDuration;
+
+			int autoDjTransition;
+			QString str_autoDjTransition = m_pConfig->getValueString(ConfigKey(CONFIG_KEY, "autoDjTransition"));
+			if( str_autoDjTransition.isEmpty() ){
+				autoDjTransition = 10;  // default 10 sec
+			}
+			else{
+				autoDjTransition = str_autoDjTransition.toInt();
+			}
+
+			if( TrackDuration > autoDjTransition ){
+				m_fadeDuration1 = (float)autoDjTransition / (float)TrackDuration;
+			}
+			else{
+				m_fadeDuration1 = 0;
+			}
+			qDebug() << "m_fadeDuration1 = " << m_fadeDuration1;
+		}
+	}
+}
+
+void DlgAutoDJ::player2PlayChanged(double value){
+	qDebug() << "player2PlayChanged(" << value << ")";
+
+	if( value == 1.0f && m_eState == ADJ_IDLE ){
+		TrackPointer loadedTrack  = PlayerInfo::Instance().getTrackInfo("[Channel2]");
+		if (loadedTrack )
+		{
+			int TrackDuration = loadedTrack->getDuration();
+			qDebug() << "TrackDuration = " << TrackDuration;
+
+			int autoDjTransition;
+			QString str_autoDjTransition = m_pConfig->getValueString(ConfigKey(CONFIG_KEY, "autoDjTransition"));
+			if( str_autoDjTransition.isEmpty() ){
+				autoDjTransition = 10;  // default 10 sec
+			}
+			else{
+				autoDjTransition = str_autoDjTransition.toInt();
+			}
+
+			if( TrackDuration > autoDjTransition ){
+				m_fadeDuration2 = (float)autoDjTransition / (float)TrackDuration;
+			}
+			else{
+				m_fadeDuration2 = 0;
+			}
+			qDebug() << "m_fadeDuration2 = " << m_fadeDuration2;
+		}
+	}
 }
 

@@ -39,6 +39,8 @@ class DlgAutoDJ : public QWidget, public Ui::DlgAutoDJ, public virtual LibraryVi
     void toggleAutoDJ(bool toggle);
     void player1PositionChanged(double value);
     void player2PositionChanged(double value);
+    void player1PlayChanged(double value);
+    void player2PlayChanged(double value);
 
   signals:
     void loadTrack(TrackPointer tio);
@@ -72,6 +74,8 @@ class DlgAutoDJ : public QWidget, public Ui::DlgAutoDJ, public virtual LibraryVi
     bool m_bFadeNow;
 	enum ADJstates m_eState;
     float m_posThreshold;
+    float m_fadeDuration1;
+    float m_fadeDuration2;
     ControlObjectThreadMain* m_pCOPlayPos1;
     ControlObjectThreadMain* m_pCOPlayPos2;
     ControlObjectThreadMain* m_pCOPlay1;
