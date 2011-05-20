@@ -15,7 +15,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-05-19 04:37+0000\n"
+"X-Launchpad-Export-Date: 2011-05-20 04:32+0000\n"
 "X-Generator: Launchpad (build 12959)\n"
 
 #: AutoDJFeature#1
@@ -4077,10 +4077,6 @@ msgstr "Mostrar ou agochar columnas."
 #~ msgid "Duration"
 #~ msgstr "Duración"
 
-#~ msgctxt "RhythmboxPlaylistModel#8"
-#~ msgid "Unknown"
-#~ msgstr "Descoñecido"
-
 #~ msgctxt "RhythmboxTrackModel#1"
 #~ msgid "Artist"
 #~ msgstr "Artista"
@@ -4135,3 +4131,7 @@ msgstr "Mostrar ou agochar columnas."
 #~ msgctxt "WTrackTableView#5"
 #~ msgid "Remove"
 #~ msgstr "Eliminar"
+
+#~ msgctxt "RhythmboxPlaylistModel#8"
+#~ msgid "Unknown"
+#~ msgstr "Desconocido"
