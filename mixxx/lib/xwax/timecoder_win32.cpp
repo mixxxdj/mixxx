@@ -97,7 +97,7 @@ static struct timecode_def_t timecode_def[] = {
         0x134503,
         0x041040,
         1500000,
-        1463000,
+        1214000,
         false        
     },
     {
@@ -109,7 +109,7 @@ static struct timecode_def_t timecode_def[] = {
         0x32066c,
         0x041040, /* same as side A */
         2110000,
-        2068000,
+        1814000,
         false
     },
     {

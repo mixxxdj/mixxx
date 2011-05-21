@@ -113,7 +113,7 @@ static inline float timecoder_get_pitch(struct timecoder_t *tc)
 
 static inline unsigned int timecoder_get_safe(struct timecoder_t *tc)
 {
-    return tc->def->safe;
+    return tc->def->safe * 1000 / (tc->def->resolution * tc->speed);
 }
 
 

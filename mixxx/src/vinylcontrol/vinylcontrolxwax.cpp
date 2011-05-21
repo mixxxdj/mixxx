@@ -239,7 +239,7 @@ void VinylControlXwax::run()
             }
             continue;
         }
-        //qDebug() << group << id << iPosition;
+        //qDebug() << m_group << id << iPosition << dVinylPitch;
 
         double cur_duration = duration->get();
         
