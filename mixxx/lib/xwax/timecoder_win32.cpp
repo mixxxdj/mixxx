@@ -520,6 +520,8 @@ signed int timecoder_get_position(struct timecoder_t *tc, float *when)
         r = lut_lookup(&tc->def->lut, tc->bitstream) * 1000 / (tc->def->resolution * tc->speed);
 
         if (r >= 0) {
+        	//normalize position to milliseconds, not timecode steps -- Owen
+        	r = r * 1000 / (tc->def->resolution * tc->speed)
             if (when)
                 *when = tc->timecode_ticker * tc->dt;
             return r;
