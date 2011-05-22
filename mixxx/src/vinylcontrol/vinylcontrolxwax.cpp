@@ -229,7 +229,7 @@ void VinylControlXwax::run()
             doTrackSelection(false, dVinylPitch, iPosition);
             continue;
         }
-        //qDebug() << group << id << iPosition;
+        //qDebug() << m_group << id << iPosition << dVinylPitch;
 
         double cur_duration = duration->get();
         //FIXME? we should really sync on all track changes

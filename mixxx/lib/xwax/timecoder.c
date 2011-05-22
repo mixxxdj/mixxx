@@ -95,7 +95,7 @@ static struct timecode_def_t timecode_def[] = {
         .seed = 0x134503,
         .taps = 0x041040,
         .length = 1500000,
-        .safe = 1463000,
+        .safe = 1214000,
         .lookup = false        
     },
     {
@@ -107,7 +107,7 @@ static struct timecode_def_t timecode_def[] = {
         .seed = 0x32066c,
         .taps = 0x041040, /* same as side A */
         .length = 2110000,
-        .safe = 2068000,
+        .safe = 1814000,
         .lookup = false
     },
     {
@@ -515,9 +515,11 @@ signed int timecoder_get_position(struct timecoder_t *tc, float *when)
     signed int r;
 
     if (tc->valid_counter > VALID_BITS) {
-        r = lut_lookup(&tc->def->lut, tc->bitstream) / tc->speed;
+        r = lut_lookup(&tc->def->lut, tc->bitstream);
 
         if (r >= 0) {
+        	//normalize position to milliseconds, not timecode steps -- Owen
+        	r = r * 1000 / (tc->def->resolution * tc->speed);
             if (when)
                 *when = tc->timecode_ticker * tc->dt;
             return r;
