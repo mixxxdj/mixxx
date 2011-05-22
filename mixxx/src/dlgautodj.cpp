@@ -187,10 +187,18 @@ void DlgAutoDJ::skipNext(bool buttonChecked)
     //m_pTrackTableView->sortByColumn(0, Qt::AscendingOrder);
     qDebug() << "Skip Next";
     //Load the next song from the queue.
-    if (!loadNextTrackFromQueue()) {
-        //Queue was empty. Disable and return.
-        return;
+
+    if (m_pCOPlay1->get() == 0.0f )
+    {
+    	removePlayingTrackFromQueue("[Channel1]");
+    	loadNextTrackFromQueue();
     }
+    else if (m_pCOPlay2->get() == 0.0f )
+    {
+    	removePlayingTrackFromQueue("[Channel2]");
+    	loadNextTrackFromQueue();
+    }
+
 }
 
 void DlgAutoDJ::fadeNow(bool buttonChecked)
