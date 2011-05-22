@@ -23,7 +23,7 @@ DlgAutoDJ::DlgAutoDJ(QWidget* parent, ConfigObject<ConfigValue>* pConfig,
 	m_bFadeNow = false;
 	m_eState = ADJ_IDLE;
 
-	m_posThreshold = 0.95; //95% playback is when we crossfade and do stuff
+	//m_posThreshold = 0.95; //95% playback is when we crossfade and do stuff
 
     m_pTrackTableView = new WTrackTableView(this, pConfig, m_pTrackCollection);
     m_pTrackTableView->installEventFilter(pKeyboard);
@@ -81,6 +81,14 @@ DlgAutoDJ::DlgAutoDJ(QWidget* parent, ConfigObject<ConfigValue>* pConfig,
                             ControlObject::getControl(ConfigKey("[Channel2]", "repeat")));
     m_pCOCrossfader = new ControlObjectThreadMain(
                             ControlObject::getControl(ConfigKey("[Master]", "crossfader")));
+
+    QString str_autoDjTransition = m_pConfig->getValueString(ConfigKey(CONFIG_KEY, "autoDjTransition"));
+	if( str_autoDjTransition.isEmpty() ){
+		spinBoxTransition->setValue(10);  // default 10 sec
+	}
+	else{
+		spinBoxTransition->setValue(str_autoDjTransition.toInt());
+	}
 }
 
 DlgAutoDJ::~DlgAutoDJ()
@@ -191,6 +199,17 @@ void DlgAutoDJ::fadeNow(bool buttonChecked)
     qDebug() << "Fade Now";
 	if(m_eState == ADJ_IDLE && m_bAutoDJEnabled){		
 		m_bFadeNow = true;
+		double crossfader = m_pCOCrossfader->get();
+		if( crossfader < -0.9f && m_pCOPlay1->get() == 1.0f )
+		{
+			m_posThreshold1 = m_pCOPlayPos1->get();
+			m_pCORepeat1->slotSet(0.0f); // Repeat is disabled by FadeNow but disables auto Fade
+		}
+		else if( crossfader > 0.9f && m_pCOPlay2->get() == 1.0f )
+		{
+			m_posThreshold2 = m_pCOPlayPos2->get();
+			m_pCORepeat2->slotSet(0.0f); // Repeat is disabled by FadeNow but disables auto Fade
+		}
 	}
 }
 
@@ -224,6 +243,9 @@ void DlgAutoDJ::toggleAutoDJ(bool toggle)
         connect(m_pCOPlay2, SIGNAL(valueChanged(double)),
         this, SLOT(player2PlayChanged(double)));
 
+        connect(spinBoxTransition, SIGNAL(valueChanged(int)),
+        this, SLOT(transitionValueChanged(int)));
+
 		if (m_pCOPlay1->get() == 0.0f )
 		{
 			m_eState = ADJ_ENABLE_P1LOADED;
@@ -244,6 +266,7 @@ void DlgAutoDJ::toggleAutoDJ(bool toggle)
         m_pCOPlayPos2->disconnect(this);
         m_pCOPlay1->disconnect(this);
         m_pCOPlay2->disconnect(this);
+        spinBoxTransition->disconnect(this);
     }
 }
 
@@ -268,6 +291,7 @@ void DlgAutoDJ::player1PositionChanged(double value)
 		{		
             m_pCOCrossfader->slotSet(-1.0f); //Move crossfader to the left!
             m_pCOPlay1->slotSet(1.0f); //Play the track in player 1
+            player1PlayChanged(1.0f);
 			removePlayingTrackFromQueue("[Channel1]");
         }
 		else if( m_pCOPlay1->get() == 1.0f && m_pCOPlay2->get() == 0.0f)
@@ -282,13 +306,16 @@ void DlgAutoDJ::player1PositionChanged(double value)
 			m_eState = ADJ_IDLE;
 			player2PlayChanged(1.0f);
 		}
+	    return;
 	}
 
 	if( m_eState == ADJ_P2FADING )	
 	{
-		if(	 m_pCOPlay2->get() == 0.0f )
+		if(	 m_pCOPlay2->get() == 0.0f && m_pCOPlay1->get() == 1.0f )
 		{
-			// End State		
+			// End State
+			m_pCOCrossfader->slotSet(-1.0f); //Move crossfader to the left!
+			// qDebug() << "1: m_pCOCrossfader->slotSet(_-1.0f_);";
 			m_eState = ADJ_IDLE;
 			loadNextTrackFromQueue();
 		}
@@ -297,21 +324,16 @@ void DlgAutoDJ::player1PositionChanged(double value)
 
 	if( m_eState == ADJ_IDLE )	
 	{
-		if(m_bFadeNow)
+		if( m_pCORepeat1->get() == 1.0f )
 		{
-			m_posThreshold = value;
-			m_pCORepeat1->slotSet(0.0f); // Repeat is disabled by FadeNow but disables auto Fade
-			m_bFadeNow = false;	
-		}
-		else if( m_pCORepeat1->get() == 1.0f )
-		{
+			//repeat disables auto DJ
 			return;
 		}
 	}
 
-    if (value >= m_posThreshold)
+    if (value >= m_posThreshold1)
     {
-		if( m_eState == ADJ_IDLE )
+		if( m_eState == ADJ_IDLE && m_pCOPlay1->get() == 1.0f)
 		{      
 			if (m_pCOPlay2->get() == 0.0f)
 		    {
@@ -324,29 +346,28 @@ void DlgAutoDJ::player1PositionChanged(double value)
 			m_eState = ADJ_P1FADING;
 		}
 
-		float posFadeEnd = m_posThreshold + fadeDuration;
+		float posFadeEnd = m_posThreshold1 + fadeDuration;
 		if( posFadeEnd > 1.0f ) posFadeEnd = 1.0f;
 		
         if (value >= posFadeEnd)
         {
 			// Pre-EndState			
-			m_pCOCrossfader->slotSet(1.0f); //Move crossfader to the right!
+			// m_pCOCrossfader->slotSet(1.0f); //Move crossfader to the right!
             
 			m_pCOPlay1->slotSet(0.0f); //Stop the player
             
-			m_posThreshold = 1.0f - fadeDuration; // back to default 
+			//m_posThreshold = 1.0f - fadeDuration; // back to default
 								
 			// does not work always emediatly after stop
 			// loadNextTrackFromQueue();
 			// m_eState = ADJ_IDLE; // Fading ready
         }
-		else
-		{
-			//Crossfade!
-		    float crossfadeValue = -1.0f + 2*(value-m_posThreshold)/(posFadeEnd-m_posThreshold);
-		    // crossfadeValue = -1.0f -> + 1.0f
-			m_pCOCrossfader->slotSet(crossfadeValue); //Move crossfader to the right!
-		}
+        //Crossfade!
+		float crossfadeValue = -1.0f + 2*(value-m_posThreshold1)/(posFadeEnd-m_posThreshold1);
+		// crossfadeValue = -1.0f -> + 1.0f
+		m_pCOCrossfader->slotSet(crossfadeValue); //Move crossfader to the right!
+		// qDebug() << "1: m_pCOCrossfader->slotSet " << crossfadeValue;
+
     }
 }
 
@@ -355,7 +376,7 @@ void DlgAutoDJ::player2PositionChanged(double value)
     // const float posThreshold = 0.95; //95% playback is when we crossfade and do stuff
     float fadeDuration = m_fadeDuration2; // 0.05; // 5% playback is crossfade duration
 
-	// qDebug() << "player2PositionChanged(" << value << ")";
+	//qDebug() << "player2PositionChanged(" << value << ")";
 
 
 	if( !m_bAutoDJEnabled )
@@ -366,9 +387,11 @@ void DlgAutoDJ::player2PositionChanged(double value)
 
 	if( m_eState == ADJ_P1FADING )	
 	{	
-		if(	 m_pCOPlay1->get() == 0.0f )
+		if(	 m_pCOPlay1->get() == 0.0f && m_pCOPlay2->get() == 1.0f)
 		{
-			// End State		
+			// End State
+			m_pCOCrossfader->slotSet(1.0f); //Move crossfader to the right!
+			// qDebug() << "1: m_pCOCrossfader->slotSet(_1.0f_);";
 			m_eState = ADJ_IDLE;
 			loadNextTrackFromQueue();
 		}
@@ -377,21 +400,16 @@ void DlgAutoDJ::player2PositionChanged(double value)
 
 	if( m_eState == ADJ_IDLE )	
 	{	
-		if(m_bFadeNow)
+		if( m_pCORepeat2->get() == 1.0f )
 		{
-			m_posThreshold = value;
-			m_pCORepeat2->slotSet(0.0f); // Repeat is disabled by FadeNow but disables auto Fade
-			m_bFadeNow = false;	
-		}
-		else if( m_pCORepeat2->get() == 1.0f )
-		{
+			//repeat disables auto DJ
 			return;
 		}
 	}
 
-    if (value >= m_posThreshold)
+    if (value >= m_posThreshold2)
     {
-		if( m_eState == ADJ_IDLE )
+		if( m_eState == ADJ_IDLE && m_pCOPlay2->get() == 1.0f)
 		{      
 			if (m_pCOPlay1->get() == 0.0f)
 		    {
@@ -402,17 +420,17 @@ void DlgAutoDJ::player2PositionChanged(double value)
 			m_eState = ADJ_P2FADING;
 		}
 
-		float posFadeEnd = m_posThreshold + fadeDuration;
+		float posFadeEnd = m_posThreshold2 + fadeDuration;
 		if( posFadeEnd > 1.0f ) posFadeEnd = 1.0f;
 		
         if (value >= posFadeEnd)
         {
 			//Pre-End State			
-			m_pCOCrossfader->slotSet(-1.0f); //Move crossfader to the left!
+			//m_pCOCrossfader->slotSet(-1.0f); //Move crossfader to the left!
             
 			m_pCOPlay2->slotSet(0.0f); //Stop the player
 
-			m_posThreshold = 1.0f - fadeDuration; // back to default 						
+			//m_posThreshold = 1.0f - fadeDuration; // back to default
 			
 			// does not work always emediatly after stop
 			// loadNextTrackFromQueue();
@@ -421,9 +439,10 @@ void DlgAutoDJ::player2PositionChanged(double value)
 		else
 		{
 			//Crossfade!
-		    float crossfadeValue = 1.0f - 2*(value-m_posThreshold)/(posFadeEnd-m_posThreshold);
+		    float crossfadeValue = 1.0f - 2*(value-m_posThreshold2)/(posFadeEnd-m_posThreshold2);
 		    // crossfadeValue = 1.0f -> + -1.0f
 			m_pCOCrossfader->slotSet(crossfadeValue); //Move crossfader to the right!
+			// qDebug() << "2: m_pCOCrossfader->slotSet " << crossfadeValue;
 		}
     }
 }
@@ -503,7 +522,8 @@ void DlgAutoDJ::player1PlayChanged(double value){
 			int TrackDuration = loadedTrack->getDuration();
 			qDebug() << "TrackDuration = " << TrackDuration;
 
-			int autoDjTransition;
+			int autoDjTransition = spinBoxTransition->value();
+			/*
 			QString str_autoDjTransition = m_pConfig->getValueString(ConfigKey(CONFIG_KEY, "autoDjTransition"));
 			if( str_autoDjTransition.isEmpty() ){
 				autoDjTransition = 10;  // default 10 sec
@@ -511,6 +531,7 @@ void DlgAutoDJ::player1PlayChanged(double value){
 			else{
 				autoDjTransition = str_autoDjTransition.toInt();
 			}
+			*/
 
 			if( TrackDuration > autoDjTransition ){
 				m_fadeDuration1 = (float)autoDjTransition / (float)TrackDuration;
@@ -518,6 +539,7 @@ void DlgAutoDJ::player1PlayChanged(double value){
 			else{
 				m_fadeDuration1 = 0;
 			}
+			m_posThreshold1 = 1.0f - m_fadeDuration1;
 			qDebug() << "m_fadeDuration1 = " << m_fadeDuration1;
 		}
 	}
@@ -533,7 +555,8 @@ void DlgAutoDJ::player2PlayChanged(double value){
 			int TrackDuration = loadedTrack->getDuration();
 			qDebug() << "TrackDuration = " << TrackDuration;
 
-			int autoDjTransition;
+			int autoDjTransition = spinBoxTransition->value();
+			/*
 			QString str_autoDjTransition = m_pConfig->getValueString(ConfigKey(CONFIG_KEY, "autoDjTransition"));
 			if( str_autoDjTransition.isEmpty() ){
 				autoDjTransition = 10;  // default 10 sec
@@ -541,6 +564,7 @@ void DlgAutoDJ::player2PlayChanged(double value){
 			else{
 				autoDjTransition = str_autoDjTransition.toInt();
 			}
+			*/
 
 			if( TrackDuration > autoDjTransition ){
 				m_fadeDuration2 = (float)autoDjTransition / (float)TrackDuration;
@@ -548,8 +572,24 @@ void DlgAutoDJ::player2PlayChanged(double value){
 			else{
 				m_fadeDuration2 = 0;
 			}
+			m_posThreshold2 = 1.0f - m_fadeDuration2;
 			qDebug() << "m_fadeDuration2 = " << m_fadeDuration2;
 		}
 	}
 }
 
+void DlgAutoDJ::transitionValueChanged(int value){
+	Q_UNUSED(value);
+
+	if( m_bAutoDJEnabled && m_eState == ADJ_IDLE)
+	{
+		if (m_pCOPlay1->get() == 1.0f)
+		{
+			player1PlayChanged(1.0f);
+		}
+		if (m_pCOPlay2->get() == 1.0f)
+		{
+			player2PlayChanged(1.0f);
+		}
+	}
+}
