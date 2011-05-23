@@ -548,7 +548,7 @@
 									<Pressed>btn_eject_sampler_over.png</Pressed>
 									<Unpressed>btn_eject_sampler.png</Unpressed>
 								</State>
-								<Pos>240,24</Pos>
+								<Pos>242,24</Pos>
 								<Connection>
 									<ConfigKey>[Sampler1],eject</ConfigKey>
 									<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
@@ -610,7 +610,7 @@
 									<Pressed>btn_orientation_sampler_right_over.png</Pressed>
 									<Unpressed>btn_orientation_sampler_right_over.png</Unpressed>
 								</State>
-								<Pos>216,42</Pos>
+								<Pos>217,42</Pos>
 								<Connection>
 									<ConfigKey>[Sampler1],orientation</ConfigKey>
 									<EmitOnDownPress>true</EmitOnDownPress>
@@ -639,7 +639,7 @@
 									<Pressed>btn_keylock_sampler_over.png</Pressed>
 									<Unpressed>btn_keylock_sampler_over.png</Unpressed>
 								</State>
-								<Pos>240,42</Pos>
+								<Pos>241,42</Pos>
 								<Connection>
 									<ConfigKey>[Sampler1],keylock</ConfigKey>
 								</Connection>
@@ -1011,7 +1011,7 @@
 									<Pressed>btn_eject_sampler_over.png</Pressed>
 									<Unpressed>btn_eject_sampler.png</Unpressed>
 								</State>
-								<Pos>240,24</Pos>
+								<Pos>242,24</Pos>
 								<Connection>
 									<ConfigKey>[Sampler2],eject</ConfigKey>
 									<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
@@ -1073,7 +1073,7 @@
 									<Pressed>btn_orientation_sampler_right_over.png</Pressed>
 									<Unpressed>btn_orientation_sampler_right_over.png</Unpressed>
 								</State>
-								<Pos>216,42</Pos>
+								<Pos>217,42</Pos>
 								<Connection>
 									<ConfigKey>[Sampler2],orientation</ConfigKey>
 									<EmitOnDownPress>true</EmitOnDownPress>
@@ -1102,7 +1102,7 @@
 									<Pressed>btn_keylock_sampler_over.png</Pressed>
 									<Unpressed>btn_keylock_sampler_over.png</Unpressed>
 								</State>
-								<Pos>240,42</Pos>
+								<Pos>241,42</Pos>
 								<Connection>
 									<ConfigKey>[Sampler2],keylock</ConfigKey>
 								</Connection>
@@ -1474,7 +1474,7 @@
 									<Pressed>btn_eject_sampler_over.png</Pressed>
 									<Unpressed>btn_eject_sampler.png</Unpressed>
 								</State>
-								<Pos>240,24</Pos>
+								<Pos>242,24</Pos>
 								<Connection>
 									<ConfigKey>[Sampler3],eject</ConfigKey>
 									<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
@@ -1536,7 +1536,7 @@
 									<Pressed>btn_orientation_sampler_right_over.png</Pressed>
 									<Unpressed>btn_orientation_sampler_right_over.png</Unpressed>
 								</State>
-								<Pos>216,42</Pos>
+								<Pos>217,42</Pos>
 								<Connection>
 									<ConfigKey>[Sampler3],orientation</ConfigKey>
 									<EmitOnDownPress>true</EmitOnDownPress>
@@ -1565,7 +1565,7 @@
 									<Pressed>btn_keylock_sampler_over.png</Pressed>
 									<Unpressed>btn_keylock_sampler_over.png</Unpressed>
 								</State>
-								<Pos>240,42</Pos>
+								<Pos>241,42</Pos>
 								<Connection>
 									<ConfigKey>[Sampler3],keylock</ConfigKey>
 								</Connection>
@@ -1937,7 +1937,7 @@
 									<Pressed>btn_eject_sampler_over.png</Pressed>
 									<Unpressed>btn_eject_sampler.png</Unpressed>
 								</State>
-								<Pos>240,24</Pos>
+								<Pos>242,24</Pos>
 								<Connection>
 									<ConfigKey>[Sampler4],eject</ConfigKey>
 									<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
@@ -1999,7 +1999,7 @@
 									<Pressed>btn_orientation_sampler_right_over.png</Pressed>
 									<Unpressed>btn_orientation_sampler_right_over.png</Unpressed>
 								</State>
-								<Pos>216,42</Pos>
+								<Pos>217,42</Pos>
 								<Connection>
 									<ConfigKey>[Sampler4],orientation</ConfigKey>
 									<EmitOnDownPress>true</EmitOnDownPress>
@@ -2028,7 +2028,7 @@
 									<Pressed>btn_keylock_sampler_over.png</Pressed>
 									<Unpressed>btn_keylock_sampler_over.png</Unpressed>
 								</State>
-								<Pos>240,42</Pos>
+								<Pos>241,42</Pos>
 								<Connection>
 									<ConfigKey>[Sampler4],keylock</ConfigKey>
 								</Connection>
