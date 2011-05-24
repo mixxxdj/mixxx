@@ -25,6 +25,8 @@ EnginePassthrough::EnginePassthrough(const char* pGroup)
 EnginePassthrough::~EnginePassthrough() {
     qDebug() << "~EnginePassthrough()";
     SampleUtil::free(m_pConversionBuffer);
+    delete m_pEnabled;
+    delete m_pPassing;
 }
 
 bool EnginePassthrough::isActive() {

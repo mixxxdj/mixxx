@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 
 import os
 import util
@@ -374,6 +375,7 @@ class MixxxCore(Feature):
 
                    "engine/enginecontrol.cpp",
                    "engine/ratecontrol.cpp",
+                   "engine/positionscratchcontroller.cpp",
                    "engine/loopingcontrol.cpp",
                    "engine/bpmcontrol.cpp",
                    "engine/cuecontrol.cpp",
@@ -400,6 +402,7 @@ class MixxxCore(Feature):
                    "midi/midioptiondelegate.cpp",
                    "midi/midimessage.cpp",
                    "midi/midiledhandler.cpp",
+                   "softtakeover.cpp",
 
                    "main.cpp",
                    "controlgroupdelegate.cpp",
@@ -411,6 +414,7 @@ class MixxxCore(Feature):
 
                    "soundsource.cpp",
 
+                   "sharedglcontext.cpp",
                    "widget/wwidget.cpp",
                    "widget/wlabel.cpp",
                    "widget/wtracktext.cpp",
@@ -425,6 +429,7 @@ class MixxxCore(Feature):
                    "widget/wslider.cpp",
                    "widget/wstatuslight.cpp",
                    "widget/woverview.cpp",
+                   "widget/wspinny.cpp",
                    "widget/wskincolor.cpp",
                    "widget/wabstractcontrol.cpp",
                    "widget/wsearchlineedit.cpp",
@@ -462,7 +467,7 @@ class MixxxCore(Feature):
                    "library/browse/browsethread.cpp",
                    "library/browse/browsefeature.cpp",
                    "library/browse/foldertreemodel.cpp",
-                   
+
                    "library/recording/recordingfeature.cpp",
                    "dlgrecording.cpp",
                    "recording/recordingmanager.cpp",

@@ -18,6 +18,7 @@ QuantizeControl::QuantizeControl(const char* pGroup,
         : EngineControl(pGroup, pConfig) {
     m_pCOQuantizeEnabled = new ControlPushButton(ConfigKey(pGroup, "quantize"));
     m_pCOQuantizeEnabled->set(0.0f);
+    m_pCOQuantizeEnabled->setToggleButton(true);
     m_pCONextBeat = new ControlObject(ConfigKey(pGroup, "beat_next"));
     m_pCONextBeat->set(0.0f);
     m_pCOPrevBeat = new ControlObject(ConfigKey(pGroup, "beat_prev"));
@@ -25,6 +26,9 @@ QuantizeControl::QuantizeControl(const char* pGroup,
 }
 
 QuantizeControl::~QuantizeControl() {
+    delete m_pCOQuantizeEnabled;
+    delete m_pCONextBeat;
+    delete m_pCOPrevBeat;
 }
 
 void QuantizeControl::trackLoaded(TrackPointer pTrack)

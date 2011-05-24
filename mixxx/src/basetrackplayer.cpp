@@ -69,7 +69,7 @@ BaseTrackPlayer::BaseTrackPlayer(QObject* pParent,
     m_pPlayPosition = new ControlObjectThreadMain(
         ControlObject::getControl(ConfigKey(getGroup(), "playposition")));
 
-    //Duration of the current song, we create this one because nothing else does.
+    // Duration of the current song, we create this one because nothing else does.
     m_pDuration = new ControlObject(ConfigKey(getGroup(), "duration"));
 
     //BPM of the current song
@@ -103,6 +103,7 @@ BaseTrackPlayer::~BaseTrackPlayer()
     delete m_pBPM;
     delete m_pReplayGain;
     delete m_pWaveformRenderer;
+    delete m_pDuration;
 }
 
 void BaseTrackPlayer::slotLoadTrack(TrackPointer track, bool bStartFromEndPos)
@@ -194,7 +195,7 @@ void BaseTrackPlayer::slotFinishLoading(TrackPointer pTrackInfoObject)
     if(!m_pLoadedTrack->getHeaderParsed())
         SoundSourceProxy::ParseHeader(m_pLoadedTrack.data());
 
-    m_pLoadedTrack->incTimesPlayed();
+    m_pLoadedTrack->setPlayed(true);
 
     // Generate waveform summary
     //TODO: Consider reworking this visual resample stuff... need to ask rryan about this -- Albert.

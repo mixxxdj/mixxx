@@ -20,10 +20,6 @@
 #include <QtGui>
 #include <QTranslator>
 
-#include "widget/wknob.h"
-#include "widget/wslider.h"
-#include "widget/wpushbutton.h"
-#include "widget/woverview.h"
 #include "mixxx.h"
 #include "controlnull.h"
 #include "controlpotmeter.h"
@@ -63,6 +59,11 @@
 // force a rebuild of everything
 
 #include "defs_version.h"
+
+#ifdef __VINYLCONTROL__
+#include "vinylcontrol/vinylcontrol.h"
+#include "vinylcontrol/vinylcontrolmanager.h"
+#endif
 
 #ifdef __C_METRICS__
 #include <cmetrics.h>
@@ -129,11 +130,24 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
     bool bFirstRun = upgrader.isFirstRun();
     bool bUpgraded = upgrader.isUpgraded();
     QString qConfigPath = m_pConfig->getConfigPath();
-
     QString translationsFolder = qConfigPath + "translations/";
+
+    // Load Qt base translations
+    QString locale = args.locale;
+    if (locale == "") {
+        locale = QLocale::system().name();
+    }
+
+    QTranslator* qtTranslator = new QTranslator();
+    qtTranslator->load("qt_" + locale,
+                      QLibraryInfo::location(QLibraryInfo::TranslationsPath));
+    a->installTranslator(qtTranslator);
+
+    // Load Mixxx specific translations for this locale
     QTranslator* mixxxTranslator = new QTranslator();
-    mixxxTranslator->load("mixxx_" + QLocale::system().name(),
-                          translationsFolder);
+    bool mixxxLoaded = mixxxTranslator->load("mixxx_" + locale, translationsFolder);
+    qDebug() << "Loading translations for locale" << locale
+             << "from translations folder" << translationsFolder << ":" << (mixxxLoaded ? "success" : "fail");
     a->installTranslator(mixxxTranslator);
 
 #ifdef __C_METRICS__
@@ -315,6 +329,17 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
             AudioOutput(AudioOutput::DECK, 0, deck), m_pEngine);
     }
 
+#ifdef __VINYLCONTROL__
+    m_pVCManager = new VinylControlManager(this, m_pConfig);
+    for (unsigned int deck = 0; deck < m_pPlayerManager->numDecks(); ++deck) {
+        m_pSoundManager->registerInput(
+            AudioInput(AudioInput::VINYLCONTROL, 0, deck),
+            m_pVCManager);
+    }
+#else
+    m_pVCManager = NULL;
+#endif
+
     //Scan the library directory.
     m_pLibraryScanner = new LibraryScanner(m_pLibrary->getTrackCollection());
 
@@ -372,16 +397,8 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
         m_pConfig->set(ConfigKey("[BPM]", "AnalyzeEntireSong"),ConfigValue(1));
     }
 
-#ifdef __VINYLCONTROL__
     //ControlObject::getControl(ConfigKey("[Channel1]","TrackEndMode"))->queueFromThread(m_pConfig->getValueString(ConfigKey("[Controls]","TrackEndModeCh1")).toDouble());
     //ControlObject::getControl(ConfigKey("[Channel2]","TrackEndMode"))->queueFromThread(m_pConfig->getValueString(ConfigKey("[Controls]","TrackEndModeCh2")).toDouble());
-    ControlObject::getControl(ConfigKey("[Channel1]","vinylcontrol_enabled"))->queueFromThread(m_pConfig->getValueString(ConfigKey("[VinylControl]","enabled_ch1")).toDouble());
-    ControlObject::getControl(ConfigKey("[Channel2]","vinylcontrol_enabled"))->queueFromThread(m_pConfig->getValueString(ConfigKey("[VinylControl]","enabled_ch2")).toDouble());
-    ControlObject::getControl(ConfigKey("[Channel1]","vinylcontrol_mode"))->queueFromThread(m_pConfig->getValueString(ConfigKey("[VinylControl]","mode")).toDouble());
-    ControlObject::getControl(ConfigKey("[Channel2]","vinylcontrol_mode"))->queueFromThread(m_pConfig->getValueString(ConfigKey("[VinylControl]","mode")).toDouble());
-    ControlObject::getControl(ConfigKey("[Channel1]","vinylcontrol_cueing"))->queueFromThread(m_pConfig->getValueString(ConfigKey("[VinylControl]","cueing_ch1")).toDouble());
-    ControlObject::getControl(ConfigKey("[Channel2]","vinylcontrol_cueing"))->queueFromThread(m_pConfig->getValueString(ConfigKey("[VinylControl]","cueing_ch2")).toDouble());
-#endif
 
     qRegisterMetaType<MidiMessage>("MidiMessage");
     qRegisterMetaType<MidiStatusByte>("MidiStatusByte");
@@ -394,7 +411,7 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
 
     // Initialize preference dialog
     m_pPrefDlg = new DlgPreferences(this, m_pSkinLoader, m_pSoundManager, m_pPlayerManager,
-                                 m_pMidiDeviceManager, m_pConfig);
+                                 m_pMidiDeviceManager, m_pVCManager, m_pConfig);
     m_pPrefDlg->setHidden(true);
 
     // Try open player device If that fails, the preference panel is opened.
@@ -529,17 +546,17 @@ MixxxApp::~MixxxApp()
     // Save state of End of track controls in config database
     //m_pConfig->set(ConfigKey("[Controls]","TrackEndModeCh1"), ConfigValue((int)ControlObject::getControl(ConfigKey("[Channel1]","TrackEndMode"))->get()));
     //m_pConfig->set(ConfigKey("[Controls]","TrackEndModeCh2"), ConfigValue((int)ControlObject::getControl(ConfigKey("[Channel2]","TrackEndMode"))->get()));
-#ifdef __VINYLCONTROL__
-    m_pConfig->set(ConfigKey("[VinylControl]","enabled_ch1"), ConfigValue((int)ControlObject::getControl(ConfigKey("[Channel1]","vinylcontrol_enabled"))->get()));
-    m_pConfig->set(ConfigKey("[VinylControl]","enabled_ch2"), ConfigValue((int)ControlObject::getControl(ConfigKey("[Channel2]","vinylcontrol_enabled"))->get()));
-    m_pConfig->set(ConfigKey("[VinylControl]","mode"), ConfigValue((int)ControlObject::getControl(ConfigKey("[Channel1]","vinylcontrol_mode"))->get()));
-    m_pConfig->set(ConfigKey("[VinylControl]","mode"), ConfigValue((int)ControlObject::getControl(ConfigKey("[Channel2]","vinylcontrol_mode"))->get()));
-    m_pConfig->set(ConfigKey("[VinylControl]","cueing_ch1"), ConfigValue((int)ControlObject::getControl(ConfigKey("[Channel1]","vinylcontrol_cueing"))->get()));
-    m_pConfig->set(ConfigKey("[VinylControl]","cueing_ch2"), ConfigValue((int)ControlObject::getControl(ConfigKey("[Channel2]","vinylcontrol_cueing"))->get()));
-#endif
+
     // SoundManager depend on Engine and Config
     qDebug() << "delete soundmanager, " << qTime.elapsed();
     delete m_pSoundManager;
+
+#ifdef __VINYLCONTROL__
+    // VinylControlManager depends on a CO the engine owns
+    // (vinylcontrol_enabled in VinylControlControl)
+    qDebug() << "delete vinylcontrolmanager, " << qTime.elapsed();
+    delete m_pVCManager;
+#endif
 
     // View depends on MixxxKeyboard, PlayerManager, Library
     qDebug() << "delete view, " << qTime.elapsed();
@@ -777,8 +794,9 @@ void MixxxApp::initActions()
     m_pOptionsPreferences->setShortcut(tr("Ctrl+P"));
     m_pOptionsPreferences->setShortcutContext(Qt::ApplicationShortcut);
 
-    m_pHelpAboutApp = new QAction(tr("&About..."), this);
-    m_pHelpSupport = new QAction(tr("&Community Support..."), this);
+    m_pHelpAboutApp = new QAction(tr("&About"), this);
+    m_pHelpSupport = new QAction(tr("&Community Support"), this);
+    m_pHelpFeedback = new QAction(tr("Send Us &Feedback"), this);
 
 #ifdef __VINYLCONTROL__
     m_pOptionsVinylControl = new QAction(tr("Enable &Vinyl Control 1"), this);
@@ -857,12 +875,10 @@ void MixxxApp::initActions()
     // Either check or uncheck the vinyl control menu item depending on what
     // it was saved as.
     m_pOptionsVinylControl->setCheckable(true);
-    if ((bool)m_pConfig->getValueString(
-        ConfigKey("[VinylControl]","enabled_ch1")).toInt() == true) {
-        m_pOptionsVinylControl->setChecked(true);
-    } else {
-        m_pOptionsVinylControl->setChecked(false);
-    }
+    //make sure control is off on startup (this is redundant to vinylcontrolmanager.cpp)
+    m_pConfig->set(
+            ConfigKey("[VinylControl]", "enabled_ch1"), false);
+    m_pOptionsVinylControl->setChecked(false);
     m_pOptionsVinylControl->setStatusTip(tr("Activate Vinyl Control"));
     m_pOptionsVinylControl->setWhatsThis(
         tr("Use timecoded vinyls on external turntables to control Mixxx"));
@@ -875,12 +891,9 @@ void MixxxApp::initActions()
         SLOT(slotControlVinylControl(double)));
 
     m_pOptionsVinylControl2->setCheckable(true);
-    if ((bool)m_pConfig->getValueString(
-        ConfigKey("[VinylControl]","enabled_ch2")).toInt() == true) {
-        m_pOptionsVinylControl2->setChecked(true);
-    } else {
-        m_pOptionsVinylControl2->setChecked(false);
-    }
+    m_pConfig->set(
+            ConfigKey("[VinylControl]", "enabled_ch2"), false);
+    m_pOptionsVinylControl2->setChecked(false);
     m_pOptionsVinylControl2->setStatusTip(tr("Activate Vinyl Control"));
     m_pOptionsVinylControl2->setWhatsThis(
         tr("Use timecoded vinyls on external turntables to control Mixxx"));
@@ -932,6 +945,10 @@ void MixxxApp::initActions()
     m_pHelpSupport->setStatusTip(tr("Support..."));
     m_pHelpSupport->setWhatsThis(tr("Support\n\nGet help with Mixxx"));
     connect(m_pHelpSupport, SIGNAL(triggered()), this, SLOT(slotHelpSupport()));
+
+    m_pHelpFeedback->setStatusTip(tr("Send feedback to the Mixxx team."));
+    m_pHelpFeedback->setWhatsThis(tr("Support\n\nSend feedback to the Mixxx team."));
+    connect(m_pHelpFeedback, SIGNAL(triggered()), this, SLOT(slotHelpFeedback()));
 
     m_pHelpAboutApp->setStatusTip(tr("About the application"));
     m_pHelpAboutApp->setWhatsThis(tr("About\n\nAbout the application"));
@@ -994,6 +1011,7 @@ void MixxxApp::initMenuBar()
 
     // menuBar entry helpMenu
     m_pHelpMenu->addAction(m_pHelpSupport);
+    m_pHelpMenu->addAction(m_pHelpFeedback);
     m_pHelpMenu->addSeparator();
     m_pHelpMenu->addAction(m_pHelpAboutApp);
 
@@ -1143,7 +1161,7 @@ void MixxxApp::slotOptionsPreferences()
 void MixxxApp::slotControlVinylControl(double toggle)
 {
 #ifdef __VINYLCONTROL__
-    if (tryToggleVinylControl(0)) {
+    if (m_pVCManager->vinylInputEnabled(1)) {
         m_pConfig->set(
             ConfigKey("[VinylControl]", "enabled_ch1"), ConfigValue((int)toggle));
         m_pOptionsVinylControl->setChecked((bool)toggle);
@@ -1180,18 +1198,11 @@ void MixxxApp::slotCheckboxVinylControl(bool toggle)
 #endif
 }
 
-int MixxxApp::tryToggleVinylControl(int deck)
-{
-#ifdef __VINYLCONTROL__
-    return m_pSoundManager->hasVinylInput(deck);
-#endif
-}
-
 void MixxxApp::slotControlVinylControl2(double toggle)
 {
 #ifdef __VINYLCONTROL__
     //we just need at least 1 input (deck 1) because of single deck mode
-    if (tryToggleVinylControl(1)) {
+    if (m_pVCManager->vinylInputEnabled(2)) {
         m_pConfig->set(
             ConfigKey("[VinylControl]", "enabled_ch2"), ConfigValue((int)toggle));
            m_pOptionsVinylControl2->setChecked((bool)toggle);
@@ -1300,6 +1311,8 @@ void MixxxApp::slotHelpAbout()
 "Miko Kiiski<br>"
 "Vin&iacute;cius Dias dos Santos<br>"
 "Joe Colosimo<br>"
+"Shashank Kumar<br>"
+"Till Hofmann<br>"
 
 "</p>"
 "<p align=\"center\"><b>And special thanks to:</b></p>"
@@ -1383,6 +1396,12 @@ void MixxxApp::slotHelpSupport()
     QUrl qSupportURL;
     qSupportURL.setUrl(MIXXX_SUPPORT_URL);
     QDesktopServices::openUrl(qSupportURL);
+}
+
+void MixxxApp::slotHelpFeedback() {
+    QUrl qFeedbackUrl;
+    qFeedbackUrl.setUrl(MIXXX_FEEDBACK_URL);
+    QDesktopServices::openUrl(qFeedbackUrl);
 }
 
 void MixxxApp::rebootMixxxView() {

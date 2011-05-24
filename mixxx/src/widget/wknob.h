@@ -57,8 +57,8 @@ private:
     QPixmap **m_pPixmaps;
     /** Associated background pixmap */
     QPixmap *m_pPixmapBack;
-    /** Values used when pressing mouse */
-    double m_dStartValue;
+    /** Starting point when left mouse button is pressed */
+    QPoint m_startPos;
     /** True if disabled pixmaps is loaded */
     bool m_bDisabledLoaded;
 };

@@ -60,13 +60,20 @@ class LoopingControl : public EngineControl {
     virtual void trackLoaded(TrackPointer pTrack);
     virtual void trackUnloaded(TrackPointer pTrack);
     void slotUpdatedTrackBeats();
-    void slotBeatLoop(double);
+
+    // Generate a loop of 'beats' length. It can also do fractions for a
+    // beatslicing effect.
+    void slotBeatLoop(double loopSize, bool keepStartPoint=false);
+    void slotBeatLoopActivate(BeatLoopingControl* pBeatLoopControl);
+    void slotBeatLoopDeactivate(BeatLoopingControl* pBeatLoopControl);
+
     void slotLoopScale(double);
     void slotLoopDouble(double);
     void slotLoopHalve(double);
 
   private:
     void setLoopingEnabled(bool enabled);
+    void clearActiveBeatLoop();
 
     ControlObject* m_pCOLoopStartPosition;
     ControlObject* m_pCOLoopEndPosition;
@@ -84,6 +91,8 @@ class LoopingControl : public EngineControl {
     int m_iCurrentSample;
     ControlObject* m_pQuantizeEnabled;
     ControlObject* m_pNextBeat;
+    ControlObject* m_pTrackSamples;
+    BeatLoopingControl* m_pActiveBeatLoop;
 
     // Base BeatLoop Control Object.
     ControlObject* m_pCOBeatLoop;
@@ -96,19 +105,31 @@ class LoopingControl : public EngineControl {
     BeatsPointer m_pBeats;
 };
 
+// Class for handling beat loops of a set size. This allows easy access from
+// skins.
 class BeatLoopingControl : public QObject {
     Q_OBJECT
   public:
-    BeatLoopingControl(const char* pGroup, LoopingControl* pLoopingControl, double size);
+    BeatLoopingControl(const char* pGroup, double size);
     virtual ~BeatLoopingControl();
 
+    void activate();
+    void deactivate();
+    inline double getSize() {
+        return m_dBeatLoopSize;
+    }
   public slots:
     void slotBeatLoopActivate(double value);
 
+  signals:
+    void activateBeatLoop(BeatLoopingControl*);
+    void deactivateBeatLoop(BeatLoopingControl*);
+
   private:
+    // Used simply to generate the beatloop_%SIZE and beatseek_%SIZE CO
+    // ConfigKeys.
     ConfigKey keyForControl(const char * _group, QString ctrlName, double num);
     double m_dBeatLoopSize;
-    LoopingControl* m_pLoopingControl;
     ControlPushButton* m_pPBActivateBeatLoop;
 };
 

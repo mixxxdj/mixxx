@@ -717,7 +717,7 @@ void MidiScriptEngine::setValue(QString group, QString name, double newValue) {
 
     ControlObjectThread *cot = getControlObjectThread(group, name);
 
-    if(cot != NULL) {
+    if(cot != NULL && !m_st.ignore(group,name,newValue)) {
         cot->slotSet(newValue);
     }
 
@@ -1261,4 +1261,16 @@ void MidiScriptEngine::scratchDisable(int deck) {
     else m_rampTo[deck]=0.0;
 
     m_ramp[deck] = true;    // Activate the ramping in scratchProcess()
+}
+
+/*  -------- ------------------------------------------------------
+    Purpose: [En/dis]ables soft-takeover status for a particular MixxxControl
+    Input:   MixxxControl group and key values,
+                whether to set the soft-takeover status or not
+    Output:  -
+    -------- ------------------------------------------------------ */
+void MidiScriptEngine::softTakeover(QString group, QString name, bool set) {
+    MixxxControl mc = MixxxControl(group,name);
+    if (set) m_st.enable(mc);
+    else m_st.disable(mc);
 }
