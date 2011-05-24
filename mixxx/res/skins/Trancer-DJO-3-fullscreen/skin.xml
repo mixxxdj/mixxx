@@ -5,7 +5,7 @@
  <Background>
   <Path>scene2.png</Path>
  </Background>
-84,
+
  <SliderComposed>
   <Tooltip>Crossfader</Tooltip>
   <Handle>crosshandle-on-.png</Handle>
@@ -2200,6 +2200,14 @@
 			<Color>#AE5CFF</Color>
 			<TextColor>#FFFFFF</TextColor>
 		</Mark>
+				<Mark>
+			<Control>cue_point</Control>
+			<Text> CUE </Text>
+			<Align>top</Align>
+			<Color>#FFFF00</Color>
+			<TextColor>#FFFFFF</TextColor>
+		</Mark>
+
  </Visual>
  
  <StatusLight>
@@ -2301,27 +2309,27 @@
  </StatusLight>
 
  <Text>
- <Style>QLabel { font: bold 14px/16px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+ <Style>QLabel { font: bold 12px/16px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 		background-color: transparent; color: #9d9d9d; text-align: left;  vertical-align: text-top;  padding-left: 1%; }
 		QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
 		</Style>
   <Channel>1</Channel>
-  <Pos>373,200</Pos>
-  <Size>200,27</Size>
+  <Pos>373,210</Pos>
+  <Size>200,40</Size>
   <BgColor>#000000</BgColor>
   <FgColor>#9d9d9d</FgColor>
  </Text>
 
  <Text>
- <Style>QLabel { font: bold 14px/16px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+ <Style>QLabel { font: bold 12px/16px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 		background-color: transparent; color: #9d9d9d; text-align: left;  vertical-align: text-top;  padding-left: 1%; }
 		QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
 		</Style>
   <Channel>2</Channel>
-  <Pos>652,200</Pos>
-  <Size>200,27</Size>
+  <Pos>652,210</Pos>
+  <Size>200,40</Size>
   <BgColor>#000000</BgColor>
   <FgColor>#9d9d9d</FgColor>
  </Text>
@@ -2329,7 +2337,7 @@
  <NumberBpm>
   <Tooltip>Tempo display (Beat Per Minute)</Tooltip>
   <Channel>1</Channel>
-  <Pos>373,258</Pos>
+  <Pos>373,254</Pos>
   <Size>75,16</Size>
   <NumberOfDigits>6</NumberOfDigits>
   <BgColor>#000000</BgColor>
@@ -2342,7 +2350,7 @@
  <NumberBpm>
   <Tooltip>Tempo display (Beat Per Minute)</Tooltip>
   <Channel>2</Channel>
-  <Pos>652,258</Pos>
+  <Pos>652,254</Pos>
   <Size>75,16</Size>
   <NumberOfDigits>6</NumberOfDigits>
   <BgColor>#000000</BgColor>
@@ -2355,7 +2363,7 @@
  <NumberPos>
   <Tooltip>Play position/remaining time</Tooltip>
   <Channel>1</Channel>
-  <Pos>373,278</Pos>
+  <Pos>373,274</Pos>
   <Size>110,16</Size>
   <Alignment>right</Alignment>
   <NumberOfDigits>6</NumberOfDigits>
@@ -2369,7 +2377,7 @@
  <NumberPos>
   <Tooltip>Play position/remaining time</Tooltip>
   <Channel>2</Channel>
-  <Pos>652,278</Pos>
+  <Pos>652,274</Pos>
   <Size>110,16</Size>
   <Alignment>right</Alignment>
   <NumberOfDigits>6</NumberOfDigits>
@@ -2383,7 +2391,7 @@
  <NumberRate>
   <Tooltip>Playback rate factor</Tooltip>
   <Channel>1</Channel>
-  <Pos>449,258</Pos>
+  <Pos>449,254</Pos>
   <Size>47,16</Size>
   <Alignment>left</Alignment>
   <NumberOfDigits>3</NumberOfDigits>
@@ -2397,7 +2405,7 @@
  <NumberRate>
   <Tooltip>Playback rate factor</Tooltip>
   <Channel>2</Channel>
-  <Pos>739,258</Pos>
+  <Pos>739,254</Pos>
   <Size>47,16</Size>
   <Alignment>left</Alignment>
   <NumberOfDigits>3</NumberOfDigits>
