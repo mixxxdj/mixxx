@@ -58,7 +58,7 @@ const int audioBeatMarkLen = 40;
 const int kiTempLength = 200000;
 
 // Rate at which the playpos slider is updated (using a sample rate of 44100 Hz):
-const int UPDATE_RATE = 10;
+const int kiUpdateRate = 10;
 
 // End of track mode constants
 const int TRACK_END_MODE_STOP = 0;
@@ -106,8 +106,9 @@ public:
     void process(const CSAMPLE *pIn, const CSAMPLE *pOut, const int iBufferSize);
 
     const char* getGroup();
-
     bool isTrackLoaded();
+    TrackPointer getLoadedTrack() const;
+
   public slots:
     void slotControlPlay(double);
     void slotControlPlayFromStart(double);
@@ -115,7 +116,6 @@ public:
     void slotControlStart(double);
     void slotControlEnd(double);
     void slotControlSeek(double);
-    void slotControlVinylSeek(double);
     void slotControlSeekAbs(double);
 
     // Request that the EngineBuffer load a track. Since the process is
@@ -218,7 +218,7 @@ private:
 
     ControlObject *m_pVinylStatus;  //Status of vinyl control
     ControlObject *m_pVinylSeek;
-	
+
     /** Fwd and back controls, start and end of track control */
     ControlPushButton *startButton, *endButton;
 

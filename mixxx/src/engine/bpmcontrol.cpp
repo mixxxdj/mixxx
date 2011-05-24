@@ -61,6 +61,10 @@ BpmControl::BpmControl(const char* _group,
             this, SLOT(slotControlBeatSync(double)),
             Qt::DirectConnection);
 
+    m_pTranslateBeats = new ControlPushButton(ConfigKey(_group, "beats_translate_curpos"));
+    connect(m_pTranslateBeats, SIGNAL(valueChanged(double)),
+            this, SLOT(slotBeatsTranslate(double)));
+
     connect(&m_tapFilter, SIGNAL(tapped(double,int)),
             this, SLOT(slotTapFilter(double,int)),
             Qt::DirectConnection);
@@ -135,6 +139,9 @@ void BpmControl::slotControlBeatSync(double v) {
     double fOtherRate = pOtherEngineBuffer->getRate();
     double fOtherFileBpm = fOtherBpm / (1.0 + fOtherRate);
 
+    //qDebug() << "this" << "bpm" << fThisBpm << "filebpm" << fThisFileBpm << "rate" << fThisRate;
+    //qDebug() << "other" << "bpm" << fOtherBpm << "filebpm" << fOtherFileBpm << "rate" << fOtherRate;
+
     ////////////////////////////////////////////////////////////////////////////
     // Rough proof of how syncing works -- rryan 3/2011
     // ------------------------------------------------
@@ -201,12 +208,100 @@ void BpmControl::slotControlBeatSync(double v) {
             m_pRateSlider->set(fDesiredRate);
 
             // Adjust the phase:
-            // (removed, see older version for this info)
+            adjustPhase();
         }
     }
+}
+
+void BpmControl::adjustPhase() {
+    EngineBuffer* pOtherEngineBuffer = getOtherEngineBuffer();
+    TrackPointer otherTrack = pOtherEngineBuffer->getLoadedTrack();
+    BeatsPointer otherBeats = otherTrack ? otherTrack->getBeats() : BeatsPointer();
+
+    // If either track does not have beats, then we can't adjust the phase.
+    if (!m_pBeats || !otherBeats) {
+        return;
+    }
+
+    // Get the file BPM of each song.
+    double dThisBpm = m_pBeats->getBpm();
+    double dOtherBpm = ControlObject::getControl(
+        ConfigKey(pOtherEngineBuffer->getGroup(), "file_bpm"))->get();
+
+    // Get the current position of both decks
+    double dThisPosition = getCurrentSample();
+    double dOtherLength = ControlObject::getControl(
+        ConfigKey(pOtherEngineBuffer->getGroup(), "track_samples"))->get();
+    double dOtherPosition = dOtherLength * ControlObject::getControl(
+        ConfigKey(pOtherEngineBuffer->getGroup(), "visual_playposition"))->get();
+
+    double dThisPrevBeat = m_pBeats->findPrevBeat(dThisPosition);
+    double dThisNextBeat = m_pBeats->findNextBeat(dThisPosition);
+
+    // Protect against the case where we are sitting exactly on the beat.
+    if (dThisPrevBeat == dThisNextBeat) {
+        dThisNextBeat = m_pBeats->findNthBeat(dThisPosition, 2);
+    }
+
+    double dOtherPrevBeat = otherBeats->findPrevBeat(dOtherPosition);
+    double dOtherNextBeat = otherBeats->findNextBeat(dOtherPosition);
+
+    // Protect against the case where we are sitting exactly on the beat.
+    if (dOtherPrevBeat == dOtherNextBeat) {
+        dOtherNextBeat = otherBeats->findNthBeat(dOtherPosition, 2);
+    }
+
+    double dThisBeatLength = fabs(dThisNextBeat - dThisPrevBeat);
+    double dOtherBeatLength = fabs(dOtherNextBeat - dOtherPrevBeat);
+    double dOtherBeatFraction = (dOtherPosition - dOtherPrevBeat) / dOtherBeatLength;
+
+    // We want our beat fraction to be identical to theirs.
+    double dNewPlaypos = dThisPrevBeat + dOtherBeatFraction * dThisBeatLength;
+    emit(seekAbs(dNewPlaypos));
 }
 
 void BpmControl::slotRateChanged(double) {
     double dFileBpm = m_pFileBpm->get();
     slotFileBpmChanged(dFileBpm);
+}
+
+void BpmControl::trackLoaded(TrackPointer pTrack) {
+    if (m_pTrack) {
+        trackUnloaded(m_pTrack);
+    }
+
+    if (pTrack) {
+        m_pTrack = pTrack;
+        m_pBeats = m_pTrack->getBeats();
+        connect(m_pTrack.data(), SIGNAL(beatsUpdated()),
+                this, SLOT(slotUpdatedTrackBeats()));
+    }
+}
+
+void BpmControl::trackUnloaded(TrackPointer pTrack) {
+    if (m_pTrack) {
+        disconnect(m_pTrack.data(), SIGNAL(beatsUpdated()),
+                   this, SLOT(slotUpdatedTrackBeats()));
+    }
+    m_pTrack.clear();
+    m_pBeats.clear();
+}
+
+void BpmControl::slotUpdatedTrackBeats()
+{
+    if (m_pTrack) {
+        m_pBeats = m_pTrack->getBeats();
+    }
+}
+
+void BpmControl::slotBeatsTranslate(double v) {
+    if (v > 0 && m_pBeats && (m_pBeats->getCapabilities() & Beats::BEATSCAP_TRANSLATE)) {
+        double currentSample = getCurrentSample();
+        double closestBeat = m_pBeats->findClosestBeat(currentSample);
+        int delta = currentSample - closestBeat;
+        if (delta % 2 != 0) {
+            delta--;
+        }
+        m_pBeats->translate(delta);
+    }
 }

@@ -287,18 +287,20 @@ class VinylControl(Feature):
         build.env.Append(CPPPATH='#lib/scratchlib')
 
     def sources(self, build):
-        sources = ['vinylcontrol.cpp',
-                   'vinylcontrolproxy.cpp',
-                   'vinylcontrolxwax.cpp',
+        sources = ['vinylcontrol/vinylcontrol.cpp',
+                   'vinylcontrol/vinylcontrolproxy.cpp',
+                   'vinylcontrol/vinylcontrolxwax.cpp',
                    'dlgprefvinyl.cpp',
-                   'vinylcontrolsignalwidget.cpp']
+                   'vinylcontrol/vinylcontrolsignalwidget.cpp',
+                   'vinylcontrol/vinylcontrolmanager.cpp',
+                   'engine/vinylcontrolcontrol.cpp',]
         if build.platform_is_windows:
             sources.append("#lib/xwax/timecoder_win32.cpp")
             sources.append("#lib/xwax/lut.cpp")
         else:
             sources.append("#lib/xwax/timecoder.c")
             sources.append("#lib/xwax/lut.c")
-        
+
         return sources
 
 class Tonal(Feature):

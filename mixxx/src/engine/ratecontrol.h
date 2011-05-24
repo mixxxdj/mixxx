@@ -19,6 +19,7 @@ class ControlTTRotary;
 class ControlObject;
 class ControlPotmeter;
 class ControlPushButton;
+class PositionScratchController;
 
 // RateControl is an EngineControl that is in charge of managing the rate of
 // playback of a given channel of audio in the Mixxx engine. Using input from
@@ -27,7 +28,7 @@ class RateControl : public EngineControl {
     Q_OBJECT
 public:
     RateControl(const char* _group, ConfigObject<ConfigValue>* _config);
-    ~RateControl();
+    virtual ~RateControl();
 
     // Must be called during each callback of the audio thread so that
     // RateControl has a chance to update itself.
@@ -36,7 +37,7 @@ public:
                    const double totalSamples,
                    const int bufferSamples);
     // Returns the current engine rate.
-    double calculateRate(double baserate, bool paused);
+    double calculateRate(double baserate, bool paused, int iSamplesPerBuffer);
     double getRawRate();
 
     // Set rate change when temp rate button is pressed
@@ -52,7 +53,7 @@ public:
     /** Set Rate Ramp Sensitivity */
     static void setRateRampSensitivity(int);
 
-public slots:
+  public slots:
     void slotControlRatePermDown(double);
     void slotControlRatePermDownSmall(double);
     void slotControlRatePermUp(double);
@@ -64,7 +65,8 @@ public slots:
     void slotControlFastForward(double);
     void slotControlFastBack(double);
     void slotControlVinyl(double);
-private:
+
+  private:
     double getJogFactor();
     double getWheelFactor();
 
@@ -88,9 +90,6 @@ private:
         *buttonRateTempUp, *buttonRateTempUpSmall;
     ControlPushButton *buttonRatePermDown, *buttonRatePermDownSmall,
         *buttonRatePermUp, *buttonRatePermUpSmall;
-    ControlPushButton *m_pVinylControl;
-    ControlPushButton *m_pVinylMode;
-    ControlPushButton *m_pVinylCueing;
     ControlObject *m_pRateDir, *m_pRateRange;
     ControlPotmeter* m_pRateSlider;
     ControlPotmeter* m_pRateSearch;
@@ -101,6 +100,8 @@ private:
     ControlTTRotary* m_pWheel;
     ControlTTRotary* m_pScratch;
     ControlTTRotary* m_pOldScratch;
+    PositionScratchController* m_pScratchController;
+
     ControlPushButton* m_pScratchToggle;
     ControlObject* m_pJog;
     Rotary* m_pJogFilter;
@@ -161,6 +162,7 @@ private:
       * pressed, because there is a fixed limit on the range of the pitch
       * slider */
     double m_dOldRate;
+
 
     /** Handle for configuration */
     ConfigObject<ConfigValue>* m_pConfig;
