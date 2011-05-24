@@ -197,7 +197,7 @@
 							<Text>
 								<Tooltip>Track title&#10;Displays the artist and title of the loaded track.&#10;Informations are extracted from the tracks tags.&#10;</Tooltip>
 								<Style>QLabel { font: bold 14px/16px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-								background-color: transparent; color: #3087BF; text-align: left; padding-left: 1px; }
+								background-color: transparent; color: #EECE33; text-align: left; padding-left: 1px; }
 								QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 								background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
 								</Style>
@@ -209,7 +209,7 @@
 							<TrackProperty>
 								<Tooltip>Track title&#10;Displays the title of the loaded track.&#10;Informations are extracted from the tracks tags.&#10;</Tooltip>
 								<Style>QLabel { font: bold 14px/16px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-								background-color: transparent; color: #3087BF; text-align: left; padding-left: 1px; }
+								background-color: transparent; color: #EECE33; text-align: left; padding-left: 1px; }
 								QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 								background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
 								</Style>
@@ -234,7 +234,7 @@
 								<Group>[Sampler1]</Group>
 								<Pos>5,25</Pos>
 								<Size>210,35</Size>
-								<SignalColor>#3087BF</SignalColor>
+								<SignalColor>#EECE33</SignalColor>
 								<MarkerColor>#00FF00</MarkerColor>
 								<Connection>
 									<ConfigKey>[Sampler1],playposition</ConfigKey>
@@ -660,7 +660,7 @@
 							<Text>
 								<Tooltip>Track title&#10;Displays the artist and title of the loaded track.&#10;Informations are extracted from the tracks tags.&#10;</Tooltip>
 								<Style>QLabel { font: bold 14px/16px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-								background-color: transparent; color: #3087BF; text-align: left; padding-left: 1px; }
+								background-color: transparent; color: #EECE33; text-align: left; padding-left: 1px; }
 								QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 								background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
 								</Style>
@@ -672,7 +672,7 @@
 							<TrackProperty>
 								<Tooltip>Track title&#10;Displays the title of the loaded track.&#10;Informations are extracted from the tracks tags.&#10;</Tooltip>
 								<Style>QLabel { font: bold 14px/16px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-								background-color: transparent; color: #3087BF; text-align: left; padding-left: 1px; }
+								background-color: transparent; color: #EECE33; text-align: left; padding-left: 1px; }
 								QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 								background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
 								</Style>
@@ -697,7 +697,7 @@
 								<Group>[Sampler2]</Group>
 								<Pos>5,25</Pos>
 								<Size>210,35</Size>
-								<SignalColor>#3087BF</SignalColor>
+								<SignalColor>#EECE33</SignalColor>
 								<MarkerColor>#00FF00</MarkerColor>
 								<Connection>
 									<ConfigKey>[Sampler2],playposition</ConfigKey>
@@ -1123,7 +1123,7 @@
 							<Text>
 								<Tooltip>Track title&#10;Displays the artist and title of the loaded track.&#10;Informations are extracted from the tracks tags.&#10;</Tooltip>
 								<Style>QLabel { font: bold 14px/16px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-								background-color: transparent; color: #3087BF; text-align: left; padding-left: 1px; }
+								background-color: transparent; color: #EECE33; text-align: left; padding-left: 1px; }
 								QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 								background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
 								</Style>
@@ -1135,7 +1135,7 @@
 							<TrackProperty>
 								<Tooltip>Track title&#10;Displays the title of the loaded track.&#10;Informations are extracted from the tracks tags.&#10;</Tooltip>
 								<Style>QLabel { font: bold 14px/16px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-								background-color: transparent; color: #3087BF; text-align: left; padding-left: 1px; }
+								background-color: transparent; color: #EECE33; text-align: left; padding-left: 1px; }
 								QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 								background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
 								</Style>
@@ -1160,7 +1160,7 @@
 								<Group>[Sampler3]</Group>
 								<Pos>5,25</Pos>
 								<Size>210,35</Size>
-								<SignalColor>#3087BF</SignalColor>
+								<SignalColor>#EECE33</SignalColor>
 								<MarkerColor>#00FF00</MarkerColor>
 								<Connection>
 									<ConfigKey>[Sampler3],playposition</ConfigKey>
@@ -1586,7 +1586,7 @@
 							<Text>
 								<Tooltip>Track title&#10;Displays the artist and title of the loaded track.&#10;Informations are extracted from the tracks tags.&#10;</Tooltip>
 								<Style>QLabel { font: bold 14px/16px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-								background-color: transparent; color: #3087BF; text-align: left; padding-left: 1px; }
+								background-color: transparent; color: #EECE33; text-align: left; padding-left: 1px; }
 								QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 								background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
 								</Style>
@@ -1598,7 +1598,7 @@
 							<TrackProperty>
 								<Tooltip>Track title&#10;Displays the title of the loaded track.&#10;Informations are extracted from the tracks tags.&#10;</Tooltip>
 								<Style>QLabel { font: bold 14px/16px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-								background-color: transparent; color: #3087BF; text-align: left; padding-left: 1px; }
+								background-color: transparent; color: #EECE33; text-align: left; padding-left: 1px; }
 								QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 								background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
 								</Style>
@@ -1623,7 +1623,7 @@
 								<Group>[Sampler4]</Group>
 								<Pos>5,25</Pos>
 								<Size>210,35</Size>
-								<SignalColor>#3087BF</SignalColor>
+								<SignalColor>#EECE33</SignalColor>
 								<MarkerColor>#00FF00</MarkerColor>
 								<Connection>
 									<ConfigKey>[Sampler4],playposition</ConfigKey>
@@ -2129,7 +2129,7 @@
 					<NumberRate>
 						<Tooltip>Pitch rate&#10;Displays the current pitch of the track based on the original tempo.&#10;</Tooltip>
 						<Style>QLabel { font: bold 14px/16px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-						background-color: transparent; color: #0099FF; text-align: center; padding-right: 1px; }
+						background-color: transparent; color: #EECE33; text-align: center; padding-right: 1px; }
 						QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 						background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
 						</Style>
@@ -2433,7 +2433,7 @@
 						<BgColor>#1C1C1C</BgColor>
 						<BgPixmap>style/style_bg_waveform1.png</BgPixmap>
 						<HfcColor>#1b1b1b</HfcColor>
-						<SignalColor>#0099FF</SignalColor>
+						<SignalColor>#EECE33</SignalColor>
 						<BeatColor>#ffffff</BeatColor>
 						<BeatHighlightColor>#00FF00</BeatHighlightColor>
 						<MarkerColor>#00FF00</MarkerColor>
@@ -2747,7 +2747,7 @@
 						<BgColor>#1C1C1C</BgColor>
 						<BgPixmap>style/style_bg_waveform2.png</BgPixmap>
 						<HfcColor>#1b1b1b</HfcColor>
-						<SignalColor>#E17800</SignalColor>
+						<SignalColor>#EECE33</SignalColor>
 						<BeatColor>#ffffff</BeatColor>
 						<BeatHighlightColor>#00FF00</BeatHighlightColor>
 						<MarkerColor>#00FF00</MarkerColor>
@@ -3176,7 +3176,7 @@
 					<NumberRate>
 						<Tooltip>Pitch rate&#10;Displays the current pitch of the track based on the original tempo.&#10;</Tooltip>
 						<Style>QLabel { font: bold 14px/16px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-						background-color: transparent; color: #0099FF; text-align: center; padding-right: 1px; }
+						background-color: transparent; color: #EECE33; text-align: center; padding-right: 1px; }
 						QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 						background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
 						</Style>
@@ -4411,7 +4411,7 @@
 				<BgColor>#1C1C1C</BgColor>
 				<BgPixmap></BgPixmap>
 				-->
-				<SignalColor>#0099FF</SignalColor>
+				<SignalColor>#EECE33</SignalColor>
 				<MarkerColor>#00FF00</MarkerColor>
 				<Connection>
 					<ConfigKey>[Channel1],playposition</ConfigKey>
@@ -4427,7 +4427,7 @@
 			<TrackProperty>
 				<Tooltip>Track title&#10;Displays the title of the loaded track.&#10;Informations are extracted from the tracks tags.&#10;</Tooltip>
 				<Style>QLabel { font: bold 18px/20px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-				background-color: transparent; color: #0099FF; text-align: left; padding-left: 1px; }
+				background-color: transparent; color: #EECE33; text-align: left; padding-left: 1px; }
 				QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 				background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
 				</Style>
@@ -4445,7 +4445,7 @@
 			<TrackProperty>
 				<Tooltip>Track Artist&#10;Displays the artist of the loaded track.&#10;Informations are extracted from the tracks tags.&#10;</Tooltip>
 				<Style>QLabel { font: bold 18px/20px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-				background-color: transparent; color: #0099FF; text-align: left; padding-left: 1px; }
+				background-color: transparent; color: #EECE33; text-align: left; padding-left: 1px; }
 				QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 				background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
 				</Style>
@@ -4463,7 +4463,7 @@
 			<TrackProperty>
 				<Tooltip>Track Album&#10;Displays the album of the loaded track.&#10;Informations are extracted from the tracks tags.&#10;</Tooltip>
 				<Style>QLabel { font: 12px/14px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-				background-color: transparent; color: #0099FF; text-align: left; padding-left: 1px; }
+				background-color: transparent; color: #EECE33; text-align: left; padding-left: 1px; }
 				QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 				background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
 				</Style>
@@ -4481,7 +4481,7 @@
 			<NumberBpm>
 				<Tooltip>Tempo&#10;Displays the tempo of the loaded track in BPM (beats per minute)&#10;</Tooltip>
 				<Style>QLabel { font: bold 18px/20px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-				background-color: transparent; color: #0099FF; text-align: left;padding-left: 1px; }
+				background-color: transparent; color: #EECE33; text-align: left;padding-left: 1px; }
 				QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 				background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
 				</Style>
@@ -4503,13 +4503,13 @@
 			<NumberPos>
 				<Tooltip>Time&#10;Displays the elapsed or remaining time of the track loaded.&#10;Click to toggle between time elapsed/remaining time.&#10;</Tooltip>
 				<Style>QLabel { font: bold 18px/20px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-				background-color: transparent; color: #0099FF; text-align: left;padding-left: 1px; }
+				background-color: transparent; color: #EECE33; text-align: left;padding-left: 1px; }
 				QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 				background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
 				</Style>
 				<Channel>1</Channel>
-				<Pos>358,25</Pos>
-				<Size>120,23</Size>
+				<Pos>308,25</Pos>
+				<Size>170,23</Size>
 				<!--CSS alignments not respected see bug lp:605530 , lets call <Alignment>-->
 				<Alignment>right</Alignment>
 				<Connection>
@@ -4525,7 +4525,7 @@
 			<TrackProperty>
 				<Tooltip>Track duration&#10;Displays the duration of the loaded track.&#10;Informations are extracted from the tracks tags.&#10;</Tooltip>
 				<Style>QLabel { font: 12px/14px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-				background-color: transparent; color: #0099FF; text-align: left; padding-left: 1px; }
+				background-color: transparent; color: #EECE33; text-align: left; padding-left: 1px; }
 				QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 				background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
 				</Style>
@@ -5362,7 +5362,7 @@
 				<BgColor>#1C1C1C</BgColor>
 				<BgPixmap></BgPixmap>
 				-->
-				<SignalColor>#E17800</SignalColor>
+				<SignalColor>#EECE33</SignalColor>
 				<MarkerColor>#00FF00</MarkerColor>
 				<Connection>
 					<ConfigKey>[Channel2],playposition</ConfigKey>
@@ -5378,7 +5378,7 @@
 			<TrackProperty>
 				<Tooltip>Track title&#10;Displays the title of the loaded track.&#10;Informations are extracted from the tracks tags.&#10;</Tooltip>
 				<Style>QLabel { font: bold 18px/20px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-				background-color: transparent; color: #E17800; text-align: left; padding-left: 1px; }
+				background-color: transparent; color: #EECE33; text-align: left; padding-left: 1px; }
 				QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 				background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
 				</Style>
@@ -5396,7 +5396,7 @@
 			<TrackProperty>
 				<Tooltip>Track Artist&#10;Displays the artist of the loaded track.&#10;Informations are extracted from the tracks tags.&#10;</Tooltip>
 				<Style>QLabel { font: bold 18px/20px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-				background-color: transparent; color: #E17800; text-align: left; padding-left: 1px; }
+				background-color: transparent; color: #EECE33; text-align: left; padding-left: 1px; }
 				QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 				background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
 				</Style>
@@ -5414,7 +5414,7 @@
 			<TrackProperty>
 				<Tooltip>Track Album&#10;Displays the album of the loaded track.&#10;Informations are extracted from the tracks tags.&#10;</Tooltip>
 				<Style>QLabel { font: 12px/14px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-				background-color: transparent; color: #E17800; text-align: left; padding-left: 1px; }
+				background-color: transparent; color: #EECE33; text-align: left; padding-left: 1px; }
 				QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 				background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
 				</Style>
@@ -5432,7 +5432,7 @@
 			<NumberBpm>
 				<Tooltip>Tempo&#10;Displays the tempo of the loaded track in BPM (beats per minute)&#10;</Tooltip>
 				<Style>QLabel { font: bold 18px/20px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-				background-color: transparent; color: #E17800; text-align: left;padding-left: 1px; }
+				background-color: transparent; color: #EECE33; text-align: left;padding-left: 1px; }
 				QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 				background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
 				</Style>
@@ -5454,13 +5454,13 @@
 			<NumberPos>
 				<Tooltip>Time&#10;Displays the elapsed or remaining time of the track loaded.&#10;Click to toggle between time elapsed/remaining time.&#10;</Tooltip>
 				<Style>QLabel { font: bold 18px/20px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-				background-color: transparent; color: #E17800; text-align: left;padding-left: 1px; }
+				background-color: transparent; color: #EECE33; text-align: left;padding-left: 1px; }
 				QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 				background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
 				</Style>
 				<Channel>2</Channel>
-				<Pos>358,25</Pos>
-				<Size>120,23</Size>
+				<Pos>308,25</Pos>
+				<Size>170,23</Size>
 				<!--CSS alignments not respected see bug lp:605530 , lets call <Alignment>-->
 				<Alignment>right</Alignment>
 				<Connection>
@@ -5476,7 +5476,7 @@
 			<TrackProperty>
 				<Tooltip>Track duration&#10;Displays the duration of the loaded track.&#10;Informations are extracted from the tracks tags.&#10;</Tooltip>
 				<Style>QLabel { font: 12px/14px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-				background-color: transparent; color: #E17800; text-align: left; padding-left: 1px; }
+				background-color: transparent; color: #EECE33; text-align: left; padding-left: 1px; }
 				QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 				background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
 				</Style>
