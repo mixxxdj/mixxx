@@ -15,8 +15,6 @@
 #include "defs.h"
 #include "trackinfoobject.h"
 
-#define MAX_RATE_INCREMENT 0.015
-
 class ControlObjectThreadMain;
 class RenderObject;
 class WaveformRenderBackground;
@@ -64,6 +62,7 @@ private:
     int m_iPlayPosTime, m_iPlayPosTimeOld;
     QTime m_playPosTime, m_playPosTimeOld;
     double m_dPlayPos, m_dPlayPosOld, m_dTargetRate, m_dRate, m_dRateRange, m_dRateDir;
+    int m_iRateAdjusting;
     int m_iDupes;
     double m_dPlayPosAdjust;
     int m_iLatency;

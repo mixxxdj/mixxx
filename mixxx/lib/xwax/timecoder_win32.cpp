@@ -85,7 +85,7 @@ static struct timecode_def_t timecode_def[] = {
         0xd8b40,
         0x34d54,
         950000,
-        940000,
+        890000,
         false
     },
     {
