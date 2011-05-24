@@ -225,19 +225,36 @@ void VinylControlXwax::run()
         //if no track loaded, let track selection work but that's it
         if (duration == NULL)
         {
-            bTrackSelectMode = true;
-            doTrackSelection(false, dVinylPitch, iPosition);
+            //until I can figure out how to detect "track 2" on serato CD,
+            //don't try track selection
+            if (!m_bCDControl)
+            {
+                bTrackSelectMode = true;
+                doTrackSelection(false, dVinylPitch, iPosition);
+            }
             continue;
         }
         //qDebug() << m_group << id << iPosition << dVinylPitch;
 
         double cur_duration = duration->get();
+        
+        //Has a new track been loaded?
         //FIXME? we should really sync on all track changes
         if (cur_duration != old_duration)
         {
             bForceResync=true;
             bTrackSelectMode = false; //just in case
             old_duration = cur_duration;
+            
+            //we were at record end, so turn it off and restore mode
+            if(atRecordEnd)
+            {
+                disableRecordEndMode();
+                if (iOldMode == MIXXX_VCMODE_CONSTANT)
+                    iVCMode = MIXXX_VCMODE_RELATIVE;
+                else
+                    iVCMode = iOldMode;
+            }
         }
 
         dVinylPosition = iPosition;
@@ -307,25 +324,20 @@ void VinylControlXwax::run()
         {
             //if atRecordEnd was true, maybe it no longer applies:
 
-            if ((iVCMode == MIXXX_VCMODE_ABSOLUTE &&
-                    (filePosition + iLeadInTime) * 1000.0f  <= timecoder_get_safe(&timecoder)))
-            {
-                //if we are in absolute mode and the file position is in a safe zone now
-                disableRecordEndMode();
-            }
-            else if (!reportedPlayButton)
+            if (!reportedPlayButton)
             {
                 //if we turned off play button, also disable
                 disableRecordEndMode();
             }
-            else if (iPosition != -1)
+            else if (iPosition != -1 && 
+                     iPosition <= timecoder_get_safe(&timecoder) &&
+                     dVinylPosition > 0 &&
+                     checkSteadyPitch(dVinylPitch, filePosition) > 0.5)
+                     
             {
-                //if relative mode, and vinylpos is safe
-                if (iVCMode == MIXXX_VCMODE_RELATIVE &&
-                    iPosition <= timecoder_get_safe(&timecoder))
-                {
-                    disableRecordEndMode();
-                }
+                //if good position, and safe, and not in leadin, and steady,
+                //disable
+                disableRecordEndMode();
             }
 
             if (atRecordEnd)
@@ -347,15 +359,20 @@ void VinylControlXwax::run()
         {
             if (iPosition != -1 && iPosition > timecoder_get_safe(&timecoder))
             {
-                if (!bTrackSelectMode)
+                //until I can figure out how to detect "track 2" on serato CD,
+                //don't try track selection
+                if (!m_bCDControl)
                 {
-                    qDebug() << "position greater than safe, select mode" << iPosition << timecoder_get_safe(&timecoder);
-                    bTrackSelectMode = true;
-                    togglePlayButton(FALSE);
-                       resetSteadyPitch(0.0f, 0.0f);
-                    controlScratch->slotSet(0.0f);
+                    if (!bTrackSelectMode)
+                    {
+                        qDebug() << "position greater than safe, select mode" << iPosition << timecoder_get_safe(&timecoder);
+                        bTrackSelectMode = true;
+                        togglePlayButton(FALSE);
+                           resetSteadyPitch(0.0f, 0.0f);
+                        controlScratch->slotSet(0.0f);
+                    }
+                    doTrackSelection(true, dVinylPitch, iPosition);
                 }
-                doTrackSelection(true, dVinylPitch, iPosition);
 
                 //hm I wonder if track will keep playing while this happens?
                 //not sure what we want to do here...  probably enforce
@@ -643,15 +660,8 @@ void VinylControlXwax::disableRecordEndMode()
 {
     vinylStatus->slotSet(VINYL_STATUS_OK);
     atRecordEnd = false;
-    //don't start a new track with constant mode
-    if (iVCMode == MIXXX_VCMODE_CONSTANT)
-    {
-        if (iOldMode == MIXXX_VCMODE_CONSTANT)
-            iVCMode = MIXXX_VCMODE_RELATIVE;
-        else
-            iVCMode = iOldMode;
-        mode->slotSet((double)iVCMode);
-    }
+    iVCMode = MIXXX_VCMODE_RELATIVE;
+    mode->slotSet((double)iVCMode);
 }
 
 void VinylControlXwax::togglePlayButton(bool on)
@@ -774,6 +784,14 @@ void VinylControlXwax::syncPosition()
 
 bool VinylControlXwax::checkEnabled(bool was, bool is)
 {
+	// if we're not enabled, but the last object was, try turning ourselves on
+    // XXX: is this just a race that's working right now?
+    if (!is and wantenabled->get())
+    {
+        enabled->slotSet(true);
+        wantenabled->slotSet(false); //don't try to do this over and over
+        return true; //optimism!
+    }
     if (was != is)
     {
         //we reset the scratch value, but we don't reset the rate slider.
