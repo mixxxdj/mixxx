@@ -517,7 +517,7 @@ signed int timecoder_get_position(struct timecoder_t *tc, float *when)
     signed int r;
 
     if (tc->valid_counter > VALID_BITS) {
-        r = lut_lookup(&tc->def->lut, tc->bitstream);
+        r = lut_lookup(&tc->def->lut, tc->bitstream) * 1000 / (tc->def->resolution * tc->speed);
 
         if (r >= 0) {
         	//normalize position to milliseconds, not timecode steps -- Owen
