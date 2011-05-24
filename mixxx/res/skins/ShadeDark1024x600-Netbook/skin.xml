@@ -4954,9 +4954,9 @@
 												<Channel>2</Channel>
 												<Pos>0,0</Pos>
 												<Size>i,i</Size>
-												<PathBackground>vinyl_spinny1_background.png</PathBackground>
-												<PathForeground>vinyl_spinny1_foreground.png</PathForeground>
-												<PathGhost>vinyl_spinny1_foreground_ghost.png</PathGhost>
+												<PathBackground>vinyl_spinny2_background.png</PathBackground>
+												<PathForeground>vinyl_spinny2_foreground.png</PathForeground>
+												<PathGhost>vinyl_spinny2_foreground_ghost.png</PathGhost>
 											</Spinny>
 										</Children>
 										<Connection>
