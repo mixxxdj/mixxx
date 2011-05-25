@@ -8,13 +8,13 @@ msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2011-05-03 21:42-0400\n"
-"PO-Revision-Date: 2011-05-16 12:32+0000\n"
+"PO-Revision-Date: 2011-05-24 21:02+0000\n"
 "Last-Translator: P Griffioen <Unknown>\n"
 "Language-Team: Dutch <nl@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-05-17 04:36+0000\n"
+"X-Launchpad-Export-Date: 2011-05-25 04:32+0000\n"
 "X-Generator: Launchpad (build 12959)\n"
 
 #: AutoDJFeature#1
@@ -786,7 +786,7 @@ msgstr "Uit"
 
 #: DlgPrefControlsDlg#9
 msgid "Pitch/Rate slider range"
-msgstr ""
+msgstr "Pitch/ Rate schuif bereik"
 
 #: DlgPrefControlsDlg#10
 msgid "Pitch/Rate slider direction"
@@ -794,7 +794,7 @@ msgstr "Pitch/ Rate schuif richting"
 
 #: DlgPrefControlsDlg#11
 msgid "Track load behaviour"
-msgstr ""
+msgstr "Gedrag van het te laden nummer"
 
 #: DlgPrefControlsDlg#12
 msgid "Cue behaviour"
@@ -952,7 +952,7 @@ msgstr ""
 
 #: DlgPrefMidiBindings#4
 msgid "Overwrite existing mapping?"
-msgstr ""
+msgstr "Overschrijven van bestaande mapping?"
 
 #: DlgPrefMidiBindings#5
 msgid ""
@@ -1046,6 +1046,9 @@ msgid ""
 "href=\"http://mixxx.org/wiki/doku.php/midi_controller_mapping_file_format\">T"
 "roubleshooting</a>"
 msgstr ""
+"<a "
+"href=\"http://mixxx.org/wiki/doku.php/midi_controller_mapping_file_format\">P"
+"robleem oplossen</a>"
 
 #: DlgPrefMidiBindingsDlg#13
 msgid "MIDI Input"
@@ -1145,22 +1148,22 @@ msgstr "seconden"
 #: DlgPrefNoVinylDlg#13
 msgctxt "DlgPrefNoVinylDlg#13"
 msgid "Control Mode"
-msgstr ""
+msgstr "Controle modus"
 
 #: DlgPrefNoVinylDlg#14
 msgctxt "DlgPrefNoVinylDlg#14"
 msgid "Absolute Mode"
-msgstr ""
+msgstr "Absolute modus"
 
 #: DlgPrefNoVinylDlg#15
 msgctxt "DlgPrefNoVinylDlg#15"
 msgid "Relative Mode"
-msgstr ""
+msgstr "Relatieve modus"
 
 #: DlgPrefNoVinylDlg#16
 msgctxt "DlgPrefNoVinylDlg#16"
 msgid "Enable Needle Skip Prevention"
-msgstr ""
+msgstr "Zet naald overslaan preventie aan"
 
 #: DlgPrefNoVinylDlg#17
 msgctxt "DlgPrefNoVinylDlg#17"
@@ -1187,6 +1190,9 @@ msgid ""
 "<b>This version of Mixxx does not support vinyl control.</b> <br> Please "
 "visit <a href=\"http://mixxx.org\">Mixxx.org</a> for more information."
 msgstr ""
+"Copy text \t\r\n"
+"<b>Deze versie van Mixxx ondersteund geen vinyl besturing</b> <br>Bezoek <a "
+"href=\"http://mixxx.org\">Mixxx.org</a> voor meer informatie."
 
 #: DlgPrefPlaylist#1
 msgctxt "DlgPrefPlaylist#1"
@@ -1202,6 +1208,8 @@ msgid ""
 "Mixxx has detected another iPod. \n"
 "\n"
 msgstr ""
+"Mixxx heeft een andere iPod gedetecteerd. \n"
+"\n"
 
 #: DlgPrefPlaylist#4
 msgid "Choose Yes to use the newly found iPod @ "
@@ -1221,7 +1229,7 @@ msgstr " en beëindig detectie \n"
 
 #: DlgPrefPlaylist#8
 msgid "Choose iPod mount point"
-msgstr ""
+msgstr "Kies iPod koppelpunt"
 
 #: DlgPrefPlaylistDlg#1
 msgctxt "DlgPrefPlaylistDlg#1"
@@ -1308,6 +1316,8 @@ msgid ""
 "Support Mixxx by counting and sharing bundled songs\n"
 "playback and outbound link statistics"
 msgstr ""
+"Ondersteun Mixxx door het tellen van en het delen van gebundelde nummers\n"
+"afspelen en uitgaande link statistieken"
 
 #: DlgPrefRecord#1
 msgid "kbps"
@@ -1377,7 +1387,7 @@ msgstr "BPM detectie instellingen"
 
 #: DlgPrefReplayGainDlg#2
 msgid "ReplayGain Normalization"
-msgstr ""
+msgstr "ReplayGain Normalisatie"
 
 #: DlgPrefReplayGainDlg#3
 msgid "Apply volume normalization to loaded songs."
@@ -1654,6 +1664,9 @@ msgid ""
 "Please note that for technical reasons changing any shoutcast settings will "
 "cause an established connection to disconnect and reconnect. "
 msgstr ""
+"Houd er rekening mee dat om technische redenen het veranderen van elke "
+"Shoutcast instelling zal zorgen dat de bestaande verbinding moet worden "
+"verbroken en opnieuw worden aangesloten. "
 
 #: DlgPrefSound#1
 msgctxt "DlgPrefSound#1"

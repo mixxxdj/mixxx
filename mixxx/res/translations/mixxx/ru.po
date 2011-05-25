@@ -8,13 +8,13 @@ msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2011-05-03 21:42-0400\n"
-"PO-Revision-Date: 2011-04-30 21:13+0000\n"
-"Last-Translator: Pavel <kitchenknif@Gmail.com>\n"
+"PO-Revision-Date: 2011-05-25 03:38+0000\n"
+"Last-Translator: Pasha Sadikov <pashalab@gmail.com>\n"
 "Language-Team: Russian <ru@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-05-05 04:36+0000\n"
+"X-Launchpad-Export-Date: 2011-05-25 04:33+0000\n"
 "X-Generator: Launchpad (build 12959)\n"
 
 #: AutoDJFeature#1
@@ -95,7 +95,7 @@ msgstr "Дата добавления"
 
 #: BaseSqlTableModel#16
 msgid "#"
-msgstr ""
+msgstr "№"
 
 #: BaseSqlTableModel#17
 msgctxt "BaseSqlTableModel#17"
@@ -121,7 +121,7 @@ msgstr "Съёмные устройства"
 #: BrowseFeature#4
 msgctxt "BrowseFeature#4"
 msgid "Mixxx Library"
-msgstr ""
+msgstr "Библиотека Mixxx"
 
 #: BrowseFeature#5
 msgid "Home"
@@ -215,21 +215,23 @@ msgstr "Размещение"
 #: BrowseTableModel#15
 msgctxt "BrowseTableModel#15"
 msgid "Mixxx Library"
-msgstr ""
+msgstr "Библиотека Mixxx"
 
 #: BrowseTableModel#16
 msgid ""
 "Could not load the following file because it is in use by Mixxx or another "
 "application."
 msgstr ""
+"Не получилось загрузить данный файл так как он в данный момент занят "
+"программой Mixxx или другой программой."
 
 #: BrowseTableModel#17
 msgid "Warning: This will permanently delete the following files:"
-msgstr ""
+msgstr "Предупреждение: Эта акция безвозвратно удалит данные файлы:"
 
 #: BrowseTableModel#18
 msgid "Are you sure you want to delete these files from your computer?"
-msgstr ""
+msgstr "Вы уверены что желаете удалить данные файлы с вашего компьютера?"
 
 #: BrowseTableModel#19
 msgid ""
@@ -239,7 +241,7 @@ msgstr ""
 
 #: BrowseTableModel#20
 msgid "Could not update file metadata."
-msgstr ""
+msgstr "Не получилось обновить мэта-информацию файла."
 
 #: CrateFeature#1
 msgid "New Crate"
@@ -271,16 +273,16 @@ msgstr "Списки"
 
 #: CrateFeature#7
 msgid "Import Crate"
-msgstr ""
+msgstr "Импортировать ящик."
 
 #: CrateFeature#8
 msgid "Export Crate"
-msgstr ""
+msgstr "Экспортировать ящик."
 
 #: CrateFeature#9
 msgctxt "CrateFeature#9"
 msgid "Unlock"
-msgstr ""
+msgstr "Разблокировать"
 
 #: CrateFeature#10
 msgid "Crate name:"
@@ -305,12 +307,12 @@ msgstr "Ошибка переименования группы"
 #: CrateFeature#15
 msgctxt "CrateFeature#15"
 msgid "Playlist Files (*.m3u *.pls)"
-msgstr ""
+msgstr "Файлы вида плэй-лист (*.m3u *.pls)"
 
 #: CrateFeature#16
 msgctxt "CrateFeature#16"
 msgid "Export Playlist"
-msgstr ""
+msgstr "Экспортировать плэй-лист"
 
 #: CrateFeature#17
 msgctxt "CrateFeature#17"
@@ -386,7 +388,7 @@ msgstr "Диспетчер"
 
 #: DlgAutoDJ#4
 msgid "Shuffle playlist"
-msgstr ""
+msgstr "Перемешать плей-лист"
 
 #: DlgAutoDJ#5
 msgid "Add tracks to the queue below..."
@@ -484,7 +486,7 @@ msgstr "Удар./мин:"
 
 #: DlgBpmTapDlg#16
 msgid "&Push to tap tempo"
-msgstr ""
+msgstr "Настучать темп"
 
 #: DlgBpmTapDlg#17
 msgid "Alt+P"
@@ -695,39 +697,39 @@ msgstr ""
 
 #: DlgPrefControls#3
 msgid "10%"
-msgstr ""
+msgstr "10%"
 
 #: DlgPrefControls#4
 msgid "20%"
-msgstr ""
+msgstr "20%"
 
 #: DlgPrefControls#5
 msgid "30%"
-msgstr ""
+msgstr "30%"
 
 #: DlgPrefControls#6
 msgid "40%"
-msgstr ""
+msgstr "40%"
 
 #: DlgPrefControls#7
 msgid "50%"
-msgstr ""
+msgstr "50%"
 
 #: DlgPrefControls#8
 msgid "60%"
-msgstr ""
+msgstr "60%"
 
 #: DlgPrefControls#9
 msgid "70%"
-msgstr ""
+msgstr "70%"
 
 #: DlgPrefControls#10
 msgid "80%"
-msgstr ""
+msgstr "80%"
 
 #: DlgPrefControls#11
 msgid "90%"
-msgstr ""
+msgstr "90%"
 
 #: DlgPrefControls#12
 msgid "Up increases speed"
@@ -740,7 +742,7 @@ msgstr "Вниз - уменьшает скорость"
 #: DlgPrefControls#14
 msgctxt "DlgPrefControls#14"
 msgid "Information"
-msgstr ""
+msgstr "Сведения"
 
 #: DlgPrefControls#15
 msgid "Mixxx must be restarted before the changes will take effect."
@@ -791,7 +793,7 @@ msgstr "Направление бегунка тона/скорости"
 
 #: DlgPrefControlsDlg#11
 msgid "Track load behaviour"
-msgstr ""
+msgstr "Манера загрузки трэка"
 
 #: DlgPrefControlsDlg#12
 msgid "Cue behaviour"
@@ -885,7 +887,7 @@ msgstr "Линейное"
 
 #: DlgPrefCrossfaderDlg#9
 msgid "Logarithmic"
-msgstr ""
+msgstr "Логарифмическое"
 
 #: DlgPrefCrossfaderDlg#10
 msgctxt "DlgPrefCrossfaderDlg#10"
@@ -907,7 +909,7 @@ msgstr "Эквалайзер ВЧ"
 
 #: DlgPrefEQDlg#4
 msgid "textLabel1"
-msgstr ""
+msgstr "текстЯрлык1"
 
 #: DlgPrefEQDlg#5
 msgid "16 Hz"
@@ -927,7 +929,7 @@ msgstr "Эквалайзер НЧ"
 
 #: DlgPrefEQDlg#9
 msgid "textLabel2"
-msgstr ""
+msgstr "текстЯрлык2"
 
 #: DlgPrefEQDlg#10
 msgctxt "DlgPrefEQDlg#10"
@@ -1068,7 +1070,7 @@ msgstr "MIDI выход"
 #: DlgPrefNoMidiDlg#1
 msgctxt "DlgPrefNoMidiDlg#1"
 msgid "Form3"
-msgstr ""
+msgstr "Форма3"
 
 #: DlgPrefNoMidiDlg#2
 msgid "No MIDI devices available"
@@ -1077,12 +1079,12 @@ msgstr "Доступные устройства MIDI отсутствуют"
 #: DlgPrefNoVinylDlg#1
 msgctxt "DlgPrefNoVinylDlg#1"
 msgid "Form1"
-msgstr ""
+msgstr "Форма1"
 
 #: DlgPrefNoVinylDlg#2
 msgctxt "DlgPrefNoVinylDlg#2"
 msgid "Input"
-msgstr ""
+msgstr "Вход"
 
 #: DlgPrefNoVinylDlg#3
 msgctxt "DlgPrefNoVinylDlg#3"
@@ -1099,6 +1101,17 @@ msgid ""
 "weight:600;\">Select sound devices for vinyl control in the Sound Hardware "
 "pane.</span></p></body></html>"
 msgstr ""
+"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" "
+"\"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+"<html><head><meta name=\"qrichtext\" content=\"1\" /><style "
+"type=\"text/css\">\n"
+"p, li { white-space: pre-wrap; }\n"
+"</style></head><body style=\" font-family:'DejaVu Sans'; font-size:9pt; font-"
+"weight:400; font-style:normal;\">\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-"
+"right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-"
+"weight:600;\">Выберите звуковые устройства для управления винилом в окне "
+"звукового обрудования.</span></p></body></html>"
 
 #: DlgPrefNoVinylDlg#4
 msgctxt "DlgPrefNoVinylDlg#4"
@@ -1107,61 +1120,64 @@ msgid ""
 "href=\"http://www.mixxx.org/wiki/doku.php/vinyl_control#troubleshooting\">Tro"
 "ubleshooting</a>"
 msgstr ""
+"<a "
+"href=\"http://www.mixxx.org/wiki/doku.php/vinyl_control#troubleshooting\">Реш"
+"ение проблем</a>"
 
 #: DlgPrefNoVinylDlg#5
 msgctxt "DlgPrefNoVinylDlg#5"
 msgid "Turntable Preamp"
-msgstr ""
+msgstr "Предуселитель Диска"
 
 #: DlgPrefNoVinylDlg#6
 msgctxt "DlgPrefNoVinylDlg#6"
 msgid "1 (Off)"
-msgstr ""
+msgstr "1 (Выкл.)"
 
 #: DlgPrefNoVinylDlg#7
 msgctxt "DlgPrefNoVinylDlg#7"
 msgid "150"
-msgstr ""
+msgstr "150"
 
 #: DlgPrefNoVinylDlg#8
 msgctxt "DlgPrefNoVinylDlg#8"
 msgid "Vinyl Configuration"
-msgstr ""
+msgstr "Конфигурирование Винила"
 
 #: DlgPrefNoVinylDlg#9
 msgctxt "DlgPrefNoVinylDlg#9"
 msgid "Deck 1 Vinyl Type"
-msgstr ""
+msgstr "Дека 1 Вид Винила"
 
 #: DlgPrefNoVinylDlg#10
 msgctxt "DlgPrefNoVinylDlg#10"
 msgid "Deck 2 Vinyl Type"
-msgstr ""
+msgstr "Дека 2 Вид Винила"
 
 #: DlgPrefNoVinylDlg#11
 msgctxt "DlgPrefNoVinylDlg#11"
 msgid "Lead-in time"
-msgstr ""
+msgstr "Время вступления"
 
 #: DlgPrefNoVinylDlg#12
 msgctxt "DlgPrefNoVinylDlg#12"
 msgid "seconds"
-msgstr ""
+msgstr "секунд"
 
 #: DlgPrefNoVinylDlg#13
 msgctxt "DlgPrefNoVinylDlg#13"
 msgid "Control Mode"
-msgstr ""
+msgstr "Режим Управления"
 
 #: DlgPrefNoVinylDlg#14
 msgctxt "DlgPrefNoVinylDlg#14"
 msgid "Absolute Mode"
-msgstr ""
+msgstr "Абсолютный Режим"
 
 #: DlgPrefNoVinylDlg#15
 msgctxt "DlgPrefNoVinylDlg#15"
 msgid "Relative Mode"
-msgstr ""
+msgstr "Относительный Режим"
 
 #: DlgPrefNoVinylDlg#16
 msgctxt "DlgPrefNoVinylDlg#16"
@@ -1171,22 +1187,22 @@ msgstr ""
 #: DlgPrefNoVinylDlg#17
 msgctxt "DlgPrefNoVinylDlg#17"
 msgid "Signal Quality"
-msgstr ""
+msgstr "Качество Сигнала"
 
 #: DlgPrefNoVinylDlg#18
 msgctxt "DlgPrefNoVinylDlg#18"
 msgid "http://www.xwax.co.uk"
-msgstr ""
+msgstr "http://www.xwax.co.uk"
 
 #: DlgPrefNoVinylDlg#19
 msgctxt "DlgPrefNoVinylDlg#19"
 msgid "Powered by xwax"
-msgstr ""
+msgstr "Работает за счёт xwax"
 
 #: DlgPrefNoVinylDlg#20
 msgctxt "DlgPrefNoVinylDlg#20"
 msgid "Apply"
-msgstr ""
+msgstr "Применить"
 
 #: DlgPrefNoVinylDlg#21
 msgid ""
@@ -1234,7 +1250,7 @@ msgstr "Выберите место подключения iPod"
 #: DlgPrefPlaylistDlg#1
 msgctxt "DlgPrefPlaylistDlg#1"
 msgid "Form3"
-msgstr ""
+msgstr "Форма3"
 
 #: DlgPrefPlaylistDlg#2
 msgid "Audio File Formats"
@@ -1246,7 +1262,7 @@ msgstr "Надстройки дополнительных форматов:"
 
 #: DlgPrefPlaylistDlg#4
 msgid "MP3, Ogg Vorbis, FLAC, WAVe, AIFF"
-msgstr ""
+msgstr "MP3, Ogg Vorbis, FLAC, WAVe, AIFF"
 
 #: DlgPrefPlaylistDlg#5
 msgid "Loaded Plugins:"
@@ -1260,7 +1276,7 @@ msgstr "Нет"
 #: DlgPrefPlaylistDlg#7
 msgctxt "DlgPrefPlaylistDlg#7"
 msgid "Miscellaneous"
-msgstr ""
+msgstr "Прочие"
 
 #: DlgPrefPlaylistDlg#8
 msgid "Synchronize ID3 tags on track modifications"
@@ -1276,7 +1292,7 @@ msgstr ""
 
 #: DlgPrefPlaylistDlg#11
 msgid "iPod"
-msgstr ""
+msgstr "iPod"
 
 #: DlgPrefPlaylistDlg#12
 msgid "iPod mountpoint"
@@ -1284,7 +1300,7 @@ msgstr "Место подключения iPod"
 
 #: DlgPrefPlaylistDlg#13
 msgid "Browse..."
-msgstr ""
+msgstr "Обзор..."
 
 #: DlgPrefPlaylistDlg#14
 msgid "Detect"
@@ -1293,7 +1309,7 @@ msgstr "Определить"
 #: DlgPrefPlaylistDlg#15
 msgctxt "DlgPrefPlaylistDlg#15"
 msgid "Library"
-msgstr ""
+msgstr "Библиотека"
 
 #: DlgPrefPlaylistDlg#16
 msgid "Music Directory:"
@@ -1324,12 +1340,12 @@ msgstr "кбит/с"
 #: DlgPrefRecordDlg#1
 msgctxt "DlgPrefRecordDlg#1"
 msgid "Form3"
-msgstr ""
+msgstr "Форма3"
 
 #: DlgPrefRecordDlg#2
 msgctxt "DlgPrefRecordDlg#2"
 msgid "Encoding"
-msgstr ""
+msgstr "Кодировка"
 
 #: DlgPrefRecordDlg#3
 msgid "Quality"
@@ -1350,7 +1366,7 @@ msgstr "Теги"
 #: DlgPrefRecordDlg#7
 msgctxt "DlgPrefRecordDlg#7"
 msgid "Title"
-msgstr ""
+msgstr "Название"
 
 #: DlgPrefRecordDlg#8
 msgid "Author"
@@ -1359,12 +1375,12 @@ msgstr "Автор"
 #: DlgPrefRecordDlg#9
 msgctxt "DlgPrefRecordDlg#9"
 msgid "Album"
-msgstr ""
+msgstr "Альбом"
 
 #: DlgPrefRecordDlg#10
 msgctxt "DlgPrefRecordDlg#10"
 msgid "Miscellaneous"
-msgstr ""
+msgstr "Прочие"
 
 #: DlgPrefRecordDlg#11
 msgid "Create a CUE file"
@@ -1372,11 +1388,11 @@ msgstr "Создать файл метаданных CUE"
 
 #: DlgPrefRecordDlg#12
 msgid "File Splitting"
-msgstr ""
+msgstr "Разделение Файла"
 
 #: DlgPrefRecordDlg#13
 msgid "Split recordings at"
-msgstr ""
+msgstr "Разделить запись около"
 
 #: DlgPrefReplayGainDlg#1
 msgctxt "DlgPrefReplayGainDlg#1"
@@ -1437,7 +1453,7 @@ msgstr "Сбросить"
 #: DlgPrefShoutcastDlg#1
 msgctxt "DlgPrefShoutcastDlg#1"
 msgid "Form3"
-msgstr ""
+msgstr "Форма3"
 
 #: DlgPrefShoutcastDlg#2
 msgctxt "DlgPrefShoutcastDlg#2"
@@ -1455,7 +1471,7 @@ msgstr "Тип"
 
 #: DlgPrefShoutcastDlg#5
 msgid "Icecast 2"
-msgstr ""
+msgstr "Icecast 2"
 
 #: DlgPrefShoutcastDlg#6
 msgid "Shoutcast"
@@ -1463,7 +1479,7 @@ msgstr "Shoutcast"
 
 #: DlgPrefShoutcastDlg#7
 msgid "Icecast 1"
-msgstr ""
+msgstr "Icecast 1"
 
 #: DlgPrefShoutcastDlg#8
 msgid "Mount"
@@ -1471,7 +1487,7 @@ msgstr "Подключить"
 
 #: DlgPrefShoutcastDlg#9
 msgid "/mixxx.ogg"
-msgstr ""
+msgstr "/mixxx.ogg"
 
 #: DlgPrefShoutcastDlg#10
 msgid "Host"
@@ -1523,7 +1539,7 @@ msgstr "Веб-сайт"
 
 #: DlgPrefShoutcastDlg#22
 msgid "http://www.mixxx.org"
-msgstr ""
+msgstr "http://www.mixxx.org"
 
 #: DlgPrefShoutcastDlg#23
 msgid "Description"
@@ -1543,6 +1559,17 @@ msgid ""
 "family:'DejaVu Sans'; font-size:9pt; font-style:italic;\">This stream is on "
 "line for testing purposes!</span></p></body></html>"
 msgstr ""
+"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" "
+"\"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+"<html><head><meta name=\"qrichtext\" content=\"1\" /><style "
+"type=\"text/css\">\n"
+"p, li { white-space: pre-wrap; }\n"
+"</style></head><body style=\" font-family:'Lucida Grande'; font-size:13pt; "
+"font-weight:400; font-style:normal;\">\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-"
+"right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-"
+"family:'DejaVu Sans'; font-size:9pt; font-style:italic;\">Данный поток "
+"эксперименталный!</span></p></body></html>"
 
 #: DlgPrefShoutcastDlg#25
 msgctxt "DlgPrefShoutcastDlg#25"
@@ -1646,7 +1673,7 @@ msgstr "Исполнитель"
 
 #: DlgPrefShoutcastDlg#49
 msgid "%mainartist"
-msgstr ""
+msgstr "%mainartist"
 
 #: DlgPrefShoutcastDlg#50
 msgctxt "DlgPrefShoutcastDlg#50"
@@ -1655,7 +1682,7 @@ msgstr "Название"
 
 #: DlgPrefShoutcastDlg#51
 msgid "%maintitle"
-msgstr ""
+msgstr "%maintitle"
 
 #: DlgPrefShoutcastDlg#52
 msgid ""
