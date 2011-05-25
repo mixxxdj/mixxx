@@ -165,8 +165,8 @@ void WSpinny::paintEvent(QPaintEvent *e)
                     m_qImage.setPixel(x, y, qRgba(r,g,b,(int)buf[x+m_iSize*y] * .75));
                 }
             }
+            p.drawImage(this->rect(), m_qImage);
         }
-        p.drawImage(this->rect(), m_qImage);
     }
 
     //To rotate the foreground pixmap around the center of the image,
