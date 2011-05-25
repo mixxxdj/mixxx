@@ -5,6 +5,7 @@
 #include <QDir>
 #include <QtDebug>
 
+#include "vinylcontrol/vinylcontrolmanager.h"
 #include "skin/skinloader.h"
 #include "skin/legacyskinparser.h"
 
@@ -52,10 +53,11 @@ QString SkinLoader::getConfiguredSkinPath() {
 QWidget* SkinLoader::loadDefaultSkin(QWidget* pParent,
                                        MixxxKeyboard* pKeyboard,
                                        PlayerManager* pPlayerManager,
-                                       Library* pLibrary) {
+                                       Library* pLibrary,
+                                       VinylControlManager* pVCMan) {
     QString skinPath = getConfiguredSkinPath();
 
-    LegacySkinParser legacy(m_pConfig, pKeyboard, pPlayerManager, pLibrary);
+    LegacySkinParser legacy(m_pConfig, pKeyboard, pPlayerManager, pLibrary, pVCMan);
     qDebug() << "Legacy can parse:" << legacy.canParse(skinPath);
     return legacy.parseSkin(skinPath, pParent);
 }

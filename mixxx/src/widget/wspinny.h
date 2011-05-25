@@ -4,6 +4,9 @@
 
 #include <QGLWidget>
 #include "wwidget.h"
+#include "vinylcontrol/vinylcontrolproxy.h"
+#include "vinylcontrol/vinylcontrolmanager.h"
+#include "vinylcontrol/vinylcontrol.h"
 
 class ControlObjectThreadMain;
 
@@ -11,15 +14,18 @@ class WSpinny : public QGLWidget
 {
     Q_OBJECT
     public:
-        WSpinny(QWidget* parent);
+        WSpinny(QWidget* parent, VinylControlManager* pVCMan);
         ~WSpinny();
         void setup(QDomNode node, QString group);
         void dragEnterEvent(QDragEnterEvent *event);
         void dropEvent(QDropEvent *event);
     public slots:
         void updateAngle(double);
+        void updateRate(double);
         void updateAngleForGhost();
         void updateVinylControlSpeed(double rpm);
+        void updateVinylControlEnabled(double enabled);
+        void invalidateVinylControl();
     signals:
         void trackDropped(QString filename, QString group);
     protected:
@@ -29,6 +35,7 @@ class WSpinny : public QGLWidget
         void mousePressEvent(QMouseEvent * e);
         void mouseReleaseEvent(QMouseEvent * e);
         void wheelEvent(QWheelEvent *e);
+        void timerEvent(QTimerEvent* event);
 
         double calculateAngle(double playpos);
         int calculateFullRotations(double playpos);
@@ -48,6 +55,16 @@ class WSpinny : public QGLWidget
         ControlObjectThreadMain* m_pScratchToggle;
         ControlObjectThreadMain* m_pScratchPos;
         ControlObjectThreadMain* m_pVinylControlSpeedType;
+        ControlObjectThreadMain* m_pVinylControlEnabled;
+        ControlObjectThreadMain* m_pRate;
+        
+        VinylControlManager* m_pVCManager;
+        VinylControlProxy* m_pVinylControl;
+        bool m_bVinylActive;
+        QImage m_qImage;
+        int m_iSize;
+        int m_iTimerId;
+        
         QString m_group;
         float m_fAngle; //Degrees
         float m_fGhostAngle; 
