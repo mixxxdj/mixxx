@@ -83,7 +83,7 @@ static struct timecode_def_t timecode_def[] = {
         .seed = 0xd8b40,
         .taps = 0x34d54,
         .length = 950000,
-        .safe = 940000,
+        .safe = 890000,
         .lookup = false
     },
     {
