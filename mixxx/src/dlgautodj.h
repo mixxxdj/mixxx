@@ -57,6 +57,7 @@ class DlgAutoDJ : public QWidget, public Ui::DlgAutoDJ, public virtual LibraryVi
 	  ADJ_ENABLE_P1PLAYING
     };
 
+	TrackPointer getNextTrackFromQueue();
     bool loadNextTrackFromQueue();
 	bool removePlayingTrackFromQueue(QString group);
 

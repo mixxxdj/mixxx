@@ -231,21 +231,33 @@ void DlgAutoDJ::fadeNow(bool buttonChecked)
 
 void DlgAutoDJ::toggleAutoDJ(bool toggle)
 {
-    if (toggle) //Enable Auto DJ
+	if (toggle) //Enable Auto DJ
     {
-        if (m_pCOPlay1Fb->get() == 1.0f && m_pCOPlay2Fb->get() == 1.0f) {
+    	if (    m_pCOPlay1Fb->get() == 1.0f
+        	 && m_pCOPlay2Fb->get() == 1.0f
+        ){
             qDebug() << "One player must be stopped before enabling Auto DJ mode";
             pushButtonAutoDJ->setChecked(false);
             return;
         }
 
-		//Load the first song from the queue.
-        if (!loadNextTrackFromQueue()) {
-            //Queue was empty. Disable and return.
-            return;
-        }
+    	// Never load the same track if it is already playing
+    	if ( m_pCOPlay1Fb->get() == 1.0f ){
+    		removePlayingTrackFromQueue("[Channel1]");
+    	}
+    	if ( m_pCOPlay2Fb->get() == 1.0f ){
+    		removePlayingTrackFromQueue("[Channel2]");
+    	}
 
-        pushButtonAutoDJ->setText(tr("Disable Auto DJ"));
+    	TrackPointer nextTrack = getNextTrackFromQueue();
+		if( !nextTrack ){
+            qDebug() << "Queue is empty now";
+            pushButtonAutoDJ->setChecked(false);
+            return;
+		}
+
+		// Track is available so GO
+		pushButtonAutoDJ->setText(tr("Disable Auto DJ"));
 		qDebug() << "Auto DJ enabled";
         m_bAutoDJEnabled = true;
 
@@ -253,21 +265,26 @@ void DlgAutoDJ::toggleAutoDJ(bool toggle)
         this, SLOT(player1PositionChanged(double)));
         connect(m_pCOPlayPos2, SIGNAL(valueChanged(double)),
         this, SLOT(player2PositionChanged(double)));
-		
-        connect(m_pCOPlay1, SIGNAL(valueChanged(double)),
+
+        connect(m_pCOPlay1Fb, SIGNAL(valueChanged(double)),
         this, SLOT(player1PlayChanged(double)));
-        connect(m_pCOPlay2, SIGNAL(valueChanged(double)),
+        connect(m_pCOPlay2Fb, SIGNAL(valueChanged(double)),
         this, SLOT(player2PlayChanged(double)));
 
-		if (m_pCOPlay1Fb->get() == 0.0f )
-		{
-			m_eState = ADJ_ENABLE_P1LOADED;
-		}
-		else
+        if( m_pCOPlay1Fb->get() == 0.0f && m_pCOPlay2Fb->get() == 0.0f ){
+        	m_eState = ADJ_ENABLE_P1LOADED;
+        	m_pCOPlayPos1->slotSet(-0.001f); // Force Update on load Track
+        }
+		else if( m_pCOPlay1Fb->get() == 0.0f )
 		{
 			m_eState = ADJ_IDLE;
 	        player1PlayChanged(1.0f);
 		}
+		else{
+			m_eState = ADJ_IDLE;
+	        player2PlayChanged(1.0f);
+		}
+        emit(loadTrack(nextTrack)); // Loads into first deck If stopped else into second else not
     }
     else //Disable Auto DJ
     {
@@ -461,7 +478,7 @@ void DlgAutoDJ::player2PositionChanged(double value)
 }
 
 
-bool DlgAutoDJ::loadNextTrackFromQueue()
+TrackPointer DlgAutoDJ::getNextTrackFromQueue()
 {
     //Get the track at the top of the playlist...
 
@@ -470,22 +487,40 @@ bool DlgAutoDJ::loadNextTrackFromQueue()
     for(;;){
 		nextTrack = m_pAutoDJTableModel->getTrack(m_pAutoDJTableModel->index(0, 0));
 
-		if (!nextTrack) //We ran out of tracks in the queue...
+		if (nextTrack)
 		{
-			//Disable auto DJ and return...
-			pushButtonAutoDJ->setChecked(false);
-			return false;
+			if( nextTrack->exists()){
+				// found a valid Track
+				return nextTrack;
+			}
+			else{
+				// Remove missing song from auto DJ playlist
+				m_pAutoDJTableModel->removeTrack(m_pAutoDJTableModel->index(0, 0));
+			}
 		}
-
-		//m_bNextTrackAlreadyLoaded = false;
-
-		if( nextTrack->exists()){
-			emit(loadTrack(nextTrack));
-			return true;
+		else{
+			// we are running out of tracks
+			return nextTrack;
 		}
-		// Remove missing song from auto DJ playlist
-		m_pAutoDJTableModel->removeTrack(m_pAutoDJTableModel->index(0, 0));
     }
+}
+
+
+bool DlgAutoDJ::loadNextTrackFromQueue()
+{
+    //Get the track at the top of the playlist...
+
+    TrackPointer nextTrack = getNextTrackFromQueue();
+
+	if (!nextTrack) //We ran out of tracks in the queue...
+	{
+		//Disable auto DJ and return...
+		pushButtonAutoDJ->setChecked(false);
+		return false;
+	}
+
+	emit(loadTrack(nextTrack));
+	return true;
 }
 
 bool DlgAutoDJ::removePlayingTrackFromQueue(QString group)
