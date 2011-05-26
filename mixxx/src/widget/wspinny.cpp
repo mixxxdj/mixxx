@@ -24,8 +24,10 @@ WSpinny::WSpinny(QWidget* parent, VinylControlManager* pVCMan) : QGLWidget(Share
     m_pVinylControlEnabled(NULL),
     m_pVinylControl(NULL),
     m_bVinylActive(false),
+    m_bSignalActive(true),
     m_iSize(0),
     m_iTimerId(0),
+    m_iSignalUpdateTick(0),
     m_fAngle(0.0f),
     m_fGhostAngle(0.0f),
     m_dPausedPosition(0.0f),
@@ -74,9 +76,12 @@ void WSpinny::setup(QDomNode node, QString group)
                                                     "PathGhost")));
     if (m_pBG && !m_pBG->isNull()) {
         setFixedSize(m_pBG->size());
-        m_iSize = MIXXX_VINYL_SCOPE_SIZE;
-        m_qImage = QImage(m_iSize, m_iSize, QImage::Format_ARGB32);
     }
+    
+    m_iSize = MIXXX_VINYL_SCOPE_SIZE;
+    m_qImage = QImage(m_iSize, m_iSize, QImage::Format_ARGB32);
+    //fill with transparent black
+    m_qImage.fill(qRgba(0,0,0,0));
 
     m_pPlay = new ControlObjectThreadMain(ControlObject::getControl(
                         ConfigKey(group, "play")));
@@ -109,6 +114,8 @@ void WSpinny::setup(QDomNode node, QString group)
     }
     m_pVinylControlEnabled = new ControlObjectThreadMain(ControlObject::getControl(
                         ConfigKey(group, "vinylcontrol_enabled")));
+    m_pSignalEnabled = new ControlObjectThreadMain(ControlObject::getControl(
+                        ConfigKey(group, "vinylcontrol_signal_enabled")));
     m_pRate = new ControlObjectThreadMain(ControlObject::getControl(
                         ConfigKey(group, "rate")));
     Q_ASSERT(m_pPlayPos);
@@ -143,28 +150,42 @@ void WSpinny::paintEvent(QPaintEvent *e)
     }
     
     // Overlay the signal quality drawing if vinyl is active
-    if (m_bVinylActive)
+    if (m_bVinylActive && m_bSignalActive)
     {
-        unsigned char * buf = m_pVinylControl->getScopeBytemap();
-        int r,g,b;
-        QColor qual_color = QColor();
-        float signalQuality = m_pVinylControl->getTimecodeQuality();
+        //reduce cpu load by only updating every 3 times
+        m_iSignalUpdateTick = (m_iSignalUpdateTick + 1) % 3;
+        if (m_iSignalUpdateTick == 0)
+        {
+            unsigned char * buf = m_pVinylControl->getScopeBytemap();
+            int r,g,b;
+            QColor qual_color = QColor();
+            float signalQuality = m_pVinylControl->getTimecodeQuality();
 
-        //color is related to signal quality
-        //hsv:  s=1, v=1
-        //h is the only variable.
-        //h=0 is red, h=120 is green
-        qual_color.setHsv((int)(120.0 * signalQuality), 255, 255);
-        qual_color.getRgb(&r, &g, &b);
-        
-        if (buf) {
-            for (int x=0; x<m_iSize; x++) {
-                for(int y=0; y<m_iSize; y++) {
-                    //use xwax's bitmap to set alpha data only
-                    //adjust alpha by 3/4 so it's not quite so distracting
-                    m_qImage.setPixel(x, y, qRgba(r,g,b,(int)buf[x+m_iSize*y] * .75));
+            //color is related to signal quality
+            //hsv:  s=1, v=1
+            //h is the only variable.
+            //h=0 is red, h=120 is green
+            qual_color.setHsv((int)(120.0 * signalQuality), 255, 255);
+            qual_color.getRgb(&r, &g, &b);
+            
+            if (buf) {
+                for (int y=0; y<m_iSize; y++) {
+                    QRgb *line = (QRgb *)m_qImage.scanLine(y);
+                    for(int x=0; x<m_iSize; x++) {
+                        //use xwax's bitmap to set alpha data only
+                        //adjust alpha by 3/4 so it's not quite so distracting
+                        //setpixel is slow, use scanlines instead
+                        //m_qImage.setPixel(x, y, qRgba(r,g,b,(int)buf[x+m_iSize*y] * .75));
+                        *line = qRgba(r,g,b,(int)(buf[x+m_iSize*y] * .75));
+                        line++;
+                    }
                 }
+                p.drawImage(this->rect(), m_qImage);
             }
+        }
+        else
+        {
+            //draw the last good image
             p.drawImage(this->rect(), m_qImage);
         }
     }
@@ -355,6 +376,7 @@ void WSpinny::updateVinylControlEnabled(double enabled)
             if (m_pVinylControl != NULL)
             {
                 m_bVinylActive = true;
+                m_bSignalActive = m_pSignalEnabled->get();
                 connect(m_pVinylControl, SIGNAL(destroyed()),
                     this, SLOT(invalidateVinylControl()));
             }

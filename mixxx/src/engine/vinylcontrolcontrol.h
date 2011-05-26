@@ -27,6 +27,7 @@ class VinylControlControl : public EngineControl {
     ControlPushButton* m_pControlVinylEnabled;
     ControlPushButton* m_pControlVinylWantEnabled;
     ControlPushButton* m_pControlVinylCueing;
+    ControlPushButton* m_pControlVinylSignalEnabled;
     TrackPointer m_pCurrentTrack;
 };
 
