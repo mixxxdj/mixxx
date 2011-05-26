@@ -52,8 +52,6 @@ DlgPrefCrossfader::DlgPrefCrossfader(QWidget * parent, ConfigObject<ConfigValue>
     connect(SliderXFader,         SIGNAL(sliderReleased()), this,  SLOT(slotUpdateXFader()));
     connect(SliderXFader,         SIGNAL(sliderReleased()), this,  SLOT(slotApply()));
 
-    connect(SpinBoxTransition,    SIGNAL(valueChanged(int)), this,  SLOT(slotTransitionValueChanged(int)));
-
 	connect(PushButtonReset,	  SIGNAL(clicked(bool)), this,	SLOT(setDefaults()));
     
     //Update the crossfader curve graph and other setings when the crossfader mode is changed.
@@ -110,15 +108,6 @@ void DlgPrefCrossfader::loadSettings()
 	slotUpdateXFader();
 	slotApply();
     drawXfaderDisplay();
-
-
-	QString str_autoDjTransition = config->getValueString(ConfigKey(CONFIG_KEY, "autoDjTransition"));
-	if( str_autoDjTransition.isEmpty() ){
-		str_autoDjTransition = "10"; // 10s default;
-	}
-    SpinBoxTransition->setMaximum(100);
-    SpinBoxTransition->setValue(str_autoDjTransition.toInt());
-
 }
 
 /** Set the default values for all the widgets */
@@ -267,11 +256,4 @@ void DlgPrefCrossfader::slotUpdateXFader()
 	//config->set(ConfigKey(CONFIG_KEY, "xFaderCalibration"), ConfigValue(m_cal)); //FIXME: m_cal is a double - be forewarned
 
 	drawXfaderDisplay();
-}
-
-/** Set the default values for all the widgets */
-void DlgPrefCrossfader::slotTransitionValueChanged(int value)
-{
-	config->set(ConfigKey(CONFIG_KEY, "autoDjTransition"), ConfigValue(value));
-	qDebug() << "autoDjTransition = " << value;
 }

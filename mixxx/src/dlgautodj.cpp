@@ -9,7 +9,7 @@
 #include "playerinfo.h"
 #include "dlgautodj.h"
 
-#define CONFIG_KEY "[Mixer Profile]"
+#define CONFIG_KEY "[Auto DJ]"
 
 DlgAutoDJ::DlgAutoDJ(QWidget* parent, ConfigObject<ConfigValue>* pConfig,
                      TrackCollection* pTrackCollection, MixxxKeyboard* pKeyboard)
@@ -23,7 +23,8 @@ DlgAutoDJ::DlgAutoDJ(QWidget* parent, ConfigObject<ConfigValue>* pConfig,
 	m_bFadeNow = false;
 	m_eState = ADJ_IDLE;
 
-	//m_posThreshold = 0.95; //95% playback is when we crossfade and do stuff
+	m_posThreshold1 = 1.0f;
+	m_posThreshold2 = 1.0f;
 
     m_pTrackTableView = new WTrackTableView(this, pConfig, m_pTrackCollection);
     m_pTrackTableView->installEventFilter(pKeyboard);
@@ -64,6 +65,9 @@ DlgAutoDJ::DlgAutoDJ(QWidget* parent, ConfigObject<ConfigValue>* pConfig,
     connect(pushButtonFadeNow, SIGNAL(clicked(bool)),
             this, SLOT(fadeNow(bool)));
 
+    connect(spinBoxTransition, SIGNAL(valueChanged(int)),
+    this, SLOT(transitionValueChanged(int)));
+
     connect(pushButtonAutoDJ, SIGNAL(toggled(bool)),
             this,  SLOT(toggleAutoDJ(bool))); _blah;
 
@@ -75,6 +79,10 @@ DlgAutoDJ::DlgAutoDJ(QWidget* parent, ConfigObject<ConfigValue>* pConfig,
                             ControlObject::getControl(ConfigKey("[Channel1]", "play")));
     m_pCOPlay2 = new ControlObjectThreadMain(
                             ControlObject::getControl(ConfigKey("[Channel2]", "play")));
+    m_pCOPlay1Fb = new ControlObjectThreadMain(
+                            ControlObject::getControl(ConfigKey("[Channel1]", "play")));
+    m_pCOPlay2Fb = new ControlObjectThreadMain(
+                            ControlObject::getControl(ConfigKey("[Channel2]", "play")));
     m_pCORepeat1 = new ControlObjectThreadMain(
                             ControlObject::getControl(ConfigKey("[Channel1]", "repeat")));
     m_pCORepeat2 = new ControlObjectThreadMain(
@@ -82,7 +90,7 @@ DlgAutoDJ::DlgAutoDJ(QWidget* parent, ConfigObject<ConfigValue>* pConfig,
     m_pCOCrossfader = new ControlObjectThreadMain(
                             ControlObject::getControl(ConfigKey("[Master]", "crossfader")));
 
-    QString str_autoDjTransition = m_pConfig->getValueString(ConfigKey(CONFIG_KEY, "autoDjTransition"));
+    QString str_autoDjTransition = m_pConfig->getValueString(ConfigKey(CONFIG_KEY, "Transition"));
 	if( str_autoDjTransition.isEmpty() ){
 		spinBoxTransition->setValue(10);  // default 10 sec
 	}
@@ -188,12 +196,12 @@ void DlgAutoDJ::skipNext(bool buttonChecked)
     qDebug() << "Skip Next";
     //Load the next song from the queue.
 
-    if (m_pCOPlay1->get() == 0.0f )
+    if (m_pCOPlay1Fb->get() == 0.0f )
     {
     	removePlayingTrackFromQueue("[Channel1]");
     	loadNextTrackFromQueue();
     }
-    else if (m_pCOPlay2->get() == 0.0f )
+    else if (m_pCOPlay2Fb->get() == 0.0f )
     {
     	removePlayingTrackFromQueue("[Channel2]");
     	loadNextTrackFromQueue();
@@ -208,12 +216,12 @@ void DlgAutoDJ::fadeNow(bool buttonChecked)
 	if(m_eState == ADJ_IDLE && m_bAutoDJEnabled){		
 		m_bFadeNow = true;
 		double crossfader = m_pCOCrossfader->get();
-		if( crossfader < -0.9f && m_pCOPlay1->get() == 1.0f )
+		if( crossfader < -0.9f && m_pCOPlay1Fb->get() == 1.0f )
 		{
 			m_posThreshold1 = m_pCOPlayPos1->get();
 			m_pCORepeat1->slotSet(0.0f); // Repeat is disabled by FadeNow but disables auto Fade
 		}
-		else if( crossfader > 0.9f && m_pCOPlay2->get() == 1.0f )
+		else if( crossfader > 0.9f && m_pCOPlay2Fb->get() == 1.0f )
 		{
 			m_posThreshold2 = m_pCOPlayPos2->get();
 			m_pCORepeat2->slotSet(0.0f); // Repeat is disabled by FadeNow but disables auto Fade
@@ -225,7 +233,7 @@ void DlgAutoDJ::toggleAutoDJ(bool toggle)
 {
     if (toggle) //Enable Auto DJ
     {
-        if (m_pCOPlay1->get() == 1.0f && m_pCOPlay2->get() == 1.0f) {
+        if (m_pCOPlay1Fb->get() == 1.0f && m_pCOPlay2Fb->get() == 1.0f) {
             qDebug() << "One player must be stopped before enabling Auto DJ mode";
             pushButtonAutoDJ->setChecked(false);
             return;
@@ -251,10 +259,7 @@ void DlgAutoDJ::toggleAutoDJ(bool toggle)
         connect(m_pCOPlay2, SIGNAL(valueChanged(double)),
         this, SLOT(player2PlayChanged(double)));
 
-        connect(spinBoxTransition, SIGNAL(valueChanged(int)),
-        this, SLOT(transitionValueChanged(int)));
-
-		if (m_pCOPlay1->get() == 0.0f )
+		if (m_pCOPlay1Fb->get() == 0.0f )
 		{
 			m_eState = ADJ_ENABLE_P1LOADED;
 		}
@@ -274,7 +279,6 @@ void DlgAutoDJ::toggleAutoDJ(bool toggle)
         m_pCOPlayPos2->disconnect(this);
         m_pCOPlay1->disconnect(this);
         m_pCOPlay2->disconnect(this);
-        spinBoxTransition->disconnect(this);
     }
 }
 
@@ -295,19 +299,20 @@ void DlgAutoDJ::player1PositionChanged(double value)
 	if ( m_eState == ADJ_ENABLE_P1LOADED )
 	{	
 		// Auto DJ Start
-	    if (m_pCOPlay1->get() == 0.0f && m_pCOPlay2->get() == 0.0f) 
+	    if (m_pCOPlay1Fb->get() == 0.0f && m_pCOPlay2Fb->get() == 0.0f)
 		{		
             m_pCOCrossfader->slotSet(-1.0f); //Move crossfader to the left!
             m_pCOPlay1->slotSet(1.0f); //Play the track in player 1
-            player1PlayChanged(1.0f);
 			removePlayingTrackFromQueue("[Channel1]");
         }
-		else if( m_pCOPlay1->get() == 1.0f && m_pCOPlay2->get() == 0.0f)
+		else if( m_pCOPlay1Fb->get() == 1.0f && m_pCOPlay2Fb->get() == 0.0f)
 		{
-			//Load the next song from the queue.
+			// Here we are, if first deck was playing before starting Auto DJ
+			// or if it was started just before
             loadNextTrackFromQueue();			
 			m_eState = ADJ_IDLE;
-			player1PlayChanged(1.0f);
+			player1PlayChanged(1.0f); // if we start the deck from code we don`t get a signal
+									  // call function manually
 		}
 		else 
 		{
@@ -319,13 +324,13 @@ void DlgAutoDJ::player1PositionChanged(double value)
 
 	if( m_eState == ADJ_P2FADING )	
 	{
-		if(	 m_pCOPlay2->get() == 0.0f && m_pCOPlay1->get() == 1.0f )
+		if(	 m_pCOPlay2Fb->get() == 0.0f && m_pCOPlay1Fb->get() == 1.0f )
 		{
+			loadNextTrackFromQueue();
 			// End State
 			m_pCOCrossfader->slotSet(-1.0f); //Move crossfader to the left!
 			// qDebug() << "1: m_pCOCrossfader->slotSet(_-1.0f_);";
 			m_eState = ADJ_IDLE;
-			loadNextTrackFromQueue();
 		}
 		return;
 	}
@@ -341,9 +346,9 @@ void DlgAutoDJ::player1PositionChanged(double value)
 
     if (value >= m_posThreshold1)
     {
-		if( m_eState == ADJ_IDLE && m_pCOPlay1->get() == 1.0f)
+		if( m_eState == ADJ_IDLE && m_pCOPlay1Fb->get() == 1.0f)
 		{      
-			if (m_pCOPlay2->get() == 0.0f)
+			if (m_pCOPlay2Fb->get() == 0.0f)
 		    {
 		        // Start Deck 2
 				m_pCOPlay2->slotSet(1.0f);
@@ -395,7 +400,7 @@ void DlgAutoDJ::player2PositionChanged(double value)
 
 	if( m_eState == ADJ_P1FADING )	
 	{	
-		if(	 m_pCOPlay1->get() == 0.0f && m_pCOPlay2->get() == 1.0f)
+		if(	 m_pCOPlay1Fb->get() == 0.0f && m_pCOPlay2Fb->get() == 1.0f)
 		{
 			// End State
 			m_pCOCrossfader->slotSet(1.0f); //Move crossfader to the right!
@@ -417,9 +422,9 @@ void DlgAutoDJ::player2PositionChanged(double value)
 
     if (value >= m_posThreshold2)
     {
-		if( m_eState == ADJ_IDLE && m_pCOPlay2->get() == 1.0f)
+		if( m_eState == ADJ_IDLE && m_pCOPlay2Fb->get() == 1.0f)
 		{      
-			if (m_pCOPlay1->get() == 0.0f)
+			if (m_pCOPlay1Fb->get() == 0.0f)
 		    {
 		        m_pCOPlay1->slotSet(1.0f);
 		        player1PlayChanged(1.0f);
@@ -440,7 +445,7 @@ void DlgAutoDJ::player2PositionChanged(double value)
 
 			//m_posThreshold = 1.0f - fadeDuration; // back to default
 			
-			// does not work always emediatly after stop
+			// does not work always immediately after stop
 			// loadNextTrackFromQueue();
 			// m_eState = ADJ_IDLE; // Fading ready
         }
@@ -478,7 +483,7 @@ bool DlgAutoDJ::loadNextTrackFromQueue()
 			emit(loadTrack(nextTrack));
 			return true;
 		}
-		// Remove missing song from auto DJ plalist
+		// Remove missing song from auto DJ playlist
 		m_pAutoDJTableModel->removeTrack(m_pAutoDJTableModel->index(0, 0));
     }
 }
@@ -531,15 +536,6 @@ void DlgAutoDJ::player1PlayChanged(double value){
 			qDebug() << "TrackDuration = " << TrackDuration;
 
 			int autoDjTransition = spinBoxTransition->value();
-			/*
-			QString str_autoDjTransition = m_pConfig->getValueString(ConfigKey(CONFIG_KEY, "autoDjTransition"));
-			if( str_autoDjTransition.isEmpty() ){
-				autoDjTransition = 10;  // default 10 sec
-			}
-			else{
-				autoDjTransition = str_autoDjTransition.toInt();
-			}
-			*/
 
 			if( TrackDuration > autoDjTransition ){
 				m_fadeDuration1 = (float)autoDjTransition / (float)TrackDuration;
@@ -564,15 +560,6 @@ void DlgAutoDJ::player2PlayChanged(double value){
 			qDebug() << "TrackDuration = " << TrackDuration;
 
 			int autoDjTransition = spinBoxTransition->value();
-			/*
-			QString str_autoDjTransition = m_pConfig->getValueString(ConfigKey(CONFIG_KEY, "autoDjTransition"));
-			if( str_autoDjTransition.isEmpty() ){
-				autoDjTransition = 10;  // default 10 sec
-			}
-			else{
-				autoDjTransition = str_autoDjTransition.toInt();
-			}
-			*/
 
 			if( TrackDuration > autoDjTransition ){
 				m_fadeDuration2 = (float)autoDjTransition / (float)TrackDuration;
@@ -587,17 +574,19 @@ void DlgAutoDJ::player2PlayChanged(double value){
 }
 
 void DlgAutoDJ::transitionValueChanged(int value){
-	Q_UNUSED(value);
 
-	if( m_bAutoDJEnabled && m_eState == ADJ_IDLE)
-	{
-		if (m_pCOPlay1->get() == 1.0f)
+	if( m_bAutoDJEnabled  ){
+		if( m_bAutoDJEnabled && m_eState == ADJ_IDLE)
 		{
-			player1PlayChanged(1.0f);
-		}
-		if (m_pCOPlay2->get() == 1.0f)
-		{
-			player2PlayChanged(1.0f);
+			if (m_pCOPlay1Fb->get() == 1.0f)
+			{
+				player1PlayChanged(1.0f);
+			}
+			if (m_pCOPlay2Fb->get() == 1.0f)
+			{
+				player2PlayChanged(1.0f);
+			}
 		}
 	}
+	m_pConfig->set(ConfigKey(CONFIG_KEY, "Transition"), ConfigValue(value));
 }
