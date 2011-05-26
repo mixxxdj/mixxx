@@ -3,13 +3,13 @@ msgstr ""
 "Project-Id-Version: Mixxx 1.8\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2011-05-03 21:42-0400\n"
-"PO-Revision-Date: 2011-05-24 18:39+0000\n"
-"Last-Translator: C. Stewart <beltoid97@email.com>\n"
+"PO-Revision-Date: 2011-05-25 12:36+0000\n"
+"Last-Translator: LENHOF Jean-Yves <Unknown>\n"
 "Language-Team: <tezalprod@gmail.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-05-25 04:33+0000\n"
+"X-Launchpad-Export-Date: 2011-05-26 04:33+0000\n"
 "X-Generator: Launchpad (build 12959)\n"
 "X-Poedit-Country: FRANCE\n"
 "X-Poedit-Language: French\n"
@@ -162,7 +162,7 @@ msgstr "Album"
 #: BrowseTableModel#5
 msgctxt "BrowseTableModel#5"
 msgid "Track #"
-msgstr "Numéro de la piste"
+msgstr "N°"
 
 #: BrowseTableModel#6
 msgctxt "BrowseTableModel#6"
@@ -225,7 +225,7 @@ msgstr ""
 #: BrowseTableModel#17
 msgid "Warning: This will permanently delete the following files:"
 msgstr ""
-"Avertissement: Les fichiers suivants selont supprimés définitivement:"
+"Avertissement: Les fichiers suivants seront définitivement supprimés:"
 
 #: BrowseTableModel#18
 msgid "Are you sure you want to delete these files from your computer?"
@@ -246,7 +246,7 @@ msgstr "Les métadonnées n'ont pas pu être mises à jour."
 
 #: CrateFeature#1
 msgid "New Crate"
-msgstr "Nouveaux container"
+msgstr "Nouveau container"
 
 #: CrateFeature#2
 msgctxt "CrateFeature#2"
@@ -274,11 +274,11 @@ msgstr "Containers"
 
 #: CrateFeature#7
 msgid "Import Crate"
-msgstr ""
+msgstr "Importer container"
 
 #: CrateFeature#8
 msgid "Export Crate"
-msgstr ""
+msgstr "Exporter container"
 
 #: CrateFeature#9
 msgctxt "CrateFeature#9"
@@ -292,18 +292,19 @@ msgstr "Nom du container:"
 #: CrateFeature#11
 msgid "An unknown error occurred while creating crate: "
 msgstr ""
+"Une erreur inconnue s'est produite lors de la création du container: "
 
 #: CrateFeature#12
 msgid "Rename Crate"
-msgstr ""
+msgstr "Renomer container"
 
 #: CrateFeature#13
 msgid "New crate name:"
-msgstr ""
+msgstr "Nouveau nom du container:"
 
 #: CrateFeature#14
 msgid "Renaming Crate Failed"
-msgstr ""
+msgstr "Échec lors du renomage du container"
 
 #: CrateFeature#15
 msgctxt "CrateFeature#15"
@@ -449,7 +450,7 @@ msgstr "<< Précédent"
 
 #: DlgBpmTapDlg#7
 msgid "BPM Editor (Click to Expand)"
-msgstr ""
+msgstr "Éditeur de BPM (cliquer pour agrandir)"
 
 #: DlgBpmTapDlg#8
 msgctxt "DlgBpmTapDlg#8"
@@ -496,7 +497,7 @@ msgstr "Alt+P"
 #: DlgBpmTapDlg#18
 msgctxt "DlgBpmTapDlg#18"
 msgid "Track Information (Click to Expand)"
-msgstr ""
+msgstr "Informations de piste (Cliquer pour agrandir)"
 
 #: DlgBpmTapDlg#19
 msgctxt "DlgBpmTapDlg#19"
@@ -525,7 +526,7 @@ msgstr "3:00"
 
 #: DlgBpmTapDlg#24
 msgid "Play Time:"
-msgstr ""
+msgstr "Durée de lecture:"
 
 #: DlgBpmTapDlg#25
 msgctxt "DlgBpmTapDlg#25"
@@ -1387,7 +1388,7 @@ msgstr ""
 
 #: DlgPrefRecordDlg#13
 msgid "Split recordings at"
-msgstr ""
+msgstr "Morceau enregistrer à"
 
 #: DlgPrefReplayGainDlg#1
 msgctxt "DlgPrefReplayGainDlg#1"
@@ -1554,6 +1555,17 @@ msgid ""
 "family:'DejaVu Sans'; font-size:9pt; font-style:italic;\">This stream is on "
 "line for testing purposes!</span></p></body></html>"
 msgstr ""
+"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" "
+"\"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+"<html><head><meta name=\"qrichtext\" content=\"1\" /><style "
+"type=\"text/css\">\n"
+"p, li { white-space: pre-wrap; }\n"
+"</style></head><body style=\" font-family:'Lucida Grande'; font-size:13pt; "
+"font-weight:400; font-style:normal;\">\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-"
+"right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-"
+"family:'DejaVu Sans'; font-size:9pt; font-style:italic;\">Ce flux est en "
+"ligne pour fins de test!</span></p></body></html>"
 
 #: DlgPrefShoutcastDlg#25
 msgctxt "DlgPrefShoutcastDlg#25"
@@ -1930,7 +1942,7 @@ msgstr "Equalizers"
 #: DlgPreferences#6
 msgctxt "DlgPreferences#6"
 msgid "Crossfader"
-msgstr ""
+msgstr "Crossfader"
 
 #: DlgPreferences#7
 msgctxt "DlgPreferences#7"
@@ -2091,7 +2103,7 @@ msgstr "Recharger les métadonnées de la piste depuis le fichier."
 #: DlgTrackInfo#16
 msgctxt "DlgTrackInfo#16"
 msgid "Track Information (Click to Expand)"
-msgstr ""
+msgstr "Informations de piste (Cliquer pour agrandir)"
 
 #: DlgTrackInfo#17
 msgid "Track BPM: "
@@ -2571,6 +2583,8 @@ msgid ""
 "<b>Retry</b> after closing the other application or reconnecting a sound "
 "device"
 msgstr ""
+"<b>Réessayer</b> après avoir fermé l'autre application ou avoir reconnecté "
+"le périphérique de son"
 
 #: MixxxApp#14
 msgid "<b>Reconfigure</b> Mixxx's sound device settings."
@@ -3075,7 +3089,7 @@ msgstr "Nouveau nom de la liste de lecture :"
 
 #: PlaylistFeature#16
 msgid "Renaming Playlist Failed"
-msgstr ""
+msgstr "Échec du renomage de la playlist"
 
 #: PlaylistFeature#17
 msgctxt "PlaylistFeature#17"
@@ -3284,11 +3298,11 @@ msgstr "Éteins"
 
 #: Ui#5
 msgid "Don't load tracks into a playing deck"
-msgstr ""
+msgstr "Ne chargez pas les pistes dans un lecteur en fonction"
 
 #: Ui#6
 msgid "Load tracks into playing decks"
-msgstr ""
+msgstr "Charger les pistes dans un lecteur en fonction"
 
 #: Ui#7
 msgid "CDJ Mode"
@@ -3322,7 +3336,7 @@ msgstr "Préférences"
 #: Ui#13
 msgctxt "Ui#13"
 msgid "Crossfader"
-msgstr ""
+msgstr "Crossfader"
 
 #: Ui#14
 msgid "Master volume"
@@ -3450,7 +3464,7 @@ msgstr ""
 
 #: Ui#45
 msgid "Switch to the next view (library, playlist..)"
-msgstr ""
+msgstr "Basculer à la prochaine vue (librairie, playliste...)"
 
 #: Ui#46
 msgid "Switch to the previous view (library, playlist..)"
