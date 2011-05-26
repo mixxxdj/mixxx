@@ -8,13 +8,13 @@ msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2011-05-03 21:42-0400\n"
-"PO-Revision-Date: 2011-05-25 03:38+0000\n"
-"Last-Translator: Pasha Sadikov <pashalab@gmail.com>\n"
+"PO-Revision-Date: 2011-05-26 02:36+0000\n"
+"Last-Translator: Serge <zezic51@yandex.ru>\n"
 "Language-Team: Russian <ru@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-05-25 04:33+0000\n"
+"X-Launchpad-Export-Date: 2011-05-26 04:33+0000\n"
 "X-Generator: Launchpad (build 12959)\n"
 
 #: AutoDJFeature#1
@@ -238,6 +238,8 @@ msgid ""
 "Could not delete the following file because it is in use by Mixxx or another "
 "application:"
 msgstr ""
+"Не получилось удалить данный файл так как он в данный момент занят "
+"программой Mixxx или другой программой."
 
 #: BrowseTableModel#20
 msgid "Could not update file metadata."
@@ -317,7 +319,7 @@ msgstr "Экспортировать плэй-лист"
 #: CrateFeature#17
 msgctxt "CrateFeature#17"
 msgid "M3U Playlist (*.m3u);;PLS Playlist (*.pls)"
-msgstr ""
+msgstr "М3U Плэй-лист (*.m3u);;PLS Плэй-лист (*.pls)"
 
 #: CrateFeature#18
 msgid "A crate cannot have a blank name."
@@ -1182,7 +1184,7 @@ msgstr "Относительный Режим"
 #: DlgPrefNoVinylDlg#16
 msgctxt "DlgPrefNoVinylDlg#16"
 msgid "Enable Needle Skip Prevention"
-msgstr ""
+msgstr "Использовать защиту от пропусков иглы"
 
 #: DlgPrefNoVinylDlg#17
 msgctxt "DlgPrefNoVinylDlg#17"
@@ -1209,6 +1211,9 @@ msgid ""
 "<b>This version of Mixxx does not support vinyl control.</b> <br> Please "
 "visit <a href=\"http://mixxx.org\">Mixxx.org</a> for more information."
 msgstr ""
+"<b>Эта версия Mixxx не поддерживает управление с помощью timecode-винила. "
+"</b> <br> Загляните на <a href=\"http://mixxx.org\">Mixxx.org</a> для "
+"дополнительных сведений."
 
 #: DlgPrefPlaylist#1
 msgctxt "DlgPrefPlaylist#1"
@@ -1289,6 +1294,7 @@ msgstr "Сканировать библиотеку при запуске"
 #: DlgPrefPlaylistDlg#10
 msgid "Use relative paths for playlist export if possible"
 msgstr ""
+"Использовать относительные пути при экспорте плэй-листа, если возможно."
 
 #: DlgPrefPlaylistDlg#11
 msgid "iPod"
