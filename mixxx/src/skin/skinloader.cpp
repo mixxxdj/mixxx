@@ -5,6 +5,7 @@
 #include <QDir>
 #include <QtDebug>
 
+#include "vinylcontrol/vinylcontrolmanager.h"
 #include "skin/skinloader.h"
 #include "skin/legacyskinparser.h"
 
@@ -53,8 +54,9 @@ QWidget* SkinLoader::loadCustomSkin(QString custom_skinpath,
 									   QWidget* pParent,
                                        MixxxKeyboard* pKeyboard,
                                        PlayerManager* pPlayerManager,
-                                       Library* pLibrary) {
-	LegacySkinParser legacy(m_pConfig, pKeyboard, pPlayerManager, pLibrary);
+                                       Library* pLibrary,
+                                       VinylControlManager* pVCMan) {
+	LegacySkinParser legacy(m_pConfig, pKeyboard, pPlayerManager, pLibrary, pVCMan);
     qDebug() << "Legacy can parse custom skin:" << legacy.canParse(custom_skinpath) << custom_skinpath;
     return legacy.parseSkin(custom_skinpath, pParent);
 }                                       
@@ -62,10 +64,11 @@ QWidget* SkinLoader::loadCustomSkin(QString custom_skinpath,
 QWidget* SkinLoader::loadDefaultSkin(QWidget* pParent,
                                        MixxxKeyboard* pKeyboard,
                                        PlayerManager* pPlayerManager,
-                                       Library* pLibrary) {
+                                       Library* pLibrary,
+                                       VinylControlManager* pVCMan) {
     QString skinPath = getConfiguredSkinPath();
 
-    LegacySkinParser legacy(m_pConfig, pKeyboard, pPlayerManager, pLibrary);
+    LegacySkinParser legacy(m_pConfig, pKeyboard, pPlayerManager, pLibrary, pVCMan);
     qDebug() << "Legacy can parse:" << legacy.canParse(skinPath);
     return legacy.parseSkin(skinPath, pParent);
 }

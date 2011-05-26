@@ -58,11 +58,13 @@ QMutex LegacySkinParser::s_safeStringMutex;
 LegacySkinParser::LegacySkinParser(ConfigObject<ConfigValue>* pConfig,
                                    MixxxKeyboard* pKeyboard,
                                    PlayerManager* pPlayerManager,
-                                   Library* pLibrary)
+                                   Library* pLibrary,
+                                   VinylControlManager* pVCMan)
         : m_pConfig(pConfig),
           m_pKeyboard(pKeyboard),
           m_pPlayerManager(pPlayerManager),
           m_pLibrary(pLibrary),
+          m_pVCManager(pVCMan),
           m_pParent(NULL) {
 
 }
@@ -611,7 +613,7 @@ QWidget* LegacySkinParser::parseKnob(QDomElement node) {
 QWidget* LegacySkinParser::parseSpinny(QDomElement node) {
     QString channelStr = lookupNodeGroup(node);
     const char* pSafeChannelStr = safeChannelString(channelStr);
-    WSpinny* p = new WSpinny(m_pParent);
+    WSpinny* p = new WSpinny(m_pParent, m_pVCManager);
     setupWidget(node, p);
 
     connect(p, SIGNAL(trackDropped(QString, QString)),
