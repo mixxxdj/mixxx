@@ -4342,10 +4342,11 @@
 				<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 				background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
 				</Style>
-				<NumberPos>3</NumberPos>
+				<NumberPos>4</NumberPos>
 				<PathStatusLight>btn_vinylcontrol_indicator_horizontal1.png</PathStatusLight>
 				<PathStatusLight2>btn_vinylcontrol_indicator_horizontal2.png</PathStatusLight2>
 				<PathStatusLight3>btn_vinylcontrol_indicator_horizontal3.png</PathStatusLight3>
+				<PathStatusLight4>btn_vinylcontrol_indicator_horizontal4.png</PathStatusLight4>
 				<Pos>0,-0</Pos>
 				<Connection>
 					<ConfigKey>[Channel1],vinylcontrol_status</ConfigKey>
@@ -4356,10 +4357,11 @@
 				<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 				background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
 				</Style>
-				<NumberPos>3</NumberPos>
+				<NumberPos>4</NumberPos>
 				<PathStatusLight>btn_vinylcontrol_indicator_horizontal1.png</PathStatusLight>
 				<PathStatusLight2>btn_vinylcontrol_indicator_horizontal2.png</PathStatusLight2>
 				<PathStatusLight3>btn_vinylcontrol_indicator_horizontal3.png</PathStatusLight3>
+				<PathStatusLight4>btn_vinylcontrol_indicator_horizontal4.png</PathStatusLight4>
 				<Pos>0,108</Pos>
 				<Connection>
 					<ConfigKey>[Channel1],vinylcontrol_status</ConfigKey>
@@ -4370,10 +4372,11 @@
 				<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 				background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
 				</Style>
-				<NumberPos>3</NumberPos>
+				<NumberPos>4</NumberPos>
 				<PathStatusLight>btn_vinylcontrol_indicator_vertical1.png</PathStatusLight>
 				<PathStatusLight2>btn_vinylcontrol_indicator_vertical2.png</PathStatusLight2>
 				<PathStatusLight3>btn_vinylcontrol_indicator_vertical3.png</PathStatusLight3>
+				<PathStatusLight4>btn_vinylcontrol_indicator_vertical4.png</PathStatusLight4>
 				<Pos>0,-2</Pos>
 				<Connection>
 					<ConfigKey>[Channel1],vinylcontrol_status</ConfigKey>
@@ -4384,10 +4387,11 @@
 				<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 				background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
 				</Style>
-				<NumberPos>3</NumberPos>
+				<NumberPos>4</NumberPos>
 				<PathStatusLight>btn_vinylcontrol_indicator_vertical1.png</PathStatusLight>
 				<PathStatusLight2>btn_vinylcontrol_indicator_vertical2.png</PathStatusLight2>
 				<PathStatusLight3>btn_vinylcontrol_indicator_vertical3.png</PathStatusLight3>
+				<PathStatusLight4>btn_vinylcontrol_indicator_vertical4.png</PathStatusLight4>
 				<Pos>477,0</Pos>
 				<Connection>
 					<ConfigKey>[Channel1],vinylcontrol_status</ConfigKey>
@@ -5293,10 +5297,11 @@
 				<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 				background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
 				</Style>
-				<NumberPos>3</NumberPos>
+				<NumberPos>4</NumberPos>
 				<PathStatusLight>btn_vinylcontrol_indicator_horizontal1.png</PathStatusLight>
 				<PathStatusLight2>btn_vinylcontrol_indicator_horizontal2.png</PathStatusLight2>
 				<PathStatusLight3>btn_vinylcontrol_indicator_horizontal3.png</PathStatusLight3>
+				<PathStatusLight4>btn_vinylcontrol_indicator_horizontal4.png</PathStatusLight4>
 				<Pos>0,-0</Pos>
 				<Connection>
 					<ConfigKey>[Channel2],vinylcontrol_status</ConfigKey>
@@ -5307,10 +5312,11 @@
 				<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 				background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
 				</Style>
-				<NumberPos>3</NumberPos>
+				<NumberPos>4</NumberPos>
 				<PathStatusLight>btn_vinylcontrol_indicator_horizontal1.png</PathStatusLight>
 				<PathStatusLight2>btn_vinylcontrol_indicator_horizontal2.png</PathStatusLight2>
 				<PathStatusLight3>btn_vinylcontrol_indicator_horizontal3.png</PathStatusLight3>
+				<PathStatusLight4>btn_vinylcontrol_indicator_horizontal4.png</PathStatusLight4>
 				<Pos>0,108</Pos>
 				<Connection>
 					<ConfigKey>[Channel2],vinylcontrol_status</ConfigKey>
@@ -5321,10 +5327,11 @@
 				<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 				background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
 				</Style>
-				<NumberPos>3</NumberPos>
+				<NumberPos>4</NumberPos>
 				<PathStatusLight>btn_vinylcontrol_indicator_vertical1.png</PathStatusLight>
 				<PathStatusLight2>btn_vinylcontrol_indicator_vertical2.png</PathStatusLight2>
 				<PathStatusLight3>btn_vinylcontrol_indicator_vertical3.png</PathStatusLight3>
+				<PathStatusLight4>btn_vinylcontrol_indicator_vertical4.png</PathStatusLight4>
 				<Pos>0,-2</Pos>
 				<Connection>
 					<ConfigKey>[Channel2],vinylcontrol_status</ConfigKey>
@@ -5335,10 +5342,11 @@
 				<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 				background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
 				</Style>
-				<NumberPos>3</NumberPos>
+				<NumberPos>4</NumberPos>
 				<PathStatusLight>btn_vinylcontrol_indicator_vertical1.png</PathStatusLight>
 				<PathStatusLight2>btn_vinylcontrol_indicator_vertical2.png</PathStatusLight2>
 				<PathStatusLight3>btn_vinylcontrol_indicator_vertical3.png</PathStatusLight3>
+				<PathStatusLight4>btn_vinylcontrol_indicator_vertical4.png</PathStatusLight4>
 				<Pos>477,0</Pos>
 				<Connection>
 					<ConfigKey>[Channel2],vinylcontrol_status</ConfigKey>

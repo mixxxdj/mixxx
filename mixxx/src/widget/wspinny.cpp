@@ -23,6 +23,7 @@ WSpinny::WSpinny(QWidget* parent, VinylControlManager* pVCMan) : QGLWidget(Share
     m_pVinylControlSpeedType(NULL),
     m_pVinylControlEnabled(NULL),
     m_pVinylControl(NULL),
+    m_pPassthroughEnabled(NULL),
     m_bVinylActive(false),
     m_iSize(0),
     m_iTimerId(0),
@@ -109,6 +110,8 @@ void WSpinny::setup(QDomNode node, QString group)
     }
     m_pVinylControlEnabled = new ControlObjectThreadMain(ControlObject::getControl(
                         ConfigKey(group, "vinylcontrol_enabled")));
+    m_pPassthroughEnabled = new ControlObjectThreadMain(ControlObject::getControl(
+                        ConfigKey(group, "inputpassthrough")));
     m_pRate = new ControlObjectThreadMain(ControlObject::getControl(
                         ConfigKey(group, "rate")));
     Q_ASSERT(m_pPlayPos);
@@ -143,7 +146,8 @@ void WSpinny::paintEvent(QPaintEvent *e)
     }
     
     // Overlay the signal quality drawing if vinyl is active
-    if (m_bVinylActive)
+    // but not input passthrough
+    if (m_bVinylActive && !m_pPassthroughEnabled->get())
     {
         unsigned char * buf = m_pVinylControl->getScopeBytemap();
         int r,g,b;

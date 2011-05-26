@@ -56,6 +56,7 @@ class WSpinny : public QGLWidget
         ControlObjectThreadMain* m_pScratchPos;
         ControlObjectThreadMain* m_pVinylControlSpeedType;
         ControlObjectThreadMain* m_pVinylControlEnabled;
+        ControlObjectThreadMain* m_pPassthroughEnabled;
         ControlObjectThreadMain* m_pRate;
         
         VinylControlManager* m_pVCManager;
