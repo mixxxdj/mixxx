@@ -56,14 +56,17 @@ class WSpinny : public QGLWidget
         ControlObjectThreadMain* m_pScratchPos;
         ControlObjectThreadMain* m_pVinylControlSpeedType;
         ControlObjectThreadMain* m_pVinylControlEnabled;
+        ControlObjectThreadMain* m_pSignalEnabled;
         ControlObjectThreadMain* m_pRate;
         
         VinylControlManager* m_pVCManager;
         VinylControlProxy* m_pVinylControl;
         bool m_bVinylActive;
+        bool m_bSignalActive;
         QImage m_qImage;
         int m_iSize;
         int m_iTimerId;
+        int m_iSignalUpdateTick;
         
         QString m_group;
         float m_fAngle; //Degrees

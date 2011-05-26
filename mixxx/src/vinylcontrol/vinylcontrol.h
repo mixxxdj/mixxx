@@ -75,6 +75,7 @@ class VinylControl : public QThread
     ControlObjectThread *vinylStatus;
     ControlObjectThread *rateDir; //direction of rate
     ControlObjectThread *loopEnabled; //looping enabled?
+    ControlObjectThread *signalenabled; //show the signal in the skin?
     //ControlObject *vinylStatus;  //Status of vinyl control
 
     int iLeadInTime; //The lead-in time...

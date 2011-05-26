@@ -25,6 +25,7 @@ VinylControl::VinylControl(ConfigObject<ConfigValue> * pConfig, QString group)
     vinylStatus     = new ControlObjectThread(ControlObject::getControl(ConfigKey(group, "vinylcontrol_status")));
     rateDir         = new ControlObjectThread(ControlObject::getControl(ConfigKey(group, "rate_dir")));
     loopEnabled     = new ControlObjectThread(ControlObject::getControl(ConfigKey(group, "loop_enabled")));
+    signalenabled     = new ControlObjectThread(ControlObject::getControl(ConfigKey(group, "vinylcontrol_signal_enabled")));
 
     dVinylPitch = 0.0f;
     dVinylPosition = 0.0f;
