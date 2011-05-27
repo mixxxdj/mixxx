@@ -4,9 +4,11 @@
 
 #include <QGLWidget>
 #include "wwidget.h"
-#include "vinylcontrol/vinylcontrolproxy.h"
 #include "vinylcontrol/vinylcontrolmanager.h"
+#ifdef __VINYLCONTROL__
+#include "vinylcontrol/vinylcontrolproxy.h"
 #include "vinylcontrol/vinylcontrol.h"
+#endif
 
 class ControlObjectThreadMain;
 
@@ -24,8 +26,10 @@ class WSpinny : public QGLWidget
         void updateRate(double);
         void updateAngleForGhost();
         void updateVinylControlSpeed(double rpm);
+#ifdef __VINYLCONTROL__
         void updateVinylControlEnabled(double enabled);
         void invalidateVinylControl();
+#endif
     signals:
         void trackDropped(QString filename, QString group);
     protected:
@@ -54,17 +58,22 @@ class WSpinny : public QGLWidget
         ControlObjectThreadMain* m_pScratch;
         ControlObjectThreadMain* m_pScratchToggle;
         ControlObjectThreadMain* m_pScratchPos;
+        ControlObjectThreadMain* m_pRate;
         ControlObjectThreadMain* m_pVinylControlSpeedType;
         ControlObjectThreadMain* m_pVinylControlEnabled;
         ControlObjectThreadMain* m_pPassthroughEnabled;
-        ControlObjectThreadMain* m_pRate;
-        
+        ControlObjectThreadMain* m_pSignalEnabled;
+
+#ifdef __VINYLCONTROL__
         VinylControlManager* m_pVCManager;
         VinylControlProxy* m_pVinylControl;
+#endif
         bool m_bVinylActive;
+        bool m_bSignalActive;
         QImage m_qImage;
         int m_iSize;
         int m_iTimerId;
+        int m_iSignalUpdateTick;
         
         QString m_group;
         float m_fAngle; //Degrees

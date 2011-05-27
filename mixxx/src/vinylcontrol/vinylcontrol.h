@@ -35,7 +35,7 @@ class ControlObjectThread;
 
 #define MIXXX_VC_DEFAULT_LEADINTIME 30
 
-#define MIXXX_VINYL_SCOPE_SIZE 128
+#define MIXXX_VINYL_SCOPE_SIZE 100
 
 //TODO: Make this an EngineObject instead one day? (need to route all the input audio through the engine that way too...)
 
@@ -77,6 +77,7 @@ class VinylControl : public QThread
     ControlObjectThread *m_pVinylPitchTweakKnob;
     ControlObjectThread *loopEnabled; //looping enabled?
     ControlObjectThread *inputPassthrough; //is input passing through to outputs?
+    ControlObjectThread *signalenabled; //show the signal in the skin?
     //ControlObject *vinylStatus;  //Status of vinyl control
 
     int iLeadInTime; //The lead-in time...

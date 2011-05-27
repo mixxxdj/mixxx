@@ -48,6 +48,7 @@ VinylControlXwax::VinylControlXwax(ConfigObject<ConfigValue> * pConfig, QString 
     dUiUpdateTime   = -1.0f;
     m_dKnobTweak = 0.0f;
     m_bNeedleSkipPrevention = (bool)(m_pConfig->getValueString( ConfigKey( "[VinylControl]", "needle_skip_prevention" ) ).toInt());
+    signalenabled->slotSet(m_pConfig->getValueString( ConfigKey( "[VinylControl]", "show_signal_quality" ) ).toInt());
 
     dLastTrackSelectPos = 0.0;
     dCurTrackSelectPos = 0.0;
