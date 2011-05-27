@@ -35,7 +35,7 @@ class ControlObjectThread;
 
 #define MIXXX_VC_DEFAULT_LEADINTIME 0
 
-#define MIXXX_VINYL_SCOPE_SIZE 128
+#define MIXXX_VINYL_SCOPE_SIZE 100
 
 //TODO: Make this an EngineObject instead one day? (need to route all the input audio through the engine that way too...)
 
