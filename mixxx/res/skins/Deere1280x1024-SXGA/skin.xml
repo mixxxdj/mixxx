@@ -548,7 +548,7 @@
 									<Pressed>btn_eject_sampler_over.png</Pressed>
 									<Unpressed>btn_eject_sampler.png</Unpressed>
 								</State>
-								<Pos>240,24</Pos>
+								<Pos>242,24</Pos>
 								<Connection>
 									<ConfigKey>[Sampler1],eject</ConfigKey>
 									<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
@@ -602,15 +602,15 @@
 								</State>
 								<State>
 									<Number>1</Number>
-									<Pressed>btn_orientation_sampler_master_over.png</Pressed>
-									<Unpressed>btn_orientation_sampler_master_over.png</Unpressed>
+									<Pressed>btn_orientation_sampler_master.png</Pressed>
+									<Unpressed>btn_orientation_sampler_master.png</Unpressed>
 								</State>
 								<State>
 									<Number>2</Number>
 									<Pressed>btn_orientation_sampler_right_over.png</Pressed>
 									<Unpressed>btn_orientation_sampler_right_over.png</Unpressed>
 								</State>
-								<Pos>216,42</Pos>
+								<Pos>217,42</Pos>
 								<Connection>
 									<ConfigKey>[Sampler1],orientation</ConfigKey>
 									<EmitOnDownPress>true</EmitOnDownPress>
@@ -639,7 +639,7 @@
 									<Pressed>btn_keylock_sampler_over.png</Pressed>
 									<Unpressed>btn_keylock_sampler_over.png</Unpressed>
 								</State>
-								<Pos>240,42</Pos>
+								<Pos>241,42</Pos>
 								<Connection>
 									<ConfigKey>[Sampler1],keylock</ConfigKey>
 								</Connection>
@@ -1011,7 +1011,7 @@
 									<Pressed>btn_eject_sampler_over.png</Pressed>
 									<Unpressed>btn_eject_sampler.png</Unpressed>
 								</State>
-								<Pos>240,24</Pos>
+								<Pos>242,24</Pos>
 								<Connection>
 									<ConfigKey>[Sampler2],eject</ConfigKey>
 									<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
@@ -1065,15 +1065,15 @@
 								</State>
 								<State>
 									<Number>1</Number>
-									<Pressed>btn_orientation_sampler_master_over.png</Pressed>
-									<Unpressed>btn_orientation_sampler_master_over.png</Unpressed>
+									<Pressed>btn_orientation_sampler_master.png</Pressed>
+									<Unpressed>btn_orientation_sampler_master.png</Unpressed>
 								</State>
 								<State>
 									<Number>2</Number>
 									<Pressed>btn_orientation_sampler_right_over.png</Pressed>
 									<Unpressed>btn_orientation_sampler_right_over.png</Unpressed>
 								</State>
-								<Pos>216,42</Pos>
+								<Pos>217,42</Pos>
 								<Connection>
 									<ConfigKey>[Sampler2],orientation</ConfigKey>
 									<EmitOnDownPress>true</EmitOnDownPress>
@@ -1102,7 +1102,7 @@
 									<Pressed>btn_keylock_sampler_over.png</Pressed>
 									<Unpressed>btn_keylock_sampler_over.png</Unpressed>
 								</State>
-								<Pos>240,42</Pos>
+								<Pos>241,42</Pos>
 								<Connection>
 									<ConfigKey>[Sampler2],keylock</ConfigKey>
 								</Connection>
@@ -1474,7 +1474,7 @@
 									<Pressed>btn_eject_sampler_over.png</Pressed>
 									<Unpressed>btn_eject_sampler.png</Unpressed>
 								</State>
-								<Pos>240,24</Pos>
+								<Pos>242,24</Pos>
 								<Connection>
 									<ConfigKey>[Sampler3],eject</ConfigKey>
 									<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
@@ -1528,15 +1528,15 @@
 								</State>
 								<State>
 									<Number>1</Number>
-									<Pressed>btn_orientation_sampler_master_over.png</Pressed>
-									<Unpressed>btn_orientation_sampler_master_over.png</Unpressed>
+									<Pressed>btn_orientation_sampler_master.png</Pressed>
+									<Unpressed>btn_orientation_sampler_master.png</Unpressed>
 								</State>
 								<State>
 									<Number>2</Number>
 									<Pressed>btn_orientation_sampler_right_over.png</Pressed>
 									<Unpressed>btn_orientation_sampler_right_over.png</Unpressed>
 								</State>
-								<Pos>216,42</Pos>
+								<Pos>217,42</Pos>
 								<Connection>
 									<ConfigKey>[Sampler3],orientation</ConfigKey>
 									<EmitOnDownPress>true</EmitOnDownPress>
@@ -1565,7 +1565,7 @@
 									<Pressed>btn_keylock_sampler_over.png</Pressed>
 									<Unpressed>btn_keylock_sampler_over.png</Unpressed>
 								</State>
-								<Pos>240,42</Pos>
+								<Pos>241,42</Pos>
 								<Connection>
 									<ConfigKey>[Sampler3],keylock</ConfigKey>
 								</Connection>
@@ -1937,7 +1937,7 @@
 									<Pressed>btn_eject_sampler_over.png</Pressed>
 									<Unpressed>btn_eject_sampler.png</Unpressed>
 								</State>
-								<Pos>240,24</Pos>
+								<Pos>242,24</Pos>
 								<Connection>
 									<ConfigKey>[Sampler4],eject</ConfigKey>
 									<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
@@ -1991,15 +1991,15 @@
 								</State>
 								<State>
 									<Number>1</Number>
-									<Pressed>btn_orientation_sampler_master_over.png</Pressed>
-									<Unpressed>btn_orientation_sampler_master_over.png</Unpressed>
+									<Pressed>btn_orientation_sampler_master.png</Pressed>
+									<Unpressed>btn_orientation_sampler_master.png</Unpressed>
 								</State>
 								<State>
 									<Number>2</Number>
 									<Pressed>btn_orientation_sampler_right_over.png</Pressed>
 									<Unpressed>btn_orientation_sampler_right_over.png</Unpressed>
 								</State>
-								<Pos>216,42</Pos>
+								<Pos>217,42</Pos>
 								<Connection>
 									<ConfigKey>[Sampler4],orientation</ConfigKey>
 									<EmitOnDownPress>true</EmitOnDownPress>
@@ -2028,7 +2028,7 @@
 									<Pressed>btn_keylock_sampler_over.png</Pressed>
 									<Unpressed>btn_keylock_sampler_over.png</Unpressed>
 								</State>
-								<Pos>240,42</Pos>
+								<Pos>241,42</Pos>
 								<Connection>
 									<ConfigKey>[Sampler4],keylock</ConfigKey>
 								</Connection>
@@ -2288,134 +2288,134 @@
 	############################################################################################
 	############################################################################################
 	--> 
-			<WidgetGroup>
-				<Pos>54,296</Pos>
-				<Size>280,58</Size>
-				<Style>QGroupBox { border: 0px solid yellow; background: url(skin:/style/style_bg_microphone.png) no-repeat;} QWidget { margin: 0; padding: 0; }</Style>
-				<!--<Layout>horizontal</Layout>-->
-				<Children>
-					<!--
-					**********************************************
-					Visual- Volume peak indicator
-					**********************************************
-					-->
-					<StatusLight>
-						<Tooltip>Peak Indicator&#10;Indicates when the signal on the channel is clipping,&#10;(too loud for the hardware and is being distorted).&#10;</Tooltip>
-						<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-						background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-						</Style>
-						<PathStatusLight>btn_clipping_microphone_over.png</PathStatusLight>
-						<PathBack>btn_clipping_microphone.png</PathBack>
-						<Pos>193,22</Pos>
-						<Connection>
-							<ConfigKey>[Microphone],PeakIndicator</ConfigKey>
-						</Connection>
-					</StatusLight>
-
-					<!--
-					**********************************************
-					Visual - Volume level display
-					**********************************************
-					-->
-					<VuMeter>
-						<Tooltip>Microphone volume meter&#10;Outputs the current instantaneous microphone volume&#10;</Tooltip>
-						<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-						background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-						</Style>
-						<PathVu>btn_volume_display_microphone_over.png</PathVu>
-						<PathBack>btn_volume_display_microphone.png</PathBack>
-						<Pos>121,22</Pos>
-						<Horizontal>true</Horizontal>
-						<PeakHoldSize>5</PeakHoldSize>
-						<PeakHoldTime>500</PeakHoldTime>
-						<PeakFallTime>50</PeakFallTime>
-						<PeakFallStep>2</PeakFallStep>
-						<Connection>
-							<ConfigKey>[Microphone],VuMeter</ConfigKey>
-						</Connection>
-					</VuMeter>
-
-					<!--
-					**********************************************
-					Button- Mix Orientation (Routing)
-					**********************************************
-					-->
-					<PushButton>
-						<Tooltip>Mix orientation&#10;Set the channel's mix orientation.&#10;L = left side of crossfader, R = right side of crossfader, M = center (default)&#10;</Tooltip>
-						<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-						background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-						</Style>
-						<NumberStates>3</NumberStates>
-						<State>
-							<Number>0</Number>
-							<Pressed>btn_orientation_microphone_left_over.png</Pressed>
-							<Unpressed>btn_orientation_microphone_left_over.png</Unpressed>
-						</State>
-						<State>
-							<Number>1</Number>
-							<Pressed>btn_orientation_microphone_master_over.png</Pressed>
-							<Unpressed>btn_orientation_microphone_master_over.png</Unpressed>
-						</State>
-						<State>
-							<Number>2</Number>
-							<Pressed>btn_orientation_microphone_right_over.png</Pressed>
-							<Unpressed>btn_orientation_microphone_right_over.png</Unpressed>
-						</State>
-						<Pos>95,18</Pos>
-						<Connection>
-							<ConfigKey>[Microphone],orientation</ConfigKey>
-							<EmitOnDownPress>true</EmitOnDownPress>
-							<ButtonState>LeftButton</ButtonState>
-						</Connection>
-					</PushButton>
-
-					<!--
-					**********************************************
-					Knob- Channel Volume
-					**********************************************
-					-->
-					<Knob>
-						<Tooltip>Microphone volume&#10;Adjusts the microphone volume.&#10;Right-click: Reset to default value&#10;</Tooltip>
-						<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-						background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-						</Style>
-						<NumberStates>64</NumberStates>
-						<Path>knobs/knob_rotary_s%1.png</Path>
-						<Pos>228,14</Pos>
-						<Connection>
-							<ConfigKey>[Microphone],volume</ConfigKey>
-						</Connection>
-					</Knob>
-
-					<!--
-					****************************************
-					Button- Talkover
-					****************************************
-					-->
-					<PushButton>
-						<Tooltip>Talkover&#10;Hold-to-talk and mix microphone input into the master output.&#10;</Tooltip>
-						<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-						background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-						</Style>
-						<NumberStates>1</NumberStates>
-						<State>
-							<Number>0</Number>
-							<Pressed>btn_microphone_talkover_over.png</Pressed>
-							<Unpressed>btn_microphone_talkover.png</Unpressed>
-						</State>
-						<Pos>25,15</Pos>
-						<Connection>
-							<ConfigKey>[Microphone],talkover</ConfigKey>
-							<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
-							<ButtonState>LeftButton</ButtonState>
-						</Connection>
-					</PushButton>
-				</Children>
+	<WidgetGroup>
+		<Pos>54,296</Pos>
+		<Size>280,58</Size>
+		<Style>QGroupBox { border: 0px solid yellow; background: url(skin:/style/style_bg_microphone.png) no-repeat;} QWidget { margin: 0; padding: 0; }</Style>
+		<!--<Layout>horizontal</Layout>-->
+		<Children>
+			<!--
+			**********************************************
+			Visual- Volume peak indicator
+			**********************************************
+			-->
+			<StatusLight>
+				<Tooltip>Peak Indicator&#10;Indicates when the signal on the channel is clipping,&#10;(too loud for the hardware and is being distorted).&#10;</Tooltip>
+				<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+				background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+				</Style>
+				<PathStatusLight>btn_clipping_microphone_over.png</PathStatusLight>
+				<PathBack>btn_clipping_microphone.png</PathBack>
+				<Pos>193,22</Pos>
 				<Connection>
-					<ConfigKey>[Microphone],show_microphone</ConfigKey>
-					<BindProperty>visible</BindProperty>
+					<ConfigKey>[Microphone],PeakIndicator</ConfigKey>
 				</Connection>
-			</WidgetGroup>
+			</StatusLight>
+
+			<!--
+			**********************************************
+			Visual - Volume level display
+			**********************************************
+			-->
+			<VuMeter>
+				<Tooltip>Microphone volume meter&#10;Outputs the current instantaneous microphone volume&#10;</Tooltip>
+				<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+				background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+				</Style>
+				<PathVu>btn_volume_display_microphone_over.png</PathVu>
+				<PathBack>btn_volume_display_microphone.png</PathBack>
+				<Pos>121,22</Pos>
+				<Horizontal>true</Horizontal>
+				<PeakHoldSize>5</PeakHoldSize>
+				<PeakHoldTime>500</PeakHoldTime>
+				<PeakFallTime>50</PeakFallTime>
+				<PeakFallStep>2</PeakFallStep>
+				<Connection>
+					<ConfigKey>[Microphone],VuMeter</ConfigKey>
+				</Connection>
+			</VuMeter>
+
+			<!--
+			**********************************************
+			Button- Mix Orientation (Routing)
+			**********************************************
+			-->
+			<PushButton>
+				<Tooltip>Mix orientation&#10;Set the channel's mix orientation.&#10;L = left side of crossfader, R = right side of crossfader, M = center (default)&#10;</Tooltip>
+				<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+				background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+				</Style>
+				<NumberStates>3</NumberStates>
+				<State>
+					<Number>0</Number>
+					<Pressed>btn_orientation_microphone_left_over.png</Pressed>
+					<Unpressed>btn_orientation_microphone_left_over.png</Unpressed>
+				</State>
+				<State>
+					<Number>1</Number>
+					<Pressed>btn_orientation_microphone_master.png</Pressed>
+					<Unpressed>btn_orientation_microphone_master.png</Unpressed>
+				</State>
+				<State>
+					<Number>2</Number>
+					<Pressed>btn_orientation_microphone_right_over.png</Pressed>
+					<Unpressed>btn_orientation_microphone_right_over.png</Unpressed>
+				</State>
+				<Pos>95,18</Pos>
+				<Connection>
+					<ConfigKey>[Microphone],orientation</ConfigKey>
+					<EmitOnDownPress>true</EmitOnDownPress>
+					<ButtonState>LeftButton</ButtonState>
+				</Connection>
+			</PushButton>
+
+			<!--
+			**********************************************
+			Knob- Channel Volume
+			**********************************************
+			-->
+			<Knob>
+				<Tooltip>Microphone volume&#10;Adjusts the microphone volume.&#10;Right-click: Reset to default value&#10;</Tooltip>
+				<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+				background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+				</Style>
+				<NumberStates>64</NumberStates>
+				<Path>knobs/knob_rotary_s%1.png</Path>
+				<Pos>228,14</Pos>
+				<Connection>
+					<ConfigKey>[Microphone],volume</ConfigKey>
+				</Connection>
+			</Knob>
+
+			<!--
+			****************************************
+			Button- Talkover
+			****************************************
+			-->
+			<PushButton>
+				<Tooltip>Talkover&#10;Hold-to-talk and mix microphone input into the master output.&#10;</Tooltip>
+				<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+				background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+				</Style>
+				<NumberStates>1</NumberStates>
+				<State>
+					<Number>0</Number>
+					<Pressed>btn_microphone_talkover_over.png</Pressed>
+					<Unpressed>btn_microphone_talkover.png</Unpressed>
+				</State>
+				<Pos>25,15</Pos>
+				<Connection>
+					<ConfigKey>[Microphone],talkover</ConfigKey>
+					<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+					<ButtonState>LeftButton</ButtonState>
+				</Connection>
+			</PushButton>
+		</Children>
+		<Connection>
+			<ConfigKey>[Microphone],show_microphone</ConfigKey>
+			<BindProperty>visible</BindProperty>
+		</Connection>
+	</WidgetGroup>
 
 	<!--
 	############################################################################################
@@ -3656,7 +3656,7 @@
 				<Style>QGroupBox { border: 0px solid yellow; } QWidget { margin: 0; padding: 0; }</Style>
 				<Children>
 					<!--If you want the waveforms center to adjust when resizing in a collapsing widget 
-					(e.g. to display rotating record widget like in this skin) don't put the Waveform in a widget group, 
+					(e.g. to display spinning vinyl widget like in this skin) don't put the Waveform in a widget group, 
 					and don't specify the Waveform's <Size>. So you would have:
 					Parent WidgetGroup
 						Waveform Widget (no Widgetgroup)
@@ -3983,7 +3983,7 @@
 						</Mark>
 					</Visual>
 
-					<!-- Rotating Vinyl sub-widget -->
+					<!-- Spinning Vinyl sub-widget -->
 					<WidgetGroup>
 						<!--<Pos>296,0</Pos>-->
 						<Size>119,119</Size>
@@ -3991,11 +3991,11 @@
 						<Children>
 							<!--
 							**********************************************
-							Visual- Rotating record
+							Visual- Spinning vinyl
 							**********************************************
 							-->
 							<Spinny>
-								<Tooltip>Rotating record&#10;Show/hide the rotating record widget&#10;</Tooltip>
+								<Tooltip>Spinning vinyl&#10;TODO&#10;</Tooltip>
 								<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 								background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
 								</Style>
@@ -4155,7 +4155,7 @@
 			**********************************************
 			-->
 			<PushButton>
-				<Tooltip>Rotating record&#10;Show/hide the rotating record widget&#10;</Tooltip>
+				<Tooltip>Spinning vinyl&#10;Show/hide the spinning vinyl widget&#10;</Tooltip>
 				<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 				background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
 				</Style>
@@ -4936,7 +4936,7 @@
 				<Style>QGroupBox { border: 0px solid yellow; } QWidget { margin: 0; padding: 0; }</Style>
 				<Children>
 					<!--If you want the waveforms center to adjust when resizing in a collapsing widget 
-					(e.g. to display rotating record widget like in this skin) don't put the Waveform in a widget group, 
+					(e.g. to display spinning vinyl widget like in this skin) don't put the Waveform in a widget group, 
 					and don't specify the Waveform's <Size>. So you would have:
 					Parent WidgetGroup
 						Waveform Widget (no Widgetgroup)
@@ -5263,7 +5263,7 @@
 						</Mark>
 					</Visual>
 
-					<!-- Rotating Vinyl sub-widget -->
+					<!-- Spinning Vinyl sub-widget -->
 					<WidgetGroup>
 						<!--<Pos>296,0</Pos>-->
 						<Size>119,119</Size>
@@ -5271,11 +5271,11 @@
 						<Children>
 							<!--
 							**********************************************
-							Visual- Rotating record
+							Visual- Spinning vinyl
 							**********************************************
 							-->
 							<Spinny>
-								<Tooltip>Rotating record&#10;Show/hide the rotating record widget&#10;</Tooltip>
+								<Tooltip>Spinning vinyl&#10;TODO&#10;</Tooltip>
 								<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 								background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
 								</Style>
@@ -5435,7 +5435,7 @@
 			**********************************************
 			-->
 			<PushButton>
-				<Tooltip>Rotating record&#10;Show/hide the rotating record widget&#10;</Tooltip>
+				<Tooltip>Spinning vinyl&#10;Show/hide the spinning vinyl widget&#10;</Tooltip>
 				<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 				background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
 				</Style>
