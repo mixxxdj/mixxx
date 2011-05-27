@@ -7,7 +7,6 @@
 #include "wspinny.h"
 
 WSpinny::WSpinny(QWidget* parent, VinylControlManager* pVCMan) : QGLWidget(SharedGLContext::getContext(), parent),
-    m_pVCManager(pVCMan),
     m_pBG(NULL), 
     m_pFG(NULL),
     m_pGhost(NULL),
@@ -22,7 +21,6 @@ WSpinny::WSpinny(QWidget* parent, VinylControlManager* pVCMan) : QGLWidget(Share
     m_pScratchPos(NULL),
     m_pVinylControlSpeedType(NULL),
     m_pVinylControlEnabled(NULL),
-    m_pVinylControl(NULL),
     m_bVinylActive(false),
     m_bSignalActive(true),
     m_iSize(0),
@@ -37,6 +35,10 @@ WSpinny::WSpinny(QWidget* parent, VinylControlManager* pVCMan) : QGLWidget(Share
     m_iFullRotations(0),
     m_dPrevTheta(0.)
 {
+#ifdef __VINYLCONTROL__
+    m_pVCManager = pVCMan;
+    m_pVinylControl = NULL;
+#endif
     //Drag and drop
     setAcceptDrops(true);
 }
@@ -78,10 +80,12 @@ void WSpinny::setup(QDomNode node, QString group)
         setFixedSize(m_pBG->size());
     }
     
+#ifdef __VINYLCONTROL__    
     m_iSize = MIXXX_VINYL_SCOPE_SIZE;
     m_qImage = QImage(m_iSize, m_iSize, QImage::Format_ARGB32);
     //fill with transparent black
     m_qImage.fill(qRgba(0,0,0,0));
+#endif
 
     m_pPlay = new ControlObjectThreadMain(ControlObject::getControl(
                         ConfigKey(group, "play")));
@@ -105,6 +109,15 @@ void WSpinny::setup(QDomNode node, QString group)
                         ConfigKey(group, "scratch_position_enable")));
     m_pScratchPos = new ControlObjectThreadMain(ControlObject::getControl(
                         ConfigKey(group, "scratch_position")));
+                        
+    Q_ASSERT(m_pPlayPos);
+    Q_ASSERT(m_pDuration);
+
+    //Repaint when visual_playposition changes.
+    connect(m_pVisualPlayPos, SIGNAL(valueChanged(double)),
+            this, SLOT(updateAngle(double)));
+            
+#ifdef __VINYLCONTROL__                        
     m_pVinylControlSpeedType = new ControlObjectThreadMain(ControlObject::getControl(
                         ConfigKey(group, "vinylcontrol_speed_type")));
     if (m_pVinylControlSpeedType)
@@ -118,13 +131,7 @@ void WSpinny::setup(QDomNode node, QString group)
                         ConfigKey(group, "vinylcontrol_signal_enabled")));
     m_pRate = new ControlObjectThreadMain(ControlObject::getControl(
                         ConfigKey(group, "rate")));
-    Q_ASSERT(m_pPlayPos);
-    Q_ASSERT(m_pDuration);
 
-    //Repaint when visual_playposition changes.
-    connect(m_pVisualPlayPos, SIGNAL(valueChanged(double)),
-            this, SLOT(updateAngle(double)));
-            
     //Match the vinyl control's set RPM so that the spinny widget rotates at the same 
     //speed as your physical decks, if you're using vinyl control.
     connect(m_pVinylControlSpeedType, SIGNAL(valueChanged(double)),
@@ -137,6 +144,7 @@ void WSpinny::setup(QDomNode node, QString group)
     //Check the rate to see if we are stopped
     connect(m_pRate, SIGNAL(valueChanged(double)),
             this, SLOT(updateRate(double)));
+#endif            
 }
 
 void WSpinny::paintEvent(QPaintEvent *e)
@@ -149,6 +157,7 @@ void WSpinny::paintEvent(QPaintEvent *e)
         p.drawPixmap(0, 0, *m_pBG);
     }
     
+#ifdef __VINYLCONTROL__    
     // Overlay the signal quality drawing if vinyl is active
     if (m_bVinylActive && m_bSignalActive)
     {
@@ -189,6 +198,7 @@ void WSpinny::paintEvent(QPaintEvent *e)
             p.drawImage(this->rect(), m_qImage);
         }
     }
+#endif
 
     //To rotate the foreground pixmap around the center of the image,
     //we use the classic trick of translating the coordinate system such that
@@ -357,6 +367,7 @@ void WSpinny::updateVinylControlSpeed(double rpm)
     m_dRotationsPerSecond = rpm/60.;
 }
 
+#ifdef __VINYLCONTROL__
 void WSpinny::updateVinylControlEnabled(double enabled)
 {
     if (enabled)
@@ -400,6 +411,7 @@ void WSpinny::invalidateVinylControl()
     m_pVinylControl = NULL;
     update();
 }
+#endif
 
 void WSpinny::mouseMoveEvent(QMouseEvent * e)
 {
