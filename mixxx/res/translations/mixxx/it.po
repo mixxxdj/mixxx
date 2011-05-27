@@ -6,13 +6,13 @@ msgstr ""
 "Project-Id-Version: Mixxx\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2011-05-03 21:42-0400\n"
-"PO-Revision-Date: 2011-05-08 12:20+0000\n"
-"Last-Translator: Federico Culloca <Unknown>\n"
+"PO-Revision-Date: 2011-05-26 19:18+0000\n"
+"Last-Translator: Max73 <Unknown>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-05-09 04:32+0000\n"
+"X-Launchpad-Export-Date: 2011-05-27 04:43+0000\n"
 "X-Generator: Launchpad (build 12959)\n"
 
 #: AutoDJFeature#1
@@ -220,24 +220,29 @@ msgid ""
 "Could not load the following file because it is in use by Mixxx or another "
 "application."
 msgstr ""
+"Non è possibile caricare il seguente file perchè è in uso da parte di Mixxx "
+"o altra applicazione."
 
 #: BrowseTableModel#17
 msgid "Warning: This will permanently delete the following files:"
 msgstr ""
+"Attenzione: Questa azione cancellerà permanentemente i seguenti file:"
 
 #: BrowseTableModel#18
 msgid "Are you sure you want to delete these files from your computer?"
-msgstr ""
+msgstr "Sei sicuro di voler eliminare questi file dal tuo computer ?"
 
 #: BrowseTableModel#19
 msgid ""
 "Could not delete the following file because it is in use by Mixxx or another "
 "application:"
 msgstr ""
+"Non è possibile cancellare il seguente file perchè è in uso da parte di "
+"Mixxx o altra applicazione:"
 
 #: BrowseTableModel#20
 msgid "Could not update file metadata."
-msgstr ""
+msgstr "Impossibile aggiornare i metadati del file."
 
 #: CrateFeature#1
 msgid "New Crate"
@@ -418,7 +423,7 @@ msgstr "Analizza l'intero brano"
 #: DlgBpmTapDlg#1
 msgctxt "DlgBpmTapDlg#1"
 msgid "Track Editor"
-msgstr ""
+msgstr "Editor traccia"
 
 #: DlgBpmTapDlg#2
 msgid "&Close"
@@ -738,7 +743,7 @@ msgstr "verso Giù aumenta la velocità"
 #: DlgPrefControls#14
 msgctxt "DlgPrefControls#14"
 msgid "Information"
-msgstr ""
+msgstr "Info su"
 
 #: DlgPrefControls#15
 msgid "Mixxx must be restarted before the changes will take effect."
@@ -1143,7 +1148,7 @@ msgstr ""
 #: DlgPrefNoVinylDlg#12
 msgctxt "DlgPrefNoVinylDlg#12"
 msgid "seconds"
-msgstr ""
+msgstr "secondi"
 
 #: DlgPrefNoVinylDlg#13
 msgctxt "DlgPrefNoVinylDlg#13"
@@ -1168,28 +1173,30 @@ msgstr ""
 #: DlgPrefNoVinylDlg#17
 msgctxt "DlgPrefNoVinylDlg#17"
 msgid "Signal Quality"
-msgstr ""
+msgstr "Qualità del segnale"
 
 #: DlgPrefNoVinylDlg#18
 msgctxt "DlgPrefNoVinylDlg#18"
 msgid "http://www.xwax.co.uk"
-msgstr ""
+msgstr "http://www.xwax.co.uk"
 
 #: DlgPrefNoVinylDlg#19
 msgctxt "DlgPrefNoVinylDlg#19"
 msgid "Powered by xwax"
-msgstr ""
+msgstr "Powered by xwax"
 
 #: DlgPrefNoVinylDlg#20
 msgctxt "DlgPrefNoVinylDlg#20"
 msgid "Apply"
-msgstr ""
+msgstr "Applica"
 
 #: DlgPrefNoVinylDlg#21
 msgid ""
 "<b>This version of Mixxx does not support vinyl control.</b> <br> Please "
 "visit <a href=\"http://mixxx.org\">Mixxx.org</a> for more information."
 msgstr ""
+"<b>Questa versione di Mixxx non supporta il controllo del vinile.</b> <br> "
+"Visita<a href=\"http://mixxx.org\">Mixxx.org</a> per maggiori informazioni."
 
 #: DlgPrefPlaylist#1
 msgctxt "DlgPrefPlaylist#1"
@@ -1269,7 +1276,7 @@ msgstr "Riesamina la libreria all'avvio"
 
 #: DlgPrefPlaylistDlg#10
 msgid "Use relative paths for playlist export if possible"
-msgstr ""
+msgstr "Se possibile usa il percorso relativo per esportare la playlist"
 
 #: DlgPrefPlaylistDlg#11
 msgid "iPod"
@@ -1281,7 +1288,7 @@ msgstr "Punto di mount dell'iPod"
 
 #: DlgPrefPlaylistDlg#13
 msgid "Browse..."
-msgstr ""
+msgstr "Esplora..."
 
 #: DlgPrefPlaylistDlg#14
 msgid "Detect"
@@ -1290,7 +1297,7 @@ msgstr "Rileva"
 #: DlgPrefPlaylistDlg#15
 msgctxt "DlgPrefPlaylistDlg#15"
 msgid "Library"
-msgstr ""
+msgstr "Libreria"
 
 #: DlgPrefPlaylistDlg#16
 msgid "Music Directory:"
@@ -1326,7 +1333,7 @@ msgstr "Form3"
 #: DlgPrefRecordDlg#2
 msgctxt "DlgPrefRecordDlg#2"
 msgid "Encoding"
-msgstr ""
+msgstr "Codifica"
 
 #: DlgPrefRecordDlg#3
 msgid "Quality"
@@ -1334,11 +1341,11 @@ msgstr "Qualità"
 
 #: DlgPrefRecordDlg#4
 msgid "High"
-msgstr ""
+msgstr "Alta"
 
 #: DlgPrefRecordDlg#5
 msgid "Low"
-msgstr ""
+msgstr "Bassa"
 
 #: DlgPrefRecordDlg#6
 msgid "Tags"
@@ -1347,7 +1354,7 @@ msgstr "Tag"
 #: DlgPrefRecordDlg#7
 msgctxt "DlgPrefRecordDlg#7"
 msgid "Title"
-msgstr ""
+msgstr "Titolo"
 
 #: DlgPrefRecordDlg#8
 msgid "Author"
@@ -1356,7 +1363,7 @@ msgstr "Autore"
 #: DlgPrefRecordDlg#9
 msgctxt "DlgPrefRecordDlg#9"
 msgid "Album"
-msgstr ""
+msgstr "Album"
 
 #: DlgPrefRecordDlg#10
 msgctxt "DlgPrefRecordDlg#10"
@@ -1365,7 +1372,7 @@ msgstr ""
 
 #: DlgPrefRecordDlg#11
 msgid "Create a CUE file"
-msgstr ""
+msgstr "Crea un file CUE"
 
 #: DlgPrefRecordDlg#12
 msgid "File Splitting"
@@ -1742,7 +1749,7 @@ msgstr "Ripristina i valori predefiniti"
 #: DlgPrefSoundDlg#9
 msgctxt "DlgPrefSoundDlg#9"
 msgid "Apply"
-msgstr ""
+msgstr "Applica"
 
 #: DlgPrefSoundDlg#10
 msgid "Latency"
@@ -1798,6 +1805,9 @@ msgid ""
 "href=\"http://www.mixxx.org/wiki/doku.php/vinyl_control#troubleshooting\">Tro"
 "ubleshooting</a>"
 msgstr ""
+"<a "
+"href=\"http://www.mixxx.org/wiki/doku.php/vinyl_control#troubleshooting\">Ris"
+"oluzione problemi</a>"
 
 #: DlgPrefVinylDlg#5
 msgctxt "DlgPrefVinylDlg#5"
@@ -1832,7 +1842,7 @@ msgstr ""
 #: DlgPrefVinylDlg#11
 msgctxt "DlgPrefVinylDlg#11"
 msgid "Apply"
-msgstr ""
+msgstr "Applica"
 
 #: DlgPrefVinylDlg#12
 msgctxt "DlgPrefVinylDlg#12"
@@ -1842,7 +1852,7 @@ msgstr ""
 #: DlgPrefVinylDlg#13
 msgctxt "DlgPrefVinylDlg#13"
 msgid "seconds"
-msgstr ""
+msgstr "secondi"
 
 #: DlgPrefVinylDlg#14
 msgctxt "DlgPrefVinylDlg#14"
@@ -1867,17 +1877,17 @@ msgstr ""
 #: DlgPrefVinylDlg#18
 msgctxt "DlgPrefVinylDlg#18"
 msgid "Signal Quality"
-msgstr ""
+msgstr "Qualità del segnale"
 
 #: DlgPrefVinylDlg#19
 msgctxt "DlgPrefVinylDlg#19"
 msgid "http://www.xwax.co.uk"
-msgstr ""
+msgstr "http://www.xwax.co.uk"
 
 #: DlgPrefVinylDlg#20
 msgctxt "DlgPrefVinylDlg#20"
 msgid "Powered by xwax"
-msgstr ""
+msgstr "Powered by xwax"
 
 #: DlgPreferences#1
 msgid "Sound Hardware"
@@ -1917,7 +1927,7 @@ msgstr "Calcolo dei BPM"
 
 #: DlgPreferences#9
 msgid "Normalization"
-msgstr ""
+msgstr "Normalizzazione"
 
 #: DlgPreferences#10
 msgctxt "DlgPreferences#10"
@@ -1974,28 +1984,28 @@ msgstr "Analisi %1%"
 #: DlgRecording#1
 msgctxt "DlgRecording#1"
 msgid "Manage"
-msgstr ""
+msgstr "Gestione"
 
 #: DlgRecording#2
 msgid "Status:"
-msgstr ""
+msgstr "Stato"
 
 #: DlgRecording#3
 msgid "Start Recording"
-msgstr ""
+msgstr "Inizia la registrazione"
 
 #: DlgRecording#4
 msgid "Start recording here ..."
-msgstr ""
+msgstr "Inizia la registrazione qui ..."
 
 #: DlgRecording#5
 msgid "Stop Recording"
-msgstr ""
+msgstr "Interrompi la registrazione"
 
 #: DlgTrackInfo#1
 msgctxt "DlgTrackInfo#1"
 msgid "Track Editor"
-msgstr ""
+msgstr "Editor traccia"
 
 #: DlgTrackInfo#2
 msgctxt "DlgTrackInfo#2"
@@ -2010,7 +2020,7 @@ msgstr "Titolo:"
 #: DlgTrackInfo#4
 msgctxt "DlgTrackInfo#4"
 msgid "Artist:"
-msgstr ""
+msgstr "Artista:"
 
 #: DlgTrackInfo#5
 msgid "Album:"
@@ -2290,6 +2300,9 @@ msgid ""
 "There was an error loading your iTunes library. Some of your iTunes tracks "
 "or playlists may not have loaded."
 msgstr ""
+"Si è verificato un errore durante il caricamento della libreria di iTunes. "
+"Alcuni dei vostri brani o le playlist di iTunes potrebbero non essere "
+"caricati."
 
 #: LADSPAPresetSlot#1
 msgid "Drag a preset from the list & drop it here"
@@ -2534,6 +2547,8 @@ msgid ""
 "<b>Retry</b> after closing the other application or reconnecting a sound "
 "device"
 msgstr ""
+"<b>Riprova</b> dopo aver chiuso l'altra applicazione o riconnesso la "
+"periferica audio"
 
 #: MixxxApp#14
 msgid "<b>Reconfigure</b> Mixxx's sound device settings."
@@ -2661,7 +2676,7 @@ msgstr ""
 
 #: MixxxApp#45
 msgid "Ctrl+U"
-msgstr ""
+msgstr "Ctrl+U"
 
 #: MixxxApp#46
 msgctxt "MixxxApp#46"
@@ -2933,7 +2948,7 @@ msgstr "Carica il brano nel Player 2"
 msgid ""
 "No input device(s) select.\n"
 "Please select your soundcard(s) in the sound hardware preferences."
-msgstr ""
+msgstr "Seleziona la tua scheda audio nelle preferenze hardware."
 
 #: MixxxApp#96
 msgid "Confirm Exit"
@@ -2951,22 +2966,22 @@ msgstr "Libreria"
 #: ParserM3u#1
 msgctxt "ParserM3u#1"
 msgid "Playlist Export Failed"
-msgstr ""
+msgstr "Esporatazione playlist fallita"
 
 #: ParserM3u#2
 msgctxt "ParserM3u#2"
 msgid "Could not create file"
-msgstr ""
+msgstr "Impossibile creare il file"
 
 #: ParserPls#1
 msgctxt "ParserPls#1"
 msgid "Playlist Export Failed"
-msgstr ""
+msgstr "Esporatazione playlist fallita"
 
 #: ParserPls#2
 msgctxt "ParserPls#2"
 msgid "Could not create file"
-msgstr ""
+msgstr "Impossibile creare il file"
 
 #: PlaylistFeature#1
 msgid "New Playlist"
@@ -2974,7 +2989,7 @@ msgstr "Nuova Playlist"
 
 #: PlaylistFeature#2
 msgid "Add to Auto-DJ Queue"
-msgstr ""
+msgstr "Aggiungi alla coda di Auto-DJ"
 
 #: PlaylistFeature#3
 msgctxt "PlaylistFeature#3"
@@ -2994,12 +3009,12 @@ msgstr ""
 #: PlaylistFeature#6
 msgctxt "PlaylistFeature#6"
 msgid "Import Playlist"
-msgstr ""
+msgstr "Importa playlist"
 
 #: PlaylistFeature#7
 msgctxt "PlaylistFeature#7"
 msgid "Export Playlist"
-msgstr ""
+msgstr "Esporta playlist"
 
 #: PlaylistFeature#8
 msgid "Playlists"
@@ -3008,7 +3023,7 @@ msgstr "Playlist"
 #: PlaylistFeature#9
 msgctxt "PlaylistFeature#9"
 msgid "Unlock"
-msgstr ""
+msgstr "Sblocca"
 
 #: PlaylistFeature#10
 msgid "Playlist name:"
@@ -3028,25 +3043,25 @@ msgstr "Errore sconosciuto durante la creazione della playlist: "
 
 #: PlaylistFeature#14
 msgid "Rename Playlist"
-msgstr ""
+msgstr "Rinomina la playlist"
 
 #: PlaylistFeature#15
 msgid "New playlist name:"
-msgstr ""
+msgstr "Nome della nuova playlist:"
 
 #: PlaylistFeature#16
 msgid "Renaming Playlist Failed"
-msgstr ""
+msgstr "Rinominazione playlist fallita"
 
 #: PlaylistFeature#17
 msgctxt "PlaylistFeature#17"
 msgid "Playlist Files (*.m3u *.pls)"
-msgstr ""
+msgstr "Playlist Files (*.m3u *.pls)"
 
 #: PlaylistFeature#18
 msgctxt "PlaylistFeature#18"
 msgid "M3U Playlist (*.m3u);;PLS Playlist (*.pls)"
-msgstr ""
+msgstr "M3U Playlist (*.m3u);;PLS Playlist (*.pls)"
 
 #: PlaylistFeature#19
 msgid "A playlist by that name already exists."
@@ -3059,7 +3074,7 @@ msgstr "Analizza"
 
 #: QObject#1
 msgid "Invalid"
-msgstr ""
+msgstr "Non valido"
 
 #: QObject#2
 msgid "Master"
@@ -3076,7 +3091,7 @@ msgstr ""
 #: QObject#5
 msgctxt "QObject#5"
 msgid "Vinyl Control"
-msgstr ""
+msgstr "Controllo Vinile"
 
 #: QObject#6
 msgid "Microphone"
@@ -3092,7 +3107,7 @@ msgstr "Tipo di percorso %1 sconosciuto"
 
 #: RecordingFeature#1
 msgid "Recordings"
-msgstr ""
+msgstr "Registrazioni"
 
 #: RhythmboxFeature#1
 msgid "Rhythmbox"
@@ -3141,7 +3156,7 @@ msgstr "Modifica"
 
 #: ScriptStudio#4
 msgid "Run"
-msgstr ""
+msgstr "Avvia"
 
 #: ScriptStudio#5
 msgid "Close"
@@ -3221,6 +3236,8 @@ msgid ""
 "There was an error loading your Traktor library. Some of your Traktor tracks "
 "or playlists may not have loaded."
 msgstr ""
+"Si è verificato un errore durante il caricamento della libreria Traktor. "
+"Alcuni dei vostri brani o le playlist Traktor non possono essere caricati."
 
 #: Ui#1
 msgctxt "Ui#1"
@@ -3276,7 +3293,7 @@ msgstr ""
 #: Ui#12
 msgctxt "Ui#12"
 msgid "Preferences"
-msgstr ""
+msgstr "Preferenze"
 
 #: Ui#13
 msgctxt "Ui#13"
