@@ -8,18 +8,18 @@ msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2011-05-03 21:42-0400\n"
-"PO-Revision-Date: 2011-05-25 05:37+0000\n"
+"PO-Revision-Date: 2011-05-27 15:46+0000\n"
 "Last-Translator: Саша Стефановић <djevrek@gmail.com>\n"
 "Language-Team: Serbian <sr@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-05-26 04:33+0000\n"
+"X-Launchpad-Export-Date: 2011-05-28 04:33+0000\n"
 "X-Generator: Launchpad (build 12959)\n"
 
 #: AutoDJFeature#1
 msgid "Auto DJ"
-msgstr "Аутоматски ди џеј"
+msgstr ""
 
 #: BaseSqlTableModel#1
 msgid "Played"
@@ -68,11 +68,11 @@ msgstr "Коментар"
 #: BaseSqlTableModel#10
 msgctxt "BaseSqlTableModel#10"
 msgid "Duration"
-msgstr "одредиште"
+msgstr "Трајање"
 
 #: BaseSqlTableModel#11
 msgid "Rating"
-msgstr "Рејтинг"
+msgstr "Оцена"
 
 #: BaseSqlTableModel#12
 msgctxt "BaseSqlTableModel#12"
@@ -82,7 +82,7 @@ msgstr "Битски проток"
 #: BaseSqlTableModel#13
 msgctxt "BaseSqlTableModel#13"
 msgid "BPM"
-msgstr "ОПМ"
+msgstr "БПМ"
 
 #: BaseSqlTableModel#14
 msgctxt "BaseSqlTableModel#14"
@@ -95,7 +95,7 @@ msgstr "Додата"
 
 #: BaseSqlTableModel#16
 msgid "#"
-msgstr "Број"
+msgstr "#"
 
 #: BaseSqlTableModel#17
 msgctxt "BaseSqlTableModel#17"
@@ -104,7 +104,7 @@ msgstr "Тастер"
 
 #: BaseTrackPlayer#1
 msgid "Couldn't load track."
-msgstr "Није могуће учитати песму."
+msgstr "Песма није учитана."
 
 #: BrowseFeature#1
 msgid "Quick Links"
