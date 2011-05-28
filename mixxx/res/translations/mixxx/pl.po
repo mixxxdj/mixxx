@@ -8,13 +8,13 @@ msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2011-05-03 21:42-0400\n"
-"PO-Revision-Date: 2011-05-26 21:25+0000\n"
+"PO-Revision-Date: 2011-05-27 22:14+0000\n"
 "Last-Translator: psylocybina <psylocybina@gmail.com>\n"
 "Language-Team: Polish <pl@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-05-27 04:43+0000\n"
+"X-Launchpad-Export-Date: 2011-05-28 04:33+0000\n"
 "X-Generator: Launchpad (build 12959)\n"
 
 #: AutoDJFeature#1
@@ -195,7 +195,7 @@ msgstr "BPM"
 #: BrowseTableModel#11
 msgctxt "BrowseTableModel#11"
 msgid "Key"
-msgstr ""
+msgstr "Klawisz"
 
 #: BrowseTableModel#12
 msgctxt "BrowseTableModel#12"
@@ -2500,6 +2500,10 @@ msgid ""
 "developers. Would you like to help us make Mixxx better by enabling this "
 "feature?"
 msgstr ""
+"Rozwój Mixxx'a jest prowadzony przy udziale informacji zwrotnej "
+"społeczności. Zachwując poufność, Mixxx może automatycznie wysyłać "
+"deweloperom dane dotyczące twojego doświadczenia z używania programu. Czy "
+"chcesz nam pomóc ulepszyć Mixxx'a przez włączenie tej funkcjonalności?"
 
 #: MixxxApp#4
 msgid "Yes"
@@ -2541,6 +2545,27 @@ msgid ""
 "This information will not be used to personally identify you, contact you, "
 "advertise to you, or otherwise bother you in any way.\n"
 msgstr ""
+"Rozwój Mixxx'a jest prowadzony przy udziale informacji zwrotnej "
+"społeczności. Aby pomóc ulepszyc przyszłe wersje, Mixxx za twoją zgodą "
+"zgromadzi informacje na temat twojego sprzętu i użytkowania Mixxx'a. Te "
+"informacje będą przede wszytkim użyte do poprawienia błędów, ulepszenia "
+"funkcji i określenia wymagań sprzętowych kolejnych wersji. Dodatkowo dane te "
+"moga być użyte w celach statystycznych.\n"
+"\n"
+"Informacje o sprzęcie będą zawierały:\n"
+"\t- model CPU\n"
+"\t- Całkowita/Dostępna wielkość pamięci RAM\n"
+"\t- Dostępnej ilości miejsca na dysku\n"
+"\t- Wesji systemu operacyjnego\n"
+"\n"
+"Informacje na temat użytkowania będą zawierały:\n"
+"\t- Ustawienia/Preferencje\n"
+"\t- Wewnętrzne błędy\n"
+"\t- Wewnętrzne wiadomości debuggingu\n"
+"\t- Statystyki wydajności (średnie opóźnienia, obciążenie procesora)\n"
+"\n"
+"Te informacje nie będą użyte do celów identyfikacyjnych, ani aby się z tobą "
+"skontaktować, reklamować lub w jakikolwiek sposób zawracać ci głowę.\n"
 
 #: MixxxApp#9
 msgctxt "MixxxApp#9"
@@ -2561,16 +2586,21 @@ msgid ""
 "application is using a sound device Mixxx is configured to use or a device "
 "is not plugged in."
 msgstr ""
+"Mixxx nie był w stanie uzyskać dostępu do wszystkich skonfigurowanych "
+"urządzeń dźwiękowych. Inna aplikacja używa urządzenia, które zostało "
+"skonfigurowane w Mixxx'ie lub urządzenie to nie jest podłączone."
 
 #: MixxxApp#13
 msgid ""
 "<b>Retry</b> after closing the other application or reconnecting a sound "
 "device"
 msgstr ""
+"<b>Ponów</b> po zamknięciu innej aplikacji lub podłącz ponownie urządzenie "
+"dźwiękowe"
 
 #: MixxxApp#14
 msgid "<b>Reconfigure</b> Mixxx's sound device settings."
-msgstr ""
+msgstr "<b>Rekonfiguruj</b> ustawienia urządzeń dźwiękowych Mixxx'a."
 
 #: MixxxApp#15
 msgid "<b>Exit</b> Mixxx."
@@ -3384,7 +3414,7 @@ msgstr "Przycisk efektu Flanger dla Player %1"
 
 #: Ui#29
 msgid "Channel %1 volume fader"
-msgstr ""
+msgstr "Kanał %1 suwak głośności"
 
 #: Ui#30
 msgid "Gain knob for Channel %1"
