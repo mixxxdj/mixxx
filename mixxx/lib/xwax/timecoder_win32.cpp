@@ -85,7 +85,7 @@ static struct timecode_def_t timecode_def[] = {
         0xd8b40,
         0x34d54,
         950000,
-        940000,
+        890000,
         false
     },
     {
@@ -521,7 +521,7 @@ signed int timecoder_get_position(struct timecoder_t *tc, float *when)
 
         if (r >= 0) {
         	//normalize position to milliseconds, not timecode steps -- Owen
-        	r = r * 1000 / (tc->def->resolution * tc->speed)
+        	r = r * 1000 / (tc->def->resolution * tc->speed);
             if (when)
                 *when = tc->timecode_ticker * tc->dt;
             return r;
