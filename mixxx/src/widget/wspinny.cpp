@@ -117,7 +117,7 @@ void WSpinny::setup(QDomNode node, QString group)
     connect(m_pVisualPlayPos, SIGNAL(valueChanged(double)),
             this, SLOT(updateAngle(double)));
             
-#ifdef __VINYLCONTROL__                        
+#ifdef __VINYLCONTROL__
     m_pVinylControlSpeedType = new ControlObjectThreadMain(ControlObject::getControl(
                         ConfigKey(group, "vinylcontrol_speed_type")));
     if (m_pVinylControlSpeedType)
@@ -157,7 +157,7 @@ void WSpinny::paintEvent(QPaintEvent *e)
         p.drawPixmap(0, 0, *m_pBG);
     }
     
-#ifdef __VINYLCONTROL__    
+#ifdef __VINYLCONTROL__
     // Overlay the signal quality drawing if vinyl is active
     if (m_bVinylActive && m_bSignalActive)
     {
@@ -341,7 +341,7 @@ void WSpinny::updateRate(double rate)
     {
         if (m_iTimerId == 0)
         {
-            m_iTimerId = startTimer(60);
+            m_iTimerId = startTimer(15);
         }
     }
 }
@@ -367,9 +367,9 @@ void WSpinny::updateVinylControlSpeed(double rpm)
     m_dRotationsPerSecond = rpm/60.;
 }
 
-#ifdef __VINYLCONTROL__
 void WSpinny::updateVinylControlEnabled(double enabled)
 {
+#ifdef __VINYLCONTROL__
     if (enabled)
     {
         if (m_pVinylControl == NULL)
@@ -403,15 +403,18 @@ void WSpinny::updateVinylControlEnabled(double enabled)
         // draw once more to erase signal
         update();
     }
+#endif
 }
 
 void WSpinny::invalidateVinylControl()
 {
+#ifdef __VINYLCONTROL__    
     m_bVinylActive = false;
     m_pVinylControl = NULL;
     update();
-}
 #endif
+}
+
 
 void WSpinny::mouseMoveEvent(QMouseEvent * e)
 {
