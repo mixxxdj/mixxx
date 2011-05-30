@@ -199,7 +199,7 @@ void DlgPrefSound::addPath(AudioOutput output) {
     }
     connect(this, SIGNAL(refreshOutputDevices(const QList<SoundDevice*>&)),
             toInsert, SLOT(refreshDevices(const QList<SoundDevice*>&)));
-    outputVLayout->insertWidget(outputVLayout->count() - 1, toInsert);
+    insertItem(toInsert, outputVLayout);
     connectSoundItem(toInsert);
 }
 
@@ -230,7 +230,7 @@ void DlgPrefSound::addPath(AudioInput input) {
     }
     connect(this, SIGNAL(refreshInputDevices(const QList<SoundDevice*>&)),
             toInsert, SLOT(refreshDevices(const QList<SoundDevice*>&)));
-    inputVLayout->insertWidget(inputVLayout->count() - 1, toInsert);
+    insertItem(toInsert, inputVLayout);
     connectSoundItem(toInsert);
 }
 
@@ -245,6 +245,23 @@ void DlgPrefSound::connectSoundItem(DlgPrefSoundItem *item) {
             item, SLOT(save()));
     connect(this, SIGNAL(updatedAPI()),
             item, SLOT(reload()));
+}
+
+void DlgPrefSound::insertItem(DlgPrefSoundItem *pItem, QBoxLayout *pLayout) {
+    int pos;
+    for (pos = 0; pos < pLayout->count() - 1; ++pos) {
+        DlgPrefSoundItem *pOther(qobject_cast<DlgPrefSoundItem*>(
+            pLayout->itemAt(pos)->widget()));
+        if (!pOther) continue;
+        if (pItem->type() < pOther->type()) {
+            break;
+        } else if (pItem->type() == pOther->type()
+            && AudioPath::isIndexed(pItem->type())
+            && pItem->index() < pOther->index()) {
+            break;
+        }
+    }
+    pLayout->insertWidget(pos, pItem);
 }
 
 /**
