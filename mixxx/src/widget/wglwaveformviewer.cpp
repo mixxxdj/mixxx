@@ -40,6 +40,12 @@ WGLWaveformViewer::WGLWaveformViewer(
         ControlObject::getControl(ConfigKey(group, "track_samples")));
     m_pTrackSampleRate = new ControlObjectThreadMain(
         ControlObject::getControl(ConfigKey(group, "track_samplerate")));
+    m_pRate = new ControlObjectThreadMain(
+        ControlObject::getControl(ConfigKey(m_pGroup, "rate")));
+    m_pRateRange = new ControlObjectThreadMain(
+        ControlObject::getControl(ConfigKey(m_pGroup, "rateRange")));
+    m_pRateDir = new ControlObjectThreadMain(
+        ControlObject::getControl(ConfigKey(m_pGroup, "rate_dir")));
 
     setAcceptDrops(true);
 
@@ -132,7 +138,11 @@ bool WGLWaveformViewer::eventFilter(QObject *o, QEvent *e) {
             // samples times two is the number of samples per pixel.  rryan
             // 4/2011
             double samplesPerPixel = m_pTrackSampleRate->get() / 100.0 * 2;
-            double targetPosition = m_dInitialPlaypos - (curX - m_iMouseStart) * samplesPerPixel;
+
+            // To take care of one one movement when zoom changes with pitch
+            double rateAdjust = m_pRateDir->get() * math_min(0.99, m_pRate->get() * m_pRateRange->get());
+
+            double targetPosition = m_dInitialPlaypos - (curX - m_iMouseStart) * samplesPerPixel * (1 + rateAdjust);
             //qDebug() << "Start:" << m_dInitialPlaypos << "Target:" << targetPosition;
             m_pScratch->slotSet(targetPosition);
         }
