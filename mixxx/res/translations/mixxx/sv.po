@@ -8,22 +8,22 @@ msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2011-05-03 21:42-0400\n"
-"PO-Revision-Date: 2011-05-26 18:24+0000\n"
-"Last-Translator: jonatan johansson <Unknown>\n"
+"PO-Revision-Date: 2011-05-29 12:38+0000\n"
+"Last-Translator: Johannes Boivie <Unknown>\n"
 "Language-Team: Swedish <sv@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-05-27 04:43+0000\n"
+"X-Launchpad-Export-Date: 2011-05-30 04:36+0000\n"
 "X-Generator: Launchpad (build 12959)\n"
 
 #: AutoDJFeature#1
 msgid "Auto DJ"
-msgstr ""
+msgstr "Auto-DJ"
 
 #: BaseSqlTableModel#1
 msgid "Played"
-msgstr ""
+msgstr "Spelad"
 
 #: BaseSqlTableModel#2
 msgctxt "BaseSqlTableModel#2"
@@ -33,7 +33,7 @@ msgstr "Artist"
 #: BaseSqlTableModel#3
 msgctxt "BaseSqlTableModel#3"
 msgid "Title"
-msgstr ""
+msgstr "Titel"
 
 #: BaseSqlTableModel#4
 msgctxt "BaseSqlTableModel#4"
@@ -58,7 +58,7 @@ msgstr "Typ"
 #: BaseSqlTableModel#8
 msgctxt "BaseSqlTableModel#8"
 msgid "Location"
-msgstr ""
+msgstr "Plats"
 
 #: BaseSqlTableModel#9
 msgctxt "BaseSqlTableModel#9"
@@ -72,7 +72,7 @@ msgstr ""
 
 #: BaseSqlTableModel#11
 msgid "Rating"
-msgstr "Rankning"
+msgstr "Betyg"
 
 #: BaseSqlTableModel#12
 msgctxt "BaseSqlTableModel#12"
@@ -87,11 +87,11 @@ msgstr "BPM"
 #: BaseSqlTableModel#14
 msgctxt "BaseSqlTableModel#14"
 msgid "Track #"
-msgstr ""
+msgstr "Spår"
 
 #: BaseSqlTableModel#15
 msgid "Date Added"
-msgstr ""
+msgstr "Tillagt"
 
 #: BaseSqlTableModel#16
 msgid "#"
@@ -100,15 +100,15 @@ msgstr "#"
 #: BaseSqlTableModel#17
 msgctxt "BaseSqlTableModel#17"
 msgid "Key"
-msgstr ""
+msgstr "Tangent"
 
 #: BaseTrackPlayer#1
 msgid "Couldn't load track."
-msgstr ""
+msgstr "Kunde inte ladda in spår"
 
 #: BrowseFeature#1
 msgid "Quick Links"
-msgstr ""
+msgstr "Snabblänkar"
 
 #: BrowseFeature#2
 msgid "Devices"
@@ -116,16 +116,16 @@ msgstr "Enheter"
 
 #: BrowseFeature#3
 msgid "Removable Devices"
-msgstr ""
+msgstr "Externa enheter"
 
 #: BrowseFeature#4
 msgctxt "BrowseFeature#4"
 msgid "Mixxx Library"
-msgstr ""
+msgstr "Mixxx-bibliotek"
 
 #: BrowseFeature#5
 msgid "Home"
-msgstr ""
+msgstr "Hem"
 
 #: BrowseFeature#6
 msgid "Music"
@@ -253,7 +253,7 @@ msgstr "Ta bort"
 #: CrateFeature#3
 msgctxt "CrateFeature#3"
 msgid "Rename"
-msgstr "Döp om"
+msgstr "Byt namn"
 
 #: CrateFeature#4
 msgctxt "CrateFeature#4"
@@ -267,15 +267,15 @@ msgstr "Importera spellista"
 
 #: CrateFeature#6
 msgid "Crates"
-msgstr ""
+msgstr "Lådor"
 
 #: CrateFeature#7
 msgid "Import Crate"
-msgstr ""
+msgstr "Importera Låda"
 
 #: CrateFeature#8
 msgid "Export Crate"
-msgstr ""
+msgstr "Exportera Låda"
 
 #: CrateFeature#9
 msgctxt "CrateFeature#9"
@@ -288,7 +288,7 @@ msgstr "Lådnamn"
 
 #: CrateFeature#11
 msgid "An unknown error occurred while creating crate: "
-msgstr "Ett okänt fel hände vid skapandet av lådan "
+msgstr "Ett okänt fel uppstod vid skapandet av lådan "
 
 #: CrateFeature#12
 msgid "Rename Crate"
