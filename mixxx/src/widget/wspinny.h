@@ -26,10 +26,8 @@ class WSpinny : public QGLWidget
         void updateRate(double);
         void updateAngleForGhost();
         void updateVinylControlSpeed(double rpm);
-#ifdef __VINYLCONTROL__
         void updateVinylControlEnabled(double enabled);
         void invalidateVinylControl();
-#endif
     signals:
         void trackDropped(QString filename, QString group);
     protected:
