@@ -9,13 +9,13 @@ msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2011-05-03 21:42-0400\n"
-"PO-Revision-Date: 2011-05-29 10:46+0000\n"
+"PO-Revision-Date: 2011-05-30 11:35+0000\n"
 "Last-Translator: bassball93 <bassball93@gmail.com>\n"
 "Language-Team: Galician <gl@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-05-30 04:36+0000\n"
+"X-Launchpad-Export-Date: 2011-05-31 04:33+0000\n"
 "X-Generator: Launchpad (build 12959)\n"
 
 #: AutoDJFeature#1
@@ -223,8 +223,8 @@ msgid ""
 "Could not load the following file because it is in use by Mixxx or another "
 "application."
 msgstr ""
-"Non se puido cargar o seguinte ficheiro xa que está sendo empregado por Mixx "
-"ou por outra aplicación."
+"Non foi posíbel cargar o seguinte ficheiro xa que está a ser empregado por "
+"Mixxx ou por outro aplicativo."
 
 #: BrowseTableModel#17
 msgid "Warning: This will permanently delete the following files:"
@@ -248,7 +248,7 @@ msgstr "Non se puido actualizar o ficheiro de metadatos."
 
 #: CrateFeature#1
 msgid "New Crate"
-msgstr "Nova creación"
+msgstr "Novo caixón"
 
 #: CrateFeature#2
 msgctxt "CrateFeature#2"
@@ -297,7 +297,7 @@ msgstr "Ocorreu un erro descoñecido ao crear o caixón: "
 
 #: CrateFeature#12
 msgid "Rename Crate"
-msgstr "Renomear caixón"
+msgstr "Renomear o caixón"
 
 #: CrateFeature#13
 msgid "New crate name:"
@@ -305,7 +305,7 @@ msgstr "Novo nome do caixón:"
 
 #: CrateFeature#14
 msgid "Renaming Crate Failed"
-msgstr "Ocorreu un erro ao renomear o caixón"
+msgstr "Produciuse un erro ao renomear o caixón"
 
 #: CrateFeature#15
 msgctxt "CrateFeature#15"
@@ -328,7 +328,7 @@ msgstr "Un caixón non pode ter o nome en branco."
 
 #: CrateFeature#19
 msgid "Creating Crate Failed"
-msgstr "Ocorreu un erro ao crear o caixón"
+msgstr "Produciuse un erro ao crear o caixón"
 
 #: CrateFeature#20
 msgid "A crate by that name already exists."
@@ -1350,7 +1350,7 @@ msgstr "Autor"
 #: DlgPrefRecordDlg#9
 msgctxt "DlgPrefRecordDlg#9"
 msgid "Album"
-msgstr "Álbume"
+msgstr "Álbum"
 
 #: DlgPrefRecordDlg#10
 msgctxt "DlgPrefRecordDlg#10"
@@ -2534,7 +2534,7 @@ msgstr "Ctrl+N"
 
 #: MixxxApp#30
 msgid "Add new &crate"
-msgstr "Engadir novo &caixón"
+msgstr "Engadir un novo &caixón"
 
 #: MixxxApp#31
 msgid "Ctrl+C"

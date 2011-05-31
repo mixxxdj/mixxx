@@ -8,13 +8,13 @@ msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2011-05-03 21:42-0400\n"
-"PO-Revision-Date: 2011-05-27 22:14+0000\n"
+"PO-Revision-Date: 2011-05-30 11:45+0000\n"
 "Last-Translator: psylocybina <psylocybina@gmail.com>\n"
 "Language-Team: Polish <pl@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-05-28 04:33+0000\n"
+"X-Launchpad-Export-Date: 2011-05-31 04:33+0000\n"
 "X-Generator: Launchpad (build 12959)\n"
 
 #: AutoDJFeature#1
@@ -100,7 +100,7 @@ msgstr "Nr"
 #: BaseSqlTableModel#17
 msgctxt "BaseSqlTableModel#17"
 msgid "Key"
-msgstr "Passthrough \tPassthrough"
+msgstr "Klawisz"
 
 #: BaseTrackPlayer#1
 msgid "Couldn't load track."
@@ -304,7 +304,7 @@ msgstr "Nowa nazwa Skrzynki:"
 
 #: CrateFeature#14
 msgid "Renaming Crate Failed"
-msgstr "Zmiana nazwy Pola Skrzynka"
+msgstr "Zmiana nazwy Skrzynki nie powiodła się"
 
 #: CrateFeature#15
 msgctxt "CrateFeature#15"
@@ -331,11 +331,11 @@ msgstr "Tworzenie Skrzynki nie powiodło się"
 
 #: CrateFeature#20
 msgid "A crate by that name already exists."
-msgstr "Skrzynka o tej nazwie już istnieje"
+msgstr "Skrzynka o tej nazwie już istnieje."
 
 #: DlgAboutDlg#1
 msgid "About Mixxx"
-msgstr "O Mixxx"
+msgstr "O Mixxx'ie"
 
 #: DlgAboutDlg#2
 msgid ""
@@ -787,11 +787,11 @@ msgstr "Wył."
 
 #: DlgPrefControlsDlg#9
 msgid "Pitch/Rate slider range"
-msgstr "Zakres suwaka Pitch/Rate"
+msgstr "Zakres suwaka Szybkość/Tempo"
 
 #: DlgPrefControlsDlg#10
 msgid "Pitch/Rate slider direction"
-msgstr ""
+msgstr "Kierunek suwaka Szybość/Tempo"
 
 #: DlgPrefControlsDlg#11
 msgid "Track load behaviour"
@@ -807,7 +807,7 @@ msgstr "Automatycznie Przywołaj Cue"
 
 #: DlgPrefControlsDlg#14
 msgid "Permanent Pitch/Rate Buttons"
-msgstr "Trwałe Przyciski Pitch/Rate"
+msgstr "Trwałe Przyciski Szybkość/Tempo"
 
 #: DlgPrefControlsDlg#15
 msgid "Left click"
@@ -833,7 +833,7 @@ msgstr ""
 
 #: DlgPrefControlsDlg#20
 msgid "Temporary Pitch/Rate Buttons"
-msgstr "Tymczasowe Przyciski Pitch/Rate"
+msgstr "Tymczasowe Przyciski Szybkość/Tempo"
 
 #: DlgPrefControlsDlg#21
 msgid "Temporary rate change (between 1 and 8000) when left clicking"
@@ -979,11 +979,11 @@ msgstr "Pliki ustawień (*.midi.xml)"
 
 #: DlgPrefMidiBindings#8
 msgid "Select Control Group"
-msgstr ""
+msgstr "Wybierz Grupę Sterowania"
 
 #: DlgPrefMidiBindings#9
 msgid "Select Control"
-msgstr ""
+msgstr "Wybierz Sterowanie"
 
 #: DlgPrefMidiBindings#10
 msgid "Clear Input Bindings"
@@ -1339,6 +1339,8 @@ msgid ""
 "Support Mixxx by counting and sharing bundled songs\n"
 "playback and outbound link statistics"
 msgstr ""
+"Wspieraj Mixxx'a dzieląc się statystykami dotyczącymi\n"
+" odtwarzania załączonych utworów i ruchu wychodzącego"
 
 #: DlgPrefRecord#1
 msgid "kbps"
@@ -2656,7 +2658,7 @@ msgstr "&Przeskanuj Kolekcję"
 
 #: MixxxApp#28
 msgid "Add &new playlist"
-msgstr "Dodaj &nową playlistę"
+msgstr "Dodaj &nową listę odtwarzania"
 
 #: MixxxApp#29
 msgid "Ctrl+N"
@@ -2833,7 +2835,7 @@ msgstr ""
 
 #: MixxxApp#63
 msgid "Import playlist"
-msgstr "Importuj liste odtwarzania"
+msgstr "Importuj listę odtwarzania"
 
 #: MixxxApp#64
 msgid "Audio Beat Marks"
