@@ -96,10 +96,6 @@ class SoundManager : public QObject
 #endif
         QHash<AudioOutput, const AudioSource*> m_registeredSources;
         QHash<AudioInput, AudioDestination*> m_registeredDestinations;
-        bool m_silence;
-        QReadWriteLock m_silenceLock;
-        CSAMPLE *m_silenceBuffer;
-        QHash<AudioOutput, const CSAMPLE*> m_silenceBuffers;
 };
 
 #endif

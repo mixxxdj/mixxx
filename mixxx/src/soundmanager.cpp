@@ -37,8 +37,6 @@ SoundManager::SoundManager(ConfigObject<ConfigValue> * pConfig, EngineMaster * _
     , m_paInitialized(false)
     , m_jackSampleRate(-1)
 #endif
-    , m_silence(false)
-    , m_silenceBuffer(new CSAMPLE[MAX_BUFFER_LEN])
 {
     //qDebug() << "SoundManager::SoundManager()";
     m_pConfig = pConfig;
@@ -73,8 +71,6 @@ SoundManager::SoundManager(ConfigObject<ConfigValue> * pConfig, EngineMaster * _
     // SoundDevicePortAudio::open
     pControlObjectLatency->slotSet(m_config.getFramesPerBuffer() / m_config.getSampleRate() * 1000);
     pControlObjectSampleRate->slotSet(m_config.getSampleRate());
-
-    memset(m_silenceBuffer, MAX_BUFFER_LEN, sizeof(*m_silenceBuffer));
 }
 
 /** Destructor for the SoundManager class. Closes all the devices, cleans up their pointers
@@ -90,8 +86,6 @@ SoundManager::~SoundManager()
     }
     // vinyl control proxies and input buffers are freed in closeDevices, called
     // by clearDeviceList -- bkgood
-
-    delete [] m_silenceBuffer;
 }
 
 /**
@@ -359,12 +353,6 @@ int SoundManager::setupDevices()
 
     // close open devices, close running vinyl control proxies
     closeDevices();
-
-    // don't do anything until we open __all__ the devices
-    m_silenceLock.lockForWrite();
-    m_silence = true;
-    m_silenceLock.unlock();
-
     foreach (SoundDevice *device, m_devices) {
         bool isInput = false;
         bool isOutput = false;
@@ -399,7 +387,6 @@ int SoundManager::setupDevices()
             if (err != OK)
                 return err;
             m_outputBuffers[out] = m_registeredSources[out]->buffer(out);
-            m_silenceBuffers[out] = m_silenceBuffer;
             if (out.getType() == AudioOutput::MASTER) {
                 m_pClkRefDevice = device;
             } else if (out.getType() == AudioOutput::DECK
@@ -423,11 +410,6 @@ int SoundManager::setupDevices()
             }
         }
     }
-
-    // we should be safe, can do stuff now -bkgood
-    m_silenceLock.lockForWrite();
-    m_silence = false;
-    m_silenceLock.unlock();
 
     if (!m_pClkRefDevice) {
         QList<SoundDevice*> outputDevices = getDeviceList(m_config.getAPI(), true, false);
@@ -530,10 +512,6 @@ SoundManager::requestBuffer(QList<AudioOutput> outputs, unsigned long iFramesPer
     //  End dropped/duped buffer display
     */
 
-    m_silenceLock.lockForRead();
-    bool silence = m_silence;
-    m_silenceLock.unlock();
-
     //When the clock reference device requests a buffer...
     if (device == m_pClkRefDevice && requestBufferMutex.tryLock())
     {
@@ -546,25 +524,17 @@ SoundManager::requestBuffer(QList<AudioOutput> outputs, unsigned long iFramesPer
         //number of samples for one channel, but the EngineObject
         //architecture expects number of samples for two channels
         //as input (buffer size) so...
-        if (!silence) m_pMaster->process(0, 0, iFramesPerBuffer*2);
+        m_pMaster->process(0, 0, iFramesPerBuffer*2);
 
         requestBufferMutex.unlock();
     }
-    if (silence)
-        return m_silenceBuffers;
-    else
-        return m_outputBuffers;
+    return m_outputBuffers;
 }
 
 //Used by SoundDevices to "push" any audio from their inputs that they have into the mixing engine.
 void SoundManager::pushBuffer(QList<AudioInput> inputs, short * inputBuffer,
                               unsigned long iFramesPerBuffer, unsigned int iFrameSize)
 {
-    m_silenceLock.lockForRead();
-    bool bail = m_silence;
-    m_silenceLock.unlock();
-    if (bail) return;
-
     //This function is called a *lot* and is a big source of CPU usage.
     //It needs to be very fast.
 
