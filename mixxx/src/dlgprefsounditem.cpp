@@ -82,9 +82,6 @@ void DlgPrefSoundItem::refreshDevices(const QList<SoundDevice*> &devices) {
  * combo box.
  */
 void DlgPrefSoundItem::deviceChanged(int index) {
-    // TODO(bkgood) assumes we're looking for a two-channel device -- eventually
-    // will want to give the option of mono for a microphone, depending on the
-    // value of m_type (this will be an easy fix when there's time)
     channelComboBox->clear();
     QString selection = deviceComboBox->itemData(index).toString();
     unsigned int numChannels = 0;
@@ -104,9 +101,16 @@ void DlgPrefSoundItem::deviceChanged(int index) {
     if (numChannels == 0) {
         goto emitAndReturn;
     } else {
-        for (unsigned int i = 1; i + 1 <= numChannels; ++i) {
-            channelComboBox->addItem(
-                QString(tr("Channels %1 - %2")).arg(i).arg(i + 1), i - 1);
+        unsigned char channelsForType =
+            AudioPath::channelsNeededForType(m_type);
+        for (unsigned int i = 1; i + (channelsForType - 1) <= numChannels; ++i) {
+            if (channelsForType == 1) {
+                channelComboBox->addItem(
+                    QString(tr("Channel %1")).arg(i), i - 1);
+            } else {
+                channelComboBox->addItem(
+                    QString(tr("Channels %1 - %2")).arg(i).arg(i + 1), i - 1);
+            }
             // i-1 because want the data part to be what goes into audiopath's
             // channelbase which is zero-based -- bkgood
         }
