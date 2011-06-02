@@ -44,8 +44,8 @@
 #include "defs_urls.h"
 #include "recording/defs_recording.h"
 
-
-#include "midi/mididevicemanager.h"
+#include "controllers/controllermanager.h"
+#include "controllers/midi/mididevicemanager.h"
 
 #include "upgrade.h"
 #include "mixxxkeyboard.h"
@@ -120,6 +120,7 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
     //Reset pointer to players
     m_pSoundManager = 0;
     m_pPrefDlg = 0;
+    m_pControllerManager = 0;
     m_pMidiDeviceManager = 0;
     m_pRecordingManager = 0;
 
@@ -390,6 +391,9 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
     qRegisterMetaType<MidiMessage>("MidiMessage");
     qRegisterMetaType<MidiStatusByte>("MidiStatusByte");
 
+    // Initialize controllers
+    m_pControllerManager = new ControllerManager(m_pConfig);
+    m_pControllerManager->setupDevices();
     // Initialise midi
     m_pMidiDeviceManager = new MidiDeviceManager(m_pConfig);
     m_pMidiDeviceManager->setupDevices();
@@ -398,7 +402,7 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
 
     // Initialize preference dialog
     m_pPrefDlg = new DlgPreferences(this, m_pSkinLoader, m_pSoundManager, m_pPlayerManager,
-                                 m_pMidiDeviceManager, m_pVCManager, m_pConfig);
+                                    m_pControllerManager, m_pMidiDeviceManager, m_pVCManager, m_pConfig);
     m_pPrefDlg->setHidden(true);
 
     // Try open player device If that fails, the preference panel is opened.
@@ -556,6 +560,10 @@ MixxxApp::~MixxxApp()
     // MIDIDeviceManager depends on Config
     qDebug() << "delete MidiDeviceManager";
     delete m_pMidiDeviceManager;
+    
+    // ControllerManager depends on Config
+    qDebug() << "delete ControllerManager";
+    delete m_pControllerManager;
 
     // PlayerManager depends on Engine, Library, and Config
     qDebug() << "delete playerManager" << qTime.elapsed();

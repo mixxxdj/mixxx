@@ -19,7 +19,7 @@
 #include "dlgprefmidibindings.h"
 #include "mididevicemanager.h"
 #include "midiledhandler.h"
-#include "../mixxxcontrol.h"
+#include "mixxxcontrol.h"
 #include "midimapping.h"
 
 #define DEVICE_CONFIG_PATH BINDINGS_PATH.append("MixxxMIDIDevices")

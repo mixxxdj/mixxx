@@ -32,7 +32,7 @@
 #include "configobject.h"
 #include "errordialoghandler.h"
 
-#define REQUIRED_SCRIPT_FILE "midi-mappings-scripts.js"
+#define REQUIRED_SCRIPT_FILE "common-controller-scripts.js"
 #define XML_SCHEMA_VERSION "1"
 #define DEFAULT_DEVICE_PRESET BINDINGS_PATH.append(m_deviceName.right(m_deviceName.size()-m_deviceName.indexOf(" ")-1).replace(" ", "_") + MIDI_MAPPING_EXTENSION)
 

@@ -29,7 +29,7 @@ class PortMIDI(Dependence):
             raise Exception('Did not find PortMidi or its development headers.')
 
     def sources(self, build):
-        return ['midi/portmidienumerator.cpp', 'midi/midideviceportmidi.cpp']
+        return ['controllers/midi/portmidienumerator.cpp', 'controllers/midi/midideviceportmidi.cpp']
 
 class OpenGL(Dependence):
 
@@ -331,8 +331,10 @@ class MixxxCore(Feature):
                    "dlgpreferences.cpp",
                    "dlgprefsound.cpp",
                    "dlgprefsounditem.cpp",
+                   "dlgprefcontroller.cpp",
                    "dlgprefmidibindings.cpp",
                    "dlgprefplaylist.cpp",
+                   "dlgprefnocontrollers.cpp",
                    "dlgprefnomidi.cpp",
                    "dlgprefcontrols.cpp",
                    "dlgprefbpm.cpp",
@@ -390,18 +392,23 @@ class MixxxCore(Feature):
                    "analyserbpm.cpp",
                    "analyserwaveform.cpp",
 
-                   "midi/mididevice.cpp",
-                   "midi/mididevicemanager.cpp",
-                   "midi/midideviceenumerator.cpp",
-                   "midi/midimapping.cpp",
-                   "midi/midiinputmappingtablemodel.cpp",
-                   "midi/midioutputmappingtablemodel.cpp",
-                   "midi/midichanneldelegate.cpp",
-                   "midi/midistatusdelegate.cpp",
-                   "midi/midinodelegate.cpp",
-                   "midi/midioptiondelegate.cpp",
-                   "midi/midimessage.cpp",
-                   "midi/midiledhandler.cpp",
+                   "controllers/controller.cpp",
+                   "controllers/controllermanager.cpp",
+                   "controllers/controllerenumerator.cpp",
+                   "controllers/controllerengine.cpp",
+                   
+                   "controllers/midi/mididevice.cpp",
+                   "controllers/midi/mididevicemanager.cpp",
+                   "controllers/midi/midideviceenumerator.cpp",
+                   "controllers/midi/midimapping.cpp",
+                   "controllers/midi/midiinputmappingtablemodel.cpp",
+                   "controllers/midi/midioutputmappingtablemodel.cpp",
+                   "controllers/midi/midichanneldelegate.cpp",
+                   "controllers/midi/midistatusdelegate.cpp",
+                   "controllers/midi/midinodelegate.cpp",
+                   "controllers/midi/midioptiondelegate.cpp",
+                   "controllers/midi/midimessage.cpp",
+                   "controllers/midi/midiledhandler.cpp",
                    "softtakeover.cpp",
 
                    "main.cpp",
@@ -574,8 +581,10 @@ class MixxxCore(Feature):
         # the code for the QT UI forms
         build.env.Uic4('dlgpreferencesdlg.ui')
         build.env.Uic4('dlgprefsounddlg.ui')
+        build.env.Uic4('dlgprefcontrollerdlg.ui')
         build.env.Uic4('dlgprefmidibindingsdlg.ui')
         build.env.Uic4('dlgprefplaylistdlg.ui')
+        build.env.Uic4('dlgprefnocontrollersdlg.ui')
         build.env.Uic4('dlgprefnomididlg.ui')
         build.env.Uic4('dlgprefcontrolsdlg.ui')
         build.env.Uic4('dlgprefeqdlg.ui')

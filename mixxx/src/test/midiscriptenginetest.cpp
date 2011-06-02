@@ -7,7 +7,7 @@
 
 #include "controlobject.h"
 #include "configobject.h"
-#include "midi/midiscriptengine.h"
+#include "controllers/midi/midiscriptengine.h"
 
 namespace {
 
@@ -43,7 +43,7 @@ TEST_F(MidiScriptEngineTest, commonScriptHasNoErrors) {
     // ConfigObject<ConfigValue> config("~/.mixxx/mixxx.cfg");
     // QString commonScript = config.getConfigPath() + "/" +
     //         "/midi/midi-mappings-scripts.js";
-    QString commonScript = "./res/midi/midi-mappings-script.js";
+    QString commonScript = "./res/controllers/midi-mappings-script.js";
     scriptEngine->evaluate(commonScript);
     EXPECT_FALSE(scriptEngine->hasErrors(commonScript));
 }

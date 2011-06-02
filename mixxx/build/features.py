@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 
 import os
 import util
@@ -43,11 +44,46 @@ class HSS1394(Feature):
         build.env.Append(CPPDEFINES = '__HSS1394__')
 
     def sources(self, build):
-        sources = SCons.Split("""midi/mididevicehss1394.cpp
-                            midi/hss1394enumerator.cpp
+        sources = SCons.Split("""controllers/midi/mididevicehss1394.cpp
+                            controllers/midi/hss1394enumerator.cpp
                             """)
         return sources
 
+class HID(Feature):
+    def description(self):
+        return "HID controller support"
+
+    def enabled(self, build):
+        build.flags['hid'] = util.get_flags(build.env, 'hid', 1)
+        if int(build.flags['hid']):
+            return True
+        return False
+
+    def add_options(self, build, vars):
+        vars.Add('hid', 'Set to 1 to enable HID controller support.', 1)
+
+    def configure(self, build, conf):
+        if not self.enabled(build):
+            return
+        if not conf.CheckLib(['libusb-1.0', 'usb-1.0']) or not conf.CheckHeader('libusb-1.0/libusb.h'):
+            raise Exception('Did not find the libusb 1.0 development library or its header file, exiting!')
+            return
+
+        build.env.Append(CPPDEFINES = '__HID__')
+
+    def sources(self, build):
+        build.env.Append(CPPPATH=['#lib/hidapi-0.6.0/hidapi'])
+        build.env.ParseConfig('pkg-config libusb-1.0 --silence-errors --cflags --libs')
+        sources = SCons.Split("""controllers/hidcontroller.cpp
+                            controllers/hidenumerator.cpp
+                            """)
+        if build.platform_is_windows:
+            sources.append("#lib/hidapi-0.6.0/windows/hid.cpp")
+        elif build.platform_is_osx:
+            sources.append("#lib/hidapi-0.6.0/mac/hid.c")
+        else:
+            sources.append("#lib/hidapi-0.6.0/linux/hid-libusb.c")
+        return sources
 
 class Mad(Feature):
     def description(self):
@@ -132,7 +168,7 @@ class MIDIScript(Feature):
         build.env.Append(CPPDEFINES = '__MIDISCRIPT__')
 
     def sources(self, build):
-        return ["midi/midiscriptengine.cpp"]
+        return ["controllers/midi/midiscriptengine.cpp"]
 
 class LADSPA(Feature):
 
