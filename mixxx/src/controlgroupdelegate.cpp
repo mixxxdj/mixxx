@@ -8,7 +8,7 @@
 #include <QtCore>
 #include <QtGui>
 #include "configobject.h"
-#include "midi/midiinputmappingtablemodel.h" //Need this to know MIDIINPUTTABLEINDEX_CONTROLOBJECTVALUE
+#include "controllers/midi/midiinputmappingtablemodel.h" //Need this to know MIDIINPUTTABLEINDEX_CONTROLOBJECTVALUE
 #include "controlvaluedelegate.h"
 #include "controlgroupdelegate.h"
 

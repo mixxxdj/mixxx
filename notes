@@ -1,0 +1,42 @@
+Leave the MIDI subsystem alone since it's closely tied with the GUI. Make a new one.
+
+Controller:
+    properties:
+    - name
+    - is input device
+    - is output device
+    - is open
+    members:
+    - scriptEngine
+    functions:
+    - open(scriptFile)
+        opens comms with controller then starts up scriptEngine,
+        loads supplied (and common) script files & runs init script function
+    - close
+        deletes scriptEngine (running shutdown script function) then closes comms with controller
+    - receive (from controller to Mixxx)
+    - send (from Mixxx to controller)
+
+ControllerManager:
+    properties:
+    - list of Controller*s
+    Spawns one thread for all Controllers under it
+
+Make GUI hierarchy:
+    Hardware Controllers
+        MIDI
+            0. foo
+            1. bar
+            2. baz
+            H0. SCS.1d
+            H1. SCS.1m
+            N0. NS7
+            N1. V7
+            ...
+        HID
+            1. EKS Otus
+            2. Numark MixDeck
+            3. Hercules RMX
+            ...
+        OSC
+            ...

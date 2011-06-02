@@ -21,7 +21,7 @@
 #include <QObject>
 #include <QEvent>
 #include <QMutex>
-#include "midi/midimessage.h"
+#include "controllers/midi/midimessage.h"
 #include "configobject.h"
 #include "controlobjectthread.h"
 

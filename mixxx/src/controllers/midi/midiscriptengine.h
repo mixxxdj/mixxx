@@ -22,7 +22,7 @@
 #include <QMessageBox>
 #include "configobject.h"
 #include "midimessage.h"
-#include "pitchfilter.h"
+#include "../pitchfilter.h"
 #include "softtakeover.h"
 
 class MidiDevice;

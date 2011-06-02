@@ -25,16 +25,13 @@
 #include "ui_dlgpreferencesdlg.h"
 #include "configobject.h"
 
-class QListWidget;
-class QListWidgetItem;
-class QStackedWidget;
-
 class MixxxApp;
-class PlayerProxy;
 class SoundManager;
 class DlgPrefSound;
+class DlgPrefController;
 class DlgPrefMidiBindings;
 class DlgPrefPlaylist;
+class DlgPrefNoControllers;
 class DlgPrefNoMidi;
 class DlgPrefControls;
 class DlgPrefEQ;
@@ -45,7 +42,7 @@ class DlgPrefVinyl;
 class DlgPrefNoVinyl;
 class DlgPrefShoutcast;
 class DlgPrefReplayGain;
-class PowerMate;
+class ControllerManager;
 class MidiDeviceManager;
 class SkinLoader;
 class PlayerManager;
@@ -60,7 +57,7 @@ class DlgPreferences : public QDialog, public Ui::DlgPreferencesDlg
     Q_OBJECT
 public:
     DlgPreferences(MixxxApp *mixxx, SkinLoader* pSkinLoader, SoundManager *soundman,
-                   PlayerManager* pPlayerManager, MidiDeviceManager* midi,
+                   PlayerManager* pPlayerManager, ControllerManager* controllers, MidiDeviceManager* midi,
                    VinylControlManager *pVCManager, ConfigObject<ConfigValue> *config);
 
     ~DlgPreferences();
@@ -68,22 +65,28 @@ public:
 public slots:
     void slotShow();
     void slotHide();
+    void rescanControllers();
     void rescanMidi();
     void slotApply();
     void changePage(QTreeWidgetItem *current, QTreeWidgetItem *previous);
     void showSoundHardwarePage();
     void slotHighlightDevice(DlgPrefMidiBindings* dialog, bool enabled);
+    void slotHighlightDevice(DlgPrefController* dialog, bool enabled);
 signals:
     void closeDlg();
     void showDlg();
 protected:
     bool eventFilter(QObject *, QEvent *);
 private:
+    void destroyControllerWidgets();
+    void setupControllerWidgets();
     void destroyMidiWidgets();
     void setupMidiWidgets();
     DlgPrefSound *wsound;
     QList<DlgPrefMidiBindings*> wmidiBindingsForDevice;
+    QList<DlgPrefController*> wcontrollerBindingsForDevice;
     DlgPrefPlaylist *wplaylist;
+    DlgPrefNoControllers *wNoControllers;
     DlgPrefNoMidi *wNoMidi;
     DlgPrefControls *wcontrols;
     DlgPrefEQ *weq;
@@ -106,10 +109,13 @@ private:
     QTreeWidgetItem* m_pShoutcastButton;
     QTreeWidgetItem* m_pReplayGainButton;
     QTreeWidgetItem* m_pMIDITreeItem;
+    QTreeWidgetItem* m_pControllerTreeItem;
     QList<QTreeWidgetItem*> m_midiBindingsButtons;
+    QList<QTreeWidgetItem*> m_controllerBindingsButtons;
 
     ConfigObject<ConfigValue> *config;
     MixxxApp *m_pMixxx;
+    ControllerManager* m_pControllerManager;
     MidiDeviceManager* m_pMidiDeviceManager;
 };
 

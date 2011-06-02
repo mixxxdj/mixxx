@@ -123,8 +123,8 @@ soundsource_plugin_files = soundsource_plugins
 #Skins
 skin_files = Glob('#res/skins/*')
 
-#MIDI mappings
-midimappings_files = Glob('#res/midi/*')
+#Controller mappings
+controllermappings_files = Glob('#res/controllers/*')
 
 #Keyboard mapping(s)
 keyboardmappings_files = Glob('#res/keyboard/*')
@@ -171,8 +171,8 @@ dll_files += Split("""$QTDIR/bin/QtCore4.dll $QTDIR/bin/QtGui4.dll $QTDIR/bin/Qt
 if int(flags.get('sqlitedll', 0)):
 	sqldll_files = Split("""$QTDIR/plugins/sqldrivers/qsqlite4.dll""") #Qt SQLite plugin
 
-if int(flags['script']) or int(flags['midiscript']):
-	dll_files += Split("""$QTDIR/bin/QtScript4.dll""")
+#if int(flags['script']) or int(flags['midiscript']):
+dll_files += Split("""$QTDIR/bin/QtScript4.dll""")  # Required for non-midi controllers
 
 
 
@@ -201,7 +201,7 @@ if build.platform_is_linux or build.platform_is_bsd:
 		resource = env.Install(unix_share_path + "/mixxx", resource_files)
 		skins = env.Install(unix_share_path + "/mixxx/skins", skin_files)
 		soundsource_plugins = env.Install(unix_lib_path + "/mixxx/plugins/soundsource", soundsource_plugin_files)
-		midimappings = env.Install(unix_share_path + "/mixxx/midi", midimappings_files)
+		controllermappings = env.Install(unix_share_path + "/mixxx/controllers", controllermappings_files)
 		keyboardmappings = env.Install(unix_share_path + "/mixxx/keyboard", keyboardmappings_files)
 		if int(flags['ladspa']):
 			ladspapresets = env.Install(unix_share_path + "/mixxx/ladspa_presets", ladspapresets_files)
@@ -215,7 +215,7 @@ if build.platform_is_linux or build.platform_is_bsd:
 		env.Alias('install', resource)
 		env.Alias('install', skins)
 		env.Alias('install', soundsource_plugins)
-		env.Alias('install', midimappings)
+		env.Alias('install', controllermappings)
 		env.Alias('install', keyboardmappings)
 		if int(flags['ladspa']):
 			env.Alias('install', ladspapresets)
@@ -233,7 +233,7 @@ if build.platform_is_linux or build.platform_is_bsd:
 			#Copy(unix_share_path + "/.ixxx/skins", skin_files)
 			#Delete(unix_bin_path + "mixxx")
 
-			#Delete(unix_share_path + "/mixxx/midi")
+			#Delete(unix_share_path + "/mixxx/controllers")
 			#Delete(unix_share_path + "/mixxx/keyboard")
 
 #Build the Mixxx.app bundle
@@ -257,7 +257,7 @@ if build.platform_is_osx and 'bundle' in COMMAND_LINE_TARGETS:
 	bundle = env.App("Mixxx", [mixxx_bin, '#res/osx/application.icns',
 		Dir('#res/skins/'),
 		File('#res/schema.xml'),
-		Dir('#res/midi/'), Dir('#res/keyboard/'),
+		Dir('#res/controllers/'), Dir('#res/keyboard/'),
 		Dir('#res/ladspa_presets'), Dir('#res/doc/'), Dir('#res/promo/'),
         Dir('/Library/Frameworks/QtGui.framework/Resources/qt_menu.nib'),  #qt_menu.nib for Cocoa Qt 4.7+
         File("#README"), File("#LICENSE")],
@@ -282,7 +282,7 @@ if build.platform_is_osx and 'bundle' in COMMAND_LINE_TARGETS:
 if build.platform_is_windows:
 	skins = env.Install("#"+dist_dir+"/skins", skin_files)
 	resource = env.Install("#"+dist_dir+"/", resource_files)
-	midimappings = env.Install("#"+dist_dir+"/midi", midimappings_files)
+	controllermappings = env.Install("#"+dist_dir+"/controllers", controllermappings_files)
 	keyboardmappings = env.Install("#"+dist_dir+"/keyboard", keyboardmappings_files)
 	if int(flags['ladspa']):
 		ladspapresets = env.Install("#"+dist_dir+"/ladspa_presets", ladspapresets_files)
@@ -296,7 +296,7 @@ if build.platform_is_windows:
 	#Always trigger these install builders when compiling on Windows
 	env.Alias('mixxx', skins)
 	env.Alias('mixxx', resource)
-	env.Alias('mixxx', midimappings)
+	env.Alias('mixxx', controllermappings)
 	env.Alias('mixxx', keyboardmappings)
 	if int(flags['ladspa']):
 		env.Alias('mixxx', ladspapresets)
