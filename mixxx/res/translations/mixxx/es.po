@@ -9,13 +9,13 @@ msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2011-05-03 21:42-0400\n"
-"PO-Revision-Date: 2011-05-30 17:10+0000\n"
-"Last-Translator: Fitoschido <fitoschido@gmail.com>\n"
+"PO-Revision-Date: 2011-06-01 09:46+0000\n"
+"Last-Translator: ronramon <Unknown>\n"
 "Language-Team: Galician <gl@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-05-31 04:33+0000\n"
+"X-Launchpad-Export-Date: 2011-06-02 04:34+0000\n"
 "X-Generator: Launchpad (build 12959)\n"
 
 #: AutoDJFeature#1
@@ -78,21 +78,21 @@ msgstr "Puntuación"
 #: BaseSqlTableModel#12
 msgctxt "BaseSqlTableModel#12"
 msgid "Bitrate"
-msgstr "Taxa de bits"
+msgstr "Tasa de bits"
 
 #: BaseSqlTableModel#13
 msgctxt "BaseSqlTableModel#13"
 msgid "BPM"
-msgstr "BPM"
+msgstr "PPM"
 
 #: BaseSqlTableModel#14
 msgctxt "BaseSqlTableModel#14"
 msgid "Track #"
-msgstr "Nº pista"
+msgstr "Pista nº"
 
 #: BaseSqlTableModel#15
 msgid "Date Added"
-msgstr "Data de adición"
+msgstr "Fecha de adición"
 
 #: BaseSqlTableModel#16
 msgid "#"
@@ -105,11 +105,11 @@ msgstr "Clave"
 
 #: BaseTrackPlayer#1
 msgid "Couldn't load track."
-msgstr "Non foi posíble cargar a pista."
+msgstr "No se pudo cargar la pista."
 
 #: BrowseFeature#1
 msgid "Quick Links"
-msgstr "Ligazóns rápidas"
+msgstr "Enlaces rápidos"
 
 #: BrowseFeature#2
 msgid "Devices"
@@ -146,12 +146,12 @@ msgstr "Examinar"
 
 #: BrowseTableModel#1
 msgid "Filename"
-msgstr "Nome do ficheiro"
+msgstr "Nombre de archivo"
 
 #: BrowseTableModel#2
 msgctxt "BrowseTableModel#2"
 msgid "Artist"
-msgstr "Intérprete"
+msgstr "Artista"
 
 #: BrowseTableModel#3
 msgctxt "BrowseTableModel#3"
@@ -166,17 +166,17 @@ msgstr "Álbum"
 #: BrowseTableModel#5
 msgctxt "BrowseTableModel#5"
 msgid "Track #"
-msgstr "Nº pista"
+msgstr "Pista nº"
 
 #: BrowseTableModel#6
 msgctxt "BrowseTableModel#6"
 msgid "Year"
-msgstr "Ano"
+msgstr "Año"
 
 #: BrowseTableModel#7
 msgctxt "BrowseTableModel#7"
 msgid "Genre"
-msgstr "Xénero"
+msgstr "Género"
 
 #: BrowseTableModel#8
 msgctxt "BrowseTableModel#8"
@@ -191,7 +191,7 @@ msgstr "Duración"
 #: BrowseTableModel#10
 msgctxt "BrowseTableModel#10"
 msgid "BPM"
-msgstr "BPM"
+msgstr "PPM"
 
 #: BrowseTableModel#11
 msgctxt "BrowseTableModel#11"
@@ -206,7 +206,7 @@ msgstr "Tipo"
 #: BrowseTableModel#13
 msgctxt "BrowseTableModel#13"
 msgid "Bitrate"
-msgstr "Taxa de bits"
+msgstr "Tasa de bits"
 
 #: BrowseTableModel#14
 msgctxt "BrowseTableModel#14"
@@ -223,116 +223,116 @@ msgid ""
 "Could not load the following file because it is in use by Mixxx or another "
 "application."
 msgstr ""
-"Non se puido cargar o seguinte ficheiro xa que está a ser empregado por Mixx "
-"ou por outra aplicación."
+"No se pudo cargar el siguiente archivo, debido a que está en uso por Mixxx o "
+"por otra aplicación."
 
 #: BrowseTableModel#17
 msgid "Warning: This will permanently delete the following files:"
-msgstr "Aviso: Isto vai eliminar os seguintes ficheiros:"
+msgstr "Aviso: Esto eliminará los siguientes archivos:"
 
 #: BrowseTableModel#18
 msgid "Are you sure you want to delete these files from your computer?"
-msgstr "Realmente desexas eliminar estos ficheiros da túa computadora?"
+msgstr "¿Está seguro de querer eliminar estos archivos de su equipo?"
 
 #: BrowseTableModel#19
 msgid ""
 "Could not delete the following file because it is in use by Mixxx or another "
 "application:"
 msgstr ""
-"Non se puido eliminar o seguinte ficheiro xa que está a ser empregado por "
-"Mixx ou por outra aplicación:"
+"No se pudo eliminar el siguiente archivo, debido a que está en uso por Mixxx "
+"o por otra aplicación:"
 
 #: BrowseTableModel#20
 msgid "Could not update file metadata."
-msgstr "Non se puido actualizar o ficheiro de metadatos."
+msgstr "No se pudieron actualizar los metadatos de archivo."
 
 #: CrateFeature#1
 msgid "New Crate"
-msgstr "Novo Caixón"
+msgstr "Cajón nuevo"
 
 #: CrateFeature#2
 msgctxt "CrateFeature#2"
 msgid "Remove"
-msgstr "Eliminar"
+msgstr "Quitar"
 
 #: CrateFeature#3
 msgctxt "CrateFeature#3"
 msgid "Rename"
-msgstr "Mudar o nome"
+msgstr "Renombrar"
 
 #: CrateFeature#4
 msgctxt "CrateFeature#4"
 msgid "Lock"
-msgstr "Trancar"
+msgstr "Bloquear"
 
 #: CrateFeature#5
 msgctxt "CrateFeature#5"
 msgid "Import Playlist"
-msgstr "Importar a lista de reprodución"
+msgstr "Importar lista de reprodución"
 
 #: CrateFeature#6
 msgid "Crates"
-msgstr "Caixóns"
+msgstr "Cajones"
 
 #: CrateFeature#7
 msgid "Import Crate"
-msgstr "Importar caixón"
+msgstr "Importar cajón"
 
 #: CrateFeature#8
 msgid "Export Crate"
-msgstr "Exportar caixón"
+msgstr "Exportar cajón"
 
 #: CrateFeature#9
 msgctxt "CrateFeature#9"
 msgid "Unlock"
-msgstr "Desatrancar"
+msgstr "Desbloquear"
 
 #: CrateFeature#10
 msgid "Crate name:"
-msgstr "Nome do caixón:"
+msgstr "Nombre del cajón:"
 
 #: CrateFeature#11
 msgid "An unknown error occurred while creating crate: "
-msgstr "Ocorreu un erro descoñecido ao crear o caixón: "
+msgstr "Ocurrió un error desconocido al crear el cajón: "
 
 #: CrateFeature#12
 msgid "Rename Crate"
-msgstr "Renomear caixón"
+msgstr "Renombrar cajón"
 
 #: CrateFeature#13
 msgid "New crate name:"
-msgstr "Novo nome do caixón:"
+msgstr "Nombre nuevo del cajón:"
 
 #: CrateFeature#14
 msgid "Renaming Crate Failed"
-msgstr "Ocorreu un erro ao renomear o caixón"
+msgstr "No se pudo renombrar el cajón"
 
 #: CrateFeature#15
 msgctxt "CrateFeature#15"
 msgid "Playlist Files (*.m3u *.pls)"
-msgstr "Ficheiros da lista de reprodución (*.m3u *.pls)"
+msgstr "Archivos de lista de reproducción (*.m3u *.pls)"
 
 #: CrateFeature#16
 msgctxt "CrateFeature#16"
 msgid "Export Playlist"
-msgstr "Exportar a lista de reprodución"
+msgstr "Exportar lista de reprodución"
 
 #: CrateFeature#17
 msgctxt "CrateFeature#17"
 msgid "M3U Playlist (*.m3u);;PLS Playlist (*.pls)"
-msgstr "Lista de reprodución M3U (*.m3u);;Lista de reprodución PLS (*.pls)"
+msgstr "Lista de reproducción M3U (*.m3u);;Lista de reproducción PLS (*.pls)"
 
 #: CrateFeature#18
 msgid "A crate cannot have a blank name."
-msgstr "Un caixón non pode ter o nome en branco."
+msgstr "Los cajones no pueden carecer de nombre."
 
 #: CrateFeature#19
 msgid "Creating Crate Failed"
-msgstr "Ocorreu un erro ao crear o caixón"
+msgstr "No se pudo crear el cajón"
 
 #: CrateFeature#20
 msgid "A crate by that name already exists."
-msgstr "Xa existe un caixón con ese nome."
+msgstr "Ya existe un cajón con ese nombre."
 
 #: DlgAboutDlg#1
 msgid "About Mixxx"
@@ -363,7 +363,7 @@ msgstr ""
 "size:8.25pt; font-weight:400; font-style:normal;\">\n"
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-"
 "right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-"
-"family:'Sans Serif'; font-size:9pt;\">Credits go here</span></p>\n"
+"family:'Sans Serif'; font-size:9pt;\">Los créditos van aquí</span></p>\n"
 "<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; "
 "margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-"
 "family:'Sans Serif'; font-size:9pt;\"></p></body></html>"
@@ -387,27 +387,27 @@ msgstr "Activar Auto DJ"
 #: DlgAutoDJ#3
 msgctxt "DlgAutoDJ#3"
 msgid "Manage"
-msgstr "Xestionar"
+msgstr "Gestionar"
 
 #: DlgAutoDJ#4
 msgid "Shuffle playlist"
-msgstr "Lista de reprodución aleatoria"
+msgstr "Mezclar lista de reproducción"
 
 #: DlgAutoDJ#5
 msgid "Add tracks to the queue below..."
-msgstr "Engade pistas á cola de aquí abaixo..."
+msgstr "Añadir pistas a la cola abajo..."
 
 #: DlgBpmSchemeDlg#1
 msgid "BPM Scheme"
-msgstr "Equema BPM"
+msgstr "Esquema de PPM"
 
 #: DlgBpmSchemeDlg#2
 msgid "Scheme Name:"
-msgstr "Nome do esquema:"
+msgstr "Nombre de esquema:"
 
 #: DlgBpmSchemeDlg#3
 msgid "BPM Range"
-msgstr "Rango BMP"
+msgstr "Rango de PPM"
 
 #: DlgBpmSchemeDlg#4
 msgid "Max"
@@ -415,12 +415,12 @@ msgstr "Máx"
 
 #: DlgBpmSchemeDlg#5
 msgid "Min"
-msgstr "Mínimo"
+msgstr "Mín"
 
 #: DlgBpmSchemeDlg#6
 msgctxt "DlgBpmSchemeDlg#6"
 msgid "Analyze Entire Song"
-msgstr "Analizar todo o tema"
+msgstr "Analizar todo el tema"
 
 #: DlgBpmTapDlg#1
 msgctxt "DlgBpmTapDlg#1"
@@ -429,7 +429,7 @@ msgstr "Editor de pistas"
 
 #: DlgBpmTapDlg#2
 msgid "&Close"
-msgstr "&Pechar"
+msgstr "&Cerrar"
 
 #: DlgBpmTapDlg#3
 msgctxt "DlgBpmTapDlg#3"
@@ -443,32 +443,32 @@ msgstr "Canción:"
 
 #: DlgBpmTapDlg#5
 msgid "Next >>"
-msgstr "Seguinte>>"
+msgstr "Siguiente >>"
 
 #: DlgBpmTapDlg#6
 msgid "<< Prev"
-msgstr "<<Anterior"
+msgstr "<< Anterior"
 
 #: DlgBpmTapDlg#7
 msgid "BPM Editor (Click to Expand)"
-msgstr "Editor BPM (Prema para expandir)"
+msgstr "Editor de PPM (pulse para expandir)"
 
 #: DlgBpmTapDlg#8
 msgctxt "DlgBpmTapDlg#8"
 msgid "BPM Detection"
-msgstr "Detección BPM"
+msgstr "Detección de PPM"
 
 #: DlgBpmTapDlg#9
 msgid "BPM Scheme:"
-msgstr "Esquema BPM:"
+msgstr "Esquema de PPM:"
 
 #: DlgBpmTapDlg#10
 msgid "to"
-msgstr "até"
+msgstr "a"
 
 #: DlgBpmTapDlg#11
 msgid "BPM Range:"
-msgstr "Rango BPM:"
+msgstr "Rango de PPM:"
 
 #: DlgBpmTapDlg#12
 msgid "&Go"
@@ -481,15 +481,15 @@ msgstr "Alt+G"
 #: DlgBpmTapDlg#14
 msgctxt "DlgBpmTapDlg#14"
 msgid "Analyze Entire Song"
-msgstr "Analizar todo o tema"
+msgstr "Analizar todo el tema"
 
 #: DlgBpmTapDlg#15
 msgid "BPM:"
-msgstr "BPM:"
+msgstr "PPM:"
 
 #: DlgBpmTapDlg#16
 msgid "&Push to tap tempo"
-msgstr "&Presionar para predecir Tiempo"
+msgstr "&Pulse para predecir tempo"
 
 #: DlgBpmTapDlg#17
 msgid "Alt+P"
@@ -498,7 +498,7 @@ msgstr "Alt+P"
 #: DlgBpmTapDlg#18
 msgctxt "DlgBpmTapDlg#18"
 msgid "Track Information (Click to Expand)"
-msgstr "Información del Tema (Click para Expandir)"
+msgstr "Información del tema (pulse para expandir)"
 
 #: DlgBpmTapDlg#19
 msgctxt "DlgBpmTapDlg#19"
@@ -508,7 +508,7 @@ msgstr "Título:"
 #: DlgBpmTapDlg#20
 msgctxt "DlgBpmTapDlg#20"
 msgid "Artist:"
-msgstr "Intérprete:"
+msgstr "Artista:"
 
 #: DlgBpmTapDlg#21
 msgctxt "DlgBpmTapDlg#21"
@@ -518,7 +518,7 @@ msgstr "Comentarios:"
 #: DlgBpmTapDlg#22
 msgctxt "DlgBpmTapDlg#22"
 msgid "Filename:"
-msgstr "Nome do ficheiro:"
+msgstr "Nombre del archivo:"
 
 #: DlgBpmTapDlg#23
 msgctxt "DlgBpmTapDlg#23"
@@ -527,12 +527,12 @@ msgstr "3:00"
 
 #: DlgBpmTapDlg#24
 msgid "Play Time:"
-msgstr "Tempo de reprodución:"
+msgstr "Tiempo de reprodución:"
 
 #: DlgBpmTapDlg#25
 msgctxt "DlgBpmTapDlg#25"
 msgid "File Type:"
-msgstr "Tipo de ficheiro:"
+msgstr "Tipo de archivo:"
 
 #: DlgBpmTapDlg#26
 msgctxt "DlgBpmTapDlg#26"
@@ -1541,7 +1541,7 @@ msgstr "Prueba de \"Mixxx Icecast\""
 
 #: DlgPrefShoutcastDlg#21
 msgid "Website"
-msgstr "Páxina web:"
+msgstr "Sitio web"
 
 #: DlgPrefShoutcastDlg#22
 msgid "http://www.mixxx.org"
@@ -1549,7 +1549,7 @@ msgstr "http://www.mixxx.org"
 
 #: DlgPrefShoutcastDlg#23
 msgid "Description"
-msgstr "Descrición"
+msgstr "Descripción"
 
 #: DlgPrefShoutcastDlg#24
 msgid ""
@@ -1574,21 +1574,21 @@ msgstr ""
 "font-weight:400; font-style:normal;\">\n"
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-"
 "right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-"
-"family:'DejaVu Sans'; font-size:9pt; font-style:italic;\">Esta transmision "
-"esta en linea por propositos de prueba!</span></p></body></html>"
+"family:'DejaVu Sans'; font-size:9pt; font-style:italic;\">¡Esta transmisión "
+"está en línea por propósitos de pruebas!</span></p></body></html>"
 
 #: DlgPrefShoutcastDlg#25
 msgctxt "DlgPrefShoutcastDlg#25"
 msgid "Genre"
-msgstr "Xénero"
+msgstr "Género"
 
 #: DlgPrefShoutcastDlg#26
 msgid "Live mix"
-msgstr "Mestura en vivo"
+msgstr "Mezcla en vivo"
 
 #: DlgPrefShoutcastDlg#27
 msgid "Public stream"
-msgstr "Emisión Pública"
+msgstr "Transmisión pública"
 
 #: DlgPrefShoutcastDlg#28
 msgctxt "DlgPrefShoutcastDlg#28"
@@ -1598,7 +1598,7 @@ msgstr "Codificación"
 #: DlgPrefShoutcastDlg#29
 msgctxt "DlgPrefShoutcastDlg#29"
 msgid "Bitrate"
-msgstr "Taxa de bits"
+msgstr "Tasa de bits"
 
 #: DlgPrefShoutcastDlg#30
 msgid "320 kbps"
@@ -2628,7 +2628,7 @@ msgstr "Axuda"
 
 #: MixxxApp#19
 msgid "Exit"
-msgstr "Saír"
+msgstr "Salir"
 
 #: MixxxApp#20
 msgid "Continue"
@@ -3164,7 +3164,7 @@ msgstr "Paso"
 
 #: QObject#8
 msgid "Unknown path type %1"
-msgstr ""
+msgstr "Directorio Desconocido Tipo %1"
 
 #: RecordingFeature#1
 msgid "Recordings"
