@@ -8,13 +8,13 @@ msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2011-05-03 21:42-0400\n"
-"PO-Revision-Date: 2011-05-27 22:29+0000\n"
+"PO-Revision-Date: 2011-06-02 19:14+0000\n"
 "Last-Translator: Yalçın Can <Unknown>\n"
 "Language-Team: Turkish <tr@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-05-28 04:33+0000\n"
+"X-Launchpad-Export-Date: 2011-06-03 04:35+0000\n"
 "X-Generator: Launchpad (build 12959)\n"
 
 #: AutoDJFeature#1
@@ -222,10 +222,12 @@ msgid ""
 "Could not load the following file because it is in use by Mixxx or another "
 "application."
 msgstr ""
+"Belirtilen dosya açılamadı, dosya Mixxx veya diğer bir program tarafıdnan "
+"kullanılıyor."
 
 #: BrowseTableModel#17
 msgid "Warning: This will permanently delete the following files:"
-msgstr ""
+msgstr "Dikkat: Bu işlem belirtilen dosyaları kalıcı olarak silecek:"
 
 #: BrowseTableModel#18
 msgid "Are you sure you want to delete these files from your computer?"
@@ -331,7 +333,7 @@ msgstr ""
 
 #: DlgAboutDlg#1
 msgid "About Mixxx"
-msgstr ""
+msgstr "Mixxx Hakkında"
 
 #: DlgAboutDlg#2
 msgid ""
@@ -402,34 +404,34 @@ msgstr ""
 #: DlgBpmSchemeDlg#6
 msgctxt "DlgBpmSchemeDlg#6"
 msgid "Analyze Entire Song"
-msgstr ""
+msgstr "Tüm Parçayı Çözümle"
 
 #: DlgBpmTapDlg#1
 msgctxt "DlgBpmTapDlg#1"
 msgid "Track Editor"
-msgstr ""
+msgstr "Parça Düzenleyici"
 
 #: DlgBpmTapDlg#2
 msgid "&Close"
-msgstr ""
+msgstr "&Kapat"
 
 #: DlgBpmTapDlg#3
 msgctxt "DlgBpmTapDlg#3"
 msgid "Alt+O"
-msgstr ""
+msgstr "Alt+O"
 
 #: DlgBpmTapDlg#4
 msgctxt "DlgBpmTapDlg#4"
 msgid "Song:"
-msgstr ""
+msgstr "Parça:"
 
 #: DlgBpmTapDlg#5
 msgid "Next >>"
-msgstr ""
+msgstr "İleri >>"
 
 #: DlgBpmTapDlg#6
 msgid "<< Prev"
-msgstr ""
+msgstr "<< Önceki"
 
 #: DlgBpmTapDlg#7
 msgid "BPM Editor (Click to Expand)"
@@ -438,7 +440,7 @@ msgstr ""
 #: DlgBpmTapDlg#8
 msgctxt "DlgBpmTapDlg#8"
 msgid "BPM Detection"
-msgstr ""
+msgstr "BPM Tespiti"
 
 #: DlgBpmTapDlg#9
 msgid "BPM Scheme:"
@@ -454,20 +456,20 @@ msgstr ""
 
 #: DlgBpmTapDlg#12
 msgid "&Go"
-msgstr ""
+msgstr "Gi&t"
 
 #: DlgBpmTapDlg#13
 msgid "Alt+G"
-msgstr ""
+msgstr "Alt+G"
 
 #: DlgBpmTapDlg#14
 msgctxt "DlgBpmTapDlg#14"
 msgid "Analyze Entire Song"
-msgstr ""
+msgstr "Tüm Parçayı Çözümle"
 
 #: DlgBpmTapDlg#15
 msgid "BPM:"
-msgstr ""
+msgstr "BPM:"
 
 #: DlgBpmTapDlg#16
 msgid "&Push to tap tempo"
@@ -475,7 +477,7 @@ msgstr ""
 
 #: DlgBpmTapDlg#17
 msgid "Alt+P"
-msgstr ""
+msgstr "Alt+P"
 
 #: DlgBpmTapDlg#18
 msgctxt "DlgBpmTapDlg#18"
@@ -485,27 +487,27 @@ msgstr ""
 #: DlgBpmTapDlg#19
 msgctxt "DlgBpmTapDlg#19"
 msgid "Title:"
-msgstr ""
+msgstr "Başlık:"
 
 #: DlgBpmTapDlg#20
 msgctxt "DlgBpmTapDlg#20"
 msgid "Artist:"
-msgstr ""
+msgstr "Sanatçı:"
 
 #: DlgBpmTapDlg#21
 msgctxt "DlgBpmTapDlg#21"
 msgid "Comments:"
-msgstr ""
+msgstr "Yorumlar:"
 
 #: DlgBpmTapDlg#22
 msgctxt "DlgBpmTapDlg#22"
 msgid "Filename:"
-msgstr ""
+msgstr "Dosya Adı:"
 
 #: DlgBpmTapDlg#23
 msgctxt "DlgBpmTapDlg#23"
 msgid "3:00"
-msgstr ""
+msgstr "3:00"
 
 #: DlgBpmTapDlg#24
 msgid "Play Time:"
@@ -514,16 +516,16 @@ msgstr ""
 #: DlgBpmTapDlg#25
 msgctxt "DlgBpmTapDlg#25"
 msgid "File Type:"
-msgstr ""
+msgstr "Dosya Türü:"
 
 #: DlgBpmTapDlg#26
 msgctxt "DlgBpmTapDlg#26"
 msgid "77"
-msgstr ""
+msgstr "77"
 
 #: DlgMidiLearning#1
 msgid "Skip"
-msgstr ""
+msgstr "Atla"
 
 #: DlgMidiLearning#2
 msgid "Successfully mapped to: "
@@ -531,7 +533,7 @@ msgstr ""
 
 #: DlgMidiLearning#3
 msgid "Next"
-msgstr ""
+msgstr "Sonraki"
 
 #: DlgMidiLearning#4
 msgctxt "DlgMidiLearning#4"
@@ -562,7 +564,7 @@ msgstr ""
 
 #: DlgMidiLearning#10
 msgid "Previous"
-msgstr ""
+msgstr "Önceki"
 
 #: DlgMidiLearning#11
 msgid "Press spacebar to proceed or skip."
@@ -605,7 +607,7 @@ msgstr ""
 #: DlgPrefBPMDlg#2
 msgctxt "DlgPrefBPMDlg#2"
 msgid "BPM Detection"
-msgstr ""
+msgstr "BPM Tespiti"
 
 #: DlgPrefBPMDlg#3
 msgid "Enable BPM Detection"
@@ -634,24 +636,24 @@ msgstr ""
 #: DlgPrefBPMDlg#9
 msgctxt "DlgPrefBPMDlg#9"
 msgid "Add"
-msgstr ""
+msgstr "Ekle"
 
 #: DlgPrefBPMDlg#10
 msgctxt "DlgPrefBPMDlg#10"
 msgid "Edit"
-msgstr ""
+msgstr "Düzenle"
 
 #: DlgPrefBPMDlg#11
 msgid "Delete"
-msgstr ""
+msgstr "Sil"
 
 #: DlgPrefBPMDlg#12
 msgid "Default"
-msgstr ""
+msgstr "Öntanımlı"
 
 #: DlgPrefBpm#1
 msgid "Error"
-msgstr ""
+msgstr "Hata"
 
 #: DlgPrefBpm#2
 msgid "Cannot open file %1"
@@ -667,39 +669,39 @@ msgstr ""
 
 #: DlgPrefControls#3
 msgid "10%"
-msgstr ""
+msgstr "%10"
 
 #: DlgPrefControls#4
 msgid "20%"
-msgstr ""
+msgstr "20%"
 
 #: DlgPrefControls#5
 msgid "30%"
-msgstr ""
+msgstr "30%"
 
 #: DlgPrefControls#6
 msgid "40%"
-msgstr ""
+msgstr "40%"
 
 #: DlgPrefControls#7
 msgid "50%"
-msgstr ""
+msgstr "%50"
 
 #: DlgPrefControls#8
 msgid "60%"
-msgstr ""
+msgstr "60%"
 
 #: DlgPrefControls#9
 msgid "70%"
-msgstr ""
+msgstr "70%"
 
 #: DlgPrefControls#10
 msgid "80%"
-msgstr ""
+msgstr "80%"
 
 #: DlgPrefControls#11
 msgid "90%"
-msgstr ""
+msgstr "%90"
 
 #: DlgPrefControls#12
 msgid "Up increases speed"
@@ -712,24 +714,25 @@ msgstr ""
 #: DlgPrefControls#14
 msgctxt "DlgPrefControls#14"
 msgid "Information"
-msgstr ""
+msgstr "Bilgi"
 
 #: DlgPrefControls#15
 msgid "Mixxx must be restarted before the changes will take effect."
 msgstr ""
+"Değişikliklerin geçerli olabilmesi için Mixxx yeniden başlatılmalıdır."
 
 #: DlgPrefControlsDlg#1
 msgctxt "DlgPrefControlsDlg#1"
 msgid "Form1"
-msgstr ""
+msgstr "Form1"
 
 #: DlgPrefControlsDlg#2
 msgid "Skin"
-msgstr ""
+msgstr "Görünüm"
 
 #: DlgPrefControlsDlg#3
 msgid "Scheme"
-msgstr ""
+msgstr "Şema"
 
 #: DlgPrefControlsDlg#4
 msgid "Waveform display"
@@ -746,12 +749,12 @@ msgstr ""
 #: DlgPrefControlsDlg#7
 msgctxt "DlgPrefControlsDlg#7"
 msgid "On"
-msgstr ""
+msgstr "Açık"
 
 #: DlgPrefControlsDlg#8
 msgctxt "DlgPrefControlsDlg#8"
 msgid "Off"
-msgstr ""
+msgstr "Kapalı"
 
 #: DlgPrefControlsDlg#9
 msgid "Pitch/Rate slider range"
@@ -779,11 +782,11 @@ msgstr ""
 
 #: DlgPrefControlsDlg#15
 msgid "Left click"
-msgstr ""
+msgstr "Sol tıklama"
 
 #: DlgPrefControlsDlg#16
 msgid "Right click"
-msgstr ""
+msgstr "Sağ tıklama"
 
 #: DlgPrefControlsDlg#17
 msgid "Permanent rate change (between 1 and 8000) when left clicking"
@@ -791,7 +794,7 @@ msgstr ""
 
 #: DlgPrefControlsDlg#18
 msgid "%"
-msgstr ""
+msgstr "%"
 
 #: DlgPrefControlsDlg#19
 msgid "Permanent rate change (between 1 and 8000) when right clicking"
@@ -820,7 +823,7 @@ msgstr ""
 #: DlgPrefCrossfaderDlg#1
 msgctxt "DlgPrefCrossfaderDlg#1"
 msgid "Form1"
-msgstr ""
+msgstr "Form1"
 
 #: DlgPrefCrossfaderDlg#2
 msgid "Crossfader Curve"
@@ -852,17 +855,17 @@ msgstr ""
 
 #: DlgPrefCrossfaderDlg#9
 msgid "Logarithmic"
-msgstr ""
+msgstr "Logaritmik"
 
 #: DlgPrefCrossfaderDlg#10
 msgctxt "DlgPrefCrossfaderDlg#10"
 msgid "Reset"
-msgstr ""
+msgstr "Sıfırla"
 
 #: DlgPrefEQDlg#1
 msgctxt "DlgPrefEQDlg#1"
 msgid "Form1"
-msgstr ""
+msgstr "Form1"
 
 #: DlgPrefEQDlg#2
 msgid "Static EQs (for slower CPUs)"
@@ -874,15 +877,15 @@ msgstr ""
 
 #: DlgPrefEQDlg#4
 msgid "textLabel1"
-msgstr ""
+msgstr "metinEtiketi1"
 
 #: DlgPrefEQDlg#5
 msgid "16 Hz"
-msgstr ""
+msgstr "16 Hz"
 
 #: DlgPrefEQDlg#6
 msgid "2.045 kHz"
-msgstr ""
+msgstr "2.045 kHz"
 
 #: DlgPrefEQDlg#7
 msgid "20.05 kHz"
