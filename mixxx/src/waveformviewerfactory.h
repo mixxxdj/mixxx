@@ -23,12 +23,11 @@ enum WaveformViewerType {
     WAVEFORM_INVALID
 };
 
-
 class WaveformViewerFactory {
 private:
     /* shouldn't be accessible */
-    WaveformViewerFactory() {};
-    ~WaveformViewerFactory() {};
+    WaveformViewerFactory() {}
+    ~WaveformViewerFactory() {}
     static QList<QWidget*> m_viewers;
     static QList<WVisualSimple*> m_simpleViewers;
     static QList<WWaveformViewer*> m_visualViewers;

@@ -2,32 +2,31 @@
 
 #include <QPainter>
 
-#include "waveformwidget.h"
+#include "waveformwidgetrenderer.h"
 #include "waveformrenderbackground.h"
 #include "glwaveformrendererfilteredsignal.h"
 
 GLWaveformWidget::GLWaveformWidget( const char* group, QWidget* parent) :
     QGLWidget(parent),
-    m_waveformWidgetRenderer( new WaveformWidgetRenderer(group))
+    WaveformWidgetAbstract(group)
 {
-    m_waveformWidgetRenderer->init();
     m_waveformWidgetRenderer->addRenderer<WaveformRenderBackground>();
     m_waveformWidgetRenderer->addRenderer<GLWaveformRendererFilteredSignal>();
+    m_waveformWidgetRenderer->init();
 }
 
 GLWaveformWidget::~GLWaveformWidget()
 {
-    delete m_waveformWidgetRenderer;
 }
 
-void GLWaveformWidget::resizeEvent(QResizeEvent* /*event*/)
+void GLWaveformWidget::castToQWidget()
 {
-    m_waveformWidgetRenderer->resize( width(), height());
+    m_widget = dynamic_cast<QWidget*>(this);
 }
 
 void GLWaveformWidget::paintEvent( QPaintEvent* event)
 {
     QPainter painter(this);
-    painter.setRenderHint(QPainter::HighQualityAntialiasing);
+    painter.setRenderHint(QPainter::Antialiasing);
     m_waveformWidgetRenderer->draw(&painter,event);
 }

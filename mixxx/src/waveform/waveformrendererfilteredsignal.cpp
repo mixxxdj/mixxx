@@ -1,6 +1,6 @@
 #include "waveformrendererfilteredsignal.h"
 
-#include "waveformwidget.h"
+#include "waveformwidgetrenderer.h"
 #include "widget/wskincolor.h"
 #include "trackinfoobject.h"
 #include "widget/wwidget.h"
@@ -8,8 +8,8 @@
 
 #include <QLineF>
 
-WaveformRendererFilteredSignal::WaveformRendererFilteredSignal( WaveformWidgetRenderer* waveformWidget) :
-    WaveformRendererAbstract( waveformWidget)
+WaveformRendererFilteredSignal::WaveformRendererFilteredSignal( WaveformWidgetRenderer* waveformWidgetRenderer) :
+    WaveformRendererAbstract( waveformWidgetRenderer)
 {
 }
 
@@ -76,8 +76,8 @@ void WaveformRendererFilteredSignal::draw( QPainter* painter, QPaintEvent* /*eve
             {
                 maxLow[0] = std::max( maxLow[0], waveform->getConstLowData()[thisIndex+sampleIndex]);
                 maxLow[1] = std::max( maxLow[1], waveform->getConstLowData()[thisIndex+sampleIndex+1]);
-                maxBand[0] = std::max( maxBand[0], waveform->getConstBandData()[thisIndex+sampleIndex]);
-                maxBand[1] = std::max( maxBand[1], waveform->getConstBandData()[thisIndex+sampleIndex+1]);
+                maxBand[0] = std::max( maxBand[0], waveform->getConstMidData()[thisIndex+sampleIndex]);
+                maxBand[1] = std::max( maxBand[1], waveform->getConstMidData()[thisIndex+sampleIndex+1]);
                 maxHigh[0] = std::max( maxHigh[0], waveform->getConstHighData()[thisIndex+sampleIndex]);
                 maxHigh[1] = std::max( maxHigh[1], waveform->getConstHighData()[thisIndex+sampleIndex+1]);
             }

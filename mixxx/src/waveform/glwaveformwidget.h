@@ -2,24 +2,21 @@
 #define GLWAVEFORMWIDGET_H
 
 #include <QtOpenGL/QGLWidget>
+#include "waveformwidgetabstract.h"
 
-class WaveformWidgetRenderer;
-
-class GLWaveformWidget : public QGLWidget
+class GLWaveformWidget : public WaveformWidgetAbstract, public QGLWidget
 {
 public:
     GLWaveformWidget( const char* group, QWidget* parent);
     virtual ~GLWaveformWidget();
 
-    WaveformWidgetRenderer* getRenderer() { return m_waveformWidgetRenderer;}
+    virtual void castToQWidget();
+    virtual QString getWaveformWidgetName() { return "Filtered";}
+    virtual WaveformWidgetType::Type getType() const { return WaveformWidgetType::FilteredOpenGlWaveform;}
+    virtual bool useOpenGl() const { return true;}
 
 protected:
-    virtual void resizeEvent(QResizeEvent *event);
     virtual void paintEvent(QPaintEvent* event);
-
-private:
-    WaveformWidgetRenderer* m_waveformWidgetRenderer;
-
 };
 
 #endif // GLWAVEFORMWIDGET_H

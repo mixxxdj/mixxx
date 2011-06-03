@@ -1,4 +1,4 @@
-#include "waveformwidget.h"
+#include "waveformwidgetrenderer.h"
 
 #include "controlobjectthreadmain.h"
 #include "controlobject.h"
@@ -8,8 +8,6 @@
 #include <QPainter>
 
 WaveformWidgetRenderer::WaveformWidgetRenderer( const char* group) :
-    QObject(),
-    WaveformRendererAbstract(this), //redirect to him sefl could be 0 too ...
     m_group(group),
     m_trackInfoObject(0),
     m_height(-1),
@@ -20,7 +18,7 @@ WaveformWidgetRenderer::WaveformWidgetRenderer( const char* group) :
     m_zoomFactor = 2.0;
     m_rateAdjust = 0.0;
 
-    //Realy create some to manage those
+    //Really create some to manage those
     m_playPosControlObject = 0;
     m_playPos = 0.0;
     m_rateControlObject = 0;
@@ -147,8 +145,6 @@ void WaveformWidgetRenderer::draw( QPainter* painter, QPaintEvent* event)
 
 void WaveformWidgetRenderer::resize( int width, int height)
 {
-    qDebug() << "WaveformWidgetRenderer::resize()";
-
     m_width = width;
     m_height = height;
     for( int i = 0; i < m_rendererStack.size(); ++i)
@@ -191,15 +187,10 @@ float WaveformWidgetRenderer::getVisualSamplePerPixel()
     return std::max( 1.0, m_zoomFactor * (1.0 + m_rateAdjust));
 }
 
-void WaveformWidgetRenderer::slotNewTrack(TrackPointer track)
+void WaveformWidgetRenderer::setTrack(TrackPointer track)
 {
     m_trackInfoObject = track;
     m_playPos = 0.0;
-}
-
-void WaveformWidgetRenderer::slotUnloadTrack( TrackPointer /*track*/)
-{
-    slotNewTrack( TrackPointer(0));
 }
 
 

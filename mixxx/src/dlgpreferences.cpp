@@ -198,7 +198,7 @@ void DlgPreferences::createIcons()
     m_pPlaylistButton->setTextAlignment(0, Qt::AlignLeft | Qt::AlignVCenter);
     m_pPlaylistButton->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
 
-       m_pControlsButton = new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type);
+    m_pControlsButton = new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type);
     m_pControlsButton->setIcon(0, QIcon(":/images/preferences/ic_preferences_interface.png"));
     m_pControlsButton->setText(0, tr("Interface"));
     m_pControlsButton->setTextAlignment(0, Qt::AlignLeft | Qt::AlignVCenter);

@@ -186,8 +186,8 @@ void WaveformRenderSignal::draw(QPainter *pPainter, QPaintEvent *event,
             pPainter->drawLine( xPos, (float)-waveform->getConstLowData()[thisIndex]   * powerFactor,
                                 xPos, (float) waveform->getConstLowData()[thisIndex+1] * powerFactor);
             pPainter->setPen( lowColor);
-            pPainter->drawLine( xPos, (float)-waveform->getConstBandData()[thisIndex]   * powerFactor * 2.0f,
-                                xPos, (float) waveform->getConstBandData()[thisIndex+1] * powerFactor * 2.0f);
+            pPainter->drawLine( xPos, (float)-waveform->getConstMidData()[thisIndex]   * powerFactor * 2.0f,
+                                xPos, (float) waveform->getConstMidData()[thisIndex+1] * powerFactor * 2.0f);
             pPainter->setPen( highColor);
             pPainter->drawLine( xPos, (float)-waveform->getConstHighData()[thisIndex]   * powerFactor * 4.0f,
                                 xPos, (float) waveform->getConstHighData()[thisIndex+1] * powerFactor * 4.0f);
@@ -280,8 +280,8 @@ void WaveformRenderSignal::draw_point(QPainter *pPainter, QPaintEvent *event, QV
             pPainter->drawLine( xPos, (int)((float)-waveform->getConstLowData()[currentDisplayPosition]   * powerFactor),
                                 xPos, (int)((float) waveform->getConstLowData()[currentDisplayPosition+1] * powerFactor));
             pPainter->setPen( lowColor);
-            pPainter->drawLine( xPos, (int)((float)-waveform->getConstBandData()[currentDisplayPosition]   * powerFactor * 2.0f),
-                                xPos, (int)((float) waveform->getConstBandData()[currentDisplayPosition+1] * powerFactor * 2.0f));
+            pPainter->drawLine( xPos, (int)((float)-waveform->getConstMidData()[currentDisplayPosition]   * powerFactor * 2.0f),
+                                xPos, (int)((float) waveform->getConstMidData()[currentDisplayPosition+1] * powerFactor * 2.0f));
             pPainter->setPen( highColor);
             pPainter->drawLine( xPos, (int)((float)-waveform->getConstHighData()[currentDisplayPosition]   * powerFactor * 4.0f),
                                 xPos, (int)((float) waveform->getConstHighData()[currentDisplayPosition+1] * powerFactor * 4.0f));

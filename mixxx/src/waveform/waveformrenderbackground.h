@@ -18,7 +18,7 @@ class WaveformRenderer;
 class WaveformRenderBackground : public WaveformRendererAbstract {
 
 public:
-    WaveformRenderBackground( WaveformWidgetRenderer* waveformWidget);
+    WaveformRenderBackground( WaveformWidgetRenderer* waveformWidgetRenderer);
 
     virtual void init();
     virtual void setup( const QDomNode& node);

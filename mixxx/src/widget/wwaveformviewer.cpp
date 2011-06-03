@@ -11,12 +11,11 @@
 #include "mixxx.h"
 #include "trackinfoobject.h"
 #include "wwaveformviewer.h"
-#include "waveform/waveformrenderer.h"
 
-#include "waveform/waveformwidget.h"
-#include "waveform/waveformrenderbackground.h"
-#include "waveform/waveformrendererfilteredsignal.h"
+#include "waveform/waveformwidgetabstract.h"
 
+//TODO vRince remove above include when factory and zoom ready
+#include "waveform/waveformwidgetrenderer.h"
 #include "waveform/glwaveformwidget.h"
 
 WWaveformViewer::WWaveformViewer(const char *group, WaveformRenderer *pWaveformRenderer, QWidget * parent, Qt::WFlags f) :
@@ -34,60 +33,24 @@ WWaveformViewer::WWaveformViewer(const char *group, WaveformRenderer *pWaveformR
 
     setAttribute(Qt::WA_OpaquePaintEvent,true);
 
-    m_waveformWidgetRenderer = new WaveformWidgetRenderer( m_pGroup);
-
-    //m_waveformWidgetRenderer->init();
-    //m_waveformWidgetRenderer->addRenderer<WaveformRenderBackground>();
-    //m_waveformWidgetRenderer->addRenderer<WaveformRendererFilteredSignal>();
-
     m_zoomZoneWidth = 20;
-
-    m_waveformWidget = new GLWaveformWidget( m_pGroup, this);
-    GLWaveformWidget* waveformWidget = (GLWaveformWidget*)m_waveformWidget;
-    waveformWidget->getRenderer()->init();
+    m_waveformWidget = 0;
 }
 
 WWaveformViewer::~WWaveformViewer() {
-    delete m_waveformWidgetRenderer;
 }
 
-void WWaveformViewer::setup(QDomNode node) {
-    GLWaveformWidget* waveformWidget = (GLWaveformWidget*)m_waveformWidget;
-    waveformWidget->getRenderer()->setup( node);
-
-    //m_waveformWidgetRenderer->setup( node);
-    //m_waveformWidgetRenderer->resize( width(), height());
+void WWaveformViewer::setup(QDomNode node)
+{
+    if( m_waveformWidget)
+        m_waveformWidget->setup(node);
 }
 
 void WWaveformViewer::resizeEvent(QResizeEvent* /*event*/)
 {
-    m_waveformWidget->resize(size());
-    //m_waveformWidgetRenderer->resize(width(),height());
-    //QWidget::resizeEvent(event);
+    if( m_waveformWidget)
+        m_waveformWidget->resize(width(),height());
 }
-/*
-void WWaveformViewer::paintEvent(QPaintEvent *event) {
- QPainter painter;
-    painter.begin(this);
-    //painter.setRenderHint(QPainter::Antialiasing);
-    m_waveformWidgetRenderer->draw(&painter,event);
-    painter.end();
-    m_painting = false;
-}
-*/
-
-void WWaveformViewer::refresh() {
-    //m_paintMutex.lock();
-    if(!m_painting) {
-        m_painting = true;
-
-        // The docs say update is better than repaint.
-        update();
-    }
-    //m_paintMutex.unlock();
-}
-
-/** SLOTS **/
 
 bool WWaveformViewer::eventFilter(QObject *o, QEvent *e) {
     if(e->type() == QEvent::MouseButtonPress) {
@@ -127,7 +90,7 @@ void WWaveformViewer::wheelEvent(QWheelEvent *event)
     update();
     if( event->x() > width() - m_zoomZoneWidth)
     {
-        GLWaveformWidget* waveformWidget = (GLWaveformWidget*)m_waveformWidget;
+        WaveformWidgetAbstract* waveformWidget = (WaveformWidgetAbstract*)m_waveformWidget;
         if( event->delta() > 0)
             waveformWidget->getRenderer()->zoomIn();
         else
@@ -159,4 +122,16 @@ void WWaveformViewer::dropEvent(QDropEvent * event)
     } else {
         event->ignore();
     }
+}
+
+void WWaveformViewer::onTrackLoaded( TrackPointer track)
+{
+    if( m_waveformWidget)
+        m_waveformWidget->getRenderer()->setTrack(track);
+}
+
+void WWaveformViewer::onTrackUnloaded( TrackPointer /*track*/)
+{
+    if( m_waveformWidget)
+        m_waveformWidget->getRenderer()->setTrack( TrackPointer(0));
 }

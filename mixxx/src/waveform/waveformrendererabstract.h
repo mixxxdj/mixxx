@@ -9,12 +9,12 @@ class QDomNode;
 class WaveformRendererAbstract
 {
 public:
-    WaveformRendererAbstract( WaveformWidgetRenderer* waveformWidget);
+    WaveformRendererAbstract( WaveformWidgetRenderer* waveformWidgetRenderer);
 
     bool isDirty() const { return m_dirty;}
     void setDirty( bool dirty = true){ m_dirty = dirty;}
 
-    //those can even be protected since the main renderer is a friend
+    //those can even be protected since the main renderer is a friend class
 
     virtual void init() = 0;
     virtual void setup( const QDomNode& node) = 0;

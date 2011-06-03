@@ -8,7 +8,7 @@
 class GLWaveformRendererFilteredSignal : public WaveformRendererAbstract
 {
 public:
-    GLWaveformRendererFilteredSignal( WaveformWidgetRenderer* waveformWidget);
+    GLWaveformRendererFilteredSignal( WaveformWidgetRenderer* waveformWidgetRenderer);
 
     virtual void init();
     virtual void setup(const QDomNode &node);

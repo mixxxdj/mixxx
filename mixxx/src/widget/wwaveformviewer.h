@@ -2,7 +2,6 @@
 #ifndef WWAVEFORMVIEWER_H
 #define WWAVEFORMVIEWER_H
 
-#include <qgl.h>
 #include <QList>
 #include <QEvent>
 #include <QDateTime>
@@ -11,22 +10,23 @@
 #include <QDropEvent>
 #include <QTimerEvent>
 
-#include "waveform/waveformwidget.h"
-
+#include "trackinfoobject.h"
 #include "wwidget.h"
 #include "defs.h"
 
 class EngineBuffer;
-class WaveformRenderer;
-
-class WaveformWidgetRenderer;
+class WaveformRenderer; //TODO vRince to remove
+class WaveformWidgetAbstract;
 
 class WWaveformViewer : public QWidget
 {
     Q_OBJECT
+
 public:
     WWaveformViewer(const char *group, WaveformRenderer* pWaveformRenderer, QWidget *parent=0, Qt::WFlags f = 0);
     virtual ~WWaveformViewer();
+
+    const char* getGroup() const { return m_pGroup;}
 
     void dragEnterEvent(QDragEnterEvent *event);
     void dropEvent(QDropEvent *event);
@@ -34,38 +34,36 @@ public:
 
     bool eventFilter(QObject *o, QEvent *e);
 
-    QWidget* getWaveformWidget() { return m_waveformWidget;}
-    WaveformWidgetRenderer* getWaveFormRenderer() { return m_waveformWidgetRenderer;}
-
-public slots:
-    void refresh();
-
 signals:
     void valueChangedLeftDown(double);
     void valueChangedRightDown(double);
     void trackDropped(QString filename, QString group);
+
+public slots:
+    void onTrackLoaded( TrackPointer track);
+    void onTrackUnloaded( TrackPointer track);
 
 protected:
     virtual void resizeEvent(QResizeEvent *event);
     virtual void wheelEvent(QWheelEvent *event);
 
 private:
-    int m_zoomZoneWidth;
+    void setWaveformWidget( WaveformWidgetAbstract* waveformWidget) { m_waveformWidget = waveformWidget;}
+    WaveformWidgetAbstract* getWaveformWidget() { return m_waveformWidget;}
 
-    /** Used in mouse event handler */
+private:
+    const char *m_pGroup;
+    int m_zoomZoneWidth;
     int m_iMouseStart;
 
-    /** Waveform Renderer does all the work for us */
+    WaveformWidgetAbstract* m_waveformWidget;
+
+    friend class WaveformWidgetFactory;
+
+    //TODO vRince remove
     WaveformRenderer *m_pWaveformRenderer;
-
-    WaveformWidgetRenderer* m_waveformWidgetRenderer;
-
-    QWidget* m_waveformWidget;
-
     bool m_painting;
     QMutex m_paintMutex;
-
-    const char *m_pGroup;
 };
 
 #endif
