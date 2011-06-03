@@ -43,6 +43,12 @@
 #include "widget/wvisualsimple.h"
 #include "widget/wglwaveformviewer.h"
 #include "widget/wwaveformviewer.h"
+
+#include "waveformwidgetfactory.h"
+
+//TODO vRince celan-up
+#include "waveform/waveformwidgetrenderer.h"
+#include "waveform/waveformwidgetabstract.h"
 #include "waveform/glwaveformwidget.h"
 
 #include "widget/wsearchlineedit.h"
@@ -59,11 +65,11 @@ LegacySkinParser::LegacySkinParser(ConfigObject<ConfigValue>* pConfig,
                                    MixxxKeyboard* pKeyboard,
                                    PlayerManager* pPlayerManager,
                                    Library* pLibrary)
-        : m_pConfig(pConfig),
-          m_pKeyboard(pKeyboard),
-          m_pPlayerManager(pPlayerManager),
-          m_pLibrary(pLibrary),
-          m_pParent(NULL) {
+    : m_pConfig(pConfig),
+      m_pKeyboard(pKeyboard),
+      m_pPlayerManager(pPlayerManager),
+      m_pLibrary(pLibrary),
+      m_pParent(NULL) {
 
 }
 
@@ -413,58 +419,29 @@ QWidget* LegacySkinParser::parseVisual(QDomElement node) {
     if (pPlayer == NULL)
         return NULL;
 
-    WaveformRenderer* pWaveformRenderer = pPlayer->getWaveformRenderer();
+    WWaveformViewer* viewer = new WWaveformViewer(pSafeChannelStr, 0, m_pParent);
+    WaveformWidgetFactory::instance()->setWaveformWidget(viewer);
 
-    WaveformViewerType type;
-    //QWidget* widget = NULL;
-
-    //TODO vRince: reintroduce waveformwidgetfactory
-    //Skip the factory for the moment
-    //type = WaveformViewerFactory::createWaveformViewer(pSafeChannelStr, m_pParent,
-    //                                                   m_pConfig, &widget, pWaveformRenderer);
-
-    WWaveformViewer* widget = new WWaveformViewer(pSafeChannelStr, 0, m_pParent);
-
-    widget->installEventFilter(m_pKeyboard);
+    viewer->installEventFilter(m_pKeyboard);
 
     // Hook up the wheel Control Object to the Visual Controller
     ControlObjectThreadWidget * p = new ControlObjectThreadWidget(
-        ControlObject::getControl(ConfigKey(channelStr, "wheel")));
+                ControlObject::getControl(ConfigKey(channelStr, "wheel")));
+    p->setWidget((QWidget *)viewer, true, true, true, Qt::LeftButton);
+    setupWidget(node, viewer);
+    viewer->setup( node);
 
-    p->setWidget((QWidget *)widget, true, true, true, Qt::LeftButton);
+    //connect display with loading/unloading of tracks
+    QObject::connect( pPlayer,SIGNAL(newTrackLoaded(TrackPointer)),
+                      viewer, SLOT(onTrackLoaded(TrackPointer)));
+    QObject::connect( pPlayer,SIGNAL(unloadingTrack(TrackPointer)),
+                      viewer, SLOT(onTrackUnloaded(TrackPointer)));
 
-    //TODO vRince: clean-up setup ...
-    setupWidget(node, widget);
-    widget->setup( node);
-
-    GLWaveformWidget* waveformWidget = (GLWaveformWidget*)widget->getWaveformWidget();
-
-    connect( pPlayer,SIGNAL(newTrackLoaded(TrackPointer)),
-             waveformWidget->getRenderer(), SLOT(slotNewTrack(TrackPointer)));
-    connect( pPlayer,SIGNAL(unloadingTrack(TrackPointer)),
-             waveformWidget->getRenderer(), SLOT(slotUnloadTrack(TrackPointer)));
-
-    //TODO vRince remove this ugly thing ... only for development
-    //We really need a render manager if should call the renders from the main loop !
-
-    QTimer* timer = new QTimer();
-    timer->start(1000.0/30.0);
-    connect( timer, SIGNAL(timeout()), waveformWidget, SLOT(update()));
-    /*
-    if (type == WAVEFORM_GL) {
-        ((WGLWaveformViewer*)widget)->setup(node);
-    } else if (type == WAVEFORM_WIDGET) {
-        ((WWaveformViewer *)widget)->setup(node);
-    } else if (type == WAVEFORM_SIMPLE) {
-        ((WVisualSimple*)widget)->setup(node);
-    }
-    */
-    setupConnections(node, widget);
-
-    connect(widget, SIGNAL(trackDropped(QString, QString)),
+    setupConnections(node, viewer);
+    connect(viewer, SIGNAL(trackDropped(QString, QString)),
             m_pPlayerManager, SLOT(slotLoadToPlayer(QString, QString)));
 
-    return widget;
+    return viewer;
 }
 
 QWidget* LegacySkinParser::parseText(QDomElement node) {
@@ -720,10 +697,10 @@ QWidget* LegacySkinParser::parseTableView(QDomElement node) {
     // Add the splitter to the library page's layout, so it's
     // positioned/sized automatically
     pLibraryPageLayout->addWidget(pSplitter,
-                                    1, 0, //From row 1, col 0,
-                                    1,    //Span 1 row
-                                    3,    //Span 3 cols
-                                    0);   //Default alignment
+                                  1, 0, //From row 1, col 0,
+                                  1,    //Span 1 row
+                                  3,    //Span 3 cols
+                                  0);   //Default alignment
 
     pTabWidget->addWidget(pLibraryPage);
 
@@ -912,7 +889,7 @@ void LegacySkinParser::setupConnections(QDomNode node, QWidget* pWidget) {
         }
 
         if (!XmlParse::selectNode(con, "OnOff").isNull() &&
-            XmlParse::selectNodeQString(con, "OnOff")=="true")
+                XmlParse::selectNodeQString(con, "OnOff")=="true")
         {
             // Connect control proxy to widget
             (new ControlObjectThreadWidget(control))->setWidgetOnOff(pWidget);
@@ -943,8 +920,8 @@ void LegacySkinParser::setupConnections(QDomNode node, QWidget* pWidget) {
 
             // Connect control proxy to widget
             (new ControlObjectThreadWidget(control))->setWidget(
-                pWidget, connectValueFromWidget, connectValueToWidget,
-                bEmitOnDownPress, state);
+                        pWidget, connectValueFromWidget, connectValueToWidget,
+                        bEmitOnDownPress, state);
 
             // Add keyboard shortcut info to tooltip string
             QString tooltip = pWidget->toolTip();

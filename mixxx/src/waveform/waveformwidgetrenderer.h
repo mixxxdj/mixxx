@@ -1,7 +1,6 @@
 #ifndef WAVEFORMWIDGET_H
 #define WAVEFORMWIDGET_H
 
-#include <QObject>
 #include <QVector>
 
 #include "waveformrendererabstract.h"
@@ -15,17 +14,15 @@ class TrackInfoObject;
 class WaveformRendererAbstract;
 class ControlObjectThreadMain;
 
-class WaveformWidgetRenderer : public QObject, public WaveformRendererAbstract
+class WaveformWidgetRenderer
 {
-    Q_OBJECT
-
 public:
     WaveformWidgetRenderer( const char* group);
     virtual ~WaveformWidgetRenderer();
 
-    virtual void init();
-    virtual void setup( const QDomNode& node);
-    virtual void draw( QPainter* painter, QPaintEvent* event);
+    void init();
+    void setup( const QDomNode& node);
+    void draw( QPainter* painter, QPaintEvent* event);
 
     const char* getGroup() const { return m_group;}
     const TrackPointer getTrackInfo() const { return m_trackInfoObject;}
@@ -52,12 +49,7 @@ public:
     template< class T_Renderer>
     inline void addRenderer() { m_rendererStack.push_back( new T_Renderer(this));}
 
-public slots:
-    //TODO vRince
-    //Drop the TrackPointer since we are sure to unload the track before it's deleted
-    //With a TrackPointer no forward declare
-    void slotNewTrack( TrackPointer track);
-    void slotUnloadTrack( TrackPointer track);
+    void setTrack( TrackPointer track);
 
 protected:
     const char* m_group;
@@ -79,7 +71,6 @@ protected:
     double m_rateRange;
     ControlObject* m_rateDirControlObject;
     double m_rateDir;
-    //gain
     ControlObject* m_gainControlObject;
     double m_gain;
     ControlObject* m_lowFilterControlObject;

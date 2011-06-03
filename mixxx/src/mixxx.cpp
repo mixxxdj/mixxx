@@ -55,6 +55,7 @@
 #include "mixxxkeyboard.h"
 #include "skin/skinloader.h"
 #include "skin/legacyskinparser.h"
+#include "waveformwidgetfactory.h"
 
 #include "build.h" // #defines of details of the build set up (flags,
 // repo number, etc). This isn't a real file, SConscript generates it and it
@@ -349,6 +350,8 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
     // Initialise midi
     m_pMidiDeviceManager = new MidiDeviceManager(m_pConfig);
     m_pMidiDeviceManager->setupDevices();
+
+    WaveformWidgetFactory::create();
 
     m_pSkinLoader = new SkinLoader(m_pConfig);
 
@@ -1294,6 +1297,9 @@ void MixxxApp::rebootMixxxView() {
 
     qDebug() << "Now in Rebootmixxview...";
 
+    WaveformWidgetFactory::instance()->stop();
+    WaveformWidgetFactory::instance()->destroyWidgets();
+
     // Workaround for changing skins while fullscreen, just go out of fullscreen
     // mode. If you change skins while in fullscreen (on Linux, at least) the
     // window returns to 0,0 but and the backdrop disappears so it looks as if
@@ -1329,6 +1335,8 @@ void MixxxApp::rebootMixxxView() {
     // this doesn't always seem to snap down tight on Windows... sigh -bkgood
     setFixedSize(m_pView->width(), m_pView->height());
     setFixedSize(QSize(QWIDGETSIZE_MAX, QWIDGETSIZE_MAX));
+
+    WaveformWidgetFactory::instance()->start();
 
     qDebug() << "rebootgui DONE";
 }

@@ -189,7 +189,7 @@ void AnalyserWaveform::storeCurentStridePower()
     {
         m_waveform->getData()[m_currentStride+i] = (unsigned char)( convertionFactor * m_currentStridePower[i]);
         m_waveform->getLowData()[m_currentStride+i] = (unsigned char)( convertionFactor * m_currentStrideFiltredPower[i][0]);
-        m_waveform->getBandData()[m_currentStride+i] = (unsigned char)( convertionFactor * m_currentStrideFiltredPower[i][1]);
+        m_waveform->getMidData()[m_currentStride+i] = (unsigned char)( convertionFactor * m_currentStrideFiltredPower[i][1]);
         m_waveform->getHighData()[m_currentStride+i] = (unsigned char)( convertionFactor * m_currentStrideFiltredPower[i][2]);
     }
 

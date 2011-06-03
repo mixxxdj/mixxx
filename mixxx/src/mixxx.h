@@ -155,14 +155,12 @@ class MixxxApp : public QMainWindow
     // The sound manager
     SoundManager *m_pSoundManager;
 
-
     // Keeps track of players
     PlayerManager* m_pPlayerManager;
 
     MidiDeviceManager *m_pMidiDeviceManager;
 
     ConfigObject<ConfigValue> *m_pConfig;
-
 
     MixxxKeyboard* m_pKeyboard;
     /** Library scanner object */

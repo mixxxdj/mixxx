@@ -1,7 +1,7 @@
 #include "waveformrendererabstract.h"
 
-WaveformRendererAbstract::WaveformRendererAbstract( WaveformWidgetRenderer* waveformWidget) :
-    m_waveformWidget( waveformWidget),
+WaveformRendererAbstract::WaveformRendererAbstract( WaveformWidgetRenderer* waveformWidgetRenderer) :
+    m_waveformWidget( waveformWidgetRenderer),
     m_dirty(true)
 {
 }

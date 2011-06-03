@@ -8,7 +8,7 @@ class Waveform
 public:
     enum WaveformFilteredType { NotFiltered = 0,
                                 LowPass = 1,
-                                BandPass = 2,
+                                MidPass = 2,
                                 HighPass = 3,
                                 FilteredTypeCount = 4};
 
@@ -23,13 +23,13 @@ public:
 
     const QVector<unsigned char>& getConstData() const { return m_data[NotFiltered];}
     const QVector<unsigned char>& getConstLowData() const { return m_data[LowPass];}
-    const QVector<unsigned char>& getConstBandData() const { return m_data[BandPass];}
+    const QVector<unsigned char>& getConstMidData() const { return m_data[MidPass];}
     const QVector<unsigned char>& getConstHighData() const { return m_data[HighPass];}
 
 private:
     QVector<unsigned char>& getData() { return m_data[NotFiltered];}
     QVector<unsigned char>& getLowData() { return m_data[LowPass];}
-    QVector<unsigned char>& getBandData() { return m_data[BandPass];}
+    QVector<unsigned char>& getMidData() { return m_data[MidPass];}
     QVector<unsigned char>& getHighData() { return m_data[HighPass];}
 
 private:

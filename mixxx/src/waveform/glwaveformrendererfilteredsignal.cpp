@@ -1,6 +1,6 @@
 #include "glwaveformrendererfilteredsignal.h"
 
-#include "waveformwidget.h"
+#include "waveformwidgetrenderer.h"
 #include "widget/wskincolor.h"
 #include "trackinfoobject.h"
 #include "widget/wwidget.h"
@@ -9,8 +9,8 @@
 #include <QLinearGradient>
 #include <QLineF>
 
-GLWaveformRendererFilteredSignal::GLWaveformRendererFilteredSignal( WaveformWidgetRenderer* waveformWidget) :
-    WaveformRendererAbstract( waveformWidget)
+GLWaveformRendererFilteredSignal::GLWaveformRendererFilteredSignal( WaveformWidgetRenderer* waveformWidgetRenderer) :
+    WaveformRendererAbstract( waveformWidgetRenderer)
 {
 }
 
@@ -52,21 +52,21 @@ void GLWaveformRendererFilteredSignal::setup( const QDomNode& node)
     m_highBrush = QBrush(gradientHigh);
 
     QLinearGradient gradientKilledLow(QPointF(0.0,-255.0/2.0),QPointF(0.0,255.0/2.0));
-    gradientKilledLow.setColorAt(0.0, QColor::fromHsl(h,s,30,30));
+    gradientKilledLow.setColorAt(0.0, QColor::fromHsl(h,s,30,50));
     gradientKilledLow.setColorAt(0.5, QColor(200,200,200,10));
-    gradientKilledLow.setColorAt(1.0, QColor::fromHsl(h,s,30,30));
+    gradientKilledLow.setColorAt(1.0, QColor::fromHsl(h,s,30,50));
     m_lowKilledBrush = QBrush(gradientKilledLow);
 
     QLinearGradient gradientKilledMid(QPointF(0.0,-255.0/2.0),QPointF(0.0,255.0/2.0));
-    gradientKilledMid.setColorAt(0.0, QColor::fromHsl(h-5,s, 80,30));
+    gradientKilledMid.setColorAt(0.0, QColor::fromHsl(h-5,s, 80,50));
     gradientKilledMid.setColorAt(0.5, QColor(200,200,200,10));
-    gradientKilledMid.setColorAt(1.0, QColor::fromHsl(h-5,s, 80,30));
+    gradientKilledMid.setColorAt(1.0, QColor::fromHsl(h-5,s, 80,50));
     m_midKilledBrush = QBrush(gradientKilledMid);
 
     QLinearGradient gradientKilledHigh(QPointF(0.0,-255.0/2.0),QPointF(0.0,255.0/2.0));
-    gradientKilledHigh.setColorAt(0.0, QColor::fromHsl(h+5,s,180,30));
+    gradientKilledHigh.setColorAt(0.0, QColor::fromHsl(h+5,s,180,50));
     gradientKilledHigh.setColorAt(0.5, QColor(200,200,200,10));
-    gradientKilledHigh.setColorAt(1.0, QColor::fromHsl(h+5,s,180,30));
+    gradientKilledHigh.setColorAt(1.0, QColor::fromHsl(h+5,s,180,50));
     m_highKilledBrush = QBrush(gradientKilledHigh);;
 }
 
@@ -116,7 +116,7 @@ void GLWaveformRendererFilteredSignal::draw(QPainter *painter, QPaintEvent *even
         float xPos = (float)i/samplesPerPixel;
         int thisIndex = currentPosition + 2*i - numberOfSamples;
         if(thisIndex >= 0 && (thisIndex+samplesPerPixel+1) < waveformData.size())
-            //vRince we coudl lost some data at the end but never more than samplesPerPixel+1 ...
+            //vRince we could lost some data at the end but never more than samplesPerPixel+1 ...
         {
             unsigned char maxLow = 0;
             unsigned char maxBand = 0;
@@ -125,7 +125,7 @@ void GLWaveformRendererFilteredSignal::draw(QPainter *painter, QPaintEvent *even
             for( int sampleIndex = 0; sampleIndex < samplesPerPixel; ++sampleIndex)
             {
                 maxLow = std::max( maxLow, waveform->getConstLowData()[thisIndex+sampleIndex]);
-                maxBand = std::max( maxBand, waveform->getConstBandData()[thisIndex+sampleIndex]);
+                maxBand = std::max( maxBand, waveform->getConstMidData()[thisIndex+sampleIndex]);
                 maxHigh = std::max( maxHigh, waveform->getConstHighData()[thisIndex+sampleIndex]);
             }
 
@@ -158,7 +158,7 @@ void GLWaveformRendererFilteredSignal::draw(QPainter *painter, QPaintEvent *even
             for( int sampleIndex = 0; sampleIndex < samplesPerPixel; ++sampleIndex)
             {
                 maxLow = std::max( maxLow, waveform->getConstLowData()[thisIndex+sampleIndex+1]);
-                maxBand = std::max( maxBand, waveform->getConstBandData()[thisIndex+sampleIndex+1]);
+                maxBand = std::max( maxBand, waveform->getConstMidData()[thisIndex+sampleIndex+1]);
                 maxHigh = std::max( maxHigh, waveform->getConstHighData()[thisIndex+sampleIndex+1]);
             }
 

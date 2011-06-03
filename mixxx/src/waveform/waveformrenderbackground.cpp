@@ -11,7 +11,7 @@
 
 #include "waveformrenderbackground.h"
 
-#include "waveformwidget.h"
+#include "waveformwidgetrenderer.h"
 
 #include "waveformrenderer.h"
 #include "controlobjectthreadmain.h"
@@ -20,8 +20,8 @@
 #include "widget/wwidget.h"
 #include "trackinfoobject.h"
 
-WaveformRenderBackground::WaveformRenderBackground( WaveformWidgetRenderer* waveformWidget) :
-    WaveformRendererAbstract(waveformWidget),
+WaveformRenderBackground::WaveformRenderBackground( WaveformWidgetRenderer* waveformWidgetRenderer) :
+    WaveformRendererAbstract(waveformWidgetRenderer),
     m_backgroungColor(0,0,0)
 {
     m_backgroundPixmap = QPixmap();
