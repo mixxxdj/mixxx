@@ -3174,7 +3174,7 @@
 					<NumberRate>
 						<Tooltip>Pitch rate&#10;Displays the current pitch of the track based on the original tempo.&#10;</Tooltip>
 						<Style>QLabel { font: bold 14px/16px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-						background-color: transparent; color: #0099FF; text-align: center; padding-right: 1px; }
+						background-color: transparent; color: #E17800; text-align: center; padding-right: 1px; }
 						QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 						background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
 						</Style>
