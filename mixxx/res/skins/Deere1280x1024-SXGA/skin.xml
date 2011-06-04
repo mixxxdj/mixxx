@@ -18,6 +18,9 @@
 	the resulting work only under the same or similar license to this one.
 
 	CHANGELOG
+	v1.10.0.10	(01/06/2011)
+	* Feature: Added BPM display & BPM tap button to samplers
+
 	v1.10.0.09	(13/05/2011)
 	* Feature: Added spinning vinyl widget
 
@@ -196,14 +199,14 @@
 							-->
 							<Text>
 								<Tooltip>Track title&#10;Displays the artist and title of the loaded track.&#10;Informations are extracted from the tracks tags.&#10;</Tooltip>
-								<Style>QLabel { font: bold 14px/16px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+								<Style>QLabel { font: bold 13px/15px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 								background-color: transparent; color: #3087BF; text-align: left; padding-left: 1px; }
 								QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 								background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
 								</Style>
 								<Group>[Sampler1]</Group>
 								<Pos>5,3</Pos>
-								<Size>258,21</Size>
+								<Size>205,21</Size>
 							</Text>
 							<!-- Alternative "TITLE ONLY" display
 							<TrackProperty>
@@ -219,6 +222,59 @@
 								<Size>258,20</Size>
 							</TrackProperty>
 							-->
+
+							<!--
+							**********************************************
+							Text- BPM number display
+							**********************************************
+							-->
+							<NumberBpm>
+								<Tooltip>Tempo&#10;Displays the tempo of the loaded track in BPM (beats per minute)&#10;</Tooltip>
+								<Style>QLabel { font: bold 13px/15px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+								background-color: transparent; color: #3087BF; text-align: left;padding-left: 1px; }
+								QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+								background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+								</Style>
+								<Group>[Sampler1]</Group>
+								<Pos>211,3</Pos>
+								<Size>55,21</Size>
+								<!--CSS alignments not respected see bug lp:605530 , lets call <Alignment>-->
+								<Alignment>right</Alignment>
+								<Connection>
+									<ConfigKey>[Sampler1],bpm</ConfigKey>
+								</Connection>
+							</NumberBpm>
+
+							<!--
+							**********************************************
+							Button- BPM Tap
+							**********************************************
+							-->
+							<!-- Little trickery here:
+								 BPM tap is transparent png directly over BPM display, so it became BPM and TAP at once,
+								 changed tooltip accordingly
+							-->
+							<PushButton>
+							<!-- Original:
+								<Tooltip>BPM Tap&#10;When tapped repeatedly, adjusts the BPM to match the tapped BPM&#10;</Tooltip>
+							-->
+								<Tooltip>Tempo and BPM tap&#10;Displays the tempo of the loaded track in BPM (beats per minute)&#10;When tapped repeatedly, adjusts the BPM to match the tapped BPM&#10;</Tooltip>
+
+								<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+								background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+								</Style>
+								<NumberStates>1</NumberStates>
+								<State>
+									<Number>0</Number>
+									<Pressed>btn_tap_sampler_over.png</Pressed>
+									<Unpressed>btn_tap_sampler.png</Unpressed>
+								</State>
+									<Pos>216,3</Pos>
+								<Connection>
+									<ConfigKey>[Sampler1],bpm_tap</ConfigKey>
+										<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+								</Connection>
+							</PushButton>
 
 							<!--
 							**********************************************
@@ -659,14 +715,14 @@
 							-->
 							<Text>
 								<Tooltip>Track title&#10;Displays the artist and title of the loaded track.&#10;Informations are extracted from the tracks tags.&#10;</Tooltip>
-								<Style>QLabel { font: bold 14px/16px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+								<Style>QLabel { font: bold 13px/15px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 								background-color: transparent; color: #3087BF; text-align: left; padding-left: 1px; }
 								QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 								background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
 								</Style>
 								<Group>[Sampler2]</Group>
 								<Pos>5,3</Pos>
-								<Size>258,21</Size>
+								<Size>205,21</Size>
 							</Text>
 							<!-- Alternative "TITLE ONLY" display
 							<TrackProperty>
@@ -682,6 +738,59 @@
 								<Size>258,20</Size>
 							</TrackProperty>
 							-->
+
+							<!--
+							**********************************************
+							Text- BPM number display
+							**********************************************
+							-->
+							<NumberBpm>
+								<Tooltip>Tempo&#10;Displays the tempo of the loaded track in BPM (beats per minute)&#10;</Tooltip>
+								<Style>QLabel { font: bold 13px/15px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+								background-color: transparent; color: #3087BF; text-align: left;padding-left: 1px; }
+								QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+								background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+								</Style>
+								<Group>[Sampler2]</Group>
+								<Pos>211,3</Pos>
+								<Size>55,21</Size>
+								<!--CSS alignments not respected see bug lp:605530 , lets call <Alignment>-->
+								<Alignment>right</Alignment>
+								<Connection>
+									<ConfigKey>[Sampler2],bpm</ConfigKey>
+								</Connection>
+							</NumberBpm>
+
+							<!--
+							**********************************************
+							Button- BPM Tap
+							**********************************************
+							-->
+							<!-- Little trickery here:
+								 BPM tap is transparent png directly over BPM display, so it became BPM and TAP at once,
+								 changed tooltip accordingly
+							-->
+							<PushButton>
+							<!-- Original:
+								<Tooltip>BPM Tap&#10;When tapped repeatedly, adjusts the BPM to match the tapped BPM&#10;</Tooltip>
+							-->
+								<Tooltip>Tempo and BPM tap&#10;Displays the tempo of the loaded track in BPM (beats per minute)&#10;When tapped repeatedly, adjusts the BPM to match the tapped BPM&#10;</Tooltip>
+
+								<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+								background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+								</Style>
+								<NumberStates>1</NumberStates>
+								<State>
+									<Number>0</Number>
+									<Pressed>btn_tap_sampler_over.png</Pressed>
+									<Unpressed>btn_tap_sampler.png</Unpressed>
+								</State>
+									<Pos>216,3</Pos>
+								<Connection>
+									<ConfigKey>[Sampler2],bpm_tap</ConfigKey>
+										<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+								</Connection>
+							</PushButton>
 
 							<!--
 							**********************************************
@@ -1122,14 +1231,14 @@
 							-->
 							<Text>
 								<Tooltip>Track title&#10;Displays the artist and title of the loaded track.&#10;Informations are extracted from the tracks tags.&#10;</Tooltip>
-								<Style>QLabel { font: bold 14px/16px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+								<Style>QLabel { font: bold 13px/15px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 								background-color: transparent; color: #3087BF; text-align: left; padding-left: 1px; }
 								QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 								background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
 								</Style>
 								<Group>[Sampler3]</Group>
 								<Pos>5,3</Pos>
-								<Size>258,21</Size>
+								<Size>205,21</Size>
 							</Text>
 							<!-- Alternative "TITLE ONLY" display
 							<TrackProperty>
@@ -1145,6 +1254,59 @@
 								<Size>258,20</Size>
 							</TrackProperty>
 							-->
+
+							<!--
+							**********************************************
+							Text- BPM number display
+							**********************************************
+							-->
+							<NumberBpm>
+								<Tooltip>Tempo&#10;Displays the tempo of the loaded track in BPM (beats per minute)&#10;</Tooltip>
+								<Style>QLabel { font: bold 13px/15px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+								background-color: transparent; color: #3087BF; text-align: left;padding-left: 1px; }
+								QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+								background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+								</Style>
+								<Group>[Sampler3]</Group>
+								<Pos>211,3</Pos>
+								<Size>55,21</Size>
+								<!--CSS alignments not respected see bug lp:605530 , lets call <Alignment>-->
+								<Alignment>right</Alignment>
+								<Connection>
+									<ConfigKey>[Sampler3],bpm</ConfigKey>
+								</Connection>
+							</NumberBpm>
+
+							<!--
+							**********************************************
+							Button- BPM Tap
+							**********************************************
+							-->
+							<!-- Little trickery here:
+								 BPM tap is transparent png directly over BPM display, so it became BPM and TAP at once,
+								 changed tooltip accordingly
+							-->
+							<PushButton>
+							<!-- Original:
+								<Tooltip>BPM Tap&#10;When tapped repeatedly, adjusts the BPM to match the tapped BPM&#10;</Tooltip>
+							-->
+								<Tooltip>Tempo and BPM tap&#10;Displays the tempo of the loaded track in BPM (beats per minute)&#10;When tapped repeatedly, adjusts the BPM to match the tapped BPM&#10;</Tooltip>
+
+								<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+								background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+								</Style>
+								<NumberStates>1</NumberStates>
+								<State>
+									<Number>0</Number>
+									<Pressed>btn_tap_sampler_over.png</Pressed>
+									<Unpressed>btn_tap_sampler.png</Unpressed>
+								</State>
+									<Pos>216,3</Pos>
+								<Connection>
+									<ConfigKey>[Sampler3],bpm_tap</ConfigKey>
+										<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+								</Connection>
+							</PushButton>
 
 							<!--
 							**********************************************
@@ -1585,14 +1747,14 @@
 							-->
 							<Text>
 								<Tooltip>Track title&#10;Displays the artist and title of the loaded track.&#10;Informations are extracted from the tracks tags.&#10;</Tooltip>
-								<Style>QLabel { font: bold 14px/16px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+								<Style>QLabel { font: bold 13px/15px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 								background-color: transparent; color: #3087BF; text-align: left; padding-left: 1px; }
 								QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 								background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
 								</Style>
 								<Group>[Sampler4]</Group>
 								<Pos>5,3</Pos>
-								<Size>258,21</Size>
+								<Size>205,21</Size>
 							</Text>
 							<!-- Alternative "TITLE ONLY" display
 							<TrackProperty>
@@ -1608,6 +1770,59 @@
 								<Size>258,20</Size>
 							</TrackProperty>
 							-->
+
+							<!--
+							**********************************************
+							Text- BPM number display
+							**********************************************
+							-->
+							<NumberBpm>
+								<Tooltip>Tempo&#10;Displays the tempo of the loaded track in BPM (beats per minute)&#10;</Tooltip>
+								<Style>QLabel { font: bold 13px/15px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+								background-color: transparent; color: #3087BF; text-align: left;padding-left: 1px; }
+								QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+								background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+								</Style>
+								<Group>[Sampler4]</Group>
+								<Pos>211,3</Pos>
+								<Size>55,21</Size>
+								<!--CSS alignments not respected see bug lp:605530 , lets call <Alignment>-->
+								<Alignment>right</Alignment>
+								<Connection>
+									<ConfigKey>[Sampler4],bpm</ConfigKey>
+								</Connection>
+							</NumberBpm>
+
+							<!--
+							**********************************************
+							Button- BPM Tap
+							**********************************************
+							-->
+							<!-- Little trickery here:
+								 BPM tap is transparent png directly over BPM display, so it became BPM and TAP at once,
+								 changed tooltip accordingly
+							-->
+							<PushButton>
+							<!-- Original:
+								<Tooltip>BPM Tap&#10;When tapped repeatedly, adjusts the BPM to match the tapped BPM&#10;</Tooltip>
+							-->
+								<Tooltip>Tempo and BPM tap&#10;Displays the tempo of the loaded track in BPM (beats per minute)&#10;When tapped repeatedly, adjusts the BPM to match the tapped BPM&#10;</Tooltip>
+
+								<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+								background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+								</Style>
+								<NumberStates>1</NumberStates>
+								<State>
+									<Number>0</Number>
+									<Pressed>btn_tap_sampler_over.png</Pressed>
+									<Unpressed>btn_tap_sampler.png</Unpressed>
+								</State>
+									<Pos>216,3</Pos>
+								<Connection>
+									<ConfigKey>[Sampler4],bpm_tap</ConfigKey>
+										<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+								</Connection>
+							</PushButton>
 
 							<!--
 							**********************************************
@@ -2063,15 +2278,18 @@
 						background: transparent; color: #ACACAC;
 						<!--we use  "background: transparent" as workaround, else "alternate-background-color" wont work, QT 4.7.x bug?-->
 						alternate-background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:0, y2:1, stop:0 rgba(43, 43, 43, 255), stop:0.049 rgba(43, 43, 43, 255), stop:0.050 rgba(43, 43, 43, 100), stop:0.949 rgba(43, 43, 43, 100), stop:0.95 rgba(43, 43, 43, 255), stop:1 rgba(43, 43, 43, 255));}
+						<!--checkbox in library "Played" column -->
 						QTableView::indicator { width: 12px; height: 12px;}
 						QTableView::indicator:checked { background: url(skin:/style/style_checkbox_checked.png);}
 						QTableView::indicator:unchecked { background: url(skin:/style/style_checkbox_unchecked.png);}
 
 						QHeaderView { font: 11px/13px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; }
 
+						<!--library search bar-->
 						WSearchLineEdit { padding: 2px; border: 1px solid #656565; font: 13px/15px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; background: transparent; color: #ACACAC; }
 						WSearchLineEdit:focus {padding: 2px; border: 2px solid #FF6600; font: 13px/15px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; background: rgba(255, 102, 0,20); color: #D6D6D6;}
 
+						<!--splitter between treeview and library-->
 						QSplitter::handle { image: url(skin:/style/style_handle_unchecked.png); background: none; }
 						QSplitter::handle:pressed { image: url(skin:/style/style_handle_checked.png); background: none; }
 						QSplitter::handle:horizontal { width: 6px; }
