@@ -26,6 +26,7 @@
 #include <mfreadwrite.h>
 #include <stdio.h>
 #include <mferror.h>
+#include <propvarutil.h>
 
 #include "soundsourcemediafoundation.h"
 
@@ -45,22 +46,21 @@ template<class T> void SafeRelease(T **ppT)
 SoundSourceMediaFoundation::SoundSourceMediaFoundation(QString filename)
     : SoundSource(filename)
     , m_file(filename)
-    , m_samples(0)
-    , m_hFile(INVALID_HANDLE_VALUE)
     , m_pAudioType(NULL)
     , m_pReader(NULL)
+    , m_nextFrame(0)
 {
+    // these are always the same, might as well just stick them here
+    // -bkgood
+    m_iChannels = kNumChannels;
+    m_iSampleRate = kSampleRate;
+
     m_wcFilename = new wchar_t[255];
 }
 
 SoundSourceMediaFoundation::~SoundSourceMediaFoundation()
-{	
+{
     delete [] m_wcFilename;
-
-    // Clean up.
-    if (m_hFile != INVALID_HANDLE_VALUE) {
-        CloseHandle(m_hFile);
-    }
 
     SafeRelease(&m_pReader);
     SafeRelease(&m_pAudioType);
@@ -68,80 +68,50 @@ SoundSourceMediaFoundation::~SoundSourceMediaFoundation()
     CoUninitialize();
 }
 
-// soundsource overrides
 int SoundSourceMediaFoundation::open()
 {
-    HRESULT hr = S_OK;
-
-    //m_file.open(QIODevice::ReadOnly);
-
-    QString qurlStr = m_qFilename;//blah.toString();
-    
-    int wcFilenameLength = m_qFilename.toWCharArray(m_wcFilename);
-    //toWCharArray does not append a null terminator to the string!
+    QString qurlStr(m_qFilename);
+    int wcFilenameLength(m_qFilename.toWCharArray(m_wcFilename));
+    // toWCharArray does not append a null terminator to the string!
     m_wcFilename[wcFilenameLength] = '\0';
-    
+ 
+    HRESULT hr(S_OK);   
     // Initialize the COM library.
     hr = CoInitializeEx(NULL, COINIT_APARTMENTTHREADED | COINIT_DISABLE_OLE1DDE);
+    if (FAILED(hr)) {
+        qDebug() << "SSMF: failed to initialize COM";
+        return ERR;
+    }
 
     // Initialize the Media Foundation platform.
-    if (SUCCEEDED(hr)) {
-        hr = MFStartup(MF_VERSION);
+    hr = MFStartup(MF_VERSION);
+    if (FAILED(hr)) {
+        qDebug() << "SSMF: failed to initialize Media Foundation";
+        return ERR;
     }
 
     // Create the source reader to read the input file.
-    if (SUCCEEDED(hr)) {
-        hr = MFCreateSourceReaderFromURL(m_wcFilename, NULL, &m_pReader);
-        if (FAILED(hr)) {
-            qDebug() << __FILE__ << "Error opening input file:" << m_qFilename << hr;
-            return ERR;
-        }
-    }    
-
-	if (hr != S_OK) {
-		qDebug() << __FILE__ << "Error opening file.";
-		return ERR;
-	}
+    hr = MFCreateSourceReaderFromURL(m_wcFilename, NULL, &m_pReader);
+    if (FAILED(hr)) {
+        qDebug() << "SSMF: Error opening input file:" << m_qFilename;
+        return ERR;
+    }
 
     hr = ConfigureAudioStream(m_pReader, &m_pAudioType);
-	if (hr != S_OK) {
-		qDebug() << __FILE__ <<"Error configuring audio stream.";
-		return ERR;
-	}
-    
-    PROPVARIANT prop;
-    //Get the bitrate
-    m_pReader->GetPresentationAttribute(MF_SOURCE_READER_MEDIASOURCE,
-                                        MF_PD_AUDIO_ENCODING_BITRATE,
-                                        &prop);
-    m_iBitrate = prop.intVal;
-    qDebug() << __FILE__ << "Bitrate:" << m_iBitrate;
-    PropVariantClear(&prop);
-    
-    //Get the duration
-    m_pReader->GetPresentationAttribute(MF_SOURCE_READER_MEDIASOURCE,
-                                        MF_PD_DURATION, //Gets the duration in 100-nanosecond units.
-                                        &prop);
-    // QuadPart isn't available on compilers that don't support _int64. Visual
-    // Studio 6.0 introduced the type in 1998, so I think we're safe here
-    // -bkgood
-    m_iDuration = prop.hVal.QuadPart * 1E-7;
-    qDebug() << __FILE__ << "Duration:" << m_iDuration;
-    PropVariantClear(&prop);
+    if (FAILED(hr)) {
+        qDebug() << "SSMF: Error configuring audio stream.";
+        return ERR;
+    }
 
-	//Set m_iChannels and m_samples;
-	m_iChannels = kNumChannels;
-	
-	m_samples = m_iDuration * kSampleRate * kNumChannels;
-    //(totalFrameCount/*-m_headerFrames*/)*m_iChannels;
-	//m_iDuration = m_samples / (inputFormat.mSampleRate * m_iChannels);
-	m_iSampleRate = kSampleRate; //inputFormat.mSampleRate;
-	qDebug() << m_samples << m_iChannels;
-	
-	//Seek to position 0, which forces us to skip over all the header frames.
-	//This makes sure we're ready to just let the Analyser rip and it'll
-	//get the number of samples it expects (ie. no header frames).
-	seek(0);
+    if (!readProperties()) {
+        qDebug() << "SSMF::readProperties failed";
+        return ERR;
+    }
+    
+    //Seek to position 0, which forces us to skip over all the header frames.
+    //This makes sure we're ready to just let the Analyser rip and it'll
+    //get the number of samples it expects (ie. no header frames).
+    seek(0);
 
     return OK;
 }
@@ -149,22 +119,22 @@ int SoundSourceMediaFoundation::open()
 long SoundSourceMediaFoundation::seek(long filepos)
 {
     //http://msdn.microsoft.com/en-us/library/dd374668(v=VS.85).aspx
-    float timeInSeconds = filepos / ((float) kSampleRate * kNumChannels);
-    float timeIn100Nanosecs = timeInSeconds * 10E7;
     PROPVARIANT v;
-    memset(&v, 0, sizeof(PROPVARIANT)); 
-    v.vt = VT_R4;
-    v.fltVal = timeIn100Nanosecs;
-    qDebug() << __FILE__ << "Seeking to" << timeIn100Nanosecs << timeIn100Nanosecs/10E7;
-
-    if (m_pReader->SetCurrentPosition(GUID_NULL, //Means 100-nanosecond units.
-                                  v) != S_OK) {
-        qDebug() << __FILE__ << "Failed to seek.";
+    HRESULT hr(S_OK);
+    // this doesn't fail, see MS's implementation
+    hr = InitPropVariantFromInt64(mfFromFrame(filepos / kNumChannels), &v);
+    
+    hr = m_pReader->SetCurrentPosition(GUID_NULL, v);
+    if (FAILED(hr)) {
+        // nothing we can do here as we can't fail (no facility to other than
+        // crashing mixxx) 
+        qDebug() << "SSMF: failed to seek" << (
+            hr == MF_E_INVALIDREQUEST ? "Sample requests still pending" : "");
     }
 
-    //XXX: Fudge, SetCurrentPosition doesn't guarantee sample-accurate seeking 
-    //(at least for video). Microsoft recommends using ReadSample after a 
-    //seek to jog forward to the exact position we want. 
+    // record the next frame so that we can make sure we're there the next
+    // time we get a buffer from MFSourceReader
+    m_nextFrame = filepos / kNumChannels;
 
     return filepos;
 }
@@ -179,6 +149,8 @@ unsigned int SoundSourceMediaFoundation::read(unsigned long size, const SAMPLE *
     unsigned int numFramesRead = 0;
     unsigned int numFramesToRead = totalFramesToRead;
 
+    // TODO XXX MAKE SURE WE'RE AT THE POSITION CACHINGREADER EXPECTS US TO BE AT
+
     HRESULT hr = S_OK;
     //DWORD cbAudioData = 0;
     DWORD cbBuffer = 0;  // Length of pAudioData, in bytes
@@ -188,7 +160,7 @@ unsigned int SoundSourceMediaFoundation::read(unsigned long size, const SAMPLE *
     IMFMediaBuffer *pBuffer = NULL;
 
     while (numFramesRead < totalFramesToRead) {
-    	numFramesToRead = totalFramesToRead - numFramesRead;
+        numFramesToRead = totalFramesToRead - numFramesRead;
 
         DWORD dwFlags = 0;
 
@@ -245,11 +217,11 @@ unsigned int SoundSourceMediaFoundation::read(unsigned long size, const SAMPLE *
         SafeRelease(&pSample);
         SafeRelease(&pBuffer);
 
-		if (!numFrames) {
-			// this is our termination condition
-			break;
-		}
-		numFramesRead += numFrames;
+        if (!numFrames) {
+            // this is our termination condition
+            break;
+        }
+        numFramesRead += numFrames;
     }
 
     if (pAudioData) {
@@ -264,7 +236,7 @@ unsigned int SoundSourceMediaFoundation::read(unsigned long size, const SAMPLE *
 
 inline unsigned long SoundSourceMediaFoundation::length()
 {
-    return m_samples; 
+    return m_iDuration * kSampleRate * kNumChannels;
 }
 
 int SoundSourceMediaFoundation::parseHeader()
@@ -395,4 +367,63 @@ HRESULT SoundSourceMediaFoundation::ConfigureAudioStream(
     SafeRelease(&pUncompressedAudioType);
     SafeRelease(&pPartialType);
     return hr;
+}
+
+bool SoundSourceMediaFoundation::readProperties()
+{
+    PROPVARIANT prop;
+    HRESULT hr = S_OK;
+    
+    //Get the duration, provided as a 64-bit integer of 100-nanosecond units
+    hr = m_pReader->GetPresentationAttribute(MF_SOURCE_READER_MEDIASOURCE,
+        MF_PD_DURATION, &prop);
+    if (FAILED(hr)) {
+        qDebug() << "SSMF: error getting duration";
+        return false;
+    }
+    // QuadPart isn't available on compilers that don't support _int64. Visual
+    // Studio 6.0 introduced the type in 1998, so I think we're safe here
+    // -bkgood
+    m_iDuration = prop.hVal.QuadPart * 1E-7;
+    qDebug() << "SSMF: Duration:" << m_iDuration;
+    PropVariantClear(&prop);
+
+    // presentation attribute MF_PD_AUDIO_ENCODING_BITRATE only exists for
+    // presentation descriptors, one of which MFSourceReader is not.
+    // Therefore, we calculate it ourselves.
+    m_iBitrate = kBitsPerSample * kSampleRate * kNumChannels;
+
+    return true;
+}
+
+/**
+ * Convert a 100ns Media Foundation value to a number of seconds.
+ */
+inline qreal SoundSourceMediaFoundation::secondsFromMF(qint64 mf)
+{
+    return static_cast<qreal>(mf) / 1e7;
+}
+
+/**
+ * Convert a number of seconds to a 100ns Media Foundation value.
+ */
+inline qint64 SoundSourceMediaFoundation::mfFromSeconds(qreal sec)
+{
+    return sec * 1e7;
+}
+
+/**
+ * Convert a 100ns Media Foundation value to a frame offset.
+ */
+inline qint64 SoundSourceMediaFoundation::frameFromMF(qint64 mf)
+{
+    return static_cast<qreal>(mf) * kSampleRate / 1e7;
+}
+
+/**
+ * Convert a frame offset to a 100ns Media Foundation value.
+ */
+inline qint64 SoundSourceMediaFoundation::mfFromFrame(qint64 frame)
+{
+    return static_cast<qreal>(frame) / kSampleRate * 1e7;
 }

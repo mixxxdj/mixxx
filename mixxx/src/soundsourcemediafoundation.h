@@ -46,13 +46,16 @@ private:
         IMFSourceReader *pReader,   // Pointer to the source reader.
         IMFMediaType **ppPCMAudio   // Receives the audio format.
         );
+    bool readProperties();
+    static inline qreal secondsFromMF(qint64 mf);
+    static inline qint64 mfFromSeconds(qreal sec);
+    static inline qint64 frameFromMF(qint64 mf);
+    static inline qint64 mfFromFrame(qint64 frame);
     QFile m_file;
-    unsigned int m_samples; // total number of samples
     IMFSourceReader *m_pReader;
     IMFMediaType *m_pAudioType;
-    HANDLE m_hFile;
     wchar_t* m_wcFilename;
-
+    int m_nextFrame;
 };
 
 #endif // ifndef SOUNDSOURCEMEDIAFOUNDATION_H
