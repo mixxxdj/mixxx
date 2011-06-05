@@ -37,7 +37,7 @@ track. This is the detected :term:`BPM` of the track, adjusted for the playback
 rate of the track. For example, if the track is normally 100 BPM, and it is
 playing at +5%, then the effective BPM will read 105 BPM. The number in the
 bottom right is the total elapsed time in the track or the total remaining time
-in the track. You can customize this in the `Mixxx Preferences`_ Interface
+in the track. You can customize this in the `Mixxx Preferences` Interface
 section.
 
 .. image:: ../_static/deere_deck_track_info.png
@@ -64,6 +64,12 @@ The :term:`Sync` button changes the :term:`rate` of the track so that the
 :term:`BPM` of the track matches that of the other deck. It also adjusts the
 :term:`phase` of the track so that the two tracks' beats are aligned.
 
+The plus and minus buttons increase and decrease the rate, respectively. If
+right-clicked, they adjust the pitch in smaller steps. Similarly, the left and
+right arrow buttons are :term:`pitch bend` buttons, and these adjust the pitch
+temporarily. These can act as either a fixed :term:`pitch bend` or a
+:term:`ramping pitch bend`. You can configure their functionality in the `Mixxx
+Preferences` Interface section.
 
 Loop Controls and Hotcues
 -------------------------
@@ -148,12 +154,20 @@ Crossfader and Channel Volume
 Headphone Controls
 ------------------
 
+The Sampler Section
+===================
+
+.. image:: ../_static/deere_sampler.png
+   :align: center
+   :width: 70%
+   :alt: A sample deck
+
 The Library
 ===========
 
 .. image:: ../_static/deere_library.png
    :align: center
-   :width: 70%
+   :width: 100%
    :alt: The Mixxx Library
 
 
