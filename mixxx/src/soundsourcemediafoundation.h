@@ -56,6 +56,9 @@ private:
     IMFMediaType *m_pAudioType;
     wchar_t* m_wcFilename;
     int m_nextFrame;
+    qint16 *m_leftoverBuffer;
+    size_t m_leftoverBufferSize;
+    size_t m_leftoverBufferLength;
 };
 
 #endif // ifndef SOUNDSOURCEMEDIAFOUNDATION_H

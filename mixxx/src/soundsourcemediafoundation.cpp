@@ -49,6 +49,9 @@ SoundSourceMediaFoundation::SoundSourceMediaFoundation(QString filename)
     , m_pAudioType(NULL)
     , m_pReader(NULL)
     , m_nextFrame(0)
+    , m_leftoverBuffer(NULL)
+    , m_leftoverBufferSize(0)
+    , m_leftoverBufferLength(0)
 {
     // these are always the same, might as well just stick them here
     // -bkgood
@@ -61,6 +64,7 @@ SoundSourceMediaFoundation::SoundSourceMediaFoundation(QString filename)
 SoundSourceMediaFoundation::~SoundSourceMediaFoundation()
 {
     delete [] m_wcFilename;
+    delete [] m_leftoverBuffer;
 
     SafeRelease(&m_pReader);
     SafeRelease(&m_pAudioType);
@@ -141,10 +145,9 @@ long SoundSourceMediaFoundation::seek(long filepos)
 
 unsigned int SoundSourceMediaFoundation::read(unsigned long size, const SAMPLE *destination)
 {
-    //if (!m_decoder) return 0;
     SAMPLE *destBuffer(const_cast<SAMPLE*>(destination));
     unsigned int i = 0;
-    int numFrames = 0;//(size / 2); /// m_inputFormat.mBytesPerFrame);
+    int numFrames = 0;
     unsigned int totalFramesToRead = size/2;
     unsigned int numFramesRead = 0;
     unsigned int numFramesToRead = totalFramesToRead;
@@ -325,6 +328,12 @@ bool SoundSourceMediaFoundation::ConfigureAudioStream(
         return false;
     }
 
+    hr = pMediaType->SetUINT32(MF_MT_FIXED_SIZE_SAMPLES, true);
+    if (FAILED(hr)) {
+        qDebug() << "SSMF: failed to set fixed size samples";
+        return false;
+    }
+
     // MSDN for this attribute says that if bps is 8, samples are unsigned.
     // Otherwise, they're signed (so they're signed for us as 16 bps). Why
     // chose to hide this rather useful tidbit here is beyond me -bkgood
@@ -383,6 +392,18 @@ bool SoundSourceMediaFoundation::ConfigureAudioStream(
         qDebug() << "SSMF: failed to select first audio stream (again)";
         return false;
     }
+
+    // this may not be safe on all platforms as m_leftoverBufferSize is a
+    // size_t and this function is writing a uint32. However, on 32-bit
+    // Windows 7, size_t is defined as uint which is 32-bits, so we're safe
+    // for all supported platforms -bkgood
+    hr = pMediaType->GetUINT32(MF_MT_SAMPLE_SIZE, &m_leftoverBufferSize);
+    if (FAILED(hr)) {
+        qDebug() << "SSMF: failed to get buffer size";
+        return false;
+    }
+    m_leftoverBufferSize /= 2; // convert size in bytes to size in int16s
+    m_leftoverBuffer = new qint16[m_leftoverBufferSize];
 
     // Return the PCM format to the caller.
     *ppPCMAudio = pMediaType;
