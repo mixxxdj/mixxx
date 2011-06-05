@@ -109,25 +109,25 @@ int SoundSourceMediaFoundation::open()
 		return ERR;
 	}
     
-    PROPVARIANT thing;
+    PROPVARIANT prop;
     //Get the bitrate
     m_pReader->GetPresentationAttribute(MF_SOURCE_READER_MEDIASOURCE,
                                         MF_PD_AUDIO_ENCODING_BITRATE,
-                                        &thing);
-    m_iBitrate = thing.intVal;
+                                        &prop);
+    m_iBitrate = prop.intVal;
     qDebug() << __FILE__ << "Bitrate:" << m_iBitrate;
-    PropVariantClear(&thing);
+    PropVariantClear(&prop);
     
     //Get the duration
     m_pReader->GetPresentationAttribute(MF_SOURCE_READER_MEDIASOURCE,
                                         MF_PD_DURATION, //Gets the duration in 100-nanosecond units.
-                                        &thing);
+                                        &prop);
     // QuadPart isn't available on compilers that don't support _int64. Visual
     // Studio 6.0 introduced the type in 1998, so I think we're safe here
     // -bkgood
-    m_iDuration = thing.hVal.QuadPart * 1E-7;
+    m_iDuration = prop.hVal.QuadPart * 1E-7;
     qDebug() << __FILE__ << "Duration:" << m_iDuration;
-    PropVariantClear(&thing);
+    PropVariantClear(&prop);
 
 	//Set m_iChannels and m_samples;
 	m_iChannels = kNumChannels;
@@ -196,7 +196,7 @@ unsigned int SoundSourceMediaFoundation::read(unsigned long size, const SAMPLE *
 
         // Read the next "sample" (it's really a buffer of audio).
         hr = m_pReader->ReadSample(
-            (DWORD)MF_SOURCE_READER_FIRST_AUDIO_STREAM, // [in] DWORD dwStreamIndex,
+            MF_SOURCE_READER_FIRST_AUDIO_STREAM,        // [in] DWORD dwStreamIndex,
             0,                                          // [in] DWORD dwControlFlags,
             NULL,                                       // [out] DWORD *pdwActualStreamIndex,
             &dwFlags,                                   // [out] DWORD *pdwStreamFlags,
@@ -223,12 +223,10 @@ unsigned int SoundSourceMediaFoundation::read(unsigned long size, const SAMPLE *
         // Get a pointer to the audio data in the sample.
 
         hr = pSample->ConvertToContiguousBuffer(&pBuffer);
-
         if (FAILED(hr)) break;
 
         //Get access to the raw data in the buffer. 
         hr = pBuffer->Lock(&pAudioData, NULL, &cbBuffer);
-
         if (FAILED(hr)) break;
 
         //Calculate the number of frames read based on the number of bytes returned.
@@ -243,15 +241,6 @@ unsigned int SoundSourceMediaFoundation::read(unsigned long size, const SAMPLE *
         pAudioData = NULL;
 
         if (FAILED(hr)) break;
-
-        // Update running total of audio data.
-        /*
-        cbAudioData += cbBuffer;
-
-        if (cbAudioData >= cbMaxAudioData)
-        {
-            break;
-        } */
 
         SafeRelease(&pSample);
         SafeRelease(&pBuffer);
@@ -328,11 +317,11 @@ HRESULT SoundSourceMediaFoundation::ConfigureAudioStream(
 
     // Select the first audio stream, and deselect all other streams.
     HRESULT hr = pReader->SetStreamSelection(
-        (DWORD)MF_SOURCE_READER_ALL_STREAMS, FALSE);
+        MF_SOURCE_READER_ALL_STREAMS, FALSE);
 
     if (SUCCEEDED(hr)) {
         hr = pReader->SetStreamSelection(
-            (DWORD)MF_SOURCE_READER_FIRST_AUDIO_STREAM, TRUE);
+            MF_SOURCE_READER_FIRST_AUDIO_STREAM, TRUE);
     }
 
     // Calculate derived values.
@@ -341,9 +330,6 @@ HRESULT SoundSourceMediaFoundation::ConfigureAudioStream(
 
     // Create a partial media type that specifies uncompressed PCM audio.
     hr = MFCreateMediaType(&pPartialType);
-    //XXX: This is probably a full type now that I filled out the rest
-    //     of the fields that the second link above said to for creating
-    //     uncompressed PCM audio.
 
     if (SUCCEEDED(hr)) {
         hr = pPartialType->SetGUID(MF_MT_MAJOR_TYPE, MFMediaType_Audio);
@@ -382,21 +368,21 @@ HRESULT SoundSourceMediaFoundation::ConfigureAudioStream(
     // load the necessary decoder.
     if (SUCCEEDED(hr)) {
         hr = pReader->SetCurrentMediaType(
-            (DWORD)MF_SOURCE_READER_FIRST_AUDIO_STREAM,
+            MF_SOURCE_READER_FIRST_AUDIO_STREAM,
             NULL, pPartialType);
     }
 
     // Get the complete uncompressed format.
     if (SUCCEEDED(hr)) {
         hr = pReader->GetCurrentMediaType(
-            (DWORD)MF_SOURCE_READER_FIRST_AUDIO_STREAM,
+            MF_SOURCE_READER_FIRST_AUDIO_STREAM,
             &pUncompressedAudioType);
     }
 
     // Ensure the stream is selected.
     if (SUCCEEDED(hr)) {
         hr = pReader->SetStreamSelection(
-            (DWORD)MF_SOURCE_READER_FIRST_AUDIO_STREAM,
+            MF_SOURCE_READER_FIRST_AUDIO_STREAM,
             TRUE);
     }
 
