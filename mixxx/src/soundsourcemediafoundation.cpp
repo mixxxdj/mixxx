@@ -29,9 +29,9 @@
 
 #include "soundsourcemediafoundation.h"
 
-#define MIXXX_SOURCEREADER_BITS_PER_SAMPLE 16
-#define MIXXX_SOURCEREADER_NUM_CHANNELS 2
-#define MIXXX_SOURCEREADER_SAMPLERATE 44100
+const int kBitsPerSample = 16;
+const int kNumChannels = 2;
+const int kSampleRate = 44100;
 
 /** Microsoft examples use this snippet often. */
 template <class T> void SafeRelease(T **ppT)
@@ -137,12 +137,12 @@ int SoundSourceMediaFoundation::open() {
     
 
 	//Set m_iChannels and m_samples;
-	m_iChannels = MIXXX_SOURCEREADER_NUM_CHANNELS;
+	m_iChannels = kNumChannels;
 	
-	m_samples = m_iDuration * MIXXX_SOURCEREADER_SAMPLERATE * MIXXX_SOURCEREADER_NUM_CHANNELS;
+	m_samples = m_iDuration * kSampleRate * kNumChannels;
     //(totalFrameCount/*-m_headerFrames*/)*m_iChannels;
 	//m_iDuration = m_samples / (inputFormat.mSampleRate * m_iChannels);
-	m_iSampleRate = MIXXX_SOURCEREADER_SAMPLERATE; //inputFormat.mSampleRate;
+	m_iSampleRate = kSampleRate; //inputFormat.mSampleRate;
 	qDebug() << m_samples << m_iChannels;
 	
 	//Seek to position 0, which forces us to skip over all the header frames.
@@ -157,7 +157,7 @@ long SoundSourceMediaFoundation::seek(long filepos) {
 
     //http://msdn.microsoft.com/en-us/library/dd374668(v=VS.85).aspx 
 
-    float timeInSeconds = filepos / ((float)MIXXX_SOURCEREADER_SAMPLERATE * MIXXX_SOURCEREADER_NUM_CHANNELS);
+    float timeInSeconds = filepos / ((float)kSampleRate * kNumChannels);
     float timeIn100Nanosecs = timeInSeconds * 10E7;
     PROPVARIANT v;
     memset(&v, 0, sizeof(PROPVARIANT)); 
@@ -242,10 +242,10 @@ unsigned int SoundSourceMediaFoundation::read(unsigned long size, const SAMPLE *
         if (FAILED(hr)) { break; }
 
         //Calculate the number of frames read based on the number of bytes returned.
-        numFrames = cbBuffer / ( (MIXXX_SOURCEREADER_BITS_PER_SAMPLE / 8) * MIXXX_SOURCEREADER_NUM_CHANNELS);
+        numFrames = cbBuffer / ( (kBitsPerSample / 8) * kNumChannels);
         for (int i = 0; i < numFrames*2; i++)
         {
-            destBuffer[numFramesRead*MIXXX_SOURCEREADER_NUM_CHANNELS + i] = pAudioData[i];
+            destBuffer[numFramesRead*kNumChannels + i] = pAudioData[i];
         }
         //Copy the data to destBuffer;
 
@@ -348,8 +348,8 @@ HRESULT SoundSourceMediaFoundation::ConfigureAudioStream(
     }
 
     // Calculate derived values.
-    UINT32 blockAlign = MIXXX_SOURCEREADER_NUM_CHANNELS * (MIXXX_SOURCEREADER_BITS_PER_SAMPLE / 8);
-    UINT32 bytesPerSecond = blockAlign * MIXXX_SOURCEREADER_SAMPLERATE;
+    UINT32 blockAlign = kNumChannels * (kBitsPerSample / 8);
+    UINT32 bytesPerSecond = blockAlign * kSampleRate;
 
 
     // Create a partial media type that specifies uncompressed PCM audio.
@@ -370,17 +370,17 @@ HRESULT SoundSourceMediaFoundation::ConfigureAudioStream(
 
     if (SUCCEEDED(hr))
     {
-        hr = pPartialType->SetUINT32(MF_MT_AUDIO_SAMPLES_PER_SECOND, MIXXX_SOURCEREADER_SAMPLERATE);
+        hr = pPartialType->SetUINT32(MF_MT_AUDIO_SAMPLES_PER_SECOND, kSampleRate);
     }
 
     if (SUCCEEDED(hr))
     {
-        hr = pPartialType->SetUINT32(MF_MT_AUDIO_NUM_CHANNELS, MIXXX_SOURCEREADER_NUM_CHANNELS);
+        hr = pPartialType->SetUINT32(MF_MT_AUDIO_NUM_CHANNELS, kNumChannels);
     }
 
     if (SUCCEEDED(hr))
     {
-        hr = pPartialType->SetUINT32(MF_MT_AUDIO_BITS_PER_SAMPLE, MIXXX_SOURCEREADER_BITS_PER_SAMPLE); 
+        hr = pPartialType->SetUINT32(MF_MT_AUDIO_BITS_PER_SAMPLE, kBitsPerSample); 
         //We'll get signed integers out.
     }
 
