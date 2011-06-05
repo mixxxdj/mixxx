@@ -53,9 +53,9 @@ SoundSourceMediaFoundation::SoundSourceMediaFoundation(QString filename)
     m_wcFilename = new wchar_t[255];
 }
 
-SoundSourceMediaFoundation::~SoundSourceMediaFoundation() {
-	
-    delete m_wcFilename;
+SoundSourceMediaFoundation::~SoundSourceMediaFoundation()
+{	
+    delete [] m_wcFilename;
 
     // Clean up.
     if (m_hFile != INVALID_HANDLE_VALUE) {
@@ -69,7 +69,8 @@ SoundSourceMediaFoundation::~SoundSourceMediaFoundation() {
 }
 
 // soundsource overrides
-int SoundSourceMediaFoundation::open() {
+int SoundSourceMediaFoundation::open()
+{
     HRESULT hr = S_OK;
 
     //m_file.open(QIODevice::ReadOnly);
@@ -145,7 +146,8 @@ int SoundSourceMediaFoundation::open() {
     return OK;
 }
 
-long SoundSourceMediaFoundation::seek(long filepos) {
+long SoundSourceMediaFoundation::seek(long filepos)
+{
     //http://msdn.microsoft.com/en-us/library/dd374668(v=VS.85).aspx 
 
     float timeInSeconds = filepos / ((float) kSampleRate * kNumChannels);
@@ -272,11 +274,13 @@ unsigned int SoundSourceMediaFoundation::read(unsigned long size, const SAMPLE *
     return numFramesRead*2;
 }
 
-inline unsigned long SoundSourceMediaFoundation::length() {
+inline unsigned long SoundSourceMediaFoundation::length()
+{
     return m_samples; 
 }
 
-int SoundSourceMediaFoundation::parseHeader() {
+int SoundSourceMediaFoundation::parseHeader()
+{
     setType("m4a");
 
     TagLib::MP4::File f(getFilename().toUtf8().constData());
@@ -294,12 +298,11 @@ int SoundSourceMediaFoundation::parseHeader() {
 
 
 // static
-QList<QString> SoundSourceMediaFoundation::supportedFileExtensions() {
+QList<QString> SoundSourceMediaFoundation::supportedFileExtensions()
+{
     QList<QString> list;
     list.push_back("m4a");
-    //Can add mp3, mp2, ac3, and others here if you want.
-    //See:
-    //  http://developer.apple.com/library/mac/documentation/MusicAudio/Reference/AudioFileConvertRef/Reference/reference.html#//apple_ref/doc/c_ref/AudioFileTypeID
+    list.push_back("mp4");
     return list;
 }
 
