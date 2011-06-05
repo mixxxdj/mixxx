@@ -18,7 +18,6 @@ figure out which one you prefer. This section will focus on Deere only.
 The Deck Sections
 =================
 
-
 The :term:`deck` section allows you to control everything relating to a virtual
 turntable deck. We are going to break this down into sections.
 
@@ -32,44 +31,72 @@ Track Information
 -----------------
 
 
-The name of the loaded track is shown on top of each deck. Below from left to right, the
-first number is the total elapsed time in the track. The second number is the
-duration of the track. The third number is the track's detected :term:`BPM`. On
-the far right is the rate of the track relative to its normal speed. The rate is
-currently at 0.00, which means that it is playing at its normal playback rate.
+The name of the loaded track is shown on top of each deck and the artist is
+listed below. The number at the top right is the effective :term:`BPM` of the
+track. This is the detected :term:`BPM` of the track, adjusted for the playback
+rate of the track. For example, if the track is normally 100 BPM, and it is
+playing at +5%, then the effective BPM will read 105 BPM. The number in the
+bottom right is the total elapsed time in the track or the total remaining time
+in the track. You can customize this in the `Mixxx Preferences`_ Interface
+section.
 
 .. image:: ../_static/deere_deck_track_info.png
    :align: center
    :width: 70%
    :alt: The track information section
 
-Playback and Rate Controls
---------------------------
+Rate Controls
+-------------
 
+.. image:: ../_static/deere_deck_rate_control.png
+   :align: left
+   :width: 10%
+   :alt: The rate control section of the deck
+
+The rate controls allow you to change the rate at which tracks are played. This
+is very useful for :term:`beatmatching` two tracks together in a mix. The slider
+adjusts the rate of the track. The percent that the track's rate is sped up or
+slowed down is noted above the slider. At the center, it is +0.0%, which
+indicates no change. The range of this slider is customizable in the `Mixxx
+Preferences`_ Interface section.
+
+The :term:`Sync` button changes the :term:`rate` of the track so that the
+:term:`BPM` of the track matches that of the other deck. It also adjusts the
+:term:`phase` of the track so that the two tracks' beats are aligned.
 
 
 Loop Controls and Hotcues
 -------------------------
 
-For each deck, you can control loops, hotcues and the playback speed.
-On the far left, you can :term:`fast-rewind`, :term:`reverse`, or
-:term:`fast-forward` the deck, respectively. The :term:`in <loop in>` and
-:term:`out <loop out>` buttons allow you to set the loop-in and loop-out
-point. Tapping the :term:`loop <reloop>` button toggles whether the loop is
-active or not.
-
 .. image:: ../_static/deere_deck_loop_hotcue.png
    :align: center
    :width: 70%
-   :alt: The looping, hotcue, and fast-forward/rewind controls.
+   :alt: The looping, beatloop, hotcue, and fast-forward/rewind controls.
 
-The hotcue section, the 4 colored numbers, are used to set and clear
+In this section, you can control loops, beatloops, hotcues and the playback
+speed.  On the far left, you can :term:`fast-rewind`, :term:`fast-forward`, or
+:term:`reverse` the deck, respectively.
+
+The eight numbered buttons to the right of these buttons are the beatlooping
+controls. Clicking on any numbered button in this section will set a loop of
+that number of beats from the beat immediately following the current playback
+position. Clicking on the minus or plus button will either halve or double the
+length of the loop. Tapping the :term:`loop <reloop>` button toggles whether the
+loop is active or not.
+
+Above the :term:`loop <reloop>` button are the :term:`in <loop in>` and
+:term:`out <loop out>` buttons, which allow you to manually set the loop-in and
+loop-out point. If the :term:`quantize` mode is enabled (see `The Waveform`
+section), then the loop points will automatically snap to the nearest beat.
+
+The hotcue section, the 4 numbers on the far right, are used to set and clear
 hotcues. Clicking on a numbered button will set a hotcue. A marker with the
 corresponding number will appear in the waveform with the same number as the
 button and the button will turn red to indicate that the hotcue is set. If the
 deck is playing, you can simply tap a hotcue to cause the deck to instantly jump
 back to the location of the hotcue. To clear a hotcue, right-click on the
-numbered button.
+numbered button. If the :term:`quantize` mode is enabled (see `The Waveform`
+section), then the hotcues will automatically snap to the nearest beat.
 
 The Waveform
 ------------
@@ -96,6 +123,12 @@ once reaches its end. Clicking the keylock button enabes :term:`key lock` mode.
 The Mixer Section
 =================
 
+.. image:: ../_static/deere_mixer.png
+   :align: center
+   :width: 70%
+   :alt: The mixer section
+
+
 Equalizers
 ----------
 
@@ -105,11 +138,23 @@ The PFL Button
 Crossfader and Channel Volume
 -----------------------------
 
+.. image:: ../_static/deere_mixer_crossfader.png
+   :align: center
+   :width: 70%
+   :alt: The crossfader section of the mixer
+
+
+
 Headphone Controls
 ------------------
 
 The Library
 ===========
+
+.. image:: ../_static/deere_library.png
+   :align: center
+   :width: 70%
+   :alt: The Mixxx Library
 
 
 
