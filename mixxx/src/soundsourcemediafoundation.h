@@ -42,7 +42,7 @@ public:
     static QList<QString> supportedFileExtensions();
 
 private:
-    HRESULT ConfigureAudioStream(
+    bool ConfigureAudioStream(
         IMFSourceReader *pReader,   // Pointer to the source reader.
         IMFMediaType **ppPCMAudio   // Receives the audio format.
         );

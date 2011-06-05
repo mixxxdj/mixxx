@@ -74,8 +74,8 @@ int SoundSourceMediaFoundation::open()
     int wcFilenameLength(m_qFilename.toWCharArray(m_wcFilename));
     // toWCharArray does not append a null terminator to the string!
     m_wcFilename[wcFilenameLength] = '\0';
- 
-    HRESULT hr(S_OK);   
+
+    HRESULT hr(S_OK);
     // Initialize the COM library.
     hr = CoInitializeEx(NULL, COINIT_APARTMENTTHREADED | COINIT_DISABLE_OLE1DDE);
     if (FAILED(hr)) {
@@ -107,7 +107,7 @@ int SoundSourceMediaFoundation::open()
         qDebug() << "SSMF::readProperties failed";
         return ERR;
     }
-    
+
     //Seek to position 0, which forces us to skip over all the header frames.
     //This makes sure we're ready to just let the Analyser rip and it'll
     //get the number of samples it expects (ie. no header frames).
@@ -123,11 +123,11 @@ long SoundSourceMediaFoundation::seek(long filepos)
     HRESULT hr(S_OK);
     // this doesn't fail, see MS's implementation
     hr = InitPropVariantFromInt64(mfFromFrame(filepos / kNumChannels), &v);
-    
+
     hr = m_pReader->SetCurrentPosition(GUID_NULL, v);
     if (FAILED(hr)) {
         // nothing we can do here as we can't fail (no facility to other than
-        // crashing mixxx) 
+        // crashing mixxx)
         qDebug() << "SSMF: failed to seek" << (
             hr == MF_E_INVALIDREQUEST ? "Sample requests still pending" : "");
     }
@@ -197,7 +197,7 @@ unsigned int SoundSourceMediaFoundation::read(unsigned long size, const SAMPLE *
         hr = pSample->ConvertToContiguousBuffer(&pBuffer);
         if (FAILED(hr)) break;
 
-        //Get access to the raw data in the buffer. 
+        //Get access to the raw data in the buffer.
         hr = pBuffer->Lock(&pAudioData, NULL, &cbBuffer);
         if (FAILED(hr)) break;
 
@@ -278,102 +278,125 @@ QList<QString> SoundSourceMediaFoundation::supportedFileExtensions()
     http://msdn.microsoft.com/en-us/library/dd757929(v=vs.85).aspx
     and http://msdn.microsoft.com/en-us/library/dd317928(VS.85).aspx
     -- Albert
+    If anything in here fails, just bail. I'm not going to decode HRESULTS.
+    -- Bill
     */
-HRESULT SoundSourceMediaFoundation::ConfigureAudioStream(
-    IMFSourceReader *pReader,   // Pointer to the source reader.
-    IMFMediaType **ppPCMAudio   // Receives the audio format.
-    )
+bool SoundSourceMediaFoundation::ConfigureAudioStream(
+    IMFSourceReader *pReader,
+    IMFMediaType **ppPCMAudio)
 {
-    IMFMediaType *pUncompressedAudioType = NULL;
-    IMFMediaType *pPartialType = NULL;
+    IMFMediaType *pMediaType(NULL);
+    HRESULT hr(S_OK);
 
-    // Select the first audio stream, and deselect all other streams.
-    HRESULT hr = pReader->SetStreamSelection(
-        MF_SOURCE_READER_ALL_STREAMS, FALSE);
-
-    if (SUCCEEDED(hr)) {
-        hr = pReader->SetStreamSelection(
-            MF_SOURCE_READER_FIRST_AUDIO_STREAM, TRUE);
+    // deselect all streams, we only want the first
+    hr = pReader->SetStreamSelection(MF_SOURCE_READER_ALL_STREAMS, false);
+    if (FAILED(hr)) {
+        qDebug() << "SSMF: failed to deselect all streams";
+        return false;
     }
 
-    // Calculate derived values.
-    UINT32 blockAlign = kNumChannels * (kBitsPerSample / 8);
-    UINT32 bytesPerSecond = blockAlign * kSampleRate;
-
-    // Create a partial media type that specifies uncompressed PCM audio.
-    hr = MFCreateMediaType(&pPartialType);
-
-    if (SUCCEEDED(hr)) {
-        hr = pPartialType->SetGUID(MF_MT_MAJOR_TYPE, MFMediaType_Audio);
+    hr = pReader->SetStreamSelection(MF_SOURCE_READER_FIRST_AUDIO_STREAM, true);
+    if (FAILED(hr)) {
+        qDebug() << "SSMF: failed to select first audio stream";
+        return false;
     }
 
-    if (SUCCEEDED(hr)) {
-        hr = pPartialType->SetGUID(MF_MT_SUBTYPE, MFAudioFormat_PCM);
+    hr = MFCreateMediaType(&pMediaType);
+    if (FAILED(hr)) {
+        qDebug() << "SSMF: failed to create media type";
+        return false;
     }
 
-    if (SUCCEEDED(hr)) {
-        hr = pPartialType->SetUINT32(MF_MT_AUDIO_SAMPLES_PER_SECOND, kSampleRate);
+    hr = pMediaType->SetGUID(MF_MT_MAJOR_TYPE, MFMediaType_Audio);
+    if (FAILED(hr)) {
+        qDebug() << "SSMF: failed to set major type";
+        return false;
     }
 
-    if (SUCCEEDED(hr)) {
-        hr = pPartialType->SetUINT32(MF_MT_AUDIO_NUM_CHANNELS, kNumChannels);
+    hr = pMediaType->SetGUID(MF_MT_SUBTYPE, MFAudioFormat_PCM);
+    if (FAILED(hr)) {
+        qDebug() << "SSMF: failed to set subtype";
+        return false;
     }
 
-    if (SUCCEEDED(hr)) {
-        hr = pPartialType->SetUINT32(MF_MT_AUDIO_BITS_PER_SAMPLE, kBitsPerSample); 
-        //We'll get signed integers out.
+    hr = pMediaType->SetUINT32(MF_MT_ALL_SAMPLES_INDEPENDENT, true);
+    if (FAILED(hr)) {
+        qDebug() << "SSMF: failed to set samples independent";
+        return false;
     }
 
-    if (SUCCEEDED(hr)) {
-        hr = pPartialType->SetUINT32(MF_MT_AUDIO_BLOCK_ALIGNMENT, blockAlign);
+    // MSDN for this attribute says that if bps is 8, samples are unsigned.
+    // Otherwise, they're signed (so they're signed for us as 16 bps). Why
+    // chose to hide this rather useful tidbit here is beyond me -bkgood
+    hr = pMediaType->SetUINT32(MF_MT_AUDIO_BITS_PER_SAMPLE, kBitsPerSample);
+    if (FAILED(hr)) {
+        qDebug() << "SSMF: failed to set bits per sample";
+        return false;
     }
 
-    if (SUCCEEDED(hr)) {
-        hr = pPartialType->SetUINT32(MF_MT_AUDIO_AVG_BYTES_PER_SECOND, bytesPerSecond);
+    hr = pMediaType->SetUINT32(MF_MT_AUDIO_BLOCK_ALIGNMENT, kNumChannels * (kBitsPerSample / 8));
+    if (FAILED(hr)) {
+        qDebug() << "SSMF: failed to set block alignment";
+        return false;
     }
 
-    if (SUCCEEDED(hr)) {
-        hr = pPartialType->SetUINT32(MF_MT_ALL_SAMPLES_INDEPENDENT, TRUE);
+    hr = pMediaType->SetUINT32(MF_MT_AUDIO_NUM_CHANNELS, kNumChannels);
+    if (FAILED(hr)) {
+        qDebug() << "SSMF: failed to set number of channels";
+        return false;
+    }
+
+    hr = pMediaType->SetUINT32(MF_MT_AUDIO_SAMPLES_PER_SECOND, kSampleRate);
+    if (FAILED(hr)) {
+        qDebug() << "SSMF: failed to set sample rate";
+        return false;
     }
 
     // Set this type on the source reader. The source reader will
     // load the necessary decoder.
-    if (SUCCEEDED(hr)) {
-        hr = pReader->SetCurrentMediaType(
-            MF_SOURCE_READER_FIRST_AUDIO_STREAM,
-            NULL, pPartialType);
+    hr = pReader->SetCurrentMediaType(
+        MF_SOURCE_READER_FIRST_AUDIO_STREAM,
+        NULL, pMediaType);
+
+    // the reader has the media type now, free our reference so we can use our
+    // pointer for other purposes
+    SafeRelease(&pMediaType);
+    if (FAILED(hr)) {
+        qDebug() << "SSMF: failed to set media type";
+        return false;
     }
 
     // Get the complete uncompressed format.
-    if (SUCCEEDED(hr)) {
-        hr = pReader->GetCurrentMediaType(
-            MF_SOURCE_READER_FIRST_AUDIO_STREAM,
-            &pUncompressedAudioType);
+    hr = pReader->GetCurrentMediaType(
+        MF_SOURCE_READER_FIRST_AUDIO_STREAM,
+        &pMediaType);
+    if (FAILED(hr)) {
+        qDebug() << "SSMF: failed to retrieve completed media type";
+        return false;
     }
 
     // Ensure the stream is selected.
-    if (SUCCEEDED(hr)) {
-        hr = pReader->SetStreamSelection(
-            MF_SOURCE_READER_FIRST_AUDIO_STREAM,
-            TRUE);
+    hr = pReader->SetStreamSelection(
+        MF_SOURCE_READER_FIRST_AUDIO_STREAM,
+        true);
+    if (FAILED(hr)) {
+        qDebug() << "SSMF: failed to select first audio stream (again)";
+        return false;
     }
 
     // Return the PCM format to the caller.
-    if (SUCCEEDED(hr)) {
-        *ppPCMAudio = pUncompressedAudioType;
-        (*ppPCMAudio)->AddRef();
-    }
+    *ppPCMAudio = pMediaType;
+    (*ppPCMAudio)->AddRef();
 
-    SafeRelease(&pUncompressedAudioType);
-    SafeRelease(&pPartialType);
-    return hr;
+    SafeRelease(&pMediaType);
+    return true;
 }
 
 bool SoundSourceMediaFoundation::readProperties()
 {
     PROPVARIANT prop;
     HRESULT hr = S_OK;
-    
+
     //Get the duration, provided as a 64-bit integer of 100-nanosecond units
     hr = m_pReader->GetPresentationAttribute(MF_SOURCE_READER_MEDIASOURCE,
         MF_PD_DURATION, &prop);
