@@ -1,8 +1,8 @@
 An Overview of the Mixxx Interface
 **********************************
 
-Welcome to the Mixxx interface. This is where the magic happens. 
-You are going to want to get very familiar with this interface because it is 
+Welcome to the Mixxx interface. This is where the magic happens.
+You are going to want to get very familiar with this interface because it is
 the main way to use Mixxx. In this chapter, we present the default interface of Mixxx
 and describe its elements, knobs and faders.
 
@@ -11,7 +11,9 @@ and describe its elements, knobs and faders.
    :width: 100%
    :alt: The Mixxx Deere skin
 
-
+This is the Deere skin. It is the default skin supplied with Mixxx. There are a
+variety of others skins included with Mixxx. You should explore them all to
+figure out which one you prefer. This section will focus on Deere only.
 
 The Deck Sections
 =================
@@ -49,7 +51,7 @@ Playback and Rate Controls
 Loop Controls and Hotcues
 -------------------------
 
-For each deck, you can control loops, hotcues and the playback speed. 
+For each deck, you can control loops, hotcues and the playback speed.
 On the far left, you can :term:`fast-rewind`, :term:`reverse`, or
 :term:`fast-forward` the deck, respectively. The :term:`in <loop in>` and
 :term:`out <loop out>` buttons allow you to set the loop-in and loop-out
