@@ -20,7 +20,7 @@ SetCompressor /SOLID lzma
 !define PRODUCT_PUBLISHER "The Mixxx Team"
 !define PRODUCT_WEB_SITE "http://www.mixxx.org"
 
-!define DEFAULT_SKIN "Outline1024x600-Netbook"
+!define DEFAULT_SKIN "Deere1280x800-WXGA"
 
 ; Assumes this script is locaed in <base>\mixxx\build\nsis
 !define BASE_BUILD_DIR "..\.."
@@ -165,7 +165,6 @@ Section "Mixxx (required)" SecMixxx
 
   SetOutPath $INSTDIR\keyboard
   File "${BASE_BUILD_DIR}\dist${BITWIDTH}\keyboard\Standard.kbd.cfg"
-  File "${BASE_BUILD_DIR}\dist${BITWIDTH}\keyboard\Old.kbd.cfg"
 
   ; MIDI mapping tools (mappings are below) & common script file
   SetOutPath $INSTDIR\midi
