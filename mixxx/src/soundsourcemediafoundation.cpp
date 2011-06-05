@@ -34,10 +34,9 @@ const int kNumChannels = 2;
 const int kSampleRate = 44100;
 
 /** Microsoft examples use this snippet often. */
-template <class T> void SafeRelease(T **ppT)
+template<class T> void SafeRelease(T **ppT)
 {
-    if (*ppT)
-    {
+    if (*ppT) {
         (*ppT)->Release();
         *ppT = NULL;
     }
@@ -59,8 +58,7 @@ SoundSourceMediaFoundation::~SoundSourceMediaFoundation() {
     delete m_wcFilename;
 
     // Clean up.
-    if (m_hFile != INVALID_HANDLE_VALUE)
-    {
+    if (m_hFile != INVALID_HANDLE_VALUE) {
         CloseHandle(m_hFile);
     }
 
@@ -86,34 +84,29 @@ int SoundSourceMediaFoundation::open() {
     hr = CoInitializeEx(NULL, COINIT_APARTMENTTHREADED | COINIT_DISABLE_OLE1DDE);
 
     // Initialize the Media Foundation platform.
-    if (SUCCEEDED(hr))
-    {
+    if (SUCCEEDED(hr)) {
         hr = MFStartup(MF_VERSION);
     }
 
     // Create the source reader to read the input file.
-    if (SUCCEEDED(hr))
-    {
+    if (SUCCEEDED(hr)) {
         // MFCreateSourceReaderFromURL is only supported on Windows 7+ !
         //Instead, we're going to use a nice snippet Microsoft gave us:
         //hr = this->CreateMediaSource(m_wcFilename, &m_pReader);
         hr = MFCreateSourceReaderFromURL(m_wcFilename, NULL, &m_pReader);
-        if (FAILED(hr))
-        {
+        if (FAILED(hr)) {
             qDebug() << "SSSR: Error opening input file:" << m_qFilename << hr;
             return ERR;
         }
     }    
 
-	if (hr != S_OK)
-	{
+	if (hr != S_OK) {
 		qDebug() << "SSSR: Error opening file.";
 		return ERR;
 	}
 
     hr = ConfigureAudioStream(m_pReader, &m_pAudioType);
-	if (hr != S_OK)
-	{
+	if (hr != S_OK) {
 		qDebug() << "SSSR: Error configuring audio stream.";
 		return ERR;
 	}
@@ -134,7 +127,6 @@ int SoundSourceMediaFoundation::open() {
     m_iDuration = thing.intVal * 1E7;
     qDebug() << "SSSR: Duration:" << m_iDuration;
     PropVariantClear(&thing);
-    
 
 	//Set m_iChannels and m_samples;
 	m_iChannels = kNumChannels;
@@ -154,10 +146,9 @@ int SoundSourceMediaFoundation::open() {
 }
 
 long SoundSourceMediaFoundation::seek(long filepos) {
-
     //http://msdn.microsoft.com/en-us/library/dd374668(v=VS.85).aspx 
 
-    float timeInSeconds = filepos / ((float)kSampleRate * kNumChannels);
+    float timeInSeconds = filepos / ((float) kSampleRate * kNumChannels);
     float timeIn100Nanosecs = timeInSeconds * 10E7;
     PROPVARIANT v;
     memset(&v, 0, sizeof(PROPVARIANT)); 
@@ -166,8 +157,7 @@ long SoundSourceMediaFoundation::seek(long filepos) {
     qDebug() << "SSSR: Seeking to" << timeIn100Nanosecs << timeIn100Nanosecs/10E7;
 
     if (m_pReader->SetCurrentPosition(GUID_NULL, //Means 100-nanosecond units.
-                                  v) != S_OK)
-    {
+                                  v) != S_OK) {
         qDebug() << "SSSR: Failed to seek.";
     }
 
@@ -178,7 +168,8 @@ long SoundSourceMediaFoundation::seek(long filepos) {
     return filepos;
 }
 
-unsigned int SoundSourceMediaFoundation::read(unsigned long size, const SAMPLE *destination) {
+unsigned int SoundSourceMediaFoundation::read(unsigned long size, const SAMPLE *destination)
+{
     //if (!m_decoder) return 0;
     SAMPLE *destBuffer(const_cast<SAMPLE*>(destination));
     unsigned int i = 0;
@@ -211,21 +202,19 @@ unsigned int SoundSourceMediaFoundation::read(unsigned long size, const SAMPLE *
             NULL,                                       // [out] LONGLONG *pllTimestamp,
             &pSample);                                  // [out] IMFSample **ppSample
 
-        if (FAILED(hr)) { break; }
+        if (FAILED(hr)) break;
 
-        if (dwFlags & MF_SOURCE_READERF_CURRENTMEDIATYPECHANGED)
-        {
+        if (dwFlags & MF_SOURCE_READERF_CURRENTMEDIATYPECHANGED) {
             qDebug() << "Type change";
             break;
         }
-        if (dwFlags & MF_SOURCE_READERF_ENDOFSTREAM)
-        {
+
+        if (dwFlags & MF_SOURCE_READERF_ENDOFSTREAM) {
             qDebug() << "End of input file.";
             break;
         }
 
-        if (pSample == NULL)
-        {
+        if (pSample == NULL) {
             qDebug() << "No sample";
             continue;
         }
@@ -234,17 +223,16 @@ unsigned int SoundSourceMediaFoundation::read(unsigned long size, const SAMPLE *
 
         hr = pSample->ConvertToContiguousBuffer(&pBuffer);
 
-        if (FAILED(hr)) { break; }
+        if (FAILED(hr)) break;
 
         //Get access to the raw data in the buffer. 
         hr = pBuffer->Lock(&pAudioData, NULL, &cbBuffer);
 
-        if (FAILED(hr)) { break; }
+        if (FAILED(hr)) break;
 
         //Calculate the number of frames read based on the number of bytes returned.
         numFrames = cbBuffer / ( (kBitsPerSample / 8) * kNumChannels);
-        for (int i = 0; i < numFrames*2; i++)
-        {
+        for (int i = 0; i < numFrames*2; i++) {
             destBuffer[numFramesRead*kNumChannels + i] = pAudioData[i];
         }
         //Copy the data to destBuffer;
@@ -253,7 +241,7 @@ unsigned int SoundSourceMediaFoundation::read(unsigned long size, const SAMPLE *
         hr = pBuffer->Unlock();
         pAudioData = NULL;
 
-        if (FAILED(hr)) { break; }
+        if (FAILED(hr)) break;
 
         // Update running total of audio data.
         /*
@@ -274,8 +262,7 @@ unsigned int SoundSourceMediaFoundation::read(unsigned long size, const SAMPLE *
 		numFramesRead += numFrames;
     }
 
-    if (pAudioData)
-    {
+    if (pAudioData) {
         pBuffer->Unlock();
     }
 
@@ -341,8 +328,7 @@ HRESULT SoundSourceMediaFoundation::ConfigureAudioStream(
     HRESULT hr = pReader->SetStreamSelection(
         (DWORD)MF_SOURCE_READER_ALL_STREAMS, FALSE);
 
-    if (SUCCEEDED(hr))
-    {
+    if (SUCCEEDED(hr)) {
         hr = pReader->SetStreamSelection(
             (DWORD)MF_SOURCE_READER_FIRST_AUDIO_STREAM, TRUE);
     }
@@ -351,82 +337,69 @@ HRESULT SoundSourceMediaFoundation::ConfigureAudioStream(
     UINT32 blockAlign = kNumChannels * (kBitsPerSample / 8);
     UINT32 bytesPerSecond = blockAlign * kSampleRate;
 
-
     // Create a partial media type that specifies uncompressed PCM audio.
     hr = MFCreateMediaType(&pPartialType);
     //XXX: This is probably a full type now that I filled out the rest
     //     of the fields that the second link above said to for creating
     //     uncompressed PCM audio.
 
-    if (SUCCEEDED(hr))
-    {
+    if (SUCCEEDED(hr)) {
         hr = pPartialType->SetGUID(MF_MT_MAJOR_TYPE, MFMediaType_Audio);
     }
 
-    if (SUCCEEDED(hr))
-    {
+    if (SUCCEEDED(hr)) {
         hr = pPartialType->SetGUID(MF_MT_SUBTYPE, MFAudioFormat_PCM);
     }
 
-    if (SUCCEEDED(hr))
-    {
+    if (SUCCEEDED(hr)) {
         hr = pPartialType->SetUINT32(MF_MT_AUDIO_SAMPLES_PER_SECOND, kSampleRate);
     }
 
-    if (SUCCEEDED(hr))
-    {
+    if (SUCCEEDED(hr)) {
         hr = pPartialType->SetUINT32(MF_MT_AUDIO_NUM_CHANNELS, kNumChannels);
     }
 
-    if (SUCCEEDED(hr))
-    {
+    if (SUCCEEDED(hr)) {
         hr = pPartialType->SetUINT32(MF_MT_AUDIO_BITS_PER_SAMPLE, kBitsPerSample); 
         //We'll get signed integers out.
     }
 
-    if (SUCCEEDED(hr))
-    {
+    if (SUCCEEDED(hr)) {
         hr = pPartialType->SetUINT32(MF_MT_AUDIO_BLOCK_ALIGNMENT, blockAlign);
     }
 
-    if (SUCCEEDED(hr))
-    {
+    if (SUCCEEDED(hr)) {
         hr = pPartialType->SetUINT32(MF_MT_AUDIO_AVG_BYTES_PER_SECOND, bytesPerSecond);
     }
 
-    if (SUCCEEDED(hr))
-    {
+    if (SUCCEEDED(hr)) {
         hr = pPartialType->SetUINT32(MF_MT_ALL_SAMPLES_INDEPENDENT, TRUE);
     }
 
     // Set this type on the source reader. The source reader will
     // load the necessary decoder.
-    if (SUCCEEDED(hr))
-    {
+    if (SUCCEEDED(hr)) {
         hr = pReader->SetCurrentMediaType(
             (DWORD)MF_SOURCE_READER_FIRST_AUDIO_STREAM,
             NULL, pPartialType);
     }
 
     // Get the complete uncompressed format.
-    if (SUCCEEDED(hr))
-    {
+    if (SUCCEEDED(hr)) {
         hr = pReader->GetCurrentMediaType(
             (DWORD)MF_SOURCE_READER_FIRST_AUDIO_STREAM,
             &pUncompressedAudioType);
     }
 
     // Ensure the stream is selected.
-    if (SUCCEEDED(hr))
-    {
+    if (SUCCEEDED(hr)) {
         hr = pReader->SetStreamSelection(
             (DWORD)MF_SOURCE_READER_FIRST_AUDIO_STREAM,
             TRUE);
     }
 
     // Return the PCM format to the caller.
-    if (SUCCEEDED(hr))
-    {
+    if (SUCCEEDED(hr)) {
         *ppPCMAudio = pUncompressedAudioType;
         (*ppPCMAudio)->AddRef();
     }
@@ -449,8 +422,7 @@ HRESULT SoundSourceMediaFoundation::CreateMediaSource(PCWSTR sURL, IMFMediaSourc
 
     // Create the source resolver.
     HRESULT hr = MFCreateSourceResolver(&pSourceResolver);
-    if (FAILED(hr))
-    {
+    if (FAILED(hr)) {
         goto done;
     }
 
@@ -468,8 +440,7 @@ HRESULT SoundSourceMediaFoundation::CreateMediaSource(PCWSTR sURL, IMFMediaSourc
         &ObjectType,        // Receives the created object type. 
         &pSource            // Receives a pointer to the media source.
         );
-    if (FAILED(hr))
-    {
+    if (FAILED(hr)) {
         goto done;
     }
 
