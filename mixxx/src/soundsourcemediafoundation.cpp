@@ -93,19 +93,19 @@ int SoundSourceMediaFoundation::open()
     if (SUCCEEDED(hr)) {
         hr = MFCreateSourceReaderFromURL(m_wcFilename, NULL, &m_pReader);
         if (FAILED(hr)) {
-            qDebug() << "SSSR: Error opening input file:" << m_qFilename << hr;
+            qDebug() << __FILE__ << "Error opening input file:" << m_qFilename << hr;
             return ERR;
         }
     }    
 
 	if (hr != S_OK) {
-		qDebug() << "SSSR: Error opening file.";
+		qDebug() << __FILE__ << "Error opening file.";
 		return ERR;
 	}
 
     hr = ConfigureAudioStream(m_pReader, &m_pAudioType);
 	if (hr != S_OK) {
-		qDebug() << "SSSR: Error configuring audio stream.";
+		qDebug() << __FILE__ <<"Error configuring audio stream.";
 		return ERR;
 	}
     
@@ -115,15 +115,18 @@ int SoundSourceMediaFoundation::open()
                                         MF_PD_AUDIO_ENCODING_BITRATE,
                                         &thing);
     m_iBitrate = thing.intVal;
-    qDebug() << "SSSR: Bitrate:" << m_iBitrate;
+    qDebug() << __FILE__ << "Bitrate:" << m_iBitrate;
     PropVariantClear(&thing);
     
     //Get the duration
     m_pReader->GetPresentationAttribute(MF_SOURCE_READER_MEDIASOURCE,
                                         MF_PD_DURATION, //Gets the duration in 100-nanosecond units.
                                         &thing);
-    m_iDuration = thing.intVal * 1E7;
-    qDebug() << "SSSR: Duration:" << m_iDuration;
+    // QuadPart isn't available on compilers that don't support _int64. Visual
+    // Studio 6.0 introduced the type in 1998, so I think we're safe here
+    // -bkgood
+    m_iDuration = thing.hVal.QuadPart * 1E-7;
+    qDebug() << __FILE__ << "Duration:" << m_iDuration;
     PropVariantClear(&thing);
 
 	//Set m_iChannels and m_samples;
@@ -145,19 +148,18 @@ int SoundSourceMediaFoundation::open()
 
 long SoundSourceMediaFoundation::seek(long filepos)
 {
-    //http://msdn.microsoft.com/en-us/library/dd374668(v=VS.85).aspx 
-
+    //http://msdn.microsoft.com/en-us/library/dd374668(v=VS.85).aspx
     float timeInSeconds = filepos / ((float) kSampleRate * kNumChannels);
     float timeIn100Nanosecs = timeInSeconds * 10E7;
     PROPVARIANT v;
     memset(&v, 0, sizeof(PROPVARIANT)); 
     v.vt = VT_R4;
     v.fltVal = timeIn100Nanosecs;
-    qDebug() << "SSSR: Seeking to" << timeIn100Nanosecs << timeIn100Nanosecs/10E7;
+    qDebug() << __FILE__ << "Seeking to" << timeIn100Nanosecs << timeIn100Nanosecs/10E7;
 
     if (m_pReader->SetCurrentPosition(GUID_NULL, //Means 100-nanosecond units.
                                   v) != S_OK) {
-        qDebug() << "SSSR: Failed to seek.";
+        qDebug() << __FILE__ << "Failed to seek.";
     }
 
     //XXX: Fudge, SetCurrentPosition doesn't guarantee sample-accurate seeking 
