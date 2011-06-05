@@ -21,12 +21,14 @@ That's right, this is you after learning how to DJ with Mixxx:
 Table of Contents
 -----------------
 
+.. Temporarily disable quickstart since it won't be ready for 1.10.0
+.. chapters/quickstart
+
 .. toctree::
    :maxdepth: 2
    :glob:
    :numbered:
-    
-   chapters/quickstart
+
    chapters/introduction
    chapters/installation
    chapters/setup
