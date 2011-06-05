@@ -25,8 +25,8 @@
 #ifdef __COREAUDIO__
 #include "soundsourcecoreaudio.h"
 #endif
-#ifdef __SOURCEREADER__
-#include "soundsourcesourcereader.h"
+#ifdef __MEDIAFOUNDATION__
+#include "soundsourcemediafoundation.h"
 #endif
 #ifdef __SNDFILE__
 #include "soundsourcesndfile.h"
@@ -134,9 +134,9 @@ Mixxx::SoundSource* SoundSourceProxy::initialize(QString qFilename) {
     } else if (SoundSourceCoreAudio::supportedFileExtensions().contains(extension)) {
         return new SoundSourceCoreAudio(qFilename);
 #endif
-#ifdef __SOURCEREADER__
-    } else if (SoundSourceSourceReader::supportedFileExtensions().contains(extension)) {
-        return new SoundSourceSourceReader(qFilename);
+#ifdef __MEDIAFOUNDATION__
+    } else if (SoundSourceMediaFoundation::supportedFileExtensions().contains(extension)) {
+        return new SoundSourceMediaFoundation(qFilename);
 #endif
     } else if (m_extensionsSupportedByPlugins.contains(extension)) {
         getSoundSourceFunc getter = m_extensionsSupportedByPlugins.value(extension);
@@ -340,8 +340,8 @@ QStringList SoundSourceProxy::supportedFileExtensions()
 #ifdef __COREAUDIO__
     supportedFileExtensions.append(SoundSourceCoreAudio::supportedFileExtensions());
 #endif
-#ifdef __SOURCEREADER__
-    supportedFileExtensions.append(SoundSourceSourceReader::supportedFileExtensions());
+#ifdef __MEDIAFOUNDATION__
+    supportedFileExtensions.append(SoundSourceMediaFoundation::supportedFileExtensions());
 #endif
     supportedFileExtensions.append(m_extensionsSupportedByPlugins.keys());
 
