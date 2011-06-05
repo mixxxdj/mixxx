@@ -42,3 +42,7 @@ Glossary of Terms
      it and play the track, just like you would put a record on turntable and
      play it.
 
+   IRC
+     Internet Relay Chat (IRC) is a an online chat network. The Mixxx IRC
+     channel can be found on the `FreeNode IRC Network <http://freenode.net>`_
+     in the #mixxx channel.
