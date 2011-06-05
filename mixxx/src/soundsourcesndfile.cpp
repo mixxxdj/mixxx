@@ -190,6 +190,7 @@ int SoundSourceSndFile::parseHeader()
                 setDuration(info->frames / info->samplerate);
             }
             sf_close(fh);
+            fh = NULL;
         }
     } else {
         // Try AIFF
