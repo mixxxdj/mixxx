@@ -1,5 +1,5 @@
 /**
- * \file soundsourcesourcereader.cpp
+ * \file soundsourcemediafoundation.cpp
  * \author Albert Santoni <alberts at mixxx dot org>
  * \date Jan 10, 2011
  */
@@ -27,7 +27,7 @@
 #include <stdio.h>
 #include <mferror.h>
 
-#include "soundsourcesourcereader.h"
+#include "soundsourcemediafoundation.h"
 
 #define MIXXX_SOURCEREADER_BITS_PER_SAMPLE 16
 #define MIXXX_SOURCEREADER_NUM_CHANNELS 2
@@ -43,7 +43,7 @@ template <class T> void SafeRelease(T **ppT)
     }
 }
 
-SoundSourceSourceReader::SoundSourceSourceReader(QString filename)
+SoundSourceMediaFoundation::SoundSourceMediaFoundation(QString filename)
     : SoundSource(filename)
     , m_file(filename)
     , m_samples(0)
@@ -54,7 +54,7 @@ SoundSourceSourceReader::SoundSourceSourceReader(QString filename)
     m_wcFilename = new wchar_t[255];
 }
 
-SoundSourceSourceReader::~SoundSourceSourceReader() {
+SoundSourceMediaFoundation::~SoundSourceMediaFoundation() {
 	
     delete m_wcFilename;
 
@@ -71,7 +71,7 @@ SoundSourceSourceReader::~SoundSourceSourceReader() {
 }
 
 // soundsource overrides
-int SoundSourceSourceReader::open() {
+int SoundSourceMediaFoundation::open() {
     HRESULT hr = S_OK;
 
     //m_file.open(QIODevice::ReadOnly);
@@ -153,7 +153,7 @@ int SoundSourceSourceReader::open() {
     return OK;
 }
 
-long SoundSourceSourceReader::seek(long filepos) {
+long SoundSourceMediaFoundation::seek(long filepos) {
 
     //http://msdn.microsoft.com/en-us/library/dd374668(v=VS.85).aspx 
 
@@ -178,7 +178,7 @@ long SoundSourceSourceReader::seek(long filepos) {
     return filepos;
 }
 
-unsigned int SoundSourceSourceReader::read(unsigned long size, const SAMPLE *destination) {
+unsigned int SoundSourceMediaFoundation::read(unsigned long size, const SAMPLE *destination) {
     //if (!m_decoder) return 0;
     SAMPLE *destBuffer(const_cast<SAMPLE*>(destination));
     unsigned int i = 0;
@@ -285,11 +285,11 @@ unsigned int SoundSourceSourceReader::read(unsigned long size, const SAMPLE *des
     return numFramesRead*2;
 }
 
-inline unsigned long SoundSourceSourceReader::length() {
+inline unsigned long SoundSourceMediaFoundation::length() {
     return m_samples; 
 }
 
-int SoundSourceSourceReader::parseHeader() {
+int SoundSourceMediaFoundation::parseHeader() {
     setType("m4a");
 
     TagLib::MP4::File f(getFilename().toUtf8().constData());
@@ -307,7 +307,7 @@ int SoundSourceSourceReader::parseHeader() {
 
 
 // static
-QList<QString> SoundSourceSourceReader::supportedFileExtensions() {
+QList<QString> SoundSourceMediaFoundation::supportedFileExtensions() {
     QList<QString> list;
     list.push_back("m4a");
     //Can add mp3, mp2, ac3, and others here if you want.
@@ -329,7 +329,7 @@ QList<QString> SoundSourceSourceReader::supportedFileExtensions() {
     and http://msdn.microsoft.com/en-us/library/dd317928(VS.85).aspx
     -- Albert
     */
-HRESULT SoundSourceSourceReader::ConfigureAudioStream(
+HRESULT SoundSourceMediaFoundation::ConfigureAudioStream(
     IMFSourceReader *pReader,   // Pointer to the source reader.
     IMFMediaType **ppPCMAudio   // Receives the audio format.
     )
@@ -440,7 +440,7 @@ HRESULT SoundSourceSourceReader::ConfigureAudioStream(
 //This is here for compatibility with Vista. If you only care about Windows 7+, you can
 //use the Media Foundation MFCreateSourceReaderFromURL() API call. -- Albert Jan 16, 2011
 // Source: http://msdn.microsoft.com/en-us/library/ms702279(v=vs.85).aspx
-HRESULT SoundSourceSourceReader::CreateMediaSource(PCWSTR sURL, IMFMediaSource **ppSource)
+HRESULT SoundSourceMediaFoundation::CreateMediaSource(PCWSTR sURL, IMFMediaSource **ppSource)
 {
     MF_OBJECT_TYPE ObjectType = MF_OBJECT_INVALID;
 
