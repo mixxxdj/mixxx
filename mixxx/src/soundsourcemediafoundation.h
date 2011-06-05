@@ -46,7 +46,6 @@ private:
         IMFSourceReader *pReader,   // Pointer to the source reader.
         IMFMediaType **ppPCMAudio   // Receives the audio format.
         );
-    HRESULT CreateMediaSource(PCWSTR sURL, IMFMediaSource **ppSource);
 
     QFile m_file;
     unsigned int m_samples; // total number of samples

@@ -91,9 +91,6 @@ int SoundSourceMediaFoundation::open()
 
     // Create the source reader to read the input file.
     if (SUCCEEDED(hr)) {
-        // MFCreateSourceReaderFromURL is only supported on Windows 7+ !
-        //Instead, we're going to use a nice snippet Microsoft gave us:
-        //hr = this->CreateMediaSource(m_wcFilename, &m_pReader);
         hr = MFCreateSourceReaderFromURL(m_wcFilename, NULL, &m_pReader);
         if (FAILED(hr)) {
             qDebug() << "SSSR: Error opening input file:" << m_qFilename << hr;
@@ -409,49 +406,5 @@ HRESULT SoundSourceMediaFoundation::ConfigureAudioStream(
 
     SafeRelease(&pUncompressedAudioType);
     SafeRelease(&pPartialType);
-    return hr;
-}
-
-//  Create a media source from a URL.
-//This is here for compatibility with Vista. If you only care about Windows 7+, you can
-//use the Media Foundation MFCreateSourceReaderFromURL() API call. -- Albert Jan 16, 2011
-// Source: http://msdn.microsoft.com/en-us/library/ms702279(v=vs.85).aspx
-HRESULT SoundSourceMediaFoundation::CreateMediaSource(PCWSTR sURL, IMFMediaSource **ppSource)
-{
-    MF_OBJECT_TYPE ObjectType = MF_OBJECT_INVALID;
-
-    IMFSourceResolver* pSourceResolver = NULL;
-    IUnknown* pSource = NULL;
-
-    // Create the source resolver.
-    HRESULT hr = MFCreateSourceResolver(&pSourceResolver);
-    if (FAILED(hr)) {
-        goto done;
-    }
-
-    // Use the source resolver to create the media source.
-
-    // Note: For simplicity this sample uses the synchronous method to create 
-    // the media source. However, creating a media source can take a noticeable
-    // amount of time, especially for a network source. For a more responsive 
-    // UI, use the asynchronous BeginCreateObjectFromURL method.
-
-    hr = pSourceResolver->CreateObjectFromURL(
-        sURL,                       // URL of the source.
-        MF_RESOLUTION_MEDIASOURCE,  // Create a source object.
-        NULL,                       // Optional property store.
-        &ObjectType,        // Receives the created object type. 
-        &pSource            // Receives a pointer to the media source.
-        );
-    if (FAILED(hr)) {
-        goto done;
-    }
-
-    // Get the IMFMediaSource interface from the media source.
-    hr = pSource->QueryInterface(IID_PPV_ARGS(ppSource));
-
-done:
-    SafeRelease(&pSourceResolver);
-    SafeRelease(&pSource);
     return hr;
 }
