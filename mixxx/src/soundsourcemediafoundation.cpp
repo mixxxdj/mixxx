@@ -243,7 +243,7 @@ int SoundSourceMediaFoundation::parseHeader()
 {
     setType("m4a");
 
-    TagLib::MP4::File f(getFilename().toUtf8().constData());
+    TagLib::MP4::File f(getFilename().toLocal8Bit().constData());
     bool result = processTaglibFile(f);
     TagLib::MP4::Tag* tag = f.tag();
 
