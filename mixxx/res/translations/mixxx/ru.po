@@ -8,13 +8,13 @@ msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2011-05-03 21:42-0400\n"
-"PO-Revision-Date: 2011-05-26 02:36+0000\n"
-"Last-Translator: Serge <zezic51@yandex.ru>\n"
+"PO-Revision-Date: 2011-06-05 13:49+0000\n"
+"Last-Translator: Elyja <Unknown>\n"
 "Language-Team: Russian <ru@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-05-27 04:43+0000\n"
+"X-Launchpad-Export-Date: 2011-06-06 04:34+0000\n"
 "X-Generator: Launchpad (build 12959)\n"
 
 #: AutoDJFeature#1
@@ -475,7 +475,7 @@ msgstr "П&ерейти"
 
 #: DlgBpmTapDlg#13
 msgid "Alt+G"
-msgstr ""
+msgstr "Alt+П"
 
 #: DlgBpmTapDlg#14
 msgctxt "DlgBpmTapDlg#14"
@@ -1840,6 +1840,9 @@ msgid ""
 "href=\"http://www.mixxx.org/wiki/doku.php/vinyl_control#troubleshooting\">Tro"
 "ubleshooting</a>"
 msgstr ""
+"<a "
+"href=\"http://www.mixxx.org/wiki/doku.php/vinyl_control#troubleshooting\">Реш"
+"ение проблем</a>"
 
 #: DlgPrefVinylDlg#5
 msgctxt "DlgPrefVinylDlg#5"
@@ -1874,7 +1877,7 @@ msgstr ""
 #: DlgPrefVinylDlg#11
 msgctxt "DlgPrefVinylDlg#11"
 msgid "Apply"
-msgstr ""
+msgstr "Применить"
 
 #: DlgPrefVinylDlg#12
 msgctxt "DlgPrefVinylDlg#12"
@@ -1884,7 +1887,7 @@ msgstr ""
 #: DlgPrefVinylDlg#13
 msgctxt "DlgPrefVinylDlg#13"
 msgid "seconds"
-msgstr ""
+msgstr "секунд(ы)"
 
 #: DlgPrefVinylDlg#14
 msgctxt "DlgPrefVinylDlg#14"
@@ -1904,7 +1907,7 @@ msgstr ""
 #: DlgPrefVinylDlg#17
 msgctxt "DlgPrefVinylDlg#17"
 msgid "Enable Needle Skip Prevention"
-msgstr ""
+msgstr "Включить Защиту от Заикания Иглы"
 
 #: DlgPrefVinylDlg#18
 msgctxt "DlgPrefVinylDlg#18"
@@ -1914,12 +1917,12 @@ msgstr ""
 #: DlgPrefVinylDlg#19
 msgctxt "DlgPrefVinylDlg#19"
 msgid "http://www.xwax.co.uk"
-msgstr ""
+msgstr "http://www.xwax.co.uk"
 
 #: DlgPrefVinylDlg#20
 msgctxt "DlgPrefVinylDlg#20"
 msgid "Powered by xwax"
-msgstr ""
+msgstr "Использует технологии xwax"
 
 #: DlgPreferences#1
 msgid "Sound Hardware"
@@ -2024,7 +2027,7 @@ msgstr ""
 
 #: DlgRecording#3
 msgid "Start Recording"
-msgstr ""
+msgstr "Начать запись"
 
 #: DlgRecording#4
 msgid "Start recording here ..."
@@ -2032,7 +2035,7 @@ msgstr ""
 
 #: DlgRecording#5
 msgid "Stop Recording"
-msgstr ""
+msgstr "Завершить запись"
 
 #: DlgTrackInfo#1
 msgctxt "DlgTrackInfo#1"
@@ -3059,7 +3062,7 @@ msgstr "Списки воспроизведения"
 #: PlaylistFeature#9
 msgctxt "PlaylistFeature#9"
 msgid "Unlock"
-msgstr ""
+msgstr "Разблокировать"
 
 #: PlaylistFeature#10
 msgid "Playlist name:"
@@ -3143,11 +3146,11 @@ msgstr "Неизвестный тип размещение %1"
 
 #: RecordingFeature#1
 msgid "Recordings"
-msgstr ""
+msgstr "Записи"
 
 #: RhythmboxFeature#1
 msgid "Rhythmbox"
-msgstr ""
+msgstr "\"Ритмбокс\""
 
 #: SamplerBank#1
 msgid "Save Sampler Bank"
