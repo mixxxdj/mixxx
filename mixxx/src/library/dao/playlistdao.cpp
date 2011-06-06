@@ -22,7 +22,7 @@ void PlaylistDAO::initialize()
 /** Create a playlist with the given name.
     @param name The name of the playlist to be created.
 */
-bool PlaylistDAO::createPlaylist(QString name, bool hidden)
+bool PlaylistDAO::createPlaylist(QString name, enum hidden_type hidden)
 {
     // qDebug() << "PlaylistDAO::createPlaylist"
     //          << QThread::currentThread()
@@ -56,7 +56,7 @@ bool PlaylistDAO::createPlaylist(QString name, bool hidden)
  				 // ":date_created, :date_modified)");
     query.bindValue(":name", name);
     query.bindValue(":position", position);
-    query.bindValue(":hidden", hidden ? 1 : 0);
+    query.bindValue(":hidden", (int)hidden);
 
     if (!query.exec()) {
         qDebug() << query.lastError();
@@ -286,8 +286,8 @@ int PlaylistDAO::getPlaylistId(int position)
     return -1;
 }
 
-bool PlaylistDAO::isHidden(int playlistId) {
-    // qDebug() << "PlaylistDAO::isHidden"
+enum PlaylistDAO::hidden_type PlaylistDAO::getHiddenType(int playlistId){
+    // qDebug() << "PlaylistDAO::getHiddenType"
     //          << QThread::currentThread() << m_database.connectionName();
 
     QSqlQuery query(m_database);
@@ -296,12 +296,26 @@ bool PlaylistDAO::isHidden(int playlistId) {
 
     if (query.exec()) {
         if (query.next()) {
-            return query.value(0).toBool();
+            return (enum hidden_type)query.value(0).toInt();
         }
     } else {
         qDebug() << query.lastError();
     }
-    return false;
+    return PLHT_UNKNOWN;
+}
+
+bool PlaylistDAO::isHidden(int playlistId) {
+    // qDebug() << "PlaylistDAO::isHidden"
+    //          << QThread::currentThread() << m_database.connectionName();
+
+	enum hidden_type ht = getHiddenType(playlistId);
+
+	if(ht==PLHT_NOT_HIDDEN){
+		return false;
+	}
+	else{
+		return true;
+	}
 }
 
 void PlaylistDAO::removeTrackFromPlaylist(int playlistId, int position)
