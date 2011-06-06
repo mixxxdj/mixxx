@@ -33,6 +33,7 @@
 const int kBitsPerSample = 16;
 const int kNumChannels = 2;
 const int kSampleRate = 44100;
+const int kLeftoverSize = 16384;
 
 /** Microsoft examples use this snippet often. */
 template<class T> void SafeRelease(T **ppT)
@@ -52,6 +53,9 @@ SoundSourceMediaFoundation::SoundSourceMediaFoundation(QString filename)
     , m_leftoverBuffer(NULL)
     , m_leftoverBufferSize(0)
     , m_leftoverBufferLength(0)
+    , m_leftoverBufferPosition(0)
+    , m_mfDuration(0)
+    , m_dead(false)
 {
     // these are always the same, might as well just stick them here
     // -bkgood
@@ -107,8 +111,8 @@ int SoundSourceMediaFoundation::open()
         return ERR;
     }
 
-    if (!readProperties()) {
-        qDebug() << "SSMF::readProperties failed";
+    if (!ReadProperties()) {
+        qDebug() << "SSMF::ReadProperties failed";
         return ERR;
     }
 
@@ -122,6 +126,7 @@ int SoundSourceMediaFoundation::open()
 
 long SoundSourceMediaFoundation::seek(long filepos)
 {
+    if (m_dead) return filepos;
     //http://msdn.microsoft.com/en-us/library/dd374668(v=VS.85).aspx
     PROPVARIANT v;
     HRESULT hr(S_OK);
@@ -146,100 +151,91 @@ long SoundSourceMediaFoundation::seek(long filepos)
 unsigned int SoundSourceMediaFoundation::read(unsigned long size, const SAMPLE *destination)
 {
     SAMPLE *destBuffer(const_cast<SAMPLE*>(destination));
-    unsigned int i = 0;
-    int numFrames = 0;
-    unsigned int totalFramesToRead = size/2;
-    unsigned int numFramesRead = 0;
-    unsigned int numFramesToRead = totalFramesToRead;
+    size_t framesNeeded = size / kNumChannels;
 
     // TODO XXX MAKE SURE WE'RE AT THE POSITION CACHINGREADER EXPECTS US TO BE AT
+    // first, copy samples from leftover buffer IF the leftover buffer is at
+    // the correct sample
+    if (m_leftoverBufferLength > 0 && m_leftoverBufferPosition == m_nextFrame) {
+        CopyFrames(destBuffer, &framesNeeded, m_leftoverBuffer, &m_leftoverBufferLength);
+        if (m_leftoverBufferLength > 0) {
+            Q_ASSERT(framesNeeded == 0); // make sure CopyFrames worked
+            // update leftoverbuffer pos
+        }
+    } else {
+        m_leftoverBufferLength = 0;
+    }
 
-    HRESULT hr = S_OK;
-    //DWORD cbAudioData = 0;
-    DWORD cbBuffer = 0;  // Length of pAudioData, in bytes
-    BYTE *pAudioData = NULL; // Raw audio buffer
+    if (m_dead) return size - (framesNeeded / kNumChannels);
 
-    IMFSample *pSample = NULL;
-    IMFMediaBuffer *pBuffer = NULL;
-
-    while (numFramesRead < totalFramesToRead) {
-        numFramesToRead = totalFramesToRead - numFramesRead;
-
-        DWORD dwFlags = 0;
-
-        //FIXME: Deal with leftover frames!
-
+    while (framesNeeded > 0) {
+        HRESULT hr(S_OK);
+        DWORD dwFlags(0);
+        qint64 timestamp(0);
+        IMFSample *pSample(NULL);
         // Read the next "sample" (it's really a buffer of audio).
         hr = m_pReader->ReadSample(
-            MF_SOURCE_READER_FIRST_AUDIO_STREAM,        // [in] DWORD dwStreamIndex,
-            0,                                          // [in] DWORD dwControlFlags,
-            NULL,                                       // [out] DWORD *pdwActualStreamIndex,
-            &dwFlags,                                   // [out] DWORD *pdwStreamFlags,
-            NULL,                                       // [out] LONGLONG *pllTimestamp,
-            &pSample);                                  // [out] IMFSample **ppSample
-
+            MF_SOURCE_READER_FIRST_AUDIO_STREAM, // [in] DWORD dwStreamIndex,
+            0,                                   // [in] DWORD dwControlFlags,
+            NULL,                                // [out] DWORD *pdwActualStreamIndex,
+            &dwFlags,                            // [out] DWORD *pdwStreamFlags,
+            &timestamp,                          // [out] LONGLONG *pllTimestamp,
+            &pSample);                           // [out] IMFSample **ppSample
         if (FAILED(hr)) break;
-
-        if (dwFlags & MF_SOURCE_READERF_CURRENTMEDIATYPECHANGED) {
-            qDebug() << "Type change";
+        if (dwFlags & MF_SOURCE_READERF_ERROR) {
+            // our source reader is now dead, according to the docs
+            m_dead = true;
             break;
         }
-
         if (dwFlags & MF_SOURCE_READERF_ENDOFSTREAM) {
             qDebug() << "End of input file.";
             break;
         }
-
+        if (dwFlags & MF_SOURCE_READERF_CURRENTMEDIATYPECHANGED) {
+            qDebug() << "Type change";
+            break;
+        }
         if (pSample == NULL) {
             qDebug() << "No sample";
             continue;
         }
 
-        // Get a pointer to the audio data in the sample.
-
+        // get the composite IMFMediaBuffer (why we get the composite is beyond
+        // me, we should only have one stream selected)
+        IMFMediaBuffer *pBuffer(NULL);
         hr = pSample->ConvertToContiguousBuffer(&pBuffer);
         if (FAILED(hr)) break;
 
-        //Get access to the raw data in the buffer.
-        hr = pBuffer->Lock(&pAudioData, NULL, &cbBuffer);
+        // get access to the raw data in the buffer...
+        quint8 *rawBuffer(NULL);
+        DWORD bufferByteLength(0);
+        hr = pBuffer->Lock(&rawBuffer, NULL, &bufferByteLength);
         if (FAILED(hr)) break;
 
-        //Calculate the number of frames read based on the number of bytes returned.
-        numFrames = cbBuffer / ( (kBitsPerSample / 8) * kNumChannels);
-        for (int i = 0; i < numFrames*2; i++) {
-            destBuffer[numFramesRead*kNumChannels + i] = pAudioData[i];
-        }
-        //Copy the data to destBuffer;
+        // but in more agreeable terms:
+        size_t realBufferLength(bufferByteLength / (kBitsPerSample / 8 * kNumChannels));
+        qint16 *realBuffer(reinterpret_cast<qint16*>(rawBuffer));
 
-        // Unlock the buffer.
+        // copy the data to destBuffer;
+        CopyFrames(destBuffer, &framesNeeded, realBuffer, &realBufferLength);
+        if (m_leftoverBufferLength > 0) {
+            Q_ASSERT(framesNeeded == 0); // make sure CopyFrames worked
+            // update leftover position
+        }
+        // unlock the buffer.
         hr = pBuffer->Unlock();
-        pAudioData = NULL;
-
         if (FAILED(hr)) break;
 
-        SafeRelease(&pSample);
         SafeRelease(&pBuffer);
-
-        if (!numFrames) {
-            // this is our termination condition
-            break;
-        }
-        numFramesRead += numFrames;
+        SafeRelease(&pSample);
     }
 
-    if (pAudioData) {
-        pBuffer->Unlock();
-    }
-
-    SafeRelease(&pBuffer);
-    SafeRelease(&pSample);
-
-    return numFramesRead*2;
+    return size - (framesNeeded * kNumChannels);
 }
 
 inline unsigned long SoundSourceMediaFoundation::length()
 {
-    return m_iDuration * kSampleRate * kNumChannels;
+    return secondsFromMF(m_mfDuration) * kSampleRate * kNumChannels;
 }
 
 int SoundSourceMediaFoundation::parseHeader()
@@ -334,6 +330,12 @@ bool SoundSourceMediaFoundation::ConfigureAudioStream(
         return false;
     }
 
+    hr = pMediaType->SetUINT32(MF_MT_SAMPLE_SIZE, kLeftoverSize);
+    if (FAILED(hr)) {
+        qDebug() << "SSMF: failed to set sample size";
+        return false;
+    }
+
     // MSDN for this attribute says that if bps is 8, samples are unsigned.
     // Otherwise, they're signed (so they're signed for us as 16 bps). Why
     // chose to hide this rather useful tidbit here is beyond me -bkgood
@@ -393,14 +395,29 @@ bool SoundSourceMediaFoundation::ConfigureAudioStream(
         return false;
     }
 
+    quint32 fixedSamples(false);
+    hr = pMediaType->GetUINT32(MF_MT_FIXED_SIZE_SAMPLES, &fixedSamples);
+    if (FAILED(hr)) {
+        qDebug() << "SSMF: failed to determine fixed sized samples";
+        return false;
+    } else {
+        if (fixedSamples) {
+            qDebug() << "SSMF: fixed sized samples enabled";
+        } else {
+            qDebug() << "SSMF: fixed sized samples disabled";
+        }
+    }
+
     // this may not be safe on all platforms as m_leftoverBufferSize is a
     // size_t and this function is writing a uint32. However, on 32-bit
     // Windows 7, size_t is defined as uint which is 32-bits, so we're safe
     // for all supported platforms -bkgood
     hr = pMediaType->GetUINT32(MF_MT_SAMPLE_SIZE, &m_leftoverBufferSize);
     if (FAILED(hr)) {
-        qDebug() << "SSMF: failed to get buffer size";
+        qDebug() << "SSMF: failed to get buffer size, we got" << m_leftoverBufferSize;
         return false;
+    } else {
+        qDebug() << "SSMF: got buffer size" << m_leftoverBufferSize;
     }
     m_leftoverBufferSize /= 2; // convert size in bytes to size in int16s
     m_leftoverBuffer = new qint16[m_leftoverBufferSize];
@@ -413,7 +430,7 @@ bool SoundSourceMediaFoundation::ConfigureAudioStream(
     return true;
 }
 
-bool SoundSourceMediaFoundation::readProperties()
+bool SoundSourceMediaFoundation::ReadProperties()
 {
     PROPVARIANT prop;
     HRESULT hr = S_OK;
@@ -428,7 +445,8 @@ bool SoundSourceMediaFoundation::readProperties()
     // QuadPart isn't available on compilers that don't support _int64. Visual
     // Studio 6.0 introduced the type in 1998, so I think we're safe here
     // -bkgood
-    m_iDuration = prop.hVal.QuadPart * 1E-7;
+    m_iDuration = secondsFromMF(prop.hVal.QuadPart);
+    m_mfDuration = prop.hVal.QuadPart;
     qDebug() << "SSMF: Duration:" << m_iDuration;
     PropVariantClear(&prop);
 
@@ -438,6 +456,32 @@ bool SoundSourceMediaFoundation::readProperties()
     m_iBitrate = kBitsPerSample * kSampleRate * kNumChannels;
 
     return true;
+}
+
+/**
+ * Copies min(destFrames, srcFrames) frames to dest from src. Anything leftover
+ * is moved to the beginning of m_leftoverBuffer, so empty it first (possibly
+ * with this method). If src and dest overlap, I'll hurt you.
+ */
+void SoundSourceMediaFoundation::CopyFrames(
+    qint16 *dest, size_t *destFrames, qint16 *src, size_t *srcFrames)
+{
+    Q_ASSERT(m_leftoverBufferLength == 0);
+    if (*srcFrames > *destFrames) {
+        int samplesToCopy(*destFrames * kNumChannels);
+        memcpy(dest, src, samplesToCopy);
+        *srcFrames -= *destFrames;
+        memmove(m_leftoverBuffer,
+            src + samplesToCopy,
+            *srcFrames);
+        *destFrames = 0;
+    } else {
+        int samplesToCopy(*srcFrames * kNumChannels);
+        memcpy(dest, src, samplesToCopy);
+        *destFrames -= *srcFrames;
+    }
+    // we've either emptied src into leftover or dest, so it's empty
+    *srcFrames = 0;
 }
 
 /**
