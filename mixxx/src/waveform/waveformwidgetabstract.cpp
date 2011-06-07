@@ -5,8 +5,18 @@
 
 #include <QDebug>
 
+const QString WaveformWidgetAbstract::s_openGlFlag = "(OpenGl)";
+
+//Default constructor is only use by the factory to evaluate dynamically WaveformWidget
+WaveformWidgetAbstract::WaveformWidgetAbstract()
+{
+    m_widget = 0;
+    m_waveformWidgetRenderer = 0;
+}
+
 WaveformWidgetAbstract::WaveformWidgetAbstract( const char* group)
 {
+    m_widget = 0;
     m_waveformWidgetRenderer =  new WaveformWidgetRenderer(group);
 }
 

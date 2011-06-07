@@ -1,12 +1,10 @@
 
-#include <QGLWidget>
 #include <QDebug>
-#include <QDomNode>
+#include <QtXml/QDomNode>
 #include <QEvent>
 #include <QDragEnterEvent>
 #include <QUrl>
 #include <QPainter>
-
 
 #include "mixxx.h"
 #include "trackinfoobject.h"

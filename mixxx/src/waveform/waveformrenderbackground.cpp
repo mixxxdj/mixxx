@@ -35,6 +35,7 @@ void WaveformRenderBackground::setup( const QDomNode& node)
 {
     m_backgroungColor.setNamedColor(WWidget::selectNodeQString(node, "BgColor"));
     m_backgroungColor = WSkinColor::getCorrectColor(m_backgroungColor);
+    qDebug() << m_backgroungColor.name();
 }
 
 void WaveformRenderBackground::draw( QPainter* painter, QPaintEvent* /*event*/)

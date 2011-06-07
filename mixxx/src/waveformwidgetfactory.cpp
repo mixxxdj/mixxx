@@ -3,33 +3,40 @@
 #include "widget/wwaveformviewer.h"
 
 //WaveformWidgets
+#include "waveform/emptywaveform.h"
 #include "waveform/glwaveformwidget.h"
 
 #include <QTimer>
 #include <QWidget>
+#include <QTime>
+#include <QStringList>
 
 #include <QDebug>
 
 WaveformWidgetFactory::WaveformWidgetFactory()
 {
-    for( int i = 0; i < s_numberOfWidget; i++)
-        m_waveformWidgets[i] = 0;
-
     m_timer = new QTimer();
     connect(m_timer,SIGNAL(timeout()),this,SLOT(refresh()));
 
+    m_time = new QTime();
+
+    //TODO let default and config file to setup this
     setFrameRate(33);
+    m_lastFrameTime = 0;
+    m_actualFrameRate = 0;
 
     //TODO here place automatic code to determine if OpenGl is available to choose type by default
     m_type = WaveformWidgetType::FilteredOpenGlWaveform;
+    //m_type = WaveformWidgetType::EmptyWaveform;
 
-    //TODO expose this from
+    evaluateWidgets();
     start();
 }
 
 WaveformWidgetFactory::~WaveformWidgetFactory()
 {
     delete m_timer;
+    delete m_time;
 }
 
 void WaveformWidgetFactory::start()
@@ -45,12 +52,9 @@ void WaveformWidgetFactory::stop()
 
 void WaveformWidgetFactory::destroyWidgets()
 {
-    for( int i = 0; i < s_numberOfWidget; i++)
-    {
-        if( m_waveformWidgets[i])
-            delete m_waveformWidgets[i];
-        m_waveformWidgets[i] = 0;
-    }
+    for( int i = 0; i < m_waveformWidgets.size(); i++)
+        delete m_waveformWidgets[i];
+    m_waveformWidgets.clear();
 }
 
 bool WaveformWidgetFactory::setWaveformWidget( WWaveformViewer* viewer)
@@ -59,7 +63,7 @@ bool WaveformWidgetFactory::setWaveformWidget( WWaveformViewer* viewer)
     if( viewer->getWaveformWidget())
     {
         //it already have a WaveformeWidget
-        for( int i = 0; i < s_numberOfWidget; i++)
+        for( int i = 0; i < m_waveformWidgets.size(); i++)
         {
             if( m_waveformWidgets[i] == viewer->getWaveformWidget())
             {
@@ -78,31 +82,14 @@ bool WaveformWidgetFactory::setWaveformWidget( WWaveformViewer* viewer)
     WaveformWidgetAbstract* waveformWidget = createWaveformWidget(m_type,viewer);
     waveformWidget->castToQWidget();
     viewer->setWaveformWidget( waveformWidget);
+    viewer->setup();
 
-    if( index == -1)
-    {
-        //search for available slot
-        for( int i = 0; i < s_numberOfWidget; i++)
-        {
-            if( m_waveformWidgets[i] == 0)
-            {
-                index = i;
-                break;
-            }
-        }
-    }
+    m_waveformWidgets.push_back(waveformWidget);
+    index = m_waveformWidgets.size()-1;
 
-    if( index != -1)
-    {
-        m_waveformWidgets[index] = waveformWidget;
-        qDebug() << "WaveformWidgetFactory::setWaveformWidget - waveforme widget added in factory index" << index;
-        return true;
-    }
-    else
-    {
-        qDebug() << "WaveformWidgetFactory::setWaveformWidget - no more available slot (" << s_numberOfWidget << ")";
-        return false;
-    }
+    qDebug() << "WaveformWidgetFactory::setWaveformWidget - waveforme widget added in factory index" << index;
+
+    return true;
 }
 
 void WaveformWidgetFactory::setFrameRate( int frameRate)
@@ -111,33 +98,113 @@ void WaveformWidgetFactory::setFrameRate( int frameRate)
     m_timer->setInterval((int)(1000.0/(double)m_frameRate));
 }
 
-bool WaveformWidgetFactory::setWidgetType( WaveformWidgetType::Type type)
+bool WaveformWidgetFactory::setWidgetType( int handleIndex)
 {
-    if( type != m_type)
+    if( handleIndex < 0 && handleIndex > m_waveformWidgetHandles.size())
     {
-        //TODO vrince
+        qDebug() << "WaveformWidgetFactory::setWidgetType - invalid handle";
+        return false;
     }
+
+    WaveformWidgetAbstractHandle& handle = m_waveformWidgetHandles[handleIndex];
+    if( handle.m_type == m_type)
+    {
+        qDebug() << "WaveformWidgetFactory::setWidgetType - type already in use";
+        return false;
+    }
+
+    //change the type
+    m_type = handle.m_type;
+
+    /*
+      vRince
+      I can't just recreate waveform widgets (even if its nicer !!)
+      Waveform widget creation works but it the complete setup (color etc ...) from the skin
+      need to be re-run ! I tried to implement some int the skin loader be it became "spagetti"
+      code :( ... So for the moment a mixxx restart will do ...
+
+    //retrieve existing viewers
+    QVector<WWaveformViewer*> viewers;
+    for( int i = 0; i < m_waveformWidgets.size(); i++)
+    {
+        if( !m_waveformWidgets[i]->isValid())
+        {
+            //should never happend the casting must be check into the setWaveformWidget
+            //method to ensre we never store mis-formed widget in the factory !!
+            continue;
+        }
+
+        //it should be safe since only the factory can build WaveformWidget and we know
+        //we give them a WWaveformViewer as a parent
+        WWaveformViewer* viewer = static_cast<WWaveformViewer*>(m_waveformWidgets[i]->getWidget()->parent());
+        viewers.push_back(viewer);
+    }
+
+    //re-create them with the current type
+    for( int i = 0; i < viewers.size(); i++)
+        setWaveformWidget(viewers[i]);
+    */
+
+    return true;
 }
 
 void WaveformWidgetFactory::refresh()
 {
     QApplication::processEvents();
 
-    for( int i = 0; i < s_numberOfWidget; i++)
-        if( m_waveformWidgets[i])
-            m_waveformWidgets[i]->refresh();
+    for( int i = 0; i < m_waveformWidgets.size(); i++)
+        m_waveformWidgets[i]->refresh();
+
+    m_lastFrameTime = m_time->elapsed();
+    m_time->restart();
+    m_actualFrameRate = 1000.0/(double)(m_lastFrameTime);
 
     QApplication::processEvents();
 }
 
+void WaveformWidgetFactory::evaluateWidgets()
+{
+    m_waveformWidgetHandles.clear();
+    for( int type = 0; type < WaveformWidgetType::Count_WaveformwidgetType; type++)
+    {
+        WaveformWidgetAbstract* widget = 0;
+        switch(type)
+        {
+        case WaveformWidgetType::EmptyWaveform : widget = new EmptyWaveform(); break;
+        case WaveformWidgetType::SimplePureQtWaveform : break; //TODO
+        case WaveformWidgetType::SimpleOpenGlWaveform : break; //TODO
+        case WaveformWidgetType::FilteredPureQtWaveform : break; //TODO
+        case WaveformWidgetType::FilteredOpenGlWaveform : widget = new GLWaveformWidget(); break;
+        }
+
+        if( widget)
+        {
+            QString widgetName = widget->getWaveformWidgetName();
+            if( widget->useOpenGl())
+                widgetName += " " + WaveformWidgetAbstract::s_openGlFlag;
+
+            //add new handle for each available widget type
+            WaveformWidgetAbstractHandle handle;
+            handle.m_displayString = widgetName;
+            handle.m_type = (WaveformWidgetType::Type)type;
+            m_waveformWidgetHandles.push_back( handle);
+        }
+        delete widget;
+    }
+}
+
 WaveformWidgetAbstract* WaveformWidgetFactory::createWaveformWidget( WaveformWidgetType::Type type, WWaveformViewer* viewer)
 {
-    switch(type)
+    if( viewer)
     {
-    case WaveformWidgetType::SimplePureQtWaveform : return 0; //TODO
-    case WaveformWidgetType::SimpleOpenGlWaveform : return 0; //TODO
-    case WaveformWidgetType::FilteredPureQtWaveform : return 0; //TODO
-    case WaveformWidgetType::FilteredOpenGlWaveform : return new GLWaveformWidget( viewer->getGroup(), viewer);
-    default : return 0;
+        switch(type)
+        {
+        case WaveformWidgetType::EmptyWaveform : return new EmptyWaveform( viewer->getGroup(), viewer);
+        case WaveformWidgetType::SimplePureQtWaveform : return 0; //TODO
+        case WaveformWidgetType::SimpleOpenGlWaveform : return 0; //TODO
+        case WaveformWidgetType::FilteredPureQtWaveform : return 0; //TODO
+        case WaveformWidgetType::FilteredOpenGlWaveform : return new GLWaveformWidget( viewer->getGroup(), viewer);
+        default : return 0;
+        }
     }
 }

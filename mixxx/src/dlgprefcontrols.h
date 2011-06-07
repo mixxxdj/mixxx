@@ -37,6 +37,7 @@ public:
     DlgPrefControls(QWidget *parent, MixxxApp *mixxx,
                     SkinLoader* pSkinLoader, ConfigObject<ConfigValue> *pConfig);
     ~DlgPrefControls();
+
 public slots:
     void slotUpdate();
     void slotSetRateRange(int pos);
@@ -57,6 +58,16 @@ public slots:
     void slotSetRateRamp(bool);
     void slotSetRateRampSensitivity(int);
     void slotApply();
+
+    void slotSetFrameRate(int);
+    void slotSetWaveformType(int);
+
+protected:
+    void timerEvent(QTimerEvent *);
+
+private:
+    void initWaveformControl();
+
 private:
     /** Pointer to ConfigObject */
     ConfigObject<ConfigValue> *m_pConfig;

@@ -441,6 +441,9 @@ QWidget* LegacySkinParser::parseVisual(QDomElement node) {
     connect(viewer, SIGNAL(trackDropped(QString, QString)),
             m_pPlayerManager, SLOT(slotLoadToPlayer(QString, QString)));
 
+    //if any already loaded (skin/waveform type swithing)
+    viewer->onTrackLoaded(pPlayer->getLoadedTrack());
+
     return viewer;
 }
 
