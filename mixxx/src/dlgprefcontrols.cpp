@@ -31,11 +31,12 @@
 #include "engine/ratecontrol.h"
 #include "skin/skinloader.h"
 #include "skin/legacyskinparser.h"
+#include "waveformwidgetfactory.h"
 
 DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxApp * mixxx,
                                  SkinLoader* pSkinLoader,
                                  ConfigObject<ConfigValue> * pConfig)
-        :  QWidget(parent), Ui::DlgPrefControlsDlg() {
+    :  QWidget(parent), Ui::DlgPrefControlsDlg() {
     m_pConfig = pConfig;
     m_mixxx = mixxx;
     m_pSkinLoader = pSkinLoader;
@@ -176,26 +177,26 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxApp * mixxx,
     connect(ComboBoxCueRecall, SIGNAL(activated(int)), this, SLOT(slotSetCueRecall(int)));
 
 
-// #ifndef QT3_SUPPORT
-//     const QFileInfoList * list = dir.entryInfoList();
-//     if (list!=0)
-//     {
-//         QFileInfoListIterator it(* list);        // create list iterator
-//         QFileInfo * fi;                   // pointer for traversing
-//         int j=0;
-//         while ((fi=(*it)))
-//         {
-//             if (fi->fileName()!="." && fi->fileName()!="..")
-//             {
-//                 ComboBoxSkinconf->addItem(fi->fileName());
-//                 if (fi->fileName() == pConfig->getValueString(ConfigKey("[Config]","Skin")))
-//                     ComboBoxSkinconf->setCurrentIndex(j);
-//                 ++j;
-//             }
-//             ++it;
-//         }
-//     }
-// #else
+    // #ifndef QT3_SUPPORT
+    //     const QFileInfoList * list = dir.entryInfoList();
+    //     if (list!=0)
+    //     {
+    //         QFileInfoListIterator it(* list);        // create list iterator
+    //         QFileInfo * fi;                   // pointer for traversing
+    //         int j=0;
+    //         while ((fi=(*it)))
+    //         {
+    //             if (fi->fileName()!="." && fi->fileName()!="..")
+    //             {
+    //                 ComboBoxSkinconf->addItem(fi->fileName());
+    //                 if (fi->fileName() == pConfig->getValueString(ConfigKey("[Config]","Skin")))
+    //                     ComboBoxSkinconf->setCurrentIndex(j);
+    //                 ++j;
+    //             }
+    //             ++it;
+    //         }
+    //     }
+    // #else
 
 
     QList<QFileInfo> list = dir.entryInfoList();
@@ -210,21 +211,21 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxApp * mixxx,
             ++j;
         }
     }
-// #endif
+    // #endif
 
-   // Detect small display and prompt user to use small skin.
-   if (QApplication::desktop()->width() >= 800 && QApplication::desktop()->height() == 480 && pConfig->getValueString(ConfigKey("[Config]","Skin"))!= "Outline800x480-WVGA") {
-      int ret = QMessageBox::warning(this, tr("Mixxx Detected a WVGA Screen"), tr("Mixxx has detected that your screen has a resolution of ") +
-                   QString::number(QApplication::desktop()->width()) + " x " + QString::number(QApplication::desktop()->height()) + ".  " +
-                   tr("The only skin compatiable with this size display is Outline800x480-WVGA.  Would you like to use that skin?"),
-                   QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes);
-      if (ret == QMessageBox::Yes) {
-         pConfig->set(ConfigKey("[Config]","Skin"), ConfigValue("Outline800x480-WVGA"));
-         pConfig->Save();
-         ComboBoxSkinconf->setCurrentIndex(ComboBoxSkinconf->findText(pConfig->getValueString(ConfigKey("[Config]","Skin"))));
-         qDebug() << "Retrieved skin:" << pConfig->getValueString(ConfigKey("[Config]","Skin")) << "ComboBoxSkinconf:" << ComboBoxSkinconf->currentText();
-         slotSetSkin(1);
-      }
+    // Detect small display and prompt user to use small skin.
+    if (QApplication::desktop()->width() >= 800 && QApplication::desktop()->height() == 480 && pConfig->getValueString(ConfigKey("[Config]","Skin"))!= "Outline800x480-WVGA") {
+        int ret = QMessageBox::warning(this, tr("Mixxx Detected a WVGA Screen"), tr("Mixxx has detected that your screen has a resolution of ") +
+                                       QString::number(QApplication::desktop()->width()) + " x " + QString::number(QApplication::desktop()->height()) + ".  " +
+                                       tr("The only skin compatiable with this size display is Outline800x480-WVGA.  Would you like to use that skin?"),
+                                       QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes);
+        if (ret == QMessageBox::Yes) {
+            pConfig->set(ConfigKey("[Config]","Skin"), ConfigValue("Outline800x480-WVGA"));
+            pConfig->Save();
+            ComboBoxSkinconf->setCurrentIndex(ComboBoxSkinconf->findText(pConfig->getValueString(ConfigKey("[Config]","Skin"))));
+            qDebug() << "Retrieved skin:" << pConfig->getValueString(ConfigKey("[Config]","Skin")) << "ComboBoxSkinconf:" << ComboBoxSkinconf->currentText();
+            slotSetSkin(1);
+        }
     }
 
     connect(ComboBoxSkinconf, SIGNAL(activated(int)), this, SLOT(slotSetSkin(int)));
@@ -250,19 +251,22 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxApp * mixxx,
     // Set Ramp Rate On or Off
     connect(groupBoxRateRamp, SIGNAL(toggled(bool)), this, SLOT(slotSetRateRamp(bool)));
     groupBoxRateRamp->setChecked((bool)
-            m_pConfig->getValueString(ConfigKey("[Controls]","RateRamp")).toInt()
-    );
+                                 m_pConfig->getValueString(ConfigKey("[Controls]","RateRamp")).toInt()
+                                 );
 
     // Update Ramp Rate Sensitivity
     connect(SliderRateRampSensitivity, SIGNAL(valueChanged(int)), this, SLOT(slotSetRateRampSensitivity(int)));
     SliderRateRampSensitivity->setValue(
-        m_pConfig->getValueString(ConfigKey("[Controls]","RateRampSensitivity")).toInt()
-    );
+                m_pConfig->getValueString(ConfigKey("[Controls]","RateRampSensitivity")).toInt()
+                );
 
     connect(ComboBoxTooltips,   SIGNAL(activated(int)), this, SLOT(slotSetTooltips(int)));
 
     slotUpdateSchemes();
     slotUpdate();
+
+    initWaveformControl();
+    startTimer(100); //refresh actual frame rate every 100 ms
 }
 
 DlgPrefControls::~DlgPrefControls()
@@ -273,7 +277,7 @@ void DlgPrefControls::slotUpdateSchemes()
 {
     // Since this involves opening a file we won't do this as part of regular slotUpdate
     QList<QString> schlist = LegacySkinParser::getSchemeList(
-        m_pSkinLoader->getConfiguredSkinPath());
+                m_pSkinLoader->getConfiguredSkinPath());
 
     ComboBoxSchemeconf->clear();
 
@@ -369,8 +373,8 @@ void DlgPrefControls::slotSetCueRecall(int)
 
 void DlgPrefControls::slotSetTooltips(int)
 {
-// setGloballyEnabled currently not implemented in QT4
-//#ifndef QT3_SUPPORT
+    // setGloballyEnabled currently not implemented in QT4
+    //#ifndef QT3_SUPPORT
     m_pConfig->set(ConfigKey("[Controls]","Tooltips"), ConfigValue((ComboBoxTooltips->currentIndex()+1)%2));
 
     //This is somewhat confusing, but to disable tooltips in QT4, you need to install an eventFilter
@@ -380,15 +384,15 @@ void DlgPrefControls::slotSetTooltips(int)
 
 
     QMessageBox::information(this, tr("Information"), //make the fact that you have to restart mixxx more obvious
-    //textLabel->setText(
-      tr("Mixxx must be restarted before the changes will take effect."));
+                             //textLabel->setText(
+                             tr("Mixxx must be restarted before the changes will take effect."));
 
 
-//    if (ComboBoxTooltips->currentIndex()==0)
-//        QToolTip::setGloballyEnabled(true);
-//    else
-//        QToolTip::setGloballyEnabled(false);
-//#endif
+    //    if (ComboBoxTooltips->currentIndex()==0)
+    //        QToolTip::setGloballyEnabled(true);
+    //    else
+    //        QToolTip::setGloballyEnabled(false);
+    //#endif
 }
 
 void DlgPrefControls::slotSetScheme(int)
@@ -458,14 +462,14 @@ void DlgPrefControls::slotSetRatePermRight(double v)
 void DlgPrefControls::slotSetRateRampSensitivity(int sense)
 {
     m_pConfig->set(ConfigKey("[Controls]","RateRampSensitivity"),
-                        ConfigValue(SliderRateRampSensitivity->value()));
+                   ConfigValue(SliderRateRampSensitivity->value()));
     RateControl::setRateRampSensitivity(sense);
 }
 
 void DlgPrefControls::slotSetRateRamp(bool mode)
 {
     m_pConfig->set(ConfigKey("[Controls]", "RateRamp"),
-                        ConfigValue(groupBoxRateRamp->isChecked()));
+                   ConfigValue(groupBoxRateRamp->isChecked()));
     RateControl::setRateRamp(mode);
 
     /*
@@ -496,5 +500,40 @@ void DlgPrefControls::slotApply()
     else
         m_pConfig->set(ConfigKey("[Controls]","RateDir"), ConfigValue(1));
 
+}
+
+void DlgPrefControls::slotSetFrameRate(int frameRate)
+{
+    WaveformWidgetFactory::instance()->setFrameRate(frameRate);
+}
+
+void DlgPrefControls::slotSetWaveformType(int index)
+{
+     if( WaveformWidgetFactory::instance()->setWidgetType(index))
+     {
+         //it actually change to a valid type
+         m_mixxx->rebootMixxxView();
+     }
+}
+
+void DlgPrefControls::timerEvent(QTimerEvent * /*event*/)
+{
+    //Just to refresh actual framrate any time the controller is modified
+    frameRateAverage->setText( QString::number(WaveformWidgetFactory::instance()->getActualFrameRate()));
+}
+
+void DlgPrefControls::initWaveformControl()
+{
+    waveformTypeComboBox->clear();
+    WaveformWidgetFactory* factory = WaveformWidgetFactory::instance();
+
+    QVector<WaveformWidgetAbstractHandle> handles = factory->getAvailableTypes();
+    for( int i = 0; i < handles.size(); i++)
+        waveformTypeComboBox->addItem( handles[i].getDisplayName());
+
+    frameRateSpinBox->setValue(factory->getFrameRate());
+
+    connect(frameRateSpinBox,SIGNAL(valueChanged(int)),this,SLOT(slotSetFrameRate(int)));
+    connect(waveformTypeComboBox,SIGNAL(currentIndexChanged(int)),this,SLOT(slotSetWaveformType(int)));
 }
 

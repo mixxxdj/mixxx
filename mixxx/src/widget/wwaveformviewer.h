@@ -30,7 +30,7 @@ public:
 
     void dragEnterEvent(QDragEnterEvent *event);
     void dropEvent(QDropEvent *event);
-    void setup(QDomNode node);
+    void setup(QDomNode node = QDomNode());
 
     bool eventFilter(QObject *o, QEvent *e);
 

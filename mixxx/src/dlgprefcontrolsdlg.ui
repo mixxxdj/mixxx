@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>499</width>
-    <height>489</height>
+    <height>550</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -251,7 +251,7 @@
      </item>
     </layout>
    </item>
-   <item row="1" column="0">
+   <item row="2" column="0">
     <layout class="QHBoxLayout" name="horizontalLayout">
      <item>
       <layout class="QGridLayout" name="gridLayout_2">
@@ -317,13 +317,13 @@
              <number>2</number>
             </property>
             <property name="minimum">
-             <double>0.0100000000000000</double>
+             <double>0.010000000000000</double>
             </property>
             <property name="maximum">
              <double>10.000000000000000</double>
             </property>
             <property name="singleStep">
-             <double>0.0100000000000000</double>
+             <double>0.010000000000000</double>
             </property>
            </widget>
           </item>
@@ -342,13 +342,13 @@
              <number>2</number>
             </property>
             <property name="minimum">
-             <double>0.0100000000000000</double>
+             <double>0.010000000000000</double>
             </property>
             <property name="maximum">
              <double>10.000000000000000</double>
             </property>
             <property name="singleStep">
-             <double>0.0100000000000000</double>
+             <double>0.010000000000000</double>
             </property>
            </widget>
           </item>
@@ -414,13 +414,13 @@
              <number>2</number>
             </property>
             <property name="minimum">
-             <double>0.0100000000000000</double>
+             <double>0.010000000000000</double>
             </property>
             <property name="maximum">
              <double>10.000000000000000</double>
             </property>
             <property name="singleStep">
-             <double>0.0100000000000000</double>
+             <double>0.010000000000000</double>
             </property>
            </widget>
           </item>
@@ -439,13 +439,13 @@
              <number>2</number>
             </property>
             <property name="minimum">
-             <double>0.0100000000000000</double>
+             <double>0.010000000000000</double>
             </property>
             <property name="maximum">
              <double>10.000000000000000</double>
             </property>
             <property name="singleStep">
-             <double>0.0100000000000000</double>
+             <double>0.010000000000000</double>
             </property>
            </widget>
           </item>
@@ -456,7 +456,7 @@
      </item>
     </layout>
    </item>
-   <item row="2" column="0">
+   <item row="3" column="0">
     <widget class="QGroupBox" name="groupBoxRateRamp">
      <property name="enabled">
       <bool>true</bool>
@@ -522,6 +522,130 @@
      </layout>
     </widget>
    </item>
+   <item row="1" column="0">
+    <widget class="QGroupBox" name="waveformDisplayGroupBox">
+     <property name="title">
+      <string>Waveform dislay</string>
+     </property>
+     <layout class="QGridLayout" name="gridLayout_6">
+      <property name="margin">
+       <number>0</number>
+      </property>
+      <item row="0" column="0">
+       <widget class="QLabel" name="openGlStatusLabel">
+        <property name="text">
+         <string>OpenGl status</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="3" colspan="3">
+       <widget class="QComboBox" name="waveformTypeComboBox"/>
+      </item>
+      <item row="0" column="1">
+       <widget class="QLabel" name="openGlSatatusIcon">
+        <property name="minimumSize">
+         <size>
+          <width>16</width>
+          <height>16</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>16</width>
+          <height>16</height>
+         </size>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="2">
+       <widget class="QLabel" name="waveformTypeLabel">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="text">
+         <string>Display type</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="2">
+       <widget class="QLabel" name="frameRateLabel">
+        <property name="text">
+         <string>Frame Rate</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="4">
+       <widget class="QSpinBox" name="frameRateSpinBox">
+        <property name="minimum">
+         <number>10</number>
+        </property>
+        <property name="value">
+         <number>30</number>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="3">
+       <widget class="QSlider" name="frameRateSlider">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>16777215</width>
+          <height>16777215</height>
+         </size>
+        </property>
+        <property name="minimum">
+         <number>10</number>
+        </property>
+        <property name="value">
+         <number>30</number>
+        </property>
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="5">
+       <widget class="QLabel" name="frameRateAverage">
+        <property name="minimumSize">
+         <size>
+          <width>30</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>30</width>
+          <height>16777215</height>
+         </size>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
   </layout>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
@@ -534,12 +658,12 @@
    <slot>setValue(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>347</x>
-     <y>382</y>
+     <x>418</x>
+     <y>468</y>
     </hint>
     <hint type="destinationlabel">
-     <x>550</x>
-     <y>382</y>
+     <x>480</x>
+     <y>466</y>
     </hint>
    </hints>
   </connection>
@@ -550,12 +674,44 @@
    <slot>setValue(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>552</x>
-     <y>382</y>
+     <x>480</x>
+     <y>466</y>
     </hint>
     <hint type="destinationlabel">
-     <x>347</x>
-     <y>382</y>
+     <x>418</x>
+     <y>468</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>frameRateSlider</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>frameRateSpinBox</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>355</x>
+     <y>292</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>419</x>
+     <y>293</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>frameRateSpinBox</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>frameRateSlider</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>432</x>
+     <y>295</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>352</x>
+     <y>298</y>
     </hint>
    </hints>
   </connection>

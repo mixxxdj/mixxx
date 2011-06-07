@@ -10,13 +10,17 @@ public:
     GLWaveformWidget( const char* group, QWidget* parent);
     virtual ~GLWaveformWidget();
 
-    virtual void castToQWidget();
     virtual QString getWaveformWidgetName() { return "Filtered";}
     virtual WaveformWidgetType::Type getType() const { return WaveformWidgetType::FilteredOpenGlWaveform;}
     virtual bool useOpenGl() const { return true;}
 
 protected:
+    virtual void castToQWidget();
     virtual void paintEvent(QPaintEvent* event);
+
+private:
+    GLWaveformWidget() {}
+    friend class WaveformWidgetFactory;
 };
 
 #endif // GLWAVEFORMWIDGET_H

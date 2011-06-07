@@ -526,6 +526,7 @@ class MixxxCore(Feature):
                    "waveform/waveformrendererfilteredsignal.cpp",
                    "waveform/glwaveformrendererfilteredsignal.cpp",
                    "waveform/glwaveformwidget.cpp",
+                   "waveform/emptywaveform.cpp",
 
                    "skin/imginvert.cpp",
                    "skin/imgloader.cpp",

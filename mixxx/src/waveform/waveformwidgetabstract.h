@@ -21,6 +21,8 @@ class QWidget;
 class WaveformWidgetAbstract
 {
 public:
+    static const QString s_openGlFlag;
+
     WaveformWidgetAbstract( const char* group);
     virtual ~WaveformWidgetAbstract();
 
@@ -29,9 +31,8 @@ public:
     //Type is use by the factory to safely up-cast waveform widgets
     virtual WaveformWidgetType::Type getType() const = 0;
     virtual void castToQWidget() = 0;
-
-    //Safely down-cast once (in constructor) to QWidget and stored in m_widget
     bool isValid() const { return m_widget;}
+    QWidget* getWidget() { return m_widget;}
 
     void hold();
     void release();
@@ -48,6 +49,12 @@ public:
 protected:
     WaveformWidgetRenderer* m_waveformWidgetRenderer;
     QWidget* m_widget;
+
+protected:
+    WaveformWidgetAbstract();
+
+private:
+    friend class WaveformWidgetFactory;
 };
 
 #endif // WAVEFORMWIDGETABSTRACT_H
