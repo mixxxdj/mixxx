@@ -9,13 +9,13 @@ msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2011-05-03 21:42-0400\n"
-"PO-Revision-Date: 2011-06-03 08:53+0000\n"
-"Last-Translator: Fitoschido <fitoschido@gmail.com>\n"
+"PO-Revision-Date: 2011-06-06 06:30+0000\n"
+"Last-Translator: Irwin Céspedes B <Unknown>\n"
 "Language-Team: Galician <gl@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-06-04 04:32+0000\n"
+"X-Launchpad-Export-Date: 2011-06-07 04:32+0000\n"
 "X-Generator: Launchpad (build 12959)\n"
 
 #: AutoDJFeature#1
@@ -54,7 +54,7 @@ msgstr "Año"
 #: BaseSqlTableModel#7
 msgctxt "BaseSqlTableModel#7"
 msgid "Type"
-msgstr "Tipo"
+msgstr "Formato"
 
 #: BaseSqlTableModel#8
 msgctxt "BaseSqlTableModel#8"
@@ -804,7 +804,7 @@ msgstr "Comportamineto del Cue"
 
 #: DlgPrefControlsDlg#13
 msgid "Auto Recall Cue"
-msgstr ""
+msgstr "Auto llamado del Cue"
 
 #: DlgPrefControlsDlg#14
 msgid "Permanent Pitch/Rate Buttons"
@@ -2845,13 +2845,15 @@ msgstr "Importar lista de reprodución"
 
 #: MixxxApp#64
 msgid "Audio Beat Marks"
-msgstr ""
+msgstr "Marcas de Compás de Audio"
 
 #: MixxxApp#65
 msgid ""
 "Audio Beat Marks\n"
 "Mark beats by audio clicks"
 msgstr ""
+"Marcas de Compás de Audio\n"
+"Marcas de compás por clicks de audio"
 
 #: MixxxApp#66
 msgid "Activate Vinyl Control"
@@ -3196,11 +3198,11 @@ msgstr "Error Leyendo Banco de Sampler"
 
 #: SamplerBank#6
 msgid "Could not open the sampler bank file '%1'."
-msgstr ""
+msgstr "No se pudo abrir el archivo '%1' en el banco de samplers"
 
 #: SamplerBank#7
 msgid "Could not read the sampler bank file '%1'."
-msgstr ""
+msgstr "No se pudo leer el archivo '%1' en el banco de samplers"
 
 #: ScriptStudio#1
 msgid "Mixxx Script Studio"
@@ -4252,3 +4254,17 @@ msgstr "Mostrar u ocultar columnas"
 #~ msgctxt "RhythmboxPlaylistModel#8"
 #~ msgid "Unknown"
 #~ msgstr "Desconocido"
+
+#~ msgid "Missing Songs"
+#~ msgstr "Temas Perdidos"
+
+#~ msgctxt "MixxxApp#72"
+#~ msgid "Preferences"
+#~ msgstr "Preferencias"
+
+#~ msgctxt "MixxxApp#44"
+#~ msgid "Enable live broadcasting"
+#~ msgstr "Activar la Transmisión en Vivo"
+
+#~ msgid "Enable &Vinyl Control"
+#~ msgstr "Habilitar"
