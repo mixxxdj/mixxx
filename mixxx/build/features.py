@@ -611,12 +611,13 @@ class Shoutcast(Feature):
         if not libshout_found:
             raise Exception('Could not find libshout or its development headers. Please install it or compile Mixxx without Shoutcast support using the shoutcast=0 flag.')
 
-        # libvorbisenc does only exist on Linux and OSX, on Windows it is
-        # included in vorbisfile.dll
-        if not build.platform_is_windows:
+        # libvorbisenc does only exist on Linux, OSX and mingw32 on Windows. On
+        # Windows with MSVS it is included in vorbisfile.dll.
+        if not build.platform_is_windows or build.toolchain_is_gnu:
             vorbisenc_found = conf.CheckLib(['vorbisenc'])
             if not vorbisenc_found:
                 raise Exception("libvorbisenc was not found! Please install it or compile Mixxx without Shoutcast support using the shoutcast=0 flag.")
+        env.Append(LIBS=['vorbis', 'ogg'])
 
     def sources(self, build):
         build.env.Uic4('dlgprefshoutcastdlg.ui')
