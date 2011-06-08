@@ -250,6 +250,8 @@ if build.platform_is_osx and 'bundle' in COMMAND_LINE_TARGETS:
 	#Mixxx build variables
 	VOLNAME="Mixxx" #tmp tmp tmp, it's unclean to pass this into build_dmg this way. perhaps pass it in the env?
         ARCH = 'ppc' if build.machine in ['powerpc', 'powerpc64'] else 'macintel'
+        ARCH += ("64" if build.machine_is_64bit else "32")
+
 	DMG_ICON="#res/osx/VolumeIcon.icns"
 
 	# this is a BIG HACK to support Qt's plugins (since Qt *requires* that
