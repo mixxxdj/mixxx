@@ -16,10 +16,6 @@
 #include <QtDebug>
 #include <QUrl>
 #include <taglib/mp4file.h>
-
-
-//#define WINVER _WIN32_WINNT_WIN7
-
 #include <windows.h>
 #include <mfapi.h>
 #include <mfidl.h>
@@ -33,7 +29,8 @@
 const int kBitsPerSample = 16;
 const int kNumChannels = 2;
 const int kSampleRate = 44100;
-const int kLeftoverSize = 16384;
+const int kLeftoverSize = 4096; // in int16's, this seems to be the MF AAC
+// decoder likes to give
 
 /** Microsoft examples use this snippet often. */
 template<class T> void SafeRelease(T **ppT)
@@ -105,7 +102,7 @@ int SoundSourceMediaFoundation::open()
         return ERR;
     }
 
-    hr = ConfigureAudioStream(m_pReader, &m_pAudioType);
+    hr = ConfigureAudioStream();
     if (FAILED(hr)) {
         qDebug() << "SSMF: Error configuring audio stream.";
         return ERR;
@@ -148,7 +145,8 @@ long SoundSourceMediaFoundation::seek(long filepos)
     return filepos;
 }
 
-unsigned int SoundSourceMediaFoundation::read(unsigned long size, const SAMPLE *destination)
+unsigned int SoundSourceMediaFoundation::read(unsigned long size,
+    const SAMPLE *destination)
 {
     SAMPLE *destBuffer(const_cast<SAMPLE*>(destination));
     size_t framesNeeded = size / kNumChannels;
@@ -157,12 +155,14 @@ unsigned int SoundSourceMediaFoundation::read(unsigned long size, const SAMPLE *
     // first, copy samples from leftover buffer IF the leftover buffer is at
     // the correct sample
     if (m_leftoverBufferLength > 0 && m_leftoverBufferPosition == m_nextFrame) {
-        CopyFrames(destBuffer, &framesNeeded, m_leftoverBuffer, &m_leftoverBufferLength);
+        CopyFrames(destBuffer, &framesNeeded, m_leftoverBuffer,
+            m_leftoverBufferLength);
         if (m_leftoverBufferLength > 0) {
             Q_ASSERT(framesNeeded == 0); // make sure CopyFrames worked
             // update leftoverbuffer pos
         }
     } else {
+        // leftoverBuffer was in the wrong position, clear it
         m_leftoverBufferLength = 0;
     }
 
@@ -173,7 +173,7 @@ unsigned int SoundSourceMediaFoundation::read(unsigned long size, const SAMPLE *
         DWORD dwFlags(0);
         qint64 timestamp(0);
         IMFSample *pSample(NULL);
-        // Read the next "sample" (it's really a buffer of audio).
+
         hr = m_pReader->ReadSample(
             MF_SOURCE_READER_FIRST_AUDIO_STREAM, // [in] DWORD dwStreamIndex,
             0,                                   // [in] DWORD dwControlFlags,
@@ -184,49 +184,43 @@ unsigned int SoundSourceMediaFoundation::read(unsigned long size, const SAMPLE *
         if (FAILED(hr)) break;
         if (dwFlags & MF_SOURCE_READERF_ERROR) {
             // our source reader is now dead, according to the docs
+            qWarning() << "SSMF: ReadSample set ERROR, SourceReader is now dead";
             m_dead = true;
             break;
-        }
-        if (dwFlags & MF_SOURCE_READERF_ENDOFSTREAM) {
-            qDebug() << "End of input file.";
+        } else if (dwFlags & MF_SOURCE_READERF_ENDOFSTREAM) {
+            qDebug() << "SSMF: End of input file.";
             break;
-        }
-        if (dwFlags & MF_SOURCE_READERF_CURRENTMEDIATYPECHANGED) {
-            qDebug() << "Type change";
+        } else if (dwFlags & MF_SOURCE_READERF_CURRENTMEDIATYPECHANGED) {
+            qWarning() << "SSMF: Type change";
             break;
-        }
-        if (pSample == NULL) {
-            qDebug() << "No sample";
+        } else if (pSample == NULL) {
+            // generally this will happen when dwFlags contains ENDOFSTREAM,
+            // so it'll be caught before now -bkgood
+            qDebug() << "SSMF: No sample";
             continue;
         }
 
-        // get the composite IMFMediaBuffer (why we get the composite is beyond
-        // me, we should only have one stream selected)
-        IMFMediaBuffer *pBuffer(NULL);
-        hr = pSample->ConvertToContiguousBuffer(&pBuffer);
+        IMFMediaBuffer *pMBuffer(NULL);
+        hr = pSample->ConvertToContiguousBuffer(&pMBuffer);
         if (FAILED(hr)) break;
-
-        // get access to the raw data in the buffer...
-        quint8 *rawBuffer(NULL);
-        DWORD bufferByteLength(0);
-        hr = pBuffer->Lock(&rawBuffer, NULL, &bufferByteLength);
+        qint16 *buffer(NULL);
+        size_t bufferLength(0);
+        hr = pMBuffer->Lock(reinterpret_cast<quint8**>(&buffer), NULL,
+            reinterpret_cast<DWORD*>(&bufferLength));
         if (FAILED(hr)) break;
-
-        // but in more agreeable terms:
-        size_t realBufferLength(bufferByteLength / (kBitsPerSample / 8 * kNumChannels));
-        qint16 *realBuffer(reinterpret_cast<qint16*>(rawBuffer));
-
-        // copy the data to destBuffer;
-        CopyFrames(destBuffer, &framesNeeded, realBuffer, &realBufferLength);
+        bufferLength /= (kBitsPerSample / 8 * kNumChannels); // now in frames
+        Q_ASSERT(bufferLength * kNumChannels <= m_leftoverBufferSize);
+        CopyFrames(destBuffer + (size - framesNeeded * kNumChannels),
+            &framesNeeded, buffer, bufferLength);
         if (m_leftoverBufferLength > 0) {
             Q_ASSERT(framesNeeded == 0); // make sure CopyFrames worked
             // update leftover position
         }
         // unlock the buffer.
-        hr = pBuffer->Unlock();
+        hr = pMBuffer->Unlock();
         if (FAILED(hr)) break;
 
-        SafeRelease(&pBuffer);
+        SafeRelease(&pMBuffer);
         SafeRelease(&pSample);
     }
 
@@ -235,7 +229,8 @@ unsigned int SoundSourceMediaFoundation::read(unsigned long size, const SAMPLE *
 
 inline unsigned long SoundSourceMediaFoundation::length()
 {
-    return secondsFromMF(m_mfDuration) * kSampleRate * kNumChannels;
+    unsigned long len(secondsFromMF(m_mfDuration) * kSampleRate * kNumChannels);
+    return len % 2 == 0 ? len : len + 1;
 }
 
 int SoundSourceMediaFoundation::parseHeader()
@@ -280,57 +275,54 @@ QList<QString> SoundSourceMediaFoundation::supportedFileExtensions()
     If anything in here fails, just bail. I'm not going to decode HRESULTS.
     -- Bill
     */
-bool SoundSourceMediaFoundation::ConfigureAudioStream(
-    IMFSourceReader *pReader,
-    IMFMediaType **ppPCMAudio)
+bool SoundSourceMediaFoundation::ConfigureAudioStream()
 {
-    IMFMediaType *pMediaType(NULL);
     HRESULT hr(S_OK);
 
     // deselect all streams, we only want the first
-    hr = pReader->SetStreamSelection(MF_SOURCE_READER_ALL_STREAMS, false);
+    hr = m_pReader->SetStreamSelection(MF_SOURCE_READER_ALL_STREAMS, false);
     if (FAILED(hr)) {
         qDebug() << "SSMF: failed to deselect all streams";
         return false;
     }
 
-    hr = pReader->SetStreamSelection(MF_SOURCE_READER_FIRST_AUDIO_STREAM, true);
+    hr = m_pReader->SetStreamSelection(MF_SOURCE_READER_FIRST_AUDIO_STREAM, true);
     if (FAILED(hr)) {
         qDebug() << "SSMF: failed to select first audio stream";
         return false;
     }
 
-    hr = MFCreateMediaType(&pMediaType);
+    hr = MFCreateMediaType(&m_pAudioType);
     if (FAILED(hr)) {
         qDebug() << "SSMF: failed to create media type";
         return false;
     }
 
-    hr = pMediaType->SetGUID(MF_MT_MAJOR_TYPE, MFMediaType_Audio);
+    hr = m_pAudioType->SetGUID(MF_MT_MAJOR_TYPE, MFMediaType_Audio);
     if (FAILED(hr)) {
         qDebug() << "SSMF: failed to set major type";
         return false;
     }
 
-    hr = pMediaType->SetGUID(MF_MT_SUBTYPE, MFAudioFormat_PCM);
+    hr = m_pAudioType->SetGUID(MF_MT_SUBTYPE, MFAudioFormat_PCM);
     if (FAILED(hr)) {
         qDebug() << "SSMF: failed to set subtype";
         return false;
     }
 
-    hr = pMediaType->SetUINT32(MF_MT_ALL_SAMPLES_INDEPENDENT, true);
+    hr = m_pAudioType->SetUINT32(MF_MT_ALL_SAMPLES_INDEPENDENT, true);
     if (FAILED(hr)) {
         qDebug() << "SSMF: failed to set samples independent";
         return false;
     }
 
-    hr = pMediaType->SetUINT32(MF_MT_FIXED_SIZE_SAMPLES, true);
+    hr = m_pAudioType->SetUINT32(MF_MT_FIXED_SIZE_SAMPLES, true);
     if (FAILED(hr)) {
         qDebug() << "SSMF: failed to set fixed size samples";
         return false;
     }
 
-    hr = pMediaType->SetUINT32(MF_MT_SAMPLE_SIZE, kLeftoverSize);
+    hr = m_pAudioType->SetUINT32(MF_MT_SAMPLE_SIZE, kLeftoverSize);
     if (FAILED(hr)) {
         qDebug() << "SSMF: failed to set sample size";
         return false;
@@ -339,25 +331,26 @@ bool SoundSourceMediaFoundation::ConfigureAudioStream(
     // MSDN for this attribute says that if bps is 8, samples are unsigned.
     // Otherwise, they're signed (so they're signed for us as 16 bps). Why
     // chose to hide this rather useful tidbit here is beyond me -bkgood
-    hr = pMediaType->SetUINT32(MF_MT_AUDIO_BITS_PER_SAMPLE, kBitsPerSample);
+    hr = m_pAudioType->SetUINT32(MF_MT_AUDIO_BITS_PER_SAMPLE, kBitsPerSample);
     if (FAILED(hr)) {
         qDebug() << "SSMF: failed to set bits per sample";
         return false;
     }
 
-    hr = pMediaType->SetUINT32(MF_MT_AUDIO_BLOCK_ALIGNMENT, kNumChannels * (kBitsPerSample / 8));
+    hr = m_pAudioType->SetUINT32(MF_MT_AUDIO_BLOCK_ALIGNMENT,
+        kNumChannels * (kBitsPerSample / 8));
     if (FAILED(hr)) {
         qDebug() << "SSMF: failed to set block alignment";
         return false;
     }
 
-    hr = pMediaType->SetUINT32(MF_MT_AUDIO_NUM_CHANNELS, kNumChannels);
+    hr = m_pAudioType->SetUINT32(MF_MT_AUDIO_NUM_CHANNELS, kNumChannels);
     if (FAILED(hr)) {
         qDebug() << "SSMF: failed to set number of channels";
         return false;
     }
 
-    hr = pMediaType->SetUINT32(MF_MT_AUDIO_SAMPLES_PER_SECOND, kSampleRate);
+    hr = m_pAudioType->SetUINT32(MF_MT_AUDIO_SAMPLES_PER_SECOND, kSampleRate);
     if (FAILED(hr)) {
         qDebug() << "SSMF: failed to set sample rate";
         return false;
@@ -365,29 +358,30 @@ bool SoundSourceMediaFoundation::ConfigureAudioStream(
 
     // Set this type on the source reader. The source reader will
     // load the necessary decoder.
-    hr = pReader->SetCurrentMediaType(
+    hr = m_pReader->SetCurrentMediaType(
         MF_SOURCE_READER_FIRST_AUDIO_STREAM,
-        NULL, pMediaType);
+        NULL, m_pAudioType);
 
     // the reader has the media type now, free our reference so we can use our
-    // pointer for other purposes
-    SafeRelease(&pMediaType);
+    // pointer for other purposes. Do this before checking for failure so we
+    // don't dangle.
+    SafeRelease(&m_pAudioType);
     if (FAILED(hr)) {
         qDebug() << "SSMF: failed to set media type";
         return false;
     }
 
     // Get the complete uncompressed format.
-    hr = pReader->GetCurrentMediaType(
+    hr = m_pReader->GetCurrentMediaType(
         MF_SOURCE_READER_FIRST_AUDIO_STREAM,
-        &pMediaType);
+        &m_pAudioType);
     if (FAILED(hr)) {
         qDebug() << "SSMF: failed to retrieve completed media type";
         return false;
     }
 
     // Ensure the stream is selected.
-    hr = pReader->SetStreamSelection(
+    hr = m_pReader->SetStreamSelection(
         MF_SOURCE_READER_FIRST_AUDIO_STREAM,
         true);
     if (FAILED(hr)) {
@@ -395,38 +389,18 @@ bool SoundSourceMediaFoundation::ConfigureAudioStream(
         return false;
     }
 
-    quint32 fixedSamples(false);
-    hr = pMediaType->GetUINT32(MF_MT_FIXED_SIZE_SAMPLES, &fixedSamples);
-    if (FAILED(hr)) {
-        qDebug() << "SSMF: failed to determine fixed sized samples";
-        return false;
-    } else {
-        if (fixedSamples) {
-            qDebug() << "SSMF: fixed sized samples enabled";
-        } else {
-            qDebug() << "SSMF: fixed sized samples disabled";
-        }
-    }
-
     // this may not be safe on all platforms as m_leftoverBufferSize is a
     // size_t and this function is writing a uint32. However, on 32-bit
     // Windows 7, size_t is defined as uint which is 32-bits, so we're safe
     // for all supported platforms -bkgood
-    hr = pMediaType->GetUINT32(MF_MT_SAMPLE_SIZE, &m_leftoverBufferSize);
+    hr = m_pAudioType->GetUINT32(MF_MT_SAMPLE_SIZE, &m_leftoverBufferSize);
     if (FAILED(hr)) {
-        qDebug() << "SSMF: failed to get buffer size, we got" << m_leftoverBufferSize;
+        qDebug() << "SSMF: failed to get buffer size";
         return false;
-    } else {
-        qDebug() << "SSMF: got buffer size" << m_leftoverBufferSize;
     }
     m_leftoverBufferSize /= 2; // convert size in bytes to size in int16s
     m_leftoverBuffer = new qint16[m_leftoverBufferSize];
 
-    // Return the PCM format to the caller.
-    *ppPCMAudio = pMediaType;
-    (*ppPCMAudio)->AddRef();
-
-    SafeRelease(&pMediaType);
     return true;
 }
 
@@ -464,24 +438,22 @@ bool SoundSourceMediaFoundation::ReadProperties()
  * with this method). If src and dest overlap, I'll hurt you.
  */
 void SoundSourceMediaFoundation::CopyFrames(
-    qint16 *dest, size_t *destFrames, qint16 *src, size_t *srcFrames)
+    qint16 *dest, size_t *destFrames, const qint16 *src, size_t srcFrames)
 {
-    Q_ASSERT(m_leftoverBufferLength == 0);
-    if (*srcFrames > *destFrames) {
+    if (srcFrames > *destFrames) {
         int samplesToCopy(*destFrames * kNumChannels);
-        memcpy(dest, src, samplesToCopy);
-        *srcFrames -= *destFrames;
+        memcpy(dest, src, samplesToCopy * sizeof(*src));
+        srcFrames -= *destFrames;
         memmove(m_leftoverBuffer,
             src + samplesToCopy,
-            *srcFrames);
+            srcFrames * kNumChannels * sizeof(*src));
         *destFrames = 0;
+        m_leftoverBufferLength = srcFrames;
     } else {
-        int samplesToCopy(*srcFrames * kNumChannels);
-        memcpy(dest, src, samplesToCopy);
-        *destFrames -= *srcFrames;
+        int samplesToCopy(srcFrames * kNumChannels);
+        memcpy(dest, src, samplesToCopy * sizeof(*src));
+        *destFrames -= srcFrames;
     }
-    // we've either emptied src into leftover or dest, so it's empty
-    *srcFrames = 0;
 }
 
 /**

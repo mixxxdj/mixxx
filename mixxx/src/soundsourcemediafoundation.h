@@ -42,12 +42,10 @@ public:
     static QList<QString> supportedFileExtensions();
 
 private:
-    bool ConfigureAudioStream(
-        IMFSourceReader *pReader,   // Pointer to the source reader.
-        IMFMediaType **ppPCMAudio   // Receives the audio format.
-        );
+    bool ConfigureAudioStream();
     bool ReadProperties();
-    void CopyFrames(qint16 *dest, size_t *destFrames, qint16 *src, size_t *srcFrames);
+    void CopyFrames(qint16 *dest, size_t *destFrames, const qint16 *src,
+        size_t srcFrames);
     static inline qreal secondsFromMF(qint64 mf);
     static inline qint64 mfFromSeconds(qreal sec);
     static inline qint64 frameFromMF(qint64 mf);
