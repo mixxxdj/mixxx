@@ -346,7 +346,7 @@ void WSpinny::updateRate(double rate)
     {
         if (m_iTimerId == 0)
         {
-            m_iTimerId = startTimer(15);
+            m_iTimerId = startTimer(10);
         }
     }
 }
