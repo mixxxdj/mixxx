@@ -94,7 +94,19 @@ if 'test' in BUILD_TARGETS:
 	print "Running tests."
 	run_tests()
 
+def osx_construct_version(build, mixxx_version, branch_name, bazaar_revision):
+        # In release mode, we only use the version.
+        if build.build_is_release:
+                return mixxx_version
+        return "%s-%s-bzr%s" % (mixxx_version, branch_name, bazaar_revision)
 
+def ubuntu_construct_version(build, mixxx_version, branch_name, bazaar_revision):
+        # In release mode, we only use the version.
+	if build.build_is_release:
+		return mixxx_version
+	# In a debug build package, include the branch name and
+	# revision number
+	return "%s~%s~bzr%s" % (mixxx_version, branch_name, bazaar_revision)
 
 #Set up the install target
 #=========================
@@ -237,17 +249,19 @@ if build.platform_is_linux or build.platform_is_bsd:
 if build.platform_is_osx and 'bundle' in COMMAND_LINE_TARGETS:
 	#Mixxx build variables
 	VOLNAME="Mixxx" #tmp tmp tmp, it's unclean to pass this into build_dmg this way. perhaps pass it in the env?
-	ARCH="macintel" #XXX should get this from scons or the system somehow?
+        ARCH = 'ppc' if build.machine in ['powerpc', 'powerpc64'] else 'macintel'
 	DMG_ICON="#res/osx/VolumeIcon.icns"
 
-	#this is a BIG HACK to support Qt's plugins (since Qt *requires* that it's plugins be in specific subdirectories, which OS X doesn't really play nice with)
+	# this is a BIG HACK to support Qt's plugins (since Qt *requires* that
+	# it's plugins be in specific subdirectories, which OS X doesn't really
+	# play nice with)
 	qt_plugins = ([("iconengines", e) for e in ["libqsvgicon.dylib"]] +
                       [("imageformats", e) for e in ["libqgif.dylib", "libqjpeg.dylib", "libqsvg.dylib"]] +
                       [("sqldrivers", e) for e in ["libqsqlite.dylib"]])
 	#Left out libqmng and libqtiff to save space.
 
-	#Concatenate the SoundSource plugins to our list of plugins
-    #(converting from SCons File nodes to strings)
+	# Concatenate the SoundSource plugins to our list of plugins (converting
+	# from SCons File nodes to strings)
 	for x in soundsource_plugins:
 		plugins.append(x.get_abspath())
 
@@ -262,8 +276,7 @@ if build.platform_is_osx and 'bundle' in COMMAND_LINE_TARGETS:
 			#Qt plugins ((Qt *NEEDS* its plugins in specific locations or it refuses to find them, however this is clearly awkward to write out like this.. maybe))
 		 QT_HACK = [(p_tgt_dir, os.path.join("/Developer/Applications/Qt/plugins/", p_tgt_dir, p)) for p_tgt_dir, p in qt_plugins] #sigh :(
 		 ,
-		 STRIP=True,
-		 #STRIP=(type == 'RELEASE'),
+		 STRIP=build.build_is_release,
          IDENTIFIER="org.mixxx.mixxx",
          DISPLAY_NAME="Mixxx",
          SHORT_VERSION=mixxx_version, #FIXME: parse defs_version.h???
@@ -272,8 +285,11 @@ if build.platform_is_osx and 'bundle' in COMMAND_LINE_TARGETS:
 		 )
 	#env.Default(mixxx_bin) #todo: make the Default() just the program itself *globally* (not just for OS X); bundle should be a separate target
 	env.Alias('bundle', bundle)
-	#dmg = env.Dmg('mixxx-%s-%s' % (mixxx_version, ARCH), [bundle, ] + docs_files, VOLNAME=VOLNAME, ICON = DMG_ICON)
-	dmg = env.Dmg('mixxx', [bundle, ] + docs_files, VOLNAME=VOLNAME, ICON = DMG_ICON)
+
+        package_name = 'mixxx'
+	package_version = osx_construct_version(build, mixxx_version, branch_name, bazaar_revision)
+        dmg_name = '%s-%s-%s' % (package_name, package_version, ARCH)
+	dmg = env.Dmg(dmg_name, [bundle, ] + docs_files, VOLNAME=VOLNAME, ICON = DMG_ICON)
 	env.Alias('package', dmg)
 
 if build.platform_is_windows:
@@ -398,14 +414,6 @@ if 'makerelease' in COMMAND_LINE_TARGETS:
 	makerelease = env.BuildRelease('', binary_files)
 	env.Alias('makerelease', makerelease)
 
-def ubuntu_construct_version(build, mixxx_version, branch_name, bazaar_revision):
-        # In release mode, we only use the version.
-	if build.build_is_release:
-		return mixxx_version
-	# In a debug build package, include the branch name and
-	# revision number
-	return "%s~%s~bzr%s" % (mixxx_version, branch_name, bazaar_revision)
-
 def ubuntu_append_changelog(debian_dir,
 			    package_name, package_version,
 			    branch_name, bazaar_revision,
@@ -452,12 +460,9 @@ def BuildUbuntuPackage(target, source, env):
 	print "Now building DEB package..."
 	print
 
-	arch = 'i386'
-	if build.machine == 'x86_64':
-                arch = 'amd64'
+	arch = 'amd64' if build.machine_is_64bit else 'i386'
 
         package_target = ARGUMENTS.get('package', None)
-
 	ubuntu_distro = ARGUMENTS.get('ubuntu_dist', None)
 	if ubuntu_distro is None:
 		print "You did not specify an Ubuntu distribution to target. Specify one with the ubuntu_dist flag."
