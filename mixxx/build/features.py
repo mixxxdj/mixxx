@@ -101,7 +101,7 @@ class CoreAudio(Feature):
             build.env.Append(CPPDEFINES = '__COREAUDIO__')
 
     def sources(self, build):
-        return ['soundsourcecoreaudio.cpp', 
+        return ['soundsourcecoreaudio.cpp',
                 '#lib/apple/CAStreamBasicDescription.h']
 
 
@@ -617,7 +617,7 @@ class Shoutcast(Feature):
             vorbisenc_found = conf.CheckLib(['vorbisenc'])
             if not vorbisenc_found:
                 raise Exception("libvorbisenc was not found! Please install it or compile Mixxx without Shoutcast support using the shoutcast=0 flag.")
-        env.Append(LIBS=['vorbis', 'ogg'])
+        build.env.Append(LIBS=['vorbis', 'ogg'])
 
     def sources(self, build):
         build.env.Uic4('dlgprefshoutcastdlg.ui')
@@ -742,7 +742,7 @@ class Optimize(Feature):
             build.env.Append(LINKFLAGS = '/OPT:ICF')
 
             # Don't worry about alining code on 4KB boundaries
-            # build.env.Append(LINKFLAGS = '/OPT:NOWIN98') 
+            # build.env.Append(LINKFLAGS = '/OPT:NOWIN98')
             # ALBERT: NOWIN98 is not supported in MSVC 2010.
 
             # http://msdn.microsoft.com/en-us/library/59a3b321.aspx
