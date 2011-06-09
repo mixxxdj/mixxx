@@ -104,6 +104,37 @@ class CoreAudio(Feature):
         return ['soundsourcecoreaudio.cpp',
                 '#lib/apple/CAStreamBasicDescription.h']
 
+class MediaFoundation(Feature):
+    FLAG = 'mediafoundation'
+    def description(self):
+        return "Media Foundation AAC decoder (Windows Vista with KB2117917 or Windows 7 required)"
+    def enabled(self, build):
+        build.flags[self.FLAG] = util.get_flags(build.env, self.FLAG, 0)
+        if int(build.flags[self.FLAG]):
+            return True
+        return False
+    def add_options(self, build, vars):
+        vars.Add(self.FLAG, "Set to 1 to enable Media Foundation AAC decoder support (Windows Vista with KB2117917 or Windows 7 required)", 0)
+    def configure(self, build, conf):
+        if not self.enabled(build):
+            return
+        if not build.platform_is_windows:
+            raise Exception("Media Foundation is only supported on Windows!")        
+        # need to look into this, SDK 6 might be ok?
+        build.env.Append(CPPPATH=[
+                  "C:/Program Files/Microsoft SDKs/Windows/v7.0/Include"])
+        if not conf.CheckLib('Ole32'):
+            raise Exception('Did not find Ole32.lib - exiting!')
+        if not conf.CheckLib(['Mfuuid']):
+            raise Exception('Did not find Mfuuid.lib - exiting!')			
+        if not conf.CheckLib(['Mfplat']):
+            raise Exception('Did not find Mfplat.lib - exiting!')
+        if not conf.CheckLib(['Mfreadwrite']): #Only available on Windows 7 and up, or properly updated Vista
+            raise Exception('Did not find Mfreadwrite.lib - exiting!')
+        build.env.Append(CPPDEFINES='__MEDIAFOUNDATION__')
+        return
+    def sources(self, build):
+        return ['soundsourcemediafoundation.cpp']
 
 class MIDIScript(Feature):
     def description(self):
