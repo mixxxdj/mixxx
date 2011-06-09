@@ -53,6 +53,7 @@ SoundSourceMediaFoundation::SoundSourceMediaFoundation(QString filename)
     , m_leftoverBufferPosition(0)
     , m_mfDuration(0)
     , m_dead(false)
+    , m_seeking(false)
 {
     // these are always the same, might as well just stick them here
     // -bkgood
@@ -123,24 +124,42 @@ int SoundSourceMediaFoundation::open()
 
 long SoundSourceMediaFoundation::seek(long filepos)
 {
-    if (m_dead) return filepos;
-    //http://msdn.microsoft.com/en-us/library/dd374668(v=VS.85).aspx
-    PROPVARIANT v;
+    PROPVARIANT prop;
     HRESULT hr(S_OK);
-    // this doesn't fail, see MS's implementation
-    hr = InitPropVariantFromInt64(mfFromFrame(filepos / kNumChannels), &v);
+    qint64 seekTarget(filepos / kNumChannels);
+    qint64 mfSeekTarget(mfFromFrame(seekTarget) - 1);
+    // minus 1 here seems to make our seeking work properly, otherwise we will
+    // (more often than not, maybe always) seek a bit too far (although not
+    // enough for our calculatedFrameFromMF <= nextFrame assertion in ::read).
+    // Has something to do with 100ns MF units being much smaller than most
+    // frame offsets (in seconds) -bkgood
 
-    hr = m_pReader->SetCurrentPosition(GUID_NULL, v);
+    if (m_dead) {
+        return filepos;
+    }
+
+    // this doesn't fail, see MS's implementation
+    hr = InitPropVariantFromInt64(mfSeekTarget < 0 ? 0 : mfSeekTarget, &prop);
+
+    // http://msdn.microsoft.com/en-us/library/dd374668(v=VS.85).aspx
+    hr = m_pReader->SetCurrentPosition(GUID_NULL, prop);
     if (FAILED(hr)) {
         // nothing we can do here as we can't fail (no facility to other than
         // crashing mixxx)
         qDebug() << "SSMF: failed to seek" << (
             hr == MF_E_INVALIDREQUEST ? "Sample requests still pending" : "");
+    } else {
+        hr = m_pReader->Flush(MF_SOURCE_READER_FIRST_AUDIO_STREAM);
+        if (FAILED(hr)) {
+            qWarning() << "SSMF: failed to flush after seek";
+        }
     }
+    PropVariantClear(&prop);
 
     // record the next frame so that we can make sure we're there the next
     // time we get a buffer from MFSourceReader
-    m_nextFrame = filepos / kNumChannels;
+    m_nextFrame = seekTarget;
+    m_seeking = true;
 
     return filepos;
 }
@@ -149,30 +168,29 @@ unsigned int SoundSourceMediaFoundation::read(unsigned long size,
     const SAMPLE *destination)
 {
     SAMPLE *destBuffer(const_cast<SAMPLE*>(destination));
-    size_t framesNeeded = size / kNumChannels;
+    size_t framesRequested(size / kNumChannels);
+    size_t framesNeeded(framesRequested);
 
-    // TODO XXX MAKE SURE WE'RE AT THE POSITION CACHINGREADER EXPECTS US TO BE AT
-    // first, copy samples from leftover buffer IF the leftover buffer is at
-    // the correct sample
+    // first, copy frames from leftover buffer IF the leftover buffer is at
+    // the correct frame
     if (m_leftoverBufferLength > 0 && m_leftoverBufferPosition == m_nextFrame) {
         CopyFrames(destBuffer, &framesNeeded, m_leftoverBuffer,
             m_leftoverBufferLength);
         if (m_leftoverBufferLength > 0) {
             Q_ASSERT(framesNeeded == 0); // make sure CopyFrames worked
-            // update leftoverbuffer pos
+            m_leftoverBufferPosition += framesRequested;
         }
     } else {
-        // leftoverBuffer was in the wrong position, clear it
+        // leftoverBuffer already empty or in the wrong position, clear it
         m_leftoverBufferLength = 0;
     }
 
-    if (m_dead) return size - (framesNeeded / kNumChannels);
-
-    while (framesNeeded > 0) {
+    while (!m_dead && framesNeeded > 0) {
         HRESULT hr(S_OK);
         DWORD dwFlags(0);
         qint64 timestamp(0);
         IMFSample *pSample(NULL);
+        bool error(false); // set to true to break after releasing
 
         hr = m_pReader->ReadSample(
             MF_SOURCE_READER_FIRST_AUDIO_STREAM, // [in] DWORD dwStreamIndex,
@@ -198,33 +216,66 @@ unsigned int SoundSourceMediaFoundation::read(unsigned long size,
             // so it'll be caught before now -bkgood
             qDebug() << "SSMF: No sample";
             continue;
-        }
+        } // we now own a ref to the instance at pSample
 
         IMFMediaBuffer *pMBuffer(NULL);
-        hr = pSample->ConvertToContiguousBuffer(&pMBuffer);
-        if (FAILED(hr)) break;
+        // I know this does at least a memcopy and maybe a malloc, if we have
+        // xrun issues with this we might want to look into using
+        // IMFSample::GetBufferByIndex (although MS doesn't recommend this)
+        if (FAILED(hr = pSample->ConvertToContiguousBuffer(&pMBuffer))) {
+            error = true;
+            goto releaseSample;
+        }
         qint16 *buffer(NULL);
         size_t bufferLength(0);
         hr = pMBuffer->Lock(reinterpret_cast<quint8**>(&buffer), NULL,
             reinterpret_cast<DWORD*>(&bufferLength));
-        if (FAILED(hr)) break;
+        if (FAILED(hr)) {
+            error = true;
+            goto releaseMBuffer;
+        }
         bufferLength /= (kBitsPerSample / 8 * kNumChannels); // now in frames
+        
+        if (m_seeking) {
+            qint64 bufferPosition(frameFromMF(timestamp));
+            Q_ASSERT(m_nextFrame >= bufferPosition); // we can never go
+            // backwards here in ::read, so if the seek didn't manage to take
+            // us far back it's important to fail
+            if (m_nextFrame == bufferPosition) {
+                m_seeking = false;
+            } else if (m_nextFrame < bufferPosition + bufferLength) {
+                // nextFrame is in this buffer
+                buffer += (m_nextFrame - bufferPosition) * kNumChannels;
+                bufferLength -= m_nextFrame - bufferPosition;
+                m_seeking = false;
+            } else { // we need to keep going forward
+                goto releaseRawBuffer;
+            }
+        }
+
         Q_ASSERT(bufferLength * kNumChannels <= m_leftoverBufferSize);
         CopyFrames(destBuffer + (size - framesNeeded * kNumChannels),
             &framesNeeded, buffer, bufferLength);
-        if (m_leftoverBufferLength > 0) {
-            Q_ASSERT(framesNeeded == 0); // make sure CopyFrames worked
-            // update leftover position
-        }
-        // unlock the buffer.
+
+releaseRawBuffer:
         hr = pMBuffer->Unlock();
-        if (FAILED(hr)) break;
-
+        // I'm ignoring this, MSDN for IMFMediaBuffer::Unlock stipulates
+        // nothing about the state of the instance if this fails so might as
+        // well just let it be released.
+        //if (FAILED(hr)) break;
+releaseMBuffer:
         SafeRelease(&pMBuffer);
+releaseSample:
         SafeRelease(&pSample);
+        if (error) break;
     }
-
-    return size - (framesNeeded * kNumChannels);
+    
+    m_nextFrame += framesRequested - framesNeeded;
+    if (m_leftoverBufferLength > 0) {
+        Q_ASSERT(framesNeeded == 0); // make sure CopyFrames worked
+        m_leftoverBufferPosition = m_nextFrame;
+    }
+    return size - framesNeeded * kNumChannels;
 }
 
 inline unsigned long SoundSourceMediaFoundation::length()
