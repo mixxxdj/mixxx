@@ -509,6 +509,9 @@ void SoundSourceMediaFoundation::CopyFrames(
         int samplesToCopy(srcFrames * kNumChannels);
         memcpy(dest, src, samplesToCopy * sizeof(*src));
         *destFrames -= srcFrames;
+        if (src == m_leftoverBuffer) {
+            m_leftoverBufferLength = 0;
+        }
     }
 }
 
