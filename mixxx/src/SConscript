@@ -76,13 +76,15 @@ def osx_construct_version(build, mixxx_version, branch_name, bazaar_revision):
                 return mixxx_version
         return "%s-%s-bzr%s" % (mixxx_version, branch_name, bazaar_revision)
 
-def ubuntu_construct_version(build, mixxx_version, branch_name, bazaar_revision):
-        # In release mode, we only use the version.
+def ubuntu_construct_version(build, mixxx_version, branch_name, bazaar_revision,
+                             ubuntu_version):
+        # In release mode, we only use the version and ubuntu_version
 	if build.build_is_release:
-		return mixxx_version
+		return "%s-%s" % (mixxx_version, ubuntu_version)
 	# In a debug build package, include the branch name and
 	# revision number
-	return "%s~%s~bzr%s" % (mixxx_version, branch_name, bazaar_revision)
+	return "%s-%s~%s~bzr%s" % (mixxx_version, ubuntu_version,
+                                   branch_name, bazaar_revision)
 
 #Set up the install target
 #=========================
@@ -447,14 +449,25 @@ def BuildUbuntuPackage(target, source, env):
 		print "You did not specify an Ubuntu distribution to target. Specify one with the ubuntu_dist flag."
 		# TODO(XXX) default to their current distro? the .pbuilderrc does this
 		return
+        ubuntu_version = ARGUMENTS.get('ubuntu_version', '0ubuntu1')
 
 	# The underscore is super important here to make the deb package work
 	package_name = 'mixxx'
-	package_version = ubuntu_construct_version(build, mixxx_version, branch_name, bazaar_revision)
+	package_version = ubuntu_construct_version(build, mixxx_version,
+                                                   branch_name, bazaar_revision,
+                                                   ubuntu_version)
 
 	#mixxx_dir = '%s-%s' % (package_name, mixxx_version)
-	mixxx_dir = '%s-%s' % (package_name, package_version)
-	mixxx_tarball = "%s_%s.orig.tar.gz" % (package_name, package_version)
+
+        # directory and original tarball need to have the upstream-release
+        # version, NOT the package version. For example:
+        # upstream version: 1.10.0-beta1
+        # package version: 1.10.0-beta1-0ubuntu1~bzr2206
+        # directory name: mixxx-1.10.0-beta1
+        # original tarball: mixxx_1.10.0-beta1.orig.tar.gz
+
+	mixxx_dir = '%s-%s' % (package_name, mixxx_version)
+	mixxx_tarball = "%s_%s.orig.tar.gz" % (package_name, mixxx_version)
 
 	# Destroy ubuntu/ and create it
 	ubuntu_cleanup()
@@ -495,7 +508,8 @@ def BuildUbuntuPackage(target, source, env):
 
 	# Add a changelog record for this package
 	if build.build_is_debug:
-		ubuntu_append_changelog('debian', package_name, package_version, branch_name, bazaar_revision)
+		ubuntu_append_changelog('debian', package_name, package_version,
+                                        branch_name, bazaar_revision)
 
 	# Run pbuilder
 	print "* Starting pbuilder ...  (cwd: %s)" % os.getcwd()
