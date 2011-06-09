@@ -119,14 +119,14 @@ class MediaFoundation(Feature):
         if not self.enabled(build):
             return
         if not build.platform_is_windows:
-            raise Exception("Media Foundation is only supported on Windows!")        
+            raise Exception("Media Foundation is only supported on Windows!")
         # need to look into this, SDK 6 might be ok?
         build.env.Append(CPPPATH=[
                   "C:/Program Files/Microsoft SDKs/Windows/v7.0/Include"])
         if not conf.CheckLib('Ole32'):
             raise Exception('Did not find Ole32.lib - exiting!')
         if not conf.CheckLib(['Mfuuid']):
-            raise Exception('Did not find Mfuuid.lib - exiting!')			
+            raise Exception('Did not find Mfuuid.lib - exiting!')
         if not conf.CheckLib(['Mfplat']):
             raise Exception('Did not find Mfplat.lib - exiting!')
         if not conf.CheckLib(['Mfreadwrite']): #Only available on Windows 7 and up, or properly updated Vista

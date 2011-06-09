@@ -240,7 +240,7 @@ unsigned int SoundSourceMediaFoundation::read(unsigned long size,
             goto releaseMBuffer;
         }
         bufferLength /= (kBitsPerSample / 8 * kNumChannels); // now in frames
-        
+
         if (m_seeking) {
             qint64 bufferPosition(frameFromMF(timestamp));
             Q_ASSERT(m_nextFrame >= bufferPosition); // we can never go
@@ -274,7 +274,7 @@ releaseSample:
         SafeRelease(&pSample);
         if (error) break;
     }
-    
+
     m_nextFrame += framesRequested - framesNeeded;
     if (m_leftoverBufferLength > 0) {
         Q_ASSERT(framesNeeded == 0); // make sure CopyFrames worked
