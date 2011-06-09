@@ -23,13 +23,12 @@
 #include <QFile>
 #include <QString>
 
-#include <windows.h>
+#include "defs.h"
+#include "soundsource.h"
+
 class IMFSourceReader;
 class IMFMediaType;
 class IMFMediaSource;
-
-#include "defs.h"
-#include "soundsource.h"
 
 class SoundSourceMediaFoundation : public Mixxx::SoundSource {
 public:

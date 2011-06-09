@@ -21,7 +21,6 @@
 #include <mfapi.h>
 #include <mfidl.h>
 #include <mfreadwrite.h>
-#include <stdio.h>
 #include <mferror.h>
 #include <propvarutil.h>
 
@@ -30,7 +29,7 @@
 const int kBitsPerSample = 16;
 const int kNumChannels = 2;
 const int kSampleRate = 44100;
-const int kLeftoverSize = 4096; // in int16's, this seems to be the MF AAC
+const int kLeftoverSize = 4096; // in int16's, this seems to be the size MF AAC
 // decoder likes to give
 
 /** Microsoft examples use this snippet often. */
