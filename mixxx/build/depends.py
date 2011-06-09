@@ -97,26 +97,6 @@ class FLAC(Dependence):
     def sources(self, build):
         return ['soundsourceflac.cpp',]
 
-class MediaFoundation(Dependence):
-    def configure(self, build, conf):
-        if build.platform_is_windows:
-            build.env.Append(CPPPATH=[
-                      "C:/Program Files/Microsoft SDKs/Windows/v7.0/Include"])
-            if not conf.CheckLib('Ole32'):
-                raise Exception('Did not find Ole32.lib - exiting!')
-            if not conf.CheckLib(['Mfuuid']):
-                raise Exception('Did not find Mfuuid.lib - exiting!')			
-            if not conf.CheckLib(['Mfplat']):
-                raise Exception('Did not find Mfplat.lib - exiting!')
-            if not conf.CheckLib(['Mfreadwrite']): #Only available on Windows 7 and up
-                raise Exception('Did not find Mfreadwrite.lib - exiting!')
-            build.env.Append(CPPDEFINES='__MEDIAFOUNDATION__')
-        return
-
-    def sources(self, build):
-        if build.platform_is_windows:
-            return ['soundsourcemediafoundation.cpp']
-
 class Qt(Dependence):
     DEFAULT_QTDIRS = {'linux': '/usr/share/qt4',
                       'bsd': '/usr/local/lib/qt4',
@@ -757,8 +737,7 @@ class MixxxCore(Feature):
 
     def depends(self, build):
         return [SoundTouch, KissFFT, ReplayGain, PortAudio, PortMIDI, Qt,
-                FidLib, SndFile, FLAC, OggVorbis, OpenGL, TagLib,
-                MediaFoundation,]
+                FidLib, SndFile, FLAC, OggVorbis, OpenGL, TagLib,]
 
     def post_dependency_check_configure(self, build, conf):
         """Sets up additional things in the Environment that must happen
