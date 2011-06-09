@@ -61,6 +61,7 @@ private:
     int m_leftoverBufferPosition;
     qint64 m_mfDuration;
     bool m_dead;
+    bool m_seeking;
 };
 
 #endif // ifndef SOUNDSOURCEMEDIAFOUNDATION_H
