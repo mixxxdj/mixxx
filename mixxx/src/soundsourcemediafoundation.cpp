@@ -86,32 +86,32 @@ int SoundSourceMediaFoundation::open()
     // Initialize the COM library.
     hr = CoInitializeEx(NULL, COINIT_APARTMENTTHREADED | COINIT_DISABLE_OLE1DDE);
     if (FAILED(hr)) {
-        qDebug() << "SSMF: failed to initialize COM";
+        qWarning() << "SSMF: failed to initialize COM";
         return ERR;
     }
 
     // Initialize the Media Foundation platform.
     hr = MFStartup(MF_VERSION);
     if (FAILED(hr)) {
-        qDebug() << "SSMF: failed to initialize Media Foundation";
+        qWarning() << "SSMF: failed to initialize Media Foundation";
         return ERR;
     }
 
     // Create the source reader to read the input file.
     hr = MFCreateSourceReaderFromURL(m_wcFilename, NULL, &m_pReader);
     if (FAILED(hr)) {
-        qDebug() << "SSMF: Error opening input file:" << m_qFilename;
+        qWarning() << "SSMF: Error opening input file:" << m_qFilename;
         return ERR;
     }
 
     hr = ConfigureAudioStream();
     if (FAILED(hr)) {
-        qDebug() << "SSMF: Error configuring audio stream.";
+        qWarning() << "SSMF: Error configuring audio stream.";
         return ERR;
     }
 
     if (!ReadProperties()) {
-        qDebug() << "SSMF::ReadProperties failed";
+        qWarning() << "SSMF::ReadProperties failed";
         return ERR;
     }
 
@@ -147,7 +147,7 @@ long SoundSourceMediaFoundation::seek(long filepos)
     if (FAILED(hr)) {
         // nothing we can do here as we can't fail (no facility to other than
         // crashing mixxx)
-        qDebug() << "SSMF: failed to seek" << (
+        qWarning() << "SSMF: failed to seek" << (
             hr == MF_E_INVALIDREQUEST ? "Sample requests still pending" : "");
     } else {
         hr = m_pReader->Flush(MF_SOURCE_READER_FIRST_AUDIO_STREAM);
@@ -215,7 +215,7 @@ unsigned int SoundSourceMediaFoundation::read(unsigned long size,
         } else if (pSample == NULL) {
             // generally this will happen when dwFlags contains ENDOFSTREAM,
             // so it'll be caught before now -bkgood
-            qDebug() << "SSMF: No sample";
+            qWarning() << "SSMF: No sample";
             continue;
         } // we now own a ref to the instance at pSample
 
@@ -334,49 +334,49 @@ bool SoundSourceMediaFoundation::ConfigureAudioStream()
     // deselect all streams, we only want the first
     hr = m_pReader->SetStreamSelection(MF_SOURCE_READER_ALL_STREAMS, false);
     if (FAILED(hr)) {
-        qDebug() << "SSMF: failed to deselect all streams";
+        qWarning() << "SSMF: failed to deselect all streams";
         return false;
     }
 
     hr = m_pReader->SetStreamSelection(MF_SOURCE_READER_FIRST_AUDIO_STREAM, true);
     if (FAILED(hr)) {
-        qDebug() << "SSMF: failed to select first audio stream";
+        qWarning() << "SSMF: failed to select first audio stream";
         return false;
     }
 
     hr = MFCreateMediaType(&m_pAudioType);
     if (FAILED(hr)) {
-        qDebug() << "SSMF: failed to create media type";
+        qWarning() << "SSMF: failed to create media type";
         return false;
     }
 
     hr = m_pAudioType->SetGUID(MF_MT_MAJOR_TYPE, MFMediaType_Audio);
     if (FAILED(hr)) {
-        qDebug() << "SSMF: failed to set major type";
+        qWarning() << "SSMF: failed to set major type";
         return false;
     }
 
     hr = m_pAudioType->SetGUID(MF_MT_SUBTYPE, MFAudioFormat_PCM);
     if (FAILED(hr)) {
-        qDebug() << "SSMF: failed to set subtype";
+        qWarning() << "SSMF: failed to set subtype";
         return false;
     }
 
     hr = m_pAudioType->SetUINT32(MF_MT_ALL_SAMPLES_INDEPENDENT, true);
     if (FAILED(hr)) {
-        qDebug() << "SSMF: failed to set samples independent";
+        qWarning() << "SSMF: failed to set samples independent";
         return false;
     }
 
     hr = m_pAudioType->SetUINT32(MF_MT_FIXED_SIZE_SAMPLES, true);
     if (FAILED(hr)) {
-        qDebug() << "SSMF: failed to set fixed size samples";
+        qWarning() << "SSMF: failed to set fixed size samples";
         return false;
     }
 
     hr = m_pAudioType->SetUINT32(MF_MT_SAMPLE_SIZE, kLeftoverSize);
     if (FAILED(hr)) {
-        qDebug() << "SSMF: failed to set sample size";
+        qWarning() << "SSMF: failed to set sample size";
         return false;
     }
 
@@ -385,26 +385,26 @@ bool SoundSourceMediaFoundation::ConfigureAudioStream()
     // chose to hide this rather useful tidbit here is beyond me -bkgood
     hr = m_pAudioType->SetUINT32(MF_MT_AUDIO_BITS_PER_SAMPLE, kBitsPerSample);
     if (FAILED(hr)) {
-        qDebug() << "SSMF: failed to set bits per sample";
+        qWarning() << "SSMF: failed to set bits per sample";
         return false;
     }
 
     hr = m_pAudioType->SetUINT32(MF_MT_AUDIO_BLOCK_ALIGNMENT,
         kNumChannels * (kBitsPerSample / 8));
     if (FAILED(hr)) {
-        qDebug() << "SSMF: failed to set block alignment";
+        qWarning() << "SSMF: failed to set block alignment";
         return false;
     }
 
     hr = m_pAudioType->SetUINT32(MF_MT_AUDIO_NUM_CHANNELS, kNumChannels);
     if (FAILED(hr)) {
-        qDebug() << "SSMF: failed to set number of channels";
+        qWarning() << "SSMF: failed to set number of channels";
         return false;
     }
 
     hr = m_pAudioType->SetUINT32(MF_MT_AUDIO_SAMPLES_PER_SECOND, kSampleRate);
     if (FAILED(hr)) {
-        qDebug() << "SSMF: failed to set sample rate";
+        qWarning() << "SSMF: failed to set sample rate";
         return false;
     }
 
@@ -419,7 +419,7 @@ bool SoundSourceMediaFoundation::ConfigureAudioStream()
     // don't dangle.
     SafeRelease(&m_pAudioType);
     if (FAILED(hr)) {
-        qDebug() << "SSMF: failed to set media type";
+        qWarning() << "SSMF: failed to set media type";
         return false;
     }
 
@@ -428,7 +428,7 @@ bool SoundSourceMediaFoundation::ConfigureAudioStream()
         MF_SOURCE_READER_FIRST_AUDIO_STREAM,
         &m_pAudioType);
     if (FAILED(hr)) {
-        qDebug() << "SSMF: failed to retrieve completed media type";
+        qWarning() << "SSMF: failed to retrieve completed media type";
         return false;
     }
 
@@ -437,7 +437,7 @@ bool SoundSourceMediaFoundation::ConfigureAudioStream()
         MF_SOURCE_READER_FIRST_AUDIO_STREAM,
         true);
     if (FAILED(hr)) {
-        qDebug() << "SSMF: failed to select first audio stream (again)";
+        qWarning() << "SSMF: failed to select first audio stream (again)";
         return false;
     }
 
@@ -447,7 +447,7 @@ bool SoundSourceMediaFoundation::ConfigureAudioStream()
     // for all supported platforms -bkgood
     hr = m_pAudioType->GetUINT32(MF_MT_SAMPLE_SIZE, &m_leftoverBufferSize);
     if (FAILED(hr)) {
-        qDebug() << "SSMF: failed to get buffer size";
+        qWarning() << "SSMF: failed to get buffer size";
         return false;
     }
     m_leftoverBufferSize /= 2; // convert size in bytes to size in int16s
@@ -465,7 +465,7 @@ bool SoundSourceMediaFoundation::ReadProperties()
     hr = m_pReader->GetPresentationAttribute(MF_SOURCE_READER_MEDIASOURCE,
         MF_PD_DURATION, &prop);
     if (FAILED(hr)) {
-        qDebug() << "SSMF: error getting duration";
+        qWarning() << "SSMF: error getting duration";
         return false;
     }
     // QuadPart isn't available on compilers that don't support _int64. Visual
