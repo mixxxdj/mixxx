@@ -3,6 +3,7 @@
  * \class SoundSourceMediaFoundation
  * \brief Decodes MPEG4/AAC audio using the SourceReader interface of the
  * Media Foundation framework included in Windows 7.
+ * \author Bill Good <bkgood at gmail dot com>
  * \author Albert Santoni <alberts at mixxx dot org>
  * \date Jan 10, 2011
  */

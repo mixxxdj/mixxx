@@ -1,5 +1,6 @@
 /**
  * \file soundsourcemediafoundation.cpp
+ * \author Bill Good <bkgood at gmail dot com>
  * \author Albert Santoni <alberts at mixxx dot org>
  * \date Jan 10, 2011
  */
