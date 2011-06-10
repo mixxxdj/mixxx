@@ -405,6 +405,11 @@ void WSpinny::updateVinylControlEnabled(double enabled)
     else
     {
         m_bVinylActive = false;
+        //don't need the timer anymore
+        if (m_iTimerId != 0)
+        {
+            killTimer(m_iTimerId);
+        }
         // draw once more to erase signal
         update();
     }

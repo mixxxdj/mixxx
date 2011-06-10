@@ -48,6 +48,7 @@ class VinylControlXwax : public VinylControl
     void establishQuality(bool quality_sample);
 
     double dFileLength; // The length (in samples) of the current song.
+    unsigned int m_uiSafeZone; // Cache the position of the end of record
 
     double dOldPos; // The position read last time it was polled.
     double dOldPitch;

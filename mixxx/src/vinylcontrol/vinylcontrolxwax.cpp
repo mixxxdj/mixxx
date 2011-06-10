@@ -99,6 +99,7 @@ VinylControlXwax::VinylControlXwax(ConfigObject<ConfigValue> * pConfig, QString 
     //Note that timecoder_init will not double-malloc the LUTs, and after this we are guaranteed
     //that the LUT has been generated unless we ran out of memory.
     m_bLUTInitialized = true;
+    m_uiSafeZone = timecoder_get_safe(&timecoder);
     //}
     s_xwaxLUTMutex.unlock();
 
@@ -316,13 +317,13 @@ void VinylControlXwax::run()
         {
             if (iVCMode == MIXXX_VCMODE_ABSOLUTE)
             {
-                if ((filePosition + iLeadInTime) * 1000.0f  > timecoder_get_safe(&timecoder) &&
+                if ((filePosition + iLeadInTime) * 1000.0f  > m_uiSafeZone &&
                     !bForceResync) //corner case: we are waiting for resync so don't enable just yet
                     enableRecordEndMode();
             }
             else if (iVCMode == MIXXX_VCMODE_RELATIVE || iVCMode == MIXXX_VCMODE_CONSTANT)
             {
-                if (iPosition != -1 && iPosition > timecoder_get_safe(&timecoder))
+                if (iPosition != -1 && iPosition > m_uiSafeZone)
                     enableRecordEndMode();
             }
         }
@@ -337,7 +338,7 @@ void VinylControlXwax::run()
                 disableRecordEndMode();
             }
             else if (iPosition != -1 && 
-                     iPosition <= timecoder_get_safe(&timecoder) &&
+                     iPosition <= m_uiSafeZone &&
                      dVinylPosition > 0 &&
                      checkSteadyPitch(dVinylPitch, filePosition) > 0.5)
                      
@@ -364,7 +365,7 @@ void VinylControlXwax::run()
 
         if (!atRecordEnd)
         {
-            if (iPosition != -1 && iPosition > timecoder_get_safe(&timecoder))
+            if (iPosition != -1 && iPosition > m_uiSafeZone)
             {
                 //until I can figure out how to detect "track 2" on serato CD,
                 //don't try track selection
@@ -372,7 +373,7 @@ void VinylControlXwax::run()
                 {
                     if (!bTrackSelectMode)
                     {
-                        qDebug() << "position greater than safe, select mode" << iPosition << timecoder_get_safe(&timecoder);
+                        qDebug() << "position greater than safe, select mode" << iPosition << m_uiSafeZone;
                         bTrackSelectMode = true;
                         togglePlayButton(FALSE);
                            resetSteadyPitch(0.0f, 0.0f);
@@ -531,9 +532,7 @@ void VinylControlXwax::run()
                 dDriftControl = ((filePosition - dVinylPosition)  / dVinylPosition) / 100 * 4.0f;
 
                 //if we hit the end of the ring, loop around
-                ringPos++;
-                if(ringPos >= RING_SIZE)
-                        ringPos = 0;
+                ringPos = (ringPos + 1) % RING_SIZE;
                 dOldPos = dVinylPosition;
             }
             else
@@ -853,7 +852,9 @@ void VinylControlXwax::establishQuality(bool quality_sample)
 {
     bQualityRing[iQualPos] = quality_sample;
     if(iQualFilled < QUALITY_RING_SIZE)
-    iQualFilled++;
+    {
+        iQualFilled++;
+    }
 
     int quality = 0;
     for (int i=0; i<iQualFilled; i++)
@@ -865,9 +866,7 @@ void VinylControlXwax::establishQuality(bool quality_sample)
     //qDebug() << "quality" << m_fTimecodeQuality;
     m_fTimecodeQuality = (float)quality / (float)iQualFilled;
 
-    iQualPos++;
-    if(iQualPos >= QUALITY_RING_SIZE)
-        iQualPos = 0;
+    iQualPos = (iQualPos + 1) % QUALITY_RING_SIZE;
 }
 
 float VinylControlXwax::getAngle()
