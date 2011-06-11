@@ -1,4 +1,4 @@
-/***************************************************************************
+</***************************************************************************
                           enginedeck.cpp  -  description
                              -------------------
     begin                : Sun Apr 28 2002
@@ -56,8 +56,7 @@ void EngineDeck::process(const CSAMPLE* pIn, const CSAMPLE * pOut, const int iBu
     	// Process the raw audio
     	m_pBuffer->process(0, pOut, iBufferSize);
     	// Emulate vinyl sounds
-    	// causes popping, disable
-    	//m_pVinylSoundEmu->process(pOut, pOut, iBufferSize);
+    	m_pVinylSoundEmu->process(pOut, pOut, iBufferSize);
 	    // Apply pregain
     	m_pPregain->process(pOut, pOut, iBufferSize);
     }
