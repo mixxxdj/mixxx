@@ -31,7 +31,7 @@ EngineVinylSoundEmu::EngineVinylSoundEmu(ConfigObject<ConfigValue> * pConfig, co
 {
     m_pConfig = pConfig;
     m_pRateEngine = ControlObject::getControl(ConfigKey(group, "rateEngine"));
-    m_fAbsSpeed = 0.0f;
+    m_fSpeed = m_fOldSpeed = 0.0f;
     m_fGainFactor = 1.0f;
 }
 
@@ -43,30 +43,28 @@ EngineVinylSoundEmu::~EngineVinylSoundEmu()
 void EngineVinylSoundEmu::process(const CSAMPLE * pIn, const CSAMPLE * pOut, const int iBufferSize)
 {
     CSAMPLE * pOutput = (CSAMPLE *)pOut;
-    m_fAbsSpeed = fabs((float)m_pRateEngine->get());
-    //qDebug() << m_pRateEngine->get();
+    m_fSpeed = (float)m_pRateEngine->get();
+    float rateFrac = 2 * (m_fSpeed - m_fOldSpeed) / (float)iBufferSize;
+    float curRate = m_fOldSpeed;
     
     const float thresholdSpeed = 0.070f; //Scale volume if playback speed is below 7%.
-    if (m_fAbsSpeed < thresholdSpeed && m_fAbsSpeed > 0.0f) //Change the volume based on the playback speed.
+    
+    //iterate over old rate to new rate to prevent audible pops    
+    for (int i=0; i<iBufferSize; i+=2)
     {
-        //The numbers in this formula are important:
-        //  - The "1 + ..." makes the minimum value of the parameter of log10
-        //    be 1, which makes the gain 0.
-        //  - The "* 9" makes the maximum value of the log10 become 10 (9 + 1 = 10)
-        //    which gives a gain of 1
-        //m_fGainFactor = log10(1 + m_fAbsSpeed/0.50f * 9);
-        m_fGainFactor = m_fAbsSpeed/thresholdSpeed;
-        //qDebug() << m_fGainFactor << m_fAbsSpeed;
+        if (fabs(curRate) < thresholdSpeed) {
+           float dither = (float)(rand() % 32768) / 32768 - 0.5; // dither
+           float gainfrac = fabs(curRate) / thresholdSpeed;
+           pOutput[i] = gainfrac * (float)pIn[i] + dither;
+           pOutput[i+1] = gainfrac * (float)pIn[i+1] + dither;
+        }
+        else
+        {
+           pOutput[i] = pIn[i];
+           pOutput[i+1] = pIn[i+1];
+        }
+        curRate += rateFrac;
     }
-    else if (m_fAbsSpeed == 0.0f)
-        m_fGainFactor = 0.0f; //Log blows up at 0 :)
-    else 
-    {
-        m_fGainFactor = 1.0f;
-    }
-
-    // Apply whatever gain we calculated. SampleUtil takes care of aliased
-    // buffers and gains of 1 or 0.
-    SampleUtil::copyWithGain(pOutput, pIn, m_fGainFactor, iBufferSize);
+    m_fOldSpeed = m_fSpeed;
 }
 
