@@ -26,6 +26,8 @@ or a combination of these. The choice usually depends on your budget or area of
 application.  
 
 
+.. _section 3.2.1:
+
 Using your keyboard
 -------------------
 
@@ -215,7 +217,7 @@ song is loaded.
 
 It is possible to use Mixxx's vinyl control with several hardware setups, but the basic ones are:
 
-**Setup 1: Vinyl DJ** Two timecoded records, two turntables with phono preamps (or line-out), and two sound 
+**Setup 1: Vinyl DJ** Two timecoded vinyls, two turntables with phono preamps (or line-out), and two sound 
 inputs. You might skip the phono amplifiers if you use the snazzy software preamp in Mixxx. *This 
 may not work for everyone - line-level signals are preferred and recommended.*
 
@@ -268,39 +270,58 @@ Laptop Only
 -----------
 
 There is absolutely no need to buy an additional, expensive soundcard **if you do not require 
-headphone cueing**. Most laptops and computers come with a build-in soundcard having a single 
-line-out where you can plug your sound box or headphone.
+headphone cueing**. Most computers and laptops   
+come with a build-in soundcard having a single line-out and microphone input where you can plug
+your sound box or headphone. 
 
  .. image:: ../_static/mixxx_standalone-setup_dlg.png
-   :width: 80%
+   :width: 90%
    :alt: Using Mixxx together with your build-in soundcard
    :align: center
 
-The figure above depicts how the configuration is supposed to look like.  
-Please note that Mixxx can use your microphone input if you soundcard has one. Just select "Input" as 
-shown in the figure for configuration.
+The figure above depicts how the sound configuration may look like. The stereo output of your
+soundcard (channels 1-2) will be connected to the **master out**. Dependend on your soundcard
+you can specify a microphone under the "Input" tab.
 
-.. note:: This setup may be suitable for radio DJs.
-
-
-
+This minimal configuration may be suitable for **radio DJs** that do not need headphone cueing. You
+can archive this configuration by simply clicking the "Reset to Defaults" command button.
 
 
 Laptop and an External USB Soundcard
 ------------------------------------
 
+The ideal way for any DJ is to have 2 stereo outputs (= 4 channels). The first stereo
+output (channels 1-2) is used as **Master out** and supplies the main mix to the room. With channels 3-4 
+(2nd stereo output) you can cueing and previewing the next track in your headphones.
+This means either having multiple soundcards or a soundcard capable of outputting 4 channels of audio. 
+
+
 .. image:: ../_static/mixxx_setup_ext_soundcard.png
    :width: 100%
    :alt: Using Mixxx together with an external soundcard
    :align: center
+   
+
+The depicted configuration above uses two soundcards. Basically, this setup is sufficient 
+to start serious DJing. You can control Mixxx with mouse or keyboard. But bear in mind that
+a successful mix often requires simultaneous actions where keyboard shortcuts may help as 
+stated in `section 3.2.1`_. 
+
 
 Laptop, MIDI Controller, and External USB Soundcard
 ---------------------------------------------------
+
+- 
+- two types of controller / with(out) integrated soundcard
+
+
 
 .. image:: ../_static/mixxx_setup_midi_with_ext_sound.png
    :width: 100%
    :alt: Using Mixxx together with a MIDI controller and external soundcard
    :align: center
+   
+Usage: 
 
 Laptop, Two Turntables, and a Hardware Mixer
 --------------------------------------------
