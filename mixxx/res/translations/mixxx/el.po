@@ -8,13 +8,13 @@ msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2011-05-03 21:42-0400\n"
-"PO-Revision-Date: 2011-06-08 13:42+0000\n"
-"Last-Translator: Andreas Ntakas <Unknown>\n"
+"PO-Revision-Date: 2011-06-11 09:32+0000\n"
+"Last-Translator: mangelasakis <Unknown>\n"
 "Language-Team: Greek <el@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-06-09 04:32+0000\n"
+"X-Launchpad-Export-Date: 2011-06-12 04:49+0000\n"
 "X-Generator: Launchpad (build 13168)\n"
 
 #: AutoDJFeature#1
@@ -800,11 +800,11 @@ msgstr ""
 
 #: DlgPrefControlsDlg#15
 msgid "Left click"
-msgstr ""
+msgstr "Αριστερό κλικ"
 
 #: DlgPrefControlsDlg#16
 msgid "Right click"
-msgstr ""
+msgstr "Δεξί κλικ"
 
 #: DlgPrefControlsDlg#17
 msgid "Permanent rate change (between 1 and 8000) when left clicking"
@@ -1431,7 +1431,7 @@ msgstr ""
 
 #: DlgPrefShoutcastDlg#3
 msgid "Server connection"
-msgstr ""
+msgstr "Σύνδεση εξυπηρετητή"
 
 #: DlgPrefShoutcastDlg#4
 msgctxt "DlgPrefShoutcastDlg#4"
@@ -1536,7 +1536,7 @@ msgstr "Είδος"
 
 #: DlgPrefShoutcastDlg#26
 msgid "Live mix"
-msgstr ""
+msgstr "Μίξη ζωντανά"
 
 #: DlgPrefShoutcastDlg#27
 msgid "Public stream"
@@ -1667,7 +1667,7 @@ msgstr "Προέκυψε ένα άγνωστο σφάλμα"
 
 #: DlgPrefSound#5
 msgid "sound device \"%1\""
-msgstr ""
+msgstr "Συσκευή ήχου \"%1\""
 
 #: DlgPrefSound#6
 msgid "Two outputs cannot share channels on %1"
@@ -2227,7 +2227,7 @@ msgstr ""
 
 #: ErrorDialogHandler#3
 msgid "Warning"
-msgstr ""
+msgstr "Προειδοποίηση"
 
 #: ErrorDialogHandler#4
 msgctxt "ErrorDialogHandler#4"
@@ -2236,15 +2236,15 @@ msgstr ""
 
 #: ErrorDialogHandler#5
 msgid "Question"
-msgstr ""
+msgstr "Ερώτηση"
 
 #: ITunesFeature#1
 msgid "iTunes"
-msgstr ""
+msgstr "iTunes"
 
 #: ITunesFeature#2
 msgid "Select your iTunes library"
-msgstr ""
+msgstr "Επιλέξτε την βιβλιοθήκη από το iTunes σας"
 
 #: ITunesFeature#3
 msgid "iTunes (loading)"
@@ -2252,11 +2252,11 @@ msgstr ""
 
 #: ITunesFeature#4
 msgid "Use Default Library"
-msgstr ""
+msgstr "Χρησιμοποιήστε την προεπιλεγμένη βιβλιοθήκη"
 
 #: ITunesFeature#5
 msgid "Choose Library..."
-msgstr ""
+msgstr "Επιλέξτε βιβλιοθήκη"
 
 #: ITunesFeature#6
 msgid "Error Loading iTunes Library"
@@ -2278,7 +2278,7 @@ msgstr ""
 
 #: LibraryScannerDlg#2
 msgid "Cancel"
-msgstr ""
+msgstr "Άκυρο"
 
 #: MidiInputMappingTableModel#1
 msgid "Midi Status Type"
@@ -2408,11 +2408,11 @@ msgstr ""
 
 #: MixxxApp#4
 msgid "Yes"
-msgstr ""
+msgstr "Ναι"
 
 #: MixxxApp#5
 msgid "No"
-msgstr ""
+msgstr "Όχι"
 
 #: MixxxApp#6
 msgid "Privacy Policy"
@@ -2491,15 +2491,15 @@ msgstr ""
 
 #: MixxxApp#18
 msgid "Help"
-msgstr ""
+msgstr "Βοήθεια"
 
 #: MixxxApp#19
 msgid "Exit"
-msgstr ""
+msgstr "Έξοδος"
 
 #: MixxxApp#20
 msgid "Continue"
-msgstr ""
+msgstr "Συνέχεια"
 
 #: MixxxApp#21
 msgid "&Load Song (Player 1)..."
@@ -2720,11 +2720,11 @@ msgstr ""
 
 #: MixxxApp#70
 msgid "Start Recording your Mix"
-msgstr ""
+msgstr "Εκκινήστε την ηχογράδηση της μίξης σας"
 
 #: MixxxApp#71
 msgid "Record your mix to a file"
-msgstr ""
+msgstr "Ηχογραφήστε την μίξη σας σε αρχείο"
 
 #: MixxxApp#72
 msgid "Full Screen"
@@ -2808,11 +2808,11 @@ msgstr ""
 
 #: MixxxApp#89
 msgid "Quit..."
-msgstr ""
+msgstr "Έξοδος"
 
 #: MixxxApp#90
 msgid "Do your really want to quit?"
-msgstr ""
+msgstr "Θέλετε πραγματικά να κλείσετε το πρόγραμμα;"
 
 #: MixxxApp#91
 msgid ""
@@ -2842,7 +2842,7 @@ msgstr ""
 
 #: MixxxApp#96
 msgid "Confirm Exit"
-msgstr ""
+msgstr "Επιβεβαίωση εξόδου"
 
 #: MixxxApp#97
 msgid "A deck is currently playing. Exit Mixxx?"
@@ -2861,7 +2861,7 @@ msgstr ""
 #: ParserM3u#2
 msgctxt "ParserM3u#2"
 msgid "Could not create file"
-msgstr ""
+msgstr "Αδύνατη δημιουργία αρχείου"
 
 #: ParserPls#1
 msgctxt "ParserPls#1"
@@ -2871,7 +2871,7 @@ msgstr ""
 #: ParserPls#2
 msgctxt "ParserPls#2"
 msgid "Could not create file"
-msgstr ""
+msgstr "Αδύνατη δημιουργία αρχείου"
 
 #: PlaylistFeature#1
 msgid "New Playlist"
@@ -2884,17 +2884,17 @@ msgstr ""
 #: PlaylistFeature#3
 msgctxt "PlaylistFeature#3"
 msgid "Remove"
-msgstr ""
+msgstr "Διαγραφή"
 
 #: PlaylistFeature#4
 msgctxt "PlaylistFeature#4"
 msgid "Rename"
-msgstr ""
+msgstr "Μετονομασία"
 
 #: PlaylistFeature#5
 msgctxt "PlaylistFeature#5"
 msgid "Lock"
-msgstr ""
+msgstr "Κλείδωμα"
 
 #: PlaylistFeature#6
 msgctxt "PlaylistFeature#6"
@@ -2913,7 +2913,7 @@ msgstr ""
 #: PlaylistFeature#9
 msgctxt "PlaylistFeature#9"
 msgid "Unlock"
-msgstr ""
+msgstr "Ξεκλείδωμα"
 
 #: PlaylistFeature#10
 msgid "Playlist name:"
@@ -2960,7 +2960,7 @@ msgstr ""
 #: PrepareFeature#1
 msgctxt "PrepareFeature#1"
 msgid "Analyze"
-msgstr ""
+msgstr "Ανάλυση"
 
 #: QObject#1
 msgid "Invalid"
@@ -2972,7 +2972,7 @@ msgstr ""
 
 #: QObject#3
 msgid "Headphones"
-msgstr ""
+msgstr "Ακουστικά"
 
 #: QObject#4
 msgid "Deck"
@@ -2985,7 +2985,7 @@ msgstr ""
 
 #: QObject#6
 msgid "Microphone"
-msgstr ""
+msgstr "Μικρόφωνο"
 
 #: QObject#7
 msgid "Passthrough"
@@ -2997,7 +2997,7 @@ msgstr ""
 
 #: RecordingFeature#1
 msgid "Recordings"
-msgstr ""
+msgstr "Ηχογραφήσεις"
 
 #: RhythmboxFeature#1
 msgid "Rhythmbox"
@@ -3037,12 +3037,12 @@ msgstr ""
 
 #: ScriptStudio#2
 msgid "File"
-msgstr ""
+msgstr "Αρχείο"
 
 #: ScriptStudio#3
 msgctxt "ScriptStudio#3"
 msgid "Edit"
-msgstr ""
+msgstr "Επεξεργασία"
 
 #: ScriptStudio#4
 msgid "Run"
@@ -3050,15 +3050,15 @@ msgstr ""
 
 #: ScriptStudio#5
 msgid "Close"
-msgstr ""
+msgstr "Κλείσιμο"
 
 #: ScriptStudio#6
 msgid "Import..."
-msgstr ""
+msgstr "Εισαγωγή"
 
 #: ScriptStudio#7
 msgid "Export..."
-msgstr ""
+msgstr "Εξαγωγή"
 
 #: ScriptStudio#8
 msgid "Delete Macro"
@@ -3096,7 +3096,7 @@ msgid ""
 "Try renaming it and restarting Mixxx.\n"
 "\n"
 "Click OK to exit."
-msgstr ""
+msgstr "Πατήστε ΟΚ για έξοδο"
 
 #: TraktorFeature#1
 msgid "Traktor"
@@ -3123,17 +3123,17 @@ msgstr ""
 
 #: Ui#2
 msgid "Remaining"
-msgstr ""
+msgstr "Απομένει"
 
 #: Ui#3
 msgctxt "Ui#3"
 msgid "On"
-msgstr ""
+msgstr "Ανοιχτό"
 
 #: Ui#4
 msgctxt "Ui#4"
 msgid "Off"
-msgstr ""
+msgstr "Κλειστό"
 
 #: Ui#5
 msgid "Don't load tracks into a playing deck"
@@ -3168,7 +3168,7 @@ msgstr ""
 #: Ui#12
 msgctxt "Ui#12"
 msgid "Preferences"
-msgstr ""
+msgstr "Επιλογές"
 
 #: Ui#13
 msgctxt "Ui#13"
@@ -3177,7 +3177,7 @@ msgstr ""
 
 #: Ui#14
 msgid "Master volume"
-msgstr ""
+msgstr "Ένταση ήχου"
 
 #: Ui#15
 msgid "Master balance"
@@ -3185,11 +3185,11 @@ msgstr ""
 
 #: Ui#16
 msgid "Headphones volume"
-msgstr ""
+msgstr "Ένταση ακουστικών"
 
 #: Ui#17
 msgid "Headphones mix (pre/main)"
-msgstr ""
+msgstr "Μίξη ακουστικών"
 
 #: Ui#18
 msgid "Cue button for Player %1"
@@ -3325,7 +3325,7 @@ msgstr ""
 
 #: WSearchLineEdit#1
 msgid "Search..."
-msgstr ""
+msgstr "Αναζήτηση"
 
 #: WTrackTableView#1
 msgid "Add to Playlist"
@@ -3342,11 +3342,11 @@ msgstr ""
 #: WTrackTableView#4
 msgctxt "WTrackTableView#4"
 msgid "Remove"
-msgstr ""
+msgstr "Διαγραφή"
 
 #: WTrackTableView#5
 msgid "Properties..."
-msgstr ""
+msgstr "Ρυθμίσεις"
 
 #: WTrackTableView#6
 msgid "Add to Auto DJ Queue"
@@ -3362,4 +3362,4 @@ msgstr ""
 
 #: WTrackTableViewHeader#1
 msgid "Show or hide columns."
-msgstr ""
+msgstr "Εμφάνηση ή κρύψημο στυλών"
