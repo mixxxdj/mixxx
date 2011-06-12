@@ -145,6 +145,8 @@ You can share custom keyboard mappings in the `Mixxx User customizations forum`_
 
 .. _Mixxx User customizations forum: http://mixxx.org/forums/viewforum.php?f=6
 
+.. _section 3.2.2:
+
 Using a MIDI Controller
 -----------------------
 
@@ -199,6 +201,8 @@ contains the most up-to-date documentation on which controllers work with Mixxx 
 device are. Device support varies for each supported OS, so please make sure to consult the documentation.
 
 .. _Hardware Compatibility wiki page: http://www.mixxx.org/wiki/doku.php/hardware_compatibility
+
+.. _section 3.2.3:
 
 Using Vinyl Timecode Records
 ----------------------------
@@ -311,29 +315,92 @@ stated in `section 3.2.1`_.
 Laptop, MIDI Controller, and External USB Soundcard
 ---------------------------------------------------
 
-- 
-- two types of controller / with(out) integrated soundcard
+Mixxx can work with any MIDI controller that has drivers for your OS, as long as there is a MIDI mapping file to
+tell Mixxx how to understand it. Mixxx comes bundled with a number of MIDI mapping presets for the devices listed 
+in `section 3.2.2`_.
 
-
+Having connected your MIDI controller via USB, Mixxx will list the device in the preferences
+under "MIDI Controllers". Select your controller on the right, enable it, and choose the appropriate 
+mapping from the combobox "presets". From now on Mixxx can be controlled by your controller unless
+the device is not supported. 
 
 .. image:: ../_static/mixxx_setup_midi_with_ext_sound.png
    :width: 100%
    :alt: Using Mixxx together with a MIDI controller and external soundcard
    :align: center
-   
-Usage: 
 
-Laptop, Two Turntables, and a Hardware Mixer
---------------------------------------------
+
+Dependent on the budget, MIDI controllers may have an integrated *multichannel* soundcard or not. If your controller 
+does not provide an integrated soundcard, your sound setup may look like in the figure above. Otherwise, an
+alternative sound setup may look as shown in the figure below:
+
+.. image:: ../_static/mixxx_setup_midi_integrated_sound.png
+   :width: 100%
+   :alt: Using Mixxx together with a MIDI controller and integrated soundcard
+   :align: center
+
+TODO:
+- Multi-controller support (RJ, I don't have a two controllers)
+   
+
+
+Laptop, External Hardware Mixer and Vinyl Control
+-------------------------------------------------------
+
+This setup is usually preferred by DJs who work in clubs. Instead of carrying large and heavy CD bags
+or a MIDI controller, all you need to have is a professional soundcard together with a pair of timecoded
+records and a headphone. But bear in mind that this setup requires your system to handle setting the 
+latency to 10ms or less otherwise the scratch sound will start to become distorted. More information on
+how to decrease latency is covered in section 6.2.  
+
+.. note:: It is strongly recommended to use a soundcard that comes with native low latency drivers
+          such as ASIO (Windows) or CoreAudio (Mac). Linux users depend on the quality
+          of the corresponding open source driver. 
+
+**Turntables**
+  
+For turntables a typical setup is depicted in the figure below.
+In a fist step, you connect the RCA cables of the turntable to the input of your soundcard.
+Secondly, you connect the inputs of your mixer to the outputs of your soundcard.
+Please note that you must set the input mode of your soundcard to "phono".
 
 .. image:: ../_static/mixxx_setup_timecode_vc.png
    :width: 100%
-   :alt: Using Mixxx together with a MIDI controller and external soundcard
+   :alt: Using Mixxx together with a turntable and external mixer
    :align: center
-   
+
+To complete your setup you must configure Mixxx properly. Make sure you have:
+
+* specified "Deck 1" and "Deck 2" in the preferences under "Sound Hardware" as
+  it will route the soundard's output directly to the external mixer.
+* specified "Vinyl Control 1" and "Vinyl Control 2" under the "Input"
+  tab in the preferences under “Sound Hardware”. 
+* selected the right vinyl type under "Vinyl Control" in the preferences.
+  Mixxx does only support Serato and Traktor control vinyls as listed in 
+  `section 3.2.3`_.
+* enabled vinyl control via the menu under "Options -> Vinyl Control -> Enable Vinyl Control".
+
+
+**CDJs**
+
+Setting up CDJs to be used with timecoded records is similar to setting up turntables. The
+figure below outlines a typical configuration. In a fist step, you connect the RCA cables of the 
+CDJ to the input of your soundcard. Secondly, you connect the inputs of your mixer to the outputs 
+of your soundcard. Please note that you must set the input mode of your soundcard to "line-in". 
+  
 .. image:: ../_static/mixxx_setup_timecode_cdj.png
    :width: 100%
    :alt: Using Mixxx together with a MIDI controller and external soundcard
    :align: center
 
+To complete your setup you must configure Mixxx properly. Make sure you have:
+
+* specified "Deck 1" and "Deck 2" in the preferences under "Sound Hardware" as
+  it will route the soundard's output directly to the external mixer.
+* specified "Vinyl Control 1" and "Vinyl Control 2" under the "Input"
+  tab in the preferences under “Sound Hardware”. 
+* selected the right vinyl type under "Vinyl Control" in the preferences.
+  With CDJs you must select "Serato CDs" since Mixxx does not support other
+  timecoded CDs at the moment.
+* enabled vinyl control via the menu under "Options -> Vinyl Control -> Enable Vinyl Control".
 
