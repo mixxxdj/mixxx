@@ -74,6 +74,7 @@ def osx_construct_version(build, mixxx_version, branch_name, bazaar_revision):
         # In release mode, we only use the version.
         if build.build_is_release:
                 return mixxx_version
+        # In a debug build, include the branch name and revision number
         return "%s-%s-bzr%s" % (mixxx_version, branch_name, bazaar_revision)
 
 def ubuntu_construct_version(build, mixxx_version, branch_name, bazaar_revision,
@@ -81,10 +82,16 @@ def ubuntu_construct_version(build, mixxx_version, branch_name, bazaar_revision,
         # In release mode, we only use the version and ubuntu_version
 	if build.build_is_release:
 		return "%s-%s" % (mixxx_version, ubuntu_version)
-	# In a debug build package, include the branch name and
-	# revision number
+	# In a debug build, include the branch name and revision number
 	return "%s-%s~%s~bzr%s" % (mixxx_version, ubuntu_version,
                                    branch_name, bazaar_revision)
+
+def windows_construct_version(build, mixxx_version, branch_name, bazaar_revision):
+        # In release mode, we only use the version
+	if build.build_is_release:
+		return mixxx_version
+	# In a debug build, include the branch name and revision number
+	return "%s-%s-bzr%s" % (mixxx_version, branch_name, bazaar_revision)
 
 #Set up the install target
 #=========================
@@ -273,18 +280,19 @@ if build.platform_is_osx and 'bundle' in COMMAND_LINE_TARGETS:
 	env.Alias('package', dmg)
 
 if build.platform_is_windows:
-	skins = env.Install("#"+dist_dir+"/skins", skin_files)
-	resource = env.Install("#"+dist_dir+"/", resource_files)
-	midimappings = env.Install("#"+dist_dir+"/midi", midimappings_files)
-	keyboardmappings = env.Install("#"+dist_dir+"/keyboard", keyboardmappings_files)
+        base_dist_dir = '#' + dist_dir
+	skins = env.Install(os.path.join(base_dist_dir, "skins"), skin_files)
+	resource = env.Install(base_dist_dir+"/", resource_files)
+	midimappings = env.Install(os.path.join(base_dist_dir, "midi"), midimappings_files)
+	keyboardmappings = env.Install(os.path.join(base_dist_dir, "keyboard"), keyboardmappings_files)
 	if int(flags['ladspa']):
-		ladspapresets = env.Install("#"+dist_dir+"/ladspa_presets", ladspapresets_files)
-	docs = env.Install("#"+dist_dir+"/doc/", docs_files)
-	promotracks = env.Install("#"+dist_dir+"/promo/", promotracks_files)
-	#icon = env.Install("#"+dist_dir+"", icon_files)
-	dlls = env.Install("#"+dist_dir+"/", dll_files)
-	soundsource_plugins = env.Install("#"+dist_dir+"/plugins/soundsource/", soundsource_plugin_files)
-	binary = env.Install("#"+dist_dir+"/", binary_files)
+		ladspapresets = env.Install(os.path.join(base_dist_dir, "ladspa_presets"), ladspapresets_files)
+	docs = env.Install(os.path.join(base_dist_dir, "doc/"), docs_files)
+	promotracks = env.Install(os.path.join(base_dist_dir, "promo/"), promotracks_files)
+	#icon = env.Install(base_dist_dir+"", icon_files)
+	dlls = env.Install(base_dist_dir+"/", dll_files)
+	soundsource_plugins = env.Install(os.path.join(base_dist_dir, "plugins", "soundsource/"), soundsource_plugin_files)
+	binary = env.Install(base_dist_dir+"/", binary_files)
 
 	#Always trigger these install builders when compiling on Windows
 	env.Alias('mixxx', skins)
@@ -302,7 +310,7 @@ if build.platform_is_windows:
 
 	# QSQLite DLL
 	if 'sqldll_files' in locals():
-		sql_dlls = env.Install("#"+dist_dir+"/sqldrivers", sqldll_files)
+		sql_dlls = env.Install(os.path.join(base_dist_dir, "sqldrivers"), sqldll_files)
 		env.Alias('mixxx', sql_dlls)
 
 def win32_find_nsis_via_registry():
@@ -361,7 +369,6 @@ def BuildRelease(target, source, env):
     #if (raw_input("Go ahead and build installer (yes/[no])? ") == "yes"):
     if True:
         print "\nNow building installer..."
-        buildwin64 = ""
         command_flag = None
         nsis_path = None
         if not build.crosscompile and build.platform_is_windows:
@@ -375,12 +382,18 @@ def BuildRelease(target, source, env):
         if not nsis_path:
             print "Cannot find NSIS. Do you have it installed?"
         else:
-            if build.machine_is_64bit:
-                buildwin64 = "/Dx64=1"
+            package_name = 'mixxx'
+
+            package_version = windows_construct_version(
+                    build, mixxx_version, branch_name, bazaar_revision)
+            arch = "x64" if build.machine_is_64bit else "x86"
+            exe_name = '%s-%s-%s.exe' % (package_name, package_version, arch)
 
             # Call the NSIS build
-            command = '%(path)s /DPRODUCT_VERSION=%(version)s /DWINLIB_PATH=%(winlibpath)s %(64bit)s build\\nsis\\Mixxx.nsi' % \
+            buildwin64 = "/Dx64=1" if build.machine_is_64bit else ''
+            command = '%(path)s /DPACKAGE_NAME=%(package_name)s /DPRODUCT_VERSION=%(version)s /DWINLIB_PATH=%(winlibpath)s %(64bit)s build\\nsis\\Mixxx.nsi' % \
                 {'path': nsis_path,
+                 'package_name': exe_name,
                  'version': mixxx_version,
                  'winlibpath': mixxx_winlib_path,
                  '64bit': buildwin64}
