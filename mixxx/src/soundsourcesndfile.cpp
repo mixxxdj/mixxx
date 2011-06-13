@@ -27,7 +27,7 @@
 /*
    Class for reading files using libsndfile
  */
-SoundSourceSndFile::SoundSourceSndFile(QString qFilename) : 
+SoundSourceSndFile::SoundSourceSndFile(QString qFilename) :
     Mixxx::SoundSource(qFilename)
 {
     info = new SF_INFO;
@@ -177,12 +177,20 @@ int SoundSourceSndFile::parseHeader()
         if (id3v2) {
             processID3v2Tag(id3v2);
         }
+
         if (getDuration() <= 0) {
             // we're using a taglib version which doesn't know how to do wav
             // durations, set it with info from sndfile -bkgood
             // XXX remove this when ubuntu ships with an sufficiently
             // intelligent version of taglib, should happen in 11.10
-            setDuration(info->frames / info->samplerate);
+
+            QByteArray qbaFilename = location.toUtf8();
+            fh = sf_open( qbaFilename.data(), SFM_READ, info );
+            if (info->samplerate > 0) {
+                setDuration(info->frames / info->samplerate);
+            }
+            sf_close(fh);
+            fh = NULL;
         }
     } else {
         // Try AIFF

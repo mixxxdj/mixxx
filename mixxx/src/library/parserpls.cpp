@@ -47,15 +47,20 @@ QList<QString> ParserPls::parse(QString sFilename)
 
     if (file.open(QIODevice::ReadOnly) && !isBinary(sFilename) ) {
 
-        /* Unfortunately, QT 4.7 does not handle <CR> line breaks.
-    	 * This is important on OS X where iTunes, e.g., exports M3U playlists using <CR>
-    	 *
-    	 * Using QFile::readAll() we obtain the complete content of the playlist as a ByteArray.
-    	 * We replace any '\r' with '\n' if applicaple
-    	 * This ensures that playlists from iTunes on OS X can be parsed
-    	 */
-    	QByteArray ba = file.readAll();
-    	ba.replace('\r',"\n");
+        /* Unfortunately, QT 4.7 does not handle <CR> (=\r or asci value 13) line breaks.
+         * This is important on OS X where iTunes, e.g., exports M3U playlists using <CR>
+         * rather that <LF>
+         *
+         * Using QFile::readAll() we obtain the complete content of the playlist as a ByteArray.
+         * We replace any '\r' with '\n' if applicaple
+         * This ensures that playlists from iTunes on OS X can be parsed
+         */
+        QByteArray ba = file.readAll();
+        //detect encoding
+        bool isCRLF_encoded = ba.contains("\r\n");
+        bool isCR_encoded = ba.contains("\r");
+        if(isCR_encoded && !isCRLF_encoded)
+            ba.replace('\r','\n');
         QTextStream textstream(ba.data());
 
         while(!textstream.atEnd()) {
@@ -66,7 +71,6 @@ QList<QString> ParserPls::parse(QString sFilename)
                 m_sLocations.append(psLine);
             }
 
-            //--numEntries;
         }
 
         file.close();
@@ -123,7 +127,7 @@ QString ParserPls::getFilepath(QTextStream *stream, QString basepath)
             filename.remove("file://");
             QByteArray strlocbytes = filename.toUtf8();
             QUrl location = QUrl::fromEncoded(strlocbytes);
-            QString trackLocation = location.toLocalFile();
+            QString trackLocation = location.toString();
             //qDebug() << trackLocation;
 
             if(isFilepath(trackLocation)) {
