@@ -9,12 +9,18 @@ const QString PLAYLISTTRACKSTABLE_PLAYLISTID = "playlist_id";
 
 class PlaylistDAO : public virtual DAO {
   public:
+	enum hidden_type {
+		PLHT_NOT_HIDDEN = 0,
+		PLHT_AUTO_DJ = 1,
+		PLHT_SET_LOG = 2,
+		PLHT_UNKNOWN = -1
+	};
     PlaylistDAO(QSqlDatabase& database);
     virtual ~PlaylistDAO();
     void initialize();
     void setDatabase(QSqlDatabase& database) { m_database = database; };
     /** Create a playlist */
-    bool createPlaylist(QString name, bool hidden = false);
+    bool createPlaylist(QString name, enum hidden_type = PLHT_NOT_HIDDEN);
     /** Delete a playlist */
     void deletePlaylist(int playlistId);
     /** Rename a playlist */
@@ -37,6 +43,8 @@ class PlaylistDAO : public virtual DAO {
     int getPlaylistId(int position);
     // Returns true if the playlist with playlistId is hidden
     bool isHidden(int playlistId);
+    // Returns cause of playlistId is hidden
+    enum hidden_type getHiddenType(int playlistId);
     /** Remove a track from a playlist */
     void removeTrackFromPlaylist(int playlistId, int position);
     /** Insert a track into a specific position in a playlist */

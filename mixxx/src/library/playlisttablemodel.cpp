@@ -101,8 +101,13 @@ void PlaylistTableModel::setPlaylist(int playlistId)
     initDefaultSearchColumns();
     slotSearch("");
     select(); //Populate the data model.
+    // dataChanged();
 }
 
+int PlaylistTableModel::getPlaylistId()
+{
+    return m_iPlaylistId;
+}
 
 bool PlaylistTableModel::addTrack(const QModelIndex& index, QString location)
 {
@@ -131,6 +136,7 @@ bool PlaylistTableModel::addTrack(const QModelIndex& index, QString location)
 
     updateTrackInIndex(trackId);
     select(); //Repopulate the data model.
+    //dataChanged();
 
     return true;
 }
@@ -174,6 +180,7 @@ void PlaylistTableModel::removeTrack(const QModelIndex& index)
         // Have to re-lookup every track b/c their playlist ranks might have changed
         buildIndex();
         select(); //Repopulate the data model.
+        //dataChanged();
     }
 }
 
@@ -200,6 +207,7 @@ void PlaylistTableModel::removeTracks(const QModelIndexList& indices) {
         // Have to re-lookup every track b/c their playlist ranks might have changed
         buildIndex();
         select();
+        //dataChanged();
     }
 }
 
