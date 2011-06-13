@@ -277,18 +277,19 @@ if build.platform_is_osx and 'bundle' in COMMAND_LINE_TARGETS:
 	env.Alias('package', dmg)
 
 if build.platform_is_windows:
-	skins = env.Install("#"+dist_dir+"/skins", skin_files)
-	resource = env.Install("#"+dist_dir+"/", resource_files)
-	midimappings = env.Install("#"+dist_dir+"/midi", midimappings_files)
-	keyboardmappings = env.Install("#"+dist_dir+"/keyboard", keyboardmappings_files)
+        base_dist_dir = '#' + dist_dir
+	skins = env.Install(os.path.join(base_dist_dir, "skins"), skin_files)
+	resource = env.Install(base_dist_dir+"/", resource_files)
+	midimappings = env.Install(os.path.join(base_dist_dir, "midi"), midimappings_files)
+	keyboardmappings = env.Install(os.path.join(base_dist_dir, "keyboard"), keyboardmappings_files)
 	if int(flags['ladspa']):
-		ladspapresets = env.Install("#"+dist_dir+"/ladspa_presets", ladspapresets_files)
-	docs = env.Install("#"+dist_dir+"/doc/", docs_files)
-	promotracks = env.Install("#"+dist_dir+"/promo/", promotracks_files)
-	#icon = env.Install("#"+dist_dir+"", icon_files)
-	dlls = env.Install("#"+dist_dir+"/", dll_files)
-	soundsource_plugins = env.Install("#"+dist_dir+"/plugins/soundsource/", soundsource_plugin_files)
-	binary = env.Install("#"+dist_dir+"/", binary_files)
+		ladspapresets = env.Install(os.path.join(base_dist_dir, "ladspa_presets"), ladspapresets_files)
+	docs = env.Install(os.path.join(base_dist_dir, "doc/"), docs_files)
+	promotracks = env.Install(os.path.join(base_dist_dir, "promo/"), promotracks_files)
+	#icon = env.Install(base_dist_dir+"", icon_files)
+	dlls = env.Install(base_dist_dir+"/", dll_files)
+	soundsource_plugins = env.Install(os.path.join(base_dist_dir, "plugins", "soundsource/"), soundsource_plugin_files)
+	binary = env.Install(base_dist_dir+"/", binary_files)
 
 	#Always trigger these install builders when compiling on Windows
 	env.Alias('mixxx', skins)
@@ -306,7 +307,7 @@ if build.platform_is_windows:
 
 	# QSQLite DLL
 	if 'sqldll_files' in locals():
-		sql_dlls = env.Install("#"+dist_dir+"/sqldrivers", sqldll_files)
+		sql_dlls = env.Install(os.path.join(base_dist_dir, "sqldrivers"), sqldll_files)
 		env.Alias('mixxx', sql_dlls)
 
 def win32_find_nsis_via_registry():
