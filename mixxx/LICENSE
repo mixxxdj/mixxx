@@ -1,25 +1,25 @@
-Mixxx version 1.9.0, Digital DJ'ing software.
-Copyright (C) 2001-2011 Mixxx development team 
+Mixxx version 1.10.0, Digital DJ'ing software.
+Copyright (C) 2001-2011 Mixxx development team
 
 Promotional tracks are copyright their respective owners and
 distributed with permission.
 
-Depending on your platform, you may receive a copy of PortAudio 
-(http://www.portaudio.com/) which is distributed under the 
+Depending on your platform, you may receive a copy of PortAudio
+(http://www.portaudio.com/) which is distributed under the
 PortAudio as-is license which can be found on their website.
 
 This may also be in turn compiled with ASIO support
 (http://www.steinberg.de) which is provided by the ASIO SDK, the
 license for which can currently be found at:
-	
+
 	http://www.steinberg.de/534+M52087573ab0.html
 
 On Windows you may receive a copy of the Microsoft Visual Studio runtime
-libraries. These are distributed only for the purpose of allowing 
+libraries. These are distributed only for the purpose of allowing
 Mixxx to run as per the license agreement for Visual Studio 2005/2008 and
 are copyright of Microsoft.
 
-This distribution of Mixxx may include skins that are licensed under a 
+This distribution of Mixxx may include skins that are licensed under a
 Creative Commons license. Full licensing information is available
 individually for each skin, located in their "skin.xml" file.
 
@@ -40,7 +40,7 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-Mixxx comes with ABSOLUTELY NO WARRANTY; 
+Mixxx comes with ABSOLUTELY NO WARRANTY;
 
 
 
@@ -324,15 +324,15 @@ YOU OR THIRD PARTIES OR A FAILURE OF THE PROGRAM TO OPERATE WITH ANY OTHER
 PROGRAMS), EVEN IF SUCH HOLDER OR OTHER PARTY HAS BEEN ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGES.
 
-13. In addition, as a special exception, you are granted the additional 
-right to distribute this Program subject to the Mac App Store Product 
-Usage Rules [3] and Licensed Application End User License Agreement [2], 
-if the source code is made available on the Mixxx Website under the 
+13. In addition, as a special exception, you are granted the additional
+right to distribute this Program subject to the Mac App Store Product
+Usage Rules [3] and Licensed Application End User License Agreement [2],
+if the source code is made available on the Mixxx Website under the
 terms of the GPL.
 
 		     END OF TERMS AND CONDITIONS
-		     
-		     
+
+
 KissFFT License
 ==================
 
@@ -498,7 +498,7 @@ such a program is covered only if its contents constitute a work based
 on the Library (independent of the use of the Library in a tool for
 writing it).  Whether that is true depends on what the Library does
 and what the program that uses the Library does.
-  
+
   1. You may copy and distribute verbatim copies of the Library's
 complete source code as you receive it, in any medium, provided that
 you conspicuously and appropriately publish on each copy an
@@ -1008,7 +1008,7 @@ such a program is covered only if its contents constitute a work based
 on the Library (independent of the use of the Library in a tool for
 writing it).  Whether that is true depends on what the Library does
 and what the program that uses the Library does.
-  
+
   1. You may copy and distribute verbatim copies of the Library's
 complete source code as you receive it, in any medium, provided that
 you conspicuously and appropriately publish on each copy an
@@ -1524,7 +1524,7 @@ such a program is covered only if its contents constitute a work based
 on the Library (independent of the use of the Library in a tool for
 writing it).  Whether that is true depends on what the Library does
 and what the program that uses the Library does.
-  
+
   1. You may copy and distribute verbatim copies of the Library's
 complete source code as you receive it, in any medium, provided that
 you conspicuously and appropriately publish on each copy an
@@ -1994,7 +1994,7 @@ such a program is covered only if its contents constitute a work based
 on the Library (independent of the use of the Library in a tool for
 writing it).  Whether that is true depends on what the Library does
 and what the program that uses the Library does.
-  
+
   1. You may copy and distribute verbatim copies of the Library's
 complete source code as you receive it, in any medium, provided that
 you conspicuously and appropriately publish on each copy an
@@ -2341,7 +2341,7 @@ HSS1394 License
 the terms and conditions of version 3 of the GNU General Public
 License, supplemented by the additional permissions listed below.
 
-  0. Additional Definitions. 
+  0. Additional Definitions.
 
   As used herein, "this License" refers to version 3 of the GNU Lesser
 General Public License, and the "GNU GPL" refers to version 3 of the GNU
@@ -2442,7 +2442,7 @@ the following:
        a copy of the Library already present on the user's computer
        system, and (b) will operate properly with a modified version
        of the Library that is interface-compatible with the Linked
-       Version. 
+       Version.
 
    e) Provide Installation Information, but only if you would otherwise
    be required to provide such information under section 6 of the
@@ -2499,7 +2499,7 @@ Library.
 libsndfile License
 ========================
 
-libsndfile was written by Erik de Castro Lopo (erikd AT mega-nerd DOT com).  
+libsndfile was written by Erik de Castro Lopo (erikd AT mega-nerd DOT com).
 
 
                   GNU LESSER GENERAL PUBLIC LICENSE
@@ -2650,7 +2650,7 @@ such a program is covered only if its contents constitute a work based
 on the Library (independent of the use of the Library in a tool for
 writing it).  Whether that is true depends on what the Library does
 and what the program that uses the Library does.
-  
+
   1. You may copy and distribute verbatim copies of the Library's
 complete source code as you receive it, in any medium, provided that
 you conspicuously and appropriately publish on each copy an
@@ -3112,7 +3112,7 @@ such a program is covered only if its contents constitute a work based
 on the Library (independent of the use of the Library in a tool for
 writing it).  Whether that is true depends on what the Library does
 and what the program that uses the Library does.
-  
+
   1. You may copy and distribute verbatim copies of the Library's
 complete source code as you receive it, in any medium, provided that
 you conspicuously and appropriately publish on each copy an
@@ -3431,7 +3431,7 @@ As an additional permission to the GNU Lesser General Public License version
 2.1, the object code form of a "work that uses the Library" may incorporate
 material from a header file that is part of the Library.  You may distribute
 such object code under terms of your choice, provided that:
-    (i)   the header files of the Library have not been modified; and 
+    (i)   the header files of the Library have not been modified; and
     (ii)  the incorporated material is limited to numerical parameters, data
           structure layouts, accessors, macros, inline functions and
           templates; and
