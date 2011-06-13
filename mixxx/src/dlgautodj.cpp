@@ -368,8 +368,12 @@ void DlgAutoDJ::player1PositionChanged(double value)
 			if (m_pCOPlay2Fb->get() == 0.0f)
 		    {
 		        // Start Deck 2
+				player2PlayChanged(1.0f);
 				m_pCOPlay2->slotSet(1.0f);
-		        player2PlayChanged(1.0f);
+		        if(fadeDuration < 0.0f){
+		        	// Scroll back for pause between tracks
+		        	m_pCOPlayPos2->slotSet(m_fadeDuration2);
+		        }
 		    }
 			removePlayingTrackFromQueue("[Channel2]");
 
@@ -379,7 +383,7 @@ void DlgAutoDJ::player1PositionChanged(double value)
 		float posFadeEnd = m_posThreshold1 + fadeDuration;
 		if( posFadeEnd > 1.0f ) posFadeEnd = 1.0f;
 		
-        if (value >= posFadeEnd)
+       if (value >= posFadeEnd)
         {
 			// Pre-EndState			
 			// m_pCOCrossfader->slotSet(1.0f); //Move crossfader to the right!
@@ -392,12 +396,13 @@ void DlgAutoDJ::player1PositionChanged(double value)
 			// loadNextTrackFromQueue();
 			// m_eState = ADJ_IDLE; // Fading ready
         }
-        //Crossfade!
-		float crossfadeValue = -1.0f + 2*(value-m_posThreshold1)/(posFadeEnd-m_posThreshold1);
-		// crossfadeValue = -1.0f -> + 1.0f
-		m_pCOCrossfader->slotSet(crossfadeValue); //Move crossfader to the right!
-		// qDebug() << "1: m_pCOCrossfader->slotSet " << crossfadeValue;
-
+        else{
+        	//Crossfade!
+        	float crossfadeValue = -1.0f + 2*(value-m_posThreshold1)/(posFadeEnd-m_posThreshold1);
+        	// crossfadeValue = -1.0f -> + 1.0f
+        	m_pCOCrossfader->slotSet(crossfadeValue); //Move crossfader to the right!
+        	// qDebug() << "1: m_pCOCrossfader->slotSet " << crossfadeValue;
+        }
     }
 }
 
@@ -443,8 +448,12 @@ void DlgAutoDJ::player2PositionChanged(double value)
 		{      
 			if (m_pCOPlay1Fb->get() == 0.0f)
 		    {
-		        m_pCOPlay1->slotSet(1.0f);
-		        player1PlayChanged(1.0f);
+				player1PlayChanged(1.0f);
+				m_pCOPlay1->slotSet(1.0f);
+		        if(fadeDuration < 0 ){
+		        	// Scroll back for pause between tracks
+		        	m_pCOPlayPos1->slotSet(m_fadeDuration1);
+		        }
 		    }
 			removePlayingTrackFromQueue("[Channel1]");
 			m_eState = ADJ_P2FADING;
@@ -578,7 +587,13 @@ void DlgAutoDJ::player1PlayChanged(double value){
 			else{
 				m_fadeDuration1 = 0;
 			}
-			m_posThreshold1 = 1.0f - m_fadeDuration1;
+			if( autoDjTransition > 0){
+				m_posThreshold1 = 1.0f - m_fadeDuration1;
+			}
+			else{
+				// in case of pause
+				m_posThreshold1 = 1.0f;
+			}
 			qDebug() << "m_fadeDuration1 = " << m_fadeDuration1;
 		}
 	}
@@ -602,7 +617,13 @@ void DlgAutoDJ::player2PlayChanged(double value){
 			else{
 				m_fadeDuration2 = 0;
 			}
-			m_posThreshold2 = 1.0f - m_fadeDuration2;
+			if( autoDjTransition > 0){
+				m_posThreshold2 = 1.0f - m_fadeDuration2;
+			}
+			else{
+				// in case of pause
+				m_posThreshold2 = 1.0f;
+			}
 			qDebug() << "m_fadeDuration2 = " << m_fadeDuration2;
 		}
 	}
