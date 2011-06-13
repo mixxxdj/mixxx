@@ -346,6 +346,8 @@ int SoundManager::setupDevices()
     clearOperativeVariables();
     int devicesAttempted = 0;
     int devicesOpened = 0;
+    // pair is isInput, isOutput
+    QHash<SoundDevice*, QPair<bool, bool> > toOpen;
 
     // filter out any devices in the config we don't actually have
     m_config.filterOutputs(this);
@@ -362,7 +364,7 @@ int SoundManager::setupDevices()
         foreach (AudioInput in, m_config.getInputs().values(device->getInternalName())) {
             isInput = true;
             err = device->addInput(in);
-            if (err != OK) return err;
+            if (err != OK) goto closeAndError;
             if (!m_inputBuffers.contains(in)) {
                 // TODO(bkgood) look into allocating this with the frames per
                 // buffer value from SMConfig
@@ -384,8 +386,7 @@ int SoundManager::setupDevices()
                 continue;
             }
             err = device->addOutput(out);
-            if (err != OK)
-                return err;
+            if (err != OK) goto closeAndError;
             m_outputBuffers[out] = m_registeredSources[out]->buffer(out);
             if (out.getType() == AudioOutput::MASTER) {
                 m_pClkRefDevice = device;
@@ -397,17 +398,24 @@ int SoundManager::setupDevices()
         if (isInput || isOutput) {
             device->setSampleRate(m_config.getSampleRate());
             device->setFramesPerBuffer(m_config.getFramesPerBuffer());
-            ++devicesAttempted;
-            err = device->open();
-            if (err != OK) {
-                return err;
-            } else {
-                ++devicesOpened;
-                if (isOutput)
-                    ++iNumDevicesOpenedForOutput;
-                if (isInput)
-                    ++iNumDevicesOpenedForInput;
-            }
+            toOpen[device] = QPair<bool, bool>(isInput, isOutput);
+        }
+    }
+    foreach (SoundDevice *device, toOpen.keys()) {
+        QPair<bool, bool> mode(toOpen[device]);
+        bool isInput(mode.first);
+        bool isOutput(mode.second);
+        ++devicesAttempted;
+        m_pErrorDevice = device;
+        err = device->open();
+        if (err != OK) {
+            goto closeAndError;
+        } else {
+            ++devicesOpened;
+            if (isOutput)
+                ++iNumDevicesOpenedForOutput;
+            if (isInput)
+                ++iNumDevicesOpenedForInput;
         }
     }
 
@@ -430,6 +438,9 @@ int SoundManager::setupDevices()
     }
     m_pErrorDevice = NULL;
     return ERR;
+closeAndError:
+    closeDevices();
+    return err;
 }
 
 SoundDevice* SoundManager::getErrorDevice() const {
