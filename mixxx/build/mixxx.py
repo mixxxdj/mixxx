@@ -88,10 +88,7 @@ class MixxxBuild(object):
             else:
                 self.machine = 'x86_64'
         self.machine_is_64bit = self.machine in ['x86_64', 'powerpc64', 'AMD64', 'EM64T', 'INTEL64']
-
-        self.bitwidth = 32
-        if self.machine_is_64bit:
-            self.bitwidth = 64
+        self.bitwidth = 64 if self.machine_is_64bit else 32
 
         self.build_dir = util.get_build_dir(self.platform, self.bitwidth)
 
