@@ -119,6 +119,8 @@ protected:
 class AudioSource {
 public:
     virtual const CSAMPLE* buffer(AudioOutput output) const = 0;
+    virtual void onOutputConnected(AudioOutput output) { Q_UNUSED(output); };
+    virtual void onOutputDisconnected(AudioOutput output) { Q_UNUSED(output); };
 };
 
 class AudioDestination {
