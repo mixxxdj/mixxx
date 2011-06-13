@@ -71,6 +71,7 @@ DlgAutoDJ::DlgAutoDJ(QWidget* parent, ConfigObject<ConfigValue>* pConfig,
     connect(pushButtonAutoDJ, SIGNAL(toggled(bool)),
             this,  SLOT(toggleAutoDJ(bool))); _blah;
 
+    // playposition is from -0.14 to + 1.14
     m_pCOPlayPos1 = new ControlObjectThreadMain(
                             ControlObject::getControl(ConfigKey("[Channel1]", "playposition")));
     m_pCOPlayPos2 = new ControlObjectThreadMain(
@@ -556,6 +557,7 @@ bool DlgAutoDJ::removePlayingTrackFromQueue(QString group)
 
     // remove the top track 
 	m_pAutoDJTableModel->removeTrack(m_pAutoDJTableModel->index(0, 0));	
+	m_pTrackTableView->loadTrackModel(m_pAutoDJTableModel);
 
     return true;
 }
