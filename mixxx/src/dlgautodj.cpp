@@ -363,7 +363,8 @@ void DlgAutoDJ::player1PositionChanged(double value)
 
     if (value >= m_posThreshold1)
     {
-		if( m_eState == ADJ_IDLE && m_pCOPlay1Fb->get() == 1.0f)
+		if(     m_eState == ADJ_IDLE
+			&& (m_pCOPlay1Fb->get() == 1.0f|| m_posThreshold1 >= 1.0f))
 		{      
 			if (m_pCOPlay2Fb->get() == 0.0f)
 		    {
@@ -444,7 +445,8 @@ void DlgAutoDJ::player2PositionChanged(double value)
 
     if (value >= m_posThreshold2)
     {
-		if( m_eState == ADJ_IDLE && m_pCOPlay2Fb->get() == 1.0f)
+		if(     m_eState == ADJ_IDLE
+			&& (m_pCOPlay2Fb->get() == 1.0f|| m_posThreshold2 >= 1.0f))
 		{      
 			if (m_pCOPlay1Fb->get() == 0.0f)
 		    {
