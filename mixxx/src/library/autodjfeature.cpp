@@ -59,7 +59,7 @@ TreeItemModel* AutoDJFeature::getChildModel() {
 void AutoDJFeature::activate() {
     //qDebug() << "AutoDJFeature::activate()";
     //emit(showTrackModel(m_pAutoDJTableModelProxy));
-    emit(switchToView("Auto DJ"));
+    emit(switchToView(m_sAutoDJViewName));
 }
 
 void AutoDJFeature::activateChild(const QModelIndex& /*index*/) {
