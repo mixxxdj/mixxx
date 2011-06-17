@@ -38,7 +38,7 @@ const int kLeftoverSize = 4096; // in int16's, this seems to be the size MF AAC
 // decoder likes to give
 
 /** Microsoft examples use this snippet often. */
-template<class T> void SafeRelease(T **ppT)
+template<class T> static void safeRelease(T **ppT)
 {
     if (*ppT) {
         (*ppT)->Release();
@@ -73,8 +73,8 @@ SoundSourceMediaFoundation::~SoundSourceMediaFoundation()
     delete [] m_wcFilename;
     delete [] m_leftoverBuffer;
 
-    SafeRelease(&m_pReader);
-    SafeRelease(&m_pAudioType);
+    safeRelease(&m_pReader);
+    safeRelease(&m_pAudioType);
     MFShutdown();
     CoUninitialize();
 }
@@ -108,13 +108,13 @@ int SoundSourceMediaFoundation::open()
         return ERR;
     }
 
-    hr = ConfigureAudioStream();
+    hr = configureAudioStream();
     if (FAILED(hr)) {
         qWarning() << "SSMF: Error configuring audio stream.";
         return ERR;
     }
 
-    if (!ReadProperties()) {
+    if (!readProperties()) {
         qWarning() << "SSMF::ReadProperties failed";
         return ERR;
     }
@@ -179,7 +179,7 @@ unsigned int SoundSourceMediaFoundation::read(unsigned long size,
     // first, copy frames from leftover buffer IF the leftover buffer is at
     // the correct frame
     if (m_leftoverBufferLength > 0 && m_leftoverBufferPosition == m_nextFrame) {
-        CopyFrames(destBuffer, &framesNeeded, m_leftoverBuffer,
+        copyFrames(destBuffer, &framesNeeded, m_leftoverBuffer,
             m_leftoverBufferLength);
         if (m_leftoverBufferLength > 0) {
             Q_ASSERT(framesNeeded == 0); // make sure CopyFrames worked
@@ -259,7 +259,7 @@ unsigned int SoundSourceMediaFoundation::read(unsigned long size,
         }
 
         Q_ASSERT(bufferLength * kNumChannels <= m_leftoverBufferSize);
-        CopyFrames(destBuffer + (size - framesNeeded * kNumChannels),
+        copyFrames(destBuffer + (size - framesNeeded * kNumChannels),
             &framesNeeded, buffer, bufferLength);
 
 releaseRawBuffer:
@@ -269,9 +269,9 @@ releaseRawBuffer:
         // well just let it be released.
         //if (FAILED(hr)) break;
 releaseMBuffer:
-        SafeRelease(&pMBuffer);
+        safeRelease(&pMBuffer);
 releaseSample:
-        SafeRelease(&pSample);
+        safeRelease(&pSample);
         if (error) break;
     }
 
@@ -318,7 +318,7 @@ QList<QString> SoundSourceMediaFoundation::supportedFileExtensions()
 
 
 //-------------------------------------------------------------------
-// ConfigureAudioStream
+// configureAudioStream
 //
 // Selects an audio stream from the source file, and configures the
 // stream to deliver decoded PCM audio.
@@ -331,7 +331,7 @@ QList<QString> SoundSourceMediaFoundation::supportedFileExtensions()
     If anything in here fails, just bail. I'm not going to decode HRESULTS.
     -- Bill
     */
-bool SoundSourceMediaFoundation::ConfigureAudioStream()
+bool SoundSourceMediaFoundation::configureAudioStream()
 {
     HRESULT hr(S_OK);
 
@@ -421,7 +421,7 @@ bool SoundSourceMediaFoundation::ConfigureAudioStream()
     // the reader has the media type now, free our reference so we can use our
     // pointer for other purposes. Do this before checking for failure so we
     // don't dangle.
-    SafeRelease(&m_pAudioType);
+    safeRelease(&m_pAudioType);
     if (FAILED(hr)) {
         qWarning() << "SSMF: failed to set media type";
         return false;
@@ -460,7 +460,7 @@ bool SoundSourceMediaFoundation::ConfigureAudioStream()
     return true;
 }
 
-bool SoundSourceMediaFoundation::ReadProperties()
+bool SoundSourceMediaFoundation::readProperties()
 {
     PROPVARIANT prop;
     HRESULT hr = S_OK;
@@ -493,7 +493,7 @@ bool SoundSourceMediaFoundation::ReadProperties()
  * is moved to the beginning of m_leftoverBuffer, so empty it first (possibly
  * with this method). If src and dest overlap, I'll hurt you.
  */
-void SoundSourceMediaFoundation::CopyFrames(
+void SoundSourceMediaFoundation::copyFrames(
     qint16 *dest, size_t *destFrames, const qint16 *src, size_t srcFrames)
 {
     if (srcFrames > *destFrames) {
