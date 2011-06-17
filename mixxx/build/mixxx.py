@@ -188,7 +188,7 @@ class MixxxBuild(object):
         # Should cover {Net,Open,Free,DragonFly}BSD, but only tested on OpenBSD
         if 'bsd' in sys.platform:
             return 'bsd'
-        if 'linux2' == sys.platform:
+        if sys.platform in ['linux2', 'linux3']:
             return 'linux'
         if sys.platform == 'darwin':
             return 'osx'
