@@ -42,9 +42,9 @@ public:
     static QList<QString> supportedFileExtensions();
 
 private:
-    bool ConfigureAudioStream();
-    bool ReadProperties();
-    void CopyFrames(qint16 *dest, size_t *destFrames, const qint16 *src,
+    bool configureAudioStream();
+    bool readProperties();
+    void copyFrames(qint16 *dest, size_t *destFrames, const qint16 *src,
         size_t srcFrames);
     static inline qreal secondsFromMF(qint64 mf);
     static inline qint64 mfFromSeconds(qreal sec);
@@ -53,7 +53,7 @@ private:
     QFile m_file;
     IMFSourceReader *m_pReader;
     IMFMediaType *m_pAudioType;
-    wchar_t* m_wcFilename;
+    wchar_t *m_wcFilename;
     int m_nextFrame;
     qint16 *m_leftoverBuffer;
     size_t m_leftoverBufferSize;
