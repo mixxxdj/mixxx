@@ -115,7 +115,7 @@ int SoundSourceMediaFoundation::open()
     }
 
     if (!readProperties()) {
-        qWarning() << "SSMF::ReadProperties failed";
+        qWarning() << "SSMF::readProperties failed";
         return ERR;
     }
 
