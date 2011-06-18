@@ -23,7 +23,7 @@
 
 /** This class emulates the response of a vinyl record's audio to changes
  *   in speed. In practice, it quiets the audio during very slow playback.
- *   This also helps mask the aliasing due to interpolation that occurs at
+ *   Dithering also helps mask the aliasing due to interpolation that occurs at
  *   these slow speeds.
  */
 
@@ -48,21 +48,27 @@ void EngineVinylSoundEmu::process(const CSAMPLE * pIn, const CSAMPLE * pOut, con
     float curRate = m_fOldSpeed;
     
     const float thresholdSpeed = 0.070f; //Scale volume if playback speed is below 7%.
+    const float ditherSpeed = 0.85f; //Dither if playback speed is below 85%.
     
     //iterate over old rate to new rate to prevent audible pops    
     for (int i=0; i<iBufferSize; i+=2)
     {
+        float dither = 0;
+        if (fabs(curRate) < ditherSpeed) {
+            dither = (float)(rand() % 32768) / 32768 - 0.5;
+        }
+        
         if (fabs(curRate) < thresholdSpeed) {
-           float dither = (float)(rand() % 32768) / 32768 - 0.5; // dither
-           float gainfrac = fabs(curRate) / thresholdSpeed;
-           pOutput[i] = gainfrac * (float)pIn[i] + dither;
-           pOutput[i+1] = gainfrac * (float)pIn[i+1] + dither;
+            float gainfrac = fabs(curRate) / thresholdSpeed;
+            pOutput[i] = gainfrac * (float)pIn[i] + dither;
+            pOutput[i+1] = gainfrac * (float)pIn[i+1] + dither;
         }
         else
         {
-           pOutput[i] = pIn[i];
-           pOutput[i+1] = pIn[i+1];
+           pOutput[i] = pIn[i] + dither;
+           pOutput[i+1] = pIn[i+1] + dither;
         }
+        
         curRate += rateFrac;
     }
     m_fOldSpeed = m_fSpeed;
