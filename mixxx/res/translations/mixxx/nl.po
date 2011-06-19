@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2011-05-03 21:42-0400\n"
-"PO-Revision-Date: 2011-05-28 16:56+0000\n"
-"Last-Translator: L. Post <Unknown>\n"
+"PO-Revision-Date: 2011-06-18 11:19+0000\n"
+"Last-Translator: Eric van Aert <Unknown>\n"
 "Language-Team: Dutch <nl@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-05-29 04:32+0000\n"
-"X-Generator: Launchpad (build 12959)\n"
+"X-Launchpad-Export-Date: 2011-06-19 04:32+0000\n"
+"X-Generator: Launchpad (build 13168)\n"
 
 #: AutoDJFeature#1
 msgid "Auto DJ"
@@ -23,7 +23,7 @@ msgstr "Auto DJ"
 
 #: BaseSqlTableModel#1
 msgid "Played"
-msgstr "Gespeeld"
+msgstr "Afgespeeld"
 
 #: BaseSqlTableModel#2
 msgctxt "BaseSqlTableModel#2"
@@ -72,7 +72,7 @@ msgstr "Tijd"
 
 #: BaseSqlTableModel#11
 msgid "Rating"
-msgstr "Beoordeling"
+msgstr "Waardering"
 
 #: BaseSqlTableModel#12
 msgctxt "BaseSqlTableModel#12"
@@ -87,7 +87,7 @@ msgstr "BPM"
 #: BaseSqlTableModel#14
 msgctxt "BaseSqlTableModel#14"
 msgid "Track #"
-msgstr "Nummer #"
+msgstr "Nummer"
 
 #: BaseSqlTableModel#15
 msgid "Date Added"
@@ -125,7 +125,7 @@ msgstr "Mixxx Bibliotheek"
 
 #: BrowseFeature#5
 msgid "Home"
-msgstr "Persoonlijk"
+msgstr "Persoonlijke map"
 
 #: BrowseFeature#6
 msgid "Music"
