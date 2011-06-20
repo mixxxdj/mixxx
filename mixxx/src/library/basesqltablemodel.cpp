@@ -78,7 +78,8 @@ void BaseSqlTableModel::initDefaultSearchColumns() {
                   << "album"
                   << "location"
                   << "comment"
-                  << "title";
+                  << "title"
+                  << "genre";
     setSearchColumns(searchColumns);
 }
 
