@@ -410,7 +410,7 @@ void TrackInfoObject::setHeaderParsed(bool parsed)
 QString TrackInfoObject::getInfo()  const
 {
     QMutexLocker lock(&m_qMutex);
-    QString artist = m_sArtist.trimmed() == "" ? "" : m_sArtist + "\n";
+    QString artist = m_sArtist.trimmed() == "" ? "" : m_sArtist + ", ";
     QString sInfo = artist + m_sTitle;
     return sInfo;
 }
@@ -556,7 +556,7 @@ bool TrackInfoObject::getPlayed() const
 void TrackInfoObject::setPlayed(bool bPlayed)
 {
     QMutexLocker lock(&m_qMutex);
-    bool dirty;
+    bool dirty = false;
     if (bPlayed) {
         ++m_iTimesPlayed;
 	    dirty = true;
