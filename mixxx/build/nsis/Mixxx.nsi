@@ -57,16 +57,9 @@ SetCompressor /SOLID lzma
 ; Disable the Nullsoft Installer branding text at the bottom.
 BrandingText " "
 
-; The file to write and default installation directory
-!ifdef x64
-    ;OutFile "${PRODUCT_NAME}-${PRODUCT_VERSION}-x64.exe"
-    ; Need consistency by taking our version number for automated builds. -- Albert
-    OutFile "${PRODUCT_NAME}-x64.exe"
-    ;InstallDir "$PROGRAMFILES64\${PRODUCT_NAME}"
-!else
-    ;OutFile "${PRODUCT_NAME}-${PRODUCT_VERSION}-x86.exe"
-    OutFile "${PRODUCT_NAME}-x86.exe"
-!endif
+; The file to write and default installation directory. This is provided by the
+; SConscript. Write to the base directory (assuming we are in <root>/build/nsis/
+OutFile "${BASE_BUILD_DIR}\${PACKAGE_NAME}"
 
 ; Registry key to check for directory (so if you install again, it will
 ; overwrite the old one automatically)
