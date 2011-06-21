@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2011-05-03 21:42-0400\n"
-"PO-Revision-Date: 2011-06-03 16:39+0000\n"
-"Last-Translator: Albert Sanchez Lafuente <Unknown>\n"
+"PO-Revision-Date: 2011-06-20 11:52+0000\n"
+"Last-Translator: antonimous <Unknown>\n"
 "Language-Team: Catalan <ca@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-06-04 04:32+0000\n"
-"X-Generator: Launchpad (build 12959)\n"
+"X-Launchpad-Export-Date: 2011-06-21 04:31+0000\n"
+"X-Generator: Launchpad (build 13168)\n"
 
 #: AutoDJFeature#1
 msgid "Auto DJ"
@@ -100,7 +100,7 @@ msgstr "Nº"
 #: BaseSqlTableModel#17
 msgctxt "BaseSqlTableModel#17"
 msgid "Key"
-msgstr ""
+msgstr "Tecla"
 
 #: BaseTrackPlayer#1
 msgid "Couldn't load track."
@@ -108,7 +108,7 @@ msgstr "No s'ha pogut carregar la pista."
 
 #: BrowseFeature#1
 msgid "Quick Links"
-msgstr ""
+msgstr "Enllaços ràpids"
 
 #: BrowseFeature#2
 msgid "Devices"
@@ -195,7 +195,7 @@ msgstr "Tempo"
 #: BrowseTableModel#11
 msgctxt "BrowseTableModel#11"
 msgid "Key"
-msgstr ""
+msgstr "Tecla"
 
 #: BrowseTableModel#12
 msgctxt "BrowseTableModel#12"
@@ -257,7 +257,7 @@ msgstr "Elimina"
 #: CrateFeature#3
 msgctxt "CrateFeature#3"
 msgid "Rename"
-msgstr ""
+msgstr "Reanomena"
 
 #: CrateFeature#4
 msgctxt "CrateFeature#4"
@@ -300,11 +300,11 @@ msgstr "Renombrar caixa"
 
 #: CrateFeature#13
 msgid "New crate name:"
-msgstr ""
+msgstr "Nom nou de caixa"
 
 #: CrateFeature#14
 msgid "Renaming Crate Failed"
-msgstr ""
+msgstr "Renombrant caixa fallida"
 
 #: CrateFeature#15
 msgctxt "CrateFeature#15"
@@ -354,6 +354,19 @@ msgid ""
 "margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-"
 "family:'Sans Serif'; font-size:9pt;\"></p></body></html>"
 msgstr ""
+"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" "
+"\"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+"<html><head><meta name=\"qrichtext\" content=\"1\" /><style "
+"type=\"text/css\">\n"
+"p, li { white-space: pre-wrap; }\n"
+"</style></head><body style=\" font-family:'MS Shell Dlg 2'; font-"
+"size:8.25pt; font-weight:400; font-style:normal;\">\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-"
+"right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-"
+"family:'Sans Serif'; font-size:9pt;\">Els crèdits van aquí</span></p>\n"
+"<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; "
+"margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-"
+"family:'Sans Serif'; font-size:9pt;\"></p></body></html>"
 
 #: DlgAboutDlg#3
 msgid "1.x.x"
@@ -386,11 +399,11 @@ msgstr "Afegiu cançons a la cua..."
 
 #: DlgBpmSchemeDlg#1
 msgid "BPM Scheme"
-msgstr ""
+msgstr "Esquema BPM"
 
 #: DlgBpmSchemeDlg#2
 msgid "Scheme Name:"
-msgstr ""
+msgstr "Nom d'esquema"
 
 #: DlgBpmSchemeDlg#3
 msgid "BPM Range"
@@ -438,7 +451,7 @@ msgstr "<< Anterior"
 
 #: DlgBpmTapDlg#7
 msgid "BPM Editor (Click to Expand)"
-msgstr ""
+msgstr "Editor de BPM (Cliqueja per a expandir)"
 
 #: DlgBpmTapDlg#8
 msgctxt "DlgBpmTapDlg#8"
