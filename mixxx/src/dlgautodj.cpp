@@ -54,7 +54,8 @@ DlgAutoDJ::DlgAutoDJ(QWidget* parent, ConfigObject<ConfigValue>* pConfig,
     m_pTrackTableView->setDragDropMode(QAbstractItemView::InternalMove);
     //Sort by the position column and lock it
     m_pTrackTableView->sortByColumn(0, Qt::AscendingOrder);
-    m_pTrackTableView->setSortingEnabled(false);
+    // m_pTrackTableView->setSortingEnabled(false); // Bug: disables only the sorting arrow
+    												// Bud anyway, why not allow sorting?
 
     connect(pushButtonShuffle, SIGNAL(clicked(bool)),
             this, SLOT(shufflePlaylist(bool)));
@@ -108,6 +109,7 @@ DlgAutoDJ::~DlgAutoDJ()
 	delete m_pCORepeat1;
     delete m_pCORepeat2;
     delete m_pCOCrossfader;
+    delete m_pAutoDJTableModel;
 }
 
 void DlgAutoDJ::onShow()
@@ -647,4 +649,9 @@ void DlgAutoDJ::transitionValueChanged(int value){
 		}
 	}
 	m_pConfig->set(ConfigKey(CONFIG_KEY, "Transition"), ConfigValue(value));
+}
+
+
+bool DlgAutoDJ::appendTrack(int trackId){
+	return m_pAutoDJTableModel->appendTrack(trackId);
 }

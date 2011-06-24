@@ -31,6 +31,7 @@ class DlgAutoDJ : public QWidget, public Ui::DlgAutoDJ, public virtual LibraryVi
     virtual void loadSelectedTrack();
     virtual void loadSelectedTrackToGroup(QString group);
     virtual void moveSelection(int delta);
+    virtual bool appendTrack(int trackId);
 
   public slots:
     void shufflePlaylist(bool buttonChecked);

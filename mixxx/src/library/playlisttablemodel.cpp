@@ -103,6 +103,10 @@ void PlaylistTableModel::setPlaylist(int playlistId)
     select(); //Populate the data model.
 }
 
+int PlaylistTableModel::getPlaylistId()
+{
+    return m_iPlaylistId;
+}
 
 bool PlaylistTableModel::addTrack(const QModelIndex& index, QString location)
 {
@@ -128,6 +132,19 @@ bool PlaylistTableModel::addTrack(const QModelIndex& index, QString location)
         return false;
 
     m_playlistDao.insertTrackIntoPlaylist(trackId, m_iPlaylistId, position);
+
+    updateTrackInIndex(trackId);
+    select(); //Repopulate the data model.
+
+    return true;
+}
+
+bool PlaylistTableModel::appendTrack(int trackId)
+{
+    if (trackId < 0)
+        return false;
+
+    m_playlistDao.appendTrackToPlaylist(trackId, m_iPlaylistId);
 
     updateTrackInIndex(trackId);
     select(); //Repopulate the data model.
