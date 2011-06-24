@@ -9,14 +9,14 @@ msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2011-05-03 21:42-0400\n"
-"PO-Revision-Date: 2011-06-06 06:30+0000\n"
+"PO-Revision-Date: 2011-06-23 19:52+0000\n"
 "Last-Translator: Irwin Céspedes B <Unknown>\n"
 "Language-Team: Galician <gl@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-06-07 04:32+0000\n"
-"X-Generator: Launchpad (build 12959)\n"
+"X-Launchpad-Export-Date: 2011-06-24 04:32+0000\n"
+"X-Generator: Launchpad (build 13168)\n"
 
 #: AutoDJFeature#1
 msgid "Auto DJ"
@@ -83,12 +83,12 @@ msgstr "Tasa de bits"
 #: BaseSqlTableModel#13
 msgctxt "BaseSqlTableModel#13"
 msgid "BPM"
-msgstr "PPM"
+msgstr "BPM"
 
 #: BaseSqlTableModel#14
 msgctxt "BaseSqlTableModel#14"
 msgid "Track #"
-msgstr "Pista nº"
+msgstr "Nº pista"
 
 #: BaseSqlTableModel#15
 msgid "Date Added"
@@ -4262,9 +4262,23 @@ msgstr "Mostrar u ocultar columnas"
 #~ msgid "Preferences"
 #~ msgstr "Preferencias"
 
+#~ msgid "Mixxx Recording"
+#~ msgstr "Grabación en Mixxx"
+
 #~ msgctxt "MixxxApp#44"
 #~ msgid "Enable live broadcasting"
 #~ msgstr "Activar la Transmisión en Vivo"
 
 #~ msgid "Enable &Vinyl Control"
 #~ msgstr "Habilitar"
+
+#~ msgid "Mixxx has detected th"
+#~ msgstr "Mixxx ha detectado th"
+
+#~ msgid ""
+#~ "No input device(s) selected.\n"
+#~ "Please select your soundcard(s) in the sound hardware preferences."
+#~ msgstr ""
+#~ "No hay dispositivo(s) de entrada seleccionados.\n"
+#~ "Seleccione su(s) tarjeta(s) de sonido en las preferencias de sonido del "
+#~ "equipo."
