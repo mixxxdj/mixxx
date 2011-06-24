@@ -260,7 +260,7 @@ int BaseSqlTableModel::findSortInsertionPoint(int trackId, TrackPointer pTrack,
         int mid = min + (max - min) / 2;
         const QPair<int, QHash<int, QVariant> >& otherRowInfo = rowInfo[mid];
         int otherTrackId = otherRowInfo.first;
-        const QHash<int, QVariant>& otherRowCache = otherRowInfo.second;
+        // const QHash<int, QVariant>& otherRowCache = otherRowInfo.second; // not used
 
 
         // This should not happen, but it's a recoverable error so we should only log it.
@@ -347,11 +347,12 @@ void BaseSqlTableModel::select() {
     foreach (QString column, m_tableColumns) {
         tableColumnIndices.push_back(record.indexOf(column));
     }
-    int rows = query.size();
 
-    if (sDebug) {
-        qDebug() << "Rows returned" << rows << m_rowInfo.size();
-    }
+    // sqlite does not set size and m_rowInfo was just cleared
+    // int irows = query.size();
+    // if (sDebug) {
+    //     qDebug() << "Rows returned" << irows << m_rowInfo.size();
+    // }
 
     QVector<QPair<int, QHash<int, QVariant> > > rowInfo;
     QHash<int, QLinkedList<int> > trackToRows;
@@ -359,7 +360,7 @@ void BaseSqlTableModel::select() {
     while (query.next()) {
         int id = query.value(idColumn).toInt();
         QLinkedList<int>& rows = trackToRows[id];
-        rows.append(rowInfo.size());
+        rows.append(rowInfo.size());  // save rows where this track id is located
 
         QPair<int, QHash<int, QVariant> > thisRowInfo;
         thisRowInfo.first = id;
@@ -373,6 +374,10 @@ void BaseSqlTableModel::select() {
             query_it++; rowinfo_it++;
         }
         rowInfo.push_back(thisRowInfo);
+
+        //if (sDebug) {
+        //	qDebug() << rowInfo.size()-1 << "id:" <<thisRowInfo.first << "; " << thisRowInfo.second[0];
+        //}
 
         if (!m_recordCache.contains(id)) {
             missingTracks.push_back(id);
@@ -422,6 +427,13 @@ void BaseSqlTableModel::select() {
         if (!m_recordCache.contains(trackId))
             continue;
 
+        if ( orderBy.indexOf( QString("position")) != -1 ){
+        	// if this is a playlist and it is sorted by "position" there is nothing to do
+			// because the playlist position is not part of the m_recordCache.
+        	continue;
+        }
+
+
         // Default true
         bool shouldBeInResultSet = true;
 
@@ -453,12 +465,16 @@ void BaseSqlTableModel::select() {
         if (shouldBeInResultSet) {
             // Track should be in result set...
 
+        	QVector<QPair<int, QHash<int, QVariant> > > rowInfoCache;
+
             // Remove the track from the results first (we have to do this or it
             // will sort wrong).
             if (isInResultSet) {
                 QLinkedList<int> rows = trackToRows[trackId];
 
                 if (rows.size() > 1) {
+                	// In case of doublets in a playlist
+
                     QVector<int> sortedRows(rows.size());
                     // NOTE(rryan) yes, I did this terrible thing. It doesn't
                     // actually matter unless you have the same track in a
@@ -474,16 +490,20 @@ void BaseSqlTableModel::select() {
                     qSort(sortedRows.begin(), sortedRows.end(), qGreater<int>());
 
                     foreach (int row, sortedRows) {
+                    	rowInfoCache.append(rowInfo[row]); // Use cache to save "position"
                         rowInfo.remove(row);
                     }
                 } else if (rows.size() == 1) {
-                    rowInfo.remove(rows.front());
+                	rowInfoCache.append(rowInfo[rows.front()]); // Use cache to save "position"
+                	rowInfo.remove(rows.front());
                 }
                 // Don't update trackToRows, since we do it below.
             }
 
             // Figure out where it is supposed to sort. The table is sorted by
             // the sort column, so we can binary search.
+            // This function does not Work with playlists sorted by "position" and doublets because each 
+			// track is only one time in m_recordCache
             int insertRow = findSortInsertionPoint(trackId, pTrack, rowInfo);
 
             if (sDebug) {
@@ -492,10 +512,18 @@ void BaseSqlTableModel::select() {
 
             // The track should sort at insertRow
             // TODO(rryan) YOU HAVE TO SORT ROWS !
-            trackToRows[trackId].append(insertRow);
-            QPair<int, QHash<int, QVariant> > thisRowInfo;
-            thisRowInfo.first = trackId;
-            rowInfo.insert(insertRow, thisRowInfo);
+            // trackToRows[trackId].append(insertRow); // trackToRows is cleared below
+
+            if( rowInfoCache.size() ){
+				for ( int i = 0; i < rowInfoCache.size(); i++ ){
+					rowInfo.insert(insertRow, rowInfoCache[i]);
+				}
+            }
+            else{
+				QPair<int, QHash<int, QVariant> > thisRowInfo;
+				thisRowInfo.first = trackId;
+				rowInfo.insert(insertRow, thisRowInfo);
+        	}
 
             trackToRows.clear();
             // Fix the index. TODO(rryan) find a non-stupid way to do this.
@@ -771,7 +799,7 @@ Qt::ItemFlags BaseSqlTableModel::readWriteFlags(const QModelIndex &index) const 
     //widget to load a track into a Player).
     defaultFlags |= Qt::ItemIsDragEnabled;
 
-    int row = index.row();
+    //int row = index.row(); // not used
     int column = index.column();
 
     if ( column == fieldIndex(LIBRARYTABLE_FILETYPE)

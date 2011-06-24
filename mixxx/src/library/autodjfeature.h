@@ -11,6 +11,7 @@
 #include "library/dao/playlistdao.h"
 #include "configobject.h"
 #include "treeitemmodel.h"
+#include "dlgautodj.h"
 
 class PlaylistTableModel;
 class TrackCollection;
@@ -50,6 +51,7 @@ private:
     PlaylistDAO& m_playlistDao;
     const static QString m_sAutoDJViewName;
     TreeItemModel m_childModel;
+    DlgAutoDJ* m_pAutoDJView;
 };
 
 
