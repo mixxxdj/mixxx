@@ -5,6 +5,7 @@
 #include "waveformwidgetrenderer.h"
 #include "waveformrenderbackground.h"
 #include "glwaveformrendererfilteredsignal.h"
+#include "waveformrendermark.h"
 
 GLWaveformWidget::GLWaveformWidget( const char* group, QWidget* parent) :
     QGLWidget(parent),
@@ -12,6 +13,7 @@ GLWaveformWidget::GLWaveformWidget( const char* group, QWidget* parent) :
 {
     m_waveformWidgetRenderer->addRenderer<WaveformRenderBackground>();
     m_waveformWidgetRenderer->addRenderer<GLWaveformRendererFilteredSignal>();
+    m_waveformWidgetRenderer->addRenderer<WaveformRenderMark>();
     m_waveformWidgetRenderer->init();
 }
 

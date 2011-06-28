@@ -2,6 +2,7 @@
 #ifndef WAVEFORMRENDERMARK_H
 #define WAVEFORMRENDERMARK_H
 
+/*
 #include <QObject>
 #include <QColor>
 #include <QPixmap>
@@ -17,49 +18,50 @@ class QPaintEvent;
 class ConfigKey;
 class ControlObjectThreadMain;
 class WaveformRenderer;
+*/
 
-class WaveformRenderMark : public RenderObject {
-    Q_OBJECT
+#include <Qt>
+#include <QPixmap>
+#include <QVector>
+
+#include "waveformrendererabstract.h"
+
+class QDomNode;
+class QPainter;
+class QPaintEvent;
+class ControlObject;
+
+class Mark
+{
 public:
-    explicit WaveformRenderMark(const char* pGroup,
-                                WaveformRenderer *parent);
-    void resize(int w, int h);
-    void setup(QDomNode node);
-    void draw(QPainter *pPainter, QPaintEvent *event,
-              QVector<float> *buffer, double playPos, double rateAdjust);
-    void newTrack(TrackPointer pTrack);
+    Mark() : m_point(0) {}
 
-public slots:
-    void slotUpdateMarkPoint(double mark);
-    void slotUpdateTrackSamples(double samples);
 private:
-    void setupMarkPixmap();
-
-    enum MarkAlign {
-        TOP = 0,
-        BOTTOM,
-        CENTER
-    };
-
-    const char* m_pGroup;
-    WaveformRenderer *m_pParent;
-    ControlObjectThreadMain *m_pMarkPoint;
-    ControlObjectThreadMain *m_pTrackSamples;
-    TrackPointer m_pTrack;
-
-    int m_iMarkPoint;
-    int m_iWidth, m_iHeight;
-    QColor m_markColor;
+    ControlObject* m_point;
+    QColor m_color;
     QColor m_textColor;
-    QString m_markText;
-    QString m_markPixmapPath;
-    MarkAlign m_markAlign;
-    QPixmap m_markPixmap;
-    bool m_bHasCustomPixmap;
-    double m_dSamplesPerDownsample;
+    QString m_text;
+    Qt::Alignment m_align;
+    QString m_pixmapPath;
+    QPixmap m_pixmap;
 
-    int m_iNumSamples;
-    int m_iSampleRate;
+    friend class WaveformRenderMark;
+};
+
+class WaveformRenderMark : public WaveformRendererAbstract {
+public:
+    WaveformRenderMark( WaveformWidgetRenderer* waveformWidgetRenderer);
+
+    virtual void init();
+    virtual void setup( const QDomNode& node);
+    virtual void draw( QPainter* painter, QPaintEvent* event);
+
+private:
+
+    void setupMark( const QDomNode& node, Mark& mark);
+    void generateMarkPixmap( Mark& mark);
+
+    QVector<Mark> m_marks;
 };
 
 #endif

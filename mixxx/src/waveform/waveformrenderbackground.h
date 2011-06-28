@@ -1,19 +1,14 @@
 #ifndef WAVEFORMRENDERBACKGROUND_H
 #define WAVEFORMRENDERBACKGROUND_H
 
-#include <QObject>
 #include <QColor>
-#include <QVector>
 #include <QPixmap>
 
-//#include "renderobject.h"
 #include "waveformrendererabstract.h"
 
 class QDomNode;
 class QPainter;
 class QPaintEvent;
-
-class WaveformRenderer;
 
 class WaveformRenderBackground : public WaveformRendererAbstract {
 

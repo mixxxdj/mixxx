@@ -1,319 +1,298 @@
 
-#include <QDebug>
-#include <QColor>
-#include <QDomNode>
-#include <QPaintEvent>
 #include <QPainter>
-#include <QObject>
-#include <QVector>
+#include <QPainterPath>
 
 #include "waveformrendermark.h"
 
-#include "waveformrenderer.h"
-#include "configobject.h"
-#include "controlobjectthreadmain.h"
-#include "controlobject.h"
+#include "waveformwidgetrenderer.h"
 #include "widget/wskincolor.h"
-#include "widget/wwidget.h"
 #include "trackinfoobject.h"
+#include "widget/wwidget.h"
+#include "waveform.h"
+#include "controlobject.h"
 
-WaveformRenderMark::WaveformRenderMark(const char* pGroup,
-                                       WaveformRenderer *parent)
-        : m_pGroup(pGroup),
-          m_pParent(parent),
-          m_pMarkPoint(NULL),
-          m_pTrackSamples(NULL),
-          m_pTrack(NULL),
-          m_iMarkPoint(-1),
-          m_iWidth(0),
-          m_iHeight(0),
-          m_bHasCustomPixmap(false),
-          m_dSamplesPerDownsample(-1),
-          m_iNumSamples(0),
-          m_iSampleRate(-1) {
 
-    m_pTrackSamples = new ControlObjectThreadMain(
-        ControlObject::getControl(ConfigKey(pGroup,"track_samples")));
-    slotUpdateTrackSamples(m_pTrackSamples->get());
-    connect(m_pTrackSamples, SIGNAL(valueChanged(double)),
-            this, SLOT(slotUpdateTrackSamples(double)));
+WaveformRenderMark::WaveformRenderMark( WaveformWidgetRenderer* waveformWidgetRenderer) :
+    WaveformRendererAbstract(waveformWidgetRenderer)
+{
 }
 
-void WaveformRenderMark::slotUpdateMarkPoint(double v) {
-    //qDebug() << "WaveformRenderMark :: MarkPoint = " << v;
-    m_iMarkPoint = (int)v;
+void WaveformRenderMark::init()
+{
 }
 
-void WaveformRenderMark::slotUpdateTrackSamples(double samples) {
-    //qDebug() << "WaveformRenderMark :: samples = " << int(samples);
-    m_iNumSamples = (int)samples;
-}
+void WaveformRenderMark::setup( const QDomNode& node)
+{
+    m_marks.clear();
+    m_marks.reserve(32);
 
-void WaveformRenderMark::resize(int w, int h) {
-    m_iWidth = w;
-    m_iHeight = h;
-}
-
-void WaveformRenderMark::newTrack(TrackPointer pTrack) {
-    m_pTrack = pTrack;
-    m_iMarkPoint = -1;
-    m_iNumSamples = 0;
-    m_iSampleRate = 0;
-    m_dSamplesPerDownsample = -1;
-
-    if (!m_pTrack)
-        return;
-
-    // calculate beat info for this track:
-
-    int sampleRate = pTrack->getSampleRate();
-
-    // f = z * m * n
-    double m = m_pParent->getSubpixelsPerPixel();
-    double f = sampleRate;
-    double z = m_pParent->getPixelsPerSecond();
-    double n = f / (m*z);
-
-    m_iSampleRate = sampleRate;
-
-    m_dSamplesPerDownsample = n;
-
-    // TODO(rryan) This will possibly get us into trouble, because track samples
-    // might not be updated yet.
-    slotUpdateTrackSamples(m_pTrackSamples->get());
-    if (m_pMarkPoint)
-        slotUpdateMarkPoint(m_pMarkPoint->get());
-}
-
-void WaveformRenderMark::setup(QDomNode node) {
-    ConfigKey configKey;
-    configKey.group = m_pGroup;
-    configKey.item = WWidget::selectNodeQString(node, "Control");
-
-    if (m_pMarkPoint) {
-        // Disconnect the old control
-        disconnect(m_pMarkPoint, 0, this, 0);
-        delete m_pMarkPoint;
-        m_pMarkPoint = NULL;
+    QDomNode child = node.firstChild();
+    while (!child.isNull())
+    {
+        if (child.nodeName() == "Mark")
+        {
+            m_marks.push_back(Mark());
+            Mark& mark = m_marks.back();
+            setupMark(child,mark);
+        }
+        child = child.nextSibling();
     }
-
-    m_pMarkPoint = new ControlObjectThreadMain(
-        ControlObject::getControl(configKey));
-    slotUpdateMarkPoint(m_pMarkPoint->get());
-    connect(m_pMarkPoint, SIGNAL(valueChanged(double)),
-            this, SLOT(slotUpdateMarkPoint(double)));
-
-    // Read the mark color, otherwise get MarkerColor of the Visual element
-    QString markColor = WWidget::selectNodeQString(node, "Color");
-    if (markColor == "") {
-        // As a fallback, grab the mark color from the parent's MarkerColor
-        markColor = WWidget::selectNodeQString(node.parentNode(), "MarkerColor");
-        qDebug() << "Didn't get mark Color, using parent's MarkerColor:"
-                 << markColor;
-        m_markColor.setNamedColor(markColor);
-        // m_markColor = QColor(255 - m_markColor.red(),
-        //                      255 - m_markColor.green(),
-        //                      255 - m_markColor.blue());
-    } else {
-        m_markColor.setNamedColor(markColor);
-    }
-    m_markColor = WSkinColor::getCorrectColor(m_markColor);
-
-    // Read the text color, otherwise use the parent's BgColor.
-    QString textColor = WWidget::selectNodeQString(node, "TextColor");
-    if (textColor == "") {
-        textColor = WWidget::selectNodeQString(node.parentNode(), "BgColor");
-        qDebug() << "Didn't get mark TextColor, using parent's BgColor:"
-                 << textColor;
-        m_textColor.setNamedColor(textColor);
-        // m_textColor = QColor(255 - m_textColor.red(),
-        //                      255 - m_textColor.green(),
-        //                      255 - m_textColor.blue());
-    } else {
-        m_textColor.setNamedColor(textColor);
-    }
-    m_textColor = WSkinColor::getCorrectColor(m_textColor);
-
-    QString markAlign = WWidget::selectNodeQString(node, "Align");
-    if (markAlign.compare("center", Qt::CaseInsensitive) == 0) {
-        m_markAlign = WaveformRenderMark::CENTER;
-    } else if (markAlign.compare("bottom", Qt::CaseInsensitive) == 0) {
-        m_markAlign = WaveformRenderMark::BOTTOM;
-    } else {
-        // Default
-        m_markAlign = WaveformRenderMark::TOP;
-    }
-
-    // Read the mark's text
-    m_markText = WWidget::selectNodeQString(node, "Text");
-    m_markPixmapPath = WWidget::selectNodeQString(node,"Pixmap");
-
-    setupMarkPixmap();
 }
 
 
-void WaveformRenderMark::draw(QPainter *pPainter, QPaintEvent *event,
-                              QVector<float> *buffer, double dPlayPos,
-                              double rateAdjust) {
-    if (m_iSampleRate == -1 || m_iSampleRate == 0 || m_iNumSamples == 0)
-        return;
+void WaveformRenderMark::draw( QPainter* painter, QPaintEvent* event)
+{
+    painter->save();
+    painter->setRenderHint(QPainter::HighQualityAntialiasing);
 
-    // necessary?
-    if (buffer == NULL)
-        return;
+    /*
+    //DEBUG
+    for( int i = 0; i < m_markPoints.size(); i++)
+    {
+        if( m_waveformWidget->getTrackSamples())
+            painter->drawText(40*i,12+12*(i%3),QString::number(m_markPoints[i]->get() / (double)m_waveformWidget->getTrackSamples()));
+    }
+    */
 
-    double subpixelsPerPixel = m_pParent->getSubpixelsPerPixel()*(1.0+rateAdjust);
+    //make the painter in the track position 'world'
+    double h = m_waveformWidget->getHeight();
+    double w = m_waveformWidget->getWidth();
+    double s = m_waveformWidget->getFirstDisplayedPosition();
+    double e = m_waveformWidget->getLastDisplayedPosition();
 
-    pPainter->save();
-    pPainter->scale(1.0/subpixelsPerPixel,1.0);
-    QPen oldPen = pPainter->pen();
-    QBrush oldBrush = pPainter->brush();
+    float a = w/(e-s);
+    float b = -s;
 
-    double subpixelWidth = m_iWidth * subpixelsPerPixel;
-    double subpixelHalfWidth = subpixelWidth / 2.0;
-    double halfh = m_iHeight/2;
+    painter->scale(1.0,1.0);
+    painter->translate(0.0,0.0);
+    painter->setWorldMatrixEnabled(false);
 
-    if (m_iMarkPoint != -1) {
-        double markPointMono = m_iMarkPoint >> 1;
-        double curPos = dPlayPos * (m_iNumSamples/2);
-        double i = (markPointMono - curPos)/m_dSamplesPerDownsample;
+    double samplesPerPixel = m_waveformWidget->getVisualSamplePerPixel();
 
-        if (abs(i) < subpixelHalfWidth) {
-            double x = (i+subpixelHalfWidth);
-            QPen newPen = QPen(m_markColor);
-            newPen.setWidth(subpixelsPerPixel*2);
-            pPainter->setPen(newPen);
-            pPainter->drawLine(QLineF(x, halfh, x, -halfh));
+    for( int i = 0; i < m_marks.size(); i++)
+    {
+        Mark& mark = m_marks[i];
 
-            if (!m_bHasCustomPixmap) {
-                // If no custom pixmap is provided, draw triangles at top and
-                // bottom of the mark.
-                pPainter->setPen(m_markColor);
-                pPainter->setBrush(QBrush(m_markColor));
-                QPolygonF topTriangle;
-                QPolygonF bottomTriangle;
-                double triWidth = subpixelsPerPixel * 8.0;
-                double triHeight = 10.0;
-                topTriangle << QPointF(x - 1 - triWidth/2.0f, halfh)
-                            << QPointF(x + 1 + triWidth/2.0f, halfh)
-                            << QPointF(x, halfh - triHeight);
-                bottomTriangle << QPointF(x - triWidth/2.0f, -halfh)
-                               << QPointF(x + 1 + triWidth/2.0f, -halfh)
-                               << QPointF(x, -halfh + triHeight);
-                pPainter->drawPolygon(topTriangle);
-                pPainter->drawPolygon(bottomTriangle);
-            }
+        if( !mark.m_point)
+            continue;
 
-            if (!m_markPixmap.isNull()) {
-                pPainter->scale(subpixelsPerPixel, -1.0);
-                x = x / subpixelsPerPixel;
-                int pw = m_markPixmap.width();
-                int ph = m_markPixmap.height();
+        //Generate pixmap on first paint can't be done in setup since we need
+        //render widget to be resized yet ...
+        if( mark.m_pixmap.isNull())
+            generateMarkPixmap(mark);
 
-                // Draw the pixmap in the right place
-                switch (m_markAlign) {
-                    case WaveformRenderMark::BOTTOM:
-                        // Bottom
-                        pPainter->drawPixmap(x - pw/2.0, halfh - ph, m_markPixmap);
-                        break;
-                    case WaveformRenderMark::CENTER:
-                        // Center
-                        pPainter->drawPixmap(x - pw/2.0, 0 - ph/2.0, m_markPixmap);
-                        break;
-                    case WaveformRenderMark::TOP:
-                    default:
-                        // Top
-                        pPainter->drawPixmap(x - pw/2.0, -halfh + 2.0, m_markPixmap);
-                        break;
-                }
+        int samplePosition = mark.m_point->get();
+        if( samplePosition > 0.0)
+        {
+            //TODO vRince remove hard-coded visual resampling ratio (100)!!
+            samplePosition -= samplePosition%(2*(int)samplesPerPixel*100);
+            float currentMarkPoint = (float)samplePosition / (float)m_waveformWidget->getTrackSamples();
+
+            //check if the current point need to be displayed
+            if( m_waveformWidget->getFirstDisplayedPosition() < currentMarkPoint &&
+                    m_waveformWidget->getLastDisplayedPosition() > currentMarkPoint)
+            {
+                currentMarkPoint = a*(currentMarkPoint+b);
+                //NOTE: vRince i guess pixmap width is odd to display the center on the exact line !
+                //external pixmap should respect that ...
+                painter->drawPixmap(QPointF(currentMarkPoint-(float)mark.m_pixmap.width()/2.0f - 1.0,0.0f),
+                                    mark.m_pixmap);
             }
         }
     }
 
-    pPainter->setPen(oldPen);
-    pPainter->setBrush(oldBrush);
-    pPainter->restore();
+    painter->restore();
 }
 
-void WaveformRenderMark::setupMarkPixmap() {
+void WaveformRenderMark::setupMark( const QDomNode& node, Mark& mark)
+{
+    QString item = WWidget::selectNodeQString( node, "Control");
+    mark.m_point = ControlObject::getControl( ConfigKey(m_waveformWidget->getGroup(), item));
+
+    //if there is no control the mark won't be displayed anyway ...
+    if( mark.m_point == 0)
+        return;
+
+    mark.m_color = WWidget::selectNodeQString( node, "Color");
+    if( mark.m_color == "") {
+        // As a fallback, grab the mark color from the parent's MarkerColor
+        mark.m_color = WWidget::selectNodeQString(node.parentNode(), "MarkerColor");
+        qDebug() << "Didn't get mark Color, using parent's MarkerColor:" << mark.m_color;
+    }
+
+    mark.m_textColor = WWidget::selectNodeQString(node, "TextColor");
+    if( mark.m_textColor == "") {
+        // Read the text color, otherwise use the parent's BgColor.
+        mark.m_textColor = WWidget::selectNodeQString(node.parentNode(), "BgColor");
+        qDebug() << "Didn't get mark TextColor, using parent's BgColor:" << mark.m_textColor;
+    }
+
+    //vRince used contains to be able to add horizontal align soon
+
+    QString markAlign = WWidget::selectNodeQString(node, "Align");
+    if (markAlign.contains("center", Qt::CaseInsensitive) == 0) {
+        mark.m_align = Qt::AlignVCenter;
+    } else if (markAlign.contains("bottom", Qt::CaseInsensitive) == 0) {
+        mark.m_align = Qt::AlignBottom;
+    } else {
+        mark.m_align = Qt::AlignTop; // Default
+    }
+
+    mark.m_text = WWidget::selectNodeQString(node, "Text");
+    mark.m_pixmapPath = WWidget::selectNodeQString(node,"Pixmap");
+}
+
+void WaveformRenderMark::generateMarkPixmap( Mark& mark)
+{
     // Load the pixmap from file -- takes precedence over text.
-    if (m_markPixmapPath != "") {
+    if( mark.m_pixmapPath != "") {
         // TODO(XXX) We could use WPixmapStore here, which would recolor the
         // pixmap according to the theme. Then we would have to worry about
         // deleting it -- for now we'll just load the pixmap directly.
-        m_markPixmap = QPixmap(WWidget::getPath(m_markPixmapPath));
+        QString path =  WWidget::getPath(mark.m_pixmapPath);
+        mark.m_pixmap = QPixmap( path);
 
         // If loading the pixmap didn't fail, then we're done. Otherwise fall
         // through and render a label.
-        if (!m_markPixmap.isNull()) {
-            m_bHasCustomPixmap = true;
+        if( !mark.m_pixmap.isNull())
             return;
-        }
     }
+
+    QPainter painter;
+
+    int labelRectWidth = 0;
+    int labelRectHeight = 0;
 
     // If no text is provided, leave m_markPixmap as a null pixmap
-    if (m_markText == "") {
-        return;
+    if( !mark.m_text.isNull())
+    {
+        //QFont font("Bitstream Vera Sans");
+        //QFont font("Helvetica");
+        QFont font; // Uses the application default
+        font.setPointSize(8);
+        font.setStretch(80);
+
+        QFontMetrics metrics(font);
+
+        //fixed margin ...
+        QRect wordRect = metrics.tightBoundingRect(mark.m_text);
+        int marginX = 1;
+        int marginY = 1;
+        wordRect.moveTop(marginX+1);
+        wordRect.moveLeft(marginY+1);
+        wordRect.setWidth( wordRect.width() + (wordRect.width())%2);
+        //even wodrrect to have an event pixmap >> draw the line in the middle !
+
+        labelRectWidth = wordRect.width() + 2*marginX + 1;
+        labelRectHeight = wordRect.height() + 2*marginY + 1;
+
+        //vRince all the 0.5 stuff produce nicer rounded rectangle ... I don't know why !
+        QRectF labelRect(0.5,0.5,(float)labelRectWidth - 0.5f,(float)labelRectHeight - 0.5f);
+
+        //Vrince TODO
+        /*
+        switch(mark.m_align)
+        {
+        case Qt::AlignBottom : labelRect.moveBottom( mark.m_pixmap.height() - 0.5); break;
+        case Qt::AlignVCenter : labelRect.moveBottom( (mark.m_pixmap.height() + wordRect.height())/2.0 - 0.5); break; //vRince should we keep that ?
+        default : labelRect.moveTop( 0.5); break;
+        }
+        */
+
+        mark.m_pixmap = QPixmap(labelRectWidth+1, m_waveformWidget->getHeight());
+
+        // Fill with transparent pixels
+        mark.m_pixmap.fill(QColor(0,0,0,0));
+
+        painter.begin(&mark.m_pixmap);
+        painter.setRenderHint(QPainter::TextAntialiasing);
+
+        //vRince : Those produce wierd rounded rectangle and produce 2 pixel width vertical line !
+        //I prefer no antialiasing ...
+        //painter.setRenderHints(QPainter::Antialiasing,true);
+        //painter.setRenderHint(QPainter::HighQualityAntialiasing,true);
+
+        painter.setWorldMatrixEnabled(false);
+
+        //draw the label rect
+        QColor rectColor = mark.m_color;
+        rectColor.setAlpha(50);
+        rectColor.darker(100);
+        painter.setPen(rectColor);
+        painter.setBrush(QBrush(rectColor));
+        painter.drawRoundedRect(labelRect, 2.0, 2.0);
+
+        //draw text
+        painter.setBrush(QBrush(QColor(0,0,0,0)));
+        font.setWeight(40);
+        painter.setFont(font);
+        painter.setPen(mark.m_textColor);
+        painter.drawText(labelRect, Qt::AlignCenter, mark.m_text);
+
+        //draw line
+        QColor lineColor = mark.m_color;
+        lineColor.setAlpha(100);
+        painter.setPen(lineColor);
+
+        float middle = mark.m_pixmap.width()/2;
+        float lineTop = labelRectHeight + 1;
+        float lineBottom = mark.m_pixmap.height();
+
+        painter.drawLine( middle, lineTop, middle, lineBottom);
+
+        //othe lines to increase contrast
+        painter.setPen(QColor(0,0,0,150));
+        painter.drawLine( middle - 1, lineTop, middle - 1, lineBottom);
+        painter.drawLine( middle + 1, lineTop, middle + 1, lineBottom);
+
     }
+    else //no text draw triangle
+    {
+        float triangleSize = 9.0;
+        mark.m_pixmap = QPixmap(triangleSize+1, m_waveformWidget->getHeight());
+        mark.m_pixmap.fill(QColor(0,0,0,0));
 
-    //QFont font("Bitstream Vera Sans");
-    //QFont font("Helvetica");
-    QFont font; // Uses the application default
-    font.setPointSize(8);
-    //font.setWeight(QFont::Bold);
-    //font.setLetterSpacing(QFont::AbsoluteSpacing, -1);
+        painter.begin(&mark.m_pixmap);
+        painter.setRenderHint(QPainter::TextAntialiasing);
 
-    QFontMetrics metrics(font);
+        painter.setWorldMatrixEnabled(false);
 
-    // Add left and right margins of one characters worth (based on average
-    // pixels / character).
-    double wordWidth = metrics.boundingRect(m_markText).width();
-    double wordHeight = metrics.height();
+        QColor triangleColor = mark.m_color;
+        triangleColor.setAlpha(100);
+        painter.setPen(QColor(0,0,0,0));
+        painter.setBrush(QBrush(triangleColor));
 
-    // A sensible margin for the horizontal is a quarter of the average
-    // character width.
-    //int marginX = wordWidth/m_markText.size()/4;
-    //int marginX = metrics.maxWidth() / 4;
-    double marginX = metrics.averageCharWidth() / 4.0;
+        //vRicne: again don't ask about the +-0.1 0.5 ... just to make it pixel perfect in Qt ...
 
-    double marginY = 0; // .1 * wordHeight
+        QPolygonF triangle;
+        triangle.append(QPointF(0.5,0));
+        triangle.append(QPointF(triangleSize+0.5,0));
+        triangle.append(QPointF(triangleSize*0.5 + 0.1, triangleSize*0.5));
 
-    double markWidth = wordWidth + 2*marginX;
-    double markHeight = wordHeight + 2*marginY;
+        painter.drawPolygon(triangle);
 
-    QRectF internalRect(marginX, marginY, wordWidth-1, wordHeight-1);
-    QRectF externalRect(0, 0, markWidth-1, markHeight-1);
+        triangle.clear();
+        triangle.append(QPointF(0.0,mark.m_pixmap.height()));
+        triangle.append(QPointF(triangleSize+0.5,mark.m_pixmap.height()));
+        triangle.append(QPointF(triangleSize*0.5 + 0.1, mark.m_pixmap.height() - triangleSize*0.5 - 2.1));
 
-    m_markPixmap = QPixmap(markWidth, markHeight);
+        painter.drawPolygon(triangle);
 
-    // Fill with transparent pixels
-    m_markPixmap.fill(QColor(0,0,0,0));
+        //TODO vRince duplicated code make a method
+        //draw line
+        QColor lineColor = mark.m_color;
+        lineColor.setAlpha(100);
+        painter.setPen(lineColor);
+        float middle = mark.m_pixmap.width()/2;
 
-    QPainter painter(&m_markPixmap);
-    painter.setRenderHint(QPainter::TextAntialiasing);
-    //painter.setRenderHint(QPainter::Antialiasing);
-    painter.setRenderHint(QPainter::HighQualityAntialiasing);
-    painter.setBackgroundMode(Qt::TransparentMode);
-    painter.setFont(font);
-    QColor color = m_textColor;
-    color = QColor(0xff - color.red(),
-                   0xff - color.green(),
-                   0xff - color.blue(),
-                   128);
-    painter.setPen(color);
-    painter.setBrush(QBrush(color));
+        float lineTop = triangleSize*0.5 + 1;
+        float lineBottom = mark.m_pixmap.height() - triangleSize*0.5 - 1;
 
-    // Stuff to test that the rectangles are correct.
-    //painter.setBrush(QBrush());
-    //painter.drawRect(externalRect);
-    //painter.drawRect(internalRect);
+        painter.drawLine( middle, lineTop, middle, lineBottom);
 
-    //painter.setBrush(QBrush());
-    //painter.drawRoundedRect(externalRect, 25, 60, Qt::RelativeSize);
-    painter.drawRoundedRect(externalRect, 2, 2);
-
-    painter.setPen(m_textColor);
-    painter.drawText(internalRect,
-                     Qt::AlignCenter,
-                     m_markText);
+        //othe lines to increase contrast
+        painter.setPen(QColor(0,0,0,150));
+        painter.drawLine( middle - 1, lineTop, middle - 1, lineBottom);
+        painter.drawLine( middle + 1, lineTop, middle + 1, lineBottom);
+    }
 }

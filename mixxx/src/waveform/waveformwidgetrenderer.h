@@ -27,6 +27,9 @@ public:
     const char* getGroup() const { return m_group;}
     const TrackPointer getTrackInfo() const { return m_trackInfoObject;}
 
+    double getFirstDisplayedPosition() const { return m_firstDisplayedPosition;}
+    double getLastDisplayedPosition() const { return m_lastDisplayedPosition;}
+
     bool zoomIn();
     bool zoomOut();
     float getVisualSamplePerPixel();
@@ -35,12 +38,7 @@ public:
     double getZoomFactor() const { m_zoomFactor;}
     double getRateAdjust() const { return m_rateAdjust;}
     double getGain() const { return m_gain;}
-    double getLowFilterGain() const { return m_lowFilterGain;}
-    double getMidFilterGain() const { return m_midFilterGain;}
-    double getHighFilterGain() const { return m_highFilterGain;}
-    bool isLowKilled() const { return m_lowKill;}
-    bool isMidKilled() const { return m_midKill;}
-    bool isHighKilled() const { return m_highKill;}
+    int getTrackSamples() const { return m_trackSamples;}
 
     void resize( int width, int height);
     int getHeight() const { return m_height;}
@@ -58,6 +56,9 @@ protected:
     int m_height;
     int m_width;
 
+    double m_firstDisplayedPosition;
+    double m_lastDisplayedPosition;
+
     double m_rateAdjust;
     double m_zoomFactor;
 
@@ -73,18 +74,8 @@ protected:
     double m_rateDir;
     ControlObject* m_gainControlObject;
     double m_gain;
-    ControlObject* m_lowFilterControlObject;
-    double m_lowFilterGain;
-    ControlObject* m_lowKillControlObject;
-    bool m_lowKill;
-    ControlObject* m_midFilterControlObject;
-    double m_midFilterGain;
-    ControlObject* m_midKillControlObject;
-    bool m_midKill;
-    ControlObject* m_highFilterControlObject;
-    double m_highFilterGain;
-    ControlObject* m_highKillControlObject;
-    bool m_highKill;
+    ControlObject* m_trackSamplesControlObject;
+    int m_trackSamples;
 
     //Debug
     QTime* m_timer;

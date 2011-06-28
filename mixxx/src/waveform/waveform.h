@@ -15,6 +15,9 @@ public:
     Waveform();
     virtual ~Waveform();
 
+    void setSampleRate( double sample) { m_sampleRate = sample;}
+    double getSampleRate() const { m_sampleRate;}
+
     int size() const { return m_data[NotFiltered].size();}
 
     void resize( int size);
@@ -34,6 +37,7 @@ private:
 
 private:
     QVector<unsigned char> m_data[FilteredTypeCount];
+    double m_sampleRate;
 
     friend class AnalyserWaveform;
 };
