@@ -42,6 +42,7 @@ void AnalyserWaveform::initialise(TrackPointer tio, int sampleRate, int totalSam
         return;  //?
     }
 
+    //TODO vRince remove hard-coded visual sample rate
     double visualResampleRate = 441;/*tio->getVisualResampleRate();*/
     double n = double(sampleRate) / visualResampleRate;
 
@@ -77,6 +78,7 @@ void AnalyserWaveform::initialise(TrackPointer tio, int sampleRate, int totalSam
     tio->setVisualWaveform(downsample);
 
     m_waveform = tio->getWaveForm();
+    m_waveform->setSampleRate(sampleRate);
     m_waveform->assign(numberOfVisualSamples,0);
 
     m_iStrideLength = samplesPerDownsample*2;

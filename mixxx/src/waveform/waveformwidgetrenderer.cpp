@@ -1,9 +1,9 @@
 #include "waveformwidgetrenderer.h"
+#include "waveform.h"
 
 #include "controlobjectthreadmain.h"
 #include "controlobject.h"
 
-#include "waveformrenderbackground.h"
 
 #include <QPainter>
 
@@ -14,6 +14,9 @@ WaveformWidgetRenderer::WaveformWidgetRenderer( const char* group) :
     m_width(-1)
 {
     m_timer = new QTime();
+
+    m_firstDisplayedPosition = 0.0;
+    m_lastDisplayedPosition = 0.0;
 
     m_zoomFactor = 2.0;
     m_rateAdjust = 0.0;
@@ -29,18 +32,8 @@ WaveformWidgetRenderer::WaveformWidgetRenderer( const char* group) :
     m_rateDir = 0.0;
     m_gainControlObject = 0;
     m_gain = 1.0;
-    m_lowFilterControlObject = 0;
-    m_lowFilterGain = 1.0;
-    m_midFilterControlObject = 0;
-    m_midFilterGain = 1.0;
-    m_highFilterControlObject = 0;
-    m_highFilterGain = 1.0;
-    m_lowKillControlObject = 0;
-    m_lowKill = false;
-    m_midKillControlObject = 0;
-    m_midKill = false;
-    m_highKillControlObject = 0;
-    m_highKill = false;
+    m_trackSamplesControlObject = 0;
+    m_trackSamples = 0;
 
     //debug
     currentFrame = 0;
@@ -71,12 +64,7 @@ void WaveformWidgetRenderer::init()
     m_rateRangeControlObject = ControlObject::getControl( ConfigKey(m_group,"rate_dir"));
     m_rateDirControlObject = ControlObject::getControl( ConfigKey(m_group,"rateRange"));
     m_gainControlObject = ControlObject::getControl( ConfigKey(m_group,"total_gain"));
-    m_lowFilterControlObject = ControlObject::getControl( ConfigKey(m_group,"filterLow"));
-    m_midFilterControlObject = ControlObject::getControl( ConfigKey(m_group,"filterMid"));
-    m_highFilterControlObject = ControlObject::getControl( ConfigKey(m_group,"filterHigh"));
-    m_lowKillControlObject = ControlObject::getControl( ConfigKey(m_group,"filterLowKill"));
-    m_midKillControlObject = ControlObject::getControl( ConfigKey(m_group,"filterMidKill"));
-    m_highKillControlObject = ControlObject::getControl( ConfigKey(m_group,"filterHighKill"));
+    m_trackSamplesControlObject = ControlObject::getControl( ConfigKey(m_group, "track_samples"));
 
     for( int i = 0; i < m_rendererStack.size(); ++i)
         m_rendererStack[i]->init();
@@ -93,12 +81,18 @@ void WaveformWidgetRenderer::draw( QPainter* painter, QPaintEvent* event)
     m_rateDir = m_rateDirControlObject->get();
     m_rateRange = m_rateRangeControlObject->get();
     m_gain = m_gainControlObject->get();
-    m_lowFilterGain = m_lowFilterControlObject->get();
-    m_midFilterGain = m_midFilterControlObject->get();
-    m_highFilterGain = m_highFilterControlObject->get();
-    m_lowKill = m_lowKillControlObject->get() > 0.1;
-    m_midKill = m_midKillControlObject->get() > 0.1;
-    m_highKill = m_highKillControlObject->get() > 0.1;
+
+    if(m_trackInfoObject)
+    {
+        double displayedLength = (double)m_width * getVisualSamplePerPixel() / (0.5*(double)m_trackInfoObject->getWaveForm()->size());
+        m_firstDisplayedPosition = m_playPos - displayedLength / 2.0;
+        m_lastDisplayedPosition = m_playPos + displayedLength / 2.0;
+    }
+    else
+    {
+        m_firstDisplayedPosition = 0.0;
+        m_lastDisplayedPosition = 0.0;
+    }
 
     //Legacy stuff (Ryan it that OK?)
     //Limit our rate adjustment to < 99%, "Bad Things" might happen otherwise.
@@ -120,6 +114,7 @@ void WaveformWidgetRenderer::draw( QPainter* painter, QPaintEvent* event)
     }
 
     //hud debug display
+    /*
     painter->drawText(1,12,
                       QString::number(m_lastFrameTime).rightJustified(2,'0') + "(" +
                       QString::number(frameMax).rightJustified(2,'0') + ")" +
@@ -127,12 +122,11 @@ void WaveformWidgetRenderer::draw( QPainter* painter, QPaintEvent* event)
                       QString::number(systemMax) + ")");
 
     painter->drawText(1,m_height-1,
-                      QString::number(m_playPos) + " | " +
+                      QString::number(m_playPos) + " [" +
+                      QString::number(m_firstDisplayedPosition) + "-" +
+                      QString::number(m_lastDisplayedPosition) + "]" +
                       QString::number(m_rate) + " | " +
-                      QString::number(m_gain) + " | " +
-                      QString::number(m_lowFilterGain) + " | " +
-                      QString::number(m_midFilterGain) + " | " +
-                      QString::number(m_highFilterGain));
+                      QString::number(m_gain));
 
     m_lastFrameTime = m_timer->elapsed();
     m_timer->restart();
@@ -141,6 +135,7 @@ void WaveformWidgetRenderer::draw( QPainter* painter, QPaintEvent* event)
     currentFrame = currentFrame%100;
     m_lastSystemFramesTime[currentFrame] = m_lastSystemFrameTime;
     m_lastFramesTime[currentFrame] = m_lastFrameTime;
+    */
 }
 
 void WaveformWidgetRenderer::resize( int width, int height)
@@ -173,7 +168,7 @@ bool WaveformWidgetRenderer::zoomIn()
 
 bool WaveformWidgetRenderer::zoomOut()
 {
-    if( m_zoomFactor > 4.9) //limit zoom to 500%
+    if( m_zoomFactor > 4.9) //limit zoom to 400%
         return false;
 
     m_zoomFactor += 1.0;
@@ -191,6 +186,10 @@ void WaveformWidgetRenderer::setTrack(TrackPointer track)
 {
     m_trackInfoObject = track;
     m_playPos = 0.0;
+    if( track.data() && m_trackSamplesControlObject)
+        m_trackSamples = (int)m_trackSamplesControlObject->get();
+    else
+        m_trackSamples = 0;
 }
 
 

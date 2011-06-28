@@ -5,6 +5,7 @@
 #include "trackinfoobject.h"
 #include "widget/wwidget.h"
 #include "waveform.h"
+#include "controlobject.h"
 
 #include <QLinearGradient>
 #include <QLineF>
@@ -12,10 +13,23 @@
 GLWaveformRendererFilteredSignal::GLWaveformRendererFilteredSignal( WaveformWidgetRenderer* waveformWidgetRenderer) :
     WaveformRendererAbstract( waveformWidgetRenderer)
 {
+    m_lowFilterControlObject = 0;
+    m_midFilterControlObject = 0;
+    m_highFilterControlObject = 0;
+    m_lowKillControlObject = 0;
+    m_midKillControlObject = 0;
+    m_highKillControlObject = 0;
 }
 
 void GLWaveformRendererFilteredSignal::init()
 {
+    //create controls
+    m_lowFilterControlObject = ControlObject::getControl( ConfigKey(m_waveformWidget->getGroup(),"filterLow"));
+    m_midFilterControlObject = ControlObject::getControl( ConfigKey(m_waveformWidget->getGroup(),"filterMid"));
+    m_highFilterControlObject = ControlObject::getControl( ConfigKey(m_waveformWidget->getGroup(),"filterHigh"));
+    m_lowKillControlObject = ControlObject::getControl( ConfigKey(m_waveformWidget->getGroup(),"filterLowKill"));
+    m_midKillControlObject = ControlObject::getControl( ConfigKey(m_waveformWidget->getGroup(),"filterMidKill"));
+    m_highKillControlObject = ControlObject::getControl( ConfigKey(m_waveformWidget->getGroup(),"filterHighKill"));
 }
 
 void GLWaveformRendererFilteredSignal::setup( const QDomNode& node)
@@ -52,22 +66,22 @@ void GLWaveformRendererFilteredSignal::setup( const QDomNode& node)
     m_highBrush = QBrush(gradientHigh);
 
     QLinearGradient gradientKilledLow(QPointF(0.0,-255.0/2.0),QPointF(0.0,255.0/2.0));
-    gradientKilledLow.setColorAt(0.0, QColor::fromHsl(h,s,30,50));
+    gradientKilledLow.setColorAt(0.0, QColor::fromHsl(h,s,30,80));
     gradientKilledLow.setColorAt(0.5, QColor(200,200,200,10));
-    gradientKilledLow.setColorAt(1.0, QColor::fromHsl(h,s,30,50));
+    gradientKilledLow.setColorAt(1.0, QColor::fromHsl(h,s,30,70));
     m_lowKilledBrush = QBrush(gradientKilledLow);
 
     QLinearGradient gradientKilledMid(QPointF(0.0,-255.0/2.0),QPointF(0.0,255.0/2.0));
-    gradientKilledMid.setColorAt(0.0, QColor::fromHsl(h-5,s, 80,50));
+    gradientKilledMid.setColorAt(0.0, QColor::fromHsl(h-5,s, 80,80));
     gradientKilledMid.setColorAt(0.5, QColor(200,200,200,10));
-    gradientKilledMid.setColorAt(1.0, QColor::fromHsl(h-5,s, 80,50));
+    gradientKilledMid.setColorAt(1.0, QColor::fromHsl(h-5,s, 80,70));
     m_midKilledBrush = QBrush(gradientKilledMid);
 
     QLinearGradient gradientKilledHigh(QPointF(0.0,-255.0/2.0),QPointF(0.0,255.0/2.0));
-    gradientKilledHigh.setColorAt(0.0, QColor::fromHsl(h+5,s,180,50));
+    gradientKilledHigh.setColorAt(0.0, QColor::fromHsl(h+5,s,180,80));
     gradientKilledHigh.setColorAt(0.5, QColor(200,200,200,10));
-    gradientKilledHigh.setColorAt(1.0, QColor::fromHsl(h+5,s,180,50));
-    m_highKilledBrush = QBrush(gradientKilledHigh);;
+    gradientKilledHigh.setColorAt(1.0, QColor::fromHsl(h+5,s,180,70));
+    m_highKilledBrush = QBrush(gradientKilledHigh);
 }
 
 void GLWaveformRendererFilteredSignal::draw(QPainter *painter, QPaintEvent *event)
@@ -129,9 +143,19 @@ void GLWaveformRendererFilteredSignal::draw(QPainter *painter, QPaintEvent *even
                 maxHigh = std::max( maxHigh, waveform->getConstHighData()[thisIndex+sampleIndex]);
             }
 
-            polygon[0].push_back(QPointF(xPos,(float)maxLow*m_waveformWidget->getLowFilterGain()));
-            polygon[1].push_back(QPointF(xPos,(float)maxBand*m_waveformWidget->getMidFilterGain()));
-            polygon[2].push_back(QPointF(xPos,(float)maxHigh*m_waveformWidget->getHighFilterGain()));
+            if( m_lowFilterControlObject && m_midFilterControlObject && m_highFilterControlObject)
+            {
+                polygon[0].push_back(QPointF(xPos,(float)maxLow*m_lowFilterControlObject->get()));
+                polygon[1].push_back(QPointF(xPos,(float)maxBand*m_midFilterControlObject->get()));
+                polygon[2].push_back(QPointF(xPos,(float)maxHigh*m_highFilterControlObject->get()));
+            }
+            else
+            {
+                //if for some reason we don't have controls
+                polygon[0].push_back(QPointF(xPos,(float)maxLow));
+                polygon[1].push_back(QPointF(xPos,(float)maxBand));
+                polygon[2].push_back(QPointF(xPos,(float)maxHigh));
+            }
         }
         else
         {
@@ -162,9 +186,19 @@ void GLWaveformRendererFilteredSignal::draw(QPainter *painter, QPaintEvent *even
                 maxHigh = std::max( maxHigh, waveform->getConstHighData()[thisIndex+sampleIndex+1]);
             }
 
-            polygon[0].push_back(QPointF(xPos,-(float)maxLow*m_waveformWidget->getLowFilterGain()));
-            polygon[1].push_back(QPointF(xPos,-(float)maxBand*m_waveformWidget->getMidFilterGain()));
-            polygon[2].push_back(QPointF(xPos,-(float)maxHigh*m_waveformWidget->getHighFilterGain()));
+            if( m_lowFilterControlObject && m_midFilterControlObject && m_highFilterControlObject)
+            {
+                polygon[0].push_back(QPointF(xPos,-(float)maxLow*m_lowFilterControlObject->get()));
+                polygon[1].push_back(QPointF(xPos,-(float)maxBand*m_midFilterControlObject->get()));
+                polygon[2].push_back(QPointF(xPos,-(float)maxHigh*m_highFilterControlObject->get()));
+            }
+            else
+            {
+                //if for some reason we don't have controls
+                polygon[0].push_back(QPointF(xPos,-(float)maxLow));
+                polygon[1].push_back(QPointF(xPos,-(float)maxBand));
+                polygon[2].push_back(QPointF(xPos,-(float)maxHigh));
+            }
         }
         else
         {
@@ -179,7 +213,7 @@ void GLWaveformRendererFilteredSignal::draw(QPainter *painter, QPaintEvent *even
     polygon[2].push_back(QPointF(0.0,0.0));
 
 
-    if( m_waveformWidget->isLowKilled())
+    if( m_lowKillControlObject && m_lowKillControlObject->get() > 0.1)
     {
         painter->setPen( QPen( m_lowKilledBrush, 0.0));
         painter->setBrush(QColor(150,150,150,20));
@@ -192,7 +226,7 @@ void GLWaveformRendererFilteredSignal::draw(QPainter *painter, QPaintEvent *even
     painter->drawPolygon(polygon[0].data(),polygon[0].size());
 
 
-    if( m_waveformWidget->isMidKilled())
+    if( m_midKillControlObject && m_midKillControlObject->get() > 0.1)
     {
         painter->setPen( QPen( m_midKilledBrush, 0.0));
         painter->setBrush(QColor(150,150,150,20));
@@ -204,7 +238,7 @@ void GLWaveformRendererFilteredSignal::draw(QPainter *painter, QPaintEvent *even
     }
     painter->drawPolygon(polygon[1].data(),polygon[1].size());
 
-    if( m_waveformWidget->isHighKilled())
+    if( m_highKillControlObject && m_highKillControlObject->get() > 0.1)
     {
         painter->setPen( QPen( m_highKilledBrush, 0.0));
         painter->setBrush(QColor(150,150,150,20));

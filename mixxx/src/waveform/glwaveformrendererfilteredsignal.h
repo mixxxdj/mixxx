@@ -5,6 +5,8 @@
 
 #include <QBrush>
 
+class ControlObject;
+
 class GLWaveformRendererFilteredSignal : public WaveformRendererAbstract
 {
 public:
@@ -15,6 +17,14 @@ public:
     virtual void draw(QPainter* painter, QPaintEvent* event);
 
 private:
+    ControlObject* m_lowFilterControlObject;
+    ControlObject* m_midFilterControlObject;
+    ControlObject* m_highFilterControlObject;
+
+    ControlObject* m_lowKillControlObject;
+    ControlObject* m_midKillControlObject;
+    ControlObject* m_highKillControlObject;
+
     QColor m_signalColor;
     QBrush m_lowBrush;
     QBrush m_midBrush;
