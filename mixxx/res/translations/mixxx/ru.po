@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2011-05-03 21:42-0400\n"
-"PO-Revision-Date: 2011-06-05 13:49+0000\n"
-"Last-Translator: Elyja <Unknown>\n"
+"PO-Revision-Date: 2011-06-28 17:20+0000\n"
+"Last-Translator: Oleksiy  Zaytsev <Unknown>\n"
 "Language-Team: Russian <ru@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-06-06 04:34+0000\n"
-"X-Generator: Launchpad (build 12959)\n"
+"X-Launchpad-Export-Date: 2011-06-29 04:40+0000\n"
+"X-Generator: Launchpad (build 13168)\n"
 
 #: AutoDJFeature#1
 msgid "Auto DJ"
@@ -23,17 +23,17 @@ msgstr "Автоматический диджеинг"
 
 #: BaseSqlTableModel#1
 msgid "Played"
-msgstr "Воспроизведённые"
+msgstr "сыграно"
 
 #: BaseSqlTableModel#2
 msgctxt "BaseSqlTableModel#2"
 msgid "Artist"
-msgstr "Исполнитель"
+msgstr "Артист"
 
 #: BaseSqlTableModel#3
 msgctxt "BaseSqlTableModel#3"
 msgid "Title"
-msgstr "Название"
+msgstr "Заголовок"
 
 #: BaseSqlTableModel#4
 msgctxt "BaseSqlTableModel#4"
@@ -43,7 +43,7 @@ msgstr "Альбом"
 #: BaseSqlTableModel#5
 msgctxt "BaseSqlTableModel#5"
 msgid "Genre"
-msgstr "Жанр"
+msgstr "Стиль"
 
 #: BaseSqlTableModel#6
 msgctxt "BaseSqlTableModel#6"
@@ -58,26 +58,26 @@ msgstr "Тип"
 #: BaseSqlTableModel#8
 msgctxt "BaseSqlTableModel#8"
 msgid "Location"
-msgstr "Размещение"
+msgstr "Местоположение"
 
 #: BaseSqlTableModel#9
 msgctxt "BaseSqlTableModel#9"
 msgid "Comment"
-msgstr "Описание"
+msgstr "Комментарий"
 
 #: BaseSqlTableModel#10
 msgctxt "BaseSqlTableModel#10"
 msgid "Duration"
-msgstr "Длительность"
+msgstr "Продолжительность"
 
 #: BaseSqlTableModel#11
 msgid "Rating"
-msgstr "Оценка"
+msgstr "Рейтинг"
 
 #: BaseSqlTableModel#12
 msgctxt "BaseSqlTableModel#12"
 msgid "Bitrate"
-msgstr "Частота бит"
+msgstr "Скорость потока"
 
 #: BaseSqlTableModel#13
 msgctxt "BaseSqlTableModel#13"
@@ -100,7 +100,7 @@ msgstr "№"
 #: BaseSqlTableModel#17
 msgctxt "BaseSqlTableModel#17"
 msgid "Key"
-msgstr "Тональность"
+msgstr "Ключ"
 
 #: BaseTrackPlayer#1
 msgid "Couldn't load track."
@@ -112,11 +112,11 @@ msgstr "Быстрые ссылки"
 
 #: BrowseFeature#2
 msgid "Devices"
-msgstr "Оборудование"
+msgstr "Носители"
 
 #: BrowseFeature#3
 msgid "Removable Devices"
-msgstr "Съёмные устройства"
+msgstr "Съемные носители"
 
 #: BrowseFeature#4
 msgctxt "BrowseFeature#4"
@@ -175,7 +175,7 @@ msgstr "Год"
 #: BrowseTableModel#7
 msgctxt "BrowseTableModel#7"
 msgid "Genre"
-msgstr "Жанр"
+msgstr "Стиль"
 
 #: BrowseTableModel#8
 msgctxt "BrowseTableModel#8"
@@ -522,7 +522,7 @@ msgstr "Имя файла:"
 #: DlgBpmTapDlg#23
 msgctxt "DlgBpmTapDlg#23"
 msgid "3:00"
-msgstr ""
+msgstr "3:00"
 
 #: DlgBpmTapDlg#24
 msgid "Play Time:"
@@ -536,7 +536,7 @@ msgstr "Тип файла:"
 #: DlgBpmTapDlg#26
 msgctxt "DlgBpmTapDlg#26"
 msgid "77"
-msgstr ""
+msgstr "77"
 
 #: DlgMidiLearning#1
 msgid "Skip"
@@ -695,7 +695,7 @@ msgstr "Эта обложка не поддерживает схемы."
 
 #: DlgPrefControls#2
 msgid "8% (Technics SL1210)"
-msgstr ""
+msgstr "8% (Technics SL1210)"
 
 #: DlgPrefControls#3
 msgid "10%"
@@ -1338,6 +1338,8 @@ msgid ""
 "Support Mixxx by counting and sharing bundled songs\n"
 "playback and outbound link statistics"
 msgstr ""
+"Поддержка Mixxx путем подсчета и обменa комплектa песен\n"
+"Воспроизведение и исходящих статистику ссылoк."
 
 #: DlgPrefRecord#1
 msgid "kbps"
@@ -1749,7 +1751,7 @@ msgstr "Частота выборки"
 
 #: DlgPrefSoundDlg#3
 msgid "Latency Tips"
-msgstr ""
+msgstr "невыявленные типы"
 
 #: DlgPrefSoundDlg#4
 msgid ""
@@ -1784,7 +1786,7 @@ msgstr "По умолчанию"
 #: DlgPrefSoundDlg#9
 msgctxt "DlgPrefSoundDlg#9"
 msgid "Apply"
-msgstr ""
+msgstr "Применить"
 
 #: DlgPrefSoundDlg#10
 msgid "Latency"
@@ -1810,7 +1812,7 @@ msgstr "Тип (#)"
 #: DlgPrefVinylDlg#1
 msgctxt "DlgPrefVinylDlg#1"
 msgid "Form1"
-msgstr ""
+msgstr "Форма1"
 
 #: DlgPrefVinylDlg#2
 msgctxt "DlgPrefVinylDlg#2"
@@ -1832,6 +1834,17 @@ msgid ""
 "weight:600;\">Select sound devices for vinyl control in the Sound Hardware "
 "pane.</span></p></body></html>"
 msgstr ""
+"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" "
+"\"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+"<html><head><meta name=\"qrichtext\" content=\"1\" /><style "
+"type=\"text/css\">\n"
+"p, li { white-space: pre-wrap; }\n"
+"</style></head><body style=\" font-family:'DejaVu Sans'; font-size:9pt; font-"
+"weight:400; font-style:normal;\">\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-"
+"right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-"
+"weight:600;\">Выберите звуковые устройства для управления винилом в окне "
+"звукового обрудования.</span></p></body></html>"
 
 #: DlgPrefVinylDlg#4
 msgctxt "DlgPrefVinylDlg#4"
@@ -1847,32 +1860,32 @@ msgstr ""
 #: DlgPrefVinylDlg#5
 msgctxt "DlgPrefVinylDlg#5"
 msgid "Turntable Preamp"
-msgstr ""
+msgstr "Проигрыватель предуселителя"
 
 #: DlgPrefVinylDlg#6
 msgctxt "DlgPrefVinylDlg#6"
 msgid "1 (Off)"
-msgstr ""
+msgstr "1 (Выкл.)"
 
 #: DlgPrefVinylDlg#7
 msgctxt "DlgPrefVinylDlg#7"
 msgid "150"
-msgstr ""
+msgstr "150"
 
 #: DlgPrefVinylDlg#8
 msgctxt "DlgPrefVinylDlg#8"
 msgid "Vinyl Configuration"
-msgstr ""
+msgstr "Конфигурирование винила"
 
 #: DlgPrefVinylDlg#9
 msgctxt "DlgPrefVinylDlg#9"
 msgid "Deck 1 Vinyl Type"
-msgstr ""
+msgstr "Дек 1 Вид Винила"
 
 #: DlgPrefVinylDlg#10
 msgctxt "DlgPrefVinylDlg#10"
 msgid "Deck 2 Vinyl Type"
-msgstr ""
+msgstr "Дек 2 Вид Винила"
 
 #: DlgPrefVinylDlg#11
 msgctxt "DlgPrefVinylDlg#11"
@@ -1882,7 +1895,7 @@ msgstr "Применить"
 #: DlgPrefVinylDlg#12
 msgctxt "DlgPrefVinylDlg#12"
 msgid "Lead-in time"
-msgstr ""
+msgstr "Время вступления"
 
 #: DlgPrefVinylDlg#13
 msgctxt "DlgPrefVinylDlg#13"
@@ -1892,17 +1905,17 @@ msgstr "секунд(ы)"
 #: DlgPrefVinylDlg#14
 msgctxt "DlgPrefVinylDlg#14"
 msgid "Control Mode"
-msgstr ""
+msgstr "Режим управления"
 
 #: DlgPrefVinylDlg#15
 msgctxt "DlgPrefVinylDlg#15"
 msgid "Absolute Mode"
-msgstr ""
+msgstr "Абсолютный режим"
 
 #: DlgPrefVinylDlg#16
 msgctxt "DlgPrefVinylDlg#16"
 msgid "Relative Mode"
-msgstr ""
+msgstr "Относительный режим"
 
 #: DlgPrefVinylDlg#17
 msgctxt "DlgPrefVinylDlg#17"
@@ -1912,7 +1925,7 @@ msgstr "Включить Защиту от Заикания Иглы"
 #: DlgPrefVinylDlg#18
 msgctxt "DlgPrefVinylDlg#18"
 msgid "Signal Quality"
-msgstr ""
+msgstr "Качество сигнала"
 
 #: DlgPrefVinylDlg#19
 msgctxt "DlgPrefVinylDlg#19"
@@ -2019,11 +2032,11 @@ msgstr "Анализирование %1%"
 #: DlgRecording#1
 msgctxt "DlgRecording#1"
 msgid "Manage"
-msgstr ""
+msgstr "Управлять"
 
 #: DlgRecording#2
 msgid "Status:"
-msgstr ""
+msgstr "Статус"
 
 #: DlgRecording#3
 msgid "Start Recording"
@@ -2031,7 +2044,7 @@ msgstr "Начать запись"
 
 #: DlgRecording#4
 msgid "Start recording here ..."
-msgstr ""
+msgstr "Начало записи здесь ..."
 
 #: DlgRecording#5
 msgid "Stop Recording"
@@ -2085,7 +2098,7 @@ msgstr "Длительность:"
 #: DlgTrackInfo#11
 msgctxt "DlgTrackInfo#11"
 msgid "3:00"
-msgstr ""
+msgstr "3:00"
 
 #: DlgTrackInfo#12
 msgctxt "DlgTrackInfo#12"
@@ -2095,7 +2108,7 @@ msgstr "Тип файла:"
 #: DlgTrackInfo#13
 msgctxt "DlgTrackInfo#13"
 msgid "77"
-msgstr ""
+msgstr "77"
 
 #: DlgTrackInfo#14
 msgctxt "DlgTrackInfo#14"
@@ -2117,7 +2130,7 @@ msgstr "Дорожка уд./мин.: "
 
 #: DlgTrackInfo#18
 msgid "x2"
-msgstr ""
+msgstr "x2"
 
 #: DlgTrackInfo#19
 msgid "/2"
@@ -2125,7 +2138,7 @@ msgstr "/2"
 
 #: DlgTrackInfo#20
 msgid "Tap to Beat"
-msgstr ""
+msgstr "Нажмите чтобы выбрать ритм."
 
 #: DlgTrackInfo#21
 msgid "Hint: Use the Library Analyze view to run BPM detection."
@@ -2181,7 +2194,7 @@ msgstr "&Отменить"
 #: DlgTrackInfo#33
 msgctxt "DlgTrackInfo#33"
 msgid "Alt+O"
-msgstr ""
+msgstr "Alt+О"
 
 #: DlgTrackInfo#34
 msgid "&Next >>"
@@ -2360,7 +2373,7 @@ msgstr "Тип состояния Midi"
 #: MidiInputMappingTableModel#2
 msgctxt "MidiInputMappingTableModel#2"
 msgid "Midi Note"
-msgstr ""
+msgstr "Нота MIDI"
 
 #: MidiInputMappingTableModel#3
 msgctxt "MidiInputMappingTableModel#3"
@@ -2416,7 +2429,7 @@ msgstr "Состояние Midi"
 #: MidiOutputMappingTableModel#2
 msgctxt "MidiOutputMappingTableModel#2"
 msgid "Midi Note"
-msgstr ""
+msgstr "Нота MIDI"
 
 #: MidiOutputMappingTableModel#3
 msgctxt "MidiOutputMappingTableModel#3"
@@ -2480,7 +2493,7 @@ msgstr "Mixxx "
 
 #: MixxxApp#2
 msgid "Mixxx"
-msgstr ""
+msgstr "Mixxx"
 
 #: MixxxApp#3
 msgid ""
@@ -2623,7 +2636,7 @@ msgstr "&Загрузить композицию (Проигрыватель 1).
 
 #: MixxxApp#22
 msgid "Ctrl+O"
-msgstr ""
+msgstr "Ctrl+О"
 
 #: MixxxApp#23
 msgid "&Load Song (Player 2)..."
@@ -2631,7 +2644,7 @@ msgstr "&Загрузить композицию (Проигрыватель 2).
 
 #: MixxxApp#24
 msgid "Ctrl+Shift+O"
-msgstr ""
+msgstr "Ctrl+Shift+O"
 
 #: MixxxApp#25
 msgid "&Exit"
@@ -2639,7 +2652,7 @@ msgstr "&Выйти"
 
 #: MixxxApp#26
 msgid "Ctrl+Q"
-msgstr ""
+msgstr "Ctrl+Q"
 
 #: MixxxApp#27
 msgid "&Rescan Library"
@@ -2651,7 +2664,7 @@ msgstr "Создать &новый список воспроизведения"
 
 #: MixxxApp#29
 msgid "Ctrl+N"
-msgstr ""
+msgstr "Ctrl+Н"
 
 #: MixxxApp#30
 msgid "Add new &crate"
@@ -2659,7 +2672,7 @@ msgstr "Добавить новый &список"
 
 #: MixxxApp#31
 msgid "Ctrl+C"
-msgstr ""
+msgstr "Ctrl+C"
 
 #: MixxxApp#32
 msgid "&Import playlist"
@@ -2667,11 +2680,11 @@ msgstr "&Импортировать список воспроизведения"
 
 #: MixxxApp#33
 msgid "Ctrl+I"
-msgstr ""
+msgstr "Ctrl+I"
 
 #: MixxxApp#34
 msgid "&Audio Beat Marks"
-msgstr ""
+msgstr "маркировка ритма"
 
 #: MixxxApp#35
 msgid "&Full Screen"
@@ -2679,11 +2692,11 @@ msgstr "&Во весь экран"
 
 #: MixxxApp#36
 msgid "Ctrl+F"
-msgstr ""
+msgstr "Ctrl+F"
 
 #: MixxxApp#37
 msgid "F11"
-msgstr ""
+msgstr "F11"
 
 #: MixxxApp#38
 msgid "&Preferences"
@@ -2691,7 +2704,7 @@ msgstr "&Параметры"
 
 #: MixxxApp#39
 msgid "Ctrl+P"
-msgstr ""
+msgstr "Ctrl+P"
 
 #: MixxxApp#40
 msgid "&About..."
@@ -2703,19 +2716,19 @@ msgstr "&Поддержка оказываемая сообществом..."
 
 #: MixxxApp#42
 msgid "Enable &Vinyl Control 1"
-msgstr ""
+msgstr "Включить & Виниловый контроль 1"
 
 #: MixxxApp#43
 msgid "Ctrl+Y"
-msgstr ""
+msgstr "Ctrl+Y"
 
 #: MixxxApp#44
 msgid "Enable &Vinyl Control 2"
-msgstr ""
+msgstr "Включить & Виниловый контроль 2"
 
 #: MixxxApp#45
 msgid "Ctrl+U"
-msgstr ""
+msgstr "Ctrl+U"
 
 #: MixxxApp#46
 msgctxt "MixxxApp#46"
@@ -2724,7 +2737,7 @@ msgstr "Использовать живое вещание"
 
 #: MixxxApp#47
 msgid "Ctrl+L"
-msgstr ""
+msgstr "Ctrl+L"
 
 #: MixxxApp#48
 msgid "&Record Mix"
@@ -2732,11 +2745,11 @@ msgstr "&Записать микс"
 
 #: MixxxApp#49
 msgid "Ctrl+R"
-msgstr ""
+msgstr "Ctrl+R"
 
 #: MixxxApp#50
 msgid "Show Studio"
-msgstr ""
+msgstr "Показать  студию"
 
 #: MixxxApp#51
 msgid "Opens a song in player 1"
@@ -2828,13 +2841,13 @@ msgstr "Импортировать список воспроизведения"
 
 #: MixxxApp#64
 msgid "Audio Beat Marks"
-msgstr ""
+msgstr "Mаркировка ритма"
 
 #: MixxxApp#65
 msgid ""
 "Audio Beat Marks\n"
 "Mark beats by audio clicks"
-msgstr ""
+msgstr "маркировка ритма по аудио кликам"
 
 #: MixxxApp#66
 msgid "Activate Vinyl Control"
@@ -2913,14 +2926,14 @@ msgstr ""
 
 #: MixxxApp#80
 msgid "Shows the macro studio window"
-msgstr ""
+msgstr "Показать окно mакро студии"
 
 #: MixxxApp#81
 msgid ""
 "Show Studio\n"
 "\n"
 "Makes the macro studio visible"
-msgstr ""
+msgstr "Показать студию  Сделать макро студию видимой"
 
 #: MixxxApp#82
 msgid "&File"
@@ -2948,7 +2961,7 @@ msgstr "&Автоматизация"
 
 #: MixxxApp#88
 msgid "&Vinyl Control"
-msgstr ""
+msgstr "&Kонтроль Винилa"
 
 #: MixxxApp#89
 msgid "Quit..."
@@ -2987,6 +3000,8 @@ msgid ""
 "No input device(s) select.\n"
 "Please select your soundcard(s) in the sound hardware preferences."
 msgstr ""
+"Нет устройства ввода (ы) выберите. Пожалуйста, выберите вашу звуковую карту "
+"(ы) в звуковых   настройках   компьютера."
 
 #: MixxxApp#96
 msgid "Confirm Exit"
@@ -3005,22 +3020,22 @@ msgstr "Библиотека"
 #: ParserM3u#1
 msgctxt "ParserM3u#1"
 msgid "Playlist Export Failed"
-msgstr ""
+msgstr "Сбой при экспорте плейлиста."
 
 #: ParserM3u#2
 msgctxt "ParserM3u#2"
 msgid "Could not create file"
-msgstr ""
+msgstr "Невозможно создать файл"
 
 #: ParserPls#1
 msgctxt "ParserPls#1"
 msgid "Playlist Export Failed"
-msgstr ""
+msgstr "Сбой при экспорте плейлиста."
 
 #: ParserPls#2
 msgctxt "ParserPls#2"
 msgid "Could not create file"
-msgstr ""
+msgstr "Невозможно создать файл"
 
 #: PlaylistFeature#1
 msgid "New Playlist"
@@ -3053,7 +3068,7 @@ msgstr "Импортировать список воспроизведения"
 #: PlaylistFeature#7
 msgctxt "PlaylistFeature#7"
 msgid "Export Playlist"
-msgstr ""
+msgstr "Экспортировать список воспроизведения"
 
 #: PlaylistFeature#8
 msgid "Playlists"
@@ -3095,12 +3110,12 @@ msgstr "Ошибка переименования списка воспроиз�
 #: PlaylistFeature#17
 msgctxt "PlaylistFeature#17"
 msgid "Playlist Files (*.m3u *.pls)"
-msgstr ""
+msgstr "Вид файлов воспроизведения (*.m3u *.pls)"
 
 #: PlaylistFeature#18
 msgctxt "PlaylistFeature#18"
 msgid "M3U Playlist (*.m3u);;PLS Playlist (*.pls)"
-msgstr ""
+msgstr "М3U Плейлист (*.m3u);;PLS Плэй-лист (*.pls)"
 
 #: PlaylistFeature#19
 msgid "A playlist by that name already exists."
@@ -3182,7 +3197,7 @@ msgstr "Невозможно прочитать файл контейнера с
 
 #: ScriptStudio#1
 msgid "Mixxx Script Studio"
-msgstr ""
+msgstr "Mixxx Скрипт Студио"
 
 #: ScriptStudio#2
 msgid "File"
@@ -3259,7 +3274,7 @@ msgstr ""
 
 #: TraktorFeature#1
 msgid "Traktor"
-msgstr ""
+msgstr "Трактор"
 
 #: TraktorFeature#2
 msgid "Traktor (loading)"
@@ -3284,7 +3299,7 @@ msgstr "Расположение"
 
 #: Ui#2
 msgid "Remaining"
-msgstr ""
+msgstr "Oстальной"
 
 #: Ui#3
 msgctxt "Ui#3"
@@ -3298,11 +3313,11 @@ msgstr "Отключить"
 
 #: Ui#5
 msgid "Don't load tracks into a playing deck"
-msgstr ""
+msgstr "Не загружайте треки в уже играющие деки"
 
 #: Ui#6
 msgid "Load tracks into playing decks"
-msgstr ""
+msgstr "Не загружайте треки в уже играющие деки"
 
 #: Ui#7
 msgid "CDJ Mode"
@@ -3331,12 +3346,12 @@ msgstr ""
 #: Ui#12
 msgctxt "Ui#12"
 msgid "Preferences"
-msgstr ""
+msgstr "Параметры"
 
 #: Ui#13
 msgctxt "Ui#13"
 msgid "Crossfader"
-msgstr ""
+msgstr "Плавный перевод звука между двумя выбранными каналами"
 
 #: Ui#14
 msgid "Master volume"
@@ -3352,7 +3367,7 @@ msgstr "Громкость наушников"
 
 #: Ui#17
 msgid "Headphones mix (pre/main)"
-msgstr ""
+msgstr "Наушники смеситель (до / главный)"
 
 #: Ui#18
 msgid "Cue button for Player %1"
@@ -3384,7 +3399,7 @@ msgstr "Кнопка синхронизации удара для проигры
 
 #: Ui#25
 msgid "BPM tap button for Player %1"
-msgstr ""
+msgstr "BPM  кнопка для Плейра %1"
 
 #: Ui#26
 msgid "Keylock button for Player %1"
@@ -3400,23 +3415,23 @@ msgstr "Кнопка эффекта фланджера для проигрыва
 
 #: Ui#29
 msgid "Channel %1 volume fader"
-msgstr ""
+msgstr "Канал  %1  громкость фейдера"
 
 #: Ui#30
 msgid "Gain knob for Channel %1"
-msgstr ""
+msgstr "Усиления  Kаналa  1"
 
 #: Ui#31
 msgid "High EQ knob for Channel %1"
-msgstr ""
+msgstr "Bысокочастотный  эквалайзер регулятор канала  % 1"
 
 #: Ui#32
 msgid "Mid EQ knob for Channel %1"
-msgstr ""
+msgstr "Среднечастотный эквалайзер регулятор канала  % 1"
 
 #: Ui#33
 msgid "Low EQ knob for Channel %1"
-msgstr ""
+msgstr "Низкочастотный эквалайзер регулятор канала  % 1"
 
 #: Ui#34
 msgid "Loop In button for Player %1"
@@ -3432,35 +3447,35 @@ msgstr "Кнопка повтора петли / выхода для проиг�
 
 #: Ui#37
 msgid "Hotcue 1 button for Player %1"
-msgstr ""
+msgstr "Кнопка  1 \"горячего сигнала\" для Плейра 1"
 
 #: Ui#38
 msgid "Hotcue 2 button for Player %1"
-msgstr ""
+msgstr "Кнопка  2 \"горячего сигнала\" для Плейра 1"
 
 #: Ui#39
 msgid "Hotcue 3 button for Player %1"
-msgstr ""
+msgstr "Кнопка  3 \"горячего сигнала\" для Плейра 1"
 
 #: Ui#40
 msgid "Hotcue 4 button for Player %1"
-msgstr ""
+msgstr "Кнопка  4 \"горячего сигнала\" для Плейра 1"
 
 #: Ui#41
 msgid "Hotcue 1 delete button for Player %1"
-msgstr ""
+msgstr "Кнопка  1   удаление \" горячего сигнала\" для Плейра 1"
 
 #: Ui#42
 msgid "Hotcue 2 delete button for Player %1"
-msgstr ""
+msgstr "Кнопка  2  удаление \" горячего сигнала\" для Плейра 1"
 
 #: Ui#43
 msgid "Hotcue 3 delete button for Player %1"
-msgstr ""
+msgstr "Кнопка 3 удаление \" горячего сигнала \" для Плейра 1"
 
 #: Ui#44
 msgid "Hotcue 4 delete button for Player %1"
-msgstr ""
+msgstr "Кнопка 4  удаление \" горячего сигнала \" для Плейра 1"
 
 #: Ui#45
 msgid "Switch to the next view (library, playlist..)"
