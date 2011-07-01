@@ -36,7 +36,9 @@ RhythmboxTrackModel::~RhythmboxTrackModel() {
 }
 
 bool RhythmboxTrackModel::addTrack(const QModelIndex& index, QString location) {
-    return false;
+    Q_UNUSED(index);
+    Q_UNUSED(location)
+	return false;
 }
 
 TrackPointer RhythmboxTrackModel::getTrack(const QModelIndex& index) const {
@@ -49,7 +51,30 @@ TrackPointer RhythmboxTrackModel::getTrack(const QModelIndex& index) const {
 
     QString location = index.sibling(index.row(), fieldIndex("location")).data().toString();
 
-    TrackInfoObject* pTrack = new TrackInfoObject(location);
+    if( location.isEmpty()) {
+    	// Track is lost
+    	return TrackPointer();
+    }
+
+    TrackDAO& track_dao = m_pTrackCollection->getTrackDAO();
+    int track_id = track_dao.getTrackId(location);
+    if (track_id < 0) {
+    	// Add Track to library
+    	track_id = track_dao.addTrack(location);
+    }
+
+    TrackPointer pTrack;
+
+    if (track_id < 0) {
+    	// Add Track to library failed
+    	// Create own TrackInfoObject
+    	pTrack = TrackPointer(new TrackInfoObject(location), &QObject::deleteLater);
+    }
+    else {
+    	pTrack = track_dao.getTrack(track_id);
+    }
+
+    // Overwrite Metadata from Rythmbox library
     pTrack->setArtist(artist);
     pTrack->setTitle(title);
     pTrack->setAlbum(album);
@@ -57,7 +82,7 @@ TrackPointer RhythmboxTrackModel::getTrack(const QModelIndex& index) const {
     pTrack->setGenre(genre);
     pTrack->setBpm(bpm);
 
-    return TrackPointer(pTrack, &QObject::deleteLater);
+    return pTrack;
 }
 
 QString RhythmboxTrackModel::getTrackLocation(const QModelIndex& index) const {
@@ -78,15 +103,16 @@ const QLinkedList<int> RhythmboxTrackModel::getTrackRows(int trackId) const {
 
 
 void RhythmboxTrackModel::removeTrack(const QModelIndex& index) {
-
+	Q_UNUSED(index);
 }
 
 void RhythmboxTrackModel::removeTracks(const QModelIndexList& indices) {
-
+	Q_UNUSED(indices);
 }
 
 void RhythmboxTrackModel::moveTrack(const QModelIndex& sourceIndex, const QModelIndex& destIndex) {
-
+	Q_UNUSED(sourceIndex);
+	Q_UNUSED(destIndex);
 }
 
 void RhythmboxTrackModel::search(const QString& searchText) {
@@ -138,11 +164,13 @@ QMimeData* RhythmboxTrackModel::mimeData(const QModelIndexList &indexes) const {
 
 
 QItemDelegate* RhythmboxTrackModel::delegateForColumn(const int i) {
+	Q_UNUSED(i);
     return NULL;
 }
 
 TrackModel::CapabilitiesFlags RhythmboxTrackModel::getCapabilities() const {
-    return TRACKMODELCAPS_NONE;
+    return TRACKMODELCAPS_NONE |
+     	   TRACKMODELCAPS_ADDTOAUTODJ;
 }
 
 Qt::ItemFlags RhythmboxTrackModel::flags(const QModelIndex &index) const {
@@ -150,5 +178,6 @@ Qt::ItemFlags RhythmboxTrackModel::flags(const QModelIndex &index) const {
 }
 
 bool RhythmboxTrackModel::isColumnHiddenByDefault(int column) {
-    return false;
+    Q_UNUSED(column);
+	return false;
 }

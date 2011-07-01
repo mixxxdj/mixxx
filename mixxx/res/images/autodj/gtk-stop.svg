@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="48"
+   height="48"
+   id="svg4908"
+   sodipodi:version="0.32"
+   inkscape:version="0.47 r22583"
+   sodipodi:docname="gtk-cancel.svg"
+   inkscape:output_extension="org.inkscape.output.svg.inkscape"
+   inkscape:export-filename="/home/andreas/project/gnome-icon-theme/scalable/actions/process-stop.png"
+   inkscape:export-xdpi="90"
+   inkscape:export-ydpi="90"
+   version="1.0"
+   sodipodi:modified="true">
+  <defs
+     id="defs4910">
+    <linearGradient
+       gradientUnits="userSpaceOnUse"
+       y2="21.132059"
+       x2="22.892584"
+       y1="0.90414524"
+       x1="22.892584"
+       id="linearGradient3178-2"
+       xlink:href="#linearGradient3172-2"
+       inkscape:collect="always" />
+    <linearGradient
+       id="linearGradient3172-2">
+      <stop
+         id="stop3174-8"
+         offset="0"
+         style="stop-color:#ffb584;stop-opacity:1;" />
+      <stop
+         id="stop3176-3"
+         offset="1"
+         style="stop-color:#ffb584;stop-opacity:0;" />
+    </linearGradient>
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient3172-2"
+       id="linearGradient3847"
+       gradientUnits="userSpaceOnUse"
+       x1="22.892584"
+       y1="0.90414524"
+       x2="22.892584"
+       y2="21.132059" />
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient3172-2"
+       id="linearGradient3852"
+       gradientUnits="userSpaceOnUse"
+       x1="22.892584"
+       y1="0.90414524"
+       x2="22.892584"
+       y2="21.132059"
+       gradientTransform="matrix(0.644962,0,0,-1.1832362,59.235153,43.983663)" />
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient3172-2"
+       id="linearGradient3855"
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="matrix(0.44278448,0,0,0.81854541,6.0578353,1.92584)"
+       x1="22.892584"
+       y1="0.90414524"
+       x2="22.892584"
+       y2="21.132059" />
+  </defs>
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="7.9999999"
+     inkscape:cx="31.312499"
+     inkscape:cy="29.93048"
+     inkscape:current-layer="g7001"
+     showgrid="false"
+     inkscape:grid-bbox="true"
+     inkscape:document-units="px"
+     showguides="true"
+     inkscape:guide-bbox="true"
+     inkscape:window-width="1280"
+     inkscape:window-height="716"
+     inkscape:window-x="0"
+     inkscape:window-y="21"
+     width="48px"
+     height="48px"
+     inkscape:window-maximized="0" />
+  <metadata
+     id="metadata4913">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title>Stop Process</dc:title>
+        <dc:date>December 2006</dc:date>
+        <dc:creator>
+          <cc:Agent>
+            <dc:title>Jakub Steiner</dc:title>
+          </cc:Agent>
+        </dc:creator>
+        <dc:contributor>
+          <cc:Agent>
+            <dc:title>Andreas Nilsson</dc:title>
+          </cc:Agent>
+        </dc:contributor>
+        <cc:license
+           rdf:resource="http://creativecommons.org/licenses/GPL/2.0/" />
+        <dc:subject>
+          <rdf:Bag>
+            <rdf:li>stop</rdf:li>
+            <rdf:li>halt</rdf:li>
+          </rdf:Bag>
+        </dc:subject>
+      </cc:Work>
+      <cc:License
+         rdf:about="http://creativecommons.org/licenses/GPL/2.0/">
+        <cc:permits
+           rdf:resource="http://web.resource.org/cc/Reproduction" />
+        <cc:permits
+           rdf:resource="http://web.resource.org/cc/Distribution" />
+        <cc:requires
+           rdf:resource="http://web.resource.org/cc/Notice" />
+        <cc:permits
+           rdf:resource="http://web.resource.org/cc/DerivativeWorks" />
+        <cc:requires
+           rdf:resource="http://web.resource.org/cc/ShareAlike" />
+        <cc:requires
+           rdf:resource="http://web.resource.org/cc/SourceCode" />
+      </cc:License>
+    </rdf:RDF>
+  </metadata>
+  <g
+     id="layer1"
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer">
+    <g
+       inkscape:label="Layer 1"
+       id="g7001"
+       transform="matrix(1.4566048,0,0,1.4455352,0.4112881,1.2324709)">
+      <g
+         id="g2453"
+         inkscape:label="Calque 1"
+         transform="matrix(0.09185347,0,0,-0.09255686,21.362331,60.748807)" />
+      <g
+         id="g2615"
+         inkscape:label="Calque 1"
+         transform="matrix(0.11481687,0,0,-0.11569611,26.109778,71.524209)" />
+      <path
+         id="path2942"
+         d="m 16.194311,29.58595 c -7.5792694,0 -13.7305597,-6.198396 -13.7305597,-13.835706 0,-7.63731 6.1512903,-13.835706 13.7305597,-13.835706 7.579269,0 13.730561,6.198396 13.73056,13.835706 -1e-6,7.63731 -6.15129,13.835706 -13.73056,13.835706 z M 10.82531,22.956341 c 0.492513,-0.0037 0.959627,-0.218825 1.298242,-0.576488 l 4.070759,-4.057587 4.070759,4.057587 c 0.324913,0.343902 0.781482,0.557818 1.254234,0.576488 0.74519,0.01753 1.428739,-0.42094 1.71632,-1.108631 0.28758,-0.68769 0.117757,-1.477361 -0.418078,-1.995534 l -4.070759,-4.07976 4.070759,-4.079759 C 23.292284,11.241187 23.485559,10.57583 23.32364,9.941021 23.161721,9.30621 22.658384,8.823935 22.025398,8.65501 21.39242,8.486084 20.721753,8.65091 20.26507,9.120634 l -4.070759,4.079761 -4.070759,-4.079761 c -0.710642,-0.71064 -1.863841,-0.710641 -2.5744797,0 -0.710641,0.710642 -0.710641,1.861382 0,2.572023 l 4.0707587,4.079759 -4.0707587,4.07976 c -0.5317948,0.514636 -0.698281,1.288422 -0.4180779,1.973362 0.2802031,0.68494 0.9542986,1.136455 1.6943156,1.130803 z"
+         style="fill:#ea5d00;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:0.68915188;marker:none;visibility:visible;display:inline;overflow:visible" />
+      <path
+         style="fill:url(#linearGradient3855);fill-opacity:1;stroke:none"
+         d="m 16.194316,19.663155 c -0.444634,0 -0.872912,-0.02484 -1.308694,-0.04324 l 1.308694,-1.297097 1.308694,1.297097 c -0.435782,0.01839 -0.864059,0.04324 -1.308694,0.04324 z M 10.337374,19.079461 C 7.10853,18.425266 4.3517796,17.256752 2.4637561,15.750244 c 0,-0.0072 -1.1e-5,-0.0144 0,-0.02162 0.011624,-7.62736 6.1584611,-13.814088 13.7305599,-13.814088 7.572099,0 13.718938,6.186728 13.730561,13.814088 -0.0038,0.0031 0.0038,0.01857 0,0.02162 -1.888024,1.506508 -4.644774,2.675022 -7.873619,3.329217 l -3.303916,-3.307599 4.07626,-4.085857 c 0.474739,-0.45147 0.655361,-1.116272 0.493442,-1.751081 C 23.155125,9.300113 22.66279,8.82837 22.029804,8.659445 21.396826,8.490519 20.72726,8.643705 20.270576,9.113429 l -4.07626,4.085857 -4.07626,-4.085857 c -0.710642,-0.71064 -1.863841,-0.710641 -2.5744798,0 -0.7106409,0.710642 -0.7106409,1.861935 0,2.572576 l 4.0762598,4.085857 -3.282462,3.307599 z"
+         id="path3841" />
+      <g
+         transform="matrix(0.09185347,0,0,-0.09255686,21.362331,60.748807)"
+         inkscape:label="Calque 1"
+         id="g3843" />
+      <g
+         transform="matrix(0.11481687,0,0,-0.11569611,26.109778,71.524209)"
+         inkscape:label="Calque 1"
+         id="g3845" />
+    </g>
+  </g>
+</svg>

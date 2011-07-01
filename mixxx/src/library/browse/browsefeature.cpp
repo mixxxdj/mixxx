@@ -119,19 +119,25 @@ TreeItemModel* BrowseFeature::getChildModel() {
 }
 
 bool BrowseFeature::dropAccept(QUrl url) {
-    return false;
+    Q_UNUSED(url);
+	return false;
 }
 
 bool BrowseFeature::dropAcceptChild(const QModelIndex& index, QUrl url) {
-    return false;
+	Q_UNUSED(index);
+	Q_UNUSED(url);
+	return false;
 }
 
 bool BrowseFeature::dragMoveAccept(QUrl url) {
-    return false;
+	Q_UNUSED(url);
+	return false;
 }
 
 bool BrowseFeature::dragMoveAcceptChild(const QModelIndex& index, QUrl url) {
-    return false;
+	Q_UNUSED(index);
+	Q_UNUSED(url);
+	return false;
 }
 
 void BrowseFeature::activate() {
@@ -150,10 +156,14 @@ void BrowseFeature::activateChild(const QModelIndex& index) {
 }
 
 void BrowseFeature::onRightClick(const QPoint& globalPos) {
+	Q_UNUSED(globalPos);
 }
 
 void BrowseFeature::onRightClickChild(const QPoint& globalPos, QModelIndex index) {
+	Q_UNUSED(globalPos);
+	Q_UNUSED(index);
 }
+
 /*
  * This is called whenever you double click or use the triangle symbol to expand
  * the subtree. The method will read the subfolders.

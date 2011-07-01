@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="48"
+   height="48"
+   id="svg4908"
+   sodipodi:version="0.32"
+   inkscape:version="0.47 r22583"
+   sodipodi:docname="gtk-apply.svg"
+   inkscape:output_extension="org.inkscape.output.svg.inkscape"
+   inkscape:export-filename="/home/andreas/project/gnome-icon-theme/scalable/actions/process-stop.png"
+   inkscape:export-xdpi="90"
+   inkscape:export-ydpi="90"
+   version="1.0"
+   sodipodi:modified="true">
+  <defs
+     id="defs4910">
+    <linearGradient
+       gradientUnits="userSpaceOnUse"
+       y2="21.132059"
+       x2="22.892584"
+       y1="0.90414524"
+       x1="22.892584"
+       id="linearGradient3178"
+       xlink:href="#linearGradient3172"
+       inkscape:collect="always" />
+    <linearGradient
+       id="linearGradient3172">
+      <stop
+         id="stop3174"
+         offset="0"
+         style="stop-color:#ffb584;stop-opacity:1;" />
+      <stop
+         id="stop3176"
+         offset="1"
+         style="stop-color:#ffb584;stop-opacity:0;" />
+    </linearGradient>
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient3172"
+       id="linearGradient2935"
+       gradientUnits="userSpaceOnUse"
+       x1="22.892584"
+       y1="0.90414524"
+       x2="22.892584"
+       y2="21.132059" />
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient3172"
+       id="linearGradient2940"
+       gradientUnits="userSpaceOnUse"
+       x1="22.892584"
+       y1="0.90414524"
+       x2="22.892584"
+       y2="21.132059"
+       gradientTransform="matrix(0.644962,0,0,-1.1832362,59.235153,43.983663)" />
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient3172"
+       id="linearGradient2943"
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="matrix(0.44278448,0,0,0.81854541,6.0578353,1.9258421)"
+       x1="22.892584"
+       y1="0.90414524"
+       x2="22.892584"
+       y2="21.132059" />
+  </defs>
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="5.656854"
+     inkscape:cx="13.2227"
+     inkscape:cy="30.246158"
+     inkscape:current-layer="g7001"
+     showgrid="false"
+     inkscape:grid-bbox="true"
+     inkscape:document-units="px"
+     showguides="true"
+     inkscape:guide-bbox="true"
+     inkscape:window-width="1280"
+     inkscape:window-height="716"
+     inkscape:window-x="0"
+     inkscape:window-y="21"
+     width="48px"
+     height="48px"
+     inkscape:window-maximized="0" />
+  <metadata
+     id="metadata4913">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title>Stop Process</dc:title>
+        <dc:date>December 2006</dc:date>
+        <dc:creator>
+          <cc:Agent>
+            <dc:title>Jakub Steiner</dc:title>
+          </cc:Agent>
+        </dc:creator>
+        <dc:contributor>
+          <cc:Agent>
+            <dc:title>Andreas Nilsson</dc:title>
+          </cc:Agent>
+        </dc:contributor>
+        <cc:license
+           rdf:resource="http://creativecommons.org/licenses/GPL/2.0/" />
+        <dc:subject>
+          <rdf:Bag>
+            <rdf:li>stop</rdf:li>
+            <rdf:li>halt</rdf:li>
+          </rdf:Bag>
+        </dc:subject>
+      </cc:Work>
+      <cc:License
+         rdf:about="http://creativecommons.org/licenses/GPL/2.0/">
+        <cc:permits
+           rdf:resource="http://web.resource.org/cc/Reproduction" />
+        <cc:permits
+           rdf:resource="http://web.resource.org/cc/Distribution" />
+        <cc:requires
+           rdf:resource="http://web.resource.org/cc/Notice" />
+        <cc:permits
+           rdf:resource="http://web.resource.org/cc/DerivativeWorks" />
+        <cc:requires
+           rdf:resource="http://web.resource.org/cc/ShareAlike" />
+        <cc:requires
+           rdf:resource="http://web.resource.org/cc/SourceCode" />
+      </cc:License>
+    </rdf:RDF>
+  </metadata>
+  <g
+     id="layer1"
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer">
+    <g
+       inkscape:label="Layer 1"
+       id="g7001"
+       transform="matrix(1.4566048,0,0,1.4455352,0.4112881,1.2324709)">
+      <path
+         id="path5"
+         d="M 16.194313,1.9145381 C 8.5417126,2.0389121 2.4637513,8.1499211 2.4637513,15.750244 c 0,7.606063 6.182301,13.835706 13.7305617,13.835706 7.54826,-1e-6 13.730561,-6.229642 13.730561,-13.835706 -10e-7,-7.6060629 -6.1823,-13.8357059 -13.730561,-13.8357059 z m 6.380385,8.4364059 c 0.971419,0.803521 0.784321,1.607042 -0.0035,2.671969 l -5.632693,7.463317 c -0.357218,0.479938 -0.94886,0.844167 -1.544223,0.844167 -0.595363,0 -1.198168,-0.120251 -1.674459,-0.600189 C 12.371717,19.381633 11.0379,18.018932 9.7094358,16.651005 8.8749737,15.777801 8.8061487,15.039266 9.601597,14.273669 c 0.724087,-0.74065 1.658992,-0.631385 2.574015,0.164245 0,0 1.905161,1.919751 2.976815,2.999612 1.309799,-1.679783 4.874536,-6.71163 4.874536,-6.71163 0.861403,-0.9767329 1.500256,-1.1724059 2.547735,-0.374952 z"
+         style="fill:#ea5d00;fill-opacity:1;fill-rule:nonzero;stroke:none"
+         sodipodi:nodetypes="csssccccsccccccc" />
+      <g
+         id="Layer_x0020_3"
+         style="fill-rule:nonzero;stroke:#ea5d00;stroke-miterlimit:4"
+         transform="translate(-34.415995,2.8001641)">
+        <radialGradient
+           id="aigrd2"
+           cx="8.6732998"
+           cy="8.6187"
+           r="11.0872"
+           fx="8.6732998"
+           fy="8.6187"
+           gradientUnits="userSpaceOnUse">
+          <stop
+             offset="0"
+             style="stop-color:#FFFFFF"
+             id="stop22" />
+          <stop
+             offset="1"
+             style="stop-color:#F0E1BD"
+             id="stop24" />
+        </radialGradient>
+      </g>
+      <path
+         style="fill:url(#linearGradient2943);fill-opacity:1;stroke:none"
+         d="m 17.588826,19.61992 4.977328,-6.593579 c 0.787822,-1.064926 0.97142,-1.877147 0,-2.680668 -1.047479,-0.7974539 -1.670168,-0.5876029 -2.531572,0.38913 0,0 -3.581712,5.021887 -4.891512,6.70167 L 12.182418,14.43153 c -0.915023,-0.79563 -1.850392,-0.891978 -2.5744798,-0.151328 -0.7954491,0.765597 -0.7271917,1.504808 0.10727,2.378012 0.8998078,0.926536 1.8171628,1.826548 2.7246578,2.745523 -4.1387359,-0.513688 -7.6896064,-1.829024 -9.9761099,-3.653491 0,-0.0072 -1.1e-5,-0.01443 0,-0.02162 C 2.4752421,8.1383131 8.5489557,2.0387941 16.194316,1.9145381 c 7.54112,0 13.718877,6.217827 13.730561,13.8140879 -0.0038,0.0031 0.0038,0.01857 0,0.02162 -2.709107,2.161674 -7.196919,3.638493 -12.336051,3.869674 z"
+         id="path2929" />
+      <g
+         transform="matrix(0.09185347,0,0,-0.09255686,21.362331,60.748807)"
+         inkscape:label="Calque 1"
+         id="g2931" />
+      <g
+         transform="matrix(0.11481687,0,0,-0.11569611,26.109778,71.524209)"
+         inkscape:label="Calque 1"
+         id="g2933" />
+    </g>
+  </g>
+</svg>
