@@ -6,12 +6,38 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>582</width>
+    <width>500</width>
     <height>399</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Manage</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">#pushButtonShuffle{
+	border-image: url(:/images/autodj/media-playlist-shuffle.svg);
+}
+
+#pushButtonSkipNext{
+	border-image: url(:/images/autodj/bottom.svg);
+}
+
+#pushButtonFadeNow{
+	border-image: url(:/images/autodj/stock_mail-send-receive.svg);
+}
+
+#spinBoxTransition{
+	border-image: transparent ;
+}
+
+QPushButton#pushButtonAutoDJ{ 
+	border-image: url(:/images/autodj/gtk-yes.svg);
+}
+
+QPushButton:checked#pushButtonAutoDJ{ 
+	border-image: url(:/images/autodj/gtk-stop.svg);
+}
+</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <property name="leftMargin">
@@ -30,8 +56,17 @@
      </property>
      <item>
       <widget class="QPushButton" name="pushButtonShuffle">
+       <property name="maximumSize">
+        <size>
+         <width>24</width>
+         <height>24</height>
+        </size>
+       </property>
+       <property name="toolTip">
+        <string>Shuffle Playlist</string>
+       </property>
        <property name="text">
-        <string>Shuffle</string>
+        <string/>
        </property>
        <property name="checkable">
         <bool>false</bool>
@@ -40,8 +75,17 @@
      </item>
      <item>
       <widget class="QPushButton" name="pushButtonSkipNext">
+       <property name="maximumSize">
+        <size>
+         <width>24</width>
+         <height>24</height>
+        </size>
+       </property>
+       <property name="toolTip">
+        <string>Skip Next Track</string>
+       </property>
        <property name="text">
-        <string>Skip Next</string>
+        <string/>
        </property>
        <property name="checkable">
         <bool>false</bool>
@@ -49,16 +93,9 @@
       </widget>
      </item>
      <item>
-      <widget class="QPushButton" name="pushButtonFadeNow">
-       <property name="text">
-        <string>Fade Now</string>
-       </property>
-      </widget>
-     </item>
-     <item>
       <widget class="QLabel" name="label_2">
        <property name="text">
-        <string>Transition</string>
+        <string>Transition [sec]</string>
        </property>
       </widget>
      </item>
@@ -85,9 +122,18 @@
       </widget>
      </item>
      <item>
-      <widget class="QLabel" name="label_3">
+      <widget class="QPushButton" name="pushButtonFadeNow">
+       <property name="maximumSize">
+        <size>
+         <width>24</width>
+         <height>24</height>
+        </size>
+       </property>
+       <property name="toolTip">
+        <string>Fade Now</string>
+       </property>
        <property name="text">
-        <string>s</string>
+        <string/>
        </property>
       </widget>
      </item>
@@ -106,8 +152,17 @@
      </item>
      <item>
       <widget class="QPushButton" name="pushButtonAutoDJ">
-       <property name="text">
+       <property name="maximumSize">
+        <size>
+         <width>24</width>
+         <height>24</height>
+        </size>
+       </property>
+       <property name="toolTip">
         <string>Enable Auto DJ</string>
+       </property>
+       <property name="text">
+        <string/>
        </property>
        <property name="checkable">
         <bool>true</bool>
@@ -147,6 +202,8 @@
    </item>
   </layout>
  </widget>
- <resources/>
+ <resources>
+  <include location="../res/mixxx.qrc"/>
+ </resources>
  <connections/>
 </ui>
