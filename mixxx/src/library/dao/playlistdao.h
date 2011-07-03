@@ -1,16 +1,19 @@
 #ifndef PLAYLISTDAO_H
 #define PLAYLISTDAO_H
 
+#include <QObject>
 #include <QSqlDatabase>
 #include "library/dao/dao.h"
 
 const QString PLAYLISTTRACKSTABLE_POSITION = "position";
 const QString PLAYLISTTRACKSTABLE_PLAYLISTID = "playlist_id";
 
-class PlaylistDAO : public virtual DAO {
+class PlaylistDAO : public QObject, public virtual DAO {
+    Q_OBJECT
   public:
     PlaylistDAO(QSqlDatabase& database);
     virtual ~PlaylistDAO();
+
     void initialize();
     void setDatabase(QSqlDatabase& database) { m_database = database; };
     /** Create a playlist */
@@ -35,6 +38,14 @@ class PlaylistDAO : public virtual DAO {
     void removeTrackFromPlaylist(int playlistId, int position);
     /** Insert a track into a specific position in a playlist */
     void insertTrackIntoPlaylist(int trackId, int playlistId, int position);
+
+  signals:
+    void added(int playlistId);
+    void deleted(int playlistId);
+    void changed(int playlistId);
+    void trackAdded(int playlistId, int trackId, int position);
+    void trackRemoved(int playlistId, int trackId, int position);
+
   private:
     QSqlDatabase& m_database;
 };
