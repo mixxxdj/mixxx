@@ -437,6 +437,7 @@ class MixxxCore(Feature):
                    "library/preparecratedelegate.cpp",
                    "library/trackcollection.cpp",
                    "library/basesqltablemodel.cpp",
+                   "library/basetrackcache.cpp",
                    "library/librarytablemodel.cpp",
                    "library/preparelibrarytablemodel.cpp",
                    "library/browsetablemodel.cpp",
