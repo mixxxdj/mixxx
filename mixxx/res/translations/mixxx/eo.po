@@ -8,13 +8,13 @@ msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2011-05-03 21:42-0400\n"
-"PO-Revision-Date: 2011-06-29 00:15+0000\n"
+"PO-Revision-Date: 2011-07-03 08:29+0000\n"
 "Last-Translator: Michael Moroni <michael.moroni@mailoo.org>\n"
 "Language-Team: Esperanto <eo@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-06-30 04:31+0000\n"
+"X-Launchpad-Export-Date: 2011-07-04 04:31+0000\n"
 "X-Generator: Launchpad (build 13168)\n"
 
 #: AutoDJFeature#1
@@ -222,24 +222,28 @@ msgid ""
 "Could not load the following file because it is in use by Mixxx or another "
 "application."
 msgstr ""
+"Ne povis ŝarĝi la sekvan dosieron ĉar ĝi estas uzata de Miksss aŭ de alia "
+"aplikaĵo."
 
 #: BrowseTableModel#17
 msgid "Warning: This will permanently delete the following files:"
-msgstr ""
+msgstr "Averto: Tio forigos daŭre la sekvajn dosierojn:"
 
 #: BrowseTableModel#18
 msgid "Are you sure you want to delete these files from your computer?"
-msgstr ""
+msgstr "Ĉu vi certe volas forigi ĉi tiujn dosierojn el via komputilo?"
 
 #: BrowseTableModel#19
 msgid ""
 "Could not delete the following file because it is in use by Mixxx or another "
 "application:"
 msgstr ""
+"Ne povis forigi la sekvan dosieron ĉar ĝi estas uzata de Miksss aŭ de alia "
+"aplikaĵo."
 
 #: BrowseTableModel#20
 msgid "Could not update file metadata."
-msgstr ""
+msgstr "Ne povas ĝisdatigi dosierajn metadatumojn."
 
 #: CrateFeature#1
 msgid "New Crate"
@@ -248,22 +252,22 @@ msgstr ""
 #: CrateFeature#2
 msgctxt "CrateFeature#2"
 msgid "Remove"
-msgstr ""
+msgstr "Forigi"
 
 #: CrateFeature#3
 msgctxt "CrateFeature#3"
 msgid "Rename"
-msgstr ""
+msgstr "Alinomigi"
 
 #: CrateFeature#4
 msgctxt "CrateFeature#4"
 msgid "Lock"
-msgstr ""
+msgstr "Ŝlosi"
 
 #: CrateFeature#5
 msgctxt "CrateFeature#5"
 msgid "Import Playlist"
-msgstr ""
+msgstr "Importi ludliston"
 
 #: CrateFeature#6
 msgid "Crates"
@@ -280,7 +284,7 @@ msgstr ""
 #: CrateFeature#9
 msgctxt "CrateFeature#9"
 msgid "Unlock"
-msgstr ""
+msgstr "Malŝlosi"
 
 #: CrateFeature#10
 msgid "Crate name:"
@@ -305,17 +309,17 @@ msgstr ""
 #: CrateFeature#15
 msgctxt "CrateFeature#15"
 msgid "Playlist Files (*.m3u *.pls)"
-msgstr ""
+msgstr "Ludlistdosieroj (*.m3u *.pls)"
 
 #: CrateFeature#16
 msgctxt "CrateFeature#16"
 msgid "Export Playlist"
-msgstr ""
+msgstr "Eksporti ludliston"
 
 #: CrateFeature#17
 msgctxt "CrateFeature#17"
 msgid "M3U Playlist (*.m3u);;PLS Playlist (*.pls)"
-msgstr ""
+msgstr "M3U-ludlisto (*.m3u);;PLS-ludlisto (*.pls)"
 
 #: CrateFeature#18
 msgid "A crate cannot have a blank name."
@@ -331,7 +335,7 @@ msgstr ""
 
 #: DlgAboutDlg#1
 msgid "About Mixxx"
-msgstr ""
+msgstr "Pri Miksss"
 
 #: DlgAboutDlg#2
 msgid ""
@@ -349,125 +353,138 @@ msgid ""
 "margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-"
 "family:'Sans Serif'; font-size:9pt;\"></p></body></html>"
 msgstr ""
+"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" "
+"\"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+"<html><head><meta name=\"qrichtext\" content=\"1\" /><style "
+"type=\"text/css\">\n"
+"p, li { white-space: pre-wrap; }\n"
+"</style></head><body style=\" font-family:'MS Shell Dlg 2'; font-"
+"size:8.25pt; font-weight:400; font-style:normal;\">\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-"
+"right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-"
+"family:'Sans Serif'; font-size:9pt;\">Ĉi tie estas agnoskoj</span></p>\n"
+"<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; "
+"margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-"
+"family:'Sans Serif'; font-size:9pt;\"></p></body></html>"
 
 #: DlgAboutDlg#3
 msgid "1.x.x"
-msgstr ""
+msgstr "1.x.x"
 
 #: DlgAboutDlg#4
 msgid "<a href=\"http://mixxx.org/\">Official Website</a>"
-msgstr ""
+msgstr "<a href=\"http://mixxx.org/\">Oficiala retejo</a>"
 
 #: DlgAutoDJ#1
 msgid "Disable Auto DJ"
-msgstr ""
+msgstr "Malŝalti aŭtomatan DĴ"
 
 #: DlgAutoDJ#2
 msgid "Enable Auto DJ"
-msgstr ""
+msgstr "Enŝalti aŭtomatan DĴ"
 
 #: DlgAutoDJ#3
 msgctxt "DlgAutoDJ#3"
 msgid "Manage"
-msgstr ""
+msgstr "Mastrumi"
 
 #: DlgAutoDJ#4
 msgid "Shuffle playlist"
-msgstr ""
+msgstr "Hazarde ordigi ludliston"
 
 #: DlgAutoDJ#5
 msgid "Add tracks to the queue below..."
-msgstr ""
+msgstr "Aldoni trakojn al la vico malsupre..."
 
 #: DlgBpmSchemeDlg#1
 msgid "BPM Scheme"
-msgstr ""
+msgstr "BPM-skemo"
 
 #: DlgBpmSchemeDlg#2
 msgid "Scheme Name:"
-msgstr ""
+msgstr "Skemnomo:"
 
 #: DlgBpmSchemeDlg#3
 msgid "BPM Range"
-msgstr ""
+msgstr "BPM-intervalo"
 
 #: DlgBpmSchemeDlg#4
 msgid "Max"
-msgstr ""
+msgstr "Maks"
 
 #: DlgBpmSchemeDlg#5
 msgid "Min"
-msgstr ""
+msgstr "Min"
 
 #: DlgBpmSchemeDlg#6
 msgctxt "DlgBpmSchemeDlg#6"
 msgid "Analyze Entire Song"
-msgstr ""
+msgstr "Analizi tutan kanton"
 
 #: DlgBpmTapDlg#1
 msgctxt "DlgBpmTapDlg#1"
 msgid "Track Editor"
-msgstr ""
+msgstr "Trakredaktilo"
 
 #: DlgBpmTapDlg#2
 msgid "&Close"
-msgstr ""
+msgstr "Fermi"
 
 #: DlgBpmTapDlg#3
 msgctxt "DlgBpmTapDlg#3"
 msgid "Alt+O"
-msgstr ""
+msgstr "Alt+O"
 
 #: DlgBpmTapDlg#4
 msgctxt "DlgBpmTapDlg#4"
 msgid "Song:"
-msgstr ""
+msgstr "Kanto:"
 
 #: DlgBpmTapDlg#5
 msgid "Next >>"
-msgstr ""
+msgstr "Sekva »"
 
 #: DlgBpmTapDlg#6
 msgid "<< Prev"
-msgstr ""
+msgstr "« Antaŭa"
 
 #: DlgBpmTapDlg#7
 msgid "BPM Editor (Click to Expand)"
-msgstr ""
+msgstr "BPM-redaktilo (Alklaki por malfaldi)"
 
 #: DlgBpmTapDlg#8
 msgctxt "DlgBpmTapDlg#8"
 msgid "BPM Detection"
-msgstr ""
+msgstr "BPM-detektado"
 
 #: DlgBpmTapDlg#9
 msgid "BPM Scheme:"
-msgstr ""
+msgstr "BPM-skemo:"
 
 #: DlgBpmTapDlg#10
 msgid "to"
-msgstr ""
+msgstr "al"
 
 #: DlgBpmTapDlg#11
 msgid "BPM Range:"
-msgstr ""
+msgstr "BPM-rango:"
 
 #: DlgBpmTapDlg#12
 msgid "&Go"
-msgstr ""
+msgstr "Ek"
 
 #: DlgBpmTapDlg#13
 msgid "Alt+G"
-msgstr ""
+msgstr "Alt+G"
 
 #: DlgBpmTapDlg#14
 msgctxt "DlgBpmTapDlg#14"
 msgid "Analyze Entire Song"
-msgstr ""
+msgstr "Analizi tutan kanton"
 
 #: DlgBpmTapDlg#15
 msgid "BPM:"
-msgstr ""
+msgstr "Bitoj minute:"
 
 #: DlgBpmTapDlg#16
 msgid "&Push to tap tempo"
@@ -475,37 +492,37 @@ msgstr ""
 
 #: DlgBpmTapDlg#17
 msgid "Alt+P"
-msgstr ""
+msgstr "Alt+P"
 
 #: DlgBpmTapDlg#18
 msgctxt "DlgBpmTapDlg#18"
 msgid "Track Information (Click to Expand)"
-msgstr ""
+msgstr "Trakinformoj (alklaki por malfaldi)"
 
 #: DlgBpmTapDlg#19
 msgctxt "DlgBpmTapDlg#19"
 msgid "Title:"
-msgstr ""
+msgstr "Titolo:"
 
 #: DlgBpmTapDlg#20
 msgctxt "DlgBpmTapDlg#20"
 msgid "Artist:"
-msgstr ""
+msgstr "Artisto:"
 
 #: DlgBpmTapDlg#21
 msgctxt "DlgBpmTapDlg#21"
 msgid "Comments:"
-msgstr ""
+msgstr "Komentoj:"
 
 #: DlgBpmTapDlg#22
 msgctxt "DlgBpmTapDlg#22"
 msgid "Filename:"
-msgstr ""
+msgstr "Dosiernomo:"
 
 #: DlgBpmTapDlg#23
 msgctxt "DlgBpmTapDlg#23"
 msgid "3:00"
-msgstr ""
+msgstr "3:00"
 
 #: DlgBpmTapDlg#24
 msgid "Play Time:"
@@ -514,16 +531,16 @@ msgstr ""
 #: DlgBpmTapDlg#25
 msgctxt "DlgBpmTapDlg#25"
 msgid "File Type:"
-msgstr ""
+msgstr "Dosiertipo:"
 
 #: DlgBpmTapDlg#26
 msgctxt "DlgBpmTapDlg#26"
 msgid "77"
-msgstr ""
+msgstr "77"
 
 #: DlgMidiLearning#1
 msgid "Skip"
-msgstr ""
+msgstr "Preterpasi"
 
 #: DlgMidiLearning#2
 msgid "Successfully mapped to: "
@@ -531,7 +548,7 @@ msgstr ""
 
 #: DlgMidiLearning#3
 msgid "Next"
-msgstr ""
+msgstr "Sekva"
 
 #: DlgMidiLearning#4
 msgctxt "DlgMidiLearning#4"

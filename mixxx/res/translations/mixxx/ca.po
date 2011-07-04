@@ -8,13 +8,13 @@ msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2011-05-03 21:42-0400\n"
-"PO-Revision-Date: 2011-06-20 11:52+0000\n"
-"Last-Translator: antonimous <Unknown>\n"
+"PO-Revision-Date: 2011-07-03 21:24+0000\n"
+"Last-Translator: VPablo <villumar@gmail.com>\n"
 "Language-Team: Catalan <ca@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-06-21 04:31+0000\n"
+"X-Launchpad-Export-Date: 2011-07-04 04:31+0000\n"
 "X-Generator: Launchpad (build 13168)\n"
 
 #: AutoDJFeature#1
@@ -460,15 +460,15 @@ msgstr "Detecció BPM"
 
 #: DlgBpmTapDlg#9
 msgid "BPM Scheme:"
-msgstr ""
+msgstr "Esquema BPM:"
 
 #: DlgBpmTapDlg#10
 msgid "to"
-msgstr ""
+msgstr "fins a"
 
 #: DlgBpmTapDlg#11
 msgid "BPM Range:"
-msgstr ""
+msgstr "Rang BPM:"
 
 #: DlgBpmTapDlg#12
 msgid "&Go"
@@ -489,7 +489,7 @@ msgstr "BPM:"
 
 #: DlgBpmTapDlg#16
 msgid "&Push to tap tempo"
-msgstr ""
+msgstr "&Polse per a predir tempo"
 
 #: DlgBpmTapDlg#17
 msgid "Alt+P"
@@ -554,7 +554,7 @@ msgstr "Següent"
 #: DlgMidiLearning#4
 msgctxt "DlgMidiLearning#4"
 msgid "MIDI Learning Wizard"
-msgstr ""
+msgstr "Assistent d'aprenentatge MIDI"
 
 #: DlgMidiLearning#5
 msgid "Welcome to the MIDI Learning Wizard"
@@ -590,7 +590,7 @@ msgstr "Premeu la tecla espai per seguir o ometre."
 
 #: DlgMidiLearning#12
 msgid "MIDI learning complete!"
-msgstr ""
+msgstr "L'aprenentatge MIDI ha finalitzat!"
 
 #: DlgMidiLearning#13
 msgid ""
@@ -628,12 +628,12 @@ msgstr "Llest!"
 
 #: DlgPluginDownloader#1
 msgid "Missing Audio Plugin Downloader"
-msgstr ""
+msgstr "Manca l'Audio Plugin Downloader"
 
 #: DlgPrefBPMDlg#1
 msgctxt "DlgPrefBPMDlg#1"
 msgid "BPM Detection Settings"
-msgstr ""
+msgstr "Configuració de detecció de BPM"
 
 #: DlgPrefBPMDlg#2
 msgctxt "DlgPrefBPMDlg#2"
@@ -662,7 +662,7 @@ msgstr "Permet el BPM fora de l'intèrval"
 
 #: DlgPrefBPMDlg#8
 msgid "BPM Schemes"
-msgstr ""
+msgstr "Esquemes BPM"
 
 #: DlgPrefBPMDlg#9
 msgctxt "DlgPrefBPMDlg#9"
@@ -692,11 +692,11 @@ msgstr "No s'ha pogut obrir el fitxer %1"
 
 #: DlgPrefControls#1
 msgid "This skin does not support schemes"
-msgstr ""
+msgstr "Esta pell no permet esquemes"
 
 #: DlgPrefControls#2
 msgid "8% (Technics SL1210)"
-msgstr ""
+msgstr "8% (Technics SL1210)"
 
 #: DlgPrefControls#3
 msgid "10%"
@@ -766,15 +766,15 @@ msgstr "Esquema"
 
 #: DlgPrefControlsDlg#4
 msgid "Waveform display"
-msgstr ""
+msgstr "Pantalla de forma d'ona"
 
 #: DlgPrefControlsDlg#5
 msgid "Position display"
-msgstr ""
+msgstr "Posició de la pantalla"
 
 #: DlgPrefControlsDlg#6
 msgid "Tool tips"
-msgstr ""
+msgstr "Informació sobre eines"
 
 #: DlgPrefControlsDlg#7
 msgctxt "DlgPrefControlsDlg#7"
@@ -784,92 +784,92 @@ msgstr "Activat"
 #: DlgPrefControlsDlg#8
 msgctxt "DlgPrefControlsDlg#8"
 msgid "Off"
-msgstr ""
+msgstr "Desactivat"
 
 #: DlgPrefControlsDlg#9
 msgid "Pitch/Rate slider range"
-msgstr ""
+msgstr "Rang del botó lliscant Pitch/Rate"
 
 #: DlgPrefControlsDlg#10
 msgid "Pitch/Rate slider direction"
-msgstr ""
+msgstr "Direcció del botó lliscant Pitch/Rate"
 
 #: DlgPrefControlsDlg#11
 msgid "Track load behaviour"
-msgstr ""
+msgstr "Comportament de càrrega de pista"
 
 #: DlgPrefControlsDlg#12
 msgid "Cue behaviour"
-msgstr ""
+msgstr "Comportament de la cua"
 
 #: DlgPrefControlsDlg#13
 msgid "Auto Recall Cue"
-msgstr ""
+msgstr "Cridada automàtica de la cua"
 
 #: DlgPrefControlsDlg#14
 msgid "Permanent Pitch/Rate Buttons"
-msgstr ""
+msgstr "Botons de Pitch/Rate permanents"
 
 #: DlgPrefControlsDlg#15
 msgid "Left click"
-msgstr ""
+msgstr "Botó esquerra"
 
 #: DlgPrefControlsDlg#16
 msgid "Right click"
-msgstr ""
+msgstr "Botó dret"
 
 #: DlgPrefControlsDlg#17
 msgid "Permanent rate change (between 1 and 8000) when left clicking"
-msgstr ""
+msgstr "Canvi de Rate permanent (entre 1 i 8000) fent click esquerra"
 
 #: DlgPrefControlsDlg#18
 msgid "%"
-msgstr ""
+msgstr "%"
 
 #: DlgPrefControlsDlg#19
 msgid "Permanent rate change (between 1 and 8000) when right clicking"
-msgstr ""
+msgstr "Canvi de Rate permanent (entre 1 i 8000) fent click dret"
 
 #: DlgPrefControlsDlg#20
 msgid "Temporary Pitch/Rate Buttons"
-msgstr ""
+msgstr "Botons Pitch/Rate temporals"
 
 #: DlgPrefControlsDlg#21
 msgid "Temporary rate change (between 1 and 8000) when left clicking"
-msgstr ""
+msgstr "Canvi de Rate temporal (entre 1 i 8000) fent click esquerra"
 
 #: DlgPrefControlsDlg#22
 msgid "Temporary rate change (between 1 and 8000) when right clicking"
-msgstr ""
+msgstr "Canvi de Rate temporal (entre 1 i 8000) fent click dret"
 
 #: DlgPrefControlsDlg#23
 msgid "Ramping Pitchbend"
-msgstr ""
+msgstr "Corbat de velocitat progressiu"
 
 #: DlgPrefControlsDlg#24
 msgid "Pitchbend sensitivity"
-msgstr ""
+msgstr "Sensibilitat de corbat de velocitat"
 
 #: DlgPrefCrossfaderDlg#1
 msgctxt "DlgPrefCrossfaderDlg#1"
 msgid "Form1"
-msgstr ""
+msgstr "Formulari1"
 
 #: DlgPrefCrossfaderDlg#2
 msgid "Crossfader Curve"
-msgstr ""
+msgstr "Corba del Crossfader"
 
 #: DlgPrefCrossfaderDlg#3
 msgid "Slow fade"
-msgstr ""
+msgstr "Atenuació baixa"
 
 #: DlgPrefCrossfaderDlg#4
 msgid "Fast cut"
-msgstr ""
+msgstr "Tall ràpid"
 
 #: DlgPrefCrossfaderDlg#5
 msgid "Constant power"
-msgstr ""
+msgstr "Potència Constant"
 
 #: DlgPrefCrossfaderDlg#6
 msgid "Mixing"
@@ -899,11 +899,11 @@ msgstr "Form1"
 
 #: DlgPrefEQDlg#2
 msgid "Static EQs (for slower CPUs)"
-msgstr ""
+msgstr "EQs Estàtic (per a CPUs lentes)"
 
 #: DlgPrefEQDlg#3
 msgid "High Shelf EQ"
-msgstr ""
+msgstr "EQ d'aguts"
 
 #: DlgPrefEQDlg#4
 msgid "textLabel1"
@@ -915,15 +915,15 @@ msgstr "16 Hz"
 
 #: DlgPrefEQDlg#6
 msgid "2.045 kHz"
-msgstr ""
+msgstr "2,045 kHz"
 
 #: DlgPrefEQDlg#7
 msgid "20.05 kHz"
-msgstr ""
+msgstr "20,05 kHz"
 
 #: DlgPrefEQDlg#8
 msgid "Low Shelf EQ"
-msgstr ""
+msgstr "EQ de grau baix"
 
 #: DlgPrefEQDlg#9
 msgid "textLabel2"
@@ -941,103 +941,108 @@ msgstr "Cap"
 
 #: DlgPrefMidiBindings#2
 msgid "Apply MIDI device settings?"
-msgstr ""
+msgstr "Aplicar les configuracions al dispositiu MIDI"
 
 #: DlgPrefMidiBindings#3
 msgid ""
 "Your settings must be applied before starting the MIDI learning wizard.\n"
 "Apply settings and continue?"
 msgstr ""
+"Les teues configuracions deuen aplicar-se abans d'iniciar l'assistent "
+"d'aprenentatge de MIDI.\n"
+"Vols aplicar les configuracions i continuar?"
 
 #: DlgPrefMidiBindings#4
 msgid "Overwrite existing mapping?"
-msgstr ""
+msgstr "Sobreescriure el mapejat existent?"
 
 #: DlgPrefMidiBindings#5
 msgid ""
 "Are you sure you'd like to load the %1 mapping?\n"
 "This will overwrite your existing MIDI mapping."
 msgstr ""
+"Estàs segur de carregar la configuració de l'1%?\n"
+"Açò sobreescriurà la configuració existent"
 
 #: DlgPrefMidiBindings#6
 msgid "Export Mixxx MIDI Bindings"
-msgstr ""
+msgstr "Exportar els paràmetres MIDI de Mixxx"
 
 #: DlgPrefMidiBindings#7
 msgid "Preset Files (*.midi.xml)"
-msgstr ""
+msgstr "Arxius de configuració (*.midi.xml)"
 
 #: DlgPrefMidiBindings#8
 msgid "Select Control Group"
-msgstr ""
+msgstr "Seleccionar grup de control"
 
 #: DlgPrefMidiBindings#9
 msgid "Select Control"
-msgstr ""
+msgstr "Seleccionar control"
 
 #: DlgPrefMidiBindings#10
 msgid "Clear Input Bindings"
-msgstr ""
+msgstr "Neteja els paràmetres d'entrada"
 
 #: DlgPrefMidiBindings#11
 msgid "Are you sure you want to clear all bindings?"
-msgstr ""
+msgstr "Estàs segur de esborrar tots els paràmetres?"
 
 #: DlgPrefMidiBindings#12
 msgid "Clear Output Bindings"
-msgstr ""
+msgstr "Neteja els paràmetres d'eixida"
 
 #: DlgPrefMidiBindings#13
 msgid "Are you sure you want to clear all output bindings?"
-msgstr ""
+msgstr "Estàs segur de esborrar tots els paràmetres d'eixida?"
 
 #: DlgPrefMidiBindingsDlg#1
 msgctxt "DlgPrefMidiBindingsDlg#1"
 msgid "Dialog"
-msgstr ""
+msgstr "Diàleg"
 
 #: DlgPrefMidiBindingsDlg#2
 msgid "Your Device Name"
-msgstr ""
+msgstr "Nom del teu dispositiu"
 
 #: DlgPrefMidiBindingsDlg#3
 msgid "Load Preset:"
-msgstr ""
+msgstr "Carregar opcions predeterminades:"
 
 #: DlgPrefMidiBindingsDlg#4
 msgid "Export"
-msgstr ""
+msgstr "Exporta"
 
 #: DlgPrefMidiBindingsDlg#5
 msgid "Output:"
-msgstr ""
+msgstr "Eixida:"
 
 #: DlgPrefMidiBindingsDlg#6
 msgid "Enabled"
-msgstr ""
+msgstr "Activat"
 
 #: DlgPrefMidiBindingsDlg#7
 msgid "Controls"
-msgstr ""
+msgstr "Controls"
 
 #: DlgPrefMidiBindingsDlg#8
 msgctxt "DlgPrefMidiBindingsDlg#8"
 msgid "Add"
-msgstr ""
+msgstr "Afegix"
 
 #: DlgPrefMidiBindingsDlg#9
 msgctxt "DlgPrefMidiBindingsDlg#9"
 msgid "Remove"
-msgstr ""
+msgstr "Elimina"
 
 #: DlgPrefMidiBindingsDlg#10
 msgctxt "DlgPrefMidiBindingsDlg#10"
 msgid "MIDI Learning Wizard"
-msgstr ""
+msgstr "Assistent d'aprenentatge MIDI"
 
 #: DlgPrefMidiBindingsDlg#11
 msgid "Clear All"
-msgstr ""
+msgstr "Neteja-ho tot"
 
 #: DlgPrefMidiBindingsDlg#12
 msgid ""
@@ -1045,37 +1050,40 @@ msgid ""
 "href=\"http://mixxx.org/wiki/doku.php/midi_controller_mapping_file_format\">T"
 "roubleshooting</a>"
 msgstr ""
+"<a "
+"href=\"http://mixxx.org/wiki/doku.php/midi_controller_mapping_file_format\">S"
+"olució de problemes</a>"
 
 #: DlgPrefMidiBindingsDlg#13
 msgid "MIDI Input"
-msgstr ""
+msgstr "Entrada MIDI"
 
 #: DlgPrefMidiBindingsDlg#14
 msgid "Outputs"
-msgstr ""
+msgstr "Eixides"
 
 #: DlgPrefMidiBindingsDlg#15
 msgid "MIDI Output"
-msgstr ""
+msgstr "Eixida MIDI"
 
 #: DlgPrefNoMidiDlg#1
 msgctxt "DlgPrefNoMidiDlg#1"
 msgid "Form3"
-msgstr ""
+msgstr "Formulari3"
 
 #: DlgPrefNoMidiDlg#2
 msgid "No MIDI devices available"
-msgstr ""
+msgstr "No hi ha dispositius MIDI disponibles"
 
 #: DlgPrefNoVinylDlg#1
 msgctxt "DlgPrefNoVinylDlg#1"
 msgid "Form1"
-msgstr ""
+msgstr "Formulari1"
 
 #: DlgPrefNoVinylDlg#2
 msgctxt "DlgPrefNoVinylDlg#2"
 msgid "Input"
-msgstr ""
+msgstr "Entrada"
 
 #: DlgPrefNoVinylDlg#3
 msgctxt "DlgPrefNoVinylDlg#3"
@@ -1092,6 +1100,17 @@ msgid ""
 "weight:600;\">Select sound devices for vinyl control in the Sound Hardware "
 "pane.</span></p></body></html>"
 msgstr ""
+"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" "
+"\"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+"<html><head><meta name=\"qrichtext\" content=\"1\" /><style "
+"type=\"text/css\">\n"
+"p, li { white-space: pre-wrap; }\n"
+"</style></head><body style=\" font-family:'DejaVu Sans'; font-size:9pt; font-"
+"weight:400; font-style:normal;\">\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-"
+"right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-"
+"weight:600;\">Selecciona els dispositius de so per al control per vinil al "
+"panell de \"Configuració dispositius de so\"..</span></p></body></html>"
 
 #: DlgPrefNoVinylDlg#4
 msgctxt "DlgPrefNoVinylDlg#4"
@@ -1100,56 +1119,59 @@ msgid ""
 "href=\"http://www.mixxx.org/wiki/doku.php/vinyl_control#troubleshooting\">Tro"
 "ubleshooting</a>"
 msgstr ""
+"<a "
+"href=\"http://www.mixxx.org/wiki/doku.php/vinyl_control#troubleshooting\">Sol"
+"ució de problemes</a>"
 
 #: DlgPrefNoVinylDlg#5
 msgctxt "DlgPrefNoVinylDlg#5"
 msgid "Turntable Preamp"
-msgstr ""
+msgstr "Preamplificador pel tocadiscs"
 
 #: DlgPrefNoVinylDlg#6
 msgctxt "DlgPrefNoVinylDlg#6"
 msgid "1 (Off)"
-msgstr ""
+msgstr "1 (Desactivat)"
 
 #: DlgPrefNoVinylDlg#7
 msgctxt "DlgPrefNoVinylDlg#7"
 msgid "150"
-msgstr ""
+msgstr "150"
 
 #: DlgPrefNoVinylDlg#8
 msgctxt "DlgPrefNoVinylDlg#8"
 msgid "Vinyl Configuration"
-msgstr ""
+msgstr "Configuració del vinil"
 
 #: DlgPrefNoVinylDlg#9
 msgctxt "DlgPrefNoVinylDlg#9"
 msgid "Deck 1 Vinyl Type"
-msgstr ""
+msgstr "Deck 1 tipus vinil"
 
 #: DlgPrefNoVinylDlg#10
 msgctxt "DlgPrefNoVinylDlg#10"
 msgid "Deck 2 Vinyl Type"
-msgstr ""
+msgstr "Deck 2 tipus vinil"
 
 #: DlgPrefNoVinylDlg#11
 msgctxt "DlgPrefNoVinylDlg#11"
 msgid "Lead-in time"
-msgstr ""
+msgstr "Termini de temps"
 
 #: DlgPrefNoVinylDlg#12
 msgctxt "DlgPrefNoVinylDlg#12"
 msgid "seconds"
-msgstr ""
+msgstr "segons"
 
 #: DlgPrefNoVinylDlg#13
 msgctxt "DlgPrefNoVinylDlg#13"
 msgid "Control Mode"
-msgstr ""
+msgstr "Mode de control"
 
 #: DlgPrefNoVinylDlg#14
 msgctxt "DlgPrefNoVinylDlg#14"
 msgid "Absolute Mode"
-msgstr ""
+msgstr "Mode absolut"
 
 #: DlgPrefNoVinylDlg#15
 msgctxt "DlgPrefNoVinylDlg#15"

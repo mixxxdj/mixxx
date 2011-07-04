@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2011-05-03 21:42-0400\n"
-"PO-Revision-Date: 2011-06-02 19:14+0000\n"
-"Last-Translator: Yalçın Can <Unknown>\n"
+"PO-Revision-Date: 2011-07-03 06:49+0000\n"
+"Last-Translator: Muhammet Kara <Unknown>\n"
 "Language-Team: Turkish <tr@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-06-03 04:35+0000\n"
-"X-Generator: Launchpad (build 12959)\n"
+"X-Launchpad-Export-Date: 2011-07-04 04:31+0000\n"
+"X-Generator: Launchpad (build 13168)\n"
 
 #: AutoDJFeature#1
 msgid "Auto DJ"
@@ -231,17 +231,19 @@ msgstr "Dikkat: Bu işlem belirtilen dosyaları kalıcı olarak silecek:"
 
 #: BrowseTableModel#18
 msgid "Are you sure you want to delete these files from your computer?"
-msgstr ""
+msgstr "Bu dosyaları bilgisayarınızdan silmek istediğinizden emin misiniz?"
 
 #: BrowseTableModel#19
 msgid ""
 "Could not delete the following file because it is in use by Mixxx or another "
 "application:"
 msgstr ""
+"Aşağıdaki dosya silinemedi çünkü Mixxx ya da başka bir uygulama tarafından "
+"kullanımda."
 
 #: BrowseTableModel#20
 msgid "Could not update file metadata."
-msgstr ""
+msgstr "Dosya meta verisi güncellenemedi."
 
 #: CrateFeature#1
 msgid "New Crate"
@@ -307,7 +309,7 @@ msgstr ""
 #: CrateFeature#15
 msgctxt "CrateFeature#15"
 msgid "Playlist Files (*.m3u *.pls)"
-msgstr ""
+msgstr "Çalma Listesi Dosyaları (*.m3u *.pls)"
 
 #: CrateFeature#16
 msgctxt "CrateFeature#16"
@@ -317,7 +319,7 @@ msgstr "Çalma Listesini Aktar"
 #: CrateFeature#17
 msgctxt "CrateFeature#17"
 msgid "M3U Playlist (*.m3u);;PLS Playlist (*.pls)"
-msgstr ""
+msgstr "M3U Çalma Listesi (*.m3u);;PLS Çalma Listesi (*.pls)"
 
 #: CrateFeature#18
 msgid "A crate cannot have a blank name."
@@ -379,27 +381,27 @@ msgstr "Çalma listesini karıştır"
 
 #: DlgAutoDJ#5
 msgid "Add tracks to the queue below..."
-msgstr ""
+msgstr "Aşağıdaki kuyruğa parça ekle..."
 
 #: DlgBpmSchemeDlg#1
 msgid "BPM Scheme"
-msgstr ""
+msgstr "BPM Şeması"
 
 #: DlgBpmSchemeDlg#2
 msgid "Scheme Name:"
-msgstr ""
+msgstr "Şema Adı:"
 
 #: DlgBpmSchemeDlg#3
 msgid "BPM Range"
-msgstr ""
+msgstr "BPM Aralığı"
 
 #: DlgBpmSchemeDlg#4
 msgid "Max"
-msgstr ""
+msgstr "En Yüksek"
 
 #: DlgBpmSchemeDlg#5
 msgid "Min"
-msgstr ""
+msgstr "En Düşük"
 
 #: DlgBpmSchemeDlg#6
 msgctxt "DlgBpmSchemeDlg#6"
@@ -435,7 +437,7 @@ msgstr "<< Önceki"
 
 #: DlgBpmTapDlg#7
 msgid "BPM Editor (Click to Expand)"
-msgstr ""
+msgstr "BPM Düzenleyicisi (Genişletmek için Tıklayın)"
 
 #: DlgBpmTapDlg#8
 msgctxt "DlgBpmTapDlg#8"
@@ -444,7 +446,7 @@ msgstr "BPM Tespiti"
 
 #: DlgBpmTapDlg#9
 msgid "BPM Scheme:"
-msgstr ""
+msgstr "BPM Şeması:"
 
 #: DlgBpmTapDlg#10
 msgid "to"
@@ -452,7 +454,7 @@ msgstr ""
 
 #: DlgBpmTapDlg#11
 msgid "BPM Range:"
-msgstr ""
+msgstr "BPM Aralığı:"
 
 #: DlgBpmTapDlg#12
 msgid "&Go"
