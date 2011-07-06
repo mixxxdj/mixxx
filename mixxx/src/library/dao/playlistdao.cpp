@@ -366,7 +366,7 @@ void PlaylistDAO::insertTrackIntoPlaylist(int trackId, int playlistId, int posit
     m_database.commit();
 }
 
-void PlaylistDAO::addToAutoDJQueue(int playlistId) {
+void PlaylistDAO::addToAutoDJQueue(int playlistId, bool bTop) {
     //qDebug() << "Adding tracks from playlist " << playlistId << " to the Auto-DJ Queue";
 
     // Query the PlaylistTracks database to locate tracks in the selected playlist
@@ -387,7 +387,15 @@ void PlaylistDAO::addToAutoDJQueue(int playlistId) {
     int autoDJId = getPlaylistIdFromName(AUTODJ_TABLE);
 
     // Loop through the tracks, adding them to the Auto-DJ Queue
-    while(query.next()) {
-        appendTrackToPlaylist(query.value(0).toInt(), autoDJId);
+
+    int i = 2; // Start at position 2 because position 1 was already loaded to the deck
+
+    while (query.next()) {
+    	if (bTop) {
+    		insertTrackIntoPlaylist(query.value(0).toInt(), autoDJId, i++);
+    	}
+    	else {
+    		appendTrackToPlaylist(query.value(0).toInt(), autoDJId);
+    	}
     }
 }

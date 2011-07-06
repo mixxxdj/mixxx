@@ -45,12 +45,14 @@ class WTrackTableView : public WLibraryTableView
     void slotNextTrackInfo();
     void slotPrevTrackInfo();
     void slotSendToAutoDJ();
+    void slotSendToAutoDJTop();
     void addSelectionToPlaylist(int iPlaylistId);
     void addSelectionToCrate(int iCrateId);
     void loadSelectionToGroup(QString group);
     void doSortByColumn(int headerSection);
 
   private:
+    void sendToAutoDJ(bool bTop);
     void showTrackInfo(QModelIndex index);
     void createActions();
     void dragMoveEvent(QDragMoveEvent * event);
@@ -80,6 +82,7 @@ class WTrackTableView : public WLibraryTableView
 
     // Send to Auto-DJ Action
     QAction *m_pAutoDJAct;
+    QAction *m_pAutoDJTopAct;
 
     // Remove from table
     QAction *m_pRemoveAct;

@@ -32,9 +32,13 @@ PlaylistFeature::PlaylistFeature(QObject* parent, TrackCollection* pTrackCollect
     connect(m_pCreatePlaylistAction, SIGNAL(triggered()),
             this, SLOT(slotCreatePlaylist()));
 
-    m_pAddToAutoDJAction = new QAction(tr("Add to Auto-DJ Queue"),this);
+    m_pAddToAutoDJAction = new QAction(tr("Add to Auto DJ bottom"),this);
     connect(m_pAddToAutoDJAction, SIGNAL(triggered()),
             this, SLOT(slotAddToAutoDJ()));
+
+    m_pAddToAutoDJTopAction = new QAction(tr("Add to Auto-DJ top 2"),this);
+    connect(m_pAddToAutoDJTopAction, SIGNAL(triggered()),
+            this, SLOT(slotAddToAutoDJTop()));
 
     m_pDeletePlaylistAction = new QAction(tr("Remove"),this);
     connect(m_pDeletePlaylistAction, SIGNAL(triggered()),
@@ -74,6 +78,7 @@ PlaylistFeature::~PlaylistFeature() {
     delete m_pDeletePlaylistAction;
     delete m_pImportPlaylistAction;
     delete m_pAddToAutoDJAction;
+    delete m_pAddToAutoDJTopAction;
     delete m_pRenamePlaylistAction;
     delete m_pLockPlaylistAction;
 }
@@ -139,6 +144,7 @@ void PlaylistFeature::onRightClickChild(const QPoint& globalPos, QModelIndex ind
     menu.addAction(m_pCreatePlaylistAction);
     menu.addSeparator();
     menu.addAction(m_pAddToAutoDJAction);
+    menu.addAction(m_pAddToAutoDJTopAction);
     menu.addAction(m_pRenamePlaylistAction);
     menu.addAction(m_pDeletePlaylistAction);
     menu.addAction(m_pLockPlaylistAction);
@@ -471,14 +477,29 @@ void PlaylistFeature::slotExportPlaylist(){
     }
 
 }
+
 void PlaylistFeature::slotAddToAutoDJ() {
+    //qDebug() << "slotAddToAutoDJ() row:" << m_lastRightClickedIndex.data();
+	addToAutoDJ(false); // Top = True
+}
+
+
+void PlaylistFeature::slotAddToAutoDJTop() {
+    //qDebug() << "slotAddToAutoDJTop() row:" << m_lastRightClickedIndex.data();
+	addToAutoDJ(true); // bTop = True
+}
+
+
+
+void PlaylistFeature::addToAutoDJ(bool bTop) {
     //qDebug() << "slotAddToAutoDJ() row:" << m_lastRightClickedIndex.data();
 
     if (m_lastRightClickedIndex.isValid()) {
         int playlistId = m_playlistDao.getPlaylistIdFromName(
             m_lastRightClickedIndex.data().toString());
         if (playlistId >= 0) {
-            m_playlistDao.addToAutoDJQueue(playlistId);
+       		// Insert this playlist
+        	m_playlistDao.addToAutoDJQueue(playlistId, bTop);
         }
     }
     emit(featureUpdated());
