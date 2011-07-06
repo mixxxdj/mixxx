@@ -8,13 +8,13 @@ msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2011-05-03 21:42-0400\n"
-"PO-Revision-Date: 2011-07-04 20:55+0000\n"
-"Last-Translator: VPablo <villumar@gmail.com>\n"
+"PO-Revision-Date: 2011-07-05 16:53+0000\n"
+"Last-Translator: elgeneradordenvolupant <Unknown>\n"
 "Language-Team: Catalan <ca@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-07-05 04:31+0000\n"
+"X-Launchpad-Export-Date: 2011-07-06 04:32+0000\n"
 "X-Generator: Launchpad (build 13168)\n"
 
 #: AutoDJFeature#1
@@ -2581,7 +2581,7 @@ msgstr "El dispositiu de so està ocupat"
 
 #: MixxxApp#11
 msgid "Get <b>Help</b> from the Mixxx Wiki."
-msgstr ""
+msgstr "Obté <b>ajuda</b> des del Wiki de Mixxx."
 
 #: MixxxApp#12
 msgid ""
@@ -2589,165 +2589,170 @@ msgid ""
 "application is using a sound device Mixxx is configured to use or a device "
 "is not plugged in."
 msgstr ""
+"Mixxx no ha aconseguit accés a tots els dispositius d'àudio configurats. "
+"Altra aplicació està usant el dispositiu de so al qual Mixx està configurat "
+"pel seu ús o és possible que el dispositiu no estiga connectat."
 
 #: MixxxApp#13
 msgid ""
 "<b>Retry</b> after closing the other application or reconnecting a sound "
 "device"
 msgstr ""
+"<b>Reintenta</b> després de tancar l'altra aplicació o reconnectar un "
+"dispositiu d'àudio"
 
 #: MixxxApp#14
 msgid "<b>Reconfigure</b> Mixxx's sound device settings."
-msgstr ""
+msgstr "<b>Reconfigura</b> les opcions del dispositiu d'àudio de Mixxx's"
 
 #: MixxxApp#15
 msgid "<b>Exit</b> Mixxx."
-msgstr ""
+msgstr "<b>Eixir</b> de Mixxx."
 
 #: MixxxApp#16
 msgid "Retry"
-msgstr ""
+msgstr "Torna-ho a intentar"
 
 #: MixxxApp#17
 msgid "Reconfigure"
-msgstr ""
+msgstr "Reconfigura"
 
 #: MixxxApp#18
 msgid "Help"
-msgstr ""
+msgstr "Ajuda"
 
 #: MixxxApp#19
 msgid "Exit"
-msgstr ""
+msgstr "Eixir"
 
 #: MixxxApp#20
 msgid "Continue"
-msgstr ""
+msgstr "Continua"
 
 #: MixxxApp#21
 msgid "&Load Song (Player 1)..."
-msgstr ""
+msgstr "&Carregar cançó (reproductor 1)..."
 
 #: MixxxApp#22
 msgid "Ctrl+O"
-msgstr ""
+msgstr "Ctrl+O"
 
 #: MixxxApp#23
 msgid "&Load Song (Player 2)..."
-msgstr ""
+msgstr "&Carregar cançó (reproductor 2)..."
 
 #: MixxxApp#24
 msgid "Ctrl+Shift+O"
-msgstr ""
+msgstr "Ctrl+Shift+O"
 
 #: MixxxApp#25
 msgid "&Exit"
-msgstr ""
+msgstr "&Eixir"
 
 #: MixxxApp#26
 msgid "Ctrl+Q"
-msgstr ""
+msgstr "Ctrl+Q"
 
 #: MixxxApp#27
 msgid "&Rescan Library"
-msgstr ""
+msgstr "&Reescanejar biblioteca"
 
 #: MixxxApp#28
 msgid "Add &new playlist"
-msgstr ""
+msgstr "Afegir &nova llista de reproducció"
 
 #: MixxxApp#29
 msgid "Ctrl+N"
-msgstr ""
+msgstr "Ctrl+N"
 
 #: MixxxApp#30
 msgid "Add new &crate"
-msgstr ""
+msgstr "Afegir &caixó nou"
 
 #: MixxxApp#31
 msgid "Ctrl+C"
-msgstr ""
+msgstr "Ctrl+C"
 
 #: MixxxApp#32
 msgid "&Import playlist"
-msgstr ""
+msgstr "&Importa llista de reproducció"
 
 #: MixxxApp#33
 msgid "Ctrl+I"
-msgstr ""
+msgstr "Ctrl+I"
 
 #: MixxxApp#34
 msgid "&Audio Beat Marks"
-msgstr ""
+msgstr "Marques de cops d'&audio"
 
 #: MixxxApp#35
 msgid "&Full Screen"
-msgstr ""
+msgstr "Pantalla sencera"
 
 #: MixxxApp#36
 msgid "Ctrl+F"
-msgstr ""
+msgstr "Ctrl+F"
 
 #: MixxxApp#37
 msgid "F11"
-msgstr ""
+msgstr "F11"
 
 #: MixxxApp#38
 msgid "&Preferences"
-msgstr ""
+msgstr "&Preferències"
 
 #: MixxxApp#39
 msgid "Ctrl+P"
-msgstr ""
+msgstr "Ctrl+P"
 
 #: MixxxApp#40
 msgid "&About..."
-msgstr ""
+msgstr "Quant &a..."
 
 #: MixxxApp#41
 msgid "&Community Support..."
-msgstr ""
+msgstr "Suport de la &Comunitat"
 
 #: MixxxApp#42
 msgid "Enable &Vinyl Control 1"
-msgstr ""
+msgstr "Activar control per &vinil 1"
 
 #: MixxxApp#43
 msgid "Ctrl+Y"
-msgstr ""
+msgstr "Ctrl+Y"
 
 #: MixxxApp#44
 msgid "Enable &Vinyl Control 2"
-msgstr ""
+msgstr "Activar control per &vinil 2"
 
 #: MixxxApp#45
 msgid "Ctrl+U"
-msgstr ""
+msgstr "Ctrl+U"
 
 #: MixxxApp#46
 msgctxt "MixxxApp#46"
 msgid "Enable live broadcasting"
-msgstr ""
+msgstr "Activa la transmissió en viu"
 
 #: MixxxApp#47
 msgid "Ctrl+L"
-msgstr ""
+msgstr "Ctrl+L"
 
 #: MixxxApp#48
 msgid "&Record Mix"
-msgstr ""
+msgstr "En&registra mescla"
 
 #: MixxxApp#49
 msgid "Ctrl+R"
-msgstr ""
+msgstr "Ctrl+R"
 
 #: MixxxApp#50
 msgid "Show Studio"
-msgstr ""
+msgstr "Mostra estudio"
 
 #: MixxxApp#51
 msgid "Opens a song in player 1"
-msgstr ""
+msgstr "Obre una cançó al reproductor 1"
 
 #: MixxxApp#52
 msgid ""
@@ -2755,10 +2760,13 @@ msgid ""
 "\n"
 "Opens a song in player 1"
 msgstr ""
+"Obre\n"
+"\n"
+"Obre una cançó al reproductor 1"
 
 #: MixxxApp#53
 msgid "Opens a song in player 2"
-msgstr ""
+msgstr "Obre una cançó al reproductor 2"
 
 #: MixxxApp#54
 msgid ""
@@ -2766,10 +2774,13 @@ msgid ""
 "\n"
 "Opens a song in player 2"
 msgstr ""
+"Obre\n"
+"\n"
+"Obre una cançó al reproductor 2"
 
 #: MixxxApp#55
 msgid "Quits the application"
-msgstr ""
+msgstr "Ix de l'aplicació"
 
 #: MixxxApp#56
 msgid ""
@@ -2777,10 +2788,13 @@ msgid ""
 "\n"
 "Quits the application"
 msgstr ""
+"Eixir\n"
+"\n"
+"Tanca l'aplicació"
 
 #: MixxxApp#57
 msgid "Rescans the song library"
-msgstr ""
+msgstr "Torna a escanejar la biblioteca de cançons"
 
 #: MixxxApp#58
 msgid ""
@@ -2788,10 +2802,13 @@ msgid ""
 "\n"
 "Rescans the song library"
 msgstr ""
+"Rescaneja la biblioteca\n"
+"\n"
+"Rescaneja la biblioteca de cançons"
 
 #: MixxxApp#59
 msgid "Create a new playlist"
-msgstr ""
+msgstr "Crea una nova llista de reproducció"
 
 #: MixxxApp#60
 msgid ""
@@ -2799,10 +2816,13 @@ msgid ""
 "\n"
 "Create a new playlist"
 msgstr ""
+"Nova llista de reproducció\n"
+"\n"
+"Crea una nova llista de reproducció"
 
 #: MixxxApp#61
 msgid "Create a new crate"
-msgstr ""
+msgstr "Crea un nou caixó"
 
 #: MixxxApp#62
 msgid ""
@@ -2810,67 +2830,75 @@ msgid ""
 "\n"
 "Create a new crate."
 msgstr ""
+"Nou caixó\n"
+"\n"
+"Crea un nou caixó."
 
 #: MixxxApp#63
 msgid "Import playlist"
-msgstr ""
+msgstr "Importa una llista de reproducció"
 
 #: MixxxApp#64
 msgid "Audio Beat Marks"
-msgstr ""
+msgstr "Marques de compàs d'àudio"
 
 #: MixxxApp#65
 msgid ""
 "Audio Beat Marks\n"
 "Mark beats by audio clicks"
 msgstr ""
+"Marques de compàs d'àudio\n"
+"Marca el compàs a través de clicks d'àudio"
 
 #: MixxxApp#66
 msgid "Activate Vinyl Control"
-msgstr ""
+msgstr "Activa el control de vinil"
 
 #: MixxxApp#67
 msgid "Use timecoded vinyls on external turntables to control Mixxx"
 msgstr ""
+"Usa vinils amb codi de temps des de giradiscs externs per controlar Mixxx"
 
 #: MixxxApp#68
 msgid "Activate live broadcasting"
-msgstr ""
+msgstr "Activa transmissió en viu"
 
 #: MixxxApp#69
 msgid "Stream your mixes to a shoutcast or icecast server"
-msgstr ""
+msgstr "Transmet les teues mescles a un servidor de shoutcast o d'icecast"
 
 #: MixxxApp#70
 msgid "Start Recording your Mix"
-msgstr ""
+msgstr "Comença a gravar la teua mescla"
 
 #: MixxxApp#71
 msgid "Record your mix to a file"
-msgstr ""
+msgstr "Grava la teua mescla a un fitxer"
 
 #: MixxxApp#72
 msgid "Full Screen"
-msgstr ""
+msgstr "Pantalla sencera"
 
 #: MixxxApp#73
 msgid "Display Mixxx using the full screen"
-msgstr ""
+msgstr "Mostra Mixx a pantalla sencera"
 
 #: MixxxApp#74
 msgctxt "MixxxApp#74"
 msgid "Preferences"
-msgstr ""
+msgstr "Preferències"
 
 #: MixxxApp#75
 msgid ""
 "Preferences\n"
 "Playback and MIDI preferences"
 msgstr ""
+"Preferències\n"
+"Preferències de reproducció i de MIDI"
 
 #: MixxxApp#76
 msgid "Support..."
-msgstr ""
+msgstr "Suport..."
 
 #: MixxxApp#77
 msgid ""
@@ -2878,10 +2906,13 @@ msgid ""
 "\n"
 "Get help with Mixxx"
 msgstr ""
+"Suport\n"
+"\n"
+"Obté ajuda amb Mixxx"
 
 #: MixxxApp#78
 msgid "About the application"
-msgstr ""
+msgstr "Quant a l'aplicació"
 
 #: MixxxApp#79
 msgid ""
@@ -2889,10 +2920,13 @@ msgid ""
 "\n"
 "About the application"
 msgstr ""
+"Quant a\n"
+"\n"
+"Quant a l'aplicació"
 
 #: MixxxApp#80
 msgid "Shows the macro studio window"
-msgstr ""
+msgstr "Mostra la finestra del taller de macros"
 
 #: MixxxApp#81
 msgid ""
@@ -2900,304 +2934,316 @@ msgid ""
 "\n"
 "Makes the macro studio visible"
 msgstr ""
+"Mostra l'estudio\n"
+"\n"
+"Fa visible l'estudio de macros"
 
 #: MixxxApp#82
 msgid "&File"
-msgstr ""
+msgstr "&Fitxer"
 
 #: MixxxApp#83
 msgid "&Options"
-msgstr ""
+msgstr "&Opcions"
 
 #: MixxxApp#84
 msgid "&Library"
-msgstr ""
+msgstr "&Biblioteca"
 
 #: MixxxApp#85
 msgid "&View"
-msgstr ""
+msgstr "&Veure"
 
 #: MixxxApp#86
 msgid "&Help"
-msgstr ""
+msgstr "&Ajuda"
 
 #: MixxxApp#87
 msgid "&Macro"
-msgstr ""
+msgstr "&Macro"
 
 #: MixxxApp#88
 msgid "&Vinyl Control"
-msgstr ""
+msgstr "Control per &vinils"
 
 #: MixxxApp#89
 msgid "Quit..."
-msgstr ""
+msgstr "Ix..."
 
 #: MixxxApp#90
 msgid "Do your really want to quit?"
-msgstr ""
+msgstr "Estàs segur que vols eixir?"
 
 #: MixxxApp#91
 msgid ""
 "Player 1 is currently playing a song.\n"
 "Are you sure you want to load a new song?"
 msgstr ""
+"El reproductor 1 està reproduint una cançó.\n"
+"Estàs segur que vols carregar una nova cançó?"
 
 #: MixxxApp#92
 msgid "Load Song into Player 1"
-msgstr ""
+msgstr "Carregar cançó al reproductor 1"
 
 #: MixxxApp#93
 msgid ""
 "Player 2 is currently playing a song.\n"
 "Are you sure you want to load a new song?"
 msgstr ""
+"El reproductor 2 està reproduint una cançó.\n"
+"Estàs segur que vols carregar una nova cançó?"
 
 #: MixxxApp#94
 msgid "Load Song into Player 2"
-msgstr ""
+msgstr "Carregar cançó al reproductor 2"
 
 #: MixxxApp#95
 msgid ""
 "No input device(s) select.\n"
 "Please select your soundcard(s) in the sound hardware preferences."
 msgstr ""
+"No s'ha seleccionat cap dispositiu(s) d'entrada\n"
+"Per favor, selecciona la teua targeta de so a les preferències del maquinari "
+"de so."
 
 #: MixxxApp#96
 msgid "Confirm Exit"
-msgstr ""
+msgstr "Confirmar eixida"
 
 #: MixxxApp#97
 msgid "A deck is currently playing. Exit Mixxx?"
-msgstr ""
+msgstr "Un plat encara està reproduint. Eixir de Mixxx?"
 
 #: MixxxLibraryFeature#1
 msgctxt "MixxxLibraryFeature#1"
 msgid "Library"
-msgstr ""
+msgstr "Biblioteca"
 
 #: ParserM3u#1
 msgctxt "ParserM3u#1"
 msgid "Playlist Export Failed"
-msgstr ""
+msgstr "La exportació de la llista de reproducció ha fallat"
 
 #: ParserM3u#2
 msgctxt "ParserM3u#2"
 msgid "Could not create file"
-msgstr ""
+msgstr "No s'ha pogut crear el fitxer"
 
 #: ParserPls#1
 msgctxt "ParserPls#1"
 msgid "Playlist Export Failed"
-msgstr ""
+msgstr "La exportació de la llista de reproducció ha fallat"
 
 #: ParserPls#2
 msgctxt "ParserPls#2"
 msgid "Could not create file"
-msgstr ""
+msgstr "No s'ha pogut crear el fitxer"
 
 #: PlaylistFeature#1
 msgid "New Playlist"
-msgstr ""
+msgstr "Nova Llista de Reproducció"
 
 #: PlaylistFeature#2
 msgid "Add to Auto-DJ Queue"
-msgstr ""
+msgstr "Afegir a la cua d'Audio-DJ"
 
 #: PlaylistFeature#3
 msgctxt "PlaylistFeature#3"
 msgid "Remove"
-msgstr ""
+msgstr "Suprimeix"
 
 #: PlaylistFeature#4
 msgctxt "PlaylistFeature#4"
 msgid "Rename"
-msgstr ""
+msgstr "Canvia el nom"
 
 #: PlaylistFeature#5
 msgctxt "PlaylistFeature#5"
 msgid "Lock"
-msgstr ""
+msgstr "Bloqueja"
 
 #: PlaylistFeature#6
 msgctxt "PlaylistFeature#6"
 msgid "Import Playlist"
-msgstr ""
+msgstr "Importar llista de reproducció"
 
 #: PlaylistFeature#7
 msgctxt "PlaylistFeature#7"
 msgid "Export Playlist"
-msgstr ""
+msgstr "Exportar llista de reproducció"
 
 #: PlaylistFeature#8
 msgid "Playlists"
-msgstr ""
+msgstr "Llistes de reproducció"
 
 #: PlaylistFeature#9
 msgctxt "PlaylistFeature#9"
 msgid "Unlock"
-msgstr ""
+msgstr "Desbloqueja"
 
 #: PlaylistFeature#10
 msgid "Playlist name:"
-msgstr ""
+msgstr "Nom de la llista de reproducció:"
 
 #: PlaylistFeature#11
 msgid "Playlist Creation Failed"
-msgstr ""
+msgstr "Ha fallat la creació de la llista de reproducció"
 
 #: PlaylistFeature#12
 msgid "A playlist cannot have a blank name."
-msgstr ""
+msgstr "Una llista de reproducció no pot tindre el nom en blanc"
 
 #: PlaylistFeature#13
 msgid "An unknown error occurred while creating playlist: "
 msgstr ""
+"S'ha produït un error desconegut mentre es creava la llista de reproducció: "
 
 #: PlaylistFeature#14
 msgid "Rename Playlist"
-msgstr ""
+msgstr "Canvia el nom de la llista de reproducció"
 
 #: PlaylistFeature#15
 msgid "New playlist name:"
-msgstr ""
+msgstr "Nou nom de la llista de reproducció:"
 
 #: PlaylistFeature#16
 msgid "Renaming Playlist Failed"
-msgstr ""
+msgstr "Ha fallat en canvi de nom de la llista de reproducció"
 
 #: PlaylistFeature#17
 msgctxt "PlaylistFeature#17"
 msgid "Playlist Files (*.m3u *.pls)"
-msgstr ""
+msgstr "Arxius de llista de reproducció (*.m3u *.pls)"
 
 #: PlaylistFeature#18
 msgctxt "PlaylistFeature#18"
 msgid "M3U Playlist (*.m3u);;PLS Playlist (*.pls)"
 msgstr ""
+"Llista de reproducció M3U (*.m3u);;Llista de reproducció PLS  (*.pls)"
 
 #: PlaylistFeature#19
 msgid "A playlist by that name already exists."
-msgstr ""
+msgstr "Ja existeix una llista de reproducció amb eixe nom."
 
 #: PrepareFeature#1
 msgctxt "PrepareFeature#1"
 msgid "Analyze"
-msgstr ""
+msgstr "Analitza"
 
 #: QObject#1
 msgid "Invalid"
-msgstr ""
+msgstr "No vàlid"
 
 #: QObject#2
 msgid "Master"
-msgstr ""
+msgstr "Mestre"
 
 #: QObject#3
 msgid "Headphones"
-msgstr ""
+msgstr "Auriculars"
 
 #: QObject#4
 msgid "Deck"
-msgstr ""
+msgstr "Plat"
 
 #: QObject#5
 msgctxt "QObject#5"
 msgid "Vinyl Control"
-msgstr ""
+msgstr "Control de vinil"
 
 #: QObject#6
 msgid "Microphone"
-msgstr ""
+msgstr "Micròfon"
 
 #: QObject#7
 msgid "Passthrough"
-msgstr ""
+msgstr "De pas"
 
 #: QObject#8
 msgid "Unknown path type %1"
-msgstr ""
+msgstr "Tipus de ruta %1 desconegut"
 
 #: RecordingFeature#1
 msgid "Recordings"
-msgstr ""
+msgstr "Enregistraments"
 
 #: RhythmboxFeature#1
 msgid "Rhythmbox"
-msgstr ""
+msgstr "Rhythmbox"
 
 #: SamplerBank#1
 msgid "Save Sampler Bank"
-msgstr ""
+msgstr "Guarda el banc de Sampler"
 
 #: SamplerBank#2
 msgid "Error Saving Sampler Bank"
-msgstr ""
+msgstr "Error guardant el banc de Sampler"
 
 #: SamplerBank#3
 msgid "Could not write the sampler bank to '%1'."
-msgstr ""
+msgstr "No s'ha pogut escriure el banc de Sampler a '%1'."
 
 #: SamplerBank#4
 msgid "Load Sampler Bank"
-msgstr ""
+msgstr "Carregar banc de Sampler"
 
 #: SamplerBank#5
 msgid "Error Reading Sampler Bank"
-msgstr ""
+msgstr "Error llegint el banc de Sampler"
 
 #: SamplerBank#6
 msgid "Could not open the sampler bank file '%1'."
-msgstr ""
+msgstr "No s'ha pogut obrir el fitxer de banc de Sampler '%1'."
 
 #: SamplerBank#7
 msgid "Could not read the sampler bank file '%1'."
-msgstr ""
+msgstr "No s'ha pogut llegir el fitxer de banc de Sampler '%1'."
 
 #: ScriptStudio#1
 msgid "Mixxx Script Studio"
-msgstr ""
+msgstr "Mixxx Script Studio"
 
 #: ScriptStudio#2
 msgid "File"
-msgstr ""
+msgstr "Fitxer"
 
 #: ScriptStudio#3
 msgctxt "ScriptStudio#3"
 msgid "Edit"
-msgstr ""
+msgstr "Edita"
 
 #: ScriptStudio#4
 msgid "Run"
-msgstr ""
+msgstr "Executa"
 
 #: ScriptStudio#5
 msgid "Close"
-msgstr ""
+msgstr "Tanca"
 
 #: ScriptStudio#6
 msgid "Import..."
-msgstr ""
+msgstr "Importa..."
 
 #: ScriptStudio#7
 msgid "Export..."
-msgstr ""
+msgstr "Exporta..."
 
 #: ScriptStudio#8
 msgid "Delete Macro"
-msgstr ""
+msgstr "Suprimeix una macro"
 
 #: ScriptStudio#9
 msgid "New Macro..."
-msgstr ""
+msgstr "Nova macro..."
 
 #: ScriptStudio#10
 msgid "Run Macro"
-msgstr ""
+msgstr "Executa macro"
 
 #: TrackCollection#1
 msgid "Cannot open database"
-msgstr ""
+msgstr "No es pot obrir la base de dades"
 
 #: TrackCollection#2
 msgid ""
@@ -3207,10 +3253,15 @@ msgid ""
 "\n"
 "Click OK to exit."
 msgstr ""
+"No s'ha pogut establir una connexió amb la base de dades.\n"
+"Mixxx necessita suport de QT amb SQLite. Per favor, llig la documentació del "
+"driver de Qt SQL per a obtindre informació de com construir-lo.\n"
+"\n"
+"Fes click a OK per eixir."
 
 #: TrackCollection#3
 msgid "Cannot upgrade database schema"
-msgstr ""
+msgstr "No s'ha pogut actualitzar l'esquema de la base de dades"
 
 #: TrackCollection#4
 msgid ""
@@ -3220,272 +3271,283 @@ msgid ""
 "\n"
 "Click OK to exit."
 msgstr ""
+"No s'ha pogut actualitzar l'esquema de la base de dades a la versió %1.\n"
+"El teu fitxer mixxx.db pot estar corrupte.\n"
+"Prova a canviar-li el nom i reiniciar Mixxx.\n"
+"\n"
+"Fes click a OK per eixir."
 
 #: TraktorFeature#1
 msgid "Traktor"
-msgstr ""
+msgstr "Traktor"
 
 #: TraktorFeature#2
 msgid "Traktor (loading)"
-msgstr ""
+msgstr "Traktor (carregant)"
 
 #: TraktorFeature#3
 msgid "Error Loading Traktor Library"
-msgstr ""
+msgstr "Error carregant la biblioteca Traktor"
 
 #: TraktorFeature#4
 msgid ""
 "There was an error loading your Traktor library. Some of your Traktor tracks "
 "or playlists may not have loaded."
 msgstr ""
+"Ha hagut un error carregant la biblioteca Traktor. Algunes de les teues "
+"llistes de reproducció de Traktor podrien no haver-se carregat."
 
 #: Ui#1
 msgctxt "Ui#1"
 msgid "Position"
-msgstr ""
+msgstr "Posició"
 
 #: Ui#2
 msgid "Remaining"
-msgstr ""
+msgstr "Restant"
 
 #: Ui#3
 msgctxt "Ui#3"
 msgid "On"
-msgstr ""
+msgstr "Encès"
 
 #: Ui#4
 msgctxt "Ui#4"
 msgid "Off"
-msgstr ""
+msgstr "Apagat"
 
 #: Ui#5
 msgid "Don't load tracks into a playing deck"
-msgstr ""
+msgstr "No carregar pistes a un disc reproduint"
 
 #: Ui#6
 msgid "Load tracks into playing decks"
-msgstr ""
+msgstr "Carregar pistes a discs reproduint"
 
 #: Ui#7
 msgid "CDJ Mode"
-msgstr ""
+msgstr "Mode CDJ"
 
 #: Ui#8
 msgid "Simple"
-msgstr ""
+msgstr "Senzill"
 
 #: Ui#9
 msgid "Mixxx Detected a WVGA Screen"
-msgstr ""
+msgstr "Mixxx ha detectat una pantalla WVGA"
 
 #: Ui#10
 msgid "Mixxx has detected that your screen has a resolution of "
-msgstr ""
+msgstr "Mixxx ha detectat que la teua pantalla te una resolució de "
 
 #: Ui#11
 msgid ""
 "The only skin compatiable with this size display is Outline800x480-WVGA.  "
 "Would you like to use that skin?"
 msgstr ""
+"La única pell compatible amb este tamany de pantalla es Outline800x480-WVGA. "
+" Vols usar esta pell?"
 
 #: Ui#12
 msgctxt "Ui#12"
 msgid "Preferences"
-msgstr ""
+msgstr "Preferències"
 
 #: Ui#13
 msgctxt "Ui#13"
 msgid "Crossfader"
-msgstr ""
+msgstr "Crossfader"
 
 #: Ui#14
 msgid "Master volume"
-msgstr ""
+msgstr "Volum mestre"
 
 #: Ui#15
 msgid "Master balance"
-msgstr ""
+msgstr "Balance mestre"
 
 #: Ui#16
 msgid "Headphones volume"
-msgstr ""
+msgstr "Volum d'auriculars"
 
 #: Ui#17
 msgid "Headphones mix (pre/main)"
-msgstr ""
+msgstr "Mescla d'auriculars (pre/principal)"
 
 #: Ui#18
 msgid "Cue button for Player %1"
-msgstr ""
+msgstr "Botó de Cue per al reproductor %1"
 
 #: Ui#19
 msgid "Play button for Player %1"
-msgstr ""
+msgstr "Botó Play per al reproductor %1"
 
 #: Ui#20
 msgid "Fast rewind button for Player %1"
-msgstr ""
+msgstr "Botó de rebobinat ràpid per al reproductor %1"
 
 #: Ui#21
 msgid "Fast forward button for Player %1"
-msgstr ""
+msgstr "Botó de avançament ràpid per al reproductor %1"
 
 #: Ui#22
 msgid "Play reverse button for Player %1"
-msgstr ""
+msgstr "Botó per a reproducció inversa al reproductor %1"
 
 #: Ui#23
 msgid "Headphone listen button for Player %1"
-msgstr ""
+msgstr "Botó per a escoltar amb auriculars el reproductor %1"
 
 #: Ui#24
 msgid "Beat sync button for Player %1"
-msgstr ""
+msgstr "Botó de sincronització de cop per al reproductor %1"
 
 #: Ui#25
 msgid "BPM tap button for Player %1"
-msgstr ""
+msgstr "Botó de BPM tap per al reproductor %1"
 
 #: Ui#26
 msgid "Keylock button for Player %1"
-msgstr ""
+msgstr "Botó Keylock per al reproductor %1"
 
 #: Ui#27
 msgid "Pitch control slider for Player %1"
-msgstr ""
+msgstr "Control lliscant de Pitch per al reproductor %1"
 
 #: Ui#28
 msgid "Flanger effect button for Player %1"
-msgstr ""
+msgstr "Botó de efecte Flanger per al reproductor %1"
 
 #: Ui#29
 msgid "Channel %1 volume fader"
-msgstr ""
+msgstr "Atenuador (fader) de volum del canal %1"
 
 #: Ui#30
 msgid "Gain knob for Channel %1"
-msgstr ""
+msgstr "Potenciòmetre de guany per al canal %1"
 
 #: Ui#31
 msgid "High EQ knob for Channel %1"
-msgstr ""
+msgstr "Potenciòmetre d'EQ d'aguts per al canal %1"
 
 #: Ui#32
 msgid "Mid EQ knob for Channel %1"
-msgstr ""
+msgstr "Potenciòmetre d'EQ de mitjos per al canal %1"
 
 #: Ui#33
 msgid "Low EQ knob for Channel %1"
-msgstr ""
+msgstr "Potenciòmetre d'EQ de greus per al canal %1"
 
 #: Ui#34
 msgid "Loop In button for Player %1"
-msgstr ""
+msgstr "Botó de Loop In per al reproductor %1"
 
 #: Ui#35
 msgid "Loop Out button for Player %1"
-msgstr ""
+msgstr "Botó de Loop Out per al reproductor %1"
 
 #: Ui#36
 msgid "Reloop / Exit button for Player %1"
-msgstr ""
+msgstr "Botó de Reloop/Eixir per al reproductor %1"
 
 #: Ui#37
 msgid "Hotcue 1 button for Player %1"
-msgstr ""
+msgstr "Botó de Hotcue 1 per al reproductor %1"
 
 #: Ui#38
 msgid "Hotcue 2 button for Player %1"
-msgstr ""
+msgstr "Botó de Hotcue 2 per al reproductor %1"
 
 #: Ui#39
 msgid "Hotcue 3 button for Player %1"
-msgstr ""
+msgstr "Botó de Hotcue 3 per al reproductor %1"
 
 #: Ui#40
 msgid "Hotcue 4 button for Player %1"
-msgstr ""
+msgstr "Botó de Hotcue 4 per al reproductor %1"
 
 #: Ui#41
 msgid "Hotcue 1 delete button for Player %1"
-msgstr ""
+msgstr "Botó per a suprimir el Hotcue 1 al reproductor %1"
 
 #: Ui#42
 msgid "Hotcue 2 delete button for Player %1"
-msgstr ""
+msgstr "Botó per a suprimir el Hotcue 2 al reproductor %1"
 
 #: Ui#43
 msgid "Hotcue 3 delete button for Player %1"
-msgstr ""
+msgstr "Botó per a suprimir el Hotcue 3 al reproductor %1"
 
 #: Ui#44
 msgid "Hotcue 4 delete button for Player %1"
-msgstr ""
+msgstr "Botó per a suprimir el Hotcue 4 al reproductor %1"
 
 #: Ui#45
 msgid "Switch to the next view (library, playlist..)"
-msgstr ""
+msgstr "Canvia a la següent vista (biblioteca, llista de reproducció...)"
 
 #: Ui#46
 msgid "Switch to the previous view (library, playlist..)"
-msgstr ""
+msgstr "Canvia a la anterior vista (biblioteca, llista de reproducció...)"
 
 #: Ui#47
 msgid "Scroll to next track in library/playlist"
 msgstr ""
+"Desplaçar-se a la següent pista a la biblioteca/llista de reproducció"
 
 #: Ui#48
 msgid "Scroll to previous track in library/playlist"
 msgstr ""
+"Desplaçar-se a la anterior pista a la biblioteca/llista de reproducció"
 
 #: Ui#49
 msgid "Load selected track into first stopped player"
-msgstr ""
+msgstr "Carregar la pista seleccionada al primer reproductor que es pare"
 
 #: Ui#50
 msgid "Load selected track into Player %1"
-msgstr ""
+msgstr "Carregar la pista seleccionada al reproductor %1"
 
 #: WSearchLineEdit#1
 msgid "Search..."
-msgstr ""
+msgstr "Cerca..."
 
 #: WTrackTableView#1
 msgid "Add to Playlist"
-msgstr ""
+msgstr "Afegeix a la llista de reproducció"
 
 #: WTrackTableView#2
 msgid "Add to Crate"
-msgstr ""
+msgstr "Afegir al caixó"
 
 #: WTrackTableView#3
 msgid "Load to Sampler"
-msgstr ""
+msgstr "Carregar al Sampler"
 
 #: WTrackTableView#4
 msgctxt "WTrackTableView#4"
 msgid "Remove"
-msgstr ""
+msgstr "Suprimeix"
 
 #: WTrackTableView#5
 msgid "Properties..."
-msgstr ""
+msgstr "Propietats..."
 
 #: WTrackTableView#6
 msgid "Add to Auto DJ Queue"
-msgstr ""
+msgstr "Afegir a la cua d'Auto DJ"
 
 #: WTrackTableView#7
 msgid "Load to Deck %1"
-msgstr ""
+msgstr "Carregar al plat %1"
 
 #: WTrackTableView#8
 msgid "Sampler %1"
-msgstr ""
+msgstr "Sampler %1"
 
 #: WTrackTableViewHeader#1
 msgid "Show or hide columns."
-msgstr ""
+msgstr "Mostra o oculta columnes."
 
 #~ msgid "Permission Denied"
 #~ msgstr "S'ha denegat el permís"
