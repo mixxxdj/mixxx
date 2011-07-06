@@ -26,17 +26,6 @@
 	border-image: url(:/images/autodj/stock_mail-send-receive.svg);
 }
 
-#spinBoxTransition{
-	border-image: transparent ;
-}
-
-QPushButton#pushButtonAutoDJ{ 
-	border-image: url(:/images/autodj/gtk-yes.svg);
-}
-
-QPushButton:checked#pushButtonAutoDJ{ 
-	border-image: url(:/images/autodj/gtk-stop.svg);
-}
 </string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
@@ -152,17 +141,11 @@ QPushButton:checked#pushButtonAutoDJ{
      </item>
      <item>
       <widget class="QPushButton" name="pushButtonAutoDJ">
-       <property name="maximumSize">
-        <size>
-         <width>24</width>
-         <height>24</height>
-        </size>
-       </property>
        <property name="toolTip">
         <string>Enable Auto DJ</string>
        </property>
        <property name="text">
-        <string/>
+        <string>Enable Auto DJ</string>
        </property>
        <property name="checkable">
         <bool>true</bool>

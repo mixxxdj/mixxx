@@ -629,7 +629,10 @@ QWidget* LegacySkinParser::parseTableView(QDomElement node) {
 
     setupPosition(node, pTabWidget);
     setupSize(node, pTabWidget);
-
+    // set maximum size to prevent growing
+    // Note: sizeHint() may be greater in skins for tiny screens 
+    pTabWidget->setMaximumSize(pTabWidget->minimumSize()); 
+ 
     QWidget* pLibraryPage = new QWidget(pTabWidget);
 
     QGridLayout* pLibraryPageLayout = new QGridLayout(pLibraryPage);
