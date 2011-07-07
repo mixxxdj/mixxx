@@ -629,10 +629,15 @@ QWidget* LegacySkinParser::parseTableView(QDomElement node) {
 
     setupPosition(node, pTabWidget);
     setupSize(node, pTabWidget);
-    // set maximum size to prevent growing
+
+    // set maximum width to prevent growing to qSplitter->sizeHint()
     // Note: sizeHint() may be greater in skins for tiny screens 
-    pTabWidget->setMaximumSize(pTabWidget->minimumSize()); 
- 
+    int width = pTabWidget->minimumWidth();
+    if (width == 0) {
+    	width = m_pParent->minimumWidth();
+    }
+    pTabWidget->setMaximumWidth(width);
+
     QWidget* pLibraryPage = new QWidget(pTabWidget);
 
     QGridLayout* pLibraryPageLayout = new QGridLayout(pLibraryPage);
