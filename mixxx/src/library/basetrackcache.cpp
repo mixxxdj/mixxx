@@ -7,7 +7,7 @@
 
 namespace {
 
-const bool sDebug = false;
+const bool sDebug = true;
 
 const QHash<QString, int> buildReverseIndex(const QList<QString> items) {
     int i = 0;
@@ -20,13 +20,11 @@ const QHash<QString, int> buildReverseIndex(const QList<QString> items) {
 
 }  // namespace
 
-BaseTrackCache::BaseTrackCache(QObject* pParent,
-                               TrackCollection* pTrackCollection,
-                               QSqlDatabase db,
+BaseTrackCache::BaseTrackCache(TrackCollection* pTrackCollection,
                                QString tableName,
                                QString idColumn,
                                QList<QString> columns)
-        : QObject(pParent),
+        : QObject(pTrackCollection),
           m_tableName(tableName),
           m_idColumn(idColumn),
           m_columns(columns),
@@ -35,7 +33,7 @@ BaseTrackCache::BaseTrackCache(QObject* pParent,
           m_bIndexBuilt(false),
           m_pTrackCollection(pTrackCollection),
           m_trackDAO(m_pTrackCollection->getTrackDAO()),
-          m_database(db) {
+          m_database(m_pTrackCollection->getDatabase()) {
 
     m_searchColumns << "artist"
                     << "album"
@@ -49,6 +47,8 @@ BaseTrackCache::BaseTrackCache(QObject* pParent,
     for (int i = 0; i < m_searchColumns.size(); ++i) {
         m_searchColumnIndices[i] = m_columnIndex.value(m_searchColumns[i], -1);
     }
+
+    buildIndex();
 }
 
 BaseTrackCache::~BaseTrackCache() {
@@ -62,8 +62,8 @@ int BaseTrackCache::columnCount() const {
     return m_columns.size();
 }
 
-int BaseTrackCache::fieldIndex(const QString& fieldName) const {
-    return m_columnIndex.value(fieldName, -1);
+int BaseTrackCache::fieldIndex(const QString columnName) const {
+    return m_columnIndex.value(columnName, -1);
 }
 
 void BaseTrackCache::slotTrackAdded(int trackId) {
@@ -102,6 +102,10 @@ bool BaseTrackCache::updateIndexWithQuery(QString queryString) {
     QTime timer;
     timer.start();
 
+    if (sDebug) {
+        qDebug() << "updateIndexWithQuery issuing query:" << queryString;
+    }
+
     QSqlQuery query(m_database);
     // This causes a memory savings since QSqlCachedResult (what QtSQLite uses)
     // won't allocate a giant in-memory table that we won't use at all.
@@ -128,6 +132,8 @@ bool BaseTrackCache::updateIndexWithQuery(QString queryString) {
             record[i] = query.value(i);
         }
     }
+
+    qDebug() << "Columns:" << numColumns << "Rows:" << m_trackInfo.size();
     qDebug() << this << "updateIndexWithQuery took" << timer.elapsed() << "ms";
     return true;
 }
@@ -188,51 +194,50 @@ void BaseTrackCache::updateTracksInIndex(QSet<int> trackIds) {
     emit(tracksChanged(trackIds));
 }
 
-QVariant BaseTrackCache::getTrackValueForColumn(TrackPointer pTrack, QString column) const {
-    const int columnIndex = fieldIndex(column);
-    if (!pTrack || columnIndex < 0) {
+QVariant BaseTrackCache::getTrackValueForColumn(TrackPointer pTrack, int column) const {
+    if (!pTrack || column < 0) {
         return QVariant();
     }
 
     // TODO(XXX) Qt properties could really help here.
     // TODO(rryan) this is all TrackDAO specific. What about iTunes/RB/etc.?
-    if (fieldIndex(LIBRARYTABLE_ARTIST) == columnIndex) {
+    if (fieldIndex(LIBRARYTABLE_ARTIST) == column) {
         return QVariant(pTrack->getArtist());
-    } else if (fieldIndex(LIBRARYTABLE_TITLE) == columnIndex) {
+    } else if (fieldIndex(LIBRARYTABLE_TITLE) == column) {
         return QVariant(pTrack->getTitle());
-    } else if (fieldIndex(LIBRARYTABLE_ALBUM) == columnIndex) {
+    } else if (fieldIndex(LIBRARYTABLE_ALBUM) == column) {
         return QVariant(pTrack->getAlbum());
-    } else if (fieldIndex(LIBRARYTABLE_YEAR) == columnIndex) {
+    } else if (fieldIndex(LIBRARYTABLE_YEAR) == column) {
         return QVariant(pTrack->getYear());
-    } else if (fieldIndex(LIBRARYTABLE_GENRE) == columnIndex) {
+    } else if (fieldIndex(LIBRARYTABLE_GENRE) == column) {
         return QVariant(pTrack->getGenre());
-    } else if (fieldIndex(LIBRARYTABLE_FILETYPE) == columnIndex) {
+    } else if (fieldIndex(LIBRARYTABLE_FILETYPE) == column) {
         return QVariant(pTrack->getType());
-    } else if (fieldIndex(LIBRARYTABLE_TRACKNUMBER) == columnIndex) {
+    } else if (fieldIndex(LIBRARYTABLE_TRACKNUMBER) == column) {
         return QVariant(pTrack->getTrackNumber());
-    } else if (fieldIndex(LIBRARYTABLE_LOCATION) == columnIndex) {
+    } else if (fieldIndex(LIBRARYTABLE_LOCATION) == column) {
         return QVariant(pTrack->getLocation());
-    } else if (fieldIndex(LIBRARYTABLE_COMMENT) == columnIndex) {
+    } else if (fieldIndex(LIBRARYTABLE_COMMENT) == column) {
         return QVariant(pTrack->getComment());
-    } else if (fieldIndex(LIBRARYTABLE_DURATION) == columnIndex) {
+    } else if (fieldIndex(LIBRARYTABLE_DURATION) == column) {
         return pTrack->getDuration();
-    } else if (fieldIndex(LIBRARYTABLE_BITRATE) == columnIndex) {
+    } else if (fieldIndex(LIBRARYTABLE_BITRATE) == column) {
         return QVariant(pTrack->getBitrate());
-    } else if (fieldIndex(LIBRARYTABLE_BPM) == columnIndex) {
+    } else if (fieldIndex(LIBRARYTABLE_BPM) == column) {
         return QVariant(pTrack->getBpm());
-    } else if (fieldIndex(LIBRARYTABLE_PLAYED) == columnIndex) {
+    } else if (fieldIndex(LIBRARYTABLE_PLAYED) == column) {
         return QVariant(pTrack->getPlayed());
-    } else if (fieldIndex(LIBRARYTABLE_TIMESPLAYED) == columnIndex) {
+    } else if (fieldIndex(LIBRARYTABLE_TIMESPLAYED) == column) {
         return QVariant(pTrack->getTimesPlayed());
-    } else if (fieldIndex(LIBRARYTABLE_RATING) == columnIndex) {
+    } else if (fieldIndex(LIBRARYTABLE_RATING) == column) {
         return pTrack->getRating();
-    } else if (fieldIndex(LIBRARYTABLE_KEY) == columnIndex) {
+    } else if (fieldIndex(LIBRARYTABLE_KEY) == column) {
         return pTrack->getKey();
     }
     return QVariant();
 }
 
-QVariant BaseTrackCache::data(int trackId, QString column) const {
+QVariant BaseTrackCache::data(int trackId, int column) const {
     QVariant result;
 
     // TODO(rryan): allow as an argument
@@ -255,21 +260,26 @@ QVariant BaseTrackCache::data(int trackId, QString column) const {
     // TODO(rryan) this code is flawed for columns that contains row-specific
     // metadata. Currently the upper-levels will not delegate row-specific
     // columns to this method, but there should still be a check here I think.
-    int iColumnIndex = fieldIndex(column);
     if (!result.isValid()) {
         QHash<int, QVector<QVariant> >::const_iterator it =
                 m_trackInfo.find(trackId);
         if (it != m_trackInfo.end()) {
             const QVector<QVariant>& fields = it.value();
-            result = fields.value(iColumnIndex, result);
+            result = fields.value(column, result);
         }
     }
     return result;
 }
 
-void BaseTrackCache::filterAndSort(QVector<int>& trackIds, QString searchQuery, QString extraFilter,
-                                   QString sortColumn, Qt::SortOrder sortOrder) const {
+void BaseTrackCache::filterAndSort(QVector<int>& trackIds, QString searchQuery,
+                                   QString extraFilter, int sortColumn,
+                                   Qt::SortOrder sortOrder) const {
     QStringList idStrings;
+
+    if (sortColumn < 0 || sortColumn >= columnCount()) {
+        qDebug() << "ERROR: Invalid sort column provided to BaseTrackCache::filterAndSort";
+        return;
+    }
 
     // TODO(rryan) consider making this the data passed in and a separate
     // QVector for output
@@ -366,8 +376,10 @@ void BaseTrackCache::filterAndSort(QVector<int>& trackIds, QString searchQuery, 
 
             // For every search column, lookup the value for the track and check
             // if it matches the search query.
+            int i = 0;
             foreach (QString column, m_searchColumns) {
-                QVariant value = getTrackValueForColumn(pTrack, column);
+                int columnIndex = m_searchColumnIndices[i++];
+                QVariant value = getTrackValueForColumn(pTrack, columnIndex);
                 if (value.isValid() && qVariantCanConvert<QString>(value)) {
                     QString valueStr = value.toString();
                     if (valueStr.contains(searchMatcher)) {
@@ -466,7 +478,7 @@ QString BaseTrackCache::filterClause(QString query, QString extraFilter,
     return "";
 }
 
-QString BaseTrackCache::orderByClause(QString sortColumn,
+QString BaseTrackCache::orderByClause(int sortColumn,
                                       Qt::SortOrder sortOrder) const {
     // This is all stolen from QSqlTableModel::orderByClause(), just rigged to
     // sort case-insensitively.
@@ -480,10 +492,8 @@ QString BaseTrackCache::orderByClause(QString sortColumn,
     query.prepare(queryString);
     query.exec();
 
-    int iSortColumn = fieldIndex(sortColumn);
-
     QString s;
-    QSqlField f = query.record().field(iSortColumn);
+    QSqlField f = query.record().field(sortColumn);
     if (!f.isValid()) {
         if (sDebug) {
             qDebug() << "field not valid";
@@ -493,8 +503,6 @@ QString BaseTrackCache::orderByClause(QString sortColumn,
 
     QString field = m_database.driver()->escapeIdentifier(
         f.name(), QSqlDriver::FieldName);
-
-    //QString field = m_columns[m_iSortColumn];
 
     s.append(QLatin1String("ORDER BY "));
     QString sort_field = QString("%1.%2").arg(m_tableName).arg(field);
@@ -518,8 +526,8 @@ QString BaseTrackCache::orderByClause(QString sortColumn,
 }
 
 int BaseTrackCache::findSortInsertionPoint(TrackPointer pTrack,
-                                           const QString sortColumn,
-                                           const Qt::SortOrder sortOrder,
+                                           const int sortColumn,
+                                           Qt::SortOrder sortOrder,
                                            const QVector<int> trackIds) const {
     QVariant trackValue = getTrackValueForColumn(pTrack, sortColumn);
 
@@ -563,18 +571,16 @@ int BaseTrackCache::findSortInsertionPoint(TrackPointer pTrack,
     return min;
 }
 
-int BaseTrackCache::compareColumnValues(QString sortColumn, Qt::SortOrder sortOrder,
+int BaseTrackCache::compareColumnValues(int sortColumn, Qt::SortOrder sortOrder,
                                         QVariant val1, QVariant val2) const {
     int result = 0;
 
-    int iColumnNumber = fieldIndex(sortColumn);
-
-    if (iColumnNumber == fieldIndex(PLAYLISTTRACKSTABLE_POSITION) ||
-        iColumnNumber == fieldIndex(LIBRARYTABLE_BITRATE) ||
-        iColumnNumber == fieldIndex(LIBRARYTABLE_BPM) ||
-        iColumnNumber == fieldIndex(LIBRARYTABLE_DURATION) ||
-        iColumnNumber == fieldIndex(LIBRARYTABLE_TIMESPLAYED) ||
-        iColumnNumber == fieldIndex(LIBRARYTABLE_RATING)) {
+    if (sortColumn == fieldIndex(PLAYLISTTRACKSTABLE_POSITION) ||
+        sortColumn == fieldIndex(LIBRARYTABLE_BITRATE) ||
+        sortColumn == fieldIndex(LIBRARYTABLE_BPM) ||
+        sortColumn == fieldIndex(LIBRARYTABLE_DURATION) ||
+        sortColumn == fieldIndex(LIBRARYTABLE_TIMESPLAYED) ||
+        sortColumn == fieldIndex(LIBRARYTABLE_RATING)) {
         // Sort as floats.
         double delta = val1.toDouble() - val2.toDouble();
 

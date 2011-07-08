@@ -27,9 +27,7 @@ class TrackCollection;
 class BaseTrackCache : public QObject {
     Q_OBJECT
   public:
-    BaseTrackCache(QObject* pParent,
-                   TrackCollection* pTrackCollection,
-                   QSqlDatabase db,
+    BaseTrackCache(TrackCollection* pTrackCollection,
                    QString tableName,
                    QString idColumn,
                    QList<QString> columns);
@@ -39,11 +37,12 @@ class BaseTrackCache : public QObject {
     // Data access methods
     ////////////////////////////////////////////////////////////////////////////
 
-    virtual QVariant data(int trackId, QString column) const;
+    virtual QVariant data(int trackId, int column) const;
     virtual const QStringList columns() const;
     virtual int columnCount() const;
+    virtual int fieldIndex(const QString column) const;
     virtual void filterAndSort(QVector<int>& trackIds, QString query, QString extraFilter,
-                               QString sortColumn, Qt::SortOrder sortOrder) const;
+                               int sortColumn, Qt::SortOrder sortOrder) const;
     virtual void ensureCached(QSet<int> trackIds);
 
   signals:
@@ -56,22 +55,21 @@ class BaseTrackCache : public QObject {
     void slotTrackClean(int trackId);
 
   private:
-    int fieldIndex(const QString& fieldName) const;
     TrackPointer lookupCachedTrack(int trackId) const;
     bool updateIndexWithQuery(QString query);
     void buildIndex();
     void updateTrackInIndex(int trackId);
     void updateTracksInIndex(QSet<int> trackIds);
-    QVariant getTrackValueForColumn(TrackPointer pTrack, QString column) const;
+    QVariant getTrackValueForColumn(TrackPointer pTrack, int column) const;
 
     QString filterClause(QString query, QString extraFilter,
                          QStringList idStrings) const;
-    QString orderByClause(QString sortColumn, Qt::SortOrder sortOrder) const;
+    QString orderByClause(int sortColumn, Qt::SortOrder sortOrder) const;
     int findSortInsertionPoint(TrackPointer pTrack,
-                               const QString sortColumn,
+                               const int sortColumn,
                                const Qt::SortOrder sortOrder,
                                const QVector<int> trackIds) const;
-    int compareColumnValues(QString sortColumn, Qt::SortOrder sortOrder,
+    int compareColumnValues(int sortColumn, Qt::SortOrder sortOrder,
                             QVariant val1, QVariant val2) const;
 
     const QString m_tableName;
