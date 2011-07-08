@@ -8,8 +8,9 @@
 #include <QtGui>
 #include <QtSql>
 
-#include "library/trackcollection.h"
+#include "library/basetrackcache.h"
 #include "library/dao/trackdao.h"
+#include "library/trackcollection.h"
 
 // BaseSqlTableModel is a custom-written SQL-backed table which aggressively
 // caches the contents of the table and supports lightweight updates.
@@ -51,11 +52,9 @@ class BaseSqlTableModel : public QAbstractTableModel {
     virtual const QLinkedList<int> getTrackRows(int trackId) const;
 
     virtual void setTable(const QString& tableName,
-                          const QStringList& columnNames,
-                          const QString& idColumn,
-                          const QStringList tableColumns = QStringList());
-
-    virtual void buildIndex();
+                          const QString& trackIdColumn,
+                          const QStringList& tableColumns,
+                          QSharedPointer<BaseTrackCache> trackSource);
     QSqlDatabase database() const;
 
     /** Use this if you want a model that is read-only. */
@@ -68,42 +67,22 @@ class BaseSqlTableModel : public QAbstractTableModel {
     // Set the columns used for searching. Names must correspond to the column
     // names in the table provided to setTable. Must be called after setTable is
     // called.
-    virtual void setSearchColumns(const QStringList& searchColumns);
     virtual QString orderByClause() const;
-    virtual QString filterClause() const;
     virtual void initHeaderData();
-    virtual void initDefaultSearchColumns();
-
-    virtual void updateTrackInIndex(int trackId);
-    virtual void updateTracksInIndex(QList<int> trackIds);
 
   private slots:
-    void trackChanged(int trackId);
-    void trackClean(int trackId);
+    void tracksChanged(QSet<int> trackIds);
 
   private:
-    inline TrackPointer lookupCachedTrack(int trackId) const;
-    inline QVariant getTrackValueForColumn(TrackPointer pTrack, int column) const;
-    inline QVariant getTrackValueForColumn(int trackId, int column,
-                                           TrackPointer pTrack=TrackPointer()) const;
     inline void setTrackValueForColumn(TrackPointer pTrack, int column, QVariant value);
     QVariant getBaseValue(const QModelIndex& index, int role = Qt::DisplayRole) const;
 
-    virtual int compareColumnValues(int iColumnNumber, Qt::SortOrder eSortOrder, QVariant val1, QVariant val2);
-    virtual int findSortInsertionPoint(int trackId, TrackPointer pTrack,
-                                       const QVector<QPair<int, QHash<int, QVariant> > >& rowInfo);
-
     QString m_tableName;
-    QStringList m_columnNames;
-    QString m_columnNamesJoined;
-    QHash<QString, int> m_columnIndex;
-    QSet<QString> m_tableColumns;
-    QString m_tableColumnsJoined;
-    QSet<int> m_tableColumnIndices;
-
-    QStringList m_searchColumns;
-    QVector<int> m_searchColumnIndices;
     QString m_idColumn;
+    QSharedPointer<BaseTrackCache> m_trackSource;
+    QStringList m_tableColumns;
+    QString m_tableColumnsJoined;
+    QHash<QString, int> m_tableColumnIndex;
 
     int m_iSortColumn;
     Qt::SortOrder m_eSortOrder;
@@ -111,10 +90,8 @@ class BaseSqlTableModel : public QAbstractTableModel {
     bool m_bInitialized;
     bool m_bIndexBuilt;
     QSqlRecord m_queryRecord;
-    QHash<int, QVector<QVariant> > m_recordCache;
     QVector<QPair<int, QHash<int, QVariant> > > m_rowInfo;
     QHash<int, QLinkedList<int> > m_trackIdToRows;
-    QSet<int> m_trackOverrides;
 
     QString m_currentSearch;
     QString m_currentSearchFilter;
