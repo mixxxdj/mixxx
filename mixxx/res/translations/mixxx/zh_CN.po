@@ -8,13 +8,13 @@ msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2011-05-03 21:42-0400\n"
-"PO-Revision-Date: 2011-07-04 01:55+0000\n"
-"Last-Translator: zhanshime <Unknown>\n"
+"PO-Revision-Date: 2011-07-08 16:05+0000\n"
+"Last-Translator: Serene <Unknown>\n"
 "Language-Team: Chinese (Simplified) <zh_CN@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-07-05 04:31+0000\n"
+"X-Launchpad-Export-Date: 2011-07-09 04:32+0000\n"
 "X-Generator: Launchpad (build 13168)\n"
 
 #: AutoDJFeature#1
@@ -550,7 +550,7 @@ msgstr ""
 
 #: DlgMidiLearning#7
 msgid "Begin"
-msgstr ""
+msgstr "开始"
 
 #: DlgMidiLearning#8
 msgid "Please tweak the control for:"
@@ -634,12 +634,12 @@ msgstr ""
 #: DlgPrefBPMDlg#9
 msgctxt "DlgPrefBPMDlg#9"
 msgid "Add"
-msgstr ""
+msgstr "新增"
 
 #: DlgPrefBPMDlg#10
 msgctxt "DlgPrefBPMDlg#10"
 msgid "Edit"
-msgstr ""
+msgstr "编辑"
 
 #: DlgPrefBPMDlg#11
 msgid "Delete"
@@ -647,7 +647,7 @@ msgstr "删除"
 
 #: DlgPrefBPMDlg#12
 msgid "Default"
-msgstr ""
+msgstr "默认值"
 
 #: DlgPrefBpm#1
 msgid "Error"
