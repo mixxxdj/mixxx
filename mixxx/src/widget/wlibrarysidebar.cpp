@@ -7,6 +7,7 @@
 const int expand_time = 250;
 
 WLibrarySidebar::WLibrarySidebar(QWidget* parent) : QTreeView(parent) {
+    m_sLibraryPrefix = "";
     //Set some properties
     setHeaderHidden(true);
     setSelectionMode(QAbstractItemView::SingleSelection);
@@ -21,6 +22,10 @@ WLibrarySidebar::WLibrarySidebar(QWidget* parent) : QTreeView(parent) {
 WLibrarySidebar::~WLibrarySidebar() {
 }
 
+void WLibrarySidebar::setLibraryPrefix(QString prefix)
+{
+    m_sLibraryPrefix = prefix;
+}
 
 void WLibrarySidebar::contextMenuEvent(QContextMenuEvent *event)
 {
@@ -79,6 +84,10 @@ void WLibrarySidebar::dragMoveEvent(QDragMoveEvent * event)
             if (sidebarModel) {
                 foreach (url, urls)
                 {
+                    if (!url.toLocalFile().startsWith("/"))
+                    {
+                        url = QUrl::fromLocalFile(m_sLibraryPrefix + "/" + url.toLocalFile());
+                    }
                     QModelIndex destIndex = this->indexAt(event->pos());
                     if (!sidebarModel->dragMoveAccept(destIndex, url))
                     {
@@ -141,6 +150,10 @@ void WLibrarySidebar::dropEvent(QDropEvent * event) {
             if (sidebarModel) {
                 foreach (url, urls)
                 {
+                    if (!url.toLocalFile().startsWith("/"))
+                    {
+                        url = QUrl::fromLocalFile(m_sLibraryPrefix + "/" + url.toLocalFile());
+                    }
                     //qDebug() << "dropEvent" << url;
                     QModelIndex destIndex = indexAt(event->pos());
                     if (sidebarModel->dropAccept(destIndex, url))

@@ -117,6 +117,9 @@ void Library::bindWidget(WLibrarySidebar* pSidebarWidget,
 
     connect(this, SIGNAL(switchToView(const QString&)),
             pLibraryWidget, SLOT(switchToView(const QString&)));
+            
+    QString prefix = m_pConfig->getValueString(ConfigKey("[Playlist]", "Directory"));
+    pSidebarWidget->setLibraryPrefix(prefix);            
 
     m_pLibraryControl->bindWidget(pSidebarWidget, pLibraryWidget, pKeyboard);
 

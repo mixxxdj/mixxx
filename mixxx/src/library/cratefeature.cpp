@@ -146,6 +146,8 @@ void CrateFeature::activateChild(const QModelIndex& index) {
     QString crateName = index.data().toString();
     int crateId = m_pTrackCollection->getCrateDAO().getCrateIdByName(crateName);
     m_crateTableModel.setCrate(crateId);
+    QString prefix = m_pConfig->getValueString(ConfigKey("[Playlist]", "Directory"));
+    m_crateTableModel.setLibraryPrefix(prefix);
     emit(showTrackModel(&m_crateTableModel));
 }
 
