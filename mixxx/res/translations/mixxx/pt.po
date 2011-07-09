@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2011-05-03 21:42-0400\n"
-"PO-Revision-Date: 2010-11-21 17:28+0000\n"
-"Last-Translator: Bruno Buccolo <Unknown>\n"
+"PO-Revision-Date: 2011-07-08 21:32+0000\n"
+"Last-Translator: Nuno Ferreira <Unknown>\n"
 "Language-Team: Portuguese <pt@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-05-05 04:36+0000\n"
-"X-Generator: Launchpad (build 12959)\n"
+"X-Launchpad-Export-Date: 2011-07-09 04:32+0000\n"
+"X-Generator: Launchpad (build 13168)\n"
 
 #: AutoDJFeature#1
 msgid "Auto DJ"
@@ -28,74 +28,74 @@ msgstr ""
 #: BaseSqlTableModel#2
 msgctxt "BaseSqlTableModel#2"
 msgid "Artist"
-msgstr ""
+msgstr "Artista"
 
 #: BaseSqlTableModel#3
 msgctxt "BaseSqlTableModel#3"
 msgid "Title"
-msgstr ""
+msgstr "Título"
 
 #: BaseSqlTableModel#4
 msgctxt "BaseSqlTableModel#4"
 msgid "Album"
-msgstr ""
+msgstr "Álbum"
 
 #: BaseSqlTableModel#5
 msgctxt "BaseSqlTableModel#5"
 msgid "Genre"
-msgstr ""
+msgstr "Género"
 
 #: BaseSqlTableModel#6
 msgctxt "BaseSqlTableModel#6"
 msgid "Year"
-msgstr ""
+msgstr "Ano"
 
 #: BaseSqlTableModel#7
 msgctxt "BaseSqlTableModel#7"
 msgid "Type"
-msgstr ""
+msgstr "Tipo"
 
 #: BaseSqlTableModel#8
 msgctxt "BaseSqlTableModel#8"
 msgid "Location"
-msgstr ""
+msgstr "Localização"
 
 #: BaseSqlTableModel#9
 msgctxt "BaseSqlTableModel#9"
 msgid "Comment"
-msgstr ""
+msgstr "Comentário"
 
 #: BaseSqlTableModel#10
 msgctxt "BaseSqlTableModel#10"
 msgid "Duration"
-msgstr ""
+msgstr "Duração"
 
 #: BaseSqlTableModel#11
 msgid "Rating"
-msgstr ""
+msgstr "Avaliação"
 
 #: BaseSqlTableModel#12
 msgctxt "BaseSqlTableModel#12"
 msgid "Bitrate"
-msgstr ""
+msgstr "Taxa de bits"
 
 #: BaseSqlTableModel#13
 msgctxt "BaseSqlTableModel#13"
 msgid "BPM"
-msgstr ""
+msgstr "BPM"
 
 #: BaseSqlTableModel#14
 msgctxt "BaseSqlTableModel#14"
 msgid "Track #"
-msgstr ""
+msgstr "Faixa #"
 
 #: BaseSqlTableModel#15
 msgid "Date Added"
-msgstr ""
+msgstr "Data de adição"
 
 #: BaseSqlTableModel#16
 msgid "#"
-msgstr ""
+msgstr "#"
 
 #: BaseSqlTableModel#17
 msgctxt "BaseSqlTableModel#17"
@@ -104,7 +104,7 @@ msgstr ""
 
 #: BaseTrackPlayer#1
 msgid "Couldn't load track."
-msgstr ""
+msgstr "Não foi possível abrir a faixa."
 
 #: BrowseFeature#1
 msgid "Quick Links"
@@ -112,7 +112,7 @@ msgstr ""
 
 #: BrowseFeature#2
 msgid "Devices"
-msgstr ""
+msgstr "Dispositivos"
 
 #: BrowseFeature#3
 msgid "Removable Devices"
@@ -121,7 +121,7 @@ msgstr ""
 #: BrowseFeature#4
 msgctxt "BrowseFeature#4"
 msgid "Mixxx Library"
-msgstr ""
+msgstr "Biblioteca Mixxx"
 
 #: BrowseFeature#5
 msgid "Home"
@@ -129,15 +129,15 @@ msgstr ""
 
 #: BrowseFeature#6
 msgid "Music"
-msgstr ""
+msgstr "Música"
 
 #: BrowseFeature#7
 msgid "Documents"
-msgstr ""
+msgstr "Documentos"
 
 #: BrowseFeature#8
 msgid "Desktop"
-msgstr ""
+msgstr "Ambiente de Trabalho"
 
 #: BrowseFeature#9
 msgid "Browse"
@@ -145,12 +145,12 @@ msgstr "Procurar"
 
 #: BrowseTableModel#1
 msgid "Filename"
-msgstr ""
+msgstr "Nome do ficheiro"
 
 #: BrowseTableModel#2
 msgctxt "BrowseTableModel#2"
 msgid "Artist"
-msgstr ""
+msgstr "Artista"
 
 #: BrowseTableModel#3
 msgctxt "BrowseTableModel#3"
