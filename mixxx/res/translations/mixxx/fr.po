@@ -3,13 +3,13 @@ msgstr ""
 "Project-Id-Version: Mixxx 1.8\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2011-05-03 21:42-0400\n"
-"PO-Revision-Date: 2011-06-17 18:35+0000\n"
-"Last-Translator: Xavier poullain <Unknown>\n"
+"PO-Revision-Date: 2011-07-10 19:30+0000\n"
+"Last-Translator: graizon christophe <Unknown>\n"
 "Language-Team: <tezalprod@gmail.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-06-18 04:34+0000\n"
+"X-Launchpad-Export-Date: 2011-07-11 04:31+0000\n"
 "X-Generator: Launchpad (build 13168)\n"
 "X-Poedit-Country: FRANCE\n"
 "X-Poedit-Language: French\n"
@@ -553,7 +553,7 @@ msgstr "Suivant"
 #: DlgMidiLearning#4
 msgctxt "DlgMidiLearning#4"
 msgid "MIDI Learning Wizard"
-msgstr "Assistant MIDI"
+msgstr "Assistant de configuration MIDI"
 
 #: DlgMidiLearning#5
 msgid "Welcome to the MIDI Learning Wizard"
@@ -735,11 +735,11 @@ msgstr "90%"
 
 #: DlgPrefControls#12
 msgid "Up increases speed"
-msgstr "Haut accélère la vitesse"
+msgstr "Augmente la vitesse"
 
 #: DlgPrefControls#13
 msgid "Down increases speed (Technics SL1210)"
-msgstr "Bas augmente la vitesse (Technics SL1210)"
+msgstr "Diminue la vitesse (Technics SL1210)"
 
 #: DlgPrefControls#14
 msgctxt "DlgPrefControls#14"
@@ -748,12 +748,12 @@ msgstr "Informations"
 
 #: DlgPrefControls#15
 msgid "Mixxx must be restarted before the changes will take effect."
-msgstr "Mixxx doit être redémarré pour que les changements prennent effet."
+msgstr "Mixxx doit être redémarré avant que les changements prennent effet."
 
 #: DlgPrefControlsDlg#1
 msgctxt "DlgPrefControlsDlg#1"
 msgid "Form1"
-msgstr "Form1"
+msgstr "Formulaire1"
 
 #: DlgPrefControlsDlg#2
 msgid "Skin"
@@ -972,7 +972,7 @@ msgstr "Fichiers Preset (*.midi.xml)"
 
 #: DlgPrefMidiBindings#8
 msgid "Select Control Group"
-msgstr "Sélectionner une group de contrôle"
+msgstr "Sélectionner Groupe de contrôle"
 
 #: DlgPrefMidiBindings#9
 msgid "Select Control"
@@ -980,7 +980,7 @@ msgstr "Sélectionner contrôle"
 
 #: DlgPrefMidiBindings#10
 msgid "Clear Input Bindings"
-msgstr "Effacer les connection d'entrée"
+msgstr "Effacer les connections d'entrée"
 
 #: DlgPrefMidiBindings#11
 msgid "Are you sure you want to clear all bindings?"
@@ -1005,7 +1005,7 @@ msgstr "Nom de votre interface"
 
 #: DlgPrefMidiBindingsDlg#3
 msgid "Load Preset:"
-msgstr "Charger sélection"
+msgstr "Charger sélection:"
 
 #: DlgPrefMidiBindingsDlg#4
 msgid "Export"
@@ -1013,7 +1013,7 @@ msgstr "Exporter"
 
 #: DlgPrefMidiBindingsDlg#5
 msgid "Output:"
-msgstr "Sortie :"
+msgstr "Sorties :"
 
 #: DlgPrefMidiBindingsDlg#6
 msgid "Enabled"
@@ -1071,7 +1071,7 @@ msgstr "Form3"
 
 #: DlgPrefNoMidiDlg#2
 msgid "No MIDI devices available"
-msgstr "Pas de périphériques MIDI disponible"
+msgstr "Pas de périphériques MIDI disponibles"
 
 #: DlgPrefNoVinylDlg#1
 msgctxt "DlgPrefNoVinylDlg#1"
@@ -1228,7 +1228,7 @@ msgstr ""
 
 #: DlgPrefPlaylist#4
 msgid "Choose Yes to use the newly found iPod @ "
-msgstr "Choisissez oui pour utiliser le nouvel IPod détécter "
+msgstr "Choisissez oui pour utiliser le nouvel IPod @ détécter "
 
 #: DlgPrefPlaylist#5
 msgid " or to continue to search for other iPods. \n"
@@ -1666,7 +1666,7 @@ msgstr "Métadonnée personnalisée"
 
 #: DlgPrefShoutcastDlg#47
 msgid "Enable custom metadata"
-msgstr "Activer les métadonnée personnalisée"
+msgstr "Activer les métadonnées personnalisées"
 
 #: DlgPrefShoutcastDlg#48
 msgctxt "DlgPrefShoutcastDlg#48"
@@ -1691,9 +1691,8 @@ msgid ""
 "Please note that for technical reasons changing any shoutcast settings will "
 "cause an established connection to disconnect and reconnect. "
 msgstr ""
-"S'il vous plait notez que pour des raisons techniques changement de  toute "
-"configurations shoutcast causera la déconnections d'une connection établie "
-"et d'une reconnection "
+"S'il vous plaît noter que pour des raisons techniques afin de modifier les "
+"paramètres shoutcast provoquera une déconnexion et une reconnexion. "
 
 #: DlgPrefSound#1
 msgctxt "DlgPrefSound#1"
@@ -2139,7 +2138,7 @@ msgstr "Tap to Tempo"
 #: DlgTrackInfo#21
 msgid "Hint: Use the Library Analyze view to run BPM detection."
 msgstr ""
-"Conseil: Utilisez l'Analyse Bibliothèque pour lancer la détéction BPM"
+"Conseil: Utilisez l'Analyse Bibliothèque pour lancer la détection BPM."
 
 #: DlgTrackInfo#22
 msgid "Track BPM"
@@ -2184,7 +2183,7 @@ msgstr "&Appliquer"
 
 #: DlgTrackInfo#32
 msgid "&Cancel"
-msgstr "&Annulé"
+msgstr "&Annuler"
 
 #: DlgTrackInfo#33
 msgctxt "DlgTrackInfo#33"
@@ -2282,7 +2281,7 @@ msgstr ""
 
 #: EngineShoutcast#7
 msgid "Live broadcasting"
-msgstr "Diffusion live"
+msgstr "Diffusion en direct"
 
 #: EngineShoutcast#8
 msgid "Mixxx has successfully connected to the shoutcast server"
@@ -2361,7 +2360,7 @@ msgstr ""
 
 #: LibraryScannerDlg#2
 msgid "Cancel"
-msgstr "Annulé"
+msgstr "Annuler"
 
 #: MidiInputMappingTableModel#1
 msgid "Midi Status Type"
@@ -2546,35 +2545,35 @@ msgid ""
 "This information will not be used to personally identify you, contact you, "
 "advertise to you, or otherwise bother you in any way.\n"
 msgstr ""
-"Le retour d'information communautaire conduit le développement de Mixxx. "
-"Pour aider a améliorer les versions futures Mixxx  avec votre permission de "
-"rassembler des informations sur votre matériel et utilisation de Mixxx. Ces "
-"informations seront principalement utilisées pour corriger des bogues, "
-"amélioreront les caractéristiques et détermineront les pré-requis techniques "
-"de versions postérieures. De plus ces informations peuvent être utilisées "
-"dans l'ensemble des statistique.\n"
+"Le développement Mixxx est guidé par les commentaires de la communauté. Afin "
+"d'aider à améliorer les futures versions, Mixxx va avec votre autorisation "
+"recueillir des informations sur votre matériel et de l'utilisation de Mixxx. "
+"Ces informations seront principalement utilisées pour corriger des bugs, "
+"améliorer les fonctionnalitées, et de déterminer les exigences du système de "
+"versions ultérieures. En outre, ces informations peuvent être utilisées dans "
+"l'ensemble à des fins statistiques.\n"
 "\n"
 "Les informations sur le matériel utilisé seront incluent:\n"
-"\t-modèle de CPU et features\n"
+"\t-Modèle de CPU et Caractéristiques.\n"
 "\t-Quantité Totale/Disponible de RAM\n"
-"t-Espace disque disponible\n"
+"\t-Espace disque disponible\n"
 "\t-OS version\n"
 "\n"
 "Vos informations d'utilisation seront incluent:\n"
 "\t-Configuration/Préférences\n"
-"\t-erreurs interne\n"
-" \t-débogage messages Interne\n"
-"\t-la statistique de Performance (font la moyenne la latence, l'utilisation "
-"du CPU)\n"
+"\t-Erreurs internes\n"
+"\t-Débogage messages Internes\n"
+"\t-La statistique de Performance (moyenne du temps de latence , "
+"l'utilisation du CPU)\n"
 "\n"
-"Ces informations ne seront pas utilisées pour personnellement vous "
-"identifiez, vous contactez, vous feront de la publicité, ou vous dérangeront "
-"de quelle façon que ce soit.\n"
+"Ces informations ne seront pas utilisées  personnellement pour vous "
+"identifiez, vous contactez,de vous envoyez de la publicité, ou vous "
+"dérangerez de quelle manière que ce soit.\n"
 
 #: MixxxApp#9
 msgctxt "MixxxApp#9"
 msgid "Choose music library directory"
-msgstr "Choisissez le dossier de la librairie musique"
+msgstr "Choisissez le dossier de la bibliothèque musicale"
 
 #: MixxxApp#10
 msgid "Sound Device Busy"
@@ -3139,7 +3138,7 @@ msgstr "Casque"
 
 #: QObject#4
 msgid "Deck"
-msgstr "Lecteur"
+msgstr "Platine"
 
 #: QObject#5
 msgctxt "QObject#5"
