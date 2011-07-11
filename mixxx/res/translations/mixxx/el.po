@@ -8,13 +8,13 @@ msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2011-05-03 21:42-0400\n"
-"PO-Revision-Date: 2011-06-11 09:32+0000\n"
-"Last-Translator: mangelasakis <Unknown>\n"
+"PO-Revision-Date: 2011-07-10 16:23+0000\n"
+"Last-Translator: mutil <Unknown>\n"
 "Language-Team: Greek <el@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-06-12 04:49+0000\n"
+"X-Launchpad-Export-Date: 2011-07-11 04:31+0000\n"
 "X-Generator: Launchpad (build 13168)\n"
 
 #: AutoDJFeature#1
@@ -642,15 +642,15 @@ msgstr "Εγγραφή του BPM στο ID3 Tag"
 
 #: DlgPrefBPMDlg#6
 msgid "If BPM can be detected but not within specified range"
-msgstr ""
+msgstr "Άν το BPM μπορεί να ανιχνευτεί αλλά όχι στο καθορισμένο εύρος"
 
 #: DlgPrefBPMDlg#7
 msgid "Allow BPM above the range"
-msgstr ""
+msgstr "Να επιτρέπεται BPM πάνω από το εύρος"
 
 #: DlgPrefBPMDlg#8
 msgid "BPM Schemes"
-msgstr ""
+msgstr "Σχήματα BPM"
 
 #: DlgPrefBPMDlg#9
 msgctxt "DlgPrefBPMDlg#9"
@@ -737,7 +737,7 @@ msgstr "Πληροφορίες"
 
 #: DlgPrefControls#15
 msgid "Mixxx must be restarted before the changes will take effect."
-msgstr ""
+msgstr "Το mixxx χρειάζεται επανεκκίνηση για να εφαρμοστούν οι αλλαγές."
 
 #: DlgPrefControlsDlg#1
 msgctxt "DlgPrefControlsDlg#1"
@@ -1056,7 +1056,7 @@ msgstr "Φόρμα3"
 
 #: DlgPrefNoMidiDlg#2
 msgid "No MIDI devices available"
-msgstr ""
+msgstr "Δεν υπάρχουν διαθέσιμες συσκευές MIDI"
 
 #: DlgPrefNoVinylDlg#1
 msgctxt "DlgPrefNoVinylDlg#1"
@@ -1287,7 +1287,7 @@ msgstr "Βιβλιοθήκη"
 
 #: DlgPrefPlaylistDlg#16
 msgid "Music Directory:"
-msgstr ""
+msgstr "Κατάλογος Μουσικής:"
 
 #: DlgPrefPlaylistDlg#17
 msgid "Built-in"
@@ -2232,7 +2232,7 @@ msgstr "Προειδοποίηση"
 #: ErrorDialogHandler#4
 msgctxt "ErrorDialogHandler#4"
 msgid "Information"
-msgstr ""
+msgstr "Πληροφορίες"
 
 #: ErrorDialogHandler#5
 msgid "Question"
@@ -3362,4 +3362,4 @@ msgstr ""
 
 #: WTrackTableViewHeader#1
 msgid "Show or hide columns."
-msgstr "Εμφάνηση ή κρύψημο στυλών"
+msgstr "Εμφάνιση ή κρύψιμο στηλών"
