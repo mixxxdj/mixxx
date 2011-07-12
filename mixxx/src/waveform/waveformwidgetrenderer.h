@@ -32,7 +32,16 @@ public:
 
     bool zoomIn();
     bool zoomOut();
-    float getVisualSamplePerPixel();
+
+    void updateSamplingPerPixel();
+    double getVisualSamplePerPixel();
+    double getAudioSamplePerPixel();
+
+    //those function replace at its best sample position to an admissible
+    //sample position according to the current visual resampling
+    //this make mark and signal deterministic
+    void regulateVisualSample( int& sampleIndex);
+    void regulateAudioSample( int& sampleIndex);
 
     double getPlayPos() const { return m_playPos;}
     double getZoomFactor() const { m_zoomFactor;}
@@ -61,6 +70,8 @@ protected:
 
     double m_rateAdjust;
     double m_zoomFactor;
+    double m_visualSamplePerPixel;
+    double m_audioSamplePerPixel;
 
     //TODO vRince create some class to manage control/value
     //ControlConnection

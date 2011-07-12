@@ -43,7 +43,6 @@ void WaveformRenderMark::setup( const QDomNode& node)
 void WaveformRenderMark::draw( QPainter* painter, QPaintEvent* event)
 {
     painter->save();
-    painter->setRenderHint(QPainter::HighQualityAntialiasing);
 
     /*
     //DEBUG
@@ -54,8 +53,8 @@ void WaveformRenderMark::draw( QPainter* painter, QPaintEvent* event)
     }
     */
 
+    //Could be useful to get his kind of transformation in the waveformWidget
     //make the painter in the track position 'world'
-    double h = m_waveformWidget->getHeight();
     double w = m_waveformWidget->getWidth();
     double s = m_waveformWidget->getFirstDisplayedPosition();
     double e = m_waveformWidget->getLastDisplayedPosition();
@@ -63,11 +62,7 @@ void WaveformRenderMark::draw( QPainter* painter, QPaintEvent* event)
     float a = w/(e-s);
     float b = -s;
 
-    painter->scale(1.0,1.0);
-    painter->translate(0.0,0.0);
     painter->setWorldMatrixEnabled(false);
-
-    double samplesPerPixel = m_waveformWidget->getVisualSamplePerPixel();
 
     for( int i = 0; i < m_marks.size(); i++)
     {
@@ -84,16 +79,15 @@ void WaveformRenderMark::draw( QPainter* painter, QPaintEvent* event)
         int samplePosition = mark.m_point->get();
         if( samplePosition > 0.0)
         {
-            //TODO vRince remove hard-coded visual resampling ratio (100)!!
-            samplePosition -= samplePosition%(2*(int)samplesPerPixel*100);
-            float currentMarkPoint = (float)samplePosition / (float)m_waveformWidget->getTrackSamples();
+            m_waveformWidget->regulateAudioSample(samplePosition);
+            double currentMarkPoint = (double)samplePosition / (double)m_waveformWidget->getTrackSamples();
 
             //check if the current point need to be displayed
             if( m_waveformWidget->getFirstDisplayedPosition() < currentMarkPoint &&
                     m_waveformWidget->getLastDisplayedPosition() > currentMarkPoint)
             {
                 currentMarkPoint = a*(currentMarkPoint+b);
-                //NOTE: vRince i guess pixmap width is odd to display the center on the exact line !
+                //NOTE: vRince I guess pixmap width is odd to display the center on the exact line !
                 //external pixmap should respect that ...
                 painter->drawPixmap(QPointF(currentMarkPoint-(float)mark.m_pixmap.width()/2.0f - 1.0,0.0f),
                                     mark.m_pixmap);
@@ -241,7 +235,7 @@ void WaveformRenderMark::generateMarkPixmap( Mark& mark)
         painter.drawLine( middle, lineTop, middle, lineBottom);
 
         //othe lines to increase contrast
-        painter.setPen(QColor(0,0,0,150));
+        painter.setPen(QColor(0,0,0,100));
         painter.drawLine( middle - 1, lineTop, middle - 1, lineBottom);
         painter.drawLine( middle + 1, lineTop, middle + 1, lineBottom);
 
@@ -290,8 +284,8 @@ void WaveformRenderMark::generateMarkPixmap( Mark& mark)
 
         painter.drawLine( middle, lineTop, middle, lineBottom);
 
-        //othe lines to increase contrast
-        painter.setPen(QColor(0,0,0,150));
+        //other lines to increase contrast
+        painter.setPen(QColor(0,0,0,100));
         painter.drawLine( middle - 1, lineTop, middle - 1, lineBottom);
         painter.drawLine( middle + 1, lineTop, middle + 1, lineBottom);
     }

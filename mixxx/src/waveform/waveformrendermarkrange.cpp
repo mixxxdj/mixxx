@@ -11,7 +11,6 @@
 
 #include "waveformrendermarkrange.h"
 
-#include "waveformrenderer.h"
 #include "configobject.h"
 #include "controlobjectthreadmain.h"
 #include "controlobject.h"
@@ -19,222 +18,182 @@
 #include "widget/wwidget.h"
 #include "trackinfoobject.h"
 
-WaveformRenderMarkRange::WaveformRenderMarkRange(const char* pGroup,
-                                                 WaveformRenderer *parent)
-        : m_pGroup(pGroup),
-          m_pParent(parent),
-          m_pMarkStartPoint(NULL),
-          m_pMarkEndPoint(NULL),
-          m_pMarkEnabled(NULL),
-          m_pTrackSamples(NULL),
-          m_pTrack(NULL),
-          m_bMarkEnabled(true),
-          m_iMarkStartPoint(-1),
-          m_iMarkEndPoint(-1),
-          m_iWidth(0),
-          m_iHeight(0),
-          m_dSamplesPerDownsample(-1),
-          m_iNumSamples(0),
-          m_iSampleRate(-1) {
+#include "waveformwidgetrenderer.h"
 
-    m_pTrackSamples = new ControlObjectThreadMain(
-        ControlObject::getControl(ConfigKey(pGroup,"track_samples")));
-    slotUpdateTrackSamples(m_pTrackSamples->get());
-    connect(m_pTrackSamples, SIGNAL(valueChanged(double)),
-            this, SLOT(slotUpdateTrackSamples(double)));
+MarkRange::MarkRange()
+{
+    m_markStartPoint = 0;
+    m_markEndPoint = 0;
+    m_markEnabled = 0;
 }
 
-void WaveformRenderMarkRange::slotUpdateMarkStartPoint(double v) {
-    //qDebug() << "WaveformRenderMarkRange :: MarkStartPoint = " << v;
-    m_iMarkStartPoint = (int)v;
+void MarkRange::generatePixmap( int weidth, int height)
+{
+    m_activePixmap = QPixmap( weidth, height);
+    m_disabledPixmap = QPixmap( weidth, height);
+
+    //fill needed cause they remain transparent
+    m_activePixmap.fill(QColor(0,0,0,0));
+    m_disabledPixmap.fill(QColor(0,0,0,0));
+
+    QColor activeBorderColor = m_activeColor.lighter(50);
+    activeBorderColor.setAlphaF(0.3);
+    QColor activeCenterColor = m_activeColor;
+    activeCenterColor.setAlphaF(0.05);
+
+    QLinearGradient linearGrad(QPointF(0,0), QPointF(0,height));
+    linearGrad.setColorAt(0.0, activeCenterColor);
+    linearGrad.setColorAt(0.01, activeBorderColor);
+    linearGrad.setColorAt(0.4, activeCenterColor);
+    linearGrad.setColorAt(0.6, activeCenterColor);
+    linearGrad.setColorAt(0.99, activeBorderColor);
+    linearGrad.setColorAt(1.0, activeCenterColor);
+
+    QBrush brush(linearGrad);
+
+    QPainter painter;
+    painter.begin(&m_activePixmap);
+    painter.fillRect(m_activePixmap.rect(), brush);
+    painter.end();
+
+    QColor disabledBorderColor = m_disabledColor;
+    disabledBorderColor.setAlphaF(0.2);
+    QColor disabledCenterColor = m_disabledColor.darker(100);
+    disabledCenterColor.setAlphaF(0.05);
+
+    linearGrad = QLinearGradient(QPointF(0,0), QPointF(0,height));
+    linearGrad.setColorAt(0.0, disabledBorderColor);
+    linearGrad.setColorAt(0.2, disabledCenterColor);
+    linearGrad.setColorAt(0.8, disabledCenterColor);
+    linearGrad.setColorAt(1.0, disabledBorderColor);
+
+    brush = QBrush(linearGrad);
+
+    painter.begin(&m_disabledPixmap);
+    painter.fillRect(m_disabledPixmap.rect(), brush);
+    painter.end();
 }
 
-void WaveformRenderMarkRange::slotUpdateMarkEndPoint(double v) {
-    //qDebug() << "WaveformRenderMarkRange :: MarkEndPoint = " << v;
-    m_iMarkEndPoint = (int)v;
+/////////////////////////////////
+
+WaveformRenderMarkRange::WaveformRenderMarkRange( WaveformWidgetRenderer* waveformWidgetRenderer) :
+    WaveformRendererAbstract(waveformWidgetRenderer)
+{
 }
 
-void WaveformRenderMarkRange::slotUpdateMarkEnabled(double v) {
-    //qDebug() << "WaveformRenderMarkRange :: MarkEnabled = " << v;
-    m_bMarkEnabled = !(v == 0.0f);
+void WaveformRenderMarkRange::init()
+{
 }
 
-void WaveformRenderMarkRange::slotUpdateTrackSamples(double samples) {
-    //qDebug() << "WaveformRenderMarkRange :: samples = " << int(samples);
-    m_iNumSamples = (int)samples;
+void WaveformRenderMarkRange::setup(const QDomNode &node)
+{
+    markRanges_.clear();
+    markRanges_.reserve(32);
+
+    QDomNode child = node.firstChild();
+    while (!child.isNull())
+    {
+        if (child.nodeName() == "MarkRange")
+        {
+            markRanges_.push_back( MarkRange());
+            setupMarkRange(child,markRanges_.back());
+        }
+        child = child.nextSibling();
+    }
 }
 
-void WaveformRenderMarkRange::resize(int w, int h) {
-    m_iWidth = w;
-    m_iHeight = h;
-}
+void WaveformRenderMarkRange::draw(QPainter *painter, QPaintEvent * /*event*/)
+{
+    painter->save();
 
-void WaveformRenderMarkRange::newTrack(TrackPointer pTrack) {
-    m_pTrack = pTrack;
-    m_iMarkStartPoint = -1;
-    m_iMarkEndPoint = -1;
-    m_bMarkEnabled = true;
-    m_iNumSamples = 0;
-    m_iSampleRate = 0;
-    m_dSamplesPerDownsample = -1;
+    painter->setWorldMatrixEnabled(false);
 
-    if (!m_pTrack)
-        return;
+    if( isDirty())
+        generatePixmaps();
 
-    // calculate beat info for this track:
+    //make the painter in the track position 'world'
+    double w = m_waveformWidget->getWidth();
+    double s = m_waveformWidget->getFirstDisplayedPosition();
+    double e = m_waveformWidget->getLastDisplayedPosition();
 
-    int sampleRate = pTrack->getSampleRate();
+    float a = w/(e-s);
+    float b = -s;
 
-    // f = z * m * n
-    double m = m_pParent->getSubpixelsPerPixel();
-    double f = sampleRate;
-    double z = m_pParent->getPixelsPerSecond();
-    double n = f / (m*z);
+    for( int i = 0; i < markRanges_.size(); i++)
+    {
+        MarkRange& markRange = markRanges_[i];
 
-    m_iSampleRate = sampleRate;
+        if( !markRange.isValid())
+            continue;
 
-    m_dSamplesPerDownsample = n;
+        int startSample = markRange.m_markStartPoint->get();
+        int endSample = markRange.m_markEndPoint->get();
+        if( startSample < 0 || endSample < 0)
+            continue;
 
-    // TODO(rryan) This will possibly get us into trouble, because track samples
-    // might not be updated yet.
-    slotUpdateTrackSamples(m_pTrackSamples->get());
-    if (m_pMarkStartPoint)
-        slotUpdateMarkStartPoint(m_pMarkStartPoint->get());
-    if (m_pMarkEndPoint)
-        slotUpdateMarkEndPoint(m_pMarkEndPoint->get());
-    if (m_pMarkEnabled)
-        slotUpdateMarkEnabled(m_pMarkEnabled->get());
-}
+        m_waveformWidget->regulateAudioSample(startSample);
+        double startPosition = (double)startSample / (double)m_waveformWidget->getTrackSamples();
 
-void WaveformRenderMarkRange::setup(QDomNode node) {
+        m_waveformWidget->regulateAudioSample(endSample);
+        double endPosition = (double)endSample / (double)m_waveformWidget->getTrackSamples();
 
-    if (m_pMarkStartPoint) {
-        // Disconnect the old control
-        disconnect(m_pMarkStartPoint, 0, this, 0);
-        delete m_pMarkStartPoint;
-        m_pMarkStartPoint = NULL;
+        //range not in the current display
+        if( startPosition > m_waveformWidget->getLastDisplayedPosition() ||
+                endPosition < m_waveformWidget->getFirstDisplayedPosition())
+            continue;
+
+        startPosition = a*(startPosition+b);
+        endPosition = a*(endPosition+b);
+
+        QPixmap* selectedPixmap = 0;
+
+        if( markRange.m_markEnabled && markRange.m_markEnabled->get() < 0.5)
+            selectedPixmap = &markRange.m_disabledPixmap;
+        else
+            selectedPixmap = &markRange.m_activePixmap;
+
+        //draw the correcponding portion of the selected pixmap
+        //this shouldn't involve *any* scaling it should be fast even in software more
+        QRect rect(startPosition,0,endPosition-startPosition,m_waveformWidget->getHeight());
+        painter->drawPixmap( rect, *selectedPixmap, rect);
     }
 
-    if (m_pMarkEndPoint) {
-        // Disconnect the old control
-        disconnect(m_pMarkEndPoint, 0, this, 0);
-        delete m_pMarkEndPoint;
-        m_pMarkEndPoint = NULL;
-    }
+    painter->restore();
+}
 
-    if (m_pMarkEnabled) {
-        // Disconnect the old control
-        disconnect(m_pMarkEnabled, 0, this, 0);
-        delete m_pMarkEnabled;
-        m_pMarkEnabled = NULL;
-    }
-
-    ConfigKey configKey;
-    configKey.group = m_pGroup;
-
-    configKey.item = WWidget::selectNodeQString(node, "StartControl");
-    m_pMarkStartPoint = new ControlObjectThreadMain(
-        ControlObject::getControl(configKey));
-    slotUpdateMarkStartPoint(m_pMarkStartPoint->get());
-    connect(m_pMarkStartPoint, SIGNAL(valueChanged(double)),
-            this, SLOT(slotUpdateMarkStartPoint(double)));
-
-    configKey.item = WWidget::selectNodeQString(node, "EndControl");
-    m_pMarkEndPoint = new ControlObjectThreadMain(
-        ControlObject::getControl(configKey));
-    slotUpdateMarkEndPoint(m_pMarkEndPoint->get());
-    connect(m_pMarkEndPoint, SIGNAL(valueChanged(double)),
-            this, SLOT(slotUpdateMarkEndPoint(double)));
-
-    // Leave m_pMarkEnabled NULL if it is not specified
-    if (!WWidget::selectNode(node, "EnabledControl").isNull()) {
-        configKey.item = WWidget::selectNodeQString(node, "EnabledControl");
-        m_pMarkEnabled = new ControlObjectThreadMain(
-            ControlObject::getControl(configKey));
-        slotUpdateMarkEnabled(m_pMarkEnabled->get());
-        connect(m_pMarkEnabled, SIGNAL(valueChanged(double)),
-                this, SLOT(slotUpdateMarkEnabled(double)));
-    }
-
-    // Read the mark color, otherwise get MarkerColor of the Visual element
-    QString markColor = WWidget::selectNodeQString(node, "Color");
-    if (markColor == "") {
+void WaveformRenderMarkRange::setupMarkRange(const QDomNode &node, MarkRange &markRange)
+{
+    markRange.m_activeColor = WWidget::selectNodeQString(node, "Color");
+    if( markRange.m_activeColor == "") {
+        //vRince kinf of legacy fallback ...
         // As a fallback, grab the mark color from the parent's MarkerColor
-        markColor = WWidget::selectNodeQString(node.parentNode(), "MarkerColor");
-        qDebug() << "Didn't get mark Color, using parent's MarkerColor:"
-                 << markColor;
-        m_markColor.setNamedColor(markColor);
-        // m_markColor = QColor(255 - m_markColor.red(),
-        //                      255 - m_markColor.green(),
-        //                      255 - m_markColor.blue());
-    } else {
-        m_markColor.setNamedColor(markColor);
+        markRange.m_activeColor = WWidget::selectNodeQString(node.parentNode(), "MarkerColor");
+        qDebug() << "Didn't get mark Color, using parent's MarkerColor:" << markRange.m_activeColor;
     }
-    m_markColor = WSkinColor::getCorrectColor(m_markColor);
 
-    QString markDisabledColor = WWidget::selectNodeQString(node, "DisabledColor");
-    if (markDisabledColor == "") {
-        // As a fallback, grab the mark color from the parent's MarkerColor
-        markDisabledColor = WWidget::selectNodeQString(
-            node.parentNode(), "SignalColor");
-        qDebug() << "Didn't get mark Color, using parent's MarkerColor:"
-                 << markDisabledColor;
-        m_markDisabledColor.setNamedColor(markDisabledColor);
-        // m_markDisabledColor = QColor(255 - m_markDisabledColor.red(),
-        //                      255 - m_markDisabledColor.green(),
-        //                      255 - m_markDisabledColor.blue());
-    } else {
-        m_markDisabledColor.setNamedColor(markDisabledColor);
+    markRange.m_disabledColor = WWidget::selectNodeQString(node, "DisabledColor");
+    if( markRange.m_disabledColor == "") {
+        //vRince kinf of legacy fallback ...
+        // Read the text color, otherwise use the parent's SignalColor.
+        markRange.m_disabledColor = WWidget::selectNodeQString(node.parentNode(), "SignalColor");
+        qDebug() << "Didn't get mark TextColor, using parent's SignalColor:" << markRange.m_disabledColor;
     }
-    m_markDisabledColor = WSkinColor::getCorrectColor(m_markDisabledColor);
+
+    markRange.m_markStartPoint = ControlObject::getControl(
+                ConfigKey(m_waveformWidget->getGroup(),
+                          WWidget::selectNodeQString(node, "StartControl")));
+    markRange.m_markEndPoint = ControlObject::getControl(
+                ConfigKey(m_waveformWidget->getGroup(),
+                          WWidget::selectNodeQString(node, "EndControl")));
+    markRange.m_markEnabled = ControlObject::getControl(
+                ConfigKey(m_waveformWidget->getGroup(),
+                          WWidget::selectNodeQString(node, "EnabledControl")));
 }
 
-
-void WaveformRenderMarkRange::draw(QPainter *pPainter, QPaintEvent *event,
-                              QVector<float> *buffer, double dPlayPos,
-                              double rateAdjust) {
-    if (m_iSampleRate == -1 || m_iSampleRate == 0 || m_iNumSamples == 0)
-        return;
-
-    // necessary?
-    if (buffer == NULL)
-        return;
-
-    // The range is not active, do nothing.
-    if (m_iMarkStartPoint == -1 || m_iMarkEndPoint == -1)
-        return;
-
-    double subpixelsPerPixel = m_pParent->getSubpixelsPerPixel()*(1.0+rateAdjust);
-
-    pPainter->save();
-    pPainter->scale(1.0/subpixelsPerPixel,1.0);
-    QPen oldPen = pPainter->pen();
-    QBrush oldBrush = pPainter->brush();
-
-    double subpixelWidth = m_iWidth * subpixelsPerPixel;
-    double subpixelHalfWidth = subpixelWidth / 2.0;
-    double halfh = m_iHeight/2;
-
-    double curPos = dPlayPos * (m_iNumSamples/2);
-
-    double markStartPointMono = m_iMarkStartPoint >> 1;
-    double markEndPointMono = m_iMarkEndPoint >> 1;
-
-    double iStart = (markStartPointMono - curPos)/m_dSamplesPerDownsample;
-    double xStart = iStart + subpixelHalfWidth;
-    double iEnd = (markEndPointMono - curPos)/m_dSamplesPerDownsample;
-    double xEnd = iEnd + subpixelHalfWidth;
-
-    QRectF markRect(QPointF(xStart, halfh), QPointF(xEnd, -halfh));
-
-    QColor color = m_bMarkEnabled ? m_markColor : m_markDisabledColor;
-    color.setAlphaF(0.3);
-    QPen newPen(color);
-    pPainter->setPen(newPen);
-    pPainter->setBrush(QBrush(color));
-    pPainter->drawRect(markRect);
-
-    pPainter->setPen(oldPen);
-    pPainter->setBrush(oldBrush);
-    pPainter->restore();
+void WaveformRenderMarkRange::generatePixmaps()
+{
+    for( int i = 0; i < markRanges_.size(); i++)
+        markRanges_[i].generatePixmap( m_waveformWidget->getWidth(), m_waveformWidget->getHeight());
+    setDirty(false);
 }
+

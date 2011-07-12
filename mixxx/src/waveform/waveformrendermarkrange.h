@@ -7,53 +7,58 @@
 #include <QObject>
 #include <QColor>
 #include <QVector>
-
-class QDomNode;
-class QPainter;
-class QPaintEvent;
+#include <QPixmap>
 
 #include "configobject.h"
 #include "waveform/renderobject.h"
 
+#include "waveformrendererabstract.h"
+
+class QDomNode;
+class QPainter;
+class QPaintEvent;
 class ConfigKey;
 class ControlObjectThreadMain;
 class WaveformRenderer;
 
-class WaveformRenderMarkRange : public RenderObject {
-    Q_OBJECT
+class MarkRange
+{
 public:
-    explicit WaveformRenderMarkRange(const char* pGroup,
-                                     WaveformRenderer *parent);
-    void resize(int w, int h);
-    void setup(QDomNode node);
-    void draw(QPainter *pPainter, QPaintEvent *event,
-              QVector<float> *buffer, double playPos, double rateAdjust);
-    void newTrack(TrackPointer pTrack);
+    MarkRange();
+    bool isValid() const { return m_markStartPoint && m_markEndPoint;}
+    bool isActive() const;
 
-public slots:
-    void slotUpdateMarkStartPoint(double mark);
-    void slotUpdateMarkEndPoint(double mark);
-    void slotUpdateMarkEnabled(double mark);
-    void slotUpdateTrackSamples(double samples);
 private:
-    const char* m_pGroup;
-    WaveformRenderer *m_pParent;
+    void generatePixmap( int weidth, int height);
 
-    ControlObjectThreadMain *m_pMarkStartPoint;
-    ControlObjectThreadMain *m_pMarkEndPoint;
-    ControlObjectThreadMain *m_pMarkEnabled;
-    ControlObjectThreadMain *m_pTrackSamples;
-    TrackPointer m_pTrack;
+private:
+    ControlObject* m_markStartPoint;
+    ControlObject* m_markEndPoint;
+    ControlObject* m_markEnabled;
 
-    bool m_bMarkEnabled;
-    int m_iMarkStartPoint, m_iMarkEndPoint;
-    int m_iWidth, m_iHeight;
-    QColor m_markColor;
-    QColor m_markDisabledColor;
+    QColor m_activeColor;
+    QColor m_disabledColor;
 
-    double m_dSamplesPerDownsample;
-    int m_iNumSamples;
-    int m_iSampleRate;
+    QPixmap m_activePixmap;
+    QPixmap m_disabledPixmap;
+
+    friend class WaveformRenderMarkRange;
+};
+
+class WaveformRenderMarkRange : public WaveformRendererAbstract {
+public:
+    WaveformRenderMarkRange( WaveformWidgetRenderer* waveformWidgetRenderer);
+
+    virtual void init();
+    virtual void setup( const QDomNode& node);
+    virtual void draw( QPainter* painter, QPaintEvent* event);
+
+private:
+    void setupMarkRange( const QDomNode& node, MarkRange& markRange);
+    void generatePixmaps();
+
+private:
+    QVector<MarkRange> markRanges_;
 };
 
 #endif
