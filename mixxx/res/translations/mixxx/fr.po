@@ -3,13 +3,13 @@ msgstr ""
 "Project-Id-Version: Mixxx 1.8\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2011-05-03 21:42-0400\n"
-"PO-Revision-Date: 2011-07-10 19:30+0000\n"
+"PO-Revision-Date: 2011-07-11 18:26+0000\n"
 "Last-Translator: graizon christophe <Unknown>\n"
 "Language-Team: <tezalprod@gmail.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-07-11 04:31+0000\n"
+"X-Launchpad-Export-Date: 2011-07-12 04:32+0000\n"
 "X-Generator: Launchpad (build 13168)\n"
 "X-Poedit-Country: FRANCE\n"
 "X-Poedit-Language: French\n"
@@ -1013,7 +1013,7 @@ msgstr "Exporter"
 
 #: DlgPrefMidiBindingsDlg#5
 msgid "Output:"
-msgstr "Sorties :"
+msgstr "Sortie:"
 
 #: DlgPrefMidiBindingsDlg#6
 msgid "Enabled"
@@ -1067,7 +1067,7 @@ msgstr "Sortie MIDI"
 #: DlgPrefNoMidiDlg#1
 msgctxt "DlgPrefNoMidiDlg#1"
 msgid "Form3"
-msgstr "Form3"
+msgstr "Formulaire3"
 
 #: DlgPrefNoMidiDlg#2
 msgid "No MIDI devices available"
@@ -1533,7 +1533,7 @@ msgstr "Nom du flux"
 
 #: DlgPrefShoutcastDlg#20
 msgid "Mixxx Icecast Testing"
-msgstr "Mixxx Teste Icecast"
+msgstr ""
 
 #: DlgPrefShoutcastDlg#21
 msgid "Website"
@@ -2233,9 +2233,9 @@ msgid ""
 "<a href='http://mixxx.org/wiki/doku.php/internet_broadcasting'>Mixxx "
 "Wiki</a> for more information.</html>"
 msgstr ""
-"<html>Mixxx a detecté que vous utilisez version modifiée  de libmp3lame. "
+"<html>Mixxx a detecté que vous utilisez une version modifiée  de libmp3lame. "
 "Voir <a href='http://mixxx.org/wiki/doku.php/internet_broadcasting'>Mixxx "
-"Wiki</a> Voir pour plus d'information.</html>"
+"Wiki</a> Voir pour plus d'informations</html>"
 
 #: EngineRecord#1
 msgctxt "EngineRecord#1"
@@ -2285,7 +2285,7 @@ msgstr "Diffusion en direct"
 
 #: EngineShoutcast#8
 msgid "Mixxx has successfully connected to the shoutcast server"
-msgstr "Mixxx c'est connecté avec succès au serveur shoutcast"
+msgstr "Mixxx s'est connecté avec succès au serveur shoutcast"
 
 #: EngineShoutcast#9
 msgid "Mixxx could not connect to streaming server"
@@ -2293,7 +2293,7 @@ msgstr "Mixxx ne peut se connecter au serveur de streaming"
 
 #: EngineShoutcast#10
 msgid "Mixxx has successfully disconnected to the shoutcast server"
-msgstr "Mixxx c'est déconnecté avec succès du serveur shoucast"
+msgstr "Mixxx s'est déconnecté avec succès au serveur shoutcast"
 
 #: ErrorDialogHandler#1
 msgid "Fatal error"
@@ -2409,7 +2409,7 @@ msgid ""
 "file (.xml) and script file (.js)\n"
 msgstr ""
 "* Veuillez regarder si le nom de la fonction est correctement orthographié "
-"dans le fichier de cartographie (.xml) and script file (.js)\n"
+"dans le fichier de cartographie (.xml) et le fichier de script (.js)\n"
 
 #: MidiMapping#5
 msgid ""
@@ -2477,8 +2477,8 @@ msgid ""
 "controller</li></ul></html>"
 msgstr ""
 "<html>(Le script MIDI a besoin d'être réparé.)<br>Pour l'instant vous "
-"pouvez:<ul><li>Ignorer cette erreur pour cette session Mais vous pouvez "
-"expérimenter des comportements irréguliers</li><li>Essayez de récupérer en "
+"pouvez:<ul><li>ignorer cette erreur pour cette session, mais vous pouvez "
+"rencontrer des comportements  irréguliers</li><li>Essayez de récupérer en "
 "reconfigurant votre contrôleur</li></ul></html>"
 
 #: MidiStatusDelegate#1
@@ -2747,7 +2747,7 @@ msgstr "Ctrl+R"
 
 #: MixxxApp#50
 msgid "Show Studio"
-msgstr "Monter Studio"
+msgstr "Montrer Studio"
 
 #: MixxxApp#51
 msgid "Opens a song in player 1"
@@ -2761,7 +2761,7 @@ msgid ""
 msgstr ""
 "Ouvrir\n"
 "\n"
-"Open une chanson dans llecteur 1"
+"Open une chanson dans lecteur 1"
 
 #: MixxxApp#53
 msgid "Opens a song in player 2"
@@ -2775,7 +2775,7 @@ msgid ""
 msgstr ""
 "Ouvrir\n"
 "\n"
-"Open une chanson dans llecteur 2"
+"Open une chanson dans lecteur 2"
 
 #: MixxxApp#55
 msgid "Quits the application"
@@ -2801,9 +2801,9 @@ msgid ""
 "\n"
 "Rescans the song library"
 msgstr ""
-"Rescanner la librairie\n"
+"Rescanner la bibliothèque\n"
 "\n"
-"Rescanner la librairie musicale"
+"Rescanner la bibliothèque musicale"
 
 #: MixxxApp#59
 msgid "Create a new playlist"
@@ -2873,7 +2873,7 @@ msgstr "Démarrez l'enregistrement de votre mix"
 
 #: MixxxApp#71
 msgid "Record your mix to a file"
-msgstr "Enregitrez votre mix dans un fichier"
+msgstr "Enregistrer votre mix dans un fichier"
 
 #: MixxxApp#72
 msgid "Full Screen"
@@ -2959,7 +2959,7 @@ msgstr "&Macro"
 
 #: MixxxApp#88
 msgid "&Vinyl Control"
-msgstr "Contrôle &Vinyl"
+msgstr "&Contrôle Vinyl"
 
 #: MixxxApp#89
 msgid "Quit..."
@@ -2991,7 +2991,7 @@ msgstr ""
 
 #: MixxxApp#94
 msgid "Load Song into Player 2"
-msgstr "Charger la chanson dans la platine 2"
+msgstr "Charger la chanson dans le lecteur 2"
 
 #: MixxxApp#95
 msgid ""
@@ -3007,7 +3007,7 @@ msgstr "Confirmer la fermeture"
 
 #: MixxxApp#97
 msgid "A deck is currently playing. Exit Mixxx?"
-msgstr "Un lecteur est présentement actif. Quitter Mixxx?"
+msgstr "Un lecteur est actuellement actif.Quitter Mixxx?"
 
 #: MixxxLibraryFeature#1
 msgctxt "MixxxLibraryFeature#1"
@@ -3022,7 +3022,7 @@ msgstr "Échec de l'exportation de liste de lecture"
 #: ParserM3u#2
 msgctxt "ParserM3u#2"
 msgid "Could not create file"
-msgstr "Le fichier n'a pas pu être créé"
+msgstr "Impossible de créer le fichier"
 
 #: ParserPls#1
 msgctxt "ParserPls#1"
@@ -3032,7 +3032,7 @@ msgstr "Échec de l'exportation de liste de lecture"
 #: ParserPls#2
 msgctxt "ParserPls#2"
 msgid "Could not create file"
-msgstr "Le fichier n'a pas pu être créé"
+msgstr "Impossible de créer le fichier"
 
 #: PlaylistFeature#1
 msgid "New Playlist"
@@ -3082,7 +3082,7 @@ msgstr "Nom de la liste de lecture:"
 
 #: PlaylistFeature#11
 msgid "Playlist Creation Failed"
-msgstr "La création de la liste de lecture a échoué"
+msgstr "La création de la liste de lecture a échouée"
 
 #: PlaylistFeature#12
 msgid "A playlist cannot have a blank name."
@@ -3130,7 +3130,7 @@ msgstr "Invalide"
 
 #: QObject#2
 msgid "Master"
-msgstr "Général"
+msgstr ""
 
 #: QObject#3
 msgid "Headphones"
@@ -3155,7 +3155,7 @@ msgstr "Passerelle"
 
 #: QObject#8
 msgid "Unknown path type %1"
-msgstr "Chemin inconu type %1"
+msgstr "Chemin inconnu type %1"
 
 #: RecordingFeature#1
 msgid "Recordings"
@@ -3246,11 +3246,10 @@ msgid ""
 "\n"
 "Click OK to exit."
 msgstr ""
-"Incapable d'établir une connexion de base de données.\n"
-"Mixxx exige QT avec l'assistance de SQLITE. Lisez s'il vous plaît la "
-"documentation de SQL Qt pour des informations sur la façon de construire "
-"cela\n"
-"\n"
+"Impossible d'établir une connexion de base de données.\n"
+"Mixxx exige QT avec l'assistance de SQLITE. S'il vous plaît, lisez la "
+"documentation de Qt pilote SQL pour plus d'informations sur la façon de le "
+"construire.\n"
 "Cliquez sur OK pour sortir."
 
 #: TrackCollection#3
@@ -3332,7 +3331,7 @@ msgstr "Mixxx a détecté un écran WVGA"
 
 #: Ui#10
 msgid "Mixxx has detected that your screen has a resolution of "
-msgstr "Mixxx a détecté que voitre écran a une résolution de "
+msgstr "Mixxx a détecté que votre écran a une résolution de "
 
 #: Ui#11
 msgid ""
@@ -3370,7 +3369,7 @@ msgstr "Niveau Casque (preecoute/diffusion)"
 
 #: Ui#18
 msgid "Cue button for Player %1"
-msgstr "Bouton Cue pour la platine 1"
+msgstr "Bouton Cue pour la lecteur 1"
 
 #: Ui#19
 msgid "Play button for Player %1"
@@ -3386,7 +3385,7 @@ msgstr "touche avance rapide du lecteur %1"
 
 #: Ui#22
 msgid "Play reverse button for Player %1"
-msgstr "touche lecture inverse du lecteur %1"
+msgstr "touche lecture inversée du lecteur %1"
 
 #: Ui#23
 msgid "Headphone listen button for Player %1"
@@ -3442,7 +3441,7 @@ msgstr "Touche de sortie de boucle du lecteur %1"
 
 #: Ui#36
 msgid "Reloop / Exit button for Player %1"
-msgstr "Reloop / Bouton quitter pour le lecteur %1"
+msgstr "touche Reloop/Sortie pour le lecteur %1"
 
 #: Ui#37
 msgid "Hotcue 1 button for Player %1"
@@ -3470,11 +3469,11 @@ msgstr "touche de suppression hotcue 2 pour la platine %1"
 
 #: Ui#43
 msgid "Hotcue 3 delete button for Player %1"
-msgstr "touche de suppression hotcue 3 pour la platine %1"
+msgstr "touche de suppression hotcue 3 pour le lecteur %1"
 
 #: Ui#44
 msgid "Hotcue 4 delete button for Player %1"
-msgstr "touche de suppression hotcue 4 pour la platine %1"
+msgstr "touche de suppression hotcue 4 pour le lecteur %1"
 
 #: Ui#45
 msgid "Switch to the next view (library, playlist..)"
@@ -3495,11 +3494,11 @@ msgstr ""
 
 #: Ui#49
 msgid "Load selected track into first stopped player"
-msgstr "Charger piste sélectionnée dans le premier lecteur arrêté"
+msgstr "Charger la piste sélectionnée dans le premier lecteur arrêté"
 
 #: Ui#50
 msgid "Load selected track into Player %1"
-msgstr "Charger piste sélectionnée dans Lecteur %1"
+msgstr "Charger la piste sélectionnée dans Lecteur %1"
 
 #: WSearchLineEdit#1
 msgid "Search..."
@@ -3507,7 +3506,7 @@ msgstr "Chercher…"
 
 #: WTrackTableView#1
 msgid "Add to Playlist"
-msgstr "Ajouter a la Liste de lecture"
+msgstr "Ajouter à la liste de lecture"
 
 #: WTrackTableView#2
 msgid "Add to Crate"
@@ -3528,7 +3527,7 @@ msgstr "Propriétés…"
 
 #: WTrackTableView#6
 msgid "Add to Auto DJ Queue"
-msgstr "Ajouter a la queue Auto DJ"
+msgstr "Ajouter à la file d'attente Auto DJ"
 
 #: WTrackTableView#7
 msgid "Load to Deck %1"
