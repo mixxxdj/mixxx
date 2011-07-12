@@ -20,6 +20,8 @@ WaveformWidgetRenderer::WaveformWidgetRenderer( const char* group) :
 
     m_zoomFactor = 2.0;
     m_rateAdjust = 0.0;
+    m_visualSamplePerPixel = 1.0;
+    m_audioSamplePerPixel = 1.0;
 
     //Really create some to manage those
     m_playPosControlObject = 0;
@@ -81,6 +83,9 @@ void WaveformWidgetRenderer::draw( QPainter* painter, QPaintEvent* event)
     m_rateDir = m_rateDirControlObject->get();
     m_rateRange = m_rateRangeControlObject->get();
     m_gain = m_gainControlObject->get();
+
+    //rate adjst may have change sampling per
+    updateSamplingPerPixel();
 
     if(m_trackInfoObject)
     {
@@ -163,6 +168,7 @@ bool WaveformWidgetRenderer::zoomIn()
         return false;
 
     m_zoomFactor -= 1.0;
+    updateSamplingPerPixel();
     return true;
 }
 
@@ -172,14 +178,43 @@ bool WaveformWidgetRenderer::zoomOut()
         return false;
 
     m_zoomFactor += 1.0;
+    updateSamplingPerPixel();
     return true;
 }
 
-float WaveformWidgetRenderer::getVisualSamplePerPixel()
+void WaveformWidgetRenderer::updateSamplingPerPixel()
 {
     //vRince for the moment only more than one sample per pixel is supported
     //due to the fact we play the visual play pos modulo floor samplePerPixel ...
-    return std::max( 1.0, m_zoomFactor * (1.0 + m_rateAdjust));
+    m_visualSamplePerPixel = std::max( 1.0, m_zoomFactor * (1.0 + m_rateAdjust));
+    //TODO vRince remove hard-coded visual sampling rate
+    m_audioSamplePerPixel = getVisualSamplePerPixel()*441.0;
+}
+
+double WaveformWidgetRenderer::getVisualSamplePerPixel()
+{
+    return m_visualSamplePerPixel;
+}
+
+double WaveformWidgetRenderer::getAudioSamplePerPixel()
+{
+    return m_audioSamplePerPixel;
+}
+
+void WaveformWidgetRenderer::regulateVisualSample( int& sampleIndex)
+{
+    if( m_visualSamplePerPixel < 1.0)
+        return;
+
+    sampleIndex -= sampleIndex%(2*(int)m_visualSamplePerPixel);
+}
+
+void WaveformWidgetRenderer::regulateAudioSample(int& sampleIndex)
+{
+    if( m_audioSamplePerPixel < 1.0)
+        return;
+
+    sampleIndex -= sampleIndex%(2*(int)m_audioSamplePerPixel);
 }
 
 void WaveformWidgetRenderer::setTrack(TrackPointer track)

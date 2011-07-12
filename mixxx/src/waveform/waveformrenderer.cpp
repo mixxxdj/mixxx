@@ -298,7 +298,7 @@ void WaveformRenderer::setup(QDomNode node) {
         if (child.nodeName() == "Mark") {
             //pRenderObject = new WaveformRenderMark(m_pGroup, this);
         } else if(child.nodeName() == "MarkRange") {
-            pRenderObject = new WaveformRenderMarkRange(m_pGroup, this);
+            //pRenderObject = new WaveformRenderMarkRange(m_pGroup, this);
         }
         if (pRenderObject != NULL) {
             if (m_pTrack != NULL)

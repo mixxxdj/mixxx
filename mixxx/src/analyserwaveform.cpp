@@ -18,6 +18,7 @@ AnalyserWaveform::AnalyserWaveform() {
     m_ready = false;
     m_timePerStride = 0.0f;
 
+    //TODO vRince bind this with *actual* filter values ...
     m_filter[0] = new EngineFilterButterworth8(FILTER_LOWPASS, 44100, 200);
     m_filter[1] = new EngineFilterButterworth8(FILTER_BANDPASS, 44100, 200, 2000);
     m_filter[2] = new EngineFilterButterworth8(FILTER_HIGHPASS, 44100, 2000);
@@ -46,7 +47,7 @@ void AnalyserWaveform::initialise(TrackPointer tio, int sampleRate, int totalSam
     double visualResampleRate = 441;/*tio->getVisualResampleRate();*/
     double n = double(sampleRate) / visualResampleRate;
 
-    QByteArray err_tmp = QString("TrackPointer %1 returned bad data: VisualResampleRate=%2, n=%3") .arg(tio->getId()).arg(visualResampleRate).arg(n).toAscii();
+    QByteArray err_tmp = QString("TrackPointer %1 returned bad data: VisualResampleRate=%2, n=%3").arg(tio->getId()).arg(visualResampleRate).arg(n).toAscii();
 
     if (visualResampleRate == 0 || n <= 0) {
         qDebug() << err_tmp

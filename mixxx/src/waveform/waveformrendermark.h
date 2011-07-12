@@ -2,24 +2,6 @@
 #ifndef WAVEFORMRENDERMARK_H
 #define WAVEFORMRENDERMARK_H
 
-/*
-#include <QObject>
-#include <QColor>
-#include <QPixmap>
-#include <QVector>
-
-class QDomNode;
-class QPainter;
-class QPaintEvent;
-
-#include "configobject.h"
-#include "waveform/renderobject.h"
-
-class ConfigKey;
-class ControlObjectThreadMain;
-class WaveformRenderer;
-*/
-
 #include <Qt>
 #include <QPixmap>
 #include <QVector>
