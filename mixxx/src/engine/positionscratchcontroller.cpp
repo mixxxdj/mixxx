@@ -82,7 +82,7 @@ class VelocityController {
             double percent_remaining = error / m_samples_per_buffer;
             // Apply exponential decay to try and stop the stuttering.
             double decay = (1.0 - pow(2, -fabs(percent_remaining)));
-            output = percent_remaining * decay;
+            //output = percent_remaining * decay;
             //qDebug() << "clamp decay" << decay << "output" << output;
         }
 
@@ -113,10 +113,11 @@ PositionScratchController::PositionScratchController(const char* pGroup)
     m_bScratching = false;
     m_iScratchTime = 0;
     m_bEnableInertia = false;
+    m_dRate = 0.;
 
     //m_pVelocityController->setPID(0.2, 1.0, 5.0);
     //m_pVelocityController->setPID(0.1, 0.0, 5.0);
-    m_pVelocityController->setPID(0.1, 0.0, 0.00);
+    m_pVelocityController->setPID(0.3, 0.0, 0.00);
 }
 
 PositionScratchController::~PositionScratchController() {

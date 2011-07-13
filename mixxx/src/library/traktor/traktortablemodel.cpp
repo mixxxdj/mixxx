@@ -85,8 +85,8 @@ int TraktorTableModel::getTrackId(const QModelIndex& index) const {
     return index.sibling(index.row(), fieldIndex("id")).data().toInt();
 }
 
-int TraktorTableModel::getTrackRow(int trackId) const {
-    return BaseSqlTableModel::getTrackRow(trackId);
+const QLinkedList<int> TraktorTableModel::getTrackRows(int trackId) const {
+    return BaseSqlTableModel::getTrackRows(trackId);
 }
 
 void TraktorTableModel::removeTrack(const QModelIndex& index)

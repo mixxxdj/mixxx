@@ -58,6 +58,7 @@ private:
     void initializePaths();
     void connectSoundItem(DlgPrefSoundItem *item);
     void loadSettings(const SoundManagerConfig &config);
+    void insertItem(DlgPrefSoundItem *pItem, QBoxLayout *pLayout);
     SoundManager *m_pSoundManager;
     PlayerManager *m_pPlayerManager;
     ConfigObject<ConfigValue> *m_pConfig;

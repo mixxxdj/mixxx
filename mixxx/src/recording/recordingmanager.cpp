@@ -21,7 +21,7 @@ RecordingManager::RecordingManager(ConfigObject<ConfigValue>* pConfig) :
     m_recReadyCO = new ControlObject(ConfigKey("[Master]", "Record"));
     m_recReady = new ControlObjectThread(m_recReadyCO);
 
-    QDir os_music_folder_dir(QDesktopServices::storageLocation(QDesktopServices::MusicLocation));
+    QDir os_music_folder_dir(m_pConfig->getValueString(ConfigKey("[Playlist]", "Directory")));
     //Check if there's a folder Mixxx within the music directory
     QDir mixxxDir(os_music_folder_dir.absolutePath() +"/Mixxx");
 

@@ -117,6 +117,8 @@ class MixxxApp : public QMainWindow
     void slotHelpAbout();
     /** visits support section of website*/
     void slotHelpSupport();
+    // Visits a feedback form
+    void slotHelpFeedback();
     /** Change of file to play */
     //void slotChangePlay(int,int,int, const QPoint &);
 
@@ -221,6 +223,7 @@ class MixxxApp : public QMainWindow
 
     QAction *m_pHelpAboutApp;
     QAction *m_pHelpSupport;
+    QAction *m_pHelpFeedback;
 #ifdef __SCRIPT__
     QAction *macroStudio;
 #endif
@@ -244,6 +247,7 @@ struct CmdlineArgs
 {
     QList<QString> qlMusicFiles;    /* List of files to load into players at startup */
     bool bStartInFullscreen;        /* Start in fullscreen mode */
+    QString locale;
 };
 
 
