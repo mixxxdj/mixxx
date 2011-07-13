@@ -93,7 +93,7 @@ int ControllerManager::setupDevices()
         Controller *cur= it.next();
         QString name = cur->getName();
 
-        if (cur->isOpen) cur->close();
+        if (cur->isOpen()) cur->close();
 
         QString ofilename = name.replace(" ", "_");
 

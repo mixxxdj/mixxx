@@ -109,9 +109,9 @@ int BrowseTableModel::getTrackId(const QModelIndex& index) const {
     return -1;
 }
 
-int BrowseTableModel::getTrackRow(int trackId) const {
+const QLinkedList<int> BrowseTableModel::getTrackRows(int trackId) const {
     // We can't implement this as it stands.
-    return -1;
+    return QLinkedList<int>();
 }
 
 void BrowseTableModel::search(const QString& searchText)

@@ -13,6 +13,7 @@
 #include "wglwaveformviewer.h"
 #include "waveform/waveformrenderer.h"
 #include "controlobjectthreadmain.h"
+#include "sharedglcontext.h"
 
 WGLWaveformViewer::WGLWaveformViewer(
         const char *group,
@@ -24,7 +25,6 @@ WGLWaveformViewer::WGLWaveformViewer(
     ) :
     QGLWidget(ctxt, pParent, pShareWidget)
 {
-
     m_pWaveformRenderer = pWaveformRenderer;
     Q_ASSERT(m_pWaveformRenderer);
 
@@ -40,12 +40,21 @@ WGLWaveformViewer::WGLWaveformViewer(
         ControlObject::getControl(ConfigKey(group, "track_samples")));
     m_pTrackSampleRate = new ControlObjectThreadMain(
         ControlObject::getControl(ConfigKey(group, "track_samplerate")));
+    m_pRate = new ControlObjectThreadMain(
+        ControlObject::getControl(ConfigKey(m_pGroup, "rate")));
+    m_pRateRange = new ControlObjectThreadMain(
+        ControlObject::getControl(ConfigKey(m_pGroup, "rateRange")));
+    m_pRateDir = new ControlObjectThreadMain(
+        ControlObject::getControl(ConfigKey(m_pGroup, "rate_dir")));
 
     setAcceptDrops(true);
 
     installEventFilter(this);
 
     m_painting = false;
+
+    setSizePolicy(QSizePolicy::MinimumExpanding,
+                  QSizePolicy::MinimumExpanding);
 }
 
 bool WGLWaveformViewer::directRendering()
@@ -62,6 +71,14 @@ void WGLWaveformViewer::setup(QDomNode node) {
     m_pWaveformRenderer->setup(node);
     m_pWaveformRenderer->resize(w, h);
 }
+
+void WGLWaveformViewer::resizeEvent(QResizeEvent* e)
+{
+    const QSize newSize = e->size();
+    m_pWaveformRenderer->resize(newSize.width(),
+                                newSize.height());
+}
+
 
 void WGLWaveformViewer::paintEvent(QPaintEvent *event) {
     QPainter painter;
@@ -110,7 +127,7 @@ bool WGLWaveformViewer::eventFilter(QObject *o, QEvent *e) {
             //qDebug() << "m_dInitialPlaypos" << m_dInitialPlaypos;
 
             // Set the cursor to a hand while the mouse is down.
-            setCursor(Qt::OpenHandCursor);
+            setCursor(Qt::ClosedHandCursor);
         }
     } else if(e->type() == QEvent::MouseMove) {
         // Only send signals for mouse moving if the left button is pressed
@@ -121,7 +138,11 @@ bool WGLWaveformViewer::eventFilter(QObject *o, QEvent *e) {
             // samples times two is the number of samples per pixel.  rryan
             // 4/2011
             double samplesPerPixel = m_pTrackSampleRate->get() / 100.0 * 2;
-            double targetPosition = m_dInitialPlaypos - (curX - m_iMouseStart) * samplesPerPixel;
+
+            // To take care of one one movement when zoom changes with pitch
+            double rateAdjust = m_pRateDir->get() * math_min(0.99, m_pRate->get() * m_pRateRange->get());
+
+            double targetPosition = m_dInitialPlaypos - (curX - m_iMouseStart) * samplesPerPixel * (1 + rateAdjust);
             //qDebug() << "Start:" << m_dInitialPlaypos << "Target:" << targetPosition;
             m_pScratch->slotSet(targetPosition);
         }

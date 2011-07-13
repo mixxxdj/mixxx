@@ -106,8 +106,9 @@ public:
     void process(const CSAMPLE *pIn, const CSAMPLE *pOut, const int iBufferSize);
 
     const char* getGroup();
-
     bool isTrackLoaded();
+    TrackPointer getLoadedTrack() const;
+
   public slots:
     void slotControlPlay(double);
     void slotControlPlayFromStart(double);

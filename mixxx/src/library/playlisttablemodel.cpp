@@ -94,7 +94,9 @@ void PlaylistTableModel::setPlaylist(int playlistId)
                 .replace("track_locations.", "").replace("PlaylistTracks.", "");
     }
 
-    setTable(playlistTableName, columns, LIBRARYTABLE_ID);
+    QStringList tableColumns;
+    tableColumns << PLAYLISTTRACKSTABLE_POSITION;
+    setTable(playlistTableName, columns, LIBRARYTABLE_ID, tableColumns);
     initHeaderData();
     initDefaultSearchColumns();
     slotSearch("");
@@ -157,8 +159,8 @@ int PlaylistTableModel::getTrackId(const QModelIndex& index) const
     return index.sibling(index.row(), fieldIndex(LIBRARYTABLE_ID)).data().toInt();
 }
 
-int PlaylistTableModel::getTrackRow(int trackId) const {
-    return BaseSqlTableModel::getTrackRow(trackId);
+const QLinkedList<int> PlaylistTableModel::getTrackRows(int trackId) const {
+    return BaseSqlTableModel::getTrackRows(trackId);
 }
 
 void PlaylistTableModel::removeTrack(const QModelIndex& index)
