@@ -35,6 +35,10 @@ WOverview::WOverview(const char *pGroup, QWidget * parent)
     m_bDrag = false;
     m_pScreenBuffer = 0;
 
+    // Analyse progress
+    m_iProgress = 0;
+    m_analysing = false;
+
     setAcceptDrops(true);
 
     m_pLoopStart = ControlObject::getControl(
@@ -156,14 +160,24 @@ void WOverview::setValue(double fValue)
     }
 }
 
-void WOverview::slotLoadNewWaveform(TrackPointer pTrack)
+void WOverview::slotTrackLoaded(TrackPointer pTrack)
 {
+    // Set current track of this overview widget
+    m_pCurrentTrack = pTrack;
+
+    // If the track already has been analysed slotLoadNewWaveform will reset
+    // this parameter.
+    m_analysing = true;
+
     if (pTrack) {
+        TrackInfoObject* pTrackInfo = pTrack.data();
+
         // Connect wavesummaryUpdated signals to our update slots.
-        connect(pTrack.data(), SIGNAL(wavesummaryUpdated(TrackInfoObject*)),
+        connect(pTrackInfo, SIGNAL(wavesummaryUpdated(TrackInfoObject*)),
                 this, SLOT(slotLoadNewWaveform(TrackInfoObject*)));
         // Now in case the track's wavesummary is already done, load it.
-        slotLoadNewWaveform(pTrack.data());
+        slotLoadNewWaveform(pTrackInfo);
+
     }
 }
 
@@ -172,10 +186,20 @@ void WOverview::slotLoadNewWaveform(TrackInfoObject* pTrack)
     //Update this widget with new waveform summary data from the new track.
     setData(pTrack->getWaveSummary(),
             pTrack->getDuration()*pTrack->getSampleRate()*pTrack->getChannels());
+
+    // If no data is available, we can expect it to be analysed.
+    if (!pTrack->getWaveSummary()->isNull() && !pTrack->getWaveSummary()->isEmpty())
+    {
+        m_analysing = false;
+    }
+
     update();
 }
 
 void WOverview::slotUnloadTrack(TrackPointer pTrack) {
+    // Unset current track of this overview widget
+    m_pCurrentTrack.clear();
+
     if (pTrack) {
         disconnect(pTrack.data(), SIGNAL(wavesummaryUpdated(TrackInfoObject*)),
                    this, SLOT(slotLoadNewWaveform(TrackInfoObject*)));
@@ -183,6 +207,16 @@ void WOverview::slotUnloadTrack(TrackPointer pTrack) {
     QByteArray ba;
     setData(&ba, 0);
     update();
+}
+
+void WOverview::slotTrackProgress(TrackPointer pTrack, int progress)
+{
+    if (pTrack == m_pCurrentTrack) {
+        if (progress != m_iProgress) {
+            m_iProgress = progress;
+            repaint();
+        }
+    }
 }
 
 void WOverview::cueChanged(double v) {
@@ -356,7 +390,6 @@ void WOverview::mousePressEvent(QMouseEvent * e)
 
 void WOverview::paintEvent(QPaintEvent *)
 {
-
     if(!m_pScreenBuffer)
         return;
 
@@ -371,6 +404,9 @@ void WOverview::paintEvent(QPaintEvent *)
 
     // Draw waveform, then playpos
     paint.drawPixmap(rect(), *m_pScreenBuffer, m_pScreenBuffer->rect());
+
+    // Draw progress bar for track analysis
+    paintTrackProgress(paint);
 
     if (m_liSampleDuration > 0) {
         // Draw play position
@@ -436,9 +472,26 @@ void WOverview::paintEvent(QPaintEvent *)
             // paint.drawText(rect, Qt::AlignCenter, QString("%1").arg(i+1));
         }
     }
+
     paint.end();
 }
 
+void WOverview::paintTrackProgress(QPainter& pPainter) {
+    if (m_analysing) {
+        // Prepare rectangle
+        QRectF buf = m_pScreenBuffer->rect();
+        qreal width = buf.width() * (float)m_iProgress / 100.0f;
+        qreal height = buf.height();
+        QRectF bar(0, 0, width, height);
+
+        // Prepare color
+        QColor color = m_qColorSignal;
+        color.setAlpha(80);
+
+        // Paint translucent rectangle representing analysis progress
+        pPainter.fillRect(bar, color);
+    }
+}
 
 QColor WOverview::getMarkerColor() {
    return m_qColorMarker;

@@ -42,6 +42,7 @@ class WOverview : public WWidget
     void mouseReleaseEvent(QMouseEvent *e);
     void mousePressEvent(QMouseEvent *e);
     void paintEvent(QPaintEvent *);
+    void paintTrackProgress(QPainter& painter);
     void redrawPixmap();
     QColor getMarkerColor();
     QColor getSignalColor();
@@ -49,8 +50,9 @@ class WOverview : public WWidget
   public slots:
     void setValue(double);
     void slotLoadNewWaveform(TrackInfoObject* pTrack);
-    void slotLoadNewWaveform(TrackPointer pTrack);
+    void slotTrackLoaded(TrackPointer pTrack);
     void slotUnloadTrack(TrackPointer pTrack);
+    void slotTrackProgress(TrackPointer pTrack, int progress);
 
   signals:
     void trackDropped(QString filename, QString group);
@@ -68,6 +70,11 @@ class WOverview : public WWidget
   private:
     const char* m_pGroup;
     bool waveformChanged;
+
+    // Current active track
+    TrackPointer m_pCurrentTrack;
+    bool m_analysing;
+    int m_iProgress;
 
     // Loop controls and values
     ControlObject* m_pLoopStart;

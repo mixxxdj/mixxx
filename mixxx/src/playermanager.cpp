@@ -68,7 +68,7 @@ Deck* PlayerManager::addDeck() {
     if (number % 2 == 0)
         orientation = EngineChannel::RIGHT;
 
-    pDeck = new Deck(this, m_pConfig, m_pEngine, orientation, group);
+    pDeck = new Deck(this, m_pConfig, m_pEngine, orientation, m_pAnalyserQueue, group);
 
     // Connect the player to the analyser queue so that loaded tracks are
     // analysed.
