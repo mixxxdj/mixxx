@@ -19,6 +19,7 @@
 #define ENGINEFILTERBLOCK_H
 
 #include "engine/engineobject.h"
+#include "controlobject.h"
 
 class ControlLogpotmeter;
 class ControlPotmeter;
@@ -48,6 +49,7 @@ private:
     EngineObject *low, *band, *high;
     ControlLogpotmeter *filterpotLow, *filterpotMid, *filterpotHigh;
     ControlPushButton *filterKillLow, *filterKillMid, *filterKillHigh;
+    ControlObject *bypassEq;
 
 	static ControlPotmeter *s_loEqFreq, *s_hiEqFreq;
 	static ControlPushButton *s_lofiEq;

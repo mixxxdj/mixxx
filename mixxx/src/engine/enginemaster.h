@@ -140,6 +140,7 @@ class EngineMaster : public EngineObject, public AudioSource {
     EngineWorkerScheduler *m_pWorkerScheduler;
 
     ControlObject *m_pMasterVolume, *m_pHeadVolume;
+    ControlPushButton *m_pBypassEq;
     EngineClipping *clipping, *head_clipping;
     EnginePflDelay *m_pHeadDelay;
 #ifdef __LADSPA__

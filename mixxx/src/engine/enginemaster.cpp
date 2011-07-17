@@ -87,6 +87,10 @@ EngineMaster::EngineMaster(ConfigObject<ConfigValue> * _config,
     // Headphone Delay
     m_pHeadDelay = new EnginePflDelay();
     
+    // Eq Bypass
+    m_pBypassEq = new ControlPushButton(ConfigKey(group, "bypass_eq"));
+    m_pBypassEq->setToggleButton(true);
+    
     //set up input passthrough o
     //TODO: we should set up n passthroughs for n decks
 	m_passthrough.append(new ControlPushButton(ConfigKey("[Channel1]","inputpassthrough")));
