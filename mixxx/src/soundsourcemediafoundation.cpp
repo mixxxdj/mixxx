@@ -49,8 +49,9 @@ template<class T> static void safeRelease(T **ppT)
 SoundSourceMediaFoundation::SoundSourceMediaFoundation(QString filename)
     : SoundSource(filename)
     , m_file(filename)
-    , m_pAudioType(NULL)
     , m_pReader(NULL)
+    , m_pAudioType(NULL)
+    , m_wcFilename(NULL)
     , m_nextFrame(0)
     , m_leftoverBuffer(NULL)
     , m_leftoverBufferSize(0)
@@ -65,7 +66,9 @@ SoundSourceMediaFoundation::SoundSourceMediaFoundation(QString filename)
     m_iChannels = kNumChannels;
     m_iSampleRate = kSampleRate;
 
-    m_wcFilename = new wchar_t[255];
+    // http://social.msdn.microsoft.com/Forums/en/netfxbcl/thread/35c6a451-3507-40c8-9d1c-8d4edde7c0cc
+    // gives maximum path + file length as 248 + 260, using that -bkgood
+    m_wcFilename = new wchar_t[248 + 260];
 }
 
 SoundSourceMediaFoundation::~SoundSourceMediaFoundation()
@@ -286,7 +289,7 @@ releaseSample:
 inline unsigned long SoundSourceMediaFoundation::length()
 {
     unsigned long len(secondsFromMF(m_mfDuration) * kSampleRate * kNumChannels);
-    return len % 2 == 0 ? len : len + 1;
+    return len % kNumChannels == 0 ? len : len + 1;
 }
 
 int SoundSourceMediaFoundation::parseHeader()
