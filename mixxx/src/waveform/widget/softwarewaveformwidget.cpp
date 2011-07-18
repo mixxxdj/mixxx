@@ -10,7 +10,7 @@
 //For the moment we use the same signal renderer until we build a brand new one for the GL version
 //a one that actually needs **hardware accelation**
 
-#include "waveform/glwaveformrendererfilteredsignal.h"
+#include "waveform/waveformrendererfilteredsignal.h"
 
 SoftwareWaveformWidget::SoftwareWaveformWidget( const char* group, QWidget* parent) :
     QWidget(parent),
@@ -20,7 +20,7 @@ SoftwareWaveformWidget::SoftwareWaveformWidget( const char* group, QWidget* pare
 
     m_waveformWidgetRenderer->addRenderer<WaveformRenderBackground>();
     m_waveformWidgetRenderer->addRenderer<WaveformRenderMarkRange>();
-    m_waveformWidgetRenderer->addRenderer<GLWaveformRendererFilteredSignal>();
+    m_waveformWidgetRenderer->addRenderer<WaveformRendererFilteredSignal>();
     m_waveformWidgetRenderer->addRenderer<WaveformRenderMark>();
     m_waveformWidgetRenderer->init();
 }

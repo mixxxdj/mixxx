@@ -24,9 +24,9 @@ protected:
     QColor m_midColor;
     QColor m_highColor;
 
-    QVector<QLineF> m_lowLines;
-    QVector<QLineF> m_midLines;
-    QVector<QLineF> m_highLines;
+    QVector<QLine> m_lowLines;
+    QVector<QLine> m_midLines;
+    QVector<QLine> m_highLines;
 };
 
 #endif // WAVEFORMRENDERERFILTEREDSIGNAL_H
