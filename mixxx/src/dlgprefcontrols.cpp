@@ -527,9 +527,25 @@ void DlgPrefControls::initWaveformControl()
     waveformTypeComboBox->clear();
     WaveformWidgetFactory* factory = WaveformWidgetFactory::instance();
 
+    if( factory->isOpenGLAvailable())
+        openGlSatatusIcon->setText(factory->getOpenGLVersion());
+    else
+        openGlSatatusIcon->setText("X");
+
+
+    WaveformWidgetType::Type currentType = factory->getType();
+    int currentIndex = -1;
+
     QVector<WaveformWidgetAbstractHandle> handles = factory->getAvailableTypes();
     for( int i = 0; i < handles.size(); i++)
+    {
         waveformTypeComboBox->addItem( handles[i].getDisplayName());
+        if( handles[i].getType() == currentType)
+            currentIndex = i;
+    }
+
+    if( currentIndex != -1)
+        waveformTypeComboBox->setCurrentIndex(currentIndex);
 
     frameRateSpinBox->setValue(factory->getFrameRate());
 

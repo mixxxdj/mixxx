@@ -16,6 +16,9 @@ public:
     virtual void setup(const QDomNode &node);
     virtual void draw(QPainter* painter, QPaintEvent* event);
 
+protected:
+    virtual void onResize();
+
 private:
     ControlObject* m_lowFilterControlObject;
     ControlObject* m_midFilterControlObject;
@@ -32,6 +35,8 @@ private:
     QBrush m_lowKilledBrush;
     QBrush m_midKilledBrush;
     QBrush m_highKilledBrush;
+
+    QVector<QPointF> m_polygon[3];
 };
 
 #endif // GLWAVEFROMRENDERERFILTEREDSIGNAL_H

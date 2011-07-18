@@ -84,6 +84,13 @@ void GLWaveformRendererFilteredSignal::setup( const QDomNode& node)
     m_highKilledBrush = QBrush(gradientKilledHigh);
 }
 
+void GLWaveformRendererFilteredSignal::onResize()
+{
+    m_polygon[0].reserve(2*m_waveformWidget->getWidth()+3);
+    m_polygon[1].reserve(2*m_waveformWidget->getWidth()+3);
+    m_polygon[2].reserve(2*m_waveformWidget->getWidth()+3);
+}
+
 void GLWaveformRendererFilteredSignal::draw(QPainter *painter, QPaintEvent *event)
 {
     const TrackInfoObject* trackInfo = m_waveformWidget->getTrackInfo().data();
@@ -105,25 +112,23 @@ void GLWaveformRendererFilteredSignal::draw(QPainter *painter, QPaintEvent *even
     }
 
     painter->save();
+
+    painter->setRenderHint( QPainter::Antialiasing);
+
     painter->translate(0.0,m_waveformWidget->getHeight()/2.0);
     painter->scale(1.0,m_waveformWidget->getGain()*2.0*(double)m_waveformWidget->getHeight()/255.0);
-
-    QVector<QPointF> polygon[3];
-    polygon[0].reserve(2*m_waveformWidget->getWidth()+3);
-    polygon[1].reserve(2*m_waveformWidget->getWidth()+3);
-    polygon[2].reserve(2*m_waveformWidget->getWidth()+3);
 
     int sampleOffset = 0;
     //vRince test in multi pass with no max comtupted (good looking, but disactivated need more work on perfs)
     //for( int sampleOffset = 0; sampleOffset < samplesPerPixel; ++sampleOffset)
     //{
-    polygon[0].clear();
-    polygon[1].clear();
-    polygon[2].clear();
+    m_polygon[0].clear();
+    m_polygon[1].clear();
+    m_polygon[2].clear();
 
-    polygon[0].push_back(QPointF(0.0,0.0));
-    polygon[1].push_back(QPointF(0.0,0.0));
-    polygon[2].push_back(QPointF(0.0,0.0));
+    m_polygon[0].push_back(QPointF(0.0,0.0));
+    m_polygon[1].push_back(QPointF(0.0,0.0));
+    m_polygon[2].push_back(QPointF(0.0,0.0));
 
     for( int i = sampleOffset; i < numberOfSamples; i += int(samplesPerPixel))
     {
@@ -136,7 +141,7 @@ void GLWaveformRendererFilteredSignal::draw(QPainter *painter, QPaintEvent *even
             unsigned char maxBand = 0;
             unsigned char maxHigh = 0;
 
-            for( int sampleIndex = 0; sampleIndex < samplesPerPixel; ++sampleIndex)
+            for( int sampleIndex = 0; sampleIndex < (samplesPerPixel); ++sampleIndex)
             {
                 maxLow = std::max( maxLow, waveform->getConstLowData()[thisIndex+sampleIndex]);
                 maxBand = std::max( maxBand, waveform->getConstMidData()[thisIndex+sampleIndex]);
@@ -145,72 +150,72 @@ void GLWaveformRendererFilteredSignal::draw(QPainter *painter, QPaintEvent *even
 
             if( m_lowFilterControlObject && m_midFilterControlObject && m_highFilterControlObject)
             {
-                polygon[0].push_back(QPointF(xPos,(float)maxLow*m_lowFilterControlObject->get()));
-                polygon[1].push_back(QPointF(xPos,(float)maxBand*m_midFilterControlObject->get()));
-                polygon[2].push_back(QPointF(xPos,(float)maxHigh*m_highFilterControlObject->get()));
+                m_polygon[0].push_back(QPointF(xPos,(float)maxLow*m_lowFilterControlObject->get()));
+                m_polygon[1].push_back(QPointF(xPos,(float)maxBand*m_midFilterControlObject->get()));
+                m_polygon[2].push_back(QPointF(xPos,(float)maxHigh*m_highFilterControlObject->get()));
             }
             else
             {
                 //if for some reason we don't have controls
-                polygon[0].push_back(QPointF(xPos,(float)maxLow));
-                polygon[1].push_back(QPointF(xPos,(float)maxBand));
-                polygon[2].push_back(QPointF(xPos,(float)maxHigh));
+                m_polygon[0].push_back(QPointF(xPos,(float)maxLow));
+                m_polygon[1].push_back(QPointF(xPos,(float)maxBand));
+                m_polygon[2].push_back(QPointF(xPos,(float)maxHigh));
             }
         }
         else
         {
-            polygon[0].push_back(QPointF(xPos,0.0));
-            polygon[1].push_back(QPointF(xPos,0.0));
-            polygon[2].push_back(QPointF(xPos,0.0));
+            m_polygon[0].push_back(QPointF(xPos,0.0));
+            m_polygon[1].push_back(QPointF(xPos,0.0));
+            m_polygon[2].push_back(QPointF(xPos,0.0));
         }
     }
 
-    polygon[0].push_back(QPointF(m_waveformWidget->getWidth(),0.0));
-    polygon[1].push_back(QPointF(m_waveformWidget->getWidth(),0.0));
-    polygon[2].push_back(QPointF(m_waveformWidget->getWidth(),0.0));
+    m_polygon[0].push_back(QPointF(m_waveformWidget->getWidth(),0.0));
+    m_polygon[1].push_back(QPointF(m_waveformWidget->getWidth(),0.0));
+    m_polygon[2].push_back(QPointF(m_waveformWidget->getWidth(),0.0));
 
     for( int i = numberOfSamples - 1; i >= 0; i -= int(samplesPerPixel))
     {
         float xPos = (float)i/samplesPerPixel;
-        int thisIndex = currentPosition + 2*i - numberOfSamples;
-        if(thisIndex >= 0 && (thisIndex+samplesPerPixel+1) < waveformData.size())
+        int thisIndex = currentPosition + 2*i - numberOfSamples + 1; //take left channel
+        if(thisIndex >= 1 && (thisIndex+samplesPerPixel+1) < waveformData.size())
         {
             unsigned char maxLow = 0;
             unsigned char maxBand = 0;
             unsigned char maxHigh = 0;
 
-            for( int sampleIndex = 0; sampleIndex < samplesPerPixel; ++sampleIndex)
+            for( int sampleIndex = 0; sampleIndex < (samplesPerPixel); ++sampleIndex)
             {
-                maxLow = std::max( maxLow, waveform->getConstLowData()[thisIndex+sampleIndex+1]);
-                maxBand = std::max( maxBand, waveform->getConstMidData()[thisIndex+sampleIndex+1]);
-                maxHigh = std::max( maxHigh, waveform->getConstHighData()[thisIndex+sampleIndex+1]);
+                maxLow = std::max( maxLow, waveform->getConstLowData()[thisIndex+sampleIndex]);
+                maxBand = std::max( maxBand, waveform->getConstMidData()[thisIndex+sampleIndex]);
+                maxHigh = std::max( maxHigh, waveform->getConstHighData()[thisIndex+sampleIndex]);
             }
 
             if( m_lowFilterControlObject && m_midFilterControlObject && m_highFilterControlObject)
             {
-                polygon[0].push_back(QPointF(xPos,-(float)maxLow*m_lowFilterControlObject->get()));
-                polygon[1].push_back(QPointF(xPos,-(float)maxBand*m_midFilterControlObject->get()));
-                polygon[2].push_back(QPointF(xPos,-(float)maxHigh*m_highFilterControlObject->get()));
+                m_polygon[0].push_back(QPointF(xPos,-(float)maxLow*m_lowFilterControlObject->get()));
+                m_polygon[1].push_back(QPointF(xPos,-(float)maxBand*m_midFilterControlObject->get()));
+                m_polygon[2].push_back(QPointF(xPos,-(float)maxHigh*m_highFilterControlObject->get()));
             }
             else
             {
                 //if for some reason we don't have controls
-                polygon[0].push_back(QPointF(xPos,-(float)maxLow));
-                polygon[1].push_back(QPointF(xPos,-(float)maxBand));
-                polygon[2].push_back(QPointF(xPos,-(float)maxHigh));
+                m_polygon[0].push_back(QPointF(xPos,-(float)maxLow));
+                m_polygon[1].push_back(QPointF(xPos,-(float)maxBand));
+                m_polygon[2].push_back(QPointF(xPos,-(float)maxHigh));
             }
         }
         else
         {
-            polygon[0].push_back(QPointF(xPos,0.0));
-            polygon[1].push_back(QPointF(xPos,0.0));
-            polygon[2].push_back(QPointF(xPos,0.0));
+            m_polygon[0].push_back(QPointF(xPos,0.0));
+            m_polygon[1].push_back(QPointF(xPos,0.0));
+            m_polygon[2].push_back(QPointF(xPos,0.0));
         }
     }
 
-    polygon[0].push_back(QPointF(0.0,0.0));
-    polygon[1].push_back(QPointF(0.0,0.0));
-    polygon[2].push_back(QPointF(0.0,0.0));
+    m_polygon[0].push_back(QPointF(0.0,0.0));
+    m_polygon[1].push_back(QPointF(0.0,0.0));
+    m_polygon[2].push_back(QPointF(0.0,0.0));
 
 
     if( m_lowKillControlObject && m_lowKillControlObject->get() > 0.1)
@@ -223,7 +228,7 @@ void GLWaveformRendererFilteredSignal::draw(QPainter *painter, QPaintEvent *even
         painter->setPen( QPen( m_lowBrush, 0.0));
         painter->setBrush( m_lowBrush);
     }
-    painter->drawPolygon(polygon[0].data(),polygon[0].size());
+    painter->drawPolygon(m_polygon[0].data(),m_polygon[0].size());
 
 
     if( m_midKillControlObject && m_midKillControlObject->get() > 0.1)
@@ -236,7 +241,7 @@ void GLWaveformRendererFilteredSignal::draw(QPainter *painter, QPaintEvent *even
         painter->setPen( QPen( m_midBrush, 0.0));
         painter->setBrush( m_midBrush);
     }
-    painter->drawPolygon(polygon[1].data(),polygon[1].size());
+    painter->drawPolygon(m_polygon[1].data(),m_polygon[1].size());
 
     if( m_highKillControlObject && m_highKillControlObject->get() > 0.1)
     {
@@ -249,8 +254,9 @@ void GLWaveformRendererFilteredSignal::draw(QPainter *painter, QPaintEvent *even
         painter->setBrush( m_highBrush);
     }
 
-    painter->drawPolygon(polygon[2].data(),polygon[2].size());
+    painter->drawPolygon(m_polygon[2].data(),m_polygon[2].size());
 
+    //multipasstest
     //}
 
     painter->restore();

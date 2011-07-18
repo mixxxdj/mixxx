@@ -3,6 +3,7 @@
 
 #include <QString>
 #include "waveformwidgettype.h"
+#include "trackinfoobject.h"
 
 //NOTE: vRince
 //This class represent objects the waveformwidgetfactory can holds,
@@ -39,6 +40,11 @@ public:
 
     void refresh();
     void resize( int width, int height);
+
+    //convenience method
+    void zoomIn();
+    void zoomOut();
+    void setTrack( TrackPointer track);
 
     //Those information enable automatic combobox creation and waveform selection
     virtual QString getWaveformWidgetName() = 0;

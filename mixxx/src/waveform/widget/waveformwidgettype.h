@@ -6,8 +6,8 @@ class WaveformWidgetType
 public:
     enum Type {
         EmptyWaveform = 0, //TODO
-        SimplePureQtWaveform, //TODO
-        FilteredPureQtWaveform,
+        SimpleSoftwareWaveform, //TODO
+        FilteredSoftwareWaveform,
         SimpleOpenGlWaveform, //TODO
         FilteredOpenGlWaveform,
         Count_WaveformwidgetType

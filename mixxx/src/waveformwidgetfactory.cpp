@@ -1,15 +1,17 @@
 #include "waveformwidgetfactory.h"
-#include "waveform/waveformwidgetabstract.h"
+#include "waveform/widget/waveformwidgetabstract.h"
 #include "widget/wwaveformviewer.h"
 
 //WaveformWidgets
-#include "waveform/emptywaveform.h"
-#include "waveform/glwaveformwidget.h"
+#include "waveform/widget/emptywaveformwidget.h"
+#include "waveform/widget/glwaveformwidget.h"
+#include "waveform/widget/softwarewaveformwidget.h"
 
 #include <QTimer>
 #include <QWidget>
 #include <QTime>
 #include <QStringList>
+#include <QtOpenGL/QGLFormat>
 
 #include <QDebug>
 
@@ -21,13 +23,28 @@ WaveformWidgetFactory::WaveformWidgetFactory()
     m_time = new QTime();
 
     //TODO let default and config file to setup this
-    setFrameRate(33);
+    setFrameRate(40);
     m_lastFrameTime = 0;
     m_actualFrameRate = 0;
 
-    //TODO here place automatic code to determine if OpenGl is available to choose type by default
-    m_type = WaveformWidgetType::FilteredOpenGlWaveform;
-    //m_type = WaveformWidgetType::EmptyWaveform;
+    //setup the opengl default format
+    m_openGLAvailable = false;
+    if( QGLFormat::hasOpenGL())
+    {
+        QGLFormat glFormat;
+        glFormat.setDirectRendering(true);
+        glFormat.setDoubleBuffer(true);
+        glFormat.setDepth(false);
+        glFormat.setSwapInterval(1); //enable vertical sync to avoid cue line to be cut
+        QGLFormat::setDefaultFormat(glFormat);
+        m_openGLVersion = QString::number(glFormat.majorVersion()) + "." + QString::number(glFormat.minorVersion());
+        m_openGLAvailable = true;
+    }
+
+    if( m_openGLAvailable)
+        m_type = WaveformWidgetType::FilteredOpenGlWaveform;
+    else
+        m_type = WaveformWidgetType::FilteredSoftwareWaveform;
 
     evaluateWidgets();
     start();
@@ -79,6 +96,7 @@ bool WaveformWidgetFactory::setWaveformWidget( WWaveformViewer* viewer)
         delete viewer->getWaveformWidget();
     }
 
+    //Cast to widget done just after creation because it can't be perform in constructor (pure virtual)
     WaveformWidgetAbstract* waveformWidget = createWaveformWidget(m_type,viewer);
     waveformWidget->castToQWidget();
     viewer->setWaveformWidget( waveformWidget);
@@ -170,10 +188,10 @@ void WaveformWidgetFactory::evaluateWidgets()
         WaveformWidgetAbstract* widget = 0;
         switch(type)
         {
-        case WaveformWidgetType::EmptyWaveform : widget = new EmptyWaveform(); break;
-        case WaveformWidgetType::SimplePureQtWaveform : break; //TODO
+        case WaveformWidgetType::EmptyWaveform : widget = new EmptyWaveformWidget(); break;
+        case WaveformWidgetType::SimpleSoftwareWaveform : break; //TODO
         case WaveformWidgetType::SimpleOpenGlWaveform : break; //TODO
-        case WaveformWidgetType::FilteredPureQtWaveform : break; //TODO
+        case WaveformWidgetType::FilteredSoftwareWaveform : widget = new SoftwareWaveformWidget(); break;
         case WaveformWidgetType::FilteredOpenGlWaveform : widget = new GLWaveformWidget(); break;
         }
 
@@ -187,6 +205,14 @@ void WaveformWidgetFactory::evaluateWidgets()
             WaveformWidgetAbstractHandle handle;
             handle.m_displayString = widgetName;
             handle.m_type = (WaveformWidgetType::Type)type;
+
+            //NOTE: For the moment non active widget are not added to available handle
+            //but it could be useful to have them anyway but not selectable in the combo box
+            if( widget->useOpenGl() && !isOpenGLAvailable())
+            {
+                handle.m_active = false;
+                continue;
+            }
             m_waveformWidgetHandles.push_back( handle);
         }
         delete widget;
@@ -199,10 +225,10 @@ WaveformWidgetAbstract* WaveformWidgetFactory::createWaveformWidget( WaveformWid
     {
         switch(type)
         {
-        case WaveformWidgetType::EmptyWaveform : return new EmptyWaveform( viewer->getGroup(), viewer);
-        case WaveformWidgetType::SimplePureQtWaveform : return 0; //TODO
+        case WaveformWidgetType::EmptyWaveform : return new EmptyWaveformWidget( viewer->getGroup(), viewer);
+        case WaveformWidgetType::SimpleSoftwareWaveform : return 0; //TODO
         case WaveformWidgetType::SimpleOpenGlWaveform : return 0; //TODO
-        case WaveformWidgetType::FilteredPureQtWaveform : return 0; //TODO
+        case WaveformWidgetType::FilteredSoftwareWaveform : return new SoftwareWaveformWidget( viewer->getGroup(), viewer);
         case WaveformWidgetType::FilteredOpenGlWaveform : return new GLWaveformWidget( viewer->getGroup(), viewer);
         default : return 0;
         }

@@ -3,7 +3,7 @@
 
 #include <singleton.h>
 
-#include "waveform/waveformwidgettype.h"
+#include "waveform/widget/waveformwidgettype.h"
 
 #include <QObject>
 #include <QVector>
@@ -16,9 +16,18 @@ class QTime;
 class WaveformWidgetAbstractHandle
 {
 public:
+    WaveformWidgetAbstractHandle()
+    {
+        m_active = true;
+        m_type = WaveformWidgetType::Count_WaveformwidgetType;
+    }
+
     WaveformWidgetType::Type getType() const { return m_type;}
     QString getDisplayName() const { return m_displayString;}
+    bool isActive() const { return m_active;}
+
 private:
+    bool m_active;
     WaveformWidgetType::Type m_type;
     QString m_displayString;
     friend class WaveformWidgetFactory;
@@ -39,8 +48,12 @@ public:
     int getFrameRate() const { return m_frameRate;}
     double getActualFrameRate() const { return m_actualFrameRate;}
 
+    bool isOpenGLAvailable() const { return m_openGLAvailable;}
+    QString getOpenGLVersion() const { return m_openGLVersion;}
+
     bool setWidgetType( int handleIndex);
     WaveformWidgetType::Type getType() const { return m_type;}
+
     const QVector<WaveformWidgetAbstractHandle> getAvailableTypes() const { return m_waveformWidgetHandles;}
     void destroyWidgets();
 
@@ -69,6 +82,9 @@ private:
 
     int m_frameRate;
     QTimer* m_timer;
+
+    bool m_openGLAvailable;
+    QString m_openGLVersion;
 
     //Debug
     QTime* m_time;
