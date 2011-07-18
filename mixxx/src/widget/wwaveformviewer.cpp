@@ -10,24 +10,16 @@
 #include "trackinfoobject.h"
 #include "wwaveformviewer.h"
 
-#include "waveform/waveformwidgetabstract.h"
+#include "waveform/widget/waveformwidgetabstract.h"
 
-//TODO vRince remove above include when factory and zoom ready
-#include "waveform/waveformwidgetrenderer.h"
-#include "waveform/glwaveformwidget.h"
-
-WWaveformViewer::WWaveformViewer(const char *group, WaveformRenderer *pWaveformRenderer, QWidget * parent, Qt::WFlags f) :
+WWaveformViewer::WWaveformViewer(const char *group, QWidget * parent, Qt::WFlags f) :
     QWidget(parent)
 {
-    m_pWaveformRenderer = pWaveformRenderer;
-    //Q_ASSERT(m_pWaveformRenderer);
-
     m_pGroup = group;
 
     setAcceptDrops(true);
 
     installEventFilter(this);
-    m_painting = false;
 
     setAttribute(Qt::WA_OpaquePaintEvent,true);
 
@@ -85,14 +77,16 @@ bool WWaveformViewer::eventFilter(QObject *o, QEvent *e) {
 
 void WWaveformViewer::wheelEvent(QWheelEvent *event)
 {
-    update();
-    if( event->x() > width() - m_zoomZoneWidth)
+    if( m_waveformWidget)
     {
-        WaveformWidgetAbstract* waveformWidget = (WaveformWidgetAbstract*)m_waveformWidget;
-        if( event->delta() > 0)
-            waveformWidget->getRenderer()->zoomIn();
-        else
-            waveformWidget->getRenderer()->zoomOut();
+        if( event->x() > width() - m_zoomZoneWidth)
+        {
+            if( event->delta() > 0)
+                m_waveformWidget->zoomIn();
+            else
+                m_waveformWidget->zoomOut();
+        }
+        update();
     }
 }
 
@@ -125,11 +119,11 @@ void WWaveformViewer::dropEvent(QDropEvent * event)
 void WWaveformViewer::onTrackLoaded( TrackPointer track)
 {
     if( m_waveformWidget)
-        m_waveformWidget->getRenderer()->setTrack(track);
+        m_waveformWidget->setTrack(track);
 }
 
 void WWaveformViewer::onTrackUnloaded( TrackPointer /*track*/)
 {
     if( m_waveformWidget)
-        m_waveformWidget->getRenderer()->setTrack( TrackPointer(0));
+        m_waveformWidget->setTrack( TrackPointer(0));
 }

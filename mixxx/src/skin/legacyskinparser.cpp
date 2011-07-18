@@ -47,9 +47,9 @@
 #include "waveformwidgetfactory.h"
 
 //TODO vRince celan-up
-#include "waveform/waveformwidgetrenderer.h"
-#include "waveform/waveformwidgetabstract.h"
-#include "waveform/glwaveformwidget.h"
+//#include "waveform/waveformwidgetrenderer.h"
+//#include "waveform/waveformwidgetabstract.h"
+//#include "waveform/glwaveformwidget.h"
 
 #include "widget/wsearchlineedit.h"
 #include "widget/wlibrary.h"
@@ -419,7 +419,7 @@ QWidget* LegacySkinParser::parseVisual(QDomElement node) {
     if (pPlayer == NULL)
         return NULL;
 
-    WWaveformViewer* viewer = new WWaveformViewer(pSafeChannelStr, 0, m_pParent);
+    WWaveformViewer* viewer = new WWaveformViewer(pSafeChannelStr, m_pParent);
     WaveformWidgetFactory::instance()->setWaveformWidget(viewer);
 
     viewer->installEventFilter(m_pKeyboard);

@@ -1,5 +1,5 @@
 #include "waveformwidgetabstract.h"
-#include "waveformwidgetrenderer.h"
+#include "waveform/waveformwidgetrenderer.h"
 
 #include <QWidget>
 
@@ -50,6 +50,21 @@ void WaveformWidgetAbstract::resize( int width, int height)
         m_widget->resize( width, height);
         m_waveformWidgetRenderer->resize( width, height);
     }
+}
+
+void WaveformWidgetAbstract::zoomIn()
+{
+    m_waveformWidgetRenderer->zoomIn();
+}
+
+void WaveformWidgetAbstract::zoomOut()
+{
+    m_waveformWidgetRenderer->zoomOut();
+}
+
+void WaveformWidgetAbstract::setTrack( TrackPointer track)
+{
+    m_waveformWidgetRenderer->setTrack( track);
 }
 
 void WaveformWidgetAbstract::setup( const QDomNode& node)

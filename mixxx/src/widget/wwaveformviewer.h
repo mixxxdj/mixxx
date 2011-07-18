@@ -15,7 +15,6 @@
 #include "defs.h"
 
 class EngineBuffer;
-class WaveformRenderer; //TODO vRince to remove
 class WaveformWidgetAbstract;
 
 class WWaveformViewer : public QWidget
@@ -23,7 +22,7 @@ class WWaveformViewer : public QWidget
     Q_OBJECT
 
 public:
-    WWaveformViewer(const char *group, WaveformRenderer* pWaveformRenderer, QWidget *parent=0, Qt::WFlags f = 0);
+    WWaveformViewer(const char *group, QWidget *parent=0, Qt::WFlags f = 0);
     virtual ~WWaveformViewer();
 
     const char* getGroup() const { return m_pGroup;}
@@ -59,11 +58,6 @@ private:
     WaveformWidgetAbstract* m_waveformWidget;
 
     friend class WaveformWidgetFactory;
-
-    //TODO vRince remove
-    WaveformRenderer *m_pWaveformRenderer;
-    bool m_painting;
-    QMutex m_paintMutex;
 };
 
 #endif

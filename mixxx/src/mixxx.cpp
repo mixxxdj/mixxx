@@ -1421,6 +1421,9 @@ void MixxxApp::checkDirectRendering() {
     // THEN
     //  * Warn user
 
+    //TODO vRince replug this kind of warning using ...
+
+    /*
     if (WaveformViewerFactory::numViewers(WAVEFORM_GL) > 0 &&
         !WaveformViewerFactory::isDirectRenderingEnabled() &&
         m_pConfig->getValueString(ConfigKey("[Direct Rendering]", "Warned")) != QString("yes")) {
@@ -1428,6 +1431,7 @@ void MixxxApp::checkDirectRendering() {
                              "Direct rendering is not enabled on your machine.\n\nThis means that the waveform displays will be very\nslow and take a lot of CPU time. Either update your\nconfiguration to enable direct rendering, or disable\nthe waveform displays in the control panel by\nselecting \"Simple\" under waveform displays.\nNOTE: In case you run on NVidia hardware,\ndirect rendering may not be present, but you will\nnot experience a degradation in performance.");
         m_pConfig->set(ConfigKey("[Direct Rendering]", "Warned"), ConfigValue(QString("yes")));
     }
+    */
 }
 
 bool MixxxApp::confirmExit() {
