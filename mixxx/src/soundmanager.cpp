@@ -470,11 +470,11 @@ int SoundManager::setConfig(SoundManagerConfig config) {
 
 void SoundManager::checkConfig() {
     if (!m_config.checkAPI(*this)) {
-        m_config.setAPI(DEFAULT_API);
+        m_config.setAPI(SoundManagerConfig::kDefaultAPI);
         m_config.loadDefaults(this, SoundManagerConfig::API | SoundManagerConfig::DEVICES);
     }
     if (!m_config.checkSampleRate(*this)) {
-        m_config.setSampleRate(DEFAULT_SAMPLE_RATE);
+        m_config.setSampleRate(SoundManagerConfig::kDefaultSampleRate);
         m_config.loadDefaults(this, SoundManagerConfig::OTHER);
     }
     // latency checks itself for validity on SMConfig::setLatency()
