@@ -181,9 +181,14 @@ void VinylControlManager::toggleDeck(double value) {
         if (nextProxy == enabled) goto bail;
         m_proxies[enabled]->ToggleVinylControl(false);
         m_proxies[nextProxy]->ToggleVinylControl(true);
-    } else if (enabled == -1 && m_proxies.size() && m_proxies[0]) {
-        // handle case 1
-        m_proxies[0]->ToggleVinylControl(true);
+    } else if (enabled == -1) {
+        // handle case 1, or we just don't have any proxies
+        foreach (VinylControlProxy *proxy, m_proxies) {
+            if (proxy) {
+                proxy->ToggleVinylControl(true);
+                break;
+            }
+        }
     }
 bail:
     m_proxiesLock.unlock();
