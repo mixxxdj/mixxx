@@ -1,10 +1,9 @@
-/***************************************************************************
-                          soundmanager.cpp
-                             -------------------
-    begin                : Sun Aug 15, 2007
-    copyright            : (C) 2007 Albert Santoni
-    email                : gamegod \a\t users.sf.net
-***************************************************************************/
+/**
+ * @file soundmanager.cpp
+ * @author Albert Santoni <gamegod at users dot sf dot net>
+ * @author Bill Good <bkgood at gmail dot com>
+ * @date 20070815
+ */
 
 /***************************************************************************
 *                                                                         *
@@ -17,21 +16,30 @@
 
 #include <QtDebug>
 #include <QtCore>
-#include <portaudio.h>
 #include <cstring> // for memcpy and strcmp
+
+#ifdef __PORTAUDIO__
+#include <portaudio.h>
+#endif // ifdef __PORTAUDIO__
+
 #include "soundmanager.h"
 #include "sounddevice.h"
 #include "sounddeviceportaudio.h"
 #include "engine/enginemaster.h"
 #include "controlobjectthreadmain.h"
 #include "audiopath.h"
+#include "controlobject.h"
+#include "vinylcontrolproxy.h"
 
 /** Initializes Mixxx's audio core
  *  @param pConfig The config key table
- *  @param _master A pointer to the audio engine's mastering class.
+ *  @param pMaster A pointer to the audio engine's mastering class.
  */
-SoundManager::SoundManager(ConfigObject<ConfigValue> * pConfig, EngineMaster * _master)
+SoundManager::SoundManager(ConfigObject<ConfigValue> *pConfig, EngineMaster *pMaster)
     : QObject()
+    , m_pMaster(pMaster)
+    , m_pConfig(pConfig)
+    , m_pClkRefDevice(NULL)
     , m_outputDevicesOpened(0)
     , m_inputDevicesOpened(0)
     , m_pErrorDevice(NULL)
@@ -40,12 +48,6 @@ SoundManager::SoundManager(ConfigObject<ConfigValue> * pConfig, EngineMaster * _
     , m_jackSampleRate(-1)
 #endif
 {
-    //qDebug() << "SoundManager::SoundManager()";
-    m_pConfig = pConfig;
-    m_pMaster = _master;
-
-    clearOperativeVariables();
-
     //These are ControlObjectThreadMains because all the code that
     //uses them is called from the GUI thread (stuff like opening soundcards).
     ControlObjectThreadMain* pControlObjectLatency = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[Master]", "latency")));
@@ -238,8 +240,8 @@ void SoundManager::closeDevices()
     // TODO(bkgood) see comment where these objects are created in setupDevices,
     // this should probably be in the dtor or at least somewhere other
     // than here.
-    while (!m_VinylControl.empty()) {
-        VinylControlProxy *vc = m_VinylControl.takeLast();
+    while (!m_vinylControl.empty()) {
+        VinylControlProxy *vc = m_vinylControl.takeLast();
         if (vc != NULL) {
             delete vc;
         }
@@ -375,8 +377,8 @@ int SoundManager::setupDevices()
     // TODO(bkgood) this ought to be done in the ctor or something. Not here. Really
     // shouldn't be any reason for these to be reinitialized every time the
     // audio prefs are updated. Will require work in DlgPrefVinyl.
-    m_VinylControl.append(new VinylControlProxy(m_pConfig, "[Channel1]"));
-    m_VinylControl.append(new VinylControlProxy(m_pConfig, "[Channel2]"));
+    m_vinylControl.append(new VinylControlProxy(m_pConfig, "[Channel1]"));
+    m_vinylControl.append(new VinylControlProxy(m_pConfig, "[Channel2]"));
 #endif
     foreach (SoundDevice *device, m_devices) {
         bool isInput = false;
@@ -662,8 +664,8 @@ void SoundManager::pushBuffer(QList<AudioInput> inputs, short * inputBuffer,
             if (in.getType() == AudioInput::VINYLCONTROL) {
                 unsigned int index = in.getIndex();
                 Q_ASSERT(index < 2); // XXX we only do two vc decks atm -- bkgood
-                if (m_VinylControl[index] && m_inputBuffers.contains(in)) {
-                    m_VinylControl[index]->AnalyseSamples(m_inputBuffers[in], iFramesPerBuffer);
+                if (m_vinylControl[index] && m_inputBuffers.contains(in)) {
+                    m_vinylControl[index]->AnalyseSamples(m_inputBuffers[in], iFramesPerBuffer);
                 }
             }
         }

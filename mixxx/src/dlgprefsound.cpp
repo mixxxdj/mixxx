@@ -20,6 +20,7 @@
 #include "soundmanager.h"
 #include "sounddevice.h"
 #include "engine/enginemaster.h"
+#include "vinylcontrol.h" // for MIXXX_VINYL_FINALSCRATCH
 
 /**
  * Construct a new sound preferences pane. Initializes and populates all the
