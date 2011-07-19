@@ -24,6 +24,7 @@
 #include "sounddevice.h"
 #include "sounddeviceportaudio.h"
 #include "audiopath.h"
+#include "controlobject.h"
 
 SoundDevicePortAudio::SoundDevicePortAudio(ConfigObject<ConfigValue> *config, SoundManager *sm,
                                            const PaDeviceInfo *deviceInfo, unsigned int devIndex)
