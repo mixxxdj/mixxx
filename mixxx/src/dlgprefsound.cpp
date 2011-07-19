@@ -359,10 +359,10 @@ void DlgPrefSound::latencyChanged(int index) {
 
 /**
  * Slot called whenever the selected sample rate is changed. Populates the
- * latency input box with MAX_LATENCY values, starting at 1ms, representing
- * a number of frames per buffer, which will always be a power of 2 (so the
- * values displayed in ms won't be constant between sample rates, but they'll
- * be close).
+ * latency input box with SMConfig::kMaxLatency values, starting at 1ms,
+ * representing a number of frames per buffer, which will always be a power
+ * of 2 (so the values displayed in ms won't be constant between sample rates,
+ * but they'll be close).
  */
 void DlgPrefSound::updateLatencies(int sampleRateIndex) {
     double sampleRate = sampleRateComboBox->itemData(sampleRateIndex).toDouble();
@@ -375,7 +375,7 @@ void DlgPrefSound::updateLatencies(int sampleRateIndex) {
     // srate list when we construct it in the ctor -- bkgood
     for (; framesPerBuffer / sampleRate * 1000 < 1.0; framesPerBuffer *= 2);
     latencyComboBox->clear();
-    for (unsigned int i = 0; i < MAX_LATENCY; ++i) {
+    for (unsigned int i = 0; i < SoundManagerConfig::kMaxLatency; ++i) {
         unsigned int latency = framesPerBuffer / sampleRate * 1000;
         // i + 1 in the next line is a latency index as described in SSConfig
         latencyComboBox->addItem(QString(tr("%1 ms")).arg(latency), i + 1);
