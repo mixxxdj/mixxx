@@ -443,14 +443,20 @@ int SoundManager::setupDevices()
             }
         }
     }
-    
-    if (!m_pClkRefDevice) {
+
+    if (!m_pClkRefDevice && iNumDevicesOpenedForOutput > 0) {
         QList<SoundDevice*> outputDevices = getDeviceList(m_config.getAPI(), true, false);
+        Q_ASSERT(outputDevices.length());
         SoundDevice* device = outputDevices.first();
-        qWarning() << "Output sound device clock reference not set! Using" << device->getDisplayName();
+        qWarning() << "Output sound device clock reference not set! Using"
+            << device->getDisplayName();
         m_pClkRefDevice = device;
+    } else if (iNumDevicesOpenedForOutput > 0) {
+        qDebug() << "Using" << m_pClkRefDevice->getDisplayName()
+            << "as output sound device clock reference";
+    } else {
+        qDebug() << "No output devices opened, no clock reference device set";
     }
-    else qDebug() << "Using" << m_pClkRefDevice->getDisplayName() << "as output sound device clock reference";
 
     qDebug() << iNumDevicesOpenedForOutput << "output sound devices opened";
     qDebug() << iNumDevicesOpenedForInput << "input sound devices opened";
