@@ -32,6 +32,8 @@
  */
 SoundManager::SoundManager(ConfigObject<ConfigValue> * pConfig, EngineMaster * _master)
     : QObject()
+    , m_outputDevicesOpened(0)
+    , m_inputDevicesOpened(0)
     , m_pErrorDevice(NULL)
 #ifdef __PORTAUDIO__
     , m_paInitialized(false)
@@ -103,8 +105,8 @@ SoundManager::~SoundManager()
  */
 void SoundManager::clearOperativeVariables()
 {
-    iNumDevicesOpenedForOutput = 0;
-    iNumDevicesOpenedForInput = 0;
+    m_outputDevicesOpened = 0;
+    m_inputDevicesOpened = 0;
     m_pClkRefDevice = NULL;
 }
 
@@ -205,7 +207,7 @@ void SoundManager::closeDevices()
 {
     //qDebug() << "SoundManager::closeDevices()";
     QListIterator<SoundDevice*> dev_it(m_devices);
-    
+
     //requestBufferMutex.lock(); //Ensures we don't kill a stream in the middle of a callback call.
                                  //Note: if we're using Pa_StopStream() (like now), we don't need
                                  //      to lock. PortAudio stops the threads nicely.
@@ -437,29 +439,29 @@ int SoundManager::setupDevices()
             } else {
                 ++devicesOpened;
                 if (isOutput)
-                    ++iNumDevicesOpenedForOutput;
+                    ++m_outputDevicesOpened;
                 if (isInput)
-                    ++iNumDevicesOpenedForInput;
+                    ++m_inputDevicesOpened;
             }
         }
     }
 
-    if (!m_pClkRefDevice && iNumDevicesOpenedForOutput > 0) {
+    if (!m_pClkRefDevice && m_outputDevicesOpened > 0) {
         QList<SoundDevice*> outputDevices = getDeviceList(m_config.getAPI(), true, false);
         Q_ASSERT(outputDevices.length());
         SoundDevice* device = outputDevices.first();
         qWarning() << "Output sound device clock reference not set! Using"
             << device->getDisplayName();
         m_pClkRefDevice = device;
-    } else if (iNumDevicesOpenedForOutput > 0) {
+    } else if (m_outputDevicesOpened > 0) {
         qDebug() << "Using" << m_pClkRefDevice->getDisplayName()
             << "as output sound device clock reference";
     } else {
         qDebug() << "No output devices opened, no clock reference device set";
     }
 
-    qDebug() << iNumDevicesOpenedForOutput << "output sound devices opened";
-    qDebug() << iNumDevicesOpenedForInput << "input sound devices opened";
+    qDebug() << m_outputDevicesOpened << "output sound devices opened";
+    qDebug() << m_inputDevicesOpened << "input sound devices opened";
 
     // returns OK if we were able to open all the devices the user
     // wanted
@@ -513,11 +515,13 @@ void SoundManager::sync()
 
 //Requests a buffer in the proper format, if we're prepared to give one.
 QHash<AudioOutput, const CSAMPLE*>
-SoundManager::requestBuffer(QList<AudioOutput> outputs, unsigned long iFramesPerBuffer, SoundDevice* device, double streamTime)
+SoundManager::requestBuffer(QList<AudioOutput> outputs,
+    unsigned long iFramesPerBuffer, SoundDevice* device,
+    double streamTime /* = 0 */)
 {
     Q_UNUSED(outputs); // unused, we just give the caller the full hash -bkgood
     //qDebug() << "SoundManager::requestBuffer()";
-    
+
     /*
     // Display when sound cards drop or duplicate buffers (use for testing only)
     if (iNumDevicesOpenedForOutput>1) {
@@ -527,7 +531,7 @@ SoundManager::requestBuffer(QList<AudioOutput> outputs, unsigned long iFramesPer
         m_deviceFrameCount.insert(device, currentFrameCount+iFramesPerBuffer);  // Overwrites existing value if already present
         // Get current time in milliseconds
 //         uint t = QDateTime::currentDateTime().toTime_t()*1000+QDateTime::currentDateTime().toString("zzz").toUint();
-        
+
         if (device != m_pClkRefDevice) {  // If not the reference device,
             // Detect dropped frames/buffers
             long sdifference = m_deviceFrameCount.value(m_pClkRefDevice)-m_deviceFrameCount.value(device);
