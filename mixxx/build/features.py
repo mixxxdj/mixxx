@@ -107,7 +107,7 @@ class CoreAudio(Feature):
 class MediaFoundation(Feature):
     FLAG = 'mediafoundation'
     def description(self):
-        return "Media Foundation AAC decoder (Windows Vista with KB2117917 or Windows 7 required)"
+        return "Media Foundation AAC Decoder"
     def enabled(self, build):
         build.flags[self.FLAG] = util.get_flags(build.env, self.FLAG, 0)
         if int(build.flags[self.FLAG]):
