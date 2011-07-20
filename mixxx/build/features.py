@@ -107,14 +107,14 @@ class CoreAudio(Feature):
 class MediaFoundation(Feature):
     FLAG = 'mediafoundation'
     def description(self):
-        return "Media Foundation AAC decoder (Windows Vista with KB2117917 or Windows 7 required)"
+        return "Media Foundation AAC decoder plugin (Windows Vista with KB2117917 or Windows 7 required)"
     def enabled(self, build):
         build.flags[self.FLAG] = util.get_flags(build.env, self.FLAG, 0)
         if int(build.flags[self.FLAG]):
             return True
         return False
     def add_options(self, build, vars):
-        vars.Add(self.FLAG, "Set to 1 to enable Media Foundation AAC decoder support (Windows Vista with KB2117917 or Windows 7 required)", 0)
+        vars.Add(self.FLAG, "Set to 1 to enable the Media Foundation AAC decoder plugin (Windows Vista with KB2117917 or Windows 7 required)", 0)
     def configure(self, build, conf):
         if not self.enabled(build):
             return
@@ -136,8 +136,6 @@ class MediaFoundation(Feature):
             raise Exception('Did not find Mfreadwrite.lib - exiting!')
         build.env.Append(CPPDEFINES='__MEDIAFOUNDATION__')
         return
-    def sources(self, build):
-        return ['soundsourcemediafoundation.cpp']
 
 class MIDIScript(Feature):
     def description(self):
