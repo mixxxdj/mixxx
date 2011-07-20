@@ -121,8 +121,11 @@ class MediaFoundation(Feature):
         if not build.platform_is_windows:
             raise Exception("Media Foundation is only supported on Windows!")
         # need to look into this, SDK 6 might be ok?
-        build.env.Append(CPPPATH=[
-                  "C:/Program Files/Microsoft SDKs/Windows/v7.0/Include"])
+        try:
+            include_path = os.path.join(os.environ["MSSdk"], "Include")
+        except KeyError:
+            raise Exception("MSSdk environment variable not set, have you run setenv?")
+        build.env.Append(CPPPATH=[include_path])
         if not conf.CheckLib('Ole32'):
             raise Exception('Did not find Ole32.lib - exiting!')
         if not conf.CheckLib(['Mfuuid']):
