@@ -8,6 +8,7 @@
 #include "vinylcontrolproxy.h"
 #include "vinylcontrolxwax.h"
 #include "soundmanager.h"
+#include "controlpushbutton.h"
 
 const int kNumberOfDecks = 4; // set to 4 because it will ideally not be more
 // or less than the number of vinyl-controlled decks but will probably be
@@ -20,7 +21,9 @@ VinylControlManager::VinylControlManager(QObject *pParent,
         ConfigObject<ConfigValue> *pConfig)
   : QObject(pParent)
   , m_pConfig(pConfig)
-  , m_proxies(kNumberOfDecks, NULL) {
+  , m_proxies(kNumberOfDecks, NULL)
+  , m_pToggle(new ControlPushButton(ConfigKey("[VinylControl]", "Toggle")))
+{
     // load a bunch of stuff
     ControlObject::getControl(ConfigKey("[Channel1]","vinylcontrol_enabled"))
         ->queueFromThread(m_pConfig->getValueString(
@@ -40,6 +43,7 @@ VinylControlManager::VinylControlManager(QObject *pParent,
     ControlObject::getControl(ConfigKey("[Channel2]","vinylcontrol_cueing"))
         ->queueFromThread(m_pConfig->getValueString(
                 ConfigKey("[VinylControl]","cueing_ch2")).toDouble());
+    connect(m_pToggle, SIGNAL(valueChanged(double)), SLOT(toggleDeck(double)));
 }
 
 VinylControlManager::~VinylControlManager() {
@@ -74,6 +78,7 @@ VinylControlManager::~VinylControlManager() {
     m_pConfig->set(ConfigKey("[VinylControl]","cueing_ch2"),
         ConfigValue((int)ControlObject::getControl(
             ConfigKey("[Channel2]","vinylcontrol_cueing"))->get()));
+    delete m_pToggle;
 }
 
 void VinylControlManager::receiveBuffer(AudioInput input,
@@ -111,7 +116,7 @@ void VinylControlManager::onInputDisconnected(AudioInput input) {
     m_proxiesLock.lockForWrite();
     Q_ASSERT(input.getIndex() < m_proxies.size());
     Q_ASSERT(m_proxies.at(input.getIndex()));
-    
+
     delete m_proxies.at(input.getIndex());
     m_proxies.replace(input.getIndex(), NULL);
     m_proxiesLock.unlock();
@@ -144,4 +149,47 @@ bool VinylControlManager::vinylInputEnabled(int deck) {
     bool ret = (deck - 1) < m_proxies.size() && m_proxies[deck-1];
     m_proxiesLock.unlock();
     return ret;
+}
+
+void VinylControlManager::toggleDeck(double value) {
+    if (!value) return;
+    /** few different cases here:
+     * 1. No decks have vinyl control enabled.
+     * 2. One deck has vinyl control enabled.
+     * 3. Many decks have vinyl control enabled.
+     *
+     * For case 1, we'll just enable vinyl control on the first deck. Case 2
+     * is the most common one, we'll just turn off the vinyl control on the
+     * deck currently using it and turn it on on the next one (sequentially,
+     * wrapping as needed). Behaviour in case 3 is totally non-obvious and
+     * will be ignored.
+     */
+    m_proxiesLock.lockForRead();
+    int enabled(-1); // -1 means we haven't found a proxy that's enabled
+    for (int i = 0; i < m_proxies.size(); ++i) {
+        if (m_proxies[i] && m_proxies[i]->isEnabled()) {
+            if (enabled > -1) goto bail; // case 3
+            enabled = i;
+        }
+    }
+    if (enabled > -1 && m_proxies.size() > 1) {
+        // handle case 2
+        int nextProxy((enabled + 1) % m_proxies.size());
+        while (!m_proxies[nextProxy]) {
+            nextProxy = (nextProxy + 1) % m_proxies.size();
+        } // guaranteed to terminate as there's at least 1 non-null proxy
+        if (nextProxy == enabled) goto bail;
+        m_proxies[enabled]->ToggleVinylControl(false);
+        m_proxies[nextProxy]->ToggleVinylControl(true);
+    } else if (enabled == -1) {
+        // handle case 1, or we just don't have any proxies
+        foreach (VinylControlProxy *proxy, m_proxies) {
+            if (proxy) {
+                proxy->ToggleVinylControl(true);
+                break;
+            }
+        }
+    }
+bail:
+    m_proxiesLock.unlock();
 }
