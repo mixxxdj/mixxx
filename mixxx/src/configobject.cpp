@@ -319,8 +319,6 @@ QString ConfigObject<ValueType>::getConfigPath()
     //
     QString qConfigPath; // TODO: this only changes once (on first load) during a run should make this a singleton.
 
-    return "/home/vrince/Project/mixxx/trunk/mixxx/res/";
-
     // Try to read in the resource directory from the command line
     QStringList commandLineArgs = QApplication::arguments();
     int resourcePath = commandLineArgs.indexOf("--resourcePath");
