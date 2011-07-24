@@ -1,7 +1,8 @@
 //
 //	fidlib include file
 //
-
+#ifndef FIDLIB_H
+#define FIDLIB_H
 typedef struct FidFilter FidFilter;
 struct FidFilter {
    short typ;		// Type of filter element 'I' IIR, 'F' FIR, or 0 for end of list
@@ -35,20 +36,23 @@ typedef double (FidFunc)(void*, double);
 //
 //	Prototypes
 //
+#ifdef MIXXX
+extern "C" {
+#endif
 
 extern void fid_set_error_handler(void(*rout)(char *));
 extern char *fid_version();
 extern double fid_response_pha(FidFilter *filt, double freq, double *phase);
 extern double fid_response(FidFilter *filt, double freq);
 extern int fid_calc_delay(FidFilter *filt);
-extern FidFilter *fid_design(char *spec, double rate, double freq0, double freq1, 
+extern FidFilter *fid_design(const char *spec, double rate, double freq0, double freq1, 
 			     int f_adj, char **descp);
-extern double fid_design_coef(double *coef, int n_coef, char *spec, 
+extern double fid_design_coef(double *coef, int n_coef, const char *spec, 
 			      double rate, double freq0, double freq1, int adj);
 extern void fid_list_filters(FILE *out);
 extern int fid_list_filters_buf(char *buf, char *bufend);
 extern FidFilter *fid_flatten(FidFilter *filt);
-extern void fid_rewrite_spec(char *spec, double freq0, double freq1, int adj, 
+extern void fid_rewrite_spec(const char *spec, double freq0, double freq1, int adj, 
 			     char **spec1p, char **spec2p, 
 			     double *freq0p, double *freq1p, int *adjp);
 extern FidFilter *fid_cv_array(double *arr);
@@ -66,3 +70,8 @@ extern void fid_run_initbuf(void *run, void *buf);
 extern void fid_run_zapbuf(void *buf);
 extern void fid_run_freebuf(void *runbuf);
 extern void fid_run_free(void *run);
+
+#ifdef MIXXX
+}
+#endif
+#endif
