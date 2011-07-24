@@ -42,10 +42,12 @@
 typedef unsigned int    uint;
 typedef unsigned long   ulong;
 
+/*
 #ifdef __GNUC__
     // In GCC, include soundtouch_config.h made by config scritps
     #include "soundtouch_config.h"
 #endif
+*/
 
 #ifndef _WINDEF_
     // if these aren't defined already by Windows headers, define now
