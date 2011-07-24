@@ -17,6 +17,9 @@
 //	that the code is easy to understand.
 //
 
+#ifndef FIDCOMBINED_H
+#define FIDCOMBINED_H
+
 typedef struct Run {
    int magic;		// Magic: 0x64966325
    double *fir;         // FIR parameters
@@ -144,3 +147,5 @@ fid_run_free(void *run) {
 }
 
 // END //
+#endif
+
