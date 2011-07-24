@@ -23,10 +23,10 @@
 ///
 ////////////////////////////////////////////////////////////////////////////////
 //
-// Last changed  : $Date: 2009-12-28 22:32:57 +0200 (Mon, 28 Dec 2009) $
+// Last changed  : $Date: 2011-07-16 15:27:28 +0300 (Sat, 16 Jul 2011) $
 // File revision : $Revision: 4 $
 //
-// $Id: sse_optimized.cpp 80 2009-12-28 20:32:57Z oparviai $
+// $Id: sse_optimized.cpp 122 2011-07-16 12:27:28Z oparviai $
 //
 ////////////////////////////////////////////////////////////////////////////////
 //
@@ -56,7 +56,7 @@
 
 using namespace soundtouch;
 
-#ifdef ALLOW_SSE
+#ifdef SOUNDTOUCH_ALLOW_SSE
 
 // SSE routines available only with float sample type    
 
@@ -84,10 +84,10 @@ double TDStretchSSE::calcCrossCorrStereo(const float *pV1, const float *pV2) con
     // This can mean up to ~ 10-fold difference (incl. part of which is
     // due to skipping every second round for stereo sound though).
     //
-    // Compile-time define ALLOW_NONEXACT_SIMD_OPTIMIZATION is provided
+    // Compile-time define SOUNDTOUCH_ALLOW_NONEXACT_SIMD_OPTIMIZATION is provided
     // for choosing if this little cheating is allowed.
 
-#ifdef ALLOW_NONEXACT_SIMD_OPTIMIZATION
+#ifdef SOUNDTOUCH_ALLOW_NONEXACT_SIMD_OPTIMIZATION
     // Little cheating allowed, return valid correlation only for 
     // aligned locations, meaning every second round for stereo sound.
 
@@ -281,7 +281,7 @@ void FIRFilterSSE::setCoefficients(const float *coeffs, uint newLength, uint uRe
     FIRFilter::setCoefficients(coeffs, newLength, uResultDivFactor);
 
     // Scale the filter coefficients so that it won't be necessary to scale the filtering result
-    // also rearrange coefficients suitably for 3DNow!
+    // also rearrange coefficients suitably for SSE
     // Ensure that filter coeffs array is aligned to 16-byte boundary
     delete[] filterCoeffsUnalign;
     filterCoeffsUnalign = new float[2 * newLength + 4];
@@ -423,88 +423,6 @@ uint FIRFilterSSE::evaluateFilterStereo(float *dest, const float *source, uint n
         dest += 4;
     }
     */
-
-
-    /* Similar routine in assembly, again obsoleted due to maintainability
-    _asm
-    {
-        // Very important note: data in 'src' _must_ be aligned to 
-        // 16-byte boundary!
-        mov     edx, count
-        mov     ebx, dword ptr src
-        mov     eax, dword ptr dest
-        shr     edx, 1
-
-    loop1:
-        // "outer loop" : during each round 2*2 output samples are calculated
-
-        // give prefetch hints to CPU of what data are to be needed soonish
-        prefetcht0 [ebx]
-        prefetcht0 [filterCoeffsLocal]
-
-        mov     esi, ebx
-        mov     edi, filterCoeffsLocal
-        xorps   xmm0, xmm0
-        xorps   xmm1, xmm1
-        mov     ecx, lengthLocal
-
-    loop2:
-        // "inner loop" : during each round eight FIR filter taps are evaluated for 2*2 samples
-        prefetcht0 [esi + 32]     // give a prefetch hint to CPU what data are to be needed soonish
-        prefetcht0 [edi + 32]     // give a prefetch hint to CPU what data are to be needed soonish
-
-        movups  xmm2, [esi]         // possibly unaligned load
-        movups  xmm3, [esi + 8]     // possibly unaligned load
-        mulps   xmm2, [edi]
-        mulps   xmm3, [edi]
-        addps   xmm0, xmm2
-        addps   xmm1, xmm3
-
-        movups  xmm4, [esi + 16]    // possibly unaligned load
-        movups  xmm5, [esi + 24]    // possibly unaligned load
-        mulps   xmm4, [edi + 16]
-        mulps   xmm5, [edi + 16]
-        addps   xmm0, xmm4
-        addps   xmm1, xmm5
-
-        prefetcht0 [esi + 64]     // give a prefetch hint to CPU what data are to be needed soonish
-        prefetcht0 [edi + 64]     // give a prefetch hint to CPU what data are to be needed soonish
-
-        movups  xmm6, [esi + 32]    // possibly unaligned load
-        movups  xmm7, [esi + 40]    // possibly unaligned load
-        mulps   xmm6, [edi + 32]
-        mulps   xmm7, [edi + 32]
-        addps   xmm0, xmm6
-        addps   xmm1, xmm7
-
-        movups  xmm4, [esi + 48]    // possibly unaligned load
-        movups  xmm5, [esi + 56]    // possibly unaligned load
-        mulps   xmm4, [edi + 48]
-        mulps   xmm5, [edi + 48]
-        addps   xmm0, xmm4
-        addps   xmm1, xmm5
-
-        add     esi, 64
-        add     edi, 64
-        dec     ecx
-        jnz     loop2
-
-        // Now xmm0 and xmm1 both have a filtered 2-channel sample each, but we still need
-        // to sum the two hi- and lo-floats of these registers together.
-
-        movhlps xmm2, xmm0          // xmm2 = xmm2_3 xmm2_2 xmm0_3 xmm0_2
-        movlhps xmm2, xmm1          // xmm2 = xmm1_1 xmm1_0 xmm0_3 xmm0_2
-        shufps  xmm0, xmm1, 0xe4    // xmm0 = xmm1_3 xmm1_2 xmm0_1 xmm0_0
-        addps   xmm0, xmm2
-
-        movaps  [eax], xmm0
-        add     ebx, 16
-        add     eax, 16
-
-        dec     edx
-        jnz     loop1
-    }
-    */
 }
 
-#endif  // ALLOW_SSE
+#endif  // SOUNDTOUCH_ALLOW_SSE

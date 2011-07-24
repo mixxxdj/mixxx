@@ -76,7 +76,7 @@ typedef unsigned char uchar;
 static double 
 filter_step(void *fbuf, double iir) {
    double *coef= ((RunBuf*)fbuf)->coef;
-   uchar *cmd= (uchar*) ((RunBuf*)fbuf)->cmd;
+   uchar *cmd= ((RunBuf*)fbuf)->cmd;
    double *buf= &((RunBuf*)fbuf)->buf[0];
    uchar ch;
    double fir= 0;
@@ -228,7 +228,7 @@ fid_run_new(FidFilter *filt, double (**funcpp)(void *,double)) {
 
    // Allocate worst-case sizes for temporary arrays
    coef_tmp= ALLOC_ARR(coef_max= filt_cnt + 1, double);
-   cmd_tmp= (uchar*)ALLOC_ARR(cmd_max= filt_cnt + 4, char);
+   cmd_tmp= ALLOC_ARR(cmd_max= filt_cnt + 4, char);
    dp= coef_tmp;
    cp= cmd_tmp;
    prev= 0;
@@ -386,7 +386,7 @@ fid_run_new(FidFilter *filt, double (**funcpp)(void *,double)) {
 
 void *
 fid_run_newbuf(void *run) {
-   Run *rr= (Run*)run;
+   Run *rr= run;
    RunBuf *rb;
    int siz;
 
@@ -394,7 +394,7 @@ fid_run_newbuf(void *run) {
       error("Bad handle passed to fid_run_newbuf()");
    
    siz= rr->buf_size ? rr->buf_size : 1;   // Minimum one element to avoid problems
-   rb= (RunBuf*)Alloc(sizeof(RunBuf) + siz * sizeof(double));
+   rb= Alloc(sizeof(RunBuf) + siz * sizeof(double));
    rb->coef= rr->coef;
    rb->cmd= rr->cmd;
    rb->mov_cnt= (siz-1) * sizeof(double);
@@ -409,7 +409,7 @@ fid_run_newbuf(void *run) {
 
 int 
 fid_run_bufsize(void *run) {
-   Run *rr= (Run*) run;
+   Run *rr= run;
    int siz;
 
    if (rr->magic != 0x64966325)
@@ -430,8 +430,8 @@ fid_run_bufsize(void *run) {
 
 void 
 fid_run_initbuf(void *run, void *buf) {
-   Run *rr= (Run*) run;
-   RunBuf *rb= (RunBuf*) buf;
+   Run *rr= run;
+   RunBuf *rb= buf;
    int siz;
 
    if (rr->magic != 0x64966325)
@@ -453,7 +453,7 @@ fid_run_initbuf(void *run, void *buf) {
 
 void 
 fid_run_zapbuf(void *buf) {
-   RunBuf *rb= (RunBuf*) buf;
+   RunBuf *rb= buf;
    memset(rb->buf, 0, rb->mov_cnt + sizeof(double));
 }   
    

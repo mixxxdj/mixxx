@@ -41,10 +41,10 @@
 ///
 ////////////////////////////////////////////////////////////////////////////////
 //
-// Last changed  : $Date: 2009-05-19 07:57:30 +0300 (Tue, 19 May 2009) $
+// Last changed  : $Date: 2011-02-13 21:13:57 +0200 (Sun, 13 Feb 2011) $
 // File revision : $Revision: 4 $
 //
-// $Id: SoundTouch.cpp 73 2009-05-19 04:57:30Z oparviai $
+// $Id: SoundTouch.cpp 104 2011-02-13 19:13:57Z oparviai $
 //
 ////////////////////////////////////////////////////////////////////////////////
 //
@@ -243,7 +243,7 @@ void SoundTouch::calcEffectiveRateAndTempo()
     if (!TEST_FLOAT_EQUAL(rate,oldRate)) pRateTransposer->setRate(rate);
     if (!TEST_FLOAT_EQUAL(tempo, oldTempo)) pTDStretch->setTempo(tempo);
 
-#ifndef PREVENT_CLICK_AT_RATE_CROSSOVER
+#ifndef SOUNDTOUCH_PREVENT_CLICK_AT_RATE_CROSSOVER
     if (rate <= 1.0f) 
     {
         if (output != pTDStretch) 
@@ -317,7 +317,7 @@ void SoundTouch::putSamples(const SAMPLETYPE *samples, uint nSamples)
         pTDStretch->putSamples(samples, nSamples);
     } 
     */
-#ifndef PREVENT_CLICK_AT_RATE_CROSSOVER
+#ifndef SOUNDTOUCH_PREVENT_CLICK_AT_RATE_CROSSOVER
     else if (rate <= 1.0f) 
     {
         // transpose the rate down, output the transposed sound to tempo changer buffer
@@ -448,7 +448,13 @@ int SoundTouch::getSetting(int settingId) const
             pTDStretch->getParameters(NULL, NULL, NULL, &temp);
             return temp;
 
-        default :
+		case SETTING_NOMINAL_INPUT_SEQUENCE :
+			return pTDStretch->getInputSampleReq();
+
+		case SETTING_NOMINAL_OUTPUT_SEQUENCE :
+			return pTDStretch->getOutputBatchSize();
+
+		default :
             return 0;
     }
 }

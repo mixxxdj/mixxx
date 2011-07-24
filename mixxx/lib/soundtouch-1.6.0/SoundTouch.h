@@ -41,10 +41,10 @@
 ///
 ////////////////////////////////////////////////////////////////////////////////
 //
-// Last changed  : $Date: 2009-12-28 22:10:14 +0200 (Mon, 28 Dec 2009) $
+// Last changed  : $Date: 2011-07-15 22:27:10 +0300 (Fri, 15 Jul 2011) $
 // File revision : $Revision: 4 $
 //
-// $Id: SoundTouch.h 78 2009-12-28 20:10:14Z oparviai $
+// $Id: SoundTouch.h 107 2011-07-15 19:27:10Z oparviai $
 //
 ////////////////////////////////////////////////////////////////////////////////
 //
@@ -79,10 +79,10 @@ namespace soundtouch
 {
 
 /// Soundtouch library version string
-#define SOUNDTOUCH_VERSION          "1.5.0"
+#define SOUNDTOUCH_VERSION          "1.6.0"
 
 /// SoundTouch library version id
-#define SOUNDTOUCH_VERSION_ID       (10500)
+#define SOUNDTOUCH_VERSION_ID       (10600)
 
 //
 // Available setting IDs for the 'setSetting' & 'get_setting' functions:
@@ -115,6 +115,31 @@ namespace soundtouch
 /// See "STTypes.h" or README for more information.
 #define SETTING_OVERLAP_MS          5
 
+
+/// Call "getSetting" with this ID to query nominal average processing sequence
+/// size in samples. This value tells approcimate value how many input samples 
+/// SoundTouch needs to gather before it does DSP processing run for the sample batch.
+///
+/// Notices: 
+/// - This is read-only parameter, i.e. setSetting ignores this parameter
+/// - Returned value is approximate average value, exact processing batch
+///   size may wary from time to time
+/// - This parameter value is not constant but may change depending on 
+///   tempo/pitch/rate/samplerate settings.
+#define SETTING_NOMINAL_INPUT_SEQUENCE		6
+
+
+/// Call "getSetting" with this ID to query nominal average processing output 
+/// size in samples. This value tells approcimate value how many output samples 
+/// SoundTouch outputs once it does DSP processing run for a batch of input samples.
+///	
+/// Notices: 
+/// - This is read-only parameter, i.e. setSetting ignores this parameter
+/// - Returned value is approximate average value, exact processing batch
+///   size may wary from time to time
+/// - This parameter value is not constant but may change depending on 
+///   tempo/pitch/rate/samplerate settings.
+#define SETTING_NOMINAL_OUTPUT_SEQUENCE		7
 
 class SoundTouch : public FIFOProcessor
 {

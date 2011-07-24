@@ -20,10 +20,10 @@
 ///
 ////////////////////////////////////////////////////////////////////////////////
 //
-// Last changed  : $Date: 2009-10-31 16:53:23 +0200 (Sat, 31 Oct 2009) $
+// Last changed  : $Date: 2011-02-13 21:13:57 +0200 (Sun, 13 Feb 2011) $
 // File revision : $Revision: 4 $
 //
-// $Id: mmx_optimized.cpp 75 2009-10-31 14:53:23Z oparviai $
+// $Id: mmx_optimized.cpp 104 2011-02-13 19:13:57Z oparviai $
 //
 ////////////////////////////////////////////////////////////////////////////////
 //
@@ -50,7 +50,7 @@
 
 #include "STTypes.h"
 
-#ifdef ALLOW_MMX
+#ifdef SOUNDTOUCH_ALLOW_MMX
 // MMX routines available only with integer sample type
 
 #if !(WIN32 || __i386__ || __x86_64__)
@@ -317,4 +317,4 @@ uint FIRFilterMMX::evaluateFilterStereo(short *dest, const short *src, uint numS
     return (numSamples & 0xfffffffe) - length;
 }
 
-#endif  // ALLOW_MMX
+#endif  // SOUNDTOUCH_ALLOW_MMX
