@@ -208,11 +208,11 @@ class FidLib(Dependence):
         else:
             symbol = 'T_LINUX'
 
-        return [build.env.StaticObject('#lib/fidlib-0.9.9/fidlib.c',
+        return [build.env.StaticObject('#lib/fidlib-0.9.10/fidlib.c',
                                        CPPDEFINES=symbol)]
 
     def configure(self, build, conf):
-        build.env.Append(CPPPATH='#lib/fidlib-0.9.9/')
+        build.env.Append(CPPPATH='#lib/fidlib-0.9.10/')
 
 class KissFFT(Dependence):
 
@@ -231,7 +231,7 @@ class ReplayGain(Dependence):
         build.env.Append(CPPPATH="#lib/replaygain")
 
 class SoundTouch(Dependence):
-    SOUNDTOUCH_PATH = 'soundtouch-1.5.0'
+    SOUNDTOUCH_PATH = 'soundtouch-1.6.0'
 
     def sources(self, build):
         sources = ['engine/enginebufferscalest.cpp',

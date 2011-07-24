@@ -12,10 +12,10 @@
 ///
 ////////////////////////////////////////////////////////////////////////////////
 //
-// Last changed  : $Date: 2009-02-13 18:22:48 +0200 (Fri, 13 Feb 2009) $
+// Last changed  : $Date: 2011-07-16 11:46:37 +0300 (Sat, 16 Jul 2011) $
 // File revision : $Revision: 4 $
 //
-// $Id: cpu_detect_x86_win.cpp 62 2009-02-13 16:22:48Z oparviai $
+// $Id: cpu_detect_x86_win.cpp 120 2011-07-16 08:46:37Z oparviai $
 //
 ////////////////////////////////////////////////////////////////////////////////
 //
@@ -71,7 +71,9 @@ uint detectCPUextensions(void)
 
     if (_dwDisabledISA == 0xffffffff) return 0;
 
-    _asm 
+#ifndef _M_X64
+    // 32bit compilation, detect CPU capabilities with inline assembler.
+    __asm 
     {
         ; check if 'cpuid' instructions is available by toggling eflags bit 21
         ;
@@ -124,6 +126,14 @@ uint detectCPUextensions(void)
 
         mov     res, esi
     }
+
+#else
+
+    // Visual C++ 64bit compilation doesn't support inline assembler. However,
+    // all x64 compatible CPUs support MMX & SSE extensions.
+    res = SUPPORT_MMX | SUPPORT_SSE | SUPPORT_SSE2;
+
+#endif
 
     return res & ~_dwDisabledISA;
 }

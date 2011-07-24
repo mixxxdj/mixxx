@@ -128,23 +128,11 @@
 //	Not A Lawyer".
 //
 
-#ifndef FIDMK_H
-#define FIDMK_H
 
-
-#ifndef T_MSVC
-  #ifdef HUGE_VAL
-    #define INF HUGE_VAL
-  #else
-    #define INF (1.0/0.0)
-  #endif
-#endif
-
-//Hacks for crappy linker error in MSVC... - Albert
-#ifdef T_MSVC
-  #undef HUGE_VAL
-  #define HUGE_VAL 1.797693134862315E+308
-  #define INF HUGE_VAL
+#ifdef HUGE_VAL
+ #define INF HUGE_VAL
+#else
+ #define INF (1.0/0.0)
 #endif
 
 #define TWOPI (2*M_PI)
@@ -159,8 +147,9 @@ my_sqrt(double aa) {
    return aa <= 0.0 ? 0.0 : sqrt(aa);
 }
 
+// 'csqrt' clashes with builtin in GCC 4, so call it 'c_sqrt'
 STATIC_INLINE void 
-csqrt(double *aa) {
+c_sqrt(double *aa) {
    double mag= hypot(aa[0], aa[1]);
    double rr= my_sqrt((mag + aa[0]) * 0.5);
    double ii= my_sqrt((mag - aa[0]) * 0.5);
@@ -183,8 +172,9 @@ cexpj(double *aa, double theta) {
 //	Complex exponent: aa= e^aa
 //
 
+// 'cexp' clashes with builtin in GCC 4, so call it 'c_exp'
 STATIC_INLINE void 
-cexp(double *aa) {
+c_exp(double *aa) {
    double mag= exp(aa[0]);
    aa[0]= mag * cos(aa[1]);
    aa[1]= mag * sin(aa[1]);
@@ -437,7 +427,7 @@ bandpass(double freq1, double freq2) {
    // Run through the list backwards, expanding as we go
    for (a= n_pol, b= n_pol*2; a>0; ) {
       // hba= pole * bw;
-      // temp= csqrt(1.0 - square(w0 / hba));
+      // temp= c_sqrt(1.0 - square(w0 / hba));
       // pole1= hba * (1.0 + temp);
       // pole2= hba * (1.0 - temp);
 
@@ -447,7 +437,7 @@ bandpass(double freq1, double freq2) {
 	 poltyp[b]= 2; poltyp[b+1]= 0;
 	 hba= pol[a] * bw;
 	 cassz(pol+b, 1.0 - (w0 / hba) * (w0 / hba), 0.0);
-	 csqrt(pol+b);
+	 c_sqrt(pol+b);
 	 caddz(pol+b, 1.0, 0.0);
 	 cmulr(pol+b, hba);
       } else {		// Assume poltyp[] data is valid
@@ -463,7 +453,7 @@ bandpass(double freq1, double freq2) {
 	 csqu(pol+b);
 	 cneg(pol+b);
 	 caddz(pol+b, 1.0, 0.0);
-	 csqrt(pol+b);
+	 c_sqrt(pol+b);
 	 cmul(pol+b, hba);
 	 cass(pol+b+2, pol+b);
 	 cneg(pol+b+2);
@@ -498,7 +488,7 @@ bandstop(double freq1, double freq2) {
    // Run through the list backwards, expanding as we go
    for (a= n_pol, b= n_pol*2; a>0; ) {
       // hba= bw / pole;
-      // temp= csqrt(1.0 - square(w0 / hba));
+      // temp= c_sqrt(1.0 - square(w0 / hba));
       // pole1= hba * (1.0 + temp);
       // pole2= hba * (1.0 - temp);
 
@@ -508,7 +498,7 @@ bandstop(double freq1, double freq2) {
 	 poltyp[b]= 2; poltyp[b+1]= 0;
 	 hba= bw / pol[a];
 	 cassz(pol+b, 1.0 - (w0 / hba) * (w0 / hba), 0.0);
-	 csqrt(pol+b);
+	 c_sqrt(pol+b);
 	 caddz(pol+b, 1.0, 0.0);
 	 cmulr(pol+b, hba);
       } else {		// Assume poltyp[] data is valid
@@ -525,7 +515,7 @@ bandstop(double freq1, double freq2) {
 	 csqu(pol+b);
 	 cneg(pol+b);
 	 caddz(pol+b, 1.0, 0.0);
-	 csqrt(pol+b);
+	 c_sqrt(pol+b);
 	 cmul(pol+b, hba);
 	 cass(pol+b+2, pol+b);
 	 cneg(pol+b+2);
@@ -606,7 +596,7 @@ s2z_matchedZ() {
 	    pol[a]= exp(pol[a]);
 	 a++;
       } else {
-	 cexp(pol+a);
+	 c_exp(pol+a);
 	 a += 2;
       }
    }
@@ -620,7 +610,7 @@ s2z_matchedZ() {
 	    zer[a]= exp(zer[a]);
 	 a++;
       } else {
-	 cexp(zer+a);
+	 c_exp(zer+a);
 	 a += 2;
       }
    }
@@ -739,7 +729,7 @@ z2fidfilter(double gain, int cbm) {
    ff->len= 0;
    ff= FFNEXT(ff);
    
-   rv= (FidFilter*) realloc(rv, ((char*)ff)-((char*)rv));
+   rv= realloc(rv, ((char*)ff)-((char*)rv));
    if (!rv) error("Out of memory");
    return rv;
 }
@@ -841,4 +831,3 @@ prop_integral(double freq) {
 }
    
 // END //
-#endif

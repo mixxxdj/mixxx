@@ -26,10 +26,10 @@
 ///
 ////////////////////////////////////////////////////////////////////////////////
 //
-// Last changed  : $Date: 2009-02-21 18:00:14 +0200 (Sat, 21 Feb 2009) $
+// Last changed  : $Date: 2010-01-06 20:59:23 +0200 (Wed, 06 Jan 2010) $
 // File revision : $Revision: 4 $
 //
-// $Id: BPMDetect.h 63 2009-02-21 16:00:14Z oparviai $
+// $Id: BPMDetect.h 86 2010-01-06 18:59:23Z oparviai $
 //
 ////////////////////////////////////////////////////////////////////////////////
 //
@@ -78,10 +78,19 @@ protected:
     float *xcorr;
     
     /// Amplitude envelope sliding average approximation level accumulator
-    float envelopeAccu;
+    double envelopeAccu;
 
     /// RMS volume sliding average approximation level accumulator
-    float RMSVolumeAccu;
+    double RMSVolumeAccu;
+
+    /// Level below which to cut off signals
+    double cutCoeff;
+
+    /// Accumulator for accounting what proportion of samples exceed cutCoeff level
+    double aboveCutAccu;
+
+    /// Accumulator for total samples to calculate proportion of samples that exceed cutCoeff level
+    double totalAccu;
 
     /// Sample average counter.
     int decimateCount;
