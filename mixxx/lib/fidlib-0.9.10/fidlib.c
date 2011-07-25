@@ -25,7 +25,7 @@
 //	  http://www.harmony-central.com/Computer/Programming/Audio-EQ-Cookbook.txt
 //	
 
-#define VERSION "0.9.10"
+#define VERSION "0.9.9"
 
 //
 //	Filter specification string
@@ -273,12 +273,10 @@ extern FidFilter *mkfilter(char *, ...);
  #ifndef snprintf
   #define snprintf _snprintf
  #endif
-// Not sure if we strictly need this still
  STATIC_INLINE double 
- my_asinh(double val) {
+ asinh(double val) {
     return log(val + sqrt(val*val + 1.0));
  }
- #define asinh(xx) my_asinh(xx)
 #endif
 
 
@@ -1115,7 +1113,7 @@ des_lpbl(double rate, double f0, double f1, int order, int n_arg, double *arg) {
    double tot, adj;
    int max= (int)floor(wid);
    int a;
-   FidFilter *ff= (FidFilter*)Alloc(FFCSIZE(1, max*2+1));
+   FidFilter *ff= (FidFilter*) Alloc(FFCSIZE(1, max*2+1));
    ff->typ= 'F';
    ff->cbm= 0;
    ff->len= max*2+1;
@@ -1162,7 +1160,7 @@ des_lphn(double rate, double f0, double f1, int order, int n_arg, double *arg) {
    double tot, adj;
    int max= (int)floor(wid);
    int a;
-   FidFilter *ff= (FidFilter*)Alloc(FFCSIZE(1, max*2+1));
+   FidFilter *ff= (FidFilter*) Alloc(FFCSIZE(1, max*2+1));
    ff->typ= 'F';
    ff->cbm= 0;
    ff->len= max*2+1;
@@ -1185,7 +1183,7 @@ des_lpba(double rate, double f0, double f1, int order, int n_arg, double *arg) {
    double tot, adj;
    int max= (int)floor(wid);
    int a;
-   FidFilter *ff= (FidFilter*)Alloc(FFCSIZE(1, max*2+1));
+   FidFilter *ff= (FidFilter*)  Alloc(FFCSIZE(1, max*2+1));
    ff->typ= 'F';
    ff->cbm= 0;
    ff->len= max*2+1;
@@ -1388,7 +1386,7 @@ fid_design(const char *spec, double rate, double freq0, double freq1, int f_adj,
    if (descp) {
       char *fmt= filter[sp.fi].txt;
       int max= strlen(fmt) + 60 + sp.n_arg * 20;
-      char *desc= (char*)Alloc(max);
+      char *desc= (char*) Alloc(max);
       char *p= desc;
       char ch;
       double *arg= sp.argarr;
@@ -1959,14 +1957,14 @@ fid_rewrite_spec(const char *spec, double freq0, double freq1, int adj,
        default: buf[0]= 0;
       }
       len= strlen(buf);
-      rv= (char*)Alloc(sp.minlen + len + 1);
+      rv= (char*) Alloc(sp.minlen + len + 1);
       memcpy(rv, spec, sp.minlen);
       strcpy(rv+sp.minlen, buf);
       *spec1p= rv;
    }
 
    if (spec2p) {
-      char *rv= (char*)Alloc(sp.minlen + 1);
+      char *rv= (char *)Alloc(sp.minlen + 1);
       memcpy(rv, spec, sp.minlen);
       *spec2p= rv;
       *freq0p= sp.f0;
@@ -2147,7 +2145,7 @@ fid_parse(double rate, char **pp, FidFilter **ffp) {
    char buf[128];
    char *p= *pp, *rew;
 #define INIT_LEN 128
-   char *rv= (char*)Alloc(INIT_LEN);
+   char *rv= (char*) Alloc(INIT_LEN);
    char *rvend= rv + INIT_LEN;
    char *rvp= rv;
    char *tmp;
