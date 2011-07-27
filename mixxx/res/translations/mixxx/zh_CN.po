@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2011-05-03 21:42-0400\n"
-"PO-Revision-Date: 2011-07-10 13:22+0000\n"
-"Last-Translator: Serene <Unknown>\n"
+"PO-Revision-Date: 2011-07-27 04:05+0000\n"
+"Last-Translator: Kakurady Drakenar <kakurady@gmail.com>\n"
 "Language-Team: Chinese (Simplified) <zh_CN@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-07-11 04:31+0000\n"
-"X-Generator: Launchpad (build 13168)\n"
+"X-Launchpad-Export-Date: 2011-07-27 04:31+0000\n"
+"X-Generator: Launchpad (build 13405)\n"
 
 #: AutoDJFeature#1
 msgid "Auto DJ"
@@ -121,7 +121,7 @@ msgstr "可移动设备"
 #: BrowseFeature#4
 msgctxt "BrowseFeature#4"
 msgid "Mixxx Library"
-msgstr ""
+msgstr "Mixxx 音乐库"
 
 #: BrowseFeature#5
 msgid "Home"
@@ -215,7 +215,7 @@ msgstr "路径"
 #: BrowseTableModel#15
 msgctxt "BrowseTableModel#15"
 msgid "Mixxx Library"
-msgstr ""
+msgstr "Mixxx 音乐库"
 
 #: BrowseTableModel#16
 msgid ""
@@ -1157,7 +1157,7 @@ msgstr ""
 #: DlgPrefPlaylist#1
 msgctxt "DlgPrefPlaylist#1"
 msgid "Choose music library directory"
-msgstr ""
+msgstr "选择音乐库目录"
 
 #: DlgPrefPlaylist#2
 msgid "Multiple iPods Detected"
@@ -1226,7 +1226,7 @@ msgstr ""
 
 #: DlgPrefPlaylistDlg#9
 msgid "Rescan library on start-up"
-msgstr ""
+msgstr "启动时重新扫描音乐库"
 
 #: DlgPrefPlaylistDlg#10
 msgid "Use relative paths for playlist export if possible"
@@ -1251,7 +1251,7 @@ msgstr ""
 #: DlgPrefPlaylistDlg#15
 msgctxt "DlgPrefPlaylistDlg#15"
 msgid "Library"
-msgstr ""
+msgstr "音乐库"
 
 #: DlgPrefPlaylistDlg#16
 msgid "Music Directory:"
@@ -1843,7 +1843,7 @@ msgstr ""
 #: DlgPreferences#3
 msgctxt "DlgPreferences#3"
 msgid "Library"
-msgstr ""
+msgstr "音乐库"
 
 #: DlgPreferences#4
 msgid "Interface"
@@ -2037,7 +2037,7 @@ msgstr ""
 
 #: DlgTrackInfo#21
 msgid "Hint: Use the Library Analyze view to run BPM detection."
-msgstr ""
+msgstr "提示: 使用音乐库分析视图运行 BPM 检测。"
 
 #: DlgTrackInfo#22
 msgid "Track BPM"
@@ -2204,7 +2204,7 @@ msgstr "iTunes"
 
 #: ITunesFeature#2
 msgid "Select your iTunes library"
-msgstr ""
+msgstr "选择你的 iTunes 音乐库"
 
 #: ITunesFeature#3
 msgid "iTunes (loading)"
