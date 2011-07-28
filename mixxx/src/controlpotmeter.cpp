@@ -33,7 +33,7 @@ ControlPotmeter::ControlPotmeter(ConfigKey key, double dMinValue, double dMaxVal
     setStep(m_dValueRange/10.f);
     setSmallStep(m_dValueRange/100.f);
 
-    ControlPushButton * p;
+    // ControlPushButton * p;
     m_pControlUp = new ControlPushButton(ConfigKey(key.group, QString(key.item)+"_up"));
     connect(m_pControlUp, SIGNAL(valueChanged(double)), this, SLOT(incValue(double)));
     m_pControlDown = new ControlPushButton(ConfigKey(key.group, QString(key.item)+"_down"));
@@ -46,10 +46,34 @@ ControlPotmeter::ControlPotmeter(ConfigKey key, double dMinValue, double dMaxVal
 
 ControlPotmeter::~ControlPotmeter()
 {
-    delete m_pControlUp;
+	// If the leaked controles are deleted by mixxx.cpp
+	// The subControls of ControlPotentiometer may have bin already delete.
+	// So check it before
+	/*
+	delete m_pControlUp;
     delete m_pControlDown;
     delete m_pControlUpSmall;
     delete m_pControlDownSmall;
+	*/
+
+	ControlObject* p;
+
+	p = ControlObject::getControl(ConfigKey(getKey().group, QString(getKey().item)+"_up"));
+	if (p) {
+		delete p;
+	}
+	p = ControlObject::getControl(ConfigKey(getKey().group, QString(getKey().item)+"_down"));
+	if (p) {
+		delete p;
+	}
+	p = ControlObject::getControl(ConfigKey(getKey().group, QString(getKey().item)+"_up_small"));
+	if (p) {
+		delete p;
+	}
+	p = ControlObject::getControl(ConfigKey(getKey().group, QString(getKey().item)+"_down_small"));
+	if (p) {
+		delete p;
+	}
 }
 
 double ControlPotmeter::getMin()

@@ -75,6 +75,7 @@ BpmControl::~BpmControl() {
     delete m_pFileBpm;
     delete m_pButtonSync;
     delete m_pButtonTap;
+    delete m_pTranslateBeats;
 }
 
 double BpmControl::getBpm() {
@@ -132,7 +133,7 @@ void BpmControl::slotControlBeatSync(double v) {
         return;
 
     double fThisBpm  = m_pEngineBpm->get();
-    double fThisRate = m_pRateDir->get() * m_pRateSlider->get() * m_pRateRange->get();
+    //double fThisRate = m_pRateDir->get() * m_pRateSlider->get() * m_pRateRange->get();
     double fThisFileBpm = m_pFileBpm->get();
 
     double fOtherBpm = pOtherEngineBuffer->getBpm();
@@ -224,9 +225,9 @@ void BpmControl::adjustPhase() {
     }
 
     // Get the file BPM of each song.
-    double dThisBpm = m_pBeats->getBpm();
-    double dOtherBpm = ControlObject::getControl(
-        ConfigKey(pOtherEngineBuffer->getGroup(), "file_bpm"))->get();
+//    double dThisBpm = m_pBeats->getBpm();
+//    double dOtherBpm = ControlObject::getControl(
+//        ConfigKey(pOtherEngineBuffer->getGroup(), "file_bpm"))->get();
 
     // Get the current position of both decks
     double dThisPosition = getCurrentSample();

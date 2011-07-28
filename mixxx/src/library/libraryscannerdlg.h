@@ -24,12 +24,12 @@
 #include <QtCore>
 #include <QtGui>
 
-class LibraryScannerDlg : public QObject
+class LibraryScannerDlg : public QWidget
 {
     Q_OBJECT
     
     public:
-        LibraryScannerDlg();
+        LibraryScannerDlg(QWidget * parent = 0, Qt::WindowFlags f = 0);
         ~LibraryScannerDlg();
     public slots:
 	    void slotUpdate(QString path);  
@@ -44,7 +44,6 @@ class LibraryScannerDlg : public QObject
 	    QTime m_timer;
         QVBoxLayout* m_layout;
         QLabel* m_label;
-	    QWidget* m_progress;
 	    QLabel* m_current;
 	    QPushButton* m_cancel;
 	    bool m_bCancelled;    

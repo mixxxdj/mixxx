@@ -33,7 +33,8 @@ VinylControlSignalWidget::VinylControlSignalWidget()
       m_pVinylControl(NULL),
       m_iSize(100),
       m_qImage(),
-      m_bVinylActive(FALSE) {
+      m_bVinylActive(FALSE), 
+      m_imageData(NULL) {
 }
 
 void VinylControlSignalWidget::setSize(int size)
@@ -48,6 +49,9 @@ void VinylControlSignalWidget::setSize(int size)
 
 VinylControlSignalWidget::~VinylControlSignalWidget()
 {
+	if (m_imageData) {
+		delete [] m_imageData;
+	}
 }
 
 /** This gets called before the VinylControlProxy objects get destroyed, in

@@ -65,6 +65,14 @@ bool WGLWaveformViewer::directRendering()
 
 
 WGLWaveformViewer::~WGLWaveformViewer() {
+    delete m_pScratchEnable;
+    delete m_pScratch;
+    delete m_pPlayPosition;
+    delete m_pTrackSamples;
+    delete m_pTrackSampleRate;
+    delete m_pRate;
+    delete m_pRateRange;
+    delete m_pRateDir;
 }
 
 void WGLWaveformViewer::setup(QDomNode node) {

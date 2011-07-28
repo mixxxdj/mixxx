@@ -61,7 +61,7 @@ class VelocityController {
 
         // Indicator that can possibly tell if we've gone unstable and are
         // oscillating around the target.
-        const bool error_flip = (error < 0 && m_last_error > 0) || (error > 0 && m_last_error < 0);
+        //const bool error_flip = (error < 0 && m_last_error > 0) || (error > 0 && m_last_error < 0);
 
         if (isnan(error_change) || isinf(error_change))
             error_change = 0.0;
@@ -78,13 +78,13 @@ class VelocityController {
 
         // Try to stabilize us if we're close to the target. Otherwise we might
         // overshoot and oscillate.
-        if (fabs(error) < m_samples_per_buffer) {
-            double percent_remaining = error / m_samples_per_buffer;
-            // Apply exponential decay to try and stop the stuttering.
-            double decay = (1.0 - pow(2, -fabs(percent_remaining)));
+        //if (fabs(error) < m_samples_per_buffer) {
+            //double percent_remaining = error / m_samples_per_buffer;
+            //// Apply exponential decay to try and stop the stuttering.
+            //double decay = (1.0 - pow(2, -fabs(percent_remaining)));
             //output = percent_remaining * decay;
             //qDebug() << "clamp decay" << decay << "output" << output;
-        }
+        //}
 
         m_last_velocity = output;
         m_last_error = error;

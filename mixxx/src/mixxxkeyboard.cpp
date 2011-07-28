@@ -30,6 +30,8 @@ MixxxKeyboard::MixxxKeyboard(ConfigObject<ConfigValueKbd> * pKbdConfigObject, QO
 
 MixxxKeyboard::~MixxxKeyboard()
 {
+	// TODO(XXX) ugly workaround to get no leak
+	delete m_pKbdConfigObject;
 }
 
 bool MixxxKeyboard::eventFilter(QObject *, QEvent * e)

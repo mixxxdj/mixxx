@@ -18,10 +18,10 @@
 BrowseTableModel::BrowseTableModel(QObject* parent, TrackCollection* pTrackCollection,
                                    RecordingManager* pRecordingManager)
         : QStandardItemModel(parent),
+          TrackModel(QSqlDatabase::database("QSQLITE"), // TrackCollections m_db (defaultConnection)
+                     "mixxx.db.model.browse"),
           m_pTrackCollection(pTrackCollection),
-          m_pRecordingManager(pRecordingManager),
-          TrackModel(QSqlDatabase::database("QSQLITE"),
-                     "mixxx.db.model.browse") {
+		  m_pRecordingManager(pRecordingManager) {
     QStringList header_data;
     header_data.insert(COLUMN_FILENAME, tr("Filename"));
     header_data.insert(COLUMN_ARTIST, tr("Artist"));

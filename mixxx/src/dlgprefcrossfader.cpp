@@ -70,6 +70,7 @@ DlgPrefCrossfader::DlgPrefCrossfader(QWidget * parent, ConfigObject<ConfigValue>
 
 DlgPrefCrossfader::~DlgPrefCrossfader()
 {
+	delete m_pxfScene;
 }
 
 /** Loads the config keys and sets the widgets in the dialog to match */

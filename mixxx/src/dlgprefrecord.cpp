@@ -214,8 +214,9 @@ void DlgPrefRecord::loadMetaData()
 
 DlgPrefRecord::~DlgPrefRecord()
 {
-
+	delete recordControl;
 }
+
 void DlgPrefRecord::slotRecordPathChange()
 {
     confirmOverwrite = false;

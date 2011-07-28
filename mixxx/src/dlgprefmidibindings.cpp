@@ -68,12 +68,12 @@ DlgPrefMidiBindings::DlgPrefMidiBindings(QWidget *parent, MidiDevice* midiDevice
     //The above shortcut doesn't work yet, not quite sure why. -- Albert Feb 1 / 2009
 
     //Set up the cool item delegates for the input mapping table
-    m_pMidiChannelDelegate = new MidiChannelDelegate();
-    m_pMidiStatusDelegate = new MidiStatusDelegate();
-    m_pMidiNoDelegate = new MidiNoDelegate();
-    m_pMidiOptionDelegate = new MidiOptionDelegate();
-    m_pControlGroupDelegate = new ControlGroupDelegate();
-    m_pControlValueDelegate = new ControlValueDelegate();
+    m_pMidiChannelDelegate = new MidiChannelDelegate(m_pInputMappingTableView);
+    m_pMidiStatusDelegate = new MidiStatusDelegate(m_pInputMappingTableView);
+    m_pMidiNoDelegate = new MidiNoDelegate(m_pInputMappingTableView);
+    m_pMidiOptionDelegate = new MidiOptionDelegate(m_pInputMappingTableView);
+    m_pControlGroupDelegate = new ControlGroupDelegate(m_pInputMappingTableView);
+    m_pControlValueDelegate = new ControlValueDelegate(m_pInputMappingTableView);
     m_pInputMappingTableView->setItemDelegateForColumn(MIDIINPUTTABLEINDEX_MIDISTATUS, m_pMidiStatusDelegate);
     m_pInputMappingTableView->setItemDelegateForColumn(MIDIINPUTTABLEINDEX_MIDICHANNEL, m_pMidiChannelDelegate);
     m_pInputMappingTableView->setItemDelegateForColumn(MIDIINPUTTABLEINDEX_MIDINO, m_pMidiNoDelegate);

@@ -129,7 +129,7 @@ DlgPrefShoutcast::DlgPrefShoutcast(QWidget *parent, ConfigObject<ConfigValue> *_
 
 DlgPrefShoutcast::~DlgPrefShoutcast()
 {
-	
+	delete m_pUpdateShoutcastFromPrefs;
 }
 
 void DlgPrefShoutcast::slotUpdate()

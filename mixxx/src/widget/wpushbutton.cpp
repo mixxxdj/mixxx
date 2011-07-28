@@ -39,6 +39,8 @@ WPushButton::~WPushButton()
         WPixmapStore::deletePixmap(m_pPixmaps[i]);
     }
 
+    delete [] m_pPixmaps;
+
     WPixmapStore::deletePixmap(m_pPixmapBack);
 }
 
@@ -121,10 +123,10 @@ void WPushButton::setup(QDomNode node)
             // control. If no button is provided, then we have to assume the
             // connected control should be a toggle.
 
-            bool setAsToggleButton = iNumStates == 2 &&
-                    ((!isLeftButton && !isRightButton) ||
-                     ( (isLeftButton && !m_bLeftClickForcePush) ||
-                       (isRightButton && !m_bRightClickForcePush) ) );
+            //bool setAsToggleButton = iNumStates == 2 &&
+            //       ((!isLeftButton && !isRightButton) ||
+            //        ( (isLeftButton && !m_bLeftClickForcePush) ||
+            //          (isRightButton && !m_bRightClickForcePush) ) );
 
             // if (setAsToggleButton)
             //     p->setToggleButton(true);

@@ -184,7 +184,7 @@ CSAMPLE* EngineBufferScaleST::scale(double playpos, unsigned long buf_size,
     // }
     //Q_ASSERT(m_iReadAheadPos >= 0);
 
-    long total_received_frames = 0;
+    unsigned long total_received_frames = 0;
     long total_read_frames = 0;
 
     long remaining_frames = buf_size/2;

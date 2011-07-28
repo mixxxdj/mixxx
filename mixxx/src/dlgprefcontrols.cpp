@@ -282,6 +282,18 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxApp * mixxx,
 
 DlgPrefControls::~DlgPrefControls()
 {
+    foreach (ControlObjectThreadMain* pControl, m_rateControls) {
+        delete pControl;
+    }
+    foreach (ControlObjectThreadMain* pControl, m_rateDirControls) {
+        delete pControl;
+    }
+    foreach (ControlObjectThreadMain* pControl, m_cueControls) {
+        delete pControl;
+    }
+    foreach (ControlObjectThreadMain* pControl, m_rateRangeControls) {
+        delete pControl;
+    }
 }
 
 void DlgPrefControls::slotUpdateSchemes()

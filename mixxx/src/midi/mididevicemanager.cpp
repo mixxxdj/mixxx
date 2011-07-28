@@ -27,7 +27,8 @@
 MidiDeviceManager::MidiDeviceManager(ConfigObject<ConfigValue> * pConfig) : QObject()
 {
     m_pConfig = pConfig;
-    m_pDeviceSettings = new ConfigObject<ConfigValue>(DEVICE_CONFIG_PATH);
+
+    //m_pDeviceSettings = new ConfigObject<ConfigValue>(DEVICE_CONFIG_PATH);
 
     m_pPMEnumerator = new PortMidiEnumerator();
 #ifdef __HSS1394__

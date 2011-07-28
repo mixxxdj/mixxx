@@ -12,7 +12,7 @@
 
 TrackCollection::TrackCollection(ConfigObject<ConfigValue>* pConfig)
         : m_pConfig(pConfig),
-          m_db(QSqlDatabase::addDatabase("QSQLITE")),
+          m_db(QSqlDatabase::addDatabase("QSQLITE")), // defaultConnection
           m_playlistDao(m_db),
           m_cueDao(m_db),
           m_trackDao(m_db, m_cueDao, pConfig),
@@ -91,7 +91,7 @@ bool TrackCollection::checkForTables()
 QSqlDatabase& TrackCollection::getDatabase()
 {
  	return m_db;
-  }
+}
 
 
 /** Do a non-recursive import of all the songs in a directory. Does NOT decend into subdirectories.

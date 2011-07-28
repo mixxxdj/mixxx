@@ -64,8 +64,7 @@ void WStatusLight::setNoPos(int iNoPos)
 void WStatusLight::setup(QDomNode node)
 {
     // Number of states. Add one to account for the background
-    m_iNoPos = selectNodeInt(node, "NumberPos") + 1;
-    setNoPos(m_iNoPos);
+    setNoPos( selectNodeInt(node, "NumberPos") + 1);
 
     // Set background pixmap if available
     if (!selectNode(node, "PathBack").isNull()) {

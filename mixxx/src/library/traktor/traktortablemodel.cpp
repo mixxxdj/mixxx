@@ -60,7 +60,7 @@ TrackPointer TraktorTableModel::getTrack(const QModelIndex& index) const
 
     QString location = index.sibling(index.row(), fieldIndex("location")).data().toString();
 
-    TrackInfoObject* pTrack = new TrackInfoObject(location);
+    TrackPointer pTrack = TrackPointer(new TrackInfoObject(location), &QObject::deleteLater);
     pTrack->setArtist(artist);
     pTrack->setTitle(title);
     pTrack->setAlbum(album);
@@ -69,7 +69,7 @@ TrackPointer TraktorTableModel::getTrack(const QModelIndex& index) const
     pTrack->setBpm(bpm);
 
 
-    return TrackPointer(pTrack, &QObject::deleteLater);
+    return pTrack;
 }
 
 QString TraktorTableModel::getTrackLocation(const QModelIndex& index) const

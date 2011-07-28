@@ -229,6 +229,10 @@ int SoundDevicePortAudio::open()
     pControlObjectLatency->slotSet(latencyMSec);
     pControlObjectSampleRate->slotSet(m_dSampleRate);
 
+    delete pControlObjectLatency;
+    delete pControlObjectSampleRate;
+
+
     //qDebug() << "SampleRate" << pControlObjectSampleRate->get();
     //qDebug() << "Latency" << pControlObjectLatency->get();
 

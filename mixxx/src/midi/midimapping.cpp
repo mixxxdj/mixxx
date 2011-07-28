@@ -72,7 +72,8 @@ MidiMapping::MidiMapping(MidiDevice* outputMidiDevice)
 }
 
 MidiMapping::~MidiMapping() {
-
+    delete m_pMidiInputMappingTableModel;
+    delete m_pMidiOutputMappingTableModel;
 }
 
 #ifdef __MIDISCRIPT__
