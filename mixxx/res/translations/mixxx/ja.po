@@ -8,13 +8,13 @@ msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2011-05-03 21:42-0400\n"
-"PO-Revision-Date: 2011-07-25 18:19+0000\n"
+"PO-Revision-Date: 2011-07-27 17:25+0000\n"
 "Last-Translator: Yuji Takada <Unknown>\n"
 "Language-Team: Japanese <ja@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-07-26 04:31+0000\n"
+"X-Launchpad-Export-Date: 2011-07-28 04:31+0000\n"
 "X-Generator: Launchpad (build 13405)\n"
 "X-Poedit-Bookmarks: 599,-1,-1,-1,-1,-1,-1,-1,-1,-1\n"
 
@@ -54,7 +54,7 @@ msgstr "年"
 #: BaseSqlTableModel#7
 msgctxt "BaseSqlTableModel#7"
 msgid "Type"
-msgstr "ファイルの種類"
+msgstr "ファイル形式"
 
 #: BaseSqlTableModel#8
 msgctxt "BaseSqlTableModel#8"
@@ -109,7 +109,7 @@ msgstr "トラックを読み込めませんでした"
 
 #: BrowseFeature#1
 msgid "Quick Links"
-msgstr ""
+msgstr "クイックリンク"
 
 #: BrowseFeature#2
 msgid "Devices"
@@ -196,12 +196,12 @@ msgstr "BPM"
 #: BrowseTableModel#11
 msgctxt "BrowseTableModel#11"
 msgid "Key"
-msgstr "高さ"
+msgstr "キー"
 
 #: BrowseTableModel#12
 msgctxt "BrowseTableModel#12"
 msgid "Type"
-msgstr "ファイルフォーマット"
+msgstr "ファイル形式"
 
 #: BrowseTableModel#13
 msgctxt "BrowseTableModel#13"
@@ -216,7 +216,7 @@ msgstr "パス名"
 #: BrowseTableModel#15
 msgctxt "BrowseTableModel#15"
 msgid "Mixxx Library"
-msgstr "Mixxx ライブラリ"
+msgstr "Mixxxライブラリ"
 
 #: BrowseTableModel#16
 msgid ""
@@ -244,7 +244,7 @@ msgstr "メタデータのアップデートができません"
 
 #: CrateFeature#1
 msgid "New Crate"
-msgstr "新規作成"
+msgstr "新しいレコードボックス"
 
 #: CrateFeature#2
 msgctxt "CrateFeature#2"
@@ -254,17 +254,17 @@ msgstr "リストから削除"
 #: CrateFeature#3
 msgctxt "CrateFeature#3"
 msgid "Rename"
-msgstr "名前変更"
+msgstr "名前を変更"
 
 #: CrateFeature#4
 msgctxt "CrateFeature#4"
 msgid "Lock"
-msgstr "ロック"
+msgstr "ロックをかける"
 
 #: CrateFeature#5
 msgctxt "CrateFeature#5"
 msgid "Import Playlist"
-msgstr "プレイリストのインポート"
+msgstr "プレイリストをインポート"
 
 #: CrateFeature#6
 msgid "Crates"
@@ -281,7 +281,7 @@ msgstr "レコードボックスのエクスポート"
 #: CrateFeature#9
 msgctxt "CrateFeature#9"
 msgid "Unlock"
-msgstr "アンロック"
+msgstr "ロックを解除"
 
 #: CrateFeature#10
 msgid "Crate name:"
@@ -320,7 +320,7 @@ msgstr "M3Uプレイリスト(*.m3u);;PLSプレイリスト(*.pls)"
 
 #: CrateFeature#18
 msgid "A crate cannot have a blank name."
-msgstr "空の名前で作成できません"
+msgstr "レコードボックスには名前が必要です。"
 
 #: CrateFeature#19
 msgid "Creating Crate Failed"
@@ -350,6 +350,19 @@ msgid ""
 "margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-"
 "family:'Sans Serif'; font-size:9pt;\"></p></body></html>"
 msgstr ""
+"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" "
+"\"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+"<html><head><meta name=\"qrichtext\" content=\"1\" /><style "
+"type=\"text/css\">\n"
+"p, li { white-space: pre-wrap; }\n"
+"</style></head><body style=\" font-family:'MS Shell Dlg 2'; font-"
+"size:8.25pt; font-weight:400; font-style:normal;\">\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-"
+"right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-"
+"family:'Sans Serif'; font-size:9pt;\">クレジットがここに載ります。</span></p>\n"
+"<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; "
+"margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-"
+"family:'Sans Serif'; font-size:9pt;\"></p></body></html>"
 
 #: DlgAboutDlg#3
 msgid "1.x.x"
@@ -361,11 +374,11 @@ msgstr "<a href=\"http://mixxx.org/\">公式Webサイト</a>"
 
 #: DlgAutoDJ#1
 msgid "Disable Auto DJ"
-msgstr "Auto DJを無効にする"
+msgstr "Auto DJを無効"
 
 #: DlgAutoDJ#2
 msgid "Enable Auto DJ"
-msgstr "Auto DJを有効にする"
+msgstr "Auto DJを有効"
 
 #: DlgAutoDJ#3
 msgctxt "DlgAutoDJ#3"
@@ -374,11 +387,11 @@ msgstr "管理"
 
 #: DlgAutoDJ#4
 msgid "Shuffle playlist"
-msgstr "プレイリストのシャッフル"
+msgstr "プレイリストをシャッフル"
 
 #: DlgAutoDJ#5
 msgid "Add tracks to the queue below..."
-msgstr "キューの下にトラックを追加する..."
+msgstr "下のキューにトラックを追加してください。"
 
 #: DlgBpmSchemeDlg#1
 msgid "BPM Scheme"
@@ -390,7 +403,7 @@ msgstr "スキーム名:"
 
 #: DlgBpmSchemeDlg#3
 msgid "BPM Range"
-msgstr "BPMの範囲"
+msgstr "BPM 範囲"
 
 #: DlgBpmSchemeDlg#4
 msgid "Max"
@@ -447,7 +460,7 @@ msgstr "BPMスキーム:"
 
 #: DlgBpmTapDlg#10
 msgid "to"
-msgstr ""
+msgstr "から"
 
 #: DlgBpmTapDlg#11
 msgid "BPM Range:"
@@ -528,7 +541,7 @@ msgstr "スキップ"
 
 #: DlgMidiLearning#2
 msgid "Successfully mapped to: "
-msgstr ""
+msgstr "マッピング成功： "
 
 #: DlgMidiLearning#3
 msgid "Next"
@@ -551,11 +564,11 @@ msgstr "このウイザードでは簡単にあなたのMIDIコントローラ�
 
 #: DlgMidiLearning#7
 msgid "Begin"
-msgstr ""
+msgstr "開始する"
 
 #: DlgMidiLearning#8
 msgid "Please tweak the control for:"
-msgstr ""
+msgstr "コントローラを操作してください："
 
 #: DlgMidiLearning#9
 msgid "Mixxx Control"
@@ -563,11 +576,11 @@ msgstr "Mixxxコントロール"
 
 #: DlgMidiLearning#10
 msgid "Previous"
-msgstr ""
+msgstr "前"
 
 #: DlgMidiLearning#11
 msgid "Press spacebar to proceed or skip."
-msgstr ""
+msgstr "スキップするにはスペースバーを押してください。"
 
 #: DlgMidiLearning#12
 msgid "MIDI learning complete!"
@@ -589,6 +602,19 @@ msgid ""
 "left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><br />Now "
 "go spin some beats!</p></body></html>"
 msgstr ""
+"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" "
+"\"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+"<html><head><meta name=\"qrichtext\" content=\"1\" /><style "
+"type=\"text/css\">\n"
+"p, li { white-space: pre-wrap; }\n"
+"</style></head><body style=\" font-family:'Lucida Grande'; font-size:13pt; "
+"font-weight:400; font-style:normal;\">\n"
+"<p align=\"center\" style=\" margin-top:0px; margin-bottom:0px; margin-"
+"left:0px; margin-right:0px; -qt-block-indent:0; text-"
+"indent:0px;\">このウィザードはいつでも再実行できます。</p>\n"
+"<p align=\"center\" style=\" margin-top:0px; margin-bottom:0px; margin-"
+"left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><br />Now "
+"go spin some beats!</p></body></html>"
 
 #: DlgMidiLearning#14
 msgid "Finito!"
@@ -596,7 +622,7 @@ msgstr "終わった！"
 
 #: DlgPluginDownloader#1
 msgid "Missing Audio Plugin Downloader"
-msgstr ""
+msgstr "足りないオーディオプラグインのダウンローダー"
 
 #: DlgPrefBPMDlg#1
 msgctxt "DlgPrefBPMDlg#1"
@@ -614,7 +640,7 @@ msgstr "BPM検出を有効にする"
 
 #: DlgPrefBPMDlg#4
 msgid "Detect Song BPM on Import"
-msgstr ""
+msgstr "インポートしたときにトラックのBPMを検出する"
 
 #: DlgPrefBPMDlg#5
 msgid "Write BPM to ID3 Tag"
@@ -622,7 +648,7 @@ msgstr "BPMをID3 Tagに書き込む"
 
 #: DlgPrefBPMDlg#6
 msgid "If BPM can be detected but not within specified range"
-msgstr ""
+msgstr "BPMが検出できたが指定の範囲内になかった場合"
 
 #: DlgPrefBPMDlg#7
 msgid "Allow BPM above the range"
@@ -660,7 +686,7 @@ msgstr "%1 を開けません"
 
 #: DlgPrefControls#1
 msgid "This skin does not support schemes"
-msgstr ""
+msgstr "このスキンはスキームをサポートしていません。"
 
 #: DlgPrefControls#2
 msgid "8% (Technics SL1210)"
@@ -704,16 +730,16 @@ msgstr "90%"
 
 #: DlgPrefControls#12
 msgid "Up increases speed"
-msgstr ""
+msgstr "上方向でスピードが増す"
 
 #: DlgPrefControls#13
 msgid "Down increases speed (Technics SL1210)"
-msgstr ""
+msgstr "下方向でスピードが増す (Technics SL1210と同じ)"
 
 #: DlgPrefControls#14
 msgctxt "DlgPrefControls#14"
 msgid "Information"
-msgstr ""
+msgstr "通知"
 
 #: DlgPrefControls#15
 msgid "Mixxx must be restarted before the changes will take effect."
@@ -722,7 +748,7 @@ msgstr "変更を有効にするためにはMixxxを再起動してください"
 #: DlgPrefControlsDlg#1
 msgctxt "DlgPrefControlsDlg#1"
 msgid "Form1"
-msgstr ""
+msgstr "フォーム1"
 
 #: DlgPrefControlsDlg#2
 msgid "Skin"
@@ -734,45 +760,45 @@ msgstr "スキーム"
 
 #: DlgPrefControlsDlg#4
 msgid "Waveform display"
-msgstr "波形ディスプレイ"
+msgstr "波形表示"
 
 #: DlgPrefControlsDlg#5
 msgid "Position display"
-msgstr "ポジションディスプレイ"
+msgstr "再生時間表示"
 
 #: DlgPrefControlsDlg#6
 msgid "Tool tips"
-msgstr "Tool tips"
+msgstr "ツールチップ"
 
 #: DlgPrefControlsDlg#7
 msgctxt "DlgPrefControlsDlg#7"
 msgid "On"
-msgstr ""
+msgstr "オン"
 
 #: DlgPrefControlsDlg#8
 msgctxt "DlgPrefControlsDlg#8"
 msgid "Off"
-msgstr ""
+msgstr "オフ"
 
 #: DlgPrefControlsDlg#9
 msgid "Pitch/Rate slider range"
-msgstr ""
+msgstr "ピッチ/レート・スライダーの範囲"
 
 #: DlgPrefControlsDlg#10
 msgid "Pitch/Rate slider direction"
-msgstr ""
+msgstr "ピッチ/レート・スライダーの方向"
 
 #: DlgPrefControlsDlg#11
 msgid "Track load behaviour"
-msgstr ""
+msgstr "トラック読み込みの動作"
 
 #: DlgPrefControlsDlg#12
 msgid "Cue behaviour"
-msgstr ""
+msgstr "キューの動作"
 
 #: DlgPrefControlsDlg#13
 msgid "Auto Recall Cue"
-msgstr ""
+msgstr "以前設定したキューを自動的に再現する"
 
 #: DlgPrefControlsDlg#14
 msgid "Permanent Pitch/Rate Buttons"
@@ -821,7 +847,7 @@ msgstr "ピッチベンドの感度"
 #: DlgPrefCrossfaderDlg#1
 msgctxt "DlgPrefCrossfaderDlg#1"
 msgid "Form1"
-msgstr ""
+msgstr "フォーム1"
 
 #: DlgPrefCrossfaderDlg#2
 msgid "Crossfader Curve"
@@ -829,19 +855,19 @@ msgstr "クロスフェーダーのカーブ"
 
 #: DlgPrefCrossfaderDlg#3
 msgid "Slow fade"
-msgstr ""
+msgstr "スローフェード"
 
 #: DlgPrefCrossfaderDlg#4
 msgid "Fast cut"
-msgstr ""
+msgstr "ファーストカット"
 
 #: DlgPrefCrossfaderDlg#5
 msgid "Constant power"
-msgstr ""
+msgstr "パワーを一定に保つ"
 
 #: DlgPrefCrossfaderDlg#6
 msgid "Mixing"
-msgstr "Mixing"
+msgstr "ロングミックス"
 
 #: DlgPrefCrossfaderDlg#7
 msgid "Scratching"
@@ -849,11 +875,11 @@ msgstr "スクラッチ"
 
 #: DlgPrefCrossfaderDlg#8
 msgid "Linear"
-msgstr "リニア"
+msgstr "リニアにフェード"
 
 #: DlgPrefCrossfaderDlg#9
 msgid "Logarithmic"
-msgstr ""
+msgstr "対数的にフェード"
 
 #: DlgPrefCrossfaderDlg#10
 msgctxt "DlgPrefCrossfaderDlg#10"
@@ -863,11 +889,11 @@ msgstr "リセット"
 #: DlgPrefEQDlg#1
 msgctxt "DlgPrefEQDlg#1"
 msgid "Form1"
-msgstr ""
+msgstr "フォーム1"
 
 #: DlgPrefEQDlg#2
 msgid "Static EQs (for slower CPUs)"
-msgstr "固定EQs（低速のCPU向け）"
+msgstr "固定EQ（低速のCPU向け）"
 
 #: DlgPrefEQDlg#3
 msgid "High Shelf EQ"
@@ -875,7 +901,7 @@ msgstr "ハイシェルフEQ"
 
 #: DlgPrefEQDlg#4
 msgid "textLabel1"
-msgstr ""
+msgstr "textLabel1"
 
 #: DlgPrefEQDlg#5
 msgid "16 Hz"
@@ -891,11 +917,11 @@ msgstr "20.05 kHz"
 
 #: DlgPrefEQDlg#8
 msgid "Low Shelf EQ"
-msgstr "Low Shelf EQ"
+msgstr "ローシェルフEQ"
 
 #: DlgPrefEQDlg#9
 msgid "textLabel2"
-msgstr ""
+msgstr "textLabel2"
 
 #: DlgPrefEQDlg#10
 msgctxt "DlgPrefEQDlg#10"
@@ -905,7 +931,7 @@ msgstr "リセット"
 #: DlgPrefMidiBindings#1
 msgctxt "DlgPrefMidiBindings#1"
 msgid "None"
-msgstr ""
+msgstr "なし"
 
 #: DlgPrefMidiBindings#2
 msgid "Apply MIDI device settings?"
@@ -916,6 +942,8 @@ msgid ""
 "Your settings must be applied before starting the MIDI learning wizard.\n"
 "Apply settings and continue?"
 msgstr ""
+"MIDIラーニングウィザードを開始するまえに設定が適用されなければなりません。\n"
+"設定を適用して続けますか？"
 
 #: DlgPrefMidiBindings#4
 msgid "Overwrite existing mapping?"
@@ -931,7 +959,7 @@ msgstr ""
 
 #: DlgPrefMidiBindings#6
 msgid "Export Mixxx MIDI Bindings"
-msgstr ""
+msgstr "MIDIバインディングをエクスポートする。"
 
 #: DlgPrefMidiBindings#7
 msgid "Preset Files (*.midi.xml)"
@@ -947,19 +975,19 @@ msgstr "コントロールを選択"
 
 #: DlgPrefMidiBindings#10
 msgid "Clear Input Bindings"
-msgstr ""
+msgstr "入力バインディングをクリアする。"
 
 #: DlgPrefMidiBindings#11
 msgid "Are you sure you want to clear all bindings?"
-msgstr ""
+msgstr "本当にすべてのバインディングをクリアしますか？"
 
 #: DlgPrefMidiBindings#12
 msgid "Clear Output Bindings"
-msgstr ""
+msgstr "出力バインディングをクリアする。"
 
 #: DlgPrefMidiBindings#13
 msgid "Are you sure you want to clear all output bindings?"
-msgstr ""
+msgstr "本当にすべての出力バインディングをクリアしますか？"
 
 #: DlgPrefMidiBindingsDlg#1
 msgctxt "DlgPrefMidiBindingsDlg#1"
@@ -968,7 +996,7 @@ msgstr "ダイアログ"
 
 #: DlgPrefMidiBindingsDlg#2
 msgid "Your Device Name"
-msgstr ""
+msgstr "デバイス名"
 
 #: DlgPrefMidiBindingsDlg#3
 msgid "Load Preset:"
@@ -984,7 +1012,7 @@ msgstr "出力:"
 
 #: DlgPrefMidiBindingsDlg#6
 msgid "Enabled"
-msgstr ""
+msgstr "有効"
 
 #: DlgPrefMidiBindingsDlg#7
 msgid "Controls"
@@ -1034,7 +1062,7 @@ msgstr "MIDI出力"
 #: DlgPrefNoMidiDlg#1
 msgctxt "DlgPrefNoMidiDlg#1"
 msgid "Form3"
-msgstr ""
+msgstr "フォーム3"
 
 #: DlgPrefNoMidiDlg#2
 msgid "No MIDI devices available"
@@ -1043,7 +1071,7 @@ msgstr "使用可能なMIDI機器がありません"
 #: DlgPrefNoVinylDlg#1
 msgctxt "DlgPrefNoVinylDlg#1"
 msgid "Form1"
-msgstr ""
+msgstr "フォーム1"
 
 #: DlgPrefNoVinylDlg#2
 msgctxt "DlgPrefNoVinylDlg#2"
@@ -1065,6 +1093,17 @@ msgid ""
 "weight:600;\">Select sound devices for vinyl control in the Sound Hardware "
 "pane.</span></p></body></html>"
 msgstr ""
+"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" "
+"\"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+"<html><head><meta name=\"qrichtext\" content=\"1\" /><style "
+"type=\"text/css\">\n"
+"p, li { white-space: pre-wrap; }\n"
+"</style></head><body style=\" font-family:'DejaVu Sans'; font-size:9pt; font-"
+"weight:400; font-style:normal;\">\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-"
+"right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-"
+"weight:600;\">サウンドハードウェアの画面でVinylコントロールに使用するサウンドデバイスを選択してください。</span></p></bo"
+"dy></html>"
 
 #: DlgPrefNoVinylDlg#4
 msgctxt "DlgPrefNoVinylDlg#4"
@@ -1080,12 +1119,12 @@ msgstr ""
 #: DlgPrefNoVinylDlg#5
 msgctxt "DlgPrefNoVinylDlg#5"
 msgid "Turntable Preamp"
-msgstr ""
+msgstr "ターンテーブルプリアンプ"
 
 #: DlgPrefNoVinylDlg#6
 msgctxt "DlgPrefNoVinylDlg#6"
 msgid "1 (Off)"
-msgstr ""
+msgstr "1 (OFF)"
 
 #: DlgPrefNoVinylDlg#7
 msgctxt "DlgPrefNoVinylDlg#7"
@@ -1110,7 +1149,7 @@ msgstr "Deck 2 Vinyl タイプ"
 #: DlgPrefNoVinylDlg#11
 msgctxt "DlgPrefNoVinylDlg#11"
 msgid "Lead-in time"
-msgstr ""
+msgstr "リードインの時間"
 
 #: DlgPrefNoVinylDlg#12
 msgctxt "DlgPrefNoVinylDlg#12"
@@ -1135,7 +1174,7 @@ msgstr "Relative Mode"
 #: DlgPrefNoVinylDlg#16
 msgctxt "DlgPrefNoVinylDlg#16"
 msgid "Enable Needle Skip Prevention"
-msgstr ""
+msgstr "針飛び防止を有効にする。"
 
 #: DlgPrefNoVinylDlg#17
 msgctxt "DlgPrefNoVinylDlg#17"
@@ -1162,6 +1201,8 @@ msgid ""
 "<b>This version of Mixxx does not support vinyl control.</b> <br> Please "
 "visit <a href=\"http://mixxx.org\">Mixxx.org</a> for more information."
 msgstr ""
+"<b>このバージョンのMixxxはVinylコントロールをサポートしていません。</b> <br>詳細については<a "
+"href=\"http://mixxx.org\">Mixxx.org</a>を参照してください。"
 
 #: DlgPrefPlaylist#1
 msgctxt "DlgPrefPlaylist#1"
@@ -1203,7 +1244,7 @@ msgstr "ipodのマウント先を指定してください"
 #: DlgPrefPlaylistDlg#1
 msgctxt "DlgPrefPlaylistDlg#1"
 msgid "Form3"
-msgstr ""
+msgstr "フォーム3"
 
 #: DlgPrefPlaylistDlg#2
 msgid "Audio File Formats"
@@ -1229,19 +1270,19 @@ msgstr "なし"
 #: DlgPrefPlaylistDlg#7
 msgctxt "DlgPrefPlaylistDlg#7"
 msgid "Miscellaneous"
-msgstr ""
+msgstr "その他"
 
 #: DlgPrefPlaylistDlg#8
 msgid "Synchronize ID3 tags on track modifications"
-msgstr ""
+msgstr "トラックが改変されたときにID3タグを同期する。"
 
 #: DlgPrefPlaylistDlg#9
 msgid "Rescan library on start-up"
-msgstr "起動時にライブラリを再スキャンする"
+msgstr "起動時にライブラリを再スキャンする。"
 
 #: DlgPrefPlaylistDlg#10
 msgid "Use relative paths for playlist export if possible"
-msgstr "プレイリストのエクスポート時に可能ならば相対パスを使用"
+msgstr "プレイリストのエクスポート時に可能ならば相対パスを使用する。"
 
 #: DlgPrefPlaylistDlg#11
 msgid "iPod"
@@ -1249,7 +1290,7 @@ msgstr "iPod"
 
 #: DlgPrefPlaylistDlg#12
 msgid "iPod mountpoint"
-msgstr ""
+msgstr "iPodのマウントポイント"
 
 #: DlgPrefPlaylistDlg#13
 msgid "Browse..."
@@ -1266,19 +1307,19 @@ msgstr "ライブラリ"
 
 #: DlgPrefPlaylistDlg#16
 msgid "Music Directory:"
-msgstr ""
+msgstr "音楽ライブラリのディレクトリ:"
 
 #: DlgPrefPlaylistDlg#17
 msgid "Built-in"
-msgstr ""
+msgstr "ビルトイン"
 
 #: DlgPrefPlaylistDlg#18
 msgid "Available Online..."
-msgstr ""
+msgstr "オンラインから入手..."
 
 #: DlgPrefPlaylistDlg#19
 msgid "Bundled Songs"
-msgstr ""
+msgstr "バンドル・トラック"
 
 #: DlgPrefPlaylistDlg#20
 msgid ""
@@ -1293,7 +1334,7 @@ msgstr "kbps"
 #: DlgPrefRecordDlg#1
 msgctxt "DlgPrefRecordDlg#1"
 msgid "Form3"
-msgstr ""
+msgstr "フォーム3"
 
 #: DlgPrefRecordDlg#2
 msgctxt "DlgPrefRecordDlg#2"
@@ -1302,15 +1343,15 @@ msgstr "エンコーディング"
 
 #: DlgPrefRecordDlg#3
 msgid "Quality"
-msgstr "Quality"
+msgstr "音質"
 
 #: DlgPrefRecordDlg#4
 msgid "High"
-msgstr ""
+msgstr "高い"
 
 #: DlgPrefRecordDlg#5
 msgid "Low"
-msgstr ""
+msgstr "低い"
 
 #: DlgPrefRecordDlg#6
 msgid "Tags"
@@ -1333,19 +1374,19 @@ msgstr "アルバム"
 #: DlgPrefRecordDlg#10
 msgctxt "DlgPrefRecordDlg#10"
 msgid "Miscellaneous"
-msgstr ""
+msgstr "その他"
 
 #: DlgPrefRecordDlg#11
 msgid "Create a CUE file"
-msgstr ""
+msgstr "CUEファイルを作成する。"
 
 #: DlgPrefRecordDlg#12
 msgid "File Splitting"
-msgstr ""
+msgstr "ファイルの分割"
 
 #: DlgPrefRecordDlg#13
 msgid "Split recordings at"
-msgstr ""
+msgstr "レコーディングを下記のサイズで分割する。"
 
 #: DlgPrefReplayGainDlg#1
 msgctxt "DlgPrefReplayGainDlg#1"
@@ -1354,7 +1395,7 @@ msgstr "BPM検出設定"
 
 #: DlgPrefReplayGainDlg#2
 msgid "ReplayGain Normalization"
-msgstr ""
+msgstr "リプレイゲイン(ReplayGain)によるノーマライズ"
 
 #: DlgPrefReplayGainDlg#3
 msgid "Apply volume normalization to loaded songs."
@@ -1362,17 +1403,17 @@ msgstr "読み込んだ曲に音量ノーマライズをかける"
 
 #: DlgPrefReplayGainDlg#4
 msgid "Enable Replay Gain"
-msgstr "リプレイゲインを有効にする"
+msgstr "リプレイゲインを有効にする。"
 
 #: DlgPrefReplayGainDlg#5
 msgid ""
 "Calculate ReplayGain normalization for songs which are missing ReplayGain "
 "metadata."
-msgstr ""
+msgstr "リプレイゲインのメタデータがないトラックに対してリプレイゲインのノーマライズを計算する"
 
 #: DlgPrefReplayGainDlg#6
 msgid "Enable Replay Gain Analysis"
-msgstr ""
+msgstr "リプレイゲインの解析を有効にする。"
 
 #: DlgPrefReplayGainDlg#7
 msgid ""
@@ -1380,14 +1421,16 @@ msgid ""
 "applied to a new song. You may wish to wait before adjusting the pregain and "
 "volume."
 msgstr ""
+"比較的古いコンピュータではボリュームノーマライズを新しいトラックに適用する際に数秒の時間がかかることがあります。プリゲインとボリューム調整の前に若干待った"
+"ほうが良いでしょう。"
 
 #: DlgPrefReplayGainDlg#8
 msgid "Initial Boost"
-msgstr ""
+msgstr "初期ブースト"
 
 #: DlgPrefReplayGainDlg#9
 msgid "Initial Gain Boost"
-msgstr ""
+msgstr "初期ゲインブースト"
 
 #: DlgPrefReplayGainDlg#10
 msgid "dB"
@@ -1401,12 +1444,12 @@ msgstr "リセット"
 #: DlgPrefShoutcastDlg#1
 msgctxt "DlgPrefShoutcastDlg#1"
 msgid "Form3"
-msgstr ""
+msgstr "フォーム3"
 
 #: DlgPrefShoutcastDlg#2
 msgctxt "DlgPrefShoutcastDlg#2"
 msgid "Enable live broadcasting"
-msgstr ""
+msgstr "ライブ放送を有効にする。"
 
 #: DlgPrefShoutcastDlg#3
 msgid "Server connection"
@@ -1415,7 +1458,7 @@ msgstr "サーバ接続"
 #: DlgPrefShoutcastDlg#4
 msgctxt "DlgPrefShoutcastDlg#4"
 msgid "Type"
-msgstr ""
+msgstr "タイプ"
 
 #: DlgPrefShoutcastDlg#5
 msgid "Icecast 2"
@@ -1459,7 +1502,7 @@ msgstr "ログイン名"
 
 #: DlgPrefShoutcastDlg#15
 msgid "source"
-msgstr ""
+msgstr "ソース"
 
 #: DlgPrefShoutcastDlg#16
 msgid "Password"
@@ -1467,31 +1510,31 @@ msgstr "パスワード"
 
 #: DlgPrefShoutcastDlg#17
 msgid "test1234"
-msgstr ""
+msgstr "test1234"
 
 #: DlgPrefShoutcastDlg#18
 msgid "Stream settings"
-msgstr "Streamの設定"
+msgstr "ストリームの設定"
 
 #: DlgPrefShoutcastDlg#19
 msgid "Stream name"
-msgstr "Stream名"
+msgstr "ストリーム名"
 
 #: DlgPrefShoutcastDlg#20
 msgid "Mixxx Icecast Testing"
-msgstr ""
+msgstr "Mixxx Icecast Testing"
 
 #: DlgPrefShoutcastDlg#21
 msgid "Website"
-msgstr ""
+msgstr "ウェブサイト"
 
 #: DlgPrefShoutcastDlg#22
 msgid "http://www.mixxx.org"
-msgstr ""
+msgstr "http://www.mixxx.org"
 
 #: DlgPrefShoutcastDlg#23
 msgid "Description"
-msgstr ""
+msgstr "概要"
 
 #: DlgPrefShoutcastDlg#24
 msgid ""
@@ -1507,6 +1550,17 @@ msgid ""
 "family:'DejaVu Sans'; font-size:9pt; font-style:italic;\">This stream is on "
 "line for testing purposes!</span></p></body></html>"
 msgstr ""
+"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" "
+"\"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+"<html><head><meta name=\"qrichtext\" content=\"1\" /><style "
+"type=\"text/css\">\n"
+"p, li { white-space: pre-wrap; }\n"
+"</style></head><body style=\" font-family:'Lucida Grande'; font-size:13pt; "
+"font-weight:400; font-style:normal;\">\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-"
+"right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-"
+"family:'DejaVu Sans'; font-size:9pt; font-"
+"style:italic;\">このストリームはテスト目的のためだけにオンラインになっています！</span></p></body></html>"
 
 #: DlgPrefShoutcastDlg#25
 msgctxt "DlgPrefShoutcastDlg#25"
@@ -1515,16 +1569,16 @@ msgstr "ジャンル"
 
 #: DlgPrefShoutcastDlg#26
 msgid "Live mix"
-msgstr ""
+msgstr "ライブミックス"
 
 #: DlgPrefShoutcastDlg#27
 msgid "Public stream"
-msgstr ""
+msgstr "公開ストリーム"
 
 #: DlgPrefShoutcastDlg#28
 msgctxt "DlgPrefShoutcastDlg#28"
 msgid "Encoding"
-msgstr ""
+msgstr "エンコーディング"
 
 #: DlgPrefShoutcastDlg#29
 msgctxt "DlgPrefShoutcastDlg#29"
@@ -1577,7 +1631,7 @@ msgstr "48 kbps"
 
 #: DlgPrefShoutcastDlg#41
 msgid "Format"
-msgstr ""
+msgstr "フォーマット"
 
 #: DlgPrefShoutcastDlg#42
 msgid "Ogg Vorbis"
@@ -1589,7 +1643,7 @@ msgstr "MP3"
 
 #: DlgPrefShoutcastDlg#44
 msgid "Channels"
-msgstr ""
+msgstr "チャンネル"
 
 #: DlgPrefShoutcastDlg#45
 msgid "Stereo"
@@ -1597,11 +1651,11 @@ msgstr "ステレオ"
 
 #: DlgPrefShoutcastDlg#46
 msgid "Custom metadata"
-msgstr ""
+msgstr "カスタムメタデータ"
 
 #: DlgPrefShoutcastDlg#47
 msgid "Enable custom metadata"
-msgstr ""
+msgstr "カスタムメタデータを有効にする。"
 
 #: DlgPrefShoutcastDlg#48
 msgctxt "DlgPrefShoutcastDlg#48"
@@ -1619,26 +1673,26 @@ msgstr "タイトル"
 
 #: DlgPrefShoutcastDlg#51
 msgid "%maintitle"
-msgstr ""
+msgstr "%maintitle"
 
 #: DlgPrefShoutcastDlg#52
 msgid ""
 "Please note that for technical reasons changing any shoutcast settings will "
 "cause an established connection to disconnect and reconnect. "
-msgstr ""
+msgstr "shoutcastの設定を変更すると技術的な理由により現在確立している接続は切断されてしまい、再接続となることに注意してください。 "
 
 #: DlgPrefSound#1
 msgctxt "DlgPrefSound#1"
 msgid "None"
-msgstr ""
+msgstr "なし"
 
 #: DlgPrefSound#2
 msgid "%1 Hz"
-msgstr ""
+msgstr "%1 Hz"
 
 #: DlgPrefSound#3
 msgid "a device"
-msgstr ""
+msgstr "デバイス"
 
 #: DlgPrefSound#4
 msgid "An unknown error occurred"
@@ -1646,29 +1700,31 @@ msgstr "未知のエラーがおこりました"
 
 #: DlgPrefSound#5
 msgid "sound device \"%1\""
-msgstr ""
+msgstr "サウンドデバイス \"%1\""
 
 #: DlgPrefSound#6
 msgid "Two outputs cannot share channels on %1"
-msgstr ""
+msgstr "%1 のチャンネルは2つの出力で共有できません。"
 
 #: DlgPrefSound#7
 msgid ""
 "Error opening %1\n"
 "%2"
 msgstr ""
+"%1を開く際にエラーが発生しました。\n"
+"%2"
 
 #: DlgPrefSound#8
 msgid "%1 ms"
-msgstr ""
+msgstr "%1 ms"
 
 #: DlgPrefSound#9
 msgid "Configuration error"
-msgstr ""
+msgstr "設定エラー"
 
 #: DlgPrefSoundDlg#1
 msgid "Sound API"
-msgstr ""
+msgstr "サウンドAPI"
 
 #: DlgPrefSoundDlg#2
 msgid "Sample Rate"
@@ -1676,7 +1732,7 @@ msgstr "サンプルレート"
 
 #: DlgPrefSoundDlg#3
 msgid "Latency Tips"
-msgstr ""
+msgstr "レイテンシに関して"
 
 #: DlgPrefSoundDlg#4
 msgid ""
@@ -1701,42 +1757,42 @@ msgstr "入力"
 
 #: DlgPrefSoundDlg#7
 msgid "Query Devices"
-msgstr ""
+msgstr "デバイスを問い合わせる"
 
 #: DlgPrefSoundDlg#8
 msgid "Reset to Defaults"
-msgstr ""
+msgstr "デフォルトに戻す"
 
 #: DlgPrefSoundDlg#9
 msgctxt "DlgPrefSoundDlg#9"
 msgid "Apply"
-msgstr ""
+msgstr "適用する"
 
 #: DlgPrefSoundDlg#10
 msgid "Latency"
-msgstr ""
+msgstr "レイテンシ"
 
 #: DlgPrefSoundItem#1
 msgctxt "DlgPrefSoundItem#1"
 msgid "None"
-msgstr ""
+msgstr "なし"
 
 #: DlgPrefSoundItem#2
 msgid "Channels %1 - %2"
-msgstr ""
+msgstr "チャンネル %1 - %2"
 
 #: DlgPrefSoundItem#3
 msgid "Form"
-msgstr ""
+msgstr "フォーム"
 
 #: DlgPrefSoundItem#4
 msgid "Type (#)"
-msgstr ""
+msgstr "タイプ (#)"
 
 #: DlgPrefVinylDlg#1
 msgctxt "DlgPrefVinylDlg#1"
 msgid "Form1"
-msgstr ""
+msgstr "フォーム1"
 
 #: DlgPrefVinylDlg#2
 msgctxt "DlgPrefVinylDlg#2"
@@ -1758,6 +1814,17 @@ msgid ""
 "weight:600;\">Select sound devices for vinyl control in the Sound Hardware "
 "pane.</span></p></body></html>"
 msgstr ""
+"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" "
+"\"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+"<html><head><meta name=\"qrichtext\" content=\"1\" /><style "
+"type=\"text/css\">\n"
+"p, li { white-space: pre-wrap; }\n"
+"</style></head><body style=\" font-family:'DejaVu Sans'; font-size:9pt; font-"
+"weight:400; font-style:normal;\">\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-"
+"right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-"
+"weight:600;\">サウンドハードウェアの画面でVinylコントロールに使用するサウンドデバイスを選択してください。</span></p></bo"
+"dy></html>"
 
 #: DlgPrefVinylDlg#4
 msgctxt "DlgPrefVinylDlg#4"
@@ -1773,12 +1840,12 @@ msgstr ""
 #: DlgPrefVinylDlg#5
 msgctxt "DlgPrefVinylDlg#5"
 msgid "Turntable Preamp"
-msgstr ""
+msgstr "ターンテーブルプリアンプ"
 
 #: DlgPrefVinylDlg#6
 msgctxt "DlgPrefVinylDlg#6"
 msgid "1 (Off)"
-msgstr ""
+msgstr "1 (OFF)"
 
 #: DlgPrefVinylDlg#7
 msgctxt "DlgPrefVinylDlg#7"
@@ -1788,75 +1855,75 @@ msgstr "150"
 #: DlgPrefVinylDlg#8
 msgctxt "DlgPrefVinylDlg#8"
 msgid "Vinyl Configuration"
-msgstr ""
+msgstr "Vinylの設定"
 
 #: DlgPrefVinylDlg#9
 msgctxt "DlgPrefVinylDlg#9"
 msgid "Deck 1 Vinyl Type"
-msgstr ""
+msgstr "デッキ 1 Vinyl タイプ"
 
 #: DlgPrefVinylDlg#10
 msgctxt "DlgPrefVinylDlg#10"
 msgid "Deck 2 Vinyl Type"
-msgstr ""
+msgstr "デッキ 2 Vinyl タイプ"
 
 #: DlgPrefVinylDlg#11
 msgctxt "DlgPrefVinylDlg#11"
 msgid "Apply"
-msgstr ""
+msgstr "適用する"
 
 #: DlgPrefVinylDlg#12
 msgctxt "DlgPrefVinylDlg#12"
 msgid "Lead-in time"
-msgstr ""
+msgstr "リードインの時間"
 
 #: DlgPrefVinylDlg#13
 msgctxt "DlgPrefVinylDlg#13"
 msgid "seconds"
-msgstr ""
+msgstr "秒"
 
 #: DlgPrefVinylDlg#14
 msgctxt "DlgPrefVinylDlg#14"
 msgid "Control Mode"
-msgstr ""
+msgstr "コントロールモード"
 
 #: DlgPrefVinylDlg#15
 msgctxt "DlgPrefVinylDlg#15"
 msgid "Absolute Mode"
-msgstr ""
+msgstr "絶対位置(Absolute)モード"
 
 #: DlgPrefVinylDlg#16
 msgctxt "DlgPrefVinylDlg#16"
 msgid "Relative Mode"
-msgstr ""
+msgstr "相対位置(Relative)モード"
 
 #: DlgPrefVinylDlg#17
 msgctxt "DlgPrefVinylDlg#17"
 msgid "Enable Needle Skip Prevention"
-msgstr ""
+msgstr "針飛び防止を有効にする。"
 
 #: DlgPrefVinylDlg#18
 msgctxt "DlgPrefVinylDlg#18"
 msgid "Signal Quality"
-msgstr ""
+msgstr "シグナルクオリティ"
 
 #: DlgPrefVinylDlg#19
 msgctxt "DlgPrefVinylDlg#19"
 msgid "http://www.xwax.co.uk"
-msgstr ""
+msgstr "http://www.xwax.co.uk"
 
 #: DlgPrefVinylDlg#20
 msgctxt "DlgPrefVinylDlg#20"
 msgid "Powered by xwax"
-msgstr ""
+msgstr "Powered by xwax"
 
 #: DlgPreferences#1
 msgid "Sound Hardware"
-msgstr ""
+msgstr "サウンドハードウェア"
 
 #: DlgPreferences#2
 msgid "MIDI Controllers"
-msgstr ""
+msgstr "MIDIコントローラ"
 
 #: DlgPreferences#3
 msgctxt "DlgPreferences#3"
@@ -1884,11 +1951,11 @@ msgstr "レコーディング"
 #: DlgPreferences#8
 msgctxt "DlgPreferences#8"
 msgid "BPM Detection"
-msgstr "BPM検知"
+msgstr "BPM検出"
 
 #: DlgPreferences#9
 msgid "Normalization"
-msgstr ""
+msgstr "ノーマライズ"
 
 #: DlgPreferences#10
 msgctxt "DlgPreferences#10"
@@ -1897,12 +1964,12 @@ msgstr "Vinylコントロール"
 
 #: DlgPreferences#11
 msgid "Live Broadcasting"
-msgstr ""
+msgstr "ライブ放送"
 
 #: DlgPreferencesDlg#1
 msgctxt "DlgPreferencesDlg#1"
 msgid "Dialog"
-msgstr ""
+msgstr "ダイアログ"
 
 #: DlgPreferencesDlg#2
 msgid "1"
@@ -1911,45 +1978,45 @@ msgstr "1"
 #: DlgPrepare#1
 msgctxt "DlgPrepare#1"
 msgid "Manage"
-msgstr ""
+msgstr "マネージ"
 
 #: DlgPrepare#2
 msgid "Recently Added"
-msgstr ""
+msgstr "最近追加したトラック"
 
 #: DlgPrepare#3
 msgid "All Songs"
-msgstr ""
+msgstr "すべてのトラック"
 
 #: DlgPrepare#4
 msgid "Progress"
-msgstr ""
+msgstr "プログレス"
 
 #: DlgPrepare#5
 msgid "Select All"
-msgstr ""
+msgstr "すべて選択"
 
 #: DlgPrepare#6
 msgctxt "DlgPrepare#6"
 msgid "Analyze"
-msgstr ""
+msgstr "解析"
 
 #: DlgPrepare#7
 msgid "Stop Analysis"
-msgstr ""
+msgstr "解析を停止"
 
 #: DlgPrepare#8
 msgid "Analyzing %1%"
-msgstr ""
+msgstr "解析中 %1 %"
 
 #: DlgRecording#1
 msgctxt "DlgRecording#1"
 msgid "Manage"
-msgstr ""
+msgstr "マネージ"
 
 #: DlgRecording#2
 msgid "Status:"
-msgstr ""
+msgstr "ステータス:"
 
 #: DlgRecording#3
 msgid "Start Recording"
@@ -1957,7 +2024,7 @@ msgstr "録音開始"
 
 #: DlgRecording#4
 msgid "Start recording here ..."
-msgstr "ここで録音開始"
+msgstr "ボタンを押すと録音開始"
 
 #: DlgRecording#5
 msgid "Stop Recording"
@@ -2030,7 +2097,7 @@ msgstr "コメント:"
 
 #: DlgTrackInfo#15
 msgid "Reload track metadata from file."
-msgstr ""
+msgstr "トラックのメタデータをファイルから再読み込み"
 
 #: DlgTrackInfo#16
 msgctxt "DlgTrackInfo#16"
@@ -2039,23 +2106,23 @@ msgstr "トラック情報（クリックすると開く）"
 
 #: DlgTrackInfo#17
 msgid "Track BPM: "
-msgstr ""
+msgstr "トラックBPM: "
 
 #: DlgTrackInfo#18
 msgid "x2"
-msgstr ""
+msgstr "x2"
 
 #: DlgTrackInfo#19
 msgid "/2"
-msgstr ""
+msgstr "/2"
 
 #: DlgTrackInfo#20
 msgid "Tap to Beat"
-msgstr ""
+msgstr "タップテンポ"
 
 #: DlgTrackInfo#21
 msgid "Hint: Use the Library Analyze view to run BPM detection."
-msgstr ""
+msgstr "ヒント：BPM検出をさせるにはライブラリの解析画面を使用します。"
 
 #: DlgTrackInfo#22
 msgid "Track BPM"
@@ -2063,57 +2130,57 @@ msgstr "トラックBPM"
 
 #: DlgTrackInfo#23
 msgid "Cue Id"
-msgstr ""
+msgstr "キューID"
 
 #: DlgTrackInfo#24
 msgctxt "DlgTrackInfo#24"
 msgid "Position"
-msgstr ""
+msgstr "経過時間"
 
 #: DlgTrackInfo#25
 msgid "Hotcue"
-msgstr ""
+msgstr "ホットキュー"
 
 #: DlgTrackInfo#26
 msgid "Label"
-msgstr ""
+msgstr "ラベル"
 
 #: DlgTrackInfo#27
 msgid "Activate Cue"
-msgstr ""
+msgstr "キューを有効にする"
 
 #: DlgTrackInfo#28
 msgid "Delete Cue"
-msgstr ""
+msgstr "キューを削除する"
 
 #: DlgTrackInfo#29
 msgid "Track Cuepoints"
-msgstr ""
+msgstr "トラックキューポイント"
 
 #: DlgTrackInfo#30
 msgid "<< &Prev"
-msgstr ""
+msgstr "<< 前(&P)"
 
 #: DlgTrackInfo#31
 msgid "&Apply"
-msgstr ""
+msgstr "適用(&A)"
 
 #: DlgTrackInfo#32
 msgid "&Cancel"
-msgstr ""
+msgstr "キャンセル(&C)"
 
 #: DlgTrackInfo#33
 msgctxt "DlgTrackInfo#33"
 msgid "Alt+O"
-msgstr ""
+msgstr "Alt+O"
 
 #: DlgTrackInfo#34
 msgid "&Next >>"
-msgstr ""
+msgstr "次(&N) >>"
 
 #: EncoderMp3#1
 msgid "Encoder"
-msgstr ""
+msgstr "エンコーダ"
 
 #: EncoderMp3#2
 msgid ""
@@ -2121,12 +2188,16 @@ msgid ""
 "install libmp3lame (also known as lame) and check if /usr/lib/libmp3lame.so "
 "exists on your system </html>"
 msgstr ""
+"<html>lame MP3エンコーダがロードできないか見つかりませんでした。<p>libmp3lame "
+"(またはlame)をインストールし、システムに/usr/lib/libmp3lame.soがあることを確認してください。</html>"
 
 #: EncoderMp3#3
 msgid ""
 "<html>Mixxx is unable to load or find the MP3 encoder lame. <p>Please put "
 "lame_enc.dll in the directory you have installed Mixxx </html>"
 msgstr ""
+"<html>lame "
+"MP3エンコーダがロードできないか見つかりませんでした。<p>lame_enc.dllをMixxxのインストールディレクトリに置いてください</html>"
 
 #: EncoderMp3#4
 msgid ""
@@ -2134,6 +2205,8 @@ msgid ""
 "install libmp3lame (also known as lame) and check if "
 "/usr/local/lib/libmp3lame.dylib exists on your system </html>"
 msgstr ""
+"<html>lame MP3エンコーダがロードできないか見つかりませんでした。<p>libmp3lame "
+"(またはlame)をインストールし、システムに/usr/local/lib/libmp3lame.dylibがあることを確認してください。</html>"
 
 #: EncoderMp3#5
 msgid ""
@@ -2141,33 +2214,38 @@ msgid ""
 "<a href='http://mixxx.org/wiki/doku.php/internet_broadcasting'>Mixxx "
 "Wiki</a> for more information.</html>"
 msgstr ""
+"<html>libmp3lameが改変されているバージョンであると検出されました。このバージョンは使用しないでください。さらなる情報は<a "
+"href='http://mixxx.org/wiki/doku.php/internet_broadcasting'>Mixxx "
+"Wiki</a>を参照してください。</html>"
 
 #: EngineRecord#1
 msgctxt "EngineRecord#1"
 msgid "Recording"
-msgstr ""
+msgstr "レコーディング"
 
 #: EngineRecord#2
 msgid ""
 "<html>Could not create audio file for recording!<p><br>Maybe you do not have "
 "enough free disk space or file permissions.</html>"
 msgstr ""
+"<html>レコーディングのためのオーディオファイルが作成できませんでした。<p><br>空きディスク容量が足りないかファイルパーミッションがない可能性が"
+"あります。</html>"
 
 #: EngineShoutcast#1
 msgid "Mixxx encountered a problem"
-msgstr ""
+msgstr "Mixxxに問題が発生しました。"
 
 #: EngineShoutcast#2
 msgid "Could not allocate shout_t"
-msgstr ""
+msgstr "shout_tがアロケートできませんでした。"
 
 #: EngineShoutcast#3
 msgid "Could not allocate shout_metadata_t"
-msgstr ""
+msgstr "shout_metadata_tがアロケートできませんでした。"
 
 #: EngineShoutcast#4
 msgid "Error setting non-blocking mode:"
-msgstr ""
+msgstr "non-blockingモードに設定できませんでした。"
 
 #: EngineShoutcast#5
 msgid "Lost connection to streaming server"
@@ -2181,11 +2259,11 @@ msgstr "インターネットの接続、ユーザ名とパスワードを確認
 
 #: EngineShoutcast#7
 msgid "Live broadcasting"
-msgstr ""
+msgstr "ライブ放送"
 
 #: EngineShoutcast#8
 msgid "Mixxx has successfully connected to the shoutcast server"
-msgstr ""
+msgstr "shoutcastサーバーへの接続に成功しました。"
 
 #: EngineShoutcast#9
 msgid "Mixxx could not connect to streaming server"
@@ -2193,28 +2271,28 @@ msgstr "Mixxxはストリーミングサーバに接続することができま�
 
 #: EngineShoutcast#10
 msgid "Mixxx has successfully disconnected to the shoutcast server"
-msgstr ""
+msgstr "shoutcastサーバーからの切断に成功しました。"
 
 #: ErrorDialogHandler#1
 msgid "Fatal error"
-msgstr ""
+msgstr "重大なエラー"
 
 #: ErrorDialogHandler#2
 msgid "Critical error"
-msgstr ""
+msgstr "致命的なエラー"
 
 #: ErrorDialogHandler#3
 msgid "Warning"
-msgstr ""
+msgstr "警告"
 
 #: ErrorDialogHandler#4
 msgctxt "ErrorDialogHandler#4"
 msgid "Information"
-msgstr ""
+msgstr "通知"
 
 #: ErrorDialogHandler#5
 msgid "Question"
-msgstr ""
+msgstr "質問"
 
 #: ITunesFeature#1
 msgid "iTunes"
@@ -2222,139 +2300,141 @@ msgstr "iTunes"
 
 #: ITunesFeature#2
 msgid "Select your iTunes library"
-msgstr ""
+msgstr "iTunesライブラリを選択"
 
 #: ITunesFeature#3
 msgid "iTunes (loading)"
-msgstr ""
+msgstr "iTunes (読み込み中)"
 
 #: ITunesFeature#4
 msgid "Use Default Library"
-msgstr ""
+msgstr "デフォルトのライブラリを使用"
 
 #: ITunesFeature#5
 msgid "Choose Library..."
-msgstr ""
+msgstr "ライブラリを選択..."
 
 #: ITunesFeature#6
 msgid "Error Loading iTunes Library"
-msgstr ""
+msgstr "iTunesライブラリの読み込みに失敗"
 
 #: ITunesFeature#7
 msgid ""
 "There was an error loading your iTunes library. Some of your iTunes tracks "
 "or playlists may not have loaded."
-msgstr ""
+msgstr "iTunesライブラリの読み込み中にエラーが発生しました。読み込まれていないiTunesのトラック・プレイリストがあるかもしれません。"
 
 #: LADSPAPresetSlot#1
 msgid "Drag a preset from the list & drop it here"
-msgstr ""
+msgstr "リストからプリセットをドラッグしてここへドロップ"
 
 #: LibraryScannerDlg#1
 msgid "It's taking Mixxx a minute to scan your music library, please wait..."
-msgstr ""
+msgstr "ミュージックライブラリをスキャンするのに若干時間がかかります。しばらくお待ちください。"
 
 #: LibraryScannerDlg#2
 msgid "Cancel"
-msgstr ""
+msgstr "キャンセル"
 
 #: MidiInputMappingTableModel#1
 msgid "Midi Status Type"
-msgstr ""
+msgstr "MIDIステータスタイプ"
 
 #: MidiInputMappingTableModel#2
 msgctxt "MidiInputMappingTableModel#2"
 msgid "Midi Note"
-msgstr ""
+msgstr "MIDIノート"
 
 #: MidiInputMappingTableModel#3
 msgctxt "MidiInputMappingTableModel#3"
 msgid "Midi Channel"
-msgstr ""
+msgstr "MIDIチャンネル"
 
 #: MidiInputMappingTableModel#4
 msgctxt "MidiInputMappingTableModel#4"
 msgid "Control Group"
-msgstr ""
+msgstr "コントロールグループ"
 
 #: MidiInputMappingTableModel#5
 msgctxt "MidiInputMappingTableModel#5"
 msgid "Control Value"
-msgstr ""
+msgstr "コントロール値"
 
 #: MidiMapping#1
 msgid "MIDI script function not found"
-msgstr ""
+msgstr "MIDIスクリプト関数が見つかりません。"
 
 #: MidiMapping#2
 msgid "The MIDI script function '%1' was not found in loaded scripts."
-msgstr ""
+msgstr "MIDIスクリプト関数 '%1' がスクリプト内にありませんでした。"
 
 #: MidiMapping#3
 msgid ""
 "The MIDI message %1 %2 will not be bound.\n"
 "(Click Show Details for hints.)"
 msgstr ""
+"MIDIメッセージ %1 %2 の送り先がありませんでした。\n"
+"(クリックして詳細を確認)"
 
 #: MidiMapping#4
 msgid ""
 "* Check to see that the function name is spelled correctly in the mapping "
 "file (.xml) and script file (.js)\n"
-msgstr ""
+msgstr "クリックして関数名がマッピングファイル(.xml)とスクリプトファイル(.js)内で正しく書かれているか確認\n"
 
 #: MidiMapping#5
 msgid ""
 "* Check to see that the script file name (.js) is spelled correctly in the "
 "mapping file (.xml)"
-msgstr ""
+msgstr "* クリックしてスクリプトファイル名(.js)がマッピングファイル(.xml)内で正しく書かれているか確認"
 
 #: MidiOutputMappingTableModel#1
 msgid "Midi Status"
-msgstr ""
+msgstr "MIDIステータス"
 
 #: MidiOutputMappingTableModel#2
 msgctxt "MidiOutputMappingTableModel#2"
 msgid "Midi Note"
-msgstr ""
+msgstr "MIDIノート"
 
 #: MidiOutputMappingTableModel#3
 msgctxt "MidiOutputMappingTableModel#3"
 msgid "Midi Channel"
-msgstr ""
+msgstr "MIDIチャンネル"
 
 #: MidiOutputMappingTableModel#4
 msgctxt "MidiOutputMappingTableModel#4"
 msgid "Control Group"
-msgstr ""
+msgstr "コントロールグループ"
 
 #: MidiOutputMappingTableModel#5
 msgctxt "MidiOutputMappingTableModel#5"
 msgid "Control Value"
-msgstr ""
+msgstr "コントロール値"
 
 #: MidiOutputMappingTableModel#6
 msgid "Threshold Min"
-msgstr ""
+msgstr "最小しきい値"
 
 #: MidiOutputMappingTableModel#7
 msgid "Threshold Max"
-msgstr ""
+msgstr "最大しきい値"
 
 #: MidiScriptEngine#1
 msgid "Uncaught exception at line %1 in file %2: %3"
-msgstr ""
+msgstr "キャッチできない例外 ファイル: %2 の行: %1 : %3"
 
 #: MidiScriptEngine#2
 msgid "Uncaught exception at line %1 in passed code: %2"
-msgstr ""
+msgstr "キャッチできない例外 渡されたコード: %2 の行: %1"
 
 #: MidiScriptEngine#3
 msgid "MIDI script error"
-msgstr ""
+msgstr "MIDIスクリプトエラー"
 
 #: MidiScriptEngine#4
 msgid "A MIDI control you just used is not working properly."
-msgstr ""
+msgstr "使用しているMIDI機器は正しく動作していません。"
 
 #: MidiScriptEngine#5
 msgid ""
@@ -2363,10 +2443,12 @@ msgid ""
 "erratic behavior</li><li>Try to recover by resetting your "
 "controller</li></ul></html>"
 msgstr ""
+"<html>(MIDIスクリプトコードを修正する必要があります。)<br>今の段階では以下の選択肢があります。<ul><li>このセッションではこのエラー"
+"を無視する。ただし異常な動作をする可能性がある。</li><li>コントローラーをリセットし回復を試みる。</li></ul></html>"
 
 #: MidiStatusDelegate#1
 msgid "Unknown"
-msgstr ""
+msgstr "不明"
 
 #: MixxxApp#1
 msgid "Mixxx "
@@ -2383,22 +2465,24 @@ msgid ""
 "developers. Would you like to help us make Mixxx better by enabling this "
 "feature?"
 msgstr ""
+"Mixxxの開発はコミュニティからのフィードバックを反映して行われています。あなたの裁量のもと、Mixxxは自動的にユーザーエクスペリエンスのデータを開発"
+"者に送ることができます。この機能を有効にしてMixxx改良の手助けをしていただけないでしょうか？"
 
 #: MixxxApp#4
 msgid "Yes"
-msgstr ""
+msgstr "はい"
 
 #: MixxxApp#5
 msgid "No"
-msgstr ""
+msgstr "いいえ"
 
 #: MixxxApp#6
 msgid "Privacy Policy"
-msgstr ""
+msgstr "プライバシーポリシー"
 
 #: MixxxApp#7
 msgid "Mixxx: Privacy Policy"
-msgstr ""
+msgstr "Mixxx: プライバシーポリシー"
 
 #: MixxxApp#8
 msgid ""
@@ -2424,19 +2508,35 @@ msgid ""
 "This information will not be used to personally identify you, contact you, "
 "advertise to you, or otherwise bother you in any way.\n"
 msgstr ""
+"Mixxxの開発はコミュニティからのフィードバックを反映して行われています。次バージョンの改善のため、あなたの了承のもと、ハードウェアとMixxxの使用情"
+"報を収集しています。この情報は主としてバグ修正、機能改善、システム要求の決定のために使用されます。加えてこの情報を統計の目的で集めています。\n"
+"\n"
+"ハードウェアの情報には下記が含まれています。\n"
+"\t- CPUのモデルと機能\n"
+"\t- RAMの総容量と使用量\n"
+"\t- 利用可能なディスクスペース\n"
+"\t- OSのバージョン\n"
+"\n"
+"使用情報には以下が含まれます。\n"
+"\t- 設定\n"
+"\t- 内部エラー\n"
+"\t- 内部デバッグメッセージ\n"
+"\t- パフォーマンスの統計量 (レイテンシ、CPU使用の平均値)\n"
+"\n"
+"この情報は個人の特定、連絡手段、広告といったあなたをわずらわせるいかなる目的にも使用されません。\n"
 
 #: MixxxApp#9
 msgctxt "MixxxApp#9"
 msgid "Choose music library directory"
-msgstr ""
+msgstr "音楽ライブラリのディレクトリを選択してください。"
 
 #: MixxxApp#10
 msgid "Sound Device Busy"
-msgstr ""
+msgstr "サウンドデバイスがビジーです。"
 
 #: MixxxApp#11
 msgid "Get <b>Help</b> from the Mixxx Wiki."
-msgstr ""
+msgstr "Mixxx Wikiで<b>Help</b>を手に入れてください。"
 
 #: MixxxApp#12
 msgid ""
@@ -2444,124 +2544,126 @@ msgid ""
 "application is using a sound device Mixxx is configured to use or a device "
 "is not plugged in."
 msgstr ""
+"指定されたサウンドデバイスにMixxxがアクセスできませんでした。他のアプリケーションがこのサウンドデバイスを使用しているか、またはデバイスが接続されてい"
+"ません。"
 
 #: MixxxApp#13
 msgid ""
 "<b>Retry</b> after closing the other application or reconnecting a sound "
 "device"
-msgstr ""
+msgstr "他のアプリケーションを閉じるかデバイスを再接続した後で<b>リトライ</b>してください。"
 
 #: MixxxApp#14
 msgid "<b>Reconfigure</b> Mixxx's sound device settings."
-msgstr ""
+msgstr "Mixxxのサウンドデバイス設定を<b>再設定</b>する。"
 
 #: MixxxApp#15
 msgid "<b>Exit</b> Mixxx."
-msgstr ""
+msgstr "Mixxxを<b>終了</b>する。"
 
 #: MixxxApp#16
 msgid "Retry"
-msgstr ""
+msgstr "リトライ"
 
 #: MixxxApp#17
 msgid "Reconfigure"
-msgstr ""
+msgstr "再設定"
 
 #: MixxxApp#18
 msgid "Help"
-msgstr ""
+msgstr "ヘルプ"
 
 #: MixxxApp#19
 msgid "Exit"
-msgstr ""
+msgstr "終了"
 
 #: MixxxApp#20
 msgid "Continue"
-msgstr ""
+msgstr "続行"
 
 #: MixxxApp#21
 msgid "&Load Song (Player 1)..."
-msgstr ""
+msgstr "デッキ1へトラックを読み込む(&L)"
 
 #: MixxxApp#22
 msgid "Ctrl+O"
-msgstr ""
+msgstr "Ctrl+O"
 
 #: MixxxApp#23
 msgid "&Load Song (Player 2)..."
-msgstr ""
+msgstr "デッキ2へトラックを読み込む(&L)"
 
 #: MixxxApp#24
 msgid "Ctrl+Shift+O"
-msgstr ""
+msgstr "Ctrl+Shift+O"
 
 #: MixxxApp#25
 msgid "&Exit"
-msgstr ""
+msgstr "終了(&E)"
 
 #: MixxxApp#26
 msgid "Ctrl+Q"
-msgstr ""
+msgstr "Ctrl+Q"
 
 #: MixxxApp#27
 msgid "&Rescan Library"
-msgstr ""
+msgstr "ライブラリを再スキャン (&R)"
 
 #: MixxxApp#28
 msgid "Add &new playlist"
-msgstr ""
+msgstr "新しいプレイリストを追加 (&N)"
 
 #: MixxxApp#29
 msgid "Ctrl+N"
-msgstr ""
+msgstr "Ctrl+N"
 
 #: MixxxApp#30
 msgid "Add new &crate"
-msgstr ""
+msgstr "新しいレコードボックスを追加 (&C)"
 
 #: MixxxApp#31
 msgid "Ctrl+C"
-msgstr ""
+msgstr "Ctrl+C"
 
 #: MixxxApp#32
 msgid "&Import playlist"
-msgstr ""
+msgstr "プレイリストをインポート (&I)"
 
 #: MixxxApp#33
 msgid "Ctrl+I"
-msgstr ""
+msgstr "Ctrl+I"
 
 #: MixxxApp#34
 msgid "&Audio Beat Marks"
-msgstr ""
+msgstr "オーディオビートマーク (&A)"
 
 #: MixxxApp#35
 msgid "&Full Screen"
-msgstr ""
+msgstr "全画面表示 (&F)"
 
 #: MixxxApp#36
 msgid "Ctrl+F"
-msgstr ""
+msgstr "Ctrl+F"
 
 #: MixxxApp#37
 msgid "F11"
-msgstr ""
+msgstr "F11"
 
 #: MixxxApp#38
 msgid "&Preferences"
-msgstr ""
+msgstr "設定(&P)"
 
 #: MixxxApp#39
 msgid "Ctrl+P"
-msgstr ""
+msgstr "Ctrl+P"
 
 #: MixxxApp#40
 msgid "&About..."
-msgstr ""
+msgstr "Mixxxについて (&A)"
 
 #: MixxxApp#41
 msgid "&Community Support..."
-msgstr ""
+msgstr "コミュニティによるサポート (&C)"
 
 #: MixxxApp#42
 msgid "Enable &Vinyl Control 1"
@@ -2569,7 +2671,7 @@ msgstr "Vinylコントロール1を有効にする(&V)"
 
 #: MixxxApp#43
 msgid "Ctrl+Y"
-msgstr ""
+msgstr "Ctrl+Y"
 
 #: MixxxApp#44
 msgid "Enable &Vinyl Control 2"
@@ -2577,32 +2679,32 @@ msgstr "Vinylコントロール2を有効にする(&V)"
 
 #: MixxxApp#45
 msgid "Ctrl+U"
-msgstr ""
+msgstr "Ctrl+U"
 
 #: MixxxApp#46
 msgctxt "MixxxApp#46"
 msgid "Enable live broadcasting"
-msgstr ""
+msgstr "ライブ放送を有効にする"
 
 #: MixxxApp#47
 msgid "Ctrl+L"
-msgstr ""
+msgstr "Ctrl+L"
 
 #: MixxxApp#48
 msgid "&Record Mix"
-msgstr ""
+msgstr "ミックスを録音する (&R)"
 
 #: MixxxApp#49
 msgid "Ctrl+R"
-msgstr ""
+msgstr "Ctrl+R"
 
 #: MixxxApp#50
 msgid "Show Studio"
-msgstr ""
+msgstr "Studioを表示する"
 
 #: MixxxApp#51
 msgid "Opens a song in player 1"
-msgstr ""
+msgstr "トラックをデッキ1で開く"
 
 #: MixxxApp#52
 msgid ""
@@ -2610,10 +2712,13 @@ msgid ""
 "\n"
 "Opens a song in player 1"
 msgstr ""
+"開く\n"
+"\n"
+"トラックをデッキ1で開く"
 
 #: MixxxApp#53
 msgid "Opens a song in player 2"
-msgstr ""
+msgstr "デッキ2で曲を開く"
 
 #: MixxxApp#54
 msgid ""
@@ -2621,10 +2726,13 @@ msgid ""
 "\n"
 "Opens a song in player 2"
 msgstr ""
+"開く\n"
+"\n"
+"トラックをデッキ2で開く"
 
 #: MixxxApp#55
 msgid "Quits the application"
-msgstr ""
+msgstr "アプリケーションを終了する"
 
 #: MixxxApp#56
 msgid ""
@@ -2632,10 +2740,13 @@ msgid ""
 "\n"
 "Quits the application"
 msgstr ""
+"終了\n"
+"\n"
+"アプリケーションを終了する"
 
 #: MixxxApp#57
 msgid "Rescans the song library"
-msgstr ""
+msgstr "音楽ライブラリを再スキャンする"
 
 #: MixxxApp#58
 msgid ""
@@ -2645,7 +2756,7 @@ msgid ""
 msgstr ""
 "ライブラリの再スキャン\n"
 "\n"
-"ソングライブラリを再スキャンします"
+"音楽ライブラリを再スキャンします"
 
 #: MixxxApp#59
 msgid "Create a new playlist"
@@ -2663,7 +2774,7 @@ msgstr ""
 
 #: MixxxApp#61
 msgid "Create a new crate"
-msgstr "新しい箱を作成"
+msgstr "新しいレコードボックスを作成"
 
 #: MixxxApp#62
 msgid ""
@@ -2671,9 +2782,9 @@ msgid ""
 "\n"
 "Create a new crate."
 msgstr ""
-"新しい箱\n"
+"新しいレコードボックス\n"
 "\n"
-"箱を新規作成します。"
+"新しいレコードボックスを作成します。"
 
 #: MixxxApp#63
 msgid "Import playlist"
@@ -2709,34 +2820,36 @@ msgstr "shoutcastかicecastサーバーを通じてミックスをストリー�
 
 #: MixxxApp#70
 msgid "Start Recording your Mix"
-msgstr ""
+msgstr "レコーディングを開始"
 
 #: MixxxApp#71
 msgid "Record your mix to a file"
-msgstr ""
+msgstr "ファイルにミックスをレコーディングする。"
 
 #: MixxxApp#72
 msgid "Full Screen"
-msgstr ""
+msgstr "全画面表示"
 
 #: MixxxApp#73
 msgid "Display Mixxx using the full screen"
-msgstr ""
+msgstr "Mixxxを全画面表示にする。"
 
 #: MixxxApp#74
 msgctxt "MixxxApp#74"
 msgid "Preferences"
-msgstr ""
+msgstr "設定"
 
 #: MixxxApp#75
 msgid ""
 "Preferences\n"
 "Playback and MIDI preferences"
 msgstr ""
+"設定\n"
+"再生とMIDIの設定"
 
 #: MixxxApp#76
 msgid "Support..."
-msgstr ""
+msgstr "サポート..."
 
 #: MixxxApp#77
 msgid ""
@@ -2747,7 +2860,7 @@ msgstr ""
 
 #: MixxxApp#78
 msgid "About the application"
-msgstr ""
+msgstr "このアプリケーションについて"
 
 #: MixxxApp#79
 msgid ""
@@ -2755,6 +2868,9 @@ msgid ""
 "\n"
 "About the application"
 msgstr ""
+"Mixxxについて\n"
+"\n"
+"このアプリケーションについて"
 
 #: MixxxApp#80
 msgid "Shows the macro studio window"
@@ -2811,24 +2927,24 @@ msgid ""
 "Player 1 is currently playing a song.\n"
 "Are you sure you want to load a new song?"
 msgstr ""
-"プレイヤー1は現在曲を再生中です。\n"
-"本当に新しい曲を読み込みますか？"
+"デッキ1は現在再生中です。\n"
+"本当に新しいトラックを読み込みますか？"
 
 #: MixxxApp#92
 msgid "Load Song into Player 1"
-msgstr "曲をプレイヤー1に読み込む"
+msgstr "トラックをデッキ1に読み込む"
 
 #: MixxxApp#93
 msgid ""
 "Player 2 is currently playing a song.\n"
 "Are you sure you want to load a new song?"
 msgstr ""
-"プレイヤー2は現在曲を再生中です。\n"
-"本当に新しい曲を読み込みますか？"
+"デッキ2は現在再生中です。\n"
+"本当に新しいトラックを読み込みますか？"
 
 #: MixxxApp#94
 msgid "Load Song into Player 2"
-msgstr "曲をプレイヤー2に読み込む"
+msgstr "トラックをデッキ2に読み込む"
 
 #: MixxxApp#95
 msgid ""
@@ -2911,7 +3027,7 @@ msgstr "プレイリスト"
 #: PlaylistFeature#9
 msgctxt "PlaylistFeature#9"
 msgid "Unlock"
-msgstr "ロック解除"
+msgstr "ロックを解除"
 
 #: PlaylistFeature#10
 msgid "Playlist name:"
@@ -2962,7 +3078,7 @@ msgstr "解析"
 
 #: QObject#1
 msgid "Invalid"
-msgstr ""
+msgstr "不正"
 
 #: QObject#2
 msgid "Master"
@@ -3126,11 +3242,11 @@ msgstr "Traktorライブラリの読み込みでエラーが起こりました�
 #: Ui#1
 msgctxt "Ui#1"
 msgid "Position"
-msgstr "位置"
+msgstr "経過時間"
 
 #: Ui#2
 msgid "Remaining"
-msgstr "残り"
+msgstr "残り時間"
 
 #: Ui#3
 msgctxt "Ui#3"
@@ -3308,23 +3424,23 @@ msgstr "プレイヤー %1 のホットキュー4削除ボタン"
 
 #: Ui#45
 msgid "Switch to the next view (library, playlist..)"
-msgstr ""
+msgstr "次の画面に切り替える (ライブラリ, プレイリスト...)"
 
 #: Ui#46
 msgid "Switch to the previous view (library, playlist..)"
-msgstr ""
+msgstr "前の画面に切り替える (ライブラリ, プレイリスト...)"
 
 #: Ui#47
 msgid "Scroll to next track in library/playlist"
-msgstr ""
+msgstr "ライブラリ/プレイリスト内の次のトラックにスクロールする。"
 
 #: Ui#48
 msgid "Scroll to previous track in library/playlist"
-msgstr ""
+msgstr "ライブラリ/プレイリスト内の前のトラックへスクロールする"
 
 #: Ui#49
 msgid "Load selected track into first stopped player"
-msgstr ""
+msgstr "選択したトラックを先に止まった方のデッキに読み込む"
 
 #: Ui#50
 msgid "Load selected track into Player %1"
@@ -3340,7 +3456,7 @@ msgstr "プレイリストに追加する"
 
 #: WTrackTableView#2
 msgid "Add to Crate"
-msgstr "箱に追加する"
+msgstr "レコードボックスに追加する"
 
 #: WTrackTableView#3
 msgid "Load to Sampler"
@@ -3361,7 +3477,7 @@ msgstr "オートDJのキューに追加"
 
 #: WTrackTableView#7
 msgid "Load to Deck %1"
-msgstr "Deck %1 に読み込む"
+msgstr "デッキ %1 に読み込む"
 
 #: WTrackTableView#8
 msgid "Sampler %1"
@@ -3369,7 +3485,7 @@ msgstr "サンプラー %1"
 
 #: WTrackTableViewHeader#1
 msgid "Show or hide columns."
-msgstr ""
+msgstr "列の表示/非表示"
 
 #~ msgctxt "DlgPrefRecordDlg#2"
 #~ msgid "File"
