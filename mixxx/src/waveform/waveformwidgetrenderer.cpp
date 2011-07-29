@@ -72,11 +72,8 @@ void WaveformWidgetRenderer::init()
         m_rendererStack[i]->init();
 }
 
-void WaveformWidgetRenderer::draw( QPainter* painter, QPaintEvent* event)
+void WaveformWidgetRenderer::preRender()
 {
-    m_lastSystemFrameTime = m_timer->elapsed();
-    m_timer->restart();
-
     //Fetch parameters before rendering in order the display all sub-renderers with the same values
     m_playPos = m_playPosControlObject->get();
     m_rate = m_rateControlObject->get();
@@ -102,12 +99,17 @@ void WaveformWidgetRenderer::draw( QPainter* painter, QPaintEvent* event)
     //Legacy stuff (Ryan it that OK?)
     //Limit our rate adjustment to < 99%, "Bad Things" might happen otherwise.
     m_rateAdjust = m_rateDir * std::min(0.99, m_rate * m_rateRange);
+}
+
+void WaveformWidgetRenderer::draw( QPainter* painter, QPaintEvent* event)
+{
+    m_lastSystemFrameTime = m_timer->elapsed();
+    m_timer->restart();
 
     for( int i = 0; i < m_rendererStack.size(); ++i)
         m_rendererStack[i]->draw( painter, event);
 
-    painter->setPen(Qt::white);
-    painter->setWorldMatrixEnabled(false);
+    painter->setPen(QColor(255,255,255,200));
     painter->drawLine( m_width/2, 0, m_width/2, m_height);
 
     int systemMax = -1;

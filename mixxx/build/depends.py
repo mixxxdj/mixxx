@@ -524,6 +524,7 @@ class MixxxCore(Feature):
                    "waveform/glwaveformrendererfilteredsignal.cpp",
                    "waveform/waveformwidgetrenderer.cpp",
                    "waveform/waveformrendererabstract.cpp",
+                   "waveform/waveformrendererendoftrack.cpp",
 
                    "waveform/widget/waveformwidgetabstract.cpp",
                    "waveform/widget/glwaveformwidget.cpp",

@@ -168,7 +168,8 @@ bool WaveformWidgetFactory::setWidgetType( int handleIndex)
 
 void WaveformWidgetFactory::refresh()
 {
-    QApplication::processEvents();
+    for( int i = 0; i < m_waveformWidgets.size(); i++)
+        m_waveformWidgets[i]->prepare();
 
     for( int i = 0; i < m_waveformWidgets.size(); i++)
         m_waveformWidgets[i]->refresh();
@@ -176,8 +177,6 @@ void WaveformWidgetFactory::refresh()
     m_lastFrameTime = m_time->elapsed();
     m_time->restart();
     m_actualFrameRate = 1000.0/(double)(m_lastFrameTime);
-
-    QApplication::processEvents();
 }
 
 void WaveformWidgetFactory::evaluateWidgets()
