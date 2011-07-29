@@ -7,15 +7,18 @@
 #include "waveform/glwaveformrendererfilteredsignal.h"
 #include "waveform/waveformrendermark.h"
 #include "waveform/waveformrendermarkrange.h"
+#include "waveform/waveformrendererendoftrack.h"
 
 GLWaveformWidget::GLWaveformWidget( const char* group, QWidget* parent) :
     QGLWidget(parent),
     WaveformWidgetAbstract(group)
 {
     m_waveformWidgetRenderer->addRenderer<WaveformRenderBackground>();
+    m_waveformWidgetRenderer->addRenderer<WaveformRendererEndOfTrack>();
     m_waveformWidgetRenderer->addRenderer<WaveformRenderMarkRange>();
     m_waveformWidgetRenderer->addRenderer<GLWaveformRendererFilteredSignal>();
     m_waveformWidgetRenderer->addRenderer<WaveformRenderMark>();
+
     m_waveformWidgetRenderer->init();
 
     setAutoBufferSwap(false);
@@ -34,5 +37,5 @@ void GLWaveformWidget::paintEvent( QPaintEvent* event)
 {
     QPainter painter(this);
     m_waveformWidgetRenderer->draw(&painter,event);
-    swapBuffers();
+    QGLWidget::swapBuffers();
 }

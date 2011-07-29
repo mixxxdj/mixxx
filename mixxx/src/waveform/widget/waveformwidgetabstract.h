@@ -32,13 +32,16 @@ public:
     //Type is use by the factory to safely up-cast waveform widgets
     virtual WaveformWidgetType::Type getType() const = 0;
     virtual void castToQWidget() = 0;
+
     bool isValid() const { return m_widget;}
     QWidget* getWidget() { return m_widget;}
 
     void hold();
     void release();
 
+    void prepare();
     void refresh();
+
     void resize( int width, int height);
 
     //convenience method

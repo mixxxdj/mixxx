@@ -27,25 +27,30 @@ WaveformWidgetAbstract::~WaveformWidgetAbstract()
 
 void WaveformWidgetAbstract::hold()
 {
-    if( m_widget)
-        m_widget->hide();
+    //if( m_widget)
+    m_widget->hide();
 }
 
 void WaveformWidgetAbstract::release()
 {
-    if( m_widget)
-        m_widget->show();
+    //if( m_widget)
+    m_widget->show();
+}
+
+void WaveformWidgetAbstract::prepare()
+{
+    m_waveformWidgetRenderer->preRender();
 }
 
 void WaveformWidgetAbstract::refresh()
 {
-    if( m_widget)
-        m_widget->update();
+    //if( m_widget)
+    m_widget->update();
 }
 
 void WaveformWidgetAbstract::resize( int width, int height)
 {
-    if( m_widget)
+    //if( m_widget)
     {
         m_widget->resize( width, height);
         m_waveformWidgetRenderer->resize( width, height);
