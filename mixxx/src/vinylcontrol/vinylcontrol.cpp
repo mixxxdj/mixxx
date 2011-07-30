@@ -11,6 +11,8 @@ VinylControl::VinylControl(ConfigObject<ConfigValue> * pConfig, QString group)
 
     // Get Control objects
     playPos             = new ControlObjectThread(ControlObject::getControl(ConfigKey(group, "playposition")));    //Range: -.14 to 1.14
+    trackSamples        = new ControlObjectThread(ControlObject::getControl(ConfigKey(group, "track_samples")));
+    trackSampleRate     = new ControlObjectThread(ControlObject::getControl(ConfigKey(group, "track_samplerate")));
     vinylSeek           = new ControlObjectThread(ControlObject::getControl(ConfigKey(group, "vinylcontrol_seek")));
     controlScratch      = new ControlObjectThread(ControlObject::getControl(ConfigKey(group, "scratch2")));
     rateSlider          = new ControlObjectThread(ControlObject::getControl(ConfigKey(group, "rate")));    //Range -1.0 to 1.0

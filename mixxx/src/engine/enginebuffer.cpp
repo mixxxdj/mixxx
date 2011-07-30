@@ -347,6 +347,9 @@ void EngineBuffer::slotTrackLoaded(TrackPointer pTrack,
     m_pTrackSampleRate->set(iTrackSampleRate);
     slotControlSeek(0.);
 
+    //fix the duration
+    pTrack->setDuration(iTrackNumSamples / (2 * iTrackSampleRate));
+    
 
     // Let the engine know that a track is loaded now.
     m_pTrackEndCOT->slotSet(0.0f); //XXX: Not sure if to use the COT or CO here
