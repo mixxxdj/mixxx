@@ -8,13 +8,13 @@ msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2011-05-03 21:42-0400\n"
-"PO-Revision-Date: 2011-07-27 17:25+0000\n"
+"PO-Revision-Date: 2011-07-29 13:39+0000\n"
 "Last-Translator: Yuji Takada <Unknown>\n"
 "Language-Team: Japanese <ja@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-07-28 04:31+0000\n"
+"X-Launchpad-Export-Date: 2011-07-30 04:35+0000\n"
 "X-Generator: Launchpad (build 13405)\n"
 "X-Poedit-Bookmarks: 599,-1,-1,-1,-1,-1,-1,-1,-1,-1\n"
 
@@ -249,7 +249,7 @@ msgstr "新しいレコードボックス"
 #: CrateFeature#2
 msgctxt "CrateFeature#2"
 msgid "Remove"
-msgstr "リストから削除"
+msgstr "削除する"
 
 #: CrateFeature#3
 msgctxt "CrateFeature#3"
@@ -264,7 +264,7 @@ msgstr "ロックをかける"
 #: CrateFeature#5
 msgctxt "CrateFeature#5"
 msgid "Import Playlist"
-msgstr "プレイリストをインポート"
+msgstr "プレイリストのインポート"
 
 #: CrateFeature#6
 msgid "Crates"
@@ -328,7 +328,7 @@ msgstr "レコードボックスの作成に失敗しました"
 
 #: CrateFeature#20
 msgid "A crate by that name already exists."
-msgstr "その名前のレコードボックスは既に存在します"
+msgstr "この名前のレコードボックスは既に存在します"
 
 #: DlgAboutDlg#1
 msgid "About Mixxx"
@@ -782,11 +782,11 @@ msgstr "オフ"
 
 #: DlgPrefControlsDlg#9
 msgid "Pitch/Rate slider range"
-msgstr "ピッチ/レート・スライダーの範囲"
+msgstr "ピッチ／レート・スライダーの範囲"
 
 #: DlgPrefControlsDlg#10
 msgid "Pitch/Rate slider direction"
-msgstr "ピッチ/レート・スライダーの方向"
+msgstr "ピッチ／レート・スライダーの方向"
 
 #: DlgPrefControlsDlg#11
 msgid "Track load behaviour"
@@ -802,7 +802,7 @@ msgstr "以前設定したキューを自動的に再現する"
 
 #: DlgPrefControlsDlg#14
 msgid "Permanent Pitch/Rate Buttons"
-msgstr ""
+msgstr "永続的ピッチ／レート変更ボタン"
 
 #: DlgPrefControlsDlg#15
 msgid "Left click"
@@ -814,7 +814,7 @@ msgstr "右クリック"
 
 #: DlgPrefControlsDlg#17
 msgid "Permanent rate change (between 1 and 8000) when left clicking"
-msgstr ""
+msgstr "ボタンを左クリックしたときの永続的なピッチ変化量 (1から8000の間)"
 
 #: DlgPrefControlsDlg#18
 msgid "%"
@@ -822,23 +822,23 @@ msgstr "%"
 
 #: DlgPrefControlsDlg#19
 msgid "Permanent rate change (between 1 and 8000) when right clicking"
-msgstr ""
+msgstr "ボタンを右クリックしたときの永続的なピッチ変化量 (1から8000の間)"
 
 #: DlgPrefControlsDlg#20
 msgid "Temporary Pitch/Rate Buttons"
-msgstr ""
+msgstr "一時的ピッチ／レート変更ボタン"
 
 #: DlgPrefControlsDlg#21
 msgid "Temporary rate change (between 1 and 8000) when left clicking"
-msgstr ""
+msgstr "ボタンを左クリックしたときの一時的なピッチ変化量 (1から8000の間)"
 
 #: DlgPrefControlsDlg#22
 msgid "Temporary rate change (between 1 and 8000) when right clicking"
-msgstr ""
+msgstr "ボタンを右クリックしたときの一時的なピッチ変化量(1から8000の間)"
 
 #: DlgPrefControlsDlg#23
 msgid "Ramping Pitchbend"
-msgstr ""
+msgstr "ピッチベンドを滑らかにする"
 
 #: DlgPrefControlsDlg#24
 msgid "Pitchbend sensitivity"
@@ -959,7 +959,7 @@ msgstr ""
 
 #: DlgPrefMidiBindings#6
 msgid "Export Mixxx MIDI Bindings"
-msgstr "MIDIバインディングをエクスポートする。"
+msgstr "MIDIバインディングをエクスポートする"
 
 #: DlgPrefMidiBindings#7
 msgid "Preset Files (*.midi.xml)"
@@ -975,7 +975,7 @@ msgstr "コントロールを選択"
 
 #: DlgPrefMidiBindings#10
 msgid "Clear Input Bindings"
-msgstr "入力バインディングをクリアする。"
+msgstr "入力バインディングをクリアする"
 
 #: DlgPrefMidiBindings#11
 msgid "Are you sure you want to clear all bindings?"
@@ -983,7 +983,7 @@ msgstr "本当にすべてのバインディングをクリアしますか？"
 
 #: DlgPrefMidiBindings#12
 msgid "Clear Output Bindings"
-msgstr "出力バインディングをクリアする。"
+msgstr "出力バインディングをクリアする"
 
 #: DlgPrefMidiBindings#13
 msgid "Are you sure you want to clear all output bindings?"
@@ -1174,7 +1174,7 @@ msgstr "Relative Mode"
 #: DlgPrefNoVinylDlg#16
 msgctxt "DlgPrefNoVinylDlg#16"
 msgid "Enable Needle Skip Prevention"
-msgstr "針飛び防止を有効にする。"
+msgstr "針飛び防止を有効にする"
 
 #: DlgPrefNoVinylDlg#17
 msgctxt "DlgPrefNoVinylDlg#17"
@@ -1274,15 +1274,15 @@ msgstr "その他"
 
 #: DlgPrefPlaylistDlg#8
 msgid "Synchronize ID3 tags on track modifications"
-msgstr "トラックが改変されたときにID3タグを同期する。"
+msgstr "トラックが改変されたときにID3タグを同期する"
 
 #: DlgPrefPlaylistDlg#9
 msgid "Rescan library on start-up"
-msgstr "起動時にライブラリを再スキャンする。"
+msgstr "起動時にライブラリを再スキャンする"
 
 #: DlgPrefPlaylistDlg#10
 msgid "Use relative paths for playlist export if possible"
-msgstr "プレイリストのエクスポート時に可能ならば相対パスを使用する。"
+msgstr "プレイリストのエクスポート時に可能ならば相対パスを使用する"
 
 #: DlgPrefPlaylistDlg#11
 msgid "iPod"
@@ -1378,7 +1378,7 @@ msgstr "その他"
 
 #: DlgPrefRecordDlg#11
 msgid "Create a CUE file"
-msgstr "CUEファイルを作成する。"
+msgstr "CUEファイルを作成する"
 
 #: DlgPrefRecordDlg#12
 msgid "File Splitting"
@@ -1386,7 +1386,7 @@ msgstr "ファイルの分割"
 
 #: DlgPrefRecordDlg#13
 msgid "Split recordings at"
-msgstr "レコーディングを下記のサイズで分割する。"
+msgstr "録音ファイルを下記のサイズで分割する"
 
 #: DlgPrefReplayGainDlg#1
 msgctxt "DlgPrefReplayGainDlg#1"
@@ -1403,7 +1403,7 @@ msgstr "読み込んだ曲に音量ノーマライズをかける"
 
 #: DlgPrefReplayGainDlg#4
 msgid "Enable Replay Gain"
-msgstr "リプレイゲインを有効にする。"
+msgstr "リプレイゲインを有効にする"
 
 #: DlgPrefReplayGainDlg#5
 msgid ""
@@ -1413,7 +1413,7 @@ msgstr "リプレイゲインのメタデータがないトラックに対して
 
 #: DlgPrefReplayGainDlg#6
 msgid "Enable Replay Gain Analysis"
-msgstr "リプレイゲインの解析を有効にする。"
+msgstr "リプレイゲインの解析を有効にする"
 
 #: DlgPrefReplayGainDlg#7
 msgid ""
@@ -1449,7 +1449,7 @@ msgstr "フォーム3"
 #: DlgPrefShoutcastDlg#2
 msgctxt "DlgPrefShoutcastDlg#2"
 msgid "Enable live broadcasting"
-msgstr "ライブ放送を有効にする。"
+msgstr "ライブ放送を有効にする"
 
 #: DlgPrefShoutcastDlg#3
 msgid "Server connection"
@@ -1655,7 +1655,7 @@ msgstr "カスタムメタデータ"
 
 #: DlgPrefShoutcastDlg#47
 msgid "Enable custom metadata"
-msgstr "カスタムメタデータを有効にする。"
+msgstr "カスタムメタデータを有効にする"
 
 #: DlgPrefShoutcastDlg#48
 msgctxt "DlgPrefShoutcastDlg#48"
@@ -1900,7 +1900,7 @@ msgstr "相対位置(Relative)モード"
 #: DlgPrefVinylDlg#17
 msgctxt "DlgPrefVinylDlg#17"
 msgid "Enable Needle Skip Prevention"
-msgstr "針飛び防止を有効にする。"
+msgstr "針飛び防止を有効にする"
 
 #: DlgPrefVinylDlg#18
 msgctxt "DlgPrefVinylDlg#18"
@@ -2788,7 +2788,7 @@ msgstr ""
 
 #: MixxxApp#63
 msgid "Import playlist"
-msgstr "プレイリストをインポート"
+msgstr "プレイリストのインポート"
 
 #: MixxxApp#64
 msgid "Audio Beat Marks"
@@ -2820,11 +2820,11 @@ msgstr "shoutcastかicecastサーバーを通じてミックスをストリー�
 
 #: MixxxApp#70
 msgid "Start Recording your Mix"
-msgstr "レコーディングを開始"
+msgstr "録音を開始"
 
 #: MixxxApp#71
 msgid "Record your mix to a file"
-msgstr "ファイルにミックスをレコーディングする。"
+msgstr "ミックスをファイルに録音する"
 
 #: MixxxApp#72
 msgid "Full Screen"
@@ -2993,7 +2993,7 @@ msgstr "新しいプレイリスト"
 
 #: PlaylistFeature#2
 msgid "Add to Auto-DJ Queue"
-msgstr "オートDJのキューに追加"
+msgstr "Auto DJのキューに追加"
 
 #: PlaylistFeature#3
 msgctxt "PlaylistFeature#3"
@@ -3013,12 +3013,12 @@ msgstr "ロックをかける"
 #: PlaylistFeature#6
 msgctxt "PlaylistFeature#6"
 msgid "Import Playlist"
-msgstr "プレイリストをインポート"
+msgstr "プレイリストのインポート"
 
 #: PlaylistFeature#7
 msgctxt "PlaylistFeature#7"
 msgid "Export Playlist"
-msgstr "プレイリストをエクスポート"
+msgstr "プレイリストのエクスポート"
 
 #: PlaylistFeature#8
 msgid "Playlists"
@@ -3111,7 +3111,7 @@ msgstr "不明なパスタイプ %1"
 
 #: RecordingFeature#1
 msgid "Recordings"
-msgstr "レコーディング"
+msgstr "録音"
 
 #: RhythmboxFeature#1
 msgid "Rhythmbox"
@@ -3473,7 +3473,7 @@ msgstr "プロパティ"
 
 #: WTrackTableView#6
 msgid "Add to Auto DJ Queue"
-msgstr "オートDJのキューに追加"
+msgstr "Auto DJのキューに追加"
 
 #: WTrackTableView#7
 msgid "Load to Deck %1"
