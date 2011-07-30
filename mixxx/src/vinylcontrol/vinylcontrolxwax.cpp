@@ -179,6 +179,7 @@ void VinylControlXwax::run()
     double dPitchRing[RING_SIZE];
     int ringPos = 0;
     int ringFilled = 0;
+    double cur_duration = -1.0f;
     double old_duration = -1.0f;
     int reportedMode = 0;
     bool reportedPlayButton = 0;
@@ -238,7 +239,8 @@ void VinylControlXwax::run()
         }
         //qDebug() << m_group << id << iPosition << dVinylPitch;
 
-        double cur_duration = duration->get();
+        cur_duration = duration->get();
+        
         
         //Has a new track been loaded?
         //FIXME? we should really sync on all track changes
@@ -247,6 +249,9 @@ void VinylControlXwax::run()
             bForceResync=true;
             bTrackSelectMode = false; //just in case
             old_duration = cur_duration;
+            //duration from the control object is an integer.  We need
+            //more precision:
+            fTrackDuration = trackSamples->get() / 2 / trackSampleRate->get();
             
             //we were at record end, so turn it off and restore mode
             if(atRecordEnd)
@@ -259,21 +264,26 @@ void VinylControlXwax::run()
             }
         }
 
-        dVinylPosition = iPosition;
-        dVinylPosition = dVinylPosition / 1000.0f;
-        dVinylPosition -= iLeadInTime;
+        //make sure dVinylPosition only has good values
+        if (iPosition != -1)
+        {
+            dVinylPosition = iPosition;
+            dVinylPosition = dVinylPosition / 1000.0f;
+            dVinylPosition -= iLeadInTime;
+        }
+        
+        
 
         //Initialize drift control to zero in case we don't get any position data to calculate it with.
         dDriftControl = 0.0f;
 
-        filePosition = playPos->get() * cur_duration;             //Get the playback position in the file in seconds.
+        filePosition = playPos->get() * fTrackDuration;             //Get the playback position in the file in seconds.
 
         reportedMode = mode->get();
         reportedPlayButton = playButton->get();
 
         if (iVCMode != reportedMode)
         {
-            //qDebug() << "cur mode" << iVCMode << "new mode" << reportedMode;
             //if we are playing, don't allow change
             //to absolute mode (would cause sudden track skip)
             if (reportedPlayButton && reportedMode == MIXXX_VCMODE_ABSOLUTE)
@@ -301,7 +311,6 @@ void VinylControlXwax::run()
             iVCMode = MIXXX_VCMODE_RELATIVE;
             mode->slotSet((double)iVCMode);
         }
-
         //are we newly playing near the end of the record?  (in absolute mode, this happens
         //when the filepos is past safe (more accurate),
         //but it can also happen in relative mode if the vinylpos is nearing the end
@@ -451,8 +460,9 @@ void VinylControlXwax::run()
 
                 //save the absolute amount of drift for when we need to estimate vinyl position
                 dDriftAmt = dVinylPosition - filePosition;
+                
+                //qDebug() << "drift" << dDriftAmt;
 
-                //qDebug() << "vinyl" << dVinylPosition << "file" << filePosition;
                 if (bForceResync)
                 {
                     //if forceresync was set but we're no longer absolute,
@@ -523,7 +533,11 @@ void VinylControlXwax::run()
 
                 //Calculate how much the vinyl's position has drifted from it's timecode and compensate for it.
                 //(This is caused by the manufacturing process of the vinyl.)
-                dDriftControl = ((filePosition - dVinylPosition)  / dVinylPosition) / 100 * 4.0f;
+                if (fabs(dDriftAmt) > 0.1 && fabs(dDriftAmt) < 5.0) {
+                    dDriftControl = dDriftAmt;
+                } else {
+                    dDriftControl = 0.0;
+                }
 
                 //if we hit the end of the ring, loop around
                 ringPos = (ringPos + 1) % RING_SIZE;
@@ -544,6 +558,14 @@ void VinylControlXwax::run()
                     ringPos = 0;
                     ringFilled = 0;
                     continue;
+                }
+                
+                if (iVCMode == MIXXX_VCMODE_ABSOLUTE &&
+                    fabs(dVinylPitch) < 0.05 &&
+                    fabs(dDriftAmt) >= 0.3f)
+                {
+                    qDebug() << "slow, out of sync, syncing position";
+                    syncPosition();
                 }
 
                 dOldPos = filePosition + dDriftAmt;
@@ -573,13 +595,12 @@ void VinylControlXwax::run()
             else
                 averagePitch = dVinylPitch;
 
-
             if (iVCMode == MIXXX_VCMODE_ABSOLUTE)
             {
-                controlScratch->slotSet(averagePitch + dDriftControl);
+                controlScratch->slotSet(dVinylPitch + dDriftControl);
                 if (iPosition != -1 && reportedPlayButton && uiUpdateTime(filePosition))
                 {
-                    rateSlider->slotSet(rateDir->get() * (fabs(averagePitch + dDriftControl) - 1.0f) / fRateRange);
+                    rateSlider->slotSet(rateDir->get() * (fabs(dVinylPitch + dDriftControl) - 1.0f) / fRateRange);
                     dUiUpdateTime = filePosition;
                 }
             }
@@ -604,14 +625,21 @@ void VinylControlXwax::run()
             //let the track play a wee bit more before deciding we've stopped
 
             rateSlider->slotSet(0.0f);
+            
+            if (iVCMode == MIXXX_VCMODE_ABSOLUTE &&
+                fabs(dVinylPosition - filePosition) >= 0.1f)
+            {
+                qDebug() << "stopped, out of sync, syncing position";
+                syncPosition();
+            }
 
             if(fabs(filePosition - dOldFilePos) >= 0.1 ||
                 !m_bNeedleSkipPrevention ||
                 filePosition == dOldFilePos)
             {
                 //We are not playing any more
-                   togglePlayButton(FALSE);
-                   resetSteadyPitch(0.0f, 0.0f);
+                togglePlayButton(FALSE);
+                resetSteadyPitch(0.0f, 0.0f);
                 controlScratch->slotSet(0.0f);
                 //resetSteadyPitch(dVinylPitch, filePosition);
                 //Notify the UI that the timecode quality is garbage/missing.
@@ -779,7 +807,7 @@ double VinylControlXwax::checkSteadyPitch(double pitch, double time)
 void VinylControlXwax::syncPosition()
 {
     //qDebug() << "sync position" << dVinylPosition / duration->get();
-       vinylSeek->slotSet(dVinylPosition / duration->get());    //VinylPos in seconds / total length of song
+    vinylSeek->slotSet(dVinylPosition / fTrackDuration);    //VinylPos in seconds / total length of song
 }
 
 bool VinylControlXwax::checkEnabled(bool was, bool is)
