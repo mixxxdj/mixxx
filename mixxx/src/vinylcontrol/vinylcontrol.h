@@ -62,6 +62,8 @@ class VinylControl : public QThread
     QString m_group;
     ControlObjectThread *playButton; //The ControlObject used to start/stop playback of the song.
     ControlObjectThread *playPos; //The ControlObject used to read the playback position in the song.
+    ControlObjectThread *trackSamples;
+    ControlObjectThread *trackSampleRate; 
     ControlObjectThread *vinylSeek; //The ControlObject used to change the playback position in the song.
     ControlObjectThread *controlScratch; //The ControlObject used to seek when the record is spinning fast.
     ControlObjectThread *rateSlider; //The ControlObject used to change the speed/pitch of the song.
@@ -88,6 +90,7 @@ class VinylControl : public QThread
     float fRateRange; //The pitch range setting from Mixxx's preferences
     float m_fTimecodeQuality; //Used as a measure of the quality of the timecode signal.
 
+    float fTrackDuration;
     unsigned long iSampleRate;
     bool bIsEnabled;
     int iRIAACorrection;
