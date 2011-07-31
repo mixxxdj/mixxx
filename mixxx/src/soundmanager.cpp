@@ -1,10 +1,9 @@
-/***************************************************************************
-                          soundmanager.cpp
-                             -------------------
-    begin                : Sun Aug 15, 2007
-    copyright            : (C) 2007 Albert Santoni
-    email                : gamegod \a\t users.sf.net
-***************************************************************************/
+/**
+ * @file soundmanager.cpp
+ * @author Albert Santoni <gamegod at users dot sf dot net>
+ * @author Bill Good <bkgood at gmail dot com>
+ * @date 20070815
+ */
 
 /***************************************************************************
 *                                                                         *
@@ -17,8 +16,12 @@
 
 #include <QtDebug>
 #include <QtCore>
-#include <portaudio.h>
 #include <cstring> // for memcpy and strcmp
+
+#ifdef __PORTAUDIO__
+#include <portaudio.h>
+#endif // ifdef __PORTAUDIO__
+
 #include "soundmanager.h"
 #include "sounddevice.h"
 #include "sounddeviceportaudio.h"
@@ -26,25 +29,25 @@
 #include "engine/enginebuffer.h"
 #include "controlobjectthreadmain.h"
 #include "soundmanagerutil.h"
+#include "controlobject.h"
 
 /** Initializes Mixxx's audio core
  *  @param pConfig The config key table
- *  @param _master A pointer to the audio engine's mastering class.
+ *  @param pMaster A pointer to the audio engine's mastering class.
  */
-SoundManager::SoundManager(ConfigObject<ConfigValue> * pConfig, EngineMaster * _master)
+SoundManager::SoundManager(ConfigObject<ConfigValue> *pConfig, EngineMaster *pMaster)
     : QObject()
+    , m_pMaster(pMaster)
+    , m_pConfig(pConfig)
+    , m_pClkRefDevice(NULL)
+    , m_outputDevicesOpened(0)
+    , m_inputDevicesOpened(0)
     , m_pErrorDevice(NULL)
 #ifdef __PORTAUDIO__
     , m_paInitialized(false)
     , m_jackSampleRate(-1)
 #endif
 {
-    //qDebug() << "SoundManager::SoundManager()";
-    m_pConfig = pConfig;
-    m_pMaster = _master;
-
-    clearOperativeVariables();
-
     //These are ControlObjectThreadMains because all the code that
     //uses them is called from the GUI thread (stuff like opening soundcards).
     ControlObjectThreadMain* pControlObjectLatency = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[Master]", "latency")));
@@ -95,8 +98,8 @@ SoundManager::~SoundManager()
  */
 void SoundManager::clearOperativeVariables()
 {
-    iNumDevicesOpenedForOutput = 0;
-    iNumDevicesOpenedForInput = 0;
+    m_outputDevicesOpened = 0;
+    m_inputDevicesOpened = 0;
     m_pClkRefDevice = NULL;
 }
 
@@ -347,6 +350,8 @@ int SoundManager::setupDevices()
     clearOperativeVariables();
     int devicesAttempted = 0;
     int devicesOpened = 0;
+    // pair is isInput, isOutput
+    QHash<SoundDevice*, QPair<bool, bool> > toOpen;
 
     // filter out any devices in the config we don't actually have
     m_config.filterOutputs(this);
@@ -363,7 +368,7 @@ int SoundManager::setupDevices()
         foreach (AudioInput in, m_config.getInputs().values(device->getInternalName())) {
             isInput = true;
             err = device->addInput(in);
-            if (err != OK) return err;
+            if (err != OK) goto closeAndError;
             if (!m_inputBuffers.contains(in)) {
                 // TODO(bkgood) look into allocating this with the frames per
                 // buffer value from SMConfig
@@ -385,8 +390,7 @@ int SoundManager::setupDevices()
                 continue;
             }
             err = device->addOutput(out);
-            if (err != OK)
-                return err;
+            if (err != OK) goto closeAndError;
             m_outputBuffers[out] = m_registeredSources[out]->buffer(out);
             if (out.getType() == AudioOutput::MASTER) {
                 m_pClkRefDevice = device;
@@ -398,30 +402,43 @@ int SoundManager::setupDevices()
         if (isInput || isOutput) {
             device->setSampleRate(m_config.getSampleRate());
             device->setFramesPerBuffer(m_config.getFramesPerBuffer());
-            ++devicesAttempted;
-            err = device->open();
-            if (err != OK) {
-                return err;
-            } else {
-                ++devicesOpened;
-                if (isOutput)
-                    ++iNumDevicesOpenedForOutput;
-                if (isInput)
-                    ++iNumDevicesOpenedForInput;
-            }
+            toOpen[device] = QPair<bool, bool>(isInput, isOutput);
+        }
+    }
+    foreach (SoundDevice *device, toOpen.keys()) {
+        QPair<bool, bool> mode(toOpen[device]);
+        bool isInput(mode.first);
+        bool isOutput(mode.second);
+        ++devicesAttempted;
+        m_pErrorDevice = device;
+        err = device->open();
+        if (err != OK) {
+            goto closeAndError;
+        } else {
+            ++devicesOpened;
+            if (isOutput)
+                ++m_outputDevicesOpened;
+            if (isInput)
+                ++m_inputDevicesOpened;
         }
     }
 
-    if (!m_pClkRefDevice) {
+    if (!m_pClkRefDevice && m_outputDevicesOpened > 0) {
         QList<SoundDevice*> outputDevices = getDeviceList(m_config.getAPI(), true, false);
+        Q_ASSERT(outputDevices.length());
         SoundDevice* device = outputDevices.first();
-        qWarning() << "Output sound device clock reference not set! Using" << device->getDisplayName();
+        qWarning() << "Output sound device clock reference not set! Using"
+            << device->getDisplayName();
         m_pClkRefDevice = device;
+    } else if (m_outputDevicesOpened > 0) {
+        qDebug() << "Using" << m_pClkRefDevice->getDisplayName()
+            << "as output sound device clock reference";
+    } else {
+        qDebug() << "No output devices opened, no clock reference device set";
     }
-    else qDebug() << "Using" << m_pClkRefDevice->getDisplayName() << "as output sound device clock reference";
 
-    qDebug() << iNumDevicesOpenedForOutput << "output sound devices opened";
-    qDebug() << iNumDevicesOpenedForInput << "input sound devices opened";
+    qDebug() << m_outputDevicesOpened << "output sound devices opened";
+    qDebug() << m_inputDevicesOpened << "input sound devices opened";
 
     // returns OK if we were able to open all the devices the user
     // wanted
@@ -431,6 +448,9 @@ int SoundManager::setupDevices()
     }
     m_pErrorDevice = NULL;
     return ERR;
+closeAndError:
+    closeDevices();
+    return err;
 }
 
 SoundDevice* SoundManager::getErrorDevice() const {
@@ -460,11 +480,11 @@ int SoundManager::setConfig(SoundManagerConfig config) {
 
 void SoundManager::checkConfig() {
     if (!m_config.checkAPI(*this)) {
-        m_config.setAPI(DEFAULT_API);
+        m_config.setAPI(SoundManagerConfig::kDefaultAPI);
         m_config.loadDefaults(this, SoundManagerConfig::API | SoundManagerConfig::DEVICES);
     }
     if (!m_config.checkSampleRate(*this)) {
-        m_config.setSampleRate(DEFAULT_SAMPLE_RATE);
+        m_config.setSampleRate(SoundManagerConfig::kDefaultSampleRate);
         m_config.loadDefaults(this, SoundManagerConfig::OTHER);
     }
     // latency checks itself for validity on SMConfig::setLatency()
@@ -479,7 +499,9 @@ void SoundManager::sync()
 
 //Requests a buffer in the proper format, if we're prepared to give one.
 QHash<AudioOutput, const CSAMPLE*>
-SoundManager::requestBuffer(QList<AudioOutput> outputs, unsigned long iFramesPerBuffer, SoundDevice* device, double streamTime)
+SoundManager::requestBuffer(QList<AudioOutput> outputs,
+    unsigned long iFramesPerBuffer, SoundDevice* device,
+    double streamTime /* = 0 */)
 {
     Q_UNUSED(outputs); // unused, we just give the caller the full hash -bkgood
     //qDebug() << "SoundManager::requestBuffer()";
