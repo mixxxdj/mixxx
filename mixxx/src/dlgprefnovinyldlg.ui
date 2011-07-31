@@ -9,8 +9,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>504</width>
-    <height>501</height>
+    <width>461</width>
+    <height>527</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -432,18 +432,15 @@ p, li { white-space: pre-wrap; }
      </layout>
     </widget>
    </item>
-   <item row="6" column="2">
-    <spacer name="verticalSpacer">
-     <property name="orientation">
-      <enum>Qt::Vertical</enum>
+   <item row="6" column="0" colspan="2">
+    <widget class="QLabel" name="label_3">
+     <property name="text">
+      <string>&lt;b&gt;This version of Mixxx does not support vinyl control.&lt;/b&gt; &lt;br&gt; Please visit &lt;a href=&quot;http://mixxx.org&quot;&gt;Mixxx.org&lt;/a&gt; for more information.</string>
      </property>
-     <property name="sizeHint" stdset="0">
-      <size>
-       <width>0</width>
-       <height>0</height>
-      </size>
+     <property name="wordWrap">
+      <bool>true</bool>
      </property>
-    </spacer>
+    </widget>
    </item>
    <item row="5" column="2">
     <widget class="QPushButton" name="applyButton">
@@ -458,8 +455,8 @@ p, li { white-space: pre-wrap; }
      </property>
      <property name="sizeHint" stdset="0">
       <size>
-       <width>85</width>
-       <height>27</height>
+       <width>79</width>
+       <height>32</height>
       </size>
      </property>
      <property name="text">
@@ -467,15 +464,34 @@ p, li { white-space: pre-wrap; }
      </property>
     </widget>
    </item>
-   <item row="5" column="0" colspan="2">
-    <widget class="QLabel" name="label_3">
-     <property name="text">
-      <string>&lt;b&gt;This version of Mixxx does not support vinyl control.&lt;/b&gt; &lt;br&gt; Please visit &lt;a href=&quot;http://mixxx.org&quot;&gt;Mixxx.org&lt;/a&gt; for more information.</string>
+   <item row="5" column="1">
+    <widget class="QLabel" name="label">
+     <property name="enabled">
+      <bool>false</bool>
      </property>
-     <property name="wordWrap">
-      <bool>true</bool>
+     <property name="toolTip">
+      <string>http://www.xwax.co.uk</string>
+     </property>
+     <property name="text">
+      <string>Powered by xwax</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignBottom|Qt::AlignLeading|Qt::AlignLeft</set>
      </property>
     </widget>
+   </item>
+   <item row="6" column="2" rowspan="2">
+    <spacer name="verticalSpacer">
+     <property name="orientation">
+      <enum>Qt::Vertical</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>0</width>
+       <height>0</height>
+      </size>
+     </property>
+    </spacer>
    </item>
   </layout>
  </widget>

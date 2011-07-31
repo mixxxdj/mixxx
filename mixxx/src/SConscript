@@ -10,28 +10,6 @@ import SCons.Script as SCons
 
 from build import util
 
-#TODO:
-#-figure out what files actually need what defines and write separate builder lines for them (so that changing a #define doesn't cause a rebuild of everything)
-#-
-#-
-
-# BIG FAT WARNING:
-# Make sure you use TABS for indentation, NOT spaces! (Python likes spaces well enough, but would much prefer to share tea time with tabs)
-#
-#   ####       ####  ##########  #####    #####  #####    #####  #####    #####
-#   ######   ######     ####      #####  #####    #####  #####    #####  #####
-#   #### ## ## ####     ####        ########        ########        ########
-#   ####   #   ####     ####      #####  #####    #####  #####    #####  #####
-#   ####       ####  ##########  #####    #####  #####    #####  #####    #####
-#
-#  #############################################################################
-#    #########################################################################
-#
-
-#
-#Useful functions
-#
-
 mixxx_version = util.get_mixxx_version()
 branch_name = util.get_bzr_branch_name()
 bazaar_revision = util.get_bzr_revision()
@@ -39,18 +17,13 @@ print "WE ARE IN:", os.getcwd()
 
 plugins = []
 
-
-###### MAIN LINE ######
-#######################
-
-
+# Grab these from the SConstruct above us
 Import('build')
 Import('sources')
-Import('soundsource_plugins') #Grab these from the SConstruct above us
+Import('soundsource_plugins')
 
 env = build.env
 flags = build.flags
-
 
 #Tell SCons to build Mixxx
 #=========================
@@ -58,7 +31,7 @@ if build.platform_is_windows:
 	dist_dir = 'dist%s' % build.bitwidth
 	mixxx_bin = env.Program('mixxx',
                             [sources, env.RES('#src/mixxx.rc')],
-                            LINKCOM  = [env['LINKCOM'], 'mt.exe -nologo -manifest ${TARGET}.manifest -outputresource:$TARGET;1'])
+                            LINKCOM = [env['LINKCOM'], 'mt.exe -nologo -manifest ${TARGET}.manifest -outputresource:$TARGET;1'])
 else:
 	mixxx_bin = env.Program('mixxx', sources)
 
@@ -97,7 +70,28 @@ if 'test' in BUILD_TARGETS:
 	print "Running tests."
 	run_tests()
 
+def osx_construct_version(build, mixxx_version, branch_name, bazaar_revision):
+        # In release mode, we only use the version.
+        if build.build_is_release:
+                return mixxx_version
+        # In a debug build, include the branch name and revision number
+        return "%s-%s-bzr%s" % (mixxx_version, branch_name, bazaar_revision)
 
+def ubuntu_construct_version(build, mixxx_version, branch_name, bazaar_revision,
+                             ubuntu_version):
+        # In release mode, we only use the version and ubuntu_version
+	if build.build_is_release:
+		return "%s-%s" % (mixxx_version, ubuntu_version)
+	# In a debug build, include the branch name and revision number
+	return "%s-%s~%s~bzr%s" % (mixxx_version, ubuntu_version,
+                                   branch_name, bazaar_revision)
+
+def windows_construct_version(build, mixxx_version, branch_name, bazaar_revision):
+        # In release mode, we only use the version
+	if build.build_is_release:
+		return mixxx_version
+	# In a debug build, include the branch name and revision number
+	return "%s-%s-bzr%s" % (mixxx_version, branch_name, bazaar_revision)
 
 #Set up the install target
 #=========================
@@ -155,9 +149,11 @@ image_files = Glob('#res/images/preferences/*')  # These are compiled in to the 
 # all files on 2+ builds after a clean.
 if build.toolchain_is_msvs:
         mixxx_winlib_path = SCons.ARGUMENTS.get('winlib', '..\\..\\..\\mixxx-win32lib-msvc90-release')
-        dll_files = Glob('%s/[!"msvc"]*.dll' % mixxx_winlib_path)   # skip the MSVC DLLs incase they're in there too
+        # skip the MSVC DLLs incase they're in there too
+        dll_files = Glob('%s/[!"msvc"]*.dll' % mixxx_winlib_path)
 elif build.crosscompile and build.platform_is_windows and build.toolchain_is_gnu:
-        # We're cross-compiling, grab these from the crosscompile bin folder. How should we be doing this?
+        # We're cross-compiling, grab these from the crosscompile bin
+        # folder. How should we be doing this?
         dll_files = Glob('#/../../mixxx-win%slib-crossmingw' % build.bitwidth)
 elif build.crosscompile and build.platform_is_osx:
         # Glob appropriate dylib files. We have 4 different library types,
@@ -188,27 +184,25 @@ if build.platform_is_linux or build.platform_is_bsd:
 		#the compiled-in strings using /usr as the prefix. That's why we have install_root and flags['prefix'].
 		install_root = ARGUMENTS.get('install_root', flags['prefix'])
 		print "Install root: " + install_root
-		if install_root != flags['prefix']:
-			unix_share_path = install_root + "/share"
-			unix_bin_path   = install_root + "/bin"
-			unix_lib_path   = install_root + "/lib"
-		else:
-			unix_share_path = flags['prefix'] + "/share"
-			unix_bin_path   = flags['prefix'] + "/bin"
-			unix_lib_path   = flags['prefix'] + "/lib"
+                unix_share_path = os.path.join(install_root, 'share')
+                unix_bin_path = os.path.join(install_root, 'bin')
+                unix_lib_path = os.path.join(install_root, 'lib')
 
 		binary = env.Install(unix_bin_path, binary_files)
-		resource = env.Install(unix_share_path + "/mixxx", resource_files)
-		skins = env.Install(unix_share_path + "/mixxx/skins", skin_files)
-		soundsource_plugins = env.Install(unix_lib_path + "/mixxx/plugins/soundsource", soundsource_plugin_files)
-		midimappings = env.Install(unix_share_path + "/mixxx/midi", midimappings_files)
-		keyboardmappings = env.Install(unix_share_path + "/mixxx/keyboard", keyboardmappings_files)
+		resource = env.Install(os.path.join(unix_share_path, 'mixxx'), resource_files)
+		skins = env.Install(os.path.join(unix_share_path, 'mixxx', 'skins'), skin_files)
+		soundsource_plugins = env.Install(
+                        os.path.join(unix_lib_path, 'mixxx', 'plugins', 'soundsource'),
+                        soundsource_plugin_files)
+		midimappings = env.Install(os.path.join(unix_share_path, 'mixxx', 'midi'), midimappings_files)
+		keyboardmappings = env.Install(os.path.join(unix_share_path, 'mixxx', 'keyboard'), keyboardmappings_files)
 		if int(flags['ladspa']):
-			ladspapresets = env.Install(unix_share_path + "/mixxx/ladspa_presets", ladspapresets_files)
-		dotdesktop = env.Install(unix_share_path + "/applications", dotdesktop_files)
-		docs = env.Install(unix_share_path + "/doc/mixxx", docs_files)
-		icon = env.Install(unix_share_path + "/pixmaps", icon_files)
-		promotracks = env.Install(unix_share_path + "/mixxx/promo", promotracks_files)
+			ladspapresets = env.Install(
+                                os.path.join(unix_share_path, 'mixxx', 'ladspa_presets'), ladspapresets_files)
+		dotdesktop = env.Install(os.path.join(unix_share_path, 'applications'), dotdesktop_files)
+		docs = env.Install(os.path.join(unix_share_path, 'doc', 'mixxx'), docs_files)
+		icon = env.Install(os.path.join(unix_share_path, 'pixmaps'), icon_files)
+		promotracks = env.Install(os.path.join(unix_share_path, 'mixxx', 'promo'), promotracks_files)
 
 		#Makes each of those Install builders get fired off when you run "scons install" :)
 		env.Alias('install', binary)
@@ -240,17 +234,21 @@ if build.platform_is_linux or build.platform_is_bsd:
 if build.platform_is_osx and 'bundle' in COMMAND_LINE_TARGETS:
 	#Mixxx build variables
 	VOLNAME="Mixxx" #tmp tmp tmp, it's unclean to pass this into build_dmg this way. perhaps pass it in the env?
-	ARCH="macintel" #XXX should get this from scons or the system somehow?
+        ARCH = 'ppc' if build.machine in ['powerpc', 'powerpc64'] else 'macintel'
+        ARCH += ("64" if build.machine_is_64bit else "32")
+
 	DMG_ICON="#res/osx/VolumeIcon.icns"
 
-	#this is a BIG HACK to support Qt's plugins (since Qt *requires* that it's plugins be in specific subdirectories, which OS X doesn't really play nice with)
+	# this is a BIG HACK to support Qt's plugins (since Qt *requires* that
+	# it's plugins be in specific subdirectories, which OS X doesn't really
+	# play nice with)
 	qt_plugins = ([("iconengines", e) for e in ["libqsvgicon.dylib"]] +
                       [("imageformats", e) for e in ["libqgif.dylib", "libqjpeg.dylib", "libqsvg.dylib"]] +
                       [("sqldrivers", e) for e in ["libqsqlite.dylib"]])
 	#Left out libqmng and libqtiff to save space.
 
-	#Concatenate the SoundSource plugins to our list of plugins
-    #(converting from SCons File nodes to strings)
+	# Concatenate the SoundSource plugins to our list of plugins (converting
+	# from SCons File nodes to strings)
 	for x in soundsource_plugins:
 		plugins.append(x.get_abspath())
 
@@ -265,8 +263,7 @@ if build.platform_is_osx and 'bundle' in COMMAND_LINE_TARGETS:
 			#Qt plugins ((Qt *NEEDS* its plugins in specific locations or it refuses to find them, however this is clearly awkward to write out like this.. maybe))
 		 QT_HACK = [(p_tgt_dir, os.path.join("/Developer/Applications/Qt/plugins/", p_tgt_dir, p)) for p_tgt_dir, p in qt_plugins] #sigh :(
 		 ,
-		 STRIP=True,
-		 #STRIP=(type == 'RELEASE'),
+		 STRIP=build.build_is_release,
          IDENTIFIER="org.mixxx.mixxx",
          DISPLAY_NAME="Mixxx",
          SHORT_VERSION=mixxx_version, #FIXME: parse defs_version.h???
@@ -275,23 +272,27 @@ if build.platform_is_osx and 'bundle' in COMMAND_LINE_TARGETS:
 		 )
 	#env.Default(mixxx_bin) #todo: make the Default() just the program itself *globally* (not just for OS X); bundle should be a separate target
 	env.Alias('bundle', bundle)
-	#dmg = env.Dmg('mixxx-%s-%s' % (mixxx_version, ARCH), [bundle, ] + docs_files, VOLNAME=VOLNAME, ICON = DMG_ICON)
-	dmg = env.Dmg('mixxx', [bundle, ] + docs_files, VOLNAME=VOLNAME, ICON = DMG_ICON)
+
+        package_name = 'mixxx'
+	package_version = osx_construct_version(build, mixxx_version, branch_name, bazaar_revision)
+        dmg_name = '%s-%s-%s' % (package_name, package_version, ARCH)
+	dmg = env.Dmg(dmg_name, [bundle, ] + docs_files, VOLNAME=VOLNAME, ICON = DMG_ICON)
 	env.Alias('package', dmg)
 
 if build.platform_is_windows:
-	skins = env.Install("#"+dist_dir+"/skins", skin_files)
-	resource = env.Install("#"+dist_dir+"/", resource_files)
-	midimappings = env.Install("#"+dist_dir+"/midi", midimappings_files)
-	keyboardmappings = env.Install("#"+dist_dir+"/keyboard", keyboardmappings_files)
+        base_dist_dir = '#' + dist_dir
+	skins = env.Install(os.path.join(base_dist_dir, "skins"), skin_files)
+	resource = env.Install(base_dist_dir+"/", resource_files)
+	midimappings = env.Install(os.path.join(base_dist_dir, "midi"), midimappings_files)
+	keyboardmappings = env.Install(os.path.join(base_dist_dir, "keyboard"), keyboardmappings_files)
 	if int(flags['ladspa']):
-		ladspapresets = env.Install("#"+dist_dir+"/ladspa_presets", ladspapresets_files)
-	docs = env.Install("#"+dist_dir+"/doc/", docs_files)
-	promotracks = env.Install("#"+dist_dir+"/promo/", promotracks_files)
-	#icon = env.Install("#"+dist_dir+"", icon_files)
-	dlls = env.Install("#"+dist_dir+"/", dll_files)
-	soundsource_plugins = env.Install("#"+dist_dir+"/plugins/soundsource/", soundsource_plugin_files)
-	binary = env.Install("#"+dist_dir+"/", binary_files)
+		ladspapresets = env.Install(os.path.join(base_dist_dir, "ladspa_presets"), ladspapresets_files)
+	docs = env.Install(os.path.join(base_dist_dir, "doc/"), docs_files)
+	promotracks = env.Install(os.path.join(base_dist_dir, "promo/"), promotracks_files)
+	#icon = env.Install(base_dist_dir+"", icon_files)
+	dlls = env.Install(base_dist_dir+"/", dll_files)
+	soundsource_plugins = env.Install(os.path.join(base_dist_dir, "plugins", "soundsource/"), soundsource_plugin_files)
+	binary = env.Install(base_dist_dir+"/", binary_files)
 
 	#Always trigger these install builders when compiling on Windows
 	env.Alias('mixxx', skins)
@@ -309,7 +310,7 @@ if build.platform_is_windows:
 
 	# QSQLite DLL
 	if 'sqldll_files' in locals():
-		sql_dlls = env.Install("#"+dist_dir+"/sqldrivers", sqldll_files)
+		sql_dlls = env.Install(os.path.join(base_dist_dir, "sqldrivers"), sqldll_files)
 		env.Alias('mixxx', sql_dlls)
 
 def win32_find_nsis_via_registry():
@@ -366,14 +367,13 @@ def BuildRelease(target, source, env):
         os.system('head -n 2 LICENSE')
 
     #if (raw_input("Go ahead and build installer (yes/[no])? ") == "yes"):
-    if (True):
+    if True:
         print "\nNow building installer..."
-        buildwin64 = ""
         command_flag = None
         nsis_path = None
         if not build.crosscompile and build.platform_is_windows:
             nsis_directory = win32_find_nsis_via_registry()
-            nsis_path = "\"%s\\makensis.exe\"" % nsis_directory
+            nsis_path = '"%s"' % os.path.join(nsis_directory, "makensis.exe")
             command_flag = '/'
         elif build.crosscompile and build.platform_is_windows:
             nsis_path = 'makensis'
@@ -382,12 +382,21 @@ def BuildRelease(target, source, env):
         if not nsis_path:
             print "Cannot find NSIS. Do you have it installed?"
         else:
-            if build.machine_is_64bit:
-                buildwin64 = "/Dx64=1"
+            package_name = 'mixxx'
+
+            package_version = windows_construct_version(
+                    build, mixxx_version, branch_name, bazaar_revision)
+            arch = "x64" if build.machine_is_64bit else "x86"
+            exe_name = '%s-%s-%s.exe' % (package_name, package_version, arch)
 
             # Call the NSIS build
-            command = '%(path)s /DPRODUCT_VERSION=%(version)s /DWINLIB_PATH=%(winlibpath)s %(64bit)s build\\nsis\\Mixxx.nsi' % \
-                {'path':nsis_path, 'version':mixxx_version, 'winlibpath':mixxx_winlib_path, '64bit':buildwin64}
+            buildwin64 = "/Dx64=1" if build.machine_is_64bit else ''
+            command = '%(path)s /DPACKAGE_NAME=%(package_name)s /DPRODUCT_VERSION=%(version)s /DWINLIB_PATH=%(winlibpath)s %(64bit)s build\\nsis\\Mixxx.nsi' % \
+                {'path': nsis_path,
+                 'package_name': exe_name,
+                 'version': mixxx_version,
+                 'winlibpath': mixxx_winlib_path,
+                 '64bit': buildwin64}
             print "Using command:" + command
             os.system(command)
     else:
@@ -401,14 +410,6 @@ if 'makerelease' in COMMAND_LINE_TARGETS:
 	makerelease = env.BuildRelease('', binary_files)
 	env.Alias('makerelease', makerelease)
 
-def ubuntu_construct_version(build, mixxx_version, branch_name, bazaar_revision):
-        # In release mode, we only use the version.
-	if build.build_is_release:
-		return mixxx_version
-	# In a debug build package, include the branch name and
-	# revision number
-	return "%s~%s~bzr%s" % (mixxx_version, branch_name, bazaar_revision)
-
 def ubuntu_append_changelog(debian_dir,
 			    package_name, package_version,
 			    branch_name, bazaar_revision,
@@ -418,7 +419,8 @@ def ubuntu_append_changelog(debian_dir,
 	new_entry = [
 		"%s (%s) %s; urgency=%s" % (package_name, package_version, distro, urgency),
 		"",
-		"  * Experimental build of branch '%s' at Bazaar revision %s" % (branch_name, bazaar_revision),
+		"  * Experimental build of branch '%s' at Bazaar revision %s" % (branch_name,
+                                                                                 bazaar_revision),
 		"",
 		" -- Mixxx Buildbot <builds@mixxx.org>  %s" % now_formatted,
 		"",
@@ -455,25 +457,33 @@ def BuildUbuntuPackage(target, source, env):
 	print "Now building DEB package..."
 	print
 
-	arch = 'i386'
-	if build.machine == 'x86_64':
-                arch = 'amd64'
+	arch = 'amd64' if build.machine_is_64bit else 'i386'
 
         package_target = ARGUMENTS.get('package', None)
-
 	ubuntu_distro = ARGUMENTS.get('ubuntu_dist', None)
 	if ubuntu_distro is None:
 		print "You did not specify an Ubuntu distribution to target. Specify one with the ubuntu_dist flag."
 		# TODO(XXX) default to their current distro? the .pbuilderrc does this
 		return
+        ubuntu_version = ARGUMENTS.get('ubuntu_version', '0ubuntu1')
 
 	# The underscore is super important here to make the deb package work
 	package_name = 'mixxx'
-	package_version = ubuntu_construct_version(build, mixxx_version, branch_name, bazaar_revision)
+	package_version = ubuntu_construct_version(build, mixxx_version,
+                                                   branch_name, bazaar_revision,
+                                                   ubuntu_version)
 
 	#mixxx_dir = '%s-%s' % (package_name, mixxx_version)
-	mixxx_dir = '%s-%s' % (package_name, package_version)
-	mixxx_tarball = "%s_%s.orig.tar.gz" % (package_name, package_version)
+
+        # directory and original tarball need to have the upstream-release
+        # version, NOT the package version. For example:
+        # upstream version: 1.10.0-beta1
+        # package version: 1.10.0-beta1-0ubuntu1~bzr2206
+        # directory name: mixxx-1.10.0-beta1
+        # original tarball: mixxx_1.10.0-beta1.orig.tar.gz
+
+	mixxx_dir = '%s-%s' % (package_name, mixxx_version)
+	mixxx_tarball = "%s_%s.orig.tar.gz" % (package_name, mixxx_version)
 
 	# Destroy ubuntu/ and create it
 	ubuntu_cleanup()
@@ -514,7 +524,8 @@ def BuildUbuntuPackage(target, source, env):
 
 	# Add a changelog record for this package
 	if build.build_is_debug:
-		ubuntu_append_changelog('debian', package_name, package_version, branch_name, bazaar_revision)
+		ubuntu_append_changelog('debian', package_name, package_version,
+                                        branch_name, bazaar_revision)
 
 	# Run pbuilder
 	print "* Starting pbuilder ...  (cwd: %s)" % os.getcwd()

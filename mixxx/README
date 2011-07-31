@@ -1,16 +1,16 @@
-Mixxx 1.9.0
+Mixxx 1.10.0
 
 * HOMEPAGE *************************************************
 http://www.mixxx.org
 
 
 * ABOUT ****************************************************
-Mixxx is open source software for DJ'ing. You can perform  
-live beatmixes with MP3s, OGGs, and other formats. Mixxx 
+Mixxx is open source software for DJ'ing. You can perform
+live beatmixes with MP3s, OGGs, and other formats. Mixxx
 also supports a number of DJ MIDI controllers.
 Mixxx works on Linux, Windows and MacOS X.
 
-Mixxx is released under GPL v2. See LICENSE file in this 
+Mixxx is released under GPL v2. See LICENSE file in this
 directory for a copy of the licence.
 
 * NEWS *****************************************************
@@ -45,22 +45,22 @@ Mixxx has the following dependencies:
 - QT 4.5+
 - scons
 
-NOTE: If you want JACK support in Mixxx, make sure you 
+NOTE: If you want JACK support in Mixxx, make sure you
 compile PortAudio-v19 with JACK support first.
 
-Mixxx's build system is now SCONS as of Mixxx 1.6.0. 
+Mixxx's build system is now SCONS as of Mixxx 1.6.0.
 To compile Mixxx using SCONS, go into the "mixxx"
 directory and run:
 
    $ scons
-  
+
 SCONS does both dependency checking and building, so it will
 tell you if you're missing any of the dependencies listed above.
 It's also possible to specify a prefix path and additional
 build flags, for example:
 
-   $ scons prefix=/usr 
-   
+   $ scons prefix=/usr
+
 To install Mixxx after compilation, run:
 
    $ sudo scons prefix=/usr install
@@ -72,7 +72,7 @@ A full list of scons flags is available by running:
 WARNING: We do not recommend building Mixxx with any
 flags other than the defaults if you are going to use Mixxx
 for live performance. Features that are disabled by default
-may not compile or may be unstable. Be forewarned. 
+may not compile or may be unstable. Be forewarned.
 
 More detailed compiling instructions are available for your
 platform on our wiki:
@@ -81,7 +81,7 @@ platform on our wiki:
 * HERCULES DJ CONSOLE USERS ON LINUX ***********************
 
 Please see: http://www.mixxx.org/wiki/doku.php/hercules
-You may need to install the official Hercules Linux drivers 
+You may need to install the official Hercules Linux drivers
 from: http://www.hercules.com/
 
 * REINSTALLING MIXXX ***************************************
@@ -92,25 +92,25 @@ not apply when reinstalling from a DEB package.) Mixxx's
 share directory can be removed by running:
 
    $ sudo rm -rf /usr/local/share/mixxx/
-   
+
 or
 
    $ sudo rm -rf /usr/share/mixxx/
 
 * USAGE ****************************************************
-Please see the manual, included in this directory, 
-Mixxx-Manual.pdf or at: 
-    
+Please see the manual, included in this directory,
+Mixxx-Manual.pdf or at:
+
     http://www.mixxx.org/manual
 
 * CONTACT **************************************************
-To contact the lead developer, send an email to 
-adam_d@users.sourceforge.net or subscribe to 
-mixxx-devel@lists.sourceforge.net and send a message to the 
+To contact the lead developer, send an email to
+adam_d@users.sourceforge.net or subscribe to
+mixxx-devel@lists.sourceforge.net and send a message to the
 list.
 
 * QT *******************************************************
-On some platforms, Mixxx may come with a pre-built copy of 
+On some platforms, Mixxx may come with a pre-built copy of
 Qt. This code is licensed under the GPL and source for this
 library may be obtained from:
 
