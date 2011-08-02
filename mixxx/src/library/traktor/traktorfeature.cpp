@@ -580,7 +580,52 @@ QString TraktorFeature::getTraktorMusicDatabase()
 {
     QString musicFolder;
 #if defined(__APPLE__)
-    musicFolder = QDir::homePath() +"/Documents/Native Instruments/Traktor/collection.nml";
+    /*
+     * As of version 2, Traktor has changed the path of the collection.nml
+     * In general, the path is <Home>/Documents/Native Instruments/Traktor 2.x.y/collection.nml
+     *  where x and y denote the bug fix release numbers. For example, Traktor 2.0.3 has the
+     * following path: <Home>/Documents/Native Instruments/Traktor 2.0.3/collection.nml
+     */
+
+    //Let's try to detect the latest Traktor version and its collection.nml
+    QDir ni_directory(QDir::homePath() +"/Documents/Native Instruments/");
+    ni_directory.setFilter(QDir::Dirs | QDir::NoDotAndDotDot | QDir::NoSymLinks) ;
+
+    //Iterate over the subfolders
+    QFileInfoList list = ni_directory.entryInfoList();
+    QMap<int, QString> installed_ts_map;
+
+    for (int i = 0; i < list.size(); ++i) {
+        QFileInfo fileInfo = list.at(i);
+        QString folder_name = fileInfo.fileName();
+
+        if(folder_name == "Traktor"){
+            //We found a Traktor 1 installation
+            installed_ts_map.insert(1, fileInfo.absoluteFilePath());
+            continue;
+        }
+        if(folder_name.contains("Traktor"))
+        {
+            qDebug() << "Found " << folder_name;
+            QVariant sVersion = folder_name.right(5).remove(".");
+            if(sVersion.canConvert<int>())
+            {
+                installed_ts_map.insert(sVersion.toInt(), fileInfo.absoluteFilePath());
+            }
+        }
+    }
+    //select the folder with the highest version as default Traktor folder
+    if(installed_ts_map.isEmpty()){
+        musicFolder =  QDir::homePath() + "/collection.nml";
+    }
+    else
+    {
+        QList<int> versions = installed_ts_map.keys();
+        qSort(versions);
+        musicFolder = installed_ts_map.value(versions.last()) + "/collection.nml";
+
+    }
+
 #elif defined(__WINDOWS__)
     QSettings settings("HKEY_CURRENT_USER\\Software\\Native Instruments\\Traktor Pro", QSettings::NativeFormat);
         // if the value method fails it returns QTDir::homePath
