@@ -18,10 +18,18 @@
 #include "sounddevice.h"
 #include "soundmanager.h"
 
+// this (7) represents latency values from 1 ms to about 80 ms -- bkgood
+const unsigned int SoundManagerConfig::kMaxLatency = 7;
+
+const QString SoundManagerConfig::kDefaultAPI = QString("None");
+const unsigned int SoundManagerConfig::kDefaultSampleRate = 48000;
+// latency=5 means about 21 ms of latency which is default in trunk r2453 -- bkgood
+const int SoundManagerConfig::kDefaultLatency = 5;
+
 SoundManagerConfig::SoundManagerConfig()
     : m_api("None")
-    , m_sampleRate(DEFAULT_SAMPLE_RATE)
-    , m_latency(DEFAULT_LATENCY) {
+    , m_sampleRate(kDefaultSampleRate)
+    , m_latency(kDefaultLatency) {
     m_configFile = QFileInfo(QString("%1/%2/%3")
             .arg(QDir::homePath())
             .arg(SETTINGS_PATH)
@@ -160,7 +168,7 @@ unsigned int SoundManagerConfig::getSampleRate() const {
 
 void SoundManagerConfig::setSampleRate(unsigned int sampleRate) {
     // making sure we don't divide by zero elsewhere
-    m_sampleRate = sampleRate != 0 ? sampleRate : DEFAULT_SAMPLE_RATE;
+    m_sampleRate = sampleRate != 0 ? sampleRate : kDefaultSampleRate;
 }
 
 /**
@@ -202,9 +210,9 @@ unsigned int SoundManagerConfig::getFramesPerBuffer() const {
  * between different sample rates.
  */
 void SoundManagerConfig::setLatency(unsigned int latency) {
-    // latency should be either the min of MAX_LATENCY and the passed value
+    // latency should be either the min of kMaxLatency and the passed value
     // if it's 0, pretend it was 1 -- bkgood
-    m_latency = latency != 0 ? math_min(latency, MAX_LATENCY) : 1;
+    m_latency = latency != 0 ? math_min(latency, kMaxLatency) : 1;
 }
 
 void SoundManagerConfig::addOutput(const QString &device, const AudioOutput &out) {
@@ -323,14 +331,14 @@ void SoundManagerConfig::loadDefaults(SoundManager *soundManager, unsigned int f
     }
     if (flags & SoundManagerConfig::OTHER) {
         QList<unsigned int> sampleRates = soundManager->getSampleRates(m_api);
-        if (sampleRates.contains(DEFAULT_SAMPLE_RATE)) {
-            m_sampleRate = DEFAULT_SAMPLE_RATE;
+        if (sampleRates.contains(kDefaultSampleRate)) {
+            m_sampleRate = kDefaultSampleRate;
         } else if (!sampleRates.isEmpty()) {
             m_sampleRate = sampleRates.first();
         } else {
             qWarning() << "got empty sample rate list from SoundManager, this is a bug";
             Q_ASSERT(false);
         }
-        m_latency = DEFAULT_LATENCY;
+        m_latency = kDefaultLatency;
     }
 }
