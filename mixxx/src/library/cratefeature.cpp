@@ -242,7 +242,7 @@ void CrateFeature::slotCreateCrate() {
 
 void CrateFeature::slotDeleteCrate() {
     QString crateName = m_lastRightClickedIndex.data().toString();
-    CrateDAO crateDao = m_pTrackCollection->getCrateDAO();
+    CrateDAO &crateDao = m_pTrackCollection->getCrateDAO();
     int crateId = crateDao.getCrateIdByName(crateName);
     bool locked = crateDao.isCrateLocked(crateId);
 
@@ -265,7 +265,7 @@ void CrateFeature::slotDeleteCrate() {
 
 void CrateFeature::slotRenameCrate() {
     QString oldName = m_lastRightClickedIndex.data().toString();
-    CrateDAO crateDao = m_pTrackCollection->getCrateDAO();
+    CrateDAO &crateDao = m_pTrackCollection->getCrateDAO();
     int crateId = crateDao.getCrateIdByName(oldName);
     bool locked = crateDao.isCrateLocked(crateId);
 
@@ -348,7 +348,7 @@ void CrateFeature::constructChildModel()
     int idColumn = m_crateListTableModel.record().indexOf("id");
     //Access the invisible root item
     TreeItem* root = m_childModel.getItem(QModelIndex());
-    CrateDAO crateDao = m_pTrackCollection->getCrateDAO();
+    CrateDAO &crateDao = m_pTrackCollection->getCrateDAO();
 
     for (int row = 0; row < m_crateListTableModel.rowCount(); ++row) {
             QModelIndex ind = m_crateListTableModel.index(row, nameColumn);
