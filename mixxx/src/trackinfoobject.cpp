@@ -570,11 +570,11 @@ void TrackInfoObject::setPlayed(bool bPlayed)
    	{
 		if (bPlayed)
 		{
-			qDebug() << "Track Played:" << m_sArtist << " - " << m_sTitle << " - " << m_sFilename;
+			qDebug() << "Track Played:" << m_sArtist << " - " << m_sTitle << " - " << m_sLocation;
 		}
 		else
 		{
-			qDebug() << "Track Unplayed:" << m_sArtist << " - " << m_sTitle << " - " << m_sFilename;
+			qDebug() << "Track Unplayed:" << m_sArtist << " - " << m_sTitle << " - " << m_sLocation;
 	    }
 		setDirty(true);
 	}

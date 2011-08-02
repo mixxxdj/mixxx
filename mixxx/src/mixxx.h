@@ -92,6 +92,8 @@ class MixxxApp : public QMainWindow
   public slots:
 
     //void slotQuitFullScreen();
+    /** Loads a mixxx logfile and marks tracks as viewed */
+    void slotFileLoadTracklist();
     /** Opens a file in player 1 */
     void slotFileLoadSongPlayer1();
     /** Opens a file in player 2 */
@@ -193,6 +195,7 @@ class MixxxApp : public QMainWindow
     QMenu *macroMenu;
 #endif
 
+    QAction *m_pFileLoadTracklist;
     QAction *m_pFileLoadSongPlayer1;
     QAction *m_pFileLoadSongPlayer2;
     QAction *m_pFileQuit;

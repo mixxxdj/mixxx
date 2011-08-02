@@ -51,6 +51,7 @@
 #include "mixxxkeyboard.h"
 #include "skin/skinloader.h"
 #include "skin/legacyskinparser.h"
+#include "logparser.h"
 
 #include "build.h" // #defines of details of the build set up (flags,
 // repo number, etc). This isn't a real file, SConscript generates it and it
@@ -779,6 +780,10 @@ int MixxxApp::noOutputDlg(bool *continueClicked)
 /** initializes all QActions of the application */
 void MixxxApp::initActions()
 {
+    m_pFileLoadTracklist = new QAction(tr("Mark &Tracks as Played..."), this);
+    m_pFileLoadTracklist->setShortcut(tr("Ctrl+L"));
+    m_pFileLoadTracklist->setShortcutContext(Qt::ApplicationShortcut);
+        
     m_pFileLoadSongPlayer1 = new QAction(tr("&Load Song (Player 1)..."), this);
     m_pFileLoadSongPlayer1->setShortcut(tr("Ctrl+O"));
     m_pFileLoadSongPlayer1->setShortcutContext(Qt::ApplicationShortcut);
@@ -850,6 +855,10 @@ void MixxxApp::initActions()
 #ifdef __SCRIPT__
     macroStudio = new QAction(tr("Show Studio"), this);
 #endif
+    m_pFileLoadTracklist->setStatusTip(tr("Loads a Mixxx logfile and marks tracks as played"));
+    m_pFileLoadTracklist->setWhatsThis(tr("Load\nLoads a Mixxx logfile and marks tracks as played"));
+    connect(m_pFileLoadTracklist, SIGNAL(triggered()),
+            this, SLOT(slotFileLoadTracklist()));
 
     m_pFileLoadSongPlayer1->setStatusTip(tr("Opens a song in player 1"));
     m_pFileLoadSongPlayer1->setWhatsThis(
@@ -1001,6 +1010,7 @@ void MixxxApp::initMenuBar()
     connect(m_pOptionsMenu, SIGNAL(aboutToShow()),
             this, SLOT(slotOptionsMenuShow()));
     // menuBar entry fileMenu
+    m_pFileMenu->addAction(m_pFileLoadTracklist);
     m_pFileMenu->addAction(m_pFileLoadSongPlayer1);
     m_pFileMenu->addAction(m_pFileLoadSongPlayer2);
     m_pFileMenu->addSeparator();
@@ -1074,6 +1084,34 @@ bool MixxxApp::queryExit()
     };
 
     return (exit==1);
+}
+
+void MixxxApp::slotFileLoadTracklist()
+{
+    QString s =
+        QFileDialog::getOpenFileName(
+            this,
+            tr("Load Mixxx logfile"),
+            QDir::homePath().append("/").append(SETTINGS_PATH),
+            QString("Logfile (*.log);;All Files(*)"));
+
+    if (s != QString::null) {
+        MixxxLogParser logparser(s);
+        QStringList loaded_tracks = logparser.getPlayedTracks();
+        QStringListIterator iter(loaded_tracks);
+        while (iter.hasNext())
+        {
+            QString location = iter.next();
+            //ripped from playermanager
+            TrackDAO& trackDao = m_pLibrary->getTrackCollection()->getTrackDAO();
+            TrackPointer pTrack = trackDao.getTrack(trackDao.getTrackId(location));
+            if (pTrack != NULL)
+            {
+                qDebug() << "Marking " << pTrack->getTitle() << "as played";
+                pTrack->setPlayed(true);
+            }
+        }
+    }
 }
 
 void MixxxApp::slotFileLoadSongPlayer1()
