@@ -1093,7 +1093,7 @@ void MixxxApp::slotFileLoadTracklist()
             this,
             tr("Load Mixxx logfile"),
             QDir::homePath().append("/").append(SETTINGS_PATH),
-            QString("Logfile (*.log);;All Files(*)"));
+            QString("Logfile (*.log*);;All Files(*)"));
 
     if (s != QString::null) {
         MixxxLogParser logparser(s);

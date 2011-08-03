@@ -98,6 +98,7 @@ void MessageHandler(QtMsgType type, const char *input)
         QString logFileName(QDir::homePath().append("/").append(SETTINGS_PATH).append("mixxx.log"));
 #endif
         //backup old logfiles
+        //FIXME: cout << doesn't get printed until after mixxx quits (???)
         for (int i=9; i>0; i--)
         {
             QString oldlogname = QString("%1.%2").arg(logFileName).arg(i);
@@ -105,18 +106,20 @@ void MessageHandler(QtMsgType type, const char *input)
             if (logbackup.exists())
             {
                 QString olderlogname = QString("%1.%2").arg(logFileName).arg(i+1);
-                if (!QFile::remove(olderlogname))
-                    qDebug() << "Error removing old logfile" << olderlogname;
+                //this will fail if the file doesn't exist, but that's ok.
+                //write errors will be caught by the next operation
+                QFile::remove(olderlogname);
                 if (!QFile::copy(oldlogname, olderlogname))
-                    qDebug() << "Error backing up old logfile" << oldlogname;
+                    cout << "Error backing up old logfile\n" << oldlogname.toStdString();
             }
         }
         QFileInfo log(logFileName);
         if (log.exists())
         {
             QString olderlogname = QString("%1.1").arg(logFileName);
+            QFile::remove(olderlogname);
             if (!QFile::copy(logFileName, olderlogname))
-                qDebug() << "Error backing up logfile" << logFileName;
+                cout << "Error backing up logfile\n" << logFileName.toStdString();
         }
         // XXX will there ever be a case that we can't write to our current
         // working directory?
