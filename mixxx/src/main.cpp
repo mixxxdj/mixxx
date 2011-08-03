@@ -33,6 +33,9 @@
 #include "errordialoghandler.h"
 #include "defs_version.h"
 
+#include <QFile>
+#include <QFileInfo>
+
 #ifdef __LADSPA__
 #include <ladspa/ladspaloader.h>
 #endif
@@ -94,6 +97,27 @@ void MessageHandler(QtMsgType type, const char *input)
 #else
         QString logFileName(QDir::homePath().append("/").append(SETTINGS_PATH).append("mixxx.log"));
 #endif
+        //backup old logfiles
+        for (int i=9; i>0; i--)
+        {
+            QString oldlogname = QString("%1.%2").arg(logFileName).arg(i);
+            QFileInfo logbackup(oldlogname);
+            if (logbackup.exists())
+            {
+                QString olderlogname = QString("%1.%2").arg(logFileName).arg(i+1);
+                if (!QFile::remove(olderlogname))
+                    qDebug() << "Error removing old logfile" << olderlogname;
+                if (!QFile::copy(oldlogname, olderlogname))
+                    qDebug() << "Error backing up old logfile" << oldlogname;
+            }
+        }
+        QFileInfo log(logFileName);
+        if (log.exists())
+        {
+            QString olderlogname = QString("%1.1").arg(logFileName);
+            if (!QFile::copy(logFileName, olderlogname))
+                qDebug() << "Error backing up logfile" << logFileName;
+        }
         // XXX will there ever be a case that we can't write to our current
         // working directory?
         Logfile.setFileName(logFileName);
