@@ -189,21 +189,23 @@ void BaseSqlTableModel::select() {
         qDebug() << "Rows returned" << rows << m_rowInfo.size();
     }
 
-    QVector<QPair<int, QHash<int, QVariant> > > rowInfo;
+    QVector<RowInfo> rowInfo;
+    QSet<int> trackIds;
     QHash<int, QLinkedList<int> > trackToRows;
     while (query.next()) {
         int id = query.value(idColumn).toInt();
         QLinkedList<int>& rows = trackToRows[id];
         rows.append(rowInfo.size());
+        trackIds.insert(id);
 
-        QPair<int, QHash<int, QVariant> > thisRowInfo;
-        thisRowInfo.first = id;
-
+        RowInfo thisRowInfo;
+        thisRowInfo.trackId = id;
+        thisRowInfo.order = rowInfo.size();
         // Get all the table columns and store them in the hash for this
         // row-info section.
 
         foreach (int tableColumnIndex, tableColumnIndices) {
-            thisRowInfo.second[tableColumnIndex] = query.value(tableColumnIndex);
+            thisRowInfo.metadata[tableColumnIndex] = query.value(tableColumnIndex);
         }
         rowInfo.push_back(thisRowInfo);
     }
@@ -212,7 +214,11 @@ void BaseSqlTableModel::select() {
         qDebug() << "Rows actually received:" << rowInfo.size();
     }
 
-    // TODO(rryan) sort and filter from tracksource given query and sort order.
+    QHash<int, int> trackOrder;
+    m_trackSource->filterAndSort(trackIds, m_currentSearch,
+                                 m_currentSearchFilter,
+                                 m_iSortColumn, m_eSortOrder,
+                                 &trackOrder);
 
     // We're done! Issue the update signals and replace the master maps.
     beginInsertRows(QModelIndex(), 0, rowInfo.size()-1);
@@ -407,12 +413,12 @@ bool BaseSqlTableModel::setData(const QModelIndex& index, const QVariant& value,
         return false;
     }
 
-    const QPair<int, QHash<int, QVariant> >& rowInfo = m_rowInfo[row];
-    int trackId = rowInfo.first;
+    const RowInfo& rowInfo = m_rowInfo[row];
+    int trackId = rowInfo.trackId;
 
     // You can't set something in the table columns because we have no way of
     // persisting it.
-    const QHash<int, QVariant>& columns = rowInfo.second;
+    const QHash<int, QVariant>& columns = rowInfo.metadata;
     if (columns.contains(column)) {
         return false;
     }
@@ -551,14 +557,15 @@ QVariant BaseSqlTableModel::getBaseValue(const QModelIndex& index, int role) con
 
     // TODO(rryan) check range on column
 
-    const QPair<int, QHash<int, QVariant> >& rowInfo = m_rowInfo[row];
-    int trackId = rowInfo.first;
+    const RowInfo& rowInfo = m_rowInfo[row];
+    int trackId = rowInfo.trackId;
 
     // If the row info has the row-specific column, return that.
-    const QHash<int, QVariant>& columns = rowInfo.second;
+    const QHash<int, QVariant>& columns = rowInfo.metadata;
     if (columns.contains(column)) {
         if (sDebug) {
-            qDebug() << "Returning table-column value" << columns[column] << "for column" << column;
+            qDebug() << "Returning table-column value" << columns[column]
+                     << "for column" << column;
         }
         return columns[column];
     }

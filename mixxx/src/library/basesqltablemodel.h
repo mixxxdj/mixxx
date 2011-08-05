@@ -11,6 +11,7 @@
 #include "library/basetrackcache.h"
 #include "library/dao/trackdao.h"
 #include "library/trackcollection.h"
+#include "util.h"
 
 // BaseSqlTableModel is a custom-written SQL-backed table which aggressively
 // caches the contents of the table and supports lightweight updates.
@@ -77,6 +78,12 @@ class BaseSqlTableModel : public QAbstractTableModel {
     inline void setTrackValueForColumn(TrackPointer pTrack, int column, QVariant value);
     QVariant getBaseValue(const QModelIndex& index, int role = Qt::DisplayRole) const;
 
+    struct RowInfo {
+        int trackId;
+        int order;
+        QHash<int, QVariant> metadata;
+    };
+
     QString m_tableName;
     QString m_idColumn;
     QSharedPointer<BaseTrackCache> m_trackSource;
@@ -90,7 +97,8 @@ class BaseSqlTableModel : public QAbstractTableModel {
     bool m_bInitialized;
     bool m_bIndexBuilt;
     QSqlRecord m_queryRecord;
-    QVector<QPair<int, QHash<int, QVariant> > > m_rowInfo;
+    QVector<RowInfo> m_rowInfo;
+    QHash<int, int> m_trackSortOrder;
     QHash<int, QLinkedList<int> > m_trackIdToRows;
 
     QString m_currentSearch;
@@ -101,6 +109,8 @@ class BaseSqlTableModel : public QAbstractTableModel {
     TrackCollection* m_pTrackCollection;
     TrackDAO& m_trackDAO;
     QSqlDatabase m_database;
+
+    DISALLOW_COPY_AND_ASSIGN(BaseSqlTableModel);
 };
 
 #endif /* BASESQLTABLEMODEL_H */

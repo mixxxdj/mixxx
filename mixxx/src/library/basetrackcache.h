@@ -13,8 +13,9 @@
 #include <QSqlDatabase>
 #include <QVector>
 
-#include "trackinfoobject.h"
 #include "library/dao/trackdao.h"
+#include "trackinfoobject.h"
+#include "util.h"
 
 class TrackCollection;
 
@@ -41,8 +42,10 @@ class BaseTrackCache : public QObject {
     virtual const QStringList columns() const;
     virtual int columnCount() const;
     virtual int fieldIndex(const QString column) const;
-    virtual void filterAndSort(QVector<int>& trackIds, QString query, QString extraFilter,
-                               int sortColumn, Qt::SortOrder sortOrder) const;
+    virtual void filterAndSort(const QSet<int>& trackIds,
+                               QString query, QString extraFilter,
+                               int sortColumn, Qt::SortOrder sortOrder,
+                               QHash<int, int>* trackToIndex);
     virtual void ensureCached(QSet<int> trackIds);
 
   signals:
@@ -71,6 +74,8 @@ class BaseTrackCache : public QObject {
                                const QVector<int> trackIds) const;
     int compareColumnValues(int sortColumn, Qt::SortOrder sortOrder,
                             QVariant val1, QVariant val2) const;
+    bool trackMatches(const TrackPointer& pTrack,
+                      const QRegExp& matcher) const;
 
     const QString m_tableName;
     const QString m_idColumn;
@@ -81,6 +86,10 @@ class BaseTrackCache : public QObject {
     QStringList m_searchColumns;
     QVector<int> m_searchColumnIndices;
 
+    // Temporary storage for filterAndSort()
+
+    QVector<int> m_trackOrder;
+
     QSet<int> m_dirtyTracks;
 
     bool m_bIndexBuilt;
@@ -88,6 +97,8 @@ class BaseTrackCache : public QObject {
     TrackCollection* m_pTrackCollection;
     TrackDAO& m_trackDAO;
     QSqlDatabase m_database;
+
+    DISALLOW_COPY_AND_ASSIGN(BaseTrackCache);
 };
 
 #endif // BASETRACKCACHE_H
