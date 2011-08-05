@@ -82,6 +82,10 @@ class BaseSqlTableModel : public QAbstractTableModel {
         int trackId;
         int order;
         QHash<int, QVariant> metadata;
+
+        bool operator<(const RowInfo& other) const {
+            return order < other.order;
+        }
     };
 
     QString m_tableName;

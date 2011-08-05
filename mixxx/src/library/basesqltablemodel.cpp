@@ -9,7 +9,7 @@
 #include "mixxxutils.cpp"
 #include "library/starrating.h"
 
-const bool sDebug = true;
+const bool sDebug = false;
 
 BaseSqlTableModel::BaseSqlTableModel(QObject* pParent,
                                      TrackCollection* pTrackCollection,
@@ -191,11 +191,8 @@ void BaseSqlTableModel::select() {
 
     QVector<RowInfo> rowInfo;
     QSet<int> trackIds;
-    QHash<int, QLinkedList<int> > trackToRows;
     while (query.next()) {
         int id = query.value(idColumn).toInt();
-        QLinkedList<int>& rows = trackToRows[id];
-        rows.append(rowInfo.size());
         trackIds.insert(id);
 
         RowInfo thisRowInfo;
@@ -214,16 +211,31 @@ void BaseSqlTableModel::select() {
         qDebug() << "Rows actually received:" << rowInfo.size();
     }
 
+    // Adjust sort column to remove table columns
+    int sortColumn = m_iSortColumn - m_tableColumns.size();
+
     QHash<int, int> trackOrder;
     m_trackSource->filterAndSort(trackIds, m_currentSearch,
                                  m_currentSearchFilter,
-                                 m_iSortColumn, m_eSortOrder,
+                                 sortColumn, m_eSortOrder,
                                  &trackOrder);
+
+    for (QVector<RowInfo>::iterator it = rowInfo.begin();
+         it != rowInfo.end(); ++it) {
+        it->order = trackOrder.value(it->trackId, 0);
+    }
+    // RowInfo::operator< sorts by the order field
+    qSort(rowInfo.begin(), rowInfo.end());
+
+    for (int i = 0; i < rowInfo.size(); ++i) {
+        const RowInfo& row = rowInfo[i];
+        QLinkedList<int>& rows = m_trackIdToRows[row.trackId];
+        rows.push_back(i);
+    }
 
     // We're done! Issue the update signals and replace the master maps.
     beginInsertRows(QModelIndex(), 0, rowInfo.size()-1);
     m_rowInfo = rowInfo;
-    m_trackIdToRows = trackToRows;
     endInsertRows();
 
     int elapsed = time.elapsed();
@@ -291,7 +303,7 @@ void BaseSqlTableModel::setSort(int column, Qt::SortOrder order) {
     m_eSortOrder = order;
 
     // TODO(rryan) should this be conditional?
-    //select();
+    select();
 }
 
 void BaseSqlTableModel::sort(int column, Qt::SortOrder order) {
@@ -301,7 +313,7 @@ void BaseSqlTableModel::sort(int column, Qt::SortOrder order) {
 
     m_iSortColumn = column;
     m_eSortOrder = order;
-    //select();
+    select();
 }
 
 int BaseSqlTableModel::rowCount(const QModelIndex& parent) const {
@@ -573,8 +585,8 @@ QVariant BaseSqlTableModel::getBaseValue(const QModelIndex& index, int role) con
     // Otherwise, return the information from the track record cache for the
     // given track ID
     if (m_trackSource) {
-        // Subtract ID column and table columns from index to get the track
-        // source column number.
+        // Subtract table columns from index to get the track source column
+        // number.
         int trackSourceColumn = column - m_tableColumns.size();
         return m_trackSource->data(trackId, trackSourceColumn);
     }

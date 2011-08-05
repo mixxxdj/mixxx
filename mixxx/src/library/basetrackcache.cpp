@@ -7,7 +7,7 @@
 
 namespace {
 
-const bool sDebug = true;
+const bool sDebug = false;
 
 const QHash<QString, int> buildReverseIndex(const QList<QString> items) {
     int i = 0;
