@@ -271,9 +271,29 @@ QVariant BaseTrackCache::data(int trackId, int column) const {
     return result;
 }
 
-void BaseTrackCache::filterAndSort(QVector<int>& trackIds, QString searchQuery,
+bool BaseTrackCache::trackMatches(const TrackPointer& pTrack,
+                                  const QRegExp& matcher) const {
+    // For every search column, lookup the value for the track and check
+    // if it matches the search query.
+    int i = 0;
+    foreach (QString column, m_searchColumns) {
+        int columnIndex = m_searchColumnIndices[i++];
+        QVariant value = getTrackValueForColumn(pTrack, columnIndex);
+        if (value.isValid() && qVariantCanConvert<QString>(value)) {
+            QString valueStr = value.toString();
+            if (valueStr.contains(matcher)) {
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+void BaseTrackCache::filterAndSort(const QSet<int>& trackIds,
+                                   QString searchQuery,
                                    QString extraFilter, int sortColumn,
-                                   Qt::SortOrder sortOrder) const {
+                                   Qt::SortOrder sortOrder,
+                                   QHash<int, int>* trackToIndex) {
     QStringList idStrings;
 
     if (sortColumn < 0 || sortColumn >= columnCount()) {
@@ -283,19 +303,12 @@ void BaseTrackCache::filterAndSort(QVector<int>& trackIds, QString searchQuery,
 
     // TODO(rryan) consider making this the data passed in and a separate
     // QVector for output
-    QSet<int> baseTracks;
     QSet<int> dirtyTracks;
     foreach (int trackId, trackIds) {
         idStrings << QVariant(trackId).toString();
-
-        baseTracks.insert(trackId);
         if (m_dirtyTracks.contains(trackId)) {
             dirtyTracks.insert(trackId);
         }
-    }
-
-    if (trackIds.size() == 0) {
-        dirtyTracks = m_dirtyTracks;
     }
 
     QString filter = filterClause(searchQuery, extraFilter, idStrings);
@@ -326,22 +339,18 @@ void BaseTrackCache::filterAndSort(QVector<int>& trackIds, QString searchQuery,
         qDebug() << "Rows returned:" << rows;
     }
 
-    QHash<int, int> trackToIndex;
+    m_trackOrder.resize(0);
+    trackToIndex->clear();
     if (rows > 0) {
-        trackToIndex.reserve(rows);
+        trackToIndex->reserve(rows);
+        m_trackOrder.reserve(rows);
     }
 
-    int numIds = 0;
     while (query.next()) {
         int id = query.value(idColumn).toInt();
-        trackToIndex[id] = numIds;
-        trackIds[numIds++] = id;
+        (*trackToIndex)[id] = m_trackOrder.size();
+        m_trackOrder.push_back(id);
     }
-
-    // We set elements 0 through i-1, so resize the vector to cut off any extra
-    // elements. TODO(rryan) should we just return the number of valid elements
-    // instead of resizing?
-    trackIds.resize(numIds);
 
     // At this point, the original set of tracks have been divided into two
     // pieces: those that should be in the result set and those that should
@@ -351,6 +360,10 @@ void BaseTrackCache::filterAndSort(QVector<int>& trackIds, QString searchQuery,
     // would match or not match the given filter criteria. Once we correct the
     // membership of tracks in either set, we must then insertion-sort the
     // missing tracks into the resulting index list.
+
+    if (dirtyTracks.size() == 0) {
+        return;
+    }
 
     // Make a regular expression that matches the query terms.
     QStringList searchTokens = searchQuery.split(" ");
@@ -368,33 +381,13 @@ void BaseTrackCache::filterAndSort(QVector<int>& trackIds, QString searchQuery,
             continue;
         }
 
-        // Default true
-        bool shouldBeInResultSet = true;
-
-        if (!searchQuery.isEmpty()) {
-            bool matches = false;
-
-            // For every search column, lookup the value for the track and check
-            // if it matches the search query.
-            int i = 0;
-            foreach (QString column, m_searchColumns) {
-                int columnIndex = m_searchColumnIndices[i++];
-                QVariant value = getTrackValueForColumn(pTrack, columnIndex);
-                if (value.isValid() && qVariantCanConvert<QString>(value)) {
-                    QString valueStr = value.toString();
-                    if (valueStr.contains(searchMatcher)) {
-                        matches = true;
-                    }
-                }
-            }
-
-            // If we matched, then it should be in the result set. If not, then
-            // it shouldn't be.
-            shouldBeInResultSet = matches;
-        }
+        // The track should be in the result set if the search is empty or the
+        // track matches the search.
+        bool shouldBeInResultSet = searchQuery.isEmpty() ||
+                trackMatches(pTrack, searchMatcher);
 
         // If the track is in this result set.
-        bool isInResultSet = trackToIndex.contains(trackId);
+        bool isInResultSet = trackToIndex->contains(trackId);
 
         if (shouldBeInResultSet) {
             // Track should be in result set...
@@ -402,38 +395,40 @@ void BaseTrackCache::filterAndSort(QVector<int>& trackIds, QString searchQuery,
             // Remove the track from the results first (we have to do this or it
             // will sort wrong).
             if (isInResultSet) {
-                int index = trackToIndex[trackId];
-                trackIds.remove(index);
+                int index = (*trackToIndex)[trackId];
+                m_trackOrder.remove(index);
                 // Don't update trackToIndex, since we do it below.
             }
 
             // Figure out where it is supposed to sort. The table is sorted by
             // the sort column, so we can binary search.
-            int insertRow = findSortInsertionPoint(pTrack, sortColumn, sortOrder, trackIds);
+            int insertRow = findSortInsertionPoint(pTrack, sortColumn,
+                                                   sortOrder, m_trackOrder);
 
             if (sDebug) {
-                qDebug() << this << "Insertion sort says it should be inserted at:" << insertRow;
+                qDebug() << this
+                         << "Insertion sort says it should be inserted at:"
+                         << insertRow;
             }
 
             // The track should sort at insertRow
-            trackToIndex[trackId] = insertRow;
-            trackIds.insert(insertRow, trackId);
+            m_trackOrder.insert(insertRow, trackId);
 
-            trackToIndex.clear();
+            trackToIndex->clear();
             // Fix the index. TODO(rryan) find a non-stupid way to do this.
-            for (int i = 0; i < trackIds.size(); ++i) {
-                trackToIndex[trackIds[i]] = i;
+            for (int i = 0; i < m_trackOrder.size(); ++i) {
+                (*trackToIndex)[m_trackOrder[i]] = i;
             }
         } else if (isInResultSet) {
             // Track should not be in this result set, but it is. We need to
             // remove it.
-            int index = trackToIndex[trackId];
-            trackIds.remove(index);
+            int index = (*trackToIndex)[trackId];
+            m_trackOrder.remove(index);
 
-            trackToIndex.clear();
+            trackToIndex->clear();
             // Fix the index. TODO(rryan) find a non-stupid way to do this.
-            for (int i = 0; i < trackIds.size(); ++i) {
-                trackToIndex[trackIds[i]] = i;
+            for (int i = 0; i < m_trackOrder.size(); ++i) {
+                (*trackToIndex)[m_trackOrder[i]] = i;
             }
         }
     }
