@@ -211,8 +211,8 @@ void BaseSqlTableModel::select() {
         qDebug() << "Rows actually received:" << rowInfo.size();
     }
 
-    // Adjust sort column to remove table columns
-    int sortColumn = m_iSortColumn - m_tableColumns.size();
+    // Adjust sort column to remove table columns and add 1 to add an id column.
+    int sortColumn = m_iSortColumn - m_tableColumns.size() + 1;
 
     QHash<int, int> trackOrder;
     m_trackSource->filterAndSort(trackIds, m_currentSearch,
@@ -327,8 +327,9 @@ int BaseSqlTableModel::columnCount(const QModelIndex& parent) const {
         return 0;
     }
 
+    // Subtract one from trackSource::columnCount to ignore the id column
     int count = m_tableColumns.size() +
-            (m_trackSource ? m_trackSource->columnCount() : 0);
+            (m_trackSource ? m_trackSource->columnCount() - 1: 0);
     //qDebug() << "columnCount()" << parent << count;
     return count;
 }
@@ -338,8 +339,9 @@ int BaseSqlTableModel::fieldIndex(const QString& fieldName) const {
     if (tableIndex > -1) {
         return tableIndex;
     }
+    // Subtract one from the fieldIndex() result to account for the id column
     return m_trackSource ? (m_tableColumns.size() +
-                            m_trackSource->fieldIndex(fieldName)) : -1;
+                            m_trackSource->fieldIndex(fieldName) - 1) : -1;
 }
 
 QVariant BaseSqlTableModel::data(const QModelIndex& index, int role) const {
@@ -586,8 +588,8 @@ QVariant BaseSqlTableModel::getBaseValue(const QModelIndex& index, int role) con
     // given track ID
     if (m_trackSource) {
         // Subtract table columns from index to get the track source column
-        // number.
-        int trackSourceColumn = column - m_tableColumns.size();
+        // number and add 1 to skip over the id column.
+        int trackSourceColumn = column - m_tableColumns.size() + 1;
         return m_trackSource->data(trackId, trackSourceColumn);
     }
     return QVariant();
