@@ -65,6 +65,15 @@ TrackCollection::TrackCollection(ConfigObject<ConfigValue>* pConfig)
             "ON library.location = track_locations.id "
             "WHERE (" + LibraryTableModel::DEFAULT_LIBRARYFILTER + ")";
 
+    for (QStringList::iterator it = columns.begin();
+         it != columns.end(); ++it) {
+        if (it->startsWith("library.")) {
+            *it = it->replace("library.", "");
+        } else if (it->startsWith("track_locations.")) {
+            *it = it->replace("track_locations.", "");
+        }
+    }
+
     query.prepare(queryString);
     if (!query.exec()) {
         qDebug() << query.executedQuery() << query.lastError();
