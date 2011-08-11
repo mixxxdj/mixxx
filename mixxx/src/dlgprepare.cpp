@@ -5,24 +5,23 @@
 #include "transposeproxymodel.h"
 #include "widget/wpreparecratestableview.h"
 #include "widget/wpreparelibrarytableview.h"
-#include "analyserqueue.h"
 #include "library/trackcollection.h"
 #include "dlgprepare.h"
 
 
-DlgPrepare::DlgPrepare(QWidget* parent, ConfigObject<ConfigValue>* pConfig, TrackCollection* pTrackCollection) : QWidget(parent), Ui::DlgPrepare()
-{
+DlgPrepare::DlgPrepare(QWidget* parent,
+                       ConfigObject<ConfigValue>* pConfig,
+                       TrackCollection* pTrackCollection)
+        : QWidget(parent), Ui::DlgPrepare(),
+          m_pConfig(pConfig),
+          m_pTrackCollection(pTrackCollection),
+          m_bAnalysisActive(false) {
     setupUi(this);
-
-    m_pConfig = pConfig;
-    m_pTrackCollection = pTrackCollection;
-    m_pAnalyserQueue = NULL;
-
     m_songsButtonGroup.addButton(radioButtonRecentlyAdded);
     m_songsButtonGroup.addButton(radioButtonAllSongs);
 
     m_pPrepareLibraryTableView = new WPrepareLibraryTableView(this, pConfig, pTrackCollection,
-                                                            ConfigKey(), ConfigKey());
+                                                              ConfigKey(), ConfigKey());
     connect(m_pPrepareLibraryTableView, SIGNAL(loadTrack(TrackPointer)),
             this, SIGNAL(loadTrack(TrackPointer)));
     connect(m_pPrepareLibraryTableView, SIGNAL(loadTrackToPlayer(TrackPointer, QString)),
@@ -84,9 +83,7 @@ DlgPrepare::DlgPrepare(QWidget* parent, ConfigObject<ConfigValue>* pConfig, Trac
             SLOT(tableSelectionChanged(const QItemSelection &, const QItemSelection&)));
 }
 
-DlgPrepare::~DlgPrepare()
-{
-    delete m_pAnalyserQueue;
+DlgPrepare::~DlgPrepare() {
 }
 
 void DlgPrepare::onShow()
@@ -95,24 +92,34 @@ void DlgPrepare::onShow()
     //m_pCratesTableModel->select();
 }
 
-QWidget* DlgPrepare::getWidgetForMIDIControl()
-{
-    return m_pPrepareLibraryTableView;
-}
-
 void DlgPrepare::setup(QDomNode node)
 {
 
 }
+
 void DlgPrepare::onSearchStarting()
 {
 }
+
 void DlgPrepare::onSearchCleared()
 {
 }
+
 void DlgPrepare::onSearch(const QString& text)
 {
     m_pPrepareLibraryTableModel->search(text);
+}
+
+void DlgPrepare::loadSelectedTrack() {
+    m_pPrepareLibraryTableView->loadSelectedTrack();
+}
+
+void DlgPrepare::loadSelectedTrackToGroup(QString group) {
+    m_pPrepareLibraryTableView->loadSelectedTrackToGroup(group);
+}
+
+void DlgPrepare::moveSelection(int delta) {
+    m_pPrepareLibraryTableView->moveSelection(delta);
 }
 
 void DlgPrepare::tableSelectionChanged(const QItemSelection& selected, const QItemSelection& deselected)
@@ -123,84 +130,52 @@ void DlgPrepare::tableSelectionChanged(const QItemSelection& selected, const QIt
         pushButtonAnalyze->setEnabled(true);
 }
 
-void DlgPrepare::selectAll()
-{
+void DlgPrepare::selectAll() {
     m_pPrepareLibraryTableView->selectAll();
 }
 
-void DlgPrepare::analyze()
-{
-    //Save the old BPM detection prefs setting (on or off)
-    m_iOldBpmEnabled = m_pConfig->getValueString(ConfigKey("[BPM]","BPMDetectionEnabled")).toInt();
-    //Force BPM detection to be on.
-    m_pConfig->set(ConfigKey("[BPM]","BPMDetectionEnabled"), ConfigValue(1));
-    //Note: this sucks... we should refactor the prefs/analyser to fix this hacky bit ^^^^.
+void DlgPrepare::analyze() {
+    //qDebug() << this << "analyze()";
+    if (m_bAnalysisActive) {
+        emit(stopAnalysis());
+    } else {
+        QList<int> trackIds;
 
-    if (m_pAnalyserQueue != NULL)
-    {
-        stopAnalysis();
-        return;
-    }
-    else
-    {
-        m_pAnalyserQueue = AnalyserQueue::createPrepareViewAnalyserQueue(m_pConfig);
-
-        connect(m_pAnalyserQueue, SIGNAL(trackProgress(TrackPointer, int)),
-                this, SLOT(trackAnalysisProgress(TrackPointer, int)));
-        connect(m_pAnalyserQueue, SIGNAL(trackFinished(TrackPointer)),
-                this, SLOT(trackAnalysisFinished(TrackPointer)));
-
-        QModelIndex selectedIndex;
-        m_indexesBeingAnalyzed = m_pPrepareLibraryTableView->selectionModel()->selectedRows();
-        foreach(selectedIndex, m_indexesBeingAnalyzed)
-        {
-            TrackPointer tio = m_pPrepareLibraryTableModel->getTrack(selectedIndex);
-            qDebug() << "Queueing track" << tio->getLocation();
-            m_pAnalyserQueue->queueAnalyseTrack(tio);
+        QModelIndexList selectedIndexes = m_pPrepareLibraryTableView->selectionModel()->selectedRows();
+        foreach(QModelIndex selectedIndex, selectedIndexes) {
+            bool ok;
+            int trackId = selectedIndex.sibling(
+                selectedIndex.row(),
+                m_pPrepareLibraryTableModel->fieldIndex(LIBRARYTABLE_ID)).data().toInt(&ok);
+            if (ok) {
+                trackIds.append(trackId);
+            }
         }
-        pushButtonAnalyze->setText("Stop Analysis");
+        emit(analyzeTracks(trackIds));
     }
 }
 
-void DlgPrepare::trackAnalysisFinished(TrackPointer tio)
-{
+void DlgPrepare::analysisActive(bool bActive) {
+    qDebug() << this << "analysisActive" << bActive;
+    m_bAnalysisActive = bActive;
+    if (bActive) {
+        pushButtonAnalyze->setEnabled(true);
+        pushButtonAnalyze->setText(tr("Stop Analysis"));
+    } else {
+        pushButtonAnalyze->setText(tr("Analyze"));
+        labelProgress->setText("");
+    }
+}
+
+void DlgPrepare::trackAnalysisFinished(TrackPointer tio) {
     qDebug() << "Analysis finished on track:" << tio->getInfo();
+}
 
-    // TrackPointer auto-deletes once nobody is referencing it anymore.
-    m_pTrackCollection->getTrackDAO().saveTrack(tio);
-
-
-
-    //If the analyser has already been deleted by the time we get this signal
-    //or there are no tracks in it when we do get the signal, then say we're done.
-    if (!m_pAnalyserQueue || m_pAnalyserQueue->numQueuedTracks() == 0)
-    {
-        stopAnalysis();
+void DlgPrepare::trackAnalysisProgress(TrackPointer tio, int progress) {
+    if (m_bAnalysisActive) {
+        QString text = tr("Analyzing %1%").arg(progress);
+        labelProgress->setText(text);
     }
-}
-
-void DlgPrepare::trackAnalysisProgress(TrackPointer tio, int progress)
-{
-    QString text = "Analyzing";
-    labelProgress->setText(QString("%1 %2\%").arg(text).arg(progress));
-}
-
-void DlgPrepare::stopAnalysis()
-{
-    //Stop analysis!
-    if (m_pAnalyserQueue)
-        m_pAnalyserQueue->stop();
-    labelProgress->setText("");
-    delete m_pAnalyserQueue;
-    m_pAnalyserQueue = NULL;
-    pushButtonAnalyze->setText("Analyze");
-
-    //Restore old BPM detection setting for preferences...
-    m_pConfig->set(ConfigKey("[BPM]","BPMDetectionEnabled"), ConfigValue(m_iOldBpmEnabled));
-
-    //Tell the model to notify the view that the track data has potentially changed.
-    m_pPrepareLibraryTableModel->updateTracks(m_indexesBeingAnalyzed);
-    //XXX: ^^ This totally doesn't work. :(
 }
 
 void DlgPrepare::showRecentSongs()

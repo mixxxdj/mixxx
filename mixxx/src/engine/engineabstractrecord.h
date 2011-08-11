@@ -17,7 +17,7 @@
 #define ENGINEABSTRACTRECORD_H
 
 #include "defs.h"
-#include "engineobject.h"
+#include "engine/engineobject.h"
 
 class EngineAbstractRecord : public EngineObject {
   public:

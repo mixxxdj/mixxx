@@ -4,6 +4,7 @@
 #include <QtSql>
 #include "trackinfoobject.h"
 #include "library/dao/playlistdao.h"
+#include "library/trackcollection.h"
 
 PlaylistDAO::PlaylistDAO(QSqlDatabase& database)
         : m_database(database) {
@@ -64,8 +65,10 @@ bool PlaylistDAO::createPlaylist(QString name, bool hidden)
     }
     //query.finish();
 
+    int playlistId = query.lastInsertId().toInt();
     //Commit the transaction
     m_database.commit();
+    emit(added(playlistId));
     return true;
 }
 
@@ -143,6 +146,8 @@ void PlaylistDAO::deletePlaylist(int playlistId)
 
     m_database.commit();
     //TODO: Crap, we need to shuffle the positions of all the playlists?
+
+    emit(deleted(playlistId));
 }
 
 
@@ -168,7 +173,7 @@ bool PlaylistDAO::setPlaylistLocked(int playlistId, bool locked) {
     int lock = locked ? 1 : 0;
 
     Q_ASSERT(m_database.transaction());
-    QSqlQuery query;
+    QSqlQuery query(m_database);
     query.prepare("UPDATE Playlists SET locked = :lock WHERE id = :id");
     query.bindValue(":lock", lock);
     query.bindValue(":id", playlistId);
@@ -184,7 +189,7 @@ bool PlaylistDAO::setPlaylistLocked(int playlistId, bool locked) {
 }
 
 bool PlaylistDAO::isPlaylistLocked(int playlistId) {
-    QSqlQuery query;
+    QSqlQuery query(m_database);
     query.prepare("SELECT locked FROM Playlists WHERE id = :id");
     query.bindValue(":id", playlistId);
 
@@ -242,6 +247,9 @@ void PlaylistDAO::appendTrackToPlaylist(int trackId, int playlistId)
 
     //Start the transaction
     m_database.commit();
+
+    emit(trackAdded(playlistId, trackId, position));
+    emit(changed(playlistId));
 }
 
 /** Find out how many playlists exist. */
@@ -309,6 +317,25 @@ void PlaylistDAO::removeTrackFromPlaylist(int playlistId, int position)
     //          << QThread::currentThread() << m_database.connectionName();
     m_database.transaction();
     QSqlQuery query(m_database);
+
+    query.prepare("SELECT id FROM PlaylistTracks WHERE playlist_id=:id "
+                  "AND position=:position");
+    query.bindValue(":id", playlistId);
+    query.bindValue(":position", position);
+
+    if (!query.exec()) {
+        qDebug() << "removeTrackFromPlaylist" << query.lastError();
+        m_database.rollback();
+        return;
+    }
+
+    if (!query.next()) {
+        qDebug() << "removeTrackFromPlaylist no track exists at position:"
+                 << position << "in playlist:" << playlistId;
+        return;
+    }
+    int trackId = query.value(query.record().indexOf("id")).toInt();
+
     //Delete the track from the playlist.
     query.prepare("DELETE FROM PlaylistTracks "
                   "WHERE playlist_id=:id AND position= :position");
@@ -329,6 +356,9 @@ void PlaylistDAO::removeTrackFromPlaylist(int playlistId, int position)
     query.exec(queryString);
     //query.finish();
     m_database.commit();
+
+    emit(trackRemoved(playlistId, trackId, position));
+    emit(changed(playlistId));
 }
 
 void PlaylistDAO::insertTrackIntoPlaylist(int trackId, int playlistId, int position)
@@ -363,4 +393,33 @@ void PlaylistDAO::insertTrackIntoPlaylist(int trackId, int playlistId, int posit
     //query.finish();
 
     m_database.commit();
+
+    emit(trackAdded(playlistId, trackId, position));
+    emit(changed(playlistId));
+}
+
+void PlaylistDAO::addToAutoDJQueue(int playlistId) {
+    //qDebug() << "Adding tracks from playlist " << playlistId << " to the Auto-DJ Queue";
+
+    // Query the PlaylistTracks database to locate tracks in the selected playlist
+    QSqlQuery query(m_database);
+    query.prepare("SELECT track_id FROM PlaylistTracks "
+                  "WHERE playlist_id = :plid");
+    query.bindValue(":plid", playlistId);
+    query.exec();
+
+    //Print out any SQL error, if there was one.
+    if (query.lastError().isValid()) {
+       qDebug() << "addToAutoDJQueue" << query.lastError();
+      // m_database.rollback();
+      // return;
+    }
+
+    // Get the ID of the Auto-DJ playlist
+    int autoDJId = getPlaylistIdFromName(AUTODJ_TABLE);
+
+    // Loop through the tracks, adding them to the Auto-DJ Queue
+    while(query.next()) {
+        appendTrackToPlaylist(query.value(0).toInt(), autoDJId);
+    }
 }

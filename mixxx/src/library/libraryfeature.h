@@ -42,10 +42,19 @@ class LibraryFeature : public QObject {
     virtual TreeItemModel* getChildModel() = 0;
 
   public slots:
+    /** called when you single click on the root item **/
     virtual void activate() = 0;
+    /** called when you single click on a child item, e.g., a concrete playlist or crate **/
     virtual void activateChild(const QModelIndex& index) = 0;
+    /** called when you right click on the root item **/
     virtual void onRightClick(const QPoint& globalPos) = 0;
+    /** called when you right click on a child item, e.g., a concrete playlist or crate **/
     virtual void onRightClickChild(const QPoint& globalPos, QModelIndex index) = 0;
+    /*
+     * Only implement this, if using incremental or lazy childmodels, see BrowseFeature.
+     * This method is executed whenever you **double** click child items
+     */
+    virtual void onLazyChildExpandation(const QModelIndex& index) = 0;
   signals:
     void featureUpdated();
     void showTrackModel(QAbstractItemModel* model);
@@ -53,7 +62,9 @@ class LibraryFeature : public QObject {
     void loadTrack(TrackPointer pTrack);
     void loadTrackToPlayer(TrackPointer pTrack, QString group);
     void restoreSearch(const QString&);
+    /** emit this signal before you parse a large music collection, e.g., iTunes, Traktor. **/
     void featureIsLoading(LibraryFeature*);
+    /** emit this signal if the foreign music collection has been imported/parsed. **/
     void featureLoadingFinished(LibraryFeature*s);
 
 

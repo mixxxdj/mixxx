@@ -5,12 +5,15 @@
 //
 //
 // Author: Ingo Kossyk <kossyki@cs.tu-berlin.de>, (C) 2004
+// Author: Tobias Rafreider trafreider@mixxx.org, (C) 2011
 //
 // Copyright: See COPYING file that comes with this distribution
 //
 //
 #include <QTextStream>
 #include <QDebug>
+#include <QDir>
+#include <QMessageBox>
 #include "parserm3u.h"
 #include <QUrl>
 
@@ -51,15 +54,20 @@ QList<QString> ParserM3u::parse(QString sFilename)
     clearLocations();
     //qDebug() << "ParserM3u: Starting to parse.";
     if (file.open(QIODevice::ReadOnly) && !isBinary(sFilename)) {
-    	/* Unfortunately, QT 4.7 does not handle <CR> line breaks.
-    	 * This is important on OS X where iTunes, e.g., exports M3U playlists using <CR>
-    	 *
-    	 * Using QFile::readAll() we obtain the complete content of the playlist as a ByteArray.
-    	 * We replace any '\r' with '\n' if applicaple
-    	 * This ensures that playlists from iTunes on OS X can be parsed
-    	 */
-    	QByteArray ba = file.readAll();
-    	ba.replace('\r',"\n");
+        /* Unfortunately, QT 4.7 does not handle <CR> (=\r or asci value 13) line breaks.
+         * This is important on OS X where iTunes, e.g., exports M3U playlists using <CR>
+         * rather that <LF>
+         *
+         * Using QFile::readAll() we obtain the complete content of the playlist as a ByteArray.
+         * We replace any '\r' with '\n' if applicaple
+         * This ensures that playlists from iTunes on OS X can be parsed
+         */
+        QByteArray ba = file.readAll();
+        //detect encoding
+        bool isCRLF_encoded = ba.contains("\r\n");
+        bool isCR_encoded = ba.contains("\r");
+        if(isCR_encoded && !isCRLF_encoded)
+            ba.replace('\r','\n');
         QTextStream textstream(ba.data());
         
         while(!textstream.atEnd()) {
@@ -67,7 +75,7 @@ QList<QString> ParserM3u::parse(QString sFilename)
             if(sLine.isEmpty())
                 break;
 
-            //qDebug) << ("ParserM3u: parsed: " << (sLine);
+            //qDebug() << "ParserM3u: parsed: " << (sLine);
             m_sLocations.append(sLine);
         }
 
@@ -90,18 +98,21 @@ QString ParserM3u::getFilepath(QTextStream *stream, QString basepath)
     QString textline,filename = "";
 
     textline = stream->readLine();
-    qDebug() << textline;
+
     while(!textline.isEmpty()){
+        //qDebug() << "Untransofrmed text: " << textline;
         if(textline.isNull())
             break;
 
-        if(!textline.contains("#") && !textline.isEmpty()){
+        if(!textline.contains("#")){
             filename = textline;
             filename.remove("file://");
             QByteArray strlocbytes = filename.toUtf8();
+            //qDebug() << "QByteArray UTF-8: " << strlocbytes;
             QUrl location = QUrl::fromEncoded(strlocbytes);
-            QString trackLocation = location.toLocalFile();
-            //qDebug() << trackLocation;
+            //qDebug() << "QURL UTF-8: " << location;
+            QString trackLocation = location.toString();
+            //qDebug() << "UTF8 TrackLocation:" << trackLocation;
             if(isFilepath(trackLocation)) {
                 return trackLocation;
             } else {
@@ -118,5 +129,41 @@ QString ParserM3u::getFilepath(QTextStream *stream, QString basepath)
 
     // Signal we reached the end
     return 0;
+
+}
+bool ParserM3u::writeM3UFile(const QString &file_str, QList<QString> &items, bool useRelativePath)
+{
+    /*
+     * Important note:
+     * On Windows \n will produce a <CR><CL> (=\r\n)
+     * On Linux and OS X \n is <CR> (which remains \n)
+     */
+    QFile file(file_str);
+    if (!file.open(QIODevice::WriteOnly | QIODevice::Text)){
+        QMessageBox::warning(NULL,tr("Playlist Export Failed"),
+                             tr("Could not create file")+" "+file_str);
+        return false;
+    }
+    //Base folder of file
+    QString base = file_str.section('/', 0, -2);
+    QDir base_dir(base);
+
+    qDebug() << "Basepath: " << base;
+    QTextStream out(&file);
+    out << "#EXTM3U\n";
+    for(int i =0; i < items.size(); ++i){
+        out << "#EXTINF\n";
+
+        //Write relative path if possible
+        if(useRelativePath){
+            //QDir::relativePath() will return the absolutePath if it cannot compute the
+            //relative Path
+            out << base_dir.relativeFilePath(items.at(i)) << "\n";
+        }
+        else
+            out << items.at(i) << "\n";
+    }
+
+    return true;
 
 }

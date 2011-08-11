@@ -1,7 +1,7 @@
 	<!--
-	Phoney , Skin for Mixxx 1.9.x
+	Phoney , Skin for Mixxx 1.10.x
 	www.mixxx.org
-	Copyright (C) 2010 jus ; jus@justmail.de
+	Copyright (C) 2010-2011 jus ; jus@justmail.de
 	This file is part of the "Phoney" Skin for Mixxx
 	"Phoney" is licensed under the Creative Commons Attribution-ShareAlike 3.0 Unported license.
 	http://creativecommons.org/licenses/by-sa/3.0/
@@ -20,6 +20,20 @@
 
 	<!--
 	CHANGELOG
+	v1.10.0.02	(29/03/2011)
+	* Added Mixxx 1.10.0 feature:
+	  EmitOnDownPress double-skin connection block replaced with EmitOnPressAndRelease
+
+	v1.10.0.01	(21/03/2011)
+	* Introduce new version number scheme for skins that follows the target Mixxx versioning
+	  <Mixxx.major>.<Mixxx.minor>.<Mixxx.patch>.<Skin.patch>
+	* Added Mixxx 1.10.0 feature: 
+	  Tracks duration can be displayed independent from tracks remaining time using Trackproperty
+	* Updated text positioning & tooltips accordingly
+
+	v1.09.1	(13/03/2011)
+	* Added Mixxx 1.9.1 feature: Expanded to support 36 hot cues
+
 	v1.09	(20/02/2011)
 	* Changed Playing position tooltips to reflect new toggle functionality
 
@@ -199,7 +213,8 @@
 			- if a MIDI device which supports more hotcues than buttons are in the current skin has them activated
 			- if you change from a skin which supports more hotcues than buttons are in the current skin (and has them activated)
 		These "special" hotcues share the color #AE5CFF to make them distinguishable (and maintainable) from the hotcues
-		represented by a button in the current skin. Mixxx 1.8 supports up to 32 hotcue. Current skins uses up to 6 buttons per channel.
+		represented by a button in the current skin. Mixxx 1.8.x-1.9.0 support up to 32 hotcues. v1.9.1+ supports up to 36.
+		Current skins uses up to 6 buttons per channel.
 		-->
 		<Mark>
 			<Control>hotcue_1_position</Control>
@@ -421,6 +436,34 @@
 		<Mark>
 			<Control>hotcue_32_position</Control>
 			<Text> HOTCUE 32 </Text>
+			<Align>center</Align>
+			<Color>#AE5CFF</Color>
+			<TextColor>#FFFFFF</TextColor>
+		</Mark>
+		<Mark>
+			<Control>hotcue_33_position</Control>
+			<Text> HOTCUE 33 </Text>
+			<Align>center</Align>
+			<Color>#AE5CFF</Color>
+			<TextColor>#FFFFFF</TextColor>
+		</Mark>
+		<Mark>
+			<Control>hotcue_34_position</Control>
+			<Text> HOTCUE 34 </Text>
+			<Align>center</Align>
+			<Color>#AE5CFF</Color>
+			<TextColor>#FFFFFF</TextColor>
+		</Mark>
+		<Mark>
+			<Control>hotcue_35_position</Control>
+			<Text> HOTCUE 35 </Text>
+			<Align>center</Align>
+			<Color>#AE5CFF</Color>
+			<TextColor>#FFFFFF</TextColor>
+		</Mark>
+		<Mark>
+			<Control>hotcue_36_position</Control>
+			<Text> HOTCUE 36 </Text>
 			<Align>center</Align>
 			<Color>#AE5CFF</Color>
 			<TextColor>#FFFFFF</TextColor>
@@ -475,7 +518,8 @@
 			- if a MIDI device which supports more hotcues than buttons are in the current skin has them activated
 			- if you change from a skin which supports more hotcues than buttons are in the current skin (and has them activated)
 		These "special" hotcues share the color #AE5CFF to make them distinguishable (and maintainable) from the hotcues
-		represented by a button in the current skin. Mixxx 1.8 supports up to 32 hotcue. Current skins uses up to 6 buttons per channel.
+		represented by a button in the current skin. Mixxx 1.8.x-1.9.0 support up to 32 hotcues. v1.9.1+ supports up to 36.
+		Current skins uses up to 6 buttons per channel.
 		-->
 		<Mark>
 			<Control>hotcue_1_position</Control>
@@ -697,6 +741,34 @@
 		<Mark>
 			<Control>hotcue_32_position</Control>
 			<Text> HOTCUE 32 </Text>
+			<Align>center</Align>
+			<Color>#AE5CFF</Color>
+			<TextColor>#FFFFFF</TextColor>
+		</Mark>
+		<Mark>
+			<Control>hotcue_33_position</Control>
+			<Text> HOTCUE 33 </Text>
+			<Align>center</Align>
+			<Color>#AE5CFF</Color>
+			<TextColor>#FFFFFF</TextColor>
+		</Mark>
+		<Mark>
+			<Control>hotcue_34_position</Control>
+			<Text> HOTCUE 34 </Text>
+			<Align>center</Align>
+			<Color>#AE5CFF</Color>
+			<TextColor>#FFFFFF</TextColor>
+		</Mark>
+		<Mark>
+			<Control>hotcue_35_position</Control>
+			<Text> HOTCUE 35 </Text>
+			<Align>center</Align>
+			<Color>#AE5CFF</Color>
+			<TextColor>#FFFFFF</TextColor>
+		</Mark>
+		<Mark>
+			<Control>hotcue_36_position</Control>
+			<Text> HOTCUE 36 </Text>
 			<Align>center</Align>
 			<Color>#AE5CFF</Color>
 			<TextColor>#FFFFFF</TextColor>
@@ -886,7 +958,7 @@
 		</Style>
 		<Channel>1</Channel>
 		<Pos>735,58</Pos>
-		<Size>550,25</Size>
+		<Size>555,25</Size>
 	</Text>
 	<Text>
 		<Tooltip>Track information&#10;Displays the Name and Title of the loaded track.&#10;Informations are extracted from the tracks tags.&#10;</Tooltip>
@@ -897,7 +969,7 @@
 		</Style>
 		<Channel>2</Channel>
 		<Pos>735,337</Pos>
-		<Size>550,25</Size>
+		<Size>555,25</Size>
 	</Text>
 
 	<!--
@@ -906,7 +978,7 @@
 	**********************************************
 	-->
 	<NumberBpm>
-		<Tooltip>Tempo information&#10;Displays the tempo of the loaded track in BPM (beats per minute)&#10;</Tooltip>
+		<Tooltip>Tempo&#10;Displays the tempo of the loaded track in BPM (beats per minute)&#10;</Tooltip>
 		<Style>QLabel { font: bold 15px/18px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 		background-color: transparent; color: #0080FF; text-align: left;padding-left: 1%; }
 		QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
@@ -914,14 +986,14 @@
 		</Style>
 		<Channel>1</Channel>
 		<Pos>735,178</Pos>
-		<Size>105,25</Size>
+		<Size>80,25</Size>
 		<NumberOfDigits>6</NumberOfDigits>
 		<Connection>
 			<ConfigKey>[Channel1],bpm</ConfigKey>
 		</Connection>
 	</NumberBpm>
 	<NumberBpm>
-		<Tooltip>Tempo information&#10;Displays the tempo of the loaded track in BPM (beats per minute)&#10;</Tooltip>
+		<Tooltip>Tempo&#10;Displays the tempo of the loaded track in BPM (beats per minute)&#10;</Tooltip>
 		<Style>QLabel { font: bold 15px/18px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 		background-color: transparent; color: #E17000; text-align: left;padding-left: 1%; }
 		QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
@@ -929,7 +1001,7 @@
 		</Style>
 		<Channel>2</Channel>
 		<Pos>735,219 </Pos>
-		<Size>105,25</Size>
+		<Size>80,25</Size>
 		<NumberOfDigits>6</NumberOfDigits>
 		<Connection>
 			<ConfigKey>[Channel2],bpm</ConfigKey>
@@ -942,7 +1014,7 @@
 	**********************************************
 	-->
 	<NumberPos>
-		<Tooltip>Time information&#10;Displays the elapsed or remaining time and the duration of the track loaded.&#10;Click to toggle between time elapsed/remaining time.&#10;</Tooltip>
+		<Tooltip>Time&#10;Displays the elapsed or remaining time of the track loaded.&#10;Click to toggle between time elapsed/remaining time.&#10;</Tooltip>
 		<Style>QLabel { font: bold 15px/18px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 		background-color: transparent; color: #0080FF; text-align: left;padding-left: 1%; }
 		QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
@@ -950,14 +1022,14 @@
 		</Style>
 		<Channel>1</Channel>
 		<Pos>735,139</Pos>
-		<Size>190,25</Size>
+		<Size>109,25</Size>
 		<NumberOfDigits>6</NumberOfDigits>
 		<Connection>
 			<ConfigKey>[Channel1],playposition</ConfigKey>
 		</Connection>
 	</NumberPos>
 	<NumberPos>
-		<Tooltip>Time information&#10;Displays the elapsed or remaining time and the duration of the track loaded.&#10;Click to toggle between time elapsed/remaining time.&#10;</Tooltip>
+		<Tooltip>Time&#10;Displays the elapsed or remaining time of the track loaded.&#10;Click to toggle between time elapsed/remaining time.&#10;</Tooltip>
 		<Style>QLabel { font: bold 15px/18px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 		background-color: transparent; color: #E17000; text-align: left;padding-left: 1%; }
 		QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
@@ -965,7 +1037,7 @@
 		</Style>
 		<Channel>2</Channel>
 		<Pos>735,259</Pos>
-		<Size>190,25</Size>
+		<Size>109,25</Size>
 		<NumberOfDigits>6</NumberOfDigits>
 		<Connection>
 			<ConfigKey>[Channel2],playposition</ConfigKey>
@@ -974,35 +1046,73 @@
 
 	<!--
 	**********************************************
+	Text- Duration
+	**********************************************
+	-->
+	<TrackProperty>
+		<Tooltip>Duration&#10;Displays the duration of the track loaded.&#10;</Tooltip>
+		<Style>QLabel { font: bold 15px/18px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+		background-color: transparent; color: #0080FF; text-align: left;padding-left: 1%; }
+		QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+		</Style>
+		<Channel>1</Channel>
+		<Pos>845,139</Pos>
+		<Size>85,25</Size>
+		<Property>durationFormatted</Property>
+		<!--CSS alignments not respected see bug lp:605530 , lets call <Alignment>-->
+		<Alignment>right</Alignment>
+	</TrackProperty>
+	<TrackProperty>
+		<Tooltip>Duration&#10;Displays the duration of the track loaded.&#10;</Tooltip>
+		<Style>QLabel { font: bold 15px/18px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+		background-color: transparent; color: #E17000; text-align: left;padding-left: 1%; }
+		QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+		</Style>
+		<Channel>2</Channel>
+		<Pos>845,259</Pos>
+		<Size>85,25</Size>
+		<Property>durationFormatted</Property>
+		<!--CSS alignments not respected see bug lp:605530 , lets call <Alignment>-->
+		<Alignment>right</Alignment>
+	</TrackProperty>
+
+	<!--
+	**********************************************
 	Text- Pitch rate display
 	**********************************************
 	-->
 	<NumberRate>
-		<Tooltip>Pitch rate information&#10;Displays the current pitch of the track based on the original tempo.&#10;</Tooltip>
+		<Tooltip>Pitch rate&#10;Displays the current pitch of the track based on the original tempo.&#10;</Tooltip>
 		<Style>QLabel { font: bold 15px/18px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 		background-color: transparent; color: #0080FF; text-align: right; padding-right: 1%; }
 		QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
 		</Style>
 		<Channel>1</Channel>
-		<Pos>862,178</Pos>
-		<Size>60,25</Size>
+		<Pos>850,178</Pos>
+		<Size>80,25</Size>
 		<NumberOfDigits>4</NumberOfDigits>
+		<!--CSS alignments not respected see bug lp:605530 , lets call <Alignment>-->
+		<Alignment>right</Alignment>
 		<Connection>
 			<ConfigKey>[Channel1],rate</ConfigKey>
 		</Connection>
 	</NumberRate>
 	<NumberRate>
-		<Tooltip>Pitch rate information&#10;Displays the current pitch of the track based on the original tempo.&#10;</Tooltip>
+		<Tooltip>Pitch rate&#10;Displays the current pitch of the track based on the original tempo.&#10;</Tooltip>
 		<Style>QLabel { font: bold 15px/18px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 		background-color: transparent; color: #E17000; text-align: right; padding-right: 1%; }
 		QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
 		</Style>
 		<Channel>2</Channel>
-		<Pos>862,218</Pos>
-		<Size>60,25</Size>
+		<Pos>850,218</Pos>
+		<Size>80,25</Size>
 		<NumberOfDigits>4</NumberOfDigits>
+		<!--CSS alignments not respected see bug lp:605530 , lets call <Alignment>-->
+		<Alignment>right</Alignment>
 		<Connection>
 			<ConfigKey>[Channel2],rate</ConfigKey>
 		</Connection>
@@ -1197,22 +1307,12 @@
 		<Pos>503,6</Pos>
 		<Connection>
 			<ConfigKey>[Channel1],cue_default</ConfigKey>
-			<EmitOnDownPress>true</EmitOnDownPress>
-			<ButtonState>LeftButton</ButtonState>
-		</Connection>
-		<Connection>
-			<ConfigKey>[Channel1],cue_default</ConfigKey>
-			<EmitOnDownPress>false</EmitOnDownPress>
+			<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 			<ButtonState>LeftButton</ButtonState>
 		</Connection>
 		<Connection>
 			<ConfigKey>[Channel1],cue_gotoandstop</ConfigKey>
-			<EmitOnDownPress>true</EmitOnDownPress>
-			<ButtonState>RightButton</ButtonState>
-		</Connection>
-		<Connection>
-			<ConfigKey>[Channel1],cue_gotoandstop</ConfigKey>
-			<EmitOnDownPress>false</EmitOnDownPress>
+			<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 			<ButtonState>RightButton</ButtonState>
 		</Connection>
 	</PushButton>
@@ -1230,22 +1330,12 @@
 		<Pos>503,381</Pos>
 		<Connection>
 			<ConfigKey>[Channel2],cue_default</ConfigKey>
-			<EmitOnDownPress>true</EmitOnDownPress>
-			<ButtonState>LeftButton</ButtonState>
-		</Connection>
-		<Connection>
-			<ConfigKey>[Channel2],cue_default</ConfigKey>
-			<EmitOnDownPress>false</EmitOnDownPress>
+			<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 			<ButtonState>LeftButton</ButtonState>
 		</Connection>
 		<Connection>
 			<ConfigKey>[Channel2],cue_gotoandstop</ConfigKey>
-			<EmitOnDownPress>true</EmitOnDownPress>
-			<ButtonState>RightButton</ButtonState>
-		</Connection>
-		<Connection>
-			<ConfigKey>[Channel2],cue_gotoandstop</ConfigKey>
-			<EmitOnDownPress>false</EmitOnDownPress>
+			<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 			<ButtonState>RightButton</ButtonState>
 		</Connection>
 	</PushButton>
@@ -1276,27 +1366,15 @@
 		<Pos>934,6</Pos>
 		<Connection>
 			<ConfigKey>[Channel1],hotcue_1_activate</ConfigKey>
-			<EmitOnDownPress>true</EmitOnDownPress>
+			<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 			<ButtonState>LeftButton</ButtonState>
-		<ConnectValueToWidget>false</ConnectValueToWidget>
-		</Connection>
-		<Connection>
-			<ConfigKey>[Channel1],hotcue_1_activate</ConfigKey>
-			<EmitOnDownPress>false</EmitOnDownPress>
-			<ButtonState>LeftButton</ButtonState>
-		<ConnectValueToWidget>false</ConnectValueToWidget>
-		</Connection>
-		<Connection>
-			<ConfigKey>[Channel1],hotcue_1_clear</ConfigKey>
-			<EmitOnDownPress>true</EmitOnDownPress>
-			<ButtonState>RightButton</ButtonState>
 			<ConnectValueToWidget>false</ConnectValueToWidget>
 		</Connection>
 		<Connection>
 			<ConfigKey>[Channel1],hotcue_1_clear</ConfigKey>
-			<EmitOnDownPress>false</EmitOnDownPress>
+			<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 			<ButtonState>RightButton</ButtonState>
-			<ConnectValueFromWidget>false</ConnectValueFromWidget>
+			<ConnectValueToWidget>false</ConnectValueToWidget>
 		</Connection>
 		<Connection>
 			<ConfigKey>[Channel1],hotcue_1_enabled</ConfigKey>
@@ -1324,27 +1402,15 @@
 		<Pos>984,6</Pos>
 		<Connection>
 			<ConfigKey>[Channel1],hotcue_2_activate</ConfigKey>
-			<EmitOnDownPress>true</EmitOnDownPress>
+			<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 			<ButtonState>LeftButton</ButtonState>
-		<ConnectValueToWidget>false</ConnectValueToWidget>
-		</Connection>
-		<Connection>
-			<ConfigKey>[Channel1],hotcue_2_activate</ConfigKey>
-			<EmitOnDownPress>false</EmitOnDownPress>
-			<ButtonState>LeftButton</ButtonState>
-		<ConnectValueToWidget>false</ConnectValueToWidget>
-		</Connection>
-		<Connection>
-			<ConfigKey>[Channel1],hotcue_2_clear</ConfigKey>
-			<EmitOnDownPress>true</EmitOnDownPress>
-			<ButtonState>RightButton</ButtonState>
 			<ConnectValueToWidget>false</ConnectValueToWidget>
 		</Connection>
 		<Connection>
 			<ConfigKey>[Channel1],hotcue_2_clear</ConfigKey>
-			<EmitOnDownPress>false</EmitOnDownPress>
+			<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 			<ButtonState>RightButton</ButtonState>
-			<ConnectValueFromWidget>false</ConnectValueFromWidget>
+			<ConnectValueToWidget>false</ConnectValueToWidget>
 		</Connection>
 		<Connection>
 			<ConfigKey>[Channel1],hotcue_2_enabled</ConfigKey>
@@ -1372,27 +1438,15 @@
 		<Pos>1034,6</Pos>
 		<Connection>
 			<ConfigKey>[Channel1],hotcue_3_activate</ConfigKey>
-			<EmitOnDownPress>true</EmitOnDownPress>
+			<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 			<ButtonState>LeftButton</ButtonState>
-		<ConnectValueToWidget>false</ConnectValueToWidget>
-		</Connection>
-		<Connection>
-			<ConfigKey>[Channel1],hotcue_3_activate</ConfigKey>
-			<EmitOnDownPress>false</EmitOnDownPress>
-			<ButtonState>LeftButton</ButtonState>
-		<ConnectValueToWidget>false</ConnectValueToWidget>
-		</Connection>
-		<Connection>
-			<ConfigKey>[Channel1],hotcue_3_clear</ConfigKey>
-			<EmitOnDownPress>true</EmitOnDownPress>
-			<ButtonState>RightButton</ButtonState>
 			<ConnectValueToWidget>false</ConnectValueToWidget>
 		</Connection>
 		<Connection>
 			<ConfigKey>[Channel1],hotcue_3_clear</ConfigKey>
-			<EmitOnDownPress>false</EmitOnDownPress>
+			<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 			<ButtonState>RightButton</ButtonState>
-			<ConnectValueFromWidget>false</ConnectValueFromWidget>
+			<ConnectValueToWidget>false</ConnectValueToWidget>
 		</Connection>
 		<Connection>
 			<ConfigKey>[Channel1],hotcue_3_enabled</ConfigKey>
@@ -1420,27 +1474,15 @@
 		<Pos>1084,6</Pos>
 		<Connection>
 			<ConfigKey>[Channel1],hotcue_4_activate</ConfigKey>
-			<EmitOnDownPress>true</EmitOnDownPress>
+			<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 			<ButtonState>LeftButton</ButtonState>
-		<ConnectValueToWidget>false</ConnectValueToWidget>
-		</Connection>
-		<Connection>
-			<ConfigKey>[Channel1],hotcue_4_activate</ConfigKey>
-			<EmitOnDownPress>false</EmitOnDownPress>
-			<ButtonState>LeftButton</ButtonState>
-		<ConnectValueToWidget>false</ConnectValueToWidget>
-		</Connection>
-		<Connection>
-			<ConfigKey>[Channel1],hotcue_4_clear</ConfigKey>
-			<EmitOnDownPress>true</EmitOnDownPress>
-			<ButtonState>RightButton</ButtonState>
 			<ConnectValueToWidget>false</ConnectValueToWidget>
 		</Connection>
 		<Connection>
 			<ConfigKey>[Channel1],hotcue_4_clear</ConfigKey>
-			<EmitOnDownPress>false</EmitOnDownPress>
+			<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 			<ButtonState>RightButton</ButtonState>
-			<ConnectValueFromWidget>false</ConnectValueFromWidget>
+			<ConnectValueToWidget>false</ConnectValueToWidget>
 		</Connection>
 		<Connection>
 			<ConfigKey>[Channel1],hotcue_4_enabled</ConfigKey>
@@ -1468,27 +1510,15 @@
 		<Pos>1134,6</Pos>
 		<Connection>
 			<ConfigKey>[Channel1],hotcue_5_activate</ConfigKey>
-			<EmitOnDownPress>true</EmitOnDownPress>
+			<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 			<ButtonState>LeftButton</ButtonState>
-		<ConnectValueToWidget>false</ConnectValueToWidget>
-		</Connection>
-		<Connection>
-			<ConfigKey>[Channel1],hotcue_5_activate</ConfigKey>
-			<EmitOnDownPress>false</EmitOnDownPress>
-			<ButtonState>LeftButton</ButtonState>
-		<ConnectValueToWidget>false</ConnectValueToWidget>
-		</Connection>
-		<Connection>
-			<ConfigKey>[Channel1],hotcue_5_clear</ConfigKey>
-			<EmitOnDownPress>true</EmitOnDownPress>
-			<ButtonState>RightButton</ButtonState>
 			<ConnectValueToWidget>false</ConnectValueToWidget>
 		</Connection>
 		<Connection>
 			<ConfigKey>[Channel1],hotcue_5_clear</ConfigKey>
-			<EmitOnDownPress>false</EmitOnDownPress>
+			<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 			<ButtonState>RightButton</ButtonState>
-			<ConnectValueFromWidget>false</ConnectValueFromWidget>
+			<ConnectValueToWidget>false</ConnectValueToWidget>
 		</Connection>
 		<Connection>
 			<ConfigKey>[Channel1],hotcue_5_enabled</ConfigKey>
@@ -1516,27 +1546,15 @@
 		<Pos>1184,6</Pos>
 		<Connection>
 			<ConfigKey>[Channel1],hotcue_6_activate</ConfigKey>
-			<EmitOnDownPress>true</EmitOnDownPress>
+			<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 			<ButtonState>LeftButton</ButtonState>
-		<ConnectValueToWidget>false</ConnectValueToWidget>
-		</Connection>
-		<Connection>
-			<ConfigKey>[Channel1],hotcue_6_activate</ConfigKey>
-			<EmitOnDownPress>false</EmitOnDownPress>
-			<ButtonState>LeftButton</ButtonState>
-		<ConnectValueToWidget>false</ConnectValueToWidget>
-		</Connection>
-		<Connection>
-			<ConfigKey>[Channel1],hotcue_6_clear</ConfigKey>
-			<EmitOnDownPress>true</EmitOnDownPress>
-			<ButtonState>RightButton</ButtonState>
 			<ConnectValueToWidget>false</ConnectValueToWidget>
 		</Connection>
 		<Connection>
 			<ConfigKey>[Channel1],hotcue_6_clear</ConfigKey>
-			<EmitOnDownPress>false</EmitOnDownPress>
+			<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 			<ButtonState>RightButton</ButtonState>
-			<ConnectValueFromWidget>false</ConnectValueFromWidget>
+			<ConnectValueToWidget>false</ConnectValueToWidget>
 		</Connection>
 		<Connection>
 			<ConfigKey>[Channel1],hotcue_6_enabled</ConfigKey>
@@ -1564,27 +1582,15 @@
 		<Pos>934,381</Pos>
 		<Connection>
 			<ConfigKey>[Channel2],hotcue_1_activate</ConfigKey>
-			<EmitOnDownPress>true</EmitOnDownPress>
+			<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 			<ButtonState>LeftButton</ButtonState>
-		<ConnectValueToWidget>false</ConnectValueToWidget>
-		</Connection>
-		<Connection>
-			<ConfigKey>[Channel2],hotcue_1_activate</ConfigKey>
-			<EmitOnDownPress>false</EmitOnDownPress>
-			<ButtonState>LeftButton</ButtonState>
-		<ConnectValueToWidget>false</ConnectValueToWidget>
-		</Connection>
-		<Connection>
-			<ConfigKey>[Channel2],hotcue_1_clear</ConfigKey>
-			<EmitOnDownPress>true</EmitOnDownPress>
-			<ButtonState>RightButton</ButtonState>
 			<ConnectValueToWidget>false</ConnectValueToWidget>
 		</Connection>
 		<Connection>
 			<ConfigKey>[Channel2],hotcue_1_clear</ConfigKey>
-			<EmitOnDownPress>false</EmitOnDownPress>
+			<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 			<ButtonState>RightButton</ButtonState>
-			<ConnectValueFromWidget>false</ConnectValueFromWidget>
+			<ConnectValueToWidget>false</ConnectValueToWidget>
 		</Connection>
 		<Connection>
 			<ConfigKey>[Channel2],hotcue_1_enabled</ConfigKey>
@@ -1612,27 +1618,15 @@
 		<Pos>984,381</Pos>
 		<Connection>
 			<ConfigKey>[Channel2],hotcue_2_activate</ConfigKey>
-			<EmitOnDownPress>true</EmitOnDownPress>
+			<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 			<ButtonState>LeftButton</ButtonState>
-		<ConnectValueToWidget>false</ConnectValueToWidget>
-		</Connection>
-		<Connection>
-			<ConfigKey>[Channel2],hotcue_2_activate</ConfigKey>
-			<EmitOnDownPress>false</EmitOnDownPress>
-			<ButtonState>LeftButton</ButtonState>
-		<ConnectValueToWidget>false</ConnectValueToWidget>
-		</Connection>
-		<Connection>
-			<ConfigKey>[Channel2],hotcue_2_clear</ConfigKey>
-			<EmitOnDownPress>true</EmitOnDownPress>
-			<ButtonState>RightButton</ButtonState>
 			<ConnectValueToWidget>false</ConnectValueToWidget>
 		</Connection>
 		<Connection>
 			<ConfigKey>[Channel2],hotcue_2_clear</ConfigKey>
-			<EmitOnDownPress>false</EmitOnDownPress>
+			<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 			<ButtonState>RightButton</ButtonState>
-			<ConnectValueFromWidget>false</ConnectValueFromWidget>
+			<ConnectValueToWidget>false</ConnectValueToWidget>
 		</Connection>
 		<Connection>
 			<ConfigKey>[Channel2],hotcue_2_enabled</ConfigKey>
@@ -1660,27 +1654,15 @@
 		<Pos>1034,381</Pos>
 		<Connection>
 			<ConfigKey>[Channel2],hotcue_3_activate</ConfigKey>
-			<EmitOnDownPress>true</EmitOnDownPress>
+			<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 			<ButtonState>LeftButton</ButtonState>
-		<ConnectValueToWidget>false</ConnectValueToWidget>
-		</Connection>
-		<Connection>
-			<ConfigKey>[Channel2],hotcue_3_activate</ConfigKey>
-			<EmitOnDownPress>false</EmitOnDownPress>
-			<ButtonState>LeftButton</ButtonState>
-		<ConnectValueToWidget>false</ConnectValueToWidget>
-		</Connection>
-		<Connection>
-			<ConfigKey>[Channel2],hotcue_3_clear</ConfigKey>
-			<EmitOnDownPress>true</EmitOnDownPress>
-			<ButtonState>RightButton</ButtonState>
 			<ConnectValueToWidget>false</ConnectValueToWidget>
 		</Connection>
 		<Connection>
 			<ConfigKey>[Channel2],hotcue_3_clear</ConfigKey>
-			<EmitOnDownPress>false</EmitOnDownPress>
+			<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 			<ButtonState>RightButton</ButtonState>
-			<ConnectValueFromWidget>false</ConnectValueFromWidget>
+			<ConnectValueToWidget>false</ConnectValueToWidget>
 		</Connection>
 		<Connection>
 			<ConfigKey>[Channel2],hotcue_3_enabled</ConfigKey>
@@ -1708,27 +1690,15 @@
 		<Pos>1084,381</Pos>
 		<Connection>
 			<ConfigKey>[Channel2],hotcue_4_activate</ConfigKey>
-			<EmitOnDownPress>true</EmitOnDownPress>
+			<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 			<ButtonState>LeftButton</ButtonState>
-		<ConnectValueToWidget>false</ConnectValueToWidget>
-		</Connection>
-		<Connection>
-			<ConfigKey>[Channel2],hotcue_4_activate</ConfigKey>
-			<EmitOnDownPress>false</EmitOnDownPress>
-			<ButtonState>LeftButton</ButtonState>
-		<ConnectValueToWidget>false</ConnectValueToWidget>
-		</Connection>
-		<Connection>
-			<ConfigKey>[Channel2],hotcue_4_clear</ConfigKey>
-			<EmitOnDownPress>true</EmitOnDownPress>
-			<ButtonState>RightButton</ButtonState>
 			<ConnectValueToWidget>false</ConnectValueToWidget>
 		</Connection>
 		<Connection>
 			<ConfigKey>[Channel2],hotcue_4_clear</ConfigKey>
-			<EmitOnDownPress>false</EmitOnDownPress>
+			<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 			<ButtonState>RightButton</ButtonState>
-			<ConnectValueFromWidget>false</ConnectValueFromWidget>
+			<ConnectValueToWidget>false</ConnectValueToWidget>
 		</Connection>
 		<Connection>
 			<ConfigKey>[Channel2],hotcue_4_enabled</ConfigKey>
@@ -1756,27 +1726,15 @@
 		<Pos>1134,381</Pos>
 		<Connection>
 			<ConfigKey>[Channel2],hotcue_5_activate</ConfigKey>
-			<EmitOnDownPress>true</EmitOnDownPress>
+			<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 			<ButtonState>LeftButton</ButtonState>
-		<ConnectValueToWidget>false</ConnectValueToWidget>
-		</Connection>
-		<Connection>
-			<ConfigKey>[Channel2],hotcue_5_activate</ConfigKey>
-			<EmitOnDownPress>false</EmitOnDownPress>
-			<ButtonState>LeftButton</ButtonState>
-		<ConnectValueToWidget>false</ConnectValueToWidget>
-		</Connection>
-		<Connection>
-			<ConfigKey>[Channel2],hotcue_5_clear</ConfigKey>
-			<EmitOnDownPress>true</EmitOnDownPress>
-			<ButtonState>RightButton</ButtonState>
 			<ConnectValueToWidget>false</ConnectValueToWidget>
 		</Connection>
 		<Connection>
 			<ConfigKey>[Channel2],hotcue_5_clear</ConfigKey>
-			<EmitOnDownPress>false</EmitOnDownPress>
+			<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 			<ButtonState>RightButton</ButtonState>
-			<ConnectValueFromWidget>false</ConnectValueFromWidget>
+			<ConnectValueToWidget>false</ConnectValueToWidget>
 		</Connection>
 		<Connection>
 			<ConfigKey>[Channel2],hotcue_5_enabled</ConfigKey>
@@ -1804,27 +1762,15 @@
 		<Pos>1184,381</Pos>
 		<Connection>
 			<ConfigKey>[Channel2],hotcue_6_activate</ConfigKey>
-			<EmitOnDownPress>true</EmitOnDownPress>
+			<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 			<ButtonState>LeftButton</ButtonState>
-		<ConnectValueToWidget>false</ConnectValueToWidget>
-		</Connection>
-		<Connection>
-			<ConfigKey>[Channel2],hotcue_6_activate</ConfigKey>
-			<EmitOnDownPress>false</EmitOnDownPress>
-			<ButtonState>LeftButton</ButtonState>
-		<ConnectValueToWidget>false</ConnectValueToWidget>
-		</Connection>
-		<Connection>
-			<ConfigKey>[Channel2],hotcue_6_clear</ConfigKey>
-			<EmitOnDownPress>true</EmitOnDownPress>
-			<ButtonState>RightButton</ButtonState>
 			<ConnectValueToWidget>false</ConnectValueToWidget>
 		</Connection>
 		<Connection>
 			<ConfigKey>[Channel2],hotcue_6_clear</ConfigKey>
-			<EmitOnDownPress>false</EmitOnDownPress>
+			<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 			<ButtonState>RightButton</ButtonState>
-			<ConnectValueFromWidget>false</ConnectValueFromWidget>
+			<ConnectValueToWidget>false</ConnectValueToWidget>
 		</Connection>
 		<Connection>
 			<ConfigKey>[Channel2],hotcue_6_enabled</ConfigKey>
@@ -1851,12 +1797,7 @@
 		<Pos>758,6</Pos>
 		<Connection>
 			<ConfigKey>[Channel1],loop_in</ConfigKey>
-			<EmitOnDownPress>true</EmitOnDownPress>
-			<ButtonState>LeftButton</ButtonState>
-		</Connection>
-		<Connection>
-			<ConfigKey>[Channel1],loop_in</ConfigKey>
-			<EmitOnDownPress>false</EmitOnDownPress>
+			<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 			<ButtonState>LeftButton</ButtonState>
 		</Connection>
 	</PushButton>
@@ -1874,12 +1815,7 @@
 		<Pos>758,381</Pos>
 		<Connection>
 			<ConfigKey>[Channel2],loop_in</ConfigKey>
-			<EmitOnDownPress>true</EmitOnDownPress>
-			<ButtonState>LeftButton</ButtonState>
-		</Connection>
-		<Connection>
-			<ConfigKey>[Channel2],loop_in</ConfigKey>
-			<EmitOnDownPress>false</EmitOnDownPress>
+			<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 			<ButtonState>LeftButton</ButtonState>
 		</Connection>
 	</PushButton>
@@ -1897,12 +1833,7 @@
 		<Pos>808,6</Pos>
 		<Connection>
 			<ConfigKey>[Channel1],loop_out</ConfigKey>
-			<EmitOnDownPress>true</EmitOnDownPress>
-			<ButtonState>LeftButton</ButtonState>
-		</Connection>
-		<Connection>
-			<ConfigKey>[Channel1],loop_out</ConfigKey>
-			<EmitOnDownPress>false</EmitOnDownPress>
+			<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 			<ButtonState>LeftButton</ButtonState>
 		</Connection>
 	</PushButton>
@@ -1920,12 +1851,7 @@
 		<Pos>808,381</Pos>
 		<Connection>
 			<ConfigKey>[Channel2],loop_out</ConfigKey>
-			<EmitOnDownPress>true</EmitOnDownPress>
-			<ButtonState>LeftButton</ButtonState>
-		</Connection>
-		<Connection>
-			<ConfigKey>[Channel2],loop_out</ConfigKey>
-			<EmitOnDownPress>false</EmitOnDownPress>
+			<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 			<ButtonState>LeftButton</ButtonState>
 		</Connection>
 	</PushButton>
@@ -1949,13 +1875,7 @@
 		<Pos>858,6</Pos>
 		<Connection>
 			<ConfigKey>[Channel1],reloop_exit</ConfigKey>
-			<EmitOnDownPress>true</EmitOnDownPress>
-			<ButtonState>LeftButton</ButtonState>
-			<ConnectValueToWidget>false</ConnectValueToWidget>
-		</Connection>
-		<Connection>
-			<ConfigKey>[Channel1],reloop_exit</ConfigKey>
-			<EmitOnDownPress>false</EmitOnDownPress>
+			<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 			<ButtonState>LeftButton</ButtonState>
 			<ConnectValueToWidget>false</ConnectValueToWidget>
 		</Connection>
@@ -1984,13 +1904,7 @@
 		<Pos>858,381</Pos>
 		<Connection>
 			<ConfigKey>[Channel2],reloop_exit</ConfigKey>
-			<EmitOnDownPress>true</EmitOnDownPress>
-			<ButtonState>LeftButton</ButtonState>
-			<ConnectValueToWidget>false</ConnectValueToWidget>
-		</Connection>
-		<Connection>
-			<ConfigKey>[Channel2],reloop_exit</ConfigKey>
-			<EmitOnDownPress>false</EmitOnDownPress>
+			<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 			<ButtonState>LeftButton</ButtonState>
 			<ConnectValueToWidget>false</ConnectValueToWidget>
 		</Connection>
@@ -2019,12 +1933,7 @@
 		<Pos>215,6</Pos>
 		<Connection>
 			<ConfigKey>[Channel1],reverse</ConfigKey>
-			<EmitOnDownPress>true</EmitOnDownPress>
-			<ButtonState>LeftButton</ButtonState>
-		</Connection>
-		<Connection>
-			<ConfigKey>[Channel1],reverse</ConfigKey>
-			<EmitOnDownPress>false</EmitOnDownPress>
+			<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 			<ButtonState>LeftButton</ButtonState>
 		</Connection>
 	</PushButton>
@@ -2042,12 +1951,7 @@
 		<Pos>215,381</Pos>
 		<Connection>
 			<ConfigKey>[Channel2],reverse</ConfigKey>
-			<EmitOnDownPress>true</EmitOnDownPress>
-			<ButtonState>LeftButton</ButtonState>
-		</Connection>
-		<Connection>
-			<ConfigKey>[Channel2],reverse</ConfigKey>
-			<EmitOnDownPress>false</EmitOnDownPress>
+			<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 			<ButtonState>LeftButton</ButtonState>
 		</Connection>
 	</PushButton>
@@ -2071,22 +1975,12 @@
 		<Pos>265,6</Pos>
 		<Connection>
 			<ConfigKey>[Channel1],fwd</ConfigKey>
-			<EmitOnDownPress>true</EmitOnDownPress>
-			<ButtonState>LeftButton</ButtonState>
-		</Connection>
-		<Connection>
-			<ConfigKey>[Channel1],fwd</ConfigKey>
-			<EmitOnDownPress>false</EmitOnDownPress>
+			<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 			<ButtonState>LeftButton</ButtonState>
 		</Connection>
 		<Connection>
 			<ConfigKey>[Channel1],end</ConfigKey>
-			<EmitOnDownPress>true</EmitOnDownPress>
-			<ButtonState>RightButton</ButtonState>
-		</Connection>
-		<Connection>
-			<ConfigKey>[Channel1],end</ConfigKey>
-			<EmitOnDownPress>false</EmitOnDownPress>
+			<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 			<ButtonState>RightButton</ButtonState>
 		</Connection>
 	</PushButton>
@@ -2104,22 +1998,12 @@
 		<Pos>165,6</Pos>
 		<Connection>
 			<ConfigKey>[Channel1],back</ConfigKey>
-			<EmitOnDownPress>true</EmitOnDownPress>
-			<ButtonState>LeftButton</ButtonState>
-		</Connection>
-		<Connection>
-			<ConfigKey>[Channel1],back</ConfigKey>
-			<EmitOnDownPress>false</EmitOnDownPress>
+			<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 			<ButtonState>LeftButton</ButtonState>
 		</Connection>
 		<Connection>
 			<ConfigKey>[Channel1],start</ConfigKey>
-			<EmitOnDownPress>true</EmitOnDownPress>
-			<ButtonState>RightButton</ButtonState>
-		</Connection>
-		<Connection>
-			<ConfigKey>[Channel1],start</ConfigKey>
-			<EmitOnDownPress>false</EmitOnDownPress>
+			<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 			<ButtonState>RightButton</ButtonState>
 		</Connection>
 	</PushButton>
@@ -2137,22 +2021,12 @@
 		<Pos>265,381</Pos>
 		<Connection>
 			<ConfigKey>[Channel2],fwd</ConfigKey>
-			<EmitOnDownPress>true</EmitOnDownPress>
-			<ButtonState>LeftButton</ButtonState>
-		</Connection>
-		<Connection>
-			<ConfigKey>[Channel2],fwd</ConfigKey>
-			<EmitOnDownPress>false</EmitOnDownPress>
+			<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 			<ButtonState>LeftButton</ButtonState>
 		</Connection>
 		<Connection>
 			<ConfigKey>[Channel2],end</ConfigKey>
-			<EmitOnDownPress>true</EmitOnDownPress>
-			<ButtonState>RightButton</ButtonState>
-		</Connection>
-		<Connection>
-			<ConfigKey>[Channel2],end</ConfigKey>
-			<EmitOnDownPress>false</EmitOnDownPress>
+			<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 			<ButtonState>RightButton</ButtonState>
 		</Connection>
 	</PushButton>
@@ -2170,22 +2044,12 @@
 		<Pos>165,381</Pos>
 		<Connection>
 			<ConfigKey>[Channel2],back</ConfigKey>
-			<EmitOnDownPress>true</EmitOnDownPress>
-			<ButtonState>LeftButton</ButtonState>
-		</Connection>
-		<Connection>
-			<ConfigKey>[Channel2],back</ConfigKey>
-			<EmitOnDownPress>false</EmitOnDownPress>
+			<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 			<ButtonState>LeftButton</ButtonState>
 		</Connection>
 		<Connection>
 			<ConfigKey>[Channel2],start</ConfigKey>
-			<EmitOnDownPress>true</EmitOnDownPress>
-			<ButtonState>RightButton</ButtonState>
-		</Connection>
-		<Connection>
-			<ConfigKey>[Channel2],start</ConfigKey>
-			<EmitOnDownPress>false</EmitOnDownPress>
+			<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 			<ButtonState>RightButton</ButtonState>
 		</Connection>
 	</PushButton>
@@ -2209,12 +2073,7 @@
 		<Pos>653,6</Pos>
 		<Connection>
 			<ConfigKey>[Channel1],beatsync</ConfigKey>
-			<EmitOnDownPress>true</EmitOnDownPress>
-			<ButtonState>LeftButton</ButtonState>
-		</Connection>
-		<Connection>
-			<ConfigKey>[Channel1],beatsync</ConfigKey>
-			<EmitOnDownPress>false</EmitOnDownPress>
+			<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 			<ButtonState>LeftButton</ButtonState>
 		</Connection>
 	</PushButton>
@@ -2232,12 +2091,7 @@
 		<Pos>653,381</Pos>
 		<Connection>
 			<ConfigKey>[Channel2],beatsync</ConfigKey>
-			<EmitOnDownPress>true</EmitOnDownPress>
-			<ButtonState>LeftButton</ButtonState>
-		</Connection>
-		<Connection>
-			<ConfigKey>[Channel2],beatsync</ConfigKey>
-			<EmitOnDownPress>false</EmitOnDownPress>
+			<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 			<ButtonState>LeftButton</ButtonState>
 		</Connection>
 	</PushButton>
@@ -2359,22 +2213,12 @@
 		<Pos>680,96</Pos>
 		<Connection>
 			<ConfigKey>[Channel1],rate_perm_up</ConfigKey>
-			<EmitOnDownPress>true</EmitOnDownPress>
-			<ButtonState>LeftButton</ButtonState>
-		</Connection>
-		<Connection>
-			<ConfigKey>[Channel1],rate_perm_up</ConfigKey>
-			<EmitOnDownPress>false</EmitOnDownPress>
+			<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 			<ButtonState>LeftButton</ButtonState>
 		</Connection>
 		<Connection>
 			<ConfigKey>[Channel1],rate_perm_up_small</ConfigKey>
-			<EmitOnDownPress>true</EmitOnDownPress>
-			<ButtonState>RightButton</ButtonState>
-		</Connection>
-		<Connection>
-			<ConfigKey>[Channel1],rate_perm_up_small</ConfigKey>
-			<EmitOnDownPress>false</EmitOnDownPress>
+			<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 			<ButtonState>RightButton</ButtonState>
 		</Connection>
 	</PushButton>
@@ -2392,22 +2236,12 @@
 		<Pos>680,264</Pos>
 		<Connection>
 			<ConfigKey>[Channel2],rate_perm_up</ConfigKey>
-			<EmitOnDownPress>true</EmitOnDownPress>
-			<ButtonState>LeftButton</ButtonState>
-		</Connection>
-		<Connection>
-			<ConfigKey>[Channel2],rate_perm_up</ConfigKey>
-			<EmitOnDownPress>false</EmitOnDownPress>
+			<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 			<ButtonState>LeftButton</ButtonState>
 		</Connection>
 		<Connection>
 			<ConfigKey>[Channel2],rate_perm_up_small</ConfigKey>
-			<EmitOnDownPress>true</EmitOnDownPress>
-			<ButtonState>RightButton</ButtonState>
-		</Connection>
-		<Connection>
-			<ConfigKey>[Channel2],rate_perm_up_small</ConfigKey>
-			<EmitOnDownPress>false</EmitOnDownPress>
+			<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 			<ButtonState>RightButton</ButtonState>
 		</Connection>
 	</PushButton>
@@ -2425,12 +2259,12 @@
 		<Pos>680,126</Pos>
 		<Connection>
 			<ConfigKey>[Channel1],rate_perm_down</ConfigKey>
-			<EmitOnDownPress>true</EmitOnDownPress>
+			<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 			<ButtonState>LeftButton</ButtonState>
 		</Connection>
 		<Connection>
 			<ConfigKey>[Channel1],rate_perm_down_small</ConfigKey>
-			<EmitOnDownPress>true</EmitOnDownPress>
+			<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 			<ButtonState>RightButton</ButtonState>
 		</Connection>
 	</PushButton>
@@ -2448,12 +2282,12 @@
 		<Pos>680,293</Pos>
 		<Connection>
 			<ConfigKey>[Channel2],rate_perm_down</ConfigKey>
-			<EmitOnDownPress>true</EmitOnDownPress>
+			<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 			<ButtonState>LeftButton</ButtonState>
 		</Connection>
 		<Connection>
 			<ConfigKey>[Channel2],rate_perm_down_small</ConfigKey>
-			<EmitOnDownPress>true</EmitOnDownPress>
+			<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 			<ButtonState>RightButton</ButtonState>
 		</Connection>
 	</PushButton>
@@ -2477,22 +2311,12 @@
 		<Pos>680,57</Pos>
 		<Connection>
 			<ConfigKey>[Channel1],rate_temp_up</ConfigKey>
-			<EmitOnDownPress>true</EmitOnDownPress>
-			<ButtonState>LeftButton</ButtonState>
-		</Connection>
-		<Connection>
-			<ConfigKey>[Channel1],rate_temp_up</ConfigKey>
-			<EmitOnDownPress>false</EmitOnDownPress>
+			<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 			<ButtonState>LeftButton</ButtonState>
 		</Connection>
 		<Connection>
 			<ConfigKey>[Channel1],rate_temp_up_small</ConfigKey>
-			<EmitOnDownPress>true</EmitOnDownPress>
-			<ButtonState>RightButton</ButtonState>
-		</Connection>
-		<Connection>
-			<ConfigKey>[Channel1],rate_temp_up_small</ConfigKey>
-			<EmitOnDownPress>false</EmitOnDownPress>
+			<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 			<ButtonState>RightButton</ButtonState>
 		</Connection>
 	</PushButton>
@@ -2510,22 +2334,12 @@
 		<Pos>680,224</Pos>
 		<Connection>
 			<ConfigKey>[Channel2],rate_temp_up</ConfigKey>
-			<EmitOnDownPress>true</EmitOnDownPress>
-			<ButtonState>LeftButton</ButtonState>
-		</Connection>
-		<Connection>
-			<ConfigKey>[Channel2],rate_temp_up</ConfigKey>
-			<EmitOnDownPress>false</EmitOnDownPress>
+			<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 			<ButtonState>LeftButton</ButtonState>
 		</Connection>
 		<Connection>
 			<ConfigKey>[Channel2],rate_temp_up_small</ConfigKey>
-			<EmitOnDownPress>true</EmitOnDownPress>
-			<ButtonState>RightButton</ButtonState>
-		</Connection>
-		<Connection>
-			<ConfigKey>[Channel2],rate_temp_up_small</ConfigKey>
-			<EmitOnDownPress>false</EmitOnDownPress>
+			<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 			<ButtonState>RightButton</ButtonState>
 		</Connection>
 	</PushButton>
@@ -2543,22 +2357,12 @@
 		<Pos>680,166</Pos>
 		<Connection>
 			<ConfigKey>[Channel1],rate_temp_down</ConfigKey>
-			<EmitOnDownPress>true</EmitOnDownPress>
-			<ButtonState>LeftButton</ButtonState>
-		</Connection>
-		<Connection>
-			<ConfigKey>[Channel1],rate_temp_down</ConfigKey>
-			<EmitOnDownPress>false</EmitOnDownPress>
+			<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 			<ButtonState>LeftButton</ButtonState>
 		</Connection>
 		<Connection>
 			<ConfigKey>[Channel1],rate_temp_down_small</ConfigKey>
-			<EmitOnDownPress>true</EmitOnDownPress>
-			<ButtonState>RightButton</ButtonState>
-		</Connection>
-		<Connection>
-			<ConfigKey>[Channel1],rate_temp_down_small</ConfigKey>
-			<EmitOnDownPress>false</EmitOnDownPress>
+			<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 			<ButtonState>RightButton</ButtonState>
 		</Connection>
 	</PushButton>
@@ -2576,22 +2380,12 @@
 		<Pos>680,333</Pos>
 		<Connection>
 			<ConfigKey>[Channel2],rate_temp_down</ConfigKey>
-			<EmitOnDownPress>true</EmitOnDownPress>
-			<ButtonState>LeftButton</ButtonState>
-		</Connection>
-		<Connection>
-			<ConfigKey>[Channel2],rate_temp_down</ConfigKey>
-			<EmitOnDownPress>false</EmitOnDownPress>
+			<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 			<ButtonState>LeftButton</ButtonState>
 		</Connection>
 		<Connection>
 			<ConfigKey>[Channel2],rate_temp_down_small</ConfigKey>
-			<EmitOnDownPress>true</EmitOnDownPress>
-			<ButtonState>RightButton</ButtonState>
-		</Connection>
-		<Connection>
-			<ConfigKey>[Channel2],rate_temp_down_small</ConfigKey>
-			<EmitOnDownPress>false</EmitOnDownPress>
+			<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 			<ButtonState>RightButton</ButtonState>
 		</Connection>
 	</PushButton>

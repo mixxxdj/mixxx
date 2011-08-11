@@ -287,15 +287,20 @@ class VinylControl(Feature):
         build.env.Append(CPPPATH='#lib/scratchlib')
 
     def sources(self, build):
-        sources = ['vinylcontrol.cpp',
-                   'vinylcontrolproxy.cpp',
-                   'vinylcontrolxwax.cpp',
+        sources = ['vinylcontrol/vinylcontrol.cpp',
+                   'vinylcontrol/vinylcontrolproxy.cpp',
+                   'vinylcontrol/vinylcontrolxwax.cpp',
                    'dlgprefvinyl.cpp',
-                   'vinylcontrolsignalwidget.cpp']
+                   'vinylcontrol/vinylcontrolsignalwidget.cpp',
+                   'vinylcontrol/vinylcontrolmanager.cpp',
+                   'engine/vinylcontrolcontrol.cpp',]
         if build.platform_is_windows:
-            sources.append("#lib/xwax/timecoder_win32.c")
+            sources.append("#lib/xwax/timecoder_win32.cpp")
+            sources.append("#lib/xwax/lut.cpp")
         else:
             sources.append("#lib/xwax/timecoder.c")
+            sources.append("#lib/xwax/lut.c")
+
         return sources
 
 class Tonal(Feature):
@@ -413,6 +418,30 @@ class ScriptStudio(Feature):
                 'script/signalrecorder.cpp',
                 'script/macrolistitem.cpp',
                 'script/qtscriptinterface.cpp']
+
+class PerfTools(Feature):
+    def description(self):
+        return "Google PerfTools"
+
+    def enabled(self, build):
+        build.flags['perftools'] = util.get_flags(build.env, 'perftools', 0)
+        build.flags['perftools_profiler'] = util.get_flags(build.env, 'perftools_profiler', 0)
+        if int(build.flags['perftools']):
+            return True
+        return False
+
+    def add_options(self, build, vars):
+        vars.Add("perftools", "Set to 1 to enable linking against libtcmalloc and Google's performance tools. You must install libtcmalloc from google-perftools to use this option.", 0)
+        vars.Add("perftools_profiler", "Set to 1 to enable linking against libprofiler, Google's CPU profiler. You must install libprofiler from google-perftools to use this option.", 0)
+
+    def configure(self, build, conf):
+        if not self.enabled(build):
+            return
+
+        build.env.Append(LIBS = "tcmalloc")
+
+        if int(build.flags['perftools_profiler']):
+            build.env.Append(LIBS = "profiler")
 
 class AsmLib(Feature):
     def description(self):
@@ -619,9 +648,10 @@ class Shoutcast(Feature):
         if not libshout_found:
             raise Exception('Could not find libshout or its development headers. Please install it or compile Mixxx without Shoutcast support using the shoutcast=0 flag.')
 
-        # libvorbisenc does only exist on Linux and OSX, on Windows it is
-        # included in vorbisfile.dll
-        if not build.platform_is_windows:
+        # libvorbisenc does only exist on Linux, OSX and mingw32 on Windows. On
+        # Windows with MSVS it is included in vorbisfile.dll. libvorbis and
+        # libogg are included from build.py so don't add here.
+        if not build.platform_is_windows or build.toolchain_is_gnu:
             vorbisenc_found = conf.CheckLib(['vorbisenc'])
             if not vorbisenc_found:
                 raise Exception("libvorbisenc was not found! Please install it or compile Mixxx without Shoutcast support using the shoutcast=0 flag.")
@@ -747,6 +777,10 @@ class Optimize(Feature):
             build.env.Append(CCFLAGS = '/Gy')
             build.env.Append(LINKFLAGS = '/OPT:REF')
             build.env.Append(LINKFLAGS = '/OPT:ICF')
+
+            # Don't worry about alining code on 4KB boundaries
+            # build.env.Append(LINKFLAGS = '/OPT:NOWIN98')
+            # ALBERT: NOWIN98 is not supported in MSVC 2010.
 
             # http://msdn.microsoft.com/en-us/library/59a3b321.aspx
             # In general, you should pick /O2 over /Ox

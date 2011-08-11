@@ -35,6 +35,8 @@ WOverview::WOverview(const char *pGroup, QWidget * parent)
     m_bDrag = false;
     m_pScreenBuffer = 0;
 
+    setAcceptDrops(true);
+
     m_pLoopStart = ControlObject::getControl(
         ConfigKey(m_pGroup, "loop_start_position"));
     connect(m_pLoopStart, SIGNAL(valueChanged(double)),
@@ -105,17 +107,23 @@ void WOverview::setup(QDomNode node)
     m_qMousePos.setY(y/2);
  */
 
-    // Background color
-    QColor c(255,255,255);
-    if (!selectNode(node, "BgColor").isNull())
-    {
-        c.setNamedColor(selectNodeQString(node, "BgColor"));
+    // Background color and pixmap, default background color to transparent
+    m_qColorBackground = QColor(0, 0, 0, 0);
+    if (!selectNode(node, "BgColor").isNull()) {
+        m_qColorBackground.setNamedColor(selectNodeQString(node, "BgColor"));
+        m_qColorBackground = WSkinColor::getCorrectColor(m_qColorBackground);
+    }
+
+    // Clear the background pixmap, if it exists.
+    m_backgroundPixmap = QPixmap();
+    m_backgroundPixmapPath = WWidget::selectNodeQString(node, "BgPixmap");
+    if (m_backgroundPixmapPath != "") {
+        m_backgroundPixmap = QPixmap(WWidget::getPath(m_backgroundPixmapPath));
     }
 
     QPalette palette; //Qt4 update according to http://doc.trolltech.com/4.4/qwidget-qt3.html#setBackgroundColor (this could probably be cleaner maybe?)
-    palette.setColor(this->backgroundRole(), WSkinColor::getCorrectColor(c));
-    this->setPalette(palette);
-
+    palette.setColor(this->backgroundRole(), m_qColorBackground);
+    setPalette(palette);
 
     // If we're doing a warm boot, free the pixmap, and flag it to be regenerated.
     if(m_pScreenBuffer != NULL) {
@@ -126,13 +134,11 @@ void WOverview::setup(QDomNode node)
         // is therefore safe to delete.
 
         delete m_pScreenBuffer;
-
-        // Flag the pixmap for regeneration.
-        waveformChanged = true;
     }
 
-    m_pScreenBuffer = new QPixmap(this->size());
-    m_pScreenBuffer->fill(this->palette().color(QPalette::Background));
+    m_pScreenBuffer = new QPixmap(size());
+    // Flag the pixmap for regeneration.
+    waveformChanged = true;
 
     m_qColorSignal.setNamedColor(selectNodeQString(node, "SignalColor"));
     m_qColorSignal = WSkinColor::getCorrectColor(m_qColorSignal);
@@ -145,18 +151,20 @@ void WOverview::setValue(double fValue)
     if (!m_bDrag)
     {
         // Calculate handle position
-        m_iPos = (int)((fValue/127.)*((double)width()-2.));
+        m_iPos = (int)(((fValue-14.)/100.)*((double)width()-2.));
         update();
     }
 }
 
 void WOverview::slotLoadNewWaveform(TrackPointer pTrack)
 {
-    // Connect wavesummaryUpdated signals to our update slots.
-    connect(pTrack.data(), SIGNAL(wavesummaryUpdated(TrackInfoObject*)),
-            this, SLOT(slotLoadNewWaveform(TrackInfoObject*)));
-    // Now in case the track's wavesummary is already done, load it.
-    slotLoadNewWaveform(pTrack.data());
+    if (pTrack) {
+        // Connect wavesummaryUpdated signals to our update slots.
+        connect(pTrack.data(), SIGNAL(wavesummaryUpdated(TrackInfoObject*)),
+                this, SLOT(slotLoadNewWaveform(TrackInfoObject*)));
+        // Now in case the track's wavesummary is already done, load it.
+        slotLoadNewWaveform(pTrack.data());
+    }
 }
 
 void WOverview::slotLoadNewWaveform(TrackInfoObject* pTrack)
@@ -168,6 +176,10 @@ void WOverview::slotLoadNewWaveform(TrackInfoObject* pTrack)
 }
 
 void WOverview::slotUnloadTrack(TrackPointer pTrack) {
+    if (pTrack) {
+        disconnect(pTrack.data(), SIGNAL(wavesummaryUpdated(TrackInfoObject*)),
+                   this, SLOT(slotLoadNewWaveform(TrackInfoObject*)));
+    }
     QByteArray ba;
     setData(&ba, 0);
     update();
@@ -215,14 +227,20 @@ void WOverview::setData(const QByteArray* pWaveformSummary, long liSampleDuratio
 }
 
 void WOverview::redrawPixmap() {
-
-    // Erase background
-    m_pScreenBuffer->fill(this->palette().color(this->backgroundRole()));
-
-    if (!m_waveformSummary.size())
-        return;
+    // Fill with transparent pixels
+    m_pScreenBuffer->fill(m_qColorBackground);
 
     QPainter paint(m_pScreenBuffer);
+    if (!m_backgroundPixmap.isNull()) {
+        paint.drawTiledPixmap(m_pScreenBuffer->rect(), m_backgroundPixmap, QPoint(0,0));
+    } else {
+        paint.fillRect(m_pScreenBuffer->rect(), m_qColorBackground);
+    }
+
+    if (!m_waveformSummary.size()) {
+        update();
+        return;
+    }
 
     float yscale = (((float)(height()-2)/2.)/128.); //32768.;
     float xscale = (float)m_waveformSummary.size()/width();
@@ -318,8 +336,8 @@ void WOverview::mouseReleaseEvent(QMouseEvent * e)
 {
     mouseMoveEvent(e);
 
-    // value ranges from 0 to 127
-    float fValue = (double)m_iPos*(127./(double)(width()-2));
+    // value ranges from 0 to 127 map to -1 to 1
+    float fValue = ((double)m_iPos*(100./(double)(width()-2))) + 14.;
 
     if (e->button()==Qt::RightButton)
         emit(valueChangedRightUp(fValue));
@@ -348,8 +366,11 @@ void WOverview::paintEvent(QPaintEvent *)
     }
 
     QPainter paint(this);
+    // Fill with transparent pixels
+    paint.fillRect(rect(), QColor(0,0,0,0));
+
     // Draw waveform, then playpos
-    paint.drawPixmap(0, 0, *m_pScreenBuffer);
+    paint.drawPixmap(rect(), *m_pScreenBuffer, m_pScreenBuffer->rect());
 
     if (m_liSampleDuration > 0) {
         // Draw play position
@@ -425,4 +446,34 @@ QColor WOverview::getMarkerColor() {
 
 QColor WOverview::getSignalColor() {
    return m_qColorSignal;
+}
+
+void WOverview::dragEnterEvent(QDragEnterEvent* event) {
+    // Accept the enter event if the thing is a filepath and nothing's playing
+    // in this deck.
+    if (event->mimeData()->hasUrls()) {
+        ControlObject *pPlayCO = ControlObject::getControl(
+            ConfigKey(m_pGroup, "play"));
+        if (pPlayCO && pPlayCO->get()) {
+            event->ignore();
+        } else {
+            event->acceptProposedAction();
+        }
+    }
+}
+
+void WOverview::dropEvent(QDropEvent* event) {
+    if (event->mimeData()->hasUrls()) {
+        QList<QUrl> urls(event->mimeData()->urls());
+        QUrl url = urls.first();
+        QString name = url.toLocalFile();
+        //If the file is on a network share, try just converting the URL to a string...
+        if (name == "") {
+            name = url.toString();
+        }
+        event->accept();
+        emit(trackDropped(name, m_pGroup));
+    } else {
+        event->ignore();
+    }
 }

@@ -24,14 +24,12 @@ TraktorPlaylistModel::~TraktorPlaylistModel() {
 
 bool TraktorPlaylistModel::addTrack(const QModelIndex& index, QString location)
 {
-
     return false;
 }
 
 TrackPointer TraktorPlaylistModel::getTrack(const QModelIndex& index) const
 {
-	//qDebug() << "getTraktorTrack";
-
+    //qDebug() << "getTraktorTrack";
     QString artist = index.sibling(index.row(), fieldIndex("artist")).data().toString();
     QString title = index.sibling(index.row(), fieldIndex("title")).data().toString();
     QString album = index.sibling(index.row(), fieldIndex("album")).data().toString();
@@ -49,7 +47,6 @@ TrackPointer TraktorPlaylistModel::getTrack(const QModelIndex& index) const
     pTrack->setGenre(genre);
     pTrack->setBpm(bpm);
 
-
     return TrackPointer(pTrack, &QObject::deleteLater);
 }
 
@@ -57,6 +54,17 @@ QString TraktorPlaylistModel::getTrackLocation(const QModelIndex& index) const
 {
     QString location = index.sibling(index.row(), fieldIndex("location")).data().toString();
     return location;
+}
+
+int TraktorPlaylistModel::getTrackId(const QModelIndex& index) const {
+    if (!index.isValid()) {
+        return -1;
+    }
+    return index.sibling(index.row(), fieldIndex("id")).data().toInt();
+}
+
+const QLinkedList<int> TraktorPlaylistModel::getTrackRows(int trackId) const {
+    return BaseSqlTableModel::getTrackRows(trackId);
 }
 
 void TraktorPlaylistModel::removeTrack(const QModelIndex& index)
@@ -67,6 +75,7 @@ void TraktorPlaylistModel::removeTrack(const QModelIndex& index)
 void TraktorPlaylistModel::removeTracks(const QModelIndexList& indices) {
 
 }
+
 void TraktorPlaylistModel::moveTrack(const QModelIndex& sourceIndex, const QModelIndex& destIndex)
 {
 
@@ -78,24 +87,12 @@ void TraktorPlaylistModel::search(const QString& searchText) {
     emit(doSearch(searchText));
 }
 
-void TraktorPlaylistModel::slotSearch(const QString& searchText)
-{
-   if (!m_currentSearch.isNull() && m_currentSearch == searchText)
-        return;
-    m_currentSearch = searchText;
-
-    QString filter;
-    QSqlField search("search", QVariant::String);
-    search.setValue("%" + searchText + "%");
-    QString escapedText = database().driver()->formatValue(search);
-    filter = "(artist LIKE " + escapedText + " OR " +
-                "album LIKE " + escapedText + " OR " +
-                "title  LIKE " + escapedText + ")";
-    setFilter(filter);
+void TraktorPlaylistModel::slotSearch(const QString& searchText) {
+    BaseSqlTableModel::search(searchText);
 }
 
 const QString TraktorPlaylistModel::currentSearch() {
-    return m_currentSearch;
+    return BaseSqlTableModel::currentSearch();
 }
 
 bool TraktorPlaylistModel::isColumnInternal(int column) {
@@ -132,9 +129,7 @@ QMimeData* TraktorPlaylistModel::mimeData(const QModelIndexList &indexes) const 
     }
     mimeData->setUrls(urls);
     return mimeData;
-
 }
-
 
 QItemDelegate* TraktorPlaylistModel::delegateForColumn(const int i) {
     return NULL;
@@ -142,7 +137,6 @@ QItemDelegate* TraktorPlaylistModel::delegateForColumn(const int i) {
 
 TrackModel::CapabilitiesFlags TraktorPlaylistModel::getCapabilities() const
 {
-
     return TRACKMODELCAPS_NONE;
 }
 
@@ -171,26 +165,29 @@ void TraktorPlaylistModel::setPlaylist(QString playlist_path)
     QSqlField playlistNameField("name", QVariant::String);
     playlistNameField.setValue(playlistID);
 
+    QStringList columns;
+    columns << "traktor_library.id"
+            << "traktor_library.artist"
+            << "traktor_library.title"
+            << "traktor_library.album"
+            << "traktor_library.year"
+            << "traktor_library.genre"
+            << "traktor_library.tracknumber"
+            << "traktor_library.location"
+            << "traktor_library.comment"
+            << "traktor_library.rating"
+            << "traktor_library.duration"
+            << "traktor_library.bitrate"
+            << "traktor_library.bpm"
+            << "traktor_library.key"
+            << "traktor_playlist_tracks.track_id"
+            << "traktor_playlists.name";
+
     QSqlQuery query(m_database);
     query.prepare("CREATE TEMPORARY VIEW IF NOT EXISTS "+ driver->formatValue(playlistNameField) + " AS "
                   "SELECT "
-                  "traktor_library.id,"
-                  "traktor_library.artist,"
-                  "traktor_library.title,"
-                  "traktor_library.album,"
-                  "traktor_library.year,"
-                  "traktor_library.genre,"
-                  "traktor_library.tracknumber,"
-                  "traktor_library.location,"
-                  "traktor_library.comment,"
-                  "traktor_library.rating,"
-                  "traktor_library.duration,"
-                  "traktor_library.bitrate,"
-                  "traktor_library.bpm,"
-                  "traktor_library.key,"
-                  "traktor_playlist_tracks.track_id, "
-                  "traktor_playlists.name "
-                  "FROM traktor_library "
+                  + columns.join(",") +
+                  " FROM traktor_library "
                   "INNER JOIN traktor_playlist_tracks "
                   "ON traktor_playlist_tracks.track_id = traktor_library.id "
                   "INNER JOIN traktor_playlists "
@@ -200,27 +197,33 @@ void TraktorPlaylistModel::setPlaylist(QString playlist_path)
 
 
     if (!query.exec()) {
-
         qDebug() << "Error creating temporary view for traktor playlists. TraktorPlaylistModel --> line: " << __LINE__ << " " << query.lastError();
         qDebug() << "Executed Query: " <<  query.executedQuery();
         return;
     }
-	setTable(playlistID);
 
-	//removeColumn(fieldIndex("track_id"));
-	//removeColumn(fieldIndex("name"));
-	//removeColumn(fieldIndex("id"));
+    // Strip out library. and track_locations.
+    for (int i = 0; i < columns.size(); ++i) {
+        columns[i] = columns[i].replace("traktor_library.", "")
+                .replace("traktor_playlist_tracks.", "").replace("traktor_playlists.", "");
+    }
 
-    slotSearch("");
+    setTable(playlistID, columns, "id");
 
-    select(); //Populate the data model.
+    //removeColumn(fieldIndex("track_id"));
+    //removeColumn(fieldIndex("name"));
+    //removeColumn(fieldIndex("id"));
     initHeaderData();
+    initDefaultSearchColumns();
+    slotSearch("");
+    select(); //Populate the data model.
 }
+
 bool TraktorPlaylistModel::isColumnHiddenByDefault(int column) {
     if (column == fieldIndex(LIBRARYTABLE_KEY))
         return true;
     if(column == fieldIndex(LIBRARYTABLE_BITRATE))
-    	return true;
+        return true;
 
     return false;
 }

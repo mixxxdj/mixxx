@@ -460,6 +460,9 @@ bool MidiScriptEngine::safeExecute(QString function, const unsigned char data[],
     if (!scriptFunction.isFunction())
         return false;
 
+    // These funky conversions are required in order to
+    //  get the byte array into ECMAScript complete and unharmed.
+    //  Don't change this or I will hurt you -- Sean
     QVector<QChar> temp(length);
     for (int i=0; i < length; i++) {
         temp[i]=data[i];
@@ -714,7 +717,7 @@ void MidiScriptEngine::setValue(QString group, QString name, double newValue) {
 
     ControlObjectThread *cot = getControlObjectThread(group, name);
 
-    if(cot != NULL) {
+    if(cot != NULL && !m_st.ignore(group,name,newValue)) {
         cot->slotSet(newValue);
     }
 
@@ -759,14 +762,14 @@ void MidiScriptEngine::trigger(QString group, QString name) {
 bool MidiScriptEngine::connectControl(QString group, QString name, QString function, bool disconnect) {
     ControlObject* cobj = ControlObject::getControl(ConfigKey(group,name));
 
-    // Don't add duplicates
-    if (!disconnect && m_connectedControls.contains(cobj->getKey(), function)) return true;
-
     if (cobj == NULL) {
         qWarning() << "MidiScriptEngine: script connecting [" << group << "," << name
                    << "], which is non-existent. ignoring.";
         return false;
     }
+
+    // Don't add duplicates
+    if (!disconnect && m_connectedControls.contains(cobj->getKey(), function)) return true;
 
     // When this function runs, assert that somebody is holding the script
     // engine lock.
@@ -1258,4 +1261,16 @@ void MidiScriptEngine::scratchDisable(int deck) {
     else m_rampTo[deck]=0.0;
 
     m_ramp[deck] = true;    // Activate the ramping in scratchProcess()
+}
+
+/*  -------- ------------------------------------------------------
+    Purpose: [En/dis]ables soft-takeover status for a particular MixxxControl
+    Input:   MixxxControl group and key values,
+                whether to set the soft-takeover status or not
+    Output:  -
+    -------- ------------------------------------------------------ */
+void MidiScriptEngine::softTakeover(QString group, QString name, bool set) {
+    MixxxControl mc = MixxxControl(group,name);
+    if (set) m_st.enable(mc);
+    else m_st.disable(mc);
 }

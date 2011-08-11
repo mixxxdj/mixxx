@@ -9,13 +9,14 @@
 #include "library/cratetablemodel.h"
 
 #include "treeitemmodel.h"
+#include "configobject.h"
 
 class TrackCollection;
 
 class CrateFeature : public LibraryFeature {
     Q_OBJECT
   public:
-    CrateFeature(QObject* parent, TrackCollection* pTrackCollection);
+    CrateFeature(QObject* parent, TrackCollection* pTrackCollection, ConfigObject<ConfigValue>* pConfig);
     virtual ~CrateFeature();
 
     QVariant title();
@@ -39,12 +40,14 @@ class CrateFeature : public LibraryFeature {
     void activateChild(const QModelIndex& index);
     void onRightClick(const QPoint& globalPos);
     void onRightClickChild(const QPoint& globalPos, QModelIndex index);
+    void onLazyChildExpandation(const QModelIndex& index);
 
     void slotCreateCrate();
     void slotDeleteCrate();
     void slotRenameCrate();
     void slotToggleCrateLock();
     void slotImportPlaylist();
+    void slotExportPlaylist();
 
   private:
     void constructChildModel();
@@ -56,10 +59,12 @@ class CrateFeature : public LibraryFeature {
     QAction *m_pRenameCrateAction;
     QAction *m_pLockCrateAction;
     QAction *m_pImportPlaylistAction;
+    QAction *m_pExportPlaylistAction;
     QSqlTableModel m_crateListTableModel;
     CrateTableModel m_crateTableModel;
     QModelIndex m_lastRightClickedIndex;
     TreeItemModel m_childModel;
+    ConfigObject<ConfigValue>* m_pConfig;
 };
 
 #endif /* CRATEFEATURE_H */

@@ -16,32 +16,36 @@ LibraryTableModel::LibraryTableModel(QObject* parent,
           BaseSqlTableModel(parent, pTrackCollection, pTrackCollection->getDatabase()),
           m_trackDao(pTrackCollection->getTrackDAO()) {
 
+    QStringList columns;
+    columns << "library." + LIBRARYTABLE_ID
+            << "library." + LIBRARYTABLE_PLAYED
+            << "library." + LIBRARYTABLE_TIMESPLAYED
+            << "library." + LIBRARYTABLE_ARTIST
+            << "library." + LIBRARYTABLE_TITLE
+            << "library." + LIBRARYTABLE_ALBUM
+            << "library." + LIBRARYTABLE_YEAR
+            << "library." + LIBRARYTABLE_DURATION
+            << "library." + LIBRARYTABLE_RATING
+            << "library." + LIBRARYTABLE_GENRE
+            << "library." + LIBRARYTABLE_FILETYPE
+            << "library." + LIBRARYTABLE_TRACKNUMBER
+            << "library." + LIBRARYTABLE_KEY
+            << "library." + LIBRARYTABLE_DATETIMEADDED
+            << "library." + LIBRARYTABLE_BPM
+            << "library." + LIBRARYTABLE_BITRATE
+            << "track_locations.location"
+            << "track_locations.fs_deleted"
+            << "library." + LIBRARYTABLE_COMMENT
+            << "library." + LIBRARYTABLE_MIXXXDELETED;
+
     QSqlQuery query(pTrackCollection->getDatabase());
-    query.prepare("CREATE TEMPORARY VIEW IF NOT EXISTS library_view AS "
-                  "SELECT "
-                  "library." + LIBRARYTABLE_ID + "," +
-                  "library." + LIBRARYTABLE_PLAYED + "," +
-                  "library." + LIBRARYTABLE_TIMESPLAYED + "," +
-                  "library." + LIBRARYTABLE_ARTIST + "," +
-                  "library." + LIBRARYTABLE_TITLE + "," +
-                  "library." + LIBRARYTABLE_ALBUM + "," +
-                  "library." + LIBRARYTABLE_YEAR + "," +
-                  "library." + LIBRARYTABLE_DURATION + "," +
-                  "library." + LIBRARYTABLE_RATING + "," +
-                  "library." + LIBRARYTABLE_GENRE + "," +
-                  "library." + LIBRARYTABLE_FILETYPE + "," +
-                  "library." + LIBRARYTABLE_TRACKNUMBER + "," +
-                  "library." + LIBRARYTABLE_KEY + "," +
-                  "library." + LIBRARYTABLE_DATETIMEADDED + "," +
-                  "library." + LIBRARYTABLE_BPM + "," +
-                  "library." + LIBRARYTABLE_BITRATE + "," +
-                  "track_locations.location," +
-                  "track_locations.fs_deleted," +
-                  "library." + LIBRARYTABLE_COMMENT + "," +
-                  "library." + LIBRARYTABLE_MIXXXDELETED + " " +
-                  "FROM library " +
-                  "INNER JOIN track_locations " +
-                  "ON library.location = track_locations.id ");
+    QString queryString = "CREATE TEMPORARY VIEW IF NOT EXISTS library_view AS SELECT "
+            + columns.join(",") +
+            " FROM library INNER JOIN track_locations "
+            "ON library.location = track_locations.id "
+            "WHERE (" + LibraryTableModel::DEFAULT_LIBRARYFILTER + ")";
+    qDebug() << "Creating View:" << queryString;
+    query.prepare(queryString);
     if (!query.exec()) {
         qDebug() << query.executedQuery() << query.lastError();
     }
@@ -51,8 +55,13 @@ LibraryTableModel::LibraryTableModel(QObject* parent,
         qDebug() << __FILE__ << __LINE__ << query.lastError();
     }
 
+    // Strip out library. and track_locations.
+    for (int i = 0; i < columns.size(); ++i) {
+        columns[i] = columns[i].replace("library.", "").replace("track_locations.", "");
+    }
+
     //setTable("library");
-    setTable("library_view");
+    setTable("library_view", columns, LIBRARYTABLE_ID);
 
     //Set up a relation which maps our location column (which is a foreign key
     //into the track_locations) table. We tell Qt that our LIBRARYTABLE_LOCATION
@@ -64,6 +73,8 @@ LibraryTableModel::LibraryTableModel(QObject* parent,
 
     // BaseSqlTabelModel will setup the header info
     initHeaderData();
+
+    initDefaultSearchColumns();
 
     //Sets up the table filter so that we don't show "deleted" tracks (only show mixxx_deleted=0).
     slotSearch("");
@@ -106,7 +117,7 @@ bool LibraryTableModel::addTrack(const QModelIndex& index, QString location)
 
 TrackPointer LibraryTableModel::getTrack(const QModelIndex& index) const
 {
-    int trackId = index.sibling(index.row(), fieldIndex(LIBRARYTABLE_ID)).data().toInt();
+    int trackId = getTrackId(index);
     return m_trackDao.getTrack(trackId);
 }
 
@@ -115,6 +126,17 @@ QString LibraryTableModel::getTrackLocation(const QModelIndex& index) const
     const int locationColumnIndex = fieldIndex(LIBRARYTABLE_LOCATION);
     QString location = index.sibling(index.row(), locationColumnIndex).data().toString();
     return location;
+}
+
+int LibraryTableModel::getTrackId(const QModelIndex& index) const {
+    if (!index.isValid()) {
+        return -1;
+    }
+    return index.sibling(index.row(), fieldIndex(LIBRARYTABLE_ID)).data().toInt();
+}
+
+const QLinkedList<int> LibraryTableModel::getTrackRows(int trackId) const {
+    return BaseSqlTableModel::getTrackRows(trackId);
 }
 
 void LibraryTableModel::removeTracks(const QModelIndexList& indices) {
@@ -151,42 +173,15 @@ void LibraryTableModel::search(const QString& searchText) {
 
 void LibraryTableModel::slotSearch(const QString& searchText) {
     // qDebug() << "slotSearch()" << searchText << QThread::currentThread();
-    if (!m_currentSearch.isNull() && m_currentSearch == searchText)
-        return;
-
-    m_currentSearch = searchText;
-
-    QString filter;
-    if (searchText == "")
-        filter = "(" + LibraryTableModel::DEFAULT_LIBRARYFILTER + ")";
-    else {
-        QSqlField search("search", QVariant::String);
-
-        filter = "(" + LibraryTableModel::DEFAULT_LIBRARYFILTER;
-
-        foreach(QString term, searchText.split(" "))
-        {
-            search.setValue("%" + term + "%");
-            QString escapedText = database().driver()->formatValue(search);
-            filter += " AND (artist LIKE " + escapedText + " OR " +
-                    "album LIKE " + escapedText + " OR " +
-                    "location LIKE " + escapedText + " OR " +
-                    "comment LIKE " + escapedText + " OR " +
-                    "title  LIKE " + escapedText + ")";
-        }
-
-        filter += ")";
-    }
-    setFilter(filter);
+    BaseSqlTableModel::search(searchText);
 }
 
 const QString LibraryTableModel::currentSearch() {
     //qDebug() << "LibraryTableModel::currentSearch(): " << m_currentSearch;
-    return m_currentSearch;
+    return BaseSqlTableModel::currentSearch();
 }
 
 bool LibraryTableModel::isColumnInternal(int column) {
-
     if ((column == fieldIndex(LIBRARYTABLE_ID)) ||
         (column == fieldIndex(LIBRARYTABLE_URL)) ||
         (column == fieldIndex(LIBRARYTABLE_CUEPOINT)) ||
@@ -202,8 +197,9 @@ bool LibraryTableModel::isColumnInternal(int column) {
     }
     return false;
 }
+
 bool LibraryTableModel::isColumnHiddenByDefault(int column) {
-    if (column == fieldIndex(LIBRARYTABLE_KEY))    
+    if (column == fieldIndex(LIBRARYTABLE_KEY))
         return true;
     return false;
 }

@@ -65,7 +65,9 @@ void AnalyserWaveform::initialise(TrackPointer tio, int sampleRate, int totalSam
 
     // Downsample from curSamples -> numDownsamples
 
+    // TODO(XXX) leaked memory
     downsample = new QVector<float>(numberOfVisualSamples);
+
     downsampleVector = downsample->data();
     int i;
 

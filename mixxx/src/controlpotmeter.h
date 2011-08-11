@@ -3,7 +3,7 @@
                              -------------------
     begin                : Wed Feb 20 2002
     copyright            : (C) 2002 by Tue and Ken Haste Andersen
-    email                : 
+    email                :
  ***************************************************************************/
 
 /***************************************************************************
@@ -26,6 +26,8 @@
   *@author Tue and Ken Haste Andersen
   */
 
+class ControlPushButton;
+
 class ControlPotmeter : public ControlObject
 {
   Q_OBJECT
@@ -38,13 +40,15 @@ public:
     double getMax();
     /** Sets the step size of the associated PushButtons */
     void setStep(double);
+    /** Sets the small step size of the associated PushButtons */
+    void setSmallStep(double);
     /** Sets the minimum and maximum allowed value. The control value is reset when calling
       * this method */
     void setRange(double dMinValue, double dMaxValue);
     double getValueFromWidget(double dValue);
     double getValueToWidget(double dValue);
     double GetMidiValue();
-    
+
 public slots:
     void setValueFromThread(double dValue);
     void setValueFromEngine(double dValue);
@@ -52,17 +56,20 @@ public slots:
     void incValue(double);
     /** Decreases the value. This method is called from an associated PushButton control */
     void decValue(double);
+    /** Increases the value by smaller step. */
+    void incSmallValue(double);
+    /** Decreases the value by smaller step. */
+    void decSmallValue(double);
 
 protected:
     void setValueFromMidi(MidiCategory c, double v);
-    
-    double m_dMaxValue, m_dMinValue, m_dValueRange, m_dStep;
 
-#define maxPosition 127
-#define minPosition 0
-#define middlePosition ((maxPosition-minPosition)/2)
-#define positionrange (maxPosition-minPosition)
+    double m_dMaxValue, m_dMinValue, m_dValueRange, m_dStep, m_dSmallStep;
 
+    ControlPushButton* m_pControlUp;
+    ControlPushButton* m_pControlDown;
+    ControlPushButton* m_pControlUpSmall;
+    ControlPushButton* m_pControlDownSmall;
 };
 
 #endif

@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 
 import os
 import util
@@ -186,6 +187,10 @@ class Qt(Dependence):
         if not build.platform_is_windows and not (using_104_sdk or compiling_on_104):
             build.env.Append(LINKFLAGS = "-Wl,-rpath,$QTDIR/lib")
 
+        #QtSQLite DLL
+        if build.platform_is_windows:
+            build.flags['sqlitedll'] = util.get_flags(build.env, 'sqlitedll', 1)
+
 
 class FidLib(Dependence):
 
@@ -332,6 +337,7 @@ class MixxxCore(Feature):
                    "dlgprefcontrols.cpp",
                    "dlgprefbpm.cpp",
                    "dlgprefreplaygain.cpp",
+                   "dlgprefnovinyl.cpp",
                    "dlgbpmscheme.cpp",
                    "dlgabout.cpp",
                    "dlgprefeq.cpp",
@@ -354,7 +360,6 @@ class MixxxCore(Feature):
                    "engine/enginefilter.cpp",
                    "engine/engineobject.cpp",
                    "engine/enginepregain.cpp",
-                   "engine/enginevolume.cpp",
                    "engine/enginechannel.cpp",
                    "engine/enginemaster.cpp",
                    "engine/enginedelay.cpp",
@@ -364,13 +369,21 @@ class MixxxCore(Feature):
                    "engine/enginesidechain.cpp",
                    "engine/enginefilterbutterworth8.cpp",
                    "engine/enginexfader.cpp",
+                   "engine/enginemicrophone.cpp",
+                   "engine/enginedeck.cpp",
+                   "engine/enginepassthrough.cpp",
+
                    "engine/enginecontrol.cpp",
                    "engine/ratecontrol.cpp",
+                   "engine/positionscratchcontroller.cpp",
                    "engine/loopingcontrol.cpp",
                    "engine/bpmcontrol.cpp",
                    "engine/cuecontrol.cpp",
+                   "engine/quantizecontrol.cpp",
+                   "engine/clockcontrol.cpp",
                    "engine/readaheadmanager.cpp",
                    "cachingreader.cpp",
+
                    "analyserrg.cpp",
                    "analyserqueue.cpp",
                    "analyserwavesummary.cpp",
@@ -389,6 +402,7 @@ class MixxxCore(Feature):
                    "midi/midioptiondelegate.cpp",
                    "midi/midimessage.cpp",
                    "midi/midiledhandler.cpp",
+                   "softtakeover.cpp",
 
                    "main.cpp",
                    "controlgroupdelegate.cpp",
@@ -400,13 +414,13 @@ class MixxxCore(Feature):
 
                    "soundsource.cpp",
 
+                   "sharedglcontext.cpp",
                    "widget/wwidget.cpp",
                    "widget/wlabel.cpp",
                    "widget/wtracktext.cpp",
                    "widget/wnumber.cpp",
                    "widget/wnumberpos.cpp",
                    "widget/wnumberrate.cpp",
-                   "widget/wnumberbpm.cpp",
                    "widget/wknob.cpp",
                    "widget/wdisplay.cpp",
                    "widget/wvumeter.cpp",
@@ -415,6 +429,7 @@ class MixxxCore(Feature):
                    "widget/wslider.cpp",
                    "widget/wstatuslight.cpp",
                    "widget/woverview.cpp",
+                   "widget/wspinny.cpp",
                    "widget/wskincolor.cpp",
                    "widget/wabstractcontrol.cpp",
                    "widget/wsearchlineedit.cpp",
@@ -436,13 +451,11 @@ class MixxxCore(Feature):
                    "library/preparecratedelegate.cpp",
                    "library/trackcollection.cpp",
                    "library/basesqltablemodel.cpp",
+                   "library/basetrackcache.cpp",
                    "library/librarytablemodel.cpp",
                    "library/preparelibrarytablemodel.cpp",
-                   "library/browsetablemodel.cpp",
                    "library/missingtablemodel.cpp",
-
                    "library/proxytrackmodel.cpp",
-
 
                    "library/playlisttablemodel.cpp",
                    "library/libraryfeature.cpp",
@@ -450,6 +463,15 @@ class MixxxCore(Feature):
                    "library/autodjfeature.cpp",
                    "library/mixxxlibraryfeature.cpp",
                    "library/playlistfeature.cpp",
+
+                   "library/browse/browsetablemodel.cpp",
+                   "library/browse/browsethread.cpp",
+                   "library/browse/browsefeature.cpp",
+                   "library/browse/foldertreemodel.cpp",
+
+                   "library/recording/recordingfeature.cpp",
+                   "dlgrecording.cpp",
+                   "recording/recordingmanager.cpp",
 
                    # External Library Features
                    "library/rhythmbox/rhythmboxfeature.cpp",
@@ -464,7 +486,7 @@ class MixxxCore(Feature):
                    "library/traktor/traktortablemodel.cpp",
                    "library/traktor/traktorplaylistmodel.cpp",
 
-                   "library/browsefeature.cpp",
+
                    "library/cratefeature.cpp",
                    "library/sidebarmodel.cpp",
                    "library/libraryscanner.cpp",
@@ -480,7 +502,7 @@ class MixxxCore(Feature):
                    "library/dao/playlistdao.cpp",
                    "library/dao/libraryhashdao.cpp",
                    "library/dao/settingsdao.cpp",
-                   "library/librarymidicontrol.cpp",
+                   "library/librarycontrol.cpp",
                    "library/schemamanager.cpp",
                    "library/promotracksfeature.cpp",
                    "library/featuredartistswebview.cpp",
@@ -493,8 +515,6 @@ class MixxxCore(Feature):
 
                    "library/treeitemmodel.cpp",
                    "library/treeitem.cpp",
-                   "library/foldertreemodel.cpp",
-                   "library/browsethread.cpp",
 
                    "xmlparse.cpp",
                    "library/parser.cpp",
@@ -537,6 +557,10 @@ class MixxxCore(Feature):
                    "skin/skinloader.cpp",
                    "skin/legacyskinparser.cpp",
                    "skin/colorschemeparser.cpp",
+#<<<<<<< TREE
+#=======
+                   "skin/propertybinder.cpp",
+#>>>>>>> MERGE-SOURCE
 
                    "sampleutil.cpp",
                    "trackinfoobject.cpp",
@@ -553,7 +577,7 @@ class MixxxCore(Feature):
                    "sounddevice.cpp",
                    "soundmanager.cpp",
                    "soundmanagerconfig.cpp",
-                   "audiopath.cpp",
+                   "soundmanagerutil.cpp",
                    "dlgprefrecord.cpp",
                    "playerinfo.cpp",
 
@@ -579,6 +603,7 @@ class MixxxCore(Feature):
         build.env.Uic4('dlgbpmschemedlg.ui')
         # build.env.Uic4('dlgbpmtapdlg.ui')
         build.env.Uic4('dlgprefvinyldlg.ui')
+        build.env.Uic4('dlgprefnovinyldlg.ui')
         build.env.Uic4('dlgprefrecorddlg.ui')
         build.env.Uic4('dlgaboutdlg.ui')
         build.env.Uic4('dlgmidilearning.ui')
@@ -586,6 +611,8 @@ class MixxxCore(Feature):
         build.env.Uic4('dlgprepare.ui')
         build.env.Uic4('dlgautodj.ui')
         build.env.Uic4('dlgprefsounditem.ui')
+        build.env.Uic4('dlgrecording.ui')
+
 
         # Add the QRC file which compiles in some extra resources (prefs icons,
         # etc.)
@@ -624,17 +651,18 @@ class MixxxCore(Feature):
             if os.system("which g++ > /dev/null"): #Checks for non-zero return code
                 raise Exception("Did not find g++.")
         elif build.toolchain_is_msvs:
-            if build.machine == 'x86_64':
-                mixxx_lib_path = '#/../mixxx-win%slib-msvc' % build.bitwidth
-            else:
-                mixxx_lib_path = '#/../mixxx-win%slib-msvc' % build.bitwidth
+            # Validate the specified winlib directory exists
+            mixxx_lib_path = SCons.ARGUMENTS.get('winlib', '..\\..\\..\\mixxx-win32lib-msvc100-release')
+            if not os.path.exists(mixxx_lib_path):
+                print mixxx_lib_path
+                raise Exception("Winlib path does not exist! Please specify your winlib directory"
+                                "path by running 'scons winlib=[path]'")
+                Script.Exit(1)
+            #mixxx_lib_path = '#/../../mixxx-win%slib-msvc100-release' % build.bitwidth
 
             # Set include and library paths to work with this
             build.env.Append(CPPPATH=mixxx_lib_path)
             build.env.Append(LIBPATH=mixxx_lib_path)
-
-
-
 
             #Ugh, MSVC-only hack :( see
             #http://www.qtforum.org/article/17883/problem-using-qstring-fromstdwstring.html
@@ -690,16 +718,8 @@ class MixxxCore(Feature):
         if build.platform_is_bsd or build.platform_is_linux:
             build.env.Append(CPPDEFINES='__UNIX__')
 
-            # We should not have to do either of these.
-            #build.env.Append(LIBS = 'sndfile')
-            #build.env.Append(LIBS = 'vorbisfile')
-
-        # I disagree with this. rryan 9/2010
-        #env.Append(CPPPATH = ['.', '../', '../../']) #Fun fun fun with paths
-
         # Add the src/ directory to the include path
         build.env.Append(CPPPATH = ['.'])
-
 
         # Set up flags for config/track listing files
         if build.platform_is_linux or \
@@ -746,6 +766,7 @@ class MixxxCore(Feature):
                                               '/entry:mainCRTStartup'])
                 # Makes the program not launch a shell first
                 build.env.Append(LINKFLAGS = '/subsystem:windows')
+                build.env.Append(LINKFLAGS = '/manifest') #Force MSVS to generate a manifest (MSVC2010)
             elif build.toolchain_is_gnu:
                 # Makes the program not launch a shell first
                 build.env.Append(LINKFLAGS = '--subsystem,windows')

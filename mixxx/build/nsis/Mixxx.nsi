@@ -20,7 +20,7 @@ SetCompressor /SOLID lzma
 !define PRODUCT_PUBLISHER "The Mixxx Team"
 !define PRODUCT_WEB_SITE "http://www.mixxx.org"
 
-!define DEFAULT_SKIN "Outline1024x600-Netbook"
+!define DEFAULT_SKIN "Deere1280x800-WXGA"
 
 ; Assumes this script is locaed in <base>\mixxx\build\nsis
 !define BASE_BUILD_DIR "..\.."
@@ -57,13 +57,9 @@ SetCompressor /SOLID lzma
 ; Disable the Nullsoft Installer branding text at the bottom.
 BrandingText " "
 
-; The file to write and default installation directory
-!ifdef x64
-    OutFile "${PRODUCT_NAME}-${PRODUCT_VERSION}-x64.exe"
-    ;InstallDir "$PROGRAMFILES64\${PRODUCT_NAME}"
-!else
-    OutFile "${PRODUCT_NAME}-${PRODUCT_VERSION}-x86.exe"
-!endif
+; The file to write and default installation directory. This is provided by the
+; SConscript. Write to the base directory (assuming we are in <root>/build/nsis/
+OutFile "${BASE_BUILD_DIR}\${PACKAGE_NAME}"
 
 ; Registry key to check for directory (so if you install again, it will
 ; overwrite the old one automatically)
@@ -132,11 +128,21 @@ Section "Mixxx (required)" SecMixxx
   ;  Visual C++ 2008 is msvc?90.dll and Microsoft.VC90.CRT.manifest)
   ;
   ; See http://mixxx.org/wiki/doku.php/build_windows_installer for full details.
+  ;
+  ; All the MSVC files are located here if you have MSVC 2008 installed. (x86)
+  File "C:\Program Files\Microsoft Visual Studio 9.0\VC\redist\x86\Microsoft.VC90.CRT\*"
+  ;File "$%VCINSTALLDIR%\redist\x86\Microsoft.VC90.CRT\*"
+  ;File "$%VS90COMNTOOLS%\..\..\VC\redist\x86\Microsoft.VC90.CRT\*"
 
-  File ${BASE_BUILD_DIR}\..\mixxx-win${BITWIDTH}lib-msvc\msvcr*.dll
-  File ${BASE_BUILD_DIR}\..\mixxx-win${BITWIDTH}lib-msvc\msvcp*.dll
-  File /nonfatal ${BASE_BUILD_DIR}\..\mixxx-win${BITWIDTH}lib-msvc\msvcm*.dll
-  File ${BASE_BUILD_DIR}\..\mixxx-win${BITWIDTH}lib-msvc\Microsoft.VC*.CRT.manifest
+  ; NOTE: The Microsoft Visual C++ 2010 Runtime gets rid of the manifest file, so it
+  ;         is no longer necessary if we switch to deploying with MSVC 2010. - Albert
+
+  ; If you have the msvc DLLs & manifest elsewhere,
+  ; copy them to the WINLIB_PATH and uncomment these:
+  ;File ..\${WINLIB_PATH}\msvcr*.dll        ; Required
+  ;File ..\${WINLIB_PATH}\msvcp*.dll        ; Required
+  ;File /nonfatal ..\${WINLIB_PATH}\msvcm*.dll    ; Not (currently) required, so nonfatal
+  ;File ..\${WINLIB_PATH}\Microsoft.VC*.CRT.manifest    ; Required on MSVC < 2010, apparently
 
   ; And documentation, licence etc.
   File "${BASE_BUILD_DIR}\Mixxx-Manual.pdf"
@@ -147,9 +153,11 @@ Section "Mixxx (required)" SecMixxx
   SetOutPath $INSTDIR\promo\${PRODUCT_VERSION}
   File /nonfatal /r "${BASE_BUILD_DIR}\dist${BITWIDTH}\promo\${PRODUCT_VERSION}\*"
 
+  SetOutPath $INSTDIR\sqldrivers
+  File /nonfatal /r "${BASE_BUILD_DIR}\dist${BITWIDTH}\sqldrivers\*"
+
   SetOutPath $INSTDIR\keyboard
   File "${BASE_BUILD_DIR}\dist${BITWIDTH}\keyboard\Standard.kbd.cfg"
-  File "${BASE_BUILD_DIR}\dist${BITWIDTH}\keyboard\Old.kbd.cfg"
 
   ; MIDI mapping tools (mappings are below) & common script file
   SetOutPath $INSTDIR\midi
@@ -215,13 +223,13 @@ SectionGroup "MIDI controller mappings" SecControllerMappings
 	  File "${BASE_BUILD_DIR}\dist${BITWIDTH}\midi\Stanton SCS.3m.midi.xml"
 	  File "${BASE_BUILD_DIR}\dist${BITWIDTH}\midi\Stanton-SCS3m-scripts.js"
 	SectionEnd
-	
+
     Section "Stanton SCS.1d" SecSCS1d
 	  SetOutPath $INSTDIR\midi
 	  File "${BASE_BUILD_DIR}\dist${BITWIDTH}\midi\Stanton SCS.1d.midi.xml"
 	  File "${BASE_BUILD_DIR}\dist${BITWIDTH}\midi\Stanton-SCS1d-scripts.js"
 	SectionEnd
-	
+
 	Section "Stanton SCS.1m" SecSCS1m
 	  SetOutPath $INSTDIR\midi
 	  File "${BASE_BUILD_DIR}\dist${BITWIDTH}\midi\Stanton SCS.1m.midi.xml"
@@ -252,15 +260,15 @@ SectionGroupEnd
 SectionGroup "Additional Skins" SecAddlSkins
 
 	Section "Minimalist skins" SecBasicSkins
-	  
+
 	  SetOutPath "$INSTDIR\skins"
 	  File /r /x ".svn" /x ".bzr" ${BASE_BUILD_DIR}\dist${BITWIDTH}\skins\Outline*
-	  
+
 	  SetOutPath "$INSTDIR\skins\Outline800x480-WVGA"
 	  File /r /x ".svn" /x ".bzr" ${BASE_BUILD_DIR}\dist${BITWIDTH}\skins\Outline800x480-WVGA\*.*
 	  SetOutPath "$INSTDIR\skins\Outline1024x768-XGA"
 	  File /r /x ".svn" /x ".bzr" ${BASE_BUILD_DIR}\dist${BITWIDTH}\skins\Outline1024x768-XGA\*.*
-	  
+
 	SectionEnd
 
 	Section "Netbook-size (1024x600)" SecNetbookSkins
@@ -326,7 +334,7 @@ SectionEnd
   LangString DESC_SecCommunityMappings ${LANG_ENGLISH} "User-developed mappings that the Mixxx team is unable to directly support. Please visit the Mixxx forum for help with these: http://mixxx.org/forums/"
   LangString DESC_SecSCS1d ${LANG_ENGLISH} "Mapping for the Stanton SCS.1d. DaRouter must be closed to use it."
   LangString DESC_SecSCS1m ${LANG_ENGLISH} "Mapping for the Stanton SCS.1m. DaRouter must be closed to use it."
-  
+
   ; Skin group descriptions
   LangString DESC_SecBasicSkins ${LANG_ENGLISH} "Additional skins using the Outline theme (featuring a clear, clean and simple layout,) including one for 800 pixel-wide screens"
   LangString DESC_SecAddlSkins ${LANG_ENGLISH} "Additional good-looking skins with varying themes and larger screen sizes."
@@ -386,13 +394,16 @@ Section "Uninstall"
   Delete $INSTDIR\LICENSE
   Delete $INSTDIR\README
   Delete $INSTDIR\COPYING
+  Delete $INSTDIR\sqldrivers\*.dll
 
   ; Remove skins, keyboard, midi mappings, promos
   Delete "$INSTDIR\skins\${DEFAULT_SKIN}\*.*"
   Delete "$INSTDIR\skins\Deere1280x1024-SXGA\*.*"
   Delete "$INSTDIR\skins\Deere1280x800-WXGA\*.*"
+  Delete "$INSTDIR\skins\Deere1440x900-WXGA+\*.*"
   Delete "$INSTDIR\skins\LateNight1280x1024-SXGA\*.*"
   Delete "$INSTDIR\skins\LateNight1280x800-WXGA\*.*"
+  Delete "$INSTDIR\skins\LateNight1366x768-WXGA\*.*"
   Delete "$INSTDIR\skins\LateNightBlues1280x1024-SXGA\*.*"
   Delete "$INSTDIR\skins\LateNightBlues1280x800-WXGA\*.*"
   Delete "$INSTDIR\skins\Outline1024x600-Netbook\*.*"
@@ -416,8 +427,10 @@ Section "Uninstall"
   RMDir "$INSTDIR\skins\${DEFAULT_SKIN}"
   RMDir "$INSTDIR\skins\Deere1280x1024-SXGA"
   RMDir "$INSTDIR\skins\Deere1280x800-WXGA"
+  RMDir "$INSTDIR\skins\Deere1440x900-WXGA+"
   RMDir "$INSTDIR\skins\LateNight1280x1024-SXGA"
   RMDir "$INSTDIR\skins\LateNight1280x800-WXGA"
+  RMDir "$INSTDIR\skins\LateNight1366x768-WXGA"
   RMDir "$INSTDIR\skins\LateNightBlues1280x1024-SXGA"
   RMDir "$INSTDIR\skins\LateNightBlues1280x800-WXGA"
   RMDir "$INSTDIR\skins\Outline1024x600-Netbook"

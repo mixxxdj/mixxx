@@ -1,3 +1,9 @@
+mixxx (1.10.0-beta1-0ubuntu1) karmic; urgency=low
+
+  * New upstream beta release
+
+ -- RJ Ryan <rryan@mixxx.org>  Wed, 08 Jun 2011 17:28:00 -0500
+
 mixxx (1.9.0-0ubuntu1) karmic; urgency=low
 
   * New upstream release
@@ -6,80 +12,80 @@ mixxx (1.9.0-0ubuntu1) karmic; urgency=low
 
 mixxx (1.8.0-0ubuntu1) karmic; urgency=low
 
-  * New upstream release 
-  
+  * New upstream release
+
  -- Albert Santoni <alberts@mixxx.org>  Thu,  5 August 2010 23:06:22 -0800
 
 mixxx (1.8.0~beta2-0ubuntu1) karmic; urgency=low
 
-  * New upstream release 
-  
+  * New upstream release
+
  -- Albert Santoni <alberts@mixxx.org>  Fri,  18 June 2010 21:06:45 -0800
 
 mixxx (1.8.0~beta1-0ubuntu1) karmic; urgency=low
 
-  * New upstream release 
-  
+  * New upstream release
+
  -- Albert Santoni <alberts@mixxx.org>  Tue,  2 February 2010 21:06:45 -0800
 
 mixxx (1.7.2-0ubuntu1) intrepid; urgency=low
 
-  * New upstream release 
-  
+  * New upstream release
+
  -- Albert Santoni <alberts@mixxx.org>  Tue,  29 December 2009 21:09:12 -0800
 
 mixxx (1.7.1-0ubuntu1) intrepid; urgency=low
 
-  * New upstream release 
-  
+  * New upstream release
+
  -- Albert Santoni <alberts@mixxx.org>  Tue,  13 October 2009 11:21:40 -0800
 
 mixxx (1.7.0-0ubuntu1) intrepid; urgency=low
 
-  * New upstream release 
-  
+  * New upstream release
+
  -- Albert Santoni <alberts@mixxx.org>  Thu,  5 August 2009 11:07:35 -0800
 
 mixxx (1.7.0~beta2-0ubuntu1) intrepid; urgency=low
 
-  * New upstream release 
-  
+  * New upstream release
+
  -- Albert Santoni <alberts@mixxx.org>  Sun,  19 July 2009 12:13:37 -0800
 
 mixxx (1.7.0~beta1-0ubuntu1) intrepid; urgency=low
 
-  * New upstream release 
-  
+  * New upstream release
+
  -- Albert Santoni <alberts@mixxx.org>  Mon,  13 April 2009 13:43:37 -0500
 
 mixxx (1.6.2-0ubuntu1) hardy; urgency=low
 
   * New upstream release - removes libDJConsole support (new driver from Hercules make this obsolete)
-  
+
  -- Garth Dahlstrom <ironstorm@users.sourceforge.net>  Tue,  13 November 2008 01:45:00 -0500
 
 mixxx (1.6.1-0ubuntu1) hardy; urgency=low
 
   * New upstream release
-  
+
  -- Albert Santoni <gamegod@users.sourceforge.net>  Tue,  25 September 2008 15:45:00 -0800
 
 mixxx (1.6.0-0ubuntu1) hardy; urgency=low
 
   * New upstream release
-  
+
  -- Albert Santoni <gamegod@users.sourceforge.net>  Tue,  5 August 2008 22:38:00 -0500
 
 mixxx (1.6.0~beta4-0ubuntu1) hardy; urgency=low
 
   * New upstream release
-  
+
  -- Albert Santoni <gamegod@users.sourceforge.net>  Sun,  13 July 2008 22:38:00 -0500
 
 mixxx (1.6.0~beta3-0ubuntu1) hardy; urgency=low
 
   * New upstream release
-  
+
  -- Albert Santoni <gamegod@users.sourceforge.net>  Sun,  18 May 2008 13:56:00 -0500
 
 mixxx (1.6.0~beta2-0ubuntu1) hardy; urgency=low
@@ -93,7 +99,7 @@ mixxx (1.6.0~beta2-0ubuntu1) hardy; urgency=low
     accordingly)
   * Dropped useless main.qbas patch (no longer use qt3)
   * Dropped direct rendering patch (handled better in upstream now)
-  
+
  -- Albert Santoni <gamegod@users.sourceforge.net>  Tue,  10 Feb 2008 15:32:00 -0500
 
 mixxx (1.6.0~beta1-1ubuntu2) hardy; urgency=low

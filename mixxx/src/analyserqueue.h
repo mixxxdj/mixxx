@@ -15,40 +15,41 @@ class SoundSourceProxy;
 class AnalyserQueue : public QThread {
     Q_OBJECT
 
-    public:
-	AnalyserQueue();
-	virtual ~AnalyserQueue();
-	void stop();
+  public:
+    AnalyserQueue();
+    virtual ~AnalyserQueue();
+    void stop();
     int numQueuedTracks();
 
-	static AnalyserQueue* createDefaultAnalyserQueue(ConfigObject<ConfigValue> *_config);
-	static AnalyserQueue* createPrepareViewAnalyserQueue(ConfigObject<ConfigValue> *_config);
+    static AnalyserQueue* createDefaultAnalyserQueue(ConfigObject<ConfigValue> *_config);
+    static AnalyserQueue* createPrepareViewAnalyserQueue(ConfigObject<ConfigValue> *_config);
     static AnalyserQueue* createAnalyserQueue(QList<Analyser*> analysers);
 
-public slots:
+  public slots:
     void queueAnalyseTrack(TrackPointer tio);
 
-signals:
+  signals:
     void trackProgress(TrackPointer pTrack,int progress);
     void trackFinished(TrackPointer pTrack);
+    void queueEmpty();
 
-protected:
-	void run();
+  protected:
+    void run();
 
-private:
-	void addAnalyser(Analyser* an);
+  private:
+    void addAnalyser(Analyser* an);
 
-	QList<Analyser*> m_aq;
+    QList<Analyser*> m_aq;
 
-	TrackPointer dequeueNextBlocking();
-	void doAnalysis(TrackPointer tio, SoundSourceProxy *pSoundSource);
+    TrackPointer dequeueNextBlocking();
+    void doAnalysis(TrackPointer tio, SoundSourceProxy *pSoundSource);
 
-	bool m_exit;
+    bool m_exit;
 
-	// The processing queue and associated mutex
-	QQueue<TrackPointer> m_tioq;
-	QMutex m_qm;
-	QWaitCondition m_qwait;
+    // The processing queue and associated mutex
+    QQueue<TrackPointer> m_tioq;
+    QMutex m_qm;
+    QWaitCondition m_qwait;
 };
 
 #endif

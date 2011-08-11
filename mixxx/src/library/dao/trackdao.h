@@ -54,14 +54,16 @@ const QString TRACKLOCATIONSTABLE_FSDELETED = "fs_deleted";
 const QString TRACKLOCATIONSTABLE_NEEDSVERIFICATION = "needs_verification";
 
 
-class TrackDAO : public QObject { //// public DAO {
+class TrackDAO : public QObject, public virtual DAO {
 Q_OBJECT
   public:
-    //TrackDAO() {};
-    /** The 'config object' is necessary because users decide ID3 tags get synchronized on track metadata change **/
-    TrackDAO(QSqlDatabase& database, CueDAO& cueDao, ConfigObject<ConfigValue> * pConfig = 0);
-    void finish();
+    /** The 'config object' is necessary because users decide ID3 tags get
+     * synchronized on track metadata change **/
+    TrackDAO(QSqlDatabase& database, CueDAO& cueDao,
+             ConfigObject<ConfigValue> * pConfig = NULL);
     virtual ~TrackDAO();
+
+    void finish();
     void setDatabase(QSqlDatabase& database) { m_database = database; };
 
     void initialize();
@@ -74,7 +76,7 @@ Q_OBJECT
     void removeTrack(int id);
     void removeTracks(QList<int> ids);
     void unremoveTrack(int trackId);
-    TrackPointer getTrack(int id) const;
+    TrackPointer getTrack(int id, bool cacheOnly=false) const;
     bool isDirty(int trackId);
 
     // Scanning related calls. Should be elsewhere or private somehow.
@@ -109,11 +111,13 @@ Q_OBJECT
     void clearCache();
 
   private slots:
-    void slotTrackDirty();
-    void slotTrackChanged();
-    void slotTrackSave();
+    void slotTrackDirty(TrackInfoObject* pTrack);
+    void slotTrackChanged(TrackInfoObject* pTrack);
+    void slotTrackClean(TrackInfoObject* pTrack);
+    void slotTrackSave(TrackInfoObject* pTrack);
 
   private:
+    bool isTrackFormatSupported(TrackInfoObject* pTrack) const;
     void saveTrack(TrackInfoObject* pTrack);
     void updateTrack(TrackInfoObject* pTrack);
     void addTrack(TrackInfoObject* pTrack);

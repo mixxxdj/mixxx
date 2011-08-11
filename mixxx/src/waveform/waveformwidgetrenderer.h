@@ -45,7 +45,7 @@ public:
     void regulateAudioSample( int& sampleIndex);
 
     double getPlayPos() const { return m_playPos;}
-    double getZoomFactor() const { m_zoomFactor;}
+    double getZoomFactor() const { return m_zoomFactor;}
     double getRateAdjust() const { return m_rateAdjust;}
     double getGain() const { return m_gain;}
     int getTrackSamples() const { return m_trackSamples;}
