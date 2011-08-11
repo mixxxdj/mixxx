@@ -105,7 +105,7 @@ bool WaveformWidgetFactory::setWaveformWidget( WWaveformViewer* viewer)
     m_waveformWidgets.push_back(waveformWidget);
     index = m_waveformWidgets.size()-1;
 
-    qDebug() << "WaveformWidgetFactory::setWaveformWidget - waveforme widget added in factory index" << index;
+    qDebug() << "WaveformWidgetFactory::setWaveformWidget - waveform widget added in factory index" << index;
 
     return true;
 }

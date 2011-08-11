@@ -18,11 +18,15 @@
 #include <QtDebug>
 #include "controlpushbutton.h"
 #include "controllogpotmeter.h"
-#include "enginefilterblock.h"
-#include "enginefilteriir.h"
-#include "enginefilter.h"
-#include "enginefilterbutterworth8.h"
+#include "engine/enginefilterblock.h"
+#include "engine/enginefilteriir.h"
+#include "engine/enginefilter.h"
+#include "engine/enginefilterbutterworth8.h"
 #include "sampleutil.h"
+
+ControlPotmeter* EngineFilterBlock::s_loEqFreq = NULL;
+ControlPotmeter* EngineFilterBlock::s_hiEqFreq = NULL;
+ControlPushButton* EngineFilterBlock::s_lofiEq = NULL;
 
 EngineFilterBlock::EngineFilterBlock(const char * group)
 {
@@ -38,17 +42,11 @@ EngineFilterBlock::EngineFilterBlock(const char * group)
 #else
 
     //Setup Filter Controls
-    if(ControlObject::getControl(ConfigKey("[Mixer Profile]", "LoEQFrequency")) == NULL)
-    {
-        m_loEqFreq = new ControlPotmeter(ConfigKey("[Mixer Profile]", "LoEQFrequency"), 0., 22040);
-        m_hiEqFreq = new ControlPotmeter(ConfigKey("[Mixer Profile]", "HiEQFrequency"), 0., 22040);
-        m_lofiEq = new ControlPushButton(ConfigKey("[Mixer Profile]", "LoFiEQs"));
-    }
-    else
-    {
-        m_loEqFreq = (ControlPotmeter*) ControlObject::getControl(ConfigKey("[Mixer Profile]", "LoEQFrequency"));
-        m_hiEqFreq = (ControlPotmeter*) ControlObject::getControl(ConfigKey("[Mixer Profile]", "HiEQFrequency"));
-        m_lofiEq = (ControlPushButton*) ControlObject::getControl(ConfigKey("[Mixer Profile]", "LoFiEQs"));
+
+    if (s_loEqFreq == NULL) {
+        s_loEqFreq = new ControlPotmeter(ConfigKey("[Mixer Profile]", "LoEQFrequency"), 0., 22040);
+        s_hiEqFreq = new ControlPotmeter(ConfigKey("[Mixer Profile]", "HiEQFrequency"), 0., 22040);
+        s_lofiEq = new ControlPushButton(ConfigKey("[Mixer Profile]", "LoFiEQs"));
     }
 
     high = band = low = NULL;
@@ -106,18 +104,29 @@ EngineFilterBlock::~EngineFilterBlock()
     delete filterKillMid;
     delete filterpotHigh;
     delete filterKillHigh;
+
+    // Delete and clear these static controls. We need to clear them so that
+    // other instances of EngineFilterBlock won't delete them as well.
+    delete s_loEqFreq;
+    s_loEqFreq = NULL;
+    delete s_hiEqFreq;
+    s_hiEqFreq = NULL;
+    delete s_lofiEq;
+    s_lofiEq = NULL;
 }
 
 void EngineFilterBlock::setFilters(bool forceSetting)
 {
-    if((ilowFreq != m_loEqFreq->get()) || (ihighFreq != m_hiEqFreq->get()) || (blofi != m_lofiEq->get()) || forceSetting)
+    if((ilowFreq != s_loEqFreq->get()) ||
+       (ihighFreq != s_hiEqFreq->get()) ||
+       (blofi != s_lofiEq->get()) || forceSetting)
     {
         delete low;
         delete band;
         delete high;
-        ilowFreq = m_loEqFreq->get();
-        ihighFreq = m_hiEqFreq->get();
-        blofi = m_lofiEq->get();
+        ilowFreq = s_loEqFreq->get();
+        ihighFreq = s_hiEqFreq->get();
+        blofi = s_lofiEq->get();
         if(blofi)
         {
             // why is this DJM800 at line ~34 (LOFI ifdef) and just
@@ -128,10 +137,9 @@ void EngineFilterBlock::setFilters(bool forceSetting)
         }
         else
         {
-            low = new EngineFilterButterworth8(FILTER_LOWPASS, 44100, m_loEqFreq->get());
-            band = new EngineFilterButterworth8(FILTER_BANDPASS, 44100, m_loEqFreq->get(), m_hiEqFreq->get());
-            high = new EngineFilterButterworth8(FILTER_HIGHPASS, 44100, m_hiEqFreq->get());
-            qDebug() << "m_loEqFreq" << m_loEqFreq->get() << "m_hiEqFreq" << m_hiEqFreq->get();
+            low = new EngineFilterButterworth8(FILTER_LOWPASS, 44100, s_loEqFreq->get());
+            band = new EngineFilterButterworth8(FILTER_BANDPASS, 44100, s_loEqFreq->get(), s_hiEqFreq->get());
+            high = new EngineFilterButterworth8(FILTER_HIGHPASS, 44100, s_hiEqFreq->get());
         }
 
     }

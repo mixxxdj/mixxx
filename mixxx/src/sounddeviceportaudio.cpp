@@ -23,7 +23,8 @@
 #include "soundmanager.h"
 #include "sounddevice.h"
 #include "sounddeviceportaudio.h"
-#include "audiopath.h"
+#include "soundmanagerutil.h"
+#include "controlobject.h"
 
 SoundDevicePortAudio::SoundDevicePortAudio(ConfigObject<ConfigValue> *config, SoundManager *sm,
                                            const PaDeviceInfo *deviceInfo, unsigned int devIndex)
@@ -210,7 +211,7 @@ int SoundDevicePortAudio::open()
     }
     else
         qDebug() << "PortAudio: Started stream successfully";
-    
+
     // Get the actual details of the stream & update Mixxx's data
     const PaStreamInfo* streamDetails = Pa_GetStreamInfo(m_pStream);
     m_dSampleRate = streamDetails->sampleRate;
@@ -297,7 +298,7 @@ int SoundDevicePortAudio::callbackProcess(unsigned long framesPerBuffer, float *
     int iFrameSize;
     int iVCGain;
     static ControlObject* pControlObjectVinylControlGain =
-        ControlObject::getControl(ConfigKey("[VinylControl]", "VinylControlGain"));
+        ControlObject::getControl(ConfigKey("[VinylControl]", "gain"));
     static const float SHRT_CONVERSION_FACTOR = 1.0f/SHRT_MAX;
 
     //Initialize some variables.

@@ -19,7 +19,7 @@ public:
     virtual void setup( const QDomNode& node);
     virtual void draw( QPainter* painter, QPaintEvent* event);
 
-private:
+  private:
     void generatePixmap();
 
     QColor m_backgroungColor;

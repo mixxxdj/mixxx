@@ -154,27 +154,13 @@ int main(int argc, char * argv[])
     //  so if you change it here, change it also in:
     //      * ErrorDialogHandler::errorDialog()
     QThread::currentThread()->setObjectName("Main");
-    a = new QApplication(argc, argv);
-
-    // Load the translations for Qt and for Mixxx
-
-    QTranslator* qtTranslator = new QTranslator();
-    qtTranslator->load("qt_" + QLocale::system().name(),
-                      QLibraryInfo::location(QLibraryInfo::TranslationsPath));
-    a->installTranslator(qtTranslator);
+    QApplication a(argc, argv);
 
     //Enumerate and load SoundSource plugins
     SoundSourceProxy::loadPlugins();
 #ifdef __LADSPA__
     //LADSPALoader ladspaloader;
 #endif
-
-    QTranslator tor(0);
-    // set the location where your .qm files are in load() below as the last parameter instead of "."
-    // for development, use "/" to use the english original as
-    // .qm files are stored in the base project directory.
-    tor.load(QString("mixxx.") + QLocale::system().name(), ".");
-    a->installTranslator(&tor);
 
     // Check if one of the command line arguments is "--no-visuals"
 //    bool bVisuals = true;
@@ -219,6 +205,8 @@ int main(int argc, char * argv[])
     --midiDebug             Causes Mixxx to display/log all of the MIDI\n\
                             messages it receives and script functions it loads\n\
 \n\
+    --locale LOCALE         Use a custom locale for loading translations (e.g 'fr')\n\
+\n\
     -f, --fullScreen        Starts Mixxx in full-screen mode\n\
 \n\
     -h, --help              Display this help message and exit");
@@ -230,11 +218,12 @@ int main(int argc, char * argv[])
         if (argv[i]==QString("-f").toLower() || argv[i]==QString("--f") || argv[i]==QString("--fullScreen"))
         {
             args.bStartInFullscreen = true;
-        }
-        else if (fileRx.indexIn(argv[i]) != -1)
+        } else if (argv[i] == QString("--locale") && i+1 < argc) {
+            args.locale = argv[i+1];
+        } else if (fileRx.indexIn(argv[i]) != -1) {
             args.qlMusicFiles += argv[i];
+        }
     }
-
 
     // set up the plugin paths...
     /*
@@ -258,7 +247,7 @@ int main(int argc, char * argv[])
         plugin_paths.push_back ("/usr/lib/ladspa/");
         plugin_paths.push_back ("/usr/lib64/ladspa/");
 #elif __APPLE__
-      QDir dir(a->applicationDirPath());
+      QDir dir(a.applicationDirPath());
      dir.cdUp();
      dir.cd("PlugIns");
          plugin_paths.push_back ("/Library/Audio/Plug-ins/LADSPA");
@@ -288,10 +277,10 @@ int main(int argc, char * argv[])
      }
 #endif
 
-    MixxxApp *mixxx = new MixxxApp(a, args);
+    MixxxApp* mixxx = new MixxxApp(&a, args);
 
-    //a->setMainWidget(mixxx);
-    a->connect(a, SIGNAL(lastWindowClosed()), a, SLOT(quit()));
+    //a.setMainWidget(mixxx);
+    QObject::connect(&a, SIGNAL(lastWindowClosed()), &a, SLOT(quit()));
 
     int result = -1;
 
@@ -300,7 +289,7 @@ int main(int argc, char * argv[])
         mixxx->show();
 
         qDebug() << "Running Mixxx";
-        result = a->exec();
+        result = a.exec();
     }
 
     delete mixxx;

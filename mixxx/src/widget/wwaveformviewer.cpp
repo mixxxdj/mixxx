@@ -38,6 +38,9 @@ void WWaveformViewer::setup(QDomNode node)
 
 void WWaveformViewer::resizeEvent(QResizeEvent* /*event*/)
 {
+    qDebug() << "WWaveformViewer::resizeEvent" << this << size();
+    qDebug() << parent() << parentWidget() << parentWidget()->size();
+
     if( m_waveformWidget)
         m_waveformWidget->resize(width(),height());
 }

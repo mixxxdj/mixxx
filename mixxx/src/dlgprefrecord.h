@@ -20,6 +20,7 @@
 
 #include "ui_dlgprefrecorddlg.h"
 #include "configobject.h"
+#include <QRadioButton>
 
 class ControlObject;
 class ControlObjectThreadMain;
@@ -39,24 +40,30 @@ public:
 public slots:
     /** Apply changes to widget */
     void slotApply();
-	void slotUpdate();
-    void slotBrowseSave();
+    void slotUpdate();
     void slotEncoding();
     void slotSliderQuality();
     void slotRecordPathChange();
-    int getSliderQualityVal();
-    void updateTextQuality();
+    void slotEnableCueFile(int);
+    void slotChangeSplitSize();
 signals:
     void apply(const QString &);
 private:
     void setMetaData();
     void loadMetaData();
+    int getSliderQualityVal();
+    void updateTextQuality();
     
     /** Pointer to config object */
     ConfigObject<ConfigValue> *config;
     ControlObjectThreadMain* recordControl;
     bool confirmOverwrite;
     QString fileTypeExtension;
+    QRadioButton *radioOgg;
+    QRadioButton *radioMp3;
+    QRadioButton *radioAiff;
+    QRadioButton *radioFlac;
+    QRadioButton *radioWav;
 };
 
 #endif

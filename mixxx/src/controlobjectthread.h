@@ -40,7 +40,7 @@ class ControlObjectThread : public QObject
 {
     Q_OBJECT
 public:
-    ControlObjectThread(ControlObject *pControlObject);
+    ControlObjectThread(ControlObject *pControlObject, QObject* pParent=NULL);
     virtual ~ControlObjectThread();
     /** Returns the value of the object */
     double get();

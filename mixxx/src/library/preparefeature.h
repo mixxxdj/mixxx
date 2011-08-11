@@ -10,12 +10,13 @@
 #include "configobject.h"
 #include "treeitemmodel.h"
 
+class AnalyserQueue;
 class LibraryTableModel;
 class TrackCollection;
 
 class PrepareFeature : public LibraryFeature {
     Q_OBJECT
-    public:
+  public:
     PrepareFeature(QObject* parent,
                    ConfigObject<ConfigValue>* pConfig,
                    TrackCollection* pTrackCollection);
@@ -35,15 +36,31 @@ class PrepareFeature : public LibraryFeature {
 
     TreeItemModel* getChildModel();
 
-public slots:
+  signals:
+    void trackAnalysisProgress(TrackPointer pTrack, int progress);
+    void trackAnalysisFinished(TrackPointer pTrack);
+    void analysisActive(bool bActive);
+
+  public slots:
     void activate();
     void activateChild(const QModelIndex& index);
     void onRightClick(const QPoint& globalPos);
     void onRightClickChild(const QPoint& globalPos, QModelIndex index);
+    void onLazyChildExpandation(const QModelIndex& index);
 
-private:
+  private slots:
+    void analyzeTracks(QList<int> trackIds);
+    void stopAnalysis();
+    void slotTrackAnalysisProgress(TrackPointer pTrack, int progress);
+    void slotTrackAnalysisFinished(TrackPointer pTrack);
+
+  private:
+    void cleanupAnalyser();
     ConfigObject<ConfigValue>* m_pConfig;
     TrackCollection* m_pTrackCollection;
+    AnalyserQueue* m_pAnalyserQueue;
+    // Used to temporarily enable BPM detection in the prefs before we analyse
+    int m_iOldBpmEnabled;
     TreeItemModel m_childModel;
     const static QString m_sPrepareViewName;
 };

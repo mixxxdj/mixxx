@@ -14,7 +14,7 @@
 *                                                                         *
 ***************************************************************************/
 
-#include "enginefilteriir.h"
+#include "engine/enginefilteriir.h"
 
 EngineFilterIIR::EngineFilterIIR(const double * pCoefs, int iOrder)
 {

@@ -22,6 +22,7 @@ int ReadAheadManager::getNextSamples(double dRate, CSAMPLE* buffer,
 
     bool in_reverse = dRate < 0;
     int start_sample = m_iCurrentPosition;
+    //qDebug() << "start" << start_sample << requested_samples;
     int samples_needed = requested_samples;
     CSAMPLE* base_buffer = buffer;
 
@@ -50,27 +51,28 @@ int ReadAheadManager::getNextSamples(double dRate, CSAMPLE* buffer,
 
     if (in_reverse) {
         start_sample = m_iCurrentPosition - samples_needed;
-        if (start_sample < 0) {
+        /*if (start_sample < 0) {
             samples_needed = math_max(0, samples_needed + start_sample);
             start_sample = 0;
-        }
+        }*/
     }
 
     // Sanity checks
-    Q_ASSERT(start_sample >= 0);
+    //Q_ASSERT(start_sample >= 0);
     Q_ASSERT(samples_needed >= 0);
 
     int samples_read = m_pReader->read(start_sample, samples_needed,
                                        base_buffer);
 
+    if (samples_read != samples_needed)
+        qDebug() << "didn't get what we wanted" << samples_read << samples_needed;
+
     // Increment or decrement current read-ahead position
     if (in_reverse) {
-        m_iCurrentPosition -= math_max(0, samples_read);
+        m_iCurrentPosition -= samples_read;
     } else {
         m_iCurrentPosition += samples_read;
     }
-
-    m_iCurrentPosition = math_max(0, m_iCurrentPosition);
 
     // Activate on this trigger if necessary
     if (next_loop.second != kNoTrigger) {
@@ -101,6 +103,7 @@ int ReadAheadManager::getNextSamples(double dRate, CSAMPLE* buffer,
         }
     }
 
+    //qDebug() << "read" << m_iCurrentPosition << samples_read;
     return samples_read;
 }
 
@@ -128,10 +131,9 @@ void ReadAheadManager::hintReader(QList<Hint>& hintList, int iSamplesPerBuffer) 
     current_position.sample = m_iCurrentPosition;
 
     // If we are trying to cache before the start of the track,
-    if (current_position.sample < 0) {
-        current_position.length += current_position.sample;
-        current_position.sample = 0;
-    }
+    // Then we don't need to cache because it's all zeros!
+    if (current_position.sample < 0)
+        return;
 
     // top priority, we need to read this data immediately
     current_position.priority = 1;

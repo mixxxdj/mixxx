@@ -45,6 +45,7 @@ WaveformRenderSignal::WaveformRenderSignal(const char* group, WaveformRenderer *
 }
 
 WaveformRenderSignal::~WaveformRenderSignal() {
+    qDebug() << this << "~WaveformRenderSignal()";
     if(m_pGain)
         delete m_pGain;
     m_pGain = NULL;
@@ -78,9 +79,7 @@ void WaveformRenderSignal::draw_old(QPainter *pPainter, QPaintEvent *event, QVec
 
     int numBufferSamples = buffer->size();
     int iCurPos = 0;
-    if(dPlayPos >= 0) {
-        iCurPos = (int)(dPlayPos*numBufferSamples);
-    }
+    iCurPos = (int)(dPlayPos*numBufferSamples);
 
     if((iCurPos % 2) != 0)
         iCurPos--;

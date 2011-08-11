@@ -41,7 +41,6 @@ void WaveformRenderer::run() {
 
         QThread::msleep(6);
     }
-
 }
 
 WaveformRenderer::WaveformRenderer(const char* group) :
@@ -120,31 +119,11 @@ WaveformRenderer::WaveformRenderer(const char* group) :
 
 
 WaveformRenderer::~WaveformRenderer() {
-    qDebug() << "~WaveformRenderer()";
+    qDebug() << this << "~WaveformRenderer()";
 
     // Wait for the thread to quit
     m_bQuit = true;
     QThread::wait();
-
-    if(m_pCOVisualResample)
-        delete m_pCOVisualResample;
-    m_pCOVisualResample = NULL;
-
-    if(m_pRate)
-        delete m_pRate;
-    m_pRate = NULL;
-
-    if(m_pRateRange)
-        delete m_pRateRange;
-    m_pRateRange = NULL;
-
-    if(m_pRateDir)
-        delete m_pRateDir;
-    m_pRateDir = NULL;
-
-    if(m_pPlayPos)
-        delete m_pPlayPos;
-    m_pPlayPos = NULL;
 
     if(m_pRenderBackground)
         delete m_pRenderBackground;
@@ -168,15 +147,43 @@ WaveformRenderer::~WaveformRenderer() {
         iter.remove();
         delete ro;
     }
+
+    if(m_pCOVisualResample)
+        delete m_pCOVisualResample;
+    m_pCOVisualResample = NULL;
+
+    if (m_pPlayPos)
+        delete m_pPlayPos;
+    m_pPlayPos = NULL;
+
+    if (m_pLatency)
+        delete m_pLatency;
+    m_pLatency = NULL;;
+
+    if(m_pRate)
+        delete m_pRate;
+    m_pRate = NULL;
+
+    if(m_pRateRange)
+        delete m_pRateRange;
+    m_pRateRange = NULL;
+
+    if(m_pRateDir)
+        delete m_pRateDir;
+    m_pRateDir = NULL;
+
+    if(m_pPlayPos)
+        delete m_pPlayPos;
+    m_pPlayPos = NULL;
 }
 
 void WaveformRenderer::slotUpdatePlayPos(double v) {
     m_iPlayPosTimeOld = m_iPlayPosTime;
-    m_playPosTimeOld = m_playPosTime;
+    //m_playPosTimeOld = m_playPosTime;
     m_dPlayPosOld = m_dPlayPos;
     m_dPlayPos = v;
     m_iPlayPosTime = clock();
-    m_playPosTime = QTime::currentTime();
+    //m_playPosTime = QTime::currentTime();
 
     m_iDupes = 0;
     m_dPlayPosAdjust = 0;

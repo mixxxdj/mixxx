@@ -18,7 +18,7 @@
 #pragma intrinsic(fabs)
 #endif
 
-#include "enginevumeter.h"
+#include "engine/enginevumeter.h"
 #include "controlpotmeter.h"
 #include "sampleutil.h"
 
@@ -65,9 +65,20 @@ void EngineVuMeter::process(const CSAMPLE * pIn, const CSAMPLE *, const int iBuf
         doSmooth(m_fRMSvolumeL, log10(m_fRMSvolumeSumL/(m_iSamplesCalculated*1000)+1));
         doSmooth(m_fRMSvolumeR, log10(m_fRMSvolumeSumR/(m_iSamplesCalculated*1000)+1));
 
-        m_ctrlVuMeterL->set(m_fRMSvolumeL);
-        m_ctrlVuMeterR->set(m_fRMSvolumeR);
-        m_ctrlVuMeter->set( (m_fRMSvolumeL + m_fRMSvolumeR) / 2);
+        const double epsilon = .0001;
+
+        // Since VU meters are a rolling sum of audio, the no-op checks in
+        // ControlObject will not prevent us from causing tons of extra
+        // work. Because of this, we use an epsilon here to be gentle on the GUI
+        // and MIDI controllers.
+        if (fabs(m_fRMSvolumeL - m_ctrlVuMeterL->get()) > epsilon)
+            m_ctrlVuMeterL->set(m_fRMSvolumeL);
+        if (fabs(m_fRMSvolumeR - m_ctrlVuMeterR->get()) > epsilon)
+            m_ctrlVuMeterR->set(m_fRMSvolumeR);
+
+        double fRMSvolume = (m_fRMSvolumeL + m_fRMSvolumeR) / 2.0;
+        if (fabs(fRMSvolume - m_ctrlVuMeter->get()) > epsilon)
+            m_ctrlVuMeter->set(fRMSvolume);
 
         // Reset calculation:
         m_iSamplesCalculated = 0;

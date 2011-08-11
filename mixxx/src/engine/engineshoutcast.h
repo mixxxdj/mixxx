@@ -66,16 +66,13 @@ class EngineShoutcast : public EngineAbstractRecord {
     TrackPointer m_pMetaData;
     shout_t *m_pShout;
     shout_metadata_t *m_pShoutMetaData;
-    int m_pMetaDataLife;
+    int m_iMetaDataLife;
     long m_iShoutStatus;
     long m_iShoutFailures;
     ConfigObject<ConfigValue> *m_pConfig;
     Encoder *m_encoder;
     ControlObject* m_pShoutcastNeedUpdateFromPrefs;
     ControlObjectThreadMain* m_pUpdateShoutcastFromPrefs;
-    ControlObjectThread* m_pCrossfader;
-    ControlObjectThread* m_pVolume1;
-    ControlObjectThread* m_pVolume2;
     volatile bool m_bQuit;
     QMutex m_shoutMutex;
     /** static metadata according to prefereneces **/

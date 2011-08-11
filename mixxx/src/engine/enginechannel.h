@@ -27,49 +27,42 @@ class EnginePregain;
 class EngineBuffer;
 class EngineFilterBlock;
 class EngineClipping;
-class EngineVolume;
 class EngineFlanger;
 class EngineVuMeter;
 class EngineVinylSoundEmu;
 class ControlPushButton;
+class ControlObject;
 
 class EngineChannel : public EngineObject {
-public:
+    Q_OBJECT
+  public:
     enum ChannelOrientation {
         LEFT = 0,
         CENTER,
         RIGHT,
     };
 
-    EngineChannel(const char *group, ConfigObject<ConfigValue>* pConfig,
-                  ChannelOrientation defaultOrientation = CENTER);
+    EngineChannel(const char *pGroup, ChannelOrientation defaultOrientation = CENTER);
     virtual ~EngineChannel();
 
-    virtual bool isPFL();
     virtual ChannelOrientation getOrientation();
-    virtual const QString& getGroup();
+    virtual const QString& getGroup() const;
 
-    virtual void process(const CSAMPLE *pIn, const CSAMPLE *pOut, const int iBufferSize);
-    virtual void applyVolume(CSAMPLE *pBuff, const int iBufferSize) const;
+    virtual bool isActive() = 0;
+    virtual bool isPFL();
+    virtual bool isMaster();
+
+    virtual void process(const CSAMPLE *pIn, const CSAMPLE *pOut, const int iBufferSize) = 0;
 
     // TODO(XXX) This hack needs to be removed.
-    virtual EngineBuffer* getEngineBuffer();
+    virtual EngineBuffer* getEngineBuffer() {
+        return NULL;
+    }
 
-    virtual bool isActive();
-private:
+  private:
     const QString m_group;
-    ConfigObject<ConfigValue>* m_pConfig;
     ControlPushButton* m_pPFL;
     ControlObject* m_pOrientation;
-
-    EngineBuffer* m_pBuffer;
-    EngineClipping* m_pClipping;
-    EngineFilterBlock* m_pFilter;
-    EngineFlanger* m_pFlanger;
-    EnginePregain* m_pPregain;
-    EngineVinylSoundEmu* m_pVinylSoundEmu;
-    EngineVolume* m_pVolume;
-    EngineVuMeter* m_pVUMeter;
 };
 
 #endif

@@ -5,6 +5,7 @@
 
 #include "configobject.h"
 #include "waveformviewerfactory.h"
+#include "sharedglcontext.h"
 
 #include "waveform/waveformrenderer.h"
 #include "widget/wvisualsimple.h"
@@ -17,11 +18,12 @@ QList<WVisualSimple*> WaveformViewerFactory::m_simpleViewers = QList<WVisualSimp
 QList<WWaveformViewer*> WaveformViewerFactory::m_visualViewers = QList<WWaveformViewer*>();
 QList<WGLWaveformViewer*> WaveformViewerFactory::m_visualGLViewers = QList<WGLWaveformViewer*>();
 QTimer WaveformViewerFactory::s_waveformUpdateTimer;;
-QGLContext* WaveformViewerFactory::s_pSharedOGLCtxt = (QGLContext *)NULL;
 
 
 WaveformViewerType WaveformViewerFactory::createWaveformViewer(const char *group, QWidget *parent, ConfigObject<ConfigValue> *pConfig, QWidget **target, WaveformRenderer* pWaveformRenderer) {
     
+    //FIXME :vRince get usefull stuff to waveformwidget factory
+
     // If the waveform update timer is not active, start it.
     if (!s_waveformUpdateTimer.isActive()) {
         int desired_fps = 40;
@@ -50,6 +52,8 @@ WaveformViewerType WaveformViewerFactory::createWaveformViewer(const char *group
     
     ctxt = new QGLContext(QGLFormat(QGL::SampleBuffers));
     ctxt->create(s_pSharedOGLCtxt);
+
+    QGLContext* ctxt = SharedGLContext::getContext();
 
     qDebug() << "createWaveformViewer()";
 

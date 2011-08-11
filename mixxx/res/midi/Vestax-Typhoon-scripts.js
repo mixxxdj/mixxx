@@ -15,6 +15,8 @@ VestaxTyphoon = new function() {
 VestaxTyphoon.DECK_LIGHTS = [0x32, 0x35, 0x33, 0x24, 0x25, 0x46, 0x42, 0x21, 0x20, 0x29, 0x2a, 0x2b,
     0x2c, 0x2d];
 VestaxTyphoon.MISC_LIGHTS = [0x26, 0x29, 0x28, 0x2a];
+VestaxTyphoon.SCRATCH_TIMER_PERIOD = 20; // timer period in milliseconds,
+// mixxx enforces a minimum of 20.
 
 VestaxTyphoon.init = function(id) {
     VestaxTyphoon.decks = {
@@ -175,8 +177,8 @@ VestaxTyphoon.Deck = function(deckNum, group) {
 // this next one is basically useless since we don't need touch for jog, maybe useful later?
 //    this.addButton("wheeltouch", new VestaxTyphoon.Button(deckNum-1, 0x2e), "handleWheelTouch");
     this.addButton("wheeltouchfilter", new VestaxTyphoon.Button(deckNum-1, 0x2f), "handleWheelTouchFilter");
-    this.addButton("jog", new VestaxTyphoon.Button(deckNum-1, 0x10), "handleJog");
-    this.addButton("scratch", new VestaxTyphoon.Button(deckNum-1, 0x11), "handleScratch");
+    this.addButton("jog", new VestaxTyphoon.Button(deckNum-1, 0x10), "handleWheel");
+    this.addButton("scratch", new VestaxTyphoon.Button(deckNum-1, 0x11), "handleWheel");
 
     this.lights["vu1"] = new VestaxTyphoon.Light(deckNum-1, 0x29);
     this.lights["vu2"] = new VestaxTyphoon.Light(deckNum-1, 0x2a);
@@ -272,6 +274,12 @@ VestaxTyphoon.Button.prototype.handleFilter = function() {
         this.light.on();
     } else {
         this.light.off();
+        // kill scratch
+        if (this.parent.buttons["wheeltouchfilter"].timer > 0) {
+            engine.stopTimer(this.parent.buttons["wheeltouchfilter"].timer);
+            this.parent.buttons["wheeltouchfilter"].timer = 0;
+        }
+        engine.scratchDisable(this.parent.deckNum);
     }
 }
 
@@ -309,21 +317,29 @@ VestaxTyphoon.Button.prototype.handleWheelTouchFilter = function() {
     if (this.state == VestaxTyphoon.ButtonState.pressed) {
         // disable keylock on scratch
         //this.keylock = engine.getValue(this.group, "keylock");
-        engine.scratchEnable(this.parent.deckNum, 128*3, 33+(1.0/3), 1.0/8, (1.0/8)/32);
+        if (this.timer > 0) {
+            engine.stopTimer(this.timer);
+            this.timer = 0;
+        }
+        engine.scratchEnable(this.parent.deckNum, 300, 33+(1.0/3), 1.0/8, (1.0/8)/32);
     } else {
-        engine.scratchDisable(this.parent.deckNum);
+        this.callback = function() {
+            var last_fire = (new Date()).valueOf() - VestaxTyphoon.SCRATCH_TIMER_PERIOD;
+            if (this.lastTick < last_fire) {
+                engine.scratchDisable(this.parent.deckNum);
+                engine.stopTimer(this.timer);
+                this.timer = 0;
+            }
+        }
+        this.timer = engine.beginTimer(VestaxTyphoon.SCRATCH_TIMER_PERIOD,
+            "VestaxTyphoon.GetDeck(\"" + this.group + "\").buttons[\"wheeltouchfilter\"].callback()");
     }
 }
 
-VestaxTyphoon.Button.prototype.handleJog = function() {
-    if (!engine.getValue(this.group, "scratch2_enable")) {
-        engine.setValue(this.group, "jog", this.state - 0x40);
-    }
-}
-
-VestaxTyphoon.Button.prototype.handleScratch = function() {
+VestaxTyphoon.Button.prototype.handleWheel = function() {
     if (engine.getValue(this.group, "scratch2_enable")) {
         engine.scratchTick(this.parent.deckNum, this.state - 0x40);
+        this.parent.buttons["wheeltouchfilter"].lastTick = (new Date()).valueOf();
     } else {
         engine.setValue(this.group, "jog", this.state - 0x40);
     }

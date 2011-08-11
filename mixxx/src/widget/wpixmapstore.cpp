@@ -24,38 +24,48 @@ QHash<QString, PixmapInfoType*> WPixmapStore::dictionary;
 
 QSharedPointer<ImgSource> WPixmapStore::loader = QSharedPointer<ImgSource>();
 
-WPixmapStore::WPixmapStore()
-{
-}
-
 QPixmap * WPixmapStore::getPixmap(const QString &fileName)
 {
     // Search for pixmap in list
-    PixmapInfoType * info;
+    PixmapInfoType* info = NULL;
 
-    info = dictionary[fileName];
-    if (info)
-    {
+    QHash<QString, PixmapInfoType*>::iterator it = dictionary.find(fileName);
+    if (it != dictionary.end()) {
+        info = it.value();
         info->instCount++;
+        //qDebug() << "WPixmapStore returning cached pixmap for:" << fileName;
         return info->pixmap;
     }
 
     // Pixmap wasn't found, construct it
-//    qDebug() << "Loading pixmap" << fileName;
-    info = new PixmapInfoType;
-    if (loader) {
-        QImage * img = loader->getImage(fileName);
+    //qDebug() << "WPixmapStore Loading pixmap from file" << fileName;
 
-        info->pixmap = new QPixmap(QPixmap::fromImage(*img)); //ack, hacky; there must be a better way (we're using pixmap pointers, but perhaps qt4 expects that you'll just copy?) --kousu 2009/03
+    QPixmap* loadedPixmap = NULL;
+    if (loader) {
+        QImage* img = loader->getImage(fileName);
+
+        if (img != NULL && !img->isNull()) {
+            // ack, hacky; there must be a better way (we're using pixmap
+            // pointers, but perhaps qt4 expects that you'll just copy?) --kousu
+            // 2009/03
+            loadedPixmap = new QPixmap(QPixmap::fromImage(*img));
+        }
         // No longer need the original QImage (I hope...) - adam_d
         delete img;
     } else {
-        info->pixmap = new QPixmap(fileName);
+        loadedPixmap = new QPixmap(fileName);
     }
+
+    if (loadedPixmap == NULL || loadedPixmap->isNull()) {
+        qDebug() << "WPixmapStore couldn't load:" << fileName << (loadedPixmap == NULL);
+        delete loadedPixmap;
+        return NULL;
+    }
+
+    info = new PixmapInfoType;
+    info->pixmap = loadedPixmap;
     info->instCount = 1;
-
     dictionary.insert(fileName, info);
-
     return info->pixmap;
 }
 

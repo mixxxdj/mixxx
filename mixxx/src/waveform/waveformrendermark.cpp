@@ -8,9 +8,9 @@
 #include "widget/wskincolor.h"
 #include "trackinfoobject.h"
 #include "widget/wwidget.h"
+
 #include "waveform.h"
 #include "controlobject.h"
-
 
 WaveformRenderMark::WaveformRenderMark( WaveformWidgetRenderer* waveformWidgetRenderer) :
     WaveformRendererAbstract(waveformWidgetRenderer)
@@ -89,7 +89,7 @@ void WaveformRenderMark::draw( QPainter* painter, QPaintEvent* event)
                 currentMarkPoint = a*(currentMarkPoint+b);
                 //NOTE: vRince I guess pixmap width is odd to display the center on the exact line !
                 //external pixmap should respect that ...
-                painter->drawPixmap(QPointF(currentMarkPoint-(float)mark.m_pixmap.width()/2.0f+1.0f,0.0f),
+                painter->drawPixmap(QPoint(currentMarkPoint-mark.m_pixmap.width()/2,0),
                                     mark.m_pixmap);
             }
         }

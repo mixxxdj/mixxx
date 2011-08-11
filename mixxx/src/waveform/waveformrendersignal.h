@@ -23,9 +23,10 @@ class QTime;
 
 class WaveformRenderSignal : public RenderObject {
     Q_OBJECT
-public:
+  public:
     WaveformRenderSignal(const char *group, WaveformRenderer *parent);
-    ~WaveformRenderSignal();
+    virtual ~WaveformRenderSignal();
+
     void resize(int w, int h);
     void setup(QDomNode node);
 
@@ -37,10 +38,10 @@ public:
 
     void newTrack(TrackPointer pTrack);
 
-public slots:
+  public slots:
     void slotUpdateGain(double gain);
 
-private:
+  private:
     float m_fGain;
 
     WaveformRenderer *m_pParent;

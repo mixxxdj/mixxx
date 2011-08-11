@@ -33,7 +33,6 @@ private:
     static QList<WWaveformViewer*> m_visualViewers;
     static QList<WGLWaveformViewer*> m_visualGLViewers;
     static QTimer s_waveformUpdateTimer;
-    static QGLContext *s_pSharedOGLCtxt;
 
 public:
     static WaveformViewerType createWaveformViewer(const char* group, QWidget *pParent, ConfigObject<ConfigValue> *pConfig, QWidget **target, WaveformRenderer *pWaveformRenderer);

@@ -3,7 +3,7 @@
                              -------------------
     begin                : Thu Apr 4 2002
     copyright            : (C) 2002 by Tue and Ken Haste Andersen
-    email                : 
+    email                :
  ***************************************************************************/
 
 /***************************************************************************
@@ -18,7 +18,7 @@
 #ifndef ENGINEFILTERBLOCK_H
 #define ENGINEFILTERBLOCK_H
 
-#include "engineobject.h"
+#include "engine/engineobject.h"
 
 class ControlLogpotmeter;
 class ControlPotmeter;
@@ -35,7 +35,7 @@ class ControlPushButton;
   *@author Tue and Ken Haste Andersen
   */
 
-class EngineFilterBlock : public EngineObject  
+class EngineFilterBlock : public EngineObject
 {
 public:
     EngineFilterBlock(const char *group);
@@ -49,8 +49,9 @@ private:
     ControlLogpotmeter *filterpotLow, *filterpotMid, *filterpotHigh;
     ControlPushButton *filterKillLow, *filterKillMid, *filterKillHigh;
 
-    ControlPotmeter *m_loEqFreq, *m_hiEqFreq;
-    ControlPushButton *m_lofiEq;
+    static ControlPotmeter *s_loEqFreq, *s_hiEqFreq;
+    static ControlPushButton *s_lofiEq;
+
     int ilowFreq, ihighFreq;
     bool blofi;
 };

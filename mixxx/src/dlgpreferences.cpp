@@ -18,6 +18,8 @@
 
 #ifdef __VINYLCONTROL__
 #include "dlgprefvinyl.h"
+#else
+#include "dlgprefnovinyl.h"
 #endif
 
 #ifdef __SHOUTCAST__
@@ -47,8 +49,9 @@
 #include <QEvent>
 
 DlgPreferences::DlgPreferences(MixxxApp * mixxx, SkinLoader* pSkinLoader,
-                               SoundManager * soundman,
-                               MidiDeviceManager * midi, ConfigObject<ConfigValue> * _config)
+                               SoundManager * soundman, PlayerManager* pPlayerManager,
+                               MidiDeviceManager * midi, VinylControlManager *pVCManager,
+                               ConfigObject<ConfigValue> * _config)
         :  QDialog(), Ui::DlgPreferencesDlg() {
     m_pMixxx = mixxx;
     m_pMidiDeviceManager = midi;
@@ -65,16 +68,18 @@ DlgPreferences::DlgPreferences(MixxxApp * mixxx, SkinLoader* pSkinLoader,
     //contentsTreeWidget->setCurrentRow(0);
 
     // Construct widgets for use in tabs
-    wsound = new DlgPrefSound(this, soundman, config);
+    wsound = new DlgPrefSound(this, soundman, pPlayerManager, config);
     wplaylist = new DlgPrefPlaylist(this, config);
-    wcontrols = new DlgPrefControls(this, mixxx, pSkinLoader, config);
+    wcontrols = new DlgPrefControls(this, mixxx, pSkinLoader, pPlayerManager, config);
     weq = new DlgPrefEQ(this, config);
     wcrossfader = new DlgPrefCrossfader(this, config);
     wbpm = new DlgPrefBpm(this, config);
     wreplaygain = new DlgPrefReplayGain(this, config);
     wrecord = new DlgPrefRecord(this, config);
 #ifdef __VINYLCONTROL__
-    wvinylcontrol = new DlgPrefVinyl(this, soundman, config);
+    wvinylcontrol = new DlgPrefVinyl(this, pVCManager, config);
+#else
+    wnovinylcontrol = new DlgPrefNoVinyl(this, soundman, config);
 #endif
 #ifdef __SHOUTCAST__
     wshoutcast = new DlgPrefShoutcast(this, config);
@@ -96,6 +101,8 @@ DlgPreferences::DlgPreferences(MixxxApp * mixxx, SkinLoader* pSkinLoader,
     pagesWidget->addWidget(wreplaygain);
 #ifdef __VINYLCONTROL__
     pagesWidget->addWidget(wvinylcontrol);
+#else
+    pagesWidget->addWidget(wnovinylcontrol);
 #endif
 #ifdef __SHOUTCAST__
     pagesWidget->addWidget(wshoutcast);
@@ -133,7 +140,6 @@ DlgPreferences::DlgPreferences(MixxxApp * mixxx, SkinLoader* pSkinLoader,
 #endif
 
 #ifdef __VINYLCONTROL__
-    connect(wvinylcontrol, SIGNAL(refreshVCProxies()), wsound, SLOT(forceApply()));
     connect(buttonBox, SIGNAL(accepted()), wvinylcontrol,    SLOT(slotApply())); //It's important for this to be before the
                                                                                  //connect for wsound...
 #endif
@@ -170,7 +176,7 @@ void DlgPreferences::createIcons()
     m_pSoundButton->setText(0, tr("Sound Hardware"));
     m_pSoundButton->setTextAlignment(0, Qt::AlignLeft | Qt::AlignVCenter);
     m_pSoundButton->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
-    
+
 /*
     QTreeWidgetItem * midiButton = new QTreeWidgetItem(contentsTreeWidget);
     midiButton->setIcon(0, QIcon(":/images/preferences/controllers.png"));
@@ -242,6 +248,14 @@ void DlgPreferences::createIcons()
     m_pVinylControlButton->setText(0, tr("Vinyl Control"));
     m_pVinylControlButton->setTextAlignment(0, Qt::AlignLeft | Qt::AlignVCenter);
     m_pVinylControlButton->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
+#else
+    m_pVinylControlButton = new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type);
+    //QT screws up my nice vinyl svg for some reason, so we'll use a PNG version
+    //instead...
+    m_pVinylControlButton->setIcon(0, QIcon(":/images/preferences/ic_preferences_vinyl.png"));
+    m_pVinylControlButton->setText(0, tr("Vinyl Control"));
+    m_pVinylControlButton->setTextAlignment(0, Qt::AlignLeft | Qt::AlignVCenter);
+    m_pVinylControlButton->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
 #endif
 
 #ifdef __SHOUTCAST__
@@ -277,11 +291,14 @@ void DlgPreferences::changePage(QTreeWidgetItem * current, QTreeWidgetItem * pre
        else if (current == m_pBPMdetectButton)
            pagesWidget->setCurrentWidget(wbpm);
        else if (current == m_pReplayGainButton)
-    	   pagesWidget->setCurrentWidget(wreplaygain);
+           pagesWidget->setCurrentWidget(wreplaygain);
 
 #ifdef __VINYLCONTROL__
        else if (current == m_pVinylControlButton)
            pagesWidget->setCurrentWidget(wvinylcontrol);
+#else
+       else if (current == m_pVinylControlButton)
+           pagesWidget->setCurrentWidget(wnovinylcontrol);
 #endif
 #ifdef __SHOUTCAST__
        else if (current == m_pShoutcastButton)

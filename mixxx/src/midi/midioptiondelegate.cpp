@@ -21,6 +21,7 @@
 #define MIDI_OPT_STRING_HERC_JOG    "HercJog"    // Generic hercules wierd range correction
 #define MIDI_OPT_STRING_SPREAD64    "Spread64"   // Accelerated difference from 64
 #define MIDI_OPT_STRING_SELECTKNOB  "SelectKnob" // Relative knob which can be turned forever and outputs a signed value.
+#define MIDI_OPT_STRING_SOFT_TAKEOVER   "SoftTakeover"  // Prevents sudden changes when hardware & software MixxxControl value differ
 #define MIDI_OPT_STRING_SCRIPT      "Script"     // Maps a MIDI control to a custom MixxxScript function
 
 MidiOptionDelegate::MidiOptionDelegate(QObject *parent)
@@ -50,7 +51,8 @@ void MidiOptionDelegate::paint(QPainter *painter, const QStyleOptionViewItem &op
            case MIDI_OPT_HERC_JOG: text = MIDI_OPT_STRING_HERC_JOG; break;
            case MIDI_OPT_SPREAD64: text = MIDI_OPT_STRING_SPREAD64; break;
            case MIDI_OPT_SELECTKNOB: text = MIDI_OPT_STRING_SELECTKNOB; break;
-           case MIDI_OPT_SCRIPT: text = MIDI_OPT_STRING_SCRIPT; break;      
+           case MIDI_OPT_SOFT_TAKEOVER: text = MIDI_OPT_STRING_SOFT_TAKEOVER; break;
+           case MIDI_OPT_SCRIPT: text = MIDI_OPT_STRING_SCRIPT; break;
            default: text = QString("%1").arg(midioption); break;                           
         }
 
@@ -77,6 +79,7 @@ QWidget *MidiOptionDelegate::createEditor(QWidget *parent,
     editor->addItem(MIDI_OPT_STRING_HERC_JOG);
     editor->addItem(MIDI_OPT_STRING_SPREAD64);
     editor->addItem(MIDI_OPT_STRING_SELECTKNOB);
+    editor->addItem(MIDI_OPT_STRING_SOFT_TAKEOVER);
     editor->addItem(MIDI_OPT_STRING_SCRIPT);
 
     return editor;
@@ -102,7 +105,8 @@ void MidiOptionDelegate::setEditorData(QWidget *editor,
         case MIDI_OPT_HERC_JOG:     comboIdx = 8; break;
         case MIDI_OPT_SPREAD64:     comboIdx = 9; break;
         case MIDI_OPT_SELECTKNOB:   comboIdx = 10; break;
-        case MIDI_OPT_SCRIPT:       comboIdx = 11; break;      
+        case MIDI_OPT_SOFT_TAKEOVER:comboIdx = 11; break;      
+        case MIDI_OPT_SCRIPT:       comboIdx = 12; break;
         default: comboIdx = 0; break;      
     }
     comboBox->setCurrentIndex(comboIdx);
@@ -116,6 +120,7 @@ void MidiOptionDelegate::setModelData(QWidget *editor, QAbstractItemModel *model
     //comboBox->interpretText();
     //Get the text from the combobox and turn it into a MidiMessage integer.
     QString text = comboBox->currentText();
+    // Sigh, it sucks that we can't switch() on a string...
     if (text == MIDI_OPT_STRING_NORMAL) //These come from the MidiOption enum (mixxxcontrol.h)
         midioption = MIDI_OPT_NORMAL;
     else if (text == MIDI_OPT_STRING_INVERT)
@@ -138,8 +143,10 @@ void MidiOptionDelegate::setModelData(QWidget *editor, QAbstractItemModel *model
         midioption = MIDI_OPT_SPREAD64;
     else if (text == MIDI_OPT_STRING_SELECTKNOB)
         midioption = MIDI_OPT_SELECTKNOB;
+    else if (text == MIDI_OPT_STRING_SOFT_TAKEOVER)
+        midioption = MIDI_OPT_SOFT_TAKEOVER;
     else if (text == MIDI_OPT_STRING_SCRIPT)
-        midioption = MIDI_OPT_SCRIPT;                                                                
+        midioption = MIDI_OPT_SCRIPT;
     model->setData(index, midioption, Qt::EditRole);
 }
 

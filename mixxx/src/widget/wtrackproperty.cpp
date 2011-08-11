@@ -18,8 +18,9 @@ void WTrackProperty::setup(QDomNode node) {
 void WTrackProperty::slotTrackLoaded(TrackPointer track) {
     if (track) {
         m_pCurrentTrack = track;
-        connect(track.data(), SIGNAL(changed()), this, SLOT(updateLabel()));
-        updateLabel();
+        connect(track.data(), SIGNAL(changed(TrackInfoObject*)),
+                this, SLOT(updateLabel(TrackInfoObject*)));
+        updateLabel(track.data());
     }
 }
 
@@ -31,7 +32,7 @@ void WTrackProperty::slotTrackUnloaded(TrackPointer track) {
     m_pLabel->setText("");
 }
 
-void WTrackProperty::updateLabel() {
+void WTrackProperty::updateLabel(TrackInfoObject*) {
     if (m_pCurrentTrack) {
         QVariant property = m_pCurrentTrack->property(m_property.toAscii().constData());
         if (property.isValid() && qVariantCanConvert<QString>(property)) {
