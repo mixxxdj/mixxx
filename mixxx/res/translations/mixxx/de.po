@@ -3,14 +3,14 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2011-05-03 21:42-0400\n"
-"PO-Revision-Date: 2011-06-30 13:54+0000\n"
-"Last-Translator: everyone <Unknown>\n"
+"PO-Revision-Date: 2011-08-17 13:46+0000\n"
+"Last-Translator: Jan Schuermann <Unknown>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-07-01 04:32+0000\n"
-"X-Generator: Launchpad (build 13168)\n"
+"X-Launchpad-Export-Date: 2011-08-18 04:32+0000\n"
+"X-Generator: Launchpad (build 13697)\n"
 
 #: AutoDJFeature#1
 msgid "Auto DJ"
@@ -111,7 +111,7 @@ msgstr "Geräte"
 
 #: BrowseFeature#3
 msgid "Removable Devices"
-msgstr "Wechselmedien"
+msgstr "Wechseldatenträger"
 
 #: BrowseFeature#4
 msgctxt "BrowseFeature#4"
@@ -200,12 +200,12 @@ msgstr "Art"
 #: BrowseTableModel#13
 msgctxt "BrowseTableModel#13"
 msgid "Bitrate"
-msgstr "Datenrate"
+msgstr "Bitrate"
 
 #: BrowseTableModel#14
 msgctxt "BrowseTableModel#14"
 msgid "Location"
-msgstr "Ort"
+msgstr "Speicherort"
 
 #: BrowseTableModel#15
 msgctxt "BrowseTableModel#15"
@@ -3555,72 +3555,9 @@ msgstr "Spalten zeigen oder verbergen."
 #~ msgid "Permission Denied"
 #~ msgstr "Zugriff verweigert"
 
-#~ msgctxt "CrateTableModel#6"
-#~ msgid "Year"
-#~ msgstr "Jahr"
-
-#~ msgctxt "CrateTableModel#8"
-#~ msgid "Location"
-#~ msgstr "Ort"
-
-#~ msgctxt "CrateTableModel#3"
-#~ msgid "Title"
-#~ msgstr "Titel"
-
-#~ msgctxt "CrateTableModel#4"
-#~ msgid "Album"
-#~ msgstr "Album"
-
-#~ msgctxt "CrateTableModel#9"
-#~ msgid "Comment"
-#~ msgstr "Kommentar"
-
-#~ msgctxt "CrateTableModel#10"
-#~ msgid "Duration"
-#~ msgstr "Dauer"
-
-#~ msgctxt "CrateTableModel#12"
-#~ msgid "Bitrate"
-#~ msgstr "Bitrate"
-
-#~ msgctxt "CrateTableModel#13"
-#~ msgid "BPM"
-#~ msgstr "BPM"
-
-#~ msgid "ID"
-#~ msgstr "ID"
-
-#~ msgctxt "WTrackTableView#3"
-#~ msgid "Load in Player 1"
-#~ msgstr "In Player 1 laden"
-
-#~ msgctxt "WTrackTableView#4"
-#~ msgid "Load in Player 2"
-#~ msgstr "In Player 2 laden"
-
-#~ msgctxt "WTrackTableView#5"
-#~ msgid "Remove"
-#~ msgstr "Entfernen"
-
-#~ msgid "Edit"
-#~ msgstr "Bearbeiten"
-
 #~ msgctxt "DlgPrefControls#4"
 #~ msgid "Information"
 #~ msgstr "Information"
-
-#~ msgctxt "DlgPrefPlaylistDlg#6"
-#~ msgid "Library"
-#~ msgstr "Bibliothek"
-
-#~ msgid "Quality: "
-#~ msgstr "Qualität: "
-
-#~ msgid "Extra Playback Plugins:"
-#~ msgstr "Extra Wiedergabe-Plugins:"
-
-#~ msgid "Audio Playback Plugins"
-#~ msgstr "Audiowiedergabe-Plugins"
 
 #~ msgctxt "DlgPrefRecordDlg#4"
 #~ msgid "Encoding"
@@ -3629,14 +3566,6 @@ msgstr "Spalten zeigen oder verbergen."
 #~ msgctxt "DlgPrefRecordDlg#9"
 #~ msgid "Title"
 #~ msgstr "Titel"
-
-#~ msgctxt "DlgPrefRecordDlg#6"
-#~ msgid "High"
-#~ msgstr "Hoch"
-
-#~ msgctxt "DlgPrefRecordDlg#7"
-#~ msgid "Low"
-#~ msgstr "Niedrig"
 
 #~ msgctxt "DlgPrefRecordDlg#11"
 #~ msgid "Album"
@@ -3666,106 +3595,6 @@ msgstr "Spalten zeigen oder verbergen."
 #~ "right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-"
 #~ "family:'DejaVu Sans'; font-size:9pt; font-style:italic;\">Dieser Stream ist "
 #~ "nur zu Testzwecken online!</span></p></body></html>"
-
-#~ msgctxt "DlgPrefSound#7"
-#~ msgid "You cannot send multiple outputs to a single channel"
-#~ msgstr ""
-#~ "Es können nicht mehrere Augänge an einen einzelnen Kanal gesendet werden"
-
-#~ msgctxt "DlgPrefSound#4"
-#~ msgid "Mixxx"
-#~ msgstr "Mixxx"
-
-#~ msgctxt "DlgPrefSound#6"
-#~ msgid "Configuration error"
-#~ msgstr "Fehler in der Konfiguration"
-
-#~ msgctxt "DlgPrefSound#9"
-#~ msgid "Audio device could not be opened"
-#~ msgstr "Das Audiogerät konnte nicht geöffnet werden"
-
-#~ msgctxt "DlgPrefSound#8"
-#~ msgid "You cannot use a single pair of channels for both decks"
-#~ msgstr "Es kann nicht ein Kanalpaar für beide Decks benutzt werden"
-
-#~ msgid ""
-#~ "Having the Headphone share the same sound card output channels as Master\n"
-#~ "will result in Mixxx playing back at full volume irespective of the volume\n"
-#~ "controls (this is because Headphone channels do not repect Master volume).\n"
-#~ "\n"
-#~ "This configuration is NOT recommended because of that.\n"
-#~ "\n"
-#~ "If your sound card has only two channels set the 'Headphones' channel to "
-#~ "'None'."
-#~ msgstr ""
-#~ "Wenn sich Master und Kopfhörer den selben Kanal auf der Soundkarte teilen,\n"
-#~ "wird Mixxx unabhängig von den Einstellung des Players mit voller Lautstärke "
-#~ "abspielen.\n"
-#~ "Die Kopfhörer Kanäle beachten die Master-Lautstärke nicht.\n"
-#~ "\n"
-#~ "Daher ist diese Konfiguration nicht empfohlen.\n"
-#~ "\n"
-#~ "Hat Ihre Soundkarte nur 2 Kanäle, setzen Sie den Kopfhörer auf 'Keine'."
-
-#~ msgid "Mixxx - Master and Headphones sharing the same channels"
-#~ msgstr "Mixxx - Master und Kopfhörer teilen sich einen Kanal"
-
-#~ msgid "Sound API could not be initialized"
-#~ msgstr "Sound API konnte nicht initialisiert werden"
-
-#~ msgid "Configuration problem"
-#~ msgstr "Fehler in der Konfiguration"
-
-#~ msgid ""
-#~ "Stretching beyond +-10% with pitch independent time stretch is not advised, "
-#~ "and is likely to result in bad sound quality."
-#~ msgstr ""
-#~ "Mehr als +/- 10%  Timestretch ist nicht empfohlen und resultiert "
-#~ "möglicherweise in schlechter Soundqualität."
-
-#~ msgctxt "DlgPrefSoundDlg#14"
-#~ msgid "High"
-#~ msgstr "Hoch"
-
-#~ msgctxt "DlgPrefSoundDlg#13"
-#~ msgid "Low"
-#~ msgstr "Niedrig"
-
-#~ msgid "256 ms"
-#~ msgstr "256 ms"
-
-#~ msgctxt "DlgPrefVinyl#1"
-#~ msgid "None"
-#~ msgstr "Keine"
-
-#~ msgctxt "DlgPrefVinyl#4"
-#~ msgid "You cannot use a single pair of channels for both decks"
-#~ msgstr ""
-#~ "Es können nicht mehrere Augänge an einen einzelnen Kanal gesendet werden"
-
-#~ msgctxt "DlgPrefVinyl#3"
-#~ msgid "You cannot send multiple outputs to a single channel"
-#~ msgstr ""
-#~ "Es können nicht mehrere Augänge an einen einzelnen Kanal gesendet werden"
-
-#~ msgctxt "DlgPrefVinyl#2"
-#~ msgid "Configuration error"
-#~ msgstr "Fehler in der Konfiguration"
-
-#~ msgid "Slow CPU"
-#~ msgstr "Langsame CPU"
-
-#~ msgid "Fast CPU"
-#~ msgstr "Schnelle CPU"
-
-#~ msgid "Input"
-#~ msgstr "Eingang"
-
-#~ msgid "Deck 1"
-#~ msgstr "Deck 1"
-
-#~ msgid "Deck 2"
-#~ msgstr "Deck 2"
 
 #~ msgid ""
 #~ "<a "
@@ -3806,156 +3635,12 @@ msgstr "Spalten zeigen oder verbergen."
 #~ msgid "Powered by xwax"
 #~ msgstr "Powered by xwax"
 
-#~ msgid "Crossfader"
-#~ msgstr "Crossfader"
-
-#~ msgid "Vinyl Control"
-#~ msgstr "Vinylsteuerung"
-
-#~ msgid "Filename:"
-#~ msgstr "Dateiname:"
-
-#~ msgid "Title:"
-#~ msgstr "Name:"
-
-#~ msgid "Comments:"
-#~ msgstr "Kommentare:"
-
-#~ msgid "Alt+O"
-#~ msgstr "Alt+O"
-
-#~ msgid "Mixxx could not connect to the server"
-#~ msgstr "Mixxx konnte keine Verbindung zum Server herstellen"
-
-#~ msgid "Shoutcast aborted connect after 3 tries"
-#~ msgstr "Shoutcast hat die Verbindung nach 3 Versuchen unterbrochen"
-
-#~ msgctxt "ITunesPlaylistModel#1"
-#~ msgid "Artist"
-#~ msgstr "Interpret"
-
 #~ msgid "Would you like to load your iTunes library?"
 #~ msgstr "Wollen Sie Ihre iTunes Bibliothek laden?"
-
-#~ msgctxt "ITunesPlaylistModel#5"
-#~ msgid "BPM"
-#~ msgstr "BPM"
-
-#~ msgctxt "ITunesPlaylistModel#3"
-#~ msgid "Album"
-#~ msgstr "Album"
-
-#~ msgctxt "ITunesPlaylistModel#8"
-#~ msgid "Duration"
-#~ msgstr "Dauer"
-
-#~ msgctxt "ITunesPlaylistModel#9"
-#~ msgid "Unknown"
-#~ msgstr "Unbekannt"
-
-#~ msgctxt "ITunesPlaylistModel#7"
-#~ msgid "Location"
-#~ msgstr "Ort"
-
-#~ msgctxt "LibraryTableModel#9"
-#~ msgid "Duration"
-#~ msgstr "Dauer"
-
-#~ msgctxt "LibraryTableModel#8"
-#~ msgid "Comment"
-#~ msgstr "Kommentar"
-
-#~ msgctxt "LibraryTableModel#1"
-#~ msgid "Artist"
-#~ msgstr "Interpret"
-
-#~ msgctxt "LibraryTableModel#3"
-#~ msgid "Album"
-#~ msgstr "Album"
-
-#~ msgctxt "LibraryTableModel#5"
-#~ msgid "Year"
-#~ msgstr "Jahr"
-
-#~ msgctxt "LibraryTableModel#4"
-#~ msgid "Genre"
-#~ msgstr "Genre"
-
-#~ msgctxt "LibraryTableModel#7"
-#~ msgid "Location"
-#~ msgstr "Ort"
-
-#~ msgctxt "LibraryTableModel#6"
-#~ msgid "Type"
-#~ msgstr "Art"
-
-#~ msgctxt "LibraryTableModel#10"
-#~ msgid "Bitrate"
-#~ msgstr "Bitrate"
-
-#~ msgctxt "LibraryTableModel#11"
-#~ msgid "BPM"
-#~ msgstr "BPM"
-
-#~ msgctxt "LibraryTableModel#13"
-#~ msgid "Date Added"
-#~ msgstr "Hinzugefügt"
-
-#~ msgctxt "MissingTableModel#4"
-#~ msgid "Album"
-#~ msgstr "Album"
-
-#~ msgctxt "MissingTableModel#2"
-#~ msgid "Artist"
-#~ msgstr "Interpret"
-
-#~ msgctxt "MissingTableModel#1"
-#~ msgid "Location"
-#~ msgstr "Ort"
 
 #~ msgctxt "MidiStatusDelegate#1"
 #~ msgid "Unknown"
 #~ msgstr "Unbekannt"
-
-#~ msgctxt "MissingTableModel#6"
-#~ msgid "Year"
-#~ msgstr "Jahr"
-
-#~ msgctxt "MissingTableModel#8"
-#~ msgid "Comment"
-#~ msgstr "Kommentar"
-
-#~ msgctxt "MissingTableModel#9"
-#~ msgid "Duration"
-#~ msgstr "Dauer"
-
-#~ msgctxt "MissingTableModel#12"
-#~ msgid "BPM"
-#~ msgstr "BPM"
-
-#~ msgctxt "MissingTableModel#13"
-#~ msgid "Date Added"
-#~ msgstr "Hinzugefügt"
-
-#~ msgctxt "MissingTableModel#11"
-#~ msgid "Bitrate"
-#~ msgstr "Bitrate"
-
-#~ msgctxt "MixxxApp#2"
-#~ msgid "Mixxx"
-#~ msgstr "Mixxx"
-
-#~ msgid "<html>Mixxx cannot access the sound device <b>"
-#~ msgstr "<html>Mixxx konnte nicht auf das Audiogerät zugreifen<b>"
-
-#~ msgid "Another application is using the sound device or it is "
-#~ msgstr "Eine andere Anwendung benutzt das Audiogerät oder es ist "
-
-#~ msgid "not plugged in."
-#~ msgstr "nicht angeschlossen."
-
-#~ msgid "<b>Retry</b> after closing the other application "
-#~ msgstr "<b>Wiederholen</b> nach dem Schließen der anderen Anwendung "
 
 #~ msgid ""
 #~ "The file %1 already exists. Would you like to overwrite it?\n"
@@ -3972,45 +3657,9 @@ msgstr "Spalten zeigen oder verbergen."
 #~ msgid "Remove"
 #~ msgstr "Entfernen"
 
-#~ msgctxt "PlaylistTableModel#2"
-#~ msgid "Artist"
-#~ msgstr "Interpret"
-
-#~ msgctxt "PlaylistTableModel#12"
-#~ msgid "Bitrate"
-#~ msgstr "Bitrate"
-
-#~ msgctxt "PlaylistTableModel#13"
-#~ msgid "Date Added"
-#~ msgstr "Hinzugefügt"
-
-#~ msgctxt "PlaylistTableModel#4"
-#~ msgid "Album"
-#~ msgstr "Album"
-
-#~ msgctxt "PlaylistTableModel#6"
-#~ msgid "Year"
-#~ msgstr "Jahr"
-
-#~ msgctxt "PlaylistTableModel#8"
-#~ msgid "Location"
-#~ msgstr "Ort"
-
-#~ msgctxt "PlaylistTableModel#10"
-#~ msgid "Duration"
-#~ msgstr "Dauer"
-
-#~ msgctxt "PlaylistTableModel#9"
-#~ msgid "Comment"
-#~ msgstr "Kommentar"
-
 #~ msgctxt "RhythmboxPlaylistModel#1"
 #~ msgid "Artist"
 #~ msgstr "Interpret"
-
-#~ msgctxt "PlaylistTableModel#14"
-#~ msgid "BPM"
-#~ msgstr "BPM"
 
 #~ msgid "Would you like to load your Rhythmbox library?"
 #~ msgstr "Wollen Sie Ihre Rhythmbox Bibliothek laden?"
@@ -4058,73 +3707,11 @@ msgstr "Spalten zeigen oder verbergen."
 #~ msgid "Preferences"
 #~ msgstr "Einstellungen"
 
-#~ msgid "http://mixxx.sf.net"
-#~ msgstr "http://mixxx.sf.net"
-
-#~ msgctxt "DlgPrefSoundDlg#1"
-#~ msgid "Form1"
-#~ msgstr "Form1"
-
-#~ msgid "3:00"
-#~ msgstr "3:00"
-
-#~ msgid "77"
-#~ msgstr "77"
-
-#~ msgid "Song:"
-#~ msgstr "Titel:"
-
 #~ msgid "Missing Songs"
 #~ msgstr "Fehlende Titel"
 
-#~ msgctxt "WBrowseTableView#1"
-#~ msgid "Load in Player 1"
-#~ msgstr "In Player 1 laden"
-
-#~ msgctxt "WBrowseTableView#2"
-#~ msgid "Load in Player 2"
-#~ msgstr "In Player 2 laden"
-
 #~ msgid "You don't have permission to view this folder."
 #~ msgstr "Sie haben keine Berechtigung diesen Ordner zu öffnen."
-
-#~ msgctxt "CrateTableModel#7CrateTableModel#7"
-#~ msgid "Type"
-#~ msgstr "Art"
-
-#~ msgctxt "CrateTableModel#11"
-#~ msgid "Track #"
-#~ msgstr "Titel#"
-
-#~ msgctxt "DlgPrefShoutcastDlg#26"
-#~ msgid "Genre"
-#~ msgstr "Genre"
-
-#~ msgctxt "DlgPrefShoutcastDlg#29"
-#~ msgid "Encoding"
-#~ msgstr "Kodierung"
-
-#~ msgctxt "DlgPrefShoutcastDlg#30"
-#~ msgid "Bitrate"
-#~ msgstr "Bitrate"
-
-#~ msgctxt "DlgPrefShoutcastDlg#49"
-#~ msgid "Artist"
-#~ msgstr "Interpret"
-
-#~ msgctxt "DlgPrefShoutcastDlg#51"
-#~ msgid "Title"
-#~ msgstr "Titel"
-
-#~ msgid "Audio Output"
-#~ msgstr "Audioausgabe"
-
-#~ msgid "Vinyl emulation"
-#~ msgstr "Vinyl Emulation"
-
-#~ msgctxt "DlgPrefVinyl#5"
-#~ msgid "Audio device could not be opened"
-#~ msgstr "Das Audiogerät konnte nicht geöffnet werden"
 
 #~ msgid "Vinyl Type"
 #~ msgstr "Vinyl Typ"
@@ -4134,69 +3721,6 @@ msgstr "Spalten zeigen oder verbergen."
 
 #~ msgid "Signal Quality"
 #~ msgstr "Signal Qualität"
-
-#~ msgctxt "ITunesPlaylistModel#2"
-#~ msgid "Title"
-#~ msgstr "Titel"
-
-#~ msgctxt "LibraryTableModel#2"
-#~ msgid "Title"
-#~ msgstr "Titel"
-
-#~ msgctxt "LibraryTableModel#12"
-#~ msgid "Track #"
-#~ msgstr "Titel#"
-
-#~ msgctxt "MissingTableModel#3"
-#~ msgid "Title"
-#~ msgstr "Titel"
-
-#~ msgctxt "MissingTableModel#10"
-#~ msgid "Track #"
-#~ msgstr "Titel#"
-
-#~ msgctxt "MixxxApp#8"
-#~ msgid "Choose music library directory"
-#~ msgstr "Verzeichnis für die Musikbibliothek auswählen"
-
-#~ msgid "or reconnecting the sound device"
-#~ msgstr "oder dem erneuten Anschluss der Soundkarte"
-
-#~ msgid "<b>Reconfigure</b> Mixxx to use another sound device."
-#~ msgstr ""
-#~ "Mixxx <b>neu konfigurieren</b> um eine andere Soundkarte zu benutzen."
-
-#~ msgid "<b>Exit</b> without saving your settings."
-#~ msgstr "<b>Beenden</b> ohne die Einstellungen abzuspeichern."
-
-#~ msgid "E&xit"
-#~ msgstr "&Beenden"
-
-#~ msgid "Ctrl+,"
-#~ msgstr "Ctrl+,"
-
-#~ msgctxt "MixxxApp#90"
-#~ msgid "Mixxx"
-#~ msgstr "Mixxx"
-
-#~ msgid ""
-#~ "No input device(s) select.\n"
-#~ "Please select your soundcard(s) in vinyl control preferences."
-#~ msgstr ""
-#~ "Kein(e) Eingabegerät(e) ausgewählt.\n"
-#~ "Bitte wählen Sie eine Soundkarte in den Einstellungen der Vinylsteuerung."
-
-#~ msgctxt "MixxxApp#97"
-#~ msgid "Save Recording As..."
-#~ msgstr "Speichere Aufnahme als..."
-
-#~ msgctxt "PlaylistTableModel#3"
-#~ msgid "Title"
-#~ msgstr "Titel"
-
-#~ msgctxt "PlaylistTableModel#11"
-#~ msgid "Track #"
-#~ msgstr "Titel#"
 
 #~ msgid "Load Rhythmbox Library?"
 #~ msgstr "Die Rhythmbox Bibliothek laden?"
@@ -4209,112 +3733,22 @@ msgstr "Spalten zeigen oder verbergen."
 #~ msgid "Title"
 #~ msgstr "Titel"
 
-#~ msgid ""
-#~ "The only skin compatiable with this size display is OutlineMini (800x480).  "
-#~ "Would you like to use that skin?"
-#~ msgstr ""
-#~ "Das einzigste mit dieser Auflösung kompatible Skin  ist OutlineMini "
-#~ "(800x480).\n"
-#~ "Wollen Sie das Skin benutzen?"
-
-#~ msgid "Live Mix"
-#~ msgstr "Live Mix"
-
-#~ msgid "Analyze Entire Song"
-#~ msgstr "Gesamten Song analysieren"
-
-#~ msgctxt "CrateTableModel#14"
-#~ msgid "Date Added"
-#~ msgstr "Hinzugefügt am"
-
 #~ msgid "Crate Creation Failed"
 #~ msgstr "Erstellung der Kiste fehlgeschlagen"
-
-#~ msgctxt "CrateTableModel#5"
-#~ msgid "Genre"
-#~ msgstr "Musikrichtung"
-
-#~ msgid "BPM Detection Settings"
-#~ msgstr "Einstellungen der BPM-Erkennung"
-
-#~ msgctxt "DlgPrefPlaylistDlg#4"
-#~ msgid "Browse..."
-#~ msgstr "Durchsuchen..."
 
 #~ msgctxt "DlgPrefRecord#1"
 #~ msgid "Save Recording As..."
 #~ msgstr "Aufnahme speichern als..."
 
-#~ msgid "MP3, Ogg Vorbis, FLAC, Wave, Aiff Playback:"
-#~ msgstr "MP3, Ogg Vorbis, FLAC, Wave, Aiff-Wiedergabe:"
-
 #~ msgctxt "DlgPrefRecordDlg#3"
 #~ msgid "Browse..."
 #~ msgstr "Durchsuchen..."
 
-#~ msgid "JACK"
-#~ msgstr "Anschluss"
-
-#~ msgid ""
-#~ "FinalScratch records currently only work properly with a 44100 Hz "
-#~ "samplerate.\n"
-#~ "The samplerate has been reset to 44100 Hz."
-#~ msgstr ""
-#~ "FinalScratch-Vinyls arbeiten nur mit einer Samplerate von 44100 Hz "
-#~ "zuverlässig.\n"
-#~ "Die Samplerate wurde auf 44100 Hz zurückgesetzt."
-
-#~ msgid "Sample rate (Hz)"
-#~ msgstr "Abtastrate"
-
-#~ msgid "Pitch independent time stretch"
-#~ msgstr "Wiedergabegeschwindigkeit ohne Tonhöhenänderung"
-
-#~ msgid "Pitch behaviour"
-#~ msgstr "Tonhöhenmodus"
-
-#~ msgid ""
-#~ "Tips:<ul><li>Increase your latency if you hear pops during "
-#~ "playback</li><li>Reduce your latency to improve Mixxx's "
-#~ "responsiveness</li></ul>"
-#~ msgstr ""
-#~ "Tipps:<ul><li>Erhöhen Sie die Latenz wenn Störungen während der Wiedergabe "
-#~ "zu hören sind.</li><li>Reduzieren Sie die Latenz damit Mixxx besser "
-#~ "anspricht.</li></ul>"
-
 #~ msgid "Turntable Preamp"
 #~ msgstr "Plattenspieler Vorverstärker"
 
-#~ msgid "Track Editor"
-#~ msgstr "Titeleditor"
-
-#~ msgid "Artist:"
-#~ msgstr "Künstler:"
-
-#~ msgid "Track Information (Click to Expand)"
-#~ msgstr "Titelinformationen (zum Aufklappen anklicken)"
-
-#~ msgid "File Type:"
-#~ msgstr "Dateityp:"
-
 #~ msgid "Load iTunes Library?"
 #~ msgstr "iTunes Bibliothek laden?"
-
-#~ msgctxt "ITunesPlaylistModel#4"
-#~ msgid "Date"
-#~ msgstr "Datum"
-
-#~ msgctxt "ITunesPlaylistModel#6"
-#~ msgid "Genre"
-#~ msgstr "Musikrichtung"
-
-#~ msgctxt "MissingTableModel#7"
-#~ msgid "Type"
-#~ msgstr "Typ"
-
-#~ msgctxt "MissingTableModel#5"
-#~ msgid "Genre"
-#~ msgstr "Musikrichtung"
 
 #~ msgctxt "MixxxApp#95"
 #~ msgid "Save Recording As..."
@@ -4322,14 +3756,6 @@ msgstr "Spalten zeigen oder verbergen."
 
 #~ msgid "Mixxx Recording"
 #~ msgstr "Mixxx-Aufnahme"
-
-#~ msgctxt "PlaylistTableModel#5"
-#~ msgid "Genre"
-#~ msgstr "Musikrichtung"
-
-#~ msgctxt "PlaylistTableModel#7"
-#~ msgid "Type"
-#~ msgstr "Typ"
 
 #~ msgctxt "RhythmboxPlaylistModel#5"
 #~ msgid "Genre"
@@ -4339,24 +3765,8 @@ msgstr "Spalten zeigen oder verbergen."
 #~ msgid "Genre"
 #~ msgstr "Musikrichtung"
 
-#~ msgctxt "RhythmboxTrackModel#4"
-#~ msgid "Date"
-#~ msgstr "Datum"
-
-#~ msgctxt "CrateTableModel#2"
-#~ msgid "Artist"
-#~ msgstr "Künstler"
-
-#~ msgctxt "CrateTableModel#7"
-#~ msgid "Type"
-#~ msgstr "Typ"
-
 #~ msgid "Control Mode"
 #~ msgstr "Kontrollmodus"
-
-#~ msgctxt "CrateFeature#7"
-#~ msgid "Unlock"
-#~ msgstr "Entsperren"
 
 #~ msgctxt "DlgPrefPlaylistDlg#14"
 #~ msgid "Library"
@@ -4381,22 +3791,12 @@ msgstr "Spalten zeigen oder verbergen."
 #~ msgid "File"
 #~ msgstr "Datei"
 
-#~ msgctxt "PlaylistFeature#8"
-#~ msgid "Unlock"
-#~ msgstr "Entsperren"
-
 #~ msgctxt "MixxxApp#72"
 #~ msgid "Preferences"
 #~ msgstr "Einstellungen"
 
-#~ msgid "Mixxx Library"
-#~ msgstr "Mixxx Bibliothek"
-
 #~ msgid "Miscellaneous"
 #~ msgstr "Diverses"
-
-#~ msgid "Cue File"
-#~ msgstr "Cue-Datei"
 
 #~ msgid "Mixxx Error"
 #~ msgstr "Mixxx Fehler"
@@ -4432,20 +3832,9 @@ msgstr "Spalten zeigen oder verbergen."
 #~ "Kein(e) Eingabegerät(e) ausgewählt.\n"
 #~ "Bitte wählen Sie die Soundkarte(n) in den Sound Hardware-Einstellungen."
 
-#~ msgctxt "CrateFeature#13"
-#~ msgid "Playlist Files (*.m3u *.pls)"
-#~ msgstr "Widergabelisten (*.m3u *.pls)"
-
-#~ msgid "Save Cue File As..."
-#~ msgstr "Cue-Datei speichern als..."
-
 #~ msgctxt "MixxxApp#44"
 #~ msgid "Enable live broadcasting"
 #~ msgstr "Liveübertragung aktivieren"
-
-#~ msgctxt "PlaylistFeature#16"
-#~ msgid "Playlist Files (*.m3u *.pls)"
-#~ msgstr "Widergabelisten (*.m3u *.pls)"
 
 #~ msgid "Enable &Vinyl Control"
 #~ msgstr "&Vinyl-Steuerung aktivieren"
