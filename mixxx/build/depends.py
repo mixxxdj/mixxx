@@ -463,6 +463,7 @@ class MixxxCore(Feature):
                    "library/autodjfeature.cpp",
                    "library/mixxxlibraryfeature.cpp",
                    "library/playlistfeature.cpp",
+				   "library/setlogfeature.cpp",
 
                    "library/browse/browsetablemodel.cpp",
                    "library/browse/browsethread.cpp",
