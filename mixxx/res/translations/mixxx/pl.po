@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2011-05-03 21:42-0400\n"
-"PO-Revision-Date: 2011-05-30 11:45+0000\n"
-"Last-Translator: psylocybina <psylocybina@gmail.com>\n"
+"PO-Revision-Date: 2011-08-20 21:12+0000\n"
+"Last-Translator: Z1rk0n <Unknown>\n"
 "Language-Team: Polish <pl@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-05-31 04:33+0000\n"
-"X-Generator: Launchpad (build 12959)\n"
+"X-Launchpad-Export-Date: 2011-08-21 04:32+0000\n"
+"X-Generator: Launchpad (build 13697)\n"
 
 #: AutoDJFeature#1
 msgid "Auto DJ"
@@ -28,7 +28,7 @@ msgstr "Zagrane"
 #: BaseSqlTableModel#2
 msgctxt "BaseSqlTableModel#2"
 msgid "Artist"
-msgstr "Artysta"
+msgstr "Wykonawca"
 
 #: BaseSqlTableModel#3
 msgctxt "BaseSqlTableModel#3"
@@ -3543,78 +3543,14 @@ msgstr "Sampler %1"
 msgid "Show or hide columns."
 msgstr "Pokaż lub ukryj kolumny."
 
-#~ msgctxt "CrateTableModel#6"
-#~ msgid "Year"
-#~ msgstr "Rok"
-
-#~ msgctxt "CrateTableModel#7"
-#~ msgid "Type"
-#~ msgstr "Rodzaj"
-
-#~ msgctxt "CrateTableModel#8"
-#~ msgid "Location"
-#~ msgstr "Lokacja"
-
-#~ msgctxt "CrateTableModel#5"
-#~ msgid "Genre"
-#~ msgstr "Gatunek"
-
-#~ msgctxt "CrateTableModel#4"
-#~ msgid "Album"
-#~ msgstr "Album"
-
-#~ msgctxt "CrateTableModel#3"
-#~ msgid "Title"
-#~ msgstr "Tytuł"
-
-#~ msgctxt "CrateTableModel#2"
-#~ msgid "Artist"
-#~ msgstr "Wykonawca"
-
-#~ msgctxt "CrateTableModel#14"
-#~ msgid "Date Added"
-#~ msgstr "Data dodania"
-
-#~ msgctxt "CrateTableModel#9"
-#~ msgid "Comment"
-#~ msgstr "Komentarze"
-
-#~ msgctxt "CrateTableModel#10"
-#~ msgid "Duration"
-#~ msgstr "Czas trwania"
-
-#~ msgctxt "CrateTableModel#11"
-#~ msgid "Track #"
-#~ msgstr "Nr utworu"
-
-#~ msgctxt "CrateTableModel#13"
-#~ msgid "BPM"
-#~ msgstr "Uderzenia na minutę"
-
-#~ msgid "Analyze Entire Song"
-#~ msgstr "Trwa analiza"
-
 #~ msgid "You don't have permission to view this folder."
 #~ msgstr "Nie masz uprawnień do przegladania tego folderu."
 
 #~ msgid "Permission Denied"
 #~ msgstr "Odmowa dostępu"
 
-#~ msgid "ID"
-#~ msgstr "ID"
-
-#~ msgctxt "CrateTableModel#12"
-#~ msgid "Bitrate"
-#~ msgstr "Bitrate"
-
 #~ msgid "Crate Creation Failed"
 #~ msgstr "Tworzenie paczki nie powiodło się"
-
-#~ msgid "BPM Detection Settings"
-#~ msgstr "Ustawienia detekcji BPM"
-
-#~ msgid "Edit"
-#~ msgstr "Edycja"
 
 #~ msgctxt "DlgPrefControls#4"
 #~ msgid "Information"
