@@ -238,7 +238,7 @@ QMimeData* LibraryTableModel::mimeData(const QModelIndexList &indexes) const {
 TrackModel::CapabilitiesFlags LibraryTableModel::getCapabilities() const
 {
     return TRACKMODELCAPS_RECEIVEDROPS | TRACKMODELCAPS_ADDTOPLAYLIST |
-            TRACKMODELCAPS_ADDTOCRATE | TRACKMODELCAPS_ADDTOAUTODJ;
+            TRACKMODELCAPS_ADDTOCRATE | TRACKMODELCAPS_ADDTOAUTODJ | TRACKMODELCAPS_RELOADMETADATA;
 }
 
 /*
