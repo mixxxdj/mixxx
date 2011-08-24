@@ -3,14 +3,14 @@ msgstr ""
 "Project-Id-Version: Mixxx 1.8\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2011-05-03 21:42-0400\n"
-"PO-Revision-Date: 2011-08-12 01:37+0000\n"
-"Last-Translator: graizon christophe <Unknown>\n"
+"PO-Revision-Date: 2011-08-24 02:09+0000\n"
+"Last-Translator: silvio <Unknown>\n"
 "Language-Team: <tezalprod@gmail.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-08-13 04:31+0000\n"
-"X-Generator: Launchpad (build 13674)\n"
+"X-Launchpad-Export-Date: 2011-08-24 04:35+0000\n"
+"X-Generator: Launchpad (build 13697)\n"
 "X-Poedit-Country: FRANCE\n"
 "X-Poedit-Language: French\n"
 
@@ -787,11 +787,11 @@ msgstr "Éteint"
 
 #: DlgPrefControlsDlg#9
 msgid "Pitch/Rate slider range"
-msgstr "Pitch/Rate slider range"
+msgstr "Taux du curseur de vitesse"
 
 #: DlgPrefControlsDlg#10
 msgid "Pitch/Rate slider direction"
-msgstr "Pitch/Rate slider direction"
+msgstr "Dirrection du curseur de vitesse"
 
 #: DlgPrefControlsDlg#11
 msgid "Track load behaviour"
@@ -803,11 +803,11 @@ msgstr "Comportement du Cue"
 
 #: DlgPrefControlsDlg#13
 msgid "Auto Recall Cue"
-msgstr "Rappel automatique CUE"
+msgstr "Rappel automatique de la queue"
 
 #: DlgPrefControlsDlg#14
 msgid "Permanent Pitch/Rate Buttons"
-msgstr "Permanent Pitch/Rate Boutons"
+msgstr "Boutons de vitesse permanent"
 
 #: DlgPrefControlsDlg#15
 msgid "Left click"
@@ -819,7 +819,7 @@ msgstr "Clic droit"
 
 #: DlgPrefControlsDlg#17
 msgid "Permanent rate change (between 1 and 8000) when left clicking"
-msgstr "Le taux permanent change (entre 1 et 8000) sur clic gauche"
+msgstr "Changement permanent de taux (entre 1 et 8000) sur clic gauche"
 
 #: DlgPrefControlsDlg#18
 msgid "%"
@@ -827,19 +827,19 @@ msgstr "%"
 
 #: DlgPrefControlsDlg#19
 msgid "Permanent rate change (between 1 and 8000) when right clicking"
-msgstr "Le taux permanent change (entre 1 et 8000) sur clic droit"
+msgstr "Changement permanent de taux (entre 1 et 8000) sur clic droit"
 
 #: DlgPrefControlsDlg#20
 msgid "Temporary Pitch/Rate Buttons"
-msgstr "Temporaire Pitch/Rate Boutons"
+msgstr "Boutons de vitesse temporaires"
 
 #: DlgPrefControlsDlg#21
 msgid "Temporary rate change (between 1 and 8000) when left clicking"
-msgstr "Le taux temporaire change (entre 1 et 8000) sur clic gauche"
+msgstr "Changement temporaire de taux (entre 1 et 8000) sur clic gauche"
 
 #: DlgPrefControlsDlg#22
 msgid "Temporary rate change (between 1 and 8000) when right clicking"
-msgstr "Changer le taux permanent (entre 1 et 8000) sur clic droit"
+msgstr "Changement temporaire de taux (entre 1 et 8000) sur clic droit"
 
 #: DlgPrefControlsDlg#23
 msgid "Ramping Pitchbend"
