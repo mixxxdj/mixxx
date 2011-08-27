@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2011-05-03 21:42-0400\n"
-"PO-Revision-Date: 2011-08-20 21:12+0000\n"
-"Last-Translator: Z1rk0n <Unknown>\n"
+"PO-Revision-Date: 2011-08-26 13:09+0000\n"
+"Last-Translator: Kacper Bak <Unknown>\n"
 "Language-Team: Polish <pl@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-08-21 04:32+0000\n"
-"X-Generator: Launchpad (build 13697)\n"
+"X-Launchpad-Export-Date: 2011-08-27 04:37+0000\n"
+"X-Generator: Launchpad (build 13794)\n"
 
 #: AutoDJFeature#1
 msgid "Auto DJ"
@@ -116,12 +116,12 @@ msgstr "Urządzenia"
 
 #: BrowseFeature#3
 msgid "Removable Devices"
-msgstr "Usuwalne urządzenia"
+msgstr "Urządzenia wymienne"
 
 #: BrowseFeature#4
 msgctxt "BrowseFeature#4"
 msgid "Mixxx Library"
-msgstr "Kolekcja Mixxx"
+msgstr "Biblioteka Mixxx"
 
 #: BrowseFeature#5
 msgid "Home"
@@ -150,7 +150,7 @@ msgstr "Nazwa pliku"
 #: BrowseTableModel#2
 msgctxt "BrowseTableModel#2"
 msgid "Artist"
-msgstr "Artysta"
+msgstr "Wykonawca"
 
 #: BrowseTableModel#3
 msgctxt "BrowseTableModel#3"
@@ -223,7 +223,7 @@ msgid ""
 "application."
 msgstr ""
 "Nie mogę załadować podanego pliku ponieważ jest używany przez Mixxx lub inna "
-"aplikację"
+"aplikację."
 
 #: BrowseTableModel#17
 msgid "Warning: This will permanently delete the following files:"
@@ -267,7 +267,7 @@ msgstr "Zablokuj"
 #: CrateFeature#5
 msgctxt "CrateFeature#5"
 msgid "Import Playlist"
-msgstr "Importuj Listę Odtwarzania"
+msgstr "Importuj Playlistę"
 
 #: CrateFeature#6
 msgid "Crates"
@@ -275,7 +275,7 @@ msgstr "Skrzynki"
 
 #: CrateFeature#7
 msgid "Import Crate"
-msgstr "Importuj Skrzynkę"
+msgstr "Importuj skrzynkę"
 
 #: CrateFeature#8
 msgid "Export Crate"
@@ -288,23 +288,23 @@ msgstr "Odblokuj"
 
 #: CrateFeature#10
 msgid "Crate name:"
-msgstr "Nazwa Skrzynki:"
+msgstr "Nazwa skrzynki:"
 
 #: CrateFeature#11
 msgid "An unknown error occurred while creating crate: "
-msgstr "Pojawił się nieznany błąd podczas tworzenia Skrzynki: "
+msgstr "Podczas tworzenia skrzynki pojawił się nieznany błąd: "
 
 #: CrateFeature#12
 msgid "Rename Crate"
-msgstr "Zmień nazwę Skrzynki"
+msgstr "Zmień nazwę skrzynki"
 
 #: CrateFeature#13
 msgid "New crate name:"
-msgstr "Nowa nazwa Skrzynki:"
+msgstr "Nowa nazwa skrzynki:"
 
 #: CrateFeature#14
 msgid "Renaming Crate Failed"
-msgstr "Zmiana nazwy Skrzynki nie powiodła się"
+msgstr "Zmiana nazwy skrzynki nie powiodła się"
 
 #: CrateFeature#15
 msgctxt "CrateFeature#15"
@@ -314,20 +314,20 @@ msgstr "Pliki Listy Odtwarzania (*.m3u *.pls)"
 #: CrateFeature#16
 msgctxt "CrateFeature#16"
 msgid "Export Playlist"
-msgstr "Eksportuj Listę Odtwarzania"
+msgstr "Eksportuj Playlistę"
 
 #: CrateFeature#17
 msgctxt "CrateFeature#17"
 msgid "M3U Playlist (*.m3u);;PLS Playlist (*.pls)"
-msgstr "Lista Odtwarzania M3U (*.m3u);;Lista Odtwarzania PLS (*.pls)"
+msgstr "Playlista M3U (*.m3u);;Playlista PLS (*.pls)"
 
 #: CrateFeature#18
 msgid "A crate cannot have a blank name."
-msgstr "Skrzynka nie może mieć pustej nazwy."
+msgstr "Musisz nazwać skrzynkę."
 
 #: CrateFeature#19
 msgid "Creating Crate Failed"
-msgstr "Tworzenie Skrzynki nie powiodło się"
+msgstr "Tworzenie skrzynki nie powiodło się"
 
 #: CrateFeature#20
 msgid "A crate by that name already exists."
@@ -353,19 +353,6 @@ msgid ""
 "margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-"
 "family:'Sans Serif'; font-size:9pt;\"></p></body></html>"
 msgstr ""
-"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" "
-"\"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
-"<html><head><meta name=\"qrichtext\" content=\"1\" /><style "
-"type=\"text/css\">\n"
-"p, li { white-space: pre-wrap; }\n"
-"</style></head><body style=\" font-family:'MS Shell Dlg 2'; font-"
-"size:8.25pt; font-weight:400; font-style:normal;\">\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-"
-"right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-"
-"family:'Sans Serif'; font-size:9pt;\">Podziękowania dla</span></p>\n"
-"<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; "
-"margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-"
-"family:'Sans Serif'; font-size:9pt;\"></p></body></html>"
 
 #: DlgAboutDlg#3
 msgid "1.x.x"
