@@ -56,9 +56,10 @@ public slots:
     void slotImportPlaylist();
     void slotExportPlaylist();
 
+    void slotPlaylistTableChanged(int playlistId);
 
  private:
-    void constructChildModel();
+    QModelIndex constructChildModel(int selected_id);
     void clearChildModel();
     void addToAutoDJ(bool bTop);
 

@@ -415,6 +415,7 @@ QMimeData* PlaylistTableModel::mimeData(const QModelIndexList &indexes) const {
 
 
 QItemDelegate* PlaylistTableModel::delegateForColumn(const int i) {
+	Q_UNUSED(i);
     return NULL;
 }
 

@@ -24,7 +24,7 @@ class CrateDAO : public QObject, public virtual DAO {
     void initialize();
 
     unsigned int crateCount();
-    bool createCrate(const QString& name);
+    int createCrate(const QString& name);
     bool deleteCrate(int crateId);
     bool renameCrate(int crateId, const QString& newName);
     bool setCrateLocked(int crateId, bool locked);
@@ -42,6 +42,8 @@ class CrateDAO : public QObject, public virtual DAO {
     void changed(int crateId);
     void trackAdded(int crateId, int trackId);
     void trackRemoved(int crateId, int trackId);
+    void renamed(int crateId);
+    void lockChanged(int crateId);
 
   private:
     QSqlDatabase& m_database;
