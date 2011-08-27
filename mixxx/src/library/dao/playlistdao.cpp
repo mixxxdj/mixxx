@@ -22,7 +22,7 @@ void PlaylistDAO::initialize()
 /** Create a playlist with the given name.
     @param name The name of the playlist to be created.
 */
-bool PlaylistDAO::createPlaylist(QString name, enum hidden_type hidden)
+int PlaylistDAO::createPlaylist(QString name, enum hidden_type hidden)
 {
     // qDebug() << "PlaylistDAO::createPlaylist"
     //          << QThread::currentThread()
@@ -38,7 +38,7 @@ bool PlaylistDAO::createPlaylist(QString name, enum hidden_type hidden)
     if (!query.exec()) {
         qDebug() << query.lastError();
         m_database.rollback();
-        return false;
+        return -1;
     }
     //query.finish();
 
@@ -61,7 +61,7 @@ bool PlaylistDAO::createPlaylist(QString name, enum hidden_type hidden)
     if (!query.exec()) {
         qDebug() << query.lastError();
         m_database.rollback();
-        return false;
+        return -1;
     }
     //query.finish();
 
@@ -69,18 +69,18 @@ bool PlaylistDAO::createPlaylist(QString name, enum hidden_type hidden)
     //Commit the transaction
     m_database.commit();
     emit(added(playlistId));
-    return true;
+    return playlistId;
 }
 
-/** Find out the name of the playlist at the given position */
-QString PlaylistDAO::getPlaylistName(unsigned int position)
+/** Find out the name of the playlist at the given Id */
+QString PlaylistDAO::getPlaylistName(int playlistId)
 {
     // qDebug() << "PlaylistDAO::getPlaylistName" << QThread::currentThread() << m_database.connectionName();
 
     QSqlQuery query(m_database);
     query.prepare("SELECT name FROM Playlists "
-                  "WHERE position = :position");
-    query.bindValue(":position", position);
+                  "WHERE id= :id");
+    query.bindValue(":id", playlistId);
 
     if (!query.exec()) {
         qDebug() << "getPlaylistName" << query.lastError();
@@ -164,6 +164,7 @@ void PlaylistDAO::renamePlaylist(int playlistId, const QString& newName) {
     }
     else {
         m_database.commit();
+        emit(renamed(playlistId));
     }
 }
 
@@ -185,6 +186,7 @@ bool PlaylistDAO::setPlaylistLocked(int playlistId, bool locked) {
     }
 
     Q_ASSERT(m_database.commit());
+    emit(lockChanged(playlistId));
     return true;
 }
 
@@ -270,7 +272,7 @@ unsigned int PlaylistDAO::playlistCount()
     return numRecords;
 }
 
-int PlaylistDAO::getPlaylistId(int position)
+int PlaylistDAO::getPlaylistId(int index)
 {
     // qDebug() << "PlaylistDAO::getPlaylistId"
     //          << QThread::currentThread() << m_database.connectionName();
@@ -281,7 +283,7 @@ int PlaylistDAO::getPlaylistId(int position)
     if (query.exec()) {
         int currentRow = 0;
         while(query.next()) {
-            if (currentRow++ == position) {
+            if (currentRow++ == index) {
                 int id = query.value(0).toInt();
                 return id;
             }
@@ -308,6 +310,7 @@ enum PlaylistDAO::hidden_type PlaylistDAO::getHiddenType(int playlistId){
     } else {
         qDebug() << query.lastError();
     }
+    qDebug() << "PlaylistDAO::hidden_type returns PLHT_UNKNOWN for playlistId " << playlistId;
     return PLHT_UNKNOWN;
 }
 

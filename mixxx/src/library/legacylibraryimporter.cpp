@@ -148,8 +148,7 @@ void LegacyLibraryImporter::import()
 
             //Create the playlist with the imported name.
             //qDebug() << "Importing playlist:" << current.name;
-            m_playlistDao.createPlaylist(current.name);
-            int playlistId = m_playlistDao.getPlaylistIdFromName(current.name);
+            int playlistId = m_playlistDao.createPlaylist(current.name);
 
             //For each track ID in the XML...
             QList<int> trackIDs = current.indexes;
