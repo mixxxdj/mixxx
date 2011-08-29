@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2011-05-03 21:42-0400\n"
-"PO-Revision-Date: 2011-07-27 10:41+0000\n"
-"Last-Translator: Kakurady Drakenar <kakurady@gmail.com>\n"
+"PO-Revision-Date: 2011-08-29 03:29+0000\n"
+"Last-Translator: zhanshime <Unknown>\n"
 "Language-Team: Chinese (Simplified) <zh_CN@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-07-28 04:32+0000\n"
-"X-Generator: Launchpad (build 13405)\n"
+"X-Launchpad-Export-Date: 2011-08-29 04:31+0000\n"
+"X-Generator: Launchpad (build 13794)\n"
 
 #: AutoDJFeature#1
 msgid "Auto DJ"
@@ -305,7 +305,7 @@ msgstr "重命名分类列表失败"
 #: CrateFeature#15
 msgctxt "CrateFeature#15"
 msgid "Playlist Files (*.m3u *.pls)"
-msgstr ""
+msgstr "播放列表文件 (*.m3u *.pls)"
 
 #: CrateFeature#16
 msgctxt "CrateFeature#16"
@@ -385,11 +385,11 @@ msgstr ""
 
 #: DlgBpmSchemeDlg#2
 msgid "Scheme Name:"
-msgstr ""
+msgstr "方案名称："
 
 #: DlgBpmSchemeDlg#3
 msgid "BPM Range"
-msgstr ""
+msgstr "BPM 范围"
 
 #: DlgBpmSchemeDlg#4
 msgid "Max"
@@ -421,7 +421,7 @@ msgstr "Alt+O"
 #: DlgBpmTapDlg#4
 msgctxt "DlgBpmTapDlg#4"
 msgid "Song:"
-msgstr ""
+msgstr "歌曲："
 
 #: DlgBpmTapDlg#5
 msgid "Next >>"
@@ -442,7 +442,7 @@ msgstr "BPM 探测"
 
 #: DlgBpmTapDlg#9
 msgid "BPM Scheme:"
-msgstr ""
+msgstr "BPM 方案"
 
 #: DlgBpmTapDlg#10
 msgid "to"
@@ -600,24 +600,24 @@ msgstr "缺失音频插件下载器"
 #: DlgPrefBPMDlg#1
 msgctxt "DlgPrefBPMDlg#1"
 msgid "BPM Detection Settings"
-msgstr ""
+msgstr "BPM 侦测设置"
 
 #: DlgPrefBPMDlg#2
 msgctxt "DlgPrefBPMDlg#2"
 msgid "BPM Detection"
-msgstr ""
+msgstr "BPM 侦测"
 
 #: DlgPrefBPMDlg#3
 msgid "Enable BPM Detection"
-msgstr ""
+msgstr "开启 BPM 侦测"
 
 #: DlgPrefBPMDlg#4
 msgid "Detect Song BPM on Import"
-msgstr ""
+msgstr "导入歌曲时检测 BPM"
 
 #: DlgPrefBPMDlg#5
 msgid "Write BPM to ID3 Tag"
-msgstr ""
+msgstr "写入 BPM 到 ID3 标签"
 
 #: DlgPrefBPMDlg#6
 msgid "If BPM can be detected but not within specified range"
@@ -659,7 +659,7 @@ msgstr "无法打开文件 %1"
 
 #: DlgPrefControls#1
 msgid "This skin does not support schemes"
-msgstr ""
+msgstr "该皮肤不支持色彩方案"
 
 #: DlgPrefControls#2
 msgid "8% (Technics SL1210)"
@@ -712,24 +712,24 @@ msgstr ""
 #: DlgPrefControls#14
 msgctxt "DlgPrefControls#14"
 msgid "Information"
-msgstr ""
+msgstr "信息"
 
 #: DlgPrefControls#15
 msgid "Mixxx must be restarted before the changes will take effect."
-msgstr ""
+msgstr "Mixxx必须重启已使更改生效"
 
 #: DlgPrefControlsDlg#1
 msgctxt "DlgPrefControlsDlg#1"
 msgid "Form1"
-msgstr ""
+msgstr "表单１"
 
 #: DlgPrefControlsDlg#2
 msgid "Skin"
-msgstr ""
+msgstr "皮肤"
 
 #: DlgPrefControlsDlg#3
 msgid "Scheme"
-msgstr ""
+msgstr "方案"
 
 #: DlgPrefControlsDlg#4
 msgid "Waveform display"
@@ -779,11 +779,11 @@ msgstr ""
 
 #: DlgPrefControlsDlg#15
 msgid "Left click"
-msgstr ""
+msgstr "左击"
 
 #: DlgPrefControlsDlg#16
 msgid "Right click"
-msgstr ""
+msgstr "右击"
 
 #: DlgPrefControlsDlg#17
 msgid "Permanent rate change (between 1 and 8000) when left clicking"
@@ -820,7 +820,7 @@ msgstr ""
 #: DlgPrefCrossfaderDlg#1
 msgctxt "DlgPrefCrossfaderDlg#1"
 msgid "Form1"
-msgstr ""
+msgstr "表单１"
 
 #: DlgPrefCrossfaderDlg#2
 msgid "Crossfader Curve"
@@ -857,7 +857,7 @@ msgstr "对数"
 #: DlgPrefCrossfaderDlg#10
 msgctxt "DlgPrefCrossfaderDlg#10"
 msgid "Reset"
-msgstr ""
+msgstr "重置"
 
 #: DlgPrefEQDlg#1
 msgctxt "DlgPrefEQDlg#1"
@@ -2455,7 +2455,7 @@ msgstr ""
 
 #: MixxxApp#19
 msgid "Exit"
-msgstr ""
+msgstr "退出"
 
 #: MixxxApp#20
 msgid "Continue"
@@ -3329,68 +3329,3 @@ msgstr ""
 
 #~ msgid "Permission Denied"
 #~ msgstr "权限不足"
-
-#~ msgctxt "CrateTableModel#8"
-#~ msgid "Location"
-#~ msgstr "位置"
-
-#~ msgctxt "CrateTableModel#6"
-#~ msgid "Year"
-#~ msgstr "年代"
-
-#~ msgctxt "CrateTableModel#7"
-#~ msgid "Type"
-#~ msgstr "类型"
-
-#~ msgctxt "CrateTableModel#4"
-#~ msgid "Album"
-#~ msgstr "唱片"
-
-#~ msgctxt "CrateTableModel#3"
-#~ msgid "Title"
-#~ msgstr "歌曲名称"
-
-#~ msgctxt "CrateTableModel#2"
-#~ msgid "Artist"
-#~ msgstr "艺术家"
-
-#~ msgid "ID"
-#~ msgstr "ID"
-
-#~ msgctxt "CrateTableModel#5"
-#~ msgid "Genre"
-#~ msgstr "风格"
-
-#~ msgctxt "CrateTableModel#9"
-#~ msgid "Comment"
-#~ msgstr "备注"
-
-#~ msgctxt "CrateTableModel#10"
-#~ msgid "Duration"
-#~ msgstr "歌曲时长"
-
-#~ msgctxt "CrateTableModel#11"
-#~ msgid "Track #"
-#~ msgstr "音轨 #"
-
-#~ msgctxt "CrateTableModel#13"
-#~ msgid "BPM"
-#~ msgstr "BPM"
-
-#~ msgctxt "CrateTableModel#14"
-#~ msgid "Date Added"
-#~ msgstr "添加日期"
-
-#~ msgctxt "CrateTableModel#12"
-#~ msgid "Bitrate"
-#~ msgstr "比特率"
-
-#~ msgid "Analyze Entire Song"
-#~ msgstr "分析整首歌"
-
-#~ msgid "Mixxx Library"
-#~ msgstr "Mixxx歌曲库"
-
-#~ msgctxt "CrateFeature#13"
-#~ msgid "Playlist Files (*.m3u *.pls)"
-#~ msgstr "播放列表文件 (*.m3u *.pls)"
