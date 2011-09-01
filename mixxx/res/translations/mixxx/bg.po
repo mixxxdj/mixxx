@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2011-05-03 21:42-0400\n"
-"PO-Revision-Date: 2011-07-05 13:09+0000\n"
-"Last-Translator: Svetoslav Stefanov <svetlisashkov@yahoo.com>\n"
+"PO-Revision-Date: 2011-08-31 09:09+0000\n"
+"Last-Translator: Dimitar Dimitrov <Unknown>\n"
 "Language-Team: Bulgarian <bg@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-07-06 04:32+0000\n"
-"X-Generator: Launchpad (build 13168)\n"
+"X-Launchpad-Export-Date: 2011-09-01 04:35+0000\n"
+"X-Generator: Launchpad (build 13827)\n"
 
 #: AutoDJFeature#1
 msgid "Auto DJ"
@@ -2138,12 +2138,17 @@ msgid ""
 "install libmp3lame (also known as lame) and check if /usr/lib/libmp3lame.so "
 "exists on your system </html>"
 msgstr ""
+"<html>Mixxx не можа да зареди или намери lame MP3 енкодер. <p>Моля, "
+"инсталирайте libmp3lame (известен също като lame) и проверете дали "
+"/usr/lib/libmp3lame.so съществува на вашата система </html>"
 
 #: EncoderMp3#3
 msgid ""
 "<html>Mixxx is unable to load or find the MP3 encoder lame. <p>Please put "
 "lame_enc.dll in the directory you have installed Mixxx </html>"
 msgstr ""
+"<html>Mixxx не можа да зареди или намери lame MP3 енкодер. <p>Моля, "
+"поставете lame_enc.dll в директорията, в която сте инсталирали Mixxx </html>"
 
 #: EncoderMp3#4
 msgid ""
@@ -2151,6 +2156,9 @@ msgid ""
 "install libmp3lame (also known as lame) and check if "
 "/usr/local/lib/libmp3lame.dylib exists on your system </html>"
 msgstr ""
+"<html>Mixxx не можа да зареди или намери lame MP3 енкодер. <p>Моля, "
+"инсталирайте libmp3lame (известен също като lame) и проверете дали "
+"/usr/local/lib/libmp3lame.dylib съществува на вашата система </html>"
 
 #: EncoderMp3#5
 msgid ""
@@ -2158,6 +2166,9 @@ msgid ""
 "<a href='http://mixxx.org/wiki/doku.php/internet_broadcasting'>Mixxx "
 "Wiki</a> for more information.</html>"
 msgstr ""
+"<html>Mixxx откри, че използвате модифицирана версия на libmp3lame. Вижте <a "
+"href='http://mixxx.org/wiki/doku.php/internet_broadcasting'>Mixxx Wiki</a> "
+"за повече информация.</html>"
 
 #: EngineRecord#1
 msgctxt "EngineRecord#1"
@@ -2190,7 +2201,7 @@ msgstr ""
 
 #: EngineShoutcast#5
 msgid "Lost connection to streaming server"
-msgstr ""
+msgstr "Връзката с стрийминг сървъра е изгубена"
 
 #: EngineShoutcast#6
 msgid ""
@@ -2294,7 +2305,7 @@ msgstr ""
 #: MidiInputMappingTableModel#3
 msgctxt "MidiInputMappingTableModel#3"
 msgid "Midi Channel"
-msgstr ""
+msgstr "Midi Канал"
 
 #: MidiInputMappingTableModel#4
 msgctxt "MidiInputMappingTableModel#4"
@@ -2334,7 +2345,7 @@ msgstr ""
 
 #: MidiOutputMappingTableModel#1
 msgid "Midi Status"
-msgstr ""
+msgstr "Midi Статус"
 
 #: MidiOutputMappingTableModel#2
 msgctxt "MidiOutputMappingTableModel#2"
@@ -3194,7 +3205,7 @@ msgstr ""
 
 #: Ui#9
 msgid "Mixxx Detected a WVGA Screen"
-msgstr ""
+msgstr "Mixxx разпозна WVGA екран"
 
 #: Ui#10
 msgid "Mixxx has detected that your screen has a resolution of "
@@ -3205,6 +3216,8 @@ msgid ""
 "The only skin compatiable with this size display is Outline800x480-WVGA.  "
 "Would you like to use that skin?"
 msgstr ""
+"Единствената кожа съвместима с този размер на дисплея е Outline800x480-WVGA. "
+"Бихте ли искали да я използвате?"
 
 #: Ui#12
 msgctxt "Ui#12"
@@ -3362,15 +3375,15 @@ msgstr ""
 
 #: Ui#50
 msgid "Load selected track into Player %1"
-msgstr ""
+msgstr "Зареди избраната песен в плеър %1"
 
 #: WSearchLineEdit#1
 msgid "Search..."
-msgstr ""
+msgstr "Търсене..."
 
 #: WTrackTableView#1
 msgid "Add to Playlist"
-msgstr ""
+msgstr "Добави към плейлист"
 
 #: WTrackTableView#2
 msgid "Add to Crate"
@@ -3383,11 +3396,11 @@ msgstr ""
 #: WTrackTableView#4
 msgctxt "WTrackTableView#4"
 msgid "Remove"
-msgstr ""
+msgstr "Премахни"
 
 #: WTrackTableView#5
 msgid "Properties..."
-msgstr ""
+msgstr "Свойства..."
 
 #: WTrackTableView#6
 msgid "Add to Auto DJ Queue"
@@ -3403,4 +3416,4 @@ msgstr ""
 
 #: WTrackTableViewHeader#1
 msgid "Show or hide columns."
-msgstr ""
+msgstr "Показване или скриване на колони."
