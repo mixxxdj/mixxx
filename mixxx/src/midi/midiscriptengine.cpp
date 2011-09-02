@@ -514,6 +514,26 @@ bool MidiScriptEngine::safeExecute(QString function, char channel,
 }
 
 /* -------- ------------------------------------------------------
+   Purpose: Evaluate & call a script function
+   Input:   This Object (context), Function name
+   Output:  false if an invalid function or an exception
+   Notes:   used for closure calls using native functions (ie: timers)
+   -------- ------------------------------------------------------ */
+bool MidiScriptEngine::safeExecute(QScriptValue thisObject, QScriptValue functionObject) {
+    
+    if(m_pEngine == NULL) {
+        return false;
+    }
+    
+    QScriptValueList args;
+    
+    functionObject.call(thisObject, args);
+    if (checkException())
+        return false;
+    return true;
+}
+
+/* -------- ------------------------------------------------------
    Purpose: Check to see if a script threw an exception
    Input:   QScriptValue returned from call(scriptFunctionName)
    Output:  true if there was an exception
@@ -1001,7 +1021,7 @@ const QStringList MidiScriptEngine::getErrors(QString filename) {
                 whether it should fire just once
    Output:  The timer's ID, 0 if starting it failed
    -------- ------------------------------------------------------ */
-int MidiScriptEngine::beginTimer(int interval, QString scriptCode, bool oneShot) {
+int MidiScriptEngine::beginTimer(int interval, QScriptValue timerCallback, bool oneShot) {
     // When this function runs, assert that somebody is holding the script
     // engine lock.
     bool lock = m_scriptEngineLock.tryLock();
@@ -1017,8 +1037,12 @@ int MidiScriptEngine::beginTimer(int interval, QString scriptCode, bool oneShot)
     // This makes use of every QObject's internal timer mechanism. Nice, clean, and simple.
     // See http://doc.trolltech.com/4.6/qobject.html#startTimer for details
     int timerId = startTimer(interval);
-    QPair<QString, bool> timerTarget;
-    timerTarget.first = scriptCode;
+    QPair<QList<QScriptValue>, bool> timerTarget;
+    if (timerCallback.isFunction()) {
+        QScriptContext *ctxt = m_pEngine->currentContext();
+        timerTarget.first.append(ctxt->thisObject());
+    }
+    timerTarget.first.append(timerCallback);
     timerTarget.second = oneShot;
     m_timers[timerId]=timerTarget;
     if (timerId==0) qWarning() << "MIDI Script timer could not be created";
@@ -1063,7 +1087,7 @@ void MidiScriptEngine::stopAllTimers() {
     Q_ASSERT(!lock);
     if(lock) m_scriptEngineLock.unlock();
 
-    QMutableHashIterator<int, QPair<QString, bool> > i(m_timers);
+    QMutableHashIterator<int, QPair<QList<QScriptValue>, bool> > i(m_timers);
     while (i.hasNext()) {
         i.next();
         stopTimer(i.key());
@@ -1093,10 +1117,15 @@ void MidiScriptEngine::timerEvent(QTimerEvent *event) {
         return;
     }
 
-    QPair<QString, bool> timerTarget = m_timers[timerId];
+    QPair<QList<QScriptValue>, bool> timerTarget = m_timers[timerId];
     if (timerTarget.second) stopTimer(timerId);
 
-    internalExecute(timerTarget.first);
+    if (timerTarget.first.size() == 1) {
+        internalExecute(timerTarget.first[0].toString());
+    }
+    else {
+        safeExecute(timerTarget.first[0], timerTarget.first[1]);
+    }
     m_scriptEngineLock.unlock();
 }
 
