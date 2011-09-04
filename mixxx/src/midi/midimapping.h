@@ -30,6 +30,8 @@
 
 #ifdef __MIDISCRIPT__
 #include "midiscriptengine.h"
+// For automatic reload of changed JS files
+#include <QFileSystemWatcher>
 #endif
 
 //Forward declarations
@@ -107,7 +109,10 @@ public slots:
     /** Restarts the script engine and re-applies the mapping
         to effectively reset the controller */
     void reset();
-    
+#ifdef __MIDISCRIPT__
+    void scriptHasChanged(QString);
+#endif
+
 signals:
     void inputMappingChanged();
     void inputMappingChanged(int startIndex, int endIndex);
@@ -158,6 +163,10 @@ private:
 
     QMutex m_scriptEngineInitializedMutex;
     QWaitCondition m_scriptEngineInitializedCondition;
+    
+    // File System Watching ...
+    QList<QString> resolveScriptPaths();
+    QFileSystemWatcher m_scriptWatcher;
 #endif
     QMutex m_mappingLock;
     QDomElement m_Bindings;

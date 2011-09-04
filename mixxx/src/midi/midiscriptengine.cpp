@@ -187,19 +187,11 @@ void MidiScriptEngine::loadScriptFiles(QList<QString> scriptFileNames) {
 
     qDebug() << "MidiScriptEngine: Loading & evaluating all MIDI script code";
 
-    // scriptPaths holds the paths to search in when we're looking for scripts
-    QList<QString> scriptPaths;
-    scriptPaths.append(QDir::homePath().append("/").append(SETTINGS_PATH).append("presets/"));
-
-    ConfigObject<ConfigValue> *config = new ConfigObject<ConfigValue>(QDir::homePath().append("/").append(SETTINGS_PATH).append(SETTINGS_FILE));
-    scriptPaths.append(config->getConfigPath().append("midi/"));
-    delete config;
-
     QListIterator<QString> it(scriptFileNames);
     m_scriptEngineLock.lock();
     while (it.hasNext()) {
         QString curScriptFileName = it.next();
-        safeEvaluate(curScriptFileName, scriptPaths);
+        safeEvaluate(curScriptFileName);
 
         if(m_scriptErrors.contains(curScriptFileName)) {
             qDebug() << "Errors occured while loading " << curScriptFileName;
@@ -267,7 +259,7 @@ void MidiScriptEngine::run() {
 bool MidiScriptEngine::evaluate(QString filepath) {
     m_scriptEngineLock.lock();
     QList<QString> dummy;
-    bool ret = safeEvaluate(filepath, dummy);
+    bool ret = safeEvaluate(filepath);
     m_scriptEngineLock.unlock();
     return ret;
 }
@@ -883,35 +875,22 @@ void MidiScriptEngine::slotValueChanged(double value) {
    Input:   Script filename
    Output:  false if the script file has errors or doesn't exist
    -------- ------------------------------------------------------ */
-bool MidiScriptEngine::safeEvaluate(QString scriptName, QList<QString> scriptPaths) {
-
+bool MidiScriptEngine::safeEvaluate(QString scriptName) {
+    QFile input;
+    
+    
     if(m_pEngine == NULL) {
         return false;
     }
 
-    QString filename = "";
-    QFile input;
+    qDebug() << "MidiScriptEngine: Loading" << scriptName;
 
-    if (scriptPaths.length() == 0) {
-        // If we aren't given any paths to search, assume that scriptName
-        // contains the full file name
-        filename = scriptName;
-        input.setFileName(filename);
-    } else {
-        QListIterator<QString> it(scriptPaths);
-        do {
-            filename = it.next()+scriptName;
-            input.setFileName(filename);
-        } while (it.hasNext() && !input.exists());
-    }
-
-    qDebug() << "MidiScriptEngine: Loading" << filename;
-
+    input.setFileName(scriptName);
     // Read in the script file
     if (!input.open(QIODevice::ReadOnly)) {
         QString errorLog =
             QString("MidiScriptEngine: Problem opening the script file: %1, error # %2, %3")
-                .arg(filename)
+                .arg(scriptName)
                 .arg(input.error())
                 .arg(input.errorString());
 
@@ -927,7 +906,7 @@ bool MidiScriptEngine::safeEvaluate(QString scriptName, QList<QString> scriptPat
                 ErrorDialogProperties* props = ErrorDialogHandler::instance()->newDialogProperties();
                 props->setType(DLG_WARNING);
                 props->setTitle("MIDI script file problem");
-                props->setText(QString("There was a problem opening the MIDI script file %1.").arg(filename));
+                props->setText(QString("There was a problem opening the MIDI script file %1.").arg(scriptName));
                 props->setInfoText(input.errorString());
 
                 ErrorDialogHandler::instance()->requestErrorDialog(props);
@@ -958,7 +937,7 @@ bool MidiScriptEngine::safeEvaluate(QString scriptName, QList<QString> scriptPat
                         .arg(error)
                         .arg(result.errorLineNumber())
                         .arg(result.errorColumnNumber())
-                        .arg(filename)
+                        .arg(scriptName)
                         .arg(result.errorMessage());
 
         if (m_midiDebug) qCritical() << "MidiScriptEngine:" << error;
@@ -968,7 +947,7 @@ bool MidiScriptEngine::safeEvaluate(QString scriptName, QList<QString> scriptPat
                 ErrorDialogProperties* props = ErrorDialogHandler::instance()->newDialogProperties();
                 props->setType(DLG_WARNING);
                 props->setTitle("MIDI script file error");
-                props->setText(QString("There was an error in the MIDI script file %1.").arg(filename));
+                props->setText(QString("There was an error in the MIDI script file %1.").arg(scriptName));
                 props->setInfoText("The functionality provided by this script file will be disabled.");
                 props->setDetails(error);
 
@@ -979,7 +958,7 @@ bool MidiScriptEngine::safeEvaluate(QString scriptName, QList<QString> scriptPat
     }
 
     // Evaluate the code
-    QScriptValue scriptFunction = m_pEngine->evaluate(scriptCode, filename);
+    QScriptValue scriptFunction = m_pEngine->evaluate(scriptCode, scriptName);
 
     // Record errors
     if(checkException())

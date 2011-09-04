@@ -124,16 +124,76 @@ void MidiMapping::startupScriptEngine() {
     connect(m_pScriptEngine, SIGNAL(resetController()), this, SLOT(reset()));
 }
 
+// We need to resolve script paths here instead of in MSE so we can watch the files
+// for changes. Watching them here makes it easier to invoke the restart code.
+// ... We could invert this later and use a signal to ask MidiMapping to restart the MSE
+// - Phillip Whelan
+QList<QString> MidiMapping::resolveScriptPaths()
+{
+    QList<QString> scriptPaths;
+    QList<QString> fullScriptPaths;
+    
+    
+    // scriptPaths holds the paths to search in when we're looking for scripts
+    scriptPaths.append(QDir::homePath().append("/").append(SETTINGS_PATH).append("presets/"));
+
+    ConfigObject<ConfigValue> *config = new ConfigObject<ConfigValue>(QDir::homePath().append("/").append(SETTINGS_PATH).append(SETTINGS_FILE));
+    scriptPaths.append(config->getConfigPath().append("midi/"));
+    delete config;
+    
+    // Add File Watchers
+    QListIterator<QString> it(m_scriptFileNames);
+    while (it.hasNext()) {
+        QString curScriptFileName = it.next();
+        QString fullScriptFilename;
+        QFile input;
+        
+        QListIterator<QString> it(scriptPaths);
+        do {
+            fullScriptFilename = it.next() + curScriptFileName;
+            input.setFileName(fullScriptFilename);
+        } while (it.hasNext() && !input.exists());
+        
+        if (input.exists()) {
+            fullScriptPaths.append(fullScriptFilename);
+        }
+    }
+    
+    return fullScriptPaths;
+}
+
 void MidiMapping::loadScriptCode() {
     QMutexLocker Locker(&m_mappingLock);
     if(m_pScriptEngine) {
+        QList<QString> fullScriptPaths = resolveScriptPaths();
+        
         m_scriptEngineInitializedMutex.lock();
         // Tell the script engine to run the init function in all loaded scripts
-        emit(loadMidiScriptFiles(m_scriptFileNames));
+        emit(loadMidiScriptFiles(fullScriptPaths));
         // Wait until it's done
         m_scriptEngineInitializedCondition.wait(&m_scriptEngineInitializedMutex);
         m_scriptEngineInitializedMutex.unlock();
+        
+        // IFDEF __MIDISCRIPT_RELOAD__
+        QListIterator<QString> it(fullScriptPaths);
+        while (it.hasNext()) {
+            QString file = it.next();
+            qDebug() << "Watching JS File:" << file;
+            m_scriptWatcher.addPath(file);
+        }
+        
+        //connect(m_pScriptEngine, SIGNAL(resetController()), this, SLOT(reset()));
+        connect(&m_scriptWatcher, SIGNAL(fileChanged(QString)), this, SLOT(scriptHasChanged(QString)));
     }
+}
+
+void MidiMapping::scriptHasChanged(QString scriptChanged) {
+    QStringList files = m_scriptWatcher.files();
+    
+    qDebug() << "Script" << scriptChanged << "has changed, reloading MSE.";
+    disconnect(&m_scriptWatcher, SIGNAL(fileChanged(QString)), this, SLOT(scriptHasChanged(QString)));
+    m_scriptWatcher.removePaths(files);
+    restartScriptEngine();
 }
 
 void MidiMapping::initializeScripts() {
