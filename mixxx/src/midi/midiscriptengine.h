@@ -96,7 +96,7 @@ class MidiScriptEngine : public QThread {
 
   private:
     // Only call these with the scriptEngineLock
-    bool safeEvaluate(QString scriptName, QList<QString> scriptPaths);
+    bool safeEvaluate(QString scriptName);
     bool internalExecute(QString scriptCode);
     bool safeExecute(QString function);
     bool safeExecute(QString function, QString data);
