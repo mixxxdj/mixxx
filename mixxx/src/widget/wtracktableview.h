@@ -46,6 +46,7 @@ class WTrackTableView : public WLibraryTableView
     void slotPrevTrackInfo();
     void slotSendToAutoDJ();
     void slotSendToAutoDJTop();
+    void slotReloadTrackMetadata();
     void addSelectionToPlaylist(int iPlaylistId);
     void addSelectionToCrate(int iCrateId);
     void loadSelectionToGroup(QString group);
@@ -79,6 +80,9 @@ class WTrackTableView : public WLibraryTableView
     // Context menu machinery
     QMenu *m_pMenu, *m_pPlaylistMenu, *m_pCrateMenu, *m_pSamplerMenu;
     QSignalMapper m_playlistMapper, m_crateMapper, m_deckMapper, m_samplerMapper;
+
+    // Reload Track Metadata Action:
+    QAction *m_pReloadMetadataAct;
 
     // Send to Auto-DJ Action
     QAction *m_pAutoDJAct;

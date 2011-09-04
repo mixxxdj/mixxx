@@ -49,7 +49,7 @@ VinylControlProxy::~VinylControlProxy()
 
 bool VinylControlProxy::isEnabled()
 {
-    return bIsEnabled;
+    return m_pVinylControl ? m_pVinylControl->isEnabled() : false;
 }
 
 void VinylControlProxy::ToggleVinylControl(bool enable)
