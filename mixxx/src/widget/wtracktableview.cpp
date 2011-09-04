@@ -81,6 +81,7 @@ WTrackTableView::~WTrackTableView()
         pHeader->saveHeaderState();
     }
 
+    delete m_pReloadMetadataAct;
     delete m_pAutoDJAct;
     delete m_pAutoDJTopAct;
     delete m_pRemoveAct;
@@ -228,6 +229,9 @@ void WTrackTableView::createActions()
 
     m_pAutoDJTopAct = new QAction(tr("Add to Auto DJ top 2"),this);
     connect(m_pAutoDJTopAct, SIGNAL(triggered()), this, SLOT(slotSendToAutoDJTop()));
+
+    m_pReloadMetadataAct = new QAction(tr("Reload Track Metadata"), this);
+    connect(m_pReloadMetadataAct, SIGNAL(triggered()), this, SLOT(slotReloadTrackMetadata()));
 }
 
 void WTrackTableView::slotMouseDoubleClicked(const QModelIndex &index)
@@ -367,7 +371,7 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent * event)
             int iPlaylistId = playlistDao.getPlaylistId(i);
 
             if (!playlistDao.isHidden(iPlaylistId)) {
-                
+
                 QString playlistName = playlistDao.getPlaylistName(iPlaylistId);
                 // No leak because making the menu the parent means they will be
                 // auto-deleted
@@ -406,6 +410,7 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent * event)
     m_pRemoveAct->setEnabled(!locked);
     m_pMenu->addSeparator();
     m_pMenu->addAction(m_pRemoveAct);
+    m_pMenu->addAction(m_pReloadMetadataAct);
     m_pPropertiesAct->setEnabled(oneSongSelected);
     m_pMenu->addAction(m_pPropertiesAct);
 
@@ -741,8 +746,9 @@ void WTrackTableView::slotSendToAutoDJTop() {
 }
 
 void WTrackTableView::sendToAutoDJ(bool bTop) {
-    if (!modelHasCapabilities(TrackModel::TRACKMODELCAPS_ADDTOAUTODJ))
+    if (!modelHasCapabilities(TrackModel::TRACKMODELCAPS_ADDTOAUTODJ)) {
         return;
+    }
 
     PlaylistDAO& playlistDao = m_pTrackCollection->getPlaylistDAO();
     int iAutoDJPlaylistId = playlistDao.getPlaylistIdFromName(AUTODJ_TABLE);
@@ -767,6 +773,27 @@ void WTrackTableView::sendToAutoDJ(bool bTop) {
             		playlistDao.appendTrackToPlaylist(iTrackId, iAutoDJPlaylistId);
             	}
             }
+        }
+    }
+}
+
+void WTrackTableView::slotReloadTrackMetadata() {
+    if (!modelHasCapabilities(TrackModel::TRACKMODELCAPS_RELOADMETADATA)) {
+        return;
+    }
+
+    QModelIndexList indices = selectionModel()->selectedRows();
+
+    TrackModel* trackModel = getTrackModel();
+
+    if (trackModel == NULL) {
+        return;
+    }
+
+    foreach (QModelIndex index, indices) {
+        TrackPointer pTrack = trackModel->getTrack(index);
+        if (pTrack) {
+            pTrack->parse();
         }
     }
 }
