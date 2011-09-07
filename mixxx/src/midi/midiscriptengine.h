@@ -111,6 +111,8 @@ class MidiScriptEngine : public QThread {
     bool checkException();
     void stopAllTimers();
 
+	void callFunctionOnObjects(QList<QString>, QString, QScriptValueList args = QScriptValueList());
+
     ControlObjectThread* getControlObjectThread(QString group, QString name);
 
     MidiDevice* m_pMidiDevice;

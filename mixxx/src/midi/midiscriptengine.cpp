@@ -76,6 +76,39 @@ MidiScriptEngine::~MidiScriptEngine() {
 }
 
 /* -------- ------------------------------------------------------
+Purpose: Calls the same method on a list of JS Objects
+Input:   -
+Output:  -
+-------- ------------------------------------------------------ */
+void MidiScriptEngine::callFunctionOnObjects(QList<QString> scriptFunctionPrefixes, QString function, QScriptValueList args)
+{
+    QListIterator<QString> prefixIt(scriptFunctionPrefixes);
+    const QScriptValue global = m_pEngine->globalObject();
+    
+    while (prefixIt.hasNext()) {
+        QString prefixName = prefixIt.next();
+        QScriptValue prefix = global.property(prefixName);
+        
+        if ( prefix.isValid() && prefix.isObject()) {
+            
+            QScriptValue init = prefix.property(function);
+            if (init.isValid()) {
+                if (m_midiDebug) {
+                    qDebug() << "MidiScriptEngine: Executing" << prefixName << "." << function;
+                }
+                init.call(QScriptValue(), args);
+            }
+            else {
+                qWarning() << "MidiScriptEngine:" << prefixName << "has no" << function << " method";
+            }
+        }
+        else {
+            qWarning() << "MidiScriptEngine: No" << prefixName << "object in script";
+        }
+    }
+}
+
+/* -------- ------------------------------------------------------
 Purpose: Shuts down MIDI scripts in an orderly fashion
             (stops timers then executes shutdown functions)
 Input:   -
@@ -99,17 +132,8 @@ void MidiScriptEngine::gracefulShutdown(QList<QString> scriptFunctionPrefixes) {
     stopAllTimers();
 
     // Call each script's shutdown function if it exists
-    QListIterator<QString> prefixIt(scriptFunctionPrefixes);
-    while (prefixIt.hasNext()) {
-        QString shutName = prefixIt.next();
-        if (shutName!="") {
-            shutName.append(".shutdown");
-            if (m_midiDebug) qDebug() << "MidiScriptEngine: Executing" << shutName;
-            if (!internalExecute(shutName))
-                qWarning() << "MidiScriptEngine: No" << shutName << "function in script";
-        }
-    }
-
+    callFunctionOnObjects(scriptFunctionPrefixes, "shutdown");
+    
     // Prevents leaving decks in an unstable state
     //  if the controller is shut down while scratching
     QHashIterator<int, int> i(m_scratchTimers);
@@ -198,6 +222,30 @@ void MidiScriptEngine::loadScriptFiles(QList<QString> scriptFileNames) {
         }
     }
 
+    // Move to initializeScriptFunctions ... we can resolve the whole mess
+    // all at once and by using the globalObject to access the object 
+    // directly, much faster. Then we can save the QScriptValue of the function
+    // directly. That way MIDIScript calls can avoid the parse stage.
+    // - Phillip Whelan
+    /* MOVED !@# not... deprecated code... */
+    const QScriptValue global = m_pEngine->globalObject();
+    QScriptValueIterator iter(global);
+    while(iter.hasNext()) {
+        iter.next();
+        QScriptValue prop = iter.value();
+        if (prop.isObject()) {
+            //qDebug() << "Found Object (using iterator):" << iter.name();
+            QScriptValueIterator iterProp(prop);
+            while(iterProp.hasNext()) {
+                iterProp.next();
+                if (iterProp.value().isFunction()) {
+                    m_scriptFunctions.append(iter.name() + "." + iterProp.name());
+                    //qDebug() << "\tFunction:" << iterProp.name();
+                }
+            }
+        }
+    }
+    
     m_scriptEngineLock.unlock();
     emit(initialized());
 }
@@ -210,17 +258,11 @@ void MidiScriptEngine::loadScriptFiles(QList<QString> scriptFileNames) {
    -------- ------------------------------------------------------ */
 void MidiScriptEngine::initializeScripts(QList<QString> scriptFunctionPrefixes) {
     m_scriptEngineLock.lock();
-
-    QListIterator<QString> prefixIt(scriptFunctionPrefixes);
-    while (prefixIt.hasNext()) {
-        QString initName = prefixIt.next();
-            if (initName!="") {
-                initName.append(".init");
-            if (m_midiDebug) qDebug() << "MidiScriptEngine: Executing" << initName;
-            if (!safeExecute(initName, m_pMidiDevice->getName()))
-                qWarning() << "MidiScriptEngine: No" << initName << "function in script";
-        }
-    }
+    
+    QScriptValueList args;
+    args << QScriptValue(m_pMidiDevice->getName());
+    callFunctionOnObjects(scriptFunctionPrefixes, "init", args);
+    
     m_scriptEngineLock.unlock();
     emit(initialized());
 }
@@ -628,11 +670,10 @@ QStringList MidiScriptEngine::getScriptFunctions() {
 }
 
 void MidiScriptEngine::generateScriptFunctions(QString scriptCode) {
-
-//     QStringList functionList;
+    
+    //     QStringList functionList;
     QStringList codeLines = scriptCode.split("\n");
-
-//     qDebug() << "MidiScriptEngine: m_scriptCode=" << m_scriptCode;
+    //     qDebug() << "MidiScriptEngine: m_scriptCode=" << m_scriptCode;
 
     if (m_midiDebug)
         qDebug() << "MidiScriptEngine:" << codeLines.count() << "lines of code being searched for functions";
@@ -655,7 +696,6 @@ void MidiScriptEngine::generateScriptFunctions(QString scriptCode) {
         }
         position = codeLines.indexOf(rx);
     }
-
 }
 
 ControlObjectThread* MidiScriptEngine::getControlObjectThread(QString group, QString name) {
@@ -965,7 +1005,7 @@ bool MidiScriptEngine::safeEvaluate(QString scriptName) {
         return false;
 
     // Add the code we evaluated to our index
-    generateScriptFunctions(scriptCode);
+    //generateScriptFunctions(scriptCode);
 
     return true;
 }
