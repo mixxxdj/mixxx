@@ -109,9 +109,7 @@ public slots:
     /** Restarts the script engine and re-applies the mapping
         to effectively reset the controller */
     void reset();
-#ifdef __MIDISCRIPT__
     void scriptHasChanged(QString);
-#endif
 
 signals:
     void inputMappingChanged();

@@ -79,7 +79,12 @@ MidiMapping::~MidiMapping() {
 void MidiMapping::startupScriptEngine() {
     QMutexLocker Locker(&m_mappingLock);
 
-    if(m_pScriptEngine) return;
+    // WUAAAA?!?!?!?!? ... this code actually blocks a second instance of
+    // MSE per controller... BUMMMER!!!!
+    if(m_pScriptEngine) {
+        qDebug() << "MSE: Redundant script engine startup call";
+        return;
+    }
 
     //XXX FIXME: Deadly hack attack:
     if (m_pOutputMidiDevice == NULL) {
@@ -90,7 +95,7 @@ void MidiMapping::startupScriptEngine() {
     }
     //XXX Memory leak :(
 
-    qDebug () << "Starting script engine with output device" << m_pOutputMidiDevice->getName();
+    qDebug () << "MSE: Starting script engine with output device" << m_pOutputMidiDevice->getName();
 
     m_pScriptEngine = new MidiScriptEngine(m_pOutputMidiDevice);
 
@@ -122,6 +127,8 @@ void MidiMapping::startupScriptEngine() {
 
     // Allow the MidiScriptEngine to tell us if it needs to reset the controller (on errors)
     connect(m_pScriptEngine, SIGNAL(resetController()), this, SLOT(reset()));
+    
+    qDebug() << "MSE: Script Engine Started";
 }
 
 // We need to resolve script paths here instead of in MSE so we can watch the files
@@ -178,7 +185,7 @@ void MidiMapping::loadScriptCode() {
         QListIterator<QString> it(fullScriptPaths);
         while (it.hasNext()) {
             QString file = it.next();
-            qDebug() << "Watching JS File:" << file;
+            qDebug() << "MSE: Watching JS File:" << file;
             m_scriptWatcher.addPath(file);
         }
         
@@ -190,10 +197,12 @@ void MidiMapping::loadScriptCode() {
 void MidiMapping::scriptHasChanged(QString scriptChanged) {
     QStringList files = m_scriptWatcher.files();
     
-    qDebug() << "Script" << scriptChanged << "has changed, reloading MSE.";
+    qDebug() << "MSE: Script" << scriptChanged << "has changed, reloading MSE.";
     disconnect(&m_scriptWatcher, SIGNAL(fileChanged(QString)), this, SLOT(scriptHasChanged(QString)));
     m_scriptWatcher.removePaths(files);
     restartScriptEngine();
+    loadPreset();
+    applyPreset();
 }
 
 void MidiMapping::initializeScripts() {
@@ -584,7 +593,7 @@ void MidiMapping::loadPreset(bool forceLoad) {
  *        specified in the mapping matches the device this MidiMapping object is hooked up to.
  */
 void MidiMapping::loadPreset(QString path, bool forceLoad) {
-    qDebug() << "MidiMapping: Loading MIDI preset from" << path;
+    qDebug() << "MSE: MidiMapping: Loading MIDI preset from" << path;
     loadPreset(WWidget::openXMLFile(path, "controller"), forceLoad);
 }
 
@@ -1210,7 +1219,9 @@ void MidiMapping::cancelMidiLearn()
 void MidiMapping::restartScriptEngine()
 {
     //Note: Locking occurs inside the functions below.
+    qDebug() << "MSE: SHUTDOWN";
     shutdownScriptEngine();
+    qDebug() << "MSE: STARTUP";
     startupScriptEngine();
 }
 #endif
