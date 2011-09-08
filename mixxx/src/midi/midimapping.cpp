@@ -198,10 +198,9 @@ void MidiMapping::scriptHasChanged(QString scriptChanged) {
     QStringList files = m_scriptWatcher.files();
     
     qDebug() << "MSE: Script" << scriptChanged << "has changed, reloading MSE.";
-    disconnect(&m_scriptWatcher, SIGNAL(fileChanged(QString)), this, SLOT(scriptHasChanged(QString)));
-    m_scriptWatcher.removePaths(files);
-    restartScriptEngine();
-    loadPreset();
+    reset();
+    //disconnect(this, SIGNAL(shutdownMidiScriptEngine(QList<QString>)), m_pScriptEngine, SLOT(gracefulShutdown(QList<QString>)));
+    loadPreset(DEFAULT_DEVICE_PRESET, true);
     applyPreset();
 }
 
@@ -1219,9 +1218,7 @@ void MidiMapping::cancelMidiLearn()
 void MidiMapping::restartScriptEngine()
 {
     //Note: Locking occurs inside the functions below.
-    qDebug() << "MSE: SHUTDOWN";
     shutdownScriptEngine();
-    qDebug() << "MSE: STARTUP";
     startupScriptEngine();
 }
 #endif
