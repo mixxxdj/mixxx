@@ -142,7 +142,7 @@ class CachingReader : public EngineWorker {
 
     // Chunks that should be read into memory when the CachingReader wakes
     // up. Readers and writers must holds the reader lock.
-    QSet<int> m_chunksToRead;
+    QList<int> m_chunksToRead;
 
     // Look up chunk_number at any cost. Reads from SoundSource if
     // necessary. Returns NULL if chunk_number is not valid. If cache_miss is

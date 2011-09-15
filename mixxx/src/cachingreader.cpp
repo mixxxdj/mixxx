@@ -357,6 +357,7 @@ int CachingReader::read(int sample, int num_samples, CSAMPLE* buffer) {
     //qDebug() << m_pGroup << "CachingReader::read() lock acquired";
 
     for (int chunk_num = start_chunk; chunk_num <= end_chunk; chunk_num++) {
+        //qDebug() << m_pGroup << "CachingReader::read() reading chunk" << chunk_num;
         Chunk* current = getChunk(chunk_num, &cache_miss);
 
         if (cache_miss) {
@@ -441,7 +442,8 @@ void CachingReader::hint(QList<Hint>& hintList) {
 void CachingReader::hintAndMaybeWake(QList<Hint>& hintList) {
     if (!m_readerMutex.tryLock()) {
         //qDebug() << m_pGroup << "CachingReader::hintAndMaybeWake would have blocked";
-        return;
+        //return;
+        m_readerMutex.lock();
     }
 
     // If no file is loaded, skip.
@@ -498,7 +500,7 @@ void CachingReader::hintAndMaybeWake(QList<Hint>& hintList) {
         // chunk will be moved to the end of the LRU list.
         if (lookupChunk(chunk) == NULL) {
             shouldWake = true;
-            m_chunksToRead.insert(chunk);
+            m_chunksToRead.push_back(chunk);
             //qDebug() << "Checking chunk " << chunk << " shouldWake:" << shouldWake << " chunksToRead" << m_chunksToRead.size();
         }
 
@@ -527,17 +529,24 @@ void CachingReader::run() {
     if (pLoadTrack) {
         loadTrack(pLoadTrack);
     } else {
-        // Read the requested chunks.
-        m_readerMutex.lock();
-        //qDebug() << m_pGroup << "CachingReader::run() lock acquired, reading" << m_chunksToRead.size() << "chunks";
-        for (QSet<int>::iterator it = m_chunksToRead.begin();
-             it != m_chunksToRead.end(); it++) {
-            int chunk = *it;
-            getChunk(chunk);
+        // Read the requested chunks. Yield after every chunk to make sure that eventual read()s
+        // can run ASAP.
+        while (1) {
+            m_readerMutex.lock();
+            //qDebug() << m_pGroup << "CachingReader::run() lock acquired, reading" << m_chunksToRead.size() << "chunks";
+            QList<int>::iterator it = m_chunksToRead.begin();
+            if (it != m_chunksToRead.end()) {
+                //qDebug() << m_pGroup << "CachingReader::run() reading chunk" << *it;
+                getChunk(*it);
+                it = m_chunksToRead.erase(it);
+            }
+            if (it == m_chunksToRead.end()) {
+                m_readerMutex.unlock();
+                break;
+            }
+            m_readerMutex.unlock();
+            QThread::yieldCurrentThread();
         }
-        m_chunksToRead.clear();
-        //qDebug() << m_pGroup << "CachingReader::run() unlocked";
-        m_readerMutex.unlock();
     }
 
     // Notify the EngineWorkerScheduler that the work we did is done.
