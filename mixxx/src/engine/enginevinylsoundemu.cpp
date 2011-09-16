@@ -46,6 +46,7 @@ void EngineVinylSoundEmu::process(const CSAMPLE * pIn, const CSAMPLE * pOut, con
     m_fSpeed = (float)m_pRateEngine->get();
     float rateFrac = 2 * (m_fSpeed - m_fOldSpeed) / (float)iBufferSize;
     float curRate = m_fOldSpeed;
+    float absCurRate = fabs(curRate);
     
     const float thresholdSpeed = 0.070f; //Scale volume if playback speed is below 7%.
     const float ditherSpeed = 0.85f; //Dither if playback speed is below 85%.
@@ -54,12 +55,12 @@ void EngineVinylSoundEmu::process(const CSAMPLE * pIn, const CSAMPLE * pOut, con
     for (int i=0; i<iBufferSize; i+=2)
     {
         float dither = 0;
-        if (fabs(curRate) < ditherSpeed) {
+        if (absCurRate < ditherSpeed) {
             dither = (float)(rand() % 32768) / 32768 - 0.5;
         }
         
-        if (fabs(curRate) < thresholdSpeed) {
-            float gainfrac = fabs(curRate) / thresholdSpeed;
+        if (absCurRate < thresholdSpeed) {
+            float gainfrac = absCurRate / thresholdSpeed;
             pOutput[i] = gainfrac * (float)pIn[i] + dither;
             pOutput[i+1] = gainfrac * (float)pIn[i+1] + dither;
         }
