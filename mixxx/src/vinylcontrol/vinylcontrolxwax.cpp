@@ -455,9 +455,6 @@ void VinylControlXwax::run()
 
             //We have pitch, but not position.  so okay signal but not great (scratching / cueing?)
             //qDebug() << "Pitch" << dVinylPitch;
-            dPitchRing[ringPos] = dVinylPitch;
-            if(ringFilled < RING_SIZE)
-                ringFilled++;
 
             if (iPosition != -1)
             {
@@ -547,7 +544,6 @@ void VinylControlXwax::run()
                 }
 
                 //if we hit the end of the ring, loop around
-                ringPos = (ringPos + 1) % RING_SIZE;
                 dOldPos = dVinylPosition;
             }
             else
@@ -585,6 +581,21 @@ void VinylControlXwax::run()
 
             //playbutton status may have changed
             reportedPlayButton = playButton->get();
+            
+            if (reportedPlayButton)
+            {
+                //only add to the ring if pitch is stable
+                dPitchRing[ringPos] = dVinylPitch;
+                if(ringFilled < RING_SIZE)
+                    ringFilled++;
+                ringPos = (ringPos + 1) % RING_SIZE;
+            }
+            else
+            {
+                //reset ring if pitch isn't steady
+                ringPos = 0;
+                ringFilled = 0;
+            }
 
             //only smooth when we have good position (no smoothing for scratching)
             double averagePitch = 0.0f;
