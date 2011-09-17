@@ -448,15 +448,15 @@ void VinylControlXwax::run()
 
             //We have pitch, but not position.  so okay signal but not great (scratching / cueing?)
             //qDebug() << "Pitch" << dVinylPitch;
+            dPitchRing[ringPos] = dVinylPitch;
+            if(ringFilled < RING_SIZE)
+                ringFilled++;
+
             if (iPosition != -1)
             {
                 //POSITION: YES  PITCH: YES
                 //add a value to the pitch ring (for averaging / smoothing the pitch)
                 //qDebug() << fabs(((dVinylPosition - dOldPos) * (dVinylPitch / fabs(dVinylPitch))));
-
-                dPitchRing[ringPos] = dVinylPitch;
-                if(ringFilled < RING_SIZE)
-                    ringFilled++;
 
                 //save the absolute amount of drift for when we need to estimate vinyl position
                 dDriftAmt = dVinylPosition - filePosition;
