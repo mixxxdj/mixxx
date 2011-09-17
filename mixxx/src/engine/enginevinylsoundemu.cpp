@@ -27,12 +27,26 @@
  *   these slow speeds.
  */
 
+float EngineVinylSoundEmu::sm_fNoise[NOISE_BUFFER_SIZE];
+bool EngineVinylSoundEmu::sm_bNoiseInited = false;
+
 EngineVinylSoundEmu::EngineVinylSoundEmu(ConfigObject<ConfigValue> * pConfig, const char * group)
 {
     m_pConfig = pConfig;
     m_pRateEngine = ControlObject::getControl(ConfigKey(group, "rateEngine"));
     m_fSpeed = m_fOldSpeed = 0.0f;
     m_fGainFactor = 1.0f;
+    m_iNoisePos = 0;
+    
+    if (!sm_bNoiseInited)
+    {
+        sm_bNoiseInited = true;
+        for (int i=0; i<NOISE_BUFFER_SIZE; i++)
+        {
+            sm_fNoise[i] = (float)(rand() % 32768) / 32768 - 0.5;
+        }
+        m_iNoisePos = rand() % NOISE_BUFFER_SIZE;
+    }
 }
 
 EngineVinylSoundEmu::~EngineVinylSoundEmu()
@@ -50,16 +64,18 @@ void EngineVinylSoundEmu::process(const CSAMPLE * pIn, const CSAMPLE * pOut, con
     const float thresholdSpeed = 0.070f; //Scale volume if playback speed is below 7%.
     const float ditherSpeed = 0.85f; //Dither if playback speed is below 85%.
     
-    //iterate over old rate to new rate to prevent audible pops    
+    //iterate over old rate to new rate to prevent audible pops
     for (int i=0; i<iBufferSize; i+=2)
     {
+        float absCurRate = fabs(curRate);
         float dither = 0;
-        if (fabs(curRate) < ditherSpeed) {
-            dither = (float)(rand() % 32768) / 32768 - 0.5;
+        if (absCurRate < ditherSpeed) {
+            dither = sm_fNoise[m_iNoisePos];
+            m_iNoisePos = (m_iNoisePos + 1) % NOISE_BUFFER_SIZE;
         }
         
-        if (fabs(curRate) < thresholdSpeed) {
-            float gainfrac = fabs(curRate) / thresholdSpeed;
+        if (absCurRate < thresholdSpeed) {
+            float gainfrac = absCurRate / thresholdSpeed;
             pOutput[i] = gainfrac * (float)pIn[i] + dither;
             pOutput[i+1] = gainfrac * (float)pIn[i+1] + dither;
         }
