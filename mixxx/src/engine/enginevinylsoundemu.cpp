@@ -45,6 +45,7 @@ EngineVinylSoundEmu::EngineVinylSoundEmu(ConfigObject<ConfigValue> * pConfig, co
         {
             sm_fNoise[i] = (float)(rand() % 32768) / 32768 - 0.5;
         }
+        m_iNoisePos = rand() % NOISE_BUFFER_SIZE;
     }
 }
 
