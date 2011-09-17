@@ -19,6 +19,7 @@
 
 #include "engineobject.h"
 
+#define NOISE_BUFFER_SIZE 1000
 class EngineVinylSoundEmu : public EngineObject
 {
 public:
@@ -30,6 +31,11 @@ private:
     ControlObject *m_pRateEngine;
     float m_fSpeed, m_fOldSpeed;
     float m_fGainFactor;
+    
+    static float sm_fNoise[NOISE_BUFFER_SIZE];
+    static bool sm_bNoiseInited;
+    int m_iNoisePos;
 };
+
 
 #endif
