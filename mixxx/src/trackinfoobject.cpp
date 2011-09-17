@@ -139,8 +139,9 @@ void TrackInfoObject::initialize(bool parseHeader) {
     m_key = "";
 
     // parse() parses the metadata from file. This is not a quick operation!
-    if (parseHeader)
+    if (parseHeader) {
         parse();
+    }
 }
 
 TrackInfoObject::~TrackInfoObject() {
