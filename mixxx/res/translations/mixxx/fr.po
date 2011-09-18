@@ -3,14 +3,14 @@ msgstr ""
 "Project-Id-Version: Mixxx 1.8\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2011-05-03 21:42-0400\n"
-"PO-Revision-Date: 2011-08-24 02:09+0000\n"
-"Last-Translator: silvio <Unknown>\n"
+"PO-Revision-Date: 2011-09-17 20:41+0000\n"
+"Last-Translator: franz <francoisguilhaumon@gmail.com>\n"
 "Language-Team: <tezalprod@gmail.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-08-25 04:35+0000\n"
-"X-Generator: Launchpad (build 13727)\n"
+"X-Launchpad-Export-Date: 2011-09-18 04:37+0000\n"
+"X-Generator: Launchpad (build 13955)\n"
 "X-Poedit-Country: FRANCE\n"
 "X-Poedit-Language: French\n"
 
@@ -88,7 +88,7 @@ msgstr "Piste n°"
 
 #: BaseSqlTableModel#15
 msgid "Date Added"
-msgstr "Date d'ajout"
+msgstr "Ajouté le"
 
 #: BaseSqlTableModel#16
 msgid "#"
@@ -2654,7 +2654,7 @@ msgstr "Ctrl+Q"
 
 #: MixxxApp#27
 msgid "&Rescan Library"
-msgstr "&Scanner de nouveau la librairie"
+msgstr "&Scanner de nouveau la bibliothèque"
 
 #: MixxxApp#28
 msgid "Add &new playlist"
@@ -3287,8 +3287,8 @@ msgid ""
 "There was an error loading your Traktor library. Some of your Traktor tracks "
 "or playlists may not have loaded."
 msgstr ""
-"Il y a eu une erreur de chargement de votre bibliothèque Traktor. Certaines "
-"de vos pistes Traktor ou listes de lecture peuvent ne pas avoir été chargé."
+"Il y a eu une erreur de chargement de votre bibliothèque Traktor. Certains "
+"de vos morceaux ou listes de lecture Traktor peuvent ne pas avoir été chargé."
 
 #: Ui#1
 msgctxt "Ui#1"
@@ -3302,12 +3302,12 @@ msgstr "Restant"
 #: Ui#3
 msgctxt "Ui#3"
 msgid "On"
-msgstr "Allumé"
+msgstr "Marche"
 
 #: Ui#4
 msgctxt "Ui#4"
 msgid "Off"
-msgstr "Éteins"
+msgstr "Arrêt"
 
 #: Ui#5
 msgid "Don't load tracks into a playing deck"
@@ -3389,7 +3389,7 @@ msgstr "touche lecture inversée du lecteur %1"
 
 #: Ui#23
 msgid "Headphone listen button for Player %1"
-msgstr "touche écouteurs du lecteur %1"
+msgstr "Touche casque du lecteur %1"
 
 #: Ui#24
 msgid "Beat sync button for Player %1"
@@ -3401,7 +3401,7 @@ msgstr "touche de contrôle des BPM du lecteur %1"
 
 #: Ui#26
 msgid "Keylock button for Player %1"
-msgstr "Verrouillage de la platine %1"
+msgstr "touche de verrouillage du lecteur %1"
 
 #: Ui#27
 msgid "Pitch control slider for Player %1"
@@ -3417,7 +3417,7 @@ msgstr "contrôleur du volume de la piste %1"
 
 #: Ui#30
 msgid "Gain knob for Channel %1"
-msgstr "contrôleur du gain de la piste %1"
+msgstr "Potentiomètre de gain de la piste %1"
 
 #: Ui#31
 msgid "High EQ knob for Channel %1"
@@ -3586,9 +3586,6 @@ msgstr "Montrer ou cacher les colonnes."
 #~ msgctxt "DlgPrefControls#4"
 #~ msgid "Information"
 #~ msgstr "Information"
-
-#~ msgid "You don't have permission to view this folder."
-#~ msgstr "Vous n'avez pas la permission de voir ce dossier"
 
 #~ msgid "Crate Creation Failed"
 #~ msgstr "La création du container a échoué"
@@ -3853,3 +3850,6 @@ msgstr "Montrer ou cacher les colonnes."
 
 #~ msgid "Gain knob for Channel 2"
 #~ msgstr "Bouton Gain pour le Canal 2"
+
+#~ msgid "You don't have permission to view this folder."
+#~ msgstr "Permission d'acçés au dossier refusé"
