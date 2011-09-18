@@ -31,6 +31,7 @@ public:
         TRACKMODELCAPS_ADDTOCRATE     = 0x0008,
         TRACKMODELCAPS_ADDTOAUTODJ    = 0x0010,
         TRACKMODELCAPS_LOCKED         = 0x0020,
+        TRACKMODELCAPS_RELOADMETADATA = 0x0040,
                                     //0x0004
     };
 
