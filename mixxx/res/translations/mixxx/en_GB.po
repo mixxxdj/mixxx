@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2011-05-03 21:42-0400\n"
-"PO-Revision-Date: 2011-08-04 11:10+0000\n"
+"PO-Revision-Date: 2011-09-18 14:17+0000\n"
 "Last-Translator: Alex Van Halen <Unknown>\n"
 "Language-Team: English (United Kingdom) <en_GB@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-08-05 04:31+0000\n"
-"X-Generator: Launchpad (build 13604)\n"
+"X-Launchpad-Export-Date: 2011-09-19 04:37+0000\n"
+"X-Generator: Launchpad (build 13955)\n"
 
 #: AutoDJFeature#1
 msgid "Auto DJ"
@@ -544,7 +544,7 @@ msgstr "Skip"
 
 #: DlgMidiLearning#2
 msgid "Successfully mapped to: "
-msgstr ""
+msgstr "Successfully mapped to: "
 
 #: DlgMidiLearning#3
 msgid "Next"
@@ -739,7 +739,7 @@ msgstr "Up increases speed"
 
 #: DlgPrefControls#13
 msgid "Down increases speed (Technics SL1210)"
-msgstr ""
+msgstr "Down increases speed (Technics SL1210)"
 
 #: DlgPrefControls#14
 msgctxt "DlgPrefControls#14"
