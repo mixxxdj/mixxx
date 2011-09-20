@@ -31,6 +31,10 @@
 #include "controlobject.h"
 #include "vinylcontrolproxy.h"
 
+#ifdef __PORTAUDIO__
+typedef PaError (*SetJackClientName)(const char *name);
+#endif
+
 /** Initializes Mixxx's audio core
  *  @param pConfig The config key table
  *  @param pMaster A pointer to the audio engine's mastering class.
@@ -308,6 +312,9 @@ void SoundManager::queryDevices()
 #ifdef __PORTAUDIO__
     PaError err = paNoError;
     if (!m_paInitialized) {
+#ifdef Q_OS_LINUX
+        setJACKName();
+#endif
         err = Pa_Initialize();
         m_paInitialized = true;
     }
@@ -673,4 +680,26 @@ void SoundManager::pushBuffer(QList<AudioInput> inputs, short * inputBuffer,
     }
     //TODO: Add pass-through option here (and push it into EngineMaster)...
     //      (or maybe save it, and then have requestBuffer() push it into EngineMaster)...
+}
+
+void SoundManager::setJACKName() const
+{
+#ifdef __PORTAUDIO__
+#ifdef Q_OS_LINUX
+    typedef PaError (*SetJackClientName)(const char *name);
+    QLibrary portaudio("libportaudio.so.2");
+    if (portaudio.load()) {
+        SetJackClientName func(
+            reinterpret_cast<SetJackClientName>(
+                portaudio.resolve("PaJack_SetClientName")));
+        if (func) {
+            if (!func("Mixxx")) qDebug() << "JACK client name set";
+        } else {
+            qWarning() << "failed to resolve JACK name method";
+        }
+    } else {
+        qWarning() << "failed to load portaudio for JACK rename";
+    }
+#endif
+#endif
 }
