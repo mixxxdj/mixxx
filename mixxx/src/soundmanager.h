@@ -64,6 +64,7 @@ public slots:
     void sync();
 private:
     void clearOperativeVariables();
+    void setJACKName() const;
 
     EngineMaster *m_pMaster;
     ConfigObject<ConfigValue> *m_pConfig;
