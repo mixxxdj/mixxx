@@ -5,8 +5,10 @@
 #include <QFileDialog>
 #include <QMenu>
 #include <QAction>
+
 #include "library/itunesfeature.h"
 
+#include "library/basetrackcache.h"
 #include "library/itunestrackmodel.h"
 #include "library/itunesplaylistmodel.h"
 #include "library/dao/settingsdao.h"
@@ -17,6 +19,24 @@ ITunesFeature::ITunesFeature(QObject* parent, TrackCollection* pTrackCollection)
         : LibraryFeature(parent),
           m_pTrackCollection(pTrackCollection),
           m_database(pTrackCollection->getDatabase()) {
+
+    QString tableName = "itunes_library";
+    QString idColumn = "id";
+    QStringList columns;
+    columns << "id"
+            << "artist"
+            << "album"
+            << "genre"
+            << "location"
+            << "comment"
+            << "duration"
+            << "bitrate"
+            << "bpm"
+            << "rating";
+    pTrackCollection->addTrackSource(QString("itunes"), QSharedPointer<BaseTrackCache>(
+        new BaseTrackCache(m_pTrackCollection, tableName, idColumn, columns)));
+
+
     m_pITunesTrackModel = new ITunesTrackModel(this, m_pTrackCollection);
     m_pITunesPlaylistModel = new ITunesPlaylistModel(this, m_pTrackCollection);
     m_isActivated = false;

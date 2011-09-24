@@ -15,20 +15,12 @@ ITunesTrackModel::ITunesTrackModel(QObject* parent,
           m_database(m_pTrackCollection->getDatabase()) {
     connect(this, SIGNAL(doSearch(const QString&)), this, SLOT(slotSearch(const QString&)));
 
-    QStringList columns;
-    columns << "id"
-            << "artist"
-            << "album"
-            << "genre"
-            << "location"
-            << "comment"
-            << "duration"
-            << "bitrate"
-            << "bpm"
-            << "rating";
-    setTable("itunes_library", columns, "id");
+
+    QStringList tableColumns;
+    tableColumns << "id";
+    setTable("itunes_library", "id", tableColumns,
+             m_pTrackCollection->getTrackSource("itunes"));
     initHeaderData();
-    initDefaultSearchColumns();
     select();
 }
 
