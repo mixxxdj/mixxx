@@ -222,13 +222,23 @@ void BaseSqlTableModel::select() {
 
     for (QVector<RowInfo>::iterator it = rowInfo.begin();
          it != rowInfo.end(); ++it) {
-        it->order = trackOrder.value(it->trackId, 0);
+        it->order = trackOrder.value(it->trackId, -1);
     }
-    // RowInfo::operator< sorts by the order field
+
+    // RowInfo::operator< sorts by the order field, except -1 is placed at the
+    // end so we can easily slice off rows that are no longer present.
     qSort(rowInfo.begin(), rowInfo.end());
 
+    m_trackIdToRows.clear();
     for (int i = 0; i < rowInfo.size(); ++i) {
         const RowInfo& row = rowInfo[i];
+
+        if (row.order == -1) {
+            // We've reached the end of valid rows. Resize rowInfo to cut off
+            // this and all further elements.
+            rowInfo.resize(i);
+            break;
+        }
         QLinkedList<int>& rows = m_trackIdToRows[row.trackId];
         rows.push_back(i);
     }

@@ -34,7 +34,6 @@ BaseTrackCache::BaseTrackCache(TrackCollection* pTrackCollection,
           m_pTrackCollection(pTrackCollection),
           m_trackDAO(m_pTrackCollection->getTrackDAO()),
           m_database(m_pTrackCollection->getDatabase()) {
-
     m_searchColumns << "artist"
                     << "album"
                     << "location"
@@ -169,8 +168,9 @@ void BaseTrackCache::updateTrackInIndex(int trackId) {
 }
 
 void BaseTrackCache::updateTracksInIndex(QSet<int> trackIds) {
-    if (trackIds.size() == 0)
+    if (trackIds.size() == 0) {
         return;
+    }
 
     QStringList idStrings;
     foreach (int trackId, trackIds) {
