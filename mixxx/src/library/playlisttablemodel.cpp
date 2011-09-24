@@ -62,7 +62,7 @@ void PlaylistTableModel::setPlaylist(int playlistId)
         qDebug() << query.executedQuery() << query.lastError();
     }
 
-    //Print out any SQL error, if there was one.
+    // Print out any SQL error, if there was one.
     if (query.lastError().isValid()) {
      	qDebug() << __FILE__ << __LINE__ << query.lastError();
     }
@@ -76,7 +76,6 @@ void PlaylistTableModel::setPlaylist(int playlistId)
     slotSearch("");
     select(); //Populate the data model.
 }
-
 
 bool PlaylistTableModel::addTrack(const QModelIndex& index, QString location)
 {
