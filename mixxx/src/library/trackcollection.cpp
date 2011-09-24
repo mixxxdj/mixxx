@@ -89,8 +89,15 @@ TrackCollection::TrackCollection(ConfigObject<ConfigValue>* pConfig)
         columns[i] = columns[i].replace("library.", "").replace("track_locations.", "");
     }
 
-    addTrackSource(QString("default"), QSharedPointer<BaseTrackCache>(
-        new BaseTrackCache(this, "library_cache_view", LIBRARYTABLE_ID, columns)));
+    BaseTrackCache* pBaseTrackCache = new BaseTrackCache(
+        this, "library_cache_view", LIBRARYTABLE_ID, columns);
+    connect(&m_trackDao, SIGNAL(trackDirty(int)),
+            pBaseTrackCache, SLOT(slotTrackDirty(int)));
+    connect(&m_trackDao, SIGNAL(trackClean(int)),
+            pBaseTrackCache, SLOT(slotTrackClean(int)));
+
+    addTrackSource(QString("default"),
+                   QSharedPointer<BaseTrackCache>(pBaseTrackCache));
 }
 
 TrackCollection::~TrackCollection()
