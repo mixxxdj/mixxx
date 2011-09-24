@@ -30,7 +30,7 @@ void PlaylistTableModel::setPlaylist(int playlistId)
 
     QString playlistTableName = "playlist_" + QString("%1").arg(m_iPlaylistId);
 
-    QSqlQuery query;
+    QSqlQuery query(m_pTrackCollection->getDatabase());
     //query.prepare("DROP VIEW " + playlistTableName);
     //query.exec();
 
@@ -40,28 +40,8 @@ void PlaylistTableModel::setPlaylist(int playlistId)
     playlistNameField.setValue(playlistTableName);
 
     QStringList columns;
-    columns << "PlaylistTracks." + PLAYLISTTRACKSTABLE_POSITION
-            // << "playlist_id, " + //DEBUG
-            << "library." + LIBRARYTABLE_ID
-            << "library." + LIBRARYTABLE_PLAYED
-            << "library." + LIBRARYTABLE_TIMESPLAYED
-            << "library." + LIBRARYTABLE_ARTIST
-            << "library." + LIBRARYTABLE_TITLE
-            << "library." + LIBRARYTABLE_ALBUM
-            << "library." + LIBRARYTABLE_YEAR
-            << "library." + LIBRARYTABLE_DURATION
-            << "library." + LIBRARYTABLE_RATING
-            << "library." + LIBRARYTABLE_GENRE
-            << "library." + LIBRARYTABLE_FILETYPE
-            << "library." + LIBRARYTABLE_TRACKNUMBER
-            << "library." + LIBRARYTABLE_KEY
-            << "library." + LIBRARYTABLE_DATETIMEADDED
-            << "library." + LIBRARYTABLE_BPM
-            << "library." + LIBRARYTABLE_BITRATE
-            << "track_locations.location"
-            << "track_locations.fs_deleted"
-            << "library." + LIBRARYTABLE_COMMENT
-            << "library." + LIBRARYTABLE_MIXXXDELETED;
+    columns << "library." + LIBRARYTABLE_ID
+            << "PlaylistTracks." + PLAYLISTTRACKSTABLE_POSITION;
 
     query.prepare("CREATE TEMPORARY VIEW IF NOT EXISTS " + driver->formatValue(playlistNameField) + " AS "
                   "SELECT "
@@ -82,26 +62,20 @@ void PlaylistTableModel::setPlaylist(int playlistId)
         qDebug() << query.executedQuery() << query.lastError();
     }
 
-    //Print out any SQL error, if there was one.
+    // Print out any SQL error, if there was one.
     if (query.lastError().isValid()) {
      	qDebug() << __FILE__ << __LINE__ << query.lastError();
     }
 
-    // Strip out library. and track_locations.
-    for (int i = 0; i < columns.size(); ++i) {
-        columns[i] = columns[i].replace("library.", "")
-                .replace("track_locations.", "").replace("PlaylistTracks.", "");
-    }
-
     QStringList tableColumns;
+    tableColumns << LIBRARYTABLE_ID;
     tableColumns << PLAYLISTTRACKSTABLE_POSITION;
-    setTable(playlistTableName, columns, LIBRARYTABLE_ID, tableColumns);
+    setTable(playlistTableName, LIBRARYTABLE_ID, tableColumns,
+             m_pTrackCollection->getTrackSource("default"));
     initHeaderData();
-    initDefaultSearchColumns();
     slotSearch("");
     select(); //Populate the data model.
 }
-
 
 bool PlaylistTableModel::addTrack(const QModelIndex& index, QString location)
 {
@@ -128,7 +102,7 @@ bool PlaylistTableModel::addTrack(const QModelIndex& index, QString location)
 
     m_playlistDao.insertTrackIntoPlaylist(trackId, m_iPlaylistId, position);
 
-    updateTrackInIndex(trackId);
+    // TODO(rryan) signal an add to the base, don't select
     select(); //Repopulate the data model.
 
     return true;
@@ -168,8 +142,6 @@ void PlaylistTableModel::removeTrack(const QModelIndex& index)
     int position = index.sibling(index.row(), positionColumnIndex).data().toInt();
     m_playlistDao.removeTrackFromPlaylist(m_iPlaylistId, position);
 
-    // Have to re-lookup every track b/c their playlist ranks might have changed
-    buildIndex();
     select(); //Repopulate the data model.
 }
 
@@ -191,7 +163,6 @@ void PlaylistTableModel::removeTracks(const QModelIndexList& indices) {
     }
 
     // Have to re-lookup every track b/c their playlist ranks might have changed
-    buildIndex();
     select();
 }
 
@@ -299,8 +270,6 @@ void PlaylistTableModel::moveTrack(const QModelIndex& sourceIndex, const QModelI
      	qDebug() << query.lastError();
     }
 
-    // Have to re-lookup every track b/c their playlist ranks might have changed
-    buildIndex();
     select();
 }
 
