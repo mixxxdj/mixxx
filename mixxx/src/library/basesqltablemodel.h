@@ -84,6 +84,12 @@ class BaseSqlTableModel : public QAbstractTableModel {
         QHash<int, QVariant> metadata;
 
         bool operator<(const RowInfo& other) const {
+            // -1 is greater than anything
+            if (order == -1) {
+                return false;
+            } else if (other.order == -1) {
+                return true;
+            }
             return order < other.order;
         }
     };
