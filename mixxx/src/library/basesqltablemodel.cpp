@@ -6,8 +6,9 @@
 #include <QTime>
 
 #include "library/basesqltablemodel.h"
-#include "mixxxutils.cpp"
+
 #include "library/starrating.h"
+#include "mixxxutils.cpp"
 
 const bool sDebug = false;
 
@@ -184,7 +185,6 @@ void BaseSqlTableModel::select() {
         tableColumnIndices.push_back(record.indexOf(column));
     }
     int rows = query.size();
-
     if (sDebug) {
         qDebug() << "Rows returned" << rows << m_rowInfo.size();
     }
@@ -213,6 +213,13 @@ void BaseSqlTableModel::select() {
 
     // Adjust sort column to remove table columns and add 1 to add an id column.
     int sortColumn = m_iSortColumn - m_tableColumns.size() + 1;
+
+    // If we were sorting a table column, then secondary sort by id. TODO(rryan)
+    // we should look into being able to drop the secondary sort to save time
+    // but going for correctness first.
+    if (sortColumn < 0) {
+        sortColumn = 0;
+    }
 
     QHash<int, int> trackOrder;
     m_trackSource->filterAndSort(trackIds, m_currentSearch,
@@ -286,8 +293,9 @@ QString BaseSqlTableModel::currentSearch() const {
 }
 
 void BaseSqlTableModel::search(const QString& searchText, const QString extraFilter) {
-    if (sDebug)
+    if (sDebug) {
         qDebug() << this << "search" << searchText;
+    }
 
     bool searchIsDifferent = m_currentSearch.isNull() || m_currentSearch != searchText;
     bool filterDisabled = (m_currentSearchFilter.isNull() && extraFilter.isNull());
