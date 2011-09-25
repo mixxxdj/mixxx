@@ -198,8 +198,8 @@ void MidiMapping::scriptHasChanged(QString scriptChanged) {
     QStringList files = m_scriptWatcher.files();
     
     qDebug() << "MSE: Script" << scriptChanged << "has changed, reloading MSE.";
+    disconnect(&m_scriptWatcher, SIGNAL(fileChanged(QString)), this, SLOT(scriptHasChanged(QString)));
     reset();
-    //disconnect(this, SIGNAL(shutdownMidiScriptEngine(QList<QString>)), m_pScriptEngine, SLOT(gracefulShutdown(QList<QString>)));
     loadPreset(DEFAULT_DEVICE_PRESET, true);
     applyPreset();
 }
