@@ -12,19 +12,15 @@
 /** Pure virtual (abstract) class that provides an interface for data models which
     display track lists. */
 class TrackModel {
-
-public:
-
+  public:
     TrackModel(QSqlDatabase db,
                QString settingsNamespace)
             : m_db(db),
               m_settingsNamespace(settingsNamespace) {
-
     }
     virtual ~TrackModel() {}
 
-    enum Capabilities
-    {
+    enum Capabilities {
         TRACKMODELCAPS_NONE           = 0x0000,
         TRACKMODELCAPS_REORDER        = 0x0001,
         TRACKMODELCAPS_RECEIVEDROPS   = 0x0002,
@@ -33,7 +29,6 @@ public:
         TRACKMODELCAPS_ADDTOAUTODJ    = 0x0010,
         TRACKMODELCAPS_LOCKED         = 0x0020,
         TRACKMODELCAPS_RELOADMETADATA = 0x0040,
-                                    //0x0004
     };
 
     typedef int CapabilitiesFlags; /** Enables us to do ORing */

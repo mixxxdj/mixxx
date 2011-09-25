@@ -412,8 +412,10 @@ QVariant BaseSqlTableModel::data(const QModelIndex& index, int role) const {
         case Qt::ToolTipRole:
         case Qt::DisplayRole:
             if (column == fieldIndex(LIBRARYTABLE_DURATION)) {
-                if (qVariantCanConvert<int>(value))
-                    value = MixxxUtils::secondsToMinutes(qVariantValue<int>(value));
+                if (qVariantCanConvert<int>(value)) {
+                    value = MixxxUtils::secondsToMinutes(
+                        qVariantValue<int>(value));
+                }
             } else if (column == fieldIndex(LIBRARYTABLE_RATING)) {
                 if (qVariantCanConvert<int>(value))
                     value = qVariantFromValue(StarRating(value.toInt()));
@@ -421,8 +423,8 @@ QVariant BaseSqlTableModel::data(const QModelIndex& index, int role) const {
                 if (qVariantCanConvert<int>(value))
                     value =  QString("(%1)").arg(value.toInt());
             } else if (column == fieldIndex(LIBRARYTABLE_PLAYED)) {
-                // Convert to a bool. Not really that useful since it gets converted
-                // right back to a QVariant
+                // Convert to a bool. Not really that useful since it gets
+                // converted right back to a QVariant
                 value = (value == "true") ? true : false;
             }
             break;
@@ -430,7 +432,8 @@ QVariant BaseSqlTableModel::data(const QModelIndex& index, int role) const {
             if (column == fieldIndex(LIBRARYTABLE_BPM)) {
                 return value.toDouble();
             } else if (column == fieldIndex(LIBRARYTABLE_TIMESPLAYED)) {
-                return index.sibling(row, fieldIndex(LIBRARYTABLE_PLAYED)).data().toBool();
+                return index.sibling(
+                    row, fieldIndex(LIBRARYTABLE_PLAYED)).data().toBool();
             } else if (column == fieldIndex(LIBRARYTABLE_RATING)) {
                 if (qVariantCanConvert<int>(value))
                     value = qVariantFromValue(StarRating(value.toInt()));
@@ -438,7 +441,8 @@ QVariant BaseSqlTableModel::data(const QModelIndex& index, int role) const {
             break;
         case Qt::CheckStateRole:
             if (column == fieldIndex(LIBRARYTABLE_TIMESPLAYED)) {
-                bool played = index.sibling(row, fieldIndex(LIBRARYTABLE_PLAYED)).data().toBool();
+                bool played = index.sibling(
+                    row, fieldIndex(LIBRARYTABLE_PLAYED)).data().toBool();
                 value = played ? Qt::Checked : Qt::Unchecked;
             }
             break;
@@ -448,7 +452,8 @@ QVariant BaseSqlTableModel::data(const QModelIndex& index, int role) const {
     return value;
 }
 
-bool BaseSqlTableModel::setData(const QModelIndex& index, const QVariant& value, int role) {
+bool BaseSqlTableModel::setData(
+    const QModelIndex& index, const QVariant& value, int role) {
     if (!index.isValid())
         return false;
 
@@ -483,6 +488,8 @@ bool BaseSqlTableModel::setData(const QModelIndex& index, const QVariant& value,
         return false;
     }
 
+    // TODO(rryan) ugly and only works because the mixxx library tables are the
+    // only ones that aren't read-only. This should be moved into BTC.
     TrackPointer pTrack = m_trackDAO.getTrack(trackId);
     setTrackValueForColumn(pTrack, column, value);
 
@@ -498,14 +505,15 @@ Qt::ItemFlags BaseSqlTableModel::flags(const QModelIndex &index) const {
     return readWriteFlags(index);
 }
 
-Qt::ItemFlags BaseSqlTableModel::readWriteFlags(const QModelIndex &index) const {
+Qt::ItemFlags BaseSqlTableModel::readWriteFlags(
+    const QModelIndex &index) const {
     if (!index.isValid())
         return Qt::ItemIsEnabled;
 
     Qt::ItemFlags defaultFlags = QAbstractItemModel::flags(index);
 
-    //Enable dragging songs from this data model to elsewhere (like the waveform
-    //widget to load a track into a Player).
+    // Enable dragging songs from this data model to elsewhere (like the
+    // waveform widget to load a track into a Player).
     defaultFlags |= Qt::ItemIsDragEnabled;
 
     int row = index.row();
@@ -524,8 +532,7 @@ Qt::ItemFlags BaseSqlTableModel::readWriteFlags(const QModelIndex &index) const 
     }
 }
 
-Qt::ItemFlags BaseSqlTableModel::readOnlyFlags(const QModelIndex &index) const
-{
+Qt::ItemFlags BaseSqlTableModel::readOnlyFlags(const QModelIndex &index) const {
     Qt::ItemFlags defaultFlags = QAbstractItemModel::flags(index);
     if (!index.isValid())
         return Qt::ItemIsEnabled;
@@ -603,8 +610,8 @@ void BaseSqlTableModel::setTrackValueForColumn(TrackPointer pTrack, int column,
     } else if (fieldIndex(LIBRARYTABLE_BITRATE) == column) {
         pTrack->setBitrate(value.toInt());
     } else if (fieldIndex(LIBRARYTABLE_BPM) == column) {
-        //QVariant::toFloat needs >= QT 4.6.x
-        pTrack->setBpm((float) value.toDouble());
+        // QVariant::toFloat needs >= QT 4.6.x
+        pTrack->setBpm(static_cast<float>(value.toDouble()));
     } else if (fieldIndex(LIBRARYTABLE_PLAYED) == column) {
         pTrack->setPlayed(value.toBool());
     } else if (fieldIndex(LIBRARYTABLE_TIMESPLAYED) == column) {
@@ -617,7 +624,8 @@ void BaseSqlTableModel::setTrackValueForColumn(TrackPointer pTrack, int column,
     }
 }
 
-QVariant BaseSqlTableModel::getBaseValue(const QModelIndex& index, int role) const {
+QVariant BaseSqlTableModel::getBaseValue(
+    const QModelIndex& index, int role) const {
     if (role != Qt::DisplayRole &&
         role != Qt::ToolTipRole &&
         role != Qt::EditRole) {
