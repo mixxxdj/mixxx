@@ -186,14 +186,8 @@ void ITunesPlaylistModel::setPlaylist(QString playlist_path) {
     tableColumns << "id";
     setTable(playlistID, "id", tableColumns,
              m_pTrackCollection->getTrackSource("itunes"));
-
-    //removeColumn(fieldIndex("track_id"));
-    //removeColumn(fieldIndex("name"));
-    //removeColumn(fieldIndex("id"));
-
     initHeaderData();
-    slotSearch("");
-    select(); //Populate the data model.
+    setSearch("");
 }
 
 bool ITunesPlaylistModel::isColumnHiddenByDefault(int column) {
