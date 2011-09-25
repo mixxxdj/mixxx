@@ -42,6 +42,7 @@ class BaseSqlTableModel : public QAbstractTableModel {
     ////////////////////////////////////////////////////////////////////////////
 
     virtual void search(const QString& searchText, const QString extraFilter=QString());
+    virtual void setSearch(const QString& searchText, const QString extraFilter=QString());
     virtual QString currentSearch() const;
     virtual void setSort(int column, Qt::SortOrder order);
     virtual int fieldIndex(const QString& fieldName) const;
@@ -105,7 +106,7 @@ class BaseSqlTableModel : public QAbstractTableModel {
     Qt::SortOrder m_eSortOrder;
 
     bool m_bInitialized;
-    bool m_bIndexBuilt;
+    bool m_bDirty;
     QSqlRecord m_queryRecord;
     QVector<RowInfo> m_rowInfo;
     QHash<int, int> m_trackSortOrder;

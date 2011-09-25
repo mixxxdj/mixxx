@@ -10,7 +10,8 @@ PlaylistTableModel::PlaylistTableModel(QObject* parent,
                                        TrackCollection* pTrackCollection)
         : TrackModel(pTrackCollection->getDatabase(),
                      "mixxx.db.model.playlist"),
-          BaseSqlTableModel(parent, pTrackCollection, pTrackCollection->getDatabase()),
+          BaseSqlTableModel(parent, pTrackCollection,
+                            pTrackCollection->getDatabase()),
           m_pTrackCollection(pTrackCollection),
           m_playlistDao(m_pTrackCollection->getPlaylistDAO()),
           m_trackDao(m_pTrackCollection->getTrackDAO()),
@@ -23,18 +24,22 @@ PlaylistTableModel::~PlaylistTableModel() {
 }
 
 
-void PlaylistTableModel::setPlaylist(int playlistId)
-{
+void PlaylistTableModel::setPlaylist(int playlistId) {
     qDebug() << "PlaylistTableModel::setPlaylist" << playlistId;
+
+    if (m_iPlaylistId == playlistId) {
+        qDebug() << "Already focused on playlist " << playlistId;
+        return;
+    }
+
     m_iPlaylistId = playlistId;
 
     QString playlistTableName = "playlist_" + QString("%1").arg(m_iPlaylistId);
-
     QSqlQuery query(m_pTrackCollection->getDatabase());
     //query.prepare("DROP VIEW " + playlistTableName);
     //query.exec();
 
-    //Escape the playlist name
+    // Escape the playlist name
     QSqlDriver* driver = m_pTrackCollection->getDatabase().driver();
     QSqlField playlistNameField("name", QVariant::String);
     playlistNameField.setValue(playlistTableName);
@@ -43,7 +48,8 @@ void PlaylistTableModel::setPlaylist(int playlistId)
     columns << "library." + LIBRARYTABLE_ID
             << "PlaylistTracks." + PLAYLISTTRACKSTABLE_POSITION;
 
-    query.prepare("CREATE TEMPORARY VIEW IF NOT EXISTS " + driver->formatValue(playlistNameField) + " AS "
+    query.prepare("CREATE TEMPORARY VIEW IF NOT EXISTS " +
+                  driver->formatValue(playlistNameField) + " AS "
                   "SELECT "
                   + columns.join(",") +
                   " FROM library "
@@ -73,12 +79,10 @@ void PlaylistTableModel::setPlaylist(int playlistId)
     setTable(playlistTableName, LIBRARYTABLE_ID, tableColumns,
              m_pTrackCollection->getTrackSource("default"));
     initHeaderData();
-    slotSearch("");
-    select(); //Populate the data model.
+    setSearch("");
 }
 
-bool PlaylistTableModel::addTrack(const QModelIndex& index, QString location)
-{
+bool PlaylistTableModel::addTrack(const QModelIndex& index, QString location) {
     const int positionColumnIndex = this->fieldIndex(PLAYLISTTRACKSTABLE_POSITION);
     int position = index.sibling(index.row(), positionColumnIndex).data().toInt();
 
@@ -93,12 +97,14 @@ bool PlaylistTableModel::addTrack(const QModelIndex& index, QString location)
     location = fileInfo.absoluteFilePath();
 
     int trackId = m_trackDao.getTrackId(location);
-    if (trackId < 0)
+    if (trackId < 0) {
         trackId = m_trackDao.addTrack(fileInfo);
+    }
 
     // Do nothing if the location still isn't in the database.
-    if (trackId < 0)
+    if (trackId < 0) {
         return false;
+    }
 
     m_playlistDao.insertTrackIntoPlaylist(trackId, m_iPlaylistId, position);
 
@@ -291,13 +297,15 @@ bool PlaylistTableModel::isColumnInternal(int column) {
     if (column == fieldIndex(LIBRARYTABLE_ID) ||
         column == fieldIndex(LIBRARYTABLE_PLAYED) ||
         column == fieldIndex(LIBRARYTABLE_MIXXXDELETED) ||
-        column == fieldIndex(TRACKLOCATIONSTABLE_FSDELETED))
+        column == fieldIndex(TRACKLOCATIONSTABLE_FSDELETED)) {
         return true;
+    }
     return false;
 }
 bool PlaylistTableModel::isColumnHiddenByDefault(int column) {
-    if (column == fieldIndex(LIBRARYTABLE_KEY))
+    if (column == fieldIndex(LIBRARYTABLE_KEY)) {
         return true;
+    }
     return false;
 }
 

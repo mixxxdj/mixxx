@@ -20,17 +20,17 @@ BaseSqlTableModel::BaseSqlTableModel(QObject* pParent,
            m_trackDAO(m_pTrackCollection->getTrackDAO()),
            m_database(db) {
     m_bInitialized = false;
+    m_bDirty = true;
     m_iSortColumn = 0;
     m_eSortOrder = Qt::AscendingOrder;
 }
 
 BaseSqlTableModel::~BaseSqlTableModel() {
-
 }
 
 void BaseSqlTableModel::initHeaderData() {
-    //Set the column heading labels, rename them for translations and have
-    //proper capitalization
+    // Set the column heading labels, rename them for translations and have
+    // proper capitalization
     setHeaderData(fieldIndex(LIBRARYTABLE_TIMESPLAYED),
                   Qt::Horizontal, tr("Played"));
     setHeaderData(fieldIndex(LIBRARYTABLE_ARTIST),
@@ -138,6 +138,17 @@ void BaseSqlTableModel::select() {
         return;
     }
 
+    // We should be able to detect when a select() would be a no-op. The DAO's
+    // do not currently broadcast signals for when common things happen. In the
+    // future, we can turn this check on and avoid a lot of needless
+    // select()'s. rryan 9/2011
+    // if (!m_bDirty) {
+    //     if (sDebug) {
+    //         qDebug() << this << "Skipping non-dirty select()";
+    //     }
+    //     return;
+    // }
+
     if (sDebug) {
         qDebug() << this << "select()";
     }
@@ -176,11 +187,9 @@ void BaseSqlTableModel::select() {
 
     QSqlRecord record = query.record();
     int idColumn = record.indexOf(m_idColumn);
+
     QLinkedList<int> tableColumnIndices;
     foreach (QString column, m_tableColumns) {
-        qDebug() << column
-                 << "recind" << record.indexOf(column)
-                 << "ti" << m_tableColumnIndex[column];
         Q_ASSERT(record.indexOf(column) == m_tableColumnIndex[column]);
         tableColumnIndices.push_back(record.indexOf(column));
     }
@@ -202,7 +211,8 @@ void BaseSqlTableModel::select() {
         // row-info section.
 
         foreach (int tableColumnIndex, tableColumnIndices) {
-            thisRowInfo.metadata[tableColumnIndex] = query.value(tableColumnIndex);
+            thisRowInfo.metadata[tableColumnIndex] =
+                    query.value(tableColumnIndex);
         }
         rowInfo.push_back(thisRowInfo);
     }
@@ -221,15 +231,14 @@ void BaseSqlTableModel::select() {
         sortColumn = 0;
     }
 
-    QHash<int, int> trackOrder;
     m_trackSource->filterAndSort(trackIds, m_currentSearch,
                                  m_currentSearchFilter,
                                  sortColumn, m_eSortOrder,
-                                 &trackOrder);
+                                 &m_trackSortOrder);
 
     for (QVector<RowInfo>::iterator it = rowInfo.begin();
          it != rowInfo.end(); ++it) {
-        it->order = trackOrder.value(it->trackId, -1);
+        it->order = m_trackSortOrder.value(it->trackId, -1);
     }
 
     // RowInfo::operator< sorts by the order field, except -1 is placed at the
@@ -253,6 +262,7 @@ void BaseSqlTableModel::select() {
     // We're done! Issue the update signals and replace the master maps.
     beginInsertRows(QModelIndex(), 0, rowInfo.size()-1);
     m_rowInfo = rowInfo;
+    m_bDirty = false;
     endInsertRows();
 
     int elapsed = time.elapsed();
@@ -285,16 +295,16 @@ void BaseSqlTableModel::setTable(const QString& tableName,
     }
 
     m_bInitialized = true;
-    select();
+    m_bDirty = true;
 }
 
 QString BaseSqlTableModel::currentSearch() const {
     return m_currentSearch;
 }
 
-void BaseSqlTableModel::search(const QString& searchText, const QString extraFilter) {
+void BaseSqlTableModel::setSearch(const QString& searchText, const QString extraFilter) {
     if (sDebug) {
-        qDebug() << this << "search" << searchText;
+        qDebug() << this << "setSearch" << searchText;
     }
 
     bool searchIsDifferent = m_currentSearch.isNull() || m_currentSearch != searchText;
@@ -308,29 +318,43 @@ void BaseSqlTableModel::search(const QString& searchText, const QString extraFil
 
     m_currentSearch = searchText;
     m_currentSearchFilter = extraFilter;
+    m_bDirty = true;
+}
 
+void BaseSqlTableModel::search(const QString& searchText, const QString extraFilter) {
+    if (sDebug) {
+        qDebug() << this << "search" << searchText;
+    }
+    setSearch(searchText, extraFilter);
     select();
 }
 
 void BaseSqlTableModel::setSort(int column, Qt::SortOrder order) {
     if (sDebug) {
-        qDebug() << this << "setSort()";
+        qDebug() << this << "setSort()" << column << order;
     }
+
+    bool sortColumnChanged = m_iSortColumn != column;
+    bool sortOrderChanged = m_eSortOrder != order;
+
+    if (!sortColumnChanged && !sortOrderChanged) {
+        // Do nothing if the sort is not different.
+        return;
+    }
+
+    // TODO(rryan) optimization: if the sort column has not changed but the
+    // order has, just reverse our ordering of the rows.
 
     m_iSortColumn = column;
     m_eSortOrder = order;
-
-    // TODO(rryan) should this be conditional?
-    select();
+    m_bDirty = true;
 }
 
 void BaseSqlTableModel::sort(int column, Qt::SortOrder order) {
     if (sDebug) {
         qDebug() << this << "sort()" << column << order;
     }
-
-    m_iSortColumn = column;
-    m_eSortOrder = order;
+    setSort(column, order);
     select();
 }
 
@@ -348,7 +372,9 @@ int BaseSqlTableModel::columnCount(const QModelIndex& parent) const {
     // Subtract one from trackSource::columnCount to ignore the id column
     int count = m_tableColumns.size() +
             (m_trackSource ? m_trackSource->columnCount() - 1: 0);
-    //qDebug() << "columnCount()" << parent << count;
+    if (sDebug) {
+        qDebug() << "columnCount()" << parent << count;
+    }
     return count;
 }
 
@@ -502,8 +528,8 @@ Qt::ItemFlags BaseSqlTableModel::readOnlyFlags(const QModelIndex &index) const
     if (!index.isValid())
         return Qt::ItemIsEnabled;
 
-    //Enable dragging songs from this data model to elsewhere (like the waveform widget to
-    //load a track into a Player).
+    // Enable dragging songs from this data model to elsewhere (like the
+    // waveform widget to load a track into a Player).
     defaultFlags |= Qt::ItemIsDragEnabled;
 
     return defaultFlags;
@@ -597,7 +623,7 @@ QVariant BaseSqlTableModel::getBaseValue(const QModelIndex& index, int role) con
     if (columns.contains(column)) {
         if (sDebug) {
             qDebug() << "Returning table-column value" << columns[column]
-                     << "for column" << column;
+                     << "for column" << column << "role" << role;
         }
         return columns[column];
     }
