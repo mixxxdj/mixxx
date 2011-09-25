@@ -48,14 +48,12 @@ LibraryTableModel::LibraryTableModel(QObject* parent,
     //and shows it...
     //setRelation(fieldIndex(LIBRARYTABLE_LOCATION), QSqlRelation("track_locations", "id", "location"));
 
-
     // BaseSqlTabelModel will setup the header info
     initHeaderData();
 
-    //Sets up the table filter so that we don't show "deleted" tracks (only show mixxx_deleted=0).
-    slotSearch("");
-
-    select(); //Populate the data model.
+    // Sets up the table filter so that we don't show "deleted" tracks (only
+    // show mixxx_deleted=0).
+    setSearch("", LibraryTableModel::DEFAULT_LIBRARYFILTER);
 
     connect(this, SIGNAL(doSearch(const QString&)),
             this, SLOT(slotSearch(const QString&)));
