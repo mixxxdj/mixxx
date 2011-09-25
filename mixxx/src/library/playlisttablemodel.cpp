@@ -24,7 +24,6 @@ PlaylistTableModel::PlaylistTableModel(QObject* parent,
 PlaylistTableModel::~PlaylistTableModel() {
 }
 
-
 void PlaylistTableModel::setPlaylist(int playlistId) {
     qDebug() << "PlaylistTableModel::setPlaylist" << playlistId;
 
@@ -46,24 +45,16 @@ void PlaylistTableModel::setPlaylist(int playlistId) {
     playlistNameField.setValue(playlistTableName);
 
     QStringList columns;
-    columns << "library." + LIBRARYTABLE_ID
-            << "PlaylistTracks." + PLAYLISTTRACKSTABLE_POSITION;
+    columns << PLAYLISTTRACKSTABLE_TRACKID
+            << PLAYLISTTRACKSTABLE_POSITION;
 
     query.prepare("CREATE TEMPORARY VIEW IF NOT EXISTS " +
                   driver->formatValue(playlistNameField) + " AS "
                   "SELECT "
                   + columns.join(",") +
-                  " FROM library "
-                  "INNER JOIN PlaylistTracks "
-                  "ON library.id = PlaylistTracks.track_id "
-                  "INNER JOIN track_locations "
-                  "ON library.location = track_locations.id "
-                  "WHERE (PlaylistTracks.playlist_id = " + QString("%1").arg(playlistId) +
-                  ") AND (" +  LibraryTableModel::DEFAULT_LIBRARYFILTER +
-                  ") ORDER BY PlaylistTracks.position ");
-
-    //query.bindValue(":playlist_name", playlistTableName);
-    //query.bindValue(":playlist_id", m_iPlaylistId);
+                  " FROM PlaylistTracks "
+                  "WHERE playlist_id = " + QString("%1").arg(playlistId) +
+                  " ORDER BY PlaylistTracks.position");
     if (!query.exec()) {
         // It's normal for this to fail.
         qDebug() << query.executedQuery() << query.lastError();
@@ -74,20 +65,17 @@ void PlaylistTableModel::setPlaylist(int playlistId) {
      	qDebug() << __FILE__ << __LINE__ << query.lastError();
     }
 
-    QStringList tableColumns;
-    tableColumns << LIBRARYTABLE_ID;
-    tableColumns << PLAYLISTTRACKSTABLE_POSITION;
-    setTable(playlistTableName, LIBRARYTABLE_ID, tableColumns,
+    setTable(playlistTableName, columns[0], columns,
              m_pTrackCollection->getTrackSource("default"));
     initHeaderData();
     setSearch("");
 }
 
 bool PlaylistTableModel::addTrack(const QModelIndex& index, QString location) {
-    const int positionColumnIndex = this->fieldIndex(PLAYLISTTRACKSTABLE_POSITION);
-    int position = index.sibling(index.row(), positionColumnIndex).data().toInt();
+    const int positionColumn = fieldIndex(PLAYLISTTRACKSTABLE_POSITION);
+    int position = index.sibling(index.row(), positionColumn).data().toInt();
 
-    //Handle weird cases like a drag-and-drop to an invalid index
+    // Handle weird cases like a drag-and-drop to an invalid index
     if (position <= 0) {
         position = rowCount() + 1;
     }
@@ -111,12 +99,10 @@ bool PlaylistTableModel::addTrack(const QModelIndex& index, QString location) {
 
     // TODO(rryan) signal an add to the base, don't select
     select(); //Repopulate the data model.
-
     return true;
 }
 
-TrackPointer PlaylistTableModel::getTrack(const QModelIndex& index) const
-{
+TrackPointer PlaylistTableModel::getTrack(const QModelIndex& index) const {
     //FIXME: use position instead of location for playlist tracks?
 
     //const int locationColumnIndex = this->fieldIndex(LIBRARYTABLE_LOCATION);
@@ -125,26 +111,23 @@ TrackPointer PlaylistTableModel::getTrack(const QModelIndex& index) const
     return m_trackDao.getTrack(trackId);
 }
 
-QString PlaylistTableModel::getTrackLocation(const QModelIndex& index) const
-{
+QString PlaylistTableModel::getTrackLocation(const QModelIndex& index) const {
     QString location = index.sibling(index.row(), fieldIndex("location")).data().toString();
     return location;
 }
 
-int PlaylistTableModel::getTrackId(const QModelIndex& index) const
-{
+int PlaylistTableModel::getTrackId(const QModelIndex& index) const {
     if (!index.isValid()) {
         return -1;
     }
-    return index.sibling(index.row(), fieldIndex(LIBRARYTABLE_ID)).data().toInt();
+    return index.sibling(index.row(), fieldIndex(PLAYLISTTRACKSTABLE_TRACKID)).data().toInt();
 }
 
 const QLinkedList<int> PlaylistTableModel::getTrackRows(int trackId) const {
     return BaseSqlTableModel::getTrackRows(trackId);
 }
 
-void PlaylistTableModel::removeTrack(const QModelIndex& index)
-{
+void PlaylistTableModel::removeTrack(const QModelIndex& index) {
     if (m_playlistDao.isPlaylistLocked(m_iPlaylistId)) {
         return;
     }
@@ -182,8 +165,8 @@ void PlaylistTableModel::removeTracks(const QModelIndexList& indices) {
     select();
 }
 
-void PlaylistTableModel::moveTrack(const QModelIndex& sourceIndex, const QModelIndex& destIndex)
-{
+void PlaylistTableModel::moveTrack(const QModelIndex& sourceIndex,
+                                   const QModelIndex& destIndex) {
     //QSqlRecord sourceRecord = this->record(sourceIndex.row());
     //sourceRecord.setValue("position", destIndex.row());
     //this->removeRows(sourceIndex.row(), 1);
@@ -289,8 +272,7 @@ void PlaylistTableModel::moveTrack(const QModelIndex& sourceIndex, const QModelI
     select();
 }
 
-void PlaylistTableModel::shuffleTracks(const QModelIndex& currentIndex)
-{
+void PlaylistTableModel::shuffleTracks(const QModelIndex& currentIndex) {
     int numOfTracks = rowCount();
     int seed = QDateTime::currentDateTime().toTime_t();
     qsrand(seed);
@@ -327,7 +309,8 @@ void PlaylistTableModel::search(const QString& searchText) {
 }
 
 void PlaylistTableModel::slotSearch(const QString& searchText) {
-    BaseSqlTableModel::search(searchText);
+    BaseSqlTableModel::search(searchText,
+                              LibraryTableModel::DEFAULT_LIBRARYFILTER);
 }
 
 const QString PlaylistTableModel::currentSearch() {
@@ -335,7 +318,7 @@ const QString PlaylistTableModel::currentSearch() {
 }
 
 bool PlaylistTableModel::isColumnInternal(int column) {
-    if (column == fieldIndex(LIBRARYTABLE_ID) ||
+    if (column == fieldIndex(PLAYLISTTRACKSTABLE_TRACKID) ||
         column == fieldIndex(LIBRARYTABLE_PLAYED) ||
         column == fieldIndex(LIBRARYTABLE_MIXXXDELETED) ||
         column == fieldIndex(TRACKLOCATIONSTABLE_FSDELETED)) {
@@ -375,13 +358,11 @@ QMimeData* PlaylistTableModel::mimeData(const QModelIndexList &indexes) const {
     return mimeData;
 }
 
-
 QItemDelegate* PlaylistTableModel::delegateForColumn(const int i) {
     return NULL;
 }
 
-TrackModel::CapabilitiesFlags PlaylistTableModel::getCapabilities() const
-{
+TrackModel::CapabilitiesFlags PlaylistTableModel::getCapabilities() const {
     TrackModel::CapabilitiesFlags caps = TRACKMODELCAPS_RECEIVEDROPS | TRACKMODELCAPS_REORDER | TRACKMODELCAPS_ADDTOCRATE | TRACKMODELCAPS_ADDTOPLAYLIST | TRACKMODELCAPS_RELOADMETADATA;
 
     // Only allow Add to AutoDJ if we aren't currently showing the AutoDJ queue.

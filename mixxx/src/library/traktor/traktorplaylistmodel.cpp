@@ -94,17 +94,13 @@ const QString TraktorPlaylistModel::currentSearch() {
 }
 
 bool TraktorPlaylistModel::isColumnInternal(int column) {
-    if (column == fieldIndex(LIBRARYTABLE_ID) ||
-        column == fieldIndex(LIBRARYTABLE_MIXXXDELETED) ||
-        column == fieldIndex(TRACKLOCATIONSTABLE_FSDELETED) ||
-        column == fieldIndex("name") ||
-        column == fieldIndex("track_id"))
+    if (column == fieldIndex("track_id")) {
         return true;
+    }
     return false;
 }
 
 QMimeData* TraktorPlaylistModel::mimeData(const QModelIndexList &indexes) const {
-
    QMimeData *mimeData = new QMimeData();
     QList<QUrl> urls;
 
@@ -142,71 +138,56 @@ Qt::ItemFlags TraktorPlaylistModel::flags(const QModelIndex &index) const
 {
     return readOnlyFlags(index);
 }
-void TraktorPlaylistModel::setPlaylist(QString playlist_path)
-{
+
+void TraktorPlaylistModel::setPlaylist(QString playlist_path) {
     int playlistId = -1;
     QSqlQuery finder_query(m_database);
-    finder_query.prepare("SELECT id from traktor_playlists where name='"+playlist_path+"'");
+    finder_query.prepare(
+        "SELECT id from traktor_playlists where name='"+playlist_path+"'");
 
-    if(finder_query.exec()){
-        while (finder_query.next()) {
-            playlistId = finder_query.value(finder_query.record().indexOf("id")).toInt();
-        }
+    if (!finder_query.exec()) {
+        qDebug() << "SQL Error in TraktorPlaylistModel.cpp: line" << __LINE__
+                 << finder_query.lastError();
     }
-    else
-        qDebug() << "SQL Error in TraktorPlaylistModel.cpp: line" << __LINE__ << " " << finder_query.lastError();
-
+    while (finder_query.next()) {
+        playlistId = finder_query.value(
+            finder_query.record().indexOf("id")).toInt();
+    }
 
     QString playlistID = "TraktorPlaylist_" + QString("%1").arg(playlistId);
-    //Escape the playlist name
+    // Escape the playlist name
     QSqlDriver* driver = m_pTrackCollection->getDatabase().driver();
     QSqlField playlistNameField("name", QVariant::String);
     playlistNameField.setValue(playlistID);
 
     QStringList columns;
-    columns << "traktor_library.id";
+    columns << "track_id";
 
     QSqlQuery query(m_database);
-    query.prepare("CREATE TEMPORARY VIEW IF NOT EXISTS "+ driver->formatValue(playlistNameField) + " AS "
-                  "SELECT "
-                  + columns.join(",") +
-                  " FROM traktor_library "
-                  "INNER JOIN traktor_playlist_tracks "
-                  "ON traktor_playlist_tracks.track_id = traktor_library.id "
-                  "INNER JOIN traktor_playlists "
-                  "ON traktor_playlist_tracks.playlist_id = traktor_playlists.id "
-                  "where traktor_playlists.name='"+playlist_path+"'"
-                  );
-
+    query.prepare("CREATE TEMPORARY VIEW IF NOT EXISTS " +
+                  driver->formatValue(playlistNameField) + " AS "
+                  "SELECT " + columns.join(",") +
+                  " FROM traktor_playlist_tracks "
+                  "WHERE playlist_id = " + QString("%1").arg(playlistId));
 
     if (!query.exec()) {
-        qDebug() << "Error creating temporary view for traktor playlists. TraktorPlaylistModel --> line: " << __LINE__ << " " << query.lastError();
-        qDebug() << "Executed Query: " <<  query.executedQuery();
+        qDebug() << "Error creating temporary view for traktor playlists."
+                 << "TraktorPlaylistModel --> line: " << __LINE__
+                 << query.lastError();
+        qDebug() << "Executed Query: " << query.executedQuery();
         return;
     }
 
-    // Strip out library. and track_locations.
-    for (int i = 0; i < columns.size(); ++i) {
-        columns[i] = columns[i].replace("traktor_library.", "")
-                .replace("traktor_playlist_tracks.", "").replace("traktor_playlists.", "");
-    }
-
-    setTable(playlistID, "id", columns,
+    setTable(playlistID, columns[0], columns,
              m_pTrackCollection->getTrackSource("traktor"));
-
-    //removeColumn(fieldIndex("track_id"));
-    //removeColumn(fieldIndex("name"));
-    //removeColumn(fieldIndex("id"));
     initHeaderData();
-    slotSearch("");
-    select(); //Populate the data model.
+    setSearch("");
 }
 
 bool TraktorPlaylistModel::isColumnHiddenByDefault(int column) {
-    if (column == fieldIndex(LIBRARYTABLE_KEY))
+    if (column == fieldIndex(LIBRARYTABLE_KEY) ||
+        column == fieldIndex(LIBRARYTABLE_BITRATE)) {
         return true;
-    if(column == fieldIndex(LIBRARYTABLE_BITRATE))
-        return true;
-
+    }
     return false;
 }

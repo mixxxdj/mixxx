@@ -91,12 +91,9 @@ const QString ITunesPlaylistModel::currentSearch() {
 }
 
 bool ITunesPlaylistModel::isColumnInternal(int column) {
-    if (column == fieldIndex(LIBRARYTABLE_ID) ||
-        column == fieldIndex(LIBRARYTABLE_MIXXXDELETED) ||
-        column == fieldIndex(TRACKLOCATIONSTABLE_FSDELETED) ||
-        column == fieldIndex("name") ||
-        column == fieldIndex("track_id"))
+    if (column == fieldIndex("track_id")) {
         return true;
+    }
     return false;
 }
 
@@ -141,49 +138,46 @@ Qt::ItemFlags ITunesPlaylistModel::flags(const QModelIndex &index) const {
 void ITunesPlaylistModel::setPlaylist(QString playlist_path) {
     int playlistId = -1;
     QSqlQuery finder_query(m_database);
-    finder_query.prepare("SELECT id from itunes_playlists where name='"+playlist_path+"'");
+    finder_query.prepare(
+        "SELECT id from itunes_playlists where name='"+playlist_path+"'");
 
-    if(finder_query.exec()){
-        while (finder_query.next()) {
-            playlistId = finder_query.value(finder_query.record().indexOf("id")).toInt();
-        }
-    }
-    else {
-        qDebug() << "SQL Error in ITunesPlaylistModel.cpp: line" << __LINE__ << " " << finder_query.lastError();
+    if (!finder_query.exec()) {
+        qDebug() << "SQL Error in ITunesPlaylistModel.cpp: line" << __LINE__
+                 << " " << finder_query.lastError();
+        return;
     }
 
+    while (finder_query.next()) {
+        playlistId = finder_query.value(
+            finder_query.record().indexOf("id")).toInt();
+    }
 
     QString playlistID = "ITunesPlaylist_" + QString("%1").arg(playlistId);
-    //Escape the playlist name
+    // Escape the playlist name
     QSqlDriver* driver = m_pTrackCollection->getDatabase().driver();
     QSqlField playlistNameField("name", QVariant::String);
     playlistNameField.setValue(playlistID);
 
     QStringList columns;
-    columns << "itunes_library.id";
+    columns << "track_id";
 
     QSqlQuery query(m_database);
     query.prepare("CREATE TEMPORARY VIEW IF NOT EXISTS " +
                   driver->formatValue(playlistNameField) + " AS "
                   "SELECT "
                   + columns.join(",") +
-                  " FROM itunes_library "
-                  "INNER JOIN itunes_playlist_tracks "
-                  "ON itunes_playlist_tracks.track_id = itunes_library.id "
-                  "INNER JOIN itunes_playlists "
-                  "ON itunes_playlist_tracks.playlist_id = itunes_playlists.id "
-                  "where itunes_playlists.name='"+playlist_path+"'"
-                  );
+                  " FROM itunes_playlist_tracks "
+                  "WHERE playlist_id = " + QString("%1").arg(playlistId));
 
     if (!query.exec()) {
-        qDebug() << "Error creating temporary view for itunes playlists. ITunesPlaylistModel --> line: " << __LINE__ << " " << query.lastError();
-        qDebug() << "Executed Query: " <<  query.executedQuery();
+        qDebug() << "Error creating temporary view for itunes playlists."
+                 << "ITunesPlaylistModel --> line: " << __LINE__
+                 << query.lastError();
+        qDebug() << "Executed Query: " << query.executedQuery();
         return;
     }
 
-    QStringList tableColumns;
-    tableColumns << "id";
-    setTable(playlistID, "id", tableColumns,
+    setTable(playlistID, columns[0], columns,
              m_pTrackCollection->getTrackSource("itunes"));
     initHeaderData();
     setSearch("");

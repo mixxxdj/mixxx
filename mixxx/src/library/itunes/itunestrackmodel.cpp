@@ -15,9 +15,9 @@ ITunesTrackModel::ITunesTrackModel(QObject* parent,
           m_database(m_pTrackCollection->getDatabase()) {
     connect(this, SIGNAL(doSearch(const QString&)),
             this, SLOT(slotSearch(const QString&)));
-    QStringList tableColumns;
-    tableColumns << "id";
-    setTable("itunes_library", "id", tableColumns,
+    QStringList columns;
+    columns << "id";
+    setTable("itunes_library", columns[0], columns,
              m_pTrackCollection->getTrackSource("itunes"));
     initHeaderData();
 }
@@ -93,10 +93,9 @@ const QString ITunesTrackModel::currentSearch() {
 }
 
 bool ITunesTrackModel::isColumnInternal(int column) {
-    if (column == fieldIndex(LIBRARYTABLE_ID) ||
-        column == fieldIndex(LIBRARYTABLE_MIXXXDELETED) ||
-        column == fieldIndex(TRACKLOCATIONSTABLE_FSDELETED))
+    if (column == fieldIndex(LIBRARYTABLE_ID)) {
         return true;
+    }
     return false;
 }
 

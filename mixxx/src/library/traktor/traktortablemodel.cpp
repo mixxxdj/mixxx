@@ -18,7 +18,7 @@ TraktorTableModel::TraktorTableModel(QObject* parent,
 
     QStringList columns;
     columns << "id";
-    setTable("traktor_library", "id", columns,
+    setTable("traktor_library", columns[0], columns,
              m_pTrackCollection->getTrackSource("traktor"));
     initHeaderData();
 }
@@ -103,10 +103,9 @@ const QString TraktorTableModel::currentSearch() {
 }
 
 bool TraktorTableModel::isColumnInternal(int column) {
-    if (column == fieldIndex(LIBRARYTABLE_ID) ||
-        column == fieldIndex(LIBRARYTABLE_MIXXXDELETED) ||
-        column == fieldIndex(TRACKLOCATIONSTABLE_FSDELETED))
+    if (column == fieldIndex(LIBRARYTABLE_ID)) {
         return true;
+    }
     return false;
 }
 
