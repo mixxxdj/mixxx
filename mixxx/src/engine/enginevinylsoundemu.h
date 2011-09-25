@@ -32,8 +32,7 @@ private:
     float m_fSpeed, m_fOldSpeed;
     float m_fGainFactor;
     
-    static float sm_fNoise[NOISE_BUFFER_SIZE];
-    static bool sm_bNoiseInited;
+    float m_fNoise[NOISE_BUFFER_SIZE];
     int m_iNoisePos;
 };
 

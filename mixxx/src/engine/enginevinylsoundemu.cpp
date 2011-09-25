@@ -27,9 +27,6 @@
  *   these slow speeds.
  */
 
-float EngineVinylSoundEmu::sm_fNoise[NOISE_BUFFER_SIZE];
-bool EngineVinylSoundEmu::sm_bNoiseInited = false;
-
 EngineVinylSoundEmu::EngineVinylSoundEmu(ConfigObject<ConfigValue> * pConfig, const char * group)
 {
     m_pConfig = pConfig;
@@ -38,14 +35,9 @@ EngineVinylSoundEmu::EngineVinylSoundEmu(ConfigObject<ConfigValue> * pConfig, co
     m_fGainFactor = 1.0f;
     m_iNoisePos = 0;
     
-    if (!sm_bNoiseInited)
+    for (int i=0; i<NOISE_BUFFER_SIZE; i++)
     {
-        sm_bNoiseInited = true;
-        for (int i=0; i<NOISE_BUFFER_SIZE; i++)
-        {
-            sm_fNoise[i] = (float)(rand() % 32768) / 32768 - 0.5;
-        }
-        m_iNoisePos = rand() % NOISE_BUFFER_SIZE;
+        m_fNoise[i] = (float)(rand() % 32768) / 32768 - 0.5;
     }
 }
 
@@ -70,7 +62,7 @@ void EngineVinylSoundEmu::process(const CSAMPLE * pIn, const CSAMPLE * pOut, con
         float absCurRate = fabs(curRate);
         float dither = 0;
         if (absCurRate < ditherSpeed) {
-            dither = sm_fNoise[m_iNoisePos];
+            dither = m_fNoise[m_iNoisePos];
             m_iNoisePos = (m_iNoisePos + 1) % NOISE_BUFFER_SIZE;
         }
         
