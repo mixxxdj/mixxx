@@ -17,7 +17,7 @@ RhythmboxTrackModel::RhythmboxTrackModel(QObject* parent,
 
     QStringList columns;
     columns << "id";
-    setTable("rhythmbox_library", "id", columns,
+    setTable("rhythmbox_library", columns[0], columns,
              m_pTrackCollection->getTrackSource("rhythmbox"));
     initHeaderData();
 }
@@ -94,10 +94,9 @@ const QString RhythmboxTrackModel::currentSearch() {
 }
 
 bool RhythmboxTrackModel::isColumnInternal(int column) {
-    if (column == fieldIndex(LIBRARYTABLE_ID) ||
-        column == fieldIndex(LIBRARYTABLE_MIXXXDELETED) ||
-        column == fieldIndex(TRACKLOCATIONSTABLE_FSDELETED))
+    if (column == fieldIndex(LIBRARYTABLE_ID)) {
         return true;
+    }
     return false;
 }
 

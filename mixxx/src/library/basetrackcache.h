@@ -31,7 +31,8 @@ class BaseTrackCache : public QObject {
     BaseTrackCache(TrackCollection* pTrackCollection,
                    QString tableName,
                    QString idColumn,
-                   QList<QString> columns);
+                   QList<QString> columns,
+                   bool isCaching);
     virtual ~BaseTrackCache();
 
     ////////////////////////////////////////////////////////////////////////////
@@ -47,6 +48,7 @@ class BaseTrackCache : public QObject {
                                int sortColumn, Qt::SortOrder sortOrder,
                                QHash<int, int>* trackToIndex);
     virtual void ensureCached(QSet<int> trackIds);
+    virtual void buildIndex();
 
   signals:
     void tracksChanged(QSet<int> trackIds);
@@ -60,7 +62,6 @@ class BaseTrackCache : public QObject {
   private:
     TrackPointer lookupCachedTrack(int trackId) const;
     bool updateIndexWithQuery(QString query);
-    void buildIndex();
     void updateTrackInIndex(int trackId);
     void updateTracksInIndex(QSet<int> trackIds);
     QVariant getTrackValueForColumn(TrackPointer pTrack, int column) const;
@@ -93,6 +94,7 @@ class BaseTrackCache : public QObject {
     QSet<int> m_dirtyTracks;
 
     bool m_bIndexBuilt;
+    bool m_bIsCaching;
     QHash<int, QVector<QVariant> > m_trackInfo;
     TrackCollection* m_pTrackCollection;
     TrackDAO& m_trackDAO;

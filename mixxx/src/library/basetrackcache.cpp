@@ -23,7 +23,8 @@ const QHash<QString, int> buildReverseIndex(const QList<QString> items) {
 BaseTrackCache::BaseTrackCache(TrackCollection* pTrackCollection,
                                QString tableName,
                                QString idColumn,
-                               QList<QString> columns)
+                               QList<QString> columns,
+                               bool isCaching)
         : QObject(pTrackCollection),
           m_tableName(tableName),
           m_idColumn(idColumn),
@@ -31,6 +32,7 @@ BaseTrackCache::BaseTrackCache(TrackCollection* pTrackCollection,
           m_columnsJoined(m_columns.join(",")),
           m_columnIndex(buildReverseIndex(m_columns)),
           m_bIndexBuilt(false),
+          m_bIsCaching(isCaching),
           m_pTrackCollection(pTrackCollection),
           m_trackDAO(m_pTrackCollection->getTrackDAO()),
           m_database(m_pTrackCollection->getDatabase()) {
@@ -46,8 +48,6 @@ BaseTrackCache::BaseTrackCache(TrackCollection* pTrackCollection,
     for (int i = 0; i < m_searchColumns.size(); ++i) {
         m_searchColumnIndices[i] = m_columnIndex.value(m_searchColumns[i], -1);
     }
-
-    buildIndex();
 }
 
 BaseTrackCache::~BaseTrackCache() {
@@ -94,7 +94,10 @@ void BaseTrackCache::ensureCached(QSet<int> trackIds) {
 
 TrackPointer BaseTrackCache::lookupCachedTrack(int trackId) const {
     // Only get the Track from the TrackDAO if it's in the cache
-    return m_trackDAO.getTrack(trackId, true);
+    if (m_bIsCaching) {
+        return m_trackDAO.getTrack(trackId, true);
+    }
+    return TrackPointer();
 }
 
 bool BaseTrackCache::updateIndexWithQuery(QString queryString) {
@@ -240,6 +243,11 @@ QVariant BaseTrackCache::getTrackValueForColumn(TrackPointer pTrack, int column)
 QVariant BaseTrackCache::data(int trackId, int column) const {
     QVariant result;
 
+    if (!m_bIndexBuilt) {
+        qDebug() << this << "ERROR index is not built for" << m_tableName;
+        return result;
+    }
+
     // TODO(rryan): allow as an argument
     TrackPointer pTrack;
 
@@ -294,6 +302,10 @@ void BaseTrackCache::filterAndSort(const QSet<int>& trackIds,
                                    QString extraFilter, int sortColumn,
                                    Qt::SortOrder sortOrder,
                                    QHash<int, int>* trackToIndex) {
+    if (!m_bIndexBuilt) {
+        buildIndex();
+    }
+
     QStringList idStrings;
 
     if (sortColumn < 0 || sortColumn >= columnCount()) {
