@@ -11,16 +11,18 @@
 #include "library/basetrackcache.h"
 #include "library/dao/trackdao.h"
 #include "library/trackcollection.h"
+#include "library/trackmodel.h"
+
 #include "util.h"
 
 // BaseSqlTableModel is a custom-written SQL-backed table which aggressively
 // caches the contents of the table and supports lightweight updates.
-class BaseSqlTableModel : public QAbstractTableModel {
+class BaseSqlTableModel : public QAbstractTableModel, public TrackModel {
     Q_OBJECT
   public:
     BaseSqlTableModel(QObject* pParent,
                       TrackCollection* pTrackCollection,
-                      QSqlDatabase db);
+                      QSqlDatabase db, QString settingsNamespace);
     virtual ~BaseSqlTableModel();
 
     ////////////////////////////////////////////////////////////////////////////
@@ -36,6 +38,7 @@ class BaseSqlTableModel : public QAbstractTableModel {
                                const QVariant &value, int role=Qt::EditRole);
     virtual QVariant headerData(int section, Qt::Orientation orientation,
                                 int role=Qt::DisplayRole) const;
+    virtual QMimeData* mimeData(const QModelIndexList &indexes) const;
 
     ////////////////////////////////////////////////////////////////////////////
     // Other public methods
@@ -43,10 +46,12 @@ class BaseSqlTableModel : public QAbstractTableModel {
 
     virtual void search(const QString& searchText, const QString extraFilter=QString());
     virtual void setSearch(const QString& searchText, const QString extraFilter=QString());
-    virtual QString currentSearch() const;
+    virtual const QString currentSearch() const;
     virtual void setSort(int column, Qt::SortOrder order);
     virtual int fieldIndex(const QString& fieldName) const;
     virtual void select();
+    virtual int getTrackId(const QModelIndex& index) const;
+    virtual QString getTrackLocation(const QModelIndex& index) const;
 
   protected:
     // Returns the row of trackId in this result set. If trackId is not present,

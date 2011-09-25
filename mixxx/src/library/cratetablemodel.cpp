@@ -11,8 +11,9 @@
 #include "mixxxutils.cpp"
 
 CrateTableModel::CrateTableModel(QObject* pParent, TrackCollection* pTrackCollection)
-        : TrackModel(pTrackCollection->getDatabase(), "mixxx.db.model.crate"),
-          BaseSqlTableModel(pParent, pTrackCollection, pTrackCollection->getDatabase()),
+        : BaseSqlTableModel(pParent, pTrackCollection,
+                            pTrackCollection->getDatabase(),
+                            "mixxx.db.model.crate"),
           m_pTrackCollection(pTrackCollection),
           m_iCrateId(-1) {
     connect(this, SIGNAL(doSearch(const QString&)),
@@ -85,26 +86,9 @@ bool CrateTableModel::addTrack(const QModelIndex& index, QString location) {
     }
 }
 
-int CrateTableModel::getTrackId(const QModelIndex& index) const {
-    if (!index.isValid()) {
-        return -1;
-    }
-    return index.sibling(
-        index.row(), fieldIndex(CRATETRACKSTABLE_TRACKID)).data().toInt();
-}
-
-const QLinkedList<int> CrateTableModel::getTrackRows(int trackId) const {
-    return BaseSqlTableModel::getTrackRows(trackId);
-}
-
 TrackPointer CrateTableModel::getTrack(const QModelIndex& index) const {
     int trackId = getTrackId(index);
     return m_pTrackCollection->getTrackDAO().getTrack(trackId);
-}
-
-QString CrateTableModel::getTrackLocation(const QModelIndex& index) const {
-    QString location = index.sibling(index.row(), fieldIndex("location")).data().toString();
-    return location;
 }
 
 void CrateTableModel::removeTracks(const QModelIndexList& indices) {
@@ -154,10 +138,6 @@ void CrateTableModel::slotSearch(const QString& searchText) {
         searchText, LibraryTableModel::DEFAULT_LIBRARYFILTER);
 }
 
-const QString CrateTableModel::currentSearch() {
-    return BaseSqlTableModel::currentSearch();
-}
-
 bool CrateTableModel::isColumnInternal(int column) {
     if (column == fieldIndex(CRATETRACKSTABLE_TRACKID) ||
         column == fieldIndex(LIBRARYTABLE_PLAYED) ||
@@ -173,38 +153,11 @@ bool CrateTableModel::isColumnHiddenByDefault(int column) {
     return false;
 }
 
-
-QMimeData* CrateTableModel::mimeData(const QModelIndexList &indexes) const {
-    QMimeData *mimeData = new QMimeData();
-    QList<QUrl> urls;
-
-    //Ok, so the list of indexes we're given contains separates indexes for
-    //each column, so even if only one row is selected, we'll have like 7 indexes.
-    //We need to only count each row once:
-    QList<int> rows;
-
-    foreach (QModelIndex index, indexes) {
-        if (index.isValid()) {
-            if (!rows.contains(index.row())) {
-                rows.push_back(index.row());
-                QUrl url = QUrl::fromLocalFile(getTrackLocation(index));
-                if (!url.isValid())
-                    qDebug() << "ERROR invalid url\n";
-                else
-                    urls.append(url);
-            }
-        }
-    }
-    mimeData->setUrls(urls);
-    return mimeData;
-}
-
 QItemDelegate* CrateTableModel::delegateForColumn(int i) {
     return NULL;
 }
 
 TrackModel::CapabilitiesFlags CrateTableModel::getCapabilities() const {
-
     CapabilitiesFlags caps =  TRACKMODELCAPS_RECEIVEDROPS  |
                               TRACKMODELCAPS_ADDTOPLAYLIST |
                               TRACKMODELCAPS_ADDTOCRATE    |
