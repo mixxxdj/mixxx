@@ -31,26 +31,7 @@ void CrateTableModel::setCrate(int crateId) {
     QSqlQuery query;
 
     QStringList columns;
-    columns << "library." + LIBRARYTABLE_ID
-            << LIBRARYTABLE_PLAYED
-            << LIBRARYTABLE_TIMESPLAYED
-            << LIBRARYTABLE_ARTIST
-            << LIBRARYTABLE_TITLE
-            << LIBRARYTABLE_ALBUM
-            << LIBRARYTABLE_YEAR
-            << LIBRARYTABLE_DURATION
-            << LIBRARYTABLE_RATING
-            << LIBRARYTABLE_GENRE
-            << LIBRARYTABLE_FILETYPE
-            << LIBRARYTABLE_TRACKNUMBER
-            << LIBRARYTABLE_KEY
-            << LIBRARYTABLE_BPM
-            << LIBRARYTABLE_BITRATE
-            << LIBRARYTABLE_DATETIMEADDED
-            << "track_locations.location"
-            << "track_locations.fs_deleted"
-            << LIBRARYTABLE_COMMENT
-            << LIBRARYTABLE_MIXXXDELETED;
+    columns << "library." + LIBRARYTABLE_ID;
 
     QString queryString = QString("CREATE TEMPORARY VIEW IF NOT EXISTS %1 AS "
                                   "SELECT "
@@ -71,15 +52,12 @@ void CrateTableModel::setCrate(int crateId) {
                  << crateId << ":" << query.executedQuery() << query.lastError();
     }
 
-    // Strip out library. and track_locations.
-    for (int i = 0; i < columns.size(); ++i) {
-        columns[i] = columns[i].replace("library.", "").replace("track_locations.", "");
-    }
-
-    setTable(tableName, columns, LIBRARYTABLE_ID);
+    QStringList tableColumns;
+    tableColumns << LIBRARYTABLE_ID;
+    setTable(tableName, LIBRARYTABLE_ID, tableColumns,
+             m_pTrackCollection->getTrackSource("default"));
     // BaseSqlTableModel sets up the header names
     initHeaderData();
-    initDefaultSearchColumns();
     // Enable the basic filters
     slotSearch("");
     select();
@@ -102,7 +80,7 @@ bool CrateTableModel::addTrack(const QModelIndex& index, QString location) {
     }
 
     if (success) {
-        updateTrackInIndex(iTrackId);
+        // TODO(rryan) just add the track dont select
         select();
         return true;
     } else {

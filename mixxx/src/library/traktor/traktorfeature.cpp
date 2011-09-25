@@ -16,7 +16,28 @@
 
 
 TraktorFeature::TraktorFeature(QObject* parent, TrackCollection* pTrackCollection):
-        LibraryFeature(parent), m_pTrackCollection(pTrackCollection) {
+        LibraryFeature(parent),
+        m_pTrackCollection(pTrackCollection) {
+    QString tableName = "traktor_library";
+    QString idColumn = "id";
+    QStringList columns;
+    columns << "id"
+            << "artist"
+            << "title"
+            << "album"
+            << "year"
+            << "genre"
+            << "tracknumber"
+            << "location"
+            << "comment"
+            << "rating"
+            << "duration"
+            << "bitrate"
+            << "bpm"
+            << "key";
+    pTrackCollection->addTrackSource(QString("traktor"), QSharedPointer<BaseTrackCache>(
+        new BaseTrackCache(m_pTrackCollection, tableName, idColumn, columns)));
+
     m_isActivated = false;
     m_pTraktorTableModel = new TraktorTableModel(this, m_pTrackCollection);
     m_pTraktorPlaylistModel = new TraktorPlaylistModel(this, m_pTrackCollection);

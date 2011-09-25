@@ -8,16 +8,34 @@
 
 #include "library/itunes/itunesfeature.h"
 
-#include "library/itunes/itunestrackmodel.h"
-#include "library/itunes/itunesplaylistmodel.h"
+#include "library/basetrackcache.h"
 #include "library/dao/settingsdao.h"
+#include "library/itunes/itunesplaylistmodel.h"
+#include "library/itunes/itunestrackmodel.h"
 
 const QString ITunesFeature::ITDB_PATH_KEY = "mixxx.itunesfeature.itdbpath";
 
 
 ITunesFeature::ITunesFeature(QObject* parent, TrackCollection* pTrackCollection)
         : LibraryFeature(parent),
-          m_pTrackCollection(pTrackCollection) {
+          m_pTrackCollection(pTrackCollection),
+          m_database(pTrackCollection->getDatabase()) {
+    QString tableName = "itunes_library";
+    QString idColumn = "id";
+    QStringList columns;
+    columns << "id"
+            << "artist"
+            << "album"
+            << "genre"
+            << "location"
+            << "comment"
+            << "duration"
+            << "bitrate"
+            << "bpm"
+            << "rating";
+    pTrackCollection->addTrackSource(QString("itunes"), QSharedPointer<BaseTrackCache>(
+        new BaseTrackCache(m_pTrackCollection, tableName, idColumn, columns)));
+
     m_pITunesTrackModel = new ITunesTrackModel(this, m_pTrackCollection);
     m_pITunesPlaylistModel = new ITunesPlaylistModel(this, m_pTrackCollection);
     m_isActivated = false;

@@ -17,26 +17,7 @@ LibraryTableModel::LibraryTableModel(QObject* parent,
           m_trackDao(pTrackCollection->getTrackDAO()) {
 
     QStringList columns;
-    columns << "library." + LIBRARYTABLE_ID
-            << "library." + LIBRARYTABLE_PLAYED
-            << "library." + LIBRARYTABLE_TIMESPLAYED
-            << "library." + LIBRARYTABLE_ARTIST
-            << "library." + LIBRARYTABLE_TITLE
-            << "library." + LIBRARYTABLE_ALBUM
-            << "library." + LIBRARYTABLE_YEAR
-            << "library." + LIBRARYTABLE_DURATION
-            << "library." + LIBRARYTABLE_RATING
-            << "library." + LIBRARYTABLE_GENRE
-            << "library." + LIBRARYTABLE_FILETYPE
-            << "library." + LIBRARYTABLE_TRACKNUMBER
-            << "library." + LIBRARYTABLE_KEY
-            << "library." + LIBRARYTABLE_DATETIMEADDED
-            << "library." + LIBRARYTABLE_BPM
-            << "library." + LIBRARYTABLE_BITRATE
-            << "track_locations.location"
-            << "track_locations.fs_deleted"
-            << "library." + LIBRARYTABLE_COMMENT
-            << "library." + LIBRARYTABLE_MIXXXDELETED;
+    columns << "library." + LIBRARYTABLE_ID;
 
     QSqlQuery query(pTrackCollection->getDatabase());
     QString queryString = "CREATE TEMPORARY VIEW IF NOT EXISTS library_view AS SELECT "
@@ -50,18 +31,15 @@ LibraryTableModel::LibraryTableModel(QObject* parent,
         qDebug() << query.executedQuery() << query.lastError();
     }
 
-    //Print out any SQL error, if there was one.
+    // Print out any SQL error, if there was one.
     if (query.lastError().isValid()) {
         qDebug() << __FILE__ << __LINE__ << query.lastError();
     }
 
-    // Strip out library. and track_locations.
-    for (int i = 0; i < columns.size(); ++i) {
-        columns[i] = columns[i].replace("library.", "").replace("track_locations.", "");
-    }
-
-    //setTable("library");
-    setTable("library_view", columns, LIBRARYTABLE_ID);
+    QStringList tableColumns;
+    tableColumns << LIBRARYTABLE_ID;
+    setTable("library_view", LIBRARYTABLE_ID, tableColumns,
+             pTrackCollection->getTrackSource("default"));
 
     //Set up a relation which maps our location column (which is a foreign key
     //into the track_locations) table. We tell Qt that our LIBRARYTABLE_LOCATION
@@ -73,8 +51,6 @@ LibraryTableModel::LibraryTableModel(QObject* parent,
 
     // BaseSqlTabelModel will setup the header info
     initHeaderData();
-
-    initDefaultSearchColumns();
 
     //Sets up the table filter so that we don't show "deleted" tracks (only show mixxx_deleted=0).
     slotSearch("");

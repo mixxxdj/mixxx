@@ -10,6 +10,24 @@
 RhythmboxFeature::RhythmboxFeature(QObject* parent, TrackCollection* pTrackCollection)
     : LibraryFeature(parent),
       m_pTrackCollection(pTrackCollection) {
+    QString tableName = "rhythmbox_library";
+    QString idColumn = "id";
+    QStringList columns;
+    columns << "id"
+            << "artist"
+            << "title"
+            << "album"
+            << "year"
+            << "genre"
+            << "tracknumber"
+            << "location"
+            << "comment"
+            << "rating"
+            << "duration"
+            << "bitrate"
+            << "bpm";
+    pTrackCollection->addTrackSource(QString("rhythmbox"), QSharedPointer<BaseTrackCache>(
+        new BaseTrackCache(m_pTrackCollection, tableName, idColumn, columns)));
 
     m_pRhythmboxTrackModel = new RhythmboxTrackModel(this, m_pTrackCollection);
     m_pRhythmboxPlaylistModel = new RhythmboxPlaylistModel(this, m_pTrackCollection);

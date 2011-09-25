@@ -12,30 +12,15 @@ TraktorTableModel::TraktorTableModel(QObject* parent,
                      "mixxx.db.model.traktor_tablemodel"),
           BaseSqlTableModel(parent, pTrackCollection, pTrackCollection->getDatabase()),
           m_pTrackCollection(pTrackCollection),
-          m_database(m_pTrackCollection->getDatabase())
-
-{
-    connect(this, SIGNAL(doSearch(const QString&)), this, SLOT(slotSearch(const QString&)));
+          m_database(m_pTrackCollection->getDatabase()) {
+    connect(this, SIGNAL(doSearch(const QString&)), this,
+            SLOT(slotSearch(const QString&)));
 
     QStringList columns;
-    columns << "id"
-            << "artist"
-            << "title"
-            << "album"
-            << "year"
-            << "genre"
-            << "tracknumber"
-            << "location"
-            << "comment"
-            << "rating"
-            << "duration"
-            << "bitrate"
-            << "bpm"
-            << "key";
-    setCaching(false);
-    setTable("traktor_library", columns, "id");
+    columns << "id";
+    setTable("traktor_library", "id", columns,
+             m_pTrackCollection->getTrackSource("traktor"));
     initHeaderData();
-    initDefaultSearchColumns();
 }
 
 TraktorTableModel::~TraktorTableModel() {
