@@ -372,9 +372,6 @@ int BaseSqlTableModel::columnCount(const QModelIndex& parent) const {
     // Subtract one from trackSource::columnCount to ignore the id column
     int count = m_tableColumns.size() +
             (m_trackSource ? m_trackSource->columnCount() - 1: 0);
-    if (sDebug) {
-        qDebug() << "columnCount()" << parent << count;
-    }
     return count;
 }
 
