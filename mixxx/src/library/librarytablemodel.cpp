@@ -4,49 +4,39 @@
 
 #include "library/trackcollection.h"
 #include "library/librarytablemodel.h"
+#include "library/queryutil.h"
 
 #include "mixxxutils.cpp"
 
-const QString LibraryTableModel::DEFAULT_LIBRARYFILTER = "mixxx_deleted=0 AND fs_deleted=0";
+const QString LibraryTableModel::DEFAULT_LIBRARYFILTER =
+        "mixxx_deleted=0 AND fs_deleted=0";
 
 LibraryTableModel::LibraryTableModel(QObject* parent,
                                      TrackCollection* pTrackCollection)
         : TrackModel(pTrackCollection->getDatabase(),
                      "mixxx.db.model.library"),
-          BaseSqlTableModel(parent, pTrackCollection, pTrackCollection->getDatabase()),
+          BaseSqlTableModel(parent, pTrackCollection,
+                            pTrackCollection->getDatabase()),
           m_trackDao(pTrackCollection->getTrackDAO()) {
-
     QStringList columns;
     columns << "library." + LIBRARYTABLE_ID;
 
     QSqlQuery query(pTrackCollection->getDatabase());
-    QString queryString = "CREATE TEMPORARY VIEW IF NOT EXISTS library_view AS SELECT "
-            + columns.join(",") +
+    QString queryString = "CREATE TEMPORARY VIEW IF NOT EXISTS library_view AS "
+            "SELECT " + columns.join(",") +
             " FROM library INNER JOIN track_locations "
             "ON library.location = track_locations.id "
             "WHERE (" + LibraryTableModel::DEFAULT_LIBRARYFILTER + ")";
     qDebug() << "Creating View:" << queryString;
     query.prepare(queryString);
     if (!query.exec()) {
-        qDebug() << query.executedQuery() << query.lastError();
-    }
-
-    // Print out any SQL error, if there was one.
-    if (query.lastError().isValid()) {
-        qDebug() << __FILE__ << __LINE__ << query.lastError();
+        LOG_FAILED_QUERY(query);
     }
 
     QStringList tableColumns;
     tableColumns << LIBRARYTABLE_ID;
     setTable("library_view", LIBRARYTABLE_ID, tableColumns,
              pTrackCollection->getTrackSource("default"));
-
-    //Set up a relation which maps our location column (which is a foreign key
-    //into the track_locations) table. We tell Qt that our LIBRARYTABLE_LOCATION
-    //column maps into the row of the track_locations table that has the id
-    //equal to our location col. It then grabs the "location" col from that row
-    //and shows it...
-    //setRelation(fieldIndex(LIBRARYTABLE_LOCATION), QSqlRelation("track_locations", "id", "location"));
 
     // BaseSqlTabelModel will setup the header info
     initHeaderData();
@@ -89,14 +79,12 @@ bool LibraryTableModel::addTrack(const QModelIndex& index, QString location)
     return false;
 }
 
-TrackPointer LibraryTableModel::getTrack(const QModelIndex& index) const
-{
+TrackPointer LibraryTableModel::getTrack(const QModelIndex& index) const {
     int trackId = getTrackId(index);
     return m_trackDao.getTrack(trackId);
 }
 
-QString LibraryTableModel::getTrackLocation(const QModelIndex& index) const
-{
+QString LibraryTableModel::getTrackLocation(const QModelIndex& index) const {
     const int locationColumnIndex = fieldIndex(LIBRARYTABLE_LOCATION);
     QString location = index.sibling(index.row(), locationColumnIndex).data().toString();
     return location;
@@ -123,20 +111,23 @@ void LibraryTableModel::removeTracks(const QModelIndexList& indices) {
 
     m_trackDao.removeTracks(trackIds);
 
+    // TODO(rryan) : do not select, instead route event to BTC and notify from
+    // there.
     select(); //Repopulate the data model.
 }
 
-void LibraryTableModel::removeTrack(const QModelIndex& index)
-{
+void LibraryTableModel::removeTrack(const QModelIndex& index) {
     int trackId = index.sibling(index.row(), fieldIndex(LIBRARYTABLE_ID)).data().toInt();
     m_trackDao.removeTrack(trackId);
+    // TODO(rryan) : do not select, instead route event to BTC and notify from
+    // there.
     select(); //Repopulate the data model.
 }
 
-void LibraryTableModel::moveTrack(const QModelIndex& sourceIndex, const QModelIndex& destIndex)
-{
-    //Does nothing because we don't support reordering tracks in the library,
-    //and getCapabilities() reports that.
+void LibraryTableModel::moveTrack(const QModelIndex& sourceIndex,
+                                  const QModelIndex& destIndex) {
+    // Does nothing because we don't support reordering tracks in the library,
+    // and getCapabilities() reports that.
 }
 
 void LibraryTableModel::search(const QString& searchText) {
@@ -151,7 +142,6 @@ void LibraryTableModel::slotSearch(const QString& searchText) {
 }
 
 const QString LibraryTableModel::currentSearch() {
-    //qDebug() << "LibraryTableModel::currentSearch(): " << m_currentSearch;
     return BaseSqlTableModel::currentSearch();
 }
 
@@ -193,13 +183,13 @@ QMimeData* LibraryTableModel::mimeData(const QModelIndexList &indexes) const {
 
     foreach (QModelIndex index, indexes) {
         if (index.isValid()) {
-            if (!rows.contains(index.row())) //Only add a URL once per row.
-            {
+            // Only add a URL once per row.
+            if (!rows.contains(index.row())) {
                 rows.push_back(index.row());
                 QUrl url = QUrl::fromLocalFile(getTrackLocation(index));
-                if (!url.isValid())
+                if (!url.isValid()) {
                     qDebug() << "ERROR invalid url\n";
-                else {
+                } else {
                     urls.append(url);
                 }
             }
@@ -209,22 +199,8 @@ QMimeData* LibraryTableModel::mimeData(const QModelIndexList &indexes) const {
     return mimeData;
 }
 
-TrackModel::CapabilitiesFlags LibraryTableModel::getCapabilities() const
-{
+TrackModel::CapabilitiesFlags LibraryTableModel::getCapabilities() const {
     return TRACKMODELCAPS_RECEIVEDROPS | TRACKMODELCAPS_ADDTOPLAYLIST |
-            TRACKMODELCAPS_ADDTOCRATE | TRACKMODELCAPS_ADDTOAUTODJ | TRACKMODELCAPS_RELOADMETADATA;
+            TRACKMODELCAPS_ADDTOCRATE | TRACKMODELCAPS_ADDTOAUTODJ |
+            TRACKMODELCAPS_RELOADMETADATA;
 }
-
-/*
-void LibraryTableModel::notifyBeginInsertRow(int row)
-{
-
-    QModelIndex foo = index(0, 0);
-    beginInsertRows(foo, row, row);
-}
-
-void LibraryTableModel::notifyEndInsertRow(int row)
-{
-    endInsertRows();
-}
-*/

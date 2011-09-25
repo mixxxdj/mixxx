@@ -55,7 +55,7 @@ const QString TRACKLOCATIONSTABLE_NEEDSVERIFICATION = "needs_verification";
 
 
 class TrackDAO : public QObject, public virtual DAO {
-Q_OBJECT
+    Q_OBJECT
   public:
     /** The 'config object' is necessary because users decide ID3 tags get
      * synchronized on track metadata change **/
