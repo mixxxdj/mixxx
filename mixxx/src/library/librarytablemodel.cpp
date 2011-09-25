@@ -12,11 +12,11 @@ const QString LibraryTableModel::DEFAULT_LIBRARYFILTER =
         "mixxx_deleted=0 AND fs_deleted=0";
 
 LibraryTableModel::LibraryTableModel(QObject* parent,
-                                     TrackCollection* pTrackCollection)
-        : TrackModel(pTrackCollection->getDatabase(),
-                     "mixxx.db.model.library"),
-          BaseSqlTableModel(parent, pTrackCollection,
-                            pTrackCollection->getDatabase()),
+                                     TrackCollection* pTrackCollection,
+                                     QString settingsNamespace)
+        : BaseSqlTableModel(parent, pTrackCollection,
+                            pTrackCollection->getDatabase(),
+                            settingsNamespace),
           m_trackDao(pTrackCollection->getTrackDAO()) {
     QStringList columns;
     columns << "library." + LIBRARYTABLE_ID;
@@ -49,16 +49,10 @@ LibraryTableModel::LibraryTableModel(QObject* parent,
             this, SLOT(slotSearch(const QString&)));
 }
 
-LibraryTableModel::~LibraryTableModel()
-{
-
+LibraryTableModel::~LibraryTableModel() {
 }
 
-bool LibraryTableModel::addTrack(const QModelIndex& index, QString location)
-{
-    //Note: The model index is ignored when adding to the library track collection.
-    //      The position in the library is determined by whatever it's being sorted by,
-    //      and there's no arbitrary "unsorted" view.
+bool LibraryTableModel::addTrack(const QModelIndex& index, QString location) {
     QFileInfo fileInfo(location);
 
     int trackId = m_trackDao.getTrackId(fileInfo.absoluteFilePath());
@@ -67,12 +61,14 @@ bool LibraryTableModel::addTrack(const QModelIndex& index, QString location)
         //not deleted. (This lets the user unremove a track from the library
         //by dragging-and-dropping it back into the library view.)
         m_trackDao.unremoveTrack(trackId);
+        // TODO(rryan) do not select(), receive signal update from BTC instead
         select();
         return true;
     }
 
     trackId = m_trackDao.addTrack(fileInfo);
     if (trackId >= 0) {
+        // TODO(rryan) do not select(), receive signal update from BTC instead
         select(); //Repopulate the data model.
         return true;
     }
@@ -84,28 +80,11 @@ TrackPointer LibraryTableModel::getTrack(const QModelIndex& index) const {
     return m_trackDao.getTrack(trackId);
 }
 
-QString LibraryTableModel::getTrackLocation(const QModelIndex& index) const {
-    const int locationColumnIndex = fieldIndex(LIBRARYTABLE_LOCATION);
-    QString location = index.sibling(index.row(), locationColumnIndex).data().toString();
-    return location;
-}
-
-int LibraryTableModel::getTrackId(const QModelIndex& index) const {
-    if (!index.isValid()) {
-        return -1;
-    }
-    return index.sibling(index.row(), fieldIndex(LIBRARYTABLE_ID)).data().toInt();
-}
-
-const QLinkedList<int> LibraryTableModel::getTrackRows(int trackId) const {
-    return BaseSqlTableModel::getTrackRows(trackId);
-}
-
 void LibraryTableModel::removeTracks(const QModelIndexList& indices) {
     QList<int> trackIds;
 
     foreach (QModelIndex index, indices) {
-        int trackId = index.sibling(index.row(), fieldIndex(LIBRARYTABLE_ID)).data().toInt();
+        int trackId = getTrackId(index);
         trackIds.append(trackId);
     }
 
@@ -117,7 +96,7 @@ void LibraryTableModel::removeTracks(const QModelIndexList& indices) {
 }
 
 void LibraryTableModel::removeTrack(const QModelIndex& index) {
-    int trackId = index.sibling(index.row(), fieldIndex(LIBRARYTABLE_ID)).data().toInt();
+    int trackId = getTrackId(index);
     m_trackDao.removeTrack(trackId);
     // TODO(rryan) : do not select, instead route event to BTC and notify from
     // there.
@@ -139,10 +118,6 @@ void LibraryTableModel::search(const QString& searchText) {
 void LibraryTableModel::slotSearch(const QString& searchText) {
     // qDebug() << "slotSearch()" << searchText << QThread::currentThread();
     BaseSqlTableModel::search(searchText);
-}
-
-const QString LibraryTableModel::currentSearch() {
-    return BaseSqlTableModel::currentSearch();
 }
 
 bool LibraryTableModel::isColumnInternal(int column) {
@@ -170,33 +145,6 @@ bool LibraryTableModel::isColumnHiddenByDefault(int column) {
 
 QItemDelegate* LibraryTableModel::delegateForColumn(const int i) {
     return NULL;
-}
-
-QMimeData* LibraryTableModel::mimeData(const QModelIndexList &indexes) const {
-    QMimeData *mimeData = new QMimeData();
-    QList<QUrl> urls;
-
-    //Ok, so the list of indexes we're given contains separates indexes for
-    //each column, so even if only one row is selected, we'll have like 7 indexes.
-    //We need to only count each row once:
-    QList<int> rows;
-
-    foreach (QModelIndex index, indexes) {
-        if (index.isValid()) {
-            // Only add a URL once per row.
-            if (!rows.contains(index.row())) {
-                rows.push_back(index.row());
-                QUrl url = QUrl::fromLocalFile(getTrackLocation(index));
-                if (!url.isValid()) {
-                    qDebug() << "ERROR invalid url\n";
-                } else {
-                    urls.append(url);
-                }
-            }
-        }
-    }
-    mimeData->setUrls(urls);
-    return mimeData;
 }
 
 TrackModel::CapabilitiesFlags LibraryTableModel::getCapabilities() const {

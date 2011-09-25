@@ -14,8 +14,10 @@ const bool sDebug = false;
 
 BaseSqlTableModel::BaseSqlTableModel(QObject* pParent,
                                      TrackCollection* pTrackCollection,
-                                     QSqlDatabase db)
+                                     QSqlDatabase db,
+                                     QString settingsNamespace)
         :  QAbstractTableModel(pParent),
+           TrackModel(db, settingsNamespace),
            m_pTrackCollection(pTrackCollection),
            m_trackDAO(m_pTrackCollection->getTrackDAO()),
            m_database(db) {
@@ -298,7 +300,7 @@ void BaseSqlTableModel::setTable(const QString& tableName,
     m_bDirty = true;
 }
 
-QString BaseSqlTableModel::currentSearch() const {
+const QString BaseSqlTableModel::currentSearch() const {
     return m_currentSearch;
 }
 
@@ -542,6 +544,22 @@ const QLinkedList<int> BaseSqlTableModel::getTrackRows(int trackId) const {
     return QLinkedList<int>();
 }
 
+int BaseSqlTableModel::getTrackId(const QModelIndex& index) const {
+    if (!index.isValid()) {
+        return -1;
+    }
+    return index.sibling(index.row(), fieldIndex(m_idColumn)).data().toInt();
+}
+
+QString BaseSqlTableModel::getTrackLocation(const QModelIndex& index) const {
+    if (!index.isValid()) {
+        return "";
+    }
+    QString location = index.sibling(
+        index.row(), fieldIndex("location")).data().toString();
+    return location;
+}
+
 void BaseSqlTableModel::tracksChanged(QSet<int> trackIds) {
     if (sDebug) {
         qDebug() << this << "trackChanged" << trackIds.size();
@@ -639,3 +657,27 @@ QVariant BaseSqlTableModel::getBaseValue(const QModelIndex& index, int role) con
     return QVariant();
 }
 
+QMimeData* BaseSqlTableModel::mimeData(const QModelIndexList &indexes) const {
+    QMimeData *mimeData = new QMimeData();
+    QList<QUrl> urls;
+
+    // The list of indexes we're given contains separates indexes for each
+    // column, so even if only one row is selected, we'll have columnCount()
+    // indices.  We need to only count each row once:
+    QSet<int> rows;
+
+    foreach (QModelIndex index, indexes) {
+        if (!index.isValid() || rows.contains(index.row())) {
+            continue;
+        }
+        rows.insert(index.row());
+        QUrl url = QUrl::fromLocalFile(getTrackLocation(index));
+        if (!url.isValid()) {
+            qDebug() << this << "ERROR: invalid url" << url;
+            continue;
+        }
+        urls.append(url);
+    }
+    mimeData->setUrls(urls);
+    return mimeData;
+}

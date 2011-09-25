@@ -9,10 +9,9 @@
 
 PlaylistTableModel::PlaylistTableModel(QObject* parent,
                                        TrackCollection* pTrackCollection)
-        : TrackModel(pTrackCollection->getDatabase(),
-                     "mixxx.db.model.playlist"),
-          BaseSqlTableModel(parent, pTrackCollection,
-                            pTrackCollection->getDatabase()),
+        : BaseSqlTableModel(parent, pTrackCollection,
+                            pTrackCollection->getDatabase(),
+                            "mixxx.db.model.playlist"),
           m_pTrackCollection(pTrackCollection),
           m_playlistDao(m_pTrackCollection->getPlaylistDAO()),
           m_trackDao(m_pTrackCollection->getTrackDAO()),
@@ -109,22 +108,6 @@ TrackPointer PlaylistTableModel::getTrack(const QModelIndex& index) const {
     //QString location = index.sibling(index.row(), locationColumnIndex).data().toString();
     int trackId = getTrackId(index);
     return m_trackDao.getTrack(trackId);
-}
-
-QString PlaylistTableModel::getTrackLocation(const QModelIndex& index) const {
-    QString location = index.sibling(index.row(), fieldIndex("location")).data().toString();
-    return location;
-}
-
-int PlaylistTableModel::getTrackId(const QModelIndex& index) const {
-    if (!index.isValid()) {
-        return -1;
-    }
-    return index.sibling(index.row(), fieldIndex(PLAYLISTTRACKSTABLE_TRACKID)).data().toInt();
-}
-
-const QLinkedList<int> PlaylistTableModel::getTrackRows(int trackId) const {
-    return BaseSqlTableModel::getTrackRows(trackId);
 }
 
 void PlaylistTableModel::removeTrack(const QModelIndex& index) {
@@ -309,12 +292,8 @@ void PlaylistTableModel::search(const QString& searchText) {
 }
 
 void PlaylistTableModel::slotSearch(const QString& searchText) {
-    BaseSqlTableModel::search(searchText,
-                              LibraryTableModel::DEFAULT_LIBRARYFILTER);
-}
-
-const QString PlaylistTableModel::currentSearch() {
-    return BaseSqlTableModel::currentSearch();
+    BaseSqlTableModel::search(
+        searchText, LibraryTableModel::DEFAULT_LIBRARYFILTER);
 }
 
 bool PlaylistTableModel::isColumnInternal(int column) {
@@ -333,46 +312,25 @@ bool PlaylistTableModel::isColumnHiddenByDefault(int column) {
     return false;
 }
 
-QMimeData* PlaylistTableModel::mimeData(const QModelIndexList &indexes) const {
-    QMimeData *mimeData = new QMimeData();
-    QList<QUrl> urls;
-
-    //Ok, so the list of indexes we're given contains separates indexes for
-    //each column, so even if only one row is selected, we'll have like 7 indexes.
-    //We need to only count each row once:
-    QList<int> rows;
-
-    foreach (QModelIndex index, indexes) {
-        if (index.isValid()) {
-            if (!rows.contains(index.row())) {
-                rows.push_back(index.row());
-                QUrl url = QUrl::fromLocalFile(getTrackLocation(index));
-                if (!url.isValid())
-                    qDebug() << "ERROR invalid url\n";
-                else
-                    urls.append(url);
-            }
-        }
-    }
-    mimeData->setUrls(urls);
-    return mimeData;
-}
-
 QItemDelegate* PlaylistTableModel::delegateForColumn(const int i) {
     return NULL;
 }
 
 TrackModel::CapabilitiesFlags PlaylistTableModel::getCapabilities() const {
-    TrackModel::CapabilitiesFlags caps = TRACKMODELCAPS_RECEIVEDROPS | TRACKMODELCAPS_REORDER | TRACKMODELCAPS_ADDTOCRATE | TRACKMODELCAPS_ADDTOPLAYLIST | TRACKMODELCAPS_RELOADMETADATA;
+    TrackModel::CapabilitiesFlags caps = TRACKMODELCAPS_RECEIVEDROPS |
+            TRACKMODELCAPS_REORDER | TRACKMODELCAPS_ADDTOCRATE |
+            TRACKMODELCAPS_ADDTOPLAYLIST | TRACKMODELCAPS_RELOADMETADATA;
 
     // Only allow Add to AutoDJ if we aren't currently showing the AutoDJ queue.
-    if (m_iPlaylistId != m_playlistDao.getPlaylistIdFromName(AUTODJ_TABLE))
+    if (m_iPlaylistId != m_playlistDao.getPlaylistIdFromName(AUTODJ_TABLE)) {
         caps |= TRACKMODELCAPS_ADDTOAUTODJ;
+    }
 
     bool locked = m_playlistDao.isPlaylistLocked(m_iPlaylistId);
 
-    if (locked)
+    if (locked) {
         caps |= TRACKMODELCAPS_LOCKED;
+    }
 
     return caps;
 }

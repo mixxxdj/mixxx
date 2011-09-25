@@ -1,41 +1,40 @@
 #include <QtCore>
 #include <QtGui>
 #include <QtSql>
+
 #include "library/trackcollection.h"
 #include "library/traktor/traktorplaylistmodel.h"
 
-#include "mixxxutils.cpp"
-
 TraktorPlaylistModel::TraktorPlaylistModel(QObject* parent,
                                        TrackCollection* pTrackCollection)
-        : TrackModel(pTrackCollection->getDatabase(),
-                     "mixxx.db.model.traktor.playlistmodel"),
-          BaseSqlTableModel(parent, pTrackCollection, pTrackCollection->getDatabase()),
+        : BaseSqlTableModel(parent, pTrackCollection,
+                            pTrackCollection->getDatabase(),
+                            "mixxx.db.model.traktor.playlistmodel"),
           m_pTrackCollection(pTrackCollection),
-          m_database(m_pTrackCollection->getDatabase())
-{
-    connect(this, SIGNAL(doSearch(const QString&)), this, SLOT(slotSearch(const QString&)));
+          m_database(m_pTrackCollection->getDatabase()) {
+    connect(this, SIGNAL(doSearch(const QString&)),
+            this, SLOT(slotSearch(const QString&)));
 }
 
 TraktorPlaylistModel::~TraktorPlaylistModel() {
 }
 
-bool TraktorPlaylistModel::addTrack(const QModelIndex& index, QString location)
-{
-    return false;
-}
-
-TrackPointer TraktorPlaylistModel::getTrack(const QModelIndex& index) const
-{
+TrackPointer TraktorPlaylistModel::getTrack(const QModelIndex& index) const {
     //qDebug() << "getTraktorTrack";
-    QString artist = index.sibling(index.row(), fieldIndex("artist")).data().toString();
-    QString title = index.sibling(index.row(), fieldIndex("title")).data().toString();
-    QString album = index.sibling(index.row(), fieldIndex("album")).data().toString();
-    QString year = index.sibling(index.row(), fieldIndex("year")).data().toString();
-    QString genre = index.sibling(index.row(), fieldIndex("genre")).data().toString();
-    float bpm = index.sibling(index.row(), fieldIndex("bpm")).data().toString().toFloat();
-
-    QString location = index.sibling(index.row(), fieldIndex("location")).data().toString();
+    QString artist = index.sibling(
+        index.row(), fieldIndex("artist")).data().toString();
+    QString title = index.sibling(
+        index.row(), fieldIndex("title")).data().toString();
+    QString album = index.sibling(
+        index.row(), fieldIndex("album")).data().toString();
+    QString year = index.sibling(
+        index.row(), fieldIndex("year")).data().toString();
+    QString genre = index.sibling(
+        index.row(), fieldIndex("genre")).data().toString();
+    float bpm = index.sibling(
+        index.row(), fieldIndex("bpm")).data().toString().toFloat();
+    QString location = index.sibling(
+        index.row(), fieldIndex("location")).data().toString();
 
     TrackInfoObject* pTrack = new TrackInfoObject(location);
     pTrack->setArtist(artist);
@@ -48,37 +47,6 @@ TrackPointer TraktorPlaylistModel::getTrack(const QModelIndex& index) const
     return TrackPointer(pTrack, &QObject::deleteLater);
 }
 
-QString TraktorPlaylistModel::getTrackLocation(const QModelIndex& index) const
-{
-    QString location = index.sibling(index.row(), fieldIndex("location")).data().toString();
-    return location;
-}
-
-int TraktorPlaylistModel::getTrackId(const QModelIndex& index) const {
-    if (!index.isValid()) {
-        return -1;
-    }
-    return index.sibling(index.row(), fieldIndex("id")).data().toInt();
-}
-
-const QLinkedList<int> TraktorPlaylistModel::getTrackRows(int trackId) const {
-    return BaseSqlTableModel::getTrackRows(trackId);
-}
-
-void TraktorPlaylistModel::removeTrack(const QModelIndex& index)
-{
-
-}
-
-void TraktorPlaylistModel::removeTracks(const QModelIndexList& indices) {
-
-}
-
-void TraktorPlaylistModel::moveTrack(const QModelIndex& sourceIndex, const QModelIndex& destIndex)
-{
-
-}
-
 void TraktorPlaylistModel::search(const QString& searchText) {
     // qDebug() << "TraktorPlaylistModel::search()" << searchText
     //          << QThread::currentThread();
@@ -89,10 +57,6 @@ void TraktorPlaylistModel::slotSearch(const QString& searchText) {
     BaseSqlTableModel::search(searchText);
 }
 
-const QString TraktorPlaylistModel::currentSearch() {
-    return BaseSqlTableModel::currentSearch();
-}
-
 bool TraktorPlaylistModel::isColumnInternal(int column) {
     if (column == fieldIndex("track_id")) {
         return true;
@@ -100,42 +64,7 @@ bool TraktorPlaylistModel::isColumnInternal(int column) {
     return false;
 }
 
-QMimeData* TraktorPlaylistModel::mimeData(const QModelIndexList &indexes) const {
-   QMimeData *mimeData = new QMimeData();
-    QList<QUrl> urls;
-
-    //Ok, so the list of indexes we're given contains separates indexes for
-    //each column, so even if only one row is selected, we'll have like 7 indexes.
-    //We need to only count each row once:
-    QList<int> rows;
-
-    foreach (QModelIndex index, indexes) {
-        if (index.isValid()) {
-            if (!rows.contains(index.row())) {
-                rows.push_back(index.row());
-                QUrl url = QUrl::fromLocalFile(getTrackLocation(index));
-                if (!url.isValid())
-                    qDebug() << "ERROR invalid url\n";
-                else
-                    urls.append(url);
-            }
-        }
-    }
-    mimeData->setUrls(urls);
-    return mimeData;
-}
-
-QItemDelegate* TraktorPlaylistModel::delegateForColumn(const int i) {
-    return NULL;
-}
-
-TrackModel::CapabilitiesFlags TraktorPlaylistModel::getCapabilities() const
-{
-    return TRACKMODELCAPS_NONE;
-}
-
-Qt::ItemFlags TraktorPlaylistModel::flags(const QModelIndex &index) const
-{
+Qt::ItemFlags TraktorPlaylistModel::flags(const QModelIndex &index) const {
     return readOnlyFlags(index);
 }
 

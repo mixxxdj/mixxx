@@ -1,40 +1,40 @@
 #include <QtCore>
 #include <QtGui>
 #include <QtSql>
+
 #include "library/trackcollection.h"
 #include "library/itunes/itunesplaylistmodel.h"
 
-#include "mixxxutils.cpp"
-
 ITunesPlaylistModel::ITunesPlaylistModel(QObject* parent,
                                          TrackCollection* pTrackCollection)
-        : TrackModel(pTrackCollection->getDatabase(),
-                     "mixxx.db.model.itunes_playlist"),
-          BaseSqlTableModel(parent, pTrackCollection, pTrackCollection->getDatabase()),
+        : BaseSqlTableModel(parent, pTrackCollection,
+                            pTrackCollection->getDatabase(),
+                            "mixxx.db.model.itunes_playlist"),
           m_pTrackCollection(pTrackCollection),
           m_database(m_pTrackCollection->getDatabase()) {
-    connect(this, SIGNAL(doSearch(const QString&)), this, SLOT(slotSearch(const QString&)));
+    connect(this, SIGNAL(doSearch(const QString&)),
+            this, SLOT(slotSearch(const QString&)));
 }
 
 ITunesPlaylistModel::~ITunesPlaylistModel() {
 }
 
-bool ITunesPlaylistModel::addTrack(const QModelIndex& index, QString location)
-{
-
-    return false;
-}
-
 TrackPointer ITunesPlaylistModel::getTrack(const QModelIndex& index) const
 {
-    QString artist = index.sibling(index.row(), fieldIndex("artist")).data().toString();
-    QString title = index.sibling(index.row(), fieldIndex("title")).data().toString();
-    QString album = index.sibling(index.row(), fieldIndex("album")).data().toString();
-    QString year = index.sibling(index.row(), fieldIndex("year")).data().toString();
-    QString genre = index.sibling(index.row(), fieldIndex("genre")).data().toString();
-    float bpm = index.sibling(index.row(), fieldIndex("bpm")).data().toString().toFloat();
-
-    QString location = index.sibling(index.row(), fieldIndex("location")).data().toString();
+    QString artist = index.sibling(
+        index.row(), fieldIndex("artist")).data().toString();
+    QString title = index.sibling(
+        index.row(), fieldIndex("title")).data().toString();
+    QString album = index.sibling(
+        index.row(), fieldIndex("album")).data().toString();
+    QString year = index.sibling(
+        index.row(), fieldIndex("year")).data().toString();
+    QString genre = index.sibling(
+        index.row(), fieldIndex("genre")).data().toString();
+    float bpm = index.sibling(
+        index.row(), fieldIndex("bpm")).data().toString().toFloat();
+    QString location = index.sibling(
+        index.row(), fieldIndex("location")).data().toString();
 
     TrackInfoObject* pTrack = new TrackInfoObject(location);
     pTrack->setArtist(artist);
@@ -47,35 +47,6 @@ TrackPointer ITunesPlaylistModel::getTrack(const QModelIndex& index) const
     return TrackPointer(pTrack, &QObject::deleteLater);
 }
 
-QString ITunesPlaylistModel::getTrackLocation(const QModelIndex& index) const {
-    QString location = index.sibling(index.row(), fieldIndex("location")).data().toString();
-    return location;
-}
-
-int ITunesPlaylistModel::getTrackId(const QModelIndex& index) const {
-    if (!index.isValid()) {
-        return -1;
-    }
-    return index.sibling(index.row(), fieldIndex("id")).data().toInt();
-}
-
-const QLinkedList<int> ITunesPlaylistModel::getTrackRows(int trackId) const
-{
-    return BaseSqlTableModel::getTrackRows(trackId);
-}
-
-void ITunesPlaylistModel::removeTrack(const QModelIndex& index) {
-
-}
-
-void ITunesPlaylistModel::removeTracks(const QModelIndexList& indices) {
-
-}
-
-void ITunesPlaylistModel::moveTrack(const QModelIndex& sourceIndex, const QModelIndex& destIndex) {
-
-}
-
 void ITunesPlaylistModel::search(const QString& searchText) {
     // qDebug() << "ITunesPlaylistModel::search()" << searchText
     //          << QThread::currentThread();
@@ -86,49 +57,11 @@ void ITunesPlaylistModel::slotSearch(const QString& searchText) {
     BaseSqlTableModel::search(searchText);
 }
 
-const QString ITunesPlaylistModel::currentSearch() {
-    return BaseSqlTableModel::currentSearch();
-}
-
 bool ITunesPlaylistModel::isColumnInternal(int column) {
     if (column == fieldIndex("track_id")) {
         return true;
     }
     return false;
-}
-
-QMimeData* ITunesPlaylistModel::mimeData(const QModelIndexList &indexes) const {
-    QMimeData *mimeData = new QMimeData();
-    QList<QUrl> urls;
-
-    //Ok, so the list of indexes we're given contains separates indexes for
-    //each column, so even if only one row is selected, we'll have like 7 indexes.
-    //We need to only count each row once:
-    QList<int> rows;
-
-    foreach (QModelIndex index, indexes) {
-        if (index.isValid()) {
-            if (!rows.contains(index.row())) {
-                rows.push_back(index.row());
-                QUrl url = QUrl::fromLocalFile(getTrackLocation(index));
-                if (!url.isValid())
-                    qDebug() << "ERROR invalid url\n";
-                else
-                    urls.append(url);
-            }
-        }
-    }
-    mimeData->setUrls(urls);
-    return mimeData;
-}
-
-
-QItemDelegate* ITunesPlaylistModel::delegateForColumn(const int i) {
-    return NULL;
-}
-
-TrackModel::CapabilitiesFlags ITunesPlaylistModel::getCapabilities() const {
-    return TRACKMODELCAPS_NONE;
 }
 
 Qt::ItemFlags ITunesPlaylistModel::flags(const QModelIndex &index) const {
