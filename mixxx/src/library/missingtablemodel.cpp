@@ -48,11 +48,8 @@ MissingTableModel::MissingTableModel(QObject* parent,
     setTable(tableName, LIBRARYTABLE_ID, tableColumns,
              m_pTrackCollection->getTrackSource("default"));
 
-    qDebug() << "Created MissingTracksModel!";
-
     initHeaderData();    //derived from BaseSqlModel
-    slotSearch("");
-    select(); //Populate the data model.
+    setSearch("");
 
     connect(this, SIGNAL(doSearch(const QString&)),
             this, SLOT(slotSearch(const QString&)));
