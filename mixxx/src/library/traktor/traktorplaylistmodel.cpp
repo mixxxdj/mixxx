@@ -13,10 +13,8 @@ TraktorPlaylistModel::TraktorPlaylistModel(QObject* parent,
           BaseSqlTableModel(parent, pTrackCollection, pTrackCollection->getDatabase()),
           m_pTrackCollection(pTrackCollection),
           m_database(m_pTrackCollection->getDatabase())
-
 {
     connect(this, SIGNAL(doSearch(const QString&)), this, SLOT(slotSearch(const QString&)));
-    setCaching(false);
 }
 
 TraktorPlaylistModel::~TraktorPlaylistModel() {
@@ -166,22 +164,7 @@ void TraktorPlaylistModel::setPlaylist(QString playlist_path)
     playlistNameField.setValue(playlistID);
 
     QStringList columns;
-    columns << "traktor_library.id"
-            << "traktor_library.artist"
-            << "traktor_library.title"
-            << "traktor_library.album"
-            << "traktor_library.year"
-            << "traktor_library.genre"
-            << "traktor_library.tracknumber"
-            << "traktor_library.location"
-            << "traktor_library.comment"
-            << "traktor_library.rating"
-            << "traktor_library.duration"
-            << "traktor_library.bitrate"
-            << "traktor_library.bpm"
-            << "traktor_library.key"
-            << "traktor_playlist_tracks.track_id"
-            << "traktor_playlists.name";
+    columns << "traktor_library.id";
 
     QSqlQuery query(m_database);
     query.prepare("CREATE TEMPORARY VIEW IF NOT EXISTS "+ driver->formatValue(playlistNameField) + " AS "
@@ -208,13 +191,13 @@ void TraktorPlaylistModel::setPlaylist(QString playlist_path)
                 .replace("traktor_playlist_tracks.", "").replace("traktor_playlists.", "");
     }
 
-    setTable(playlistID, columns, "id");
+    setTable(playlistID, "id", columns,
+             m_pTrackCollection->getTrackSource("traktor"));
 
     //removeColumn(fieldIndex("track_id"));
     //removeColumn(fieldIndex("name"));
     //removeColumn(fieldIndex("id"));
     initHeaderData();
-    initDefaultSearchColumns();
     slotSearch("");
     select(); //Populate the data model.
 }

@@ -11,7 +11,8 @@ PlaylistTableModel::PlaylistTableModel(QObject* parent,
                                        TrackCollection* pTrackCollection)
         : TrackModel(pTrackCollection->getDatabase(),
                      "mixxx.db.model.playlist"),
-          BaseSqlTableModel(parent, pTrackCollection, pTrackCollection->getDatabase()),
+          BaseSqlTableModel(parent, pTrackCollection,
+                            pTrackCollection->getDatabase()),
           m_pTrackCollection(pTrackCollection),
           m_playlistDao(m_pTrackCollection->getPlaylistDAO()),
           m_trackDao(m_pTrackCollection->getTrackDAO()),
@@ -24,47 +25,32 @@ PlaylistTableModel::~PlaylistTableModel() {
 }
 
 
-void PlaylistTableModel::setPlaylist(int playlistId)
-{
+void PlaylistTableModel::setPlaylist(int playlistId) {
     qDebug() << "PlaylistTableModel::setPlaylist" << playlistId;
+
+    if (m_iPlaylistId == playlistId) {
+        qDebug() << "Already focused on playlist " << playlistId;
+        return;
+    }
+
     m_iPlaylistId = playlistId;
 
     QString playlistTableName = "playlist_" + QString("%1").arg(m_iPlaylistId);
-
-    QSqlQuery query;
+    QSqlQuery query(m_pTrackCollection->getDatabase());
     //query.prepare("DROP VIEW " + playlistTableName);
     //query.exec();
 
-    //Escape the playlist name
+    // Escape the playlist name
     QSqlDriver* driver = m_pTrackCollection->getDatabase().driver();
     QSqlField playlistNameField("name", QVariant::String);
     playlistNameField.setValue(playlistTableName);
 
     QStringList columns;
-    columns << "PlaylistTracks." + PLAYLISTTRACKSTABLE_POSITION
-            // << "playlist_id, " + //DEBUG
-            << "library." + LIBRARYTABLE_ID
-            << "library." + LIBRARYTABLE_PLAYED
-            << "library." + LIBRARYTABLE_TIMESPLAYED
-            << "library." + LIBRARYTABLE_ARTIST
-            << "library." + LIBRARYTABLE_TITLE
-            << "library." + LIBRARYTABLE_ALBUM
-            << "library." + LIBRARYTABLE_YEAR
-            << "library." + LIBRARYTABLE_DURATION
-            << "library." + LIBRARYTABLE_RATING
-            << "library." + LIBRARYTABLE_GENRE
-            << "library." + LIBRARYTABLE_FILETYPE
-            << "library." + LIBRARYTABLE_TRACKNUMBER
-            << "library." + LIBRARYTABLE_KEY
-            << "library." + LIBRARYTABLE_DATETIMEADDED
-            << "library." + LIBRARYTABLE_BPM
-            << "library." + LIBRARYTABLE_BITRATE
-            << "track_locations.location"
-            << "track_locations.fs_deleted"
-            << "library." + LIBRARYTABLE_COMMENT
-            << "library." + LIBRARYTABLE_MIXXXDELETED;
+    columns << "library." + LIBRARYTABLE_ID
+            << "PlaylistTracks." + PLAYLISTTRACKSTABLE_POSITION;
 
-    query.prepare("CREATE TEMPORARY VIEW IF NOT EXISTS " + driver->formatValue(playlistNameField) + " AS "
+    query.prepare("CREATE TEMPORARY VIEW IF NOT EXISTS " +
+                  driver->formatValue(playlistNameField) + " AS "
                   "SELECT "
                   + columns.join(",") +
                   " FROM library "
@@ -83,29 +69,21 @@ void PlaylistTableModel::setPlaylist(int playlistId)
         qDebug() << query.executedQuery() << query.lastError();
     }
 
-    //Print out any SQL error, if there was one.
+    // Print out any SQL error, if there was one.
     if (query.lastError().isValid()) {
      	qDebug() << __FILE__ << __LINE__ << query.lastError();
     }
 
-    // Strip out library. and track_locations.
-    for (int i = 0; i < columns.size(); ++i) {
-        columns[i] = columns[i].replace("library.", "")
-                .replace("track_locations.", "").replace("PlaylistTracks.", "");
-    }
-
     QStringList tableColumns;
+    tableColumns << LIBRARYTABLE_ID;
     tableColumns << PLAYLISTTRACKSTABLE_POSITION;
-    setTable(playlistTableName, columns, LIBRARYTABLE_ID, tableColumns);
+    setTable(playlistTableName, LIBRARYTABLE_ID, tableColumns,
+             m_pTrackCollection->getTrackSource("default"));
     initHeaderData();
-    initDefaultSearchColumns();
-    slotSearch("");
-    select(); //Populate the data model.
+    setSearch("");
 }
 
-
-bool PlaylistTableModel::addTrack(const QModelIndex& index, QString location)
-{
+bool PlaylistTableModel::addTrack(const QModelIndex& index, QString location) {
     const int positionColumnIndex = this->fieldIndex(PLAYLISTTRACKSTABLE_POSITION);
     int position = index.sibling(index.row(), positionColumnIndex).data().toInt();
 
@@ -120,16 +98,18 @@ bool PlaylistTableModel::addTrack(const QModelIndex& index, QString location)
     location = fileInfo.absoluteFilePath();
 
     int trackId = m_trackDao.getTrackId(location);
-    if (trackId < 0)
+    if (trackId < 0) {
         trackId = m_trackDao.addTrack(fileInfo);
+    }
 
     // Do nothing if the location still isn't in the database.
-    if (trackId < 0)
+    if (trackId < 0) {
         return false;
+    }
 
     m_playlistDao.insertTrackIntoPlaylist(trackId, m_iPlaylistId, position);
 
-    updateTrackInIndex(trackId);
+    // TODO(rryan) signal an add to the base, don't select
     select(); //Repopulate the data model.
 
     return true;
@@ -165,42 +145,41 @@ const QLinkedList<int> PlaylistTableModel::getTrackRows(int trackId) const {
 
 void PlaylistTableModel::removeTrack(const QModelIndex& index)
 {
-    bool locked = m_playlistDao.isPlaylistLocked(m_iPlaylistId);
-
-    if (!locked) {
-        const int positionColumnIndex = fieldIndex(PLAYLISTTRACKSTABLE_POSITION);
-        int position = index.sibling(index.row(), positionColumnIndex).data().toInt();
-        m_playlistDao.removeTrackFromPlaylist(m_iPlaylistId, position);
-        // Have to re-lookup every track b/c their playlist ranks might have changed
-        buildIndex();
-        select(); //Repopulate the data model.
+    if (m_playlistDao.isPlaylistLocked(m_iPlaylistId)) {
+        return;
     }
+
+    const int positionColumnIndex = fieldIndex(PLAYLISTTRACKSTABLE_POSITION);
+    int position = index.sibling(index.row(), positionColumnIndex).data().toInt();
+    m_playlistDao.removeTrackFromPlaylist(m_iPlaylistId, position);
+    select(); //Repopulate the data model.
 }
 
 void PlaylistTableModel::removeTracks(const QModelIndexList& indices) {
     bool locked = m_playlistDao.isPlaylistLocked(m_iPlaylistId);
 
-    if (!locked) {
-        const int positionColumnIndex = fieldIndex(PLAYLISTTRACKSTABLE_POSITION);
-
-        QList<int> trackPositions;
-        foreach (QModelIndex index, indices) {
-            int trackPosition = index.sibling(index.row(), positionColumnIndex).data().toInt();
-            trackPositions.append(trackPosition);
-        }
-
-        qSort(trackPositions);
-        QListIterator<int> iterator(trackPositions);
-        iterator.toBack();
-
-        while (iterator.hasPrevious()) {
-            m_playlistDao.removeTrackFromPlaylist(m_iPlaylistId, iterator.previous());
-        }
-
-        // Have to re-lookup every track b/c their playlist ranks might have changed
-        buildIndex();
-        select();
+    if (locked) {
+        return;
     }
+
+    const int positionColumnIndex = fieldIndex(PLAYLISTTRACKSTABLE_POSITION);
+
+    QList<int> trackPositions;
+    foreach (QModelIndex index, indices) {
+        int trackPosition = index.sibling(index.row(), positionColumnIndex).data().toInt();
+        trackPositions.append(trackPosition);
+    }
+
+    qSort(trackPositions);
+    QListIterator<int> iterator(trackPositions);
+    iterator.toBack();
+
+    while (iterator.hasPrevious()) {
+        m_playlistDao.removeTrackFromPlaylist(m_iPlaylistId, iterator.previous());
+    }
+
+    // Have to re-lookup every track b/c their playlist ranks might have changed
+    select();
 }
 
 void PlaylistTableModel::moveTrack(const QModelIndex& sourceIndex, const QModelIndex& destIndex)
@@ -307,8 +286,6 @@ void PlaylistTableModel::moveTrack(const QModelIndex& sourceIndex, const QModelI
      	qDebug() << query.lastError();
     }
 
-    // Have to re-lookup every track b/c their playlist ranks might have changed
-    buildIndex();
     select();
 }
 
@@ -321,7 +298,7 @@ void PlaylistTableModel::shuffleTracks(const QModelIndex& currentIndex)
     const int positionColumnIndex = fieldIndex(PLAYLISTTRACKSTABLE_POSITION);
     int currentPosition = currentIndex.sibling(currentIndex.row(), positionColumnIndex).data().toInt();
     int shuffleStartIndex = currentPosition + 1;
-    
+
     m_pTrackCollection->getDatabase().transaction();
 
     // This is a simple Fisher-Yates shuffling algorithm
@@ -333,13 +310,13 @@ void PlaylistTableModel::shuffleTracks(const QModelIndex& currentIndex)
         query.exec(swapQuery.arg(-1).arg(i).arg(m_iPlaylistId));
         query.exec(swapQuery.arg(i).arg(random).arg(m_iPlaylistId));
         query.exec(swapQuery.arg(random).arg(-1).arg(m_iPlaylistId));
-        
+
         if (query.lastError().isValid())
             qDebug() << query.lastError();
     }
 
     m_pTrackCollection->getDatabase().commit();
-    
+
     select();
 }
 
@@ -361,13 +338,15 @@ bool PlaylistTableModel::isColumnInternal(int column) {
     if (column == fieldIndex(LIBRARYTABLE_ID) ||
         column == fieldIndex(LIBRARYTABLE_PLAYED) ||
         column == fieldIndex(LIBRARYTABLE_MIXXXDELETED) ||
-        column == fieldIndex(TRACKLOCATIONSTABLE_FSDELETED))
+        column == fieldIndex(TRACKLOCATIONSTABLE_FSDELETED)) {
         return true;
+    }
     return false;
 }
 bool PlaylistTableModel::isColumnHiddenByDefault(int column) {
-    if (column == fieldIndex(LIBRARYTABLE_KEY))
+    if (column == fieldIndex(LIBRARYTABLE_KEY)) {
         return true;
+    }
     return false;
 }
 

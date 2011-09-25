@@ -23,25 +23,7 @@ MissingTableModel::MissingTableModel(QObject* parent,
     QString tableName("missing_songs");
 
     QStringList columns;
-    columns << "library." + LIBRARYTABLE_ID
-            << "library." + LIBRARYTABLE_PLAYED
-            << "library." + LIBRARYTABLE_TIMESPLAYED
-            << "library." + LIBRARYTABLE_ARTIST
-            << "library." + LIBRARYTABLE_TITLE
-            << "library." + LIBRARYTABLE_ALBUM
-            << "library." + LIBRARYTABLE_YEAR
-            << "library." + LIBRARYTABLE_DURATION
-            << "library." + LIBRARYTABLE_RATING
-            << "library." + LIBRARYTABLE_GENRE
-            << "library." + LIBRARYTABLE_FILETYPE
-            << "library." + LIBRARYTABLE_TRACKNUMBER
-            << "library." + LIBRARYTABLE_KEY
-            << "library." + LIBRARYTABLE_DATETIMEADDED
-            << "library." + LIBRARYTABLE_BPM
-            << "track_locations.location"
-            << "track_locations.fs_deleted"
-            << "library." + LIBRARYTABLE_COMMENT
-            << "library." + LIBRARYTABLE_MIXXXDELETED;
+    columns << "library." + LIBRARYTABLE_ID;
 
     query.prepare("CREATE TEMPORARY VIEW IF NOT EXISTS " + tableName + " AS "
                   "SELECT "
@@ -61,17 +43,14 @@ MissingTableModel::MissingTableModel(QObject* parent,
      	qDebug() << __FILE__ << __LINE__ << query.lastError();
     }
 
-    // Strip out library. and track_locations.
-    for (int i = 0; i < columns.size(); ++i) {
-        columns[i] = columns[i].replace("library.", "").replace("track_locations.", "");
-    }
-
-    setTable(tableName, columns, LIBRARYTABLE_ID);
+    QStringList tableColumns;
+    tableColumns << LIBRARYTABLE_ID;
+    setTable(tableName, LIBRARYTABLE_ID, tableColumns,
+             m_pTrackCollection->getTrackSource("default"));
 
     qDebug() << "Created MissingTracksModel!";
 
     initHeaderData();    //derived from BaseSqlModel
-    initDefaultSearchColumns();
     slotSearch("");
     select(); //Populate the data model.
 

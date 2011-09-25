@@ -15,7 +15,6 @@ RhythmboxPlaylistModel::RhythmboxPlaylistModel(QObject* parent,
           m_database(m_pTrackCollection->getDatabase())
 {
     connect(this, SIGNAL(doSearch(const QString&)), this, SLOT(slotSearch(const QString&)));
-    setCaching(false);
 }
 
 RhythmboxPlaylistModel::~RhythmboxPlaylistModel() {
@@ -156,21 +155,7 @@ void RhythmboxPlaylistModel::setPlaylist(QString playlist_path) {
     playlistNameField.setValue(playlistID);
 
     QStringList columns;
-    columns << "rhythmbox_library.id"
-            << "rhythmbox_library.artist"
-            << "rhythmbox_library.title"
-            << "rhythmbox_library.album"
-            << "rhythmbox_library.year"
-            << "rhythmbox_library.genre"
-            << "rhythmbox_library.tracknumber"
-            << "rhythmbox_library.location"
-            << "rhythmbox_library.comment"
-            << "rhythmbox_library.rating"
-            << "rhythmbox_library.duration"
-            << "rhythmbox_library.bitrate"
-            << "rhythmbox_library.bpm"
-            << "rhythmbox_playlist_tracks.track_id"
-            << "rhythmbox_playlists.name";
+    columns << "rhythmbox_library.id";
 
     QSqlQuery query(m_database);
     query.prepare("CREATE TEMPORARY VIEW IF NOT EXISTS "+ driver->formatValue(playlistNameField) + " AS "
@@ -198,12 +183,12 @@ void RhythmboxPlaylistModel::setPlaylist(QString playlist_path) {
                 .replace("rhythmbox_playlist_tracks.", "").replace("rhythmbox_playlists.", "");
     }
 
-    setTable(playlistID, columns, "id");
+    setTable(playlistID, "id", columns,
+             m_pTrackCollection->getTrackSource("rhythmbox"));
     //removeColumn(fieldIndex("track_id"));
     //removeColumn(fieldIndex("name"));
     //removeColumn(fieldIndex("id"));
     initHeaderData();
-    initDefaultSearchColumns();
     slotSearch("");
     select(); //Populate the data model.
 }

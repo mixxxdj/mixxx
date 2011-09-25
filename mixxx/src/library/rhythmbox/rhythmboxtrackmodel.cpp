@@ -16,20 +16,10 @@ RhythmboxTrackModel::RhythmboxTrackModel(QObject* parent,
     connect(this, SIGNAL(doSearch(const QString&)), this, SLOT(slotSearch(const QString&)));
 
     QStringList columns;
-    columns << "id"
-            << "artist"
-            << "album"
-            << "genre"
-            << "location"
-            << "comment"
-            << "duration"
-            << "bitrate"
-            << "bpm"
-            << "rating";
-    setTable("rhythmbox_library", columns, "id");
+    columns << "id";
+    setTable("rhythmbox_library", "id", columns,
+             m_pTrackCollection->getTrackSource("rhythmbox"));
     initHeaderData();
-    initDefaultSearchColumns();
-    setCaching(false);
 }
 
 RhythmboxTrackModel::~RhythmboxTrackModel() {

@@ -12,10 +12,8 @@ ITunesPlaylistModel::ITunesPlaylistModel(QObject* parent,
                      "mixxx.db.model.itunes_playlist"),
           BaseSqlTableModel(parent, pTrackCollection, pTrackCollection->getDatabase()),
           m_pTrackCollection(pTrackCollection),
-          m_database(m_pTrackCollection->getDatabase())
-{
+          m_database(m_pTrackCollection->getDatabase()) {
     connect(this, SIGNAL(doSearch(const QString&)), this, SLOT(slotSearch(const QString&)));
-    setCaching(false);
 }
 
 ITunesPlaylistModel::~ITunesPlaylistModel() {
@@ -150,8 +148,9 @@ void ITunesPlaylistModel::setPlaylist(QString playlist_path) {
             playlistId = finder_query.value(finder_query.record().indexOf("id")).toInt();
         }
     }
-    else
+    else {
         qDebug() << "SQL Error in ITunesPlaylistModel.cpp: line" << __LINE__ << " " << finder_query.lastError();
+    }
 
 
     QString playlistID = "ITunesPlaylist_" + QString("%1").arg(playlistId);
@@ -161,24 +160,11 @@ void ITunesPlaylistModel::setPlaylist(QString playlist_path) {
     playlistNameField.setValue(playlistID);
 
     QStringList columns;
-    columns << "itunes_library.id"
-            << "itunes_library.artist"
-            << "itunes_library.title"
-            << "itunes_library.album"
-            << "itunes_library.year"
-            << "itunes_library.genre"
-            << "itunes_library.tracknumber"
-            << "itunes_library.location"
-            << "itunes_library.comment"
-            << "itunes_library.rating"
-            << "itunes_library.duration"
-            << "itunes_library.bitrate"
-            << "itunes_library.bpm"
-            << "itunes_playlist_tracks.track_id"
-            << "itunes_playlists.name";
+    columns << "itunes_library.id";
 
     QSqlQuery query(m_database);
-    query.prepare("CREATE TEMPORARY VIEW IF NOT EXISTS "+ driver->formatValue(playlistNameField) + " AS "
+    query.prepare("CREATE TEMPORARY VIEW IF NOT EXISTS " +
+                  driver->formatValue(playlistNameField) + " AS "
                   "SELECT "
                   + columns.join(",") +
                   " FROM itunes_library "
@@ -195,26 +181,18 @@ void ITunesPlaylistModel::setPlaylist(QString playlist_path) {
         return;
     }
 
-    // Strip out library. and track_locations.
-    for (int i = 0; i < columns.size(); ++i) {
-        columns[i] = columns[i].replace("itunes_library.", "")
-                .replace("itunes_playlist_tracks.", "").replace("itunes_playlists.", "");
-    }
-
-    setTable(playlistID, columns, "id");
+    QStringList tableColumns;
+    tableColumns << "id";
+    setTable(playlistID, "id", tableColumns,
+             m_pTrackCollection->getTrackSource("itunes"));
 
     //removeColumn(fieldIndex("track_id"));
     //removeColumn(fieldIndex("name"));
     //removeColumn(fieldIndex("id"));
 
     initHeaderData();
-
-    initDefaultSearchColumns();
-
     slotSearch("");
-
     select(); //Populate the data model.
-
 }
 
 bool ITunesPlaylistModel::isColumnHiddenByDefault(int column) {

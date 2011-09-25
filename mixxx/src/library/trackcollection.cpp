@@ -9,6 +9,7 @@
 #include "soundsourceproxy.h"
 #include "library/schemamanager.h"
 #include "trackinfoobject.h"
+#include "library/librarytablemodel.h"
 
 TrackCollection::TrackCollection(ConfigObject<ConfigValue>* pConfig)
         : m_pConfig(pConfig),
@@ -32,11 +33,71 @@ TrackCollection::TrackCollection(ConfigObject<ConfigValue>* pConfig)
     qDebug() << __FILE__ << "DB status:" << ok;
     qDebug() << m_db.lastError();
 
-
-
-
     //Check for tables and create them if missing
     if (!checkForTables()) exit(-1);
+
+    QStringList columns;
+    columns << "library." + LIBRARYTABLE_ID
+            << "library." + LIBRARYTABLE_PLAYED
+            << "library." + LIBRARYTABLE_TIMESPLAYED
+            << "library." + LIBRARYTABLE_ARTIST
+            << "library." + LIBRARYTABLE_TITLE
+            << "library." + LIBRARYTABLE_ALBUM
+            << "library." + LIBRARYTABLE_YEAR
+            << "library." + LIBRARYTABLE_DURATION
+            << "library." + LIBRARYTABLE_RATING
+            << "library." + LIBRARYTABLE_GENRE
+            << "library." + LIBRARYTABLE_FILETYPE
+            << "library." + LIBRARYTABLE_TRACKNUMBER
+            << "library." + LIBRARYTABLE_KEY
+            << "library." + LIBRARYTABLE_DATETIMEADDED
+            << "library." + LIBRARYTABLE_BPM
+            << "library." + LIBRARYTABLE_BITRATE
+            << "track_locations.location"
+            << "track_locations.fs_deleted"
+            << "library." + LIBRARYTABLE_COMMENT
+            << "library." + LIBRARYTABLE_MIXXXDELETED;
+
+    QSqlQuery query(m_db);
+    QString queryString = "CREATE TEMPORARY VIEW IF NOT EXISTS library_cache_view AS SELECT "
+            + columns.join(",") +
+            " FROM library INNER JOIN track_locations "
+            "ON library.location = track_locations.id "
+            "WHERE (" + LibraryTableModel::DEFAULT_LIBRARYFILTER + ")";
+
+    for (QStringList::iterator it = columns.begin();
+         it != columns.end(); ++it) {
+        if (it->startsWith("library.")) {
+            *it = it->replace("library.", "");
+        } else if (it->startsWith("track_locations.")) {
+            *it = it->replace("track_locations.", "");
+        }
+    }
+
+    query.prepare(queryString);
+    if (!query.exec()) {
+        qDebug() << query.executedQuery() << query.lastError();
+    }
+
+    // Print out any SQL error, if there was one.
+    if (query.lastError().isValid()) {
+        qDebug() << __FILE__ << __LINE__ << query.lastError();
+    }
+
+    // Strip out library. and track_locations.
+    for (int i = 0; i < columns.size(); ++i) {
+        columns[i] = columns[i].replace("library.", "").replace("track_locations.", "");
+    }
+
+    BaseTrackCache* pBaseTrackCache = new BaseTrackCache(
+        this, "library_cache_view", LIBRARYTABLE_ID, columns);
+    connect(&m_trackDao, SIGNAL(trackDirty(int)),
+            pBaseTrackCache, SLOT(slotTrackDirty(int)));
+    connect(&m_trackDao, SIGNAL(trackClean(int)),
+            pBaseTrackCache, SLOT(slotTrackClean(int)));
+
+    addTrackSource(QString("default"),
+                   QSharedPointer<BaseTrackCache>(pBaseTrackCache));
 }
 
 TrackCollection::~TrackCollection()
@@ -193,3 +254,12 @@ PlaylistDAO& TrackCollection::getPlaylistDAO() {
     return m_playlistDao;
 }
 
+QSharedPointer<BaseTrackCache> TrackCollection::getTrackSource(const QString name) {
+    return m_trackSources.value(name, QSharedPointer<BaseTrackCache>());
+}
+
+void TrackCollection::addTrackSource(const QString name,
+                                     QSharedPointer<BaseTrackCache> trackSource) {
+    Q_ASSERT(!m_trackSources.contains(name));
+    m_trackSources[name] = trackSource;
+}
