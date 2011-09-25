@@ -68,7 +68,7 @@ void PlaylistTableModel::setPlaylist(int playlistId) {
     setTable(playlistTableName, columns[0], columns,
              m_pTrackCollection->getTrackSource("default"));
     initHeaderData();
-    setSearch("");
+    setSearch("", LibraryTableModel::DEFAULT_LIBRARYFILTER);
 }
 
 bool PlaylistTableModel::addTrack(const QModelIndex& index, QString location) {
