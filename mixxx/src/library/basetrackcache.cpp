@@ -25,7 +25,7 @@ BaseTrackCache::BaseTrackCache(TrackCollection* pTrackCollection,
                                QString idColumn,
                                QList<QString> columns,
                                bool isCaching)
-        : QObject(pTrackCollection),
+        : QObject(NULL),
           m_tableName(tableName),
           m_idColumn(idColumn),
           m_columns(columns),

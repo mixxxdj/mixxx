@@ -41,6 +41,7 @@ TrackCollection::TrackCollection(ConfigObject<ConfigValue>* pConfig)
 }
 
 TrackCollection::~TrackCollection() {
+    qDebug() << "~TrackCollection()";
     // Save all tracks that haven't been saved yet.
     m_trackDao.saveDirtyTracks();
     // TODO(XXX) Maybe fold saveDirtyTracks into TrackDAO::finish now that it
@@ -52,11 +53,9 @@ TrackCollection::~TrackCollection() {
     //transaction when this code is called. If there is, it means we probably
     //aren't committing a transaction somewhere that should be.
     m_db.close();
-    qDebug() << "TrackCollection destroyed";
 }
 
-bool TrackCollection::checkForTables()
-{
+bool TrackCollection::checkForTables() {
     if (!m_db.open()) {
         QMessageBox::critical(0, tr("Cannot open database"),
                               tr("Unable to establish a database connection.\n"
