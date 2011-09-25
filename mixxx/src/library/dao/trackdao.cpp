@@ -380,7 +380,7 @@ int TrackDAO::addTrack(QFileInfo& fileInfo) {
     int trackId = -1;
     TrackInfoObject * pTrack = new TrackInfoObject(fileInfo);
     if (pTrack) {
-        //Add the song to the database.
+        // Add the song to the database.
         addTrack(pTrack);
         trackId = pTrack->getId();
         delete pTrack;
@@ -388,14 +388,12 @@ int TrackDAO::addTrack(QFileInfo& fileInfo) {
     return trackId;
 }
 
-int TrackDAO::addTrack(QString absoluteFilePath)
-{
+int TrackDAO::addTrack(QString absoluteFilePath) {
     QFileInfo fileInfo(absoluteFilePath);
     return addTrack(fileInfo);
 }
 
-void TrackDAO::addTrack(TrackInfoObject* pTrack)
-{
+void TrackDAO::addTrack(TrackInfoObject* pTrack) {
     QTime time;
     time.start();
 
@@ -408,7 +406,7 @@ void TrackDAO::addTrack(TrackInfoObject* pTrack)
         return;
     }
 
-    //Start the transaction
+    // Start the transaction
     m_database.transaction();
 
     QSqlQuery query(m_database);
@@ -483,8 +481,7 @@ void TrackDAO::addTrack(TrackInfoObject* pTrack)
 }
 
   /** Removes a track from the library track collection. */
-void TrackDAO::removeTrack(int id)
-{
+void TrackDAO::removeTrack(int id) {
     //qDebug() << "TrackDAO::removeTrack" << QThread::currentThread() << m_database.connectionName();
     Q_ASSERT(id >= 0);
     QSqlQuery query(m_database);
@@ -524,8 +521,7 @@ void TrackDAO::removeTracks(QList<int> ids) {
      This function should get called if you drag-and-drop a file that's been
      "removed" from Mixxx back into the library view.
 */
-void TrackDAO::unremoveTrack(int trackId)
-{
+void TrackDAO::unremoveTrack(int trackId) {
     Q_ASSERT(trackId >= 0);
     QSqlQuery query(m_database);
     query.prepare("UPDATE library "
@@ -736,8 +732,7 @@ TrackPointer TrackDAO::getTrack(int id, bool cacheOnly) const {
 }
 
 /** Saves a track's info back to the database */
-void TrackDAO::updateTrack(TrackInfoObject* pTrack)
-{
+void TrackDAO::updateTrack(TrackInfoObject* pTrack) {
     m_database.transaction();
     QTime time;
     time.start();
@@ -831,8 +826,7 @@ void TrackDAO::updateTrack(TrackInfoObject* pTrack)
 /** Mark all the tracks whose paths begin with libraryPath as invalid.
     That means we'll need to later check that those tracks actually
     (still) exist as part of the library scanning procedure. */
-void TrackDAO::invalidateTrackLocationsInLibrary(QString libraryPath)
-{
+void TrackDAO::invalidateTrackLocationsInLibrary(QString libraryPath) {
     //qDebug() << "TrackDAO::invalidateTrackLocations" << QThread::currentThread() << m_database.connectionName();
     //qDebug() << "invalidateTrackLocations(" << libraryPath << ")";
     libraryPath += "%"; //Add wildcard to SQL query to match subdirectories!
@@ -865,8 +859,7 @@ void TrackDAO::markTrackLocationAsVerified(QString location)
     }
 }
 
-void TrackDAO::markTracksInDirectoryAsVerified(QString directory)
-{
+void TrackDAO::markTracksInDirectoryAsVerified(QString directory) {
     //qDebug() << "TrackDAO::markTracksInDirectoryAsVerified" << QThread::currentThread() << m_database.connectionName();
     //qDebug() << "markTracksInDirectoryAsVerified()" << directory;
 
@@ -881,8 +874,7 @@ void TrackDAO::markTracksInDirectoryAsVerified(QString directory)
     }
 }
 
-void TrackDAO::markUnverifiedTracksAsDeleted()
-{
+void TrackDAO::markUnverifiedTracksAsDeleted() {
     //qDebug() << "TrackDAO::markUnverifiedTracksAsDeleted" << QThread::currentThread() << m_database.connectionName();
     //qDebug() << "markUnverifiedTracksAsDeleted()";
 
@@ -897,8 +889,7 @@ void TrackDAO::markUnverifiedTracksAsDeleted()
 
 }
 
-void TrackDAO::markTrackLocationsAsDeleted(QString directory)
-{
+void TrackDAO::markTrackLocationsAsDeleted(QString directory) {
     //qDebug() << "TrackDAO::markTrackLocationsAsDeleted" << QThread::currentThread() << m_database.connectionName();
     QSqlQuery query(m_database);
     query.prepare("UPDATE track_locations "
@@ -915,8 +906,7 @@ void TrackDAO::markTrackLocationsAsDeleted(QString directory)
     and see if another "file" with the same name and filesize exists in the track_locations
     table. That means the file has moved instead of being deleted outright, and so
     we can salvage your existing metadata that you have in your DB (like cue points, etc.). */
-void TrackDAO::detectMovedFiles()
-{
+void TrackDAO::detectMovedFiles() {
     //This function should not start a transaction on it's own!
     //When it's called from libraryscanner.cpp, there already is a transaction
     //started!
