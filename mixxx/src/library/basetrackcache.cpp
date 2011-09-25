@@ -135,7 +135,6 @@ bool BaseTrackCache::updateIndexWithQuery(QString queryString) {
         }
     }
 
-    qDebug() << "Columns:" << numColumns << "Rows:" << m_trackInfo.size();
     qDebug() << this << "updateIndexWithQuery took" << timer.elapsed() << "ms";
     return true;
 }

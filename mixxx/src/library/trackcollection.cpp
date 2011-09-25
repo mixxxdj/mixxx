@@ -4,12 +4,13 @@
 #include <QtDebug>
 
 #include "trackcollection.h"
-#include "xmlparse.h"
+
 #include "defs.h"
-#include "soundsourceproxy.h"
-#include "library/schemamanager.h"
-#include "trackinfoobject.h"
 #include "library/librarytablemodel.h"
+#include "library/schemamanager.h"
+#include "soundsourceproxy.h"
+#include "trackinfoobject.h"
+#include "xmlparse.h"
 
 TrackCollection::TrackCollection(ConfigObject<ConfigValue>* pConfig)
         : m_pConfig(pConfig),
@@ -20,26 +21,26 @@ TrackCollection::TrackCollection(ConfigObject<ConfigValue>* pConfig)
           m_crateDao(m_db),
           m_supportedFileExtensionsRegex(
               SoundSourceProxy::supportedFileExtensionsRegex(),
-              Qt::CaseInsensitive)
-{
-
-    bCancelLibraryScan = 0;
-    qDebug() << QSqlDatabase::drivers();
-
+              Qt::CaseInsensitive) {
+    bCancelLibraryScan = false;
+    qDebug() << "Available QtSQL drivers:" << QSqlDatabase::drivers();
     m_db.setHostName("localhost");
     m_db.setDatabaseName(MIXXX_DB_PATH);
     m_db.setUserName("mixxx");
     m_db.setPassword("mixxx");
     bool ok = m_db.open();
     qDebug() << __FILE__ << "DB status:" << ok;
-    qDebug() << m_db.lastError();
-
-    //Check for tables and create them if missing
-    if (!checkForTables()) exit(-1);
+    if (m_db.lastError().isValid()) {
+        qDebug() << "Error loading database:" << m_db.lastError();
+    }
+    // Check for tables and create them if missing
+    if (!checkForTables()) {
+        // TODO(XXX) something a little more elegant
+        exit(-1);
+    }
 }
 
-TrackCollection::~TrackCollection()
-{
+TrackCollection::~TrackCollection() {
     // Save all tracks that haven't been saved yet.
     m_trackDao.saveDirtyTracks();
     // TODO(XXX) Maybe fold saveDirtyTracks into TrackDAO::finish now that it
@@ -86,20 +87,16 @@ bool TrackCollection::checkForTables()
     return true;
 }
 
-
-QSqlDatabase& TrackCollection::getDatabase()
-{
- 	return m_db;
-  }
-
+QSqlDatabase& TrackCollection::getDatabase() {
+    return m_db;
+}
 
 /** Do a non-recursive import of all the songs in a directory. Does NOT decend into subdirectories.
     @param trackDao The track data access object which provides a connection to the database. We use this parameter in order to make this function callable from separate threads. You need to use a different DB connection for each thread.
     @return true if the scan completed without being cancelled. False if the scan was cancelled part-way through.
 */
 bool TrackCollection::importDirectory(QString directory, TrackDAO &trackDao,
-                                      QList<TrackInfoObject*>& tracksToAdd)
-{
+                                      QList<TrackInfoObject*>& tracksToAdd) {
     //qDebug() << "TrackCollection::importDirectory(" << directory<< ")";
 
     emit(startedLoading());
@@ -124,8 +121,7 @@ bool TrackCollection::importDirectory(QString directory, TrackDAO &trackDao,
         m_libraryScanMutex.lock();
         bool cancel = bCancelLibraryScan;
         m_libraryScanMutex.unlock();
-        if (cancel)
-        {
+        if (cancel) {
             return false;
         }
 
