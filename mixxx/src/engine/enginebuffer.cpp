@@ -455,6 +455,7 @@ void EngineBuffer::slotControlStop(double v)
 void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBufferSize)
 {
 
+    m_pReader->process();
     // Steps:
     // - Lookup new reader information
     // - Calculate current rate

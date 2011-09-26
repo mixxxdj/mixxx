@@ -125,7 +125,7 @@ void ReadAheadManager::hintReader(QList<Hint>& hintList, int iSamplesPerBuffer) 
 
     // Make sure that we have enough samples to do n more process() calls
     // without reading again either forward or reverse.
-    int n = 64; // 5? 10? 20? who knows!
+    int n = 8; // 5? 10? 20? who knows!
     int length_to_cache = iSamplesPerBuffer * n;
     current_position.length = length_to_cache;
     current_position.sample = m_iCurrentPosition;
