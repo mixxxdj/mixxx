@@ -571,6 +571,9 @@ class MixxxCore(Feature):
 
                    "segmentation.cpp",
                    "tapfilter.cpp",
+
+                   "util/pa_ringbuffer.c",
+                   "util/fifo.cpp",
                    ]
 
         # Uic these guys (they're moc'd automatically after this) - Generates

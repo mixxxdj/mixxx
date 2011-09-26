@@ -18,6 +18,7 @@
 #include "configobject.h"
 #include "trackinfoobject.h"
 #include "engine/engineworker.h"
+#include "util/fifo.h"
 
 class ControlObjectThread;
 namespace Mixxx {
@@ -52,6 +53,29 @@ typedef struct Chunk {
     Chunk* next_lru;
 } Chunk;
 
+typedef struct ChunkReadRequest {
+    Chunk* chunk;
+
+    ChunkReadRequest() { chunk = NULL; }
+} ChunkReadRequest;
+
+enum ReaderStatus {
+    INVALID,
+    NEWTRACK,
+    CHUNK_READ_SUCCESS,
+    CHUNK_READ_EOF,
+    CHUNK_READ_INVALID
+};
+
+typedef struct ReaderStatusUpdate {
+    ReaderStatus status;
+    Chunk* chunk;
+    ReaderStatusUpdate() {
+        status = INVALID;
+        chunk = NULL;
+    }
+} ReaderStatusUpdate;
+
 // CachingReader provides a layer on top of a SoundSource for reading samples
 // from a file. A cache is provided so that repeated reads to a certain section
 // of a song do not cause disk seeks or unnecessary SoundSource
@@ -63,7 +87,6 @@ class CachingReader : public EngineWorker {
     Q_OBJECT
 
   public:
-
     // Construct a CachingReader with the given group.
     CachingReader(const char* _group,
                   ConfigObject<ConfigValue>* _config);
@@ -74,6 +97,9 @@ class CachingReader : public EngineWorker {
     // to receive trackLoaded signals instead.
     int getTrackSampleRate();
     int getTrackNumSamples();
+
+
+    void process();
 
     // Read num_samples from the SoundSource starting with sample into
     // buffer. Returns the total number of samples actually written to buffer.
@@ -140,10 +166,6 @@ class CachingReader : public EngineWorker {
     // hold it if you touch them.
     //
 
-    // Chunks that should be read into memory when the CachingReader wakes
-    // up. Readers and writers must holds the reader lock.
-    QSet<int> m_chunksToRead;
-
     // Look up chunk_number at any cost. Reads from SoundSource if
     // necessary. Returns NULL if chunk_number is not valid. If cache_miss is
     // not NULL, sets it to true or false whether or not the chunk was fetched
@@ -152,7 +174,8 @@ class CachingReader : public EngineWorker {
 
     // Read the given chunk_number from the file into pChunk's data
     // buffer. Fills length/sample information about Chunk* as well.
-    bool readChunkFromFile(Chunk* pChunk, int chunk_number);
+    void processChunkReadRequest(ChunkReadRequest* request,
+                                 ReaderStatusUpdate* update);
 
     // Looks for the provided chunk number in the index of in-memory chunks and
     // returns it if it is present. If not, returns NULL.
@@ -201,6 +224,9 @@ class CachingReader : public EngineWorker {
     QVector<Chunk*> m_chunks;
     // List of free chunks available for use.
     QList<Chunk*> m_freeChunks;
+    // List of reserved chunks with reads in progress
+    QHash<int, Chunk*> m_chunksBeingRead;
+
     // Keeps track of what Chunks we've allocated and indexes them based on what
     // chunk number they are allocated to.
     QHash<int, Chunk*> m_allocatedChunks;
@@ -215,6 +241,9 @@ class CachingReader : public EngineWorker {
     // Temporary buffer for reading from SoundSources
     SAMPLE* m_pSample;
     bool m_bQuit;
+
+    FIFO<ChunkReadRequest> m_chunkReadRequestFIFO;
+    FIFO<ReaderStatusUpdate> m_readerStatusFIFO;
 };
 
 
