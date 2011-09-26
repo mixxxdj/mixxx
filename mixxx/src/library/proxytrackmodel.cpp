@@ -39,8 +39,6 @@ QString ProxyTrackModel::getTrackLocation(const QModelIndex& index) const {
     return m_pTrackModel->getTrackLocation(indexSource);
 }
 
-
-
 void ProxyTrackModel::search(const QString& searchText) {
     if (m_bHandleSearches) {
         m_currentSearch = searchText;
@@ -50,7 +48,7 @@ void ProxyTrackModel::search(const QString& searchText) {
     }
 }
 
-const QString ProxyTrackModel::currentSearch() {
+const QString ProxyTrackModel::currentSearch() const {
     if (m_bHandleSearches) {
         return m_currentSearch;
     }
@@ -64,7 +62,6 @@ bool ProxyTrackModel::isColumnInternal(int column) {
 bool ProxyTrackModel::isColumnHiddenByDefault(int column) {
     return m_pTrackModel->isColumnHiddenByDefault(column);
 }
-
 
 void ProxyTrackModel::removeTrack(const QModelIndex& index) {
     QModelIndex indexSource = mapToSource(index);
@@ -102,7 +99,6 @@ TrackModel::CapabilitiesFlags ProxyTrackModel::getCapabilities() const {
 
 bool ProxyTrackModel::filterAcceptsRow(int sourceRow,
                                        const QModelIndex& sourceParent) const {
-
     if (!m_bHandleSearches)
         return QSortFilterProxyModel::filterAcceptsRow(sourceRow, sourceParent);
 
