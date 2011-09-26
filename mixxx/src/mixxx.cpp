@@ -589,7 +589,7 @@ MixxxApp::~MixxxApp()
     qDebug() << "delete library" << qTime.elapsed();
     delete m_pLibrary;
 
-    //RecordingManager depends on config
+    // RecordingManager depends on config
     qDebug() << "delete RecordingManager" << qTime.elapsed();
     delete m_pRecordingManager;
 

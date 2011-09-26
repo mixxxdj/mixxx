@@ -21,6 +21,7 @@ public:
               m_settingsNamespace(settingsNamespace) {
 
     }
+    virtual ~TrackModel() {}
 
     enum Capabilities
     {
@@ -31,6 +32,7 @@ public:
         TRACKMODELCAPS_ADDTOCRATE     = 0x0008,
         TRACKMODELCAPS_ADDTOAUTODJ    = 0x0010,
         TRACKMODELCAPS_LOCKED         = 0x0020,
+        TRACKMODELCAPS_RELOADMETADATA = 0x0040,
                                     //0x0004
     };
 
@@ -52,21 +54,36 @@ public:
 
     bool isTrackModel() { return true;}
     virtual void search(const QString& searchText) = 0;
-    virtual const QString currentSearch() = 0;
+    virtual const QString currentSearch() const = 0;
     virtual bool isColumnInternal(int column) = 0;
-    /** if no header state exists, we may hide some columns so that the user can reactivate them **/
+    // if no header state exists, we may hide some columns so that the user can
+    // reactivate them
     virtual bool isColumnHiddenByDefault(int column) = 0;
     virtual const QList<int>& showableColumns() const { return m_emptyColumns; }
     virtual const QList<int>& searchColumns() const { return m_emptyColumns; }
-    virtual void removeTrack(const QModelIndex& index) = 0;
-    virtual void removeTracks(const QModelIndexList& indices) = 0;
-    virtual bool addTrack(const QModelIndex& index, QString location) = 0;
+    virtual void removeTrack(const QModelIndex& index) {
+        Q_UNUSED(index);
+    }
+    virtual void removeTracks(const QModelIndexList& indices) {
+        Q_UNUSED(indices);
+    }
+    virtual bool addTrack(const QModelIndex& index, QString location) {
+        Q_UNUSED(index);
+        Q_UNUSED(location);
+        return false;
+    }
     virtual void moveTrack(const QModelIndex& sourceIndex,
-                           const QModelIndex& destIndex) = 0;
-    virtual QItemDelegate* delegateForColumn(const int i) = 0;
-    virtual ~TrackModel() {}
-    virtual TrackModel::CapabilitiesFlags getCapabilities() const { return TRACKMODELCAPS_NONE; }
-
+                           const QModelIndex& destIndex) {
+        Q_UNUSED(sourceIndex);
+        Q_UNUSED(destIndex);
+    }
+    virtual QItemDelegate* delegateForColumn(const int i) {
+        Q_UNUSED(i);
+        return NULL;
+    }
+    virtual TrackModel::CapabilitiesFlags getCapabilities() const {
+        return TRACKMODELCAPS_NONE;
+    }
     virtual QString getModelSetting(QString name) {
         SettingsDAO settings(m_db);
         QString key = m_settingsNamespace + "." + name;
