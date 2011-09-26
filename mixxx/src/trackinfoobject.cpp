@@ -138,8 +138,9 @@ void TrackInfoObject::initialize(bool parseHeader) {
     m_key = "";
 
     // parse() parses the metadata from file. This is not a quick operation!
-    if (parseHeader)
+    if (parseHeader) {
         parse();
+    }
 }
 
 TrackInfoObject::~TrackInfoObject() {
@@ -550,7 +551,7 @@ void TrackInfoObject::setPlayed(bool bPlayed)
     else if (m_bPlayed && !bPlayed) {
         --m_iTimesPlayed;
 	setDirty(true);
-    } 
+    }
     m_bPlayed = bPlayed;
 }
 
