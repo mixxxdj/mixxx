@@ -40,6 +40,7 @@ class MidiMapping;
 #ifdef __MIDISCRIPT__
 class MidiScriptEngine;
 #endif
+#include <QScriptValue>
 
 class MidiDevice : public QThread
 {
@@ -77,7 +78,7 @@ Q_OBJECT
 
     signals:
         void midiEvent(MidiMessage message);
-        void callMidiScriptFunction(QString function, char channel, char control, char value, MidiStatusByte status, QString group);
+        void callMidiScriptFunction(QScriptValue function, char channel, char control, char value, MidiStatusByte status, QString group);
 
     protected:
         /** Verbose device name, in format "[index]. [device name]". Suitable for display in GUI. */

@@ -48,9 +48,14 @@ class MidiScriptEngine : public QThread {
         m_midiPopups = bPopups;
     }
 
-    // Lookup registered script functions
-    QStringList getScriptFunctions();
-
+    bool isLoaded() {
+        return m_isLoaded;
+    }
+    
+    // Resolve a function name to a QScriptValue.
+    // Also resolves calls prefixed with an object name.
+    QScriptValue resolveFunction(QString function);
+    
     /* DO NOT CALL DIRECTLY,
        SHOULD ONLY BE CALLED FROM WITHIN SCRIPTS */
     Q_INVOKABLE double getValue(QString group, QString name);
@@ -79,6 +84,8 @@ class MidiScriptEngine : public QThread {
     // Execute a particular function with all the data
     bool execute(QString function, char channel,
                  char control, char value, MidiStatusByte status, QString group);
+    bool execute(QScriptValue function, char channel,
+                 char control, char value, MidiStatusByte status, QString group);
     void loadScriptFiles(QList<QString> scriptFileNames);
     void initializeScripts(QList<QString> scriptFunctionPrefixes);
     void gracefulShutdown(QList<QString> scriptFunctionPrefixes);
@@ -104,6 +111,8 @@ class MidiScriptEngine : public QThread {
     bool safeExecute(QString function, char channel,
                      char control, char value, MidiStatusByte status, QString group);
     bool safeExecute(QScriptValue thisObject, QScriptValue functionObject);
+    bool safeExecute(QScriptValue functionObject, char channel, char control, char value,
+                        MidiStatusByte status, QString group);
     void initializeScriptEngine();
 
     void scriptErrorDialog(QString detailedError);
@@ -137,6 +146,7 @@ class MidiScriptEngine : public QThread {
     QVarLengthArray <bool> m_ramp;
     QVarLengthArray <PitchFilter*> m_pitchFilter;
     QHash<int, int> m_scratchTimers;
+    bool m_isLoaded;
 };
 
 #endif

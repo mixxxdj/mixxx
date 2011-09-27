@@ -245,7 +245,7 @@ void MidiDevice::receive(MidiStatusByte status, char channel, char control, char
 
         // This needs to be a signal because the MIDI Script Engine thread must execute
         //  script functions, not this MidiDevice one
-        emit(callMidiScriptFunction(configKey.item, channel, control, value, status,
+        emit(callMidiScriptFunction(mixxxControl.getScriptFunction(), channel, control, value, status,
                                 mixxxControl.getControlObjectGroup()));
         return;
     }

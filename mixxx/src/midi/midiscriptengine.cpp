@@ -36,7 +36,8 @@ MidiScriptEngine::MidiScriptEngine(MidiDevice* midiDevice) :
     m_pEngine(NULL),
     m_pMidiDevice(midiDevice),
     m_midiDebug(false),
-    m_midiPopups(false) {
+    m_midiPopups(false),
+    m_isLoaded(false) {
 
     // Handle error dialog buttons
     qRegisterMetaType<QMessageBox::StandardButton>("QMessageBox::StandardButton");
@@ -109,6 +110,25 @@ void MidiScriptEngine::callFunctionOnObjects(QList<QString> scriptFunctionPrefix
 }
 
 /* -------- ------------------------------------------------------
+Purpose: Resolves a function name to a QScriptValue including 
+            OBJECT.Function calls
+Input:   -
+Output:  -
+-------- ------------------------------------------------------ */
+QScriptValue MidiScriptEngine::resolveFunction(QString function) {
+    QScriptValue object = m_pEngine->globalObject();
+    QStringList parts = function.split(".");
+    
+    for (int i = 0; i < parts.size(); i++) {
+        object = object.property(parts.at(i));
+        if (!object.isValid())
+            break;
+    }
+    
+    return object;
+}
+
+/* -------- ------------------------------------------------------
 Purpose: Shuts down MIDI scripts in an orderly fashion
             (stops timers then executes shutdown functions)
 Input:   -
@@ -124,9 +144,9 @@ void MidiScriptEngine::gracefulShutdown(QList<QString> scriptFunctionPrefixes) {
 
     // Disconnect the function call signal
     if (m_pMidiDevice)
-        disconnect(m_pMidiDevice, SIGNAL(callMidiScriptFunction(QString, char, char,
+        disconnect(m_pMidiDevice, SIGNAL(callMidiScriptFunction(QScriptValue, char, char,
                                                                 char, MidiStatusByte, QString)),
-                   this, SLOT(execute(QString, char, char, char, MidiStatusByte, QString)));
+                   this, SLOT(execute(QScriptValue, char, char, char, MidiStatusByte, QString)));
 
     // Stop all timers
     stopAllTimers();
@@ -192,9 +212,9 @@ void MidiScriptEngine::initializeScriptEngine() {
         engineGlobalObject.setProperty("midi", m_pEngine->newQObject(m_pMidiDevice));
 
         // Allow the MidiDevice to signal script function calls
-        connect(m_pMidiDevice, SIGNAL(callMidiScriptFunction(QString, char, char,
+        connect(m_pMidiDevice, SIGNAL(callMidiScriptFunction(QScriptValue, char, char,
                                                              char, MidiStatusByte, QString)),
-                this, SLOT(execute(QString, char, char, char, MidiStatusByte, QString)));
+                this, SLOT(execute(QScriptValue, char, char, char, MidiStatusByte, QString)));
     }
 }
 
@@ -245,6 +265,10 @@ void MidiScriptEngine::loadScriptFiles(QList<QString> scriptFileNames) {
             }
         }
     }
+    
+    // Mark Engine as Loaded so we do not get loaded again.
+    // - Phillip Whelan
+    m_isLoaded = true;
     
     m_scriptEngineLock.unlock();
     emit(initialized());
@@ -358,6 +382,23 @@ bool MidiScriptEngine::execute(QString function, char channel,
     m_scriptEngineLock.lock();
     bool ret = safeExecute(function, channel, control, value, status, group);
     if (!ret) qWarning() << "MidiScriptEngine: Invalid script function" << function;
+    m_scriptEngineLock.unlock();
+    return ret;
+}
+
+/* -------- ------------------------------------------------------
+   Purpose: Evaluate & call a script function
+   Input:   Function name, channel #, control #, value, status
+                MixxxControl group
+   Output:  false if an invalid function or an exception
+   -------- ------------------------------------------------------ */
+bool MidiScriptEngine::execute(QScriptValue function, char channel,
+                               char control, char value,
+                               MidiStatusByte status,
+                               QString group) {
+    m_scriptEngineLock.lock();
+    bool ret = safeExecute(function, channel, control, value, status, group);
+    if (!ret) qWarning() << "MidiScriptEngine: Invalid function object";
     m_scriptEngineLock.unlock();
     return ret;
 }
@@ -558,10 +599,39 @@ bool MidiScriptEngine::safeExecute(QScriptValue thisObject, QScriptValue functio
     if(m_pEngine == NULL) {
         return false;
     }
-    
     QScriptValueList args;
     
     functionObject.call(thisObject, args);
+    if (checkException())
+        return false;
+    return true;
+}
+
+/* -------- ------------------------------------------------------
+   Purpose: Evaluate & call a script function
+   Input:   Function Object
+   Output:  false if an invalid function or an exception
+   Notes:   used for closure calls using native functions (ie: timers)
+   -------- ------------------------------------------------------ */
+bool MidiScriptEngine::safeExecute(QScriptValue functionObject,
+                                    char channel, 
+                                    char control, 
+                                    char value,
+                                    MidiStatusByte status,
+                                    QString group) {
+    
+    if(m_pEngine == NULL) {
+        return false;
+    }
+    
+    QScriptValueList args;
+    args << QScriptValue(channel);
+    args << QScriptValue(control);
+    args << QScriptValue(value);
+    args << QScriptValue(status);
+    args << QScriptValue(group);
+    
+    functionObject.call(m_pEngine->globalObject(), args);
     if (checkException())
         return false;
     return true;
@@ -654,19 +724,6 @@ void MidiScriptEngine::errorDialogButton(QString key, QMessageBox::StandardButto
         this, SLOT(errorDialogButton(QString, QMessageBox::StandardButton)));
 
     if (button == QMessageBox::Retry) emit(resetController());
-}
-
-/* -------- ------------------------------------------------------
-   Purpose: Returns a list of functions available in the QtScript
-            code
-   Input:   -
-   Output:  functionList QStringList
-   -------- ------------------------------------------------------ */
-QStringList MidiScriptEngine::getScriptFunctions() {
-    m_scriptEngineLock.lock();
-    QStringList ret = m_scriptFunctions;
-    m_scriptEngineLock.unlock();
-    return ret;
 }
 
 void MidiScriptEngine::generateScriptFunctions(QString scriptCode) {
@@ -1059,7 +1116,8 @@ int MidiScriptEngine::beginTimer(int interval, QScriptValue timerCallback, bool 
     QPair<QList<QScriptValue>, bool> timerTarget;
     if (timerCallback.isFunction()) {
         QScriptContext *ctxt = m_pEngine->currentContext();
-        timerTarget.first.append(ctxt->thisObject());
+        QScriptContext *pCtxt = ctxt->parentContext();
+        timerTarget.first.append(pCtxt->thisObject());
     }
     timerTarget.first.append(timerCallback);
     timerTarget.second = oneShot;

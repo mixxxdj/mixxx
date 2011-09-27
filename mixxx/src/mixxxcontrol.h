@@ -4,6 +4,10 @@
 #include <QDebug>
 #include "configobject.h"
 
+#ifdef __MIDISCRIPT__
+#include <QScriptValue>
+#endif
+
 typedef enum {
     MIDI_OPT_NORMAL           = 0,
     MIDI_OPT_INVERT           = 1,
@@ -36,11 +40,17 @@ class MixxxControl
         void setMidiOption(MidiOption midioption) { m_midiOption = midioption; };
         void setThresholdMinimum(float min) { m_thresholdMinimum = min; };
         void setThresholdMaximum(float max) { m_thresholdMaximum = max; };
+#ifdef __MIDISCRIPT__
+        void setScriptFunction(QScriptValue func) { m_scriptFunction = func; };
+#endif
         QString getControlObjectGroup() const { return m_strCOGroup; };
         QString getControlObjectValue() const { return m_strCOValue; };
         MidiOption getMidiOption() const { return m_midiOption; };
         float getThresholdMinimum() const { return m_thresholdMinimum; };
         float getThresholdMaximum() const { return m_thresholdMaximum; };
+#ifdef __MIDISCRIPT__
+        QScriptValue getScriptFunction() const { return m_scriptFunction; };
+#endif
         void serializeToXML(QDomElement& parentNode, bool isOutputNode=false) const;
         bool operator==(const MixxxControl& other) const {
             return ((m_strCOGroup == other.getControlObjectGroup()) &&
@@ -57,7 +67,12 @@ class MixxxControl
             the value of some control and sending output when it hits some threshold
             (and stuff like that). */
         float m_thresholdMinimum;
-        float m_thresholdMaximum; 
+        float m_thresholdMaximum;
+
+#ifdef __MIDISCRIPT__
+	QScriptValue m_scriptFunction;
+#endif
+
 };
 
 inline bool operator<(const MixxxControl &first, const MixxxControl &second)

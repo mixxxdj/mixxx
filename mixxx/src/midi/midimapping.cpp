@@ -660,11 +660,7 @@ void MidiMapping::loadPreset(QDomElement root, bool forceLoad) {
         }
 
         loadScriptCode();   // Actually load code from the list built above
-
-        QStringList scriptFunctions;
-        if (m_pScriptEngine != NULL) {
-            scriptFunctions = m_pScriptEngine->getScriptFunctions();
-        }
+        
 
 #endif
 
@@ -677,10 +673,21 @@ void MidiMapping::loadPreset(QDomElement root, bool forceLoad) {
             MidiMessage midiMessage(control);
             MixxxControl mixxxControl(control);
 #ifdef __MIDISCRIPT__
-            // Verify script functions are loaded
-            if (mixxxControl.getMidiOption()==MIDI_OPT_SCRIPT &&
-                scriptFunctions.indexOf(mixxxControl.getControlObjectValue())==-1) {
-
+            QScriptValue func;
+            
+            // Resolve Script function
+            if (mixxxControl.getMidiOption()==MIDI_OPT_SCRIPT) {
+                func = m_pScriptEngine->resolveFunction(mixxxControl.getControlObjectValue());
+            }
+            else {
+                //Add to the input mapping.
+                internalSetInputMidiMapping(midiMessage, mixxxControl, true);
+                // This code is horrible, not a great way to handle flow of control.
+                continue;
+            }
+            
+            if (!func.isValid() || !func.isFunction()) {
+                
                 QString status = QString("%1").arg(midiMessage.getMidiStatusByte(), 0, 16).toUpper();
                 status = "0x"+status;
                 QString byte2 = QString("%1").arg(midiMessage.getMidiNo(), 0, 16).toUpper();
@@ -722,6 +729,7 @@ void MidiMapping::loadPreset(QDomElement root, bool forceLoad) {
                     ErrorDialogHandler::instance()->requestErrorDialog(props);
                 }
             } else {
+                mixxxControl.setScriptFunction(func);
 #endif
                 //Add to the input mapping.
                 internalSetInputMidiMapping(midiMessage, mixxxControl, true);
@@ -795,13 +803,15 @@ void MidiMapping::applyPreset() {
 #ifdef __MIDISCRIPT__
     // Since this can be called after re-enabling a device without reloading the XML preset,
     // the script engine must have its code loaded here as well
-    QStringList scriptFunctions;
     if (m_pScriptEngine != NULL) {
-        scriptFunctions = m_pScriptEngine->getScriptFunctions();
+        if (!m_pScriptEngine->isLoaded()) {
+            loadScriptCode();
+        }
     }
-    if (scriptFunctions.isEmpty()) loadScriptCode();
-
+    
     initializeScripts();
+    
+    
 #endif
 
     if (m_pOutputMidiDevice != NULL) {
