@@ -2,6 +2,10 @@
 #include <QtXml>
 #include "mixxxcontrol.h"
 
+#ifdef __MIDISCRIPT__
+#include <QScriptValue>
+#endif
+
 /** MixxxControl constructor */
 MixxxControl::MixxxControl(QString controlobject_group, QString controlobject_value,
                          MidiOption midioption)
@@ -12,6 +16,10 @@ MixxxControl::MixxxControl(QString controlobject_group, QString controlobject_va
     
     m_thresholdMinimum = 0.0f;
     m_thresholdMaximum = 1.0f;
+    
+#ifdef __MIDISCRIPT__
+    m_scriptFunction = QScriptValue();
+#endif
 }
 
 /** Constructor that unserializes a MixxxControl object from a <control> or <output>
