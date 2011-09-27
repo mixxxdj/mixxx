@@ -409,7 +409,7 @@ def enable_modules(self, modules, debug=False) :
 		self.AppendUnique(CPPFLAGS=['-DQT_GUI_LIB'])
 
 	debugSuffix = ''
-	if sys.platform == "linux2" :
+	if sys.platform in ["linux2", "linux3"]:
 		if debug : debugSuffix = '_debug'
 		for module in modules :
 			if module not in pclessModules : continue

@@ -89,18 +89,20 @@ void WPushButton::setup(QDomNode node)
         configKey.group = key.left(key.indexOf(","));
         configKey.item = key.mid(key.indexOf(",")+1);
 
-        ControlPushButton* p =
-                dynamic_cast<ControlPushButton*>(ControlObject::getControl(configKey));
-
-        if (p == NULL) {
-            qWarning() << "WPushButton for control " << key << "is null, skipping.";
-            con = con.nextSibling();
-            continue;
-        }
-
         //Find out if we're a push button...
-        if (node.nodeName()=="PushButton")
+        if (node.nodeName() == "PushButton")
         {
+            ControlPushButton* p = dynamic_cast<ControlPushButton*>(
+                ControlObject::getControl(configKey));
+
+            if (p == NULL) {
+                // A NULL here either means that this control is not a
+                // ControlPushButton or it does not exist. This logic is
+                // specific to push-buttons, so skip it either way.
+                con = con.nextSibling();
+                continue;
+            }
+
             bool isLeftButton = false;
             bool isRightButton = false;
             if (!selectNode(con, "ButtonState").isNull())

@@ -18,10 +18,10 @@
 BrowseTableModel::BrowseTableModel(QObject* parent, TrackCollection* pTrackCollection,
                                    RecordingManager* pRecordingManager)
         : QStandardItemModel(parent),
-          TrackModel(QSqlDatabase::database("QSQLITE"), // TrackCollections m_db (defaultConnection)
-                     "mixxx.db.model.browse"),
           m_pTrackCollection(pTrackCollection),
-		  m_pRecordingManager(pRecordingManager) {
+          m_pRecordingManager(pRecordingManager),
+          TrackModel(pTrackCollection->getDatabase(),
+                     "mixxx.db.model.browse") {
     QStringList header_data;
     header_data.insert(COLUMN_FILENAME, tr("Filename"));
     header_data.insert(COLUMN_ARTIST, tr("Artist"));
@@ -119,8 +119,7 @@ void BrowseTableModel::search(const QString& searchText)
 
 }
 
-const QString BrowseTableModel::currentSearch()
-{
+const QString BrowseTableModel::currentSearch() const {
     return QString();
 }
 

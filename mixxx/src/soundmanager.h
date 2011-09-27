@@ -79,6 +79,7 @@ private slots:
 	void slotInputPassthrough2(double);
 private:
     void clearOperativeVariables();
+    void setJACKName() const;
 
     EngineMaster *m_pMaster;
     ConfigObject<ConfigValue> *m_pConfig;

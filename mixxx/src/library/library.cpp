@@ -35,7 +35,7 @@ const QString Library::m_sTrackViewName = QString("WTrackTableView");
 Library::Library(QObject* parent, ConfigObject<ConfigValue>* pConfig, bool firstRun,
                  RecordingManager* pRecordingManager)
     : m_pConfig(pConfig),
-      m_pRecordingManager(pRecordingManager){
+      m_pRecordingManager(pRecordingManager) {
     m_pTrackCollection = new TrackCollection(pConfig);
     m_pSidebarModel = new SidebarModel(parent);
     m_pLibraryControl = new LibraryControl(this);
@@ -46,13 +46,12 @@ Library::Library(QObject* parent, ConfigObject<ConfigValue>* pConfig, bool first
     m_pMixxxLibraryFeature = new MixxxLibraryFeature(this, m_pTrackCollection);
     m_pMixxxLibraryFeature->setLibraryPrefix(prefix);
     addFeature(m_pMixxxLibraryFeature);
-    if(PromoTracksFeature::isSupported(m_pConfig)) {
+    if (PromoTracksFeature::isSupported(m_pConfig)) {
         m_pPromoTracksFeature = new PromoTracksFeature(this, pConfig,
                                                        m_pTrackCollection,
                                                        firstRun);
         addFeature(m_pPromoTracksFeature);
-    }
-    else {
+    } else {
         m_pPromoTracksFeature = NULL;
     }
 
@@ -85,9 +84,6 @@ Library::Library(QObject* parent, ConfigObject<ConfigValue>* pConfig, bool first
 }
 
 Library::~Library() {
-    delete m_pLibraryControl;
-    delete m_pSidebarModel;
-
     QMutableListIterator<LibraryFeature*> features_it(m_features);
     while(features_it.hasNext()) {
         LibraryFeature* feature = features_it.next();
@@ -95,6 +91,8 @@ Library::~Library() {
         delete feature;
     }
 
+    delete m_pLibraryControl;
+    delete m_pSidebarModel;
     //IMPORTANT: m_pTrackCollection gets destroyed via the QObject hierarchy somehow.
     //           Qt does it for us due to the way RJ wrote all this stuff.
     //Update:  - OR NOT! As of Dec 8, 2009, this pointer must be destroyed manually otherwise

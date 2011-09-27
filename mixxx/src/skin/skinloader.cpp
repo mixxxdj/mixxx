@@ -69,6 +69,5 @@ QWidget* SkinLoader::loadDefaultSkin(QWidget* pParent,
     QString skinPath = getConfiguredSkinPath();
 
     LegacySkinParser legacy(m_pConfig, pKeyboard, pPlayerManager, pLibrary, pVCMan);
-    qDebug() << "Legacy can parse:" << legacy.canParse(skinPath);
     return legacy.parseSkin(skinPath, pParent);
 }
