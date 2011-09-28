@@ -107,8 +107,12 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel *model) {
      * there's no need to exchange the headers
      * this will cause a small GUI freeze
      */
-    if(getTrackModel() == track_model)
+    if (getTrackModel() == track_model) {
+        // Re-sort the table even if the track model is the same. This triggers
+        // a select() if the table is dirty.
+        doSortByColumn(horizontalHeader()->sortIndicatorSection());
         return;
+    }
 
     setVisible(false);
 
@@ -159,10 +163,7 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel *model) {
     //setSortingEnabled(true);
     connect(horizontalHeader(), SIGNAL(sortIndicatorChanged(int, Qt::SortOrder)),
             this, SLOT(doSortByColumn(int)), Qt::AutoConnection);
-
     doSortByColumn(horizontalHeader()->sortIndicatorSection());
-
-    sortByColumn(horizontalHeader()->sortIndicatorSection());
 
     // Initialize all column-specific things
     for (int i = 0; i < model->columnCount(); ++i) {
