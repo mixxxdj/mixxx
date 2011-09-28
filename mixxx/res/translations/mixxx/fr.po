@@ -3,14 +3,14 @@ msgstr ""
 "Project-Id-Version: Mixxx 1.8\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2011-05-03 21:42-0400\n"
-"PO-Revision-Date: 2011-09-17 20:41+0000\n"
+"PO-Revision-Date: 2011-09-27 10:53+0000\n"
 "Last-Translator: franz <francoisguilhaumon@gmail.com>\n"
 "Language-Team: <tezalprod@gmail.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-09-18 04:37+0000\n"
-"X-Generator: Launchpad (build 13955)\n"
+"X-Launchpad-Export-Date: 2011-09-28 04:33+0000\n"
+"X-Generator: Launchpad (build 14049)\n"
 "X-Poedit-Country: FRANCE\n"
 "X-Poedit-Language: French\n"
 
@@ -843,7 +843,7 @@ msgstr "Changement temporaire de taux (entre 1 et 8000) sur clic droit"
 
 #: DlgPrefControlsDlg#23
 msgid "Ramping Pitchbend"
-msgstr "Ramping Pitchbend"
+msgstr "Augmenter Pitchbend"
 
 #: DlgPrefControlsDlg#24
 msgid "Pitchbend sensitivity"
@@ -1571,7 +1571,7 @@ msgstr ""
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-"
 "right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-"
 "family:'DejaVu Sans'; font-size:9pt; font-style:italic;\">Ce flux est en "
-"ligne pour fins de test!</span></p></body></html>"
+"ligne à des fins de tests!!</span></p></body></html>"
 
 #: DlgPrefShoutcastDlg#25
 msgctxt "DlgPrefShoutcastDlg#25"
@@ -1798,7 +1798,7 @@ msgstr "Canaux %1 - %2"
 
 #: DlgPrefSoundItem#3
 msgid "Form"
-msgstr "Form"
+msgstr "Formulaire"
 
 #: DlgPrefSoundItem#4
 msgid "Type (#)"
@@ -2133,7 +2133,7 @@ msgstr "/2"
 
 #: DlgTrackInfo#20
 msgid "Tap to Beat"
-msgstr "Tap to Tempo"
+msgstr "tapez le rythme"
 
 #: DlgTrackInfo#21
 msgid "Hint: Use the Library Analyze view to run BPM detection."
@@ -2947,7 +2947,7 @@ msgstr "&Bibliothèque"
 
 #: MixxxApp#85
 msgid "&View"
-msgstr "&Vue"
+msgstr "&Affichage"
 
 #: MixxxApp#86
 msgid "&Help"
@@ -3413,7 +3413,7 @@ msgstr "touche effet flanger pour le lecteur %1"
 
 #: Ui#29
 msgid "Channel %1 volume fader"
-msgstr "contrôleur du volume de la piste %1"
+msgstr "Curseur de volume de la piste %1"
 
 #: Ui#30
 msgid "Gain knob for Channel %1"
@@ -3421,7 +3421,7 @@ msgstr "Potentiomètre de gain de la piste %1"
 
 #: Ui#31
 msgid "High EQ knob for Channel %1"
-msgstr "contrôleur des aigus de la piste %1"
+msgstr "Potentiomètre des aigus du Canal %1"
 
 #: Ui#32
 msgid "Mid EQ knob for Channel %1"
@@ -3429,7 +3429,7 @@ msgstr "Bouton Mid EQ pour le Canal %1"
 
 #: Ui#33
 msgid "Low EQ knob for Channel %1"
-msgstr "contrôleur des graves de la piste %1"
+msgstr "Potentiomètre des graves du canal %1"
 
 #: Ui#34
 msgid "Loop In button for Player %1"
