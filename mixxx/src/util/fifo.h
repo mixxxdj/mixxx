@@ -27,6 +27,14 @@ class FIFO {
     int write(const DataType* pData, int count) {
         return PaUtil_WriteRingBuffer(&m_ringBuffer, pData, count);
     }
+    void writeBlocking(const DataType* pData, int count) {
+        int written = 0;
+        while (written != count) {
+            int i = write(pData, count);
+            pData += i;
+            written += i;
+        }
+    }
   private:
     DataType* m_data;
     PaUtilRingBuffer m_ringBuffer;
