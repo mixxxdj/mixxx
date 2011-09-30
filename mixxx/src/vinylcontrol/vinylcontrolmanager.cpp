@@ -147,6 +147,21 @@ bool VinylControlManager::vinylInputEnabled(int deck) {
     return ret;
 }
 
+VinylControlProxy* VinylControlManager::getVinylControlProxyForChannel(QString channel)
+{
+    // TODO: will need update for n-deck
+    if (channel == "[Channel1]")
+    {
+        return m_proxies.at(0);
+    }
+    else if (channel == "[Channel2]")
+    {
+        return m_proxies.at(1);
+    }
+    
+    return NULL;
+}
+
 void VinylControlManager::toggleDeck(double value) {
     if (!value) return;
     /** few different cases here:
