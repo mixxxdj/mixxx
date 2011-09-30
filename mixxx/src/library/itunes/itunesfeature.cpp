@@ -25,6 +25,7 @@ ITunesFeature::ITunesFeature(QObject* parent, TrackCollection* pTrackCollection)
     QStringList columns;
     columns << "id"
             << "artist"
+            << "title"
             << "album"
             << "genre"
             << "location"
