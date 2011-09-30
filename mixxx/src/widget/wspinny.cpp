@@ -374,16 +374,7 @@ void WSpinny::updateVinylControlEnabled(double enabled)
     {
         if (m_pVinylControl == NULL)
         {
-            QList<VinylControlProxy*> VCProxiesList = m_pVCManager->vinylControlProxies();
-            if (m_group == "[Channel1]")
-            {
-                m_pVinylControl = VCProxiesList.value(0);
-            }
-            else if (m_group == "[Channel2]")
-            {
-                m_pVinylControl = VCProxiesList.value(1);
-            }
-            
+            m_pVinylControl = m_pVCManager->getVinylControlProxyForChannel(m_group);
             if (m_pVinylControl != NULL)
             {
                 m_bVinylActive = true;
