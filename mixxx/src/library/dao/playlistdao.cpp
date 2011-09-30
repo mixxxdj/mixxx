@@ -51,9 +51,8 @@ int PlaylistDAO::createPlaylist(QString name, enum hidden_type hidden)
 
     qDebug() << "Inserting playlist" << name << "at position" << position;
 
-    query.prepare("INSERT INTO Playlists (name, position, hidden) "
-                  "VALUES (:name, :position, :hidden)");
- 				 // ":date_created, :date_modified)");
+    query.prepare("INSERT INTO Playlists (name, position, hidden, date_created, date_modified) "
+                  "VALUES (:name, :position, :hidden,  CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)");
     query.bindValue(":name", name);
     query.bindValue(":position", position);
     query.bindValue(":hidden", (int)hidden);

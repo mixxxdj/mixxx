@@ -56,6 +56,7 @@ public slots:
     void slotRenamePlaylist();
     void slotTogglePlaylistLock();
     void slotExportPlaylist();
+    void slotJoinWithPrevious();
 
     void slotPositionChanged(double /*value*/);
     void slotPlaylistTableChanged(int playlistId);
@@ -74,6 +75,7 @@ public slots:
     QAction *m_pRenamePlaylistAction;
     QAction *m_pLockPlaylistAction;
     QAction *m_pExportPlaylistAction;
+    QAction *m_pJoinWithPreviousAction;
     ControlObjectThreadMain* m_pCOPlayPos1;
     ControlObjectThreadMain* m_pCOPlayPos2;
     QModelIndex m_lastRightClickedIndex;
