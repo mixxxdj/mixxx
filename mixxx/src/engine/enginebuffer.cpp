@@ -614,10 +614,6 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
         m_engineLock.unlock();
 
 
-        // Give the Reader hints as to which chunks of the current song we
-        // really care about. It will try very hard to keep these in memory
-        hintReader(rate, iBufferSize);
-
         // Update all the indicators that EngineBuffer publishes to allow
         // external parts of Mixxx to observe its status.
         updateIndicators(rate, iBufferSize);
@@ -649,9 +645,9 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
         bCurBufferPaused = true;
     }
 
-    // Wake up the reader so that it processes our hints / loads new files
-    // (hopefully) before the next callback.
-    m_pReader->wake();
+    // Give the Reader hints as to which chunks of the current song we
+    // really care about. It will try very hard to keep these in memory
+    hintReader(rate, iBufferSize);
 
     if (m_bLastBufferPaused && !bCurBufferPaused) {
         if (fabs(rate) > 0.005) //at very slow forward rates, don't ramp up
