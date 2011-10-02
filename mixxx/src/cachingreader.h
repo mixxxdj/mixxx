@@ -101,7 +101,8 @@ class CachingReader : public EngineWorker {
 
     // Issue a list of hints, but check whether any of the hints request a chunk
     // that is not in the cache. If any hints do request a chunk not in cache,
-    // then wake the reader so that it can process them.
+    // then wake the reader so that it can process them. Must only be called
+    // from the engine callback.
     void hintAndMaybeWake(QList<Hint>& hintList);
 
     // Request that the CachingReader load a new track. These requests are
