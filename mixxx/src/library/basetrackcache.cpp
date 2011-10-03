@@ -24,7 +24,7 @@ BaseTrackCache::BaseTrackCache(TrackCollection* pTrackCollection,
                                QString tableName,
                                QString idColumn,
                                QList<QString> columns)
-        : QObject(pTrackCollection),
+        : QObject(),
           m_tableName(tableName),
           m_idColumn(idColumn),
           m_columns(columns),
@@ -209,6 +209,8 @@ QVariant BaseTrackCache::getTrackValueForColumn(TrackPointer pTrack, int column)
         return QVariant(pTrack->getAlbum());
     } else if (fieldIndex(LIBRARYTABLE_YEAR) == column) {
         return QVariant(pTrack->getYear());
+    } else if (fieldIndex(LIBRARYTABLE_DATETIMEADDED) == column) {
+        return QVariant(pTrack->getDateAdded());
     } else if (fieldIndex(LIBRARYTABLE_GENRE) == column) {
         return QVariant(pTrack->getGenre());
     } else if (fieldIndex(LIBRARYTABLE_FILETYPE) == column) {
