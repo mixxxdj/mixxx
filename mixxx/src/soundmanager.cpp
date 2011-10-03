@@ -497,13 +497,6 @@ void SoundManager::checkConfig() {
     // latency checks itself for validity on SMConfig::setLatency()
 }
 
-void SoundManager::sync()
-{
-    ControlObject::sync();
-    //qDebug() << "sync";
-
-}
-
 //Requests a buffer in the proper format, if we're prepared to give one.
 QHash<AudioOutput, const CSAMPLE*>
 SoundManager::requestBuffer(QList<AudioOutput> outputs,
@@ -547,8 +540,6 @@ SoundManager::requestBuffer(QList<AudioOutput> outputs,
     {
         // Only generate a new buffer for the clock reference card
 //         qDebug() << "New buffer for" << device->getDisplayName() << "of size" << iFramesPerBuffer;
-        //First, sync control parameters with changes from GUI thread
-        sync();
 
         //Process a block of samples for output. iFramesPerBuffer is the
         //number of samples for one channel, but the EngineObject
