@@ -40,11 +40,11 @@ void EngineWorkerScheduler::workerReady(EngineWorker* pWorker) {
 }
 
 void EngineWorkerScheduler::workerStarted(EngineWorker* pWorker) {
-    Q_UNUSED(pWorker);
 }
 
 void EngineWorkerScheduler::workerFinished(EngineWorker* pWorker) {
-    Q_UNUSED(pWorker);
+    QMutexLocker locker(&m_mutex);
+    m_activeWorkers.remove(pWorker);
 }
 
 void EngineWorkerScheduler::runWorkers() {
@@ -52,16 +52,16 @@ void EngineWorkerScheduler::runWorkers() {
 }
 
 void EngineWorkerScheduler::run() {
+    m_mutex.lock();
     while (true) {
         EngineWorker* pWorker = NULL;
         while (m_scheduleFIFO.read(&pWorker, 1) == 1) {
-            if (pWorker) {
+            if (pWorker && !m_activeWorkers.contains(pWorker)) {
+                m_activeWorkers.insert(pWorker);
                 m_workerThreadPool.start(pWorker);
             }
         }
-        m_waitMutex.lock();
-        m_waitCondition.wait(&m_waitMutex);
-        m_waitMutex.unlock();
+        m_waitCondition.wait(&m_mutex);
     }
 }
 

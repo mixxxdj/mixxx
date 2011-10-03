@@ -2,6 +2,7 @@
 #define ENGINEWORKERSCHEDULER_H
 
 #include <QMutex>
+#include <QSet>
 #include <QThreadPool>
 #include <QWaitCondition>
 
@@ -13,7 +14,7 @@
 // The max number of threads that EngineWorkers will be scheduled on. TODO(XXX)
 // this should be dynamically chosen by the user, since it will vary depending
 // on the machine resources available.
-#define ENGINE_WORKER_THREAD_COUNT 2
+#define ENGINE_WORKER_THREAD_COUNT 4
 
 class EngineWorker;
 
@@ -38,7 +39,8 @@ class EngineWorkerScheduler : public QThread {
     FIFO<EngineWorker*> m_scheduleFIFO;
     QThreadPool m_workerThreadPool;
     QWaitCondition m_waitCondition;
-    QMutex m_waitMutex;
+    QMutex m_mutex;
+    QSet<EngineWorker*> m_activeWorkers;
 };
 
 #endif /* ENGINEWORKERSCHEDULER_H */
