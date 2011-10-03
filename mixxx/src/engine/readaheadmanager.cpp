@@ -120,19 +120,24 @@ void ReadAheadManager::notifySeek(int iSeekPosition) {
     m_iCurrentPosition = iSeekPosition;
 }
 
-void ReadAheadManager::hintReader(QList<Hint>& hintList, int iSamplesPerBuffer) {
+void ReadAheadManager::hintReader(double dRate, QList<Hint>& hintList,
+                                  int iSamplesPerBuffer) {
+    bool in_reverse = dRate < 0;
     Hint current_position;
 
-    // Make sure that we have enough samples to do n more process() calls
-    // without reading again either forward or reverse.
-    int n = 64; // 5? 10? 20? who knows!
-    int length_to_cache = iSamplesPerBuffer * n;
+    // SoundTouch can read up to 2 chunks ahead. Always keep 2 chunks ahead in
+    // cache.
+    int length_to_cache = 2*CachingReader::kSamplesPerChunk;
+
     current_position.length = length_to_cache;
-    current_position.sample = m_iCurrentPosition;
+    current_position.sample = in_reverse ?
+            m_iCurrentPosition - length_to_cache :
+            m_iCurrentPosition;
 
     // If we are trying to cache before the start of the track,
     // Then we don't need to cache because it's all zeros!
-    if (current_position.sample < 0)
+    if (current_position.sample < 0 &&
+        current_position.sample + current_position.length < 0)
         return;
 
     // top priority, we need to read this data immediately
