@@ -117,16 +117,16 @@ class CachingReader : public EngineWorker {
     // thread pool via the EngineWorkerScheduler.
     void run();
 
+    // A Chunk is a memory-resident section of audio that has been cached. Each
+    // chunk holds a fixed number of samples given by kSamplesPerChunk.
+    const static int kChunkLength, kSamplesPerChunk;
+
   signals:
     // Emitted once a new track is loaded and ready to be read from.
     void trackLoaded(TrackPointer pTrack, int iSampleRate, int iNumSamples);
     void trackLoadFailed(TrackPointer pTrack, QString reason);
 
   private:
-    // A Chunk is a memory-resident section of audio that has been cached. Each
-    // chunk holds a fixed number of samples given by kSamplesPerChunk.
-    const static int kChunkLength, kSamplesPerChunk;
-
     // Removes a chunk from the LRU list
     static Chunk* removeFromLRUList(Chunk* chunk, Chunk* head);
     // Inserts a chunk into the LRU list
