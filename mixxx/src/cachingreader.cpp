@@ -227,8 +227,7 @@ Chunk* CachingReader::lookupChunk(int chunk_number) {
 void CachingReader::processChunkReadRequest(ChunkReadRequest* request,
                                             ReaderStatusUpdate* update) {
     int chunk_number = request->chunk->chunk_number;
-    // qDebug() << "Processing ChunkReadRequest for" << chunk_number << "into"
-    //          << request->chunk;
+    //qDebug() << "Processing ChunkReadRequest for" << chunk_number;
     update->status = CHUNK_READ_INVALID;
     update->chunk = request->chunk;
     update->chunk->length = 0;
@@ -385,7 +384,7 @@ int CachingReader::read(int sample, int num_samples, CSAMPLE* buffer) {
 
         // If the chunk is not in cache, then we must return an error.
         if (current == NULL) {
-            qDebug() << "Couldn't get chunk " << start_chunk
+            qDebug() << "Couldn't get chunk " << chunk_num
                      << " in read() of [" << sample << "," << sample+num_samples
                      << "] chunks " << start_chunk << "-" << end_chunk;
 
@@ -503,7 +502,7 @@ void CachingReader::hintAndMaybeWake(QList<Hint>& hintList) {
 
         // This will cause the chunk to be 'freshened' in the cache. The
         // chunk will be moved to the end of the LRU list.
-        if (lookupChunk(chunk) == NULL && !m_chunksBeingRead.contains(chunk)) {
+        if (!m_chunksBeingRead.contains(chunk) && lookupChunk(chunk) == NULL) {
             shouldWake = true;
             Chunk* pChunk = allocateChunkExpireLRU();
             Q_ASSERT(pChunk != NULL);
