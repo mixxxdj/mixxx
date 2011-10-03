@@ -207,9 +207,6 @@ Chunk* CachingReader::lookupChunk(int chunk_number) {
         chunk = m_allocatedChunks.value(chunk_number);
 
         // Make sure we're all in agreement here.
-        if (chunk_number != chunk->chunk_number) {
-            qDebug() << "Inconsistency!" << chunk_number << chunk->chunk_number;
-        }
         Q_ASSERT(chunk_number == chunk->chunk_number);
 
 
