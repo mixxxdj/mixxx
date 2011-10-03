@@ -777,7 +777,7 @@ void EngineBuffer::hintReader(const double dRate,
     m_engineLock.lock();
 
     m_hintList.clear();
-    m_pReadAheadManager->hintReader(m_hintList, iSourceSamples);
+    m_pReadAheadManager->hintReader(dRate, m_hintList, iSourceSamples);
 
     QListIterator<EngineControl*> it(m_engineControls);
     while (it.hasNext()) {
