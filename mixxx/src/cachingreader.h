@@ -71,6 +71,7 @@ enum ReaderStatus {
 typedef struct ReaderStatusUpdate {
     ReaderStatus status;
     Chunk* chunk;
+    int trackNumSamples;
     ReaderStatusUpdate() {
         status = INVALID;
         chunk = NULL;
@@ -215,6 +216,7 @@ class CachingReader : public EngineWorker {
     Mixxx::SoundSource* m_pCurrentSoundSource;
     int m_iTrackSampleRate;
     int m_iTrackNumSamples;
+    int m_iTrackNumSamplesCallbackSafe;
 
     // Temporary buffer for reading from SoundSources
     SAMPLE* m_pSample;
