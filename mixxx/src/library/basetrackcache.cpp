@@ -211,6 +211,8 @@ QVariant BaseTrackCache::getTrackValueForColumn(TrackPointer pTrack, int column)
         return QVariant(pTrack->getAlbum());
     } else if (fieldIndex(LIBRARYTABLE_YEAR) == column) {
         return QVariant(pTrack->getYear());
+    } else if (fieldIndex(LIBRARYTABLE_DATETIMEADDED) == column) {
+        return QVariant(pTrack->getCreateDate());
     } else if (fieldIndex(LIBRARYTABLE_GENRE) == column) {
         return QVariant(pTrack->getGenre());
     } else if (fieldIndex(LIBRARYTABLE_FILETYPE) == column) {
