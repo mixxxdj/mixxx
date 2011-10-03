@@ -33,6 +33,7 @@
 #include "enginexfader.h"
 #include "enginesidechain.h"
 #include "enginepfldelay.h"
+#include "engine/syncworker.h"
 #include "sampleutil.h"
 
 #ifdef __LADSPA__
@@ -43,6 +44,8 @@
 EngineMaster::EngineMaster(ConfigObject<ConfigValue> * _config,
                            const char * group) {
     m_pWorkerScheduler = new EngineWorkerScheduler(this);
+    m_pWorkerScheduler->start();
+    m_pSyncWorker = new SyncWorker(m_pWorkerScheduler);
 
     // Master sample rate
     m_pMasterSampleRate = new ControlObject(ConfigKey(group, "samplerate"));
@@ -166,6 +169,9 @@ EngineMaster::~EngineMaster()
         delete pChannelInfo->m_pVolumeControl;
         delete pChannelInfo;
     }
+
+    delete m_pWorkerScheduler;
+    delete m_pSyncWorker;
 }
 
 const CSAMPLE* EngineMaster::getMasterBuffer() const
@@ -516,8 +522,11 @@ void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
     //Master/headphones interleaving is now done in
     //SoundManager::requestBuffer() - Albert Nov 18/07
 
-    // We're close to the end of the callback. Schedule the workers. Hopefully
-    // the work thread doesn't get scheduled between now and then.
+    // Schedule a ControlObject sync
+    m_pSyncWorker->schedule();
+
+    // We're close to the end of the callback. Wake up the engine worker
+    // scheduler so that it runs the workers.
     m_pWorkerScheduler->runWorkers();
 }
 

@@ -522,58 +522,6 @@ void SoundManager::checkConfig() {
     // latency checks itself for validity on SMConfig::setLatency()
 }
 
-void SoundManager::sync()
-{
-    ControlObject::sync();
-    //qDebug() << "sync";
-
-}
-
-void SoundManager::slotInputPassthrough1(double toggle)
-{
-	if (m_bPassthroughActive[0] != (bool)toggle)
-		m_bPassthroughActive[0] = (bool)toggle;
-	if ((bool)toggle)
-	{
-		//iterate through inputs.  if none for deck 0, then toggle it back again
-		//this is separate from hasvinylinput because it has to work even if
-		//vinyl support is not compiled
-		foreach (AudioInput in, m_inputBuffers.keys())
-		{
-			if (in.getIndex() == 0)
-			{
-				m_pControlObjectVinylStatus1->slotSet(VINYL_STATUS_PASSTHROUGH);
-				return;
-			}
-		}
-		//didn't find itm_pControlObjectVinylStatus1 = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[Channel1]", "VinylStatus")));
-		m_pControlObjectInputPassthrough1->slotSet(false);
-		
-	}
-}
-
-void SoundManager::slotInputPassthrough2(double toggle)
-{
-	if (m_bPassthroughActive[1] != (bool)toggle)
-		m_bPassthroughActive[1] = (bool)toggle;
-	if (toggle)
-	{
-		//iterate through inputs.  if none for deck 0, then toggle it back again
-		//this is separate from hasvinylinput because it has to work even if
-		//vinyl support is not compiled
-		foreach (AudioInput in, m_inputBuffers.keys())
-		{
-			if (in.getIndex() == 1)
-			{
-				m_pControlObjectVinylStatus2->slotSet(VINYL_STATUS_PASSTHROUGH);
-				return;
-			}
-		}
-		//didn't find it
-		m_pControlObjectInputPassthrough2->slotSet(false);
-	}
-}
-
 //Requests a buffer in the proper format, if we're prepared to give one.
 QHash<AudioOutput, const CSAMPLE*>
 SoundManager::requestBuffer(QList<AudioOutput> outputs,
@@ -617,8 +565,6 @@ SoundManager::requestBuffer(QList<AudioOutput> outputs,
     {
         // Only generate a new buffer for the clock reference card
 //         qDebug() << "New buffer for" << device->getDisplayName() << "of size" << iFramesPerBuffer;
-        //First, sync control parameters with changes from GUI thread
-        sync();
 
         //Process a block of samples for output. iFramesPerBuffer is the
         //number of samples for one channel, but the EngineObject

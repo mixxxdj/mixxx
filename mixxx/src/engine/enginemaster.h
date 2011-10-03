@@ -41,6 +41,7 @@ class ControlPushButton;
 class EngineVinylSoundEmu;
 class EngineSideChain;
 class EnginePflDelay;
+class SyncWorker;
 
 class EngineMaster : public EngineObject, public AudioSource {
     Q_OBJECT
@@ -138,6 +139,7 @@ class EngineMaster : public EngineObject, public AudioSource {
     QMutex passthroughBufferMutex[2];
 
     EngineWorkerScheduler *m_pWorkerScheduler;
+    SyncWorker* m_pSyncWorker;
 
     ControlObject* m_pMasterVolume;
     ControlObject* m_pHeadVolume;

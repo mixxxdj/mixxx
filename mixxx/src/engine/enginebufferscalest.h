@@ -30,7 +30,7 @@
 #include "SoundTouch.h"
 
 /** Number of samples to read ahead */
-const int kiSoundTouchReadAheadLength = 1000;
+const int kiSoundTouchReadAheadLength = 10000;
 using namespace soundtouch;
 
 class ReadAheadManager;
@@ -40,7 +40,7 @@ class ReadAheadManager;
   */
 class EngineBufferScaleST : public EngineBufferScale {
     Q_OBJECT
-public: 
+public:
     EngineBufferScaleST(ReadAheadManager* pReadAheadManager);
     ~EngineBufferScaleST();
 
@@ -61,13 +61,13 @@ public:
     /** Flush buffer */
     void clear();
 
-public slots:    
+public slots:
     void slotSetSamplerate(double dSampleRate);
 private:
     /** Holds the playback direction */
     bool m_bBackwards;
 
-    /** Buffer used to reverse output from SoundTouch 
+    /** Buffer used to reverse output from SoundTouch
       * library when playback direction is backwards */
     CSAMPLE *buffer_back;
 
@@ -79,7 +79,7 @@ private:
 
     /** Used when clear is called */
     bool m_bClear;
-    
+
     /** Used to protect SoundTouch calls */
     QMutex m_qMutex;
 
