@@ -422,6 +422,8 @@ QVariant BaseSqlTableModel::data(const QModelIndex& index, int role) const {
                 // Convert to a bool. Not really that useful since it gets converted
                 // right back to a QVariant
                 value = (value == "true") ? true : false;
+            } else if (column == fieldIndex(LIBRARYTABLE_DATETIMEADDED)) {
+                value = value.toDateTime();
             }
             break;
         case Qt::EditRole:
