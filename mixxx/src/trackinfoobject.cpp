@@ -133,7 +133,7 @@ void TrackInfoObject::initialize(bool parseHeader) {
     m_iChannels = 0;
     m_fCuePoint = 0.0f;
     m_dVisualResampleRate = 0;
-    m_dCreateDate = QDateTime::currentDateTime();
+    m_dCreateDate = m_dateAdded = QDateTime::currentDateTime();
     m_Rating = 0;
     m_key = "";
 
@@ -401,6 +401,16 @@ QString TrackInfoObject::getInfo()  const
     QString artist = m_sArtist.trimmed() == "" ? "" : m_sArtist + ", ";
     QString sInfo = artist + m_sTitle;
     return sInfo;
+}
+
+QDateTime TrackInfoObject::getDateAdded() const {
+    QMutexLocker lock(&m_qMutex);
+    return m_dateAdded;
+}
+
+void TrackInfoObject::setDateAdded(QDateTime dateAdded) {
+    QMutexLocker lock(&m_qMutex);
+    m_dateAdded = dateAdded;
 }
 
 int TrackInfoObject::getDuration()  const
