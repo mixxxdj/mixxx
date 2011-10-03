@@ -349,6 +349,7 @@ class MixxxCore(Feature):
 
                    "engine/engineworker.cpp",
                    "engine/engineworkerscheduler.cpp",
+                   "engine/syncworker.cpp",
                    "engine/enginebuffer.cpp",
                    "engine/enginebufferscale.cpp",
                    "engine/enginebufferscaledummy.cpp",
@@ -571,6 +572,8 @@ class MixxxCore(Feature):
 
                    "segmentation.cpp",
                    "tapfilter.cpp",
+
+                   "util/pa_ringbuffer.c",
                    ]
 
         # Uic these guys (they're moc'd automatically after this) - Generates
