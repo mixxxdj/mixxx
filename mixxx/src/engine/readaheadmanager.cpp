@@ -123,10 +123,11 @@ void ReadAheadManager::notifySeek(int iSeekPosition) {
 void ReadAheadManager::hintReader(QList<Hint>& hintList, int iSamplesPerBuffer) {
     Hint current_position;
 
-    // Make sure that we have enough samples to do n more process() calls
-    // without reading again either forward or reverse.
-    int n = 8; // 5? 10? 20? who knows!
-    int length_to_cache = iSamplesPerBuffer * n;
+    // SoundTouch can read up to 2 chunks ahead. Always keep 2 chunks ahead in
+    // cache.
+    int length_to_cache = 2*CachingReader::kSamplesPerChunk;
+
+    // TODO(rryan) This code should be rate dependent. It doesn't hint backwards!
     current_position.length = length_to_cache;
     current_position.sample = m_iCurrentPosition;
 
