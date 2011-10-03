@@ -1,21 +1,33 @@
 #ifndef ENGINEWORKERSCHEDULER_H
 #define ENGINEWORKERSCHEDULER_H
 
-#include <QSignalMapper>
-#include <QSet>
-#include <QThreadPool>
 #include <QMutex>
+#include <QThreadPool>
+#include <QWaitCondition>
+
+#include "util/fifo.h"
+
+// The max engine workers that can be expected to run within a callback
+// (e.g. the max that we will schedule). Must be a power of 2.
+#define MAX_ENGINE_WORKERS 32
+// The max number of threads that EngineWorkers will be scheduled on. TODO(XXX)
+// this should be dynamically chosen by the user, since it will vary depending
+// on the machine resources available.
+#define ENGINE_WORKER_THREAD_COUNT 2
 
 class EngineWorker;
 
-class EngineWorkerScheduler : public QThreadPool {
+class EngineWorkerScheduler : public QThread {
     Q_OBJECT
   public:
     EngineWorkerScheduler(QObject* pParent=NULL);
     virtual ~EngineWorkerScheduler();
 
-    void runWorkers();
     void bindWorker(EngineWorker* pWorker);
+    void runWorkers();
+
+  protected:
+    void run();
 
   private slots:
     void workerReady(EngineWorker* worker);
@@ -23,9 +35,10 @@ class EngineWorkerScheduler : public QThreadPool {
     void workerFinished(EngineWorker* worker);
 
   private:
-    QSet<EngineWorker*> m_scheduledWorkers;
-    QMutex m_mutex;
+    FIFO<EngineWorker*> m_scheduleFIFO;
+    QThreadPool m_workerThreadPool;
+    QWaitCondition m_waitCondition;
+    QMutex m_waitMutex;
 };
-
 
 #endif /* ENGINEWORKERSCHEDULER_H */

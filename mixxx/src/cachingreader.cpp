@@ -313,7 +313,6 @@ void CachingReader::process() {
                 }
             }
         } else if (status.status == CHUNK_READ_EOF) {
-            qDebug() << "WARNING: READER THREAD GOT EOF";
             Chunk* pChunk = status.chunk;
             Q_ASSERT(pChunk != NULL);
             Chunk* pChunk2 = m_chunksBeingRead.take(pChunk->chunk_number);

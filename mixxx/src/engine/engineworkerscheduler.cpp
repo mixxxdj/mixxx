@@ -8,11 +8,14 @@
 #include "engine/engineworkerscheduler.h"
 
 EngineWorkerScheduler::EngineWorkerScheduler(QObject* pParent)
-        : QThreadPool(pParent) {
+        : m_scheduleFIFO(MAX_ENGINE_WORKERS) {
+    Q_UNUSED(pParent);
+    m_workerThreadPool.setMaxThreadCount(ENGINE_WORKER_THREAD_COUNT);
+    // A timeout of 1 minute for threads in the pool.
+    m_workerThreadPool.setExpiryTimeout(60000);
 }
 
 EngineWorkerScheduler::~EngineWorkerScheduler() {
-
 }
 
 void EngineWorkerScheduler::bindWorker(EngineWorker* pWorker) {
@@ -29,25 +32,36 @@ void EngineWorkerScheduler::bindWorker(EngineWorker* pWorker) {
 
 void EngineWorkerScheduler::workerReady(EngineWorker* pWorker) {
     if (pWorker) {
-        QMutexLocker locker(&m_mutex);
-        m_scheduledWorkers.insert(pWorker);
+        // If the write fails, we really can't do much since we should not block
+        // in this slot. Write the address of the variable pWorker, since it is
+        // a 1-element array.
+        m_scheduleFIFO.write(&pWorker, 1);
     }
 }
 
 void EngineWorkerScheduler::workerStarted(EngineWorker* pWorker) {
+    Q_UNUSED(pWorker);
 }
 
 void EngineWorkerScheduler::workerFinished(EngineWorker* pWorker) {
+    Q_UNUSED(pWorker);
 }
 
-
 void EngineWorkerScheduler::runWorkers() {
-    QMutexLocker locker(&m_mutex);
-    QMutableSetIterator<EngineWorker*> it(m_scheduledWorkers);
-    while (it.hasNext()) {
-        EngineWorker* pWorker = it.next();
-        it.remove();
-        start(pWorker);
+    m_waitCondition.wakeAll();
+}
+
+void EngineWorkerScheduler::run() {
+    while (true) {
+        EngineWorker* pWorker = NULL;
+        while (m_scheduleFIFO.read(&pWorker, 1) == 1) {
+            if (pWorker) {
+                m_workerThreadPool.start(pWorker);
+            }
+        }
+        m_waitMutex.lock();
+        m_waitCondition.wait(&m_waitMutex);
+        m_waitMutex.unlock();
     }
 }
 

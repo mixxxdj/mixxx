@@ -43,6 +43,7 @@ EngineMaster::EngineMaster(ConfigObject<ConfigValue> * _config,
                            const char * group) {
 
     m_pWorkerScheduler = new EngineWorkerScheduler(this);
+    m_pWorkerScheduler->start();
 
     // Master sample rate
     ControlObject * sr = new ControlObject(ConfigKey(group, "samplerate"));
@@ -409,8 +410,8 @@ void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
     //Master/headphones interleaving is now done in
     //SoundManager::requestBuffer() - Albert Nov 18/07
 
-    // We're close to the end of the callback. Schedule the workers. Hopefully
-    // the work thread doesn't get scheduled between now and then.
+    // We're close to the end of the callback. Wake up the engine worker
+    // scheduler so that it runs the workers.
     m_pWorkerScheduler->runWorkers();
 }
 
