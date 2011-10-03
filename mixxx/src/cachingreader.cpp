@@ -34,6 +34,7 @@ CachingReader::CachingReader(const char* _group,
         m_pCurrentSoundSource(NULL),
         m_iTrackSampleRate(0),
         m_iTrackNumSamples(0),
+        m_iTrackNumSamplesCallbackSafe(0),
         m_readerStatus(INVALID),
         m_mruChunk(NULL),
         m_lruChunk(NULL),
@@ -284,6 +285,7 @@ void CachingReader::process() {
         } else if (status.status == TRACK_LOADED) {
             freeAllChunks();
             m_readerStatus = status.status;
+            m_iTrackNumSamplesCallbackSafe = status.trackNumSamples;
         } else if (status.status == CHUNK_READ_SUCCESS) {
             Chunk* pChunk = status.chunk;
             Q_ASSERT(pChunk != NULL);
@@ -370,8 +372,12 @@ int CachingReader::read(int sample, int num_samples, CSAMPLE* buffer) {
         }
     }
 
-    int start_chunk = chunkForSample(sample);
-    int end_chunk = chunkForSample(sample + num_samples - 1);
+    int start_sample = math_min(m_iTrackNumSamplesCallbackSafe,
+                                sample);
+    int start_chunk = chunkForSample(start_sample);
+    int end_sample = math_min(m_iTrackNumSamplesCallbackSafe,
+                              sample + num_samples - 1);
+    int end_chunk = chunkForSample(end_sample);
 
     int samples_remaining = num_samples;
     int current_sample = sample;
@@ -485,8 +491,12 @@ void CachingReader::hintAndMaybeWake(QList<Hint>& hintList) {
         }
         //Q_ASSERT(hint.sample >= 0);
         Q_ASSERT(hint.length >= 0);
-        int start_chunk = chunkForSample(hint.sample);
-        int end_chunk = chunkForSample(hint.sample + hint.length);
+        int start_sample = math_min(m_iTrackNumSamplesCallbackSafe,
+                                    hint.sample);
+        int start_chunk = chunkForSample(start_sample);
+        int end_sample = math_min(m_iTrackNumSamplesCallbackSafe,
+                                  hint.sample + hint.length - 1);
+        int end_chunk = chunkForSample(end_sample);
 
         for (int current = start_chunk; current <= end_chunk; ++current) {
             chunksToFreshen.insert(current);
@@ -566,6 +576,7 @@ void CachingReader::loadTrack(TrackPointer pTrack) {
     ReaderStatusUpdate status;
     status.status = TRACK_LOADED;
     status.chunk = NULL;
+    status.trackNumSamples = 0;
 
     if (m_pCurrentSoundSource != NULL) {
         delete m_pCurrentSoundSource;
@@ -590,7 +601,8 @@ void CachingReader::loadTrack(TrackPointer pTrack) {
     m_pCurrentSoundSource = new SoundSourceProxy(pTrack);
     m_pCurrentSoundSource->open(); //Open the song for reading
     m_iTrackSampleRate = m_pCurrentSoundSource->getSampleRate();
-    m_iTrackNumSamples = m_pCurrentSoundSource->length();
+    m_iTrackNumSamples = status.trackNumSamples =
+            m_pCurrentSoundSource->length();
 
     if (m_iTrackNumSamples == 0 || m_iTrackSampleRate == 0) {
         // Must unlock before emitting to avoid deadlock
