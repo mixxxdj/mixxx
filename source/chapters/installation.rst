@@ -2,7 +2,7 @@ Installing Mixxx
 ****************
 
 First, you need to download Mixxx. If you haven't done this already, head on
-over to our `downloads page <http://mixxx.org/downloads.php>`_ and grab a copy
+over to our `downloads page <http://mixxx.org/download.php>`_ and grab a copy
 for your OS.
 
 Windows
@@ -18,8 +18,8 @@ versions. (It may also run on Windows 2000.)
 Mac OS X
 ========
 
-OS X users on Snow Leopard or greater can install Mixxx from the Mac App
-Store. Alternatively, Intel and PPC users can install Mixxx by downloading and
+OS X users on Snow Leopard or greater can install Mixxx from the `Mac App
+Store <http://itunes.apple.com/us/app/mixxx/id413756578?mt=12>`_. Alternatively, Intel and PPC users can install Mixxx by downloading and
 double-clicking the Mixxx DMG archive, and then dragging-and-dropping the Mixxx
 bundle into their Applications folder. Mixxx requires an Intel or PPC Mac
 running OS 10.4 or newer.
