@@ -46,3 +46,12 @@ Glossary of Terms
      Internet Relay Chat (IRC) is a an online chat network. The Mixxx IRC
      channel can be found on the `FreeNode IRC Network <http://freenode.net>`_
      in the #mixxx channel.
+
+   BPM
+     Beats per minute (BPM) is used as a measure of tempo in music.
+     If you tap your foot to music you are following the “beat”. 
+     If you count how many taps you do in a minute you have calculated the BPM.
+
+   Beatmatching
+     A mixing technique used to establish a similar tempo with two or more tracks,
+     making them sound like just one track.
