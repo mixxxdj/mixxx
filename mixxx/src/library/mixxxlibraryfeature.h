@@ -22,26 +22,24 @@ class MixxxLibraryFeature : public LibraryFeature {
 
     QVariant title();
     QIcon getIcon();
-
     bool dropAccept(QUrl url);
     bool dropAcceptChild(const QModelIndex& index, QUrl url);
     bool dragMoveAccept(QUrl url);
     bool dragMoveAcceptChild(const QModelIndex& index, QUrl url);
-
     TreeItemModel* getChildModel();
 
-public slots:
+  public slots:
     void activate();
     void activateChild(const QModelIndex& index);
     void onRightClick(const QPoint& globalPos);
     void onRightClickChild(const QPoint& globalPos, QModelIndex index);
     void onLazyChildExpandation(const QModelIndex& index);
     void refreshLibraryModels();
-private:
+
+  private:
     LibraryTableModel* m_pLibraryTableModel;
     MissingTableModel* m_pMissingTableModel;
     TreeItemModel m_childModel;
 };
-
 
 #endif /* MIXXXLIBRARYFEATURE_H */

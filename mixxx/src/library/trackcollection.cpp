@@ -4,11 +4,13 @@
 #include <QtDebug>
 
 #include "trackcollection.h"
-#include "xmlparse.h"
+
 #include "defs.h"
-#include "soundsourceproxy.h"
+#include "library/librarytablemodel.h"
 #include "library/schemamanager.h"
+#include "soundsourceproxy.h"
 #include "trackinfoobject.h"
+#include "xmlparse.h"
 
 TrackCollection::TrackCollection(ConfigObject<ConfigValue>* pConfig)
         : m_pConfig(pConfig),
@@ -17,30 +19,29 @@ TrackCollection::TrackCollection(ConfigObject<ConfigValue>* pConfig)
           m_cueDao(m_db),
           m_trackDao(m_db, m_cueDao, pConfig),
           m_crateDao(m_db),
-          m_supportedFileExtensionsRegex(SoundSourceProxy::supportedFileExtensionsRegex(),
-                                         Qt::CaseInsensitive)
-{
-
-    bCancelLibraryScan = 0;
-    qDebug() << QSqlDatabase::drivers();
-
+          m_supportedFileExtensionsRegex(
+              SoundSourceProxy::supportedFileExtensionsRegex(),
+              Qt::CaseInsensitive) {
+    bCancelLibraryScan = false;
+    qDebug() << "Available QtSQL drivers:" << QSqlDatabase::drivers();
     m_db.setHostName("localhost");
     m_db.setDatabaseName(MIXXX_DB_PATH);
     m_db.setUserName("mixxx");
     m_db.setPassword("mixxx");
     bool ok = m_db.open();
     qDebug() << __FILE__ << "DB status:" << ok;
-    qDebug() << m_db.lastError();
-
-
-
-
-    //Check for tables and create them if missing
-    if (!checkForTables()) exit(-1);
+    if (m_db.lastError().isValid()) {
+        qDebug() << "Error loading database:" << m_db.lastError();
+    }
+    // Check for tables and create them if missing
+    if (!checkForTables()) {
+        // TODO(XXX) something a little more elegant
+        exit(-1);
+    }
 }
 
-TrackCollection::~TrackCollection()
-{
+TrackCollection::~TrackCollection() {
+    qDebug() << "~TrackCollection()";
     // Save all tracks that haven't been saved yet.
     m_trackDao.saveDirtyTracks();
     // TODO(XXX) Maybe fold saveDirtyTracks into TrackDAO::finish now that it
@@ -52,11 +53,9 @@ TrackCollection::~TrackCollection()
     //transaction when this code is called. If there is, it means we probably
     //aren't committing a transaction somewhere that should be.
     m_db.close();
-    qDebug() << "TrackCollection destroyed";
 }
 
-bool TrackCollection::checkForTables()
-{
+bool TrackCollection::checkForTables() {
     if (!m_db.open()) {
         QMessageBox::critical(0, tr("Cannot open database"),
                               tr("Unable to establish a database connection.\n"
@@ -87,20 +86,16 @@ bool TrackCollection::checkForTables()
     return true;
 }
 
-
-QSqlDatabase& TrackCollection::getDatabase()
-{
- 	return m_db;
-  }
-
+QSqlDatabase& TrackCollection::getDatabase() {
+    return m_db;
+}
 
 /** Do a non-recursive import of all the songs in a directory. Does NOT decend into subdirectories.
     @param trackDao The track data access object which provides a connection to the database. We use this parameter in order to make this function callable from separate threads. You need to use a different DB connection for each thread.
     @return true if the scan completed without being cancelled. False if the scan was cancelled part-way through.
 */
 bool TrackCollection::importDirectory(QString directory, TrackDAO &trackDao,
-                                      QList<TrackInfoObject*>& tracksToAdd)
-{
+                                      QList<TrackInfoObject*>& tracksToAdd) {
     //qDebug() << "TrackCollection::importDirectory(" << directory<< ")";
 
     emit(startedLoading());
@@ -125,8 +120,7 @@ bool TrackCollection::importDirectory(QString directory, TrackDAO &trackDao,
         m_libraryScanMutex.lock();
         bool cancel = bCancelLibraryScan;
         m_libraryScanMutex.unlock();
-        if (cancel)
-        {
+        if (cancel) {
             return false;
         }
 
@@ -165,17 +159,13 @@ bool TrackCollection::importDirectory(QString directory, TrackDAO &trackDao,
     return true;
 }
 
-
-
-void TrackCollection::slotCancelLibraryScan()
-{
+void TrackCollection::slotCancelLibraryScan() {
     m_libraryScanMutex.lock();
     bCancelLibraryScan = 1;
     m_libraryScanMutex.unlock();
 }
 
-void TrackCollection::resetLibaryCancellation()
-{
+void TrackCollection::resetLibaryCancellation() {
     m_libraryScanMutex.lock();
     bCancelLibraryScan = 0;
     m_libraryScanMutex.unlock();
@@ -193,3 +183,13 @@ PlaylistDAO& TrackCollection::getPlaylistDAO() {
     return m_playlistDao;
 }
 
+QSharedPointer<BaseTrackCache> TrackCollection::getTrackSource(
+    const QString name) {
+    return m_trackSources.value(name, QSharedPointer<BaseTrackCache>());
+}
+
+void TrackCollection::addTrackSource(
+    const QString name, QSharedPointer<BaseTrackCache> trackSource) {
+    Q_ASSERT(!m_trackSources.contains(name));
+    m_trackSources[name] = trackSource;
+}

@@ -34,7 +34,7 @@ ControlPushButton::~ControlPushButton()
 //Tell this PushButton whether or not it's a "toggle" push button...
 void ControlPushButton::setToggleButton(bool bIsToggleButton)
 {
-    qDebug() << "Setting " << m_Key.group << m_Key.item << "as toggle";
+    //qDebug() << "Setting " << m_Key.group << m_Key.item << "as toggle";
     m_bIsToggleButton = bIsToggleButton;
 }
 
