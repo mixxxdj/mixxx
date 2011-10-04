@@ -1286,6 +1286,7 @@ void MixxxApp::slotHelpAbout()
 "Joe Colosimo<br>"
 "Shashank Kumar<br>"
 "Till Hofmann<br>"
+"Daniel Sch&uuml;rmann<br>"
 
 "</p>"
 "<p align=\"center\"><b>And special thanks to:</b></p>"
