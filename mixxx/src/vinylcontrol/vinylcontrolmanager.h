@@ -25,6 +25,7 @@ class VinylControlManager : public QObject, public AudioDestination {
     virtual void onInputDisconnected(AudioInput input);
     QList<VinylControlProxy*> vinylControlProxies();
     bool vinylInputEnabled(int deck);
+    VinylControlProxy* getVinylControlProxyForChannel(QString);
   public slots:
     void reloadConfig();
   signals:

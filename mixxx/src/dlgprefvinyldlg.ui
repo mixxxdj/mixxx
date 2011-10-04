@@ -308,6 +308,13 @@ p, li { white-space: pre-wrap; }
         </property>
        </spacer>
       </item>
+      <item row="3" column="0" colspan="3">
+       <widget class="QCheckBox" name="SignalQualityEnable">
+        <property name="text">
+         <string>Show Signal Quality in Skin</string>
+        </property>
+       </widget>
+      </item>
      </layout>
     </widget>
    </item>
