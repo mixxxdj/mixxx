@@ -317,6 +317,13 @@ p, li { white-space: pre-wrap; }
         </property>
        </spacer>
       </item>
+      <item row="3" column="0" colspan="3">
+       <widget class="QCheckBox" name="SignalQualityEnable">
+        <property name="text">
+         <string>Show Signal Quality in Skin</string>
+        </property>
+       </widget>
+      </item>
      </layout>
     </widget>
    </item>
@@ -405,6 +412,22 @@ p, li { white-space: pre-wrap; }
          </size>
         </property>
        </spacer>
+      </item>
+      <item row="1" column="0">
+       <widget class="QLabel" name="label">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
+        <property name="toolTip">
+         <string>http://www.xwax.co.uk</string>
+        </property>
+        <property name="text">
+         <string>Powered by xwax</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignBottom|Qt::AlignLeading|Qt::AlignLeft</set>
+        </property>
+       </widget>
       </item>
      </layout>
     </widget>

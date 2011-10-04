@@ -27,7 +27,9 @@ ITunesFeature::ITunesFeature(QObject* parent, TrackCollection* pTrackCollection)
             << "artist"
             << "title"
             << "album"
+            << "year"
             << "genre"
+            << "tracknumber"
             << "location"
             << "comment"
             << "duration"
@@ -129,7 +131,7 @@ void ITunesFeature::activate(bool forceReload) {
         // Let a worker thread do the XML parsing
         m_future = QtConcurrent::run(this, &ITunesFeature::importLibrary);
         m_future_watcher.setFuture(m_future);
-        m_title = tr("iTunes (loading)");
+        m_title = tr("(loading) iTunes");
         //calls a slot in the sidebar model such that 'iTunes (isLoading)' is displayed.
         emit (featureIsLoading(this));
     }

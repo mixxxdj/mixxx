@@ -580,6 +580,7 @@ TrackPointer TrackDAO::getTrackFromDB(QSqlQuery &query) const {
         QString filetype = query.value(query.record().indexOf("filetype")).toString();
         QString location = query.value(query.record().indexOf("location")).toString();
         bool header_parsed = query.value(query.record().indexOf("header_parsed")).toBool();
+        QDateTime date_created = query.value(query.record().indexOf("datetime_added")).toDateTime();
 
         TrackInfoObject* track = new TrackInfoObject(location, false);
         TrackPointer pTrack = TrackPointer(track, &TrackDAO::deleteTrack);
@@ -622,6 +623,7 @@ TrackPointer TrackDAO::getTrackFromDB(QSqlQuery &query) const {
         track->setType(filetype);
         track->setLocation(location);
         track->setHeaderParsed(header_parsed);
+        track->setDateAdded(date_created);
 
         track->setCuePoints(m_cueDao.getCuesForTrack(trackId));
         track->setDirty(false);
@@ -711,7 +713,7 @@ TrackPointer TrackDAO::getTrack(int id, bool cacheOnly) const {
         "filetype, rating, key, track_locations.location as location, "
         "track_locations.filesize as filesize, comment, url, duration, bitrate, "
         "samplerate, cuepoint, bpm, replaygain, wavesummaryhex, channels, "
-        "header_parsed, timesplayed, played, beats_version, beats "
+        "header_parsed, timesplayed, played, beats_version, beats, datetime_added "
         "FROM Library "
         "INNER JOIN track_locations "
             "ON library.location = track_locations.id "
