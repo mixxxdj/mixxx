@@ -122,7 +122,7 @@ QString BaseSqlTableModel::orderByClause() const {
 
     QString field = m_idColumn;
     if (m_iSortColumn != 0) {
-        field = m_tableColumns[m_iSortColumn-1];
+        field = m_tableColumns[m_iSortColumn];
     }
 
     QString s;
@@ -226,26 +226,30 @@ void BaseSqlTableModel::select() {
     // Adjust sort column to remove table columns and add 1 to add an id column.
     int sortColumn = m_iSortColumn - m_tableColumns.size() + 1;
 
-    // If we were sorting a table column, then secondary sort by id. TODO(rryan)
-    // we should look into being able to drop the secondary sort to save time
-    // but going for correctness first.
     if (sortColumn < 0) {
         sortColumn = 0;
     }
+
+    // If we were sorting a table column, then secondary sort by id. TODO(rryan)
+    // we should look into being able to drop the secondary sort to save time
+    // but going for correctness first.
 
     m_trackSource->filterAndSort(trackIds, m_currentSearch,
                                  m_currentSearchFilter,
                                  sortColumn, m_eSortOrder,
                                  &m_trackSortOrder);
 
-    for (QVector<RowInfo>::iterator it = rowInfo.begin();
-         it != rowInfo.end(); ++it) {
-        it->order = m_trackSortOrder.value(it->trackId, -1);
-    }
+    // Only re-sort results if the sort column was a track column.
+    if (sortColumn > 0) {
+        for (QVector<RowInfo>::iterator it = rowInfo.begin();
+             it != rowInfo.end(); ++it) {
+            it->order = m_trackSortOrder.value(it->trackId, -1);
+        }
 
-    // RowInfo::operator< sorts by the order field, except -1 is placed at the
-    // end so we can easily slice off rows that are no longer present.
-    qSort(rowInfo.begin(), rowInfo.end());
+        // RowInfo::operator< sorts by the order field, except -1 is placed at the
+        // end so we can easily slice off rows that are no longer present.
+        qSort(rowInfo.begin(), rowInfo.end());
+    }
 
     m_trackIdToRows.clear();
     for (int i = 0; i < rowInfo.size(); ++i) {
@@ -374,9 +378,6 @@ int BaseSqlTableModel::columnCount(const QModelIndex& parent) const {
     // Subtract one from trackSource::columnCount to ignore the id column
     int count = m_tableColumns.size() +
             (m_trackSource ? m_trackSource->columnCount() - 1: 0);
-    if (sDebug) {
-        qDebug() << "columnCount()" << parent << count;
-    }
     return count;
 }
 
@@ -429,7 +430,9 @@ QVariant BaseSqlTableModel::data(const QModelIndex& index, int role) const {
             } else if (column == fieldIndex(LIBRARYTABLE_LOCATION)) {
 				if (value.toString().startsWith(m_sPrefix))
 					return value.toString().remove(0, m_sPrefix.size() + 1);
-		}
+            } else if (column == fieldIndex(LIBRARYTABLE_DATETIMEADDED)) {
+                value = value.toDateTime();
+            }
             break;
         case Qt::EditRole:
             if (column == fieldIndex(LIBRARYTABLE_BPM)) {
@@ -699,4 +702,3 @@ void BaseSqlTableModel::setLibraryPrefix(QString sPrefix)
     if (sPrefix[sPrefix.length()-1] == '/' || sPrefix[sPrefix.length()-1] == '\\')
         m_sPrefix.chop(1);
 }
-

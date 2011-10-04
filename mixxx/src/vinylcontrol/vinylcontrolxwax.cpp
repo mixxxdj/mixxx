@@ -830,7 +830,7 @@ void VinylControlXwax::syncPosition()
 
 bool VinylControlXwax::checkEnabled(bool was, bool is)
 {
-    // if we're not enabled, but the last object was, try turning ourselves on
+	// if we're not enabled, but the last object was, try turning ourselves on
     // XXX: is this just a race that's working right now?
     if (!is and wantenabled->get())
     {

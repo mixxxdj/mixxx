@@ -25,7 +25,7 @@ BaseTrackCache::BaseTrackCache(TrackCollection* pTrackCollection,
                                QString idColumn,
                                QList<QString> columns,
                                bool isCaching)
-        : QObject(NULL),
+        : QObject(),
           m_tableName(tableName),
           m_idColumn(idColumn),
           m_columns(columns),
@@ -40,7 +40,8 @@ BaseTrackCache::BaseTrackCache(TrackCollection* pTrackCollection,
                     << "album"
                     << "location"
                     << "comment"
-                    << "title";
+                    << "title"
+                    << "genre";
 
     // Convert all the search column names to their field indexes because we use
     // them a bunch.
@@ -212,7 +213,7 @@ QVariant BaseTrackCache::getTrackValueForColumn(TrackPointer pTrack, int column)
     } else if (fieldIndex(LIBRARYTABLE_YEAR) == column) {
         return QVariant(pTrack->getYear());
     } else if (fieldIndex(LIBRARYTABLE_DATETIMEADDED) == column) {
-        return QVariant(pTrack->getCreateDate());
+        return QVariant(pTrack->getDateAdded());
     } else if (fieldIndex(LIBRARYTABLE_GENRE) == column) {
         return QVariant(pTrack->getGenre());
     } else if (fieldIndex(LIBRARYTABLE_FILETYPE) == column) {
