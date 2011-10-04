@@ -26,6 +26,8 @@
 #define DEFAULT_SUBPIXELS_PER_PIXEL 4
 #define DEFAULT_PIXELS_PER_SECOND 100
 
+#define RATE_INCREMENT 0.015
+
 void WaveformRenderer::run() {
     double msecs_old = 0, msecs_elapsed = 0;
 
@@ -61,6 +63,7 @@ WaveformRenderer::WaveformRenderer(const char* group) :
     m_dRate(0),
     m_dRateRange(0),
     m_dRateDir(0),
+    m_iRateAdjusting(0),
     m_iDupes(0),
     m_dPlayPosAdjust(0),
     m_iLatency(0),
@@ -190,7 +193,7 @@ void WaveformRenderer::slotUpdatePlayPos(double v) {
 }
 
 void WaveformRenderer::slotUpdateRate(double v) {
-    m_dRate = v;
+    m_dTargetRate = v;
 }
 
 void WaveformRenderer::slotUpdateRateRange(double v) {
@@ -501,6 +504,26 @@ void WaveformRenderer::draw(QPainter* pPainter, QPaintEvent *pEvent) {
 
     //qDebug() << m_dPlayPosAdjust;
 
+    // Gradually stretch the waveform
+    if (fabs(m_dTargetRate - m_dRate) > RATE_INCREMENT)
+    {
+        if ((m_dTargetRate - m_dRate) > 0)
+        {
+            m_iRateAdjusting = m_iRateAdjusting > 0 ? m_iRateAdjusting + 1 : 1;
+            m_dRate = math_min(m_dTargetRate, m_dRate + RATE_INCREMENT * pow(m_iRateAdjusting, 2) / 80);
+        }
+        else
+        {
+            m_iRateAdjusting = m_iRateAdjusting < 0 ? m_iRateAdjusting - 1 : -1;
+            m_dRate = math_max(m_dTargetRate, m_dRate - RATE_INCREMENT * pow(m_iRateAdjusting, 2) / 80);
+        }
+    }
+    else
+    {
+        m_iRateAdjusting = 0;
+        m_dRate = m_dTargetRate;
+    }
+        
     // Limit our rate adjustment to < 99%, "Bad Things" might happen otherwise.
     double rateAdjust = m_dRateDir * math_min(0.99, m_dRate * m_dRateRange);
 
