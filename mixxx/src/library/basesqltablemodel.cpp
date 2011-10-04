@@ -431,7 +431,7 @@ QVariant BaseSqlTableModel::data(const QModelIndex& index, int role) const {
 				if (value.toString().startsWith(m_sPrefix))
 					return value.toString().remove(0, m_sPrefix.size() + 1);
             } else if (column == fieldIndex(LIBRARYTABLE_DATETIMEADDED)) {
-                value = value.toDateTime();
+                value = value.toDateTime().toString("yyyy-MM-dd"); //I prefer year first
             }
             break;
         case Qt::EditRole:
