@@ -40,7 +40,8 @@ BaseTrackCache::BaseTrackCache(TrackCollection* pTrackCollection,
                     << "album"
                     << "location"
                     << "comment"
-                    << "title";
+                    << "title"
+                    << "genre";
 
     // Convert all the search column names to their field indexes because we use
     // them a bunch.
