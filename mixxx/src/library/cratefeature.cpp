@@ -438,8 +438,8 @@ void CrateFeature::slotExportPlaylist(){
     //create and populate a list of files of the playlist
     QList<QString> playlist_items;
     int rows = m_crateTableModel.rowCount();
-    for(int i = 0; i < rows; ++i){
-        QModelIndex index = m_crateTableModel.index(i,0);
+    for (int i = 0; i < rows; ++i) {
+        QModelIndex index = m_crateTableModel.index(i, 0);
         playlist_items << m_crateTableModel.getTrackLocation(index);
     }
     //check config if relative paths are desired

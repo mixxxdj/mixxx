@@ -67,8 +67,6 @@ QColor ImgHSVTweak::doColorCorrection(QColor c) {
     int h, s, v;
     c.getHsv(&h, &s, &v);
 
-    if (h == -1) { h = 0; }
-
     if (h >= m_hmin && h <= m_hmax && s >= m_smin && s <= m_smax &&
         v >= m_vmin && v <= m_vmax) {
         h *= m_hfact;
@@ -78,8 +76,8 @@ QColor ImgHSVTweak::doColorCorrection(QColor c) {
         s += m_sconst;
         v += m_vconst;
 
-        h = h % 256;
-        if (h < 0) { h += 256; }
+        h = h % 360;
+        if (h < 0) { h += 360; }
         if (s < 0) { s = 0; }
         if (s > 255) { s = 255; }
         if (v < 0) { v = 0; }
