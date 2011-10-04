@@ -49,11 +49,6 @@ CachingReader::~CachingReader() {
     m_allocatedChunks.clear();
     m_lruChunk = m_mruChunk = NULL;
 
-    for (int i=0; i < m_chunks.size(); i++) {
-        Chunk* c = m_chunks[i];
-        delete c;
-    }
-
     delete [] m_pSample;
 
     delete [] m_pRawMemoryBuffer;
