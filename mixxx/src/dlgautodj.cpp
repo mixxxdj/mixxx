@@ -222,12 +222,12 @@ void DlgAutoDJ::fadeNow(bool buttonChecked)
 	if (m_eState == ADJ_IDLE && m_bAutoDJEnabled) {		
 		m_bFadeNow = true;
 		double crossfader = m_pCOCrossfader->get();
-		if (crossfader < -0.9f && m_pCOPlay1Fb->get() == 1.0f) {
-			m_posThreshold1 = m_pCOPlayPos1->get();
+		if (crossfader <= 0.3f && m_pCOPlay1Fb->get() == 1.0f) {
+			m_posThreshold1 = m_pCOPlayPos1->get() - ((crossfader + 1.0f) / 2 * (m_fadeDuration1));
 			m_pCORepeat1->slotSet(0.0f); // Repeat is disabled by FadeNow but disables auto Fade
 		}
-		else if (crossfader > 0.9f && m_pCOPlay2Fb->get() == 1.0f) {
-			m_posThreshold2 = m_pCOPlayPos2->get();
+		else if (crossfader >= -0.3f && m_pCOPlay2Fb->get() == 1.0f) {
+			m_posThreshold2 = m_pCOPlayPos2->get() - ((1.0f - crossfader) / 2 * (m_fadeDuration2));
 			m_pCORepeat2->slotSet(0.0f); // Repeat is disabled by FadeNow but disables auto Fade
 		}
 	}
@@ -262,6 +262,7 @@ void DlgAutoDJ::toggleAutoDJ(bool toggle)
 
 		// Track is available so GO
 		pushButtonAutoDJ->setToolTip(tr("Disable Auto DJ"));
+		pushButtonAutoDJ->setText(tr("Disable Auto DJ"));
 		qDebug() << "Auto DJ enabled";
         m_bAutoDJEnabled = true;
 
@@ -276,15 +277,18 @@ void DlgAutoDJ::toggleAutoDJ(bool toggle)
         this, SLOT(player2PlayChanged(double)));
 
         if (m_pCOPlay1Fb->get() == 0.0f && m_pCOPlay2Fb->get() == 0.0f) {
+        	// both decks are stopped
         	m_eState = ADJ_ENABLE_P1LOADED;
         	m_pCOPlayPos1->slotSet(-0.001f); // Force Update on load Track
         }
-		else if (m_pCOPlay1Fb->get() == 0.0f)
+		else if (m_pCOPlay1Fb->get() == 1.0f)
 		{
+			// deck 1 is already playing
 			m_eState = ADJ_IDLE;
 	        player1PlayChanged(1.0f);
 		}
 		else {
+			// deck 2 is already playing
 			m_eState = ADJ_IDLE;
 	        player2PlayChanged(1.0f);
 		}
@@ -292,6 +296,7 @@ void DlgAutoDJ::toggleAutoDJ(bool toggle)
     }
     else { //Disable Auto DJ
         pushButtonAutoDJ->setToolTip(tr("Enable Auto DJ"));
+        pushButtonAutoDJ->setText(tr("Enable Auto DJ"));
         qDebug() << "Auto DJ disabled";
         m_bAutoDJEnabled = false;
 		m_bFadeNow = false;
@@ -492,9 +497,10 @@ TrackPointer DlgAutoDJ::getNextTrackFromQueue()
 		}
 		else {
 			// we are running out of tracks
-			return nextTrack;
+			break;
 		}
     }
+    return nextTrack;
 }
 
 
