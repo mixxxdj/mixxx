@@ -1288,6 +1288,7 @@ void MixxxApp::slotHelpAbout()
 "Till Hofmann<br>"
 "Daniel Sch&uuml;rmann<br>"
 "Peter V&aacute;gner<br>"
+"Thanasis Liappis<br>"
 
 "</p>"
 "<p align=\"center\"><b>And special thanks to:</b></p>"
