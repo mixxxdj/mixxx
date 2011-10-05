@@ -137,6 +137,8 @@ void DlgPrefVinyl::slotUpdate()
 
     // Honour the Needle Skip Prevention setting.
     NeedleSkipEnable->setChecked( (bool)config->getValueString( ConfigKey("[VinylControl]", "needle_skip_prevention") ).toInt() );
+    
+    SignalQualityEnable->setChecked((bool)config->getValueString(ConfigKey("[VinylControl]", "show_signal_quality") ).toInt() );
 
     //set vinyl control gain
     VinylGain->setValue( config->getValueString(ConfigKey("[VinylControl]","gain")).toInt());
@@ -182,6 +184,7 @@ void DlgPrefVinyl::slotApply()
     m_COMode.slotSet(iMode);
     config->set(ConfigKey("[VinylControl]","mode"), ConfigValue(iMode));
     config->set(ConfigKey("[VinylControl]","needle_skip_prevention" ), ConfigValue( (int)(NeedleSkipEnable->isChecked( )) ) );
+    config->set(ConfigKey("[VinylControl]","show_signal_quality" ), ConfigValue( (int)(SignalQualityEnable->isChecked( )) ) );
 
     m_pVCManager->reloadConfig();
     slotUpdate();

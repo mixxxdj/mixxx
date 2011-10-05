@@ -326,16 +326,6 @@ CSAMPLE * EngineBufferScaleLinear::do_scale(CSAMPLE* buf, unsigned long buf_size
         //at extremely low speeds, dampen the gain to hide pops and clicks
         //this does cause odd-looking linear waveforms that go to zero and back
 
-        //although enginevinylsoundemu does this, it works much better here
-        //because the gain ramps as the rate does
-        if (fabs(rate_add) < 0.5) {
-           float dither = (float)(rand() % 32768) / 32768 - 0.5; // dither
-           //float dither = 0;
-           float gainfrac = fabs(rate_add) / 0.5;
-           buf[i] = gainfrac * (float)buf[i] + dither;
-           buf[i+1] = gainfrac * (float)buf[i+1] + dither;
-        }
-
         /*writer << QString("%1,%2,%3,%4\n").arg(buffer_count)
                                          .arg(buffer[i])
                                            .arg(prev_sample[0])

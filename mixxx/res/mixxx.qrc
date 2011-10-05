@@ -31,5 +31,6 @@
         <file>images/library/ic_library_rhythmbox.png</file>
         <file>images/library/ic_library_traktor.png</file>
         <file>images/library/ic_library_recordings.png</file>
+        <file>images/library/drag-n-drop.png</file>
     </qresource>
 </RCC>

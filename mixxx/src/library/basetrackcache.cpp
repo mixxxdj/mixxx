@@ -20,28 +20,28 @@ const QHash<QString, int> buildReverseIndex(const QList<QString> items) {
 
 }  // namespace
 
-BaseTrackCache::BaseTrackCache(QObject* pParent,
-                               TrackCollection* pTrackCollection,
-                               QSqlDatabase db,
+BaseTrackCache::BaseTrackCache(TrackCollection* pTrackCollection,
                                QString tableName,
                                QString idColumn,
-                               QList<QString> columns)
-        : QObject(pParent),
+                               QList<QString> columns,
+                               bool isCaching)
+        : QObject(),
           m_tableName(tableName),
           m_idColumn(idColumn),
           m_columns(columns),
           m_columnsJoined(m_columns.join(",")),
           m_columnIndex(buildReverseIndex(m_columns)),
           m_bIndexBuilt(false),
+          m_bIsCaching(isCaching),
           m_pTrackCollection(pTrackCollection),
           m_trackDAO(m_pTrackCollection->getTrackDAO()),
-          m_database(db) {
-
+          m_database(m_pTrackCollection->getDatabase()) {
     m_searchColumns << "artist"
                     << "album"
                     << "location"
                     << "comment"
-                    << "title";
+                    << "title"
+                    << "genre";
 
     // Convert all the search column names to their field indexes because we use
     // them a bunch.
@@ -62,8 +62,8 @@ int BaseTrackCache::columnCount() const {
     return m_columns.size();
 }
 
-int BaseTrackCache::fieldIndex(const QString& fieldName) const {
-    return m_columnIndex.value(fieldName, -1);
+int BaseTrackCache::fieldIndex(const QString columnName) const {
+    return m_columnIndex.value(columnName, -1);
 }
 
 void BaseTrackCache::slotTrackAdded(int trackId) {
@@ -95,12 +95,19 @@ void BaseTrackCache::ensureCached(QSet<int> trackIds) {
 
 TrackPointer BaseTrackCache::lookupCachedTrack(int trackId) const {
     // Only get the Track from the TrackDAO if it's in the cache
-    return m_trackDAO.getTrack(trackId, true);
+    if (m_bIsCaching) {
+        return m_trackDAO.getTrack(trackId, true);
+    }
+    return TrackPointer();
 }
 
 bool BaseTrackCache::updateIndexWithQuery(QString queryString) {
     QTime timer;
     timer.start();
+
+    if (sDebug) {
+        qDebug() << "updateIndexWithQuery issuing query:" << queryString;
+    }
 
     QSqlQuery query(m_database);
     // This causes a memory savings since QSqlCachedResult (what QtSQLite uses)
@@ -128,6 +135,7 @@ bool BaseTrackCache::updateIndexWithQuery(QString queryString) {
             record[i] = query.value(i);
         }
     }
+
     qDebug() << this << "updateIndexWithQuery took" << timer.elapsed() << "ms";
     return true;
 }
@@ -163,8 +171,9 @@ void BaseTrackCache::updateTrackInIndex(int trackId) {
 }
 
 void BaseTrackCache::updateTracksInIndex(QSet<int> trackIds) {
-    if (trackIds.size() == 0)
+    if (trackIds.size() == 0) {
         return;
+    }
 
     QStringList idStrings;
     foreach (int trackId, trackIds) {
@@ -188,52 +197,58 @@ void BaseTrackCache::updateTracksInIndex(QSet<int> trackIds) {
     emit(tracksChanged(trackIds));
 }
 
-QVariant BaseTrackCache::getTrackValueForColumn(TrackPointer pTrack, QString column) const {
-    const int columnIndex = fieldIndex(column);
-    if (!pTrack || columnIndex < 0) {
+QVariant BaseTrackCache::getTrackValueForColumn(TrackPointer pTrack, int column) const {
+    if (!pTrack || column < 0) {
         return QVariant();
     }
 
     // TODO(XXX) Qt properties could really help here.
     // TODO(rryan) this is all TrackDAO specific. What about iTunes/RB/etc.?
-    if (fieldIndex(LIBRARYTABLE_ARTIST) == columnIndex) {
+    if (fieldIndex(LIBRARYTABLE_ARTIST) == column) {
         return QVariant(pTrack->getArtist());
-    } else if (fieldIndex(LIBRARYTABLE_TITLE) == columnIndex) {
+    } else if (fieldIndex(LIBRARYTABLE_TITLE) == column) {
         return QVariant(pTrack->getTitle());
-    } else if (fieldIndex(LIBRARYTABLE_ALBUM) == columnIndex) {
+    } else if (fieldIndex(LIBRARYTABLE_ALBUM) == column) {
         return QVariant(pTrack->getAlbum());
-    } else if (fieldIndex(LIBRARYTABLE_YEAR) == columnIndex) {
+    } else if (fieldIndex(LIBRARYTABLE_YEAR) == column) {
         return QVariant(pTrack->getYear());
-    } else if (fieldIndex(LIBRARYTABLE_GENRE) == columnIndex) {
+    } else if (fieldIndex(LIBRARYTABLE_DATETIMEADDED) == column) {
+        return QVariant(pTrack->getDateAdded());
+    } else if (fieldIndex(LIBRARYTABLE_GENRE) == column) {
         return QVariant(pTrack->getGenre());
-    } else if (fieldIndex(LIBRARYTABLE_FILETYPE) == columnIndex) {
+    } else if (fieldIndex(LIBRARYTABLE_FILETYPE) == column) {
         return QVariant(pTrack->getType());
-    } else if (fieldIndex(LIBRARYTABLE_TRACKNUMBER) == columnIndex) {
+    } else if (fieldIndex(LIBRARYTABLE_TRACKNUMBER) == column) {
         return QVariant(pTrack->getTrackNumber());
-    } else if (fieldIndex(LIBRARYTABLE_LOCATION) == columnIndex) {
+    } else if (fieldIndex(LIBRARYTABLE_LOCATION) == column) {
         return QVariant(pTrack->getLocation());
-    } else if (fieldIndex(LIBRARYTABLE_COMMENT) == columnIndex) {
+    } else if (fieldIndex(LIBRARYTABLE_COMMENT) == column) {
         return QVariant(pTrack->getComment());
-    } else if (fieldIndex(LIBRARYTABLE_DURATION) == columnIndex) {
+    } else if (fieldIndex(LIBRARYTABLE_DURATION) == column) {
         return pTrack->getDuration();
-    } else if (fieldIndex(LIBRARYTABLE_BITRATE) == columnIndex) {
+    } else if (fieldIndex(LIBRARYTABLE_BITRATE) == column) {
         return QVariant(pTrack->getBitrate());
-    } else if (fieldIndex(LIBRARYTABLE_BPM) == columnIndex) {
+    } else if (fieldIndex(LIBRARYTABLE_BPM) == column) {
         return QVariant(pTrack->getBpm());
-    } else if (fieldIndex(LIBRARYTABLE_PLAYED) == columnIndex) {
+    } else if (fieldIndex(LIBRARYTABLE_PLAYED) == column) {
         return QVariant(pTrack->getPlayed());
-    } else if (fieldIndex(LIBRARYTABLE_TIMESPLAYED) == columnIndex) {
+    } else if (fieldIndex(LIBRARYTABLE_TIMESPLAYED) == column) {
         return QVariant(pTrack->getTimesPlayed());
-    } else if (fieldIndex(LIBRARYTABLE_RATING) == columnIndex) {
+    } else if (fieldIndex(LIBRARYTABLE_RATING) == column) {
         return pTrack->getRating();
-    } else if (fieldIndex(LIBRARYTABLE_KEY) == columnIndex) {
+    } else if (fieldIndex(LIBRARYTABLE_KEY) == column) {
         return pTrack->getKey();
     }
     return QVariant();
 }
 
-QVariant BaseTrackCache::data(int trackId, QString column) const {
+QVariant BaseTrackCache::data(int trackId, int column) const {
     QVariant result;
+
+    if (!m_bIndexBuilt) {
+        qDebug() << this << "ERROR index is not built for" << m_tableName;
+        return result;
+    }
 
     // TODO(rryan): allow as an argument
     TrackPointer pTrack;
@@ -255,37 +270,59 @@ QVariant BaseTrackCache::data(int trackId, QString column) const {
     // TODO(rryan) this code is flawed for columns that contains row-specific
     // metadata. Currently the upper-levels will not delegate row-specific
     // columns to this method, but there should still be a check here I think.
-    int iColumnIndex = fieldIndex(column);
     if (!result.isValid()) {
         QHash<int, QVector<QVariant> >::const_iterator it =
                 m_trackInfo.find(trackId);
         if (it != m_trackInfo.end()) {
             const QVector<QVariant>& fields = it.value();
-            result = fields.value(iColumnIndex, result);
+            result = fields.value(column, result);
         }
     }
     return result;
 }
 
-void BaseTrackCache::filterAndSort(QVector<int>& trackIds, QString searchQuery, QString extraFilter,
-                                   QString sortColumn, Qt::SortOrder sortOrder) const {
+bool BaseTrackCache::trackMatches(const TrackPointer& pTrack,
+                                  const QRegExp& matcher) const {
+    // For every search column, lookup the value for the track and check
+    // if it matches the search query.
+    int i = 0;
+    foreach (QString column, m_searchColumns) {
+        int columnIndex = m_searchColumnIndices[i++];
+        QVariant value = getTrackValueForColumn(pTrack, columnIndex);
+        if (value.isValid() && qVariantCanConvert<QString>(value)) {
+            QString valueStr = value.toString();
+            if (valueStr.contains(matcher)) {
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+void BaseTrackCache::filterAndSort(const QSet<int>& trackIds,
+                                   QString searchQuery,
+                                   QString extraFilter, int sortColumn,
+                                   Qt::SortOrder sortOrder,
+                                   QHash<int, int>* trackToIndex) {
+    if (!m_bIndexBuilt) {
+        buildIndex();
+    }
+
     QStringList idStrings;
+
+    if (sortColumn < 0 || sortColumn >= columnCount()) {
+        qDebug() << "ERROR: Invalid sort column provided to BaseTrackCache::filterAndSort";
+        return;
+    }
 
     // TODO(rryan) consider making this the data passed in and a separate
     // QVector for output
-    QSet<int> baseTracks;
     QSet<int> dirtyTracks;
     foreach (int trackId, trackIds) {
         idStrings << QVariant(trackId).toString();
-
-        baseTracks.insert(trackId);
         if (m_dirtyTracks.contains(trackId)) {
             dirtyTracks.insert(trackId);
         }
-    }
-
-    if (trackIds.size() == 0) {
-        dirtyTracks = m_dirtyTracks;
     }
 
     QString filter = filterClause(searchQuery, extraFilter, idStrings);
@@ -316,22 +353,18 @@ void BaseTrackCache::filterAndSort(QVector<int>& trackIds, QString searchQuery, 
         qDebug() << "Rows returned:" << rows;
     }
 
-    QHash<int, int> trackToIndex;
+    m_trackOrder.resize(0);
+    trackToIndex->clear();
     if (rows > 0) {
-        trackToIndex.reserve(rows);
+        trackToIndex->reserve(rows);
+        m_trackOrder.reserve(rows);
     }
 
-    int numIds = 0;
     while (query.next()) {
         int id = query.value(idColumn).toInt();
-        trackToIndex[id] = numIds;
-        trackIds[numIds++] = id;
+        (*trackToIndex)[id] = m_trackOrder.size();
+        m_trackOrder.push_back(id);
     }
-
-    // We set elements 0 through i-1, so resize the vector to cut off any extra
-    // elements. TODO(rryan) should we just return the number of valid elements
-    // instead of resizing?
-    trackIds.resize(numIds);
 
     // At this point, the original set of tracks have been divided into two
     // pieces: those that should be in the result set and those that should
@@ -341,6 +374,10 @@ void BaseTrackCache::filterAndSort(QVector<int>& trackIds, QString searchQuery, 
     // would match or not match the given filter criteria. Once we correct the
     // membership of tracks in either set, we must then insertion-sort the
     // missing tracks into the resulting index list.
+
+    if (dirtyTracks.size() == 0) {
+        return;
+    }
 
     // Make a regular expression that matches the query terms.
     QStringList searchTokens = searchQuery.split(" ");
@@ -358,31 +395,13 @@ void BaseTrackCache::filterAndSort(QVector<int>& trackIds, QString searchQuery, 
             continue;
         }
 
-        // Default true
-        bool shouldBeInResultSet = true;
-
-        if (!searchQuery.isEmpty()) {
-            bool matches = false;
-
-            // For every search column, lookup the value for the track and check
-            // if it matches the search query.
-            foreach (QString column, m_searchColumns) {
-                QVariant value = getTrackValueForColumn(pTrack, column);
-                if (value.isValid() && qVariantCanConvert<QString>(value)) {
-                    QString valueStr = value.toString();
-                    if (valueStr.contains(searchMatcher)) {
-                        matches = true;
-                    }
-                }
-            }
-
-            // If we matched, then it should be in the result set. If not, then
-            // it shouldn't be.
-            shouldBeInResultSet = matches;
-        }
+        // The track should be in the result set if the search is empty or the
+        // track matches the search.
+        bool shouldBeInResultSet = searchQuery.isEmpty() ||
+                trackMatches(pTrack, searchMatcher);
 
         // If the track is in this result set.
-        bool isInResultSet = trackToIndex.contains(trackId);
+        bool isInResultSet = trackToIndex->contains(trackId);
 
         if (shouldBeInResultSet) {
             // Track should be in result set...
@@ -390,38 +409,40 @@ void BaseTrackCache::filterAndSort(QVector<int>& trackIds, QString searchQuery, 
             // Remove the track from the results first (we have to do this or it
             // will sort wrong).
             if (isInResultSet) {
-                int index = trackToIndex[trackId];
-                trackIds.remove(index);
+                int index = (*trackToIndex)[trackId];
+                m_trackOrder.remove(index);
                 // Don't update trackToIndex, since we do it below.
             }
 
             // Figure out where it is supposed to sort. The table is sorted by
             // the sort column, so we can binary search.
-            int insertRow = findSortInsertionPoint(pTrack, sortColumn, sortOrder, trackIds);
+            int insertRow = findSortInsertionPoint(pTrack, sortColumn,
+                                                   sortOrder, m_trackOrder);
 
             if (sDebug) {
-                qDebug() << this << "Insertion sort says it should be inserted at:" << insertRow;
+                qDebug() << this
+                         << "Insertion sort says it should be inserted at:"
+                         << insertRow;
             }
 
             // The track should sort at insertRow
-            trackToIndex[trackId] = insertRow;
-            trackIds.insert(insertRow, trackId);
+            m_trackOrder.insert(insertRow, trackId);
 
-            trackToIndex.clear();
+            trackToIndex->clear();
             // Fix the index. TODO(rryan) find a non-stupid way to do this.
-            for (int i = 0; i < trackIds.size(); ++i) {
-                trackToIndex[trackIds[i]] = i;
+            for (int i = 0; i < m_trackOrder.size(); ++i) {
+                (*trackToIndex)[m_trackOrder[i]] = i;
             }
         } else if (isInResultSet) {
             // Track should not be in this result set, but it is. We need to
             // remove it.
-            int index = trackToIndex[trackId];
-            trackIds.remove(index);
+            int index = (*trackToIndex)[trackId];
+            m_trackOrder.remove(index);
 
-            trackToIndex.clear();
+            trackToIndex->clear();
             // Fix the index. TODO(rryan) find a non-stupid way to do this.
-            for (int i = 0; i < trackIds.size(); ++i) {
-                trackToIndex[trackIds[i]] = i;
+            for (int i = 0; i < m_trackOrder.size(); ++i) {
+                (*trackToIndex)[m_trackOrder[i]] = i;
             }
         }
     }
@@ -466,7 +487,7 @@ QString BaseTrackCache::filterClause(QString query, QString extraFilter,
     return "";
 }
 
-QString BaseTrackCache::orderByClause(QString sortColumn,
+QString BaseTrackCache::orderByClause(int sortColumn,
                                       Qt::SortOrder sortOrder) const {
     // This is all stolen from QSqlTableModel::orderByClause(), just rigged to
     // sort case-insensitively.
@@ -480,10 +501,8 @@ QString BaseTrackCache::orderByClause(QString sortColumn,
     query.prepare(queryString);
     query.exec();
 
-    int iSortColumn = fieldIndex(sortColumn);
-
     QString s;
-    QSqlField f = query.record().field(iSortColumn);
+    QSqlField f = query.record().field(sortColumn);
     if (!f.isValid()) {
         if (sDebug) {
             qDebug() << "field not valid";
@@ -493,8 +512,6 @@ QString BaseTrackCache::orderByClause(QString sortColumn,
 
     QString field = m_database.driver()->escapeIdentifier(
         f.name(), QSqlDriver::FieldName);
-
-    //QString field = m_columns[m_iSortColumn];
 
     s.append(QLatin1String("ORDER BY "));
     QString sort_field = QString("%1.%2").arg(m_tableName).arg(field);
@@ -518,8 +535,8 @@ QString BaseTrackCache::orderByClause(QString sortColumn,
 }
 
 int BaseTrackCache::findSortInsertionPoint(TrackPointer pTrack,
-                                           const QString sortColumn,
-                                           const Qt::SortOrder sortOrder,
+                                           const int sortColumn,
+                                           Qt::SortOrder sortOrder,
                                            const QVector<int> trackIds) const {
     QVariant trackValue = getTrackValueForColumn(pTrack, sortColumn);
 
@@ -563,18 +580,16 @@ int BaseTrackCache::findSortInsertionPoint(TrackPointer pTrack,
     return min;
 }
 
-int BaseTrackCache::compareColumnValues(QString sortColumn, Qt::SortOrder sortOrder,
+int BaseTrackCache::compareColumnValues(int sortColumn, Qt::SortOrder sortOrder,
                                         QVariant val1, QVariant val2) const {
     int result = 0;
 
-    int iColumnNumber = fieldIndex(sortColumn);
-
-    if (iColumnNumber == fieldIndex(PLAYLISTTRACKSTABLE_POSITION) ||
-        iColumnNumber == fieldIndex(LIBRARYTABLE_BITRATE) ||
-        iColumnNumber == fieldIndex(LIBRARYTABLE_BPM) ||
-        iColumnNumber == fieldIndex(LIBRARYTABLE_DURATION) ||
-        iColumnNumber == fieldIndex(LIBRARYTABLE_TIMESPLAYED) ||
-        iColumnNumber == fieldIndex(LIBRARYTABLE_RATING)) {
+    if (sortColumn == fieldIndex(PLAYLISTTRACKSTABLE_POSITION) ||
+        sortColumn == fieldIndex(LIBRARYTABLE_BITRATE) ||
+        sortColumn == fieldIndex(LIBRARYTABLE_BPM) ||
+        sortColumn == fieldIndex(LIBRARYTABLE_DURATION) ||
+        sortColumn == fieldIndex(LIBRARYTABLE_TIMESPLAYED) ||
+        sortColumn == fieldIndex(LIBRARYTABLE_RATING)) {
         // Sort as floats.
         double delta = val1.toDouble() - val2.toDouble();
 

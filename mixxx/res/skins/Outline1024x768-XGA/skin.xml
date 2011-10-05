@@ -2,23 +2,34 @@
 	Outline, Skin for Mixxx 1.10.x
 	www.mixxx.org
 	Copyright (C) 2010-2011 Mixxx
-	
+
 	This program is free software: you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by
 	the Free Software Foundation, either version 2 of the License, or
 	(at your option) any later version.
-	
+
 	This program is distributed in the hope that it will be useful,
 	but WITHOUT ANY WARRANTY; without even the implied warranty of
 	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 	GNU General Public License for more details.
-	
+
 	You should have received a copy of the GNU General Public License
 	along with this program.  If not, see http://www.gnu.org/licenses
 	-->
 
 	<!--
 	CHANGELOG
+	v1.10.0.03	(06/08/2011)
+	* Update: Reworked graphics for better visibility
+	* Update: Use 64 pictures for smooth knob animation (derived fom 128 midi note numbers)
+	* Update: Moved knobs and style elements to subfolders
+	* Update: Stylesheets
+	* Feature: Added spinning vinyl widget, vinyl control widget & tabs to show/hide these widgets
+	* Feature: Added extended beatloop, beatgrid, quantize & eject buttons
+	* Feature: Skin uses WidgetGroups positioning for some elements now
+	  WidgetGroups allow to make a group of relatively positioned widgets, useful for easy resizing
+	  http://mixxx.org/wiki/doku.php/creating_skins#widgetgroup
+
 	v1.10.0.02	(29/03/2011)
 	* Added Mixxx 1.10.0 feature:
 	  EmitOnDownPress double-skin connection block replaced with EmitOnPressAndRelease
@@ -26,7 +37,7 @@
 	v1.10.0.01	(21/03/2011)
 	* Introduce new version number scheme for skins that follows the target Mixxx versioning
 	  <Mixxx.major>.<Mixxx.minor>.<Mixxx.patch>.<Skin.patch>
-	* Added Mixxx 1.10.0 feature: 
+	* Added Mixxx 1.10.0 feature:
 	  Tracks duration can be displayed independent from tracks remaining time using Trackproperty
 	* Updated text positioning & tooltips accordingly
 
@@ -60,6 +71,29 @@
 
 <!DOCTYPE skin>
 <skin>
+	<!--
+	############################################################################################
+	############################################################################################
+	Mixxx skin documentation:
+	http://mixxx.org/wiki/doku.php/creating_skins
+
+	List of controls:
+	http://www.mixxx.org/wiki/doku.php/midi_controller_mapping_file_format#ui_midi_controls_and_names
+
+	Qt Style Sheets documentation:
+	http://doc.qt.nokia.com/latest/stylesheet.html
+
+	Debugging:
+	To outline WidgetGroups change all occurrences (exept this one ;-) of
+	"QGroupBox { border: 0px solid" to "QGroupBox { border: 1px solid"
+	
+	Parent WidgedGroups are outlined one pixel solid red;
+		Child WidgedGroups are outlined one pixel solid yellow;
+			Grandchild WidgedGroups are outlined one pixel solid green;
+	############################################################################################
+	############################################################################################
+	-->
+
 	<!--
 	############################################################################################
 	############################################################################################
@@ -152,16 +186,18 @@
 
 		QTableView, QTextBrowser, QTreeView { font: 13px/15px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; }
 		QTableView::indicator { width: 12px; height: 12px;}
-		QTableView::indicator:checked { background: url(skin:/style_checkbox_checked.png);}
-		QTableView::indicator:unchecked { background: url(skin:/style_checkbox_unchecked.png);}
+		QTableView::indicator:checked { background: url(skin:/style/style_checkbox_checked.png);}
+		QTableView::indicator:unchecked { background: url(skin:/style/style_checkbox_unchecked.png);}
 
 		QHeaderView { font: 11px/13px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; }
 
-		WSearchLineEdit { padding: 2px; font: 13px/15px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; }
-		WSearchLineEdit:focus {padding: 2px; border: 2px solid #FF6600; font: 13px/15px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;}
+		
+		<!--library search bar-->
+		WSearchLineEdit { padding: 2px; border: 1px solid #656565; font: 13px/15px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;}
+		WSearchLineEdit:focus {padding: 2px; border: 2px solid #FF6600; font: 13px/15px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; background: rgba(255, 102, 0,20);}
 
-		QSplitter::handle { image: url(skin:/style_handle_unchecked.png); background: none; }
-		QSplitter::handle:pressed { image: url(skin:/style_handle_checked.png); background: none; }
+		QSplitter::handle { image: url(skin:/style/style_handle_unchecked.png); background: none; }
+		QSplitter::handle:pressed { image: url(skin:/style/style_handle_checked.png); background: none; }
 		QSplitter::handle:horizontal { width: 6px; }
 		QSplitter::handle:vertical { height: 6px; }
 
@@ -171,12 +207,12 @@
 
 		<!--Workaround for QT4.7.0 background color bug in Linux with Gnome https://bugs.launchpad.net/mixxx/+bug/690280-->
 		QTreeView::branch:has-children:!has-siblings:closed,
-		QTreeView::branch:closed:has-children:has-siblings { border-image: none; image: url(skin:/style_branch_closed.png);}
+		QTreeView::branch:closed:has-children:has-siblings { border-image: none; image: url(skin:/style/style_branch_closed.png);}
 		QTreeView::branch:open:has-children:!has-siblings,
-		QTreeView::branch:open:has-children:has-siblings { border-image: none; image: url(skin:/style_branch_open.png);}
+		QTreeView::branch:open:has-children:has-siblings { border-image: none; image: url(skin:/style/style_branch_open.png);}
 		</Style>
-		<Pos>107,225</Pos>
-		<Size>800,513</Size>
+		<Pos>107,236</Pos>
+		<Size>801,503</Size>
 		<BgColor>#FFFFFF</BgColor>
 		<FgColor>#191919</FgColor>
 		<BgColorRowEven>#FFFFFF</BgColorRowEven>
@@ -193,660 +229,6 @@
 
 	<!--
 	**********************************************
-	Visual- Waveform
-	**********************************************
-	-->
-	<Visual>
-		<Tooltip>Waveform display&#10;Shows the loaded tracks' waveforms near the playback position.&#10;Drag with mouse to control sound playback.&#10;Drop tracks from external file manager here.&#10;</Tooltip>
-		<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-		</Style>
-		<Channel>1</Channel>
-		<Pos>108,21</Pos>
-		<Size>799,60</Size>
-		<BgColor>#FFFFFF</BgColor>
-		<HfcColor>#1b1b1b</HfcColor>
-		<SignalColor>#00ff00</SignalColor>
-		<BeatColor>#0032FF</BeatColor>
-		<BeatHighlightColor>#000000</BeatHighlightColor>
-		<MarkerColor>#0033FF</MarkerColor>
-		<CueColor>#00FF00</CueColor>
-		<MarkRange>
-			<StartControl>loop_start_position</StartControl>
-			<EndControl>loop_end_position</EndControl>
-			<EnabledControl>loop_enabled</EnabledControl>
-			<Color>#0032FF</Color>
-			<DisabledColor>#00FF00</DisabledColor>
-		</MarkRange>
-		<Mark>
-			<Control>loop_start_position</Control>
-			<Text> LOOP IN </Text>
-			<Align>bottom</Align>
-			<Color>#0032FF</Color>
-			<TextColor>#FFFFFF</TextColor>
-		</Mark>
-		<Mark>
-			<Control>loop_end_position</Control>
-			<Text> LOOP OUT </Text>
-			<Align>bottom</Align>
-			<Color>#0032FF</Color>
-			<TextColor>#FFFFFF</TextColor>
-		</Mark>
-		<!--
-		The hotcues not represented by a button in the current skin show only in the waveform under two circumstances:
-			- if a MIDI device which supports more hotcues than buttons are in the current skin has them activated
-			- if you change from a skin which supports more hotcues than buttons are in the current skin (and has them activated)
-		These "special" hotcues share the color #AE5CFF to make them distinguishable (and maintainable) from the hotcues
-		represented by a button in the current skin. Mixxx 1.8.x-1.9.0 support up to 32 hotcues. v1.9.1+ supports up to 36.
-		Current skins uses up to 6 buttons per channel.
-		-->
-		<Mark>
-			<Control>hotcue_1_position</Control>
-			<Text> HOTCUE 1 </Text>
-			<Align>center</Align>
-			<Color>#00AAFF</Color>
-			<TextColor>#FFFFFF</TextColor>
-		</Mark>
-		<Mark>
-			<Control>hotcue_2_position</Control>
-			<Text> HOTCUE 2 </Text>
-			<Align>center</Align>
-			<Color>#FF2929</Color>
-			<TextColor>#FFFFFF</TextColor>
-		</Mark>
-		<Mark>
-			<Control>hotcue_3_position</Control>
-			<Text> HOTCUE 3 </Text>
-			<Align>center</Align>
-			<Color>#FF00FF</Color>
-			<TextColor>#FFFFFF</TextColor>
-		</Mark>
-		<Mark>
-			<Control>hotcue_4_position</Control>
-			<Text> HOTCUE 4 </Text>
-			<Align>center</Align>
-			<Color>#80FF00</Color>
-			<TextColor>#FFFFFF</TextColor>
-		</Mark>
-		<Mark>
-			<Control>hotcue_5_position</Control>
-			<Text> HOTCUE 5 </Text>
-			<Align>center</Align>
-			<Color>#AE5CFF</Color>
-			<TextColor>#FFFFFF</TextColor>
-		</Mark>
-		<Mark>
-			<Control>hotcue_6_position</Control>
-			<Text> HOTCUE 6 </Text>
-			<Align>center</Align>
-			<Color>#AE5CFF</Color>
-			<TextColor>#FFFFFF</TextColor>
-		</Mark>
-		<Mark>
-			<Control>hotcue_7_position</Control>
-			<Text> HOTCUE 7 </Text>
-			<Align>center</Align>
-			<Color>#AE5CFF</Color>
-			<TextColor>#FFFFFF</TextColor>
-		</Mark>
-		<Mark>
-			<Control>hotcue_8_position</Control>
-			<Text> HOTCUE 8 </Text>
-			<Align>center</Align>
-			<Color>#AE5CFF</Color>
-			<TextColor>#FFFFFF</TextColor>
-		</Mark>
-		<Mark>
-			<Control>hotcue_9_position</Control>
-			<Text> HOTCUE 9 </Text>
-			<Align>center</Align>
-			<Color>#AE5CFF</Color>
-			<TextColor>#FFFFFF</TextColor>
-		</Mark>
-		<Mark>
-			<Control>hotcue_10_position</Control>
-			<Text> HOTCUE 10 </Text>
-			<Align>center</Align>
-			<Color>#AE5CFF</Color>
-			<TextColor>#FFFFFF</TextColor>
-		</Mark>
-		<Mark>
-			<Control>hotcue_11_position</Control>
-			<Text> HOTCUE 11 </Text>
-			<Align>center</Align>
-			<Color>#AE5CFF</Color>
-			<TextColor>#FFFFFF</TextColor>
-		</Mark>
-		<Mark>
-			<Control>hotcue_12_position</Control>
-			<Text> HOTCUE 12 </Text>
-			<Align>center</Align>
-			<Color>#AE5CFF</Color>
-			<TextColor>#FFFFFF</TextColor>
-		</Mark>
-		<Mark>
-			<Control>hotcue_13_position</Control>
-			<Text> HOTCUE 13 </Text>
-			<Align>center</Align>
-			<Color>#AE5CFF</Color>
-			<TextColor>#FFFFFF</TextColor>
-		</Mark>
-		<Mark>
-			<Control>hotcue_14_position</Control>
-			<Text> HOTCUE 14 </Text>
-			<Align>center</Align>
-			<Color>#AE5CFF</Color>
-			<TextColor>#FFFFFF</TextColor>
-		</Mark>
-		<Mark>
-			<Control>hotcue_15_position</Control>
-			<Text> HOTCUE 15 </Text>
-			<Align>center</Align>
-			<Color>#AE5CFF</Color>
-			<TextColor>#FFFFFF</TextColor>
-		</Mark>
-		<Mark>
-			<Control>hotcue_16_position</Control>
-			<Text> HOTCUE 16 </Text>
-			<Align>center</Align>
-			<Color>#AE5CFF</Color>
-			<TextColor>#FFFFFF</TextColor>
-		</Mark>
-		<Mark>
-			<Control>hotcue_17_position</Control>
-			<Text> HOTCUE 17 </Text>
-			<Align>center</Align>
-			<Color>#AE5CFF</Color>
-			<TextColor>#FFFFFF</TextColor>
-		</Mark>
-		<Mark>
-			<Control>hotcue_18_position</Control>
-			<Text> HOTCUE 18 </Text>
-			<Align>center</Align>
-			<Color>#AE5CFF</Color>
-			<TextColor>#FFFFFF</TextColor>
-		</Mark>
-		<Mark>
-			<Control>hotcue_19_position</Control>
-			<Text> HOTCUE 19 </Text>
-			<Align>center</Align>
-			<Color>#AE5CFF</Color>
-			<TextColor>#FFFFFF</TextColor>
-		</Mark>
-		<Mark>
-			<Control>hotcue_20_position</Control>
-			<Text> HOTCUE 20 </Text>
-			<Align>center</Align>
-			<Color>#AE5CFF</Color>
-			<TextColor>#FFFFFF</TextColor>
-		</Mark>
-		<Mark>
-			<Control>hotcue_21_position</Control>
-			<Text> HOTCUE 21 </Text>
-			<Align>center</Align>
-			<Color>#AE5CFF</Color>
-			<TextColor>#FFFFFF</TextColor>
-		</Mark>
-		<Mark>
-			<Control>hotcue_22_position</Control>
-			<Text> HOTCUE 22 </Text>
-			<Align>center</Align>
-			<Color>#AE5CFF</Color>
-			<TextColor>#FFFFFF</TextColor>
-		</Mark>
-		<Mark>
-			<Control>hotcue_23_position</Control>
-			<Text> HOTCUE 23 </Text>
-			<Align>center</Align>
-			<Color>#AE5CFF</Color>
-			<TextColor>#FFFFFF</TextColor>
-		</Mark>
-		<Mark>
-			<Control>hotcue_24_position</Control>
-			<Text> HOTCUE 24 </Text>
-			<Align>center</Align>
-			<Color>#AE5CFF</Color>
-			<TextColor>#FFFFFF</TextColor>
-		</Mark>
-		<Mark>
-			<Control>hotcue_25_position</Control>
-			<Text> HOTCUE 25 </Text>
-			<Align>center</Align>
-			<Color>#AE5CFF</Color>
-			<TextColor>#FFFFFF</TextColor>
-		</Mark>
-		<Mark>
-			<Control>hotcue_26_position</Control>
-			<Text> HOTCUE 26 </Text>
-			<Align>center</Align>
-			<Color>#AE5CFF</Color>
-			<TextColor>#FFFFFF</TextColor>
-		</Mark>
-		<Mark>
-			<Control>hotcue_27_position</Control>
-			<Text> HOTCUE 27 </Text>
-			<Align>center</Align>
-			<Color>#AE5CFF</Color>
-			<TextColor>#FFFFFF</TextColor>
-		</Mark>
-		<Mark>
-			<Control>hotcue_28_position</Control>
-			<Text> HOTCUE 28 </Text>
-			<Align>center</Align>
-			<Color>#AE5CFF</Color>
-			<TextColor>#FFFFFF</TextColor>
-		</Mark>
-		<Mark>
-			<Control>hotcue_29_position</Control>
-			<Text> HOTCUE 29 </Text>
-			<Align>center</Align>
-			<Color>#AE5CFF</Color>
-			<TextColor>#FFFFFF</TextColor>
-		</Mark>
-		<Mark>
-			<Control>hotcue_30_position</Control>
-			<Text> HOTCUE 30 </Text>
-			<Align>center</Align>
-			<Color>#AE5CFF</Color>
-			<TextColor>#FFFFFF</TextColor>
-		</Mark>
-		<Mark>
-			<Control>hotcue_31_position</Control>
-			<Text> HOTCUE 31 </Text>
-			<Align>center</Align>
-			<Color>#AE5CFF</Color>
-			<TextColor>#FFFFFF</TextColor>
-		</Mark>
-		<Mark>
-			<Control>hotcue_32_position</Control>
-			<Text> HOTCUE 32 </Text>
-			<Align>center</Align>
-			<Color>#AE5CFF</Color>
-			<TextColor>#FFFFFF</TextColor>
-		</Mark>
-		<Mark>
-			<Control>hotcue_33_position</Control>
-			<Text> HOTCUE 33 </Text>
-			<Align>center</Align>
-			<Color>#AE5CFF</Color>
-			<TextColor>#FFFFFF</TextColor>
-		</Mark>
-		<Mark>
-			<Control>hotcue_34_position</Control>
-			<Text> HOTCUE 34 </Text>
-			<Align>center</Align>
-			<Color>#AE5CFF</Color>
-			<TextColor>#FFFFFF</TextColor>
-		</Mark>
-		<Mark>
-			<Control>hotcue_35_position</Control>
-			<Text> HOTCUE 35 </Text>
-			<Align>center</Align>
-			<Color>#AE5CFF</Color>
-			<TextColor>#FFFFFF</TextColor>
-		</Mark>
-		<Mark>
-			<Control>hotcue_36_position</Control>
-			<Text> HOTCUE 36 </Text>
-			<Align>center</Align>
-			<Color>#AE5CFF</Color>
-			<TextColor>#FFFFFF</TextColor>
-		</Mark>
-
-		<Mark>
-			<Control>cue_point</Control>
-			<Text> CUE </Text>
-			<Align>top</Align>
-			<Color>#FFFF00</Color>
-			<TextColor>#FFFFFF</TextColor>
-		</Mark>
-	</Visual>
-	<Visual>
-		<Tooltip>Waveform display&#10;Shows the loaded tracks' waveforms near the playback position.&#10;Drag with mouse to control sound playback.&#10;Drop tracks from external file manager here.&#10;</Tooltip>
-		<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-		</Style>
-		<Channel>2</Channel>
-		<Pos>108,80</Pos>
-		<Size>799,60</Size>
-		<BgColor>#FFFFFF</BgColor>
-		<HfcColor>#1b1b1b</HfcColor>
-		<SignalColor>#00ff00</SignalColor>
-		<BeatColor>#F00000</BeatColor>
-		<BeatHighlightColor>#000000</BeatHighlightColor>
-		<MarkerColor>#FF0000</MarkerColor>
-		<CueColor>#000000</CueColor>
-		<MarkRange>
-			<StartControl>loop_start_position</StartControl>
-			<EndControl>loop_end_position</EndControl>
-			<EnabledControl>loop_enabled</EnabledControl>
-			<Color>#F00000</Color>
-			<DisabledColor>#00FF00</DisabledColor>
-		</MarkRange>
-		<Mark>
-			<Control>loop_start_position</Control>
-			<Text> LOOP IN </Text>
-			<Align>bottom</Align>
-			<Color>#F00000</Color>
-			<TextColor>#FFFFFF</TextColor>
-		</Mark>
-		<Mark>
-			<Control>loop_end_position</Control>
-			<Text> LOOP OUT </Text>
-			<Align>bottom</Align>
-			<Color>#F00000</Color>
-			<TextColor>#FFFFFF</TextColor>
-		</Mark>
-		<!--
-		The hotcues not represented by a button in the current skin show only in the waveform under two circumstances:
-			- if a MIDI device which supports more hotcues than buttons are in the current skin has them activated
-			- if you change from a skin which supports more hotcues than buttons are in the current skin (and has them activated)
-		These "special" hotcues share the color #AE5CFF to make them distinguishable (and maintainable) from the hotcues
-		represented by a button in the current skin. Mixxx 1.8.x-1.9.0 support up to 32 hotcues. v1.9.1+ supports up to 36.
-		Current skins uses up to 6 buttons per channel.
-		-->
-		<Mark>
-			<Control>hotcue_1_position</Control>
-			<Text> HOTCUE 1 </Text>
-			<Align>center</Align>
-			<Color>#00AAFF</Color>
-			<TextColor>#FFFFFF</TextColor>
-		</Mark>
-		<Mark>
-			<Control>hotcue_2_position</Control>
-			<Text> HOTCUE 2 </Text>
-			<Align>center</Align>
-			<Color>#FF2929</Color>
-			<TextColor>#FFFFFF</TextColor>
-		</Mark>
-		<Mark>
-			<Control>hotcue_3_position</Control>
-			<Text> HOTCUE 3 </Text>
-			<Align>center</Align>
-			<Color>#FF00FF</Color>
-			<TextColor>#FFFFFF</TextColor>
-		</Mark>
-		<Mark>
-			<Control>hotcue_4_position</Control>
-			<Text> HOTCUE 4 </Text>
-			<Align>center</Align>
-			<Color>#80FF00</Color>
-			<TextColor>#FFFFFF</TextColor>
-		</Mark>
-		<Mark>
-			<Control>hotcue_5_position</Control>
-			<Text> HOTCUE 5 </Text>
-			<Align>center</Align>
-			<Color>#AE5CFF</Color>
-			<TextColor>#FFFFFF</TextColor>
-		</Mark>
-		<Mark>
-			<Control>hotcue_6_position</Control>
-			<Text> HOTCUE 6 </Text>
-			<Align>center</Align>
-			<Color>#AE5CFF</Color>
-			<TextColor>#FFFFFF</TextColor>
-		</Mark>
-		<Mark>
-			<Control>hotcue_7_position</Control>
-			<Text> HOTCUE 7 </Text>
-			<Align>center</Align>
-			<Color>#AE5CFF</Color>
-			<TextColor>#FFFFFF</TextColor>
-		</Mark>
-		<Mark>
-			<Control>hotcue_8_position</Control>
-			<Text> HOTCUE 8 </Text>
-			<Align>center</Align>
-			<Color>#AE5CFF</Color>
-			<TextColor>#FFFFFF</TextColor>
-		</Mark>
-		<Mark>
-			<Control>hotcue_9_position</Control>
-			<Text> HOTCUE 9 </Text>
-			<Align>center</Align>
-			<Color>#AE5CFF</Color>
-			<TextColor>#FFFFFF</TextColor>
-		</Mark>
-		<Mark>
-			<Control>hotcue_10_position</Control>
-			<Text> HOTCUE 10 </Text>
-			<Align>center</Align>
-			<Color>#AE5CFF</Color>
-			<TextColor>#FFFFFF</TextColor>
-		</Mark>
-		<Mark>
-			<Control>hotcue_11_position</Control>
-			<Text> HOTCUE 11 </Text>
-			<Align>center</Align>
-			<Color>#AE5CFF</Color>
-			<TextColor>#FFFFFF</TextColor>
-		</Mark>
-		<Mark>
-			<Control>hotcue_12_position</Control>
-			<Text> HOTCUE 12 </Text>
-			<Align>center</Align>
-			<Color>#AE5CFF</Color>
-			<TextColor>#FFFFFF</TextColor>
-		</Mark>
-		<Mark>
-			<Control>hotcue_13_position</Control>
-			<Text> HOTCUE 13 </Text>
-			<Align>center</Align>
-			<Color>#AE5CFF</Color>
-			<TextColor>#FFFFFF</TextColor>
-		</Mark>
-		<Mark>
-			<Control>hotcue_14_position</Control>
-			<Text> HOTCUE 14 </Text>
-			<Align>center</Align>
-			<Color>#AE5CFF</Color>
-			<TextColor>#FFFFFF</TextColor>
-		</Mark>
-		<Mark>
-			<Control>hotcue_15_position</Control>
-			<Text> HOTCUE 15 </Text>
-			<Align>center</Align>
-			<Color>#AE5CFF</Color>
-			<TextColor>#FFFFFF</TextColor>
-		</Mark>
-		<Mark>
-			<Control>hotcue_16_position</Control>
-			<Text> HOTCUE 16 </Text>
-			<Align>center</Align>
-			<Color>#AE5CFF</Color>
-			<TextColor>#FFFFFF</TextColor>
-		</Mark>
-		<Mark>
-			<Control>hotcue_17_position</Control>
-			<Text> HOTCUE 17 </Text>
-			<Align>center</Align>
-			<Color>#AE5CFF</Color>
-			<TextColor>#FFFFFF</TextColor>
-		</Mark>
-		<Mark>
-			<Control>hotcue_18_position</Control>
-			<Text> HOTCUE 18 </Text>
-			<Align>center</Align>
-			<Color>#AE5CFF</Color>
-			<TextColor>#FFFFFF</TextColor>
-		</Mark>
-		<Mark>
-			<Control>hotcue_19_position</Control>
-			<Text> HOTCUE 19 </Text>
-			<Align>center</Align>
-			<Color>#AE5CFF</Color>
-			<TextColor>#FFFFFF</TextColor>
-		</Mark>
-		<Mark>
-			<Control>hotcue_20_position</Control>
-			<Text> HOTCUE 20 </Text>
-			<Align>center</Align>
-			<Color>#AE5CFF</Color>
-			<TextColor>#FFFFFF</TextColor>
-		</Mark>
-		<Mark>
-			<Control>hotcue_21_position</Control>
-			<Text> HOTCUE 21 </Text>
-			<Align>center</Align>
-			<Color>#AE5CFF</Color>
-			<TextColor>#FFFFFF</TextColor>
-		</Mark>
-		<Mark>
-			<Control>hotcue_22_position</Control>
-			<Text> HOTCUE 22 </Text>
-			<Align>center</Align>
-			<Color>#AE5CFF</Color>
-			<TextColor>#FFFFFF</TextColor>
-		</Mark>
-		<Mark>
-			<Control>hotcue_23_position</Control>
-			<Text> HOTCUE 23 </Text>
-			<Align>center</Align>
-			<Color>#AE5CFF</Color>
-			<TextColor>#FFFFFF</TextColor>
-		</Mark>
-		<Mark>
-			<Control>hotcue_24_position</Control>
-			<Text> HOTCUE 24 </Text>
-			<Align>center</Align>
-			<Color>#AE5CFF</Color>
-			<TextColor>#FFFFFF</TextColor>
-		</Mark>
-		<Mark>
-			<Control>hotcue_25_position</Control>
-			<Text> HOTCUE 25 </Text>
-			<Align>center</Align>
-			<Color>#AE5CFF</Color>
-			<TextColor>#FFFFFF</TextColor>
-		</Mark>
-		<Mark>
-			<Control>hotcue_26_position</Control>
-			<Text> HOTCUE 26 </Text>
-			<Align>center</Align>
-			<Color>#AE5CFF</Color>
-			<TextColor>#FFFFFF</TextColor>
-		</Mark>
-		<Mark>
-			<Control>hotcue_27_position</Control>
-			<Text> HOTCUE 27 </Text>
-			<Align>center</Align>
-			<Color>#AE5CFF</Color>
-			<TextColor>#FFFFFF</TextColor>
-		</Mark>
-		<Mark>
-			<Control>hotcue_28_position</Control>
-			<Text> HOTCUE 28 </Text>
-			<Align>center</Align>
-			<Color>#AE5CFF</Color>
-			<TextColor>#FFFFFF</TextColor>
-		</Mark>
-		<Mark>
-			<Control>hotcue_29_position</Control>
-			<Text> HOTCUE 29 </Text>
-			<Align>center</Align>
-			<Color>#AE5CFF</Color>
-			<TextColor>#FFFFFF</TextColor>
-		</Mark>
-		<Mark>
-			<Control>hotcue_30_position</Control>
-			<Text> HOTCUE 30 </Text>
-			<Align>center</Align>
-			<Color>#AE5CFF</Color>
-			<TextColor>#FFFFFF</TextColor>
-		</Mark>
-		<Mark>
-			<Control>hotcue_31_position</Control>
-			<Text> HOTCUE 31 </Text>
-			<Align>center</Align>
-			<Color>#AE5CFF</Color>
-			<TextColor>#FFFFFF</TextColor>
-		</Mark>
-		<Mark>
-			<Control>hotcue_32_position</Control>
-			<Text> HOTCUE 32 </Text>
-			<Align>center</Align>
-			<Color>#AE5CFF</Color>
-			<TextColor>#FFFFFF</TextColor>
-		</Mark>
-		<Mark>
-			<Control>hotcue_33_position</Control>
-			<Text> HOTCUE 33 </Text>
-			<Align>center</Align>
-			<Color>#AE5CFF</Color>
-			<TextColor>#FFFFFF</TextColor>
-		</Mark>
-		<Mark>
-			<Control>hotcue_34_position</Control>
-			<Text> HOTCUE 34 </Text>
-			<Align>center</Align>
-			<Color>#AE5CFF</Color>
-			<TextColor>#FFFFFF</TextColor>
-		</Mark>
-		<Mark>
-			<Control>hotcue_35_position</Control>
-			<Text> HOTCUE 35 </Text>
-			<Align>center</Align>
-			<Color>#AE5CFF</Color>
-			<TextColor>#FFFFFF</TextColor>
-		</Mark>
-		<Mark>
-			<Control>hotcue_36_position</Control>
-			<Text> HOTCUE 36 </Text>
-			<Align>center</Align>
-			<Color>#AE5CFF</Color>
-			<TextColor>#FFFFFF</TextColor>
-		</Mark>
-
-		<Mark>
-			<Control>cue_point</Control>
-			<Text> CUE </Text>
-			<Align>top</Align>
-			<Color>#FFFF00</Color>
-			<TextColor>#FFFFFF</TextColor>
-		</Mark>
-	</Visual>
-
-	<!--
-	**********************************************
-	Visaul- Waveform overview
-	**********************************************
-	-->
-	<Overview>
-		<Tooltip>Waveform overview&#10;Shows information about the track currently loaded in this channel.&#10;Jump around in the track by clicking somewhere on the waveform.&#10;</Tooltip>
-		<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-		</Style>
-		<Channel>1</Channel>
-		<Pos>150,158</Pos>
-		<Size>236,20</Size>
-		<BgColor>#FFFFFF</BgColor>
-		<SignalColor>#00ff00</SignalColor>
-		<MarkerColor>#0032FF</MarkerColor>
-		<Connection>
-			<ConfigKey>[Channel1],playposition</ConfigKey>
-			<EmitOnDownPress>false</EmitOnDownPress>
-		</Connection>
-	</Overview>
-	<Overview>
-		<Tooltip>Waveform overview&#10;Shows information about the track currently loaded in this channel.&#10;Jump around in the track by clicking somewhere on the waveform.&#10;</Tooltip>
-		<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-		</Style>
-		<Channel>2</Channel>
-		<Pos>629,158</Pos>
-		<Size>236,20</Size>
-		<BgColor>#FFFFFF</BgColor>
-		<SignalColor>#00ff00</SignalColor>
-		<MarkerColor>#ff0000</MarkerColor>
-		<Connection>
-			<ConfigKey>[Channel2],playposition</ConfigKey>
-			<EmitOnDownPress>false</EmitOnDownPress>
-		</Connection>
-	</Overview>
-
-	<!--
-	**********************************************
 	Visual - Volume level display
 	**********************************************
 	-->
@@ -857,7 +239,7 @@
 		</Style>
 		<PathVu>btn_volume_display1_over.png</PathVu>
 		<PathBack>btn_volume_display1.png</PathBack>
-		<Pos>83,374</Pos>
+		<Pos>87,395</Pos>
 		<Horizontal>false</Horizontal>
 		<PeakHoldSize>5</PeakHoldSize>
 		<PeakHoldTime>500</PeakHoldTime>
@@ -874,7 +256,7 @@
 		</Style>
 		<PathVu>btn_volume_display2_over.png</PathVu>
 		<PathBack>btn_volume_display2.png</PathBack>
-		<Pos>991,374</Pos>
+		<Pos>995,395</Pos>
 		<Horizontal>false</Horizontal>
 		<PeakHoldSize>5</PeakHoldSize>
 		<PeakHoldTime>500</PeakHoldTime>
@@ -892,7 +274,7 @@
 		</Style>
 		<PathVu>btn_volume_display_master1_over.png</PathVu>
 		<PathBack>btn_volume_display_master1.png</PathBack>
-		<Pos>737,187</Pos>
+		<Pos>811,201</Pos>
 		<Horizontal>true</Horizontal>
 		<PeakHoldSize>5</PeakHoldSize>
 		<PeakHoldTime>500</PeakHoldTime>
@@ -909,7 +291,7 @@
 		</Style>
 		<PathVu>btn_volume_display_master2_over.png</PathVu>
 		<PathBack>btn_volume_display_master2.png</PathBack>
-		<Pos>737,201</Pos>
+		<Pos>811,211</Pos>
 		<Horizontal>true</Horizontal>
 		<PeakHoldSize>5</PeakHoldSize>
 		<PeakHoldTime>500</PeakHoldTime>
@@ -932,7 +314,7 @@
 		</Style>
 		<PathStatusLight>btn_clipping1_over.png</PathStatusLight>
 		<PathBack>btn_clipping1.png</PathBack>
-		<Pos>83,360</Pos>
+		<Pos>87,380</Pos>
 		<Connection>
 			<ConfigKey>[Channel1],PeakIndicator</ConfigKey>
 		</Connection>
@@ -944,7 +326,7 @@
 		</Style>
 		<PathStatusLight>btn_clipping2_over.png</PathStatusLight>
 		<PathBack>btn_clipping2.png</PathBack>
-		<Pos>991,360</Pos>
+		<Pos>995,380</Pos>
 		<Connection>
 			<ConfigKey>[Channel2],PeakIndicator</ConfigKey>
 		</Connection>
@@ -956,13 +338,1069 @@
 		</Style>
 		<PathStatusLight>btn_clipping_master_over.png</PathStatusLight>
 		<PathBack>btn_clipping_master.png</PathBack>
-		<Pos>893,187</Pos>
+		<Pos>893,201</Pos>
 		<Connection>
 			<ConfigKey>[Master],PeakIndicator</ConfigKey>
 		</Connection>
 	</StatusLight>
 
 	<!--
+	**********************************************
+	Visual- Vinyl control status indicator // we need 4 of them for top-bottom-left-right
+	**********************************************
+	-->
+	<StatusLight>
+		<Tooltip>Vinyl Status&#10;Provides visual feedback with regards to vinyl control status&#10;Green for control enabled&#10;Blinking yellow for when the needle reaches the end of the record&#10;Red for needle skip detected&#10;</Tooltip>
+		<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+		</Style>
+		<NumberPos>3</NumberPos>
+		<PathStatusLight>btn_vinylcontrol_indicator_horizontal1.png</PathStatusLight>
+		<PathStatusLight2>btn_vinylcontrol_indicator_horizontal2.png</PathStatusLight2>
+		<PathStatusLight3>btn_vinylcontrol_indicator_horizontal3.png</PathStatusLight3>
+		<Pos>107,121</Pos>
+		<Connection>
+			<ConfigKey>[Channel1],vinylcontrol_status</ConfigKey>
+		</Connection>
+	</StatusLight>
+	<StatusLight>
+		<Tooltip>Vinyl Status&#10;Provides visual feedback with regards to vinyl control status&#10;Green for control enabled&#10;Blinking yellow for when the needle reaches the end of the record&#10;Red for needle skip detected&#10;</Tooltip>
+		<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+		</Style>
+		<NumberPos>3</NumberPos>
+		<PathStatusLight>btn_vinylcontrol_indicator_horizontal1.png</PathStatusLight>
+		<PathStatusLight2>btn_vinylcontrol_indicator_horizontal2.png</PathStatusLight2>
+		<PathStatusLight3>btn_vinylcontrol_indicator_horizontal3.png</PathStatusLight3>
+		<Pos>107,189</Pos>
+		<Connection>
+			<ConfigKey>[Channel1],vinylcontrol_status</ConfigKey>
+		</Connection>
+	</StatusLight>
+	<StatusLight>
+		<Tooltip>Vinyl Status&#10;Provides visual feedback with regards to vinyl control status&#10;Green for control enabled&#10;Blinking yellow for when the needle reaches the end of the record&#10;Red for needle skip detected&#10;</Tooltip>
+		<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+		</Style>
+		<NumberPos>3</NumberPos>
+		<PathStatusLight>btn_vinylcontrol_indicator_vertical1.png</PathStatusLight>
+		<PathStatusLight2>btn_vinylcontrol_indicator_vertical2.png</PathStatusLight2>
+		<PathStatusLight3>btn_vinylcontrol_indicator_vertical3.png</PathStatusLight3>
+		<Pos>465,121</Pos>
+		<Connection>
+			<ConfigKey>[Channel1],vinylcontrol_status</ConfigKey>
+		</Connection>
+	</StatusLight>
+	<StatusLight>
+		<Tooltip>Vinyl Status&#10;Provides visual feedback with regards to vinyl control status&#10;Green for control enabled&#10;Blinking yellow for when the needle reaches the end of the record&#10;Red for needle skip detected&#10;</Tooltip>
+		<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+		</Style>
+		<NumberPos>3</NumberPos>
+		<PathStatusLight>btn_vinylcontrol_indicator_vertical1.png</PathStatusLight>
+		<PathStatusLight2>btn_vinylcontrol_indicator_vertical2.png</PathStatusLight2>
+		<PathStatusLight3>btn_vinylcontrol_indicator_vertical3.png</PathStatusLight3>
+		<Pos>105,121</Pos>
+		<Connection>
+			<ConfigKey>[Channel1],vinylcontrol_status</ConfigKey>
+		</Connection>
+	</StatusLight>
+
+	<StatusLight>
+		<Tooltip>Vinyl Status&#10;Provides visual feedback with regards to vinyl control status&#10;Green for control enabled&#10;Blinking yellow for when the needle reaches the end of the record&#10;Red for needle skip detected&#10;</Tooltip>
+		<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+		</Style>
+		<NumberPos>3</NumberPos>
+		<PathStatusLight>btn_vinylcontrol_indicator_horizontal1.png</PathStatusLight>
+		<PathStatusLight2>btn_vinylcontrol_indicator_horizontal2.png</PathStatusLight2>
+		<PathStatusLight3>btn_vinylcontrol_indicator_horizontal3.png</PathStatusLight3>
+		<Pos>549,121</Pos>
+		<Connection>
+			<ConfigKey>[Channel2],vinylcontrol_status</ConfigKey>
+		</Connection>
+	</StatusLight>
+	<StatusLight>
+		<Tooltip>Vinyl Status&#10;Provides visual feedback with regards to vinyl control status&#10;Green for control enabled&#10;Blinking yellow for when the needle reaches the end of the record&#10;Red for needle skip detected&#10;</Tooltip>
+		<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+		</Style>
+		<NumberPos>3</NumberPos>
+		<PathStatusLight>btn_vinylcontrol_indicator_horizontal1.png</PathStatusLight>
+		<PathStatusLight2>btn_vinylcontrol_indicator_horizontal2.png</PathStatusLight2>
+		<PathStatusLight3>btn_vinylcontrol_indicator_horizontal3.png</PathStatusLight3>
+		<Pos>549,189</Pos>
+		<Connection>
+			<ConfigKey>[Channel2],vinylcontrol_status</ConfigKey>
+		</Connection>
+	</StatusLight>
+	<StatusLight>
+		<Tooltip>Vinyl Status&#10;Provides visual feedback with regards to vinyl control status&#10;Green for control enabled&#10;Blinking yellow for when the needle reaches the end of the record&#10;Red for needle skip detected&#10;</Tooltip>
+		<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+		</Style>
+		<NumberPos>3</NumberPos>
+		<PathStatusLight>btn_vinylcontrol_indicator_vertical1.png</PathStatusLight>
+		<PathStatusLight2>btn_vinylcontrol_indicator_vertical2.png</PathStatusLight2>
+		<PathStatusLight3>btn_vinylcontrol_indicator_vertical3.png</PathStatusLight3>
+		<Pos>907,121</Pos>
+		<Connection>
+			<ConfigKey>[Channel2],vinylcontrol_status</ConfigKey>
+		</Connection>
+	</StatusLight>
+	<StatusLight>
+		<Tooltip>Vinyl Status&#10;Provides visual feedback with regards to vinyl control status&#10;Green for control enabled&#10;Blinking yellow for when the needle reaches the end of the record&#10;Red for needle skip detected&#10;</Tooltip>
+		<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+		</Style>
+		<NumberPos>3</NumberPos>
+		<PathStatusLight>btn_vinylcontrol_indicator_vertical1.png</PathStatusLight>
+		<PathStatusLight2>btn_vinylcontrol_indicator_vertical2.png</PathStatusLight2>
+		<PathStatusLight3>btn_vinylcontrol_indicator_vertical3.png</PathStatusLight3>
+		<Pos>547,121</Pos>
+		<Connection>
+			<ConfigKey>[Channel2],vinylcontrol_status</ConfigKey>
+		</Connection>
+	</StatusLight>
+	<!--
+	**********************************************
+	Visaul- Waveform overview
+	**********************************************
+	-->
+	<Overview>
+		<Tooltip>Waveform overview&#10;Shows information about the track currently loaded in this channel.&#10;Jump around in the track by clicking somewhere on the waveform.&#10;</Tooltip>
+		<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+		</Style>
+		<Channel>1</Channel>
+		<Pos>108,159</Pos>
+		<Size>240,28</Size>
+		<BgColor>#FFFFFF</BgColor>
+		<SignalColor>#00ff00</SignalColor>
+		<MarkerColor>#0032FF</MarkerColor>
+		<Connection>
+			<ConfigKey>[Channel1],playposition</ConfigKey>
+			<EmitOnDownPress>false</EmitOnDownPress>
+		</Connection>
+	</Overview>
+	<Overview>
+		<Tooltip>Waveform overview&#10;Shows information about the track currently loaded in this channel.&#10;Jump around in the track by clicking somewhere on the waveform.&#10;</Tooltip>
+		<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+		</Style>
+		<Channel>2</Channel>
+		<Pos>551,159</Pos>
+		<Size>240,28</Size>
+		<BgColor>#FFFFFF</BgColor>
+		<SignalColor>#00ff00</SignalColor>
+		<MarkerColor>#ff0000</MarkerColor>
+		<Connection>
+			<ConfigKey>[Channel2],playposition</ConfigKey>
+			<EmitOnDownPress>false</EmitOnDownPress>
+		</Connection>
+	</Overview>
+
+	<!--
+	############################################################################################
+	############################################################################################
+	WidgetGroup : Waveform, Vinylcontrol & Spinning Vinyl
+	############################################################################################
+	############################################################################################
+	-->
+	<WidgetGroup>
+		<Pos>106,0</Pos>
+		<Size>801,120</Size>
+		<Style>QGroupBox { border: 0px solid red; } QWidget { margin: 0; padding: 0; }</Style>
+		<Layout>horizontal</Layout>
+		<Children>
+			<!-- Vinylcontrol 1 sub-widget -->
+			<WidgetGroup>
+				<!--<<Pos>0,0</Pos>-->
+				<Size>35,i</Size>
+				<Style>QGroupBox { border: 0px solid yellow;} QWidget { margin: 0; padding: 0; }</Style>
+				<Children>
+					<!--
+					**********************************************
+					Vinyl- Status 
+					// Vinyl status indicators are inside the players WidgetGroups
+					**********************************************
+					-->
+
+					<!--
+					**********************************************
+					Vinyl- Control Mode
+					**********************************************
+					-->
+					<PushButton>
+						<Tooltip>Vinyl Control Mode&#10;Absolute mode - track position equals needle position and speed&#10;Relative mode - track speed equals needle speed regardless of needle position&#10;Constant mode - track speed equals last known-steady speed regardless of needle input&#10;</Tooltip>
+						<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+						background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+						</Style>
+						<NumberStates>3</NumberStates>
+						<State>
+							<Number>0</Number>
+							<Pressed>btn_vinylcontrol_mode_abs1.png</Pressed>
+							<Unpressed>btn_vinylcontrol_mode_abs1.png</Unpressed>
+						</State>
+						<State>
+							<Number>1</Number>
+							<Pressed>btn_vinylcontrol_mode_rel1.png</Pressed>
+							<Unpressed>btn_vinylcontrol_mode_rel1.png</Unpressed>
+						</State>
+						<State>
+							<Number>2</Number>
+							<Pressed>btn_vinylcontrol_mode_const1.png</Pressed>
+							<Unpressed>btn_vinylcontrol_mode_const1.png</Unpressed>
+						</State>
+						<Pos>5,14</Pos>
+						<Connection>
+							<ConfigKey>[Channel1],vinylcontrol_mode</ConfigKey>
+						</Connection>
+					</PushButton>
+
+					<!--
+					**********************************************
+					Vinyl- Cueing Mode
+					**********************************************
+					-->
+					<PushButton>
+						<Tooltip>Vinyl Cueing Mode&#10;Determines how cue points are treated in vinyl control Relative mode&#10;Off - Cue points ignored&#10;One Cue - If needle is dropped after the cue point, track will seek to that cue point&#10;Hot Cue - Track will seek to nearest previous hot cue point&#10;</Tooltip>
+						<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+						background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+						</Style>
+						<NumberStates>3</NumberStates>
+						<State>
+							<Number>0</Number>
+							<Pressed>btn_vinylcontrol_cueing_off1.png</Pressed>
+							<Unpressed>btn_vinylcontrol_cueing_off1.png</Unpressed>
+						</State>
+						<State>
+							<Number>1</Number>
+							<Pressed>btn_vinylcontrol_cueing_one1.png</Pressed>
+							<Unpressed>btn_vinylcontrol_cueing_one1.png</Unpressed>
+						</State>
+						<State>
+							<Number>2</Number>
+							<Pressed>btn_vinylcontrol_cueing_hot1.png</Pressed>
+							<Unpressed>btn_vinylcontrol_cueing_hot1.png</Unpressed>
+						</State>
+						<Pos>5,74</Pos>
+						<Connection>
+							<ConfigKey>[Channel1],vinylcontrol_cueing</ConfigKey>
+						</Connection>
+					</PushButton>
+				</Children>
+				<Connection>
+					<ConfigKey>[Vinylcontrol],show_vinylcontrol</ConfigKey>
+					<BindProperty>visible</BindProperty>
+				</Connection>
+			</WidgetGroup>
+			<!-- Spinning Vinyl 1 sub-widget -->
+			<WidgetGroup>
+				<!--<Pos>0,0</Pos>-->
+				<Size>120,i</Size>
+				<Style>QGroupBox { border: 0px solid green; } QWidget { margin: 0; padding: 0;} </Style>
+				<Children>
+					<!--
+					**********************************************
+					Visual- Spinning Vinyl
+					**********************************************
+					-->
+					<Spinny>
+						<Tooltip>Spinning vinyl&#10;TODO&#10;</Tooltip>
+						<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+						background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+						</Style>
+						<Channel>1</Channel>
+						<Pos>0,2</Pos>
+						<Size>i,i</Size>
+						<PathBackground>vinyl_spinny1_background.png</PathBackground>
+						<PathForeground>vinyl_spinny1_foreground.png</PathForeground>
+						<PathGhost>vinyl_spinny1_foreground_ghost.png</PathGhost>
+					</Spinny>
+				</Children>
+				<Connection>
+					<ConfigKey>[Spinny1],show_spinny</ConfigKey>
+					<BindProperty>visible</BindProperty>
+				</Connection>
+			</WidgetGroup>
+			<!-- Expanding waveform sub-widget -->
+			<WidgetGroup>
+				<Style>QGroupBox { border: 0px solid yellow; } QWidget { margin: 0; padding: 0; }</Style>
+				<Layout>vertical</Layout>
+				<Children>
+					<!--If you want the waveforms center to adjust when resizing in a collapsing widget 
+					(e.g. to display spinning vinyl widget like in this skin) don't put the Waveform in a widget group, 
+					and don't specify the Waveform's <Size>. So you would have:
+					Parent WidgetGroup
+						Waveform Widget (no Widgetgroup)
+						Child WidgetGroup for Spinny
+							Spinny Widget
+					-->
+					<!--
+					**********************************************
+					Visual- Waveform
+					**********************************************
+					-->
+					<Visual>
+						<Tooltip>Waveform display&#10;Shows the loaded tracks' waveforms near the playback position.&#10;Click and drag with mouse to scratch the song.&#10;Drop tracks from external file manager here.&#10;</Tooltip>
+						<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+						background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+						</Style>
+						<Channel>1</Channel>
+						<Pos>0,0</Pos>
+						<!--See comment about <Size> above-->
+						<!--<Size>i,60</Size>-->
+						<BgColor>#FFFFFF</BgColor>
+						<HfcColor>#1b1b1b</HfcColor>
+						<SignalColor>#00ff00</SignalColor>
+						<BeatColor>#0032FF</BeatColor>
+						<BeatHighlightColor>#000000</BeatHighlightColor>
+						<MarkerColor>#0033FF</MarkerColor>
+						<CueColor>#00FF00</CueColor>
+						<MarkRange>
+							<StartControl>loop_start_position</StartControl>
+							<EndControl>loop_end_position</EndControl>
+							<EnabledControl>loop_enabled</EnabledControl>
+							<Color>#0032FF</Color>
+							<DisabledColor>#00FF00</DisabledColor>
+						</MarkRange>
+						<Mark>
+							<Control>loop_start_position</Control>
+							<Text> LOOP IN </Text>
+							<Align>bottom</Align>
+							<Color>#0032FF</Color>
+							<TextColor>#FFFFFF</TextColor>
+						</Mark>
+						<Mark>
+							<Control>loop_end_position</Control>
+							<Text> LOOP OUT </Text>
+							<Align>bottom</Align>
+							<Color>#0032FF</Color>
+							<TextColor>#FFFFFF</TextColor>
+						</Mark>
+						<!--
+						The hotcues not represented by a button in the current skin show only in the waveform under two circumstances:
+							- if a MIDI device which supports more hotcues than buttons are in the current skin has them activated
+							- if you change from a skin which supports more hotcues than buttons are in the current skin (and has them activated)
+						These "special" hotcues share the color #AE5CFF to make them distinguishable (and maintainable) from the hotcues
+						represented by a button in the current skin. Mixxx 1.8.x-1.9.0 support up to 32 hotcues. v1.9.1+ supports up to 36.
+						Current skins uses up to 6 buttons per channel.
+						-->
+						<Mark>
+							<Control>hotcue_1_position</Control>
+							<Text> HOTCUE 1 </Text>
+							<Align>center</Align>
+							<Color>#00AAFF</Color>
+							<TextColor>#FFFFFF</TextColor>
+						</Mark>
+						<Mark>
+							<Control>hotcue_2_position</Control>
+							<Text> HOTCUE 2 </Text>
+							<Align>center</Align>
+							<Color>#FF2929</Color>
+							<TextColor>#FFFFFF</TextColor>
+						</Mark>
+						<Mark>
+							<Control>hotcue_3_position</Control>
+							<Text> HOTCUE 3 </Text>
+							<Align>center</Align>
+							<Color>#FF00FF</Color>
+							<TextColor>#FFFFFF</TextColor>
+						</Mark>
+						<Mark>
+							<Control>hotcue_4_position</Control>
+							<Text> HOTCUE 4 </Text>
+							<Align>center</Align>
+							<Color>#80FF00</Color>
+							<TextColor>#FFFFFF</TextColor>
+						</Mark>
+						<Mark>
+							<Control>hotcue_5_position</Control>
+							<Text> HOTCUE 5 </Text>
+							<Align>center</Align>
+							<Color>#AE5CFF</Color>
+							<TextColor>#FFFFFF</TextColor>
+						</Mark>
+						<Mark>
+							<Control>hotcue_6_position</Control>
+							<Text> HOTCUE 6 </Text>
+							<Align>center</Align>
+							<Color>#AE5CFF</Color>
+							<TextColor>#FFFFFF</TextColor>
+						</Mark>
+						<Mark>
+							<Control>hotcue_7_position</Control>
+							<Text> HOTCUE 7 </Text>
+							<Align>center</Align>
+							<Color>#AE5CFF</Color>
+							<TextColor>#FFFFFF</TextColor>
+						</Mark>
+						<Mark>
+							<Control>hotcue_8_position</Control>
+							<Text> HOTCUE 8 </Text>
+							<Align>center</Align>
+							<Color>#AE5CFF</Color>
+							<TextColor>#FFFFFF</TextColor>
+						</Mark>
+						<Mark>
+							<Control>hotcue_9_position</Control>
+							<Text> HOTCUE 9 </Text>
+							<Align>center</Align>
+							<Color>#AE5CFF</Color>
+							<TextColor>#FFFFFF</TextColor>
+						</Mark>
+						<Mark>
+							<Control>hotcue_10_position</Control>
+							<Text> HOTCUE 10 </Text>
+							<Align>center</Align>
+							<Color>#AE5CFF</Color>
+							<TextColor>#FFFFFF</TextColor>
+						</Mark>
+						<Mark>
+							<Control>hotcue_11_position</Control>
+							<Text> HOTCUE 11 </Text>
+							<Align>center</Align>
+							<Color>#AE5CFF</Color>
+							<TextColor>#FFFFFF</TextColor>
+						</Mark>
+						<Mark>
+							<Control>hotcue_12_position</Control>
+							<Text> HOTCUE 12 </Text>
+							<Align>center</Align>
+							<Color>#AE5CFF</Color>
+							<TextColor>#FFFFFF</TextColor>
+						</Mark>
+						<Mark>
+							<Control>hotcue_13_position</Control>
+							<Text> HOTCUE 13 </Text>
+							<Align>center</Align>
+							<Color>#AE5CFF</Color>
+							<TextColor>#FFFFFF</TextColor>
+						</Mark>
+						<Mark>
+							<Control>hotcue_14_position</Control>
+							<Text> HOTCUE 14 </Text>
+							<Align>center</Align>
+							<Color>#AE5CFF</Color>
+							<TextColor>#FFFFFF</TextColor>
+						</Mark>
+						<Mark>
+							<Control>hotcue_15_position</Control>
+							<Text> HOTCUE 15 </Text>
+							<Align>center</Align>
+							<Color>#AE5CFF</Color>
+							<TextColor>#FFFFFF</TextColor>
+						</Mark>
+						<Mark>
+							<Control>hotcue_16_position</Control>
+							<Text> HOTCUE 16 </Text>
+							<Align>center</Align>
+							<Color>#AE5CFF</Color>
+							<TextColor>#FFFFFF</TextColor>
+						</Mark>
+						<Mark>
+							<Control>hotcue_17_position</Control>
+							<Text> HOTCUE 17 </Text>
+							<Align>center</Align>
+							<Color>#AE5CFF</Color>
+							<TextColor>#FFFFFF</TextColor>
+						</Mark>
+						<Mark>
+							<Control>hotcue_18_position</Control>
+							<Text> HOTCUE 18 </Text>
+							<Align>center</Align>
+							<Color>#AE5CFF</Color>
+							<TextColor>#FFFFFF</TextColor>
+						</Mark>
+						<Mark>
+							<Control>hotcue_19_position</Control>
+							<Text> HOTCUE 19 </Text>
+							<Align>center</Align>
+							<Color>#AE5CFF</Color>
+							<TextColor>#FFFFFF</TextColor>
+						</Mark>
+						<Mark>
+							<Control>hotcue_20_position</Control>
+							<Text> HOTCUE 20 </Text>
+							<Align>center</Align>
+							<Color>#AE5CFF</Color>
+							<TextColor>#FFFFFF</TextColor>
+						</Mark>
+						<Mark>
+							<Control>hotcue_21_position</Control>
+							<Text> HOTCUE 21 </Text>
+							<Align>center</Align>
+							<Color>#AE5CFF</Color>
+							<TextColor>#FFFFFF</TextColor>
+						</Mark>
+						<Mark>
+							<Control>hotcue_22_position</Control>
+							<Text> HOTCUE 22 </Text>
+							<Align>center</Align>
+							<Color>#AE5CFF</Color>
+							<TextColor>#FFFFFF</TextColor>
+						</Mark>
+						<Mark>
+							<Control>hotcue_23_position</Control>
+							<Text> HOTCUE 23 </Text>
+							<Align>center</Align>
+							<Color>#AE5CFF</Color>
+							<TextColor>#FFFFFF</TextColor>
+						</Mark>
+						<Mark>
+							<Control>hotcue_24_position</Control>
+							<Text> HOTCUE 24 </Text>
+							<Align>center</Align>
+							<Color>#AE5CFF</Color>
+							<TextColor>#FFFFFF</TextColor>
+						</Mark>
+						<Mark>
+							<Control>hotcue_25_position</Control>
+							<Text> HOTCUE 25 </Text>
+							<Align>center</Align>
+							<Color>#AE5CFF</Color>
+							<TextColor>#FFFFFF</TextColor>
+						</Mark>
+						<Mark>
+							<Control>hotcue_26_position</Control>
+							<Text> HOTCUE 26 </Text>
+							<Align>center</Align>
+							<Color>#AE5CFF</Color>
+							<TextColor>#FFFFFF</TextColor>
+						</Mark>
+						<Mark>
+							<Control>hotcue_27_position</Control>
+							<Text> HOTCUE 27 </Text>
+							<Align>center</Align>
+							<Color>#AE5CFF</Color>
+							<TextColor>#FFFFFF</TextColor>
+						</Mark>
+						<Mark>
+							<Control>hotcue_28_position</Control>
+							<Text> HOTCUE 28 </Text>
+							<Align>center</Align>
+							<Color>#AE5CFF</Color>
+							<TextColor>#FFFFFF</TextColor>
+						</Mark>
+						<Mark>
+							<Control>hotcue_29_position</Control>
+							<Text> HOTCUE 29 </Text>
+							<Align>center</Align>
+							<Color>#AE5CFF</Color>
+							<TextColor>#FFFFFF</TextColor>
+						</Mark>
+						<Mark>
+							<Control>hotcue_30_position</Control>
+							<Text> HOTCUE 30 </Text>
+							<Align>center</Align>
+							<Color>#AE5CFF</Color>
+							<TextColor>#FFFFFF</TextColor>
+						</Mark>
+						<Mark>
+							<Control>hotcue_31_position</Control>
+							<Text> HOTCUE 31 </Text>
+							<Align>center</Align>
+							<Color>#AE5CFF</Color>
+							<TextColor>#FFFFFF</TextColor>
+						</Mark>
+						<Mark>
+							<Control>hotcue_32_position</Control>
+							<Text> HOTCUE 32 </Text>
+							<Align>center</Align>
+							<Color>#AE5CFF</Color>
+							<TextColor>#FFFFFF</TextColor>
+						</Mark>
+						<Mark>
+							<Control>hotcue_33_position</Control>
+							<Text> HOTCUE 33 </Text>
+							<Align>center</Align>
+							<Color>#AE5CFF</Color>
+							<TextColor>#FFFFFF</TextColor>
+						</Mark>
+						<Mark>
+							<Control>hotcue_34_position</Control>
+							<Text> HOTCUE 34 </Text>
+							<Align>center</Align>
+							<Color>#AE5CFF</Color>
+							<TextColor>#FFFFFF</TextColor>
+						</Mark>
+						<Mark>
+							<Control>hotcue_35_position</Control>
+							<Text> HOTCUE 35 </Text>
+							<Align>center</Align>
+							<Color>#AE5CFF</Color>
+							<TextColor>#FFFFFF</TextColor>
+						</Mark>
+						<Mark>
+							<Control>hotcue_36_position</Control>
+							<Text> HOTCUE 36 </Text>
+							<Align>center</Align>
+							<Color>#AE5CFF</Color>
+							<TextColor>#FFFFFF</TextColor>
+						</Mark>
+				
+						<Mark>
+							<Control>cue_point</Control>
+							<Text> CUE </Text>
+							<Align>top</Align>
+							<Color>#FFFF00</Color>
+							<TextColor>#FFFFFF</TextColor>
+						</Mark>
+					</Visual>
+					<Visual>
+						<Tooltip>Waveform display&#10;Shows the loaded tracks' waveforms near the playback position.&#10;Click and drag with mouse to scratch the song.&#10;Drop tracks from external file manager here.&#10;</Tooltip>
+						<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+						background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+						</Style>
+						<Channel>2</Channel>
+						<Pos>0,60</Pos>
+						<!--See comment about <Size> above-->
+						<!--<Size>i,60</Size>-->
+						<BgColor>#FFFFFF</BgColor>
+						<HfcColor>#1b1b1b</HfcColor>
+						<SignalColor>#00ff00</SignalColor>
+						<BeatColor>#F00000</BeatColor>
+						<BeatHighlightColor>#000000</BeatHighlightColor>
+						<MarkerColor>#FF0000</MarkerColor>
+						<CueColor>#000000</CueColor>
+						<MarkRange>
+							<StartControl>loop_start_position</StartControl>
+							<EndControl>loop_end_position</EndControl>
+							<EnabledControl>loop_enabled</EnabledControl>
+							<Color>#F00000</Color>
+							<DisabledColor>#00FF00</DisabledColor>
+						</MarkRange>
+						<Mark>
+							<Control>loop_start_position</Control>
+							<Text> LOOP IN </Text>
+							<Align>bottom</Align>
+							<Color>#F00000</Color>
+							<TextColor>#FFFFFF</TextColor>
+						</Mark>
+						<Mark>
+							<Control>loop_end_position</Control>
+							<Text> LOOP OUT </Text>
+							<Align>bottom</Align>
+							<Color>#F00000</Color>
+							<TextColor>#FFFFFF</TextColor>
+						</Mark>
+						<!--
+						The hotcues not represented by a button in the current skin show only in the waveform under two circumstances:
+							- if a MIDI device which supports more hotcues than buttons are in the current skin has them activated
+							- if you change from a skin which supports more hotcues than buttons are in the current skin (and has them activated)
+						These "special" hotcues share the color #AE5CFF to make them distinguishable (and maintainable) from the hotcues
+						represented by a button in the current skin. Mixxx 1.8.x-1.9.0 support up to 32 hotcues. v1.9.1+ supports up to 36.
+						Current skins uses up to 6 buttons per channel.
+						-->
+						<Mark>
+							<Control>hotcue_1_position</Control>
+							<Text> HOTCUE 1 </Text>
+							<Align>center</Align>
+							<Color>#00AAFF</Color>
+							<TextColor>#FFFFFF</TextColor>
+						</Mark>
+						<Mark>
+							<Control>hotcue_2_position</Control>
+							<Text> HOTCUE 2 </Text>
+							<Align>center</Align>
+							<Color>#FF2929</Color>
+							<TextColor>#FFFFFF</TextColor>
+						</Mark>
+						<Mark>
+							<Control>hotcue_3_position</Control>
+							<Text> HOTCUE 3 </Text>
+							<Align>center</Align>
+							<Color>#FF00FF</Color>
+							<TextColor>#FFFFFF</TextColor>
+						</Mark>
+						<Mark>
+							<Control>hotcue_4_position</Control>
+							<Text> HOTCUE 4 </Text>
+							<Align>center</Align>
+							<Color>#80FF00</Color>
+							<TextColor>#FFFFFF</TextColor>
+						</Mark>
+						<Mark>
+							<Control>hotcue_5_position</Control>
+							<Text> HOTCUE 5 </Text>
+							<Align>center</Align>
+							<Color>#AE5CFF</Color>
+							<TextColor>#FFFFFF</TextColor>
+						</Mark>
+						<Mark>
+							<Control>hotcue_6_position</Control>
+							<Text> HOTCUE 6 </Text>
+							<Align>center</Align>
+							<Color>#AE5CFF</Color>
+							<TextColor>#FFFFFF</TextColor>
+						</Mark>
+						<Mark>
+							<Control>hotcue_7_position</Control>
+							<Text> HOTCUE 7 </Text>
+							<Align>center</Align>
+							<Color>#AE5CFF</Color>
+							<TextColor>#FFFFFF</TextColor>
+						</Mark>
+						<Mark>
+							<Control>hotcue_8_position</Control>
+							<Text> HOTCUE 8 </Text>
+							<Align>center</Align>
+							<Color>#AE5CFF</Color>
+							<TextColor>#FFFFFF</TextColor>
+						</Mark>
+						<Mark>
+							<Control>hotcue_9_position</Control>
+							<Text> HOTCUE 9 </Text>
+							<Align>center</Align>
+							<Color>#AE5CFF</Color>
+							<TextColor>#FFFFFF</TextColor>
+						</Mark>
+						<Mark>
+							<Control>hotcue_10_position</Control>
+							<Text> HOTCUE 10 </Text>
+							<Align>center</Align>
+							<Color>#AE5CFF</Color>
+							<TextColor>#FFFFFF</TextColor>
+						</Mark>
+						<Mark>
+							<Control>hotcue_11_position</Control>
+							<Text> HOTCUE 11 </Text>
+							<Align>center</Align>
+							<Color>#AE5CFF</Color>
+							<TextColor>#FFFFFF</TextColor>
+						</Mark>
+						<Mark>
+							<Control>hotcue_12_position</Control>
+							<Text> HOTCUE 12 </Text>
+							<Align>center</Align>
+							<Color>#AE5CFF</Color>
+							<TextColor>#FFFFFF</TextColor>
+						</Mark>
+						<Mark>
+							<Control>hotcue_13_position</Control>
+							<Text> HOTCUE 13 </Text>
+							<Align>center</Align>
+							<Color>#AE5CFF</Color>
+							<TextColor>#FFFFFF</TextColor>
+						</Mark>
+						<Mark>
+							<Control>hotcue_14_position</Control>
+							<Text> HOTCUE 14 </Text>
+							<Align>center</Align>
+							<Color>#AE5CFF</Color>
+							<TextColor>#FFFFFF</TextColor>
+						</Mark>
+						<Mark>
+							<Control>hotcue_15_position</Control>
+							<Text> HOTCUE 15 </Text>
+							<Align>center</Align>
+							<Color>#AE5CFF</Color>
+							<TextColor>#FFFFFF</TextColor>
+						</Mark>
+						<Mark>
+							<Control>hotcue_16_position</Control>
+							<Text> HOTCUE 16 </Text>
+							<Align>center</Align>
+							<Color>#AE5CFF</Color>
+							<TextColor>#FFFFFF</TextColor>
+						</Mark>
+						<Mark>
+							<Control>hotcue_17_position</Control>
+							<Text> HOTCUE 17 </Text>
+							<Align>center</Align>
+							<Color>#AE5CFF</Color>
+							<TextColor>#FFFFFF</TextColor>
+						</Mark>
+						<Mark>
+							<Control>hotcue_18_position</Control>
+							<Text> HOTCUE 18 </Text>
+							<Align>center</Align>
+							<Color>#AE5CFF</Color>
+							<TextColor>#FFFFFF</TextColor>
+						</Mark>
+						<Mark>
+							<Control>hotcue_19_position</Control>
+							<Text> HOTCUE 19 </Text>
+							<Align>center</Align>
+							<Color>#AE5CFF</Color>
+							<TextColor>#FFFFFF</TextColor>
+						</Mark>
+						<Mark>
+							<Control>hotcue_20_position</Control>
+							<Text> HOTCUE 20 </Text>
+							<Align>center</Align>
+							<Color>#AE5CFF</Color>
+							<TextColor>#FFFFFF</TextColor>
+						</Mark>
+						<Mark>
+							<Control>hotcue_21_position</Control>
+							<Text> HOTCUE 21 </Text>
+							<Align>center</Align>
+							<Color>#AE5CFF</Color>
+							<TextColor>#FFFFFF</TextColor>
+						</Mark>
+						<Mark>
+							<Control>hotcue_22_position</Control>
+							<Text> HOTCUE 22 </Text>
+							<Align>center</Align>
+							<Color>#AE5CFF</Color>
+							<TextColor>#FFFFFF</TextColor>
+						</Mark>
+						<Mark>
+							<Control>hotcue_23_position</Control>
+							<Text> HOTCUE 23 </Text>
+							<Align>center</Align>
+							<Color>#AE5CFF</Color>
+							<TextColor>#FFFFFF</TextColor>
+						</Mark>
+						<Mark>
+							<Control>hotcue_24_position</Control>
+							<Text> HOTCUE 24 </Text>
+							<Align>center</Align>
+							<Color>#AE5CFF</Color>
+							<TextColor>#FFFFFF</TextColor>
+						</Mark>
+						<Mark>
+							<Control>hotcue_25_position</Control>
+							<Text> HOTCUE 25 </Text>
+							<Align>center</Align>
+							<Color>#AE5CFF</Color>
+							<TextColor>#FFFFFF</TextColor>
+						</Mark>
+						<Mark>
+							<Control>hotcue_26_position</Control>
+							<Text> HOTCUE 26 </Text>
+							<Align>center</Align>
+							<Color>#AE5CFF</Color>
+							<TextColor>#FFFFFF</TextColor>
+						</Mark>
+						<Mark>
+							<Control>hotcue_27_position</Control>
+							<Text> HOTCUE 27 </Text>
+							<Align>center</Align>
+							<Color>#AE5CFF</Color>
+							<TextColor>#FFFFFF</TextColor>
+						</Mark>
+						<Mark>
+							<Control>hotcue_28_position</Control>
+							<Text> HOTCUE 28 </Text>
+							<Align>center</Align>
+							<Color>#AE5CFF</Color>
+							<TextColor>#FFFFFF</TextColor>
+						</Mark>
+						<Mark>
+							<Control>hotcue_29_position</Control>
+							<Text> HOTCUE 29 </Text>
+							<Align>center</Align>
+							<Color>#AE5CFF</Color>
+							<TextColor>#FFFFFF</TextColor>
+						</Mark>
+						<Mark>
+							<Control>hotcue_30_position</Control>
+							<Text> HOTCUE 30 </Text>
+							<Align>center</Align>
+							<Color>#AE5CFF</Color>
+							<TextColor>#FFFFFF</TextColor>
+						</Mark>
+						<Mark>
+							<Control>hotcue_31_position</Control>
+							<Text> HOTCUE 31 </Text>
+							<Align>center</Align>
+							<Color>#AE5CFF</Color>
+							<TextColor>#FFFFFF</TextColor>
+						</Mark>
+						<Mark>
+							<Control>hotcue_32_position</Control>
+							<Text> HOTCUE 32 </Text>
+							<Align>center</Align>
+							<Color>#AE5CFF</Color>
+							<TextColor>#FFFFFF</TextColor>
+						</Mark>
+						<Mark>
+							<Control>hotcue_33_position</Control>
+							<Text> HOTCUE 33 </Text>
+							<Align>center</Align>
+							<Color>#AE5CFF</Color>
+							<TextColor>#FFFFFF</TextColor>
+						</Mark>
+						<Mark>
+							<Control>hotcue_34_position</Control>
+							<Text> HOTCUE 34 </Text>
+							<Align>center</Align>
+							<Color>#AE5CFF</Color>
+							<TextColor>#FFFFFF</TextColor>
+						</Mark>
+						<Mark>
+							<Control>hotcue_35_position</Control>
+							<Text> HOTCUE 35 </Text>
+							<Align>center</Align>
+							<Color>#AE5CFF</Color>
+							<TextColor>#FFFFFF</TextColor>
+						</Mark>
+						<Mark>
+							<Control>hotcue_36_position</Control>
+							<Text> HOTCUE 36 </Text>
+							<Align>center</Align>
+							<Color>#AE5CFF</Color>
+							<TextColor>#FFFFFF</TextColor>
+						</Mark>
+				
+						<Mark>
+							<Control>cue_point</Control>
+							<Text> CUE </Text>
+							<Align>top</Align>
+							<Color>#FFFF00</Color>
+							<TextColor>#FFFFFF</TextColor>
+						</Mark>
+					</Visual>
+				</Children>
+			</WidgetGroup>
+			<!-- Spinning Vinyl 2 sub-widget -->
+			<WidgetGroup>
+				<!--<Pos>0,0</Pos>-->
+				<Size>120,i</Size>
+				<Style>QGroupBox { border: 0px solid green; } QWidget { margin: 0; padding: 0; } </Style>
+				<Children>
+					<!--
+					**********************************************
+					Visual- Spinning Vinyl
+					**********************************************
+					-->
+					<Spinny>
+						<Tooltip>Spinning vinyl&#10;TODO&#10;</Tooltip>
+						<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+						background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+						</Style>
+						<Channel>2</Channel>
+						<Pos>0,2</Pos>
+						<Size>i,i</Size>
+						<PathBackground>vinyl_spinny2_background.png</PathBackground>
+						<PathForeground>vinyl_spinny2_foreground.png</PathForeground>
+						<PathGhost>vinyl_spinny2_foreground_ghost.png</PathGhost>
+					</Spinny>
+				</Children>
+				<Connection>
+					<ConfigKey>[Spinny2],show_spinny</ConfigKey>
+					<BindProperty>visible</BindProperty>
+				</Connection>
+			</WidgetGroup>
+			<!-- Vinylcontrol 2 sub-widget -->
+			<WidgetGroup>
+				<!--<Pos>0,0</Pos>-->
+				<Size>35,i</Size>
+				<Style>QGroupBox { border: 0px solid green;} QWidget { margin: 0; padding: 0; }</Style>
+				<Children>
+					<!--
+					**********************************************
+					Vinyl- Status 
+					// Vinyl status indicators are inside the players WidgetGroups
+					**********************************************
+					-->
+
+					<!--
+					**********************************************
+					Vinyl- Control Mode
+					**********************************************
+					-->
+					<PushButton>
+						<Tooltip>Vinyl Control Mode&#10;Absolute mode - track position equals needle position and speed&#10;Relative mode - track speed equals needle speed regardless of needle position&#10;Constant mode - track speed equals last known-steady speed regardless of needle input&#10;</Tooltip>
+						<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+						background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+						</Style>
+						<NumberStates>3</NumberStates>
+						<State>
+							<Number>0</Number>
+							<Pressed>btn_vinylcontrol_mode_abs2.png</Pressed>
+							<Unpressed>btn_vinylcontrol_mode_abs2.png</Unpressed>
+						</State>
+						<State>
+							<Number>1</Number>
+							<Pressed>btn_vinylcontrol_mode_rel2.png</Pressed>
+							<Unpressed>btn_vinylcontrol_mode_rel2.png</Unpressed>
+						</State>
+						<State>
+							<Number>2</Number>
+							<Pressed>btn_vinylcontrol_mode_const2.png</Pressed>
+							<Unpressed>btn_vinylcontrol_mode_const2.png</Unpressed>
+						</State>
+						<Pos>4,14</Pos>
+						<Connection>
+							<ConfigKey>[Channel2],vinylcontrol_mode</ConfigKey>
+						</Connection>
+					</PushButton>
+
+					<!--
+					**********************************************
+					Vinyl- Cueing Mode
+					**********************************************
+					-->
+					<PushButton>
+						<Tooltip>Vinyl Cueing Mode&#10;Determines how cue points are treated in vinyl control Relative mode&#10;Off - Cue points ignored&#10;One Cue - If needle is dropped after the cue point, track will seek to that cue point&#10;Hot Cue - Track will seek to nearest previous hot cue point&#10;</Tooltip>
+						<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+						background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+						</Style>
+						<NumberStates>3</NumberStates>
+						<State>
+							<Number>0</Number>
+							<Pressed>btn_vinylcontrol_cueing_off2.png</Pressed>
+							<Unpressed>btn_vinylcontrol_cueing_off2.png</Unpressed>
+						</State>
+						<State>
+							<Number>1</Number>
+							<Pressed>btn_vinylcontrol_cueing_one2.png</Pressed>
+							<Unpressed>btn_vinylcontrol_cueing_one2.png</Unpressed>
+						</State>
+						<State>
+							<Number>2</Number>
+							<Pressed>btn_vinylcontrol_cueing_hot2.png</Pressed>
+							<Unpressed>btn_vinylcontrol_cueing_hot2.png</Unpressed>
+						</State>
+						<Pos>4,74</Pos>
+						<Connection>
+							<ConfigKey>[Channel2],vinylcontrol_cueing</ConfigKey>
+						</Connection>
+					</PushButton>
+				</Children>
+				<Connection>
+					<ConfigKey>[Vinylcontrol],show_vinylcontrol</ConfigKey>
+					<BindProperty>visible</BindProperty>
+				</Connection>
+			</WidgetGroup>
+
+		</Children>
+	</WidgetGroup>
+
+	<!--
+	**********************************************
+	Tab- Show/hide Vinyl Control widget group
+	**********************************************
+	-->
+	<!-- The Mac App Store Version of Mixxx does not support vinyl control.
+	Comment out this tabs that no broken widget are displayed to the user
+	-->
+	<PushButton>
+		<Tooltip>Vinyl Control&#10;Show/hide the Vinyl Control widget.&#10;Activate Vinyl Control from the Menu→Options&#10;</Tooltip>
+		<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+		</Style>
+		<NumberStates>2</NumberStates>
+		<State>
+			<Number>0</Number>
+			<Pressed>tab_vinylcontrol.png</Pressed>
+			<Unpressed>tab_vinylcontrol.png</Unpressed>
+		</State>
+		<State>
+			<Number>1</Number>
+			<Pressed>tab_vinylcontrol_over.png</Pressed>
+			<Unpressed>tab_vinylcontrol_over.png</Unpressed>
+		</State>
+		<Pos>482,130</Pos>
+		<Connection>
+			<ConfigKey>[Vinylcontrol],show_vinylcontrol</ConfigKey>
+		</Connection>
+	</PushButton>
+
 	############################################################################################
 	############################################################################################
 	Section: Text
@@ -972,31 +1410,63 @@
 
 	<!--
 	**********************************************
-	Text- Track information
+	Text- Track Title
 	**********************************************
 	-->
-	<Text>
-		<Tooltip>Track information&#10;Displays the Name and Title of the loaded track.&#10;Informations are extracted from the tracks tags.&#10;</Tooltip>
-		<Style>QLabel { font: 14px/16px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-		background-color: transparent; text-align: left; }
+	<TrackProperty>
+		<Tooltip>Track title&#10;Displays the title of the loaded track.&#10;Informations are extracted from the tracks tags.&#10;</Tooltip>
+		<Style>QLabel { font: bold 16px/18px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+		background-color: transparent; text-align: right; padding-left: 1px; }
 		QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
 		</Style>
+		<Property>title</Property>
 		<Channel>1</Channel>
-		<Pos>108,1</Pos>
-		<Size>390,20</Size>
-	</Text>
-	<Text>
-		<Tooltip>Track information&#10;Displays the Name and Title of the loaded track.&#10;Informations are extracted from the tracks tags.&#10;</Tooltip>
-		<Style>QLabel { font: 14px/16px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-		background-color: transparent; text-align: left; }
+		<Pos>108,121</Pos>
+		<Size>270,20</Size>
+	</TrackProperty>
+	<TrackProperty>
+		<Tooltip>Track title&#10;Displays the title of the loaded track.&#10;Informations are extracted from the tracks tags.&#10;</Tooltip>
+		<Style>QLabel { font: bold 16px/18px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+		background-color: transparent; text-align: right; padding-left: 1px; }
 		QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
 		</Style>
+		<Property>title</Property>
 		<Channel>2</Channel>
-		<Pos>517,1</Pos>
-		<Size>390,20</Size>
-	</Text>
+		<Pos>550,121</Pos>
+		<Size>270,20</Size>
+	</TrackProperty>
+
+	<!--
+	**********************************************
+	Text- Track Artist
+	**********************************************
+	-->
+	<TrackProperty>
+		<Tooltip>Track Artist&#10;Displays the artist of the loaded track.&#10;Informations are extracted from the tracks tags.&#10;</Tooltip>
+		<Style>QLabel { font: bold 16px/18px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+		background-color: transparent; text-align: right; padding-left: 1px; }
+		QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+		</Style>
+		<Property>artist</Property>
+		<Channel>1</Channel>
+		<Pos>108,141</Pos>
+		<Size>240,20</Size>
+	</TrackProperty>
+	<TrackProperty>
+		<Tooltip>Track Artist&#10;Displays the artist of the loaded track.&#10;Informations are extracted from the tracks tags.&#10;</Tooltip>
+		<Style>QLabel { font: bold 16px/18px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+		background-color: transparent; text-align: right; padding-left: 1px; }
+		QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+		</Style>
+		<Property>artist</Property>
+		<Channel>2</Channel>
+		<Pos>550,141</Pos>
+		<Size>240,20</Size>
+	</TrackProperty>
 
 	<!--
 	**********************************************
@@ -1005,16 +1475,16 @@
 	-->
 	<NumberBpm>
 		<Tooltip>Tempo&#10;Displays the tempo of the loaded track in BPM (beats per minute)&#10;</Tooltip>
-		<Style>QLabel { font: 13px/15px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-		background-color: transparent; text-align: left; }
+		<Style>QLabel { font: bold 16px/18px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+		background-color: transparent; text-align: left; padding-left: 1px; }
 		QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }
 		</Style>
 		<Channel>1</Channel>
-		<Pos>108,141</Pos>
-		<Size>60,16</Size>
+		<Pos>390,121</Pos>
+		<Size>70,20</Size>
 		<!--CSS alignments not respected see bug lp:605530 , lets call <Alignment>-->
-		<Alignment>left</Alignment>
+		<Alignment>right</Alignment>
 		<NumberOfDigits>6</NumberOfDigits>
 		<Connection>
 			<ConfigKey>[Channel1],bpm</ConfigKey>
@@ -1022,16 +1492,16 @@
 	</NumberBpm>
 	<NumberBpm>
 		<Tooltip>Tempo&#10;Displays the tempo of the loaded track in BPM (beats per minute)&#10;</Tooltip>
-		<Style>QLabel { font: 13px/15px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-		background-color: transparent; text-align: left; }
+		<Style>QLabel { font: bold 16px/18px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+		background-color: transparent; text-align: left; padding-left: 1px; }
 		QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }
 		</Style>
 		<Channel>2</Channel>
-		<Pos>587,141</Pos>
-		<Size>60,16</Size>
+		<Pos>837,121</Pos>
+		<Size>70,20</Size>
 		<!--CSS alignments not respected see bug lp:605530 , lets call <Alignment>-->
-		<Alignment>left</Alignment>
+		<Alignment>right</Alignment>
 		<NumberOfDigits>6</NumberOfDigits>
 		<Connection>
 			<ConfigKey>[Channel2],bpm</ConfigKey>
@@ -1045,14 +1515,14 @@
 	-->
 	<NumberPos>
 		<Tooltip>Time&#10;Displays the elapsed or remaining time of the track loaded.&#10;Click to toggle between time elapsed/remaining time.&#10;</Tooltip>
-		<Style>QLabel { font: 13px/15px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-		background-color: transparent; text-align: right; }
+		<Style>QLabel { font: bold 16px/18px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+		background-color: transparent; text-align: right; padding-left: 1px; }
 		QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
 		</Style>
 		<Channel>1</Channel>
-		<Pos>338,141</Pos>
-		<Size>90,16</Size>
+		<Pos>350,141</Pos>
+		<Size>110,20</Size>
 		<!--CSS alignments not respected see bug lp:605530 , lets call <Alignment>-->
 		<Alignment>right</Alignment>
 		<NumberOfDigits>6</NumberOfDigits>
@@ -1062,14 +1532,14 @@
 	</NumberPos>
 	<NumberPos>
 		<Tooltip>Time&#10;Displays the elapsed or remaining time of the track loaded.&#10;Click to toggle between time elapsed/remaining time.&#10;</Tooltip>
-		<Style>QLabel { font: 13px/15px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-		background-color: transparent; text-align: right; }
+		<Style>QLabel { font: bold 16px/18px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+		background-color: transparent; text-align: right; padding-left: 1px; }
 		QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
 		</Style>
 		<Channel>2</Channel>
-		<Pos>817,141</Pos>
-		<Size>90,16</Size>
+		<Pos>797,141</Pos>
+		<Size>110,20</Size>
 		<!--CSS alignments not respected see bug lp:605530 , lets call <Alignment>-->
 		<Alignment>right</Alignment>
 		<NumberOfDigits>6</NumberOfDigits>
@@ -1077,40 +1547,6 @@
 			<ConfigKey>[Channel2],playposition</ConfigKey>
 		</Connection>
 	</NumberPos>
-
-	<!--
-	**********************************************
-	Text- Duration
-	**********************************************
-	-->
-	<TrackProperty>
-		<Tooltip>Duration&#10;Displays the duration of the track loaded.&#10;</Tooltip>
-		<Style>QLabel { font: 13px/15px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-		background-color: transparent; text-align: right; }
-		QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-		</Style>
-		<Channel>1</Channel>
-		<Pos>257,141</Pos>
-		<Size>80,16</Size>
-		<Property>durationFormatted</Property>
-		<!--CSS alignments not respected see bug lp:605530 , lets call <Alignment>-->
-		<Alignment>right</Alignment>
-	</TrackProperty>
-	<TrackProperty>
-		<Tooltip>Duration&#10;Displays the duration of the track loaded.&#10;</Tooltip>
-		<Style>QLabel { font: 13px/15px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-		background-color: transparent; text-align: right; }
-		QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-		</Style>
-		<Channel>2</Channel>
-		<Pos>736,141</Pos>
-		<Size>80,16</Size>
-		<Property>durationFormatted</Property>
-		<!--CSS alignments not respected see bug lp:605530 , lets call <Alignment>-->
-		<Alignment>right</Alignment>
-	</TrackProperty>
 
 	<!--
 	**********************************************
@@ -1125,7 +1561,7 @@
 		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
 		</Style>
 		<Channel>1</Channel>
-		<Pos>175,141</Pos>
+		<Pos>50,220</Pos>
 		<Size>60,16</Size>
 		<NumberOfDigits>4</NumberOfDigits>
 		<Connection>
@@ -1140,7 +1576,7 @@
 		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
 		</Style>
 		<Channel>2</Channel>
-		<Pos>655,141</Pos>
+		<Pos>957,220</Pos>
 		<Size>60,16</Size>
 		<NumberOfDigits>4</NumberOfDigits>
 		<Connection>
@@ -1168,7 +1604,7 @@
 		</Style>
 		<Handle>knob_volume1.png</Handle>
 		<Slider>slider_volume1.png</Slider>
-		<Pos>7,360</Pos>
+		<Pos>7,380</Pos>
 		<Horizontal>false</Horizontal>
 		<Connection>
 			<ConfigKey>[Channel1],volume</ConfigKey>
@@ -1182,7 +1618,7 @@
 		</Style>
 		<Handle>knob_volume2.png</Handle>
 		<Slider>slider_volume2.png</Slider>
-		<Pos>915,360</Pos>
+		<Pos>915,380</Pos>
 		<Horizontal>false</Horizontal>
 		<Connection>
 			<ConfigKey>[Channel2],volume</ConfigKey>
@@ -1202,7 +1638,7 @@
 		</Style>
 		<Handle>knob_crossfader.png</Handle>
 		<Slider>slider_crossfader.png</Slider>
-		<Pos>427,188</Pos>
+		<Pos>427,198</Pos>
 		<Horizontal>true</Horizontal>
 		<Connection>
 			<ConfigKey>[Master],crossfader</ConfigKey>
@@ -1222,7 +1658,7 @@
 		</Style>
 		<Handle>knob_pitch1.png</Handle>
 		<Slider>slider_pitch1.png</Slider>
-		<Pos>7,106</Pos>
+		<Pos>7,169</Pos>
 		<Horizontal>false</Horizontal>
 		<Connection>
 			<ConfigKey>[Channel1],rate</ConfigKey>
@@ -1236,7 +1672,7 @@
 		</Style>
 		<Handle>knob_pitch2.png</Handle>
 		<Slider>slider_pitch2.png</Slider>
-		<Pos>915,106</Pos>
+		<Pos>915,169</Pos>
 		<Horizontal>false</Horizontal>
 		<Connection>
 			<ConfigKey>[Channel2],rate</ConfigKey>
@@ -1274,7 +1710,7 @@
 			<Pressed>btn_play1_over.png</Pressed>
 			<Unpressed>btn_play1_over.png</Unpressed>
 		</State>
-		<Pos>7,11</Pos>
+		<Pos>7,7</Pos>
 		<Connection>
 			<ConfigKey>[Channel1],play</ConfigKey>
 			<EmitOnDownPress>true</EmitOnDownPress>
@@ -1304,7 +1740,7 @@
 			<Pressed>btn_play2_over.png</Pressed>
 			<Unpressed>btn_play2_over.png</Unpressed>
 		</State>
-		<Pos>915,11</Pos>
+		<Pos>915,7</Pos>
 		<Connection>
 			<ConfigKey>[Channel2],play</ConfigKey>
 			<EmitOnDownPress>true</EmitOnDownPress>
@@ -1334,7 +1770,7 @@
 			<Pressed>btn_cue1_over.png</Pressed>
 			<Unpressed>btn_cue1.png</Unpressed>
 		</State>
-		<Pos>55,11</Pos>
+		<Pos>55,7</Pos>
 		<Connection>
 			<ConfigKey>[Channel1],cue_default</ConfigKey>
 			<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
@@ -1357,7 +1793,7 @@
 			<Pressed>btn_cue2_over.png</Pressed>
 			<Unpressed>btn_cue2.png</Unpressed>
 		</State>
-		<Pos>963,11</Pos>
+		<Pos>963,7</Pos>
 		<Connection>
 			<ConfigKey>[Channel2],cue_default</ConfigKey>
 			<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
@@ -1393,7 +1829,7 @@
 			<Pressed>btn_hotcue1_1.png</Pressed>
 			<Unpressed>btn_hotcue1_1_over.png</Unpressed>
 		</State>
-		<Pos>7,41</Pos>
+		<Pos>7,36</Pos>
 		<Connection>
 			<ConfigKey>[Channel1],hotcue_1_activate</ConfigKey>
 			<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
@@ -1429,7 +1865,7 @@
 			<Pressed>btn_hotcue1_2.png</Pressed>
 			<Unpressed>btn_hotcue1_2_over.png</Unpressed>
 		</State>
-		<Pos>31,41</Pos>
+		<Pos>31,36</Pos>
 		<Connection>
 			<ConfigKey>[Channel1],hotcue_2_activate</ConfigKey>
 			<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
@@ -1465,7 +1901,7 @@
 			<Pressed>btn_hotcue1_3.png</Pressed>
 			<Unpressed>btn_hotcue1_3_over.png</Unpressed>
 		</State>
-		<Pos>55,41</Pos>
+		<Pos>55,36</Pos>
 		<Connection>
 			<ConfigKey>[Channel1],hotcue_3_activate</ConfigKey>
 			<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
@@ -1501,7 +1937,7 @@
 			<Pressed>btn_hotcue1_4.png</Pressed>
 			<Unpressed>btn_hotcue1_4_over.png</Unpressed>
 		</State>
-		<Pos>79,41</Pos>
+		<Pos>79,36</Pos>
 		<Connection>
 			<ConfigKey>[Channel1],hotcue_4_activate</ConfigKey>
 			<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
@@ -1537,7 +1973,7 @@
 			<Pressed>btn_hotcue2_1.png</Pressed>
 			<Unpressed>btn_hotcue2_1_over.png</Unpressed>
 		</State>
-		<Pos>915,41</Pos>
+		<Pos>915,36</Pos>
 		<Connection>
 			<ConfigKey>[Channel2],hotcue_1_activate</ConfigKey>
 			<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
@@ -1573,7 +2009,7 @@
 			<Pressed>btn_hotcue2_2.png</Pressed>
 			<Unpressed>btn_hotcue2_2_over.png</Unpressed>
 		</State>
-		<Pos>939,41</Pos>
+		<Pos>939,36</Pos>
 		<Connection>
 			<ConfigKey>[Channel2],hotcue_2_activate</ConfigKey>
 			<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
@@ -1609,7 +2045,7 @@
 			<Pressed>btn_hotcue2_3.png</Pressed>
 			<Unpressed>btn_hotcue2_3_over.png</Unpressed>
 		</State>
-		<Pos>963,41</Pos>
+		<Pos>963,36</Pos>
 		<Connection>
 			<ConfigKey>[Channel2],hotcue_3_activate</ConfigKey>
 			<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
@@ -1645,7 +2081,7 @@
 			<Pressed>btn_hotcue2_4.png</Pressed>
 			<Unpressed>btn_hotcue2_4_over.png</Unpressed>
 		</State>
-		<Pos>987,41</Pos>
+		<Pos>987,36</Pos>
 		<Connection>
 			<ConfigKey>[Channel2],hotcue_4_activate</ConfigKey>
 			<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
@@ -1680,7 +2116,7 @@
 			<Pressed>btn_loop_in1_over.png</Pressed>
 			<Unpressed>btn_loop_in1.png</Unpressed>
 		</State>
-		<Pos>55,95</Pos>
+		<Pos>7,98</Pos>
 		<Connection>
 			<ConfigKey>[Channel1],loop_in</ConfigKey>
 			<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
@@ -1698,7 +2134,7 @@
 			<Pressed>btn_loop_in2_over.png</Pressed>
 			<Unpressed>btn_loop_in2.png</Unpressed>
 		</State>
-		<Pos>963,95</Pos>
+		<Pos>915,98</Pos>
 		<Connection>
 			<ConfigKey>[Channel2],loop_in</ConfigKey>
 			<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
@@ -1716,7 +2152,7 @@
 			<Pressed>btn_loop_out1_over.png</Pressed>
 			<Unpressed>btn_loop_out1.png</Unpressed>
 		</State>
-		<Pos>55,125</Pos>
+		<Pos>31,98</Pos>
 		<Connection>
 			<ConfigKey>[Channel1],loop_out</ConfigKey>
 			<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
@@ -1734,7 +2170,7 @@
 			<Pressed>btn_loop_out2_over.png</Pressed>
 			<Unpressed>btn_loop_out2.png</Unpressed>
 		</State>
-		<Pos>963,125</Pos>
+		<Pos>939,98</Pos>
 		<Connection>
 			<ConfigKey>[Channel2],loop_out</ConfigKey>
 			<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
@@ -1758,7 +2194,7 @@
 			<Pressed>btn_reloop1_over.png</Pressed>
 			<Unpressed>btn_reloop1_over.png</Unpressed>
 		</State>
-		<Pos>55,155</Pos>
+		<Pos>55,98</Pos>
 		<Connection>
 			<ConfigKey>[Channel1],reloop_exit</ConfigKey>
 			<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
@@ -1787,7 +2223,7 @@
 			<Pressed>btn_reloop2_over.png</Pressed>
 			<Unpressed>btn_reloop2_over.png</Unpressed>
 		</State>
-		<Pos>963,155</Pos>
+		<Pos>963,98</Pos>
 		<Connection>
 			<ConfigKey>[Channel2],reloop_exit</ConfigKey>
 			<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
@@ -1797,6 +2233,274 @@
 		<Connection>
 			<ConfigKey>[Channel2],loop_enabled</ConfigKey>
 			<ConnectValueFromWidget>false</ConnectValueFromWidget>
+		</Connection>
+	</PushButton>
+
+	<!--
+	**********************************************
+	Button - Beatloop
+	**********************************************
+	-->
+	<PushButton>
+		<Tooltip>Beatloop&#10;Setup a loop over X beats&#10;</Tooltip>
+		<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+		</Style>
+		<NumberStates>2</NumberStates>
+		<State>
+			<Number>0</Number>
+			<Pressed>btn_beatloop1_1.png</Pressed>
+			<Unpressed>btn_beatloop1_1.png</Unpressed>
+		</State>
+		<State>
+			<Number>1</Number>
+			<Pressed>btn_beatloop1_1_over.png</Pressed>
+			<Unpressed>btn_beatloop1_1_over.png</Unpressed>
+		</State>
+		<Pos>7,127</Pos>
+		<Connection>
+			<ConfigKey>[Channel1],beatloop_1</ConfigKey>
+			<EmitOnPress>true</EmitOnPress>
+			<ButtonState>LeftButton</ButtonState>
+		</Connection>
+	</PushButton>
+	<PushButton>
+		<Tooltip>Beatloop&#10;Setup a loop over X beats&#10;</Tooltip>
+		<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+		</Style>
+		<NumberStates>2</NumberStates>
+		<State>
+			<Number>0</Number>
+			<Pressed>btn_beatloop2_1.png</Pressed>
+			<Unpressed>btn_beatloop2_1.png</Unpressed>
+		</State>
+		<State>
+			<Number>1</Number>
+			<Pressed>btn_beatloop2_1_over.png</Pressed>
+			<Unpressed>btn_beatloop2_1_over.png</Unpressed>
+		</State>
+		<Pos>915,127</Pos>
+		<Connection>
+			<ConfigKey>[Channel2],beatloop_1</ConfigKey>
+			<EmitOnPress>true</EmitOnPress>
+			<ButtonState>LeftButton</ButtonState>
+		</Connection>
+	</PushButton>
+	<PushButton>
+		<Tooltip>Beatloop&#10;Setup a loop over X beats&#10;</Tooltip>
+		<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+		</Style>
+		<NumberStates>2</NumberStates>
+		<State>
+			<Number>0</Number>
+			<Pressed>btn_beatloop1_2.png</Pressed>
+			<Unpressed>btn_beatloop1_2.png</Unpressed>
+		</State>
+		<State>
+			<Number>1</Number>
+			<Pressed>btn_beatloop1_2_over.png</Pressed>
+			<Unpressed>btn_beatloop1_2_over.png</Unpressed>
+		</State>
+		<Pos>31,127</Pos>
+		<Connection>
+			<ConfigKey>[Channel1],beatloop_2</ConfigKey>
+			<EmitOnPress>true</EmitOnPress>
+			<ButtonState>LeftButton</ButtonState>
+		</Connection>
+	</PushButton>
+	<PushButton>
+		<Tooltip>Beatloop&#10;Setup a loop over X beats&#10;</Tooltip>
+		<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+		</Style>
+		<NumberStates>2</NumberStates>
+		<State>
+			<Number>0</Number>
+			<Pressed>btn_beatloop2_2.png</Pressed>
+			<Unpressed>btn_beatloop2_2.png</Unpressed>
+		</State>
+		<State>
+			<Number>1</Number>
+			<Pressed>btn_beatloop2_2_over.png</Pressed>
+			<Unpressed>btn_beatloop2_2_over.png</Unpressed>
+		</State>
+		<Pos>939,127</Pos>
+		<Connection>
+			<ConfigKey>[Channel2],beatloop_2</ConfigKey>
+			<EmitOnPress>true</EmitOnPress>
+			<ButtonState>LeftButton</ButtonState>
+		</Connection>
+	</PushButton>
+	<PushButton>
+		<Tooltip>Beatloop&#10;Setup a loop over X beats&#10;</Tooltip>
+		<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+		</Style>
+		<NumberStates>2</NumberStates>
+		<State>
+			<Number>0</Number>
+			<Pressed>btn_beatloop1_4.png</Pressed>
+			<Unpressed>btn_beatloop1_4.png</Unpressed>
+		</State>
+		<State>
+			<Number>1</Number>
+			<Pressed>btn_beatloop1_4_over.png</Pressed>
+			<Unpressed>btn_beatloop1_4_over.png</Unpressed>
+		</State>
+		<Pos>55,127</Pos>
+		<Connection>
+			<ConfigKey>[Channel1],beatloop_4</ConfigKey>
+			<EmitOnPress>true</EmitOnPress>
+			<ButtonState>LeftButton</ButtonState>
+		</Connection>
+	</PushButton>
+	<PushButton>
+		<Tooltip>Beatloop&#10;Setup a loop over X beats&#10;</Tooltip>
+		<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+		</Style>
+		<NumberStates>2</NumberStates>
+		<State>
+			<Number>0</Number>
+			<Pressed>btn_beatloop2_4.png</Pressed>
+			<Unpressed>btn_beatloop2_4.png</Unpressed>
+		</State>
+		<State>
+			<Number>1</Number>
+			<Pressed>btn_beatloop2_4_over.png</Pressed>
+			<Unpressed>btn_beatloop2_4_over.png</Unpressed>
+		</State>
+		<Pos>963,127</Pos>
+		<Connection>
+			<ConfigKey>[Channel2],beatloop_4</ConfigKey>
+			<EmitOnPress>true</EmitOnPress>
+			<ButtonState>LeftButton</ButtonState>
+		</Connection>
+	</PushButton>
+	<PushButton>
+		<Tooltip>Beatloop&#10;Setup a loop over X beats&#10;</Tooltip>
+		<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+		</Style>
+		<NumberStates>2</NumberStates>
+		<State>
+			<Number>0</Number>
+			<Pressed>btn_beatloop1_8_over.png</Pressed>
+			<Unpressed>btn_beatloop1_8.png</Unpressed>
+		</State>
+		<State>
+			<Number>1</Number>
+			<Pressed>btn_beatloop1_8.png</Pressed>
+			<Unpressed>btn_beatloop1_8_over.png</Unpressed>
+		</State>
+		<Pos>79,127</Pos>
+		<Connection>
+			<ConfigKey>[Channel1],beatloop_8</ConfigKey>
+			<EmitOnPress>true</EmitOnPress>
+			<ButtonState>LeftButton</ButtonState>
+		</Connection>
+	</PushButton>
+	<PushButton>
+		<Tooltip>Beatloop&#10;Setup a loop over X beats&#10;</Tooltip>
+		<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+		</Style>
+		<NumberStates>2</NumberStates>
+		<State>
+			<Number>0</Number>
+			<Pressed>btn_beatloop2_8_over.png</Pressed>
+			<Unpressed>btn_beatloop2_8.png</Unpressed>
+		</State>
+		<State>
+			<Number>1</Number>
+			<Pressed>btn_beatloop2_8.png</Pressed>
+			<Unpressed>btn_beatloop2_8_over.png</Unpressed>
+		</State>
+		<Pos>986,127</Pos>
+		<Connection>
+			<ConfigKey>[Channel2],beatloop_8</ConfigKey>
+			<EmitOnPress>true</EmitOnPress>
+			<ButtonState>LeftButton</ButtonState>
+		</Connection>
+	</PushButton>
+
+	<!--
+	**********************************************
+	Button - Beatloop halve/double
+	**********************************************
+	-->
+	<PushButton>
+		<Tooltip>Loop halve&#10;Halves the current loop's length by moving the end marker.&#10;Player immediately loops if past the new endpoint.&#10;</Tooltip>
+		<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+		</Style>
+		<NumberStates>1</NumberStates>
+		<State>
+			<Number>0</Number>
+			<Pressed>btn_beatloop1_halve_over.png</Pressed>
+			<Unpressed>btn_beatloop1_halve.png</Unpressed>
+		</State>
+		<Pos>55,151</Pos>
+		<Connection>
+			<ConfigKey>[Channel1],loop_halve</ConfigKey>
+			<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+			<ButtonState>LeftButton</ButtonState>
+		</Connection>
+	</PushButton>
+	<PushButton>
+		<Tooltip>Loop halve&#10;Halves the current loop's length by moving the end marker.&#10;Player immediately loops if past the new endpoint.&#10;</Tooltip>
+		<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+		</Style>
+		<NumberStates>1</NumberStates>
+		<State>
+			<Number>0</Number>
+			<Pressed>btn_beatloop2_halve_over.png</Pressed>
+			<Unpressed>btn_beatloop2_halve.png</Unpressed>
+		</State>
+		<Pos>963,151</Pos>
+		<Connection>
+			<ConfigKey>[Channel2],loop_halve</ConfigKey>
+			<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+			<ButtonState>LeftButton</ButtonState>
+		</Connection>
+	</PushButton>
+	<PushButton>
+		<Tooltip>Loop double&#10;Doubles the current loop's length by moving the end marker.&#10;</Tooltip>
+		<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+		</Style>
+		<NumberStates>1</NumberStates>
+		<State>
+			<Number>0</Number>
+			<Pressed>btn_beatloop1_double_over.png</Pressed>
+			<Unpressed>btn_beatloop1_double.png</Unpressed>
+		</State>
+		<Pos>79,151</Pos>
+		<Connection>
+			<ConfigKey>[Channel1],loop_double</ConfigKey>
+			<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+			<ButtonState>LeftButton</ButtonState>
+		</Connection>
+	</PushButton>
+	<PushButton>
+		<Tooltip>Loop double&#10;Doubles the current loop's length by moving the end marker.&#10;</Tooltip>
+		<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+		</Style>
+		<NumberStates>1</NumberStates>
+		<State>
+			<Number>0</Number>
+			<Pressed>btn_beatloop2_double_over.png</Pressed>
+			<Unpressed>btn_beatloop2_double.png</Unpressed>
+		</State>
+		<Pos>986,151</Pos>
+		<Connection>
+			<ConfigKey>[Channel2],loop_double</ConfigKey>
+			<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+			<ButtonState>LeftButton</ButtonState>
 		</Connection>
 	</PushButton>
 
@@ -1816,7 +2520,7 @@
 			<Pressed>btn_reverse1_over.png</Pressed>
 			<Unpressed>btn_reverse1.png</Unpressed>
 		</State>
-		<Pos>55,65</Pos>
+		<Pos>55,60</Pos>
 		<Connection>
 			<ConfigKey>[Channel1],reverse</ConfigKey>
 			<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
@@ -1834,7 +2538,7 @@
 			<Pressed>btn_reverse2_over.png</Pressed>
 			<Unpressed>btn_reverse2.png</Unpressed>
 		</State>
-		<Pos>963,65</Pos>
+		<Pos>963,60</Pos>
 		<Connection>
 			<ConfigKey>[Channel2],reverse</ConfigKey>
 			<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
@@ -1858,7 +2562,7 @@
 			<Pressed>btn_forward1_over.png</Pressed>
 			<Unpressed>btn_forward1.png</Unpressed>
 		</State>
-		<Pos>31,65</Pos>
+		<Pos>31,60</Pos>
 		<Connection>
 			<ConfigKey>[Channel1],fwd</ConfigKey>
 			<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
@@ -1881,7 +2585,7 @@
 			<Pressed>btn_rewind1_over.png</Pressed>
 			<Unpressed>btn_rewind1.png</Unpressed>
 		</State>
-		<Pos>7,65</Pos>
+		<Pos>7,60</Pos>
 		<Connection>
 			<ConfigKey>[Channel1],back</ConfigKey>
 			<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
@@ -1904,7 +2608,7 @@
 			<Pressed>btn_forward2_over.png</Pressed>
 			<Unpressed>btn_forward2.png</Unpressed>
 		</State>
-		<Pos>939,65</Pos>
+		<Pos>939,60</Pos>
 		<Connection>
 			<ConfigKey>[Channel2],fwd</ConfigKey>
 			<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
@@ -1927,7 +2631,7 @@
 			<Pressed>btn_rewind2_over.png</Pressed>
 			<Unpressed>btn_rewind2.png</Unpressed>
 		</State>
-		<Pos>915,65</Pos>
+		<Pos>915,60</Pos>
 		<Connection>
 			<ConfigKey>[Channel2],back</ConfigKey>
 			<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
@@ -1939,6 +2643,242 @@
 			<ButtonState>RightButton</ButtonState>
 		</Connection>
 	</PushButton>
+
+
+			<!--
+			**********************************************
+			Button - Show spinning Vinyl widget
+			**********************************************
+			-->
+			<PushButton>
+				<Tooltip>Spinning vinyl&#10;Show/hide the spinning vinyl widget&#10;</Tooltip>
+				<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+				background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+				</Style>
+				<NumberStates>2</NumberStates>
+				<State>
+					<Number>0</Number>
+					<Pressed>btn_spinny1.png</Pressed>
+					<Unpressed>btn_spinny1.png</Unpressed>
+				</State>
+				<State>
+					<Number>1</Number>
+					<Pressed>btn_spinny1_over.png</Pressed>
+					<Unpressed>btn_spinny1_over.png</Unpressed>
+				</State>
+				<Pos>352,167</Pos>
+				<Connection>
+					<ConfigKey>[Spinny1],show_spinny</ConfigKey>
+					<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+					<ButtonState>LeftButton</ButtonState>
+				</Connection>
+			</PushButton>
+			<PushButton>
+				<Tooltip>Spinning vinyl&#10;Show/hide the spinning vinyl widget&#10;</Tooltip>
+				<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+				background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+				</Style>
+				<NumberStates>2</NumberStates>
+				<State>
+					<Number>0</Number>
+					<Pressed>btn_spinny2.png</Pressed>
+					<Unpressed>btn_spinny2.png</Unpressed>
+				</State>
+				<State>
+					<Number>1</Number>
+					<Pressed>btn_spinny2_over.png</Pressed>
+					<Unpressed>btn_spinny2_over.png</Unpressed>
+				</State>
+				<Pos>794,167</Pos>
+				<Connection>
+					<ConfigKey>[Spinny2],show_spinny</ConfigKey>
+					<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+					<ButtonState>LeftButton</ButtonState>
+				</Connection>
+			</PushButton>
+			<!--
+			**********************************************
+			Button- Repeat (End of track mode)
+			**********************************************
+			-->
+			<PushButton>
+				<Tooltip>Repeat&#10;When active the track will repeat if you go past the end or reverse before the start.&#10;</Tooltip>
+				<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+				background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+				</Style>
+				<NumberStates>2</NumberStates>
+				<State>
+					<Number>0</Number>
+					<Pressed>btn_repeat1.png</Pressed>
+					<Unpressed>btn_repeat1.png</Unpressed>
+				</State>
+				<State>
+					<Number>1</Number>
+					<Pressed>btn_repeat1_over.png</Pressed>
+					<Unpressed>btn_repeat1_over.png</Unpressed>
+				</State>
+				<Pos>420,168</Pos>
+				<Connection>
+					<ConfigKey>[Channel1],repeat</ConfigKey>
+				</Connection>
+			</PushButton>
+			<PushButton>
+				<Tooltip>Repeat&#10;When active the track will repeat if you go past the end or reverse before the start.&#10;</Tooltip>
+				<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+				background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+				</Style>
+				<NumberStates>2</NumberStates>
+				<State>
+					<Number>0</Number>
+					<Pressed>btn_repeat2.png</Pressed>
+					<Unpressed>btn_repeat2.png</Unpressed>
+				</State>
+				<State>
+					<Number>1</Number>
+					<Pressed>btn_repeat2_over.png</Pressed>
+					<Unpressed>btn_repeat2_over.png</Unpressed>
+				</State>
+				<Pos>862,168</Pos>
+				<Connection>
+					<ConfigKey>[Channel2],repeat</ConfigKey>
+				</Connection>
+			</PushButton>
+			
+			<!--
+			**********************************************
+			Button- Eject
+			**********************************************
+			-->
+			<PushButton>
+				<Tooltip>Eject&#10;Eject currently loaded track from player.&#10;</Tooltip>
+				<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+				background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+				</Style>
+				<NumberStates>1</NumberStates>
+				<State>
+					<Number>0</Number>
+					<Pressed>btn_eject1_over.png</Pressed>
+					<Unpressed>btn_eject1.png</Unpressed>
+				</State>
+				<Pos>443,168</Pos>
+				<Connection>
+					<ConfigKey>[Channel1],eject</ConfigKey>
+					<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+					<ButtonState>LeftButton</ButtonState>
+					<ConnectValueToWidget>false</ConnectValueToWidget>
+				</Connection>
+			</PushButton>
+			<PushButton>
+				<Tooltip>Eject&#10;Eject currently loaded track from player.&#10;</Tooltip>
+				<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+				background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+				</Style>
+				<NumberStates>1</NumberStates>
+				<State>
+					<Number>0</Number>
+					<Pressed>btn_eject2_over.png</Pressed>
+					<Unpressed>btn_eject2.png</Unpressed>
+				</State>
+				<Pos>885,168</Pos>
+				<Connection>
+					<ConfigKey>[Channel2],eject</ConfigKey>
+					<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+					<ButtonState>LeftButton</ButtonState>
+					<ConnectValueToWidget>false</ConnectValueToWidget>
+				</Connection>
+			</PushButton>
+			<!--
+			**********************************************
+			Button - Beatgrid
+			**********************************************
+			-->
+			<PushButton>
+				<Tooltip>Adjust beatgrid&#10;Adjust beatgrid so closest beat is aligned with the current playposition.&#10;</Tooltip>
+				<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+				background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+				</Style>
+				<NumberStates>1</NumberStates>
+				<State>
+					<Number>0</Number>
+					<Pressed>btn_beatgrid1_over.png</Pressed>
+					<Unpressed>btn_beatgrid1.png</Unpressed>
+				</State>
+				<Pos>397,168</Pos>
+				<Connection>
+					<ConfigKey>[Channel1],beats_translate_curpos</ConfigKey>
+					<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+					<ButtonState>LeftButton</ButtonState>
+				</Connection>
+			</PushButton>
+			<PushButton>
+				<Tooltip>Adjust beatgrid&#10;Adjust beatgrid so closest beat is aligned with the current playposition.&#10;</Tooltip>
+				<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+				background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+				</Style>
+				<NumberStates>1</NumberStates>
+				<State>
+					<Number>0</Number>
+					<Pressed>btn_beatgrid2_over.png</Pressed>
+					<Unpressed>btn_beatgrid2.png</Unpressed>
+				</State>
+				<Pos>839,168</Pos>
+				<Connection>
+					<ConfigKey>[Channel2],beats_translate_curpos</ConfigKey>
+					<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+					<ButtonState>LeftButton</ButtonState>
+				</Connection>
+			</PushButton>
+			<!--
+			**********************************************
+			Button - Quantize
+			**********************************************
+			-->
+			<PushButton>
+				<Tooltip>Quantize&#10;Toggles quantization in loops and cues&#10;</Tooltip>
+				<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+				background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+				</Style>
+				<NumberStates>2</NumberStates>
+				<State>
+					<Number>0</Number>
+					<Pressed>btn_quantize1.png</Pressed>
+					<Unpressed>btn_quantize1.png</Unpressed>
+				</State>
+				<State>
+					<Number>1</Number>
+					<Pressed>btn_quantize1_over.png</Pressed>
+					<Unpressed>btn_quantize1_over.png</Unpressed>
+				</State>
+				<Pos>374,168</Pos>
+				<Connection>
+					<ConfigKey>[Channel1],quantize</ConfigKey>
+					<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+					<ButtonState>LeftButton</ButtonState>
+				</Connection>
+			</PushButton>
+			<PushButton>
+				<Tooltip>Quantize&#10;Toggles quantization in loops and cues&#10;</Tooltip>
+				<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+				background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+				</Style>
+				<NumberStates>2</NumberStates>
+				<State>
+					<Number>0</Number>
+					<Pressed>btn_quantize2.png</Pressed>
+					<Unpressed>btn_quantize2.png</Unpressed>
+				</State>
+				<State>
+					<Number>1</Number>
+					<Pressed>btn_quantize2_over.png</Pressed>
+					<Unpressed>btn_quantize2_over.png</Unpressed>
+				</State>
+				<Pos>816,168</Pos>
+				<Connection>
+					<ConfigKey>[Channel2],quantize</ConfigKey>
+					<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+					<ButtonState>LeftButton</ButtonState>
+				</Connection>
+			</PushButton>
 
 	<!--
 	**********************************************
@@ -1956,7 +2896,7 @@
 			<Pressed>btn_sync1_over.png</Pressed>
 			<Unpressed>btn_sync1.png</Unpressed>
 		</State>
-		<Pos>55,293</Pos>
+		<Pos>55,314</Pos>
 		<Connection>
 			<ConfigKey>[Channel1],beatsync</ConfigKey>
 			<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
@@ -1974,7 +2914,7 @@
 			<Pressed>btn_sync2_over.png</Pressed>
 			<Unpressed>btn_sync2.png</Unpressed>
 		</State>
-		<Pos>963,293</Pos>
+		<Pos>963,314</Pos>
 		<Connection>
 			<ConfigKey>[Channel2],beatsync</ConfigKey>
 			<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
@@ -1984,12 +2924,11 @@
 
 	<!--
 	**********************************************
-	Button- BPM Tap 
+	Button- BPM Tap
 	**********************************************
 	-->
-
 	<PushButton>
-		<Tooltip>BPM Tap&#10;It takes the progressive average of the last 4 taps &#10;and sets the bpm of the deck to that value, &#10;assuming the pitch range is large enough to reach it.&#10;</Tooltip>
+		<Tooltip>BPM Tap&#10;When tapped repeatedly, adjusts the BPM to match the tapped BPM&#10;</Tooltip>
 		<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
 		</Style>
@@ -1999,18 +2938,14 @@
 			<Pressed>btn_tap1_over.png</Pressed>
 			<Unpressed>btn_tap1.png</Unpressed>
 		</State>
-		<Pos>108,158</Pos>
+			<Pos>55,190</Pos>
 		<Connection>
 			<ConfigKey>[Channel1],bpm_tap</ConfigKey>
-			<EmitOnDownPress>true</EmitOnDownPress>
-		</Connection>
-		<Connection>
-			<ConfigKey>[Channel1],bpm_tap</ConfigKey>
-			<EmitOnDownPress>false</EmitOnDownPress>
+				<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 		</Connection>
 	</PushButton>
 	<PushButton>
-		<Tooltip>BPM Tap&#10;It takes the progressive average of the last 4 taps &#10;and sets the bpm of the deck to that value, &#10;assuming the pitch range is large enough to reach it.&#10;</Tooltip>
+		<Tooltip>BPM Tap&#10;When tapped repeatedly, adjusts the BPM to match the tapped BPM&#10;</Tooltip>
 		<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
 		</Style>
@@ -2020,14 +2955,10 @@
 			<Pressed>btn_tap2_over.png</Pressed>
 			<Unpressed>btn_tap2.png</Unpressed>
 		</State>
-		<Pos>587,158</Pos>
+			<Pos>963,190</Pos>
 		<Connection>
 			<ConfigKey>[Channel2],bpm_tap</ConfigKey>
-			<EmitOnDownPress>true</EmitOnDownPress>
-		</Connection>
-		<Connection>
-			<ConfigKey>[Channel2],bpm_tap</ConfigKey>
-			<EmitOnDownPress>false</EmitOnDownPress>
+				<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 		</Connection>
 	</PushButton>
 
@@ -2053,7 +2984,7 @@
 			<Pressed>btn_keylock1_over.png</Pressed>
 			<Unpressed>btn_keylock1_over.png</Unpressed>
 		</State>
-		<Pos>7,323</Pos>
+		<Pos>7,343</Pos>
 		<Connection>
 			<ConfigKey>[Channel1],keylock</ConfigKey>
 		</Connection>
@@ -2074,7 +3005,7 @@
 			<Pressed>btn_keylock2_over.png</Pressed>
 			<Unpressed>btn_keylock2_over.png</Unpressed>
 		</State>
-		<Pos>915,323</Pos>
+		<Pos>915,343</Pos>
 		<Connection>
 			<ConfigKey>[Channel2],keylock</ConfigKey>
 		</Connection>
@@ -2096,7 +3027,7 @@
 			<Pressed>btn_pitch_up1_over.png</Pressed>
 			<Unpressed>btn_pitch_up1.png</Unpressed>
 		</State>
-		<Pos>43,222</Pos>
+		<Pos>43,246</Pos>
 		<Connection>
 			<ConfigKey>[Channel1],rate_perm_up</ConfigKey>
 			<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
@@ -2119,7 +3050,7 @@
 			<Pressed>btn_pitch_up2_over.png</Pressed>
 			<Unpressed>btn_pitch_up1.png</Unpressed>
 		</State>
-		<Pos>951,222</Pos>
+		<Pos>951,246</Pos>
 		<Connection>
 			<ConfigKey>[Channel2],rate_perm_up</ConfigKey>
 			<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
@@ -2142,7 +3073,7 @@
 			<Pressed>btn_pitch_down1_over.png</Pressed>
 			<Unpressed>btn_pitch_down1.png</Unpressed>
 		</State>
-		<Pos>43,246</Pos>
+		<Pos>43,270</Pos>
 		<Connection>
 			<ConfigKey>[Channel1],rate_perm_down</ConfigKey>
 			<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
@@ -2165,7 +3096,7 @@
 			<Pressed>btn_pitch_down2_over.png</Pressed>
 			<Unpressed>btn_pitch_down2.png</Unpressed>
 		</State>
-		<Pos>951,246</Pos>
+		<Pos>951,270</Pos>
 		<Connection>
 			<ConfigKey>[Channel2],rate_perm_down</ConfigKey>
 			<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
@@ -2194,7 +3125,7 @@
 			<Pressed>btn_nudge_up1_over.png</Pressed>
 			<Unpressed>btn_nudge_up1.png</Unpressed>
 		</State>
-		<Pos>73,222</Pos>
+		<Pos>73,246</Pos>
 		<Connection>
 			<ConfigKey>[Channel1],rate_temp_up</ConfigKey>
 			<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
@@ -2217,7 +3148,7 @@
 			<Pressed>btn_nudge_up2_over.png</Pressed>
 			<Unpressed>btn_nudge_up2.png</Unpressed>
 		</State>
-		<Pos>981,222</Pos>
+		<Pos>981,246</Pos>
 		<Connection>
 			<ConfigKey>[Channel2],rate_temp_up</ConfigKey>
 			<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
@@ -2240,7 +3171,7 @@
 			<Pressed>btn_nudge_down1_over.png</Pressed>
 			<Unpressed>btn_nudge_down1.png</Unpressed>
 		</State>
-		<Pos>73,246</Pos>
+		<Pos>73,270</Pos>
 		<Connection>
 			<ConfigKey>[Channel1],rate_temp_down</ConfigKey>
 			<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
@@ -2263,7 +3194,7 @@
 			<Pressed>btn_nudge_down2_over.png</Pressed>
 			<Unpressed>btn_nudge_down2.png</Unpressed>
 		</State>
-		<Pos>981,246</Pos>
+		<Pos>981,270</Pos>
 		<Connection>
 			<ConfigKey>[Channel2],rate_temp_down</ConfigKey>
 			<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
@@ -2297,7 +3228,7 @@
 			<Pressed>btn_pfl1_over.png</Pressed>
 			<Unpressed>btn_pfl1_over.png</Unpressed>
 		</State>
-		<Pos>7,293</Pos>
+		<Pos>7,314</Pos>
 		<Connection>
 			<ConfigKey>[Channel1],pfl</ConfigKey>
 		</Connection>
@@ -2318,57 +3249,9 @@
 			<Pressed>btn_pfl2_over.png</Pressed>
 			<Unpressed>btn_pfl2_over.png</Unpressed>
 		</State>
-		<Pos>915,293</Pos>
+		<Pos>915,314</Pos>
 		<Connection>
 			<ConfigKey>[Channel2],pfl</ConfigKey>
-		</Connection>
-	</PushButton>
-
-	<!--
-	**********************************************
-	Button- Repeat (End of track mode)
-	**********************************************
-	-->
-	<PushButton>
-		<Tooltip>Repeat&#10;When active the track will repeat if you go past the end or reverse before the start.&#10;</Tooltip>
-		<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-		</Style>
-		<NumberStates>2</NumberStates>
-		<State>
-			<Number>0</Number>
-			<Pressed>btn_repeat1.png</Pressed>
-			<Unpressed>btn_repeat1.png</Unpressed>
-		</State>
-		<State>
-			<Number>1</Number>
-			<Pressed>btn_repeat1_over.png</Pressed>
-			<Unpressed>btn_repeat1_over.png</Unpressed>
-		</State>
-		<Pos>388,158</Pos>
-		<Connection>
-			<ConfigKey>[Channel1],repeat</ConfigKey>
-		</Connection>
-	</PushButton>
-	<PushButton>
-		<Tooltip>Repeat&#10;When active the track will repeat if you go past the end or reverse before the start.&#10;</Tooltip>
-		<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-		</Style>
-		<NumberStates>2</NumberStates>
-		<State>
-			<Number>0</Number>
-			<Pressed>btn_repeat2.png</Pressed>
-			<Unpressed>btn_repeat2.png</Unpressed>
-		</State>
-		<State>
-			<Number>1</Number>
-			<Pressed>btn_repeat2_over.png</Pressed>
-			<Unpressed>btn_repeat2_over.png</Unpressed>
-		</State>
-		<Pos>867,158</Pos>
-		<Connection>
-			<ConfigKey>[Channel2],repeat</ConfigKey>
 		</Connection>
 	</PushButton>
 
@@ -2393,7 +3276,7 @@
 			<Pressed>btn_fx1_over.png</Pressed>
 			<Unpressed>btn_fx1_over.png</Unpressed>
 		</State>
-		<Pos>55,323</Pos>
+		<Pos>55,343</Pos>
 		<Connection>
 			<ConfigKey>[Channel1],flanger</ConfigKey>
 		</Connection>
@@ -2414,7 +3297,7 @@
 			<Pressed>btn_fx2_over.png</Pressed>
 			<Unpressed>btn_fx2_over.png</Unpressed>
 		</State>
-		<Pos>963,323</Pos>
+		<Pos>963,343</Pos>
 		<Connection>
 			<ConfigKey>[Channel2],flanger</ConfigKey>
 		</Connection>
@@ -2441,7 +3324,7 @@
 			<Pressed>btn_kill1.png</Pressed>
 			<Unpressed>btn_kill1_over.png</Unpressed>
 		</State>
-		<Pos>70,432</Pos>
+		<Pos>70,450</Pos>
 		<Connection>
 			<ConfigKey>[Channel1],filterHighKill</ConfigKey>
 			<EmitOnDownPress>true</EmitOnDownPress>
@@ -2464,7 +3347,7 @@
 			<Pressed>btn_kill1.png</Pressed>
 			<Unpressed>btn_kill1_over.png</Unpressed>
 		</State>
-		<Pos>70,476</Pos>
+		<Pos>70,494</Pos>
 		<Connection>
 			<ConfigKey>[Channel1],filterMidKill</ConfigKey>
 			<EmitOnDownPress>true</EmitOnDownPress>
@@ -2487,7 +3370,7 @@
 			<Pressed>btn_kill1.png</Pressed>
 			<Unpressed>btn_kill1_over.png</Unpressed>
 		</State>
-		<Pos>70,519</Pos>
+		<Pos>70,537</Pos>
 		<Connection>
 			<ConfigKey>[Channel1],filterLowKill</ConfigKey>
 			<EmitOnDownPress>true</EmitOnDownPress>
@@ -2510,7 +3393,7 @@
 			<Pressed>btn_kill2.png</Pressed>
 			<Unpressed>btn_kill2_over.png</Unpressed>
 		</State>
-		<Pos>978,432</Pos>
+		<Pos>978,450</Pos>
 		<Connection>
 			<ConfigKey>[Channel2],filterHighKill</ConfigKey>
 			<EmitOnDownPress>true</EmitOnDownPress>
@@ -2533,7 +3416,7 @@
 			<Pressed>btn_kill2.png</Pressed>
 			<Unpressed>btn_kill2_over.png</Unpressed>
 		</State>
-		<Pos>978,476</Pos>
+		<Pos>978,494</Pos>
 		<Connection>
 			<ConfigKey>[Channel2],filterMidKill</ConfigKey>
 			<EmitOnDownPress>true</EmitOnDownPress>
@@ -2556,7 +3439,7 @@
 			<Pressed>btn_kill2.png</Pressed>
 			<Unpressed>btn_kill2_over.png</Unpressed>
 		</State>
-		<Pos>978,519</Pos>
+		<Pos>978,537</Pos>
 		<Connection>
 			<ConfigKey>[Channel2],filterLowKill</ConfigKey>
 			<EmitOnDownPress>true</EmitOnDownPress>
@@ -2582,9 +3465,9 @@
 		<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
 		</Style>
-		<NumberStates>33</NumberStates>
-		<Path>knob_rotary3_s%1.png</Path>
-		<Pos>696,183</Pos>
+		<NumberStates>64</NumberStates>
+		<Path>knobs/knob_rotary3_s%1.png</Path>
+		<Pos>696,193</Pos>
 		<Connection>
 			<ConfigKey>[Master],volume</ConfigKey>
 		</Connection>
@@ -2594,9 +3477,9 @@
 		<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
 		</Style>
-		<NumberStates>33</NumberStates>
-		<Path>knob_rotary3_s%1.png</Path>
-		<Pos>656,183</Pos>
+		<NumberStates>64</NumberStates>
+		<Path>knobs/knob_rotary3_s%1.png</Path>
+		<Pos>656,193</Pos>
 		<Connection>
 			<ConfigKey>[Master],balance</ConfigKey>
 		</Connection>
@@ -2612,9 +3495,9 @@
 		<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
 		</Style>
-		<NumberStates>33</NumberStates>
-		<Path>knob_rotary3_s%1.png</Path>
-		<Pos>150,183</Pos>
+		<NumberStates>64</NumberStates>
+		<Path>knobs/knob_rotary3_s%1.png</Path>
+		<Pos>150,193</Pos>
 		<Connection>
 			<ConfigKey>[Flanger],lfoDelay</ConfigKey>
 		</Connection>
@@ -2624,9 +3507,9 @@
 		<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
 		</Style>
-		<NumberStates>33</NumberStates>
-		<Path>knob_rotary3_s%1.png</Path>
-		<Pos>110,183</Pos>
+		<NumberStates>64</NumberStates>
+		<Path>knobs/knob_rotary3_s%1.png</Path>
+		<Pos>110,193</Pos>
 		<Connection>
 			<ConfigKey>[Flanger],lfoDepth</ConfigKey>
 		</Connection>
@@ -2636,9 +3519,9 @@
 		<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
 		</Style>
-		<NumberStates>33</NumberStates>
-		<Path>knob_rotary3_s%1.png</Path>
-		<Pos>190,183</Pos>
+		<NumberStates>64</NumberStates>
+		<Path>knobs/knob_rotary3_s%1.png</Path>
+		<Pos>190,193</Pos>
 		<Connection>
 			<ConfigKey>[Flanger],lfoPeriod</ConfigKey>
 		</Connection>
@@ -2654,9 +3537,9 @@
 		<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
 		</Style>
-		<NumberStates>33</NumberStates>
-		<Path>knob_rotary3_s%1.png</Path>
-		<Pos>300,183</Pos>
+		<NumberStates>64</NumberStates>
+		<Path>knobs/knob_rotary3_s%1.png</Path>
+		<Pos>300,193</Pos>
 		<Connection>
 			<ConfigKey>[Master],headVolume</ConfigKey>
 		</Connection>
@@ -2666,9 +3549,9 @@
 		<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
 		</Style>
-		<NumberStates>33</NumberStates>
-		<Path>knob_rotary3_s%1.png</Path>
-		<Pos>260,183</Pos>
+		<NumberStates>64</NumberStates>
+		<Path>knobs/knob_rotary3_s%1.png</Path>
+		<Pos>260,193</Pos>
 		<Connection>
 			<ConfigKey>[Master],headMix</ConfigKey>
 		</Connection>
@@ -2684,9 +3567,9 @@
 		<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
 		</Style>
-		<NumberStates>33</NumberStates>
-		<Path>knob_rotary1_s%1.png</Path>
-		<Pos>42,360</Pos>
+		<NumberStates>64</NumberStates>
+		<Path>knobs/knob_rotary1_s%1.png</Path>
+		<Pos>42,380</Pos>
 		<Connection>
 			<ConfigKey>[Channel1],pregain</ConfigKey>
 		</Connection>
@@ -2696,9 +3579,9 @@
 		<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
 		</Style>
-		<NumberStates>33</NumberStates>
-		<Path>knob_rotary1_s%1.png</Path>
-		<Pos>42,403</Pos>
+		<NumberStates>64</NumberStates>
+		<Path>knobs/knob_rotary1_s%1.png</Path>
+		<Pos>42,423</Pos>
 		<Connection>
 			<ConfigKey>[Channel1],filterHigh</ConfigKey>
 		</Connection>
@@ -2708,9 +3591,9 @@
 		<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
 		</Style>
-		<NumberStates>33</NumberStates>
-		<Path>knob_rotary1_s%1.png</Path>
-		<Pos>42,447</Pos>
+		<NumberStates>64</NumberStates>
+		<Path>knobs/knob_rotary1_s%1.png</Path>
+		<Pos>42,467</Pos>
 		<Connection>
 			<ConfigKey>[Channel1],filterMid</ConfigKey>
 		</Connection>
@@ -2720,9 +3603,9 @@
 		<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
 		</Style>
-		<NumberStates>33</NumberStates>
-		<Path>knob_rotary1_s%1.png</Path>
-		<Pos>42,490</Pos>
+		<NumberStates>64</NumberStates>
+		<Path>knobs/knob_rotary1_s%1.png</Path>
+		<Pos>42,510</Pos>
 		<Connection>
 			<ConfigKey>[Channel1],filterLow</ConfigKey>
 		</Connection>
@@ -2732,9 +3615,9 @@
 		<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
 		</Style>
-		<NumberStates>33</NumberStates>
-		<Path>knob_rotary2_s%1.png</Path>
-		<Pos>950,360</Pos>
+		<NumberStates>64</NumberStates>
+		<Path>knobs/knob_rotary2_s%1.png</Path>
+		<Pos>950,380</Pos>
 		<Connection>
 			<ConfigKey>[Channel2],pregain</ConfigKey>
 		</Connection>
@@ -2744,9 +3627,9 @@
 		<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
 		</Style>
-		<NumberStates>33</NumberStates>
-		<Path>knob_rotary2_s%1.png</Path>
-		<Pos>950,403</Pos>
+		<NumberStates>64</NumberStates>
+		<Path>knobs/knob_rotary2_s%1.png</Path>
+		<Pos>950,423</Pos>
 		<Connection>
 			<ConfigKey>[Channel2],filterHigh</ConfigKey>
 		</Connection>
@@ -2756,9 +3639,9 @@
 		<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
 		</Style>
-		<NumberStates>33</NumberStates>
-		<Path>knob_rotary2_s%1.png</Path>
-		<Pos>950,447</Pos>
+		<NumberStates>64</NumberStates>
+		<Path>knobs/knob_rotary2_s%1.png</Path>
+		<Pos>950,467</Pos>
 		<Connection>
 			<ConfigKey>[Channel2],filterMid</ConfigKey>
 		</Connection>
@@ -2768,9 +3651,9 @@
 		<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
 		</Style>
-		<NumberStates>33</NumberStates>
-		<Path>knob_rotary2_s%1.png</Path>
-		<Pos>950,490</Pos>
+		<NumberStates>64</NumberStates>
+		<Path>knobs/knob_rotary2_s%1.png</Path>
+		<Pos>950,510</Pos>
 		<Connection>
 			<ConfigKey>[Channel2],filterLow</ConfigKey>
 		</Connection>

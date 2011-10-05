@@ -7,12 +7,10 @@ const QString RECENT_FILTER = "datetime_added > datetime('now', '-7 days')";
 
 PrepareLibraryTableModel::PrepareLibraryTableModel(QObject* parent,
                                                    TrackCollection* pTrackCollection)
-        : TrackModel(pTrackCollection->getDatabase(),
-                     "mixxx.db.model.prepare"),
-          LibraryTableModel(parent, pTrackCollection) {
-
+        : LibraryTableModel(parent, pTrackCollection,
+                            "mixxx.db.model.prepare") {
     m_bShowRecentSongs = true;
-    slotSearch("");
+    setSearch("", m_bShowRecentSongs ? RECENT_FILTER : QString());
     select();
 
     connect(this, SIGNAL(doSearch(const QString&)),
@@ -21,19 +19,10 @@ PrepareLibraryTableModel::PrepareLibraryTableModel(QObject* parent,
 
 
 PrepareLibraryTableModel::~PrepareLibraryTableModel() {
-
 }
 
 bool PrepareLibraryTableModel::isColumnInternal(int column) {
-    bool result = false;
-
-    if ((column == fieldIndex(LIBRARYTABLE_DATETIMEADDED))) {
-        result = false;
-    }
-    else
-        result = LibraryTableModel::isColumnInternal(column);
-
-    return result;
+    return LibraryTableModel::isColumnInternal(column);
 }
 
 void PrepareLibraryTableModel::search(const QString& searchText) {
@@ -43,17 +32,16 @@ void PrepareLibraryTableModel::search(const QString& searchText) {
 }
 
 void PrepareLibraryTableModel::slotSearch(const QString& searchText) {
-    BaseSqlTableModel::search(searchText, m_bShowRecentSongs ? RECENT_FILTER : QString());
+    BaseSqlTableModel::search(searchText,
+                              m_bShowRecentSongs ? RECENT_FILTER : QString());
 }
 
-void PrepareLibraryTableModel::showRecentSongs()
-{
+void PrepareLibraryTableModel::showRecentSongs() {
    m_bShowRecentSongs = true;
    search(currentSearch());
 }
 
-void PrepareLibraryTableModel::showAllSongs()
-{
+void PrepareLibraryTableModel::showAllSongs() {
     m_bShowRecentSongs = false;
     search(currentSearch());
 }

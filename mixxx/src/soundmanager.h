@@ -68,10 +68,9 @@ signals:
     void devicesSetup(); // emitted when the sound devices have been set up
     void outputRegistered(AudioOutput output, const AudioSource *src);
     void inputRegistered(AudioInput input, AudioDestination *dest);
-public slots:
-    void sync();
 private:
     void clearOperativeVariables();
+    void setJACKName() const;
 
     EngineMaster *m_pMaster;
     ConfigObject<ConfigValue> *m_pConfig;
