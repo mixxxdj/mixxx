@@ -17,7 +17,8 @@ class SkinLoader {
     QWidget* loadDefaultSkin(QWidget* pParent,
                                MixxxKeyboard* pKeyboard,
                                PlayerManager* pPlayerManager,
-                               Library* pLibrary);
+                               Library* pLibrary,
+                               VinylControlManager* pVCMan);
 
     QString getConfiguredSkinPath();
 

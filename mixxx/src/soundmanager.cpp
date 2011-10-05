@@ -26,9 +26,14 @@
 #include "sounddevice.h"
 #include "sounddeviceportaudio.h"
 #include "engine/enginemaster.h"
+#include "engine/enginebuffer.h"
 #include "controlobjectthreadmain.h"
 #include "soundmanagerutil.h"
 #include "controlobject.h"
+
+#ifdef __PORTAUDIO__
+typedef PaError (*SetJackClientName)(const char *name);
+#endif
 
 /** Initializes Mixxx's audio core
  *  @param pConfig The config key table
@@ -292,6 +297,9 @@ void SoundManager::queryDevices()
 #ifdef __PORTAUDIO__
     PaError err = paNoError;
     if (!m_paInitialized) {
+#ifdef Q_OS_LINUX
+        setJACKName();
+#endif
         err = Pa_Initialize();
         m_paInitialized = true;
     }
@@ -489,13 +497,6 @@ void SoundManager::checkConfig() {
     // latency checks itself for validity on SMConfig::setLatency()
 }
 
-void SoundManager::sync()
-{
-    ControlObject::sync();
-    //qDebug() << "sync";
-
-}
-
 //Requests a buffer in the proper format, if we're prepared to give one.
 QHash<AudioOutput, const CSAMPLE*>
 SoundManager::requestBuffer(QList<AudioOutput> outputs,
@@ -539,8 +540,6 @@ SoundManager::requestBuffer(QList<AudioOutput> outputs,
     {
         // Only generate a new buffer for the clock reference card
 //         qDebug() << "New buffer for" << device->getDisplayName() << "of size" << iFramesPerBuffer;
-        //First, sync control parameters with changes from GUI thread
-        sync();
 
         //Process a block of samples for output. iFramesPerBuffer is the
         //number of samples for one channel, but the EngineObject
@@ -687,4 +686,25 @@ QList<AudioOutput> SoundManager::registeredOutputs() const {
 
 QList<AudioInput> SoundManager::registeredInputs() const {
     return m_registeredDestinations.keys();
+}
+
+void SoundManager::setJACKName() const {
+#ifdef __PORTAUDIO__
+#ifdef Q_OS_LINUX
+    typedef PaError (*SetJackClientName)(const char *name);
+    QLibrary portaudio("libportaudio.so.2");
+    if (portaudio.load()) {
+        SetJackClientName func(
+            reinterpret_cast<SetJackClientName>(
+                portaudio.resolve("PaJack_SetClientName")));
+        if (func) {
+            if (!func("Mixxx")) qDebug() << "JACK client name set";
+        } else {
+            qWarning() << "failed to resolve JACK name method";
+        }
+    } else {
+        qWarning() << "failed to load portaudio for JACK rename";
+    }
+#endif
+#endif
 }
