@@ -478,8 +478,10 @@ void WTrackTableView::dragEnterEvent(QDragEnterEvent * event)
  *  Why we need this is a little vague, but without it, drag-and-drop just doesn't work.
  *  -- Albert June 8/08
  */
-void WTrackTableView::dragMoveEvent(QDragMoveEvent * event)
-{
+void WTrackTableView::dragMoveEvent(QDragMoveEvent * event) {
+    // Needed to allow auto-scrolling
+    WLibraryTableView::dragMoveEvent(event);
+
     //qDebug() << "dragMoveEvent" << event->mimeData()->formats();
     if (event->mimeData()->hasUrls())
     {
