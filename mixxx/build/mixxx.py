@@ -206,7 +206,7 @@ class MixxxBuild(object):
         if os.environ.has_key('CC'):
             self.env['CC'] = os.environ['CC']
         if os.environ.has_key('CFLAGS'):
-            self.env['CCFLAGS'] += SCons.Util.CLVar(os.environ['CFLAGS'])
+            self.env['CFLAGS'] += SCons.Util.CLVar(os.environ['CFLAGS'])
         if os.environ.has_key('CXX'):
             self.env['CXX'] = os.environ['CXX']
         if os.environ.has_key('CXXFLAGS'):
