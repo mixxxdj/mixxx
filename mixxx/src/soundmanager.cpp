@@ -26,9 +26,14 @@
 #include "sounddevice.h"
 #include "sounddeviceportaudio.h"
 #include "engine/enginemaster.h"
+#include "engine/enginebuffer.h"
 #include "controlobjectthreadmain.h"
 #include "soundmanagerutil.h"
 #include "controlobject.h"
+
+#ifdef __PORTAUDIO__
+typedef PaError (*SetJackClientName)(const char *name);
+#endif
 
 /** Initializes Mixxx's audio core
  *  @param pConfig The config key table
@@ -43,18 +48,20 @@ SoundManager::SoundManager(ConfigObject<ConfigValue> *pConfig, EngineMaster *pMa
     , m_inputDevicesOpened(0)
     , m_pErrorDevice(NULL)
 #ifdef __PORTAUDIO__
-    , m_paInitialized(false)
-    , m_jackSampleRate(-1)
+   , m_paInitialized(false)
+   , m_jackSampleRate(-1)
 #endif
 {
     //These are ControlObjectThreadMains because all the code that
     //uses them is called from the GUI thread (stuff like opening soundcards).
-    ControlObjectThreadMain* pControlObjectLatency = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[Master]", "latency")));
-    ControlObjectThreadMain* pControlObjectSampleRate = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[Master]", "samplerate")));
-    ControlObjectThreadMain* pControlObjectVinylControlMode = new ControlObjectThreadMain(new ControlObject(ConfigKey("[VinylControl]", "mode")));
-    ControlObjectThreadMain* pControlObjectVinylControlMode1 = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[Channel1]", "vinylcontrol_mode")));
-    ControlObjectThreadMain* pControlObjectVinylControlMode2 = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[Channel2]", "vinylcontrol_mode")));
-    ControlObjectThreadMain* pControlObjectVinylControlGain = new ControlObjectThreadMain(new ControlObject(ConfigKey("[VinylControl]", "gain")));
+    // TODO(xxx) some of these ControlObject are not needed by soundmanager, or are unused here.
+    // It is possible to take them out?    
+    m_pControlObjectLatency = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[Master]", "latency")));
+    m_pControlObjectSampleRate = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[Master]", "samplerate")));
+    m_pControlObjectVinylControlMode = new ControlObjectThreadMain(new ControlObject(ConfigKey("[VinylControl]", "mode")));
+    m_pControlObjectVinylControlMode1 = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[Channel1]", "vinylcontrol_mode")));
+    m_pControlObjectVinylControlMode2 = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[Channel2]", "vinylcontrol_mode")));
+    m_pControlObjectVinylControlGain = new ControlObjectThreadMain(new ControlObject(ConfigKey("[VinylControl]", "gain")));
 
     //Hack because PortAudio samplerate enumeration is slow as hell on Linux (ALSA dmix sucks, so we can't blame PortAudio)
     m_samplerates.push_back(44100);
@@ -72,8 +79,9 @@ SoundManager::SoundManager(ConfigObject<ConfigValue> *pConfig, EngineMaster *pMa
 
     // TODO(bkgood) do these really need to be here? they're set in
     // SoundDevicePortAudio::open
-    pControlObjectLatency->slotSet(m_config.getFramesPerBuffer() / m_config.getSampleRate() * 1000);
-    pControlObjectSampleRate->slotSet(m_config.getSampleRate());
+    m_pControlObjectLatency->slotSet(
+        m_config.getFramesPerBuffer() / m_config.getSampleRate() * 1000);
+    m_pControlObjectSampleRate->slotSet(m_config.getSampleRate());
 }
 
 /** Destructor for the SoundManager class. Closes all the devices, cleans up their pointers
@@ -83,12 +91,21 @@ SoundManager::~SoundManager()
     //Clean up devices.
     clearDeviceList();
 
+#ifdef __PORTAUDIO__
     if (m_paInitialized) {
         Pa_Terminate();
         m_paInitialized = false;
     }
+#endif
     // vinyl control proxies and input buffers are freed in closeDevices, called
     // by clearDeviceList -- bkgood
+
+    delete m_pControlObjectLatency;
+    delete m_pControlObjectSampleRate;
+    delete m_pControlObjectVinylControlMode;
+    delete m_pControlObjectVinylControlMode1;
+    delete m_pControlObjectVinylControlMode2;
+    delete m_pControlObjectVinylControlGain;
 }
 
 /**
@@ -292,6 +309,9 @@ void SoundManager::queryDevices()
 #ifdef __PORTAUDIO__
     PaError err = paNoError;
     if (!m_paInitialized) {
+#ifdef Q_OS_LINUX
+        setJACKName();
+#endif
         err = Pa_Initialize();
         m_paInitialized = true;
     }
@@ -489,13 +509,6 @@ void SoundManager::checkConfig() {
     // latency checks itself for validity on SMConfig::setLatency()
 }
 
-void SoundManager::sync()
-{
-    ControlObject::sync();
-    //qDebug() << "sync";
-
-}
-
 //Requests a buffer in the proper format, if we're prepared to give one.
 QHash<AudioOutput, const CSAMPLE*>
 SoundManager::requestBuffer(QList<AudioOutput> outputs,
@@ -539,8 +552,6 @@ SoundManager::requestBuffer(QList<AudioOutput> outputs,
     {
         // Only generate a new buffer for the clock reference card
 //         qDebug() << "New buffer for" << device->getDisplayName() << "of size" << iFramesPerBuffer;
-        //First, sync control parameters with changes from GUI thread
-        sync();
 
         //Process a block of samples for output. iFramesPerBuffer is the
         //number of samples for one channel, but the EngineObject
@@ -687,4 +698,25 @@ QList<AudioOutput> SoundManager::registeredOutputs() const {
 
 QList<AudioInput> SoundManager::registeredInputs() const {
     return m_registeredDestinations.keys();
+}
+
+void SoundManager::setJACKName() const {
+#ifdef __PORTAUDIO__
+#ifdef Q_OS_LINUX
+    typedef PaError (*SetJackClientName)(const char *name);
+    QLibrary portaudio("libportaudio.so.2");
+    if (portaudio.load()) {
+        SetJackClientName func(
+            reinterpret_cast<SetJackClientName>(
+                portaudio.resolve("PaJack_SetClientName")));
+        if (func) {
+            if (!func("Mixxx")) qDebug() << "JACK client name set";
+        } else {
+            qWarning() << "failed to resolve JACK name method";
+        }
+    } else {
+        qWarning() << "failed to load portaudio for JACK rename";
+    }
+#endif
+#endif
 }
