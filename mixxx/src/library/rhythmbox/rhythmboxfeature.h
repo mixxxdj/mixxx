@@ -17,8 +17,6 @@
 #include "library/rhythmbox/rhythmboxplaylistmodel.h"
 #include "library/trackcollection.h"
 
-
-
 class RhythmboxFeature : public LibraryFeature {
  Q_OBJECT
  public:
@@ -39,7 +37,16 @@ class RhythmboxFeature : public LibraryFeature {
     TreeItem* importMusicCollection();
     /** processes the playlist entries **/
     TreeItem* importPlaylists();
-private:
+
+  public slots:
+    void activate();
+    void activateChild(const QModelIndex& index);
+    void onRightClick(const QPoint& globalPos);
+    void onRightClickChild(const QPoint& globalPos, QModelIndex index);
+    void onLazyChildExpandation(const QModelIndex& index);
+    void onTrackCollectionLoaded();
+
+  private:
     RhythmboxTrackModel* m_pRhythmboxTrackModel;
     RhythmboxPlaylistModel* m_pRhythmboxPlaylistModel;
     TrackCollection* m_pTrackCollection;
@@ -50,8 +57,6 @@ private:
 
     QFutureWatcher<TreeItem*> m_track_watcher;
     QFuture<TreeItem*> m_track_future;
-
-
     TreeItemModel m_childModel;
 
     /**Removes all rows from a given table **/
@@ -60,15 +65,6 @@ private:
     void importTrack(QXmlStreamReader &xml, QSqlQuery &query);
     /** reads all playlist entries and executes a SQL statement **/
     void importPlaylist(QXmlStreamReader &xml, QSqlQuery &query, int playlist_id);
-
-public slots:
-    void activate();
-    void activateChild(const QModelIndex& index);
-    void onRightClick(const QPoint& globalPos);
-    void onRightClickChild(const QPoint& globalPos, QModelIndex index);
-    void onLazyChildExpandation(const QModelIndex& index);
-    void onTrackCollectionLoaded();
-
 };
 
 #endif /* RHYTHMBOXFEATURE_H */

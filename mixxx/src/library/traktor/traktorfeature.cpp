@@ -16,7 +16,29 @@
 
 
 TraktorFeature::TraktorFeature(QObject* parent, TrackCollection* pTrackCollection):
-        LibraryFeature(parent), m_pTrackCollection(pTrackCollection) {
+        LibraryFeature(parent),
+        m_pTrackCollection(pTrackCollection) {
+    QString tableName = "traktor_library";
+    QString idColumn = "id";
+    QStringList columns;
+    columns << "id"
+            << "artist"
+            << "title"
+            << "album"
+            << "year"
+            << "genre"
+            << "tracknumber"
+            << "location"
+            << "comment"
+            << "rating"
+            << "duration"
+            << "bitrate"
+            << "bpm"
+            << "key";
+    pTrackCollection->addTrackSource(QString("traktor"), QSharedPointer<BaseTrackCache>(
+        new BaseTrackCache(m_pTrackCollection, tableName, idColumn,
+                           columns, false)));
+
     m_isActivated = false;
     m_pTraktorTableModel = new TraktorTableModel(this, m_pTrackCollection);
     m_pTraktorPlaylistModel = new TraktorPlaylistModel(this, m_pTrackCollection);
@@ -68,8 +90,7 @@ void TraktorFeature::refreshLibraryModels()
 void TraktorFeature::activate() {
     qDebug() << "TraktorFeature::activate()";
 
-    if(!m_isActivated){
-
+    if (!m_isActivated) {
         m_isActivated =  true;
         /* Ususally the maximum number of threads
          * is > 2 depending on the CPU cores
@@ -84,11 +105,10 @@ void TraktorFeature::activate() {
         // Let a worker thread do the XML parsing
         m_future = QtConcurrent::run(this, &TraktorFeature::importLibrary, getTraktorMusicDatabase());
         m_future_watcher.setFuture(m_future);
-        m_title = tr("Traktor (loading)");
+        m_title = tr("(loading) Traktor");
         //calls a slot in the sidebar model such that 'iTunes (isLoading)' is displayed.
         emit (featureIsLoading(this));
-    }
-    else{
+    } else {
         emit(showTrackModel(m_pTraktorTableModel));
     }
 
@@ -640,12 +660,15 @@ QString TraktorFeature::getTraktorMusicDatabase()
     return musicFolder;
 }
 
-void TraktorFeature::onTrackCollectionLoaded()
-{
+void TraktorFeature::onTrackCollectionLoaded() {
     TreeItem* root = m_future.result();
     if (root) {
         m_childModel.setRootItem(root);
-        m_pTraktorTableModel->select();
+
+        // Tell the rhythmbox track source that it should re-build its index.
+        m_pTrackCollection->getTrackSource("traktor")->buildIndex();
+
+        //m_pTraktorTableModel->select();
         emit(showTrackModel(m_pTraktorTableModel));
         qDebug() << "Traktor library loaded successfully";
     } else {
@@ -655,11 +678,13 @@ void TraktorFeature::onTrackCollectionLoaded()
             tr("There was an error loading your Traktor library. Some of "
                "your Traktor tracks or playlists may not have loaded."));
     }
-    //calls a slot in the sidebarmodel such that 'isLoading' is removed from the feature title.
+
+    // calls a slot in the sidebarmodel such that 'isLoading' is removed from the feature title.
     m_title = tr("Traktor");
     emit(featureLoadingFinished(this));
     activate();
 }
-void TraktorFeature::onLazyChildExpandation(const QModelIndex &index){
-    //Nothing to do because the childmodel is not of lazy nature.
+
+void TraktorFeature::onLazyChildExpandation(const QModelIndex &index) {
+    // Nothing to do because the childmodel is not of lazy nature.
 }

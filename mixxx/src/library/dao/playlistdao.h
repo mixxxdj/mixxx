@@ -5,6 +5,7 @@
 #include <QSqlDatabase>
 #include "library/dao/dao.h"
 
+const QString PLAYLISTTRACKSTABLE_TRACKID = "track_id";
 const QString PLAYLISTTRACKSTABLE_POSITION = "position";
 const QString PLAYLISTTRACKSTABLE_PLAYLISTID = "playlist_id";
 
@@ -52,6 +53,8 @@ class PlaylistDAO : public QObject, public virtual DAO {
     void changed(int playlistId);
     void trackAdded(int playlistId, int trackId, int position);
     void trackRemoved(int playlistId, int trackId, int position);
+    void renamed(int playlistId);
+    void lockChanged(int playlistId);
   private:
     QSqlDatabase& m_database;
 };
