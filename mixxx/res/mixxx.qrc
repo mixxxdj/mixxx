@@ -34,5 +34,6 @@
         <file>images/library/ic_library_recordings.png</file>
         <file>images/library/ic_library_setlog.png</file>
 		<file>images/library/ic_library_setlog_current.png</file>
+        <file>images/library/drag-n-drop.png</file>
     </qresource>
 </RCC>
