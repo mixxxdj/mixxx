@@ -443,10 +443,32 @@ void WTrackTableView::onSearchCleared() {
     }
 }
 
-void WTrackTableView::onShow()
-{
-
+void WTrackTableView::onShow() {
 }
+
+void WTrackTableView::mouseMoveEvent(QMouseEvent* pEvent) {
+    TrackModel* trackModel = getTrackModel();
+    if (!trackModel)
+        return;
+
+    // Iterate over selected rows and append each item's location url to a list
+    QList<QUrl> locationUrls;
+    QModelIndexList indices = selectionModel()->selectedRows();
+    foreach (QModelIndex index, indices) {
+      if (index.isValid()) {
+        locationUrls.append(trackModel->getTrackLocation(index));
+      }
+    }
+
+    QMimeData* mimeData = new QMimeData();
+    mimeData->setUrls(locationUrls);
+
+    QDrag* drag = new QDrag(this);
+    drag->setMimeData(mimeData);
+    drag->setPixmap(QPixmap(":images/library/drag-n-drop.png"));
+    drag->exec(Qt::CopyAction);
+}
+
 
 /** Drag enter event, happens when a dragged item hovers over the track table view*/
 void WTrackTableView::dragEnterEvent(QDragEnterEvent * event)
@@ -483,12 +505,11 @@ void WTrackTableView::dragEnterEvent(QDragEnterEvent * event)
  *  Why we need this is a little vague, but without it, drag-and-drop just doesn't work.
  *  -- Albert June 8/08
  */
-void WTrackTableView::dragMoveEvent(QDragMoveEvent * event)
-{
-    // qDebug() << "dragMoveEvent" << event->mimeData()->formats();
+void WTrackTableView::dragMoveEvent(QDragMoveEvent * event) {
+    // Needed to allow auto-scrolling
+    WLibraryTableView::dragMoveEvent(event);
 
-    WLibraryTableView::dragMoveEvent(event); // This is needed to enable autoscroll
-
+    //qDebug() << "dragMoveEvent" << event->mimeData()->formats();
     if (event->mimeData()->hasUrls())
     {
         if (event->source() == this) {

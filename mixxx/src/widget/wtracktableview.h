@@ -60,6 +60,10 @@ class WTrackTableView : public WLibraryTableView
     void dragEnterEvent(QDragEnterEvent * event);
     void dropEvent(QDropEvent * event);
 
+    // Mouse move event, implemented to hide the text and show an icon instead
+    // when dragging
+    void mouseMoveEvent(QMouseEvent *pEvent);
+
     // Returns the current TrackModel, or returns NULL if none is set.
     TrackModel* getTrackModel();
     bool modelHasCapabilities(TrackModel::CapabilitiesFlags capability);

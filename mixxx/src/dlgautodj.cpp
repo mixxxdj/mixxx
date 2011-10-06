@@ -50,10 +50,9 @@ DlgAutoDJ::DlgAutoDJ(QWidget* parent, ConfigObject<ConfigValue>* pConfig,
     m_pTrackTableView->loadTrackModel(m_pAutoDJTableModel);
 
     //Override some playlist-view properties:
-    //Prevent drag and drop to the waveform or elsewhere so you can't preempt the Auto DJ queue...
-    //Why not? This disables AutoScroll as well, so it should be commented out
-    // m_pTrackTableView->setDragDropMode(QAbstractItemView::InternalMove);
 
+    // Do not set this because it disables auto-scrolling
+    //m_pTrackTableView->setDragDropMode(QAbstractItemView::InternalMove);
 
     //Sort by the position column and lock it
     m_pTrackTableView->sortByColumn(0, Qt::AscendingOrder);
