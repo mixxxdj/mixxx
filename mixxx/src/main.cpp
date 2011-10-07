@@ -188,7 +188,7 @@ int main(int argc, char * argv[])
 
             QString fileExtensions = SoundSourceProxy::supportedFileExtensionsString();
             QByteArray fileExtensionsBA = QString(fileExtensions).toUtf8();
-            printf(fileExtensionsBA);
+            printf("%s", fileExtensionsBA.constData());
             printf("\n\n");
             printf("\
                             Each file you specify will be loaded into the\n\
