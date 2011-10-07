@@ -495,6 +495,34 @@ class QDebug(Feature):
         if not self.enabled(build):
             build.env.Append(CPPDEFINES = 'QT_NO_DEBUG_OUTPUT')
 
+class Verbose(Feature):
+    def description(self):
+        return "Verbose compilation output"
+
+    def enabled(self, build):
+        build.flags['verbose'] = util.get_flags(build.env, 'verbose', 1)
+        if int(build.flags['verbose']):
+            return True
+        return False
+
+    def add_options(self, build, vars):
+        vars.Add('verbose', 'Compile files verbosely.', 1)
+
+    def configure(self, build, conf):
+        if not self.enabled(build):
+            build.env['CCCOMSTR'] = '[CC] $SOURCE'
+            build.env['CXXCOMSTR'] = '[CXX] $SOURCE'
+            build.env['ASCOMSTR'] = '[AS] $SOURCE'
+            build.env['LDMODULECOMSTR'] = '[LD] $TARGET'
+            build.env['LINKCOMSTR'] = '[LD] $TARGET'
+
+            build.env['QT4_LUPDATECOMSTR'] = '[LUPDATE] $SOURCE'
+            build.env['QT4_LRELEASECOMSTR'] = '[LRELEASE] $SOURCE'
+            build.env['QT4_RCCCOMSTR'] = '[QRC] $SOURCE'
+            build.env['QT4_UICCOMSTR'] = '[UIC4] $SOURCE'
+            build.env['QT4_MOCFROMHCOMSTR'] = '[MOC] $SOURCE'
+            build.env['QT4_MOCFROMCXXCOMSTR'] = '[MOC] $SOURCE'
+
 class CMetrics(Feature):
     def description(self):
         return "NOT-WORKING CMetrics Reporting"
