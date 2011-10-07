@@ -97,6 +97,7 @@ class MixxxBuild(object):
         logging.info("Build: %s" % self.build)
         logging.info("Toolchain: %s" % self.toolchain)
         logging.info("Crosscompile: %s" % ("YES" if self.crosscompile else "NO"))
+
         if self.crosscompile:
             logging.info("Host Platform: %s" % self.host_platform)
             logging.info("Host Machine: %s" % self.host_machine)
