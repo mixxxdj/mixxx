@@ -575,6 +575,10 @@ class MixxxCore(Feature):
                    "tapfilter.cpp",
 
                    "util/pa_ringbuffer.c",
+
+                   # Add the QRC file which compiles in some extra resources
+                   # (prefs icons, etc.)
+                   build.env.Qrc('#res/mixxx.qrc')
                    ]
 
         # Uic these guys (they're moc'd automatically after this) - Generates
@@ -601,12 +605,6 @@ class MixxxCore(Feature):
         build.env.Uic4('dlgautodj.ui')
         build.env.Uic4('dlgprefsounditem.ui')
         build.env.Uic4('dlgrecording.ui')
-
-
-        # Add the QRC file which compiles in some extra resources (prefs icons,
-        # etc.)
-        build.env.Qrc('#res/mixxx.qrc')
-        sources.append("#res/qrc_mixxx.cc")
 
         if build.platform_is_windows:
             # Add Windows resource file with icons and such
