@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2011-05-03 21:42-0400\n"
-"PO-Revision-Date: 2011-05-27 22:21+0000\n"
-"Last-Translator: Shademarki <Unknown>\n"
+"PO-Revision-Date: 2011-10-07 14:26+0000\n"
+"Last-Translator: Papp Bence <papp.bence89@gmail.com>\n"
 "Language-Team: Hungarian <hu@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-05-28 04:33+0000\n"
-"X-Generator: Launchpad (build 12959)\n"
+"X-Launchpad-Export-Date: 2011-10-08 05:14+0000\n"
+"X-Generator: Launchpad (build 14110)\n"
 
 #: AutoDJFeature#1
 msgid "Auto DJ"
@@ -3396,94 +3396,13 @@ msgstr "Oszlop mutatása vagy elrejtése."
 #~ msgid "Crate Creation Failed"
 #~ msgstr "Rekesz készítése sikertelen"
 
-#~ msgctxt "CrateTableModel#6"
-#~ msgid "Year"
-#~ msgstr "Év"
-
-#~ msgctxt "CrateTableModel#8"
-#~ msgid "Location"
-#~ msgstr "Hely"
-
-#~ msgctxt "CrateTableModel#5"
-#~ msgid "Genre"
-#~ msgstr "Műfaj"
-
-#~ msgctxt "CrateTableModel#4"
-#~ msgid "Album"
-#~ msgstr "Album"
-
-#~ msgctxt "CrateTableModel#3"
-#~ msgid "Title"
-#~ msgstr "Cím"
-
-#~ msgctxt "CrateTableModel#2"
-#~ msgid "Artist"
-#~ msgstr "Előadó"
-
-#~ msgid "ID"
-#~ msgstr "Azonosító"
-
-#~ msgctxt "CrateTableModel#7"
-#~ msgid "Type"
-#~ msgstr "Típus"
-
-#~ msgctxt "CrateTableModel#9"
-#~ msgid "Comment"
-#~ msgstr "Megjegyzés"
-
-#~ msgctxt "CrateTableModel#10"
-#~ msgid "Duration"
-#~ msgstr "Időtartam"
-
-#~ msgctxt "CrateTableModel#11"
-#~ msgid "Track #"
-#~ msgstr "Sorszám"
-
-#~ msgctxt "CrateTableModel#12"
-#~ msgid "Bitrate"
-#~ msgstr "Bitráta"
-
-#~ msgctxt "CrateTableModel#13"
-#~ msgid "BPM"
-#~ msgstr "BPM (ütem/perc)"
-
-#~ msgctxt "CrateTableModel#14"
-#~ msgid "Date Added"
-#~ msgstr "Hozzáadás dátuma"
-
-#~ msgid "Analyze Entire Song"
-#~ msgstr "Teljes dal analizálása"
-
-#~ msgid "BPM Detection Settings"
-#~ msgstr "BPM Felderítő beállításai"
-
-#~ msgid "Edit"
-#~ msgstr "Szerkesztés"
-
 #~ msgctxt "DlgPrefControls#4"
 #~ msgid "Information"
 #~ msgstr "Információ"
 
-#~ msgctxt "DlgPrefPlaylistDlg#6"
-#~ msgid "Library"
-#~ msgstr "Gyűjtemény"
-
-#~ msgctxt "DlgPrefPlaylistDlg#4"
-#~ msgid "Browse..."
-#~ msgstr "Böngészés..."
-
 #~ msgctxt "DlgPrefRecord#1"
 #~ msgid "Save Recording As..."
 #~ msgstr "Felvétel mentése mint..."
-
-#~ msgid "Quality: "
-#~ msgstr "Minőség: "
-
-#~ msgid "MP3, Ogg Vorbis, FLAC, Wave, Aiff Playback:"
-#~ msgstr "MP3, Ogg Vorbis, FLAC, Wave, Aiff Playback:"
-
-#~ msgid "Audio Playback Plugins"
-#~ msgstr "Audio Visszajátszás Beépülő"
 
 #~ msgctxt "DlgPrefRecordDlg#9"
 #~ msgid "Title"
@@ -3492,14 +3411,6 @@ msgstr "Oszlop mutatása vagy elrejtése."
 #~ msgctxt "DlgPrefRecordDlg#4"
 #~ msgid "Encoding"
 #~ msgstr "Kódolás"
-
-#~ msgctxt "DlgPrefRecordDlg#6"
-#~ msgid "High"
-#~ msgstr "Magas"
-
-#~ msgctxt "DlgPrefRecordDlg#7"
-#~ msgid "Low"
-#~ msgstr "Alacsony"
 
 #~ msgctxt "DlgPrefRecordDlg#3"
 #~ msgid "Browse..."
@@ -3534,82 +3445,6 @@ msgstr "Oszlop mutatása vagy elrejtése."
 #~ "family:'DejaVu Sans'; font-size:9pt; font-style:italic;\">This stream is on "
 #~ "line for testing purposes!</span></p></body></html>"
 
-#~ msgid "http://mixxx.sf.net"
-#~ msgstr "http://mixxx.sf.net"
-
-#~ msgctxt "DlgPrefSound#7"
-#~ msgid "You cannot send multiple outputs to a single channel"
-#~ msgstr "Nem küldhet többszörös kimenetet egy szimpla csatornára"
-
-#~ msgid "JACK"
-#~ msgstr "JACK"
-
-#~ msgctxt "DlgPrefSound#4"
-#~ msgid "Mixxx"
-#~ msgstr "Mixxx"
-
-#~ msgctxt "DlgPrefSound#6"
-#~ msgid "Configuration error"
-#~ msgstr "Konfigurációs hiba"
-
-#~ msgid "Configuration problem"
-#~ msgstr "Konfigurációs probléma"
-
-#~ msgctxt "DlgPrefSound#9"
-#~ msgid "Audio device could not be opened"
-#~ msgstr "Audio eszközt nem lehet megnyitni"
-
-#~ msgid "Audio Output"
-#~ msgstr "Audió kimenet"
-
-#~ msgctxt "DlgPrefSoundDlg#1"
-#~ msgid "Form1"
-#~ msgstr "Űrlap1"
-
-#~ msgid "Sound API could not be initialized"
-#~ msgstr "Zene API-t nem lehet betölteni"
-
-#~ msgid "Sample rate (Hz)"
-#~ msgstr "Minta vétel (Hz)"
-
-#~ msgctxt "DlgPrefSoundDlg#14"
-#~ msgid "High"
-#~ msgstr "Magas"
-
-#~ msgctxt "DlgPrefSoundDlg#13"
-#~ msgid "Low"
-#~ msgstr "Alacsony"
-
-#~ msgid "256 ms"
-#~ msgstr "256 ms"
-
-#~ msgctxt "DlgPrefVinyl#1"
-#~ msgid "None"
-#~ msgstr "Nincs"
-
-#~ msgctxt "DlgPrefVinyl#3"
-#~ msgid "You cannot send multiple outputs to a single channel"
-#~ msgstr "Nem küldhet többszörös kimenetet egy szimpla csatornára"
-
-#~ msgctxt "DlgPrefVinyl#2"
-#~ msgid "Configuration error"
-#~ msgstr "Konfigurációs hiba"
-
-#~ msgid "Slow CPU"
-#~ msgstr "Lassú CPU"
-
-#~ msgid "Fast CPU"
-#~ msgstr "Gyors CPU"
-
-#~ msgid "Input"
-#~ msgstr "Bemenet"
-
-#~ msgid "Deck 1"
-#~ msgstr "Deck 1"
-
-#~ msgid "Deck 2"
-#~ msgstr "Deck 2"
-
 #~ msgid ""
 #~ "<a "
 #~ "href=\"http://www.mixxx.org/wiki/doku.php/vinyl_control#troubleshooting\">Tro"
@@ -3618,10 +3453,6 @@ msgstr "Oszlop mutatása vagy elrejtése."
 #~ "<a "
 #~ "href=\"http://www.mixxx.org/wiki/doku.php/vinyl_control#troubleshooting\">Hib"
 #~ "aelhárítás</a>"
-
-#~ msgctxt "DlgPrefVinyl#5"
-#~ msgid "Audio device could not be opened"
-#~ msgstr "Audio eszközt nem lehet megnyitni"
 
 #~ msgid "150"
 #~ msgstr "150"
@@ -3641,192 +3472,12 @@ msgstr "Oszlop mutatása vagy elrejtése."
 #~ msgid "Powered by xwax"
 #~ msgstr "Powered by xwax"
 
-#~ msgid "Vinyl Control"
-#~ msgstr "Vinyl Kontról"
-
-#~ msgid "3:00"
-#~ msgstr "3:00"
-
-#~ msgid "Filename:"
-#~ msgstr "Fájlnév:"
-
-#~ msgid "Artist:"
-#~ msgstr "Előadó:"
-
-#~ msgid "Title:"
-#~ msgstr "Cím:"
-
-#~ msgid "Song:"
-#~ msgstr "Zene:"
-
-#~ msgid "Comments:"
-#~ msgstr "Megjegyzések:"
-
-#~ msgid "File Type:"
-#~ msgstr "Fájl típus:"
-
-#~ msgid "77"
-#~ msgstr "77"
-
-#~ msgid "Alt+O"
-#~ msgstr "Alt+O"
-
 #~ msgid "Load iTunes Library?"
 #~ msgstr "Betöltsem az iTunes gyűjteményt?"
-
-#~ msgctxt "ITunesPlaylistModel#1"
-#~ msgid "Artist"
-#~ msgstr "Előadó"
-
-#~ msgctxt "ITunesPlaylistModel#2"
-#~ msgid "Title"
-#~ msgstr "Cím"
-
-#~ msgctxt "ITunesPlaylistModel#4"
-#~ msgid "Date"
-#~ msgstr "Dátum"
-
-#~ msgctxt "ITunesPlaylistModel#5"
-#~ msgid "BPM"
-#~ msgstr "BPM (ütem/perc)"
-
-#~ msgctxt "ITunesPlaylistModel#3"
-#~ msgid "Album"
-#~ msgstr "Album"
-
-#~ msgctxt "ITunesPlaylistModel#8"
-#~ msgid "Duration"
-#~ msgstr "Időtartam"
-
-#~ msgctxt "ITunesPlaylistModel#9"
-#~ msgid "Unknown"
-#~ msgstr "Ismeretlen"
-
-#~ msgctxt "ITunesPlaylistModel#6"
-#~ msgid "Genre"
-#~ msgstr "Műfaj"
-
-#~ msgctxt "ITunesPlaylistModel#7"
-#~ msgid "Location"
-#~ msgstr "Hely"
-
-#~ msgctxt "LibraryTableModel#9"
-#~ msgid "Duration"
-#~ msgstr "Időtartam"
-
-#~ msgctxt "LibraryTableModel#8"
-#~ msgid "Comment"
-#~ msgstr "Megjegyzés"
-
-#~ msgctxt "LibraryTableModel#1"
-#~ msgid "Artist"
-#~ msgstr "Előadó"
-
-#~ msgctxt "LibraryTableModel#3"
-#~ msgid "Album"
-#~ msgstr "Album"
-
-#~ msgctxt "LibraryTableModel#2"
-#~ msgid "Title"
-#~ msgstr "Cím"
-
-#~ msgctxt "LibraryTableModel#5"
-#~ msgid "Year"
-#~ msgstr "Év"
-
-#~ msgctxt "LibraryTableModel#4"
-#~ msgid "Genre"
-#~ msgstr "Műfaj"
-
-#~ msgctxt "LibraryTableModel#7"
-#~ msgid "Location"
-#~ msgstr "Hely"
-
-#~ msgctxt "LibraryTableModel#6"
-#~ msgid "Type"
-#~ msgstr "Típus"
-
-#~ msgctxt "LibraryTableModel#10"
-#~ msgid "Bitrate"
-#~ msgstr "Bitráta"
-
-#~ msgctxt "LibraryTableModel#11"
-#~ msgid "BPM"
-#~ msgstr "BPM (ütem/perc)"
-
-#~ msgctxt "LibraryTableModel#13"
-#~ msgid "Date Added"
-#~ msgstr "Hozzáadás dátuma"
-
-#~ msgctxt "LibraryTableModel#12"
-#~ msgid "Track #"
-#~ msgstr "Sorszám #"
-
-#~ msgctxt "MissingTableModel#4"
-#~ msgid "Album"
-#~ msgstr "Album"
-
-#~ msgctxt "MissingTableModel#3"
-#~ msgid "Title"
-#~ msgstr "Cím"
-
-#~ msgctxt "MissingTableModel#2"
-#~ msgid "Artist"
-#~ msgstr "Előadó"
-
-#~ msgctxt "MissingTableModel#1"
-#~ msgid "Location"
-#~ msgstr "Hely"
 
 #~ msgctxt "MidiStatusDelegate#1"
 #~ msgid "Unknown"
 #~ msgstr "Ismeretlen"
-
-#~ msgctxt "MissingTableModel#5"
-#~ msgid "Genre"
-#~ msgstr "Műfaj"
-
-#~ msgctxt "MissingTableModel#6"
-#~ msgid "Year"
-#~ msgstr "Év"
-
-#~ msgctxt "MissingTableModel#7"
-#~ msgid "Type"
-#~ msgstr "Típus"
-
-#~ msgctxt "MissingTableModel#8"
-#~ msgid "Comment"
-#~ msgstr "Megjegyzés"
-
-#~ msgctxt "MissingTableModel#9"
-#~ msgid "Duration"
-#~ msgstr "Időtartam"
-
-#~ msgctxt "MissingTableModel#10"
-#~ msgid "Track #"
-#~ msgstr "Sorszám #"
-
-#~ msgctxt "MissingTableModel#11"
-#~ msgid "Bitrate"
-#~ msgstr "Bitráta"
-
-#~ msgctxt "MissingTableModel#12"
-#~ msgid "BPM"
-#~ msgstr "BPM (ütem/perc)"
-
-#~ msgctxt "MissingTableModel#13"
-#~ msgid "Date Added"
-#~ msgstr "Hozzáadás dátuma"
-
-#~ msgctxt "MixxxApp#2"
-#~ msgid "Mixxx"
-#~ msgstr "Mixxx"
-
-#~ msgid "Another application is using the sound device or it is "
-#~ msgstr "Másik alkalmazás használja a hangeszközt vagy ez "
-
-#~ msgid "not plugged in."
-#~ msgstr "nincs csatlakoztatva."
 
 #~ msgctxt "MixxxApp#95"
 #~ msgid "Save Recording As..."
@@ -3840,54 +3491,6 @@ msgstr "Oszlop mutatása vagy elrejtése."
 #~ msgid "Remove"
 #~ msgstr "Törlés"
 
-#~ msgctxt "PlaylistTableModel#2"
-#~ msgid "Artist"
-#~ msgstr "Előadó"
-
-#~ msgctxt "PlaylistTableModel#3"
-#~ msgid "Title"
-#~ msgstr "Cím"
-
-#~ msgctxt "PlaylistTableModel#11"
-#~ msgid "Track #"
-#~ msgstr "Sorszám #"
-
-#~ msgctxt "PlaylistTableModel#12"
-#~ msgid "Bitrate"
-#~ msgstr "Bitráta"
-
-#~ msgctxt "PlaylistTableModel#13"
-#~ msgid "Date Added"
-#~ msgstr "Hozzáadás dátuma"
-
-#~ msgctxt "PlaylistTableModel#4"
-#~ msgid "Album"
-#~ msgstr "Album"
-
-#~ msgctxt "PlaylistTableModel#6"
-#~ msgid "Year"
-#~ msgstr "Év"
-
-#~ msgctxt "PlaylistTableModel#5"
-#~ msgid "Genre"
-#~ msgstr "Műfaj"
-
-#~ msgctxt "PlaylistTableModel#8"
-#~ msgid "Location"
-#~ msgstr "Hely"
-
-#~ msgctxt "PlaylistTableModel#7"
-#~ msgid "Type"
-#~ msgstr "Típus"
-
-#~ msgctxt "PlaylistTableModel#10"
-#~ msgid "Duration"
-#~ msgstr "Időtartam"
-
-#~ msgctxt "PlaylistTableModel#9"
-#~ msgid "Comment"
-#~ msgstr "Megjegyzés"
-
 #~ msgctxt "RhythmboxPlaylistModel#1"
 #~ msgid "Artist"
 #~ msgstr "Előadó"
@@ -3895,10 +3498,6 @@ msgstr "Oszlop mutatása vagy elrejtése."
 #~ msgctxt "RhythmboxPlaylistModel#2"
 #~ msgid "Title"
 #~ msgstr "Cím"
-
-#~ msgctxt "PlaylistTableModel#14"
-#~ msgid "BPM"
-#~ msgstr "BPM (ütem/perc)"
 
 #~ msgid "Load Rhythmbox Library?"
 #~ msgstr "Betölti a Rhythmbox Gyűjteményt?"
@@ -3950,10 +3549,6 @@ msgstr "Oszlop mutatása vagy elrejtése."
 #~ msgid "Location"
 #~ msgstr "Hely"
 
-#~ msgctxt "RhythmboxTrackModel#4"
-#~ msgid "Date"
-#~ msgstr "Dátum"
-
 #~ msgctxt "RhythmboxTrackModel#3"
 #~ msgid "Album"
 #~ msgstr "Album"
@@ -3964,7 +3559,3 @@ msgstr "Oszlop mutatása vagy elrejtése."
 #~ msgctxt "Ui#10"
 #~ msgid "Preferences"
 #~ msgstr "Testreszabás"
-
-#~ msgctxt "WTrackTableView#5"
-#~ msgid "Remove"
-#~ msgstr "Törlés"

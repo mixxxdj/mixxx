@@ -9,14 +9,14 @@ msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2011-05-03 21:42-0400\n"
-"PO-Revision-Date: 2011-05-30 11:35+0000\n"
-"Last-Translator: bassball93 <bassball93@gmail.com>\n"
+"PO-Revision-Date: 2011-10-07 14:24+0000\n"
+"Last-Translator: Dario <dario.villar.v@gmail.com>\n"
 "Language-Team: Galician <gl@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-05-31 04:33+0000\n"
-"X-Generator: Launchpad (build 12959)\n"
+"X-Launchpad-Export-Date: 2011-10-08 05:14+0000\n"
+"X-Generator: Launchpad (build 14110)\n"
 
 #: AutoDJFeature#1
 msgid "Auto DJ"
@@ -3389,85 +3389,13 @@ msgstr "Mostrar ou agochar columnas."
 #~ msgid "You don't have permission to view this folder."
 #~ msgstr "Vostede non ten permiso para ver este cartafol."
 
-#~ msgid "ID"
-#~ msgstr "ID"
-
-#~ msgctxt "CrateTableModel#2"
-#~ msgid "Artist"
-#~ msgstr "Artista"
-
-#~ msgctxt "CrateTableModel#3"
-#~ msgid "Title"
-#~ msgstr "Título"
-
-#~ msgctxt "CrateTableModel#4"
-#~ msgid "Album"
-#~ msgstr "Álbum"
-
-#~ msgctxt "CrateTableModel#5"
-#~ msgid "Genre"
-#~ msgstr "Xénero"
-
-#~ msgctxt "CrateTableModel#6"
-#~ msgid "Year"
-#~ msgstr "Ano"
-
-#~ msgctxt "CrateTableModel#7"
-#~ msgid "Type"
-#~ msgstr "Tipo"
-
-#~ msgctxt "CrateTableModel#8"
-#~ msgid "Location"
-#~ msgstr "Lugar"
-
-#~ msgctxt "CrateTableModel#9"
-#~ msgid "Comment"
-#~ msgstr "Comentario"
-
-#~ msgctxt "CrateTableModel#10"
-#~ msgid "Duration"
-#~ msgstr "Duración"
-
-#~ msgctxt "CrateTableModel#11"
-#~ msgid "Track #"
-#~ msgstr "Pista"
-
-#~ msgctxt "CrateTableModel#12"
-#~ msgid "Bitrate"
-#~ msgstr "Taxa de bits"
-
-#~ msgctxt "CrateTableModel#13"
-#~ msgid "BPM"
-#~ msgstr "BPM"
-
-#~ msgctxt "CrateTableModel#14"
-#~ msgid "Date Added"
-#~ msgstr "Data engadida"
-
-#~ msgid "Analyze Entire Song"
-#~ msgstr "Analizar a canción enteira"
-
-#~ msgid "Edit"
-#~ msgstr "Editar"
-
 #~ msgctxt "DlgPrefControls#4"
 #~ msgid "Information"
 #~ msgstr "Información"
 
-#~ msgctxt "DlgPrefPlaylistDlg#4"
-#~ msgid "Browse..."
-#~ msgstr "Examinar..."
-
-#~ msgctxt "DlgPrefPlaylistDlg#6"
-#~ msgid "Library"
-#~ msgstr "Biblioteca"
-
 #~ msgctxt "DlgPrefRecord#1"
 #~ msgid "Save Recording As..."
 #~ msgstr "Gardar a gravación como..."
-
-#~ msgid "Quality: "
-#~ msgstr "Calidade: "
 
 #~ msgctxt "DlgPrefRecordDlg#3"
 #~ msgid "Browse..."
@@ -3477,14 +3405,6 @@ msgstr "Mostrar ou agochar columnas."
 #~ msgid "Encoding"
 #~ msgstr "Codificación"
 
-#~ msgctxt "DlgPrefRecordDlg#6"
-#~ msgid "High"
-#~ msgstr "Alta"
-
-#~ msgctxt "DlgPrefRecordDlg#7"
-#~ msgid "Low"
-#~ msgstr "Baixa"
-
 #~ msgctxt "DlgPrefRecordDlg#9"
 #~ msgid "Title"
 #~ msgstr "Título"
@@ -3492,80 +3412,6 @@ msgstr "Mostrar ou agochar columnas."
 #~ msgctxt "DlgPrefRecordDlg#11"
 #~ msgid "Album"
 #~ msgstr "Álbum"
-
-#~ msgid "http://mixxx.sf.net"
-#~ msgstr "http://mixxx.sf.net"
-
-#~ msgid "JACK"
-#~ msgstr "JACK"
-
-#~ msgctxt "DlgPrefSound#4"
-#~ msgid "Mixxx"
-#~ msgstr "Mixxx"
-
-#~ msgctxt "DlgPrefSound#6"
-#~ msgid "Configuration error"
-#~ msgstr "Erro de configuración"
-
-#~ msgctxt "DlgPrefSound#7"
-#~ msgid "You cannot send multiple outputs to a single channel"
-#~ msgstr "Non pode enviar múltiples saídas a un só canal"
-
-#~ msgctxt "DlgPrefSound#9"
-#~ msgid "Audio device could not be opened"
-#~ msgstr "Non foi posíbel abrir o dispositivo"
-
-#~ msgid "Configuration problem"
-#~ msgstr "Problema de configuración"
-
-#~ msgid "Sound API could not be initialized"
-#~ msgstr "Non foi posíbel inicializar a API de son"
-
-#~ msgctxt "DlgPrefSoundDlg#1"
-#~ msgid "Form1"
-#~ msgstr "Formulario"
-
-#~ msgid "Audio Output"
-#~ msgstr "Saída de son"
-
-#~ msgid "Vinyl emulation"
-#~ msgstr "Emulación de un vinilo"
-
-#~ msgid "256 ms"
-#~ msgstr "256 ms"
-
-#~ msgctxt "DlgPrefSoundDlg#13"
-#~ msgid "Low"
-#~ msgstr "Baixa"
-
-#~ msgctxt "DlgPrefSoundDlg#14"
-#~ msgid "High"
-#~ msgstr "Alta"
-
-#~ msgid "Fast CPU"
-#~ msgstr "CPU Rápida"
-
-#~ msgid "Slow CPU"
-#~ msgstr "CPU lenta"
-
-#~ msgctxt "DlgPrefVinyl#1"
-#~ msgid "None"
-#~ msgstr "Ningún"
-
-#~ msgctxt "DlgPrefVinyl#2"
-#~ msgid "Configuration error"
-#~ msgstr "Erro de configuración"
-
-#~ msgctxt "DlgPrefVinyl#3"
-#~ msgid "You cannot send multiple outputs to a single channel"
-#~ msgstr "Non pode enviar múltiples saídas a un só canal"
-
-#~ msgctxt "DlgPrefVinyl#5"
-#~ msgid "Audio device could not be opened"
-#~ msgstr "Non foi posíbel abrir o dispositivo"
-
-#~ msgid "Input"
-#~ msgstr "Entrada"
 
 #~ msgid "1 (Off)"
 #~ msgstr "1 (Desactivado)"
@@ -3594,204 +3440,15 @@ msgstr "Mostrar ou agochar columnas."
 #~ msgid "http://www.xwax.co.uk"
 #~ msgstr "http://www.xwax.co.uk"
 
-#~ msgid "Vinyl Control"
-#~ msgstr "Control do Vinilo"
-
-#~ msgid "Track Editor"
-#~ msgstr "Edotor de pistas"
-
-#~ msgid "Song:"
-#~ msgstr "Canción:"
-
-#~ msgid "Title:"
-#~ msgstr "Título:"
-
-#~ msgid "Artist:"
-#~ msgstr "Artista:"
-
-#~ msgid "Filename:"
-#~ msgstr "Nome do ficheiro:"
-
-#~ msgid "3:00"
-#~ msgstr "3:00"
-
-#~ msgid "File Type:"
-#~ msgstr "Tipo de ficheiro:"
-
-#~ msgid "77"
-#~ msgstr "77"
-
-#~ msgid "Comments:"
-#~ msgstr "Comentarios:"
-
-#~ msgid "Alt+O"
-#~ msgstr "Alt+O"
-
-#~ msgid "Shoutcast aborted connect after 3 tries"
-#~ msgstr "Shoutcast cancelou o intento de conexión despois de 3 tentativas"
-
-#~ msgid "Mixxx could not connect to the server"
-#~ msgstr "Mixxx non se puido conectar ao servidor"
-
 #~ msgid "Load iTunes Library?"
 #~ msgstr "Cargar a biblioteca de iTunes?"
 
 #~ msgid "Would you like to load your iTunes library?"
 #~ msgstr "Desexa cargar a biblioteca de iTunes?"
 
-#~ msgctxt "ITunesPlaylistModel#1"
-#~ msgid "Artist"
-#~ msgstr "Artista"
-
-#~ msgctxt "ITunesPlaylistModel#2"
-#~ msgid "Title"
-#~ msgstr "Título"
-
-#~ msgctxt "ITunesPlaylistModel#3"
-#~ msgid "Album"
-#~ msgstr "Álbum"
-
-#~ msgctxt "ITunesPlaylistModel#4"
-#~ msgid "Date"
-#~ msgstr "Data"
-
-#~ msgctxt "ITunesPlaylistModel#5"
-#~ msgid "BPM"
-#~ msgstr "BPM"
-
-#~ msgctxt "ITunesPlaylistModel#6"
-#~ msgid "Genre"
-#~ msgstr "Xénero"
-
-#~ msgctxt "ITunesPlaylistModel#7"
-#~ msgid "Location"
-#~ msgstr "Lugar"
-
-#~ msgctxt "ITunesPlaylistModel#8"
-#~ msgid "Duration"
-#~ msgstr "Duración"
-
-#~ msgctxt "ITunesPlaylistModel#9"
-#~ msgid "Unknown"
-#~ msgstr "Descoñecido"
-
-#~ msgctxt "LibraryTableModel#1"
-#~ msgid "Artist"
-#~ msgstr "Artista"
-
-#~ msgctxt "LibraryTableModel#2"
-#~ msgid "Title"
-#~ msgstr "Título"
-
-#~ msgctxt "LibraryTableModel#3"
-#~ msgid "Album"
-#~ msgstr "Álbum"
-
-#~ msgctxt "LibraryTableModel#4"
-#~ msgid "Genre"
-#~ msgstr "Xénero"
-
-#~ msgctxt "LibraryTableModel#5"
-#~ msgid "Year"
-#~ msgstr "Ano"
-
-#~ msgctxt "LibraryTableModel#6"
-#~ msgid "Type"
-#~ msgstr "Tipo"
-
-#~ msgctxt "LibraryTableModel#7"
-#~ msgid "Location"
-#~ msgstr "Lugar"
-
-#~ msgctxt "LibraryTableModel#8"
-#~ msgid "Comment"
-#~ msgstr "Comentario"
-
-#~ msgctxt "LibraryTableModel#9"
-#~ msgid "Duration"
-#~ msgstr "Duración"
-
-#~ msgctxt "LibraryTableModel#10"
-#~ msgid "Bitrate"
-#~ msgstr "Taxa de bits"
-
-#~ msgctxt "LibraryTableModel#11"
-#~ msgid "BPM"
-#~ msgstr "BPM"
-
-#~ msgctxt "LibraryTableModel#12"
-#~ msgid "Track #"
-#~ msgstr "Pista #"
-
-#~ msgctxt "LibraryTableModel#13"
-#~ msgid "Date Added"
-#~ msgstr "Data engadida"
-
 #~ msgctxt "MidiStatusDelegate#1"
 #~ msgid "Unknown"
 #~ msgstr "Descoñecido"
-
-#~ msgctxt "MissingTableModel#1"
-#~ msgid "Location"
-#~ msgstr "Lugar"
-
-#~ msgctxt "MissingTableModel#2"
-#~ msgid "Artist"
-#~ msgstr "Artista"
-
-#~ msgctxt "MissingTableModel#3"
-#~ msgid "Title"
-#~ msgstr "Título"
-
-#~ msgctxt "MissingTableModel#4"
-#~ msgid "Album"
-#~ msgstr "Álbum"
-
-#~ msgctxt "MissingTableModel#5"
-#~ msgid "Genre"
-#~ msgstr "Xénero"
-
-#~ msgctxt "MissingTableModel#6"
-#~ msgid "Year"
-#~ msgstr "Ano"
-
-#~ msgctxt "MissingTableModel#7"
-#~ msgid "Type"
-#~ msgstr "Tipo"
-
-#~ msgctxt "MissingTableModel#8"
-#~ msgid "Comment"
-#~ msgstr "Comentario"
-
-#~ msgctxt "MissingTableModel#9"
-#~ msgid "Duration"
-#~ msgstr "Duración"
-
-#~ msgctxt "MissingTableModel#10"
-#~ msgid "Track #"
-#~ msgstr "Pista #"
-
-#~ msgctxt "MissingTableModel#11"
-#~ msgid "Bitrate"
-#~ msgstr "Taxa de bits"
-
-#~ msgctxt "MissingTableModel#12"
-#~ msgid "BPM"
-#~ msgstr "BPM"
-
-#~ msgctxt "MissingTableModel#13"
-#~ msgid "Date Added"
-#~ msgstr "Data engadida"
-
-#~ msgctxt "MixxxApp#2"
-#~ msgid "Mixxx"
-#~ msgstr "Mixxx"
-
-#~ msgid "Another application is using the sound device or it is "
-#~ msgstr "Outro aplicativo está a usar o dispositivo de son ou esté está "
-
-#~ msgid "not plugged in."
-#~ msgstr "non enchufado."
 
 #~ msgctxt "MixxxApp#95"
 #~ msgid "Save Recording As..."
@@ -3811,58 +3468,6 @@ msgstr "Mostrar ou agochar columnas."
 #~ msgctxt "PlaylistFeature#2"
 #~ msgid "Remove"
 #~ msgstr "Eliminar"
-
-#~ msgctxt "PlaylistTableModel#2"
-#~ msgid "Artist"
-#~ msgstr "Artista"
-
-#~ msgctxt "PlaylistTableModel#3"
-#~ msgid "Title"
-#~ msgstr "Título"
-
-#~ msgctxt "PlaylistTableModel#4"
-#~ msgid "Album"
-#~ msgstr "Álbum"
-
-#~ msgctxt "PlaylistTableModel#5"
-#~ msgid "Genre"
-#~ msgstr "Xénero"
-
-#~ msgctxt "PlaylistTableModel#6"
-#~ msgid "Year"
-#~ msgstr "Ano"
-
-#~ msgctxt "PlaylistTableModel#7"
-#~ msgid "Type"
-#~ msgstr "Tipo"
-
-#~ msgctxt "PlaylistTableModel#8"
-#~ msgid "Location"
-#~ msgstr "Lugar"
-
-#~ msgctxt "PlaylistTableModel#9"
-#~ msgid "Comment"
-#~ msgstr "Comentario"
-
-#~ msgctxt "PlaylistTableModel#10"
-#~ msgid "Duration"
-#~ msgstr "Duración"
-
-#~ msgctxt "PlaylistTableModel#11"
-#~ msgid "Track #"
-#~ msgstr "Pista #"
-
-#~ msgctxt "PlaylistTableModel#12"
-#~ msgid "Bitrate"
-#~ msgstr "Taxa de bits"
-
-#~ msgctxt "PlaylistTableModel#13"
-#~ msgid "Date Added"
-#~ msgstr "Data engadida"
-
-#~ msgctxt "PlaylistTableModel#14"
-#~ msgid "BPM"
-#~ msgstr "BPM"
 
 #~ msgid "Load Rhythmbox Library?"
 #~ msgstr "Cargar a biblioteca de Rythmbox?"
@@ -3914,10 +3519,6 @@ msgstr "Mostrar ou agochar columnas."
 #~ msgid "Album"
 #~ msgstr "Álbum"
 
-#~ msgctxt "RhythmboxTrackModel#4"
-#~ msgid "Date"
-#~ msgstr "Data"
-
 #~ msgctxt "RhythmboxTrackModel#5"
 #~ msgid "Genre"
 #~ msgstr "Xénero"
@@ -3936,23 +3537,3 @@ msgstr "Mostrar ou agochar columnas."
 
 #~ msgid "OK"
 #~ msgstr "Aceptar"
-
-#~ msgctxt "WBrowseTableView#1"
-#~ msgid "Load in Player 1"
-#~ msgstr "Cargar no reproductor 1"
-
-#~ msgctxt "WBrowseTableView#2"
-#~ msgid "Load in Player 2"
-#~ msgstr "Cargar no reproductor 2"
-
-#~ msgctxt "WTrackTableView#3"
-#~ msgid "Load in Player 1"
-#~ msgstr "Cargar no reproductor 1"
-
-#~ msgctxt "WTrackTableView#4"
-#~ msgid "Load in Player 2"
-#~ msgstr "Cargar no reproductor 2"
-
-#~ msgctxt "WTrackTableView#5"
-#~ msgid "Remove"
-#~ msgstr "Eliminar"
