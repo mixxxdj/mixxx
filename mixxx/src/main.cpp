@@ -218,9 +218,9 @@ int main(int argc, char * argv[])
 
             QString fileExtensions = SoundSourceProxy::supportedFileExtensionsString();
             QByteArray fileExtensionsBA = QString(fileExtensions).toUtf8();
-            // printf(fileExtensionsBA); produces a warning
-            puts("\n\n");
-            puts("\
+            printf("%s", fileExtensionsBA.constData());
+            printf("\n\n");
+            printf("\
                             Each file you specify will be loaded into the\n\
                             next virtual deck.\n\
 \n\

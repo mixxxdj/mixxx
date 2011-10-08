@@ -194,7 +194,11 @@
           </widget>
          </item>
          <item row="9" column="1" colspan="3">
-          <widget class="QTextEdit" name="txtComment"/>
+          <widget class="QTextEdit" name="txtComment">
+            <property name="tabChangesFocus">
+              <bool>true</bool>
+            </property>
+          </widget>
          </item>
          <item row="4" column="1" colspan="3">
           <widget class="QLineEdit" name="txtTrackNumber"/>

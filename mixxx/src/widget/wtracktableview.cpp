@@ -438,10 +438,32 @@ void WTrackTableView::onSearchCleared() {
     }
 }
 
-void WTrackTableView::onShow()
-{
-
+void WTrackTableView::onShow() {
 }
+
+void WTrackTableView::mouseMoveEvent(QMouseEvent* pEvent) {
+    TrackModel* trackModel = getTrackModel();
+    if (!trackModel)
+        return;
+
+    // Iterate over selected rows and append each item's location url to a list
+    QList<QUrl> locationUrls;
+    QModelIndexList indices = selectionModel()->selectedRows();
+    foreach (QModelIndex index, indices) {
+      if (index.isValid()) {
+        locationUrls.append(trackModel->getTrackLocation(index));
+      }
+    }
+
+    QMimeData* mimeData = new QMimeData();
+    mimeData->setUrls(locationUrls);
+
+    QDrag* drag = new QDrag(this);
+    drag->setMimeData(mimeData);
+    drag->setPixmap(QPixmap(":images/library/ic_library_drag_and_drop.png"));
+    drag->exec(Qt::CopyAction);
+}
+
 
 /** Drag enter event, happens when a dragged item hovers over the track table view*/
 void WTrackTableView::dragEnterEvent(QDragEnterEvent * event)

@@ -100,6 +100,7 @@ class EngineMaster : public EngineObject, public AudioSource {
     class ConstantGainCalculator : public GainCalculator {
       public:
         inline double getGain(ChannelInfo* pChannelInfo) {
+            Q_UNUSED(pChannelInfo);
             return m_dGain;
         }
         inline void setGain(double dGain) {
