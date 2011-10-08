@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2011-05-03 21:42-0400\n"
-"PO-Revision-Date: 2011-06-21 15:26+0000\n"
-"Last-Translator: Jakub Hadámek <Unknown>\n"
+"PO-Revision-Date: 2011-10-07 14:24+0000\n"
+"Last-Translator: Petr Šimáček <petr.simacek@gmail.com>\n"
 "Language-Team: Czech <cs@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-06-22 04:31+0000\n"
-"X-Generator: Launchpad (build 13168)\n"
+"X-Launchpad-Export-Date: 2011-10-08 05:14+0000\n"
+"X-Generator: Launchpad (build 14110)\n"
 
 #: AutoDJFeature#1
 msgid "Auto DJ"
@@ -3534,93 +3534,12 @@ msgstr "Ukázat nebo skrýt sloupce."
 #~ msgid "Permission Denied"
 #~ msgstr "Oprávnění byla odepřena"
 
-#~ msgctxt "CrateTableModel#6"
-#~ msgid "Year"
-#~ msgstr "Rok"
-
-#~ msgctxt "CrateTableModel#7"
-#~ msgid "Type"
-#~ msgstr "Typ"
-
-#~ msgctxt "CrateTableModel#8"
-#~ msgid "Location"
-#~ msgstr "Umístění"
-
-#~ msgctxt "CrateTableModel#5"
-#~ msgid "Genre"
-#~ msgstr "Styl"
-
-#~ msgctxt "CrateTableModel#4"
-#~ msgid "Album"
-#~ msgstr "Album"
-
-#~ msgctxt "CrateTableModel#3"
-#~ msgid "Title"
-#~ msgstr "Název"
-
-#~ msgctxt "CrateTableModel#2"
-#~ msgid "Artist"
-#~ msgstr "Umělec"
-
-#~ msgid "ID"
-#~ msgstr "ID"
-
-#~ msgctxt "CrateTableModel#14"
-#~ msgid "Date Added"
-#~ msgstr "Datum přidání"
-
-#~ msgctxt "CrateTableModel#9"
-#~ msgid "Comment"
-#~ msgstr "Komentář"
-
-#~ msgctxt "CrateTableModel#10"
-#~ msgid "Duration"
-#~ msgstr "Prolnutí"
-
-#~ msgctxt "CrateTableModel#11"
-#~ msgid "Track #"
-#~ msgstr "Stopa #"
-
-#~ msgctxt "CrateTableModel#12"
-#~ msgid "Bitrate"
-#~ msgstr "Datový tok"
-
-#~ msgctxt "CrateTableModel#13"
-#~ msgid "BPM"
-#~ msgstr "BPM"
-
-#~ msgid "Analyze Entire Song"
-#~ msgstr "Analyzovat celý song"
-
-#~ msgid "BPM Detection Settings"
-#~ msgstr "Nastavení detekce BPM"
-
-#~ msgid "Edit"
-#~ msgstr "Upravit"
-
 #~ msgctxt "DlgPrefControls#4"
 #~ msgid "Information"
 #~ msgstr "Informace"
 
 #~ msgid "Crate Creation Failed"
 #~ msgstr "Přepravka nebyla vytvořena"
-
-#~ msgctxt "DlgPrefPlaylistDlg#6"
-#~ msgid "Library"
-#~ msgstr "Knihovna"
-
-#~ msgctxt "DlgPrefPlaylistDlg#4"
-#~ msgid "Browse..."
-#~ msgstr "Procházet..."
-
-#~ msgid "MP3, Ogg Vorbis, FLAC, Wave, Aiff Playback:"
-#~ msgstr "MP3, Ogg Vorbis, FLAC, Wave, Aiff Playback:"
-
-#~ msgid "Extra Playback Plugins:"
-#~ msgstr "Extra Playback pluginy:"
-
-#~ msgid "Audio Playback Plugins"
-#~ msgstr "Audio Playback pluginy"
 
 #~ msgctxt "DlgPrefRecordDlg#3"
 #~ msgid "Browse..."
@@ -3630,9 +3549,6 @@ msgstr "Ukázat nebo skrýt sloupce."
 #~ msgid "Save Recording As..."
 #~ msgstr "Uložit nahrávku jako..."
 
-#~ msgid "Quality: "
-#~ msgstr "Kvalita "
-
 #~ msgctxt "DlgPrefRecordDlg#9"
 #~ msgid "Title"
 #~ msgstr "Titul"
@@ -3641,88 +3557,9 @@ msgstr "Ukázat nebo skrýt sloupce."
 #~ msgid "Encoding"
 #~ msgstr "Kódování"
 
-#~ msgctxt "DlgPrefRecordDlg#6"
-#~ msgid "High"
-#~ msgstr "Vysoká"
-
-#~ msgctxt "DlgPrefRecordDlg#7"
-#~ msgid "Low"
-#~ msgstr "Nízká"
-
 #~ msgctxt "DlgPrefRecordDlg#11"
 #~ msgid "Album"
 #~ msgstr "Album"
-
-#~ msgid "http://mixxx.sf.net"
-#~ msgstr "http://mixxx.sf.net"
-
-#~ msgid "Configuration problem"
-#~ msgstr "Problém s konfigurací"
-
-#~ msgctxt "DlgPrefSound#9"
-#~ msgid "Audio device could not be opened"
-#~ msgstr "Zvukové zařízení nelze otevřít"
-
-#~ msgid "Audio Output"
-#~ msgstr "Zvukový výstup"
-
-#~ msgid "Mixxx - Master and Headphones sharing the same channels"
-#~ msgstr "Mixxx - Master a sluchátka sdílejí stejný kanál"
-
-#~ msgid "Sample rate (Hz)"
-#~ msgstr "Sample rate"
-
-#~ msgctxt "DlgPrefSoundDlg#1"
-#~ msgid "Form1"
-#~ msgstr "Formulář1"
-
-#~ msgid "Sound API could not be initialized"
-#~ msgstr "Zvukové API nemohlo být inicializováno"
-
-#~ msgid "Vinyl emulation"
-#~ msgstr "Emulace vinylu"
-
-#~ msgid "256 ms"
-#~ msgstr "256 ms"
-
-#~ msgid "Fast CPU"
-#~ msgstr "Rychlý procesor"
-
-#~ msgid ""
-#~ "Tips:<ul><li>Increase your latency if you hear pops during "
-#~ "playback</li><li>Reduce your latency to improve Mixxx's "
-#~ "responsiveness</li></ul>"
-#~ msgstr ""
-#~ "Tipy:<ul><li>Zvyšte latenci, pokud slyšíte pukání během "
-#~ "přehrávání</li><li>Snižte latenci pro zlepšení odezvy Mixxxu</li></ul>"
-
-#~ msgctxt "DlgPrefVinyl#4"
-#~ msgid "You cannot use a single pair of channels for both decks"
-#~ msgstr "Nelze použít jeden pár kanálů pro oba \"decky\""
-
-#~ msgctxt "DlgPrefVinyl#3"
-#~ msgid "You cannot send multiple outputs to a single channel"
-#~ msgstr "Není možné poslat více výstupů do jednoho kanálu"
-
-#~ msgctxt "DlgPrefVinyl#5"
-#~ msgid "Audio device could not be opened"
-#~ msgstr "Zvukové zařízení nelze otevřít"
-
-#~ msgid "Slow CPU"
-#~ msgstr "Pomalý procesor"
-
-#~ msgctxt "DlgPrefVinyl#2"
-#~ msgid "Configuration error"
-#~ msgstr "Chyba nastavení"
-
-#~ msgid "Input"
-#~ msgstr "Vstup"
-
-#~ msgid "Deck 1"
-#~ msgstr "Deck 1"
-
-#~ msgid "Deck 2"
-#~ msgstr "Deck 2"
 
 #~ msgid ""
 #~ "<a "
@@ -3772,227 +3609,15 @@ msgstr "Ukázat nebo skrýt sloupce."
 #~ msgid "Relative Mode"
 #~ msgstr "Relativní režim"
 
-#~ msgid "Crossfader"
-#~ msgstr "Crossfader"
-
-#~ msgid "Vinyl Control"
-#~ msgstr "Kontrola vinylu"
-
-#~ msgid "Song:"
-#~ msgstr "Song:"
-
-#~ msgid "Track Editor"
-#~ msgstr "Editor stopy"
-
-#~ msgid "Artist:"
-#~ msgstr "Umělec:"
-
-#~ msgid "Title:"
-#~ msgstr "Titul:"
-
-#~ msgid "Filename:"
-#~ msgstr "Jméno souboru:"
-
-#~ msgid "Track Information (Click to Expand)"
-#~ msgstr "Informace o stopě (klikněte pro rozbalení)"
-
-#~ msgid "Comments:"
-#~ msgstr "Komentáře:"
-
-#~ msgid "File Type:"
-#~ msgstr "Typ souboru:"
-
-#~ msgid "77"
-#~ msgstr "77"
-
-#~ msgid "3:00"
-#~ msgstr "3:00"
-
-#~ msgid "Alt+O"
-#~ msgstr "Alt+O"
-
-#~ msgid "Mixxx could not connect to the server"
-#~ msgstr "Mixxx se nemohl spojit se serverem"
-
-#~ msgid "Shoutcast aborted connect after 3 tries"
-#~ msgstr "Připojení k Shoutcast bylo přerušeno po třetím  pokusu"
-
-#~ msgctxt "DlgPrefSound#7"
-#~ msgid "You cannot send multiple outputs to a single channel"
-#~ msgstr "Není možné poslat více výstupů do jednoho kanálu"
-
-#~ msgctxt "DlgPrefSound#6"
-#~ msgid "Configuration error"
-#~ msgstr "Chyba nastavení"
-
 #~ msgid "Load iTunes Library?"
 #~ msgstr "Nahrát knihovnu iTunes?"
 
 #~ msgid "Would you like to load your iTunes library?"
 #~ msgstr "Chcete nahrát knihovnu iTunes?"
 
-#~ msgctxt "ITunesPlaylistModel#1"
-#~ msgid "Artist"
-#~ msgstr "Interpret"
-
-#~ msgctxt "ITunesPlaylistModel#4"
-#~ msgid "Date"
-#~ msgstr "Datum"
-
-#~ msgctxt "ITunesPlaylistModel#5"
-#~ msgid "BPM"
-#~ msgstr "BPM"
-
-#~ msgctxt "ITunesPlaylistModel#2"
-#~ msgid "Title"
-#~ msgstr "Název"
-
-#~ msgctxt "ITunesPlaylistModel#3"
-#~ msgid "Album"
-#~ msgstr "Album"
-
-#~ msgctxt "ITunesPlaylistModel#9"
-#~ msgid "Unknown"
-#~ msgstr "Neznámý"
-
-#~ msgctxt "ITunesPlaylistModel#6"
-#~ msgid "Genre"
-#~ msgstr "Styl"
-
-#~ msgctxt "ITunesPlaylistModel#7"
-#~ msgid "Location"
-#~ msgstr "Umístění"
-
-#~ msgctxt "ITunesPlaylistModel#8"
-#~ msgid "Duration"
-#~ msgstr "Prolnutí"
-
-#~ msgctxt "LibraryTableModel#8"
-#~ msgid "Comment"
-#~ msgstr "Komentář"
-
-#~ msgctxt "LibraryTableModel#1"
-#~ msgid "Artist"
-#~ msgstr "Interpret"
-
-#~ msgctxt "LibraryTableModel#3"
-#~ msgid "Album"
-#~ msgstr "Album"
-
-#~ msgctxt "LibraryTableModel#2"
-#~ msgid "Title"
-#~ msgstr "Název"
-
-#~ msgctxt "LibraryTableModel#5"
-#~ msgid "Year"
-#~ msgstr "Rok"
-
-#~ msgctxt "LibraryTableModel#4"
-#~ msgid "Genre"
-#~ msgstr "Styl"
-
-#~ msgctxt "LibraryTableModel#7"
-#~ msgid "Location"
-#~ msgstr "Umístění"
-
-#~ msgctxt "LibraryTableModel#6"
-#~ msgid "Type"
-#~ msgstr "Typ"
-
-#~ msgctxt "LibraryTableModel#9"
-#~ msgid "Duration"
-#~ msgstr "Prolnutí"
-
-#~ msgctxt "LibraryTableModel#11"
-#~ msgid "BPM"
-#~ msgstr "BPM"
-
-#~ msgctxt "LibraryTableModel#10"
-#~ msgid "Bitrate"
-#~ msgstr "Datový tok"
-
-#~ msgctxt "LibraryTableModel#13"
-#~ msgid "Date Added"
-#~ msgstr "Datum přidání"
-
-#~ msgctxt "LibraryTableModel#12"
-#~ msgid "Track #"
-#~ msgstr "Stopa #"
-
-#~ msgctxt "MissingTableModel#1"
-#~ msgid "Location"
-#~ msgstr "Umístění"
-
 #~ msgctxt "MidiStatusDelegate#1"
 #~ msgid "Unknown"
 #~ msgstr "Neznámý"
-
-#~ msgctxt "MissingTableModel#7"
-#~ msgid "Type"
-#~ msgstr "Typ"
-
-#~ msgctxt "MissingTableModel#5"
-#~ msgid "Genre"
-#~ msgstr "Styl"
-
-#~ msgctxt "MissingTableModel#4"
-#~ msgid "Album"
-#~ msgstr "Album"
-
-#~ msgctxt "MissingTableModel#6"
-#~ msgid "Year"
-#~ msgstr "Rok"
-
-#~ msgctxt "MissingTableModel#8"
-#~ msgid "Comment"
-#~ msgstr "Komentář"
-
-#~ msgctxt "MissingTableModel#9"
-#~ msgid "Duration"
-#~ msgstr "Prolnutí"
-
-#~ msgctxt "MissingTableModel#10"
-#~ msgid "Track #"
-#~ msgstr "Stopa #"
-
-#~ msgctxt "MissingTableModel#11"
-#~ msgid "Bitrate"
-#~ msgstr "Datový tok"
-
-#~ msgctxt "MissingTableModel#3"
-#~ msgid "Title"
-#~ msgstr "Název"
-
-#~ msgctxt "MissingTableModel#2"
-#~ msgid "Artist"
-#~ msgstr "Interpret"
-
-#~ msgctxt "MixxxApp#2"
-#~ msgid "Mixxx"
-#~ msgstr "Mixxx"
-
-#~ msgctxt "MissingTableModel#12"
-#~ msgid "BPM"
-#~ msgstr "BPM"
-
-#~ msgctxt "MissingTableModel#13"
-#~ msgid "Date Added"
-#~ msgstr "Datum přidání"
-
-#~ msgid "<b>Exit</b> without saving your settings."
-#~ msgstr "<b>Zavřít</b> bez uložení nastavení."
-
-#~ msgid "or reconnecting the sound device"
-#~ msgstr "nebo znovu připojte zvukové zařízení"
-
-#~ msgid "<html>Mixxx cannot access the sound device <b>"
-#~ msgstr "<html>Mixxx nemůže přistoupit ke zvukovému zařízení <b>"
-
-#~ msgid "not plugged in."
-#~ msgstr "není zapojen."
-
-#~ msgid "<b>Retry</b> after closing the other application "
-#~ msgstr "<b>Zkuste znovu</b> po zavření jiné aplikace. "
 
 #~ msgid ""
 #~ "The file %1 already exists. Would you like to overwrite it?\n"
@@ -4019,42 +3644,6 @@ msgstr "Ukázat nebo skrýt sloupce."
 #~ msgid "Library"
 #~ msgstr "Knihovna"
 
-#~ msgctxt "PlaylistTableModel#7"
-#~ msgid "Type"
-#~ msgstr "Typ"
-
-#~ msgctxt "PlaylistTableModel#2"
-#~ msgid "Artist"
-#~ msgstr "Interpret"
-
-#~ msgctxt "PlaylistTableModel#4"
-#~ msgid "Album"
-#~ msgstr "Album"
-
-#~ msgctxt "PlaylistTableModel#3"
-#~ msgid "Title"
-#~ msgstr "Název"
-
-#~ msgctxt "PlaylistTableModel#6"
-#~ msgid "Year"
-#~ msgstr "Rok"
-
-#~ msgctxt "PlaylistTableModel#5"
-#~ msgid "Genre"
-#~ msgstr "Styl"
-
-#~ msgctxt "PlaylistTableModel#8"
-#~ msgid "Location"
-#~ msgstr "Umístění"
-
-#~ msgctxt "PlaylistTableModel#10"
-#~ msgid "Duration"
-#~ msgstr "Prolnutí"
-
-#~ msgctxt "PlaylistTableModel#9"
-#~ msgid "Comment"
-#~ msgstr "Komentář"
-
 #~ msgctxt "RhythmboxPlaylistModel#1"
 #~ msgid "Artist"
 #~ msgstr "Interpret"
@@ -4062,22 +3651,6 @@ msgstr "Ukázat nebo skrýt sloupce."
 #~ msgctxt "RhythmboxPlaylistModel#2"
 #~ msgid "Title"
 #~ msgstr "Název"
-
-#~ msgctxt "PlaylistTableModel#11"
-#~ msgid "Track #"
-#~ msgstr "Stopa #"
-
-#~ msgctxt "PlaylistTableModel#12"
-#~ msgid "Bitrate"
-#~ msgstr "Datový tok"
-
-#~ msgctxt "PlaylistTableModel#13"
-#~ msgid "Date Added"
-#~ msgstr "Datum přidání"
-
-#~ msgctxt "PlaylistTableModel#14"
-#~ msgid "BPM"
-#~ msgstr "BPM"
 
 #~ msgid "Load Rhythmbox Library?"
 #~ msgstr "Nahrát knihovnu z Rhythmboxu?"
@@ -4117,10 +3690,6 @@ msgstr "Ukázat nebo skrýt sloupce."
 #~ msgid "Album"
 #~ msgstr "Album"
 
-#~ msgctxt "RhythmboxTrackModel#4"
-#~ msgid "Date"
-#~ msgstr "Datum"
-
 #~ msgctxt "RhythmboxTrackModel#3"
 #~ msgid "Album"
 #~ msgstr "Album"
@@ -4137,23 +3706,8 @@ msgstr "Ukázat nebo skrýt sloupce."
 #~ msgid "Location"
 #~ msgstr "Umístění"
 
-#~ msgctxt "WBrowseTableView#1"
-#~ msgid "Load in Player 1"
-#~ msgstr "Vložit do Přehrávače 1"
-
 #~ msgid "OK"
 #~ msgstr "OK"
-
-#~ msgctxt "WBrowseTableView#2"
-#~ msgid "Load in Player 2"
-#~ msgstr "Vložit do Přehrávače 2"
-
-#~ msgid ""
-#~ "The only skin compatiable with this size display is OutlineMini (800x480).  "
-#~ "Would you like to use that skin?"
-#~ msgstr ""
-#~ "Pouze vzhled OutlineMini (800x480) je kompatibilní s velikostí displeje. "
-#~ "Chcete ho použít?"
 
 #~ msgctxt "Ui#10"
 #~ msgid "Preferences"

@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2011-05-03 21:42-0400\n"
-"PO-Revision-Date: 2011-06-28 17:20+0000\n"
-"Last-Translator: Oleksiy  Zaytsev <Unknown>\n"
+"PO-Revision-Date: 2011-10-07 14:27+0000\n"
+"Last-Translator: Pavel <kitchenknif@Gmail.com>\n"
 "Language-Team: Russian <ru@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-06-29 04:40+0000\n"
-"X-Generator: Launchpad (build 13168)\n"
+"X-Launchpad-Export-Date: 2011-10-08 05:14+0000\n"
+"X-Generator: Launchpad (build 14110)\n"
 
 #: AutoDJFeature#1
 msgid "Auto DJ"
@@ -3553,94 +3553,13 @@ msgstr "Показать или скрыть столбцы."
 #~ msgid "Crate Creation Failed"
 #~ msgstr "Ошибка создания списка"
 
-#~ msgctxt "CrateTableModel#6"
-#~ msgid "Year"
-#~ msgstr "Год"
-
-#~ msgctxt "CrateTableModel#7"
-#~ msgid "Type"
-#~ msgstr "Тип"
-
-#~ msgctxt "CrateTableModel#8"
-#~ msgid "Location"
-#~ msgstr "Расположение"
-
-#~ msgctxt "CrateTableModel#5"
-#~ msgid "Genre"
-#~ msgstr "Жанр"
-
-#~ msgctxt "CrateTableModel#4"
-#~ msgid "Album"
-#~ msgstr "Альбом"
-
-#~ msgctxt "CrateTableModel#3"
-#~ msgid "Title"
-#~ msgstr "Название"
-
-#~ msgctxt "CrateTableModel#2"
-#~ msgid "Artist"
-#~ msgstr "Исполнитель"
-
-#~ msgctxt "CrateTableModel#9"
-#~ msgid "Comment"
-#~ msgstr "Описание"
-
-#~ msgctxt "CrateTableModel#10"
-#~ msgid "Duration"
-#~ msgstr "Длительность"
-
-#~ msgctxt "CrateTableModel#11"
-#~ msgid "Track #"
-#~ msgstr "Дорожка №"
-
-#~ msgctxt "CrateTableModel#12"
-#~ msgid "Bitrate"
-#~ msgstr "Битрейт"
-
-#~ msgctxt "CrateTableModel#13"
-#~ msgid "BPM"
-#~ msgstr "Уд./мин."
-
-#~ msgctxt "CrateTableModel#14"
-#~ msgid "Date Added"
-#~ msgstr "Дата добавления"
-
-#~ msgid "Analyze Entire Song"
-#~ msgstr "Анализировать всю композицию"
-
-#~ msgid "BPM Detection Settings"
-#~ msgstr "Настройки определения уд./мин."
-
-#~ msgid "Edit"
-#~ msgstr "Изменить"
-
 #~ msgctxt "DlgPrefControls#4"
 #~ msgid "Information"
 #~ msgstr "Сведения"
 
-#~ msgctxt "DlgPrefPlaylistDlg#6"
-#~ msgid "Library"
-#~ msgstr "Библиотека"
-
-#~ msgctxt "DlgPrefPlaylistDlg#4"
-#~ msgid "Browse..."
-#~ msgstr "Обзор..."
-
 #~ msgctxt "DlgPrefRecord#1"
 #~ msgid "Save Recording As..."
 #~ msgstr "Сохранить запись как..."
-
-#~ msgid "Quality: "
-#~ msgstr "Качество: "
-
-#~ msgid "MP3, Ogg Vorbis, FLAC, Wave, Aiff Playback:"
-#~ msgstr "Воспроизведение MP3, Ogg Vorbis, FLAC, Wave, Aiff:"
-
-#~ msgid "Extra Playback Plugins:"
-#~ msgstr "Дополнительные надстройки воспроизведения:"
-
-#~ msgid "Audio Playback Plugins"
-#~ msgstr "Надстройки воспроизведения звука"
 
 #~ msgctxt "DlgPrefRecordDlg#9"
 #~ msgid "Title"
@@ -3649,14 +3568,6 @@ msgstr "Показать или скрыть столбцы."
 #~ msgctxt "DlgPrefRecordDlg#4"
 #~ msgid "Encoding"
 #~ msgstr "Кодирование"
-
-#~ msgctxt "DlgPrefRecordDlg#6"
-#~ msgid "High"
-#~ msgstr "Высокое"
-
-#~ msgctxt "DlgPrefRecordDlg#7"
-#~ msgid "Low"
-#~ msgstr "Низкое"
 
 #~ msgctxt "DlgPrefRecordDlg#3"
 #~ msgid "Browse..."
@@ -3690,126 +3601,6 @@ msgstr "Показать или скрыть столбцы."
 #~ "right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-"
 #~ "family:'DejaVu Sans'; font-size:9pt; font-style:italic;\">Этот вэб поток "
 #~ "используется для проверки!</span></p></body></html>"
-
-#~ msgctxt "DlgPrefSound#7"
-#~ msgid "You cannot send multiple outputs to a single channel"
-#~ msgstr "Вы не можете отправить несколько выводов в одиночный канал"
-
-#~ msgid ""
-#~ "FinalScratch records currently only work properly with a 44100 Hz "
-#~ "samplerate.\n"
-#~ "The samplerate has been reset to 44100 Hz."
-#~ msgstr ""
-#~ "FinalScratch работают правильно, только с частотой дискретизации 44100 Гц.\n"
-#~ "Частота дискретизации была установлена на отметке 44100 Гц."
-
-#~ msgctxt "DlgPrefSound#6"
-#~ msgid "Configuration error"
-#~ msgstr "Ошибка конфигурации"
-
-#~ msgid "Configuration problem"
-#~ msgstr "Проблема конфигурации"
-
-#~ msgctxt "DlgPrefSound#8"
-#~ msgid "You cannot use a single pair of channels for both decks"
-#~ msgstr "Вы не можете использовать одну пару каналов на обе деки"
-
-#~ msgid "Audio Output"
-#~ msgstr "Аудиовыход"
-
-#~ msgid "Mixxx - Master and Headphones sharing the same channels"
-#~ msgstr "Mixxx - Основной и Наушники используют одинаковые каналы"
-
-#~ msgctxt "DlgPrefSound#9"
-#~ msgid "Audio device could not be opened"
-#~ msgstr "Невозможно открыть звуковое устройство"
-
-#~ msgid ""
-#~ "Having the Headphone share the same sound card output channels as Master\n"
-#~ "will result in Mixxx playing back at full volume irespective of the volume\n"
-#~ "controls (this is because Headphone channels do not repect Master volume).\n"
-#~ "\n"
-#~ "This configuration is NOT recommended because of that.\n"
-#~ "\n"
-#~ "If your sound card has only two channels set the 'Headphones' channel to "
-#~ "'None'."
-#~ msgstr ""
-#~ "При использовании одинаковых каналов наушниками и основным, приведёт к "
-#~ "воспроизведению в Mixxx на максимальной громкости, вне зависимости от "
-#~ "регулятора громкости (это происходит из-за не состыковки каналов наушников с "
-#~ "основной громкостью).\n"
-#~ "\n"
-#~ "Данная конфигурация НЕ реомендуется к использованию.\n"
-#~ "\n"
-#~ "Если ваша звуковая карта имеет только два канала, установите значение "
-#~ "'Наушники' на 'Отсутствуют'."
-
-#~ msgid "Sound API could not be initialized"
-#~ msgstr "Невозможно инициализировать звуковой API"
-
-#~ msgctxt "DlgPrefSoundDlg#13"
-#~ msgid "Low"
-#~ msgstr "Низкое"
-
-#~ msgid "Sample rate (Hz)"
-#~ msgstr "Частота дискретизации (Гц)"
-
-#~ msgid "Vinyl emulation"
-#~ msgstr "Эмуляция винила"
-
-#~ msgid "Pitch behaviour"
-#~ msgstr "Поведение высоты звука"
-
-#~ msgctxt "DlgPrefSoundDlg#14"
-#~ msgid "High"
-#~ msgstr "Высокое"
-
-#~ msgid "256 ms"
-#~ msgstr "256 мс"
-
-#~ msgid "Fast CPU"
-#~ msgstr "Быстрый процессор"
-
-#~ msgctxt "DlgPrefVinyl#1"
-#~ msgid "None"
-#~ msgstr "Нет"
-
-#~ msgid ""
-#~ "Tips:<ul><li>Increase your latency if you hear pops during "
-#~ "playback</li><li>Reduce your latency to improve Mixxx's "
-#~ "responsiveness</li></ul>"
-#~ msgstr ""
-#~ "Совет:<ul><li>Увеличьте время задержки, если слышите искажения во время "
-#~ "воспроизведения</li><li>Уменьшение времени задержки увеличивает отзывчивость "
-#~ "Mixxx</li></ul>"
-
-#~ msgctxt "DlgPrefVinyl#4"
-#~ msgid "You cannot use a single pair of channels for both decks"
-#~ msgstr "Вы не можете использовать одну пару каналов на обе деки"
-
-#~ msgctxt "DlgPrefVinyl#3"
-#~ msgid "You cannot send multiple outputs to a single channel"
-#~ msgstr "Вы не можете отправить несколько выводов в одиночный канал"
-
-#~ msgctxt "DlgPrefVinyl#2"
-#~ msgid "Configuration error"
-#~ msgstr "Ошибка конфигурации"
-
-#~ msgctxt "DlgPrefVinyl#5"
-#~ msgid "Audio device could not be opened"
-#~ msgstr "Невозможно открыть звуковое устройство"
-
-#~ msgid "Slow CPU"
-#~ msgstr "Медленный процессор"
-
-#~ msgid "Input"
-#~ msgstr "Вход"
-
-#~ msgid "Deck 1"
-#~ msgstr "Дека 1"
-
-#~ msgid "Deck 2"
-#~ msgstr "Дека 2"
 
 #~ msgid ""
 #~ "<a "
@@ -3853,213 +3644,15 @@ msgstr "Показать или скрыть столбцы."
 #~ msgid "Enable Needle Skip Prevention"
 #~ msgstr "Использовать защиту от пропусков иглы"
 
-#~ msgid "Crossfader"
-#~ msgstr "Кроссфейдер"
-
-#~ msgid "Vinyl Control"
-#~ msgstr "Управление винилом"
-
-#~ msgid "Track Editor"
-#~ msgstr "Редактор дорожек"
-
-#~ msgid "Filename:"
-#~ msgstr "Имя файла:"
-
-#~ msgid "Artist:"
-#~ msgstr "Исполнитель:"
-
-#~ msgid "Title:"
-#~ msgstr "Название:"
-
-#~ msgid "Song:"
-#~ msgstr "Композиция:"
-
-#~ msgid "Track Information (Click to Expand)"
-#~ msgstr "Сведения о дорожке (Щелкните для получения дополнительных сведений)"
-
-#~ msgid "Comments:"
-#~ msgstr "Описание:"
-
-#~ msgid "File Type:"
-#~ msgstr "Тип файла:"
-
-#~ msgid "Mixxx could not connect to the server"
-#~ msgstr "Mixxx не может подключиться к серверу"
-
-#~ msgid "Shoutcast aborted connect after 3 tries"
-#~ msgstr "Shoutcast прервал соединение после 3 попыток"
-
 #~ msgid "Would you like to load your iTunes library?"
 #~ msgstr "Вы действительно хотите загрузить вашу библиотеку из iTunes?"
 
 #~ msgid "Load iTunes Library?"
 #~ msgstr "Загрузить библиотеку iTunes?"
 
-#~ msgctxt "ITunesPlaylistModel#1"
-#~ msgid "Artist"
-#~ msgstr "Исполнитель"
-
-#~ msgctxt "ITunesPlaylistModel#4"
-#~ msgid "Date"
-#~ msgstr "Дата"
-
-#~ msgctxt "ITunesPlaylistModel#5"
-#~ msgid "BPM"
-#~ msgstr "Уд./мин."
-
-#~ msgctxt "ITunesPlaylistModel#2"
-#~ msgid "Title"
-#~ msgstr "Название"
-
-#~ msgctxt "ITunesPlaylistModel#3"
-#~ msgid "Album"
-#~ msgstr "Альбом"
-
-#~ msgctxt "ITunesPlaylistModel#8"
-#~ msgid "Duration"
-#~ msgstr "Длительность"
-
-#~ msgctxt "ITunesPlaylistModel#9"
-#~ msgid "Unknown"
-#~ msgstr "Неизвестно"
-
-#~ msgctxt "ITunesPlaylistModel#6"
-#~ msgid "Genre"
-#~ msgstr "Жанр"
-
-#~ msgctxt "ITunesPlaylistModel#7"
-#~ msgid "Location"
-#~ msgstr "Расположение"
-
-#~ msgctxt "LibraryTableModel#9"
-#~ msgid "Duration"
-#~ msgstr "Длительность"
-
-#~ msgctxt "LibraryTableModel#8"
-#~ msgid "Comment"
-#~ msgstr "Описание"
-
-#~ msgctxt "LibraryTableModel#1"
-#~ msgid "Artist"
-#~ msgstr "Исполнитель"
-
-#~ msgctxt "LibraryTableModel#3"
-#~ msgid "Album"
-#~ msgstr "Альбом"
-
-#~ msgctxt "LibraryTableModel#2"
-#~ msgid "Title"
-#~ msgstr "Название"
-
-#~ msgctxt "LibraryTableModel#5"
-#~ msgid "Year"
-#~ msgstr "Год"
-
-#~ msgctxt "LibraryTableModel#4"
-#~ msgid "Genre"
-#~ msgstr "Жанр"
-
-#~ msgctxt "LibraryTableModel#7"
-#~ msgid "Location"
-#~ msgstr "Расположение"
-
-#~ msgctxt "LibraryTableModel#6"
-#~ msgid "Type"
-#~ msgstr "Тип"
-
-#~ msgctxt "LibraryTableModel#11"
-#~ msgid "BPM"
-#~ msgstr "Уд./мин."
-
-#~ msgctxt "LibraryTableModel#10"
-#~ msgid "Bitrate"
-#~ msgstr "Битрейт"
-
-#~ msgctxt "LibraryTableModel#13"
-#~ msgid "Date Added"
-#~ msgstr "Дата добавления"
-
-#~ msgctxt "LibraryTableModel#12"
-#~ msgid "Track #"
-#~ msgstr "Дорожка #"
-
-#~ msgctxt "MissingTableModel#3"
-#~ msgid "Title"
-#~ msgstr "Название"
-
-#~ msgctxt "MissingTableModel#2"
-#~ msgid "Artist"
-#~ msgstr "Исполнитель"
-
-#~ msgctxt "MissingTableModel#1"
-#~ msgid "Location"
-#~ msgstr "Расположение"
-
 #~ msgctxt "MidiStatusDelegate#1"
 #~ msgid "Unknown"
 #~ msgstr "Неизвестно"
-
-#~ msgctxt "MissingTableModel#5"
-#~ msgid "Genre"
-#~ msgstr "Жанр"
-
-#~ msgctxt "MissingTableModel#4"
-#~ msgid "Album"
-#~ msgstr "Альбом"
-
-#~ msgctxt "MissingTableModel#6"
-#~ msgid "Year"
-#~ msgstr "Год"
-
-#~ msgctxt "MissingTableModel#7"
-#~ msgid "Type"
-#~ msgstr "Тип"
-
-#~ msgctxt "MissingTableModel#8"
-#~ msgid "Comment"
-#~ msgstr "Описание"
-
-#~ msgctxt "MissingTableModel#9"
-#~ msgid "Duration"
-#~ msgstr "Длительность"
-
-#~ msgctxt "MissingTableModel#10"
-#~ msgid "Track #"
-#~ msgstr "Дорожка #"
-
-#~ msgctxt "MissingTableModel#11"
-#~ msgid "Bitrate"
-#~ msgstr "Битрейт"
-
-#~ msgctxt "MissingTableModel#12"
-#~ msgid "BPM"
-#~ msgstr "Уд./мин."
-
-#~ msgctxt "MissingTableModel#13"
-#~ msgid "Date Added"
-#~ msgstr "Дата добавления"
-
-#~ msgid "<b>Exit</b> without saving your settings."
-#~ msgstr "<b>Выйти</b> без сохранения ваших настроек."
-
-#~ msgid "<html>Mixxx cannot access the sound device <b>"
-#~ msgstr "<html>Mixxx не может получить доступ к звуковому устройству <b>"
-
-#~ msgid "Another application is using the sound device or it is "
-#~ msgstr "Другое приложение использует звуковое устройство или оно "
-
-#~ msgid "not plugged in."
-#~ msgstr "не подключено."
-
-#~ msgid "<b>Retry</b> after closing the other application "
-#~ msgstr "<b>Повторить</b> после закрытия другой программы "
-
-#~ msgid "or reconnecting the sound device"
-#~ msgstr "или переподключения звукового устройства"
-
-#~ msgid "<b>Reconfigure</b> Mixxx to use another sound device."
-#~ msgstr ""
-#~ "<b>Настроить</b> Mixxx для использования с другим звуковым устройством."
 
 #~ msgid "Enable &Vinyl Control"
 #~ msgstr "Использовать управление &винилом"
@@ -4085,56 +3678,9 @@ msgstr "Показать или скрыть столбцы."
 #~ msgid "Mixxx Recording"
 #~ msgstr "Mixxx запись"
 
-#~ msgid ""
-#~ "No input device(s) select.\n"
-#~ "Please select your soundcard(s) in vinyl control preferences."
-#~ msgstr ""
-#~ "Необходимо выбрать устройство(а) ввода.\n"
-#~ "Пожалуйста, выберите вашу звуковую карту(ы) в параметрах управления винилом."
-
 #~ msgctxt "PlaylistFeature#2"
 #~ msgid "Remove"
 #~ msgstr "Удалить"
-
-#~ msgctxt "PlaylistTableModel#2"
-#~ msgid "Artist"
-#~ msgstr "Исполнитель"
-
-#~ msgctxt "PlaylistTableModel#11"
-#~ msgid "Track #"
-#~ msgstr "Дорожка #"
-
-#~ msgctxt "PlaylistTableModel#12"
-#~ msgid "Bitrate"
-#~ msgstr "Битрейт"
-
-#~ msgctxt "PlaylistTableModel#5"
-#~ msgid "Genre"
-#~ msgstr "Жанр"
-
-#~ msgctxt "PlaylistTableModel#4"
-#~ msgid "Album"
-#~ msgstr "Альбом"
-
-#~ msgctxt "PlaylistTableModel#6"
-#~ msgid "Year"
-#~ msgstr "Год"
-
-#~ msgctxt "PlaylistTableModel#8"
-#~ msgid "Location"
-#~ msgstr "Расположение"
-
-#~ msgctxt "PlaylistTableModel#7"
-#~ msgid "Type"
-#~ msgstr "Тип"
-
-#~ msgctxt "PlaylistTableModel#10"
-#~ msgid "Duration"
-#~ msgstr "Длительность"
-
-#~ msgctxt "PlaylistTableModel#9"
-#~ msgid "Comment"
-#~ msgstr "Описание"
 
 #~ msgctxt "RhythmboxPlaylistModel#1"
 #~ msgid "Artist"
@@ -4143,14 +3689,6 @@ msgstr "Показать или скрыть столбцы."
 #~ msgctxt "RhythmboxPlaylistModel#2"
 #~ msgid "Title"
 #~ msgstr "Название"
-
-#~ msgctxt "PlaylistTableModel#13"
-#~ msgid "Date Added"
-#~ msgstr "Дата добавления"
-
-#~ msgctxt "PlaylistTableModel#14"
-#~ msgid "BPM"
-#~ msgstr "Уд./мин."
 
 #~ msgid "Load Rhythmbox Library?"
 #~ msgstr "Загрузить библиотеку Rhythmbox?"
@@ -4198,10 +3736,6 @@ msgstr "Показать или скрыть столбцы."
 #~ msgid "Genre"
 #~ msgstr "Жанр"
 
-#~ msgctxt "RhythmboxTrackModel#4"
-#~ msgid "Date"
-#~ msgstr "Дата"
-
 #~ msgctxt "RhythmboxTrackModel#3"
 #~ msgid "Album"
 #~ msgstr "Альбом"
@@ -4210,61 +3744,12 @@ msgstr "Показать или скрыть столбцы."
 #~ msgid "Duration"
 #~ msgstr "Длительность"
 
-#~ msgctxt "WBrowseTableView#1"
-#~ msgid "Load in Player 1"
-#~ msgstr "Загрузить в проигрыватель 1"
-
-#~ msgctxt "WBrowseTableView#2"
-#~ msgid "Load in Player 2"
-#~ msgstr "Загрузить в проигрыватель 2"
-
-#~ msgid ""
-#~ "The only skin compatiable with this size display is OutlineMini (800x480).  "
-#~ "Would you like to use that skin?"
-#~ msgstr ""
-#~ "Единственная обложка такого формата OutlineMini (800x480).  Вы действительно "
-#~ "хотите использовать эту обложку?"
-
 #~ msgctxt "Ui#10"
 #~ msgid "Preferences"
 #~ msgstr "Параметры"
 
-#~ msgid "ID"
-#~ msgstr "Идентификационный номер"
-
-#~ msgid "http://mixxx.sf.net"
-#~ msgstr "http://mixxx.sf.net"
-
-#~ msgid "JACK"
-#~ msgstr "JACK"
-
-#~ msgctxt "DlgPrefSound#4"
-#~ msgid "Mixxx"
-#~ msgstr "Mixxx"
-
-#~ msgid "3:00"
-#~ msgstr "3:00"
-
 #~ msgid "http://www.xwax.co.uk"
 #~ msgstr "http://www.xwax.co.uk"
-
-#~ msgid "77"
-#~ msgstr "77"
-
-#~ msgctxt "MixxxApp#2"
-#~ msgid "Mixxx"
-#~ msgstr "Mixxx"
-
-#~ msgid "Mixxx Library"
-#~ msgstr "Библиотека Mixxx"
-
-#~ msgctxt "CrateFeature#7"
-#~ msgid "Unlock"
-#~ msgstr "Разблокировать"
-
-#~ msgctxt "CrateFeature#13"
-#~ msgid "Playlist Files (*.m3u *.pls)"
-#~ msgstr "Списки воспроизведения (*.m3u *.pls)"
 
 #~ msgid "Miscellaneous"
 #~ msgstr "Разные"
@@ -4280,12 +3765,6 @@ msgstr "Показать или скрыть столбцы."
 #~ msgctxt "DlgPrefRecordDlg#2"
 #~ msgid "File"
 #~ msgstr "Файл"
-
-#~ msgid "Cue File"
-#~ msgstr "Cue-файл"
-
-#~ msgid "Save Cue File As..."
-#~ msgstr "Сохранить файл метаданных Cue как..."
 
 #~ msgid "Mixxx Error"
 #~ msgstr "Ошибка Mixxx"
@@ -4343,14 +3822,6 @@ msgstr "Показать или скрыть столбцы."
 #~ msgstr ""
 #~ "Устройства ввода не выбраны.\n"
 #~ "Пожалуйста, выберите вашу звуковую карту в параметрах звукового оборудования."
-
-#~ msgctxt "PlaylistFeature#8"
-#~ msgid "Unlock"
-#~ msgstr "Разблокировать"
-
-#~ msgctxt "PlaylistFeature#16"
-#~ msgid "Playlist Files (*.m3u *.pls)"
-#~ msgstr "Списки воспроизведения (*.m3u *.pls)"
 
 #~ msgctxt "ScriptStudio#2"
 #~ msgid "File"
