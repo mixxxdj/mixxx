@@ -486,13 +486,12 @@ void CachingReader::hintAndMaybeWake(QList<Hint>& hintList) {
                 hint.sample = 0;
             }
         }
-        //Q_ASSERT(hint.sample >= 0);
         Q_ASSERT(hint.length >= 0);
-        int start_sample = math_min(m_iTrackNumSamplesCallbackSafe,
-                                    hint.sample);
+        int start_sample = math_max(0, math_min(
+            m_iTrackNumSamplesCallbackSafe, hint.sample));
         int start_chunk = chunkForSample(start_sample);
-        int end_sample = math_min(m_iTrackNumSamplesCallbackSafe,
-                                  hint.sample + hint.length - 1);
+        int end_sample = math_max(0, math_min(
+            m_iTrackNumSamplesCallbackSafe, hint.sample + hint.length - 1));
         int end_chunk = chunkForSample(end_sample);
 
         for (int current = start_chunk; current <= end_chunk; ++current) {
