@@ -11,12 +11,13 @@ First off, to be clear **you don't have to be a programmer to contribute**.
 As a non-developer
 ==================
 
-* `Making skins <http://mixxx.org/wiki/doku.php/creating_skins>`_
-* `Making MIDI mappings <http://mixxx.org/wiki/doku.php/midi_controller_mapping_file_format>`_ for your controller
-* `Reporting bugs <http://bugs.launchpad.net/mixxx>`_
-* Updating our `Ẁiki <http://mixxx.org/wiki>`_ to make sure the information on it is up to date.
-* Translating Mixxx's built-in text using `Launchpad Translations <https://translations.launchpad.net/mixxx/trunk>`_
-* Answering questions on the `Troubleshooting Forum <http://mixxx.org/forums/viewforum.php?f=3>`_ and the `Launchpad Answers page <https://answers.launchpad.net/mixxx>`_
+* `Donate <http://mixxx.org/download.php>`_ to Mixxx using Paypal to help support and enhance development. 
+* `Make skins <http://mixxx.org/wiki/doku.php/creating_skins>`_
+* `Make MIDI mappings <http://mixxx.org/wiki/doku.php/midi_controller_mapping_file_format>`_ for your controller
+* `Report bugs <http://bugs.launchpad.net/mixxx>`_
+* Update our `Ẁiki <http://mixxx.org/wiki>`_ to make sure the information on it is up to date.
+* Translate Mixxx's built-in text using `Launchpad Translations <https://translations.launchpad.net/mixxx/trunk>`_
+* Answer questions on the `Troubleshooting Forum <http://mixxx.org/forums/viewforum.php?f=3>`_ and the `Launchpad Answers page <https://answers.launchpad.net/mixxx>`_
 * Help promote Mixxx: If you've got a blog, write an article about Mixxx. Blog about our new releases when they come out. Any exposure on the web and in
   print helps our project grow, and is much appreciated.
 * Send us some photos of you using Mixxx at a gig!
@@ -36,5 +37,5 @@ As a software developer
 #############
 * Pick a bug off of the `Easy Bug List <https://bugs.launchpad.net/mixxx/+bugs?field.tag=easy>`_
 * Talk to us on IRC for help on how to fix it.
-* Fix it! *Done!* Your name will now be on the `Mixxx contributor list <http://mixxx.org/contact.php>`_.
+* Fix it! *Done!* Your name will now be on the `Mixxx contributor list <https://launchpad.net/~mixxxcontributors/+join>`_.
 
