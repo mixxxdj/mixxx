@@ -457,7 +457,7 @@ void WTrackTableView::mouseMoveEvent(QMouseEvent* pEvent) {
 
     QDrag* drag = new QDrag(this);
     drag->setMimeData(mimeData);
-    drag->setPixmap(QPixmap(":images/library/drag-n-drop.png"));
+    drag->setPixmap(QPixmap(":images/library/ic_library_drag_and_drop.png"));
     drag->exec(Qt::CopyAction);
 }
 
