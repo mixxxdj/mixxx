@@ -186,6 +186,8 @@ public:
     bool getPlayed() const;
     /** Set Played status*/
     void setPlayed(bool);
+    /** To restore the played flag without increment the played counter  */
+    void restorePlayed(bool bPlayed);
 
     int getId() const;
 

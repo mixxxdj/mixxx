@@ -142,7 +142,7 @@ void SetlogFeature::bindWidget(WLibrarySidebar* sidebarWidget,
 	Q_UNUSED(sidebarWidget);
     WLibraryTextBrowser* edit = new WLibraryTextBrowser(libraryWidget);
     connect(this, SIGNAL(showPage(const QUrl&)),
-            edit, SLOT(setSourc e(const QUrl&)));
+            edit, SLOT(setSource(const QUrl&)));
 
     m_pCOPlayPos1 = new ControlObjectThreadMain(
                             ControlObject::getControl(ConfigKey("[Channel1]", "playposition")));
@@ -209,7 +209,10 @@ void SetlogFeature::onRightClickChild(const QPoint& globalPos, QModelIndex index
     	menu.addAction(m_pDeletePlaylistAction);
     	menu.addAction(m_pLockPlaylistAction);
     }
-   	menu.addAction(m_pJoinWithPreviousAction);
+    if (index.row() > 0) {
+    	// The very first setlog cannot be joint
+    	menu.addAction(m_pJoinWithPreviousAction);
+    }
     menu.addSeparator();
     menu.addAction(m_pExportPlaylistAction);
     menu.exec(globalPos);
@@ -294,7 +297,6 @@ void SetlogFeature::slotDeletePlaylist() {
         emit(featureUpdated());
         activate();
     }
-
 }
 
 bool SetlogFeature::dropAccept(QUrl url) {
@@ -324,7 +326,7 @@ TreeItemModel* SetlogFeature::getChildModel() {
     return &m_childModel;
 }
 
-/**
+/**lock
   * Purpose: When inserting or removing playlists,
   * we require the sidebar model not to reset.
   * This method queries the database and does dynamic insertion
@@ -344,7 +346,6 @@ QModelIndex SetlogFeature::constructChildModel(int selected_id)
         QString playlist_name = m_playlistTableModel.data(ind).toString();
         ind = m_playlistTableModel.index(row, idColumn);
         int playlist_id = m_playlistTableModel.data(ind).toInt();
-        bool locked = m_playlistDao.isPlaylistLocked(playlist_id);
 
         if ( selected_id == playlist_id) {
         	// save index for selection
@@ -450,14 +451,47 @@ void SetlogFeature::slotJoinWithPrevious() {
     //qDebug() << "slotJoinWithPrevious() row:" << m_lastRightClickedIndex.data();
 
     if (m_lastRightClickedIndex.isValid()) {
-        int playlistId = m_playlistDao.getPlaylistIdFromName(
+        int currentPlaylistId = m_playlistDao.getPlaylistIdFromName(
             m_lastRightClickedIndex.data().toString());
-        if (playlistId >= 0) {
+
+        if (currentPlaylistId >= 0) {
+
+    	    bool locked = m_playlistDao.isPlaylistLocked(currentPlaylistId);
+
+    	    if (locked) {
+    	        qDebug() << "Skipping playlist deletion because playlist" << currentPlaylistId << "is locked.";
+    	        return;
+    	    }
+
         	// Add every track from right klicked playlist to that with the next smaller ID
-        	// TODO:
+        	int previousPlaylistId = m_playlistDao.getPreviousPlaylist(currentPlaylistId, PlaylistDAO::PLHT_SET_LOG);
+        	if (previousPlaylistId >= 0) {
 
+        	    m_pPlaylistTableModel->setPlaylist(previousPlaylistId);
 
+        		if (currentPlaylistId == m_playlistId) {
+        			// mark all the Tracks in the previous Playlist as played
 
+            	    m_pPlaylistTableModel->select();
+        	        int rows = m_pPlaylistTableModel->rowCount();
+        	        for(int i = 0; i < rows; ++i){
+        	            QModelIndex index = m_pPlaylistTableModel->index(i,0);
+        	            if (index.isValid()) {
+        	            	TrackPointer track = m_pPlaylistTableModel->getTrack(index);
+        	            	track->restorePlayed(true);
+        	            }
+        	        }
+
+        			// Change current setlog
+        			m_playlistId = previousPlaylistId;
+        		}
+        		qDebug() << "slotJoinWithPrevious() current:" << currentPlaylistId << " previous:" << previousPlaylistId;
+        		m_playlistDao.copyPlaylistTracks(currentPlaylistId, previousPlaylistId);
+        		m_playlistDao.deletePlaylist(currentPlaylistId);
+        		slotPlaylistTableChanged(previousPlaylistId); // For moving selection
+        	    emit(showTrackModel(m_pPlaylistTableModel));
+        		emit(featureUpdated());
+        	}
         }
     }
 }
