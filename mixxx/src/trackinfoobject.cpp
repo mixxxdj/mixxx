@@ -556,13 +556,22 @@ void TrackInfoObject::setPlayed(bool bPlayed)
     QMutexLocker lock(&m_qMutex);
     if (bPlayed) {
         ++m_iTimesPlayed;
-	setDirty(true);
+	    setDirty(true);
     }
     else if (m_bPlayed && !bPlayed) {
         --m_iTimesPlayed;
-	setDirty(true);
+	    setDirty(true);
     }
     m_bPlayed = bPlayed;
+}
+
+void TrackInfoObject::restorePlayed(bool bPlayed)
+{
+    QMutexLocker lock(&m_qMutex);
+    if (bPlayed != m_bPlayed) {
+    	m_bPlayed = bPlayed;
+        setDirty(true);
+    }
 }
 
 QString TrackInfoObject::getComment() const

@@ -55,6 +55,10 @@ class PlaylistDAO : public QObject, public virtual DAO {
     void insertTrackIntoPlaylist(int trackId, int playlistId, int position);
     /** Add a playlist to the Auto-DJ Queue */
     void addToAutoDJQueue(int playlistId, bool bTop);
+    // Get a playlist from the same hidden type that was created just before
+    int getPreviousPlaylist(int currentPlaylistId, enum hidden_type hidden);
+    // Copy tracks from source to target playlist
+    void copyPlaylistTracks( int sourcePlaylistID, int targetPlaylistId);
   signals:
     void added(int playlistId);
     void deleted(int playlistId);

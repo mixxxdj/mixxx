@@ -447,3 +447,90 @@ void PlaylistDAO::addToAutoDJQueue(int playlistId, bool bTop) {
     	}
     }
 }
+
+int PlaylistDAO::getPreviousPlaylist(int currentPlaylistId, enum hidden_type hidden) {
+    //Start the transaction
+    m_database.transaction();
+
+    //Find out the highest position existing in the playlist so we know what
+    //position this track should have.
+    QSqlQuery query(m_database);
+    query.prepare("SELECT max(id) as id FROM Playlists "
+                  "WHERE id < :id AND hidden = :hidden");
+    query.bindValue(":id", currentPlaylistId);
+    query.bindValue(":hidden", hidden);
+    query.exec();
+
+    //Print out any SQL error, if there was one.
+    if (query.lastError().isValid()) {
+     	qDebug() << "appendTrackToPlaylist" << query.lastError();
+      // m_database.rollback();
+      // return;
+    }
+
+    // Get the position of the highest playlist...
+    int previousPlaylistId = -1;
+    if (query.next()) {
+    	previousPlaylistId = query.value(query.record().indexOf("id")).toInt();
+    }
+    return previousPlaylistId;
+}
+
+
+void PlaylistDAO::copyPlaylistTracks(int sourcePlaylistID, int targetPlaylistId) {
+
+    //Start the transaction
+    m_database.transaction();
+
+    //Find out the highest position existing in the target playlist so we know what
+    //position this track should have.
+    QSqlQuery query(m_database);
+    query.prepare("SELECT max(position) as position FROM PlaylistTracks "
+                  "WHERE playlist_id = :id");
+    query.bindValue(":id", targetPlaylistId);
+    query.exec();
+
+    //Print out any SQL error, if there was one.
+    if (query.lastError().isValid()) {
+     	qDebug() << "appendTrackToPlaylist" << query.lastError();
+      // m_database.rollback();
+      // return;
+    }
+
+    // Get the position of the highest playlist...
+    int position = 0;
+    if (query.next()) {
+        position = query.value(query.record().indexOf("position")).toInt();
+    }
+
+
+    // Query Tracks from the source Playlist
+    query.prepare("SELECT track_id FROM PlaylistTracks "
+                  "WHERE playlist_id = :plid");
+    query.bindValue(":plid", sourcePlaylistID);
+    query.exec();
+
+    //Print out any SQL error, if there was one.
+    if (query.lastError().isValid()) {
+       qDebug() << "addToAutoDJQueue" << query.lastError();
+       return;
+    }
+
+
+    QSqlQuery query2(m_database);
+    //Insert the Tracks into the PlaylistTracks table
+    query2.prepare("INSERT INTO PlaylistTracks (playlist_id, track_id, position)"
+                  "VALUES (:playlist_id, :track_id, :position)");
+    query2.bindValue(":playlist_id", targetPlaylistId);
+
+    while (query.next()) {
+        query2.bindValue(":track_id", query.value(0));
+        query2.bindValue(":position", ++position);
+        query2.exec();
+    }
+
+    //Start the transaction
+    m_database.commit();
+    emit(changed(targetPlaylistId));
+}
+
