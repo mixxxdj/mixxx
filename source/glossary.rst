@@ -23,6 +23,18 @@ Glossary of Terms
      ``PFL`` or "pre-fader listen" is a fancy word for whether or not you are
      "pre-listening" to a deck in your headphones. See also: :term:`headphone button`.
 
+   waveform summary
+     The waveform summary shows the waveform envelope of the song near the current playback postition.
+
+   waveform overview
+     The waveform overview shows the waveform envelope of the entire song, and is 
+     useful because they allow DJs to see breakdowns far in advance.
+
+   key lock
+     With key lock enabled, the tempo of the track will change but the pitch remains consistent.
+     When unlocked, the pitch slider will speed up (or slow down) the track and
+     the pitch will increase (or decrease) along with it. 
+
    headphone button
      The headphone button is used to indicate whether or not you are
      pre-listening to a deck or sampler in your headphones.

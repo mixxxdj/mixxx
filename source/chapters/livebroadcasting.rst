@@ -75,10 +75,10 @@ ____
 
 To activate MP3 streaming on Mac OSX, the following steps are necessary:
 
-1. Download LAME 3.98.4 Intel (OS X 10.5+ 32-bit & 64-bit) or LAME 3.98.4 PowerPC (OS X 10.5 32-bit)
+1. Download `LAME 3.98.4 <http://www.mediafire.com/?7v9s8g0ip93s9dd>`_ Intel (OS X 10.5+ 32-bit & 64-bit) or `LAME 3.98.4 <http://www.mediafire.com/?6ifaj2b7cwpf3ag>`_ PowerPC (OS X 10.5 32-bit)
 2. Unpack & install the archive
 
-Another easy way to achieve MP3 streaming is to use MacPorts which is a repository manager 
+Another easy way to achieve MP3 streaming is to use `MacPorts <http://www.macports.org/>`_ which is a repository manager 
 (like apt on Ubuntu) for Open Source software. Having installed this piece of software, 
 installing MP3 support is rather simple. ::
 
