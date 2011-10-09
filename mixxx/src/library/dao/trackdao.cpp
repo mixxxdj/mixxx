@@ -561,7 +561,7 @@ TrackPointer TrackDAO::getTrackFromDB(QSqlQuery &query) const {
         LOG_FAILED_QUERY(query);
     }
 
-    //int locationId = -1;
+    int locationId = -1;
     while (query.next()) {
         // Good god! Assign query.record() to a freaking variable!
         int trackId = query.value(query.record().indexOf("id")).toInt();
@@ -591,32 +591,34 @@ TrackPointer TrackDAO::getTrackFromDB(QSqlQuery &query) const {
         QString location = query.value(query.record().indexOf("location")).toString();
         bool header_parsed = query.value(query.record().indexOf("header_parsed")).toBool();
         QDateTime date_created = query.value(query.record().indexOf("datetime_added")).toDateTime();
+        
+        TrackInfoObject* track = new TrackInfoObject(location, false);
+        TrackPointer pTrack = TrackPointer(track, &TrackDAO::deleteTrack);
 
-        TrackPointer pTrack = TrackPointer(new TrackInfoObject(location, false), &TrackDAO::deleteTrack);
 
         // TIO already stats the file to see if it exists, what its length is,
         // etc. So don't bother setting it.
         //track->setLength(filesize);
 
-        pTrack->setId(trackId);
-        pTrack->setArtist(artist);
-        pTrack->setTitle(title);
-        pTrack->setAlbum(album);
-        pTrack->setYear(year);
-        pTrack->setGenre(genre);
-        pTrack->setTrackNumber(tracknumber);
-        pTrack->setRating(rating);
-        pTrack->setKey(key);
+        track->setId(trackId);
+        track->setArtist(artist);
+        track->setTitle(title);
+        track->setAlbum(album);
+        track->setYear(year);
+        track->setGenre(genre);
+        track->setTrackNumber(tracknumber);
+        track->setRating(rating);
+        track->setKey(key);
 
-        pTrack->setComment(comment);
-        pTrack->setURL(url);
-        pTrack->setDuration(duration);
-        pTrack->setBitrate(bitrate);
-        pTrack->setSampleRate(samplerate);
-        pTrack->setCuePoint((float)cuepoint);
-        pTrack->setBpm(bpm.toFloat());
-        pTrack->setReplayGain(replaygain.toFloat());
-        pTrack->setWaveSummary(wavesummaryhex, false);
+        track->setComment(comment);
+        track->setURL(url);
+        track->setDuration(duration);
+        track->setBitrate(bitrate);
+        track->setSampleRate(samplerate);
+        track->setCuePoint((float)cuepoint);
+        track->setBpm(bpm.toFloat());
+        track->setReplayGain(replaygain.toFloat());
+        track->setWaveSummary(wavesummaryhex, false);
         delete wavesummaryhex;
 
         QString beatsVersion = query.value(query.record().indexOf("beats_version")).toString();
@@ -626,30 +628,40 @@ TrackPointer TrackDAO::getTrackFromDB(QSqlQuery &query) const {
             pTrack->setBeats(pBeats);
         }
 
-        pTrack->setTimesPlayed(timesplayed);
-        pTrack->setPlayed(played);
-        pTrack->setChannels(channels);
-        pTrack->setType(filetype);
-        pTrack->setLocation(location);
-        pTrack->setHeaderParsed(header_parsed);
-        pTrack->setDateAdded(date_created);
+        track->setTimesPlayed(timesplayed);
+        track->setPlayed(played);
+        track->setChannels(channels);
+        track->setType(filetype);
+        track->setLocation(location);
+        track->setHeaderParsed(header_parsed);
+        track->setDateAdded(date_created);
 
-        pTrack->setCuePoints(m_cueDao.getCuesForTrack(trackId));
-        pTrack->setDirty(false);
+        track->setCuePoints(m_cueDao.getCuesForTrack(trackId));
+        track->setDirty(false);
 
         // Listen to dirty and changed signals
-        connect(pTrack.data(), SIGNAL(dirty(TrackInfoObject*)),
+        connect(track, SIGNAL(dirty(TrackInfoObject*)),
                 this, SLOT(slotTrackDirty(TrackInfoObject*)),
                 Qt::DirectConnection);
-        connect(pTrack.data(), SIGNAL(clean(TrackInfoObject*)),
+        connect(track, SIGNAL(clean(TrackInfoObject*)),
                 this, SLOT(slotTrackClean(TrackInfoObject*)),
                 Qt::DirectConnection);
-        connect(pTrack.data(), SIGNAL(changed(TrackInfoObject*)),
+        connect(track, SIGNAL(changed(TrackInfoObject*)),
                 this, SLOT(slotTrackChanged(TrackInfoObject*)),
                 Qt::DirectConnection);
-        connect(pTrack.data(), SIGNAL(save(TrackInfoObject*)),
+        connect(track, SIGNAL(save(TrackInfoObject*)),
                 this, SLOT(slotTrackSave(TrackInfoObject*)),
                 Qt::DirectConnection);
+
+        /*This should prevent the crash I had, I hope.  There is, however,
+        //no good reason why this should occur. --Owen
+        
+        //bzzt.  way to misunderstand how qhash works.  
+        if (!m_tracks.contains(trackId)) {
+            qDebug() << "Search Error: m_tracks does not contain this trackid:"
+                 << artist << title;
+            return TrackPointer();
+        }*/
 
         // Automatic conversion to a weak pointer
         m_tracks[trackId] = pTrack;
@@ -808,7 +820,6 @@ void TrackDAO::updateTrack(TrackInfoObject* pTrack) {
     query.bindValue(":beats", pBeatsBlob ? *pBeatsBlob : QVariant(QVariant::ByteArray));
     query.bindValue(":beats_version", beatsVersion);
     query.bindValue(":bpm", dBpm);
-    delete pBeatsBlob;
 
     if (!query.exec()) {
         LOG_FAILED_QUERY(query);
@@ -994,17 +1005,19 @@ void TrackDAO::clearCache() {
 }
 
 void TrackDAO::writeAudioMetaData(TrackInfoObject* pTrack){
-    AudioTagger tagger(pTrack->getLocation());
+    if (m_pConfig && m_pConfig->getValueString(ConfigKey("[Library]","WriteAudioTags")).toInt() == 1) {
+        AudioTagger tagger(pTrack->getLocation());
 
-    tagger.setArtist(pTrack->getArtist());
-    tagger.setTitle(pTrack->getTitle());
-    tagger.setGenre(pTrack->getGenre());
-    tagger.setAlbum(pTrack->getAlbum());
-    tagger.setComment(pTrack->getComment());
-    tagger.setTracknumber(pTrack->getTrackNumber());
-    tagger.setBpm(pTrack->getBpmStr());
+        tagger.setArtist(pTrack->getArtist());
+        tagger.setTitle(pTrack->getTitle());
+        tagger.setGenre(pTrack->getGenre());
+        tagger.setAlbum(pTrack->getAlbum());
+        tagger.setComment(pTrack->getComment());
+        tagger.setTracknumber(pTrack->getTrackNumber());
+        tagger.setBpm(pTrack->getBpmStr());
 
-    tagger.save();
+        tagger.save();
+    }
 }
 
 bool TrackDAO::isTrackFormatSupported(TrackInfoObject* pTrack) const {
