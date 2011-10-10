@@ -798,6 +798,7 @@ void MixxxApp::initActions()
     m_pHelpAboutApp = new QAction(tr("&About"), this);
     m_pHelpSupport = new QAction(tr("&Community Support"), this);
     m_pHelpFeedback = new QAction(tr("Send Us &Feedback"), this);
+    m_pHelpTranslation = new QAction(tr("&Translate this application"), this);
 
 #ifdef __VINYLCONTROL__
     m_pOptionsVinylControl = new QAction(tr("Enable &Vinyl Control 1"), this);
@@ -946,6 +947,10 @@ void MixxxApp::initActions()
     m_pHelpFeedback->setWhatsThis(tr("Support\n\nSend feedback to the Mixxx team."));
     connect(m_pHelpFeedback, SIGNAL(triggered()), this, SLOT(slotHelpFeedback()));
 
+    m_pHelpTranslation->setStatusTip(tr("Help translate this application into your language."));
+    m_pHelpTranslation->setWhatsThis(tr("Support\n\nHelp translate this application into your language."));
+    connect(m_pHelpTranslation, SIGNAL(triggered()), this, SLOT(slotHelpTranslation()));
+
     m_pHelpAboutApp->setStatusTip(tr("About the application"));
     m_pHelpAboutApp->setWhatsThis(tr("About\n\nAbout the application"));
     connect(m_pHelpAboutApp, SIGNAL(triggered()), this, SLOT(slotHelpAbout()));
@@ -1008,6 +1013,7 @@ void MixxxApp::initMenuBar()
     // menuBar entry helpMenu
     m_pHelpMenu->addAction(m_pHelpSupport);
     m_pHelpMenu->addAction(m_pHelpFeedback);
+    m_pHelpMenu->addAction(m_pHelpTranslation);
     m_pHelpMenu->addSeparator();
     m_pHelpMenu->addAction(m_pHelpAboutApp);
 
@@ -1367,8 +1373,7 @@ void MixxxApp::slotHelpAbout()
 
 }
 
-void MixxxApp::slotHelpSupport()
-{
+void MixxxApp::slotHelpSupport() {
     QUrl qSupportURL;
     qSupportURL.setUrl(MIXXX_SUPPORT_URL);
     QDesktopServices::openUrl(qSupportURL);
@@ -1378,6 +1383,12 @@ void MixxxApp::slotHelpFeedback() {
     QUrl qFeedbackUrl;
     qFeedbackUrl.setUrl(MIXXX_FEEDBACK_URL);
     QDesktopServices::openUrl(qFeedbackUrl);
+}
+
+void MixxxApp::slotHelpTranslation() {
+    QUrl qTranslationUrl;
+    qTranslationUrl.setUrl(MIXXX_TRANSLATION_URL);
+    QDesktopServices::openUrl(qTranslationUrl);
 }
 
 void MixxxApp::rebootMixxxView() {
