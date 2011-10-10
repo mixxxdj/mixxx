@@ -140,6 +140,9 @@
       <property name="text" >
        <string>BPM Scheme:</string>
       </property>
+      <property name="buddy" >
+       <cstring>cboSchemes</cstring>
+      </property>
      </widget>
      <widget class="QComboBox" name="cboSchemes" >
       <property name="geometry" >
@@ -165,6 +168,9 @@
       </property>
       <property name="wordWrap" >
        <bool>false</bool>
+      </property>
+      <property name="buddy" >
+       <cstring>spinBoxBPMRangeEnd</cstring>
       </property>
      </widget>
      <widget class="QSpinBox" name="spinBoxBPMRangeStart" >
@@ -213,6 +219,9 @@
       </property>
       <property name="wordWrap" >
        <bool>false</bool>
+      </property>
+      <property name="buddy" >
+       <cstring>spinBoxBPMRangeStart</cstring>
       </property>
      </widget>
      <widget class="QProgressBar" name="progressBPMDetect" >
@@ -310,6 +319,9 @@
      <property name="wordWrap" >
       <bool>false</bool>
      </property>
+      <property name="buddy" >
+       <cstring>txtBPM</cstring>
+      </property>
     </widget>
     <widget class="QPushButton" name="btnTap" >
      <property name="geometry" >
@@ -358,6 +370,9 @@
      <property name="text" >
       <string>Title:</string>
      </property>
+     <property name="buddy" >
+      <cstring>txtTrackName</cstring>
+     </property>
     </widget>
     <widget class="QLineEdit" name="txtTrackName" >
      <property name="geometry" >
@@ -380,6 +395,9 @@
      </property>
      <property name="text" >
       <string>Artist:</string>
+     </property>
+     <property name="buddy" >
+      <cstring>txtArtist</cstring>
      </property>
     </widget>
     <widget class="QLineEdit" name="txtArtist" >
@@ -404,6 +422,9 @@
      <property name="text" >
       <string>Comments:</string>
      </property>
+     <property name="buddy" >
+      <cstring>txtComment</cstring>
+     </property>
     </widget>
     <widget class="QTextEdit" name="txtComment" >
      <property name="geometry" >
@@ -426,6 +447,9 @@
      </property>
      <property name="text" >
       <string>Filename:</string>
+     </property>
+     <property name="buddy" >
+      <cstring>txtFilepath</cstring>
      </property>
     </widget>
     <widget class="QLabel" name="txtDuration" >

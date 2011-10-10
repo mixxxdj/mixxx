@@ -519,7 +519,7 @@ signed int timecoder_get_position(struct timecoder_t *tc, float *when)
 
         if (r >= 0) {
         	//normalize position to milliseconds, not timecode steps -- Owen
-        	r = r * 1000 / (tc->def->resolution * tc->speed);
+        	r = (float)r * (1000.0 / (tc->def->resolution * tc->speed));
             if (when)
                 *when = tc->timecode_ticker * tc->dt;
             return r;

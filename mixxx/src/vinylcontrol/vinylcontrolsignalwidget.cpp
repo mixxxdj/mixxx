@@ -31,7 +31,7 @@ VinylControlSignalWidget::VinylControlSignalWidget()
     : QWidget(),
       m_iTimerId(0),
       m_pVinylControl(NULL),
-      m_iSize(128),
+      m_iSize(MIXXX_VINYL_SCOPE_SIZE),
       m_qImage(),
       m_bVinylActive(FALSE) {
 }
