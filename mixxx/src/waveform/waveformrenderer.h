@@ -61,7 +61,8 @@ private:
 
     int m_iPlayPosTime, m_iPlayPosTimeOld;
     QTime m_playPosTime, m_playPosTimeOld;
-    double m_dPlayPos, m_dPlayPosOld, m_dRate, m_dRateRange, m_dRateDir;
+    double m_dPlayPos, m_dPlayPosOld, m_dTargetRate, m_dRate, m_dRateRange, m_dRateDir;
+    int m_iRateAdjusting;
     int m_iDupes;
     double m_dPlayPosAdjust;
     int m_iLatency;

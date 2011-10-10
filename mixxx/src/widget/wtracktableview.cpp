@@ -104,8 +104,12 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel *model) {
      * there's no need to exchange the headers
      * this will cause a small GUI freeze
      */
-    if(getTrackModel() == track_model)
+    if (getTrackModel() == track_model) {
+        // Re-sort the table even if the track model is the same. This triggers
+        // a select() if the table is dirty.
+        doSortByColumn(horizontalHeader()->sortIndicatorSection());
         return;
+    }
 
     setVisible(false);
 
@@ -156,10 +160,7 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel *model) {
     //setSortingEnabled(true);
     connect(horizontalHeader(), SIGNAL(sortIndicatorChanged(int, Qt::SortOrder)),
             this, SLOT(doSortByColumn(int)), Qt::AutoConnection);
-
     doSortByColumn(horizontalHeader()->sortIndicatorSection());
-
-    sortByColumn(horizontalHeader()->sortIndicatorSection());
 
     // Initialize all column-specific things
     for (int i = 0; i < model->columnCount(); ++i) {
@@ -434,10 +435,32 @@ void WTrackTableView::onSearchCleared() {
     }
 }
 
-void WTrackTableView::onShow()
-{
-
+void WTrackTableView::onShow() {
 }
+
+void WTrackTableView::mouseMoveEvent(QMouseEvent* pEvent) {
+    TrackModel* trackModel = getTrackModel();
+    if (!trackModel)
+        return;
+
+    // Iterate over selected rows and append each item's location url to a list
+    QList<QUrl> locationUrls;
+    QModelIndexList indices = selectionModel()->selectedRows();
+    foreach (QModelIndex index, indices) {
+      if (index.isValid()) {
+        locationUrls.append(trackModel->getTrackLocation(index));
+      }
+    }
+
+    QMimeData* mimeData = new QMimeData();
+    mimeData->setUrls(locationUrls);
+
+    QDrag* drag = new QDrag(this);
+    drag->setMimeData(mimeData);
+    drag->setPixmap(QPixmap(":images/library/ic_library_drag_and_drop.png"));
+    drag->exec(Qt::CopyAction);
+}
+
 
 /** Drag enter event, happens when a dragged item hovers over the track table view*/
 void WTrackTableView::dragEnterEvent(QDragEnterEvent * event)
@@ -474,8 +497,10 @@ void WTrackTableView::dragEnterEvent(QDragEnterEvent * event)
  *  Why we need this is a little vague, but without it, drag-and-drop just doesn't work.
  *  -- Albert June 8/08
  */
-void WTrackTableView::dragMoveEvent(QDragMoveEvent * event)
-{
+void WTrackTableView::dragMoveEvent(QDragMoveEvent * event) {
+    // Needed to allow auto-scrolling
+    WLibraryTableView::dragMoveEvent(event);
+
     //qDebug() << "dragMoveEvent" << event->mimeData()->formats();
     if (event->mimeData()->hasUrls())
     {
