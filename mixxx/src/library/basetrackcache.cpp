@@ -23,13 +23,15 @@ const QHash<QString, int> buildReverseIndex(const QList<QString> items) {
 BaseTrackCache::BaseTrackCache(TrackCollection* pTrackCollection,
                                QString tableName,
                                QString idColumn,
-                               QList<QString> columns)
+                               QList<QString> columns,
+                               bool isCaching)
         : QObject(),
           m_tableName(tableName),
           m_idColumn(idColumn),
           m_columns(columns),
           m_columnsJoined(m_columns.join(",")),
           m_columnIndex(buildReverseIndex(m_columns)),
+          m_bIsCaching(isCaching),
           m_bIndexBuilt(false),
           m_pTrackCollection(pTrackCollection),
           m_trackDAO(m_pTrackCollection->getTrackDAO()),
@@ -39,6 +41,16 @@ BaseTrackCache::BaseTrackCache(TrackCollection* pTrackCollection,
                     << "location"
                     << "comment"
                     << "title";
+
+    // Stupid special-case for TrackDAO usage. Should really be a subclass of BaseTrackCache.
+    if (m_bIsCaching) {
+        connect(&m_trackDAO, SIGNAL(trackDirty(int)),
+                this, SLOT(slotTrackDirty(int)));
+        connect(&m_trackDAO, SIGNAL(trackChanged(int)),
+                this, SLOT(slotTrackChanged(int)));
+        connect(&m_trackDAO, SIGNAL(trackClean(int)),
+                this, SLOT(slotTrackClean(int)));
+    }
 
     // Convert all the search column names to their field indexes because we use
     // them a bunch.
@@ -80,6 +92,15 @@ void BaseTrackCache::slotTrackDirty(int trackId) {
     m_dirtyTracks.insert(trackId);
 }
 
+void BaseTrackCache::slotTrackChanged(int trackId) {
+    if (sDebug) {
+        qDebug() << this << "slotTrackChanged" << trackId;
+    }
+    QSet<int> trackIds;
+    trackIds.insert(trackId);
+    emit(tracksChanged(trackIds));
+}
+
 void BaseTrackCache::slotTrackClean(int trackId) {
     if (sDebug) {
         qDebug() << this << "slotTrackClean" << trackId;
@@ -102,7 +123,10 @@ void BaseTrackCache::ensureCached(QSet<int> trackIds) {
 
 TrackPointer BaseTrackCache::lookupCachedTrack(int trackId) const {
     // Only get the Track from the TrackDAO if it's in the cache
-    return m_trackDAO.getTrack(trackId, true);
+    if (m_bIsCaching) {
+        return m_trackDAO.getTrack(trackId, true);
+    }
+    return TrackPointer();
 }
 
 bool BaseTrackCache::updateIndexWithQuery(QString queryString) {

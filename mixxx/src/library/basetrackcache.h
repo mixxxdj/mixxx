@@ -31,7 +31,8 @@ class BaseTrackCache : public QObject {
     BaseTrackCache(TrackCollection* pTrackCollection,
                    QString tableName,
                    QString idColumn,
-                   QList<QString> columns);
+                   QList<QString> columns,
+                   bool isCaching);
     virtual ~BaseTrackCache();
 
     ////////////////////////////////////////////////////////////////////////////
@@ -58,6 +59,7 @@ class BaseTrackCache : public QObject {
     void slotTrackRemoved(int trackId);
     void slotTrackDirty(int trackId);
     void slotTrackClean(int trackId);
+    void slotTrackChanged(int trackId);
 
   private:
     TrackPointer lookupCachedTrack(int trackId) const;
@@ -95,6 +97,7 @@ class BaseTrackCache : public QObject {
     QSet<int> m_dirtyTracks;
 
     bool m_bIndexBuilt;
+    bool m_bIsCaching;
     QHash<int, QVector<QVariant> > m_trackInfo;
     TrackCollection* m_pTrackCollection;
     TrackDAO& m_trackDAO;
