@@ -54,15 +54,20 @@ QList<QString> ParserM3u::parse(QString sFilename)
     clearLocations();
     //qDebug() << "ParserM3u: Starting to parse.";
     if (file.open(QIODevice::ReadOnly) && !isBinary(sFilename)) {
-    	/* Unfortunately, QT 4.7 does not handle <CR> line breaks.
-    	 * This is important on OS X where iTunes, e.g., exports M3U playlists using <CR>
-    	 *
-    	 * Using QFile::readAll() we obtain the complete content of the playlist as a ByteArray.
-    	 * We replace any '\r' with '\n' if applicaple
-    	 * This ensures that playlists from iTunes on OS X can be parsed
-    	 */
-    	QByteArray ba = file.readAll();
-    	ba.replace('\r',"\n");
+        /* Unfortunately, QT 4.7 does not handle <CR> (=\r or asci value 13) line breaks.
+         * This is important on OS X where iTunes, e.g., exports M3U playlists using <CR>
+         * rather that <LF>
+         *
+         * Using QFile::readAll() we obtain the complete content of the playlist as a ByteArray.
+         * We replace any '\r' with '\n' if applicaple
+         * This ensures that playlists from iTunes on OS X can be parsed
+         */
+        QByteArray ba = file.readAll();
+        //detect encoding
+        bool isCRLF_encoded = ba.contains("\r\n");
+        bool isCR_encoded = ba.contains("\r");
+        if(isCR_encoded && !isCRLF_encoded)
+            ba.replace('\r','\n');
         QTextStream textstream(ba.data());
         
         while(!textstream.atEnd()) {
@@ -70,7 +75,7 @@ QList<QString> ParserM3u::parse(QString sFilename)
             if(sLine.isEmpty())
                 break;
 
-            //qDebug) << ("ParserM3u: parsed: " << (sLine);
+            //qDebug() << "ParserM3u: parsed: " << (sLine);
             m_sLocations.append(sLine);
         }
 
@@ -93,18 +98,21 @@ QString ParserM3u::getFilepath(QTextStream *stream, QString basepath)
     QString textline,filename = "";
 
     textline = stream->readLine();
-    qDebug() << textline;
+
     while(!textline.isEmpty()){
+        //qDebug() << "Untransofrmed text: " << textline;
         if(textline.isNull())
             break;
 
-        if(!textline.contains("#") && !textline.isEmpty()){
+        if(!textline.contains("#")){
             filename = textline;
             filename.remove("file://");
             QByteArray strlocbytes = filename.toUtf8();
+            //qDebug() << "QByteArray UTF-8: " << strlocbytes;
             QUrl location = QUrl::fromEncoded(strlocbytes);
-            QString trackLocation = location.toLocalFile();
-            //qDebug() << trackLocation;
+            //qDebug() << "QURL UTF-8: " << location;
+            QString trackLocation = location.toString();
+            //qDebug() << "UTF8 TrackLocation:" << trackLocation;
             if(isFilepath(trackLocation)) {
                 return trackLocation;
             } else {
@@ -125,6 +133,11 @@ QString ParserM3u::getFilepath(QTextStream *stream, QString basepath)
 }
 bool ParserM3u::writeM3UFile(const QString &file_str, QList<QString> &items, bool useRelativePath)
 {
+    /*
+     * Important note:
+     * On Windows \n will produce a <CR><CL> (=\r\n)
+     * On Linux and OS X \n is <CR> (which remains \n)
+     */
     QFile file(file_str);
     if (!file.open(QIODevice::WriteOnly | QIODevice::Text)){
         QMessageBox::warning(NULL,tr("Playlist Export Failed"),
