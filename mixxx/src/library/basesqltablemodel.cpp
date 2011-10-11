@@ -662,6 +662,16 @@ QVariant BaseSqlTableModel::getBaseValue(
         // Subtract table columns from index to get the track source column
         // number and add 1 to skip over the id column.
         int trackSourceColumn = column - m_tableColumns.size() + 1;
+        if (!m_trackSource->isCached(trackId)) {
+            // Ideally Mixxx would have notified us of this via a signal, but in
+            // the case that a track is not in the cache, we attempt to load it
+            // on the fly. This will be a steep penalty to pay if there are tons
+            // of these tracks in the table that are not cached.
+            qDebug() << __FILE__ << __LINE__
+                     << "Track" << trackId
+                     << "was not present in cache and had to be manually fetched.";
+            m_trackSource->ensureCached(trackId);
+        }
         return m_trackSource->data(trackId, trackSourceColumn);
     }
     return QVariant();
