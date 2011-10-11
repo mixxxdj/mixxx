@@ -1,8 +1,11 @@
 #include <QtCore>
 #include <QtGui>
 #include <QtSql>
-#include "library/trackcollection.h"
+
 #include "library/itunes/itunestrackmodel.h"
+#include "library/trackcollection.h"
+#include "track/beatfactory.h"
+#include "track/beats.h"
 
 ITunesTrackModel::ITunesTrackModel(QObject* parent,
                                    TrackCollection* pTrackCollection)
@@ -40,8 +43,15 @@ TrackPointer ITunesTrackModel::getTrack(const QModelIndex& index) const {
     pTrack->setYear(year);
     pTrack->setGenre(genre);
     pTrack->setBpm(bpm);
+    TrackPointer track(pTrack, &QObject::deleteLater);
 
-    return TrackPointer(pTrack, &QObject::deleteLater);
+    // If the track has a BPM, then give it a static beatgrid.
+    if (bpm > 0) {
+        BeatsPointer pBeats = BeatFactory::makeBeatGrid(track, bpm, 0);
+        track->setBeats(pBeats);
+    }
+
+    return track;
 }
 
 void ITunesTrackModel::search(const QString& searchText) {

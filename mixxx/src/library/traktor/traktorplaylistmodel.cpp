@@ -4,6 +4,8 @@
 
 #include "library/trackcollection.h"
 #include "library/traktor/traktorplaylistmodel.h"
+#include "track/beatfactory.h"
+#include "track/beats.h"
 
 TraktorPlaylistModel::TraktorPlaylistModel(QObject* parent,
                                        TrackCollection* pTrackCollection)
@@ -43,8 +45,16 @@ TrackPointer TraktorPlaylistModel::getTrack(const QModelIndex& index) const {
     pTrack->setYear(year);
     pTrack->setGenre(genre);
     pTrack->setBpm(bpm);
+    TrackPointer track(pTrack, &QObject::deleteLater);
 
-    return TrackPointer(pTrack, &QObject::deleteLater);
+    // If the track has a BPM, then give it a static beatgrid. TODO(XXX) load
+    // traktor beatgrid information.
+    if (bpm > 0) {
+        BeatsPointer pBeats = BeatFactory::makeBeatGrid(track, bpm, 0);
+        track->setBeats(pBeats);
+    }
+
+    return track;
 }
 
 void TraktorPlaylistModel::search(const QString& searchText) {
