@@ -90,7 +90,7 @@ TrackCollection::TrackCollection(ConfigObject<ConfigValue>* pConfig)
     }
 
     BaseTrackCache* pBaseTrackCache = new BaseTrackCache(
-        this, "library_cache_view", LIBRARYTABLE_ID, columns);
+        this, "library_cache_view", LIBRARYTABLE_ID, columns, true);
     connect(&m_trackDao, SIGNAL(trackDirty(int)),
             pBaseTrackCache, SLOT(slotTrackDirty(int)));
     connect(&m_trackDao, SIGNAL(trackClean(int)),

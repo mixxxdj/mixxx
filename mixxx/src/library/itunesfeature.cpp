@@ -34,7 +34,7 @@ ITunesFeature::ITunesFeature(QObject* parent, TrackCollection* pTrackCollection)
             << "bpm"
             << "rating";
     pTrackCollection->addTrackSource(QString("itunes"), QSharedPointer<BaseTrackCache>(
-        new BaseTrackCache(m_pTrackCollection, tableName, idColumn, columns)));
+        new BaseTrackCache(m_pTrackCollection, tableName, idColumn, columns, false)));
 
 
     m_pITunesTrackModel = new ITunesTrackModel(this, m_pTrackCollection);
