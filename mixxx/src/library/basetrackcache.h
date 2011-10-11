@@ -60,6 +60,7 @@ class BaseTrackCache : public QObject {
     void slotTrackRemoved(int trackId);
     void slotTrackDirty(int trackId);
     void slotTrackClean(int trackId);
+    void slotTrackChanged(int trackId);
 
   private:
     TrackPointer lookupCachedTrack(int trackId) const;
