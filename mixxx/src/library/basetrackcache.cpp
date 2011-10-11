@@ -31,6 +31,7 @@ BaseTrackCache::BaseTrackCache(TrackCollection* pTrackCollection,
           m_columns(columns),
           m_columnsJoined(m_columns.join(",")),
           m_columnIndex(buildReverseIndex(m_columns)),
+          m_bIsCaching(isCaching),
           m_bIndexBuilt(false),
           m_bIsCaching(isCaching),
           m_pTrackCollection(pTrackCollection),
@@ -79,6 +80,15 @@ void BaseTrackCache::slotTrackDirty(int trackId) {
         qDebug() << this << "slotTrackDirty" << trackId;
     }
     m_dirtyTracks.insert(trackId);
+}
+
+void BaseTrackCache::slotTrackChanged(int trackId) {
+    if (sDebug) {
+        qDebug() << this << "slotTrackChanged" << trackId;
+    }
+    QSet<int> trackIds;
+    trackIds.insert(trackId);
+    emit(tracksChanged(trackIds));
 }
 
 void BaseTrackCache::slotTrackClean(int trackId) {
