@@ -72,7 +72,7 @@ ImgSource* ColorSchemeParser::parseFilters(QDomNode filt) {
             ret = new ImgScaleWhite(ret, WWidget::selectNodeFloat(f, "Amount"));
         } else if (name == "hsvtweak") {
             int hmin = 0;
-            int hmax = 255;
+            int hmax = 359;
             int smin = 0;
             int smax = 255;
             int vmin = 0;

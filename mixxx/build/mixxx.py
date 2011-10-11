@@ -88,10 +88,7 @@ class MixxxBuild(object):
             else:
                 self.machine = 'x86_64'
         self.machine_is_64bit = self.machine in ['x86_64', 'powerpc64', 'AMD64', 'EM64T', 'INTEL64']
-
-        self.bitwidth = 32
-        if self.machine_is_64bit:
-            self.bitwidth = 64
+        self.bitwidth = 64 if self.machine_is_64bit else 32
 
         self.build_dir = util.get_build_dir(self.platform, self.bitwidth)
 
@@ -114,7 +111,7 @@ class MixxxBuild(object):
 
         # Ugly hack to check the qtdir argument
         import depends
-        default_qtdir = depends.Qt.DEFAULT_QTDIRS[self.platform]
+        default_qtdir = depends.Qt.DEFAULT_QTDIRS.get(self.platform, '')
         qtdir = Script.ARGUMENTS.get('qtdir',
                                     os.environ.get('QTDIR', default_qtdir))
 
@@ -129,11 +126,13 @@ class MixxxBuild(object):
             Script.Exit(1)
         logging.info("Qt path: %s" % qtdir)
 
+        # Previously this wasn't done for OSX, but I'm not sure why
+        # -- rryan 6/8/2011
+        extra_arguments['QTDIR'] = qtdir
+
         if self.platform == 'osx':
             tools.append('OSConsX')
             toolpath.append('#/build/osx/')
-        if self.platform in ['windows', 'linux', 'bsd']:
-            extra_arguments['QTDIR'] = qtdir
         if self.platform_is_windows and self.toolchain == 'msvs':
             toolpath.append('msvs')
             extra_arguments['VCINSTALLDIR'] = os.getenv('VCInstallDir') # TODO(XXX) Why?
@@ -189,7 +188,7 @@ class MixxxBuild(object):
         # Should cover {Net,Open,Free,DragonFly}BSD, but only tested on OpenBSD
         if 'bsd' in sys.platform:
             return 'bsd'
-        if 'linux2' == sys.platform:
+        if sys.platform in ['linux2', 'linux3']:
             return 'linux'
         if sys.platform == 'darwin':
             return 'osx'
