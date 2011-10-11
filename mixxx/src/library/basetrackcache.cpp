@@ -42,16 +42,6 @@ BaseTrackCache::BaseTrackCache(TrackCollection* pTrackCollection,
                     << "comment"
                     << "title";
 
-    // Stupid special-case for TrackDAO usage. Should really be a subclass of BaseTrackCache.
-    if (m_bIsCaching) {
-        connect(&m_trackDAO, SIGNAL(trackDirty(int)),
-                this, SLOT(slotTrackDirty(int)));
-        connect(&m_trackDAO, SIGNAL(trackChanged(int)),
-                this, SLOT(slotTrackChanged(int)));
-        connect(&m_trackDAO, SIGNAL(trackClean(int)),
-                this, SLOT(slotTrackClean(int)));
-    }
-
     // Convert all the search column names to their field indexes because we use
     // them a bunch.
     m_searchColumnIndices.resize(m_searchColumns.size());
