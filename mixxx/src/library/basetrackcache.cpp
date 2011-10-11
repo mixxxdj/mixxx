@@ -88,6 +88,14 @@ void BaseTrackCache::slotTrackClean(int trackId) {
     updateTrackInIndex(trackId);
 }
 
+bool BaseTrackCache::isCached(int trackId) const {
+    return m_trackInfo.contains(trackId);
+}
+
+void BaseTrackCache::ensureCached(int trackId) {
+    updateTrackInIndex(trackId);
+}
+
 void BaseTrackCache::ensureCached(QSet<int> trackIds) {
     updateTracksInIndex(trackIds);
 }
