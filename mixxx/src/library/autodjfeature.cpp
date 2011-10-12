@@ -85,18 +85,13 @@ bool AutoDJFeature::dropAccept(QUrl url) {
     //XXX: See the note in PlaylistFeature::dropAccept() about using QUrl::toLocalFile()
     //     instead of toString()
     QFileInfo file(url.toLocalFile());
-    QString location = file.absoluteFilePath();
 
     if (!SoundSourceProxy::isFilenameSupported(file.fileName())) {
         return false;
     }
 
-    //Get id of track
-    int trackId = trackDao.getTrackId(location);
-
-    if (trackId < 0) {
-        trackId = trackDao.addTrack(file);
-    }
+    // Adds track, does not insert duplicates, handles unremoving logic.
+    int trackId = trackDao.addTrack(file, true);
 
     if (trackId < 0) {
         return false;

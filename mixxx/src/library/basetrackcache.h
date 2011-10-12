@@ -55,8 +55,8 @@ class BaseTrackCache : public QObject {
     void tracksChanged(QSet<int> trackIds);
 
   private slots:
-    void slotTrackAdded(int trackId);
-    void slotTrackRemoved(int trackId);
+    void slotTracksAdded(QSet<int> trackId);
+    void slotTracksRemoved(QSet<int> trackId);
     void slotTrackDirty(int trackId);
     void slotTrackClean(int trackId);
     void slotTrackChanged(int trackId);

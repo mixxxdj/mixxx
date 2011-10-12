@@ -97,6 +97,10 @@ TrackCollection::TrackCollection(ConfigObject<ConfigValue>* pConfig)
             pBaseTrackCache, SLOT(slotTrackChanged(int)));
     connect(&m_trackDao, SIGNAL(trackClean(int)),
             pBaseTrackCache, SLOT(slotTrackClean(int)));
+    connect(&m_trackDao, SIGNAL(tracksAdded(QSet<int>)),
+            pBaseTrackCache, SLOT(slotTracksAdded(QSet<int>)));
+    connect(&m_trackDao, SIGNAL(tracksRemoved(QSet<int>)),
+            pBaseTrackCache, SLOT(slotTracksRemoved(QSet<int>)));
 
     addTrackSource(QString("default"),
                    QSharedPointer<BaseTrackCache>(pBaseTrackCache));
