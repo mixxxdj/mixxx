@@ -4,6 +4,8 @@
 
 #include "library/trackcollection.h"
 #include "library/rhythmbox/rhythmboxtrackmodel.h"
+#include "track/beatfactory.h"
+#include "track/beats.h"
 
 RhythmboxTrackModel::RhythmboxTrackModel(QObject* parent,
                                    TrackCollection* pTrackCollection)
@@ -41,8 +43,15 @@ TrackPointer RhythmboxTrackModel::getTrack(const QModelIndex& index) const {
     pTrack->setYear(year);
     pTrack->setGenre(genre);
     pTrack->setBpm(bpm);
+    TrackPointer track(pTrack, &QObject::deleteLater);
 
-    return TrackPointer(pTrack, &QObject::deleteLater);
+    // If the track has a BPM, then give it a static beatgrid.
+    if (bpm > 0) {
+        BeatsPointer pBeats = BeatFactory::makeBeatGrid(track, bpm, 0);
+        track->setBeats(pBeats);
+    }
+
+    return track;
 }
 
 void RhythmboxTrackModel::search(const QString& searchText) {

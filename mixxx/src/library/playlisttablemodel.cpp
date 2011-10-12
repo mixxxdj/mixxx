@@ -86,12 +86,9 @@ bool PlaylistTableModel::addTrack(const QModelIndex& index, QString location) {
     // If a track is dropped but it isn't in the library, then add it because
     // the user probably dropped a file from outside Mixxx into this playlist.
     QFileInfo fileInfo(location);
-    location = fileInfo.absoluteFilePath();
 
-    int trackId = m_trackDao.getTrackId(location);
-    if (trackId < 0) {
-        trackId = m_trackDao.addTrack(fileInfo);
-    }
+    // Adds track, does not insert duplicates, handles unremoving logic.
+    int trackId = m_trackDao.addTrack(fileInfo, true);
 
     // Do nothing if the location still isn't in the database.
     if (trackId < 0) {
