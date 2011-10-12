@@ -70,9 +70,9 @@ class TrackDAO : public QObject, public virtual DAO {
     int getTrackId(QString absoluteFilePath);
     bool trackExistsInDatabase(QString absoluteFilePath);
     QString getTrackLocation(int id);
-    int addTrack(QString absoluteFilePath);
-    int addTrack(QFileInfo& fileInfo);
-    void addTracks(QList<TrackInfoObject*> tracksToAdd);
+    int addTrack(QString absoluteFilePath, bool unremove);
+    int addTrack(QFileInfo& fileInfo, bool unremove);
+    void addTracks(QList<TrackInfoObject*> tracksToAdd, bool unremove);
     void removeTrack(int id);
     void removeTracks(QList<int> ids);
     void unremoveTrack(int trackId);
@@ -91,6 +91,8 @@ class TrackDAO : public QObject, public virtual DAO {
     void trackDirty(int trackId);
     void trackClean(int trackId);
     void trackChanged(int trackId);
+    void tracksAdded(QSet<int> trackIds);
+    void tracksRemoved(QSet<int> trackIds);
 
   public slots:
     // The public interface to the TrackDAO requires a TrackPointer so that we
@@ -120,7 +122,7 @@ class TrackDAO : public QObject, public virtual DAO {
     bool isTrackFormatSupported(TrackInfoObject* pTrack) const;
     void saveTrack(TrackInfoObject* pTrack);
     void updateTrack(TrackInfoObject* pTrack);
-    void addTrack(TrackInfoObject* pTrack);
+    void addTrack(TrackInfoObject* pTrack, bool unremove);
     TrackPointer getTrackFromDB(QSqlQuery &query) const;
     QString absoluteFilePath(QString location);
 
@@ -151,10 +153,10 @@ class TrackDAO : public QObject, public virtual DAO {
 
     QSqlDatabase &m_database;
     CueDAO &m_cueDao;
+    ConfigObject<ConfigValue> * m_pConfig;
     mutable QHash<int, TrackWeakPointer> m_tracks;
     mutable QSet<int> m_dirtyTracks;
     mutable QCache<int,TrackPointer> m_trackCache;
-    ConfigObject<ConfigValue> * m_pConfig;
 };
 
 #endif //TRACKDAO_H

@@ -55,20 +55,11 @@ LibraryTableModel::~LibraryTableModel() {
 bool LibraryTableModel::addTrack(const QModelIndex& index, QString location) {
     QFileInfo fileInfo(location);
 
-    int trackId = m_trackDao.getTrackId(fileInfo.absoluteFilePath());
+    // Adds track, does not insert duplicates, handles unremoving logic.
+    int trackId = m_trackDao.addTrack(fileInfo, true);
     if (trackId >= 0) {
-        //If the track is already in the library, make sure it's marked as
-        //not deleted. (This lets the user unremove a track from the library
-        //by dragging-and-dropping it back into the library view.)
-        m_trackDao.unremoveTrack(trackId);
-        // TODO(rryan) do not select(), receive signal update from BTC instead
-        select();
-        return true;
-    }
-
-    trackId = m_trackDao.addTrack(fileInfo);
-    if (trackId >= 0) {
-        // TODO(rryan) do not select(), receive signal update from BTC instead
+        // TODO(rryan) do not select since we will get a signal. instead, do
+        // something nice UI wise and select the track they dropped.
         select(); //Repopulate the data model.
         return true;
     }
