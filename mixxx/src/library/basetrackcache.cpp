@@ -66,12 +66,20 @@ int BaseTrackCache::fieldIndex(const QString columnName) const {
     return m_columnIndex.value(columnName, -1);
 }
 
-void BaseTrackCache::slotTrackAdded(int trackId) {
-    updateTrackInIndex(trackId);
+void BaseTrackCache::slotTracksAdded(QSet<int> trackIds) {
+    if (sDebug) {
+        qDebug() << this << "slotTracksAdded" << trackIds.size();
+    }
+    updateTracksInIndex(trackIds);
 }
 
-void BaseTrackCache::slotTrackRemoved(int trackId) {
-    m_trackInfo.remove(trackId);
+void BaseTrackCache::slotTracksRemoved(QSet<int> trackIds) {
+    if (sDebug) {
+        qDebug() << this << "slotTracksRemoved" << trackIds.size();
+    }
+    foreach (int trackId, trackIds) {
+        m_trackInfo.remove(trackId);
+    }
 }
 
 void BaseTrackCache::slotTrackDirty(int trackId) {
