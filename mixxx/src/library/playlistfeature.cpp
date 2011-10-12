@@ -314,7 +314,6 @@ bool PlaylistFeature::dropAcceptChild(const QModelIndex& index, QUrl url) {
     // library, then add the track to the library before adding it to the
     // playlist.
     QFileInfo file(url.toLocalFile());
-    QString location = file.absoluteFilePath();
 
     // XXX: Possible WTF alert - Previously we thought we needed toString() here
     // but what you actually want in any case when converting a QUrl to a file
@@ -323,15 +322,13 @@ bool PlaylistFeature::dropAcceptChild(const QModelIndex& index, QUrl url) {
     // case. toString() absolutely does not work when you pass the result to a
     // QFileInfo. rryan 9/2010
 
-    int trackId = m_trackDao.getTrackId(location);
-
-    if (trackId == -1) {
-        trackId = m_trackDao.addTrack(file);
-    }
+    // Adds track, does not insert duplicates, handles unremoving logic.
+    int trackId = m_trackDao.addTrack(file, true);
 
     // Do nothing if the location still isn't in the database.
-    if (trackId < 0)
+    if (trackId < 0) {
         return false;
+    }
 
     // appendTrackToPlaylist doesn't return whether it succeeded, so assume it
     // did.

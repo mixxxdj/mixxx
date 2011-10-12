@@ -105,14 +105,10 @@ bool CrateFeature::dropAcceptChild(const QModelIndex& index, QUrl url) {
     //XXX: See the comment in PlaylistFeature::dropAcceptChild() about
     //     QUrl::toLocalFile() vs. QUrl::toString() usage.
     QFileInfo file(url.toLocalFile());
-    QString trackLocation = file.absoluteFilePath();
 
-    int trackId = m_pTrackCollection->getTrackDAO().getTrackId(trackLocation);
-    //If the track wasn't found in the database, add it to the DB first.
-    if (trackId <= 0)
-    {
-        trackId = m_pTrackCollection->getTrackDAO().addTrack(trackLocation);
-    }
+    // Adds track, does not insert duplicates, handles unremoving logic.
+    int trackId = m_pTrackCollection->getTrackDAO().addTrack(file, true);
+
     qDebug() << "CrateFeature::dropAcceptChild adding track"
              << trackId << "to crate" << crateId;
 
