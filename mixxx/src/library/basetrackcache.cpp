@@ -81,11 +81,28 @@ void BaseTrackCache::slotTrackDirty(int trackId) {
     m_dirtyTracks.insert(trackId);
 }
 
+void BaseTrackCache::slotTrackChanged(int trackId) {
+    if (sDebug) {
+        qDebug() << this << "slotTrackChanged" << trackId;
+    }
+    QSet<int> trackIds;
+    trackIds.insert(trackId);
+    emit(tracksChanged(trackIds));
+}
+
 void BaseTrackCache::slotTrackClean(int trackId) {
     if (sDebug) {
         qDebug() << this << "slotTrackClean" << trackId;
     }
     m_dirtyTracks.remove(trackId);
+    updateTrackInIndex(trackId);
+}
+
+bool BaseTrackCache::isCached(int trackId) const {
+    return m_trackInfo.contains(trackId);
+}
+
+void BaseTrackCache::ensureCached(int trackId) {
     updateTrackInIndex(trackId);
 }
 
