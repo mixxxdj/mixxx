@@ -237,8 +237,8 @@ void LibraryScanner::run()
      * of 3-4 !!!
      */
 
-    // Runs inside a transaction
-    m_trackDao.addTracks(tracksToAdd);
+    // Runs inside a transaction. Do not unremove files.
+    m_trackDao.addTracks(tracksToAdd, false);
 
     QMutableListIterator<TrackInfoObject*> it(tracksToAdd);
     while (it.hasNext()) {
