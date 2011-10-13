@@ -8,14 +8,15 @@ msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2011-05-03 21:42-0400\n"
-"PO-Revision-Date: 2011-10-10 11:08+0000\n"
-"Last-Translator: Fábio Ihle <Unknown>\n"
+"PO-Revision-Date: 2011-10-12 15:57+0000\n"
+"Last-Translator: Emmanuel Jussier de Oliveira Pinheiro "
+"<jussier.rn@hotmail.com>\n"
 "Language-Team: Brazilian Portuguese <pt_BR@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-10-11 05:20+0000\n"
-"X-Generator: Launchpad (build 14123)\n"
+"X-Launchpad-Export-Date: 2011-10-13 04:36+0000\n"
+"X-Generator: Launchpad (build 14124)\n"
 
 #: AutoDJFeature#1
 msgid "Auto DJ"
@@ -627,7 +628,7 @@ msgstr "Terminado!"
 
 #: DlgPluginDownloader#1
 msgid "Missing Audio Plugin Downloader"
-msgstr ""
+msgstr "Baixar Plugin de Audio Faltante."
 
 #: DlgPrefBPMDlg#1
 msgctxt "DlgPrefBPMDlg#1"
