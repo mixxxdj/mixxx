@@ -112,6 +112,7 @@ public:
   public slots:
     void slotControlPlay(double);
     void slotControlPlayFromStart(double);
+    void slotControlJumpToStartAndStop(double);
     void slotControlStop(double);
     void slotControlStart(double);
     void slotControlEnd(double);
@@ -197,8 +198,8 @@ private:
     ControlObject* m_pTrackSamples;
     ControlObject* m_pTrackSampleRate;
 
-    ControlPushButton *playButton, *buttonBeatSync, *playStartButton, *stopButton;
-    ControlObjectThreadMain *playButtonCOT, *playStartButtonCOT, *m_pTrackEndCOT, *stopButtonCOT;
+    ControlPushButton *playButton, *buttonBeatSync, *playStartButton, *stopStartButton, *stopButton;
+    ControlObjectThreadMain *playButtonCOT, *playStartButtonCOT, *stopStartButtonCOT, *m_pTrackEndCOT, *stopButtonCOT;
     ControlObject *fwdButton, *backButton;
 
     ControlObject *rateEngine;
