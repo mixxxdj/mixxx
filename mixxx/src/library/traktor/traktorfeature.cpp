@@ -410,8 +410,9 @@ TreeItem* TraktorFeature::parsePlaylists(QXmlStreamReader &xml){
                   "VALUES (:name)");
 
     QSqlQuery query_insert_to_playlist_tracks(m_database);
-    query_insert_to_playlist_tracks.prepare("INSERT INTO traktor_playlist_tracks (playlist_id, track_id) "
-                  "VALUES (:playlist_id, :track_id)");
+    query_insert_to_playlist_tracks.prepare(
+        "INSERT INTO traktor_playlist_tracks (playlist_id, track_id, position) "
+        "VALUES (:playlist_id, :track_id, :position)");
 
     while(!xml.atEnd())
     {
@@ -509,6 +510,7 @@ void TraktorFeature::parsePlaylistEntries(QXmlStreamReader &xml,QString playlist
     success = id_query.exec();
 
     int playlist_id = -1;
+    int playlist_position = 1;
     if(success){
         //playlist_id = id_query.lastInsertId().toInt();
         while (id_query.next()) {
@@ -517,8 +519,6 @@ void TraktorFeature::parsePlaylistEntries(QXmlStreamReader &xml,QString playlist
     }
     else
         qDebug() << "SQL Error in TraktorTableModel.cpp: line" << __LINE__ << " " << id_query.lastError();
-
-
 
     while(!xml.atEnd())
     {
@@ -547,7 +547,6 @@ void TraktorFeature::parsePlaylistEntries(QXmlStreamReader &xml,QString playlist
                     finder_query.bindValue(":path", key);
                     success = finder_query.exec();
 
-
                     if(success){
                         while (finder_query.next()) {
                             track_id = finder_query.value(finder_query.record().indexOf("id")).toInt();
@@ -558,19 +557,15 @@ void TraktorFeature::parsePlaylistEntries(QXmlStreamReader &xml,QString playlist
 
                     query_insert_into_playlisttracks.bindValue(":playlist_id", playlist_id);
                     query_insert_into_playlisttracks.bindValue(":track_id", track_id);
+                    query_insert_into_playlisttracks.bindValue(":position", playlist_position++);
                     success = query_insert_into_playlisttracks.exec();
-
-
                     if(!success){
                         qDebug() << "SQL Error in TraktorFeature.cpp: line" << __LINE__ << " " << query_insert_into_playlisttracks.lastError();
                         qDebug() << "trackid" << track_id << " with path " << key;
                         qDebug() << "playlistname; " << playlist_path <<" with ID " << playlist_id;
                         qDebug() << "-----------------";
-
                     }
-
                 }
-
             }
         }
         if(xml.isEndElement()){
@@ -581,7 +576,6 @@ void TraktorFeature::parsePlaylistEntries(QXmlStreamReader &xml,QString playlist
             }
         }
     }
-
 }
 
 void TraktorFeature::clearTable(QString table_name)

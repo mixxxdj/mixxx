@@ -106,6 +106,14 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
     playStartButton->set(0);
     playStartButtonCOT = new ControlObjectThreadMain(playStartButton);
 
+    // Jump to start and stop button
+    stopStartButton = new ControlPushButton(ConfigKey(group, "start_stop"));
+    connect(stopStartButton, SIGNAL(valueChanged(double)),
+            this, SLOT(slotControlJumpToStartAndStop(double)),
+            Qt::DirectConnection);
+    stopStartButton->set(0);
+    stopStartButtonCOT = new ControlObjectThreadMain(stopStartButton);
+
     //Stop playback (for sampler)
     stopButton = new ControlPushButton(ConfigKey(group, "stop"));
     connect(stopButton, SIGNAL(valueChanged(double)),
@@ -455,6 +463,14 @@ void EngineBuffer::slotControlPlayFromStart(double v)
     if (v > 0.0) {
         slotControlSeek(0.);
         playButton->set(1);
+    }
+}
+
+void EngineBuffer::slotControlJumpToStartAndStop(double v)
+{
+    if (v > 0.0) {
+        slotControlSeek(0.);
+        playButton->set(0);
     }
 }
 

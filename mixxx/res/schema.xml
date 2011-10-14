@@ -275,4 +275,14 @@ METADATA
       ALTER TABLE Library ADD COLUMN beats_version TEXT;
     </sql>
   </revision>
+  <revision version="13" min_compatible="3">
+    <description>
+      Add position column to Rhythmbox, iTunes, and Traktor playlist tables.
+    </description>
+    <sql>
+      ALTER TABLE itunes_playlist_tracks ADD COLUMN position INTEGER DEFAULT 0;
+      ALTER TABLE rhythmbox_playlist_tracks ADD COLUMN position INTEGER DEFAULT 0;
+      ALTER TABLE traktor_playlist_tracks ADD COLUMN position INTEGER DEFAULT 0;
+    </sql>
+  </revision>
 </schema>
