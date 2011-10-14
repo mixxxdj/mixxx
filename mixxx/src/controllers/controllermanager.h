@@ -2,7 +2,7 @@
   * @file controllermanager.h
   * @author Sean Pappalardo spappalardo@mixxx.org
   * @date Sat Apr 30 2011
-  * @brief Manages creation/enumeration/deletion of (non-MIDI) hardware controllers.
+  * @brief Manages creation/enumeration/deletion of hardware controllers.
   */
 
 /***************************************************************************
