@@ -65,8 +65,10 @@ bool PlaylistDAO::createPlaylist(QString name, bool hidden)
     }
     //query.finish();
 
+    int playlistId = query.lastInsertId().toInt();
     //Commit the transaction
     m_database.commit();
+    emit(added(playlistId));
     return true;
 }
 
@@ -144,6 +146,8 @@ void PlaylistDAO::deletePlaylist(int playlistId)
 
     m_database.commit();
     //TODO: Crap, we need to shuffle the positions of all the playlists?
+
+    emit(deleted(playlistId));
 }
 
 
@@ -243,6 +247,9 @@ void PlaylistDAO::appendTrackToPlaylist(int trackId, int playlistId)
 
     //Start the transaction
     m_database.commit();
+
+    emit(trackAdded(playlistId, trackId, position));
+    emit(changed(playlistId));
 }
 
 /** Find out how many playlists exist. */
@@ -310,6 +317,25 @@ void PlaylistDAO::removeTrackFromPlaylist(int playlistId, int position)
     //          << QThread::currentThread() << m_database.connectionName();
     m_database.transaction();
     QSqlQuery query(m_database);
+
+    query.prepare("SELECT id FROM PlaylistTracks WHERE playlist_id=:id "
+                  "AND position=:position");
+    query.bindValue(":id", playlistId);
+    query.bindValue(":position", position);
+
+    if (!query.exec()) {
+        qDebug() << "removeTrackFromPlaylist" << query.lastError();
+        m_database.rollback();
+        return;
+    }
+
+    if (!query.next()) {
+        qDebug() << "removeTrackFromPlaylist no track exists at position:"
+                 << position << "in playlist:" << playlistId;
+        return;
+    }
+    int trackId = query.value(query.record().indexOf("id")).toInt();
+
     //Delete the track from the playlist.
     query.prepare("DELETE FROM PlaylistTracks "
                   "WHERE playlist_id=:id AND position= :position");
@@ -330,6 +356,9 @@ void PlaylistDAO::removeTrackFromPlaylist(int playlistId, int position)
     query.exec(queryString);
     //query.finish();
     m_database.commit();
+
+    emit(trackRemoved(playlistId, trackId, position));
+    emit(changed(playlistId));
 }
 
 void PlaylistDAO::insertTrackIntoPlaylist(int trackId, int playlistId, int position)
@@ -364,6 +393,9 @@ void PlaylistDAO::insertTrackIntoPlaylist(int trackId, int playlistId, int posit
     //query.finish();
 
     m_database.commit();
+
+    emit(trackAdded(playlistId, trackId, position));
+    emit(changed(playlistId));
 }
 
 void PlaylistDAO::addToAutoDJQueue(int playlistId) {

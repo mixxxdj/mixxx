@@ -97,6 +97,7 @@ class MixxxBuild(object):
         logging.info("Build: %s" % self.build)
         logging.info("Toolchain: %s" % self.toolchain)
         logging.info("Crosscompile: %s" % ("YES" if self.crosscompile else "NO"))
+
         if self.crosscompile:
             logging.info("Host Platform: %s" % self.host_platform)
             logging.info("Host Machine: %s" % self.host_machine)
@@ -206,7 +207,7 @@ class MixxxBuild(object):
         if os.environ.has_key('CC'):
             self.env['CC'] = os.environ['CC']
         if os.environ.has_key('CFLAGS'):
-            self.env['CCFLAGS'] += SCons.Util.CLVar(os.environ['CFLAGS'])
+            self.env['CFLAGS'] += SCons.Util.CLVar(os.environ['CFLAGS'])
         if os.environ.has_key('CXX'):
             self.env['CXX'] = os.environ['CXX']
         if os.environ.has_key('CXXFLAGS'):

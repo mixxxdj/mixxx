@@ -133,13 +133,14 @@ void TrackInfoObject::initialize(bool parseHeader) {
     m_iChannels = 0;
     m_fCuePoint = 0.0f;
     m_dVisualResampleRate = 0;
-    m_dCreateDate = QDateTime::currentDateTime();
+    m_dCreateDate = m_dateAdded = QDateTime::currentDateTime();
     m_Rating = 0;
     m_key = "";
 
     // parse() parses the metadata from file. This is not a quick operation!
-    if (parseHeader)
+    if (parseHeader) {
         parse();
+    }
 }
 
 TrackInfoObject::~TrackInfoObject() {
@@ -402,6 +403,16 @@ QString TrackInfoObject::getInfo()  const
     return sInfo;
 }
 
+QDateTime TrackInfoObject::getDateAdded() const {
+    QMutexLocker lock(&m_qMutex);
+    return m_dateAdded;
+}
+
+void TrackInfoObject::setDateAdded(QDateTime dateAdded) {
+    QMutexLocker lock(&m_qMutex);
+    m_dateAdded = dateAdded;
+}
+
 int TrackInfoObject::getDuration()  const
 {
     QMutexLocker lock(&m_qMutex);
@@ -550,7 +561,7 @@ void TrackInfoObject::setPlayed(bool bPlayed)
     else if (m_bPlayed && !bPlayed) {
         --m_iTimesPlayed;
 	setDirty(true);
-    } 
+    }
     m_bPlayed = bPlayed;
 }
 

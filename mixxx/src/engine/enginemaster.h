@@ -39,6 +39,7 @@ class ControlPotmeter;
 class ControlPushButton;
 class EngineVinylSoundEmu;
 class EngineSideChain;
+class SyncWorker;
 
 class EngineMaster : public EngineObject, public AudioSource {
     Q_OBJECT
@@ -95,6 +96,7 @@ class EngineMaster : public EngineObject, public AudioSource {
     class ConstantGainCalculator : public GainCalculator {
       public:
         inline double getGain(ChannelInfo* pChannelInfo) {
+            Q_UNUSED(pChannelInfo);
             return m_dGain;
         }
         inline void setGain(double dGain) {
@@ -131,6 +133,7 @@ class EngineMaster : public EngineObject, public AudioSource {
     CSAMPLE *m_pMaster, *m_pHead;
 
     EngineWorkerScheduler *m_pWorkerScheduler;
+    SyncWorker* m_pSyncWorker;
 
     ControlObject *m_pMasterVolume, *m_pHeadVolume;
     EngineClipping *clipping, *head_clipping;
