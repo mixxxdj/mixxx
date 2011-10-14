@@ -123,6 +123,7 @@ void TraktorPlaylistModel::setPlaylist(QString playlist_path) {
 
     setTable(playlistID, columns[0], columns,
              m_pTrackCollection->getTrackSource("traktor"));
+    setDefaultSort(fieldIndex("position"), Qt::AscendingOrder);
     initHeaderData();
     setSearch("");
 }

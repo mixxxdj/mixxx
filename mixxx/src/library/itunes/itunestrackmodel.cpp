@@ -20,6 +20,7 @@ ITunesTrackModel::ITunesTrackModel(QObject* parent,
     columns << "id";
     setTable("itunes_library", columns[0], columns,
              m_pTrackCollection->getTrackSource("itunes"));
+    setDefaultSort(fieldIndex("artist"), Qt::AscendingOrder);
     initHeaderData();
 }
 

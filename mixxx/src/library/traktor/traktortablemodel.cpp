@@ -21,6 +21,7 @@ TraktorTableModel::TraktorTableModel(QObject* parent,
     columns << "id";
     setTable("traktor_library", columns[0], columns,
              m_pTrackCollection->getTrackSource("traktor"));
+    setDefaultSort(fieldIndex("artist"), Qt::AscendingOrder);
     initHeaderData();
 }
 

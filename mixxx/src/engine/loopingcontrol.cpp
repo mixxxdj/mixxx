@@ -324,7 +324,7 @@ void LoopingControl::slotReloopExit(double val) {
 
 void LoopingControl::slotLoopStartPos(double pos) {
     int newpos = pos;
-    if (newpos >= 0 && !even(newpos)) {
+    if (newpos != -1 && !even(newpos)) {
         newpos--;
     }
 
@@ -347,14 +347,14 @@ void LoopingControl::slotLoopStartPos(double pos) {
 void LoopingControl::slotLoopEndPos(double pos) {
     int newpos = pos;
 
-    if (newpos >= 0 && !even(newpos)) {
+    if (newpos != -1 && !even(newpos)) {
         newpos--;
     }
 
     // Reject if the loop-in is not set, or if the new position is before the
     // start point (but not -1).
     if (m_iLoopStartSample == -1 ||
-        (newpos >= 0 && newpos < m_iLoopStartSample)) {
+        (newpos != -1 && newpos < m_iLoopStartSample)) {
         return;
     }
 

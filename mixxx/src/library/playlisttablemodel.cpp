@@ -47,13 +47,15 @@ void PlaylistTableModel::setPlaylist(int playlistId) {
     columns << PLAYLISTTRACKSTABLE_TRACKID
             << PLAYLISTTRACKSTABLE_POSITION;
 
-    query.prepare("CREATE TEMPORARY VIEW IF NOT EXISTS " +
-                  driver->formatValue(playlistNameField) + " AS "
-                  "SELECT "
-                  + columns.join(",") +
-                  " FROM PlaylistTracks "
-                  "WHERE playlist_id = " + QString("%1").arg(playlistId) +
-                  " ORDER BY PlaylistTracks.position");
+    QString queryString = QString(
+        "CREATE TEMPORARY VIEW IF NOT EXISTS %1 AS "
+        "SELECT %2 FROM %3 WHERE playlist_id = %4")
+            .arg(driver->formatValue(playlistNameField))
+            .arg(columns.join(","))
+            .arg("PlaylistTracks")
+            .arg(playlistId);
+    query.prepare(queryString);
+
     if (!query.exec()) {
         // It's normal for this to fail.
         qDebug() << query.executedQuery() << query.lastError();
@@ -68,6 +70,7 @@ void PlaylistTableModel::setPlaylist(int playlistId) {
              m_pTrackCollection->getTrackSource("default"));
     initHeaderData();
     setSearch("", LibraryTableModel::DEFAULT_LIBRARYFILTER);
+    setDefaultSort(fieldIndex("position"), Qt::AscendingOrder);
 }
 
 bool PlaylistTableModel::addTrack(const QModelIndex& index, QString location) {

@@ -20,6 +20,7 @@ RhythmboxTrackModel::RhythmboxTrackModel(QObject* parent,
     columns << "id";
     setTable("rhythmbox_library", columns[0], columns,
              m_pTrackCollection->getTrackSource("rhythmbox"));
+    setDefaultSort(fieldIndex("artist"), Qt::AscendingOrder);
     initHeaderData();
 }
 
