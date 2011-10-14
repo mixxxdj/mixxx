@@ -1,8 +1,8 @@
 /**
-  * @file mididevicemanager.cpp
-  * @author Albert Santoni alberts@mixxx.org & Sean Pappalardo pegasus@c64.org
-  * @date Thu Dec 18 2008
-  * @brief Manages creation/enumeration/deletion of (non-MIDI) hardware controllers.
+  * @file controllermanager.cpp
+  * @author Sean Pappalardo spappalardo@mixxx.org
+  * @date Sat Apr 30 2011
+  * @brief Manages creation/enumeration/deletion of hardware controllers.
   */
 
 /***************************************************************************
