@@ -51,6 +51,8 @@
 #include <math.h>  // for isnan() everywhere else
 #endif
 
+const double kMaxPlayposRange = 1.14;
+const double kMinPlayposRange = -0.14;
 
 EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _config) :
     m_engineLock(QMutex::Recursive),
@@ -140,14 +142,15 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
 
     // Slider to show and change song position
     //these bizarre choices map conveniently to the 0-127 range of midi
-    playposSlider = new ControlPotmeter(ConfigKey(group, "playposition"), -0.14, 1.14);
+    playposSlider = new ControlPotmeter(
+        ConfigKey(group, "playposition"), kMinPlayposRange, kMaxPlayposRange);
     connect(playposSlider, SIGNAL(valueChanged(double)),
             this, SLOT(slotControlSeek(double)),
             Qt::DirectConnection);
 
     // Control used to communicate ratio playpos to GUI thread
-    visualPlaypos =
-        new ControlPotmeter(ConfigKey(group, "visual_playposition"), -0.14, 1.14);
+    visualPlaypos = new ControlPotmeter(
+        ConfigKey(group, "visual_playposition"), kMinPlayposRange, kMaxPlayposRange);
 
     // m_pTrackEnd is used to signal when at end of file during
     // playback. TODO(XXX) This should not even be a control object because it
@@ -386,7 +389,7 @@ void EngineBuffer::ejectTrack() {
 // WARNING: This method runs in both the GUI thread and the Engine Thread
 void EngineBuffer::slotControlSeek(double change)
 {
-    if(isnan(change) || change > 1.14 || change < -1.14) {
+    if(isnan(change) || change > kMaxPlayposRange || change < kMinPlayposRange) {
         // This seek is ridiculous.
         return;
     }
@@ -394,10 +397,10 @@ void EngineBuffer::slotControlSeek(double change)
     // Find new playpos, restrict to valid ranges.
     double new_playpos = round(change*file_length_old);
 
+    // TODO(XXX) currently not limiting seeks file_length_old instead of
+    // kMaxPlayposRange.
     if (new_playpos > file_length_old)
         new_playpos = file_length_old;
-    //if (new_playpos < 0.)
-    //   new_playpos = 0.;
 
     // Ensure that the file position is even (remember, stereo channel files...)
     if (!even((int)new_playpos))
@@ -599,21 +602,21 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
                 filepos_play = control_seek;
                 Q_ASSERT(round(filepos_play) == filepos_play);
 
+                // Fix filepos_play so that it is not out of bounds.
+                if (file_length_old > 0) {
+                    if (filepos_play > file_length_old) {
+                        // TODO(XXX) limit to kMaxPlayposRange instead of file_length_old
+                        filepos_play = file_length_old;
+                    } else if(filepos_play < file_length_old * kMinPlayposRange) {
+                        filepos_play = kMinPlayposRange * file_length_old;
+                    }
+                }
+
                 // Safety check that the EngineControl didn't pass us a bogus
                 // value
                 if (!even(filepos_play))
                     filepos_play--;
 
-                // Fix filepos_play so that it is not out of bounds.
-                if (file_length_old > 0) {
-                    if(filepos_play > file_length_old) {
-                        filepos_play = file_length_old;
-                        at_end = true;
-                    } else if(filepos_play < 0) {
-                        filepos_play = 0;
-                        at_start = true;
-                    }
-                }
                 // TODO(XXX) need to re-evaluate this later. If we
                 // setNewPlaypos, that clear()'s soundtouch, which might screw
                 // up the audio. This sort of jump is a normal event. Also, the
