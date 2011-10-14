@@ -57,6 +57,7 @@ void CrateTableModel::setCrate(int crateId) {
     initHeaderData();
     // Enable the basic filters
     setSearch("", LibraryTableModel::DEFAULT_LIBRARYFILTER);
+    setDefaultSort(fieldIndex("artist"), Qt::AscendingOrder);
 }
 
 bool CrateTableModel::addTrack(const QModelIndex& index, QString location) {

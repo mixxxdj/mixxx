@@ -16,7 +16,9 @@ class TrackModel {
     TrackModel(QSqlDatabase db,
                QString settingsNamespace)
             : m_db(db),
-              m_settingsNamespace(settingsNamespace) {
+              m_settingsNamespace(settingsNamespace),
+              m_iDefaultSortColumn(-1),
+              m_eDefaultSortOrder(Qt::AscendingOrder) {
     }
     virtual ~TrackModel() {}
 
@@ -91,10 +93,25 @@ class TrackModel {
         return settings.setValue(key, value);
     }
 
+    virtual int defaultSortColumn() const {
+        return m_iDefaultSortColumn;
+    }
+
+    virtual Qt::SortOrder defaultSortOrder() const {
+        return m_eDefaultSortOrder;
+    }
+
+    virtual void setDefaultSort(int sortColumn, Qt::SortOrder sortOrder) {
+        m_iDefaultSortColumn = sortColumn;
+        m_eDefaultSortOrder = sortOrder;
+    }
+
   private:
     QSqlDatabase m_db;
     QString m_settingsNamespace;
     QList<int> m_emptyColumns;
+    int m_iDefaultSortColumn;
+    Qt::SortOrder m_eDefaultSortOrder;
 };
 
 #endif
