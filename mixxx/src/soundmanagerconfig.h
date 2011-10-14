@@ -27,17 +27,6 @@
 class SoundDevice;
 class SoundManager;
 
-#define DEFAULT_API "None"
-
-// this (7) represents latency values from 1 ms to about 80 ms -- bkgood
-const unsigned int MAX_LATENCY = 7;
-
-// no DEFAULT_API because we have to check that the api is available -- bkgood
-const unsigned int DEFAULT_SAMPLE_RATE = 48000;
-
-// latency=5 means about 21 ms of latency which is default in trunk r2453 -- bkgood
-const int DEFAULT_LATENCY = 5;
-
 class SoundManagerConfig {
 public:
     enum Defaults {
@@ -46,6 +35,11 @@ public:
         OTHER = (1 << 2),
         ALL = (API | DEVICES | OTHER),
     };
+    static const unsigned int kMaxLatency;
+    static const QString kDefaultAPI;
+    static const unsigned int kDefaultSampleRate;
+    static const int kDefaultLatency;
+
     SoundManagerConfig();
     ~SoundManagerConfig();
     bool readFromDisk();

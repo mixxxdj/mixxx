@@ -8,16 +8,38 @@
 
 #include "library/itunes/itunesfeature.h"
 
-#include "library/itunes/itunestrackmodel.h"
-#include "library/itunes/itunesplaylistmodel.h"
+#include "library/basetrackcache.h"
 #include "library/dao/settingsdao.h"
+#include "library/itunes/itunesplaylistmodel.h"
+#include "library/itunes/itunestrackmodel.h"
 
 const QString ITunesFeature::ITDB_PATH_KEY = "mixxx.itunesfeature.itdbpath";
 
 
 ITunesFeature::ITunesFeature(QObject* parent, TrackCollection* pTrackCollection)
         : LibraryFeature(parent),
-          m_pTrackCollection(pTrackCollection) {
+          m_pTrackCollection(pTrackCollection),
+          m_database(pTrackCollection->getDatabase()) {
+    QString tableName = "itunes_library";
+    QString idColumn = "id";
+    QStringList columns;
+    columns << "id"
+            << "artist"
+            << "title"
+            << "album"
+            << "year"
+            << "genre"
+            << "tracknumber"
+            << "location"
+            << "comment"
+            << "duration"
+            << "bitrate"
+            << "bpm"
+            << "rating";
+    pTrackCollection->addTrackSource(
+        QString("itunes"), QSharedPointer<BaseTrackCache>(
+            new BaseTrackCache(m_pTrackCollection, tableName, idColumn,
+                               columns, false)));
     m_pITunesTrackModel = new ITunesTrackModel(this, m_pTrackCollection);
     m_pITunesPlaylistModel = new ITunesPlaylistModel(this, m_pTrackCollection);
     m_isActivated = false;
@@ -109,7 +131,7 @@ void ITunesFeature::activate(bool forceReload) {
         // Let a worker thread do the XML parsing
         m_future = QtConcurrent::run(this, &ITunesFeature::importLibrary);
         m_future_watcher.setFuture(m_future);
-        m_title = tr("iTunes (loading)");
+        m_title = tr("(loading) iTunes");
         //calls a slot in the sidebar model such that 'iTunes (isLoading)' is displayed.
         emit (featureIsLoading(this));
     }
@@ -430,8 +452,9 @@ TreeItem* ITunesFeature::parsePlaylists(QXmlStreamReader &xml) {
                                       "VALUES (:id, :name)");
 
     QSqlQuery query_insert_to_playlist_tracks(m_database);
-    query_insert_to_playlist_tracks.prepare("INSERT INTO itunes_playlist_tracks (playlist_id, track_id) "
-                                            "VALUES (:playlist_id, :track_id)");
+    query_insert_to_playlist_tracks.prepare(
+        "INSERT INTO itunes_playlist_tracks (playlist_id, track_id, position) "
+        "VALUES (:playlist_id, :track_id, :position)");
 
     while (!xml.atEnd()) {
         xml.readNext();
@@ -468,6 +491,7 @@ void ITunesFeature::parsePlaylist(QXmlStreamReader &xml, QSqlQuery &query_insert
 
     QString playlistname;
     int playlist_id = -1;
+    int playlist_position = -1;
     int track_reference = -1;
     //indicates that we haven't found the <
     bool isSystemPlaylist = false;
@@ -498,6 +522,7 @@ void ITunesFeature::parsePlaylist(QXmlStreamReader &xml, QSqlQuery &query_insert
                 if (key == "Playlist ID") {
                     readNextStartElement(xml);
                     playlist_id = xml.readElementText().toInt();
+                    playlist_position = 1;
                     continue;
                 }
                 //Hide playlists that are system playlists
@@ -535,6 +560,7 @@ void ITunesFeature::parsePlaylist(QXmlStreamReader &xml, QSqlQuery &query_insert
 
                     query_insert_to_playlist_tracks.bindValue(":playlist_id", playlist_id);
                     query_insert_to_playlist_tracks.bindValue(":track_id", track_reference);
+                    query_insert_to_playlist_tracks.bindValue(":position", playlist_position++);
 
                     //Insert tracks if we are not in a pre-build playlist
                     if (!isSystemPlaylist && !query_insert_to_playlist_tracks.exec()) {
@@ -561,28 +587,34 @@ void ITunesFeature::clearTable(QString table_name) {
     query.prepare("delete from "+table_name);
     bool success = query.exec();
 
-    if (!success)
-        qDebug() << "Could not delete remove old entries from table " << table_name << " : " << query.lastError();
-    else
-        qDebug() << "iTunes table entries of '" << table_name <<"' have been cleared.";
+    if (!success) {
+        qDebug() << "Could not delete remove old entries from table "
+                 << table_name << " : " << query.lastError();
+    } else {
+        qDebug() << "iTunes table entries of '"
+                 << table_name <<"' have been cleared.";
+    }
 }
 
 void ITunesFeature::onTrackCollectionLoaded(){
     TreeItem* root = m_future.result();
-    if(root){
+    if (root) {
         m_childModel.setRootItem(root);
-        m_pITunesTrackModel->select();
+
+        // Tell the rhythmbox track source that it should re-build its index.
+        m_pTrackCollection->getTrackSource("itunes")->buildIndex();
+
+        //m_pITunesTrackModel->select();
         emit(showTrackModel(m_pITunesTrackModel));
         qDebug() << "Itunes library loaded: success";
-    }
-    else{
+    } else {
         QMessageBox::warning(
             NULL,
             tr("Error Loading iTunes Library"),
             tr("There was an error loading your iTunes library. Some of "
                "your iTunes tracks or playlists may not have loaded."));
     }
-    //calls a slot in the sidebarmodel such that 'isLoading' is removed from the feature title.
+    // calls a slot in the sidebarmodel such that 'isLoading' is removed from the feature title.
     m_title = tr("iTunes");
     emit(featureLoadingFinished(this));
     activate();
