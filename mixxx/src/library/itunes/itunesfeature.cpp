@@ -452,8 +452,9 @@ TreeItem* ITunesFeature::parsePlaylists(QXmlStreamReader &xml) {
                                       "VALUES (:id, :name)");
 
     QSqlQuery query_insert_to_playlist_tracks(m_database);
-    query_insert_to_playlist_tracks.prepare("INSERT INTO itunes_playlist_tracks (playlist_id, track_id) "
-                                            "VALUES (:playlist_id, :track_id)");
+    query_insert_to_playlist_tracks.prepare(
+        "INSERT INTO itunes_playlist_tracks (playlist_id, track_id, position) "
+        "VALUES (:playlist_id, :track_id, :position)");
 
     while (!xml.atEnd()) {
         xml.readNext();
@@ -490,6 +491,7 @@ void ITunesFeature::parsePlaylist(QXmlStreamReader &xml, QSqlQuery &query_insert
 
     QString playlistname;
     int playlist_id = -1;
+    int playlist_position = -1;
     int track_reference = -1;
     //indicates that we haven't found the <
     bool isSystemPlaylist = false;
@@ -520,6 +522,7 @@ void ITunesFeature::parsePlaylist(QXmlStreamReader &xml, QSqlQuery &query_insert
                 if (key == "Playlist ID") {
                     readNextStartElement(xml);
                     playlist_id = xml.readElementText().toInt();
+                    playlist_position = 1;
                     continue;
                 }
                 //Hide playlists that are system playlists
@@ -557,6 +560,7 @@ void ITunesFeature::parsePlaylist(QXmlStreamReader &xml, QSqlQuery &query_insert
 
                     query_insert_to_playlist_tracks.bindValue(":playlist_id", playlist_id);
                     query_insert_to_playlist_tracks.bindValue(":track_id", track_reference);
+                    query_insert_to_playlist_tracks.bindValue(":position", playlist_position++);
 
                     //Insert tracks if we are not in a pre-build playlist
                     if (!isSystemPlaylist && !query_insert_to_playlist_tracks.exec()) {
