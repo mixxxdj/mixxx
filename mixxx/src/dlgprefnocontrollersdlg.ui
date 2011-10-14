@@ -31,7 +31,7 @@
              </size>
             </property>
      <property name="text" >
-      <string>No controllers available</string>
+      <string>No controllers available.</string>
      </property>
      <property name="wordWrap" >
       <bool>false</bool>
