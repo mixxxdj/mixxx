@@ -44,6 +44,7 @@ LibraryTableModel::LibraryTableModel(QObject* parent,
     // Sets up the table filter so that we don't show "deleted" tracks (only
     // show mixxx_deleted=0).
     setSearch("", LibraryTableModel::DEFAULT_LIBRARYFILTER);
+    setDefaultSort(fieldIndex("artist"), Qt::AscendingOrder);
 
     connect(this, SIGNAL(doSearch(const QString&)),
             this, SLOT(slotSearch(const QString&)));
