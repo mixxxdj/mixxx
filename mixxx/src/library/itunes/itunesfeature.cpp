@@ -19,7 +19,8 @@ const QString ITunesFeature::ITDB_PATH_KEY = "mixxx.itunesfeature.itdbpath";
 ITunesFeature::ITunesFeature(QObject* parent, TrackCollection* pTrackCollection)
         : LibraryFeature(parent),
           m_pTrackCollection(pTrackCollection),
-          m_database(pTrackCollection->getDatabase()) {
+          m_database(pTrackCollection->getDatabase()),
+          m_cancelImport(false) {
     QString tableName = "itunes_library";
     QString idColumn = "id";
     QStringList columns;
@@ -62,6 +63,8 @@ ITunesFeature::ITunesFeature(QObject* parent, TrackCollection* pTrackCollection)
 }
 
 ITunesFeature::~ITunesFeature() {
+    m_cancelImport = true;
+    m_future.waitForFinished();
     delete m_pITunesTrackModel;
     delete m_pITunesPlaylistModel;
 }
@@ -239,7 +242,7 @@ TreeItem* ITunesFeature::importLibrary() {
     }
     QXmlStreamReader xml(&itunes_file);
     TreeItem* playlist_root = NULL;
-    while (!xml.atEnd()) {
+    while (!xml.atEnd() && !m_cancelImport) {
         xml.readNext();
         if (xml.isStartElement()) {
             if (xml.name() == "key") {
@@ -286,7 +289,7 @@ void ITunesFeature::parseTracks(QXmlStreamReader &xml) {
     qDebug() << "Parse iTunes music collection";
 
     //read all sunsequent <dict> until we reach the closing ENTRY tag
-    while (!xml.atEnd()) {
+    while (!xml.atEnd() && !m_cancelImport) {
         xml.readNext();
 
         if (xml.isStartElement()) {
@@ -456,7 +459,7 @@ TreeItem* ITunesFeature::parsePlaylists(QXmlStreamReader &xml) {
         "INSERT INTO itunes_playlist_tracks (playlist_id, track_id, position) "
         "VALUES (:playlist_id, :track_id, :position)");
 
-    while (!xml.atEnd()) {
+    while (!xml.atEnd() && !m_cancelImport) {
         xml.readNext();
         //We process and iterate the <dict> tags holding playlist summary information here
         if (xml.isStartElement() && xml.name() == "dict") {
@@ -500,7 +503,7 @@ void ITunesFeature::parsePlaylist(QXmlStreamReader &xml, QSqlQuery &query_insert
 
 
     //We process and iterate the <dict> tags holding playlist summary information here
-    while (!xml.atEnd()) {
+    while (!xml.atEnd() && !m_cancelImport) {
         xml.readNext();
 
         if (xml.isStartElement()) {
@@ -619,6 +622,7 @@ void ITunesFeature::onTrackCollectionLoaded(){
     emit(featureLoadingFinished(this));
     activate();
 }
+
 void ITunesFeature::onLazyChildExpandation(const QModelIndex &index){
     //Nothing to do because the childmodel is not of lazy nature.
 }
