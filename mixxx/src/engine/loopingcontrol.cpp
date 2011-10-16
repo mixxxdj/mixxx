@@ -78,7 +78,7 @@ LoopingControl::LoopingControl(const char * _group,
 
     // Here we create corresponding beatloop_(SIZE) CO's which all call the same
     // BeatControl, but with a set value.
-    for (int i = 0; i < (sizeof(s_dBeatSizes) / sizeof(s_dBeatSizes[0])); ++i) {
+    for (unsigned int i = 0; i < (sizeof(s_dBeatSizes) / sizeof(s_dBeatSizes[0])); ++i) {
         BeatLoopingControl* pBeatLoop = new BeatLoopingControl(_group, s_dBeatSizes[i]);
         connect(pBeatLoop, SIGNAL(activateBeatLoop(BeatLoopingControl*)),
                 this, SLOT(slotBeatLoopActivate(BeatLoopingControl*)),

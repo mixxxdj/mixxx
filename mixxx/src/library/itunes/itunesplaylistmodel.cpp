@@ -38,22 +38,22 @@ TrackPointer ITunesPlaylistModel::getTrack(const QModelIndex& index) const
     QString location = index.sibling(
         index.row(), fieldIndex("location")).data().toString();
 
-    TrackInfoObject* pTrack = new TrackInfoObject(location);
+    TrackPointer pTrack = TrackPointer(new TrackInfoObject(location), &QObject::deleteLater);
+
     pTrack->setArtist(artist);
     pTrack->setTitle(title);
     pTrack->setAlbum(album);
     pTrack->setYear(year);
     pTrack->setGenre(genre);
     pTrack->setBpm(bpm);
-    TrackPointer track(pTrack, &QObject::deleteLater);
 
     // If the track has a BPM, then give it a static beatgrid.
     if (bpm > 0) {
-        BeatsPointer pBeats = BeatFactory::makeBeatGrid(track, bpm, 0);
-        track->setBeats(pBeats);
+        BeatsPointer pBeats = BeatFactory::makeBeatGrid(pTrack, bpm, 0);
+        pTrack->setBeats(pBeats);
     }
 
-    return track;
+    return pTrack;
 }
 
 void ITunesPlaylistModel::search(const QString& searchText) {
@@ -130,5 +130,6 @@ void ITunesPlaylistModel::setPlaylist(QString playlist_path) {
 }
 
 bool ITunesPlaylistModel::isColumnHiddenByDefault(int column) {
-    return false;
+   Q_UNUSED(column);
+   return false;
 }

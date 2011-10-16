@@ -78,7 +78,9 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
     m_pScaleST(NULL),
     m_bScalerChanged(false),
     m_bLastBufferPaused(true),
-    m_fRampValue(0.0) {
+    m_fRampValue(0.0),
+    m_iRampState(ENGINE_RAMP_NONE)
+{
 
     m_fLastSampleValue[0] = 0;
     m_fLastSampleValue[1] = 0;
@@ -134,8 +136,6 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
     connect(endButton, SIGNAL(valueChanged(double)),
             this, SLOT(slotControlEnd(double)),
             Qt::DirectConnection);
-
-    m_pMasterRate = ControlObject::getControl(ConfigKey("[Master]", "rate"));
 
     // Actual rate (used in visuals, not for control)
     rateEngine = new ControlObject(ConfigKey(group, "rateEngine"));
@@ -487,7 +487,7 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
     CSAMPLE * pOutput = (CSAMPLE *)pOut;
 
     bool bCurBufferPaused = false;
-    double rate;
+    double rate = 0;
 
     if (!m_pTrackEnd->get() && pause.tryLock()) {
 
