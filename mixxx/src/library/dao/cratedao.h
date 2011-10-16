@@ -12,6 +12,9 @@
 #define CRATE_TABLE "crates"
 #define CRATE_TRACKS_TABLE "crate_tracks"
 
+const QString CRATETRACKSTABLE_TRACKID = "track_id";
+const QString CRATETRACKSTABLE_CRATEID = "crate_id";
+
 class CrateDAO : public QObject, public virtual DAO {
     Q_OBJECT
   public:

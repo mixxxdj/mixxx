@@ -30,6 +30,9 @@
        <property name="wordWrap">
         <bool>false</bool>
        </property>
+       <property name="buddy" >
+        <cstring>ComboBoxSkinconf</cstring>
+       </property>
       </widget>
      </item>
      <item row="0" column="1" colspan="2">
@@ -58,6 +61,9 @@
        </property>
        <property name="wordWrap">
         <bool>false</bool>
+       </property>
+       <property name="buddy" >
+        <cstring>ComboBoxSchemeconf</cstring>
        </property>
       </widget>
      </item>
@@ -88,6 +94,9 @@
        <property name="wordWrap">
         <bool>false</bool>
        </property>
+       <property name="buddy" >
+        <cstring>ComboBoxVisuals</cstring>
+       </property>
       </widget>
      </item>
      <item row="2" column="1" colspan="2">
@@ -117,6 +126,9 @@
        <property name="wordWrap">
         <bool>false</bool>
        </property>
+       <property name="buddy" >
+        <cstring>ComboBoxPosition</cstring>
+       </property>
       </widget>
      </item>
      <item row="3" column="1" colspan="2">
@@ -145,6 +157,9 @@
        </property>
        <property name="wordWrap">
         <bool>false</bool>
+       </property>
+       <property name="buddy" >
+        <cstring>ComboBoxTooltips</cstring>
        </property>
       </widget>
      </item>
@@ -185,6 +200,9 @@
        <property name="wordWrap">
         <bool>false</bool>
        </property>
+       <property name="buddy" >
+        <cstring>ComboBoxRateRange</cstring>
+       </property>
       </widget>
      </item>
      <item row="6" column="1" colspan="2">
@@ -214,6 +232,9 @@
        <property name="wordWrap">
         <bool>false</bool>
        </property>
+       <property name="buddy" >
+        <cstring>ComboBoxRateDir</cstring>
+       </property>
       </widget>
      </item>
      <item row="7" column="1" colspan="2">
@@ -234,6 +255,9 @@
              <property name="text">
                  <string>Track load behaviour</string>
              </property>
+       <property name="buddy" >
+        <cstring>ComboBoxAllowTrackLoadToPlayingDeck</cstring>
+       </property>
          </widget>
      </item>
      <item row="11" column="1" colspan="2">
@@ -244,6 +268,9 @@
        <property name="text">
         <string>Cue behaviour</string>
        </property>
+       <property name="buddy" >
+        <cstring>ComboBoxCueDefault</cstring>
+       </property>
       </widget>
      </item>
      <item row="10" column="1" colspan="2">
@@ -253,6 +280,9 @@
       <widget class="QLabel" name="textLabelCueRecall">
        <property name="text">
         <string>Auto Recall Cue</string>
+       </property>
+       <property name="buddy" >
+        <cstring>ComboBoxCueRecall</cstring>
        </property>
       </widget>
      </item>
@@ -291,6 +321,9 @@
             <property name="wordWrap">
              <bool>false</bool>
             </property>
+            <property name="buddy" >
+             <cstring>spinBoxPermRateLeft</cstring>
+            </property>
            </widget>
           </item>
           <item row="1" column="0">
@@ -309,6 +342,9 @@
             </property>
             <property name="wordWrap">
              <bool>false</bool>
+            </property>
+            <property name="buddy" >
+             <cstring>spinBoxPermRateRight</cstring>
             </property>
            </widget>
           </item>
@@ -388,6 +424,9 @@
             <property name="wordWrap">
              <bool>false</bool>
             </property>
+            <property name="buddy" >
+             <cstring>spinBoxTempRateLeft</cstring>
+            </property>
            </widget>
           </item>
           <item row="1" column="0">
@@ -406,6 +445,9 @@
             </property>
             <property name="wordWrap">
              <bool>false</bool>
+            </property>
+            <property name="buddy" >
+             <cstring>spinBoxTempRateRight</cstring>
             </property>
            </widget>
           </item>
@@ -485,6 +527,9 @@
        <widget class="QLabel" name="label_2">
         <property name="text">
          <string>Pitchbend sensitivity</string>
+        </property>
+        <property name="buddy" >
+         <cstring>SliderRateRampSensitivity</cstring>
         </property>
        </widget>
       </item>

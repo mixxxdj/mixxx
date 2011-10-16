@@ -18,6 +18,7 @@
 #include "configobject.h"
 #include "trackinfoobject.h"
 #include "engine/engineworker.h"
+#include "util/fifo.h"
 
 class ControlObjectThread;
 namespace Mixxx {
@@ -52,6 +53,31 @@ typedef struct Chunk {
     Chunk* next_lru;
 } Chunk;
 
+typedef struct ChunkReadRequest {
+    Chunk* chunk;
+
+    ChunkReadRequest() { chunk = NULL; }
+} ChunkReadRequest;
+
+enum ReaderStatus {
+    INVALID,
+    TRACK_NOT_LOADED,
+    TRACK_LOADED,
+    CHUNK_READ_SUCCESS,
+    CHUNK_READ_EOF,
+    CHUNK_READ_INVALID
+};
+
+typedef struct ReaderStatusUpdate {
+    ReaderStatus status;
+    Chunk* chunk;
+    int trackNumSamples;
+    ReaderStatusUpdate() {
+        status = INVALID;
+        chunk = NULL;
+    }
+} ReaderStatusUpdate;
+
 // CachingReader provides a layer on top of a SoundSource for reading samples
 // from a file. A cache is provided so that repeated reads to a certain section
 // of a song do not cause disk seeks or unnecessary SoundSource
@@ -63,33 +89,21 @@ class CachingReader : public EngineWorker {
     Q_OBJECT
 
   public:
-
     // Construct a CachingReader with the given group.
     CachingReader(const char* _group,
                   ConfigObject<ConfigValue>* _config);
     virtual ~CachingReader();
 
-    // You really shouldn't use these unless there /really/ isn't any other way
-    // of getting at this data. Calling it involves a lock/unlock. It's better
-    // to receive trackLoaded signals instead.
-    int getTrackSampleRate();
-    int getTrackNumSamples();
+    void process();
 
     // Read num_samples from the SoundSource starting with sample into
     // buffer. Returns the total number of samples actually written to buffer.
     int read(int sample, int num_samples, CSAMPLE* buffer);
 
-
-    // Issue a hint or list of hints to the CachingReader. Next time the reader
-    // is woken, it will make sure as many hints are in memory as possible. The
-    // hint's sample and length are taken into account, but priority is
-    // currently unused.
-    void hint(Hint& hint);
-    void hint(QList<Hint>& hintList);
-
     // Issue a list of hints, but check whether any of the hints request a chunk
     // that is not in the cache. If any hints do request a chunk not in cache,
-    // then wake the reader so that it can process them.
+    // then wake the reader so that it can process them. Must only be called
+    // from the engine callback.
     void hintAndMaybeWake(QList<Hint>& hintList);
 
     // Request that the CachingReader load a new track. These requests are
@@ -104,55 +118,51 @@ class CachingReader : public EngineWorker {
     // thread pool via the EngineWorkerScheduler.
     void run();
 
+    // A Chunk is a memory-resident section of audio that has been cached. Each
+    // chunk holds a fixed number of samples given by kSamplesPerChunk.
+    const static int kChunkLength, kSamplesPerChunk;
+
   signals:
     // Emitted once a new track is loaded and ready to be read from.
     void trackLoaded(TrackPointer pTrack, int iSampleRate, int iNumSamples);
     void trackLoadFailed(TrackPointer pTrack, QString reason);
 
   private:
-
-    // A Chunk is a memory-resident section of audio that has been cached. Each
-    // chunk holds a fixed number of samples given by kSamplesPerChunk.
-    const static int kChunkLength, kSamplesPerChunk;
-
     // Removes a chunk from the LRU list
     static Chunk* removeFromLRUList(Chunk* chunk, Chunk* head);
     // Inserts a chunk into the LRU list
     static Chunk* insertIntoLRUList(Chunk* chunk, Chunk* head);
 
+    // Given a sample number, return the chunk number corresponding to it.
+    inline static int chunkForSample(int sample_number) {
+        return sample_number / kSamplesPerChunk;
+    }
+
+    // Given a chunk number, return the start sample number for the chunk.
+    inline static int sampleForChunk(int chunk_number) {
+        return chunk_number * kSamplesPerChunk;
+    }
+
     // Initialize the reader by creating all the chunks from the RAM provided to
     // the CachingReader.
     void initialize();
 
-    // Internal method to load a track. Emits trackLoaded when finished.
-    void loadTrack(TrackPointer pTrack);
+    const char* m_pGroup;
+    const ConfigObject<ConfigValue>* m_pConfig;
 
-    // Queue of Tracks to load, and the corresponding lock.
+    // Thread-safe FIFOs for communication between the engine callback and
+    // reader thread.
+    FIFO<ChunkReadRequest> m_chunkReadRequestFIFO;
+    FIFO<ReaderStatusUpdate> m_readerStatusFIFO;
+
+    // Queue of Tracks to load, and the corresponding lock. Must acquire the
+    // lock to touch.
     QMutex m_trackQueueMutex;
     QQueue<TrackWeakPointer> m_trackQueue;
 
-    // Held when the Reader is working: read() vs. run()
-    QMutex m_readerMutex;
-    QWaitCondition m_readerWait;
-
-    //
-    // Everything below this line is guarded by m_readerMutex, make sure you
-    // hold it if you touch them.
-    //
-
-    // Chunks that should be read into memory when the CachingReader wakes
-    // up. Readers and writers must holds the reader lock.
-    QSet<int> m_chunksToRead;
-
-    // Look up chunk_number at any cost. Reads from SoundSource if
-    // necessary. Returns NULL if chunk_number is not valid. If cache_miss is
-    // not NULL, sets it to true or false whether or not the chunk was fetched
-    // from cache or not.
-    Chunk* getChunk(int chunk_number, bool* cache_miss=NULL);
-
-    // Read the given chunk_number from the file into pChunk's data
-    // buffer. Fills length/sample information about Chunk* as well.
-    bool readChunkFromFile(Chunk* pChunk, int chunk_number);
+    ////////////////////////////////////////////////////////////////////////////
+    // The following may /only/ be called within the engine callback
+    ////////////////////////////////////////////////////////////////////////////
 
     // Looks for the provided chunk number in the index of in-memory chunks and
     // returns it if it is present. If not, returns NULL.
@@ -170,37 +180,15 @@ class CachingReader : public EngineWorker {
     // Gets a chunk from the free list, frees the LRU Chunk if none available.
     Chunk* allocateChunkExpireLRU();
 
-    // Given a sample number, return the chunk number corresponding to it.
-    inline int chunkForSample(int sample_number) {
-        return sample_number / kSamplesPerChunk;
-        //return int(floor(double(sample_number) / double(kSamplesPerChunk)));
-    }
-
-    // Given a chunk number, return the start sample number for the chunk.
-    inline int sampleForChunk(int chunk_number) {
-        return chunk_number * kSamplesPerChunk;
-    }
-
-    inline bool isChunkValid(int chunk_number) {
-        return m_iTrackSampleRate != 0 &&
-                chunk_number >= 0 &&
-                sampleForChunk(chunk_number) < m_iTrackNumSamples;
-    }
-
-    const char* m_pGroup;
-    const ConfigObject<ConfigValue>* m_pConfig;
-
-    // The current track loaded
-    TrackPointer m_pCurrentTrack;
-    // The current sound source of the track loaded
-    Mixxx::SoundSource* m_pCurrentSoundSource;
-    int m_iTrackSampleRate;
-    int m_iTrackNumSamples;
+    ReaderStatus m_readerStatus;
 
     // Keeps track of free Chunks we've allocated
     QVector<Chunk*> m_chunks;
     // List of free chunks available for use.
     QList<Chunk*> m_freeChunks;
+    // List of reserved chunks with reads in progress
+    QHash<int, Chunk*> m_chunksBeingRead;
+
     // Keeps track of what Chunks we've allocated and indexes them based on what
     // chunk number they are allocated to.
     QHash<int, Chunk*> m_allocatedChunks;
@@ -211,10 +199,27 @@ class CachingReader : public EngineWorker {
 
     // The raw memory buffer which is divided up into chunks.
     CSAMPLE* m_pRawMemoryBuffer;
-    int m_iRawMemoryBufferLength;
+
+    ////////////////////////////////////////////////////////////////////////////
+    // The following may /only/ be called within the reader thread
+    ////////////////////////////////////////////////////////////////////////////
+
+    // Internal method to load a track. Emits trackLoaded when finished.
+    void loadTrack(TrackPointer pTrack);
+
+    // Read the given chunk_number from the file into pChunk's data
+    // buffer. Fills length/sample information about Chunk* as well.
+    void processChunkReadRequest(ChunkReadRequest* request,
+                                 ReaderStatusUpdate* update);
+
+    // The current sound source of the track loaded
+    Mixxx::SoundSource* m_pCurrentSoundSource;
+    int m_iTrackSampleRate;
+    int m_iTrackNumSamples;
+    int m_iTrackNumSamplesCallbackSafe;
+
     // Temporary buffer for reading from SoundSources
     SAMPLE* m_pSample;
-    bool m_bQuit;
 };
 
 
