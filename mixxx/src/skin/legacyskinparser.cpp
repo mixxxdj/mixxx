@@ -440,8 +440,10 @@ QWidget* LegacySkinParser::parseVisual(QDomElement node) {
     widget->installEventFilter(m_pKeyboard);
 
     // Hook up the wheel Control Object to the Visual Controller
+
+    // Connect control proxy to widget, so delete can be handled by the QT object tree
     ControlObjectThreadWidget * p = new ControlObjectThreadWidget(
-        ControlObject::getControl(ConfigKey(channelStr, "wheel")));
+        ControlObject::getControl(ConfigKey(channelStr, "wheel")), widget);
 
     p->setWidget((QWidget *)widget, true, true,
                  ControlObjectThreadWidget::EMIT_ON_PRESS, Qt::LeftButton);

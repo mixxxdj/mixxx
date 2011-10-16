@@ -74,7 +74,7 @@ bool EngineBufferScaleST::getPitchIndpTimeStretch(void)
     return m_bPitchIndpTimeStretch;
 }
 
- 
+
 void EngineBufferScaleST::setBaseRate(double dBaseRate)
 {
     m_dBaseRate = dBaseRate;
@@ -165,7 +165,7 @@ CSAMPLE* EngineBufferScaleST::scale(double playpos, unsigned long buf_size,
                                     CSAMPLE* pBase, unsigned long iBaseLength) {
     Q_UNUSED (pBase);
     Q_UNUSED (iBaseLength);
-    
+
     m_qMutex.lock();
 
     int iCurPos = playpos;

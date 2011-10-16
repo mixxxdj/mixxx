@@ -16,8 +16,8 @@
 ***************************************************************************/
 
 /**
-    TODO(XXX): Feb 2011 - asantoni 
-        * This class probably doesn't need the locking anymore. 
+    TODO(XXX): Feb 2011 - asantoni
+        * This class probably doesn't need the locking anymore.
 
 */
 
@@ -33,7 +33,8 @@ VinylControlSignalWidget::VinylControlSignalWidget()
       m_pVinylControl(NULL),
       m_iSize(MIXXX_VINYL_SCOPE_SIZE),
       m_qImage(),
-      m_bVinylActive(FALSE) {
+      m_bVinylActive(FALSE),
+      m_imageData(NULL) {
 }
 
 void VinylControlSignalWidget::setSize(int size)
@@ -48,6 +49,7 @@ void VinylControlSignalWidget::setSize(int size)
 
 VinylControlSignalWidget::~VinylControlSignalWidget()
 {
+    delete [] m_imageData;
 }
 
 /** This gets called before the VinylControlProxy objects get destroyed, in

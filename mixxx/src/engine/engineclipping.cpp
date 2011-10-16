@@ -33,7 +33,7 @@ EngineClipping::~EngineClipping()
 void EngineClipping::process(const CSAMPLE * pIn, const CSAMPLE * pOut, const int iBufferSize)
 {
     static const FLOAT_TYPE kfMaxAmp = 32767.;
-    static const FLOAT_TYPE kfClip = 0.8*kfMaxAmp;
+    // static const FLOAT_TYPE kfClip = 0.8*kfMaxAmp;
 
     CSAMPLE * pOutput = (CSAMPLE *)pOut;
     // SampleUtil clamps the buffer and if pIn and pOut are aliased will not copy.
