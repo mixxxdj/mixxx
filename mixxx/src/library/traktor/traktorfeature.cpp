@@ -6,6 +6,7 @@
 #include <QXmlStreamReader>
 #include <QMap>
 #include <QSettings>
+#include <QDesktopServices>
 
 #include "library/traktor/traktorfeature.h"
 
@@ -16,7 +17,29 @@
 
 
 TraktorFeature::TraktorFeature(QObject* parent, TrackCollection* pTrackCollection):
-        LibraryFeature(parent), m_pTrackCollection(pTrackCollection) {
+        LibraryFeature(parent),
+        m_pTrackCollection(pTrackCollection) {
+    QString tableName = "traktor_library";
+    QString idColumn = "id";
+    QStringList columns;
+    columns << "id"
+            << "artist"
+            << "title"
+            << "album"
+            << "year"
+            << "genre"
+            << "tracknumber"
+            << "location"
+            << "comment"
+            << "rating"
+            << "duration"
+            << "bitrate"
+            << "bpm"
+            << "key";
+    pTrackCollection->addTrackSource(QString("traktor"), QSharedPointer<BaseTrackCache>(
+        new BaseTrackCache(m_pTrackCollection, tableName, idColumn,
+                           columns, false)));
+
     m_isActivated = false;
     m_pTraktorTableModel = new TraktorTableModel(this, m_pTrackCollection);
     m_pTraktorPlaylistModel = new TraktorPlaylistModel(this, m_pTrackCollection);
@@ -68,8 +91,7 @@ void TraktorFeature::refreshLibraryModels()
 void TraktorFeature::activate() {
     qDebug() << "TraktorFeature::activate()";
 
-    if(!m_isActivated){
-
+    if (!m_isActivated) {
         m_isActivated =  true;
         /* Ususally the maximum number of threads
          * is > 2 depending on the CPU cores
@@ -84,11 +106,10 @@ void TraktorFeature::activate() {
         // Let a worker thread do the XML parsing
         m_future = QtConcurrent::run(this, &TraktorFeature::importLibrary, getTraktorMusicDatabase());
         m_future_watcher.setFuture(m_future);
-        m_title = tr("Traktor (loading)");
+        m_title = tr("(loading) Traktor");
         //calls a slot in the sidebar model such that 'iTunes (isLoading)' is displayed.
         emit (featureIsLoading(this));
-    }
-    else{
+    } else {
         emit(showTrackModel(m_pTraktorTableModel));
     }
 
@@ -578,8 +599,8 @@ void TraktorFeature::clearTable(QString table_name)
 
 QString TraktorFeature::getTraktorMusicDatabase()
 {
-    QString musicFolder;
-#if defined(__APPLE__)
+    QString musicFolder = "";
+
     /*
      * As of version 2, Traktor has changed the path of the collection.nml
      * In general, the path is <Home>/Documents/Native Instruments/Traktor 2.x.y/collection.nml
@@ -588,7 +609,8 @@ QString TraktorFeature::getTraktorMusicDatabase()
      */
 
     //Let's try to detect the latest Traktor version and its collection.nml
-    QDir ni_directory(QDir::homePath() +"/Documents/Native Instruments/");
+    QString myDocuments = QDesktopServices::storageLocation(QDesktopServices::DocumentsLocation);
+    QDir ni_directory(myDocuments +"/Native Instruments/");
     ni_directory.setFilter(QDir::Dirs | QDir::NoDotAndDotDot | QDir::NoSymLinks) ;
 
     //Iterate over the subfolders
@@ -614,38 +636,30 @@ QString TraktorFeature::getTraktorMusicDatabase()
             }
         }
     }
-    //select the folder with the highest version as default Traktor folder
+    //If no Traktor installation has been found, return some default string
     if(installed_ts_map.isEmpty()){
         musicFolder =  QDir::homePath() + "/collection.nml";
     }
-    else
+    else  //Select the folder with the highest version as default Traktor folder
     {
         QList<int> versions = installed_ts_map.keys();
         qSort(versions);
         musicFolder = installed_ts_map.value(versions.last()) + "/collection.nml";
 
     }
-
-#elif defined(__WINDOWS__)
-    QSettings settings("HKEY_CURRENT_USER\\Software\\Native Instruments\\Traktor Pro", QSettings::NativeFormat);
-        // if the value method fails it returns QTDir::homePath
-    musicFolder = settings.value("RootDirectory", QDir::homePath()).toString();
-    musicFolder += "collection.nml";
-#elif defined(__LINUX__)
-        musicFolder =  QDir::homePath() + "/collection.nml";
-#else
-        musicFolder = "";
-#endif
     qDebug() << "Traktor Library Location=[" << musicFolder << "]";
     return musicFolder;
 }
 
-void TraktorFeature::onTrackCollectionLoaded()
-{
+void TraktorFeature::onTrackCollectionLoaded() {
     TreeItem* root = m_future.result();
     if (root) {
         m_childModel.setRootItem(root);
-        m_pTraktorTableModel->select();
+
+        // Tell the rhythmbox track source that it should re-build its index.
+        m_pTrackCollection->getTrackSource("traktor")->buildIndex();
+
+        //m_pTraktorTableModel->select();
         emit(showTrackModel(m_pTraktorTableModel));
         qDebug() << "Traktor library loaded successfully";
     } else {
@@ -655,11 +669,13 @@ void TraktorFeature::onTrackCollectionLoaded()
             tr("There was an error loading your Traktor library. Some of "
                "your Traktor tracks or playlists may not have loaded."));
     }
-    //calls a slot in the sidebarmodel such that 'isLoading' is removed from the feature title.
+
+    // calls a slot in the sidebarmodel such that 'isLoading' is removed from the feature title.
     m_title = tr("Traktor");
     emit(featureLoadingFinished(this));
     activate();
 }
-void TraktorFeature::onLazyChildExpandation(const QModelIndex &index){
-    //Nothing to do because the childmodel is not of lazy nature.
+
+void TraktorFeature::onLazyChildExpandation(const QModelIndex &index) {
+    // Nothing to do because the childmodel is not of lazy nature.
 }

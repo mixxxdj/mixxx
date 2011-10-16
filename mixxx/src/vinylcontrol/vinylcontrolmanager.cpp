@@ -26,11 +26,9 @@ VinylControlManager::VinylControlManager(QObject *pParent,
 {
     // load a bunch of stuff
     ControlObject::getControl(ConfigKey("[Channel1]","vinylcontrol_enabled"))
-        ->queueFromThread(m_pConfig->getValueString(
-                ConfigKey("[VinylControl]","enabled_ch1")).toDouble());
+        ->queueFromThread(0);
     ControlObject::getControl(ConfigKey("[Channel2]","vinylcontrol_enabled"))
-        ->queueFromThread(m_pConfig->getValueString(
-                ConfigKey("[VinylControl]","enabled_ch2")).toDouble());
+        ->queueFromThread(0);
     ControlObject::getControl(ConfigKey("[Channel1]","vinylcontrol_mode"))
         ->queueFromThread(m_pConfig->getValueString(
                 ConfigKey("[VinylControl]","mode")).toDouble());
@@ -62,8 +60,6 @@ VinylControlManager::~VinylControlManager() {
 
     // save a bunch of stuff to config
     // turn off vinyl control so it won't be enabled on load (this is redundant to mixxx.cpp)
-    m_pConfig->set(ConfigKey("[VinylControl]","enabled_ch1"), false);
-    m_pConfig->set(ConfigKey("[VinylControl]","enabled_ch2"), false);
     m_pConfig->set(ConfigKey("[Channel 1]","vinylcontrol_enabled"), false);
     m_pConfig->set(ConfigKey("[Channel 2]","vinylcontrol_enabled"), false);
     m_pConfig->set(ConfigKey("[VinylControl]","mode"),
@@ -149,6 +145,21 @@ bool VinylControlManager::vinylInputEnabled(int deck) {
     bool ret = (deck - 1) < m_proxies.size() && m_proxies[deck-1];
     m_proxiesLock.unlock();
     return ret;
+}
+
+VinylControlProxy* VinylControlManager::getVinylControlProxyForChannel(QString channel)
+{
+    // TODO: will need update for n-deck
+    if (channel == "[Channel1]")
+    {
+        return m_proxies.at(0);
+    }
+    else if (channel == "[Channel2]")
+    {
+        return m_proxies.at(1);
+    }
+    
+    return NULL;
 }
 
 void VinylControlManager::toggleDeck(double value) {
