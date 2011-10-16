@@ -18,7 +18,10 @@
 	the resulting work only under the same or similar license to this one.
 
 	CHANGELOG
-	v1.10.0.10	(01/06/2011)
+	v1.10.0.10	(16/10/2011)
+	* Fix: Wrong button for hotcue 1 on channel 2 was displayed
+
+	v1.10.0.09	(01/06/2011)
 	* Feature: Added BPM display & BPM tap button to samplers
 
 	v1.10.0.08	(24/05/2011)
@@ -6166,13 +6169,13 @@
 								<RightClickIsPushButton>true</RightClickIsPushButton>
 								<State>
 									<Number>0</Number>
-									<Pressed>btn_hotcue2_2_over.png</Pressed>
-									<Unpressed>btn_hotcue2_2.png</Unpressed>
+									<Pressed>btn_hotcue2_1_over.png</Pressed>
+									<Unpressed>btn_hotcue2_1.png</Unpressed>
 								</State>
 								<State>
 									<Number>1</Number>
-									<Pressed>btn_hotcue2_2.png</Pressed>
-									<Unpressed>btn_hotcue2_2_over.png</Unpressed>
+									<Pressed>btn_hotcue2_1.png</Pressed>
+									<Unpressed>btn_hotcue2_1_over.png</Unpressed>
 								</State>
 								<Pos>236,0</Pos>
 								<Connection>
