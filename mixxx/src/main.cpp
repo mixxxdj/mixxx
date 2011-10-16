@@ -205,22 +205,25 @@ int main(int argc, char * argv[])
     // Only match supported file types since command line options are also parsed elsewhere
     QRegExp fileRx(SoundSourceProxy::supportedFileExtensionsRegex(), Qt::CaseInsensitive);
 
-    for (int i=0; i<argc; ++i)
-    {
-        if (argv[i]==QString("-h") || argv[i]==QString("--h") || argv[i]==QString("--help")) {
-            puts("Mixxx digital DJ software v");
-            puts(VERSION);
-            puts(" - Command line options");
-            puts("\n(These are case-sensitive.)\n\n\
+   for (int i = 0; i < argc; ++i) {
+       if (   argv[i] == QString("-h") 
+            || argv[i] == QString("--h") 
+            || argv[i] == QString("--help")
+    ) {
+           puts("Mixxx digital DJ software v");
+           puts(VERSION);
+           puts(" - Command line options");
+           puts(
+                   "\n(These are case-sensitive.)\n\n\
     [FILE]                  Load the specified music file(s) at start-up.\n\
                             Each must be one of the following file types:\n\
                             ");
 
             QString fileExtensions = SoundSourceProxy::supportedFileExtensionsString();
             QByteArray fileExtensionsBA = QString(fileExtensions).toUtf8();
-            printf("%s", fileExtensionsBA.constData());
-            printf("\n\n");
-            printf("\
+            puts(fileExtensionsBA.constData());
+            puts("\n\n");
+            puts("\
                             Each file you specify will be loaded into the\n\
                             next virtual deck.\n\
 \n\

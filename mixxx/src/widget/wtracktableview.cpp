@@ -88,11 +88,9 @@ WTrackTableView::~WTrackTableView()
     delete m_pPlaylistMenu;
     delete m_pCrateMenu;
     //delete m_pRenamePlaylistAct;
-
     delete m_pTrackInfo;
-
-	delete m_pNumSamplers;
-	delete m_pNumDecks;
+    delete m_pNumSamplers;
+    delete m_pNumDecks;
 }
 
 void WTrackTableView::loadTrackModel(QAbstractItemModel *model) {
@@ -471,7 +469,8 @@ void WTrackTableView::onShow() {
 }
 
 void WTrackTableView::mouseMoveEvent(QMouseEvent* pEvent) {
-    TrackModel* trackModel = getTrackModel();
+   Q_UNUSED(pEvent);
+   TrackModel* trackModel = getTrackModel();
     if (!trackModel)
         return;
 

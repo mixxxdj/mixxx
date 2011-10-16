@@ -24,29 +24,26 @@
 #include <QtCore>
 #include <QtGui>
 
-class LibraryScannerDlg : public QWidget
-{
+class LibraryScannerDlg : public QWidget {
     Q_OBJECT
-    
-    public:
-        LibraryScannerDlg(QWidget * parent = 0, Qt::WindowFlags f = 0);
-        ~LibraryScannerDlg();
-    public slots:
-	    void slotUpdate(QString path);  
-	    void slotCancel();  
-        void slotScanFinished();
-        
-    signals:
-        void scanCancelled();
-    private:
-        QString m_qLibraryPath;             //The path to the library on disk
-            
-	    QTime m_timer;
-        QVBoxLayout* m_layout;
-        QLabel* m_label;
-	    QLabel* m_current;
-	    QPushButton* m_cancel;
-	    bool m_bCancelled;    
+  public:
+    LibraryScannerDlg(QWidget * parent = 0, Qt::WindowFlags f = 0);
+    ~LibraryScannerDlg();
+
+  public slots:
+    void slotUpdate(QString path);
+    void slotCancel();
+    void slotScanFinished();
+
+  signals:
+    void scanCancelled();
+    void progress(QString);
+
+  private:
+    // The path to the library on disk
+    QString m_qLibraryPath;
+    QTime m_timer;
+    bool m_bCancelled;
 };
 
 #endif

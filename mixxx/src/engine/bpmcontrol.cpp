@@ -225,9 +225,9 @@ void BpmControl::adjustPhase() {
     }
 
     // Get the file BPM of each song.
-//    double dThisBpm = m_pBeats->getBpm();
-//    double dOtherBpm = ControlObject::getControl(
-//        ConfigKey(pOtherEngineBuffer->getGroup(), "file_bpm"))->get();
+    //double dThisBpm = m_pBeats->getBpm();
+    //double dOtherBpm = ControlObject::getControl(
+    //ConfigKey(pOtherEngineBuffer->getGroup(), "file_bpm"))->get();
 
     // Get the current position of both decks
     double dThisPosition = getCurrentSample();

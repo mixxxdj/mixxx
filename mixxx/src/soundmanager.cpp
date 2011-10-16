@@ -48,18 +48,18 @@ SoundManager::SoundManager(ConfigObject<ConfigValue> *pConfig, EngineMaster *pMa
     , m_inputDevicesOpened(0)
     , m_pErrorDevice(NULL)
 #ifdef __PORTAUDIO__
-    , m_paInitialized(false)
-    , m_jackSampleRate(-1)
+   , m_paInitialized(false)
+   , m_jackSampleRate(-1)
 #endif
 {
     //These are ControlObjectThreadMains because all the code that
     //uses them is called from the GUI thread (stuff like opening soundcards).
+    // TODO(xxx) some of these ControlObject are not needed by soundmanager, or are unused here.
+    // It is possible to take them out?    
     m_pControlObjectLatency = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[Master]", "latency")));
     m_pControlObjectSampleRate = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[Master]", "samplerate")));
     m_pControlObjectInputPassthrough1 = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[Channel1]", "inputpassthrough")));
     m_pControlObjectInputPassthrough2 = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[Channel2]", "inputpassthrough")));
-    m_pControlObjectVinylStatus1 = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[Channel1]", "vinylcontrol_status")));
-    m_pControlObjectVinylStatus2 = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[Channel2]", "vinylcontrol_status")));
     m_bPassthroughActive[0] = false;
     m_bPassthroughActive[1] = false;
     

@@ -141,26 +141,26 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
 
     // Load Qt translations for this locale
     QTranslator* qtTranslator = new QTranslator(a);
-	if( qtTranslator->load("qt_" + locale,
-			QLibraryInfo::location(QLibraryInfo::TranslationsPath))) {
-		a->installTranslator(qtTranslator);
-	}
-	else{
-		delete qtTranslator;
-	}
+   if( qtTranslator->load("qt_" + locale,
+           QLibraryInfo::location(QLibraryInfo::TranslationsPath))) {
+       a->installTranslator(qtTranslator);
+   }
+   else{
+       delete qtTranslator;
+   }
 
     // Load Mixxx specific translations for this locale
     QTranslator* mixxxTranslator = new QTranslator(a);
     bool mixxxLoaded = mixxxTranslator->load("mixxx_" + locale, translationsFolder);
     qDebug() << "Loading translations for locale" << locale
-			 << "from translations folder" << translationsFolder << ":"
-			 << (mixxxLoaded ? "success" : "fail");
-	if (mixxxLoaded) {
-		a->installTranslator(mixxxTranslator);
-	}
-	else {
-		delete mixxxTranslator;
-	}
+            << "from translations folder" << translationsFolder << ":"
+            << (mixxxLoaded ? "success" : "fail");
+   if (mixxxLoaded) {
+       a->installTranslator(mixxxTranslator);
+   }
+   else {
+       delete mixxxTranslator;
+   }
 
 #ifdef __C_METRICS__
     // Initialize Case Metrics if User is OK with that
@@ -642,19 +642,16 @@ MixxxApp::~MixxxApp()
             leakedConfigKeys.append(key);
         }
 
-		foreach (ConfigKey key, leakedConfigKeys) {
-			// delete just to satisfy valgrind:
-			// check if the pointer is still valid, the control object may have bin already
-			// deleted by its parent in this loop
-			ControlObject* p = ControlObject::getControl(key);
-			if (p) {
-				delete p;
-			}
-		}
-	}
-	qDebug() << "~MixxxApp: All leaking controls deleted.";
+       foreach (ConfigKey key, leakedConfigKeys) {
+           // delete just to satisfy valgrind:
+           // check if the pointer is still valid, the control object may have bin already
+           // deleted by its parent in this loop
+           delete ControlObject::getControl(key);
+       }
+   }
+   qDebug() << "~MixxxApp: All leaking controls deleted.";
 
-	delete m_pKeyboard;
+   delete m_pKeyboard;
 }
 
 int MixxxApp::noSoundDlg(void)
@@ -1004,13 +1001,13 @@ void MixxxApp::initActions()
 void MixxxApp::initMenuBar()
 {
     // MENUBAR
-	m_pFileMenu = new QMenu(tr("&File"), menuBar());
-	m_pOptionsMenu = new QMenu(tr("&Options"), menuBar());
-	m_pLibraryMenu = new QMenu(tr("&Library"),menuBar());
-	m_pViewMenu = new QMenu(tr("&View"), menuBar());
-	m_pHelpMenu = new QMenu(tr("&Help"), menuBar());
+   m_pFileMenu = new QMenu(tr("&File"), menuBar());
+   m_pOptionsMenu = new QMenu(tr("&Options"), menuBar());
+   m_pLibraryMenu = new QMenu(tr("&Library"),menuBar());
+   m_pViewMenu = new QMenu(tr("&View"), menuBar());
+   m_pHelpMenu = new QMenu(tr("&Help"), menuBar());
 #ifdef __SCRIPT__
-	macroMenu=new QMenu(tr("&Macro"), menuBar());
+   macroMenu=new QMenu(tr("&Macro"), menuBar());
 #endif
     connect(m_pOptionsMenu, SIGNAL(aboutToShow()),
             this, SLOT(slotOptionsMenuShow()));

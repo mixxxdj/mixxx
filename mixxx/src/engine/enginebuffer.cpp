@@ -137,8 +137,6 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
             this, SLOT(slotControlEnd(double)),
             Qt::DirectConnection);
 
-    // m_pMasterRate = ControlObject::getControl(ConfigKey("[Master]", "rate"));
-    
     // Actual rate (used in visuals, not for control)
     rateEngine = new ControlObject(ConfigKey(group, "rateEngine"));
 

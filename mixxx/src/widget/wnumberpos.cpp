@@ -55,9 +55,9 @@ WNumberPos::WNumberPos(const char * group, QWidget * parent)
 }
 
 WNumberPos::~WNumberPos() {
-	delete m_pTrackSampleRate;
-	delete m_pTrackSamples;
-	delete m_pShowDurationRemaining;
+    delete m_pTrackSampleRate;
+    delete m_pTrackSamples;
+    delete m_pShowDurationRemaining;
     delete m_pRateControl;
     delete m_pRateDirControl;
     delete m_pDuration;

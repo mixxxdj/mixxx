@@ -141,7 +141,7 @@ void LibraryScanner::run()
 
 
     if (!m_database.isValid()) {
-    	m_database = QSqlDatabase::addDatabase("QSQLITE", "LIBRARY_SCANNER");
+       m_database = QSqlDatabase::addDatabase("QSQLITE", "LIBRARY_SCANNER");
     }
 
     if (!m_database.isOpen()) {

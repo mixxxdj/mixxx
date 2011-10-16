@@ -38,7 +38,6 @@ class MidiDeviceManager : public QObject
         void saveMappings(bool onlyActive=false);
         //void closeDevices();
         int setupDevices();
-        //ConfigObject<ConfigValue>* getDeviceSettings() { return m_pDeviceSettings; };
         void associateInputAndOutputDevices(MidiDevice* inputDevice, QString outputDeviceName);
     signals:
         void devicesChanged();
@@ -51,5 +50,5 @@ class MidiDeviceManager : public QObject
         Hss1394Enumerator *m_pHSSEnumerator;
 #endif
     };
-    
+
 #endif

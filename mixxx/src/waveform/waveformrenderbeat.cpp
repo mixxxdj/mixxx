@@ -42,8 +42,8 @@ WaveformRenderBeat::WaveformRenderBeat(const char* group, WaveformRenderer *pare
 }
 
 WaveformRenderBeat::~WaveformRenderBeat() {
-	delete m_pTrackSamples;
-	delete m_pBeatActive;
+   delete m_pTrackSamples;
+   delete m_pBeatActive;
     qDebug() << this << "~WaveformRenderBeat()";
 }
 
@@ -102,8 +102,6 @@ void WaveformRenderBeat::setup(QDomNode node) {
 
 void WaveformRenderBeat::draw(QPainter *pPainter, QPaintEvent *event,
                               QVector<float> *buffer, double dPlayPos, double rateAdjust) {
-    //int i;
-
     slotUpdateTrackSamples(m_pTrackSamples->get());
 
     if(m_iSampleRate == -1 || m_iSampleRate == 0 || m_iNumSamples == 0)
@@ -132,7 +130,6 @@ void WaveformRenderBeat::draw(QPainter *pPainter, QPaintEvent *event,
     // where s is a /mono/ sample
 
     double subpixelsPerPixel = m_pParent->getSubpixelsPerPixel()*(1.0+rateAdjust);
-    //const int oversample = (int)subpixelsPerPixel;
 
     pPainter->save();
     pPainter->scale(1.0/subpixelsPerPixel,1.0);
@@ -140,7 +137,6 @@ void WaveformRenderBeat::draw(QPainter *pPainter, QPaintEvent *event,
 
     double subpixelWidth = m_iWidth * subpixelsPerPixel;
     double subpixelHalfWidth = subpixelWidth / 2.0;
-    //double halfw = m_iWidth/2;
     double halfh = m_iHeight/2;
 
     // basePos and endPos are in samples

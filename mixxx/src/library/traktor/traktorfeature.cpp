@@ -17,7 +17,8 @@
 
 TraktorFeature::TraktorFeature(QObject* parent, TrackCollection* pTrackCollection):
         LibraryFeature(parent),
-        m_pTrackCollection(pTrackCollection) {
+        m_pTrackCollection(pTrackCollection),
+        m_cancelImport(false) {
     QString tableName = "traktor_library";
     QString idColumn = "id";
     QStringList columns;
@@ -59,6 +60,8 @@ TraktorFeature::TraktorFeature(QObject* parent, TrackCollection* pTrackCollectio
 }
 
 TraktorFeature::~TraktorFeature() {
+    m_cancelImport = true;
+    m_future.waitForFinished();
     if(m_pTraktorTableModel)
         delete m_pTraktorTableModel;
     if(m_pTraktorPlaylistModel)
@@ -75,16 +78,13 @@ QIcon TraktorFeature::getIcon() {
 
 bool TraktorFeature::isSupported() {
     return (QFile::exists(getTraktorMusicDatabase()));
-
 }
 
 TreeItemModel* TraktorFeature::getChildModel() {
     return &m_childModel;
 }
 
-void TraktorFeature::refreshLibraryModels()
-{
-
+void TraktorFeature::refreshLibraryModels() {
 }
 
 void TraktorFeature::activate() {
@@ -111,8 +111,6 @@ void TraktorFeature::activate() {
     } else {
         emit(showTrackModel(m_pTraktorTableModel));
     }
-
-
 }
 
 void TraktorFeature::activateChild(const QModelIndex& index) {
@@ -193,7 +191,7 @@ TreeItem* TraktorFeature::importLibrary(QString file){
     bool isRootFolderParsed = false;
     int nAudioFiles = 0;
 
-    while (!xml.atEnd())
+    while (!xml.atEnd() && !m_cancelImport)
     {
         xml.readNext();
         if(xml.isStartElement())
@@ -414,8 +412,7 @@ TreeItem* TraktorFeature::parsePlaylists(QXmlStreamReader &xml){
         "INSERT INTO traktor_playlist_tracks (playlist_id, track_id, position) "
         "VALUES (:playlist_id, :track_id, :position)");
 
-    while(!xml.atEnd())
-    {
+    while(!xml.atEnd() && !m_cancelImport) {
         //read next XML element
         xml.readNext();
 
@@ -451,15 +448,10 @@ TreeItem* TraktorFeature::parsePlaylists(QXmlStreamReader &xml){
                     parent->appendChild(item);
                     // process all the entries within the playlist 'name' having path 'current_path'
                     parsePlaylistEntries(xml,current_path, query_insert_to_playlists, query_insert_to_playlist_tracks);
-
                }
-
             }
             if(xml.name() == "ENTRY" && inPlaylistTag){
-
-
             }
-
         }
 
         if(xml.isEndElement())
@@ -475,9 +467,6 @@ TreeItem* TraktorFeature::parsePlaylists(QXmlStreamReader &xml){
                 int path_length = current_path.size();
 
                 current_path.remove(lastSlash, path_length - lastSlash);
-
-
-
             }
              if(xml.name() == "PLAYLIST")
             {
@@ -489,7 +478,6 @@ TreeItem* TraktorFeature::parsePlaylists(QXmlStreamReader &xml){
                 break;
             }
         }
-
     }
     return rootItem;
 }
@@ -520,8 +508,7 @@ void TraktorFeature::parsePlaylistEntries(QXmlStreamReader &xml,QString playlist
     else
         qDebug() << "SQL Error in TraktorTableModel.cpp: line" << __LINE__ << " " << id_query.lastError();
 
-    while(!xml.atEnd())
-    {
+    while(!xml.atEnd() && !m_cancelImport) {
         //read next XML element
         xml.readNext();
         if(xml.isStartElement())

@@ -58,6 +58,7 @@ class RhythmboxFeature : public LibraryFeature {
     QFutureWatcher<TreeItem*> m_track_watcher;
     QFuture<TreeItem*> m_track_future;
     TreeItemModel m_childModel;
+    bool m_cancelImport;
 
     /**Removes all rows from a given table **/
     void clearTable(QString table_name);

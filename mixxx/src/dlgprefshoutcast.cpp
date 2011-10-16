@@ -5,7 +5,7 @@
     copyright            : (C) 2008 by Wesley Stessens
                            (C) 2008 by Albert Santoni
                            (C) 2007 by John Sully
-    email                : 
+    email                :
  ***************************************************************************/
 
 /***************************************************************************
@@ -35,7 +35,7 @@ DlgPrefShoutcast::DlgPrefShoutcast(QWidget *parent, ConfigObject<ConfigValue> *_
     //Connections
     //connect(PushButtonBrowse, SIGNAL(clicked()),	this,	SLOT(slotBrowseSave()));
     //connect(LineEditRecPath,  SIGNAL(returnPressed()),  this,	SLOT(slotApply()));
-    
+
     /*
     connect(comboBoxEncoding, SIGNAL(activated(int)),	this,	SLOT(slotRecordPathChange()));
     connect(SliderQuality,    SIGNAL(valueChanged(int)), this,	SLOT(slotSliderQuality()));
@@ -47,7 +47,7 @@ DlgPrefShoutcast::DlgPrefShoutcast(QWidget *parent, ConfigObject<ConfigValue> *_
 
     //Enable live broadcasting checkbox
     enableLiveBroadcasting->setChecked((bool)m_pConfig->getValueString(ConfigKey(SHOUTCAST_PREF_KEY,"enabled")).toInt());
-    
+
     //Server type combobox
     tmp_index = comboBoxServerType->findText(m_pConfig->getValueString(ConfigKey(SHOUTCAST_PREF_KEY,"servertype")));
     if (tmp_index < 0) //Set default if invalid.
@@ -56,43 +56,43 @@ DlgPrefShoutcast::DlgPrefShoutcast(QWidget *parent, ConfigObject<ConfigValue> *_
 
     //Mountpoint
     mountpoint->setText(m_pConfig->getValueString(ConfigKey(SHOUTCAST_PREF_KEY,"mountpoint")));
-    
+
     //Host
     host->setText(m_pConfig->getValueString(ConfigKey(SHOUTCAST_PREF_KEY,"host")));
-    
+
     //Port
     tmp_string = m_pConfig->getValueString(ConfigKey(SHOUTCAST_PREF_KEY,"port"));
     if (tmp_string.isEmpty())
         tmp_string = QString(SHOUTCAST_DEFAULT_PORT);
     port->setText(tmp_string);
-    
+
     //Login
     login->setText(m_pConfig->getValueString(ConfigKey(SHOUTCAST_PREF_KEY,"login")));
-    
+
     //Password
     password->setText(m_pConfig->getValueString(ConfigKey(SHOUTCAST_PREF_KEY,"password")));
-    
+
     //Stream name
     stream_name->setText(m_pConfig->getValueString(ConfigKey(SHOUTCAST_PREF_KEY,"stream_name")));
-    
+
     //Stream website
     tmp_string = m_pConfig->getValueString(ConfigKey(SHOUTCAST_PREF_KEY,"stream_website"));
     if (tmp_string.isEmpty())
         tmp_string = MIXXX_WEBSITE_URL;
     stream_website->setText(tmp_string);
-    
+
     //Stream description
     stream_desc->setText(m_pConfig->getValueString(ConfigKey(SHOUTCAST_PREF_KEY,"stream_desc")));
-    
+
     //Stream genre
     tmp_string = m_pConfig->getValueString(ConfigKey(SHOUTCAST_PREF_KEY,"stream_genre"));
     if (tmp_string.isEmpty())
         tmp_string = "Live Mix";
     stream_genre->setText(tmp_string);
-    
+
     //Stream "public" checkbox
     stream_public->setChecked((bool)m_pConfig->getValueString(ConfigKey(SHOUTCAST_PREF_KEY,"stream_public")).toInt());
-    
+
     //Encoding bitrate combobox
     tmp_index = comboBoxEncodingBitrate->findText(m_pConfig->getValueString(ConfigKey(SHOUTCAST_PREF_KEY,"bitrate")));
     if (tmp_index < 0) //Set default if invalid.
@@ -104,37 +104,37 @@ DlgPrefShoutcast::DlgPrefShoutcast(QWidget *parent, ConfigObject<ConfigValue> *_
     if (tmp_index < 0) //Set default if invalid.
         tmp_index = 0;
     comboBoxEncodingFormat->setCurrentIndex(tmp_index);
-        
+
     //Encoding channels combobox
     tmp_index = comboBoxEncodingChannels->findText(m_pConfig->getValueString(ConfigKey(SHOUTCAST_PREF_KEY,"channels")));
     if (tmp_index < 0) //Set default if invalid.
         tmp_index = 0;
-    comboBoxEncodingChannels->setCurrentIndex(tmp_index);    
- 
+    comboBoxEncodingChannels->setCurrentIndex(tmp_index);
+
     //"Enable custom metadata" checkbox
     enableCustomMetadata->setChecked((bool)m_pConfig->getValueString(ConfigKey(SHOUTCAST_PREF_KEY,"enable_metadata")).toInt());
-    
+
     //Custom artist
     custom_artist->setText(m_pConfig->getValueString(ConfigKey(SHOUTCAST_PREF_KEY,"custom_artist")));
-    
+
     //Custom title
     custom_title->setText(m_pConfig->getValueString(ConfigKey(SHOUTCAST_PREF_KEY,"custom_title")));
-    
+
 
     slotApply();
-    
+
     //recordControl->queueFromThread(RECORD_OFF); //make sure a corrupt config file won't cause us to record constantly
 
 }
 
 DlgPrefShoutcast::~DlgPrefShoutcast()
 {
-	delete m_pUpdateShoutcastFromPrefs;
+    delete m_pUpdateShoutcastFromPrefs;
 }
 
 void DlgPrefShoutcast::slotUpdate()
 {
-	enableLiveBroadcasting->setChecked((bool)m_pConfig->getValueString(ConfigKey(SHOUTCAST_PREF_KEY,"enabled")).toInt());
+    enableLiveBroadcasting->setChecked((bool)m_pConfig->getValueString(ConfigKey(SHOUTCAST_PREF_KEY,"enabled")).toInt());
 }
 
 void DlgPrefShoutcast::slotApply()
@@ -154,10 +154,10 @@ void DlgPrefShoutcast::slotApply()
     m_pConfig->set(ConfigKey(SHOUTCAST_PREF_KEY, "bitrate"),       ConfigValue(comboBoxEncodingBitrate->currentText()));
     m_pConfig->set(ConfigKey(SHOUTCAST_PREF_KEY, "format"),        ConfigValue(comboBoxEncodingFormat->currentText()));
     m_pConfig->set(ConfigKey(SHOUTCAST_PREF_KEY, "channels"),      ConfigValue(comboBoxEncodingChannels->currentText()));
-    m_pConfig->set(ConfigKey(SHOUTCAST_PREF_KEY,"enable_metadata"),ConfigValue(enableCustomMetadata->isChecked()));    
-    m_pConfig->set(ConfigKey(SHOUTCAST_PREF_KEY, "custom_artist"), ConfigValue(custom_artist->text())); 
-    m_pConfig->set(ConfigKey(SHOUTCAST_PREF_KEY, "custom_title"),  ConfigValue(custom_title->text())); 
-    
+    m_pConfig->set(ConfigKey(SHOUTCAST_PREF_KEY,"enable_metadata"),ConfigValue(enableCustomMetadata->isChecked()));
+    m_pConfig->set(ConfigKey(SHOUTCAST_PREF_KEY, "custom_artist"), ConfigValue(custom_artist->text()));
+    m_pConfig->set(ConfigKey(SHOUTCAST_PREF_KEY, "custom_title"),  ConfigValue(custom_title->text()));
+
     //Tell the EngineShoutcast object to update with these values by toggling this control object.
     m_pUpdateShoutcastFromPrefs->slotSet(1.0f);
 }
