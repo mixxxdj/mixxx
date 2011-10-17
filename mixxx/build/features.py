@@ -838,33 +838,36 @@ class Optimize(Feature):
             # optimizations with data.
             #build.env.Append(CCFLAGS='-O3 -fomit-frame-pointer -ffast-math -funroll-loops')
             #build.env.Append(CCFLAGS='-O0 -g')# -fomit-frame-pointer -ffast-math -funroll-loops')
-            build.env.Append(CCFLAGS='-O2')# -fomit-frame-pointer -ffast-math -funroll-loops')
+            #owen's previous options:
+            #build.env.Append(CCFLAGS='-O2')# -fomit-frame-pointer -ffast-math -funroll-loops')
+            #based on https://bugs.launchpad.net/mixxx/+bug/876080
+            build.env.Append(CCFLAGS='-Os -fomit-frame-pointer -ffast-math')
 
             if optimize_level == 1:
                 # only includes what we already applied
                 self.status = "Enabled -- Basic Optimizations (-03)"
             elif optimize_level == 2:
                 self.status = "Enabled (P4 MMX/SSE)"
-                build.env.Append(CCFLAGS = '-march=pentium4 -mmmx -msse2 -mfpmath=sse')
+                build.env.Append(CCFLAGS = '-march=pentium4 -mmmx -msse2')
             elif optimize_level == 3:
                 self.status = "Enabled (Intel Core Solo/Duo)"
-                build.env.Append(CCFLAGS = '-march=prescott -mmmx -msse3 -mfpmath=sse')
+                build.env.Append(CCFLAGS = '-march=prescott -mmmx -msse3')
             elif optimize_level == 4:
                 self.status = "Enabled (Intel Core 2)"
-                build.env.Append(CCFLAGS = '-march=nocona -mmmx -msse -msse2 -msse3 -mfpmath=sse')
+                build.env.Append(CCFLAGS = '-march=nocona -mmmx -msse -msse2 -msse3')
                 #build.env.Append(CCFLAGS = '-march=nocona -mmmx -msse -msse2 -msse3 -mfpmath=sse -ffast-math -funroll-loops')
             elif optimize_level == 5:
                 self.status = "Enabled (Athlon Athlon-4/XP/MP)"
-                build.env.Append(CCFLAGS = '-march=athlon-4 -mmmx -msse -m3dnow -mfpmath=sse')
+                build.env.Append(CCFLAGS = '-march=athlon-4 -mmmx -msse -m3dnow')
             elif optimize_level == 6:
                 self.status = "Enabled (Athlon K8/Opteron/AMD64)"
-                build.env.Append(CCFLAGS = '-march=k8 -mmmx -msse2 -m3dnow -mfpmath=sse')
+                build.env.Append(CCFLAGS = '-march=k8 -mmmx -msse2 -m3dnow')
             elif optimize_level == 7:
                 self.status = "Enabled (Athlon K8/Opteron/AMD64 + SSE3)"
-                build.env.Append(CCFLAGS = '-march=k8-sse3 -mmmx -msse2 -msse3 -m3dnow -mfpmath=sse')
+                build.env.Append(CCFLAGS = '-march=k8-sse3 -mmmx -msse2 -msse3 -m3dnow')
             elif optimize_level == 8:
                 self.status = "Enabled (Generic SSE/SSE2/SSE3)"
-                build.env.Append(CCFLAGS = '-mmmx -msse2 -msse3 -mfpmath=sse')
+                build.env.Append(CCFLAGS = '-mmmx -msse2 -msse3')
             elif optimize_level == 9:
                 self.status = "Enabled (Tuned Generic)"
                 # This option is for release builds packaged for 64-bit. We
@@ -880,7 +883,7 @@ class Optimize(Feature):
                 # -- rryan 2/2011
 
                 # TODO(XXX) check the soundtouch package in Ubuntu to see what they do about this.
-                build.env.Append(CCFLAGS = '-mtune=generic -mmmx -msse -mfpmath=sse')
+                build.env.Append(CCFLAGS = '-mtune=generic -mmmx -msse')
 
                 # Enable SSE2 on 64-bit machines. SSE3 is not a sure thing on 64-bit
                 if build.machine_is_64bit:

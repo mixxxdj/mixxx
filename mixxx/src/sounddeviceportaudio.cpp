@@ -236,8 +236,6 @@ int SoundDevicePortAudio::open()
     //qDebug() << "SampleRate" << pControlObjectSampleRate->get();
     //qDebug() << "Latency" << pControlObjectLatency->get();
 
-    delete pControlObjectLatency;
-    delete pControlObjectSampleRate;
     return OK;
 }
 

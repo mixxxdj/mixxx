@@ -29,6 +29,6 @@
 #define SIZE_700MB  750000000     //bytes
 #define SIZE_1GB    1000000000    //bytes
 #define SIZE_2GB    2000000000  //bytes
-#define SIZE_4GB    4000000000  //bytes
+#define SIZE_4GB    4000000000l  //bytes
 
 #endif
