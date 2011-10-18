@@ -18,7 +18,13 @@
 	the resulting work only under the same or similar license to this one.
 
 	CHANGELOG
-	v1.10.0.10	(01/06/2011)
+	v1.10.0.11	(16/10/2011)
+	* Update: Tooltips for spinning vinyl, waveform (overview) due to changes in functionality
+
+	v1.10.0.10	(16/10/2011)
+	* Fix: Wrong button for hotcue 1 on channel 2 was displayed
+
+	v1.10.0.09	(01/06/2011)
 	* Feature: Added BPM display & BPM tap button to samplers
 
 	v1.10.0.08	(23/05/2011)
@@ -280,7 +286,7 @@
 							**********************************************
 							-->
 							<Overview>
-								<Tooltip>Waveform overview&#10;Shows information about the track currently loaded in this channel.&#10;Jump around in the track by clicking somewhere on the waveform.&#10;</Tooltip>
+								<Tooltip>Waveform overview&#10;Shows information about the track currently loaded in this channel.&#10;Jump around in the track by clicking somewhere on the waveform.&#10;Drop tracks from library or external file manager here.&#10;</Tooltip>
 								<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 								background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
 								background: {
@@ -795,7 +801,7 @@
 							**********************************************
 							-->
 							<Overview>
-								<Tooltip>Waveform overview&#10;Shows information about the track currently loaded in this channel.&#10;Jump around in the track by clicking somewhere on the waveform.&#10;</Tooltip>
+								<Tooltip>Waveform overview&#10;Shows information about the track currently loaded in this channel.&#10;Jump around in the track by clicking somewhere on the waveform.&#10;Drop tracks from library or external file manager here.&#10;</Tooltip>
 								<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 								background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
 								background: {
@@ -1310,7 +1316,7 @@
 							**********************************************
 							-->
 							<Overview>
-								<Tooltip>Waveform overview&#10;Shows information about the track currently loaded in this channel.&#10;Jump around in the track by clicking somewhere on the waveform.&#10;</Tooltip>
+								<Tooltip>Waveform overview&#10;Shows information about the track currently loaded in this channel.&#10;Jump around in the track by clicking somewhere on the waveform.&#10;Drop tracks from library or external file manager here.&#10;</Tooltip>
 								<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 								background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
 								background: {
@@ -1825,7 +1831,7 @@
 							**********************************************
 							-->
 							<Overview>
-								<Tooltip>Waveform overview&#10;Shows information about the track currently loaded in this channel.&#10;Jump around in the track by clicking somewhere on the waveform.&#10;</Tooltip>
+								<Tooltip>Waveform overview&#10;Shows information about the track currently loaded in this channel.&#10;Jump around in the track by clicking somewhere on the waveform.&#10;Drop tracks from library or external file manager here.&#10;</Tooltip>
 								<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 								background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
 								background: {
@@ -3260,7 +3266,7 @@
 							**********************************************
 							-->
 							<Visual>
-								<Tooltip>Waveform display&#10;Shows the loaded tracks' waveforms near the playback position.&#10;Click and drag with mouse to scratch the song.&#10;Drop tracks from external file manager here.&#10;</Tooltip>
+								<Tooltip>Waveform display&#10;Shows the loaded tracks' waveforms near the playback position.&#10;Use the mouse to scratch, halt, spin back and push forward a track.&#10;Drop tracks from library or external file manager here.&#10;</Tooltip>
 								<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 								background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
 								</Style>
@@ -3588,7 +3594,7 @@
 											**********************************************
 											-->
 											<Spinny>
-												<Tooltip>Spinning vinyl&#10;TODO&#10;</Tooltip>
+												<Tooltip>Spinning vinyl&#10;Rotates during playback and shows the position of a track.&#10;Use the mouse to scratch, halt, spin back and push forward a track.&#10;Drop tracks from library or external file manager here.&#10;If Vinyl control is enabled, it can display the timecoded vinyls signal quality (see Preferences→Vinyl Control).&#10;</Tooltip>
 												<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 												background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
 												</Style>
@@ -3729,7 +3735,7 @@
 					**********************************************
 					-->
 					<Overview>
-						<Tooltip>Waveform overview&#10;Shows information about the track currently loaded in this channel.&#10;Jump around in the track by clicking somewhere on the waveform.&#10;</Tooltip>
+						<Tooltip>Waveform overview&#10;Shows information about the track currently loaded in this channel.&#10;Jump around in the track by clicking somewhere on the waveform.&#10;Drop tracks from library or external file manager here.&#10;</Tooltip>
 						<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 						background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
 						</Style>
@@ -4837,7 +4843,7 @@
 							**********************************************
 							-->
 							<Visual>
-								<Tooltip>Waveform display&#10;Shows the loaded tracks' waveforms near the playback position.&#10;Click and drag with mouse to scratch the song.&#10;Drop tracks from external file manager here.&#10;</Tooltip>
+								<Tooltip>Waveform display&#10;Shows the loaded tracks' waveforms near the playback position.&#10;Use the mouse to scratch, halt, spin back and push forward a track.&#10;Drop tracks from library or external file manager here.&#10;</Tooltip>
 								<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 								background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
 								</Style>
@@ -5165,7 +5171,7 @@
 											**********************************************
 											-->
 											<Spinny>
-												<Tooltip>Spinning vinyl&#10;TODO&#10;</Tooltip>
+												<Tooltip>Spinning vinyl&#10;Rotates during playback and shows the position of a track.&#10;Use the mouse to scratch, halt, spin back and push forward a track.&#10;Drop tracks from library or external file manager here.&#10;If Vinyl control is enabled, it can display the timecoded vinyls signal quality (see Preferences→Vinyl Control).&#10;</Tooltip>
 												<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 												background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
 												</Style>
@@ -5306,7 +5312,7 @@
 					**********************************************
 					-->
 					<Overview>
-						<Tooltip>Waveform overview&#10;Shows information about the track currently loaded in this channel.&#10;Jump around in the track by clicking somewhere on the waveform.&#10;</Tooltip>
+						<Tooltip>Waveform overview&#10;Shows information about the track currently loaded in this channel.&#10;Jump around in the track by clicking somewhere on the waveform.&#10;Drop tracks from library or external file manager here.&#10;</Tooltip>
 						<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 						background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
 						</Style>
@@ -6166,13 +6172,13 @@
 								<RightClickIsPushButton>true</RightClickIsPushButton>
 								<State>
 									<Number>0</Number>
-									<Pressed>btn_hotcue2_2_over.png</Pressed>
-									<Unpressed>btn_hotcue2_2.png</Unpressed>
+									<Pressed>btn_hotcue2_1_over.png</Pressed>
+									<Unpressed>btn_hotcue2_1.png</Unpressed>
 								</State>
 								<State>
 									<Number>1</Number>
-									<Pressed>btn_hotcue2_2.png</Pressed>
-									<Unpressed>btn_hotcue2_2_over.png</Unpressed>
+									<Pressed>btn_hotcue2_1.png</Pressed>
+									<Unpressed>btn_hotcue2_1_over.png</Unpressed>
 								</State>
 								<Pos>236,0</Pos>
 								<Connection>
