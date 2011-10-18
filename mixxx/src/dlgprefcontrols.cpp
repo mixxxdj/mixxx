@@ -190,29 +190,6 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxApp * mixxx,
     //NOTE: for CueRecall, 0 means ON....
     connect(ComboBoxCueRecall, SIGNAL(activated(int)), this, SLOT(slotSetCueRecall(int)));
 
-
-// #ifndef QT3_SUPPORT
-//     const QFileInfoList * list = dir.entryInfoList();
-//     if (list!=0)
-//     {
-//         QFileInfoListIterator it(* list);        // create list iterator
-//         QFileInfo * fi;                   // pointer for traversing
-//         int j=0;
-//         while ((fi=(*it)))
-//         {
-//             if (fi->fileName()!="." && fi->fileName()!="..")
-//             {
-//                 ComboBoxSkinconf->addItem(fi->fileName());
-//                 if (fi->fileName() == pConfig->getValueString(ConfigKey("[Config]","Skin")))
-//                     ComboBoxSkinconf->setCurrentIndex(j);
-//                 ++j;
-//             }
-//             ++it;
-//         }
-//     }
-// #else
-
-
     QList<QFileInfo> list = dir.entryInfoList();
     int j=0;
     for (int i=0; i<list.size(); ++i)
@@ -282,6 +259,18 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxApp * mixxx,
 
 DlgPrefControls::~DlgPrefControls()
 {
+    foreach (ControlObjectThreadMain* pControl, m_rateControls) {
+        delete pControl;
+    }
+    foreach (ControlObjectThreadMain* pControl, m_rateDirControls) {
+        delete pControl;
+    }
+    foreach (ControlObjectThreadMain* pControl, m_cueControls) {
+        delete pControl;
+    }
+    foreach (ControlObjectThreadMain* pControl, m_rateRangeControls) {
+        delete pControl;
+    }
 }
 
 void DlgPrefControls::slotUpdateSchemes()
@@ -399,8 +388,6 @@ void DlgPrefControls::slotSetCueRecall(int)
 
 void DlgPrefControls::slotSetTooltips(int)
 {
-// setGloballyEnabled currently not implemented in QT4
-//#ifndef QT3_SUPPORT
     m_pConfig->set(ConfigKey("[Controls]","Tooltips"), ConfigValue((ComboBoxTooltips->currentIndex()+1)%2));
 
     //This is somewhat confusing, but to disable tooltips in QT4, you need to install an eventFilter
@@ -412,13 +399,6 @@ void DlgPrefControls::slotSetTooltips(int)
     QMessageBox::information(this, tr("Information"), //make the fact that you have to restart mixxx more obvious
     //textLabel->setText(
       tr("Mixxx must be restarted before the changes will take effect."));
-
-
-//    if (ComboBoxTooltips->currentIndex()==0)
-//        QToolTip::setGloballyEnabled(true);
-//    else
-//        QToolTip::setGloballyEnabled(false);
-//#endif
 }
 
 void DlgPrefControls::slotSetScheme(int)

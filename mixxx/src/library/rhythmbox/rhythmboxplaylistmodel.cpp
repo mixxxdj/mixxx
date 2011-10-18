@@ -4,6 +4,8 @@
 
 #include "library/trackcollection.h"
 #include "library/rhythmbox/rhythmboxplaylistmodel.h"
+#include "track/beatfactory.h"
+#include "track/beats.h"
 
 RhythmboxPlaylistModel::RhythmboxPlaylistModel(QObject* parent,
                                          TrackCollection* pTrackCollection)
@@ -42,8 +44,15 @@ TrackPointer RhythmboxPlaylistModel::getTrack(const QModelIndex& index) const {
     pTrack->setYear(year);
     pTrack->setGenre(genre);
     pTrack->setBpm(bpm);
+    TrackPointer track(pTrack, &QObject::deleteLater);
 
-    return TrackPointer(pTrack, &QObject::deleteLater);
+    // If the track has a BPM, then give it a static beatgrid.
+    if (bpm > 0) {
+        BeatsPointer pBeats = BeatFactory::makeBeatGrid(track, bpm, 0);
+        track->setBeats(pBeats);
+    }
+
+    return track;
 }
 
 void RhythmboxPlaylistModel::search(const QString& searchText) {
@@ -91,13 +100,17 @@ void RhythmboxPlaylistModel::setPlaylist(QString playlist_path) {
 
     QStringList columns;
     columns << "track_id";
+    columns << "position";
 
     QSqlQuery query(m_database);
-    query.prepare("CREATE TEMPORARY VIEW IF NOT EXISTS " +
-                  driver->formatValue(playlistNameField) + " AS "
-                  "SELECT " + columns.join(",") +
-                  " FROM rhythmbox_playlist_tracks "
-                  "WHERE playlist_id = " + QString("%1").arg(playlistId));
+    QString queryString = QString(
+        "CREATE TEMPORARY VIEW IF NOT EXISTS %1 AS "
+        "SELECT %2 FROM %3 WHERE playlist_id = %4")
+            .arg(driver->formatValue(playlistNameField))
+            .arg(columns.join(","))
+            .arg("rhythmbox_playlist_tracks")
+            .arg(playlistId);
+    query.prepare(queryString);
 
     if (!query.exec()) {
         qDebug() << "Error creating temporary view for rhythmbox playlists. "
@@ -109,6 +122,7 @@ void RhythmboxPlaylistModel::setPlaylist(QString playlist_path) {
 
     setTable(playlistID, columns[0], columns,
              m_pTrackCollection->getTrackSource("rhythmbox"));
+    setDefaultSort(fieldIndex("position"), Qt::AscendingOrder);
     initHeaderData();
     setSearch("");
 }

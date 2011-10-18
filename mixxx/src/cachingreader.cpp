@@ -31,16 +31,17 @@ CachingReader::CachingReader(const char* _group,
                              ConfigObject<ConfigValue>* _config) :
         m_pGroup(_group),
         m_pConfig(_config),
-        m_pCurrentSoundSource(NULL),
-        m_iTrackSampleRate(0),
-        m_iTrackNumSamples(0),
-        m_iTrackNumSamplesCallbackSafe(0),
+        m_chunkReadRequestFIFO(1024),
+        m_readerStatusFIFO(1024),
         m_readerStatus(INVALID),
         m_mruChunk(NULL),
         m_lruChunk(NULL),
         m_pRawMemoryBuffer(NULL),
-        m_chunkReadRequestFIFO(1024),
-        m_readerStatusFIFO(1024) {
+        m_pCurrentSoundSource(NULL),
+        m_iTrackSampleRate(0),
+        m_iTrackNumSamples(0),
+        m_iTrackNumSamplesCallbackSafe(0),
+        m_pSample(NULL) {
     initialize();
 }
 
@@ -49,10 +50,17 @@ CachingReader::~CachingReader() {
     m_allocatedChunks.clear();
     m_lruChunk = m_mruChunk = NULL;
 
+    for (int i=0; i < m_chunks.size(); i++) {
+        Chunk* c = m_chunks[i];
+        delete c;
+    }
+
     delete [] m_pSample;
 
     delete [] m_pRawMemoryBuffer;
     m_pRawMemoryBuffer = NULL;
+
+    delete m_pCurrentSoundSource;
 }
 
 void CachingReader::initialize() {

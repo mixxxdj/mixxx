@@ -4,9 +4,25 @@
 #include <QObject>
 
 class ControlObjectThreadMain;
+class ControlObject;
 class WLibrary;
 class WLibrarySidebar;
 class MixxxKeyboard;
+
+class LoadToGroupController : public QObject {
+    Q_OBJECT
+  public:
+    LoadToGroupController(QObject* pParent, const QString group);
+    virtual ~LoadToGroupController();
+  signals:
+    void loadToGroup(QString group);
+  public slots:
+    void slotLoadToGroup(double v);
+  private:
+    QString m_group;
+    ControlObject* m_pLoadControl;
+    ControlObjectThreadMain* m_pLoadCOTM;
+};
 
 class LibraryControl : public QObject {
     Q_OBJECT
@@ -15,9 +31,10 @@ class LibraryControl : public QObject {
     virtual ~LibraryControl();
     void bindWidget(WLibrarySidebar* pLibrarySidebar, WLibrary* pLibrary, MixxxKeyboard* pKeyboard);
 
-  public slots:
-    void slotLoadSelectedTrackCh1(double v);
-    void slotLoadSelectedTrackCh2(double v);
+  private slots:
+    void libraryWidgetDeleted();
+    void sidebarWidgetDeleted();
+    void slotLoadSelectedTrackToGroup(QString group);
     void slotSelectNextTrack(double v);
     void slotSelectPrevTrack(double v);
     void slotSelectNextPlaylist(double v);
@@ -25,13 +42,7 @@ class LibraryControl : public QObject {
     void slotLoadSelectedIntoFirstStopped(double v);
     void slotSelectTrackKnob(double v);
 
-  private slots:
-    void libraryWidgetDeleted();
-    void sidebarWidgetDeleted();
-
   private:
-    ControlObjectThreadMain* m_pLoadSelectedTrackCh1;
-    ControlObjectThreadMain* m_pLoadSelectedTrackCh2;
     ControlObjectThreadMain* m_pSelectNextTrack;
     ControlObjectThreadMain* m_pSelectPrevTrack;
     ControlObjectThreadMain* m_pSelectNextPlaylist;
