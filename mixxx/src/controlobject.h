@@ -80,9 +80,9 @@ public:
       * happend, otherwise false. */
     bool updateProxies(ControlObjectThread *pProxyNoUpdate=0);
     /** Return the key of the object */
-    ConfigKey getKey();
+    inline ConfigKey getKey() { return m_Key; }
     /** Return the value of the ControlObject */
-    double get();
+    inline double get() { return m_dValue; }
     /** Add to value. Not thread safe. */
     void add(double dValue);
     /** Subtract from value. Not thread safe. */
