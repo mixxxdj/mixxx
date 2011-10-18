@@ -121,13 +121,6 @@ void WaveformRenderSignal::draw(QPainter *pPainter, QPaintEvent *event,
             polygon.translate(-polyWidth/subpixelsPerPixel, 0);
             index -= polyWidth;
         }
-
-        for (int i = 0; i < halfw - iCurPos/2; ++i) {
-            // pPainter->drawLine(i/subpixelsPerPixel, m_iHeight,
-            //                    i/subpixelsPerPixel, -m_iHeight);
-        }
     }
-
     pPainter->restore();
-
 }
