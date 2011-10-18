@@ -86,6 +86,7 @@ void MessageHandler(QtMsgType type, const char *input)
     const char* s = ba.constData();
 
 
+
     if(!Logfile.isOpen())
     {
         QString logFileName = QDir::homePath().append("/").append(SETTINGS_PATH).append("/mixxx.log");
@@ -134,7 +135,6 @@ void MessageHandler(QtMsgType type, const char *input)
     Logfile.flush();
 }
 
-
 int main(int argc, char * argv[])
 {
     // Check if an instance of Mixxx is already running
@@ -175,22 +175,25 @@ int main(int argc, char * argv[])
     // Only match supported file types since command line options are also parsed elsewhere
     QRegExp fileRx(SoundSourceProxy::supportedFileExtensionsRegex(), Qt::CaseInsensitive);
 
-    for (int i=0; i<argc; ++i)
-    {
-        if (argv[i]==QString("-h") || argv[i]==QString("--h") || argv[i]==QString("--help")) {
-            printf("Mixxx digital DJ software v");
-            printf(VERSION);
-            printf(" - Command line options");
-            printf("\n(These are case-sensitive.)\n\n\
+   for (int i = 0; i < argc; ++i) {
+       if (   argv[i] == QString("-h") 
+            || argv[i] == QString("--h") 
+            || argv[i] == QString("--help")
+    ) {
+           puts("Mixxx digital DJ software v");
+           puts(VERSION);
+           puts(" - Command line options");
+           puts(
+                   "\n(These are case-sensitive.)\n\n\
     [FILE]                  Load the specified music file(s) at start-up.\n\
                             Each must be one of the following file types:\n\
                             ");
 
             QString fileExtensions = SoundSourceProxy::supportedFileExtensionsString();
             QByteArray fileExtensionsBA = QString(fileExtensions).toUtf8();
-            printf("%s", fileExtensionsBA.constData());
-            printf("\n\n");
-            printf("\
+            puts(fileExtensionsBA.constData());
+            puts("\n\n");
+            puts("\
                             Each file you specify will be loaded into the\n\
                             next virtual deck.\n\
 \n\
@@ -205,13 +208,14 @@ int main(int argc, char * argv[])
     --midiDebug             Causes Mixxx to display/log all of the MIDI\n\
                             messages it receives and script functions it loads\n\
 \n\
-    --locale LOCALE         Use a custom locale for loading translations (e.g 'fr')\n\
+    --locale LOCALE         Use a custom locale for loading translations\n\
+                            (e.g 'fr')\n\
 \n\
     -f, --fullScreen        Starts Mixxx in full-screen mode\n\
 \n\
     -h, --help              Display this help message and exit");
 
-            printf("\n\n(For more information, see http://mixxx.org/wiki/doku.php/command_line_options)\n");
+            puts("\n\n(For more information, see http://mixxx.org/wiki/doku.php/command_line_options)\n");
             return(0);
         }
 

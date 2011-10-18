@@ -47,13 +47,15 @@ void PlaylistTableModel::setPlaylist(int playlistId) {
     columns << PLAYLISTTRACKSTABLE_TRACKID
             << PLAYLISTTRACKSTABLE_POSITION;
 
-    query.prepare("CREATE TEMPORARY VIEW IF NOT EXISTS " +
-                  driver->formatValue(playlistNameField) + " AS "
-                  "SELECT "
-                  + columns.join(",") +
-                  " FROM PlaylistTracks "
-                  "WHERE playlist_id = " + QString("%1").arg(playlistId) +
-                  " ORDER BY PlaylistTracks.position");
+    QString queryString = QString(
+        "CREATE TEMPORARY VIEW IF NOT EXISTS %1 AS "
+        "SELECT %2 FROM %3 WHERE playlist_id = %4")
+            .arg(driver->formatValue(playlistNameField))
+            .arg(columns.join(","))
+            .arg("PlaylistTracks")
+            .arg(playlistId);
+    query.prepare(queryString);
+
     if (!query.exec()) {
         // It's normal for this to fail.
         qDebug() << query.executedQuery() << query.lastError();
@@ -68,6 +70,7 @@ void PlaylistTableModel::setPlaylist(int playlistId) {
              m_pTrackCollection->getTrackSource("default"));
     initHeaderData();
     setSearch("", LibraryTableModel::DEFAULT_LIBRARYFILTER);
+    setDefaultSort(fieldIndex("position"), Qt::AscendingOrder);
 }
 
 bool PlaylistTableModel::addTrack(const QModelIndex& index, QString location) {
@@ -82,12 +85,9 @@ bool PlaylistTableModel::addTrack(const QModelIndex& index, QString location) {
     // If a track is dropped but it isn't in the library, then add it because
     // the user probably dropped a file from outside Mixxx into this playlist.
     QFileInfo fileInfo(location);
-    location = fileInfo.absoluteFilePath();
 
-    int trackId = m_trackDao.getTrackId(location);
-    if (trackId < 0) {
-        trackId = m_trackDao.addTrack(fileInfo);
-    }
+    // Adds track, does not insert duplicates, handles unremoving logic.
+    int trackId = m_trackDao.addTrack(fileInfo, true);
 
     // Do nothing if the location still isn't in the database.
     if (trackId < 0) {

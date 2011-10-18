@@ -64,6 +64,7 @@ class ITunesFeature : public LibraryFeature {
     TrackCollection* m_pTrackCollection;
     //a new DB connection for the worker thread
     QSqlDatabase m_database;
+    bool m_cancelImport;
     bool m_isActivated;
     QString m_dbfile;
 

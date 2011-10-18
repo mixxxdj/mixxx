@@ -27,6 +27,7 @@
 
 LibraryScanner::LibraryScanner(TrackCollection* collection) :
     m_pCollection(collection),
+    m_pProgress(NULL),
     m_libraryHashDao(m_database),
     m_cueDao(m_database),
     m_trackDao(m_database, m_cueDao),
@@ -138,8 +139,12 @@ void LibraryScanner::run()
     //Lower our priority to help not grind crappy computers.
     setPriority(QThread::LowPriority);
 
+
+    if (!m_database.isValid()) {
+       m_database = QSqlDatabase::addDatabase("QSQLITE", "LIBRARY_SCANNER");
+    }
+
     if (!m_database.isOpen()) {
-        m_database = QSqlDatabase::addDatabase("QSQLITE", "LIBRARY_SCANNER");
         m_database.setHostName("localhost");
         m_database.setDatabaseName(MIXXX_DB_PATH);
         m_database.setUserName("mixxx");
@@ -232,8 +237,8 @@ void LibraryScanner::run()
      * of 3-4 !!!
      */
 
-    // Runs inside a transaction
-    m_trackDao.addTracks(tracksToAdd);
+    // Runs inside a transaction. Do not unremove files.
+    m_trackDao.addTracks(tracksToAdd, false);
 
     QMutableListIterator<TrackInfoObject*> it(tracksToAdd);
     while (it.hasNext()) {
@@ -296,6 +301,7 @@ void LibraryScanner::scan(QString libraryPath)
 {
     m_qLibraryPath = libraryPath;
     m_pProgress = new LibraryScannerDlg();
+    m_pProgress->setAttribute(Qt::WA_DeleteOnClose);
 
     //The important part here is that we need to use
     //Qt::BlockingQueuedConnection, because we're sending these signals across

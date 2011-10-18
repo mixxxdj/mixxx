@@ -4,6 +4,8 @@
 
 #include "library/trackcollection.h"
 #include "library/traktor/traktortablemodel.h"
+#include "track/beatfactory.h"
+#include "track/beats.h"
 
 TraktorTableModel::TraktorTableModel(QObject* parent,
                                      TrackCollection* pTrackCollection)
@@ -19,6 +21,7 @@ TraktorTableModel::TraktorTableModel(QObject* parent,
     columns << "id";
     setTable("traktor_library", columns[0], columns,
              m_pTrackCollection->getTrackSource("traktor"));
+    setDefaultSort(fieldIndex("artist"), Qt::AscendingOrder);
     initHeaderData();
 }
 
@@ -35,7 +38,7 @@ TrackPointer TraktorTableModel::getTrack(const QModelIndex& index) const {
 
     QString location = index.sibling(index.row(), fieldIndex("location")).data().toString();
 
-    TrackInfoObject* pTrack = new TrackInfoObject(location);
+    TrackPointer pTrack = TrackPointer(new TrackInfoObject(location), &QObject::deleteLater);
     pTrack->setArtist(artist);
     pTrack->setTitle(title);
     pTrack->setAlbum(album);
@@ -43,8 +46,13 @@ TrackPointer TraktorTableModel::getTrack(const QModelIndex& index) const {
     pTrack->setGenre(genre);
     pTrack->setBpm(bpm);
 
+    // If the track has a BPM, then give it a static beatgrid.
+    if (bpm > 0) {
+        BeatsPointer pBeats = BeatFactory::makeBeatGrid(pTrack, bpm, 0);
+        pTrack->setBeats(pBeats);
+    }
 
-    return TrackPointer(pTrack, &QObject::deleteLater);
+    return pTrack;
 }
 
 void TraktorTableModel::search(const QString& searchText) {

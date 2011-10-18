@@ -188,6 +188,7 @@ RateControl::~RateControl() {
     delete m_pScratchToggle;
     delete m_pJog;
     delete m_pJogFilter;
+    delete m_pScratchController;
 }
 
 void RateControl::setRateRamp(bool linearMode)

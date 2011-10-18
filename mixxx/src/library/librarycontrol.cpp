@@ -5,10 +5,31 @@
 
 #include "controlobject.h"
 #include "controlobjectthreadmain.h"
+#include "playermanager.h"
 #include "widget/wlibrary.h"
 #include "widget/wlibrarysidebar.h"
 #include "library/librarycontrol.h"
 #include "library/libraryview.h"
+
+LoadToGroupController::LoadToGroupController(QObject* pParent, const QString group)
+        : QObject(pParent),
+          m_group(group) {
+    m_pLoadControl = new ControlObject(ConfigKey(group, "LoadSelectedTrack"));
+    m_pLoadCOTM = new ControlObjectThreadMain(m_pLoadControl);
+    connect(m_pLoadCOTM, SIGNAL(valueChanged(double)),
+            this, SLOT(slotLoadToGroup(double)));
+}
+
+LoadToGroupController::~LoadToGroupController() {
+    delete m_pLoadCOTM;
+    delete m_pLoadControl;
+}
+
+void LoadToGroupController::slotLoadToGroup(double v) {
+    if (v > 0) {
+        emit(loadToGroup(m_group));
+    }
+}
 
 LibraryControl::LibraryControl(QObject* pParent) : QObject(pParent) {
     m_pLibraryWidget = NULL;
@@ -16,13 +37,15 @@ LibraryControl::LibraryControl(QObject* pParent) : QObject(pParent) {
 
     // Make controls for library navigation and track loading. Leaking all these CO's, but oh well?
 
-    m_pLoadSelectedTrackCh1 = new ControlObjectThreadMain(new ControlObject(ConfigKey("[Channel1]","LoadSelectedTrack")));
-    connect(m_pLoadSelectedTrackCh1, SIGNAL(valueChanged(double)),
-            this, SLOT(slotLoadSelectedTrackCh1(double)));
-
-    m_pLoadSelectedTrackCh2 = new ControlObjectThreadMain(new ControlObject(ConfigKey("[Channel2]","LoadSelectedTrack")));
-    connect(m_pLoadSelectedTrackCh2, SIGNAL(valueChanged(double)),
-            this, SLOT(slotLoadSelectedTrackCh2(double)));
+    // We don't know how many decks or samplers there will be, so create 100 of them.
+    for (int i = 0; i < 100; ++i) {
+        LoadToGroupController* pLoadController = new LoadToGroupController(this, PlayerManager::groupForDeck(i));
+        connect(pLoadController, SIGNAL(loadToGroup(QString)),
+                this, SLOT(slotLoadSelectedTrackToGroup(QString)));
+        pLoadController = new LoadToGroupController(this, PlayerManager::groupForSampler(i));
+        connect(pLoadController, SIGNAL(loadToGroup(QString)),
+                this, SLOT(slotLoadSelectedTrackToGroup(QString)));
+    }
 
     m_pSelectNextTrack = new ControlObjectThreadMain(new ControlObject(ConfigKey("[Playlist]","SelectNextTrack")));
     connect(m_pSelectNextTrack, SIGNAL(valueChanged(double)),
@@ -50,8 +73,6 @@ LibraryControl::LibraryControl(QObject* pParent) : QObject(pParent) {
 }
 
 LibraryControl::~LibraryControl() {
-   delete m_pLoadSelectedTrackCh1;
-   delete m_pLoadSelectedTrackCh2;
    delete m_pSelectNextTrack;
    delete m_pSelectPrevTrack;
    delete m_pSelectNextPlaylist;
@@ -84,31 +105,15 @@ void LibraryControl::sidebarWidgetDeleted() {
     m_pSidebarWidget = NULL;
 }
 
-void LibraryControl::slotLoadSelectedTrackCh1(double v) {
+void LibraryControl::slotLoadSelectedTrackToGroup(QString group) {
     if (m_pLibraryWidget == NULL)
         return;
 
-    if (v > 0) {
-        LibraryView* activeView = m_pLibraryWidget->getActiveView();
-        if (!activeView) {
-            return;
-        }
-        activeView->loadSelectedTrackToGroup("[Channel1]");
-    }
-}
-
-void LibraryControl::slotLoadSelectedTrackCh2(double v) {
-    if (m_pLibraryWidget == NULL)
+    LibraryView* activeView = m_pLibraryWidget->getActiveView();
+    if (!activeView) {
         return;
-
-    if (v > 0) {
-        LibraryView* activeView = m_pLibraryWidget->getActiveView();
-        if (!activeView) {
-            return;
-        }
-
-        activeView->loadSelectedTrackToGroup("[Channel2]");
     }
+    activeView->loadSelectedTrackToGroup(group);
 }
 
 void LibraryControl::slotLoadSelectedIntoFirstStopped(double v) {

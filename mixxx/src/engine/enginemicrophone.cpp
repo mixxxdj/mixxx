@@ -84,7 +84,7 @@ void EngineMicrophone::receiveBuffer(AudioInput input, const short* pBuffer, uns
     // There isn't a suitable SampleUtil method that can do mono->stereo and
     // short->float in one pass.
     // SampleUtil::convert(m_pConversionBuffer, pBuffer, iNumSamples);
-    for (int i = 0; i < iNumSamples; ++i) {
+    for (unsigned int i = 0; i < iNumSamples; ++i) {
         m_pConversionBuffer[i*2 + 0] = pBuffer[i];
         m_pConversionBuffer[i*2 + 1] = pBuffer[i];
     }
