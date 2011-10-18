@@ -240,8 +240,8 @@ void VinylControlXwax::run()
         //qDebug() << m_group << id << iPosition << dVinylPitch;
 
         cur_duration = duration->get();
-        
-        
+
+
         //Has a new track been loaded?
         //FIXME? we should really sync on all track changes
         if (cur_duration != old_duration)
@@ -252,7 +252,7 @@ void VinylControlXwax::run()
             //duration from the control object is an integer.  We need
             //more precision:
             fTrackDuration = trackSamples->get() / 2 / trackSampleRate->get();
-            
+
             //we were at record end, so turn it off and restore mode
             if(atRecordEnd)
             {
@@ -271,8 +271,8 @@ void VinylControlXwax::run()
             dVinylPosition = dVinylPosition / 1000.0f;
             dVinylPosition -= iLeadInTime;
         }
-        
-        
+
+
 
         //Initialize drift control to zero in case we don't get any position data to calculate it with.
         dDriftControl = 0.0f;
@@ -340,11 +340,11 @@ void VinylControlXwax::run()
                 //if we turned off play button, also disable
                 disableRecordEndMode();
             }
-            else if (iPosition != -1 && 
+            else if (iPosition != -1 &&
                      iPosition <= m_uiSafeZone &&
                      dVinylPosition > 0 &&
                      checkSteadyPitch(dVinylPitch, filePosition) > 0.5)
-                     
+
             {
                 //if good position, and safe, and not in leadin, and steady,
                 //disable
@@ -457,7 +457,7 @@ void VinylControlXwax::run()
 
                 //save the absolute amount of drift for when we need to estimate vinyl position
                 dDriftAmt = dVinylPosition - filePosition;
-                
+
                 //qDebug() << "drift" << dDriftAmt;
 
                 if (bForceResync)
@@ -555,7 +555,7 @@ void VinylControlXwax::run()
                     ringFilled = 0;
                     continue;
                 }
-                
+
                 if (iVCMode == MIXXX_VCMODE_ABSOLUTE &&
                     fabs(dVinylPitch) < 0.05 &&
                     fabs(dDriftAmt) >= 0.3f)
@@ -574,7 +574,7 @@ void VinylControlXwax::run()
 
             //playbutton status may have changed
             reportedPlayButton = playButton->get();
-            
+
             if (reportedPlayButton)
             {
                 //only add to the ring if pitch is stable
@@ -636,7 +636,7 @@ void VinylControlXwax::run()
             //let the track play a wee bit more before deciding we've stopped
 
             rateSlider->slotSet(0.0f);
-            
+
             if (iVCMode == MIXXX_VCMODE_ABSOLUTE &&
                 fabs(dVinylPosition - filePosition) >= 0.1f)
             {
@@ -705,8 +705,7 @@ void VinylControlXwax::disableRecordEndMode()
 
 void VinylControlXwax::togglePlayButton(bool on)
 {
-    if (bIsEnabled && playButton->get() != on)
-    {
+    if (bIsEnabled && (playButton->get() > 0) != on) {
         //switching from on to off -- restart counter for checking needleskip
         if (!on)
             tSinceSteadyPitch.restart();
@@ -823,9 +822,9 @@ void VinylControlXwax::syncPosition()
 
 bool VinylControlXwax::checkEnabled(bool was, bool is)
 {
-	// if we're not enabled, but the last object was, try turning ourselves on
+    // if we're not enabled, but the last object was, try turning ourselves on
     // XXX: is this just a race that's working right now?
-    if (!is and wantenabled->get())
+    if (!is && wantenabled->get() > 0)
     {
         enabled->slotSet(true);
         wantenabled->slotSet(false); //don't try to do this over and over
