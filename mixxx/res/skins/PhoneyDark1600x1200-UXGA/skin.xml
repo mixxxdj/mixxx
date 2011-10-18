@@ -20,6 +20,9 @@
 
 	<!--
 	CHANGELOG
+	v1.10.0.03	(16/10/2011)
+	* Update: Tooltips for waveform (overview) due to changes in functionality
+
 	v1.10.0.02	(29/03/2011)
 	* Added Mixxx 1.10.0 feature:
 	  EmitOnDownPress double-skin connection block replaced with EmitOnPressAndRelease
@@ -789,7 +792,7 @@
 	**********************************************
 	-->
 	<Overview>
-		<Tooltip>Waveform overview&#10;Shows information about the track currently loaded in this channel.&#10;Jump around in the track by clicking somewhere on the waveform.&#10;</Tooltip>
+		<Tooltip>Waveform overview&#10;Shows information about the track currently loaded in this channel.&#10;Jump around in the track by clicking somewhere on the waveform.&#10;Drop tracks from library or external file manager here.&#10;</Tooltip>
 		<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
 		</Style>
@@ -805,7 +808,7 @@
 		</Connection>
 	</Overview>
 	<Overview>
-		<Tooltip>Waveform overview&#10;Shows information about the track currently loaded in this channel.&#10;Jump around in the track by clicking somewhere on the waveform.&#10;</Tooltip>
+		<Tooltip>Waveform overview&#10;Shows information about the track currently loaded in this channel.&#10;Jump around in the track by clicking somewhere on the waveform.&#10;Drop tracks from library or external file manager here.&#10;</Tooltip>
 		<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
 		</Style>
