@@ -587,3 +587,6 @@ void RateControl::slotControlVinyl(double toggle)
     m_bVinylControlEnabled = (bool)toggle;
 }
 
+void RateControl::notifySeek(double playPos) {
+    m_pScratchController->notifySeek(playPos);
+}
