@@ -510,12 +510,14 @@ void WaveformRenderer::draw(QPainter* pPainter, QPaintEvent *pEvent) {
         if ((m_dTargetRate - m_dRate) > 0)
         {
             m_iRateAdjusting = m_iRateAdjusting > 0 ? m_iRateAdjusting + 1 : 1;
-            m_dRate = math_min(m_dTargetRate, m_dRate + RATE_INCREMENT * pow(m_iRateAdjusting, 2) / 80);
+            m_dRate = math_min(m_dTargetRate, m_dRate + RATE_INCREMENT * pow(
+                static_cast<double>(m_iRateAdjusting), 2) / 80);
         }
         else
         {
             m_iRateAdjusting = m_iRateAdjusting < 0 ? m_iRateAdjusting - 1 : -1;
-            m_dRate = math_max(m_dTargetRate, m_dRate - RATE_INCREMENT * pow(m_iRateAdjusting, 2) / 80);
+            m_dRate = math_max(m_dTargetRate, m_dRate - RATE_INCREMENT * pow(
+                static_cast<double>(m_iRateAdjusting), 2) / 80);
         }
     }
     else
@@ -523,7 +525,7 @@ void WaveformRenderer::draw(QPainter* pPainter, QPaintEvent *pEvent) {
         m_iRateAdjusting = 0;
         m_dRate = m_dTargetRate;
     }
-        
+
     // Limit our rate adjustment to < 99%, "Bad Things" might happen otherwise.
     double rateAdjust = m_dRateDir * math_min(0.99, m_dRate * m_dRateRange);
 

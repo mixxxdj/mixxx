@@ -52,6 +52,7 @@ public:
     static void setRateRamp(bool);
     /** Set Rate Ramp Sensitivity */
     static void setRateRampSensitivity(int);
+    virtual void notifySeek(double dNewPlaypos);
 
   public slots:
     void slotControlRatePermDown(double);

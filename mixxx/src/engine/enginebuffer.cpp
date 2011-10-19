@@ -640,6 +640,9 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
 
                 //setNewPlaypos(filepos_play);
                 m_pReadAheadManager->notifySeek(filepos_play);
+                // Notify seek the rate control since it needs to track things
+                // like looping. Hacky, I know.
+                m_pRateControl->notifySeek(filepos_play);
             }
         }
         m_engineLock.unlock();

@@ -25,10 +25,10 @@
 // Once the recording size has reached
 // there's enough room to add closing frames by
 // the encoder
-#define SIZE_650MB  650000000    //bytes
-#define SIZE_700MB  750000000     //bytes
-#define SIZE_1GB    1000000000    //bytes
+#define SIZE_650MB  650000000   //bytes
+#define SIZE_700MB  750000000   //bytes
+#define SIZE_1GB    1000000000  //bytes
 #define SIZE_2GB    2000000000  //bytes
-#define SIZE_4GB    4000000000l  //bytes
+#define SIZE_4GB    4000000000l //bytes
 
 #endif
