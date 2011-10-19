@@ -5,6 +5,7 @@
 
 #include "library/mixxxlibraryfeature.h"
 
+#include "library/basetrackcache.h"
 #include "library/librarytablemodel.h"
 #include "library/missingtablemodel.h"
 #include "library/queryutil.h"
@@ -73,8 +74,8 @@ MixxxLibraryFeature::MixxxLibraryFeature(QObject* parent,
     connect(&pTrackCollection->getTrackDAO(), SIGNAL(tracksRemoved(QSet<int>)),
             pBaseTrackCache, SLOT(slotTracksRemoved(QSet<int>)));
 
-    pTrackCollection->addTrackSource(
-        QString("default"), QSharedPointer<BaseTrackCache>(pBaseTrackCache));
+    m_pBaseTrackCache = QSharedPointer<BaseTrackCache>(pBaseTrackCache);
+    pTrackCollection->addTrackSource(QString("default"), m_pBaseTrackCache);
 
     // These rely on the 'default' track source being present.
     m_pLibraryTableModel = new LibraryTableModel(this, pTrackCollection);
@@ -104,9 +105,17 @@ TreeItemModel* MixxxLibraryFeature::getChildModel() {
     return &m_childModel;
 }
 
-void MixxxLibraryFeature::refreshLibraryModels() {
-    m_pLibraryTableModel->select();
-    m_pMissingTableModel->select();
+void MixxxLibraryFeature::refreshLibraryModels()
+{
+    if (m_pBaseTrackCache) {
+        m_pBaseTrackCache->buildIndex();
+    }
+    if (m_pLibraryTableModel) {
+        m_pLibraryTableModel->select();
+    }
+    if (m_pMissingTableModel) {
+        m_pMissingTableModel->select();
+    }
 }
 
 void MixxxLibraryFeature::activate() {

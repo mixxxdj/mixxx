@@ -35,6 +35,10 @@ class BaseTrackCache : public QObject {
                    bool isCaching);
     virtual ~BaseTrackCache();
 
+    // Rebuild the BaseTrackCache index from the SQL table. This can be
+    // expensive on large tables.
+    void buildIndex();
+
     ////////////////////////////////////////////////////////////////////////////
     // Data access methods
     ////////////////////////////////////////////////////////////////////////////
