@@ -127,7 +127,15 @@ RateControl::RateControl(const char* _group,
     m_pWheel = new ControlTTRotary(ConfigKey(_group, "wheel"));
     
     // Adjust jog wheel sensitivity factor
-    m_dWheelSensitivity = 1.0;
+    QString wheel_sense_str = m_pConfig->getValueString(ConfigKey("[Master]","wheelsensitivity"));
+    if (wheel_sense_str.isNull() || wheel_sense_str.isEmpty())
+    {
+        m_dWheelSensitivity = 1.0f;
+    }
+    else
+    {
+        m_dWheelSensitivity = wheel_sense_str.toDouble();
+    }
     m_pWheelSensitivity = new ControlPotmeter(ConfigKey("[Master]", "wheelsensitivity"), 0., 2.);
     connect(m_pWheelSensitivity, SIGNAL(valueChanged(double)), this, SLOT(slotWheelSensitivity(double)));
     
@@ -170,6 +178,8 @@ RateControl::RateControl(const char* _group,
 }
 
 RateControl::~RateControl() {
+    m_pConfig->set(ConfigKey("[Master]","wheelsensitivity"),
+                   ConfigValue(m_dWheelSensitivity));
     delete m_pRateSlider;
     delete m_pRateRange;
     delete m_pRateDir;
