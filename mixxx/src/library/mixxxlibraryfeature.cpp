@@ -5,6 +5,7 @@
 
 #include "library/mixxxlibraryfeature.h"
 
+#include "library/basetrackcache.h"
 #include "library/librarytablemodel.h"
 #include "library/missingtablemodel.h"
 #include "library/proxytrackmodel.h"
@@ -15,6 +16,7 @@
 MixxxLibraryFeature::MixxxLibraryFeature(QObject* parent,
                                          TrackCollection* pTrackCollection)
     : LibraryFeature(parent),
+      m_pBaseTrackCache(pTrackCollection->getTrackSource("default")),
       m_pLibraryTableModel(new LibraryTableModel(this, pTrackCollection)),
       m_pMissingTableModel(new MissingTableModel(this, pTrackCollection)) {
     QStringList children;
@@ -41,8 +43,15 @@ QAbstractItemModel* MixxxLibraryFeature::getChildModel() {
 
 void MixxxLibraryFeature::refreshLibraryModels()
 {
-    m_pLibraryTableModel->select();
-    m_pMissingTableModel->select();
+    if (m_pBaseTrackCache) {
+        m_pBaseTrackCache->buildIndex();
+    }
+    if (m_pLibraryTableModel) {
+        m_pLibraryTableModel->select();
+    }
+    if (m_pMissingTableModel) {
+        m_pMissingTableModel->select();
+    }
 }
 
 void MixxxLibraryFeature::activate() {
