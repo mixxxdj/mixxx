@@ -58,16 +58,13 @@ class WGLWaveformViewer : public QGLWidget
 
     ControlObjectThreadMain* m_pScratchEnable;
     ControlObjectThreadMain* m_pScratch;
-    ControlObjectThreadMain* m_pPlayPosition;
     ControlObjectThreadMain* m_pTrackSamples;
     ControlObjectThreadMain* m_pTrackSampleRate;
     ControlObjectThreadMain* m_pRate;
     ControlObjectThreadMain* m_pRateRange;
     ControlObjectThreadMain* m_pRateDir;
-    
-    bool m_bScratching;
-    double m_dInitialPlaypos;
 
+    bool m_bScratching;
     bool m_painting;
     QMutex m_paintMutex;
 

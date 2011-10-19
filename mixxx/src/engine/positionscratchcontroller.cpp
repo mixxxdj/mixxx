@@ -158,7 +158,12 @@ void PositionScratchController::process(double currentSample, bool paused, int i
                 // Set the scratch target to the current set position
                 m_pVelocityController->setTarget(scratchPosition);
 
-                m_dRate = m_pVelocityController->observation(currentSample, m_iScratchTime);
+                // Measure the total distance travelled since last frame and add
+                // it to the running total.
+                m_dPositionDeltaSum += (currentSample - m_dLastPlaypos);
+
+                m_dRate = m_pVelocityController->observation(
+                    m_dPositionDeltaSum, m_iScratchTime);
                 //qDebug() << "continue" << m_dRate << iBufferSize;
             } else {
                 // If we got here then we're not scratching and we're in inertia
@@ -191,15 +196,17 @@ void PositionScratchController::process(double currentSample, bool paused, int i
             // mode. Enable scratching.
             m_bScratching = true;
             m_bEnableInertia = false;
+            m_dPositionDeltaSum = 0;
             m_iScratchTime = 0;
-            m_pVelocityController->reset(currentSample, m_iScratchTime, scratchPosition);
-            m_dRate = m_pVelocityController->observation(currentSample, m_iScratchTime);
+            m_pVelocityController->reset(0, m_iScratchTime, scratchPosition);
+            m_dRate = m_pVelocityController->observation(0, m_iScratchTime);
             //qDebug() << "enable" << m_dRate << currentSample;
         } else {
             // We were not previously in scratch mode are still not in scratch
             // mode. Do nothing
         }
     }
+    m_dLastPlaypos = currentSample;
 }
 
 bool PositionScratchController::isEnabled() {
@@ -208,4 +215,8 @@ bool PositionScratchController::isEnabled() {
 
 double PositionScratchController::getRate() {
     return m_dRate;
+}
+
+void PositionScratchController::notifySeek(double currentSample) {
+    m_dLastPlaypos = currentSample;
 }
