@@ -37,7 +37,7 @@ class BaseTrackCache : public QObject {
 
     // Rebuild the BaseTrackCache index from the SQL table. This can be
     // expensive on large tables.
-    void buildIndex();
+    virtual void buildIndex();
 
     ////////////////////////////////////////////////////////////////////////////
     // Data access methods
@@ -54,7 +54,6 @@ class BaseTrackCache : public QObject {
     virtual bool isCached(int trackId) const;
     virtual void ensureCached(int trackId);
     virtual void ensureCached(QSet<int> trackIds);
-    virtual void buildIndex();
 
   signals:
     void tracksChanged(QSet<int> trackIds);
