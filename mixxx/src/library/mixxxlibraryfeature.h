@@ -8,6 +8,7 @@
 
 #include "library/libraryfeature.h"
 
+class BaseTrackCache;
 class LibraryTableModel;
 class MissingTableModel;
 class TrackCollection;
@@ -36,6 +37,7 @@ public slots:
     void onRightClickChild(const QPoint& globalPos, QModelIndex index);
     void refreshLibraryModels();
 private:
+    QSharedPointer<BaseTrackCache> m_pBaseTrackCache;
     LibraryTableModel* m_pLibraryTableModel;
     MissingTableModel* m_pMissingTableModel;
     QStringListModel m_childModel;
