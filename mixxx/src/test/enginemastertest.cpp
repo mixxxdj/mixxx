@@ -35,8 +35,8 @@ class EngineMasterTest : public testing::Test {
     }
 
     virtual void TearDown() {
-        delete m_pConfig;
         delete m_pMaster;
+        delete m_pConfig;
     }
 
     void ClearBuffer(CSAMPLE* pBuffer, int length) {
