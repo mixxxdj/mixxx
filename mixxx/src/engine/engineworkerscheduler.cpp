@@ -9,7 +9,7 @@
 
 EngineWorkerScheduler::EngineWorkerScheduler(QObject* pParent)
         : m_scheduleFIFO(MAX_ENGINE_WORKERS),
-          m_bQuit(true) {
+          m_bQuit(false) {
     Q_UNUSED(pParent);
     m_workerThreadPool.setMaxThreadCount(ENGINE_WORKER_THREAD_COUNT);
     // A timeout of 1 minute for threads in the pool.
