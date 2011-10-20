@@ -27,6 +27,12 @@ class HotcueControl : public QObject {
     inline ControlObject* getPosition() { return m_hotcuePosition; }
     inline ControlObject* getEnabled() { return m_hotcueEnabled; }
 
+    // Used for caching the preview state of this hotcue control.
+    inline bool isPreviewing() { return m_bPreviewing; }
+    inline void setPreviewing(bool bPreviewing) { m_bPreviewing = bPreviewing; }
+    inline int getPreviewingPosition() { return m_iPreviewingPosition; }
+    inline void setPreviewingPosition(int iPosition) { m_iPreviewingPosition = iPosition; }
+
   private slots:
     void slotHotcueSet(double v);
     void slotHotcueGoto(double v);
@@ -64,6 +70,8 @@ class HotcueControl : public QObject {
     ControlObject* m_hotcueActivatePreview;
     ControlObject* m_hotcueClear;
 
+    bool m_bPreviewing;
+    int m_iPreviewingPosition;
 };
 
 class CueControl : public EngineControl {

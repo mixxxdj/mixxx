@@ -383,6 +383,12 @@ void CueControl::hotcueActivate(HotcueControl* pControl, double v) {
             // just in case
             m_bHotcueCancel = false;
             hotcueSet(pControl, v);
+        } else if (m_bPreviewingHotcue) {
+            // The cue is non-existent, yet we got a release for it and are
+            // currently previewing a hotcue. This is indicative of a corner
+            // case where the cue was detached while we were pressing it. Let
+            // hotcueActivatePreview handle it.
+            hotcueActivatePreview(pControl, v);
         }
     }
 }
@@ -399,36 +405,41 @@ void CueControl::hotcueActivatePreview(HotcueControl* pControl, double v) {
             int iPosition = pCue->getPosition();
             m_pPlayButton->set(1.0);
             m_bPreviewingHotcue = true;
+            pControl->setPreviewing(true);
+            pControl->setPreviewingPosition(iPosition);
 
             // Need to unlock before emitting any signals to prevent deadlock.
             lock.unlock();
 
             emit(seekAbs(iPosition));
         }
-    } else {
-        if (m_bPreviewingHotcue && pCue && pCue->getPosition() != -1) {
-            if (m_bHotcueCancel) { // we want to keep playing from where we are
-                if (--m_iCurrentlyPreviewingHotcues == 0) {
-                    m_bPreviewingHotcue = false;
-                    m_bHotcueCancel = false;
+    } else if (m_bPreviewingHotcue) {
+        // This is a activate release and we are previewing at least one
+        // hotcue. If this hotcue is previewing:
+        if (pControl->isPreviewing()) {
+            // Mark this hotcue as not previewing.
+            int iPosition = pControl->getPreviewingPosition();
+            pControl->setPreviewing(false);
+            pControl->setPreviewingPosition(-1);
+
+            // If this is the last hotcue to leave preview.
+            if (--m_iCurrentlyPreviewingHotcues == 0) {
+                bool bHotcueCancel = m_bHotcueCancel;
+                m_bPreviewingHotcue = false;
+                m_bHotcueCancel = false;
+                // If hotcue cancel is marked then do not snap back to the
+                // hotcue and stop. Otherwise, seek back to the start point and
+                // stop.
+                if (bHotcueCancel) {
                     // Re-trigger the play button value so controllers get the correct one
-                    // after cuePlay() changes it.
+                    // after.
                     m_pPlayButton->set(m_pPlayButton->get());
-
-                    lock.unlock();
-                }
-            } else {
-                if (--m_iCurrentlyPreviewingHotcues == 0) {
-                    int iPosition = pCue->getPosition();
+                } else {
                     m_pPlayButton->set(0.0);
-                    m_bPreviewingHotcue = false;
-
                     // Need to unlock before emitting any signals to prevent deadlock.
                     lock.unlock();
-
                     emit(seekAbs(iPosition));
                 }
-
             }
         }
     }
@@ -683,7 +694,9 @@ ConfigKey HotcueControl::keyForControl(int hotcue, QString name) {
 HotcueControl::HotcueControl(const char* pGroup, int i)
         : m_pGroup(pGroup),
           m_iHotcueNumber(i),
-          m_pCue(NULL) {
+          m_pCue(NULL),
+          m_bPreviewing(false),
+          m_iPreviewingPosition(-1) {
     m_hotcuePosition = new ControlObject(keyForControl(i, "position"));
     connect(m_hotcuePosition, SIGNAL(valueChanged(double)),
             this, SLOT(slotHotcuePositionChanged(double)),
