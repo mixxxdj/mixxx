@@ -83,7 +83,6 @@ void WaveformRenderSignal::draw(QPainter *pPainter, QPaintEvent *event,
     // If the array is not large enough, expand it.
     // Amortize the cost of this by requesting a factor of 2 more.
     if(m_lines.size() < subpixelWidth) {
-        qDebug() << "RESIZING";
         m_lines.resize(2*subpixelWidth);
     }
 
