@@ -73,7 +73,7 @@ void RecordingManager::startRecording(bool generateFileName) {
         //Construct the file pattern
         // dd_mm_yyyy--hours-minutes-ss   or    mm_dd_yyyy --hours-minutes:seconds
         QDateTime current_date_time = QDateTime::currentDateTime();
-        QString date_time_str = current_date_time.toString("MM_dd_yyyy-hh'h'_mm'm'_ss's'");
+        QString date_time_str = current_date_time.toString(Qt::ISODate);
         //Append file extension
         m_recordingFile = date_time_str + "."+ encodingType.toLower();
 

@@ -68,6 +68,10 @@ QVariant MidiOutputMappingTableModel::data(const QModelIndex &index, int role) c
                  return control.getControlObjectValue();
                  break;
 
+             case MIDIOUTPUTTABLEINDEX_CONTROLOBJECTDESCRIPTION:
+                 return control.getControlObjectDescription();
+                 break;
+
              case MIDIOUTPUTTABLEINDEX_MIDIOPTION:
                  return control.getMidiOption();
                  break;
@@ -131,6 +135,10 @@ bool MidiOutputMappingTableModel::setData(const QModelIndex &index, const QVaria
                 case MIDIOUTPUTTABLEINDEX_CONTROLOBJECTVALUE:
                     control.setControlObjectValue(value.toString());
                     break;
+
+                case MIDIOUTPUTTABLEINDEX_CONTROLOBJECTDESCRIPTION:
+                    control.setControlObjectDescription(value.toString());
+                    break;
                     
                 case MIDIOUTPUTTABLEINDEX_MIDIOPTION:
                     control.setMidiOption((MidiOption)value.toInt());
@@ -193,6 +201,10 @@ QVariant MidiOutputMappingTableModel::headerData(int section, Qt::Orientation or
 
             case MIDIOUTPUTTABLEINDEX_CONTROLOBJECTVALUE:
                 return QVariant(tr("Control Value"));
+                break;
+                
+            case MIDIOUTPUTTABLEINDEX_CONTROLOBJECTDESCRIPTION:
+                return QVariant(tr("Description"));
                 break;
                 
             case MIDIOUTPUTTABLEINDEX_THRESHOLDMIN:

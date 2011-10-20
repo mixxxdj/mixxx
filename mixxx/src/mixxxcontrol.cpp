@@ -3,11 +3,12 @@
 #include "mixxxcontrol.h"
 
 /** MixxxControl constructor */
-MixxxControl::MixxxControl(QString controlobject_group, QString controlobject_value,
-                         MidiOption midioption)
+MixxxControl::MixxxControl(QString controlobject_group, QString controlobject_value, 
+                         QString controlobject_description, MidiOption midioption)
 {
     m_strCOGroup = controlobject_group;
     m_strCOValue = controlobject_value;
+    m_strCODescription = controlobject_description;
     m_midiOption = midioption;
     
     m_thresholdMinimum = 0.0f;
@@ -21,9 +22,11 @@ MixxxControl::MixxxControl(QDomElement& parentNode, bool isOutputNode)
 {
     QDomElement groupNode = parentNode.firstChildElement("group");
     QDomElement keyNode = parentNode.firstChildElement("key");
+    QDomElement descriptionNode = parentNode.firstChildElement("description");
 
     m_strCOGroup = groupNode.text();
     m_strCOValue = keyNode.text();
+    m_strCODescription = descriptionNode.text();
 
     QDomElement optionsNode = parentNode.firstChildElement("options");
 
@@ -109,6 +112,12 @@ void MixxxControl::serializeToXML(QDomElement& parentNode, bool isOutputNode) co
     //Control object value
     tagNode = nodeMaker.createElement("key"); //WTF worst name ever
     text = nodeMaker.createTextNode(this->getControlObjectValue());
+    tagNode.appendChild(text);
+    parentNode.appendChild(tagNode);
+
+    //Control object description
+    tagNode = nodeMaker.createElement("description");
+    text = nodeMaker.createTextNode(this->getControlObjectDescription());
     tagNode.appendChild(text);
     parentNode.appendChild(tagNode);
 
