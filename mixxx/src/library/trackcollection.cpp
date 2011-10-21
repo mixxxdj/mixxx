@@ -61,18 +61,7 @@ TrackCollection::TrackCollection(ConfigObject<ConfigValue>* pConfig)
     QString queryString = "CREATE TEMPORARY VIEW IF NOT EXISTS library_cache_view AS SELECT "
             + columns.join(",") +
             " FROM library INNER JOIN track_locations "
-            "ON library.location = track_locations.id "
-            "WHERE (" + LibraryTableModel::DEFAULT_LIBRARYFILTER + ")";
-
-    for (QStringList::iterator it = columns.begin();
-         it != columns.end(); ++it) {
-        if (it->startsWith("library.")) {
-            *it = it->replace("library.", "");
-        } else if (it->startsWith("track_locations.")) {
-            *it = it->replace("track_locations.", "");
-        }
-    }
-
+            "ON library.location = track_locations.id";
     query.prepare(queryString);
     if (!query.exec()) {
         qDebug() << query.executedQuery() << query.lastError();
@@ -84,8 +73,13 @@ TrackCollection::TrackCollection(ConfigObject<ConfigValue>* pConfig)
     }
 
     // Strip out library. and track_locations.
-    for (int i = 0; i < columns.size(); ++i) {
-        columns[i] = columns[i].replace("library.", "").replace("track_locations.", "");
+    for (QStringList::iterator it = columns.begin();
+         it != columns.end(); ++it) {
+        if (it->startsWith("library.")) {
+            *it = it->replace("library.", "");
+        } else if (it->startsWith("track_locations.")) {
+            *it = it->replace("track_locations.", "");
+        }
     }
 
     BaseTrackCache* pBaseTrackCache = new BaseTrackCache(
