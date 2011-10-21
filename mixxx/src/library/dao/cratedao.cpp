@@ -141,7 +141,6 @@ unsigned int CrateDAO::crateSize(int crateId) {
 
 bool CrateDAO::addTrackToCrate(int trackId, int crateId) {
     QSqlQuery query(m_database);
-
     query.prepare("INSERT INTO " CRATE_TRACKS_TABLE
                   " (crate_id, track_id) VALUES (:crate_id, :track_id)");
     query.bindValue(":crate_id", crateId);
@@ -157,9 +156,21 @@ bool CrateDAO::addTrackToCrate(int trackId, int crateId) {
     return true;
 }
 
+void CrateDAO::removeTrackFromCrates(int trackId) {
+    QSqlQuery query(m_database);
+    QString queryString = QString("DELETE FROM %1 WHERE %2 = %3")
+            .arg(CRATE_TRACKS_TABLE)
+            .arg(CRATETRACKSTABLE_TRACKID)
+            .arg(QString::number(trackId));
+    query.prepare(queryString);
+    if (!query.exec()) {
+        qDebug() << __FILE__ << __LINE__
+                 << "Failed to remove track from crates:" << trackId;
+    }
+}
+
 bool CrateDAO::removeTrackFromCrate(int trackId, int crateId) {
     QSqlQuery query(m_database);
-
     query.prepare("DELETE FROM " CRATE_TRACKS_TABLE " WHERE "
                   "crate_id = :crate_id AND track_id = :track_id");
     query.bindValue(":crate_id", crateId);

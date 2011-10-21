@@ -1,5 +1,3 @@
-
-
 #ifndef TRACKDAO_H
 #define TRACKDAO_H
 
@@ -13,10 +11,13 @@
 #include <QWeakPointer>
 #include <QCache>
 
-#include "trackinfoobject.h"
+#include "configobject.h"
+#include "library/dao/cratedao.h"
 #include "library/dao/cuedao.h"
 #include "library/dao/dao.h"
-#include "configobject.h"
+#include "library/dao/playlistdao.h"
+#include "trackinfoobject.h"
+#include "util.h"
 
 const QString LIBRARYTABLE_ID = "id";
 const QString LIBRARYTABLE_ARTIST = "artist";
@@ -53,14 +54,14 @@ const QString TRACKLOCATIONSTABLE_FILESIZE = "filesize";
 const QString TRACKLOCATIONSTABLE_FSDELETED = "fs_deleted";
 const QString TRACKLOCATIONSTABLE_NEEDSVERIFICATION = "needs_verification";
 
-
 class TrackDAO : public QObject, public virtual DAO {
     Q_OBJECT
   public:
     /** The 'config object' is necessary because users decide ID3 tags get
      * synchronized on track metadata change **/
     TrackDAO(QSqlDatabase& database, CueDAO& cueDao,
-             ConfigObject<ConfigValue> * pConfig = NULL);
+             PlaylistDAO& playlistDao, CrateDAO& crateDao,
+             ConfigObject<ConfigValue>* pConfig = NULL);
     virtual ~TrackDAO();
 
     void finish();
@@ -136,27 +137,16 @@ class TrackDAO : public QObject, public virtual DAO {
     // Called when the TIO reference count drops to 0
     static void deleteTrack(TrackInfoObject* pTrack);
 
-    // Prevents evil copy constructors! (auto-generated ones by the compiler
-    // that don't compile)
-    TrackDAO(TrackDAO&);
-    bool operator=(TrackDAO&);
-    /**
-       NOTE: If you get a compile error complaining about these, it means you're
-             copying a track DAO, which is probably not what you meant to
-             do. Did you declare:
-               TrackDAO m_trackDAO;
-             instead of:
-               TrackDAO &m_trackDAO;
-             Go back and check your code...
-       -- Albert Nov 1/2009
-     */
-
     QSqlDatabase &m_database;
     CueDAO &m_cueDao;
+    PlaylistDAO &m_playlistDao;
+    CrateDAO &m_crateDao;
     ConfigObject<ConfigValue> * m_pConfig;
     mutable QHash<int, TrackWeakPointer> m_tracks;
     mutable QSet<int> m_dirtyTracks;
     mutable QCache<int,TrackPointer> m_trackCache;
+
+    DISALLOW_COPY_AND_ASSIGN(TrackDAO);
 };
 
 #endif //TRACKDAO_H
