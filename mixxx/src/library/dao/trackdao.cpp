@@ -1,4 +1,3 @@
-
 #include <QtDebug>
 #include <QtCore>
 #include <QtSql>
@@ -19,9 +18,15 @@
 // 0.
 #define TRACK_CACHE_SIZE 5
 
-TrackDAO::TrackDAO(QSqlDatabase& database, CueDAO& cueDao, ConfigObject<ConfigValue> * pConfig)
+TrackDAO::TrackDAO(QSqlDatabase& database,
+                   CueDAO& cueDao,
+                   PlaylistDAO& playlistDao,
+                   CrateDAO& crateDao,
+                   ConfigObject<ConfigValue> * pConfig)
         : m_database(database),
           m_cueDao(cueDao),
+          m_playlistDao(playlistDao),
+          m_crateDao(crateDao),
           m_trackCache(TRACK_CACHE_SIZE),
           m_pConfig(pConfig) {
 }
@@ -65,7 +70,6 @@ int TrackDAO::getTrackId(QString absoluteFilePath) {
     if (query.next()) {
         libraryTrackId = query.value(query.record().indexOf("id")).toInt();
     }
-    //query.finish();
 
     return libraryTrackId;
 }
@@ -86,7 +90,6 @@ QString TrackDAO::getTrackLocation(int trackId) {
     while (query.next()) {
         trackLocation = query.value(query.record().indexOf("location")).toString();
     }
-    //query.finish();
 
     return trackLocation;
 }
@@ -354,9 +357,8 @@ void TrackDAO::addTracks(QList<TrackInfoObject*> tracksToAdd, bool unremove) {
     track_lookup.prepare("SELECT location, id, mixxx_deleted from library WHERE location IN (" +
                          trackLocationIds.join(",")+ ")");
     if (!track_lookup.exec()) {
-        qDebug() << __FILE__ << __LINE__ << "Failed to lookup existing tracks:"
-                 << track_lookup.lastError()
-                 << track_lookup.executedQuery();
+        LOG_FAILED_QUERY(track_lookup)
+                << "Failed to lookup existing tracks:";
     } else {
         QSqlRecord track_lookup_record = track_lookup.record();
         int locationIdColumn = track_lookup_record.indexOf("location");
@@ -395,9 +397,8 @@ void TrackDAO::addTracks(QList<TrackInfoObject*> tracksToAdd, bool unremove) {
                 unremove_query.prepare("UPDATE library SET mixxx_deleted = 0 WHERE id = :id");
                 unremove_query.bindValue(":id", trackId);
                 if (!unremove_query.exec()) {
-                    qDebug() << __FILE__ << __LINE__ << "Could not unremove track" << trackId
-                             << unremove_query.lastError()
-                             << unremove_query.executedQuery();
+                    LOG_FAILED_QUERY(unremove_query)
+                            << "Could not unremove track" << trackId;
                 } else {
                     tracksAddedSet.insert(trackId);
                 }
@@ -469,10 +470,14 @@ void TrackDAO::removeTrack(int id) {
     Q_ASSERT(id >= 0);
     QSqlQuery query(m_database);
 
+    // Remove track from crates and playlists.
+    m_playlistDao.removeTrackFromPlaylists(id);
+    m_crateDao.removeTrackFromCrates(id);
+
     //Mark the track as deleted!
     query.prepare("UPDATE library "
                   "SET mixxx_deleted=1 "
-                  "WHERE id = " + QString("%1").arg(id));
+                  "WHERE id = " + QString::number(id));
     if (!query.exec()) {
         LOG_FAILED_QUERY(query);
     }
@@ -655,7 +660,6 @@ TrackPointer TrackDAO::getTrackFromDB(QSqlQuery &query) const {
 
         return pTrack;
     }
-    //query.finish();
 
     return TrackPointer();
 }
@@ -803,8 +807,6 @@ void TrackDAO::updateTrack(TrackInfoObject* pTrack) {
         m_database.rollback();
         return;
     }
-
-    //query.finish();
 
     //qDebug() << "Update track took : " << time.elapsed() << "ms. Now updating cues";
     time.start();
