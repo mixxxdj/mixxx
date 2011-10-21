@@ -4,6 +4,7 @@
 #include <QDateTime>
 #include "library/trackcollection.h"
 #include "library/playlisttablemodel.h"
+#include "library/queryutil.h"
 
 #include "mixxxutils.cpp"
 
@@ -32,38 +33,30 @@ void PlaylistTableModel::setPlaylist(int playlistId) {
     }
 
     m_iPlaylistId = playlistId;
-
-    QString playlistTableName = "playlist_" + QString("%1").arg(m_iPlaylistId);
+    QString playlistTableName = "playlist_" + QString::number(m_iPlaylistId);
     QSqlQuery query(m_pTrackCollection->getDatabase());
-    //query.prepare("DROP VIEW " + playlistTableName);
-    //query.exec();
-
-    // Escape the playlist name
-    QSqlDriver* driver = m_pTrackCollection->getDatabase().driver();
-    QSqlField playlistNameField("name", QVariant::String);
-    playlistNameField.setValue(playlistTableName);
+    FieldEscaper escaper(m_pTrackCollection->getDatabase());
 
     QStringList columns;
     columns << PLAYLISTTRACKSTABLE_TRACKID
             << PLAYLISTTRACKSTABLE_POSITION;
 
+    // We drop files that have been explicitly deleted from mixxx
+    // (mixxx_deleted=0) from the view. There was a bug in <= 1.9.0 where
+    // removed files were not removed from playlists, so some users will have
+    // libraries where this is the case.
     QString queryString = QString(
         "CREATE TEMPORARY VIEW IF NOT EXISTS %1 AS "
-        "SELECT %2 FROM %3 WHERE playlist_id = %4")
-            .arg(driver->formatValue(playlistNameField))
+        "SELECT %2 FROM PlaylistTracks "
+        "INNER JOIN library ON library.id = PlaylistTracks.track_id "
+        "WHERE PlaylistTracks.playlist_id = %3 AND library.mixxx_deleted = 0")
+            .arg(escaper.escapeString(playlistTableName))
             .arg(columns.join(","))
-            .arg("PlaylistTracks")
             .arg(playlistId);
     query.prepare(queryString);
-
     if (!query.exec()) {
         // It's normal for this to fail.
-        qDebug() << query.executedQuery() << query.lastError();
-    }
-
-    // Print out any SQL error, if there was one.
-    if (query.lastError().isValid()) {
-     	qDebug() << __FILE__ << __LINE__ << query.lastError();
+        LOG_FAILED_QUERY(query);
     }
 
     setTable(playlistTableName, columns[0], columns,
