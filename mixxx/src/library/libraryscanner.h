@@ -24,23 +24,23 @@
 #include <QtCore>
 #include <QList>
 
-#include "library/dao/libraryhashdao.h"
-#include "library/dao/trackdao.h"
+#include "library/dao/cratedao.h"
 #include "library/dao/cuedao.h"
+#include "library/dao/libraryhashdao.h"
 #include "library/dao/playlistdao.h"
-#include "trackcollection.h"
+#include "library/dao/trackdao.h"
 #include "libraryscannerdlg.h"
+#include "trackcollection.h"
 
 class TrackInfoObject;
 
-class LibraryScanner : public QThread
-{
+class LibraryScanner : public QThread {
     Q_OBJECT
-
   public:
     LibraryScanner();
     LibraryScanner(TrackCollection* collection);
     virtual ~LibraryScanner();
+
     void run();
     void scan(QString libraryPath);
     void scan();
@@ -57,14 +57,15 @@ class LibraryScanner : public QThread
     LibraryScannerDlg* m_pProgress;       //The library scanning window
     LibraryHashDAO m_libraryHashDao;
     CueDAO m_cueDao;
-    TrackDAO m_trackDao;
     PlaylistDAO m_playlistDao;
+    CrateDAO m_crateDao;
+    TrackDAO m_trackDao;
     QSqlDatabase m_database;            /**Hang on to a different DB connection
                                            since we run in a different thread */
     QStringList nameFilters;
     bool m_bCancelLibraryScan;
     QMutex m_libraryScanMutex;
-    QStringList m_directoriesBlacklist; 
+    QStringList m_directoriesBlacklist;
 };
 
 #endif
