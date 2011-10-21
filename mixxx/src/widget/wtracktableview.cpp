@@ -92,7 +92,7 @@ WTrackTableView::~WTrackTableView()
 }
 
 void WTrackTableView::loadTrackModel(QAbstractItemModel *model) {
-    qDebug() << "WTrackTableView::loadTrackModel()" << model;
+    //qDebug() << "WTrackTableView::loadTrackModel()" << model;
 
     TrackModel* track_model = dynamic_cast<TrackModel*>(model);
 

@@ -25,7 +25,7 @@ PlaylistTableModel::~PlaylistTableModel() {
 
 
 void PlaylistTableModel::setPlaylist(int playlistId) {
-    qDebug() << "PlaylistTableModel::setPlaylist" << playlistId;
+    //qDebug() << "PlaylistTableModel::setPlaylist" << playlistId;
 
     if (m_iPlaylistId == playlistId) {
         qDebug() << "Already focused on playlist " << playlistId;
@@ -193,7 +193,7 @@ void PlaylistTableModel::moveTrack(const QModelIndex& sourceIndex, const QModelI
     int oldPosition = sourceIndex.sibling(sourceIndex.row(), playlistPositionColumn).data().toInt();
 
 
-    qDebug() << "old pos" << oldPosition << "new pos" << newPosition;
+    //qDebug() << "old pos" << oldPosition << "new pos" << newPosition;
 
     //Invalid for the position to be 0 or less.
     if (newPosition < 0)
