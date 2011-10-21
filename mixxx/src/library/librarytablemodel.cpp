@@ -25,7 +25,6 @@ LibraryTableModel::LibraryTableModel(QObject* parent,
             " FROM library INNER JOIN track_locations "
             "ON library.location = track_locations.id "
             "WHERE (" + LibraryTableModel::DEFAULT_LIBRARYFILTER + ")";
-    qDebug() << "Creating View:" << queryString;
     query.prepare(queryString);
     if (!query.exec()) {
         qDebug() << query.executedQuery() << query.lastError();
@@ -53,7 +52,7 @@ LibraryTableModel::LibraryTableModel(QObject* parent,
     initHeaderData();
 
     //Sets up the table filter so that we don't show "deleted" tracks (only show mixxx_deleted=0).
-    slotSearch("");
+    setSearch("");
 
     select(); //Populate the data model.
 
