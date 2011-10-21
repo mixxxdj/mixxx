@@ -279,7 +279,9 @@ void BaseSqlTableModel::setTable(const QString& tableName,
                                  const QStringList& tableColumns,
                                  QSharedPointer<BaseTrackCache> trackSource) {
     Q_ASSERT(trackSource);
-    qDebug() << this << "setTable" << tableName << tableColumns << idColumn;
+    if (sDebug) {
+        qDebug() << this << "setTable" << tableName << tableColumns << idColumn;
+    }
     m_tableName = tableName;
     m_idColumn = idColumn;
     m_tableColumns = tableColumns;
