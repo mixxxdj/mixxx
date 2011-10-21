@@ -76,11 +76,10 @@ class TrackCollection : public QObject
     QSqlDatabase m_db;
     QHash<QString, QSharedPointer<BaseTrackCache> > m_trackSources;
     PlaylistDAO m_playlistDao;
+    CrateDAO m_crateDao;
     CueDAO m_cueDao;
     TrackDAO m_trackDao;
-    CrateDAO m_crateDao;
     const QRegExp m_supportedFileExtensionsRegex;
-
     /** Flag to raise when library scan should be cancelled */
     int bCancelLibraryScan;
     QMutex m_libraryScanMutex;

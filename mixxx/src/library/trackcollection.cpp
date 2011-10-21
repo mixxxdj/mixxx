@@ -14,14 +14,13 @@
 TrackCollection::TrackCollection(ConfigObject<ConfigValue>* pConfig)
         : m_pConfig(pConfig),
           m_db(QSqlDatabase::addDatabase("QSQLITE")),
-          m_playlistDao(m_db),
           m_cueDao(m_db),
-          m_trackDao(m_db, m_cueDao, pConfig),
+          m_playlistDao(m_db),
           m_crateDao(m_db),
-          m_supportedFileExtensionsRegex(SoundSourceProxy::supportedFileExtensionsRegex(),
-                                         Qt::CaseInsensitive)
-{
-
+          m_trackDao(m_db, m_cueDao, m_playlistDao, m_crateDao, pConfig),
+          m_supportedFileExtensionsRegex(
+              SoundSourceProxy::supportedFileExtensionsRegex(),
+              Qt::CaseInsensitive) {
     bCancelLibraryScan = 0;
     qDebug() << QSqlDatabase::drivers();
 

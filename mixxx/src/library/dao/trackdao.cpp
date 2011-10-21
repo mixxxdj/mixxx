@@ -1,7 +1,7 @@
-
 #include <QtDebug>
 #include <QtCore>
 #include <QtSql>
+
 #include "trackinfoobject.h"
 #include "library/dao/trackdao.h"
 #include "audiotagger.h"
@@ -14,12 +14,17 @@
 // 0.
 #define TRACK_CACHE_SIZE 5
 
-TrackDAO::TrackDAO(QSqlDatabase& database, CueDAO& cueDao, ConfigObject<ConfigValue> * pConfig)
+TrackDAO::TrackDAO(QSqlDatabase& database,
+                   CueDAO& cueDao,
+                   PlaylistDAO& playlistDao,
+                   CrateDAO& crateDao,
+                   ConfigObject<ConfigValue> * pConfig)
         : m_database(database),
           m_cueDao(cueDao),
+          m_playlistDao(playlistDao),
+          m_crateDao(crateDao),
           m_pConfig(pConfig),
           m_trackCache(TRACK_CACHE_SIZE) {
-
 }
 
 void TrackDAO::finish()
@@ -453,10 +458,14 @@ void TrackDAO::removeTrack(int id)
     Q_ASSERT(id >= 0);
     QSqlQuery query(m_database);
 
+    // Remove track from crates and playlists.
+    m_playlistDao.removeTrackFromPlaylists(id);
+    m_crateDao.removeTrackFromCrates(id);
+
     //Mark the track as deleted!
     query.prepare("UPDATE library "
                   "SET mixxx_deleted=1 "
-                  "WHERE id = " + QString("%1").arg(id));
+                  "WHERE id = " + QString::number(id));
     query.exec();
     //query.finish();
 
