@@ -43,8 +43,7 @@ MixxxLibraryFeature::MixxxLibraryFeature(QObject* parent,
     QString queryString = "CREATE TEMPORARY VIEW IF NOT EXISTS library_cache_view AS SELECT "
             + columns.join(",") +
             " FROM library INNER JOIN track_locations "
-            "ON library.location = track_locations.id "
-            "WHERE (" + LibraryTableModel::DEFAULT_LIBRARYFILTER + ")";
+            "ON library.location = track_locations.id";
 
     query.prepare(queryString);
     if (!query.exec()) {
