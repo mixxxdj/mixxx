@@ -4,9 +4,11 @@
 #include <QtDebug>
 
 #include "library/cratetablemodel.h"
-#include "library/librarytablemodel.h"
-#include "library/trackcollection.h"
+
 #include "library/dao/cratedao.h"
+#include "library/librarytablemodel.h"
+#include "library/queryutil.h"
+#include "library/trackcollection.h"
 
 #include "mixxxutils.cpp"
 
@@ -24,39 +26,40 @@ CrateTableModel::~CrateTableModel() {
 }
 
 void CrateTableModel::setCrate(int crateId) {
-    qDebug() << "CrateTableModel::setCrate()" << crateId;
+    //qDebug() << "CrateTableModel::setCrate()" << crateId;
     m_iCrateId = crateId;
 
     QString tableName = QString("crate_%1").arg(m_iCrateId);
-    QSqlQuery query;
-
+    QSqlQuery query(m_pTrackCollection->getDatabase());
+    FieldEscaper escaper(m_pTrackCollection->getDatabase());
     QStringList columns;
     columns << CRATETRACKSTABLE_TRACKID;
 
-    QString queryString = QString("CREATE TEMPORARY VIEW IF NOT EXISTS %1 AS "
-                                  "SELECT %2 FROM " CRATE_TRACKS_TABLE
-                                  " WHERE " + CRATETRACKSTABLE_CRATEID +
-                                  " = %3");
-    queryString = queryString
-            .arg(tableName)
+    // We drop files that have been explicitly deleted from mixxx
+    // (mixxx_deleted=0) from the view. There was a bug in <= 1.9.0 where
+    // removed files were not removed from playlists, so some users will have
+    // libraries where this is the case.
+    QString queryString = QString(
+        "CREATE TEMPORARY VIEW IF NOT EXISTS %1 AS "
+        "SELECT %2 FROM %3 "
+        "INNER JOIN library ON library.id = %3.%4 "
+        "WHERE %3.%5 = %6 AND library.mixxx_deleted = 0")
+            .arg(escaper.escapeString(tableName))
             .arg(columns.join(","))
+            .arg(CRATE_TRACKS_TABLE)
+            .arg(CRATETRACKSTABLE_TRACKID)
+            .arg(CRATETRACKSTABLE_CRATEID)
             .arg(crateId);
     query.prepare(queryString);
-
     if (!query.exec()) {
-        // TODO(XXX) feedback
-        qDebug() << "Error creating temporary view for crate "
-                 << crateId << ":" << query.executedQuery()
-                 << query.lastError();
+        LOG_FAILED_QUERY(query);
     }
 
-    QStringList tableColumns;
     setTable(tableName, columns[0], columns,
              m_pTrackCollection->getTrackSource("default"));
     // BaseSqlTableModel sets up the header names
     initHeaderData();
-    // Enable the basic filters
-    setSearch("", LibraryTableModel::DEFAULT_LIBRARYFILTER);
+    setSearch("");
     setDefaultSort(fieldIndex("artist"), Qt::AscendingOrder);
 }
 

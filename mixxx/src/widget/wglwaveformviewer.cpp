@@ -145,7 +145,7 @@ bool WGLWaveformViewer::eventFilter(QObject *o, QEvent *e) {
             // To take care of one one movement when zoom changes with pitch
             double rateAdjust = m_pRateDir->get() *
                     math_min(0.99, m_pRate->get() * m_pRateRange->get());
-            double targetPosition = (curX - m_iMouseStart) *
+            double targetPosition = (m_iMouseStart - curX) *
                     samplesPerPixel * (1 + rateAdjust);
             //qDebug() << "Target:" << targetPosition;
             m_pScratch->slotSet(targetPosition);
