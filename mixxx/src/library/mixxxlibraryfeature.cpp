@@ -40,11 +40,13 @@ MixxxLibraryFeature::MixxxLibraryFeature(QObject* parent,
             << "library." + LIBRARYTABLE_MIXXXDELETED;
 
     QSqlQuery query(pTrackCollection->getDatabase());
-    QString queryString = "CREATE TEMPORARY VIEW IF NOT EXISTS library_cache_view AS SELECT "
-            + columns.join(",") +
-            " FROM library INNER JOIN track_locations "
-            "ON library.location = track_locations.id";
-
+    QString tableName = "library_cache_view";
+    QString queryString = QString(
+        "CREATE TEMPORARY VIEW IF NOT EXISTS %1 AS "
+        "SELECT %2 FROM library "
+        "INNER JOIN track_locations ON library.location = track_locations.id")
+            .arg(tableName)
+            .arg(columns.join(","));
     query.prepare(queryString);
     if (!query.exec()) {
         LOG_FAILED_QUERY(query);
@@ -61,7 +63,7 @@ MixxxLibraryFeature::MixxxLibraryFeature(QObject* parent,
     }
 
     BaseTrackCache* pBaseTrackCache = new BaseTrackCache(
-        pTrackCollection, "library_cache_view", LIBRARYTABLE_ID, columns, true);
+        pTrackCollection, tableName, LIBRARYTABLE_ID, columns, true);
     connect(&pTrackCollection->getTrackDAO(), SIGNAL(trackDirty(int)),
             pBaseTrackCache, SLOT(slotTrackDirty(int)));
     connect(&pTrackCollection->getTrackDAO(), SIGNAL(trackClean(int)),
