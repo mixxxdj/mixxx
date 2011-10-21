@@ -55,14 +55,13 @@ void PlaylistTableModel::setPlaylist(int playlistId) {
             .arg(playlistId);
     query.prepare(queryString);
     if (!query.exec()) {
-        // It's normal for this to fail.
         LOG_FAILED_QUERY(query);
     }
 
     setTable(playlistTableName, columns[0], columns,
              m_pTrackCollection->getTrackSource("default"));
     initHeaderData();
-    setSearch("", LibraryTableModel::DEFAULT_LIBRARYFILTER);
+    setSearch("");
     setDefaultSort(fieldIndex("position"), Qt::AscendingOrder);
 }
 
