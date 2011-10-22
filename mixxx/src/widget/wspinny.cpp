@@ -7,7 +7,7 @@
 #include "wspinny.h"
 
 WSpinny::WSpinny(QWidget* parent, VinylControlManager* pVCMan) : QGLWidget(SharedGLContext::getContext(), parent),
-    m_pBG(NULL), 
+    m_pBG(NULL),
     m_pFG(NULL),
     m_pGhost(NULL),
     m_pPlay(NULL),
@@ -71,17 +71,17 @@ void WSpinny::setup(QDomNode node, QString group)
     m_group = group;
 
     // Set pixmaps
-    m_pBG = WPixmapStore::getPixmap(WWidget::getPath(WWidget::selectNodeQString(node, 
+    m_pBG = WPixmapStore::getPixmap(WWidget::getPath(WWidget::selectNodeQString(node,
                                                     "PathBackground")));
-    m_pFG = WPixmapStore::getPixmap(WWidget::getPath(WWidget::selectNodeQString(node, 
+    m_pFG = WPixmapStore::getPixmap(WWidget::getPath(WWidget::selectNodeQString(node,
                                                     "PathForeground")));
-    m_pGhost = WPixmapStore::getPixmap(WWidget::getPath(WWidget::selectNodeQString(node, 
+    m_pGhost = WPixmapStore::getPixmap(WWidget::getPath(WWidget::selectNodeQString(node,
                                                     "PathGhost")));
     if (m_pBG && !m_pBG->isNull()) {
         setFixedSize(m_pBG->size());
     }
-    
-#ifdef __VINYLCONTROL__    
+
+#ifdef __VINYLCONTROL__
     m_iSize = MIXXX_VINYL_SCOPE_SIZE;
     m_qImage = QImage(m_iSize, m_iSize, QImage::Format_ARGB32);
     //fill with transparent black
@@ -110,7 +110,7 @@ void WSpinny::setup(QDomNode node, QString group)
                         ConfigKey(group, "scratch_position_enable")));
     m_pScratchPos = new ControlObjectThreadMain(ControlObject::getControl(
                         ConfigKey(group, "scratch_position")));
-                        
+
     Q_ASSERT(m_pPlayPos);
     Q_ASSERT(m_pDuration);
 
@@ -136,19 +136,19 @@ void WSpinny::setup(QDomNode node, QString group)
     m_pRate = new ControlObjectThreadMain(ControlObject::getControl(
                         ConfigKey(group, "rate")));
 
-    //Match the vinyl control's set RPM so that the spinny widget rotates at the same 
+    //Match the vinyl control's set RPM so that the spinny widget rotates at the same
     //speed as your physical decks, if you're using vinyl control.
     connect(m_pVinylControlSpeedType, SIGNAL(valueChanged(double)),
             this, SLOT(updateVinylControlSpeed(double)));
-            
+
     //Make sure vinyl control proxies are up to date
     connect(m_pVinylControlEnabled, SIGNAL(valueChanged(double)),
             this, SLOT(updateVinylControlEnabled(double)));
-            
+
     //Check the rate to see if we are stopped
     connect(m_pRate, SIGNAL(valueChanged(double)),
             this, SLOT(updateRate(double)));
-#endif            
+#endif
 }
 
 void WSpinny::paintEvent(QPaintEvent *e)
@@ -156,11 +156,11 @@ void WSpinny::paintEvent(QPaintEvent *e)
     Q_UNUSED(e); //ditch unused param warning
 
     QPainter p(this);
-    
+
     if (m_pBG) {
         p.drawPixmap(0, 0, *m_pBG);
     }
-    
+
 #ifdef __VINYLCONTROL__
     // Overlay the signal quality drawing if vinyl is active
     // but not input passthrough
@@ -181,7 +181,7 @@ void WSpinny::paintEvent(QPaintEvent *e)
             //h=0 is red, h=120 is green
             qual_color.setHsv((int)(120.0 * signalQuality), 255, 255);
             qual_color.getRgb(&r, &g, &b);
-            
+
             if (buf) {
                 for (int y=0; y<m_iSize; y++) {
                     QRgb *line = (QRgb *)m_qImage.scanLine(y);
@@ -219,7 +219,7 @@ void WSpinny::paintEvent(QPaintEvent *e)
         p.rotate(m_fAngle);
         p.drawPixmap(-(width() / 2), -(height() / 2), *m_pFG);
     }
-    
+
     if (m_bGhostPlayback && m_pGhost && !m_pGhost->isNull())
     {
         p.restore();
@@ -227,12 +227,12 @@ void WSpinny::paintEvent(QPaintEvent *e)
         p.rotate(m_fGhostAngle);
         p.drawPixmap(-(width() / 2), -(height() / 2), *m_pGhost);
 
-        //Rotate back to the playback position (not the ghost positon), 
+        //Rotate back to the playback position (not the ghost positon),
         //and draw the beat marks from there.
         p.restore();
-        
+
         /*
-        //Draw a line where the next 4 beats are 
+        //Draw a line where the next 4 beats are
         double bpm = m_pBPM->get();
         double duration = m_pDuration->get();
         if (bpm <= 0. || duration <= 0.) {
@@ -280,14 +280,14 @@ double WSpinny::calculateAngle(double playpos)
     {
         int x = (angle+180)/360;
         angle = angle - (360*x);
-    } else 
+    } else
     {
         int x = (angle-180)/360;
         angle = angle - (360*x);
     }
 
     Q_ASSERT(angle <= 180 && angle >= -180);
-    return angle; 
+    return angle;
 }
 
 /** Given a normalized playpos, calculate the integer number of rotations
@@ -321,7 +321,7 @@ double WSpinny::calculatePositionFromAngle(double angle)
     //double playpos = t / m_pDuration->get();
     double playpos = t / (m_pTrackSamples->get()/2 /  // Stereo audio!
                           m_pTrackSampleRate->get());
-    return playpos; 
+    return playpos;
 }
 
 /** Update the playback angle saved in the widget and repaint.
@@ -330,7 +330,7 @@ double WSpinny::calculatePositionFromAngle(double angle)
 void WSpinny::updateAngle(double playpos)
 {
     m_fAngle = calculateAngle(playpos);
-    
+
     // if we had the timer going, kill it
     if (m_iTimerId != 0) {
         killTimer(m_iTimerId);
@@ -341,7 +341,7 @@ void WSpinny::updateAngle(double playpos)
 
 void WSpinny::updateRate(double rate)
 {
-    //if rate is zero, updateAngle won't get called, 
+    //if rate is zero, updateAngle won't get called,
     if (rate == 0.0 && m_bVinylActive)
     {
         if (m_iTimerId == 0)
@@ -356,12 +356,12 @@ void WSpinny::timerEvent(QTimerEvent *event)
     update();
 }
 
-//Update the angle using the ghost playback position. 
+//Update the angle using the ghost playback position.
 void WSpinny::updateAngleForGhost()
 {
     qint64 elapsed = m_time.elapsed();
     double duration = m_pDuration->get();
-    double newPlayPos = m_dPausedPosition + 
+    double newPlayPos = m_dPausedPosition +
                          (((double)elapsed)/1000.)/duration;
     m_fGhostAngle = calculateAngle(newPlayPos);
     update();
@@ -409,7 +409,7 @@ void WSpinny::updateVinylControlEnabled(double enabled)
 
 void WSpinny::invalidateVinylControl()
 {
-#ifdef __VINYLCONTROL__    
+#ifdef __VINYLCONTROL__
     m_bVinylActive = false;
     m_pVinylControl = NULL;
     update();
@@ -432,10 +432,10 @@ void WSpinny::mouseMoveEvent(QMouseEvent * e)
     double c_y = y - height()/2;
     double theta = (180.0f/M_PI)*atan2(c_x, -c_y);
 
-    //qDebug() << "c_x:" << c_x << "c_y:" << c_y << 
+    //qDebug() << "c_x:" << c_x << "c_y:" << c_y <<
     //            "dX:" << dX << "dY:" << dY;
 
-    //When we finish one full rotation (clockwise or anticlockwise), 
+    //When we finish one full rotation (clockwise or anticlockwise),
     //we'll need to manually add/sub 360 degrees because atan2()'s range is
     //only within -180 to 180 degrees. We need a wider range so your position
     //in the song can be tracked.
@@ -448,8 +448,8 @@ void WSpinny::mouseMoveEvent(QMouseEvent * e)
 
     m_dPrevTheta = theta;
     theta += m_iFullRotations*360;
-   
-    //qDebug() << "c t:" << theta << "pt:" << m_dPrevTheta << 
+
+    //qDebug() << "c t:" << theta << "pt:" << m_dPrevTheta <<
     //            "icr" << m_iFullRotations;
 
     if (e->buttons() & Qt::LeftButton && !m_bVinylActive)
@@ -458,7 +458,7 @@ void WSpinny::mouseMoveEvent(QMouseEvent * e)
         double absPos = calculatePositionFromAngle(theta);
 
         double absPosInSamples = absPos * m_pTrackSamples->get();
-        m_pScratchPos->slotSet(absPosInSamples);
+        m_pScratchPos->slotSet(absPosInSamples - m_dInitialPos);
     }
     else if (e->buttons() & Qt::MidButton)
     {
@@ -476,7 +476,7 @@ void WSpinny::mousePressEvent(QMouseEvent * e)
 
     m_iStartMouseX = x;
     m_iStartMouseY = y;
-    
+
     //don't do anything if vinyl control is active
     if (m_bVinylActive)
         return;
@@ -485,8 +485,8 @@ void WSpinny::mousePressEvent(QMouseEvent * e)
     {
         QApplication::setOverrideCursor(QCursor(Qt::ClosedHandCursor));
 
-        double initialPosInSamples = m_pPlayPos->get() * m_pTrackSamples->get();
-        m_pScratchPos->slotSet(initialPosInSamples);
+        m_dInitialPos = m_pPlayPos->get() * m_pTrackSamples->get();
+        m_pScratchPos->slotSet(0);
         m_pScratchToggle->slotSet(1.0f);
 
         m_iFullRotations = calculateFullRotations(m_pPlayPos->get());
@@ -507,10 +507,10 @@ void WSpinny::mousePressEvent(QMouseEvent * e)
         updateAngleForGhost(); //Need to recalc the ghost angle right away
         m_bGhostPlayback = true;
         m_ghostPaintTimer.start(30);
-        connect(&m_ghostPaintTimer, SIGNAL(timeout()), 
+        connect(&m_ghostPaintTimer, SIGNAL(timeout()),
                 this, SLOT(updateAngleForGhost()));
 
-        //TODO: Ramp down (brake) over a period of 1 beat 
+        //TODO: Ramp down (brake) over a period of 1 beat
         //      instead? Would be sweet.
         m_pPlay->slotSet(0.0f);
     }
@@ -526,7 +526,7 @@ void WSpinny::mouseReleaseEvent(QMouseEvent * e)
     }
     else if (e->button() == Qt::RightButton)
     {
-        //Start playback by jumping forwards in the song as if playback 
+        //Start playback by jumping forwards in the song as if playback
         //was never paused. (useful for bleeping or adding silence breaks)
         qint64 elapsed = m_time.elapsed();
         //qDebug() << "elapsed:" << elapsed;
@@ -537,7 +537,7 @@ void WSpinny::mouseReleaseEvent(QMouseEvent * e)
         //move the playback position ahead by the elapsed amount.
         double duration = m_pDuration->get();
         double newPlayPos = m_dPausedPosition + (((double)elapsed)/1000.)/duration;
-        //qDebug() << m_dPausedPosition << newPlayPos; 
+        //qDebug() << m_dPausedPosition << newPlayPos;
         m_pPlay->slotSet(1.0f);
         m_pPlayPos->slotSet(newPlayPos);
         //m_bRightButtonPressed = true;
