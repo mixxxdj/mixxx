@@ -38,22 +38,22 @@ TrackPointer ITunesPlaylistModel::getTrack(const QModelIndex& index) const
     QString location = index.sibling(
         index.row(), fieldIndex("location")).data().toString();
 
-    TrackInfoObject* pTrack = new TrackInfoObject(location);
+    TrackPointer pTrack = TrackPointer(new TrackInfoObject(location), &QObject::deleteLater);
+
     pTrack->setArtist(artist);
     pTrack->setTitle(title);
     pTrack->setAlbum(album);
     pTrack->setYear(year);
     pTrack->setGenre(genre);
     pTrack->setBpm(bpm);
-    TrackPointer track(pTrack, &QObject::deleteLater);
 
     // If the track has a BPM, then give it a static beatgrid.
     if (bpm > 0) {
-        BeatsPointer pBeats = BeatFactory::makeBeatGrid(track, bpm, 0);
-        track->setBeats(pBeats);
+        BeatsPointer pBeats = BeatFactory::makeBeatGrid(pTrack, bpm, 0);
+        pTrack->setBeats(pBeats);
     }
 
-    return track;
+    return pTrack;
 }
 
 void ITunesPlaylistModel::search(const QString& searchText) {
@@ -102,14 +102,17 @@ void ITunesPlaylistModel::setPlaylist(QString playlist_path) {
 
     QStringList columns;
     columns << "track_id";
+    columns << "position";
 
     QSqlQuery query(m_database);
-    query.prepare("CREATE TEMPORARY VIEW IF NOT EXISTS " +
-                  driver->formatValue(playlistNameField) + " AS "
-                  "SELECT "
-                  + columns.join(",") +
-                  " FROM itunes_playlist_tracks "
-                  "WHERE playlist_id = " + QString("%1").arg(playlistId));
+    QString queryString = QString(
+        "CREATE TEMPORARY VIEW IF NOT EXISTS %1 AS "
+        "SELECT %2 FROM %3 WHERE playlist_id = %4")
+            .arg(driver->formatValue(playlistNameField))
+            .arg(columns.join(","))
+            .arg("itunes_playlist_tracks")
+            .arg(playlistId);
+    query.prepare(queryString);
 
     if (!query.exec()) {
         qDebug() << "Error creating temporary view for itunes playlists."
@@ -121,10 +124,12 @@ void ITunesPlaylistModel::setPlaylist(QString playlist_path) {
 
     setTable(playlistID, columns[0], columns,
              m_pTrackCollection->getTrackSource("itunes"));
+    setDefaultSort(fieldIndex("position"), Qt::AscendingOrder);
     initHeaderData();
     setSearch("");
 }
 
 bool ITunesPlaylistModel::isColumnHiddenByDefault(int column) {
-    return false;
+   Q_UNUSED(column);
+   return false;
 }
