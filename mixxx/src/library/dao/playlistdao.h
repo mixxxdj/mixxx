@@ -3,7 +3,12 @@
 
 #include <QObject>
 #include <QSqlDatabase>
+
 #include "library/dao/dao.h"
+#include "util.h"
+
+#define PLAYLIST_TABLE "Playlists"
+#define PLAYLIST_TRACKS_TABLE "PlaylistTracks"
 
 const QString PLAYLISTTRACKSTABLE_TRACKID = "track_id";
 const QString PLAYLISTTRACKSTABLE_POSITION = "position";
@@ -49,6 +54,8 @@ class PlaylistDAO : public QObject, public virtual DAO {
     bool isHidden(int playlistId);
     // Returns cause of playlistId is hidden
     enum hidden_type getHiddenType(int playlistId);
+    /** Remove a track from all playlists */
+    void removeTrackFromPlaylists(int trackId);
     /** Remove a track from a playlist */
     void removeTrackFromPlaylist(int playlistId, int position);
     /** Insert a track into a specific position in a playlist */
@@ -69,6 +76,7 @@ class PlaylistDAO : public QObject, public virtual DAO {
     void lockChanged(int playlistId);
   private:
     QSqlDatabase& m_database;
+    DISALLOW_COPY_AND_ASSIGN(PlaylistDAO);
 };
 
 #endif //PLAYLISTDAO_H

@@ -237,10 +237,8 @@ void SidebarModel::doubleClicked(const QModelIndex& index) {
 
 void SidebarModel::rightClicked(const QPoint& globalPos, const QModelIndex& index) {
     //qDebug() << "SidebarModel::rightClicked() index=" << index;
-    if (index.isValid())
-    {
-        if (index.internalPointer() == this)
-        {
+    if (index.isValid()) {
+        if (index.internalPointer() == this) {
             m_sFeatures[index.row()]->activate();
             m_sFeatures[index.row()]->onRightClick(globalPos);
         }

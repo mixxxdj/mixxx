@@ -48,9 +48,8 @@ DlgAutoDJ::DlgAutoDJ(QWidget* parent, ConfigObject<ConfigValue>* pConfig,
     // Do not set this because it disables auto-scrolling
     //m_pTrackTableView->setDragDropMode(QAbstractItemView::InternalMove);
 
-    //Sort by the position column and lock it
-    m_pTrackTableView->sortByColumn(0, Qt::AscendingOrder);
-    m_pTrackTableView->setSortingEnabled(false);
+    // Disallow sorting.
+    m_pTrackTableView->disableSorting();
 
     connect(pushButtonShuffle, SIGNAL(clicked(bool)),
             this, SLOT(shufflePlaylist(bool)));

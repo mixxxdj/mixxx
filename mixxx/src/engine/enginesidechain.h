@@ -52,7 +52,7 @@ public:
 
     ConfigObject<ConfigValue> * m_pConfig;
     const char* m_group;
-    bool m_bStopThread;                     //Indicates that the thread should exit.
+    volatile bool m_bStopThread;                     //Indicates that the thread should exit.
     unsigned long m_iBufferEnd;             //Index of the last valid sample in the buffer.
     CSAMPLE* m_buffer;                      //Pointer to the fillable giant buffer (for double-buffering)
     CSAMPLE* m_filledBuffer;                //Pointer to the filled giant buffer (after swapping).
@@ -61,7 +61,6 @@ public:
     QMutex m_backBufferLock;                //Provides thread safety for the back buffer.
     QMutex m_waitLock;                      //Provides thread safety around the wait condition below.
     QWaitCondition m_waitForFullBuffer;     //Allows sleeping until we have a full buffer.
-    QMutex m_stopLock;                      //Provides thread safety around bStopThread.
 
 #ifdef __SHOUTCAST__
     EngineShoutcast *m_shoutcast;

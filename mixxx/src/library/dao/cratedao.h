@@ -8,6 +8,7 @@
 #include <QSqlDatabase>
 
 #include "library/dao/dao.h"
+#include "util.h"
 
 #define CRATE_TABLE "crates"
 #define CRATE_TRACKS_TABLE "crate_tracks"
@@ -37,6 +38,7 @@ class CrateDAO : public QObject, public virtual DAO {
     QString crateName(int crateId);
     unsigned int crateSize(int crateId);
     bool addTrackToCrate(int trackId, int crateId);
+    void removeTrackFromCrates(int trackId);
     bool removeTrackFromCrate(int trackId, int crateId);
 
   signals:
@@ -50,6 +52,7 @@ class CrateDAO : public QObject, public virtual DAO {
 
   private:
     QSqlDatabase& m_database;
+    DISALLOW_COPY_AND_ASSIGN(CrateDAO);
 };
 
 #endif /* CRATEDAO_H */
