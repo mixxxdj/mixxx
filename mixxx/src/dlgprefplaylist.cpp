@@ -29,6 +29,7 @@ DlgPrefPlaylist::DlgPrefPlaylist(QWidget * parent, ConfigObject<ConfigValue> * _
     config = _config;
     setupUi(this);
     slotUpdate();
+    checkbox_ID3_sync->setVisible(false);
 
     /*
     m_pPluginDownloader = new PluginDownloader(this);
