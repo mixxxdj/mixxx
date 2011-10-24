@@ -33,6 +33,7 @@
 #include "widget/wvumeter.h"
 #include "widget/wstatuslight.h"
 #include "widget/wlabel.h"
+#include "widget/wtime.h"
 #include "widget/wtracktext.h"
 #include "widget/wtrackproperty.h"
 #include "widget/wnumber.h"
@@ -269,6 +270,8 @@ QWidget* LegacySkinParser::parseNode(QDomElement node, QWidget *pGrandparent) {
         return parseStyle(node);
     } else if (nodeName == "Spinny") {
         return parseSpinny(node);
+    } else if (nodeName == "Time") {
+        return parseTime(node);
     } else {
         qDebug() << "Invalid node name in skin:" << nodeName;
     }
@@ -608,6 +611,15 @@ QWidget* LegacySkinParser::parseLabel(QDomElement node) {
     setupConnections(node, p);
     p->installEventFilter(m_pKeyboard);
     return p;
+}
+
+QWidget* LegacySkinParser::parseTime(QDomElement node) {
+   WTime *p = new WTime(m_pParent);
+   setupWidget(node, p);
+   p->setup(node);
+   setupConnections(node, p);
+   p->installEventFilter(m_pKeyboard);
+   return p;
 }
 
 QWidget* LegacySkinParser::parseKnob(QDomElement node) {

@@ -156,6 +156,9 @@ playback and outbound link statistics</string>
      <layout class="QGridLayout" name="gridLayout_4">
       <item row="1" column="0">
        <widget class="QCheckBox" name="checkbox_ID3_sync">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
         <property name="text">
          <string>Synchronize ID3 tags on track modifications</string>
         </property>
