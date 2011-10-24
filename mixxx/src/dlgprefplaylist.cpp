@@ -29,7 +29,8 @@ DlgPrefPlaylist::DlgPrefPlaylist(QWidget * parent, ConfigObject<ConfigValue> * _
     config = _config;
     setupUi(this);
     slotUpdate();
-    checkbox_ID3_sync->setVisible(false);
+    //Owen edit: my workaround works well enough for my personal use
+    //checkbox_ID3_sync->setVisible(false);
 
     /*
     m_pPluginDownloader = new PluginDownloader(this);
