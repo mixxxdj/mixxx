@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2011-05-03 21:42-0400\n"
-"PO-Revision-Date: 2011-08-01 14:32+0000\n"
-"Last-Translator: Roman Jastrebov <Unknown>\n"
+"PO-Revision-Date: 2011-10-23 14:44+0000\n"
+"Last-Translator: lyyser <Unknown>\n"
 "Language-Team: Estonian <et@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-08-02 04:31+0000\n"
-"X-Generator: Launchpad (build 13552)\n"
+"X-Launchpad-Export-Date: 2011-10-24 05:12+0000\n"
+"X-Generator: Launchpad (build 14185)\n"
 
 #: AutoDJFeature#1
 msgid "Auto DJ"
@@ -613,7 +613,7 @@ msgstr ""
 
 #: DlgPluginDownloader#1
 msgid "Missing Audio Plugin Downloader"
-msgstr ""
+msgstr "Puuduva heli lisandprogrammi allalaadia"
 
 #: DlgPrefBPMDlg#1
 msgctxt "DlgPrefBPMDlg#1"
@@ -866,7 +866,7 @@ msgstr ""
 
 #: DlgPrefCrossfaderDlg#8
 msgid "Linear"
-msgstr ""
+msgstr "Lineaarne"
 
 #: DlgPrefCrossfaderDlg#9
 msgid "Logarithmic"
@@ -875,12 +875,12 @@ msgstr ""
 #: DlgPrefCrossfaderDlg#10
 msgctxt "DlgPrefCrossfaderDlg#10"
 msgid "Reset"
-msgstr ""
+msgstr "Lähtesta"
 
 #: DlgPrefEQDlg#1
 msgctxt "DlgPrefEQDlg#1"
 msgid "Form1"
-msgstr ""
+msgstr "Vorm1"
 
 #: DlgPrefEQDlg#2
 msgid "Static EQs (for slower CPUs)"
@@ -896,15 +896,15 @@ msgstr ""
 
 #: DlgPrefEQDlg#5
 msgid "16 Hz"
-msgstr ""
+msgstr "16 Hz"
 
 #: DlgPrefEQDlg#6
 msgid "2.045 kHz"
-msgstr ""
+msgstr "2.045 kHz"
 
 #: DlgPrefEQDlg#7
 msgid "20.05 kHz"
-msgstr ""
+msgstr "20.05 kHz"
 
 #: DlgPrefEQDlg#8
 msgid "Low Shelf EQ"
@@ -917,12 +917,12 @@ msgstr ""
 #: DlgPrefEQDlg#10
 msgctxt "DlgPrefEQDlg#10"
 msgid "Reset"
-msgstr ""
+msgstr "Lähtesta"
 
 #: DlgPrefMidiBindings#1
 msgctxt "DlgPrefMidiBindings#1"
 msgid "None"
-msgstr ""
+msgstr "Pole"
 
 #: DlgPrefMidiBindings#2
 msgid "Apply MIDI device settings?"
@@ -979,11 +979,11 @@ msgstr ""
 #: DlgPrefMidiBindingsDlg#1
 msgctxt "DlgPrefMidiBindingsDlg#1"
 msgid "Dialog"
-msgstr ""
+msgstr "Dialoog"
 
 #: DlgPrefMidiBindingsDlg#2
 msgid "Your Device Name"
-msgstr ""
+msgstr "Sinu seadme nimi"
 
 #: DlgPrefMidiBindingsDlg#3
 msgid "Load Preset:"
@@ -991,15 +991,15 @@ msgstr ""
 
 #: DlgPrefMidiBindingsDlg#4
 msgid "Export"
-msgstr ""
+msgstr "Ekspordi"
 
 #: DlgPrefMidiBindingsDlg#5
 msgid "Output:"
-msgstr ""
+msgstr "Väljund:"
 
 #: DlgPrefMidiBindingsDlg#6
 msgid "Enabled"
-msgstr ""
+msgstr "Lubatud"
 
 #: DlgPrefMidiBindingsDlg#7
 msgid "Controls"
@@ -1008,12 +1008,12 @@ msgstr ""
 #: DlgPrefMidiBindingsDlg#8
 msgctxt "DlgPrefMidiBindingsDlg#8"
 msgid "Add"
-msgstr ""
+msgstr "Lisa"
 
 #: DlgPrefMidiBindingsDlg#9
 msgctxt "DlgPrefMidiBindingsDlg#9"
 msgid "Remove"
-msgstr ""
+msgstr "Eemalda"
 
 #: DlgPrefMidiBindingsDlg#10
 msgctxt "DlgPrefMidiBindingsDlg#10"
@@ -1022,7 +1022,7 @@ msgstr ""
 
 #: DlgPrefMidiBindingsDlg#11
 msgid "Clear All"
-msgstr ""
+msgstr "Tühjenda kõik"
 
 #: DlgPrefMidiBindingsDlg#12
 msgid ""
@@ -1037,7 +1037,7 @@ msgstr ""
 
 #: DlgPrefMidiBindingsDlg#14
 msgid "Outputs"
-msgstr ""
+msgstr "Väljundid"
 
 #: DlgPrefMidiBindingsDlg#15
 msgid "MIDI Output"
@@ -1060,7 +1060,7 @@ msgstr ""
 #: DlgPrefNoVinylDlg#2
 msgctxt "DlgPrefNoVinylDlg#2"
 msgid "Input"
-msgstr ""
+msgstr "Sisend"
 
 #: DlgPrefNoVinylDlg#3
 msgctxt "DlgPrefNoVinylDlg#3"
@@ -1099,7 +1099,7 @@ msgstr ""
 #: DlgPrefNoVinylDlg#7
 msgctxt "DlgPrefNoVinylDlg#7"
 msgid "150"
-msgstr ""
+msgstr "150"
 
 #: DlgPrefNoVinylDlg#8
 msgctxt "DlgPrefNoVinylDlg#8"
@@ -1124,7 +1124,7 @@ msgstr ""
 #: DlgPrefNoVinylDlg#12
 msgctxt "DlgPrefNoVinylDlg#12"
 msgid "seconds"
-msgstr ""
+msgstr "sekundid"
 
 #: DlgPrefNoVinylDlg#13
 msgctxt "DlgPrefNoVinylDlg#13"
@@ -1149,7 +1149,7 @@ msgstr ""
 #: DlgPrefNoVinylDlg#17
 msgctxt "DlgPrefNoVinylDlg#17"
 msgid "Signal Quality"
-msgstr ""
+msgstr "Signaali kvaliteet"
 
 #: DlgPrefNoVinylDlg#18
 msgctxt "DlgPrefNoVinylDlg#18"
@@ -1164,7 +1164,7 @@ msgstr ""
 #: DlgPrefNoVinylDlg#20
 msgctxt "DlgPrefNoVinylDlg#20"
 msgid "Apply"
-msgstr ""
+msgstr "Rakenda"
 
 #: DlgPrefNoVinylDlg#21
 msgid ""
@@ -1214,7 +1214,7 @@ msgstr ""
 
 #: DlgPrefPlaylistDlg#2
 msgid "Audio File Formats"
-msgstr ""
+msgstr "Helifaili vormingud"
 
 #: DlgPrefPlaylistDlg#3
 msgid "Additional Format Plugins:"
@@ -1226,17 +1226,17 @@ msgstr ""
 
 #: DlgPrefPlaylistDlg#5
 msgid "Loaded Plugins:"
-msgstr ""
+msgstr "Laetud lisandprogrammid:"
 
 #: DlgPrefPlaylistDlg#6
 msgctxt "DlgPrefPlaylistDlg#6"
 msgid "None"
-msgstr ""
+msgstr "Pole"
 
 #: DlgPrefPlaylistDlg#7
 msgctxt "DlgPrefPlaylistDlg#7"
 msgid "Miscellaneous"
-msgstr ""
+msgstr "Mitmesugust"
 
 #: DlgPrefPlaylistDlg#8
 msgid "Synchronize ID3 tags on track modifications"
@@ -1252,7 +1252,7 @@ msgstr ""
 
 #: DlgPrefPlaylistDlg#11
 msgid "iPod"
-msgstr ""
+msgstr "iPod"
 
 #: DlgPrefPlaylistDlg#12
 msgid "iPod mountpoint"
@@ -1260,24 +1260,24 @@ msgstr ""
 
 #: DlgPrefPlaylistDlg#13
 msgid "Browse..."
-msgstr ""
+msgstr "Sirvi..."
 
 #: DlgPrefPlaylistDlg#14
 msgid "Detect"
-msgstr ""
+msgstr "Tuvasta"
 
 #: DlgPrefPlaylistDlg#15
 msgctxt "DlgPrefPlaylistDlg#15"
 msgid "Library"
-msgstr ""
+msgstr "Helikogu"
 
 #: DlgPrefPlaylistDlg#16
 msgid "Music Directory:"
-msgstr ""
+msgstr "Muusika kataloog:"
 
 #: DlgPrefPlaylistDlg#17
 msgid "Built-in"
-msgstr ""
+msgstr "Sisseehitatud"
 
 #: DlgPrefPlaylistDlg#18
 msgid "Available Online..."
@@ -1295,7 +1295,7 @@ msgstr ""
 
 #: DlgPrefRecord#1
 msgid "kbps"
-msgstr ""
+msgstr "kbps"
 
 #: DlgPrefRecordDlg#1
 msgctxt "DlgPrefRecordDlg#1"
@@ -1305,46 +1305,46 @@ msgstr ""
 #: DlgPrefRecordDlg#2
 msgctxt "DlgPrefRecordDlg#2"
 msgid "Encoding"
-msgstr ""
+msgstr "Kodeering"
 
 #: DlgPrefRecordDlg#3
 msgid "Quality"
-msgstr ""
+msgstr "Kvaliteet"
 
 #: DlgPrefRecordDlg#4
 msgid "High"
-msgstr ""
+msgstr "Kõrge"
 
 #: DlgPrefRecordDlg#5
 msgid "Low"
-msgstr ""
+msgstr "Madal"
 
 #: DlgPrefRecordDlg#6
 msgid "Tags"
-msgstr ""
+msgstr "Sildid"
 
 #: DlgPrefRecordDlg#7
 msgctxt "DlgPrefRecordDlg#7"
 msgid "Title"
-msgstr ""
+msgstr "Pealkiri"
 
 #: DlgPrefRecordDlg#8
 msgid "Author"
-msgstr ""
+msgstr "Autor"
 
 #: DlgPrefRecordDlg#9
 msgctxt "DlgPrefRecordDlg#9"
 msgid "Album"
-msgstr ""
+msgstr "Album"
 
 #: DlgPrefRecordDlg#10
 msgctxt "DlgPrefRecordDlg#10"
 msgid "Miscellaneous"
-msgstr ""
+msgstr "Mitmesugust"
 
 #: DlgPrefRecordDlg#11
 msgid "Create a CUE file"
-msgstr ""
+msgstr "Loo CUE fail"
 
 #: DlgPrefRecordDlg#12
 msgid "File Splitting"
@@ -1398,12 +1398,12 @@ msgstr ""
 
 #: DlgPrefReplayGainDlg#10
 msgid "dB"
-msgstr ""
+msgstr "dB"
 
 #: DlgPrefReplayGainDlg#11
 msgctxt "DlgPrefReplayGainDlg#11"
 msgid "Reset"
-msgstr ""
+msgstr "Lähtesta"
 
 #: DlgPrefShoutcastDlg#1
 msgctxt "DlgPrefShoutcastDlg#1"
@@ -1422,7 +1422,7 @@ msgstr ""
 #: DlgPrefShoutcastDlg#4
 msgctxt "DlgPrefShoutcastDlg#4"
 msgid "Type"
-msgstr ""
+msgstr "Tüüp"
 
 #: DlgPrefShoutcastDlg#5
 msgid "Icecast 2"
@@ -1430,7 +1430,7 @@ msgstr ""
 
 #: DlgPrefShoutcastDlg#6
 msgid "Shoutcast"
-msgstr ""
+msgstr "Shoutcast"
 
 #: DlgPrefShoutcastDlg#7
 msgid "Icecast 1"
@@ -1438,43 +1438,43 @@ msgstr ""
 
 #: DlgPrefShoutcastDlg#8
 msgid "Mount"
-msgstr ""
+msgstr "Ühenda"
 
 #: DlgPrefShoutcastDlg#9
 msgid "/mixxx.ogg"
-msgstr ""
+msgstr "/mixxx.ogg"
 
 #: DlgPrefShoutcastDlg#10
 msgid "Host"
-msgstr ""
+msgstr "Host"
 
 #: DlgPrefShoutcastDlg#11
 msgid "192.168.123.8"
-msgstr ""
+msgstr "192.168.123.8"
 
 #: DlgPrefShoutcastDlg#12
 msgid "Port"
-msgstr ""
+msgstr "Port"
 
 #: DlgPrefShoutcastDlg#13
 msgid "8000"
-msgstr ""
+msgstr "8000"
 
 #: DlgPrefShoutcastDlg#14
 msgid "Login"
-msgstr ""
+msgstr "Sisene"
 
 #: DlgPrefShoutcastDlg#15
 msgid "source"
-msgstr ""
+msgstr "allikas"
 
 #: DlgPrefShoutcastDlg#16
 msgid "Password"
-msgstr ""
+msgstr "Salasõna"
 
 #: DlgPrefShoutcastDlg#17
 msgid "test1234"
-msgstr ""
+msgstr "test1234"
 
 #: DlgPrefShoutcastDlg#18
 msgid "Stream settings"
@@ -1490,15 +1490,15 @@ msgstr ""
 
 #: DlgPrefShoutcastDlg#21
 msgid "Website"
-msgstr ""
+msgstr "Veebileht"
 
 #: DlgPrefShoutcastDlg#22
 msgid "http://www.mixxx.org"
-msgstr ""
+msgstr "http://www.mixxx.org"
 
 #: DlgPrefShoutcastDlg#23
 msgid "Description"
-msgstr ""
+msgstr "Kirjeldus"
 
 #: DlgPrefShoutcastDlg#24
 msgid ""
@@ -1518,7 +1518,7 @@ msgstr ""
 #: DlgPrefShoutcastDlg#25
 msgctxt "DlgPrefShoutcastDlg#25"
 msgid "Genre"
-msgstr ""
+msgstr "Žanr"
 
 #: DlgPrefShoutcastDlg#26
 msgid "Live mix"
@@ -1531,32 +1531,32 @@ msgstr ""
 #: DlgPrefShoutcastDlg#28
 msgctxt "DlgPrefShoutcastDlg#28"
 msgid "Encoding"
-msgstr ""
+msgstr "Kodeering"
 
 #: DlgPrefShoutcastDlg#29
 msgctxt "DlgPrefShoutcastDlg#29"
 msgid "Bitrate"
-msgstr ""
+msgstr "Bitikiirus"
 
 #: DlgPrefShoutcastDlg#30
 msgid "320 kbps"
-msgstr ""
+msgstr "320 kbps"
 
 #: DlgPrefShoutcastDlg#31
 msgid "256 kbps"
-msgstr ""
+msgstr "256 kbps"
 
 #: DlgPrefShoutcastDlg#32
 msgid "224 kbps"
-msgstr ""
+msgstr "224 kbps"
 
 #: DlgPrefShoutcastDlg#33
 msgid "192 kbps"
-msgstr ""
+msgstr "192 kbps"
 
 #: DlgPrefShoutcastDlg#34
 msgid "160 kbps"
-msgstr ""
+msgstr "160 kbps"
 
 #: DlgPrefShoutcastDlg#35
 msgid "128 kbps"
@@ -1564,27 +1564,27 @@ msgstr ""
 
 #: DlgPrefShoutcastDlg#36
 msgid "112 kbps"
-msgstr ""
+msgstr "112 kbps"
 
 #: DlgPrefShoutcastDlg#37
 msgid "96 kbps"
-msgstr ""
+msgstr "96 kbps"
 
 #: DlgPrefShoutcastDlg#38
 msgid "80 kbps"
-msgstr ""
+msgstr "80 kbps"
 
 #: DlgPrefShoutcastDlg#39
 msgid "64 kbps"
-msgstr ""
+msgstr "64 kbps"
 
 #: DlgPrefShoutcastDlg#40
 msgid "48 kbps"
-msgstr ""
+msgstr "48 kbps"
 
 #: DlgPrefShoutcastDlg#41
 msgid "Format"
-msgstr ""
+msgstr "Vorming"
 
 #: DlgPrefShoutcastDlg#42
 msgid "Ogg Vorbis"
@@ -1592,15 +1592,15 @@ msgstr ""
 
 #: DlgPrefShoutcastDlg#43
 msgid "MP3"
-msgstr ""
+msgstr "MP3"
 
 #: DlgPrefShoutcastDlg#44
 msgid "Channels"
-msgstr ""
+msgstr "Kanalid"
 
 #: DlgPrefShoutcastDlg#45
 msgid "Stereo"
-msgstr ""
+msgstr "Stereo"
 
 #: DlgPrefShoutcastDlg#46
 msgid "Custom metadata"
@@ -1613,7 +1613,7 @@ msgstr ""
 #: DlgPrefShoutcastDlg#48
 msgctxt "DlgPrefShoutcastDlg#48"
 msgid "Artist"
-msgstr ""
+msgstr "Esitaja"
 
 #: DlgPrefShoutcastDlg#49
 msgid "%mainartist"
@@ -1622,7 +1622,7 @@ msgstr ""
 #: DlgPrefShoutcastDlg#50
 msgctxt "DlgPrefShoutcastDlg#50"
 msgid "Title"
-msgstr ""
+msgstr "Pealkiri"
 
 #: DlgPrefShoutcastDlg#51
 msgid "%maintitle"
@@ -1637,11 +1637,11 @@ msgstr ""
 #: DlgPrefSound#1
 msgctxt "DlgPrefSound#1"
 msgid "None"
-msgstr ""
+msgstr "Pole"
 
 #: DlgPrefSound#2
 msgid "%1 Hz"
-msgstr ""
+msgstr "%1 Hz"
 
 #: DlgPrefSound#3
 msgid "a device"
@@ -1649,7 +1649,7 @@ msgstr ""
 
 #: DlgPrefSound#4
 msgid "An unknown error occurred"
-msgstr ""
+msgstr "Esines tundmatu tõrge"
 
 #: DlgPrefSound#5
 msgid "sound device \"%1\""
@@ -1667,11 +1667,11 @@ msgstr ""
 
 #: DlgPrefSound#8
 msgid "%1 ms"
-msgstr ""
+msgstr "%1 ms"
 
 #: DlgPrefSound#9
 msgid "Configuration error"
-msgstr ""
+msgstr "Seadistamise viga"
 
 #: DlgPrefSoundDlg#1
 msgid "Sound API"
@@ -1679,7 +1679,7 @@ msgstr ""
 
 #: DlgPrefSoundDlg#2
 msgid "Sample Rate"
-msgstr ""
+msgstr "Diskreetimissagedus"
 
 #: DlgPrefSoundDlg#3
 msgid "Latency Tips"
@@ -1695,12 +1695,12 @@ msgstr ""
 
 #: DlgPrefSoundDlg#5
 msgid "Output"
-msgstr ""
+msgstr "Väljund"
 
 #: DlgPrefSoundDlg#6
 msgctxt "DlgPrefSoundDlg#6"
 msgid "Input"
-msgstr ""
+msgstr "Sisend"
 
 #: DlgPrefSoundDlg#7
 msgid "Query Devices"
@@ -1708,21 +1708,21 @@ msgstr ""
 
 #: DlgPrefSoundDlg#8
 msgid "Reset to Defaults"
-msgstr ""
+msgstr "Lähtesta vaikeväärtustele"
 
 #: DlgPrefSoundDlg#9
 msgctxt "DlgPrefSoundDlg#9"
 msgid "Apply"
-msgstr ""
+msgstr "Rakenda"
 
 #: DlgPrefSoundDlg#10
 msgid "Latency"
-msgstr ""
+msgstr "Viivitus"
 
 #: DlgPrefSoundItem#1
 msgctxt "DlgPrefSoundItem#1"
 msgid "None"
-msgstr ""
+msgstr "Pole"
 
 #: DlgPrefSoundItem#2
 msgid "Channels %1 - %2"
@@ -1730,7 +1730,7 @@ msgstr ""
 
 #: DlgPrefSoundItem#3
 msgid "Form"
-msgstr ""
+msgstr "Vorming"
 
 #: DlgPrefSoundItem#4
 msgid "Type (#)"
@@ -1744,7 +1744,7 @@ msgstr ""
 #: DlgPrefVinylDlg#2
 msgctxt "DlgPrefVinylDlg#2"
 msgid "Input"
-msgstr ""
+msgstr "Sisend"
 
 #: DlgPrefVinylDlg#3
 msgctxt "DlgPrefVinylDlg#3"
