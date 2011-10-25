@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2011-05-03 21:42-0400\n"
-"PO-Revision-Date: 2011-10-07 14:26+0000\n"
-"Last-Translator: Adam Czabara <kolofaza@o2.pl>\n"
+"PO-Revision-Date: 2011-10-24 19:41+0000\n"
+"Last-Translator: psylocybina <psylocybina@gmail.com>\n"
 "Language-Team: Polish <pl@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-10-08 05:14+0000\n"
-"X-Generator: Launchpad (build 14110)\n"
+"X-Launchpad-Export-Date: 2011-10-25 04:39+0000\n"
+"X-Generator: Launchpad (build 14185)\n"
 
 #: AutoDJFeature#1
 msgid "Auto DJ"
@@ -185,7 +185,7 @@ msgstr "Komentarz"
 #: BrowseTableModel#9
 msgctxt "BrowseTableModel#9"
 msgid "Duration"
-msgstr "Długość"
+msgstr "Czas trwania"
 
 #: BrowseTableModel#10
 msgctxt "BrowseTableModel#10"
@@ -238,8 +238,8 @@ msgid ""
 "Could not delete the following file because it is in use by Mixxx or another "
 "application:"
 msgstr ""
-"Nie mogę skasować podanego pliku ponieważ jest używany przez Mixxx lub inna "
-"aplikację:"
+"Nie mogę usunąć podanego pliku, ponieważ jest używany przez Mixxx lub inny "
+"program:"
 
 #: BrowseTableModel#20
 msgid "Could not update file metadata."
@@ -335,7 +335,7 @@ msgstr "Skrzynka o tej nazwie już istnieje."
 
 #: DlgAboutDlg#1
 msgid "About Mixxx"
-msgstr "O Mixxx'ie"
+msgstr "O Mixxx"
 
 #: DlgAboutDlg#2
 msgid ""
@@ -373,7 +373,7 @@ msgstr "1.x.x"
 
 #: DlgAboutDlg#4
 msgid "<a href=\"http://mixxx.org/\">Official Website</a>"
-msgstr "<a href=\"http://mixxx.org/\">Oficjalna strona www</a>"
+msgstr "<a href=\"http://mixxx.org/\">Oficjalna strona WWW</a>"
 
 #: DlgAutoDJ#1
 msgid "Disable Auto DJ"
@@ -497,7 +497,7 @@ msgstr "Alt+P"
 #: DlgBpmTapDlg#18
 msgctxt "DlgBpmTapDlg#18"
 msgid "Track Information (Click to Expand)"
-msgstr "Informacje Ścieżki (Kliknij aby Rozwinąć)"
+msgstr "Informacje o Ścieżcę (Kliknij aby Rozwinąć)"
 
 #: DlgBpmTapDlg#19
 msgctxt "DlgBpmTapDlg#19"
@@ -585,7 +585,7 @@ msgstr "Wstecz"
 
 #: DlgMidiLearning#11
 msgid "Press spacebar to proceed or skip."
-msgstr "Wciśnij spację, aby kontynuować lub pominąć."
+msgstr "Naciśnij spację, aby kontynouwać lub pominąć."
 
 #: DlgMidiLearning#12
 msgid "MIDI learning complete!"
@@ -795,7 +795,7 @@ msgstr "Kierunek suwaka Szybość/Tempo"
 
 #: DlgPrefControlsDlg#11
 msgid "Track load behaviour"
-msgstr "Zachowanie podczas ładowania Utworu"
+msgstr "Zachowaj podczas ładowania utworu"
 
 #: DlgPrefControlsDlg#12
 msgid "Cue behaviour"
@@ -811,11 +811,11 @@ msgstr "Trwałe Przyciski Szybkość/Tempo"
 
 #: DlgPrefControlsDlg#15
 msgid "Left click"
-msgstr "Lewy klik"
+msgstr "Lewy przycisk"
 
 #: DlgPrefControlsDlg#16
 msgid "Right click"
-msgstr "Prawy klik"
+msgstr "Prawy przycisk"
 
 #: DlgPrefControlsDlg#17
 msgid "Permanent rate change (between 1 and 8000) when left clicking"
@@ -895,7 +895,7 @@ msgstr "Logarytmiczne"
 #: DlgPrefCrossfaderDlg#10
 msgctxt "DlgPrefCrossfaderDlg#10"
 msgid "Reset"
-msgstr "Wyzerowanie"
+msgstr "Reset"
 
 #: DlgPrefEQDlg#1
 msgctxt "DlgPrefEQDlg#1"
@@ -904,7 +904,7 @@ msgstr "Form1"
 
 #: DlgPrefEQDlg#2
 msgid "Static EQs (for slower CPUs)"
-msgstr "Statyczne EQ (dla słabszych CPU)"
+msgstr "Statyczny EQ (dla słabszych CPU)"
 
 #: DlgPrefEQDlg#3
 msgid "High Shelf EQ"
@@ -1749,7 +1749,7 @@ msgstr "API Dźwięku"
 
 #: DlgPrefSoundDlg#2
 msgid "Sample Rate"
-msgstr "Próbkowanie dźwięku"
+msgstr "Próbkowanie"
 
 #: DlgPrefSoundDlg#3
 msgid "Latency Tips"
@@ -1940,7 +1940,7 @@ msgstr "Powered by xwax"
 
 #: DlgPreferences#1
 msgid "Sound Hardware"
-msgstr "Sprzęt Dżwiękowy"
+msgstr "Urządzenia Audio"
 
 #: DlgPreferences#2
 msgid "MIDI Controllers"
@@ -2258,7 +2258,7 @@ msgstr ""
 
 #: EngineShoutcast#1
 msgid "Mixxx encountered a problem"
-msgstr "Houston mamy problem! :)"
+msgstr "Mixxx napotkał problem"
 
 #: EngineShoutcast#2
 msgid "Could not allocate shout_t"
@@ -2281,7 +2281,7 @@ msgid ""
 "Please check your connection to the Internet and verify that your username "
 "and password are correct."
 msgstr ""
-"Sprawdź twoje połaczenie z Internetem i zweryfikuj nazwę użytkownika i hasło."
+"Sprawdź połączenie z Internetem i zweryfikuj nazwę użytkownika i hasło"
 
 #: EngineShoutcast#7
 msgid "Live broadcasting"
@@ -2469,7 +2469,7 @@ msgstr "Błąd skryptu MIDI"
 
 #: MidiScriptEngine#4
 msgid "A MIDI control you just used is not working properly."
-msgstr "Kontrolka MIDI którą właśnie użyłeś nie działa prawidłowo."
+msgstr "Kontroler Midi, który właśnie użyłeś nie działa prawidłowo."
 
 #: MidiScriptEngine#5
 msgid ""
@@ -2547,18 +2547,18 @@ msgid ""
 "This information will not be used to personally identify you, contact you, "
 "advertise to you, or otherwise bother you in any way.\n"
 msgstr ""
-"Rozwój Mixxx'a jest prowadzony przy udziale informacji zwrotnej "
-"społeczności. Aby pomóc ulepszyc przyszłe wersje, Mixxx za twoją zgodą "
-"zgromadzi informacje na temat twojego sprzętu i użytkowania Mixxx'a. Te "
-"informacje będą przede wszytkim użyte do poprawienia błędów, ulepszenia "
-"funkcji i określenia wymagań sprzętowych kolejnych wersji. Dodatkowo dane te "
-"moga być użyte w celach statystycznych.\n"
+"Rozwój programu Mixxx prowadzony jest przy udziale informacji zwrotnej "
+"społeczności. Aby pomóc ulepszyć przyszłe wersje, Mixxx za twoją zgodą "
+"zgromadzi informacje na temat twojego sprzętu i użytkowania Mixxx'a. "
+"Informacje te będą przede wszytkim użyte do poprawienia błędów, ulepszenia "
+"funkcji i określenia wymagań sprzętowych dla kolejnych wersji. Dodatkowo "
+"dane te moga być użyte w celach statystycznych.\n"
 "\n"
 "Informacje o sprzęcie będą zawierały:\n"
-"\t- model CPU\n"
-"\t- Całkowita/Dostępna wielkość pamięci RAM\n"
-"\t- Dostępnej ilości miejsca na dysku\n"
-"\t- Wesji systemu operacyjnego\n"
+"\t- Model procesora\n"
+"\t- Całkowitą/Dostępną ilość pamięci RAM\n"
+"\t- Dostępną ilość miejsca na dysku\n"
+"\t- Wersję systemu operacyjnego\n"
 "\n"
 "Informacje na temat użytkowania będą zawierały:\n"
 "\t- Ustawienia/Preferencje\n"
@@ -3472,7 +3472,7 @@ msgstr "Przycisk Usuń Hotcue 2 dla Player %1"
 
 #: Ui#43
 msgid "Hotcue 3 delete button for Player %1"
-msgstr "Hotcue 3 przycisk usuwania dla Player %1"
+msgstr "Przycisk Usuń Hotcue 3 dla Player %1"
 
 #: Ui#44
 msgid "Hotcue 4 delete button for Player %1"

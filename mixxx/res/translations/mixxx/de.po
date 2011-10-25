@@ -3,14 +3,14 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2011-05-03 21:42-0400\n"
-"PO-Revision-Date: 2011-09-09 15:46+0000\n"
-"Last-Translator: Janis Fehrmann <janis96@gmx.net>\n"
+"PO-Revision-Date: 2011-10-24 20:44+0000\n"
+"Last-Translator: toomuch <Unknown>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-09-10 04:42+0000\n"
-"X-Generator: Launchpad (build 13900)\n"
+"X-Launchpad-Export-Date: 2011-10-25 04:39+0000\n"
+"X-Generator: Launchpad (build 14185)\n"
 
 #: AutoDJFeature#1
 msgid "Auto DJ"
@@ -18,7 +18,7 @@ msgstr "Auto-DJ"
 
 #: BaseSqlTableModel#1
 msgid "Played"
-msgstr "Wiedergegeben"
+msgstr "Gespielt"
 
 #: BaseSqlTableModel#2
 msgctxt "BaseSqlTableModel#2"
@@ -48,12 +48,12 @@ msgstr "Jahr"
 #: BaseSqlTableModel#7
 msgctxt "BaseSqlTableModel#7"
 msgid "Type"
-msgstr "Art"
+msgstr "Typ"
 
 #: BaseSqlTableModel#8
 msgctxt "BaseSqlTableModel#8"
 msgid "Location"
-msgstr "Ort"
+msgstr "Speicherort"
 
 #: BaseSqlTableModel#9
 msgctxt "BaseSqlTableModel#9"
@@ -63,16 +63,16 @@ msgstr "Kommentar"
 #: BaseSqlTableModel#10
 msgctxt "BaseSqlTableModel#10"
 msgid "Duration"
-msgstr "Dauer"
+msgstr "Länge"
 
 #: BaseSqlTableModel#11
 msgid "Rating"
-msgstr "Wertung"
+msgstr "Bewertung"
 
 #: BaseSqlTableModel#12
 msgctxt "BaseSqlTableModel#12"
 msgid "Bitrate"
-msgstr "Datenrate"
+msgstr "Bitrate"
 
 #: BaseSqlTableModel#13
 msgctxt "BaseSqlTableModel#13"
@@ -116,7 +116,7 @@ msgstr "Wechseldatenträger"
 #: BrowseFeature#4
 msgctxt "BrowseFeature#4"
 msgid "Mixxx Library"
-msgstr "Mixxx Bibliothek"
+msgstr "Mixxx-Bibliothek"
 
 #: BrowseFeature#5
 msgid "Home"
