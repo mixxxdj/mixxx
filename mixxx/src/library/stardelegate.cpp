@@ -31,6 +31,11 @@
  */
 void StarDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
+    if (!qVariantCanConvert<StarRating>(index.data())) {
+        QStyledItemDelegate::paint(painter, option, index);
+        return;
+    }
+
     // Populate the correct colors based on the styling
     QStyleOptionViewItem newOption = option;
     initStyleOption(&newOption, index);
@@ -51,12 +56,8 @@ void StarDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, 
         painter->setBrush(newOption.palette.text());
     }
 
-    if (qVariantCanConvert<StarRating>(index.data())) {
-        StarRating starRating = qVariantValue<StarRating>(index.data());
-        starRating.paint(painter, newOption.rect, newOption.palette, StarRating::ReadOnly);
-    } else {
-        QStyledItemDelegate::paint(painter, newOption, index);
-    }
+    StarRating starRating = qVariantValue<StarRating>(index.data());
+    starRating.paint(painter, newOption.rect, newOption.palette, StarRating::ReadOnly);
 }
 
 QSize StarDelegate::sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const
