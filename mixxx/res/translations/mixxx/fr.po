@@ -3,14 +3,14 @@ msgstr ""
 "Project-Id-Version: Mixxx 1.8\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2011-05-03 21:42-0400\n"
-"PO-Revision-Date: 2011-09-27 10:53+0000\n"
-"Last-Translator: franz <francoisguilhaumon@gmail.com>\n"
+"PO-Revision-Date: 2011-10-25 16:08+0000\n"
+"Last-Translator: Adrien <Unknown>\n"
 "Language-Team: <tezalprod@gmail.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-09-28 04:33+0000\n"
-"X-Generator: Launchpad (build 14049)\n"
+"X-Launchpad-Export-Date: 2011-10-26 05:11+0000\n"
+"X-Generator: Launchpad (build 14189)\n"
 "X-Poedit-Country: FRANCE\n"
 "X-Poedit-Language: French\n"
 
@@ -25,7 +25,7 @@ msgstr "Joué"
 #: BaseSqlTableModel#2
 msgctxt "BaseSqlTableModel#2"
 msgid "Artist"
-msgstr "Artiste"
+msgstr "Artistes"
 
 #: BaseSqlTableModel#3
 msgctxt "BaseSqlTableModel#3"
@@ -35,7 +35,7 @@ msgstr "Titre"
 #: BaseSqlTableModel#4
 msgctxt "BaseSqlTableModel#4"
 msgid "Album"
-msgstr "Album"
+msgstr "Albums"
 
 #: BaseSqlTableModel#5
 msgctxt "BaseSqlTableModel#5"
@@ -60,7 +60,7 @@ msgstr "Emplacement"
 #: BaseSqlTableModel#9
 msgctxt "BaseSqlTableModel#9"
 msgid "Comment"
-msgstr "Commentaire"
+msgstr "Commentaires"
 
 #: BaseSqlTableModel#10
 msgctxt "BaseSqlTableModel#10"
