@@ -111,16 +111,27 @@ Section "Mixxx (required)" SecMixxx
 
   SectionIn RO
 
-  ; Set output path to the installation directory.
-  SetOutPath $INSTDIR
-
-  ; Put binary files there
-  File "${BASE_BUILD_DIR}\dist${BITWIDTH}\mixxx.exe"
-  File "${BASE_BUILD_DIR}\dist${BITWIDTH}\*.dll"
-
-  ; Put other files there
-  File "${BASE_BUILD_DIR}\dist${BITWIDTH}\*.xml"
-
+  ; ------- VC redist DLLs --------
+  SetOutPath $TEMP
+  
+  ; Put the VC redist installer files there
+  File ${WINLIB_PATH}\VC_redist\vc_red.cab
+  File ${WINLIB_PATH}\VC_redist\vc_red.msi
+  
+  ClearErrors
+  ; Call it & wait for it to install
+  ExecWait 'msiexec /i $TEMP\vc_red.msi'
+  Delete "$TEMP\vc_red.cab"
+  Delete "$TEMP\vc_red.msi"
+  IfErrors error_installing_redist
+  Goto continue
+  
+  error_installing_redist:
+    MessageBox MB_ICONSTOP|MB_OK "There was a problem installing the Microsoft Visual C++ libraries.$\r$\nYou may need to run this installer as an administrator."
+    Abort
+    
+  ; OLD VC stuff below
+  
   ; NOTE: you need to check the mixxx.exe.manifest file in the win??_build directory
   ; and place the appropriate versions of the listed DLL files and their manifest files
   ; into the mixxx-win[64]lib-msvc directory for packaging before making the installer
@@ -130,7 +141,7 @@ Section "Mixxx (required)" SecMixxx
   ; See http://mixxx.org/wiki/doku.php/build_windows_installer for full details.
   ;
   ; All the MSVC files are located here if you have MSVC 2008 installed. (x86)
-  File "C:\Program Files\Microsoft Visual Studio 9.0\VC\redist\x86\Microsoft.VC90.CRT\*"
+  ;File "C:\Program Files\Microsoft Visual Studio 9.0\VC\redist\x86\Microsoft.VC90.CRT\*"
   ;File "$%VCINSTALLDIR%\redist\x86\Microsoft.VC90.CRT\*"
   ;File "$%VS90COMNTOOLS%\..\..\VC\redist\x86\Microsoft.VC90.CRT\*"
 
@@ -143,6 +154,19 @@ Section "Mixxx (required)" SecMixxx
   ;File ..\${WINLIB_PATH}\msvcp*.dll        ; Required
   ;File /nonfatal ..\${WINLIB_PATH}\msvcm*.dll    ; Not (currently) required, so nonfatal
   ;File ..\${WINLIB_PATH}\Microsoft.VC*.CRT.manifest    ; Required on MSVC < 2010, apparently
+
+  ; ------- End VC redist --------
+
+  continue:
+  ; Set output path to the installation directory.
+  SetOutPath $INSTDIR
+  
+  ; Put binary files there
+  File "${BASE_BUILD_DIR}\dist${BITWIDTH}\mixxx.exe"
+  File /x "msvc*" "${BASE_BUILD_DIR}\dist${BITWIDTH}\*.dll"
+
+  ; Put other files there
+  File "${BASE_BUILD_DIR}\dist${BITWIDTH}\*.xml"
 
   ; And documentation, licence etc.
   File "${BASE_BUILD_DIR}\Mixxx-Manual.pdf"
@@ -195,7 +219,7 @@ SectionGroup "MIDI controller mappings" SecControllerMappings
   SectionGroup "Certified mappings" SecCertifiedMappings
 
 	Section "Hercules DJ Console Mk2"
-	  SetOutPath $INSTDIR\midi
+      SetOutPath $INSTDIR\midi
 	  File "${BASE_BUILD_DIR}\dist${BITWIDTH}\midi\Hercules DJ Console Mk2.midi.xml"
 	  File "${BASE_BUILD_DIR}\dist${BITWIDTH}\midi\Hercules-DJ-Console-Mk2-scripts.js"
 	SectionEnd
@@ -260,46 +284,56 @@ SectionGroupEnd
 SectionGroup "Additional Skins" SecAddlSkins
 
 	Section "Minimalist skins" SecBasicSkins
-
 	  SetOutPath "$INSTDIR\skins"
 	  File /r /x ".svn" /x ".bzr" ${BASE_BUILD_DIR}\dist${BITWIDTH}\skins\Outline*
-
-	  SetOutPath "$INSTDIR\skins\Outline800x480-WVGA"
-	  File /r /x ".svn" /x ".bzr" ${BASE_BUILD_DIR}\dist${BITWIDTH}\skins\Outline800x480-WVGA\*.*
-	  SetOutPath "$INSTDIR\skins\Outline1024x768-XGA"
-	  File /r /x ".svn" /x ".bzr" ${BASE_BUILD_DIR}\dist${BITWIDTH}\skins\Outline1024x768-XGA\*.*
-
 	SectionEnd
 
 	Section "Netbook-size (1024x600)" SecNetbookSkins
 	  SetOutPath "$INSTDIR\skins"
-	  File /r /x ".svn" /x ".bzr" /x "Outline*" ${BASE_BUILD_DIR}\dist${BITWIDTH}\skins\*-Netbook*
+	  File /r /x ".svn" /x ".bzr" /x "Outline*" /x "${DEFAULT_SKIN}" ${BASE_BUILD_DIR}\dist${BITWIDTH}\skins\*-Netbook
 	SectionEnd
 
 	Section "XGA-size (1024x768)" SecXGASkins
 	  SetOutPath "$INSTDIR\skins"
-	  File /r /x ".svn" /x ".bzr" /x "Outline*" ${BASE_BUILD_DIR}\dist${BITWIDTH}\skins\*-XGA*
+	  File /r /x ".svn" /x ".bzr" /x "Outline*" /x "${DEFAULT_SKIN}" ${BASE_BUILD_DIR}\dist${BITWIDTH}\skins\*-XGA
+	SectionEnd
+    
+    Section "SXGA-size (1280x1024)" SecSXGASkins
+	  SetOutPath "$INSTDIR\skins"
+	  File /r /x ".svn" /x ".bzr" /x "Outline*" /x "${DEFAULT_SKIN}" ${BASE_BUILD_DIR}\dist${BITWIDTH}\skins\*-SXGA
 	SectionEnd
 
 	Section "WXGA-size (1280x800)" SecWXGASkins
 	  SetOutPath "$INSTDIR\skins"
-	  File /r /x ".svn" /x ".bzr" /x "Outline*" ${BASE_BUILD_DIR}\dist${BITWIDTH}\skins\*-WXGA*
+	  File /r /x ".svn" /x ".bzr" /x "Outline*" /x "${DEFAULT_SKIN}" ${BASE_BUILD_DIR}\dist${BITWIDTH}\skins\*-WXGA
 	SectionEnd
-
-	Section "SXGA-size (1280x1024)" SecSXGASkins
+    
+    Section "WXGA+-size (1440x900)" SecWXGAPlusSkins
 	  SetOutPath "$INSTDIR\skins"
-	  File /r /x ".svn" /x ".bzr" /x "Outline*" ${BASE_BUILD_DIR}\dist${BITWIDTH}\skins\*-SXGA*
+	  File /r /x ".svn" /x ".bzr" /x "Outline*" /x "${DEFAULT_SKIN}" ${BASE_BUILD_DIR}\dist${BITWIDTH}\skins\*-WXGA+
+	SectionEnd
+    
+    Section "WSXGA-size (1680x1050)" SecWSXGASkins
+	  SetOutPath "$INSTDIR\skins"
+	  File /r /x ".svn" /x ".bzr" /x "Outline*" /x "${DEFAULT_SKIN}" ${BASE_BUILD_DIR}\dist${BITWIDTH}\skins\*-WSXGA
 	SectionEnd
 
 	Section "UXGA-size (1600x1200)" SecUXGASkins
 	  SetOutPath "$INSTDIR\skins"
-	  File /r /x ".svn" /x ".bzr" /x "Outline*" ${BASE_BUILD_DIR}\dist${BITWIDTH}\skins\*-UXGA*
+	  File /r /x ".svn" /x ".bzr" /x "Outline*" /x "${DEFAULT_SKIN}" ${BASE_BUILD_DIR}\dist${BITWIDTH}\skins\*-UXGA
+	SectionEnd
+    
+    Section "Full HD-size (1920x1080)" SecFullHDSkins
+	  SetOutPath "$INSTDIR\skins"
+	  File /r /x ".svn" /x ".bzr" /x "Outline*" /x "${DEFAULT_SKIN}" ${BASE_BUILD_DIR}\dist${BITWIDTH}\skins\*-FullHD
+	SectionEnd
+    
+    Section "WUXGA-size (1920x1200)" SecWUXGASkins
+	  SetOutPath "$INSTDIR\skins"
+	  File /r /x ".svn" /x ".bzr" /x "Outline*" /x "${DEFAULT_SKIN}" ${BASE_BUILD_DIR}\dist${BITWIDTH}\skins\*-WUXGA
 	SectionEnd
 
-	Section "WSXGA-size (1680x1050)" SecWSXGASkins
-	  SetOutPath "$INSTDIR\skins"
-	  File /r /x ".svn" /x ".bzr" /x "Outline*" ${BASE_BUILD_DIR}\dist${BITWIDTH}\skins\*-WSXGA*
-	SectionEnd
+	
 
 SectionGroupEnd
 
@@ -324,7 +358,7 @@ SectionEnd
 ; Descriptions
 
   ; Language strings
-  LangString DESC_SecMixxx ${LANG_ENGLISH} "Mixxx itself with the default wide-format netbook-sized skin (1024x600) using the Outline theme"
+  LangString DESC_SecMixxx ${LANG_ENGLISH} "Mixxx itself with the default 1280x800 Deere skin"
   LangString DESC_SecStartMenu ${LANG_ENGLISH} "Mixxx program group containing useful shortcuts appearing under the [All] Programs section under the Start menu"
   LangString DESC_SecDesktop ${LANG_ENGLISH} "Shortcut to Mixxx placed on the Desktop"
 
@@ -337,13 +371,16 @@ SectionEnd
 
   ; Skin group descriptions
   LangString DESC_SecBasicSkins ${LANG_ENGLISH} "Additional skins using the Outline theme (featuring a clear, clean and simple layout,) including one for 800 pixel-wide screens"
-  LangString DESC_SecAddlSkins ${LANG_ENGLISH} "Additional good-looking skins with varying themes and larger screen sizes."
+  LangString DESC_SecAddlSkins ${LANG_ENGLISH} "Additional skins with varying themes and screen sizes."
   LangString DESC_SecNetbookSkins ${LANG_ENGLISH} "Includes Shade and Shade Dark"
   LangString DESC_SecXGASkins ${LANG_ENGLISH} "Includes Shade and Shade Dark"
-  LangString DESC_SecWXGASkins ${LANG_ENGLISH} "Includes Deere, Late Night (Blues)"
   LangString DESC_SecSXGASkins ${LANG_ENGLISH} "Includes Deere, Late Night (Blues)"
-  LangString DESC_SecUXGASkins ${LANG_ENGLISH} "Includes Phoney and Phoney Dark"
+  LangString DESC_SecWXGASkins ${LANG_ENGLISH} "Includes Deere, Late Night (Blues)"
+  LangString DESC_SecWXGAPlusSkins ${LANG_ENGLISH} "Deere"
   LangString DESC_SecWSXGASkins ${LANG_ENGLISH} "Includes Phoney and Phoney Dark"
+  LangString DESC_SecUXGASkins ${LANG_ENGLISH} "Includes Phoney and Phoney Dark"
+  LangString DESC_SecFullHDSkins ${LANG_ENGLISH} "Deere"
+  LangString DESC_SecWUXGASkins ${LANG_ENGLISH} "Deere"
 
   ;Assign language strings to sections
   !insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN
@@ -353,14 +390,19 @@ SectionEnd
     !insertmacro MUI_DESCRIPTION_TEXT ${SecControllerMappings} $(DESC_SecControllerMappings)
     !insertmacro MUI_DESCRIPTION_TEXT ${SecCertifiedMappings} $(DESC_SecCertifiedMappings)
     !insertmacro MUI_DESCRIPTION_TEXT ${SecCommunityMappings} $(DESC_SecCommunityMappings)
+    
     !insertmacro MUI_DESCRIPTION_TEXT ${SecAddlSkins} $(DESC_SecAddlSkins)
     !insertmacro MUI_DESCRIPTION_TEXT ${SecBasicSkins} $(DESC_SecBasicSkins)
     !insertmacro MUI_DESCRIPTION_TEXT ${SecNetbookSkins} $(DESC_SecNetbookSkins)
     !insertmacro MUI_DESCRIPTION_TEXT ${SecXGASkins} $(DESC_SecXGASkins)
-	!insertmacro MUI_DESCRIPTION_TEXT ${SecWXGASkins} $(DESC_SecWXGASkins)
 	!insertmacro MUI_DESCRIPTION_TEXT ${SecSXGASkins} $(DESC_SecSXGASkins)
-	!insertmacro MUI_DESCRIPTION_TEXT ${SecUXGASkins} $(DESC_SecUXGASkins)
+    !insertmacro MUI_DESCRIPTION_TEXT ${SecWXGASkins} $(DESC_SecWXGASkins)
+	!insertmacro MUI_DESCRIPTION_TEXT ${SecWXGAPlusSkins} $(DESC_SecWXGAPlusSkins)
 	!insertmacro MUI_DESCRIPTION_TEXT ${SecWSXGASkins} $(DESC_SecWSXGASkins)
+    !insertmacro MUI_DESCRIPTION_TEXT ${SecUXGASkins} $(DESC_SecUXGASkins)
+    !insertmacro MUI_DESCRIPTION_TEXT ${SecFullHDSkins} $(DESC_SecFullHDSkins)
+    !insertmacro MUI_DESCRIPTION_TEXT ${SecWUXGASkins} $(DESC_SecWUXGASkins)
+	
     !insertmacro MUI_DESCRIPTION_TEXT ${SecSCS1d} $(DESC_SecSCS1d)
     !insertmacro MUI_DESCRIPTION_TEXT ${SecSCS1m} $(DESC_SecSCS1m)
   !insertmacro MUI_FUNCTION_DESCRIPTION_END
@@ -421,7 +463,8 @@ Section "Uninstall"
   Delete "$INSTDIR\skins\ShadeDark1024x600-Netbook\*.*"
   Delete "$INSTDIR\skins\ShadeDark1024x768-XGA\*.*"
   Delete $INSTDIR\skins\*.*
-
+  
+  Delete $INSTDIR\sqldrivers\*.*
   Delete $INSTDIR\keyboard\*.*
   Delete $INSTDIR\midi\*.*
   Delete $INSTDIR\promo\${PRODUCT_VERSION}\*.*
@@ -451,7 +494,8 @@ Section "Uninstall"
   RMDir "$INSTDIR\skins\ShadeDark1024x600-Netbook"
   RMDir "$INSTDIR\skins\ShadeDark1024x768-XGA"
   RMDir "$INSTDIR\skins"
-
+  
+  RMDir "$INSTDIR\sqldrivers"
   RMDir "$INSTDIR\midi"
   RMDir "$INSTDIR\keyboard"
   RMDir /r "$INSTDIR\promo\${PRODUCT_VERSION}"
