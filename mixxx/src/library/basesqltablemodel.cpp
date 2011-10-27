@@ -122,7 +122,7 @@ QString BaseSqlTableModel::orderByClause() const {
 
     QString field = m_idColumn;
     if (m_iSortColumn != 0) {
-        field = m_tableColumns[m_iSortColumn-1];
+        field = m_tableColumns[m_iSortColumn];
     }
 
     QString s;
@@ -226,26 +226,29 @@ void BaseSqlTableModel::select() {
     // Adjust sort column to remove table columns and add 1 to add an id column.
     int sortColumn = m_iSortColumn - m_tableColumns.size() + 1;
 
-    // If we were sorting a table column, then secondary sort by id. TODO(rryan)
-    // we should look into being able to drop the secondary sort to save time
-    // but going for correctness first.
     if (sortColumn < 0) {
         sortColumn = 0;
     }
 
+    // If we were sorting a table column, then secondary sort by id. TODO(rryan)
+    // we should look into being able to drop the secondary sort to save time
+    // but going for correctness first.
     m_trackSource->filterAndSort(trackIds, m_currentSearch,
                                  m_currentSearchFilter,
                                  sortColumn, m_eSortOrder,
                                  &m_trackSortOrder);
 
-    for (QVector<RowInfo>::iterator it = rowInfo.begin();
-         it != rowInfo.end(); ++it) {
-        it->order = m_trackSortOrder.value(it->trackId, -1);
-    }
+    // Only re-sort results if the sort column was a track column.
+    if (sortColumn > 0) {
+        for (QVector<RowInfo>::iterator it = rowInfo.begin();
+             it != rowInfo.end(); ++it) {
+            it->order = m_trackSortOrder.value(it->trackId, -1);
+        }
 
-    // RowInfo::operator< sorts by the order field, except -1 is placed at the
-    // end so we can easily slice off rows that are no longer present.
-    qSort(rowInfo.begin(), rowInfo.end());
+        // RowInfo::operator< sorts by the order field, except -1 is placed at the
+        // end so we can easily slice off rows that are no longer present.
+        qSort(rowInfo.begin(), rowInfo.end());
+    }
 
     m_trackIdToRows.clear();
     for (int i = 0; i < rowInfo.size(); ++i) {
@@ -276,7 +279,9 @@ void BaseSqlTableModel::setTable(const QString& tableName,
                                  const QStringList& tableColumns,
                                  QSharedPointer<BaseTrackCache> trackSource) {
     Q_ASSERT(trackSource);
-    qDebug() << this << "setTable" << tableName << tableColumns << idColumn;
+    if (sDebug) {
+        qDebug() << this << "setTable" << tableName << tableColumns << idColumn;
+    }
     m_tableName = tableName;
     m_idColumn = idColumn;
     m_tableColumns = tableColumns;
@@ -374,9 +379,6 @@ int BaseSqlTableModel::columnCount(const QModelIndex& parent) const {
     // Subtract one from trackSource::columnCount to ignore the id column
     int count = m_tableColumns.size() +
             (m_trackSource ? m_trackSource->columnCount() - 1: 0);
-    if (sDebug) {
-        qDebug() << "columnCount()" << parent << count;
-    }
     return count;
 }
 
@@ -412,8 +414,10 @@ QVariant BaseSqlTableModel::data(const QModelIndex& index, int role) const {
         case Qt::ToolTipRole:
         case Qt::DisplayRole:
             if (column == fieldIndex(LIBRARYTABLE_DURATION)) {
-                if (qVariantCanConvert<int>(value))
-                    value = MixxxUtils::secondsToMinutes(qVariantValue<int>(value));
+                if (qVariantCanConvert<int>(value)) {
+                    value = MixxxUtils::secondsToMinutes(
+                        qVariantValue<int>(value));
+                }
             } else if (column == fieldIndex(LIBRARYTABLE_RATING)) {
                 if (qVariantCanConvert<int>(value))
                     value = qVariantFromValue(StarRating(value.toInt()));
@@ -421,16 +425,19 @@ QVariant BaseSqlTableModel::data(const QModelIndex& index, int role) const {
                 if (qVariantCanConvert<int>(value))
                     value =  QString("(%1)").arg(value.toInt());
             } else if (column == fieldIndex(LIBRARYTABLE_PLAYED)) {
-                // Convert to a bool. Not really that useful since it gets converted
-                // right back to a QVariant
+                // Convert to a bool. Not really that useful since it gets
+                // converted right back to a QVariant
                 value = (value == "true") ? true : false;
+            } else if (column == fieldIndex(LIBRARYTABLE_DATETIMEADDED)) {
+                value = value.toDateTime();
             }
             break;
         case Qt::EditRole:
             if (column == fieldIndex(LIBRARYTABLE_BPM)) {
                 return value.toDouble();
             } else if (column == fieldIndex(LIBRARYTABLE_TIMESPLAYED)) {
-                return index.sibling(row, fieldIndex(LIBRARYTABLE_PLAYED)).data().toBool();
+                return index.sibling(
+                    row, fieldIndex(LIBRARYTABLE_PLAYED)).data().toBool();
             } else if (column == fieldIndex(LIBRARYTABLE_RATING)) {
                 if (qVariantCanConvert<int>(value))
                     value = qVariantFromValue(StarRating(value.toInt()));
@@ -438,7 +445,8 @@ QVariant BaseSqlTableModel::data(const QModelIndex& index, int role) const {
             break;
         case Qt::CheckStateRole:
             if (column == fieldIndex(LIBRARYTABLE_TIMESPLAYED)) {
-                bool played = index.sibling(row, fieldIndex(LIBRARYTABLE_PLAYED)).data().toBool();
+                bool played = index.sibling(
+                    row, fieldIndex(LIBRARYTABLE_PLAYED)).data().toBool();
                 value = played ? Qt::Checked : Qt::Unchecked;
             }
             break;
@@ -448,7 +456,8 @@ QVariant BaseSqlTableModel::data(const QModelIndex& index, int role) const {
     return value;
 }
 
-bool BaseSqlTableModel::setData(const QModelIndex& index, const QVariant& value, int role) {
+bool BaseSqlTableModel::setData(
+    const QModelIndex& index, const QVariant& value, int role) {
     if (!index.isValid())
         return false;
 
@@ -483,6 +492,8 @@ bool BaseSqlTableModel::setData(const QModelIndex& index, const QVariant& value,
         return false;
     }
 
+    // TODO(rryan) ugly and only works because the mixxx library tables are the
+    // only ones that aren't read-only. This should be moved into BTC.
     TrackPointer pTrack = m_trackDAO.getTrack(trackId);
     setTrackValueForColumn(pTrack, column, value);
 
@@ -498,14 +509,15 @@ Qt::ItemFlags BaseSqlTableModel::flags(const QModelIndex &index) const {
     return readWriteFlags(index);
 }
 
-Qt::ItemFlags BaseSqlTableModel::readWriteFlags(const QModelIndex &index) const {
+Qt::ItemFlags BaseSqlTableModel::readWriteFlags(
+    const QModelIndex &index) const {
     if (!index.isValid())
         return Qt::ItemIsEnabled;
 
     Qt::ItemFlags defaultFlags = QAbstractItemModel::flags(index);
 
-    //Enable dragging songs from this data model to elsewhere (like the waveform
-    //widget to load a track into a Player).
+    // Enable dragging songs from this data model to elsewhere (like the
+    // waveform widget to load a track into a Player).
     defaultFlags |= Qt::ItemIsDragEnabled;
 
     int row = index.row();
@@ -524,8 +536,7 @@ Qt::ItemFlags BaseSqlTableModel::readWriteFlags(const QModelIndex &index) const 
     }
 }
 
-Qt::ItemFlags BaseSqlTableModel::readOnlyFlags(const QModelIndex &index) const
-{
+Qt::ItemFlags BaseSqlTableModel::readOnlyFlags(const QModelIndex &index) const {
     Qt::ItemFlags defaultFlags = QAbstractItemModel::flags(index);
     if (!index.isValid())
         return Qt::ItemIsEnabled;
@@ -603,8 +614,8 @@ void BaseSqlTableModel::setTrackValueForColumn(TrackPointer pTrack, int column,
     } else if (fieldIndex(LIBRARYTABLE_BITRATE) == column) {
         pTrack->setBitrate(value.toInt());
     } else if (fieldIndex(LIBRARYTABLE_BPM) == column) {
-        //QVariant::toFloat needs >= QT 4.6.x
-        pTrack->setBpm((float) value.toDouble());
+        // QVariant::toFloat needs >= QT 4.6.x
+        pTrack->setBpm(static_cast<float>(value.toDouble()));
     } else if (fieldIndex(LIBRARYTABLE_PLAYED) == column) {
         pTrack->setPlayed(value.toBool());
     } else if (fieldIndex(LIBRARYTABLE_TIMESPLAYED) == column) {
@@ -617,7 +628,8 @@ void BaseSqlTableModel::setTrackValueForColumn(TrackPointer pTrack, int column,
     }
 }
 
-QVariant BaseSqlTableModel::getBaseValue(const QModelIndex& index, int role) const {
+QVariant BaseSqlTableModel::getBaseValue(
+    const QModelIndex& index, int role) const {
     if (role != Qt::DisplayRole &&
         role != Qt::ToolTipRole &&
         role != Qt::EditRole) {
@@ -652,6 +664,16 @@ QVariant BaseSqlTableModel::getBaseValue(const QModelIndex& index, int role) con
         // Subtract table columns from index to get the track source column
         // number and add 1 to skip over the id column.
         int trackSourceColumn = column - m_tableColumns.size() + 1;
+        if (!m_trackSource->isCached(trackId)) {
+            // Ideally Mixxx would have notified us of this via a signal, but in
+            // the case that a track is not in the cache, we attempt to load it
+            // on the fly. This will be a steep penalty to pay if there are tons
+            // of these tracks in the table that are not cached.
+            qDebug() << __FILE__ << __LINE__
+                     << "Track" << trackId
+                     << "was not present in cache and had to be manually fetched.";
+            m_trackSource->ensureCached(trackId);
+        }
         return m_trackSource->data(trackId, trackSourceColumn);
     }
     return QVariant();

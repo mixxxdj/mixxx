@@ -9,6 +9,7 @@
 #include "library/libraryfeature.h"
 #include "treeitemmodel.h"
 
+class BaseTrackCache;
 class LibraryTableModel;
 class MissingTableModel;
 class TrackCollection;
@@ -37,6 +38,7 @@ class MixxxLibraryFeature : public LibraryFeature {
     void refreshLibraryModels();
 
   private:
+    QSharedPointer<BaseTrackCache> m_pBaseTrackCache;
     LibraryTableModel* m_pLibraryTableModel;
     MissingTableModel* m_pMissingTableModel;
     TreeItemModel m_childModel;

@@ -35,6 +35,10 @@ class BaseTrackCache : public QObject {
                    bool isCaching);
     virtual ~BaseTrackCache();
 
+    // Rebuild the BaseTrackCache index from the SQL table. This can be
+    // expensive on large tables.
+    virtual void buildIndex();
+
     ////////////////////////////////////////////////////////////////////////////
     // Data access methods
     ////////////////////////////////////////////////////////////////////////////
@@ -47,17 +51,19 @@ class BaseTrackCache : public QObject {
                                QString query, QString extraFilter,
                                int sortColumn, Qt::SortOrder sortOrder,
                                QHash<int, int>* trackToIndex);
+    virtual bool isCached(int trackId) const;
+    virtual void ensureCached(int trackId);
     virtual void ensureCached(QSet<int> trackIds);
-    virtual void buildIndex();
 
   signals:
     void tracksChanged(QSet<int> trackIds);
 
   private slots:
-    void slotTrackAdded(int trackId);
-    void slotTrackRemoved(int trackId);
+    void slotTracksAdded(QSet<int> trackId);
+    void slotTracksRemoved(QSet<int> trackId);
     void slotTrackDirty(int trackId);
     void slotTrackClean(int trackId);
+    void slotTrackChanged(int trackId);
 
   private:
     TrackPointer lookupCachedTrack(int trackId) const;

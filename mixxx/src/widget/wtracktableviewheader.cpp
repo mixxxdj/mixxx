@@ -11,10 +11,6 @@ WTrackTableViewHeader::WTrackTableViewHeader(Qt::Orientation orientation,
         : QHeaderView(orientation, parent),
           m_menu(tr("Show or hide columns."), this),
           m_signalMapper(this) {
-
-    // Show the sort indicator (technically redundant since setSortingEnabled()
-    // on a View will handle this)
-    setSortIndicatorShown(true);
     //Allow the columns to be reordered.
     setMovable(true);
 

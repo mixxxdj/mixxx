@@ -32,8 +32,6 @@ MissingTableModel::MissingTableModel(QObject* parent,
                   "INNER JOIN track_locations "
                   "ON library.location=track_locations.id "
                   "WHERE " + MissingTableModel::MISSINGFILTER);
-    //query.bindValue(":playlist_name", playlistTableName);
-    //query.bindValue(":playlist_id", m_iPlaylistId);
     if (!query.exec()) {
         qDebug() << query.executedQuery() << query.lastError();
     }
@@ -48,7 +46,8 @@ MissingTableModel::MissingTableModel(QObject* parent,
     setTable(tableName, LIBRARYTABLE_ID, tableColumns,
              m_pTrackCollection->getTrackSource("default"));
 
-    initHeaderData();    //derived from BaseSqlModel
+    initHeaderData();
+    setDefaultSort(fieldIndex("artist"), Qt::AscendingOrder);
     setSearch("");
 
     connect(this, SIGNAL(doSearch(const QString&)),

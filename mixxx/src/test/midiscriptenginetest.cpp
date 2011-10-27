@@ -43,7 +43,7 @@ TEST_F(MidiScriptEngineTest, commonScriptHasNoErrors) {
     // ConfigObject<ConfigValue> config("~/.mixxx/mixxx.cfg");
     // QString commonScript = config.getConfigPath() + "/" +
     //         "/midi/midi-mappings-scripts.js";
-    QString commonScript = "./res/midi/midi-mappings-script.js";
+    QString commonScript = "./res/midi/midi-mappings-scripts.js";
     scriptEngine->evaluate(commonScript);
     EXPECT_FALSE(scriptEngine->hasErrors(commonScript));
 }

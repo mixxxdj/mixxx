@@ -5,6 +5,7 @@
 
 #include "library/mixxxlibraryfeature.h"
 
+#include "library/basetrackcache.h"
 #include "library/librarytablemodel.h"
 #include "library/missingtablemodel.h"
 #include "library/queryutil.h"
@@ -39,12 +40,19 @@ MixxxLibraryFeature::MixxxLibraryFeature(QObject* parent,
             << "library." + LIBRARYTABLE_MIXXXDELETED;
 
     QSqlQuery query(pTrackCollection->getDatabase());
-    QString queryString = "CREATE TEMPORARY VIEW IF NOT EXISTS library_cache_view AS SELECT "
-            + columns.join(",") +
-            " FROM library INNER JOIN track_locations "
-            "ON library.location = track_locations.id "
-            "WHERE (" + LibraryTableModel::DEFAULT_LIBRARYFILTER + ")";
+    QString tableName = "library_cache_view";
+    QString queryString = QString(
+        "CREATE TEMPORARY VIEW IF NOT EXISTS %1 AS "
+        "SELECT %2 FROM library "
+        "INNER JOIN track_locations ON library.location = track_locations.id")
+            .arg(tableName)
+            .arg(columns.join(","));
+    query.prepare(queryString);
+    if (!query.exec()) {
+        LOG_FAILED_QUERY(query);
+    }
 
+    // Strip out library. and track_locations.
     for (QStringList::iterator it = columns.begin();
          it != columns.end(); ++it) {
         if (it->startsWith("library.")) {
@@ -54,25 +62,21 @@ MixxxLibraryFeature::MixxxLibraryFeature(QObject* parent,
         }
     }
 
-    query.prepare(queryString);
-    if (!query.exec()) {
-        LOG_FAILED_QUERY(query);
-    }
-
-    // Strip out library. and track_locations.
-    for (int i = 0; i < columns.size(); ++i) {
-        columns[i] = columns[i].replace("library.", "").replace("track_locations.", "");
-    }
-
     BaseTrackCache* pBaseTrackCache = new BaseTrackCache(
-        pTrackCollection, "library_cache_view", LIBRARYTABLE_ID, columns, true);
+        pTrackCollection, tableName, LIBRARYTABLE_ID, columns, true);
     connect(&pTrackCollection->getTrackDAO(), SIGNAL(trackDirty(int)),
             pBaseTrackCache, SLOT(slotTrackDirty(int)));
     connect(&pTrackCollection->getTrackDAO(), SIGNAL(trackClean(int)),
             pBaseTrackCache, SLOT(slotTrackClean(int)));
+    connect(&pTrackCollection->getTrackDAO(), SIGNAL(trackChanged(int)),
+            pBaseTrackCache, SLOT(slotTrackChanged(int)));
+    connect(&pTrackCollection->getTrackDAO(), SIGNAL(tracksAdded(QSet<int>)),
+            pBaseTrackCache, SLOT(slotTracksAdded(QSet<int>)));
+    connect(&pTrackCollection->getTrackDAO(), SIGNAL(tracksRemoved(QSet<int>)),
+            pBaseTrackCache, SLOT(slotTracksRemoved(QSet<int>)));
 
-    pTrackCollection->addTrackSource(
-        QString("default"), QSharedPointer<BaseTrackCache>(pBaseTrackCache));
+    m_pBaseTrackCache = QSharedPointer<BaseTrackCache>(pBaseTrackCache);
+    pTrackCollection->addTrackSource(QString("default"), m_pBaseTrackCache);
 
     // These rely on the 'default' track source being present.
     m_pLibraryTableModel = new LibraryTableModel(this, pTrackCollection);
@@ -102,9 +106,17 @@ TreeItemModel* MixxxLibraryFeature::getChildModel() {
     return &m_childModel;
 }
 
-void MixxxLibraryFeature::refreshLibraryModels() {
-    m_pLibraryTableModel->select();
-    m_pMissingTableModel->select();
+void MixxxLibraryFeature::refreshLibraryModels()
+{
+    if (m_pBaseTrackCache) {
+        m_pBaseTrackCache->buildIndex();
+    }
+    if (m_pLibraryTableModel) {
+        m_pLibraryTableModel->select();
+    }
+    if (m_pMissingTableModel) {
+        m_pMissingTableModel->select();
+    }
 }
 
 void MixxxLibraryFeature::activate() {

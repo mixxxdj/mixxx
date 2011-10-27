@@ -21,6 +21,7 @@
 #include "defs.h"
 #include "configobject.h"
 #include "soundmanagerconfig.h"
+#include "controlobjectthreadmain.h"
 
 class SoundDevice;
 class EngineMaster;
@@ -68,8 +69,6 @@ signals:
     void devicesSetup(); // emitted when the sound devices have been set up
     void outputRegistered(AudioOutput output, const AudioSource *src);
     void inputRegistered(AudioInput input, AudioDestination *dest);
-public slots:
-    void sync();
 private:
     void clearOperativeVariables();
     void setJACKName() const;
@@ -96,6 +95,13 @@ private:
 #endif
     QHash<AudioOutput, const AudioSource*> m_registeredSources;
     QHash<AudioInput, AudioDestination*> m_registeredDestinations;
+
+    ControlObjectThreadMain* m_pControlObjectLatency;
+    ControlObjectThreadMain* m_pControlObjectSampleRate;
+    ControlObjectThreadMain* m_pControlObjectVinylControlMode;
+    ControlObjectThreadMain* m_pControlObjectVinylControlMode1;
+    ControlObjectThreadMain* m_pControlObjectVinylControlMode2;
+    ControlObjectThreadMain* m_pControlObjectVinylControlGain;
 };
 
 #endif

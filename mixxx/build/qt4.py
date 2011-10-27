@@ -94,7 +94,7 @@ class _Automoc:
 
 	def __init__(self, objBuilderName):
 		self.objBuilderName = objBuilderName
-		
+
 	def __call__(self, target, source, env):
 		"""
 		Smart autoscan function. Gets the list of objects for the Program
@@ -109,7 +109,7 @@ class _Automoc:
 			debug = int(env.subst('$QT4_DEBUG'))
 		except ValueError:
 			debug = 0
-		
+
 		# some shortcuts used in the scanner
 		FS = SCons.Node.FS.default_fs
 		splitext = SCons.Util.splitext
@@ -117,18 +117,18 @@ class _Automoc:
 
 		# some regular expressions:
 		# Q_OBJECT detection
-		q_object_search = re.compile(r'[^A-Za-z0-9]Q_OBJECT[^A-Za-z0-9]') 
+		q_object_search = re.compile(r'[^A-Za-z0-9]Q_OBJECT[^A-Za-z0-9]')
 		# cxx and c comment 'eater'
 		#comment = re.compile(r'(//.*)|(/\*(([^*])|(\*[^/]))*\*/)')
 		# CW: something must be wrong with the regexp. See also bug #998222
 		#     CURRENTLY THERE IS NO TEST CASE FOR THAT
-		
+
 		# The following is kind of hacky to get builders working properly (FIXME)
 		objBuilderEnv = objBuilder.env
 		objBuilder.env = env
 		mocBuilderEnv = env.Moc4.env
 		env.Moc4.env = env
-		
+
 		# make a deep copy for the result; MocH objects will be appended
 		out_sources = source[:]
 
@@ -144,7 +144,7 @@ class _Automoc:
 			cpp = obj.sources[0]
 			if not splitext(str(cpp))[1] in cxx_suffixes:
 				if debug:
-					print "scons: qt: '%s' is no cxx file. Discarded." % str(cpp) 
+					print "scons: qt: '%s' is no cxx file. Discarded." % str(cpp)
 				# c or fortran source
 				continue
 			#cpp_contents = comment.sub('', cpp.get_contents())
@@ -232,7 +232,7 @@ def generate(env):
 		fullpath = env.Detect([command+'-qt4', command+'4', command])
 		if not (fullpath is None) : return fullpath
 		raise Exception("Qt4 command '" + command + "' not found. Tried: " + fullpath1 + " and "+ fullpath2)
-		
+
 
 	CLVar = SCons.Util.CLVar
 	Action = SCons.Action.Action
@@ -289,12 +289,12 @@ def generate(env):
 
 	# Translation builder
 	tsbuilder = Builder(
-		action = SCons.Action.Action('$QT4_LUPDATECOM'), #,'$QT4_LUPDATECOMSTR'),
+		action = SCons.Action.Action('$QT4_LUPDATECOM', '$QT4_LUPDATECOMSTR'),
 		multi=1
 		)
 	env.Append( BUILDERS = { 'Ts': tsbuilder } )
 	qmbuilder = Builder(
-		action = SCons.Action.Action('$QT4_LRELEASECOM'),# , '$QT4_LRELEASECOMSTR'),
+		action = SCons.Action.Action('$QT4_LRELEASECOM', '$QT4_LRELEASECOMSTR'),
 		src_suffix = '.ts',
 		suffix = '.qm',
 		single_source = True
@@ -311,7 +311,7 @@ def generate(env):
 		argument = None,
 		skeys = ['.qrc'])
 	qrcbuilder = Builder(
-		action = SCons.Action.Action('$QT4_RCCCOM'), #, '$QT4_RCCCOMSTR'),
+		action = SCons.Action.Action('$QT4_RCCCOM', '$QT4_RCCCOMSTR'),
 		source_scanner = qrcscanner,
 		src_suffix = '$QT4_QRCSUFFIX',
 		suffix = '$QT4_QRCCXXSUFFIX',
@@ -322,7 +322,7 @@ def generate(env):
 
 	# Interface builder
 	uic4builder = Builder(
-		action = SCons.Action.Action('$QT4_UICCOM'), #, '$QT4_UICCOMSTR'),
+		action = SCons.Action.Action('$QT4_UICCOM', '$QT4_UICCOMSTR'),
 		src_suffix='$QT4_UISUFFIX',
 		suffix='$QT4_UICDECLSUFFIX',
 		prefix='$QT4_UICDECLPREFIX',
@@ -334,12 +334,12 @@ def generate(env):
 	# Metaobject builder
 	mocBld = Builder(action={}, prefix={}, suffix={})
 	for h in header_extensions:
-		act = SCons.Action.Action('$QT4_MOCFROMHCOM') #, '$QT4_MOCFROMHCOMSTR')
+		act = SCons.Action.Action('$QT4_MOCFROMHCOM', '$QT4_MOCFROMHCOMSTR')
 		mocBld.add_action(h, act)
 		mocBld.prefix[h] = '$QT4_MOCHPREFIX'
 		mocBld.suffix[h] = '$QT4_MOCHSUFFIX'
 	for cxx in cxx_suffixes:
-		act = SCons.Action.Action('$QT4_MOCFROMCXXCOM') #, '$QT4_MOCFROMCXXCOMSTR')
+		act = SCons.Action.Action('$QT4_MOCFROMCXXCOM', '$QT4_MOCFROMCXXCOMSTR')
 		mocBld.add_action(cxx, act)
 		mocBld.prefix[cxx] = '$QT4_MOCCXXPREFIX'
 		mocBld.suffix[cxx] = '$QT4_MOCCXXSUFFIX'
@@ -362,7 +362,7 @@ def generate(env):
 					 CPPPATH=["$QT4_CPPPATH"],
 					 LIBPATH=["$QT4_LIBPATH"],
 					 LIBS=['$QT4_LIB'])
-	
+
 	import new
 	method = new.instancemethod(enable_modules, env, SCons.Environment)
 	env.EnableQt4Modules=method

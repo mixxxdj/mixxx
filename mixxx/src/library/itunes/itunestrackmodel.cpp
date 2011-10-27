@@ -1,8 +1,11 @@
 #include <QtCore>
 #include <QtGui>
 #include <QtSql>
-#include "library/trackcollection.h"
+
 #include "library/itunes/itunestrackmodel.h"
+#include "library/trackcollection.h"
+#include "track/beatfactory.h"
+#include "track/beats.h"
 
 ITunesTrackModel::ITunesTrackModel(QObject* parent,
                                    TrackCollection* pTrackCollection)
@@ -17,6 +20,7 @@ ITunesTrackModel::ITunesTrackModel(QObject* parent,
     columns << "id";
     setTable("itunes_library", columns[0], columns,
              m_pTrackCollection->getTrackSource("itunes"));
+    setDefaultSort(fieldIndex("artist"), Qt::AscendingOrder);
     initHeaderData();
 }
 
@@ -33,7 +37,7 @@ TrackPointer ITunesTrackModel::getTrack(const QModelIndex& index) const {
 
     QString location = index.sibling(index.row(), fieldIndex("location")).data().toString();
 
-    TrackInfoObject* pTrack = new TrackInfoObject(location);
+    TrackPointer pTrack = TrackPointer(new TrackInfoObject(location), &QObject::deleteLater);
     pTrack->setArtist(artist);
     pTrack->setTitle(title);
     pTrack->setAlbum(album);
@@ -41,7 +45,13 @@ TrackPointer ITunesTrackModel::getTrack(const QModelIndex& index) const {
     pTrack->setGenre(genre);
     pTrack->setBpm(bpm);
 
-    return TrackPointer(pTrack, &QObject::deleteLater);
+    // If the track has a BPM, then give it a static beatgrid.
+    if (bpm > 0) {
+        BeatsPointer pBeats = BeatFactory::makeBeatGrid(pTrack, bpm, 0);
+        pTrack->setBeats(pBeats);
+    }
+
+    return pTrack;
 }
 
 void ITunesTrackModel::search(const QString& searchText) {

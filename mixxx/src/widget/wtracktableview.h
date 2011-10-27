@@ -34,6 +34,7 @@ class WTrackTableView : public WLibraryTableView
     virtual void keyPressEvent(QKeyEvent* event);
     virtual void loadSelectedTrack();
     virtual void loadSelectedTrackToGroup(QString group);
+    void disableSorting();
 
   public slots:
     void loadTrackModel(QAbstractItemModel* model);
@@ -57,6 +58,10 @@ class WTrackTableView : public WLibraryTableView
     void dragMoveEvent(QDragMoveEvent * event);
     void dragEnterEvent(QDragEnterEvent * event);
     void dropEvent(QDropEvent * event);
+
+    // Mouse move event, implemented to hide the text and show an icon instead
+    // when dragging
+    void mouseMoveEvent(QMouseEvent *pEvent);
 
     // Returns the current TrackModel, or returns NULL if none is set.
     TrackModel* getTrackModel();

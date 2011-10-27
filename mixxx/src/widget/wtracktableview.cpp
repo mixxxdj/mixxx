@@ -88,12 +88,13 @@ WTrackTableView::~WTrackTableView()
     delete m_pPlaylistMenu;
     delete m_pCrateMenu;
     //delete m_pRenamePlaylistAct;
-
     delete m_pTrackInfo;
+    delete m_pNumSamplers;
+    delete m_pNumDecks;
 }
 
 void WTrackTableView::loadTrackModel(QAbstractItemModel *model) {
-    qDebug() << "WTrackTableView::loadTrackModel()" << model;
+    //qDebug() << "WTrackTableView::loadTrackModel()" << model;
 
     TrackModel* track_model = dynamic_cast<TrackModel*>(model);
 
@@ -104,8 +105,12 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel *model) {
      * there's no need to exchange the headers
      * this will cause a small GUI freeze
      */
-    if(getTrackModel() == track_model)
+    if (getTrackModel() == track_model) {
+        // Re-sort the table even if the track model is the same. This triggers
+        // a select() if the table is dirty.
+        doSortByColumn(horizontalHeader()->sortIndicatorSection());
         return;
+    }
 
     setVisible(false);
 
@@ -153,13 +158,6 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel *model) {
     header->setClickable(true);
     header->setHighlightSections(true);
     header->setSortIndicatorShown(true);
-    //setSortingEnabled(true);
-    connect(horizontalHeader(), SIGNAL(sortIndicatorChanged(int, Qt::SortOrder)),
-            this, SLOT(doSortByColumn(int)), Qt::AutoConnection);
-
-    doSortByColumn(horizontalHeader()->sortIndicatorSection());
-
-    sortByColumn(horizontalHeader()->sortIndicatorSection());
 
     // Initialize all column-specific things
     for (int i = 0; i < model->columnCount(); ++i) {
@@ -189,6 +187,31 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel *model) {
         }
     }
 
+    // NOTE: Should be a UniqueConnection but that requires Qt 4.6
+    connect(horizontalHeader(), SIGNAL(sortIndicatorChanged(int, Qt::SortOrder)),
+            this, SLOT(doSortByColumn(int)), Qt::AutoConnection);
+
+    // Stupid hack that assumes column 0 is never visible, but this is a weak
+    // proxy for "there was a saved column sort order"
+    if (horizontalHeader()->sortIndicatorSection() > 0) {
+        // Sort by the saved sort section and order. This line sorts the
+        // TrackModel and in turn generates a select()
+        horizontalHeader()->setSortIndicator(horizontalHeader()->sortIndicatorSection(),
+                                             horizontalHeader()->sortIndicatorOrder());
+    } else {
+        // No saved order is present. Use the TrackModel's default sort order.
+        int sortColumn = track_model->defaultSortColumn();
+        Qt::SortOrder sortOrder = track_model->defaultSortOrder();
+
+        // If the TrackModel has an invalid or internal column as its default
+        // sort, find the first non-internal column and sort by that.
+        while (sortColumn < 0 || track_model->isColumnInternal(sortColumn)) {
+            sortColumn++;
+        }
+        // This line sorts the TrackModel and in turn generates a select()
+        horizontalHeader()->setSortIndicator(sortColumn, sortOrder);
+    }
+
     // Set up drag and drop behaviour according to whether or not the track
     // model says it supports it.
 
@@ -213,6 +236,14 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel *model) {
     // target though, so my hax above may not be completely unjustified.
 
     setVisible(true);
+}
+
+void WTrackTableView::disableSorting() {
+    // We have to manually do this because setSortingEnabled(false) does not
+    // properly disconnect the signals for some reason.
+    disconnect(horizontalHeader(), SIGNAL(sortIndicatorChanged(int, Qt::SortOrder)),
+               this, SLOT(doSortByColumn(int)));
+    horizontalHeader()->setSortIndicatorShown(false);
 }
 
 void WTrackTableView::createActions() {
@@ -434,10 +465,33 @@ void WTrackTableView::onSearchCleared() {
     }
 }
 
-void WTrackTableView::onShow()
-{
-
+void WTrackTableView::onShow() {
 }
+
+void WTrackTableView::mouseMoveEvent(QMouseEvent* pEvent) {
+   Q_UNUSED(pEvent);
+   TrackModel* trackModel = getTrackModel();
+    if (!trackModel)
+        return;
+
+    // Iterate over selected rows and append each item's location url to a list
+    QList<QUrl> locationUrls;
+    QModelIndexList indices = selectionModel()->selectedRows();
+    foreach (QModelIndex index, indices) {
+      if (index.isValid()) {
+        locationUrls.append(trackModel->getTrackLocation(index));
+      }
+    }
+
+    QMimeData* mimeData = new QMimeData();
+    mimeData->setUrls(locationUrls);
+
+    QDrag* drag = new QDrag(this);
+    drag->setMimeData(mimeData);
+    drag->setPixmap(QPixmap(":images/library/ic_library_drag_and_drop.png"));
+    drag->exec(Qt::CopyAction);
+}
+
 
 /** Drag enter event, happens when a dragged item hovers over the track table view*/
 void WTrackTableView::dragEnterEvent(QDragEnterEvent * event)
@@ -474,8 +528,10 @@ void WTrackTableView::dragEnterEvent(QDragEnterEvent * event)
  *  Why we need this is a little vague, but without it, drag-and-drop just doesn't work.
  *  -- Albert June 8/08
  */
-void WTrackTableView::dragMoveEvent(QDragMoveEvent * event)
-{
+void WTrackTableView::dragMoveEvent(QDragMoveEvent * event) {
+    // Needed to allow auto-scrolling
+    WLibraryTableView::dragMoveEvent(event);
+
     //qDebug() << "dragMoveEvent" << event->mimeData()->formats();
     if (event->mimeData()->hasUrls())
     {

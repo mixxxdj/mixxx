@@ -25,7 +25,7 @@ BaseTrackCache::BaseTrackCache(TrackCollection* pTrackCollection,
                                QString idColumn,
                                QList<QString> columns,
                                bool isCaching)
-        : QObject(NULL),
+        : QObject(),
           m_tableName(tableName),
           m_idColumn(idColumn),
           m_columns(columns),
@@ -40,7 +40,8 @@ BaseTrackCache::BaseTrackCache(TrackCollection* pTrackCollection,
                     << "album"
                     << "location"
                     << "comment"
-                    << "title";
+                    << "title"
+                    << "genre";
 
     // Convert all the search column names to their field indexes because we use
     // them a bunch.
@@ -65,12 +66,20 @@ int BaseTrackCache::fieldIndex(const QString columnName) const {
     return m_columnIndex.value(columnName, -1);
 }
 
-void BaseTrackCache::slotTrackAdded(int trackId) {
-    updateTrackInIndex(trackId);
+void BaseTrackCache::slotTracksAdded(QSet<int> trackIds) {
+    if (sDebug) {
+        qDebug() << this << "slotTracksAdded" << trackIds.size();
+    }
+    updateTracksInIndex(trackIds);
 }
 
-void BaseTrackCache::slotTrackRemoved(int trackId) {
-    m_trackInfo.remove(trackId);
+void BaseTrackCache::slotTracksRemoved(QSet<int> trackIds) {
+    if (sDebug) {
+        qDebug() << this << "slotTracksRemoved" << trackIds.size();
+    }
+    foreach (int trackId, trackIds) {
+        m_trackInfo.remove(trackId);
+    }
 }
 
 void BaseTrackCache::slotTrackDirty(int trackId) {
@@ -80,11 +89,28 @@ void BaseTrackCache::slotTrackDirty(int trackId) {
     m_dirtyTracks.insert(trackId);
 }
 
+void BaseTrackCache::slotTrackChanged(int trackId) {
+    if (sDebug) {
+        qDebug() << this << "slotTrackChanged" << trackId;
+    }
+    QSet<int> trackIds;
+    trackIds.insert(trackId);
+    emit(tracksChanged(trackIds));
+}
+
 void BaseTrackCache::slotTrackClean(int trackId) {
     if (sDebug) {
         qDebug() << this << "slotTrackClean" << trackId;
     }
     m_dirtyTracks.remove(trackId);
+    updateTrackInIndex(trackId);
+}
+
+bool BaseTrackCache::isCached(int trackId) const {
+    return m_trackInfo.contains(trackId);
+}
+
+void BaseTrackCache::ensureCached(int trackId) {
     updateTrackInIndex(trackId);
 }
 
@@ -211,6 +237,8 @@ QVariant BaseTrackCache::getTrackValueForColumn(TrackPointer pTrack, int column)
         return QVariant(pTrack->getAlbum());
     } else if (fieldIndex(LIBRARYTABLE_YEAR) == column) {
         return QVariant(pTrack->getYear());
+    } else if (fieldIndex(LIBRARYTABLE_DATETIMEADDED) == column) {
+        return QVariant(pTrack->getDateAdded());
     } else if (fieldIndex(LIBRARYTABLE_GENRE) == column) {
         return QVariant(pTrack->getGenre());
     } else if (fieldIndex(LIBRARYTABLE_FILETYPE) == column) {

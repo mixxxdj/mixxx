@@ -244,7 +244,8 @@ if build.platform_is_osx and 'bundle' in COMMAND_LINE_TARGETS:
 	# play nice with)
 	qt_plugins = ([("iconengines", e) for e in ["libqsvgicon.dylib"]] +
                       [("imageformats", e) for e in ["libqgif.dylib", "libqjpeg.dylib", "libqsvg.dylib"]] +
-                      [("sqldrivers", e) for e in ["libqsqlite.dylib"]])
+                      [("sqldrivers", e) for e in ["libqsqlite.dylib"]] +
+                      [("accessible", e) for e in ["libqtaccessiblecompatwidgets.dylib", "libqtaccessiblewidgets.dylib"]])
 	#Left out libqmng and libqtiff to save space.
 
 	# Concatenate the SoundSource plugins to our list of plugins (converting
