@@ -5,6 +5,7 @@ import os
 import sys
 import SCons
 import shutil
+import subprocess
 import time
 import SCons.Script as SCons
 
@@ -337,9 +338,18 @@ def win32_find_program_via_registry(program_name):
             program_location = program_location_tuple[0]
         except WindowsError:
             program_location_handle = None
-            
+
     _winreg.CloseKey(hklm)
     return program_location
+
+def get_mssdk_path():
+    path = os.getenv('SDKDIR', None)
+    if path is not None:
+        return path
+    path = os.getenv('MSSdk', None)
+    if path is not None:
+        return path
+    return ""
 
 def BuildRelease(target, source, env):
     print
@@ -380,17 +390,21 @@ def BuildRelease(target, source, env):
     #if (raw_input("Go ahead and build installer (yes/[no])? ") == "yes"):
     if True:
         if build.toolchain_is_msvs:
-            print "\nExtracting Visual C++ DLL installer..."
-            szip_directory = win32_find_program_via_registry("7-Zip")
-            szip_path = '%s' % os.path.join(szip_directory, "7z.exe")
-            if not szip_path:
+            mssdk_path = get_mssdk_path()
+            print "Detected MSSDK path:", mssdk_path
+            print "Extracting Visual C++ DLL installer..."
+            szip_path = None
+            try:
+                szip_directory = win32_find_program_via_registry("7-Zip")
+                szip_path = '%s' % os.path.join(szip_directory, "7z.exe")
+            except Exception, e:
+                pass
+            if szip_path is None:
                 print "Cannot find 7-Zip. Do you have it installed?"
             else:
-                import subprocess   # Screw all the command shell manipulations!
-                redist_file = 'vcredist_'+arch+'.exe'
-                redist_path = '%s' % os.path.join(os.getenv("SDKDIR"),'Redist','VC',redist_file)
+                redist_file = 'vcredist_%s.exe' % arch
+                redist_path = '%s' % os.path.join(mssdk_path,'Redist','VC',redist_file)
                 output_path = '%s' % os.path.join(mixxx_winlib_path,'VC_redist')
-                
                 args = [szip_path,"x","-y","-ir!vc_red.*",redist_path,"-o"+output_path]
                 print "Executing:", ' '.join(args)
                 proc = subprocess.Popen(args)
@@ -400,8 +414,7 @@ def BuildRelease(target, source, env):
                     print "====="
                     print err
                     print "====="
-            
-        print "\nNow building installation package..."
+        print "Now building installation package..."
         command_flag = None
         nsis_path = None
         if not build.crosscompile and build.platform_is_windows:
