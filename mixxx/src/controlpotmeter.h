@@ -65,11 +65,6 @@ protected:
     void setValueFromMidi(MidiCategory c, double v);
 
     double m_dMaxValue, m_dMinValue, m_dValueRange, m_dStep, m_dSmallStep;
-
-    ControlPushButton* m_pControlUp;
-    ControlPushButton* m_pControlDown;
-    ControlPushButton* m_pControlUpSmall;
-    ControlPushButton* m_pControlDownSmall;
 };
 
 #endif

@@ -145,7 +145,7 @@ private:
 
     bool addInputControl(MidiStatusByte midiStatus, int midiNo, int midiChannel,
                          QString controlObjectGroup, QString controlObjectKey,
-                         MidiOption midiOption);
+                         QString controlObjectDescription, MidiOption midiOption);
     bool addInputControl(MidiMessage message, MixxxControl control);
     void removeInputMapping(MidiStatusByte midiStatus, int midiNo, int midiChannel);
 

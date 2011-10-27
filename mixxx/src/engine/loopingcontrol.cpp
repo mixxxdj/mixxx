@@ -78,7 +78,7 @@ LoopingControl::LoopingControl(const char * _group,
 
     // Here we create corresponding beatloop_(SIZE) CO's which all call the same
     // BeatControl, but with a set value.
-    for (int i = 0; i < (sizeof(s_dBeatSizes) / sizeof(s_dBeatSizes[0])); ++i) {
+    for (unsigned int i = 0; i < (sizeof(s_dBeatSizes) / sizeof(s_dBeatSizes[0])); ++i) {
         BeatLoopingControl* pBeatLoop = new BeatLoopingControl(_group, s_dBeatSizes[i]);
         connect(pBeatLoop, SIGNAL(activateBeatLoop(BeatLoopingControl*)),
                 this, SLOT(slotBeatLoopActivate(BeatLoopingControl*)),
@@ -324,7 +324,7 @@ void LoopingControl::slotReloopExit(double val) {
 
 void LoopingControl::slotLoopStartPos(double pos) {
     int newpos = pos;
-    if (newpos >= 0 && !even(newpos)) {
+    if (newpos != -1 && !even(newpos)) {
         newpos--;
     }
 
@@ -347,14 +347,14 @@ void LoopingControl::slotLoopStartPos(double pos) {
 void LoopingControl::slotLoopEndPos(double pos) {
     int newpos = pos;
 
-    if (newpos >= 0 && !even(newpos)) {
+    if (newpos != -1 && !even(newpos)) {
         newpos--;
     }
 
     // Reject if the loop-in is not set, or if the new position is before the
     // start point (but not -1).
     if (m_iLoopStartSample == -1 ||
-        (newpos >= 0 && newpos < m_iLoopStartSample)) {
+        (newpos != -1 && newpos < m_iLoopStartSample)) {
         return;
     }
 

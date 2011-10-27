@@ -12,19 +12,17 @@
 /** Pure virtual (abstract) class that provides an interface for data models which
     display track lists. */
 class TrackModel {
-
-public:
-
+  public:
     TrackModel(QSqlDatabase db,
                QString settingsNamespace)
             : m_db(db),
-              m_settingsNamespace(settingsNamespace) {
-
+              m_settingsNamespace(settingsNamespace),
+              m_iDefaultSortColumn(-1),
+              m_eDefaultSortOrder(Qt::AscendingOrder) {
     }
     virtual ~TrackModel() {}
 
-    enum Capabilities
-    {
+    enum Capabilities {
         TRACKMODELCAPS_NONE           = 0x0000,
         TRACKMODELCAPS_REORDER        = 0x0001,
         TRACKMODELCAPS_RECEIVEDROPS   = 0x0002,
@@ -33,7 +31,6 @@ public:
         TRACKMODELCAPS_ADDTOAUTODJ    = 0x0010,
         TRACKMODELCAPS_LOCKED         = 0x0020,
         TRACKMODELCAPS_RELOADMETADATA = 0x0040,
-                                    //0x0004
     };
 
     typedef int CapabilitiesFlags; /** Enables us to do ORing */
@@ -96,10 +93,25 @@ public:
         return settings.setValue(key, value);
     }
 
+    virtual int defaultSortColumn() const {
+        return m_iDefaultSortColumn;
+    }
+
+    virtual Qt::SortOrder defaultSortOrder() const {
+        return m_eDefaultSortOrder;
+    }
+
+    virtual void setDefaultSort(int sortColumn, Qt::SortOrder sortOrder) {
+        m_iDefaultSortColumn = sortColumn;
+        m_eDefaultSortOrder = sortOrder;
+    }
+
   private:
     QSqlDatabase m_db;
     QString m_settingsNamespace;
     QList<int> m_emptyColumns;
+    int m_iDefaultSortColumn;
+    Qt::SortOrder m_eDefaultSortOrder;
 };
 
 #endif

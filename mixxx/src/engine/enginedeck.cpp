@@ -54,8 +54,7 @@ void EngineDeck::process(const CSAMPLE*, const CSAMPLE * pOut, const int iBuffer
     // Process the raw audio
     m_pBuffer->process(0, pOut, iBufferSize);
     // Emulate vinyl sounds
-    // This causes popping, disable -Owen
-    //m_pVinylSoundEmu->process(pOut, pOut, iBufferSize);
+    m_pVinylSoundEmu->process(pOut, pOut, iBufferSize);
     // Apply pregain
     m_pPregain->process(pOut, pOut, iBufferSize);
     // Filter the channel with EQs
