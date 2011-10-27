@@ -35,8 +35,8 @@ int ReadAheadManager::getNextSamples(double dRate, CSAMPLE* buffer,
     // first engine control.
     next_loop.first = 0;
     next_loop.second = m_sEngineControls[0]->nextTrigger(dRate,
-                                                        m_iCurrentPosition,
-                                                        0, 0);
+                                                         m_iCurrentPosition,
+                                                         0, 0);
 
     if (next_loop.second != kNoTrigger) {
         int samples_available;
@@ -143,33 +143,4 @@ void ReadAheadManager::hintReader(double dRate, QList<Hint>& hintList,
     // top priority, we need to read this data immediately
     current_position.priority = 1;
     hintList.append(current_position);
-}
-
-QPair<int, double> ReadAheadManager::getSoonestTrigger(double dRate,
-                                                       int iCurrentSample) {
-
-    // This is not currently working.
-    bool in_reverse = dRate < 0;
-    double next_trigger = kNoTrigger;
-    int next_trigger_index = -1;
-    int i;
-    for (int i = 0; i < m_sEngineControls.size(); ++i) {
-        // TODO(rryan) eh.. this interface is likely to change so dont sweat the
-        // last 2 parameters for now, nothing currently uses them
-        double trigger = m_sEngineControls[i]->nextTrigger(dRate, iCurrentSample,
-                                                           0, 0);
-        bool trigger_active = (trigger != kNoTrigger &&
-                               ((in_reverse && trigger <= iCurrentSample) ||
-                                (!in_reverse && trigger >= iCurrentSample)));
-
-        if (trigger_active &&
-            (next_trigger == kNoTrigger ||
-             (in_reverse && trigger > next_trigger) ||
-             (!in_reverse && trigger < next_trigger))) {
-
-            next_trigger = trigger;
-            next_trigger_index = i;
-        }
-    }
-    return qMakePair(next_trigger_index, next_trigger);
 }

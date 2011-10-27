@@ -135,7 +135,7 @@ CSAMPLE * EngineBufferScaleLinear::scale(double playpos, unsigned long buf_size,
             qDebug() << "extra samples" << extra_samples;
 
             m_pReadAheadManager->getNextSamples(rate_add_new,buffer_int,
-                                                 extra_samples);
+                                                extra_samples);
 
         }
         //force a buffer read:
@@ -167,6 +167,7 @@ CSAMPLE * EngineBufferScaleLinear::do_scale(CSAMPLE* buf, unsigned long buf_size
     float rate_add = rate_add_new;
     float rate_add_diff = rate_add_new - rate_add_old;
     double rate_add_abs;
+    int original_raman_playposition = m_pReadAheadManager->getPlaypos();
 
     //Update the old base rate because we only need to
     //interpolate/ramp up the pitch changes once.
@@ -355,5 +356,37 @@ CSAMPLE * EngineBufferScaleLinear::do_scale(CSAMPLE* buf, unsigned long buf_size
     // this requirement. We may be trying to read past the end of the file.
     //Q_ASSERT(unscaled_samples_needed == 0);
 
+    // RAMAN follows loops. delta_raman_samples is almost always equal to what
+    // EBSL estimates as new_playpos. The difference is that EBSL calculates
+    // new_playpos as the total number of samples read, while EngineBuffer wants
+    // to know (from getNewPlaypos()) the total delta position the scaler has
+    // traversed in the song to produce its output, not the total number of song
+    // samples traversed. Since EBSL is not a read-ahead scaler, there is a
+    // direct correspondence between RAMAN playposition and samples output
+    // during this scale() call. If we take the song position before reading
+    // from the RAMAN (as we do at the start of scale()) and take the difference
+    // with its current position, we will get the total delta position the
+    // scaler has traversed in the song to produce its output. The old way (just
+    // leaving new_playpos as calculated by EBSL) causes loops to fall out of
+    // sync (Bug #790871) because at the end of a loop, RAMAN takes the loop
+    // while we are calling getNextSamples() on it. RAMAN's internal position is
+    // therefore *at or after the loop's start or end position*, depending on
+    // whether we are in reverse. EBSL then says to EngineBuffer that we have
+    // travelled new_playpos samples, which EngineBuffer then adds to its
+    // current playposition. This puts EngineBuffer's playposition PAST the end
+    // of the loop. EngineBuffer then calls process() on all EngineControls and
+    // LoopingControl tells EngineBuffer to jump to the loop start or end
+    // position. EngineBufer updates its playposition and calls
+    // RAMAN::notifySeek() to seek the RAMAN *to the start or end of the
+    // loop*. Recall from above that the RAMAN was already at or after the
+    // loop's start or end position. This causes the RAMAN to replay samples on
+    // every run through a loop, causing the loop to drift out of sync with
+    // other decks and possibly causes a tiny audible blip if the waveform is
+    // discontinuous. This is a giant mess and needs to be fixed with a rework
+    // of how the RAMAN, EngineBuffer, and the Scalers work together.
+    //
+    // rryan 10/2011
+    int delta_raman_samples = m_pReadAheadManager->getPlaypos() - original_raman_playposition;
+    new_playpos = delta_raman_samples;
     return buf;
 }
