@@ -28,6 +28,20 @@ SetCompressor /SOLID lzma
 !define PRODUCT_DIR_REGKEY "Software\Microsoft\Windows\CurrentVersion\App Paths\Mixxx.exe"
 !define PRODUCT_UNINST_KEY "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_NAME} (${PRODUCT_VERSION})"
 
+; The name of the installer
+!ifdef x64
+    Name "${PRODUCT_NAME} ${PRODUCT_VERSION} (64-bit)"
+    !define BITWIDTH "64"
+    !define ARCH "x64"
+; In order for the below line to work, you must patch your C:\Program Files (x86)\NSIS\Include\MultiUser.nsh file with the one given at this link:
+;   http://sourceforge.net/tracker/?func=detail&atid=373085&aid=2355677&group_id=22049
+    !define MULTIUSER_USE_PROGRAMFILES64 "True"
+!else
+    Name "${PRODUCT_NAME} ${PRODUCT_VERSION}"
+    !define BITWIDTH "32"
+    !define ARCH "x86"
+!endif
+
 !define MULTIUSER_INSTALLMODE_INSTDIR "${PRODUCT_NAME}"
 !define MULTIUSER_INSTALLMODE_DEFAULT_REGISTRY_KEY "${PRODUCT_UNINST_KEY}"
 !define MULTIUSER_INSTALLMODE_DEFAULT_REGISTRY_VALUENAME "InstallDir"
@@ -44,15 +58,6 @@ SetCompressor /SOLID lzma
 
 ;Include Modern UI
 !include "MUI2.nsh"
-
-; The name of the installer
-!ifdef x64
-    Name "${PRODUCT_NAME} ${PRODUCT_VERSION} (64-bit)"
-    !define BITWIDTH "64"
-!else
-    Name "${PRODUCT_NAME} ${PRODUCT_VERSION}"
-    !define BITWIDTH "32"
-!endif
 
 ; Disable the Nullsoft Installer branding text at the bottom.
 BrandingText " "
@@ -104,14 +109,15 @@ Function .onInit    ; Prevent multiple installer instances
 
 FunctionEnd
 
-;--------------------------------
-; The stuff to install
-
-Section "Mixxx (required)" SecMixxx
-
-  SectionIn RO
-
-  ; ------- VC redist DLLs --------
+;-------------------------------
+; Install the VC 2010 redistributable DLLs if they're not already.
+Function InstallVCRedist
+  Push $R0
+  Call CheckVCRedist
+  Pop $R0
+  StrCmp $R0 "-1" 0 VCRedistDone
+  
+  ; Install them
   SetOutPath $TEMP
   
   ; Put the VC redist installer files there
@@ -123,12 +129,9 @@ Section "Mixxx (required)" SecMixxx
   ExecWait 'msiexec /i $TEMP\vc_red.msi'
   Delete "$TEMP\vc_red.cab"
   Delete "$TEMP\vc_red.msi"
-  IfErrors error_installing_redist
-  Goto continue
-  
-  error_installing_redist:
-    MessageBox MB_ICONSTOP|MB_OK "There was a problem installing the Microsoft Visual C++ libraries.$\r$\nYou may need to run this installer as an administrator."
-    Abort
+  IfErrors 0 VCRedistDone
+  MessageBox MB_ICONSTOP|MB_OK "There was a problem installing the Microsoft Visual C++ libraries.$\r$\nYou may need to run this installer as an administrator."
+  Abort
     
   ; OLD VC stuff below
   
@@ -155,9 +158,41 @@ Section "Mixxx (required)" SecMixxx
   ;File /nonfatal ..\${WINLIB_PATH}\msvcm*.dll    ; Not (currently) required, so nonfatal
   ;File ..\${WINLIB_PATH}\Microsoft.VC*.CRT.manifest    ; Required on MSVC < 2010, apparently
 
-  ; ------- End VC redist --------
+  VCRedistDone:
+    Exch $R0
 
-  continue:
+FunctionEnd
+
+;-------------------------------
+; Test if Visual C++ Redistributables 10.0 are installed
+; Returns -1 if they're not
+Function CheckVCRedist
+   Push $R0
+   ClearErrors
+   ReadRegDword $R0 HKLM "SOFTWARE\Microsoft\VisualStudio\10.0\VC\VCRedist\${ARCH}" "Installed"
+   ; Old way:
+   ;   x64
+   ;ReadRegDword $R0 HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\{DA5E371C-6333-3D8A-93A4-6FD5B20BCC6E}" "Version"
+   ;   x86
+   ;ReadRegDword $R0 HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\{196BB40D-1578-3D01-B289-BEFC77A11A1E}" "Version"
+   
+   IfErrors 0 VSRedistInstalled
+   StrCpy $R0 "-1"
+
+VSRedistInstalled:
+   Exch $R0
+
+FunctionEnd
+
+;--------------------------------
+; The stuff to install
+
+Section "Mixxx (required)" SecMixxx
+
+  SectionIn RO
+   
+  Call InstallVCRedist
+  
   ; Set output path to the installation directory.
   SetOutPath $INSTDIR
   
@@ -200,9 +235,9 @@ Section "Mixxx (required)" SecMixxx
   WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_DIR_REGKEY}" "" "$INSTDIR\Mixxx.exe"
 
   ; Write the uninstall keys for Windows
-  WriteUninstaller "$INSTDIR\uninst.exe"
+  WriteUninstaller "$INSTDIR\UninstallMixxx.exe"
   WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "DisplayName" "$(^Name)"
-  WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "UninstallString" "$INSTDIR\uninst.exe"
+  WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "UninstallString" "$INSTDIR\UninstallMixxx.exe"
   WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "DisplayIcon" "$INSTDIR\Mixxx.exe"
   WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "DisplayVersion" "${PRODUCT_VERSION}"
   WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "URLInfoAbout" "${PRODUCT_WEB_SITE}"
@@ -343,7 +378,7 @@ Section "Start Menu Shortcuts" SecStartMenu
   SetOutPath $INSTDIR
   CreateShortCut "$SMPROGRAMS\Mixxx\Mixxx.lnk" "$INSTDIR\mixxx.exe" "" "$INSTDIR\mixxx.exe" 0
   CreateShortCut "$SMPROGRAMS\Mixxx\Manual.lnk" "$INSTDIR\Mixxx-Manual.pdf" "" "$INSTDIR\Mixxx-Manual.pdf" 0
-  CreateShortCut "$SMPROGRAMS\Mixxx\Uninstall.lnk" "$INSTDIR\uninst.exe" "" "$INSTDIR\uninst.exe" 0
+  CreateShortCut "$SMPROGRAMS\Mixxx\Uninstall.lnk" "$INSTDIR\UninstallMixxx.exe" "" "$INSTDIR\UninstallMixxx.exe" 0
 
 SectionEnd
 
@@ -429,79 +464,128 @@ Section "Uninstall"
   Delete $INSTDIR\mixxx.exe
   Delete $INSTDIR\mixxx.log
   Delete $INSTDIR\*.dll
-  Delete $INSTDIR\*.xml
+  Delete $INSTDIR\schema.xml
   Delete $INSTDIR\*.manifest
-  Delete $INSTDIR\uninst.exe
+  Delete $INSTDIR\UninstallMixxx.exe
   Delete $INSTDIR\Mixxx-Manual.pdf
   Delete $INSTDIR\LICENSE
   Delete $INSTDIR\README
   Delete $INSTDIR\COPYING
   Delete $INSTDIR\sqldrivers\*.dll
-
-  ; Remove skins, keyboard, midi mappings, promos
-  Delete "$INSTDIR\skins\${DEFAULT_SKIN}\*.*"
-  Delete "$INSTDIR\skins\Deere1280x1024-SXGA\*.*"
-  Delete "$INSTDIR\skins\Deere1280x800-WXGA\*.*"
-  Delete "$INSTDIR\skins\Deere1440x900-WXGA+\*.*"
-  Delete "$INSTDIR\skins\Deere1920x1080-FullHD\*.*"
-  Delete "$INSTDIR\skins\Deere1920x1200-WUXGA\*.*"
-  Delete "$INSTDIR\skins\LateNight1280x1024-SXGA\*.*"
-  Delete "$INSTDIR\skins\LateNight1280x800-WXGA\*.*"
-  Delete "$INSTDIR\skins\LateNight1366x768-WXGA\*.*"
-  Delete "$INSTDIR\skins\LateNightBlues1280x1024-SXGA\*.*"
-  Delete "$INSTDIR\skins\LateNightBlues1280x800-WXGA\*.*"
-  Delete "$INSTDIR\skins\LateNightBlues1366x768-WXGA\*.*"
-  Delete "$INSTDIR\skins\Outline1024x600-Netbook\*.*"
-  Delete "$INSTDIR\skins\Outline800x480-WVGA\*.*"
-  Delete "$INSTDIR\skins\Outline1024x768-XGA\*.*"
-  Delete "$INSTDIR\skins\Phoney1600x1200-UXGA\*.*"
-  Delete "$INSTDIR\skins\Phoney1680x1050-WSXGA\*.*"
-  Delete "$INSTDIR\skins\PhoneyDark1600x1200-UXGA\*.*"
-  Delete "$INSTDIR\skins\PhoneyDark1680x1050-WSXGA\*.*"
-  Delete "$INSTDIR\skins\Shade1024x600-Netbook\*.*"
-  Delete "$INSTDIR\skins\Shade1024x768-XGA\*.*"
-  Delete "$INSTDIR\skins\ShadeDark1024x600-Netbook\*.*"
-  Delete "$INSTDIR\skins\ShadeDark1024x768-XGA\*.*"
-  Delete $INSTDIR\skins\*.*
+  RMDir "$INSTDIR\sqldrivers"
   
-  Delete $INSTDIR\sqldrivers\*.*
-  Delete $INSTDIR\keyboard\*.*
-  Delete $INSTDIR\midi\*.*
+  ; Remove keyboard mappings
+  Delete $INSTDIR\keyboard\Standard.kbd.cfg
+  Delete $INSTDIR\keyboard\Old-pre1.10.0.kbd.cfg
+  RMDir "$INSTDIR\keyboard" ; No /r flag means remove the directory only if it's empty
+  
+  ; Remove midi mappings/scripts that we may have installed
+  ; TODO: Only delete files that were not changed since install
+  ; Get this list with dir /b /s <build_dir>\res\midi >> filestodelete.txt  and creative search & replace
+  Delete "$INSTDIR\midi\Akai MPD24.midi.xml"
+  Delete "$INSTDIR\midi\American Audio VMS4.midi.xml"
+  Delete "$INSTDIR\midi\American-Audio-VMS4-scripts.js"
+  Delete "$INSTDIR\midi\Behringer BCD3000.midi.xml"
+  Delete "$INSTDIR\midi\Behringer-BCD3000-scripts.js"
+  Delete "$INSTDIR\midi\BindableConfigKeys.txt"
+  Delete "$INSTDIR\midi\convertToXMLSchemaV1.php"
+  Delete "$INSTDIR\midi\DJTechTools MIDI Fighter.midi.xml"
+  Delete "$INSTDIR\midi\DJTechTools-MIDIFighter-scripts.js"
+  Delete "$INSTDIR\midi\Evolution_Xsession.midi.xml"
+  Delete "$INSTDIR\midi\FaderFoxDJ2.midi.xml"
+  Delete "$INSTDIR\midi\format.txt"
+  Delete "$INSTDIR\midi\Hercules DJ Console Mac Edition.midi.xml"
+  Delete "$INSTDIR\midi\Hercules DJ Console Mk2.midi.xml"
+  Delete "$INSTDIR\midi\Hercules DJ Console Mk4.midi.xml"
+  Delete "$INSTDIR\midi\Hercules DJ Console RMX Advanced.midi.xml"
+  Delete "$INSTDIR\midi\Hercules DJ Console RMX.midi.xml"
+  Delete "$INSTDIR\midi\Hercules DJ Control MP3 e2-scripts.js"
+  Delete "$INSTDIR\midi\Hercules DJ Control MP3 e2.midi.xml"
+  Delete "$INSTDIR\midi\Hercules DJ Control MP3.midi.xml"
+  Delete "$INSTDIR\midi\Hercules DJ Control Steel.midi.xml"
+  Delete "$INSTDIR\midi\Hercules-DJ-Console-Mk2-scripts.js"
+  Delete "$INSTDIR\midi\Hercules-DJ-Console-Mk4-scripts.js"
+  Delete "$INSTDIR\midi\Hercules-DJ-Console-RMX-scripts.js"
+  Delete "$INSTDIR\midi\Hercules-DJ-Control-MP3-scripts.js"
+  Delete "$INSTDIR\midi\Hercules-DJ-Control-Steel-scripts.js"
+  Delete "$INSTDIR\midi\Ion Discover DJ.midi.xml"
+  Delete "$INSTDIR\midi\Ion-Discover-DJ-scripts.js"
+  Delete "$INSTDIR\midi\M-Audio-Xponent-scripts.js"
+  Delete "$INSTDIR\midi\M-Audio_Xponent.midi.xml"
+  Delete "$INSTDIR\midi\M-Audio_Xsession_pro.midi.xml"
+  Delete "$INSTDIR\midi\Midi-Keyboard.midi.xml"
+  Delete "$INSTDIR\midi\midi-mappings-scripts.js"
+  Delete "$INSTDIR\midi\MidiTech-MidiControl.midi.xml"
+  Delete "$INSTDIR\midi\Mixman DM2 (Linux).js"
+  Delete "$INSTDIR\midi\Mixman DM2 (Linux).midi.xml"
+  Delete "$INSTDIR\midi\Mixman DM2 (OS X).js"
+  Delete "$INSTDIR\midi\Mixman DM2 (OS X).midi.xml"
+  Delete "$INSTDIR\midi\Mixman DM2 (Windows).midi.xml"
+  Delete "$INSTDIR\midi\Numark MIXTRACK.midi.xml"
+  Delete "$INSTDIR\midi\Numark NS7.midi.xml"
+  Delete "$INSTDIR\midi\Numark Total Control.midi.xml"
+  Delete "$INSTDIR\midi\Numark-MixTrack-scripts.js"
+  Delete "$INSTDIR\midi\Numark-NS7-scripts.js"
+  Delete "$INSTDIR\midi\Numark-Total-Control-scripts.js"
+  Delete "$INSTDIR\midi\Pioneer CDJ-350 Ch1.midi.xml"
+  Delete "$INSTDIR\midi\Pioneer CDJ-350 Ch2.midi.xml"
+  Delete "$INSTDIR\midi\Pioneer-CDJ-350-scripts.js"
+  Delete "$INSTDIR\midi\Reloop Digital Jockey 2 Controller Edition.midi.xml"
+  Delete "$INSTDIR\midi\Reloop-Digital-Jockey2-Controller-scripts.js"
+  Delete "$INSTDIR\midi\Stanton SCS.1d.midi.xml"
+  Delete "$INSTDIR\midi\Stanton SCS.1m.midi.xml"
+  Delete "$INSTDIR\midi\Stanton SCS.3d.midi.xml"
+  Delete "$INSTDIR\midi\Stanton SCS.3m.midi.xml"
+  Delete "$INSTDIR\midi\Stanton-SCS1d-scripts.js"
+  Delete "$INSTDIR\midi\Stanton-SCS1m-scripts.js"
+  Delete "$INSTDIR\midi\Stanton-SCS3d-scripts.js"
+  Delete "$INSTDIR\midi\Stanton-SCS3m-scripts.js"
+  Delete "$INSTDIR\midi\us428.midi.xml"
+  Delete "$INSTDIR\midi\Vestax Spin.midi.xml"
+  Delete "$INSTDIR\midi\Vestax Typhoon.midi.xml"
+  Delete "$INSTDIR\midi\Vestax VCI-100.midi.xml"
+  Delete "$INSTDIR\midi\Vestax-Spin-scripts.js"
+  Delete "$INSTDIR\midi\Vestax-Typhoon-scripts.js"
+  Delete "$INSTDIR\midi\Vestax-VCI-100-scripts.js"
+  Delete "$INSTDIR\midi\Wireless DJ App.midi.xml"
+  Delete "$INSTDIR\midi\Wireless-DJ-scripts.js"
+  ;Delete $INSTDIR\midi\*.* ; Avoid this since it will delete customized files too
+  RMDir "$INSTDIR\midi"
+  
+  ; Remove promos
   Delete $INSTDIR\promo\${PRODUCT_VERSION}\*.*
   Delete $INSTDIR\promo\*.*
-
-  RMDir "$INSTDIR\skins\${DEFAULT_SKIN}"
-  RMDir "$INSTDIR\skins\Deere1280x1024-SXGA"
-  RMDir "$INSTDIR\skins\Deere1280x800-WXGA"
-  RMDir "$INSTDIR\skins\Deere1440x900-WXGA+"
-  RMDir "$INSTDIR\skins\Deere1920x1080-FullHD"
-  RMDir "$INSTDIR\skins\Deere1920x1200-WUXGA"
-  RMDir "$INSTDIR\skins\LateNight1280x1024-SXGA"
-  RMDir "$INSTDIR\skins\LateNight1280x800-WXGA"
-  RMDir "$INSTDIR\skins\LateNight1366x768-WXGA"
-  RMDir "$INSTDIR\skins\LateNightBlues1280x1024-SXGA"
-  RMDir "$INSTDIR\skins\LateNightBlues1280x800-WXGA"
-  RMDir "$INSTDIR\skins\LateNightBlues1366x768-WXGA"
-  RMDir "$INSTDIR\skins\Outline1024x600-Netbook"
-  RMDir "$INSTDIR\skins\Outline800x480-WVGA"
-  RMDir "$INSTDIR\skins\Outline1024x768-XGA"
-  RMDir "$INSTDIR\skins\Phoney1600x1200-UXGA"
-  RMDir "$INSTDIR\skins\Phoney1680x1050-WSXGA"
-  RMDir "$INSTDIR\skins\PhoneyDark1600x1200-UXGA"
-  RMDir "$INSTDIR\skins\PhoneyDark1680x1050-WSXGA"
-  RMDir "$INSTDIR\skins\Shade1024x600-Netbook"
-  RMDir "$INSTDIR\skins\Shade1024x768-XGA"
-  RMDir "$INSTDIR\skins\ShadeDark1024x600-Netbook"
-  RMDir "$INSTDIR\skins\ShadeDark1024x768-XGA"
-  RMDir "$INSTDIR\skins"
-  
-  RMDir "$INSTDIR\sqldrivers"
-  RMDir "$INSTDIR\midi"
-  RMDir "$INSTDIR\keyboard"
   RMDir /r "$INSTDIR\promo\${PRODUCT_VERSION}"
   RMDir "$INSTDIR\promo"
-
-
+  
+  ; Remove skins we (might have) installed
+  Delete $INSTDIR\skins\*.* ; This just deletes files at the root of the skins directory
+  RMDir /r "$INSTDIR\skins\${DEFAULT_SKIN}"
+  RMDir /r "$INSTDIR\skins\Deere1280x1024-SXGA"
+  RMDir /r "$INSTDIR\skins\Deere1280x800-WXGA"
+  RMDir /r "$INSTDIR\skins\Deere1440x900-WXGA+"
+  RMDir /r "$INSTDIR\skins\Deere1920x1080-FullHD"
+  RMDir /r "$INSTDIR\skins\Deere1920x1200-WUXGA"
+  RMDir /r "$INSTDIR\skins\LateNight1280x1024-SXGA"
+  RMDir /r "$INSTDIR\skins\LateNight1280x800-WXGA"
+  RMDir /r "$INSTDIR\skins\LateNight1366x768-WXGA"
+  RMDir /r "$INSTDIR\skins\LateNightBlues1280x1024-SXGA"
+  RMDir /r "$INSTDIR\skins\LateNightBlues1280x800-WXGA"
+  RMDir /r "$INSTDIR\skins\LateNightBlues1366x768-WXGA"
+  RMDir /r "$INSTDIR\skins\Outline1024x600-Netbook"
+  RMDir /r "$INSTDIR\skins\Outline800x480-WVGA"
+  RMDir /r "$INSTDIR\skins\Outline1024x768-XGA"
+  RMDir /r "$INSTDIR\skins\Phoney1600x1200-UXGA"
+  RMDir /r "$INSTDIR\skins\Phoney1680x1050-WSXGA"
+  RMDir /r "$INSTDIR\skins\PhoneyDark1600x1200-UXGA"
+  RMDir /r "$INSTDIR\skins\PhoneyDark1680x1050-WSXGA"
+  RMDir /r "$INSTDIR\skins\Shade1024x600-Netbook"
+  RMDir /r "$INSTDIR\skins\Shade1024x768-XGA"
+  RMDir /r "$INSTDIR\skins\ShadeDark1024x600-Netbook"
+  RMDir /r "$INSTDIR\skins\ShadeDark1024x768-XGA"
+  ; The lack of the /r prevents deleting any sub-directories we didn't explicitly delete above
+  RMDir "$INSTDIR\skins"
+  
   ; Remove shortcuts, if any
   Delete "$SMPROGRAMS\Mixxx\*.*"
   Delete "$DESKTOP\Mixxx.lnk"
