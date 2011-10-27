@@ -191,6 +191,7 @@ void MidiMapping::loadScriptCode() {
         
         //connect(m_pScriptEngine, SIGNAL(resetController()), this, SLOT(reset()));
         connect(&m_scriptWatcher, SIGNAL(fileChanged(QString)), this, SLOT(scriptHasChanged(QString)));
+        qDebug() << "Done loading and watching of script files";
     }
 }
 
@@ -596,6 +597,53 @@ void MidiMapping::loadPreset(QString path, bool forceLoad) {
     loadPreset(WWidget::openXMLFile(path, "controller"), forceLoad);
 }
 
+void MidiMapping::doScriptError(MixxxControl mixxxControl, MidiMessage midiMessage)
+{
+    QString status = QString("%1").arg(midiMessage.getMidiStatusByte(), 0, 16).toUpper();
+    status = "0x"+status;
+    QString byte2 = QString("%1").arg(midiMessage.getMidiNo(), 0, 16).toUpper();
+    byte2 = "0x"+byte2;
+    
+    qDebug() << "Unable to Map Scripted MIDI thingamabob";
+    
+    // If status is MIDI pitch, the 2nd byte is part of the payload so don't display it
+    if (midiMessage.getMidiStatusByte() == 0xE0) byte2 = "";
+
+    QString errorLog = QString("MIDI script function \"%1\" not found. "
+                        "(Mapped to MIDI message %2 %3)")
+                        .arg(mixxxControl.getControlObjectValue())
+                        .arg(status)
+                        .arg(byte2);
+
+    if (m_pOutputMidiDevice != NULL && m_pOutputMidiDevice->midiDebugging()) {
+            qCritical() << errorLog;
+    }
+    else {
+        qWarning() << errorLog;
+        ErrorDialogProperties* props = ErrorDialogHandler::instance()->newDialogProperties();
+        props->setType(DLG_WARNING);
+        props->setTitle(tr("MIDI script function not found"));
+        props->setText(QString(tr("The MIDI script function '%1' was not "
+                        "found in loaded scripts."))
+                        .arg(mixxxControl.getControlObjectValue()));
+        props->setInfoText(QString(tr("The MIDI message %1 %2 will not be bound."
+                        "\n(Click Show Details for hints.)"))
+                        .arg(status)
+                        .arg(byte2));
+        QString detailsText = QString(tr("* Check to see that the "
+            "function name is spelled correctly in the mapping "
+            "file (.xml) and script file (.js)\n"));
+        detailsText += QString(tr("* Check to see that the script "
+            "file name (.js) is spelled correctly in the mapping "
+            "file (.xml)"));
+        props->setDetails(detailsText);
+
+        //ErrorDialogHandler::instance()->requestErrorDialog(props);
+        qDebug() << "MSE Resolve Error:" << detailsText;
+    }
+    
+}
+
 /* loadPreset(QDomElement)
  * Loads a set of MIDI bindings from a QDomElement structure.
  * @param root The root node of the XML document for the MIDI mapping.
@@ -667,79 +715,35 @@ void MidiMapping::loadPreset(QDomElement root, bool forceLoad) {
         QDomElement control = controller.firstChildElement("controls").firstChildElement("control");
 
         //Iterate through each <control> block in the XML
-        while (!control.isNull()) {
+        for ( ; !control.isNull(); control = control.nextSiblingElement("control")) {
 
             //Unserialize these objects from the XML
             MidiMessage midiMessage(control);
             MixxxControl mixxxControl(control);
-#ifdef __MIDISCRIPT__
-            QScriptValue func;
             
+            qDebug() << "Adding Mapping....";
+#ifdef __MIDISCRIPT__
             // Resolve Script function
             if (mixxxControl.getMidiOption()==MIDI_OPT_SCRIPT) {
+                qDebug() << "Adding Scripted Mapping:" << mixxxControl.getControlObjectValue();
+                QScriptValue func;
+
                 func = m_pScriptEngine->resolveFunction(mixxxControl.getControlObjectValue());
-            }
-            else {
-                //Add to the input mapping.
-                internalSetInputMidiMapping(midiMessage, mixxxControl, true);
-                // This code is horrible, not a great way to handle flow of control.
-                continue;
-            }
-            
-            if (!func.isValid() || !func.isFunction()) {
-                
-                QString status = QString("%1").arg(midiMessage.getMidiStatusByte(), 0, 16).toUpper();
-                status = "0x"+status;
-                QString byte2 = QString("%1").arg(midiMessage.getMidiNo(), 0, 16).toUpper();
-                byte2 = "0x"+byte2;
-
-                // If status is MIDI pitch, the 2nd byte is part of the payload so don't display it
-                if (midiMessage.getMidiStatusByte() == 0xE0) byte2 = "";
-
-                QString errorLog = QString("MIDI script function \"%1\" not found. "
-                                    "(Mapped to MIDI message %2 %3)")
-                                    .arg(mixxxControl.getControlObjectValue())
-                                    .arg(status)
-                                    .arg(byte2);
-
-                if (m_pOutputMidiDevice != NULL
-                    && m_pOutputMidiDevice->midiDebugging()) {
-                        qCritical() << errorLog;
+                if (!func.isValid() || !func.isFunction()) {
+                    doScriptError(mixxxControl, midiMessage);
                 }
                 else {
-                    qWarning() << errorLog;
-                    ErrorDialogProperties* props = ErrorDialogHandler::instance()->newDialogProperties();
-                    props->setType(DLG_WARNING);
-                    props->setTitle(tr("MIDI script function not found"));
-                    props->setText(QString(tr("The MIDI script function '%1' was not "
-                                    "found in loaded scripts."))
-                                    .arg(mixxxControl.getControlObjectValue()));
-                    props->setInfoText(QString(tr("The MIDI message %1 %2 will not be bound."
-                                    "\n(Click Show Details for hints.)"))
-                                    .arg(status)
-                                    .arg(byte2));
-                    QString detailsText = QString(tr("* Check to see that the "
-                        "function name is spelled correctly in the mapping "
-                        "file (.xml) and script file (.js)\n"));
-                    detailsText += QString(tr("* Check to see that the script "
-                        "file name (.js) is spelled correctly in the mapping "
-                        "file (.xml)"));
-                    props->setDetails(detailsText);
-
-                    ErrorDialogHandler::instance()->requestErrorDialog(props);
+                    qDebug() << "Mapped to MIDI Script Function:" << mixxxControl.getControlObjectValue();
+                    mixxxControl.setScriptFunction(func);
                 }
-            } else {
-                mixxxControl.setScriptFunction(func);
-#endif
-                //Add to the input mapping.
-                internalSetInputMidiMapping(midiMessage, mixxxControl, true);
-                /*Old code: m_inputMapping.insert(midiMessage, mixxxControl);
-                  Reason why this is bad: Don't want to access this directly because the
-                  model doesn't get notified about the update */
-#ifdef __MIDISCRIPT__
             }
+            
+            //Add to the input mapping.
+            internalSetInputMidiMapping(midiMessage, mixxxControl, true);
+#else
+            //Add to the input mapping.
+            internalSetInputMidiMapping(midiMessage, mixxxControl, true);
 #endif
-            control = control.nextSiblingElement("control");
         }
 
         qDebug() << "MidiMapping: Input parsed!";
@@ -807,6 +811,8 @@ void MidiMapping::applyPreset() {
         if (!m_pScriptEngine->isLoaded()) {
             loadScriptCode();
         }
+        else
+            qDebug() << "Not reloading the code...";
     }
     
     initializeScripts();

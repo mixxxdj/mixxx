@@ -154,6 +154,8 @@ private:
     void addScriptFile(QString filename, QString functionprefix);
     /** Actually loads script code from the files in the list */
     void loadScriptCode();
+    /** Show MIDI Script errors */
+    void doScriptError(MixxxControl mixxxControl, MidiMessage midiMessage);
 
     QList<QString> m_scriptFileNames;
     QList<QString> m_scriptFunctionPrefixes;
