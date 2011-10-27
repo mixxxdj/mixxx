@@ -24,7 +24,7 @@ class CachingReader;
 // call notifySeek to inform the ReadAheadManager to reset itself to the seek
 // point.
 class ReadAheadManager {
-public:
+  public:
     explicit ReadAheadManager(CachingReader* reader);
     virtual ~ReadAheadManager();
 
@@ -39,8 +39,14 @@ public:
     // which samples to return.
     virtual void addEngineControl(EngineControl* control);
 
-    // Notify the ReadAheadManager that the current playposition has changed
+    // Notify the ReadAheadManager that the current playposition has
+    // changed. Units are stereo samples.
     virtual void setNewPlaypos(int iNewPlaypos);
+
+    // Get the current read-ahead position in stereo samples.
+    virtual inline int getPlaypos() const {
+        return m_iCurrentPosition;
+    }
 
     virtual void notifySeek(int iSeekPosition);
 
@@ -49,12 +55,7 @@ public:
     virtual void hintReader(double dRate, QList<Hint>& hintList,
                             int iSamplesPerBuffer);
 
-private:
-    // A broken method for choosing which EngineControl to trust for determining
-    // when to take loops and jumps. Currently the RAMAN just uses the first
-    // EngineControl.
-    QPair<int, double> getSoonestTrigger(double dRate, int iCurrentSample);
-
+  private:
     QList<EngineControl*> m_sEngineControls;
     int m_iCurrentPosition;
     CachingReader* m_pReader;
