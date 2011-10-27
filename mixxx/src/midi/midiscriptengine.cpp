@@ -582,9 +582,14 @@ bool MidiScriptEngine::safeExecute(QString function, char channel,
     args << QScriptValue(status);
     args << QScriptValue(group);
 
-    scriptFunction.call(QScriptValue(), args);
-    if (checkException())
+    qDebug() << "Executing MIDI Script function";
+    QScriptValue rc = scriptFunction.call(QScriptValue(), args);
+    if (!rc.isValid())
+        qDebug() << "Value is not a function or ...";
+    if (checkException()) {
+        qDebug() << "exception ocurred";
         return false;
+    }
     return true;
 }
 
@@ -631,7 +636,12 @@ bool MidiScriptEngine::safeExecute(QScriptValue functionObject,
     args << QScriptValue(status);
     args << QScriptValue(group);
     
-    functionObject.call(m_pEngine->globalObject(), args);
+    qDebug() << "Calling MIDI Script Function";
+    if (!functionObject.isFunction())
+        qDebug() << "Not a function";
+    QScriptValue rc = functionObject.call(m_pEngine->globalObject(), args);
+    if (!rc.isValid())
+        qDebug() << "QScriptValue is not a function or ...";
     if (checkException())
         return false;
     return true;
