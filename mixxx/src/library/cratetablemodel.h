@@ -8,11 +8,10 @@
 #include <QSqlTableModel>
 
 #include "library/basesqltablemodel.h"
-#include "library/trackmodel.h"
 
 class TrackCollection;
 
-class CrateTableModel : public BaseSqlTableModel, public virtual TrackModel {
+class CrateTableModel : public BaseSqlTableModel {
     Q_OBJECT
   public:
     CrateTableModel(QObject* parent, TrackCollection* pTrackCollection);
@@ -20,16 +19,9 @@ class CrateTableModel : public BaseSqlTableModel, public virtual TrackModel {
 
     void setCrate(int crateId);
 
-    QMimeData* mimeData(const QModelIndexList &indexes) const;
-
     // From TrackModel
     virtual TrackPointer getTrack(const QModelIndex& index) const;
-    virtual QString getTrackLocation(const QModelIndex& index) const;
-    virtual int getTrackId(const QModelIndex& index) const;
-    virtual const QLinkedList<int> getTrackRows(int trackId) const;
-
     virtual void search(const QString& searchText);
-    virtual const QString currentSearch();
     virtual bool isColumnInternal(int column);
     virtual bool isColumnHiddenByDefault(int column);
     virtual void removeTrack(const QModelIndex& index);
@@ -42,6 +34,7 @@ class CrateTableModel : public BaseSqlTableModel, public virtual TrackModel {
 
   private slots:
     void slotSearch(const QString& searchText);
+
   signals:
     void doSearch(const QString& searchText);
 
@@ -49,6 +42,5 @@ class CrateTableModel : public BaseSqlTableModel, public virtual TrackModel {
     TrackCollection* m_pTrackCollection;
     int m_iCrateId;
 };
-
 
 #endif /* CRATETABLEMODEL_H */

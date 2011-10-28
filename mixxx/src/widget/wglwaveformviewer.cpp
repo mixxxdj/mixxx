@@ -34,12 +34,16 @@ WGLWaveformViewer::WGLWaveformViewer(
         ControlObject::getControl(ConfigKey(group, "scratch_position_enable")));
     m_pScratch = new ControlObjectThreadMain(
         ControlObject::getControl(ConfigKey(group, "scratch_position")));
-    m_pPlayPosition = new ControlObjectThreadMain(
-        ControlObject::getControl(ConfigKey(group, "visual_playposition")));
     m_pTrackSamples = new ControlObjectThreadMain(
         ControlObject::getControl(ConfigKey(group, "track_samples")));
     m_pTrackSampleRate = new ControlObjectThreadMain(
         ControlObject::getControl(ConfigKey(group, "track_samplerate")));
+    m_pRate = new ControlObjectThreadMain(
+        ControlObject::getControl(ConfigKey(m_pGroup, "rate")));
+    m_pRateRange = new ControlObjectThreadMain(
+        ControlObject::getControl(ConfigKey(m_pGroup, "rateRange")));
+    m_pRateDir = new ControlObjectThreadMain(
+        ControlObject::getControl(ConfigKey(m_pGroup, "rate_dir")));
 
     setAcceptDrops(true);
 
@@ -58,6 +62,13 @@ bool WGLWaveformViewer::directRendering()
 
 
 WGLWaveformViewer::~WGLWaveformViewer() {
+    delete m_pScratchEnable;
+    delete m_pScratch;
+    delete m_pTrackSamples;
+    delete m_pTrackSampleRate;
+    delete m_pRate;
+    delete m_pRateRange;
+    delete m_pRateDir;
 }
 
 void WGLWaveformViewer::setup(QDomNode node) {
@@ -114,11 +125,9 @@ bool WGLWaveformViewer::eventFilter(QObject *o, QEvent *e) {
     if(e->type() == QEvent::MouseButtonPress) {
         m_iMouseStart = m->x();
         if(m->button() == Qt::LeftButton) {
-            m_dInitialPlaypos = m_pPlayPosition->get() * m_pTrackSamples->get();
             m_bScratching = true;
-            m_pScratch->slotSet(m_dInitialPlaypos);
+            m_pScratch->slotSet(0);
             m_pScratchEnable->slotSet(1.0f);
-            //qDebug() << "m_dInitialPlaypos" << m_dInitialPlaypos;
 
             // Set the cursor to a hand while the mouse is down.
             setCursor(Qt::ClosedHandCursor);
@@ -132,8 +141,13 @@ bool WGLWaveformViewer::eventFilter(QObject *o, QEvent *e) {
             // samples times two is the number of samples per pixel.  rryan
             // 4/2011
             double samplesPerPixel = m_pTrackSampleRate->get() / 100.0 * 2;
-            double targetPosition = m_dInitialPlaypos - (curX - m_iMouseStart) * samplesPerPixel;
-            //qDebug() << "Start:" << m_dInitialPlaypos << "Target:" << targetPosition;
+
+            // To take care of one one movement when zoom changes with pitch
+            double rateAdjust = m_pRateDir->get() *
+                    math_min(0.99, m_pRate->get() * m_pRateRange->get());
+            double targetPosition = (m_iMouseStart - curX) *
+                    samplesPerPixel * (1 + rateAdjust);
+            //qDebug() << "Target:" << targetPosition;
             m_pScratch->slotSet(targetPosition);
         }
     } else if(e->type() == QEvent::MouseButtonRelease) {

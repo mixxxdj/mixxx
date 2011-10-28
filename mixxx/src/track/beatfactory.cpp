@@ -1,11 +1,11 @@
 #include <QtDebug>
-#include <QVectorIterator>
 
 #include "track/beatgrid.h"
 #include "track/beatmatrix.h"
 #include "track/beatfactory.h"
 
-BeatsPointer BeatFactory::loadBeatsFromByteArray(TrackPointer pTrack, QString beatsVersion,
+BeatsPointer BeatFactory::loadBeatsFromByteArray(TrackPointer pTrack,
+                                                 QString beatsVersion,
                                                  QByteArray* beatsSerialized) {
     // TODO(XXX) make it so the version strings are not in multiple places
     if (beatsVersion == "BeatGrid-1.0") {
@@ -31,21 +31,12 @@ BeatsPointer BeatFactory::makeBeatGrid(TrackPointer pTrack, double dBpm, double 
     return BeatsPointer(pGrid, &BeatFactory::deleteBeats);
 }
 
-BeatsPointer BeatFactory::makeBeatMatrix (TrackPointer pTrack, QVector <double> beats) {
-    BeatMatrix* pMatrix = new BeatMatrix(pTrack);
-    pMatrix->createFromVector(beats);
-    return BeatsPointer(pMatrix,&BeatFactory::deleteBeats);
-
-}
-
 void BeatFactory::deleteBeats(Beats* pBeats) {
-    // This assumes all Beats* variants multiply-inherit from QObject. Kind of ugly. Oh well.
+    // This assumes all Beats* variants multiply-inherit from QObject. Kind of
+    // ugly. Oh well.
     QObject* pObject = dynamic_cast<QObject*>(pBeats);
 
     if (pObject != NULL) {
-        qDebug() << "Deleting QObject instance.";
         pObject->deleteLater();
-    } else {
-        qDebug() << "Could not delete Beats instance, did not dynamic_cast to QObject";
     }
 }

@@ -26,6 +26,9 @@ private:
     ConfigObject<ConfigValue> *m_pConfigAVT;
     VampAnalyser* mvamp;
     //int m_iStartTime;
+    int m_iSampleRate;
+
+    double calculateBpm(QVector<double> beats) const;
 };
 
 #endif /* ANALYSERVAMPTEST_H_ */

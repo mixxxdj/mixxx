@@ -273,16 +273,6 @@ double ControlObject::getValueToWidget(double v)
     return v;
 }
 
-ConfigKey ControlObject::getKey()
-{
-    return m_Key;
-}
-
-double ControlObject::get()
-{
-    return m_dValue;
-}
-
 void ControlObject::sync()
 {
     // Update control objects with values recieved from threads

@@ -32,6 +32,7 @@
 #include "enginevumeter.h"
 #include "enginexfader.h"
 #include "enginesidechain.h"
+#include "engine/syncworker.h"
 #include "sampleutil.h"
 
 #ifdef __LADSPA__
@@ -43,16 +44,18 @@ EngineMaster::EngineMaster(ConfigObject<ConfigValue> * _config,
                            const char * group) {
 
     m_pWorkerScheduler = new EngineWorkerScheduler(this);
+    m_pWorkerScheduler->start();
+    m_pSyncWorker = new SyncWorker(m_pWorkerScheduler);
 
     // Master sample rate
-    ControlObject * sr = new ControlObject(ConfigKey(group, "samplerate"));
-    sr->set(44100.);
+    m_pMasterSampleRate = new ControlObject(ConfigKey(group, "samplerate"));
+    m_pMasterSampleRate->set(44100.);
 
     // Latency control
-    new ControlObject(ConfigKey(group, "latency"));
+    m_pMasterLatency = new ControlObject(ConfigKey(group, "latency"));
 
     // Master rate
-    new ControlPotmeter(ConfigKey(group, "rate"), -1.0, 1.0);
+    m_pMasterRate = new ControlPotmeter(ConfigKey(group, "rate"), -1.0, 1.0);
 
 #ifdef __LADSPA__
     // LADSPA
@@ -120,6 +123,10 @@ EngineMaster::~EngineMaster()
     delete xFaderCalibration;
     delete xFaderCurve;
 
+    delete m_pMasterSampleRate;
+    delete m_pMasterLatency;
+    delete m_pMasterRate;
+
     SampleUtil::free(m_pHead);
     SampleUtil::free(m_pMaster);
 
@@ -132,6 +139,9 @@ EngineMaster::~EngineMaster()
         delete pChannelInfo->m_pVolumeControl;
         delete pChannelInfo;
     }
+
+    delete m_pWorkerScheduler;
+    delete m_pSyncWorker;
 }
 
 const CSAMPLE* EngineMaster::getMasterBuffer() const
@@ -409,8 +419,11 @@ void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
     //Master/headphones interleaving is now done in
     //SoundManager::requestBuffer() - Albert Nov 18/07
 
-    // We're close to the end of the callback. Schedule the workers. Hopefully
-    // the work thread doesn't get scheduled between now and then.
+    // Schedule a ControlObject sync
+    m_pSyncWorker->schedule();
+
+    // We're close to the end of the callback. Wake up the engine worker
+    // scheduler so that it runs the workers.
     m_pWorkerScheduler->runWorkers();
 }
 

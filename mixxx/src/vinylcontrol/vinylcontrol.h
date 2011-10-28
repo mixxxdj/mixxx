@@ -35,7 +35,7 @@ class ControlObjectThread;
 
 #define MIXXX_VC_DEFAULT_LEADINTIME 0
 
-#define MIXXX_VINYL_SCOPE_SIZE 128
+#define MIXXX_VINYL_SCOPE_SIZE 100
 
 //TODO: Make this an EngineObject instead one day? (need to route all the input audio through the engine that way too...)
 
@@ -62,6 +62,8 @@ class VinylControl : public QThread
     QString m_group;
     ControlObjectThread *playButton; //The ControlObject used to start/stop playback of the song.
     ControlObjectThread *playPos; //The ControlObject used to read the playback position in the song.
+    ControlObjectThread *trackSamples;
+    ControlObjectThread *trackSampleRate; 
     ControlObjectThread *vinylSeek; //The ControlObject used to change the playback position in the song.
     ControlObjectThread *controlScratch; //The ControlObject used to seek when the record is spinning fast.
     ControlObjectThread *rateSlider; //The ControlObject used to change the speed/pitch of the song.
@@ -69,11 +71,13 @@ class VinylControl : public QThread
     ControlObjectThread *duration; //The ControlObject used to get the duration of the current song.
     ControlObjectThread *mode; //The ControlObject used to get the vinyl control mode (absolute/relative/scratch)
     ControlObjectThread *enabled; //The ControlObject used to get if the vinyl control is enabled or disabled.
+    ControlObjectThread *wantenabled; //The ControlObject used to get if the vinyl control should try to enable itself
     ControlObjectThread *cueing; //Should cueing mode be active?
     ControlObjectThread *rateRange; //The ControlObject used to the get the pitch range from the prefs.
     ControlObjectThread *vinylStatus;
     ControlObjectThread *rateDir; //direction of rate
     ControlObjectThread *loopEnabled; //looping enabled?
+    ControlObjectThread *signalenabled; //show the signal in the skin?
     //ControlObject *vinylStatus;  //Status of vinyl control
 
     int iLeadInTime; //The lead-in time...
@@ -86,6 +90,7 @@ class VinylControl : public QThread
     float fRateRange; //The pitch range setting from Mixxx's preferences
     float m_fTimecodeQuality; //Used as a measure of the quality of the timecode signal.
 
+    float fTrackDuration;
     unsigned long iSampleRate;
     bool bIsEnabled;
     int iRIAACorrection;

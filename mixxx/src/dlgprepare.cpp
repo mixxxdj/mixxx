@@ -173,7 +173,7 @@ void DlgPrepare::trackAnalysisFinished(TrackPointer tio) {
 
 void DlgPrepare::trackAnalysisProgress(TrackPointer tio, int progress) {
     if (m_bAnalysisActive) {
-        QString text = tr("Analyzing %1\%").arg(progress);
+        QString text = tr("Analyzing %1%").arg(progress);
         labelProgress->setText(text);
     }
 }

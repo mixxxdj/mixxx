@@ -542,6 +542,34 @@ class QDebug(Feature):
         if not self.enabled(build):
             build.env.Append(CPPDEFINES = 'QT_NO_DEBUG_OUTPUT')
 
+class Verbose(Feature):
+    def description(self):
+        return "Verbose compilation output"
+
+    def enabled(self, build):
+        build.flags['verbose'] = util.get_flags(build.env, 'verbose', 1)
+        if int(build.flags['verbose']):
+            return True
+        return False
+
+    def add_options(self, build, vars):
+        vars.Add('verbose', 'Compile files verbosely.', 1)
+
+    def configure(self, build, conf):
+        if not self.enabled(build):
+            build.env['CCCOMSTR'] = '[CC] $SOURCE'
+            build.env['CXXCOMSTR'] = '[CXX] $SOURCE'
+            build.env['ASCOMSTR'] = '[AS] $SOURCE'
+            build.env['LDMODULECOMSTR'] = '[LD] $TARGET'
+            build.env['LINKCOMSTR'] = '[LD] $TARGET'
+
+            build.env['QT4_LUPDATECOMSTR'] = '[LUPDATE] $SOURCE'
+            build.env['QT4_LRELEASECOMSTR'] = '[LRELEASE] $SOURCE'
+            build.env['QT4_RCCCOMSTR'] = '[QRC] $SOURCE'
+            build.env['QT4_UICCOMSTR'] = '[UIC4] $SOURCE'
+            build.env['QT4_MOCFROMHCOMSTR'] = '[MOC] $SOURCE'
+            build.env['QT4_MOCFROMCXXCOMSTR'] = '[MOC] $SOURCE'
+
 class CMetrics(Feature):
     def description(self):
         return "NOT-WORKING CMetrics Reporting"
@@ -695,9 +723,10 @@ class Shoutcast(Feature):
         if not libshout_found:
             raise Exception('Could not find libshout or its development headers. Please install it or compile Mixxx without Shoutcast support using the shoutcast=0 flag.')
 
-        # libvorbisenc does only exist on Linux and OSX, on Windows it is
-        # included in vorbisfile.dll
-        if not build.platform_is_windows:
+        # libvorbisenc does only exist on Linux, OSX and mingw32 on Windows. On
+        # Windows with MSVS it is included in vorbisfile.dll. libvorbis and
+        # libogg are included from build.py so don't add here.
+        if not build.platform_is_windows or build.toolchain_is_gnu:
             vorbisenc_found = conf.CheckLib(['vorbisenc'])
             if not vorbisenc_found:
                 raise Exception("libvorbisenc was not found! Please install it or compile Mixxx without Shoutcast support using the shoutcast=0 flag.")
@@ -823,6 +852,10 @@ class Optimize(Feature):
             build.env.Append(CCFLAGS = '/Gy')
             build.env.Append(LINKFLAGS = '/OPT:REF')
             build.env.Append(LINKFLAGS = '/OPT:ICF')
+
+            # Don't worry about alining code on 4KB boundaries
+            # build.env.Append(LINKFLAGS = '/OPT:NOWIN98')
+            # ALBERT: NOWIN98 is not supported in MSVC 2010.
 
             # http://msdn.microsoft.com/en-us/library/59a3b321.aspx
             # In general, you should pick /O2 over /Ox

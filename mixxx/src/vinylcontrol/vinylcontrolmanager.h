@@ -13,6 +13,7 @@
 
 class VinylControlProxy;
 class SoundManager;
+class ControlPushButton;
 
 class VinylControlManager : public QObject, public AudioDestination {
     Q_OBJECT;
@@ -24,13 +25,17 @@ class VinylControlManager : public QObject, public AudioDestination {
     virtual void onInputDisconnected(AudioInput input);
     QList<VinylControlProxy*> vinylControlProxies();
     bool vinylInputEnabled(int deck);
+    VinylControlProxy* getVinylControlProxyForChannel(QString);
   public slots:
     void reloadConfig();
   signals:
+  private slots:
+    void toggleDeck(double value);
   private:
     ConfigObject<ConfigValue> *m_pConfig;
     QVector<VinylControlProxy*> m_proxies;
     QReadWriteLock m_proxiesLock;
+    ControlPushButton *m_pToggle;
 };
 
 #endif // VINYLCONTROLMANAGER_H

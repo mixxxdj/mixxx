@@ -9,6 +9,7 @@
 
 #include "configobject.h"
 #include "skin/skinparser.h"
+#include "vinylcontrol/vinylcontrolmanager.h"
 
 class Library;
 class MixxxKeyboard;
@@ -20,7 +21,7 @@ class LegacySkinParser : public QObject, public SkinParser {
   public:
     LegacySkinParser(ConfigObject<ConfigValue>* pConfig,
                      MixxxKeyboard* pKeyboard, PlayerManager* pPlayerManager,
-                     Library* pLibrary);
+                     Library* pLibrary, VinylControlManager* pVCMan);
     virtual ~LegacySkinParser();
 
     virtual bool canParse(QString skinPath);
@@ -47,6 +48,7 @@ class LegacySkinParser : public QObject, public SkinParser {
     QWidget* parseVisual(QDomElement node);
     QWidget* parseOverview(QDomElement node);
     QWidget* parseText(QDomElement node);
+    QWidget* parseTime(QDomElement node);
     QWidget* parseTrackProperty(QDomElement node);
     QWidget* parseVuMeter(QDomElement node);
     QWidget* parseStatusLight(QDomElement node);
@@ -73,6 +75,7 @@ class LegacySkinParser : public QObject, public SkinParser {
     MixxxKeyboard* m_pKeyboard;
     PlayerManager* m_pPlayerManager;
     Library* m_pLibrary;
+    VinylControlManager* m_pVCManager;
     QWidget *m_pParent;
     static QList<const char*> s_channelStrs;
     static QMutex s_safeStringMutex;

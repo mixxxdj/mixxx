@@ -47,6 +47,16 @@ class PlayerManager : public QObject {
     // Get the sampler by its number. Samplers are numbered starting with 1.
     Sampler* getSampler(unsigned int sampler) const;
 
+    // Returns the group for the ith sampler where i is zero indexed
+    static QString groupForSampler(int i) {
+        return QString("[Sampler%1]").arg(i+1);
+    }
+
+    // Returns the group for the ith deck where i is zero indexed
+    static QString groupForDeck(int i) {
+        return QString("[Channel%1]").arg(i+1);
+    }
+
   public slots:
     // Slots for loading tracks into a Player, which is either a Sampler or a Deck
     void slotLoadTrackToPlayer(TrackPointer pTrack, QString group);

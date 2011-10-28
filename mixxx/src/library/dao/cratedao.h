@@ -4,17 +4,24 @@
 #ifndef CRATEDAO_H
 #define CRATEDAO_H
 
+#include <QObject>
 #include <QSqlDatabase>
 
 #include "library/dao/dao.h"
+#include "util.h"
 
 #define CRATE_TABLE "crates"
 #define CRATE_TRACKS_TABLE "crate_tracks"
 
-class CrateDAO : public virtual DAO {
+const QString CRATETRACKSTABLE_TRACKID = "track_id";
+const QString CRATETRACKSTABLE_CRATEID = "crate_id";
+
+class CrateDAO : public QObject, public virtual DAO {
+    Q_OBJECT
   public:
     CrateDAO(QSqlDatabase& database);
     virtual ~CrateDAO();
+
     void setDatabase(QSqlDatabase& database) { m_database = database; };
 
     // Initialize this DAO, create the tables it relies on, etc.
@@ -31,10 +38,19 @@ class CrateDAO : public virtual DAO {
     QString crateName(int crateId);
     unsigned int crateSize(int crateId);
     bool addTrackToCrate(int trackId, int crateId);
+    void removeTrackFromCrates(int trackId);
     bool removeTrackFromCrate(int trackId, int crateId);
+
+  signals:
+    void added(int crateId);
+    void deleted(int crateId);
+    void changed(int crateId);
+    void trackAdded(int crateId, int trackId);
+    void trackRemoved(int crateId, int trackId);
 
   private:
     QSqlDatabase& m_database;
+    DISALLOW_COPY_AND_ASSIGN(CrateDAO);
 };
 
 #endif /* CRATEDAO_H */
