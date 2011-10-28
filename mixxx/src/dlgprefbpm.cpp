@@ -44,15 +44,15 @@ DlgPrefBpm::DlgPrefBpm(QWidget * parent, ConfigObject<ConfigValue> * _config) : 
     connect(chkWriteID3,            SIGNAL(stateChanged(int)), this, SLOT(slotSetWriteID3Tag(int)));
     connect(chkEnableBpmDetection,  SIGNAL(stateChanged(int)), this, SLOT(slotSetBpmEnabled(int)));
     connect(chkAboveRange,          SIGNAL(stateChanged(int)), this, SLOT(slotSetAboveRange(int)));
-    
+
     // TODO: Move this over the the scheme dialog
-    
+
     connect(btnAdd,        SIGNAL(pressed()),         this, SLOT(slotAddBpmScheme()));
     connect(btnEdit,       SIGNAL(pressed()),         this, SLOT(slotEditBpmScheme()));
     connect(btnDelete,     SIGNAL(pressed()),         this, SLOT(slotDeleteBpmScheme()));
     connect(btnDefault,    SIGNAL(pressed()),         this, SLOT(slotDefaultBpmScheme()));
-   
-    
+
+
     // Determine if the config value has already been set. If not, default to enabled
     QString sBpmEnabled = config->getValueString(ConfigKey(CONFIG_KEY,"BPMDetectionEnabled"));
     if(sBpmEnabled.isNull() || sBpmEnabled.isEmpty())
@@ -89,11 +89,11 @@ DlgPrefBpm::DlgPrefBpm(QWidget * parent, ConfigObject<ConfigValue> * _config) : 
 
     chkWriteID3->setEnabled(false);
     chkDetectOnImport->setEnabled(false);
-    
+
     // Load the BPM schemes
     loadBpmSchemes();
     populateBpmSchemeList();
-    
+
     updateBpmEnabled();
 
 
@@ -115,7 +115,7 @@ DlgPrefBpm::DlgPrefBpm(QWidget * parent, ConfigObject<ConfigValue> * _config) : 
 DlgPrefBpm::~DlgPrefBpm()
 {
     saveBpmSchemes();
-    
+
     while (!m_BpmSchemes.isEmpty())
     {
         delete m_BpmSchemes.takeFirst();
@@ -144,7 +144,7 @@ void DlgPrefBpm::slotSetBpmEnabled(int)
         config->set(ConfigKey(CONFIG_KEY,"BPMDetectionEnabled"), ConfigValue(1));
     else
         config->set(ConfigKey(CONFIG_KEY,"BPMDetectionEnabled"), ConfigValue(0));
-        
+
     updateBpmEnabled();
 
 }
@@ -169,20 +169,20 @@ void DlgPrefBpm::slotSetBpmRangeEnd(int end)
 void DlgPrefBpm::slotEditBpmScheme()
 {
     int row = lstSchemes->currentRow();
-    
+
     if(row > -1)
     {
         BpmScheme *schemeToEdit = m_BpmSchemes.at(row);
         QString oldname = schemeToEdit->getName();
-        
+
         // Open the BPM scheme dialog to edit
         DlgBpmScheme* SchemeEdit = new DlgBpmScheme(schemeToEdit);
         SchemeEdit->setModal(true);
         SchemeEdit->exec();
-        
+
         QListWidgetItem *item = lstSchemes->item(row);
         item->setText(schemeToEdit->getName());
-        
+
         if(oldname == config->getValueString(ConfigKey("[BPM]","DefaultScheme")))
         {
             config->set(ConfigKey("[BPM]","DefaultScheme"), schemeToEdit->getName());
@@ -193,11 +193,11 @@ void DlgPrefBpm::slotEditBpmScheme()
 void DlgPrefBpm::slotAddBpmScheme()
 {
     BpmScheme *schemeToAdd = NULL;
-    
-    // Open the BPM scheme dialog to add 
+
+    // Open the BPM scheme dialog to add
     DlgBpmScheme* SchemeEdit = new DlgBpmScheme(schemeToAdd);
     SchemeEdit->setModal(true);
-    
+
     if(SchemeEdit->exec() == QDialog::Accepted)
     {
         if(schemeToAdd)
@@ -211,14 +211,14 @@ void DlgPrefBpm::slotAddBpmScheme()
     {
         delete schemeToAdd;
     }
-    
-    
+
+
 }
 
 void DlgPrefBpm::slotDeleteBpmScheme()
 {
     int row = lstSchemes->currentRow();
-    
+
     if(row > -1)
     {
         qDebug() << "Removing Bpm Scheme at position " << row;
@@ -230,18 +230,18 @@ void DlgPrefBpm::slotDeleteBpmScheme()
 void DlgPrefBpm::slotDefaultBpmScheme()
 {
     int row = lstSchemes->currentRow();
-    
+
     if(row > -1)
     {
         BpmScheme* scheme = m_BpmSchemes.at(row);
-        
+
         config->set(ConfigKey("[BPM]","BPMRangeEnd"),ConfigValue(scheme->getMaxBpm()));
         config->set(ConfigKey("[BPM]","BPMRangeStart"),ConfigValue(scheme->getMinBpm()));
         config->set(ConfigKey("[BPM]","AnalyzeEntireSong"),ConfigValue(scheme->getAnalyzeEntireSong()));
         config->set(ConfigKey("[BPM]","DefaultScheme"), scheme->getName());
-                
+
         clearListIcons();
-        
+
         QListWidgetItem *item = lstSchemes->item(row);
         item->setIcon(QIcon(":/images/preferences/ic_preferences_bpmdetect.png"));
     }
@@ -256,7 +256,7 @@ void DlgPrefBpm::clearListIcons()
 }
 
 void DlgPrefBpm::slotApply()
-{    
+{
     saveBpmSchemes();
 }
 
@@ -280,12 +280,12 @@ void DlgPrefBpm::updateBpmEnabled()
         chkWriteID3->setEnabled(false);
         chkAboveRange->setEnabled(false);
         grpBpmSchemes->setEnabled(false);
-    }   
-   
-    // These are not implemented yet, so don't enable them 
+    }
+
+    // These are not implemented yet, so don't enable them
     chkDetectOnImport->setEnabled(false);
     chkWriteID3->setEnabled(false);
-    
+
 }
 
 void DlgPrefBpm::loadBpmSchemes()
@@ -301,10 +301,9 @@ void DlgPrefBpm::loadBpmSchemes()
 
     QString location(config->getValueString(ConfigKey("[BPM]","SchemeFile")));
     qDebug() << "BpmSchemes::readXML" << location;
-    
+
     // Open XML file
     QFile file(location);
-    QDomDocument domXML("Mixxx_BPM_Scheme_List");
 
     // Check if we can open the file
     if (!file.exists())
@@ -314,11 +313,30 @@ void DlgPrefBpm::loadBpmSchemes()
         return;
     }
 
+    if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+        qDebug() << "BPM Scheme:" << location <<  "can't open file for reading.";
+        return;
+    }
+
+    QByteArray fileData = file.readAll();
+    QByteArray badHeader = QByteArray("<?xml version=\"1.0\" encoding=\"UTF-16\"?>");
+    QByteArray goodHeader = QByteArray("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
+
+    // We've been writing UTF-16 as the encoding forever but actually writing
+    // the file in UTF-8 (well, latin1 actually). Qt seems to have started
+    // caring recently. Manually fix the header if we are dealing with an old
+    // file.
+    fileData.replace(badHeader, goodHeader);
+
+    QDomDocument domXML("Mixxx_BPM_Scheme_List");
+
+
+
     // Check if there is a parsing problem
     QString error_msg;
     int error_line;
     int error_column;
-    if (!domXML.setContent(&file, &error_msg, &error_line, &error_column))
+    if (!domXML.setContent(fileData, &error_msg, &error_line, &error_column))
     {
         qDebug() << "BPM Scheme Parse error in" << location;
         qDebug() << "Doctype:" << domXML.doctype().name();
@@ -349,16 +367,16 @@ void DlgPrefBpm::loadBpmSchemes()
             bpmScheme->setName(XmlParse::selectNodeQString(node, "Name"));
             bpmScheme->setMinBpm(XmlParse::selectNodeQString(node, "MinBpm").toInt());
             bpmScheme->setMaxBpm(XmlParse::selectNodeQString(node, "MaxBpm").toInt());
-            bpmScheme->setAnalyzeEntireSong((bool)XmlParse::selectNodeQString(node, 
+            bpmScheme->setAnalyzeEntireSong((bool)XmlParse::selectNodeQString(node,
                                                         "AnalyzeEntireSong").toInt());
             bpmScheme->setComment(XmlParse::selectNodeQString(node, "Comment"));
-            
-            m_BpmSchemes.push_back(bpmScheme);          
-        }       
+
+            m_BpmSchemes.push_back(bpmScheme);
+        }
 
         node = node.nextSibling();
     }
-    
+
     if(m_BpmSchemes.size() == 0)
     {
         BpmScheme *scheme = new BpmScheme("Default", 70, 140, false);
@@ -378,7 +396,7 @@ void DlgPrefBpm::saveBpmSchemes()
     QDomDocument domXML( "Mixxx_BPM_Scheme_List" );
 
     // Ensure UTF16 encoding
-    domXML.appendChild(domXML.createProcessingInstruction("xml","version=\"1.0\" encoding=\"UTF-16\""));
+    domXML.appendChild(domXML.createProcessingInstruction("xml","version=\"1.0\" encoding=\"UTF-8\""));
 
     // Set the document type
     QDomElement elementRoot = domXML.createElement( "Mixxx_BPM_Scheme_List" );
@@ -412,13 +430,12 @@ void DlgPrefBpm::saveBpmSchemes()
                               tr("Cannot open file %1").arg(location));
         return;
     }
-
-    // Write to the file:
-    QTextStream Xml(&opmlFile);
-    Xml << domXML.toString();
+    // QByteArray encoded in UTF-8
+    QByteArray ba = domXML.toByteArray();
+    opmlFile.write(ba.constData(), ba.size());
     opmlFile.close();
 }
-    
+
 void DlgPrefBpm::populateBpmSchemeList()
 {
     QString defaultscheme = config->getValueString(ConfigKey("[BPM]","DefaultScheme"));

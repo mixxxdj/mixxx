@@ -1,5 +1,5 @@
 /***************************************************************************
-                          enginebufferscalest.h  -  description
+                          enginebufferscalest.cpp  -  description
                              -------------------
     begin                : November 2004
     copyright            : (C) 2004 by Tue Haste Andersen
@@ -74,7 +74,7 @@ bool EngineBufferScaleST::getPitchIndpTimeStretch(void)
     return m_bPitchIndpTimeStretch;
 }
 
- 
+
 void EngineBufferScaleST::setBaseRate(double dBaseRate)
 {
     m_dBaseRate = dBaseRate;
@@ -163,6 +163,9 @@ double EngineBufferScaleST::setTempo(double dTempo)
  */
 CSAMPLE* EngineBufferScaleST::scale(double playpos, unsigned long buf_size,
                                     CSAMPLE* pBase, unsigned long iBaseLength) {
+    Q_UNUSED (pBase);
+    Q_UNUSED (iBaseLength);
+
     m_qMutex.lock();
 
     int iCurPos = playpos;
@@ -183,16 +186,15 @@ CSAMPLE* EngineBufferScaleST::scale(double playpos, unsigned long buf_size,
     // }
     //Q_ASSERT(m_iReadAheadPos >= 0);
 
-    long total_received_frames = 0;
-    long total_read_frames = 0;
+    unsigned long total_received_frames = 0;
+    unsigned long total_read_frames = 0;
 
-    long remaining_frames = buf_size/2;
+    unsigned long remaining_frames = buf_size/2;
     //long remaining_source_frames = iBaseLength/2;
     CSAMPLE* read = buffer;
     bool last_read_failed = false;
     while (remaining_frames > 0) {
-        long received_frames = received_frames = m_pSoundTouch->receiveSamples((SAMPLETYPE*)read,
-                                                                              remaining_frames);
+        unsigned long received_frames = m_pSoundTouch->receiveSamples((SAMPLETYPE*)read, remaining_frames);
         remaining_frames -= received_frames;
         total_received_frames += received_frames;
         read += received_frames*2;

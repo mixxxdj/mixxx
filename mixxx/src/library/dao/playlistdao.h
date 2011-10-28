@@ -1,16 +1,25 @@
 #ifndef PLAYLISTDAO_H
 #define PLAYLISTDAO_H
 
+#include <QObject>
 #include <QSqlDatabase>
-#include "library/dao/dao.h"
 
+#include "library/dao/dao.h"
+#include "util.h"
+
+#define PLAYLIST_TABLE "Playlists"
+#define PLAYLIST_TRACKS_TABLE "PlaylistTracks"
+
+const QString PLAYLISTTRACKSTABLE_TRACKID = "track_id";
 const QString PLAYLISTTRACKSTABLE_POSITION = "position";
 const QString PLAYLISTTRACKSTABLE_PLAYLISTID = "playlist_id";
 
-class PlaylistDAO : public virtual DAO {
+class PlaylistDAO : public QObject, public virtual DAO {
+    Q_OBJECT
   public:
     PlaylistDAO(QSqlDatabase& database);
     virtual ~PlaylistDAO();
+
     void initialize();
     void setDatabase(QSqlDatabase& database) { m_database = database; };
     /** Create a playlist */
@@ -37,14 +46,23 @@ class PlaylistDAO : public virtual DAO {
     int getPlaylistId(int position);
     // Returns true if the playlist with playlistId is hidden
     bool isHidden(int playlistId);
+    /** Remove a track from all playlists */
+    void removeTrackFromPlaylists(int trackId);
     /** Remove a track from a playlist */
     void removeTrackFromPlaylist(int playlistId, int position);
     /** Insert a track into a specific position in a playlist */
     void insertTrackIntoPlaylist(int trackId, int playlistId, int position);
     /** Add a playlist to the Auto-DJ Queue */
     void addToAutoDJQueue(int playlistId);
+  signals:
+    void added(int playlistId);
+    void deleted(int playlistId);
+    void changed(int playlistId);
+    void trackAdded(int playlistId, int trackId, int position);
+    void trackRemoved(int playlistId, int trackId, int position);
   private:
     QSqlDatabase& m_database;
+    DISALLOW_COPY_AND_ASSIGN(PlaylistDAO);
 };
 
 #endif //PLAYLISTDAO_H

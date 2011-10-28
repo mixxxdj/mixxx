@@ -24,6 +24,7 @@
 #include "sounddevice.h"
 #include "sounddeviceportaudio.h"
 #include "soundmanagerutil.h"
+#include "controlobject.h"
 
 SoundDevicePortAudio::SoundDevicePortAudio(ConfigObject<ConfigValue> *config, SoundManager *sm,
                                            const PaDeviceInfo *deviceInfo, unsigned int devIndex)
@@ -231,6 +232,8 @@ int SoundDevicePortAudio::open()
     //qDebug() << "SampleRate" << pControlObjectSampleRate->get();
     //qDebug() << "Latency" << pControlObjectLatency->get();
 
+    delete pControlObjectLatency;
+    delete pControlObjectSampleRate;
     return OK;
 }
 

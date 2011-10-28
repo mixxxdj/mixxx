@@ -53,7 +53,7 @@ private:
     TreeItem* parsePlaylists(QXmlStreamReader &xml);
     /** processes a particular playlist **/
     void parsePlaylistEntries(QXmlStreamReader &xml, QString playlist_path,
-    			QSqlQuery query_insert_into_playlist, QSqlQuery query_insert_into_playlisttracks);
+    QSqlQuery query_insert_into_playlist, QSqlQuery query_insert_into_playlisttracks);
     void clearTable(QString table_name);
     static QString getTraktorMusicDatabase();
     //private fields
@@ -65,11 +65,10 @@ private:
     TraktorPlaylistModel* m_pTraktorPlaylistModel;
 
     bool m_isActivated;
+    bool m_cancelImport;
     QFutureWatcher<TreeItem*> m_future_watcher;
     QFuture<TreeItem*> m_future;
     QString m_title;
-
-
 };
 
 

@@ -39,6 +39,8 @@ WPushButton::~WPushButton()
         WPixmapStore::deletePixmap(m_pPixmaps[i]);
     }
 
+    delete [] m_pPixmaps;
+
     WPixmapStore::deletePixmap(m_pPixmapBack);
 }
 
@@ -87,18 +89,20 @@ void WPushButton::setup(QDomNode node)
         configKey.group = key.left(key.indexOf(","));
         configKey.item = key.mid(key.indexOf(",")+1);
 
-        ControlPushButton* p =
-                dynamic_cast<ControlPushButton*>(ControlObject::getControl(configKey));
-
-        if (p == NULL) {
-            qWarning() << "WPushButton for control " << key << "is null, skipping.";
-            con = con.nextSibling();
-            continue;
-        }
-
         //Find out if we're a push button...
-        if (node.nodeName()=="PushButton")
+        if (node.nodeName() == "PushButton")
         {
+            ControlPushButton* p = dynamic_cast<ControlPushButton*>(
+                ControlObject::getControl(configKey));
+
+            if (p == NULL) {
+                // A NULL here either means that this control is not a
+                // ControlPushButton or it does not exist. This logic is
+                // specific to push-buttons, so skip it either way.
+                con = con.nextSibling();
+                continue;
+            }
+
             bool isLeftButton = false;
             bool isRightButton = false;
             if (!selectNode(con, "ButtonState").isNull())
@@ -121,10 +125,10 @@ void WPushButton::setup(QDomNode node)
             // control. If no button is provided, then we have to assume the
             // connected control should be a toggle.
 
-            bool setAsToggleButton = iNumStates == 2 &&
-                    ((!isLeftButton && !isRightButton) ||
-                     ( (isLeftButton && !m_bLeftClickForcePush) ||
-                       (isRightButton && !m_bRightClickForcePush) ) );
+            //bool setAsToggleButton = iNumStates == 2 &&
+            //       ((!isLeftButton && !isRightButton) ||
+            //        ( (isLeftButton && !m_bLeftClickForcePush) ||
+            //          (isRightButton && !m_bRightClickForcePush) ) );
 
             // if (setAsToggleButton)
             //     p->setToggleButton(true);
@@ -150,8 +154,8 @@ void WPushButton::setStates(int iStates)
     m_bPressed = false;
 
     // If pixmap array is already allocated, delete it
-    if (m_pPixmaps)
-        delete [] m_pPixmaps;
+    delete [] m_pPixmaps;
+    m_pPixmaps = NULL;
 
     if (iStates>0)
     {
