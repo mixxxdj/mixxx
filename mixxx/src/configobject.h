@@ -116,6 +116,7 @@ template <class ValueType> class ConfigObject {
     ConfigOption<ValueType> *get(ConfigKey key);
     ConfigKey *get(ValueType v);
     QString getValueString(ConfigKey k);
+    QString getValueString(ConfigKey k, QString default_string);
 
     void clear();
     void reopen(QString file);

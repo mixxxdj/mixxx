@@ -50,15 +50,18 @@ public slots:
     void slotCreatePlaylist();
     void slotDeletePlaylist();
     void slotAddToAutoDJ();
+    void slotAddToAutoDJTop();
     void slotRenamePlaylist();
     void slotTogglePlaylistLock();
     void slotImportPlaylist();
     void slotExportPlaylist();
 
+    void slotPlaylistTableChanged(int playlistId);
 
  private:
-    void constructChildModel();
+    QModelIndex constructChildModel(int selected_id);
     void clearChildModel();
+    void addToAutoDJ(bool bTop);
 
     PlaylistTableModel* m_pPlaylistTableModel;
     PlaylistDAO &m_playlistDao;
@@ -66,6 +69,7 @@ public slots:
     QAction *m_pCreatePlaylistAction;
     QAction *m_pDeletePlaylistAction;
     QAction *m_pAddToAutoDJAction;
+    QAction *m_pAddToAutoDJTopAction;
     QAction *m_pRenamePlaylistAction;
     QAction *m_pLockPlaylistAction;
     QAction *m_pImportPlaylistAction;

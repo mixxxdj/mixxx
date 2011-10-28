@@ -520,7 +520,6 @@ Qt::ItemFlags BaseSqlTableModel::readWriteFlags(
     // waveform widget to load a track into a Player).
     defaultFlags |= Qt::ItemIsDragEnabled;
 
-    int row = index.row();
     int column = index.column();
 
     if ( column == fieldIndex(LIBRARYTABLE_FILETYPE)

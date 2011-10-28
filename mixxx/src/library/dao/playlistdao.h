@@ -23,7 +23,7 @@ class PlaylistDAO : public QObject, public virtual DAO {
     void initialize();
     void setDatabase(QSqlDatabase& database) { m_database = database; };
     /** Create a playlist */
-    bool createPlaylist(QString name, bool hidden = false);
+    int createPlaylist(QString name, bool hidden = false);
     /** Delete a playlist */
     void deletePlaylist(int playlistId);
     /** Rename a playlist */
@@ -37,13 +37,13 @@ class PlaylistDAO : public QObject, public virtual DAO {
     /** Find out how many playlists exist. */
     unsigned int playlistCount();
     /** Get the name of the playlist at the given position */
-    QString getPlaylistName(unsigned int position);
+    QString getPlaylistName(int playlistId);
     // Get the playlist id by its name
     int getPlaylistIdFromName(QString name);
-    /** Get the id of the playlist at position. Note that the position is the
+    /** Get the id of the playlist at index. Note that the index is the
      * natural position in the database table, not the display order position
      * column stored in the database. */
-    int getPlaylistId(int position);
+    int getPlaylistId(int index);
     // Returns true if the playlist with playlistId is hidden
     bool isHidden(int playlistId);
     /** Remove a track from all playlists */
@@ -53,13 +53,15 @@ class PlaylistDAO : public QObject, public virtual DAO {
     /** Insert a track into a specific position in a playlist */
     void insertTrackIntoPlaylist(int trackId, int playlistId, int position);
     /** Add a playlist to the Auto-DJ Queue */
-    void addToAutoDJQueue(int playlistId);
+    void addToAutoDJQueue(int playlistId, bool bTop);
   signals:
     void added(int playlistId);
     void deleted(int playlistId);
     void changed(int playlistId);
     void trackAdded(int playlistId, int trackId, int position);
     void trackRemoved(int playlistId, int trackId, int position);
+    void renamed(int playlistId);
+    void lockChanged(int playlistId);
   private:
     QSqlDatabase& m_database;
     DISALLOW_COPY_AND_ASSIGN(PlaylistDAO);

@@ -22,7 +22,7 @@ void PlaylistDAO::initialize()
 /** Create a playlist with the given name.
     @param name The name of the playlist to be created.
 */
-bool PlaylistDAO::createPlaylist(QString name, bool hidden)
+int PlaylistDAO::createPlaylist(QString name, bool hidden)
 {
     // qDebug() << "PlaylistDAO::createPlaylist"
     //          << QThread::currentThread()
@@ -38,7 +38,7 @@ bool PlaylistDAO::createPlaylist(QString name, bool hidden)
     if (!query.exec()) {
         LOG_FAILED_QUERY(query);
         m_database.rollback();
-        return false;
+        return -1;
     }
 
     //Get the id of the last playlist.
@@ -59,25 +59,25 @@ bool PlaylistDAO::createPlaylist(QString name, bool hidden)
     if (!query.exec()) {
         LOG_FAILED_QUERY(query);
         m_database.rollback();
-        return false;
+        return -1;
     }
 
     int playlistId = query.lastInsertId().toInt();
     //Commit the transaction
     m_database.commit();
     emit(added(playlistId));
-    return true;
+    return playlistId;
 }
 
-/** Find out the name of the playlist at the given position */
-QString PlaylistDAO::getPlaylistName(unsigned int position)
+/** Find out the name of the playlist at the given Id */
+QString PlaylistDAO::getPlaylistName(int playlistId)
 {
     // qDebug() << "PlaylistDAO::getPlaylistName" << QThread::currentThread() << m_database.connectionName();
 
     QSqlQuery query(m_database);
     query.prepare("SELECT name FROM Playlists "
-                  "WHERE position = :position");
-    query.bindValue(":position", position);
+                  "WHERE id= :id");
+    query.bindValue(":id", playlistId);
 
     if (!query.exec()) {
         LOG_FAILED_QUERY(query);
@@ -107,7 +107,6 @@ int PlaylistDAO::getPlaylistIdFromName(QString name) {
     }
     return -1;
 }
-
 
 /** Delete a playlist */
 void PlaylistDAO::deletePlaylist(int playlistId)
@@ -144,7 +143,6 @@ void PlaylistDAO::deletePlaylist(int playlistId)
     emit(deleted(playlistId));
 }
 
-
 void PlaylistDAO::renamePlaylist(int playlistId, const QString& newName) {
     QSqlQuery query(m_database);
     query.prepare("UPDATE Playlists SET name = :name WHERE id = :id");
@@ -169,6 +167,7 @@ bool PlaylistDAO::setPlaylistLocked(int playlistId, bool locked) {
         LOG_FAILED_QUERY(query);
         return false;
     }
+    emit(lockChanged(playlistId));
     return true;
 }
 
@@ -249,7 +248,7 @@ unsigned int PlaylistDAO::playlistCount()
     return numRecords;
 }
 
-int PlaylistDAO::getPlaylistId(int position)
+int PlaylistDAO::getPlaylistId(int index)
 {
     // qDebug() << "PlaylistDAO::getPlaylistId"
     //          << QThread::currentThread() << m_database.connectionName();
@@ -260,7 +259,7 @@ int PlaylistDAO::getPlaylistId(int position)
     if (query.exec()) {
         int currentRow = 0;
         while(query.next()) {
-            if (currentRow++ == position) {
+            if (currentRow++ == index) {
                 int id = query.value(0).toInt();
                 return id;
             }
@@ -396,7 +395,7 @@ void PlaylistDAO::insertTrackIntoPlaylist(int trackId, int playlistId, int posit
     emit(changed(playlistId));
 }
 
-void PlaylistDAO::addToAutoDJQueue(int playlistId) {
+void PlaylistDAO::addToAutoDJQueue(int playlistId, bool bTop) {
     //qDebug() << "Adding tracks from playlist " << playlistId << " to the Auto-DJ Queue";
 
     // Query the PlaylistTracks database to locate tracks in the selected playlist
@@ -411,7 +410,15 @@ void PlaylistDAO::addToAutoDJQueue(int playlistId) {
     // Get the ID of the Auto-DJ playlist
     int autoDJId = getPlaylistIdFromName(AUTODJ_TABLE);
     // Loop through the tracks, adding them to the Auto-DJ Queue
-    while(query.next()) {
-        appendTrackToPlaylist(query.value(0).toInt(), autoDJId);
+
+    int i = 2; // Start at position 2 because position 1 was already loaded to the deck
+
+    while (query.next()) {
+    	if (bTop) {
+    		insertTrackIntoPlaylist(query.value(0).toInt(), autoDJId, i++);
+    	}
+    	else {
+    		appendTrackToPlaylist(query.value(0).toInt(), autoDJId);
+    	}
     }
 }

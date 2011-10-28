@@ -31,19 +31,19 @@ unsigned int CrateDAO::crateCount() {
     return query.value(0).toInt();
 }
 
-bool CrateDAO::createCrate(const QString& name) {
+int CrateDAO::createCrate(const QString& name) {
     QSqlQuery query(m_database);
     query.prepare("INSERT INTO " CRATE_TABLE " (name) VALUES (:name)");
     query.bindValue(":name", name);
 
     if (!query.exec()) {
         LOG_FAILED_QUERY(query);
-        return false;
+        return -1;
     }
 
     int crateId = query.lastInsertId().toInt();
     emit(added(crateId));
-    return true;
+    return crateId;
 }
 
 bool CrateDAO::renameCrate(int crateId, const QString& newName) {
@@ -56,6 +56,7 @@ bool CrateDAO::renameCrate(int crateId, const QString& newName) {
         LOG_FAILED_QUERY(query);
         return false;
     }
+    emit(renamed(crateId));
     return true;
 }
 
@@ -71,7 +72,7 @@ bool CrateDAO::setCrateLocked(int crateId, bool locked) {
         LOG_FAILED_QUERY(query);
         return false;
     }
-
+    emit(lockChanged(crateId));
     return true;
 }
 

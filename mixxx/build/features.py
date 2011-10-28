@@ -178,7 +178,7 @@ class LADSPA(Feature):
 
 class IPod(Feature):
     def description(self):
-        return "NOT-WORKING iPod Support"
+        return "Guest's iPod Support"
 
     def enabled(self, build):
         build.flags['ipod'] = util.get_flags(build.env, 'ipod', 0)
@@ -211,7 +211,8 @@ class IPod(Feature):
             build.env.ParseConfig('pkg-config glib-2.0 --silence-errors --cflags --libs')
 
     def sources(self, build):
-        return ['wipodtracksmodel.cpp']
+        return ['library/ipod/ipodfeature.cpp',
+                'library/ipod/ipodplaylistmodel.cpp']
 
 class MSVCDebug(Feature):
     def description(self):

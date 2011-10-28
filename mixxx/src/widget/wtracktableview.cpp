@@ -82,6 +82,7 @@ WTrackTableView::~WTrackTableView()
 
     delete m_pReloadMetadataAct;
     delete m_pAutoDJAct;
+    delete m_pAutoDJTopAct;
     delete m_pRemoveAct;
     delete m_pPropertiesAct;
     delete m_pMenu;
@@ -256,8 +257,11 @@ void WTrackTableView::createActions() {
     m_pPropertiesAct = new QAction(tr("Properties..."), this);
     connect(m_pPropertiesAct, SIGNAL(triggered()), this, SLOT(slotShowTrackInfo()));
 
-    m_pAutoDJAct = new QAction(tr("Add to Auto DJ Queue"),this);
+    m_pAutoDJAct = new QAction(tr("Add to Auto DJ bottom"),this);
     connect(m_pAutoDJAct, SIGNAL(triggered()), this, SLOT(slotSendToAutoDJ()));
+
+    m_pAutoDJTopAct = new QAction(tr("Add to Auto DJ top 2"),this);
+    connect(m_pAutoDJTopAct, SIGNAL(triggered()), this, SLOT(slotSendToAutoDJTop()));
 
     m_pReloadMetadataAct = new QAction(tr("Reload Track Metadata"), this);
     connect(m_pReloadMetadataAct, SIGNAL(triggered()), this, SLOT(slotReloadTrackMetadata()));
@@ -353,6 +357,7 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent * event)
 
     if (modelHasCapabilities(TrackModel::TRACKMODELCAPS_ADDTOAUTODJ)) {
         m_pMenu->addAction(m_pAutoDJAct);
+        m_pMenu->addAction(m_pAutoDJTopAct);
         m_pMenu->addSeparator();
     }
 
@@ -756,11 +761,9 @@ void WTrackTableView::keyPressEvent(QKeyEvent* event)
 {
     if (event->key() == Qt::Key_Return)
     {
-		/*
-		 * It is not a good idea if 'key_return'
-		 * causes a track to load since we allow in-line editing
-		 * of table items in general
-		 */
+        // It is not a good idea if 'key_return'
+        // causes a track to load since we allow in-line editing
+        // of table items in general
         return;
     }
     else if (event->key() == Qt::Key_BracketLeft)
@@ -787,6 +790,15 @@ void WTrackTableView::loadSelectedTrackToGroup(QString group) {
 }
 
 void WTrackTableView::slotSendToAutoDJ() {
+    // append to auto DJ
+    sendToAutoDJ(false); // bTop = false
+}
+
+void WTrackTableView::slotSendToAutoDJTop() {
+    sendToAutoDJ(true); // bTop = true
+}
+
+void WTrackTableView::sendToAutoDJ(bool bTop) {
     if (!modelHasCapabilities(TrackModel::TRACKMODELCAPS_ADDTOAUTODJ)) {
         return;
     }
@@ -806,7 +818,13 @@ void WTrackTableView::slotSendToAutoDJ() {
             (pTrack = trackModel->getTrack(index))) {
             int iTrackId = pTrack->getId();
             if (iTrackId != -1) {
-                playlistDao.appendTrackToPlaylist(iTrackId, iAutoDJPlaylistId);
+                if (bTop) {
+                    // Load track to position two because position one is already loaded to the player
+                    playlistDao.insertTrackIntoPlaylist(iTrackId, iAutoDJPlaylistId, 2);
+                }
+                else {
+                    playlistDao.appendTrackToPlaylist(iTrackId, iAutoDJPlaylistId);
+                }
             }
         }
     }
@@ -892,6 +910,8 @@ void WTrackTableView::doSortByColumn(int headerSection) {
     while (isColumnHidden(visibleColumn) && visibleColumn < itemModel->columnCount()) {
         visibleColumn++;
     }
+
+    currentSelection->reset(); // remove current selection
 
     QModelIndex first;
     foreach (int trackId, trackIds) {
