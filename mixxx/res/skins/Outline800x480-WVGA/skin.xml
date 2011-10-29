@@ -19,6 +19,9 @@
 
 	<!--
 	CHANGELOG
+	v1.10.0.04	(29/10/2011)
+	* Fix: Selected sidebar item's branch indicator shows wrong color when out of focus
+
 	v1.10.0.03	(16/10/2011)
 	* Update: Tooltips for waveform (overview) due to changes in functionality
 
@@ -172,7 +175,8 @@
 		<!--Extra declaration for QRadionButton otherwise it shows up with wrong colors in Linux with Gnome -->
 		QRadioButton { font: 12px/14px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; background: transparent; }
 
-		<!--Workaround for QT4.7.0 background color bug in Linux with Gnome https://bugs.launchpad.net/mixxx/+bug/690280-->
+		<!--triangle for closed/opened branches in treeview-->
+		QTreeView {show-decoration-selected: 0;} <!-- Suppresses that selected sidebar item's branch indicator shows wrong color when out of focus ; lp:880588-->
 		QTreeView::branch:has-children:!has-siblings:closed,
 		QTreeView::branch:closed:has-children:has-siblings { border-image: none; image: url(skin:/style_branch_closed.png);}
 		QTreeView::branch:open:has-children:!has-siblings,
