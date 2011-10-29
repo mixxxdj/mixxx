@@ -21,6 +21,7 @@ plugins = []
 Import('build')
 Import('sources')
 Import('soundsource_plugins')
+Import('mixxxminimal_plugins')
 
 env = build.env
 flags = build.flags
@@ -113,6 +114,9 @@ resource_files = Glob('#res/schema.xml')
 
 #Soundsource plugins
 soundsource_plugin_files = soundsource_plugins
+
+#VAMP beat tracking and key detection plugin
+libmixxxminimal_vamp_plugin = mixxxminimal_plugins
 
 #Skins
 skin_files = Glob('#res/skins/*')
@@ -252,6 +256,9 @@ if build.platform_is_osx and 'bundle' in COMMAND_LINE_TARGETS:
 	# from SCons File nodes to strings)
 	for x in soundsource_plugins:
 		plugins.append(x.get_abspath())
+		
+	for x in mixxxminimal_plugins:
+	    plugins.append(x.get_abspath())
 
 	bundle = env.App("Mixxx", [mixxx_bin, '#res/osx/application.icns',
 		Dir('#res/skins/'),

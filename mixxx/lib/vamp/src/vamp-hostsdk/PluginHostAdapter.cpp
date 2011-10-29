@@ -84,7 +84,7 @@ PluginHostAdapter::getPluginPath()
 #else
 #define PATH_SEPARATOR ':'
 #ifdef __APPLE__
-#define DEFAULT_VAMP_PATH "$HOME/Library/Audio/Plug-Ins/Vamp:/Library/Audio/Plug-Ins/Vamp:/Library/Application Support/Mixxx/Plugins/Vamp/:" + ((QCoreApplication::applicationDirPath()).remove("MacOS")).toStdString() +"/osx64_build/vamp-plugins"
+#define DEFAULT_VAMP_PATH  ((QCoreApplication::applicationDirPath()).remove("MacOS")).toStdString() +"/osx64_build/vamp-plugins:"+ ((QCoreApplication::applicationDirPath())).toStdString() +"/../Plugins"
 #else
 #define DEFAULT_VAMP_PATH "$HOME/vamp:$HOME/.vamp:/usr/local/lib/vamp:/usr/lib/vamp:/usr/local/lib/mixxx/plugins/vamp:/usr/lib/mixxx/plugins/vamp:"+(QDesktopServices::storageLocation(QDesktopServices::HomeLocation)).toStdString() + "/.mixxx/plugins/vamp"
 #endif
