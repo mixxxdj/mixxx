@@ -57,7 +57,8 @@ BeatTracker::BeatTracker(float inputSampleRate) :
     Vamp::Plugin(inputSampleRate),
     m_d(0),
     m_method(METHOD_NEW),
-    m_dfType(DF_COMPLEXSD),
+    //m_dfType(DF_COMPLEXSD),
+	m_dfType(DF_SPECDIFF),
     m_whiten(false)
 {
 }
