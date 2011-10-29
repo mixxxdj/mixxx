@@ -110,13 +110,19 @@ EncoderMp3::EncoderMp3(EngineAbstractRecord *engine) {
         props->setTitle(tr("Encoder"));
         QString key = "";
 #ifdef __LINUX__
-        key = tr("<html>Mixxx is unable to load or find the MP3 encoder lame. <p>Please install libmp3lame (also known as lame) and check if /usr/lib/libmp3lame.so exists on your system </html>");
+        key = tr("<html>Mixxx cannot record or stream in MP3 without the MP3 encoder &quot;lame&quot;.
+                 Due to licensing issues, we cannot include this with Mixxx. To record or stream in MP3, you must download <b>libmp3lame</b> and install it on your system.
+                 <p>See <a href='http://mixxx.org/wiki/doku.php/internet_broadcasting#linux'>Mixxx Wiki</a> for more information. </html>");
         props->setText(key);
 #elif __WINDOWS__
-        key = tr("<html>Mixxx is unable to load or find the MP3 encoder lame. <p>Please put lame_enc.dll in the directory you have installed Mixxx </html>");
+        key = tr("<html>Mixxx cannot record or stream in MP3 without the MP3 encoder &quot;lame&quot;.
+                 Due to licensing issues, we cannot include this with Mixxx. To record or stream in MP3, you must download <b>lame_enc.dll</b> and install it on your system.
+                 <p>See <a href='http://mixxx.org/wiki/doku.php/internet_broadcasting#windows'>Mixxx Wiki</a> for more information. </html>");
         props->setText(key);
 #elif __APPLE__
-        key = tr("<html>Mixxx is unable to load or find the MP3 encoder lame. <p>Please install libmp3lame (also known as lame) and check if /usr/local/lib/libmp3lame.dylib exists on your system </html>");
+        key = tr("<html>Mixxx cannot record or stream in MP3 without the MP3 encoder &quot;lame&quot;.
+                 Due to licensing issues, we cannot include this with Mixxx. To record or stream in MP3, you must download <b>libmp3lame</b> and install it on your system.
+                 <p>See <a href='http://mixxx.org/wiki/doku.php/internet_broadcasting#mac_osx'>Mixxx Wiki</a> for more information. </html>");
         props->setText(key);
 #endif
         props->setKey(key);
