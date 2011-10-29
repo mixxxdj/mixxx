@@ -98,6 +98,7 @@ SConscript(File('src/SConscript'), variant_dir=Dir(build.build_dir), duplicate=0
 # the DLLs present with it.
 if not build.platform_is_windows:
     Command("mixxx", os.path.join(build.build_dir, "mixxx"), Copy("$TARGET", "$SOURCE"))
+    
 
 
 #On OS X, if the bundle has been built, copy it up:
