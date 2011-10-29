@@ -73,6 +73,7 @@ class EngineShoutcast : public EngineAbstractRecord {
     Encoder *m_encoder;
     ControlObject* m_pShoutcastNeedUpdateFromPrefs;
     ControlObjectThreadMain* m_pUpdateShoutcastFromPrefs;
+    ControlObjectThread* m_pMasterSamplerate;
     ControlObjectThread* m_pCrossfader;
     ControlObjectThread* m_pVolume1;
     ControlObjectThread* m_pVolume2;
