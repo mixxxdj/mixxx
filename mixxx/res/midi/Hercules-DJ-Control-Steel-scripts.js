@@ -695,7 +695,7 @@ HerculesSteel.Decks.Left.Controls.Bass.maxOutput = 4.0;
 HerculesSteel.Decks.Left.Controls.Vol.minOutput = 0.0;
 HerculesSteel.Decks.Left.Controls.Vol.midOutput = 0.4;
 HerculesSteel.Decks.Left.Controls.Vol.maxOutput = 1.0;
-HerculesSteel.Decks.Left.Controls.Pitch.midInput = 0x35;
+HerculesSteel.Decks.Left.Controls.Pitch.midInput = 0x3F;
 
 HerculesSteel.Decks.Right.addButton("Keypad1",  new HerculesSteel.Button(0x19), "keypad1Handler");
 HerculesSteel.Decks.Right.addButton("Keypad2", new HerculesSteel.Button(0x1A), "keypad2Handler");
@@ -748,7 +748,7 @@ HerculesSteel.Decks.Right.Controls.Bass.maxOutput = 4.0;
 HerculesSteel.Decks.Right.Controls.Vol.minOutput = 0.0;
 HerculesSteel.Decks.Right.Controls.Vol.midOutput = 0.4;
 HerculesSteel.Decks.Right.Controls.Vol.maxOutput = 1.0;
-HerculesSteel.Decks.Right.Controls.Pitch.midInput = 0x35;
+HerculesSteel.Decks.Right.Controls.Pitch.midInput = 0x3F;
 
 
 //Mapping functions
