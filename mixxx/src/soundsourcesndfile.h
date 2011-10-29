@@ -34,6 +34,7 @@ public:
     static QList<QString> supportedFileExtensions();
 
 private:
+    bool m_bOpened;
     int channels;
     SNDFILE *fh;
     SF_INFO *info;
