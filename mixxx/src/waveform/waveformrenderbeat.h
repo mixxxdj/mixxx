@@ -30,11 +30,13 @@ public slots:
     void slotUpdateBpm(double bpm);
     void slotUpdateBeatFirst(double beatfirst);
     void slotUpdateTrackSamples(double samples);
+    void slotUpdateTrackSampleRate(double sampleRate);
 private:
     WaveformRenderer *m_pParent;
     ControlObjectThreadMain *m_pBpm;
     ControlObjectThreadMain *m_pBeatFirst;
     ControlObjectThreadMain *m_pTrackSamples;
+    ControlObjectThreadMain *m_pTrackSampleRate;
     TrackPointer m_pTrack;
     int m_iWidth, m_iHeight;
     double m_dBpm;

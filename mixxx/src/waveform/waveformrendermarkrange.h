@@ -35,6 +35,8 @@ public slots:
     void slotUpdateMarkEndPoint(double mark);
     void slotUpdateMarkEnabled(double mark);
     void slotUpdateTrackSamples(double samples);
+    void slotUpdateTrackSampleRate(double samples);
+
 private:
     const char* m_pGroup;
     WaveformRenderer *m_pParent;
@@ -43,7 +45,7 @@ private:
     ControlObjectThreadMain *m_pMarkEndPoint;
     ControlObjectThreadMain *m_pMarkEnabled;
     ControlObjectThreadMain *m_pTrackSamples;
-    TrackPointer m_pTrack;
+    ControlObjectThreadMain *m_pTrackSampleRate;
 
     bool m_bMarkEnabled;
     int m_iMarkStartPoint, m_iMarkEndPoint;

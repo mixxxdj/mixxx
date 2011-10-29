@@ -29,17 +29,26 @@ WaveformRenderBeat::WaveformRenderBeat(const char* group, WaveformRenderer *pare
           m_dSamplesPerDownsample(-1),
           m_dBeatLength(-1),
           m_iNumSamples(0),
-          m_iSampleRate(-1) {
-    m_pBpm = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey(group, "file_bpm")));
-    connect(m_pBpm, SIGNAL(valueChanged(double)), this, SLOT(slotUpdateBpm(double)));
+          m_iSampleRate(0) {
+    m_pBpm = new ControlObjectThreadMain(
+        ControlObject::getControl(ConfigKey(group, "file_bpm")));
+    connect(m_pBpm, SIGNAL(valueChanged(double)),
+            this, SLOT(slotUpdateBpm(double)));
 
     //m_pBeatFirst = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey(group, "BeatFirst")));
     //connect(m_pBeatFirst, SIGNAL(valueChanged(double)), this, SLOT(slotUpdateBeatFirst(double)));
 
-    m_pTrackSamples = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey(group,"track_samples")));
+    m_pTrackSamples = new ControlObjectThreadMain(
+        ControlObject::getControl(ConfigKey(group,"track_samples")));
     slotUpdateTrackSamples(m_pTrackSamples->get());
     connect(m_pTrackSamples, SIGNAL(valueChanged(double)),
             this, SLOT(slotUpdateTrackSamples(double)));
+
+    m_pTrackSampleRate = new ControlObjectThreadMain(
+        ControlObject::getControl(ConfigKey(group,"track_samplerate")));
+    slotUpdateTrackSampleRate(m_pTrackSampleRate->get());
+    connect(m_pTrackSampleRate, SIGNAL(valueChanged(double)),
+            this, SLOT(slotUpdateTrackSampleRate(double)));
 }
 
 void WaveformRenderBeat::slotUpdateBpm(double v) {
@@ -55,7 +64,21 @@ void WaveformRenderBeat::slotUpdateBeatFirst(double v) {
 
 void WaveformRenderBeat::slotUpdateTrackSamples(double samples) {
     //qDebug() << "WaveformRenderBeat :: samples = " << int(samples);
-    m_iNumSamples = (int)samples;
+    m_iNumSamples = static_cast<int>(samples);
+}
+
+void WaveformRenderBeat::slotUpdateTrackSampleRate(double sampleRate) {
+    //qDebug() << "WaveformRenderBeat :: sampleRate = " << int(sampleRate);
+
+    // f = z * m * n
+    double m = m_pParent->getSubpixelsPerPixel();
+    double f = sampleRate;
+    double z = m_pParent->getPixelsPerSecond();
+    double n = f / (m*z);
+
+    m_iSampleRate = static_cast<int>(sampleRate);
+    m_dSamplesPerDownsample = n;
+    m_dSamplesPerPixel = static_cast<double>(f)/z;
 }
 
 void WaveformRenderBeat::resize(int w, int h) {
@@ -68,31 +91,7 @@ void WaveformRenderBeat::newTrack(TrackPointer pTrack) {
     m_dBpm = -1;
     m_dBeatFirst = -1;
     m_dBeatLength = -1;
-    m_iNumSamples = 0;
-    m_iSampleRate = 0;
-    m_dSamplesPerDownsample = -1;
-    m_dSamplesPerPixel = -1;
-
-    if (!m_pTrack)
-        return;
-
-    // calculate beat info for this track:
-
-    int sampleRate = pTrack->getSampleRate();
-
-    // f = z * m * n
-    double m = m_pParent->getSubpixelsPerPixel();
-    double f = sampleRate;
-    double z = m_pParent->getPixelsPerSecond();
-    double n = f / (m*z);
-
-    m_iSampleRate = sampleRate;
-
-    m_dSamplesPerDownsample = n;
-    m_dSamplesPerPixel = double(f)/z;
-
     //qDebug() << "WaveformRenderBeat sampleRate  " << sampleRate << " samplesPerPixel " << m_dSamplesPerPixel;
-
 }
 
 void WaveformRenderBeat::setup(QDomNode node) {
@@ -113,9 +112,7 @@ void WaveformRenderBeat::draw(QPainter *pPainter, QPaintEvent *event, QVector<fl
     if(m_dBpm == -1 || m_dBpm == 0)
         return;
 
-    slotUpdateTrackSamples(m_pTrackSamples->get());
-
-    if(m_iSampleRate == -1 || m_iSampleRate == 0 || m_iNumSamples == 0)
+    if(m_iSampleRate <= 0 || m_iNumSamples == 0)
         return;
 
     if(buffer == NULL)
