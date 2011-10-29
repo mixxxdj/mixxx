@@ -11,7 +11,16 @@
 AnalyserGain::AnalyserGain(ConfigObject<ConfigValue> *_config) {
     m_pConfigReplayGain = _config;
     m_iStepControl = 0;
+    m_pLeftTempBuffer = NULL;
+    m_pRightTempBuffer = NULL;
+    m_iBufferSize = 0;
 }
+
+AnalyserGain::~AnalyserGain() {
+    delete [] m_pLeftTempBuffer;
+    delete [] m_pRightTempBuffer;
+}
+
 //TODO: On may think on rewriting replaygain/replagain_analys.* to improve performances. Anyway those willing to do should be sure of
 //		the resulting values to exactly coincide with "classical" replaygain_analysis.* ones.
 //		On the other hand, every other ReplayGain tagger uses exactly these methods so that we do not have problems about
@@ -27,34 +36,29 @@ void AnalyserGain::initialise(TrackPointer tio, int sampleRate, int totalSamples
         return;
     }
     m_iStepControl = InitGainAnalysis( (long)sampleRate );
-
-    //   m_iStartTime = clock();
 }
 
 
 
 
 void AnalyserGain::process(const CSAMPLE *pIn, const int iLen) {
+    if(m_iStepControl != 1)
+        return;
 
-    if(m_iStepControl!=1) return;
-
-    CSAMPLE *LeftChannel = new CSAMPLE[(int)(iLen/2)];
-    CSAMPLE *RightChannel = new CSAMPLE[(int)(iLen/2)];
-    int iRGCounter = 0;
-    for(int i=0; i<iLen; i+=2) {
-        LeftChannel[iRGCounter] = pIn[i]*32767;
-        RightChannel[iRGCounter] = pIn[i+1]*32767;
-
-        iRGCounter++;
+    int halfLength = static_cast<int>(iLen / 2);
+    if (halfLength > m_iBufferSize) {
+        delete [] m_pLeftTempBuffer;
+        delete [] m_pRightTempBuffer;
+        m_pLeftTempBuffer = new CSAMPLE[halfLength];
+        m_pRightTempBuffer = new CSAMPLE[halfLength];
     }
 
-    m_iStepControl = AnalyzeSamples(LeftChannel,RightChannel,iRGCounter,2);
-
-    delete [] LeftChannel;
-    delete [] RightChannel;
-    LeftChannel = NULL;
-    RightChannel = NULL;
-
+    for (int i = 0; i < halfLength; ++i) {
+        m_pLeftTempBuffer[i] = pIn[i*2] * 32767;
+        m_pRightTempBuffer[i] = pIn[i*2+1] * 32767;
+    }
+    m_iStepControl = AnalyzeSamples(m_pLeftTempBuffer, m_pRightTempBuffer,
+                                    halfLength, 2);
 }
 
 
