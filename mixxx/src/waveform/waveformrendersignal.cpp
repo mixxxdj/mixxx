@@ -89,6 +89,12 @@ void WaveformRenderSignal::draw(QPainter *pPainter, QPaintEvent *event, QVector<
         m_lines.resize(2*subpixelWidth);
     }
 
+    // Use the pointer to the QVector internal data to avoid range
+    // checks. QVector<QLineF>::operator[] profiled very high. const_cast is
+    // naughty but we just want Qt to leave us alone here. WARNING: calling
+    // m_lines.data() will copy the entire vector in memory by calling
+    // QVector<T>::detach(). QVector<T>::constData() does not do this.
+    QLineF* lineData = const_cast<QLineF*>(m_lines.constData());
     int halfw = subpixelWidth/2;
     for(int i=0;i<subpixelWidth;i++) {
         // Start at curPos minus half the waveform viewer
@@ -97,14 +103,14 @@ void WaveformRenderSignal::draw(QPainter *pPainter, QPaintEvent *event, QVector<
             float sampl = baseBuffer[thisIndex] * m_fGain * m_iHeight * 0.5f;
             float sampr = -baseBuffer[thisIndex+1] * m_fGain * m_iHeight * 0.5f;
             const qreal xPos = i/subpixelsPerPixel;
-            m_lines[i].setLine(xPos, sampr, xPos, sampl);
+            lineData[i].setLine(xPos, sampr, xPos, sampl);
         } else {
-            m_lines[i].setLine(0,0,0,0);
+            lineData[i].setLine(0,0,0,0);
         }
     }
 
     // Only draw lines that we have provided
-    pPainter->drawLines(m_lines.data(), subpixelWidth);
+    pPainter->drawLines(lineData, subpixelWidth);
 
     pPainter->restore();
 
