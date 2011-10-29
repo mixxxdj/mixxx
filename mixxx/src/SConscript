@@ -169,7 +169,7 @@ if int(flags.get('sqlitedll', 0)):
 	sqldll_files = Split("""$QTDIR/plugins/sqldrivers/qsqlite4.dll""") #Qt SQLite plugin
 
 if int(flags['script']) or int(flags['midiscript']):
-	dll_files += Split("""$QTDIR/bin/QtScript4.dll""")
+	dll_files += Split("""$QTDIR/lib/QtScript4.dll""")
 
 
 
