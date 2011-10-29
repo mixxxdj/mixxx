@@ -19,7 +19,7 @@ static bool sDebug = true;
 
 
 #ifdef __LINUX__
-    #define VAMP_MIXXX_MINIMAL "libmixxxminimal.dylib"
+    #define VAMP_MIXXX_MINIMAL "libmixxxminimal.so"
 #elif __APPLE__
     #define VAMP_MIXXX_MINIMAL "libmixxxminimal.dylib"
 #else
@@ -73,16 +73,15 @@ void AnalyserBeats::finalise(TrackPointer tio) {
 
    QVector <double> beats;
    beats = mvamp->GetInitFramesVector();
-    /*
-     * By default Vamp does not assume a 4/4 signature.
-     * This is basically a good property of Vamp, however,
-     * it leads to inaccurate beat grids if a 4/4 signature is given.
-     * What is the problem? Almost all modern dance music from the last decades
-     * refer to 4/4 signature. Thus, we must 'correct' the beat positions of Vamp
-     *
-     *
-     */
+
     if(!beats.isEmpty()){
+        /*
+         * By default Vamp does not assume a 4/4 signature.
+         * This is basically a good property of Vamp, however,
+         * it leads to inaccurate beat grids if a 4/4 signature is given.
+         * What is the problem? Almost all modern dance music from the last decades
+         * refer to 4/4 signatures. Thus, we must 'correct' the beat positions of Vamp
+         */
         double corrected_global_bpm = calculateBpm(beats);
         BeatsPointer pBeats = BeatFactory::makeBeatGrid(tio, corrected_global_bpm, beats.at(0));
         tio->setBeats(pBeats);
@@ -98,6 +97,13 @@ void AnalyserBeats::finalise(TrackPointer tio) {
     delete mvamp;
 }
 
+/*
+ * This method detects the BPM given a set of beat positions.
+ * We compute the avergage local BPM of by condering 8 beats
+ * at a time. Internally, a sorted list of average BPM values is constructed
+ * from which the statistical median is computed. This value provides
+ * a pretty good guess of the global BPM value.
+ */
 double AnalyserBeats::calculateBpm(QVector<double> beats) const
 {
 
@@ -189,9 +195,15 @@ double AnalyserBeats::calculateBpm(QVector<double> beats) const
     /*
      * Okay, let's consider the median an estimation of the BPM
      * To not soley rely on the median, we build the average
-     * let's build the weighted average value of all bpm values being at most
-     * 1 BPM from the median away.
-     *
+     * weighted value of all bpm values being at most
+     * +-1 BPM from the median away.
+     * Please note, this has improved the BPM: While relying on median only
+     * we may have a derivation of about +-0.2 BPM, taking into account
+     * BPM values around the median leads to derivation of +- 0.05
+     * Please also note that this value refers to electronic music,
+     * but to be honest, the BPM detection of Traktor and Co work best
+     * with electronic music, too. But BPM detection for non-electronic
+     * music isn't too bad.
      */
     QMapIterator<QString, int> i(frequency_table);
     double avg_weighted_bpm = 0.0;
@@ -205,13 +217,11 @@ double AnalyserBeats::calculateBpm(QVector<double> beats) const
              if(sDebug)
                 qDebug() << "BPM:" << bpmVal << " Frequency: " << i.value();
          }
-
      }
     //return median;
      if(sDebug){
          qDebug() << "Median: " << median;
          qDebug() << "Corrected Median: " << (avg_weighted_bpm / (double) sum);
-         //qDebug() << "Avg Local BPM List: " << average_bpm_list;
      }
      return double (avg_weighted_bpm / (double) sum);
 
