@@ -361,36 +361,40 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent * event)
         m_pMenu->addSeparator();
     }
 
-    int iNumDecks = m_pNumDecks->get();
-    if (iNumDecks > 0) {
-        for (int i = 1; i <= iNumDecks; ++i) {
-            QString deckGroup = QString("[Channel%1]").arg(i);
-            bool deckPlaying = ControlObject::getControl(
-                ConfigKey(deckGroup, "play"))->get() == 1.0f;
-            bool deckEnabled = !deckPlaying && oneSongSelected;
-            QAction* pAction = new QAction(tr("Load to Deck %1").arg(i), m_pMenu);
-            pAction->setEnabled(deckEnabled);
-            m_pMenu->addAction(pAction);
-            m_deckMapper.setMapping(pAction, deckGroup);
-            connect(pAction, SIGNAL(triggered()), &m_deckMapper, SLOT(map()));
+    if (modelHasCapabilities(TrackModel::TRACKMODELCAPS_LOADTODECK)) {
+        int iNumDecks = m_pNumDecks->get();
+        if (iNumDecks > 0) {
+            for (int i = 1; i <= iNumDecks; ++i) {
+                QString deckGroup = QString("[Channel%1]").arg(i);
+                bool deckPlaying = ControlObject::getControl(
+                    ConfigKey(deckGroup, "play"))->get() == 1.0f;
+                bool deckEnabled = !deckPlaying && oneSongSelected;
+                QAction* pAction = new QAction(tr("Load to Deck %1").arg(i), m_pMenu);
+                pAction->setEnabled(deckEnabled);
+                m_pMenu->addAction(pAction);
+                m_deckMapper.setMapping(pAction, deckGroup);
+                connect(pAction, SIGNAL(triggered()), &m_deckMapper, SLOT(map()));
+            }
         }
     }
 
-    int iNumSamplers = m_pNumSamplers->get();
-    if (iNumSamplers > 0) {
-        m_pSamplerMenu->clear();
-        for (int i = 1; i <= iNumSamplers; ++i) {
-            QString samplerGroup = QString("[Sampler%1]").arg(i);
-            bool samplerPlaying = ControlObject::getControl(
-                ConfigKey(samplerGroup, "play"))->get() == 1.0f;
-            bool samplerEnabled = !samplerPlaying && oneSongSelected;
-            QAction* pAction = new QAction(tr("Sampler %1").arg(i), m_pSamplerMenu);
-            pAction->setEnabled(samplerEnabled);
-            m_pSamplerMenu->addAction(pAction);
-            m_samplerMapper.setMapping(pAction, samplerGroup);
-            connect(pAction, SIGNAL(triggered()), &m_samplerMapper, SLOT(map()));
+    if (modelHasCapabilities(TrackModel::TRACKMODELCAPS_LOADTOSAMPLER)) {
+        int iNumSamplers = m_pNumSamplers->get();
+        if (iNumSamplers > 0) {
+            m_pSamplerMenu->clear();
+            for (int i = 1; i <= iNumSamplers; ++i) {
+                QString samplerGroup = QString("[Sampler%1]").arg(i);
+                bool samplerPlaying = ControlObject::getControl(
+                    ConfigKey(samplerGroup, "play"))->get() == 1.0f;
+                bool samplerEnabled = !samplerPlaying && oneSongSelected;
+                QAction* pAction = new QAction(tr("Sampler %1").arg(i), m_pSamplerMenu);
+                pAction->setEnabled(samplerEnabled);
+                m_pSamplerMenu->addAction(pAction);
+                m_samplerMapper.setMapping(pAction, samplerGroup);
+                connect(pAction, SIGNAL(triggered()), &m_samplerMapper, SLOT(map()));
+            }
+            m_pMenu->addMenu(m_pSamplerMenu);
         }
-        m_pMenu->addMenu(m_pSamplerMenu);
     }
 
     m_pMenu->addSeparator();
@@ -442,8 +446,12 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent * event)
     bool locked = modelHasCapabilities(TrackModel::TRACKMODELCAPS_LOCKED);
     m_pRemoveAct->setEnabled(!locked);
     m_pMenu->addSeparator();
-    m_pMenu->addAction(m_pRemoveAct);
-    m_pMenu->addAction(m_pReloadMetadataAct);
+    if (modelHasCapabilities(TrackModel::TRACKMODELCAPS_REMOVE)) {
+        m_pMenu->addAction(m_pRemoveAct);
+    }
+    if (modelHasCapabilities(TrackModel::TRACKMODELCAPS_RELOADMETADATA)) {
+        m_pMenu->addAction(m_pReloadMetadataAct);
+    }
     m_pPropertiesAct->setEnabled(oneSongSelected);
     m_pMenu->addAction(m_pPropertiesAct);
 
@@ -759,23 +767,18 @@ bool WTrackTableView::modelHasCapabilities(TrackModel::CapabilitiesFlags capabil
 
 void WTrackTableView::keyPressEvent(QKeyEvent* event)
 {
-    if (event->key() == Qt::Key_Return)
-    {
+    if (event->key() == Qt::Key_Return) {
         // It is not a good idea if 'key_return'
         // causes a track to load since we allow in-line editing
         // of table items in general
         return;
-    }
-    else if (event->key() == Qt::Key_BracketLeft)
-    {
+    } else if (event->key() == Qt::Key_BracketLeft) {
         loadSelectionToGroup("[Channel1]");
-    }
-    else if (event->key() == Qt::Key_BracketRight)
-    {
+    } else if (event->key() == Qt::Key_BracketRight) {
         loadSelectionToGroup("[Channel2]");
-    }
-    else
+    } else {
         QTableView::keyPressEvent(event);
+    }
 }
 
 void WTrackTableView::loadSelectedTrack() {
