@@ -17,6 +17,17 @@
 
 static bool sDebug = true;
 
+
+#ifdef __LINUX__
+    #define VAMP_MIXXX_MINIMAL "libmixxxminimal.dylib"
+#elif __APPLE__
+    #define VAMP_MIXXX_MINIMAL "libmixxxminimal.dylib"
+#else
+    #define VAMP_MIXXX_MINIMAL "libmixxxminimal.dll"
+#endif
+
+#define VAMP_PLUGIN_BEAT_TRACKER_ID "qm-tempotracker:0"
+
 AnalyserBeats::AnalyserBeats(ConfigObject<ConfigValue> *_config) {
     m_pConfigAVT = _config;
     m_bPass = 0;
@@ -44,11 +55,9 @@ void AnalyserBeats::initialise(TrackPointer tio, int sampleRate,
 //        qDebug()<<"BeatMatrix already exists: calculation will not start";
 //        return;
 //    }
-    QString library = m_pConfigAVT->getValueString(ConfigKey("[Vamp]","AnalyserBeatLibrary"));
-    QString pluginID = m_pConfigAVT->getValueString(ConfigKey("[Vamp]","AnalyserBeatPluginID"));
 
         mvamp = new VampAnalyser();
-        m_bPass = mvamp->Init(library, pluginID, sampleRate, totalSamples);
+        m_bPass = mvamp->Init(VAMP_MIXXX_MINIMAL, VAMP_PLUGIN_BEAT_TRACKER_ID, sampleRate, totalSamples);
     //   m_iStartTime = clock();
 }
 
