@@ -11,18 +11,23 @@
 #include "analyser.h"
 #include "configobject.h"
 
+
 class AnalyserGain : public Analyser {
 
-public:
+  public:
     AnalyserGain(ConfigObject<ConfigValue> *_config);
+    virtual ~AnalyserGain();
+
     void initialise(TrackPointer tio, int sampleRate, int totalSamples);
     void process(const CSAMPLE *pIn, const int iLen);
     void finalise(TrackPointer tio);
 
-private:
+  private:
     int m_iStepControl;
     ConfigObject<ConfigValue> *m_pConfigReplayGain;
-    //int m_iStartTime;
+    CSAMPLE* m_pLeftTempBuffer;
+    CSAMPLE* m_pRightTempBuffer;
+    int m_iBufferSize;
 };
 
 
