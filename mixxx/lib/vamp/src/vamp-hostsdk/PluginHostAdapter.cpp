@@ -84,7 +84,9 @@ PluginHostAdapter::getPluginPath()
 #else
 #define PATH_SEPARATOR ':'
 #ifdef __APPLE__
-#define DEFAULT_VAMP_PATH  ((QCoreApplication::applicationDirPath()).remove("MacOS")).toStdString() +"/osx64_build/vamp-plugins:"+ ((QCoreApplication::applicationDirPath())).toStdString() +"/../Plugins"
+//The first path is the one if you don't use 'scons bundle'; the second path valid if you have bundles mixxx, i.e., you run Mixxx as mixxx.app
+//Please note that *.app file are nothing else than folders
+#define DEFAULT_VAMP_PATH  QCoreApplication::applicationDirPath().toStdString() +"/osx64_build/vamp-plugins:"+ QCoreApplication::applicationDirPath().toStdString() +"/../Plugins"
 #else
 #define DEFAULT_VAMP_PATH "$HOME/vamp:$HOME/.vamp:/usr/local/lib/vamp:/usr/lib/vamp:/usr/local/lib/mixxx/plugins/vamp:/usr/lib/mixxx/plugins/vamp:"+(QDesktopServices::storageLocation(QDesktopServices::HomeLocation)).toStdString() + "/.mixxx/plugins/vamp"
 #endif
