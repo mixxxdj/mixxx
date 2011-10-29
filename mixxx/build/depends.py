@@ -154,14 +154,14 @@ class Qt(Dependence):
             build.env.Append(LIBS = 'QtScript')
         elif build.platform_is_windows:
             build.env.Append(LIBPATH=['$QTDIR/lib'])
-            build.env.Append(LIBS = 'QtXml4');
-            build.env.Append(LIBS = 'QtXmlPatterns4');
-            build.env.Append(LIBS = 'QtSql4');
-            build.env.Append(LIBS = 'QtGui4');
-            build.env.Append(LIBS = 'QtCore4');
-            build.env.Append(LIBS = 'QtWebKit4');
+            build.env.Append(LIBS = 'QtXml4')
+            build.env.Append(LIBS = 'QtXmlPatterns4')
+            build.env.Append(LIBS = 'QtSql4')
+            build.env.Append(LIBS = 'QtGui4')
+            build.env.Append(LIBS = 'QtCore4')
+            build.env.Append(LIBS = 'QtWebKit4')
             build.env.Append(LIBS = 'QtNetwork4')
-            build.env.Append(LIBS = 'QtOpenGL4');
+            build.env.Append(LIBS = 'QtOpenGL4')
             # Tobias: Don't remove this line
             # I used the Windows API in foldertreemodel.cpp
             # to quickly test if a folder has subfolders
