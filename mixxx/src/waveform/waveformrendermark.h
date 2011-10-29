@@ -33,6 +33,8 @@ class WaveformRenderMark : public RenderObject {
   public slots:
     void slotUpdateMarkPoint(double mark);
     void slotUpdateTrackSamples(double samples);
+    void slotUpdateTrackSampleRate(double sampleRate);
+
   private:
     void setupMarkPixmap();
 
@@ -46,7 +48,7 @@ class WaveformRenderMark : public RenderObject {
     WaveformRenderer *m_pParent;
     ControlObjectThreadMain *m_pMarkPoint;
     ControlObjectThreadMain *m_pTrackSamples;
-    TrackPointer m_pTrack;
+    ControlObjectThreadMain *m_pTrackSampleRate;
 
     int m_iMarkPoint;
     int m_iWidth, m_iHeight;

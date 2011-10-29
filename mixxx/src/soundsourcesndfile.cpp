@@ -30,6 +30,7 @@
 SoundSourceSndFile::SoundSourceSndFile(QString qFilename) :
     Mixxx::SoundSource(qFilename)
 {
+    m_bOpened = false;
     info = new SF_INFO;
     info->format = 0;   // Must be set to 0 per the API for reading (non-RAW files)
     filelength = 0;
@@ -37,8 +38,9 @@ SoundSourceSndFile::SoundSourceSndFile(QString qFilename) :
 
 SoundSourceSndFile::~SoundSourceSndFile()
 {
-    if (filelength > 0)
+    if (m_bOpened) {
         sf_close(fh);
+    }
     delete info;
 }
 
@@ -71,7 +73,7 @@ int SoundSourceSndFile::open()
 
     filelength = channels*info->frames; // File length with two interleaved channels
     m_iSampleRate =  info->samplerate;
-
+    m_bOpened = true;
     return OK;
 }
 
@@ -184,13 +186,17 @@ int SoundSourceSndFile::parseHeader()
             // XXX remove this when ubuntu ships with an sufficiently
             // intelligent version of taglib, should happen in 11.10
 
-            QByteArray qbaFilename = location.toUtf8();
-            fh = sf_open( qbaFilename.data(), SFM_READ, info );
+            // Have to open the file for info to be valid.
+            if (!m_bOpened) {
+                open();
+            }
+
             if (info->samplerate > 0) {
                 setDuration(info->frames / info->samplerate);
+            } else {
+                qDebug() << "WARNING: WAV file with invalid samplerate."
+                         << "Can't get duration using libsndfile.";
             }
-            sf_close(fh);
-            fh = NULL;
         }
     } else {
         // Try AIFF
