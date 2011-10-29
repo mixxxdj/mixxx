@@ -15,6 +15,8 @@
 #include "track/beatfactory.h"
 #include "analyserbeats.h"
 
+static bool sDebug = true;
+
 AnalyserBeats::AnalyserBeats(ConfigObject<ConfigValue> *_config) {
     m_pConfigAVT = _config;
     m_bPass = 0;
@@ -101,6 +103,8 @@ double AnalyserBeats::calculateBpm(QVector<double> beats) const
      * BPM value in many case but not worse than +-0.2 BPM
      */
      QList<double> average_bpm_list;
+     //mapping local bpm values to their frequencies
+     QMap<QString, int> frequency_table;
      const int N = 8; //computes the avg BPM from N subsequent beats --> should be a DEFINE later on
 
 
@@ -135,9 +139,20 @@ double AnalyserBeats::calculateBpm(QVector<double> beats) const
         double avg_bpm = 60*N / time;
         //add to local BPM to list
         average_bpm_list << avg_bpm;
+
+        QString local_bpm_str = QString::number(avg_bpm,'g',6);
+        //qDebug() << "Local BPM: " << avg_bpm << " StringVal: " << local_bpm_str;
+        if(frequency_table.contains(local_bpm_str)){
+            int newFreq = frequency_table.value(local_bpm_str) + 1;
+            //Set new Frequency
+            frequency_table.insert(local_bpm_str, newFreq);
+        }
+        else{
+            frequency_table.insert(local_bpm_str, 1);
+        }
         //qDebug() << "Average Bar BPM: " << avg_bpm;
     }
-    //sort the least of average BPMs
+    //sort the list of average BPMs
     qSort(average_bpm_list);
 
 
@@ -162,7 +177,34 @@ double AnalyserBeats::calculateBpm(QVector<double> beats) const
 
     }
 
-    return median;
+    /*
+     * Okay, let's consider the median an estimation of the BPM
+     * To not soley rely on the median, we build the average
+     * let's build the weighted average value of all bpm values being at most
+     * 1 BPM from the median away.
+     *
+     */
+    QMapIterator<QString, int> i(frequency_table);
+    double avg_weighted_bpm = 0.0;
+    int sum = 0;
+     while (i.hasNext()) {
+         i.next();
+         double bpmVal = i.key().toDouble();
+         if(bpmVal >= median -1 && bpmVal <= median+1){
+             sum += i.value();
+             avg_weighted_bpm += bpmVal * i.value();
+             if(sDebug)
+                qDebug() << "BPM:" << bpmVal << " Frequency: " << i.value();
+         }
+
+     }
+    //return median;
+     if(sDebug){
+         qDebug() << "Median: " << median;
+         qDebug() << "Corrected Median: " << (avg_weighted_bpm / (double) sum);
+         //qDebug() << "Avg Local BPM List: " << average_bpm_list;
+     }
+     return double (avg_weighted_bpm / (double) sum);
 
 
 }
