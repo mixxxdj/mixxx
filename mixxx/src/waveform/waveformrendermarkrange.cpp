@@ -27,7 +27,6 @@ WaveformRenderMarkRange::WaveformRenderMarkRange(const char* pGroup,
           m_pMarkEndPoint(NULL),
           m_pMarkEnabled(NULL),
           m_pTrackSamples(NULL),
-          m_pTrack(NULL),
           m_bMarkEnabled(true),
           m_iMarkStartPoint(-1),
           m_iMarkEndPoint(-1),
@@ -38,10 +37,16 @@ WaveformRenderMarkRange::WaveformRenderMarkRange(const char* pGroup,
           m_iSampleRate(-1) {
 
     m_pTrackSamples = new ControlObjectThreadMain(
-        ControlObject::getControl(ConfigKey(pGroup,"track_samples")));
+        ControlObject::getControl(ConfigKey(pGroup, "track_samples")));
     slotUpdateTrackSamples(m_pTrackSamples->get());
     connect(m_pTrackSamples, SIGNAL(valueChanged(double)),
             this, SLOT(slotUpdateTrackSamples(double)));
+
+    m_pTrackSampleRate = new ControlObjectThreadMain(
+        ControlObject::getControl(ConfigKey(pGroup, "track_samplerate")));
+    slotUpdateTrackSampleRate(m_pTrackSampleRate->get());
+    connect(m_pTrackSampleRate, SIGNAL(valueChanged(double)),
+            this, SLOT(slotUpdateTrackSampleRate(double)));
 }
 
 WaveformRenderMarkRange::~WaveformRenderMarkRange() {
@@ -72,26 +77,8 @@ void WaveformRenderMarkRange::slotUpdateTrackSamples(double samples) {
     m_iNumSamples = (int)samples;
 }
 
-void WaveformRenderMarkRange::resize(int w, int h) {
-    m_iWidth = w;
-    m_iHeight = h;
-}
-
-void WaveformRenderMarkRange::newTrack(TrackPointer pTrack) {
-    m_pTrack = pTrack;
-    m_iMarkStartPoint = -1;
-    m_iMarkEndPoint = -1;
-    m_bMarkEnabled = true;
-    m_iNumSamples = 0;
-    m_iSampleRate = 0;
-    m_dSamplesPerDownsample = -1;
-
-    if (!m_pTrack)
-        return;
-
-    // calculate beat info for this track:
-
-    int sampleRate = pTrack->getSampleRate();
+void WaveformRenderMarkRange::slotUpdateTrackSampleRate(double sampleRate) {
+    //qDebug() << "WaveformRenderMarkRange :: sampleRate = " << int(sampleRate);
 
     // f = z * m * n
     double m = m_pParent->getSubpixelsPerPixel();
@@ -99,19 +86,17 @@ void WaveformRenderMarkRange::newTrack(TrackPointer pTrack) {
     double z = m_pParent->getPixelsPerSecond();
     double n = f / (m*z);
 
-    m_iSampleRate = sampleRate;
-
+    m_iSampleRate = static_cast<int>(sampleRate);
     m_dSamplesPerDownsample = n;
+}
 
-    // TODO(rryan) This will possibly get us into trouble, because track samples
-    // might not be updated yet.
-    slotUpdateTrackSamples(m_pTrackSamples->get());
-    if (m_pMarkStartPoint)
-        slotUpdateMarkStartPoint(m_pMarkStartPoint->get());
-    if (m_pMarkEndPoint)
-        slotUpdateMarkEndPoint(m_pMarkEndPoint->get());
-    if (m_pMarkEnabled)
-        slotUpdateMarkEnabled(m_pMarkEnabled->get());
+
+void WaveformRenderMarkRange::resize(int w, int h) {
+    m_iWidth = w;
+    m_iHeight = h;
+}
+
+void WaveformRenderMarkRange::newTrack(TrackPointer pTrack) {
 }
 
 void WaveformRenderMarkRange::setup(QDomNode node) {
