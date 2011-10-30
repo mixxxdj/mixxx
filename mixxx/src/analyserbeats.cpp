@@ -31,10 +31,7 @@ static bool sDebug = true;
 AnalyserBeats::AnalyserBeats(ConfigObject<ConfigValue> *_config) {
     m_pConfigAVT = _config;
     m_bPass = 0;
-    m_iSampleRate = 44100;
-
-
-
+    m_iSampleRate = 0;
 }
 
 AnalyserBeats::~AnalyserBeats(){
@@ -86,6 +83,9 @@ void AnalyserBeats::finalise(TrackPointer tio) {
         BeatsPointer pBeats = BeatFactory::makeBeatGrid(tio, corrected_global_bpm, beats.at(0));
         tio->setBeats(pBeats);
         tio->setBpm(pBeats->getBpm());
+    }
+    else{
+        qDebug() << "Could not detect beat positions from Vamp.";
     }
     m_bPass = mvamp->End();
     beats.clear();
