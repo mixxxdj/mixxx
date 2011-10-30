@@ -18,6 +18,10 @@
 
 #include <vector>
 
+#ifdef __LINUX__
+#include <stddef.h>  //resolves size_t compile error on Ubuntu 11.10
+#endif
+
 #include "Decimator.h"
 
 using std::vector;

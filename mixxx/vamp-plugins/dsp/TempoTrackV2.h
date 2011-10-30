@@ -18,6 +18,9 @@
 #define TEMPOTRACKV2_H
 
 #include <vector>
+#ifdef __LINUX__
+#include <stddef.h>  //resolves size_t compile error on Ubuntu 11.10
+#endif
 
 using std::vector;
 
