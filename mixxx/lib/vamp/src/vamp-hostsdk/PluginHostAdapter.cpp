@@ -88,7 +88,7 @@ PluginHostAdapter::getPluginPath()
 //Please note that *.app file are nothing else than folders
 #define DEFAULT_VAMP_PATH  QCoreApplication::applicationDirPath().toStdString() +"/osx64_build/vamp-plugins:"+ QCoreApplication::applicationDirPath().toStdString() +"/../Plugins"
 #else
-#define DEFAULT_VAMP_PATH "$HOME/vamp:$HOME/.vamp:/usr/local/lib/vamp:/usr/lib/vamp:/usr/local/lib/mixxx/plugins/vamp:/usr/lib/mixxx/plugins/vamp:"+QCoreApplication::applicationDirPath().toStdString() +"/lin32_build/vamp-plugins:"+QCoreApplication::applicationDirPath().toStdString() +"/lin64_build/vamp-plugins"
+#define DEFAULT_VAMP_PATH "/usr/local/lib/mixxx/vamp:"+QCoreApplication::applicationDirPath().toStdString() +"/lin32_build/vamp-plugins:"+QCoreApplication::applicationDirPath().toStdString() +"/lin64_build/vamp-plugins"
 #endif
 #endif
     //if (envPath == "") {
