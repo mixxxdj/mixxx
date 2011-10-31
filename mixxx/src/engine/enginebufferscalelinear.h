@@ -43,7 +43,8 @@ public:
 
 private:
     CSAMPLE *do_scale(CSAMPLE* buf, unsigned long buf_size,
-                   CSAMPLE* pBase, unsigned long iBaseLength);
+                      CSAMPLE* pBase, unsigned long iBaseLength,
+                      int *samples_read);
 
     /** Holds playback direction */
     bool m_bBackwards;
