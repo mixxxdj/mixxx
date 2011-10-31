@@ -109,6 +109,7 @@ class ReadAheadManager {
     void addReadLogEntry(int virtualPlaypositionStart,
                          int virtualPlaypositionEndNonInclusive);
 
+    QMutex m_mutex;
     QList<EngineControl*> m_sEngineControls;
     QLinkedList<ReadLogEntry> m_readAheadLog;
     int m_iCurrentPosition;
