@@ -298,7 +298,12 @@ void CueControl::hotcueSet(HotcueControl* pControl, double v) {
     int hotcue = pControl->getHotcueNumber();
     detachCue(hotcue);
     Cue* pCue = m_pLoadedTrack->addCue();
-    pCue->setPosition(m_pQuantizeEnabled->get() > 0.0 ? m_pNextBeat->get() : getCurrentSample());
+    double cuePosition =
+            (m_pQuantizeEnabled->get() > 0.0 && m_pNextBeat->get() != -1) ?
+            floorf(m_pNextBeat->get()) : floorf(getCurrentSample());
+    if (!even(cuePosition))
+        cuePosition--;
+    pCue->setPosition(cuePosition);
     pCue->setHotCue(hotcue);
     pCue->setLabel("");
     pCue->setType(Cue::CUE);
@@ -523,9 +528,9 @@ void CueControl::cueSet(double v) {
         return;
 
     QMutexLocker lock(&m_mutex);
-    double cue = m_pQuantizeEnabled->get() ?
-            math_max(0.,floorf(m_pNextBeat->get())) :
-            math_max(0.,floorf(getCurrentSample()));
+    double cue =
+            (m_pQuantizeEnabled->get() > 0.0 && m_pNextBeat->get() != -1) ?
+            floorf(m_pNextBeat->get()) : floorf(getCurrentSample());
     if (!even(cue))
         cue--;
     m_pCuePoint->set(cue);
