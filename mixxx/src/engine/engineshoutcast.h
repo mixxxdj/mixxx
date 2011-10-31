@@ -73,6 +73,7 @@ class EngineShoutcast : public EngineAbstractRecord {
     Encoder *m_encoder;
     ControlObject* m_pShoutcastNeedUpdateFromPrefs;
     ControlObjectThreadMain* m_pUpdateShoutcastFromPrefs;
+    ControlObjectThread* m_pMasterSamplerate;
     volatile bool m_bQuit;
     QMutex m_shoutMutex;
     /** static metadata according to prefereneces **/

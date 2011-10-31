@@ -65,16 +65,16 @@ class WSpinny : public QGLWidget
         VinylControlManager* m_pVCManager;
         VinylControlProxy* m_pVinylControl;
 #endif
+        double m_dInitialPos;
         bool m_bVinylActive;
         bool m_bSignalActive;
         QImage m_qImage;
         int m_iSize;
         int m_iTimerId;
         int m_iSignalUpdateTick;
-        
         QString m_group;
         float m_fAngle; //Degrees
-        float m_fGhostAngle; 
+        float m_fGhostAngle;
         QTime m_time;
         double m_dPausedPosition;
         bool m_bGhostPlayback;

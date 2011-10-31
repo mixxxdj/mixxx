@@ -33,7 +33,7 @@ class HSS1394(Feature):
             #if not have_ffado:
             #    raise Exception('Could not find libffado.')
         else:
-#            if not conf.CheckHeader('HSS1394/HSS1394.h'):  # WTF this gives tons of errors on MSVC
+#            if not conf.CheckHeader('HSS1394/HSS1394.h'):  # WTF this gives tons of cmath errors on MSVC
 #                raise Exception('Did not find HSS1394 development headers, exiting!')
 #            elif not conf.CheckLib(['libHSS1394', 'HSS1394']):
             if not conf.CheckLib(['libHSS1394', 'HSS1394']):

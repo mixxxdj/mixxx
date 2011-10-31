@@ -7,12 +7,12 @@
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
@@ -25,7 +25,7 @@ v0.1 10/09/2010 First public release
 
 **/
 
-//TODO: Cleanup, create objects from init. 
+//TODO: Cleanup, create objects from init.
 //Remove led timers when alsa midi is working properly.
 HerculesSteel = new function() {
 	this.group = "[Master]";
@@ -45,7 +45,7 @@ HerculesSteel.addButton = function(buttonName, button, eventHandler) {
 		}
 		button.handler = handler;
 	}
-	this.Buttons[buttonName] = button; 
+	this.Buttons[buttonName] = button;
 };
 
 HerculesSteel.setControlValue = function(control, value) {
@@ -62,7 +62,7 @@ HerculesSteel.Button = function (controlId, blinkId) {
 };
 
 	HerculesSteel.Button.prototype.setLed = function(lightState) {
-		if(lightState == HerculesSteel.LedState.on) 
+		if(lightState == HerculesSteel.LedState.on)
 		{
 			engine.beginTimer(20, "midi.sendShortMsg(0xB0," + (this.controlId) + ", " + HerculesSteel.LedState.on + ")", true);
 		}
@@ -100,7 +100,7 @@ HerculesSteel.Control.prototype.setValue = function(group, inputValue){
 	} else {
 		outputValue = this.midOutput + ((inputValue - this.midInput) / (this.maxInput - this.midInput)) * (this.maxOutput - this.midOutput);
 	}
-	if(this.softMode){ 
+	if(this.softMode){
 		var currentValue = engine.getValue(group, this.mappedFunction);
 		var currentRelative = 0.0;
 		if(currentValue <= this.midOutput){
@@ -695,7 +695,7 @@ HerculesSteel.Decks.Left.Controls.Bass.maxOutput = 4.0;
 HerculesSteel.Decks.Left.Controls.Vol.minOutput = 0.0;
 HerculesSteel.Decks.Left.Controls.Vol.midOutput = 0.4;
 HerculesSteel.Decks.Left.Controls.Vol.maxOutput = 1.0;
-HerculesSteel.Decks.Left.Controls.Pitch.midInput = 0x40;
+HerculesSteel.Decks.Left.Controls.Pitch.midInput = 0x3F;
 
 HerculesSteel.Decks.Right.addButton("Keypad1",  new HerculesSteel.Button(0x19), "keypad1Handler");
 HerculesSteel.Decks.Right.addButton("Keypad2", new HerculesSteel.Button(0x1A), "keypad2Handler");
@@ -748,7 +748,7 @@ HerculesSteel.Decks.Right.Controls.Bass.maxOutput = 4.0;
 HerculesSteel.Decks.Right.Controls.Vol.minOutput = 0.0;
 HerculesSteel.Decks.Right.Controls.Vol.midOutput = 0.4;
 HerculesSteel.Decks.Right.Controls.Vol.maxOutput = 1.0;
-HerculesSteel.Decks.Right.Controls.Pitch.midInput = 0x40;
+HerculesSteel.Decks.Right.Controls.Pitch.midInput = 0x3F;
 
 
 //Mapping functions
@@ -819,7 +819,7 @@ HerculesSteel.deckVolume = function(channel, control, value, status, group) {
 };
 
 HerculesSteel.jog_wheel = function (channel, control, value, status, group) {
-	// 7F > 40: CCW Slow > Fast - 127 > 64 
+	// 7F > 40: CCW Slow > Fast - 127 > 64
 	// 01 > 3F: CW Slow > Fast - 0 > 63
 	var jogValue = value >=0x40 ? value - 0x80 : value; // -64 to +63, - = CCW, + = CW
 	HerculesSteel.GetDeck(group).jogMove(jogValue);

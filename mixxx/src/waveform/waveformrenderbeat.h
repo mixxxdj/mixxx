@@ -28,12 +28,15 @@ class WaveformRenderBeat : public RenderObject {
               double playPos, double rateAdjust);
     void newTrack(TrackPointer pTrack);
 
-  public slots:
+  private slots:
     void slotUpdateTrackSamples(double samples);
     void slotUpdateBeatActive(double beatActive);
+    void slotUpdateTrackSampleRate(double sampleRate);
+
   private:
     WaveformRenderer *m_pParent;
     ControlObjectThreadMain* m_pTrackSamples;
+    ControlObjectThreadMain *m_pTrackSampleRate;
     ControlObjectThreadMain* m_pBeatActive;
     TrackPointer m_pTrack;
     int m_iWidth, m_iHeight;
@@ -44,7 +47,6 @@ class WaveformRenderBeat : public RenderObject {
     int m_iNumSamples;
     int m_iSampleRate;
     bool m_bBeatActive;
-
     BeatList m_beatList;
 };
 
