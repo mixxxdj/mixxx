@@ -17,6 +17,7 @@ class TraktorTableModel : public BaseSqlTableModel {
     Q_OBJECT
   public:
     TraktorTableModel(QObject* parent, TrackCollection* pTrackCollection);
+    TrackModel::CapabilitiesFlags getCapabilities() const;
     virtual ~TraktorTableModel();
 
     virtual TrackPointer getTrack(const QModelIndex& index) const;

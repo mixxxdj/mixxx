@@ -165,6 +165,7 @@ CSAMPLE* EngineBufferScaleST::scale(double playpos, unsigned long buf_size,
                                     CSAMPLE* pBase, unsigned long iBaseLength) {
     Q_UNUSED (pBase);
     Q_UNUSED (iBaseLength);
+    new_playpos = 0.0;
 
     m_qMutex.lock();
 
@@ -243,13 +244,10 @@ CSAMPLE* EngineBufferScaleST::scale(double playpos, unsigned long buf_size,
     //for (unsigned long i = 0; i < buf_size; i++)
     //    qDebug() << buffer[i];
 
-    ///Even though this is called "new_playpos", it's really just the new _offset_
-    //of the playposition. It's how many samples forwards or backwards we just moved
-    //in the song.
-    if (m_bBackwards)
-        new_playpos = playpos - m_dTempo*m_dBaseRate*total_received_frames*2;
-    else
-        new_playpos = playpos + m_dTempo*m_dBaseRate*total_received_frames*2;
+    // new_playpos is now interpreted as the total number of virtual samples
+    // consumed to produce the scaled buffer. Due to this, we do not take into
+    // account directionality or starting point.
+    new_playpos = m_dTempo*m_dBaseRate*total_received_frames*2;
 
     m_qMutex.unlock();
 

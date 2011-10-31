@@ -353,18 +353,11 @@ bool IPodPlaylistModel::setData(const QModelIndex& index, const QVariant& value,
 
 TrackModel::CapabilitiesFlags IPodPlaylistModel::getCapabilities() const {
     return TRACKMODELCAPS_NONE
-            //| TRACKMODELCAPS_REORDER
-            //| TRACKMODELCAPS_RECEIVEDROPS
             | TRACKMODELCAPS_ADDTOPLAYLIST
             | TRACKMODELCAPS_ADDTOCRATE
             | TRACKMODELCAPS_ADDTOAUTODJ
-            //| TRACKMODELCAPS_LOCKED
-            //| TRACKMODELCAPS_RELOADMETADATA
             | TRACKMODELCAPS_LOADTODECK
-            | TRACKMODELCAPS_LOADTOSAMPLER
-            //| TRACKMODELCAPS_REMOVE
-            //| TRACKMODELCAPS_RELOCATE
-            ;
+            | TRACKMODELCAPS_LOADTOSAMPLER;
 }
 
 Qt::ItemFlags IPodPlaylistModel::flags(const QModelIndex &index) const {
@@ -757,6 +750,7 @@ TrackPointer IPodPlaylistModel::getTrack(const QModelIndex& index) const {
 
     // Overwrite metadata from Ipod
     // Note: This will be written to the mixxx library as well
+    // This is OK here because the location ist still pointing to the iPod device
     pTrackP->setArtist(QString::fromUtf8(pTrack->artist));
     pTrackP->setTitle(QString::fromUtf8(pTrack->title));
     pTrackP->setAlbum(QString::fromUtf8(pTrack->album));
@@ -771,7 +765,6 @@ TrackPointer IPodPlaylistModel::getTrack(const QModelIndex& index) const {
         BeatsPointer pBeats = BeatFactory::makeBeatGrid(pTrackP, bpm, 0);
         pTrackP->setBeats(pBeats);
     }
-
 
     return pTrackP;
 }
