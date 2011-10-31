@@ -29,10 +29,6 @@ int ReadAheadManager::getNextSamples(double dRate, CSAMPLE* buffer,
     // A loop will only limit the amount we can read in one shot.
 
     QPair<int, double> next_loop;
-    // = getSoonestTrigger(in_reverse, m_iCurrentPosition);
-
-    // Instead of used getSoonestTrigger, instead we just use the result of the
-    // first engine control.
     next_loop.first = 0;
     next_loop.second = m_sEngineControls[0]->nextTrigger(dRate,
                                                          m_iCurrentPosition,
@@ -69,8 +65,10 @@ int ReadAheadManager::getNextSamples(double dRate, CSAMPLE* buffer,
 
     // Increment or decrement current read-ahead position
     if (in_reverse) {
+        addReadLogEntry(m_iCurrentPosition, m_iCurrentPosition - samples_read);
         m_iCurrentPosition -= samples_read;
     } else {
+        addReadLogEntry(m_iCurrentPosition, m_iCurrentPosition + samples_read);
         m_iCurrentPosition += samples_read;
     }
 
@@ -114,10 +112,20 @@ void ReadAheadManager::addEngineControl(EngineControl* pControl) {
 
 void ReadAheadManager::setNewPlaypos(int iNewPlaypos) {
     m_iCurrentPosition = iNewPlaypos;
+    m_readAheadLog.clear();
 }
 
 void ReadAheadManager::notifySeek(int iSeekPosition) {
     m_iCurrentPosition = iSeekPosition;
+    m_readAheadLog.clear();
+
+    // TODO(XXX) notifySeek on the engine controls. EngineBuffer currently does
+    // a fine job of this so it isn't really necessary but eventually I think
+    // RAMAN should do this job. rryan 11/2011
+
+    // foreach (EngineControl* pControl, m_sEngineControls) {
+    //     pControl->notifySeek(iSeekPosition);
+    // }
 }
 
 void ReadAheadManager::hintReader(double dRate, QList<Hint>& hintList,
@@ -143,4 +151,58 @@ void ReadAheadManager::hintReader(double dRate, QList<Hint>& hintList,
     // top priority, we need to read this data immediately
     current_position.priority = 1;
     hintList.append(current_position);
+}
+
+void ReadAheadManager::addReadLogEntry(int virtualPlaypositionStart,
+                                       int virtualPlaypositionEndNonInclusive) {
+    ReadLogEntry newEntry(virtualPlaypositionStart,
+                          virtualPlaypositionEndNonInclusive);
+    if (m_readAheadLog.size() > 0) {
+        ReadLogEntry& last = m_readAheadLog.last();
+        if (last.merge(newEntry)) {
+            return;
+        }
+    }
+    m_readAheadLog.append(newEntry);
+}
+
+int ReadAheadManager::getEffectiveVirtualPlaypositionFromLog(int currentVirtualPlayposition,
+                                                             int numConsumedSamples) {
+    if (numConsumedSamples == 0) {
+        return currentVirtualPlayposition;
+    }
+
+    if (m_readAheadLog.size() == 0) {
+        // No log entries to read from.
+        qDebug() << this << "No read ahead log entries to read from. Case not currently handled.";
+        // TODO(rryan) log through a stats pipe eventually
+        return currentVirtualPlayposition;
+    }
+
+    int virtualPlayposition = 0;
+    bool shouldNotifySeek = false;
+    while (m_readAheadLog.size() > 0 && numConsumedSamples > 0) {
+        ReadLogEntry& entry = m_readAheadLog.first();
+
+        // Notify EngineControls that we have taken a seek.
+        if (shouldNotifySeek) {
+            foreach (EngineControl* pControl, m_sEngineControls) {
+                pControl->notifySeek(entry.virtualPlaypositionStart);
+            }
+        }
+
+        int consumed = entry.consume(numConsumedSamples);
+        numConsumedSamples -= consumed;
+
+        // Advance our idea of the current virtual playposition to this
+        // ReadLogEntry's start position.
+        virtualPlayposition = entry.virtualPlaypositionStart;
+
+        if (entry.length() == 0) {
+            // This entry is empty now.
+            m_readAheadLog.removeFirst();
+        }
+        shouldNotifySeek = true;
+    }
+    return virtualPlayposition;
 }
