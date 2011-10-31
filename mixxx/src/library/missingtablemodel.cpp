@@ -140,5 +140,6 @@ QItemDelegate* MissingTableModel::delegateForColumn(const int i) {
 }
 
 TrackModel::CapabilitiesFlags MissingTableModel::getCapabilities() const {
-    return TRACKMODELCAPS_NONE | TRACKMODELCAPS_REMOVE;
+    return TRACKMODELCAPS_NONE
+            | TRACKMODELCAPS_REMOVE;
 }
