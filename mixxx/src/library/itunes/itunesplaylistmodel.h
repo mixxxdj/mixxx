@@ -24,6 +24,7 @@ class ITunesPlaylistModel : public BaseSqlTableModel {
     virtual bool isColumnHiddenByDefault(int column);
     virtual Qt::ItemFlags flags(const QModelIndex &index) const;
     void setPlaylist(QString path_name);
+    TrackModel::CapabilitiesFlags getCapabilities() const;
 
   private slots:
     void slotSearch(const QString& searchText);
