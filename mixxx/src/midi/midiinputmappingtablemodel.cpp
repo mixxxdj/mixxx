@@ -74,6 +74,10 @@ QVariant MidiInputMappingTableModel::data(const QModelIndex &index, int role) co
                  return control.getMidiOption();
                  break;
 
+            case MIDIINPUTTABLEINDEX_CONTROLOBJECTDESCRIPTION:
+                return control.getControlObjectDescription();
+                break;
+
              default:
                  return QVariant();
          }
@@ -128,6 +132,10 @@ bool MidiInputMappingTableModel::setData(const QModelIndex &index, const QVarian
 
                 case MIDIINPUTTABLEINDEX_MIDIOPTION:
                     control.setMidiOption((MidiOption)value.toInt());
+                    break;
+
+                case MIDIINPUTTABLEINDEX_CONTROLOBJECTDESCRIPTION:
+                    control.setControlObjectDescription(value.toString());
                     break;
             };
 
@@ -187,6 +195,10 @@ QVariant MidiInputMappingTableModel::headerData(int section, Qt::Orientation ori
                 return QVariant(tr("Midi Option"));
                 break;
                 */
+
+            case MIDIINPUTTABLEINDEX_CONTROLOBJECTDESCRIPTION:
+                return QVariant(tr("Description"));
+                break;
         }
     }
 

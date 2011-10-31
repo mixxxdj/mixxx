@@ -65,11 +65,10 @@ private:
     TraktorPlaylistModel* m_pTraktorPlaylistModel;
 
     bool m_isActivated;
+    bool m_cancelImport;
     QFutureWatcher<TreeItem*> m_future_watcher;
     QFuture<TreeItem*> m_future;
     QString m_title;
-
-
 };
 
 

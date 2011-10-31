@@ -8,7 +8,8 @@
 #include "engine/engineworkerscheduler.h"
 
 EngineWorkerScheduler::EngineWorkerScheduler(QObject* pParent)
-        : m_scheduleFIFO(MAX_ENGINE_WORKERS) {
+        : m_scheduleFIFO(MAX_ENGINE_WORKERS),
+          m_bQuit(false) {
     Q_UNUSED(pParent);
     m_workerThreadPool.setMaxThreadCount(ENGINE_WORKER_THREAD_COUNT);
     // A timeout of 1 minute for threads in the pool.
@@ -16,6 +17,9 @@ EngineWorkerScheduler::EngineWorkerScheduler(QObject* pParent)
 }
 
 EngineWorkerScheduler::~EngineWorkerScheduler() {
+    m_bQuit = true;
+    m_waitCondition.wakeAll();
+    m_workerThreadPool.waitForDone();
 }
 
 void EngineWorkerScheduler::bindWorker(EngineWorker* pWorker) {
@@ -53,7 +57,7 @@ void EngineWorkerScheduler::runWorkers() {
 
 void EngineWorkerScheduler::run() {
     m_mutex.lock();
-    while (true) {
+    while (!m_bQuit) {
         EngineWorker* pWorker = NULL;
         while (m_scheduleFIFO.read(&pWorker, 1) == 1) {
             if (pWorker && !m_activeWorkers.contains(pWorker)) {

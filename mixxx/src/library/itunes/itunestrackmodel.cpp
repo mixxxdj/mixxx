@@ -1,8 +1,11 @@
 #include <QtCore>
 #include <QtGui>
 #include <QtSql>
-#include "library/trackcollection.h"
+
 #include "library/itunes/itunestrackmodel.h"
+#include "library/trackcollection.h"
+#include "track/beatfactory.h"
+#include "track/beats.h"
 
 ITunesTrackModel::ITunesTrackModel(QObject* parent,
                                    TrackCollection* pTrackCollection)
@@ -17,6 +20,7 @@ ITunesTrackModel::ITunesTrackModel(QObject* parent,
     columns << "id";
     setTable("itunes_library", columns[0], columns,
              m_pTrackCollection->getTrackSource("itunes"));
+    setDefaultSort(fieldIndex("artist"), Qt::AscendingOrder);
     initHeaderData();
 }
 
@@ -33,15 +37,46 @@ TrackPointer ITunesTrackModel::getTrack(const QModelIndex& index) const {
 
     QString location = index.sibling(index.row(), fieldIndex("location")).data().toString();
 
-    TrackInfoObject* pTrack = new TrackInfoObject(location);
-    pTrack->setArtist(artist);
-    pTrack->setTitle(title);
-    pTrack->setAlbum(album);
-    pTrack->setYear(year);
-    pTrack->setGenre(genre);
-    pTrack->setBpm(bpm);
+    if (location.isEmpty()) {
+        // Track is lost
+        return TrackPointer();
+    }
 
-    return TrackPointer(pTrack, &QObject::deleteLater);
+    TrackDAO& track_dao = m_pTrackCollection->getTrackDAO();
+    int track_id = track_dao.getTrackId(location);
+    bool track_already_in_library = track_id >= 0;
+    if (track_id < 0) {
+        // Add Track to library
+        track_id = track_dao.addTrack(location, true);
+    }
+
+    TrackPointer pTrack;
+
+    if (track_id < 0) {
+        // Add Track to library failed, create a transient TrackInfoObject
+        pTrack = TrackPointer(new TrackInfoObject(location), &QObject::deleteLater);
+    } else {
+        pTrack = track_dao.getTrack(track_id);
+    }
+
+    // If this track was not in the Mixxx library it is now added and will be
+    // saved with the metadata from iTunes. If it was already in the library
+    // then we do not touch it so that we do not over-write the user's metadata.
+    if (!track_already_in_library) {
+        pTrack->setArtist(artist);
+        pTrack->setTitle(title);
+        pTrack->setAlbum(album);
+        pTrack->setYear(year);
+        pTrack->setGenre(genre);
+        pTrack->setBpm(bpm);
+
+        // If the track has a BPM, then give it a static beatgrid.
+        if (bpm > 0) {
+            BeatsPointer pBeats = BeatFactory::makeBeatGrid(pTrack, bpm, 0);
+            pTrack->setBeats(pBeats);
+        }
+    }
+    return pTrack;
 }
 
 void ITunesTrackModel::search(const QString& searchText) {
@@ -66,5 +101,16 @@ Qt::ItemFlags ITunesTrackModel::flags(const QModelIndex &index) const {
 }
 
 bool ITunesTrackModel::isColumnHiddenByDefault(int column) {
+    Q_UNUSED(column);
     return false;
+}
+
+TrackModel::CapabilitiesFlags ITunesTrackModel::getCapabilities() const {
+    // See src/library/trackmodel.h for the list of TRACKMODELCAPS
+    return TRACKMODELCAPS_NONE
+            | TRACKMODELCAPS_ADDTOPLAYLIST
+            | TRACKMODELCAPS_ADDTOCRATE
+            | TRACKMODELCAPS_ADDTOAUTODJ
+            | TRACKMODELCAPS_LOADTODECK
+            | TRACKMODELCAPS_LOADTOSAMPLER;
 }

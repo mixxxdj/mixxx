@@ -1,4 +1,3 @@
-
 #include <QDebug>
 #include <QColor>
 #include <QDomNode>
@@ -24,12 +23,10 @@ WaveformRenderSignal::WaveformRenderSignal(const char* group, WaveformRenderer *
     m_fGain(1),
     m_lines(0),
     m_pTrack(NULL),
-
     signalColor(255,255,255) {
-
     m_pGain = new ControlObjectThreadMain(
         ControlObject::getControl(ConfigKey(group, "total_gain")));
-    if(m_pGain != NULL) {
+    if (m_pGain != NULL) {
         connect(m_pGain, SIGNAL(valueChanged(double)),
                 this, SLOT(slotUpdateGain(double)));
     }
@@ -37,9 +34,7 @@ WaveformRenderSignal::WaveformRenderSignal(const char* group, WaveformRenderer *
 
 WaveformRenderSignal::~WaveformRenderSignal() {
     qDebug() << this << "~WaveformRenderSignal()";
-    if(m_pGain)
-        delete m_pGain;
-    m_pGain = NULL;
+    delete m_pGain;
 }
 
 void WaveformRenderSignal::resize(int w, int h) {
@@ -61,9 +56,12 @@ void WaveformRenderSignal::setup(QDomNode node) {
 }
 
 
-void WaveformRenderSignal::draw(QPainter *pPainter, QPaintEvent *event, QVector<float> *buffer, double dPlayPos, double rateAdjust) {
-    if(buffer == NULL)
+void WaveformRenderSignal::draw(QPainter *pPainter, QPaintEvent *event,
+                                QVector<float> *buffer, double dPlayPos,
+                                double rateAdjust) {
+    if (buffer == NULL) {
         return;
+    }
 
     float* baseBuffer = buffer->data();
 
@@ -71,14 +69,14 @@ void WaveformRenderSignal::draw(QPainter *pPainter, QPaintEvent *event, QVector<
     int iCurPos = 0;
     iCurPos = (int)(dPlayPos*numBufferSamples);
 
-    if((iCurPos % 2) != 0)
+    if ((iCurPos % 2) != 0)
         iCurPos--;
 
     pPainter->save();
 
     pPainter->setPen(signalColor);
 
-    double subpixelsPerPixel = m_pParent->getSubpixelsPerPixel() * (1.0 + rateAdjust);
+    const double subpixelsPerPixel = m_pParent->getSubpixelsPerPixel() * (1.0 + rateAdjust);
 
     int subpixelWidth = int(m_iWidth * subpixelsPerPixel);
 
@@ -88,6 +86,12 @@ void WaveformRenderSignal::draw(QPainter *pPainter, QPaintEvent *event, QVector<
         m_lines.resize(2*subpixelWidth);
     }
 
+    // Use the pointer to the QVector internal data to avoid range
+    // checks. QVector<QLineF>::operator[] profiled very high. const_cast is
+    // naughty but we just want Qt to leave us alone here. WARNING: calling
+    // m_lines.data() will copy the entire vector in memory by calling
+    // QVector<T>::detach(). QVector<T>::constData() does not do this.
+    QLineF* lineData = const_cast<QLineF*>(m_lines.constData());
     int halfw = subpixelWidth/2;
     for(int i=0;i<subpixelWidth;i++) {
         // Start at curPos minus half the waveform viewer
@@ -96,15 +100,33 @@ void WaveformRenderSignal::draw(QPainter *pPainter, QPaintEvent *event, QVector<
             float sampl = baseBuffer[thisIndex] * m_fGain * m_iHeight * 0.5f;
             float sampr = -baseBuffer[thisIndex+1] * m_fGain * m_iHeight * 0.5f;
             const qreal xPos = i/subpixelsPerPixel;
-            m_lines[i].setLine(xPos, sampr, xPos, sampl);
+            lineData[i].setLine(xPos, sampr, xPos, sampl);
         } else {
-            m_lines[i].setLine(0,0,0,0);
+            lineData[i].setLine(0,0,0,0);
         }
     }
 
     // Only draw lines that we have provided
-    pPainter->drawLines(m_lines.data(), subpixelWidth);
+    pPainter->drawLines(lineData, subpixelWidth);
 
+    // Some of the pre-roll is on screen. Draw little triangles to indicate
+    // where the pre-roll is located.
+    if (iCurPos < 2*halfw) {
+        double start_index = 0;
+        int end_index = (halfw - iCurPos/2);
+        QPolygonF polygon;
+        const int polyWidth = 80;
+        polygon << QPointF(0, 0)
+                << QPointF(-polyWidth/subpixelsPerPixel, -m_iHeight/5)
+                << QPointF(-polyWidth/subpixelsPerPixel, m_iHeight/5);
+        polygon.translate(end_index/subpixelsPerPixel, 0);
+
+        int index = end_index;
+        while (index > start_index) {
+            pPainter->drawPolygon(polygon);
+            polygon.translate(-polyWidth/subpixelsPerPixel, 0);
+            index -= polyWidth;
+        }
+    }
     pPainter->restore();
-
 }

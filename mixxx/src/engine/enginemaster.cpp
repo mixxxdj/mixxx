@@ -48,14 +48,14 @@ EngineMaster::EngineMaster(ConfigObject<ConfigValue> * _config,
     m_pSyncWorker = new SyncWorker(m_pWorkerScheduler);
 
     // Master sample rate
-    ControlObject * sr = new ControlObject(ConfigKey(group, "samplerate"));
-    sr->set(44100.);
+    m_pMasterSampleRate = new ControlObject(ConfigKey(group, "samplerate"));
+    m_pMasterSampleRate->set(44100.);
 
     // Latency control
-    new ControlObject(ConfigKey(group, "latency"));
+    m_pMasterLatency = new ControlObject(ConfigKey(group, "latency"));
 
     // Master rate
-    new ControlPotmeter(ConfigKey(group, "rate"), -1.0, 1.0);
+    m_pMasterRate = new ControlPotmeter(ConfigKey(group, "rate"), -1.0, 1.0);
 
 #ifdef __LADSPA__
     // LADSPA
@@ -122,6 +122,10 @@ EngineMaster::~EngineMaster()
 
     delete xFaderCalibration;
     delete xFaderCurve;
+
+    delete m_pMasterSampleRate;
+    delete m_pMasterLatency;
+    delete m_pMasterRate;
 
     SampleUtil::free(m_pHead);
     SampleUtil::free(m_pMaster);

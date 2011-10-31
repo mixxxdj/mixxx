@@ -138,17 +138,28 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
         locale = QLocale::system().name();
     }
 
-    QTranslator* qtTranslator = new QTranslator();
-    qtTranslator->load("qt_" + locale,
-                      QLibraryInfo::location(QLibraryInfo::TranslationsPath));
-    a->installTranslator(qtTranslator);
+    // Load Qt translations for this locale
+    QTranslator* qtTranslator = new QTranslator(a);
+   if( qtTranslator->load("qt_" + locale,
+           QLibraryInfo::location(QLibraryInfo::TranslationsPath))) {
+       a->installTranslator(qtTranslator);
+   }
+   else{
+       delete qtTranslator;
+   }
 
     // Load Mixxx specific translations for this locale
-    QTranslator* mixxxTranslator = new QTranslator();
+    QTranslator* mixxxTranslator = new QTranslator(a);
     bool mixxxLoaded = mixxxTranslator->load("mixxx_" + locale, translationsFolder);
     qDebug() << "Loading translations for locale" << locale
-             << "from translations folder" << translationsFolder << ":" << (mixxxLoaded ? "success" : "fail");
-    a->installTranslator(mixxxTranslator);
+            << "from translations folder" << translationsFolder << ":"
+            << (mixxxLoaded ? "success" : "fail");
+   if (mixxxLoaded) {
+       a->installTranslator(mixxxTranslator);
+   }
+   else {
+       delete mixxxTranslator;
+   }
 
 #ifdef __C_METRICS__
     // Initialize Case Metrics if User is OK with that
@@ -245,6 +256,7 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
 
     // TODO(XXX) leak pKbdConfig, MixxxKeyboard owns it? Maybe roll all keyboard
     // initialization into MixxxKeyboard
+    // Workaround for today: MixxxKeyboard calls delete
     m_pKeyboard = new MixxxKeyboard(pKbdConfig);
 
     //create RecordingManager
@@ -292,6 +304,15 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
             hasChanged_MusicDir = true;
         }
     }
+    /*
+     * Do not write meta data back to ID3 when meta data has changed
+     * Because multiple TrackDao objects can exists for a particular track
+     * writing meta data may ruine your MP3 file if done simultaneously.
+     * see Bug #728197
+     * For safety reasons, we deactivate this feature.
+     */
+    m_pConfig->set(ConfigKey("[Library]","WriteAudioTags"), ConfigValue(0));
+
 
     // library dies in seemingly unrelated qtsql error about not having a
     // sqlite driver if this path doesn't exist. Normally config->Save()
@@ -617,15 +638,28 @@ MixxxApp::~MixxxApp()
 
     // Check for leaked ControlObjects and give warnings.
     QList<ControlObject*> leakedControls;
+    QList<ConfigKey> leakedConfigKeys;
+
     ControlObject::getControls(&leakedControls);
 
     if (leakedControls.size() > 0) {
-        qDebug() << "WARNING: The following controls were leaked:";
+        qDebug() << "WARNING: The following" << leakedControls.size() << "controls were leaked:";
         foreach (ControlObject* pControl, leakedControls) {
             ConfigKey key = pControl->getKey();
             qDebug() << key.group << key.item;
+            leakedConfigKeys.append(key);
         }
-    }
+
+       foreach (ConfigKey key, leakedConfigKeys) {
+           // delete just to satisfy valgrind:
+           // check if the pointer is still valid, the control object may have bin already
+           // deleted by its parent in this loop
+           delete ControlObject::getControl(key);
+       }
+   }
+   qDebug() << "~MixxxApp: All leaking controls deleted.";
+
+   delete m_pKeyboard;
 }
 
 int MixxxApp::noSoundDlg(void)
@@ -798,6 +832,7 @@ void MixxxApp::initActions()
     m_pHelpAboutApp = new QAction(tr("&About"), this);
     m_pHelpSupport = new QAction(tr("&Community Support"), this);
     m_pHelpFeedback = new QAction(tr("Send Us &Feedback"), this);
+    m_pHelpTranslation = new QAction(tr("&Translate this application"), this);
 
 #ifdef __VINYLCONTROL__
     m_pOptionsVinylControl = new QAction(tr("Enable &Vinyl Control 1"), this);
@@ -883,8 +918,8 @@ void MixxxApp::initActions()
     connect(m_pOptionsVinylControl, SIGNAL(toggled(bool)), this,
         SLOT(slotCheckboxVinylControl(bool)));
 
-    ControlObjectThreadMain *enabled1 = new ControlObjectThreadMain(
-        ControlObject::getControl(ConfigKey("[Channel1]", "vinylcontrol_enabled")));
+   ControlObjectThreadMain* enabled1 = new ControlObjectThreadMain(
+        ControlObject::getControl(ConfigKey("[Channel1]", "vinylcontrol_enabled")),this);
     connect(enabled1, SIGNAL(valueChanged(double)), this,
         SLOT(slotControlVinylControl(double)));
 
@@ -896,8 +931,8 @@ void MixxxApp::initActions()
     connect(m_pOptionsVinylControl2, SIGNAL(toggled(bool)), this,
         SLOT(slotCheckboxVinylControl2(bool)));
 
-    ControlObjectThreadMain *enabled2 = new ControlObjectThreadMain(
-        ControlObject::getControl(ConfigKey("[Channel2]", "vinylcontrol_enabled")));
+    ControlObjectThreadMain* enabled2 = new ControlObjectThreadMain(
+        ControlObject::getControl(ConfigKey("[Channel2]", "vinylcontrol_enabled")),this);
     connect(enabled2, SIGNAL(valueChanged(double)), this,
         SLOT(slotControlVinylControl2(double)));
 #endif
@@ -946,6 +981,10 @@ void MixxxApp::initActions()
     m_pHelpFeedback->setWhatsThis(tr("Support\n\nSend feedback to the Mixxx team."));
     connect(m_pHelpFeedback, SIGNAL(triggered()), this, SLOT(slotHelpFeedback()));
 
+    m_pHelpTranslation->setStatusTip(tr("Help translate this application into your language."));
+    m_pHelpTranslation->setWhatsThis(tr("Support\n\nHelp translate this application into your language."));
+    connect(m_pHelpTranslation, SIGNAL(triggered()), this, SLOT(slotHelpTranslation()));
+
     m_pHelpAboutApp->setStatusTip(tr("About the application"));
     m_pHelpAboutApp->setWhatsThis(tr("About\n\nAbout the application"));
     connect(m_pHelpAboutApp, SIGNAL(triggered()), this, SLOT(slotHelpAbout()));
@@ -962,13 +1001,13 @@ void MixxxApp::initActions()
 void MixxxApp::initMenuBar()
 {
     // MENUBAR
-    m_pFileMenu=new QMenu(tr("&File"));
-    m_pOptionsMenu=new QMenu(tr("&Options"));
-    m_pLibraryMenu=new QMenu(tr("&Library"));
-    m_pViewMenu=new QMenu(tr("&View"));
-    m_pHelpMenu=new QMenu(tr("&Help"));
+   m_pFileMenu = new QMenu(tr("&File"), menuBar());
+   m_pOptionsMenu = new QMenu(tr("&Options"), menuBar());
+   m_pLibraryMenu = new QMenu(tr("&Library"),menuBar());
+   m_pViewMenu = new QMenu(tr("&View"), menuBar());
+   m_pHelpMenu = new QMenu(tr("&Help"), menuBar());
 #ifdef __SCRIPT__
-    macroMenu=new QMenu(tr("&Macro"));
+   macroMenu=new QMenu(tr("&Macro"), menuBar());
 #endif
     connect(m_pOptionsMenu, SIGNAL(aboutToShow()),
             this, SLOT(slotOptionsMenuShow()));
@@ -982,7 +1021,7 @@ void MixxxApp::initMenuBar()
     //optionsMenu->setCheckable(true);
     //  optionsBeatMark->addTo(optionsMenu);
 #ifdef __VINYLCONTROL__
-    m_pVinylControlMenu = new QMenu(tr("&Vinyl Control"));
+    m_pVinylControlMenu = new QMenu(tr("&Vinyl Control"), menuBar());
     m_pVinylControlMenu->addAction(m_pOptionsVinylControl);
     m_pVinylControlMenu->addAction(m_pOptionsVinylControl2);
     m_pOptionsMenu->addMenu(m_pVinylControlMenu);
@@ -1008,6 +1047,7 @@ void MixxxApp::initMenuBar()
     // menuBar entry helpMenu
     m_pHelpMenu->addAction(m_pHelpSupport);
     m_pHelpMenu->addAction(m_pHelpFeedback);
+    m_pHelpMenu->addAction(m_pHelpTranslation);
     m_pHelpMenu->addSeparator();
     m_pHelpMenu->addAction(m_pHelpAboutApp);
 
@@ -1289,6 +1329,7 @@ void MixxxApp::slotHelpAbout()
 "Daniel Sch&uuml;rmann<br>"
 "Peter V&aacute;gner<br>"
 "Thanasis Liappis<br>"
+"Jens Nachtigall<br>"
 
 "</p>"
 "<p align=\"center\"><b>And special thanks to:</b></p>"
@@ -1367,8 +1408,7 @@ void MixxxApp::slotHelpAbout()
 
 }
 
-void MixxxApp::slotHelpSupport()
-{
+void MixxxApp::slotHelpSupport() {
     QUrl qSupportURL;
     qSupportURL.setUrl(MIXXX_SUPPORT_URL);
     QDesktopServices::openUrl(qSupportURL);
@@ -1378,6 +1418,12 @@ void MixxxApp::slotHelpFeedback() {
     QUrl qFeedbackUrl;
     qFeedbackUrl.setUrl(MIXXX_FEEDBACK_URL);
     QDesktopServices::openUrl(qFeedbackUrl);
+}
+
+void MixxxApp::slotHelpTranslation() {
+    QUrl qTranslationUrl;
+    qTranslationUrl.setUrl(MIXXX_TRANSLATION_URL);
+    QDesktopServices::openUrl(qTranslationUrl);
 }
 
 void MixxxApp::rebootMixxxView() {

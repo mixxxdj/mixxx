@@ -27,7 +27,6 @@
 #include "controlpotmeter.h"
 #include "engine/enginebufferscalest.h"
 #include "engine/enginebufferscalelinear.h"
-#include "engine/enginebufferscalereal.h"
 #include "engine/enginebufferscaledummy.h"
 #include "mathstuff.h"
 #include "engine/engineworkerscheduler.h"
@@ -51,6 +50,8 @@
 #include <math.h>  // for isnan() everywhere else
 #endif
 
+const double kMaxPlayposRange = 1.14;
+const double kMinPlayposRange = -0.14;
 
 EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _config) :
     m_engineLock(QMutex::Recursive),
@@ -76,7 +77,9 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
     m_pScaleST(NULL),
     m_bScalerChanged(false),
     m_bLastBufferPaused(true),
-    m_fRampValue(0.0) {
+    m_fRampValue(0.0),
+    m_iRampState(ENGINE_RAMP_NONE)
+{
 
     m_fLastSampleValue[0] = 0;
     m_fLastSampleValue[1] = 0;
@@ -105,6 +108,14 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
     playStartButton->set(0);
     playStartButtonCOT = new ControlObjectThreadMain(playStartButton);
 
+    // Jump to start and stop button
+    stopStartButton = new ControlPushButton(ConfigKey(group, "start_stop"));
+    connect(stopStartButton, SIGNAL(valueChanged(double)),
+            this, SLOT(slotControlJumpToStartAndStop(double)),
+            Qt::DirectConnection);
+    stopStartButton->set(0);
+    stopStartButtonCOT = new ControlObjectThreadMain(stopStartButton);
+
     //Stop playback (for sampler)
     stopButton = new ControlPushButton(ConfigKey(group, "stop"));
     connect(stopButton, SIGNAL(valueChanged(double)),
@@ -125,21 +136,20 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
             this, SLOT(slotControlEnd(double)),
             Qt::DirectConnection);
 
-    m_pMasterRate = ControlObject::getControl(ConfigKey("[Master]", "rate"));
-
     // Actual rate (used in visuals, not for control)
     rateEngine = new ControlObject(ConfigKey(group, "rateEngine"));
 
     // Slider to show and change song position
     //these bizarre choices map conveniently to the 0-127 range of midi
-    playposSlider = new ControlPotmeter(ConfigKey(group, "playposition"), -0.14, 1.14);
+    playposSlider = new ControlPotmeter(
+        ConfigKey(group, "playposition"), kMinPlayposRange, kMaxPlayposRange);
     connect(playposSlider, SIGNAL(valueChanged(double)),
             this, SLOT(slotControlSeek(double)),
             Qt::DirectConnection);
 
     // Control used to communicate ratio playpos to GUI thread
-    visualPlaypos =
-        new ControlPotmeter(ConfigKey(group, "visual_playposition"), -0.14, 1.14);
+    visualPlaypos = new ControlPotmeter(
+        ConfigKey(group, "visual_playposition"), kMinPlayposRange, kMaxPlayposRange);
 
     // m_pTrackEnd is used to signal when at end of file during
     // playback. TODO(XXX) This should not even be a control object because it
@@ -185,6 +195,7 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
 
     m_pReadAheadManager = new ReadAheadManager(m_pReader);
     m_pReadAheadManager->addEngineControl(m_pLoopingControl);
+    m_pReadAheadManager->addEngineControl(m_pRateControl);
 
     // Construct scaling objects
     m_pScaleLinear = new EngineBufferScaleLinear(m_pReadAheadManager);
@@ -378,7 +389,7 @@ void EngineBuffer::ejectTrack() {
 // WARNING: This method runs in both the GUI thread and the Engine Thread
 void EngineBuffer::slotControlSeek(double change)
 {
-    if(isnan(change) || change > 1.14 || change < -1.14) {
+    if(isnan(change) || change > kMaxPlayposRange || change < kMinPlayposRange) {
         // This seek is ridiculous.
         return;
     }
@@ -386,10 +397,10 @@ void EngineBuffer::slotControlSeek(double change)
     // Find new playpos, restrict to valid ranges.
     double new_playpos = round(change*file_length_old);
 
+    // TODO(XXX) currently not limiting seeks file_length_old instead of
+    // kMaxPlayposRange.
     if (new_playpos > file_length_old)
         new_playpos = file_length_old;
-    //if (new_playpos < 0.)
-    //   new_playpos = 0.;
 
     // Ensure that the file position is even (remember, stereo channel files...)
     if (!even((int)new_playpos))
@@ -444,6 +455,14 @@ void EngineBuffer::slotControlPlayFromStart(double v)
     }
 }
 
+void EngineBuffer::slotControlJumpToStartAndStop(double v)
+{
+    if (v > 0.0) {
+        slotControlSeek(0.);
+        playButton->set(0);
+    }
+}
+
 void EngineBuffer::slotControlStop(double v)
 {
     if (v > 0.0) {
@@ -468,16 +487,9 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
     CSAMPLE * pOutput = (CSAMPLE *)pOut;
 
     bool bCurBufferPaused = false;
-    double rate;
+    double rate = 0;
 
     if (!m_pTrackEnd->get() && pause.tryLock()) {
-
-        if (m_pKeylock->get() && m_pScale != m_pScaleST) {
-            setPitchIndpTimeStretch(true);
-        } else if (!m_pKeylock->get() && m_pScale == m_pScaleST) {
-            setPitchIndpTimeStretch(false);
-        }
-
         float sr = m_pSampleRate->get();
 
         double baserate = 0.0f;
@@ -486,8 +498,22 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
 
         bool paused = playButton->get() != 0.0f ? false : true;
 
-        rate = m_pRateControl->calculateRate(baserate, paused, iBufferSize);
+        bool is_scratching = false;
+        rate = m_pRateControl->calculateRate(baserate, paused, iBufferSize,
+                                             &is_scratching);
         //qDebug() << "rate" << rate << " paused" << paused;
+
+        // Scratching always disables keylock because keylock sounds terrible
+        // when not going at a constant rate.
+        if (is_scratching && m_pScale != m_pScaleLinear) {
+            setPitchIndpTimeStretch(false);
+        } else if (!is_scratching) {
+            if (m_pKeylock->get() && m_pScale != m_pScaleST) {
+                setPitchIndpTimeStretch(true);
+            } else if (!m_pKeylock->get() && m_pScale == m_pScaleST) {
+                setPitchIndpTimeStretch(false);
+            }
+        }
 
         // If the rate has changed, set it in the scale object
         if (rate != rate_old || m_bScalerChanged) {
@@ -527,7 +553,6 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
         // If the buffer is not paused, then scale the audio.
         if (!bCurBufferPaused) {
             CSAMPLE *output;
-            double idx;
 
             Q_ASSERT(even(iBufferSize));
 
@@ -542,26 +567,23 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
                                      iBufferSize,
                                      0,
                                      0);
-            idx = m_pScale->getNewPlaypos();
+            double samplesRead = m_pScale->getNewPlaypos();
 
             // qDebug() << "sourceSamples used " << iSourceSamples
-            //          <<" idx " << idx
+            //          <<" samplesRead " << samplesRead
             //          << ", buffer pos " << iBufferStartSample
             //          << ", play " << filepos_play
             //          << " bufferlen " << iBufferSize;
 
             // Copy scaled audio into pOutput
-            memcpy(pOutput, output, sizeof(CSAMPLE) * iBufferSize);
+            memcpy(pOutput, output, sizeof(pOutput[0]) * iBufferSize);
 
-            // for(int i=0; i<iBufferSize; i++) {
-            //     pOutput[i] = output[i];
-            // }
-
-            // Adjust filepos_play by the amount we processed.
-            filepos_play += idx;
-            //filepos_play = math_max(0, filepos_play);
-            //// We need the above protection against negative playpositions
-            //// in case SoundTouch/EngineBufferSoundTouch gives us too many samples.
+            // Adjust filepos_play by the amount we processed. TODO(XXX) what
+            // happens if samplesRead is a fraction?
+            int newVirtualPlayposition =
+                    m_pReadAheadManager->getEffectiveVirtualPlaypositionFromLog(
+                        static_cast<int>(filepos_play), samplesRead);
+            filepos_play = newVirtualPlayposition;
 
             // Get rid of annoying decimals that the scaler sometimes produces
             filepos_play = round(filepos_play);
@@ -580,24 +602,30 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
                                                     file_length_old, iBufferSize);
 
             if (control_seek != kNoTrigger) {
+                // If we have not processed loops by this point then we have a
+                // bug. RAMAN should be in charge of taking loops now. This
+                // final step is more to notify all the EngineControls of the
+                // happenings of the engine. TODO(rryan) log condition to a
+                // stats-pipe once we have them.
+
                 filepos_play = control_seek;
                 Q_ASSERT(round(filepos_play) == filepos_play);
+
+                // Fix filepos_play so that it is not out of bounds.
+                if (file_length_old > 0) {
+                    if (filepos_play > file_length_old) {
+                        // TODO(XXX) limit to kMaxPlayposRange instead of file_length_old
+                        filepos_play = file_length_old;
+                    } else if(filepos_play < file_length_old * kMinPlayposRange) {
+                        filepos_play = kMinPlayposRange * file_length_old;
+                    }
+                }
 
                 // Safety check that the EngineControl didn't pass us a bogus
                 // value
                 if (!even(filepos_play))
                     filepos_play--;
 
-                // Fix filepos_play so that it is not out of bounds.
-                if (file_length_old > 0) {
-                    if(filepos_play > file_length_old) {
-                        filepos_play = file_length_old;
-                        at_end = true;
-                    } else if(filepos_play < 0) {
-                        filepos_play = 0;
-                        at_start = true;
-                    }
-                }
                 // TODO(XXX) need to re-evaluate this later. If we
                 // setNewPlaypos, that clear()'s soundtouch, which might screw
                 // up the audio. This sort of jump is a normal event. Also, the
@@ -608,6 +636,10 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
 
                 //setNewPlaypos(filepos_play);
                 m_pReadAheadManager->notifySeek(filepos_play);
+                // Notify seek the rate control since it needs to track things
+                // like looping. Hacky, I know, but this helps prevent things
+                // like the scratch controller from flipping out.
+                m_pRateControl->notifySeek(filepos_play);
             }
         }
         m_engineLock.unlock();

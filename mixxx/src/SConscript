@@ -5,6 +5,7 @@ import os
 import sys
 import SCons
 import shutil
+import subprocess
 import time
 import SCons.Script as SCons
 
@@ -163,12 +164,12 @@ else:
         dll_files = list() # dll_files += on the next line required dll_files to exist
 
 # dll_files = libsndfile
-dll_files += Split("""$QTDIR/bin/QtCore4.dll $QTDIR/bin/QtGui4.dll $QTDIR/bin/QtNetwork4.dll $QTDIR/bin/QtOpenGL4.dll $QTDIR/bin/QtSql4.dll $QTDIR/bin/QtXml4.dll $QTDIR/bin/QtXmlPatterns4.dll $QTDIR/bin/QtSql4.dll $QTDIR/bin/QtSvg4.dll $QTDIR/bin/QtWebKit4.dll""")
+dll_files += Split("""$QTDIR/lib/QtCore4.dll $QTDIR/lib/QtGui4.dll $QTDIR/lib/QtNetwork4.dll $QTDIR/lib/QtOpenGL4.dll $QTDIR/lib/QtSql4.dll $QTDIR/lib/QtXml4.dll $QTDIR/lib/QtXmlPatterns4.dll $QTDIR/lib/QtSvg4.dll $QTDIR/lib/QtWebKit4.dll $QTDIR/lib/phonon4.dll""")
 if int(flags.get('sqlitedll', 0)):
 	sqldll_files = Split("""$QTDIR/plugins/sqldrivers/qsqlite4.dll""") #Qt SQLite plugin
 
 if int(flags['script']) or int(flags['midiscript']):
-	dll_files += Split("""$QTDIR/bin/QtScript4.dll""")
+	dll_files += Split("""$QTDIR/lib/QtScript4.dll""")
 
 
 
@@ -314,25 +315,41 @@ if build.platform_is_windows:
 		sql_dlls = env.Install(os.path.join(base_dist_dir, "sqldrivers"), sqldll_files)
 		env.Alias('mixxx', sql_dlls)
 
-def win32_find_nsis_via_registry():
-    # Windows registry access to find where NSIS is installed
+def win32_find_program_via_registry(program_name):
+    # Windows registry access to find where program is installed
     import _winreg
     hklm = _winreg.ConnectRegistry(None, _winreg.HKEY_LOCAL_MACHINE)
-    nsis_location_handle = None
+    program_location_handle = None
     try:
-        nsis_location_handle = _winreg.OpenKey(hklm, "SOFTWARE\\NSIS", 0, _winreg.KEY_READ)
+        program_location_handle = _winreg.OpenKey(hklm, "SOFTWARE\\"+program_name, 0, _winreg.KEY_READ)
     except WindowsError:
-        nsis_location_handle = None
+        program_location_handle = None
 
-    if not nsis_location_handle:
+    if not program_location_handle:
         try:
-            nsis_location_handle = _winreg.OpenKey(hklm, "SOFTWARE\\Wow6432Node\\NSIS", 0, _winreg.KEY_READ)
+            program_location_handle = _winreg.OpenKey(hklm, "SOFTWARE\\Wow6432Node\\"+program_name, 0, _winreg.KEY_READ)
         except WindowsError:
-            nsis_location_handle = None
+            program_location_handle = None
 
-    nsis_location = _winreg.QueryValue(nsis_location_handle, None)
+    program_location = _winreg.QueryValue(program_location_handle, None)
+    if not program_location:
+        try:
+            program_location_tuple = _winreg.QueryValueEx(program_location_handle, "Path")
+            program_location = program_location_tuple[0]
+        except WindowsError:
+            program_location_handle = None
+
     _winreg.CloseKey(hklm)
-    return nsis_location
+    return program_location
+
+def get_mssdk_path():
+    path = os.getenv('SDKDIR', None)
+    if path is not None:
+        return path
+    path = os.getenv('MSSdk', None)
+    if path is not None:
+        return path
+    return ""
 
 def BuildRelease(target, source, env):
     print
@@ -345,35 +362,63 @@ def BuildRelease(target, source, env):
         print
     print "Binary has size ",
     if build.platform_is_windows:
-        print "     Implement me!"
+        os.system('for %I in ('+dist_dir+'\mixxx.exe) do @echo %~zI')
     else:
         os.system('ls -lh '+dist_dir+'/mixxx.exe | cut -d \' \' -f 5')
     print
     print "Installer file ",
-    if build.platform_is_windows:
-        print "     Implement me!"
-    else:
-        os.system('grep OutFile Mixxx.nsi | cut -d \' \' -f 2')
+    package_name = 'mixxx'
+
+    package_version = windows_construct_version(
+        build, mixxx_version, branch_name, bazaar_revision)
+    arch = "x64" if build.machine_is_64bit else "x86"
+    exe_name = '%s-%s-%s.exe' % (package_name, package_version, arch)
+    print exe_name
     print
     print "Top line of README, check version:"
     if build.platform_is_windows:
-        print "     Implement me!"
+        os.system('for /l %l in (1,1,1) do @for /f "tokens=1,2* delims=:" %a in (\'findstr /n /r "^" README ^| findstr /r "^%l:"\') do @echo %b')
     else:
         os.system('head -n 1 README')
     print
     print "Top 2 lines of LICENSE, check version and copyright dates:"
     if build.platform_is_windows:
-        print "     Implement me!"
+        os.system('for /l %l in (1,1,2) do @for /f "tokens=1,2* delims=:" %a in (\'findstr /n /r "^" LICENSE ^| findstr /r "^%l:"\') do @echo %b')
     else:
         os.system('head -n 2 LICENSE')
-
+    print
     #if (raw_input("Go ahead and build installer (yes/[no])? ") == "yes"):
     if True:
-        print "\nNow building installer..."
+        if build.toolchain_is_msvs:
+            mssdk_path = get_mssdk_path()
+            print "Detected MSSDK path:", mssdk_path
+            print "Extracting Visual C++ DLL installer..."
+            szip_path = None
+            try:
+                szip_directory = win32_find_program_via_registry("7-Zip")
+                szip_path = '%s' % os.path.join(szip_directory, "7z.exe")
+            except Exception, e:
+                pass
+            if szip_path is None:
+                print "Cannot find 7-Zip. Do you have it installed?"
+            else:
+                redist_file = 'vcredist_%s.exe' % arch
+                redist_path = '%s' % os.path.join(mssdk_path,'Redist','VC',redist_file)
+                output_path = '%s' % os.path.join(mixxx_winlib_path,'VC_redist')
+                args = [szip_path,"x","-y","-ir!vc_red.*",redist_path,"-o"+output_path]
+                print "Executing:", ' '.join(args)
+                proc = subprocess.Popen(args)
+                data, err = proc.communicate()
+                rv = proc.wait()
+                if rv:
+                    print "====="
+                    print err
+                    print "====="
+        print "Now building installation package..."
         command_flag = None
         nsis_path = None
         if not build.crosscompile and build.platform_is_windows:
-            nsis_directory = win32_find_nsis_via_registry()
+            nsis_directory = win32_find_program_via_registry("NSIS")
             nsis_path = '"%s"' % os.path.join(nsis_directory, "makensis.exe")
             command_flag = '/'
         elif build.crosscompile and build.platform_is_windows:
@@ -383,13 +428,6 @@ def BuildRelease(target, source, env):
         if not nsis_path:
             print "Cannot find NSIS. Do you have it installed?"
         else:
-            package_name = 'mixxx'
-
-            package_version = windows_construct_version(
-                    build, mixxx_version, branch_name, bazaar_revision)
-            arch = "x64" if build.machine_is_64bit else "x86"
-            exe_name = '%s-%s-%s.exe' % (package_name, package_version, arch)
-
             # Call the NSIS build
             buildwin64 = "/Dx64=1" if build.machine_is_64bit else ''
             command = '%(path)s /DPACKAGE_NAME=%(package_name)s /DPRODUCT_VERSION=%(version)s /DWINLIB_PATH=%(winlibpath)s %(64bit)s build\\nsis\\Mixxx.nsi' % \
