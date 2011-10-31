@@ -105,6 +105,8 @@ CSAMPLE * EngineBufferScaleLinear::scale(double playpos, unsigned long buf_size,
 {
     float rate_add_new = m_dBaseRate;
     float rate_add_old = m_fOldBaseRate; //Smoothly interpolate to new playback rate
+    int samples_read = 0;
+    new_playpos = 0;
 
     // Guard against buf_size == 0
     if ((int)buf_size == 0)
@@ -117,7 +119,7 @@ CSAMPLE * EngineBufferScaleLinear::scale(double playpos, unsigned long buf_size,
         //first half: rate goes from old rate to zero
         m_fOldBaseRate = rate_add_old;
         m_dBaseRate = 0.0;
-        buffer = do_scale(buffer, buf_size/2, pBase, iBaseLength);
+        buffer = do_scale(buffer, buf_size/2, pBase, iBaseLength, &samples_read);
 
         //reset prev sample so we can now read in the other direction
         //(may not be necessary?)
@@ -132,11 +134,10 @@ CSAMPLE * EngineBufferScaleLinear::scale(double playpos, unsigned long buf_size,
         if (extra_samples > 0) {
             if (extra_samples % 2 != 0)
                 extra_samples++;
-            qDebug() << "extra samples" << extra_samples;
+            //qDebug() << "extra samples" << extra_samples;
 
-            m_pReadAheadManager->getNextSamples(rate_add_new,buffer_int,
-                                                extra_samples);
-
+            samples_read += m_pReadAheadManager->getNextSamples(
+                rate_add_new, buffer_int, extra_samples);
         }
         //force a buffer read:
         buffer_int_size=0;
@@ -148,17 +149,21 @@ CSAMPLE * EngineBufferScaleLinear::scale(double playpos, unsigned long buf_size,
         m_fOldBaseRate = 0.0;
         m_dBaseRate = rate_add_new;
         //pass the address of the sample at the halfway point
-        do_scale(&buffer[buf_size/2], buf_size/2, pBase, iBaseLength);
+        do_scale(&buffer[buf_size/2], buf_size/2, pBase, iBaseLength, &samples_read);
 
+        new_playpos = samples_read;
         return buffer;
     }
 
-    return do_scale(buffer, buf_size, pBase, iBaseLength);
+    CSAMPLE* result = do_scale(buffer, buf_size, pBase, iBaseLength, &samples_read);
+    new_playpos = samples_read;
+    return result;
 }
 
 /** Stretch a specified buffer worth of audio using linear interpolation */
 CSAMPLE * EngineBufferScaleLinear::do_scale(CSAMPLE* buf, unsigned long buf_size,
-                                         CSAMPLE* pBase, unsigned long iBaseLength)
+                                            CSAMPLE* pBase, unsigned long iBaseLength,
+                                            int* samples_read)
 {
 
     long unscaled_samples_needed;
@@ -175,7 +180,6 @@ CSAMPLE * EngineBufferScaleLinear::do_scale(CSAMPLE* buf, unsigned long buf_size
 
     // Determine position in read_buffer to start from. (This is always 0 with
     // the new EngineBuffer implementation)
-    new_playpos = 0.0;
 
     int iRateLerpLength = (int)buf_size;
 
@@ -274,19 +278,12 @@ CSAMPLE * EngineBufferScaleLinear::do_scale(CSAMPLE* buf, unsigned long buf_size
                 buffer_int_size = m_pReadAheadManager
                                 ->getNextSamples(rate_add_old,buffer_int,
                                                  samples_to_read);
-                if (rate_add_old > 0) {
-                    new_playpos += buffer_int_size;
-                } else if (rate_add_old < 0) {
-                    new_playpos -= buffer_int_size;
-                }
+                *samples_read += buffer_int_size;
             } else {
                 buffer_int_size = m_pReadAheadManager
                                 ->getNextSamples(rate_add_new,buffer_int,
                                                  samples_to_read);
-                if (rate_add_new > 0)
-                    new_playpos += buffer_int_size;
-                else if (rate_add_new < 0)
-                    new_playpos -= buffer_int_size;
+                *samples_read += buffer_int_size;
             }
 
             if (buffer_int_size == 0 && last_read_failed) {
@@ -356,37 +353,5 @@ CSAMPLE * EngineBufferScaleLinear::do_scale(CSAMPLE* buf, unsigned long buf_size
     // this requirement. We may be trying to read past the end of the file.
     //Q_ASSERT(unscaled_samples_needed == 0);
 
-    // RAMAN follows loops. delta_raman_samples is almost always equal to what
-    // EBSL estimates as new_playpos. The difference is that EBSL calculates
-    // new_playpos as the total number of samples read, while EngineBuffer wants
-    // to know (from getNewPlaypos()) the total delta position the scaler has
-    // traversed in the song to produce its output, not the total number of song
-    // samples traversed. Since EBSL is not a read-ahead scaler, there is a
-    // direct correspondence between RAMAN playposition and samples output
-    // during this scale() call. If we take the song position before reading
-    // from the RAMAN (as we do at the start of scale()) and take the difference
-    // with its current position, we will get the total delta position the
-    // scaler has traversed in the song to produce its output. The old way (just
-    // leaving new_playpos as calculated by EBSL) causes loops to fall out of
-    // sync (Bug #790871) because at the end of a loop, RAMAN takes the loop
-    // while we are calling getNextSamples() on it. RAMAN's internal position is
-    // therefore *at or after the loop's start or end position*, depending on
-    // whether we are in reverse. EBSL then says to EngineBuffer that we have
-    // travelled new_playpos samples, which EngineBuffer then adds to its
-    // current playposition. This puts EngineBuffer's playposition PAST the end
-    // of the loop. EngineBuffer then calls process() on all EngineControls and
-    // LoopingControl tells EngineBuffer to jump to the loop start or end
-    // position. EngineBufer updates its playposition and calls
-    // RAMAN::notifySeek() to seek the RAMAN *to the start or end of the
-    // loop*. Recall from above that the RAMAN was already at or after the
-    // loop's start or end position. This causes the RAMAN to replay samples on
-    // every run through a loop, causing the loop to drift out of sync with
-    // other decks and possibly causes a tiny audible blip if the waveform is
-    // discontinuous. This is a giant mess and needs to be fixed with a rework
-    // of how the RAMAN, EngineBuffer, and the Scalers work together.
-    //
-    // rryan 10/2011
-    int delta_raman_samples = m_pReadAheadManager->getPlaypos() - original_raman_playposition;
-    new_playpos = delta_raman_samples;
     return buf;
 }
