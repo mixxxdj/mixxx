@@ -91,8 +91,14 @@ TrackPointer BrowseTableModel::getTrack(const QModelIndex& index) const
         return TrackPointer();
     }
 
-    TrackInfoObject* tio = new TrackInfoObject(track_location);
-    return TrackPointer(tio, &QObject::deleteLater);
+    TrackDAO& track_dao = m_pTrackCollection->getTrackDAO();
+    int track_id = track_dao.getTrackId(track_location);
+    if (track_id < 0) {
+        // Add Track to library
+        track_id = track_dao.addTrack(track_location, true);
+    }
+
+    return track_dao.getTrack(track_id);
 }
 
 QString BrowseTableModel::getTrackLocation(const QModelIndex& index) const
@@ -256,9 +262,14 @@ void BrowseTableModel::slotInsert(const QList< QList<QStandardItem*> >& rows, Br
 
 }
 
-TrackModel::CapabilitiesFlags BrowseTableModel::getCapabilities() const
-{
-    return TRACKMODELCAPS_NONE;
+TrackModel::CapabilitiesFlags BrowseTableModel::getCapabilities() const {
+    // See src/library/trackmodel.h for the list of TRACKMODELCAPS
+    return TRACKMODELCAPS_NONE
+            | TRACKMODELCAPS_ADDTOPLAYLIST
+            | TRACKMODELCAPS_ADDTOCRATE
+            | TRACKMODELCAPS_ADDTOAUTODJ
+            | TRACKMODELCAPS_LOADTODECK
+            | TRACKMODELCAPS_LOADTOSAMPLER;
 }
 
 Qt::ItemFlags BrowseTableModel::flags(const QModelIndex &index) const{

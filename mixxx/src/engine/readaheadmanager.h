@@ -4,6 +4,7 @@
 #ifndef READAHEADMANGER_H
 #define READAHEADMANGER_H
 
+#include <QLinkedList>
 #include <QList>
 #include <QMutex>
 #include <QPair>
@@ -55,8 +56,62 @@ class ReadAheadManager {
     virtual void hintReader(double dRate, QList<Hint>& hintList,
                             int iSamplesPerBuffer);
 
+
+    virtual int getEffectiveVirtualPlaypositionFromLog(int currentVirtualPlayposition,
+                                                       int numConsumedSamples);
+
   private:
+    // An entry in the read log indicates the virtual playposition the read
+    // began at and the virtual playposition it ended at.
+    struct ReadLogEntry {
+        int virtualPlaypositionStart;
+        int virtualPlaypositionEndNonInclusive;
+
+        ReadLogEntry(int virtualPlaypositionStart,
+                     int virtualPlaypositionEndNonInclusive) {
+            this->virtualPlaypositionStart = virtualPlaypositionStart;
+            this->virtualPlaypositionEndNonInclusive =
+                    virtualPlaypositionEndNonInclusive;
+        }
+
+        bool direction() const {
+            return virtualPlaypositionStart < virtualPlaypositionEndNonInclusive;
+        }
+
+        int length() const {
+            return abs(virtualPlaypositionEndNonInclusive -
+                       virtualPlaypositionStart);
+        }
+
+        // Moves the start position forward or backward (depending on
+        // direction()) by numSamples. Returns the total number of samples
+        // consumed. Caller should check if length() is 0 after consumption in
+        // order to expire the ReadLogEntry.
+        int consume(int numSamples) {
+            int available = math_min(numSamples, length());
+            virtualPlaypositionStart += (direction() ? 1 : -1) * available;
+            return available;
+        }
+
+        bool merge(const ReadLogEntry& other) {
+            if (direction() == other.direction() &&
+                virtualPlaypositionEndNonInclusive == other.virtualPlaypositionStart) {
+                virtualPlaypositionEndNonInclusive =
+                        other.virtualPlaypositionEndNonInclusive;
+                return true;
+            }
+            return false;
+        }
+    };
+
+    // virtualPlaypositionEnd is the first sample in the direction that was read
+    // that was NOT read as part of this log entry. This is to simplify the
+    void addReadLogEntry(int virtualPlaypositionStart,
+                         int virtualPlaypositionEndNonInclusive);
+
+    QMutex m_mutex;
     QList<EngineControl*> m_sEngineControls;
+    QLinkedList<ReadLogEntry> m_readAheadLog;
     int m_iCurrentPosition;
     CachingReader* m_pReader;
 };

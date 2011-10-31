@@ -37,7 +37,7 @@ public:
                    const double totalSamples,
                    const int bufferSamples);
     // Returns the current engine rate.
-    double calculateRate(double baserate, bool paused, int iSamplesPerBuffer);
+    double calculateRate(double baserate, bool paused, int iSamplesPerBuffer, bool* isScratching);
     double getRawRate();
 
     // Set rate change when temp rate button is pressed
