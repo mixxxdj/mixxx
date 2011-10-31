@@ -89,15 +89,13 @@ WTrackTableView::~WTrackTableView()
     delete m_pPlaylistMenu;
     delete m_pCrateMenu;
     //delete m_pRenamePlaylistAct;
-
     delete m_pTrackInfo;
-
-	delete m_pNumSamplers;
-	delete m_pNumDecks;
+    delete m_pNumSamplers;
+    delete m_pNumDecks;
 }
 
 void WTrackTableView::loadTrackModel(QAbstractItemModel *model) {
-    qDebug() << "WTrackTableView::loadTrackModel()" << model;
+    //qDebug() << "WTrackTableView::loadTrackModel()" << model;
 
     TrackModel* track_model = dynamic_cast<TrackModel*>(model);
 
@@ -161,10 +159,6 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel *model) {
     header->setClickable(true);
     header->setHighlightSections(true);
     header->setSortIndicatorShown(true);
-    //setSortingEnabled(true);
-    connect(horizontalHeader(), SIGNAL(sortIndicatorChanged(int, Qt::SortOrder)),
-            this, SLOT(doSortByColumn(int)), Qt::AutoConnection);
-    doSortByColumn(horizontalHeader()->sortIndicatorSection());
 
     // Initialize all column-specific things
     for (int i = 0; i < model->columnCount(); ++i) {
@@ -194,6 +188,31 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel *model) {
         }
     }
 
+    // NOTE: Should be a UniqueConnection but that requires Qt 4.6
+    connect(horizontalHeader(), SIGNAL(sortIndicatorChanged(int, Qt::SortOrder)),
+            this, SLOT(doSortByColumn(int)), Qt::AutoConnection);
+
+    // Stupid hack that assumes column 0 is never visible, but this is a weak
+    // proxy for "there was a saved column sort order"
+    if (horizontalHeader()->sortIndicatorSection() > 0) {
+        // Sort by the saved sort section and order. This line sorts the
+        // TrackModel and in turn generates a select()
+        horizontalHeader()->setSortIndicator(horizontalHeader()->sortIndicatorSection(),
+                                             horizontalHeader()->sortIndicatorOrder());
+    } else {
+        // No saved order is present. Use the TrackModel's default sort order.
+        int sortColumn = track_model->defaultSortColumn();
+        Qt::SortOrder sortOrder = track_model->defaultSortOrder();
+
+        // If the TrackModel has an invalid or internal column as its default
+        // sort, find the first non-internal column and sort by that.
+        while (sortColumn < 0 || track_model->isColumnInternal(sortColumn)) {
+            sortColumn++;
+        }
+        // This line sorts the TrackModel and in turn generates a select()
+        horizontalHeader()->setSortIndicator(sortColumn, sortOrder);
+    }
+
     // Set up drag and drop behaviour according to whether or not the track
     // model says it supports it.
 
@@ -220,6 +239,14 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel *model) {
     setVisible(true);
 }
 
+void WTrackTableView::disableSorting() {
+    // We have to manually do this because setSortingEnabled(false) does not
+    // properly disconnect the signals for some reason.
+    disconnect(horizontalHeader(), SIGNAL(sortIndicatorChanged(int, Qt::SortOrder)),
+               this, SLOT(doSortByColumn(int)));
+    horizontalHeader()->setSortIndicatorShown(false);
+}
+
 void WTrackTableView::createActions() {
     Q_ASSERT(m_pMenu);
     Q_ASSERT(m_pSamplerMenu);
@@ -240,8 +267,11 @@ void WTrackTableView::createActions() {
     connect(m_pReloadMetadataAct, SIGNAL(triggered()), this, SLOT(slotReloadTrackMetadata()));
 }
 
-void WTrackTableView::slotMouseDoubleClicked(const QModelIndex &index)
-{
+void WTrackTableView::slotMouseDoubleClicked(const QModelIndex &index) {
+    if (!modelHasCapabilities(TrackModel::TRACKMODELCAPS_LOADTODECK)) {
+        return;
+    }
+
     TrackModel* trackModel = getTrackModel();
     TrackPointer pTrack;
     if (trackModel && (pTrack = trackModel->getTrack(index))) {
@@ -334,36 +364,40 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent * event)
         m_pMenu->addSeparator();
     }
 
-    int iNumDecks = m_pNumDecks->get();
-    if (iNumDecks > 0) {
-        for (int i = 1; i <= iNumDecks; ++i) {
-            QString deckGroup = QString("[Channel%1]").arg(i);
-            bool deckPlaying = ControlObject::getControl(
-                ConfigKey(deckGroup, "play"))->get() == 1.0f;
-            bool deckEnabled = !deckPlaying && oneSongSelected;
-            QAction* pAction = new QAction(tr("Load to Deck %1").arg(i), m_pMenu);
-            pAction->setEnabled(deckEnabled);
-            m_pMenu->addAction(pAction);
-            m_deckMapper.setMapping(pAction, deckGroup);
-            connect(pAction, SIGNAL(triggered()), &m_deckMapper, SLOT(map()));
+    if (modelHasCapabilities(TrackModel::TRACKMODELCAPS_LOADTODECK)) {
+        int iNumDecks = m_pNumDecks->get();
+        if (iNumDecks > 0) {
+            for (int i = 1; i <= iNumDecks; ++i) {
+                QString deckGroup = QString("[Channel%1]").arg(i);
+                bool deckPlaying = ControlObject::getControl(
+                    ConfigKey(deckGroup, "play"))->get() == 1.0f;
+                bool deckEnabled = !deckPlaying && oneSongSelected;
+                QAction* pAction = new QAction(tr("Load to Deck %1").arg(i), m_pMenu);
+                pAction->setEnabled(deckEnabled);
+                m_pMenu->addAction(pAction);
+                m_deckMapper.setMapping(pAction, deckGroup);
+                connect(pAction, SIGNAL(triggered()), &m_deckMapper, SLOT(map()));
+            }
         }
     }
 
-    int iNumSamplers = m_pNumSamplers->get();
-    if (iNumSamplers > 0) {
-        m_pSamplerMenu->clear();
-        for (int i = 1; i <= iNumSamplers; ++i) {
-            QString samplerGroup = QString("[Sampler%1]").arg(i);
-            bool samplerPlaying = ControlObject::getControl(
-                ConfigKey(samplerGroup, "play"))->get() == 1.0f;
-            bool samplerEnabled = !samplerPlaying && oneSongSelected;
-            QAction* pAction = new QAction(tr("Sampler %1").arg(i), m_pSamplerMenu);
-            pAction->setEnabled(samplerEnabled);
-            m_pSamplerMenu->addAction(pAction);
-            m_samplerMapper.setMapping(pAction, samplerGroup);
-            connect(pAction, SIGNAL(triggered()), &m_samplerMapper, SLOT(map()));
+    if (modelHasCapabilities(TrackModel::TRACKMODELCAPS_LOADTOSAMPLER)) {
+        int iNumSamplers = m_pNumSamplers->get();
+        if (iNumSamplers > 0) {
+            m_pSamplerMenu->clear();
+            for (int i = 1; i <= iNumSamplers; ++i) {
+                QString samplerGroup = QString("[Sampler%1]").arg(i);
+                bool samplerPlaying = ControlObject::getControl(
+                    ConfigKey(samplerGroup, "play"))->get() == 1.0f;
+                bool samplerEnabled = !samplerPlaying && oneSongSelected;
+                QAction* pAction = new QAction(tr("Sampler %1").arg(i), m_pSamplerMenu);
+                pAction->setEnabled(samplerEnabled);
+                m_pSamplerMenu->addAction(pAction);
+                m_samplerMapper.setMapping(pAction, samplerGroup);
+                connect(pAction, SIGNAL(triggered()), &m_samplerMapper, SLOT(map()));
+            }
+            m_pMenu->addMenu(m_pSamplerMenu);
         }
-        m_pMenu->addMenu(m_pSamplerMenu);
     }
 
     m_pMenu->addSeparator();
@@ -415,8 +449,12 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent * event)
     bool locked = modelHasCapabilities(TrackModel::TRACKMODELCAPS_LOCKED);
     m_pRemoveAct->setEnabled(!locked);
     m_pMenu->addSeparator();
-    m_pMenu->addAction(m_pRemoveAct);
-    m_pMenu->addAction(m_pReloadMetadataAct);
+    if (modelHasCapabilities(TrackModel::TRACKMODELCAPS_REMOVE)) {
+        m_pMenu->addAction(m_pRemoveAct);
+    }
+    if (modelHasCapabilities(TrackModel::TRACKMODELCAPS_RELOADMETADATA)) {
+        m_pMenu->addAction(m_pReloadMetadataAct);
+    }
     m_pPropertiesAct->setEnabled(oneSongSelected);
     m_pMenu->addAction(m_pPropertiesAct);
 
@@ -447,7 +485,8 @@ void WTrackTableView::onShow() {
 }
 
 void WTrackTableView::mouseMoveEvent(QMouseEvent* pEvent) {
-    TrackModel* trackModel = getTrackModel();
+   Q_UNUSED(pEvent);
+   TrackModel* trackModel = getTrackModel();
     if (!trackModel)
         return;
 
@@ -465,7 +504,7 @@ void WTrackTableView::mouseMoveEvent(QMouseEvent* pEvent) {
 
     QDrag* drag = new QDrag(this);
     drag->setMimeData(mimeData);
-    drag->setPixmap(QPixmap(":images/library/drag-n-drop.png"));
+    drag->setPixmap(QPixmap(":images/library/ic_library_drag_and_drop.png"));
     drag->exec(Qt::CopyAction);
 }
 
@@ -729,27 +768,19 @@ bool WTrackTableView::modelHasCapabilities(TrackModel::CapabilitiesFlags capabil
             (trackModel->getCapabilities() & capabilities) == capabilities;
 }
 
-void WTrackTableView::keyPressEvent(QKeyEvent* event)
-{
-    if (event->key() == Qt::Key_Return)
-    {
-		/*
-		 * It is not a good idea if 'key_return'
-		 * causes a track to load since we allow in-line editing
-		 * of table items in general
-		 */
+void WTrackTableView::keyPressEvent(QKeyEvent* event) {
+    if (event->key() == Qt::Key_Return) {
+        // It is not a good idea if 'key_return'
+        // causes a track to load since we allow in-line editing
+        // of table items in general
         return;
-    }
-    else if (event->key() == Qt::Key_BracketLeft)
-    {
+    } else if (event->key() == Qt::Key_BracketLeft) {
         loadSelectionToGroup("[Channel1]");
-    }
-    else if (event->key() == Qt::Key_BracketRight)
-    {
+    } else if (event->key() == Qt::Key_BracketRight) {
         loadSelectionToGroup("[Channel2]");
-    }
-    else
+    } else {
         QTableView::keyPressEvent(event);
+    }
 }
 
 void WTrackTableView::loadSelectedTrack() {

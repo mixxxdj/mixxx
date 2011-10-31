@@ -9,16 +9,16 @@
    xmlns:xlink="http://www.w3.org/1999/xlink"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   inkscape:export-ydpi="135"
-   inkscape:export-xdpi="135"
-   inkscape:export-filename=""
-   style="display:inline"
-   sodipodi:docname="ic_template_library_and_preferences.svg"
-   inkscape:version="0.48.1 r9760"
-   id="svg2"
-   height="32"
+   version="1.1"
    width="32"
-   version="1.1">
+   height="32"
+   id="svg2"
+   inkscape:version="0.48.2 r9819"
+   sodipodi:docname="ic_template_library_and_preferences.svg"
+   style="display:inline"
+   inkscape:export-filename=""
+   inkscape:export-xdpi="135"
+   inkscape:export-ydpi="135">
   <sodipodi:namedview
      pagecolor="#ffffff"
      bordercolor="#666666"
@@ -28,14 +28,14 @@
      guidetolerance="10"
      inkscape:pageopacity="0"
      inkscape:pageshadow="2"
-     inkscape:window-width="1680"
-     inkscape:window-height="1028"
+     inkscape:window-width="1280"
+     inkscape:window-height="752"
      id="namedview26"
      showgrid="true"
      inkscape:zoom="10"
      inkscape:cx="16"
      inkscape:cy="16"
-     inkscape:window-x="1280"
+     inkscape:window-x="0"
      inkscape:window-y="0"
      inkscape:window-maximized="1"
      inkscape:current-layer="g4255"
@@ -620,24 +620,6 @@
     <linearGradient
        inkscape:collect="always"
        xlink:href="#linearGradient4942"
-       id="linearGradient5146"
-       x1="16"
-       y1="8"
-       x2="16"
-       y2="32"
-       gradientUnits="userSpaceOnUse" />
-    <linearGradient
-       inkscape:collect="always"
-       xlink:href="#linearGradient4942"
-       id="linearGradient5148"
-       x1="16"
-       y1="8"
-       x2="16"
-       y2="32"
-       gradientUnits="userSpaceOnUse" />
-    <linearGradient
-       inkscape:collect="always"
-       xlink:href="#linearGradient4942"
        id="linearGradient5172"
        x1="16"
        y1="8"
@@ -1117,7 +1099,7 @@
         </dc:subject>
         <dc:creator>
           <cc:Agent>
-            <dc:title>jus@justmail.de</dc:title>
+            <dc:title>s.brandt@mixxx.org</dc:title>
           </cc:Agent>
         </dc:creator>
         <cc:license
@@ -1500,25 +1482,6 @@ Grid based on suggestions from http://techbase.kde.org/Projects/Oxygen/Style</dc
     </g>
     <g
        inkscape:groupmode="layer"
-       id="layer47"
-       inkscape:label="playlist_unused.png"
-       style="display:none"
-       sodipodi:insensitive="true">
-      <path
-         style="fill:url(#linearGradient5148);fill-opacity:1;stroke:none;display:inline"
-         d="M 4,2 4,29.90625 C 4,29.96165 4.03835,30 4.09375,30 l 23.8125,0 C 27.96165,30 28,29.96165 28,29.90625 L 28,10 18,10 18,2 z m 4,12 16,0 0,2 -16,0 z m 0,4 16,0 0,2 -16,0 z m 0,4 16,0 0,2 -16,0 z"
-         id="rect4856-6"
-         inkscape:connector-curvature="0"
-         sodipodi:nodetypes="cssssccccccccccccccccccc" />
-      <path
-         style="fill:url(#linearGradient5146);fill-opacity:1;stroke:none;display:inline"
-         d="m 20,2 0,6 8,0 0,0 -8,-6 z"
-         id="path7782-7"
-         inkscape:connector-curvature="0"
-         sodipodi:nodetypes="cccccc" />
-    </g>
-    <g
-       inkscape:groupmode="layer"
        id="layer2"
        inkscape:label="playlist.png"
        style="display:none"
@@ -1694,6 +1657,67 @@ Grid based on suggestions from http://techbase.kde.org/Projects/Oxygen/Style</dc
     </g>
     <g
        inkscape:groupmode="layer"
+       id="layer47"
+       inkscape:label="drag_and_drop.png"
+       style="display:none"
+       sodipodi:insensitive="true">
+      <g
+         id="g3312"
+         inkscape:export-filename=""
+         inkscape:export-xdpi="90"
+         inkscape:export-ydpi="90">
+        <rect
+           y="4"
+           x="4"
+           height="24"
+           width="24"
+           id="rect3310"
+           style="color:#000000;fill:none;stroke:none;stroke-width:1;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate" />
+        <g
+           inkscape:export-ydpi="90"
+           inkscape:export-xdpi="90"
+           inkscape:export-filename=""
+           id="g6189">
+          <path
+             sodipodi:nodetypes="cssssccc"
+             inkscape:connector-curvature="0"
+             id="path5515"
+             d="M 6,4 6,27.919643 C 6,27.967129 6.03196,28 6.07813,28 l 19.84375,0 C 25.968042,28 26,27.967129 26,27.919643 L 26,9.5 19.5,4 z"
+             style="fill:#ffffff;fill-opacity:1;stroke:none;display:inline" />
+          <g
+             id="g5519"
+             transform="matrix(0.75,0,0,0.78571429,4,3.4285714)"
+             style="fill:#000000">
+            <path
+               sodipodi:nodetypes="cssssccccccccccccccccccc"
+               inkscape:connector-curvature="0"
+               id="rect4856-6"
+               d="M 4,2 4,29.90625 C 4,29.96165 4.03835,30 4.09375,30 l 23.8125,0 C 27.96165,30 28,29.96165 28,29.90625 l 0,-20.2698864 -9.333333,0 0,-7.6363636 z m 4,12.727273 16,0 L 24,16 8,16 z m 0,3.818181 16,0 0,1.272728 -16,0 z m 0,3.818182 16,0 0,1.272728 -16,0 z"
+               style="fill:#000000;fill-opacity:1;stroke:none;display:inline" />
+            <path
+               sodipodi:nodetypes="cccc"
+               inkscape:connector-curvature="0"
+               id="path7782-7"
+               d="m 20,2 0,6.3636363 8,0 z"
+               style="fill:#000000;fill-opacity:1;stroke:none;display:inline" />
+          </g>
+        </g>
+      </g>
+      <text
+         xml:space="preserve"
+         style="font-size:10.79635239px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Arial;-inkscape-font-specification:Arial"
+         x="1.4114101"
+         y="35"
+         id="text6195"
+         sodipodi:linespacing="125%"><tspan
+           sodipodi:role="line"
+           id="tspan6197"
+           x="1.4114101"
+           y="35"
+           style="font-size:1.96297312px">Hint: Export selection @ 24x24px</tspan></text>
+    </g>
+    <g
+       inkscape:groupmode="layer"
        id="layer44"
        inkscape:label="crates.png"
        style="display:none"
@@ -1796,7 +1820,8 @@ Grid based on suggestions from http://techbase.kde.org/Projects/Oxygen/Style</dc
        inkscape:groupmode="layer"
        id="layer37"
        inkscape:label="autodj.png"
-       style="display:none">
+       style="display:none"
+       sodipodi:insensitive="true">
       <g
          id="ic_library_autodj"
          inkscape:label="#g6175">
@@ -1874,7 +1899,7 @@ Grid based on suggestions from http://techbase.kde.org/Projects/Oxygen/Style</dc
            sodipodi:cy="7"
            sodipodi:rx="5"
            sodipodi:ry="5"
-           d="M 12,7 A 5,5 0 1 1 2,7 5,5 0 1 1 12,7 z"
+           d="M 12,7 C 12,9.7614237 9.7614237,12 7,12 4.2385763,12 2,9.7614237 2,7 2,4.2385763 4.2385763,2 7,2 c 2.7614237,0 5,2.2385763 5,5 z"
            transform="matrix(1.9222927,0,0,1.9222927,0.5439511,-13.456048)" />
         <path
            sodipodi:type="arc"
@@ -1884,7 +1909,7 @@ Grid based on suggestions from http://techbase.kde.org/Projects/Oxygen/Style</dc
            sodipodi:cy="6"
            sodipodi:rx="1.4933327"
            sodipodi:ry="1.4933327"
-           d="M 7.4933327,6 A 1.4933327,1.4933327 0 1 1 4.5066673,6 1.4933327,1.4933327 0 1 1 7.4933327,6 z"
+           d="M 7.4933327,6 C 7.4933327,6.8247449 6.8247449,7.4933327 6,7.4933327 5.1752551,7.4933327 4.5066673,6.8247449 4.5066673,6 4.5066673,5.1752551 5.1752551,4.5066673 6,4.5066673 6.8247449,4.5066673 7.4933327,5.1752551 7.4933327,6 z"
            transform="matrix(1.3392862,0,0,1.3392862,5.9642827,-8.0357171)" />
       </g>
     </g>

@@ -1,5 +1,5 @@
 /***************************************************************************
-                          enginebufferscalest.h  -  description
+                          enginebufferscalest.cpp  -  description
                              -------------------
     begin                : November 2004
     copyright            : (C) 2004 by Tue Haste Andersen
@@ -74,7 +74,7 @@ bool EngineBufferScaleST::getPitchIndpTimeStretch(void)
     return m_bPitchIndpTimeStretch;
 }
 
- 
+
 void EngineBufferScaleST::setBaseRate(double dBaseRate)
 {
     m_dBaseRate = dBaseRate;
@@ -163,6 +163,10 @@ double EngineBufferScaleST::setTempo(double dTempo)
  */
 CSAMPLE* EngineBufferScaleST::scale(double playpos, unsigned long buf_size,
                                     CSAMPLE* pBase, unsigned long iBaseLength) {
+    Q_UNUSED (pBase);
+    Q_UNUSED (iBaseLength);
+    new_playpos = 0.0;
+
     m_qMutex.lock();
 
     int iCurPos = playpos;
@@ -183,16 +187,15 @@ CSAMPLE* EngineBufferScaleST::scale(double playpos, unsigned long buf_size,
     // }
     //Q_ASSERT(m_iReadAheadPos >= 0);
 
-    long total_received_frames = 0;
-    long total_read_frames = 0;
+    unsigned long total_received_frames = 0;
+    unsigned long total_read_frames = 0;
 
-    long remaining_frames = buf_size/2;
+    unsigned long remaining_frames = buf_size/2;
     //long remaining_source_frames = iBaseLength/2;
     CSAMPLE* read = buffer;
     bool last_read_failed = false;
     while (remaining_frames > 0) {
-        long received_frames = received_frames = m_pSoundTouch->receiveSamples((SAMPLETYPE*)read,
-                                                                              remaining_frames);
+        unsigned long received_frames = m_pSoundTouch->receiveSamples((SAMPLETYPE*)read, remaining_frames);
         remaining_frames -= received_frames;
         total_received_frames += received_frames;
         read += received_frames*2;
@@ -241,13 +244,10 @@ CSAMPLE* EngineBufferScaleST::scale(double playpos, unsigned long buf_size,
     //for (unsigned long i = 0; i < buf_size; i++)
     //    qDebug() << buffer[i];
 
-    ///Even though this is called "new_playpos", it's really just the new _offset_
-    //of the playposition. It's how many samples forwards or backwards we just moved
-    //in the song.
-    if (m_bBackwards)
-        new_playpos = playpos - m_dTempo*m_dBaseRate*total_received_frames*2;
-    else
-        new_playpos = playpos + m_dTempo*m_dBaseRate*total_received_frames*2;
+    // new_playpos is now interpreted as the total number of virtual samples
+    // consumed to produce the scaled buffer. Due to this, we do not take into
+    // account directionality or starting point.
+    new_playpos = m_dTempo*m_dBaseRate*total_received_frames*2;
 
     m_qMutex.unlock();
 

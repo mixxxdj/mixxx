@@ -45,25 +45,25 @@ http://svn.xiph.org/trunk/vorbis/examples/encoder_example.c
 
 // Constructor
 EncoderVorbis::EncoderVorbis(EngineAbstractRecord *engine) {
+    m_bStreamInitialized = false;
     m_pEngine = engine;
     m_metaDataTitle = NULL;
     m_metaDataArtist = NULL;
     m_metaDataAlbum = NULL;
     m_pMetaData = TrackPointer(NULL);
-   
-
     m_samplerate = new ControlObjectThread(ControlObject::getControl(ConfigKey("[Master]", "samplerate")));
 }
 
 // Destructor  //call flush before any encoder gets deleted
 EncoderVorbis::~EncoderVorbis() {
-    ogg_stream_clear(&m_oggs);
-    vorbis_block_clear(&m_vblock);
-    vorbis_dsp_clear(&m_vdsp);
-    vorbis_comment_clear(&m_vcomment);
-    vorbis_info_clear(&m_vinfo);
-
-    if(m_samplerate)    delete m_samplerate;
+    if (m_bStreamInitialized) {
+        ogg_stream_clear(&m_oggs);
+        vorbis_block_clear(&m_vblock);
+        vorbis_dsp_clear(&m_vdsp);
+        vorbis_comment_clear(&m_vcomment);
+        vorbis_info_clear(&m_vinfo);
+    }
+    delete m_samplerate;
 }
 //call sendPackages() or write() after 'flush()' as outlined in engineshoutcast.cpp
 void EncoderVorbis::flush() {
@@ -187,6 +187,7 @@ void EncoderVorbis::initStream() {
 		//The encoder is now inialized
 		// Encode method will start streaming by sending the header first
 		m_header_write = true;
+    m_bStreamInitialized = true;
 }
 
 int EncoderVorbis::initEncoder(int bitrate) {
@@ -195,7 +196,7 @@ int EncoderVorbis::initEncoder(int bitrate) {
 
     // initialize VBR quality based mode
     unsigned long samplerate = m_samplerate->get();
-    
+
     ret = vorbis_encode_init(&m_vinfo, 2, samplerate, -1, bitrate*1000, -1);
 
     if (ret == 0) {

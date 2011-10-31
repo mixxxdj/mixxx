@@ -43,11 +43,11 @@ void WLibrary::setup(QDomNode node) {
 
 void WLibrary::switchToView(const QString& name) {
     QMutexLocker lock(&m_mutex);
-    qDebug() << "WLibrary::switchToView" << name;
+    //qDebug() << "WLibrary::switchToView" << name;
     if (m_viewMap.contains(name)) {
         QWidget* widget = m_viewMap[name];
         if (widget != NULL && currentWidget() != widget) {
-            qDebug() << "WLibrary::setCurrentWidget" << name;
+            //qDebug() << "WLibrary::setCurrentWidget" << name;
             setCurrentWidget(widget);
             dynamic_cast<LibraryView*>(widget)->onShow();
         }

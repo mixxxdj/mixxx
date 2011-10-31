@@ -66,12 +66,20 @@ int BaseTrackCache::fieldIndex(const QString columnName) const {
     return m_columnIndex.value(columnName, -1);
 }
 
-void BaseTrackCache::slotTrackAdded(int trackId) {
-    updateTrackInIndex(trackId);
+void BaseTrackCache::slotTracksAdded(QSet<int> trackIds) {
+    if (sDebug) {
+        qDebug() << this << "slotTracksAdded" << trackIds.size();
+    }
+    updateTracksInIndex(trackIds);
 }
 
-void BaseTrackCache::slotTrackRemoved(int trackId) {
-    m_trackInfo.remove(trackId);
+void BaseTrackCache::slotTracksRemoved(QSet<int> trackIds) {
+    if (sDebug) {
+        qDebug() << this << "slotTracksRemoved" << trackIds.size();
+    }
+    foreach (int trackId, trackIds) {
+        m_trackInfo.remove(trackId);
+    }
 }
 
 void BaseTrackCache::slotTrackDirty(int trackId) {
@@ -81,11 +89,28 @@ void BaseTrackCache::slotTrackDirty(int trackId) {
     m_dirtyTracks.insert(trackId);
 }
 
+void BaseTrackCache::slotTrackChanged(int trackId) {
+    if (sDebug) {
+        qDebug() << this << "slotTrackChanged" << trackId;
+    }
+    QSet<int> trackIds;
+    trackIds.insert(trackId);
+    emit(tracksChanged(trackIds));
+}
+
 void BaseTrackCache::slotTrackClean(int trackId) {
     if (sDebug) {
         qDebug() << this << "slotTrackClean" << trackId;
     }
     m_dirtyTracks.remove(trackId);
+    updateTrackInIndex(trackId);
+}
+
+bool BaseTrackCache::isCached(int trackId) const {
+    return m_trackInfo.contains(trackId);
+}
+
+void BaseTrackCache::ensureCached(int trackId) {
     updateTrackInIndex(trackId);
 }
 

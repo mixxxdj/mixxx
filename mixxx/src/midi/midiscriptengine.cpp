@@ -33,9 +33,9 @@
 
 
 MidiScriptEngine::MidiScriptEngine(MidiDevice* midiDevice) :
-    m_pEngine(NULL),
     m_pMidiDevice(midiDevice),
     m_midiDebug(false),
+    m_pEngine(NULL),
     m_midiPopups(false) {
 
     // Handle error dialog buttons
@@ -51,8 +51,8 @@ MidiScriptEngine::MidiScriptEngine(MidiDevice* midiDevice) :
 
     // Initialize arrays used for testing and pointers
     for (int i=0; i < decks; i++) {
-        m_dx[i]=NULL;
-        m_pitchFilter[i]=new PitchFilter(); // allocate RAM at startup
+        m_dx[i] = 0;
+        m_pitchFilter[i] = new PitchFilter(); // allocate RAM at startup
         m_ramp[i] = false;
     }
 }
@@ -464,7 +464,7 @@ bool MidiScriptEngine::safeExecute(QString function, const unsigned char data[],
     //  get the byte array into ECMAScript complete and unharmed.
     //  Don't change this or I will hurt you -- Sean
     QVector<QChar> temp(length);
-    for (int i=0; i < length; i++) {
+    for (unsigned int i=0; i < length; i++) {
         temp[i]=data[i];
     }
     QString buffer = QString(temp.constData(),length);
@@ -1226,7 +1226,7 @@ void MidiScriptEngine::scratchProcess(int timerId) {
         killTimer(timerId);
         m_scratchTimers.remove(timerId);
 
-        m_dx[deck] = NULL;
+        m_dx[deck] = 0;
     }
 }
 

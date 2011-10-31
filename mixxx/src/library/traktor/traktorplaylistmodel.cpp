@@ -4,6 +4,8 @@
 
 #include "library/trackcollection.h"
 #include "library/traktor/traktorplaylistmodel.h"
+#include "track/beatfactory.h"
+#include "track/beats.h"
 
 TraktorPlaylistModel::TraktorPlaylistModel(QObject* parent,
                                        TrackCollection* pTrackCollection)
@@ -36,15 +38,47 @@ TrackPointer TraktorPlaylistModel::getTrack(const QModelIndex& index) const {
     QString location = index.sibling(
         index.row(), fieldIndex("location")).data().toString();
 
-    TrackInfoObject* pTrack = new TrackInfoObject(location);
-    pTrack->setArtist(artist);
-    pTrack->setTitle(title);
-    pTrack->setAlbum(album);
-    pTrack->setYear(year);
-    pTrack->setGenre(genre);
-    pTrack->setBpm(bpm);
+    if (location.isEmpty()) {
+        // Track is lost
+        return TrackPointer();
+    }
 
-    return TrackPointer(pTrack, &QObject::deleteLater);
+    TrackDAO& track_dao = m_pTrackCollection->getTrackDAO();
+    int track_id = track_dao.getTrackId(location);
+    bool track_already_in_library = track_id >= 0;
+    if (track_id < 0) {
+        // Add Track to library
+        track_id = track_dao.addTrack(location, true);
+    }
+
+    TrackPointer pTrack;
+
+    if (track_id < 0) {
+        // Add Track to library failed, create a transient TrackInfoObject
+        pTrack = TrackPointer(new TrackInfoObject(location), &QObject::deleteLater);
+    } else {
+        pTrack = track_dao.getTrack(track_id);
+    }
+
+    // If this track was not in the Mixxx library it is now added and will be
+    // saved with the metadata from iTunes. If it was already in the library
+    // then we do not touch it so that we do not over-write the user's metadata.
+    if (!track_already_in_library) {
+        pTrack->setArtist(artist);
+        pTrack->setTitle(title);
+        pTrack->setAlbum(album);
+        pTrack->setYear(year);
+        pTrack->setGenre(genre);
+        pTrack->setBpm(bpm);
+
+        // If the track has a BPM, then give it a static beatgrid. TODO(XXX) load
+        // traktor beatgrid information.
+        if (bpm > 0) {
+            BeatsPointer pBeats = BeatFactory::makeBeatGrid(pTrack, bpm, 0);
+            pTrack->setBeats(pBeats);
+        }
+    }
+    return pTrack;
 }
 
 void TraktorPlaylistModel::search(const QString& searchText) {
@@ -91,13 +125,17 @@ void TraktorPlaylistModel::setPlaylist(QString playlist_path) {
 
     QStringList columns;
     columns << "track_id";
+    columns << "position";
 
     QSqlQuery query(m_database);
-    query.prepare("CREATE TEMPORARY VIEW IF NOT EXISTS " +
-                  driver->formatValue(playlistNameField) + " AS "
-                  "SELECT " + columns.join(",") +
-                  " FROM traktor_playlist_tracks "
-                  "WHERE playlist_id = " + QString("%1").arg(playlistId));
+    QString queryString = QString(
+        "CREATE TEMPORARY VIEW IF NOT EXISTS %1 AS "
+        "SELECT %2 FROM %3 WHERE playlist_id = %4")
+            .arg(driver->formatValue(playlistNameField))
+            .arg(columns.join(","))
+            .arg("traktor_playlist_tracks")
+            .arg(playlistId);
+    query.prepare(queryString);
 
     if (!query.exec()) {
         qDebug() << "Error creating temporary view for traktor playlists."
@@ -109,6 +147,7 @@ void TraktorPlaylistModel::setPlaylist(QString playlist_path) {
 
     setTable(playlistID, columns[0], columns,
              m_pTrackCollection->getTrackSource("traktor"));
+    setDefaultSort(fieldIndex("position"), Qt::AscendingOrder);
     initHeaderData();
     setSearch("");
 }
@@ -119,4 +158,14 @@ bool TraktorPlaylistModel::isColumnHiddenByDefault(int column) {
         return true;
     }
     return false;
+}
+
+TrackModel::CapabilitiesFlags TraktorPlaylistModel::getCapabilities() const {
+    // See src/library/trackmodel.h for the list of TRACKMODELCAPS
+    return TRACKMODELCAPS_NONE
+            | TRACKMODELCAPS_ADDTOPLAYLIST
+            | TRACKMODELCAPS_ADDTOCRATE
+            | TRACKMODELCAPS_ADDTOAUTODJ
+            | TRACKMODELCAPS_LOADTODECK
+            | TRACKMODELCAPS_LOADTOSAMPLER;
 }

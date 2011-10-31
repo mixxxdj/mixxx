@@ -37,7 +37,7 @@ public:
                    const double totalSamples,
                    const int bufferSamples);
     // Returns the current engine rate.
-    double calculateRate(double baserate, bool paused, int iSamplesPerBuffer);
+    double calculateRate(double baserate, bool paused, int iSamplesPerBuffer, bool* isScratching);
     double getRawRate();
 
     // Set rate change when temp rate button is pressed
@@ -52,6 +52,7 @@ public:
     static void setRateRamp(bool);
     /** Set Rate Ramp Sensitivity */
     static void setRateRampSensitivity(int);
+    virtual void notifySeek(double dNewPlaypos);
 
   public slots:
     void slotControlRatePermDown(double);

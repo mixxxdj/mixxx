@@ -17,11 +17,11 @@
 
 BrowseTableModel::BrowseTableModel(QObject* parent, TrackCollection* pTrackCollection,
                                    RecordingManager* pRecordingManager)
-        : QStandardItemModel(parent),
+        : TrackModel(pTrackCollection->getDatabase(), // TrackCollections m_db (defaultConnection)
+                     "mixxx.db.model.browse"),
+          QStandardItemModel(parent),
           m_pTrackCollection(pTrackCollection),
-          m_pRecordingManager(pRecordingManager),
-          TrackModel(pTrackCollection->getDatabase(),
-                     "mixxx.db.model.browse") {
+         m_pRecordingManager(pRecordingManager) {
     QStringList header_data;
     header_data.insert(COLUMN_FILENAME, tr("Filename"));
     header_data.insert(COLUMN_ARTIST, tr("Artist"));
@@ -94,14 +94,11 @@ TrackPointer BrowseTableModel::getTrack(const QModelIndex& index) const
     TrackDAO& track_dao = m_pTrackCollection->getTrackDAO();
     int track_id = track_dao.getTrackId(track_location);
     if (track_id < 0) {
-    	// Add Track to library
-    	track_id = track_dao.addTrack(track_location);
+        // Add Track to library
+        track_id = track_dao.addTrack(track_location, true);
     }
 
     return track_dao.getTrack(track_id);
-
-    //TrackInfoObject* tio = new TrackInfoObject(track_location);
-    //return TrackPointer(tio, &QObject::deleteLater);
 }
 
 QString BrowseTableModel::getTrackLocation(const QModelIndex& index) const
@@ -114,19 +111,19 @@ QString BrowseTableModel::getTrackLocation(const QModelIndex& index) const
 }
 
 int BrowseTableModel::getTrackId(const QModelIndex& index) const {
-	Q_UNUSED(index);
-	// We can't implement this as it stands.
+    Q_UNUSED(index);
+    // We can't implement this as it stands.
     return -1;
 }
 
 const QLinkedList<int> BrowseTableModel::getTrackRows(int trackId) const {
-	Q_UNUSED(trackId);
-	// We can't implement this as it stands.
-	return QLinkedList<int>();
+    Q_UNUSED(trackId);
+    // We can't implement this as it stands.
+    return QLinkedList<int>();
 }
 
 void BrowseTableModel::search(const QString& searchText) {
-	Q_UNUSED(searchText);
+    Q_UNUSED(searchText);
 }
 
 const QString BrowseTableModel::currentSearch() const {
@@ -217,7 +214,7 @@ bool BrowseTableModel::addTrack(const QModelIndex& index, QString location)
 {
     Q_UNUSED(index);
     Q_UNUSED(location);
-	return false;
+    return false;
 }
 
 QMimeData* BrowseTableModel::mimeData(const QModelIndexList &indexes) const {
@@ -265,10 +262,14 @@ void BrowseTableModel::slotInsert(const QList< QList<QStandardItem*> >& rows, Br
 
 }
 
-TrackModel::CapabilitiesFlags BrowseTableModel::getCapabilities() const
-{
-    return TRACKMODELCAPS_NONE |
-    	   TRACKMODELCAPS_ADDTOAUTODJ;
+TrackModel::CapabilitiesFlags BrowseTableModel::getCapabilities() const {
+    // See src/library/trackmodel.h for the list of TRACKMODELCAPS
+    return TRACKMODELCAPS_NONE
+            | TRACKMODELCAPS_ADDTOPLAYLIST
+            | TRACKMODELCAPS_ADDTOCRATE
+            | TRACKMODELCAPS_ADDTOAUTODJ
+            | TRACKMODELCAPS_LOADTODECK
+            | TRACKMODELCAPS_LOADTOSAMPLER;
 }
 
 Qt::ItemFlags BrowseTableModel::flags(const QModelIndex &index) const{
@@ -280,8 +281,6 @@ Qt::ItemFlags BrowseTableModel::flags(const QModelIndex &index) const{
     defaultFlags |= Qt::ItemIsDragEnabled;
 
     QString track_location = getTrackLocation(index);
-
-    //int row = index.row(); // unused
     int column = index.column();
 
     if(isTrackInUse(track_location) ||
@@ -318,7 +317,7 @@ bool BrowseTableModel::setData(const QModelIndex &index, const QVariant &value, 
 {
     Q_UNUSED(role);
 
-	if(!index.isValid())
+    if(!index.isValid())
         return false;
     qDebug() << "BrowseTableModel::setData(" << index.data() << ")";
     int row = index.row();

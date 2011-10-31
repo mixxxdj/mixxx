@@ -18,6 +18,12 @@
 	the resulting work only under the same or similar license to this one.
 
 	CHANGELOG
+	v1.10.0.07	(29/10/2011)
+	* Fix: Selected sidebar item's branch indicator shows wrong color when out of focus
+
+	v1.10.0.06	(16/10/2011)
+	* Update: Tooltips for spinning vinyl, waveform (overview) due to changes in functionality
+
 	v1.10.0.05	(01/06/2011)
 	* Feature: Added BPM display & BPM tap button to samplers
 
@@ -282,7 +288,7 @@
 							**********************************************
 							-->
 							<Overview>
-								<Tooltip>Waveform overview&#10;Shows information about the track currently loaded in this channel.&#10;Jump around in the track by clicking somewhere on the waveform.&#10;</Tooltip>
+								<Tooltip>Waveform overview&#10;Shows information about the track currently loaded in this channel.&#10;Jump around in the track by clicking somewhere on the waveform.&#10;Drop tracks from library or external file manager here.&#10;</Tooltip>
 								<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 								background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
 								background: {
@@ -798,7 +804,7 @@
 							**********************************************
 							-->
 							<Overview>
-								<Tooltip>Waveform overview&#10;Shows information about the track currently loaded in this channel.&#10;Jump around in the track by clicking somewhere on the waveform.&#10;</Tooltip>
+								<Tooltip>Waveform overview&#10;Shows information about the track currently loaded in this channel.&#10;Jump around in the track by clicking somewhere on the waveform.&#10;Drop tracks from library or external file manager here.&#10;</Tooltip>
 								<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 								background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
 								background: {
@@ -1314,7 +1320,7 @@
 							**********************************************
 							-->
 							<Overview>
-								<Tooltip>Waveform overview&#10;Shows information about the track currently loaded in this channel.&#10;Jump around in the track by clicking somewhere on the waveform.&#10;</Tooltip>
+								<Tooltip>Waveform overview&#10;Shows information about the track currently loaded in this channel.&#10;Jump around in the track by clicking somewhere on the waveform.&#10;Drop tracks from library or external file manager here.&#10;</Tooltip>
 								<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 								background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
 								background: {
@@ -1830,7 +1836,7 @@
 							**********************************************
 							-->
 							<Overview>
-								<Tooltip>Waveform overview&#10;Shows information about the track currently loaded in this channel.&#10;Jump around in the track by clicking somewhere on the waveform.&#10;</Tooltip>
+								<Tooltip>Waveform overview&#10;Shows information about the track currently loaded in this channel.&#10;Jump around in the track by clicking somewhere on the waveform.&#10;Drop tracks from library or external file manager here.&#10;</Tooltip>
 								<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 								background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
 								background: {
@@ -2299,8 +2305,8 @@
 						<!--Extra declaration for QRadionButton otherwise it shows up with wrong colors in Linux with Gnome -->
 						QLabel, QRadioButton { font: 13px/15px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; background: transparent; color: #C1C1C1;}
 
-						<!--Workaround for QT4.7.0 background color bug in Linux with Gnome https://bugs.launchpad.net/mixxx/+bug/690280-->
-						QTreeView::branch {background: transparent;}
+						<!--triangle for closed/opened branches in treeview-->
+						QTreeView {show-decoration-selected: 0;} <!-- Suppresses that selected sidebar item's branch indicator shows wrong color when out of focus ; lp:880588-->
 						QTreeView::branch:has-children:!has-siblings:closed,
 						QTreeView::branch:closed:has-children:has-siblings { border-image: none; image: url(skin:/style/style_branch_closed.png);}
 						QTreeView::branch:open:has-children:!has-siblings,
@@ -2602,7 +2608,7 @@
 					**********************************************
 					-->
 					<Spinny>
-						<Tooltip>Spinning vinyl&#10;TODO&#10;</Tooltip>
+						<Tooltip>Spinning vinyl&#10;Rotates during playback and shows the position of a track.&#10;Use the mouse to scratch, halt, spin back and push forward a track.&#10;Drop tracks from library or external file manager here.&#10;If Vinyl control is enabled, it can display the timecoded vinyls signal quality (see Preferences→Vinyl Control).&#10;</Tooltip>
 						<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 						background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
 						</Style>
@@ -2638,7 +2644,7 @@
 					**********************************************
 					-->
 					<Visual>
-						<Tooltip>Waveform display&#10;Shows the loaded tracks' waveforms near the playback position.&#10;Click and drag with mouse to scratch the song.&#10;Drop tracks from external file manager here.&#10;</Tooltip>
+						<Tooltip>Waveform display&#10;Shows the loaded tracks' waveforms near the playback position.&#10;Use the mouse to scratch, halt, spin back and push forward a track.&#10;Drop tracks from library or external file manager here.&#10;</Tooltip>
 						<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 						background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
 						</Style>
@@ -2952,7 +2958,7 @@
 						</Mark>
 					</Visual>
 					<Visual>
-						<Tooltip>Waveform display&#10;Shows the loaded tracks' waveforms near the playback position.&#10;Click and drag with mouse to scratch the song.&#10;Drop tracks from external file manager here.&#10;</Tooltip>
+						<Tooltip>Waveform display&#10;Shows the loaded tracks' waveforms near the playback position.&#10;Use the mouse to scratch, halt, spin back and push forward a track.&#10;Drop tracks from library or external file manager here.&#10;</Tooltip>
 						<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 						background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
 						</Style>
@@ -3279,7 +3285,7 @@
 					**********************************************
 					-->
 					<Spinny>
-						<Tooltip>Spinning vinyl&#10;TODO&#10;</Tooltip>
+						<Tooltip>Spinning vinyl&#10;Rotates during playback and shows the position of a track.&#10;Use the mouse to scratch, halt, spin back and push forward a track.&#10;Drop tracks from library or external file manager here.&#10;If Vinyl control is enabled, it can display the timecoded vinyls signal quality (see Preferences→Vinyl Control).&#10;</Tooltip>
 						<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 						background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
 						</Style>
@@ -4616,7 +4622,7 @@
 			**********************************************
 			-->
 			<Overview>
-				<Tooltip>Waveform overview&#10;Shows information about the track currently loaded in this channel.&#10;Jump around in the track by clicking somewhere on the waveform.&#10;</Tooltip>
+				<Tooltip>Waveform overview&#10;Shows information about the track currently loaded in this channel.&#10;Jump around in the track by clicking somewhere on the waveform.&#10;Drop tracks from library or external file manager here.&#10;</Tooltip>
 				<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 				background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
 				</Style>
@@ -5567,7 +5573,7 @@
 			**********************************************
 			-->
 			<Overview>
-				<Tooltip>Waveform overview&#10;Shows information about the track currently loaded in this channel.&#10;Jump around in the track by clicking somewhere on the waveform.&#10;</Tooltip>
+				<Tooltip>Waveform overview&#10;Shows information about the track currently loaded in this channel.&#10;Jump around in the track by clicking somewhere on the waveform.&#10;Drop tracks from library or external file manager here.&#10;</Tooltip>
 				<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 				background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
 				</Style>

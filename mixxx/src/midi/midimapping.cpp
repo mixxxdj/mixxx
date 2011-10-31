@@ -72,7 +72,8 @@ MidiMapping::MidiMapping(MidiDevice* outputMidiDevice)
 }
 
 MidiMapping::~MidiMapping() {
-
+    delete m_pMidiInputMappingTableModel;
+    delete m_pMidiOutputMappingTableModel;
 }
 
 #ifdef __MIDISCRIPT__
@@ -946,11 +947,11 @@ void MidiMapping::addOutput(QDomElement &output, QString device) {
 
 bool MidiMapping::addInputControl(MidiStatusByte midiStatus, int midiNo, int midiChannel,
                                   QString controlObjectGroup, QString controlObjectKey,
-                                  MidiOption midiOption)
+                                  QString controlObjectDescription, MidiOption midiOption)
 {
     return addInputControl(MidiMessage(midiStatus, midiNo, midiChannel),
                            MixxxControl(controlObjectGroup, controlObjectKey,
-                                        midiOption));
+                                        controlObjectDescription, midiOption));
 }
 
 bool MidiMapping::addInputControl(MidiMessage message, MixxxControl control)
