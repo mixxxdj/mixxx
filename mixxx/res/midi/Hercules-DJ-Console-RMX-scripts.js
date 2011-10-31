@@ -182,10 +182,14 @@ HerculesRMX.Deck.prototype.syncHandler = function(value) {
 	   if(this.shiftMode) {
 	      engine.setValue(this.group,"bpm_tap",1);
 	   } else {
-	      engine.setValue(this.group,"beatsync",0);
+	      engine.setValue(this.group,"beatsync",1);
          this.Buttons.Sync.setLed(LedState.on);
 	   }
-	}
+	} else if(value == ButtonState.released) {
+      if(!this.shiftMode) {
+         engine.setValue(this.group,"beatsync",0);
+      }
+   }
 };
 
 HerculesRMX.Deck.prototype.keypad1Handler = function(value) {
@@ -591,7 +595,7 @@ HerculesRMX.Decks.Right.Controls.Bass.maxOutput = 4.0;
 HerculesRMX.Decks.Right.Controls.Vol.minOutput = 0.0;
 HerculesRMX.Decks.Right.Controls.Vol.midOutput = 0.4;
 HerculesRMX.Decks.Right.Controls.Vol.maxOutput = 1.0;
-HerculesRMX.Decks.Left.Controls.Pitch.midInput = (HerculesRMX.firstGenerationFirmware ? 0x40 : 0x3F);
+HerculesRMX.Decks.Right.Controls.Pitch.midInput = (HerculesRMX.firstGenerationFirmware ? 0x40 : 0x3F);
 
 //Mapping functions
 HerculesRMX.volume = function(channel, control, value, status, group) {
