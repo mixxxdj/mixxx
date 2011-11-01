@@ -2,15 +2,12 @@
 <ui version="4.0">
  <class>DlgPrefNoVinylDlg</class>
  <widget class="QWidget" name="DlgPrefNoVinylDlg">
-  <property name="enabled">
-   <bool>true</bool>
-  </property>
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>461</width>
-    <height>527</height>
+    <width>504</width>
+    <height>501</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -57,8 +54,8 @@ p, li { white-space: pre-wrap; }
           <property name="wordWrap">
            <bool>false</bool>
           </property>
-          <property name="buddy" >
-           <cstring>VinylGainDevice</cstring>
+          <property name="buddy">
+           <cstring>VinylGain</cstring>
           </property>
          </widget>
         </item>
@@ -168,7 +165,7 @@ p, li { white-space: pre-wrap; }
         <property name="wordWrap">
          <bool>false</bool>
         </property>
-        <property name="buddy" >
+        <property name="buddy">
          <cstring>ComboBoxVinylType1</cstring>
         </property>
        </widget>
@@ -225,7 +222,7 @@ p, li { white-space: pre-wrap; }
         <property name="wordWrap">
          <bool>false</bool>
         </property>
-        <property name="buddy" >
+        <property name="buddy">
          <cstring>ComboBoxVinylType2</cstring>
         </property>
        </widget>
@@ -282,7 +279,7 @@ p, li { white-space: pre-wrap; }
         <property name="wordWrap">
          <bool>false</bool>
         </property>
-        <property name="buddy" >
+        <property name="buddy">
          <cstring>LeadinTime</cstring>
         </property>
        </widget>
@@ -425,27 +422,17 @@ p, li { white-space: pre-wrap; }
         </property>
        </spacer>
       </item>
-      <item row="1" column="0">
-       <widget class="QLabel" name="label">
-        <property name="enabled">
-         <bool>false</bool>
-        </property>
-        <property name="toolTip">
-         <string>http://www.xwax.co.uk</string>
-        </property>
-        <property name="text">
-         <string>Powered by xwax</string>
-        </property>
-        <property name="alignment">
-         <set>Qt::AlignBottom|Qt::AlignLeading|Qt::AlignLeft</set>
-        </property>
-       </widget>
-      </item>
      </layout>
     </widget>
    </item>
-   <item row="6" column="0" colspan="2">
+   <item row="5" column="0" colspan="2">
     <widget class="QLabel" name="label_3">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
      <property name="text">
       <string>&lt;b&gt;This version of Mixxx does not support vinyl control.&lt;/b&gt; &lt;br&gt; Please visit &lt;a href=&quot;http://mixxx.org&quot;&gt;Mixxx.org&lt;/a&gt; for more information.</string>
      </property>
@@ -455,28 +442,6 @@ p, li { white-space: pre-wrap; }
     </widget>
    </item>
    <item row="5" column="2">
-    <widget class="QPushButton" name="applyButton">
-     <property name="enabled">
-      <bool>false</bool>
-     </property>
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
-       <horstretch>0</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
-     </property>
-     <property name="sizeHint" stdset="0">
-      <size>
-       <width>79</width>
-       <height>32</height>
-      </size>
-     </property>
-     <property name="text">
-      <string>Apply</string>
-     </property>
-    </widget>
-   </item>
-   <item row="5" column="1">
     <widget class="QLabel" name="label">
      <property name="enabled">
       <bool>false</bool>
@@ -492,7 +457,7 @@ p, li { white-space: pre-wrap; }
      </property>
     </widget>
    </item>
-   <item row="6" column="2" rowspan="2">
+   <item row="6" column="2">
     <spacer name="verticalSpacer">
      <property name="orientation">
       <enum>Qt::Vertical</enum>
