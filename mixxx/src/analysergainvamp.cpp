@@ -11,17 +11,17 @@
 #include <QString>
 #include <time.h>
 #include <math.h>
-#include "analysergain.h"
+#include "analysergainvamp.h"
 
-AnalyserGain::AnalyserGain(ConfigObject<ConfigValue> *_config) {
+AnalyserGainVamp::AnalyserGainVamp(ConfigObject<ConfigValue> *_config) {
     m_pConfigAVR = _config;
 }
 
-AnalyserGain::~AnalyserGain(){
+AnalyserGainVamp::~AnalyserGainVamp(){
 
 }
 
-void AnalyserGain::initialise(TrackPointer tio, int sampleRate, int totalSamples) {
+void AnalyserGainVamp::initialise(TrackPointer tio, int sampleRate, int totalSamples) {
     mvamprg = new VampAnalyser();
     m_bPass = false;
     bool bAnalyserEnabled = (bool)m_pConfigAVR->getValueString(ConfigKey("[ReplayGain]","ReplayGainAnalyserEnabled")).toInt();
@@ -39,14 +39,14 @@ void AnalyserGain::initialise(TrackPointer tio, int sampleRate, int totalSamples
 
 }
 
-void AnalyserGain::process(const CSAMPLE *pIn, const int iLen) {
+void AnalyserGainVamp::process(const CSAMPLE *pIn, const int iLen) {
     if(!m_bPass) return;
     m_bPass = mvamprg->Process(pIn, iLen);
 
 
 }
 
-void AnalyserGain::finalise(TrackPointer tio) {
+void AnalyserGainVamp::finalise(TrackPointer tio) {
     if(!m_bPass) return;
     QVector <double> values;
     values = mvamprg->GetFirstValuesVector();

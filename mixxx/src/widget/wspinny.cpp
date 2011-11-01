@@ -144,6 +144,9 @@ void WSpinny::setup(QDomNode node, QString group)
     //Check the rate to see if we are stopped
     connect(m_pRate, SIGNAL(valueChanged(double)),
             this, SLOT(updateRate(double)));
+#else
+    //if no vinyl control, just call it 33
+    this->updateVinylControlSpeed(33.0);
 #endif
 }
 

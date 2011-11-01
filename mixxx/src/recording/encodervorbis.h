@@ -46,7 +46,7 @@ class EncoderVorbis : public Encoder {
     //Call this method in conjunction with shoutcast streaming
     void writePage();
 
-   
+    bool m_bStreamInitialized;
     ogg_stream_state m_oggs;    /* take physical pages, weld into logical stream
                                  of packets */
     ogg_page m_oggpage;         /* Ogg bitstream page: contains Vorbis packets */
@@ -65,7 +65,7 @@ class EncoderVorbis : public Encoder {
     QFile m_file;
 
     ControlObjectThread* m_samplerate;
-    
+
 };
 
 #endif
