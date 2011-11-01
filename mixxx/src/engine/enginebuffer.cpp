@@ -561,7 +561,7 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
             Q_ASSERT(round(filepos_play) == filepos_play);
             // Even.
             Q_ASSERT(even(filepos_play));
-
+            
             // Perform scaling of Reader buffer into buffer.
             output = m_pScale->scale(0,
                                      iBufferSize,
@@ -580,17 +580,9 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
 
             // Adjust filepos_play by the amount we processed. TODO(XXX) what
             // happens if samplesRead is a fraction?
-            int newVirtualPlayposition =
+            filepos_play =
                     m_pReadAheadManager->getEffectiveVirtualPlaypositionFromLog(
                         static_cast<int>(filepos_play), samplesRead);
-            filepos_play = newVirtualPlayposition;
-
-            // Get rid of annoying decimals that the scaler sometimes produces
-            filepos_play = round(filepos_play);
-
-            if (!even(filepos_play))
-                filepos_play--;
-
         } // else (bCurBufferPaused)
 
         m_engineLock.lock();
@@ -697,7 +689,7 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
     float ramp_inc = 0;
     if (m_iRampState == ENGINE_RAMP_UP || 
         m_iRampState == ENGINE_RAMP_DOWN) {
-        ramp_inc = 1000 / m_pSampleRate->get();
+        ramp_inc = m_iRampState * 1000 / m_pSampleRate->get();
     }
 
     //float fakerate = rate * 30000 == 0 ? -5000 : rate*30000;
