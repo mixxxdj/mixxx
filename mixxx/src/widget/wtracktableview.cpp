@@ -492,7 +492,7 @@ void WTrackTableView::mouseMoveEvent(QMouseEvent* pEvent) {
         if (!index.isValid()) {
             continue;
         }
-        QUrl url = QUrl::fromLocalFile(getTrackLocation(index));
+        QUrl url = QUrl::fromLocalFile(trackModel->getTrackLocation(index));
         if (!url.isValid()) {
             qDebug() << this << "ERROR: invalid url" << url;
             continue;
