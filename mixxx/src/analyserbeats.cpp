@@ -17,15 +17,7 @@
 
 static bool sDebug = true;
 
-
-#ifdef __LINUX__
-    #define VAMP_MIXXX_MINIMAL "libmixxxminimal.so"
-#elif __APPLE__
-    #define VAMP_MIXXX_MINIMAL "libmixxxminimal.dylib"
-#else
-    #define VAMP_MIXXX_MINIMAL "libmixxxminimal.dll"
-#endif
-
+#define VAMP_MIXXX_MINIMAL "libmixxxminimal"
 #define VAMP_PLUGIN_BEAT_TRACKER_ID "qm-tempotracker:0"
 
 AnalyserBeats::AnalyserBeats(ConfigObject<ConfigValue> *_config) {
