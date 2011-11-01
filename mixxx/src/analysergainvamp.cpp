@@ -34,7 +34,7 @@ void AnalyserGainVamp::initialise(TrackPointer tio, int sampleRate, int totalSam
 
     m_bPass = mvamprg->Init("libmixxxminimal","replaygain:0",sampleRate, totalSamples);
     if (!m_bPass)
-        qDebug() << "Failed to init";
+        qDebug() << "Failed to init Vamp Replay Gain Analyser";
 
 
 }
