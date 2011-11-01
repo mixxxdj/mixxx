@@ -68,6 +68,7 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
     file_length_old(-1),
     file_srate_old(0),
     m_iSamplesCalculated(0),
+    m_iUiSlowTick(0),
     m_pTrackEnd(NULL),
     m_pRepeat(NULL),
     startButton(NULL),
@@ -138,6 +139,9 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
 
     // Actual rate (used in visuals, not for control)
     rateEngine = new ControlObject(ConfigKey(group, "rateEngine"));
+    
+    // BPM to display in the UI (updated more slowly than the actual bpm)
+    visualBpm = new ControlObject(ConfigKey(group, "visual_bpm"));
 
     // Slider to show and change song position
     //these bizarre choices map conveniently to the 0-127 range of midi
@@ -784,6 +788,12 @@ void EngineBuffer::updateIndicators(double rate, int iBufferSize) {
 
         if(rate != rateEngine->get())
             rateEngine->set(rate);
+            
+        //Update the BPM even more slowly
+        m_iUiSlowTick = (m_iUiSlowTick + 1) % kiBpmUpdateRate;
+        if (m_iUiSlowTick == 0) {
+            visualBpm->set(m_pBpmControl->getBpm());
+        }
 
         // Reset sample counter
         m_iSamplesCalculated = 0;
