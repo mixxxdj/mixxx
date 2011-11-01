@@ -178,6 +178,7 @@ function Control(mappedFunction, softMode) {
    this.softMode = softMode;
    this.maxJump = 10;
 }
+
 Control.prototype.setValue = function(group, inputValue){
    var outputValue = 0;
    if(inputValue <= this.midInput){
