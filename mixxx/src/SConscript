@@ -290,8 +290,8 @@ if build.platform_is_windows:
         base_dist_dir = '#' + dist_dir
 	skins = env.Install(os.path.join(base_dist_dir, "skins"), skin_files)
 	resource = env.Install(base_dist_dir+"/", resource_files)
-	midimappings = env.Install(os.path.join(base_dist_dir, "midi"), midimappings_files)
-        translations = env.Install(os.path.join(base_dist_dir, "translations"), translations_files)
+        midimappings = env.Install(os.path.join(base_dist_dir, "midi"), midimappings_files)
+        translations = env.Install(os.path.join(base_dist_dir, "translations"), translation_files)
 	keyboardmappings = env.Install(os.path.join(base_dist_dir, "keyboard"), keyboardmappings_files)
 	if int(flags['ladspa']):
 		ladspapresets = env.Install(os.path.join(base_dist_dir, "ladspa_presets"), ladspapresets_files)
