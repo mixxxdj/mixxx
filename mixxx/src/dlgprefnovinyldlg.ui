@@ -2,15 +2,12 @@
 <ui version="4.0">
  <class>DlgPrefNoVinylDlg</class>
  <widget class="QWidget" name="DlgPrefNoVinylDlg">
-  <property name="enabled">
-   <bool>true</bool>
-  </property>
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>461</width>
-    <height>527</height>
+    <width>504</width>
+    <height>501</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -57,8 +54,8 @@ p, li { white-space: pre-wrap; }
           <property name="wordWrap">
            <bool>false</bool>
           </property>
-          <property name="buddy" >
-           <cstring>VinylGainDevice</cstring>
+          <property name="buddy">
+           <cstring>VinylGain</cstring>
           </property>
          </widget>
         </item>
@@ -168,7 +165,7 @@ p, li { white-space: pre-wrap; }
         <property name="wordWrap">
          <bool>false</bool>
         </property>
-        <property name="buddy" >
+        <property name="buddy">
          <cstring>ComboBoxVinylType1</cstring>
         </property>
        </widget>
@@ -225,7 +222,7 @@ p, li { white-space: pre-wrap; }
         <property name="wordWrap">
          <bool>false</bool>
         </property>
-        <property name="buddy" >
+        <property name="buddy">
          <cstring>ComboBoxVinylType2</cstring>
         </property>
        </widget>
@@ -282,7 +279,7 @@ p, li { white-space: pre-wrap; }
         <property name="wordWrap">
          <bool>false</bool>
         </property>
-        <property name="buddy" >
+        <property name="buddy">
          <cstring>LeadinTime</cstring>
         </property>
        </widget>
@@ -424,22 +421,6 @@ p, li { white-space: pre-wrap; }
          </size>
         </property>
        </spacer>
-      </item>
-      <item row="1" column="0">
-       <widget class="QLabel" name="label">
-        <property name="enabled">
-         <bool>false</bool>
-        </property>
-        <property name="toolTip">
-         <string>http://www.xwax.co.uk</string>
-        </property>
-        <property name="text">
-         <string>Powered by xwax</string>
-        </property>
-        <property name="alignment">
-         <set>Qt::AlignBottom|Qt::AlignLeading|Qt::AlignLeft</set>
-        </property>
-       </widget>
       </item>
      </layout>
     </widget>
