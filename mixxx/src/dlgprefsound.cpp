@@ -376,9 +376,9 @@ void DlgPrefSound::updateLatencies(int sampleRateIndex) {
     for (; framesPerBuffer / sampleRate * 1000 < 1.0; framesPerBuffer *= 2);
     latencyComboBox->clear();
     for (unsigned int i = 0; i < SoundManagerConfig::kMaxLatency; ++i) {
-        unsigned int latency = framesPerBuffer / sampleRate * 1000;
+        float latency = framesPerBuffer / sampleRate * 1000;
         // i + 1 in the next line is a latency index as described in SSConfig
-        latencyComboBox->addItem(QString(tr("%1 ms")).arg(latency), i + 1);
+        latencyComboBox->addItem(QString(tr("%1 ms")).arg(latency,0,'g',3), i + 1);
         framesPerBuffer <<= 1; // *= 2
     }
     if (oldLatency < latencyComboBox->count() && oldLatency >= 0) {
