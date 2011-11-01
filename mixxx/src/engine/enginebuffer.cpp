@@ -697,7 +697,7 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
     float ramp_inc = 0;
     if (m_iRampState == ENGINE_RAMP_UP || 
         m_iRampState == ENGINE_RAMP_DOWN) {
-        ramp_inc = 1000 / m_pSampleRate->get();
+        ramp_inc = m_iRampState * 1000 / m_pSampleRate->get();
     }
 
     //float fakerate = rate * 30000 == 0 ? -5000 : rate*30000;
