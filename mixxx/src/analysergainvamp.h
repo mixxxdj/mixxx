@@ -5,17 +5,17 @@
  *      Author: vittorio
  */
 
-#ifndef ANALYSERRGAIN_H_
-#define ANALYSERRGAIN_H_
+#ifndef ANALYSERRGAINVAMP_H_
+#define ANALYSERRGAINVAMP_H_
 #include "analyser.h"
 #include "configobject.h"
 #include "vamp/vampanalyser.h"
 
-class AnalyserGain: public Analyser {
+class AnalyserGainVamp: public Analyser {
 
 public:
-    AnalyserGain(ConfigObject<ConfigValue> *_config);
-    ~AnalyserGain();
+    AnalyserGainVamp(ConfigObject<ConfigValue> *_config);
+    ~AnalyserGainVamp();
     void initialise(TrackPointer tio, int sampleRate, int totalSamples);
     void process(const CSAMPLE *pIn, const int iLen);
     void finalise(TrackPointer tio);
@@ -28,4 +28,4 @@ private:
     //int m_iStartTime;
 };
 
-#endif /* ANALYSERGAIN_H_ */
+#endif /* ANALYSERRGAINVAMP_H_ */
