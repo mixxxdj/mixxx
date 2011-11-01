@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2011-05-03 21:42-0400\n"
+"POT-Creation-Date: 2011-10-31 23:15-0400\n"
 "PO-Revision-Date: 2011-10-07 14:25+0000\n"
 "Last-Translator: RJ Ryan <Unknown>\n"
 "Language-Team: Finnish <fi@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-10-08 05:14+0000\n"
-"X-Generator: Launchpad (build 14110)\n"
+"X-Launchpad-Export-Date: 2011-11-01 04:44+0000\n"
+"X-Generator: Launchpad (build 14197)\n"
 
 #: AutoDJFeature#1
 msgid "Auto DJ"
@@ -417,126 +417,8 @@ msgid "Min"
 msgstr "Min."
 
 #: DlgBpmSchemeDlg#6
-msgctxt "DlgBpmSchemeDlg#6"
 msgid "Analyze Entire Song"
-msgstr "Analysoi koko kappale"
-
-#: DlgBpmTapDlg#1
-msgctxt "DlgBpmTapDlg#1"
-msgid "Track Editor"
-msgstr "Raitaeditori"
-
-#: DlgBpmTapDlg#2
-msgid "&Close"
-msgstr "Sulje"
-
-#: DlgBpmTapDlg#3
-msgctxt "DlgBpmTapDlg#3"
-msgid "Alt+O"
-msgstr "Alt+O"
-
-#: DlgBpmTapDlg#4
-msgctxt "DlgBpmTapDlg#4"
-msgid "Song:"
-msgstr "Kappale:"
-
-#: DlgBpmTapDlg#5
-msgid "Next >>"
-msgstr "Seuraava >>"
-
-#: DlgBpmTapDlg#6
-msgid "<< Prev"
-msgstr "<< Edellinen"
-
-#: DlgBpmTapDlg#7
-msgid "BPM Editor (Click to Expand)"
-msgstr "BPM muokkaus (Klikkaa avataksesi)"
-
-#: DlgBpmTapDlg#8
-msgctxt "DlgBpmTapDlg#8"
-msgid "BPM Detection"
-msgstr "BPM:n tunnistus"
-
-#: DlgBpmTapDlg#9
-msgid "BPM Scheme:"
-msgstr "BPM teema:"
-
-#: DlgBpmTapDlg#10
-msgid "to"
-msgstr "–"
-
-#: DlgBpmTapDlg#11
-msgid "BPM Range:"
-msgstr "BPM alue:"
-
-#: DlgBpmTapDlg#12
-msgid "&Go"
-msgstr "&Mene"
-
-#: DlgBpmTapDlg#13
-msgid "Alt+G"
-msgstr "Alt+G"
-
-#: DlgBpmTapDlg#14
-msgctxt "DlgBpmTapDlg#14"
-msgid "Analyze Entire Song"
-msgstr "Analysoi koko kappale"
-
-#: DlgBpmTapDlg#15
-msgid "BPM:"
-msgstr "BPM:"
-
-#: DlgBpmTapDlg#16
-msgid "&Push to tap tempo"
-msgstr "&Paina vaihtaaksesi tempoa"
-
-#: DlgBpmTapDlg#17
-msgid "Alt+P"
-msgstr "Alt+P"
-
-#: DlgBpmTapDlg#18
-msgctxt "DlgBpmTapDlg#18"
-msgid "Track Information (Click to Expand)"
-msgstr "Raidan tiedot (Klikkaa avataksesi)"
-
-#: DlgBpmTapDlg#19
-msgctxt "DlgBpmTapDlg#19"
-msgid "Title:"
-msgstr "Nimi:"
-
-#: DlgBpmTapDlg#20
-msgctxt "DlgBpmTapDlg#20"
-msgid "Artist:"
-msgstr "Esittäjä:"
-
-#: DlgBpmTapDlg#21
-msgctxt "DlgBpmTapDlg#21"
-msgid "Comments:"
-msgstr "Kommentit:"
-
-#: DlgBpmTapDlg#22
-msgctxt "DlgBpmTapDlg#22"
-msgid "Filename:"
-msgstr "Tiedostonnimi:"
-
-#: DlgBpmTapDlg#23
-msgctxt "DlgBpmTapDlg#23"
-msgid "3:00"
-msgstr "3:00"
-
-#: DlgBpmTapDlg#24
-msgid "Play Time:"
-msgstr "Soittoaika:"
-
-#: DlgBpmTapDlg#25
-msgctxt "DlgBpmTapDlg#25"
-msgid "File Type:"
-msgstr "Tiedoston tyyppi:"
-
-#: DlgBpmTapDlg#26
-msgctxt "DlgBpmTapDlg#26"
-msgid "77"
-msgstr "77"
+msgstr ""
 
 #: DlgMidiLearning#1
 msgid "Skip"
@@ -1173,45 +1055,50 @@ msgstr "sekuntteja"
 
 #: DlgPrefNoVinylDlg#13
 msgctxt "DlgPrefNoVinylDlg#13"
-msgid "Control Mode"
-msgstr "Hallintatila"
+msgid "Show Signal Quality in Skin"
+msgstr ""
 
 #: DlgPrefNoVinylDlg#14
 msgctxt "DlgPrefNoVinylDlg#14"
-msgid "Absolute Mode"
-msgstr "Absoluuttinen"
+msgid "Control Mode"
+msgstr ""
 
 #: DlgPrefNoVinylDlg#15
 msgctxt "DlgPrefNoVinylDlg#15"
-msgid "Relative Mode"
-msgstr "Suhteellinen"
+msgid "Absolute Mode"
+msgstr ""
 
 #: DlgPrefNoVinylDlg#16
 msgctxt "DlgPrefNoVinylDlg#16"
-msgid "Enable Needle Skip Prevention"
-msgstr "Käynnistä neulan hyppäämisen estäminen"
+msgid "Relative Mode"
+msgstr ""
 
 #: DlgPrefNoVinylDlg#17
 msgctxt "DlgPrefNoVinylDlg#17"
-msgid "Signal Quality"
-msgstr "Signaalin laatu"
+msgid "Enable Needle Skip Prevention"
+msgstr ""
 
 #: DlgPrefNoVinylDlg#18
 msgctxt "DlgPrefNoVinylDlg#18"
-msgid "http://www.xwax.co.uk"
-msgstr "http://www.xwax.co.uk"
+msgid "Signal Quality"
+msgstr ""
 
 #: DlgPrefNoVinylDlg#19
 msgctxt "DlgPrefNoVinylDlg#19"
-msgid "Powered by xwax"
-msgstr "Terästetty xwax:lla"
+msgid "http://www.xwax.co.uk"
+msgstr ""
 
 #: DlgPrefNoVinylDlg#20
 msgctxt "DlgPrefNoVinylDlg#20"
-msgid "Apply"
-msgstr "Käytä"
+msgid "Powered by xwax"
+msgstr ""
 
 #: DlgPrefNoVinylDlg#21
+msgctxt "DlgPrefNoVinylDlg#21"
+msgid "Apply"
+msgstr ""
+
+#: DlgPrefNoVinylDlg#22
 msgid ""
 "<b>This version of Mixxx does not support vinyl control.</b> <br> Please "
 "visit <a href=\"http://mixxx.org\">Mixxx.org</a> for more information."
@@ -1553,8 +1440,9 @@ msgid "http://www.mixxx.org"
 msgstr "http://www.mixxx.org"
 
 #: DlgPrefShoutcastDlg#23
+msgctxt "DlgPrefShoutcastDlg#23"
 msgid "Description"
-msgstr "Kuvaus"
+msgstr ""
 
 #: DlgPrefShoutcastDlg#24
 msgid ""
@@ -1802,14 +1690,18 @@ msgid "None"
 msgstr "Ei määritelty"
 
 #: DlgPrefSoundItem#2
+msgid "Channel %1"
+msgstr ""
+
+#: DlgPrefSoundItem#3
 msgid "Channels %1 - %2"
 msgstr "Kanavat %1 - %2"
 
-#: DlgPrefSoundItem#3
+#: DlgPrefSoundItem#4
 msgid "Form"
 msgstr "Lomake"
 
-#: DlgPrefSoundItem#4
+#: DlgPrefSoundItem#5
 msgid "Type (#)"
 msgstr "Tyyppi (#)"
 
@@ -1893,53 +1785,58 @@ msgstr "Ohjainlevyn 2 tyyppi"
 
 #: DlgPrefVinylDlg#11
 msgctxt "DlgPrefVinylDlg#11"
-msgid "Apply"
-msgstr "Käytä"
+msgid "Show Signal Quality in Skin"
+msgstr ""
 
 #: DlgPrefVinylDlg#12
 msgctxt "DlgPrefVinylDlg#12"
-msgid "Lead-in time"
-msgstr "Kappaleen johdanto aika"
+msgid "Apply"
+msgstr ""
 
 #: DlgPrefVinylDlg#13
 msgctxt "DlgPrefVinylDlg#13"
-msgid "seconds"
-msgstr "sekuntia"
+msgid "Lead-in time"
+msgstr ""
 
 #: DlgPrefVinylDlg#14
 msgctxt "DlgPrefVinylDlg#14"
-msgid "Control Mode"
-msgstr "Toimintatila"
+msgid "seconds"
+msgstr ""
 
 #: DlgPrefVinylDlg#15
 msgctxt "DlgPrefVinylDlg#15"
-msgid "Absolute Mode"
-msgstr "Absoluuttinen"
+msgid "Control Mode"
+msgstr ""
 
 #: DlgPrefVinylDlg#16
 msgctxt "DlgPrefVinylDlg#16"
-msgid "Relative Mode"
-msgstr "Suhteellinen"
+msgid "Absolute Mode"
+msgstr ""
 
 #: DlgPrefVinylDlg#17
 msgctxt "DlgPrefVinylDlg#17"
-msgid "Enable Needle Skip Prevention"
-msgstr "Käynnistä neulan hyppäämisen estäminen"
+msgid "Relative Mode"
+msgstr ""
 
 #: DlgPrefVinylDlg#18
 msgctxt "DlgPrefVinylDlg#18"
-msgid "Signal Quality"
-msgstr "Signaalin laatu"
+msgid "Enable Needle Skip Prevention"
+msgstr ""
 
 #: DlgPrefVinylDlg#19
 msgctxt "DlgPrefVinylDlg#19"
-msgid "http://www.xwax.co.uk"
-msgstr "http://www.xwax.co.uk"
+msgid "Signal Quality"
+msgstr ""
 
 #: DlgPrefVinylDlg#20
 msgctxt "DlgPrefVinylDlg#20"
+msgid "http://www.xwax.co.uk"
+msgstr ""
+
+#: DlgPrefVinylDlg#21
+msgctxt "DlgPrefVinylDlg#21"
 msgid "Powered by xwax"
-msgstr "Terästetty xwax:lla"
+msgstr ""
 
 #: DlgPreferences#1
 msgid "Sound Hardware"
@@ -2055,24 +1952,20 @@ msgid "Stop Recording"
 msgstr "Lopeta tallennus"
 
 #: DlgTrackInfo#1
-msgctxt "DlgTrackInfo#1"
 msgid "Track Editor"
-msgstr "Raitaeditori"
+msgstr ""
 
 #: DlgTrackInfo#2
-msgctxt "DlgTrackInfo#2"
 msgid "Song:"
-msgstr "Kappale:"
+msgstr ""
 
 #: DlgTrackInfo#3
-msgctxt "DlgTrackInfo#3"
 msgid "Title:"
-msgstr "Otsikko:"
+msgstr ""
 
 #: DlgTrackInfo#4
-msgctxt "DlgTrackInfo#4"
 msgid "Artist:"
-msgstr "Artisti:"
+msgstr ""
 
 #: DlgTrackInfo#5
 msgid "Album:"
@@ -2091,42 +1984,36 @@ msgid "Genre:"
 msgstr "Tyylilaji:"
 
 #: DlgTrackInfo#9
-msgctxt "DlgTrackInfo#9"
 msgid "Filename:"
-msgstr "Tiedoston nimi:"
+msgstr ""
 
 #: DlgTrackInfo#10
 msgid "Duration:"
 msgstr "Kesto:"
 
 #: DlgTrackInfo#11
-msgctxt "DlgTrackInfo#11"
 msgid "3:00"
-msgstr "3:00"
+msgstr ""
 
 #: DlgTrackInfo#12
-msgctxt "DlgTrackInfo#12"
 msgid "File Type:"
-msgstr "Tiedoston tyyppi:"
+msgstr ""
 
 #: DlgTrackInfo#13
-msgctxt "DlgTrackInfo#13"
 msgid "77"
-msgstr "77"
+msgstr ""
 
 #: DlgTrackInfo#14
-msgctxt "DlgTrackInfo#14"
 msgid "Comments:"
-msgstr "Kommentit:"
+msgstr ""
 
 #: DlgTrackInfo#15
 msgid "Reload track metadata from file."
 msgstr "Päivitä metadata tiedostosta."
 
 #: DlgTrackInfo#16
-msgctxt "DlgTrackInfo#16"
 msgid "Track Information (Click to Expand)"
-msgstr "Raidan tiedot (Klikkaa avataksesi)"
+msgstr ""
 
 #: DlgTrackInfo#17
 msgid "Track BPM: "
@@ -2195,9 +2082,8 @@ msgid "&Cancel"
 msgstr "&Peruuta"
 
 #: DlgTrackInfo#33
-msgctxt "DlgTrackInfo#33"
 msgid "Alt+O"
-msgstr "Alt+O"
+msgstr ""
 
 #: DlgTrackInfo#34
 msgid "&Next >>"
@@ -2209,30 +2095,33 @@ msgstr "Pakkaaja"
 
 #: EncoderMp3#2
 msgid ""
-"<html>Mixxx is unable to load or find the MP3 encoder lame. <p>Please "
-"install libmp3lame (also known as lame) and check if /usr/lib/libmp3lame.so "
-"exists on your system </html>"
+"<html>Mixxx cannot record or stream in MP3 without the MP3 encoder "
+"&quot;lame&quot;. Due to licensing issues, we cannot include this with "
+"Mixxx. To record or stream in MP3, you must download <b>libmp3lame</b> and "
+"install it on your system. <p>See <a "
+"href='http://mixxx.org/wiki/doku.php/internet_broadcasting#linux'>Mixxx "
+"Wiki</a> for more information. </html>"
 msgstr ""
-"<html>Mixxx ei löydä MP3 pakkaajaa. <p>Asenna libmp3lame (tunnetaan myös "
-"nimellä lame) ja tarkista että se löytyy /usr/lib/libmp3lame.so</html>"
 
 #: EncoderMp3#3
 msgid ""
-"<html>Mixxx is unable to load or find the MP3 encoder lame. <p>Please put "
-"lame_enc.dll in the directory you have installed Mixxx </html>"
+"<html>Mixxx cannot record or stream in MP3 without the MP3 encoder "
+"&quot;lame&quot;. Due to licensing issues, we cannot include this with "
+"Mixxx. To record or stream in MP3, you must download <b>lame_enc.dll</b> and "
+"install it on your system. <p>See <a "
+"href='http://mixxx.org/wiki/doku.php/internet_broadcasting#windows'>Mixxx "
+"Wiki</a> for more information. </html>"
 msgstr ""
-"<html>Mixxx ei löydä MP3 pakkaajaa. <p>Kopioi lame_enc.dll samaan "
-"hakemistoon kuin Mixxx</html>"
 
 #: EncoderMp3#4
 msgid ""
-"<html>Mixxx is unable to load or find the MP3 encoder lame. <p>Please "
-"install libmp3lame (also known as lame) and check if "
-"/usr/local/lib/libmp3lame.dylib exists on your system </html>"
+"<html>Mixxx cannot record or stream in MP3 without the MP3 encoder "
+"&quot;lame&quot;. Due to licensing issues, we cannot include this with "
+"Mixxx. To record or stream in MP3, you must download <b>libmp3lame</b> and "
+"install it on your system. <p>See <a "
+"href='http://mixxx.org/wiki/doku.php/internet_broadcasting#mac_osx'>Mixxx "
+"Wiki</a> for more information. </html>"
 msgstr ""
-"<html>Mixxx ei löydä MP3 pakkaajaa <p>Asenna libmp3lame (tunnetaan myös "
-"nimellä lame) ja tarkista että se löytyy "
-"/usr/local/lib/libmp3lame.dylib</html>"
 
 #: EncoderMp3#5
 msgid ""
@@ -2331,8 +2220,8 @@ msgid "Select your iTunes library"
 msgstr "Valitse iTunes kirjastosi"
 
 #: ITunesFeature#3
-msgid "iTunes (loading)"
-msgstr "iTunes (ladataan)"
+msgid "(loading) iTunes"
+msgstr ""
 
 #: ITunesFeature#4
 msgid "Use Default Library"
@@ -2389,6 +2278,11 @@ msgstr "Ohjainryhmä"
 msgctxt "MidiInputMappingTableModel#5"
 msgid "Control Value"
 msgstr "Ohjainarvo"
+
+#: MidiInputMappingTableModel#6
+msgctxt "MidiInputMappingTableModel#6"
+msgid "Description"
+msgstr ""
 
 #: MidiMapping#1
 msgid "MIDI script function not found"
@@ -2447,10 +2341,15 @@ msgid "Control Value"
 msgstr "Ohjainarvo"
 
 #: MidiOutputMappingTableModel#6
+msgctxt "MidiOutputMappingTableModel#6"
+msgid "Description"
+msgstr ""
+
+#: MidiOutputMappingTableModel#7
 msgid "Threshold Min"
 msgstr "Herkkyyden alaraja"
 
-#: MidiOutputMappingTableModel#7
+#: MidiOutputMappingTableModel#8
 msgid "Threshold Max"
 msgstr "Herkkyyden yläraja"
 
@@ -2702,55 +2601,63 @@ msgid "Ctrl+P"
 msgstr "Ctrl+P"
 
 #: MixxxApp#40
-msgid "&About..."
-msgstr "Tietoja..."
+msgid "&About"
+msgstr ""
 
 #: MixxxApp#41
-msgid "&Community Support..."
-msgstr "&Yhteisötuki"
+msgid "&Community Support"
+msgstr ""
 
 #: MixxxApp#42
+msgid "Send Us &Feedback"
+msgstr ""
+
+#: MixxxApp#43
+msgid "&Translate this application"
+msgstr ""
+
+#: MixxxApp#44
 msgid "Enable &Vinyl Control 1"
 msgstr "Käytä %Levyohjainta 1"
 
-#: MixxxApp#43
+#: MixxxApp#45
 msgid "Ctrl+Y"
 msgstr "Ctrl+Y"
 
-#: MixxxApp#44
+#: MixxxApp#46
 msgid "Enable &Vinyl Control 2"
 msgstr "Käytä %Levyohjainta 2"
 
-#: MixxxApp#45
+#: MixxxApp#47
 msgid "Ctrl+U"
 msgstr "Ctrl+U"
 
-#: MixxxApp#46
-msgctxt "MixxxApp#46"
+#: MixxxApp#48
+msgctxt "MixxxApp#48"
 msgid "Enable live broadcasting"
-msgstr "Lähetä livenä nettiradioon"
+msgstr ""
 
-#: MixxxApp#47
+#: MixxxApp#49
 msgid "Ctrl+L"
 msgstr "Ctrl+L"
 
-#: MixxxApp#48
+#: MixxxApp#50
 msgid "&Record Mix"
 msgstr "Miksauksen äänitys"
 
-#: MixxxApp#49
+#: MixxxApp#51
 msgid "Ctrl+R"
 msgstr "Ctrl+R"
 
-#: MixxxApp#50
+#: MixxxApp#52
 msgid "Show Studio"
 msgstr "Näytä studio"
 
-#: MixxxApp#51
+#: MixxxApp#53
 msgid "Opens a song in player 1"
 msgstr "Lataa kappaleen soittimeen 1"
 
-#: MixxxApp#52
+#: MixxxApp#54
 msgid ""
 "Open\n"
 "\n"
@@ -2760,11 +2667,11 @@ msgstr ""
 "\n"
 "Lataa kappaleen soittimeen 1"
 
-#: MixxxApp#53
+#: MixxxApp#55
 msgid "Opens a song in player 2"
 msgstr "Lataa kappaleen soittimeen 2"
 
-#: MixxxApp#54
+#: MixxxApp#56
 msgid ""
 "Open\n"
 "\n"
@@ -2774,11 +2681,11 @@ msgstr ""
 "\n"
 "Lataa kappaleen soittimeen 2"
 
-#: MixxxApp#55
+#: MixxxApp#57
 msgid "Quits the application"
 msgstr "Sulkee sovelluksen"
 
-#: MixxxApp#56
+#: MixxxApp#58
 msgid ""
 "Exit\n"
 "\n"
@@ -2788,11 +2695,11 @@ msgstr ""
 "\n"
 "Sulkee sovelluksen"
 
-#: MixxxApp#57
+#: MixxxApp#59
 msgid "Rescans the song library"
 msgstr "Hakee kappale kirjastoa uudelleen"
 
-#: MixxxApp#58
+#: MixxxApp#60
 msgid ""
 "Rescan library\n"
 "\n"
@@ -2802,11 +2709,11 @@ msgstr ""
 "\n"
 "Hakee kappale kirjastoa uudelleen"
 
-#: MixxxApp#59
+#: MixxxApp#61
 msgid "Create a new playlist"
 msgstr "Luo uusi soittolista"
 
-#: MixxxApp#60
+#: MixxxApp#62
 msgid ""
 "New playlist\n"
 "\n"
@@ -2816,11 +2723,11 @@ msgstr ""
 "\n"
 "Luo uuden soittolistan."
 
-#: MixxxApp#61
+#: MixxxApp#63
 msgid "Create a new crate"
 msgstr "Luo uusi levylaukku"
 
-#: MixxxApp#62
+#: MixxxApp#64
 msgid ""
 "New crate\n"
 "\n"
@@ -2830,15 +2737,15 @@ msgstr ""
 "\n"
 "Luo uuden levylaukun."
 
-#: MixxxApp#63
+#: MixxxApp#65
 msgid "Import playlist"
 msgstr "Tuo soittolista"
 
-#: MixxxApp#64
+#: MixxxApp#66
 msgid "Audio Beat Marks"
 msgstr "Äänen tahtimerkit"
 
-#: MixxxApp#65
+#: MixxxApp#67
 msgid ""
 "Audio Beat Marks\n"
 "Mark beats by audio clicks"
@@ -2846,44 +2753,44 @@ msgstr ""
 "Äänen tahtimerkit\n"
 "Merkitse tahdit äänen perusteella"
 
-#: MixxxApp#66
+#: MixxxApp#68
 msgid "Activate Vinyl Control"
 msgstr "Vinyyliohjaus"
 
-#: MixxxApp#67
+#: MixxxApp#69
 msgid "Use timecoded vinyls on external turntables to control Mixxx"
 msgstr "Mixxxin ohjaus aikakoodilevyjen avulla"
 
-#: MixxxApp#68
+#: MixxxApp#70
 msgid "Activate live broadcasting"
 msgstr "Aktivoi live lähetys"
 
-#: MixxxApp#69
+#: MixxxApp#71
 msgid "Stream your mixes to a shoutcast or icecast server"
 msgstr "Lähetä miksauksesi shoutcast tai icecast palvelimeen"
 
-#: MixxxApp#70
+#: MixxxApp#72
 msgid "Start Recording your Mix"
 msgstr "Aloita nauhoittamaan miksauksesi"
 
-#: MixxxApp#71
+#: MixxxApp#73
 msgid "Record your mix to a file"
 msgstr "Nauhoita miksauksesi tiedostoon"
 
-#: MixxxApp#72
+#: MixxxApp#74
 msgid "Full Screen"
 msgstr "Kokoruututila"
 
-#: MixxxApp#73
+#: MixxxApp#75
 msgid "Display Mixxx using the full screen"
 msgstr "Näytä Mixxx kokoruutu tilassa"
 
-#: MixxxApp#74
-msgctxt "MixxxApp#74"
+#: MixxxApp#76
+msgctxt "MixxxApp#76"
 msgid "Preferences"
-msgstr "Asetukset"
+msgstr ""
 
-#: MixxxApp#75
+#: MixxxApp#77
 msgid ""
 "Preferences\n"
 "Playback and MIDI preferences"
@@ -2891,11 +2798,11 @@ msgstr ""
 "Asetukset\n"
 "Toisto ja MIDI asetukset"
 
-#: MixxxApp#76
+#: MixxxApp#78
 msgid "Support..."
 msgstr "Tuki..."
 
-#: MixxxApp#77
+#: MixxxApp#79
 msgid ""
 "Support\n"
 "\n"
@@ -2905,11 +2812,33 @@ msgstr ""
 "\n"
 "Saa apua Mixxx:n käyttöön"
 
-#: MixxxApp#78
+#: MixxxApp#80
+msgid "Send feedback to the Mixxx team."
+msgstr ""
+
+#: MixxxApp#81
+msgid ""
+"Support\n"
+"\n"
+"Send feedback to the Mixxx team."
+msgstr ""
+
+#: MixxxApp#82
+msgid "Help translate this application into your language."
+msgstr ""
+
+#: MixxxApp#83
+msgid ""
+"Support\n"
+"\n"
+"Help translate this application into your language."
+msgstr ""
+
+#: MixxxApp#84
 msgid "About the application"
 msgstr "Tietoja sovelluksesta"
 
-#: MixxxApp#79
+#: MixxxApp#85
 msgid ""
 "About\n"
 "\n"
@@ -2919,11 +2848,11 @@ msgstr ""
 "\n"
 "Tietoja sovelluksesta"
 
-#: MixxxApp#80
+#: MixxxApp#86
 msgid "Shows the macro studio window"
 msgstr "Näyttää makro studio ikkunan"
 
-#: MixxxApp#81
+#: MixxxApp#87
 msgid ""
 "Show Studio\n"
 "\n"
@@ -2933,43 +2862,43 @@ msgstr ""
 "\n"
 "Näyttää makro studio ikkunan"
 
-#: MixxxApp#82
+#: MixxxApp#88
 msgid "&File"
 msgstr "Tiedosto"
 
-#: MixxxApp#83
+#: MixxxApp#89
 msgid "&Options"
 msgstr "Asetukset"
 
-#: MixxxApp#84
+#: MixxxApp#90
 msgid "&Library"
 msgstr "Kokoelma"
 
-#: MixxxApp#85
+#: MixxxApp#91
 msgid "&View"
 msgstr "Näytä"
 
-#: MixxxApp#86
+#: MixxxApp#92
 msgid "&Help"
 msgstr "Ohje"
 
-#: MixxxApp#87
+#: MixxxApp#93
 msgid "&Macro"
 msgstr "Makro"
 
-#: MixxxApp#88
+#: MixxxApp#94
 msgid "&Vinyl Control"
 msgstr "&Levyohjain"
 
-#: MixxxApp#89
+#: MixxxApp#95
 msgid "Quit..."
 msgstr "Sulje..."
 
-#: MixxxApp#90
+#: MixxxApp#96
 msgid "Do your really want to quit?"
 msgstr "Haluatko todella lopettaa?"
 
-#: MixxxApp#91
+#: MixxxApp#97
 msgid ""
 "Player 1 is currently playing a song.\n"
 "Are you sure you want to load a new song?"
@@ -2977,11 +2906,11 @@ msgstr ""
 "Soitin 1 soittaa parhaillaan kappaletta.\n"
 "Haluatko varmasti ladata uuden kappaleen?"
 
-#: MixxxApp#92
+#: MixxxApp#98
 msgid "Load Song into Player 1"
 msgstr "Lataa kappale soittimeen 1"
 
-#: MixxxApp#93
+#: MixxxApp#99
 msgid ""
 "Player 2 is currently playing a song.\n"
 "Are you sure you want to load a new song?"
@@ -2989,11 +2918,11 @@ msgstr ""
 "Soitin 2 soittaa parhaillaan kappaletta.\n"
 "Haluatko varmasti ladata uuden kappaleen?"
 
-#: MixxxApp#94
+#: MixxxApp#100
 msgid "Load Song into Player 2"
 msgstr "Lataa kappale soittimeen 2"
 
-#: MixxxApp#95
+#: MixxxApp#101
 msgid ""
 "No input device(s) select.\n"
 "Please select your soundcard(s) in the sound hardware preferences."
@@ -3001,11 +2930,11 @@ msgstr ""
 "Sisääntulo laitteita ei ole valittu.\n"
 "Valitse äänikorttisi äänilaitteiden hallinnassa"
 
-#: MixxxApp#96
+#: MixxxApp#102
 msgid "Confirm Exit"
 msgstr "Varmista lopetus"
 
-#: MixxxApp#97
+#: MixxxApp#103
 msgid "A deck is currently playing. Exit Mixxx?"
 msgstr "Kanavaa toistetaan parhaillaan. Suljetaanko Mixxx?"
 
@@ -3274,8 +3203,8 @@ msgid "Traktor"
 msgstr "Traktor"
 
 #: TraktorFeature#2
-msgid "Traktor (loading)"
-msgstr "Traktor (ladataan)"
+msgid "(loading) Traktor"
+msgstr ""
 
 #: TraktorFeature#3
 msgid "Error Loading Traktor Library"
@@ -3528,10 +3457,14 @@ msgid "Add to Auto DJ Queue"
 msgstr "Lisää Auto-DJ jonoon"
 
 #: WTrackTableView#7
+msgid "Reload Track Metadata"
+msgstr ""
+
+#: WTrackTableView#8
 msgid "Load to Deck %1"
 msgstr "Lataa kannelle %1"
 
-#: WTrackTableView#8
+#: WTrackTableView#9
 msgid "Sampler %1"
 msgstr "Näytesoitin %1"
 
@@ -3564,6 +3497,9 @@ msgstr "Näytä tai piilota sarakkeita."
 #~ msgid "Album"
 #~ msgstr "Julkaisu"
 
+#~ msgid "Description"
+#~ msgstr "Kuvaus"
+
 #~ msgid "OK"
 #~ msgstr "Hyväksy"
 
@@ -3585,6 +3521,10 @@ msgstr "Näytä tai piilota sarakkeita."
 
 #~ msgid "Vinyl Type"
 #~ msgstr "Aikakoodilevyn tyyppi"
+
+#~ msgctxt "MixxxApp#74"
+#~ msgid "Preferences"
+#~ msgstr "Asetukset"
 
 #~ msgctxt "PlaylistFeature#2"
 #~ msgid "Remove"
@@ -3706,6 +3646,9 @@ msgstr "Näytä tai piilota sarakkeita."
 #~ msgid "Enable &Vinyl Control"
 #~ msgstr "Vinyyliohjaus"
 
+#~ msgid "&About..."
+#~ msgstr "Tietoja..."
+
 #~ msgid "Missing Songs"
 #~ msgstr "Puuttuvat kappaleet"
 
@@ -3731,3 +3674,251 @@ msgstr "Näytä tai piilota sarakkeita."
 #~ msgctxt "RhythmboxPlaylistModel#8"
 #~ msgid "Unknown"
 #~ msgstr "Tuntematon"
+
+#~ msgid "Next >>"
+#~ msgstr "Seuraava >>"
+
+#~ msgid "<< Prev"
+#~ msgstr "<< Edellinen"
+
+#~ msgctxt "DlgBpmTapDlg#3"
+#~ msgid "Alt+O"
+#~ msgstr "Alt+O"
+
+#~ msgctxt "DlgBpmTapDlg#4"
+#~ msgid "Song:"
+#~ msgstr "Kappale:"
+
+#~ msgctxt "DlgBpmTapDlg#1"
+#~ msgid "Track Editor"
+#~ msgstr "Raitaeditori"
+
+#~ msgid "&Close"
+#~ msgstr "Sulje"
+
+#~ msgctxt "DlgBpmSchemeDlg#6"
+#~ msgid "Analyze Entire Song"
+#~ msgstr "Analysoi koko kappale"
+
+#~ msgid "BPM Editor (Click to Expand)"
+#~ msgstr "BPM muokkaus (Klikkaa avataksesi)"
+
+#~ msgid "to"
+#~ msgstr "–"
+
+#~ msgid "BPM Scheme:"
+#~ msgstr "BPM teema:"
+
+#~ msgid "&Go"
+#~ msgstr "&Mene"
+
+#~ msgid "BPM Range:"
+#~ msgstr "BPM alue:"
+
+#~ msgid "Alt+G"
+#~ msgstr "Alt+G"
+
+#~ msgid "BPM:"
+#~ msgstr "BPM:"
+
+#~ msgctxt "DlgBpmTapDlg#8"
+#~ msgid "BPM Detection"
+#~ msgstr "BPM:n tunnistus"
+
+#~ msgid "Alt+P"
+#~ msgstr "Alt+P"
+
+#~ msgctxt "DlgBpmTapDlg#18"
+#~ msgid "Track Information (Click to Expand)"
+#~ msgstr "Raidan tiedot (Klikkaa avataksesi)"
+
+#~ msgctxt "DlgBpmTapDlg#26"
+#~ msgid "77"
+#~ msgstr "77"
+
+#~ msgctxt "DlgBpmTapDlg#20"
+#~ msgid "Artist:"
+#~ msgstr "Esittäjä:"
+
+#~ msgctxt "DlgBpmTapDlg#19"
+#~ msgid "Title:"
+#~ msgstr "Nimi:"
+
+#~ msgctxt "DlgBpmTapDlg#22"
+#~ msgid "Filename:"
+#~ msgstr "Tiedostonnimi:"
+
+#~ msgctxt "DlgBpmTapDlg#21"
+#~ msgid "Comments:"
+#~ msgstr "Kommentit:"
+
+#~ msgid "Play Time:"
+#~ msgstr "Soittoaika:"
+
+#~ msgctxt "DlgBpmTapDlg#23"
+#~ msgid "3:00"
+#~ msgstr "3:00"
+
+#~ msgctxt "DlgBpmTapDlg#25"
+#~ msgid "File Type:"
+#~ msgstr "Tiedoston tyyppi:"
+
+#~ msgctxt "DlgBpmTapDlg#14"
+#~ msgid "Analyze Entire Song"
+#~ msgstr "Analysoi koko kappale"
+
+#~ msgid "&Push to tap tempo"
+#~ msgstr "&Paina vaihtaaksesi tempoa"
+
+#~ msgctxt "DlgPrefNoVinylDlg#13"
+#~ msgid "Control Mode"
+#~ msgstr "Hallintatila"
+
+#~ msgctxt "DlgPrefNoVinylDlg#16"
+#~ msgid "Enable Needle Skip Prevention"
+#~ msgstr "Käynnistä neulan hyppäämisen estäminen"
+
+#~ msgctxt "DlgPrefNoVinylDlg#14"
+#~ msgid "Absolute Mode"
+#~ msgstr "Absoluuttinen"
+
+#~ msgctxt "DlgPrefNoVinylDlg#15"
+#~ msgid "Relative Mode"
+#~ msgstr "Suhteellinen"
+
+#~ msgctxt "DlgPrefNoVinylDlg#20"
+#~ msgid "Apply"
+#~ msgstr "Käytä"
+
+#~ msgctxt "DlgPrefNoVinylDlg#18"
+#~ msgid "http://www.xwax.co.uk"
+#~ msgstr "http://www.xwax.co.uk"
+
+#~ msgctxt "DlgPrefNoVinylDlg#19"
+#~ msgid "Powered by xwax"
+#~ msgstr "Terästetty xwax:lla"
+
+#~ msgctxt "DlgPrefNoVinylDlg#17"
+#~ msgid "Signal Quality"
+#~ msgstr "Signaalin laatu"
+
+#~ msgctxt "DlgPrefVinylDlg#14"
+#~ msgid "Control Mode"
+#~ msgstr "Toimintatila"
+
+#~ msgctxt "DlgPrefVinylDlg#13"
+#~ msgid "seconds"
+#~ msgstr "sekuntia"
+
+#~ msgctxt "DlgPrefVinylDlg#11"
+#~ msgid "Apply"
+#~ msgstr "Käytä"
+
+#~ msgctxt "DlgPrefVinylDlg#16"
+#~ msgid "Relative Mode"
+#~ msgstr "Suhteellinen"
+
+#~ msgctxt "DlgPrefVinylDlg#15"
+#~ msgid "Absolute Mode"
+#~ msgstr "Absoluuttinen"
+
+#~ msgctxt "DlgPrefVinylDlg#20"
+#~ msgid "Powered by xwax"
+#~ msgstr "Terästetty xwax:lla"
+
+#~ msgctxt "DlgPrefVinylDlg#18"
+#~ msgid "Signal Quality"
+#~ msgstr "Signaalin laatu"
+
+#~ msgctxt "DlgPrefVinylDlg#19"
+#~ msgid "http://www.xwax.co.uk"
+#~ msgstr "http://www.xwax.co.uk"
+
+#~ msgctxt "DlgPrefVinylDlg#17"
+#~ msgid "Enable Needle Skip Prevention"
+#~ msgstr "Käynnistä neulan hyppäämisen estäminen"
+
+#~ msgctxt "DlgTrackInfo#4"
+#~ msgid "Artist:"
+#~ msgstr "Artisti:"
+
+#~ msgctxt "DlgTrackInfo#2"
+#~ msgid "Song:"
+#~ msgstr "Kappale:"
+
+#~ msgctxt "DlgTrackInfo#1"
+#~ msgid "Track Editor"
+#~ msgstr "Raitaeditori"
+
+#~ msgctxt "DlgTrackInfo#3"
+#~ msgid "Title:"
+#~ msgstr "Otsikko:"
+
+#~ msgctxt "DlgTrackInfo#14"
+#~ msgid "Comments:"
+#~ msgstr "Kommentit:"
+
+#~ msgctxt "DlgTrackInfo#16"
+#~ msgid "Track Information (Click to Expand)"
+#~ msgstr "Raidan tiedot (Klikkaa avataksesi)"
+
+#~ msgctxt "DlgTrackInfo#33"
+#~ msgid "Alt+O"
+#~ msgstr "Alt+O"
+
+#~ msgctxt "DlgTrackInfo#11"
+#~ msgid "3:00"
+#~ msgstr "3:00"
+
+#~ msgctxt "DlgTrackInfo#9"
+#~ msgid "Filename:"
+#~ msgstr "Tiedoston nimi:"
+
+#~ msgctxt "DlgTrackInfo#13"
+#~ msgid "77"
+#~ msgstr "77"
+
+#~ msgctxt "DlgTrackInfo#12"
+#~ msgid "File Type:"
+#~ msgstr "Tiedoston tyyppi:"
+
+#~ msgid ""
+#~ "<html>Mixxx is unable to load or find the MP3 encoder lame. <p>Please "
+#~ "install libmp3lame (also known as lame) and check if /usr/lib/libmp3lame.so "
+#~ "exists on your system </html>"
+#~ msgstr ""
+#~ "<html>Mixxx ei löydä MP3 pakkaajaa. <p>Asenna libmp3lame (tunnetaan myös "
+#~ "nimellä lame) ja tarkista että se löytyy /usr/lib/libmp3lame.so</html>"
+
+#~ msgid ""
+#~ "<html>Mixxx is unable to load or find the MP3 encoder lame. <p>Please put "
+#~ "lame_enc.dll in the directory you have installed Mixxx </html>"
+#~ msgstr ""
+#~ "<html>Mixxx ei löydä MP3 pakkaajaa. <p>Kopioi lame_enc.dll samaan "
+#~ "hakemistoon kuin Mixxx</html>"
+
+#~ msgid ""
+#~ "<html>Mixxx is unable to load or find the MP3 encoder lame. <p>Please "
+#~ "install libmp3lame (also known as lame) and check if "
+#~ "/usr/local/lib/libmp3lame.dylib exists on your system </html>"
+#~ msgstr ""
+#~ "<html>Mixxx ei löydä MP3 pakkaajaa <p>Asenna libmp3lame (tunnetaan myös "
+#~ "nimellä lame) ja tarkista että se löytyy "
+#~ "/usr/local/lib/libmp3lame.dylib</html>"
+
+#~ msgid "iTunes (loading)"
+#~ msgstr "iTunes (ladataan)"
+
+#~ msgctxt "MixxxApp#46"
+#~ msgid "Enable live broadcasting"
+#~ msgstr "Lähetä livenä nettiradioon"
+
+#~ msgid "Traktor (loading)"
+#~ msgstr "Traktor (ladataan)"
+
+#~ msgctxt "DlgPrefVinylDlg#12"
+#~ msgid "Lead-in time"
+#~ msgstr "Kappaleen johdanto aika"
+
+#~ msgid "&Community Support..."
+#~ msgstr "&Yhteisötuki"
