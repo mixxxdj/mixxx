@@ -130,7 +130,7 @@ Section "Mixxx (required)" SecMixxx
   ; See http://mixxx.org/wiki/doku.php/build_windows_installer for full details.
   ;
   ; All the MSVC files are located here if you have MSVC 2008 installed. (x86)
-  File "C:\Program Files\Microsoft Visual Studio 9.0\VC\redist\x86\Microsoft.VC90.CRT\*"
+  ;File "C:\Program Files\Microsoft Visual Studio 9.0\VC\redist\x86\Microsoft.VC90.CRT\*"
   ;File "$%VCINSTALLDIR%\redist\x86\Microsoft.VC90.CRT\*"
   ;File "$%VS90COMNTOOLS%\..\..\VC\redist\x86\Microsoft.VC90.CRT\*"
 
@@ -139,10 +139,10 @@ Section "Mixxx (required)" SecMixxx
 
   ; If you have the msvc DLLs & manifest elsewhere,
   ; copy them to the WINLIB_PATH and uncomment these:
-  ;File ..\${WINLIB_PATH}\msvcr*.dll        ; Required
-  ;File ..\${WINLIB_PATH}\msvcp*.dll        ; Required
-  ;File /nonfatal ..\${WINLIB_PATH}\msvcm*.dll    ; Not (currently) required, so nonfatal
-  ;File ..\${WINLIB_PATH}\Microsoft.VC*.CRT.manifest    ; Required on MSVC < 2010, apparently
+  File ${WINLIB_PATH}\msvcr*.dll        ; Required
+  File ${WINLIB_PATH}\msvcp*.dll        ; Required
+  ;File /nonfatal ${WINLIB_PATH}\msvcm*.dll    ; Not (currently) required, so nonfatal
+  File ${WINLIB_PATH}\Microsoft.VC*.CRT.manifest    ; Required on MSVC < 2010, apparently
 
   ; And documentation, licence etc.
   File "${BASE_BUILD_DIR}\Mixxx-Manual.pdf"
@@ -195,6 +195,12 @@ SectionGroup "MIDI controller mappings" SecControllerMappings
 
   SectionGroup "Certified mappings" SecCertifiedMappings
 
+	Section "American Audio VMS4"
+	  SetOutPath $INSTDIR\midi
+	  File "${BASE_BUILD_DIR}\dist${BITWIDTH}\midi\American Audio VMS4.midi.xml"
+	  File "${BASE_BUILD_DIR}\dist${BITWIDTH}\midi\American-Audio-VMS4-scripts.js"
+	SectionEnd
+	
 	Section "Hercules DJ Console Mk2"
 	  SetOutPath $INSTDIR\midi
 	  File "${BASE_BUILD_DIR}\dist${BITWIDTH}\midi\Hercules DJ Console Mk2.midi.xml"
