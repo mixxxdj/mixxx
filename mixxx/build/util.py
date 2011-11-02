@@ -52,7 +52,7 @@ def get_mixxx_version():
         if line.strip().startswith("#define VERSION"):
             version = line
             break
-            
+
     if version == "":
         for line in open(str(defs)).readlines():
             if line.strip().startswith("#define VERSION"):
@@ -80,6 +80,17 @@ def get_flags(env, argflag, default=0):
             flags = default
     env[argflag] = flags
     return flags
+
+def get_mssdk_path():
+    """Look for the Microsoft SDK path checking the various environment
+    variables they set."""
+    path = os.getenv('SDKDIR', None)
+    if path is not None:
+        return path
+    path = os.getenv('MSSdk', None)
+    if path is not None:
+        return path
+    return ""
 
 # Checks for pkg-config on Linux
 def CheckForPKGConfig( context, version='0.0.0' ):
