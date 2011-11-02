@@ -407,7 +407,7 @@ def emit_app(target, source, env):
             res_index = path.rfind('/res/')
             if res_index != -1:
                 path = path[res_index + 5:]
-            env.Install(os.path.join(env['APP_RESOURCES'],path), i)
+            env.Install(Dir(os.path.join(str(env['APP_RESOURCES']),path)), i)
 
     plugins = env['PLUGINS']
 
