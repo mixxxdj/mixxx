@@ -18,6 +18,9 @@
 	the resulting work only under the same or similar license to this one.
 
 	CHANGELOG
+	v1.10.0.08	(02/11/2011)
+	* Fix: use "visual_bpm" key instead "bpm" so bpm display does not updates too quickly 
+
 	v1.10.0.07	(29/10/2011)
 	* Fix: Selected sidebar item's branch indicator shows wrong color when out of focus
 
@@ -247,7 +250,7 @@
 								<!--CSS alignments not respected see bug lp:605530 , lets call <Alignment>-->
 								<Alignment>right</Alignment>
 								<Connection>
-									<ConfigKey>[Sampler1],bpm</ConfigKey>
+									<ConfigKey>[Sampler1],visual_bpm</ConfigKey>
 								</Connection>
 							</NumberBpm>
 
@@ -763,7 +766,7 @@
 								<!--CSS alignments not respected see bug lp:605530 , lets call <Alignment>-->
 								<Alignment>right</Alignment>
 								<Connection>
-									<ConfigKey>[Sampler2],bpm</ConfigKey>
+									<ConfigKey>[Sampler2],visual_bpm</ConfigKey>
 								</Connection>
 							</NumberBpm>
 
@@ -1279,7 +1282,7 @@
 								<!--CSS alignments not respected see bug lp:605530 , lets call <Alignment>-->
 								<Alignment>right</Alignment>
 								<Connection>
-									<ConfigKey>[Sampler3],bpm</ConfigKey>
+									<ConfigKey>[Sampler3],visual_bpm</ConfigKey>
 								</Connection>
 							</NumberBpm>
 
@@ -1795,7 +1798,7 @@
 								<!--CSS alignments not respected see bug lp:605530 , lets call <Alignment>-->
 								<Alignment>right</Alignment>
 								<Connection>
-									<ConfigKey>[Sampler4],bpm</ConfigKey>
+									<ConfigKey>[Sampler4],visual_bpm</ConfigKey>
 								</Connection>
 							</NumberBpm>
 
@@ -3763,7 +3766,7 @@
 	-->
 	<WidgetGroup>
 		<Pos>801,149</Pos>
-		<Size>370,42</Size>
+		<Size>470,42</Size>
 		<Style>QGroupBox { border: 0px solid red; } QWidget { margin: 0; padding: 0; }</Style>
 		<Children>
 			<!--
@@ -3771,6 +3774,16 @@
 			RotaryFader- Master volume & balance
 			**********************************************
 			-->
+			<Time>
+		        <Style>QLabel { font: bold 13px/15px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+			            background-color: transparent; color: #EECE33; text-align: left; padding-left: 1px; }
+			            QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+				        background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+		        </Style>
+		        <ClockFormat>12</ClockFormat>
+		        <Pos>395,25</Pos>
+		        <Size>205,21</Size>
+	        </Time>
 			<Knob>
 				<Tooltip>Master volume&#10;Adjusts the Master output volume.&#10;Right-click: Reset to default value&#10;</Tooltip>
 				<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
@@ -4717,7 +4730,7 @@
 				<!--CSS alignments not respected see bug lp:605530 , lets call <Alignment>-->
 				<Alignment>right</Alignment>
 				<Connection>
-					<ConfigKey>[Channel1],bpm</ConfigKey>
+					<ConfigKey>[Channel1],visual_bpm</ConfigKey>
 				</Connection>
 			</NumberBpm>
 
@@ -5672,7 +5685,7 @@
 				<!--CSS alignments not respected see bug lp:605530 , lets call <Alignment>-->
 				<Alignment>right</Alignment>
 				<Connection>
-					<ConfigKey>[Channel2],bpm</ConfigKey>
+					<ConfigKey>[Channel2],visual_bpm</ConfigKey>
 				</Connection>
 			</NumberBpm>
 

@@ -19,6 +19,9 @@
 
 	<!--
 	CHANGELOG
+	v1.10.0.06	(02/11/2011)
+	* Fix: use "visual_bpm" key instead "bpm" so bpm display does not updates too quickly 
+
 	v1.10.0.05	(29/10/2011)
 	* Fix: Selected sidebar item's branch indicator shows wrong color when out of focus
 
@@ -1493,7 +1496,7 @@
 		<Alignment>right</Alignment>
 		<NumberOfDigits>6</NumberOfDigits>
 		<Connection>
-			<ConfigKey>[Channel1],bpm</ConfigKey>
+			<ConfigKey>[Channel1],visual_bpm</ConfigKey>
 		</Connection>
 	</NumberBpm>
 	<NumberBpm>
@@ -1510,7 +1513,7 @@
 		<Alignment>right</Alignment>
 		<NumberOfDigits>6</NumberOfDigits>
 		<Connection>
-			<ConfigKey>[Channel2],bpm</ConfigKey>
+			<ConfigKey>[Channel2],visual_bpm</ConfigKey>
 		</Connection>
 	</NumberBpm>
 
