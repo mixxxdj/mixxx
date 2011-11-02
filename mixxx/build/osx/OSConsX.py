@@ -405,9 +405,12 @@ def emit_app(target, source, env):
             # instead of APP_RESOURCES/subdir. Try to detect if this path is
             # within res/ and if so, install the file to the right subdirectory.
             res_index = path.rfind('/res/')
+            target = env['APP_RESOURCES']
             if res_index != -1:
                 path = path[res_index + 5:]
-            env.Install(Dir(os.path.join(str(env['APP_RESOURCES']),path)), i)
+                if path != '':
+                    target = Dir(os.path.join(str(target),path))
+            env.Install(target, i)
 
     plugins = env['PLUGINS']
 
