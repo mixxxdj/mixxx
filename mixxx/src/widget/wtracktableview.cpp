@@ -902,6 +902,8 @@ void WTrackTableView::doSortByColumn(int headerSection) {
         visibleColumn++;
     }
 
+    currentSelection->reset(); // remove current selection
+
     QModelIndex first;
     foreach (int trackId, trackIds) {
 
