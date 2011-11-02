@@ -27,7 +27,7 @@
 #include "defs.h"
 #include <QString>
 
-#define MIXXX_SOUNDSOURCE_API_VERSION 2
+#define MIXXX_SOUNDSOURCE_API_VERSION 3
 /** @note SoundSource API Version history:
            1 - Mixxx 1.8.0 Beta 2
            2 - Mixxx 1.9.0 Pre (added key code)
