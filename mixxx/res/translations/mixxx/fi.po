@@ -14,8 +14,8 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-11-01 04:44+0000\n"
-"X-Generator: Launchpad (build 14197)\n"
+"X-Launchpad-Export-Date: 2011-11-02 04:45+0000\n"
+"X-Generator: Launchpad (build 14214)\n"
 
 #: AutoDJFeature#1
 msgid "Auto DJ"
@@ -3522,10 +3522,6 @@ msgstr "Näytä tai piilota sarakkeita."
 #~ msgid "Vinyl Type"
 #~ msgstr "Aikakoodilevyn tyyppi"
 
-#~ msgctxt "MixxxApp#74"
-#~ msgid "Preferences"
-#~ msgstr "Asetukset"
-
 #~ msgctxt "PlaylistFeature#2"
 #~ msgid "Remove"
 #~ msgstr "Poista"
@@ -3770,74 +3766,6 @@ msgstr "Näytä tai piilota sarakkeita."
 #~ msgid "&Push to tap tempo"
 #~ msgstr "&Paina vaihtaaksesi tempoa"
 
-#~ msgctxt "DlgPrefNoVinylDlg#13"
-#~ msgid "Control Mode"
-#~ msgstr "Hallintatila"
-
-#~ msgctxt "DlgPrefNoVinylDlg#16"
-#~ msgid "Enable Needle Skip Prevention"
-#~ msgstr "Käynnistä neulan hyppäämisen estäminen"
-
-#~ msgctxt "DlgPrefNoVinylDlg#14"
-#~ msgid "Absolute Mode"
-#~ msgstr "Absoluuttinen"
-
-#~ msgctxt "DlgPrefNoVinylDlg#15"
-#~ msgid "Relative Mode"
-#~ msgstr "Suhteellinen"
-
-#~ msgctxt "DlgPrefNoVinylDlg#20"
-#~ msgid "Apply"
-#~ msgstr "Käytä"
-
-#~ msgctxt "DlgPrefNoVinylDlg#18"
-#~ msgid "http://www.xwax.co.uk"
-#~ msgstr "http://www.xwax.co.uk"
-
-#~ msgctxt "DlgPrefNoVinylDlg#19"
-#~ msgid "Powered by xwax"
-#~ msgstr "Terästetty xwax:lla"
-
-#~ msgctxt "DlgPrefNoVinylDlg#17"
-#~ msgid "Signal Quality"
-#~ msgstr "Signaalin laatu"
-
-#~ msgctxt "DlgPrefVinylDlg#14"
-#~ msgid "Control Mode"
-#~ msgstr "Toimintatila"
-
-#~ msgctxt "DlgPrefVinylDlg#13"
-#~ msgid "seconds"
-#~ msgstr "sekuntia"
-
-#~ msgctxt "DlgPrefVinylDlg#11"
-#~ msgid "Apply"
-#~ msgstr "Käytä"
-
-#~ msgctxt "DlgPrefVinylDlg#16"
-#~ msgid "Relative Mode"
-#~ msgstr "Suhteellinen"
-
-#~ msgctxt "DlgPrefVinylDlg#15"
-#~ msgid "Absolute Mode"
-#~ msgstr "Absoluuttinen"
-
-#~ msgctxt "DlgPrefVinylDlg#20"
-#~ msgid "Powered by xwax"
-#~ msgstr "Terästetty xwax:lla"
-
-#~ msgctxt "DlgPrefVinylDlg#18"
-#~ msgid "Signal Quality"
-#~ msgstr "Signaalin laatu"
-
-#~ msgctxt "DlgPrefVinylDlg#19"
-#~ msgid "http://www.xwax.co.uk"
-#~ msgstr "http://www.xwax.co.uk"
-
-#~ msgctxt "DlgPrefVinylDlg#17"
-#~ msgid "Enable Needle Skip Prevention"
-#~ msgstr "Käynnistä neulan hyppäämisen estäminen"
-
 #~ msgctxt "DlgTrackInfo#4"
 #~ msgid "Artist:"
 #~ msgstr "Artisti:"
@@ -3905,20 +3833,6 @@ msgstr "Näytä tai piilota sarakkeita."
 #~ "<html>Mixxx ei löydä MP3 pakkaajaa <p>Asenna libmp3lame (tunnetaan myös "
 #~ "nimellä lame) ja tarkista että se löytyy "
 #~ "/usr/local/lib/libmp3lame.dylib</html>"
-
-#~ msgid "iTunes (loading)"
-#~ msgstr "iTunes (ladataan)"
-
-#~ msgctxt "MixxxApp#46"
-#~ msgid "Enable live broadcasting"
-#~ msgstr "Lähetä livenä nettiradioon"
-
-#~ msgid "Traktor (loading)"
-#~ msgstr "Traktor (ladataan)"
-
-#~ msgctxt "DlgPrefVinylDlg#12"
-#~ msgid "Lead-in time"
-#~ msgstr "Kappaleen johdanto aika"
 
 #~ msgid "&Community Support..."
 #~ msgstr "&Yhteisötuki"

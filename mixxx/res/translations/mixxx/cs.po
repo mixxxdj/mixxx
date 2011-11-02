@@ -14,8 +14,8 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-11-01 04:44+0000\n"
-"X-Generator: Launchpad (build 14197)\n"
+"X-Launchpad-Export-Date: 2011-11-02 04:45+0000\n"
+"X-Generator: Launchpad (build 14214)\n"
 
 #: AutoDJFeature#1
 msgid "Auto DJ"
@@ -3579,19 +3579,11 @@ msgstr "Ukázat nebo skrýt sloupce."
 #~ msgid "Unknown"
 #~ msgstr "Neznámý"
 
-#~ msgctxt "MixxxApp#46"
-#~ msgid "Enable live broadcasting"
-#~ msgstr "Povolit živé vysílání"
-
 #~ msgid "&Community Support..."
 #~ msgstr "&Komunitní podpora..."
 
 #~ msgid "&About..."
 #~ msgstr "&O programu"
-
-#~ msgctxt "MixxxApp#74"
-#~ msgid "Preferences"
-#~ msgstr "Nastavení"
 
 #~ msgid ""
 #~ "The file %1 already exists. Would you like to overwrite it?\n"
@@ -3755,46 +3747,6 @@ msgstr "Ukázat nebo skrýt sloupce."
 #~ msgid "77"
 #~ msgstr "77"
 
-#~ msgctxt "DlgPrefNoVinylDlg#20"
-#~ msgid "Apply"
-#~ msgstr "Použít"
-
-#~ msgctxt "DlgPrefNoVinylDlg#18"
-#~ msgid "http://www.xwax.co.uk"
-#~ msgstr "http://www.xwax.co.uk"
-
-#~ msgctxt "DlgPrefNoVinylDlg#16"
-#~ msgid "Enable Needle Skip Prevention"
-#~ msgstr "Povolit prevenci přeskakování jehly"
-
-#~ msgctxt "DlgPrefNoVinylDlg#17"
-#~ msgid "Signal Quality"
-#~ msgstr "Kvalita signálu"
-
-#~ msgctxt "DlgPrefVinylDlg#14"
-#~ msgid "Control Mode"
-#~ msgstr "Režim kontroly"
-
-#~ msgctxt "DlgPrefVinylDlg#11"
-#~ msgid "Apply"
-#~ msgstr "Použít"
-
-#~ msgctxt "DlgPrefVinylDlg#20"
-#~ msgid "Powered by xwax"
-#~ msgstr "Powered by xwax"
-
-#~ msgctxt "DlgPrefVinylDlg#19"
-#~ msgid "http://www.xwax.co.uk"
-#~ msgstr "http://www.xwax.co.uk"
-
-#~ msgctxt "DlgPrefVinylDlg#18"
-#~ msgid "Signal Quality"
-#~ msgstr "Kvalita signálu"
-
-#~ msgctxt "DlgPrefVinylDlg#17"
-#~ msgid "Enable Needle Skip Prevention"
-#~ msgstr "Povolit prevenci přeskakování jehly"
-
 #~ msgctxt "DlgTrackInfo#4"
 #~ msgid "Artist:"
 #~ msgstr "Interpret:"
@@ -3839,47 +3791,9 @@ msgstr "Ukázat nebo skrýt sloupce."
 #~ msgid "Alt+O"
 #~ msgstr "Alt+O"
 
-#~ msgid "Traktor (loading)"
-#~ msgstr "Traktor (nahrávání)"
-
-#~ msgctxt "DlgPrefNoVinylDlg#13"
-#~ msgid "Control Mode"
-#~ msgstr "Režim kontroly"
-
-#~ msgctxt "DlgPrefNoVinylDlg#19"
-#~ msgid "Powered by xwax"
-#~ msgstr "Powered by xwax"
-
-#~ msgctxt "DlgPrefNoVinylDlg#14"
-#~ msgid "Absolute Mode"
-#~ msgstr "Absolutní režim"
-
-#~ msgctxt "DlgPrefNoVinylDlg#15"
-#~ msgid "Relative Mode"
-#~ msgstr "Relativní režim"
-
-#~ msgctxt "DlgPrefVinylDlg#12"
-#~ msgid "Lead-in time"
-#~ msgstr "Doba trvání zaváděcí stopy"
-
-#~ msgctxt "DlgPrefVinylDlg#15"
-#~ msgid "Absolute Mode"
-#~ msgstr "Absolutní režim"
-
-#~ msgctxt "DlgPrefVinylDlg#13"
-#~ msgid "seconds"
-#~ msgstr "sek."
-
-#~ msgctxt "DlgPrefVinylDlg#16"
-#~ msgid "Relative Mode"
-#~ msgstr "Relativní režim"
-
 #~ msgctxt "DlgBpmTapDlg#1"
 #~ msgid "Track Editor"
 #~ msgstr "Editor skladeb"
-
-#~ msgid "iTunes (loading)"
-#~ msgstr "iTunes (načítání)"
 
 #~ msgid "to"
 #~ msgstr "do"

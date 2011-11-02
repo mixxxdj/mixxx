@@ -15,8 +15,8 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-11-01 04:44+0000\n"
-"X-Generator: Launchpad (build 14197)\n"
+"X-Launchpad-Export-Date: 2011-11-02 04:45+0000\n"
+"X-Generator: Launchpad (build 14214)\n"
 
 #: AutoDJFeature#1
 msgid "Auto DJ"
@@ -3396,10 +3396,6 @@ msgstr "Mostrar ou agochar columnas."
 #~ msgid "&About..."
 #~ msgstr "&Sobre"
 
-#~ msgctxt "MixxxApp#74"
-#~ msgid "Preferences"
-#~ msgstr "Preferencias"
-
 #~ msgctxt "MixxxApp#95"
 #~ msgid "Save Recording As..."
 #~ msgstr "Gardar a gravación como..."
@@ -3529,10 +3525,6 @@ msgstr "Mostrar ou agochar columnas."
 #~ msgid "77"
 #~ msgstr "77"
 
-#~ msgctxt "DlgPrefVinylDlg#13"
-#~ msgid "seconds"
-#~ msgstr "segundos"
-
 #~ msgctxt "DlgTrackInfo#2"
 #~ msgid "Song:"
 #~ msgstr "Canción:"
@@ -3608,22 +3600,6 @@ msgstr "Mostrar ou agochar columnas."
 #~ msgid "File Type:"
 #~ msgstr "Tipo de ficheiro:"
 
-#~ msgctxt "DlgPrefNoVinylDlg#18"
-#~ msgid "http://www.xwax.co.uk"
-#~ msgstr "http://www.xwax.co.uk"
-
-#~ msgctxt "DlgPrefNoVinylDlg#20"
-#~ msgid "Apply"
-#~ msgstr "Aplicar"
-
-#~ msgctxt "DlgPrefVinylDlg#11"
-#~ msgid "Apply"
-#~ msgstr "Aplicar"
-
-#~ msgctxt "DlgPrefVinylDlg#19"
-#~ msgid "http://www.xwax.co.uk"
-#~ msgstr "http://www.xwax.co.uk"
-
 #~ msgctxt "DlgTrackInfo#1"
 #~ msgid "Track Editor"
 #~ msgstr "Editor de pistas"
@@ -3635,9 +3611,3 @@ msgstr "Mostrar ou agochar columnas."
 #~ msgctxt "DlgTrackInfo#12"
 #~ msgid "File Type:"
 #~ msgstr "Tipo de ficheiro:"
-
-#~ msgid "iTunes (loading)"
-#~ msgstr "iTunes (cargando)"
-
-#~ msgid "Traktor (loading)"
-#~ msgstr "Traktor (cargando)"
