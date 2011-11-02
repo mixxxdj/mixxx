@@ -15,8 +15,8 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-11-01 04:45+0000\n"
-"X-Generator: Launchpad (build 14197)\n"
+"X-Launchpad-Export-Date: 2011-11-02 04:47+0000\n"
+"X-Generator: Launchpad (build 14214)\n"
 
 #: AutoDJFeature#1
 msgid "Auto DJ"
@@ -3460,64 +3460,8 @@ msgstr "Mostrar ou ocultar colunas."
 #~ msgid "File Type:"
 #~ msgstr "Tipo de Arquivo:"
 
-#~ msgctxt "DlgPrefNoVinylDlg#13"
-#~ msgid "Control Mode"
-#~ msgstr "Modo de Controle"
-
-#~ msgctxt "DlgPrefNoVinylDlg#14"
-#~ msgid "Absolute Mode"
-#~ msgstr "Modo Absoluto"
-
-#~ msgctxt "DlgPrefNoVinylDlg#15"
-#~ msgid "Relative Mode"
-#~ msgstr "Modo Relativo"
-
-#~ msgctxt "DlgPrefNoVinylDlg#20"
-#~ msgid "Apply"
-#~ msgstr "Aplicar"
-
-#~ msgctxt "DlgPrefNoVinylDlg#18"
-#~ msgid "http://www.xwax.co.uk"
-#~ msgstr "http://www.xwax.co.uk"
-
-#~ msgctxt "DlgPrefNoVinylDlg#16"
-#~ msgid "Enable Needle Skip Prevention"
-#~ msgstr "Habilitar Prenvenção Pulo de Agulha"
-
-#~ msgctxt "DlgPrefNoVinylDlg#17"
-#~ msgid "Signal Quality"
-#~ msgstr "Qualidade do Sinal"
-
 #~ msgid "Description"
 #~ msgstr "Descrição"
-
-#~ msgctxt "DlgPrefVinylDlg#16"
-#~ msgid "Relative Mode"
-#~ msgstr "Modo Relativo"
-
-#~ msgctxt "DlgPrefVinylDlg#15"
-#~ msgid "Absolute Mode"
-#~ msgstr "Modo Absoluto"
-
-#~ msgctxt "DlgPrefVinylDlg#14"
-#~ msgid "Control Mode"
-#~ msgstr "Modo de Controle"
-
-#~ msgctxt "DlgPrefVinylDlg#11"
-#~ msgid "Apply"
-#~ msgstr "Aplicar"
-
-#~ msgctxt "DlgPrefVinylDlg#19"
-#~ msgid "http://www.xwax.co.uk"
-#~ msgstr "http://www.xwax.co.uk"
-
-#~ msgctxt "DlgPrefVinylDlg#18"
-#~ msgid "Signal Quality"
-#~ msgstr "Qualidade do Sinal"
-
-#~ msgctxt "DlgPrefVinylDlg#17"
-#~ msgid "Enable Needle Skip Prevention"
-#~ msgstr "Habilitar Prenvenção Pulo de Agulha"
 
 #~ msgctxt "DlgTrackInfo#2"
 #~ msgid "Song:"
@@ -3563,25 +3507,11 @@ msgstr "Mostrar ou ocultar colunas."
 #~ msgid "Alt+O"
 #~ msgstr "Alt+O"
 
-#~ msgid "iTunes (loading)"
-#~ msgstr "iTunes (carregando)"
-
 #~ msgid "&Community Support..."
 #~ msgstr "&Suporte da Comunidade..."
 
 #~ msgid "&About..."
 #~ msgstr "&Sobre"
-
-#~ msgctxt "MixxxApp#46"
-#~ msgid "Enable live broadcasting"
-#~ msgstr "Habilitar difulsão ao vivo"
-
-#~ msgctxt "MixxxApp#74"
-#~ msgid "Preferences"
-#~ msgstr "Preferências"
-
-#~ msgid "Traktor (loading)"
-#~ msgstr "Tractor (carregando)"
 
 #~ msgctxt "DlgBpmTapDlg#23"
 #~ msgid "3:00"
@@ -3590,18 +3520,6 @@ msgstr "Mostrar ou ocultar colunas."
 #~ msgctxt "DlgBpmTapDlg#26"
 #~ msgid "77"
 #~ msgstr "77"
-
-#~ msgctxt "DlgPrefVinylDlg#13"
-#~ msgid "seconds"
-#~ msgstr "segundos"
-
-#~ msgctxt "DlgPrefNoVinylDlg#19"
-#~ msgid "Powered by xwax"
-#~ msgstr "Desenvolvido porxwax"
-
-#~ msgctxt "DlgPrefVinylDlg#20"
-#~ msgid "Powered by xwax"
-#~ msgstr "Desenvolvido porxwax"
 
 #~ msgid "BPM Range:"
 #~ msgstr "Faixa de BPM:"

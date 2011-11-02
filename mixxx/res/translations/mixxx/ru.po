@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2011-10-31 23:15-0400\n"
-"PO-Revision-Date: 2011-10-07 14:27+0000\n"
-"Last-Translator: Pavel <kitchenknif@Gmail.com>\n"
+"PO-Revision-Date: 2011-11-01 18:52+0000\n"
+"Last-Translator: jibiel <Unknown>\n"
 "Language-Team: Russian <ru@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-11-01 04:45+0000\n"
-"X-Generator: Launchpad (build 14197)\n"
+"X-Launchpad-Export-Date: 2011-11-02 04:46+0000\n"
+"X-Generator: Launchpad (build 14214)\n"
 
 #: AutoDJFeature#1
 msgid "Auto DJ"
@@ -1081,7 +1081,7 @@ msgstr ""
 #: DlgPrefNoVinylDlg#19
 msgctxt "DlgPrefNoVinylDlg#19"
 msgid "http://www.xwax.co.uk"
-msgstr ""
+msgstr "http://www.xwax.co.uk"
 
 #: DlgPrefNoVinylDlg#20
 msgctxt "DlgPrefNoVinylDlg#20"
@@ -1091,7 +1091,7 @@ msgstr ""
 #: DlgPrefNoVinylDlg#21
 msgctxt "DlgPrefNoVinylDlg#21"
 msgid "Apply"
-msgstr ""
+msgstr "Применить"
 
 #: DlgPrefNoVinylDlg#22
 msgid ""
@@ -1439,7 +1439,7 @@ msgstr "http://www.mixxx.org"
 #: DlgPrefShoutcastDlg#23
 msgctxt "DlgPrefShoutcastDlg#23"
 msgid "Description"
-msgstr ""
+msgstr "Описание"
 
 #: DlgPrefShoutcastDlg#24
 msgid ""
@@ -1787,7 +1787,7 @@ msgstr ""
 #: DlgPrefVinylDlg#12
 msgctxt "DlgPrefVinylDlg#12"
 msgid "Apply"
-msgstr ""
+msgstr "Применить"
 
 #: DlgPrefVinylDlg#13
 msgctxt "DlgPrefVinylDlg#13"
@@ -1827,7 +1827,7 @@ msgstr ""
 #: DlgPrefVinylDlg#20
 msgctxt "DlgPrefVinylDlg#20"
 msgid "http://www.xwax.co.uk"
-msgstr ""
+msgstr "http://www.xwax.co.uk"
 
 #: DlgPrefVinylDlg#21
 msgctxt "DlgPrefVinylDlg#21"
@@ -1957,11 +1957,11 @@ msgstr ""
 
 #: DlgTrackInfo#3
 msgid "Title:"
-msgstr ""
+msgstr "Название:"
 
 #: DlgTrackInfo#4
 msgid "Artist:"
-msgstr ""
+msgstr "Исполнитель:"
 
 #: DlgTrackInfo#5
 msgid "Album:"
@@ -1981,7 +1981,7 @@ msgstr "Жанр:"
 
 #: DlgTrackInfo#9
 msgid "Filename:"
-msgstr ""
+msgstr "Имя файла:"
 
 #: DlgTrackInfo#10
 msgid "Duration:"
@@ -1989,19 +1989,19 @@ msgstr "Длительность:"
 
 #: DlgTrackInfo#11
 msgid "3:00"
-msgstr ""
+msgstr "3:00"
 
 #: DlgTrackInfo#12
 msgid "File Type:"
-msgstr ""
+msgstr "Тип файла:"
 
 #: DlgTrackInfo#13
 msgid "77"
-msgstr ""
+msgstr "77"
 
 #: DlgTrackInfo#14
 msgid "Comments:"
-msgstr ""
+msgstr "Комментарии:"
 
 #: DlgTrackInfo#15
 msgid "Reload track metadata from file."
@@ -2080,7 +2080,7 @@ msgstr "&Отменить"
 
 #: DlgTrackInfo#33
 msgid "Alt+O"
-msgstr ""
+msgstr "Alt+O"
 
 #: DlgTrackInfo#34
 msgid "&Next >>"
@@ -2281,7 +2281,7 @@ msgstr "Управляющее значение"
 #: MidiInputMappingTableModel#6
 msgctxt "MidiInputMappingTableModel#6"
 msgid "Description"
-msgstr ""
+msgstr "Описание"
 
 #: MidiMapping#1
 msgid "MIDI script function not found"
@@ -2342,7 +2342,7 @@ msgstr "Контрольное значение"
 #: MidiOutputMappingTableModel#6
 msgctxt "MidiOutputMappingTableModel#6"
 msgid "Description"
-msgstr ""
+msgstr "Описание"
 
 #: MidiOutputMappingTableModel#7
 msgid "Threshold Min"
@@ -3614,10 +3614,6 @@ msgstr "Показать или скрыть столбцы."
 #~ msgid "Unknown"
 #~ msgstr "Неизвестно"
 
-#~ msgctxt "MixxxApp#46"
-#~ msgid "Enable live broadcasting"
-#~ msgstr "Использовать живое вещание"
-
 #~ msgid "Enable &Vinyl Control"
 #~ msgstr "Использовать управление &винилом"
 
@@ -3626,10 +3622,6 @@ msgstr "Показать или скрыть столбцы."
 
 #~ msgid "&About..."
 #~ msgstr "&Сведения о программе..."
-
-#~ msgctxt "MixxxApp#74"
-#~ msgid "Preferences"
-#~ msgstr "Параметры"
 
 #~ msgid ""
 #~ "The file %1 already exists. Would you like to overwrite it?\n"
@@ -3888,9 +3880,6 @@ msgstr "Показать или скрыть столбцы."
 #~ msgid "File Type:"
 #~ msgstr "Тип файла:"
 
-#~ msgid "iTunes (loading)"
-#~ msgstr "iTunes (загрузка)"
-
 #~ msgctxt "MixxxApp#44"
 #~ msgid "Enable live broadcasting"
 #~ msgstr "Использовать вещание в прямом эфире"
@@ -3914,9 +3903,6 @@ msgstr "Показать или скрыть столбцы."
 #~ msgid "Crossfader"
 #~ msgstr "Плавное микширование"
 
-#~ msgid "Traktor (loading)"
-#~ msgstr "Traktor (загрузка)"
-
 #~ msgid "Channel 2 volume fader"
 #~ msgstr "Микшер громкости 2-го канала"
 
@@ -3936,60 +3922,8 @@ msgstr "Показать или скрыть столбцы."
 #~ msgid "Alt+O"
 #~ msgstr "Alt+О"
 
-#~ msgctxt "DlgPrefNoVinylDlg#13"
-#~ msgid "Control Mode"
-#~ msgstr "Режим Управления"
-
-#~ msgctxt "DlgPrefNoVinylDlg#14"
-#~ msgid "Absolute Mode"
-#~ msgstr "Абсолютный Режим"
-
-#~ msgctxt "DlgPrefNoVinylDlg#15"
-#~ msgid "Relative Mode"
-#~ msgstr "Относительный Режим"
-
-#~ msgctxt "DlgPrefNoVinylDlg#20"
-#~ msgid "Apply"
-#~ msgstr "Применить"
-
-#~ msgctxt "DlgPrefNoVinylDlg#18"
-#~ msgid "http://www.xwax.co.uk"
-#~ msgstr "http://www.xwax.co.uk"
-
-#~ msgctxt "DlgPrefNoVinylDlg#19"
-#~ msgid "Powered by xwax"
-#~ msgstr "Работает за счёт xwax"
-
-#~ msgctxt "DlgPrefNoVinylDlg#17"
-#~ msgid "Signal Quality"
-#~ msgstr "Качество Сигнала"
-
-#~ msgctxt "DlgPrefNoVinylDlg#16"
-#~ msgid "Enable Needle Skip Prevention"
-#~ msgstr "Использовать защиту от пропусков иглы"
-
 #~ msgid "Alt+G"
 #~ msgstr "Alt+П"
-
-#~ msgctxt "DlgPrefVinylDlg#13"
-#~ msgid "seconds"
-#~ msgstr "секунд(ы)"
-
-#~ msgctxt "DlgPrefVinylDlg#11"
-#~ msgid "Apply"
-#~ msgstr "Применить"
-
-#~ msgctxt "DlgPrefVinylDlg#20"
-#~ msgid "Powered by xwax"
-#~ msgstr "Использует технологии xwax"
-
-#~ msgctxt "DlgPrefVinylDlg#19"
-#~ msgid "http://www.xwax.co.uk"
-#~ msgstr "http://www.xwax.co.uk"
-
-#~ msgctxt "DlgPrefVinylDlg#17"
-#~ msgid "Enable Needle Skip Prevention"
-#~ msgstr "Включить Защиту от Заикания Иглы"
 
 #~ msgctxt "DlgBpmTapDlg#23"
 #~ msgid "3:00"
@@ -3998,26 +3932,6 @@ msgstr "Показать или скрыть столбцы."
 #~ msgctxt "DlgBpmTapDlg#26"
 #~ msgid "77"
 #~ msgstr "77"
-
-#~ msgctxt "DlgPrefVinylDlg#16"
-#~ msgid "Relative Mode"
-#~ msgstr "Относительный режим"
-
-#~ msgctxt "DlgPrefVinylDlg#15"
-#~ msgid "Absolute Mode"
-#~ msgstr "Абсолютный режим"
-
-#~ msgctxt "DlgPrefVinylDlg#14"
-#~ msgid "Control Mode"
-#~ msgstr "Режим управления"
-
-#~ msgctxt "DlgPrefVinylDlg#18"
-#~ msgid "Signal Quality"
-#~ msgstr "Качество сигнала"
-
-#~ msgctxt "DlgPrefVinylDlg#12"
-#~ msgid "Lead-in time"
-#~ msgstr "Время вступления"
 
 #~ msgctxt "DlgTrackInfo#33"
 #~ msgid "Alt+O"
