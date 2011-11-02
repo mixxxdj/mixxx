@@ -116,14 +116,14 @@ Function InstallVCRedist
   Call CheckVCRedist
   Pop $R0
   StrCmp $R0 "-1" 0 VCRedistDone
-  
+
   ; Install them
   SetOutPath $TEMP
-  
+
   ; Put the VC redist installer files there
   File ${WINLIB_PATH}\VC_redist\vc_red.cab
   File ${WINLIB_PATH}\VC_redist\vc_red.msi
-  
+
   ClearErrors
   ; Call it & wait for it to install
   ExecWait 'msiexec /i $TEMP\vc_red.msi'
@@ -132,9 +132,9 @@ Function InstallVCRedist
   IfErrors 0 VCRedistDone
   MessageBox MB_ICONSTOP|MB_OK "There was a problem installing the Microsoft Visual C++ libraries.$\r$\nYou may need to run this installer as an administrator."
   Abort
-    
+
   ; OLD VC stuff below
-  
+
   ; NOTE: you need to check the mixxx.exe.manifest file in the win??_build directory
   ; and place the appropriate versions of the listed DLL files and their manifest files
   ; into the mixxx-win[64]lib-msvc directory for packaging before making the installer
@@ -175,7 +175,7 @@ Function CheckVCRedist
    ;ReadRegDword $R0 HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\{DA5E371C-6333-3D8A-93A4-6FD5B20BCC6E}" "Version"
    ;   x86
    ;ReadRegDword $R0 HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\{196BB40D-1578-3D01-B289-BEFC77A11A1E}" "Version"
-   
+
    IfErrors 0 VSRedistInstalled
    StrCpy $R0 "-1"
 
@@ -190,12 +190,12 @@ FunctionEnd
 Section "Mixxx (required)" SecMixxx
 
   SectionIn RO
-   
+
   Call InstallVCRedist
-  
+
   ; Set output path to the installation directory.
   SetOutPath $INSTDIR
-  
+
   ; Put binary files there
   File "${BASE_BUILD_DIR}\dist${BITWIDTH}\mixxx.exe"
   File /x "msvc*" "${BASE_BUILD_DIR}\dist${BITWIDTH}\*.dll"
@@ -214,6 +214,15 @@ Section "Mixxx (required)" SecMixxx
 
   SetOutPath $INSTDIR\sqldrivers
   File /nonfatal /r "${BASE_BUILD_DIR}\dist${BITWIDTH}\sqldrivers\*"
+
+  SetOutPath $INSTDIR\plugins
+  File /nonfatal /r "${BASE_BUILD_DIR}\dist${BITWIDTH}\plugins\*.dll"
+
+  SetOutPath $INSTDIR\plugins\soundsource
+  File /nonfatal /r "${BASE_BUILD_DIR}\dist${BITWIDTH}\plugins\soundsource\*.dll"
+
+  SetOutPath $INSTDIR\translations
+  File /nonfatal /r "${BASE_BUILD_DIR}\dist${BITWIDTH}\translations\*"
 
   SetOutPath $INSTDIR\keyboard
   File "${BASE_BUILD_DIR}\dist${BITWIDTH}\keyboard\Standard.kbd.cfg"
@@ -332,7 +341,7 @@ SectionGroup "Additional Skins" SecAddlSkins
 	  SetOutPath "$INSTDIR\skins"
 	  File /r /x ".svn" /x ".bzr" /x "Outline*" /x "${DEFAULT_SKIN}" ${BASE_BUILD_DIR}\dist${BITWIDTH}\skins\*-XGA
 	SectionEnd
-    
+
     Section "SXGA-size (1280x1024)" SecSXGASkins
 	  SetOutPath "$INSTDIR\skins"
 	  File /r /x ".svn" /x ".bzr" /x "Outline*" /x "${DEFAULT_SKIN}" ${BASE_BUILD_DIR}\dist${BITWIDTH}\skins\*-SXGA
@@ -342,12 +351,12 @@ SectionGroup "Additional Skins" SecAddlSkins
 	  SetOutPath "$INSTDIR\skins"
 	  File /r /x ".svn" /x ".bzr" /x "Outline*" /x "${DEFAULT_SKIN}" ${BASE_BUILD_DIR}\dist${BITWIDTH}\skins\*-WXGA
 	SectionEnd
-    
+
     Section "WXGA+-size (1440x900)" SecWXGAPlusSkins
 	  SetOutPath "$INSTDIR\skins"
 	  File /r /x ".svn" /x ".bzr" /x "Outline*" /x "${DEFAULT_SKIN}" ${BASE_BUILD_DIR}\dist${BITWIDTH}\skins\*-WXGA+
 	SectionEnd
-    
+
     Section "WSXGA-size (1680x1050)" SecWSXGASkins
 	  SetOutPath "$INSTDIR\skins"
 	  File /r /x ".svn" /x ".bzr" /x "Outline*" /x "${DEFAULT_SKIN}" ${BASE_BUILD_DIR}\dist${BITWIDTH}\skins\*-WSXGA
@@ -357,18 +366,18 @@ SectionGroup "Additional Skins" SecAddlSkins
 	  SetOutPath "$INSTDIR\skins"
 	  File /r /x ".svn" /x ".bzr" /x "Outline*" /x "${DEFAULT_SKIN}" ${BASE_BUILD_DIR}\dist${BITWIDTH}\skins\*-UXGA
 	SectionEnd
-    
+
     Section "Full HD-size (1920x1080)" SecFullHDSkins
 	  SetOutPath "$INSTDIR\skins"
 	  File /r /x ".svn" /x ".bzr" /x "Outline*" /x "${DEFAULT_SKIN}" ${BASE_BUILD_DIR}\dist${BITWIDTH}\skins\*-FullHD
 	SectionEnd
-    
+
     Section "WUXGA-size (1920x1200)" SecWUXGASkins
 	  SetOutPath "$INSTDIR\skins"
 	  File /r /x ".svn" /x ".bzr" /x "Outline*" /x "${DEFAULT_SKIN}" ${BASE_BUILD_DIR}\dist${BITWIDTH}\skins\*-WUXGA
 	SectionEnd
 
-	
+
 
 SectionGroupEnd
 
@@ -425,7 +434,7 @@ SectionEnd
     !insertmacro MUI_DESCRIPTION_TEXT ${SecControllerMappings} $(DESC_SecControllerMappings)
     !insertmacro MUI_DESCRIPTION_TEXT ${SecCertifiedMappings} $(DESC_SecCertifiedMappings)
     !insertmacro MUI_DESCRIPTION_TEXT ${SecCommunityMappings} $(DESC_SecCommunityMappings)
-    
+
     !insertmacro MUI_DESCRIPTION_TEXT ${SecAddlSkins} $(DESC_SecAddlSkins)
     !insertmacro MUI_DESCRIPTION_TEXT ${SecBasicSkins} $(DESC_SecBasicSkins)
     !insertmacro MUI_DESCRIPTION_TEXT ${SecNetbookSkins} $(DESC_SecNetbookSkins)
@@ -437,7 +446,7 @@ SectionEnd
     !insertmacro MUI_DESCRIPTION_TEXT ${SecUXGASkins} $(DESC_SecUXGASkins)
     !insertmacro MUI_DESCRIPTION_TEXT ${SecFullHDSkins} $(DESC_SecFullHDSkins)
     !insertmacro MUI_DESCRIPTION_TEXT ${SecWUXGASkins} $(DESC_SecWUXGASkins)
-	
+
     !insertmacro MUI_DESCRIPTION_TEXT ${SecSCS1d} $(DESC_SecSCS1d)
     !insertmacro MUI_DESCRIPTION_TEXT ${SecSCS1m} $(DESC_SecSCS1m)
   !insertmacro MUI_FUNCTION_DESCRIPTION_END
@@ -473,12 +482,18 @@ Section "Uninstall"
   Delete $INSTDIR\COPYING
   Delete $INSTDIR\sqldrivers\*.dll
   RMDir "$INSTDIR\sqldrivers"
-  
+  Delete $INSTDIR\plugins\soundsource\*
+  RMDir "$INSTDIR\plugins\soundsource"
+  Delete $INSTDIR\plugins\*
+  RMDir "$INSTDIR\plugins"
+  Delete $INSTDIR\translations\*
+  RMDir "$INSTDIR\translations"
+
   ; Remove keyboard mappings
   Delete $INSTDIR\keyboard\Standard.kbd.cfg
   Delete $INSTDIR\keyboard\Old-pre1.10.0.kbd.cfg
   RMDir "$INSTDIR\keyboard" ; No /r flag means remove the directory only if it's empty
-  
+
   ; Remove midi mappings/scripts that we may have installed
   ; TODO: Only delete files that were not changed since install
   ; Get this list with dir /b /s <build_dir>\res\midi >> filestodelete.txt  and creative search & replace
@@ -551,13 +566,13 @@ Section "Uninstall"
   Delete "$INSTDIR\midi\Wireless-DJ-scripts.js"
   ;Delete $INSTDIR\midi\*.* ; Avoid this since it will delete customized files too
   RMDir "$INSTDIR\midi"
-  
+
   ; Remove promos
   Delete $INSTDIR\promo\${PRODUCT_VERSION}\*.*
   Delete $INSTDIR\promo\*.*
   RMDir /r "$INSTDIR\promo\${PRODUCT_VERSION}"
   RMDir "$INSTDIR\promo"
-  
+
   ; Remove skins we (might have) installed
   Delete $INSTDIR\skins\*.* ; This just deletes files at the root of the skins directory
   RMDir /r "$INSTDIR\skins\${DEFAULT_SKIN}"
@@ -585,7 +600,7 @@ Section "Uninstall"
   RMDir /r "$INSTDIR\skins\ShadeDark1024x768-XGA"
   ; The lack of the /r prevents deleting any sub-directories we didn't explicitly delete above
   RMDir "$INSTDIR\skins"
-  
+
   ; Remove shortcuts, if any
   Delete "$SMPROGRAMS\Mixxx\*.*"
   Delete "$DESKTOP\Mixxx.lnk"
