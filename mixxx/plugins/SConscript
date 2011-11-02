@@ -19,7 +19,7 @@ plugins.extend(soundsourcewv)
 
 soundsourcemediafoundation = SConscript(
     File('soundsourcemediafoundation/SConscript'),
-    build_dir=Dir(build.build_dir + "/mediafoundation"),
+    variant_dir=Dir(build.build_dir + "/mediafoundation"),
     duplicate=0, exports=['build'])
 plugins.extend(soundsourcemediafoundation)
 
