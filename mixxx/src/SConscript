@@ -349,15 +349,6 @@ def win32_find_program_via_registry(program_name):
     _winreg.CloseKey(hklm)
     return program_location
 
-def get_mssdk_path():
-    path = os.getenv('SDKDIR', None)
-    if path is not None:
-        return path
-    path = os.getenv('MSSdk', None)
-    if path is not None:
-        return path
-    return ""
-
 def BuildRelease(target, source, env):
     print
     print "==== Mixxx Post-Build Checks ===="
@@ -397,7 +388,7 @@ def BuildRelease(target, source, env):
     #if (raw_input("Go ahead and build installer (yes/[no])? ") == "yes"):
     if True:
         if build.toolchain_is_msvs:
-            mssdk_path = get_mssdk_path()
+            mssdk_path = util.get_mssdk_path()
             print "Detected MSSDK path:", mssdk_path
             print "Extracting Visual C++ DLL installer..."
             szip_path = None
