@@ -452,11 +452,13 @@ bool SoundSourceMediaFoundation::configureAudioStream()
     // size_t and this function is writing a uint32. However, on 32-bit
     // Windows 7, size_t is defined as uint which is 32-bits, so we're safe
     // for all supported platforms -bkgood
-    hr = m_pAudioType->GetUINT32(MF_MT_SAMPLE_SIZE, &m_leftoverBufferSize);
+    UINT32 leftoverBufferSize = 0;
+    hr = m_pAudioType->GetUINT32(MF_MT_SAMPLE_SIZE, &leftoverBufferSize);
     if (FAILED(hr)) {
         qWarning() << "SSMF: failed to get buffer size";
         return false;
     }
+    m_leftoverBufferSize = static_cast<size_t>(leftoverBufferSize);
     m_leftoverBufferSize /= 2; // convert size in bytes to size in int16s
     m_leftoverBuffer = new qint16[m_leftoverBufferSize];
 
