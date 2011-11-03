@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2011-03-27 03:32-0400\n"
-"PO-Revision-Date: 2010-12-18 20:22+0000\n"
+"POT-Creation-Date: 2011-05-03 21:42-0400\n"
+"PO-Revision-Date: 2011-10-07 14:26+0000\n"
 "Last-Translator: Papp Bence <papp.bence89@gmail.com>\n"
 "Language-Team: Hungarian <hu@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-03-28 04:34+0000\n"
-"X-Generator: Launchpad (build 12559)\n"
+"X-Launchpad-Export-Date: 2011-10-08 05:14+0000\n"
+"X-Generator: Launchpad (build 14110)\n"
 
 #: AutoDJFeature#1
 msgid "Auto DJ"
@@ -23,75 +23,75 @@ msgstr "Auto DJ"
 
 #: BaseSqlTableModel#1
 msgid "Played"
-msgstr ""
+msgstr "Játszott"
 
 #: BaseSqlTableModel#2
 msgctxt "BaseSqlTableModel#2"
 msgid "Artist"
-msgstr ""
+msgstr "Előadó"
 
 #: BaseSqlTableModel#3
 msgctxt "BaseSqlTableModel#3"
 msgid "Title"
-msgstr ""
+msgstr "Cím"
 
 #: BaseSqlTableModel#4
 msgctxt "BaseSqlTableModel#4"
 msgid "Album"
-msgstr ""
+msgstr "Album"
 
 #: BaseSqlTableModel#5
 msgctxt "BaseSqlTableModel#5"
 msgid "Genre"
-msgstr ""
+msgstr "Műfaj"
 
 #: BaseSqlTableModel#6
 msgctxt "BaseSqlTableModel#6"
 msgid "Year"
-msgstr ""
+msgstr "Év"
 
 #: BaseSqlTableModel#7
 msgctxt "BaseSqlTableModel#7"
 msgid "Type"
-msgstr ""
+msgstr "Típus"
 
 #: BaseSqlTableModel#8
 msgctxt "BaseSqlTableModel#8"
 msgid "Location"
-msgstr ""
+msgstr "Hely"
 
 #: BaseSqlTableModel#9
 msgctxt "BaseSqlTableModel#9"
 msgid "Comment"
-msgstr ""
+msgstr "Megjegyzés"
 
 #: BaseSqlTableModel#10
 msgctxt "BaseSqlTableModel#10"
 msgid "Duration"
-msgstr ""
+msgstr "Időtartam"
 
 #: BaseSqlTableModel#11
 msgid "Rating"
-msgstr ""
+msgstr "Értékelés"
 
 #: BaseSqlTableModel#12
 msgctxt "BaseSqlTableModel#12"
 msgid "Bitrate"
-msgstr ""
+msgstr "Bitráta"
 
 #: BaseSqlTableModel#13
 msgctxt "BaseSqlTableModel#13"
 msgid "BPM"
-msgstr ""
+msgstr "BPM"
 
 #: BaseSqlTableModel#14
 msgctxt "BaseSqlTableModel#14"
 msgid "Track #"
-msgstr ""
+msgstr "Sorszám#"
 
 #: BaseSqlTableModel#15
 msgid "Date Added"
-msgstr ""
+msgstr "Hozzáadás dátuma"
 
 #: BaseSqlTableModel#16
 msgid "#"
@@ -100,7 +100,7 @@ msgstr "#"
 #: BaseSqlTableModel#17
 msgctxt "BaseSqlTableModel#17"
 msgid "Key"
-msgstr ""
+msgstr "Billentyű"
 
 #: BaseTrackPlayer#1
 msgid "Couldn't load track."
@@ -108,68 +108,69 @@ msgstr "Nem lehet a számot betölteni."
 
 #: BrowseFeature#1
 msgid "Quick Links"
-msgstr ""
+msgstr "Gyors Linkek"
 
 #: BrowseFeature#2
 msgid "Devices"
-msgstr ""
+msgstr "Eszközök"
 
 #: BrowseFeature#3
 msgid "Removable Devices"
-msgstr ""
+msgstr "Cserélhető eszközök"
 
 #: BrowseFeature#4
+msgctxt "BrowseFeature#4"
 msgid "Mixxx Library"
-msgstr ""
+msgstr "Mixxx Könyvtár"
 
 #: BrowseFeature#5
 msgid "Home"
-msgstr ""
+msgstr "Saját mappa"
 
 #: BrowseFeature#6
 msgid "Music"
-msgstr ""
+msgstr "Zenék"
 
 #: BrowseFeature#7
 msgid "Documents"
-msgstr ""
+msgstr "Dokumentumok"
 
 #: BrowseFeature#8
 msgid "Desktop"
-msgstr ""
+msgstr "Asztal"
 
-#: BrowseFeature#1
+#: BrowseFeature#9
 msgid "Browse"
 msgstr "Böngészés"
 
 #: BrowseTableModel#1
 msgid "Filename"
-msgstr ""
+msgstr "Fájlnév"
 
 #: BrowseTableModel#2
 msgctxt "BrowseTableModel#2"
 msgid "Artist"
-msgstr ""
+msgstr "Előadó"
 
 #: BrowseTableModel#3
 msgctxt "BrowseTableModel#3"
 msgid "Title"
-msgstr ""
+msgstr "Cím"
 
 #: BrowseTableModel#4
 msgctxt "BrowseTableModel#4"
 msgid "Album"
-msgstr ""
+msgstr "Album"
 
 #: BrowseTableModel#5
 msgctxt "BrowseTableModel#5"
 msgid "Track #"
-msgstr ""
+msgstr "Sorszám#"
 
 #: BrowseTableModel#6
 msgctxt "BrowseTableModel#6"
 msgid "Year"
-msgstr ""
+msgstr "Év"
 
 #: BrowseTableModel#7
 msgctxt "BrowseTableModel#7"
@@ -211,6 +212,35 @@ msgctxt "BrowseTableModel#14"
 msgid "Location"
 msgstr ""
 
+#: BrowseTableModel#15
+msgctxt "BrowseTableModel#15"
+msgid "Mixxx Library"
+msgstr ""
+
+#: BrowseTableModel#16
+msgid ""
+"Could not load the following file because it is in use by Mixxx or another "
+"application."
+msgstr ""
+
+#: BrowseTableModel#17
+msgid "Warning: This will permanently delete the following files:"
+msgstr ""
+
+#: BrowseTableModel#18
+msgid "Are you sure you want to delete these files from your computer?"
+msgstr ""
+
+#: BrowseTableModel#19
+msgid ""
+"Could not delete the following file because it is in use by Mixxx or another "
+"application:"
+msgstr ""
+
+#: BrowseTableModel#20
+msgid "Could not update file metadata."
+msgstr ""
+
 #: CrateFeature#1
 msgid "New Crate"
 msgstr "Új Rekesz"
@@ -235,49 +265,67 @@ msgctxt "CrateFeature#5"
 msgid "Import Playlist"
 msgstr ""
 
-#: CrateFeature#3
+#: CrateFeature#6
 msgid "Crates"
 msgstr "Rekeszek"
 
 #: CrateFeature#7
-msgctxt "CrateFeature#7"
+msgid "Import Crate"
+msgstr ""
+
+#: CrateFeature#8
+msgid "Export Crate"
+msgstr ""
+
+#: CrateFeature#9
+msgctxt "CrateFeature#9"
 msgid "Unlock"
 msgstr ""
 
-#: CrateFeature#4
+#: CrateFeature#10
 msgid "Crate name:"
 msgstr "Rekesz neve:"
 
-#: CrateFeature#9
+#: CrateFeature#11
 msgid "An unknown error occurred while creating crate: "
 msgstr ""
 
-#: CrateFeature#10
+#: CrateFeature#12
 msgid "Rename Crate"
 msgstr ""
 
-#: CrateFeature#11
+#: CrateFeature#13
 msgid "New crate name:"
 msgstr ""
 
-#: CrateFeature#12
+#: CrateFeature#14
 msgid "Renaming Crate Failed"
 msgstr ""
 
-#: CrateFeature#13
-msgctxt "CrateFeature#13"
+#: CrateFeature#15
+msgctxt "CrateFeature#15"
 msgid "Playlist Files (*.m3u *.pls)"
 msgstr ""
 
-#: CrateFeature#6
+#: CrateFeature#16
+msgctxt "CrateFeature#16"
+msgid "Export Playlist"
+msgstr ""
+
+#: CrateFeature#17
+msgctxt "CrateFeature#17"
+msgid "M3U Playlist (*.m3u);;PLS Playlist (*.pls)"
+msgstr ""
+
+#: CrateFeature#18
 msgid "A crate cannot have a blank name."
 msgstr "Rekesz neve nem lehet üres."
 
-#: CrateFeature#7
+#: CrateFeature#19
 msgid "Creating Crate Failed"
 msgstr "Rekesz készítése sikertelen"
 
-#: CrateFeature#8
+#: CrateFeature#20
 msgid "A crate by that name already exists."
 msgstr "Rekesz ezzel a névvel már létezik."
 
@@ -337,6 +385,10 @@ msgid "Manage"
 msgstr "Szerkesztés"
 
 #: DlgAutoDJ#4
+msgid "Shuffle playlist"
+msgstr ""
+
+#: DlgAutoDJ#5
 msgid "Add tracks to the queue below..."
 msgstr "Számok hozzáadása a lenti listához..."
 
@@ -411,24 +463,24 @@ msgstr ""
 
 #: DlgBpmTapDlg#11
 msgid "BPM Range:"
-msgstr ""
+msgstr "BPM Terjedelem:"
 
 #: DlgBpmTapDlg#12
 msgid "&Go"
-msgstr ""
+msgstr "&Ugrás"
 
 #: DlgBpmTapDlg#13
 msgid "Alt+G"
-msgstr ""
+msgstr "Alt+G"
 
 #: DlgBpmTapDlg#14
 msgctxt "DlgBpmTapDlg#14"
 msgid "Analyze Entire Song"
-msgstr ""
+msgstr "Analizálja az egész dalt"
 
 #: DlgBpmTapDlg#15
 msgid "BPM:"
-msgstr ""
+msgstr "BPM:"
 
 #: DlgBpmTapDlg#16
 msgid "&Push to tap tempo"
@@ -436,7 +488,7 @@ msgstr ""
 
 #: DlgBpmTapDlg#17
 msgid "Alt+P"
-msgstr ""
+msgstr "Alt+P"
 
 #: DlgBpmTapDlg#18
 msgctxt "DlgBpmTapDlg#18"
@@ -571,10 +623,6 @@ msgstr "Kész!"
 msgid "Missing Audio Plugin Downloader"
 msgstr ""
 
-#: DlgPluginDownloader#2
-msgid "Mixxx has detected th"
-msgstr ""
-
 #: DlgPrefBPMDlg#1
 msgctxt "DlgPrefBPMDlg#1"
 msgid "BPM Detection Settings"
@@ -640,19 +688,59 @@ msgid "This skin does not support schemes"
 msgstr "Ez a kinézet nem támogatja a sémákat"
 
 #: DlgPrefControls#2
-msgid "Up increases speed"
+msgid "8% (Technics SL1210)"
 msgstr ""
 
 #: DlgPrefControls#3
-msgid "Down increases speed (Technics SL1210)"
+msgid "10%"
 msgstr ""
 
 #: DlgPrefControls#4
-msgctxt "DlgPrefControls#4"
-msgid "Information"
-msgstr "Információ"
+msgid "20%"
+msgstr ""
 
 #: DlgPrefControls#5
+msgid "30%"
+msgstr ""
+
+#: DlgPrefControls#6
+msgid "40%"
+msgstr ""
+
+#: DlgPrefControls#7
+msgid "50%"
+msgstr ""
+
+#: DlgPrefControls#8
+msgid "60%"
+msgstr ""
+
+#: DlgPrefControls#9
+msgid "70%"
+msgstr ""
+
+#: DlgPrefControls#10
+msgid "80%"
+msgstr ""
+
+#: DlgPrefControls#11
+msgid "90%"
+msgstr ""
+
+#: DlgPrefControls#12
+msgid "Up increases speed"
+msgstr ""
+
+#: DlgPrefControls#13
+msgid "Down increases speed (Technics SL1210)"
+msgstr ""
+
+#: DlgPrefControls#14
+msgctxt "DlgPrefControls#14"
+msgid "Information"
+msgstr ""
+
+#: DlgPrefControls#15
 msgid "Mixxx must be restarted before the changes will take effect."
 msgstr ""
 "A Mixxx-et újra kell indítani, hogy a változtatások érvénybe lépjenek."
@@ -701,54 +789,58 @@ msgid "Pitch/Rate slider direction"
 msgstr ""
 
 #: DlgPrefControlsDlg#11
-msgid "Cue behaviour"
+msgid "Track load behaviour"
 msgstr ""
 
 #: DlgPrefControlsDlg#12
-msgid "Auto Recall Cue"
+msgid "Cue behaviour"
 msgstr ""
 
 #: DlgPrefControlsDlg#13
-msgid "Permanent Pitch/Rate Buttons"
+msgid "Auto Recall Cue"
 msgstr ""
 
 #: DlgPrefControlsDlg#14
+msgid "Permanent Pitch/Rate Buttons"
+msgstr ""
+
+#: DlgPrefControlsDlg#15
 msgid "Left click"
 msgstr "Bal kattintás"
 
-#: DlgPrefControlsDlg#15
+#: DlgPrefControlsDlg#16
 msgid "Right click"
 msgstr "Jobb kattintás"
 
-#: DlgPrefControlsDlg#16
+#: DlgPrefControlsDlg#17
 msgid "Permanent rate change (between 1 and 8000) when left clicking"
 msgstr ""
 
-#: DlgPrefControlsDlg#17
+#: DlgPrefControlsDlg#18
 msgid "%"
 msgstr "%"
 
-#: DlgPrefControlsDlg#18
+#: DlgPrefControlsDlg#19
 msgid "Permanent rate change (between 1 and 8000) when right clicking"
 msgstr ""
 
-#: DlgPrefControlsDlg#19
+#: DlgPrefControlsDlg#20
 msgid "Temporary Pitch/Rate Buttons"
 msgstr ""
 
-#: DlgPrefControlsDlg#20
+#: DlgPrefControlsDlg#21
 msgid "Temporary rate change (between 1 and 8000) when left clicking"
 msgstr ""
 
-#: DlgPrefControlsDlg#21
+#: DlgPrefControlsDlg#22
 msgid "Temporary rate change (between 1 and 8000) when right clicking"
 msgstr ""
 
-#: DlgPrefControlsDlg#22
+#: DlgPrefControlsDlg#23
 msgid "Ramping Pitchbend"
 msgstr ""
 
-#: DlgPrefControlsDlg#23
+#: DlgPrefControlsDlg#24
 msgid "Pitchbend sensitivity"
 msgstr ""
 
@@ -972,6 +1064,126 @@ msgstr "Űrlap3"
 msgid "No MIDI devices available"
 msgstr "Nincs elérhető MIDI eszközök"
 
+#: DlgPrefNoVinylDlg#1
+msgctxt "DlgPrefNoVinylDlg#1"
+msgid "Form1"
+msgstr ""
+
+#: DlgPrefNoVinylDlg#2
+msgctxt "DlgPrefNoVinylDlg#2"
+msgid "Input"
+msgstr ""
+
+#: DlgPrefNoVinylDlg#3
+msgctxt "DlgPrefNoVinylDlg#3"
+msgid ""
+"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" "
+"\"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+"<html><head><meta name=\"qrichtext\" content=\"1\" /><style "
+"type=\"text/css\">\n"
+"p, li { white-space: pre-wrap; }\n"
+"</style></head><body style=\" font-family:'DejaVu Sans'; font-size:9pt; font-"
+"weight:400; font-style:normal;\">\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-"
+"right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-"
+"weight:600;\">Select sound devices for vinyl control in the Sound Hardware "
+"pane.</span></p></body></html>"
+msgstr ""
+
+#: DlgPrefNoVinylDlg#4
+msgctxt "DlgPrefNoVinylDlg#4"
+msgid ""
+"<a "
+"href=\"http://www.mixxx.org/wiki/doku.php/vinyl_control#troubleshooting\">Tro"
+"ubleshooting</a>"
+msgstr ""
+
+#: DlgPrefNoVinylDlg#5
+msgctxt "DlgPrefNoVinylDlg#5"
+msgid "Turntable Preamp"
+msgstr ""
+
+#: DlgPrefNoVinylDlg#6
+msgctxt "DlgPrefNoVinylDlg#6"
+msgid "1 (Off)"
+msgstr ""
+
+#: DlgPrefNoVinylDlg#7
+msgctxt "DlgPrefNoVinylDlg#7"
+msgid "150"
+msgstr ""
+
+#: DlgPrefNoVinylDlg#8
+msgctxt "DlgPrefNoVinylDlg#8"
+msgid "Vinyl Configuration"
+msgstr ""
+
+#: DlgPrefNoVinylDlg#9
+msgctxt "DlgPrefNoVinylDlg#9"
+msgid "Deck 1 Vinyl Type"
+msgstr ""
+
+#: DlgPrefNoVinylDlg#10
+msgctxt "DlgPrefNoVinylDlg#10"
+msgid "Deck 2 Vinyl Type"
+msgstr ""
+
+#: DlgPrefNoVinylDlg#11
+msgctxt "DlgPrefNoVinylDlg#11"
+msgid "Lead-in time"
+msgstr ""
+
+#: DlgPrefNoVinylDlg#12
+msgctxt "DlgPrefNoVinylDlg#12"
+msgid "seconds"
+msgstr ""
+
+#: DlgPrefNoVinylDlg#13
+msgctxt "DlgPrefNoVinylDlg#13"
+msgid "Control Mode"
+msgstr ""
+
+#: DlgPrefNoVinylDlg#14
+msgctxt "DlgPrefNoVinylDlg#14"
+msgid "Absolute Mode"
+msgstr ""
+
+#: DlgPrefNoVinylDlg#15
+msgctxt "DlgPrefNoVinylDlg#15"
+msgid "Relative Mode"
+msgstr ""
+
+#: DlgPrefNoVinylDlg#16
+msgctxt "DlgPrefNoVinylDlg#16"
+msgid "Enable Needle Skip Prevention"
+msgstr ""
+
+#: DlgPrefNoVinylDlg#17
+msgctxt "DlgPrefNoVinylDlg#17"
+msgid "Signal Quality"
+msgstr ""
+
+#: DlgPrefNoVinylDlg#18
+msgctxt "DlgPrefNoVinylDlg#18"
+msgid "http://www.xwax.co.uk"
+msgstr ""
+
+#: DlgPrefNoVinylDlg#19
+msgctxt "DlgPrefNoVinylDlg#19"
+msgid "Powered by xwax"
+msgstr ""
+
+#: DlgPrefNoVinylDlg#20
+msgctxt "DlgPrefNoVinylDlg#20"
+msgid "Apply"
+msgstr ""
+
+#: DlgPrefNoVinylDlg#21
+msgid ""
+"<b>This version of Mixxx does not support vinyl control.</b> <br> Please "
+"visit <a href=\"http://mixxx.org\">Mixxx.org</a> for more information."
+msgstr ""
+
 #: DlgPrefPlaylist#1
 msgctxt "DlgPrefPlaylist#1"
 msgid "Choose music library directory"
@@ -1036,6 +1248,7 @@ msgid "None"
 msgstr ""
 
 #: DlgPrefPlaylistDlg#7
+msgctxt "DlgPrefPlaylistDlg#7"
 msgid "Miscellaneous"
 msgstr ""
 
@@ -1048,59 +1261,53 @@ msgid "Rescan library on start-up"
 msgstr ""
 
 #: DlgPrefPlaylistDlg#10
+msgid "Use relative paths for playlist export if possible"
+msgstr ""
+
+#: DlgPrefPlaylistDlg#11
 msgid "iPod"
 msgstr "iPod"
 
-#: DlgPrefPlaylistDlg#11
+#: DlgPrefPlaylistDlg#12
 msgid "iPod mountpoint"
 msgstr ""
 
-#: DlgPrefPlaylistDlg#12
-msgctxt "DlgPrefPlaylistDlg#12"
-msgid "Browse..."
-msgstr ""
-
 #: DlgPrefPlaylistDlg#13
+msgid "Browse..."
+msgstr "Tallózás..."
+
+#: DlgPrefPlaylistDlg#14
 msgid "Detect"
 msgstr "Felismerés"
 
-#: DlgPrefPlaylistDlg#14
-msgctxt "DlgPrefPlaylistDlg#14"
-msgid "Library"
-msgstr ""
-
 #: DlgPrefPlaylistDlg#15
+msgctxt "DlgPrefPlaylistDlg#15"
+msgid "Library"
+msgstr "Könyvtár"
+
+#: DlgPrefPlaylistDlg#16
 msgid "Music Directory:"
 msgstr "Zene Könyvtár:"
 
-#: DlgPrefPlaylistDlg#16
+#: DlgPrefPlaylistDlg#17
 msgid "Built-in"
 msgstr "Beépített"
 
-#: DlgPrefPlaylistDlg#17
+#: DlgPrefPlaylistDlg#18
 msgid "Available Online..."
 msgstr "Elérhető Online..."
 
-#: DlgPrefPlaylistDlg#18
+#: DlgPrefPlaylistDlg#19
 msgid "Bundled Songs"
 msgstr ""
 
-#: DlgPrefPlaylistDlg#19
+#: DlgPrefPlaylistDlg#20
 msgid ""
 "Support Mixxx by counting and sharing bundled songs\n"
 "playback and outbound link statistics"
 msgstr ""
 
 #: DlgPrefRecord#1
-msgctxt "DlgPrefRecord#1"
-msgid "Save Recording As..."
-msgstr "Felvétel mentése mint..."
-
-#: DlgPrefRecord#2
-msgid "Save Cue File As..."
-msgstr ""
-
-#: DlgPrefRecord#2
 msgid "kbps"
 msgstr "kbps"
 
@@ -1111,55 +1318,54 @@ msgstr "Űrlap3"
 
 #: DlgPrefRecordDlg#2
 msgctxt "DlgPrefRecordDlg#2"
-msgid "File"
+msgid "Encoding"
 msgstr ""
 
 #: DlgPrefRecordDlg#3
-msgctxt "DlgPrefRecordDlg#3"
-msgid "Browse..."
-msgstr "Böngészés..."
-
-#: DlgPrefRecordDlg#4
-msgctxt "DlgPrefRecordDlg#4"
-msgid "Encoding"
-msgstr "Kódolás"
-
-#: DlgPrefRecordDlg#5
 msgid "Quality"
 msgstr "Minőség"
 
-#: DlgPrefRecordDlg#6
+#: DlgPrefRecordDlg#4
 msgid "High"
-msgstr ""
+msgstr "Magas"
 
-#: DlgPrefRecordDlg#7
+#: DlgPrefRecordDlg#5
 msgid "Low"
 msgstr ""
 
-#: DlgPrefRecordDlg#8
+#: DlgPrefRecordDlg#6
 msgid "Tags"
 msgstr "Címkék"
 
-#: DlgPrefRecordDlg#9
-msgctxt "DlgPrefRecordDlg#9"
+#: DlgPrefRecordDlg#7
+msgctxt "DlgPrefRecordDlg#7"
 msgid "Title"
-msgstr "Cím"
+msgstr ""
 
-#: DlgPrefRecordDlg#10
+#: DlgPrefRecordDlg#8
 msgid "Author"
 msgstr "Szerző"
 
-#: DlgPrefRecordDlg#11
-msgctxt "DlgPrefRecordDlg#11"
+#: DlgPrefRecordDlg#9
+msgctxt "DlgPrefRecordDlg#9"
 msgid "Album"
-msgstr "Album"
+msgstr ""
 
-#: DlgPrefRecordDlg#12
+#: DlgPrefRecordDlg#10
+msgctxt "DlgPrefRecordDlg#10"
+msgid "Miscellaneous"
+msgstr ""
+
+#: DlgPrefRecordDlg#11
 msgid "Create a CUE file"
 msgstr ""
 
+#: DlgPrefRecordDlg#12
+msgid "File Splitting"
+msgstr ""
+
 #: DlgPrefRecordDlg#13
-msgid "Cue File"
+msgid "Split recordings at"
 msgstr ""
 
 #: DlgPrefReplayGainDlg#1
@@ -1315,24 +1521,13 @@ msgid ""
 "<html><head><meta name=\"qrichtext\" content=\"1\" /><style "
 "type=\"text/css\">\n"
 "p, li { white-space: pre-wrap; }\n"
-"</style></head><body style=\" font-family:'Sans'; font-size:10pt; font-"
-"weight:400; font-style:normal;\">\n"
+"</style></head><body style=\" font-family:'Lucida Grande'; font-size:13pt; "
+"font-weight:400; font-style:normal;\">\n"
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-"
 "right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-"
 "family:'DejaVu Sans'; font-size:9pt; font-style:italic;\">This stream is on "
 "line for testing purposes!</span></p></body></html>"
 msgstr ""
-"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" "
-"\"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
-"<html><head><meta name=\"qrichtext\" content=\"1\" /><style "
-"type=\"text/css\">\n"
-"p, li { white-space: pre-wrap; }\n"
-"</style></head><body style=\" font-family:'Sans'; font-size:10pt; font-"
-"weight:400; font-style:normal;\">\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-"
-"right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-"
-"family:'DejaVu Sans'; font-size:9pt; font-style:italic;\">This stream is on "
-"line for testing purposes!</span></p></body></html>"
 
 #: DlgPrefShoutcastDlg#25
 msgctxt "DlgPrefShoutcastDlg#25"
@@ -1463,43 +1658,32 @@ msgid "%1 Hz"
 msgstr ""
 
 #: DlgPrefSound#3
-msgid "Mixxx Error"
-msgstr ""
-
-#: DlgPrefSound#4
-msgid ""
-"FinalScratch records currently only work properly with a 44100 Hz sample "
-"rate.\n"
-"The sample rate has been reset to 44100 Hz."
-msgstr ""
-
-#: DlgPrefSound#5
 msgid "a device"
 msgstr ""
 
-#: DlgPrefSound#6
+#: DlgPrefSound#4
 msgid "An unknown error occurred"
 msgstr ""
 
-#: DlgPrefSound#7
+#: DlgPrefSound#5
 msgid "sound device \"%1\""
 msgstr ""
 
-#: DlgPrefSound#8
+#: DlgPrefSound#6
 msgid "Two outputs cannot share channels on %1"
 msgstr ""
 
-#: DlgPrefSound#9
+#: DlgPrefSound#7
 msgid ""
 "Error opening %1\n"
 "%2"
 msgstr ""
 
-#: DlgPrefSound#10
+#: DlgPrefSound#8
 msgid "%1 ms"
 msgstr "%1 ms"
 
-#: DlgPrefSound#11
+#: DlgPrefSound#9
 msgid "Configuration error"
 msgstr ""
 
@@ -1541,6 +1725,7 @@ msgid "Reset to Defaults"
 msgstr ""
 
 #: DlgPrefSoundDlg#9
+msgctxt "DlgPrefSoundDlg#9"
 msgid "Apply"
 msgstr ""
 
@@ -1576,6 +1761,7 @@ msgid "Input"
 msgstr ""
 
 #: DlgPrefVinylDlg#3
+msgctxt "DlgPrefVinylDlg#3"
 msgid ""
 "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" "
 "\"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
@@ -1591,74 +1777,92 @@ msgid ""
 msgstr ""
 
 #: DlgPrefVinylDlg#4
+msgctxt "DlgPrefVinylDlg#4"
 msgid ""
 "<a "
 "href=\"http://www.mixxx.org/wiki/doku.php/vinyl_control#troubleshooting\">Tro"
 "ubleshooting</a>"
 msgstr ""
-"<a "
-"href=\"http://www.mixxx.org/wiki/doku.php/vinyl_control#troubleshooting\">Hib"
-"aelhárítás</a>"
 
 #: DlgPrefVinylDlg#5
+msgctxt "DlgPrefVinylDlg#5"
 msgid "Turntable Preamp"
 msgstr ""
 
 #: DlgPrefVinylDlg#6
+msgctxt "DlgPrefVinylDlg#6"
 msgid "1 (Off)"
-msgstr "1 (Ki)"
+msgstr ""
 
 #: DlgPrefVinylDlg#7
+msgctxt "DlgPrefVinylDlg#7"
 msgid "150"
-msgstr "150"
+msgstr ""
 
 #: DlgPrefVinylDlg#8
+msgctxt "DlgPrefVinylDlg#8"
 msgid "Vinyl Configuration"
 msgstr ""
 
 #: DlgPrefVinylDlg#9
-msgid "Vinyl Type"
+msgctxt "DlgPrefVinylDlg#9"
+msgid "Deck 1 Vinyl Type"
 msgstr ""
 
 #: DlgPrefVinylDlg#10
-msgid "Lead-in time"
+msgctxt "DlgPrefVinylDlg#10"
+msgid "Deck 2 Vinyl Type"
 msgstr ""
 
 #: DlgPrefVinylDlg#11
-msgid "seconds"
-msgstr "másodperc"
+msgctxt "DlgPrefVinylDlg#11"
+msgid "Apply"
+msgstr ""
 
 #: DlgPrefVinylDlg#12
-msgid "Control Mode"
+msgctxt "DlgPrefVinylDlg#12"
+msgid "Lead-in time"
 msgstr ""
 
 #: DlgPrefVinylDlg#13
-msgid "Absolute Mode"
+msgctxt "DlgPrefVinylDlg#13"
+msgid "seconds"
 msgstr ""
 
 #: DlgPrefVinylDlg#14
-msgid "Relative Mode"
+msgctxt "DlgPrefVinylDlg#14"
+msgid "Control Mode"
 msgstr ""
 
 #: DlgPrefVinylDlg#15
-msgid "Scratch Mode"
+msgctxt "DlgPrefVinylDlg#15"
+msgid "Absolute Mode"
 msgstr ""
 
 #: DlgPrefVinylDlg#16
-msgid "Enable Needle Skip Prevention"
+msgctxt "DlgPrefVinylDlg#16"
+msgid "Relative Mode"
 msgstr ""
 
 #: DlgPrefVinylDlg#17
-msgid "Signal Quality"
-msgstr "Jelminőség"
+msgctxt "DlgPrefVinylDlg#17"
+msgid "Enable Needle Skip Prevention"
+msgstr ""
 
 #: DlgPrefVinylDlg#18
-msgid "http://www.xwax.co.uk"
-msgstr "http://www.xwax.co.uk"
+msgctxt "DlgPrefVinylDlg#18"
+msgid "Signal Quality"
+msgstr ""
 
 #: DlgPrefVinylDlg#19
+msgctxt "DlgPrefVinylDlg#19"
+msgid "http://www.xwax.co.uk"
+msgstr ""
+
+#: DlgPrefVinylDlg#20
+msgctxt "DlgPrefVinylDlg#20"
 msgid "Powered by xwax"
-msgstr "Powered by xwax"
+msgstr ""
 
 #: DlgPreferences#1
 msgid "Sound Hardware"
@@ -1750,6 +1954,27 @@ msgstr ""
 
 #: DlgPrepare#8
 msgid "Analyzing %1%"
+msgstr ""
+
+#: DlgRecording#1
+msgctxt "DlgRecording#1"
+msgid "Manage"
+msgstr ""
+
+#: DlgRecording#2
+msgid "Status:"
+msgstr ""
+
+#: DlgRecording#3
+msgid "Start Recording"
+msgstr ""
+
+#: DlgRecording#4
+msgid "Start recording here ..."
+msgstr ""
+
+#: DlgRecording#5
+msgid "Stop Recording"
 msgstr ""
 
 #: DlgTrackInfo#1
@@ -2009,7 +2234,7 @@ msgstr "Kérdés"
 msgid "iTunes"
 msgstr "iTunes"
 
-#: ITunesFeature#4
+#: ITunesFeature#2
 msgid "Select your iTunes library"
 msgstr ""
 
@@ -2017,19 +2242,19 @@ msgstr ""
 msgid "iTunes (loading)"
 msgstr ""
 
-#: ITunesFeature#7
+#: ITunesFeature#4
 msgid "Use Default Library"
 msgstr ""
 
-#: ITunesFeature#8
+#: ITunesFeature#5
 msgid "Choose Library..."
 msgstr ""
 
-#: ITunesFeature#5
+#: ITunesFeature#6
 msgid "Error Loading iTunes Library"
 msgstr ""
 
-#: ITunesFeature#6
+#: ITunesFeature#7
 msgid ""
 "There was an error loading your iTunes library. Some of your iTunes tracks "
 "or playlists may not have loaded."
@@ -2373,7 +2598,7 @@ msgid "&Community Support..."
 msgstr "&Közösségi Segítség..."
 
 #: MixxxApp#42
-msgid "Enable &Vinyl Control"
+msgid "Enable &Vinyl Control 1"
 msgstr ""
 
 #: MixxxApp#43
@@ -2381,53 +2606,61 @@ msgid "Ctrl+Y"
 msgstr "Ctrl+Y"
 
 #: MixxxApp#44
-msgctxt "MixxxApp#44"
-msgid "Enable live broadcasting"
+msgid "Enable &Vinyl Control 2"
 msgstr ""
 
 #: MixxxApp#45
+msgid "Ctrl+U"
+msgstr ""
+
+#: MixxxApp#46
+msgctxt "MixxxApp#46"
+msgid "Enable live broadcasting"
+msgstr ""
+
+#: MixxxApp#47
 msgid "Ctrl+L"
 msgstr "Ctrl+L"
 
-#: MixxxApp#46
+#: MixxxApp#48
 msgid "&Record Mix"
 msgstr "&Mix felvétele"
 
-#: MixxxApp#47
+#: MixxxApp#49
 msgid "Ctrl+R"
 msgstr "Ctrl+R"
 
-#: MixxxApp#48
+#: MixxxApp#50
 msgid "Show Studio"
 msgstr "Stúdió mutatása"
 
-#: MixxxApp#49
-msgid "Opens a song in player 1"
-msgstr ""
-
-#: MixxxApp#50
-msgid ""
-"Open\n"
-"\n"
-"Opens a song in player 1"
-msgstr ""
-
 #: MixxxApp#51
-msgid "Opens a song in player 2"
+msgid "Opens a song in player 1"
 msgstr ""
 
 #: MixxxApp#52
 msgid ""
 "Open\n"
 "\n"
-"Opens a song in player 2"
+"Opens a song in player 1"
 msgstr ""
 
 #: MixxxApp#53
+msgid "Opens a song in player 2"
+msgstr ""
+
+#: MixxxApp#54
+msgid ""
+"Open\n"
+"\n"
+"Opens a song in player 2"
+msgstr ""
+
+#: MixxxApp#55
 msgid "Quits the application"
 msgstr "Kilépés az alkalmazásból"
 
-#: MixxxApp#54
+#: MixxxApp#56
 msgid ""
 "Exit\n"
 "\n"
@@ -2437,91 +2670,91 @@ msgstr ""
 "\n"
 "Kilépés az alkalmazásból"
 
-#: MixxxApp#55
+#: MixxxApp#57
 msgid "Rescans the song library"
 msgstr ""
 
-#: MixxxApp#56
+#: MixxxApp#58
 msgid ""
 "Rescan library\n"
 "\n"
 "Rescans the song library"
 msgstr ""
 
-#: MixxxApp#57
+#: MixxxApp#59
 msgid "Create a new playlist"
 msgstr "Új lejátszólista létrehozása"
 
-#: MixxxApp#58
+#: MixxxApp#60
 msgid ""
 "New playlist\n"
 "\n"
 "Create a new playlist"
 msgstr ""
 
-#: MixxxApp#59
+#: MixxxApp#61
 msgid "Create a new crate"
 msgstr "Új rekesz készítése"
 
-#: MixxxApp#60
+#: MixxxApp#62
 msgid ""
 "New crate\n"
 "\n"
 "Create a new crate."
 msgstr ""
 
-#: MixxxApp#61
+#: MixxxApp#63
 msgid "Import playlist"
 msgstr ""
 
-#: MixxxApp#62
+#: MixxxApp#64
 msgid "Audio Beat Marks"
 msgstr ""
 
-#: MixxxApp#63
+#: MixxxApp#65
 msgid ""
 "Audio Beat Marks\n"
 "Mark beats by audio clicks"
 msgstr ""
 
-#: MixxxApp#64
+#: MixxxApp#66
 msgid "Activate Vinyl Control"
 msgstr ""
 
-#: MixxxApp#65
+#: MixxxApp#67
 msgid "Use timecoded vinyls on external turntables to control Mixxx"
 msgstr ""
 
-#: MixxxApp#66
+#: MixxxApp#68
 msgid "Activate live broadcasting"
 msgstr ""
 
-#: MixxxApp#67
+#: MixxxApp#69
 msgid "Stream your mixes to a shoutcast or icecast server"
 msgstr ""
 
-#: MixxxApp#68
+#: MixxxApp#70
 msgid "Start Recording your Mix"
 msgstr ""
 
-#: MixxxApp#69
+#: MixxxApp#71
 msgid "Record your mix to a file"
 msgstr ""
 
-#: MixxxApp#70
+#: MixxxApp#72
 msgid "Full Screen"
 msgstr "Teljes képernyő"
 
-#: MixxxApp#71
+#: MixxxApp#73
 msgid "Display Mixxx using the full screen"
 msgstr ""
 
-#: MixxxApp#72
-msgctxt "MixxxApp#72"
+#: MixxxApp#74
+msgctxt "MixxxApp#74"
 msgid "Preferences"
-msgstr ""
+msgstr "Testreszabás"
 
-#: MixxxApp#73
+#: MixxxApp#75
 msgid ""
 "Preferences\n"
 "Playback and MIDI preferences"
@@ -2529,11 +2762,11 @@ msgstr ""
 "Testreszabás\n"
 "Visszajátszás és MIDI testreszabása"
 
-#: MixxxApp#74
+#: MixxxApp#76
 msgid "Support..."
 msgstr "Segítség..."
 
-#: MixxxApp#75
+#: MixxxApp#77
 msgid ""
 "Support\n"
 "\n"
@@ -2543,11 +2776,11 @@ msgstr ""
 "\n"
 "Kérj segítséget a Mixxx-hez"
 
-#: MixxxApp#76
+#: MixxxApp#78
 msgid "About the application"
 msgstr "Az alkalmazásról"
 
-#: MixxxApp#77
+#: MixxxApp#79
 msgid ""
 "About\n"
 "\n"
@@ -2557,101 +2790,110 @@ msgstr ""
 "\n"
 "Az alkalmazásról"
 
-#: MixxxApp#78
+#: MixxxApp#80
 msgid "Shows the macro studio window"
 msgstr ""
 
-#: MixxxApp#79
+#: MixxxApp#81
 msgid ""
 "Show Studio\n"
 "\n"
 "Makes the macro studio visible"
 msgstr ""
 
-#: MixxxApp#80
+#: MixxxApp#82
 msgid "&File"
 msgstr "&Fájl"
 
-#: MixxxApp#81
+#: MixxxApp#83
 msgid "&Options"
 msgstr "&Opciók"
 
-#: MixxxApp#82
+#: MixxxApp#84
 msgid "&Library"
 msgstr "&Könyvtár"
 
-#: MixxxApp#83
+#: MixxxApp#85
 msgid "&View"
 msgstr "&Nézet"
 
-#: MixxxApp#84
+#: MixxxApp#86
 msgid "&Help"
 msgstr "&Súgó"
 
-#: MixxxApp#85
+#: MixxxApp#87
 msgid "&Macro"
 msgstr "&Makró"
 
-#: MixxxApp#86
+#: MixxxApp#88
+msgid "&Vinyl Control"
+msgstr ""
+
+#: MixxxApp#89
 msgid "Quit..."
 msgstr "Kilépés…"
 
-#: MixxxApp#87
+#: MixxxApp#90
 msgid "Do your really want to quit?"
 msgstr "Biztos benne, hogy kilép?"
 
-#: MixxxApp#88
+#: MixxxApp#91
 msgid ""
 "Player 1 is currently playing a song.\n"
 "Are you sure you want to load a new song?"
 msgstr ""
 
-#: MixxxApp#89
+#: MixxxApp#92
 msgid "Load Song into Player 1"
 msgstr ""
 
-#: MixxxApp#90
+#: MixxxApp#93
 msgid ""
 "Player 2 is currently playing a song.\n"
 "Are you sure you want to load a new song?"
 msgstr ""
 
-#: MixxxApp#91
+#: MixxxApp#94
 msgid "Load Song into Player 2"
 msgstr ""
 
-#: MixxxApp#92
+#: MixxxApp#95
 msgid ""
-"No input device(s) selected.\n"
+"No input device(s) select.\n"
 "Please select your soundcard(s) in the sound hardware preferences."
 msgstr ""
 
-#: MixxxApp#93
+#: MixxxApp#96
 msgid "Confirm Exit"
 msgstr ""
 
-#: MixxxApp#94
-msgid "A deck is currently playing. Exit Mixxx?"
-msgstr ""
-
-#: MixxxApp#95
-msgctxt "MixxxApp#95"
-msgid "Save Recording As..."
-msgstr "Felvétel mentése mint..."
-
-#: MixxxApp#96
-msgid "Mixxx Recording"
-msgstr ""
-
 #: MixxxApp#97
-msgid ""
-"The file %1 already exists. Would you like to overwrite it?\n"
-"Selecting \"No\" will abort the recording."
+msgid "A deck is currently playing. Exit Mixxx?"
 msgstr ""
 
 #: MixxxLibraryFeature#1
 msgctxt "MixxxLibraryFeature#1"
 msgid "Library"
+msgstr ""
+
+#: ParserM3u#1
+msgctxt "ParserM3u#1"
+msgid "Playlist Export Failed"
+msgstr ""
+
+#: ParserM3u#2
+msgctxt "ParserM3u#2"
+msgid "Could not create file"
+msgstr ""
+
+#: ParserPls#1
+msgctxt "ParserPls#1"
+msgid "Playlist Export Failed"
+msgstr ""
+
+#: ParserPls#2
+msgctxt "ParserPls#2"
+msgid "Could not create file"
 msgstr ""
 
 #: PlaylistFeature#1
@@ -2682,49 +2924,59 @@ msgctxt "PlaylistFeature#6"
 msgid "Import Playlist"
 msgstr ""
 
-#: PlaylistFeature#3
+#: PlaylistFeature#7
+msgctxt "PlaylistFeature#7"
+msgid "Export Playlist"
+msgstr ""
+
+#: PlaylistFeature#8
 msgid "Playlists"
 msgstr "Lejátszólista"
 
-#: PlaylistFeature#8
-msgctxt "PlaylistFeature#8"
+#: PlaylistFeature#9
+msgctxt "PlaylistFeature#9"
 msgid "Unlock"
 msgstr ""
 
-#: PlaylistFeature#4
+#: PlaylistFeature#10
 msgid "Playlist name:"
 msgstr "A lejátszólista neve:"
 
-#: PlaylistFeature#5
+#: PlaylistFeature#11
 msgid "Playlist Creation Failed"
 msgstr "Lejátszólista készítése sikertelen"
 
-#: PlaylistFeature#6
+#: PlaylistFeature#12
 msgid "A playlist cannot have a blank name."
 msgstr "A lejátszólista nem tartalmazhat üres helyet."
 
-#: PlaylistFeature#7
+#: PlaylistFeature#13
 msgid "An unknown error occurred while creating playlist: "
 msgstr "Egy ismeretlen hiba történt a lejátszólista készítésekor: "
 
-#: PlaylistFeature#13
+#: PlaylistFeature#14
 msgid "Rename Playlist"
 msgstr ""
 
-#: PlaylistFeature#14
+#: PlaylistFeature#15
 msgid "New playlist name:"
 msgstr ""
 
-#: PlaylistFeature#15
+#: PlaylistFeature#16
 msgid "Renaming Playlist Failed"
 msgstr ""
 
-#: PlaylistFeature#16
-msgctxt "PlaylistFeature#16"
+#: PlaylistFeature#17
+msgctxt "PlaylistFeature#17"
 msgid "Playlist Files (*.m3u *.pls)"
 msgstr ""
 
-#: PlaylistFeature#8
+#: PlaylistFeature#18
+msgctxt "PlaylistFeature#18"
+msgid "M3U Playlist (*.m3u);;PLS Playlist (*.pls)"
+msgstr ""
+
+#: PlaylistFeature#19
 msgid "A playlist by that name already exists."
 msgstr "Egy lejátszólista ezzel a névvel már létezik."
 
@@ -2766,6 +3018,10 @@ msgstr ""
 msgid "Unknown path type %1"
 msgstr ""
 
+#: RecordingFeature#1
+msgid "Recordings"
+msgstr ""
+
 #: RhythmboxFeature#1
 msgid "Rhythmbox"
 msgstr "Rhythmbox (zenelejátszó)"
@@ -2803,9 +3059,8 @@ msgid "Mixxx Script Studio"
 msgstr ""
 
 #: ScriptStudio#2
-msgctxt "ScriptStudio#2"
 msgid "File"
-msgstr ""
+msgstr "Fájl"
 
 #: ScriptStudio#3
 msgctxt "ScriptStudio#3"
@@ -2904,188 +3159,192 @@ msgid "Off"
 msgstr "Ki"
 
 #: Ui#5
+msgid "Don't load tracks into a playing deck"
+msgstr ""
+
+#: Ui#6
+msgid "Load tracks into playing decks"
+msgstr ""
+
+#: Ui#7
 msgid "CDJ Mode"
 msgstr "CDJ Mód"
 
-#: Ui#6
+#: Ui#8
 msgid "Simple"
 msgstr "Egyszerű"
 
-#: Ui#7
+#: Ui#9
 msgid "Mixxx Detected a WVGA Screen"
 msgstr ""
 
-#: Ui#8
+#: Ui#10
 msgid "Mixxx has detected that your screen has a resolution of "
 msgstr ""
 
-#: Ui#9
+#: Ui#11
 msgid ""
 "The only skin compatiable with this size display is Outline800x480-WVGA.  "
 "Would you like to use that skin?"
 msgstr ""
 
-#: Ui#10
-msgctxt "Ui#10"
-msgid "Preferences"
-msgstr "Testreszabás"
-
-#: Ui#11
-msgctxt "Ui#11"
-msgid "Crossfader"
-msgstr ""
-
 #: Ui#12
-msgid "Master volume"
+msgctxt "Ui#12"
+msgid "Preferences"
 msgstr ""
 
 #: Ui#13
-msgid "Master balance"
+msgctxt "Ui#13"
+msgid "Crossfader"
 msgstr ""
 
 #: Ui#14
-msgid "Headphones volume"
+msgid "Master volume"
 msgstr ""
 
 #: Ui#15
-msgid "Headphones mix (pre/main)"
+msgid "Master balance"
 msgstr ""
 
 #: Ui#16
-msgid "Cue button for Player %1"
+msgid "Headphones volume"
 msgstr ""
 
 #: Ui#17
-msgid "Play button for Player %1"
+msgid "Headphones mix (pre/main)"
 msgstr ""
 
 #: Ui#18
-msgid "Fast rewind button for Player %1"
+msgid "Cue button for Player %1"
 msgstr ""
 
 #: Ui#19
-msgid "Fast forward button for Player %1"
+msgid "Play button for Player %1"
 msgstr ""
 
 #: Ui#20
-msgid "Play reverse button for Player %1"
+msgid "Fast rewind button for Player %1"
 msgstr ""
 
 #: Ui#21
-msgid "Headphone listen button for Player %1"
+msgid "Fast forward button for Player %1"
 msgstr ""
 
 #: Ui#22
-msgid "Beat sync button for Player %1"
+msgid "Play reverse button for Player %1"
 msgstr ""
 
 #: Ui#23
-msgid "BPM tap button for Player %1"
+msgid "Headphone listen button for Player %1"
 msgstr ""
 
 #: Ui#24
-msgid "Keylock button for Player %1"
+msgid "Beat sync button for Player %1"
 msgstr ""
 
 #: Ui#25
-msgid "Pitch control slider for Player %1"
+msgid "BPM tap button for Player %1"
 msgstr ""
 
 #: Ui#26
-msgid "Flanger effect button for Player %1"
+msgid "Keylock button for Player %1"
 msgstr ""
 
 #: Ui#27
-msgid "Channel 2 volume fader"
+msgid "Pitch control slider for Player %1"
 msgstr ""
 
 #: Ui#28
-msgid "Gain knob for Channel 2"
+msgid "Flanger effect button for Player %1"
 msgstr ""
 
 #: Ui#29
-msgid "High EQ knob for Channel 2"
+msgid "Channel %1 volume fader"
 msgstr ""
 
 #: Ui#30
-msgid "Mid EQ knob for Channel 2"
+msgid "Gain knob for Channel %1"
 msgstr ""
 
 #: Ui#31
-msgid "Low EQ knob for Channel 2"
+msgid "High EQ knob for Channel %1"
 msgstr ""
 
 #: Ui#32
-msgid "Loop In button for Player %1"
+msgid "Mid EQ knob for Channel %1"
 msgstr ""
 
 #: Ui#33
-msgid "Loop Out button for Player %1"
+msgid "Low EQ knob for Channel %1"
 msgstr ""
 
 #: Ui#34
-msgid "Reloop / Exit button for Player %1"
+msgid "Loop In button for Player %1"
 msgstr ""
 
 #: Ui#35
-msgid "Hotcue 1 button for Player %1"
+msgid "Loop Out button for Player %1"
 msgstr ""
 
 #: Ui#36
-msgid "Hotcue 2 button for Player %1"
+msgid "Reloop / Exit button for Player %1"
 msgstr ""
 
 #: Ui#37
-msgid "Hotcue 3 button for Player %1"
+msgid "Hotcue 1 button for Player %1"
 msgstr ""
 
 #: Ui#38
-msgid "Hotcue 4 button for Player %1"
+msgid "Hotcue 2 button for Player %1"
 msgstr ""
 
 #: Ui#39
-msgid "Hotcue 1 delete button for Player %1"
+msgid "Hotcue 3 button for Player %1"
 msgstr ""
 
 #: Ui#40
-msgid "Hotcue 2 delete button for Player %1"
+msgid "Hotcue 4 button for Player %1"
 msgstr ""
 
 #: Ui#41
-msgid "Hotcue 3 delete button for Player %1"
+msgid "Hotcue 1 delete button for Player %1"
 msgstr ""
 
 #: Ui#42
-msgid "Hotcue 4 delete button for Player %1"
+msgid "Hotcue 2 delete button for Player %1"
 msgstr ""
 
 #: Ui#43
-msgid "Switch to the next view (library, playlist..)"
+msgid "Hotcue 3 delete button for Player %1"
 msgstr ""
 
 #: Ui#44
-msgid "Switch to the previous view (library, playlist..)"
+msgid "Hotcue 4 delete button for Player %1"
 msgstr ""
 
 #: Ui#45
-msgid "Scroll to next track in library/playlist"
+msgid "Switch to the next view (library, playlist..)"
 msgstr ""
 
 #: Ui#46
-msgid "Scroll to previous track in library/playlist"
+msgid "Switch to the previous view (library, playlist..)"
 msgstr ""
 
 #: Ui#47
-msgid "Load selected track into first stopped player"
+msgid "Scroll to next track in library/playlist"
 msgstr ""
 
 #: Ui#48
-msgid "Load selected track into Player %1"
+msgid "Scroll to previous track in library/playlist"
 msgstr ""
 
-#: VinylControlSignalWidget#1
-msgid "OK"
-msgstr "Rendben"
+#: Ui#49
+msgid "Load selected track into first stopped player"
+msgstr ""
+
+#: Ui#50
+msgid "Load selected track into Player %1"
+msgstr ""
 
 #: WSearchLineEdit#1
 msgid "Search..."
@@ -3137,368 +3396,92 @@ msgstr "Oszlop mutatása vagy elrejtése."
 #~ msgid "Crate Creation Failed"
 #~ msgstr "Rekesz készítése sikertelen"
 
-#~ msgctxt "CrateTableModel#6"
-#~ msgid "Year"
-#~ msgstr "Év"
+#~ msgctxt "DlgPrefControls#4"
+#~ msgid "Information"
+#~ msgstr "Információ"
 
-#~ msgctxt "CrateTableModel#8"
-#~ msgid "Location"
-#~ msgstr "Hely"
+#~ msgctxt "DlgPrefRecord#1"
+#~ msgid "Save Recording As..."
+#~ msgstr "Felvétel mentése mint..."
 
-#~ msgctxt "CrateTableModel#5"
-#~ msgid "Genre"
-#~ msgstr "Műfaj"
-
-#~ msgctxt "CrateTableModel#4"
-#~ msgid "Album"
-#~ msgstr "Album"
-
-#~ msgctxt "CrateTableModel#3"
+#~ msgctxt "DlgPrefRecordDlg#9"
 #~ msgid "Title"
 #~ msgstr "Cím"
 
-#~ msgctxt "CrateTableModel#2"
-#~ msgid "Artist"
-#~ msgstr "Előadó"
+#~ msgctxt "DlgPrefRecordDlg#4"
+#~ msgid "Encoding"
+#~ msgstr "Kódolás"
 
-#~ msgid "ID"
-#~ msgstr "Azonosító"
-
-#~ msgctxt "CrateTableModel#7"
-#~ msgid "Type"
-#~ msgstr "Típus"
-
-#~ msgctxt "CrateTableModel#9"
-#~ msgid "Comment"
-#~ msgstr "Megjegyzés"
-
-#~ msgctxt "CrateTableModel#10"
-#~ msgid "Duration"
-#~ msgstr "Időtartam"
-
-#~ msgctxt "CrateTableModel#11"
-#~ msgid "Track #"
-#~ msgstr "Sorszám"
-
-#~ msgctxt "CrateTableModel#12"
-#~ msgid "Bitrate"
-#~ msgstr "Bitráta"
-
-#~ msgctxt "CrateTableModel#13"
-#~ msgid "BPM"
-#~ msgstr "BPM (ütem/perc)"
-
-#~ msgctxt "CrateTableModel#14"
-#~ msgid "Date Added"
-#~ msgstr "Hozzáadás dátuma"
-
-#~ msgid "Analyze Entire Song"
-#~ msgstr "Teljes dal analizálása"
-
-#~ msgid "BPM Detection Settings"
-#~ msgstr "BPM Felderítő beállításai"
-
-#~ msgid "Edit"
-#~ msgstr "Szerkesztés"
-
-#~ msgctxt "DlgPrefPlaylistDlg#6"
-#~ msgid "Library"
-#~ msgstr "Gyűjtemény"
-
-#~ msgctxt "DlgPrefPlaylistDlg#4"
+#~ msgctxt "DlgPrefRecordDlg#3"
 #~ msgid "Browse..."
 #~ msgstr "Böngészés..."
 
-#~ msgid "Quality: "
-#~ msgstr "Minőség: "
+#~ msgctxt "DlgPrefRecordDlg#11"
+#~ msgid "Album"
+#~ msgstr "Album"
 
-#~ msgid "MP3, Ogg Vorbis, FLAC, Wave, Aiff Playback:"
-#~ msgstr "MP3, Ogg Vorbis, FLAC, Wave, Aiff Playback:"
+#~ msgid ""
+#~ "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" "
+#~ "\"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+#~ "<html><head><meta name=\"qrichtext\" content=\"1\" /><style "
+#~ "type=\"text/css\">\n"
+#~ "p, li { white-space: pre-wrap; }\n"
+#~ "</style></head><body style=\" font-family:'Sans'; font-size:10pt; font-"
+#~ "weight:400; font-style:normal;\">\n"
+#~ "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-"
+#~ "right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-"
+#~ "family:'DejaVu Sans'; font-size:9pt; font-style:italic;\">This stream is on "
+#~ "line for testing purposes!</span></p></body></html>"
+#~ msgstr ""
+#~ "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" "
+#~ "\"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+#~ "<html><head><meta name=\"qrichtext\" content=\"1\" /><style "
+#~ "type=\"text/css\">\n"
+#~ "p, li { white-space: pre-wrap; }\n"
+#~ "</style></head><body style=\" font-family:'Sans'; font-size:10pt; font-"
+#~ "weight:400; font-style:normal;\">\n"
+#~ "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-"
+#~ "right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-"
+#~ "family:'DejaVu Sans'; font-size:9pt; font-style:italic;\">This stream is on "
+#~ "line for testing purposes!</span></p></body></html>"
 
-#~ msgid "Audio Playback Plugins"
-#~ msgstr "Audio Visszajátszás Beépülő"
+#~ msgid ""
+#~ "<a "
+#~ "href=\"http://www.mixxx.org/wiki/doku.php/vinyl_control#troubleshooting\">Tro"
+#~ "ubleshooting</a>"
+#~ msgstr ""
+#~ "<a "
+#~ "href=\"http://www.mixxx.org/wiki/doku.php/vinyl_control#troubleshooting\">Hib"
+#~ "aelhárítás</a>"
 
-#~ msgctxt "DlgPrefRecordDlg#6"
-#~ msgid "High"
-#~ msgstr "Magas"
+#~ msgid "150"
+#~ msgstr "150"
 
-#~ msgctxt "DlgPrefRecordDlg#7"
-#~ msgid "Low"
-#~ msgstr "Alacsony"
+#~ msgid "1 (Off)"
+#~ msgstr "1 (Ki)"
 
-#~ msgid "File"
-#~ msgstr "Fájl"
+#~ msgid "http://www.xwax.co.uk"
+#~ msgstr "http://www.xwax.co.uk"
 
-#~ msgid "http://mixxx.sf.net"
-#~ msgstr "http://mixxx.sf.net"
+#~ msgid "Signal Quality"
+#~ msgstr "Jelminőség"
 
-#~ msgctxt "DlgPrefSound#7"
-#~ msgid "You cannot send multiple outputs to a single channel"
-#~ msgstr "Nem küldhet többszörös kimenetet egy szimpla csatornára"
+#~ msgid "seconds"
+#~ msgstr "másodperc"
 
-#~ msgid "JACK"
-#~ msgstr "JACK"
-
-#~ msgctxt "DlgPrefSound#4"
-#~ msgid "Mixxx"
-#~ msgstr "Mixxx"
-
-#~ msgctxt "DlgPrefSound#6"
-#~ msgid "Configuration error"
-#~ msgstr "Konfigurációs hiba"
-
-#~ msgid "Configuration problem"
-#~ msgstr "Konfigurációs probléma"
-
-#~ msgctxt "DlgPrefSound#9"
-#~ msgid "Audio device could not be opened"
-#~ msgstr "Audio eszközt nem lehet megnyitni"
-
-#~ msgid "Audio Output"
-#~ msgstr "Audió kimenet"
-
-#~ msgctxt "DlgPrefSoundDlg#1"
-#~ msgid "Form1"
-#~ msgstr "Űrlap1"
-
-#~ msgid "Sound API could not be initialized"
-#~ msgstr "Zene API-t nem lehet betölteni"
-
-#~ msgid "Sample rate (Hz)"
-#~ msgstr "Minta vétel (Hz)"
-
-#~ msgctxt "DlgPrefSoundDlg#14"
-#~ msgid "High"
-#~ msgstr "Magas"
-
-#~ msgctxt "DlgPrefSoundDlg#13"
-#~ msgid "Low"
-#~ msgstr "Alacsony"
-
-#~ msgid "256 ms"
-#~ msgstr "256 ms"
-
-#~ msgctxt "DlgPrefVinyl#1"
-#~ msgid "None"
-#~ msgstr "Nincs"
-
-#~ msgctxt "DlgPrefVinyl#3"
-#~ msgid "You cannot send multiple outputs to a single channel"
-#~ msgstr "Nem küldhet többszörös kimenetet egy szimpla csatornára"
-
-#~ msgctxt "DlgPrefVinyl#2"
-#~ msgid "Configuration error"
-#~ msgstr "Konfigurációs hiba"
-
-#~ msgid "Slow CPU"
-#~ msgstr "Lassú CPU"
-
-#~ msgid "Fast CPU"
-#~ msgstr "Gyors CPU"
-
-#~ msgid "Input"
-#~ msgstr "Bemenet"
-
-#~ msgid "Deck 1"
-#~ msgstr "Deck 1"
-
-#~ msgid "Deck 2"
-#~ msgstr "Deck 2"
-
-#~ msgctxt "DlgPrefVinyl#5"
-#~ msgid "Audio device could not be opened"
-#~ msgstr "Audio eszközt nem lehet megnyitni"
-
-#~ msgid "Vinyl Control"
-#~ msgstr "Vinyl Kontról"
-
-#~ msgid "3:00"
-#~ msgstr "3:00"
-
-#~ msgid "Filename:"
-#~ msgstr "Fájlnév:"
-
-#~ msgid "Artist:"
-#~ msgstr "Előadó:"
-
-#~ msgid "Title:"
-#~ msgstr "Cím:"
-
-#~ msgid "Song:"
-#~ msgstr "Zene:"
-
-#~ msgid "Comments:"
-#~ msgstr "Megjegyzések:"
-
-#~ msgid "File Type:"
-#~ msgstr "Fájl típus:"
-
-#~ msgid "77"
-#~ msgstr "77"
-
-#~ msgid "Alt+O"
-#~ msgstr "Alt+O"
+#~ msgid "Powered by xwax"
+#~ msgstr "Powered by xwax"
 
 #~ msgid "Load iTunes Library?"
 #~ msgstr "Betöltsem az iTunes gyűjteményt?"
-
-#~ msgctxt "ITunesPlaylistModel#1"
-#~ msgid "Artist"
-#~ msgstr "Előadó"
-
-#~ msgctxt "ITunesPlaylistModel#2"
-#~ msgid "Title"
-#~ msgstr "Cím"
-
-#~ msgctxt "ITunesPlaylistModel#4"
-#~ msgid "Date"
-#~ msgstr "Dátum"
-
-#~ msgctxt "ITunesPlaylistModel#5"
-#~ msgid "BPM"
-#~ msgstr "BPM (ütem/perc)"
-
-#~ msgctxt "ITunesPlaylistModel#3"
-#~ msgid "Album"
-#~ msgstr "Album"
-
-#~ msgctxt "ITunesPlaylistModel#8"
-#~ msgid "Duration"
-#~ msgstr "Időtartam"
-
-#~ msgctxt "ITunesPlaylistModel#9"
-#~ msgid "Unknown"
-#~ msgstr "Ismeretlen"
-
-#~ msgctxt "ITunesPlaylistModel#6"
-#~ msgid "Genre"
-#~ msgstr "Műfaj"
-
-#~ msgctxt "ITunesPlaylistModel#7"
-#~ msgid "Location"
-#~ msgstr "Hely"
-
-#~ msgctxt "LibraryTableModel#9"
-#~ msgid "Duration"
-#~ msgstr "Időtartam"
-
-#~ msgctxt "LibraryTableModel#8"
-#~ msgid "Comment"
-#~ msgstr "Megjegyzés"
-
-#~ msgctxt "LibraryTableModel#1"
-#~ msgid "Artist"
-#~ msgstr "Előadó"
-
-#~ msgctxt "LibraryTableModel#3"
-#~ msgid "Album"
-#~ msgstr "Album"
-
-#~ msgctxt "LibraryTableModel#2"
-#~ msgid "Title"
-#~ msgstr "Cím"
-
-#~ msgctxt "LibraryTableModel#5"
-#~ msgid "Year"
-#~ msgstr "Év"
-
-#~ msgctxt "LibraryTableModel#4"
-#~ msgid "Genre"
-#~ msgstr "Műfaj"
-
-#~ msgctxt "LibraryTableModel#7"
-#~ msgid "Location"
-#~ msgstr "Hely"
-
-#~ msgctxt "LibraryTableModel#6"
-#~ msgid "Type"
-#~ msgstr "Típus"
-
-#~ msgctxt "LibraryTableModel#10"
-#~ msgid "Bitrate"
-#~ msgstr "Bitráta"
-
-#~ msgctxt "LibraryTableModel#11"
-#~ msgid "BPM"
-#~ msgstr "BPM (ütem/perc)"
-
-#~ msgctxt "LibraryTableModel#13"
-#~ msgid "Date Added"
-#~ msgstr "Hozzáadás dátuma"
-
-#~ msgctxt "LibraryTableModel#12"
-#~ msgid "Track #"
-#~ msgstr "Sorszám #"
-
-#~ msgctxt "MissingTableModel#4"
-#~ msgid "Album"
-#~ msgstr "Album"
-
-#~ msgctxt "MissingTableModel#3"
-#~ msgid "Title"
-#~ msgstr "Cím"
-
-#~ msgctxt "MissingTableModel#2"
-#~ msgid "Artist"
-#~ msgstr "Előadó"
-
-#~ msgctxt "MissingTableModel#1"
-#~ msgid "Location"
-#~ msgstr "Hely"
 
 #~ msgctxt "MidiStatusDelegate#1"
 #~ msgid "Unknown"
 #~ msgstr "Ismeretlen"
 
-#~ msgctxt "MissingTableModel#5"
-#~ msgid "Genre"
-#~ msgstr "Műfaj"
-
-#~ msgctxt "MissingTableModel#6"
-#~ msgid "Year"
-#~ msgstr "Év"
-
-#~ msgctxt "MissingTableModel#7"
-#~ msgid "Type"
-#~ msgstr "Típus"
-
-#~ msgctxt "MissingTableModel#8"
-#~ msgid "Comment"
-#~ msgstr "Megjegyzés"
-
-#~ msgctxt "MissingTableModel#9"
-#~ msgid "Duration"
-#~ msgstr "Időtartam"
-
-#~ msgctxt "MissingTableModel#10"
-#~ msgid "Track #"
-#~ msgstr "Sorszám #"
-
-#~ msgctxt "MissingTableModel#11"
-#~ msgid "Bitrate"
-#~ msgstr "Bitráta"
-
-#~ msgctxt "MissingTableModel#12"
-#~ msgid "BPM"
-#~ msgstr "BPM (ütem/perc)"
-
-#~ msgctxt "MissingTableModel#13"
-#~ msgid "Date Added"
-#~ msgstr "Hozzáadás dátuma"
-
-#~ msgctxt "MixxxApp#2"
-#~ msgid "Mixxx"
-#~ msgstr "Mixxx"
-
-#~ msgid "Another application is using the sound device or it is "
-#~ msgstr "Másik alkalmazás használja a hangeszközt vagy ez "
-
-#~ msgid "not plugged in."
-#~ msgstr "nincs csatlakoztatva."
-
-#~ msgctxt "MixxxApp#74"
-#~ msgid "Preferences"
-#~ msgstr "Testreszabás"
+#~ msgctxt "MixxxApp#95"
+#~ msgid "Save Recording As..."
+#~ msgstr "Felvétel mentése mint..."
 
 #~ msgctxt "MixxxLibraryFeature#2"
 #~ msgid "Library"
@@ -3508,54 +3491,6 @@ msgstr "Oszlop mutatása vagy elrejtése."
 #~ msgid "Remove"
 #~ msgstr "Törlés"
 
-#~ msgctxt "PlaylistTableModel#2"
-#~ msgid "Artist"
-#~ msgstr "Előadó"
-
-#~ msgctxt "PlaylistTableModel#3"
-#~ msgid "Title"
-#~ msgstr "Cím"
-
-#~ msgctxt "PlaylistTableModel#11"
-#~ msgid "Track #"
-#~ msgstr "Sorszám #"
-
-#~ msgctxt "PlaylistTableModel#12"
-#~ msgid "Bitrate"
-#~ msgstr "Bitráta"
-
-#~ msgctxt "PlaylistTableModel#13"
-#~ msgid "Date Added"
-#~ msgstr "Hozzáadás dátuma"
-
-#~ msgctxt "PlaylistTableModel#4"
-#~ msgid "Album"
-#~ msgstr "Album"
-
-#~ msgctxt "PlaylistTableModel#6"
-#~ msgid "Year"
-#~ msgstr "Év"
-
-#~ msgctxt "PlaylistTableModel#5"
-#~ msgid "Genre"
-#~ msgstr "Műfaj"
-
-#~ msgctxt "PlaylistTableModel#8"
-#~ msgid "Location"
-#~ msgstr "Hely"
-
-#~ msgctxt "PlaylistTableModel#7"
-#~ msgid "Type"
-#~ msgstr "Típus"
-
-#~ msgctxt "PlaylistTableModel#10"
-#~ msgid "Duration"
-#~ msgstr "Időtartam"
-
-#~ msgctxt "PlaylistTableModel#9"
-#~ msgid "Comment"
-#~ msgstr "Megjegyzés"
-
 #~ msgctxt "RhythmboxPlaylistModel#1"
 #~ msgid "Artist"
 #~ msgstr "Előadó"
@@ -3563,10 +3498,6 @@ msgstr "Oszlop mutatása vagy elrejtése."
 #~ msgctxt "RhythmboxPlaylistModel#2"
 #~ msgid "Title"
 #~ msgstr "Cím"
-
-#~ msgctxt "PlaylistTableModel#14"
-#~ msgid "BPM"
-#~ msgstr "BPM (ütem/perc)"
 
 #~ msgid "Load Rhythmbox Library?"
 #~ msgstr "Betölti a Rhythmbox Gyűjteményt?"
@@ -3618,14 +3549,13 @@ msgstr "Oszlop mutatása vagy elrejtése."
 #~ msgid "Location"
 #~ msgstr "Hely"
 
-#~ msgctxt "RhythmboxTrackModel#4"
-#~ msgid "Date"
-#~ msgstr "Dátum"
-
 #~ msgctxt "RhythmboxTrackModel#3"
 #~ msgid "Album"
 #~ msgstr "Album"
 
-#~ msgctxt "WTrackTableView#5"
-#~ msgid "Remove"
-#~ msgstr "Törlés"
+#~ msgid "OK"
+#~ msgstr "Rendben"
+
+#~ msgctxt "Ui#10"
+#~ msgid "Preferences"
+#~ msgstr "Testreszabás"

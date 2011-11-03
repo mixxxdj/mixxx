@@ -650,7 +650,7 @@ QWidget* LegacySkinParser::parseTableView(QDomElement node) {
     // Note: sizeHint() may be greater in skins for tiny screens 
     int width = pTabWidget->minimumWidth();
     if (width == 0) {
-    	width = m_pParent->minimumWidth();
+        width = m_pParent->minimumWidth();
     }
     pTabWidget->setMaximumWidth(width);
 

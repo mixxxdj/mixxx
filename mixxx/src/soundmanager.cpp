@@ -457,7 +457,7 @@ int SoundManager::setupDevices()
     }
 
     qDebug() << m_outputDevicesOpened << "output sound devices opened";
-    qDebug() << m_inputDevicesOpened << "input sound devices opened";
+    qDebug() << m_inputDevicesOpened << "input  sound devices opened";
 
     // returns OK if we were able to open all the devices the user
     // wanted

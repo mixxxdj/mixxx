@@ -157,7 +157,7 @@ bool BeatGrid::hasBeatInRange(double startSample, double stopSample) const {
 double BeatGrid::getBpm() const {
     QMutexLocker locker(&m_mutex);
     if (!isValid()) {
-        return -1;
+        return 0;
     }
     return m_dBpm;
 }

@@ -325,9 +325,15 @@ QItemDelegate* PlaylistTableModel::delegateForColumn(const int i) {
 }
 
 TrackModel::CapabilitiesFlags PlaylistTableModel::getCapabilities() const {
-    TrackModel::CapabilitiesFlags caps = TRACKMODELCAPS_RECEIVEDROPS |
-            TRACKMODELCAPS_REORDER | TRACKMODELCAPS_ADDTOCRATE |
-            TRACKMODELCAPS_ADDTOPLAYLIST | TRACKMODELCAPS_RELOADMETADATA;
+    TrackModel::CapabilitiesFlags caps = TRACKMODELCAPS_NONE
+            | TRACKMODELCAPS_RECEIVEDROPS
+            | TRACKMODELCAPS_REORDER
+            | TRACKMODELCAPS_ADDTOCRATE
+            | TRACKMODELCAPS_ADDTOPLAYLIST
+            | TRACKMODELCAPS_RELOADMETADATA
+            | TRACKMODELCAPS_LOADTODECK
+            | TRACKMODELCAPS_LOADTOSAMPLER
+            | TRACKMODELCAPS_REMOVE;
 
     // Only allow Add to AutoDJ if we aren't currently showing the AutoDJ queue.
     if (m_iPlaylistId != m_playlistDao.getPlaylistIdFromName(AUTODJ_TABLE)) {
