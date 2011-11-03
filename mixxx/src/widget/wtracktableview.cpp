@@ -257,10 +257,10 @@ void WTrackTableView::createActions() {
     m_pPropertiesAct = new QAction(tr("Properties..."), this);
     connect(m_pPropertiesAct, SIGNAL(triggered()), this, SLOT(slotShowTrackInfo()));
 
-    m_pAutoDJAct = new QAction(tr("Add to Auto DJ bottom"),this);
+    m_pAutoDJAct = new QAction(tr("Add to Auto-DJ bottom"),this);
     connect(m_pAutoDJAct, SIGNAL(triggered()), this, SLOT(slotSendToAutoDJ()));
 
-    m_pAutoDJTopAct = new QAction(tr("Add to Auto DJ top 2"),this);
+    m_pAutoDJTopAct = new QAction(tr("Add to Auto-DJ top 2"),this);
     connect(m_pAutoDJTopAct, SIGNAL(triggered()), this, SLOT(slotSendToAutoDJTop()));
 
     m_pReloadMetadataAct = new QAction(tr("Reload Track Metadata"), this);
@@ -494,9 +494,15 @@ void WTrackTableView::mouseMoveEvent(QMouseEvent* pEvent) {
     QList<QUrl> locationUrls;
     QModelIndexList indices = selectionModel()->selectedRows();
     foreach (QModelIndex index, indices) {
-      if (index.isValid()) {
-        locationUrls.append(trackModel->getTrackLocation(index));
-      }
+        if (!index.isValid()) {
+            continue;
+        }
+        QUrl url = QUrl::fromLocalFile(trackModel->getTrackLocation(index));
+        if (!url.isValid()) {
+            qDebug() << this << "ERROR: invalid url" << url;
+            continue;
+        }
+        locationUrls.append(url);
     }
 
     QMimeData* mimeData = new QMimeData();
@@ -915,6 +921,8 @@ void WTrackTableView::doSortByColumn(int headerSection) {
     while (isColumnHidden(visibleColumn) && visibleColumn < itemModel->columnCount()) {
         visibleColumn++;
     }
+
+    currentSelection->reset(); // remove current selection
 
     QModelIndex first;
     foreach (int trackId, trackIds) {

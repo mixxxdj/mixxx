@@ -157,8 +157,8 @@ void ReadAheadManager::hintReader(double dRate, QList<Hint>& hintList,
     hintList.append(current_position);
 }
 
-void ReadAheadManager::addReadLogEntry(int virtualPlaypositionStart,
-                                       int virtualPlaypositionEndNonInclusive) {
+void ReadAheadManager::addReadLogEntry(double virtualPlaypositionStart,
+                                       double virtualPlaypositionEndNonInclusive) {
     QMutexLocker locker(&m_mutex);
     ReadLogEntry newEntry(virtualPlaypositionStart,
                           virtualPlaypositionEndNonInclusive);
@@ -171,8 +171,8 @@ void ReadAheadManager::addReadLogEntry(int virtualPlaypositionStart,
     m_readAheadLog.append(newEntry);
 }
 
-int ReadAheadManager::getEffectiveVirtualPlaypositionFromLog(int currentVirtualPlayposition,
-                                                             int numConsumedSamples) {
+int ReadAheadManager::getEffectiveVirtualPlaypositionFromLog(double currentVirtualPlayposition,
+                                                             double numConsumedSamples) {
     if (numConsumedSamples == 0) {
         return currentVirtualPlayposition;
     }
@@ -185,10 +185,12 @@ int ReadAheadManager::getEffectiveVirtualPlaypositionFromLog(int currentVirtualP
         return currentVirtualPlayposition;
     }
 
-    int virtualPlayposition = 0;
+    double virtualPlayposition = 0;
     bool shouldNotifySeek = false;
+    bool direction = true;
     while (m_readAheadLog.size() > 0 && numConsumedSamples > 0) {
         ReadLogEntry& entry = m_readAheadLog.first();
+        direction = entry.direction();
 
         // Notify EngineControls that we have taken a seek.
         if (shouldNotifySeek) {
@@ -197,7 +199,7 @@ int ReadAheadManager::getEffectiveVirtualPlaypositionFromLog(int currentVirtualP
             }
         }
 
-        int consumed = entry.consume(numConsumedSamples);
+        double consumed = entry.consume(numConsumedSamples);
         numConsumedSamples -= consumed;
 
         // Advance our idea of the current virtual playposition to this
@@ -210,5 +212,18 @@ int ReadAheadManager::getEffectiveVirtualPlaypositionFromLog(int currentVirtualP
         }
         shouldNotifySeek = true;
     }
-    return virtualPlayposition;
+    if (direction) {
+        virtualPlayposition = floor(virtualPlayposition);
+        if (!even(virtualPlayposition)) {
+            virtualPlayposition--;
+        }
+    } else {
+        virtualPlayposition = ceil(virtualPlayposition);
+        if (!even(virtualPlayposition)) {
+            virtualPlayposition++;
+        }
+    }
+
+    
+    return (int)virtualPlayposition;
 }

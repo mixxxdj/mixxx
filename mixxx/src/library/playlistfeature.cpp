@@ -32,7 +32,7 @@ PlaylistFeature::PlaylistFeature(QObject* parent, TrackCollection* pTrackCollect
     connect(m_pCreatePlaylistAction, SIGNAL(triggered()),
             this, SLOT(slotCreatePlaylist()));
 
-    m_pAddToAutoDJAction = new QAction(tr("Add to Auto DJ bottom"),this);
+    m_pAddToAutoDJAction = new QAction(tr("Add to Auto-DJ bottom"),this);
     connect(m_pAddToAutoDJAction, SIGNAL(triggered()),
             this, SLOT(slotAddToAutoDJ()));
 

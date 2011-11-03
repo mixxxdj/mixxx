@@ -20,6 +20,7 @@
 
 #include "engine/enginebuffer.h"
 #include "cachingreader.h"
+#include "sampleutil.h"
 
 #include "controlpushbutton.h"
 #include "controlobjectthreadmain.h"
@@ -68,6 +69,7 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
     file_length_old(-1),
     file_srate_old(0),
     m_iSamplesCalculated(0),
+    m_iUiSlowTick(0),
     m_pTrackEnd(NULL),
     m_pRepeat(NULL),
     startButton(NULL),
@@ -138,6 +140,9 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
 
     // Actual rate (used in visuals, not for control)
     rateEngine = new ControlObject(ConfigKey(group, "rateEngine"));
+    
+    // BPM to display in the UI (updated more slowly than the actual bpm)
+    visualBpm = new ControlObject(ConfigKey(group, "visual_bpm"));
 
     // Slider to show and change song position
     //these bizarre choices map conveniently to the 0-127 range of midi
@@ -561,7 +566,7 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
             Q_ASSERT(round(filepos_play) == filepos_play);
             // Even.
             Q_ASSERT(even(filepos_play));
-
+            
             // Perform scaling of Reader buffer into buffer.
             output = m_pScale->scale(0,
                                      iBufferSize,
@@ -580,17 +585,9 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
 
             // Adjust filepos_play by the amount we processed. TODO(XXX) what
             // happens if samplesRead is a fraction?
-            int newVirtualPlayposition =
+            filepos_play =
                     m_pReadAheadManager->getEffectiveVirtualPlaypositionFromLog(
                         static_cast<int>(filepos_play), samplesRead);
-            filepos_play = newVirtualPlayposition;
-
-            // Get rid of annoying decimals that the scaler sometimes produces
-            filepos_play = round(filepos_play);
-
-            if (!even(filepos_play))
-                filepos_play--;
-
         } // else (bCurBufferPaused)
 
         m_engineLock.lock();
@@ -695,40 +692,47 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
     //let's try holding the last sample value constant, and pull it
     //towards zero
     float ramp_inc = 0;
-    if (m_iRampState == ENGINE_RAMP_UP) {
-        ramp_inc = (m_iRampState * 0.2) / iBufferSize; //ramp up quickly (5 frames)
-    } else if (m_iRampState == ENGINE_RAMP_DOWN) {
-        ramp_inc = (m_iRampState * 0.08) / iBufferSize; //but down slowly
-    }
+    if (m_iRampState == ENGINE_RAMP_UP || 
+        m_iRampState == ENGINE_RAMP_DOWN) {
+        ramp_inc = m_iRampState * 300 / m_pSampleRate->get();
 
-    //float fakerate = rate * 30000 == 0 ? -5000 : rate*30000;
-    for (int i=0; i<iBufferSize; i+=2) {
-        if (bCurBufferPaused) {
-            float dither = (float)(rand() % 32768) / 32768 - 0.5; // dither
-            pOutput[i] = m_fLastSampleValue[0] * m_fRampValue + dither;
-            pOutput[i+1] = m_fLastSampleValue[1] * m_fRampValue + dither;
-        } else {
-            pOutput[i] = pOutput[i] * m_fRampValue;
-            pOutput[i+1] = pOutput[i+1] * m_fRampValue;
-        }
+        //float fakerate = rate * 30000 == 0 ? -5000 : rate*30000;
+        for (int i=0; i<iBufferSize; i+=2) {
+            if (bCurBufferPaused) {
+                float dither = (float)(rand() % 32768) / 32768 - 0.5; // dither
+                pOutput[i] = m_fLastSampleValue[0] * m_fRampValue + dither;
+                pOutput[i+1] = m_fLastSampleValue[1] * m_fRampValue + dither;
+            } else {
+                pOutput[i] = pOutput[i] * m_fRampValue;
+                pOutput[i+1] = pOutput[i+1] * m_fRampValue;
+            }
 
-        //writer << pOutput[i] <<  "\n";
-        m_fRampValue += ramp_inc;
-        if (m_fRampValue >= 1.0) {
-            m_iRampState = ENGINE_RAMP_NONE;
-            m_fRampValue = 1.0;
-        }
-        if (m_fRampValue <= 0.0) {
-            m_iRampState = ENGINE_RAMP_NONE;
-            m_fRampValue = 0.0;
+            m_fRampValue += ramp_inc;
+            if (m_fRampValue >= 1.0) {
+                m_iRampState = ENGINE_RAMP_NONE;
+                m_fRampValue = 1.0;
+            }
+            if (m_fRampValue <= 0.0) {
+                m_iRampState = ENGINE_RAMP_NONE;
+                m_fRampValue = 0.0;
+            }
         }
     }
-
+    else if (m_fRampValue == 0.0)
+    {
+        SampleUtil::applyGain(pOutput, 0.0, iBufferSize);
+    }
+    
     if ((!bCurBufferPaused && m_iRampState == ENGINE_RAMP_NONE) ||
         (bCurBufferPaused && m_fRampValue == 0.0)) {
         m_fLastSampleValue[0] = pOutput[iBufferSize-2];
         m_fLastSampleValue[1] = pOutput[iBufferSize-1];
     }
+    
+    /*for (int i=0; i<iBufferSize; i+=2) {
+        writer << pOutput[i] <<  "\n";
+    }*/
+    
 
     m_bLastBufferPaused = bCurBufferPaused;
 }
@@ -793,6 +797,12 @@ void EngineBuffer::updateIndicators(double rate, int iBufferSize) {
 
         if(rate != rateEngine->get())
             rateEngine->set(rate);
+            
+        //Update the BPM even more slowly
+        m_iUiSlowTick = (m_iUiSlowTick + 1) % kiBpmUpdateRate;
+        if (m_iUiSlowTick == 0) {
+            visualBpm->set(m_pBpmControl->getBpm());
+        }
 
         // Reset sample counter
         m_iSamplesCalculated = 0;
