@@ -433,7 +433,7 @@ void EngineMaster::addChannel(EngineChannel* pChannel) {
     pChannelInfo->m_pVolumeControl = new ControlLogpotmeter(
         ConfigKey(pChannel->getGroup(), "volume"), 1.0);
     pChannelInfo->m_pBuffer = SampleUtil::alloc(MAX_BUFFER_LEN);
-    memset(pChannelInfo->m_pBuffer, 0, sizeof(CSAMPLE) * MAX_BUFFER_LEN);
+    SampleUtil::applyGain(pChannelInfo->m_pBuffer, 0, MAX_BUFFER_LEN);
     m_channels.push_back(pChannelInfo);
 
     EngineBuffer* pBuffer = pChannelInfo->m_pChannel->getEngineBuffer();
