@@ -1,4 +1,4 @@
-# Uzbek translation for mixxx
+# Mongolian translation for mixxx
 # Copyright (c) 2011 Rosetta Contributors and Canonical Ltd 2011
 # This file is distributed under the same license as the mixxx package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2011.
@@ -8,9 +8,9 @@ msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2011-10-31 23:15-0400\n"
-"PO-Revision-Date: 2011-11-02 08:11+0000\n"
-"Last-Translator: Akmal Xushvaqov <akmalxster@gmail.com>\n"
-"Language-Team: Uzbek <uz@li.org>\n"
+"PO-Revision-Date: 2011-11-02 14:57+0000\n"
+"Last-Translator: Tsetsentsengel <Unknown>\n"
+"Language-Team: Mongolian <mn@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -19,79 +19,79 @@ msgstr ""
 
 #: AutoDJFeature#1
 msgid "Auto DJ"
-msgstr "Авто DJ"
+msgstr "Автомат ДиЖэи"
 
 #: BaseSqlTableModel#1
 msgid "Played"
-msgstr "Ижро этилди"
+msgstr "Тоглосон"
 
 #: BaseSqlTableModel#2
 msgctxt "BaseSqlTableModel#2"
 msgid "Artist"
-msgstr "Санъаткор"
+msgstr ""
 
 #: BaseSqlTableModel#3
 msgctxt "BaseSqlTableModel#3"
 msgid "Title"
-msgstr "Сарлавҳа"
+msgstr ""
 
 #: BaseSqlTableModel#4
 msgctxt "BaseSqlTableModel#4"
 msgid "Album"
-msgstr "Альбом"
+msgstr "Цомог"
 
 #: BaseSqlTableModel#5
 msgctxt "BaseSqlTableModel#5"
 msgid "Genre"
-msgstr "Жанри"
+msgstr ""
 
 #: BaseSqlTableModel#6
 msgctxt "BaseSqlTableModel#6"
 msgid "Year"
-msgstr "Йил"
+msgstr "Он"
 
 #: BaseSqlTableModel#7
 msgctxt "BaseSqlTableModel#7"
 msgid "Type"
-msgstr "Тури"
+msgstr "Төрөл"
 
 #: BaseSqlTableModel#8
 msgctxt "BaseSqlTableModel#8"
 msgid "Location"
-msgstr "Манзили"
+msgstr "Байршил"
 
 #: BaseSqlTableModel#9
 msgctxt "BaseSqlTableModel#9"
 msgid "Comment"
-msgstr "Мулоҳаза"
+msgstr "Сэтгэгдэл"
 
 #: BaseSqlTableModel#10
 msgctxt "BaseSqlTableModel#10"
 msgid "Duration"
-msgstr "Давомийлиги"
+msgstr "Үргэлжлэх хугацаа"
 
 #: BaseSqlTableModel#11
 msgid "Rating"
-msgstr "Рейтинг"
+msgstr "Үнэлгээ"
 
 #: BaseSqlTableModel#12
 msgctxt "BaseSqlTableModel#12"
 msgid "Bitrate"
-msgstr "Битрейт"
+msgstr "Дамжуулах хурд"
 
 #: BaseSqlTableModel#13
 msgctxt "BaseSqlTableModel#13"
 msgid "BPM"
-msgstr "BPM"
+msgstr ""
 
 #: BaseSqlTableModel#14
 msgctxt "BaseSqlTableModel#14"
 msgid "Track #"
-msgstr "Қўшиқ #"
+msgstr "Хөгжим #"
 
 #: BaseSqlTableModel#15
 msgid "Date Added"
-msgstr "Қўшилган санаси"
+msgstr "Оруулсан өдөр"
 
 #: BaseSqlTableModel#16
 msgid "#"
@@ -100,146 +100,142 @@ msgstr "#"
 #: BaseSqlTableModel#17
 msgctxt "BaseSqlTableModel#17"
 msgid "Key"
-msgstr "Калит"
+msgstr "Түлхүүр"
 
 #: BaseTrackPlayer#1
 msgid "Couldn't load track."
-msgstr "Қўшиқ қўшилмади"
+msgstr "Уншиж чадахгүй байна"
 
 #: BrowseFeature#1
 msgid "Quick Links"
-msgstr "Тез боғламалар"
+msgstr "Шууд холбоос"
 
 #: BrowseFeature#2
 msgid "Devices"
-msgstr "Ускуналар"
+msgstr "Төхөөрөмж"
 
 #: BrowseFeature#3
 msgid "Removable Devices"
-msgstr "Ташувчи қурилмалар"
+msgstr "Нэмэлт төхөөрөмж"
 
 #: BrowseFeature#4
 msgctxt "BrowseFeature#4"
 msgid "Mixxx Library"
-msgstr "Микс кутубхонаси"
+msgstr "Мixxx-ийн Сан"
 
 #: BrowseFeature#5
 msgid "Home"
-msgstr "Уй жилди"
+msgstr "Эхлэл"
 
 #: BrowseFeature#6
 msgid "Music"
-msgstr "Мусиқа"
+msgstr "Дуу"
 
 #: BrowseFeature#7
 msgid "Documents"
-msgstr "Ҳужжатлар"
+msgstr "Баримт"
 
 #: BrowseFeature#8
 msgid "Desktop"
-msgstr "Иш столи"
+msgstr "Ажлын талбар"
 
 #: BrowseFeature#9
 msgid "Browse"
-msgstr "Кўриш"
+msgstr "Нээх"
 
 #: BrowseTableModel#1
 msgid "Filename"
-msgstr "Файл номи"
+msgstr "Файлын нэр"
 
 #: BrowseTableModel#2
 msgctxt "BrowseTableModel#2"
 msgid "Artist"
-msgstr "Санъаткор"
+msgstr "Уран бүтээлч"
 
 #: BrowseTableModel#3
 msgctxt "BrowseTableModel#3"
 msgid "Title"
-msgstr "Сарлавҳа"
+msgstr ""
 
 #: BrowseTableModel#4
 msgctxt "BrowseTableModel#4"
 msgid "Album"
-msgstr "Альбом"
+msgstr ""
 
 #: BrowseTableModel#5
 msgctxt "BrowseTableModel#5"
 msgid "Track #"
-msgstr "Қўшиқ #"
+msgstr ""
 
 #: BrowseTableModel#6
 msgctxt "BrowseTableModel#6"
 msgid "Year"
-msgstr "Йил"
+msgstr ""
 
 #: BrowseTableModel#7
 msgctxt "BrowseTableModel#7"
 msgid "Genre"
-msgstr "Жанри"
+msgstr ""
 
 #: BrowseTableModel#8
 msgctxt "BrowseTableModel#8"
 msgid "Comment"
-msgstr "Мулоҳаза"
+msgstr ""
 
 #: BrowseTableModel#9
 msgctxt "BrowseTableModel#9"
 msgid "Duration"
-msgstr "Давомийлиги"
+msgstr ""
 
 #: BrowseTableModel#10
 msgctxt "BrowseTableModel#10"
 msgid "BPM"
-msgstr "BPM"
+msgstr ""
 
 #: BrowseTableModel#11
 msgctxt "BrowseTableModel#11"
 msgid "Key"
-msgstr "Калит"
+msgstr ""
 
 #: BrowseTableModel#12
 msgctxt "BrowseTableModel#12"
 msgid "Type"
-msgstr "Тури"
+msgstr ""
 
 #: BrowseTableModel#13
 msgctxt "BrowseTableModel#13"
 msgid "Bitrate"
-msgstr "Битрейт"
+msgstr ""
 
 #: BrowseTableModel#14
 msgctxt "BrowseTableModel#14"
 msgid "Location"
-msgstr "Манзили"
+msgstr ""
 
 #: BrowseTableModel#15
 msgctxt "BrowseTableModel#15"
 msgid "Mixxx Library"
-msgstr "Микс кутубхонаси"
+msgstr ""
 
 #: BrowseTableModel#16
 msgid ""
 "Could not load the following file because it is in use by Mixxx or another "
 "application."
 msgstr ""
-"Қуйидаги файлни юклаб бўлмади, чунки  Микс ёки бошқа дастур томонидан "
-"фойдаланилмоқда."
 
 #: BrowseTableModel#17
 msgid "Warning: This will permanently delete the following files:"
-msgstr "Диққат: Қуйидаги файллар бутунлай ўчирилади."
+msgstr ""
 
 #: BrowseTableModel#18
 msgid "Are you sure you want to delete these files from your computer?"
-msgstr "Ушбу файлларни компьютерингиздан ўчирилишига розимисиз?"
+msgstr ""
 
 #: BrowseTableModel#19
 msgid ""
 "Could not delete the following file because it is in use by Mixxx or another "
 "application:"
 msgstr ""
-"Қуйидаги файлни ўчириб бўлмади, чунки у Микс ёки бошқа дастур томонидан "
-"фойдаланилмоқда"
 
 #: BrowseTableModel#20
 msgid "Could not update file metadata."
@@ -252,22 +248,22 @@ msgstr ""
 #: CrateFeature#2
 msgctxt "CrateFeature#2"
 msgid "Remove"
-msgstr "Олиб ташлаш"
+msgstr ""
 
 #: CrateFeature#3
 msgctxt "CrateFeature#3"
 msgid "Rename"
-msgstr "Қайта номлаш"
+msgstr ""
 
 #: CrateFeature#4
 msgctxt "CrateFeature#4"
 msgid "Lock"
-msgstr "Қулфлаш"
+msgstr ""
 
 #: CrateFeature#5
 msgctxt "CrateFeature#5"
 msgid "Import Playlist"
-msgstr "Ижро рўйхатини импорт қилиш"
+msgstr ""
 
 #: CrateFeature#6
 msgid "Crates"
@@ -284,7 +280,7 @@ msgstr ""
 #: CrateFeature#9
 msgctxt "CrateFeature#9"
 msgid "Unlock"
-msgstr "Қулфдан чиқариш"
+msgstr ""
 
 #: CrateFeature#10
 msgid "Crate name:"
