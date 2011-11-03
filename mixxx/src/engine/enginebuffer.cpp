@@ -79,8 +79,14 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
     m_bScalerChanged(false),
     m_bLastBufferPaused(true),
     m_fRampValue(0.0),
-    m_iRampState(ENGINE_RAMP_NONE)
-{
+    m_iRampState(ENGINE_RAMP_NONE),
+    m_pDitherBuffer(new CSAMPLE[MAX_BUFFER_LEN]),
+    m_iDitherBufferReadIndex(0) {
+
+    // Generate dither values
+    for (int i = 0; i < MAX_BUFFER_LEN; ++i) {
+        m_pDitherBuffer[i] = static_cast<float>(rand() % 32768) / 32768.0 - 0.5;
+    }
 
     m_fLastSampleValue[0] = 0;
     m_fLastSampleValue[1] = 0;
@@ -139,7 +145,7 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
 
     // Actual rate (used in visuals, not for control)
     rateEngine = new ControlObject(ConfigKey(group, "rateEngine"));
-    
+
     // BPM to display in the UI (updated more slowly than the actual bpm)
     visualBpm = new ControlObject(ConfigKey(group, "visual_bpm"));
 
@@ -258,6 +264,8 @@ EngineBuffer::~EngineBuffer()
 
     delete m_pKeylock;
     delete m_pEject;
+
+    delete [] m_pDitherBuffer;
 
     while (m_engineControls.size() > 0) {
         EngineControl* pControl = m_engineControls.takeLast();
@@ -476,7 +484,6 @@ void EngineBuffer::slotControlStop(double v)
 
 void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBufferSize)
 {
-
     m_pReader->process();
     // Steps:
     // - Lookup new reader information
@@ -489,7 +496,6 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
     //   miscellaneous upkeep issues.
 
     CSAMPLE * pOutput = (CSAMPLE *)pOut;
-
     bool bCurBufferPaused = false;
     double rate = 0;
 
@@ -565,7 +571,7 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
             Q_ASSERT(round(filepos_play) == filepos_play);
             // Even.
             Q_ASSERT(even(filepos_play));
-            
+
             // Perform scaling of Reader buffer into buffer.
             output = m_pScale->scale(0,
                                      iBufferSize,
@@ -691,7 +697,7 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
     //let's try holding the last sample value constant, and pull it
     //towards zero
     float ramp_inc = 0;
-    if (m_iRampState == ENGINE_RAMP_UP || 
+    if (m_iRampState == ENGINE_RAMP_UP ||
         m_iRampState == ENGINE_RAMP_DOWN) {
         ramp_inc = m_iRampState * 1000 / m_pSampleRate->get();
     }
@@ -699,7 +705,7 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
     //float fakerate = rate * 30000 == 0 ? -5000 : rate*30000;
     for (int i=0; i<iBufferSize; i+=2) {
         if (bCurBufferPaused) {
-            float dither = (float)(rand() % 32768) / 32768 - 0.5; // dither
+            float dither = m_pDitherBuffer[m_iDitherBufferReadIndex++ % MAX_BUFFER_LEN];
             pOutput[i] = m_fLastSampleValue[0] * m_fRampValue + dither;
             pOutput[i+1] = m_fLastSampleValue[1] * m_fRampValue + dither;
         } else {
@@ -728,45 +734,6 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
     m_bLastBufferPaused = bCurBufferPaused;
 }
 
-
-void EngineBuffer::rampOut(const CSAMPLE* pOut, int iBufferSize)
-{
-    CSAMPLE * pOutput = (CSAMPLE *)pOut;
-
-    //qDebug() << "ramp out";
-
-    // Ramp to zero
-    int i=0;
-    if (m_fLastSampleValue[0]!=0.) {
-        // TODO(XXX) SSE
-        if (pOutput[0] == 0) {
-            while (i<iBufferSize) {
-                float sigmoid = sigmoid_zero((float)(iBufferSize - i), (float)iBufferSize);
-                float dither = (float)(rand() % 32768) / 32768 - 0.5; // dither
-                pOutput[i] = (float)m_fLastSampleValue[0] * sigmoid + dither;
-                pOutput[i+1] = (float)m_fLastSampleValue[1] * sigmoid + dither;
-                i+=2;
-            }
-        } else {
-            while (i<iBufferSize) {
-                float sigmoid = sigmoid_zero((float)(iBufferSize - i), (float)iBufferSize);
-                float dither = (float)(rand() % 32768) / 32768 - 0.5; // dither
-                pOutput[i] = (float)pOutput[i] * sigmoid + dither;
-                pOutput[i+1] = (float)pOutput[i+1] * sigmoid + dither;
-                i+=2;
-               }
-        }
-    }
-
-    // TODO(XXX) memset
-    // Reset rest of buffer
-    while (i<iBufferSize)
-    {
-        pOutput[i]=0.;
-        ++i;
-    }
-}
-
 void EngineBuffer::updateIndicators(double rate, int iBufferSize) {
 
     // Increase samplesCalculated by the buffer size
@@ -788,7 +755,7 @@ void EngineBuffer::updateIndicators(double rate, int iBufferSize) {
 
         if(rate != rateEngine->get())
             rateEngine->set(rate);
-            
+
         //Update the BPM even more slowly
         m_iUiSlowTick = (m_iUiSlowTick + 1) % kiBpmUpdateRate;
         if (m_iUiSlowTick == 0) {
