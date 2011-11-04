@@ -1,4 +1,4 @@
-# Esperanto translation for mixxx
+# Mongolian translation for mixxx
 # Copyright (c) 2011 Rosetta Contributors and Canonical Ltd 2011
 # This file is distributed under the same license as the mixxx package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2011.
@@ -8,90 +8,90 @@ msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2011-10-31 23:15-0400\n"
-"PO-Revision-Date: 2011-08-12 10:17+0000\n"
-"Last-Translator: Kristjan SCHMIDT <Unknown>\n"
-"Language-Team: Esperanto <eo@li.org>\n"
+"PO-Revision-Date: 2011-11-02 14:57+0000\n"
+"Last-Translator: Tsetsentsengel <Unknown>\n"
+"Language-Team: Mongolian <mn@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-11-02 04:45+0000\n"
+"X-Launchpad-Export-Date: 2011-11-03 05:21+0000\n"
 "X-Generator: Launchpad (build 14214)\n"
 
 #: AutoDJFeature#1
 msgid "Auto DJ"
-msgstr "Aŭtomata DĴ"
+msgstr "Автомат ДиЖэи"
 
 #: BaseSqlTableModel#1
 msgid "Played"
-msgstr "Ludita"
+msgstr "Тоглосон"
 
 #: BaseSqlTableModel#2
 msgctxt "BaseSqlTableModel#2"
 msgid "Artist"
-msgstr "Artisto"
+msgstr ""
 
 #: BaseSqlTableModel#3
 msgctxt "BaseSqlTableModel#3"
 msgid "Title"
-msgstr "Titolo"
+msgstr ""
 
 #: BaseSqlTableModel#4
 msgctxt "BaseSqlTableModel#4"
 msgid "Album"
-msgstr "Albumo"
+msgstr "Цомог"
 
 #: BaseSqlTableModel#5
 msgctxt "BaseSqlTableModel#5"
 msgid "Genre"
-msgstr "Ĝenro"
+msgstr ""
 
 #: BaseSqlTableModel#6
 msgctxt "BaseSqlTableModel#6"
 msgid "Year"
-msgstr "Jaro"
+msgstr "Он"
 
 #: BaseSqlTableModel#7
 msgctxt "BaseSqlTableModel#7"
 msgid "Type"
-msgstr "Tipo"
+msgstr "Төрөл"
 
 #: BaseSqlTableModel#8
 msgctxt "BaseSqlTableModel#8"
 msgid "Location"
-msgstr "Loko"
+msgstr "Байршил"
 
 #: BaseSqlTableModel#9
 msgctxt "BaseSqlTableModel#9"
 msgid "Comment"
-msgstr "Komento"
+msgstr "Сэтгэгдэл"
 
 #: BaseSqlTableModel#10
 msgctxt "BaseSqlTableModel#10"
 msgid "Duration"
-msgstr "Daŭro"
+msgstr "Үргэлжлэх хугацаа"
 
 #: BaseSqlTableModel#11
 msgid "Rating"
-msgstr "Pritakso"
+msgstr "Үнэлгээ"
 
 #: BaseSqlTableModel#12
 msgctxt "BaseSqlTableModel#12"
 msgid "Bitrate"
-msgstr "Bitrapido"
+msgstr "Дамжуулах хурд"
 
 #: BaseSqlTableModel#13
 msgctxt "BaseSqlTableModel#13"
 msgid "BPM"
-msgstr "BPM"
+msgstr ""
 
 #: BaseSqlTableModel#14
 msgctxt "BaseSqlTableModel#14"
 msgid "Track #"
-msgstr "Kanto #"
+msgstr "Хөгжим #"
 
 #: BaseSqlTableModel#15
 msgid "Date Added"
-msgstr "Almetdato"
+msgstr "Оруулсан өдөр"
 
 #: BaseSqlTableModel#16
 msgid "#"
@@ -100,150 +100,146 @@ msgstr "#"
 #: BaseSqlTableModel#17
 msgctxt "BaseSqlTableModel#17"
 msgid "Key"
-msgstr "Klavo"
+msgstr "Түлхүүр"
 
 #: BaseTrackPlayer#1
 msgid "Couldn't load track."
-msgstr "Oni ne povis ŝargi la kanton."
+msgstr "Уншиж чадахгүй байна"
 
 #: BrowseFeature#1
 msgid "Quick Links"
-msgstr "Rapidaj Ligiloj"
+msgstr "Шууд холбоос"
 
 #: BrowseFeature#2
 msgid "Devices"
-msgstr "Aparatoj"
+msgstr "Төхөөрөмж"
 
 #: BrowseFeature#3
 msgid "Removable Devices"
-msgstr "Forpreneblaj Aparatoj"
+msgstr "Нэмэлт төхөөрөмж"
 
 #: BrowseFeature#4
 msgctxt "BrowseFeature#4"
 msgid "Mixxx Library"
-msgstr "Biblioteko de Mixxx"
+msgstr "Мixxx-ийн Сан"
 
 #: BrowseFeature#5
 msgid "Home"
-msgstr "Hejmo"
+msgstr "Эхлэл"
 
 #: BrowseFeature#6
 msgid "Music"
-msgstr "Muziko"
+msgstr "Дуу"
 
 #: BrowseFeature#7
 msgid "Documents"
-msgstr "Dokumentoj"
+msgstr "Баримт"
 
 #: BrowseFeature#8
 msgid "Desktop"
-msgstr "Labortablo"
+msgstr "Ажлын талбар"
 
 #: BrowseFeature#9
 msgid "Browse"
-msgstr "Foliumi"
+msgstr "Нээх"
 
 #: BrowseTableModel#1
 msgid "Filename"
-msgstr "Dosiernomo"
+msgstr "Файлын нэр"
 
 #: BrowseTableModel#2
 msgctxt "BrowseTableModel#2"
 msgid "Artist"
-msgstr "Artisto"
+msgstr "Уран бүтээлч"
 
 #: BrowseTableModel#3
 msgctxt "BrowseTableModel#3"
 msgid "Title"
-msgstr "Titolo"
+msgstr ""
 
 #: BrowseTableModel#4
 msgctxt "BrowseTableModel#4"
 msgid "Album"
-msgstr "Albumo"
+msgstr ""
 
 #: BrowseTableModel#5
 msgctxt "BrowseTableModel#5"
 msgid "Track #"
-msgstr "Kanto #"
+msgstr ""
 
 #: BrowseTableModel#6
 msgctxt "BrowseTableModel#6"
 msgid "Year"
-msgstr "Jaro"
+msgstr ""
 
 #: BrowseTableModel#7
 msgctxt "BrowseTableModel#7"
 msgid "Genre"
-msgstr "Ĝenro"
+msgstr ""
 
 #: BrowseTableModel#8
 msgctxt "BrowseTableModel#8"
 msgid "Comment"
-msgstr "Komento"
+msgstr ""
 
 #: BrowseTableModel#9
 msgctxt "BrowseTableModel#9"
 msgid "Duration"
-msgstr "Daŭro"
+msgstr ""
 
 #: BrowseTableModel#10
 msgctxt "BrowseTableModel#10"
 msgid "BPM"
-msgstr "Bitoj minute"
+msgstr ""
 
 #: BrowseTableModel#11
 msgctxt "BrowseTableModel#11"
 msgid "Key"
-msgstr "Ŝlosilo"
+msgstr ""
 
 #: BrowseTableModel#12
 msgctxt "BrowseTableModel#12"
 msgid "Type"
-msgstr "Tipo"
+msgstr ""
 
 #: BrowseTableModel#13
 msgctxt "BrowseTableModel#13"
 msgid "Bitrate"
-msgstr "Bitrapido"
+msgstr ""
 
 #: BrowseTableModel#14
 msgctxt "BrowseTableModel#14"
 msgid "Location"
-msgstr "Loko"
+msgstr ""
 
 #: BrowseTableModel#15
 msgctxt "BrowseTableModel#15"
 msgid "Mixxx Library"
-msgstr "Biblioteko de Mixxx"
+msgstr ""
 
 #: BrowseTableModel#16
 msgid ""
 "Could not load the following file because it is in use by Mixxx or another "
 "application."
 msgstr ""
-"Ne povis ŝarĝi la sekvan dosieron ĉar ĝi estas uzata de Miksss aŭ de alia "
-"aplikaĵo."
 
 #: BrowseTableModel#17
 msgid "Warning: This will permanently delete the following files:"
-msgstr "Averto: Tio forigos daŭre la sekvajn dosierojn:"
+msgstr ""
 
 #: BrowseTableModel#18
 msgid "Are you sure you want to delete these files from your computer?"
-msgstr "Ĉu vi certe volas forigi ĉi tiujn dosierojn el via komputilo?"
+msgstr ""
 
 #: BrowseTableModel#19
 msgid ""
 "Could not delete the following file because it is in use by Mixxx or another "
 "application:"
 msgstr ""
-"Ne povis forigi la sekvan dosieron ĉar ĝi estas uzata de Miksss aŭ de alia "
-"aplikaĵo."
 
 #: BrowseTableModel#20
 msgid "Could not update file metadata."
-msgstr "Ne povas ĝisdatigi dosierajn metadatumojn."
+msgstr ""
 
 #: CrateFeature#1
 msgid "New Crate"
@@ -252,22 +248,22 @@ msgstr ""
 #: CrateFeature#2
 msgctxt "CrateFeature#2"
 msgid "Remove"
-msgstr "Forigi"
+msgstr ""
 
 #: CrateFeature#3
 msgctxt "CrateFeature#3"
 msgid "Rename"
-msgstr "Alinomi"
+msgstr ""
 
 #: CrateFeature#4
 msgctxt "CrateFeature#4"
 msgid "Lock"
-msgstr "Ŝlosi"
+msgstr ""
 
 #: CrateFeature#5
 msgctxt "CrateFeature#5"
 msgid "Import Playlist"
-msgstr "Importi ludliston"
+msgstr ""
 
 #: CrateFeature#6
 msgid "Crates"
@@ -284,7 +280,7 @@ msgstr ""
 #: CrateFeature#9
 msgctxt "CrateFeature#9"
 msgid "Unlock"
-msgstr "Malŝlosi"
+msgstr ""
 
 #: CrateFeature#10
 msgid "Crate name:"
@@ -309,17 +305,17 @@ msgstr ""
 #: CrateFeature#15
 msgctxt "CrateFeature#15"
 msgid "Playlist Files (*.m3u *.pls)"
-msgstr "Ludlistdosieroj (*.m3u *.pls)"
+msgstr ""
 
 #: CrateFeature#16
 msgctxt "CrateFeature#16"
 msgid "Export Playlist"
-msgstr "Eksporti ludliston"
+msgstr ""
 
 #: CrateFeature#17
 msgctxt "CrateFeature#17"
 msgid "M3U Playlist (*.m3u);;PLS Playlist (*.pls)"
-msgstr "M3U-ludlisto (*.m3u);;PLS-ludlisto (*.pls)"
+msgstr ""
 
 #: CrateFeature#18
 msgid "A crate cannot have a blank name."
@@ -335,7 +331,7 @@ msgstr ""
 
 #: DlgAboutDlg#1
 msgid "About Mixxx"
-msgstr "Pri Miksss"
+msgstr ""
 
 #: DlgAboutDlg#2
 msgid ""
@@ -353,68 +349,55 @@ msgid ""
 "margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-"
 "family:'Sans Serif'; font-size:9pt;\"></p></body></html>"
 msgstr ""
-"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" "
-"\"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
-"<html><head><meta name=\"qrichtext\" content=\"1\" /><style "
-"type=\"text/css\">\n"
-"p, li { white-space: pre-wrap; }\n"
-"</style></head><body style=\" font-family:'MS Shell Dlg 2'; font-"
-"size:8.25pt; font-weight:400; font-style:normal;\">\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-"
-"right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-"
-"family:'Sans Serif'; font-size:9pt;\">Ĉi tie estas agnoskoj</span></p>\n"
-"<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; "
-"margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-"
-"family:'Sans Serif'; font-size:9pt;\"></p></body></html>"
 
 #: DlgAboutDlg#3
 msgid "1.x.x"
-msgstr "1.x.x"
+msgstr ""
 
 #: DlgAboutDlg#4
 msgid "<a href=\"http://mixxx.org/\">Official Website</a>"
-msgstr "<a href=\"http://mixxx.org/\">Oficiala retejo</a>"
+msgstr ""
 
 #: DlgAutoDJ#1
 msgid "Disable Auto DJ"
-msgstr "Malŝalti aŭtomatan DĴ"
+msgstr ""
 
 #: DlgAutoDJ#2
 msgid "Enable Auto DJ"
-msgstr "Enŝalti aŭtomatan DĴ"
+msgstr ""
 
 #: DlgAutoDJ#3
 msgctxt "DlgAutoDJ#3"
 msgid "Manage"
-msgstr "Mastrumi"
+msgstr ""
 
 #: DlgAutoDJ#4
 msgid "Shuffle playlist"
-msgstr "Hazarde ordigi ludliston"
+msgstr ""
 
 #: DlgAutoDJ#5
 msgid "Add tracks to the queue below..."
-msgstr "Aldoni trakojn al la vico malsupre..."
+msgstr ""
 
 #: DlgBpmSchemeDlg#1
 msgid "BPM Scheme"
-msgstr "BPM-skemo"
+msgstr ""
 
 #: DlgBpmSchemeDlg#2
 msgid "Scheme Name:"
-msgstr "Skemnomo:"
+msgstr ""
 
 #: DlgBpmSchemeDlg#3
 msgid "BPM Range"
-msgstr "BPM-intervalo"
+msgstr ""
 
 #: DlgBpmSchemeDlg#4
 msgid "Max"
-msgstr "Maks"
+msgstr ""
 
 #: DlgBpmSchemeDlg#5
 msgid "Min"
-msgstr "Min"
+msgstr ""
 
 #: DlgBpmSchemeDlg#6
 msgid "Analyze Entire Song"
@@ -422,7 +405,7 @@ msgstr ""
 
 #: DlgMidiLearning#1
 msgid "Skip"
-msgstr "Preterpasi"
+msgstr ""
 
 #: DlgMidiLearning#2
 msgid "Successfully mapped to: "
@@ -430,7 +413,7 @@ msgstr ""
 
 #: DlgMidiLearning#3
 msgid "Next"
-msgstr "Sekva"
+msgstr ""
 
 #: DlgMidiLearning#4
 msgctxt "DlgMidiLearning#4"
@@ -3280,92 +3263,3 @@ msgstr ""
 #: WTrackTableViewHeader#1
 msgid "Show or hide columns."
 msgstr ""
-
-#~ msgctxt "DlgBpmSchemeDlg#6"
-#~ msgid "Analyze Entire Song"
-#~ msgstr "Analizi tutan kanton"
-
-#~ msgid "to"
-#~ msgstr "al"
-
-#~ msgid "BPM Scheme:"
-#~ msgstr "BPM-skemo:"
-
-#~ msgctxt "DlgBpmTapDlg#8"
-#~ msgid "BPM Detection"
-#~ msgstr "BPM-detektado"
-
-#~ msgctxt "DlgBpmTapDlg#3"
-#~ msgid "Alt+O"
-#~ msgstr "Alt+O"
-
-#~ msgid "<< Prev"
-#~ msgstr "« Antaŭa"
-
-#~ msgctxt "DlgBpmTapDlg#4"
-#~ msgid "Song:"
-#~ msgstr "Kanto:"
-
-#~ msgctxt "DlgBpmTapDlg#1"
-#~ msgid "Track Editor"
-#~ msgstr "Trakredaktilo"
-
-#~ msgid "&Close"
-#~ msgstr "Fermi"
-
-#~ msgid "BPM Editor (Click to Expand)"
-#~ msgstr "BPM-redaktilo (Alklaki por malfaldi)"
-
-#~ msgid "Next >>"
-#~ msgstr "Sekva »"
-
-#~ msgctxt "DlgBpmTapDlg#18"
-#~ msgid "Track Information (Click to Expand)"
-#~ msgstr "Trakinformoj (alklaki por malfaldi)"
-
-#~ msgid "Alt+P"
-#~ msgstr "Alt+P"
-
-#~ msgid "&Go"
-#~ msgstr "Ek"
-
-#~ msgid "BPM Range:"
-#~ msgstr "BPM-rango:"
-
-#~ msgid "Alt+G"
-#~ msgstr "Alt+G"
-
-#~ msgid "BPM:"
-#~ msgstr "Bitoj minute:"
-
-#~ msgctxt "DlgBpmTapDlg#14"
-#~ msgid "Analyze Entire Song"
-#~ msgstr "Analizi tutan kanton"
-
-#~ msgctxt "DlgBpmTapDlg#20"
-#~ msgid "Artist:"
-#~ msgstr "Artisto:"
-
-#~ msgctxt "DlgBpmTapDlg#19"
-#~ msgid "Title:"
-#~ msgstr "Titolo:"
-
-#~ msgctxt "DlgBpmTapDlg#22"
-#~ msgid "Filename:"
-#~ msgstr "Dosiernomo:"
-
-#~ msgctxt "DlgBpmTapDlg#21"
-#~ msgid "Comments:"
-#~ msgstr "Komentoj:"
-
-#~ msgctxt "DlgBpmTapDlg#23"
-#~ msgid "3:00"
-#~ msgstr "3:00"
-
-#~ msgctxt "DlgBpmTapDlg#26"
-#~ msgid "77"
-#~ msgstr "77"
-
-#~ msgctxt "DlgBpmTapDlg#25"
-#~ msgid "File Type:"
-#~ msgstr "Dosiertipo:"

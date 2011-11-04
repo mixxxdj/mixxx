@@ -371,113 +371,6 @@ p, li { white-space: pre-wrap; }
         </message>
     </context>
     <context>
-        <name>DlgBpmTapDlg</name>
-        <message>
-            <source>Track Editor</source>
-            <translation>Editor de la cançó</translation>
-        </message>
-        <message>
-            <source>&amp;Close</source>
-            <translation>&amp;Tanca</translation>
-        </message>
-        <message>
-            <source>Alt+O</source>
-            <translation>Alt+O</translation>
-        </message>
-        <message>
-            <source>Song:</source>
-            <translation>Cançò:</translation>
-        </message>
-        <message>
-            <source>Next &gt;&gt;</source>
-            <translation>Següent &gt;&gt;</translation>
-        </message>
-        <message>
-            <source>&lt;&lt; Prev</source>
-            <translation>&lt;&lt; Anterior</translation>
-        </message>
-        <message>
-            <source>BPM Editor (Click to Expand)</source>
-            <translation>Editor de BPM (Cliqueja per a expandir)</translation>
-        </message>
-        <message>
-            <source>BPM Detection</source>
-            <translation>Detecció BPM</translation>
-        </message>
-        <message>
-            <source>BPM Scheme:</source>
-            <translation>Esquema BPM:</translation>
-        </message>
-        <message>
-            <source>to</source>
-            <translation>fins a</translation>
-        </message>
-        <message>
-            <source>BPM Range:</source>
-            <translation>Rang BPM:</translation>
-        </message>
-        <message>
-            <source>&amp;Go</source>
-            <translation>&amp;Vés</translation>
-        </message>
-        <message>
-            <source>Alt+G</source>
-            <translation>Alt+G</translation>
-        </message>
-        <message>
-            <source>Analyze Entire Song</source>
-            <translation>Analitza la cançò sencera</translation>
-        </message>
-        <message>
-            <source>BPM:</source>
-            <translation>BPM:</translation>
-        </message>
-        <message>
-            <source>&amp;Push to tap tempo</source>
-            <translation>&amp;Polse per a predir tempo</translation>
-        </message>
-        <message>
-            <source>Alt+P</source>
-            <translation>Alt+P</translation>
-        </message>
-        <message>
-            <source>Track Information (Click to Expand)</source>
-            <translation>Informació de la cançò (Cliqueja per a expandir)</translation>
-        </message>
-        <message>
-            <source>Title:</source>
-            <translation>Títol:</translation>
-        </message>
-        <message>
-            <source>Artist:</source>
-            <translation>Artista:</translation>
-        </message>
-        <message>
-            <source>Comments:</source>
-            <translation>Comentaris:</translation>
-        </message>
-        <message>
-            <source>Filename:</source>
-            <translation>Nom del fitxer:</translation>
-        </message>
-        <message>
-            <source>3:00</source>
-            <translation>3:00</translation>
-        </message>
-        <message>
-            <source>Play Time:</source>
-            <translation>Temps de reproducció:</translation>
-        </message>
-        <message>
-            <source>File Type:</source>
-            <translation>Tipus de fitxer:</translation>
-        </message>
-        <message>
-            <source>77</source>
-            <translation>77</translation>
-        </message>
-    </context>
-    <context>
         <name>DlgMidiLearning</name>
         <message>
             <source>Skip</source>
@@ -1055,6 +948,10 @@ p, li { white-space: pre-wrap; }
             <translation>segons</translation>
         </message>
         <message>
+            <source>Show Signal Quality in Skin</source>
+            <translation>Mostra la senyal de qualitat al tema</translation>
+        </message>
+        <message>
             <source>Control Mode</source>
             <translation>Mode de control</translation>
         </message>
@@ -1068,7 +965,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Enable Needle Skip Prevention</source>
-            <translation>Activa la prevenció de bot de l'agulla</translation>
+            <translation>Habilita la prevenció de bot de pua</translation>
         </message>
         <message>
             <source>Signal Quality</source>
@@ -1080,7 +977,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Powered by xwax</source>
-            <translation>Amb la tecnologia de xmax</translation>
+            <translation>Amb tecnologia xwax</translation>
         </message>
         <message>
             <source>Apply</source>
@@ -1418,7 +1315,7 @@ reproducció i visita de les pàgines del temes inclosos.</translation>
         </message>
         <message>
             <source>Description</source>
-            <translation>Descripció</translation>
+            <translation>Descripció</translation>
         </message>
         <message>
             <source>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
@@ -1642,6 +1539,10 @@ p, li { white-space: pre-wrap; }
             <translation>Cap</translation>
         </message>
         <message>
+            <source>Channel %1</source>
+            <translation>Canal %1</translation>
+        </message>
+        <message>
             <source>Channels %1 - %2</source>
             <translation>Canals %1 - %2</translation>
         </message>
@@ -1705,6 +1606,10 @@ p, li { white-space: pre-wrap; }
             <translation>Deck 2 tipus vinil</translation>
         </message>
         <message>
+            <source>Show Signal Quality in Skin</source>
+            <translation>Mostra la senyal de qualitat al tema</translation>
+        </message>
+        <message>
             <source>Apply</source>
             <translation>Aplica</translation>
         </message>
@@ -1730,7 +1635,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Enable Needle Skip Prevention</source>
-            <translation>Activa la prevenció de bot de l'agulla</translation>
+            <translation>Habilita la prevenció de bot de pua</translation>
         </message>
         <message>
             <source>Signal Quality</source>
@@ -1742,7 +1647,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Powered by xwax</source>
-            <translation>Amb la tecnologia de xwax</translation>
+            <translation>Amb tecnologia xwax</translation>
         </message>
     </context>
     <context>
@@ -1897,7 +1802,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Filename:</source>
-            <translation>Nom del fitxer:</translation>
+            <translation>Nom de fitxer:</translation>
         </message>
         <message>
             <source>Duration:</source>
@@ -1925,7 +1830,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Track Information (Click to Expand)</source>
-            <translation>Informació de la cançò (Cliqueja per a expandir)</translation>
+            <translation>Informació de la pista (Click per expandir)</translation>
         </message>
         <message>
             <source>Track BPM: </source>
@@ -2007,16 +1912,16 @@ p, li { white-space: pre-wrap; }
             <translation>Codificador</translation>
         </message>
         <message>
-            <source>&lt;html&gt;Mixxx is unable to load or find the MP3 encoder lame. &lt;p&gt;Please install libmp3lame (also known as lame) and check if /usr/lib/libmp3lame.so exists on your system &lt;/html&gt;</source>
-            <translation>&lt;html&gt;Mixxx no pot carregar o trobar el codificador LAME de MP3. &lt;p&gt;Per favor, instal·la libmp3lame (també conegut com a lame) i comprova si /usr/lib/libmp3lame.so existeix al teu sistema &lt;/html&gt;</translation>
+            <source>&lt;html&gt;Mixxx cannot record or stream in MP3 without the MP3 encoder &amp;quot;lame&amp;quot;. Due to licensing issues, we cannot include this with Mixxx. To record or stream in MP3, you must download &lt;b&gt;libmp3lame&lt;/b&gt; and install it on your system. &lt;p&gt;See &lt;a href='http://mixxx.org/wiki/doku.php/internet_broadcasting#linux'&gt;Mixxx Wiki&lt;/a&gt; for more information. &lt;/html&gt;</source>
+            <translation>&lt;html&gt;Mixxx no pot gravar o emetre en MP3 sense el codificador MP3 &amp;quot;lame&amp;quot;. Degut a problemes de llicència no podem incloure'l amb Mixxx. Per gravar o emetre en MP3, ha de descarregar &lt;b&gt;libmp3lame&lt;/b&gt; i instal·lar-lo al seu sistema. &lt;p&gt;Mire &lt;a href='http://mixxx.org/wiki/doku.php/internet_broadcasting#linux'&gt;la Wiki de Mixxx&lt;/a&gt; per més informació. &lt;/html&gt;</translation>
         </message>
         <message>
-            <source>&lt;html&gt;Mixxx is unable to load or find the MP3 encoder lame. &lt;p&gt;Please put lame_enc.dll in the directory you have installed Mixxx &lt;/html&gt;</source>
-            <translation>&lt;html&gt;Mixxx no pot carregar o trobar el codificador LAME de MP3. &lt;p&gt;PPer favor, posa el fitxer lame_enc.dll en el directori en el qual hages instal·lat Mixxx &lt;/html&gt;</translation>
+            <source>&lt;html&gt;Mixxx cannot record or stream in MP3 without the MP3 encoder &amp;quot;lame&amp;quot;. Due to licensing issues, we cannot include this with Mixxx. To record or stream in MP3, you must download &lt;b&gt;lame_enc.dll&lt;/b&gt; and install it on your system. &lt;p&gt;See &lt;a href='http://mixxx.org/wiki/doku.php/internet_broadcasting#windows'&gt;Mixxx Wiki&lt;/a&gt; for more information. &lt;/html&gt;</source>
+            <translation>&lt;html&gt;Mixxx no pot gravar o emetre en MP3 sense el codificador MP3 &amp;quot;lame&amp;quot;. Degut a problemes de llicència no podem incloure'l amb Mixxx. Per gravar o emetre en MP3, ha de descarregar &lt;b&gt;lame_enc.dll&lt;/b&gt; i instal·lar-lo al seu sistema. &lt;p&gt;Mire &lt;a href='http://mixxx.org/wiki/doku.php/internet_broadcasting#windows'&gt;la Wiki de Mixxx&lt;/a&gt; per més informació. &lt;/html&gt;</translation>
         </message>
         <message>
-            <source>&lt;html&gt;Mixxx is unable to load or find the MP3 encoder lame. &lt;p&gt;Please install libmp3lame (also known as lame) and check if /usr/local/lib/libmp3lame.dylib exists on your system &lt;/html&gt;</source>
-            <translation>&lt;html&gt;Mixxx no pot carregar o trobar el codificador LAME de MP3. &lt;p&gt;Per favor, instal·la el libmp3lame (també conegut com a lame) i comprova que el fitxer /usr/local/lib/libmp3lame.dylib existeix al teu sistema &lt;/html&gt;</translation>
+            <source>&lt;html&gt;Mixxx cannot record or stream in MP3 without the MP3 encoder &amp;quot;lame&amp;quot;. Due to licensing issues, we cannot include this with Mixxx. To record or stream in MP3, you must download &lt;b&gt;libmp3lame&lt;/b&gt; and install it on your system. &lt;p&gt;See &lt;a href='http://mixxx.org/wiki/doku.php/internet_broadcasting#mac_osx'&gt;Mixxx Wiki&lt;/a&gt; for more information. &lt;/html&gt;</source>
+            <translation>&lt;html&gt;Mixxx no pot gravar o emetre en MP3 sense el codificador MP3 &amp;quot;lame&amp;quot;. Degut a problemes de llicència no podem incloure'l amb Mixxx. Per gravar o emetre en MP3, ha de descarregar &lt;b&gt;libmp3lame&lt;/b&gt; i instal·lar-lo al seu sistema. &lt;p&gt;Mire &lt;a href='http://mixxx.org/wiki/doku.php/internet_broadcasting#mac_osx'&gt;la Wiki de Mixxx&lt;/a&gt; per més informació. &lt;/html&gt;</translation>
         </message>
         <message>
             <source>&lt;html&gt;Mixxx has detected that you use a modified version of libmp3lame. See &lt;a href='http://mixxx.org/wiki/doku.php/internet_broadcasting'&gt;Mixxx Wiki&lt;/a&gt; for more information.&lt;/html&gt;</source>
@@ -2111,8 +2016,8 @@ p, li { white-space: pre-wrap; }
             <translation>Selecciona la teua biblioteca d'iTunes</translation>
         </message>
         <message>
-            <source>iTunes (loading)</source>
-            <translation>iTunes (carregant)</translation>
+            <source>(loading) iTunes</source>
+            <translation>(carregant) iTunes</translation>
         </message>
         <message>
             <source>Use Default Library</source>
@@ -2171,6 +2076,10 @@ p, li { white-space: pre-wrap; }
             <source>Control Value</source>
             <translation>Valor de control</translation>
         </message>
+        <message>
+            <source>Description</source>
+            <translation>Descripció</translation>
+        </message>
     </context>
     <context>
         <name>MidiMapping</name>
@@ -2220,6 +2129,10 @@ p, li { white-space: pre-wrap; }
         <message>
             <source>Control Value</source>
             <translation>Valor de control</translation>
+        </message>
+        <message>
+            <source>Description</source>
+            <translation>Descripció</translation>
         </message>
         <message>
             <source>Threshold Min</source>
@@ -2443,12 +2356,20 @@ Esta informació no s'usarà de manera personal per a identificar-te, contactar 
             <translation>Ctrl+P</translation>
         </message>
         <message>
-            <source>&amp;About...</source>
-            <translation>Quant &amp;a...</translation>
+            <source>&amp;About</source>
+            <translation>Qu&amp;ant a</translation>
         </message>
         <message>
-            <source>&amp;Community Support...</source>
+            <source>&amp;Community Support</source>
             <translation>Suport de la &amp;Comunitat</translation>
+        </message>
+        <message>
+            <source>Send Us &amp;Feedback</source>
+            <translation>&amp;Envia'ns la teua opinió</translation>
+        </message>
+        <message>
+            <source>&amp;Translate this application</source>
+            <translation>&amp;Traduïx esta aplicació</translation>
         </message>
         <message>
             <source>Enable &amp;Vinyl Control 1</source>
@@ -2611,6 +2532,26 @@ Preferències de reproducció i de MIDI</translation>
 Get help with Mixxx</source>
             <translation>Suport
 Obté ajuda amb Mixxx</translation>
+        </message>
+        <message>
+            <source>Send feedback to the Mixxx team.</source>
+            <translation>Envia la teua opinió a l'equip de Mixx.</translation>
+        </message>
+        <message>
+            <source>Support
+Send feedback to the Mixxx team.</source>
+            <translation>Suport
+Envia la teua opinió a l'equip de Mixx.</translation>
+        </message>
+        <message>
+            <source>Help translate this application into your language.</source>
+            <translation>Ajuda a traduir esta aplicació a la teua llengua.</translation>
+        </message>
+        <message>
+            <source>Support
+Help translate this application into your language.</source>
+            <translation>Suport
+Ajuda a traduir esta aplicació a la teua llengua.</translation>
         </message>
         <message>
             <source>About the application</source>
@@ -2977,8 +2918,8 @@ Fes click a OK per eixir.</translation>
             <translation>Traktor</translation>
         </message>
         <message>
-            <source>Traktor (loading)</source>
-            <translation>Traktor (carregant)</translation>
+            <source>(loading) Traktor</source>
+            <translation>(carregant) Traktor</translation>
         </message>
         <message>
             <source>Error Loading Traktor Library</source>
@@ -3224,6 +3165,10 @@ Fes click a OK per eixir.</translation>
         <message>
             <source>Add to Auto DJ Queue</source>
             <translation>Afegir a la cua d'Auto DJ</translation>
+        </message>
+        <message>
+            <source>Reload Track Metadata</source>
+            <translation>Recarrega les metadades de la pista</translation>
         </message>
         <message>
             <source>Load to Deck %1</source>
