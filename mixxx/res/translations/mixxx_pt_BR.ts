@@ -1288,7 +1288,7 @@ playback and outbound link statistics</source>
         </message>
         <message>
             <source>/mixxx.ogg</source>
-            <translation>Copy text 	 /mixxx.ogg</translation>
+            <translation>/mixxx.ogg</translation>
         </message>
         <message>
             <source>Host</source>

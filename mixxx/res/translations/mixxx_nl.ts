@@ -995,8 +995,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>&lt;b&gt;This version of Mixxx does not support vinyl control.&lt;/b&gt; &lt;br&gt; Please visit &lt;a href=&quot;http://mixxx.org&quot;&gt;Mixxx.org&lt;/a&gt; for more information.</source>
-            <translation>Copy text 	
-&lt;b&gt;Deze versie van Mixxx ondersteund geen vinyl besturing&lt;/b&gt; &lt;br&gt;Bezoek &lt;a href=&quot;http://mixxx.org&quot;&gt;Mixxx.org&lt;/a&gt; voor meer informatie.</translation>
+            <translation>&lt;b&gt;Deze versie van Mixxx ondersteund geen vinyl besturing&lt;/b&gt; &lt;br&gt;Bezoek &lt;a href=&quot;http://mixxx.org&quot;&gt;Mixxx.org&lt;/a&gt; voor meer informatie.</translation>
         </message>
     </context>
     <context>

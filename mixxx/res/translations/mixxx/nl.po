@@ -1093,7 +1093,6 @@ msgid ""
 "<b>This version of Mixxx does not support vinyl control.</b> <br> Please "
 "visit <a href=\"http://mixxx.org\">Mixxx.org</a> for more information."
 msgstr ""
-"Copy text \t\r\n"
 "<b>Deze versie van Mixxx ondersteund geen vinyl besturing</b> <br>Bezoek <a "
 "href=\"http://mixxx.org\">Mixxx.org</a> voor meer informatie."
 
