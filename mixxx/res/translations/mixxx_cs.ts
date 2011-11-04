@@ -367,114 +367,8 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Analyze Entire Song</source>
-            <translation>Analyzovat celou skladbu</translation>
-        </message>
-    </context>
-    <context>
-        <name>DlgBpmTapDlg</name>
-        <message>
-            <source>Track Editor</source>
-            <translation>Editor skladeb</translation>
-        </message>
-        <message>
-            <source>&amp;Close</source>
-            <translation>&amp;Zavřít</translation>
-        </message>
-        <message>
-            <source>Alt+O</source>
-            <translation>Alt+O</translation>
-        </message>
-        <message>
-            <source>Song:</source>
-            <translation>Skladba:</translation>
-        </message>
-        <message>
-            <source>Next &gt;&gt;</source>
-            <translation>Následující&gt;&gt;</translation>
-        </message>
-        <message>
-            <source>&lt;&lt; Prev</source>
-            <translation>&lt;&lt;Předchozí</translation>
-        </message>
-        <message>
-            <source>BPM Editor (Click to Expand)</source>
-            <translation>Editor BPM (rozbalit)</translation>
-        </message>
-        <message>
-            <source>BPM Detection</source>
-            <translation>Rozpoznání BPM</translation>
-        </message>
-        <message>
-            <source>BPM Scheme:</source>
-            <translation>Režim rozpoznání BPM:</translation>
-        </message>
-        <message>
-            <source>to</source>
-            <translation>do</translation>
-        </message>
-        <message>
-            <source>BPM Range:</source>
-            <translation>Rozsah BPM:</translation>
-        </message>
-        <message>
-            <source>&amp;Go</source>
-            <translation>Př&amp;ejít</translation>
-        </message>
-        <message>
-            <source>Alt+G</source>
-            <translation>Alt+G</translation>
-        </message>
-        <message>
-            <source>Analyze Entire Song</source>
-            <translation>Analyzovat celou skladbu</translation>
-        </message>
-        <message>
-            <source>BPM:</source>
-            <translation>BPM:</translation>
-        </message>
-        <message>
-            <source>&amp;Push to tap tempo</source>
-            <translation>Vykle&amp;pávat tempo</translation>
-        </message>
-        <message>
-            <source>Alt+P</source>
-            <translation>Alt+P</translation>
-        </message>
-        <message>
-            <source>Track Information (Click to Expand)</source>
-            <translation>Informace o skladbě (rozbalit)</translation>
-        </message>
-        <message>
-            <source>Title:</source>
-            <translation>Název:</translation>
-        </message>
-        <message>
-            <source>Artist:</source>
-            <translation>Interpret:</translation>
-        </message>
-        <message>
-            <source>Comments:</source>
-            <translation>Komentář:</translation>
-        </message>
-        <message>
-            <source>Filename:</source>
-            <translation>Název souboru:</translation>
-        </message>
-        <message>
-            <source>3:00</source>
-            <translation>3:00</translation>
-        </message>
-        <message>
-            <source>Play Time:</source>
-            <translation>Čas přehrávání:</translation>
-        </message>
-        <message>
-            <source>File Type:</source>
-            <translation>Formát:</translation>
-        </message>
-        <message>
-            <source>77</source>
-            <translation>77</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
     </context>
     <context>
@@ -1055,36 +949,49 @@ p, li { white-space: pre-wrap; }
             <translation>sek.</translation>
         </message>
         <message>
+            <source>Show Signal Quality in Skin</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
             <source>Control Mode</source>
-            <translation>Režim kontroly</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Absolute Mode</source>
-            <translation>Absolutní režim</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Relative Mode</source>
-            <translation>Relativní režim</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Enable Needle Skip Prevention</source>
-            <translation>Povolit prevenci přeskakování jehly</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Signal Quality</source>
-            <translation>Kvalita signálu</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>http://www.xwax.co.uk</source>
-            <translation>http://www.xwax.co.uk</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Powered by xwax</source>
-            <translation>Powered by xwax</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Apply</source>
-            <translation>Použít</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>&lt;b&gt;This version of Mixxx does not support vinyl control.&lt;/b&gt; &lt;br&gt; Please visit &lt;a href=&quot;http://mixxx.org&quot;&gt;Mixxx.org&lt;/a&gt; for more information.</source>
@@ -1418,7 +1325,8 @@ přibalených skladeb a odkazů na webové stránky</translation>
         </message>
         <message>
             <source>Description</source>
-            <translation>Popis</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
@@ -1642,6 +1550,11 @@ p, li { white-space: pre-wrap; }
             <translation>Nic</translation>
         </message>
         <message>
+            <source>Channel %1</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
             <source>Channels %1 - %2</source>
             <translation>Kanály %1 - %2</translation>
         </message>
@@ -1705,44 +1618,59 @@ p, li { white-space: pre-wrap; }
             <translation>Typ vinylu plotny 2</translation>
         </message>
         <message>
+            <source>Show Signal Quality in Skin</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
             <source>Apply</source>
-            <translation>Použít</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Lead-in time</source>
-            <translation>Doba trvání zaváděcí stopy</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>seconds</source>
-            <translation>sek.</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Control Mode</source>
-            <translation>Režim kontroly</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Absolute Mode</source>
-            <translation>Absolutní režim</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Relative Mode</source>
-            <translation>Relativní režim</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Enable Needle Skip Prevention</source>
-            <translation>Povolit prevenci přeskakování jehly</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Signal Quality</source>
-            <translation>Kvalita signálu</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>http://www.xwax.co.uk</source>
-            <translation>http://www.xwax.co.uk</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Powered by xwax</source>
-            <translation>Powered by xwax</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
     </context>
     <context>
@@ -1865,19 +1793,23 @@ p, li { white-space: pre-wrap; }
         <name>DlgTrackInfo</name>
         <message>
             <source>Track Editor</source>
-            <translation>Editor skladeb</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Song:</source>
-            <translation>Skladba:</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Title:</source>
-            <translation>Název:</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Artist:</source>
-            <translation>Interpret:</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Album:</source>
@@ -1897,7 +1829,8 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Filename:</source>
-            <translation>Jméno souboru:</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Duration:</source>
@@ -1905,19 +1838,23 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>3:00</source>
-            <translation>3:00</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>File Type:</source>
-            <translation>Typ souboru:</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>77</source>
-            <translation>77</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Comments:</source>
-            <translation>Komentář:</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Reload track metadata from file.</source>
@@ -1925,7 +1862,8 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Track Information (Click to Expand)</source>
-            <translation>Informace o skladbě (rozbalit)</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Track BPM: </source>
@@ -1993,7 +1931,8 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Alt+O</source>
-            <translation>Alt+O</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>&amp;Next &gt;&gt;</source>
@@ -2007,16 +1946,19 @@ p, li { white-space: pre-wrap; }
             <translation>Encoder</translation>
         </message>
         <message>
-            <source>&lt;html&gt;Mixxx is unable to load or find the MP3 encoder lame. &lt;p&gt;Please install libmp3lame (also known as lame) and check if /usr/lib/libmp3lame.so exists on your system &lt;/html&gt;</source>
-            <translation>&lt;html&gt;Mixxx nemůže najít MP3 encoder lame. &lt;p&gt;Nainstalujte prosím libmp3lame (známou jako lame) a zkontrolujte, jestli je /usr/lib/libmp3lame.so ve vašem systému &lt;/html&gt;</translation>
+            <source>&lt;html&gt;Mixxx cannot record or stream in MP3 without the MP3 encoder &amp;quot;lame&amp;quot;. Due to licensing issues, we cannot include this with Mixxx. To record or stream in MP3, you must download &lt;b&gt;libmp3lame&lt;/b&gt; and install it on your system. &lt;p&gt;See &lt;a href='http://mixxx.org/wiki/doku.php/internet_broadcasting#linux'&gt;Mixxx Wiki&lt;/a&gt; for more information. &lt;/html&gt;</source>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
-            <source>&lt;html&gt;Mixxx is unable to load or find the MP3 encoder lame. &lt;p&gt;Please put lame_enc.dll in the directory you have installed Mixxx &lt;/html&gt;</source>
-            <translation>&lt;html&gt;Mixxx nemůže najít MP3 encoder lame. &lt;p&gt;Vložte prosím lame_enc.dll do adresáře, který nainstaloval Mixxx &lt;/html&gt;</translation>
+            <source>&lt;html&gt;Mixxx cannot record or stream in MP3 without the MP3 encoder &amp;quot;lame&amp;quot;. Due to licensing issues, we cannot include this with Mixxx. To record or stream in MP3, you must download &lt;b&gt;lame_enc.dll&lt;/b&gt; and install it on your system. &lt;p&gt;See &lt;a href='http://mixxx.org/wiki/doku.php/internet_broadcasting#windows'&gt;Mixxx Wiki&lt;/a&gt; for more information. &lt;/html&gt;</source>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
-            <source>&lt;html&gt;Mixxx is unable to load or find the MP3 encoder lame. &lt;p&gt;Please install libmp3lame (also known as lame) and check if /usr/local/lib/libmp3lame.dylib exists on your system &lt;/html&gt;</source>
-            <translation>&lt;html&gt;Mixxx nemůže nahrát nebo nalézt MP3 enkodér lame. &lt;p&gt;Prosím nainstalujte libmp3lame (známou také jako lame) a zkontrolujte jestli /usr/local/lib/libmp3lame.dylib je ve vašem systému &lt;/html&gt;</translation>
+            <source>&lt;html&gt;Mixxx cannot record or stream in MP3 without the MP3 encoder &amp;quot;lame&amp;quot;. Due to licensing issues, we cannot include this with Mixxx. To record or stream in MP3, you must download &lt;b&gt;libmp3lame&lt;/b&gt; and install it on your system. &lt;p&gt;See &lt;a href='http://mixxx.org/wiki/doku.php/internet_broadcasting#mac_osx'&gt;Mixxx Wiki&lt;/a&gt; for more information. &lt;/html&gt;</source>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>&lt;html&gt;Mixxx has detected that you use a modified version of libmp3lame. See &lt;a href='http://mixxx.org/wiki/doku.php/internet_broadcasting'&gt;Mixxx Wiki&lt;/a&gt; for more information.&lt;/html&gt;</source>
@@ -2111,8 +2053,9 @@ p, li { white-space: pre-wrap; }
             <translation>Vyberte svou knihovnu skladeb iTunes</translation>
         </message>
         <message>
-            <source>iTunes (loading)</source>
-            <translation>iTunes (načítání)</translation>
+            <source>(loading) iTunes</source>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Use Default Library</source>
@@ -2171,6 +2114,11 @@ p, li { white-space: pre-wrap; }
             <source>Control Value</source>
             <translation>Kontrolní hodnota</translation>
         </message>
+        <message>
+            <source>Description</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
     </context>
     <context>
         <name>MidiMapping</name>
@@ -2220,6 +2168,11 @@ p, li { white-space: pre-wrap; }
         <message>
             <source>Control Value</source>
             <translation>Kontrolní hodnota</translation>
+        </message>
+        <message>
+            <source>Description</source>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Threshold Min</source>
@@ -2443,12 +2396,24 @@ Tyto informace nebudou použity pro osobní identifikaci, kontakt, reklamu, ani 
             <translation>Ctrl+P</translation>
         </message>
         <message>
-            <source>&amp;About...</source>
-            <translation>&amp;O programu</translation>
+            <source>&amp;About</source>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
-            <source>&amp;Community Support...</source>
-            <translation>&amp;Komunitní podpora...</translation>
+            <source>&amp;Community Support</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Send Us &amp;Feedback</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>&amp;Translate this application</source>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Enable &amp;Vinyl Control 1</source>
@@ -2468,7 +2433,8 @@ Tyto informace nebudou použity pro osobní identifikaci, kontakt, reklamu, ani 
         </message>
         <message>
             <source>Enable live broadcasting</source>
-            <translation>Povolit živé vysílání</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Ctrl+L</source>
@@ -2594,7 +2560,8 @@ Označit úhozy pomocí klikání</translation>
         </message>
         <message>
             <source>Preferences</source>
-            <translation>Nastavení</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Preferences
@@ -2611,6 +2578,28 @@ Nastavení playbacku a MIDI</translation>
 Get help with Mixxx</source>
             <translation>Podpora
 Získejte pomoc pro Mixxx</translation>
+        </message>
+        <message>
+            <source>Send feedback to the Mixxx team.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Support
+Send feedback to the Mixxx team.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Help translate this application into your language.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Support
+Help translate this application into your language.</source>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>About the application</source>
@@ -2977,8 +2966,9 @@ Stiskněte OK pro ukončení.</translation>
             <translation>Traktor</translation>
         </message>
         <message>
-            <source>Traktor (loading)</source>
-            <translation>Traktor (nahrávání)</translation>
+            <source>(loading) Traktor</source>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Error Loading Traktor Library</source>
@@ -3224,6 +3214,11 @@ Stiskněte OK pro ukončení.</translation>
         <message>
             <source>Add to Auto DJ Queue</source>
             <translation>Přidat do fronty Auto DJ</translation>
+        </message>
+        <message>
+            <source>Reload Track Metadata</source>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Load to Deck %1</source>

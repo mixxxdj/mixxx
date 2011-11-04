@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2011-05-03 21:42-0400\n"
-"PO-Revision-Date: 2011-10-07 14:27+0000\n"
-"Last-Translator: RJ Ryan <Unknown>\n"
+"POT-Creation-Date: 2011-10-31 23:15-0400\n"
+"PO-Revision-Date: 2011-11-01 15:50+0000\n"
+"Last-Translator: butthead <carlozousa@gmail.com>\n"
 "Language-Team: Portuguese <pt@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-10-08 05:14+0000\n"
-"X-Generator: Launchpad (build 14110)\n"
+"X-Launchpad-Export-Date: 2011-11-02 04:46+0000\n"
+"X-Generator: Launchpad (build 14214)\n"
 
 #: AutoDJFeature#1
 msgid "Auto DJ"
@@ -419,126 +419,8 @@ msgid "Min"
 msgstr "Mín."
 
 #: DlgBpmSchemeDlg#6
-msgctxt "DlgBpmSchemeDlg#6"
 msgid "Analyze Entire Song"
 msgstr "Analisar a música completa"
-
-#: DlgBpmTapDlg#1
-msgctxt "DlgBpmTapDlg#1"
-msgid "Track Editor"
-msgstr "Editor de faixas"
-
-#: DlgBpmTapDlg#2
-msgid "&Close"
-msgstr "Fe&char"
-
-#: DlgBpmTapDlg#3
-msgctxt "DlgBpmTapDlg#3"
-msgid "Alt+O"
-msgstr "Alt+O"
-
-#: DlgBpmTapDlg#4
-msgctxt "DlgBpmTapDlg#4"
-msgid "Song:"
-msgstr "Música:"
-
-#: DlgBpmTapDlg#5
-msgid "Next >>"
-msgstr "Seguinte >>"
-
-#: DlgBpmTapDlg#6
-msgid "<< Prev"
-msgstr "<< Anterior"
-
-#: DlgBpmTapDlg#7
-msgid "BPM Editor (Click to Expand)"
-msgstr "Editor de BPM (Clique para expandir)"
-
-#: DlgBpmTapDlg#8
-msgctxt "DlgBpmTapDlg#8"
-msgid "BPM Detection"
-msgstr "Deteção de BPM"
-
-#: DlgBpmTapDlg#9
-msgid "BPM Scheme:"
-msgstr "Esquema de BPM:"
-
-#: DlgBpmTapDlg#10
-msgid "to"
-msgstr "para"
-
-#: DlgBpmTapDlg#11
-msgid "BPM Range:"
-msgstr "Intervalo de BPM:"
-
-#: DlgBpmTapDlg#12
-msgid "&Go"
-msgstr "&Ir"
-
-#: DlgBpmTapDlg#13
-msgid "Alt+G"
-msgstr "Alt+G"
-
-#: DlgBpmTapDlg#14
-msgctxt "DlgBpmTapDlg#14"
-msgid "Analyze Entire Song"
-msgstr "Analisar a música completa"
-
-#: DlgBpmTapDlg#15
-msgid "BPM:"
-msgstr "BPM:"
-
-#: DlgBpmTapDlg#16
-msgid "&Push to tap tempo"
-msgstr "&Prima para sincronizar a batida"
-
-#: DlgBpmTapDlg#17
-msgid "Alt+P"
-msgstr "Alt+P"
-
-#: DlgBpmTapDlg#18
-msgctxt "DlgBpmTapDlg#18"
-msgid "Track Information (Click to Expand)"
-msgstr "Informações da faixa (Clique para expandir)"
-
-#: DlgBpmTapDlg#19
-msgctxt "DlgBpmTapDlg#19"
-msgid "Title:"
-msgstr "Título:"
-
-#: DlgBpmTapDlg#20
-msgctxt "DlgBpmTapDlg#20"
-msgid "Artist:"
-msgstr "Artista:"
-
-#: DlgBpmTapDlg#21
-msgctxt "DlgBpmTapDlg#21"
-msgid "Comments:"
-msgstr "Comentários:"
-
-#: DlgBpmTapDlg#22
-msgctxt "DlgBpmTapDlg#22"
-msgid "Filename:"
-msgstr "Nome do ficheiro:"
-
-#: DlgBpmTapDlg#23
-msgctxt "DlgBpmTapDlg#23"
-msgid "3:00"
-msgstr "3:00"
-
-#: DlgBpmTapDlg#24
-msgid "Play Time:"
-msgstr "Tempo de reprodução:"
-
-#: DlgBpmTapDlg#25
-msgctxt "DlgBpmTapDlg#25"
-msgid "File Type:"
-msgstr "Tipo de ficheiro:"
-
-#: DlgBpmTapDlg#26
-msgctxt "DlgBpmTapDlg#26"
-msgid "77"
-msgstr "77"
 
 #: DlgMidiLearning#1
 msgid "Skip"
@@ -874,7 +756,7 @@ msgstr "Corte rápido"
 
 #: DlgPrefCrossfaderDlg#5
 msgid "Constant power"
-msgstr ""
+msgstr "Potência constante"
 
 #: DlgPrefCrossfaderDlg#6
 msgid "Mixing"
@@ -956,7 +838,7 @@ msgstr ""
 
 #: DlgPrefMidiBindings#4
 msgid "Overwrite existing mapping?"
-msgstr ""
+msgstr "Substituir o mapeamento actual?"
 
 #: DlgPrefMidiBindings#5
 msgid ""
@@ -982,58 +864,58 @@ msgstr ""
 
 #: DlgPrefMidiBindings#10
 msgid "Clear Input Bindings"
-msgstr ""
+msgstr "Limpar as definições de entrada"
 
 #: DlgPrefMidiBindings#11
 msgid "Are you sure you want to clear all bindings?"
-msgstr ""
+msgstr "Tem a certeza que deseja eliminar todas as definições?"
 
 #: DlgPrefMidiBindings#12
 msgid "Clear Output Bindings"
-msgstr ""
+msgstr "Limpar as definições de saída"
 
 #: DlgPrefMidiBindings#13
 msgid "Are you sure you want to clear all output bindings?"
-msgstr ""
+msgstr "Tem a certeza que deseja eliminar todas as definições de saída?"
 
 #: DlgPrefMidiBindingsDlg#1
 msgctxt "DlgPrefMidiBindingsDlg#1"
 msgid "Dialog"
-msgstr ""
+msgstr "Diálogo"
 
 #: DlgPrefMidiBindingsDlg#2
 msgid "Your Device Name"
-msgstr ""
+msgstr "Nome do dispositivo"
 
 #: DlgPrefMidiBindingsDlg#3
 msgid "Load Preset:"
-msgstr ""
+msgstr "Carregar as pre-definições"
 
 #: DlgPrefMidiBindingsDlg#4
 msgid "Export"
-msgstr ""
+msgstr "Exportar"
 
 #: DlgPrefMidiBindingsDlg#5
 msgid "Output:"
-msgstr ""
+msgstr "Saída:"
 
 #: DlgPrefMidiBindingsDlg#6
 msgid "Enabled"
-msgstr ""
+msgstr "Activado"
 
 #: DlgPrefMidiBindingsDlg#7
 msgid "Controls"
-msgstr ""
+msgstr "Controlos"
 
 #: DlgPrefMidiBindingsDlg#8
 msgctxt "DlgPrefMidiBindingsDlg#8"
 msgid "Add"
-msgstr ""
+msgstr "adicionar"
 
 #: DlgPrefMidiBindingsDlg#9
 msgctxt "DlgPrefMidiBindingsDlg#9"
 msgid "Remove"
-msgstr ""
+msgstr "Remover"
 
 #: DlgPrefMidiBindingsDlg#10
 msgctxt "DlgPrefMidiBindingsDlg#10"
@@ -1042,26 +924,26 @@ msgstr ""
 
 #: DlgPrefMidiBindingsDlg#11
 msgid "Clear All"
-msgstr ""
+msgstr "Limpar Todos"
 
 #: DlgPrefMidiBindingsDlg#12
 msgid ""
 "<a "
 "href=\"http://mixxx.org/wiki/doku.php/midi_controller_mapping_file_format\">T"
 "roubleshooting</a>"
-msgstr ""
+msgstr "Resolução de problemas"
 
 #: DlgPrefMidiBindingsDlg#13
 msgid "MIDI Input"
-msgstr ""
+msgstr "Entrada MIDI"
 
 #: DlgPrefMidiBindingsDlg#14
 msgid "Outputs"
-msgstr ""
+msgstr "Saídas"
 
 #: DlgPrefMidiBindingsDlg#15
 msgid "MIDI Output"
-msgstr ""
+msgstr "Saida MIDI"
 
 #: DlgPrefNoMidiDlg#1
 msgctxt "DlgPrefNoMidiDlg#1"
@@ -1070,7 +952,7 @@ msgstr ""
 
 #: DlgPrefNoMidiDlg#2
 msgid "No MIDI devices available"
-msgstr ""
+msgstr "Os dispositívos MIDI não estão disponíveis"
 
 #: DlgPrefNoVinylDlg#1
 msgctxt "DlgPrefNoVinylDlg#1"
@@ -1080,7 +962,7 @@ msgstr ""
 #: DlgPrefNoVinylDlg#2
 msgctxt "DlgPrefNoVinylDlg#2"
 msgid "Input"
-msgstr ""
+msgstr "Entrada"
 
 #: DlgPrefNoVinylDlg#3
 msgctxt "DlgPrefNoVinylDlg#3"
@@ -1097,6 +979,8 @@ msgid ""
 "weight:600;\">Select sound devices for vinyl control in the Sound Hardware "
 "pane.</span></p></body></html>"
 msgstr ""
+"Definir o dispositivo de som para controlo de vinyl, no painel de Hardware "
+"Sonoro"
 
 #: DlgPrefNoVinylDlg#4
 msgctxt "DlgPrefNoVinylDlg#4"
@@ -1104,12 +988,12 @@ msgid ""
 "<a "
 "href=\"http://www.mixxx.org/wiki/doku.php/vinyl_control#troubleshooting\">Tro"
 "ubleshooting</a>"
-msgstr ""
+msgstr "Resolução de problemas"
 
 #: DlgPrefNoVinylDlg#5
 msgctxt "DlgPrefNoVinylDlg#5"
 msgid "Turntable Preamp"
-msgstr ""
+msgstr "Pré-amplificador do gira-discos"
 
 #: DlgPrefNoVinylDlg#6
 msgctxt "DlgPrefNoVinylDlg#6"
@@ -1124,108 +1008,117 @@ msgstr ""
 #: DlgPrefNoVinylDlg#8
 msgctxt "DlgPrefNoVinylDlg#8"
 msgid "Vinyl Configuration"
-msgstr ""
+msgstr "Configurações Vinyl"
 
 #: DlgPrefNoVinylDlg#9
 msgctxt "DlgPrefNoVinylDlg#9"
 msgid "Deck 1 Vinyl Type"
-msgstr ""
+msgstr "Tipo de vinyl - Deck 1"
 
 #: DlgPrefNoVinylDlg#10
 msgctxt "DlgPrefNoVinylDlg#10"
 msgid "Deck 2 Vinyl Type"
-msgstr ""
+msgstr "Tipo de vinyl - Deck 2"
 
 #: DlgPrefNoVinylDlg#11
 msgctxt "DlgPrefNoVinylDlg#11"
 msgid "Lead-in time"
-msgstr ""
+msgstr "Tempo de entrada"
 
 #: DlgPrefNoVinylDlg#12
 msgctxt "DlgPrefNoVinylDlg#12"
 msgid "seconds"
-msgstr ""
+msgstr "segundos"
 
 #: DlgPrefNoVinylDlg#13
 msgctxt "DlgPrefNoVinylDlg#13"
-msgid "Control Mode"
-msgstr ""
+msgid "Show Signal Quality in Skin"
+msgstr "Mostrar a qualidade do sinal - no tema pré-definido"
 
 #: DlgPrefNoVinylDlg#14
 msgctxt "DlgPrefNoVinylDlg#14"
-msgid "Absolute Mode"
-msgstr ""
+msgid "Control Mode"
+msgstr "Modo de controlo"
 
 #: DlgPrefNoVinylDlg#15
 msgctxt "DlgPrefNoVinylDlg#15"
-msgid "Relative Mode"
-msgstr ""
+msgid "Absolute Mode"
+msgstr "Modo absoluto"
 
 #: DlgPrefNoVinylDlg#16
 msgctxt "DlgPrefNoVinylDlg#16"
-msgid "Enable Needle Skip Prevention"
-msgstr ""
+msgid "Relative Mode"
+msgstr "Modo relativo"
 
 #: DlgPrefNoVinylDlg#17
 msgctxt "DlgPrefNoVinylDlg#17"
-msgid "Signal Quality"
-msgstr ""
+msgid "Enable Needle Skip Prevention"
+msgstr "Activar a prevenção de salto da agulha"
 
 #: DlgPrefNoVinylDlg#18
 msgctxt "DlgPrefNoVinylDlg#18"
-msgid "http://www.xwax.co.uk"
-msgstr ""
+msgid "Signal Quality"
+msgstr "Qualidade do Sinal"
 
 #: DlgPrefNoVinylDlg#19
 msgctxt "DlgPrefNoVinylDlg#19"
-msgid "Powered by xwax"
-msgstr ""
+msgid "http://www.xwax.co.uk"
+msgstr "http://www.xwax.co.uk"
 
 #: DlgPrefNoVinylDlg#20
 msgctxt "DlgPrefNoVinylDlg#20"
-msgid "Apply"
-msgstr ""
+msgid "Powered by xwax"
+msgstr "Patrocionado por xwax"
 
 #: DlgPrefNoVinylDlg#21
+msgctxt "DlgPrefNoVinylDlg#21"
+msgid "Apply"
+msgstr "Aplicar"
+
+#: DlgPrefNoVinylDlg#22
 msgid ""
 "<b>This version of Mixxx does not support vinyl control.</b> <br> Please "
 "visit <a href=\"http://mixxx.org\">Mixxx.org</a> for more information."
 msgstr ""
+"<b>Esta versão do Mixxx não tem suporte de controlo vinyl.</b> <br> Por "
+"favor visite <a href=\"http://mixxx.org\">Mixxx.org</a> para mais informação."
 
 #: DlgPrefPlaylist#1
 msgctxt "DlgPrefPlaylist#1"
 msgid "Choose music library directory"
-msgstr ""
+msgstr "Seleccione uma pasta para a livraria de músicas"
 
 #: DlgPrefPlaylist#2
 msgid "Multiple iPods Detected"
-msgstr ""
+msgstr "Multiplos iPods detectados"
 
 #: DlgPrefPlaylist#3
 msgid ""
 "Mixxx has detected another iPod. \n"
 "\n"
 msgstr ""
+"Mixxx detectou outro iPod \n"
+"\n"
 
 #: DlgPrefPlaylist#4
 msgid "Choose Yes to use the newly found iPod @ "
-msgstr ""
+msgstr "Escolha \"Sim\" para usar o iPod recentemente encontrado @ "
 
 #: DlgPrefPlaylist#5
 msgid " or to continue to search for other iPods. \n"
-msgstr ""
+msgstr " ou pode continuar a procurar por outros iPods. \n"
 
 #: DlgPrefPlaylist#6
 msgid "Choose No to use the existing iPod @ "
-msgstr ""
+msgstr "Escolha \"Não\" para usar o iPod actualmente seleccionado @ "
 
 #: DlgPrefPlaylist#7
 msgid " and end detection. \n"
-msgstr ""
+msgstr " detecção de fim \n"
 
 #: DlgPrefPlaylist#8
 msgid "Choose iPod mount point"
-msgstr ""
+msgstr "dispositivo a utilizar é o iPod"
 
 #: DlgPrefPlaylistDlg#1
 msgctxt "DlgPrefPlaylistDlg#1"
@@ -1234,45 +1127,45 @@ msgstr ""
 
 #: DlgPrefPlaylistDlg#2
 msgid "Audio File Formats"
-msgstr ""
+msgstr "Formatos de ficheiro Audio"
 
 #: DlgPrefPlaylistDlg#3
 msgid "Additional Format Plugins:"
-msgstr ""
+msgstr "plugins de formatos adicionais"
 
 #: DlgPrefPlaylistDlg#4
 msgid "MP3, Ogg Vorbis, FLAC, WAVe, AIFF"
-msgstr ""
+msgstr "MP3, Ogg Vorbis, FLAC, WAVe, AIFF"
 
 #: DlgPrefPlaylistDlg#5
 msgid "Loaded Plugins:"
-msgstr ""
+msgstr "Plugins carregados"
 
 #: DlgPrefPlaylistDlg#6
 msgctxt "DlgPrefPlaylistDlg#6"
 msgid "None"
-msgstr ""
+msgstr "Nenhum"
 
 #: DlgPrefPlaylistDlg#7
 msgctxt "DlgPrefPlaylistDlg#7"
 msgid "Miscellaneous"
-msgstr ""
+msgstr "Diversos"
 
 #: DlgPrefPlaylistDlg#8
 msgid "Synchronize ID3 tags on track modifications"
-msgstr ""
+msgstr "Sincronizar as tags ID3 nas modificações de pistas"
 
 #: DlgPrefPlaylistDlg#9
 msgid "Rescan library on start-up"
-msgstr ""
+msgstr "Re-ler a livraria ao iniciar o programa"
 
 #: DlgPrefPlaylistDlg#10
 msgid "Use relative paths for playlist export if possible"
-msgstr ""
+msgstr "usar o caminho relativo para exportação da lista de reprodução"
 
 #: DlgPrefPlaylistDlg#11
 msgid "iPod"
-msgstr ""
+msgstr "iPod"
 
 #: DlgPrefPlaylistDlg#12
 msgid "iPod mountpoint"
@@ -1280,32 +1173,32 @@ msgstr ""
 
 #: DlgPrefPlaylistDlg#13
 msgid "Browse..."
-msgstr ""
+msgstr "Procurar..."
 
 #: DlgPrefPlaylistDlg#14
 msgid "Detect"
-msgstr ""
+msgstr "Detectar"
 
 #: DlgPrefPlaylistDlg#15
 msgctxt "DlgPrefPlaylistDlg#15"
 msgid "Library"
-msgstr ""
+msgstr "Biblioteca"
 
 #: DlgPrefPlaylistDlg#16
 msgid "Music Directory:"
-msgstr ""
+msgstr "Directoria de música"
 
 #: DlgPrefPlaylistDlg#17
 msgid "Built-in"
-msgstr ""
+msgstr "Integrado"
 
 #: DlgPrefPlaylistDlg#18
 msgid "Available Online..."
-msgstr ""
+msgstr "Disponível online..."
 
 #: DlgPrefPlaylistDlg#19
 msgid "Bundled Songs"
-msgstr ""
+msgstr "Músicas gratuitas"
 
 #: DlgPrefPlaylistDlg#20
 msgid ""
@@ -1315,7 +1208,7 @@ msgstr ""
 
 #: DlgPrefRecord#1
 msgid "kbps"
-msgstr ""
+msgstr "kbps"
 
 #: DlgPrefRecordDlg#1
 msgctxt "DlgPrefRecordDlg#1"
@@ -1325,42 +1218,42 @@ msgstr ""
 #: DlgPrefRecordDlg#2
 msgctxt "DlgPrefRecordDlg#2"
 msgid "Encoding"
-msgstr ""
+msgstr "Codificação"
 
 #: DlgPrefRecordDlg#3
 msgid "Quality"
-msgstr ""
+msgstr "Qualidade"
 
 #: DlgPrefRecordDlg#4
 msgid "High"
-msgstr ""
+msgstr "Alto"
 
 #: DlgPrefRecordDlg#5
 msgid "Low"
-msgstr ""
+msgstr "Baixo"
 
 #: DlgPrefRecordDlg#6
 msgid "Tags"
-msgstr ""
+msgstr "Etiquetas"
 
 #: DlgPrefRecordDlg#7
 msgctxt "DlgPrefRecordDlg#7"
 msgid "Title"
-msgstr ""
+msgstr "Título"
 
 #: DlgPrefRecordDlg#8
 msgid "Author"
-msgstr ""
+msgstr "Autor"
 
 #: DlgPrefRecordDlg#9
 msgctxt "DlgPrefRecordDlg#9"
 msgid "Album"
-msgstr ""
+msgstr "Álbum"
 
 #: DlgPrefRecordDlg#10
 msgctxt "DlgPrefRecordDlg#10"
 msgid "Miscellaneous"
-msgstr ""
+msgstr "Diversos"
 
 #: DlgPrefRecordDlg#11
 msgid "Create a CUE file"
@@ -1368,38 +1261,40 @@ msgstr ""
 
 #: DlgPrefRecordDlg#12
 msgid "File Splitting"
-msgstr ""
+msgstr "Divisão de ficheiros"
 
 #: DlgPrefRecordDlg#13
 msgid "Split recordings at"
-msgstr ""
+msgstr "Divisão das gravações em"
 
 #: DlgPrefReplayGainDlg#1
 msgctxt "DlgPrefReplayGainDlg#1"
 msgid "BPM Detection Settings"
-msgstr ""
+msgstr "Definições de Detecção de BPM"
 
 #: DlgPrefReplayGainDlg#2
 msgid "ReplayGain Normalization"
-msgstr ""
+msgstr "Normalização do ReplayGain (ganho na repetição)"
 
 #: DlgPrefReplayGainDlg#3
 msgid "Apply volume normalization to loaded songs."
-msgstr ""
+msgstr "Aplicar a normalização de volume às músicas carregadas"
 
 #: DlgPrefReplayGainDlg#4
 msgid "Enable Replay Gain"
-msgstr ""
+msgstr "Activar o ganho da replrodução"
 
 #: DlgPrefReplayGainDlg#5
 msgid ""
 "Calculate ReplayGain normalization for songs which are missing ReplayGain "
 "metadata."
 msgstr ""
+"Calcular a normalização de ganho/reprodução às músicas que não tenham o "
+"campo de metadados reprodução/ganho preenchidos"
 
 #: DlgPrefReplayGainDlg#6
 msgid "Enable Replay Gain Analysis"
-msgstr ""
+msgstr "Activar a análise de reprodução/ganho"
 
 #: DlgPrefReplayGainDlg#7
 msgid ""
@@ -1407,23 +1302,26 @@ msgid ""
 "applied to a new song. You may wish to wait before adjusting the pregain and "
 "volume."
 msgstr ""
+"Em computadores mais antigos, o processo de normalização deverá demorar mais "
+"do que o normal a ser aplicado. Deverá aguardar alguns segundos antes de "
+"ajustar o volume do pré/ganho"
 
 #: DlgPrefReplayGainDlg#8
 msgid "Initial Boost"
-msgstr ""
+msgstr "Arranque inicial"
 
 #: DlgPrefReplayGainDlg#9
 msgid "Initial Gain Boost"
-msgstr ""
+msgstr "Arranque do ganho inicial"
 
 #: DlgPrefReplayGainDlg#10
 msgid "dB"
-msgstr ""
+msgstr "dB"
 
 #: DlgPrefReplayGainDlg#11
 msgctxt "DlgPrefReplayGainDlg#11"
 msgid "Reset"
-msgstr ""
+msgstr "Repor"
 
 #: DlgPrefShoutcastDlg#1
 msgctxt "DlgPrefShoutcastDlg#1"
@@ -1433,16 +1331,16 @@ msgstr ""
 #: DlgPrefShoutcastDlg#2
 msgctxt "DlgPrefShoutcastDlg#2"
 msgid "Enable live broadcasting"
-msgstr ""
+msgstr "Activar a transmissão em tempo real"
 
 #: DlgPrefShoutcastDlg#3
 msgid "Server connection"
-msgstr ""
+msgstr "Conecção ao servidor"
 
 #: DlgPrefShoutcastDlg#4
 msgctxt "DlgPrefShoutcastDlg#4"
 msgid "Type"
-msgstr ""
+msgstr "Tipo"
 
 #: DlgPrefShoutcastDlg#5
 msgid "Icecast 2"
@@ -1458,7 +1356,7 @@ msgstr ""
 
 #: DlgPrefShoutcastDlg#8
 msgid "Mount"
-msgstr ""
+msgstr "Montar"
 
 #: DlgPrefShoutcastDlg#9
 msgid "/mixxx.ogg"
@@ -1466,7 +1364,7 @@ msgstr ""
 
 #: DlgPrefShoutcastDlg#10
 msgid "Host"
-msgstr ""
+msgstr "Anfitrião (host)"
 
 #: DlgPrefShoutcastDlg#11
 msgid "192.168.123.8"
@@ -1474,7 +1372,7 @@ msgstr ""
 
 #: DlgPrefShoutcastDlg#12
 msgid "Port"
-msgstr ""
+msgstr "Porto"
 
 #: DlgPrefShoutcastDlg#13
 msgid "8000"
@@ -1482,15 +1380,15 @@ msgstr ""
 
 #: DlgPrefShoutcastDlg#14
 msgid "Login"
-msgstr ""
+msgstr "Iniciar Sessão"
 
 #: DlgPrefShoutcastDlg#15
 msgid "source"
-msgstr ""
+msgstr "origem"
 
 #: DlgPrefShoutcastDlg#16
 msgid "Password"
-msgstr ""
+msgstr "Palavra passe"
 
 #: DlgPrefShoutcastDlg#17
 msgid "test1234"
@@ -1498,27 +1396,28 @@ msgstr ""
 
 #: DlgPrefShoutcastDlg#18
 msgid "Stream settings"
-msgstr ""
+msgstr "Definições de transmissão"
 
 #: DlgPrefShoutcastDlg#19
 msgid "Stream name"
-msgstr ""
+msgstr "Nome da transmissão"
 
 #: DlgPrefShoutcastDlg#20
 msgid "Mixxx Icecast Testing"
-msgstr ""
+msgstr "Teste de ligação do Mixxx ao IceCast"
 
 #: DlgPrefShoutcastDlg#21
 msgid "Website"
-msgstr ""
+msgstr "Página Web"
 
 #: DlgPrefShoutcastDlg#22
 msgid "http://www.mixxx.org"
 msgstr ""
 
 #: DlgPrefShoutcastDlg#23
+msgctxt "DlgPrefShoutcastDlg#23"
 msgid "Description"
-msgstr ""
+msgstr "Descrição"
 
 #: DlgPrefShoutcastDlg#24
 msgid ""
@@ -1533,30 +1432,30 @@ msgid ""
 "right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-"
 "family:'DejaVu Sans'; font-size:9pt; font-style:italic;\">This stream is on "
 "line for testing purposes!</span></p></body></html>"
-msgstr ""
+msgstr "A transmissão está online para efeitos de teste!"
 
 #: DlgPrefShoutcastDlg#25
 msgctxt "DlgPrefShoutcastDlg#25"
 msgid "Genre"
-msgstr ""
+msgstr "Género"
 
 #: DlgPrefShoutcastDlg#26
 msgid "Live mix"
-msgstr ""
+msgstr "Mistura ao vivo"
 
 #: DlgPrefShoutcastDlg#27
 msgid "Public stream"
-msgstr ""
+msgstr "Transmissão pública"
 
 #: DlgPrefShoutcastDlg#28
 msgctxt "DlgPrefShoutcastDlg#28"
 msgid "Encoding"
-msgstr ""
+msgstr "A codificar..."
 
 #: DlgPrefShoutcastDlg#29
 msgctxt "DlgPrefShoutcastDlg#29"
 msgid "Bitrate"
-msgstr ""
+msgstr "Taxa de dados"
 
 #: DlgPrefShoutcastDlg#30
 msgid "320 kbps"
@@ -1604,7 +1503,7 @@ msgstr ""
 
 #: DlgPrefShoutcastDlg#41
 msgid "Format"
-msgstr ""
+msgstr "Formato"
 
 #: DlgPrefShoutcastDlg#42
 msgid "Ogg Vorbis"
@@ -1616,24 +1515,24 @@ msgstr ""
 
 #: DlgPrefShoutcastDlg#44
 msgid "Channels"
-msgstr ""
+msgstr "Canais"
 
 #: DlgPrefShoutcastDlg#45
 msgid "Stereo"
-msgstr ""
+msgstr "Estéreo"
 
 #: DlgPrefShoutcastDlg#46
 msgid "Custom metadata"
-msgstr ""
+msgstr "Metadados pessoais"
 
 #: DlgPrefShoutcastDlg#47
 msgid "Enable custom metadata"
-msgstr ""
+msgstr "Activar metadados pessoais"
 
 #: DlgPrefShoutcastDlg#48
 msgctxt "DlgPrefShoutcastDlg#48"
 msgid "Artist"
-msgstr ""
+msgstr "Artista"
 
 #: DlgPrefShoutcastDlg#49
 msgid "%mainartist"
@@ -1642,7 +1541,7 @@ msgstr ""
 #: DlgPrefShoutcastDlg#50
 msgctxt "DlgPrefShoutcastDlg#50"
 msgid "Title"
-msgstr ""
+msgstr "Título"
 
 #: DlgPrefShoutcastDlg#51
 msgid "%maintitle"
@@ -1653,11 +1552,13 @@ msgid ""
 "Please note that for technical reasons changing any shoutcast settings will "
 "cause an established connection to disconnect and reconnect. "
 msgstr ""
+"Avisa-se que por razões técnicas, alterações às definições do shoutcast "
+"causarão uma perca de conecção ao servidor e a sua reposição. "
 
 #: DlgPrefSound#1
 msgctxt "DlgPrefSound#1"
 msgid "None"
-msgstr ""
+msgstr "Nenhum"
 
 #: DlgPrefSound#2
 msgid "%1 Hz"
@@ -1665,11 +1566,11 @@ msgstr ""
 
 #: DlgPrefSound#3
 msgid "a device"
-msgstr ""
+msgstr "um dispositivo"
 
 #: DlgPrefSound#4
 msgid "An unknown error occurred"
-msgstr ""
+msgstr "Ocorreu um erro desconhecido"
 
 #: DlgPrefSound#5
 msgid "sound device \"%1\""
@@ -1677,33 +1578,35 @@ msgstr ""
 
 #: DlgPrefSound#6
 msgid "Two outputs cannot share channels on %1"
-msgstr ""
+msgstr "Duas saídas não podem partilhar canais em %1"
 
 #: DlgPrefSound#7
 msgid ""
 "Error opening %1\n"
 "%2"
 msgstr ""
+"Erro ao abrir %1\n"
+"%2"
 
 #: DlgPrefSound#8
 msgid "%1 ms"
-msgstr ""
+msgstr "%1 ms"
 
 #: DlgPrefSound#9
 msgid "Configuration error"
-msgstr ""
+msgstr "Erro de configuração"
 
 #: DlgPrefSoundDlg#1
 msgid "Sound API"
-msgstr ""
+msgstr "Interface de programação Aplicacional do Som"
 
 #: DlgPrefSoundDlg#2
 msgid "Sample Rate"
-msgstr ""
+msgstr "Taxa de Amostragem"
 
 #: DlgPrefSoundDlg#3
 msgid "Latency Tips"
-msgstr ""
+msgstr "Dicas sobre a Latência"
 
 #: DlgPrefSoundDlg#4
 msgid ""
@@ -1712,59 +1615,67 @@ msgid ""
 "<li>Reduce your latency to improve Mixxx's responsiveness</li>\n"
 "</ul>"
 msgstr ""
+"<ul>\n"
+"<li>Aumentar a latência de forem ouvidos estalidos durante o playback</li>\n"
+"<li>Diminuir a latência para melhorar o tempo de resposta do Mixxx</li>\n"
+"</ul>"
 
 #: DlgPrefSoundDlg#5
 msgid "Output"
-msgstr ""
+msgstr "Saída"
 
 #: DlgPrefSoundDlg#6
 msgctxt "DlgPrefSoundDlg#6"
 msgid "Input"
-msgstr ""
+msgstr "Entrada"
 
 #: DlgPrefSoundDlg#7
 msgid "Query Devices"
-msgstr ""
+msgstr "Pesquisa por dispositívos"
 
 #: DlgPrefSoundDlg#8
 msgid "Reset to Defaults"
-msgstr ""
+msgstr "Repor as Predefinições"
 
 #: DlgPrefSoundDlg#9
 msgctxt "DlgPrefSoundDlg#9"
 msgid "Apply"
-msgstr ""
+msgstr "Aplicar"
 
 #: DlgPrefSoundDlg#10
 msgid "Latency"
-msgstr ""
+msgstr "Latência"
 
 #: DlgPrefSoundItem#1
 msgctxt "DlgPrefSoundItem#1"
 msgid "None"
-msgstr ""
+msgstr "Nenhum"
 
 #: DlgPrefSoundItem#2
-msgid "Channels %1 - %2"
+msgid "Channel %1"
 msgstr ""
 
 #: DlgPrefSoundItem#3
-msgid "Form"
-msgstr ""
+msgid "Channels %1 - %2"
+msgstr "Canais %1 - %2"
 
 #: DlgPrefSoundItem#4
+msgid "Form"
+msgstr "Formulário"
+
+#: DlgPrefSoundItem#5
 msgid "Type (#)"
-msgstr ""
+msgstr "Tipo (#)"
 
 #: DlgPrefVinylDlg#1
 msgctxt "DlgPrefVinylDlg#1"
 msgid "Form1"
-msgstr ""
+msgstr "Form1"
 
 #: DlgPrefVinylDlg#2
 msgctxt "DlgPrefVinylDlg#2"
 msgid "Input"
-msgstr ""
+msgstr "Entrada"
 
 #: DlgPrefVinylDlg#3
 msgctxt "DlgPrefVinylDlg#3"
@@ -1822,98 +1733,103 @@ msgstr ""
 
 #: DlgPrefVinylDlg#11
 msgctxt "DlgPrefVinylDlg#11"
-msgid "Apply"
+msgid "Show Signal Quality in Skin"
 msgstr ""
 
 #: DlgPrefVinylDlg#12
 msgctxt "DlgPrefVinylDlg#12"
-msgid "Lead-in time"
+msgid "Apply"
 msgstr ""
 
 #: DlgPrefVinylDlg#13
 msgctxt "DlgPrefVinylDlg#13"
-msgid "seconds"
+msgid "Lead-in time"
 msgstr ""
 
 #: DlgPrefVinylDlg#14
 msgctxt "DlgPrefVinylDlg#14"
-msgid "Control Mode"
-msgstr ""
+msgid "seconds"
+msgstr "segundos"
 
 #: DlgPrefVinylDlg#15
 msgctxt "DlgPrefVinylDlg#15"
-msgid "Absolute Mode"
+msgid "Control Mode"
 msgstr ""
 
 #: DlgPrefVinylDlg#16
 msgctxt "DlgPrefVinylDlg#16"
-msgid "Relative Mode"
+msgid "Absolute Mode"
 msgstr ""
 
 #: DlgPrefVinylDlg#17
 msgctxt "DlgPrefVinylDlg#17"
-msgid "Enable Needle Skip Prevention"
+msgid "Relative Mode"
 msgstr ""
 
 #: DlgPrefVinylDlg#18
 msgctxt "DlgPrefVinylDlg#18"
-msgid "Signal Quality"
+msgid "Enable Needle Skip Prevention"
 msgstr ""
 
 #: DlgPrefVinylDlg#19
 msgctxt "DlgPrefVinylDlg#19"
-msgid "http://www.xwax.co.uk"
+msgid "Signal Quality"
 msgstr ""
 
 #: DlgPrefVinylDlg#20
 msgctxt "DlgPrefVinylDlg#20"
+msgid "http://www.xwax.co.uk"
+msgstr ""
+
+#: DlgPrefVinylDlg#21
+msgctxt "DlgPrefVinylDlg#21"
 msgid "Powered by xwax"
 msgstr ""
 
 #: DlgPreferences#1
 msgid "Sound Hardware"
-msgstr ""
+msgstr "Hardware de Som"
 
 #: DlgPreferences#2
 msgid "MIDI Controllers"
-msgstr ""
+msgstr "Controladores MIDI"
 
 #: DlgPreferences#3
 msgctxt "DlgPreferences#3"
 msgid "Library"
-msgstr ""
+msgstr "Biblioteca"
 
 #: DlgPreferences#4
 msgid "Interface"
-msgstr ""
+msgstr "Interface"
 
 #: DlgPreferences#5
 msgid "Equalizers"
-msgstr ""
+msgstr "Equalizadores"
 
 #: DlgPreferences#6
 msgctxt "DlgPreferences#6"
 msgid "Crossfader"
-msgstr ""
+msgstr "Crossfader"
 
 #: DlgPreferences#7
 msgctxt "DlgPreferences#7"
 msgid "Recording"
-msgstr ""
+msgstr "Em gravação"
 
 #: DlgPreferences#8
 msgctxt "DlgPreferences#8"
 msgid "BPM Detection"
-msgstr ""
+msgstr "Deteção de BPM"
 
 #: DlgPreferences#9
 msgid "Normalization"
-msgstr ""
+msgstr "Normalização"
 
 #: DlgPreferences#10
 msgctxt "DlgPreferences#10"
 msgid "Vinyl Control"
-msgstr ""
+msgstr "Controlo Vynil"
 
 #: DlgPreferences#11
 msgid "Live Broadcasting"
@@ -1922,7 +1838,7 @@ msgstr ""
 #: DlgPreferencesDlg#1
 msgctxt "DlgPreferencesDlg#1"
 msgid "Dialog"
-msgstr ""
+msgstr "Diálogo"
 
 #: DlgPreferencesDlg#2
 msgid "1"
@@ -1931,75 +1847,71 @@ msgstr ""
 #: DlgPrepare#1
 msgctxt "DlgPrepare#1"
 msgid "Manage"
-msgstr ""
+msgstr "Gerir"
 
 #: DlgPrepare#2
 msgid "Recently Added"
-msgstr ""
+msgstr "Adicionadas Recentemente"
 
 #: DlgPrepare#3
 msgid "All Songs"
-msgstr ""
+msgstr "Todas as músicas"
 
 #: DlgPrepare#4
 msgid "Progress"
-msgstr ""
+msgstr "Evolução"
 
 #: DlgPrepare#5
 msgid "Select All"
-msgstr ""
+msgstr "Seleccionar Todos"
 
 #: DlgPrepare#6
 msgctxt "DlgPrepare#6"
 msgid "Analyze"
-msgstr ""
+msgstr "Analisar"
 
 #: DlgPrepare#7
 msgid "Stop Analysis"
-msgstr ""
+msgstr "Parar a análise"
 
 #: DlgPrepare#8
 msgid "Analyzing %1%"
-msgstr ""
+msgstr "Analisando %1%"
 
 #: DlgRecording#1
 msgctxt "DlgRecording#1"
 msgid "Manage"
-msgstr ""
+msgstr "Gerir"
 
 #: DlgRecording#2
 msgid "Status:"
-msgstr ""
+msgstr "Estado:"
 
 #: DlgRecording#3
 msgid "Start Recording"
-msgstr ""
+msgstr "Iniciar a Gravação"
 
 #: DlgRecording#4
 msgid "Start recording here ..."
-msgstr ""
+msgstr "Iniciar a gravação aqui ..."
 
 #: DlgRecording#5
 msgid "Stop Recording"
-msgstr ""
+msgstr "Parar a gravação"
 
 #: DlgTrackInfo#1
-msgctxt "DlgTrackInfo#1"
 msgid "Track Editor"
 msgstr ""
 
 #: DlgTrackInfo#2
-msgctxt "DlgTrackInfo#2"
 msgid "Song:"
 msgstr ""
 
 #: DlgTrackInfo#3
-msgctxt "DlgTrackInfo#3"
 msgid "Title:"
 msgstr ""
 
 #: DlgTrackInfo#4
-msgctxt "DlgTrackInfo#4"
 msgid "Artist:"
 msgstr ""
 
@@ -2020,7 +1932,6 @@ msgid "Genre:"
 msgstr ""
 
 #: DlgTrackInfo#9
-msgctxt "DlgTrackInfo#9"
 msgid "Filename:"
 msgstr ""
 
@@ -2029,22 +1940,18 @@ msgid "Duration:"
 msgstr ""
 
 #: DlgTrackInfo#11
-msgctxt "DlgTrackInfo#11"
 msgid "3:00"
 msgstr ""
 
 #: DlgTrackInfo#12
-msgctxt "DlgTrackInfo#12"
 msgid "File Type:"
 msgstr ""
 
 #: DlgTrackInfo#13
-msgctxt "DlgTrackInfo#13"
 msgid "77"
 msgstr ""
 
 #: DlgTrackInfo#14
-msgctxt "DlgTrackInfo#14"
 msgid "Comments:"
 msgstr ""
 
@@ -2053,7 +1960,6 @@ msgid "Reload track metadata from file."
 msgstr ""
 
 #: DlgTrackInfo#16
-msgctxt "DlgTrackInfo#16"
 msgid "Track Information (Click to Expand)"
 msgstr ""
 
@@ -2123,7 +2029,6 @@ msgid "&Cancel"
 msgstr ""
 
 #: DlgTrackInfo#33
-msgctxt "DlgTrackInfo#33"
 msgid "Alt+O"
 msgstr ""
 
@@ -2137,22 +2042,32 @@ msgstr ""
 
 #: EncoderMp3#2
 msgid ""
-"<html>Mixxx is unable to load or find the MP3 encoder lame. <p>Please "
-"install libmp3lame (also known as lame) and check if /usr/lib/libmp3lame.so "
-"exists on your system </html>"
+"<html>Mixxx cannot record or stream in MP3 without the MP3 encoder "
+"&quot;lame&quot;. Due to licensing issues, we cannot include this with "
+"Mixxx. To record or stream in MP3, you must download <b>libmp3lame</b> and "
+"install it on your system. <p>See <a "
+"href='http://mixxx.org/wiki/doku.php/internet_broadcasting#linux'>Mixxx "
+"Wiki</a> for more information. </html>"
 msgstr ""
 
 #: EncoderMp3#3
 msgid ""
-"<html>Mixxx is unable to load or find the MP3 encoder lame. <p>Please put "
-"lame_enc.dll in the directory you have installed Mixxx </html>"
+"<html>Mixxx cannot record or stream in MP3 without the MP3 encoder "
+"&quot;lame&quot;. Due to licensing issues, we cannot include this with "
+"Mixxx. To record or stream in MP3, you must download <b>lame_enc.dll</b> and "
+"install it on your system. <p>See <a "
+"href='http://mixxx.org/wiki/doku.php/internet_broadcasting#windows'>Mixxx "
+"Wiki</a> for more information. </html>"
 msgstr ""
 
 #: EncoderMp3#4
 msgid ""
-"<html>Mixxx is unable to load or find the MP3 encoder lame. <p>Please "
-"install libmp3lame (also known as lame) and check if "
-"/usr/local/lib/libmp3lame.dylib exists on your system </html>"
+"<html>Mixxx cannot record or stream in MP3 without the MP3 encoder "
+"&quot;lame&quot;. Due to licensing issues, we cannot include this with "
+"Mixxx. To record or stream in MP3, you must download <b>libmp3lame</b> and "
+"install it on your system. <p>See <a "
+"href='http://mixxx.org/wiki/doku.php/internet_broadcasting#mac_osx'>Mixxx "
+"Wiki</a> for more information. </html>"
 msgstr ""
 
 #: EncoderMp3#5
@@ -2245,7 +2160,7 @@ msgid "Select your iTunes library"
 msgstr ""
 
 #: ITunesFeature#3
-msgid "iTunes (loading)"
+msgid "(loading) iTunes"
 msgstr ""
 
 #: ITunesFeature#4
@@ -2302,6 +2217,11 @@ msgctxt "MidiInputMappingTableModel#5"
 msgid "Control Value"
 msgstr ""
 
+#: MidiInputMappingTableModel#6
+msgctxt "MidiInputMappingTableModel#6"
+msgid "Description"
+msgstr ""
+
 #: MidiMapping#1
 msgid "MIDI script function not found"
 msgstr ""
@@ -2353,10 +2273,15 @@ msgid "Control Value"
 msgstr ""
 
 #: MidiOutputMappingTableModel#6
-msgid "Threshold Min"
+msgctxt "MidiOutputMappingTableModel#6"
+msgid "Description"
 msgstr ""
 
 #: MidiOutputMappingTableModel#7
+msgid "Threshold Min"
+msgstr ""
+
+#: MidiOutputMappingTableModel#8
 msgid "Threshold Max"
 msgstr ""
 
@@ -2576,273 +2501,303 @@ msgid "Ctrl+P"
 msgstr ""
 
 #: MixxxApp#40
-msgid "&About..."
+msgid "&About"
 msgstr ""
 
 #: MixxxApp#41
-msgid "&Community Support..."
+msgid "&Community Support"
 msgstr ""
 
 #: MixxxApp#42
-msgid "Enable &Vinyl Control 1"
+msgid "Send Us &Feedback"
 msgstr ""
 
 #: MixxxApp#43
-msgid "Ctrl+Y"
+msgid "&Translate this application"
 msgstr ""
 
 #: MixxxApp#44
-msgid "Enable &Vinyl Control 2"
+msgid "Enable &Vinyl Control 1"
 msgstr ""
 
 #: MixxxApp#45
-msgid "Ctrl+U"
+msgid "Ctrl+Y"
 msgstr ""
 
 #: MixxxApp#46
-msgctxt "MixxxApp#46"
-msgid "Enable live broadcasting"
+msgid "Enable &Vinyl Control 2"
 msgstr ""
 
 #: MixxxApp#47
-msgid "Ctrl+L"
+msgid "Ctrl+U"
 msgstr ""
 
 #: MixxxApp#48
-msgid "&Record Mix"
+msgctxt "MixxxApp#48"
+msgid "Enable live broadcasting"
 msgstr ""
 
 #: MixxxApp#49
-msgid "Ctrl+R"
+msgid "Ctrl+L"
 msgstr ""
 
 #: MixxxApp#50
-msgid "Show Studio"
+msgid "&Record Mix"
 msgstr ""
 
 #: MixxxApp#51
-msgid "Opens a song in player 1"
+msgid "Ctrl+R"
 msgstr ""
 
 #: MixxxApp#52
-msgid ""
-"Open\n"
-"\n"
-"Opens a song in player 1"
+msgid "Show Studio"
 msgstr ""
 
 #: MixxxApp#53
-msgid "Opens a song in player 2"
+msgid "Opens a song in player 1"
 msgstr ""
 
 #: MixxxApp#54
 msgid ""
 "Open\n"
 "\n"
-"Opens a song in player 2"
+"Opens a song in player 1"
 msgstr ""
 
 #: MixxxApp#55
-msgid "Quits the application"
+msgid "Opens a song in player 2"
 msgstr ""
 
 #: MixxxApp#56
+msgid ""
+"Open\n"
+"\n"
+"Opens a song in player 2"
+msgstr ""
+
+#: MixxxApp#57
+msgid "Quits the application"
+msgstr ""
+
+#: MixxxApp#58
 msgid ""
 "Exit\n"
 "\n"
 "Quits the application"
 msgstr ""
 
-#: MixxxApp#57
+#: MixxxApp#59
 msgid "Rescans the song library"
 msgstr ""
 
-#: MixxxApp#58
+#: MixxxApp#60
 msgid ""
 "Rescan library\n"
 "\n"
 "Rescans the song library"
 msgstr ""
 
-#: MixxxApp#59
+#: MixxxApp#61
 msgid "Create a new playlist"
 msgstr ""
 
-#: MixxxApp#60
+#: MixxxApp#62
 msgid ""
 "New playlist\n"
 "\n"
 "Create a new playlist"
 msgstr ""
 
-#: MixxxApp#61
+#: MixxxApp#63
 msgid "Create a new crate"
 msgstr ""
 
-#: MixxxApp#62
+#: MixxxApp#64
 msgid ""
 "New crate\n"
 "\n"
 "Create a new crate."
 msgstr ""
 
-#: MixxxApp#63
+#: MixxxApp#65
 msgid "Import playlist"
 msgstr ""
 
-#: MixxxApp#64
+#: MixxxApp#66
 msgid "Audio Beat Marks"
 msgstr ""
 
-#: MixxxApp#65
+#: MixxxApp#67
 msgid ""
 "Audio Beat Marks\n"
 "Mark beats by audio clicks"
 msgstr ""
 
-#: MixxxApp#66
+#: MixxxApp#68
 msgid "Activate Vinyl Control"
 msgstr ""
 
-#: MixxxApp#67
+#: MixxxApp#69
 msgid "Use timecoded vinyls on external turntables to control Mixxx"
 msgstr ""
 
-#: MixxxApp#68
+#: MixxxApp#70
 msgid "Activate live broadcasting"
 msgstr ""
 
-#: MixxxApp#69
+#: MixxxApp#71
 msgid "Stream your mixes to a shoutcast or icecast server"
 msgstr ""
 
-#: MixxxApp#70
+#: MixxxApp#72
 msgid "Start Recording your Mix"
 msgstr ""
 
-#: MixxxApp#71
+#: MixxxApp#73
 msgid "Record your mix to a file"
 msgstr ""
 
-#: MixxxApp#72
+#: MixxxApp#74
 msgid "Full Screen"
 msgstr ""
 
-#: MixxxApp#73
+#: MixxxApp#75
 msgid "Display Mixxx using the full screen"
 msgstr ""
 
-#: MixxxApp#74
-msgctxt "MixxxApp#74"
+#: MixxxApp#76
+msgctxt "MixxxApp#76"
 msgid "Preferences"
 msgstr ""
 
-#: MixxxApp#75
+#: MixxxApp#77
 msgid ""
 "Preferences\n"
 "Playback and MIDI preferences"
 msgstr ""
 
-#: MixxxApp#76
+#: MixxxApp#78
 msgid "Support..."
 msgstr ""
 
-#: MixxxApp#77
+#: MixxxApp#79
 msgid ""
 "Support\n"
 "\n"
 "Get help with Mixxx"
 msgstr ""
 
-#: MixxxApp#78
+#: MixxxApp#80
+msgid "Send feedback to the Mixxx team."
+msgstr ""
+
+#: MixxxApp#81
+msgid ""
+"Support\n"
+"\n"
+"Send feedback to the Mixxx team."
+msgstr ""
+
+#: MixxxApp#82
+msgid "Help translate this application into your language."
+msgstr ""
+
+#: MixxxApp#83
+msgid ""
+"Support\n"
+"\n"
+"Help translate this application into your language."
+msgstr ""
+
+#: MixxxApp#84
 msgid "About the application"
 msgstr ""
 
-#: MixxxApp#79
+#: MixxxApp#85
 msgid ""
 "About\n"
 "\n"
 "About the application"
 msgstr ""
 
-#: MixxxApp#80
+#: MixxxApp#86
 msgid "Shows the macro studio window"
 msgstr ""
 
-#: MixxxApp#81
+#: MixxxApp#87
 msgid ""
 "Show Studio\n"
 "\n"
 "Makes the macro studio visible"
 msgstr ""
 
-#: MixxxApp#82
+#: MixxxApp#88
 msgid "&File"
 msgstr ""
 
-#: MixxxApp#83
+#: MixxxApp#89
 msgid "&Options"
 msgstr ""
 
-#: MixxxApp#84
+#: MixxxApp#90
 msgid "&Library"
 msgstr ""
 
-#: MixxxApp#85
+#: MixxxApp#91
 msgid "&View"
 msgstr ""
 
-#: MixxxApp#86
+#: MixxxApp#92
 msgid "&Help"
 msgstr ""
 
-#: MixxxApp#87
+#: MixxxApp#93
 msgid "&Macro"
 msgstr ""
 
-#: MixxxApp#88
+#: MixxxApp#94
 msgid "&Vinyl Control"
 msgstr ""
 
-#: MixxxApp#89
+#: MixxxApp#95
 msgid "Quit..."
 msgstr ""
 
-#: MixxxApp#90
+#: MixxxApp#96
 msgid "Do your really want to quit?"
 msgstr ""
 
-#: MixxxApp#91
+#: MixxxApp#97
 msgid ""
 "Player 1 is currently playing a song.\n"
 "Are you sure you want to load a new song?"
 msgstr ""
 
-#: MixxxApp#92
+#: MixxxApp#98
 msgid "Load Song into Player 1"
 msgstr ""
 
-#: MixxxApp#93
+#: MixxxApp#99
 msgid ""
 "Player 2 is currently playing a song.\n"
 "Are you sure you want to load a new song?"
 msgstr ""
 
-#: MixxxApp#94
+#: MixxxApp#100
 msgid "Load Song into Player 2"
 msgstr ""
 
-#: MixxxApp#95
+#: MixxxApp#101
 msgid ""
 "No input device(s) select.\n"
 "Please select your soundcard(s) in the sound hardware preferences."
 msgstr ""
 
-#: MixxxApp#96
+#: MixxxApp#102
 msgid "Confirm Exit"
 msgstr ""
 
-#: MixxxApp#97
+#: MixxxApp#103
 msgid "A deck is currently playing. Exit Mixxx?"
 msgstr ""
 
@@ -3101,7 +3056,7 @@ msgid "Traktor"
 msgstr ""
 
 #: TraktorFeature#2
-msgid "Traktor (loading)"
+msgid "(loading) Traktor"
 msgstr ""
 
 #: TraktorFeature#3
@@ -3351,10 +3306,14 @@ msgid "Add to Auto DJ Queue"
 msgstr ""
 
 #: WTrackTableView#7
-msgid "Load to Deck %1"
+msgid "Reload Track Metadata"
 msgstr ""
 
 #: WTrackTableView#8
+msgid "Load to Deck %1"
+msgstr ""
+
+#: WTrackTableView#9
 msgid "Sampler %1"
 msgstr ""
 
@@ -3374,3 +3333,98 @@ msgstr ""
 #~ msgctxt "DlgPrefControls#4"
 #~ msgid "Information"
 #~ msgstr "Informação"
+
+#~ msgid "to"
+#~ msgstr "para"
+
+#~ msgid "Next >>"
+#~ msgstr "Seguinte >>"
+
+#~ msgid "<< Prev"
+#~ msgstr "<< Anterior"
+
+#~ msgctxt "DlgBpmTapDlg#3"
+#~ msgid "Alt+O"
+#~ msgstr "Alt+O"
+
+#~ msgctxt "DlgBpmTapDlg#4"
+#~ msgid "Song:"
+#~ msgstr "Música:"
+
+#~ msgid "Alt+P"
+#~ msgstr "Alt+P"
+
+#~ msgid "Alt+G"
+#~ msgstr "Alt+G"
+
+#~ msgid "BPM:"
+#~ msgstr "BPM:"
+
+#~ msgctxt "DlgBpmTapDlg#19"
+#~ msgid "Title:"
+#~ msgstr "Título:"
+
+#~ msgctxt "DlgBpmTapDlg#21"
+#~ msgid "Comments:"
+#~ msgstr "Comentários:"
+
+#~ msgid "&Go"
+#~ msgstr "&Ir"
+
+#~ msgctxt "DlgBpmTapDlg#20"
+#~ msgid "Artist:"
+#~ msgstr "Artista:"
+
+#~ msgctxt "DlgBpmTapDlg#23"
+#~ msgid "3:00"
+#~ msgstr "3:00"
+
+#~ msgctxt "DlgBpmTapDlg#26"
+#~ msgid "77"
+#~ msgstr "77"
+
+#~ msgctxt "DlgBpmTapDlg#1"
+#~ msgid "Track Editor"
+#~ msgstr "Editor de faixas"
+
+#~ msgid "&Close"
+#~ msgstr "Fe&char"
+
+#~ msgctxt "DlgBpmSchemeDlg#6"
+#~ msgid "Analyze Entire Song"
+#~ msgstr "Analisar a música completa"
+
+#~ msgid "BPM Editor (Click to Expand)"
+#~ msgstr "Editor de BPM (Clique para expandir)"
+
+#~ msgctxt "DlgBpmTapDlg#8"
+#~ msgid "BPM Detection"
+#~ msgstr "Deteção de BPM"
+
+#~ msgid "BPM Scheme:"
+#~ msgstr "Esquema de BPM:"
+
+#~ msgid "BPM Range:"
+#~ msgstr "Intervalo de BPM:"
+
+#~ msgctxt "DlgBpmTapDlg#14"
+#~ msgid "Analyze Entire Song"
+#~ msgstr "Analisar a música completa"
+
+#~ msgid "&Push to tap tempo"
+#~ msgstr "&Prima para sincronizar a batida"
+
+#~ msgctxt "DlgBpmTapDlg#18"
+#~ msgid "Track Information (Click to Expand)"
+#~ msgstr "Informações da faixa (Clique para expandir)"
+
+#~ msgctxt "DlgBpmTapDlg#22"
+#~ msgid "Filename:"
+#~ msgstr "Nome do ficheiro:"
+
+#~ msgid "Play Time:"
+#~ msgstr "Tempo de reprodução:"
+
+#~ msgctxt "DlgBpmTapDlg#25"
+#~ msgid "File Type:"
+#~ msgstr "Tipo de ficheiro:"

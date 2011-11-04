@@ -5,7 +5,8 @@
         <name>AutoDJFeature</name>
         <message>
             <source>Auto DJ</source>
-            <translation>Auto DJ</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
     </context>
     <context>
@@ -24,7 +25,7 @@
         </message>
         <message>
             <source>Album</source>
-            <translation>Julkaisu</translation>
+            <translation>Levyn nimi</translation>
         </message>
         <message>
             <source>Genre</source>
@@ -44,7 +45,7 @@
         </message>
         <message>
             <source>Comment</source>
-            <translation>Kommentti</translation>
+            <translation>Lisätietoja</translation>
         </message>
         <message>
             <source>Duration</source>
@@ -52,11 +53,11 @@
         </message>
         <message>
             <source>Rating</source>
-            <translation>Arvostelu</translation>
+            <translation>Luokitus</translation>
         </message>
         <message>
             <source>Bitrate</source>
-            <translation>Laatu</translation>
+            <translation>Bittinopeus</translation>
         </message>
         <message>
             <source>BPM</source>
@@ -83,7 +84,7 @@
         <name>BaseTrackPlayer</name>
         <message>
             <source>Couldn't load track.</source>
-            <translation>En voinut ladata kappaletta.</translation>
+            <translation>Raitaa ei voitu ladata</translation>
         </message>
     </context>
     <context>
@@ -129,7 +130,7 @@
         <name>BrowseTableModel</name>
         <message>
             <source>Filename</source>
-            <translation>Tiedostonnimi</translation>
+            <translation>Tiedostonimi</translation>
         </message>
         <message>
             <source>Artist</source>
@@ -189,7 +190,7 @@
         </message>
         <message>
             <source>Could not load the following file because it is in use by Mixxx or another application.</source>
-            <translation>Ei voinut ladata seuraavaa tiedostoa koska se on käytössä Mixxx:llä tai jollain muulla sovelluksella.</translation>
+            <translation>Seuraavaa tiedostoa ei  voitu ladata koska sitä käyttää Mixxx tai jokin muu sovellus.</translation>
         </message>
         <message>
             <source>Warning: This will permanently delete the following files:</source>
@@ -197,15 +198,15 @@
         </message>
         <message>
             <source>Are you sure you want to delete these files from your computer?</source>
-            <translation>Oletko varma että haluat poistaa tämä tiedostot tietokoneeltasi?</translation>
+            <translation>Oletko varma että haluat poistaa nämä tiedostot tietokoneeltasi?</translation>
         </message>
         <message>
             <source>Could not delete the following file because it is in use by Mixxx or another application:</source>
-            <translation>Ei voinut poistaa tiedostoa koska se on käytössä Mixxx:llä tai jollain muulla sovelluksella:</translation>
+            <translation>Seuraavaa tiedostoa ei voitu poistaa koska sitä käyttää Mixxx tai jokin muu sovellus:</translation>
         </message>
         <message>
             <source>Could not update file metadata.</source>
-            <translation>Ei voinut päivittää metadataa</translation>
+            <translation>Tiedoston metadataa ei voitu päivittää</translation>
         </message>
     </context>
     <context>
@@ -244,7 +245,7 @@
         </message>
         <message>
             <source>Unlock</source>
-            <translation>Vapauta</translation>
+            <translation>Poista lukitus</translation>
         </message>
         <message>
             <source>Crate name:</source>
@@ -288,7 +289,7 @@
         </message>
         <message>
             <source>A crate by that name already exists.</source>
-            <translation>Levylaukku on jo olemassa.</translation>
+            <translation>Saman niminen levylaukku on jo olemassa.</translation>
         </message>
     </context>
     <context>
@@ -324,11 +325,11 @@ p, li { white-space: pre-wrap; }
         <name>DlgAutoDJ</name>
         <message>
             <source>Disable Auto DJ</source>
-            <translation>Sammula Auto DJ</translation>
+            <translation>Poista Auto DJ käytöstä</translation>
         </message>
         <message>
             <source>Enable Auto DJ</source>
-            <translation>Käynnistä Auto DJ</translation>
+            <translation>Ota Auto DJ käyttöön</translation>
         </message>
         <message>
             <source>Manage</source>
@@ -359,122 +360,15 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Max</source>
-            <translation>Max</translation>
+            <translation>Maksimi</translation>
         </message>
         <message>
             <source>Min</source>
-            <translation>Min.</translation>
+            <translation>Minimi</translation>
         </message>
         <message>
             <source>Analyze Entire Song</source>
             <translation>Analysoi koko kappale</translation>
-        </message>
-    </context>
-    <context>
-        <name>DlgBpmTapDlg</name>
-        <message>
-            <source>Track Editor</source>
-            <translation>Raitaeditori</translation>
-        </message>
-        <message>
-            <source>&amp;Close</source>
-            <translation>Sulje</translation>
-        </message>
-        <message>
-            <source>Alt+O</source>
-            <translation>Alt+O</translation>
-        </message>
-        <message>
-            <source>Song:</source>
-            <translation>Kappale:</translation>
-        </message>
-        <message>
-            <source>Next &gt;&gt;</source>
-            <translation>Seuraava &gt;&gt;</translation>
-        </message>
-        <message>
-            <source>&lt;&lt; Prev</source>
-            <translation>&lt;&lt; Edellinen</translation>
-        </message>
-        <message>
-            <source>BPM Editor (Click to Expand)</source>
-            <translation>BPM muokkaus (Klikkaa avataksesi)</translation>
-        </message>
-        <message>
-            <source>BPM Detection</source>
-            <translation>BPM:n tunnistus</translation>
-        </message>
-        <message>
-            <source>BPM Scheme:</source>
-            <translation>BPM teema:</translation>
-        </message>
-        <message>
-            <source>to</source>
-            <translation>–</translation>
-        </message>
-        <message>
-            <source>BPM Range:</source>
-            <translation>BPM alue:</translation>
-        </message>
-        <message>
-            <source>&amp;Go</source>
-            <translation>&amp;Mene</translation>
-        </message>
-        <message>
-            <source>Alt+G</source>
-            <translation>Alt+G</translation>
-        </message>
-        <message>
-            <source>Analyze Entire Song</source>
-            <translation>Analysoi koko kappale</translation>
-        </message>
-        <message>
-            <source>BPM:</source>
-            <translation>BPM:</translation>
-        </message>
-        <message>
-            <source>&amp;Push to tap tempo</source>
-            <translation>&amp;Paina vaihtaaksesi tempoa</translation>
-        </message>
-        <message>
-            <source>Alt+P</source>
-            <translation>Alt+P</translation>
-        </message>
-        <message>
-            <source>Track Information (Click to Expand)</source>
-            <translation>Raidan tiedot (Klikkaa avataksesi)</translation>
-        </message>
-        <message>
-            <source>Title:</source>
-            <translation>Nimi:</translation>
-        </message>
-        <message>
-            <source>Artist:</source>
-            <translation>Esittäjä:</translation>
-        </message>
-        <message>
-            <source>Comments:</source>
-            <translation>Kommentit:</translation>
-        </message>
-        <message>
-            <source>Filename:</source>
-            <translation>Tiedostonnimi:</translation>
-        </message>
-        <message>
-            <source>3:00</source>
-            <translation>3:00</translation>
-        </message>
-        <message>
-            <source>Play Time:</source>
-            <translation>Soittoaika:</translation>
-        </message>
-        <message>
-            <source>File Type:</source>
-            <translation>Tiedoston tyyppi:</translation>
-        </message>
-        <message>
-            <source>77</source>
-            <translation>77</translation>
         </message>
     </context>
     <context>
@@ -497,7 +391,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Welcome to the MIDI Learning Wizard</source>
-            <translation>Tervetuloa ohjattuun MIDI-asetuste luomiseen</translation>
+            <translation>Tervetuloa ohjattuun MIDI-asetusten luomiseen</translation>
         </message>
         <message>
             <source>This wizard allows you to easily map the controls on your MIDI controller to Mixxx's controls.</source>
@@ -505,11 +399,11 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Begin</source>
-            <translation>Aloita</translation>
+            <translation>Aloituskohta</translation>
         </message>
         <message>
             <source>Please tweak the control for:</source>
-            <translation>Liikuta säädintä toiminnolle:</translation>
+            <translation>Valitse säätimen toiminto:</translation>
         </message>
         <message>
             <source>Mixxx Control</source>
@@ -550,7 +444,7 @@ p, li { white-space: pre-wrap; }
         <name>DlgPluginDownloader</name>
         <message>
             <source>Missing Audio Plugin Downloader</source>
-            <translation>Audio laajennusten lataaja puuttuu</translation>
+            <translation>Äänen lisäosien lataaja puuttuu</translation>
         </message>
     </context>
     <context>
@@ -561,19 +455,19 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>BPM Detection</source>
-            <translation>Temponmääritys</translation>
+            <translation>BPM:n tunnistus</translation>
         </message>
         <message>
             <source>Enable BPM Detection</source>
-            <translation>Käytä temponmääritystä</translation>
+            <translation>Käytä BPM tunnistusta</translation>
         </message>
         <message>
             <source>Detect Song BPM on Import</source>
-            <translation>Määritä tempo kappaleen tuonnin yhteydessä</translation>
+            <translation>Tunnista kappaleen BPM tuonnin yhteydessä</translation>
         </message>
         <message>
             <source>Write BPM to ID3 Tag</source>
-            <translation>Kirjoita tempo ID3-tagiin</translation>
+            <translation>Lisää BPM-tieto kappaleen ID3-tagiin</translation>
         </message>
         <message>
             <source>If BPM can be detected but not within specified range</source>
@@ -619,7 +513,7 @@ p, li { white-space: pre-wrap; }
         <name>DlgPrefControls</name>
         <message>
             <source>This skin does not support schemes</source>
-            <translation>Ei variaatioita</translation>
+            <translation>Tämä teema ei salli mukauttamista</translation>
         </message>
         <message>
             <source>8% (Technics SL1210)</source>
@@ -663,11 +557,11 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Up increases speed</source>
-            <translation>Liuku ylös nostaa nopeuttaa</translation>
+            <translation>Ylöspäin säätäminen nostaa nopeutta</translation>
         </message>
         <message>
             <source>Down increases speed (Technics SL1210)</source>
-            <translation>Liuku alas nostaa nopeuttaa (Technics SL1210)</translation>
+            <translation>Alaspäin säätäminen laskee nopeutta (Technics SL1210)</translation>
         </message>
         <message>
             <source>Information</source>
@@ -675,14 +569,14 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Mixxx must be restarted before the changes will take effect.</source>
-            <translation>Muutokset tulevat voimaan kun Mixxx käynnistetään seuraavan kerran.</translation>
+            <translation>Jotta muutokset voidaan ottaa käyttöön on Mixxx käynnistettävä uudelleen.</translation>
         </message>
     </context>
     <context>
         <name>DlgPrefControlsDlg</name>
         <message>
             <source>Form1</source>
-            <translation>Lomake1</translation>
+            <translation>Muoto1</translation>
         </message>
         <message>
             <source>Skin</source>
@@ -690,7 +584,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Scheme</source>
-            <translation>Variaatio</translation>
+            <translation>Muunnelma</translation>
         </message>
         <message>
             <source>Waveform display</source>
@@ -726,11 +620,11 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Cue behaviour</source>
-            <translation>Cue-toimintatila</translation>
+            <translation>Cue toiminnon käyttäytyminen</translation>
         </message>
         <message>
             <source>Auto Recall Cue</source>
-            <translation>Palaa merkkiin automaattisesti</translation>
+            <translation>Palaa Cue-merkin kohdalle automaattisesti</translation>
         </message>
         <message>
             <source>Permanent Pitch/Rate Buttons</source>
@@ -746,7 +640,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Permanent rate change (between 1 and 8000) when left clicking</source>
-            <translation>Pysyvä nopeuden muutos (väliltä 1 ja 8000) painetteassa vasenta hiiren painiketta</translation>
+            <translation>Pysyvä nopeuden muutos (väliltä 1 ja 8000) painettaessa hiiren vasenta painiketta</translation>
         </message>
         <message>
             <source>%</source>
@@ -754,11 +648,11 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Permanent rate change (between 1 and 8000) when right clicking</source>
-            <translation>Pysyvä nopeuden muutos (väliltä 1 ja 8000) painetteassa oikeaa hiiren painiketta</translation>
+            <translation>Pysyvä nopeuden muutos (väliltä 1 ja 8000) painettaessa hiiren oikeaa painiketta</translation>
         </message>
         <message>
             <source>Temporary Pitch/Rate Buttons</source>
-            <translation>Hetkellisen äänen korkeuden/nopeuden säätö painikkeet</translation>
+            <translation>Tilapäisen äänen Korkeuden/Nopeuden säädön painikkeet</translation>
         </message>
         <message>
             <source>Temporary rate change (between 1 and 8000) when left clicking</source>
@@ -770,22 +664,22 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Ramping Pitchbend</source>
-            <translation>Riehuva pitchbend</translation>
+            <translation>Muutuva nopeuden säätö</translation>
         </message>
         <message>
             <source>Pitchbend sensitivity</source>
-            <translation>Pitchbend herkkyys</translation>
+            <translation>Nopeuden säädön herkkyys</translation>
         </message>
     </context>
     <context>
         <name>DlgPrefCrossfaderDlg</name>
         <message>
             <source>Form1</source>
-            <translation>Lomake1</translation>
+            <translation>Muoto1</translation>
         </message>
         <message>
             <source>Crossfader Curve</source>
-            <translation>Crossfaderin käyttäytyminen</translation>
+            <translation>Crossfaderin säätökäyrä</translation>
         </message>
         <message>
             <source>Slow fade</source>
@@ -801,15 +695,15 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Mixing</source>
-            <translation>Miksaamisen soveltuva</translation>
+            <translation>Miksaaminen</translation>
         </message>
         <message>
             <source>Scratching</source>
-            <translation>Scratchaamiseen soveltuva</translation>
+            <translation>''Skrätsääminen''</translation>
         </message>
         <message>
             <source>Linear</source>
-            <translation>Lineaarinen</translation>
+            <translation>Suora</translation>
         </message>
         <message>
             <source>Logarithmic</source>
@@ -817,14 +711,14 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Reset</source>
-            <translation>Nollaa</translation>
+            <translation>Palauta asetus</translation>
         </message>
     </context>
     <context>
         <name>DlgPrefEQDlg</name>
         <message>
             <source>Form1</source>
-            <translation>Lomake1</translation>
+            <translation>Muoto1</translation>
         </message>
         <message>
             <source>Static EQs (for slower CPUs)</source>
@@ -836,7 +730,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>textLabel1</source>
-            <translation>textLabel1</translation>
+            <translation>tekstiMalli1</translation>
         </message>
         <message>
             <source>16 Hz</source>
@@ -856,11 +750,11 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>textLabel2</source>
-            <translation>textLabel2</translation>
+            <translation>tekstiMalli2</translation>
         </message>
         <message>
             <source>Reset</source>
-            <translation>Nollaa</translation>
+            <translation>Palauta asetus</translation>
         </message>
     </context>
     <context>
@@ -895,7 +789,7 @@ Tämä korvaa olemassaolevan asetuksen.</translation>
         </message>
         <message>
             <source>Preset Files (*.midi.xml)</source>
-            <translation>MIDI-määritystiedostot</translation>
+            <translation>Asetukset tiedostoille (*.midi.xml)</translation>
         </message>
         <message>
             <source>Select Control Group</source>
@@ -903,7 +797,7 @@ Tämä korvaa olemassaolevan asetuksen.</translation>
         </message>
         <message>
             <source>Select Control</source>
-            <translation>Valitse ohjain</translation>
+            <translation>Valitse säätö</translation>
         </message>
         <message>
             <source>Clear Input Bindings</source>
@@ -919,7 +813,7 @@ Tämä korvaa olemassaolevan asetuksen.</translation>
         </message>
         <message>
             <source>Are you sure you want to clear all output bindings?</source>
-            <translation>Haluatko varmasti poistaa kaikki sidonnat?</translation>
+            <translation>Haluatko varmasti poistaa kaikki ulostulosidonnat?</translation>
         </message>
     </context>
     <context>
@@ -989,7 +883,7 @@ Tämä korvaa olemassaolevan asetuksen.</translation>
         <name>DlgPrefNoMidiDlg</name>
         <message>
             <source>Form3</source>
-            <translation>Lomake3</translation>
+            <translation>Malli3</translation>
         </message>
         <message>
             <source>No MIDI devices available</source>
@@ -1000,7 +894,7 @@ Tämä korvaa olemassaolevan asetuksen.</translation>
         <name>DlgPrefNoVinylDlg</name>
         <message>
             <source>Form1</source>
-            <translation>Lomake1</translation>
+            <translation>Muoto1</translation>
         </message>
         <message>
             <source>Input</source>
@@ -1024,7 +918,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Turntable Preamp</source>
-            <translation>Esivahvistus</translation>
+            <translation>Levysoittimen esivahvistin</translation>
         </message>
         <message>
             <source>1 (Off)</source>
@@ -1036,39 +930,43 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Vinyl Configuration</source>
-            <translation>Ohjainlevyn asetukset</translation>
+            <translation>Levysoittimen asetukset</translation>
         </message>
         <message>
             <source>Deck 1 Vinyl Type</source>
-            <translation>Ohjainlevyn 1 tyyppi</translation>
+            <translation>Osio 1 Levysoittimen tyyppi</translation>
         </message>
         <message>
             <source>Deck 2 Vinyl Type</source>
-            <translation>Ohjainlevyn 2 tyyppi</translation>
+            <translation>Osio 2 Levysoittimen tyyppi</translation>
         </message>
         <message>
             <source>Lead-in time</source>
-            <translation>Kappaleen johdanto aika</translation>
+            <translation>Aloitusviive</translation>
         </message>
         <message>
             <source>seconds</source>
-            <translation>sekuntteja</translation>
+            <translation>sekuntia</translation>
+        </message>
+        <message>
+            <source>Show Signal Quality in Skin</source>
+            <translation>Näytä signaalin laatu teemassa</translation>
         </message>
         <message>
             <source>Control Mode</source>
-            <translation>Hallintatila</translation>
+            <translation>Toimintatila</translation>
         </message>
         <message>
             <source>Absolute Mode</source>
-            <translation>Absoluuttinen</translation>
+            <translation>Todellinen tila</translation>
         </message>
         <message>
             <source>Relative Mode</source>
-            <translation>Suhteellinen</translation>
+            <translation>Suhteellinen tila</translation>
         </message>
         <message>
             <source>Enable Needle Skip Prevention</source>
-            <translation>Käynnistä neulan hyppäämisen estäminen</translation>
+            <translation>Ota käyttöön neulan hyppimisen esto</translation>
         </message>
         <message>
             <source>Signal Quality</source>
@@ -1080,11 +978,11 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Powered by xwax</source>
-            <translation>Terästetty xwax:lla</translation>
+            <translation>Toimittanut xwax</translation>
         </message>
         <message>
             <source>Apply</source>
-            <translation>Käytä</translation>
+            <translation>Hyväksy</translation>
         </message>
         <message>
             <source>&lt;b&gt;This version of Mixxx does not support vinyl control.&lt;/b&gt; &lt;br&gt; Please visit &lt;a href=&quot;http://mixxx.org&quot;&gt;Mixxx.org&lt;/a&gt; for more information.</source>
@@ -1095,7 +993,7 @@ p, li { white-space: pre-wrap; }
         <name>DlgPrefPlaylist</name>
         <message>
             <source>Choose music library directory</source>
-            <translation>Määritä musiikkikokoelman sijainti</translation>
+            <translation>Valitse musiikkikirjaston sijainti</translation>
         </message>
         <message>
             <source>Multiple iPods Detected</source>
@@ -1124,7 +1022,7 @@ p, li { white-space: pre-wrap; }
         <message>
             <source> and end detection. 
 </source>
-            <translation> ja lopettaaksesi laitehaun. 
+            <translation> ja lopettaa haun 
 </translation>
         </message>
         <message>
@@ -1136,15 +1034,15 @@ p, li { white-space: pre-wrap; }
         <name>DlgPrefPlaylistDlg</name>
         <message>
             <source>Form3</source>
-            <translation>Lomake3</translation>
+            <translation>Malli3</translation>
         </message>
         <message>
             <source>Audio File Formats</source>
-            <translation>Audiotiedostojen muodot</translation>
+            <translation>Äänitiedostojen muodot</translation>
         </message>
         <message>
             <source>Additional Format Plugins:</source>
-            <translation>Lisätyt laajennokset:</translation>
+            <translation>Muiden äänitiedostojen lisäosat</translation>
         </message>
         <message>
             <source>MP3, Ogg Vorbis, FLAC, WAVe, AIFF</source>
@@ -1172,7 +1070,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Use relative paths for playlist export if possible</source>
-            <translation>Käytä suhteellisia polkuja soittolistassa</translation>
+            <translation>Käytä suhteellisia polkuja soittolistojen viennissä mikäli mahdollista</translation>
         </message>
         <message>
             <source>iPod</source>
@@ -1196,7 +1094,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Music Directory:</source>
-            <translation>Kokoelmahakemisto</translation>
+            <translation>Musiikkikirjasto</translation>
         </message>
         <message>
             <source>Built-in</source>
@@ -1204,35 +1102,35 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Available Online...</source>
-            <translation>Lataa verkosta</translation>
+            <translation>Saatavilla verkosta</translation>
         </message>
         <message>
             <source>Bundled Songs</source>
-            <translation>Mukaan ämpätyt kappaleet</translation>
+            <translation>Mukana tulevat kappaleet</translation>
         </message>
         <message>
             <source>Support Mixxx by counting and sharing bundled songs
 playback and outbound link statistics</source>
-            <translation>Tue Mixxx:ää laskemalla ja jakamalla paketoituja kappaleita
-toistoa ja lähetettyjä linkki tilastoja</translation>
+            <translation>Tue Mixxx-ohjelmaa lisäämällä ja jakamalla mukana tulevia kappaleita
+toista ja lähetä linkkitiedot</translation>
         </message>
     </context>
     <context>
         <name>DlgPrefRecord</name>
         <message>
             <source>kbps</source>
-            <translation>kb/s</translation>
+            <translation>Kilobit/s</translation>
         </message>
     </context>
     <context>
         <name>DlgPrefRecordDlg</name>
         <message>
             <source>Form3</source>
-            <translation>Lomake3</translation>
+            <translation>Malli3</translation>
         </message>
         <message>
             <source>Encoding</source>
-            <translation>Pakkaus</translation>
+            <translation>Muunnos</translation>
         </message>
         <message>
             <source>Quality</source>
@@ -1248,7 +1146,7 @@ toistoa ja lähetettyjä linkki tilastoja</translation>
         </message>
         <message>
             <source>Tags</source>
-            <translation>Avainsanat</translation>
+            <translation>Tunnisteet</translation>
         </message>
         <message>
             <source>Title</source>
@@ -1260,7 +1158,7 @@ toistoa ja lähetettyjä linkki tilastoja</translation>
         </message>
         <message>
             <source>Album</source>
-            <translation>Albumi</translation>
+            <translation>Levyn nimi</translation>
         </message>
         <message>
             <source>Miscellaneous</source>
@@ -1272,11 +1170,11 @@ toistoa ja lähetettyjä linkki tilastoja</translation>
         </message>
         <message>
             <source>File Splitting</source>
-            <translation>Tiedoston paloittelu</translation>
+            <translation>Tiedoston leikkaaminen</translation>
         </message>
         <message>
             <source>Split recordings at</source>
-            <translation>Paloittele nauhoitteet</translation>
+            <translation>Leikkaa tallenteet seuraavasti</translation>
         </message>
     </context>
     <context>
@@ -1287,23 +1185,23 @@ toistoa ja lähetettyjä linkki tilastoja</translation>
         </message>
         <message>
             <source>ReplayGain Normalization</source>
-            <translation>Toiston äänen voimakkuuden normalisointi</translation>
+            <translation>Toistotason normalisointi</translation>
         </message>
         <message>
             <source>Apply volume normalization to loaded songs.</source>
-            <translation>Käytä äänen voimakkuuden normalisointia kappeleille.</translation>
+            <translation>Salli tason normalisointi ladatuille raidoille</translation>
         </message>
         <message>
             <source>Enable Replay Gain</source>
-            <translation>Käytä toiston vahvistusta</translation>
+            <translation>Käytä Toistotason normalisointia</translation>
         </message>
         <message>
             <source>Calculate ReplayGain normalization for songs which are missing ReplayGain metadata.</source>
-            <translation>Laske toiston vahvistuksen normalisointi kappaleille joilta puuttuu toiston vahvistus leima.</translation>
+            <translation>Laske Toistotason normalisoinnin tiedot niille raidoille joilta se vielä puuttuu.</translation>
         </message>
         <message>
             <source>Enable Replay Gain Analysis</source>
-            <translation>Käytä toiston vahvistuksen analysointia</translation>
+            <translation>Salli Toistotason analysointi</translation>
         </message>
         <message>
             <source>On older computers, it may take a few seconds before volume normalization is applied to a new song. You may wish to wait before adjusting the pregain and volume.</source>
@@ -1323,18 +1221,18 @@ toistoa ja lähetettyjä linkki tilastoja</translation>
         </message>
         <message>
             <source>Reset</source>
-            <translation>Nollaa</translation>
+            <translation>Palauta</translation>
         </message>
     </context>
     <context>
         <name>DlgPrefShoutcastDlg</name>
         <message>
             <source>Form3</source>
-            <translation>Lomake3</translation>
+            <translation>Malli3</translation>
         </message>
         <message>
             <source>Enable live broadcasting</source>
-            <translation>Lähetä livenä nettiradioon</translation>
+            <translation>Salli suora lähettäminen nettiradioon</translation>
         </message>
         <message>
             <source>Server connection</source>
@@ -1382,7 +1280,7 @@ toistoa ja lähetettyjä linkki tilastoja</translation>
         </message>
         <message>
             <source>Login</source>
-            <translation>Käyttäjätunnus</translation>
+            <translation>Kirjaudu</translation>
         </message>
         <message>
             <source>source</source>
@@ -1438,7 +1336,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Live mix</source>
-            <translation>Suora lähetys</translation>
+            <translation>Miksaus suoraan lähetykseen</translation>
         </message>
         <message>
             <source>Public stream</source>
@@ -1446,7 +1344,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Encoding</source>
-            <translation>Tiedostomuoto</translation>
+            <translation>Muunnos</translation>
         </message>
         <message>
             <source>Bitrate</source>
@@ -1643,6 +1541,11 @@ p, li { white-space: pre-wrap; }
             <translation>Ei määritelty</translation>
         </message>
         <message>
+            <source>Channel %1</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
             <source>Channels %1 - %2</source>
             <translation>Kanavat %1 - %2</translation>
         </message>
@@ -1706,44 +1609,59 @@ p, li { white-space: pre-wrap; }
             <translation>Ohjainlevyn 2 tyyppi</translation>
         </message>
         <message>
+            <source>Show Signal Quality in Skin</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
             <source>Apply</source>
-            <translation>Käytä</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Lead-in time</source>
-            <translation>Kappaleen johdanto aika</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>seconds</source>
-            <translation>sekuntia</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Control Mode</source>
-            <translation>Toimintatila</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Absolute Mode</source>
-            <translation>Absoluuttinen</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Relative Mode</source>
-            <translation>Suhteellinen</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Enable Needle Skip Prevention</source>
-            <translation>Käynnistä neulan hyppäämisen estäminen</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Signal Quality</source>
-            <translation>Signaalin laatu</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>http://www.xwax.co.uk</source>
-            <translation>http://www.xwax.co.uk</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Powered by xwax</source>
-            <translation>Terästetty xwax:lla</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
     </context>
     <context>
@@ -1866,19 +1784,23 @@ p, li { white-space: pre-wrap; }
         <name>DlgTrackInfo</name>
         <message>
             <source>Track Editor</source>
-            <translation>Raitaeditori</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Song:</source>
-            <translation>Kappale:</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Title:</source>
-            <translation>Otsikko:</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Artist:</source>
-            <translation>Artisti:</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Album:</source>
@@ -1898,7 +1820,8 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Filename:</source>
-            <translation>Tiedoston nimi:</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Duration:</source>
@@ -1906,19 +1829,23 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>3:00</source>
-            <translation>3:00</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>File Type:</source>
-            <translation>Tiedoston tyyppi:</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>77</source>
-            <translation>77</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Comments:</source>
-            <translation>Kommentit:</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Reload track metadata from file.</source>
@@ -1926,7 +1853,8 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Track Information (Click to Expand)</source>
-            <translation>Raidan tiedot (Klikkaa avataksesi)</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Track BPM: </source>
@@ -1994,7 +1922,8 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Alt+O</source>
-            <translation>Alt+O</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>&amp;Next &gt;&gt;</source>
@@ -2008,16 +1937,19 @@ p, li { white-space: pre-wrap; }
             <translation>Pakkaaja</translation>
         </message>
         <message>
-            <source>&lt;html&gt;Mixxx is unable to load or find the MP3 encoder lame. &lt;p&gt;Please install libmp3lame (also known as lame) and check if /usr/lib/libmp3lame.so exists on your system &lt;/html&gt;</source>
-            <translation>&lt;html&gt;Mixxx ei löydä MP3 pakkaajaa. &lt;p&gt;Asenna libmp3lame (tunnetaan myös nimellä lame) ja tarkista että se löytyy /usr/lib/libmp3lame.so&lt;/html&gt;</translation>
+            <source>&lt;html&gt;Mixxx cannot record or stream in MP3 without the MP3 encoder &amp;quot;lame&amp;quot;. Due to licensing issues, we cannot include this with Mixxx. To record or stream in MP3, you must download &lt;b&gt;libmp3lame&lt;/b&gt; and install it on your system. &lt;p&gt;See &lt;a href='http://mixxx.org/wiki/doku.php/internet_broadcasting#linux'&gt;Mixxx Wiki&lt;/a&gt; for more information. &lt;/html&gt;</source>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
-            <source>&lt;html&gt;Mixxx is unable to load or find the MP3 encoder lame. &lt;p&gt;Please put lame_enc.dll in the directory you have installed Mixxx &lt;/html&gt;</source>
-            <translation>&lt;html&gt;Mixxx ei löydä MP3 pakkaajaa. &lt;p&gt;Kopioi lame_enc.dll samaan hakemistoon kuin Mixxx&lt;/html&gt;</translation>
+            <source>&lt;html&gt;Mixxx cannot record or stream in MP3 without the MP3 encoder &amp;quot;lame&amp;quot;. Due to licensing issues, we cannot include this with Mixxx. To record or stream in MP3, you must download &lt;b&gt;lame_enc.dll&lt;/b&gt; and install it on your system. &lt;p&gt;See &lt;a href='http://mixxx.org/wiki/doku.php/internet_broadcasting#windows'&gt;Mixxx Wiki&lt;/a&gt; for more information. &lt;/html&gt;</source>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
-            <source>&lt;html&gt;Mixxx is unable to load or find the MP3 encoder lame. &lt;p&gt;Please install libmp3lame (also known as lame) and check if /usr/local/lib/libmp3lame.dylib exists on your system &lt;/html&gt;</source>
-            <translation>&lt;html&gt;Mixxx ei löydä MP3 pakkaajaa &lt;p&gt;Asenna libmp3lame (tunnetaan myös nimellä lame) ja tarkista että se löytyy /usr/local/lib/libmp3lame.dylib&lt;/html&gt;</translation>
+            <source>&lt;html&gt;Mixxx cannot record or stream in MP3 without the MP3 encoder &amp;quot;lame&amp;quot;. Due to licensing issues, we cannot include this with Mixxx. To record or stream in MP3, you must download &lt;b&gt;libmp3lame&lt;/b&gt; and install it on your system. &lt;p&gt;See &lt;a href='http://mixxx.org/wiki/doku.php/internet_broadcasting#mac_osx'&gt;Mixxx Wiki&lt;/a&gt; for more information. &lt;/html&gt;</source>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>&lt;html&gt;Mixxx has detected that you use a modified version of libmp3lame. See &lt;a href='http://mixxx.org/wiki/doku.php/internet_broadcasting'&gt;Mixxx Wiki&lt;/a&gt; for more information.&lt;/html&gt;</source>
@@ -2112,8 +2044,9 @@ p, li { white-space: pre-wrap; }
             <translation>Valitse iTunes kirjastosi</translation>
         </message>
         <message>
-            <source>iTunes (loading)</source>
-            <translation>iTunes (ladataan)</translation>
+            <source>(loading) iTunes</source>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Use Default Library</source>
@@ -2172,6 +2105,11 @@ p, li { white-space: pre-wrap; }
             <source>Control Value</source>
             <translation>Ohjainarvo</translation>
         </message>
+        <message>
+            <source>Description</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
     </context>
     <context>
         <name>MidiMapping</name>
@@ -2221,6 +2159,11 @@ p, li { white-space: pre-wrap; }
         <message>
             <source>Control Value</source>
             <translation>Ohjainarvo</translation>
+        </message>
+        <message>
+            <source>Description</source>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Threshold Min</source>
@@ -2444,12 +2387,24 @@ Tätä tietoa ei käytetä yksilöimään sinua, ottamaan yhteyttä, mainostamaa
             <translation>Ctrl+P</translation>
         </message>
         <message>
-            <source>&amp;About...</source>
-            <translation>Tietoja...</translation>
+            <source>&amp;About</source>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
-            <source>&amp;Community Support...</source>
-            <translation>&amp;Yhteisötuki</translation>
+            <source>&amp;Community Support</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Send Us &amp;Feedback</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>&amp;Translate this application</source>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Enable &amp;Vinyl Control 1</source>
@@ -2469,7 +2424,8 @@ Tätä tietoa ei käytetä yksilöimään sinua, ottamaan yhteyttä, mainostamaa
         </message>
         <message>
             <source>Enable live broadcasting</source>
-            <translation>Lähetä livenä nettiradioon</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Ctrl+L</source>
@@ -2595,7 +2551,8 @@ Merkitse tahdit äänen perusteella</translation>
         </message>
         <message>
             <source>Preferences</source>
-            <translation>Asetukset</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Preferences
@@ -2612,6 +2569,28 @@ Toisto ja MIDI asetukset</translation>
 Get help with Mixxx</source>
             <translation>Tuki
 Saa apua Mixxx:n käyttöön</translation>
+        </message>
+        <message>
+            <source>Send feedback to the Mixxx team.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Support
+Send feedback to the Mixxx team.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Help translate this application into your language.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Support
+Help translate this application into your language.</source>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>About the application</source>
@@ -2978,8 +2957,9 @@ Valitse OK lopettaaksesi.</translation>
             <translation>Traktor</translation>
         </message>
         <message>
-            <source>Traktor (loading)</source>
-            <translation>Traktor (ladataan)</translation>
+            <source>(loading) Traktor</source>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Error Loading Traktor Library</source>
@@ -3225,6 +3205,11 @@ Valitse OK lopettaaksesi.</translation>
         <message>
             <source>Add to Auto DJ Queue</source>
             <translation>Lisää Auto-DJ jonoon</translation>
+        </message>
+        <message>
+            <source>Reload Track Metadata</source>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Load to Deck %1</source>
