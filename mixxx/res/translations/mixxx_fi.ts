@@ -1503,8 +1503,7 @@ p, li { white-space: pre-wrap; }
 &lt;li&gt;Increase your latency if you hear pops during playback&lt;/li&gt;
 &lt;li&gt;Reduce your latency to improve Mixxx's responsiveness&lt;/li&gt;
 &lt;/ul&gt;</source>
-            <translation>Copy text 	
-&lt;ul&gt;
+            <translation>&lt;ul&gt;
 &lt;li&gt;Lisää viivettä jos kuulet naksuja toistossa&lt;/li&gt;
 &lt;li&gt;Vähennä viivettä jos haluat lisätä Mixxx:in käyttöliittymän vastetta&lt;/li&gt;
 &lt;/ul&gt;</translation>
