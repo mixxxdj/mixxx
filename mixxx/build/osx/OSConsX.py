@@ -394,22 +394,16 @@ def emit_app(target, source, env):
       NSAppleScriptEnabled"""
       #further: we should support generating document associations
 
+    resource_map = env.get('APP_RESOURCES_MAP', {})
+
     for i in resources:
+        path = resource_map.get(str(i), '')
+        target = env['APP_RESOURCES']
+        if path != '':
+            target = Dir(os.path.join(str(target), path))
         if isinstance(i, SCons.Node.FS.Dir):
-            #source+=
-            InstallDir(env['APP_RESOURCES'], i, env)
-        elif isinstance(i, SCons.Node.FS.File):
-            path, filename = os.path.split(str(i))
-            # This is a hack. If we glob files in a sub-directory of res/ then
-            # this code previously erroneously installed them in APP_RESOURCES
-            # instead of APP_RESOURCES/subdir. Try to detect if this path is
-            # within res/ and if so, install the file to the right subdirectory.
-            res_index = path.rfind('/res/')
-            target = env['APP_RESOURCES']
-            if res_index != -1:
-                path = path[res_index + 5:]
-                if path != '':
-                    target = Dir(os.path.join(str(target),path))
+            InstallDir(target, i, env)
+        elif isinstance(i, SCons.Node.FS.File) or isinstance(i, basestring):
             env.Install(target, i)
 
     plugins = env['PLUGINS']
