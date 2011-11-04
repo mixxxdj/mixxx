@@ -28,7 +28,7 @@
     <div class="rowOfBoxes features">
         <div class="fullWidth noBorderOnLeft">   
 		        <h1>Contact Us</h1>
-		        <p>Support for <b>users</b> of Mixxx is available through our <a href="/forum">community forums</a> and our IRC channel as described on our <a href="support.php">Support page</a>.
+		        <p>Support for <b>users</b> of Mixxx is available through our <a href="/forums">community forums</a> and our IRC channel as described on our <a href="support.php">Support page</a>.
 				
 				If you think you've found a bug, please file a bug report in our <a href="https://bugs.launchpad.net/mixxx/">bug tracker</a>.</p>
 				
