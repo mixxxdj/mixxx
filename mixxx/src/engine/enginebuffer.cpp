@@ -484,6 +484,7 @@ void EngineBuffer::slotControlStop(double v)
 
 void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBufferSize)
 {
+    Q_ASSERT(even(iBufferSize));
     m_pReader->process();
     // Steps:
     // - Lookup new reader information
@@ -564,13 +565,19 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
         if (!bCurBufferPaused) {
             CSAMPLE *output;
 
-            Q_ASSERT(even(iBufferSize));
-
             // The fileposition should be: (why is this thing a double anyway!?
             // Integer valued.
-            Q_ASSERT(round(filepos_play) == filepos_play);
+            double filepos_play_rounded = round(filepos_play);
+            if (filepos_play_rounded != filepos_play) {
+                qWarning() << __FILE__ << __LINE__ << "ERROR: filepos_play is not round:" << filepos_play;
+                filepos_play = filepos_play_rounded;
+            }
+
             // Even.
-            Q_ASSERT(even(filepos_play));
+            if (!even(filepos_play)) {
+                qWarning() << "ERROR: filepos_play is not even:" << filepos_play;
+                filepos_play--;
+            }
 
             // Perform scaling of Reader buffer into buffer.
             output = m_pScale->scale(0,
@@ -611,7 +618,11 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
                 // stats-pipe once we have them.
 
                 filepos_play = control_seek;
-                Q_ASSERT(round(filepos_play) == filepos_play);
+                double filepos_play_rounded = round(filepos_play);
+                if (filepos_play_rounded != filepos_play) {
+                    qWarning() << __FILE__ << __LINE__ << "ERROR: filepos_play is not round:" << filepos_play;
+                    filepos_play = filepos_play_rounded;
+                }
 
                 // Fix filepos_play so that it is not out of bounds.
                 if (file_length_old > 0) {
