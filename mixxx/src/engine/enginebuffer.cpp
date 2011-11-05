@@ -418,16 +418,6 @@ void EngineBuffer::slotControlSeek(double change)
     if (!even((int)new_playpos))
         new_playpos--;
 
-    // Give EngineControl's a chance to veto or correct the seek target.
-
-    // Seek reader
-    Hint seek_hint;
-    seek_hint.sample = new_playpos;
-    seek_hint.length = 0;
-    seek_hint.priority = 1;
-    QList<Hint> hint_list;
-    hint_list.append(seek_hint);
-    m_pReader->hintAndMaybeWake(hint_list);
     setNewPlaypos(new_playpos);
 }
 
