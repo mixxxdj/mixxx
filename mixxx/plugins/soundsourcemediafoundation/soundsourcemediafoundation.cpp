@@ -111,8 +111,7 @@ int SoundSourceMediaFoundation::open()
         return ERR;
     }
 
-    hr = configureAudioStream();
-    if (FAILED(hr)) {
+    if (!configureAudioStream()) {
         qWarning() << "SSMF: Error configuring audio stream.";
         return ERR;
     }
