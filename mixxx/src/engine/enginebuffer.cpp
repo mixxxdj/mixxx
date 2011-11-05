@@ -20,6 +20,7 @@
 
 #include "engine/enginebuffer.h"
 #include "cachingreader.h"
+#include "sampleutil.h"
 
 #include "controlpushbutton.h"
 #include "controlobjectthreadmain.h"
@@ -700,30 +701,30 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
     float ramp_inc = 0;
     if (m_iRampState == ENGINE_RAMP_UP ||
         m_iRampState == ENGINE_RAMP_DOWN) {
-        ramp_inc = m_iRampState * 1000 / m_pSampleRate->get();
-    }
+        ramp_inc = m_iRampState * 300 / m_pSampleRate->get();
 
-    //float fakerate = rate * 30000 == 0 ? -5000 : rate*30000;
-    for (int i=0; i<iBufferSize; i+=2) {
-        if (bCurBufferPaused) {
-            float dither = m_pDitherBuffer[m_iDitherBufferReadIndex++ % MAX_BUFFER_LEN];
-            pOutput[i] = m_fLastSampleValue[0] * m_fRampValue + dither;
-            pOutput[i+1] = m_fLastSampleValue[1] * m_fRampValue + dither;
-        } else {
-            pOutput[i] = pOutput[i] * m_fRampValue;
-            pOutput[i+1] = pOutput[i+1] * m_fRampValue;
-        }
+        for (int i=0; i<iBufferSize; i+=2) {
+            if (bCurBufferPaused) {
+                float dither = m_pDitherBuffer[m_iDitherBufferReadIndex++ % MAX_BUFFER_LEN];
+                pOutput[i] = m_fLastSampleValue[0] * m_fRampValue + dither;
+                pOutput[i+1] = m_fLastSampleValue[1] * m_fRampValue + dither;
+            } else {
+                pOutput[i] = pOutput[i] * m_fRampValue;
+                pOutput[i+1] = pOutput[i+1] * m_fRampValue;
+            }
 
-        //writer << pOutput[i] <<  "\n";
-        m_fRampValue += ramp_inc;
-        if (m_fRampValue >= 1.0) {
-            m_iRampState = ENGINE_RAMP_NONE;
-            m_fRampValue = 1.0;
+            m_fRampValue += ramp_inc;
+            if (m_fRampValue >= 1.0) {
+                m_iRampState = ENGINE_RAMP_NONE;
+                m_fRampValue = 1.0;
+            }
+            if (m_fRampValue <= 0.0) {
+                m_iRampState = ENGINE_RAMP_NONE;
+                m_fRampValue = 0.0;
+            }
         }
-        if (m_fRampValue <= 0.0) {
-            m_iRampState = ENGINE_RAMP_NONE;
-            m_fRampValue = 0.0;
-        }
+    } else if (m_fRampValue == 0.0) {
+        SampleUtil::applyGain(pOutput, 0.0, iBufferSize);
     }
 
     if ((!bCurBufferPaused && m_iRampState == ENGINE_RAMP_NONE) ||
@@ -731,6 +732,10 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
         m_fLastSampleValue[0] = pOutput[iBufferSize-2];
         m_fLastSampleValue[1] = pOutput[iBufferSize-1];
     }
+
+    /*for (int i=0; i<iBufferSize; i+=2) {
+        writer << pOutput[i] <<  "\n";
+    }*/
 
     m_bLastBufferPaused = bCurBufferPaused;
 }
