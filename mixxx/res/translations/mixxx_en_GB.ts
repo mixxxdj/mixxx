@@ -371,113 +371,6 @@ p, li { white-space: pre-wrap; }
         </message>
     </context>
     <context>
-        <name>DlgBpmTapDlg</name>
-        <message>
-            <source>Track Editor</source>
-            <translation>Track Editor</translation>
-        </message>
-        <message>
-            <source>&amp;Close</source>
-            <translation>&amp;Close</translation>
-        </message>
-        <message>
-            <source>Alt+O</source>
-            <translation>Alt+O</translation>
-        </message>
-        <message>
-            <source>Song:</source>
-            <translation>Song:</translation>
-        </message>
-        <message>
-            <source>Next &gt;&gt;</source>
-            <translation>Next &gt;&gt;</translation>
-        </message>
-        <message>
-            <source>&lt;&lt; Prev</source>
-            <translation>&lt;&lt; Prev</translation>
-        </message>
-        <message>
-            <source>BPM Editor (Click to Expand)</source>
-            <translation>BPM Editor (Click to Expand)</translation>
-        </message>
-        <message>
-            <source>BPM Detection</source>
-            <translation>BPM Detection</translation>
-        </message>
-        <message>
-            <source>BPM Scheme:</source>
-            <translation>BPM Scheme:</translation>
-        </message>
-        <message>
-            <source>to</source>
-            <translation>to</translation>
-        </message>
-        <message>
-            <source>BPM Range:</source>
-            <translation>BPM Range:</translation>
-        </message>
-        <message>
-            <source>&amp;Go</source>
-            <translation>&amp;Go</translation>
-        </message>
-        <message>
-            <source>Alt+G</source>
-            <translation>Alt+G</translation>
-        </message>
-        <message>
-            <source>Analyze Entire Song</source>
-            <translation>Analyse Entire Song</translation>
-        </message>
-        <message>
-            <source>BPM:</source>
-            <translation>BPM:</translation>
-        </message>
-        <message>
-            <source>&amp;Push to tap tempo</source>
-            <translation>&amp;Push to tap tempo</translation>
-        </message>
-        <message>
-            <source>Alt+P</source>
-            <translation>Alt+P</translation>
-        </message>
-        <message>
-            <source>Track Information (Click to Expand)</source>
-            <translation>Track Information (Click to Expand)</translation>
-        </message>
-        <message>
-            <source>Title:</source>
-            <translation>Title:</translation>
-        </message>
-        <message>
-            <source>Artist:</source>
-            <translation>Artist:</translation>
-        </message>
-        <message>
-            <source>Comments:</source>
-            <translation>Comments:</translation>
-        </message>
-        <message>
-            <source>Filename:</source>
-            <translation>Filename:</translation>
-        </message>
-        <message>
-            <source>3:00</source>
-            <translation>3:00</translation>
-        </message>
-        <message>
-            <source>Play Time:</source>
-            <translation>Play Time:</translation>
-        </message>
-        <message>
-            <source>File Type:</source>
-            <translation>File Type:</translation>
-        </message>
-        <message>
-            <source>77</source>
-            <translation>77</translation>
-        </message>
-    </context>
-    <context>
         <name>DlgMidiLearning</name>
         <message>
             <source>Skip</source>
@@ -1055,172 +948,149 @@ p, li { white-space: pre-wrap; }
             <translation>seconds</translation>
         </message>
         <message>
+            <source>Show Signal Quality in Skin</source>
+            <translation>Show Signal Quality in Skin</translation>
+        </message>
+        <message>
             <source>Control Mode</source>
-            <translation>Control Mode</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Absolute Mode</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Absolute Mode</translation>
         </message>
         <message>
             <source>Relative Mode</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Relative Mode</translation>
         </message>
         <message>
             <source>Enable Needle Skip Prevention</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Enable Needle Skip Prevention</translation>
         </message>
         <message>
             <source>Signal Quality</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Signal Quality</translation>
         </message>
         <message>
             <source>http://www.xwax.co.uk</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>http://www.xwax.co.uk</translation>
         </message>
         <message>
             <source>Powered by xwax</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Powered by xwax</translation>
         </message>
         <message>
             <source>Apply</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Apply</translation>
         </message>
         <message>
             <source>&lt;b&gt;This version of Mixxx does not support vinyl control.&lt;/b&gt; &lt;br&gt; Please visit &lt;a href=&quot;http://mixxx.org&quot;&gt;Mixxx.org&lt;/a&gt; for more information.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>&lt;b&gt;This version of Mixxx does not support vinyl control.&lt;/b&gt; &lt;br&gt; Please visit &lt;a href=&quot;http://mixxx.org&quot;&gt;Mixxx.org&lt;/a&gt; for more information.</translation>
         </message>
     </context>
     <context>
         <name>DlgPrefPlaylist</name>
         <message>
             <source>Choose music library directory</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Choose music library directory</translation>
         </message>
         <message>
             <source>Multiple iPods Detected</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Multiple iPods Detected</translation>
         </message>
         <message>
             <source>Mixxx has detected another iPod. 
 </source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Mixxx has detected another iPod. 
+</translation>
         </message>
         <message>
             <source>Choose Yes to use the newly found iPod @ </source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Choose Yes to use the newly found iPod @ </translation>
         </message>
         <message>
             <source> or to continue to search for other iPods. 
 </source>
-            <translation type="unfinished">
-            </translation>
+            <translation> or to continue to search for other iPods. 
+</translation>
         </message>
         <message>
             <source>Choose No to use the existing iPod @ </source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Choose No to use the existing iPod @ </translation>
         </message>
         <message>
             <source> and end detection. 
 </source>
-            <translation type="unfinished">
-            </translation>
+            <translation> and end detection. 
+</translation>
         </message>
         <message>
             <source>Choose iPod mount point</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Choose iPod mount point</translation>
         </message>
     </context>
     <context>
         <name>DlgPrefPlaylistDlg</name>
         <message>
             <source>Form3</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Form3</translation>
         </message>
         <message>
             <source>Audio File Formats</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Audio File Formats</translation>
         </message>
         <message>
             <source>Additional Format Plugins:</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Additional Format Plug-ins:</translation>
         </message>
         <message>
             <source>MP3, Ogg Vorbis, FLAC, WAVe, AIFF</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>MP3, Ogg Vorbis, FLAC, WAVe, AIFF</translation>
         </message>
         <message>
             <source>Loaded Plugins:</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Loaded Plug-ins:</translation>
         </message>
         <message>
             <source>None</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>None</translation>
         </message>
         <message>
             <source>Miscellaneous</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Miscellaneous</translation>
         </message>
         <message>
             <source>Synchronize ID3 tags on track modifications</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Synchronise ID3 tags on track modifications</translation>
         </message>
         <message>
             <source>Rescan library on start-up</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Rescan library on start-up</translation>
         </message>
         <message>
             <source>Use relative paths for playlist export if possible</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Use relative paths for playlist export if possible</translation>
         </message>
         <message>
             <source>iPod</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>iPod</translation>
         </message>
         <message>
             <source>iPod mountpoint</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>iPod mountpoint</translation>
         </message>
         <message>
             <source>Browse...</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Browse...</translation>
         </message>
         <message>
             <source>Detect</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Detect</translation>
         </message>
         <message>
             <source>Library</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Library</translation>
         </message>
         <message>
             <source>Music Directory:</source>
@@ -1234,13 +1104,11 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Available Online...</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Available Online...</translation>
         </message>
         <message>
             <source>Bundled Songs</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Bundled Songs</translation>
         </message>
         <message>
             <source>Support Mixxx by counting and sharing bundled songs
@@ -1253,31 +1121,26 @@ playback and outbound link statistics</source>
         <name>DlgPrefRecord</name>
         <message>
             <source>kbps</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>kbps</translation>
         </message>
     </context>
     <context>
         <name>DlgPrefRecordDlg</name>
         <message>
             <source>Form3</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Form3</translation>
         </message>
         <message>
             <source>Encoding</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Encoding</translation>
         </message>
         <message>
             <source>Quality</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Quality</translation>
         </message>
         <message>
             <source>High</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>High</translation>
         </message>
         <message>
             <source>Low</source>
@@ -1286,109 +1149,89 @@ playback and outbound link statistics</source>
         </message>
         <message>
             <source>Tags</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Tags</translation>
         </message>
         <message>
             <source>Title</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Title</translation>
         </message>
         <message>
             <source>Author</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Author</translation>
         </message>
         <message>
             <source>Album</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Album</translation>
         </message>
         <message>
             <source>Miscellaneous</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Miscellaneous</translation>
         </message>
         <message>
             <source>Create a CUE file</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Create a CUE file</translation>
         </message>
         <message>
             <source>File Splitting</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>File Splitting</translation>
         </message>
         <message>
             <source>Split recordings at</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Split recordings at</translation>
         </message>
     </context>
     <context>
         <name>DlgPrefReplayGainDlg</name>
         <message>
             <source>BPM Detection Settings</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>BPM Detection Settings</translation>
         </message>
         <message>
             <source>ReplayGain Normalization</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>ReplayGain Normalisation</translation>
         </message>
         <message>
             <source>Apply volume normalization to loaded songs.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Apply volume normalisation to loaded songs.</translation>
         </message>
         <message>
             <source>Enable Replay Gain</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Enable Replay Gain</translation>
         </message>
         <message>
             <source>Calculate ReplayGain normalization for songs which are missing ReplayGain metadata.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Calculate ReplayGain normalisation for songs which are missing ReplayGain metadata.</translation>
         </message>
         <message>
             <source>Enable Replay Gain Analysis</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Enable Replay Gain Analysis</translation>
         </message>
         <message>
             <source>On older computers, it may take a few seconds before volume normalization is applied to a new song. You may wish to wait before adjusting the pregain and volume.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>On older computers, it may take a few seconds before volume normalisation is applied to a new song. You may wish to wait before adjusting the pregain and volume.</translation>
         </message>
         <message>
             <source>Initial Boost</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Initial Boost</translation>
         </message>
         <message>
             <source>Initial Gain Boost</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Initial Gain Boost</translation>
         </message>
         <message>
             <source>dB</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>dB</translation>
         </message>
         <message>
             <source>Reset</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Reset</translation>
         </message>
     </context>
     <context>
         <name>DlgPrefShoutcastDlg</name>
         <message>
             <source>Form3</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Form3</translation>
         </message>
         <message>
             <source>Enable live broadcasting</source>
@@ -1397,13 +1240,11 @@ playback and outbound link statistics</source>
         </message>
         <message>
             <source>Server connection</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Server connection</translation>
         </message>
         <message>
             <source>Type</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Type</translation>
         </message>
         <message>
             <source>Icecast 2</source>
@@ -1763,6 +1604,11 @@ p, li { white-space: pre-wrap; }
             </translation>
         </message>
         <message>
+            <source>Channel %1</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
             <source>Channels %1 - %2</source>
             <translation type="unfinished">
             </translation>
@@ -1831,6 +1677,11 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Deck 2 Vinyl Type</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Show Signal Quality in Skin</source>
             <translation type="unfinished">
             </translation>
         </message>
@@ -2208,17 +2059,17 @@ p, li { white-space: pre-wrap; }
             </translation>
         </message>
         <message>
-            <source>&lt;html&gt;Mixxx is unable to load or find the MP3 encoder lame. &lt;p&gt;Please install libmp3lame (also known as lame) and check if /usr/lib/libmp3lame.so exists on your system &lt;/html&gt;</source>
+            <source>&lt;html&gt;Mixxx cannot record or stream in MP3 without the MP3 encoder &amp;quot;lame&amp;quot;. Due to licensing issues, we cannot include this with Mixxx. To record or stream in MP3, you must download &lt;b&gt;libmp3lame&lt;/b&gt; and install it on your system. &lt;p&gt;See &lt;a href='http://mixxx.org/wiki/doku.php/internet_broadcasting#linux'&gt;Mixxx Wiki&lt;/a&gt; for more information. &lt;/html&gt;</source>
             <translation type="unfinished">
             </translation>
         </message>
         <message>
-            <source>&lt;html&gt;Mixxx is unable to load or find the MP3 encoder lame. &lt;p&gt;Please put lame_enc.dll in the directory you have installed Mixxx &lt;/html&gt;</source>
+            <source>&lt;html&gt;Mixxx cannot record or stream in MP3 without the MP3 encoder &amp;quot;lame&amp;quot;. Due to licensing issues, we cannot include this with Mixxx. To record or stream in MP3, you must download &lt;b&gt;lame_enc.dll&lt;/b&gt; and install it on your system. &lt;p&gt;See &lt;a href='http://mixxx.org/wiki/doku.php/internet_broadcasting#windows'&gt;Mixxx Wiki&lt;/a&gt; for more information. &lt;/html&gt;</source>
             <translation type="unfinished">
             </translation>
         </message>
         <message>
-            <source>&lt;html&gt;Mixxx is unable to load or find the MP3 encoder lame. &lt;p&gt;Please install libmp3lame (also known as lame) and check if /usr/local/lib/libmp3lame.dylib exists on your system &lt;/html&gt;</source>
+            <source>&lt;html&gt;Mixxx cannot record or stream in MP3 without the MP3 encoder &amp;quot;lame&amp;quot;. Due to licensing issues, we cannot include this with Mixxx. To record or stream in MP3, you must download &lt;b&gt;libmp3lame&lt;/b&gt; and install it on your system. &lt;p&gt;See &lt;a href='http://mixxx.org/wiki/doku.php/internet_broadcasting#mac_osx'&gt;Mixxx Wiki&lt;/a&gt; for more information. &lt;/html&gt;</source>
             <translation type="unfinished">
             </translation>
         </message>
@@ -2335,7 +2186,7 @@ p, li { white-space: pre-wrap; }
             </translation>
         </message>
         <message>
-            <source>iTunes (loading)</source>
+            <source>(loading) iTunes</source>
             <translation type="unfinished">
             </translation>
         </message>
@@ -2408,6 +2259,11 @@ p, li { white-space: pre-wrap; }
             <translation type="unfinished">
             </translation>
         </message>
+        <message>
+            <source>Description</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
     </context>
     <context>
         <name>MidiMapping</name>
@@ -2463,6 +2319,11 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Control Value</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Description</source>
             <translation type="unfinished">
             </translation>
         </message>
@@ -2723,12 +2584,22 @@ This information will not be used to personally identify you, contact you, adver
             </translation>
         </message>
         <message>
-            <source>&amp;About...</source>
+            <source>&amp;About</source>
             <translation type="unfinished">
             </translation>
         </message>
         <message>
-            <source>&amp;Community Support...</source>
+            <source>&amp;Community Support</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Send Us &amp;Feedback</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>&amp;Translate this application</source>
             <translation type="unfinished">
             </translation>
         </message>
@@ -2918,6 +2789,28 @@ Playback and MIDI preferences</source>
         <message>
             <source>Support
 Get help with Mixxx</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Send feedback to the Mixxx team.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Support
+Send feedback to the Mixxx team.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Help translate this application into your language.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Support
+Help translate this application into your language.</source>
             <translation type="unfinished">
             </translation>
         </message>
@@ -3353,7 +3246,7 @@ Click OK to exit.</source>
             </translation>
         </message>
         <message>
-            <source>Traktor (loading)</source>
+            <source>(loading) Traktor</source>
             <translation type="unfinished">
             </translation>
         </message>
@@ -3658,6 +3551,11 @@ Click OK to exit.</source>
         </message>
         <message>
             <source>Add to Auto DJ Queue</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Reload Track Metadata</source>
             <translation type="unfinished">
             </translation>
         </message>

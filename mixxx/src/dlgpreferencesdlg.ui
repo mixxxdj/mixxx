@@ -1,7 +1,8 @@
-<ui version="4.0" >
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
  <class>DlgPreferencesDlg</class>
- <widget class="QDialog" name="DlgPreferencesDlg" >
-  <property name="geometry" >
+ <widget class="QDialog" name="DlgPreferencesDlg">
+  <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
@@ -9,62 +10,59 @@
     <height>445</height>
    </rect>
   </property>
-  <property name="windowTitle" >
+  <property name="windowTitle">
    <string>Dialog</string>
   </property>
-  <layout class="QHBoxLayout" name="horizontalLayout" >
+  <layout class="QHBoxLayout" name="horizontalLayout">
    <item>
-    <widget class="QTreeWidget" name="contentsTreeWidget" >
-     <property name="sizePolicy" >
-      <sizepolicy vsizetype="Expanding" hsizetype="Fixed" >
+    <widget class="QTreeWidget" name="contentsTreeWidget">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Fixed" vsizetype="Expanding">
        <horstretch>0</horstretch>
        <verstretch>0</verstretch>
       </sizepolicy>
      </property>
-     <property name="minimumSize" >
+     <property name="minimumSize">
       <size>
        <width>0</width>
        <height>0</height>
       </size>
      </property>
-     <property name="maximumSize" >
+     <property name="maximumSize">
       <size>
        <width>170</width>
        <height>16777215</height>
       </size>
      </property>
-     <property name="showDropIndicator" stdset="0" >
+     <property name="showDropIndicator" stdset="0">
       <bool>false</bool>
      </property>
-     <property name="selectionMode" >
+     <property name="selectionMode">
       <enum>QAbstractItemView::SingleSelection</enum>
      </property>
-     <property name="rootIsDecorated" >
+     <property name="rootIsDecorated">
       <bool>true</bool>
      </property>
-     <!--<property name="headerHidden" >
-      <bool>true</bool>
-     </property>-->
      <column>
-      <property name="text" >
+      <property name="text">
        <string>1</string>
       </property>
      </column>
     </widget>
    </item>
    <item>
-    <layout class="QVBoxLayout" >
+    <layout class="QVBoxLayout">
      <item>
-      <widget class="QStackedWidget" name="pagesWidget" >
-       <widget class="QWidget" name="page_2" />
+      <widget class="QStackedWidget" name="pagesWidget">
+       <widget class="QWidget" name="page"/>
       </widget>
      </item>
      <item>
-      <widget class="QDialogButtonBox" name="buttonBox" >
-       <property name="orientation" >
+      <widget class="QDialogButtonBox" name="buttonBox">
+       <property name="orientation">
         <enum>Qt::Horizontal</enum>
        </property>
-       <property name="standardButtons" >
+       <property name="standardButtons">
         <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
        </property>
       </widget>
@@ -81,11 +79,11 @@
    <receiver>DlgPreferencesDlg</receiver>
    <slot>accept()</slot>
    <hints>
-    <hint type="sourcelabel" >
+    <hint type="sourcelabel">
      <x>330</x>
      <y>470</y>
     </hint>
-    <hint type="destinationlabel" >
+    <hint type="destinationlabel">
      <x>157</x>
      <y>274</y>
     </hint>
@@ -97,11 +95,11 @@
    <receiver>DlgPreferencesDlg</receiver>
    <slot>reject()</slot>
    <hints>
-    <hint type="sourcelabel" >
+    <hint type="sourcelabel">
      <x>330</x>
      <y>470</y>
     </hint>
-    <hint type="destinationlabel" >
+    <hint type="destinationlabel">
      <x>286</x>
      <y>274</y>
     </hint>

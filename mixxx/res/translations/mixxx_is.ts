@@ -381,114 +381,8 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Analyze Entire Song</source>
-            <translation>Grandskoða allt lagið</translation>
-        </message>
-    </context>
-    <context>
-        <name>DlgBpmTapDlg</name>
-        <message>
-            <source>Track Editor</source>
-            <translation>Sýsla með lag</translation>
-        </message>
-        <message>
-            <source>&amp;Close</source>
-            <translation>&amp;Loka</translation>
-        </message>
-        <message>
-            <source>Alt+O</source>
-            <translation>Alt+O</translation>
-        </message>
-        <message>
-            <source>Song:</source>
-            <translation>Lag:</translation>
-        </message>
-        <message>
-            <source>Next &gt;&gt;</source>
-            <translation>Næsta &gt;&gt;</translation>
-        </message>
-        <message>
-            <source>&lt;&lt; Prev</source>
-            <translation>&lt;&lt; Fyrra</translation>
-        </message>
-        <message>
-            <source>BPM Editor (Click to Expand)</source>
-            <translation>Sýsla með BPM (Smelltu til að útvíkka)</translation>
-        </message>
-        <message>
-            <source>BPM Detection</source>
-            <translation>BPM skynjun</translation>
-        </message>
-        <message>
-            <source>BPM Scheme:</source>
-            <translation>BPM skema:</translation>
-        </message>
-        <message>
-            <source>to</source>
-            <translation>til</translation>
-        </message>
-        <message>
-            <source>BPM Range:</source>
-            <translation>BPM svið:</translation>
-        </message>
-        <message>
-            <source>&amp;Go</source>
-            <translation>Á&amp;fram</translation>
-        </message>
-        <message>
-            <source>Alt+G</source>
-            <translation>Alt+G</translation>
-        </message>
-        <message>
-            <source>Analyze Entire Song</source>
-            <translation>Grandskoða allt lagið</translation>
-        </message>
-        <message>
-            <source>BPM:</source>
-            <translation>BPM:</translation>
-        </message>
-        <message>
-            <source>&amp;Push to tap tempo</source>
-            <translation>Ý&amp;ttu til að setja tempo</translation>
-        </message>
-        <message>
-            <source>Alt+P</source>
-            <translation>Alt+P</translation>
-        </message>
-        <message>
-            <source>Track Information (Click to Expand)</source>
-            <translation>Upplýsingar um lag (Smelltu til að útvíkka)</translation>
-        </message>
-        <message>
-            <source>Title:</source>
-            <translation>Heiti:</translation>
-        </message>
-        <message>
-            <source>Artist:</source>
-            <translation>Flytjandi:</translation>
-        </message>
-        <message>
-            <source>Comments:</source>
-            <translation>Athugasemdir:</translation>
-        </message>
-        <message>
-            <source>Filename:</source>
-            <translation>Skráarnafn:</translation>
-        </message>
-        <message>
-            <source>3:00</source>
-            <translation>3:00</translation>
-        </message>
-        <message>
-            <source>Play Time:</source>
-            <translation>Spilunartími:</translation>
-        </message>
-        <message>
-            <source>File Type:</source>
-            <translation>Skráartegund:</translation>
-        </message>
-        <message>
-            <source>77</source>
-            <translation>77</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
     </context>
     <context>
@@ -1112,6 +1006,11 @@ p, li { white-space: pre-wrap; }
             </translation>
         </message>
         <message>
+            <source>Show Signal Quality in Skin</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
             <source>Control Mode</source>
             <translation type="unfinished">
             </translation>
@@ -1511,7 +1410,8 @@ playback and outbound link statistics</source>
         </message>
         <message>
             <source>Description</source>
-            <translation>Lýsing</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
@@ -1734,6 +1634,11 @@ p, li { white-space: pre-wrap; }
             <translation>Ekkert</translation>
         </message>
         <message>
+            <source>Channel %1</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
             <source>Channels %1 - %2</source>
             <translation>Rásir %1 - %2</translation>
         </message>
@@ -1797,6 +1702,11 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Deck 2 Vinyl Type</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Show Signal Quality in Skin</source>
             <translation type="unfinished">
             </translation>
         </message>
@@ -1983,15 +1893,18 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Song:</source>
-            <translation>Lag:</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Title:</source>
-            <translation>Heiti:</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Artist:</source>
-            <translation>Flytjandi:</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Album:</source>
@@ -2011,7 +1924,8 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Filename:</source>
-            <translation>Skráarnafn:</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Duration:</source>
@@ -2019,19 +1933,23 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>3:00</source>
-            <translation>3:00</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>File Type:</source>
-            <translation>Skráartegund:</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>77</source>
-            <translation>77</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Comments:</source>
-            <translation>Athugasemdir:</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Reload track metadata from file.</source>
@@ -2039,7 +1957,8 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Track Information (Click to Expand)</source>
-            <translation>Upplýsingar um lag (Smelltu til að útvíkka)</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Track BPM: </source>
@@ -2115,7 +2034,8 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Alt+O</source>
-            <translation>Alt+O</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>&amp;Next &gt;&gt;</source>
@@ -2129,17 +2049,17 @@ p, li { white-space: pre-wrap; }
             <translation>Kóðari</translation>
         </message>
         <message>
-            <source>&lt;html&gt;Mixxx is unable to load or find the MP3 encoder lame. &lt;p&gt;Please install libmp3lame (also known as lame) and check if /usr/lib/libmp3lame.so exists on your system &lt;/html&gt;</source>
+            <source>&lt;html&gt;Mixxx cannot record or stream in MP3 without the MP3 encoder &amp;quot;lame&amp;quot;. Due to licensing issues, we cannot include this with Mixxx. To record or stream in MP3, you must download &lt;b&gt;libmp3lame&lt;/b&gt; and install it on your system. &lt;p&gt;See &lt;a href='http://mixxx.org/wiki/doku.php/internet_broadcasting#linux'&gt;Mixxx Wiki&lt;/a&gt; for more information. &lt;/html&gt;</source>
             <translation type="unfinished">
             </translation>
         </message>
         <message>
-            <source>&lt;html&gt;Mixxx is unable to load or find the MP3 encoder lame. &lt;p&gt;Please put lame_enc.dll in the directory you have installed Mixxx &lt;/html&gt;</source>
+            <source>&lt;html&gt;Mixxx cannot record or stream in MP3 without the MP3 encoder &amp;quot;lame&amp;quot;. Due to licensing issues, we cannot include this with Mixxx. To record or stream in MP3, you must download &lt;b&gt;lame_enc.dll&lt;/b&gt; and install it on your system. &lt;p&gt;See &lt;a href='http://mixxx.org/wiki/doku.php/internet_broadcasting#windows'&gt;Mixxx Wiki&lt;/a&gt; for more information. &lt;/html&gt;</source>
             <translation type="unfinished">
             </translation>
         </message>
         <message>
-            <source>&lt;html&gt;Mixxx is unable to load or find the MP3 encoder lame. &lt;p&gt;Please install libmp3lame (also known as lame) and check if /usr/local/lib/libmp3lame.dylib exists on your system &lt;/html&gt;</source>
+            <source>&lt;html&gt;Mixxx cannot record or stream in MP3 without the MP3 encoder &amp;quot;lame&amp;quot;. Due to licensing issues, we cannot include this with Mixxx. To record or stream in MP3, you must download &lt;b&gt;libmp3lame&lt;/b&gt; and install it on your system. &lt;p&gt;See &lt;a href='http://mixxx.org/wiki/doku.php/internet_broadcasting#mac_osx'&gt;Mixxx Wiki&lt;/a&gt; for more information. &lt;/html&gt;</source>
             <translation type="unfinished">
             </translation>
         </message>
@@ -2254,7 +2174,7 @@ p, li { white-space: pre-wrap; }
             </translation>
         </message>
         <message>
-            <source>iTunes (loading)</source>
+            <source>(loading) iTunes</source>
             <translation type="unfinished">
             </translation>
         </message>
@@ -2327,6 +2247,11 @@ p, li { white-space: pre-wrap; }
             <translation type="unfinished">
             </translation>
         </message>
+        <message>
+            <source>Description</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
     </context>
     <context>
         <name>MidiMapping</name>
@@ -2382,6 +2307,11 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Control Value</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Description</source>
             <translation type="unfinished">
             </translation>
         </message>
@@ -2642,12 +2572,22 @@ This information will not be used to personally identify you, contact you, adver
             </translation>
         </message>
         <message>
-            <source>&amp;About...</source>
+            <source>&amp;About</source>
             <translation type="unfinished">
             </translation>
         </message>
         <message>
-            <source>&amp;Community Support...</source>
+            <source>&amp;Community Support</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Send Us &amp;Feedback</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>&amp;Translate this application</source>
             <translation type="unfinished">
             </translation>
         </message>
@@ -2837,6 +2777,28 @@ Playback and MIDI preferences</source>
         <message>
             <source>Support
 Get help with Mixxx</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Send feedback to the Mixxx team.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Support
+Send feedback to the Mixxx team.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Help translate this application into your language.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Support
+Help translate this application into your language.</source>
             <translation type="unfinished">
             </translation>
         </message>
@@ -3272,7 +3234,7 @@ Click OK to exit.</source>
             </translation>
         </message>
         <message>
-            <source>Traktor (loading)</source>
+            <source>(loading) Traktor</source>
             <translation type="unfinished">
             </translation>
         </message>
@@ -3577,6 +3539,11 @@ Click OK to exit.</source>
         </message>
         <message>
             <source>Add to Auto DJ Queue</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Reload Track Metadata</source>
             <translation type="unfinished">
             </translation>
         </message>
