@@ -384,6 +384,14 @@ void DlgPrefMidiBindings::slotAddInputBinding()
     {
         controlValues = ControlValueDelegate::getPlaylistControlValues();
     }
+    else if (controlGroup == CONTROLGROUP_FLANGER_STRING)
+    {
+        controlValues = ControlValueDelegate::getFlangerControlValues();
+    }
+    else if (controlGroup == CONTROLGROUP_MICROPHONE_STRING)
+    {
+        controlValues = ControlValueDelegate::getMicrophoneControlValues();
+    }
     else
     {
         qDebug() << "Unhandled ControlGroup in " << __FILE__;
