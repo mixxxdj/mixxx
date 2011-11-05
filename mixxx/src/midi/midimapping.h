@@ -156,6 +156,8 @@ private:
     void loadScriptCode();
     /** Show MIDI Script errors */
     void doScriptError(MixxxControl mixxxControl, MidiMessage midiMessage);
+    /** Resolve all MIDI Script Functions */
+    void resolveFunctions();
 
     QList<QString> m_scriptFileNames;
     QList<QString> m_scriptFunctionPrefixes;
