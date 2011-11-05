@@ -645,6 +645,46 @@ void MidiMapping::doScriptError(MixxxControl mixxxControl, MidiMessage midiMessa
     
 }
 
+#ifdef __MIDISCRIPT__
+void MidiMapping::resolveFunctions()
+{
+    QDomElement controller = m_Bindings.firstChildElement("controller");
+    QDomElement control = controller.firstChildElement("controls").firstChildElement("control");
+    
+    
+    //Iterate through each <control> block in the XML
+    for ( ; !control.isNull(); control = control.nextSiblingElement("control")) {
+        
+        //Unserialize these objects from the XML
+        MidiMessage midiMessage(control);
+        MixxxControl mixxxControl(control);
+        QScriptValue func;
+        
+        
+        // Resolve Script function
+        if (mixxxControl.getMidiOption()!=MIDI_OPT_SCRIPT)
+            continue;
+        
+        // Check if the function has already been resolved and hooked
+        func = mixxxControl.getScriptFunction();
+        if (func.isFunction() && func.isValid())
+            continue;
+        
+        func = m_pScriptEngine->resolveFunction(mixxxControl.getControlObjectValue());
+        if (!func.isValid() || !func.isFunction()) {
+            doScriptError(mixxxControl, midiMessage);
+        }
+        else {
+            qDebug() << "Mapped to MIDI Script Function:" << mixxxControl.getControlObjectValue();
+            
+            mixxxControl.setScriptFunction(func);
+            internalSetInputMidiMapping(midiMessage, mixxxControl, true);
+        }
+    }
+}
+#endif
+
+
 /* loadPreset(QDomElement)
  * Loads a set of MIDI bindings from a QDomElement structure.
  * @param root The root node of the XML document for the MIDI mapping.
@@ -810,6 +850,7 @@ void MidiMapping::applyPreset() {
     // the script engine must have its code loaded here as well
     if (m_pScriptEngine != NULL) {
         if (!m_pScriptEngine->isLoaded()) {
+            qDebug() << "Reloading the code...";
             loadScriptCode();
         }
         else
@@ -817,7 +858,7 @@ void MidiMapping::applyPreset() {
     }
     
     initializeScripts();
-    
+    resolveFunctions();
     
 #endif
 
