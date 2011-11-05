@@ -69,7 +69,13 @@ extern "C" MY_EXPORT char** supportedFileExtensions()
     }
     c_exts[exts.count()] = NULL; //NULL terminate the list
 
-    return c_exts; //It's up to the caller to free this array
+    return c_exts;
+}
+
+extern "C" MY_EXPORT void freeFileExtensions(char **exts)
+{
+    for (int i(0); exts[i]; ++i) free(exts[i]);
+    free(exts);
 }
 
 }  // namespace Mixxx

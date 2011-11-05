@@ -49,6 +49,8 @@ EngineShoutcast::EngineShoutcast(ConfigObject<ConfigValue> *_config)
           m_pConfig(_config),
           m_encoder(NULL),
           m_pUpdateShoutcastFromPrefs(NULL),
+          m_pMasterSamplerate(new ControlObjectThread(
+              ControlObject::getControl(ConfigKey("[Master]", "samplerate")))),
           m_shoutMutex(QMutex::Recursive) {
 
     m_pShout = 0;
@@ -86,12 +88,12 @@ EngineShoutcast::~EngineShoutcast()
 
     if (m_encoder){
         m_encoder->flush();
-
         delete m_encoder;
     }
 
     delete m_pUpdateShoutcastFromPrefs;
     delete m_pShoutcastNeedUpdateFromPrefs;
+    delete m_pMasterSamplerate;
 
     if (m_pShoutMetaData)
         shout_metadata_free(m_pShoutMetaData);
@@ -101,6 +103,7 @@ EngineShoutcast::~EngineShoutcast()
     }
     shout_shutdown();
 }
+
 bool EngineShoutcast::serverDisconnect()
 {
     QMutexLocker locker(&m_shoutMutex);
@@ -116,6 +119,7 @@ bool EngineShoutcast::serverDisconnect()
     }
     return false; //if no connection has been established, nothing can be disconnected
 }
+
 bool EngineShoutcast::isConnected()
 {
     QMutexLocker locker(&m_shoutMutex);
@@ -226,6 +230,17 @@ void EngineShoutcast::updateFromPreferences()
     if ((len = baBitrate.indexOf(' ')) != -1) {
         baBitrate.resize(len);
     }
+    int iBitrate = baBitrate.toInt();
+
+    int iMasterSamplerate = m_pMasterSamplerate->get();
+    if (format == SHOUT_FORMAT_OGG && iMasterSamplerate == 96000) {
+        errorDialog("Broadcasting at 96kHz with Ogg Vorbis is not currently "
+                    "supported. Please try a different sample-rate or switch "
+                    "to a different encoding.",
+                    "See https://bugs.launchpad.net/mixxx/+bug/686212 for more "
+                    "information.");
+        return;
+    }
 
     if (shout_set_audio_info(m_pShout, SHOUT_AI_BITRATE, baBitrate.data()) != SHOUTERR_SUCCESS) {
         errorDialog("Error setting bitrate", shout_get_error(m_pShout));
@@ -268,7 +283,7 @@ void EngineShoutcast::updateFromPreferences()
         qDebug() << "**** Unknown Encoder Format";
         return;
     }
-    if (m_encoder->initEncoder(baBitrate.toInt()) < 0) {
+    if (m_encoder->initEncoder(iBitrate) < 0) {
         //e.g., if lame is not found
         //init m_encoder itself will display a message box
         qDebug() << "**** Encoder init failed";
@@ -327,7 +342,6 @@ bool EngineShoutcast::serverConnect()
         if (m_pShout)
             shout_close(m_pShout);
         m_pConfig->set(ConfigKey("[Shoutcast]","enabled"),ConfigValue("0"));
-        
     }
     if (m_bQuit) {
         if (m_pShout)
@@ -378,7 +392,7 @@ void EngineShoutcast::write(unsigned char *header, unsigned char *body,
                 if ( m_iShoutFailures > 3 ){
                     if(!serverConnect())
                         errorDialog(tr("Lost connection to streaming server"), tr("Please check your connection to the Internet and verify that your username and password are correct."));
-                 }                       
+                 }
                  else{
                     m_iShoutFailures++;
                  }
@@ -395,7 +409,7 @@ void EngineShoutcast::write(unsigned char *header, unsigned char *body,
             if ( m_iShoutFailures > 3 ){
                     if(!serverConnect())
                         errorDialog(tr("Lost connection to streaming server"), tr("Please check your connection to the Internet and verify that your username and password are correct."));
-             }                       
+             }
              else{
                 m_iShoutFailures++;
              }
@@ -545,7 +559,7 @@ void EngineShoutcast::updateMetaData()
             // convert QStrings to char*s
             QByteArray baArtist = m_pMetaData->getArtist().toLatin1();
             QByteArray baTitle = m_pMetaData->getTitle().toLatin1();
-            
+
             if (baArtist.isEmpty())
                 baSong = baTitle;
             else

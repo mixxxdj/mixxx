@@ -31,6 +31,10 @@ class TrackModel {
         TRACKMODELCAPS_ADDTOAUTODJ    = 0x0010,
         TRACKMODELCAPS_LOCKED         = 0x0020,
         TRACKMODELCAPS_RELOADMETADATA = 0x0040,
+        TRACKMODELCAPS_LOADTODECK     = 0x0080,
+        TRACKMODELCAPS_LOADTOSAMPLER  = 0x0100,
+        TRACKMODELCAPS_REMOVE         = 0x0200,
+        TRACKMODELCAPS_RELOCATE       = 0x0400,
     };
 
     typedef int CapabilitiesFlags; /** Enables us to do ORing */

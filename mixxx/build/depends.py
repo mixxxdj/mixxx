@@ -97,7 +97,6 @@ class FLAC(Dependence):
     def sources(self, build):
         return ['soundsourceflac.cpp',]
 
-
 class Qt(Dependence):
     DEFAULT_QTDIRS = {'linux': '/usr/share/qt4',
                       'bsd': '/usr/local/lib/qt4',
@@ -154,14 +153,14 @@ class Qt(Dependence):
             build.env.Append(LIBS = 'QtScript')
         elif build.platform_is_windows:
             build.env.Append(LIBPATH=['$QTDIR/lib'])
-            build.env.Append(LIBS = 'QtXml4');
-            build.env.Append(LIBS = 'QtXmlPatterns4');
-            build.env.Append(LIBS = 'QtSql4');
-            build.env.Append(LIBS = 'QtGui4');
-            build.env.Append(LIBS = 'QtCore4');
-            build.env.Append(LIBS = 'QtWebKit4');
+            build.env.Append(LIBS = 'QtXml4')
+            build.env.Append(LIBS = 'QtXmlPatterns4')
+            build.env.Append(LIBS = 'QtSql4')
+            build.env.Append(LIBS = 'QtGui4')
+            build.env.Append(LIBS = 'QtCore4')
+            build.env.Append(LIBS = 'QtWebKit4')
             build.env.Append(LIBS = 'QtNetwork4')
-            build.env.Append(LIBS = 'QtOpenGL4');
+            build.env.Append(LIBS = 'QtOpenGL4')
             # Tobias: Don't remove this line
             # I used the Windows API in foldertreemodel.cpp
             # to quickly test if a folder has subfolders
@@ -354,7 +353,6 @@ class MixxxCore(Feature):
                    "engine/enginebufferscale.cpp",
                    "engine/enginebufferscaledummy.cpp",
                    "engine/enginebufferscalelinear.cpp",
-                   "engine/enginebufferscalereal.cpp",
                    "engine/engineclipping.cpp",
                    "engine/enginefilterblock.cpp",
                    "engine/enginefilteriir.cpp",
@@ -741,7 +739,7 @@ class MixxxCore(Feature):
 
     def depends(self, build):
         return [SoundTouch, KissFFT, ReplayGain, PortAudio, PortMIDI, Qt,
-                FidLib, SndFile, FLAC, OggVorbis, OpenGL, TagLib]
+                FidLib, SndFile, FLAC, OggVorbis, OpenGL, TagLib,]
 
     def post_dependency_check_configure(self, build, conf):
         """Sets up additional things in the Environment that must happen

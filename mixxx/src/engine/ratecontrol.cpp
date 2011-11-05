@@ -363,7 +363,8 @@ double RateControl::getJogFactor() {
     return jogFactor;
 }
 
-double RateControl::calculateRate(double baserate, bool paused, int iSamplesPerBuffer) {
+double RateControl::calculateRate(double baserate, bool paused, int iSamplesPerBuffer,
+                                  bool* isScratching) {
     double rate = 0.0;
     double wheelFactor = getWheelFactor();
     double jogFactor = getJogFactor();
@@ -387,6 +388,7 @@ double RateControl::calculateRate(double baserate, bool paused, int iSamplesPerB
     if (m_pScratchController->isEnabled()) {
         scratchEnable = true;
         scratchFactor = m_pScratchController->getRate();
+        *isScratching = true;
     }
 
     if (searching) {
