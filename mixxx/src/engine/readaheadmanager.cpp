@@ -212,18 +212,17 @@ int ReadAheadManager::getEffectiveVirtualPlaypositionFromLog(double currentVirtu
         }
         shouldNotifySeek = true;
     }
+    int result = 0;
     if (direction) {
-        virtualPlayposition = floor(virtualPlayposition);
-        if (!even(virtualPlayposition)) {
-            virtualPlayposition--;
+        result = static_cast<int>(floor(virtualPlayposition));
+        if (!even(result)) {
+            result--;
         }
     } else {
-        virtualPlayposition = ceil(virtualPlayposition);
-        if (!even(virtualPlayposition)) {
-            virtualPlayposition++;
+        result = static_cast<int>(ceil(virtualPlayposition));
+        if (!even(result)) {
+            result++;
         }
     }
-
-    
-    return (int)virtualPlayposition;
+    return result;
 }

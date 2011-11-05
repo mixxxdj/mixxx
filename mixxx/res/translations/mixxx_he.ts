@@ -276,8 +276,7 @@
         </message>
         <message>
             <source>M3U Playlist (*.m3u);;PLS Playlist (*.pls)</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>רשימת השמעה M3U‏ (‎*.m3u);; רשימת השמעה PLS‏ (‎*.pls)</translation>
         </message>
         <message>
             <source>A crate cannot have a blank name.</source>
@@ -310,8 +309,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>1.x.x</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>1.x.x</translation>
         </message>
         <message>
             <source>&lt;a href=&quot;http://mixxx.org/&quot;&gt;Official Website&lt;/a&gt;</source>
@@ -326,8 +324,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Enable Auto DJ</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>הפעלת תקליטן אוטומטי</translation>
         </message>
         <message>
             <source>Manage</source>
@@ -370,182 +367,54 @@ p, li { white-space: pre-wrap; }
         </message>
     </context>
     <context>
-        <name>DlgBpmTapDlg</name>
-        <message>
-            <source>Track Editor</source>
-            <translation>עורך הרצועות</translation>
-        </message>
-        <message>
-            <source>&amp;Close</source>
-            <translation>&amp;סגירה</translation>
-        </message>
-        <message>
-            <source>Alt+O</source>
-            <translation>Alt+O</translation>
-        </message>
-        <message>
-            <source>Song:</source>
-            <translation>שיר:</translation>
-        </message>
-        <message>
-            <source>Next &gt;&gt;</source>
-            <translation>הבא &gt;&gt;</translation>
-        </message>
-        <message>
-            <source>&lt;&lt; Prev</source>
-            <translation>&lt;&lt; הקודם</translation>
-        </message>
-        <message>
-            <source>BPM Editor (Click to Expand)</source>
-            <translation>עורך BPM (יש ללחוץ על מנת להרחיב)</translation>
-        </message>
-        <message>
-            <source>BPM Detection</source>
-            <translation>זיהוי BPM</translation>
-        </message>
-        <message>
-            <source>BPM Scheme:</source>
-            <translation>תרשים BPM:</translation>
-        </message>
-        <message>
-            <source>to</source>
-            <translation>עד</translation>
-        </message>
-        <message>
-            <source>BPM Range:</source>
-            <translation>טווח BPM:</translation>
-        </message>
-        <message>
-            <source>&amp;Go</source>
-            <translation>&amp;מעבר</translation>
-        </message>
-        <message>
-            <source>Alt+G</source>
-            <translation>Alt+G</translation>
-        </message>
-        <message>
-            <source>Analyze Entire Song</source>
-            <translation>ניתוח השיר כולו</translation>
-        </message>
-        <message>
-            <source>BPM:</source>
-            <translation>BPM:</translation>
-        </message>
-        <message>
-            <source>&amp;Push to tap tempo</source>
-            <translation>&amp;לחיצה לקצב הנקישה</translation>
-        </message>
-        <message>
-            <source>Alt+P</source>
-            <translation>Alt+P</translation>
-        </message>
-        <message>
-            <source>Track Information (Click to Expand)</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Title:</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Artist:</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Comments:</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Filename:</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>3:00</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Play Time:</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>File Type:</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>77</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-    </context>
-    <context>
         <name>DlgMidiLearning</name>
         <message>
             <source>Skip</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>דילוג</translation>
         </message>
         <message>
             <source>Successfully mapped to: </source>
-            <translation type="unfinished">
-            </translation>
+            <translation>מופה בהצלחה למיקום: </translation>
         </message>
         <message>
             <source>Next</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>הבא</translation>
         </message>
         <message>
             <source>MIDI Learning Wizard</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>האשף ללימוד MIDI</translation>
         </message>
         <message>
             <source>Welcome to the MIDI Learning Wizard</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>ברוך בואך לאשף ללימוד MIDI</translation>
         </message>
         <message>
             <source>This wizard allows you to easily map the controls on your MIDI controller to Mixxx's controls.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>אשף זה יאפשר לך למפות בקלות את פקדי הבקרה שעל פקד ה־MIDI שלך לפקדים של Mixxx.</translation>
         </message>
         <message>
             <source>Begin</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>התחלה</translation>
         </message>
         <message>
             <source>Please tweak the control for:</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>נא לשפר את הפקד עבור:</translation>
         </message>
         <message>
             <source>Mixxx Control</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>הבקרה של Mixxx</translation>
         </message>
         <message>
             <source>Previous</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>הקודם</translation>
         </message>
         <message>
             <source>Press spacebar to proceed or skip.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>יש ללחוץ על רווח כדי להמשיך או לדלג.</translation>
         </message>
         <message>
             <source>MIDI learning complete!</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>למידת ה־MIDI הושלמה!</translation>
         </message>
         <message>
             <source>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
@@ -559,49 +428,41 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Finito!</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>סיימנו!</translation>
         </message>
     </context>
     <context>
         <name>DlgPluginDownloader</name>
         <message>
             <source>Missing Audio Plugin Downloader</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>חסר מוריד תוספי שמע</translation>
         </message>
     </context>
     <context>
         <name>DlgPrefBPMDlg</name>
         <message>
             <source>BPM Detection Settings</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>הגדרות איתור BPM</translation>
         </message>
         <message>
             <source>BPM Detection</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>זיהוי BPM</translation>
         </message>
         <message>
             <source>Enable BPM Detection</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>הפעלת זיהוי BPM</translation>
         </message>
         <message>
             <source>Detect Song BPM on Import</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>זיהוי ה־BPM של השיר עם היבוא</translation>
         </message>
         <message>
             <source>Write BPM to ID3 Tag</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>כתיבת ה־BPM לתגית ה־ID3</translation>
         </message>
         <message>
             <source>If BPM can be detected but not within specified range</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>אם ניתן לזהות את ה־BPM אך לא בתוך טווח מסוים</translation>
         </message>
         <message>
             <source>Allow BPM above the range</source>
@@ -610,119 +471,97 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>BPM Schemes</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>סכימות BPM</translation>
         </message>
         <message>
             <source>Add</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>הוספה</translation>
         </message>
         <message>
             <source>Edit</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>עריכה</translation>
         </message>
         <message>
             <source>Delete</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>מחיקה</translation>
         </message>
         <message>
             <source>Default</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>בררת מחדל</translation>
         </message>
     </context>
     <context>
         <name>DlgPrefBpm</name>
         <message>
             <source>Error</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>שגיאה</translation>
         </message>
         <message>
             <source>Cannot open file %1</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>לא ניתן לפתוח את הקובץ %1</translation>
         </message>
     </context>
     <context>
         <name>DlgPrefControls</name>
         <message>
             <source>This skin does not support schemes</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>מעטפת זו אינה תומכת בסכימות</translation>
         </message>
         <message>
             <source>8% (Technics SL1210)</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>8% (Technics SL1210)</translation>
         </message>
         <message>
             <source>10%</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>10%</translation>
         </message>
         <message>
             <source>20%</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>20%</translation>
         </message>
         <message>
             <source>30%</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>30%</translation>
         </message>
         <message>
             <source>40%</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>40%</translation>
         </message>
         <message>
             <source>50%</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>50%</translation>
         </message>
         <message>
             <source>60%</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>60%</translation>
         </message>
         <message>
             <source>70%</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>70%</translation>
         </message>
         <message>
             <source>80%</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>80%</translation>
         </message>
         <message>
             <source>90%</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>90%</translation>
         </message>
         <message>
             <source>Up increases speed</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>חץ למעלה מגביר את המהירות</translation>
         </message>
         <message>
             <source>Down increases speed (Technics SL1210)</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>חץ למטה (Technics SL1210)</translation>
         </message>
         <message>
             <source>Information</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>פרטים</translation>
         </message>
         <message>
             <source>Mixxx must be restarted before the changes will take effect.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>יש להפעיל את Mixxx מחדש כדי שהשינויים יכנסו לתוקף.</translation>
         </message>
     </context>
     <context>
@@ -734,38 +573,31 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Skin</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>מעטפת</translation>
         </message>
         <message>
             <source>Scheme</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>סכימה</translation>
         </message>
         <message>
             <source>Waveform display</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>תצוגת גלי קול</translation>
         </message>
         <message>
             <source>Position display</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>תצוגת מיקום</translation>
         </message>
         <message>
             <source>Tool tips</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>חלוניות עצה</translation>
         </message>
         <message>
             <source>On</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>פעיל</translation>
         </message>
         <message>
             <source>Off</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>כבוי</translation>
         </message>
         <message>
             <source>Pitch/Rate slider range</source>
@@ -1178,6 +1010,11 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>seconds</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Show Signal Quality in Skin</source>
             <translation type="unfinished">
             </translation>
         </message>
@@ -1891,6 +1728,11 @@ p, li { white-space: pre-wrap; }
             </translation>
         </message>
         <message>
+            <source>Channel %1</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
             <source>Channels %1 - %2</source>
             <translation type="unfinished">
             </translation>
@@ -1959,6 +1801,11 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Deck 2 Vinyl Type</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Show Signal Quality in Skin</source>
             <translation type="unfinished">
             </translation>
         </message>
@@ -2336,17 +2183,17 @@ p, li { white-space: pre-wrap; }
             </translation>
         </message>
         <message>
-            <source>&lt;html&gt;Mixxx is unable to load or find the MP3 encoder lame. &lt;p&gt;Please install libmp3lame (also known as lame) and check if /usr/lib/libmp3lame.so exists on your system &lt;/html&gt;</source>
+            <source>&lt;html&gt;Mixxx cannot record or stream in MP3 without the MP3 encoder &amp;quot;lame&amp;quot;. Due to licensing issues, we cannot include this with Mixxx. To record or stream in MP3, you must download &lt;b&gt;libmp3lame&lt;/b&gt; and install it on your system. &lt;p&gt;See &lt;a href='http://mixxx.org/wiki/doku.php/internet_broadcasting#linux'&gt;Mixxx Wiki&lt;/a&gt; for more information. &lt;/html&gt;</source>
             <translation type="unfinished">
             </translation>
         </message>
         <message>
-            <source>&lt;html&gt;Mixxx is unable to load or find the MP3 encoder lame. &lt;p&gt;Please put lame_enc.dll in the directory you have installed Mixxx &lt;/html&gt;</source>
+            <source>&lt;html&gt;Mixxx cannot record or stream in MP3 without the MP3 encoder &amp;quot;lame&amp;quot;. Due to licensing issues, we cannot include this with Mixxx. To record or stream in MP3, you must download &lt;b&gt;lame_enc.dll&lt;/b&gt; and install it on your system. &lt;p&gt;See &lt;a href='http://mixxx.org/wiki/doku.php/internet_broadcasting#windows'&gt;Mixxx Wiki&lt;/a&gt; for more information. &lt;/html&gt;</source>
             <translation type="unfinished">
             </translation>
         </message>
         <message>
-            <source>&lt;html&gt;Mixxx is unable to load or find the MP3 encoder lame. &lt;p&gt;Please install libmp3lame (also known as lame) and check if /usr/local/lib/libmp3lame.dylib exists on your system &lt;/html&gt;</source>
+            <source>&lt;html&gt;Mixxx cannot record or stream in MP3 without the MP3 encoder &amp;quot;lame&amp;quot;. Due to licensing issues, we cannot include this with Mixxx. To record or stream in MP3, you must download &lt;b&gt;libmp3lame&lt;/b&gt; and install it on your system. &lt;p&gt;See &lt;a href='http://mixxx.org/wiki/doku.php/internet_broadcasting#mac_osx'&gt;Mixxx Wiki&lt;/a&gt; for more information. &lt;/html&gt;</source>
             <translation type="unfinished">
             </translation>
         </message>
@@ -2463,7 +2310,7 @@ p, li { white-space: pre-wrap; }
             </translation>
         </message>
         <message>
-            <source>iTunes (loading)</source>
+            <source>(loading) iTunes</source>
             <translation type="unfinished">
             </translation>
         </message>
@@ -2536,6 +2383,11 @@ p, li { white-space: pre-wrap; }
             <translation type="unfinished">
             </translation>
         </message>
+        <message>
+            <source>Description</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
     </context>
     <context>
         <name>MidiMapping</name>
@@ -2591,6 +2443,11 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Control Value</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Description</source>
             <translation type="unfinished">
             </translation>
         </message>
@@ -2851,12 +2708,22 @@ This information will not be used to personally identify you, contact you, adver
             </translation>
         </message>
         <message>
-            <source>&amp;About...</source>
+            <source>&amp;About</source>
             <translation type="unfinished">
             </translation>
         </message>
         <message>
-            <source>&amp;Community Support...</source>
+            <source>&amp;Community Support</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Send Us &amp;Feedback</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>&amp;Translate this application</source>
             <translation type="unfinished">
             </translation>
         </message>
@@ -3046,6 +2913,28 @@ Playback and MIDI preferences</source>
         <message>
             <source>Support
 Get help with Mixxx</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Send feedback to the Mixxx team.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Support
+Send feedback to the Mixxx team.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Help translate this application into your language.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Support
+Help translate this application into your language.</source>
             <translation type="unfinished">
             </translation>
         </message>
@@ -3481,7 +3370,7 @@ Click OK to exit.</source>
             </translation>
         </message>
         <message>
-            <source>Traktor (loading)</source>
+            <source>(loading) Traktor</source>
             <translation type="unfinished">
             </translation>
         </message>
@@ -3786,6 +3675,11 @@ Click OK to exit.</source>
         </message>
         <message>
             <source>Add to Auto DJ Queue</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Reload Track Metadata</source>
             <translation type="unfinished">
             </translation>
         </message>

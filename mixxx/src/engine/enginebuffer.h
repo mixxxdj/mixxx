@@ -141,8 +141,6 @@ public:
 
 private:
     void setPitchIndpTimeStretch(bool b);
-    /** Called from process() when an empty buffer, possible ramped to zero is needed */
-    void rampOut(const CSAMPLE *pOut, int iBufferSize);
 
     void updateIndicators(double rate, int iBufferSize);
 
@@ -248,6 +246,8 @@ private:
     TrackPointer m_pCurrentTrack;
     /*QFile df;
     QTextStream writer;*/
+    CSAMPLE* m_pDitherBuffer;
+    unsigned int m_iDitherBufferReadIndex;
 };
 
 #endif
