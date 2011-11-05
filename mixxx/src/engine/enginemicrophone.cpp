@@ -100,7 +100,7 @@ void EngineMicrophone::receiveBuffer(AudioInput input, const short* pBuffer, uns
         // shouldn't happen since the mic spits out samples just as fast as they
         // come in, right?
         qWarning() << "Microphone buffer overflow";
-        Q_ASSERT(false);
+//         Q_ASSERT(false);
     }
 }
 
@@ -117,7 +117,7 @@ void EngineMicrophone::process(const CSAMPLE* pInput, const CSAMPLE* pOutput, co
             // shouldn't happen since PortAudio should feed us samples just as fast
             // as we consume them, right?
             qWarning() << "Microphone buffer underflow";
-            Q_ASSERT(false);
+//             Q_ASSERT(false);
         }
     } else {
         SampleUtil::applyGain(pOut, 0.0, iBufferSize);
