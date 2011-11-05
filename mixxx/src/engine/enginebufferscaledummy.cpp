@@ -49,7 +49,7 @@ CSAMPLE *EngineBufferScaleDummy::scale(double playpos,
                                        CSAMPLE* pBase,
                                        unsigned long iBaseLength)
 {
-
+    new_playpos = 0.0;
     if (m_dBaseRate * m_dTempo == 0.0f) {
         memset(buffer, 0, sizeof(CSAMPLE) * buf_size);
         return buffer;
@@ -64,11 +64,8 @@ CSAMPLE *EngineBufferScaleDummy::scale(double playpos,
         buffer_back += read_samples;
     }
 
-    if (m_dBaseRate * m_dTempo < 0) {
-        new_playpos = -long(buf_size);
-    } else {
-        new_playpos = buf_size;
-    }
+    // Interpreted as number of virtual song samples consumed.
+    new_playpos = buf_size;
 
 /*
         //START OF BASIC/ROCKSOLID LINEAR INTERPOLATION CODE

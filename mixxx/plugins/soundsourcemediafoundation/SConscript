@@ -1,0 +1,22 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+import os
+import sys
+import SCons
+import shutil
+
+Import('build')
+
+if int(build.flags['mediafoundation']):
+    env = build.env.Clone()
+    conf = Configure(env)
+    env = conf.Finish()
+    env["LINKFLAGS"].remove("/entry:mainCRTStartup")
+    env["LINKFLAGS"].remove("/subsystem:windows")
+    ssmediafoundation_bin = env.SharedLibrary('soundsourcemediafoundation',
+        ['soundsource.cpp', 'soundsourcemediafoundation.cpp'],
+        LINKCOM  = [env['LINKCOM'],
+            'mt.exe -nologo -manifest ${TARGET}.manifest -outputresource:$TARGET;1'])
+    Return("ssmediafoundation_bin")
+else:
+    Return("")
