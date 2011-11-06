@@ -524,11 +524,13 @@ def BuildUbuntuPackage(target, source, env):
 	if build.build_is_debug:
                 description = "  * Experimental build of branch '%s' at Bazaar revision %s" % (branch_name, bazaar_revision)
 		ubuntu_append_changelog('debian', package_name, package_version,
-                                        description)
+                                        description, distro=ubuntu_distro)
         else:
                 description = "  * New upstream release."
                 ubuntu_append_changelog('debian', package_name, package_version,
-                                        description, author="RJ Ryan <rryan@mixxx.org>")
+                                        description,
+                                        distro=ubuntu_distro,
+                                        author="RJ Ryan <rryan@mixxx.org>")
 
 	# Run pbuilder
 	print "* Starting pbuilder ...  (cwd: %s)" % os.getcwd()
