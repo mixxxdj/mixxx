@@ -60,7 +60,7 @@ SoundSourceMediaFoundation::SoundSourceMediaFoundation(QString filename)
     , m_leftoverBufferLength(0)
     , m_leftoverBufferPosition(0)
     , m_mfDuration(0)
-    , m_iCurrentPosition(0),
+    , m_iCurrentPosition(0)
     , m_dead(false)
     , m_seeking(false)
 {
