@@ -56,7 +56,7 @@ QList<QString> SoundSourceSndFile::supportedFileExtensions()
 
 int SoundSourceSndFile::open() {
 #ifdef __WINDOWS__
-    QByteArray qBAFilename = m_qFilename.toLocal8Bit();
+    QByteArray qbaFilename = m_qFilename.toLocal8Bit();
 #else
     QByteArray qbaFilename = m_qFilename.toUtf8();
 #endif
