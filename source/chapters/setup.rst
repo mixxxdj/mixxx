@@ -166,15 +166,16 @@ the verify their quality.
 
 **Mixxx Certified Mappings**
 
+* American Audio VMS4 
+* DJ TechTools MIDIFighter
 * Hercules DJ Console RMX
 * Hercules DJ Console MK2
 * Hercules DJ Control MP3 e2
+* M-Audio X-Session Pro
+* Reloop Digitial Jockey 2 (Interface/Controller)
 * Stanton SCS.3d
 * Stanton SCS.3m
 * Stanton SCS.1m
-* M-Audio X-Session Pro
-* DJ TechTools MIDIFighter
-* Reloop Digitial Jockey 2 (Interface/Controller)
 
 **Community Supported Mappings**
 
@@ -182,19 +183,27 @@ These mappings have been verified as working by the Mixxx community. However, th
 edges. If you run into issues with these mappings, please file a bug on our bug tracker or tell us about it on 
 our mailing list, forums, or IRC channel.
 
+* Akai MPD24
+* Behringer BCD3000
+* Ecler NUO4
+* Evolution X-Session
+* FaderFox DJ2
+* Hercules DJ Console Mac Edition
+* Hercules DJ Console Mk4
 * Hercules DJ Console MP3
 * Hercules DJ Control Steel
-* Hercules DJ Console Mac Edition
-* Mixman DM2
-* Tascam US-428
+* Ion Discover
 * M-Audio Xponent
-* Evolution X-Session
-* Ecler NUO4
-* FaderFox DJ2
-* Vestax VCI-100
+* Mixman DM2
+* Numark MixTrack
+* Numark NS7
 * Numark Total Control
-* Behringer BCD3000
-* Akai MPD24
+* Pioneer CDJ-350
+* Tascam US-428
+* Vestax Spin
+* Vestax Typhoon
+* Vestax VCI-100
+* Wireless DJ App (iOS)
 
 Before purchasing a controller to use with Mixxx, please consult our `Hardware Compatibility wiki page`_. It 
 contains the most up-to-date documentation on which controllers work with Mixxx and what the caveats of each 
