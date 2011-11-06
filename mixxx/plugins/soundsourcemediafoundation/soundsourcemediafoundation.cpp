@@ -156,8 +156,13 @@ long SoundSourceMediaFoundation::seek(long filepos)
     // this doesn't fail, see MS's implementation
     hr = InitPropVariantFromInt64(mfSeekTarget < 0 ? 0 : mfSeekTarget, &prop);
 
-    // http://msdn.microsoft.com/en-us/library/dd374668(v=VS.85).aspx
 
+    hr = m_pReader->Flush(MF_SOURCE_READER_FIRST_AUDIO_STREAM);
+    if (FAILED(hr)) {
+        qWarning() << "SSMF: failed to flush before seek";
+    }
+
+    // http://msdn.microsoft.com/en-us/library/dd374668(v=VS.85).aspx
     hr = m_pReader->SetCurrentPosition(GUID_NULL, prop);
     if (FAILED(hr)) {
         // nothing we can do here as we can't fail (no facility to other than
@@ -166,10 +171,6 @@ long SoundSourceMediaFoundation::seek(long filepos)
             hr == MF_E_INVALIDREQUEST ? "Sample requests still pending" : "");
     } else {
         result = filepos;
-        hr = m_pReader->Flush(MF_SOURCE_READER_FIRST_AUDIO_STREAM);
-        if (FAILED(hr)) {
-            qWarning() << "SSMF: failed to flush after seek";
-        }
     }
     PropVariantClear(&prop);
 
@@ -273,12 +274,45 @@ unsigned int SoundSourceMediaFoundation::read(unsigned long size,
             if (sDebug) {
                 qDebug() << this << "While seeking to "
                          << m_nextFrame << "WMF put us at" << bufferPosition;
+
             }
             if (m_nextFrame < bufferPosition) {
                 // Uh oh. We are farther forward than our seek target. Emit
                 // silence? We can't seek backwards here.
-            } else if (m_nextFrame >= bufferPosition &&
-                       m_nextFrame < bufferPosition + bufferLength) {
+                SAMPLE* pBufferCurpos = destBuffer +
+                        (size - framesNeeded * kNumChannels);
+                qint64 offshootFrames = bufferPosition - m_nextFrame;
+
+                // If we can correct this immediately, write zeros and adjust
+                // m_nextFrame to pretend it never happened.
+                if (offshootFrames <= framesNeeded) {
+                    if (sDebug) {
+                        qWarning() << __FILE__ << __LINE__
+                                   << "Working around inaccurate seeking. Writing silence for" << offshootFrames << "frames";
+                    }
+                    // Set offshootFrames * kNumChannels samples to zero.
+                    memset(pBufferCurpos, 0,
+                           sizeof(*pBufferCurpos) * offshootFrames *
+                           kNumChannels);
+                    // Now m_nextFrame == bufferPosition
+                    m_nextFrame += offshootFrames;
+                    framesNeeded -= offshootFrames;
+                } else {
+                    // It's more complicated. The buffer we have just decoded is
+                    // more than framesNeeded frames away from us. It's too hard
+                    // for us to handle this correctly currently, so let's just
+                    // try to get on with our lives.
+                    m_seeking = false;
+                    m_nextFrame = bufferPosition;
+                    if (sDebug) {
+                        qWarning() << __FILE__ << __LINE__
+                                   << "Seek offshoot is too drastic. Cutting losses and pretending the current decoded audio buffer is the right seek point.";
+                    }
+                }
+            }
+
+            if (m_nextFrame >= bufferPosition &&
+                m_nextFrame < bufferPosition + bufferLength) {
                 // m_nextFrame is in this buffer.
                 buffer += (m_nextFrame - bufferPosition) * kNumChannels;
                 bufferLength -= m_nextFrame - bufferPosition;
