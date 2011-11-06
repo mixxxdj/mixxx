@@ -45,7 +45,7 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxApp * mixxx,
 
     setupUi(this);
 
-    for (int i = 0; i < m_pPlayerManager->numDecks(); ++i) {
+    for (unsigned int i = 0; i < m_pPlayerManager->numDecks(); ++i) {
         QString group = QString("[Channel%1]").arg(i+1);
         m_rateControls.push_back(new ControlObjectThreadMain(
             ControlObject::getControl(ConfigKey(group, "rate"))));
@@ -57,7 +57,7 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxApp * mixxx,
             ControlObject::getControl(ConfigKey(group, "cue_mode"))));
     }
 
-    for (int i = 0; i < m_pPlayerManager->numSamplers(); ++i) {
+    for (unsigned int i = 0; i < m_pPlayerManager->numSamplers(); ++i) {
         QString group = QString("[Sampler%1]").arg(i+1);
         m_rateControls.push_back(new ControlObjectThreadMain(
             ControlObject::getControl(ConfigKey(group, "rate"))));

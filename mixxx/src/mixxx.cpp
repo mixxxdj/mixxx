@@ -433,6 +433,7 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
     // Initialize preference dialog
     m_pPrefDlg = new DlgPreferences(this, m_pSkinLoader, m_pSoundManager, m_pPlayerManager,
                                  m_pMidiDeviceManager, m_pVCManager, m_pConfig);
+    m_pPrefDlg->setWindowIcon(QIcon(":/images/ic_mixxx_window.png"));
     m_pPrefDlg->setHidden(true);
 
     // Try open player device If that fails, the preference panel is opened.
@@ -1180,8 +1181,10 @@ void MixxxApp::slotOptionsFullScreen(bool toggle)
          //m_winpos.setX(m_winpos.x() + (geometry().x() - x()));
          //m_winpos.setY(m_winpos.y() + (geometry().y() - y()));
 #endif
+        menuBar()-> setNativeMenuBar(false);
         showFullScreen();
     } else {
+        menuBar()-> setNativeMenuBar(true);
         showNormal();
 #ifdef __LINUX__
         //move(m_winpos);
@@ -1192,6 +1195,7 @@ void MixxxApp::slotOptionsFullScreen(bool toggle)
 void MixxxApp::slotOptionsPreferences()
 {
     m_pPrefDlg->setHidden(false);
+    m_pPrefDlg->activateWindow();
 }
 
 void MixxxApp::slotControlVinylControl(double toggle)
@@ -1281,8 +1285,6 @@ void MixxxApp::slotHelpAbout()
 "S. Brandt<br>"
 "Bill Good<br>"
 "Owen Williams<br>"
-"Bruno Buccolo<br>"
-"Ryan Baker<br>"
 "Vittorio Colao<br>"
 
 "</p>"
@@ -1334,6 +1336,7 @@ void MixxxApp::slotHelpAbout()
 "</p>"
 "<p align=\"center\"><b>And special thanks to:</b></p>"
 "<p align=\"center\">"
+"Vestax<br>"
 "Stanton<br>"
 "Hercules<br>"
 "EKS<br>"
@@ -1365,6 +1368,8 @@ void MixxxApp::slotHelpAbout()
 "Tom Care<br>"
 "Pawel Bartkiewicz<br>"
 "Nick Guenther<br>"
+"Bruno Buccolo<br>"
+"Ryan Baker<br>"
 "</p>"
 
 "<p align=\"center\"><b>Past Contributors</b></p>"

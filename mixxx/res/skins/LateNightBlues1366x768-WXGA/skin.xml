@@ -18,6 +18,9 @@
 	the resulting work only under the same or similar license to this one.
 
 	CHANGELOG
+	v1.10.0.07	(02/11/2011)
+	* Fix: use "visual_bpm" key instead "bpm" so bpm display does not updates too quickly 
+
 	v1.10.0.06	(16/10/2011)
 	* Update: Tooltips for spinning vinyl, waveform (overview) due to changes in functionality
 
@@ -244,7 +247,7 @@
 								<!--CSS alignments not respected see bug lp:605530 , lets call <Alignment>-->
 								<Alignment>right</Alignment>
 								<Connection>
-									<ConfigKey>[Sampler1],bpm</ConfigKey>
+									<ConfigKey>[Sampler1],visual_bpm</ConfigKey>
 								</Connection>
 							</NumberBpm>
 
@@ -760,7 +763,7 @@
 								<!--CSS alignments not respected see bug lp:605530 , lets call <Alignment>-->
 								<Alignment>right</Alignment>
 								<Connection>
-									<ConfigKey>[Sampler2],bpm</ConfigKey>
+									<ConfigKey>[Sampler2],visual_bpm</ConfigKey>
 								</Connection>
 							</NumberBpm>
 
@@ -1276,7 +1279,7 @@
 								<!--CSS alignments not respected see bug lp:605530 , lets call <Alignment>-->
 								<Alignment>right</Alignment>
 								<Connection>
-									<ConfigKey>[Sampler3],bpm</ConfigKey>
+									<ConfigKey>[Sampler3],visual_bpm</ConfigKey>
 								</Connection>
 							</NumberBpm>
 
@@ -1792,7 +1795,7 @@
 								<!--CSS alignments not respected see bug lp:605530 , lets call <Alignment>-->
 								<Alignment>right</Alignment>
 								<Connection>
-									<ConfigKey>[Sampler4],bpm</ConfigKey>
+									<ConfigKey>[Sampler4],visual_bpm</ConfigKey>
 								</Connection>
 							</NumberBpm>
 
@@ -4710,7 +4713,7 @@
 				<!--CSS alignments not respected see bug lp:605530 , lets call <Alignment>-->
 				<Alignment>right</Alignment>
 				<Connection>
-					<ConfigKey>[Channel1],bpm</ConfigKey>
+					<ConfigKey>[Channel1],visual_bpm</ConfigKey>
 				</Connection>
 			</NumberBpm>
 
@@ -5661,7 +5664,7 @@
 				<!--CSS alignments not respected see bug lp:605530 , lets call <Alignment>-->
 				<Alignment>right</Alignment>
 				<Connection>
-					<ConfigKey>[Channel2],bpm</ConfigKey>
+					<ConfigKey>[Channel2],visual_bpm</ConfigKey>
 				</Connection>
 			</NumberBpm>
 
