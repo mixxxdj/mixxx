@@ -489,9 +489,15 @@ void WTrackTableView::mouseMoveEvent(QMouseEvent* pEvent) {
     QList<QUrl> locationUrls;
     QModelIndexList indices = selectionModel()->selectedRows();
     foreach (QModelIndex index, indices) {
-      if (index.isValid()) {
-        locationUrls.append(trackModel->getTrackLocation(index));
-      }
+        if (!index.isValid()) {
+            continue;
+        }
+        QUrl url = QUrl::fromLocalFile(trackModel->getTrackLocation(index));
+        if (!url.isValid()) {
+            qDebug() << this << "ERROR: invalid url" << url;
+            continue;
+        }
+        locationUrls.append(url);
     }
 
     QMimeData* mimeData = new QMimeData();
@@ -895,6 +901,8 @@ void WTrackTableView::doSortByColumn(int headerSection) {
     while (isColumnHidden(visibleColumn) && visibleColumn < itemModel->columnCount()) {
         visibleColumn++;
     }
+
+    currentSelection->reset(); // remove current selection
 
     QModelIndex first;
     foreach (int trackId, trackIds) {

@@ -28,7 +28,7 @@ class ReadAheadManager {
   public:
     explicit ReadAheadManager(CachingReader* reader);
     virtual ~ReadAheadManager();
-
+    
     // Call this method to fill buffer with requested_samples out of the
     // lookahead buffer. Provide rate as dRate so that the manager knows the
     // direction the audio is progressing in. Returns the total number of
@@ -57,18 +57,18 @@ class ReadAheadManager {
                             int iSamplesPerBuffer);
 
 
-    virtual int getEffectiveVirtualPlaypositionFromLog(int currentVirtualPlayposition,
-                                                       int numConsumedSamples);
+    virtual int getEffectiveVirtualPlaypositionFromLog(double currentVirtualPlayposition,
+                                                       double numConsumedSamples);
 
   private:
     // An entry in the read log indicates the virtual playposition the read
     // began at and the virtual playposition it ended at.
     struct ReadLogEntry {
-        int virtualPlaypositionStart;
-        int virtualPlaypositionEndNonInclusive;
+        double virtualPlaypositionStart;
+        double virtualPlaypositionEndNonInclusive;
 
-        ReadLogEntry(int virtualPlaypositionStart,
-                     int virtualPlaypositionEndNonInclusive) {
+        ReadLogEntry(double virtualPlaypositionStart,
+                     double virtualPlaypositionEndNonInclusive) {
             this->virtualPlaypositionStart = virtualPlaypositionStart;
             this->virtualPlaypositionEndNonInclusive =
                     virtualPlaypositionEndNonInclusive;
@@ -78,7 +78,7 @@ class ReadAheadManager {
             return virtualPlaypositionStart < virtualPlaypositionEndNonInclusive;
         }
 
-        int length() const {
+        double length() const {
             return abs(virtualPlaypositionEndNonInclusive -
                        virtualPlaypositionStart);
         }
@@ -87,8 +87,8 @@ class ReadAheadManager {
         // direction()) by numSamples. Returns the total number of samples
         // consumed. Caller should check if length() is 0 after consumption in
         // order to expire the ReadLogEntry.
-        int consume(int numSamples) {
-            int available = math_min(numSamples, length());
+        double consume(double numSamples) {
+            double available = math_min(numSamples, length());
             virtualPlaypositionStart += (direction() ? 1 : -1) * available;
             return available;
         }
@@ -106,8 +106,8 @@ class ReadAheadManager {
 
     // virtualPlaypositionEnd is the first sample in the direction that was read
     // that was NOT read as part of this log entry. This is to simplify the
-    void addReadLogEntry(int virtualPlaypositionStart,
-                         int virtualPlaypositionEndNonInclusive);
+    void addReadLogEntry(double virtualPlaypositionStart,
+                         double virtualPlaypositionEndNonInclusive);
 
     QMutex m_mutex;
     QList<EngineControl*> m_sEngineControls;

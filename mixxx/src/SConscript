@@ -121,6 +121,9 @@ skin_files = Glob('#res/skins/*')
 #MIDI mappings
 midimappings_files = Glob('#res/midi/*')
 
+# Translation files
+translation_files = Glob('#res/translations/*.qm')
+
 #Keyboard mapping(s)
 keyboardmappings_files = Glob('#res/keyboard/*')
 
@@ -196,6 +199,7 @@ if build.platform_is_linux or build.platform_is_bsd:
                         os.path.join(unix_lib_path, 'mixxx', 'plugins', 'soundsource'),
                         soundsource_plugin_files)
 		midimappings = env.Install(os.path.join(unix_share_path, 'mixxx', 'midi'), midimappings_files)
+                translations = env.Install(os.path.join(unix_share_path, 'mixxx', 'translations'), translation_files)
 		keyboardmappings = env.Install(os.path.join(unix_share_path, 'mixxx', 'keyboard'), keyboardmappings_files)
 		if int(flags['ladspa']):
 			ladspapresets = env.Install(
@@ -211,6 +215,7 @@ if build.platform_is_linux or build.platform_is_bsd:
 		env.Alias('install', skins)
 		env.Alias('install', soundsource_plugins)
 		env.Alias('install', midimappings)
+                env.Alias('install', translations)
 		env.Alias('install', keyboardmappings)
 		if int(flags['ladspa']):
 			env.Alias('install', ladspapresets)
@@ -254,24 +259,35 @@ if build.platform_is_osx and 'bundle' in COMMAND_LINE_TARGETS:
 	for x in soundsource_plugins:
 		plugins.append(x.get_abspath())
 
-	bundle = env.App("Mixxx", [mixxx_bin, '#res/osx/application.icns',
-		Dir('#res/skins/'),
-		File('#res/schema.xml'),
-		Dir('#res/midi/'), Dir('#res/keyboard/'),
-		Dir('#res/ladspa_presets'), Dir('#res/doc/'), Dir('#res/promo/'),
-        Dir('/Library/Frameworks/QtGui.framework/Resources/qt_menu.nib'),  #qt_menu.nib for Cocoa Qt 4.7+
-        File("#README"), File("#LICENSE")],
-		 PLUGINS=plugins, ##XXX test what happens if we don't pass any plugins
-			#Qt plugins ((Qt *NEEDS* its plugins in specific locations or it refuses to find them, however this is clearly awkward to write out like this.. maybe))
-		 QT_HACK = [(p_tgt_dir, os.path.join("/Developer/Applications/Qt/plugins/", p_tgt_dir, p)) for p_tgt_dir, p in qt_plugins] #sigh :(
-		 ,
-		 STRIP=build.build_is_release,
-         IDENTIFIER="org.mixxx.mixxx",
-         DISPLAY_NAME="Mixxx",
-         SHORT_VERSION=mixxx_version, #FIXME: parse defs_version.h???
-         COPYRIGHT="Copyright © 2011 Mixxx Development Team", #FIXME: datetime.year()
-         CATEGORY="public.app-category.music"
-		 )
+        resource_map = {}
+        translation_files = Glob('#res/translations/*.qm')
+        for tfile in translation_files:
+                resource_map[str(tfile)] = 'translations'
+
+	bundle = env.App(
+                "Mixxx",
+                [mixxx_bin, '#res/osx/application.icns',
+                 Dir('#res/skins/'),
+                 File('#res/schema.xml'),
+                 Dir('#res/midi/'),
+                 translation_files,
+                 Dir('#res/keyboard/'),
+                 Dir('#res/ladspa_presets'),
+                 Dir('#res/doc/'),
+                 Dir('#res/promo/'),
+                 Dir('/Library/Frameworks/QtGui.framework/Resources/qt_menu.nib'),  #qt_menu.nib for Cocoa Qt 4.7+
+                 File("#README"),
+                 File("#LICENSE")],
+                PLUGINS=plugins, ##XXX test what happens if we don't pass any plugins
+                #Qt plugins ((Qt *NEEDS* its plugins in specific locations or it refuses to find them, however this is clearly awkward to write out like this.. maybe))
+                QT_HACK = [(p_tgt_dir, os.path.join("/Developer/Applications/Qt/plugins/", p_tgt_dir, p)) for p_tgt_dir, p in qt_plugins], #sigh :(
+                STRIP=build.build_is_release,
+                APP_RESOURCES_MAP=resource_map,
+                IDENTIFIER="org.mixxx.mixxx",
+                DISPLAY_NAME="Mixxx",
+                SHORT_VERSION=mixxx_version, #FIXME: parse defs_version.h???
+                COPYRIGHT="Copyright © 2011 Mixxx Development Team", #FIXME: datetime.year()
+                CATEGORY="public.app-category.music")
 	#env.Default(mixxx_bin) #todo: make the Default() just the program itself *globally* (not just for OS X); bundle should be a separate target
 	env.Alias('bundle', bundle)
 
@@ -285,7 +301,8 @@ if build.platform_is_windows:
         base_dist_dir = '#' + dist_dir
 	skins = env.Install(os.path.join(base_dist_dir, "skins"), skin_files)
 	resource = env.Install(base_dist_dir+"/", resource_files)
-	midimappings = env.Install(os.path.join(base_dist_dir, "midi"), midimappings_files)
+        midimappings = env.Install(os.path.join(base_dist_dir, "midi"), midimappings_files)
+        translations = env.Install(os.path.join(base_dist_dir, "translations"), translation_files)
 	keyboardmappings = env.Install(os.path.join(base_dist_dir, "keyboard"), keyboardmappings_files)
 	if int(flags['ladspa']):
 		ladspapresets = env.Install(os.path.join(base_dist_dir, "ladspa_presets"), ladspapresets_files)
@@ -300,6 +317,7 @@ if build.platform_is_windows:
 	env.Alias('mixxx', skins)
 	env.Alias('mixxx', resource)
 	env.Alias('mixxx', midimappings)
+        env.Alias('mixxx', translations)
 	env.Alias('mixxx', keyboardmappings)
 	if int(flags['ladspa']):
 		env.Alias('mixxx', ladspapresets)
@@ -342,15 +360,6 @@ def win32_find_program_via_registry(program_name):
     _winreg.CloseKey(hklm)
     return program_location
 
-def get_mssdk_path():
-    path = os.getenv('SDKDIR', None)
-    if path is not None:
-        return path
-    path = os.getenv('MSSdk', None)
-    if path is not None:
-        return path
-    return ""
-
 def BuildRelease(target, source, env):
     print
     print "==== Mixxx Post-Build Checks ===="
@@ -390,7 +399,7 @@ def BuildRelease(target, source, env):
     #if (raw_input("Go ahead and build installer (yes/[no])? ") == "yes"):
     if True:
         if build.toolchain_is_msvs:
-            mssdk_path = get_mssdk_path()
+            mssdk_path = util.get_mssdk_path()
             print "Detected MSSDK path:", mssdk_path
             print "Extracting Visual C++ DLL installer..."
             szip_path = None
