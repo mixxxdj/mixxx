@@ -153,10 +153,10 @@ Function InstallVCRedist
 
   ; If you have the msvc DLLs & manifest elsewhere,
   ; copy them to the WINLIB_PATH and uncomment these:
-  ;File ..\${WINLIB_PATH}\msvcr*.dll        ; Required
-  ;File ..\${WINLIB_PATH}\msvcp*.dll        ; Required
-  ;File /nonfatal ..\${WINLIB_PATH}\msvcm*.dll    ; Not (currently) required, so nonfatal
-  ;File ..\${WINLIB_PATH}\Microsoft.VC*.CRT.manifest    ; Required on MSVC < 2010, apparently
+  File ${WINLIB_PATH}\msvcr*.dll        ; Required
+  File ${WINLIB_PATH}\msvcp*.dll        ; Required
+  ;File /nonfatal ${WINLIB_PATH}\msvcm*.dll    ; Not (currently) required, so nonfatal
+  File ${WINLIB_PATH}\Microsoft.VC*.CRT.manifest    ; Required on MSVC < 2010, apparently
 
   VCRedistDone:
     Exch $R0
@@ -262,6 +262,12 @@ SectionGroup "MIDI controller mappings" SecControllerMappings
 
   SectionGroup "Certified mappings" SecCertifiedMappings
 
+	Section "American Audio VMS4"
+	  SetOutPath $INSTDIR\midi
+	  File "${BASE_BUILD_DIR}\dist${BITWIDTH}\midi\American Audio VMS4.midi.xml"
+	  File "${BASE_BUILD_DIR}\dist${BITWIDTH}\midi\American-Audio-VMS4-scripts.js"
+	SectionEnd
+	
 	Section "Hercules DJ Console Mk2"
       SetOutPath $INSTDIR\midi
 	  File "${BASE_BUILD_DIR}\dist${BITWIDTH}\midi\Hercules DJ Console Mk2.midi.xml"
