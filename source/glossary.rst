@@ -5,7 +5,7 @@ Glossary of Terms
    :sorted:
 
    cueing
-     Headphone cueing, or just cueing, is listening to the next song you would
+     Headphone cueing, or just cueing, is listening to the next track you would
      like to mix in in your headphones. The audience will not hear what you are
      cueing in your headphones. Being able to cue is a crucial aspect to DJing.
 
@@ -24,10 +24,10 @@ Glossary of Terms
      "pre-listening" to a deck in your headphones. See also: :term:`headphone button`.
 
    waveform summary
-     The waveform summary shows the waveform envelope of the song near the current playback postition.
+     The waveform summary shows the waveform envelope of the track near the current playback postition.
 
    waveform overview
-     The waveform overview shows the waveform envelope of the entire song, and is 
+     The waveform overview shows the waveform envelope of the entire track, and is 
      useful because they allow DJs to see breakdowns far in advance.
 
    key lock

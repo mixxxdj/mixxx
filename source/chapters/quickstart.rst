@@ -13,10 +13,10 @@ with Mixxx, you can skip to the `Table of Contents`_.
 
 .. todo:: Example of a todo
 
-Loading a Song
+Loading a Track
 ==========================
 
-Lesson about how to load a song.
+Lesson about how to load a track.
 
 
 Using the Mixer Section

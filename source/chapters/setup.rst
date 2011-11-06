@@ -8,7 +8,7 @@ options including time-coded records, MIDI control and keyboard.
 Audio Output with Mixxx
 =======================
 
-Headphone cueing, or just cueing, is listening to the next song you would like to mix 
+Headphone cueing, or just cueing, is listening to the next track you would like to mix 
 in in your headphones. The audience will not hear what you are cueing in your 
 headphones. Being able to cue is a crucial aspect to DJing.
 
@@ -207,7 +207,7 @@ device are. Device support varies for each supported OS, so please make sure to 
 Using Vinyl Timecode Records
 ----------------------------
 
-Vinyl control allows a user to manipulate the playback of a song in Mixxx using a turntable as an interface. In 
+Vinyl control allows a user to manipulate the playback of a track in Mixxx using a turntable as an interface. In 
 effect, it simulates the sound and feel of having your MP3 collection on vinyl. 
 
 **How does it work?**
@@ -215,7 +215,7 @@ effect, it simulates the sound and feel of having your MP3 collection on vinyl.
 Vinyl control uses special timecoded records which are placed on real turntables. The audio output of the 
 turntables is plugged into a computer, on which Mixxx is running. When a record is played on one of the attached 
 turntables, Mixxx decodes the timecode off the record, and uses information from that to manipulate whatever 
-song is loaded. 
+track is loaded. 
 
 **What do I need to use it**?
 

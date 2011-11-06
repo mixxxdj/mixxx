@@ -46,7 +46,7 @@ MP3 streaming
 Depending on the server type you can stream in OGG and MP3 format. However, MP3 streams are 
 not supported out of the box for legal reasons. Here is how to install the needed software for 
 the operating systems Mixxx supports. 
-Lesson about how to load a song.
+Lesson about how to load a track.
 
 Linux
 _____
