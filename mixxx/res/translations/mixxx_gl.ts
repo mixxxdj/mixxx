@@ -367,116 +367,8 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Analyze Entire Song</source>
-            <translation>Analizar todo o tema</translation>
-        </message>
-    </context>
-    <context>
-        <name>DlgBpmTapDlg</name>
-        <message>
-            <source>Track Editor</source>
-            <translation>Editor de pistas</translation>
-        </message>
-        <message>
-            <source>&amp;Close</source>
-            <translation>&amp;Pechar</translation>
-        </message>
-        <message>
-            <source>Alt+O</source>
-            <translation>Alt+O</translation>
-        </message>
-        <message>
-            <source>Song:</source>
-            <translation>Canción:</translation>
-        </message>
-        <message>
-            <source>Next &gt;&gt;</source>
-            <translation>Seguinte&gt;&gt;</translation>
-        </message>
-        <message>
-            <source>&lt;&lt; Prev</source>
-            <translation>&lt;&lt;Anterior</translation>
-        </message>
-        <message>
-            <source>BPM Editor (Click to Expand)</source>
-            <translation>Editor BPM (Prema para expandir)</translation>
-        </message>
-        <message>
-            <source>BPM Detection</source>
-            <translation>Detección BPM</translation>
-        </message>
-        <message>
-            <source>BPM Scheme:</source>
-            <translation>Esquema BPM:</translation>
-        </message>
-        <message>
-            <source>to</source>
-            <translation>até</translation>
-        </message>
-        <message>
-            <source>BPM Range:</source>
-            <translation>Rango BPM:</translation>
-        </message>
-        <message>
-            <source>&amp;Go</source>
-            <translation>&amp;Ir</translation>
-        </message>
-        <message>
-            <source>Alt+G</source>
-            <translation>Alt+G</translation>
-        </message>
-        <message>
-            <source>Analyze Entire Song</source>
-            <translation>Analizar todo o tema</translation>
-        </message>
-        <message>
-            <source>BPM:</source>
-            <translation>BPM:</translation>
-        </message>
-        <message>
-            <source>&amp;Push to tap tempo</source>
             <translation type="unfinished">
             </translation>
-        </message>
-        <message>
-            <source>Alt+P</source>
-            <translation>Alt+P</translation>
-        </message>
-        <message>
-            <source>Track Information (Click to Expand)</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Title:</source>
-            <translation>Título:</translation>
-        </message>
-        <message>
-            <source>Artist:</source>
-            <translation>Intérprete:</translation>
-        </message>
-        <message>
-            <source>Comments:</source>
-            <translation>Comentarios:</translation>
-        </message>
-        <message>
-            <source>Filename:</source>
-            <translation>Nome do ficheiro:</translation>
-        </message>
-        <message>
-            <source>3:00</source>
-            <translation>3:00</translation>
-        </message>
-        <message>
-            <source>Play Time:</source>
-            <translation>Tempo de reprodución:</translation>
-        </message>
-        <message>
-            <source>File Type:</source>
-            <translation>Tipo de ficheiro:</translation>
-        </message>
-        <message>
-            <source>77</source>
-            <translation>77</translation>
         </message>
     </context>
     <context>
@@ -1107,6 +999,11 @@ p, li { white-space: pre-wrap; }
             <translation>segundos</translation>
         </message>
         <message>
+            <source>Show Signal Quality in Skin</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
             <source>Control Mode</source>
             <translation type="unfinished">
             </translation>
@@ -1133,7 +1030,8 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>http://www.xwax.co.uk</source>
-            <translation>http://www.xwax.co.uk</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Powered by xwax</source>
@@ -1142,7 +1040,8 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Apply</source>
-            <translation>Aplicar</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>&lt;b&gt;This version of Mixxx does not support vinyl control.&lt;/b&gt; &lt;br&gt; Please visit &lt;a href=&quot;http://mixxx.org&quot;&gt;Mixxx.org&lt;/a&gt; for more information.</source>
@@ -1502,7 +1401,8 @@ playback and outbound link statistics</source>
         </message>
         <message>
             <source>Description</source>
-            <translation>Descrición</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
@@ -1731,6 +1631,11 @@ p, li { white-space: pre-wrap; }
             <translation>Ningún</translation>
         </message>
         <message>
+            <source>Channel %1</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
             <source>Channels %1 - %2</source>
             <translation>Canles %1 - %2</translation>
         </message>
@@ -1796,8 +1701,14 @@ p, li { white-space: pre-wrap; }
             </translation>
         </message>
         <message>
+            <source>Show Signal Quality in Skin</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
             <source>Apply</source>
-            <translation>Aplicar</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Lead-in time</source>
@@ -1806,7 +1717,8 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>seconds</source>
-            <translation>segundos</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Control Mode</source>
@@ -1835,7 +1747,8 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>http://www.xwax.co.uk</source>
-            <translation>http://www.xwax.co.uk</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Powered by xwax</source>
@@ -1966,19 +1879,23 @@ p, li { white-space: pre-wrap; }
         <name>DlgTrackInfo</name>
         <message>
             <source>Track Editor</source>
-            <translation>Editor de pistas</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Song:</source>
-            <translation>Canción:</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Title:</source>
-            <translation>Título:</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Artist:</source>
-            <translation>Intérprete:</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Album:</source>
@@ -1998,7 +1915,8 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Filename:</source>
-            <translation>Nome do ficheiro:</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Duration:</source>
@@ -2006,19 +1924,23 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>3:00</source>
-            <translation>3:00</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>File Type:</source>
-            <translation>Tipo de ficheiro:</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>77</source>
-            <translation>77</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Comments:</source>
-            <translation>Comentarios:</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Reload track metadata from file.</source>
@@ -2103,7 +2025,8 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Alt+O</source>
-            <translation>Alt+O</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>&amp;Next &gt;&gt;</source>
@@ -2117,17 +2040,17 @@ p, li { white-space: pre-wrap; }
             <translation>Codificador</translation>
         </message>
         <message>
-            <source>&lt;html&gt;Mixxx is unable to load or find the MP3 encoder lame. &lt;p&gt;Please install libmp3lame (also known as lame) and check if /usr/lib/libmp3lame.so exists on your system &lt;/html&gt;</source>
+            <source>&lt;html&gt;Mixxx cannot record or stream in MP3 without the MP3 encoder &amp;quot;lame&amp;quot;. Due to licensing issues, we cannot include this with Mixxx. To record or stream in MP3, you must download &lt;b&gt;libmp3lame&lt;/b&gt; and install it on your system. &lt;p&gt;See &lt;a href='http://mixxx.org/wiki/doku.php/internet_broadcasting#linux'&gt;Mixxx Wiki&lt;/a&gt; for more information. &lt;/html&gt;</source>
             <translation type="unfinished">
             </translation>
         </message>
         <message>
-            <source>&lt;html&gt;Mixxx is unable to load or find the MP3 encoder lame. &lt;p&gt;Please put lame_enc.dll in the directory you have installed Mixxx &lt;/html&gt;</source>
+            <source>&lt;html&gt;Mixxx cannot record or stream in MP3 without the MP3 encoder &amp;quot;lame&amp;quot;. Due to licensing issues, we cannot include this with Mixxx. To record or stream in MP3, you must download &lt;b&gt;lame_enc.dll&lt;/b&gt; and install it on your system. &lt;p&gt;See &lt;a href='http://mixxx.org/wiki/doku.php/internet_broadcasting#windows'&gt;Mixxx Wiki&lt;/a&gt; for more information. &lt;/html&gt;</source>
             <translation type="unfinished">
             </translation>
         </message>
         <message>
-            <source>&lt;html&gt;Mixxx is unable to load or find the MP3 encoder lame. &lt;p&gt;Please install libmp3lame (also known as lame) and check if /usr/local/lib/libmp3lame.dylib exists on your system &lt;/html&gt;</source>
+            <source>&lt;html&gt;Mixxx cannot record or stream in MP3 without the MP3 encoder &amp;quot;lame&amp;quot;. Due to licensing issues, we cannot include this with Mixxx. To record or stream in MP3, you must download &lt;b&gt;libmp3lame&lt;/b&gt; and install it on your system. &lt;p&gt;See &lt;a href='http://mixxx.org/wiki/doku.php/internet_broadcasting#mac_osx'&gt;Mixxx Wiki&lt;/a&gt; for more information. &lt;/html&gt;</source>
             <translation type="unfinished">
             </translation>
         </message>
@@ -2232,8 +2155,9 @@ p, li { white-space: pre-wrap; }
             <translation>Selecciona a túa librería de iTunes</translation>
         </message>
         <message>
-            <source>iTunes (loading)</source>
-            <translation>iTunes (cargando)</translation>
+            <source>(loading) iTunes</source>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Use Default Library</source>
@@ -2298,6 +2222,11 @@ p, li { white-space: pre-wrap; }
             <source>Control Value</source>
             <translation>Valor de control</translation>
         </message>
+        <message>
+            <source>Description</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
     </context>
     <context>
         <name>MidiMapping</name>
@@ -2352,6 +2281,11 @@ p, li { white-space: pre-wrap; }
         <message>
             <source>Control Value</source>
             <translation>Valor de control</translation>
+        </message>
+        <message>
+            <source>Description</source>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Threshold Min</source>
@@ -2576,11 +2510,22 @@ This information will not be used to personally identify you, contact you, adver
             <translation>Ctrl+P</translation>
         </message>
         <message>
-            <source>&amp;About...</source>
-            <translation>&amp;Sobre</translation>
+            <source>&amp;About</source>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
-            <source>&amp;Community Support...</source>
+            <source>&amp;Community Support</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Send Us &amp;Feedback</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>&amp;Translate this application</source>
             <translation type="unfinished">
             </translation>
         </message>
@@ -2736,7 +2681,8 @@ Mark beats by audio clicks</source>
         </message>
         <message>
             <source>Preferences</source>
-            <translation>Preferencias</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Preferences
@@ -2751,6 +2697,28 @@ Playback and MIDI preferences</source>
         <message>
             <source>Support
 Get help with Mixxx</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Send feedback to the Mixxx team.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Support
+Send feedback to the Mixxx team.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Help translate this application into your language.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Support
+Help translate this application into your language.</source>
             <translation type="unfinished">
             </translation>
         </message>
@@ -3132,8 +3100,9 @@ Click OK to exit.</source>
             <translation>Traktor</translation>
         </message>
         <message>
-            <source>Traktor (loading)</source>
-            <translation>Traktor (cargando)</translation>
+            <source>(loading) Traktor</source>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Error Loading Traktor Library</source>
@@ -3419,6 +3388,11 @@ Click OK to exit.</source>
         <message>
             <source>Add to Auto DJ Queue</source>
             <translation>Engadir á cola de AutoDJ</translation>
+        </message>
+        <message>
+            <source>Reload Track Metadata</source>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Load to Deck %1</source>

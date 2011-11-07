@@ -434,6 +434,7 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
     // Initialize preference dialog
     m_pPrefDlg = new DlgPreferences(this, m_pSkinLoader, m_pSoundManager, m_pPlayerManager,
                                  m_pMidiDeviceManager, m_pVCManager, m_pConfig);
+    m_pPrefDlg->setWindowIcon(QIcon(":/images/ic_mixxx_window.png"));
     m_pPrefDlg->setHidden(true);
 
     // Try open player device If that fails, the preference panel is opened.
@@ -1223,6 +1224,7 @@ void MixxxApp::slotOptionsFullScreen(bool toggle)
          //m_winpos.setX(m_winpos.x() + (geometry().x() - x()));
          //m_winpos.setY(m_winpos.y() + (geometry().y() - y()));
 #endif
+        menuBar()-> setNativeMenuBar(false);
         showFullScreen();
         //menuBar()->hide();
         // FWI: Begin of fullscreen patch
@@ -1267,14 +1269,13 @@ void MixxxApp::slotOptionsFullScreen(bool toggle)
             m_pView->move((deskw - m_pView->width())/2,
                           (deskh - m_pView->height())/2);
         // FWI: End of fullscreen patch
-    }
-    else
-    {
+    } else {
         // FWI: Begin of fullscreen patch
         if (m_pView)
             m_pView->move(0,0);
 
         menuBar()->show();
+        menuBar()->setNativeMenuBar(true);
         showNormal();
         
         if (QDir(qSkinPath+"-fullscreen").exists())
@@ -1312,6 +1313,7 @@ void MixxxApp::slotOptionsFullScreen(bool toggle)
 void MixxxApp::slotOptionsPreferences()
 {
     m_pPrefDlg->setHidden(false);
+    m_pPrefDlg->activateWindow();
 }
 
 void MixxxApp::slotControlVinylControl(double toggle)
@@ -1401,8 +1403,6 @@ void MixxxApp::slotHelpAbout()
 "S. Brandt<br>"
 "Bill Good<br>"
 "Owen Williams<br>"
-"Bruno Buccolo<br>"
-"Ryan Baker<br>"
 "Vittorio Colao<br>"
 
 "</p>"
@@ -1486,6 +1486,8 @@ void MixxxApp::slotHelpAbout()
 "Tom Care<br>"
 "Pawel Bartkiewicz<br>"
 "Nick Guenther<br>"
+"Bruno Buccolo<br>"
+"Ryan Baker<br>"
 "</p>"
 
 "<p align=\"center\"><b>Past Contributors</b></p>"
