@@ -705,7 +705,8 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
 
         for (int i=0; i<iBufferSize; i+=2) {
             if (bCurBufferPaused) {
-                float dither = m_pDitherBuffer[m_iDitherBufferReadIndex++ % MAX_BUFFER_LEN];
+                float dither = m_pDitherBuffer[m_iDitherBufferReadIndex];
+                m_iDitherBufferReadIndex = (m_iDitherBufferReadIndex + 1) % MAX_BUFFER_LEN;
                 pOutput[i] = m_fLastSampleValue[0] * m_fRampValue + dither;
                 pOutput[i+1] = m_fLastSampleValue[1] * m_fRampValue + dither;
             } else {
