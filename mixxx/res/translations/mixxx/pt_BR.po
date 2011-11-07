@@ -8,14 +8,13 @@ msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2011-10-31 23:15-0400\n"
-"PO-Revision-Date: 2011-11-05 22:59+0000\n"
-"Last-Translator: Emmanuel Jussier de Oliveira Pinheiro "
-"<jussier.rn@hotmail.com>\n"
+"PO-Revision-Date: 2011-11-06 20:52+0000\n"
+"Last-Translator: Charles do Nascimento Liesenfeld <Unknown>\n"
 "Language-Team: Brazilian Portuguese <pt_BR@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-11-06 05:21+0000\n"
+"X-Launchpad-Export-Date: 2011-11-07 05:20+0000\n"
 "X-Generator: Launchpad (build 14231)\n"
 
 #: AutoDJFeature#1
@@ -763,7 +762,7 @@ msgstr "Mixando"
 
 #: DlgPrefCrossfaderDlg#7
 msgid "Scratching"
-msgstr ""
+msgstr "Arranhando"
 
 #: DlgPrefCrossfaderDlg#8
 msgid "Linear"
@@ -880,7 +879,7 @@ msgstr "Limpar ligações de saida"
 
 #: DlgPrefMidiBindings#13
 msgid "Are you sure you want to clear all output bindings?"
-msgstr ""
+msgstr "Tem certeza de que deseja apagar todas as ligações de saída?"
 
 #: DlgPrefMidiBindingsDlg#1
 msgctxt "DlgPrefMidiBindingsDlg#1"
@@ -1041,22 +1040,22 @@ msgstr "Segundos"
 #: DlgPrefNoVinylDlg#13
 msgctxt "DlgPrefNoVinylDlg#13"
 msgid "Show Signal Quality in Skin"
-msgstr ""
+msgstr "Mostrar qualidade do sinal na Skin"
 
 #: DlgPrefNoVinylDlg#14
 msgctxt "DlgPrefNoVinylDlg#14"
 msgid "Control Mode"
-msgstr ""
+msgstr "Modo de Controle"
 
 #: DlgPrefNoVinylDlg#15
 msgctxt "DlgPrefNoVinylDlg#15"
 msgid "Absolute Mode"
-msgstr ""
+msgstr "Modo absoluto"
 
 #: DlgPrefNoVinylDlg#16
 msgctxt "DlgPrefNoVinylDlg#16"
 msgid "Relative Mode"
-msgstr ""
+msgstr "Modo Relativo"
 
 #: DlgPrefNoVinylDlg#17
 msgctxt "DlgPrefNoVinylDlg#17"
@@ -1071,12 +1070,12 @@ msgstr ""
 #: DlgPrefNoVinylDlg#19
 msgctxt "DlgPrefNoVinylDlg#19"
 msgid "http://www.xwax.co.uk"
-msgstr ""
+msgstr "http://www.xwax.co.uk"
 
 #: DlgPrefNoVinylDlg#20
 msgctxt "DlgPrefNoVinylDlg#20"
 msgid "Powered by xwax"
-msgstr ""
+msgstr "Desenvolvido por xwax"
 
 #: DlgPrefNoVinylDlg#21
 msgctxt "DlgPrefNoVinylDlg#21"
