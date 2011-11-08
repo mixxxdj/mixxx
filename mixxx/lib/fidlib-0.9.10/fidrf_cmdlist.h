@@ -76,7 +76,7 @@ typedef unsigned char uchar;
 static double 
 filter_step(void *fbuf, double iir) {
    double *coef= ((RunBuf*)fbuf)->coef;
-   uchar *cmd= (uchar*) ((RunBuf*)fbuf)->cmd;
+   uchar *cmd= ((RunBuf*)fbuf)->cmd;
    double *buf= &((RunBuf*)fbuf)->buf[0];
    uchar ch;
    double fir= 0;
@@ -409,7 +409,7 @@ fid_run_newbuf(void *run) {
 
 int 
 fid_run_bufsize(void *run) {
-   Run *rr= (Run*) run;
+   Run *rr= (Run*)run;
    int siz;
 
    if (rr->magic != 0x64966325)
@@ -430,8 +430,8 @@ fid_run_bufsize(void *run) {
 
 void 
 fid_run_initbuf(void *run, void *buf) {
-   Run *rr= (Run*) run;
-   RunBuf *rb= (RunBuf*) buf;
+   Run *rr= (Run*)run;
+   RunBuf *rb= (RunBuf*)buf;
    int siz;
 
    if (rr->magic != 0x64966325)
@@ -453,7 +453,7 @@ fid_run_initbuf(void *run, void *buf) {
 
 void 
 fid_run_zapbuf(void *buf) {
-   RunBuf *rb= (RunBuf*) buf;
+   RunBuf *rb= (RunBuf*)buf;
    memset(rb->buf, 0, rb->mov_cnt + sizeof(double));
 }   
    

@@ -10,10 +10,10 @@
 ///
 ////////////////////////////////////////////////////////////////////////////////
 //
-// Last changed  : $Date: 2009-10-31 16:37:24 +0200 (Sat, 31 Oct 2009) $
+// Last changed  : $Date: 2011-02-13 21:13:57 +0200 (Sun, 13 Feb 2011) $
 // File revision : $Revision: 4 $
 //
-// $Id: RateTransposer.cpp 74 2009-10-31 14:37:24Z oparviai $
+// $Id: RateTransposer.cpp 104 2011-02-13 19:13:57Z oparviai $
 //
 ////////////////////////////////////////////////////////////////////////////////
 //
@@ -115,7 +115,7 @@ void * RateTransposer::operator new(size_t s)
 
 RateTransposer *RateTransposer::newInstance()
 {
-#ifdef INTEGER_SAMPLES
+#ifdef SOUNDTOUCH_INTEGER_SAMPLES
     return ::new RateTransposerInteger;
 #else
     return ::new RateTransposerFloat;
