@@ -233,46 +233,22 @@ class SoundTouch(Dependence):
                    '#lib/%s/FIFOSampleBuffer.cpp' % self.SOUNDTOUCH_PATH,
                    '#lib/%s/FIRFilter.cpp' % self.SOUNDTOUCH_PATH,
                    '#lib/%s/PeakFinder.cpp' % self.SOUNDTOUCH_PATH,
-                   '#lib/%s/BPMDetect.cpp' % self.SOUNDTOUCH_PATH]
+                   '#lib/%s/BPMDetect.cpp' % self.SOUNDTOUCH_PATH,
+                   '#lib/%s/mmx_optimized.cpp' % self.SOUNDTOUCH_PATH,
+                   '#lib/%s/sse_optimized.cpp' % self.SOUNDTOUCH_PATH,]
 
-        # SoundTouch CPU optimizations are only for x86 architectures
-        cpu_detection = {
-            ('msvs', 'x86'): '#lib/%s/cpu_detect_x86_win.cpp',
-            ('msvs', 'x86_64'): '#lib/%s/cpu_detect_x64_win.cpp',
-            ('gnu', 'x86'): '#lib/%s/cpu_detect_x86_gcc.cpp',
-            ('gnu', 'x86_64'): '#lib/%s/cpu_detect_x64_gcc.cpp'
-            }
-
-        toolchain = 'gnu' if build.toolchain_is_gnu else 'msvs'
-        machine = 'unknown'
-        machine = 'x86_64' if build.architecture_is_x86 and build.machine_is_64bit else machine
-        machine = 'x86' if build.architecture_is_x86 and not build.machine_is_64bit else machine
-
-        optimize = int(util.get_flags(build.env, 'optimize', 1))
-        optimizations_enabled = build.machine_is_64bit or \
-            (build.toolchain_is_msvs and optimize > 1) or \
-            (build.toolchain_is_gnu and optimize > 2)
-        cpu_detection_file = cpu_detection.get((toolchain, machine), None)
-        if optimizations_enabled and build.architecture_is_x86 and cpu_detection_file:
-            sources.extend(
-                [cpu_detection_file % self.SOUNDTOUCH_PATH,
-                 '#lib/%s/mmx_optimized.cpp' % self.SOUNDTOUCH_PATH,
-                 '#lib/%s/sse_optimized.cpp' % self.SOUNDTOUCH_PATH,
-                 ])
+        # SoundTouch CPU optimizations are only for x86
+        # architectures. SoundTouch automatically ignores these files when it is
+        # not being built for an architecture that supports them.
+        cpu_detection = '#lib/%s/cpu_detect_x86_win.cpp' if build.toolchain_is_msvs else '#lib/%s/cpu_detect_x86_gcc.cpp'
+        sources.append(cpu_detection)
         return sources
 
     def configure(self, build, conf):
         if build.platform_is_windows:
-            build.env.Append(CPPDEFINES = 'WIN%s' % build.bitwidth)
+            # Regardless of the bitwidth, ST checks for WIN32
+            build.env.Append(CPPDEFINES = 'WIN32')
         build.env.Append(CPPPATH=['#lib/%s' % self.SOUNDTOUCH_PATH])
-
-        # TODO(XXX) when we figure out a better way to represent features, fix
-        # this.
-        optimize = int(util.get_flags(build.env, 'optimize', 1))
-        if build.machine_is_64bit or \
-                (build.toolchain_is_msvs and optimize > 1) or \
-                (build.toolchain_is_gnu and optimize > 2):
-            build.env.Append(CPPDEFINES='SOUNDTOUCH_ALLOW_X86_OPTIMIZATIONS')
 
 class TagLib(Dependence):
     def configure(self, build, conf):
