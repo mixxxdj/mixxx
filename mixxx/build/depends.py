@@ -213,14 +213,6 @@ class FidLib(Dependence):
     def configure(self, build, conf):
         build.env.Append(CPPPATH='#lib/fidlib-0.9.10/')
 
-class KissFFT(Dependence):
-
-    def sources(self, build):
-        return ["#lib/kissfft/kiss_fft.c"]
-
-    def configure(self, build, conf):
-        build.env.Append(CPPPATH="#lib/kissfft")
-
 class ReplayGain(Dependence):
 
     def sources(self, build):
