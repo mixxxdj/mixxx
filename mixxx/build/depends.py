@@ -241,7 +241,7 @@ class SoundTouch(Dependence):
         # architectures. SoundTouch automatically ignores these files when it is
         # not being built for an architecture that supports them.
         cpu_detection = '#lib/%s/cpu_detect_x86_win.cpp' if build.toolchain_is_msvs else '#lib/%s/cpu_detect_x86_gcc.cpp'
-        sources.append(cpu_detection)
+        sources.append(cpu_detection % self.SOUNDTOUCH_PATH)
         return sources
 
     def configure(self, build, conf):
