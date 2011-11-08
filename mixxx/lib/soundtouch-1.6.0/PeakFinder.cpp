@@ -11,10 +11,10 @@
 ///
 ////////////////////////////////////////////////////////////////////////////////
 //
-// Last changed  : $Date: 2009-02-21 18:00:14 +0200 (Sat, 21 Feb 2009) $
+// Last changed  : $Date: 2010-08-24 18:53:56 +0300 (Tue, 24 Aug 2010) $
 // File revision : $Revision: 4 $
 //
-// $Id: PeakFinder.cpp 63 2009-02-21 16:00:14Z oparviai $
+// $Id: PeakFinder.cpp 91 2010-08-24 15:53:56Z oparviai $
 //
 ////////////////////////////////////////////////////////////////////////////////
 //
@@ -164,7 +164,7 @@ double PeakFinder::getPeakCenter(const float *data, int peakpos) const
     groundLevel = max(data[gp1], data[gp2]);
     peakLevel = data[peakpos];
 
-    if (groundLevel < 1e-6) return 0;                // ground level too small => detection failed
+    if (groundLevel < 1e-9) return 0;                // ground level too small => detection failed
     if ((peakLevel / groundLevel) < 1.3) return 0;   // peak less than 30% of the ground level => no good peak detected
 
     // calculate 70%-level of the peak
