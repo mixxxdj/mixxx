@@ -37,6 +37,8 @@ const int kSampleRate = 44100;
 const int kLeftoverSize = 4096; // in int16's, this seems to be the size MF AAC
 // decoder likes to give
 
+const static bool sDebug = false;
+
 /** Microsoft examples use this snippet often. */
 template<class T> static void safeRelease(T **ppT)
 {
@@ -58,6 +60,7 @@ SoundSourceMediaFoundation::SoundSourceMediaFoundation(QString filename)
     , m_leftoverBufferLength(0)
     , m_leftoverBufferPosition(0)
     , m_mfDuration(0)
+    , m_iCurrentPosition(0)
     , m_dead(false)
     , m_seeking(false)
 {
@@ -84,6 +87,10 @@ SoundSourceMediaFoundation::~SoundSourceMediaFoundation()
 
 int SoundSourceMediaFoundation::open()
 {
+    if (sDebug) {
+        qDebug() << "open()" << m_qFilename;
+    }
+
     QString qurlStr(m_qFilename);
     int wcFilenameLength(m_qFilename.toWCharArray(m_wcFilename));
     // toWCharArray does not append a null terminator to the string!
@@ -131,6 +138,7 @@ int SoundSourceMediaFoundation::open()
 
 long SoundSourceMediaFoundation::seek(long filepos)
 {
+    if (sDebug) { qDebug() << "seek()" << filepos; }
     PROPVARIANT prop;
     HRESULT hr(S_OK);
     qint64 seekTarget(filepos / kNumChannels);
@@ -140,13 +148,19 @@ long SoundSourceMediaFoundation::seek(long filepos)
     // enough for our calculatedFrameFromMF <= nextFrame assertion in ::read).
     // Has something to do with 100ns MF units being much smaller than most
     // frame offsets (in seconds) -bkgood
-
+    long result = m_iCurrentPosition;
     if (m_dead) {
-        return filepos;
+        return result;
     }
 
     // this doesn't fail, see MS's implementation
     hr = InitPropVariantFromInt64(mfSeekTarget < 0 ? 0 : mfSeekTarget, &prop);
+
+
+    hr = m_pReader->Flush(MF_SOURCE_READER_FIRST_AUDIO_STREAM);
+    if (FAILED(hr)) {
+        qWarning() << "SSMF: failed to flush before seek";
+    }
 
     // http://msdn.microsoft.com/en-us/library/dd374668(v=VS.85).aspx
     hr = m_pReader->SetCurrentPosition(GUID_NULL, prop);
@@ -156,10 +170,7 @@ long SoundSourceMediaFoundation::seek(long filepos)
         qWarning() << "SSMF: failed to seek" << (
             hr == MF_E_INVALIDREQUEST ? "Sample requests still pending" : "");
     } else {
-        hr = m_pReader->Flush(MF_SOURCE_READER_FIRST_AUDIO_STREAM);
-        if (FAILED(hr)) {
-            qWarning() << "SSMF: failed to flush after seek";
-        }
+        result = filepos;
     }
     PropVariantClear(&prop);
 
@@ -167,13 +178,14 @@ long SoundSourceMediaFoundation::seek(long filepos)
     // time we get a buffer from MFSourceReader
     m_nextFrame = seekTarget;
     m_seeking = true;
-
-    return filepos;
+    m_iCurrentPosition = result;
+    return result;
 }
 
 unsigned int SoundSourceMediaFoundation::read(unsigned long size,
     const SAMPLE *destination)
 {
+    if (sDebug) { qDebug() << "read()" << size; }
     SAMPLE *destBuffer(const_cast<SAMPLE*>(destination));
     size_t framesRequested(size / kNumChannels);
     size_t framesNeeded(framesRequested);
@@ -184,7 +196,11 @@ unsigned int SoundSourceMediaFoundation::read(unsigned long size,
         copyFrames(destBuffer, &framesNeeded, m_leftoverBuffer,
             m_leftoverBufferLength);
         if (m_leftoverBufferLength > 0) {
-            Q_ASSERT(framesNeeded == 0); // make sure CopyFrames worked
+            if (framesNeeded != 0) {
+                qWarning() << __FILE__ << __LINE__
+                           << "WARNING: Expected frames needed to be 0. Abandoning this file.";
+                m_dead = true;
+            }
             m_leftoverBufferPosition += framesRequested;
         }
     } else {
@@ -206,7 +222,17 @@ unsigned int SoundSourceMediaFoundation::read(unsigned long size,
             &dwFlags,                            // [out] DWORD *pdwStreamFlags,
             &timestamp,                          // [out] LONGLONG *pllTimestamp,
             &pSample);                           // [out] IMFSample **ppSample
-        if (FAILED(hr)) break;
+        if (FAILED(hr)) {
+            if (sDebug) { qDebug() << "ReadSample failed."; }
+            break;
+        }
+
+        if (sDebug) {
+            qDebug() << "ReadSample timestamp:" << timestamp
+                     << "frame:" << frameFromMF(timestamp)
+                     << "dwflags:" << dwFlags;
+        }
+
         if (dwFlags & MF_SOURCE_READERF_ERROR) {
             // our source reader is now dead, according to the docs
             qWarning() << "SSMF: ReadSample set ERROR, SourceReader is now dead";
@@ -245,22 +271,71 @@ unsigned int SoundSourceMediaFoundation::read(unsigned long size,
 
         if (m_seeking) {
             qint64 bufferPosition(frameFromMF(timestamp));
-            Q_ASSERT(m_nextFrame >= bufferPosition); // we can never go
-            // backwards here in ::read, so if the seek didn't manage to take
-            // us far back it's important to fail
-            if (m_nextFrame == bufferPosition) {
-                m_seeking = false;
-            } else if (m_nextFrame < bufferPosition + bufferLength) {
-                // nextFrame is in this buffer
+            if (sDebug) {
+                qDebug() << "While seeking to "
+                         << m_nextFrame << "WMF put us at" << bufferPosition;
+
+            }
+            if (m_nextFrame < bufferPosition) {
+                // Uh oh. We are farther forward than our seek target. Emit
+                // silence? We can't seek backwards here.
+                SAMPLE* pBufferCurpos = destBuffer +
+                        (size - framesNeeded * kNumChannels);
+                qint64 offshootFrames = bufferPosition - m_nextFrame;
+
+                // If we can correct this immediately, write zeros and adjust
+                // m_nextFrame to pretend it never happened.
+
+                if (offshootFrames <= framesNeeded) {
+                    qWarning() << __FILE__ << __LINE__
+                               << "Working around inaccurate seeking. Writing silence for"
+                               << offshootFrames << "frames";
+                    // Set offshootFrames * kNumChannels samples to zero.
+                    memset(pBufferCurpos, 0,
+                           sizeof(*pBufferCurpos) * offshootFrames *
+                           kNumChannels);
+                    // Now m_nextFrame == bufferPosition
+                    m_nextFrame += offshootFrames;
+                    framesNeeded -= offshootFrames;
+                } else {
+                    // It's more complicated. The buffer we have just decoded is
+                    // more than framesNeeded frames away from us. It's too hard
+                    // for us to handle this correctly currently, so let's just
+                    // try to get on with our lives.
+                    m_seeking = false;
+                    m_nextFrame = bufferPosition;
+                    qWarning() << __FILE__ << __LINE__
+                               << "Seek offshoot is too drastic. Cutting losses and pretending the current decoded audio buffer is the right seek point.";
+                }
+            }
+
+            if (m_nextFrame >= bufferPosition &&
+                m_nextFrame < bufferPosition + bufferLength) {
+                // m_nextFrame is in this buffer.
                 buffer += (m_nextFrame - bufferPosition) * kNumChannels;
                 bufferLength -= m_nextFrame - bufferPosition;
                 m_seeking = false;
-            } else { // we need to keep going forward
+            } else {
+                // we need to keep going forward
                 goto releaseRawBuffer;
             }
         }
 
-        Q_ASSERT(bufferLength * kNumChannels <= m_leftoverBufferSize);
+        // If the bufferLength is larger than the leftover buffer, re-allocate
+        // it with 2x the space.
+        if (bufferLength * kNumChannels > m_leftoverBufferSize) {
+            int newSize = m_leftoverBufferSize;
+
+            while (newSize < bufferLength * kNumChannels) {
+                newSize *= 2;
+            }
+            qint16* newBuffer = new qint16[newSize];
+            memcpy(newBuffer, m_leftoverBuffer,
+                   sizeof(m_leftoverBuffer[0]) * m_leftoverBufferSize);
+            delete [] m_leftoverBuffer;
+            m_leftoverBuffer = newBuffer;
+            m_leftoverBufferSize = newSize;
+        }
         copyFrames(destBuffer + (size - framesNeeded * kNumChannels),
             &framesNeeded, buffer, bufferLength);
 
@@ -279,10 +354,17 @@ releaseSample:
 
     m_nextFrame += framesRequested - framesNeeded;
     if (m_leftoverBufferLength > 0) {
-        Q_ASSERT(framesNeeded == 0); // make sure CopyFrames worked
+        if (framesNeeded != 0) {
+            qWarning() << __FILE__ << __LINE__
+                       << "WARNING: Expected frames needed to be 0. Abandoning this file.";
+            m_dead = true;
+        }
         m_leftoverBufferPosition = m_nextFrame;
     }
-    return size - framesNeeded * kNumChannels;
+    long samples_read = size - framesNeeded * kNumChannels;
+    m_iCurrentPosition += samples_read;
+    if (sDebug) { qDebug() << "read()" << size << "returning" << samples_read; }
+    return samples_read;
 }
 
 inline unsigned long SoundSourceMediaFoundation::length()

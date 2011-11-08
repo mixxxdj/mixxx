@@ -101,7 +101,7 @@ class Qt(Dependence):
     DEFAULT_QTDIRS = {'linux': '/usr/share/qt4',
                       'bsd': '/usr/local/lib/qt4',
                       'osx': '/Library/Frameworks',
-                      'windows': 'C:\\qt\\4.5.1'}
+                      'windows': 'C:\\qt\\4.6.0'}
 
     def satisfy(self):
         pass
@@ -113,8 +113,8 @@ class Qt(Dependence):
 
         # Enable Qt include paths
         if build.platform_is_linux:
-            if not conf.CheckForPKG('QtCore', '4.3'):
-                raise Exception('QT >= 4.3 not found')
+            if not conf.CheckForPKG('QtCore', '4.6'):
+                raise Exception('QT >= 4.6 not found')
 
             #Try using David's qt4.py's Qt4-module finding thingy instead of pkg-config.
             #(This hopefully respects our qtdir=blah flag while linking now.)

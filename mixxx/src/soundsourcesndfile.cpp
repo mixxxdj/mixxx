@@ -54,9 +54,12 @@ QList<QString> SoundSourceSndFile::supportedFileExtensions()
     return list;
 }
 
-int SoundSourceSndFile::open()
-{
+int SoundSourceSndFile::open() {
+#ifdef __WINDOWS__
+    QByteArray qbaFilename = m_qFilename.toLocal8Bit();
+#else
     QByteArray qbaFilename = m_qFilename.toUtf8();
+#endif
     fh = sf_open( qbaFilename.data(), SFM_READ, info );
 
     if (fh == NULL) {   // sf_format_check is only for writes
