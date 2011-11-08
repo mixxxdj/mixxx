@@ -1,4 +1,4 @@
-mixxx (1.10.0-beta1-0ubuntu1) karmic; urgency=low
+mixxx (1.10.0-beta1-0ubuntu1) lucid; urgency=low
 
   * New upstream beta release
   * Bump Qt requirement to 4.6.0
