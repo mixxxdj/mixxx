@@ -7,9 +7,9 @@ Welcome to Mixxx!
 *****************
 
 Mixxx is Free [#f1]_ DJ software for Windows, Mac OSX, and Linux.  **Mixxx gives
-you everything you need to become a superstar DJ.** Using Mixxx, you can rock
-the party with your vinyl turntables, your MIDI controllers, or even just your
-keyboard.
+you everything you need to become a superstar DJ** (except talent and hard work.)
+Using Mixxx, you can rock the party with your vinyl turntables,
+your MIDI controllers, or even just your keyboard.
 
 That's right, this is you after learning how to DJ with Mixxx:
 

@@ -1,42 +1,40 @@
-Configuring your Setup
-**********************
+Hardware set-up
+***************
 
-This chapter describes some of the most common hardware setups that you
-will choose from when preparing your DJ setup with Mixxx. We provide a couple of
-options including time-coded records, MIDI control and keyboard.
+This chapter describes the most common hardware setups to serve as examples as you
+prepare yours. We provide a few options including time-code records/CDs, MIDI control and keyboard.
 
-Audio Output with Mixxx
-=======================
+Audio output
+============
 
-Headphone cueing, or just cueing, is listening to the next track you would like to mix 
-in in your headphones. The audience will not hear what you are cueing in your 
-headphones. Being able to cue is a crucial aspect to DJing.
+Headphone cueing, or just cueing, is previewing the next track you would like to mix
+in your headphones. The audience will not hear what you are cueing in your
+headphones. Being able to cue is a crucial aspect of DJing.
 
 In order to cue with your computer, you will need **at least 2 separate audio
 outputs**. Traditionally, a headphone jack on most laptops **is not a second
-audio output**. Rather, plugging headphones into the headphone jack on most
-laptops allows you to listen to the main output of your laptop in your
-headphones. **Having a headphone jack alone will not allow you to cue.**
+audio output**. Rather, plugging headphones into the jack simply redirects the
+laptop's main output to your headphones. **Having a headphone jack alone will not allow you to cue.**
 
 Controlling Mixxx
 =================
 
-Mixxx can be controlled with keyboard, mouse, MIDI controller, time-coded records
+Mixxx can be controlled with keyboard, mouse, MIDI controllers, time-code records/CDs,
 or a combination of these. The choice usually depends on your budget or area of 
 application.  
 
 
-.. _section 3.2.1:
+.. _using a keyboard:
 
-Using your keyboard
--------------------
+Using a keyboard
+----------------
 
-If you cannot afford a MIDI controller, controlling Mixxx through a keyboard
-is a handy way. Unlike mouse control, the keyboard allows you to manage things 
+If you cannot afford a MIDI controller, controlling Mixxx with a keyboard
+is handy. Unlike mouse control, the keyboard allows you to manage things
 simultaneously. For example, you can start playing a track on deck 1 whilst 
 stopping deck 2 at the same time.
 
-The default mapping for English keyboards is depicted in the figure below. The figure is divided 
+The default mapping for English keyboards is depicted in the figure below. It's divided 
 into a left-hand side for deck 1 and right-hand side for deck 2. Please note that you can also 
 access the functions through Mixxx's interface.
 
@@ -49,7 +47,7 @@ access the functions through Mixxx's interface.
 +----------------------------------------+---------------------+---------------------+--------------+
 | Function                               | Deck 1              | Deck 2              | Master       |
 +========================================+=====================+=====================+==============+
-| Microphone Talkover                    |                     |                     | `            |
+| Microphone Talkover                    |                     |                     | \`           |
 +----------------------------------------+---------------------+---------------------+--------------+
 | Crossfade Left                         |                     |                     | G            |
 +----------------------------------------+---------------------+---------------------+--------------+
@@ -89,7 +87,7 @@ access the functions through Mixxx's interface.
 +----------------------------------------+---------------------+---------------------+--------------+
 | Activate/Disable Effects Unit          | 5                   | 0                   |              |
 +----------------------------------------+---------------------+---------------------+--------------+
-| Headphone Cue (Prelisten)              | T                   | Y                   |              |
+| Headphone Cue (Pre-fader listen)       | T                   | Y                   |              |
 +----------------------------------------+---------------------+---------------------+--------------+
 | Tempo Adjust Dow                       | F1                  | F5                  |              |
 +----------------------------------------+---------------------+---------------------+--------------+
@@ -111,21 +109,21 @@ access the functions through Mixxx's interface.
 +----------------------------------------+---------------------+---------------------+--------------+
 | BPM Tap Tempo Adjust                   | Shift + 1           | Shift + 0           |              |
 +----------------------------------------+---------------------+---------------------+--------------+
-| Set Hotcue 1                           | Z                   | M                   |              |
+| Set Hot cue 1                          | Z                   | M                   |              |
 +----------------------------------------+---------------------+---------------------+--------------+
-| Set Hotcue 2                           | X                   | ,                   |              |
+| Set Hot cue 2                          | X                   | ,                   |              |
 +----------------------------------------+---------------------+---------------------+--------------+
-| Set Hotcue 3                           | C                   | .                   |              |
+| Set Hot cue 3                          | C                   | .                   |              |
 +----------------------------------------+---------------------+---------------------+--------------+
-| Set Hotcue 4                           | V                   | /                   |              |
+| Set Hot cue 4                          | V                   | /                   |              |
 +----------------------------------------+---------------------+---------------------+--------------+
-| Clear Hotcue 1                         | Shift + Z           | Shift + M           |              |
+| Clear Hot cue 1                        | Shift + Z           | Shift + M           |              |
 +----------------------------------------+---------------------+---------------------+--------------+
-| Clear Hotcue 2                         | Shift + X           | Shift + <           |              |
+| Clear Hot cue 2                        | Shift + X           | Shift + <           |              |
 +----------------------------------------+---------------------+---------------------+--------------+
-| Clear Hotcue 3                         | Shift + C           | Shift + >           |              |
+| Clear Hot cue 3                        | Shift + C           | Shift + >           |              |
 +----------------------------------------+---------------------+---------------------+--------------+
-| Clear Hotcue 4                         | Shift + V           | Shift + ?           |              |
+| Clear Hot cue 4                        | Shift + V           | Shift + ?           |              |
 +----------------------------------------+---------------------+---------------------+--------------+
 | Load selected track to deck            | Shift + left arrow  | Shift + right arrow |              |
 +----------------------------------------+---------------------+---------------------+--------------+
@@ -134,32 +132,39 @@ access the functions through Mixxx's interface.
 
 **Customizing** 
 
-You can also customize the keyboard mapping. The shortcuts are defined in a text file, and can be changed 
-by the user -
+You can also customize the keyboard mapping. The shortcuts are defined in a text file, and can be changed.
           
 * Linux: /usr/share/mixxx/keyboard/Standard.kbd.cfg 
 * MacOS X: <Mixxx bundle>/keyboard/Standard.kbd.cfg 
-* Windows: <Mixxx dir>\keyboard\Standard.kbd.cfg  
+* Windows: <Mixxx dir>\\keyboard\\Standard.kbd.cfg  
 
 You can share custom keyboard mappings in the `Mixxx User customizations forum`_.
 
 .. _Mixxx User customizations forum: http://mixxx.org/forums/viewforum.php?f=6
 
-.. _section 3.2.2:
+.. _using midi controllers:
 
 Using a MIDI Controller
 -----------------------
 
-MIDI controllers are external hardware devices used that can be used to control audio applications, like Mixxx.
-Many DJs prefer the “hands-on” feel of a MIDI controller with Mixxx because it can feel similar to using a real
+MIDI controllers are external hardware devices used that can be used to control audio applications.
+Many DJs prefer the hands-on feel of a MIDI controller with Mixxx because it can feel similar to using a real
 mixer and turntables.
 
-Mixxx can work with any MIDI controller that has drivers for your OS, as long as there is a MIDI mapping file
-to tell Mixxx how to understand it. Mixxx comes bundled with a number of MIDI mapping presets for the devices 
-listed below.
+Here are the steps for using one:
 
-Often times these mappings are contributed by users, but the Mixxx team has no way of judging the quality of 
-the mappings because we do not own the devices ourselves. There are two different levels of support for devices 
+#. Connect your controller(s) to your computer
+#. Open Preferences and click *MIDI Controllers*
+#. Select your controller on the left and the right pane will change
+#. Click *Enable* and choose the appropriate mapping from the *presets* combobox 
+#. Click OK and Mixxx can now be controlled by your controller(s).
+
+Mixxx can use any MIDI controller that is recognized by your OS (some may require drivers,)
+as long as there is a MIDI mapping file to tell Mixxx how to understand it.
+Mixxx comes bundled with a number of mappings for the devices listed below.
+
+Often times these mappings are contributed by users and the Mixxx team has no way of judging the quality of
+the mappings because we do not own the devices ourselves. There are two different levels of support for controllers
 in Mixxx: Mixxx Certified Support and Community Support. Mixxx Certified mappings are verified by the Mixxx 
 Team. Community Supported mappings are mappings provided by the Mixxx Community, but the Mixxx team is unable 
 the verify their quality.
@@ -172,10 +177,11 @@ the verify their quality.
 * Hercules DJ Console MK2
 * Hercules DJ Control MP3 e2
 * M-Audio X-Session Pro
-* Reloop Digitial Jockey 2 (Interface/Controller)
+* Reloop Digital Jockey 2 (Interface/Controller)
 * Stanton SCS.3d
 * Stanton SCS.3m
 * Stanton SCS.1m
+* Stanton SCS.1d
 
 **Community Supported Mappings**
 
@@ -206,53 +212,54 @@ our mailing list, forums, or IRC channel.
 * Wireless DJ App (iOS)
 
 Before purchasing a controller to use with Mixxx, please consult our `Hardware Compatibility wiki page`_. It 
-contains the most up-to-date documentation on which controllers work with Mixxx and what the caveats of each 
-device are. Device support varies for each supported OS, so please make sure to consult the documentation.
+contains the most up-to-date information about which controllers work with Mixxx and the details of each.
+Device support varies for each supported OS, so please make sure to consult the documentation.
 
 .. _Hardware Compatibility wiki page: http://www.mixxx.org/wiki/doku.php/hardware_compatibility
 
-.. _section 3.2.3:
+.. _using time-code:
 
-Using Vinyl Timecode Records
-----------------------------
+Using Vinyl Time-code Records/CDs
+---------------------------------
 
-Vinyl control allows a user to manipulate the playback of a track in Mixxx using a turntable as an interface. In 
-effect, it simulates the sound and feel of having your MP3 collection on vinyl. 
+Vinyl control allows a user to manipulate the playback of a track in Mixxx using a turntable or DJ CD player as an interface.
+In effect, it simulates the sound and feel of having your music collection on vinyl.
 
 **How does it work?**
 
-Vinyl control uses special timecoded records which are placed on real turntables. The audio output of the 
-turntables is plugged into a computer, on which Mixxx is running. When a record is played on one of the attached 
-turntables, Mixxx decodes the timecode off the record, and uses information from that to manipulate whatever 
-track is loaded. 
+Vinyl control uses special time-code records which are placed on real turntables. The audio output of the
+turntables is plugged into a computer on which Mixxx is running. When a record is played on one of the attached
+turntables, Mixxx reads the time-code from the record and uses the information to manipulate whatever track is loaded.
 
 **What do I need to use it**?
 
 It is possible to use Mixxx's vinyl control with several hardware setups, but the basic ones are:
 
-**Setup 1: Vinyl DJ** Two timecoded vinyls, two turntables with phono preamps (or line-out), and two sound 
-inputs. You might skip the phono amplifiers if you use the snazzy software preamp in Mixxx. *This 
-may not work for everyone - line-level signals are preferred and recommended.*
+**Setup 1: Vinyl DJ** Two time-code vinyls, two turntables with phono pre-amplifiers (or line-out), and two sound
+inputs.
+You can try skipping the phono pre-amps if you use the software pre-amp in Mixxx on the Vinyl Control preferences pane.
+*This may not work for everyone - line-level signals are preferred and recommended.*
 
-**Setup 2: CDJ** Two timecoded CDs, two CD decks, and two sound inputs.
+**Setup 2: CDJ** Two time-code CDs, two CD decks, and two sound inputs.
 
-For the sound inputs, you have two options: You can either use a propper DJ soundcard that has multiple 
-stereo line inputs on it, or can use two soundcards (each with a single stereo line in). 
+For the sound inputs, you have two options: You can either use a proper DJ sound card that has multiple
+stereo line inputs on it, or can use two sound cards (each with a single stereo line in).
+A single multi-channel sound card is recommended.
 
 .. note:: For best scratch performance with vinyl control, your system must be able to handle setting the 
           latency to 10ms or less otherwise the scratch sound will start to become distorted as latencies (and 
           lag time) increase.
 
-For timecoded records or CDs, you can use any of the records supported by Mixxx:
+For time-code records or CDs, you can use any of the records supported by Mixxx:
 
-**Timecode Support**
+**Time-code Support**
 
 +----------------------------------------+---------------------+
-| Vinyl                                  | Responsivenes       |
+| Vinyl                                  | Responsiveness      |
 +========================================+=====================+
 | Serato CV02                            | Very high           |
 +----------------------------------------+---------------------+
-| Serato CD                              | Very high           |                   
+| Serato CD                              | Very high           |
 +----------------------------------------+---------------------+
 | Traktor Scratch                        | Very high           | 
 +----------------------------------------+---------------------+
@@ -282,134 +289,117 @@ This section provides useful information for club, hobby and radio DJs alike.
 Laptop Only
 -----------
 
-There is absolutely no need to buy an additional, expensive soundcard **if you do not require 
+There is absolutely no need to buy an additional, expensive sound card **if you do not require
 headphone cueing**. Most computers and laptops   
-come with a build-in soundcard having a single line-out and microphone input where you can plug
+come with a build-in sound card having a single line-out and microphone input where you can plug
 your sound box or headphone. 
 
  .. image:: ../_static/mixxx_standalone-setup_dlg.png
    :width: 90%
-   :alt: Using Mixxx together with your build-in soundcard
+   :alt: Using Mixxx together with your build-in sound card
    :align: center
 
-The figure above depicts how the sound configuration may look like. The stereo output of your
-soundcard (channels 1-2) will be connected to the **master out**. Dependend on your soundcard
+The figure above depicts how the sound configuration might look. The stereo output of your
+sound card (channels 1-2) will be connected to the **master out**. Depending on your sound card
 you can specify a microphone under the "Input" tab.
 
 This minimal configuration may be suitable for **radio DJs** that do not need headphone cueing. You
 can archive this configuration by simply clicking the "Reset to Defaults" command button.
 
 
-Laptop and an External USB Soundcard
-------------------------------------
+Laptop and an External USB Sound card
+-------------------------------------
 
 The ideal way for any DJ is to have 2 stereo outputs (= 4 channels). The first stereo
 output (channels 1-2) is used as **Master out** and supplies the main mix to the room. With channels 3-4 
 (2nd stereo output) you can cueing and previewing the next track in your headphones.
-This means either having multiple soundcards or a soundcard capable of outputting 4 channels of audio. 
+This means either having multiple sound cards or a sound card capable of outputting 4 channels of audio.
 
 
 .. image:: ../_static/mixxx_setup_ext_soundcard.png
    :width: 100%
-   :alt: Using Mixxx together with an external soundcard
+   :alt: Using Mixxx together with an external sound card
    :align: center
    
 
-The depicted configuration above uses two soundcards. Basically, this setup is sufficient 
+The depicted configuration above uses two sound cards. Basically, this setup is sufficient
 to start serious DJing. You can control Mixxx with mouse or keyboard. But bear in mind that
 a successful mix often requires simultaneous actions where keyboard shortcuts may help as 
-stated in `section 3.2.1`_. 
+stated in `using a keyboard`_. 
 
 
-Laptop, MIDI Controller, and External USB Soundcard
----------------------------------------------------
+Laptop, MIDI Controller, and External USB Sound card
+----------------------------------------------------
 
 Mixxx can work with any MIDI controller that has drivers for your OS, as long as there is a MIDI mapping file to
 tell Mixxx how to understand it. Mixxx comes bundled with a number of MIDI mapping presets for the devices listed 
-in `section 3.2.2`_.
-
-Having connected your MIDI controller via USB, Mixxx will list the device in the preferences
-under "MIDI Controllers". Select your controller on the right, enable it, and choose the appropriate 
-mapping from the combobox "presets". From now on Mixxx can be controlled by your controller unless
-the device is not supported. 
+in `using midi controllers`_.
 
 .. image:: ../_static/mixxx_setup_midi_with_ext_sound.png
    :width: 100%
-   :alt: Using Mixxx together with a MIDI controller and external soundcard
+   :alt: Using Mixxx together with a MIDI controller and external sound card
    :align: center
 
 
-Dependent on the budget, MIDI controllers may have an integrated *multichannel* soundcard or not. If your controller 
-does not provide an integrated soundcard, your sound setup may look like in the figure above. Otherwise, an
-alternative sound setup may look as shown in the figure below:
+Depending on price, a MIDI controller may have an integrated *multi-channel* sound card. If yours
+does not, your sound setup may look like the figure above. Otherwise, an alternative sound setup may look like the figure below:
 
 .. image:: ../_static/mixxx_setup_midi_integrated_sound.png
    :width: 100%
-   :alt: Using Mixxx together with a MIDI controller and integrated soundcard
+   :alt: Using Mixxx together with a MIDI controller and integrated sound card
    :align: center
 
-TODO:
-- Multi-controller support (RJ, I don't have a two controllers)
-   
+**Multiple MIDI Controllers**
+
+You can connect as many MIDI controllers as you have ports on your computer.
+Just follow the steps in `using midi controllers`_ for each controller you want to use.
 
 
 Laptop, External Hardware Mixer and Vinyl Control
--------------------------------------------------------
+-------------------------------------------------
 
 This setup is usually preferred by DJs who work in clubs. Instead of carrying large and heavy CD bags
-or a MIDI controller, all you need to have is a professional soundcard together with a pair of timecoded
+or a MIDI controller, all you need to have is a professional sound card together with a pair of time-code
 records and a headphone. But bear in mind that this setup requires your system to handle setting the 
 latency to 10ms or less otherwise the scratch sound will start to become distorted. More information on
 how to decrease latency is covered in section 6.2.  
 
-.. note:: It is strongly recommended to use a soundcard that comes with native low latency drivers
+.. note:: It is strongly recommended to use a sound card that comes with native low latency drivers
           such as ASIO (Windows) or CoreAudio (Mac). Linux users depend on the quality
           of the corresponding open source driver. 
 
 **Turntables**
   
 For turntables a typical setup is depicted in the figure below.
-In a fist step, you connect the RCA cables of the turntable to the input of your soundcard.
-Secondly, you connect the inputs of your mixer to the outputs of your soundcard.
-Please note that you must set the input mode of your soundcard to "phono".
+In the first step, you connect the RCA cables from the turntable to an input on your sound card.
+Secondly, you connect the outputs of your sound card to the inputs on your mixer.
+Please note that you must set the input mode of your sound card to *phono* if you have standard turntables.
+(Many modern turntables have a *Line/Phono* select switch.
+If yours does, make sure it matches the input and/or switch setting on your sound card.)
 
 .. image:: ../_static/mixxx_setup_timecode_vc.png
    :width: 100%
    :alt: Using Mixxx together with a turntable and external mixer
    :align: center
 
-To complete your setup you must configure Mixxx properly. Make sure you have:
-
-* specified "Deck 1" and "Deck 2" in the preferences under "Sound Hardware" as
-  it will route the soundard's output directly to the external mixer.
-* specified "Vinyl Control 1" and "Vinyl Control 2" under the "Input"
-  tab in the preferences under “Sound Hardware”. 
-* selected the right vinyl type under "Vinyl Control" in the preferences.
-  Mixxx does only support Serato and Traktor control vinyls as listed in 
-  `section 3.2.3`_.
-* enabled vinyl control via the menu under "Options -> Vinyl Control -> Enable Vinyl Control".
-
-
 **CDJs**
 
-Setting up CDJs to be used with timecoded records is similar to setting up turntables. The
-figure below outlines a typical configuration. In a fist step, you connect the RCA cables of the 
-CDJ to the input of your soundcard. Secondly, you connect the inputs of your mixer to the outputs 
-of your soundcard. Please note that you must set the input mode of your soundcard to "line-in". 
+Setting up CDJs for use with time-code CDs is similar to setting up turntables. The
+figure below outlines a typical configuration. In the first step, you connect the RCA cables of the
+CDJ to an input of your sound card. Secondly, you connect the inputs of your mixer to the outputs
+of your sound card. Please note that you must set the input mode of your sound card to *Line*.
   
 .. image:: ../_static/mixxx_setup_timecode_cdj.png
    :width: 100%
-   :alt: Using Mixxx together with a MIDI controller and external soundcard
+   :alt: Using Mixxx together with a MIDI controller and external sound card
    :align: center
+
+Configuring Mixxx
+^^^^^^^^^^^^^^^^^
 
 To complete your setup you must configure Mixxx properly. Make sure you have:
 
-* specified "Deck 1" and "Deck 2" in the preferences under "Sound Hardware" as
-  it will route the soundard's output directly to the external mixer.
-* specified "Vinyl Control 1" and "Vinyl Control 2" under the "Input"
-  tab in the preferences under “Sound Hardware”. 
-* selected the right vinyl type under "Vinyl Control" in the preferences.
-  With CDJs you must select "Serato CDs" since Mixxx does not support other
-  timecoded CDs at the moment.
+* specified "Deck 1" and "Deck 2" in the preferences under "Sound Hardware" to route Mixxx's output directly to the external mixer,
+* specified "Vinyl Control 1" and "Vinyl Control 2" under the "Input" tab in the preferences under "Sound Hardware",
+* selected the right vinyl type under "Vinyl Control" in the preferences (see `using time-code`_ for the list of supported control records/CDs,)
 * enabled vinyl control via the menu under "Options -> Vinyl Control -> Enable Vinyl Control".
-
