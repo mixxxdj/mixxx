@@ -49,7 +49,7 @@ typedef struct MadSeekFrameType {
   *@author Tue and Ken Haste Andersen
   */
 
-class SoundSourceMp3 : public SoundSource {
+class SoundSourceMp3 : public Mixxx::SoundSource {
 public:
     SoundSourceMp3(QString qFilename);
     ~SoundSourceMp3();
@@ -61,16 +61,17 @@ public:
     inline long unsigned length();
     int parseHeader();
     static QList<QString> supportedFileExtensions();
-    
+
 private:
     /** Returns the position of the frame which was found. The found frame is set to
       * the current element in m_qSeekList */
     int findFrame(int pos);
-    /** Fills the string str with the content of the id3tag frame of frameid.
-      * If the frame does not exist or is empty the string is left untouched. */
-    static void getField(id3_tag *tag, const char *frameid, QString *str);
     /** Scale the mad sample to be in 16 bit range. */
     inline signed int madScale (mad_fixed_t sample);
+    MadSeekFrameType* getSeekFrame(long frameIndex) const;
+
+    // Returns true if the loaded file is valid and usable to read audio.
+    bool isValid() const;
 
     QFile m_file;
     int bitrate;

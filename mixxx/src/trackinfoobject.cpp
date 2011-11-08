@@ -133,20 +133,23 @@ void TrackInfoObject::initialize(bool parseHeader) {
     m_iChannels = 0;
     m_fCuePoint = 0.0f;
     m_dVisualResampleRate = 0;
-    m_dCreateDate = QDateTime::currentDateTime();
+    m_dCreateDate = m_dateAdded = QDateTime::currentDateTime();
     m_Rating = 0;
     m_key = "";
 
     // parse() parses the metadata from file. This is not a quick operation!
-    if (parseHeader)
+    if (parseHeader) {
         parse();
+    }
 }
 
 TrackInfoObject::~TrackInfoObject() {
+    //qDebug() << "~TrackInfoObject()" << m_iId << getInfo();
 }
 
 void TrackInfoObject::doSave() {
-    emit(save());
+    //qDebug() << "TIO::doSave()" << getInfo();
+    emit(save(this));
 }
 
 bool TrackInfoObject::isValid() const {
@@ -235,7 +238,7 @@ QString TrackInfoObject::getDurationStr() const
     int iDuration = m_iDuration;
     lock.unlock();
 
-    return MixxxUtils::secondsToMinutes(iDuration);
+    return MixxxUtils::secondsToMinutes(iDuration, true);
 }
 
 void TrackInfoObject::setLocation(QString location)
@@ -341,6 +344,42 @@ void TrackInfoObject::setBpmConfirm(bool confirm)
     m_bBpmConfirm = confirm;
 }
 
+void TrackInfoObject::setBeats(BeatsPointer pBeats) {
+    QMutexLocker lock(&m_qMutex);
+
+    // This whole method is not so great. The fact that Beats is an ABC is
+    // limiting with respect to QObject and signals/slots.
+
+    QObject* pObject = NULL;
+    if (m_pBeats) {
+        pObject = dynamic_cast<QObject*>(m_pBeats.data());
+        if (pObject)
+            pObject->disconnect(this, SIGNAL(updated()));
+    }
+    m_pBeats = pBeats;
+    pObject = dynamic_cast<QObject*>(m_pBeats.data());
+    Q_ASSERT(pObject);
+    if (pObject) {
+        connect(pObject, SIGNAL(updated()),
+                this, SLOT(slotBeatsUpdated()));
+    }
+    setDirty(true);
+    lock.unlock();
+    emit(beatsUpdated());
+}
+
+BeatsPointer TrackInfoObject::getBeats() const {
+    QMutexLocker lock(&m_qMutex);
+    return m_pBeats;
+}
+
+void TrackInfoObject::slotBeatsUpdated() {
+    QMutexLocker lock(&m_qMutex);
+    setDirty(true);
+    lock.unlock();
+    emit(beatsUpdated());
+}
+
 bool TrackInfoObject::getHeaderParsed()  const
 {
     QMutexLocker lock(&m_qMutex);
@@ -362,6 +401,16 @@ QString TrackInfoObject::getInfo()  const
     QString artist = m_sArtist.trimmed() == "" ? "" : m_sArtist + ", ";
     QString sInfo = artist + m_sTitle;
     return sInfo;
+}
+
+QDateTime TrackInfoObject::getDateAdded() const {
+    QMutexLocker lock(&m_qMutex);
+    return m_dateAdded;
+}
+
+void TrackInfoObject::setDateAdded(QDateTime dateAdded) {
+    QMutexLocker lock(&m_qMutex);
+    m_dateAdded = dateAdded;
 }
 
 int TrackInfoObject::getDuration()  const
@@ -492,11 +541,7 @@ void TrackInfoObject::setTimesPlayed(int t)
 
 void TrackInfoObject::incTimesPlayed()
 {
-    QMutexLocker lock(&m_qMutex);
-    qDebug() << "Track Played:" << m_sArtist << " - " << m_sTitle;
-    m_bPlayed = true;
-    ++m_iTimesPlayed;
-    setDirty(true);
+    setPlayed(true); //setPlayed increases play count
 }
 
 bool TrackInfoObject::getPlayed() const
@@ -509,20 +554,15 @@ bool TrackInfoObject::getPlayed() const
 void TrackInfoObject::setPlayed(bool bPlayed)
 {
     QMutexLocker lock(&m_qMutex);
-    bool dirty = bPlayed != m_bPlayed;
-    m_bPlayed = bPlayed;
-    if (dirty)
-    {
-        if (bPlayed)
-        {
-            qDebug() << "Track Played:" << m_sArtist << " - " << m_sTitle;
-        }
-        else
-        {
-            qDebug() << "Track Unplayed:" << m_sArtist << " - " << m_sTitle;
-        }
-        setDirty(true);
+    if (bPlayed) {
+        ++m_iTimesPlayed;
+	setDirty(true);
     }
+    else if (m_bPlayed && !bPlayed) {
+        --m_iTimesPlayed;
+	setDirty(true);
+    }
+    m_bPlayed = bPlayed;
 }
 
 QString TrackInfoObject::getComment() const
@@ -772,21 +812,22 @@ void TrackInfoObject::setChordData(Segmentation<QString> cd) {
 }
 
 void TrackInfoObject::setDirty(bool bDirty) {
+
     QMutexLocker lock(&m_qMutex);
     bool change = m_bDirty != bDirty;
     m_bDirty = bDirty;
     lock.unlock();
+    // qDebug() << "Track" << m_iId << getInfo() << (change? "changed" : "unchanged")
+    //          << "set" << (bDirty ? "dirty" : "clean");
     if (change) {
-        //qDebug() << "Track" << m_iId << "set" << (bDirty ? "dirty" : "clean");
         if (m_bDirty)
-            emit(dirty());
+            emit(dirty(this));
         else
-            emit(clean());
+            emit(clean(this));
     }
     // Emit a changed signal regardless if this attempted to set us dirty.
     if (bDirty)
-        emit(changed());
-
+        emit(changed(this));
 
     //qDebug() << QString("TrackInfoObject %1 %2 set to %3").arg(m_iId).arg(m_sLocation).arg(m_bDirty ? "dirty" : "clean");
 }

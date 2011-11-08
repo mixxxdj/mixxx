@@ -17,10 +17,10 @@
 
 
 
-#include "enginefilterbutterworth8.h"
-#include "enginefilter.h"
-#include "engineobject.h"
-#include "../lib/fidlib-0.9.9/fidlib.h"
+#include "engine/enginefilterbutterworth8.h"
+#include "engine/enginefilter.h"
+#include "engine/engineobject.h"
+#include "../lib/fidlib-0.9.10/fidlib.h"
 
 /* Local Prototypes */
 inline double _processLowpass(double *coef, double *buf, register double val);
@@ -72,7 +72,7 @@ EngineFilterButterworth8::~EngineFilterButterworth8()
 void EngineFilterButterworth8::process(const CSAMPLE *pIn, const CSAMPLE *ppOut, const int iBufferSize)
 {
 	CSAMPLE * pOutput = (CSAMPLE *)ppOut;
-	
+
 	switch(m_type)
 	{
 	case FILTER_LOWPASS:

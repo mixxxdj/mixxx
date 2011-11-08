@@ -8,6 +8,7 @@
 #include "library/dao/playlistdao.h"
 #include "library/libraryview.h"
 #include "library/trackcollection.h"
+#include "mixxxkeyboard.h"
 
 class PlaylistTableModel;
 class WTrackTableView;
@@ -17,23 +18,31 @@ class ControlObjectThreadMain;
 
 class DlgAutoDJ : public QWidget, public Ui::DlgAutoDJ, public virtual LibraryView {
     Q_OBJECT
-public:
-    DlgAutoDJ(QWidget *parent, ConfigObject<ConfigValue>* pConfig, TrackCollection* pTrackCollection);
+  public:
+    DlgAutoDJ(QWidget *parent, ConfigObject<ConfigValue>* pConfig,
+              TrackCollection* pTrackCollection, MixxxKeyboard* pKeyboard);
     virtual ~DlgAutoDJ();
+
     virtual void setup(QDomNode node);
     virtual void onSearchStarting();
     virtual void onSearchCleared();
     virtual void onSearch(const QString& text);
     virtual void onShow();
-    virtual QWidget* getWidgetForMIDIControl();
-public slots:
+    virtual void loadSelectedTrack();
+    virtual void loadSelectedTrackToGroup(QString group);
+    virtual void moveSelection(int delta);
+
+  public slots:
+    void shufflePlaylist(bool buttonChecked);
     void toggleAutoDJ(bool toggle);
     void player1PositionChanged(double value);
     void player2PositionChanged(double value);
-signals:
+
+  signals:
     void loadTrack(TrackPointer tio);
     void loadTrackToPlayer(TrackPointer tio, QString group);
-private:
+
+  private:
     bool loadNextTrackFromQueue(bool removeTopMostBeforeLoading);
 
     ConfigObject<ConfigValue>* m_pConfig;

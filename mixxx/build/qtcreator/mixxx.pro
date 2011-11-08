@@ -110,6 +110,7 @@ HEADERS += $$UI_DIR/ui_dlgaboutdlg.h \
     $$UI_DIR/ui_dlgprefrecorddlg.h \
     $$UI_DIR/ui_dlgprefsounddlg.h \
     $$UI_DIR/ui_dlgprefvinyldlg.h \
+    $$UI_DIR/ui_dlgprefnovinyldlg.h \
     $$UI_DIR/ui_dlgprefnomididlg.h
 
 INCLUDEPATH += src \
@@ -608,7 +609,7 @@ SOURCES += $$BASE_DIR/lib/soundtouch-1.4.1/SoundTouch.cpp \
     $$BASE_DIR/lib/soundtouch-1.4.1/cpu_detect_x86_gcc.cpp
 
 # Fidlib
-SOURCES += $$BASE_DIR/lib/fidlib-0.9.9/fidlib.c
+SOURCES += $$BASE_DIR/lib/fidlib-0.9.10/fidlib.c
 win32-g++ {
     DEFINES += T_MINGW
 }

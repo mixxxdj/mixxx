@@ -23,22 +23,30 @@
 #include "configobject.h"
 #include "midimessage.h"
 #include "pitchfilter.h"
+#include "softtakeover.h"
+
 class MidiDevice;
 
 //Forward declaration(s)
 class ControlObjectThread;
 
 class MidiScriptEngine : public QThread {
-
     Q_OBJECT
-
-public:
+  public:
     MidiScriptEngine(MidiDevice* midiDevice);
-    ~MidiScriptEngine();
+    virtual ~MidiScriptEngine();
 
     bool isReady();
     bool hasErrors(QString filename);
     const QStringList getErrors(QString filename);
+
+    void setMidiDebug(bool bDebug) {
+        m_midiDebug = bDebug;
+    }
+
+    void setMidiPopups(bool bPopups) {
+        m_midiPopups = bPopups;
+    }
 
     // Lookup registered script functions
     QStringList getScriptFunctions();
@@ -56,13 +64,14 @@ public:
     Q_INVOKABLE void scratchEnable(int deck, int intervalsPerRev, float rpm, float alpha, float beta);
     Q_INVOKABLE void scratchTick(int deck, int interval);
     Q_INVOKABLE void scratchDisable(int deck);
+    Q_INVOKABLE void softTakeover(QString group, QString name, bool set);
 
-public slots:
+  public slots:
     void slotValueChanged(double value);
     // Evaluate a script file
     bool evaluate(QString filepath);
     // Execute a particular function
-    bool execute(QString function); 
+    bool execute(QString function);
     // Execute a particular function with a data string (e.g. a device ID)
     bool execute(QString function, QString data);
     // Execute a particular function with a data buffer (e.g. a SysEx message)
@@ -73,38 +82,39 @@ public slots:
     void loadScriptFiles(QList<QString> scriptFileNames);
     void initializeScripts(QList<QString> scriptFunctionPrefixes);
     void gracefulShutdown(QList<QString> scriptFunctionPrefixes);
-    
-signals:
+
+  signals:
     void initialized();
     void resetController();
 
-protected:
+  protected:
     void run();
     void timerEvent(QTimerEvent *event);
 
-private slots:
+  private slots:
     void errorDialogButton(QString key, QMessageBox::StandardButton button);
-    
-private:
+
+  private:
     // Only call these with the scriptEngineLock
     bool safeEvaluate(QString scriptName, QList<QString> scriptPaths);
     bool internalExecute(QString scriptCode);
     bool safeExecute(QString function);
     bool safeExecute(QString function, QString data);
     bool safeExecute(QString function, const unsigned char data[], unsigned int length);
-    bool safeExecute(QString function, char channel, 
+    bool safeExecute(QString function, char channel,
                      char control, char value, MidiStatusByte status, QString group);
     void initializeScriptEngine();
-    
+
     void scriptErrorDialog(QString detailedError);
     void generateScriptFunctions(QString code);
     bool checkException();
     void stopAllTimers();
 
     ControlObjectThread* getControlObjectThread(QString group, QString name);
-        
+
     MidiDevice* m_pMidiDevice;
     bool m_midiDebug;
+    bool m_midiPopups;
     QMultiHash<ConfigKey, QString> m_connectedControls;
     QScriptEngine *m_pEngine;
     QStringList m_scriptFunctions;
@@ -112,10 +122,11 @@ private:
     QMutex m_scriptEngineLock;
     QHash<ConfigKey, ControlObjectThread*> m_controlCache;
     QHash<int, QPair<QString, bool> > m_timers;
-    
+    SoftTakeover m_st;
+
     // Scratching functions & variables
     void scratchProcess(int timerId);
-    
+
     // 256 (default) available virtual decks is enough I would think.
     //  If more are needed at run-time, these will move to the heap automatically
     QVarLengthArray <int> m_intervalAccumulator;

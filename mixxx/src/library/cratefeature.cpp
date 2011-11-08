@@ -17,11 +17,13 @@
 #include "widget/wlibrarysidebar.h"
 #include "mixxxkeyboard.h"
 #include "treeitem.h"
+#include "soundsourceproxy.h"
 
 CrateFeature::CrateFeature(QObject* parent,
-                           TrackCollection* pTrackCollection)
+                           TrackCollection* pTrackCollection, ConfigObject<ConfigValue>* pConfig)
         : m_pTrackCollection(pTrackCollection),
           m_crateListTableModel(this, pTrackCollection->getDatabase()),
+          m_pConfig(pConfig),
           m_crateTableModel(this, pTrackCollection) {
     m_pCreateCrateAction = new QAction(tr("New Crate"),this);
     connect(m_pCreateCrateAction, SIGNAL(triggered()),
@@ -39,9 +41,12 @@ CrateFeature::CrateFeature(QObject* parent,
     connect(m_pLockCrateAction, SIGNAL(triggered()),
             this, SLOT(slotToggleCrateLock()));
 
-    m_pImportPlaylistAction = new QAction(tr("Import Playlist"),this);
+    m_pImportPlaylistAction = new QAction(tr("Import Crate"),this);
     connect(m_pImportPlaylistAction, SIGNAL(triggered()),
             this, SLOT(slotImportPlaylist()));
+    m_pExportPlaylistAction = new QAction(tr("Export Crate"), this);
+    connect(m_pExportPlaylistAction, SIGNAL(triggered()),
+            this, SLOT(slotExportPlaylist()));
 
     m_crateListTableModel.setTable("crates");
     m_crateListTableModel.setSort(m_crateListTableModel.fieldIndex("name"),
@@ -83,14 +88,10 @@ bool CrateFeature::dropAcceptChild(const QModelIndex& index, QUrl url) {
     //XXX: See the comment in PlaylistFeature::dropAcceptChild() about
     //     QUrl::toLocalFile() vs. QUrl::toString() usage.
     QFileInfo file(url.toLocalFile());
-    QString trackLocation = file.absoluteFilePath();
 
-    int trackId = m_pTrackCollection->getTrackDAO().getTrackId(trackLocation);
-    //If the track wasn't found in the database, add it to the DB first.
-    if (trackId <= 0)
-    {
-        trackId = m_pTrackCollection->getTrackDAO().addTrack(trackLocation);
-    }
+    // Adds track, does not insert duplicates, handles unremoving logic.
+    int trackId = m_pTrackCollection->getTrackDAO().addTrack(file, true);
+
     qDebug() << "CrateFeature::dropAcceptChild adding track"
              << trackId << "to crate" << crateId;
 
@@ -111,7 +112,10 @@ bool CrateFeature::dragMoveAcceptChild(const QModelIndex& index, QUrl url) {
     CrateDAO& crateDao = m_pTrackCollection->getCrateDAO();
     int crateId = crateDao.getCrateIdByName(crateName);
     bool locked = crateDao.isCrateLocked(crateId);
-    return !locked;
+
+    QFileInfo file(url.toLocalFile());
+    bool formatSupported = SoundSourceProxy::isFilenameSupported(file.fileName());
+    return !locked && formatSupported;
 }
 
 void CrateFeature::bindWidget(WLibrarySidebar* sidebarWidget,
@@ -171,6 +175,7 @@ void CrateFeature::onRightClickChild(const QPoint& globalPos, QModelIndex index)
     menu.addAction(m_pLockCrateAction);
     menu.addSeparator();
     menu.addAction(m_pImportPlaylistAction);
+    menu.addAction(m_pExportPlaylistAction);
     menu.exec(globalPos);
 }
 
@@ -233,7 +238,7 @@ void CrateFeature::slotCreateCrate() {
 
 void CrateFeature::slotDeleteCrate() {
     QString crateName = m_lastRightClickedIndex.data().toString();
-    CrateDAO crateDao = m_pTrackCollection->getCrateDAO();
+    CrateDAO &crateDao = m_pTrackCollection->getCrateDAO();
     int crateId = crateDao.getCrateIdByName(crateName);
     bool locked = crateDao.isCrateLocked(crateId);
 
@@ -256,7 +261,7 @@ void CrateFeature::slotDeleteCrate() {
 
 void CrateFeature::slotRenameCrate() {
     QString oldName = m_lastRightClickedIndex.data().toString();
-    CrateDAO crateDao = m_pTrackCollection->getCrateDAO();
+    CrateDAO &crateDao = m_pTrackCollection->getCrateDAO();
     int crateId = crateDao.getCrateIdByName(oldName);
     bool locked = crateDao.isCrateLocked(crateId);
 
@@ -339,7 +344,7 @@ void CrateFeature::constructChildModel()
     int idColumn = m_crateListTableModel.record().indexOf("id");
     //Access the invisible root item
     TreeItem* root = m_childModel.getItem(QModelIndex());
-    CrateDAO crateDao = m_pTrackCollection->getCrateDAO();
+    CrateDAO &crateDao = m_pTrackCollection->getCrateDAO();
 
     for (int row = 0; row < m_crateListTableModel.rowCount(); ++row) {
             QModelIndex ind = m_crateListTableModel.index(row, nameColumn);
@@ -394,10 +399,12 @@ void CrateFeature::slotImportPlaylist()
     }
 
     QList<QString> entries = playlist_parser->parse(playlist_file);
+    //qDebug() << "Size of Imported Playlist: " << entries.size();
 
     //Iterate over the List that holds URLs of playlist entires
     for (int i = 0; i < entries.size(); ++i) {
         m_crateTableModel.addTrack(QModelIndex(), entries[i]);
+        //qDebug() << "Playlist entry: " << entries[i];
 
     }
 
@@ -405,4 +412,42 @@ void CrateFeature::slotImportPlaylist()
     if(playlist_parser)
         delete playlist_parser;
 }
+void CrateFeature::onLazyChildExpandation(const QModelIndex &index){
+    //Nothing to do because the childmodel is not of lazy nature.
+}
+void CrateFeature::slotExportPlaylist(){
+    qDebug() << "Export playlist" << m_lastRightClickedIndex.data();
+    QString file_location = QFileDialog::getSaveFileName(NULL,
+                                        tr("Export Playlist"),
+                                        QDesktopServices::storageLocation(QDesktopServices::MusicLocation),
+                                        tr("M3U Playlist (*.m3u);;PLS Playlist (*.pls)"));
+    //Exit method if user cancelled the open dialog.
+    if(file_location.isNull() || file_location.isEmpty()) return;
+    //create and populate a list of files of the playlist
+    QList<QString> playlist_items;
+    int rows = m_crateTableModel.rowCount();
+    for (int i = 0; i < rows; ++i) {
+        QModelIndex index = m_crateTableModel.index(i, 0);
+        playlist_items << m_crateTableModel.getTrackLocation(index);
+    }
+    //check config if relative paths are desired
+    bool useRelativePath = (bool)m_pConfig->getValueString(ConfigKey("[Library]","UseRelativePathOnExport")).toInt();
 
+    if(file_location.endsWith(".m3u", Qt::CaseInsensitive))
+    {
+        ParserM3u::writeM3UFile(file_location, playlist_items, useRelativePath);
+    }
+    else if(file_location.endsWith(".pls", Qt::CaseInsensitive))
+    {
+        ParserPls::writePLSFile(file_location,playlist_items, useRelativePath);
+    }
+    else
+    {
+        //default export to M3U if file extension is missing
+
+        qDebug() << "Crate export: No file extension specified. Appending .m3u "
+                 << "and exporting to M3U.";
+        file_location.append(".m3u");
+        ParserM3u::writeM3UFile(file_location, playlist_items, useRelativePath);
+    }
+}

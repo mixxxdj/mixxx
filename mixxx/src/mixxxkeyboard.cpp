@@ -30,6 +30,8 @@ MixxxKeyboard::MixxxKeyboard(ConfigObject<ConfigValueKbd> * pKbdConfigObject, QO
 
 MixxxKeyboard::~MixxxKeyboard()
 {
+   // TODO(XXX) ugly workaround to get no leak
+   delete m_pKbdConfigObject;
 }
 
 bool MixxxKeyboard::eventFilter(QObject *, QEvent * e)
@@ -95,7 +97,7 @@ bool MixxxKeyboard::kbdPress(QKeySequence k, bool release, bool autoRepeat)
         {
             if (release) {
                 //qDebug() << "Sending MIDI NOTE_OFF";
-                ControlObject::getControl(*pConfigKey)->queueFromMidi(NOTE_OFF, 1);
+                ControlObject::getControl(*pConfigKey)->queueFromMidi(NOTE_OFF, 0);
             }
             else
             {
@@ -109,23 +111,28 @@ bool MixxxKeyboard::kbdPress(QKeySequence k, bool release, bool autoRepeat)
 
 QKeySequence MixxxKeyboard::getKeySeq(QKeyEvent * e)
 {
-    //XXX: If you want Mixxx to handle multiple modifiers,
-    //     eg. Ctrl+Alt+G, then you'll need to change the
-    //     code below a bit.
-    QKeySequence s;
-    int modifier = (int)e->modifiers() & Qt::ShiftModifier;
-    if ((e->modifiers() & Qt::ShiftModifier) > 0)
-        s = QKeySequence("Shift+" + e->text());
-    else if ((e->modifiers() & Qt::ControlModifier) > 0)
-        s = QKeySequence("Ctrl+" + e->text());
-    else if ((e->modifiers() & Qt::AltModifier) > 0)
-        s = QKeySequence("Alt+" + e->text());
-    else
-        s = QKeySequence(e->key());
+    QString modseq = QString::null;
+	QString keyseq = QString::null;
 
-    //qDebug() << "keyboard press: " << s;
-    return s;
 
+	if (e->modifiers() & Qt::ShiftModifier)
+               modseq += "Shift+";
+
+	if (e->modifiers() & Qt::ControlModifier)
+		modseq += "Ctrl+";
+
+	if (e->modifiers() & Qt::AltModifier)
+		modseq += "Alt+";
+
+	if (e->modifiers() & Qt::MetaModifier)
+		modseq += "Meta+";
+
+	keyseq = (QString)QKeySequence(e->key());
+
+	QString seq = modseq + keyseq;
+	QKeySequence k = QKeySequence(seq);
+	//qDebug() << "keyboard press: " << k;
+	return k;
 }
 
 ConfigObject<ConfigValueKbd>* MixxxKeyboard::getKeyboardConfig() {

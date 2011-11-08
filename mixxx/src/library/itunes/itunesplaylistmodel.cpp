@@ -1,69 +1,83 @@
 #include <QtCore>
 #include <QtGui>
 #include <QtSql>
+
 #include "library/trackcollection.h"
 #include "library/itunes/itunesplaylistmodel.h"
-
-#include "mixxxutils.cpp"
+#include "track/beatfactory.h"
+#include "track/beats.h"
 
 ITunesPlaylistModel::ITunesPlaylistModel(QObject* parent,
                                          TrackCollection* pTrackCollection)
-        : TrackModel(pTrackCollection->getDatabase(),
-                     "mixxx.db.model.itunes_playlist"),
-          BaseSqlTableModel(parent, pTrackCollection, pTrackCollection->getDatabase()),
+        : BaseSqlTableModel(parent, pTrackCollection,
+                            pTrackCollection->getDatabase(),
+                            "mixxx.db.model.itunes_playlist"),
           m_pTrackCollection(pTrackCollection),
-          m_database(m_pTrackCollection->getDatabase())
-{
-    connect(this, SIGNAL(doSearch(const QString&)), this, SLOT(slotSearch(const QString&)));
-    setCaching(false);
+          m_database(m_pTrackCollection->getDatabase()) {
+    connect(this, SIGNAL(doSearch(const QString&)),
+            this, SLOT(slotSearch(const QString&)));
 }
 
 ITunesPlaylistModel::~ITunesPlaylistModel() {
 }
 
-bool ITunesPlaylistModel::addTrack(const QModelIndex& index, QString location)
-{
-
-    return false;
-}
-
 TrackPointer ITunesPlaylistModel::getTrack(const QModelIndex& index) const
 {
-    QString artist = index.sibling(index.row(), fieldIndex("artist")).data().toString();
-    QString title = index.sibling(index.row(), fieldIndex("title")).data().toString();
-    QString album = index.sibling(index.row(), fieldIndex("album")).data().toString();
-    QString year = index.sibling(index.row(), fieldIndex("year")).data().toString();
-    QString genre = index.sibling(index.row(), fieldIndex("genre")).data().toString();
-    float bpm = index.sibling(index.row(), fieldIndex("bpm")).data().toString().toFloat();
+    QString artist = index.sibling(
+        index.row(), fieldIndex("artist")).data().toString();
+    QString title = index.sibling(
+        index.row(), fieldIndex("title")).data().toString();
+    QString album = index.sibling(
+        index.row(), fieldIndex("album")).data().toString();
+    QString year = index.sibling(
+        index.row(), fieldIndex("year")).data().toString();
+    QString genre = index.sibling(
+        index.row(), fieldIndex("genre")).data().toString();
+    float bpm = index.sibling(
+        index.row(), fieldIndex("bpm")).data().toString().toFloat();
+    QString location = index.sibling(
+        index.row(), fieldIndex("location")).data().toString();
 
-    QString location = index.sibling(index.row(), fieldIndex("location")).data().toString();
+    if (location.isEmpty()) {
+        // Track is lost
+        return TrackPointer();
+    }
 
-    TrackInfoObject* pTrack = new TrackInfoObject(location);
-    pTrack->setArtist(artist);
-    pTrack->setTitle(title);
-    pTrack->setAlbum(album);
-    pTrack->setYear(year);
-    pTrack->setGenre(genre);
-    pTrack->setBpm(bpm);
+    TrackDAO& track_dao = m_pTrackCollection->getTrackDAO();
+    int track_id = track_dao.getTrackId(location);
+    bool track_already_in_library = track_id >= 0;
+    if (track_id < 0) {
+        // Add Track to library
+        track_id = track_dao.addTrack(location, true);
+    }
 
-    return TrackPointer(pTrack, &QObject::deleteLater);
-}
+    TrackPointer pTrack;
 
-QString ITunesPlaylistModel::getTrackLocation(const QModelIndex& index) const {
-    QString location = index.sibling(index.row(), fieldIndex("location")).data().toString();
-    return location;
-}
+    if (track_id < 0) {
+        // Add Track to library failed, create a transient TrackInfoObject
+        pTrack = TrackPointer(new TrackInfoObject(location), &QObject::deleteLater);
+    } else {
+        pTrack = track_dao.getTrack(track_id);
+    }
 
-void ITunesPlaylistModel::removeTrack(const QModelIndex& index) {
+    // If this track was not in the Mixxx library it is now added and will be
+    // saved with the metadata from iTunes. If it was already in the library
+    // then we do not touch it so that we do not over-write the user's metadata.
+    if (!track_already_in_library) {
+        pTrack->setArtist(artist);
+        pTrack->setTitle(title);
+        pTrack->setAlbum(album);
+        pTrack->setYear(year);
+        pTrack->setGenre(genre);
+        pTrack->setBpm(bpm);
 
-}
-
-void ITunesPlaylistModel::removeTracks(const QModelIndexList& indices) {
-
-}
-
-void ITunesPlaylistModel::moveTrack(const QModelIndex& sourceIndex, const QModelIndex& destIndex) {
-
+        // If the track has a BPM, then give it a static beatgrid.
+        if (bpm > 0) {
+            BeatsPointer pBeats = BeatFactory::makeBeatGrid(pTrack, bpm, 0);
+            pTrack->setBeats(pBeats);
+        }
+    }
+    return pTrack;
 }
 
 void ITunesPlaylistModel::search(const QString& searchText) {
@@ -73,66 +87,14 @@ void ITunesPlaylistModel::search(const QString& searchText) {
 }
 
 void ITunesPlaylistModel::slotSearch(const QString& searchText) {
-    if (!m_currentSearch.isNull() && m_currentSearch == searchText)
-        return;
-    m_currentSearch = searchText;
-
-    QString filter;
-    QSqlField search("search", QVariant::String);
-    search.setValue("%" + searchText + "%");
-    QString escapedText = database().driver()->formatValue(search);
-    filter = "(artist LIKE " + escapedText + " OR " +
-            "album LIKE " + escapedText + " OR " +
-            "title  LIKE " + escapedText + ")";
-    setFilter(filter);
-}
-
-const QString ITunesPlaylistModel::currentSearch() {
-    return m_currentSearch;
+    BaseSqlTableModel::search(searchText);
 }
 
 bool ITunesPlaylistModel::isColumnInternal(int column) {
-    if (column == fieldIndex(LIBRARYTABLE_ID) ||
-        column == fieldIndex(LIBRARYTABLE_MIXXXDELETED) ||
-        column == fieldIndex(TRACKLOCATIONSTABLE_FSDELETED) ||
-        column == fieldIndex("name") ||
-        column == fieldIndex("track_id"))
+    if (column == fieldIndex("track_id")) {
         return true;
-    return false;
-}
-
-QMimeData* ITunesPlaylistModel::mimeData(const QModelIndexList &indexes) const {
-    QMimeData *mimeData = new QMimeData();
-    QList<QUrl> urls;
-
-    //Ok, so the list of indexes we're given contains separates indexes for
-    //each column, so even if only one row is selected, we'll have like 7 indexes.
-    //We need to only count each row once:
-    QList<int> rows;
-
-    foreach (QModelIndex index, indexes) {
-        if (index.isValid()) {
-            if (!rows.contains(index.row())) {
-                rows.push_back(index.row());
-                QUrl url = QUrl::fromLocalFile(getTrackLocation(index));
-                if (!url.isValid())
-                    qDebug() << "ERROR invalid url\n";
-                else
-                    urls.append(url);
-            }
-        }
     }
-    mimeData->setUrls(urls);
-    return mimeData;
-}
-
-
-QItemDelegate* ITunesPlaylistModel::delegateForColumn(const int i) {
-    return NULL;
-}
-
-TrackModel::CapabilitiesFlags ITunesPlaylistModel::getCapabilities() const {
-    return TRACKMODELCAPS_NONE;
+    return false;
 }
 
 Qt::ItemFlags ITunesPlaylistModel::flags(const QModelIndex &index) const {
@@ -142,68 +104,67 @@ Qt::ItemFlags ITunesPlaylistModel::flags(const QModelIndex &index) const {
 void ITunesPlaylistModel::setPlaylist(QString playlist_path) {
     int playlistId = -1;
     QSqlQuery finder_query(m_database);
-    finder_query.prepare("SELECT id from itunes_playlists where name='"+playlist_path+"'");
+    finder_query.prepare(
+        "SELECT id from itunes_playlists where name='"+playlist_path+"'");
 
-    if(finder_query.exec()){
-        while (finder_query.next()) {
-            playlistId = finder_query.value(finder_query.record().indexOf("id")).toInt();
-        }
+    if (!finder_query.exec()) {
+        qDebug() << "SQL Error in ITunesPlaylistModel.cpp: line" << __LINE__
+                 << " " << finder_query.lastError();
+        return;
     }
-    else
-        qDebug() << "SQL Error in ITunesPlaylistModel.cpp: line" << __LINE__ << " " << finder_query.lastError();
 
+    while (finder_query.next()) {
+        playlistId = finder_query.value(
+            finder_query.record().indexOf("id")).toInt();
+    }
 
     QString playlistID = "ITunesPlaylist_" + QString("%1").arg(playlistId);
-    //Escape the playlist name
+    // Escape the playlist name
     QSqlDriver* driver = m_pTrackCollection->getDatabase().driver();
     QSqlField playlistNameField("name", QVariant::String);
     playlistNameField.setValue(playlistID);
 
-    QSqlQuery query(m_database);
-    query.prepare("CREATE TEMPORARY VIEW IF NOT EXISTS "+ driver->formatValue(playlistNameField) + " AS "
-                  "SELECT "
-                  "itunes_library.id,"
-                  "itunes_library.artist,"
-                  "itunes_library.title,"
-                  "itunes_library.album,"
-                  "itunes_library.year,"
-                  "itunes_library.genre,"
-                  "itunes_library.tracknumber,"
-                  "itunes_library.location,"
-                  "itunes_library.comment,"
-                  "itunes_library.rating,"
-                  "itunes_library.duration,"
-                  "itunes_library.bitrate,"
-                  "itunes_library.bpm,"
-                  "itunes_playlist_tracks.track_id, "
-                  "itunes_playlists.name "
-                  "FROM itunes_library "
-                  "INNER JOIN itunes_playlist_tracks "
-                  "ON itunes_playlist_tracks.track_id = itunes_library.id "
-                  "INNER JOIN itunes_playlists "
-                  "ON itunes_playlist_tracks.playlist_id = itunes_playlists.id "
-                  "where itunes_playlists.name='"+playlist_path+"'"
-                  );
+    QStringList columns;
+    columns << "track_id";
+    columns << "position";
 
+    QSqlQuery query(m_database);
+    QString queryString = QString(
+        "CREATE TEMPORARY VIEW IF NOT EXISTS %1 AS "
+        "SELECT %2 FROM %3 WHERE playlist_id = %4")
+            .arg(driver->formatValue(playlistNameField))
+            .arg(columns.join(","))
+            .arg("itunes_playlist_tracks")
+            .arg(playlistId);
+    query.prepare(queryString);
 
     if (!query.exec()) {
-
-        qDebug() << "Error creating temporary view for itunes playlists. ITunesPlaylistModel --> line: " << __LINE__ << " " << query.lastError();
-        qDebug() << "Executed Query: " <<  query.executedQuery();
+        qDebug() << "Error creating temporary view for itunes playlists."
+                 << "ITunesPlaylistModel --> line: " << __LINE__
+                 << query.lastError();
+        qDebug() << "Executed Query: " << query.executedQuery();
         return;
     }
-    setTable(playlistID);
 
-    //removeColumn(fieldIndex("track_id"));
-    //removeColumn(fieldIndex("name"));
-    //removeColumn(fieldIndex("id"));
-
-    slotSearch("");
-
-    select(); //Populate the data model.
+    setTable(playlistID, columns[0], columns,
+             m_pTrackCollection->getTrackSource("itunes"));
+    setDefaultSort(fieldIndex("position"), Qt::AscendingOrder);
     initHeaderData();
+    setSearch("");
 }
 
 bool ITunesPlaylistModel::isColumnHiddenByDefault(int column) {
-    return false;
+   Q_UNUSED(column);
+   return false;
 }
+
+TrackModel::CapabilitiesFlags ITunesPlaylistModel::getCapabilities() const {
+    // See src/library/trackmodel.h for the list of TRACKMODELCAPS
+    return TRACKMODELCAPS_NONE
+            | TRACKMODELCAPS_ADDTOPLAYLIST
+            | TRACKMODELCAPS_ADDTOCRATE
+            | TRACKMODELCAPS_ADDTOAUTODJ
+            | TRACKMODELCAPS_LOADTODECK
+            | TRACKMODELCAPS_LOADTOSAMPLER;
+}
+

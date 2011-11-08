@@ -10,17 +10,15 @@
 
 class TrackCollection;
 
-class LibraryTableModel : public BaseSqlTableModel, public virtual TrackModel
-{
+class LibraryTableModel : public BaseSqlTableModel {
     Q_OBJECT
   public:
-    LibraryTableModel(QObject* parent, TrackCollection* pTrackCollection);
+    LibraryTableModel(QObject* parent, TrackCollection* pTrackCollection,
+                      QString settingsNamespace="mixxx.db.model.library");
     virtual ~LibraryTableModel();
 
     virtual TrackPointer getTrack(const QModelIndex& index) const;
-    virtual QString getTrackLocation(const QModelIndex& index) const;
     virtual void search(const QString& searchText);
-    virtual const QString currentSearch();
     virtual bool isColumnInternal(int column);
     virtual bool isColumnHiddenByDefault(int column);
     virtual void removeTrack(const QModelIndex& index);
@@ -29,8 +27,6 @@ class LibraryTableModel : public BaseSqlTableModel, public virtual TrackModel
     virtual void moveTrack(const QModelIndex& sourceIndex,
                            const QModelIndex& destIndex);
 
-
-    QMimeData* mimeData(const QModelIndexList &indexes) const;
     QItemDelegate* delegateForColumn(const int i);
     TrackModel::CapabilitiesFlags getCapabilities() const;
     static const QString DEFAULT_LIBRARYFILTER;
@@ -40,11 +36,9 @@ class LibraryTableModel : public BaseSqlTableModel, public virtual TrackModel
 
   private slots:
     void slotSearch(const QString& searchText);
+
   signals:
     void doSearch(const QString& searchText);
-
-  protected:
-    QString m_currentSearch;
 };
 
 #endif

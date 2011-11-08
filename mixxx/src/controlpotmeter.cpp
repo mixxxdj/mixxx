@@ -31,12 +31,30 @@ ControlPotmeter::ControlPotmeter(ConfigKey key, double dMinValue, double dMaxVal
 {
     setRange(dMinValue,dMaxValue);
     setStep(m_dValueRange/10.f);
+    setSmallStep(m_dValueRange/100.f);
 
-    ControlPushButton * p;
-    p = new ControlPushButton(ConfigKey(key.group, QString(key.item)+"_up"));
-    connect(p, SIGNAL(valueChanged(double)), this, SLOT(incValue(double)));
-    p = new ControlPushButton(ConfigKey(key.group, QString(key.item)+"_down"));
-    connect(p, SIGNAL(valueChanged(double)), this, SLOT(decValue(double)));
+    // These controls are deleted when this ControlPotmeter is since we set
+    // their parent as this.
+    ControlPushButton* controlUp = new ControlPushButton(
+        ConfigKey(key.group, QString(key.item)+"_up"));
+    controlUp->setParent(this);
+    connect(controlUp, SIGNAL(valueChanged(double)),
+            this, SLOT(incValue(double)));
+    ControlPushButton* controlDown = new ControlPushButton(
+        ConfigKey(key.group, QString(key.item)+"_down"));
+    controlDown->setParent(this);
+    connect(controlDown, SIGNAL(valueChanged(double)),
+            this, SLOT(decValue(double)));
+    ControlPushButton* controlUpSmall = new ControlPushButton(
+        ConfigKey(key.group, QString(key.item)+"_up_small"));
+    controlUpSmall->setParent(this);
+    connect(controlUpSmall, SIGNAL(valueChanged(double)),
+            this, SLOT(incSmallValue(double)));
+    ControlPushButton* controlDownSmall = new ControlPushButton(
+        ConfigKey(key.group, QString(key.item)+"_down_small"));
+    controlDownSmall->setParent(this);
+    connect(controlDownSmall, SIGNAL(valueChanged(double)),
+            this, SLOT(decSmallValue(double)));
 }
 
 ControlPotmeter::~ControlPotmeter()
@@ -56,6 +74,11 @@ double ControlPotmeter::getMax()
 void ControlPotmeter::setStep(double dValue)
 {
     m_dStep = dValue;
+}
+
+void ControlPotmeter::setSmallStep(double dValue)
+{
+    m_dSmallStep = dValue;
 }
 
 void ControlPotmeter::setRange(double dMinValue, double dMaxValue)
@@ -120,10 +143,9 @@ void ControlPotmeter::incValue(double keypos)
 {
     if (keypos>0)
     {
-        if (m_dValue+m_dStep>m_dMaxValue)
+        m_dValue += m_dStep;
+        if (m_dValue > m_dMaxValue)
             m_dValue = m_dMaxValue;
-        else
-            m_dValue += m_dStep;
         emit(valueChanged(m_dValue));
 
         // incValue will be activated by assosiated _up or _down ControlObject, and thus it is safe to update all proxies.
@@ -135,14 +157,40 @@ void ControlPotmeter::decValue(double keypos)
 {
     if (keypos>0)
     {
-        if (m_dValue-m_dStep<m_dMinValue)
+        m_dValue -= m_dStep;
+        if (m_dValue < m_dMinValue)
             m_dValue = m_dMinValue;
-        else
-            m_dValue -= m_dStep;
         emit(valueChanged(m_dValue));
 
-        // incValue will be activated by assosiated _up or _down ControlObject, and thus it is safe to update all proxies.
+        // decValue will be activated by assosiated _up or _down ControlObject, and thus it is safe to update all proxies.
         updateProxies(0);
     }
 }
 
+void ControlPotmeter::incSmallValue(double keypos)
+{
+    if (keypos>0)
+    {
+        m_dValue += m_dSmallStep;
+        if (m_dValue > m_dMaxValue)
+            m_dValue = m_dMaxValue;
+        emit(valueChanged(m_dValue));
+
+        // incSmallValue will be activated by assosiated _up_small or _down_small ControlObject, and thus it is safe to update all proxies.
+        updateProxies(0);
+    }
+}
+
+void ControlPotmeter::decSmallValue(double keypos)
+{
+    if (keypos>0)
+    {
+        m_dValue -= m_dSmallStep;
+        if (m_dValue < m_dMinValue)
+            m_dValue = m_dMinValue;
+        emit(valueChanged(m_dValue));
+
+        // decSmallValue will be activated by assosiated _up_small or _down_small ControlObject, and thus it is safe to update all proxies.
+        updateProxies(0);
+    }
+}

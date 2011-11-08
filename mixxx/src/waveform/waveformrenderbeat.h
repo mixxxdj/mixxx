@@ -12,40 +12,42 @@ class QDomNode;
 class QPainter;
 class QPaintEvent;
 
-
 class ControlObjectThreadMain;
 class WaveformRenderer;
 class SoundSourceProxy;
 
 class WaveformRenderBeat : public RenderObject {
     Q_OBJECT
-public:
+  public:
     WaveformRenderBeat(const char *group, WaveformRenderer *parent);
+    virtual ~WaveformRenderBeat();
+
     void resize(int w, int h);
     void setup(QDomNode node);
-    void draw(QPainter *pPainter, QPaintEvent *event, QVector<float> *buffer, double playPos, double rateAdjust);
+    void draw(QPainter *pPainter, QPaintEvent *event, QVector<float> *buffer,
+              double playPos, double rateAdjust);
     void newTrack(TrackPointer pTrack);
 
-public slots:
-    void slotUpdateBpm(double bpm);
-    void slotUpdateBeatFirst(double beatfirst);
+  private slots:
     void slotUpdateTrackSamples(double samples);
-private:
+    void slotUpdateBeatActive(double beatActive);
+    void slotUpdateTrackSampleRate(double sampleRate);
+
+  private:
     WaveformRenderer *m_pParent;
-    ControlObjectThreadMain *m_pBpm;
-    ControlObjectThreadMain *m_pBeatFirst;
-    ControlObjectThreadMain *m_pTrackSamples;
+    ControlObjectThreadMain* m_pTrackSamples;
+    ControlObjectThreadMain *m_pTrackSampleRate;
+    ControlObjectThreadMain* m_pBeatActive;
     TrackPointer m_pTrack;
     int m_iWidth, m_iHeight;
-    double m_dBpm;
-    double m_dBeatFirst;
     QColor colorMarks;
     QColor colorHighlight;
     double m_dSamplesPerPixel;
     double m_dSamplesPerDownsample;
-    double m_dBeatLength;
     int m_iNumSamples;
     int m_iSampleRate;
+    bool m_bBeatActive;
+    BeatList m_beatList;
 };
 
 #endif

@@ -9,9 +9,10 @@
 #include "library/sidebarmodel.h"
 #include "library/trackcollection.h"
 #include "library/trackmodel.h"
-#include "library/browsefeature.h"
+#include "library/browse/browsefeature.h"
 #include "library/cratefeature.h"
 #include "library/rhythmbox/rhythmboxfeature.h"
+#include "library/recording/recordingfeature.h"
 #include "library/itunes/itunesfeature.h"
 #include "library/mixxxlibraryfeature.h"
 #include "library/autodjfeature.h"
@@ -19,44 +20,46 @@
 #include "library/preparefeature.h"
 #include "library/promotracksfeature.h"
 #include "library/traktor/traktorfeature.h"
+#include "library/librarycontrol.h"
 
 #include "widget/wtracktableview.h"
 #include "widget/wlibrary.h"
 #include "widget/wlibrarysidebar.h"
 
 #include "mixxxkeyboard.h"
-#include "librarymidicontrol.h"
-
 
 // This is is the name which we use to register the WTrackTableView with the
 // WLibrary
 const QString Library::m_sTrackViewName = QString("WTrackTableView");
 
-Library::Library(QObject* parent, ConfigObject<ConfigValue>* pConfig, bool firstRun)
-    : m_pConfig(pConfig) {
+Library::Library(QObject* parent, ConfigObject<ConfigValue>* pConfig, bool firstRun,
+                 RecordingManager* pRecordingManager)
+    : m_pConfig(pConfig),
+      m_pRecordingManager(pRecordingManager) {
     m_pTrackCollection = new TrackCollection(pConfig);
     m_pSidebarModel = new SidebarModel(parent);
-    m_pLibraryMIDIControl = NULL;  //Initialized in bindWidgets
-
+    m_pLibraryControl = new LibraryControl(this);
 
     // TODO(rryan) -- turn this construction / adding of features into a static
     // method or something -- CreateDefaultLibrary
     m_pMixxxLibraryFeature = new MixxxLibraryFeature(this, m_pTrackCollection);
     addFeature(m_pMixxxLibraryFeature);
-    if(PromoTracksFeature::isSupported(m_pConfig)) {
+    if (PromoTracksFeature::isSupported(m_pConfig)) {
         m_pPromoTracksFeature = new PromoTracksFeature(this, pConfig,
                                                        m_pTrackCollection,
                                                        firstRun);
         addFeature(m_pPromoTracksFeature);
-    }
-    else
+    } else {
         m_pPromoTracksFeature = NULL;
+    }
+
     addFeature(new AutoDJFeature(this, pConfig, m_pTrackCollection));
-    m_pPlaylistFeature = new PlaylistFeature(this, m_pTrackCollection);
+    m_pPlaylistFeature = new PlaylistFeature(this, m_pTrackCollection, pConfig);
     addFeature(m_pPlaylistFeature);
-    m_pCrateFeature = new CrateFeature(this, m_pTrackCollection);
+    m_pCrateFeature = new CrateFeature(this, m_pTrackCollection, pConfig);
     addFeature(m_pCrateFeature);
-    addFeature(new BrowseFeature(this, pConfig, m_pTrackCollection));
+    addFeature(new BrowseFeature(this, pConfig, m_pTrackCollection, m_pRecordingManager));
+    addFeature(new RecordingFeature(this, pConfig, m_pTrackCollection, m_pRecordingManager));
     addFeature(new PrepareFeature(this, pConfig, m_pTrackCollection));
     //iTunes and Rhythmbox should be last until we no longer have an obnoxious
     //messagebox popup when you select them. (This forces you to reach for your
@@ -70,29 +73,29 @@ Library::Library(QObject* parent, ConfigObject<ConfigValue>* pConfig, bool first
 
     //Show the promo tracks view on first run, otherwise show the library
     if (firstRun) {
-        qDebug() << "First Run, switching to PROMO view!";
+        //qDebug() << "First Run, switching to PROMO view!";
         //This doesn't trigger onShow()... argh
-        m_pSidebarModel->setDefaultSelection(1);
+        //m_pSidebarModel->setDefaultSelection(1);
         //slotSwitchToView(tr("Bundled Songs"));
         //Note the promo tracks item has index=1... hardcoded hack. :/
     }
 }
 
 Library::~Library() {
-    delete m_pLibraryMIDIControl;
-    delete m_pSidebarModel;
-    //IMPORTANT: m_pTrackCollection gets destroyed via the QObject hierarchy somehow.
-    //           Qt does it for us due to the way RJ wrote all this stuff.
-    //Update:  - OR NOT! As of Dec 8, 2009, this pointer must be destroyed manually otherwise
-    // we never see the TrackCollection's destructor being called... - Albert
-    delete m_pTrackCollection;
-
     QMutableListIterator<LibraryFeature*> features_it(m_features);
     while(features_it.hasNext()) {
         LibraryFeature* feature = features_it.next();
         features_it.remove();
         delete feature;
     }
+
+    delete m_pLibraryControl;
+    delete m_pSidebarModel;
+    //IMPORTANT: m_pTrackCollection gets destroyed via the QObject hierarchy somehow.
+    //           Qt does it for us due to the way RJ wrote all this stuff.
+    //Update:  - OR NOT! As of Dec 8, 2009, this pointer must be destroyed manually otherwise
+    // we never see the TrackCollection's destructor being called... - Albert
+    delete m_pTrackCollection;
 }
 
 void Library::bindWidget(WLibrarySidebar* pSidebarWidget,
@@ -112,7 +115,7 @@ void Library::bindWidget(WLibrarySidebar* pSidebarWidget,
     connect(this, SIGNAL(switchToView(const QString&)),
             pLibraryWidget, SLOT(switchToView(const QString&)));
 
-    m_pLibraryMIDIControl = new LibraryMIDIControl(pLibraryWidget, pSidebarWidget);
+    m_pLibraryControl->bindWidget(pSidebarWidget, pLibraryWidget, pKeyboard);
 
     // Setup the sources view
     pSidebarWidget->setModel(m_pSidebarModel);
@@ -122,7 +125,7 @@ void Library::bindWidget(WLibrarySidebar* pSidebarWidget,
             m_pSidebarModel, SLOT(clicked(const QModelIndex&)));
     // Lazy model: Let triange symbol increment the model
     connect(pSidebarWidget, SIGNAL(expanded(const QModelIndex&)),
-            m_pSidebarModel, SLOT(clicked(const QModelIndex&)));
+            m_pSidebarModel, SLOT(doubleClicked(const QModelIndex&)));
 
     connect(pSidebarWidget, SIGNAL(rightClicked(const QPoint&, const QModelIndex&)),
             m_pSidebarModel, SLOT(rightClicked(const QPoint&, const QModelIndex&)));

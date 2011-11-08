@@ -72,7 +72,8 @@ MidiMapping::MidiMapping(MidiDevice* outputMidiDevice)
 }
 
 MidiMapping::~MidiMapping() {
-
+    delete m_pMidiInputMappingTableModel;
+    delete m_pMidiOutputMappingTableModel;
 }
 
 #ifdef __MIDISCRIPT__
@@ -705,7 +706,7 @@ void MidiMapping::savePreset() {
  */
 void MidiMapping::savePreset(QString path) {
     qDebug() << "Writing MIDI preset file" << path;
-    m_mappingLock.lock();
+    QMutexLocker locker(&m_mappingLock);
     QFile output(path);
     if (!output.open(QIODevice::WriteOnly | QIODevice::Truncate)) return;
     QTextStream outputstream(&output);
@@ -714,7 +715,6 @@ void MidiMapping::savePreset(QString path) {
     // Save the DOM to the XML file
     docBindings.save(outputstream, 4);
     output.close();
-    m_mappingLock.unlock();
 }
 
 /* applyPreset()
@@ -723,7 +723,7 @@ void MidiMapping::savePreset(QString path) {
  */
 void MidiMapping::applyPreset() {
     qDebug() << "MidiMapping::applyPreset()";
-    m_mappingLock.lock();
+    QMutexLocker locker(&m_mappingLock);
 
 #ifdef __MIDISCRIPT__
     // Since this can be called after re-enabling a device without reloading the XML preset,
@@ -755,7 +755,6 @@ void MidiMapping::applyPreset() {
             controller = controller.nextSiblingElement("controller");
         }
     }
-    m_mappingLock.unlock();
 }
 
 /* clearPreset()
@@ -777,7 +776,7 @@ void MidiMapping::clearPreset() {
  QDomDocument MidiMapping::buildDomElement() {
      // We should hold the mapping lock. The lock is recursive so if we already
      // hold it it will relock.
-     m_mappingLock.lock();
+     QMutexLocker locker(&m_mappingLock);
 
     clearPreset(); // Create blank document
 
@@ -859,8 +858,6 @@ void MidiMapping::clearPreset() {
         //Add the control node we just created to the XML document in the proper spot
         outputs.appendChild(outputNode);
     }
-
-    m_mappingLock.unlock();
 
     return doc;
 }
@@ -950,11 +947,11 @@ void MidiMapping::addOutput(QDomElement &output, QString device) {
 
 bool MidiMapping::addInputControl(MidiStatusByte midiStatus, int midiNo, int midiChannel,
                                   QString controlObjectGroup, QString controlObjectKey,
-                                  MidiOption midiOption)
+                                  QString controlObjectDescription, MidiOption midiOption)
 {
     return addInputControl(MidiMessage(midiStatus, midiNo, midiChannel),
                            MixxxControl(controlObjectGroup, controlObjectKey,
-                                        midiOption));
+                                        controlObjectDescription, midiOption));
 }
 
 bool MidiMapping::addInputControl(MidiMessage message, MixxxControl control)

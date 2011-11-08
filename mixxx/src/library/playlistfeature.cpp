@@ -17,18 +17,24 @@
 #include "library/playlisttablemodel.h"
 #include "mixxxkeyboard.h"
 #include "treeitem.h"
+#include "soundsourceproxy.h"
 
-PlaylistFeature::PlaylistFeature(QObject* parent, TrackCollection* pTrackCollection)
+PlaylistFeature::PlaylistFeature(QObject* parent, TrackCollection* pTrackCollection, ConfigObject<ConfigValue>* pConfig)
         : LibraryFeature(parent),
          // m_pTrackCollection(pTrackCollection),
           m_playlistDao(pTrackCollection->getPlaylistDAO()),
           m_trackDao(pTrackCollection->getTrackDAO()),
+          m_pConfig(pConfig),
           m_playlistTableModel(this, pTrackCollection->getDatabase()) {
     m_pPlaylistTableModel = new PlaylistTableModel(this, pTrackCollection);
 
     m_pCreatePlaylistAction = new QAction(tr("New Playlist"),this);
     connect(m_pCreatePlaylistAction, SIGNAL(triggered()),
             this, SLOT(slotCreatePlaylist()));
+
+    m_pAddToAutoDJAction = new QAction(tr("Add to Auto-DJ Queue"),this);
+    connect(m_pAddToAutoDJAction, SIGNAL(triggered()),
+            this, SLOT(slotAddToAutoDJ()));
 
     m_pDeletePlaylistAction = new QAction(tr("Remove"),this);
     connect(m_pDeletePlaylistAction, SIGNAL(triggered()),
@@ -45,6 +51,9 @@ PlaylistFeature::PlaylistFeature(QObject* parent, TrackCollection* pTrackCollect
     m_pImportPlaylistAction = new QAction(tr("Import Playlist"),this);
     connect(m_pImportPlaylistAction, SIGNAL(triggered()),
             this, SLOT(slotImportPlaylist()));
+    m_pExportPlaylistAction = new QAction(tr("Export Playlist"), this);
+    connect(m_pExportPlaylistAction, SIGNAL(triggered()),
+            this, SLOT(slotExportPlaylist()));
 
     // Setup the sidebar playlist model
     m_playlistTableModel.setTable("Playlists");
@@ -64,6 +73,7 @@ PlaylistFeature::~PlaylistFeature() {
     delete m_pCreatePlaylistAction;
     delete m_pDeletePlaylistAction;
     delete m_pImportPlaylistAction;
+    delete m_pAddToAutoDJAction;
     delete m_pRenamePlaylistAction;
     delete m_pLockPlaylistAction;
 }
@@ -128,11 +138,13 @@ void PlaylistFeature::onRightClickChild(const QPoint& globalPos, QModelIndex ind
     QMenu menu(NULL);
     menu.addAction(m_pCreatePlaylistAction);
     menu.addSeparator();
+    menu.addAction(m_pAddToAutoDJAction);
     menu.addAction(m_pRenamePlaylistAction);
     menu.addAction(m_pDeletePlaylistAction);
     menu.addAction(m_pLockPlaylistAction);
     menu.addSeparator();
     menu.addAction(m_pImportPlaylistAction);
+    menu.addAction(m_pExportPlaylistAction);
     menu.exec(globalPos);
 }
 
@@ -298,7 +310,6 @@ bool PlaylistFeature::dropAcceptChild(const QModelIndex& index, QUrl url) {
     // library, then add the track to the library before adding it to the
     // playlist.
     QFileInfo file(url.toLocalFile());
-    QString location = file.absoluteFilePath();
 
     // XXX: Possible WTF alert - Previously we thought we needed toString() here
     // but what you actually want in any case when converting a QUrl to a file
@@ -307,14 +318,13 @@ bool PlaylistFeature::dropAcceptChild(const QModelIndex& index, QUrl url) {
     // case. toString() absolutely does not work when you pass the result to a
     // QFileInfo. rryan 9/2010
 
-    int trackId = m_trackDao.getTrackId(location);
+    // Adds track, does not insert duplicates, handles unremoving logic.
+    int trackId = m_trackDao.addTrack(file, true);
 
-    if (trackId == -1) {
-        trackId = m_trackDao.addTrack(file);
-    }
-
-    if (trackId == -1)
+    // Do nothing if the location still isn't in the database.
+    if (trackId < 0) {
         return false;
+    }
 
     // appendTrackToPlaylist doesn't return whether it succeeded, so assume it
     // did.
@@ -333,7 +343,9 @@ bool PlaylistFeature::dragMoveAcceptChild(const QModelIndex& index, QUrl url) {
     int playlistId = m_playlistDao.getPlaylistIdFromName(playlistName);
     bool locked = m_playlistDao.isPlaylistLocked(playlistId);
 
-    return !locked;
+    QFileInfo file(url.toLocalFile());
+    bool formatSupported = SoundSourceProxy::isFilenameSupported(file.fileName());
+    return !locked && formatSupported;
 }
 
 TreeItemModel* PlaylistFeature::getChildModel() {
@@ -348,7 +360,7 @@ void PlaylistFeature::constructChildModel()
 {
     QList<TreeItem*> data_list;
     int nameColumn = m_playlistTableModel.record().indexOf("name");
-    int idColumn = m_playlistTableModel.record().indexOf("name");
+    int idColumn = m_playlistTableModel.record().indexOf("id");
 
     //Access the invisible root item
     TreeItem* root = m_childModel.getItem(QModelIndex());
@@ -415,4 +427,56 @@ void PlaylistFeature::slotImportPlaylist()
 
     //delete the parser object
     if(playlist_parser) delete playlist_parser;
+}
+void PlaylistFeature::onLazyChildExpandation(const QModelIndex &index){
+    //Nothing to do because the childmodel is not of lazy nature.
+}
+void PlaylistFeature::slotExportPlaylist(){
+    qDebug() << "Export playlist" << m_lastRightClickedIndex.data();
+    QString file_location = QFileDialog::getSaveFileName(NULL,
+                                        tr("Export Playlist"),
+                                        QDesktopServices::storageLocation(QDesktopServices::MusicLocation),
+                                        tr("M3U Playlist (*.m3u);;PLS Playlist (*.pls)"));
+    //Exit method if user cancelled the open dialog.
+    if(file_location.isNull() || file_location.isEmpty()) return;
+    //create and populate a list of files of the playlist
+    QList<QString> playlist_items;
+    int rows = m_pPlaylistTableModel->rowCount();
+    for(int i = 0; i < rows; ++i){
+        QModelIndex index = m_pPlaylistTableModel->index(i,0);
+        playlist_items << m_pPlaylistTableModel->getTrackLocation(index);
+    }
+    //check config if relative paths are desired
+    bool useRelativePath = (bool)m_pConfig->getValueString(ConfigKey("[Library]","UseRelativePathOnExport")).toInt();
+
+    if(file_location.endsWith(".m3u", Qt::CaseInsensitive))
+    {
+        ParserM3u::writeM3UFile(file_location, playlist_items, useRelativePath);
+    }
+    else if(file_location.endsWith(".pls", Qt::CaseInsensitive))
+    {
+        ParserPls::writePLSFile(file_location,playlist_items, useRelativePath);
+    }
+    else
+    {
+        //default export to M3U if file extension is missing
+
+        qDebug() << "Playlist export: No file extension specified. Appending .m3u "
+                 << "and exporting to M3U.";
+        file_location.append(".m3u");
+        ParserM3u::writeM3UFile(file_location, playlist_items, useRelativePath);
+    }
+
+}
+void PlaylistFeature::slotAddToAutoDJ() {
+    //qDebug() << "slotAddToAutoDJ() row:" << m_lastRightClickedIndex.data();
+
+    if (m_lastRightClickedIndex.isValid()) {
+        int playlistId = m_playlistDao.getPlaylistIdFromName(
+            m_lastRightClickedIndex.data().toString());
+        if (playlistId >= 0) {
+            m_playlistDao.addToAutoDJQueue(playlistId);
+        }
+    }
+    emit(featureUpdated());
 }

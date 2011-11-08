@@ -1,39 +1,34 @@
 #include <QtCore>
 #include <QtGui>
 #include <QtSql>
+
 #include "library/trackcollection.h"
 #include "library/traktor/traktortablemodel.h"
-
-#include "mixxxutils.cpp"
+#include "track/beatfactory.h"
+#include "track/beats.h"
 
 TraktorTableModel::TraktorTableModel(QObject* parent,
-                                       TrackCollection* pTrackCollection)
-        : TrackModel(pTrackCollection->getDatabase(),
-                     "mixxx.db.model.traktor_tablemodel"),
-          BaseSqlTableModel(parent, pTrackCollection, pTrackCollection->getDatabase()),
+                                     TrackCollection* pTrackCollection)
+        : BaseSqlTableModel(parent, pTrackCollection,
+                            pTrackCollection->getDatabase(),
+                            "mixxx.db.model.traktor_tablemodel"),
           m_pTrackCollection(pTrackCollection),
-          m_database(m_pTrackCollection->getDatabase())
+          m_database(m_pTrackCollection->getDatabase()) {
+    connect(this, SIGNAL(doSearch(const QString&)), this,
+            SLOT(slotSearch(const QString&)));
 
-{
-    connect(this, SIGNAL(doSearch(const QString&)), this, SLOT(slotSearch(const QString&)));
-    setTable("traktor_library");
+    QStringList columns;
+    columns << "id";
+    setTable("traktor_library", columns[0], columns,
+             m_pTrackCollection->getTrackSource("traktor"));
+    setDefaultSort(fieldIndex("artist"), Qt::AscendingOrder);
     initHeaderData();
-    setCaching(false);
 }
 
 TraktorTableModel::~TraktorTableModel() {
 }
 
-bool TraktorTableModel::addTrack(const QModelIndex& index, QString location)
-{
-
-    return false;
-}
-
-TrackPointer TraktorTableModel::getTrack(const QModelIndex& index) const
-{
-    //qDebug() << "getTraktorTrack";
-
+TrackPointer TraktorTableModel::getTrack(const QModelIndex& index) const {
     QString artist = index.sibling(index.row(), fieldIndex("artist")).data().toString();
     QString title = index.sibling(index.row(), fieldIndex("title")).data().toString();
     QString album = index.sibling(index.row(), fieldIndex("album")).data().toString();
@@ -43,35 +38,46 @@ TrackPointer TraktorTableModel::getTrack(const QModelIndex& index) const
 
     QString location = index.sibling(index.row(), fieldIndex("location")).data().toString();
 
-    TrackInfoObject* pTrack = new TrackInfoObject(location);
-    pTrack->setArtist(artist);
-    pTrack->setTitle(title);
-    pTrack->setAlbum(album);
-    pTrack->setYear(year);
-    pTrack->setGenre(genre);
-    pTrack->setBpm(bpm);
+    if (location.isEmpty()) {
+        // Track is lost
+        return TrackPointer();
+    }
 
+    TrackDAO& track_dao = m_pTrackCollection->getTrackDAO();
+    int track_id = track_dao.getTrackId(location);
+    bool track_already_in_library = track_id >= 0;
+    if (track_id < 0) {
+        // Add Track to library
+        track_id = track_dao.addTrack(location, true);
+    }
 
-    return TrackPointer(pTrack, &QObject::deleteLater);
-}
+    TrackPointer pTrack;
 
-QString TraktorTableModel::getTrackLocation(const QModelIndex& index) const
-{
-    QString location = index.sibling(index.row(), fieldIndex("location")).data().toString();
-    return location;
-}
+    if (track_id < 0) {
+        // Add Track to library failed, create a transient TrackInfoObject
+        pTrack = TrackPointer(new TrackInfoObject(location), &QObject::deleteLater);
+    } else {
+        pTrack = track_dao.getTrack(track_id);
+    }
 
-void TraktorTableModel::removeTrack(const QModelIndex& index)
-{
+    // If this track was not in the Mixxx library it is now added and will be
+    // saved with the metadata from iTunes. If it was already in the library
+    // then we do not touch it so that we do not over-write the user's metadata.
+    if (!track_already_in_library) {
+        pTrack->setArtist(artist);
+        pTrack->setTitle(title);
+        pTrack->setAlbum(album);
+        pTrack->setYear(year);
+        pTrack->setGenre(genre);
+        pTrack->setBpm(bpm);
 
-}
-
-void TraktorTableModel::removeTracks(const QModelIndexList& indices) {
-
-}
-void TraktorTableModel::moveTrack(const QModelIndex& sourceIndex, const QModelIndex& destIndex)
-{
-
+        // If the track has a BPM, then give it a static beatgrid.
+        if (bpm > 0) {
+            BeatsPointer pBeats = BeatFactory::makeBeatGrid(pTrack, bpm, 0);
+            pTrack->setBeats(pBeats);
+        }
+    }
+    return pTrack;
 }
 
 void TraktorTableModel::search(const QString& searchText) {
@@ -80,82 +86,35 @@ void TraktorTableModel::search(const QString& searchText) {
     emit(doSearch(searchText));
 }
 
-void TraktorTableModel::slotSearch(const QString& searchText)
-{
-   if (!m_currentSearch.isNull() && m_currentSearch == searchText)
-        return;
-    m_currentSearch = searchText;
-
-    QString filter;
-    QSqlField search("search", QVariant::String);
-    search.setValue("%" + searchText + "%");
-    QString escapedText = database().driver()->formatValue(search);
-    filter = "(artist LIKE " + escapedText + " OR " +
-                "album LIKE " + escapedText + " OR " +
-                "title  LIKE " + escapedText + ")";
-    setFilter(filter);
-
-}
-
-const QString TraktorTableModel::currentSearch() {
-    return m_currentSearch;
+void TraktorTableModel::slotSearch(const QString& searchText) {
+    BaseSqlTableModel::search(searchText);
 }
 
 bool TraktorTableModel::isColumnInternal(int column) {
-    if (column == fieldIndex(LIBRARYTABLE_ID) ||
-        column == fieldIndex(LIBRARYTABLE_MIXXXDELETED) ||
-        column == fieldIndex(TRACKLOCATIONSTABLE_FSDELETED))
+    if (column == fieldIndex(LIBRARYTABLE_ID)) {
         return true;
+    }
     return false;
 }
 
-QMimeData* TraktorTableModel::mimeData(const QModelIndexList &indexes) const {
-
-    QMimeData *mimeData = new QMimeData();
-    QList<QUrl> urls;
-
-    //Ok, so the list of indexes we're given contains separates indexes for
-    //each column, so even if only one row is selected, we'll have like 7 indexes.
-    //We need to only count each row once:
-    QList<int> rows;
-
-    foreach (QModelIndex index, indexes) {
-        if (index.isValid()) {
-            if (!rows.contains(index.row())) {
-                rows.push_back(index.row());
-                QUrl url = QUrl::fromLocalFile(getTrackLocation(index));
-                if (!url.isValid())
-                    qDebug() << "ERROR invalid url\n";
-                else
-                    urls.append(url);
-            }
-        }
-    }
-    mimeData->setUrls(urls);
-    return mimeData;
-
-}
-
-
-QItemDelegate* TraktorTableModel::delegateForColumn(const int i) {
-    return NULL;
-}
-
-TrackModel::CapabilitiesFlags TraktorTableModel::getCapabilities() const
-{
-
-    return TRACKMODELCAPS_NONE;
-}
-
-Qt::ItemFlags TraktorTableModel::flags(const QModelIndex &index) const
-{
+Qt::ItemFlags TraktorTableModel::flags(const QModelIndex &index) const {
     return readOnlyFlags(index);
 }
-bool TraktorTableModel::isColumnHiddenByDefault(int column) {
-    if (column == fieldIndex(LIBRARYTABLE_KEY))
-        return true;
-    if(column == fieldIndex(LIBRARYTABLE_BITRATE))
-        return true;
 
+bool TraktorTableModel::isColumnHiddenByDefault(int column) {
+    if (column == fieldIndex(LIBRARYTABLE_KEY) ||
+        column == fieldIndex(LIBRARYTABLE_BITRATE)) {
+        return true;
+    }
     return false;
+}
+
+TrackModel::CapabilitiesFlags TraktorTableModel::getCapabilities() const {
+    // See src/library/trackmodel.h for the list of TRACKMODELCAPS
+    return TRACKMODELCAPS_NONE
+            | TRACKMODELCAPS_ADDTOPLAYLIST
+            | TRACKMODELCAPS_ADDTOCRATE
+            | TRACKMODELCAPS_ADDTOAUTODJ
+            | TRACKMODELCAPS_LOADTODECK
+            | TRACKMODELCAPS_LOADTOSAMPLER;
 }

@@ -8,9 +8,11 @@
 #include "controlobject.h"
 #include "trackinfoobject.h"
 #include "engine/enginebuffer.h"
+#include "engine/enginedeck.h"
 #include "engine/enginemaster.h"
 #include "soundsourceproxy.h"
 #include "engine/cuecontrol.h"
+#include "engine/clockcontrol.h"
 #include "mathstuff.h"
 #include "waveform/waveformrenderer.h"
 
@@ -22,19 +24,22 @@ BaseTrackPlayer::BaseTrackPlayer(QObject* pParent,
         : BasePlayer(pParent, group),
           m_pConfig(pConfig),
           m_pLoadedTrack() {
-
     // Need to strdup the string because EngineChannel will save the pointer,
     // but we might get deleted before the EngineChannel. TODO(XXX)
     // pSafeGroupName is leaked. It's like 5 bytes so whatever.
     const char* pSafeGroupName = strdup(getGroup().toAscii().constData());
 
-    EngineChannel* pChannel = pMixingEngine->createChannel(
-        pSafeGroupName, pConfig, defaultOrientation);
+    EngineDeck* pChannel = new EngineDeck(
+        pSafeGroupName, pConfig, pMixingEngine->getEffectsManager(),
+        defaultOrientation);
+
     EngineBuffer* pEngineBuffer = pChannel->getEngineBuffer();
     pMixingEngine->addChannel(pChannel);
 
-    CueControl* pCueControl = new CueControl(pSafeGroupName, pConfig);
+    ClockControl* pClockControl = new ClockControl(pSafeGroupName, pConfig);
+    pEngineBuffer->addControl(pClockControl);
 
+    CueControl* pCueControl = new CueControl(pSafeGroupName, pConfig);
     connect(this, SIGNAL(newTrackLoaded(TrackPointer)),
             pCueControl, SLOT(loadTrack(TrackPointer)));
     connect(this, SIGNAL(unloadingTrack(TrackPointer)),
@@ -65,7 +70,7 @@ BaseTrackPlayer::BaseTrackPlayer(QObject* pParent,
     m_pPlayPosition = new ControlObjectThreadMain(
         ControlObject::getControl(ConfigKey(getGroup(), "playposition")));
 
-    //Duration of the current song, we create this one because nothing else does.
+    // Duration of the current song, we create this one because nothing else does.
     m_pDuration = new ControlObject(ConfigKey(getGroup(), "duration"));
 
     //BPM of the current song
@@ -98,6 +103,8 @@ BaseTrackPlayer::~BaseTrackPlayer()
     delete m_pPlayPosition;
     delete m_pBPM;
     delete m_pReplayGain;
+    delete m_pWaveformRenderer;
+    delete m_pDuration;
 }
 
 void BaseTrackPlayer::slotLoadTrack(TrackPointer track, bool bStartFromEndPos)
@@ -127,11 +134,13 @@ void BaseTrackPlayer::slotLoadTrack(TrackPointer track, bool bStartFromEndPos)
             pLoopCue->setLength(loopEnd - loopStart);
         }
 
-        // TODO(XXX) This could be a help or a hurt. This should disconnect
-        // every signal connected to the track. Other parts of Mixxx might be
-        // relying on this -- but if it's being unloaded maybe that's a good
-        // thing.
-        m_pLoadedTrack->disconnect();
+        // WARNING: Never. Ever. call bare disconnect() on an object. Mixxx
+        // relies on signals and slots to get tons of things done. Don't
+        // randomly disconnect things.
+        // m_pLoadedTrack->disconnect();
+        disconnect(m_pLoadedTrack.data(), 0, m_pBPM, 0);
+        disconnect(m_pLoadedTrack.data(), 0, m_pReplayGain, 0);
+
         // Causes the track's data to be saved back to the library database.
         emit(unloadingTrack(m_pLoadedTrack));
     }
@@ -158,11 +167,13 @@ void BaseTrackPlayer::slotLoadFailed(TrackPointer track, QString reason) {
 
 void BaseTrackPlayer::slotUnloadTrack(TrackPointer) {
     if (m_pLoadedTrack) {
-        // TODO(XXX) This could be a help or a hurt. This should disconnect
-        // every signal connected to the track. Other parts of Mixxx might be
-        // relying on this -- but if it's being unloaded maybe that's a good
-        // thing.
-        m_pLoadedTrack->disconnect();
+        // WARNING: Never. Ever. call bare disconnect() on an object. Mixxx
+        // relies on signals and slots to get tons of things done. Don't
+        // randomly disconnect things.
+        // m_pLoadedTrack->disconnect();
+        disconnect(m_pLoadedTrack.data(), 0, m_pBPM, 0);
+        disconnect(m_pLoadedTrack.data(), 0, m_pReplayGain, 0);
+
         // Causes the track's data to be saved back to the library database and
         // for all the widgets to unload the track and blank themselves.
         emit(unloadingTrack(m_pLoadedTrack));
@@ -185,7 +196,7 @@ void BaseTrackPlayer::slotFinishLoading(TrackPointer pTrackInfoObject)
     if(!m_pLoadedTrack->getHeaderParsed())
         SoundSourceProxy::ParseHeader(m_pLoadedTrack.data());
 
-    m_pLoadedTrack->incTimesPlayed();
+    m_pLoadedTrack->setPlayed(true);
 
     // Generate waveform summary
     //TODO: Consider reworking this visual resample stuff... need to ask rryan about this -- Albert.

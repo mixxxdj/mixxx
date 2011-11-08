@@ -16,15 +16,18 @@
 #include "widget/wwidget.h"
 #include "trackinfoobject.h"
 
-WaveformRenderSignalPixmap::WaveformRenderSignalPixmap(const char* group, WaveformRenderer *parent) :
-    m_iWidth(0),
-    m_iHeight(0),
-    m_pParent(parent),
-    m_lines(0),
-    signalColor(255,255,255),
-    m_screenPixmap(),
-    m_iLastPlaypos(0)
-{
+WaveformRenderSignalPixmap::WaveformRenderSignalPixmap(const char* group, WaveformRenderer *parent)
+        : m_iWidth(0),
+          m_iHeight(0),
+          m_pParent(parent),
+          m_lines(0),
+          signalColor(255,255,255),
+          m_screenPixmap(),
+          m_iLastPlaypos(0) {
+}
+
+WaveformRenderSignalPixmap::~WaveformRenderSignalPixmap() {
+
 }
 
 void WaveformRenderSignalPixmap::resize(int w, int h) {

@@ -1,6 +1,8 @@
 // readaheadmanager.cpp
 // Created 8/2/2009 by RJ Ryan (rryan@mit.edu)
 
+#include <QMutexLocker>
+
 #include "engine/readaheadmanager.h"
 
 #include "mathstuff.h"
@@ -22,20 +24,17 @@ int ReadAheadManager::getNextSamples(double dRate, CSAMPLE* buffer,
 
     bool in_reverse = dRate < 0;
     int start_sample = m_iCurrentPosition;
+    //qDebug() << "start" << start_sample << requested_samples;
     int samples_needed = requested_samples;
     CSAMPLE* base_buffer = buffer;
 
     // A loop will only limit the amount we can read in one shot.
 
     QPair<int, double> next_loop;
-    // = getSoonestTrigger(in_reverse, m_iCurrentPosition);
-
-    // Instead of used getSoonestTrigger, instead we just use the result of the
-    // first engine control.
     next_loop.first = 0;
     next_loop.second = m_sEngineControls[0]->nextTrigger(dRate,
-                                                        m_iCurrentPosition,
-                                                        0, 0);
+                                                         m_iCurrentPosition,
+                                                         0, 0);
 
     if (next_loop.second != kNoTrigger) {
         int samples_available;
@@ -50,27 +49,30 @@ int ReadAheadManager::getNextSamples(double dRate, CSAMPLE* buffer,
 
     if (in_reverse) {
         start_sample = m_iCurrentPosition - samples_needed;
-        if (start_sample < 0) {
+        /*if (start_sample < 0) {
             samples_needed = math_max(0, samples_needed + start_sample);
             start_sample = 0;
-        }
+        }*/
     }
 
     // Sanity checks
-    Q_ASSERT(start_sample >= 0);
+    //Q_ASSERT(start_sample >= 0);
     Q_ASSERT(samples_needed >= 0);
 
     int samples_read = m_pReader->read(start_sample, samples_needed,
                                        base_buffer);
 
+    if (samples_read != samples_needed)
+        qDebug() << "didn't get what we wanted" << samples_read << samples_needed;
+
     // Increment or decrement current read-ahead position
     if (in_reverse) {
-        m_iCurrentPosition -= math_max(0, samples_read);
+        addReadLogEntry(m_iCurrentPosition, m_iCurrentPosition - samples_read);
+        m_iCurrentPosition -= samples_read;
     } else {
+        addReadLogEntry(m_iCurrentPosition, m_iCurrentPosition + samples_read);
         m_iCurrentPosition += samples_read;
     }
-
-    m_iCurrentPosition = math_max(0, m_iCurrentPosition);
 
     // Activate on this trigger if necessary
     if (next_loop.second != kNoTrigger) {
@@ -101,6 +103,7 @@ int ReadAheadManager::getNextSamples(double dRate, CSAMPLE* buffer,
         }
     }
 
+    //qDebug() << "read" << m_iCurrentPosition << samples_read;
     return samples_read;
 }
 
@@ -110,59 +113,116 @@ void ReadAheadManager::addEngineControl(EngineControl* pControl) {
 }
 
 void ReadAheadManager::setNewPlaypos(int iNewPlaypos) {
+    QMutexLocker locker(&m_mutex);
     m_iCurrentPosition = iNewPlaypos;
+    m_readAheadLog.clear();
 }
 
 void ReadAheadManager::notifySeek(int iSeekPosition) {
+    QMutexLocker locker(&m_mutex);
     m_iCurrentPosition = iSeekPosition;
+    m_readAheadLog.clear();
+
+    // TODO(XXX) notifySeek on the engine controls. EngineBuffer currently does
+    // a fine job of this so it isn't really necessary but eventually I think
+    // RAMAN should do this job. rryan 11/2011
+
+    // foreach (EngineControl* pControl, m_sEngineControls) {
+    //     pControl->notifySeek(iSeekPosition);
+    // }
 }
 
-void ReadAheadManager::hintReader(QList<Hint>& hintList, int iSamplesPerBuffer) {
+void ReadAheadManager::hintReader(double dRate, QList<Hint>& hintList,
+                                  int iSamplesPerBuffer) {
+    bool in_reverse = dRate < 0;
     Hint current_position;
 
-    // Make sure that we have enough samples to do n more process() calls
-    // without reading again either forward or reverse.
-    int n = 64; // 5? 10? 20? who knows!
-    int length_to_cache = iSamplesPerBuffer * n;
+    // SoundTouch can read up to 2 chunks ahead. Always keep 2 chunks ahead in
+    // cache.
+    int length_to_cache = 2*CachingReader::kSamplesPerChunk;
+
     current_position.length = length_to_cache;
-    current_position.sample = m_iCurrentPosition;
+    current_position.sample = in_reverse ?
+            m_iCurrentPosition - length_to_cache :
+            m_iCurrentPosition;
 
     // If we are trying to cache before the start of the track,
-    if (current_position.sample < 0) {
-        current_position.length += current_position.sample;
-        current_position.sample = 0;
-    }
+    // Then we don't need to cache because it's all zeros!
+    if (current_position.sample < 0 &&
+        current_position.sample + current_position.length < 0)
+        return;
 
     // top priority, we need to read this data immediately
     current_position.priority = 1;
     hintList.append(current_position);
 }
 
-QPair<int, double> ReadAheadManager::getSoonestTrigger(double dRate,
-                                                       int iCurrentSample) {
-
-    // This is not currently working.
-    bool in_reverse = dRate < 0;
-    double next_trigger = kNoTrigger;
-    int next_trigger_index = -1;
-    int i;
-    for (int i = 0; i < m_sEngineControls.size(); ++i) {
-        // TODO(rryan) eh.. this interface is likely to change so dont sweat the
-        // last 2 parameters for now, nothing currently uses them
-        double trigger = m_sEngineControls[i]->nextTrigger(dRate, iCurrentSample,
-                                                           0, 0);
-        bool trigger_active = (trigger != kNoTrigger &&
-                               ((in_reverse && trigger <= iCurrentSample) ||
-                                (!in_reverse && trigger >= iCurrentSample)));
-
-        if (trigger_active &&
-            (next_trigger == kNoTrigger ||
-             (in_reverse && trigger > next_trigger) ||
-             (!in_reverse && trigger < next_trigger))) {
-
-            next_trigger = trigger;
-            next_trigger_index = i;
+void ReadAheadManager::addReadLogEntry(double virtualPlaypositionStart,
+                                       double virtualPlaypositionEndNonInclusive) {
+    QMutexLocker locker(&m_mutex);
+    ReadLogEntry newEntry(virtualPlaypositionStart,
+                          virtualPlaypositionEndNonInclusive);
+    if (m_readAheadLog.size() > 0) {
+        ReadLogEntry& last = m_readAheadLog.last();
+        if (last.merge(newEntry)) {
+            return;
         }
     }
-    return qMakePair(next_trigger_index, next_trigger);
+    m_readAheadLog.append(newEntry);
+}
+
+int ReadAheadManager::getEffectiveVirtualPlaypositionFromLog(double currentVirtualPlayposition,
+                                                             double numConsumedSamples) {
+    if (numConsumedSamples == 0) {
+        return currentVirtualPlayposition;
+    }
+
+    QMutexLocker locker(&m_mutex);
+    if (m_readAheadLog.size() == 0) {
+        // No log entries to read from.
+        qDebug() << this << "No read ahead log entries to read from. Case not currently handled.";
+        // TODO(rryan) log through a stats pipe eventually
+        return currentVirtualPlayposition;
+    }
+
+    double virtualPlayposition = 0;
+    bool shouldNotifySeek = false;
+    bool direction = true;
+    while (m_readAheadLog.size() > 0 && numConsumedSamples > 0) {
+        ReadLogEntry& entry = m_readAheadLog.first();
+        direction = entry.direction();
+
+        // Notify EngineControls that we have taken a seek.
+        if (shouldNotifySeek) {
+            foreach (EngineControl* pControl, m_sEngineControls) {
+                pControl->notifySeek(entry.virtualPlaypositionStart);
+            }
+        }
+
+        double consumed = entry.consume(numConsumedSamples);
+        numConsumedSamples -= consumed;
+
+        // Advance our idea of the current virtual playposition to this
+        // ReadLogEntry's start position.
+        virtualPlayposition = entry.virtualPlaypositionStart;
+
+        if (entry.length() == 0) {
+            // This entry is empty now.
+            m_readAheadLog.removeFirst();
+        }
+        shouldNotifySeek = true;
+    }
+    int result = 0;
+    if (direction) {
+        result = static_cast<int>(floor(virtualPlayposition));
+        if (!even(result)) {
+            result--;
+        }
+    } else {
+        result = static_cast<int>(ceil(virtualPlayposition));
+        if (!even(result)) {
+            result++;
+        }
+    }
+    return result;
 }

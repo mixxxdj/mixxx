@@ -1,8 +1,8 @@
 /****************************************************************/
-/*      Stanton SCS.3m MIDI controller script v1.04             */
-/*          Copyright (C) 2010, Sean M. Pappalardo              */
+/*      Stanton SCS.3m MIDI controller script v1.05             */
+/*          Copyright (C) 2010-11, Sean M. Pappalardo           */
 /*      but feel free to tweak this to your heart's content!    */
-/*      For Mixxx version 1.8.x                                 */
+/*      For Mixxx version 1.9.x                                 */
 /****************************************************************/
 
 function StantonSCS3m() {}
@@ -592,7 +592,7 @@ StantonSCS3m.cue = function (status, side) {
     }
     else {
         StantonSCS3m.modifier["cue"+side] = false;
-        if (!StantonSCS3m.modifier["play"+side]) engine.setValue("[Channel"+deck+"]","cue_default",0);
+        engine.setValue("[Channel"+deck+"]","cue_default",0);
     }
 }
 
@@ -609,12 +609,8 @@ StantonSCS3m.play = function (status, side) {
     var deck = StantonSCS3m.SideToDeck(side);
     if ((status & 0xF0) == 0x90) {  // If button down
         StantonSCS3m.modifier["play"+side]=true;
-        if (StantonSCS3m.modifier["cue"+side]) engine.setValue("[Channel"+deck+"]","play",1);
-        else {
-            var currentlyPlaying = engine.getValue("[Channel"+deck+"]","play");
-            if (currentlyPlaying && engine.getValue("[Channel"+deck+"]","cue_default")==1) engine.setValue("[Channel"+deck+"]","cue_default",0);
-            engine.setValue("[Channel"+deck+"]","play", !currentlyPlaying);
-        }
+        var currentlyPlaying = engine.getValue("[Channel"+deck+"]","play");
+        engine.setValue("[Channel"+deck+"]","play", !currentlyPlaying);
         return;
     }
     StantonSCS3m.modifier["play"+side]=false;

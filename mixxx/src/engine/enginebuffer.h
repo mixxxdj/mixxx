@@ -19,13 +19,14 @@
 #define ENGINEBUFFER_H
 
 #include <qapplication.h>
-#include <qmutex.h>
+#include <QMutex>
 #include "defs.h"
-#include "engineobject.h"
+#include "engine/engineobject.h"
 #include "trackinfoobject.h"
 #include "configobject.h"
-// #include "monitor.h"
 #include "rotary.h"
+//for the writer
+//#include <QtCore>
 
 class EngineControl;
 class BpmControl;
@@ -57,7 +58,9 @@ const int audioBeatMarkLen = 40;
 const int kiTempLength = 200000;
 
 // Rate at which the playpos slider is updated (using a sample rate of 44100 Hz):
-const int UPDATE_RATE = 10;
+const int kiUpdateRate = 10;
+// Number of kiUpdateRates that go by before we update BPM.
+const int kiBpmUpdateRate = 40 / kiUpdateRate; //about 2.5 updates per sec
 
 // End of track mode constants
 const int TRACK_END_MODE_STOP = 0;
@@ -65,10 +68,18 @@ const int TRACK_END_MODE_NEXT = 1;
 const int TRACK_END_MODE_LOOP = 2;
 const int TRACK_END_MODE_PING = 3;
 
-// Maximum number of samples used to ramp to or from zero when playback is
-// stopped or started.
-const int kiRampLength = 50;
+//vinyl status constants
+//XXX: move this to vinylcontrol.h once thread startup is moved
+const int VINYL_STATUS_DISABLED = 0;
+const int VINYL_STATUS_OK = 1;
+const int VINYL_STATUS_WARNING = 2;
+const int VINYL_STATUS_ERROR = 3;
 
+const int ENGINE_RAMP_DOWN = -1;
+const int ENGINE_RAMP_NONE = 0;
+const int ENGINE_RAMP_UP = 1;
+
+//const int kiRampLength = 3;
 
 class EngineBuffer : public EngineObject
 {
@@ -97,11 +108,13 @@ public:
     void process(const CSAMPLE *pIn, const CSAMPLE *pOut, const int iBufferSize);
 
     const char* getGroup();
-
     bool isTrackLoaded();
+    TrackPointer getLoadedTrack() const;
+
   public slots:
     void slotControlPlay(double);
     void slotControlPlayFromStart(double);
+    void slotControlJumpToStartAndStop(double);
     void slotControlStop(double);
     void slotControlStart(double);
     void slotControlEnd(double);
@@ -128,8 +141,6 @@ public:
 
 private:
     void setPitchIndpTimeStretch(bool b);
-    /** Called from process() when an empty buffer, possible ramped to zero is needed */
-    void rampOut(const CSAMPLE *pOut, int iBufferSize);
 
     void updateIndicators(double rate, int iBufferSize);
 
@@ -183,15 +194,17 @@ private:
     QMutex pause;
     /** Used in update of playpos slider */
     int m_iSamplesCalculated;
+    int m_iUiSlowTick;
 
     ControlObject* m_pTrackSamples;
     ControlObject* m_pTrackSampleRate;
 
-    ControlPushButton *playButton, *buttonBeatSync, *playStartButton, *stopButton;
-    ControlObjectThreadMain *playButtonCOT, *playStartButtonCOT, *m_pTrackEndCOT, *stopButtonCOT;
+    ControlPushButton *playButton, *buttonBeatSync, *playStartButton, *stopStartButton, *stopButton;
+    ControlObjectThreadMain *playButtonCOT, *playStartButtonCOT, *stopStartButtonCOT, *m_pTrackEndCOT, *stopButtonCOT;
     ControlObject *fwdButton, *backButton;
 
     ControlObject *rateEngine;
+    ControlObject *visualBpm;
     ControlObject *m_pMasterRate;
     ControlPotmeter *playposSlider;
     ControlPotmeter *visualPlaypos;
@@ -205,6 +218,9 @@ private:
 
     // Whether or not to repeat the track when at the end
     ControlPushButton* m_pRepeat;
+
+    ControlObject *m_pVinylStatus;  //Status of vinyl control
+    ControlObject *m_pVinylSeek;
 
     /** Fwd and back controls, start and end of track control */
     ControlPushButton *startButton, *endButton;
@@ -220,11 +236,18 @@ private:
 
     /** Holds the last sample value of the previous buffer. This is used when ramping to
       * zero in case of an immediate stop of the playback */
-    float m_fLastSampleValue;
+    float m_fLastSampleValue[2];
     /** Is true if the previous buffer was silent due to pausing */
     bool m_bLastBufferPaused;
+    float m_fRampValue;
+    int m_iRampState;
+    //int m_iRampIter;
 
     TrackPointer m_pCurrentTrack;
+    /*QFile df;
+    QTextStream writer;*/
+    CSAMPLE* m_pDitherBuffer;
+    unsigned int m_iDitherBufferReadIndex;
 };
 
 #endif

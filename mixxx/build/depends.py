@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 
 import os
 import util
@@ -73,17 +74,6 @@ class OggVorbis(Dependence):
     def sources(self, build):
         return ['soundsourceoggvorbis.cpp']
 
-class Mad(Dependence):
-
-    def configure(self, build, conf):
-        if not conf.CheckLib(['libmad','mad']):
-            raise Exception('Did not find libmad.a, libmad.lib, or the libmad development header files - exiting!')
-        if not conf.CheckLib(['libid3tag', 'id3tag','libid3tag-release']):
-            raise Exception('Did not find libid3tag.a, libid3tag.lib, or the libid3tag development header files - exiting!')
-
-    def sources(self, build):
-        return ['soundsourcemp3.cpp']
-
 
 class SndFile(Dependence):
 
@@ -106,7 +96,6 @@ class FLAC(Dependence):
 
     def sources(self, build):
         return ['soundsourceflac.cpp',]
-
 
 class Qt(Dependence):
     DEFAULT_QTDIRS = {'linux': '/usr/share/qt4',
@@ -164,14 +153,14 @@ class Qt(Dependence):
             build.env.Append(LIBS = 'QtScript')
         elif build.platform_is_windows:
             build.env.Append(LIBPATH=['$QTDIR/lib'])
-            build.env.Append(LIBS = 'QtXml4');
-            build.env.Append(LIBS = 'QtXmlPatterns4');
-            build.env.Append(LIBS = 'QtSql4');
-            build.env.Append(LIBS = 'QtGui4');
-            build.env.Append(LIBS = 'QtCore4');
-            build.env.Append(LIBS = 'QtWebKit4');
+            build.env.Append(LIBS = 'QtXml4')
+            build.env.Append(LIBS = 'QtXmlPatterns4')
+            build.env.Append(LIBS = 'QtSql4')
+            build.env.Append(LIBS = 'QtGui4')
+            build.env.Append(LIBS = 'QtCore4')
+            build.env.Append(LIBS = 'QtWebKit4')
             build.env.Append(LIBS = 'QtNetwork4')
-            build.env.Append(LIBS = 'QtOpenGL4');
+            build.env.Append(LIBS = 'QtOpenGL4')
             # Tobias: Don't remove this line
             # I used the Windows API in foldertreemodel.cpp
             # to quickly test if a folder has subfolders
@@ -197,6 +186,10 @@ class Qt(Dependence):
         if not build.platform_is_windows and not (using_104_sdk or compiling_on_104):
             build.env.Append(LINKFLAGS = "-Wl,-rpath,$QTDIR/lib")
 
+        #QtSQLite DLL
+        if build.platform_is_windows:
+            build.flags['sqlitedll'] = util.get_flags(build.env, 'sqlitedll', 1)
+
 
 class FidLib(Dependence):
 
@@ -214,11 +207,11 @@ class FidLib(Dependence):
         else:
             symbol = 'T_LINUX'
 
-        return [build.env.StaticObject('#lib/fidlib-0.9.9/fidlib.c',
+        return [build.env.StaticObject('#lib/fidlib-0.9.10/fidlib.c',
                                        CPPDEFINES=symbol)]
 
     def configure(self, build, conf):
-        build.env.Append(CPPPATH='#lib/fidlib-0.9.9/')
+        build.env.Append(CPPPATH='#lib/fidlib-0.9.10/')
 
 class KissFFT(Dependence):
 
@@ -237,7 +230,7 @@ class ReplayGain(Dependence):
         build.env.Append(CPPPATH="#lib/replaygain")
 
 class SoundTouch(Dependence):
-    SOUNDTOUCH_PATH = 'soundtouch-1.5.0'
+    SOUNDTOUCH_PATH = 'soundtouch-1.6.0'
 
     def sources(self, build):
         sources = ['engine/enginebufferscalest.cpp',
@@ -249,42 +242,31 @@ class SoundTouch(Dependence):
                    '#lib/%s/FIRFilter.cpp' % self.SOUNDTOUCH_PATH,
                    '#lib/%s/PeakFinder.cpp' % self.SOUNDTOUCH_PATH,
                    '#lib/%s/BPMDetect.cpp' % self.SOUNDTOUCH_PATH]
-        if build.platform_is_windows and build.toolchain_is_msvs:
-            if build.machine_is_64bit:
-                sources.append(
-                    '#lib/%s/cpu_detect_x64_win.cpp' % self.SOUNDTOUCH_PATH)
-            elif build.machine == 'x86':
-                sources.append(
-                    '#lib/%s/cpu_detect_x86_win.cpp' % self.SOUNDTOUCH_PATH)
-            else:
-                raise Exception("Unhandled CPU configuration for SoundTouch")
-        elif build.toolchain_is_gnu:
-            if build.machine == 'x86_64':
-                sources.append(
-                    '#lib/%s/cpu_detect_x64_gcc.cpp' % self.SOUNDTOUCH_PATH)
-            else:
-                sources.append(
-                    '#lib/%s/cpu_detect_x86_gcc.cpp' % self.SOUNDTOUCH_PATH)
-        else:
-            raise Exception("Unhandled CPU configuration for SoundTouch")
 
-        # TODO(XXX) when we figure out a better way to represent features, fix
-        # this.
+        # SoundTouch CPU optimizations are only for x86 architectures
+        cpu_detection = {
+            ('msvs', 'x86'): '#lib/%s/cpu_detect_x86_win.cpp',
+            ('msvs', 'x86_64'): '#lib/%s/cpu_detect_x64_win.cpp',
+            ('gnu', 'x86'): '#lib/%s/cpu_detect_x86_gcc.cpp',
+            ('gnu', 'x86_64'): '#lib/%s/cpu_detect_x64_gcc.cpp'
+            }
+
+        toolchain = 'gnu' if build.toolchain_is_gnu else 'msvs'
+        machine = 'unknown'
+        machine = 'x86_64' if build.architecture_is_x86 and build.machine_is_64bit else machine
+        machine = 'x86' if build.architecture_is_x86 and not build.machine_is_64bit else machine
+
         optimize = int(util.get_flags(build.env, 'optimize', 1))
-        if build.machine_is_64bit or \
-                (build.toolchain_is_msvs and optimize > 1) or \
-                (build.toolchain_is_gnu and optimize > 2):
+        optimizations_enabled = build.machine_is_64bit or \
+            (build.toolchain_is_msvs and optimize > 1) or \
+            (build.toolchain_is_gnu and optimize > 2)
+        cpu_detection_file = cpu_detection.get((toolchain, machine), None)
+        if optimizations_enabled and build.architecture_is_x86 and cpu_detection_file:
             sources.extend(
-                ['#lib/%s/mmx_optimized.cpp' % self.SOUNDTOUCH_PATH,
+                [cpu_detection_file % self.SOUNDTOUCH_PATH,
+                 '#lib/%s/mmx_optimized.cpp' % self.SOUNDTOUCH_PATH,
                  '#lib/%s/sse_optimized.cpp' % self.SOUNDTOUCH_PATH,
                  ])
-        if build.toolchain_is_msvs and not build.machine_is_64bit:
-            sources.append('#lib/%s/3dnow_win.cpp' % self.SOUNDTOUCH_PATH)
-        else:
-            # TODO(XXX) the docs refer to a 3dnow_gcc, but we don't seem to have
-            # it.
-            pass
-
         return sources
 
     def configure(self, build, conf):
@@ -298,7 +280,7 @@ class SoundTouch(Dependence):
         if build.machine_is_64bit or \
                 (build.toolchain_is_msvs and optimize > 1) or \
                 (build.toolchain_is_gnu and optimize > 2):
-            build.env.Append(CPPDEFINES='ALLOW_X86_OPTIMIZATIONS')
+            build.env.Append(CPPDEFINES='SOUNDTOUCH_ALLOW_X86_OPTIMIZATIONS')
 
 class TagLib(Dependence):
     def configure(self, build, conf):
@@ -343,6 +325,7 @@ class MixxxCore(Feature):
                    "dlgprefcontrols.cpp",
                    "dlgprefbpm.cpp",
                    "dlgprefreplaygain.cpp",
+                   "dlgprefnovinyl.cpp",
                    "dlgbpmscheme.cpp",
                    "dlgabout.cpp",
                    "dlgprefeq.cpp",
@@ -372,18 +355,17 @@ class MixxxCore(Feature):
 
                    "engine/engineworker.cpp",
                    "engine/engineworkerscheduler.cpp",
+                   "engine/syncworker.cpp",
                    "engine/enginebuffer.cpp",
                    "engine/enginebufferscale.cpp",
                    "engine/enginebufferscaledummy.cpp",
                    "engine/enginebufferscalelinear.cpp",
-                   "engine/enginebufferscalereal.cpp",
                    "engine/engineclipping.cpp",
                    "engine/enginefilterblock.cpp",
                    "engine/enginefilteriir.cpp",
                    "engine/enginefilter.cpp",
                    "engine/engineobject.cpp",
                    "engine/enginepregain.cpp",
-                   "engine/enginevolume.cpp",
                    "engine/enginechannel.cpp",
                    "engine/enginemaster.cpp",
                    "engine/enginedelay.cpp",
@@ -393,13 +375,21 @@ class MixxxCore(Feature):
                    "engine/enginesidechain.cpp",
                    "engine/enginefilterbutterworth8.cpp",
                    "engine/enginexfader.cpp",
+                   "engine/enginemicrophone.cpp",
+                   "engine/enginedeck.cpp",
+                   "engine/enginepassthrough.cpp",
+
                    "engine/enginecontrol.cpp",
                    "engine/ratecontrol.cpp",
+                   "engine/positionscratchcontroller.cpp",
                    "engine/loopingcontrol.cpp",
                    "engine/bpmcontrol.cpp",
                    "engine/cuecontrol.cpp",
+                   "engine/quantizecontrol.cpp",
+                   "engine/clockcontrol.cpp",
                    "engine/readaheadmanager.cpp",
                    "cachingreader.cpp",
+
                    "analyserrg.cpp",
                    "analyserqueue.cpp",
                    "analyserwavesummary.cpp",
@@ -418,6 +408,7 @@ class MixxxCore(Feature):
                    "midi/midioptiondelegate.cpp",
                    "midi/midimessage.cpp",
                    "midi/midiledhandler.cpp",
+                   "softtakeover.cpp",
 
                    "main.cpp",
                    "controlgroupdelegate.cpp",
@@ -429,13 +420,13 @@ class MixxxCore(Feature):
 
                    "soundsource.cpp",
 
+                   "sharedglcontext.cpp",
                    "widget/wwidget.cpp",
                    "widget/wlabel.cpp",
                    "widget/wtracktext.cpp",
                    "widget/wnumber.cpp",
                    "widget/wnumberpos.cpp",
                    "widget/wnumberrate.cpp",
-                   "widget/wnumberbpm.cpp",
                    "widget/wknob.cpp",
                    "widget/wdisplay.cpp",
                    "widget/wvumeter.cpp",
@@ -444,6 +435,7 @@ class MixxxCore(Feature):
                    "widget/wslider.cpp",
                    "widget/wstatuslight.cpp",
                    "widget/woverview.cpp",
+                   "widget/wspinny.cpp",
                    "widget/wskincolor.cpp",
                    "widget/wabstractcontrol.cpp",
                    "widget/wsearchlineedit.cpp",
@@ -451,6 +443,7 @@ class MixxxCore(Feature):
                    "widget/hexspinbox.cpp",
                    "widget/wtrackproperty.cpp",
                    "widget/weffectchain.cpp",
+                   "widget/wtime.cpp",
 
                    "mathstuff.cpp",
 
@@ -466,13 +459,11 @@ class MixxxCore(Feature):
                    "library/preparecratedelegate.cpp",
                    "library/trackcollection.cpp",
                    "library/basesqltablemodel.cpp",
+                   "library/basetrackcache.cpp",
                    "library/librarytablemodel.cpp",
                    "library/preparelibrarytablemodel.cpp",
-                   "library/browsetablemodel.cpp",
                    "library/missingtablemodel.cpp",
-
                    "library/proxytrackmodel.cpp",
-
 
                    "library/playlisttablemodel.cpp",
                    "library/libraryfeature.cpp",
@@ -480,6 +471,15 @@ class MixxxCore(Feature):
                    "library/autodjfeature.cpp",
                    "library/mixxxlibraryfeature.cpp",
                    "library/playlistfeature.cpp",
+
+                   "library/browse/browsetablemodel.cpp",
+                   "library/browse/browsethread.cpp",
+                   "library/browse/browsefeature.cpp",
+                   "library/browse/foldertreemodel.cpp",
+
+                   "library/recording/recordingfeature.cpp",
+                   "dlgrecording.cpp",
+                   "recording/recordingmanager.cpp",
 
                    # External Library Features
                    "library/rhythmbox/rhythmboxfeature.cpp",
@@ -494,7 +494,7 @@ class MixxxCore(Feature):
                    "library/traktor/traktortablemodel.cpp",
                    "library/traktor/traktorplaylistmodel.cpp",
 
-                   "library/browsefeature.cpp",
+
                    "library/cratefeature.cpp",
                    "library/sidebarmodel.cpp",
                    "library/libraryscanner.cpp",
@@ -510,7 +510,7 @@ class MixxxCore(Feature):
                    "library/dao/playlistdao.cpp",
                    "library/dao/libraryhashdao.cpp",
                    "library/dao/settingsdao.cpp",
-                   "library/librarymidicontrol.cpp",
+                   "library/librarycontrol.cpp",
                    "library/schemamanager.cpp",
                    "library/promotracksfeature.cpp",
                    "library/featuredartistswebview.cpp",
@@ -523,8 +523,6 @@ class MixxxCore(Feature):
 
                    "library/treeitemmodel.cpp",
                    "library/treeitem.cpp",
-                   "library/foldertreemodel.cpp",
-                   "library/browsethread.cpp",
 
                    "xmlparse.cpp",
                    "library/parser.cpp",
@@ -555,10 +553,14 @@ class MixxxCore(Feature):
                    "skin/skinloader.cpp",
                    "skin/legacyskinparser.cpp",
                    "skin/colorschemeparser.cpp",
-
+                   "skin/propertybinder.cpp",
 
                    "sampleutil.cpp",
                    "trackinfoobject.cpp",
+                   "track/beatgrid.cpp",
+                   "track/beatmatrix.cpp",
+                   "track/beatfactory.cpp",
+
                    "baseplayer.cpp",
                    "basetrackplayer.cpp",
                    "deck.cpp",
@@ -568,7 +570,7 @@ class MixxxCore(Feature):
                    "sounddevice.cpp",
                    "soundmanager.cpp",
                    "soundmanagerconfig.cpp",
-                   "audiopath.cpp",
+                   "soundmanagerutil.cpp",
                    "dlgprefrecord.cpp",
                    "playerinfo.cpp",
 
@@ -577,6 +579,12 @@ class MixxxCore(Feature):
 
                    "segmentation.cpp",
                    "tapfilter.cpp",
+
+                   "util/pa_ringbuffer.c",
+
+                   # Add the QRC file which compiles in some extra resources
+                   # (prefs icons, etc.)
+                   build.env.Qrc('#res/mixxx.qrc')
                    ]
 
         # Uic these guys (they're moc'd automatically after this) - Generates
@@ -594,6 +602,7 @@ class MixxxCore(Feature):
         build.env.Uic4('dlgbpmschemedlg.ui')
         # build.env.Uic4('dlgbpmtapdlg.ui')
         build.env.Uic4('dlgprefvinyldlg.ui')
+        build.env.Uic4('dlgprefnovinyldlg.ui')
         build.env.Uic4('dlgprefrecorddlg.ui')
         build.env.Uic4('dlgaboutdlg.ui')
         build.env.Uic4('dlgmidilearning.ui')
@@ -601,11 +610,7 @@ class MixxxCore(Feature):
         build.env.Uic4('dlgprepare.ui')
         build.env.Uic4('dlgautodj.ui')
         build.env.Uic4('dlgprefsounditem.ui')
-
-        # Add the QRC file which compiles in some extra resources (prefs icons,
-        # etc.)
-        build.env.Qrc('#res/mixxx.qrc')
-        sources.append("#res/qrc_mixxx.cc")
+        build.env.Uic4('dlgrecording.ui')
 
         if build.platform_is_windows:
             # Add Windows resource file with icons and such
@@ -639,17 +644,18 @@ class MixxxCore(Feature):
             if os.system("which g++ > /dev/null"): #Checks for non-zero return code
                 raise Exception("Did not find g++.")
         elif build.toolchain_is_msvs:
-            if build.machine == 'x86_64':
-                mixxx_lib_path = '#/../mixxx-win%slib-msvc' % build.bitwidth
-            else:
-                mixxx_lib_path = '#/../mixxx-win%slib-msvc' % build.bitwidth
+            # Validate the specified winlib directory exists
+            mixxx_lib_path = SCons.ARGUMENTS.get('winlib', '..\\..\\..\\mixxx-win32lib-msvc100-release')
+            if not os.path.exists(mixxx_lib_path):
+                print mixxx_lib_path
+                raise Exception("Winlib path does not exist! Please specify your winlib directory"
+                                "path by running 'scons winlib=[path]'")
+                Script.Exit(1)
+            #mixxx_lib_path = '#/../../mixxx-win%slib-msvc100-release' % build.bitwidth
 
             # Set include and library paths to work with this
             build.env.Append(CPPPATH=mixxx_lib_path)
             build.env.Append(LIBPATH=mixxx_lib_path)
-
-
-
 
             #Ugh, MSVC-only hack :( see
             #http://www.qtforum.org/article/17883/problem-using-qstring-fromstdwstring.html
@@ -705,16 +711,8 @@ class MixxxCore(Feature):
         if build.platform_is_bsd or build.platform_is_linux:
             build.env.Append(CPPDEFINES='__UNIX__')
 
-            # We should not have to do either of these.
-            #build.env.Append(LIBS = 'sndfile')
-            #build.env.Append(LIBS = 'vorbisfile')
-
-        # I disagree with this. rryan 9/2010
-        #env.Append(CPPPATH = ['.', '../', '../../']) #Fun fun fun with paths
-
         # Add the src/ directory to the include path
         build.env.Append(CPPPATH = ['.'])
-
 
         # Set up flags for config/track listing files
         if build.platform_is_linux or \
@@ -749,7 +747,7 @@ class MixxxCore(Feature):
 
     def depends(self, build):
         return [SoundTouch, KissFFT, ReplayGain, PortAudio, PortMIDI, Qt,
-                FidLib, Mad, SndFile, FLAC, OggVorbis, OpenGL, TagLib]
+                FidLib, SndFile, FLAC, OggVorbis, OpenGL, TagLib,]
 
     def post_dependency_check_configure(self, build, conf):
         """Sets up additional things in the Environment that must happen
@@ -761,6 +759,7 @@ class MixxxCore(Feature):
                                               '/entry:mainCRTStartup'])
                 # Makes the program not launch a shell first
                 build.env.Append(LINKFLAGS = '/subsystem:windows')
+                build.env.Append(LINKFLAGS = '/manifest') #Force MSVS to generate a manifest (MSVC2010)
             elif build.toolchain_is_gnu:
                 # Makes the program not launch a shell first
                 build.env.Append(LINKFLAGS = '--subsystem,windows')

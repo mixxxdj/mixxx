@@ -5,6 +5,7 @@
 #include <QDir>
 #include <QtDebug>
 
+#include "vinylcontrol/vinylcontrolmanager.h"
 #include "skin/skinloader.h"
 #include "skin/legacyskinparser.h"
 
@@ -23,7 +24,7 @@ SkinLoader::~SkinLoader() {
 }
 
 QString SkinLoader::getConfiguredSkinPath() {
-    const QString defaultSkin = "Outline1024x600-Netbook";
+    const QString defaultSkin = "Deere1280x800-WXGA";//XXX: App Store //"Outline1024x600-Netbook";
 
     QString qSkinPath = m_pConfig->getConfigPath();
     qSkinPath.append("skins/");
@@ -54,10 +55,10 @@ QWidget* SkinLoader::loadDefaultSkin(QWidget* pParent,
                                      MixxxKeyboard* pKeyboard,
                                      PlayerManager* pPlayerManager,
                                      Library* pLibrary,
+                                     VinylControlManager* pVCMan,
                                      EffectsManager* pEffectsManager) {
     QString skinPath = getConfiguredSkinPath();
-
-    LegacySkinParser legacy(m_pConfig, pKeyboard, pPlayerManager, pLibrary, pEffectsManager);
-    qDebug() << "Legacy can parse:" << legacy.canParse(skinPath);
+    LegacySkinParser legacy(m_pConfig, pKeyboard, pPlayerManager, pLibrary,
+                            pVCMan, pEffectsManager);
     return legacy.parseSkin(skinPath, pParent);
 }

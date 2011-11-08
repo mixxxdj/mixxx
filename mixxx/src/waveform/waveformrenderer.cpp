@@ -1,9 +1,3 @@
-/**
-
-  A license and other info goes here!
-
- */
-
 #include <QDebug>
 #include <QDomNode>
 #include <QImage>
@@ -32,6 +26,8 @@
 #define DEFAULT_SUBPIXELS_PER_PIXEL 4
 #define DEFAULT_PIXELS_PER_SECOND 100
 
+#define RATE_INCREMENT 0.015
+
 void WaveformRenderer::run() {
     double msecs_old = 0, msecs_elapsed = 0;
 
@@ -47,7 +43,6 @@ void WaveformRenderer::run() {
 
         QThread::msleep(6);
     }
-
 }
 
 WaveformRenderer::WaveformRenderer(const char* group) :
@@ -68,6 +63,7 @@ WaveformRenderer::WaveformRenderer(const char* group) :
     m_dRate(0),
     m_dRateRange(0),
     m_dRateDir(0),
+    m_iRateAdjusting(0),
     m_iDupes(0),
     m_dPlayPosAdjust(0),
     m_iLatency(0),
@@ -126,29 +122,11 @@ WaveformRenderer::WaveformRenderer(const char* group) :
 
 
 WaveformRenderer::~WaveformRenderer() {
+    qDebug() << this << "~WaveformRenderer()";
+
     // Wait for the thread to quit
     m_bQuit = true;
     QThread::wait();
-
-    if(m_pCOVisualResample)
-        delete m_pCOVisualResample;
-    m_pCOVisualResample = NULL;
-
-    if(m_pRate)
-        delete m_pRate;
-    m_pRate = NULL;
-
-    if(m_pRateRange)
-        delete m_pRateRange;
-    m_pRateRange = NULL;
-
-    if(m_pRateDir)
-        delete m_pRateDir;
-    m_pRateDir = NULL;
-
-    if(m_pPlayPos)
-        delete m_pPlayPos;
-    m_pPlayPos = NULL;
 
     if(m_pRenderBackground)
         delete m_pRenderBackground;
@@ -165,22 +143,57 @@ WaveformRenderer::~WaveformRenderer() {
     if(m_pRenderBeat)
         delete m_pRenderBeat;
     m_pRenderBeat = NULL;
+
+    QMutableListIterator<RenderObject*> iter(m_renderObjects);
+    while (iter.hasNext()) {
+        RenderObject* ro = iter.next();
+        iter.remove();
+        delete ro;
+    }
+
+    if(m_pCOVisualResample)
+        delete m_pCOVisualResample;
+    m_pCOVisualResample = NULL;
+
+    if (m_pPlayPos)
+        delete m_pPlayPos;
+    m_pPlayPos = NULL;
+
+    if (m_pLatency)
+        delete m_pLatency;
+    m_pLatency = NULL;;
+
+    if(m_pRate)
+        delete m_pRate;
+    m_pRate = NULL;
+
+    if(m_pRateRange)
+        delete m_pRateRange;
+    m_pRateRange = NULL;
+
+    if(m_pRateDir)
+        delete m_pRateDir;
+    m_pRateDir = NULL;
+
+    if(m_pPlayPos)
+        delete m_pPlayPos;
+    m_pPlayPos = NULL;
 }
 
 void WaveformRenderer::slotUpdatePlayPos(double v) {
     m_iPlayPosTimeOld = m_iPlayPosTime;
-    m_playPosTimeOld = m_playPosTime;
+    //m_playPosTimeOld = m_playPosTime;
     m_dPlayPosOld = m_dPlayPos;
     m_dPlayPos = v;
     m_iPlayPosTime = clock();
-    m_playPosTime = QTime::currentTime();
+    //m_playPosTime = QTime::currentTime();
 
     m_iDupes = 0;
     m_dPlayPosAdjust = 0;
 }
 
 void WaveformRenderer::slotUpdateRate(double v) {
-    m_dRate = v;
+    m_dTargetRate = v;
 }
 
 void WaveformRenderer::slotUpdateRateRange(double v) {
@@ -490,6 +503,28 @@ void WaveformRenderer::draw(QPainter* pPainter, QPaintEvent *pEvent) {
     double playpos = m_dPlayPos + m_dPlayPosAdjust;
 
     //qDebug() << m_dPlayPosAdjust;
+
+    // Gradually stretch the waveform
+    if (fabs(m_dTargetRate - m_dRate) > RATE_INCREMENT)
+    {
+        if ((m_dTargetRate - m_dRate) > 0)
+        {
+            m_iRateAdjusting = m_iRateAdjusting > 0 ? m_iRateAdjusting + 1 : 1;
+            m_dRate = math_min(m_dTargetRate, m_dRate + RATE_INCREMENT * pow(
+                static_cast<double>(m_iRateAdjusting), 2) / 80);
+        }
+        else
+        {
+            m_iRateAdjusting = m_iRateAdjusting < 0 ? m_iRateAdjusting - 1 : -1;
+            m_dRate = math_max(m_dTargetRate, m_dRate - RATE_INCREMENT * pow(
+                static_cast<double>(m_iRateAdjusting), 2) / 80);
+        }
+    }
+    else
+    {
+        m_iRateAdjusting = 0;
+        m_dRate = m_dTargetRate;
+    }
 
     // Limit our rate adjustment to < 99%, "Bad Things" might happen otherwise.
     double rateAdjust = m_dRateDir * math_min(0.99, m_dRate * m_dRateRange);

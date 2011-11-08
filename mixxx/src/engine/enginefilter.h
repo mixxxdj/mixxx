@@ -19,8 +19,8 @@
 #define ENGINEFILTER_H
 
 #define MIXXX
-#include "engineobject.h"
-#include "../lib/fidlib-0.9.9/fidlib.h"
+#include "engine/engineobject.h"
+#include "../lib/fidlib-0.9.10/fidlib.h"
 #include "defs.h"
 
 enum filterType{

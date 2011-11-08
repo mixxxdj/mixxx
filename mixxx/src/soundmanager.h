@@ -1,10 +1,9 @@
-/***************************************************************************
-                          soundmanager.h
-                             -------------------
-    begin                : Sun Aug 15, 2007
-    copyright            : (C) 2007 Albert Santoni
-    email                : gamegod \a\t users.sf.net
- ***************************************************************************/
+/**
+ * @file soundmanager.h
+ * @author Albert Santoni <gamegod at users dot sf dot net>
+ * @author Bill Good <bkgood at gmail dot com>
+ * @date 20070815
+ */
 
 /***************************************************************************
  *                                                                         *
@@ -18,19 +17,18 @@
 #ifndef SOUNDMANAGER_H
 #define SOUNDMANAGER_H
 
-#include "configobject.h"
-#include "controlobject.h"
+#include <QObject>
 #include "defs.h"
-#ifdef __VINYLCONTROL__
-#include "vinylcontrolproxy.h"
-#endif
+#include "configobject.h"
 #include "soundmanagerconfig.h"
-#include <QTimer>
+#include "controlobjectthreadmain.h"
 
 class SoundDevice;
 class EngineMaster;
 class AudioOutput;
 class AudioInput;
+class AudioSource;
+class AudioDestination;
 
 #define MIXXX_PORTAUDIO_JACK_STRING "JACK Audio Connection Kit"
 #define MIXXX_PORTAUDIO_ALSA_STRING "ALSA"
@@ -39,58 +37,71 @@ class AudioInput;
 #define MIXXX_PORTAUDIO_DIRECTSOUND_STRING "Windows DirectSound"
 #define MIXXX_PORTAUDIO_COREAUDIO_STRING "Core Audio"
 
-class SoundManager : public QObject
-{
+class SoundManager : public QObject {
     Q_OBJECT
-    
-    public:
-        SoundManager(ConfigObject<ConfigValue> *pConfig, EngineMaster *_master);
-        ~SoundManager();
-        const EngineMaster* getEngine() const;
-        QList<SoundDevice*> getDeviceList(QString filterAPI, bool bOutputDevices, bool bInputDevices);
-        void closeDevices();
-        void clearDeviceList();
-        void queryDevices();
-        int setupDevices();
-        SoundDevice* getErrorDevice() const;
-        QList<unsigned int> getSampleRates(QString api) const;
-        QList<unsigned int> getSampleRates() const;
-        QList<QString> getHostAPIList() const;
-        SoundManagerConfig getConfig() const;
-        int setConfig(SoundManagerConfig config);
-        void checkConfig();
-        QHash<AudioOutput, const CSAMPLE*>
-            requestBuffer(QList<AudioOutput> outputs, unsigned long iFramesPerBuffer, SoundDevice*, double streamTime=0);
-        void pushBuffer(QList<AudioInput> inputs, short *inputBuffer, 
-                        unsigned long iFramesPerBuffer, unsigned int iFrameSize);
-    signals:
-        void devicesUpdated(); // emitted when all the pointers to SoundDevices go stale
-    public slots:
-        void sync();
-    private:
-        void clearOperativeVariables();
-        
-        EngineMaster *m_pMaster;
-        ConfigObject<ConfigValue> *m_pConfig;
-        QList<SoundDevice*> m_devices;
-        QList<unsigned int> m_samplerates;
-        QString m_hostAPI;
-        QHash<AudioOutput, const CSAMPLE*> m_outputBuffers;
-        QHash<AudioInput, short*> m_inputBuffers; /** Audio received from input */
-        QHash<SoundDevice*, long> m_deviceFrameCount;   /** Sound card sync */
-        SoundDevice* m_pClkRefDevice;  /** Sound card sync */
-#ifdef __VINYLCONTROL__
-        QList<VinylControlProxy*> m_VinylControl;
-#endif        
-        unsigned int iNumDevicesOpenedForOutput;
-        unsigned int iNumDevicesOpenedForInput;
-        QMutex requestBufferMutex;
-        SoundManagerConfig m_config;
-        SoundDevice *m_pErrorDevice;
+public:
+    SoundManager(ConfigObject<ConfigValue> *pConfig, EngineMaster *_master);
+    ~SoundManager();
+    const EngineMaster* getEngine() const; // this shouldn't exist
+    QList<SoundDevice*> getDeviceList(QString filterAPI, bool bOutputDevices, bool bInputDevices);
+    void closeDevices();
+    void clearDeviceList();
+    void queryDevices();
+    int setupDevices();
+    SoundDevice* getErrorDevice() const;
+    QList<unsigned int> getSampleRates(QString api) const;
+    QList<unsigned int> getSampleRates() const;
+    QList<QString> getHostAPIList() const;
+    SoundManagerConfig getConfig() const;
+    int setConfig(SoundManagerConfig config);
+    void checkConfig();
+    QHash<AudioOutput, const CSAMPLE*> requestBuffer(
+        QList<AudioOutput> outputs, unsigned long iFramesPerBuffer,
+        SoundDevice *device, double streamTime = 0);
+    void pushBuffer(QList<AudioInput> inputs, short *inputBuffer,
+        unsigned long iFramesPerBuffer, unsigned int iFrameSize);
+    void registerOutput(AudioOutput output, const AudioSource *src);
+    void registerInput(AudioInput input, AudioDestination *dest);
+    QList<AudioOutput> registeredOutputs() const;
+    QList<AudioInput> registeredInputs() const;
+signals:
+    void devicesUpdated(); // emitted when pointers to SoundDevices go stale
+    void devicesSetup(); // emitted when the sound devices have been set up
+    void outputRegistered(AudioOutput output, const AudioSource *src);
+    void inputRegistered(AudioInput input, AudioDestination *dest);
+private:
+    void clearOperativeVariables();
+    void setJACKName() const;
+
+    EngineMaster *m_pMaster;
+    ConfigObject<ConfigValue> *m_pConfig;
+    QList<SoundDevice*> m_devices;
+    QList<unsigned int> m_samplerates;
+    QString m_hostAPI;
+    QHash<AudioOutput, const CSAMPLE*> m_outputBuffers;
+    QHash<AudioInput, short*> m_inputBuffers;
+    QHash<SoundDevice*, long> m_deviceFrameCount; // used in dead code
+    // Clock reference, used to make sure the same device triggers buffer
+    // refresh every $latency-ms period
+    SoundDevice* m_pClkRefDevice;
+    int m_outputDevicesOpened;
+    int m_inputDevicesOpened;
+    QMutex requestBufferMutex;
+    SoundManagerConfig m_config;
+    SoundDevice *m_pErrorDevice;
 #ifdef __PORTAUDIO__
-        bool m_paInitialized;
-        unsigned int m_jackSampleRate;
+    bool m_paInitialized;
+    unsigned int m_jackSampleRate;
 #endif
+    QHash<AudioOutput, const AudioSource*> m_registeredSources;
+    QHash<AudioInput, AudioDestination*> m_registeredDestinations;
+
+    ControlObjectThreadMain* m_pControlObjectLatency;
+    ControlObjectThreadMain* m_pControlObjectSampleRate;
+    ControlObjectThreadMain* m_pControlObjectVinylControlMode;
+    ControlObjectThreadMain* m_pControlObjectVinylControlMode1;
+    ControlObjectThreadMain* m_pControlObjectVinylControlMode2;
+    ControlObjectThreadMain* m_pControlObjectVinylControlGain;
 };
 
 #endif

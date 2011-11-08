@@ -20,6 +20,15 @@ ProxyTrackModel::ProxyTrackModel(QAbstractItemModel* pTrackModel,
 ProxyTrackModel::~ProxyTrackModel() {
 }
 
+int ProxyTrackModel::getTrackId(const QModelIndex& index) const {
+    QModelIndex indexSource = mapToSource(index);
+    return m_pTrackModel->getTrackId(indexSource);
+}
+
+const QLinkedList<int> ProxyTrackModel::getTrackRows(int trackId) const {
+    return m_pTrackModel->getTrackRows(trackId);
+}
+
 TrackPointer ProxyTrackModel::getTrack(const QModelIndex& index) const {
     QModelIndex indexSource = mapToSource(index);
     return m_pTrackModel->getTrack(indexSource);
@@ -39,7 +48,7 @@ void ProxyTrackModel::search(const QString& searchText) {
     }
 }
 
-const QString ProxyTrackModel::currentSearch() {
+const QString ProxyTrackModel::currentSearch() const {
     if (m_bHandleSearches) {
         return m_currentSearch;
     }
@@ -53,7 +62,6 @@ bool ProxyTrackModel::isColumnInternal(int column) {
 bool ProxyTrackModel::isColumnHiddenByDefault(int column) {
     return m_pTrackModel->isColumnHiddenByDefault(column);
 }
-
 
 void ProxyTrackModel::removeTrack(const QModelIndex& index) {
     QModelIndex indexSource = mapToSource(index);
@@ -91,7 +99,6 @@ TrackModel::CapabilitiesFlags ProxyTrackModel::getCapabilities() const {
 
 bool ProxyTrackModel::filterAcceptsRow(int sourceRow,
                                        const QModelIndex& sourceParent) const {
-
     if (!m_bHandleSearches)
         return QSortFilterProxyModel::filterAcceptsRow(sourceRow, sourceParent);
 

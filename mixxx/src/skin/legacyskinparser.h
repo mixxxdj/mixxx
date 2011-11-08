@@ -9,6 +9,7 @@
 
 #include "configobject.h"
 #include "skin/skinparser.h"
+#include "vinylcontrol/vinylcontrolmanager.h"
 
 class Library;
 class MixxxKeyboard;
@@ -21,7 +22,7 @@ class LegacySkinParser : public QObject, public SkinParser {
   public:
     LegacySkinParser(ConfigObject<ConfigValue>* pConfig,
                      MixxxKeyboard* pKeyboard, PlayerManager* pPlayerManager,
-                     Library* pLibrary,
+                     Library* pLibrary, VinylControlManager* pVCMan,
                      EffectsManager* pEffectsManager);
     virtual ~LegacySkinParser();
 
@@ -49,6 +50,7 @@ class LegacySkinParser : public QObject, public SkinParser {
     QWidget* parseVisual(QDomElement node);
     QWidget* parseOverview(QDomElement node);
     QWidget* parseText(QDomElement node);
+    QWidget* parseTime(QDomElement node);
     QWidget* parseTrackProperty(QDomElement node);
     QWidget* parseVuMeter(QDomElement node);
     QWidget* parseStatusLight(QDomElement node);
@@ -62,7 +64,10 @@ class LegacySkinParser : public QObject, public SkinParser {
     QWidget* parseTableView(QDomElement node);
     QWidget* parseStyle(QDomElement node);
     QWidget* parseEffectChainName(QDomElement node);
+    QWidget* parseSpinny(QDomElement node);
 
+    void setupPosition(QDomNode node, QWidget* pWidget);
+    void setupSize(QDomNode node, QWidget* pWidget);
     void setupWidget(QDomNode node, QWidget* pWidget);
     void setupConnections(QDomNode node, QWidget* pWidget);
 
@@ -73,6 +78,7 @@ class LegacySkinParser : public QObject, public SkinParser {
     MixxxKeyboard* m_pKeyboard;
     PlayerManager* m_pPlayerManager;
     Library* m_pLibrary;
+    VinylControlManager* m_pVCManager;
     EffectsManager* m_pEffectsManager;
     QWidget *m_pParent;
     static QList<const char*> s_channelStrs;

@@ -19,6 +19,7 @@ class SkinLoader {
                              MixxxKeyboard* pKeyboard,
                              PlayerManager* pPlayerManager,
                              Library* pLibrary,
+                             VinylControlManager* pVCMan,
                              EffectsManager* pEffectsManager);
 
     QString getConfiguredSkinPath();

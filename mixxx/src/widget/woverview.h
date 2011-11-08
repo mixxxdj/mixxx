@@ -45,18 +45,27 @@ class WOverview : public WWidget
     void redrawPixmap();
     QColor getMarkerColor();
     QColor getSignalColor();
+
   public slots:
     void setValue(double);
     void slotLoadNewWaveform(TrackInfoObject* pTrack);
     void slotLoadNewWaveform(TrackPointer pTrack);
     void slotUnloadTrack(TrackPointer pTrack);
+
+  signals:
+    void trackDropped(QString filename, QString group);
+
+  protected:
+    virtual void dragEnterEvent(QDragEnterEvent* event);
+    virtual void dropEvent(QDropEvent* event);
+
   private slots:
     void cueChanged(double v);
     void loopStartChanged(double v);
     void loopEndChanged(double v);
     void loopEnabledChanged(double v);
-  private:
 
+  private:
     const char* m_pGroup;
     bool waveformChanged;
 
@@ -82,6 +91,9 @@ class WOverview : public WWidget
     int m_iPos, m_iStartMousePos;
     /** Pointer to screen buffer */
     QPixmap *m_pScreenBuffer;
+    QPixmap m_backgroundPixmap;
+    QString m_backgroundPixmapPath;
+    QColor m_qColorBackground;
     QColor m_qColorMarker;
     QColor m_qColorSignal;
 };

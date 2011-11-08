@@ -12,6 +12,7 @@
 #include "widget/wlibrary.h"
 #include "widget/wlibrarysidebar.h"
 #include "mixxxkeyboard.h"
+#include "soundsourceproxy.h"
 
 const QString AutoDJFeature::m_sAutoDJViewName = QString("Auto DJ");
 
@@ -41,7 +42,8 @@ void AutoDJFeature::bindWidget(WLibrarySidebar* sidebarWidget,
 
     DlgAutoDJ* pAutoDJView = new DlgAutoDJ(libraryWidget,
                                            m_pConfig,
-                                           m_pTrackCollection);
+                                           m_pTrackCollection,
+                                           keyboard);
     pAutoDJView->installEventFilter(keyboard);
     libraryWidget->registerView(m_sAutoDJViewName, pAutoDJView);
     connect(pAutoDJView, SIGNAL(loadTrack(TrackPointer)),
@@ -83,14 +85,13 @@ bool AutoDJFeature::dropAccept(QUrl url) {
     //XXX: See the note in PlaylistFeature::dropAccept() about using QUrl::toLocalFile()
     //     instead of toString()
     QFileInfo file(url.toLocalFile());
-    QString location = file.absoluteFilePath();
 
-    //Get id of track
-    int trackId = trackDao.getTrackId(location);
-
-    if (trackId < 0) {
-        trackId = trackDao.addTrack(file);
+    if (!SoundSourceProxy::isFilenameSupported(file.fileName())) {
+        return false;
     }
+
+    // Adds track, does not insert duplicates, handles unremoving logic.
+    int trackId = trackDao.addTrack(file, true);
 
     if (trackId < 0) {
         return false;
@@ -107,10 +108,14 @@ bool AutoDJFeature::dropAcceptChild(const QModelIndex& index, QUrl url) {
 }
 
 bool AutoDJFeature::dragMoveAccept(QUrl url) {
-    return true;
+    QFileInfo file(url.toLocalFile());
+    return SoundSourceProxy::isFilenameSupported(file.fileName());
 }
 
 bool AutoDJFeature::dragMoveAcceptChild(const QModelIndex& index,
                                               QUrl url) {
     return false;
+}
+void AutoDJFeature::onLazyChildExpandation(const QModelIndex &index){
+    //Nothing to do because the childmodel is not of lazy nature.
 }

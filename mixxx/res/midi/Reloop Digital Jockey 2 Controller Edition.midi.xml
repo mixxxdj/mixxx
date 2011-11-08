@@ -27,26 +27,6 @@
                     <script-binding/>
                 </options>
             </control>
-			<!-- Key Lock channel 2 -->
-			<control>
-                <status>0x90</status>
-                <midino>0x3E</midino>
-                <group>[Channel2]</group>
-                <key>DigitalJockey2Controller.KeyLock2</key>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-			<!-- Key Lock channel 1 -->
-			<control>
-                <status>0x90</status>
-                <midino>0x02</midino>
-                <group>[Channel1]</group>
-                <key>DigitalJockey2Controller.KeyLock1</key>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
             <control>
                 <status>0x90</status>
                 <midino>0x03</midino>
@@ -128,6 +108,26 @@
                     <script-binding/>
                 </options>
             </control>
+            <!-- Beat Loops -->
+            <control>
+                <status>0x90</status>
+                <midino>0x11</midino>
+                <group>[Channel1]</group>
+                <key>DigitalJockey2Controller.BeatLoop</key>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <status>0x90</status>
+                <midino>0x4D</midino>
+                <group>[Channel2]</group>
+                <key>DigitalJockey2Controller.BeatLoop</key>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+             <!-- pitch and tempo controls -->
             <control>
                 <status>0xe0</status>
                 <midino>0x20</midino>
@@ -524,6 +524,80 @@
               <script-binding/>
             </options>
           </control>
+	  <control>
+                <status>0x90</status>
+                <midino>0x13</midino>
+                <group>[Channel1]</group>
+                <key>DigitalJockey2Controller.LoadSelectedTrack</key>
+                <options>
+                    <script-binding/>
+                </options>
+          </control>
+	  <control>
+                <status>0x90</status>
+                <midino>0x4f</midino>
+                <group>[Channel2]</group>
+                <key>DigitalJockey2Controller.LoadSelectedTrack</key>
+                <options>
+                    <script-binding/>
+                </options>
+          </control>
+	  <control>
+                <status>0x90</status>
+                <midino>0x1d</midino>
+                <group>[Channel1]</group>
+                <key>DigitalJockey2Controller.JogWheelHelper</key>
+                <options>
+                    <script-binding/>
+                </options>
+          </control>
+	  <control>
+                <status>0x90</status>
+                <midino>0x59</midino>
+                <group>[Channel2]</group>
+                <key>DigitalJockey2Controller.JogWheelHelper</key>
+                <options>
+                    <script-binding/>
+                </options>
+          </control>
+	  <control>
+	  	<status>0xe0</status>
+	  	<midino>0x20</midino>
+	  	<group>[Channel1]</group>
+		<key>DigitalJockey2Controller.PitchControl</key>
+		<options>
+		    <script-binding/>
+		</options>
+	  </control>
+	  <control>
+		<status>0xe1</status>
+		<midino>0x10</midino>
+		<group>[Channel2]</group>
+		<key>DigitalJockey2Controller.PitchControl</key>
+		<options>
+		    <script-binding/>
+		</options>
+          </control>
+	    <!-- Key Lock channel 1 -->
+	    <control>
+                <status>0x90</status>
+                <midino>0x02</midino>
+                <group>[Channel1]</group>
+                <key>DigitalJockey2Controller.KeyLock1</key>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+	    <!-- Key Lock channel 2 -->
+	    <control>
+                <status>0x90</status>
+                <midino>0x3E</midino>
+                <group>[Channel2]</group>
+                <key>DigitalJockey2Controller.KeyLock2</key>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
         </controls>
         <outputs/>
     </controller>

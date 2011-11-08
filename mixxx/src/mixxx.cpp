@@ -20,18 +20,12 @@
 #include <QtGui>
 #include <QTranslator>
 
-#include "widget/wknob.h"
-#include "widget/wslider.h"
-#include "widget/wpushbutton.h"
-#include "widget/woverview.h"
 #include "mixxx.h"
 #include "controlnull.h"
 #include "controlpotmeter.h"
 #include "controlobjectthreadmain.h"
-#include "engine/enginebuffer.h"
 #include "engine/enginemaster.h"
-#include "engine/enginechannel.h"
-#include "engine/enginevumeter.h"
+#include "engine/enginemicrophone.h"
 #include "trackinfoobject.h"
 #include "dlgabout.h"
 #include "waveformviewerfactory.h"
@@ -55,8 +49,10 @@
 #include "library/libraryscanner.h"
 
 #include "soundmanager.h"
+#include "soundmanagerutil.h"
 #include "defs_urls.h"
 #include "recording/defs_recording.h"
+
 
 #include "midi/mididevicemanager.h"
 
@@ -72,6 +68,11 @@
 // force a rebuild of everything
 
 #include "defs_version.h"
+
+#ifdef __VINYLCONTROL__
+#include "vinylcontrol/vinylcontrol.h"
+#include "vinylcontrol/vinylcontrolmanager.h"
+#endif
 
 #ifdef __C_METRICS__
 #include <cmetrics.h>
@@ -129,6 +130,7 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
     m_pSoundManager = 0;
     m_pPrefDlg = 0;
     m_pMidiDeviceManager = 0;
+    m_pRecordingManager = 0;
 
     // Check to see if this is the first time this version of Mixxx is run
     // after an upgrade and make any needed changes.
@@ -137,12 +139,36 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
     bool bFirstRun = upgrader.isFirstRun();
     bool bUpgraded = upgrader.isUpgraded();
     QString qConfigPath = m_pConfig->getConfigPath();
-
     QString translationsFolder = qConfigPath + "translations/";
-    QTranslator* mixxxTranslator = new QTranslator();
-    mixxxTranslator->load("mixxx_" + QLocale::system().name(),
-                          translationsFolder);
-    a->installTranslator(mixxxTranslator);
+
+    // Load Qt base translations
+    QString locale = args.locale;
+    if (locale == "") {
+        locale = QLocale::system().name();
+    }
+
+    // Load Qt translations for this locale
+    QTranslator* qtTranslator = new QTranslator(a);
+   if( qtTranslator->load("qt_" + locale,
+           QLibraryInfo::location(QLibraryInfo::TranslationsPath))) {
+       a->installTranslator(qtTranslator);
+   }
+   else{
+       delete qtTranslator;
+   }
+
+    // Load Mixxx specific translations for this locale
+    QTranslator* mixxxTranslator = new QTranslator(a);
+    bool mixxxLoaded = mixxxTranslator->load("mixxx_" + locale, translationsFolder);
+    qDebug() << "Loading translations for locale" << locale
+            << "from translations folder" << translationsFolder << ":"
+            << (mixxxLoaded ? "success" : "fail");
+   if (mixxxLoaded) {
+       a->installTranslator(mixxxTranslator);
+   }
+   else {
+       delete mixxxTranslator;
+   }
 
 #ifdef __C_METRICS__
     // Initialize Case Metrics if User is OK with that
@@ -239,6 +265,7 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
 
     // TODO(XXX) leak pKbdConfig, MixxxKeyboard owns it? Maybe roll all keyboard
     // initialization into MixxxKeyboard
+    // Workaround for today: MixxxKeyboard calls delete
     m_pKeyboard = new MixxxKeyboard(pKbdConfig);
 
     // Setup the effects manager with four effects chains
@@ -247,6 +274,9 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
     m_pEffectsManager->addEffectChainSlot();
     m_pEffectsManager->addEffectChainSlot();
     m_pEffectsManager->addEffectChainSlot();
+
+    //create RecordingManager
+    m_pRecordingManager = new RecordingManager(m_pConfig);
 
     // Starting the master (mixing of the channels and effects):
     m_pEngine = new EngineMaster(m_pConfig, "[Master]", m_pEffectsManager);
@@ -260,10 +290,20 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
 
     m_pEffectsManager->setupDefaultChains();
 
+    connect(m_pEngine, SIGNAL(isRecording(bool)),
+            m_pRecordingManager,SLOT(slotIsRecording(bool)));
+    connect(m_pEngine, SIGNAL(bytesRecorded(int)),
+            m_pRecordingManager,SLOT(slotBytesRecorded(int)));
+
     // Initialize player device
     // while this is created here, setupDevices needs to be called sometime
     // after the players are added to the engine (as is done currently) -- bkgood
     m_pSoundManager = new SoundManager(m_pConfig, m_pEngine);
+
+    EngineMicrophone* pMicrophone = new EngineMicrophone("[Microphone]");
+    AudioInput micInput = AudioInput(AudioPath::MICROPHONE, 0, 0); // What should channelbase be?
+    m_pEngine->addChannel(pMicrophone);
+    m_pSoundManager->registerInput(micInput, pMicrophone);
 
     // Get Music dir
     bool hasChanged_MusicDir = false;
@@ -289,6 +329,15 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
             hasChanged_MusicDir = true;
         }
     }
+    /*
+     * Do not write meta data back to ID3 when meta data has changed
+     * Because multiple TrackDao objects can exists for a particular track
+     * writing meta data may ruine your MP3 file if done simultaneously.
+     * see Bug #728197
+     * For safety reasons, we deactivate this feature.
+     */
+    m_pConfig->set(ConfigKey("[Library]","WriteAudioTags"), ConfigValue(0));
+
 
     // library dies in seemingly unrelated qtsql error about not having a
     // sqlite driver if this path doesn't exist. Normally config->Save()
@@ -298,17 +347,44 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
         QDir().mkpath(QDir::homePath().append("/").append(SETTINGS_PATH));
     }
 
-    m_pLibrary = new Library(this, m_pConfig, bFirstRun || bUpgraded);
+
+
+    m_pLibrary = new Library(this, m_pConfig,
+                             bFirstRun || bUpgraded,
+                             m_pRecordingManager);
     qRegisterMetaType<TrackPointer>("TrackPointer");
 
     // Create the player manager.
     m_pPlayerManager = new PlayerManager(m_pConfig, m_pEngine, m_pLibrary);
     m_pPlayerManager->addDeck();
     m_pPlayerManager->addDeck();
-    // m_pPlayerManager->addSampler();
-    // m_pPlayerManager->addSampler();
-    // m_pPlayerManager->addSampler();
-    // m_pPlayerManager->addSampler();
+    m_pPlayerManager->addSampler();
+    m_pPlayerManager->addSampler();
+    m_pPlayerManager->addSampler();
+    m_pPlayerManager->addSampler();
+
+    // register the engine's outputs
+    m_pSoundManager->registerOutput(AudioOutput(AudioOutput::MASTER),
+        m_pEngine);
+    m_pSoundManager->registerOutput(AudioOutput(AudioOutput::HEADPHONES),
+        m_pEngine);
+    for (unsigned int deck = 0; deck < m_pPlayerManager->numDecks(); ++deck) {
+        // TODO(bkgood) make this look less dumb by putting channelBase after
+        // index in the AudioOutput() params
+        m_pSoundManager->registerOutput(
+            AudioOutput(AudioOutput::DECK, 0, deck), m_pEngine);
+    }
+
+#ifdef __VINYLCONTROL__
+    m_pVCManager = new VinylControlManager(this, m_pConfig);
+    for (unsigned int deck = 0; deck < m_pPlayerManager->numDecks(); ++deck) {
+        m_pSoundManager->registerInput(
+            AudioInput(AudioInput::VINYLCONTROL, 0, deck),
+            m_pVCManager);
+    }
+#else
+    m_pVCManager = NULL;
+#endif
 
     //Scan the library directory.
     m_pLibraryScanner = new LibraryScanner(m_pLibrary->getTrackCollection());
@@ -367,6 +443,8 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
         m_pConfig->set(ConfigKey("[BPM]", "AnalyzeEntireSong"),ConfigValue(1));
     }
 
+    //ControlObject::getControl(ConfigKey("[Channel1]","TrackEndMode"))->queueFromThread(m_pConfig->getValueString(ConfigKey("[Controls]","TrackEndModeCh1")).toDouble());
+    //ControlObject::getControl(ConfigKey("[Channel2]","TrackEndMode"))->queueFromThread(m_pConfig->getValueString(ConfigKey("[Controls]","TrackEndModeCh2")).toDouble());
 
     qRegisterMetaType<MidiMessage>("MidiMessage");
     qRegisterMetaType<MidiStatusByte>("MidiStatusByte");
@@ -378,8 +456,9 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
     m_pSkinLoader = new SkinLoader(m_pConfig);
 
     // Initialize preference dialog
-    m_pPrefDlg = new DlgPreferences(this, m_pSkinLoader, m_pSoundManager,
-                                 m_pMidiDeviceManager, m_pConfig);
+    m_pPrefDlg = new DlgPreferences(this, m_pSkinLoader, m_pSoundManager, m_pPlayerManager,
+                                 m_pMidiDeviceManager, m_pVCManager, m_pConfig);
+    m_pPrefDlg->setWindowIcon(QIcon(":/images/ic_mixxx_window.png"));
     m_pPrefDlg->setHidden(true);
 
     // Try open player device If that fails, the preference panel is opened.
@@ -446,11 +525,9 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
     m_pWidgetParent = NULL;
     // Loads the skin as a child of m_pView
     // assignment itentional in next line
-    if (!(m_pWidgetParent = m_pSkinLoader->loadDefaultSkin(m_pView,
-                                                           m_pKeyboard,
-                                                           m_pPlayerManager,
-                                                           m_pLibrary,
-                                                           m_pEffectsManager))) {
+    if (!(m_pWidgetParent = m_pSkinLoader->loadDefaultSkin(
+        m_pView, m_pKeyboard, m_pPlayerManager, m_pLibrary,
+        m_pVCManager, m_pEffectsManager))) {
         qDebug() << "Could not load default skin.";
     }
 
@@ -512,43 +589,65 @@ MixxxApp::~MixxxApp()
     qDebug() << "save config, " << qTime.elapsed();
     m_pConfig->Save();
 
-    qDebug() << "close soundmanager" << qTime.elapsed();
-    m_pSoundManager->closeDevices();
-    qDebug() << "soundmanager->close() done";
+    // Save state of End of track controls in config database
+    //m_pConfig->set(ConfigKey("[Controls]","TrackEndModeCh1"), ConfigValue((int)ControlObject::getControl(ConfigKey("[Channel1]","TrackEndMode"))->get()));
+    //m_pConfig->set(ConfigKey("[Controls]","TrackEndModeCh2"), ConfigValue((int)ControlObject::getControl(ConfigKey("[Channel2]","TrackEndMode"))->get()));
 
-    qDebug() << "delete SkinLoader";
-    delete m_pSkinLoader;
-
-    qDebug() << "delete MidiDeviceManager";
-    delete m_pMidiDeviceManager;
-
+    // SoundManager depend on Engine and Config
     qDebug() << "delete soundmanager, " << qTime.elapsed();
     delete m_pSoundManager;
 
+#ifdef __VINYLCONTROL__
+    // VinylControlManager depends on a CO the engine owns
+    // (vinylcontrol_enabled in VinylControlControl)
+    qDebug() << "delete vinylcontrolmanager, " << qTime.elapsed();
+    delete m_pVCManager;
+#endif
+
+    // View depends on MixxxKeyboard, PlayerManager, Library
+    qDebug() << "delete view, " << qTime.elapsed();
+    delete m_pView;
+
+    // SkinLoader depends on Config
+    qDebug() << "delete SkinLoader";
+    delete m_pSkinLoader;
+
+    // MIDIDeviceManager depends on Config
+    qDebug() << "delete MidiDeviceManager";
+    delete m_pMidiDeviceManager;
+
+    // PlayerManager depends on Engine, Library, and Config
     qDebug() << "delete playerManager" << qTime.elapsed();
     delete m_pPlayerManager;
 
+    // EngineMaster depends on Config
     qDebug() << "delete m_pEngine, " << qTime.elapsed();
     delete m_pEngine;
-
-    qDebug() << "delete view, " << qTime.elapsed();
-    delete m_pView;
 
     qDebug() << "deleting effects manager, " << qTime.elapsed();
     delete m_pEffectsManager;
 
+    // LibraryScanner depends on Library
     qDebug() << "delete library scanner" <<  qTime.elapsed();
     delete m_pLibraryScanner;
 
     // Delete the library after the view so there are no dangling pointers to
+    // Depends on RecordingManager
     // the data models.
     qDebug() << "delete library" << qTime.elapsed();
     delete m_pLibrary;
+
+    // RecordingManager depends on config
+    qDebug() << "delete RecordingManager" << qTime.elapsed();
+    delete m_pRecordingManager;
 
     // HACK: Save config again. We saved it once before doing some dangerous
     // stuff. We only really want to save it here, but the first one was just
     // a precaution. The earlier one can be removed when stuff is more stable
     // at exit.
+
+    //Disable shoutcast so when Mixxx starts again it will not connect
+    m_pConfig->set(ConfigKey("[Shoutcast]", "enabled"),0);
     m_pConfig->Save();
     delete m_pPrefDlg;
 
@@ -563,6 +662,31 @@ MixxxApp::~MixxxApp()
 
     qDebug() << "delete config, " << qTime.elapsed();
     delete m_pConfig;
+
+    // Check for leaked ControlObjects and give warnings.
+    QList<ControlObject*> leakedControls;
+    QList<ConfigKey> leakedConfigKeys;
+
+    ControlObject::getControls(&leakedControls);
+
+    if (leakedControls.size() > 0) {
+        qDebug() << "WARNING: The following" << leakedControls.size() << "controls were leaked:";
+        foreach (ControlObject* pControl, leakedControls) {
+            ConfigKey key = pControl->getKey();
+            qDebug() << key.group << key.item;
+            leakedConfigKeys.append(key);
+        }
+
+       foreach (ConfigKey key, leakedConfigKeys) {
+           // delete just to satisfy valgrind:
+           // check if the pointer is still valid, the control object may have bin already
+           // deleted by its parent in this loop
+           delete ControlObject::getControl(key);
+       }
+   }
+   qDebug() << "~MixxxApp: All leaking controls deleted.";
+
+   delete m_pKeyboard;
 }
 
 int MixxxApp::noSoundDlg(void)
@@ -732,13 +856,19 @@ void MixxxApp::initActions()
     m_pOptionsPreferences->setShortcut(tr("Ctrl+P"));
     m_pOptionsPreferences->setShortcutContext(Qt::ApplicationShortcut);
 
-    m_pHelpAboutApp = new QAction(tr("&About..."), this);
-    m_pHelpSupport = new QAction(tr("&Community Support..."), this);
+    m_pHelpAboutApp = new QAction(tr("&About"), this);
+    m_pHelpSupport = new QAction(tr("&Community Support"), this);
+    m_pHelpFeedback = new QAction(tr("Send Us &Feedback"), this);
+    m_pHelpTranslation = new QAction(tr("&Translate this application"), this);
 
 #ifdef __VINYLCONTROL__
-    m_pOptionsVinylControl = new QAction(tr("Enable &Vinyl Control"), this);
+    m_pOptionsVinylControl = new QAction(tr("Enable &Vinyl Control 1"), this);
     m_pOptionsVinylControl->setShortcut(tr("Ctrl+Y"));
     m_pOptionsVinylControl->setShortcutContext(Qt::ApplicationShortcut);
+
+    m_pOptionsVinylControl2 = new QAction(tr("Enable &Vinyl Control 2"), this);
+    m_pOptionsVinylControl2->setShortcut(tr("Ctrl+U"));
+    m_pOptionsVinylControl2->setShortcutContext(Qt::ApplicationShortcut);
 #endif
 
 #ifdef __SHOUTCAST__
@@ -808,16 +938,30 @@ void MixxxApp::initActions()
     // Either check or uncheck the vinyl control menu item depending on what
     // it was saved as.
     m_pOptionsVinylControl->setCheckable(true);
-    if ((bool)m_pConfig->getValueString(ConfigKey("[VinylControl]", "Enabled"))
-            .toInt() == true)
-        m_pOptionsVinylControl->setChecked(true);
-    else
-        m_pOptionsVinylControl->setChecked(false);
+    m_pOptionsVinylControl->setChecked(false);
     m_pOptionsVinylControl->setStatusTip(tr("Activate Vinyl Control"));
     m_pOptionsVinylControl->setWhatsThis(
         tr("Use timecoded vinyls on external turntables to control Mixxx"));
-    connect(m_pOptionsVinylControl, SIGNAL(toggled(bool)),
-            this, SLOT(slotOptionsVinylControl(bool)));
+    connect(m_pOptionsVinylControl, SIGNAL(toggled(bool)), this,
+        SLOT(slotCheckboxVinylControl(bool)));
+
+   ControlObjectThreadMain* enabled1 = new ControlObjectThreadMain(
+        ControlObject::getControl(ConfigKey("[Channel1]", "vinylcontrol_enabled")),this);
+    connect(enabled1, SIGNAL(valueChanged(double)), this,
+        SLOT(slotControlVinylControl(double)));
+
+    m_pOptionsVinylControl2->setCheckable(true);
+    m_pOptionsVinylControl2->setChecked(false);
+    m_pOptionsVinylControl2->setStatusTip(tr("Activate Vinyl Control"));
+    m_pOptionsVinylControl2->setWhatsThis(
+        tr("Use timecoded vinyls on external turntables to control Mixxx"));
+    connect(m_pOptionsVinylControl2, SIGNAL(toggled(bool)), this,
+        SLOT(slotCheckboxVinylControl2(bool)));
+
+    ControlObjectThreadMain* enabled2 = new ControlObjectThreadMain(
+        ControlObject::getControl(ConfigKey("[Channel2]", "vinylcontrol_enabled")),this);
+    connect(enabled2, SIGNAL(valueChanged(double)), this,
+        SLOT(slotControlVinylControl2(double)));
 #endif
 
 #ifdef __SHOUTCAST__
@@ -860,6 +1004,14 @@ void MixxxApp::initActions()
     m_pHelpSupport->setWhatsThis(tr("Support\n\nGet help with Mixxx"));
     connect(m_pHelpSupport, SIGNAL(triggered()), this, SLOT(slotHelpSupport()));
 
+    m_pHelpFeedback->setStatusTip(tr("Send feedback to the Mixxx team."));
+    m_pHelpFeedback->setWhatsThis(tr("Support\n\nSend feedback to the Mixxx team."));
+    connect(m_pHelpFeedback, SIGNAL(triggered()), this, SLOT(slotHelpFeedback()));
+
+    m_pHelpTranslation->setStatusTip(tr("Help translate this application into your language."));
+    m_pHelpTranslation->setWhatsThis(tr("Support\n\nHelp translate this application into your language."));
+    connect(m_pHelpTranslation, SIGNAL(triggered()), this, SLOT(slotHelpTranslation()));
+
     m_pHelpAboutApp->setStatusTip(tr("About the application"));
     m_pHelpAboutApp->setWhatsThis(tr("About\n\nAbout the application"));
     connect(m_pHelpAboutApp, SIGNAL(triggered()), this, SLOT(slotHelpAbout()));
@@ -876,13 +1028,13 @@ void MixxxApp::initActions()
 void MixxxApp::initMenuBar()
 {
     // MENUBAR
-    m_pFileMenu=new QMenu(tr("&File"));
-    m_pOptionsMenu=new QMenu(tr("&Options"));
-    m_pLibraryMenu=new QMenu(tr("&Library"));
-    m_pViewMenu=new QMenu(tr("&View"));
-    m_pHelpMenu=new QMenu(tr("&Help"));
+   m_pFileMenu = new QMenu(tr("&File"), menuBar());
+   m_pOptionsMenu = new QMenu(tr("&Options"), menuBar());
+   m_pLibraryMenu = new QMenu(tr("&Library"),menuBar());
+   m_pViewMenu = new QMenu(tr("&View"), menuBar());
+   m_pHelpMenu = new QMenu(tr("&Help"), menuBar());
 #ifdef __SCRIPT__
-    macroMenu=new QMenu(tr("&Macro"));
+   macroMenu=new QMenu(tr("&Macro"), menuBar());
 #endif
     connect(m_pOptionsMenu, SIGNAL(aboutToShow()),
             this, SLOT(slotOptionsMenuShow()));
@@ -896,7 +1048,10 @@ void MixxxApp::initMenuBar()
     //optionsMenu->setCheckable(true);
     //  optionsBeatMark->addTo(optionsMenu);
 #ifdef __VINYLCONTROL__
-    m_pOptionsMenu->addAction(m_pOptionsVinylControl);
+    m_pVinylControlMenu = new QMenu(tr("&Vinyl Control"), menuBar());
+    m_pVinylControlMenu->addAction(m_pOptionsVinylControl);
+    m_pVinylControlMenu->addAction(m_pOptionsVinylControl2);
+    m_pOptionsMenu->addMenu(m_pVinylControlMenu);
 #endif
     m_pOptionsMenu->addAction(m_pOptionsRecord);
 #ifdef __SHOUTCAST__
@@ -918,6 +1073,8 @@ void MixxxApp::initMenuBar()
 
     // menuBar entry helpMenu
     m_pHelpMenu->addAction(m_pHelpSupport);
+    m_pHelpMenu->addAction(m_pHelpFeedback);
+    m_pHelpMenu->addAction(m_pHelpTranslation);
     m_pHelpMenu->addSeparator();
     m_pHelpMenu->addAction(m_pHelpAboutApp);
 
@@ -1050,8 +1207,10 @@ void MixxxApp::slotOptionsFullScreen(bool toggle)
          //m_winpos.setX(m_winpos.x() + (geometry().x() - x()));
          //m_winpos.setY(m_winpos.y() + (geometry().y() - y()));
 #endif
+        menuBar()-> setNativeMenuBar(false);
         showFullScreen();
     } else {
+        menuBar()-> setNativeMenuBar(true);
         showNormal();
 #ifdef __LINUX__
         //move(m_winpos);
@@ -1062,130 +1221,83 @@ void MixxxApp::slotOptionsFullScreen(bool toggle)
 void MixxxApp::slotOptionsPreferences()
 {
     m_pPrefDlg->setHidden(false);
+    m_pPrefDlg->activateWindow();
 }
 
-//Note: Can't #ifdef this because MOC doesn't catch it.
-void MixxxApp::slotOptionsVinylControl(bool toggle)
+void MixxxApp::slotControlVinylControl(double toggle)
 {
 #ifdef __VINYLCONTROL__
-    //qDebug() << "slotOptionsVinylControl: toggle is " << (int)toggle;
-
-    QMultiHash<QString, AudioInput> inputs = m_pSoundManager->getConfig().getInputs();
-    unsigned int countVCIns = 0;
-    foreach (AudioInput in, inputs.values()) {
-        if (in.getType() == AudioInput::VINYLCONTROL) {
-            ++countVCIns;
+    if (m_pVCManager->vinylInputEnabled(1)) {
+        m_pOptionsVinylControl->setChecked((bool)toggle);
+    } else {
+        m_pOptionsVinylControl->setChecked(false);
+        if (toggle) {
+            QMessageBox::warning(this, tr("Mixxx"),
+                tr("No input device(s) select.\nPlease select your soundcard(s) "
+                    "in the sound hardware preferences."),
+                QMessageBox::Ok,
+                QMessageBox::Ok);
+            m_pPrefDlg->show();
+            m_pPrefDlg->showSoundHardwarePage();
+            ControlObject::getControl(ConfigKey("[Channel1]", "vinylcontrol_status"))->set(VINYL_STATUS_DISABLED);
+            ControlObject::getControl(ConfigKey("[Channel1]", "vinylcontrol_enabled"))->set(0);
         }
     }
+#endif
+}
 
-    if (countVCIns == 0 && toggle)
-    {
-        QMessageBox::warning(this, tr("Mixxx"),
-            tr("No input device(s) selected.\nPlease select your soundcard(s) "
-                "in the sound hardware preferences."),
-            QMessageBox::Ok,
-            QMessageBox::Ok);
-        m_pPrefDlg->show();
-        m_pPrefDlg->showSoundHardwarePage();
-        m_pOptionsVinylControl->setChecked(false);
+void MixxxApp::slotCheckboxVinylControl(bool toggle)
+{
+#ifdef __VINYLCONTROL__
+    ControlObject::getControl(ConfigKey("[Channel1]", "vinylcontrol_enabled"))->set((double)toggle);
+#endif
+}
+
+void MixxxApp::slotControlVinylControl2(double toggle)
+{
+#ifdef __VINYLCONTROL__
+    if (m_pVCManager->vinylInputEnabled(2)) {
+        m_pOptionsVinylControl2->setChecked((bool)toggle);
+    } else {
+        m_pOptionsVinylControl2->setChecked(false);
+        if (toggle) {
+            QMessageBox::warning(this, tr("Mixxx"),
+                tr("No input device(s) select.\nPlease select your soundcard(s) "
+                    "in the sound hardware preferences."),
+                QMessageBox::Ok,
+                QMessageBox::Ok);
+            m_pPrefDlg->show();
+            m_pPrefDlg->showSoundHardwarePage();
+            ControlObject::getControl(ConfigKey("[Channel2]", "vinylcontrol_status"))->set(VINYL_STATUS_DISABLED);
+            ControlObject::getControl(ConfigKey("[Channel2]", "vinylcontrol_enabled"))->set(0);
+        }
     }
-    else
-    {
-        m_pConfig->set(
-            ConfigKey("[VinylControl]", "Enabled"), ConfigValue((int)toggle));
-        ControlObject::getControl(ConfigKey("[VinylControl]", "Enabled"))->set(
-            (int)toggle);
-    }
+#endif
+}
+
+void MixxxApp::slotCheckboxVinylControl2(bool toggle)
+{
+#ifdef __VINYLCONTROL__
+    ControlObject::getControl(ConfigKey("[Channel2]", "vinylcontrol_enabled"))->set((double)toggle);
 #endif
 }
 
 //Also can't ifdef this (MOC again)
 void MixxxApp::slotOptionsRecord(bool toggle)
 {
-    ControlObjectThreadMain *recordingControl =
-        new ControlObjectThreadMain(ControlObject::getControl(
-                    ConfigKey("[Master]", "Record")));
-    QString recordPath = m_pConfig->getValueString(
-            ConfigKey("[Recording]", "Path"));
-    QString encodingType = m_pConfig->getValueString(
-            ConfigKey("[Recording]", "Encoding"));
-    QString encodingFileFilter = QString("Audio (*.%1)").arg(encodingType);
-    bool proceedWithRecording = true;
-
-    if (toggle == true)
-    {
-        //If there was no recording path set,
-        if (recordPath == "")
-        {
-            QString selectedFile = QFileDialog::getSaveFileName(NULL,
-                    tr("Save Recording As..."),
-                    recordPath,
-                    encodingFileFilter);
-            if (selectedFile.toLower() != "")
-            {
-                if(!selectedFile.toLower().endsWith(
-                            "." + encodingType.toLower()))
-                {
-                    selectedFile.append("." + encodingType.toLower());
-                }
-                //Update the saved Path
-                m_pConfig->set(
-                    ConfigKey(RECORDING_PREF_KEY, "Path"), selectedFile);
-            }
-            else
-                proceedWithRecording = false; //Empty filename, so don't record
-        }
-        else //If there was already a recording path set
-        {
-            //... and the file already exists, ask the user if they want to over
-            // write it.
-            int result;
-            if(QFile::exists(recordPath))
-            {
-                QFileInfo fi(recordPath);
-                result = QMessageBox::question(this, tr("Mixxx Recording"),
-                    tr("The file %1 already exists. Would you like to overwrite"
-                       " it?\nSelecting \"No\" will abort the recording.")
-                    .arg(fi.fileName()), QMessageBox::Yes | QMessageBox::No);
-                if (result == QMessageBox::Yes)
-                    //If the user selected, "yes, overwrite the recording"...
-                    proceedWithRecording = true;
-                else
-                    proceedWithRecording = false;
-            }
-        }
-
-        if (proceedWithRecording == true)
-        {
-            qDebug() << "Setting record status: READY";
-            recordingControl->slotSet(RECORD_READY);
-        }
-        else
-        {
-            m_pOptionsRecord->setChecked(false);
-        }
-
-    }
-    else
-    {
-        qDebug() << "Setting record status: OFF";
-        recordingControl->slotSet(RECORD_OFF);
-    }
-
-    delete recordingControl;
+    //Only start recording if checkbox was set to true and recording is inactive
+    if(toggle && !m_pRecordingManager->isRecordingActive()) //start recording
+        m_pRecordingManager->startRecording();
+    //Only stop recording if checkbox was set to false and recording is active
+    else if(!toggle && m_pRecordingManager->isRecordingActive())
+        m_pRecordingManager->stopRecording();
 }
 
 void MixxxApp::slotHelpAbout()
 {
 
     DlgAbout *about = new DlgAbout(this);
-#if defined(AMD64) || defined(EM64T) || defined(x86_64)
-    about->version_label->setText(VERSION " x64");
-#elif defined(IA64)
-    about->version_label->setText(VERSION " IA64");
-#else
     about->version_label->setText(VERSION);
-#endif
     QString credits =
     QString("<p align=\"center\"><b>Mixxx %1 Development Team</b></p>"
 "<p align=\"center\">"
@@ -1199,8 +1311,6 @@ void MixxxApp::slotHelpAbout()
 "S. Brandt<br>"
 "Bill Good<br>"
 "Owen Williams<br>"
-"Bruno Buccolo<br>"
-"Ryan Baker<br>"
 "Vittorio Colao<br>"
 
 "</p>"
@@ -1237,10 +1347,22 @@ void MixxxApp::slotHelpAbout()
 "Micz Flor<br>"
 "Daniel James<br>"
 "Mika Haulo<br>"
+"Matthew Mikolay<br>"
+"Tom Mast<br>"
+"Miko Kiiski<br>"
+"Vin&iacute;cius Dias dos Santos<br>"
+"Joe Colosimo<br>"
+"Shashank Kumar<br>"
+"Till Hofmann<br>"
+"Daniel Sch&uuml;rmann<br>"
+"Peter V&aacute;gner<br>"
+"Thanasis Liappis<br>"
+"Jens Nachtigall<br>"
 
 "</p>"
 "<p align=\"center\"><b>And special thanks to:</b></p>"
 "<p align=\"center\">"
+"Vestax<br>"
 "Stanton<br>"
 "Hercules<br>"
 "EKS<br>"
@@ -1272,6 +1394,8 @@ void MixxxApp::slotHelpAbout()
 "Tom Care<br>"
 "Pawel Bartkiewicz<br>"
 "Nick Guenther<br>"
+"Bruno Buccolo<br>"
+"Ryan Baker<br>"
 "</p>"
 
 "<p align=\"center\"><b>Past Contributors</b></p>"
@@ -1308,25 +1432,29 @@ void MixxxApp::slotHelpAbout()
 "Michael Pujos<br>"
 "Claudio Bantaloukas<br>"
 "Pavol Rusnak<br>"
-
-#if defined(AMD64) || defined(EM64T) || defined(x86_64)
-    "</p>").arg(VERSION " x64");
-#elif defined(IA64)
-    "</p>").arg(VERSION " IA64");
-#else
     "</p>").arg(VERSION);
-#endif
 
     about->textBrowser->setHtml(credits);
     about->show();
 
 }
 
-void MixxxApp::slotHelpSupport()
-{
+void MixxxApp::slotHelpSupport() {
     QUrl qSupportURL;
     qSupportURL.setUrl(MIXXX_SUPPORT_URL);
     QDesktopServices::openUrl(qSupportURL);
+}
+
+void MixxxApp::slotHelpFeedback() {
+    QUrl qFeedbackUrl;
+    qFeedbackUrl.setUrl(MIXXX_FEEDBACK_URL);
+    QDesktopServices::openUrl(qFeedbackUrl);
+}
+
+void MixxxApp::slotHelpTranslation() {
+    QUrl qTranslationUrl;
+    qTranslationUrl.setUrl(MIXXX_TRANSLATION_URL);
+    QDesktopServices::openUrl(qTranslationUrl);
 }
 
 void MixxxApp::rebootMixxxView() {
@@ -1350,11 +1478,9 @@ void MixxxApp::rebootMixxxView() {
     m_pView = new QFrame();
 
     // assignment in next line intentional
-    if (!(m_pWidgetParent = m_pSkinLoader->loadDefaultSkin(m_pView,
-                                                           m_pKeyboard,
-                                                           m_pPlayerManager,
-                                                           m_pLibrary,
-                                                           m_pEffectsManager))) {
+    if (!(m_pWidgetParent = m_pSkinLoader->loadDefaultSkin(
+        m_pView, m_pKeyboard, m_pPlayerManager, m_pLibrary,
+        m_pVCManager, m_pEffectsManager))) {
         qDebug() << "Could not reload the skin.";
     }
 
@@ -1417,14 +1543,8 @@ void MixxxApp::slotEnableRescanLibraryAction()
 }
 
 void MixxxApp::slotOptionsMenuShow(){
-    ControlObjectThread* ctrlRec =
-        new ControlObjectThread(ControlObject::getControl(
-                    ConfigKey("[Master]", "Record")));
-
-    if(ctrlRec->get() == RECORD_OFF){
-        //uncheck Recording
-    m_pOptionsRecord->setChecked(false);
-    }
+    // Check recording if it is active.
+    m_pOptionsRecord->setChecked(m_pRecordingManager->isRecordingActive());
 
 #ifdef __SHOUTCAST__
     bool broadcastEnabled =

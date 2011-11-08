@@ -28,7 +28,7 @@
 #include <QWeakPointer>
 
 #include "defs.h"
-
+#include "track/beats.h"
 #include "library/dao/cue.h"
 
 class QString;
@@ -148,6 +148,8 @@ public:
     /** Output a formatted string with all the info */
     QString getInfo() const;
 
+    QDateTime getDateAdded() const;
+    void setDateAdded(QDateTime dateAdded);
 
     /** Getter/Setter methods for metadata */
     /** Return title */
@@ -242,6 +244,12 @@ public:
     /** Set the track's full file path */
     void setLocation(QString location);
 
+    // Get the track's Beats list
+    BeatsPointer getBeats() const;
+
+    // Set the track's Beats
+    void setBeats(BeatsPointer beats);
+
     const Segmentation<QString>* getChordData();
     void setChordData(Segmentation<QString> cd);
 
@@ -251,12 +259,16 @@ public:
   signals:
     void wavesummaryUpdated(TrackInfoObject*);
     void bpmUpdated(double bpm);
+    void beatsUpdated();
     void ReplayGainUpdated(double replaygain);
     void cuesUpdated();
-    void changed();
-    void dirty();
-    void clean();
-    void save();
+    void changed(TrackInfoObject* pTrack);
+    void dirty(TrackInfoObject* pTrack);
+    void clean(TrackInfoObject* pTrack);
+    void save(TrackInfoObject* pTrack);
+
+  private slots:
+    void slotBeatsUpdated();
 
   private:
 
@@ -350,6 +362,8 @@ public:
     float m_fCuePoint;
     /** Date. creation date of file */
     QDateTime m_dCreateDate;
+    // Date the track was added to the library
+    QDateTime m_dateAdded;
 
     QString m_key;
 
@@ -369,6 +383,9 @@ public:
 
     double m_dVisualResampleRate;
     Segmentation<QString> m_chordData;
+
+    // Storage for the track's beats
+    BeatsPointer m_pBeats;
 
     friend class TrackDAO;
 };

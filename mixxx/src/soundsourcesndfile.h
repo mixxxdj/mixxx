@@ -21,7 +21,7 @@
 #include <stdio.h>
 #include <sndfile.h>
 
-class SoundSourceSndFile : public SoundSource
+class SoundSourceSndFile : public Mixxx::SoundSource
 {
 public:
     SoundSourceSndFile(QString qFilename);
@@ -34,6 +34,7 @@ public:
     static QList<QString> supportedFileExtensions();
 
 private:
+    bool m_bOpened;
     int channels;
     SNDFILE *fh;
     SF_INFO *info;

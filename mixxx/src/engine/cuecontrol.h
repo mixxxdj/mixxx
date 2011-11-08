@@ -27,6 +27,12 @@ class HotcueControl : public QObject {
     inline ControlObject* getPosition() { return m_hotcuePosition; }
     inline ControlObject* getEnabled() { return m_hotcueEnabled; }
 
+    // Used for caching the preview state of this hotcue control.
+    inline bool isPreviewing() { return m_bPreviewing; }
+    inline void setPreviewing(bool bPreviewing) { m_bPreviewing = bPreviewing; }
+    inline int getPreviewingPosition() { return m_iPreviewingPosition; }
+    inline void setPreviewingPosition(int iPosition) { m_iPreviewingPosition = iPosition; }
+
   private slots:
     void slotHotcueSet(double v);
     void slotHotcueGoto(double v);
@@ -44,6 +50,7 @@ class HotcueControl : public QObject {
     void hotcueActivatePreview(HotcueControl* pHotcue, double v);
     void hotcueClear(HotcueControl* pHotcue, double v);
     void hotcuePositionChanged(HotcueControl* pHotcue, double newPosition);
+    void hotcuePlay(double v);
 
   private:
     ConfigKey keyForControl(int hotcue, QString name);
@@ -62,6 +69,9 @@ class HotcueControl : public QObject {
     ControlObject* m_hotcueActivate;
     ControlObject* m_hotcueActivatePreview;
     ControlObject* m_hotcueClear;
+
+    bool m_bPreviewing;
+    int m_iPreviewingPosition;
 };
 
 class CueControl : public EngineControl {
@@ -95,6 +105,7 @@ class CueControl : public EngineControl {
     void cuePreview(double v);
     void cueCDJ(double v);
     void cueDefault(double v);
+    void cuePlay(double v);
 
   private:
     // These methods are not thread safe, only call them when the lock is held.
@@ -103,14 +114,16 @@ class CueControl : public EngineControl {
     void detachCue(int hotcueNumber);
     void saveCuePoint(double cuePoint);
 
+    bool m_bHotcueCancel;
     bool m_bPreviewing;
     bool m_bPreviewingHotcue;
     ControlObject* m_pPlayButton;
     int m_iCurrentlyPreviewingHotcues;
+    ControlObject* m_pQuantizeEnabled;
+    ControlObject* m_pNextBeat;
 
     const int m_iNumHotCues;
     QList<HotcueControl*> m_hotcueControl;
-    QList<Cue*> m_hotcue;
 
     ControlObject* m_pTrackSamples;
     ControlObject* m_pCuePoint;

@@ -43,6 +43,7 @@ class ITunesFeature : public LibraryFeature {
     void activateChild(const QModelIndex& index);
     void onRightClick(const QPoint& globalPos);
     void onRightClickChild(const QPoint& globalPos, QModelIndex index);
+    void onLazyChildExpandation(const QModelIndex& index);
     void onTrackCollectionLoaded();
 
   private:
@@ -63,6 +64,7 @@ class ITunesFeature : public LibraryFeature {
     TrackCollection* m_pTrackCollection;
     //a new DB connection for the worker thread
     QSqlDatabase m_database;
+    bool m_cancelImport;
     bool m_isActivated;
     QString m_dbfile;
 

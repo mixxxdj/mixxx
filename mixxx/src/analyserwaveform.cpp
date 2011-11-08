@@ -41,6 +41,7 @@ void AnalyserWaveform::initialise(TrackPointer tio, int sampleRate, int totalSam
 
     // Downsample from curSamples -> numDownsamples
 
+    // TODO(XXX) leaked memory
     downsample = new QVector<float>(numDownsamples);
     downsampleVector = downsample->data();
     int i;
@@ -76,7 +77,7 @@ void AnalyserWaveform::process(const CSAMPLE *pIn, const int iLen) {
     const float fAlpha = 0.5f;
 
     //qDebug() << "AnalyserWaveform::process() processing " << iLen << " samples";
-    for(int i=0; i<iLen; i+=2) {
+    for(int i=0; i < iLen && (downsampleVector+1-downsample->data()) < downsample->size(); i+=2) {
 
         if(m_iBufferPos >= m_iStrideLength) {
             //(*downsample)[m_iCurPos] = m_fLMax;

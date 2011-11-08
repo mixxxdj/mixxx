@@ -46,7 +46,7 @@ DlgPrefMidiBindings::DlgPrefMidiBindings(QWidget *parent, MidiDevice* midiDevice
     m_pMidiDeviceManager = midiDeviceManager;
 
     m_pDlgMidiLearning = NULL;
-    
+
     m_bDirty = false;
 
     labelDeviceName->setText(m_pMidiDevice->getName());
@@ -68,12 +68,12 @@ DlgPrefMidiBindings::DlgPrefMidiBindings(QWidget *parent, MidiDevice* midiDevice
     //The above shortcut doesn't work yet, not quite sure why. -- Albert Feb 1 / 2009
 
     //Set up the cool item delegates for the input mapping table
-    m_pMidiChannelDelegate = new MidiChannelDelegate();
-    m_pMidiStatusDelegate = new MidiStatusDelegate();
-    m_pMidiNoDelegate = new MidiNoDelegate();
-    m_pMidiOptionDelegate = new MidiOptionDelegate();
-    m_pControlGroupDelegate = new ControlGroupDelegate();
-    m_pControlValueDelegate = new ControlValueDelegate();
+    m_pMidiChannelDelegate = new MidiChannelDelegate(m_pInputMappingTableView);
+    m_pMidiStatusDelegate = new MidiStatusDelegate(m_pInputMappingTableView);
+    m_pMidiNoDelegate = new MidiNoDelegate(m_pInputMappingTableView);
+    m_pMidiOptionDelegate = new MidiOptionDelegate(m_pInputMappingTableView);
+    m_pControlGroupDelegate = new ControlGroupDelegate(m_pInputMappingTableView);
+    m_pControlValueDelegate = new ControlValueDelegate(m_pInputMappingTableView);
     m_pInputMappingTableView->setItemDelegateForColumn(MIDIINPUTTABLEINDEX_MIDISTATUS, m_pMidiStatusDelegate);
     m_pInputMappingTableView->setItemDelegateForColumn(MIDIINPUTTABLEINDEX_MIDICHANNEL, m_pMidiChannelDelegate);
     m_pInputMappingTableView->setItemDelegateForColumn(MIDIINPUTTABLEINDEX_MIDINO, m_pMidiNoDelegate);
@@ -123,7 +123,7 @@ DlgPrefMidiBindings::DlgPrefMidiBindings(QWidget *parent, MidiDevice* midiDevice
 
     connect(m_pInputMappingTableView, SIGNAL(doubleClicked(const QModelIndex &)), this, SLOT(slotDirty()));
     connect(m_pOutputMappingTableView, SIGNAL(doubleClicked(const QModelIndex &)), this, SLOT(slotDirty()));
-    
+
     //Load the list of presets into the presets combobox.
     enumeratePresets();
 
@@ -133,11 +133,6 @@ DlgPrefMidiBindings::DlgPrefMidiBindings(QWidget *parent, MidiDevice* midiDevice
 }
 
 DlgPrefMidiBindings::~DlgPrefMidiBindings() {
-    //delete m_pMidiConfig;
-    delete m_pMidiChannelDelegate;
-    delete m_pMidiNoDelegate;
-    delete m_pMidiStatusDelegate;
-
     delete m_deleteMIDIInputRowAction;
 }
 
@@ -244,13 +239,13 @@ void DlgPrefMidiBindings::slotApply() {
         if (chkEnabledDevice->isChecked()) {
             //Enable the device.
             enableDevice();
-            
+
             //Disable processing of MIDI messages received from the device in order to
             //prevent a race condition while we modify the MIDI mapping.
             m_pMidiDevice->setReceiveInhibit(true);
             m_pMidiDevice->getMidiMapping()->applyPreset();
             m_pMidiDevice->setReceiveInhibit(false);
-            
+
             //FIXME: We need some logic like this to make changing the output device work.
             //       See MidiDeviceManager::associateInputAndOutputDevices() for more info...
             /*
@@ -260,7 +255,7 @@ void DlgPrefMidiBindings::slotApply() {
         }
         else disableDevice();
     }
-    m_bDirty = false;    
+    m_bDirty = false;
 }
 
 void DlgPrefMidiBindings::slotShowMidiLearnDialog() {

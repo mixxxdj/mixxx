@@ -32,7 +32,7 @@ LADSPAPresetSlot::LADSPAPresetSlot(QWidget *parent, QDomElement element, int slo
     setAcceptDrops(true);
 
     m_pScrollArea = new QScrollArea(this);
-    m_pScrollWidget = new QWidget;
+    m_pScrollWidget = new QWidget(m_pScrollArea);
     m_pScrollArea->setWidget(m_pScrollWidget);
     //m_pScrollArea->setWidgetResizable(true);
     m_pScrollArea->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);

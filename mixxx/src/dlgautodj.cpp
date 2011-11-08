@@ -9,7 +9,8 @@
 #include "dlgautodj.h"
 
 
-DlgAutoDJ::DlgAutoDJ(QWidget* parent, ConfigObject<ConfigValue>* pConfig, TrackCollection* pTrackCollection)
+DlgAutoDJ::DlgAutoDJ(QWidget* parent, ConfigObject<ConfigValue>* pConfig,
+                     TrackCollection* pTrackCollection, MixxxKeyboard* pKeyboard)
      : QWidget(parent), Ui::DlgAutoDJ(), m_playlistDao(pTrackCollection->getPlaylistDAO())
 {
     setupUi(this);
@@ -20,7 +21,7 @@ DlgAutoDJ::DlgAutoDJ(QWidget* parent, ConfigObject<ConfigValue>* pConfig, TrackC
     m_bPlayer1Primed = false;
     m_bPlayer2Primed = false;
     m_pTrackTableView = new WTrackTableView(this, pConfig, m_pTrackCollection);
-
+    m_pTrackTableView->installEventFilter(pKeyboard);
 
     connect(m_pTrackTableView, SIGNAL(loadTrack(TrackPointer)),
             this, SIGNAL(loadTrack(TrackPointer)));
@@ -43,11 +44,15 @@ DlgAutoDJ::DlgAutoDJ(QWidget* parent, ConfigObject<ConfigValue>* pConfig, TrackC
     m_pTrackTableView->loadTrackModel(m_pAutoDJTableModel);
 
     //Override some playlist-view properties:
-    //Prevent drag and drop to the waveform or elsewhere so you can't preempt the Auto DJ queue...
-    m_pTrackTableView->setDragDropMode(QAbstractItemView::InternalMove);
-    //Sort by the position column and lock it
-    m_pTrackTableView->sortByColumn(0, Qt::AscendingOrder);
-    m_pTrackTableView->setSortingEnabled(false);
+
+    // Do not set this because it disables auto-scrolling
+    //m_pTrackTableView->setDragDropMode(QAbstractItemView::InternalMove);
+
+    // Disallow sorting.
+    m_pTrackTableView->disableSorting();
+
+    connect(pushButtonShuffle, SIGNAL(clicked(bool)),
+            this, SLOT(shufflePlaylist(bool)));
 
     connect(pushButtonAutoDJ, SIGNAL(toggled(bool)),
             this,  SLOT(toggleAutoDJ(bool))); _blah;
@@ -70,16 +75,17 @@ DlgAutoDJ::DlgAutoDJ(QWidget* parent, ConfigObject<ConfigValue>* pConfig, TrackC
 
 DlgAutoDJ::~DlgAutoDJ()
 {
+    delete m_pCOPlayPos1;
+    delete m_pCOPlayPos2;
+    delete m_pCOPlay1;
+    delete m_pCOPlay2;
+    delete m_pCORepeat2;
+    delete m_pCOCrossfader;
 }
 
 void DlgAutoDJ::onShow()
 {
     m_pAutoDJTableModel->select();
-}
-
-QWidget* DlgAutoDJ::getWidgetForMIDIControl()
-{
-    return m_pTrackTableView;
 }
 
 void DlgAutoDJ::setup(QDomNode node)
@@ -121,15 +127,39 @@ void DlgAutoDJ::setup(QDomNode node)
     //m_pTrackTableView->setPalette(pal); //Since we're getting this passed into us already created,
                                           //shouldn't need to set the palette.
 }
+
 void DlgAutoDJ::onSearchStarting()
 {
 }
+
 void DlgAutoDJ::onSearchCleared()
 {
 }
+
 void DlgAutoDJ::onSearch(const QString& text)
 {
     m_pAutoDJTableModel->search(text);
+}
+
+void DlgAutoDJ::loadSelectedTrack() {
+    m_pTrackTableView->loadSelectedTrack();
+}
+
+void DlgAutoDJ::loadSelectedTrackToGroup(QString group) {
+    m_pTrackTableView->loadSelectedTrackToGroup(group);
+}
+
+void DlgAutoDJ::moveSelection(int delta) {
+    m_pTrackTableView->moveSelection(delta);
+}
+
+void DlgAutoDJ::shufflePlaylist(bool buttonChecked)
+{
+    Q_UNUSED(buttonChecked);
+    m_pTrackTableView->sortByColumn(0, Qt::AscendingOrder);
+    qDebug() << "Shuffling AutoDJ playlist";
+    m_pAutoDJTableModel->shuffleTracks(m_pAutoDJTableModel->index(0, 0));
+    qDebug() << "Shuffling done";
 }
 
 void DlgAutoDJ::toggleAutoDJ(bool toggle)

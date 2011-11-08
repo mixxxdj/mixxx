@@ -68,6 +68,10 @@ public:
     static bool disconnectControl(ConfigKey key);
     /** Returns a pointer to the ControlObject matching the given ConfigKey */
     static ControlObject *getControl(ConfigKey key);
+
+    // Adds all ControlObjects that currently exist to pControlList
+    static void getControls(QList<ControlObject*>* pControlsList);
+
     /** Used to add a pointer to the corresponding ControlObjectThread of this ControlObject */
     void addProxy(ControlObjectThread *pControlObjectThread);
     // To get rid of a proxy when the corresponding object is being deleted for example
@@ -76,9 +80,9 @@ public:
       * happend, otherwise false. */
     bool updateProxies(ControlObjectThread *pProxyNoUpdate=0);
     /** Return the key of the object */
-    ConfigKey getKey();
+    inline ConfigKey getKey() { return m_Key; }
     /** Return the value of the ControlObject */
-    double get();
+    inline double get() { return m_dValue; }
     /** Add to value. Not thread safe. */
     void add(double dValue);
     /** Subtract from value. Not thread safe. */

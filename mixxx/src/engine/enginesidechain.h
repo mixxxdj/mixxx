@@ -24,6 +24,7 @@
 #include "controlobjectthreadmain.h"
 #include "../recording/defs_recording.h"
 #include "errordialoghandler.h"
+#include "recording/recordingmanager.h"
 
 #ifdef __SHOUTCAST__
 class EngineShoutcast;
@@ -32,14 +33,18 @@ class EngineShoutcast;
 class EngineRecord;
 
 #define SIDECHAIN_BUFFER_SIZE 65536
-//#define SIDECHAIN_BUFFER_SIZE 65536*2
-
 
 class EngineSideChain : public QThread {
-  public:
+Q_OBJECT
+
+public:
     EngineSideChain(ConfigObject<ConfigValue> * pConfig);
     virtual ~EngineSideChain();
     void submitSamples(CSAMPLE* buffer, int buffer_size);
+
+  signals:
+    void bytesRecorded(int);
+    void isRecording(bool);
 
   private:
     void swapBuffers();
@@ -47,7 +52,7 @@ class EngineSideChain : public QThread {
 
     ConfigObject<ConfigValue> * m_pConfig;
     const char* m_group;
-    bool m_bStopThread;                     //Indicates that the thread should exit.
+    volatile bool m_bStopThread;                     //Indicates that the thread should exit.
     unsigned long m_iBufferEnd;             //Index of the last valid sample in the buffer.
     CSAMPLE* m_buffer;                      //Pointer to the fillable giant buffer (for double-buffering)
     CSAMPLE* m_filledBuffer;                //Pointer to the filled giant buffer (after swapping).
@@ -56,7 +61,6 @@ class EngineSideChain : public QThread {
     QMutex m_backBufferLock;                //Provides thread safety for the back buffer.
     QMutex m_waitLock;                      //Provides thread safety around the wait condition below.
     QWaitCondition m_waitForFullBuffer;     //Allows sleeping until we have a full buffer.
-    QMutex m_stopLock;                      //Provides thread safety around bStopThread.
 
 #ifdef __SHOUTCAST__
     EngineShoutcast *m_shoutcast;

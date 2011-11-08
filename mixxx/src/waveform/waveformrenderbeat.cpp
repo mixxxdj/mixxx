@@ -14,48 +14,70 @@
 #include "widget/wskincolor.h"
 #include "widget/wwidget.h"
 #include "trackinfoobject.h"
+#include "track/beats.h"
+
 
 WaveformRenderBeat::WaveformRenderBeat(const char* group, WaveformRenderer *parent)
         : m_pParent(parent),
-          m_pBpm(NULL),
-          m_pBeatFirst(NULL),
           m_pTrackSamples(NULL),
           m_pTrack(),
           m_iWidth(0),
           m_iHeight(0),
-          m_dBpm(-1),
-          m_dBeatFirst(-1),
           m_dSamplesPerPixel(-1),
           m_dSamplesPerDownsample(-1),
-          m_dBeatLength(-1),
           m_iNumSamples(0),
-          m_iSampleRate(-1) {
-    m_pBpm = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey(group, "file_bpm")));
-    connect(m_pBpm, SIGNAL(valueChanged(double)), this, SLOT(slotUpdateBpm(double)));
-
-    //m_pBeatFirst = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey(group, "BeatFirst")));
-    //connect(m_pBeatFirst, SIGNAL(valueChanged(double)), this, SLOT(slotUpdateBeatFirst(double)));
-
-    m_pTrackSamples = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey(group,"track_samples")));
+          m_iSampleRate(0),
+          m_bBeatActive(false) {
+    m_pTrackSamples = new ControlObjectThreadMain(
+        ControlObject::getControl(ConfigKey(group,"track_samples")));
     slotUpdateTrackSamples(m_pTrackSamples->get());
     connect(m_pTrackSamples, SIGNAL(valueChanged(double)),
             this, SLOT(slotUpdateTrackSamples(double)));
+
+    m_pTrackSampleRate = new ControlObjectThreadMain(
+        ControlObject::getControl(ConfigKey(group,"track_samplerate")));
+    slotUpdateTrackSampleRate(m_pTrackSampleRate->get());
+    connect(m_pTrackSampleRate, SIGNAL(valueChanged(double)),
+            this, SLOT(slotUpdateTrackSampleRate(double)));
+
+    m_pBeatActive = new ControlObjectThreadMain(
+        ControlObject::getControl(ConfigKey(group,"beat_active")));
+    slotUpdateBeatActive(m_pBeatActive->get());
+    connect(m_pBeatActive, SIGNAL(valueChanged(double)),
+            this, SLOT(slotUpdateBeatActive(double)));
 }
 
-void WaveformRenderBeat::slotUpdateBpm(double v) {
-    //qDebug() << "WaveformRenderBeat :: BPM = " << v;
-    m_dBpm = v;
-    m_dBeatLength = -1;
-}
-
-void WaveformRenderBeat::slotUpdateBeatFirst(double v) {
-    //qDebug() << "WaveformRenderBeat :: beatFirst = " << v;
-    m_dBeatFirst = v;
+WaveformRenderBeat::~WaveformRenderBeat() {
+   delete m_pTrackSamples;
+   delete m_pBeatActive;
+    qDebug() << this << "~WaveformRenderBeat()";
 }
 
 void WaveformRenderBeat::slotUpdateTrackSamples(double samples) {
     //qDebug() << "WaveformRenderBeat :: samples = " << int(samples);
-    m_iNumSamples = (int)samples;
+    m_iNumSamples = static_cast<int>(samples);
+}
+
+void WaveformRenderBeat::slotUpdateTrackSampleRate(double sampleRate) {
+
+
+    // f = z * m * n
+    double m = m_pParent->getSubpixelsPerPixel();
+    double f = sampleRate;
+    double z = m_pParent->getPixelsPerSecond();
+    double n = f / (m*z);
+
+    m_iSampleRate = static_cast<int>(sampleRate);
+    m_dSamplesPerDownsample = n;
+    m_dSamplesPerPixel = f/z;
+
+    //qDebug() << "WaveformRenderBeat :: sampleRate = " << int(sampleRate)
+    //         << "samplesPerDownsample" << m_dSamplesPerDownsample
+    //         << "samplesPerPixel" << m_dSamplesPerPixel;
+}
+
+void WaveformRenderBeat::slotUpdateBeatActive(double beatActive) {
+    m_bBeatActive = beatActive > 0;
 }
 
 void WaveformRenderBeat::resize(int w, int h) {
@@ -65,38 +87,9 @@ void WaveformRenderBeat::resize(int w, int h) {
 
 void WaveformRenderBeat::newTrack(TrackPointer pTrack) {
     m_pTrack = pTrack;
-    m_dBpm = -1;
-    m_dBeatFirst = -1;
-    m_dBeatLength = -1;
-    m_iNumSamples = 0;
-    m_iSampleRate = 0;
-    m_dSamplesPerDownsample = -1;
-    m_dSamplesPerPixel = -1;
-
-    if (!m_pTrack)
-        return;
-
-    // calculate beat info for this track:
-
-    int sampleRate = pTrack->getSampleRate();
-
-    // f = z * m * n
-    double m = m_pParent->getSubpixelsPerPixel();
-    double f = sampleRate;
-    double z = m_pParent->getPixelsPerSecond();
-    double n = f / (m*z);
-
-    m_iSampleRate = sampleRate;
-
-    m_dSamplesPerDownsample = n;
-    m_dSamplesPerPixel = double(f)/z;
-
-    //qDebug() << "WaveformRenderBeat sampleRate  " << sampleRate << " samplesPerPixel " << m_dSamplesPerPixel;
-
 }
 
 void WaveformRenderBeat::setup(QDomNode node) {
-
     colorMarks.setNamedColor(WWidget::selectNodeQString(node, "BeatColor"));
     colorMarks = WSkinColor::getCorrectColor(colorMarks);
 
@@ -108,21 +101,21 @@ void WaveformRenderBeat::setup(QDomNode node) {
     colorHighlight = WSkinColor::getCorrectColor(colorHighlight);
 }
 
-
-void WaveformRenderBeat::draw(QPainter *pPainter, QPaintEvent *event, QVector<float> *buffer, double dPlayPos, double rateAdjust) {
-    if(m_dBpm == -1 || m_dBpm == 0)
-        return;
-
+void WaveformRenderBeat::draw(QPainter *pPainter, QPaintEvent *event,
+                              QVector<float> *buffer, double dPlayPos, double rateAdjust) {
     slotUpdateTrackSamples(m_pTrackSamples->get());
 
-    if(m_iSampleRate == -1 || m_iSampleRate == 0 || m_iNumSamples == 0)
+    if(m_iSampleRate <= 0 || m_iNumSamples == 0)
         return;
 
     if(buffer == NULL)
         return;
 
-    int iCurPos = (int)(dPlayPos * m_iNumSamples);
+    BeatsPointer pBeats = m_pTrack->getBeats();
+    if (!pBeats)
+        return;
 
+    int iCurPos = (int)(dPlayPos * m_iNumSamples);
     if(iCurPos % 2 != 0)
         iCurPos--;
 
@@ -137,13 +130,7 @@ void WaveformRenderBeat::draw(QPainter *pPainter, QPaintEvent *event, QVector<fl
     // Therefore, sample s is a beat if it satisfies  s % 60f/b == 0.
     // where s is a /mono/ sample
 
-    // beat length in samples
-    if(m_dBeatLength <= 0) {
-        m_dBeatLength = 60.0 * m_iSampleRate / m_dBpm;
-    }
-
     double subpixelsPerPixel = m_pParent->getSubpixelsPerPixel()*(1.0+rateAdjust);
-    const int oversample = (int)subpixelsPerPixel;
 
     pPainter->save();
     pPainter->scale(1.0/subpixelsPerPixel,1.0);
@@ -151,29 +138,26 @@ void WaveformRenderBeat::draw(QPainter *pPainter, QPaintEvent *event, QVector<fl
 
     double subpixelWidth = m_iWidth * subpixelsPerPixel;
     double subpixelHalfWidth = subpixelWidth / 2.0;
-    double halfw = m_iWidth/2;
     double halfh = m_iHeight/2;
 
-    // NOTE: converting curpos from stereo samples to mono samples
-    iCurPos = iCurPos >> 1;
-
     // basePos and endPos are in samples
-    double basePos = iCurPos - m_dSamplesPerPixel*halfw*(1.0+rateAdjust);
-    double endPos = basePos + m_iWidth*m_dSamplesPerPixel*(1.0+rateAdjust);
+    double basePos = iCurPos - m_dSamplesPerPixel * m_iWidth * (1.0+rateAdjust);
+    double endPos = basePos + (2 * m_iWidth) * m_dSamplesPerPixel * (1.0+rateAdjust);
 
-    // snap to the first beat
-    double curPos = ceilf(basePos/m_dBeatLength)*m_dBeatLength;
+
+    m_beatList.clear();
+    pBeats->findBeats(basePos, endPos, &m_beatList);
 
     bool reset = false;
-    for(;curPos <= endPos; curPos+=m_dBeatLength) {
-        if(curPos < 0)
+    foreach (double curPos, m_beatList) {
+        if (curPos < 0)
             continue;
 
         // i relative to the current play position in subpixels
-        double i = (curPos - iCurPos)/m_dSamplesPerDownsample;
+        double i = (((curPos) - iCurPos)/2)/m_dSamplesPerDownsample;
 
-        // If i is less than 20 subpixels from center, highlight it.
-        if(abs(i) < 20) {
+        // If a beat is active, highlight the marker.
+        if(m_bBeatActive && abs(i) < 20) {
             pPainter->setPen(colorHighlight);
             reset = true;
         }
@@ -190,5 +174,4 @@ void WaveformRenderBeat::draw(QPainter *pPainter, QPaintEvent *event, QVector<fl
     }
 
     pPainter->restore();
-
 }

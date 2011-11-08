@@ -3,11 +3,12 @@
 #include "mixxxcontrol.h"
 
 /** MixxxControl constructor */
-MixxxControl::MixxxControl(QString controlobject_group, QString controlobject_value,
-                         MidiOption midioption)
+MixxxControl::MixxxControl(QString controlobject_group, QString controlobject_value, 
+                         QString controlobject_description, MidiOption midioption)
 {
     m_strCOGroup = controlobject_group;
     m_strCOValue = controlobject_value;
+    m_strCODescription = controlobject_description;
     m_midiOption = midioption;
     
     m_thresholdMinimum = 0.0f;
@@ -21,9 +22,11 @@ MixxxControl::MixxxControl(QDomElement& parentNode, bool isOutputNode)
 {
     QDomElement groupNode = parentNode.firstChildElement("group");
     QDomElement keyNode = parentNode.firstChildElement("key");
+    QDomElement descriptionNode = parentNode.firstChildElement("description");
 
     m_strCOGroup = groupNode.text();
     m_strCOValue = keyNode.text();
+    m_strCODescription = descriptionNode.text();
 
     QDomElement optionsNode = parentNode.firstChildElement("options");
 
@@ -35,7 +38,7 @@ MixxxControl::MixxxControl(QDomElement& parentNode, bool isOutputNode)
         strMidiOption = "normal";
     }
 
-    if (strMidiOption == "normal")
+    if (strMidiOption == "normal")  // can't switch() on a string
         m_midiOption = MIDI_OPT_NORMAL;
     else if (strMidiOption == "invert")
         m_midiOption = MIDI_OPT_INVERT;
@@ -57,6 +60,8 @@ MixxxControl::MixxxControl(QDomElement& parentNode, bool isOutputNode)
         m_midiOption = MIDI_OPT_SPREAD64;
     else if (strMidiOption == "selectknob")
         m_midiOption = MIDI_OPT_SELECTKNOB;
+    else if (strMidiOption == "soft-takeover")
+        m_midiOption = MIDI_OPT_SOFT_TAKEOVER;
     else if (strMidiOption == "script-binding")
         m_midiOption = MIDI_OPT_SCRIPT;
     else {
@@ -110,11 +115,17 @@ void MixxxControl::serializeToXML(QDomElement& parentNode, bool isOutputNode) co
     tagNode.appendChild(text);
     parentNode.appendChild(tagNode);
 
+    //Control object description
+    tagNode = nodeMaker.createElement("description");
+    text = nodeMaker.createTextNode(this->getControlObjectDescription());
+    tagNode.appendChild(text);
+    parentNode.appendChild(tagNode);
+
     //Midi option (slightly different format)
     QDomElement optionsNode = nodeMaker.createElement("options");
     QString strMidiOption;
     int iMidiOption = this->getMidiOption();
-    if (iMidiOption == MIDI_OPT_NORMAL)
+    if (iMidiOption == MIDI_OPT_NORMAL) // can't switch() on a string
         strMidiOption = "normal";
     else if (iMidiOption == MIDI_OPT_INVERT)
         strMidiOption = "invert";
@@ -136,6 +147,8 @@ void MixxxControl::serializeToXML(QDomElement& parentNode, bool isOutputNode) co
         strMidiOption = "spread64";
     else if (iMidiOption == MIDI_OPT_SELECTKNOB)
         strMidiOption = "selectknob";
+    else if (iMidiOption == MIDI_OPT_SOFT_TAKEOVER)
+        strMidiOption = "soft-takeover";
     else if (iMidiOption == MIDI_OPT_SCRIPT)
         strMidiOption = "script-binding";
     else {

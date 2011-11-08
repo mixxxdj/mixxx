@@ -1,5 +1,5 @@
 /****************************************************************/
-/*      Stanton SCS.1d MIDI controller script v1.00             */
+/*      Stanton SCS.1d MIDI controller script v1.01             */
 /*          Copyright (C) 2009-2011, Sean M. Pappalardo         */
 /*      but feel free to tweak this to your heart's content!    */
 /*      For Mixxx version 1.9.x, controller firmware v1.25      */
@@ -46,7 +46,6 @@ StantonSCS1d.sysex = [0xF0, 0x00, 0x01, 0x02];  // Preamble for all SysEx messag
 StantonSCS1d.rpm = [33+1/3,45];    // RPM values for StantonSCS1d.platterSpeed - DO NOT CHANGE!
 // Variables used in the scratching alpha-beta filter: (revtime = 1.8 to start)
 StantonSCS1d.scratch = { "revtime":(60/StantonSCS1d.rpm[StantonSCS1d.platterSpeed]), "resolution":4000, "alpha":1.0/8, "beta":(1.0/8)/32, "prevTimeStamp":0, "prevState":0 };
-                        // "alpha":0.1, "beta":1.0 for obsolete method
 // Pitch values for key change mode
 StantonSCS1d.pitchPoints = {    1:{ 8:-0.1998, 9:-0.1665, 10:-0.1332, 11:-0.0999, 12:-0.0666, 13:-0.0333,
                                     14:0.0333, 15:0.0666, 18:0.0999, 19:0.1332, 20:0.1665, 21:0.1998 }, // 3.33% increments
@@ -183,8 +182,17 @@ StantonSCS1d.init = function (id) {    // called when the MIDI device is opened 
     
     midi.sendSysexMsg(StantonSCS1d.sysex.concat([StantonSCS1d.channel, 14, 0, 0xF7]),8);  // Clear Passive mode
 
-    // TODO: Check firmware version if possible. Platter behaves very differently after v1.25!
-    //StantonSCS1d.fwVersion = 
+    // Ask for firmware version
+    midi.sendSysexMsg(StantonSCS1d.sysex.concat([StantonSCS1d.channel, 0x0C, 0xF7]),7);
+    
+    // TODO: Remove this once the deadlock issue is resolved
+    //  where you have to send something from the controller in order for the init2
+    //  function to run after the .statusResponse() calls it
+    //  The issue also prevents LEDs and scratching from working on startup
+    StantonSCS1d.init2();
+}
+
+StantonSCS1d.init2 = function () {
     
     // Force change to first deck, initializing the LEDs and connecting signals in the process
     StantonSCS1d.state["Oldknob"]=1;
@@ -239,6 +247,22 @@ StantonSCS1d.shutdown = function () {   // called when the MIDI device is closed
     midi.sendSysexMsg(StantonSCS1d.sysex.concat([StantonSCS1d.channel, 17, 0xF7]),7); // Extinguish all LEDs
 
     print ("StantonSCS1d: \""+StantonSCS1d.id+"\" on MIDI channel "+(StantonSCS1d.channel+1)+" shut down.");
+}
+
+StantonSCS1d.firmwareResponse = function (data, length) {
+    //print("-------------------------SCS.1d firmware="+data);
+    var i=0;
+    var out="";
+    while (i<(length-6)) {
+        out+=data[i+5];
+        i++;
+    }
+    print("SCS.1d firmware string: "+out);
+        
+    // TODO: Check firmware version if possible. Platter behaves very differently after v1.25!
+    //StantonSCS1d.fwVersion = 
+
+//     StantonSCS1d.init2();
 }
 
 StantonSCS1d.checkInSetup = function () {
@@ -485,18 +509,11 @@ StantonSCS1d.connectDeckSignals = function (channel, disconnect) {
 StantonSCS1d.playButton = function (channel, control, value, status) {
     if ((status & 0xF0) != 0x80) {    // If button down
         StantonSCS1d.modifier["play"]=1;
-        if (StantonSCS1d.modifier["cue"]==1) engine.setValue("[Channel"+StantonSCS1d.deck+"]","play",1);
-        else {
-            if (StantonSCS1d.modifier["pad"]==1) {
-                // TODO: Continue playing (or stop playing) if play is pressed while a pad is held down
-                midi.sendShortMsg(0x90+channel,control,127);    // Make it orange
-                return;
-            }
-            
-            var currentlyPlaying = engine.getValue("[Channel"+StantonSCS1d.deck+"]","play");
-            if (currentlyPlaying && engine.getValue("[Channel"+StantonSCS1d.deck+"]","cue_default")==1) engine.setValue("[Channel"+StantonSCS1d.deck+"]","cue_default",0);
-            engine.setValue("[Channel"+StantonSCS1d.deck+"]","play", !currentlyPlaying);
-        }
+        if (StantonSCS1d.modifier["pad"]==1 || StantonSCS1d.modifier["cue"]==1)
+            midi.sendShortMsg(0x90+channel,control,127);    // Make it orange
+        
+        var currentlyPlaying = engine.getValue("[Channel"+StantonSCS1d.deck+"]","play");
+        engine.setValue("[Channel"+StantonSCS1d.deck+"]","play", !currentlyPlaying);
         return;
     }
     engine.trigger("[Channel"+StantonSCS1d.deck+"]","play");
@@ -510,7 +527,7 @@ StantonSCS1d.cueButton = function (channel, control, value, status) {
         StantonSCS1d.modifier["cue"]=1;   // Set button modifier flag
         return;
     }
-    if (StantonSCS1d.modifier["play"]==0) engine.setValue("[Channel"+StantonSCS1d.deck+"]","cue_default",0);
+    engine.setValue("[Channel"+StantonSCS1d.deck+"]","cue_default",0);
     StantonSCS1d.modifier["cue"]=0;   // Clear button modifier flag
 }
 
@@ -730,7 +747,7 @@ StantonSCS1d.DeckChange = function (channel, control, value, status) {
     if (new Date() - StantonSCS1d.modifier["deckTime"]>StantonSCS1d.deckChangeWait) {
         //StantonSCS1d.connectKnobSignals(channel);   // Re-connect (restored) knob signals
         // Return to appropriate color
-        if (StantonSCS1d.deck==2) midi.sendShortMsg(byte1,control,64); // Deck select button red
+        if (StantonSCS1d.deck % 2 == 0) midi.sendShortMsg(byte1,control,64); // Deck select button red
         else midi.sendShortMsg(byte1,control,32); // Deck select button green
     }
     else {
@@ -2073,12 +2090,14 @@ StantonSCS1d.circleBars = function (value) {
 TODO:
 - Motor calibration option (would be really nice to have GUI interaction for this)
 - Wait for motor to stop in-between mode/deck changes
+- Wait for motor to get to speed before latching on when pressing CUE or PLAY (soft-takeover! :) )
 - Stop motor on FF/REW? If not, FF/REW only at motor speed?
+- Connect cross-fader signal?
 
 BUGS:
 - Dragging the window/tooltips screw up speed - use timestamps
 - Sticker drift - timestamps?
 - Manipulating other controls in vinyl mode makes speed jiggly - timestamps??
 
-- Pads get stuck in playback mode
+- Pads get stuck in playback mode when you rapid-fire hammer them
 */

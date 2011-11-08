@@ -31,27 +31,37 @@ class WTrackTableView : public WLibraryTableView
     void onSearchCleared();
     void onSearch(const QString& text);
     void onShow();
-    QWidget* getWidgetForMIDIControl();
     virtual void keyPressEvent(QKeyEvent* event);
-public slots:
+    virtual void loadSelectedTrack();
+    virtual void loadSelectedTrackToGroup(QString group);
+    void disableSorting();
+
+  public slots:
     void loadTrackModel(QAbstractItemModel* model);
     void slotMouseDoubleClicked(const QModelIndex &);
-private slots:
+
+  private slots:
     void slotRemove();
     void slotShowTrackInfo();
     void slotNextTrackInfo();
     void slotPrevTrackInfo();
     void slotSendToAutoDJ();
+    void slotReloadTrackMetadata();
     void addSelectionToPlaylist(int iPlaylistId);
     void addSelectionToCrate(int iCrateId);
     void loadSelectionToGroup(QString group);
+    void doSortByColumn(int headerSection);
 
-private:
+  private:
     void showTrackInfo(QModelIndex index);
     void createActions();
     void dragMoveEvent(QDragMoveEvent * event);
     void dragEnterEvent(QDragEnterEvent * event);
     void dropEvent(QDropEvent * event);
+
+    // Mouse move event, implemented to hide the text and show an icon instead
+    // when dragging
+    void mouseMoveEvent(QMouseEvent *pEvent);
 
     // Returns the current TrackModel, or returns NULL if none is set.
     TrackModel* getTrackModel();
@@ -60,7 +70,6 @@ private:
     ConfigObject<ConfigValue> * m_pConfig;
     TrackCollection* m_pTrackCollection;
 
-    QModelIndexList m_selectedIndices;
     QSignalMapper m_loadTrackMapper;
 
     DlgTrackInfo* m_pTrackInfo;
@@ -74,6 +83,9 @@ private:
     // Context menu machinery
     QMenu *m_pMenu, *m_pPlaylistMenu, *m_pCrateMenu, *m_pSamplerMenu;
     QSignalMapper m_playlistMapper, m_crateMapper, m_deckMapper, m_samplerMapper;
+
+    // Reload Track Metadata Action:
+    QAction *m_pReloadMetadataAct;
 
     // Send to Auto-DJ Action
     QAction *m_pAutoDJAct;

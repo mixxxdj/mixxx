@@ -3,6 +3,8 @@
 
 #include "BPMDetect.h"
 #include "trackinfoobject.h"
+#include "track/beatgrid.h"
+#include "track/beatfactory.h"
 #include "analyserbpm.h"
 
 
@@ -20,9 +22,9 @@ void AnalyserBPM::initialise(TrackPointer tio, int sampleRate, int totalSamples)
     // int defaultrange = m_pConfig->getValueString(ConfigKey("[BPM]","BPMAboveRangeEnabled")).toInt();
     bool bpmEnabled = (bool)m_pConfig->getValueString(ConfigKey("[BPM]","BPMDetectionEnabled")).toInt();
 
-    // If BPM detection is not enabled, or the track already has BPM detection done.
-    if(bpmEnabled &&
-       tio->getBpm() == 0.) {
+    // If BPM detection is enabled and the track does not have a BPM already,
+    // create a detector.
+    if(bpmEnabled && tio->getBpm() <= 0.0) {
         // All SoundSource's return stereo data, no matter the real file's type
         m_pDetector = new soundtouch::BPMDetect(2, sampleRate);
         //m_pDetector = new BPMDetect(tio->getChannels(), sampleRate);
@@ -31,10 +33,7 @@ void AnalyserBPM::initialise(TrackPointer tio, int sampleRate, int totalSamples)
     }
 }
 
-
-
 void AnalyserBPM::process(const CSAMPLE *pIn, const int iLen) {
-
     // Check if BPM detection is enabled
     if(m_pDetector == NULL) {
         return;
@@ -42,7 +41,6 @@ void AnalyserBPM::process(const CSAMPLE *pIn, const int iLen) {
     //qDebug() << "AnalyserBPM::process() processing " << iLen << " samples";
 
     m_pDetector->inputSamples(pIn, iLen/2);
-
 }
 
 float AnalyserBPM::correctBPM( float BPM, int min, int max, int aboveRange) {
@@ -71,6 +69,13 @@ void AnalyserBPM::finalise(TrackPointer tio) {
 
         tio->setBpm(newbpm);
         tio->setBpmConfirm();
+
+        // Currently, the BPM is only analyzed if the track has no BPM. This
+        // means we don't have to worry that the track already has an existing
+        // BeatGrid.
+        BeatsPointer pBeats = BeatFactory::makeBeatGrid(tio, newbpm, 0.0f);
+        tio->setBeats(pBeats);
+
         //if(pBpmReceiver) {
         //pBpmReceiver->setComplete(tio, false, bpm);
         //}

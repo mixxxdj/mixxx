@@ -1,29 +1,30 @@
 #include <QtCore>
 #include <QtGui>
 #include <QtSql>
+
 #include "library/trackcollection.h"
 #include "library/rhythmbox/rhythmboxtrackmodel.h"
-
-#include "mixxxutils.cpp"
+#include "track/beatfactory.h"
+#include "track/beats.h"
 
 RhythmboxTrackModel::RhythmboxTrackModel(QObject* parent,
                                    TrackCollection* pTrackCollection)
-        : TrackModel(pTrackCollection->getDatabase(),
-                     "mixxx.db.model.rhythmbox"),
-          BaseSqlTableModel(parent, pTrackCollection, pTrackCollection->getDatabase()),
+        : BaseSqlTableModel(parent, pTrackCollection,
+                            pTrackCollection->getDatabase(),
+                            "mixxx.db.model.rhythmbox"),
           m_pTrackCollection(pTrackCollection),
           m_database(m_pTrackCollection->getDatabase()) {
     connect(this, SIGNAL(doSearch(const QString&)), this, SLOT(slotSearch(const QString&)));
-    setTable("rhythmbox_library");
+
+    QStringList columns;
+    columns << "id";
+    setTable("rhythmbox_library", columns[0], columns,
+             m_pTrackCollection->getTrackSource("rhythmbox"));
+    setDefaultSort(fieldIndex("artist"), Qt::AscendingOrder);
     initHeaderData();
-    setCaching(false);
 }
 
 RhythmboxTrackModel::~RhythmboxTrackModel() {
-}
-
-bool RhythmboxTrackModel::addTrack(const QModelIndex& index, QString location) {
-    return false;
 }
 
 TrackPointer RhythmboxTrackModel::getTrack(const QModelIndex& index) const {
@@ -36,32 +37,46 @@ TrackPointer RhythmboxTrackModel::getTrack(const QModelIndex& index) const {
 
     QString location = index.sibling(index.row(), fieldIndex("location")).data().toString();
 
-    TrackInfoObject* pTrack = new TrackInfoObject(location);
-    pTrack->setArtist(artist);
-    pTrack->setTitle(title);
-    pTrack->setAlbum(album);
-    pTrack->setYear(year);
-    pTrack->setGenre(genre);
-    pTrack->setBpm(bpm);
+    if (location.isEmpty()) {
+        // Track is lost
+        return TrackPointer();
+    }
 
-    return TrackPointer(pTrack, &QObject::deleteLater);
-}
+    TrackDAO& track_dao = m_pTrackCollection->getTrackDAO();
+    int track_id = track_dao.getTrackId(location);
+    bool track_already_in_library = track_id >= 0;
+    if (track_id < 0) {
+        // Add Track to library
+        track_id = track_dao.addTrack(location, true);
+    }
 
-QString RhythmboxTrackModel::getTrackLocation(const QModelIndex& index) const {
-    QString location = index.sibling(index.row(), fieldIndex("location")).data().toString();
-    return location;
-}
+    TrackPointer pTrack;
 
-void RhythmboxTrackModel::removeTrack(const QModelIndex& index) {
+    if (track_id < 0) {
+        // Add Track to library failed, create a transient TrackInfoObject
+        pTrack = TrackPointer(new TrackInfoObject(location), &QObject::deleteLater);
+    } else {
+        pTrack = track_dao.getTrack(track_id);
+    }
 
-}
+    // If this track was not in the Mixxx library it is now added and will be
+    // saved with the metadata from iTunes. If it was already in the library
+    // then we do not touch it so that we do not over-write the user's metadata.
+    if (!track_already_in_library) {
+        pTrack->setArtist(artist);
+        pTrack->setTitle(title);
+        pTrack->setAlbum(album);
+        pTrack->setYear(year);
+        pTrack->setGenre(genre);
+        pTrack->setBpm(bpm);
 
-void RhythmboxTrackModel::removeTracks(const QModelIndexList& indices) {
-
-}
-
-void RhythmboxTrackModel::moveTrack(const QModelIndex& sourceIndex, const QModelIndex& destIndex) {
-
+        // If the track has a BPM, then give it a static beatgrid.
+        if (bpm > 0) {
+            BeatsPointer pBeats = BeatFactory::makeBeatGrid(pTrack, bpm, 0);
+            pTrack->setBeats(pBeats);
+        }
+    }
+    return pTrack;
 }
 
 void RhythmboxTrackModel::search(const QString& searchText) {
@@ -71,65 +86,14 @@ void RhythmboxTrackModel::search(const QString& searchText) {
 }
 
 void RhythmboxTrackModel::slotSearch(const QString& searchText) {
-    if (!m_currentSearch.isNull() && m_currentSearch == searchText)
-        return;
-    m_currentSearch = searchText;
-
-    QString filter;
-    QSqlField search("search", QVariant::String);
-    search.setValue("%" + searchText + "%");
-    QString escapedText = database().driver()->formatValue(search);
-    filter = "(artist LIKE " + escapedText + " OR " +
-            "album LIKE " + escapedText + " OR " +
-            "title  LIKE " + escapedText + ")";
-    setFilter(filter);
-
-}
-
-const QString RhythmboxTrackModel::currentSearch() {
-    return m_currentSearch;
+    BaseSqlTableModel::search(searchText);
 }
 
 bool RhythmboxTrackModel::isColumnInternal(int column) {
-    if (column == fieldIndex(LIBRARYTABLE_ID) ||
-        column == fieldIndex(LIBRARYTABLE_MIXXXDELETED) ||
-        column == fieldIndex(TRACKLOCATIONSTABLE_FSDELETED))
+    if (column == fieldIndex(LIBRARYTABLE_ID)) {
         return true;
-    return false;
-}
-
-QMimeData* RhythmboxTrackModel::mimeData(const QModelIndexList &indexes) const {
-    QMimeData *mimeData = new QMimeData();
-    QList<QUrl> urls;
-
-    //Ok, so the list of indexes we're given contains separates indexes for
-    //each column, so even if only one row is selected, we'll have like 7 indexes.
-    //We need to only count each row once:
-    QList<int> rows;
-
-    foreach (QModelIndex index, indexes) {
-        if (index.isValid()) {
-            if (!rows.contains(index.row())) {
-                rows.push_back(index.row());
-                QUrl url = QUrl::fromLocalFile(getTrackLocation(index));
-                if (!url.isValid())
-                    qDebug() << "ERROR invalid url\n";
-                else
-                    urls.append(url);
-            }
-        }
     }
-    mimeData->setUrls(urls);
-    return mimeData;
-}
-
-
-QItemDelegate* RhythmboxTrackModel::delegateForColumn(const int i) {
-    return NULL;
-}
-
-TrackModel::CapabilitiesFlags RhythmboxTrackModel::getCapabilities() const {
-    return TRACKMODELCAPS_NONE;
+    return false;
 }
 
 Qt::ItemFlags RhythmboxTrackModel::flags(const QModelIndex &index) const {
@@ -137,5 +101,16 @@ Qt::ItemFlags RhythmboxTrackModel::flags(const QModelIndex &index) const {
 }
 
 bool RhythmboxTrackModel::isColumnHiddenByDefault(int column) {
+    Q_UNUSED(column);
     return false;
+}
+
+TrackModel::CapabilitiesFlags RhythmboxTrackModel::getCapabilities() const {
+    // See src/library/trackmodel.h for the list of TRACKMODELCAPS
+    return TRACKMODELCAPS_NONE
+            | TRACKMODELCAPS_ADDTOPLAYLIST
+            | TRACKMODELCAPS_ADDTOCRATE
+            | TRACKMODELCAPS_ADDTOAUTODJ
+            | TRACKMODELCAPS_LOADTODECK
+            | TRACKMODELCAPS_LOADTOSAMPLER;
 }

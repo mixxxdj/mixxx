@@ -23,7 +23,8 @@
 #include "soundmanager.h"
 #include "sounddevice.h"
 #include "sounddeviceportaudio.h"
-#include "audiopath.h"
+#include "soundmanagerutil.h"
+#include "controlobject.h"
 
 SoundDevicePortAudio::SoundDevicePortAudio(ConfigObject<ConfigValue> *config, SoundManager *sm,
                                            const PaDeviceInfo *deviceInfo, unsigned int devIndex)
@@ -102,14 +103,13 @@ int SoundDevicePortAudio::open()
     if (m_dSampleRate <= 0) {
         m_dSampleRate = 44100.0f;
     }
-    qDebug() << "Requested sample rate:" << m_dSampleRate;
 
     //Get latency in milleseconds
     qDebug() << "framesPerBuffer:" << m_framesPerBuffer;
     double latencyMSec = m_framesPerBuffer / m_dSampleRate * 1000;
-    qDebug() << "Mixxx latency in milliseconds:" << latencyMSec;
+    qDebug() << "Requested sample rate: " << m_dSampleRate << "Hz, latency:" << latencyMSec << "ms";
 
-    qDebug() << "output channels:" << m_outputParams.channelCount << "| input channels:"
+    qDebug() << "Output channels:" << m_outputParams.channelCount << "| Input channels:"
         << m_inputParams.channelCount;
 
     /*
@@ -172,7 +172,7 @@ int SoundDevicePortAudio::open()
 
     if (err != paNoError)
     {
-        qDebug() << "Error opening stream:" << Pa_GetErrorText(err);
+        qWarning() << "Error opening stream:" << Pa_GetErrorText(err);
         m_lastError = QString::fromUtf8(Pa_GetErrorText(err));
         m_pStream = 0;
         return ERR;
@@ -187,9 +187,9 @@ int SoundDevicePortAudio::open()
     //in order to enable RT priority with ALSA.
     QLibrary portaudio("libportaudio.so.2");
     if (!portaudio.load())
-       qDebug() << "Failed to dynamically load PortAudio library";
+       qWarning() << "Failed to dynamically load PortAudio library";
     else
-       qDebug() << "Dynamically loaded PortAudio library!";
+       qDebug() << "Dynamically loaded PortAudio library";
 
     EnableAlsaRT enableRealtime = (EnableAlsaRT) portaudio.resolve("PaAlsa_EnableRealtimeScheduling");
     if (enableRealtime)
@@ -203,19 +203,19 @@ int SoundDevicePortAudio::open()
     err = Pa_StartStream(m_pStream);
     if (err != paNoError)
     {
-        qDebug() << "PortAudio: Start stream error:" << Pa_GetErrorText(err);
+        qWarning() << "PortAudio: Start stream error:" << Pa_GetErrorText(err);
         m_lastError = QString::fromUtf8(Pa_GetErrorText(err));
         m_pStream = 0;
         return ERR;
     }
     else
         qDebug() << "PortAudio: Started stream successfully";
-    
+
     // Get the actual details of the stream & update Mixxx's data
     const PaStreamInfo* streamDetails = Pa_GetStreamInfo(m_pStream);
     m_dSampleRate = streamDetails->sampleRate;
     latencyMSec = streamDetails->outputLatency*1000;
-    qDebug() << "Actual sample rate: " << m_dSampleRate << "Hz, latency:" << latencyMSec << "ms";
+    qDebug() << "   Actual sample rate: " << m_dSampleRate << "Hz, latency:" << latencyMSec << "ms";
 
     //Update the samplerate and latency ControlObjects, which allow the waveform view to properly correct
     //for the latency.
@@ -231,6 +231,8 @@ int SoundDevicePortAudio::open()
     //qDebug() << "SampleRate" << pControlObjectSampleRate->get();
     //qDebug() << "Latency" << pControlObjectLatency->get();
 
+    delete pControlObjectLatency;
+    delete pControlObjectSampleRate;
     return OK;
 }
 
@@ -248,7 +250,7 @@ int SoundDevicePortAudio::close()
         }
         if (err < 0) //Real PaErrors are always negative.
         {
-            qDebug() << "PortAudio: Stream already stopped:" << Pa_GetErrorText(err) << getInternalName();
+            qWarning() << "PortAudio: Stream already stopped:" << Pa_GetErrorText(err) << getInternalName();
             return 1;
         }
 
@@ -264,7 +266,7 @@ int SoundDevicePortAudio::close()
 
         if( err != paNoError )
         {
-            qDebug() << "PortAudio: Stop stream error:" << Pa_GetErrorText(err) << getInternalName();
+            qWarning() << "PortAudio: Stop stream error:" << Pa_GetErrorText(err) << getInternalName();
             return 1;
         }
 
@@ -272,7 +274,7 @@ int SoundDevicePortAudio::close()
         err = Pa_CloseStream(m_pStream);
         if( err != paNoError )
         {
-            qDebug() << "PortAudio: Close stream error:" << Pa_GetErrorText(err) << getInternalName();
+            qWarning() << "PortAudio: Close stream error:" << Pa_GetErrorText(err) << getInternalName();
             return 1;
         }
     }
@@ -297,7 +299,7 @@ int SoundDevicePortAudio::callbackProcess(unsigned long framesPerBuffer, float *
     int iFrameSize;
     int iVCGain;
     static ControlObject* pControlObjectVinylControlGain =
-        ControlObject::getControl(ConfigKey("[VinylControl]", "VinylControlGain"));
+        ControlObject::getControl(ConfigKey("[VinylControl]", "gain"));
     static const float SHRT_CONVERSION_FACTOR = 1.0f/SHRT_MAX;
 
     //Initialize some variables.

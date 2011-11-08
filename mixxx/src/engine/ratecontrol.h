@@ -19,6 +19,7 @@ class ControlTTRotary;
 class ControlObject;
 class ControlPotmeter;
 class ControlPushButton;
+class PositionScratchController;
 
 // RateControl is an EngineControl that is in charge of managing the rate of
 // playback of a given channel of audio in the Mixxx engine. Using input from
@@ -27,7 +28,7 @@ class RateControl : public EngineControl {
     Q_OBJECT
 public:
     RateControl(const char* _group, ConfigObject<ConfigValue>* _config);
-    ~RateControl();
+    virtual ~RateControl();
 
     // Must be called during each callback of the audio thread so that
     // RateControl has a chance to update itself.
@@ -36,7 +37,7 @@ public:
                    const double totalSamples,
                    const int bufferSamples);
     // Returns the current engine rate.
-    double calculateRate(double baserate, bool paused);
+    double calculateRate(double baserate, bool paused, int iSamplesPerBuffer, bool* isScratching);
     double getRawRate();
 
     // Set rate change when temp rate button is pressed
@@ -51,8 +52,9 @@ public:
     static void setRateRamp(bool);
     /** Set Rate Ramp Sensitivity */
     static void setRateRampSensitivity(int);
-    
-public slots:
+    virtual void notifySeek(double dNewPlaypos);
+
+  public slots:
     void slotControlRatePermDown(double);
     void slotControlRatePermDownSmall(double);
     void slotControlRatePermUp(double);
@@ -63,10 +65,12 @@ public slots:
     void slotControlRateTempUpSmall(double);
     void slotControlFastForward(double);
     void slotControlFastBack(double);
-private:
+    void slotControlVinyl(double);
+
+  private:
     double getJogFactor();
     double getWheelFactor();
-    
+
     /** Set rate change of the temporary pitch rate */
     void setRateTemp(double v);
     /** Add a value to the temporary pitch rate */
@@ -77,7 +81,9 @@ private:
     void resetRateTemp(void);
     /** Get the 'Raw' Temp Rate */
     double getTempRate(void);
-    
+    /** Is vinyl control enabled? **/
+    bool m_bVinylControlEnabled;
+
     /** Values used when temp and perm rate buttons are pressed */
     static double m_dTemp, m_dTempSmall, m_dPerm, m_dPermSmall;
 
@@ -95,6 +101,8 @@ private:
     ControlTTRotary* m_pWheel;
     ControlTTRotary* m_pScratch;
     ControlTTRotary* m_pOldScratch;
+    PositionScratchController* m_pScratchController;
+
     ControlPushButton* m_pScratchToggle;
     ControlObject* m_pJog;
     Rotary* m_pJogFilter;
@@ -109,7 +117,7 @@ private:
         RATERAMP_UP = 2,	// Up button is being held
         RATERAMP_BOTH = 3	// Both buttons are being held down
     };
-    
+
     // Rate ramping mode:
     //	RATERAMP_STEP: pitch takes a temporary step up/down a certain amount.
     //  RATERAMP_LINEAR: pitch moves up/down in a progresively linear fashion.
@@ -117,7 +125,7 @@ private:
         RATERAMP_STEP = 0,
         RATERAMP_LINEAR = 1
     };
-    
+
     // This defines how the rate returns to normal. Currently unused.
     // Rate ramp back mode:
     //	RATERAMP_RAMPBACK_NONE: returns back to normal all at once.
@@ -128,12 +136,12 @@ private:
         RATERAMP_RAMPBACK_SPEED,
         RATERAMP_RAMPBACK_PERIOD
     };
-    
+
     // The current rate ramping direction. Only holds the last button pressed.
     int m_ePbCurrent;
     //  The rate ramping buttons which are currently being pressed.
     int m_ePbPressed;
-    
+
     /** This is true if we've already started to ramp the rate */
     int m_bTempStarted;
     /** Set to the rate change used for rate temp */
@@ -148,13 +156,14 @@ private:
     enum RATERAMP_RAMPBACK_MODE m_eRampBackMode;
     /** Return speed for temporary rate change */
     double m_dRateTempRampbackChange;
-    
+
     /** Old playback rate. Stored in this variable while a temp pitch change
       * buttons is in effect. It does not work to just decrease the pitch slider
       * by the value it has been increased with when the temp button was
       * pressed, because there is a fixed limit on the range of the pitch
       * slider */
     double m_dOldRate;
+
 
     /** Handle for configuration */
     ConfigObject<ConfigValue>* m_pConfig;
