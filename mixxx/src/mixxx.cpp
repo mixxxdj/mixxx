@@ -406,10 +406,6 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
         }
     }
 
-#ifdef __SCRIPT__
-    scriptEng = new ScriptEngine(this, m_pTrack);
-#endif
-
     initActions();
     initMenuBar();
 
@@ -470,13 +466,6 @@ MixxxApp::~MixxxApp()
     qTime.start();
 
     qDebug() << "Destroying MixxxApp";
-
-// Moved this up to insulate macros you've worked hard on from being lost in
-// a segfault that happens sometimes somewhere below here
-#ifdef __SCRIPT__
-    scriptEng->saveMacros();
-    delete scriptEng;
-#endif
 
     qDebug() << "save config, " << qTime.elapsed();
     m_pConfig->Save();
@@ -761,10 +750,6 @@ void MixxxApp::initActions()
     m_pOptionsRecord->setShortcut(tr("Ctrl+R"));
     m_pOptionsRecord->setShortcutContext(Qt::ApplicationShortcut);
 
-#ifdef __SCRIPT__
-    macroStudio = new QAction(tr("Show Studio"), this);
-#endif
-
     m_pFileLoadSongPlayer1->setStatusTip(tr("Opens a song in player 1"));
     m_pFileLoadSongPlayer1->setWhatsThis(
         tr("Open\n\nOpens a song in player 1"));
@@ -895,14 +880,6 @@ void MixxxApp::initActions()
     m_pHelpAboutApp->setStatusTip(tr("About the application"));
     m_pHelpAboutApp->setWhatsThis(tr("About\n\nAbout the application"));
     connect(m_pHelpAboutApp, SIGNAL(triggered()), this, SLOT(slotHelpAbout()));
-
-#ifdef __SCRIPT__
-    macroStudio->setStatusTip(tr("Shows the macro studio window"));
-    macroStudio->setWhatsThis(
-        tr("Show Studio\n\nMakes the macro studio visible"));
-     connect(macroStudio, SIGNAL(triggered()),
-             scriptEng->getStudio(), SLOT(showStudio()));
-#endif
 }
 
 void MixxxApp::initMenuBar()
@@ -913,9 +890,6 @@ void MixxxApp::initMenuBar()
    m_pLibraryMenu = new QMenu(tr("&Library"),menuBar());
    m_pViewMenu = new QMenu(tr("&View"), menuBar());
    m_pHelpMenu = new QMenu(tr("&Help"), menuBar());
-#ifdef __SCRIPT__
-   macroMenu=new QMenu(tr("&Macro"), menuBar());
-#endif
     connect(m_pOptionsMenu, SIGNAL(aboutToShow()),
             this, SLOT(slotOptionsMenuShow()));
     // menuBar entry fileMenu
@@ -958,19 +932,11 @@ void MixxxApp::initMenuBar()
     m_pHelpMenu->addSeparator();
     m_pHelpMenu->addAction(m_pHelpAboutApp);
 
-
-#ifdef __SCRIPT__
-    macroMenu->addAction(macroStudio);
-#endif
-
     menuBar()->addMenu(m_pFileMenu);
     menuBar()->addMenu(m_pLibraryMenu);
     menuBar()->addMenu(m_pOptionsMenu);
 
     //    menuBar()->addMenu(viewMenu);
-#ifdef __SCRIPT__
-    menuBar()->addMenu(macroMenu);
-#endif
     menuBar()->addSeparator();
     menuBar()->addMenu(m_pHelpMenu);
 

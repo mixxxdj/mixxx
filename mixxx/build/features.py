@@ -414,43 +414,6 @@ class WavPack(Feature):
             raise Exception('Could not find libwavpack, libwv or its development headers.')
 
 
-class ScriptStudio(Feature):
-    def description(self):
-        return "NOT-WORKING MixxxScript Studio"
-
-    def enabled(self, build):
-        build.flags['script'] = util.get_flags(build.env, 'script', 0)
-        if int(build.flags['script']):
-            return True
-        return False
-
-    def add_options(self, build, vars):
-        vars.Add('script', 'Set to 1 to enable MixxxScript/QtScript Studio support.', 0)
-
-    def configure(self, build, conf):
-        if not self.enabled(build):
-            return
-        build.env.Append(CPPDEFINES = '__SCRIPT__')
-
-    def sources(self, build):
-        build.env.Uic4('script/scriptstudio.ui')
-        return ['script/scriptengine.cpp',
-                'script/scriptcontrolqueue.cpp',
-                'script/scriptstudio.cpp',
-                'script/scriptrecorder.cpp',
-                'script/playinterface.cpp',
-                'script/macro.cpp',
-                'script/scriptcontrolevent.cpp',
-                'script/trackcontrolevent.cpp',
-                'script/numbercontrolevent.cpp',
-                'script/numberrecorder.cpp',
-                'script/macrolist.cpp',
-                'script/trackrecorder.cpp',
-                'script/sdatetime.cpp',
-                'script/signalrecorder.cpp',
-                'script/macrolistitem.cpp',
-                'script/qtscriptinterface.cpp']
-
 class PerfTools(Feature):
     def description(self):
         return "Google PerfTools"
