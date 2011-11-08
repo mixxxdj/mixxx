@@ -38,7 +38,7 @@ class IMFMediaType;
 class IMFMediaSource;
 
 class SoundSourceMediaFoundation : public Mixxx::SoundSource {
-public:
+  public:
     SoundSourceMediaFoundation(QString filename);
     ~SoundSourceMediaFoundation();
     int open();
@@ -48,7 +48,7 @@ public:
     int parseHeader();
     static QList<QString> supportedFileExtensions();
 
-private:
+  private:
     bool configureAudioStream();
     bool readProperties();
     void copyFrames(qint16 *dest, size_t *destFrames, const qint16 *src,
@@ -67,6 +67,7 @@ private:
     size_t m_leftoverBufferLength;
     int m_leftoverBufferPosition;
     qint64 m_mfDuration;
+    long m_iCurrentPosition;
     bool m_dead;
     bool m_seeking;
 };

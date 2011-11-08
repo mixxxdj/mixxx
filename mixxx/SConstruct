@@ -57,8 +57,6 @@ available_features = [features.HifiEq,
                       features.AsmLib,
                       features.Tonal,
                       features.IPod,
-                      features.ScriptStudio,
-                      features.CMetrics,
                       features.FFMPEG,
                       ]
 
