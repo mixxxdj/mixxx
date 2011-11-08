@@ -20,10 +20,6 @@
 #include <QtDebug>
 #include "widget/wwidget.h"
 
-#ifdef __C_METRICS__
-#include "cmetrics.h"
-#endif
-
 #ifdef __WINDOWS__
 #include <windows.h>
 #endif

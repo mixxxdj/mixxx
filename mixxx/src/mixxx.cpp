@@ -65,12 +65,6 @@
 #include "vinylcontrol/vinylcontrolmanager.h"
 #endif
 
-#ifdef __C_METRICS__
-#include <cmetrics.h>
-#include "defs_mixxxcmetrics.h"
-#endif
-
-
 extern "C" void crashDlg()
 {
     QMessageBox::critical(0, "Mixxx",
@@ -160,77 +154,6 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
    else {
        delete mixxxTranslator;
    }
-
-#ifdef __C_METRICS__
-    // Initialize Case Metrics if User is OK with that
-    QString metricsAgree =
-        m_pConfig->getValueString(
-            ConfigKey("[User Experience]", "AgreedToUserExperienceProgram"));
-
-    if (metricsAgree.isEmpty() || (metricsAgree != "yes" && metricsAgree != "no")) {
-        metricsAgree = "no";
-        int dlg = -1;
-        while (dlg != 0 && dlg != 1) {
-            dlg = QMessageBox::question(this, tr("Mixxx"),
-                tr("Mixxx's development is driven by community feedback.  At "
-                "your discretion, Mixxx can automatically send data on your "
-                "user experience back to the developers. Would you like to "
-                "help us make Mixxx better by enabling this feature?"),
-                tr("Yes"), tr("No"), tr("Privacy Policy"), 0, -1);
-            switch (dlg) {
-            case 0: metricsAgree = "yes";
-            case 1: break;
-            default: //show privacy policy
-                QMessageBox::information(this, tr("Mixxx: Privacy Policy"),
-                    tr("Mixxx's development is driven by community feedback. "
-                    "In order to help improve future versions Mixxx will with "
-                    "your permission collect information on your hardware and "
-                    "usage of Mixxx.  This information will primarily be used "
-                    "to fix bugs, improve features, and determine the system "
-                    "requirements of later versions.  Additionally this "
-                    "information may be used in aggregate for statistical "
-                    "purposes.\n\n"
-                    "The hardware information will include:\n"
-                    "\t- CPU model and features\n"
-                    "\t- Total/Available Amount of RAM\n"
-                    "\t- Available disk space\n"
-                    "\t- OS version\n\n"
-                    "Your usage information will include:\n"
-                    "\t- Settings/Preferences\n"
-                    "\t- Internal errors\n"
-                    "\t- Internal debugging messages\n"
-                    "\t- Performance statistics (average latency, CPU usage)\n"
-                    "\nThis information will not be used to personally "
-                    "identify you, contact you, advertise to you, or otherwise"
-                    " bother you in any way.\n"));
-                break;
-             }
-        }
-    }
-    m_pConfig->set(
-        ConfigKey("[User Experience]", "AgreedToUserExperienceProgram"),
-        ConfigValue(metricsAgree)
-    );
-
-    // If the user agrees...
-    if (metricsAgree == "yes") {
-        // attempt to load the user ID from the config file
-        if (m_pConfig->getValueString(ConfigKey("[User Experience]", "UID"))
-                == "") {
-            QString pUID = cm_generate_userid();
-            if (!pUID.isEmpty()) {
-                m_pConfig->set(
-                    ConfigKey("[User Experience]", "UID"), ConigValue(pUID));
-            }
-        }
-    }
-    // Initialize cmetrics
-    cm_init(100,20, metricsAgree == "yes", MIXXCMETRICS_RELEASE_ID,
-        m_pConfig->getValueString(ConfigKey("[User Experience]", "UID"))
-            .ascii());
-    cm_set_crash_dlg(crashDlg);
-    cm_writemsg_ascii(MIXXXCMETRICS_VERSION, VERSION);
-#endif
 
     // Store the path in the config database
     m_pConfig->set(ConfigKey("[Config]", "Path"), ConfigValue(qConfigPath));
@@ -445,12 +368,6 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
     // says "mixxx will barely work with no outs"
     while (setupDevices != OK || numDevices == 0)
     {
-
-#ifdef __C_METRICS__
-        cm_writemsg_ascii(MIXXXCMETRICS_FAILED_TO_OPEN_SNDDEVICE_AT_STARTUP,
-                          "Mixxx failed to open audio device(s) on startup.");
-#endif
-
         // Exit when we press the Exit button in the noSoundDlg dialog
         // only call it if setupDevices != OK
         if (setupDevices != OK) {
@@ -533,10 +450,6 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
     // then turn on fullscreen mode.
     if (args.bStartInFullscreen)
         slotOptionsFullScreen(true);
-#ifdef __C_METRICS__
-    cm_writemsg_ascii(MIXXXCMETRICS_MIXXX_CONSTRUCTOR_COMPLETE,
-            "Mixxx constructor complete.");
-#endif
 
     // Refresh the GUI (workaround for Qt 4.6 display bug)
     /* // TODO(bkgood) delete this block if the moving of setCentralWidget
@@ -626,15 +539,6 @@ MixxxApp::~MixxxApp()
     m_pConfig->set(ConfigKey("[Shoutcast]", "enabled"),0);
     m_pConfig->Save();
     delete m_pPrefDlg;
-
-#ifdef __C_METRICS__
-    // cmetrics will cause this whole method to segfault on Linux/i386 if it is
-    // called after config is deleted. Obviously, it depends on config somehow.
-    qDebug() << "cmetrics to report:" << "Mixxx deconstructor complete.";
-    cm_writemsg_ascii(MIXXXCMETRICS_MIXXX_DESTRUCTOR_COMPLETE,
-            "Mixxx deconstructor complete.");
-    cm_close(10);
-#endif
 
     qDebug() << "delete config, " << qTime.elapsed();
     delete m_pConfig;
