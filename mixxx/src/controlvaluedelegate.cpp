@@ -17,6 +17,8 @@ QStringList ControlValueDelegate::m_channelControlValues;
 QStringList ControlValueDelegate::m_masterControlValues;
 QStringList ControlValueDelegate::m_playlistControlValues;
 QStringList ControlValueDelegate::m_fxControlValues;
+QStringList ControlValueDelegate::m_flangerControlValues;
+QStringList ControlValueDelegate::m_microphoneControlValues;
 
 
 ControlValueDelegate::ControlValueDelegate(QObject *parent)
@@ -33,6 +35,7 @@ ControlValueDelegate::ControlValueDelegate(QObject *parent)
         m_channelControlValues.append("filterMid");
         m_channelControlValues.append("filterMidKill");
         m_channelControlValues.append("flanger");
+        m_channelControlValues.append("keylock");
         m_channelControlValues.append("LoadSelectedTrack");
         m_channelControlValues.append("NextTrack");
         m_channelControlValues.append("pfl");
@@ -62,6 +65,9 @@ ControlValueDelegate::ControlValueDelegate(QObject *parent)
         m_channelControlValues.append("loop_in");
         m_channelControlValues.append("loop_out");
         m_channelControlValues.append("reloop_exit");
+        m_channelControlValues.append("beatloop_4");
+        m_channelControlValues.append("loop_halve");
+        m_channelControlValues.append("loop_double");
         m_channelControlValues.append("hotcue_1_activate");
         m_channelControlValues.append("hotcue_2_activate");
         m_channelControlValues.append("hotcue_3_activate");
@@ -94,6 +100,10 @@ ControlValueDelegate::ControlValueDelegate(QObject *parent)
         m_channelControlValues.append("hotcue_30_activate");
         m_channelControlValues.append("hotcue_31_activate");
         m_channelControlValues.append("hotcue_32_activate");
+        m_channelControlValues.append("hotcue_33_activate");
+        m_channelControlValues.append("hotcue_34_activate");
+        m_channelControlValues.append("hotcue_35_activate");
+        m_channelControlValues.append("hotcue_36_activate");
         m_channelControlValues.append("hotcue_1_clear");
         m_channelControlValues.append("hotcue_2_clear");
         m_channelControlValues.append("hotcue_3_clear");
@@ -126,6 +136,10 @@ ControlValueDelegate::ControlValueDelegate(QObject *parent)
         m_channelControlValues.append("hotcue_30_clear");
         m_channelControlValues.append("hotcue_31_clear");
         m_channelControlValues.append("hotcue_32_clear");
+        m_channelControlValues.append("hotcue_33_clear");
+        m_channelControlValues.append("hotcue_34_clear");
+        m_channelControlValues.append("hotcue_35_clear");
+        m_channelControlValues.append("hotcue_36_clear");
     }
     if (m_masterControlValues.isEmpty())
     {
@@ -172,6 +186,17 @@ ControlValueDelegate::ControlValueDelegate(QObject *parent)
     	m_fxControlValues.append("Widget4Parameter2");
     	m_fxControlValues.append("Widget4Parameter3");
     	m_fxControlValues.append("Widget4Parameter4");
+    }
+    if (m_flangerControlValues.isEmpty())
+    {
+        m_flangerControlValues.append("lfoPeriod");
+        m_flangerControlValues.append("lfoDepth");
+        m_flangerControlValues.append("lfoDelay");
+    }
+    if (m_microphoneControlValues.isEmpty())
+    {
+        m_microphoneControlValues.append("talkover");
+        m_microphoneControlValues.append("volume");
     }
 }
 
@@ -228,9 +253,18 @@ QWidget *ControlValueDelegate::createEditor(QWidget *parent,
     }
     else if (controlGroup == CONTROLGROUP_FX_STRING)
     {
-    	editor->addItems(m_fxControlValues);
+        editor->addItems(m_fxControlValues);
     }
-
+    else if (controlGroup == CONTROLGROUP_FLANGER_STRING)
+    {
+        //Add all the ControlObject values that only [Flanger] has.
+        editor->addItems(m_flangerControlValues);
+    }
+    else if (controlGroup == CONTROLGROUP_MICROPHONE_STRING)
+    {
+        //Add all the ControlObject values that only [Microphone] has.
+        editor->addItems(m_microphoneControlValues);
+    }
     return editor;
 }
 
@@ -292,8 +326,18 @@ bool ControlValueDelegate::verifyControlValueValidity(QString controlGroup, QAbs
     }
     else if (controlGroup == CONTROLGROUP_FX_STRING)
     {
-		if (m_fxControlValues.contains(value))
-			return true;
+        if (m_fxControlValues.contains(value))
+            return true;
+    }
+    else if (controlGroup == CONTROLGROUP_FLANGER_STRING)
+    {
+        if (m_flangerControlValues.contains(value))
+            return true;
+    }
+    else if (controlGroup == CONTROLGROUP_MICROPHONE_STRING)
+    {
+        if (m_microphoneControlValues.contains(value))
+            return true;
     }
     else
     {

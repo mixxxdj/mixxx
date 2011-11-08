@@ -101,7 +101,7 @@ class Qt(Dependence):
     DEFAULT_QTDIRS = {'linux': '/usr/share/qt4',
                       'bsd': '/usr/local/lib/qt4',
                       'osx': '/Library/Frameworks',
-                      'windows': 'C:\\qt\\4.5.1'}
+                      'windows': 'C:\\qt\\4.6.0'}
 
     def satisfy(self):
         pass
@@ -113,8 +113,8 @@ class Qt(Dependence):
 
         # Enable Qt include paths
         if build.platform_is_linux:
-            if not conf.CheckForPKG('QtCore', '4.3'):
-                raise Exception('QT >= 4.3 not found')
+            if not conf.CheckForPKG('QtCore', '4.6'):
+                raise Exception('QT >= 4.6 not found')
 
             #Try using David's qt4.py's Qt4-module finding thingy instead of pkg-config.
             #(This hopefully respects our qtdir=blah flag while linking now.)
@@ -213,14 +213,6 @@ class FidLib(Dependence):
     def configure(self, build, conf):
         build.env.Append(CPPPATH='#lib/fidlib-0.9.10/')
 
-class KissFFT(Dependence):
-
-    def sources(self, build):
-        return ["#lib/kissfft/kiss_fft.c"]
-
-    def configure(self, build, conf):
-        build.env.Append(CPPPATH="#lib/kissfft")
-
 class ReplayGain(Dependence):
 
     def sources(self, build):
@@ -241,46 +233,22 @@ class SoundTouch(Dependence):
                    '#lib/%s/FIFOSampleBuffer.cpp' % self.SOUNDTOUCH_PATH,
                    '#lib/%s/FIRFilter.cpp' % self.SOUNDTOUCH_PATH,
                    '#lib/%s/PeakFinder.cpp' % self.SOUNDTOUCH_PATH,
-                   '#lib/%s/BPMDetect.cpp' % self.SOUNDTOUCH_PATH]
+                   '#lib/%s/BPMDetect.cpp' % self.SOUNDTOUCH_PATH,
+                   '#lib/%s/mmx_optimized.cpp' % self.SOUNDTOUCH_PATH,
+                   '#lib/%s/sse_optimized.cpp' % self.SOUNDTOUCH_PATH,]
 
-        # SoundTouch CPU optimizations are only for x86 architectures
-        cpu_detection = {
-            ('msvs', 'x86'): '#lib/%s/cpu_detect_x86_win.cpp',
-            ('msvs', 'x86_64'): '#lib/%s/cpu_detect_x64_win.cpp',
-            ('gnu', 'x86'): '#lib/%s/cpu_detect_x86_gcc.cpp',
-            ('gnu', 'x86_64'): '#lib/%s/cpu_detect_x64_gcc.cpp'
-            }
-
-        toolchain = 'gnu' if build.toolchain_is_gnu else 'msvs'
-        machine = 'unknown'
-        machine = 'x86_64' if build.architecture_is_x86 and build.machine_is_64bit else machine
-        machine = 'x86' if build.architecture_is_x86 and not build.machine_is_64bit else machine
-
-        optimize = int(util.get_flags(build.env, 'optimize', 1))
-        optimizations_enabled = build.machine_is_64bit or \
-            (build.toolchain_is_msvs and optimize > 1) or \
-            (build.toolchain_is_gnu and optimize > 2)
-        cpu_detection_file = cpu_detection.get((toolchain, machine), None)
-        if optimizations_enabled and build.architecture_is_x86 and cpu_detection_file:
-            sources.extend(
-                [cpu_detection_file % self.SOUNDTOUCH_PATH,
-                 '#lib/%s/mmx_optimized.cpp' % self.SOUNDTOUCH_PATH,
-                 '#lib/%s/sse_optimized.cpp' % self.SOUNDTOUCH_PATH,
-                 ])
+        # SoundTouch CPU optimizations are only for x86
+        # architectures. SoundTouch automatically ignores these files when it is
+        # not being built for an architecture that supports them.
+        cpu_detection = '#lib/%s/cpu_detect_x86_win.cpp' if build.toolchain_is_msvs else '#lib/%s/cpu_detect_x86_gcc.cpp'
+        sources.append(cpu_detection % self.SOUNDTOUCH_PATH)
         return sources
 
     def configure(self, build, conf):
         if build.platform_is_windows:
-            build.env.Append(CPPDEFINES = 'WIN%s' % build.bitwidth)
+            # Regardless of the bitwidth, ST checks for WIN32
+            build.env.Append(CPPDEFINES = 'WIN32')
         build.env.Append(CPPPATH=['#lib/%s' % self.SOUNDTOUCH_PATH])
-
-        # TODO(XXX) when we figure out a better way to represent features, fix
-        # this.
-        optimize = int(util.get_flags(build.env, 'optimize', 1))
-        if build.machine_is_64bit or \
-                (build.toolchain_is_msvs and optimize > 1) or \
-                (build.toolchain_is_gnu and optimize > 2):
-            build.env.Append(CPPDEFINES='SOUNDTOUCH_ALLOW_X86_OPTIMIZATIONS')
 
 class TagLib(Dependence):
     def configure(self, build, conf):
@@ -746,7 +714,7 @@ class MixxxCore(Feature):
             build.env.Append(CPPDEFINES=('UNIX_SHARE_PATH', r'\"%s\"' % share_path))
 
     def depends(self, build):
-        return [SoundTouch, KissFFT, ReplayGain, PortAudio, PortMIDI, Qt,
+        return [SoundTouch, ReplayGain, PortAudio, PortMIDI, Qt,
                 FidLib, SndFile, FLAC, OggVorbis, OpenGL, TagLib,]
 
     def post_dependency_check_configure(self, build, conf):

@@ -20,6 +20,8 @@
 #define CONTROLGROUP_MASTER_STRING   "[Master]"
 #define CONTROLGROUP_PLAYLIST_STRING "[Playlist]"
 #define CONTROLGROUP_FX_STRING "[FX]"
+#define CONTROLGROUP_FLANGER_STRING  "[Flanger]"
+#define CONTROLGROUP_MICROPHONE_STRING  "[Microphone]"
 
 class ControlGroupDelegate : public QItemDelegate
 {

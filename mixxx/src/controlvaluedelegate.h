@@ -40,11 +40,16 @@ public:
     static QStringList getMasterControlValues() { return m_masterControlValues; };
     static QStringList getPlaylistControlValues() { return m_playlistControlValues; };
     static QStringList getFXControlValues() { return m_fxControlValues; };
+    static QStringList getFlangerControlValues() { return m_flangerControlValues; };
+    static QStringList getMicrophoneControlValues() { return m_microphoneControlValues; };
+
 private:
     static QStringList m_channelControlValues;
     static QStringList m_masterControlValues;
     static QStringList m_playlistControlValues;
     static QStringList m_fxControlValues;
+    static QStringList m_flangerControlValues;
+    static QStringList m_microphoneControlValues;
 };
 
 #endif /* CONTROLVALUEDELEGATE_H_ */

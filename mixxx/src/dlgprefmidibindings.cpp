@@ -387,7 +387,15 @@ void DlgPrefMidiBindings::slotAddInputBinding()
     else if (controlGroup == CONTROLGROUP_FX_STRING)
     {
     	controlValues = ControlValueDelegate::getFXControlValues();
-	}
+    }
+    else if (controlGroup == CONTROLGROUP_FLANGER_STRING)
+    {
+        controlValues = ControlValueDelegate::getFlangerControlValues();
+    }
+    else if (controlGroup == CONTROLGROUP_MICROPHONE_STRING)
+    {
+        controlValues = ControlValueDelegate::getMicrophoneControlValues();
+    }
     else
     {
         qDebug() << "Unhandled ControlGroup in " << __FILE__;
