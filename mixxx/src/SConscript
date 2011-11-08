@@ -306,6 +306,7 @@ if build.platform_is_windows:
 	#icon = env.Install(base_dist_dir+"", icon_files)
 	dlls = env.Install(base_dist_dir+"/", dll_files)
 	soundsource_plugins = env.Install(os.path.join(base_dist_dir, "plugins", "soundsource/"), soundsource_plugin_files)
+	vamp_plugins = env.Install(os.path.join(base_dist_dir, "plugins"), libmixxxminimal_vamp_plugin)
 	binary = env.Install(base_dist_dir+"/", binary_files)
 
 	#Always trigger these install builders when compiling on Windows
@@ -319,6 +320,7 @@ if build.platform_is_windows:
 	env.Alias('mixxx', docs)
 	env.Alias('mixxx', dlls)
 	env.Alias('mixxx', soundsource_plugins)
+	env.Alias('mixxx', vamp_plugins)
 	#env.Alias('mixxx', icon)
 	env.Alias('mixxx', binary)
 
