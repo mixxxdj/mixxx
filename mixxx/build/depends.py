@@ -719,7 +719,7 @@ class MixxxCore(Feature):
             build.env.Append(CPPDEFINES=('UNIX_SHARE_PATH', r'\"%s\"' % share_path))
 
     def depends(self, build):
-        return [SoundTouch, KissFFT, ReplayGain, PortAudio, PortMIDI, Qt,
+        return [SoundTouch, ReplayGain, PortAudio, PortMIDI, Qt,
                 FidLib, SndFile, FLAC, OggVorbis, OpenGL, TagLib,]
 
     def post_dependency_check_configure(self, build, conf):
