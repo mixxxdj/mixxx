@@ -1053,10 +1053,10 @@ void MixxxApp::slotOptionsFullScreen(bool toggle)
          //m_winpos.setX(m_winpos.x() + (geometry().x() - x()));
          //m_winpos.setY(m_winpos.y() + (geometry().y() - y()));
 #endif
-        menuBar()-> setNativeMenuBar(false);
+        menuBar()->setNativeMenuBar(false);
         showFullScreen();
     } else {
-        menuBar()-> setNativeMenuBar(true);
+        menuBar()->setNativeMenuBar(true);
         showNormal();
 #ifdef __LINUX__
         //move(m_winpos);
@@ -1346,6 +1346,10 @@ void MixxxApp::rebootMixxxView() {
     // this doesn't always seem to snap down tight on Windows... sigh -bkgood
     setFixedSize(m_pView->width(), m_pView->height());
     setFixedSize(QSize(QWIDGETSIZE_MAX, QWIDGETSIZE_MAX));
+
+    // Set native menu bar. Fixes issue on OSX where menu bar went away after a
+    // skin change.
+    menuBar()->setNativeMenuBar(true);
 
     qDebug() << "rebootgui DONE";
 }
