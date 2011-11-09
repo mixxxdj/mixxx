@@ -3,14 +3,14 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2011-10-31 23:15-0400\n"
-"PO-Revision-Date: 2011-11-01 05:11+0000\n"
-"Last-Translator: jus <Unknown>\n"
+"PO-Revision-Date: 2011-11-08 11:00+0000\n"
+"Last-Translator: Florian Greinus <Unknown>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-11-02 04:45+0000\n"
-"X-Generator: Launchpad (build 14214)\n"
+"X-Launchpad-Export-Date: 2011-11-09 04:46+0000\n"
+"X-Generator: Launchpad (build 14263)\n"
 
 #: AutoDJFeature#1
 msgid "Auto DJ"
@@ -1071,7 +1071,7 @@ msgstr "Relativer Modus"
 #: DlgPrefNoVinylDlg#17
 msgctxt "DlgPrefNoVinylDlg#17"
 msgid "Enable Needle Skip Prevention"
-msgstr ""
+msgstr "Verhinderung von Nadel-Sprüngen aktivieren"
 
 #: DlgPrefNoVinylDlg#18
 msgctxt "DlgPrefNoVinylDlg#18"
@@ -1086,7 +1086,7 @@ msgstr "http://www.xwax.co.uk"
 #: DlgPrefNoVinylDlg#20
 msgctxt "DlgPrefNoVinylDlg#20"
 msgid "Powered by xwax"
-msgstr ""
+msgstr "Powered by xwax"
 
 #: DlgPrefNoVinylDlg#21
 msgctxt "DlgPrefNoVinylDlg#21"
@@ -1820,7 +1820,7 @@ msgstr "Relativer Modus"
 #: DlgPrefVinylDlg#18
 msgctxt "DlgPrefVinylDlg#18"
 msgid "Enable Needle Skip Prevention"
-msgstr ""
+msgstr "Verhinderung von Nadel-Sprüngen aktivieren"
 
 #: DlgPrefVinylDlg#19
 msgctxt "DlgPrefVinylDlg#19"
@@ -1835,7 +1835,7 @@ msgstr "http://www.xwax.co.uk"
 #: DlgPrefVinylDlg#21
 msgctxt "DlgPrefVinylDlg#21"
 msgid "Powered by xwax"
-msgstr ""
+msgstr "Powered by xwax"
 
 #: DlgPreferences#1
 msgid "Sound Hardware"
@@ -2012,7 +2012,7 @@ msgstr "Metadaten aus der Datei laden."
 
 #: DlgTrackInfo#16
 msgid "Track Information (Click to Expand)"
-msgstr ""
+msgstr "Titel-Information (Zum Vergrößern anklicken)"
 
 #: DlgTrackInfo#17
 msgid "Track BPM: "
@@ -2634,11 +2634,11 @@ msgstr "&Über"
 
 #: MixxxApp#41
 msgid "&Community Support"
-msgstr ""
+msgstr "&Community Support"
 
 #: MixxxApp#42
 msgid "Send Us &Feedback"
-msgstr ""
+msgstr "Sende uns &Feedback"
 
 #: MixxxApp#43
 msgid "&Translate this application"
@@ -2851,6 +2851,9 @@ msgid ""
 "\n"
 "Send feedback to the Mixxx team."
 msgstr ""
+"Support\n"
+"\n"
+"Sende Feedback an das Mixxx Team."
 
 #: MixxxApp#82
 msgid "Help translate this application into your language."
@@ -2862,6 +2865,9 @@ msgid ""
 "\n"
 "Help translate this application into your language."
 msgstr ""
+"Support\n"
+"\n"
+"Helfe diese Anwendung in deine Sprache zu übersetzen."
 
 #: MixxxApp#84
 msgid "About the application"
@@ -3488,7 +3494,7 @@ msgstr "Zur Auto DJ Warteschlange hinzufügen"
 
 #: WTrackTableView#7
 msgid "Reload Track Metadata"
-msgstr ""
+msgstr "Titel-Metadaten erneut laden"
 
 #: WTrackTableView#8
 msgid "Load to Deck %1"
