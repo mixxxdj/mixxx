@@ -186,7 +186,7 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
     m_pRecordingManager = new RecordingManager(m_pConfig);
 
     // Starting the master (mixing of the channels and effects):
-    m_pEngine = new EngineMaster(m_pConfig, "[Master]");
+    m_pEngine = new EngineMaster(m_pConfig, "[Master]", true);
 
     connect(m_pEngine, SIGNAL(isRecording(bool)),
             m_pRecordingManager,SLOT(slotIsRecording(bool)));
