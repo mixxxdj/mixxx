@@ -45,7 +45,8 @@ class EngineMaster : public EngineObject, public AudioSource {
     Q_OBJECT
   public:
     EngineMaster(ConfigObject<ConfigValue>* pConfig,
-                 const char* pGroup);
+                 const char* pGroup,
+                 bool bEnableSidechain);
     virtual ~EngineMaster();
 
     // Get access to the sample buffers. None of these are thread safe. Only to
