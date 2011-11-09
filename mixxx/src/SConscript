@@ -446,7 +446,7 @@ def BuildRelease(target, source, env):
                  'winlibpath': mixxx_winlib_path,
                  '64bit': buildwin64}
             print "Using command:" + command
-            os.system(command)
+            subprocess.check_call(command)
     else:
         print "Aborted building installer"
 
