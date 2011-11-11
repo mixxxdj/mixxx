@@ -20,11 +20,15 @@ using Vamp::Plugin;
 using Vamp::PluginHostAdapter;
 
 VampAnalyser::VampAnalyser()
-    {
+{
     m_pluginbuf = new CSAMPLE*[2];
     mPlugin = NULL;
-}
+    /*
+     * Calls list Plugins here to force VAMP-HOST_SDK
+     * reading all *.dll files from plugin folder
+     */
 
+}
 VampAnalyser::~VampAnalyser() {
     if(m_pluginbuf!=NULL){
     delete[] m_pluginbuf;
@@ -62,8 +66,7 @@ bool VampAnalyser::Init(const QString pluginlibrary, const QString pluginid,
         delete mPlugin;
         qDebug()<<"VampAnalyser: kill plugin";
     }
-    Vamp::HostExt::PluginLoader *loader =
-            Vamp::HostExt::PluginLoader::getInstance();
+    Vamp::HostExt::PluginLoader *loader = Vamp::HostExt::PluginLoader::getInstance();
     QStringList pluginlist = pluginid.split(":");
     if(pluginlist.size()!=2){
         qDebug()<<"VampAnalyser: got malformed pluginid: "<<pluginid;
