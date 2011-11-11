@@ -216,6 +216,7 @@ AnalyserQueue* AnalyserQueue::createDefaultAnalyserQueue(ConfigObject<ConfigValu
     ret->addAnalyser(new AnalyserWaveform());
 
 #ifdef __VAMP__
+    qDebug() << "Create VAMP Analysers ";
     ret->addAnalyser(new AnalyserGainVamp(_config));
     ret->addAnalyser(new AnalyserBeats(_config));
     //ret->addAnalyser(new AnalyserVampKeyTest(_config));

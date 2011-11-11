@@ -81,7 +81,8 @@ PluginHostAdapter::getPluginPath()
 #ifdef __WINDOWS__
 #define PATH_SEPARATOR ';'
 //This path is already relative to Mixxx.exe due to WIN32 API function FindFirstFile()
-#define DEFAULT_VAMP_PATH "plugins"
+//#define DEFAULT_VAMP_PATH (QCoreApplication::applicationDirPath().replace("/","\\") +"\\plugins").toStdString().c_str()
+#define DEFAULT_VAMP_PATH "plugins" //Use the path where Mixxx.exe is located
 #else
 #define PATH_SEPARATOR ':'
 #ifdef __APPLE__

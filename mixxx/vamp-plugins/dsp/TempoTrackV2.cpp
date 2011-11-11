@@ -18,8 +18,7 @@
 #include <cmath>
 #include <cstdlib>
 #include <iostream>
-//Using Mixxx's mathstuff.h to get round() function
-#include "../../src/mathstuff.h"
+
 
 #include "MathUtilities.h"
 
@@ -423,7 +422,7 @@ TempoTrackV2::calculateBeats(const vector<double> &df,
     for (unsigned int i=0; i<localscore.size(); i++)
     {
         int prange_min = -2*beat_period[i];
-        int prange_max = round(-0.5*beat_period[i]);
+        int prange_max = MathUtilities::round(-0.5*beat_period[i]);
 
         // transition range
         d_vec_t txwt (prange_max - prange_min + 1);
@@ -432,7 +431,7 @@ TempoTrackV2::calculateBeats(const vector<double> &df,
         for (unsigned int j=0;j<txwt.size();j++)
         {
             double mu = static_cast<double> (beat_period[i]);
-            txwt[j] = exp( -0.5*pow(tightness * log((round(2*mu)-j)/mu),2));
+            txwt[j] = exp( -0.5*pow(tightness * log((MathUtilities::round(2*mu)-j)/mu),2));
 
             // IF IN THE ALLOWED RANGE, THEN LOOK AT CUMSCORE[I+PRANGE_MIN+J
             // ELSE LEAVE AT DEFAULT VALUE FROM INITIALISATION:  D_VEC_T SCORECANDS (TXWT.SIZE());
