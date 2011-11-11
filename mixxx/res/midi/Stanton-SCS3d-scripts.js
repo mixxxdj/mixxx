@@ -677,7 +677,8 @@ StantonSCS3d.B12 = function (channel, control, value, status) {
                 break;
         default:
                 if ((status & 0xF0) == 0x90) {    // If button down
-                    var currentRange = engine.getValue("[Channel"+StantonSCS3d.deck+"]","rateRange");
+                    // Round to two decimal places to avoid double-precision comparison problems
+                    var currentRange = Math.round(engine.getValue("[Channel"+StantonSCS3d.deck+"]","rateRange")*100)/100;
                     switch (true) {
                         case (currentRange<=StantonSCS3d.pitchRanges[0]):
                                 engine.setValue("[Channel"+StantonSCS3d.deck+"]","rateRange",StantonSCS3d.pitchRanges[1]);

@@ -12,7 +12,7 @@
 #include "mixxxutils.cpp"
 
 
-BrowseThread* BrowseThread::m_instance = 0;
+BrowseThread* BrowseThread::m_instance = NULL;
 static QMutex s_Mutex;
 
 /*
@@ -47,7 +47,7 @@ BrowseThread::~BrowseThread() {
 BrowseThread* BrowseThread::getInstance(){
     if (!m_instance)
     {
-        s_Mutex.lock();;
+        s_Mutex.lock();
 
          if (!m_instance)
                m_instance = new BrowseThread();
@@ -170,12 +170,10 @@ void BrowseThread::populateModel() {
         if(row % 10 == 0){
             //this is a blocking operation
             emit(rowsAppended(rows, m_model_observer));
-
             rows.clear();
         }
         //Sleep additionally for 10ms which prevents us from GUI freezes
         msleep(20);
     }
     emit(rowsAppended(rows, m_model_observer));
-
 }

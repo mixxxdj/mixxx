@@ -26,6 +26,8 @@ ControlGroupDelegate::ControlGroupDelegate(QObject *parent)
         m_controlGroups.append(CONTROLGROUP_CHANNEL2_STRING);
         m_controlGroups.append(CONTROLGROUP_MASTER_STRING);
         m_controlGroups.append(CONTROLGROUP_PLAYLIST_STRING);
+        m_controlGroups.append(CONTROLGROUP_FLANGER_STRING);
+        m_controlGroups.append(CONTROLGROUP_MICROPHONE_STRING);
     }
 }
 
@@ -60,6 +62,8 @@ QWidget *ControlGroupDelegate::createEditor(QWidget *parent,
     editor->addItem(CONTROLGROUP_CHANNEL2_STRING);
     editor->addItem(CONTROLGROUP_MASTER_STRING);
     editor->addItem(CONTROLGROUP_PLAYLIST_STRING);
+    editor->addItem(CONTROLGROUP_FLANGER_STRING);
+    editor->addItem(CONTROLGROUP_MICROPHONE_STRING);    
 
     return editor;
 }
