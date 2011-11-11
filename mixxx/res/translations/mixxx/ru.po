@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2011-10-31 23:15-0400\n"
-"PO-Revision-Date: 2011-11-07 07:43+0000\n"
-"Last-Translator: jibiel <Unknown>\n"
+"PO-Revision-Date: 2011-11-10 11:34+0000\n"
+"Last-Translator: Олег Резников <Unknown>\n"
 "Language-Team: Russian <ru@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-11-08 05:22+0000\n"
-"X-Generator: Launchpad (build 14231)\n"
+"X-Launchpad-Export-Date: 2011-11-11 04:46+0000\n"
+"X-Generator: Launchpad (build 14277)\n"
 
 #: AutoDJFeature#1
 msgid "Auto DJ"
@@ -77,12 +77,12 @@ msgstr "Рейтинг"
 #: BaseSqlTableModel#12
 msgctxt "BaseSqlTableModel#12"
 msgid "Bitrate"
-msgstr "Скорость потока"
+msgstr "Битрейт"
 
 #: BaseSqlTableModel#13
 msgctxt "BaseSqlTableModel#13"
 msgid "BPM"
-msgstr "Ударов в минуту"
+msgstr "Темп"
 
 #: BaseSqlTableModel#14
 msgctxt "BaseSqlTableModel#14"
@@ -100,7 +100,7 @@ msgstr "№"
 #: BaseSqlTableModel#17
 msgctxt "BaseSqlTableModel#17"
 msgid "Key"
-msgstr "Ключ"
+msgstr "Тональность"
 
 #: BaseTrackPlayer#1
 msgid "Couldn't load track."
@@ -180,7 +180,7 @@ msgstr "Стиль"
 #: BrowseTableModel#8
 msgctxt "BrowseTableModel#8"
 msgid "Comment"
-msgstr "Описание"
+msgstr "Комментарий"
 
 #: BrowseTableModel#9
 msgctxt "BrowseTableModel#9"
@@ -190,7 +190,7 @@ msgstr "Длительность"
 #: BrowseTableModel#10
 msgctxt "BrowseTableModel#10"
 msgid "BPM"
-msgstr "Ударов в минуту"
+msgstr "Темп"
 
 #: BrowseTableModel#11
 msgctxt "BrowseTableModel#11"
@@ -205,7 +205,7 @@ msgstr "Тип"
 #: BrowseTableModel#13
 msgctxt "BrowseTableModel#13"
 msgid "Bitrate"
-msgstr "Частота бит"
+msgstr "Битрейт"
 
 #: BrowseTableModel#14
 msgctxt "BrowseTableModel#14"
@@ -222,24 +222,24 @@ msgid ""
 "Could not load the following file because it is in use by Mixxx or another "
 "application."
 msgstr ""
-"Не получилось загрузить данный файл так как он в данный момент занят "
-"программой Mixxx или другой программой."
+"Не получилось загрузить данный файл, так как в данный момент он используется "
+"Mixxx или другой программой."
 
 #: BrowseTableModel#17
 msgid "Warning: This will permanently delete the following files:"
-msgstr "Предупреждение: Эта акция безвозвратно удалит данные файлы:"
+msgstr "Предупреждение: Данные файлы будут безвозвратно удалены:"
 
 #: BrowseTableModel#18
 msgid "Are you sure you want to delete these files from your computer?"
-msgstr "Вы уверены что желаете удалить данные файлы с вашего компьютера?"
+msgstr "Вы уверены, что желаете удалить данные файлы с вашего компьютера?"
 
 #: BrowseTableModel#19
 msgid ""
 "Could not delete the following file because it is in use by Mixxx or another "
 "application:"
 msgstr ""
-"Не получилось удалить данный файл так как он в данный момент занят "
-"программой Mixxx или другой программой."
+"Не получилось удалить данный файл, так как в данный момент он используется "
+"Mixxx или другой программой."
 
 #: BrowseTableModel#20
 msgid "Could not update file metadata."
@@ -257,7 +257,7 @@ msgstr "Удалить"
 #: CrateFeature#3
 msgctxt "CrateFeature#3"
 msgid "Rename"
-msgstr "Переменовать"
+msgstr "Переименовать"
 
 #: CrateFeature#4
 msgctxt "CrateFeature#4"
@@ -309,12 +309,12 @@ msgstr "Ошибка переименования группы"
 #: CrateFeature#15
 msgctxt "CrateFeature#15"
 msgid "Playlist Files (*.m3u *.pls)"
-msgstr "Файлы вида плэй-лист (*.m3u *.pls)"
+msgstr "Файлы списков воспроизведения (*.m3u *.pls)"
 
 #: CrateFeature#16
 msgctxt "CrateFeature#16"
 msgid "Export Playlist"
-msgstr "Экспортировать плэй-лист"
+msgstr "Экспортировать список воспроизведения"
 
 #: CrateFeature#17
 msgctxt "CrateFeature#17"
@@ -331,7 +331,7 @@ msgstr "Ошибка создания списка"
 
 #: CrateFeature#20
 msgid "A crate by that name already exists."
-msgstr "Список с этим наименованием уже существует."
+msgstr "Список с ьаким именем уже существует."
 
 #: DlgAboutDlg#1
 msgid "About Mixxx"
