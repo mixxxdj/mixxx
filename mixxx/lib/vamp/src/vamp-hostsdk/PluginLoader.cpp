@@ -45,11 +45,12 @@
 
 #include <cstring>
 
-#ifdef __WINDOWS__
+
 #include <QString>
 #include <QtDebug>
 #include <QCoreApplication>
 
+#ifdef __WINDOWS__
 #include <windows.h>
 #include <tchar.h>
 #define PLUGIN_SUFFIX "dll"
@@ -269,7 +270,9 @@ PluginLoader::Impl::enumeratePlugins(PluginKey forPlugin)
             fullPath = splicePath(fullPath, *fi);
             //qDebug() << "Trying to load "<< QString::fromStdString(fullPath);
             void *handle = loadLibrary(fullPath);
+            #ifdef __WINDOWS__
             if(!handle) qDebug() << "Loading failed with error:" << GetLastError();
+            #endif
             if (!handle) continue;
             qDebug() << "Loaded " << QString::fromStdString(fullPath);
             VampGetPluginDescriptorFunction fn =
