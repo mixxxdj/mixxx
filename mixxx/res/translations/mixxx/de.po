@@ -3,14 +3,14 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2011-10-31 23:15-0400\n"
-"PO-Revision-Date: 2011-11-08 11:00+0000\n"
-"Last-Translator: Florian Greinus <Unknown>\n"
+"PO-Revision-Date: 2011-11-11 00:19+0000\n"
+"Last-Translator: toomuch <Unknown>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-11-09 04:46+0000\n"
-"X-Generator: Launchpad (build 14263)\n"
+"X-Launchpad-Export-Date: 2011-11-11 04:46+0000\n"
+"X-Generator: Launchpad (build 14277)\n"
 
 #: AutoDJFeature#1
 msgid "Auto DJ"
@@ -238,7 +238,7 @@ msgstr ""
 
 #: BrowseTableModel#20
 msgid "Could not update file metadata."
-msgstr "Die Metadaten der Datei konnten nicht aktualisiert werden."
+msgstr ""
 
 #: CrateFeature#1
 msgid "New Crate"
@@ -442,8 +442,8 @@ msgid ""
 "This wizard allows you to easily map the controls on your MIDI controller to "
 "Mixxx's controls."
 msgstr ""
-"Dieser Assistent ermöglicht es die Bedienelemente Ihres MIDI-Controllers "
-"denen von Mixxx zuzuweisen."
+"Dieser Assistent ermöglicht es die Bedienelemente Ihres MIDI-Geräte denen "
+"von Mixxx zuzuweisen."
 
 #: DlgMidiLearning#7
 msgid "Begin"
@@ -515,7 +515,7 @@ msgstr "Einstellung BPM-Erkennung"
 #: DlgPrefBPMDlg#2
 msgctxt "DlgPrefBPMDlg#2"
 msgid "BPM Detection"
-msgstr "BPM Erkennung"
+msgstr "BPM-Erkennung"
 
 #: DlgPrefBPMDlg#3
 msgid "Enable BPM Detection"
@@ -643,7 +643,7 @@ msgstr "Farbschema"
 
 #: DlgPrefControlsDlg#4
 msgid "Waveform display"
-msgstr "Wellenform Anzeige"
+msgstr "Wellenform-Anzeige"
 
 #: DlgPrefControlsDlg#5
 msgid "Position display"
@@ -651,7 +651,7 @@ msgstr "Positionsanzeige"
 
 #: DlgPrefControlsDlg#6
 msgid "Tool tips"
-msgstr "Werkzeughilfe"
+msgstr "Quickinfo"
 
 #: DlgPrefControlsDlg#7
 msgctxt "DlgPrefControlsDlg#7"
@@ -994,7 +994,7 @@ msgstr ""
 "weight:400; font-style:normal;\">\n"
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-"
 "right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-"
-"weight:600;\">Wählen Sie Audio-Geräte für die Vinyl-Steuerung in den Sound "
+"weight:600;\">Wählen Sie Audio-Geräte für die Vinyl-Steuerung in den Sound-"
 "Hardware-Einstellungen aus.</span></p></body></html>"
 
 #: DlgPrefNoVinylDlg#4
@@ -1026,17 +1026,17 @@ msgstr "150"
 #: DlgPrefNoVinylDlg#8
 msgctxt "DlgPrefNoVinylDlg#8"
 msgid "Vinyl Configuration"
-msgstr "Vinyl Konfiguration"
+msgstr "Vinyl-Konfiguration"
 
 #: DlgPrefNoVinylDlg#9
 msgctxt "DlgPrefNoVinylDlg#9"
 msgid "Deck 1 Vinyl Type"
-msgstr "Deck 1 Vinyl-Typ"
+msgstr "Vinyl-Typ Deck 1"
 
 #: DlgPrefNoVinylDlg#10
 msgctxt "DlgPrefNoVinylDlg#10"
 msgid "Deck 2 Vinyl Type"
-msgstr "Deck 2 Vinyl-Typ"
+msgstr "Vinyl-Typ Deck 2"
 
 #: DlgPrefNoVinylDlg#11
 msgctxt "DlgPrefNoVinylDlg#11"
@@ -1181,7 +1181,8 @@ msgstr "Bibliothek beim Start neu einlesen"
 #: DlgPrefPlaylistDlg#10
 msgid "Use relative paths for playlist export if possible"
 msgstr ""
-"Wenn möglich relative Pfade für den den Export von Wiedergabelisten verwenden"
+"Wenn möglich, relative Pfade für den den Export von Wiedergabelisten "
+"verwenden"
 
 #: DlgPrefPlaylistDlg#11
 msgid "iPod"
@@ -1284,7 +1285,7 @@ msgstr "Neue Cue-Datei erstellen"
 
 #: DlgPrefRecordDlg#12
 msgid "File Splitting"
-msgstr "Datei Aufteilung"
+msgstr "Datei-Aufteilung"
 
 #: DlgPrefRecordDlg#13
 msgid "Split recordings at"
@@ -1297,7 +1298,7 @@ msgstr "Einstellung BPM-Erkennung"
 
 #: DlgPrefReplayGainDlg#2
 msgid "ReplayGain Normalization"
-msgstr "ReplayGain Normalisierung"
+msgstr "ReplayGain-Normalisierung"
 
 #: DlgPrefReplayGainDlg#3
 msgid "Apply volume normalization to loaded songs."
@@ -1312,12 +1313,12 @@ msgid ""
 "Calculate ReplayGain normalization for songs which are missing ReplayGain "
 "metadata."
 msgstr ""
-"ReplayGain-Normalisierung für Titel berechnen welche keine ReplayGain-"
+"ReplayGain-Normalisierung für Titel berechnen, welche keine ReplayGain-"
 "Metadaten haben."
 
 #: DlgPrefReplayGainDlg#6
 msgid "Enable Replay Gain Analysis"
-msgstr "ReplayGain Analyse aktivieren"
+msgstr "ReplayGain-Analyse aktivieren"
 
 #: DlgPrefReplayGainDlg#7
 msgid ""
@@ -1325,9 +1326,9 @@ msgid ""
 "applied to a new song. You may wish to wait before adjusting the pregain and "
 "volume."
 msgstr ""
-"Auf älteren Computern dauert es vielleicht etwas bis die Normalisierung der "
-"Lautstärke auf neue Titel angewandt ist. Vielleicht warten Sie solange bevor "
-"Sie die Vorverstärkung und Lautstärke anpassen."
+"Auf älteren Computern dauert es vielleicht etwas, bis die Normalisierung der "
+"Lautstärke auf neue Titel angewandt ist. Sie sollten warten, bevor Sie die "
+"Vorverstärkung und Lautstärke anpassen."
 
 #: DlgPrefReplayGainDlg#8
 msgid "Initial Boost"
@@ -1419,11 +1420,11 @@ msgstr "test1234"
 
 #: DlgPrefShoutcastDlg#18
 msgid "Stream settings"
-msgstr "Stromeinstellungen"
+msgstr "Stream-Einstellungen"
 
 #: DlgPrefShoutcastDlg#19
 msgid "Stream name"
-msgstr "Stromname"
+msgstr "Stream-Name"
 
 #: DlgPrefShoutcastDlg#20
 msgid "Mixxx Icecast Testing"
@@ -1587,7 +1588,7 @@ msgid ""
 "cause an established connection to disconnect and reconnect. "
 msgstr ""
 "Aus technischen Gründen wird eine bestehende Verbindung unterbrochen und "
-"erneut hergestellt wenn Änderungen an den Shoutcast Einstellungen "
+"erneut hergestellt, wenn Änderungen an den Shoutcast-Einstellungen "
 "vorgenommen werden. "
 
 #: DlgPrefSound#1
@@ -1651,10 +1652,10 @@ msgid ""
 "</ul>"
 msgstr ""
 "<ul>\n"
-"<li>Erhöhen Sie die Latenz wenn Aussetzer während der Wiedergabe zu hören "
-"sind</li>\n"
-"<li>Verringern Sie die Latenz um Mixxx` Reaktionsgeschwindigkeit zu "
-"verbessern</li>\n"
+"<li>Erhöhen Sie die Latenz, wenn Aussetzer während der Wiedergabe zu hören "
+"sind.</li>\n"
+"<li>Verringern Sie die Latenz um Mixxx' Reaktionsgeschwindigkeit zu "
+"verbessern.</li>\n"
 "</ul>"
 
 #: DlgPrefSoundDlg#5
@@ -1738,7 +1739,7 @@ msgstr ""
 "weight:400; font-style:normal;\">\n"
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-"
 "right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-"
-"weight:600;\">Wählen Sie Audio-Geräte für die Vinyl-Steuerung in den Sound "
+"weight:600;\">Wählen Sie Audio-Geräte für die Vinyl-Steuerung in den Sound-"
 "Hardware-Einstellungen aus.</span></p></body></html>"
 
 #: DlgPrefVinylDlg#4
@@ -1775,12 +1776,12 @@ msgstr "Vinyl Konfiguration"
 #: DlgPrefVinylDlg#9
 msgctxt "DlgPrefVinylDlg#9"
 msgid "Deck 1 Vinyl Type"
-msgstr "Deck 1 Vinyl-Typ"
+msgstr "Vinyl-Typ Deck 1"
 
 #: DlgPrefVinylDlg#10
 msgctxt "DlgPrefVinylDlg#10"
 msgid "Deck 2 Vinyl Type"
-msgstr "Deck 2 Vinyl-Typ"
+msgstr "Vinyl-Typ Deck 2"
 
 #: DlgPrefVinylDlg#11
 msgctxt "DlgPrefVinylDlg#11"
@@ -1839,11 +1840,11 @@ msgstr "Powered by xwax"
 
 #: DlgPreferences#1
 msgid "Sound Hardware"
-msgstr "Sound Hardware"
+msgstr "Sound-Hardware"
 
 #: DlgPreferences#2
 msgid "MIDI Controllers"
-msgstr "MIDI Controller"
+msgstr "MIDI-Geräte"
 
 #: DlgPreferences#3
 msgctxt "DlgPreferences#3"
@@ -1871,7 +1872,7 @@ msgstr "Aufnahme"
 #: DlgPreferences#8
 msgctxt "DlgPreferences#8"
 msgid "BPM Detection"
-msgstr "BPM Erkennung"
+msgstr "BPM-Erkennung"
 
 #: DlgPreferences#9
 msgid "Normalization"
@@ -1880,7 +1881,7 @@ msgstr "Normalisierung"
 #: DlgPreferences#10
 msgctxt "DlgPreferences#10"
 msgid "Vinyl Control"
-msgstr "Vinyl-Control"
+msgstr "Vinyl-Steuerung"
 
 #: DlgPreferences#11
 msgid "Live Broadcasting"
@@ -2034,7 +2035,7 @@ msgstr "Zum Tackt tippen"
 msgid "Hint: Use the Library Analyze view to run BPM detection."
 msgstr ""
 "Hinweis: Nutzen Sie in der Bibliothek die \"Analysieren\"-Ansicht für die "
-"BPM Erkennung."
+"BPM-Erkennung."
 
 #: DlgTrackInfo#22
 msgid "Track BPM"
@@ -2104,10 +2105,10 @@ msgid ""
 msgstr ""
 "<html>Mixxx kann ohne den MP3-Kodierer &quot;lame&quot; nicht in MP3 "
 "aufnehmen oder streamen. Aus lizenzrechtlichen Gründen beinhaltet Mixxx "
-"diesen nicht. Um in MP3 aufnehmen oder streamen zu können, mussen Sie "
+"diesen nicht. Um in MP3 aufnehmen oder streamen zu können, müssen Sie "
 "<b>libmp3lame</b>  herunterladen und auf Ihrem System installieren. <p>Siehe "
 "<a href='http://mixxx.org/wiki/doku.php/internet_broadcasting#linux'>Mixxx "
-"Wiki</a> für weitere Information. </html>"
+"Wiki</a> für weitere Informationen. </html>"
 
 #: EncoderMp3#3
 msgid ""
@@ -2120,11 +2121,11 @@ msgid ""
 msgstr ""
 "<html>Mixxx kann ohne den MP3-Kodierer &quot;lame&quot; nicht in MP3 "
 "aufnehmen oder streamen. Aus lizenzrechtlichen Gründen beinhaltet Mixxx "
-"diesen nicht. Um in MP3 aufnehmen oder streamen zu können, mussen Sie "
+"diesen nicht. Um in MP3 aufnehmen oder streamen zu können, müssen Sie "
 "<b>lame_enc.dll</b>  herunterladen und auf Ihrem System installieren. "
 "<p>Siehe <a "
 "href='http://mixxx.org/wiki/doku.php/internet_broadcasting#windows'>Mixxx "
-"Wiki</a> für weitere Information. </html>"
+"Wiki</a> für weitere Informationen. </html>"
 
 #: EncoderMp3#4
 msgid ""
@@ -2137,10 +2138,10 @@ msgid ""
 msgstr ""
 "<html>Mixxx kann ohne den MP3-Kodierer &quot;lame&quot; nicht in MP3 "
 "aufnehmen oder streamen. Aus lizenzrechtlichen Gründen beinhaltet Mixxx "
-"diesen nicht. Um in MP3 aufnehmen oder streamen zu können, mussen Sie "
+"diesen nicht. Um in MP3 aufnehmen oder streamen zu können, müssen Sie "
 "<b>libmp3lame</b>  herunterladen und auf Ihrem System installieren. <p>Siehe "
 "<a href='http://mixxx.org/wiki/doku.php/internet_broadcasting#mac_osx'>Mixxx "
-"Wiki</a> für weitere Information. </html>"
+"Wiki</a> für weitere Informationen. </html>"
 
 #: EncoderMp3#5
 msgid ""
@@ -2796,7 +2797,7 @@ msgstr "Liveübertragung aktivieren"
 
 #: MixxxApp#71
 msgid "Stream your mixes to a shoutcast or icecast server"
-msgstr "Den Mix zu einem Icecast oder Shoutcast Server streamen"
+msgstr "Den Mix zu einem Icecast- oder Shoutcast-Server streamen"
 
 #: MixxxApp#72
 msgid "Start Recording your Mix"
@@ -2963,7 +2964,7 @@ msgid ""
 "Please select your soundcard(s) in the sound hardware preferences."
 msgstr ""
 "Kein(e) Eingabegerät(e) ausgewählt.\n"
-"Bitte wählen Sie die Soundkarte(n) für die Vinyl-Steuerung in den Sound "
+"Bitte wählen Sie die Soundkarte(n) für die Vinyl-Steuerung in den Sound-"
 "Hardware-Einstellungen aus."
 
 #: MixxxApp#102
