@@ -71,6 +71,7 @@ bool VampAnalyser::Init(const QString pluginlibrary, const QString pluginid,
     }
     QString plugin = pluginlist.at(0);
     mKey = loader->composePluginKey(pluginlibrary.toStdString(),plugin.toStdString());
+    
     int outputnumber = (pluginlist.at(1)).toInt();
 
 

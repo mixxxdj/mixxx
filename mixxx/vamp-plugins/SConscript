@@ -8,10 +8,7 @@ import shutil
 Import('build')
 
 
-mixxxminimal_sources = [
-	"#lib/soundtouch-1.5.0/FIFOSampleBuffer.cpp",
-	"#lib/soundtouch-1.5.0/PeakFinder.cpp",
-	"#lib/soundtouch-1.5.0/BPMDetect.cpp",    
+mixxxminimal_sources = [    
 	"#lib/vamp/src/vamp-sdk/PluginAdapter.cpp",
 	"#lib/vamp/src/vamp-sdk/RealTime.cpp",
 	"dsp/ChangeDetectionFunction.cpp",  
@@ -41,10 +38,8 @@ mixxxminimal_sources = [
 	"plugins/KeyDetect.cpp",          
 	"plugins/replaygain.cpp",
 	"plugins/BeatTrack.cpp",
-	"plugins/MixxxBpmDetection.cpp",  
 	"plugins/TonalChangeDetect.cpp",
 	"libmain.cpp",
-	"#src/mathstuff.cpp",
 ]
 
 
@@ -57,7 +52,15 @@ if int(build.flags['Vamp']):
     env = conf.Finish()
     if build.platform_is_windows:
         env["LINKFLAGS"].remove("/entry:mainCRTStartup")
-        env["LINKFLAGS"].remove("/subsystem:windows")
+        #this will reduce DLL dependencies; no need to depend on MSVCRT.dll, etc
+        #env["LINKFLAGS"].remove("/nodefaultlib:LIBCMT.lib")
+        #env["LINKFLAGS"].remove("/nodefaultlib:LIBCMTd.lib")
+        #env["LINKFLAGS"].append("/NODEFAULTLIB:MSVCRT.lib")
+        #env["LINKFLAGS"].append("/DEFAULTLIB:LIBCMT.lib")
+        #env["LINKFLAGS"].append("/DEFAULTLIB:LIBCPMT.lib")
+      
+        
+        
         mixxxminimal_bin = env.SharedLibrary('libmixxxminimal', mixxxminimal_sources)
     else:
         mixxxminimal_bin = env.SharedLibrary('mixxxminimal', mixxxminimal_sources)

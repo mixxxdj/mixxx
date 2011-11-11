@@ -370,9 +370,7 @@ class Vamp(Feature):
                    '#lib/vamp/src/vamp-hostsdk/PluginLoader.cpp',
                    '#lib/vamp/src/vamp-hostsdk/PluginSummarisingAdapter.cpp',
                    '#lib/vamp/src/vamp-hostsdk/PluginWrapper.cpp',
-                   '#lib/vamp/src/vamp-hostsdk/RealTime.cpp',
-                   '#lib/vamp/src/vamp-sdk/PluginAdapter.cpp',
-                   '#lib/vamp/src/vamp-sdk/RealTime.cpp']
+                   '#lib/vamp/src/vamp-hostsdk/RealTime.cpp']
         return sources
 
 class FAAD(Feature):

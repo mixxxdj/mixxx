@@ -46,6 +46,9 @@
 #include <cstring>
 
 #ifdef __WINDOWS__
+#include <QString>
+#include <QtDebug>
+#include <QCoreApplication>
 
 #include <windows.h>
 #include <tchar.h>
@@ -230,6 +233,7 @@ PluginLoader::Impl::enumeratePlugins(PluginKey forPlugin)
     vector<string> path = PluginHostAdapter::getPluginPath();
 
     string libraryName, identifier;
+    //qDebug() << "Vamp: Decomposing plugin key: " << QString::fromStdString(forPlugin);
     if (forPlugin != "") {
         if (!decomposePluginKey(forPlugin, libraryName, identifier)) {
             std::cerr << "WARNING: Vamp::HostExt::PluginLoader: Invalid plugin key \""
@@ -237,7 +241,7 @@ PluginLoader::Impl::enumeratePlugins(PluginKey forPlugin)
             return;
         }
     }
-
+    //qDebug() << "Vamp: decomposed library name: " << QString::fromStdString(libraryName);
     for (size_t i = 0; i < path.size(); ++i) {
         
         vector<string> files = listFiles(path[i], PLUGIN_SUFFIX);
@@ -249,6 +253,7 @@ PluginLoader::Impl::enumeratePlugins(PluginKey forPlugin)
                 // libraryName is lowercased and lacking an extension,
                 // as it came from the plugin key
                 string temp = *fi;
+                
                 for (size_t i = 0; i < temp.length(); ++i) {
                     temp[i] = tolower(temp[i]);
                 }
@@ -262,9 +267,11 @@ PluginLoader::Impl::enumeratePlugins(PluginKey forPlugin)
 
             string fullPath = path[i];
             fullPath = splicePath(fullPath, *fi);
+            //qDebug() << "Trying to load "<< QString::fromStdString(fullPath);
             void *handle = loadLibrary(fullPath);
+            if(!handle) qDebug() << "Loading failed with error:" << GetLastError();
             if (!handle) continue;
-            
+            qDebug() << "Loaded " << QString::fromStdString(fullPath);
             VampGetPluginDescriptorFunction fn =
                 (VampGetPluginDescriptorFunction)lookupInLibrary
                 (handle, "vampGetPluginDescriptor");
@@ -281,7 +288,7 @@ PluginLoader::Impl::enumeratePlugins(PluginKey forPlugin)
             int index = 0;
             const VampPluginDescriptor *descriptor = 0;
             bool found = false;
-            
+            //qDebug() << "Loaded Vamp DLL descriptor";
             while ((descriptor = fn(VAMP_API_VERSION, index))) {
                 ++index;
                 if (identifier != "") {
@@ -355,6 +362,7 @@ PluginLoader::Impl::getPluginCategory(PluginKey plugin)
 string
 PluginLoader::Impl::getLibraryPathForPlugin(PluginKey plugin)
 {
+    qDebug() << "getLibraryPathForPlugin()";
     if (m_pluginLibraryNameMap.find(plugin) == m_pluginLibraryNameMap.end()) {
         if (m_allPluginsEnumerated) return "";
         enumeratePlugins(plugin);
@@ -377,14 +385,14 @@ PluginLoader::Impl::loadPlugin(PluginKey key,
     }
         
     string fullPath = getLibraryPathForPlugin(key);
+    qDebug() << "Vamp getLibraryPathForPlugin() returns: " << QString::fromStdString(fullPath);
     if (fullPath == "") {
         std::cerr << "Vamp::HostExt::PluginLoader: No library found in Vamp path for plugin \"" << key << "\"" << std::endl;
         return 0;
     }
     
     void *handle = loadLibrary(fullPath);
-    if (!handle) return 0;
-    
+    qDebug() << "Loaded Vamp library " << QString::fromStdString(fullPath);
     VampGetPluginDescriptorFunction fn =
         (VampGetPluginDescriptorFunction)lookupInLibrary
         (handle, "vampGetPluginDescriptor");
@@ -617,11 +625,15 @@ PluginLoader::Impl::listFiles(string dir, string extension)
     while (ok) {
         wchar_t *fn = data.cFileName;
         int wlen = wcslen(fn);
+        
         int maxlen = wlen * 6;
         char *conv = new char[maxlen];
         int rv = WideCharToMultiByte(CP_UTF8, 0, fn, wlen, conv, maxlen, 0, 0);
         if (rv > 0) {
+            QString lib = QString::fromUtf8 (conv,maxlen);
+            qDebug() << "Found Vamp Library " << QString::fromUtf8 (conv,maxlen);
             files.push_back(conv);
+            
         }
         delete[] conv;
         ok = FindNextFile(fh, &data);
