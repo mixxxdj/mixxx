@@ -14,6 +14,7 @@
 #include "track/beatmatrix.h"
 #include "track/beatfactory.h"
 #include "analyserbeats.h"
+#include "vamp-hostsdk/PluginLoader.h"
 
 static bool sDebug = true;
 
@@ -24,6 +25,13 @@ AnalyserBeats::AnalyserBeats(ConfigObject<ConfigValue> *_config) {
     m_pConfigAVT = _config;
     m_bPass = 0;
     m_iSampleRate = 0;
+    /*
+     * Let the Vamp-Host-SDK read all shared libraries
+     * from the plugin folder
+     */
+    Vamp::HostExt::PluginLoader::getInstance()->listPlugins();
+
+
 }
 
 AnalyserBeats::~AnalyserBeats(){
@@ -45,8 +53,8 @@ void AnalyserBeats::initialise(TrackPointer tio, int sampleRate,
 //        return;
 //    }
 
-        mvamp = new VampAnalyser();
-        m_bPass = mvamp->Init(VAMP_MIXXX_MINIMAL, VAMP_PLUGIN_BEAT_TRACKER_ID, sampleRate, totalSamples);
+      mvamp = new VampAnalyser();
+      m_bPass = mvamp->Init(VAMP_MIXXX_MINIMAL, VAMP_PLUGIN_BEAT_TRACKER_ID, sampleRate, totalSamples);
     //   m_iStartTime = clock();
 }
 
