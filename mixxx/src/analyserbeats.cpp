@@ -21,6 +21,10 @@ static bool sDebug = true;
 #define VAMP_MIXXX_MINIMAL "libmixxxminimal"
 #define VAMP_PLUGIN_BEAT_TRACKER_ID "qm-tempotracker:0"
 
+#ifdef __WINDOWS__
+#include <windows.h>
+#endif
+
 AnalyserBeats::AnalyserBeats(ConfigObject<ConfigValue> *_config) {
     m_pConfigAVT = _config;
     m_bPass = 0;
@@ -29,6 +33,9 @@ AnalyserBeats::AnalyserBeats(ConfigObject<ConfigValue> *_config) {
      * Let the Vamp-Host-SDK read all shared libraries
      * from the plugin folder
      */
+    #ifdef __WINDOWS__  //for finding MSVCRT.dll 
+    SetDllDirectory(L"."); 
+    #endif
     Vamp::HostExt::PluginLoader::getInstance()->listPlugins();
 
 
