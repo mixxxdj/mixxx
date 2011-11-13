@@ -49,7 +49,8 @@ void AnalyserBeats::initialise(TrackPointer tio, int sampleRate,
 
 //    if(tio->getBpm() != 0)
 //        return;
-    m_iSampleRate = sampleRate;
+   // m_iSampleRate = sampleRate;
+    m_iSampleRate = tio->getSampleRate();
     qDebug()<<"Beat calculation started";
     m_bPass = false;
     BeatsPointer pBeats = tio->getBeats();
@@ -59,9 +60,9 @@ void AnalyserBeats::initialise(TrackPointer tio, int sampleRate,
 //        qDebug()<<"BeatMatrix already exists: calculation will not start";
 //        return;
 //    }
-
+      //qDebug() << "Init Vamp Beat tracker with samplerate " << tio->getSampleRate() << " " << sampleRate;
       mvamp = new VampAnalyser();
-      m_bPass = mvamp->Init(VAMP_MIXXX_MINIMAL, VAMP_PLUGIN_BEAT_TRACKER_ID, sampleRate, totalSamples);
+      m_bPass = mvamp->Init(VAMP_MIXXX_MINIMAL, VAMP_PLUGIN_BEAT_TRACKER_ID, m_iSampleRate, totalSamples);
     //   m_iStartTime = clock();
 }
 
@@ -76,6 +77,11 @@ void AnalyserBeats::finalise(TrackPointer tio) {
         return;
 
    QVector <double> beats;
+   /*
+    * Call End() here, because the number of total samples may
+    * have been estimated incorrectly.
+    */
+   m_bPass = mvamp->End(); // This will ensure that beattracking succeeds in a beat list
    beats = mvamp->GetInitFramesVector();
 
     if(!beats.isEmpty()){
@@ -94,7 +100,7 @@ void AnalyserBeats::finalise(TrackPointer tio) {
     else{
         qDebug() << "Could not detect beat positions from Vamp.";
     }
-    m_bPass = mvamp->End();
+
     beats.clear();
     if(m_bPass)
         qDebug()<<"Beat Calculation complete";
