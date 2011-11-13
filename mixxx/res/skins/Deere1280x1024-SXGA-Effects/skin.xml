@@ -3852,7 +3852,7 @@
 						<Path>knobs/knob_rotary_s%1.png</Path>
 						<Pos>265,62</Pos>
 						<Connection>
-							<ConfigKey>[Flanger],lfoDelay</ConfigKey>
+							<ConfigKey>[EffectChain1_Effect1_Parameter1],value_normalized</ConfigKey>
 						</Connection>
 					</Knob>
 					<Knob>
@@ -3864,7 +3864,7 @@
 						<Path>knobs/knob_rotary_s%1.png</Path>
 						<Pos>206,62</Pos>
 						<Connection>
-							<ConfigKey>[Flanger],lfoDepth</ConfigKey>
+							<ConfigKey>[EffectChain1_Effect1_Parameter2],value_normalized</ConfigKey>
 						</Connection>
 					</Knob>
 					<Knob>
@@ -3876,7 +3876,7 @@
 						<Path>knobs/knob_rotary_s%1.png</Path>
 						<Pos>146,62</Pos>
 						<Connection>
-							<ConfigKey>[Flanger],lfoPeriod</ConfigKey>
+							<ConfigKey>[EffectChain1_Effect1_Parameter3],value_normalized</ConfigKey>
 						</Connection>
 					</Knob>
 
