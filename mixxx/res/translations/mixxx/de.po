@@ -3,13 +3,13 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2011-10-31 23:15-0400\n"
-"PO-Revision-Date: 2011-11-11 06:46+0000\n"
-"Last-Translator: jus <Unknown>\n"
+"PO-Revision-Date: 2011-11-12 18:44+0000\n"
+"Last-Translator: Henrik Graßhoff <Unknown>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-11-12 04:41+0000\n"
+"X-Launchpad-Export-Date: 2011-11-13 05:21+0000\n"
 "X-Generator: Launchpad (build 14277)\n"
 
 #: AutoDJFeature#1
@@ -132,7 +132,7 @@ msgstr "Dokumente"
 
 #: BrowseFeature#8
 msgid "Desktop"
-msgstr "Desktop"
+msgstr "Arbeitsfläche"
 
 #: BrowseFeature#9
 msgid "Browse"
@@ -195,7 +195,7 @@ msgstr "Tonart"
 #: BrowseTableModel#12
 msgctxt "BrowseTableModel#12"
 msgid "Type"
-msgstr "Art"
+msgstr "Typ"
 
 #: BrowseTableModel#13
 msgctxt "BrowseTableModel#13"
@@ -210,7 +210,7 @@ msgstr "Speicherort"
 #: BrowseTableModel#15
 msgctxt "BrowseTableModel#15"
 msgid "Mixxx Library"
-msgstr "Mixxx Bibliothek"
+msgstr "Mixxx-Bibliothek"
 
 #: BrowseTableModel#16
 msgid ""
@@ -373,11 +373,11 @@ msgstr "<a href=\"http://mixxx.org/\">Offizielle Webseite</a>"
 
 #: DlgAutoDJ#1
 msgid "Disable Auto DJ"
-msgstr "Auto DJ deaktivieren"
+msgstr "Auto-DJ deaktivieren"
 
 #: DlgAutoDJ#2
 msgid "Enable Auto DJ"
-msgstr "Auto DJ aktivieren"
+msgstr "Auto-DJ aktivieren"
 
 #: DlgAutoDJ#3
 msgctxt "DlgAutoDJ#3"
@@ -390,15 +390,15 @@ msgstr "Wiedergabeliste mischen"
 
 #: DlgAutoDJ#5
 msgid "Add tracks to the queue below..."
-msgstr "Titel zur Warteschlange hinzufügen..."
+msgstr "Titel zur Warteschlange hinzufügen …"
 
 #: DlgBpmSchemeDlg#1
 msgid "BPM Scheme"
-msgstr "BPM Schema"
+msgstr "BPM-Schema"
 
 #: DlgBpmSchemeDlg#2
 msgid "Scheme Name:"
-msgstr "Schema Name:"
+msgstr "Schemaname:"
 
 #: DlgBpmSchemeDlg#3
 msgid "BPM Range"
@@ -431,18 +431,18 @@ msgstr "Weiter"
 #: DlgMidiLearning#4
 msgctxt "DlgMidiLearning#4"
 msgid "MIDI Learning Wizard"
-msgstr "MIDI-Lern Assistent"
+msgstr "MIDI-Lernassistent"
 
 #: DlgMidiLearning#5
 msgid "Welcome to the MIDI Learning Wizard"
-msgstr "Wilkommen zum MIDI-Lern Assistent"
+msgstr "Wilkommen zum MIDI-Lernassistent"
 
 #: DlgMidiLearning#6
 msgid ""
 "This wizard allows you to easily map the controls on your MIDI controller to "
 "Mixxx's controls."
 msgstr ""
-"Dieser Assistent ermöglicht es die Bedienelemente Ihres MIDI-Geräte denen "
+"Dieser Assistent ermöglicht es, die Bedienelemente Ihres MIDI-Geräte denen "
 "von Mixxx zuzuweisen."
 
 #: DlgMidiLearning#7
@@ -451,7 +451,7 @@ msgstr "Anfang"
 
 #: DlgMidiLearning#8
 msgid "Please tweak the control for:"
-msgstr "Bitte bewegen Sie das MIDI Bedienelement für:"
+msgstr "Bitte justieren Sie das Kontrollelement für:"
 
 #: DlgMidiLearning#9
 msgid "Mixxx Control"
@@ -467,7 +467,7 @@ msgstr "Zum Fortsetzen oder Überspringen die Leertaste drücken."
 
 #: DlgMidiLearning#12
 msgid "MIDI learning complete!"
-msgstr "Midi-Lernen ist vollständig!"
+msgstr "MIDI-Lernen ist vollständig!"
 
 #: DlgMidiLearning#13
 msgid ""
@@ -505,12 +505,12 @@ msgstr "Fertig!"
 
 #: DlgPluginDownloader#1
 msgid "Missing Audio Plugin Downloader"
-msgstr "Audio Plugin-Downloader fehlt"
+msgstr "Audioerweiterungsdownloader fehlt"
 
 #: DlgPrefBPMDlg#1
 msgctxt "DlgPrefBPMDlg#1"
 msgid "BPM Detection Settings"
-msgstr "Einstellung BPM-Erkennung"
+msgstr "Einstellungen der BPM-Erkennung"
 
 #: DlgPrefBPMDlg#2
 msgctxt "DlgPrefBPMDlg#2"
@@ -531,7 +531,7 @@ msgstr "BPM in den ID3-Tag schreiben"
 
 #: DlgPrefBPMDlg#6
 msgid "If BPM can be detected but not within specified range"
-msgstr "Falls BPM erkannt wird aber nicht im angegebenen Bereich"
+msgstr "Falls BPM erkannt wird, aber nicht im angegebenen Bereich"
 
 #: DlgPrefBPMDlg#7
 msgid "Allow BPM above the range"
@@ -622,11 +622,12 @@ msgstr "Runter erhöht Geschwindigkeit (Technics SL1210)"
 #: DlgPrefControls#14
 msgctxt "DlgPrefControls#14"
 msgid "Information"
-msgstr "Information"
+msgstr "Informationen"
 
 #: DlgPrefControls#15
 msgid "Mixxx must be restarted before the changes will take effect."
-msgstr "Mixxx muss neu gestartet werden damit die Änderungen wirksam werden."
+msgstr ""
+"Mixxx muss neu gestartet werden, damit die Änderungen wirksam werden."
 
 #: DlgPrefControlsDlg#1
 msgctxt "DlgPrefControlsDlg#1"
@@ -635,7 +636,7 @@ msgstr "Form1"
 
 #: DlgPrefControlsDlg#2
 msgid "Skin"
-msgstr "Skin"
+msgstr "Oberfläche"
 
 #: DlgPrefControlsDlg#3
 msgid "Scheme"
@@ -643,7 +644,7 @@ msgstr "Farbschema"
 
 #: DlgPrefControlsDlg#4
 msgid "Waveform display"
-msgstr "Wellenform-Anzeige"
+msgstr "Wellenformanzeige"
 
 #: DlgPrefControlsDlg#5
 msgid "Position display"
@@ -651,7 +652,7 @@ msgstr "Positionsanzeige"
 
 #: DlgPrefControlsDlg#6
 msgid "Tool tips"
-msgstr "Quickinfo"
+msgstr "Kurzhilfen"
 
 #: DlgPrefControlsDlg#7
 msgctxt "DlgPrefControlsDlg#7"
@@ -758,7 +759,7 @@ msgstr "Gleichbleibende Leistung"
 
 #: DlgPrefCrossfaderDlg#6
 msgid "Mixing"
-msgstr "Mixen"
+msgstr "Mischen"
 
 #: DlgPrefCrossfaderDlg#7
 msgid "Scratching"
@@ -851,7 +852,7 @@ msgstr ""
 
 #: DlgPrefMidiBindings#6
 msgid "Export Mixxx MIDI Bindings"
-msgstr "Mixxx MIDI Bindings exportieren"
+msgstr "Mixxx-MIDI-Bindings exportieren"
 
 #: DlgPrefMidiBindings#7
 msgid "Preset Files (*.midi.xml)"
