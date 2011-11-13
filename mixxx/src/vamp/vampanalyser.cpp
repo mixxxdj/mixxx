@@ -199,7 +199,7 @@ bool VampAnalyser::End() {
         Vamp::Plugin::FeatureSet features = mPlugin->getRemainingFeatures();
         m_Results.insert( m_Results.end(), features[m_iOutput].begin(),features[m_iOutput].end());
     }
-    //crealing buffer arrays
+    //Clearing buffer arrays
     for(int i=0; i < 2; i++){
         if(m_pluginbuf[i]){
             delete [] m_pluginbuf[i];
