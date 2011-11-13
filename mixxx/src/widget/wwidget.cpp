@@ -46,18 +46,6 @@ WWidget::~WWidget()
 {
 }
 
-
-bool WWidget::event(QEvent *event)
-{
-  if(event->type() == QEvent::ToolTip)
-    {
-      QHelpEvent *tooltip = static_cast<QHelpEvent *>(event);
-      QToolTip::showText(tooltip->globalPos(), toolTip(), this);
-      //http://doc.trolltech.com/4.3/widgets-tooltips-sortingbox-cpp.html suggests you should use QToolTip::hideText in certain cases; it works well enough on OS X with just this code though...
-    }
-  return QWidget::event(event);
-}
-
 void WWidget::setValue(double fValue)
 {
     m_fValue = fValue;
