@@ -98,9 +98,9 @@ bool VampAnalyser::Init(const QString pluginlibrary, const QString pluginid,
     this->SelectOutput(outputnumber);
     m_iBlockSize = mPlugin->getPreferredBlockSize();
 
-    if (m_iBlockSize == 0) {
-        m_iBlockSize = 1024;
-    }
+    //if (m_iBlockSize == 0) {
+      //  m_iBlockSize = 1024;
+    //}
     m_iStepSize = mPlugin->getPreferredStepSize();
     qDebug()<<"Vampanalyser BlockSize: "<<m_iBlockSize;
     qDebug()<<"Vampanalyser StepSize: "<<m_iStepSize;
@@ -130,15 +130,28 @@ bool VampAnalyser::Process(const CSAMPLE *pIn, const int iLen) {
         qDebug()<< "VampAnalyser: Buffer points to NULL";
         return false;
     }
-    while (iIN < iLen / 2) {
+    while (iIN < iLen / 2) { //4096
         m_pluginbuf[0][m_iOUT] = pIn[2 * iIN]; //* 32767;
         m_pluginbuf[1][m_iOUT] = pIn[2 * iIN + 1]; //* 32767;
 
 
         m_iOUT++;
         iIN++;
+
+        /*
+         * Note 'm_iRemainingSamples' is initialized with
+         * the number of total samples.
+         * Thus, 'm_iRemainingSamples' will only become <= 0
+         * if the number of total samples --which may be incorrect--
+         * is correct.
+         *
+         * The following if-block works under optimal conditions
+         * If the total number of samples is incorrect
+         * VampAnalyser:End() handles it.
+         */
         if (m_iRemainingSamples <= 0 && iIN == iLen / 2) {
             lastsamples = true;
+            //qDebug() << "LastSample reached";
             while (m_iOUT < m_iBlockSize) {
                 m_pluginbuf[0][m_iOUT] = 0;
                 m_pluginbuf[1][m_iOUT] = 0;
@@ -146,8 +159,9 @@ bool VampAnalyser::Process(const CSAMPLE *pIn, const int iLen) {
                 m_iOUT++;
             }
         }
-        if (m_iOUT == m_iBlockSize) {
-
+        if (m_iOUT == m_iBlockSize) { //Blocksize 1024
+            //qDebug() << "VAMP Block size reached";
+            //qDebug() << "Ramaining samples=" << m_iRemainingSamples;
             Vamp::RealTime timestamp =
                     Vamp::RealTime::frame2RealTime(m_iSampleCount, mRate);
 
@@ -155,13 +169,15 @@ bool VampAnalyser::Process(const CSAMPLE *pIn, const int iLen) {
                                                                  timestamp);
             m_Results.insert( m_Results.end(), features[m_iOutput].begin(),features[m_iOutput].end());
             if (lastsamples) {
+
                 Vamp::Plugin::FeatureSet features =
                         mPlugin->getRemainingFeatures();
                 m_Results.insert( m_Results.end(), features[m_iOutput].begin(),features[m_iOutput].end());
             }
             m_iSampleCount += m_iBlockSize;
             m_iOUT = 0;
-            while(m_iOUT<(m_iBlockSize-m_iStepSize)){
+
+            while(m_iOUT < (m_iBlockSize - m_iStepSize)){
                 CSAMPLE lframe = m_pluginbuf[0][m_iOUT+m_iStepSize];
                 CSAMPLE rframe = m_pluginbuf[1][m_iOUT+m_iStepSize];
                 m_pluginbuf[0][m_iOUT] = lframe;
@@ -177,13 +193,20 @@ bool VampAnalyser::Process(const CSAMPLE *pIn, const int iLen) {
 }
 
 bool VampAnalyser::End() {
+
+    //If the total number of samples has been estimated incorrectly
+    if (m_iRemainingSamples > 0){
+        Vamp::Plugin::FeatureSet features = mPlugin->getRemainingFeatures();
+        m_Results.insert( m_Results.end(), features[m_iOutput].begin(),features[m_iOutput].end());
+    }
+    //crealing buffer arrays
     for(int i=0; i < 2; i++){
-    if(m_pluginbuf[i]){
-        delete [] m_pluginbuf[i];
-        m_pluginbuf[i] = NULL;
+        if(m_pluginbuf[i]){
+            delete [] m_pluginbuf[i];
+            m_pluginbuf[i] = NULL;
         }
     }
-    m_Results.clear();
+    //m_Results.clear();
     return true;
 }
 
