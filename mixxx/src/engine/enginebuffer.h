@@ -116,6 +116,9 @@ public:
     bool isTrackLoaded();
     TrackPointer getLoadedTrack() const;
 
+    // For dependency injection of readers.
+    void setReader(CachingReader* pReader);
+
   public slots:
     void slotControlPlay(double);
     void slotControlPlayFromStart(double);

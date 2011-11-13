@@ -76,7 +76,7 @@ void CachingReader::initialize() {
 
     int total_chunks = memory_to_use / kChunkLength;
 
-    qDebug() << "CachingReader using" << memory_to_use << "bytes.";
+    //qDebug() << "CachingReader using" << memory_to_use << "bytes.";
 
     int rawMemoryBufferLength = kSamplesPerChunk * total_chunks;
     m_pRawMemoryBuffer = new CSAMPLE[rawMemoryBufferLength];
