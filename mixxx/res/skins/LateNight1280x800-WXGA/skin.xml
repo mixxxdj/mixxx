@@ -4549,6 +4549,23 @@
 							<ConfigKey>[Master],PeakIndicator</ConfigKey>
 						</Connection>
 					</StatusLight>
+					<StatusLight>
+						<PathStatusLight>eq_bypass_left.png</PathStatusLight>
+						<PathBack>eq_bypass_none.png</PathBack>
+						<Pos>15,41</Pos>
+						<Connection>
+							<ConfigKey>[Master],bypass_eq</ConfigKey>
+						</Connection>
+					</StatusLight>
+					
+					<StatusLight>
+						<PathStatusLight>eq_bypass_right.png</PathStatusLight>
+						<PathBack>eq_bypass_none.png</PathBack>
+						<Pos>248,41</Pos>
+						<Connection>
+							<ConfigKey>[Master],bypass_eq</ConfigKey>
+						</Connection>
+					</StatusLight>
 				</Children>
 			</WidgetGroup>
 
