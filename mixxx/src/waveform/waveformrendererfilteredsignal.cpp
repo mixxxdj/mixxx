@@ -5,6 +5,7 @@
 #include "trackinfoobject.h"
 #include "widget/wwidget.h"
 #include "waveform.h"
+#include "defs.h"
 
 WaveformRendererFilteredSignal::WaveformRendererFilteredSignal(
     WaveformWidgetRenderer* waveformWidgetRenderer)
@@ -55,7 +56,7 @@ void WaveformRendererFilteredSignal::draw(QPainter* painter,
     m_highLines.clear();
 
     int samplesPerPixel = m_waveformWidget->getZoomFactor();
-    samplesPerPixel = std::min(2, samplesPerPixel);
+    samplesPerPixel = math_min(2, samplesPerPixel);
     int numberOfSamples = m_waveformWidget->getWidth() * samplesPerPixel;
 
     int currentPosition = 0;

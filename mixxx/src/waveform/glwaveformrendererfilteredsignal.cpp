@@ -6,6 +6,7 @@
 #include "widget/wwidget.h"
 #include "waveform.h"
 #include "controlobject.h"
+#include "defs.h"
 
 #include <QLinearGradient>
 #include <QLineF>
@@ -142,9 +143,9 @@ void GLWaveformRendererFilteredSignal::draw(QPainter *painter, QPaintEvent *even
 
             for( int sampleIndex = 0; sampleIndex < (samplesPerPixel); ++sampleIndex)
             {
-                maxLow = std::max( maxLow, waveform->getConstLowData()[thisIndex+sampleIndex]);
-                maxBand = std::max( maxBand, waveform->getConstMidData()[thisIndex+sampleIndex]);
-                maxHigh = std::max( maxHigh, waveform->getConstHighData()[thisIndex+sampleIndex]);
+                maxLow = math_max( maxLow, waveform->getConstLowData()[thisIndex+sampleIndex]);
+                maxBand = math_max( maxBand, waveform->getConstMidData()[thisIndex+sampleIndex]);
+                maxHigh = math_max( maxHigh, waveform->getConstHighData()[thisIndex+sampleIndex]);
             }
 
             if( m_lowFilterControlObject && m_midFilterControlObject && m_highFilterControlObject)
@@ -185,9 +186,9 @@ void GLWaveformRendererFilteredSignal::draw(QPainter *painter, QPaintEvent *even
 
             for( int sampleIndex = 0; sampleIndex < (samplesPerPixel); ++sampleIndex)
             {
-                maxLow = std::max( maxLow, waveform->getConstLowData()[thisIndex+sampleIndex]);
-                maxBand = std::max( maxBand, waveform->getConstMidData()[thisIndex+sampleIndex]);
-                maxHigh = std::max( maxHigh, waveform->getConstHighData()[thisIndex+sampleIndex]);
+                maxLow = math_max( maxLow, waveform->getConstLowData()[thisIndex+sampleIndex]);
+                maxBand = math_max( maxBand, waveform->getConstMidData()[thisIndex+sampleIndex]);
+                maxHigh = math_max( maxHigh, waveform->getConstHighData()[thisIndex+sampleIndex]);
             }
 
             if( m_lowFilterControlObject && m_midFilterControlObject && m_highFilterControlObject)
