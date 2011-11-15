@@ -49,7 +49,7 @@ class BrowseTableModel : public QStandardItemModel, public virtual TrackModel {
     virtual void removeTracks(const QModelIndexList& indices);
     virtual bool addTrack(const QModelIndex& index, QString location);
     virtual QMimeData* mimeData(const QModelIndexList &indexes) const;
-    virtual const QString currentSearch();
+    virtual const QString currentSearch() const;
     virtual bool isColumnInternal(int);
     virtual void moveTrack(const QModelIndex&, const QModelIndex&);
     virtual QItemDelegate* delegateForColumn(const int);

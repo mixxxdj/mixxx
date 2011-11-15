@@ -70,6 +70,9 @@ DlgMidiLearning::DlgMidiLearning(QWidget * parent, MidiMapping* mapping) :  QDia
     setupDeckControl("loop_in", tr("Loop In button for Player %1"));
     setupDeckControl("loop_out", tr("Loop Out button for Player %1"));
     setupDeckControl("reloop_exit", tr("Reloop / Exit button for Player %1"));
+    setupDeckControl("beatloop_4", tr("Setup a loop over 4 beats for Player %1"));
+    setupDeckControl("loop_halve", tr("Halves the current loop's length for Player %1"));
+    setupDeckControl("loop_double", tr("Doubles the current loop's length for Player %1"));
     setupDeckControl("hotcue_1_activate", tr("Hotcue 1 button for Player %1"));
     setupDeckControl("hotcue_2_activate", tr("Hotcue 2 button for Player %1"));
     setupDeckControl("hotcue_3_activate", tr("Hotcue 3 button for Player %1"));
@@ -86,7 +89,15 @@ DlgMidiLearning::DlgMidiLearning(QWidget * parent, MidiMapping* mapping) :  QDia
     setupControl("[Playlist]", "SelectPrevTrack", tr("Scroll to previous track in library/playlist"));
     setupControl("[Playlist]", "LoadSelectedIntoFirstStopped", tr("Load selected track into first stopped player"));
     setupDeckControl("LoadSelectedTrack", tr("Load selected track into Player %1"));
-    setupDeckControl("LoadSelectedTrack", tr("Load selected track into Player %1"));
+
+    // Flanger Controls
+    setupControl("[Flanger]", "lfoPeriod", tr("Adjusts the wavelength of the flange effect"));
+    setupControl("[Flanger]", "lfoDepth", tr("Adjusts the intensity of the flange effect"));
+    setupControl("[Flanger]", "lfoDelay", tr("Adjusts the phase delay of the flange effect"));
+
+    // Microphone Controls
+    setupControl("[Microphone]", "talkover", tr("Microphone on/off"));
+    setupControl("[Microphone]", "volume", tr("Microphone volume"));
 }
 
 void DlgMidiLearning::setupControl(QString group, QString control, QString description) {

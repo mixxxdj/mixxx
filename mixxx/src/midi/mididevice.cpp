@@ -173,6 +173,13 @@ void MidiDevice::disableMidiLearn() {
 
 void MidiDevice::receive(MidiStatusByte status, char channel, char control, char value)
 {
+    if (midiDebugging()) qDebug() << QString("MIDI status 0x%1 (ch %2, opcode 0x%3), ctrl 0x%4, val 0x%5")
+      .arg(QString::number(status, 16).toUpper())
+      .arg(QString::number(channel+1, 10))
+      .arg(QString::number((status & 255)>>4, 16).toUpper())
+      .arg(QString::number(control, 16).toUpper().rightJustified(2,'0'))
+      .arg(QString::number(value, 16).toUpper().rightJustified(2,'0'));
+    
     // some status bytes can have the channel encoded in them. Take out the
     // channel when necessary. We do this because later bits of this
     // function (and perhaps its callchain) assume the channel nibble to be
@@ -188,11 +195,6 @@ void MidiDevice::receive(MidiStatusByte status, char channel, char control, char
         status = (MidiStatusByte) (status & 0xF0);
     }
     QMutexLocker locker(&m_mutex); //Lots of returns in this function. Keeps things simple.
-    if (midiDebugging()) qDebug() << QString("MIDI ch %1: opcode: %2, ctrl: %3, val: %4")
-        .arg(QString::number(channel+1, 16).toUpper())
-        .arg(QString::number(status & 255, 16).toUpper())
-        .arg(QString::number(control, 16).toUpper())
-        .arg(QString::number(value, 16).toUpper());
 
     MidiMessage inputCommand(status, control, channel);
 

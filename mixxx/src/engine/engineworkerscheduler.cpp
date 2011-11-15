@@ -8,11 +8,18 @@
 #include "engine/engineworkerscheduler.h"
 
 EngineWorkerScheduler::EngineWorkerScheduler(QObject* pParent)
-        : QThreadPool(pParent) {
+        : m_scheduleFIFO(MAX_ENGINE_WORKERS),
+          m_bQuit(false) {
+    Q_UNUSED(pParent);
+    m_workerThreadPool.setMaxThreadCount(ENGINE_WORKER_THREAD_COUNT);
+    // A timeout of 1 minute for threads in the pool.
+    m_workerThreadPool.setExpiryTimeout(60000);
 }
 
 EngineWorkerScheduler::~EngineWorkerScheduler() {
-
+    m_bQuit = true;
+    m_waitCondition.wakeAll();
+    m_workerThreadPool.waitForDone();
 }
 
 void EngineWorkerScheduler::bindWorker(EngineWorker* pWorker) {
@@ -29,8 +36,10 @@ void EngineWorkerScheduler::bindWorker(EngineWorker* pWorker) {
 
 void EngineWorkerScheduler::workerReady(EngineWorker* pWorker) {
     if (pWorker) {
-        QMutexLocker locker(&m_mutex);
-        m_scheduledWorkers.insert(pWorker);
+        // If the write fails, we really can't do much since we should not block
+        // in this slot. Write the address of the variable pWorker, since it is
+        // a 1-element array.
+        m_scheduleFIFO.write(&pWorker, 1);
     }
 }
 
@@ -38,16 +47,26 @@ void EngineWorkerScheduler::workerStarted(EngineWorker* pWorker) {
 }
 
 void EngineWorkerScheduler::workerFinished(EngineWorker* pWorker) {
+    QMutexLocker locker(&m_mutex);
+    m_activeWorkers.remove(pWorker);
 }
 
-
 void EngineWorkerScheduler::runWorkers() {
-    QMutexLocker locker(&m_mutex);
-    QMutableSetIterator<EngineWorker*> it(m_scheduledWorkers);
-    while (it.hasNext()) {
-        EngineWorker* pWorker = it.next();
-        it.remove();
-        start(pWorker);
+    m_waitCondition.wakeAll();
+}
+
+void EngineWorkerScheduler::run() {
+    while (!m_bQuit) {
+        m_mutex.lock();
+        EngineWorker* pWorker = NULL;
+        while (m_scheduleFIFO.read(&pWorker, 1) == 1) {
+            if (pWorker && !m_activeWorkers.contains(pWorker)) {
+                m_activeWorkers.insert(pWorker);
+                m_workerThreadPool.start(pWorker);
+            }
+        }
+        m_waitCondition.wait(&m_mutex);
+        m_mutex.unlock();
     }
 }
 

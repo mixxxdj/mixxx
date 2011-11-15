@@ -21,46 +21,45 @@
 #include <QtGui>
 #include "libraryscannerdlg.h"
 
-LibraryScannerDlg::LibraryScannerDlg()
+LibraryScannerDlg::LibraryScannerDlg(QWidget * parent, Qt::WindowFlags f) :
+   QWidget(parent, f)
 {
     m_bCancelled = false;
 
-    m_progress = new QWidget();
-    m_layout = new QVBoxLayout();
-    m_label = new QLabel(tr("It's taking Mixxx a minute to scan your music library, please wait..."));
-    m_layout->addWidget(m_label);
-    m_cancel = new QPushButton(tr("Cancel"), m_progress);
-    m_layout->addWidget(m_cancel);
-    m_current = new QLabel();
-    m_current->setMaximumWidth(600);
-    m_current->setWordWrap(true);
-    m_layout->addWidget(m_current);
-    m_progress->setLayout(m_layout);
+    QVBoxLayout* pLayout = new QVBoxLayout(this);
 
-    connect(m_cancel, SIGNAL(clicked()), this, SLOT(slotCancel()));
+    QLabel* pLabel = new QLabel(tr("It's taking Mixxx a minute to scan your music library, please wait..."),this);
+    pLayout->addWidget(pLabel);
+
+    QPushButton* pCancel = new QPushButton(tr("Cancel"), this);
+    connect(pCancel, SIGNAL(clicked()),
+            this, SLOT(slotCancel()));
+    pLayout->addWidget(pCancel);
+
+    QLabel* pCurrent = new QLabel(this);
+    pCurrent->setMaximumWidth(600);
+    pCurrent->setWordWrap(true);
+    connect(this, SIGNAL(progress(QString)),
+            pCurrent, SLOT(setText(QString)));
+    pLayout->addWidget(pCurrent);
+    setLayout(pLayout);
 
     m_timer.start();
 }
 
 LibraryScannerDlg::~LibraryScannerDlg()
 {
-    delete m_current;
-    delete m_cancel;
-    delete m_progress;
-    delete m_layout;
-    delete m_label;
 }
 
 void LibraryScannerDlg::slotUpdate(QString path) {
-
     //qDebug() << "LibraryScannerDlg slotUpdate" << m_timer.elapsed();
     if (!m_bCancelled && m_timer.elapsed() > 2000) {
-        m_progress->setVisible(true);
+       setVisible(true);
     }
 
-    if (m_progress->isVisible()) {
-        m_current->setText("Scanning: " + path);
-        //m_current->repaint();
+    if (isVisible()) {
+        QString status = "Scanning: " + path;
+        emit(progress(status));
     }
 }
 
@@ -73,9 +72,7 @@ void LibraryScannerDlg::slotCancel()
 
     // Need to use close() or else if you close the Mixxx window and then hit
     // Cancel, Mixxx will not shutdown.
-
-    //m_progress->setVisible(false);
-    m_progress->close();
+    close();
 }
 
 void LibraryScannerDlg::slotScanFinished()
@@ -85,6 +82,5 @@ void LibraryScannerDlg::slotScanFinished()
 
     // Need to use close() or else if you close the Mixxx window and then hit
     // Cancel, Mixxx will not shutdown.
-    //m_progress->setVisible(false);
-    m_progress->close();
+    close();
 }

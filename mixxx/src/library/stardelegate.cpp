@@ -26,31 +26,38 @@
 /*
  * The function is invoked once for each item, represented by a QModelIndex object from the model.
  * If the data stored in the item is a StarRating, we paint it use a star editor for displaying;
- * otherwise, we let QItemDelegate paint it for us.
+ * otherwise, we let QStyledItemDelegate paint it for us.
  * This ensures that the StarDelegate can handle the most common data types.
  */
 void StarDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
+    if (!qVariantCanConvert<StarRating>(index.data())) {
+        QStyledItemDelegate::paint(painter, option, index);
+        return;
+    }
+
     // Populate the correct colors based on the styling
-    //QStyleOptionViewItem newOption = option;
-    //initStyleOption(&newOption, index);
+    QStyleOptionViewItem newOption = option;
+    initStyleOption(&newOption, index);
 
-    // Set the palette appropriately based on whether the row is selected or not
-    if (option.state & QStyle::State_Selected) {
-        painter->fillRect(option.rect, option.palette.highlight());
-        painter->setBrush(option.palette.highlightedText());
+    // Set the palette appropriately based on whether the row is selected or
+    // not. We also have to check if it is inactive or not and use the
+    // appropriate ColorGroup.
+    if (newOption.state & QStyle::State_Selected) {
+        QPalette::ColorGroup colorGroup =
+                newOption.state & QStyle::State_Active ?
+                QPalette::Active : QPalette::Inactive;
+        painter->fillRect(newOption.rect,
+            newOption.palette.color(colorGroup, QPalette::Highlight));
+        painter->setBrush(newOption.palette.color(
+            colorGroup, QPalette::HighlightedText));
     } else {
-        painter->fillRect(option.rect, option.palette.base());
-        painter->setBrush(option.palette.text());
+        painter->fillRect(newOption.rect, newOption.palette.base());
+        painter->setBrush(newOption.palette.text());
     }
 
-    if (qVariantCanConvert<StarRating>(index.data())) {
-        StarRating starRating = qVariantValue<StarRating>(index.data());
-        starRating.paint(painter, option.rect, option.palette, StarRating::ReadOnly);
-    } else {
-        //QStyledItemDelegate::paint(painter, newOption, index);
-        QItemDelegate::paint(painter, option, index);
-    }
+    StarRating starRating = qVariantValue<StarRating>(index.data());
+    starRating.paint(painter, newOption.rect, newOption.palette, StarRating::ReadOnly);
 }
 
 QSize StarDelegate::sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const
@@ -59,7 +66,7 @@ QSize StarDelegate::sizeHint(const QStyleOptionViewItem &option, const QModelInd
         StarRating starRating = qVariantValue<StarRating>(index.data());
         return starRating.sizeHint();
     } else {
-        return QItemDelegate::sizeHint(option, index);
+        return QStyledItemDelegate::sizeHint(option, index);
     }
 }
 /*
@@ -79,7 +86,7 @@ QWidget *StarDelegate::createEditor(QWidget *parent, const QStyleOptionViewItem 
         this, SLOT(commitAndCloseEditor()));
         return editor;
     } else {
-        return QItemDelegate::createEditor(parent, option, index);
+        return QStyledItemDelegate::createEditor(parent, option, index);
     }
 }
 
@@ -90,7 +97,7 @@ void StarDelegate::setEditorData(QWidget *editor, const QModelIndex &index) cons
         StarEditor *starEditor = qobject_cast<StarEditor *>(editor);
         starEditor->setStarRating(starRating);
     } else {
-        QItemDelegate::setEditorData(editor, index);
+        QStyledItemDelegate::setEditorData(editor, index);
     }
 }
 
@@ -100,7 +107,7 @@ void StarDelegate::setModelData(QWidget *editor, QAbstractItemModel *model, cons
         StarEditor *starEditor = qobject_cast<StarEditor *>(editor);
         model->setData(index, qVariantFromValue(starEditor->starRating()));
     } else {
-        QItemDelegate::setModelData(editor, model, index);
+        QStyledItemDelegate::setModelData(editor, model, index);
     }
 }
 /*
