@@ -34,12 +34,14 @@ void WaveformRendererEndOfTrack::draw(QPainter* painter,
         generatePixmap();
     }
 
-    if (!m_waveformWidget->getTrackInfo()) {
+    TrackPointer pTrack = m_waveformWidget->getTrackInfo();
+    if (!pTrack) {
         return;
     }
 
     double trackSamples = m_waveformWidget->getTrackSamples();
-    double sampleRate = m_waveformWidget->getTrackInfo()->getSampleRate();
+    // TODO(rryan) WARNING NOT ACCURATE! Should use track_samplerate CO
+    double sampleRate = pTrack->getSampleRate();
 
     if (sampleRate == 0.0 || trackSamples == 0.0) {
         return;

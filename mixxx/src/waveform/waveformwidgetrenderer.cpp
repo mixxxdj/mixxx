@@ -61,6 +61,7 @@ void WaveformWidgetRenderer::init()
 {
     qDebug() << "WaveformWidgetRenderer::init()";
 
+    // TODO(rryan): WARNING unsafe use of ControlObject. Must use COThreadMain
     m_playPosControlObject = ControlObject::getControl( ConfigKey(m_group,"visual_playposition"));
     m_rateControlObject = ControlObject::getControl( ConfigKey(m_group,"rate"));
     m_rateRangeControlObject = ControlObject::getControl( ConfigKey(m_group,"rate_dir"));
