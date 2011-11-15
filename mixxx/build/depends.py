@@ -485,8 +485,7 @@ class MixxxCore(Feature):
                    "widget/wvisualsimple.cpp",
                    "widget/wwaveformviewer.cpp",
                    "widget/wglwaveformviewer.cpp",
-                   #"waveformviewerfactory.cpp",
-                   "waveformwidgetfactory.cpp",
+                   "waveform/waveformwidgetfactory.cpp",
                    "waveform/renderobject.cpp",
                    "waveform/waveformrenderer.cpp",
                    "waveform/waveformrenderbackground.cpp",
@@ -514,10 +513,7 @@ class MixxxCore(Feature):
                    "skin/skinloader.cpp",
                    "skin/legacyskinparser.cpp",
                    "skin/colorschemeparser.cpp",
-#<<<<<<< TREE
-#=======
                    "skin/propertybinder.cpp",
-#>>>>>>> MERGE-SOURCE
 
                    "sampleutil.cpp",
                    "trackinfoobject.cpp",

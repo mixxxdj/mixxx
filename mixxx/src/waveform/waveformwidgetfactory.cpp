@@ -1,4 +1,4 @@
-#include "waveformwidgetfactory.h"
+#include "waveform/waveformwidgetfactory.h"
 #include "waveform/widget/waveformwidgetabstract.h"
 #include "widget/wwaveformviewer.h"
 

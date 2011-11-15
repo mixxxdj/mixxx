@@ -17,7 +17,6 @@
 #include "playermanager.h"
 #include "basetrackplayer.h"
 #include "library/library.h"
-#include "waveformviewerfactory.h"
 #include "xmlparse.h"
 
 #include "skin/legacyskinparser.h"
@@ -46,7 +45,7 @@
 #include "widget/wglwaveformviewer.h"
 #include "widget/wwaveformviewer.h"
 
-#include "waveformwidgetfactory.h"
+#include "waveform/waveformwidgetfactory.h"
 
 #include "widget/wsearchlineedit.h"
 #include "widget/wlibrary.h"
@@ -456,8 +455,6 @@ QWidget* LegacySkinParser::parseVisual(QDomElement node) {
     ControlObjectThreadWidget * p = new ControlObjectThreadWidget(
         ControlObject::getControl(ConfigKey(channelStr, "wheel")), viewer);
 
-    //p->setWidget((QWidget *)viewer, true, true, true, Qt::LeftButton);
-
     p->setWidget((QWidget *)viewer, true, true,
                  ControlObjectThreadWidget::EMIT_ON_PRESS, Qt::LeftButton);
 
@@ -465,11 +462,11 @@ QWidget* LegacySkinParser::parseVisual(QDomElement node) {
 
     viewer->setup( node);
 
-    //connect display with loading/unloading of tracks
-    QObject::connect( pPlayer,SIGNAL(newTrackLoaded(TrackPointer)),
-                      viewer, SLOT(onTrackLoaded(TrackPointer)));
-    QObject::connect( pPlayer,SIGNAL(unloadingTrack(TrackPointer)),
-                      viewer, SLOT(onTrackUnloaded(TrackPointer)));
+    // connect display with loading/unloading of tracks
+    QObject::connect(pPlayer, SIGNAL(newTrackLoaded(TrackPointer)),
+                     viewer, SLOT(onTrackLoaded(TrackPointer)));
+    QObject::connect(pPlayer, SIGNAL(unloadingTrack(TrackPointer)),
+                     viewer, SLOT(onTrackUnloaded(TrackPointer)));
 
     setupConnections(node, viewer);
 
