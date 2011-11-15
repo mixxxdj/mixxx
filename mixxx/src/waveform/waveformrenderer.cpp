@@ -13,7 +13,6 @@
 #include "waveformrendermark.h"
 #include "waveformrendermarkrange.h"
 #include "waveformrendersignal.h"
-#include "waveformrendersignalpixmap.h"
 #include "trackinfoobject.h"
 #include "soundsourceproxy.h"
 #include "controlobjectthreadmain.h"
@@ -90,7 +89,6 @@ WaveformRenderer::WaveformRenderer(const char* group) :
 
     m_pRenderBackground = 0 /*new WaveformRenderBackground(group, this)*/;
     m_pRenderSignal = new WaveformRenderSignal(group, this);
-    m_pRenderSignalPixmap = new WaveformRenderSignalPixmap(group, this);
     m_pRenderBeat = new WaveformRenderBeat(group, this);
 
     m_pCOVisualResample = new ControlObject(ConfigKey(group, "VisualResample"));
@@ -131,10 +129,6 @@ WaveformRenderer::~WaveformRenderer() {
     if(m_pRenderBackground)
         delete m_pRenderBackground;
     m_pRenderBackground = NULL;
-
-    if(m_pRenderSignalPixmap)
-        delete m_pRenderSignalPixmap;
-    m_pRenderSignalPixmap = NULL;
 
     if(m_pRenderSignal)
         delete m_pRenderSignal;
@@ -217,7 +211,6 @@ void WaveformRenderer::resize(int w, int h) {
     // Notify children that we've been resized
     //m_pRenderBackground->resize(w,h);
     m_pRenderSignal->resize(w,h);
-    m_pRenderSignalPixmap->resize(w,h);
     m_pRenderBeat->resize(w,h);
 
     QListIterator<RenderObject*> iter(m_renderObjects);
@@ -321,7 +314,6 @@ void WaveformRenderer::setup(QDomNode node) {
 
     //m_pRenderBackground->setup(node);
     m_pRenderSignal->setup(node);
-    m_pRenderSignalPixmap->setup(node);
     m_pRenderBeat->setup(node);
 }
 
@@ -417,53 +409,6 @@ bool WaveformRenderer::fetchWaveformFromTrack() {
     return true;
 }
 
-void WaveformRenderer::drawSignalPixmap(QPainter *pPainter) {
-
-
-    //if(m_pImage == NULL)
-    //return;
-    if(m_pImage.isNull())
-        return;
-
-    //double dCurPos = m_pPlayPos->get();
-    int iCurPos = (int)(m_dPlayPos*m_pImage.width());
-
-    int halfw = m_iWidth/2;
-    int halfh = m_iHeight/2;
-
-    int totalHeight = m_pImage.height();
-    int totalWidth = m_pImage.width();
-    int width = m_iWidth;
-    int height = m_iHeight;
-    // widths and heights of the two rects should be the same:
-    // m_iWidth - 0 = iCurPos + halfw - iCurPos + halfw = m_iWidth (if even)
-    // -halfh-halfh = -halfh-halfh
-
-    int sx=iCurPos-halfw;
-    int sy=0;
-    int tx=0;
-    int ty=0;
-
-    if(sx < 0) {
-        sx = 0;
-        width = iCurPos + halfw;
-        tx = m_iWidth - width;
-    } else if(sx + width >= totalWidth) {
-        //width = (iCurPos - sx) + (totalWidth-iCurPos);
-        width = halfw + totalWidth - iCurPos;
-    }
-
-    QRect target(tx,ty,width,height);
-    QRect source(sx,sy,width,height);
-
-    //qDebug() << "target:" << target;
-    //qDebug() << "source:" << source;
-    pPainter->setPen(signalColor);
-
-    pPainter->drawImage(target, m_pImage, source);
-
-}
-
 void WaveformRenderer::draw(QPainter* pPainter, QPaintEvent *pEvent) {
     double playposadjust = 0;
 
@@ -538,7 +483,6 @@ void WaveformRenderer::draw(QPainter* pPainter, QPaintEvent *pEvent) {
 
     pPainter->setPen(signalColor);
 
-    //m_pRenderSignalPixmap->draw(pPainter, pEvent, m_pSampleBuffer, playpos, rateAdjust);
     // Translate our coordinate frame from (0,0) at top left
     // to (0,0) at left, center. All the subrenderers expect this.
     pPainter->translate(0.0,m_iHeight/2.0);
@@ -582,7 +526,6 @@ void WaveformRenderer::slotNewTrack(TrackPointer pTrack) {
 
     //m_pRenderBackground->newTrack(pTrack);
     m_pRenderSignal->newTrack(pTrack);
-    m_pRenderSignalPixmap->newTrack(pTrack);
     m_pRenderBeat->newTrack(pTrack);
 
     QListIterator<RenderObject*> iter(m_renderObjects);

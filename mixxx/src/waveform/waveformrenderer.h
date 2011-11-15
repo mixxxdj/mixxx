@@ -19,7 +19,6 @@ class ControlObjectThreadMain;
 class RenderObject;
 class WaveformRenderBackground;
 class WaveformRenderSignal;
-class WaveformRenderSignalPixmap;
 class WaveformRenderBeat;
 class WaveformRenderMark;
 class ControlObject;
@@ -32,7 +31,6 @@ public:
 
     void resize(int w, int h);
     void draw(QPainter* pPainter, QPaintEvent *pEvent);
-    void drawSignalPixmap(QPainter* p);
     void setup(QDomNode node);
     void precomputePixmap();
     int getSubpixelsPerPixel();
@@ -81,7 +79,6 @@ private:
 
     WaveformRenderBackground *m_pRenderBackground;
     WaveformRenderSignal *m_pRenderSignal;
-    WaveformRenderSignalPixmap *m_pRenderSignalPixmap;
     WaveformRenderBeat *m_pRenderBeat;
 
     QList<RenderObject*> m_renderObjects;
