@@ -31,7 +31,7 @@
 #include "engine/ratecontrol.h"
 #include "skin/skinloader.h"
 #include "skin/legacyskinparser.h"
-#include "waveformwidgetfactory.h"
+#include "waveform/waveformwidgetfactory.h"
 #include "playermanager.h"
 
 DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxApp * mixxx,

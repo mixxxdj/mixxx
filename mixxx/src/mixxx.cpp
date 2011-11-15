@@ -28,7 +28,6 @@
 #include "engine/enginemicrophone.h"
 #include "trackinfoobject.h"
 #include "dlgabout.h"
-#include "waveformviewerfactory.h"
 #include "waveform/waveformrenderer.h"
 #include "soundsourceproxy.h"
 
@@ -51,7 +50,7 @@
 #include "mixxxkeyboard.h"
 #include "skin/skinloader.h"
 #include "skin/legacyskinparser.h"
-#include "waveformwidgetfactory.h"
+#include "waveform/waveformwidgetfactory.h"
 
 #include "build.h" // #defines of details of the build set up (flags,
 // repo number, etc). This isn't a real file, SConscript generates it and it
