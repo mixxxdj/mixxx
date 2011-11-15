@@ -1,15 +1,15 @@
 #ifndef WAVEFORMRENDERERABSTRACT_H
 #define WAVEFORMRENDERERABSTRACT_H
 
-#include <QPainter>
-#include <QPaintEvent>
 #include <QDomNode>
+#include <QPaintEvent>
+#include <QPainter>
 
 class WaveformWidgetRenderer;
 
 class WaveformRendererAbstract {
   public:
-    WaveformRendererAbstract(WaveformWidgetRenderer* waveformWidgetRenderer);
+    explicit WaveformRendererAbstract(WaveformWidgetRenderer* waveformWidgetRenderer);
     virtual ~WaveformRendererAbstract();
 
     virtual void init() = 0;

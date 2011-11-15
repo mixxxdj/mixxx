@@ -2,28 +2,33 @@
 #define WAVEFORMRENDERBACKGROUND_H
 
 #include <QColor>
+#include <QDomNode>
+#include <QPaintEvent>
+#include <QPainter>
 #include <QPixmap>
 
-#include "waveformrendererabstract.h"
+#include "util.h"
+#include "waveform/waveformrendererabstract.h"
 
-class QDomNode;
-class QPainter;
-class QPaintEvent;
+class WaveformWidgetRenderer;
 
 class WaveformRenderBackground : public WaveformRendererAbstract {
-
-public:
-    WaveformRenderBackground( WaveformWidgetRenderer* waveformWidgetRenderer);
+  public:
+    explicit WaveformRenderBackground(WaveformWidgetRenderer* waveformWidgetRenderer);
+    virtual ~WaveformRenderBackground();
 
     virtual void init();
-    virtual void setup( const QDomNode& node);
-    virtual void draw( QPainter* painter, QPaintEvent* event);
+    virtual void setup(const QDomNode& node);
+    virtual void draw(QPainter* painter, QPaintEvent* event);
 
   private:
     void generatePixmap();
 
-    QColor m_backgroungColor;
+    QString m_backgroundPixmapPath;
+    QColor m_backgroundColor;
     QPixmap m_backgroundPixmap;
+
+    DISALLOW_COPY_AND_ASSIGN(WaveformRenderBackground);
 };
 
-#endif
+#endif /* WAVEFORMRENDERBACKGROUND_H */
