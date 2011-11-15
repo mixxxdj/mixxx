@@ -490,8 +490,6 @@ class MixxxCore(Feature):
                    "waveform/waveformrenderer.cpp",
                    "waveform/waveformrenderbackground.cpp",
                    "waveform/waveformrendersignal.cpp",
-                   "waveform/waveformrendersignaltiles.cpp",
-                   "waveform/waveformrendersignalpixmap.cpp",
                    "waveform/waveformrendermark.cpp",
                    "waveform/waveformrendermarkrange.cpp",
                    "waveform/waveformrenderbeat.cpp",
