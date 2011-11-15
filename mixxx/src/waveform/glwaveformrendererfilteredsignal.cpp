@@ -11,8 +11,7 @@
 #include <QLineF>
 
 GLWaveformRendererFilteredSignal::GLWaveformRendererFilteredSignal( WaveformWidgetRenderer* waveformWidgetRenderer) :
-    WaveformRendererAbstract( waveformWidgetRenderer)
-{
+    WaveformRendererAbstract( waveformWidgetRenderer) {
     m_lowFilterControlObject = 0;
     m_midFilterControlObject = 0;
     m_highFilterControlObject = 0;
