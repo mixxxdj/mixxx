@@ -3,7 +3,7 @@
 
 #include "controlobjectthreadmain.h"
 #include "controlobject.h"
-
+#include "defs.h"
 
 #include <QPainter>
 
@@ -99,7 +99,7 @@ void WaveformWidgetRenderer::preRender()
 
     //Legacy stuff (Ryan it that OK?)
     //Limit our rate adjustment to < 99%, "Bad Things" might happen otherwise.
-    m_rateAdjust = m_rateDir * std::min(0.99, m_rate * m_rateRange);
+    m_rateAdjust = m_rateDir * math_min(0.99, m_rate * m_rateRange);
 }
 
 void WaveformWidgetRenderer::draw( QPainter* painter, QPaintEvent* event)
@@ -117,8 +117,8 @@ void WaveformWidgetRenderer::draw( QPainter* painter, QPaintEvent* event)
     int frameMax = -1;
     for( int i = 0; i < 100; ++i)
     {
-        frameMax = std::max( frameMax, m_lastFramesTime[i]);
-        systemMax = std::max( systemMax, m_lastSystemFramesTime[i]);
+        frameMax = math_max( frameMax, m_lastFramesTime[i]);
+        systemMax = math_max( systemMax, m_lastSystemFramesTime[i]);
     }
 
     //hud debug display
@@ -189,7 +189,7 @@ void WaveformWidgetRenderer::updateSamplingPerPixel()
 {
     //vRince for the moment only more than one sample per pixel is supported
     //due to the fact we play the visual play pos modulo floor samplePerPixel ...
-    m_visualSamplePerPixel = std::max( 1.0, m_zoomFactor * (1.0 + m_rateAdjust));
+    m_visualSamplePerPixel = math_max( 1.0, m_zoomFactor * (1.0 + m_rateAdjust));
     //TODO vRince remove hard-coded visual sampling rate
     m_audioSamplePerPixel = getVisualSamplePerPixel()*441.0;
 }

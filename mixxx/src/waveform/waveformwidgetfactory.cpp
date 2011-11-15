@@ -6,6 +6,7 @@
 #include "waveform/widget/emptywaveformwidget.h"
 #include "waveform/widget/glwaveformwidget.h"
 #include "waveform/widget/softwarewaveformwidget.h"
+#include "defs.h"
 
 #include <QTimer>
 #include <QWidget>
@@ -142,7 +143,7 @@ bool WaveformWidgetFactory::setWaveformWidget( WWaveformViewer* viewer)
 
 void WaveformWidgetFactory::setFrameRate( int frameRate)
 {
-    m_frameRate = std::min(60,frameRate);
+    m_frameRate = math_min(60, frameRate);
     m_timer->setInterval((int)(1000.0/(double)m_frameRate));
 }
 
