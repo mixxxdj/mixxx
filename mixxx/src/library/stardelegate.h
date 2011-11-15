@@ -19,7 +19,7 @@
 #ifndef STARDELEGATE_H
 #define STARDELEGATE_H
 
-#include <QItemDelegate>
+#include <QStyledItemDelegate>
 
 /*
  * When displaying data in a QListView, QTableView, or QTreeView,
@@ -32,12 +32,12 @@
  * If we need to support custom data types, or want to customize the rendering or the editing for
  * existing data types, we can subclass QAbstractItemDelegate or QItemDelegate or QStyledItemDelegate
  */
-class StarDelegate : public QItemDelegate
+class StarDelegate : public QStyledItemDelegate
 {
     Q_OBJECT
 
 public:
-    StarDelegate(QWidget *parent = 0) : QItemDelegate(parent) {}
+    StarDelegate(QWidget *parent = 0) : QStyledItemDelegate(parent) {}
     /** reimplemented from QItemDelegate and is called whenever the view needs to repaint an item **/
     void paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const;
     /** eturns an item's preferred size **/

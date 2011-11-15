@@ -32,6 +32,7 @@
 #include "enginevumeter.h"
 #include "enginexfader.h"
 #include "enginesidechain.h"
+#include "engine/syncworker.h"
 #include "sampleutil.h"
 
 #ifdef __LADSPA__
@@ -40,19 +41,22 @@
 
 
 EngineMaster::EngineMaster(ConfigObject<ConfigValue> * _config,
-                           const char * group) {
+                           const char * group,
+                           bool bEnableSidechain) {
 
     m_pWorkerScheduler = new EngineWorkerScheduler(this);
+    m_pWorkerScheduler->start();
+    m_pSyncWorker = new SyncWorker(m_pWorkerScheduler);
 
     // Master sample rate
-    ControlObject * sr = new ControlObject(ConfigKey(group, "samplerate"));
-    sr->set(44100.);
+    m_pMasterSampleRate = new ControlObject(ConfigKey(group, "samplerate"));
+    m_pMasterSampleRate->set(44100.);
 
     // Latency control
-    new ControlObject(ConfigKey(group, "latency"));
+    m_pMasterLatency = new ControlObject(ConfigKey(group, "latency"));
 
     // Master rate
-    new ControlPotmeter(ConfigKey(group, "rate"), -1.0, 1.0);
+    m_pMasterRate = new ControlPotmeter(ConfigKey(group, "rate"), -1.0, 1.0);
 
 #ifdef __LADSPA__
     // LADSPA
@@ -91,11 +95,14 @@ EngineMaster::EngineMaster(ConfigObject<ConfigValue> * _config,
     memset(m_pMaster, 0, sizeof(CSAMPLE) * MAX_BUFFER_LEN);
 
     //Starts a thread for recording and shoutcast
-    sidechain = new EngineSideChain(_config);
-    connect(sidechain, SIGNAL(isRecording(bool)),
-            this, SIGNAL(isRecording(bool)));
-    connect(sidechain, SIGNAL(bytesRecorded(int)),
-            this, SIGNAL(bytesRecorded(int)));
+    sidechain = NULL;
+    if (bEnableSidechain) {
+        sidechain = new EngineSideChain(_config);
+        connect(sidechain, SIGNAL(isRecording(bool)),
+                this, SIGNAL(isRecording(bool)));
+        connect(sidechain, SIGNAL(bytesRecorded(int)),
+                this, SIGNAL(bytesRecorded(int)));
+    }
 
     //X-Fader Setup
     xFaderCurve = new ControlPotmeter(
@@ -120,6 +127,10 @@ EngineMaster::~EngineMaster()
     delete xFaderCalibration;
     delete xFaderCurve;
 
+    delete m_pMasterSampleRate;
+    delete m_pMasterLatency;
+    delete m_pMasterRate;
+
     SampleUtil::free(m_pHead);
     SampleUtil::free(m_pMaster);
 
@@ -132,6 +143,9 @@ EngineMaster::~EngineMaster()
         delete pChannelInfo->m_pVolumeControl;
         delete pChannelInfo;
     }
+
+    delete m_pWorkerScheduler;
+    delete m_pSyncWorker;
 }
 
 const CSAMPLE* EngineMaster::getMasterBuffer() const
@@ -397,7 +411,9 @@ void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
 
     //Submit master samples to the side chain to do shoutcasting, recording,
     //etc.  (cpu intensive non-realtime tasks)
-    sidechain->submitSamples(m_pMaster, iBufferSize);
+    if (sidechain != NULL) {
+        sidechain->submitSamples(m_pMaster, iBufferSize);
+    }
 
     // Add master to headphone with appropriate gain
     SampleUtil::addWithGain(m_pHead, m_pMaster, cmaster_gain, iBufferSize);
@@ -409,8 +425,11 @@ void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
     //Master/headphones interleaving is now done in
     //SoundManager::requestBuffer() - Albert Nov 18/07
 
-    // We're close to the end of the callback. Schedule the workers. Hopefully
-    // the work thread doesn't get scheduled between now and then.
+    // Schedule a ControlObject sync
+    m_pSyncWorker->schedule();
+
+    // We're close to the end of the callback. Wake up the engine worker
+    // scheduler so that it runs the workers.
     m_pWorkerScheduler->runWorkers();
 }
 
@@ -420,7 +439,7 @@ void EngineMaster::addChannel(EngineChannel* pChannel) {
     pChannelInfo->m_pVolumeControl = new ControlLogpotmeter(
         ConfigKey(pChannel->getGroup(), "volume"), 1.0);
     pChannelInfo->m_pBuffer = SampleUtil::alloc(MAX_BUFFER_LEN);
-    memset(pChannelInfo->m_pBuffer, 0, sizeof(CSAMPLE) * MAX_BUFFER_LEN);
+    SampleUtil::applyGain(pChannelInfo->m_pBuffer, 0, MAX_BUFFER_LEN);
     m_channels.push_back(pChannelInfo);
 
     EngineBuffer* pBuffer = pChannelInfo->m_pChannel->getEngineBuffer();

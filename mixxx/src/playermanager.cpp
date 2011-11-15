@@ -61,8 +61,8 @@ unsigned int PlayerManager::numSamplers() const {
 
 Deck* PlayerManager::addDeck() {
     Deck* pDeck;
+    QString group = groupForDeck(numDecks());
     int number = numDecks() + 1;
-    QString group = QString("[Channel%1]").arg(number);
 
     EngineChannel::ChannelOrientation orientation = EngineChannel::LEFT;
     if (number % 2 == 0)
@@ -85,8 +85,7 @@ Deck* PlayerManager::addDeck() {
 
 Sampler* PlayerManager::addSampler() {
     Sampler* pSampler;
-    int number = numSamplers() + 1;
-    QString group = QString("[Sampler%1]").arg(number);
+    QString group = groupForSampler(numSamplers());
 
     // All samplers are in the center
     EngineChannel::ChannelOrientation orientation = EngineChannel::CENTER;

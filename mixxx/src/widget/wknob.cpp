@@ -25,17 +25,20 @@
 #include <QPaintEvent>
 
 WKnob::WKnob(QWidget * parent, float defaultValue)
-    : WAbstractControl(parent, defaultValue)
-{
-    m_pPixmaps = 0;
-    m_pPixmapBack = 0;
-    m_bDisabledLoaded = false;
-    setPositions(0);
+        : WAbstractControl(parent, defaultValue),
+          m_iPos(0),
+          m_iNoPos(0),
+          m_pPixmaps(NULL),
+          m_pPixmapBack(NULL),
+          m_bDisabledLoaded(false) {
 }
 
 WKnob::~WKnob()
 {
     resetPositions();
+    if (m_pPixmapBack) {
+       WPixmapStore::deletePixmap(m_pPixmapBack);
+    }
 }
 
 void WKnob::setup(QDomNode node)
@@ -45,10 +48,8 @@ void WKnob::setup(QDomNode node)
         setPixmapBackground(getPath(selectNodeQString(node, "BackPath")));
 
     // Number of states. Depends if disabled pics are defined as well
-    if (!selectNode(node, "DisabledPath").isNull())
-        setPositions(selectNodeInt(node, "NumberStates"),true);
-    else
-        setPositions(selectNodeInt(node, "NumberStates"),false);
+    setPositions(selectNodeInt(node, "NumberStates"),
+                 !selectNode(node, "DisabledPath").isNull());
 
     // Load knob pixmaps
     QString path = selectNodeQString(node, "Path");
@@ -67,10 +68,10 @@ void WKnob::setup(QDomNode node)
 
 void WKnob::setPositions(int iNoPos, bool bIncludingDisabled)
 {
+    resetPositions();
+
     m_iNoPos = iNoPos;
     m_iPos = 0;
-
-    resetPositions();
 
     if (m_iNoPos>0)
     {
@@ -88,12 +89,17 @@ void WKnob::resetPositions()
 {
     if (m_pPixmaps)
     {
-        for (int i=0; i<m_iNoPos; i++)
-            if (m_pPixmaps[i])
+        int pics = m_iNoPos;
+        if( m_bDisabledLoaded ){
+            pics *= 2;
+        }
+        for (int i=0; i<pics; i++) {
+            if (m_pPixmaps[i]) {
                 WPixmapStore::deletePixmap(m_pPixmaps[i]);
-
-        //WPixmapStore::deletePixmap(m_pPixmaps);
-        m_pPixmaps = 0;
+            }
+        }
+        delete [] m_pPixmaps;
+        m_pPixmaps = NULL;
     }
 }
 
@@ -108,6 +114,9 @@ void WKnob::setPixmap(int iPos, const QString &filename)
 void WKnob::setPixmapBackground(const QString &filename)
 {
     // Load background pixmap
+   if (m_pPixmapBack) {
+       WPixmapStore::deletePixmap(m_pPixmapBack);
+   }
     m_pPixmapBack = WPixmapStore::getPixmap(filename);
     if (!m_pPixmapBack)
         qDebug() << "WKnob: Error loading background pixmap:" << filename;
@@ -180,7 +189,7 @@ void WKnob::wheelEvent(QWheelEvent *e)
 
 void WKnob::paintEvent(QPaintEvent *)
 {
-    if (m_pPixmaps>0)
+    if (m_pPixmaps)
     {
         int idx = (int)(((m_fValue-64.)*(((float)m_iNoPos-1.)/127.))+((float)m_iNoPos/2.));
         // Range check

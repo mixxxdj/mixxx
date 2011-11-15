@@ -37,7 +37,37 @@ WaveformWidgetFactory::WaveformWidgetFactory()
         glFormat.setDepth(false);
         glFormat.setSwapInterval(1); //enable vertical sync to avoid cue line to be cut
         QGLFormat::setDefaultFormat(glFormat);
-        m_openGLVersion = QString::number(glFormat.majorVersion()) + "." + QString::number(glFormat.minorVersion());
+        QGLFormat::OpenGLVersionFlags version = QGLFormat::openGLVersionFlags();
+        int majorVersion = 0;
+        int minorVersion = 0;
+        if (version == QGLFormat::OpenGL_Version_None) {
+            m_openGLVersion = "None";
+        } else if (version & QGLFormat::OpenGL_Version_3_0) {
+            majorVersion = 3;
+        } else if (version & QGLFormat::OpenGL_Version_2_1) {
+            majorVersion = 2;
+            minorVersion = 1;
+        } else if (version & QGLFormat::OpenGL_Version_2_0) {
+            majorVersion = 2;
+            minorVersion = 0;
+        } else if (version & QGLFormat::OpenGL_Version_1_5) {
+            majorVersion = 1;
+            minorVersion = 5;
+        } else if (version & QGLFormat::OpenGL_Version_1_4) {
+            majorVersion = 1;
+            minorVersion = 4;
+        } else if (version & QGLFormat::OpenGL_Version_1_3) {
+            majorVersion = 1;
+            minorVersion = 3;
+        } else if (version & QGLFormat::OpenGL_Version_1_2) {
+            majorVersion = 1;
+            minorVersion = 2;
+        } else if (version & QGLFormat::OpenGL_Version_1_1) {
+            majorVersion = 1;
+            minorVersion = 1;
+        }
+
+        m_openGLVersion = QString::number(majorVersion) + "." + QString::number(minorVersion);
         m_openGLAvailable = true;
     }
 

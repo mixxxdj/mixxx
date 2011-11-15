@@ -11,9 +11,9 @@ const QString MissingTableModel::MISSINGFILTER = "mixxx_deleted=0 AND fs_deleted
 
 MissingTableModel::MissingTableModel(QObject* parent,
                                      TrackCollection* pTrackCollection)
-        : TrackModel(pTrackCollection->getDatabase(),
-                     "mixxx.db.model.missing"),
-          BaseSqlTableModel(parent, pTrackCollection, pTrackCollection->getDatabase()),
+        : BaseSqlTableModel(parent, pTrackCollection,
+                            pTrackCollection->getDatabase(),
+                            "mixxx.db.model.missing"),
           m_pTrackCollection(pTrackCollection),
           m_trackDao(m_pTrackCollection->getTrackDAO()) {
 
@@ -23,25 +23,7 @@ MissingTableModel::MissingTableModel(QObject* parent,
     QString tableName("missing_songs");
 
     QStringList columns;
-    columns << "library." + LIBRARYTABLE_ID
-            << "library." + LIBRARYTABLE_PLAYED
-            << "library." + LIBRARYTABLE_TIMESPLAYED
-            << "library." + LIBRARYTABLE_ARTIST
-            << "library." + LIBRARYTABLE_TITLE
-            << "library." + LIBRARYTABLE_ALBUM
-            << "library." + LIBRARYTABLE_YEAR
-            << "library." + LIBRARYTABLE_DURATION
-            << "library." + LIBRARYTABLE_RATING
-            << "library." + LIBRARYTABLE_GENRE
-            << "library." + LIBRARYTABLE_FILETYPE
-            << "library." + LIBRARYTABLE_TRACKNUMBER
-            << "library." + LIBRARYTABLE_KEY
-            << "library." + LIBRARYTABLE_DATETIMEADDED
-            << "library." + LIBRARYTABLE_BPM
-            << "track_locations.location"
-            << "track_locations.fs_deleted"
-            << "library." + LIBRARYTABLE_COMMENT
-            << "library." + LIBRARYTABLE_MIXXXDELETED;
+    columns << "library." + LIBRARYTABLE_ID;
 
     query.prepare("CREATE TEMPORARY VIEW IF NOT EXISTS " + tableName + " AS "
                   "SELECT "
@@ -50,8 +32,6 @@ MissingTableModel::MissingTableModel(QObject* parent,
                   "INNER JOIN track_locations "
                   "ON library.location=track_locations.id "
                   "WHERE " + MissingTableModel::MISSINGFILTER);
-    //query.bindValue(":playlist_name", playlistTableName);
-    //query.bindValue(":playlist_id", m_iPlaylistId);
     if (!query.exec()) {
         qDebug() << query.executedQuery() << query.lastError();
     }
@@ -61,47 +41,29 @@ MissingTableModel::MissingTableModel(QObject* parent,
      	qDebug() << __FILE__ << __LINE__ << query.lastError();
     }
 
-    // Strip out library. and track_locations.
-    for (int i = 0; i < columns.size(); ++i) {
-        columns[i] = columns[i].replace("library.", "").replace("track_locations.", "");
-    }
+    QStringList tableColumns;
+    tableColumns << LIBRARYTABLE_ID;
+    setTable(tableName, LIBRARYTABLE_ID, tableColumns,
+             m_pTrackCollection->getTrackSource("default"));
 
-    setTable(tableName, columns, LIBRARYTABLE_ID);
-
-    qDebug() << "Created MissingTracksModel!";
-
-    initHeaderData();    //derived from BaseSqlModel
-    initDefaultSearchColumns();
-    slotSearch("");
-    select(); //Populate the data model.
+    initHeaderData();
+    setDefaultSort(fieldIndex("artist"), Qt::AscendingOrder);
+    setSearch("");
 
     connect(this, SIGNAL(doSearch(const QString&)),
             this, SLOT(slotSearch(const QString&)));
-
 }
 
 MissingTableModel::~MissingTableModel() {
 }
 
-bool MissingTableModel::addTrack(const QModelIndex& index, QString location)
-{
+bool MissingTableModel::addTrack(const QModelIndex& index, QString location) {
+    Q_UNUSED(index);
+    Q_UNUSED(location);
     return false;
 }
 
-int MissingTableModel::getTrackId(const QModelIndex& index) const
-{
-    if (!index.isValid()) {
-        return -1;
-    }
-    return index.sibling(index.row(), fieldIndex(LIBRARYTABLE_ID)).data().toInt();
-}
-
-const QLinkedList<int> MissingTableModel::getTrackRows(int trackId) const {
-    return BaseSqlTableModel::getTrackRows(trackId);
-}
-
-TrackPointer MissingTableModel::getTrack(const QModelIndex& index) const
-{
+TrackPointer MissingTableModel::getTrack(const QModelIndex& index) const {
     //FIXME: use position instead of location for playlist tracks?
 
     //const int locationColumnIndex = this->fieldIndex(LIBRARYTABLE_LOCATION);
@@ -110,27 +72,38 @@ TrackPointer MissingTableModel::getTrack(const QModelIndex& index) const
     return m_trackDao.getTrack(trackId);
 }
 
-QString MissingTableModel::getTrackLocation(const QModelIndex& index) const
-{
+void MissingTableModel::removeTrack(const QModelIndex& index) {
     int trackId = getTrackId(index);
-    QString location = m_trackDao.getTrackLocation(trackId);
-    return location;
+
+    m_trackDao.removeTrack(trackId);
+
+    // TODO(rryan) : do not select, instead route event to BTC and notify from
+    // there.
+    select(); //Repopulate the data model.
 }
 
-void MissingTableModel::removeTrack(const QModelIndex& index)
-{
+void MissingTableModel::removeTracks(const QModelIndexList& indices) {
+    QList<int> trackIds;
+
+    foreach (QModelIndex index, indices) {
+        int trackId = getTrackId(index);
+        trackIds.append(trackId);
+    }
+
+    m_trackDao.removeTracks(trackIds);
+
+    // TODO(rryan) : do not select, instead route event to BTC and notify from
+    // there.
+    select(); //Repopulate the data model.
 }
 
-void MissingTableModel::removeTracks(const QModelIndexList& indices)
-{
+void MissingTableModel::moveTrack(const QModelIndex& sourceIndex,
+                                  const QModelIndex& destIndex) {
+    Q_UNUSED(sourceIndex);
+    Q_UNUSED(destIndex);
 }
 
-void MissingTableModel::moveTrack(const QModelIndex& sourceIndex, const QModelIndex& destIndex)
-{
-}
-
-void MissingTableModel::search(const QString& searchText)
-{
+void MissingTableModel::search(const QString& searchText) {
     // qDebug() << "MissingTableModel::search()" << searchText
     //          << QThread::currentThread();
     emit(doSearch(searchText));
@@ -140,61 +113,33 @@ void MissingTableModel::slotSearch(const QString& searchText) {
     BaseSqlTableModel::search(searchText);
 }
 
-const QString MissingTableModel::currentSearch() {
-    return BaseSqlTableModel::currentSearch();
-}
-
 bool MissingTableModel::isColumnInternal(int column) {
     if (column == fieldIndex(LIBRARYTABLE_ID) ||
         column == fieldIndex(LIBRARYTABLE_PLAYED) ||
         column == fieldIndex(LIBRARYTABLE_MIXXXDELETED) ||
-        column == fieldIndex(TRACKLOCATIONSTABLE_FSDELETED))
+        column == fieldIndex(TRACKLOCATIONSTABLE_FSDELETED)) {
         return true;
-    else
-        return false;
+    }
+    return false;
 }
 bool MissingTableModel::isColumnHiddenByDefault(int column) {
-    if (column == fieldIndex(LIBRARYTABLE_KEY))
+    if (column == fieldIndex(LIBRARYTABLE_KEY)) {
         return true;
+    }
     return false;
 }
 
-QMimeData* MissingTableModel::mimeData(const QModelIndexList &indexes) const {
-    QMimeData *mimeData = new QMimeData();
-    QList<QUrl> urls;
-
-    //Ok, so the list of indexes we're given contains separates indexes for
-    //each column, so even if only one row is selected, we'll have like 7 indexes.
-    //We need to only count each row once:
-    QList<int> rows;
-
-    foreach (QModelIndex index, indexes) {
-        if (index.isValid()) {
-            if (!rows.contains(index.row())) {
-                rows.push_back(index.row());
-                QUrl url = QUrl::fromLocalFile(getTrackLocation(index));
-                if (!url.isValid())
-                    qDebug() << "ERROR invalid url\n";
-                else
-                    urls.append(url);
-            }
-        }
-    }
-    mimeData->setUrls(urls);
-    return mimeData;
-}
-
 /** Override flags from BaseSqlModel since we don't want edit this model */
-Qt::ItemFlags MissingTableModel::flags(const QModelIndex &index) const
-{
+Qt::ItemFlags MissingTableModel::flags(const QModelIndex &index) const {
     return readOnlyFlags(index);
 }
 
 QItemDelegate* MissingTableModel::delegateForColumn(const int i) {
+    Q_UNUSED(i);
     return NULL;
 }
 
-TrackModel::CapabilitiesFlags MissingTableModel::getCapabilities() const
-{
-    return 0;
+TrackModel::CapabilitiesFlags MissingTableModel::getCapabilities() const {
+    return TRACKMODELCAPS_NONE
+            | TRACKMODELCAPS_REMOVE;
 }

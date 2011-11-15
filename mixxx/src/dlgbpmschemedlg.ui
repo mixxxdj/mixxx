@@ -50,6 +50,9 @@
    <property name="text" >
     <string>Scheme Name:</string>
    </property>
+   <property name="buddy" >
+    <cstring>txtSchemeName</cstring>
+   </property>
   </widget>
   <widget class="QGroupBox" name="groupBox" >
    <property name="geometry" >
@@ -107,6 +110,9 @@
     <property name="text" >
      <string>Max</string>
     </property>
+    <property name="buddy" >
+     <cstring>spinBpmMax</cstring>
+       </property>
    </widget>
    <widget class="QLabel" name="label_3" >
     <property name="geometry" >
@@ -120,6 +126,9 @@
     <property name="text" >
      <string>Min</string>
     </property>
+    <property name="buddy" >
+     <cstring>spinBpmMin</cstring>
+       </property>
    </widget>
   </widget>
   <widget class="QCheckBox" name="chkAnalyzeEntireSong" >

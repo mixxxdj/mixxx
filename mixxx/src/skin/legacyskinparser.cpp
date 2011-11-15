@@ -33,6 +33,7 @@
 #include "widget/wvumeter.h"
 #include "widget/wstatuslight.h"
 #include "widget/wlabel.h"
+#include "widget/wtime.h"
 #include "widget/wtracktext.h"
 #include "widget/wtrackproperty.h"
 #include "widget/wnumber.h"
@@ -60,13 +61,14 @@ QMutex LegacySkinParser::s_safeStringMutex;
 LegacySkinParser::LegacySkinParser(ConfigObject<ConfigValue>* pConfig,
                                    MixxxKeyboard* pKeyboard,
                                    PlayerManager* pPlayerManager,
-                                   Library* pLibrary)
-    : m_pConfig(pConfig),
-      m_pKeyboard(pKeyboard),
-      m_pPlayerManager(pPlayerManager),
-      m_pLibrary(pLibrary),
-      m_pParent(NULL) {
-
+                                   Library* pLibrary,
+                                   VinylControlManager* pVCMan)
+        : m_pConfig(pConfig),
+          m_pKeyboard(pKeyboard),
+          m_pPlayerManager(pPlayerManager),
+          m_pLibrary(pLibrary),
+          m_pVCManager(pVCMan),
+          m_pParent(NULL) {
 }
 
 LegacySkinParser::~LegacySkinParser() {
@@ -269,6 +271,8 @@ QWidget* LegacySkinParser::parseNode(QDomElement node, QWidget *pGrandparent) {
         return parseStyle(node);
     } else if (nodeName == "Spinny") {
         return parseSpinny(node);
+    } else if (nodeName == "Time") {
+        return parseTime(node);
     } else {
         qDebug() << "Invalid node name in skin:" << nodeName;
     }
@@ -447,8 +451,10 @@ QWidget* LegacySkinParser::parseVisual(QDomElement node) {
     viewer->installEventFilter(m_pKeyboard);
 
     // Hook up the wheel Control Object to the Visual Controller
+
+    // Connect control proxy to widget, so delete can be handled by the QT object tree
     ControlObjectThreadWidget * p = new ControlObjectThreadWidget(
-                ControlObject::getControl(ConfigKey(channelStr, "wheel")));
+        ControlObject::getControl(ConfigKey(channelStr, "wheel")), viewer);
 
     //p->setWidget((QWidget *)viewer, true, true, true, Qt::LeftButton);
 
@@ -614,6 +620,15 @@ QWidget* LegacySkinParser::parseLabel(QDomElement node) {
     return p;
 }
 
+QWidget* LegacySkinParser::parseTime(QDomElement node) {
+   WTime *p = new WTime(m_pParent);
+   setupWidget(node, p);
+   p->setup(node);
+   setupConnections(node, p);
+   p->installEventFilter(m_pKeyboard);
+   return p;
+}
+
 QWidget* LegacySkinParser::parseKnob(QDomElement node) {
     WKnob * p = new WKnob(m_pParent);
     setupWidget(node, p);
@@ -627,7 +642,7 @@ QWidget* LegacySkinParser::parseKnob(QDomElement node) {
 QWidget* LegacySkinParser::parseSpinny(QDomElement node) {
     QString channelStr = lookupNodeGroup(node);
     const char* pSafeChannelStr = safeChannelString(channelStr);
-    WSpinny* p = new WSpinny(m_pParent);
+    WSpinny* p = new WSpinny(m_pParent, m_pVCManager);
     setupWidget(node, p);
 
     connect(p, SIGNAL(trackDropped(QString, QString)),
@@ -645,6 +660,14 @@ QWidget* LegacySkinParser::parseTableView(QDomElement node) {
 
     setupPosition(node, pTabWidget);
     setupSize(node, pTabWidget);
+
+    // set maximum width to prevent growing to qSplitter->sizeHint()
+    // Note: sizeHint() may be greater in skins for tiny screens
+    int width = pTabWidget->minimumWidth();
+    if (width == 0) {
+        width = m_pParent->minimumWidth();
+    }
+    pTabWidget->setMaximumWidth(width);
 
     QWidget* pLibraryPage = new QWidget(pTabWidget);
 

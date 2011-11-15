@@ -11,10 +11,6 @@ WTrackTableViewHeader::WTrackTableViewHeader(Qt::Orientation orientation,
         : QHeaderView(orientation, parent),
           m_menu(tr("Show or hide columns."), this),
           m_signalMapper(this) {
-
-    // Show the sort indicator (technically redundant since setSortingEnabled()
-    // on a View will handle this)
-    setSortIndicatorShown(true);
     //Allow the columns to be reordered.
     setMovable(true);
 
@@ -62,21 +58,26 @@ void WTrackTableViewHeader::setModel(QAbstractItemModel* model) {
 
     int columns = model->columnCount();
     for (int i = 0; i < columns; ++i) {
-        if (trackModel->isColumnInternal(i))
+        if (trackModel->isColumnInternal(i)) {
             continue;
+        }
 
         QString title = model->headerData(i, orientation()).toString();
         QAction* action = new QAction(title, &m_menu);
         action->setCheckable(true);
-    
-        /* If Mixxx starts the first time or the header states have been cleared due to database schema evolution
-         * we gonna hide all columns that may contain a potential large number of NULL values.
-         * Here we uncheck item in the context menu that are hidden by defualt (e.g., key column)
+
+        /* If Mixxx starts the first time or the header states have been cleared
+         * due to database schema evolution we gonna hide all columns that may
+         * contain a potential large number of NULL values.  Here we uncheck
+         * item in the context menu that are hidden by defualt (e.g., key
+         * column)
          */
-        if(!hasPersistedHeaderState() && trackModel->isColumnHiddenByDefault(i))
-             action->setChecked(false);          
-        else
+        if (!hasPersistedHeaderState() &&
+            trackModel->isColumnHiddenByDefault(i)) {
+            action->setChecked(false);
+        } else {
             action->setChecked(!isSectionHidden(i));
+        }
 
         // Map this action's signals via our QSignalMapper
         m_signalMapper.setMapping(action, i);
@@ -128,9 +129,9 @@ bool WTrackTableViewHeader::hasPersistedHeaderState() {
     TrackModel* track_model = getTrackModel();
     if (!track_model) {
         return false;
-    }    
+    }
     QString headerStateString = track_model->getModelSetting("header_state");
-    
+
     if (!headerStateString.isNull()) return true;
     return false;
 

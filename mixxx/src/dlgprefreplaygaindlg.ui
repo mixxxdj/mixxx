@@ -123,6 +123,9 @@
             <property name="text" >
              <string>Initial Boost</string>
             </property>
+            <property name="buddy" >
+             <cstring>SliderBoost</cstring>
+            </property>
            </widget>
           </item>
           <item>

@@ -196,4 +196,3 @@ void WaveformRenderMarkRange::generatePixmaps()
         markRanges_[i].generatePixmap( m_waveformWidget->getWidth(), m_waveformWidget->getHeight());
     setDirty(false);
 }
-
