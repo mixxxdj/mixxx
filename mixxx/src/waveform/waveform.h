@@ -21,7 +21,7 @@ class Waveform {
     }
 
     double getSampleRate() const {
-        m_sampleRate;
+        return m_sampleRate;
     }
 
     int size() const {
