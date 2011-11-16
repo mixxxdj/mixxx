@@ -156,7 +156,8 @@ double AnalyserBeats::calculateBpm(QVector<double> beats) const
      * the central element is choosen in order to compute the median.
      *
      */
-
+    int max_frequency = 0;
+    double most_freq_bpm = 0;
     for(int i=N; i < beats.size(); i+=N){
         //get start and end sample of the beats
         double start_sample = beats.at(i-N);
@@ -174,6 +175,12 @@ double AnalyserBeats::calculateBpm(QVector<double> beats) const
             int newFreq = frequency_table.value(local_bpm_str) + 1;
             //Set new Frequency
             frequency_table.insert(local_bpm_str, newFreq);
+
+            if(newFreq > max_frequency){
+                max_frequency = newFreq;
+                most_freq_bpm = avg_bpm;
+            }
+
         }
         else{
             frequency_table.insert(local_bpm_str, 1);
@@ -220,23 +227,90 @@ double AnalyserBeats::calculateBpm(QVector<double> beats) const
      */
     QMapIterator<QString, int> i(frequency_table);
     double avg_weighted_bpm = 0.0;
+    qDebug() << "Max BPM Frequency=" << most_freq_bpm;
     int sum = 0;
      while (i.hasNext()) {
          i.next();
          double bpmVal = i.key().toDouble();
-         if(bpmVal >= median -1 && bpmVal <= median+1){
+
+         if( (bpmVal >= median -1.0) && (bpmVal <= median+1.0)){
              sum += i.value();
              avg_weighted_bpm += bpmVal * i.value();
              if(sDebug)
                 qDebug() << "BPM:" << bpmVal << " Frequency: " << i.value();
+
          }
      }
+     double global_bpm = (avg_weighted_bpm / (double) sum);
     //return median;
      if(sDebug){
-         qDebug() << "Median: " << median;
-         qDebug() << "Corrected Median: " << (avg_weighted_bpm / (double) sum);
+         qDebug() << "Median BPM: " << median;
+         qDebug() << "Corrected Median BPM value: " << global_bpm;
      }
-     return double (avg_weighted_bpm / (double) sum);
+     /*
+      * Although we have a minimal deviation of about +- 0.05 BPM units
+      * compared to Traktor, this deviation may cause the beat grid to
+      * look unaligned, especially at the end of a track.
+      * Let's try to get the BPM 'perfect' :-)
+      *
+      * Idea: Iterate over the original VAMP beat set where
+      * some detected beats may be wrong:
+      * The Vamp beat is considered as correct if:
+      *  - the beat position can be approached by a beat grid obtained by the global BPM
+      *
+      * If the beat turns out correct, we can compute the error in BPM units.
+      * E.g., we can check the Vamp beat position after 60 seconds. Ideally,
+      * the approached beat is just a couple of samples away, i.e., not worse than 0.05 BPM units.
+      * The distance between these two samples can be used for BPM error correction.
+      */
+#define BPM_ERROR 0.08f //we are generous and assume the global_BPM to be at most 0.12 BPM far away from the correct one
+
+
+     double perfect_bpm = global_bpm;
+     // Calculate beat length as sample offsets based on our estimated 'global_bpm'
+     double dBeatLength = (60.0 * m_iSampleRate / global_bpm) * 2;
+     double reference_beat = 0;
+
+     if(beats.size() > 0)
+         reference_beat = beats[0]; //we assume the first beat to be wrong
+
+
+     for(int i=N; i < beats.size(); i+=N){
+         //get start and end sample of the beats
+         double beat_start = beats.at(i-N);
+         double beat_end = beats.at(i);
+
+         //Time needed to count a bar (N beats)
+         double time = (beat_end - beat_start)/(m_iSampleRate * 2);
+         double local_bpm = 60*N / time;
+         //qDebug() << "Local BPM beat " << i << ": " << local_bpm;
+
+         if(local_bpm <= global_bpm + BPM_ERROR && local_bpm >= global_bpm - BPM_ERROR){
+
+             /*
+              * Let's try to replace 'reference_beat_end' by approaching thr beat using the global BPM
+              */
+               double estimated_beat = beat_start + N * dBeatLength;
+               //compute the beat number
+               double dBeatPos = (estimated_beat / dBeatLength);
+               double iBeatPos =  floor(dBeatPos + 0.5); //rounding up or down
+
+               //get BPM for estimated_beat
+               double time2 = (estimated_beat - reference_beat)/(m_iSampleRate * 2);
+               double exact_BPM = 60 * iBeatPos / time2;
+
+               if(exact_BPM  <= global_bpm + BPM_ERROR && exact_BPM >= global_bpm - BPM_ERROR){
+                   if(sDebug)
+                       qDebug() << "Vamp beat " << i<< " might be correct: " << dBeatPos << " = " << exact_BPM << "BPM"  ;
+                   perfect_bpm = exact_BPM;
+               }
+
+
+         }
+     }
+
+
+     return perfect_bpm;
 
 
 }
