@@ -8,13 +8,13 @@ msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2011-10-31 23:15-0400\n"
-"PO-Revision-Date: 2011-11-14 14:20+0000\n"
+"PO-Revision-Date: 2011-11-15 08:58+0000\n"
 "Last-Translator: Andreas Ntakas <Unknown>\n"
 "Language-Team: Greek <el@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-11-15 04:48+0000\n"
+"X-Launchpad-Export-Date: 2011-11-16 05:13+0000\n"
 "X-Generator: Launchpad (build 14291)\n"
 
 #: AutoDJFeature#1
@@ -670,7 +670,7 @@ msgstr ""
 
 #: DlgPrefControlsDlg#12
 msgid "Cue behaviour"
-msgstr ""
+msgstr "Συμπεριφορά Cue"
 
 #: DlgPrefControlsDlg#13
 msgid "Auto Recall Cue"
@@ -834,7 +834,7 @@ msgstr ""
 
 #: DlgPrefMidiBindings#6
 msgid "Export Mixxx MIDI Bindings"
-msgstr ""
+msgstr "Εξαγωγή Δεσμεύσεων MIDI του Mixxx"
 
 #: DlgPrefMidiBindings#7
 msgid "Preset Files (*.midi.xml)"
@@ -850,19 +850,19 @@ msgstr ""
 
 #: DlgPrefMidiBindings#10
 msgid "Clear Input Bindings"
-msgstr ""
+msgstr "Καθαρισμός Δεσμεύσεων Εισόδου"
 
 #: DlgPrefMidiBindings#11
 msgid "Are you sure you want to clear all bindings?"
-msgstr ""
+msgstr "Είστε σίγουρος ότι θέλετε να καθαρίσετε όλες τις δεσμεύσεις;"
 
 #: DlgPrefMidiBindings#12
 msgid "Clear Output Bindings"
-msgstr ""
+msgstr "Καθαρισμός Δεσμεύσεων Εξόδου"
 
 #: DlgPrefMidiBindings#13
 msgid "Are you sure you want to clear all output bindings?"
-msgstr ""
+msgstr "Είστε σίγουρος ότι θέλετε να καθαρίσετε όλες τις δεσμεύσεις εξόδου;"
 
 #: DlgPrefMidiBindingsDlg#1
 msgctxt "DlgPrefMidiBindingsDlg#1"
@@ -1023,7 +1023,7 @@ msgstr "δευτερόλεπτα"
 #: DlgPrefNoVinylDlg#13
 msgctxt "DlgPrefNoVinylDlg#13"
 msgid "Show Signal Quality in Skin"
-msgstr ""
+msgstr "Εμφάνιση Ποιότητας Σήματος στο Skin"
 
 #: DlgPrefNoVinylDlg#14
 msgctxt "DlgPrefNoVinylDlg#14"
@@ -1058,7 +1058,7 @@ msgstr "http://www.xwax.co.uk"
 #: DlgPrefNoVinylDlg#20
 msgctxt "DlgPrefNoVinylDlg#20"
 msgid "Powered by xwax"
-msgstr ""
+msgstr "Powered by xwax"
 
 #: DlgPrefNoVinylDlg#21
 msgctxt "DlgPrefNoVinylDlg#21"
@@ -1101,7 +1101,7 @@ msgstr " ή συνέχισε την αναζήτηση για άλλα iPod. \n"
 
 #: DlgPrefPlaylist#6
 msgid "Choose No to use the existing iPod @ "
-msgstr ""
+msgstr "Επιλέξτε Όχι για να χρησιμοποιήσετε το υπάρχον iPod στο "
 
 #: DlgPrefPlaylist#7
 msgid " and end detection. \n"
@@ -1109,7 +1109,7 @@ msgstr ""
 
 #: DlgPrefPlaylist#8
 msgid "Choose iPod mount point"
-msgstr ""
+msgstr "Επιλέξτε σημείο προσάρτησης του iPod"
 
 #: DlgPrefPlaylistDlg#1
 msgctxt "DlgPrefPlaylistDlg#1"
@@ -1160,7 +1160,7 @@ msgstr "iPod"
 
 #: DlgPrefPlaylistDlg#12
 msgid "iPod mountpoint"
-msgstr ""
+msgstr "σημείο προσάρτησης του iPod"
 
 #: DlgPrefPlaylistDlg#13
 msgid "Browse..."
@@ -1189,7 +1189,7 @@ msgstr "Διαθέσιμο Online..."
 
 #: DlgPrefPlaylistDlg#19
 msgid "Bundled Songs"
-msgstr ""
+msgstr "Πακεταρισμένα Τραγούδια"
 
 #: DlgPrefPlaylistDlg#20
 msgid ""
@@ -1248,7 +1248,7 @@ msgstr "Διάφορα"
 
 #: DlgPrefRecordDlg#11
 msgid "Create a CUE file"
-msgstr ""
+msgstr "Δημιουργία αρχείου CUE"
 
 #: DlgPrefRecordDlg#12
 msgid "File Splitting"
@@ -1302,7 +1302,7 @@ msgstr ""
 
 #: DlgPrefReplayGainDlg#10
 msgid "dB"
-msgstr ""
+msgstr "dB"
 
 #: DlgPrefReplayGainDlg#11
 msgctxt "DlgPrefReplayGainDlg#11"
@@ -1317,7 +1317,7 @@ msgstr "Φόρμα3"
 #: DlgPrefShoutcastDlg#2
 msgctxt "DlgPrefShoutcastDlg#2"
 msgid "Enable live broadcasting"
-msgstr ""
+msgstr "Ενεργοποίηση ζωντανής εκπομπής"
 
 #: DlgPrefShoutcastDlg#3
 msgid "Server connection"
@@ -1390,7 +1390,7 @@ msgstr ""
 
 #: DlgPrefShoutcastDlg#20
 msgid "Mixxx Icecast Testing"
-msgstr ""
+msgstr "Δοκιμή του Icecast από το Mixxx"
 
 #: DlgPrefShoutcastDlg#21
 msgid "Website"
@@ -1773,7 +1773,7 @@ msgstr "http://www.xwax.co.uk"
 #: DlgPrefVinylDlg#21
 msgctxt "DlgPrefVinylDlg#21"
 msgid "Powered by xwax"
-msgstr ""
+msgstr "Powered by xwax"
 
 #: DlgPreferences#1
 msgid "Sound Hardware"
@@ -2148,7 +2148,7 @@ msgstr "iTunes"
 
 #: ITunesFeature#2
 msgid "Select your iTunes library"
-msgstr "Επιλέξτε την βιβλιοθήκη από το iTunes σας"
+msgstr "Επιλέξτε την βιβλιοθήκη του iTunes σας"
 
 #: ITunesFeature#3
 msgid "(loading) iTunes"
@@ -2171,6 +2171,8 @@ msgid ""
 "There was an error loading your iTunes library. Some of your iTunes tracks "
 "or playlists may not have loaded."
 msgstr ""
+"Προκλήθηκε ένα σφάλμα κατά την φόρτωση της βιβλιοθήκης του iTunes. Κάποια "
+"από τα κομμάτια ή τις λίστες αναπαραγωγής του iTunes μπορεί να μη φορτώθηκαν."
 
 #: LADSPAPresetSlot#1
 msgid "Drag a preset from the list & drop it here"
@@ -2568,7 +2570,7 @@ msgstr ""
 
 #: MixxxApp#57
 msgid "Quits the application"
-msgstr ""
+msgstr "Έξοδος από την εφαρμογή"
 
 #: MixxxApp#58
 msgid ""
@@ -2650,11 +2652,11 @@ msgstr "Ηχογραφήστε την μίξη σας σε αρχείο"
 
 #: MixxxApp#74
 msgid "Full Screen"
-msgstr ""
+msgstr "Πλήρης Οθόνη"
 
 #: MixxxApp#75
 msgid "Display Mixxx using the full screen"
-msgstr ""
+msgstr "Εμφάνιση του Mixxx σε πλήρη οθόνη"
 
 #: MixxxApp#76
 msgctxt "MixxxApp#76"
@@ -2724,7 +2726,7 @@ msgstr ""
 
 #: MixxxApp#88
 msgid "&File"
-msgstr ""
+msgstr "&Αρχείο"
 
 #: MixxxApp#89
 msgid "&Options"
@@ -2732,19 +2734,19 @@ msgstr ""
 
 #: MixxxApp#90
 msgid "&Library"
-msgstr ""
+msgstr "&Βιβλιοθήκη"
 
 #: MixxxApp#91
 msgid "&View"
-msgstr ""
+msgstr "&Εμφάνιση"
 
 #: MixxxApp#92
 msgid "&Help"
-msgstr ""
+msgstr "&Βοήθεια"
 
 #: MixxxApp#93
 msgid "&Macro"
-msgstr ""
+msgstr "&Μακροεντολή"
 
 #: MixxxApp#94
 msgid "&Vinyl Control"
@@ -2795,7 +2797,7 @@ msgstr ""
 #: MixxxLibraryFeature#1
 msgctxt "MixxxLibraryFeature#1"
 msgid "Library"
-msgstr ""
+msgstr "Βιβλιοθήκη"
 
 #: ParserM3u#1
 msgctxt "ParserM3u#1"
@@ -2819,7 +2821,7 @@ msgstr "Αδύνατη δημιουργία αρχείου"
 
 #: PlaylistFeature#1
 msgid "New Playlist"
-msgstr ""
+msgstr "Νέα Λίστα Αναπαραγωγής"
 
 #: PlaylistFeature#2
 msgid "Add to Auto-DJ Queue"
@@ -2843,16 +2845,16 @@ msgstr "Κλείδωμα"
 #: PlaylistFeature#6
 msgctxt "PlaylistFeature#6"
 msgid "Import Playlist"
-msgstr ""
+msgstr "Εισαγωγή Λίστας Αναπαραγωγής"
 
 #: PlaylistFeature#7
 msgctxt "PlaylistFeature#7"
 msgid "Export Playlist"
-msgstr ""
+msgstr "Εξαγωγή Λίστας Αναπαραγωγής"
 
 #: PlaylistFeature#8
 msgid "Playlists"
-msgstr ""
+msgstr "Λίστες Αναπαραγωγής"
 
 #: PlaylistFeature#9
 msgctxt "PlaylistFeature#9"
@@ -2861,27 +2863,27 @@ msgstr "Ξεκλείδωμα"
 
 #: PlaylistFeature#10
 msgid "Playlist name:"
-msgstr ""
+msgstr "Όνομα λίστας:"
 
 #: PlaylistFeature#11
 msgid "Playlist Creation Failed"
-msgstr ""
+msgstr "Η Δημιουργία Λίστας Απέτυχε"
 
 #: PlaylistFeature#12
 msgid "A playlist cannot have a blank name."
-msgstr ""
+msgstr "Η λίστα δεν μπορεί να έχει κενό όνομα"
 
 #: PlaylistFeature#13
 msgid "An unknown error occurred while creating playlist: "
-msgstr ""
+msgstr "Προκλήθηκε άγνωστο σφάλμα κατά την δημιουργία λίστας: "
 
 #: PlaylistFeature#14
 msgid "Rename Playlist"
-msgstr ""
+msgstr "Μετονομασία Λίστας"
 
 #: PlaylistFeature#15
 msgid "New playlist name:"
-msgstr ""
+msgstr "Νέο όνομα λίστας:"
 
 #: PlaylistFeature#16
 msgid "Renaming Playlist Failed"
@@ -2890,16 +2892,16 @@ msgstr ""
 #: PlaylistFeature#17
 msgctxt "PlaylistFeature#17"
 msgid "Playlist Files (*.m3u *.pls)"
-msgstr ""
+msgstr "Αρχεία Λίστας Αναπαραγωγής (*.m3u *.pls)"
 
 #: PlaylistFeature#18
 msgctxt "PlaylistFeature#18"
 msgid "M3U Playlist (*.m3u);;PLS Playlist (*.pls)"
-msgstr ""
+msgstr "Λίστα Αναπαραγωγής M3U (*.m3u);;Λίστα Αναπαραγωγής PLS (*.pls)"
 
 #: PlaylistFeature#19
 msgid "A playlist by that name already exists."
-msgstr ""
+msgstr "Μια λίστα αναπαραγωγής με αυτό το όνομα υπάρχει ήδη."
 
 #: PrepareFeature#1
 msgctxt "PrepareFeature#1"
@@ -2908,11 +2910,11 @@ msgstr "Ανάλυση"
 
 #: QObject#1
 msgid "Invalid"
-msgstr ""
+msgstr "Μη έγκυρο"
 
 #: QObject#2
 msgid "Master"
-msgstr ""
+msgstr "Πρωτεύων"
 
 #: QObject#3
 msgid "Headphones"
@@ -2925,7 +2927,7 @@ msgstr ""
 #: QObject#5
 msgctxt "QObject#5"
 msgid "Vinyl Control"
-msgstr ""
+msgstr "Έλεγχος Βινιλίου"
 
 #: QObject#6
 msgid "Microphone"
@@ -2977,7 +2979,7 @@ msgstr ""
 
 #: ScriptStudio#1
 msgid "Mixxx Script Studio"
-msgstr ""
+msgstr "Mixxx Script Studio"
 
 #: ScriptStudio#2
 msgid "File"
@@ -3006,19 +3008,19 @@ msgstr "Εξαγωγή"
 
 #: ScriptStudio#8
 msgid "Delete Macro"
-msgstr ""
+msgstr "Διαγραφή Μακροεντολής"
 
 #: ScriptStudio#9
 msgid "New Macro..."
-msgstr ""
+msgstr "Νέα Μακροεντολή..."
 
 #: ScriptStudio#10
 msgid "Run Macro"
-msgstr ""
+msgstr "Εκτέλεση Μακροεντολής"
 
 #: TrackCollection#1
 msgid "Cannot open database"
-msgstr ""
+msgstr "Αδυναμία ανοίγματος της βάσης δεδομένων"
 
 #: TrackCollection#2
 msgid ""
@@ -3028,10 +3030,15 @@ msgid ""
 "\n"
 "Click OK to exit."
 msgstr ""
+"Αδυναμία δημιουργίας σύνδεσης με την βάση δεδομένων.\n"
+"Το Mixxx απαιτεί την QT με υποστήριξη SQLite. Παρακαλώ διαβάστε τις οδηγίες "
+"του Qt SQL driver για να ενημερωθείτε πως να την δημιουργήσετε.\n"
+"\n"
+"Πατήστε OK για έξοδο."
 
 #: TrackCollection#3
 msgid "Cannot upgrade database schema"
-msgstr ""
+msgstr "Αδυναμία αναβάθμισης σχήματος βάσης δεδομένων"
 
 #: TrackCollection#4
 msgid ""
@@ -3044,26 +3051,29 @@ msgstr "Πατήστε ΟΚ για έξοδο"
 
 #: TraktorFeature#1
 msgid "Traktor"
-msgstr ""
+msgstr "Traktor"
 
 #: TraktorFeature#2
 msgid "(loading) Traktor"
-msgstr ""
+msgstr "(φορτώνεται) Traktor"
 
 #: TraktorFeature#3
 msgid "Error Loading Traktor Library"
-msgstr ""
+msgstr "Σφάλμα Φόρτωσης της Βιβλιοθήκης του Traktor"
 
 #: TraktorFeature#4
 msgid ""
 "There was an error loading your Traktor library. Some of your Traktor tracks "
 "or playlists may not have loaded."
 msgstr ""
+"Προκλήθηκε ένα σφάλμα κατά την ανάγνωση της βιβλιοθήκης του Traktor. Κάποια "
+"από τα κομμάτια ή τις λίστες αναπαραγωγής του Traktor μπορεί να μη "
+"φορτώθηκαν."
 
 #: Ui#1
 msgctxt "Ui#1"
 msgid "Position"
-msgstr ""
+msgstr "Θέση"
 
 #: Ui#2
 msgid "Remaining"
@@ -3089,19 +3099,19 @@ msgstr ""
 
 #: Ui#7
 msgid "CDJ Mode"
-msgstr ""
+msgstr "Λειτουργία CDJ"
 
 #: Ui#8
 msgid "Simple"
-msgstr ""
+msgstr "Απλή"
 
 #: Ui#9
 msgid "Mixxx Detected a WVGA Screen"
-msgstr ""
+msgstr "Το Mixxx Εντόπισε μια Οθόνη WVGA"
 
 #: Ui#10
 msgid "Mixxx has detected that your screen has a resolution of "
-msgstr ""
+msgstr "Το Mixxx εντόπισε ότι η οθόνη σας έχει ανάλυση "
 
 #: Ui#11
 msgid ""
@@ -3273,11 +3283,11 @@ msgstr "Αναζήτηση"
 
 #: WTrackTableView#1
 msgid "Add to Playlist"
-msgstr ""
+msgstr "Προσθήκη στη Λίστα Αναπαραγωγής"
 
 #: WTrackTableView#2
 msgid "Add to Crate"
-msgstr ""
+msgstr "Προσθήκη σε Κιβώτιο"
 
 #: WTrackTableView#3
 msgid "Load to Sampler"
@@ -3294,7 +3304,7 @@ msgstr "Ρυθμίσεις"
 
 #: WTrackTableView#6
 msgid "Add to Auto DJ Queue"
-msgstr ""
+msgstr "Προσθήκη στη Λίστα Αυτόματου DJ"
 
 #: WTrackTableView#7
 msgid "Reload Track Metadata"
