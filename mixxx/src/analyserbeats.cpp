@@ -296,7 +296,7 @@ double AnalyserBeats::calculateBpm(QVector<double> beats) const
          if(local_bpm <= global_bpm + BPM_ERROR && local_bpm >= global_bpm - BPM_ERROR){
 
              /*
-              * Let's try to replace 'reference_beat_end' by approaching thr beat using the global BPM
+              * Let's try to replace 'reference_beat_end' by approaching the beat using the global BPM
               */
                double estimated_beat = beat_start + N * dBeatLength;
                //compute the beat number
@@ -317,8 +317,14 @@ double AnalyserBeats::calculateBpm(QVector<double> beats) const
          }
      }
 
+      //last guess to make BPM more accurate: rounding values like 127.96 or 128.01 to 128.0
+     double rounded_bpm = floor(perfect_bpm+0.5);
+     double bpm_diff = rounded_bpm - perfect_bpm;
+     qDebug() << "Perfect BPM=" << perfect_bpm;
+     qDebug() << "Rounded Perfect BPM=" << rounded_bpm;
+     qDebug() << "Rounded difference=" << fabs(bpm_diff);
 
-     return perfect_bpm;
+     return (fabs(bpm_diff) <= BPM_ERROR)? rounded_bpm : perfect_bpm;
 
 
 }
