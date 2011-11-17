@@ -44,8 +44,9 @@ AnalyserBeats::AnalyserBeats(ConfigObject<ConfigValue> *_config) {
 AnalyserBeats::~AnalyserBeats(){
 
 }
-void AnalyserBeats::initialise(TrackPointer tio, int sampleRate,
-        int totalSamples) {
+void AnalyserBeats::initialise(TrackPointer tio, int sampleRate, int totalSamples) {
+    m_iMinBpm = m_pConfigAVT->getValueString(ConfigKey("[BPM]","BPMRangeStart")).toInt();
+    m_iMaxBpm = m_pConfigAVT->getValueString(ConfigKey("[BPM]","BPMRangeEnd")).toInt();
 
 //    if(tio->getBpm() != 0)
 //        return;
@@ -166,6 +167,11 @@ double AnalyserBeats::calculateBpm(QVector<double> beats) const
         //Time needed to count a bar (4 beats)
         double time = (end_sample - start_sample)/(m_iSampleRate * 2);
         double avg_bpm = 60*N / time;
+        if(avg_bpm < m_iMinBpm)
+            avg_bpm *= 2;
+        if(avg_bpm > m_iMaxBpm)
+            avg_bpm /=2;
+
         //add to local BPM to list
         average_bpm_list << avg_bpm;
 
@@ -227,17 +233,19 @@ double AnalyserBeats::calculateBpm(QVector<double> beats) const
      */
     QMapIterator<QString, int> i(frequency_table);
     double avg_weighted_bpm = 0.0;
+    qDebug() << "BPM range between " << m_iMinBpm << " and " << m_iMaxBpm;
     qDebug() << "Max BPM Frequency=" << most_freq_bpm;
     int sum = 0;
      while (i.hasNext()) {
          i.next();
          double bpmVal = i.key().toDouble();
+         if(sDebug)
+            qDebug() << "BPM:" << bpmVal << " Frequency: " << i.value();
 
          if( (bpmVal >= median -1.0) && (bpmVal <= median+1.0)){
              sum += i.value();
              avg_weighted_bpm += bpmVal * i.value();
-             if(sDebug)
-                qDebug() << "BPM:" << bpmVal << " Frequency: " << i.value();
+
 
          }
      }
@@ -263,7 +271,7 @@ double AnalyserBeats::calculateBpm(QVector<double> beats) const
       * the approached beat is just a couple of samples away, i.e., not worse than 0.05 BPM units.
       * The distance between these two samples can be used for BPM error correction.
       */
-#define BPM_ERROR 0.08f //we are generous and assume the global_BPM to be at most 0.12 BPM far away from the correct one
+#define BPM_ERROR 0.05f //we are generous and assume the global_BPM to be at most 0.12 BPM far away from the correct one
 
 
      double perfect_bpm = global_bpm;

@@ -27,6 +27,7 @@ private:
     VampAnalyser* mvamp;
     //int m_iStartTime;
     int m_iSampleRate;
+    int m_iMinBpm, m_iMaxBpm;
 
     double calculateBpm(QVector<double> beats) const;
 };
