@@ -167,6 +167,7 @@ double AnalyserBeats::calculateBpm(QVector<double> beats) const
         //Time needed to count a bar (4 beats)
         double time = (end_sample - start_sample)/(m_iSampleRate * 2);
         double avg_bpm = 60*N / time;
+
         if(avg_bpm < m_iMinBpm)
             avg_bpm *= 2;
         if(avg_bpm > m_iMaxBpm)
@@ -197,25 +198,25 @@ double AnalyserBeats::calculateBpm(QVector<double> beats) const
     qSort(average_bpm_list);
 
 
-    //find the {(n+1)/2} th item in the sorted list
-    int item_position = (average_bpm_list.size() + 1)/2;
-    double median;
-
     /*
      * compute the median (bpm)
      * see http://en.wikipedia.org/wiki/Median#The_sample_median
      */
+    double median = 0;
     if(average_bpm_list.size() % 2 == 0){
+        //build avg of {(n)/2} and {(n)/2}+1 in the sorted list
+        int item_position = (average_bpm_list.size())/2;
         //when the list size is eval
-        double item_value1 = average_bpm_list.at(item_position/2);
-        double item_value2 = average_bpm_list.at((item_position/2) + 1);
-        median = item_value1 + (item_value1 - item_value2)/2;
+        double item_value1 = average_bpm_list.at(item_position);
+        double item_value2 = average_bpm_list.at(item_position + 1);
+        median = (item_value1 + item_value2)/2;
 
     }
     else
     {
-        median = average_bpm_list.at(item_position/2);
-
+        //find the {(n+1)/2} th item in the sorted list
+        int item_position = (average_bpm_list.size() + 1)/2;
+        median = average_bpm_list.at(item_position);
     }
 
     /*
@@ -239,21 +240,20 @@ double AnalyserBeats::calculateBpm(QVector<double> beats) const
      while (i.hasNext()) {
          i.next();
          double bpmVal = i.key().toDouble();
-         if(sDebug)
-            qDebug() << "BPM:" << bpmVal << " Frequency: " << i.value();
 
          if( (bpmVal >= median -1.0) && (bpmVal <= median+1.0)){
              sum += i.value();
              avg_weighted_bpm += bpmVal * i.value();
-
-
+             if(sDebug)
+                qDebug() << "BPM:" << bpmVal << " Frequency: " << i.value();
          }
      }
      double global_bpm = (avg_weighted_bpm / (double) sum);
     //return median;
      if(sDebug){
-         qDebug() << "Median BPM: " << median;
-         qDebug() << "Corrected Median BPM value: " << global_bpm;
+         qDebug() << "Sum of frequencies: " << sum;
+         qDebug() << "Statistical median BPM: " << median;
+         qDebug() << "Weighted Avg of values around median of +- 1 BPM " << global_bpm;
      }
      /*
       * Although we have a minimal deviation of about +- 0.05 BPM units
@@ -320,9 +320,12 @@ double AnalyserBeats::calculateBpm(QVector<double> beats) const
       //last guess to make BPM more accurate: rounding values like 127.96 or 128.01 to 128.0
      double rounded_bpm = floor(perfect_bpm+0.5);
      double bpm_diff = rounded_bpm - perfect_bpm;
-     qDebug() << "Perfect BPM=" << perfect_bpm;
-     qDebug() << "Rounded Perfect BPM=" << rounded_bpm;
-     qDebug() << "Rounded difference=" << fabs(bpm_diff);
+     if(sDebug){
+         qDebug() << "Perfect BPM=" << perfect_bpm;
+         qDebug() << "Rounded Perfect BPM=" << rounded_bpm;
+         qDebug() << "Rounded difference=" << fabs(bpm_diff);
+         qDebug() << "Perform rounding=" << ((fabs(bpm_diff) <= BPM_ERROR)? true: false);
+     }
 
      return (fabs(bpm_diff) <= BPM_ERROR)? rounded_bpm : perfect_bpm;
 
