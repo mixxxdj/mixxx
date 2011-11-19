@@ -222,7 +222,7 @@ AnalyserQueue* AnalyserQueue::createDefaultAnalyserQueue(ConfigObject<ConfigValu
     //ret->addAnalyser(new AnalyserVampKeyTest(_config));
 #else
     ret->addAnalyser(new AnalyserBPM(_config));
-    ret->addAnalyser(new AnalyserReplayGain(_config));
+    ret->addAnalyser(new AnalyserGain(_config));
 #endif
     ret->start(QThread::IdlePriority);
     return ret;
@@ -237,7 +237,7 @@ AnalyserQueue* AnalyserQueue::createPrepareViewAnalyserQueue(ConfigObject<Config
     //ret->addAnalyser(new AnalyserVampKeyTest(_config));
 #else
     ret->addAnalyser(new AnalyserBPM(_config));
-    ret->addAnalyser(new AnalyserReplayGain(_config));
+    ret->addAnalyser(new AnalyserGain(_config));
 #endif
     ret->start(QThread::IdlePriority);
     return ret;
