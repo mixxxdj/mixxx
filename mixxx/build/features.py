@@ -365,31 +365,31 @@ class Vamp(Feature):
         return "Experimental Vamp Analysers support"
 
     def enabled(self, build):
-        build.flags['Vamp'] = util.get_flags(build.env, 'Vamp', 0)
-        if int(build.flags['Vamp']):
+        build.flags['vamp'] = util.get_flags(build.env, 'vamp', 0)
+        if int(build.flags['vamp']):
             return True
         return False
-    
+
 
     def add_options(self, build, vars):
-        vars.Add('Vamp', '(EXPERIMENTAL) Set to 1 to enable vamp analysers', 0)
+        vars.Add('vamp', '(EXPERIMENTAL) Set to 1 to enable vamp analysers', 0)
 
     def configure(self, build, conf):
         if not self.enabled(build):
             return
-        build.env.Append(CPPPATH=['#lib/vamp'])  
+        build.env.Append(CPPPATH=['#lib/vamp'])
         build.env.Append(CPPDEFINES = '__VAMP__')
-        
+
         have_fftw3_h = conf.CheckHeader('fftw3.h')
         have_fftw3 = conf.CheckLib('fftw3', autoadd=False)
 
         if(have_fftw3_h and have_fftw3 and build.platform_is_linux):
              build.env.Append(CPPDEFINES = 'HAVE_FFTW3')
              build.env.ParseConfig('pkg-config fftw3 --silence-errors --cflags --libs')
-            
-                 
 
-            
+
+
+
     def sources(self, build):
         sources = ['vamp/vampanalyser.cpp',
                    'analyserbeats.cpp',
