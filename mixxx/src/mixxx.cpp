@@ -1332,6 +1332,7 @@ void MixxxApp::slotHelpAbout()
 "Peter V&aacute;gner<br>"
 "Thanasis Liappis<br>"
 "Jens Nachtigall<br>"
+"Scott Ullrich<br>"
 
 "</p>"
 "<p align=\"center\"><b>And special thanks to:</b></p>"
