@@ -16,7 +16,7 @@
 			<midichan>2</midichan>
 			<midino>43</midino>
 			<options>
-				<diff />
+				<diff/>
 			</options>
 		</control>
 		<control>
@@ -54,7 +54,7 @@
 			<midichan>2</midichan>
 			<midino>45</midino>
 			<options>
-				<hercjog />
+				<hercjog/>
 			</options>
 		</control>
 		<control>
@@ -64,7 +64,7 @@
 			<midichan>2</midichan>
 			<midino>8</midino>
 			<options>
-				<button />
+				<button/>
 			</options>
 		</control>
 		<control>
@@ -74,7 +74,7 @@
 			<midichan>2</midichan>
 			<midino>9</midino>
 			<options>
-				<button />
+				<button/>
 			</options>
 		</control>
 		<control>
@@ -84,7 +84,7 @@
 			<midichan>2</midichan>
 			<midino>21</midino>
 			<options>
-				<button />
+				<button/>
 			</options>
 		</control>
 		<control>
@@ -115,7 +115,7 @@
 			<midichan>2</midichan>
 			<midino>19</midino>
 			<options>
-				<switch />
+				<switch/>
 			</options>
 		</control>
 		<control>
@@ -125,9 +125,9 @@
 			<midichan>2</midichan>
 			<midino>20</midino>
 			<options>
-				<switch />
+				<switch/>
 			</options>
-		</control>
+		</control>	
 
 		<control>
 			<group>[Channel2]</group>
@@ -136,7 +136,7 @@
 			<midichan>2</midichan>
 			<midino>44</midino>
 			<options>
-				<diff />
+				<diff/>
 			</options>
 		</control>
 		<control>
@@ -174,7 +174,7 @@
 			<midichan>2</midichan>
 			<midino>46</midino>
 			<options>
-				<hercjog />
+				<hercjog/>
 			</options>
 		</control>
 		<control>
@@ -184,7 +184,7 @@
 			<midichan>2</midichan>
 			<midino>2</midino>
 			<options>
-				<button />
+				<button/>
 			</options>
 		</control>
 		<control>
@@ -194,7 +194,7 @@
 			<midichan>2</midichan>
 			<midino>3</midino>
 			<options>
-				<button />
+				<button/>
 			</options>
 		</control>
 		<control>
@@ -204,7 +204,7 @@
 			<midichan>2</midichan>
 			<midino>25</midino>
 			<options>
-				<button />
+				<button/>
 			</options>
 		</control>
 		<control>
@@ -235,7 +235,7 @@
 			<midichan>2</midichan>
 			<midino>23</midino>
 			<options>
-				<switch />
+				<switch/>
 			</options>
 
 		</control>
@@ -246,7 +246,7 @@
 			<midichan>2</midichan>
 			<midino>24</midino>
 			<options>
-				<switch />
+				<switch/>
 			</options>
 		</control>
 	</controls>

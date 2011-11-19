@@ -1,28 +1,27 @@
-<MixxxMIDIPreset mixxxVersion="1.7.0-beta1+"
-	schemaVersion="1">
-	<controller id="Mixman DM2">
+<MixxxMIDIPreset mixxxVersion="1.7.0-beta1+" schemaVersion="1" >
+	<controller id="Mixman DM2" >
 		<scriptfiles>
 			<file functionprefix="DM2" filename="Mixman DM2 (OS X).js" />
 		</scriptfiles>
 		<controls>
 
-			<!-- crossfader -->
+<!-- crossfader -->
 			<control>
 				<status>0xe4</status>
 				<group>[Master]</group>
 				<key>crossfader</key>
 				<options>
-					<Normal />
+					<Normal/>
 				</options>
 			</control>
 
-			<!-- wheels -->
+<!-- wheels -->
 			<control>
 				<status>0xe0</status>
 				<group>[Channel1]</group>
 				<key>DM2.wheel</key>
 				<options>
-					<Script-Binding />
+					<Script-Binding/>
 				</options>
 			</control>
 			<control>
@@ -30,18 +29,18 @@
 				<group>[Channel2]</group>
 				<key>DM2.wheel</key>
 				<options>
-					<Script-Binding />
+					<Script-Binding/>
 				</options>
 			</control>
 
-			<!-- playlist -->
+<!-- playlist -->
 			<control>
 				<status>0xb0</status>
 				<midino>0x01</midino>
 				<group>[Channel1]</group>
 				<key>DM2.playlist</key>
 				<options>
-					<Script-Binding />
+					<Script-Binding/>
 				</options>
 			</control>
 			<control>
@@ -50,7 +49,7 @@
 				<group>[Channel2]</group>
 				<key>DM2.playlist</key>
 				<options>
-					<Script-Binding />
+					<Script-Binding/>
 				</options>
 			</control>
 			<control>
@@ -59,18 +58,18 @@
 				<group>[Playlist]</group>
 				<key>DM2.middle</key>
 				<options>
-					<Script-Binding />
+					<Script-Binding/>
 				</options>
 			</control>
 
-			<!-- play -->
+<!-- play -->
 			<control>
 				<status>0x90</status>
 				<midino>0x27</midino>
 				<group>[Channel1]</group>
 				<key>play</key>
 				<options>
-					<Normal />
+					<Normal/>
 				</options>
 			</control>
 			<control>
@@ -79,18 +78,18 @@
 				<group>[Channel2]</group>
 				<key>play</key>
 				<options>
-					<Normal />
+					<Normal/>
 				</options>
 			</control>
 
-			<!-- beatsync -->
+<!-- beatsync -->
 			<control>
 				<status>0x90</status>
 				<midino>0x2F</midino>
 				<group>[Channel1]</group>
 				<key>beatsync</key>
 				<options>
-					<Normal />
+					<Normal/>
 				</options>
 			</control>
 			<control>
@@ -99,18 +98,18 @@
 				<group>[Channel2]</group>
 				<key>beatsync</key>
 				<options>
-					<Normal />
+					<Normal/>
 				</options>
 			</control>
 
-			<!-- headphones (pfl) -->
+<!-- headphones (pfl) -->
 			<control>
 				<status>0x90</status>
 				<midino>0x2a</midino>
 				<group>[Channel1]</group>
 				<key>pfl</key>
 				<options>
-					<Normal />
+					<Normal/>
 				</options>
 			</control>
 			<control>
@@ -119,18 +118,18 @@
 				<group>[Channel2]</group>
 				<key>pfl</key>
 				<options>
-					<Normal />
+					<Normal/>
 				</options>
 			</control>
 
-			<!-- filterHighKill -->
+<!-- filterHighKill -->
 			<control>
 				<status>0x80</status>
 				<midino>0x1e</midino>
 				<group>[Channel1]</group>
 				<key>DM2.filterKill</key>
 				<options>
-					<Script-Binding />
+					<Script-Binding/>
 				</options>
 			</control>
 			<control>
@@ -139,18 +138,18 @@
 				<group>[Channel2]</group>
 				<key>DM2.filterKill</key>
 				<options>
-					<Script-Binding />
+					<Script-Binding/>
 				</options>
 			</control>
 
-			<!-- filterMidKill -->
+<!-- filterMidKill -->
 			<control>
 				<status>0x80</status>
 				<midino>0x1d</midino>
 				<group>[Channel1]</group>
 				<key>DM2.filterKill</key>
 				<options>
-					<Script-Binding />
+					<Script-Binding/>
 				</options>
 			</control>
 			<control>
@@ -159,18 +158,18 @@
 				<group>[Channel2]</group>
 				<key>DM2.filterKill</key>
 				<options>
-					<Script-Binding />
+					<Script-Binding/>
 				</options>
 			</control>
 
-			<!-- filterLowKill -->
+<!-- filterLowKill -->
 			<control>
 				<status>0x80</status>
 				<midino>0x1c</midino>
 				<group>[Channel1]</group>
 				<key>DM2.filterKill</key>
 				<options>
-					<Script-Binding />
+					<Script-Binding/>
 				</options>
 			</control>
 			<control>
@@ -179,18 +178,18 @@
 				<group>[Channel2]</group>
 				<key>DM2.filterKill</key>
 				<options>
-					<Script-Binding />
+					<Script-Binding/>
 				</options>
 			</control>
 
-			<!-- filterHigh -->
+<!-- filterHigh -->
 			<control>
 				<status>0xb0</status>
 				<midino>0x03</midino>
 				<group>[Channel1]</group>
 				<key>DM2.filter</key>
 				<options>
-					<Script-Binding />
+					<Script-Binding/>
 				</options>
 			</control>
 			<control>
@@ -199,18 +198,18 @@
 				<group>[Channel2]</group>
 				<key>DM2.filter</key>
 				<options>
-					<Script-Binding />
+					<Script-Binding/>
 				</options>
 			</control>
 
-			<!-- filterMid -->
+<!-- filterMid -->
 			<control>
 				<status>0xb0</status>
 				<midino>0x05</midino>
 				<group>[Channel1]</group>
 				<key>DM2.filter</key>
 				<options>
-					<Script-Binding />
+					<Script-Binding/>
 				</options>
 			</control>
 			<control>
@@ -219,18 +218,18 @@
 				<group>[Channel2]</group>
 				<key>DM2.filter</key>
 				<options>
-					<Script-Binding />
+					<Script-Binding/>
 				</options>
 			</control>
 
-			<!-- filterLow -->
+<!-- filterLow -->
 			<control>
 				<status>0xb0</status>
 				<midino>0x07</midino>
 				<group>[Channel1]</group>
 				<key>DM2.filter</key>
 				<options>
-					<Script-Binding />
+					<Script-Binding/>
 				</options>
 			</control>
 			<control>
@@ -239,18 +238,18 @@
 				<group>[Channel2]</group>
 				<key>DM2.filter</key>
 				<options>
-					<Script-Binding />
+					<Script-Binding/>
 				</options>
 			</control>
 
-			<!-- gain -->
+<!-- gain -->
 			<control>
 				<status>0xb0</status>
 				<midino>0x09</midino>
 				<group>[Channel1]</group>
 				<key>DM2.filter</key>
 				<options>
-					<Script-Binding />
+					<Script-Binding/>
 				</options>
 			</control>
 			<control>
@@ -259,18 +258,18 @@
 				<group>[Channel2]</group>
 				<key>DM2.filter</key>
 				<options>
-					<Script-Binding />
+					<Script-Binding/>
 				</options>
 			</control>
 
-			<!-- volume -->
+<!-- volume -->
 			<control>
 				<status>0xb0</status>
 				<midino>0x0b</midino>
 				<group>[Channel1]</group>
 				<key>DM2.volume</key>
 				<options>
-					<Script-Binding />
+					<Script-Binding/>
 				</options>
 			</control>
 			<control>
@@ -279,18 +278,18 @@
 				<group>[Channel2]</group>
 				<key>DM2.volume</key>
 				<options>
-					<Script-Binding />
+					<Script-Binding/>
 				</options>
 			</control>
 
-			<!-- rate -->
+<!-- rate -->
 			<control>
 				<status>0xb0</status>
 				<midino>0x0d</midino>
 				<group>[Channel1]</group>
 				<key>DM2.rate</key>
 				<options>
-					<Script-Binding />
+					<Script-Binding/>
 				</options>
 			</control>
 			<control>
@@ -299,20 +298,20 @@
 				<group>[Channel2]</group>
 				<key>DM2.rate</key>
 				<options>
-					<Script-Binding />
+					<Script-Binding/>
 				</options>
 			</control>
 
 
 
-			<!-- flanger -->
+<!-- flanger -->
 			<control>
 				<status>0x80</status>
 				<midino>0x1F</midino>
 				<group>[Channel1]</group>
 				<key>DM2.filterKill</key>
 				<options>
-					<Script-Binding />
+					<Script-Binding/>
 				</options>
 			</control>
 			<control>
@@ -321,20 +320,20 @@
 				<group>[Channel2]</group>
 				<key>DM2.filterKill</key>
 				<options>
-					<Script-Binding />
+					<Script-Binding/>
 				</options>
 			</control>
 
-			<!-- TODO: does not work -->
+<!-- TODO: does not work -->
 
-			<!-- cue_default -->
+<!-- cue_default -->
 			<control>
 				<status>0x80</status>
 				<midino>0x1b</midino>
 				<group>[Channel1]</group>
 				<key>DM2.filterKill</key>
 				<options>
-					<Script-Binding />
+					<Script-Binding/>
 				</options>
 			</control>
 			<control>
@@ -343,18 +342,18 @@
 				<group>[Channel2]</group>
 				<key>DM2.filterKill</key>
 				<options>
-					<Script-Binding />
+					<Script-Binding/>
 				</options>
 			</control>
-
-			<!-- rate_perm_up_small -->
+			
+<!-- rate_perm_up_small -->
 			<control>
 				<status>0x80</status>
 				<midino>0x18</midino>
 				<group>[Channel1]</group>
 				<key>DM2.trigger</key>
 				<options>
-					<Script-Binding />
+					<Script-Binding/>
 				</options>
 			</control>
 			<control>
@@ -363,18 +362,18 @@
 				<group>[Channel2]</group>
 				<key>DM2.trigger</key>
 				<options>
-					<Script-Binding />
+					<Script-Binding/>
 				</options>
 			</control>
 
-			<!-- rate_perm_down_small -->
+<!-- rate_perm_down_small -->
 			<control>
 				<status>0x80</status>
 				<midino>0x1a</midino>
 				<group>[Channel1]</group>
 				<key>DM2.trigger</key>
 				<options>
-					<Script-Binding />
+					<Script-Binding/>
 				</options>
 			</control>
 			<control>
@@ -383,21 +382,21 @@
 				<group>[Channel2]</group>
 				<key>DM2.trigger</key>
 				<options>
-					<Script-Binding />
+					<Script-Binding/>
 				</options>
 			</control>
 
 
-			<!-- TODO -->
-
-
+<!-- TODO -->
+	
+			
 			<control>
 				<status>0x0</status>
 				<midino>0x0</midino>
 				<group>[Channel1]</group>
 				<key>reverse</key>
 				<options>
-					<Normal />
+					<Normal/>
 				</options>
 			</control>
 			<control>
@@ -406,7 +405,7 @@
 				<group>[Channel2]</group>
 				<key>reverse</key>
 				<options>
-					<Normal />
+					<Normal/>
 				</options>
 			</control>
 
@@ -416,7 +415,7 @@
 				<group>[Channel2]</group>
 				<key>cue_simple</key>
 				<options>
-					<Normal />
+					<Normal/>
 				</options>
 			</control>
 			<control>
@@ -425,7 +424,7 @@
 				<group>[Channel1]</group>
 				<key>cue_simple</key>
 				<options>
-					<Normal />
+					<Normal/>
 				</options>
 			</control>
 
