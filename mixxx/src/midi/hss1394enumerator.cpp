@@ -17,7 +17,7 @@
 *                                                                         *
 ***************************************************************************/
 
-#include <HSS1394/HSS1394.h>
+#include <hss1394/HSS1394.h>
 
 #include "mididevicehss1394.h"
 #include "hss1394enumerator.h"
