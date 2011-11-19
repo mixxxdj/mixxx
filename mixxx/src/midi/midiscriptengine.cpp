@@ -122,7 +122,7 @@ QScriptValue MidiScriptEngine::resolveFunction(QString function) {
     for (int i = 0; i < parts.size(); i++) {
         object = object.property(parts.at(i));
         if (!object.isValid())
-            break;
+            return QScriptValue();
     }
     
     return object;
@@ -582,7 +582,7 @@ bool MidiScriptEngine::safeExecute(QString function, char channel,
     args << QScriptValue(status);
     args << QScriptValue(group);
 
-    qDebug() << "Executing MIDI Script function";
+    //qDebug() << "Executing MIDI Script function";
     QScriptValue rc = scriptFunction.call(QScriptValue(), args);
     if (!rc.isValid())
         qDebug() << "Value is not a function or ...";
@@ -636,7 +636,7 @@ bool MidiScriptEngine::safeExecute(QScriptValue functionObject,
     args << QScriptValue(status);
     args << QScriptValue(group);
     
-    qDebug() << "Calling MIDI Script Function";
+    //qDebug() << "Calling MIDI Script Function";
     if (!functionObject.isFunction())
         qDebug() << "Not a function";
     QScriptValue rc = functionObject.call(m_pEngine->globalObject(), args);
