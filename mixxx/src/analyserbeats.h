@@ -13,23 +13,22 @@
 #include "vamp/vampanalyser.h"
 
 class AnalyserBeats: public Analyser {
-
-public:
+  public:
     AnalyserBeats(ConfigObject<ConfigValue> *_config);
-    ~AnalyserBeats();
+    virtual ~AnalyserBeats();
+
     void initialise(TrackPointer tio, int sampleRate, int totalSamples);
     void process(const CSAMPLE *pIn, const int iLen);
     void finalise(TrackPointer tio);
 
-private:
+  private:
+    double calculateBpm(QVector<double> beats) const;
+
     bool m_bPass;
     ConfigObject<ConfigValue> *m_pConfigAVT;
     VampAnalyser* mvamp;
-    //int m_iStartTime;
     int m_iSampleRate;
     int m_iMinBpm, m_iMaxBpm;
-
-    double calculateBpm(QVector<double> beats) const;
 };
 
 #endif /* ANALYSERVAMPTEST_H_ */

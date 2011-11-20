@@ -5,43 +5,77 @@
  *      Author: Vittorio Colao
  */
 
-#include "vampanalyser.h"
+#include "vamp/vampanalyser.h"
 
-
-#include "vamp-hostsdk/PluginChannelAdapter.h"
-#include "vamp-hostsdk/PluginInputDomainAdapter.h"
-#include "vamp-hostsdk/PluginHostAdapter.h"
-#include "vamp-hostsdk/PluginInputDomainAdapter.h"
-#include "vamp-hostsdk/PluginLoader.h"
 #include <QtDebug>
+#include <QCoreApplication>
 #include <QStringList>
+#include <stdlib.h>
+
+#ifdef __WINDOWS__
+#include <windows.h>
+#endif
 
 using Vamp::Plugin;
 using Vamp::PluginHostAdapter;
 
-VampAnalyser::VampAnalyser()
-{
+void VampAnalyser::initializePluginPaths() {
+    const char* pVampPath = getenv("VAMP_PATH");
+    QString vampPath = "";
+    if (pVampPath) {
+        vampPath = QString(pVampPath);
+    }
+
+    // TODO(XXX) use correct split separator here.
+    QStringList pathElements = vampPath.length() > 0 ?
+            vampPath.split(":") : QStringList();
+
+    QString applicationPath = QCoreApplication::applicationDirPath();
+#ifdef __WINDOWS__
+#define PATH_SEPARATOR ";"
+//This path is already relative to Mixxx.exe due to WIN32 API function FindFirstFile()
+//#define DEFAULT_VAMP_PATH (QCoreApplication::applicationDirPath().replace("/","\\") +"\\plugins").toStdString().c_str()
+    pathElements << "plugins"; //Use the path where Mixxx.exe is located
+#else
+#define PATH_SEPARATOR ":"
+#ifdef __APPLE__
+    // Location within the OS X bundle that we store plugins.
+    pathElements << applicationPath +"/../Plugins";
+    // For people who build from source.
+    pathElements << applicationPath +"/osx32_build/vamp-plugins";
+    pathElements << applicationPath +"/osx64_build/vamp-plugins";
+#else
+    pathElements << "/usr/local/lib/mixxx/vamp";
+    // For people who build from source.
+    pathElements << applicationPath + "/lin32_build/vamp-plugins";
+    pathElements << applicationPath + "/lin64_build/vamp-plugins";
+#endif
+#endif
+
+    QString newPath = pathElements.join(PATH_SEPARATOR);
+    qDebug() << "Setting VAMP_PATH to: " << newPath;
+    QByteArray newPathBA = newPath.toAscii();
+    setenv("VAMP_PATH", newPathBA.data(), 1);
+
+    // TODO(XXX) is this necessary?
+#ifdef __WINDOWS__  //for finding MSVCRT.dll
+    SetDllDirectory(L".");
+#endif
+}
+
+VampAnalyser::VampAnalyser() {
     m_pluginbuf = new CSAMPLE*[2];
     mPlugin = NULL;
-    /*
-     * Calls list Plugins here to force VAMP-HOST_SDK
-     * reading all *.dll files from plugin folder
-     */
 
 }
+
 VampAnalyser::~VampAnalyser() {
-    if(m_pluginbuf!=NULL){
-    delete[] m_pluginbuf;
-    m_pluginbuf = NULL;
-    }
-    if(mPlugin!=NULL){
-        delete mPlugin;
-        mPlugin = NULL;
-    }
+    delete [] m_pluginbuf;
+    delete mPlugin;
 }
 
 bool VampAnalyser::Init(const QString pluginlibrary, const QString pluginid,
-        const int samplerate, const int TotalSamples) {
+                        const int samplerate, const int TotalSamples) {
     m_iOutput = 0;
     mRate = 0;
 
@@ -74,7 +108,7 @@ bool VampAnalyser::Init(const QString pluginlibrary, const QString pluginid,
     }
     QString plugin = pluginlist.at(0);
     mKey = loader->composePluginKey(pluginlibrary.toStdString(),plugin.toStdString());
-    
+
     int outputnumber = (pluginlist.at(1)).toInt();
 
 
@@ -83,10 +117,10 @@ bool VampAnalyser::Init(const QString pluginlibrary, const QString pluginid,
 
     if (!mPlugin) {
         qDebug() << "VampAnalyser: Cannot load Vamp Plug-in.";
-        qDebug()<<"Please copy libmixxxminimal.so from build dir to one of the following:";
+        qDebug() << "Please copy libmixxxminimal.so from build dir to one of the following:";
         std::vector<std::string> path = PluginHostAdapter::getPluginPath();
         for (int i=0; i<path.size(); i++){
-            qDebug()<<QString::fromStdString(path[i]);
+            qDebug() << QString::fromStdString(path[i]);
         }
         return false;
     }
@@ -115,7 +149,6 @@ bool VampAnalyser::Init(const QString pluginlibrary, const QString pluginid,
     m_pluginbuf[1] = new CSAMPLE[m_iBlockSize];
 
     return true;
-
 }
 
 bool VampAnalyser::Process(const CSAMPLE *pIn, const int iLen) {
@@ -126,14 +159,13 @@ bool VampAnalyser::Process(const CSAMPLE *pIn, const int iLen) {
     int iIN = 0;
     bool lastsamples = false;
     m_iRemainingSamples -= iLen;
-    if(m_pluginbuf[0]==NULL||m_pluginbuf[1]==NULL){
+    if (m_pluginbuf[0] == NULL || m_pluginbuf[1] == NULL) {
         qDebug()<< "VampAnalyser: Buffer points to NULL";
         return false;
     }
     while (iIN < iLen / 2) { //4096
         m_pluginbuf[0][m_iOUT] = pIn[2 * iIN]; //* 32767;
         m_pluginbuf[1][m_iOUT] = pIn[2 * iIN + 1]; //* 32767;
-
 
         m_iOUT++;
         iIN++;
@@ -193,15 +225,14 @@ bool VampAnalyser::Process(const CSAMPLE *pIn, const int iLen) {
 }
 
 bool VampAnalyser::End() {
-
-    //If the total number of samples has been estimated incorrectly
+    // If the total number of samples has been estimated incorrectly
     if (m_iRemainingSamples > 0){
         Vamp::Plugin::FeatureSet features = mPlugin->getRemainingFeatures();
         m_Results.insert( m_Results.end(), features[m_iOutput].begin(),features[m_iOutput].end());
     }
     //Clearing buffer arrays
-    for(int i=0; i < 2; i++){
-        if(m_pluginbuf[i]){
+    for (int i = 0; i < 2; i++) {
+        if (m_pluginbuf[i]) {
             delete [] m_pluginbuf[i];
             m_pluginbuf[i] = NULL;
         }
@@ -210,21 +241,15 @@ bool VampAnalyser::End() {
     return true;
 }
 
-
-
-
-bool VampAnalyser::SetParameter(const QString parameter,const double value) {
-
-
-return true;
+bool VampAnalyser::SetParameter(const QString parameter, const double value) {
+    return true;
 }
 
-void VampAnalyser::SelectOutput(int outputnumber){
+void VampAnalyser::SelectOutput(int outputnumber) {
     Plugin::OutputList outputs = mPlugin->getOutputDescriptors();
     if (outputnumber>=0 && outputnumber<outputs.size()){
         m_iOutput = outputnumber;
         }
-
 }
 
 QVector <double> VampAnalyser::GetInitFramesVector() {
@@ -237,7 +262,6 @@ QVector <double> VampAnalyser::GetInitFramesVector() {
             //        / 1000000000.0);
             vectout << (double) (Vamp::RealTime::realTime2Frame(ftime0, mRate))*2;
         }
-
     }
     return vectout;
 }
@@ -254,21 +278,17 @@ QVector <double> VampAnalyser::GetEndFramesVector() {
             //        / 1000000000.0);
             vectout << (double) (Vamp::RealTime::realTime2Frame(ftime1, mRate))*2;
         }
-
     }
     return vectout;
-
 }
 
 QVector<QString> VampAnalyser::GetLabelsVector() {
     QVector<QString> vectout;
     for (Vamp::Plugin::FeatureList::iterator fli = m_Results.begin(); fli
             != m_Results.end(); ++fli) {
-
         vectout << fli->label.c_str();
     }
     return vectout;
-
 }
 
 
@@ -279,7 +299,6 @@ QVector <double> VampAnalyser::GetFirstValuesVector() {
         std::vector<float> vec = fli->values;
         if (!vec.empty())
             vectout << vec[0];
-
     }
     return vectout;
 
@@ -292,7 +311,6 @@ QVector <double> VampAnalyser::GetLastValuesVector() {
         std::vector<float> vec = fli->values;
         if (!vec.empty())
             vectout << vec[vec.size() - 1];
-
     }
     return vectout;
 

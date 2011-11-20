@@ -7,10 +7,7 @@ import shutil
 
 Import('build')
 
-
 mixxxminimal_sources = [
-	"#lib/vamp/src/vamp-sdk/PluginAdapter.cpp",
-	"#lib/vamp/src/vamp-sdk/RealTime.cpp",
 	"dsp/ChangeDetectionFunction.cpp",
 	"dsp/DownBeat.cpp",
 	"dsp/PeakPicking.cpp",
@@ -42,13 +39,13 @@ mixxxminimal_sources = [
 	"libmain.cpp",
 ]
 
-
 #Tell SCons to build the plugin
 #=========================
 if int(build.flags['vamp']):
-
     env = build.env.Clone()
     conf = Configure(env)
+    if not conf.CheckLib('vamp-sdk'):
+        raise Exception('Did not find libvamp-sdk.a or the libvamp-sdk development header files - exiting!')
     env = conf.Finish()
     if build.platform_is_windows:
         env["LINKFLAGS"].remove("/entry:mainCRTStartup")
@@ -58,18 +55,11 @@ if int(build.flags['vamp']):
         #env["LINKFLAGS"].append("/NODEFAULTLIB:MSVCRT.lib")
         #env["LINKFLAGS"].append("/DEFAULTLIB:LIBCMT.lib")
         #env["LINKFLAGS"].append("/DEFAULTLIB:LIBCPMT.lib")
-
-
-
         mixxxminimal_bin = env.SharedLibrary('libmixxxminimal', mixxxminimal_sources)
     else:
         mixxxminimal_bin = env.SharedLibrary('mixxxminimal', mixxxminimal_sources)
-
 
     #Pass this library object file back to the SConscript above us.
     Return("mixxxminimal_bin")
 else:
     Return("")
-
-
-

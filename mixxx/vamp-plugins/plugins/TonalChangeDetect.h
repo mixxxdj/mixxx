@@ -15,7 +15,7 @@
 #ifndef _TONALCHANGEDETECT_
 #define _TONALCHANGEDETECT_
 
-#include "vamp-sdk/Plugin.h"
+#include <vamp-sdk/Plugin.h>
 
 #include "../dsp/Chromagram.h"
 #include "../dsp//TonalEstimator.h"
@@ -25,11 +25,10 @@
 #include <vector>
 #include <valarray>
 
-class TonalChangeDetect : public Vamp::Plugin
-{
-public:
-	TonalChangeDetect(float fInputSampleRate);
-	virtual ~TonalChangeDetect();
+class TonalChangeDetect : public Vamp::Plugin {
+  public:
+    TonalChangeDetect(float fInputSampleRate);
+    virtual ~TonalChangeDetect();
 
     bool initialise(size_t channels, size_t stepSize, size_t blockSize);
     void reset();
@@ -57,8 +56,8 @@ public:
                        Vamp::RealTime timestamp);
 
     FeatureSet getRemainingFeatures();
-	
-private:
+
+  private:
     void setupConfig();
 
     ChromaConfig m_config;
@@ -70,7 +69,7 @@ private:
     std::queue<ChromaVector> m_pending;
     ChromaVector m_vaCurrentVector;
     TCSGram m_TCSGram;
-	
+
     int m_iSmoothingWidth;  // smoothing window size
     int m_minMIDIPitch;     // chromagram parameters
     int m_maxMIDIPitch;

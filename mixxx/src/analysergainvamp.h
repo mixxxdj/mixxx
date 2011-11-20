@@ -7,25 +7,23 @@
 
 #ifndef ANALYSERRGAINVAMP_H_
 #define ANALYSERRGAINVAMP_H_
+
 #include "analyser.h"
 #include "configobject.h"
 #include "vamp/vampanalyser.h"
 
 class AnalyserGainVamp: public Analyser {
-
-public:
+  public:
     AnalyserGainVamp(ConfigObject<ConfigValue> *_config);
     ~AnalyserGainVamp();
     void initialise(TrackPointer tio, int sampleRate, int totalSamples);
     void process(const CSAMPLE *pIn, const int iLen);
     void finalise(TrackPointer tio);
 
-private:
+  private:
     bool m_bPass;
     ConfigObject<ConfigValue> *m_pConfigAVR;
     VampAnalyser* mvamprg;
-
-    //int m_iStartTime;
 };
 
 #endif /* ANALYSERRGAINVAMP_H_ */

@@ -8,42 +8,26 @@
 #include <QtDebug>
 #include <QVector>
 #include <QString>
-#include <time.h>
 
 #include "trackinfoobject.h"
 #include "track/beatmatrix.h"
 #include "track/beatfactory.h"
 #include "analyserbeats.h"
-#include "vamp-hostsdk/PluginLoader.h"
 
 static bool sDebug = true;
 
 #define VAMP_MIXXX_MINIMAL "libmixxxminimal"
 #define VAMP_PLUGIN_BEAT_TRACKER_ID "qm-tempotracker:0"
 
-#ifdef __WINDOWS__
-#include <windows.h>
-#endif
-
 AnalyserBeats::AnalyserBeats(ConfigObject<ConfigValue> *_config) {
     m_pConfigAVT = _config;
     m_bPass = 0;
     m_iSampleRate = 0;
-    /*
-     * Let the Vamp-Host-SDK read all shared libraries
-     * from the plugin folder
-     */
-    #ifdef __WINDOWS__  //for finding MSVCRT.dll 
-    SetDllDirectory(L"."); 
-    #endif
-    Vamp::HostExt::PluginLoader::getInstance()->listPlugins();
-
-
 }
 
 AnalyserBeats::~AnalyserBeats(){
-
 }
+
 void AnalyserBeats::initialise(TrackPointer tio, int sampleRate, int totalSamples) {
     m_iMinBpm = m_pConfigAVT->getValueString(ConfigKey("[BPM]","BPMRangeStart")).toInt();
     m_iMaxBpm = m_pConfigAVT->getValueString(ConfigKey("[BPM]","BPMRangeEnd")).toInt();
@@ -64,7 +48,6 @@ void AnalyserBeats::initialise(TrackPointer tio, int sampleRate, int totalSample
       //qDebug() << "Init Vamp Beat tracker with samplerate " << tio->getSampleRate() << " " << sampleRate;
       mvamp = new VampAnalyser();
       m_bPass = mvamp->Init(VAMP_MIXXX_MINIMAL, VAMP_PLUGIN_BEAT_TRACKER_ID, m_iSampleRate, totalSamples);
-    //   m_iStartTime = clock();
 }
 
 void AnalyserBeats::process(const CSAMPLE *pIn, const int iLen) {
@@ -107,7 +90,6 @@ void AnalyserBeats::finalise(TrackPointer tio) {
         qDebug()<<"Beat Calculation complete";
     else
         qDebug()<<"Beat Calculation failed";
-    //m_iStartTime = clock() - m_iStartTime;
     delete mvamp;
 }
 

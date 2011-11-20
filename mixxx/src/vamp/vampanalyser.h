@@ -8,67 +8,40 @@
 #ifndef VAMPANALYSER_H_
 #define VAMPANALYSER_H_
 
-#include "vamp-hostsdk/PluginLoader.h"
-#include "vamp-hostsdk/vamp-hostsdk.h"
-#include "vamp-hostsdk/Plugin.h"
 #include <QString>
 #include <QList>
 #include <QVector>
+
+#include <vamp-hostsdk/vamp-hostsdk.h>
 #include "sampleutil.h"
 
-
-
 class VampAnalyser {
-
-public:
-
+  public:
     VampAnalyser();
-
-    ~VampAnalyser();
-
-    //bool Init(const Vamp::HostExt::PluginLoader::PluginKey key, int outputnumber,
-    //        const int samplerate, const int TotalSamples);
+    virtual ~VampAnalyser();
 
     bool Init(const QString pluginlibrary, const QString pluginid,
-                const int samplerate, const int TotalSamples);
-
+              const int samplerate, const int TotalSamples);
     bool Process(const CSAMPLE *pIn, const int iLen);
-
     bool End();
-
-    bool SetParameter (const QString parameter,const double value);
-
-
+    bool SetParameter(const QString parameter, const double value);
 
     QVector <double> GetInitFramesVector();
-
     QVector <double> GetEndFramesVector();
+    QVector<QString> GetLabelsVector();
+    QVector <double> GetFirstValuesVector();
+    QVector <double> GetLastValuesVector();
 
-    QVector<QString> GetLabelsVector ();
+    // Initialize the VAMP_PATH environment variable to point to the default
+    // places that Mixxx VAMP plugins are deployed on installation. If a
+    // VAMP_PATH environment variable is already set by the user, then this
+    // method appends to that.
+    static void initializePluginPaths();
 
-    QVector <double> GetFirstValuesVector ();
-
-    QVector <double> GetLastValuesVector ();
-
-//   QVector <double> GetMeanValueVector ( int FromOutput);
-//
-//   QVector <double> GetMinValueVector ( int FromOutput);
-//
-//    QVector <double> GetMaxValueVector ( int FromOutput);
-
-
-
-
-
-
-private:
-
-    //void AddFeatures(Vamp::Plugin::FeatureSet &features);
-
-    void SelectOutput (const int outputnumber);
+  private:
+    void SelectOutput(const int outputnumber);
 
     Vamp::HostExt::PluginLoader::PluginKey mKey;
-
     int m_iSampleCount, m_iOUT, m_iRemainingSamples,
         m_iBlockSize, m_iStepSize, mRate, m_iOutput;
     CSAMPLE ** m_pluginbuf;

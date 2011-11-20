@@ -32,20 +32,13 @@
 #ifndef REPLAYGAIN_H_
 #define REPLAYGAIN_H_
 
-
-
-
 #include <stddef.h>
-#include "vamp-sdk/Plugin.h"
+#include <vamp-sdk/Plugin.h>
 
 using std::string;
 
-
-
-class ReplayGain : public Vamp::Plugin
-{
-
-public:
+class ReplayGain : public Vamp::Plugin {
+  public:
     ReplayGain (float inputSampleRate);
     virtual ~ReplayGain();
 

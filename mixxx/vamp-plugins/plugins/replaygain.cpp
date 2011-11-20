@@ -11,18 +11,14 @@
 #include <math.h>
 #include "replaygain.h"
 
-
 ReplayGain::ReplayGain(float inputSampleRate) :
-Plugin(inputSampleRate),
-samplefreq(inputSampleRate),
-BlockSize(0),
-numchannels(1)
-
-{
+        Plugin(inputSampleRate),
+        samplefreq(inputSampleRate),
+        BlockSize(0),
+        numchannels(1) {
 }
 
-ReplayGain::~ReplayGain()
-{
+ReplayGain::~ReplayGain() {
 }
 
 string
