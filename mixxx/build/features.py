@@ -377,32 +377,24 @@ class Vamp(Feature):
     def configure(self, build, conf):
         if not self.enabled(build):
             return
-        build.env.Append(CPPPATH=['#lib/vamp'])
+
+        if not conf.CheckLib(['vamp-hostsdk']):
+            raise Exception('Did not find libvamp-hostsdk.a or the libvamp-hostsdk development header files - exiting!')
+        #build.env.Append(CPPPATH=['#lib/vamp'])
         build.env.Append(CPPDEFINES = '__VAMP__')
 
+        # FFTW3 support
         have_fftw3_h = conf.CheckHeader('fftw3.h')
         have_fftw3 = conf.CheckLib('fftw3', autoadd=False)
-
         if(have_fftw3_h and have_fftw3 and build.platform_is_linux):
              build.env.Append(CPPDEFINES = 'HAVE_FFTW3')
              build.env.ParseConfig('pkg-config fftw3 --silence-errors --cflags --libs')
-
-
-
 
     def sources(self, build):
         sources = ['vamp/vampanalyser.cpp',
                    'analyserbeats.cpp',
                    'analysergainvamp.cpp',
-                   'dlgprefanalysers.cpp',
-                   '#lib/vamp/src/vamp-hostsdk/PluginBufferingAdapter.cpp',
-                   '#lib/vamp/src/vamp-hostsdk/PluginChannelAdapter.cpp',
-                   '#lib/vamp/src/vamp-hostsdk/PluginHostAdapter.cpp',
-                   '#lib/vamp/src/vamp-hostsdk/PluginInputDomainAdapter.cpp',
-                   '#lib/vamp/src/vamp-hostsdk/PluginLoader.cpp',
-                   '#lib/vamp/src/vamp-hostsdk/PluginSummarisingAdapter.cpp',
-                   '#lib/vamp/src/vamp-hostsdk/PluginWrapper.cpp',
-                   '#lib/vamp/src/vamp-hostsdk/RealTime.cpp']
+                   'dlgprefanalysers.cpp']
         return sources
 
 class FAAD(Feature):

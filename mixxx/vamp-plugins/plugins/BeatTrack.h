@@ -15,7 +15,7 @@
 #ifndef _BEAT_TRACK_PLUGIN_H_
 #define _BEAT_TRACK_PLUGIN_H_
 
-#include "vamp-sdk/Plugin.h"
+#include <vamp-sdk/Plugin.h>
 
 class BeatTrackerData;
 

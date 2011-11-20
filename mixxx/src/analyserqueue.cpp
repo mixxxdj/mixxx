@@ -15,6 +15,7 @@
 #ifdef __VAMP__
 #include "analyserbeats.h"
 #include "analysergainvamp.h";
+#include "vamp/vampanalyser.h"
 #endif
 
 AnalyserQueue::AnalyserQueue() : m_aq(),
@@ -216,7 +217,7 @@ AnalyserQueue* AnalyserQueue::createDefaultAnalyserQueue(ConfigObject<ConfigValu
     ret->addAnalyser(new AnalyserWaveform());
 
 #ifdef __VAMP__
-    qDebug() << "Create VAMP Analysers ";
+    VampAnalyser::initializePluginPaths();
     ret->addAnalyser(new AnalyserGainVamp(_config));
     ret->addAnalyser(new AnalyserBeats(_config));
     //ret->addAnalyser(new AnalyserVampKeyTest(_config));
@@ -232,6 +233,7 @@ AnalyserQueue* AnalyserQueue::createPrepareViewAnalyserQueue(ConfigObject<Config
     AnalyserQueue* ret = new AnalyserQueue();
     ret->addAnalyser(new AnalyserWavesummary());
 #ifdef __VAMP__
+    VampAnalyser::initializePluginPaths();
     ret->addAnalyser(new AnalyserGainVamp(_config));
     ret->addAnalyser(new AnalyserBeats(_config));
     //ret->addAnalyser(new AnalyserVampKeyTest(_config));

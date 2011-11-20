@@ -246,8 +246,6 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
         QDir().mkpath(QDir::homePath().append("/").append(SETTINGS_PATH));
     }
 
-
-
     m_pLibrary = new Library(this, m_pConfig,
                              bFirstRun || bUpgraded,
                              m_pRecordingManager);

@@ -1,24 +1,13 @@
-
-// This is a skeleton file for use in creating your own plugin
-// libraries.  Replace MyPlugin and myPlugin throughout with the name
-// of your first plugin class, and fill in the gaps as appropriate.
-
-
-// Remember to use a different guard symbol in each header!
-#ifndef _MIXXXPMDETECTION_H_
+#ifndef _MIXXXBPMDETECTION_H_
 #define _MIXXXBPMDETECTION_H_
 
+#include <vamp-sdk/Plugin.h>
 #include "BPMDetect.h"
-#include "vamp-sdk/Plugin.h"
-
 
 using std::string;
 
-
-
-class MixxxBpmDetection : public Vamp::Plugin
-{
-public:
+class MixxxBpmDetection : public Vamp::Plugin {
+  public:
     MixxxBpmDetection(float inputSampleRate);
     virtual ~MixxxBpmDetection();
 
@@ -53,7 +42,7 @@ public:
 
     FeatureSet getRemainingFeatures();
 
-protected:
+  protected:
     // plugin-specific data and methods go here
     float correctBPM(float BPM, float min, float max, bool aboveRange);
 
@@ -62,10 +51,6 @@ protected:
         m_iBlockSize;
     float m_fPhase, m_fNumCycles, m_fMinBpm, m_fMaxBpm;
     bool m_bProcessEntireSong, m_bAllowAboveRange;
-
-
 };
-
-
 
 #endif

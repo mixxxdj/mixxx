@@ -15,9 +15,7 @@
 #include <QVector>
 #include <QList>
 #include <QtCore>
-#include "vamp-hostsdk/PluginLoader.h"
-#include "vamp-hostsdk/vamp-hostsdk.h"
-#include "vamp-hostsdk/Plugin.h"
+#include <vamp-hostsdk/vamp-hostsdk.h>
 #include "controlobject.h"
 #include "dlgprefanalysers.h"
 

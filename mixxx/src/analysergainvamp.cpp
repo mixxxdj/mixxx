@@ -9,7 +9,7 @@
 #include <QList>
 #include <QVector>
 #include <QString>
-#include <time.h>
+#include <QStringList>
 #include <math.h>
 #include "analysergainvamp.h"
 
@@ -17,8 +17,7 @@ AnalyserGainVamp::AnalyserGainVamp(ConfigObject<ConfigValue> *_config) {
     m_pConfigAVR = _config;
 }
 
-AnalyserGainVamp::~AnalyserGainVamp(){
-
+AnalyserGainVamp::~AnalyserGainVamp() {
 }
 
 void AnalyserGainVamp::initialise(TrackPointer tio, int sampleRate, int totalSamples) {
@@ -35,23 +34,22 @@ void AnalyserGainVamp::initialise(TrackPointer tio, int sampleRate, int totalSam
     m_bPass = mvamprg->Init("libmixxxminimal","replaygain:0",sampleRate, totalSamples);
     if (!m_bPass)
         qDebug() << "Failed to init Vamp Replay Gain Analyser";
-
-
 }
 
 void AnalyserGainVamp::process(const CSAMPLE *pIn, const int iLen) {
-    if(!m_bPass) return;
+    if (!m_bPass) {
+        return;
+    }
     m_bPass = mvamprg->Process(pIn, iLen);
-
-
 }
 
 void AnalyserGainVamp::finalise(TrackPointer tio) {
-    if(!m_bPass) return;
-    QVector <double> values;
+    if (!m_bPass) {
+        return;
+    }
+    QVector<double> values;
     values = mvamprg->GetFirstValuesVector();
-    if(!values.isEmpty())
-    {
+    if (!values.isEmpty()) {
         //qDebug()<<"Found a ReplayGain value of"<<pow(10,values[0]/20);
         float fReplayGain_Result = pow(10,values[0]/20);
         tio->setReplayGain(fReplayGain_Result);
@@ -65,5 +63,4 @@ void AnalyserGainVamp::finalise(TrackPointer tio) {
 
     delete mvamprg;
     mvamprg = NULL;
-    //m_iStartTime = clock() - m_iStartTime;
 }
