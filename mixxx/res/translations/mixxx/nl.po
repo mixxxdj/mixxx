@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2011-10-31 23:15-0400\n"
-"PO-Revision-Date: 2011-11-07 13:23+0000\n"
-"Last-Translator: L. Post <Unknown>\n"
+"PO-Revision-Date: 2011-11-21 00:05+0000\n"
+"Last-Translator: colobot <engelbertmercelis@gmail.com>\n"
 "Language-Team: Dutch <nl@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-11-08 05:22+0000\n"
-"X-Generator: Launchpad (build 14231)\n"
+"X-Launchpad-Export-Date: 2011-11-21 05:19+0000\n"
+"X-Generator: Launchpad (build 14299)\n"
 
 #: AutoDJFeature#1
 msgid "Auto DJ"
@@ -1046,32 +1046,32 @@ msgstr "seconden"
 #: DlgPrefNoVinylDlg#13
 msgctxt "DlgPrefNoVinylDlg#13"
 msgid "Show Signal Quality in Skin"
-msgstr ""
+msgstr "Toon signaal kwaliteit in de skin"
 
 #: DlgPrefNoVinylDlg#14
 msgctxt "DlgPrefNoVinylDlg#14"
 msgid "Control Mode"
-msgstr ""
+msgstr "Controle Modus"
 
 #: DlgPrefNoVinylDlg#15
 msgctxt "DlgPrefNoVinylDlg#15"
 msgid "Absolute Mode"
-msgstr ""
+msgstr "Absolute Modus"
 
 #: DlgPrefNoVinylDlg#16
 msgctxt "DlgPrefNoVinylDlg#16"
 msgid "Relative Mode"
-msgstr ""
+msgstr "Relatieve Modus"
 
 #: DlgPrefNoVinylDlg#17
 msgctxt "DlgPrefNoVinylDlg#17"
 msgid "Enable Needle Skip Prevention"
-msgstr ""
+msgstr "Zet preventie van naald verspringing aan"
 
 #: DlgPrefNoVinylDlg#18
 msgctxt "DlgPrefNoVinylDlg#18"
 msgid "Signal Quality"
-msgstr ""
+msgstr "Signaalkwaliteit"
 
 #: DlgPrefNoVinylDlg#19
 msgctxt "DlgPrefNoVinylDlg#19"
@@ -1081,7 +1081,7 @@ msgstr "http://www.xwax.co.uk"
 #: DlgPrefNoVinylDlg#20
 msgctxt "DlgPrefNoVinylDlg#20"
 msgid "Powered by xwax"
-msgstr ""
+msgstr "Mede mogelijk gemaakt door xwax"
 
 #: DlgPrefNoVinylDlg#21
 msgctxt "DlgPrefNoVinylDlg#21"
@@ -1776,7 +1776,7 @@ msgstr "Dek 2 Vinyl Type"
 #: DlgPrefVinylDlg#11
 msgctxt "DlgPrefVinylDlg#11"
 msgid "Show Signal Quality in Skin"
-msgstr ""
+msgstr "Toon signaal kwaliteit in de skin"
 
 #: DlgPrefVinylDlg#12
 msgctxt "DlgPrefVinylDlg#12"
@@ -1796,27 +1796,27 @@ msgstr "seconden"
 #: DlgPrefVinylDlg#15
 msgctxt "DlgPrefVinylDlg#15"
 msgid "Control Mode"
-msgstr ""
+msgstr "Controle Modus"
 
 #: DlgPrefVinylDlg#16
 msgctxt "DlgPrefVinylDlg#16"
 msgid "Absolute Mode"
-msgstr ""
+msgstr "Absolute Mmodus"
 
 #: DlgPrefVinylDlg#17
 msgctxt "DlgPrefVinylDlg#17"
 msgid "Relative Mode"
-msgstr ""
+msgstr "Relatieve Modus"
 
 #: DlgPrefVinylDlg#18
 msgctxt "DlgPrefVinylDlg#18"
 msgid "Enable Needle Skip Prevention"
-msgstr ""
+msgstr "Zet preventie van naald verspringing aan"
 
 #: DlgPrefVinylDlg#19
 msgctxt "DlgPrefVinylDlg#19"
 msgid "Signal Quality"
-msgstr ""
+msgstr "Signaalkwaliteit"
 
 #: DlgPrefVinylDlg#20
 msgctxt "DlgPrefVinylDlg#20"
@@ -1826,7 +1826,7 @@ msgstr "http://www.xwax.co.uk"
 #: DlgPrefVinylDlg#21
 msgctxt "DlgPrefVinylDlg#21"
 msgid "Powered by xwax"
-msgstr ""
+msgstr "Mede mogelijk gemaakt door xwax"
 
 #: DlgPreferences#1
 msgid "Sound Hardware"
@@ -1943,7 +1943,7 @@ msgstr "Opname stoppen"
 
 #: DlgTrackInfo#1
 msgid "Track Editor"
-msgstr ""
+msgstr "Nummer-editor"
 
 #: DlgTrackInfo#2
 msgid "Song:"
@@ -2231,7 +2231,7 @@ msgstr "Selecteer jouw iTunes bibliotheek"
 
 #: ITunesFeature#3
 msgid "(loading) iTunes"
-msgstr ""
+msgstr "(laden) iTunes"
 
 #: ITunesFeature#4
 msgid "Use Default Library"
@@ -2623,7 +2623,7 @@ msgstr "&Over"
 
 #: MixxxApp#41
 msgid "&Community Support"
-msgstr ""
+msgstr "&Community Ondersteuning"
 
 #: MixxxApp#42
 msgid "Send Us &Feedback"
@@ -2840,6 +2840,9 @@ msgid ""
 "\n"
 "Send feedback to the Mixxx team."
 msgstr ""
+"Ondersteuning\n"
+" \n"
+"Stuur feedback naar het Mixxx team."
 
 #: MixxxApp#82
 msgid "Help translate this application into your language."
@@ -2851,6 +2854,9 @@ msgid ""
 "\n"
 "Help translate this application into your language."
 msgstr ""
+"Ondersteuning\n"
+"\n"
+"Help om deze applicatie in jouw taal te vertalen."
 
 #: MixxxApp#84
 msgid "About the application"
@@ -3222,7 +3228,7 @@ msgstr "Traktor"
 
 #: TraktorFeature#2
 msgid "(loading) Traktor"
-msgstr ""
+msgstr "(laden) Traktor"
 
 #: TraktorFeature#3
 msgid "Error Loading Traktor Library"
@@ -3477,7 +3483,7 @@ msgstr "Toevoegen aan Auto DJ Wachtrij"
 
 #: WTrackTableView#7
 msgid "Reload Track Metadata"
-msgstr ""
+msgstr "Metadata van nummer opnieuw laden"
 
 #: WTrackTableView#8
 msgid "Load to Deck %1"
