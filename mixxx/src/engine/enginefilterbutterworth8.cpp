@@ -20,7 +20,7 @@
 #include "engine/enginefilterbutterworth8.h"
 #include "engine/enginefilter.h"
 #include "engine/engineobject.h"
-#include "../lib/fidlib-0.9.9/fidlib.h"
+#include "../lib/fidlib-0.9.10/fidlib.h"
 
 /* Local Prototypes */
 inline double _processLowpass(double *coef, double *buf, register double val);

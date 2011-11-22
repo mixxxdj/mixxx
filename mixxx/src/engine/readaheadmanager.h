@@ -28,7 +28,7 @@ class ReadAheadManager {
   public:
     explicit ReadAheadManager(CachingReader* reader);
     virtual ~ReadAheadManager();
-    
+
     // Call this method to fill buffer with requested_samples out of the
     // lookahead buffer. Provide rate as dRate so that the manager knows the
     // direction the audio is progressing in. Returns the total number of
@@ -56,9 +56,12 @@ class ReadAheadManager {
     virtual void hintReader(double dRate, QList<Hint>& hintList,
                             int iSamplesPerBuffer);
 
-
     virtual int getEffectiveVirtualPlaypositionFromLog(double currentVirtualPlayposition,
                                                        double numConsumedSamples);
+
+    virtual void setReader(CachingReader* pReader) {
+        m_pReader = pReader;
+    }
 
   private:
     // An entry in the read log indicates the virtual playposition the read

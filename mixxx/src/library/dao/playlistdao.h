@@ -13,6 +13,7 @@
 const QString PLAYLISTTRACKSTABLE_TRACKID = "track_id";
 const QString PLAYLISTTRACKSTABLE_POSITION = "position";
 const QString PLAYLISTTRACKSTABLE_PLAYLISTID = "playlist_id";
+const QString PLAYLISTTRACKSTABLE_LOCATION = "location";
 
 class PlaylistDAO : public QObject, public virtual DAO {
     Q_OBJECT

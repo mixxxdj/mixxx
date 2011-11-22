@@ -49,6 +49,9 @@ protected:
     bool isBinary(QString);
     /**Checks if the given string represents a local filepath**/
     bool isFilepath(QString );
+    // check for Utf8 encoding
+    static bool isUtf8(const char * string);
+
 };
 
 #endif
