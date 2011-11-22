@@ -8,6 +8,7 @@
 #include "library/parser.h"
 #include "library/parserm3u.h"
 #include "library/parserpls.h"
+#include "library/parsercsv.h"
 
 
 #include "widget/wlibrary.h"
@@ -24,8 +25,7 @@ PlaylistFeature::PlaylistFeature(QObject* parent, TrackCollection* pTrackCollect
           m_playlistDao(pTrackCollection->getPlaylistDAO()),
           m_trackDao(pTrackCollection->getTrackDAO()),
           m_playlistTableModel(this, pTrackCollection->getDatabase()),
-          m_pConfig(pConfig)
-{
+          m_pConfig(pConfig) {
     m_pPlaylistTableModel = new PlaylistTableModel(this, pTrackCollection);
 
     m_pCreatePlaylistAction = new QAction(tr("New Playlist"),this);
@@ -106,11 +106,10 @@ QIcon PlaylistFeature::getIcon() {
 
 void PlaylistFeature::bindWidget(WLibrarySidebar* sidebarWidget,
                                  WLibrary* libraryWidget,
-                                 MixxxKeyboard* keyboard)
-{
-	Q_UNUSED(sidebarWidget);
-	Q_UNUSED(keyboard);
-	WLibraryTextBrowser* edit = new WLibraryTextBrowser(libraryWidget);
+                                 MixxxKeyboard* keyboard) {
+    Q_UNUSED(sidebarWidget);
+    Q_UNUSED(keyboard);
+    WLibraryTextBrowser* edit = new WLibraryTextBrowser(libraryWidget);
     connect(this, SIGNAL(showPage(const QUrl&)),
             edit, SLOT(setSource(const QUrl&)));
     libraryWidget->registerView("PLAYLISTHOME", edit);
@@ -300,7 +299,7 @@ void PlaylistFeature::slotDeletePlaylist()
 }
 
 bool PlaylistFeature::dropAccept(QUrl url) {
-	Q_UNUSED(url);
+    Q_UNUSED(url);
     return false;
 }
 
@@ -337,8 +336,8 @@ bool PlaylistFeature::dropAcceptChild(const QModelIndex& index, QUrl url) {
 }
 
 bool PlaylistFeature::dragMoveAccept(QUrl url) {
-	Q_UNUSED(url);
-	return false;
+    Q_UNUSED(url);
+    return false;
 }
 
 bool PlaylistFeature::dragMoveAcceptChild(const QModelIndex& index, QUrl url) {
@@ -367,11 +366,10 @@ QModelIndex PlaylistFeature::constructChildModel(int selected_id)
     QList<TreeItem*> data_list;
     int nameColumn = m_playlistTableModel.record().indexOf("name");
     int idColumn = m_playlistTableModel.record().indexOf("id");
-	int selected_row = -1;
+    int selected_row = -1;
     // Access the invisible root item
     TreeItem* root = m_childModel.getItem(QModelIndex());
-    
-	// Create new TreeItems for the playlists in the database
+    // Create new TreeItems for the playlists in the database
     for (int row = 0; row < m_playlistTableModel.rowCount(); ++row) {
         QModelIndex ind = m_playlistTableModel.index(row, nameColumn);
         QString playlist_name = m_playlistTableModel.data(ind).toString();
@@ -380,8 +378,8 @@ QModelIndex PlaylistFeature::constructChildModel(int selected_id)
         bool locked = m_playlistDao.isPlaylistLocked(playlist_id);
 
         if ( selected_id == playlist_id) {
-        	// save index for selection
-        	selected_row = row;
+            // save index for selection
+            selected_row = row;
         }
 
         // Create the TreeItem whose parent is the invisible root item
@@ -393,7 +391,7 @@ QModelIndex PlaylistFeature::constructChildModel(int selected_id)
     // Append all the newly created TreeItems in a dynamic way to the childmodel
     m_childModel.insertRows(data_list, 0, m_playlistTableModel.rowCount());
     if (selected_row == -1) {
-    	return QModelIndex();
+        return QModelIndex();
     }
     return m_childModel.index(selected_row, 0);
 }
@@ -414,25 +412,25 @@ void PlaylistFeature::slotImportPlaylist()
             NULL,
             tr("Import Playlist"),
             QDesktopServices::storageLocation(QDesktopServices::MusicLocation),
-            tr("Playlist Files (*.m3u *.pls)")
+            tr("Playlist Files (*.m3u *.m3u8 *.pls *.csv)")
             );
     //Exit method if user cancelled the open dialog.
-    if (playlist_file.isNull() || playlist_file.isEmpty() ) return;
+    if (playlist_file.isNull() || playlist_file.isEmpty()) return;
 
     Parser* playlist_parser = NULL;
 
-    if(playlist_file.endsWith(".m3u", Qt::CaseInsensitive))
-    {
+    if (   playlist_file.endsWith(".m3u", Qt::CaseInsensitive)
+        || playlist_file.endsWith(".m3u8", Qt::CaseInsensitive)) {
+        // .m3u8 is Utf8 representation of an m3u playlist
         playlist_parser = new ParserM3u();
-    }
-    else if(playlist_file.endsWith(".pls", Qt::CaseInsensitive))
-    {
+    } else if (playlist_file.endsWith(".pls", Qt::CaseInsensitive)) {
         playlist_parser = new ParserPls();
-    }
-    else
-    {
+    } else if (playlist_file.endsWith(".csv", Qt::CaseInsensitive)) {
+        playlist_parser = new ParserCsv();
+    } else {
         return;
     }
+
     QList<QString> entries = playlist_parser->parse(playlist_file);
 
     //Iterate over the List that holds URLs of playlist entires
@@ -446,8 +444,8 @@ void PlaylistFeature::slotImportPlaylist()
 }
 
 void PlaylistFeature::onLazyChildExpandation(const QModelIndex &index){
-	Q_UNUSED(index);
-	//Nothing to do because the childmodel is not of lazy nature.
+    Q_UNUSED(index);
+    //Nothing to do because the childmodel is not of lazy nature.
 }
 
 void PlaylistFeature::slotExportPlaylist(){
@@ -455,7 +453,7 @@ void PlaylistFeature::slotExportPlaylist(){
     QString file_location = QFileDialog::getSaveFileName(NULL,
                                         tr("Export Playlist"),
                                         QDesktopServices::storageLocation(QDesktopServices::MusicLocation),
-                                        tr("M3U Playlist (*.m3u);;PLS Playlist (*.pls)"));
+                                        tr("M3U Playlist (*.m3u);;M3U8 Playlist (*.m3u8);;PLS Playlist (*.pls);Text CSV (*.csv)"));
     //Exit method if user cancelled the open dialog.
     if(file_location.isNull() || file_location.isEmpty()) return;
     //create and populate a list of files of the playlist
@@ -468,16 +466,13 @@ void PlaylistFeature::slotExportPlaylist(){
     //check config if relative paths are desired
     bool useRelativePath = (bool)m_pConfig->getValueString(ConfigKey("[Library]","UseRelativePathOnExport")).toInt();
 
-    if(file_location.endsWith(".m3u", Qt::CaseInsensitive))
-    {
+    if (file_location.endsWith(".m3u", Qt::CaseInsensitive)) {
         ParserM3u::writeM3UFile(file_location, playlist_items, useRelativePath);
-    }
-    else if(file_location.endsWith(".pls", Qt::CaseInsensitive))
-    {
+    } else if(file_location.endsWith(".pls", Qt::CaseInsensitive)) {
         ParserPls::writePLSFile(file_location,playlist_items, useRelativePath);
-    }
-    else
-    {
+    } else if (file_location.endsWith(".m3u8", Qt::CaseInsensitive)) {
+        ParserM3u::writeM3U8File(file_location, playlist_items, useRelativePath);
+    } else {
         //default export to M3U if file extension is missing
 
         qDebug() << "Playlist export: No file extension specified. Appending .m3u "
@@ -490,12 +485,12 @@ void PlaylistFeature::slotExportPlaylist(){
 
 void PlaylistFeature::slotAddToAutoDJ() {
     //qDebug() << "slotAddToAutoDJ() row:" << m_lastRightClickedIndex.data();
-	addToAutoDJ(false); // Top = True
+    addToAutoDJ(false); // Top = True
 }
 
 void PlaylistFeature::slotAddToAutoDJTop() {
     //qDebug() << "slotAddToAutoDJTop() row:" << m_lastRightClickedIndex.data();
-	addToAutoDJ(true); // bTop = True
+    addToAutoDJ(true); // bTop = True
 }
 
 void PlaylistFeature::addToAutoDJ(bool bTop) {
@@ -505,28 +500,28 @@ void PlaylistFeature::addToAutoDJ(bool bTop) {
         int playlistId = m_playlistDao.getPlaylistIdFromName(
             m_lastRightClickedIndex.data().toString());
         if (playlistId >= 0) {
-       		// Insert this playlist
-        	m_playlistDao.addToAutoDJQueue(playlistId, bTop);
+       	    // Insert this playlist
+            m_playlistDao.addToAutoDJQueue(playlistId, bTop);
         }
     }
     emit(featureUpdated());
 }
 
 void PlaylistFeature::slotPlaylistTableChanged(int playlistId) {
-	 //qDebug() << "slotPlaylistTableChanged() playlistId:" << playlistId;
-	 enum PlaylistDAO::hidden_type type = m_playlistDao.getHiddenType(playlistId);
-	 if (   type == PlaylistDAO::PLHT_NOT_HIDDEN
-	     || type == PlaylistDAO::PLHT_UNKNOWN      // In case of a deleted Playlist
-	 ){
-		 clearChildModel();
-		 m_playlistTableModel.select();
-		 m_lastRightClickedIndex = constructChildModel(playlistId);
+    //qDebug() << "slotPlaylistTableChanged() playlistId:" << playlistId;
+    enum PlaylistDAO::hidden_type type = m_playlistDao.getHiddenType(playlistId);
+    if (   type == PlaylistDAO::PLHT_NOT_HIDDEN
+        || type == PlaylistDAO::PLHT_UNKNOWN      // In case of a deleted Playlist
+    ){
+        clearChildModel();
+        m_playlistTableModel.select();
+        m_lastRightClickedIndex = constructChildModel(playlistId);
 
-		 if(type != PlaylistDAO::PLHT_UNKNOWN) {
-			 // Switch the view to the playlist.
-			 m_pPlaylistTableModel->setPlaylist(playlistId);
-			 // Update selection
-			 emit(featureSelect(this, m_lastRightClickedIndex));
-		 }
-	 }
+        if(type != PlaylistDAO::PLHT_UNKNOWN) {
+            // Switch the view to the playlist.
+            m_pPlaylistTableModel->setPlaylist(playlistId);
+            // Update selection
+            emit(featureSelect(this, m_lastRightClickedIndex));
+        }
+    }
 }

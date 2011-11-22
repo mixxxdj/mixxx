@@ -6,7 +6,8 @@
                            (C) 2007 Mark Hills
                            (C) 2011 Owen Williams
                            Portions of xwax used under the terms of the GPL
-    email                : gamegod \a\t users.sf.net
+    current maintainer   : Owen Williams
+    email                : owilliams@mixxx.org
 ***************************************************************************/
 
 /***************************************************************************
@@ -106,8 +107,6 @@ VinylControlXwax::VinylControlXwax(ConfigObject<ConfigValue> * pConfig, QString 
 
     //Start this thread (ends up calling-back the function "run()" below)
     start();
-
-    //qDebug() << "Created new VinylControlXwax!";
 }
 
 VinylControlXwax::~VinylControlXwax()
@@ -406,7 +405,7 @@ void VinylControlXwax::run()
                 }
                 else if (bTrackSelectMode)
                 {
-                    qDebug() << "discontinuing select mode, selecting track";
+                    //qDebug() << "discontinuing select mode, selecting track";
                     if (trackLoader == NULL)
                         trackLoader = new ControlObjectThread(ControlObject::getControl(ConfigKey(m_group,"LoadSelectedTrack")));
 
@@ -487,8 +486,8 @@ void VinylControlXwax::run()
                 else if (iVCMode == MIXXX_VCMODE_ABSOLUTE && (fabs(dVinylPosition - dOldPos) >= 15.0f))
                 {
                     //If the position from the timecode is more than a few seconds off, resync the position.
-                    qDebug() << "resync position (>15.0 sec)";
-                    qDebug() << dVinylPosition << dOldPos << dVinylPosition - dOldPos;
+                    //qDebug() << "resync position (>15.0 sec)";
+                    //qDebug() << dVinylPosition << dOldPos << dVinylPosition - dOldPos;
                     syncPosition();
                     resetSteadyPitch(dVinylPitch, dVinylPosition);
                 }
@@ -509,7 +508,7 @@ void VinylControlXwax::run()
                 else if (iVCMode == MIXXX_VCMODE_ABSOLUTE && m_bCDControl &&
                     fabs(dVinylPosition - dOldPos) >= 0.1f)
                 {
-                    qDebug() << "CDJ resync position (>0.1 sec)";
+                    //qDebug() << "CDJ resync position (>0.1 sec)";
                     syncPosition();
                     resetSteadyPitch(dVinylPitch, dVinylPosition);
                 }
@@ -560,7 +559,7 @@ void VinylControlXwax::run()
                     fabs(dVinylPitch) < 0.05 &&
                     fabs(dDriftAmt) >= 0.3f)
                 {
-                    qDebug() << "slow, out of sync, syncing position";
+                    //qDebug() << "slow, out of sync, syncing position";
                     syncPosition();
                 }
 
@@ -640,7 +639,7 @@ void VinylControlXwax::run()
             if (iVCMode == MIXXX_VCMODE_ABSOLUTE &&
                 fabs(dVinylPosition - filePosition) >= 0.1f)
             {
-                qDebug() << "stopped, out of sync, syncing position";
+                //qDebug() << "stopped, out of sync, syncing position";
                 syncPosition();
             }
 

@@ -9,6 +9,7 @@
 #include "library/parser.h"
 #include "library/parserm3u.h"
 #include "library/parserpls.h"
+#include "library/parsercsv.h"
 
 
 #include "widget/wlibrary.h"
@@ -118,10 +119,10 @@ SetlogFeature::~SetlogFeature() {
     delete m_pAddToAutoDJTopAction;
     delete m_pRenamePlaylistAction;
     delete m_pLockPlaylistAction;
-    if( m_pCOPlayPos1 ){
+    if (m_pCOPlayPos1) {
     	delete m_pCOPlayPos1;
     }
-    if( m_pCOPlayPos2 ){
+    if (m_pCOPlayPos2) {
     	delete m_pCOPlayPos2;
     }
 }
@@ -144,15 +145,18 @@ void SetlogFeature::bindWidget(WLibrarySidebar* sidebarWidget,
     connect(this, SIGNAL(showPage(const QUrl&)),
             edit, SLOT(setSource(const QUrl&)));
 
-    m_pCOPlayPos1 = new ControlObjectThreadMain(
+    if (!m_pCOPlayPos1) {
+        m_pCOPlayPos1 = new ControlObjectThreadMain(
                             ControlObject::getControl(ConfigKey("[Channel1]", "playposition")));
-    m_pCOPlayPos2 = new ControlObjectThreadMain(
+        connect(m_pCOPlayPos1, SIGNAL(valueChanged(double)),
+                this, SLOT(slotPositionChanged(double)));
+    }
+    if (!m_pCOPlayPos2) {
+        m_pCOPlayPos2 = new ControlObjectThreadMain(
                             ControlObject::getControl(ConfigKey("[Channel2]", "playposition")));
-
-    connect(m_pCOPlayPos1, SIGNAL(valueChanged(double)),
-    this, SLOT(slotPositionChanged(double)));
-    connect(m_pCOPlayPos2, SIGNAL(valueChanged(double)),
-    this, SLOT(slotPositionChanged(double)));
+        connect(m_pCOPlayPos2, SIGNAL(valueChanged(double)),
+                this, SLOT(slotPositionChanged(double)));
+    }
 
     libraryWidget->registerView(m_sSetlogViewName, edit);
 }
@@ -390,37 +394,38 @@ void SetlogFeature::slotExportPlaylist() {
     QString file_location = QFileDialog::getSaveFileName(NULL,
                                         tr("Export Playlist"),
                                         QDesktopServices::storageLocation(QDesktopServices::MusicLocation),
-                                        tr("M3U Playlist (*.m3u);;PLS Playlist (*.pls)"));
+                                        tr("M3U Playlist (*.m3u);;M3U8 Playlist (*.m3u8);;PLS Playlist (*.pls);;Text CSV (*.csv)"));
     //Exit method if user cancelled the open dialog.
     if(file_location.isNull() || file_location.isEmpty()) return;
-    //create and populate a list of files of the playlist
-    QList<QString> playlist_items;
-    int rows = m_pPlaylistTableModel->rowCount();
-    for(int i = 0; i < rows; ++i){
-        QModelIndex index = m_pPlaylistTableModel->index(i,0);
-        playlist_items << m_pPlaylistTableModel->getTrackLocation(index);
-    }
     //check config if relative paths are desired
     bool useRelativePath = (bool)m_pConfig->getValueString(ConfigKey("[Library]","UseRelativePathOnExport")).toInt();
 
-    if(file_location.endsWith(".m3u", Qt::CaseInsensitive))
-    {
-        ParserM3u::writeM3UFile(file_location, playlist_items, useRelativePath);
-    }
-    else if(file_location.endsWith(".pls", Qt::CaseInsensitive))
-    {
-        ParserPls::writePLSFile(file_location,playlist_items, useRelativePath);
-    }
-    else
-    {
-        //default export to M3U if file extension is missing
+    if (file_location.endsWith(".csv", Qt::CaseInsensitive)) {
+            ParserCsv::writeCSVFile(file_location, m_pPlaylistTableModel, useRelativePath);
+    } else {
+        //create and populate a list of files of the playlist
+        QList<QString> playlist_items;
+        int rows = m_pPlaylistTableModel->rowCount();
+        for (int i = 0; i < rows; ++i) {
+            QModelIndex index = m_pPlaylistTableModel->index(i,0);
+            playlist_items << m_pPlaylistTableModel->getTrackLocation(index);
+        }
 
-        qDebug() << "Playlist export: No file extension specified. Appending .m3u "
-                 << "and exporting to M3U.";
-        file_location.append(".m3u");
-        ParserM3u::writeM3UFile(file_location, playlist_items, useRelativePath);
+        if (file_location.endsWith(".pls", Qt::CaseInsensitive)) {
+            ParserPls::writePLSFile(file_location, playlist_items, useRelativePath);
+        } else if (file_location.endsWith(".m3u8", Qt::CaseInsensitive)) {
+            ParserM3u::writeM3U8File(file_location, playlist_items, useRelativePath);
+        } else {
+            //default export to M3U if file extension is missing
+            if(!file_location.endsWith(".m3u", Qt::CaseInsensitive))
+            {
+                qDebug() << "Playlist export: No valid file extension specified. Appending .m3u "
+                         << "and exporting to M3U.";
+                file_location.append(".m3u");
+            }
+            ParserM3u::writeM3UFile(file_location, playlist_items, useRelativePath);
+        }
     }
-
 }
 
 void SetlogFeature::slotAddToAutoDJ() {

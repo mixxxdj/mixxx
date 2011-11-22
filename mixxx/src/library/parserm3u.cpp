@@ -16,6 +16,7 @@
 #include <QMessageBox>
 #include "parserm3u.h"
 #include <QUrl>
+#include <QTextCodec>
 
 /**
    @author Ingo Kossyk (kossyki@cs.tu-berlin.de)
@@ -70,6 +71,12 @@ QList<QString> ParserM3u::parse(QString sFilename)
             ba.replace('\r','\n');
         QTextStream textstream(ba.data());
         
+        if (isUtf8(ba.data())) {
+            textstream.setCodec("UTF-8");
+        } else {
+            textstream.setCodec("windows-1252");
+        }
+
         while(!textstream.atEnd()) {
             QString sLine = getFilepath(&textstream, basepath);
             if(sLine.isEmpty())
@@ -131,39 +138,67 @@ QString ParserM3u::getFilepath(QTextStream *stream, QString basepath)
     return 0;
 
 }
-bool ParserM3u::writeM3UFile(const QString &file_str, QList<QString> &items, bool useRelativePath)
+
+bool ParserM3u::writeM3UFile(const QString &file_str, QList<QString> &items, bool useRelativePath) {
+    return writeM3UFile(file_str, items, useRelativePath, false);
+}
+
+bool ParserM3u::writeM3U8File(const QString &file_str, QList<QString> &items, bool useRelativePath) {
+    return writeM3UFile(file_str, items, useRelativePath, true);
+}
+
+bool ParserM3u::writeM3UFile(const QString &file_str, QList<QString> &items, bool useRelativePath, bool useUtf8)
 {
-    /*
-     * Important note:
-     * On Windows \n will produce a <CR><CL> (=\r\n)
-     * On Linux and OS X \n is <CR> (which remains \n)
-     */
+    // Important note:
+    // On Windows \n will produce a <CR><CL> (=\r\n)
+    // On Linux and OS X \n is <CR> (which remains \n)
+
+    QTextCodec* codec;
+    if(useUtf8){
+        codec = QTextCodec::codecForName("UTF-8");
+    } else {
+        // according to http://en.wikipedia.org/wiki/M3U the default encoding of m3u is Windows-1252
+        // see also http://tools.ietf.org/html/draft-pantos-http-live-streaming-07
+        // check if the all items can be properly encoded to Latin1.
+        codec = QTextCodec::codecForName("windows-1252");
+        for (int i = 0; i < items.size(); ++i) {
+            if (!codec->canEncode(items.at(i))) {
+                // filepath contains incompatible character
+                QMessageBox::warning(NULL,tr("Playlist Export Failed"),
+                                     tr("File path contains characters, not allowed in m3u playlists.\n") +
+                                     tr("Export a m3u8 playlist instead!\n") +
+                                     items.at(i));
+
+                return false;
+            }
+        }
+    }
+
     QFile file(file_str);
     if (!file.open(QIODevice::WriteOnly | QIODevice::Text)){
         QMessageBox::warning(NULL,tr("Playlist Export Failed"),
-                             tr("Could not create file")+" "+file_str);
+                             tr("Could not create file") + " " + file_str);
         return false;
     }
+
     //Base folder of file
     QString base = file_str.section('/', 0, -2);
     QDir base_dir(base);
 
     qDebug() << "Basepath: " << base;
     QTextStream out(&file);
+    out.setCodec(codec);
     out << "#EXTM3U\n";
-    for(int i =0; i < items.size(); ++i){
+    for (int i = 0; i < items.size(); ++i) {
         out << "#EXTINF\n";
-
         //Write relative path if possible
-        if(useRelativePath){
+        if (useRelativePath) {
             //QDir::relativePath() will return the absolutePath if it cannot compute the
             //relative Path
             out << base_dir.relativeFilePath(items.at(i)) << "\n";
-        }
-        else
+        } else {
             out << items.at(i) << "\n";
+        }
     }
-
     return true;
-
 }

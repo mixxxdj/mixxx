@@ -56,8 +56,8 @@ void EngineWorkerScheduler::runWorkers() {
 }
 
 void EngineWorkerScheduler::run() {
-    m_mutex.lock();
     while (!m_bQuit) {
+        m_mutex.lock();
         EngineWorker* pWorker = NULL;
         while (m_scheduleFIFO.read(&pWorker, 1) == 1) {
             if (pWorker && !m_activeWorkers.contains(pWorker)) {
@@ -66,6 +66,7 @@ void EngineWorkerScheduler::run() {
             }
         }
         m_waitCondition.wait(&m_mutex);
+        m_mutex.unlock();
     }
 }
 
