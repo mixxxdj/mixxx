@@ -107,6 +107,8 @@ void GLWaveformRendererFilteredSignal::draw(QPainter *painter, QPaintEvent *even
     int currentPosition = 0;
     if( m_waveformWidget->getPlayPos() >= 0)
     {
+        //TODO (vRince) not really accurate since waveform size une visual reasampling and
+        //have two mores samples to hold the complete visual data
         currentPosition = m_waveformWidget->getPlayPos()*waveformData.size();
         m_waveformWidget->regulateVisualSample(currentPosition);
     }

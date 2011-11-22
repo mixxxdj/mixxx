@@ -66,6 +66,7 @@ void AnalyserWaveform::initialise(TrackPointer tio, int sampleRate, int totalSam
     //qDebug() << "actualVisualSamplingRate" << actualVisualSamplingRate;
     //qDebug() << "numberOfVisualSamples" << numberOfVisualSamples;
 
+    m_waveform->setAudioVisualRatio(samplesPerVisualSample);
     m_waveform->setVisualSampleRate(actualVisualSamplingRate);
     m_waveform->assign(numberOfVisualSamples,0);
 
