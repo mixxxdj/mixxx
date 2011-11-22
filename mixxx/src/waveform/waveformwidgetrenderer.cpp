@@ -87,7 +87,7 @@ void WaveformWidgetRenderer::preRender()
 
     if(m_trackInfoObject)
     {
-        double displayedLength = (double)m_width * getVisualSamplePerPixel() / (0.5*(double)m_trackInfoObject->getWaveForm()->size());
+        double displayedLength = 2.0*(double)m_width * getAudioSamplePerPixel() / ((double)m_trackSamples);
         m_firstDisplayedPosition = m_playPos - displayedLength / 2.0;
         m_lastDisplayedPosition = m_playPos + displayedLength / 2.0;
     }
@@ -187,11 +187,19 @@ bool WaveformWidgetRenderer::zoomOut()
 
 void WaveformWidgetRenderer::updateSamplingPerPixel()
 {
-    //vRince for the moment only more than one sample per pixel is supported
-    //due to the fact we play the visual play pos modulo floor samplePerPixel ...
-    m_visualSamplePerPixel = math_max( 1.0, m_zoomFactor * (1.0 + m_rateAdjust));
-    //TODO vRince remove hard-coded visual sampling rate
-    m_audioSamplePerPixel = getVisualSamplePerPixel()*441.0;
+    if( m_trackInfoObject && m_trackInfoObject->getWaveForm()) {
+        //vRince for the moment only more than one sample per pixel is supported
+        //due to the fact we play the visual play pos modulo floor m_visualSamplePerPixel ...
+        m_visualSamplePerPixel = math_max( 1.0, m_zoomFactor * (1.0 + m_rateAdjust));
+        m_audioSamplePerPixel = getVisualSamplePerPixel()*m_trackInfoObject->getWaveForm()->getAudioVisualRatio();
+    }
+    else {
+        m_visualSamplePerPixel = 0.0;
+        m_audioSamplePerPixel = 0.0;
+    }
+
+    //qDebug() << "m_visualSamplePerPixel" << m_visualSamplePerPixel;
+    //qDebug() << "m_audioSamplePerPixel" << m_audioSamplePerPixel;
 }
 
 double WaveformWidgetRenderer::getVisualSamplePerPixel()
