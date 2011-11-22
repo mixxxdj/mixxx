@@ -53,15 +53,6 @@ void WaveformRenderMark::draw( QPainter* painter, QPaintEvent* event)
     }
     */
 
-    //Could be useful to get his kind of transformation in the waveformWidget
-    //make the painter in the track position 'world'
-    double w = m_waveformWidget->getWidth();
-    double s = m_waveformWidget->getFirstDisplayedPosition();
-    double e = m_waveformWidget->getLastDisplayedPosition();
-
-    float a = w/(e-s);
-    float b = -s;
-
     painter->setWorldMatrixEnabled(false);
 
     for( int i = 0; i < m_marks.size(); i++)
@@ -79,19 +70,16 @@ void WaveformRenderMark::draw( QPainter* painter, QPaintEvent* event)
         int samplePosition = mark.m_point->get();
         if( samplePosition > 0.0)
         {
-            m_waveformWidget->regulateAudioSample(samplePosition);
-            double currentMarkPoint = (double)samplePosition / (double)m_waveformWidget->getTrackSamples();
+            m_waveformWidget->regulateVisualSample(samplePosition);
+            double currentMarkPoint = m_waveformWidget->transformAudioPositionInRendererWorld(samplePosition);
+
+            //NOTE: vRince I guess pixmap width is odd to display the center on the exact line !
+            //external pixmap should respect that ...
+            const int markHalfWidth = mark.m_pixmap.width()/2.0;
 
             //check if the current point need to be displayed
-            if( m_waveformWidget->getFirstDisplayedPosition() < currentMarkPoint &&
-                    m_waveformWidget->getLastDisplayedPosition() > currentMarkPoint)
-            {
-                currentMarkPoint = a*(currentMarkPoint+b);
-                //NOTE: vRince I guess pixmap width is odd to display the center on the exact line !
-                //external pixmap should respect that ...
-                painter->drawPixmap(QPoint(currentMarkPoint-mark.m_pixmap.width()/2,0),
-                                    mark.m_pixmap);
-            }
+            if( currentMarkPoint > -markHalfWidth && currentMarkPoint < m_waveformWidget->getWidth() + markHalfWidth)
+                painter->drawPixmap(QPoint(currentMarkPoint-markHalfWidth,0), mark.m_pixmap);
         }
     }
 

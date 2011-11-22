@@ -17,6 +17,8 @@ WaveformWidgetRenderer::WaveformWidgetRenderer( const char* group) :
 
     m_firstDisplayedPosition = 0.0;
     m_lastDisplayedPosition = 0.0;
+    m_rendererTransformationOffset = 0.0;
+    m_rendererTransformationGain = 0.0;
 
     m_zoomFactor = 2.0;
     m_rateAdjust = 0.0;
@@ -90,11 +92,15 @@ void WaveformWidgetRenderer::preRender()
         double displayedLength = 2.0*(double)m_width * getAudioSamplePerPixel() / ((double)m_trackSamples);
         m_firstDisplayedPosition = m_playPos - displayedLength / 2.0;
         m_lastDisplayedPosition = m_playPos + displayedLength / 2.0;
+        m_rendererTransformationOffset = - m_firstDisplayedPosition;
+        m_rendererTransformationGain = m_width / (m_lastDisplayedPosition - m_firstDisplayedPosition);
     }
     else
     {
         m_firstDisplayedPosition = 0.0;
         m_lastDisplayedPosition = 0.0;
+        m_rendererTransformationOffset = 0.0;
+        m_rendererTransformationGain = 0.0;
     }
 
     //Legacy stuff (Ryan it that OK?)
@@ -212,7 +218,7 @@ double WaveformWidgetRenderer::getAudioSamplePerPixel()
     return m_audioSamplePerPixel;
 }
 
-void WaveformWidgetRenderer::regulateVisualSample( int& sampleIndex)
+void WaveformWidgetRenderer::regulateVisualSample( int& sampleIndex) const
 {
     if( m_visualSamplePerPixel < 1.0)
         return;
@@ -220,12 +226,18 @@ void WaveformWidgetRenderer::regulateVisualSample( int& sampleIndex)
     sampleIndex -= sampleIndex%(2*(int)m_visualSamplePerPixel);
 }
 
-void WaveformWidgetRenderer::regulateAudioSample(int& sampleIndex)
+void WaveformWidgetRenderer::regulateAudioSample(int& sampleIndex) const
 {
     if( m_audioSamplePerPixel < 1.0)
         return;
 
     sampleIndex -= sampleIndex%(2*(int)m_audioSamplePerPixel);
+}
+
+double WaveformWidgetRenderer::transformAudioPositionInRendererWorld( int samplePosition) const
+{
+    const double relativePosition = (double)samplePosition / (double)m_trackSamples;
+    return m_rendererTransformationGain * ( relativePosition + m_rendererTransformationOffset);
 }
 
 void WaveformWidgetRenderer::setTrack(TrackPointer track)
