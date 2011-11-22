@@ -41,8 +41,12 @@ public:
     //those function replace at its best sample position to an admissible
     //sample position according to the current visual resampling
     //this make mark and signal deterministic
-    void regulateVisualSample( int& sampleIndex);
-    void regulateAudioSample( int& sampleIndex);
+    void regulateVisualSample( int& sampleIndex) const;
+    void regulateAudioSample( int& sampleIndex) const;
+
+    //this "regulate" againt visual sampling to make the position in widget
+    //stable and deterministic
+    double transformAudioPositionInRendererWorld( int samplePosition) const;
 
     double getPlayPos() const { return m_playPos;}
     double getZoomFactor() const { return m_zoomFactor;}
@@ -68,6 +72,8 @@ protected:
 
     double m_firstDisplayedPosition;
     double m_lastDisplayedPosition;
+    double m_rendererTransformationOffset;
+    double m_rendererTransformationGain;
 
     double m_rateAdjust;
     double m_zoomFactor;

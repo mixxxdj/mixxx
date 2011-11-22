@@ -36,9 +36,9 @@ void MarkRange::generatePixmap( int weidth, int height)
     m_activePixmap.fill(QColor(0,0,0,0));
     m_disabledPixmap.fill(QColor(0,0,0,0));
 
-    QColor activeBorderColor = m_activeColor.lighter(50);
-    activeBorderColor.setAlphaF(0.3);
-    QColor activeCenterColor = m_activeColor;
+    QColor activeBorderColor = m_activeColor;
+    activeBorderColor.setAlphaF(0.2);
+    QColor activeCenterColor = m_activeColor.darker(200);
     activeCenterColor.setAlphaF(0.05);
 
     QLinearGradient linearGrad(QPointF(0,0), QPointF(0,height));
@@ -56,10 +56,10 @@ void MarkRange::generatePixmap( int weidth, int height)
     painter.fillRect(m_activePixmap.rect(), brush);
     painter.end();
 
-    QColor disabledBorderColor = m_disabledColor;
+    QColor disabledBorderColor = m_disabledColor.darker(10);
     disabledBorderColor.setAlphaF(0.2);
     QColor disabledCenterColor = m_disabledColor.darker(100);
-    disabledCenterColor.setAlphaF(0.05);
+    disabledCenterColor.setAlphaF(0.1);
 
     linearGrad = QLinearGradient(QPointF(0,0), QPointF(0,height));
     linearGrad.setColorAt(0.0, disabledBorderColor);
@@ -111,14 +111,6 @@ void WaveformRenderMarkRange::draw(QPainter *painter, QPaintEvent * /*event*/)
     if( isDirty())
         generatePixmaps();
 
-    //make the painter in the track position 'world'
-    double w = m_waveformWidget->getWidth();
-    double s = m_waveformWidget->getFirstDisplayedPosition();
-    double e = m_waveformWidget->getLastDisplayedPosition();
-
-    float a = w/(e-s);
-    float b = -s;
-
     for( int i = 0; i < markRanges_.size(); i++)
     {
         MarkRange& markRange = markRanges_[i];
@@ -131,19 +123,16 @@ void WaveformRenderMarkRange::draw(QPainter *painter, QPaintEvent * /*event*/)
         if( startSample < 0 || endSample < 0)
             continue;
 
-        m_waveformWidget->regulateAudioSample(startSample);
-        double startPosition = (double)startSample / (double)m_waveformWidget->getTrackSamples();
+        m_waveformWidget->regulateVisualSample(startSample);
+        double startPosition = m_waveformWidget->transformAudioPositionInRendererWorld(startSample);
 
-        m_waveformWidget->regulateAudioSample(endSample);
-        double endPosition = (double)endSample / (double)m_waveformWidget->getTrackSamples();
+        m_waveformWidget->regulateVisualSample(endSample);
+        double endPosition = m_waveformWidget->transformAudioPositionInRendererWorld(endSample);
 
         //range not in the current display
-        if( startPosition > m_waveformWidget->getLastDisplayedPosition() ||
-                endPosition < m_waveformWidget->getFirstDisplayedPosition())
+        if( startPosition > m_waveformWidget->getWidth() ||
+                endPosition < 0)
             continue;
-
-        startPosition = a*(startPosition+b);
-        endPosition = a*(endPosition+b);
 
         QPixmap* selectedPixmap = 0;
 
@@ -165,7 +154,7 @@ void WaveformRenderMarkRange::setupMarkRange(const QDomNode &node, MarkRange &ma
 {
     markRange.m_activeColor = WWidget::selectNodeQString(node, "Color");
     if( markRange.m_activeColor == "") {
-        //vRince kinf of legacy fallback ...
+        //vRince kind of legacy fallback ...
         // As a fallback, grab the mark color from the parent's MarkerColor
         markRange.m_activeColor = WWidget::selectNodeQString(node.parentNode(), "MarkerColor");
         qDebug() << "Didn't get mark Color, using parent's MarkerColor:" << markRange.m_activeColor;
@@ -173,7 +162,7 @@ void WaveformRenderMarkRange::setupMarkRange(const QDomNode &node, MarkRange &ma
 
     markRange.m_disabledColor = WWidget::selectNodeQString(node, "DisabledColor");
     if( markRange.m_disabledColor == "") {
-        //vRince kinf of legacy fallback ...
+        //vRince kind of legacy fallback ...
         // Read the text color, otherwise use the parent's SignalColor.
         markRange.m_disabledColor = WWidget::selectNodeQString(node.parentNode(), "SignalColor");
         qDebug() << "Didn't get mark TextColor, using parent's SignalColor:" << markRange.m_disabledColor;
