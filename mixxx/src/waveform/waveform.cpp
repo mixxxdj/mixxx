@@ -1,7 +1,7 @@
 #include "waveform/waveform.h"
 
 Waveform::Waveform()
-        : m_sampleRate(0) {
+        : m_visualSampleRate(441) {
 }
 
 Waveform::~Waveform() {

@@ -16,12 +16,12 @@ class Waveform {
     Waveform();
     virtual ~Waveform();
 
-    void setSampleRate(double sample) {
-        m_sampleRate = sample;
+    void setVisualSampleRate(double sample) {
+        m_visualSampleRate = sample;
     }
 
-    double getSampleRate() const {
-        return m_sampleRate;
+    double getVisualSampleRate() const {
+        return m_visualSampleRate;
     }
 
     int size() const {
@@ -43,7 +43,7 @@ class Waveform {
     QVector<unsigned char>& getMidData() { return m_data[MidPass];}
     QVector<unsigned char>& getHighData() { return m_data[HighPass];}
     QVector<unsigned char> m_data[FilteredTypeCount];
-    double m_sampleRate;
+    double m_visualSampleRate;
 
     friend class AnalyserWaveform;
     DISALLOW_COPY_AND_ASSIGN(Waveform);
