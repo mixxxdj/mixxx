@@ -1,9 +1,9 @@
 #ifndef WAVEFORMRENDERERABSTRACT_H
 #define WAVEFORMRENDERERABSTRACT_H
 
-#include <QDomNode>
-#include <QPaintEvent>
-#include <QPainter>
+class QDomNode;
+class QPaintEvent;
+class QPainter;
 
 class WaveformWidgetRenderer;
 

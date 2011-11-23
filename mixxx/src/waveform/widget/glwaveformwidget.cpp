@@ -8,6 +8,7 @@
 #include "waveform/waveformrendermark.h"
 #include "waveform/waveformrendermarkrange.h"
 #include "waveform/waveformrendererendoftrack.h"
+#include "waveform/waveformrenderbeat.h"
 
 GLWaveformWidget::GLWaveformWidget( const char* group, QWidget* parent) :
     QGLWidget(parent),
@@ -16,8 +17,9 @@ GLWaveformWidget::GLWaveformWidget( const char* group, QWidget* parent) :
     m_waveformWidgetRenderer->addRenderer<WaveformRenderBackground>();
     m_waveformWidgetRenderer->addRenderer<WaveformRendererEndOfTrack>();
     m_waveformWidgetRenderer->addRenderer<WaveformRenderMarkRange>();
-    m_waveformWidgetRenderer->addRenderer<GLWaveformRendererFilteredSignal>();
     m_waveformWidgetRenderer->addRenderer<WaveformRenderMark>();
+    m_waveformWidgetRenderer->addRenderer<GLWaveformRendererFilteredSignal>();
+    m_waveformWidgetRenderer->addRenderer<WaveformRenderBeat>();
 
     m_waveformWidgetRenderer->init();
 

@@ -9,7 +9,7 @@
 #include "mathstuff.h"
 #include "waveformrenderer.h"
 #include "waveformrenderbackground.h"
-#include "waveformrenderbeat.h"
+//#include "waveformrenderbeat.h"
 #include "waveformrendermark.h"
 #include "waveformrendermarkrange.h"
 #include "waveformrendersignal.h"
@@ -89,7 +89,7 @@ WaveformRenderer::WaveformRenderer(const char* group) :
 
     m_pRenderBackground = 0 /*new WaveformRenderBackground(group, this)*/;
     m_pRenderSignal = new WaveformRenderSignal(group, this);
-    m_pRenderBeat = new WaveformRenderBeat(group, this);
+    m_pRenderBeat = 0; /*new WaveformRenderBeat(group, this);*/
 
     m_pCOVisualResample = new ControlObject(ConfigKey(group, "VisualResample"));
 
@@ -209,9 +209,9 @@ void WaveformRenderer::resize(int w, int h) {
     setupControlObjects();
 
     // Notify children that we've been resized
-    //m_pRenderBackground->resize(w,h);
+    //m_pRenderBackground->resize(w,h); vRince waveform-2.0
     m_pRenderSignal->resize(w,h);
-    m_pRenderBeat->resize(w,h);
+    //m_pRenderBeat->resize(w,h); vRince waveform-2.0
 
     QListIterator<RenderObject*> iter(m_renderObjects);
     while (iter.hasNext()) {
@@ -314,7 +314,7 @@ void WaveformRenderer::setup(QDomNode node) {
 
     //m_pRenderBackground->setup(node);
     m_pRenderSignal->setup(node);
-    m_pRenderBeat->setup(node);
+    //m_pRenderBeat->setup(node);
 }
 
 
@@ -526,7 +526,7 @@ void WaveformRenderer::slotNewTrack(TrackPointer pTrack) {
 
     //m_pRenderBackground->newTrack(pTrack);
     m_pRenderSignal->newTrack(pTrack);
-    m_pRenderBeat->newTrack(pTrack);
+    //m_pRenderBeat->newTrack(pTrack);
 
     QListIterator<RenderObject*> iter(m_renderObjects);
     while (iter.hasNext()) {

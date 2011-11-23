@@ -1,4 +1,5 @@
 
+#include <QDomNode>
 #include <QPainter>
 #include <QPainterPath>
 
@@ -71,7 +72,7 @@ void WaveformRenderMark::draw( QPainter* painter, QPaintEvent* event)
         if( samplePosition > 0.0)
         {
             m_waveformWidget->regulateVisualSample(samplePosition);
-            double currentMarkPoint = m_waveformWidget->transformAudioPositionInRendererWorld(samplePosition);
+            double currentMarkPoint = m_waveformWidget->transformSampleIndexInRendererWorld(samplePosition);
 
             //NOTE: vRince I guess pixmap width is odd to display the center on the exact line !
             //external pixmap should respect that ...
