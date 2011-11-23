@@ -234,10 +234,15 @@ void WaveformWidgetRenderer::regulateAudioSample(int& sampleIndex) const
     sampleIndex -= sampleIndex%(2*(int)m_audioSamplePerPixel);
 }
 
-double WaveformWidgetRenderer::transformAudioPositionInRendererWorld( int samplePosition) const
+double WaveformWidgetRenderer::transformSampleIndexInRendererWorld( int sampleIndex) const
 {
-    const double relativePosition = (double)samplePosition / (double)m_trackSamples;
-    return m_rendererTransformationGain * ( relativePosition + m_rendererTransformationOffset);
+    const double relativePosition = (double)sampleIndex / (double)m_trackSamples;
+    return transformPositionInRendererWorld(relativePosition);
+}
+
+double WaveformWidgetRenderer::transformPositionInRendererWorld( double position) const
+{
+    return m_rendererTransformationGain * ( position + m_rendererTransformationOffset);
 }
 
 void WaveformWidgetRenderer::setTrack(TrackPointer track)

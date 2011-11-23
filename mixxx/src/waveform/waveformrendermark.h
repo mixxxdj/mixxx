@@ -8,9 +8,6 @@
 
 #include "waveformrendererabstract.h"
 
-class QDomNode;
-class QPainter;
-class QPaintEvent;
 class ControlObject;
 
 class Mark

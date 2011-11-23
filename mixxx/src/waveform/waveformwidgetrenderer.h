@@ -46,7 +46,8 @@ public:
 
     //this "regulate" againt visual sampling to make the position in widget
     //stable and deterministic
-    double transformAudioPositionInRendererWorld( int samplePosition) const;
+    double transformSampleIndexInRendererWorld( int sampleIndex) const;
+    double transformPositionInRendererWorld( double position) const;
 
     double getPlayPos() const { return m_playPos;}
     double getZoomFactor() const { return m_zoomFactor;}

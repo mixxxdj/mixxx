@@ -1,7 +1,5 @@
 
-#ifndef WAVEFORMRENDERBEAT_H
-#define WAVEFORMRENDERBEAT_H
-
+/*
 #include <QObject>
 #include <QColor>
 #include <QVector>
@@ -48,6 +46,35 @@ class WaveformRenderBeat : public RenderObject {
     int m_iSampleRate;
     bool m_bBeatActive;
     BeatList m_beatList;
+};*/
+
+
+#ifndef WAVEFORMRENDERBEAT_H
+#define WAVEFORMRENDERBEAT_H
+
+#include "waveformrendererabstract.h"
+#include "track/beats.h"
+
+#include <QColor>
+
+class ControlObjectThreadMain;
+
+class WaveformRenderBeat : public WaveformRendererAbstract {
+public:
+    WaveformRenderBeat( WaveformWidgetRenderer* waveformWidgetRenderer);
+    virtual ~WaveformRenderBeat();
+
+    virtual void init();
+    virtual void setup( const QDomNode& node);
+    virtual void draw( QPainter* painter, QPaintEvent* event);
+
+private:
+    QColor m_beatColor;
+    QColor m_highBeatColor;
+
+    ControlObjectThreadMain* m_beatActive;
+
+    BeatList m_beatsCache;
 };
 
-#endif
+#endif //WAVEFORMRENDERBEAT_H
