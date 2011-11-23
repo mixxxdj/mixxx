@@ -178,8 +178,9 @@ RateControl::RateControl(const char* _group,
 }
 
 RateControl::~RateControl() {
-    m_pConfig->set(ConfigKey("[Master]","wheelsensitivity"),
-                   ConfigValue(m_dWheelSensitivity));
+    QString str;
+    str = str.setNum(m_dWheelSensitivity, 'f');
+    m_pConfig->set(ConfigKey("[Master]","wheelsensitivity"), str);
     delete m_pRateSlider;
     delete m_pRateRange;
     delete m_pRateDir;
