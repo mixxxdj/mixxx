@@ -20,6 +20,10 @@
 
 	<!--
 	CHANGELOG
+	v1.10.0.06	(26/11/2011)
+	* Feature: Added "ProgressColor" & "ProgressAlpha" for track analysis progress visualization 
+	  in waveform overview, lp:803740
+
 	v1.10.0.05	(02/11/2011)
 	* Fix: use "visual_bpm" key instead "bpm" so bpm display does not updates too quickly 
 
@@ -809,6 +813,8 @@
 		<BgColor>#F7F7F7</BgColor>
 		<SignalColor>#0080FF</SignalColor>
 		<MarkerColor>#191919</MarkerColor>
+		<ProgressColor>#0080FF</ProgressColor>
+		<ProgressAlpha>80</ProgressAlpha>
 		<Connection>
 			<ConfigKey>[Channel1],playposition</ConfigKey>
 			<EmitOnDownPress>false</EmitOnDownPress>
@@ -825,6 +831,8 @@
 		<BgColor>#F7F7F7</BgColor>
 		<SignalColor>#E17000</SignalColor>
 		<MarkerColor>#191919</MarkerColor>
+		<ProgressColor>#E17000</ProgressColor>
+		<ProgressAlpha>80</ProgressAlpha>
 		<Connection>
 			<ConfigKey>[Channel2],playposition</ConfigKey>
 			<EmitOnDownPress>false</EmitOnDownPress>

@@ -19,6 +19,10 @@
 
 	<!--
 	CHANGELOG
+	v1.10.0.07	(26/11/2011)
+	* Feature: Added "ProgressColor" & "ProgressAlpha" for track analysis progress visualization 
+	  in waveform overview, lp:803740
+
 	v1.10.0.06	(02/11/2011)
 	* Fix: use "visual_bpm" key instead "bpm" so bpm display does not updates too quickly 
 
@@ -473,7 +477,7 @@
 	</StatusLight>
 	<!--
 	**********************************************
-	Visaul- Waveform overview
+	Visual- Waveform overview
 	**********************************************
 	-->
 	<Overview>
@@ -487,6 +491,8 @@
 		<BgColor>#FFFFFF</BgColor>
 		<SignalColor>#00ff00</SignalColor>
 		<MarkerColor>#0032FF</MarkerColor>
+		<ProgressColor>#00ff00</ProgressColor>
+		<ProgressAlpha>80</ProgressAlpha>
 		<Connection>
 			<ConfigKey>[Channel1],playposition</ConfigKey>
 			<EmitOnDownPress>false</EmitOnDownPress>
@@ -503,6 +509,8 @@
 		<BgColor>#FFFFFF</BgColor>
 		<SignalColor>#00ff00</SignalColor>
 		<MarkerColor>#ff0000</MarkerColor>
+		<ProgressColor>#00ff00</ProgressColor>
+		<ProgressAlpha>80</ProgressAlpha>
 		<Connection>
 			<ConfigKey>[Channel2],playposition</ConfigKey>
 			<EmitOnDownPress>false</EmitOnDownPress>
@@ -524,7 +532,7 @@
 		<Children>
 			<!-- Vinylcontrol 1 sub-widget -->
 			<WidgetGroup>
-				<!--<<Pos>0,0</Pos>-->
+				<!--<Pos>0,0</Pos>-->
 				<Size>35,i</Size>
 				<Style>QGroupBox { border: 0px solid yellow;} QWidget { margin: 0; padding: 0; }</Style>
 				<Children>
@@ -1410,6 +1418,7 @@
 		</Connection>
 	</PushButton>
 
+	<!--
 	############################################################################################
 	############################################################################################
 	Section: Text
