@@ -49,7 +49,7 @@ private slots:
 private:
     void loadSettings();
     void setDefaultShelves();
-    int getEqFreq(int);
+    int getEqFreq(int value, int minimum, int maximum);
     int getSliderPosition(int eqFreq);
     void validate_levels();
 
