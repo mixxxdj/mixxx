@@ -153,6 +153,7 @@ EngineMaster::~EngineMaster()
     delete head_mix;
     delete m_pMasterVolume;
     delete m_pHeadVolume;
+    delete m_pHeadDelay;
     delete clipping;
     delete vumeter;
     delete head_clipping;

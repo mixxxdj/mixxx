@@ -276,6 +276,10 @@ EngineBuffer::~EngineBuffer()
 
     delete m_pKeylock;
     delete m_pEject;
+    
+#ifdef __VINYLCONTROL__    
+    delete m_pVinylPitchTweakKnob;
+#endif
 
     delete [] m_pDitherBuffer;
 

@@ -207,6 +207,7 @@ RateControl::~RateControl() {
     delete m_pJog;
     delete m_pJogFilter;
     delete m_pScratchController;
+    delete m_pWheelSensitivity;
 }
 
 void RateControl::setRateRamp(bool linearMode)
