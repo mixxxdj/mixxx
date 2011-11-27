@@ -23,7 +23,7 @@
 
 #define INTERPOLATION 0
 
-#define DEFAULT_SUBPIXELS_PER_PIXEL 4
+#define DEFAULT_SUBPIXELS_PER_PIXEL 10
 #define DEFAULT_PIXELS_PER_SECOND 100
 
 #define RATE_INCREMENT 0.015
@@ -64,6 +64,7 @@ WaveformRenderer::WaveformRenderer(const char* group) :
     m_dRateRange(0),
     m_dRateDir(0),
     m_iRateAdjusting(0),
+    m_dZoomFactor(1.0),
     m_iDupes(0),
     m_dPlayPosAdjust(0),
     m_iLatency(0),
@@ -115,7 +116,15 @@ WaveformRenderer::WaveformRenderer(const char* group) :
         connect(m_pRateDir, SIGNAL(valueChanged(double)),
                 this, SLOT(slotUpdateRateDir(double)));
     }
-
+    
+    m_pWaveformZoomFactor = new ControlObjectThreadMain(
+        ControlObject::getControl(ConfigKey("[Master]","waveform_zoom_factor")));
+    if (m_pWaveformZoomFactor) {
+        connect(m_pWaveformZoomFactor, SIGNAL(valueChanged(double)),
+                this, SLOT(slotUpdateZoomFactor(double)));
+        m_dZoomFactor = m_pWaveformZoomFactor->get();
+    }
+        
     if(0)
         start();
 }
@@ -206,6 +215,10 @@ void WaveformRenderer::slotUpdateRateDir(double v) {
 
 void WaveformRenderer::slotUpdateLatency(double v) {
     m_iLatency = v;
+}
+
+void WaveformRenderer::slotUpdateZoomFactor(double v) {
+    m_dZoomFactor = v;
 }
 
 void WaveformRenderer::resize(int w, int h) {
@@ -550,8 +563,12 @@ void WaveformRenderer::draw(QPainter* pPainter, QPaintEvent *pEvent) {
 
     m_pRenderSignal->draw(pPainter, pEvent, m_pSampleBuffer, playpos, rateAdjust);
 
-    // Draw various markers.
-    m_pRenderBeat->draw(pPainter, pEvent, m_pSampleBuffer, playpos, rateAdjust);
+    //beats get all weird when we are zoomed out, so don't draw them
+    if (m_dZoomFactor <= 1.0)
+    {
+        // Draw various markers.
+        m_pRenderBeat->draw(pPainter, pEvent, m_pSampleBuffer, playpos, rateAdjust);
+    }
 
     QListIterator<RenderObject*> iter(m_renderObjects);
     while (iter.hasNext()) {
@@ -597,4 +614,8 @@ int WaveformRenderer::getPixelsPerSecond() {
 
 int WaveformRenderer::getSubpixelsPerPixel() {
     return m_iSubpixelsPerPixel;
+}
+
+double WaveformRenderer::getZoomFactor() {
+    return m_dZoomFactor;
 }

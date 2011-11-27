@@ -4,6 +4,7 @@
 #include <QGLContext>
 
 #include "configobject.h"
+#include "controlobject.h"
 #include "waveformviewerfactory.h"
 #include "sharedglcontext.h"
 

@@ -76,7 +76,7 @@ void WaveformRenderSignal::draw(QPainter *pPainter, QPaintEvent *event,
 
     pPainter->setPen(signalColor);
 
-    const double subpixelsPerPixel = m_pParent->getSubpixelsPerPixel() * (1.0 + rateAdjust);
+    const double subpixelsPerPixel = (float)m_pParent->getSubpixelsPerPixel() * (1.0 + rateAdjust) * m_pParent->getZoomFactor();
 
     int subpixelWidth = int(m_iWidth * subpixelsPerPixel);
 
@@ -109,23 +109,27 @@ void WaveformRenderSignal::draw(QPainter *pPainter, QPaintEvent *event,
     // Only draw lines that we have provided
     pPainter->drawLines(lineData, subpixelWidth);
 
-    // Some of the pre-roll is on screen. Draw little triangles to indicate
-    // where the pre-roll is located.
-    if (iCurPos < 2*halfw) {
-        double start_index = 0;
-        int end_index = (halfw - iCurPos/2);
-        QPolygonF polygon;
-        const int polyWidth = 80;
-        polygon << QPointF(0, 0)
-                << QPointF(-polyWidth/subpixelsPerPixel, -m_iHeight/5)
-                << QPointF(-polyWidth/subpixelsPerPixel, m_iHeight/5);
-        polygon.translate(end_index/subpixelsPerPixel, 0);
+    //don't draw preroll if we are way zoomed out
+    if (m_pParent->getZoomFactor() <= 2)
+    {
+        // Some of the pre-roll is on screen. Draw little triangles to indicate
+        // where the pre-roll is located.
+        if (iCurPos < 2*halfw) {
+            double start_index = 0;
+            int end_index = (halfw - iCurPos/2);
+            QPolygonF polygon;
+            const int polyWidth = 80;
+            polygon << QPointF(0, 0)
+                    << QPointF(-polyWidth/subpixelsPerPixel, -m_iHeight/5)
+                    << QPointF(-polyWidth/subpixelsPerPixel, m_iHeight/5);
+            polygon.translate(end_index/subpixelsPerPixel, 0);
 
-        int index = end_index;
-        while (index > start_index) {
-            pPainter->drawPolygon(polygon);
-            polygon.translate(-polyWidth/subpixelsPerPixel, 0);
-            index -= polyWidth;
+            int index = end_index;
+            while (index > start_index) {
+                pPainter->drawPolygon(polygon);
+                polygon.translate(-polyWidth/subpixelsPerPixel, 0);
+                index -= polyWidth;
+            }
         }
     }
     pPainter->restore();

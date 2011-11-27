@@ -45,6 +45,8 @@ WGLWaveformViewer::WGLWaveformViewer(
         ControlObject::getControl(ConfigKey(m_pGroup, "rateRange")));
     m_pRateDir = new ControlObjectThreadMain(
         ControlObject::getControl(ConfigKey(m_pGroup, "rate_dir")));
+    m_pWaveformZoomFactor = new ControlObjectThreadMain(
+        ControlObject::getControl(ConfigKey("[Master]", "waveform_zoom_factor")));
 
     setAcceptDrops(true);
 
@@ -133,6 +135,10 @@ bool WGLWaveformViewer::eventFilter(QObject *o, QEvent *e) {
             // Set the cursor to a hand while the mouse is down.
             setCursor(Qt::ClosedHandCursor);
         }
+        //reset zoom on right click
+        else if (m->button() == Qt::RightButton) {
+            m_pWaveformZoomFactor->slotSet(1.0);
+        }
     } else if(e->type() == QEvent::MouseMove) {
         // Only send signals for mouse moving if the left button is pressed
         if (m_iMouseStart != -1 && m_bScratching) {
@@ -141,7 +147,7 @@ bool WGLWaveformViewer::eventFilter(QObject *o, QEvent *e) {
             // Adjusts for one-to-one movement. Track sample rate in hundreds of
             // samples times two is the number of samples per pixel.  rryan
             // 4/2011
-            double samplesPerPixel = m_pTrackSampleRate->get() / 100.0 * 2;
+            double samplesPerPixel = m_pTrackSampleRate->get() / 100.0 * 2 * m_pWaveformZoomFactor->get();
 
             // To take care of one one movement when zoom changes with pitch
             double rateAdjust = m_pRateDir->get() *
@@ -160,6 +166,15 @@ bool WGLWaveformViewer::eventFilter(QObject *o, QEvent *e) {
             setCursor(Qt::ArrowCursor);
         }
         m_iMouseStart = -1;
+    } else if(e->type() == QEvent::Wheel) {
+        QWheelEvent* w = dynamic_cast<QWheelEvent*>(e);
+        if (w->orientation() == Qt::Vertical)
+        {
+            double new_zoom = m_pWaveformZoomFactor->get() - (m_pWaveformZoomFactor->get() * (float)w->delta()) / 1200.0;
+            new_zoom = math_max(new_zoom, 0.05);
+            new_zoom = math_min(new_zoom, 6.0);
+            m_pWaveformZoomFactor->slotSet(new_zoom);
+        }
     } else {
         return QObject::eventFilter(o,e);
     }

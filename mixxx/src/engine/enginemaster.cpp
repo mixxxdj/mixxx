@@ -96,6 +96,9 @@ EngineMaster::EngineMaster(ConfigObject<ConfigValue> * _config,
     m_pBypassEq = new ControlPushButton(ConfigKey(group, "bypass_eq"));
     m_pBypassEq->setToggleButton(true);
     
+    m_pWaveformZoomFactor = new ControlObject(ConfigKey(group, "waveform_zoom_factor"));
+    m_pWaveformZoomFactor->set(1.0);
+    
     //set up input passthrough o
     //TODO: we should set up n passthroughs for n decks
 	m_passthrough.append(new ControlPushButton(ConfigKey("[Channel1]","inputpassthrough")));

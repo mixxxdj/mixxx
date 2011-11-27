@@ -67,7 +67,7 @@ void WaveformRenderSignalPixmap::updatePixmap(QVector<float> *buffer, double dPl
     if((iCurPos % 2) != 0)
         iCurPos--;
 
-    double subpixelsPerPixel = m_pParent->getSubpixelsPerPixel() * (1.0 + rateAdjust);
+    double subpixelsPerPixel = (float)m_pParent->getSubpixelsPerPixel() * (1.0 + rateAdjust) * m_pParent->getZoomFactor();
     int subpixelWidth = int(m_iWidth * subpixelsPerPixel);
 
     int pixelsToDraw = iCurPos - m_iLastPlaypos;

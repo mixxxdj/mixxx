@@ -64,6 +64,7 @@ class WGLWaveformViewer : public QGLWidget
     ControlObjectThreadMain* m_pRate;
     ControlObjectThreadMain* m_pRateRange;
     ControlObjectThreadMain* m_pRateDir;
+    ControlObjectThreadMain* m_pWaveformZoomFactor;
 
     bool m_bScratching;
     bool m_painting;

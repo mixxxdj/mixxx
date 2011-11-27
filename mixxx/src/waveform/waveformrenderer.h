@@ -37,6 +37,7 @@ public:
     void precomputePixmap();
     int getSubpixelsPerPixel();
     int getPixelsPerSecond();
+    double getZoomFactor();
 
 public slots:
     void slotNewTrack(TrackPointer pTrack);
@@ -46,6 +47,7 @@ public slots:
     void slotUpdateRate(double rate);
     void slotUpdateRateRange(double rate_range);
     void slotUpdateRateDir(double rate_dir);
+    void slotUpdateZoomFactor(double zoom_factor);
 
 protected:
     void run();
@@ -63,6 +65,7 @@ private:
     QTime m_playPosTime, m_playPosTimeOld;
     double m_dPlayPos, m_dPlayPosOld, m_dTargetRate, m_dRate, m_dRateRange, m_dRateDir;
     int m_iRateAdjusting;
+    double m_dZoomFactor;
     int m_iDupes;
     double m_dPlayPosAdjust;
     int m_iLatency;
@@ -76,6 +79,7 @@ private:
     ControlObjectThreadMain *m_pRate;
     ControlObjectThreadMain *m_pRateRange;
     ControlObjectThreadMain *m_pRateDir;
+    ControlObjectThreadMain *m_pWaveformZoomFactor;
 
     ControlObject *m_pCOVisualResample;
 

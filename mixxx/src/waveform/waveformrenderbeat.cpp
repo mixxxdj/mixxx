@@ -130,7 +130,7 @@ void WaveformRenderBeat::draw(QPainter *pPainter, QPaintEvent *event,
     // Therefore, sample s is a beat if it satisfies  s % 60f/b == 0.
     // where s is a /mono/ sample
 
-    double subpixelsPerPixel = m_pParent->getSubpixelsPerPixel()*(1.0+rateAdjust);
+    double subpixelsPerPixel = (float)m_pParent->getSubpixelsPerPixel()*(1.0+rateAdjust) * m_pParent->getZoomFactor();
 
     pPainter->save();
     pPainter->scale(1.0/subpixelsPerPixel,1.0);

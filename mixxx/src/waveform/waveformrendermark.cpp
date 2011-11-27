@@ -157,7 +157,7 @@ void WaveformRenderMark::draw(QPainter *pPainter, QPaintEvent *event,
     if (buffer == NULL)
         return;
 
-    double subpixelsPerPixel = m_pParent->getSubpixelsPerPixel()*(1.0+rateAdjust);
+    double subpixelsPerPixel = (float)m_pParent->getSubpixelsPerPixel()*(1.0+rateAdjust) * m_pParent->getZoomFactor();
 
     pPainter->save();
     pPainter->scale(1.0/subpixelsPerPixel,1.0);
