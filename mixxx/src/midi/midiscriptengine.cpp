@@ -756,8 +756,9 @@ void MidiScriptEngine::log(QString message) {
 }
 
 /* -------- ------------------------------------------------------
-   Purpose: Emits valueChanged() so device outputs update
-   Input:   -
+   Purpose: Calls script function(s) linked to a particular ControlObject
+            so controller outputs update
+   Input:   ControlObject Group and Name strings
    Output:  -
    -------- ------------------------------------------------------ */
 void MidiScriptEngine::trigger(QString group, QString name) {
@@ -769,9 +770,29 @@ void MidiScriptEngine::trigger(QString group, QString name) {
         m_scriptEngineLock.unlock();
     }
 
-    ControlObjectThread *cot = getControlObjectThread(group, name);
-    if(cot != NULL) {
-        cot->slotSet(cot->get());
+    // ControlObject doesn't emit ValueChanged when set to the same value,
+    //  so we have to call the function(s) manually with the current value
+    ConfigKey key = ConfigKey(group,name);
+    if(m_connectedControls.contains(key)) {
+        QMultiHash<ConfigKey, QString>::iterator i = m_connectedControls.find(key);
+        while (i != m_connectedControls.end() && i.key() == key) {
+            QString function = i.value();
+
+            QScriptValue function_value = m_pEngine->evaluate(function);
+            QScriptValueList args;
+            double value;
+            ControlObjectThread *cot = getControlObjectThread(group, name);
+            if(cot != NULL) {
+                args << QScriptValue(cot->get());
+                args << QScriptValue(key.group);
+                args << QScriptValue(key.item);
+                QScriptValue result = function_value.call(QScriptValue(), args);
+                if (result.isError()) {
+                    qWarning()<< "MidiScriptEngine: Call to " << function << " resulted in an error:  " << result.toString();
+                }
+            }
+            ++i;
+        }
     }
 }
 
