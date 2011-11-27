@@ -434,10 +434,14 @@ void CrateFeature::slotExportPlaylist(){
 
     // Create and populate a list of files of the crate
     QList<QString> playlist_items;
-    int rows = m_crateTableModel.rowCount();
+    QScopedPointer<CrateTableModel> pCrateTableModel(
+        new CrateTableModel(this, m_pTrackCollection));
+    pCrateTableModel->setCrate(m_crateTableModel.getCrate());
+    pCrateTableModel->select();
+    int rows = pCrateTableModel->rowCount();
     for (int i = 0; i < rows; ++i) {
-        QModelIndex index = m_crateTableModel.index(i, 0);
-        playlist_items << m_crateTableModel.getTrackLocation(index);
+        QModelIndex index = pCrateTableModel->index(i, 0);
+        playlist_items << pCrateTableModel->getTrackLocation(index);
     }
 
     if (file_location.endsWith(".pls", Qt::CaseInsensitive)) {
