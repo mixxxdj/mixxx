@@ -238,17 +238,16 @@ void BaseSqlTableModel::select() {
                                  sortColumn, m_eSortOrder,
                                  &m_trackSortOrder);
 
-    // Only re-sort results if the sort column was a track column.
-    if (sortColumn > 0) {
-        for (QVector<RowInfo>::iterator it = rowInfo.begin();
-             it != rowInfo.end(); ++it) {
-            it->order = m_trackSortOrder.value(it->trackId, -1);
-        }
-
-        // RowInfo::operator< sorts by the order field, except -1 is placed at the
-        // end so we can easily slice off rows that are no longer present.
-        qSort(rowInfo.begin(), rowInfo.end());
+    // Re-sort the track IDs since filterAndSort can change their order or mark
+    // them for removal (by setting their row to -1).
+    for (QVector<RowInfo>::iterator it = rowInfo.begin();
+         it != rowInfo.end(); ++it) {
+        it->order = m_trackSortOrder.value(it->trackId, -1);
     }
+
+    // RowInfo::operator< sorts by the order field, except -1 is placed at the
+    // end so we can easily slice off rows that are no longer present.
+    qSort(rowInfo.begin(), rowInfo.end());
 
     m_trackIdToRows.clear();
     for (int i = 0; i < rowInfo.size(); ++i) {
