@@ -405,7 +405,6 @@ void CrateFeature::slotImportPlaylist()
     for (int i = 0; i < entries.size(); ++i) {
         m_crateTableModel.addTrack(QModelIndex(), entries[i]);
         //qDebug() << "Playlist entry: " << entries[i];
-
     }
 
     //delete the parser object
@@ -419,10 +418,10 @@ void CrateFeature::onLazyChildExpandation(const QModelIndex &index){
 }
 
 void CrateFeature::slotExportPlaylist(){
-    qDebug() << "Export playlist" << m_lastRightClickedIndex.data();
+    qDebug() << "Export crate" << m_lastRightClickedIndex.data();
     QString file_location = QFileDialog::getSaveFileName(
         NULL,
-        tr("Export Playlist"),
+        tr("Export Crate"),
         QDesktopServices::storageLocation(QDesktopServices::MusicLocation),
         tr("M3U Playlist (*.m3u);;M3U8 Playlist (*.m3u8);;PLS Playlist (*.pls)"));
     // Exit method if user cancelled the open dialog.
