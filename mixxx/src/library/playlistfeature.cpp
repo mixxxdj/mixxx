@@ -19,8 +19,11 @@
 #include "treeitem.h"
 #include "soundsourceproxy.h"
 
-PlaylistFeature::PlaylistFeature(QObject* parent, TrackCollection* pTrackCollection, ConfigObject<ConfigValue>* pConfig)
+PlaylistFeature::PlaylistFeature(QObject* parent,
+                                 TrackCollection* pTrackCollection,
+                                 ConfigObject<ConfigValue>* pConfig)
         : LibraryFeature(parent),
+          m_pTrackCollection(pTrackCollection),
           m_playlistDao(pTrackCollection->getPlaylistDAO()),
           m_trackDao(pTrackCollection->getTrackDAO()),
           m_pConfig(pConfig),
@@ -439,11 +442,17 @@ void PlaylistFeature::slotExportPlaylist(){
     }
     // Create and populate a list of files of the playlist
     QList<QString> playlist_items;
-    int rows = m_pPlaylistTableModel->rowCount();
+    // Create a new table model since the main one might have an active search.
+    QScopedPointer<PlaylistTableModel> pPlaylistTableModel(
+        new PlaylistTableModel(this, m_pTrackCollection));
+    pPlaylistTableModel->setPlaylist(m_pPlaylistTableModel->getPlaylist());
+    pPlaylistTableModel->select();
+    int rows = pPlaylistTableModel->rowCount();
     for (int i = 0; i < rows; ++i) {
-        QModelIndex index = m_pPlaylistTableModel->index(i, 0);
-        playlist_items << m_pPlaylistTableModel->getTrackLocation(index);
+        QModelIndex index = pPlaylistTableModel->index(i, 0);
+        playlist_items << pPlaylistTableModel->getTrackLocation(index);
     }
+
     // check config if relative paths are desired
     bool useRelativePath = static_cast<bool>(m_pConfig->getValueString(
         ConfigKey("[Library]", "UseRelativePathOnExport")).toInt());
