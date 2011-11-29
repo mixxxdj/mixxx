@@ -151,26 +151,30 @@ void WKnob::mouseMoveEvent(QMouseEvent * e)
 
 void WKnob::mousePressEvent(QMouseEvent * e)
 {
-    m_startPos = e->globalPos();
-
-    if (e->button() == Qt::RightButton)
-    {
+    switch (e->button()) {
+    case Qt::RightButton:
         reset();
         m_bRightButtonPressed = true;
-    } else {
+        break;
+    case Qt::LeftButton:
+        m_startPos = e->globalPos();
         QApplication::setOverrideCursor(Qt::BlankCursor);
+        break;
     }
 }
 
 void WKnob::mouseReleaseEvent(QMouseEvent * e)
 {
-    if (e->button() == Qt::LeftButton) {
+    switch (e->button()) {
+    case Qt::LeftButton:
         QCursor::setPos(m_startPos);
         QApplication::restoreOverrideCursor();
         emit(valueChangedLeftUp(m_fValue));
-    } else if (e->button()==Qt::RightButton) {
+        break;
+    case Qt::RightButton:
         m_bRightButtonPressed = false;
         //emit(valueChangedRightUp(m_fValue));
+        break;
     }
 
     update();
