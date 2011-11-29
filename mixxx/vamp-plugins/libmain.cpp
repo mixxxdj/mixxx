@@ -35,7 +35,7 @@ const VampPluginDescriptor *vampGetPluginDescriptor(unsigned int vampApiVersion,
     case  0: return beatTrackerAdapter.getDescriptor();
     case  1: return barBeatTrackPluginAdapter.getDescriptor();
     //case  2: return MixxxBpmDetection.getDescriptor();
-    case  3: return ReplayGain.getDescriptor();
+    case  2: return ReplayGain.getDescriptor();
 
     default: return 0;
     }

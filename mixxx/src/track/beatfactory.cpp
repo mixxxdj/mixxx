@@ -31,6 +31,12 @@ BeatsPointer BeatFactory::makeBeatGrid(TrackPointer pTrack, double dBpm, double 
     return BeatsPointer(pGrid, &BeatFactory::deleteBeats);
 }
 
+BeatsPointer BeatFactory::makeBeatMatrix (TrackPointer pTrack, QVector <double> beats) {
+    BeatMatrix* pMatrix = new BeatMatrix(pTrack);
+    pMatrix->createFromVector(beats);
+    return BeatsPointer(pMatrix,&BeatFactory::deleteBeats);
+
+}
 void BeatFactory::deleteBeats(Beats* pBeats) {
     // This assumes all Beats* variants multiply-inherit from QObject. Kind of
     // ugly. Oh well.
