@@ -27,7 +27,7 @@ class AnalyserBeats: public Analyser {
     bool m_bPass;
     ConfigObject<ConfigValue> *m_pConfigAVT;
     VampAnalyser* mvamp;
-    int m_iSampleRate;
+    int m_iSampleRate, m_iTotalSamples;
     int m_iMinBpm, m_iMaxBpm;
 };
 

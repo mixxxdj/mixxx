@@ -15,7 +15,7 @@
 #include "analyserbeats.h"
 
 static bool sDebug = true;
-
+static bool EnableCorrection = false;
 #define VAMP_MIXXX_MINIMAL "libmixxxminimal"
 #define VAMP_PLUGIN_BEAT_TRACKER_ID "qm-tempotracker:0"
 
@@ -23,6 +23,7 @@ AnalyserBeats::AnalyserBeats(ConfigObject<ConfigValue> *_config) {
     m_pConfigAVT = _config;
     m_bPass = 0;
     m_iSampleRate = 0;
+    m_iTotalSamples = 0;
 }
 
 AnalyserBeats::~AnalyserBeats(){
@@ -36,9 +37,10 @@ void AnalyserBeats::initialise(TrackPointer tio, int sampleRate, int totalSample
 //        return;
    // m_iSampleRate = sampleRate;
     m_iSampleRate = tio->getSampleRate();
+    m_iTotalSamples = totalSamples;
     qDebug()<<"Beat calculation started";
     m_bPass = false;
-    BeatsPointer pBeats = tio->getBeats();
+    //BeatsPointer pBeats = tio->getBeats();
     //if(pBeats)
     //    m_bPass = !(pBeats->getVersion()).contains("BeatMatrix");
 //    if(!m_bPass){
@@ -76,10 +78,27 @@ void AnalyserBeats::finalise(TrackPointer tio) {
          * What is the problem? Almost all modern dance music from the last decades
          * refer to 4/4 signatures. Thus, we must 'correct' the beat positions of Vamp
          */
+        //qDebug()<< "First beat is at " << beats.at(0);
         double corrected_global_bpm = calculateBpm(beats);
-        BeatsPointer pBeats = BeatFactory::makeBeatGrid(tio, corrected_global_bpm, beats.at(0));
+        QVector <double> correctedbeats;
+        //what if the first beat is wrong?
+        double i = beats.at(0);
+        while(i < m_iTotalSamples){
+            correctedbeats << i;
+            i += (60.0 * m_iSampleRate / corrected_global_bpm) * 2;
+        }
+        //BeatsPointer pBeats = BeatFactory::makeBeatGrid(tio, corrected_global_bpm, beats.at(0));
+
+        if(EnableCorrection){
+        BeatsPointer pBeats = BeatFactory::makeBeatMatrix(tio, correctedbeats);
         tio->setBeats(pBeats);
         tio->setBpm(pBeats->getBpm());
+        } else {
+        BeatsPointer pBeats = BeatFactory::makeBeatMatrix(tio, beats);
+        tio->setBeats(pBeats);
+        tio->setBpm(pBeats->getBpm());
+        }
+
     }
     else{
         qDebug() << "Could not detect beat positions from Vamp.";
