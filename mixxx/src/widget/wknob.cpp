@@ -160,6 +160,8 @@ void WKnob::mousePressEvent(QMouseEvent * e)
         m_startPos = e->globalPos();
         QApplication::setOverrideCursor(Qt::BlankCursor);
         break;
+    default:
+        break;
     }
 }
 
@@ -174,6 +176,8 @@ void WKnob::mouseReleaseEvent(QMouseEvent * e)
     case Qt::RightButton:
         m_bRightButtonPressed = false;
         //emit(valueChangedRightUp(m_fValue));
+        break;
+    default:
         break;
     }
 
