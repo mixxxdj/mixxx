@@ -7,9 +7,10 @@
 #include "mixxxutils.cpp"
 
 PlaylistTableModel::PlaylistTableModel(QObject* parent,
-                                       TrackCollection* pTrackCollection)
+                                       TrackCollection* pTrackCollection,
+                                       QString settingsNamespace)
         : TrackModel(pTrackCollection->getDatabase(),
-                     "mixxx.db.model.playlist"),
+                     settingsNamespace),
           BaseSqlTableModel(parent, pTrackCollection,
                             pTrackCollection->getDatabase()),
           m_pTrackCollection(pTrackCollection),

@@ -16,7 +16,8 @@ class PlaylistTableModel : public BaseSqlTableModel, public virtual TrackModel
 {
     Q_OBJECT
   public:
-    PlaylistTableModel(QObject* parent, TrackCollection* pTrackCollection);
+    PlaylistTableModel(QObject* parent, TrackCollection* pTrackCollection,
+                       QString settingsNamespace);
     virtual ~PlaylistTableModel();
     void setPlaylist(int playlistId);
     virtual TrackPointer getTrack(const QModelIndex& index) const;

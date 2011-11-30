@@ -18,7 +18,8 @@ PlaylistFeature::PlaylistFeature(QObject* parent, TrackCollection* pTrackCollect
           m_playlistDao(pTrackCollection->getPlaylistDAO()),
           m_trackDao(pTrackCollection->getTrackDAO()),
           m_playlistTableModel(this, pTrackCollection->getDatabase()) {
-    m_pPlaylistTableModel = new PlaylistTableModel(this, pTrackCollection);
+    m_pPlaylistTableModel = new PlaylistTableModel(this, pTrackCollection,
+                                                   "mixxx.db.model.playlist");
 
     m_pCreatePlaylistAction = new QAction(tr("New Playlist"),this);
     connect(m_pCreatePlaylistAction, SIGNAL(triggered()),
