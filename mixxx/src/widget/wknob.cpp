@@ -15,14 +15,16 @@
 *                                                                         *
 ***************************************************************************/
 
-#include "wknob.h"
-#include "wpixmapstore.h"
-
 #include <QPixmap>
 #include <QtDebug>
 #include <QMouseEvent>
 #include <QPainter>
 #include <QPaintEvent>
+
+#include "widget/wknob.h"
+
+#include "defs.h"
+#include "widget/wpixmapstore.h"
 
 WKnob::WKnob(QWidget * parent, float defaultValue)
         : WAbstractControl(parent, defaultValue),
@@ -189,8 +191,12 @@ void WKnob::mouseReleaseEvent(QMouseEvent * e)
 void WKnob::wheelEvent(QWheelEvent *e)
 {
     double wheelDirection = ((QWheelEvent *)e)->delta() / 120.;
-    double newValue = getValue() + (wheelDirection);
-    this->updateValue(newValue);
+    double newValue = getValue() + wheelDirection;
+
+    // Clamp to [0.0, 127.0]
+    newValue = math_max(0.0, math_min(127.0, newValue));
+
+    updateValue(newValue);
 
     e->accept();
 
