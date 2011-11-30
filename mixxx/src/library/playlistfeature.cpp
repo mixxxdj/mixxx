@@ -28,7 +28,8 @@ PlaylistFeature::PlaylistFeature(QObject* parent,
           m_trackDao(pTrackCollection->getTrackDAO()),
           m_pConfig(pConfig),
           m_playlistTableModel(this, pTrackCollection->getDatabase()) {
-    m_pPlaylistTableModel = new PlaylistTableModel(this, pTrackCollection);
+    m_pPlaylistTableModel = new PlaylistTableModel(this, pTrackCollection,
+                                                   "mixxx.db.model.playlist");
 
     m_pCreatePlaylistAction = new QAction(tr("New Playlist"),this);
     connect(m_pCreatePlaylistAction, SIGNAL(triggered()),
@@ -444,8 +445,11 @@ void PlaylistFeature::slotExportPlaylist(){
     QList<QString> playlist_items;
     // Create a new table model since the main one might have an active search.
     QScopedPointer<PlaylistTableModel> pPlaylistTableModel(
-        new PlaylistTableModel(this, m_pTrackCollection));
+        new PlaylistTableModel(this, m_pTrackCollection,
+                               "mixxx.db.model.playlist_export"));
+
     pPlaylistTableModel->setPlaylist(m_pPlaylistTableModel->getPlaylist());
+    pPlaylistTableModel->setSort(0, Qt::AscendingOrder);
     pPlaylistTableModel->select();
     int rows = pPlaylistTableModel->rowCount();
     for (int i = 0; i < rows; ++i) {
