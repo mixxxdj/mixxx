@@ -15,7 +15,7 @@ BpmControl::BpmControl(const char* _group,
                        ConfigObject<ConfigValue>* _config) :
         EngineControl(_group, _config),
         m_tapFilter(this, filterLength, maxInterval) {
-
+    m_pPlayButton = ControlObject::getControl(ConfigKey(_group, "play"));
     m_pRateSlider = ControlObject::getControl(ConfigKey(_group, "rate"));
     connect(m_pRateSlider, SIGNAL(valueChanged(double)),
             this, SLOT(slotRateChanged(double)),
@@ -208,8 +208,11 @@ void BpmControl::slotControlBeatSync(double v) {
             // And finally, set the slider
             m_pRateSlider->set(fDesiredRate);
 
-            // Adjust the phase:
-            adjustPhase();
+            // If the player is playing, adjust its phase so that it plays in
+            // sync.
+            if (m_pPlayButton->get() > 0) {
+                adjustPhase();
+            }
         }
     }
 }
