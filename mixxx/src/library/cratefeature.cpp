@@ -384,13 +384,13 @@ void CrateFeature::slotImportPlaylist()
         tr("Import Playlist"),
         QDesktopServices::storageLocation(QDesktopServices::MusicLocation),
         tr("Playlist Files (*.m3u *.m3u8 *.pls *.csv)"));
-    //Exit method if user cancelled the open dialog.
+    // Exit method if user cancelled the open dialog.
     if (playlist_file.isNull() || playlist_file.isEmpty() ) return;
 
     Parser* playlist_parser = NULL;
 
-    if (   playlist_file.endsWith(".m3u", Qt::CaseInsensitive)
-        || playlist_file.endsWith(".m3u8", Qt::CaseInsensitive)) {
+    if (playlist_file.endsWith(".m3u", Qt::CaseInsensitive) ||
+        playlist_file.endsWith(".m3u8", Qt::CaseInsensitive)) {
         // .m3u8 is Utf8 representation of an m3u playlist
         playlist_parser = new ParserM3u();
     } else if (playlist_file.endsWith(".pls", Qt::CaseInsensitive)) {
@@ -408,7 +408,6 @@ void CrateFeature::slotImportPlaylist()
     for (int i = 0; i < entries.size(); ++i) {
         m_crateTableModel.addTrack(QModelIndex(), entries[i]);
         //qDebug() << "Playlist entry: " << entries[i];
-
     }
 
     //delete the parser object
@@ -417,27 +416,42 @@ void CrateFeature::slotImportPlaylist()
 }
 
 void CrateFeature::onLazyChildExpandation(const QModelIndex &index){
-	Q_UNUSED(index);
+    Q_UNUSED(index);
     //Nothing to do because the childmodel is not of lazy nature.
 }
 
 void CrateFeature::slotExportPlaylist(){
-    qDebug() << "Export playlist" << m_lastRightClickedIndex.data();
-    QString file_location = QFileDialog::getSaveFileName(NULL,
-                                        tr("Export Playlist"),
-                                        QDesktopServices::storageLocation(QDesktopServices::MusicLocation),
-                                        tr("M3U Playlist (*.m3u);;M3U8 Playlist (*.m3u8);;PLS Playlist (*.pls);;Text CSV (*.csv)"));
-    //Exit method if user cancelled the open dialog.
-    if(file_location.isNull() || file_location.isEmpty()) return;
-    //check config if relative paths are desired
-    bool useRelativePath = (bool)m_pConfig->getValueString(ConfigKey("[Library]","UseRelativePathOnExport")).toInt();
+    qDebug() << "Export crate" << m_lastRightClickedIndex.data();
+    QString file_location = QFileDialog::getSaveFileName(
+        NULL,
+        tr("Export Crate"),
+        QDesktopServices::storageLocation(QDesktopServices::MusicLocation),
+        tr("M3U Playlist (*.m3u);;M3U8 Playlist (*.m3u8);;PLS Playlist (*.pls);;Text CSV (*.csv);;Readable Text (*.txt)"));
+    // Exit method if user cancelled the open dialog.
+    if (file_location.isNull() || file_location.isEmpty()) {
+        return;
+    }
+    // check config if relative paths are desired
+    bool useRelativePath = static_cast<bool>(
+        m_pConfig->getValueString(
+            ConfigKey("[Library]", "UseRelativePathOnExport")).toInt());
+
+    // Create list of files of the crate
+    QList<QString> playlist_items;
+    QScopedPointer<CrateTableModel> pCrateTableModel(
+        new CrateTableModel(this, m_pTrackCollection));
+    pCrateTableModel->setCrate(m_crateTableModel.getCrate());
+    pCrateTableModel->select();
+    int rows = pCrateTableModel->rowCount();
 
     if (file_location.endsWith(".csv", Qt::CaseInsensitive)) {
-            ParserCsv::writeCSVFile(file_location, &m_crateTableModel, useRelativePath);
-    } else {
-        //create and populate a list of files of the crate
+            ParserCsv::writeCSVFile(file_location, pCrateTableModel.data(), useRelativePath);
+    } else if (file_location.endsWith(".txt", Qt::CaseInsensitive)) {
+             ParserCsv::writeReadableTextFile(file_location, pCrateTableModel.data());
+    } else{
+        // populate a list of files of the crate
         QList<QString> playlist_items;
-        int rows = m_crateTableModel.rowCount();
+        int rows = pCrateTableModel->rowCount();
         for (int i = 0; i < rows; ++i) {
             QModelIndex index = m_crateTableModel.index(i, 0);
             playlist_items << m_crateTableModel.getTrackLocation(index);

@@ -66,6 +66,7 @@ public slots:
     void clearChildModel();
     void addToAutoDJ(bool bTop);
 
+    TrackCollection* m_pTrackCollection;
     PlaylistTableModel* m_pPlaylistTableModel;
     PlaylistDAO &m_playlistDao;
     TrackDAO &m_trackDao;

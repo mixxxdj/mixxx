@@ -26,6 +26,7 @@ const QString SetlogFeature::m_sSetlogViewName = QString("SETLOGHOME");
 
 SetlogFeature::SetlogFeature(QObject* parent, ConfigObject<ConfigValue>* pConfig, TrackCollection* pTrackCollection)
         : LibraryFeature(parent),
+          m_pTrackCollection(pTrackCollection),
           m_playlistDao(pTrackCollection->getPlaylistDAO()),
           m_trackDao(pTrackCollection->getTrackDAO()),
 		  m_pCOPlayPos1(NULL),
@@ -33,7 +34,8 @@ SetlogFeature::SetlogFeature(QObject* parent, ConfigObject<ConfigValue>* pConfig
           m_pConfig(pConfig),
 		  m_playlistTableModel(this, pTrackCollection->getDatabase())
 {
-    m_pPlaylistTableModel = new PlaylistTableModel(this, pTrackCollection);
+    m_pPlaylistTableModel = new PlaylistTableModel(this, pTrackCollection,
+                                                    "mixxx.db.model.setlog");
 
     m_pAddToAutoDJAction = new QAction(tr("Add to Auto DJ bottom"),this);
     connect(m_pAddToAutoDJAction, SIGNAL(triggered()),
@@ -391,24 +393,42 @@ void SetlogFeature::onLazyChildExpandation(const QModelIndex &index) {
 
 void SetlogFeature::slotExportPlaylist() {
     qDebug() << "Export playlist" << m_lastRightClickedIndex.data();
-    QString file_location = QFileDialog::getSaveFileName(NULL,
-                                        tr("Export Playlist"),
-                                        QDesktopServices::storageLocation(QDesktopServices::MusicLocation),
-                                        tr("M3U Playlist (*.m3u);;M3U8 Playlist (*.m3u8);;PLS Playlist (*.pls);;Text CSV (*.csv)"));
-    //Exit method if user cancelled the open dialog.
-    if(file_location.isNull() || file_location.isEmpty()) return;
-    //check config if relative paths are desired
-    bool useRelativePath = (bool)m_pConfig->getValueString(ConfigKey("[Library]","UseRelativePathOnExport")).toInt();
+    QString file_location = QFileDialog::getSaveFileName(
+        NULL,
+        tr("Export Playlist"),
+        QDesktopServices::storageLocation(QDesktopServices::MusicLocation),
+        tr("M3U Playlist (*.m3u);;M3U8 Playlist (*.m3u8);;"
+           "PLS Playlist (*.pls);;Text CSV (*.csv);;Readable Text (*.txt)"));
+    // Exit method if user cancelled the open dialog.
+    if (file_location.isNull() || file_location.isEmpty()) {
+        return;
+    }
+
+
+    // Create a new table model since the main one might have an active search.
+    QScopedPointer<PlaylistTableModel> pPlaylistTableModel(
+        new PlaylistTableModel(this, m_pTrackCollection,
+                               "mixxx.db.model.playlist_export"));
+
+    pPlaylistTableModel->setPlaylist(m_pPlaylistTableModel->getPlaylist());
+    pPlaylistTableModel->setSort(0, Qt::AscendingOrder);
+    pPlaylistTableModel->select();
+
+    // check config if relative paths are desired
+    bool useRelativePath = static_cast<bool>(m_pConfig->getValueString(
+        ConfigKey("[Library]", "UseRelativePathOnExport")).toInt());
 
     if (file_location.endsWith(".csv", Qt::CaseInsensitive)) {
-            ParserCsv::writeCSVFile(file_location, m_pPlaylistTableModel, useRelativePath);
+        ParserCsv::writeCSVFile(file_location, pPlaylistTableModel.data(), useRelativePath);
+    } else if (file_location.endsWith(".txt", Qt::CaseInsensitive)) {
+        ParserCsv::writeReadableTextFile(file_location, pPlaylistTableModel.data());
     } else {
-        //create and populate a list of files of the playlist
+        // Create and populate a list of files of the playlist
         QList<QString> playlist_items;
-        int rows = m_pPlaylistTableModel->rowCount();
+        int rows = pPlaylistTableModel->rowCount();
         for (int i = 0; i < rows; ++i) {
-            QModelIndex index = m_pPlaylistTableModel->index(i,0);
-            playlist_items << m_pPlaylistTableModel->getTrackLocation(index);
+            QModelIndex index = pPlaylistTableModel->index(i, 0);
+            playlist_items << pPlaylistTableModel->getTrackLocation(index);
         }
 
         if (file_location.endsWith(".pls", Qt::CaseInsensitive)) {
@@ -419,7 +439,7 @@ void SetlogFeature::slotExportPlaylist() {
             //default export to M3U if file extension is missing
             if(!file_location.endsWith(".m3u", Qt::CaseInsensitive))
             {
-                qDebug() << "Playlist export: No valid file extension specified. Appending .m3u "
+                qDebug() << "Crate export: No valid file extension specified. Appending .m3u "
                          << "and exporting to M3U.";
                 file_location.append(".m3u");
             }
@@ -519,7 +539,7 @@ void SetlogFeature::slotPositionChanged(double value) {
     		qDebug() << "The audience listens to track " << currendPlayingTrackId;
     		currendPlayingTrack->setPlayed(true); // Here the song is realy played, not only loaded.
 
-    		if (m_pPlaylistTableModel->getPlaylistId() == m_playlistId) {
+    		if (m_pPlaylistTableModel->getPlaylist() == m_playlistId) {
     			// View needs a refresh
     			m_pPlaylistTableModel->appendTrack(currendPlayingTrackId);
     		}

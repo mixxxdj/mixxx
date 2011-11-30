@@ -191,3 +191,45 @@ bool ParserCsv::writeCSVFile(const QString &file_str, BaseSqlTableModel* pPlayli
     }
     return true;
 }
+
+bool ParserCsv::writeReadableTextFile(const QString &file_str, BaseSqlTableModel* pPlaylistTableModel)
+{
+    /*
+     * Important note:
+     * On Windows \n will produce a <CR><CL> (=\r\n)
+     * On Linux and OS X \n is <CR> (which remains \n)
+     */
+
+    QFile file(file_str);
+    if (!file.open(QIODevice::WriteOnly | QIODevice::Text)){
+        QMessageBox::warning(NULL,tr("Readable text Export Failed"),
+                             tr("Could not create file")+" "+file_str);
+        return false;
+    }
+
+    QTextStream out(&file);
+
+    int i; // fieldIndex
+    int rows = pPlaylistTableModel->rowCount();
+    for (int j = 0; j < rows; j++) {
+        // writing fields section
+        i = pPlaylistTableModel->fieldIndex(PLAYLISTTRACKSTABLE_POSITION);
+        if (i >= 0){
+            out << pPlaylistTableModel->data(pPlaylistTableModel->index(j,i)).toString();
+        }
+        // TODO(DSC) // Fill in Cue point
+        i = pPlaylistTableModel->fieldIndex(PLAYLISTTRACKSTABLE_ARTIST);
+        if (i >= 0){
+            out << " ";
+            out << pPlaylistTableModel->data(pPlaylistTableModel->index(j,i)).toString();
+        }
+        i = pPlaylistTableModel->fieldIndex(PLAYLISTTRACKSTABLE_TITLE);
+        if (i >= 0){
+            out << " - ";
+            out << pPlaylistTableModel->data(pPlaylistTableModel->index(j,i)).toString();;
+        }
+        // TODO(DSC) // Fill in Label
+        out << "\n";
+    }
+    return true;
+}
