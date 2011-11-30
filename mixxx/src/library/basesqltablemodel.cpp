@@ -242,12 +242,13 @@ void BaseSqlTableModel::select() {
     // them for removal (by setting their row to -1).
     for (QVector<RowInfo>::iterator it = rowInfo.begin();
          it != rowInfo.end(); ++it) {
-        it->order = m_trackSortOrder.value(it->trackId, -1);
         // If the sort column is not a track column then we will sort only to
         // separate removed tracks (order == -1) from present tracks (order ==
-        // 0).
-        if (sortColumn <= 0 && it->order != -1) {
-            it->order = 0;
+        // 0). Otherwise we sort by the order that filterAndSort returned to us.
+        if (sortColumn == 0) {
+            it->order = m_trackSortOrder.contains(it->trackId) ? 0 : -1;
+        } else {
+            it->order = m_trackSortOrder.value(it->trackId, -1);
         }
     }
 
