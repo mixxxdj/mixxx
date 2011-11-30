@@ -243,11 +243,19 @@ void BaseSqlTableModel::select() {
     for (QVector<RowInfo>::iterator it = rowInfo.begin();
          it != rowInfo.end(); ++it) {
         it->order = m_trackSortOrder.value(it->trackId, -1);
+        // If the sort column is not a track column then we will sort only to
+        // separate removed tracks (order == -1) from present tracks (order ==
+        // 0).
+        if (sortColumn <= 0 && it->order != -1) {
+            it->order = 0;
+        }
     }
 
     // RowInfo::operator< sorts by the order field, except -1 is placed at the
-    // end so we can easily slice off rows that are no longer present.
-    qSort(rowInfo.begin(), rowInfo.end());
+    // end so we can easily slice off rows that are no longer present. Stable
+    // sort is necessary because the tracks may be in pre-sorted order so we
+    // should not disturb that if we are only removing tracks.
+    qStableSort(rowInfo.begin(), rowInfo.end());
 
     m_trackIdToRows.clear();
     for (int i = 0; i < rowInfo.size(); ++i) {
