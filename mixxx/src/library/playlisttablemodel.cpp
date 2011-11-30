@@ -274,7 +274,7 @@ void PlaylistTableModel::shuffleTracks(const QModelIndex& currentIndex) {
     }
 
     m_pTrackCollection->getDatabase().commit();
-
+    // TODO(XXX) set dirty because someday select() will only do work on dirty.
     select();
 }
 
