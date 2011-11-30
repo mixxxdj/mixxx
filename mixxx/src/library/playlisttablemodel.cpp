@@ -9,10 +9,11 @@
 #include "mixxxutils.cpp"
 
 PlaylistTableModel::PlaylistTableModel(QObject* parent,
-                                       TrackCollection* pTrackCollection)
+                                       TrackCollection* pTrackCollection,
+                                       QString settingsNamespace)
         : BaseSqlTableModel(parent, pTrackCollection,
                             pTrackCollection->getDatabase(),
-                            "mixxx.db.model.playlist"),
+                            settingsNamespace),
           m_pTrackCollection(pTrackCollection),
           m_playlistDao(m_pTrackCollection->getPlaylistDAO()),
           m_trackDao(m_pTrackCollection->getTrackDAO()),
