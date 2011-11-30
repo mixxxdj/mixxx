@@ -62,7 +62,13 @@ WSpinny::~WSpinny()
     delete m_pScratch;
     delete m_pScratchToggle;
     delete m_pScratchPos;
+#ifdef __VINYLCONTROL__
     delete m_pVinylControlSpeedType;
+    delete m_pVinylControlEnabled;
+    delete m_pSignalEnabled;
+    delete m_pRate;
+#endif
+
 }
 
 void WSpinny::setup(QDomNode node, QString group)
