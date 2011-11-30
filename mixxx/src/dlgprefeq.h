@@ -50,7 +50,7 @@ private:
     void loadSettings();
     void setDefaultShelves();
     int getEqFreq(int value, int minimum, int maximum);
-    int getSliderPosition(int eqFreq);
+    int getSliderPosition(int eqFreq, int minimum, int maximum);
     void validate_levels();
 
     int m_lowEqFreq, m_highEqFreq;
