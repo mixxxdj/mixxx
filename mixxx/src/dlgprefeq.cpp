@@ -82,9 +82,13 @@ void DlgPrefEQ::loadSettings()
         setDefaultShelves();
     }
     SliderHiEQ->setValue(
-        getSliderPosition(m_pConfig->getValueString(ConfigKey(CONFIG_KEY, "HiEQFrequency")).toInt()));
+        getSliderPosition(m_pConfig->getValueString(ConfigKey(CONFIG_KEY, "HiEQFrequency")).toInt(),
+                          SliderHiEQ->minimum(),
+                          SliderHiEQ->maximum()));
     SliderLoEQ->setValue(
-        getSliderPosition(m_pConfig->getValueString(ConfigKey(CONFIG_KEY, "LoEQFrequency")).toInt()));
+        getSliderPosition(m_pConfig->getValueString(ConfigKey(CONFIG_KEY, "LoEQFrequency")).toInt(),
+                          SliderLoEQ->minimum(),
+                          SliderLoEQ->maximum()));
 
     if (m_pConfig->getValueString(ConfigKey(CONFIG_KEY, "LoFiEQs")) == QString("yes")) {
         CheckBoxLoFi->setChecked(true);
@@ -161,13 +165,13 @@ void DlgPrefEQ::slotUpdateLoEQ()
     slotApply();
 }
 
-int DlgPrefEQ::getSliderPosition(int eqFreq)
+int DlgPrefEQ::getSliderPosition(int eqFreq, int minValue, int maxValue)
 {
     if(eqFreq >= kFrequencyUpperLimit) {
         return 480;
     }
-    double dsliderPos = pow(eqFreq, 1./4.);
-    dsliderPos *= 40;
+    double dsliderPos = static_cast<double>(eqFreq - kFrequencyLowerLimit) / (kFrequencyUpperLimit-kFrequencyLowerLimit);
+    dsliderPos = pow(dsliderPos, 1./4.) * (maxValue - minValue) + minValue;
     return dsliderPos;
 }
 
