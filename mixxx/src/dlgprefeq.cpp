@@ -168,7 +168,9 @@ void DlgPrefEQ::slotUpdateLoEQ()
 int DlgPrefEQ::getSliderPosition(int eqFreq, int minValue, int maxValue)
 {
     if(eqFreq >= kFrequencyUpperLimit) {
-        return 480;
+        return maxValue;
+    } else if (eqFreq <= kFrequencyLowerLimit) {
+        return minValue;
     }
     double dsliderPos = static_cast<double>(eqFreq - kFrequencyLowerLimit) / (kFrequencyUpperLimit-kFrequencyLowerLimit);
     dsliderPos = pow(dsliderPos, 1./4.) * (maxValue - minValue) + minValue;
