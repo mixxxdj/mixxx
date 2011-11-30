@@ -70,7 +70,7 @@ QList<QString> ParserM3u::parse(QString sFilename)
         if(isCR_encoded && !isCRLF_encoded)
             ba.replace('\r','\n');
         QTextStream textstream(ba.data());
-        
+
         if (isUtf8(ba.data())) {
             textstream.setCodec("UTF-8");
         } else {
@@ -154,7 +154,7 @@ bool ParserM3u::writeM3UFile(const QString &file_str, QList<QString> &items, boo
     // On Linux and OS X \n is <CR> (which remains \n)
 
     QTextCodec* codec;
-    if(useUtf8){
+    if (useUtf8) {
         codec = QTextCodec::codecForName("UTF-8");
     } else {
         // according to http://en.wikipedia.org/wiki/M3U the default encoding of m3u is Windows-1252
@@ -168,20 +168,19 @@ bool ParserM3u::writeM3UFile(const QString &file_str, QList<QString> &items, boo
                                      tr("File path contains characters, not allowed in m3u playlists.\n") +
                                      tr("Export a m3u8 playlist instead!\n") +
                                      items.at(i));
-
                 return false;
             }
         }
     }
 
     QFile file(file_str);
-    if (!file.open(QIODevice::WriteOnly | QIODevice::Text)){
+    if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
         QMessageBox::warning(NULL,tr("Playlist Export Failed"),
                              tr("Could not create file") + " " + file_str);
         return false;
     }
 
-    //Base folder of file
+    // Base folder of file
     QString base = file_str.section('/', 0, -2);
     QDir base_dir(base);
 
@@ -191,7 +190,7 @@ bool ParserM3u::writeM3UFile(const QString &file_str, QList<QString> &items, boo
     out << "#EXTM3U\n";
     for (int i = 0; i < items.size(); ++i) {
         out << "#EXTINF\n";
-        //Write relative path if possible
+        // Write relative path if possible
         if (useRelativePath) {
             //QDir::relativePath() will return the absolutePath if it cannot compute the
             //relative Path

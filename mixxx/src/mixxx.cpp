@@ -414,7 +414,7 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
 
     m_pWidgetParent = NULL;
     // Loads the skin as a child of m_pView
-    // assignment itentional in next line
+    // assignment intentional in next line
     if (!(m_pWidgetParent = m_pSkinLoader->loadDefaultSkin(m_pView,
                                         m_pKeyboard,
                                         m_pPlayerManager,
