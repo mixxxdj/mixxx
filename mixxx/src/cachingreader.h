@@ -94,29 +94,29 @@ class CachingReader : public EngineWorker {
                   ConfigObject<ConfigValue>* _config);
     virtual ~CachingReader();
 
-    void process();
+    virtual void process();
 
     // Read num_samples from the SoundSource starting with sample into
     // buffer. Returns the total number of samples actually written to buffer.
-    int read(int sample, int num_samples, CSAMPLE* buffer);
+    virtual int read(int sample, int num_samples, CSAMPLE* buffer);
 
     // Issue a list of hints, but check whether any of the hints request a chunk
     // that is not in the cache. If any hints do request a chunk not in cache,
     // then wake the reader so that it can process them. Must only be called
     // from the engine callback.
-    void hintAndMaybeWake(QList<Hint>& hintList);
+    virtual void hintAndMaybeWake(QList<Hint>& hintList);
 
     // Request that the CachingReader load a new track. These requests are
     // processed in the work thread, so the reader must be woken up via wake()
     // for this to take effect.
-    void newTrack(TrackPointer pTrack);
+    virtual void newTrack(TrackPointer pTrack);
 
     // Wake the reader up so that it will process newTrack requests and hints.
-    void wake();
+    virtual void wake();
 
     // Run upkeep operations like loading tracks and reading from file. Run by a
     // thread pool via the EngineWorkerScheduler.
-    void run();
+    virtual void run();
 
     // A Chunk is a memory-resident section of audio that has been cached. Each
     // chunk holds a fixed number of samples given by kSamplesPerChunk.
