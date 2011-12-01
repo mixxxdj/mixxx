@@ -22,8 +22,7 @@ class AnalyserBeats: public Analyser {
     void finalise(TrackPointer tio);
 
   private:
-    double calculateBpm(QVector<double> beats) const;
-
+    QVector<double> correctedBeats ( QVector<double> rawbeats, bool bypass);
     bool m_bPass;
     ConfigObject<ConfigValue> *m_pConfigAVT;
     VampAnalyser* mvamp;

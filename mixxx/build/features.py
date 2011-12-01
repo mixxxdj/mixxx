@@ -394,7 +394,8 @@ class Vamp(Feature):
         sources = ['vamp/vampanalyser.cpp',
                    'analyserbeats.cpp',
                    'analysergainvamp.cpp',
-                   'dlgprefanalysers.cpp']
+                   'dlgprefanalysers.cpp',
+                   'beattools.cpp']
         return sources
 
 class FAAD(Feature):
