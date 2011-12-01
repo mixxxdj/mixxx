@@ -283,8 +283,7 @@ QVector<double> VampAnalyser::GetInitFramesVector() {
             Vamp::RealTime ftime0 = fli->timestamp;
             //double ltime0 = ftime0.sec + (double(ftime0.nsec)
             //        / 1000000000.0);
-            vectout << (double) (Vamp::RealTime::realTime2Frame(ftime0, mRate))
-                    * 2;
+            vectout << (double) (Vamp::RealTime::realTime2Frame(ftime0, mRate));
         }
     }
     return vectout;
@@ -300,8 +299,7 @@ QVector<double> VampAnalyser::GetEndFramesVector() {
             ftime1 = ftime0 + fli->duration;
             //double ltime1 = ftime1.sec + (double(ftime1.nsec)
             //        / 1000000000.0);
-            vectout << (double) (Vamp::RealTime::realTime2Frame(ftime1, mRate))
-                    * 2;
+            vectout << (double) (Vamp::RealTime::realTime2Frame(ftime1, mRate));
         }
     }
     return vectout;

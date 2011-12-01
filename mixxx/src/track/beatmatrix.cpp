@@ -2,6 +2,7 @@
 #include <QMutexLocker>
 
 #include "track/beatmatrix.h"
+#include "beattools.h"
 
 BeatMatrix::BeatMatrix(TrackPointer pTrack, const QByteArray* pByteArray)
         : QObject(),
@@ -96,8 +97,8 @@ double BeatMatrix::findClosestBeat(double dSamples) const {
 double BeatMatrix::findNthBeat(double dSamples, int n) const {
     QMutexLocker locker(&m_mutex);
     // Reduce the Sample Offset to a frame offset.
-    // dSamples = floorf(dSamples/2);
-    // cannot see why
+    dSamples = floorf(dSamples/2);
+
     BeatList::const_iterator it;
     int i;
 
@@ -112,7 +113,7 @@ double BeatMatrix::findNthBeat(double dSamples, int n) const {
         while (it != m_beatList.end()) {
             if (n == 1) {
                 // Return a Sample Offset
-                return (*it);//  * 2);
+                return (*it * 2);
             }
             it++; n--;
         }
@@ -130,7 +131,7 @@ double BeatMatrix::findNthBeat(double dSamples, int n) const {
             it--;
             if (n == -1) {
                 // Return a Sample Offset
-                return (*it);// * 2);
+                return ( *it * 2);
             }
             n++;
         }
@@ -141,8 +142,11 @@ double BeatMatrix::findNthBeat(double dSamples, int n) const {
 
 void BeatMatrix::findBeats(double startSample, double stopSample, QList<double>* pBeatsList) const {
     QMutexLocker locker(&m_mutex);
+    //startSample and stopSample are sample offsets:
+    startSample = floorf(startSample/2);
+    stopSample = floorf(stopSample/2);
     if (!isValid() || startSample > stopSample) {
-        return;
+       return;
     }
     BeatList::const_iterator curBeat = qLowerBound(m_beatList.begin(),
                                                    m_beatList.end(),
@@ -152,7 +156,9 @@ void BeatMatrix::findBeats(double startSample, double stopSample, QList<double>*
                                                     stopSample);
 
     for (; curBeat != stopBeat; curBeat++) {
-        pBeatsList->append(*curBeat);
+        //BeatGrid::findBeats outputs a frame offset * kFrameSize, i.e. a sample offset
+        //here it should be the same:
+        pBeatsList->append(*curBeat * 2);
     }
 }
 
@@ -180,11 +186,14 @@ double BeatMatrix::getBpm() const {
     }
 
     // TODO(XXX) not actually correct. We need the true song length.
-    double startSample = *m_beatList.begin();
-    double stopSample = *(m_beatList.end()-1);
-    double songDurationMinutes =
-            (stopSample - startSample) / (2 * 60.0f * m_iSampleRate);
-    return m_beatList.size() / songDurationMinutes;
+    //    double startSample = *m_beatList.begin();
+    //    double stopSample = *(m_beatList.end()-1);
+    //    double songDurationMinutes =
+    //            (stopSample - startSample) / (60.0f * m_iSampleRate);
+    //    return m_beatList.size() / songDurationMinutes;
+    //
+    //    statistical approach from Tobias Rafreider should work here too.
+    return BeatTools::calculateBpm(m_beatList.toVector(),m_iSampleRate,0,9999);
 }
 
 double BeatMatrix::getBpmRange(double startSample, double stopSample) const {
@@ -193,19 +202,28 @@ double BeatMatrix::getBpmRange(double startSample, double stopSample) const {
         return -1;
     }
 
+
     BeatList::const_iterator startBeat = qLowerBound(m_beatList.begin(),
-                                               m_beatList.end(),
-                                               startSample);
+                                                     m_beatList.end(),
+                                                     startSample);
     BeatList::const_iterator stopBeat = qUpperBound(m_beatList.begin(),
                                                     m_beatList.end(),
                                                     stopSample);
-    double rangeDurationMinutes =
-           (stopSample - startSample) / (2 * 60.0f * m_iSampleRate) ;
-    // Subtracting returns the number of beats between the samples referred to
-    // by the start and end.
-    double beatsInRange = stopBeat - startBeat;
+    QVector<double> beatvect;
+    for (; startBeat != stopBeat; startBeat++) {
+        beatvect.append(*startBeat);
+    }
+    if (beatvect.size()<8){
+        double rangeDurationMinutes =
+                (stopSample - startSample) / ( 60.0f * m_iSampleRate) ;
+        // Subtracting returns the number of beats between the samples referred to
+        // by the start and end.
+        double beatsInRange = stopBeat - startBeat;
 
-    return beatsInRange / rangeDurationMinutes;
+        return beatsInRange / rangeDurationMinutes;
+    }
+
+    return BeatTools::calculateBpm(beatvect,m_iSampleRate,0,9999);
 }
 
 void BeatMatrix::addBeat(double dBeatSample) {
