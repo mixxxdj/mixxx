@@ -209,15 +209,19 @@ bool ParserCsv::writeReadableTextFile(const QString &file_str, BaseSqlTableModel
 
     QTextStream out(&file);
 
+    // export each row as "01. 00:00 Artist - Title"
+
     int i; // fieldIndex
     int rows = pPlaylistTableModel->rowCount();
     for (int j = 0; j < rows; j++) {
         // writing fields section
         i = pPlaylistTableModel->fieldIndex(PLAYLISTTRACKSTABLE_POSITION);
         if (i >= 0){
-            out << pPlaylistTableModel->data(pPlaylistTableModel->index(j,i)).toString();
+            int nr = pPlaylistTableModel->data(pPlaylistTableModel->index(j,i)).toInt();
+            out << QString("%1.").arg(nr,2,10,QLatin1Char('0'));
         }
         // TODO(DSC) // Fill in Cue point
+
         i = pPlaylistTableModel->fieldIndex(PLAYLISTTRACKSTABLE_ARTIST);
         if (i >= 0){
             out << " ";
@@ -228,7 +232,6 @@ bool ParserCsv::writeReadableTextFile(const QString &file_str, BaseSqlTableModel
             out << " - ";
             out << pPlaylistTableModel->data(pPlaylistTableModel->index(j,i)).toString();;
         }
-        // TODO(DSC) // Fill in Label
         out << "\n";
     }
     return true;
