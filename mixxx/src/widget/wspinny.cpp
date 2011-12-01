@@ -489,13 +489,17 @@ void WSpinny::mousePressEvent(QMouseEvent * e)
     {
         QApplication::setOverrideCursor(QCursor(Qt::ClosedHandCursor));
 
-        m_dInitialPos = m_pPlayPos->get() * m_pTrackSamples->get();
+        // Coordinates from center of widget
+        double c_x = x - width()/2;
+        double c_y = y - height()/2;
+        double theta = (180.0f/M_PI)*atan2(c_x, -c_y);
+        m_dPrevTheta = theta;
+        m_iFullRotations = calculateFullRotations(m_pPlayPos->get());
+        theta += m_iFullRotations * 360.0;
+        m_dInitialPos = calculatePositionFromAngle(theta) * m_pTrackSamples->get();
+
         m_pScratchPos->slotSet(0);
         m_pScratchToggle->slotSet(1.0f);
-
-        m_iFullRotations = calculateFullRotations(m_pPlayPos->get());
-
-        m_dPrevTheta = calculateAngle(m_pPlayPos->get());
 
         //Trigger a mouse move to immediately line up the vinyl with the cursor
         mouseMoveEvent(e);
