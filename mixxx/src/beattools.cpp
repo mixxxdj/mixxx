@@ -10,6 +10,7 @@
 #include <QList>
 #include <QMap>
 #include <math.h>
+#define BPM_ERROR 0.05f //we are generous and assume the global_BPM to be at most 0.12 BPM far away from the correct one
 
 #include "beattools.h"
 
@@ -168,7 +169,6 @@ double BeatTools::calculateBpm(QVector<double> beats, int SampleRate, int min_bp
       * the approached beat is just a couple of samples away, i.e., not worse than 0.05 BPM units.
       * The distance between these two samples can be used for BPM error correction.
       */
-#define BPM_ERROR 0.05f //we are generous and assume the global_BPM to be at most 0.12 BPM far away from the correct one
 
 
      double perfect_bpm = global_bpm;
@@ -226,4 +226,34 @@ double BeatTools::calculateBpm(QVector<double> beats, int SampleRate, int min_bp
 
      return (fabs(bpm_diff) <= BPM_ERROR)? rounded_bpm : perfect_bpm;
 
+}
+
+double BeatTools::calculateOffset(const QVector<double> beats1, const QVector<double> beats2, const int SampleRate){
+    /*
+     * Here we compare to beats vector and try to determine the best offset
+     * based on the occurences, i.e. by assuming that the almost correct beats
+     * are more than the "false" ones.
+     */
+    double beatlength1 = (60.0 * SampleRate  / calculateBpm(beats1, SampleRate, 0, 9999));
+    double error = (60 * SampleRate / BPM_ERROR);
+    int MaxFreq = 1;
+    double BestOffset = beats1.at(0) - beats2.at(0);
+    double offset = -beatlength1/2;
+    while (offset<beatlength1/2){
+        double freq = 0;
+        for (int i=0; i<beats2.size(); i++){
+            QVector<double>::const_iterator it;
+            it = qUpperBound(beats1.begin(), beats1.end(), beats2.at(i));
+            if(*it -(beats2.at(i)+offset)< error)
+                freq++;
+        }
+        if(freq>MaxFreq){
+            MaxFreq = freq;
+            BestOffset = offset;
+            if(sDebug)
+                qDebug()<<"Best offset "<< BestOffset<<" guarantees that "<< MaxFreq <<" beats almost coincides";
+        }
+        offset++;
+    }
+    return BestOffset;
 }

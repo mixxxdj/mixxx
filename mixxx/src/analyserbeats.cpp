@@ -16,11 +16,23 @@
 #include "beattools.h"
 
 static bool sDebug = true;
-static bool DisableBpmCorrection = true;
+static bool DisableBpmCorrection = false;
+static bool DisableOffsetCorrection = false;
+
+// libmixxxminimal:qm-tempotracker
 #define VAMP_MIXXX_MINIMAL "libmixxxminimal"
 #define VAMP_PLUGIN_BEAT_TRACKER_ID "qm-tempotracker:0"
-// libmixxxminimal:qm-tempotracker
+
+
 // libmvamp:marsyas_ibt:0
+//#define VAMP_MIXXX_MINIMAL "libmvamp"
+//#define VAMP_PLUGIN_BEAT_TRACKER_ID "marsyas_ibt:0"
+
+//beatroot-vamp:beatroot:0
+
+//#define VAMP_MIXXX_MINIMAL "beatroot-vamp"
+//#define VAMP_PLUGIN_BEAT_TRACKER_ID "beatroot:0"
+
 
 AnalyserBeats::AnalyserBeats(ConfigObject<ConfigValue> *_config) {
     m_pConfigAVT = _config;
@@ -104,16 +116,34 @@ QVector<double> AnalyserBeats::correctedBeats (QVector<double> rawbeats, bool by
     double corrected_global_bpm = BeatTools::calculateBpm(rawbeats, m_iSampleRate, m_iMinBpm, m_iMaxBpm);
 
     QVector <double> corrbeats;
-    //what if the first beat is wrong?
-    //it seems to me that the second beat is more precise...
-    double i = rawbeats.at(1) - ((60.0 * m_iSampleRate / corrected_global_bpm) );
-    if(i<0){
-        qDebug()<<"First beat is less than 0:" <<i;
-        i=rawbeats.at(0);
-    }
+    double BpmFrame = (60.0 * m_iSampleRate / corrected_global_bpm);
+    /*
+     * We start building a grid and assume that the first beat is correct:
+     */
+    double i = rawbeats.at(0);
     while(i < m_iTotalSamples){
-        corrbeats << i;
-        i += ( 60.0 * m_iSampleRate / corrected_global_bpm);
+           corrbeats << i;
+           i += BpmFrame;
+       }
+    /*
+     * BeatTools::calculateOffset compares the beats from Vamp and the beats from
+     * the beats contstructed above. See beattools.* for details.
+     */
+    if(!DisableOffsetCorrection){
+        double offset = BeatTools::calculateOffset(rawbeats, corrbeats, m_iSampleRate);
+        corrbeats.clear();
+        double FirstFrame = offset;
+        while (FirstFrame < 0)
+            FirstFrame += BpmFrame;
+        while (FirstFrame > BpmFrame)
+            FirstFrame -= BpmFrame;
+        i = FirstFrame;
+        if(sDebug)
+            qDebug()<<"First Frame is at " << i <<". Before it was at " << rawbeats.at(0);
+        while(i < m_iTotalSamples){
+            corrbeats << i;
+            i += BpmFrame;
+        }
     }
     return corrbeats;
 
