@@ -11,10 +11,12 @@ External Mixer Mode
 -------------------
 
 
-.. _section 6.2:
+.. _latency-samplerate-audioapi:
 
 Latency, Sample Rate, and Audio API
 ===================================
+
+
 
 Audio Inputs
 ============

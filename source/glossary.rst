@@ -27,13 +27,13 @@ Glossary of Terms
      The waveform summary shows the waveform envelope of the track near the current playback postition.
 
    waveform overview
-     The waveform overview shows the waveform envelope of the entire track, and is 
+     The waveform overview shows the waveform envelope of the entire track, and is
      useful because they allow DJs to see breakdowns far in advance.
 
    key lock
      With key lock enabled, the tempo of the track will change but the pitch remains consistent.
      When unlocked, the pitch slider will speed up (or slow down) the track and
-     the pitch will increase (or decrease) along with it. 
+     the pitch will increase (or decrease) along with it.
 
    headphone button
      The headphone button is used to indicate whether or not you are
@@ -61,9 +61,21 @@ Glossary of Terms
 
    BPM
      Beats per minute (BPM) is used as a measure of tempo in music.
-     If you tap your foot to music you are following the “beat”. 
+     If you tap your foot to music you are following the “beat”.
      If you count how many taps you do in a minute you have calculated the BPM.
 
    Beatmatching
      A mixing technique used to establish a similar tempo with two or more tracks,
      making them sound like just one track.
+
+   MIDI Controller
+     An external hardware device, usually connected to your computer via USB,
+     that allows you to control audio applications. Many DJs prefer to control
+     DJ software using physical knobs, faders, and wheels instead of using a
+     keyboard.
+
+   Vinyl Control
+     A method of controlling DJ applications which simulates the traditional
+     DJing paradigm of two turntables. Using special vinyl records called
+     "timecode records", the DJ application analyzes the timecode signal and
+     simulates the sound and feel of having your music collection on vinyl.
