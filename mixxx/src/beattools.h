@@ -22,10 +22,10 @@ public:
      */
     static double calculateBpm(QVector<double> beats, int SampleRate, int min_bpm, int max_bpm);
 
-    /* TODO: implement a method to find the best offset so that
+    /* This implement a method to find the best offset so that
      * the grid generated from bpm is close enough to the one we get from vamp.
      */
-
+    static double calculateOffset(const QVector<double> beats1, const QVector<double> beats2, const int SampleRate);
 };
 
 #endif /* BEATTOOLS_H_ */
