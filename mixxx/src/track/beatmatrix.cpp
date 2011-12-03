@@ -213,6 +213,7 @@ double BeatMatrix::getBpmRange(double startSample, double stopSample) const {
     for (; startBeat != stopBeat; startBeat++) {
         beatvect.append(*startBeat);
     }
+    // Statistical approach works better if we have more than 8 samples:
     if (beatvect.size()<8){
         double rangeDurationMinutes =
                 (stopSample - startSample) / ( 60.0f * m_iSampleRate) ;
