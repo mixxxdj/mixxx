@@ -67,9 +67,13 @@ double BeatTools::calculateBpm(QVector<double> beats, int SampleRate, int min_bp
         double avg_bpm = 60*N / time;
 
         if(avg_bpm < min_bpm)
+        {
             avg_bpm *= 2;
-        if(avg_bpm > max_bpm)
+        }
+        if(avg_bpm > max_bpm){
             avg_bpm /=2;
+        }
+
 
         //add to local BPM to list
         average_bpm_list << avg_bpm;
@@ -228,32 +232,41 @@ double BeatTools::calculateBpm(QVector<double> beats, int SampleRate, int min_bp
 
 }
 
-double BeatTools::calculateOffset(const QVector<double> beats1, const QVector<double> beats2, const int SampleRate){
+double BeatTools::calculateOffset(const QVector<double> beats1, const QVector<double> beats2
+        , const int SampleRate, int min_bpm, int max_bpm) {
     /*
      * Here we compare to beats vector and try to determine the best offset
      * based on the occurences, i.e. by assuming that the almost correct beats
      * are more than the "false" ones.
      */
-    double beatlength1 = (60.0 * SampleRate  / calculateBpm(beats1, SampleRate, 0, 9999));
-    double error = (60 * SampleRate / BPM_ERROR);
+    double bpm1 = calculateBpm(beats1, SampleRate, min_bpm, max_bpm);
+    double beatlength1 = (60.0 * SampleRate / bpm1);
     int MaxFreq = 1;
     double BestOffset = beats1.at(0) - beats2.at(0);
-    double offset = -beatlength1/2;
-    while (offset<beatlength1/2){
+    double offset = 0;//floor(-beatlength1 / 2 + 0.5);
+    while (offset < (beatlength1 / 2) )
+    {
         double freq = 0;
-        for (int i=0; i<beats2.size(); i++){
+        for (int i = 0; i < beats2.size(); i+=4)
+        {
             QVector<double>::const_iterator it;
             it = qUpperBound(beats1.begin(), beats1.end(), beats2.at(i));
-            if(*it -(beats2.at(i)+offset)< error)
+            if (fabs(*it - beats2.at(i)-offset) <= .02 * (60*SampleRate/bpm1))
                 freq++;
         }
-        if(freq>MaxFreq){
+        if (freq > MaxFreq)
+        {
             MaxFreq = freq;
             BestOffset = offset;
-            if(sDebug)
-                qDebug()<<"Best offset "<< BestOffset<<" guarantees that "<< MaxFreq <<" beats almost coincides";
         }
         offset++;
     }
-    return BestOffset;
+
+    if (sDebug) {
+        qDebug() << "Best offset " << BestOffset << " guarantees that "
+                << MaxFreq << " over " << beats1.size()/4
+                << " beats almost coincides. ";
+    }
+
+    return floor(BestOffset + (.02 * (60*SampleRate/bpm1)));
 }

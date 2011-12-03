@@ -118,7 +118,7 @@ QVector<double> AnalyserBeats::correctedBeats (QVector<double> rawbeats, bool by
     QVector <double> corrbeats;
     double BpmFrame = (60.0 * m_iSampleRate / corrected_global_bpm);
     /*
-     * We start building a grid and assume that the first beat is correct:
+     * We start building a grid:
      */
     double i = rawbeats.at(0);
     while(i < m_iTotalSamples){
@@ -130,16 +130,16 @@ QVector<double> AnalyserBeats::correctedBeats (QVector<double> rawbeats, bool by
      * the beats contstructed above. See beattools.* for details.
      */
     if(!DisableOffsetCorrection){
-        double offset = BeatTools::calculateOffset(rawbeats, corrbeats, m_iSampleRate);
+        double offset = BeatTools::calculateOffset(rawbeats, corrbeats, m_iSampleRate, m_iMinBpm,  m_iMaxBpm);
         corrbeats.clear();
-        double FirstFrame = offset;
+        double FirstFrame = offset + rawbeats.at(0);
         while (FirstFrame < 0)
             FirstFrame += BpmFrame;
         while (FirstFrame > BpmFrame)
             FirstFrame -= BpmFrame;
         i = FirstFrame;
         if(sDebug)
-            qDebug()<<"First Frame is at " << i <<". Before it was at " << rawbeats.at(0);
+            qDebug()<<"First Frame is at " << i <<".It was at " << rawbeats.at(0);
         while(i < m_iTotalSamples){
             corrbeats << i;
             i += BpmFrame;
