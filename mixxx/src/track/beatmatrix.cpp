@@ -192,8 +192,19 @@ double BeatMatrix::getBpm() const {
     //            (stopSample - startSample) / (60.0f * m_iSampleRate);
     //    return m_beatList.size() / songDurationMinutes;
     //
+#ifdef __VAMP__
     //    statistical approach from Tobias Rafreider should work here too.
     return BeatTools::calculateBpm(m_beatList.toVector(),m_iSampleRate,0,9999);
+
+#else
+
+    double startSample = *m_beatList.begin();
+    double stopSample = *(m_beatList.end()-1);
+    double songDurationMinutes =
+            (stopSample - startSample) / (60.0f * m_iSampleRate);
+    return m_beatList.size() / songDurationMinutes;
+
+#endif
 }
 
 double BeatMatrix::getBpmRange(double startSample, double stopSample) const {
@@ -209,6 +220,7 @@ double BeatMatrix::getBpmRange(double startSample, double stopSample) const {
     BeatList::const_iterator stopBeat = qUpperBound(m_beatList.begin(),
                                                     m_beatList.end(),
                                                     stopSample);
+#ifdef __VAMP__
     QVector<double> beatvect;
     for (; startBeat != stopBeat; startBeat++) {
         beatvect.append(*startBeat);
@@ -225,6 +237,16 @@ double BeatMatrix::getBpmRange(double startSample, double stopSample) const {
     }
 
     return BeatTools::calculateBpm(beatvect,m_iSampleRate,0,9999);
+
+#else
+    double rangeDurationMinutes =
+                   (stopSample - startSample) / ( 60.0f * m_iSampleRate) ;
+           // Subtracting returns the number of beats between the samples referred to
+           // by the start and end.
+           double beatsInRange = stopBeat - startBeat;
+
+           return beatsInRange / rangeDurationMinutes;
+#endif
 }
 
 void BeatMatrix::addBeat(double dBeatSample) {
