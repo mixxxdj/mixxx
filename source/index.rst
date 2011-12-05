@@ -38,7 +38,7 @@ Table of Contents
    chapters/controlling_mixxx
    chapters/vinyl_control
    chapters/livebroadcasting
-   .. chapters/djing_with_mixxx
+   chapters/djing_with_mixxx
    chapters/advanced_topics
    chapters/getting_involved
 
