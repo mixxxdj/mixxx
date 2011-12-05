@@ -36,6 +36,7 @@ Table of Contents
    chapters/user_interface
    chapters/library
    chapters/controlling_mixxx
+   chapters/vinyl_control
    chapters/livebroadcasting
    .. chapters/djing_with_mixxx
    chapters/advanced_topics

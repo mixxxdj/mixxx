@@ -41,13 +41,22 @@ Latency
 -------
 
 Latency is the lag time in milliseconds that it takes for Mixxx to process your
-input (turning knobs, sliding the crossfader, etc.). Additionally, latency
-determines how quickly your :term:`Operating System` expects Mixxx to
-react. Lower latency means Mixxx will be more responsive. On the other hand,
-setting your latency too low may be too much for your computer to handle. In
-this situation, Mixxx playback will be choppy and very clearly distorted as your
-computer will not be able to keep up with how frequently Mixxx is processing
-audio.
+input (turning knobs, sliding the crossfader, etc.). For example, a latency of
+36 ms indicates that it will take approximately 36 ms for Mixxx to stop the
+audio after you toggle the play button. Additionally, latency determines how
+quickly your :term:`Operating System` expects Mixxx to react. Lower latency
+means Mixxx will be more responsive. On the other hand, setting your latency too
+low may be too much for your computer to handle. In this situation, Mixxx
+playback will be choppy and very clearly distorted as your computer will not be
+able to keep up with how frequently Mixxx is processing audio.
+
+A latency between 36-64 ms is acceptable if you are using Mixxx with a
+keyboard/mouse or a MIDI controller. A latency below 10 ms is recommended when
+vinyl control is used because Mixxx will feel unresponsive otherwise.
+
+Keep in mind that *lower latencies require better soundcards and faster CPUs*
+and that *zero latency DJ software is a myth* (although Mixxx is capable of
+sub-1ms operation).
 
 Sample Rate
 -----------
@@ -56,12 +65,11 @@ The sample rate setting in Mixxx determines how many samples per second are
 produced by Mixxx. In general, a higher sample rate means that Mixxx produces
 more audio data for your soundcard. This takes more CPU time, but in theory
 produces higher audio quality. On high-wattage club sound systems, it may become
-apparent if your audio sample rate is too low. The most common setting for this
-is 44.1 kHz.
+apparent if your audio sample rate is too low.
 
-.. note:: A sample rate of 96kHz takes Mixxx over twice as long to compute. This
-          is an important consideration as you will not be able to achieve as
-          low latency if you choose a high sample rate.
+.. warning:: A sample rate of 96kHz takes Mixxx over twice as long to compute.
+             Keep in mind that increasing the samplerate will increase CPU usage
+             and likely raise the minimum latency you can achieve.
 
 Audio API
 ---------
@@ -88,9 +96,9 @@ best choice is for your operating system.
 +----------------------------------------+--------------+
 | OSX / CoreAudio                        | Good         |
 +----------------------------------------+--------------+
-| GNU Linux / ALSA                       | Good         |
+| GNU Linux / OSS                        | OK           |
 +----------------------------------------+--------------+
-| GNU Linux / OSS                        | Good         |
+| GNU Linux / ALSA                       | Good         |
 +----------------------------------------+--------------+
 | GNU Linux / JACK (Advanced)            | Good         |
 +----------------------------------------+--------------+
@@ -104,3 +112,7 @@ best choice is for your operating system.
              results in very poor performance. Make sure to run Mixxx using the
              ``pasuspender`` tool on GNU/Linux distributions that use
              PulseAudio.
+
+.. note:: On GNU/Linux using JACK, make sure to start your JACK daemon *before*
+          running Mixxx. Otherwise JACK will not appear as a Sound API in the
+          preferences.
