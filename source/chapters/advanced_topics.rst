@@ -22,5 +22,7 @@ Migrating Your Library to Another Computer
 Deleting Your Library
 =====================
 
-.. warning:: Deleting your library will lose all of your metadata. This includes saved **hotcues**, **loops**, **comments**, **ratings**, and other library related metadata. Only delete your library if you are fine with losing these.
-
+.. warning:: Deleting your library will lose all of your metadata. This includes
+             saved **hotcues**, **loops**, **comments**, **ratings**, and other
+             library related metadata. Only delete your library if you are fine
+             with losing these.
