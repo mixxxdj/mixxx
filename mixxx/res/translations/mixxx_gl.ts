@@ -367,8 +367,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Analyze Entire Song</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Analizar todo o tema</translation>
         </message>
     </context>
     <context>
@@ -379,8 +378,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Successfully mapped to: </source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Asignado correctamente a: </translation>
         </message>
         <message>
             <source>Next</source>
@@ -388,18 +386,15 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>MIDI Learning Wizard</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Asistente de aprendizaxe MIDI</translation>
         </message>
         <message>
             <source>Welcome to the MIDI Learning Wizard</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Benvido ao Asistente de aprendizaxe MIDI</translation>
         </message>
         <message>
             <source>This wizard allows you to easily map the controls on your MIDI controller to Mixxx's controls.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Este asistente permítelle mappear facilmente os controis MIDI cos controis de Mixxx.</translation>
         </message>
         <message>
             <source>Begin</source>
@@ -407,8 +402,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Please tweak the control for:</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Por favor, axuste o control para:</translation>
         </message>
         <message>
             <source>Mixxx Control</source>
@@ -424,8 +418,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>MIDI learning complete!</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Aprendizase MIDI completado!</translation>
         </message>
         <message>
             <source>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
@@ -450,16 +443,14 @@ p, li { white-space: pre-wrap; }
         <name>DlgPluginDownloader</name>
         <message>
             <source>Missing Audio Plugin Downloader</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Plugin de descarga de audio non atopado</translation>
         </message>
     </context>
     <context>
         <name>DlgPrefBPMDlg</name>
         <message>
             <source>BPM Detection Settings</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Configuración da Detección BPM</translation>
         </message>
         <message>
             <source>BPM Detection</source>
@@ -471,23 +462,19 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Detect Song BPM on Import</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Detectar o BMP do tema ao importar</translation>
         </message>
         <message>
             <source>Write BPM to ID3 Tag</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Escribe BPM na Etiqueta ID3</translation>
         </message>
         <message>
             <source>If BPM can be detected but not within specified range</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Se os BPM poden detectarse pero non entre o rango específico</translation>
         </message>
         <message>
             <source>Allow BPM above the range</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Permitir BPM por riba do rango</translation>
         </message>
         <message>
             <source>BPM Schemes</source>
@@ -525,8 +512,7 @@ p, li { white-space: pre-wrap; }
         <name>DlgPrefControls</name>
         <message>
             <source>This skin does not support schemes</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Esta pel non permite esquemas</translation>
         </message>
         <message>
             <source>8% (Technics SL1210)</source>
@@ -570,13 +556,11 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Up increases speed</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Arriba aumenta a velociadade</translation>
         </message>
         <message>
             <source>Down increases speed (Technics SL1210)</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Abaixo disminúe a velocidade (Technics SL1210)</translation>
         </message>
         <message>
             <source>Information</source>
@@ -584,8 +568,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Mixxx must be restarted before the changes will take effect.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Mixxx debe reiniciarse para que os cambio teñan efecto.</translation>
         </message>
     </context>
     <context>
@@ -604,18 +587,15 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Waveform display</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Amosar Formato de Onda</translation>
         </message>
         <message>
             <source>Position display</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Amosar Posición</translation>
         </message>
         <message>
             <source>Tool tips</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Consellos emerxentes</translation>
         </message>
         <message>
             <source>On</source>
@@ -627,33 +607,27 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Pitch/Rate slider range</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Rango do deslizador Pitch/Rate</translation>
         </message>
         <message>
             <source>Pitch/Rate slider direction</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Dirección do deslizador Pitch/Rate</translation>
         </message>
         <message>
             <source>Track load behaviour</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Comportamento de carga da Pista</translation>
         </message>
         <message>
             <source>Cue behaviour</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Comportamento do Cue</translation>
         </message>
         <message>
             <source>Auto Recall Cue</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Autochamada do Cue</translation>
         </message>
         <message>
             <source>Permanent Pitch/Rate Buttons</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Botóns de Pitch/Rate permanentes</translation>
         </message>
         <message>
             <source>Left click</source>
@@ -665,8 +639,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Permanent rate change (between 1 and 8000) when left clicking</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Cambio de Rate permanente (entre 1 e 8000) facendo clic esquerdo</translation>
         </message>
         <message>
             <source>%</source>
@@ -674,18 +647,15 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Permanent rate change (between 1 and 8000) when right clicking</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Cambio de Rate permanente (entre 1 e 8000) facendo clic esquerdo</translation>
         </message>
         <message>
             <source>Temporary Pitch/Rate Buttons</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Botóns Pitch/Rate temporais</translation>
         </message>
         <message>
             <source>Temporary rate change (between 1 and 8000) when left clicking</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Cambio de Rate temporal (entre 1 e 8000) facendo clic esquerdo</translation>
         </message>
         <message>
             <source>Temporary rate change (between 1 and 8000) when right clicking</source>

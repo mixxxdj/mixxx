@@ -308,7 +308,7 @@ p, li { white-space: pre-wrap; }
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'MS Shell Dlg 2'; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'Sans Serif'; font-size:9pt;&quot;&gt;Los créditos van aquí&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'Sans Serif'; font-size:9pt;&quot;&gt;Créditos Aquí&lt;/span&gt;&lt;/p&gt;
 &lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-family:'Sans Serif'; font-size:9pt;&quot;&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
         </message>
         <message>
@@ -827,7 +827,7 @@ Esto sobreescribirá tu configuración existente</translation>
         </message>
         <message>
             <source>Load Preset:</source>
-            <translation>Cargar opcións predeterminadas:</translation>
+            <translation>Cargar opciones predeterminadas</translation>
         </message>
         <message>
             <source>Export</source>
@@ -835,7 +835,7 @@ Esto sobreescribirá tu configuración existente</translation>
         </message>
         <message>
             <source>Output:</source>
-            <translation>Saída:</translation>
+            <translation>Salida:</translation>
         </message>
         <message>
             <source>Enabled</source>
@@ -855,11 +855,11 @@ Esto sobreescribirá tu configuración existente</translation>
         </message>
         <message>
             <source>MIDI Learning Wizard</source>
-            <translation>Asistente de aprendizaxe MIDI</translation>
+            <translation>Asistente de aprendizaje de MIDI</translation>
         </message>
         <message>
             <source>Clear All</source>
-            <translation>Limpar todo</translation>
+            <translation>Limpiar todo</translation>
         </message>
         <message>
             <source>&lt;a href=&quot;http://mixxx.org/wiki/doku.php/midi_controller_mapping_file_format&quot;&gt;Troubleshooting&lt;/a&gt;</source>
@@ -2269,7 +2269,7 @@ Esta informacion no sera utilizada para identificarlo personalmente, contactarlo
         </message>
         <message>
             <source>Help</source>
-            <translation>Axuda</translation>
+            <translation>Ayuda</translation>
         </message>
         <message>
             <source>Exit</source>
@@ -2591,7 +2591,7 @@ Hace visible el estudio de macros</translation>
         </message>
         <message>
             <source>&amp;Help</source>
-            <translation>&amp;Axuda</translation>
+            <translation>&amp;Ayuda</translation>
         </message>
         <message>
             <source>&amp;Macro</source>

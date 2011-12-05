@@ -965,8 +965,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Enable Needle Skip Prevention</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Activer la prévention du saut d'aiguille</translation>
         </message>
         <message>
             <source>Signal Quality</source>
@@ -1616,8 +1615,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Lead-in time</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Temps d'introduction</translation>
         </message>
         <message>
             <source>seconds</source>
@@ -1637,8 +1635,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Enable Needle Skip Prevention</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Activer la prévention du saut d'aiguille</translation>
         </message>
         <message>
             <source>Signal Quality</source>
@@ -1916,18 +1913,15 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>&lt;html&gt;Mixxx cannot record or stream in MP3 without the MP3 encoder &amp;quot;lame&amp;quot;. Due to licensing issues, we cannot include this with Mixxx. To record or stream in MP3, you must download &lt;b&gt;libmp3lame&lt;/b&gt; and install it on your system. &lt;p&gt;See &lt;a href='http://mixxx.org/wiki/doku.php/internet_broadcasting#linux'&gt;Mixxx Wiki&lt;/a&gt; for more information. &lt;/html&gt;</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>&lt;html&gt;Mixxx ne peut enregistrer ou streamer en MP3 sans l'encodeur MP3 &amp;quot;lame&amp;quot;. Pour des questions de licences, nous ne pouvons pas l'inclure avec Mixxx. Pour enregistrer ou streamer en MP3, vous devez télécharger &lt;b&gt;libmp3lame&lt;/b&gt; et l'installer sur votre système. &lt;p&gt;Consultez &lt;a href='http://mixxx.org/wiki/doku.php/internet_broadcasting#linux'&gt;le Mixxx Wiki&lt;/a&gt; pour plus d'informations. &lt;/html&gt;</translation>
         </message>
         <message>
             <source>&lt;html&gt;Mixxx cannot record or stream in MP3 without the MP3 encoder &amp;quot;lame&amp;quot;. Due to licensing issues, we cannot include this with Mixxx. To record or stream in MP3, you must download &lt;b&gt;lame_enc.dll&lt;/b&gt; and install it on your system. &lt;p&gt;See &lt;a href='http://mixxx.org/wiki/doku.php/internet_broadcasting#windows'&gt;Mixxx Wiki&lt;/a&gt; for more information. &lt;/html&gt;</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>&lt;html&gt;Mixxx ne peut enregistrer ou streamer en MP3 sans l'encodeur MP3 &amp;quot;lame&amp;quot;. Pour des questions de licences, nous ne pouvons pas l'inclure avec Mixxx. Pour enregistrer ou streamer en MP3, vous devez télécharger &lt;b&gt;libmp3lame&lt;/b&gt; et l'installer sur votre système. &lt;p&gt;Consultez &lt;a href='http://mixxx.org/wiki/doku.php/internet_broadcasting#windows'&gt;le Mixxx Wiki&lt;/a&gt; pour plus d'informations. &lt;/html&gt;</translation>
         </message>
         <message>
             <source>&lt;html&gt;Mixxx cannot record or stream in MP3 without the MP3 encoder &amp;quot;lame&amp;quot;. Due to licensing issues, we cannot include this with Mixxx. To record or stream in MP3, you must download &lt;b&gt;libmp3lame&lt;/b&gt; and install it on your system. &lt;p&gt;See &lt;a href='http://mixxx.org/wiki/doku.php/internet_broadcasting#mac_osx'&gt;Mixxx Wiki&lt;/a&gt; for more information. &lt;/html&gt;</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>&lt;html&gt;Mixxx ne peut enregistrer ou streamer en MP3 sans l'encodeur MP3 &amp;quot;lame&amp;quot;. Pour des questions de licences, nous ne pouvons pas l'inclure avec Mixxx. Pour enregistrer ou streamer en MP3, vous devez télécharger &lt;b&gt;libmp3lame&lt;/b&gt; et l'installer sur votre système. &lt;p&gt;Consultez &lt;a href='http://mixxx.org/wiki/doku.php/internet_broadcasting#mac_osx'&gt;le Mixxx Wiki&lt;/a&gt; pour plus d'informations. &lt;/html&gt;</translation>
         </message>
         <message>
             <source>&lt;html&gt;Mixxx has detected that you use a modified version of libmp3lame. See &lt;a href='http://mixxx.org/wiki/doku.php/internet_broadcasting'&gt;Mixxx Wiki&lt;/a&gt; for more information.&lt;/html&gt;</source>
@@ -2923,8 +2917,7 @@ Cliquez sur OK pour sortir.</translation>
         </message>
         <message>
             <source>(loading) Traktor</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>(chargement) Traktor</translation>
         </message>
         <message>
             <source>Error Loading Traktor Library</source>
@@ -3173,8 +3166,7 @@ Cliquez sur OK pour sortir.</translation>
         </message>
         <message>
             <source>Reload Track Metadata</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Recharger les métadonnées de la piste</translation>
         </message>
         <message>
             <source>Load to Deck %1</source>
