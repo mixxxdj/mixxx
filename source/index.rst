@@ -34,6 +34,7 @@ Table of Contents
    chapters/setup
    chapters/configuration
    chapters/user_interface
+   chapters/library
    chapters/controlling_mixxx
    chapters/livebroadcasting
    .. chapters/djing_with_mixxx
