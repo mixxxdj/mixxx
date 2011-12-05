@@ -19,6 +19,17 @@ Making a Custom Keyboard Mapping
 Editing the keyboard shortcuts is very easy. For more information, see the
 `Mixxx Wiki <http://mixxx.org/wiki/>`_.
 
+Effects via JACK Rack
+=====================
+
+Mixxx does not have an effects engine yet (work on one is in progress). To hold
+you over, on GNU/Linux you can use a tool called JACK Rack. External mixer mode
+can be used with `Jack
+<http://en.wikipedia.org/wiki/JACK_Audio_Connection_Kit>`_ to route each deck
+directly through `JACK Rack <http://jack-rack.sourceforge.net/>`_ effect racks,
+or for more control you can use Ardour (or other DAW) using sends for
+effects. This gives Mixxx access to the extensive collection of LADSPA
+plugins. For more informatoin, see the `Mixxx Wiki <http://mixxx.org/wiki>`_.
 
 Deleting Your Library
 =====================
