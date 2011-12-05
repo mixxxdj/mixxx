@@ -27,17 +27,22 @@ Glossary of Terms
      The waveform summary shows the waveform envelope of the track near the current playback postition.
 
    waveform overview
-     The waveform overview shows the waveform envelope of the entire track, and is 
+     The waveform overview shows the waveform envelope of the entire track, and is
      useful because they allow DJs to see breakdowns far in advance.
 
    key lock
-     With key lock enabled, the tempo of the track will change but the pitch remains consistent.
-     When unlocked, the pitch slider will speed up (or slow down) the track and
-     the pitch will increase (or decrease) along with it. 
+     With key lock enabled, the tempo of the track will change but the pitch
+     remains consistent.  When unlocked, the pitch slider will speed up (or slow
+     down) the track and the pitch will increase (or decrease) along with it.
 
    headphone button
      The headphone button is used to indicate whether or not you are
      pre-listening to a deck or sampler in your headphones.
+
+   operating system
+     Your operating system (OS) is the computing environment on your
+     computer. For example, Windows, Mac OS X, or GNU/Linux are the three
+     operating systems that Mixxx supports.
 
    head/mix button
      The head/mix button is used to control how much you mix the :term:`master
@@ -61,9 +66,33 @@ Glossary of Terms
 
    BPM
      Beats per minute (BPM) is used as a measure of tempo in music.
-     If you tap your foot to music you are following the “beat”. 
+     If you tap your foot to music you are following the “beat”.
      If you count how many taps you do in a minute you have calculated the BPM.
 
    Beatmatching
      A mixing technique used to establish a similar tempo with two or more tracks,
      making them sound like just one track.
+
+   Sync
+     Sync allows you to automatically adjust the sync'd track to be in sync with
+     another deck that is playing.
+
+   Rate
+     The speed at which a track is played back, usually expressed in terms of a
+     percentage of the speed relative to the tracks normal rate. Often while
+     mixing, DJs adjust the rates of tracks so that they can play at the same
+     tempo as other tracks. This allows DJs to beatmix, and is an essential part
+     of DJing.
+
+   Phase
+     The phase of a track is its position relative to another track. If two
+     tracks are sync'd to the same tempo and in-phase then they should be
+     playing so that their beats are aligned.
+
+   Pitch bend
+     A technique used by DJs that temporarily `bends` the rate of a track up or
+     down, usually while a button is held. This technique is usually used to
+     make micro-adjustments to the synchronization of tracks while
+     beatmatching. Before digital DJing, this was accomplished by dragging one's
+     finger alongside the turntable to slow it down or by twisting the record
+     spindle to speed it up.

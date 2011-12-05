@@ -32,10 +32,11 @@ Table of Contents
    chapters/introduction
    chapters/installation
    chapters/setup
-   chapters/user_interface
-   chapters/livebroadcasting
    chapters/configuration
-   chapters/djing_with_mixxx
+   chapters/user_interface
+   chapters/controlling_mixxx
+   chapters/livebroadcasting
+   .. chapters/djing_with_mixxx
    chapters/advanced_topics
    chapters/getting_involved
 

@@ -37,13 +37,15 @@ track. This is the detected :term:`BPM` of the track, adjusted for the playback
 rate of the track. For example, if the track is normally 100 BPM, and it is
 playing at +5%, then the effective BPM will read 105 BPM. The number in the
 bottom right is the total elapsed time in the track or the total remaining time
-in the track. You can customize this in the `Mixxx Preferences` Interface
+in the track. You can customize this in the `Mixxx Preferences`_ Interface
 section.
 
 .. image:: ../_static/deere_deck_track_info.png
    :align: center
    :width: 70%
    :alt: The track information section
+
+.. hint:: Tap the BPM to set the BPM to the speed you are tapping.
 
 Rate Controls
 -------------
@@ -58,7 +60,7 @@ is very useful for :term:`beatmatching` two tracks together in a mix. The slider
 adjusts the rate of the track. The percent that the track's rate is sped up or
 slowed down is noted above the slider. At the center, it is +0.0%, which
 indicates no change. The range of this slider is customizable in the `Mixxx
-Preferences`_ Interface section.
+Preferences` Interface section.
 
 The :term:`Sync` button changes the :term:`rate` of the track so that the
 :term:`BPM` of the track matches that of the other deck. It also adjusts the
@@ -70,6 +72,9 @@ right arrow buttons are :term:`pitch bend` buttons, and these adjust the pitch
 temporarily. These can act as either a fixed :term:`pitch bend` or a
 :term:`ramping pitch bend`. You can configure their functionality in the `Mixxx
 Preferences` Interface section.
+
+.. _interface-looping:
+.. _interface-hotcues:
 
 Loop Controls and Hotcues
 -------------------------
@@ -92,8 +97,9 @@ loop is active or not.
 
 Above the :term:`loop <reloop>` button are the :term:`in <loop in>` and
 :term:`out <loop out>` buttons, which allow you to manually set the loop-in and
-loop-out point. If the :term:`quantize` mode is enabled (see `The Waveform`
-section), then the loop points will automatically snap to the nearest beat.
+loop-out point. If the :term:`quantize` mode is enabled (see
+:ref:`interface-waveform` section), then the loop points will automatically
+snap to the nearest beat.
 
 The hotcue section, the 4 numbers on the far right, are used to set and clear
 hotcues. Clicking on a numbered button will set a hotcue. A marker with the
@@ -101,45 +107,127 @@ corresponding number will appear in the waveform with the same number as the
 button and the button will turn red to indicate that the hotcue is set. If the
 deck is playing, you can simply tap a hotcue to cause the deck to instantly jump
 back to the location of the hotcue. To clear a hotcue, right-click on the
-numbered button. If the :term:`quantize` mode is enabled (see `The Waveform`
-section), then the hotcues will automatically snap to the nearest beat.
+numbered button. If the :term:`quantize` mode is enabled (see
+:ref:`interface-waveform` section), then the hotcues will automatically snap to
+the nearest beat.
+
+
+.. _interface-waveform:
 
 The Waveform
 ------------
 
-The waveform section of a deck allows you to visualize the
-audio changes that occur throughout the track. The larger, zoomed-in waveform is
-called the :term:`waveform overview`, while the smaller, zoomed-out version of
-the waveform is called the :term:`waveform summary`. The white lines on the
-waveform overview are called :term:`beat markers`, and they indicate the
-locations of beats in the audio. The vertical line in the center of the waveform
-overview indicates the playback point of the deck.
-
+The waveform section of a deck allows you to visualize the audio changes that
+occur throughout the track. The larger, zoomed-in waveform is called the
+:term:`waveform overview`, while the smaller, zoomed-out version of the waveform
+is called the :term:`waveform summary`. The white lines on the waveform overview
+are called :term:`beat markers`, and they indicate the locations of beats in the
+audio. The vertical line in the center of the waveform overview indicates the
+playback point of the deck. Clicking on either the waveform or the spinning
+vinyl widget allows you to scratch the track as if you were using vinyl or a
+MIDI controller.
 
 .. image:: ../_static/deere_deck_waveform.png
    :align: center
    :width: 70%
    :alt: The deck waveform overview and waveform summary
 
+The six buttons at the bottom right allow you to configure the deck. Starting
+from the top-let and going counterclockwise:
 
-The two buttons at the bottom right of this section are the :term:`repeat` and
-:term:`key lock` buttons. Clicking the repeat button causes the track to repeat
-once reaches its end. Clicking the keylock button enabes :term:`key lock` mode.
+* Show/Hide Vinyl Widget
+* Toggle Repeat Mode
+* Eject Track
+* Beat-grid Adjust
+* Toggle Quantize Mode
+* Toggle Keylock
+
+Repeat Mode
+^^^^^^^^^^^
+
+If enabled, repeat mode will jump back to the beginning and continue playing
+when the track finishes.
+
+Eject Track
+^^^^^^^^^^^
+
+Clicking this button ejects the track from the deck.
+
+Beat-grid Adjust
+^^^^^^^^^^^^^^^^
+
+Clicking this button adjusts the track beat-grid so that the current position is
+marked as a beat. This is useful if Mixxx was able to accurately detect the
+track's :term:`BPM` but failed to align the beat markers on the beats.
+
+Toggle Quantize Mode
+^^^^^^^^^^^^^^^^^^^^
+
+In this mode, all cues, hotcues, loops, and beatloops will be automatically
+adjusted (:term:`quantized`) so that they begin on a beat.
+
+Toggle Keylock
+^^^^^^^^^^^^^^
+
+Keylock locks the track's pitch so that adjustments to its tempo via the rate
+slider do not affect its pitch. This is useful if you would like to speed up or
+slow down a track and avoid the "chipmunk" affect that speeding up vocals has.
+
+.. _interface-mixer:
 
 The Mixer Section
 =================
+
+The mixer section allows you to control how the different decks and samplers are
+mixed together.
 
 .. image:: ../_static/deere_mixer.png
    :align: center
    :width: 70%
    :alt: The mixer section
 
+VU Meters and Channel Faders
+----------------------------
 
-Equalizers
-----------
+In the center above the Mixxx logo are 4 :term:`VU meters`. The two outer-most
+VU meters are for each deck, while the 2 inner-most VU meters are the left and
+right VU meters for the master output. The two large faders on either side of
+the VU meters are the deck volume faders. Adjusting these controls the volume of
+each deck.
+
+Above the VU meters are the optional section expansion buttons. If you click on
+either "MIC", "SAMPLER", or "VINYL" then you will enable control sections for
+interacting with the microphone, samplers, and vinyl control respectively.
+
+Headphone and Master Mix Controls
+---------------------------------
+
+The top row of buttons control the headphones and master output. The head-mix
+knob allows you to customize how much of the master output you hear in your
+headphones. The head volume button adjusts your headphone volume. The
+:term:`balance` knob allows you to adjust the balance (left / right orientation)
+of the master output. Finally, the volume knob adjusts the volume of the master
+output.
+
+Equalizers and Gain Knobs
+-------------------------
+
+The low, mid, and high knobs allow you to change the filters of the audio. This
+allows you to selectively reduce or boost certain frequency ranges of the
+audio. The small boxes next to each knob are called :term:`kills` and allow you
+to fully remove that frequency range.
+
+Above these knobs, the gain knob allows you to adjust the gain of the deck. In
+general, you should adjust this knob so that at full-volume the deck's audio is
+just at the peak of the center VU meters. This is so you can achieve the widest
+dynamic range for your track.
 
 The PFL Button
 --------------
+
+The headphone button below the EQ knobs is called the :term:`pre-fader listen or
+PFL <PFL>` button. Selecting this button allows you to listen to the deck in
+your headphones.
 
 Crossfader and Channel Volume
 -----------------------------
@@ -149,10 +237,15 @@ Crossfader and Channel Volume
    :width: 70%
    :alt: The crossfader section of the mixer
 
-
-
-Headphone Controls
-------------------
+This section allows you control the playback of each deck and the fraction of
+each deck that is mixed into the master output. The play/pause buttons play or
+pause each deck. The :term:`cue` button sets or jumps to a cue point. The large
+fader in the center is the :term:`crossfader`. This allows you to adjust the
+proportion of the master mix which is made up by the decks and samplers on the
+left side and the decks and samplers on the right side. With the crossfader all
+the way to the left, you will only hear decks and samplers oriented towards the
+left. Similarly, with the crossfader all the way to the right you will only hear
+decks and samplers oriented towards the right.
 
 The Sampler Section
 ===================
@@ -162,13 +255,32 @@ The Sampler Section
    :width: 70%
    :alt: A sample deck
 
-The Library
-===========
+Samplers are miniature decks. They allow you to play short samples and jingles
+in your mix. They come with a small overview waveform and a limited number of
+controls. The title of the track and its BPM are displayed along the top row.
 
-.. image:: ../_static/deere_library.png
-   :align: center
-   :width: 100%
-   :alt: The Mixxx Library
+The numbered buttons are hotcues and work just like deck hotcues as described in
+:ref:`interface-hotcues`. The headphone button is a :term:`PFL` button and the
+knob to the right of it is a :term:`volume` knob for the sampler. The fader on
+the far right controls the playback rate of the sampler, and the :term:`VU
+meter` to the left of it visualizes the audio intensity of the sampler, allowing
+you to adjust it as necessary.
+
+The 4 configure buttons (in clockwise order from the top left) are:
+
+* Repeat: Enable repeat for the sample.
+* Eject: Eject the track from this deck.
+* Mix Orientation: M for Middle, L for Left, R for Right. Clicking cycles
+  through all the options.
+* Keylock: Enable or disable keylock for the sampler.
+
+.. The Library
+.. ===========
+
+.. .. image:: ../_static/deere_library.png
+..   :align: center
+..   :width: 100%
+..   :alt: The Mixxx Library
 
 
 
