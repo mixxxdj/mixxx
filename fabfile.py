@@ -2,8 +2,8 @@ from fabric.api import *
 import fabric.contrib.project as project
 import os
 
-PROD = 'linerva.mit.edu'
-DEST_PATH = '/afs/athena.mit.edu/user/r/r/rryan/www/mixxx_manual/'
+PROD = 'stacktrace.org'
+DEST_PATH = '/home/mixxx/public_html/manual/1.10'
 ROOT_PATH = os.path.abspath(os.path.dirname(__file__))
 DEPLOY_PATH = os.path.join(ROOT_PATH, 'build/html')
 
