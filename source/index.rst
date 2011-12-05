@@ -32,9 +32,12 @@ Table of Contents
    chapters/introduction
    chapters/installation
    chapters/setup
-   chapters/user_interface
-   chapters/livebroadcasting
    chapters/configuration
+   chapters/user_interface
+   chapters/library
+   chapters/controlling_mixxx
+   chapters/vinyl_control
+   chapters/livebroadcasting
    chapters/djing_with_mixxx
    chapters/advanced_topics
    chapters/getting_involved
