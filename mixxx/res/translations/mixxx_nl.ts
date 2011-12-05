@@ -367,8 +367,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Analyze Entire Song</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Analyseer gehele nummer</translation>
         </message>
     </context>
     <context>
@@ -950,48 +949,39 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Show Signal Quality in Skin</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Toon signaal kwaliteit in de skin</translation>
         </message>
         <message>
             <source>Control Mode</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Controle Modus</translation>
         </message>
         <message>
             <source>Absolute Mode</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Absolute Modus</translation>
         </message>
         <message>
             <source>Relative Mode</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Relatieve Modus</translation>
         </message>
         <message>
             <source>Enable Needle Skip Prevention</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Zet preventie van naald verspringing aan</translation>
         </message>
         <message>
             <source>Signal Quality</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Signaalkwaliteit</translation>
         </message>
         <message>
             <source>http://www.xwax.co.uk</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>http://www.xwax.co.uk</translation>
         </message>
         <message>
             <source>Powered by xwax</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Mede mogelijk gemaakt door xwax</translation>
         </message>
         <message>
             <source>Apply</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Toepassen</translation>
         </message>
         <message>
             <source>&lt;b&gt;This version of Mixxx does not support vinyl control.&lt;/b&gt; &lt;br&gt; Please visit &lt;a href=&quot;http://mixxx.org&quot;&gt;Mixxx.org&lt;/a&gt; for more information.</source>
@@ -1241,7 +1231,7 @@ afspelen en uitgaande link statistieken</translation>
         </message>
         <message>
             <source>Enable live broadcasting</source>
-            <translation>Schakel live uitzending in</translation>
+            <translation>Schakel live uitzenden in</translation>
         </message>
         <message>
             <source>Server connection</source>
@@ -1325,8 +1315,7 @@ afspelen en uitgaande link statistieken</translation>
         </message>
         <message>
             <source>Description</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Omschrijving</translation>
         </message>
         <message>
             <source>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
@@ -1551,8 +1540,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Channel %1</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Kanaal %1</translation>
         </message>
         <message>
             <source>Channels %1 - %2</source>
@@ -1619,58 +1607,47 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Show Signal Quality in Skin</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Toon signaal kwaliteit in de skin</translation>
         </message>
         <message>
             <source>Apply</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Toepassen</translation>
         </message>
         <message>
             <source>Lead-in time</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Lead-in tijd</translation>
         </message>
         <message>
             <source>seconds</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>seconden</translation>
         </message>
         <message>
             <source>Control Mode</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Controle Modus</translation>
         </message>
         <message>
             <source>Absolute Mode</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Absolute Mmodus</translation>
         </message>
         <message>
             <source>Relative Mode</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Relatieve Modus</translation>
         </message>
         <message>
             <source>Enable Needle Skip Prevention</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Zet preventie van naald verspringing aan</translation>
         </message>
         <message>
             <source>Signal Quality</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Signaalkwaliteit</translation>
         </message>
         <message>
             <source>http://www.xwax.co.uk</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>http://www.xwax.co.uk</translation>
         </message>
         <message>
             <source>Powered by xwax</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Mede mogelijk gemaakt door xwax</translation>
         </message>
     </context>
     <context>
@@ -1793,23 +1770,19 @@ p, li { white-space: pre-wrap; }
         <name>DlgTrackInfo</name>
         <message>
             <source>Track Editor</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Nummer-editor</translation>
         </message>
         <message>
             <source>Song:</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Nummer:</translation>
         </message>
         <message>
             <source>Title:</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Titel:</translation>
         </message>
         <message>
             <source>Artist:</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Artiest:</translation>
         </message>
         <message>
             <source>Album:</source>
@@ -1829,8 +1802,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Filename:</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Bestandsnaam:</translation>
         </message>
         <message>
             <source>Duration:</source>
@@ -1838,23 +1810,19 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>3:00</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>3:00</translation>
         </message>
         <message>
             <source>File Type:</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Bestandstype:</translation>
         </message>
         <message>
             <source>77</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>77</translation>
         </message>
         <message>
             <source>Comments:</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Opmerkingen:</translation>
         </message>
         <message>
             <source>Reload track metadata from file.</source>
@@ -1862,8 +1830,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Track Information (Click to Expand)</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Nummer informatie (Klik om te vergroten)</translation>
         </message>
         <message>
             <source>Track BPM: </source>
@@ -1931,8 +1898,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Alt+O</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Alt+O</translation>
         </message>
         <message>
             <source>&amp;Next &gt;&gt;</source>
@@ -1947,18 +1913,15 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>&lt;html&gt;Mixxx cannot record or stream in MP3 without the MP3 encoder &amp;quot;lame&amp;quot;. Due to licensing issues, we cannot include this with Mixxx. To record or stream in MP3, you must download &lt;b&gt;libmp3lame&lt;/b&gt; and install it on your system. &lt;p&gt;See &lt;a href='http://mixxx.org/wiki/doku.php/internet_broadcasting#linux'&gt;Mixxx Wiki&lt;/a&gt; for more information. &lt;/html&gt;</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>&lt;html&gt;Mixxx kan niet opnemen of streamen in MP3 zonder de MP3 encoder &amp;quot;lame&amp;quot;. Vanwege licentie problemen, kunnen we dit niet toevoegen aan Mixxx. Om in MP3 op te nemen of te streamen, moet je &lt;b&gt;libmp3lame&lt;/b&gt; downloaden en installeren op jouw systeem. &lt;p&gt;Zie &lt;a href='http://mixxx.org/wiki/doku.php/internet_broadcasting#linux'&gt;Mixxx Wiki&lt;/a&gt; voor meer informatie. &lt;/html&gt;</translation>
         </message>
         <message>
             <source>&lt;html&gt;Mixxx cannot record or stream in MP3 without the MP3 encoder &amp;quot;lame&amp;quot;. Due to licensing issues, we cannot include this with Mixxx. To record or stream in MP3, you must download &lt;b&gt;lame_enc.dll&lt;/b&gt; and install it on your system. &lt;p&gt;See &lt;a href='http://mixxx.org/wiki/doku.php/internet_broadcasting#windows'&gt;Mixxx Wiki&lt;/a&gt; for more information. &lt;/html&gt;</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>&lt;html&gt;Mixxx kan niet opnemen of streamen in MP3 zonder de MP3 encoder &amp;quot;lame&amp;quot;. Vanwege licentie problemen, kunnen we dit niet toevoegen aan Mixxx. Om in MP3 op te nemen of te streamen, moet je &lt;b&gt;lame_enc.dll&lt;/b&gt; downloaden en installeren op jouw systeem. &lt;p&gt;Zie &lt;a href='http://mixxx.org/wiki/doku.php/internet_broadcasting#windows'&gt;Mixxx Wiki&lt;/a&gt; voor meer informatie. &lt;/html&gt;</translation>
         </message>
         <message>
             <source>&lt;html&gt;Mixxx cannot record or stream in MP3 without the MP3 encoder &amp;quot;lame&amp;quot;. Due to licensing issues, we cannot include this with Mixxx. To record or stream in MP3, you must download &lt;b&gt;libmp3lame&lt;/b&gt; and install it on your system. &lt;p&gt;See &lt;a href='http://mixxx.org/wiki/doku.php/internet_broadcasting#mac_osx'&gt;Mixxx Wiki&lt;/a&gt; for more information. &lt;/html&gt;</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>&lt;html&gt;Mixxx kan niet opnemen of streamen in MP3 zonder de MP3 encoder &amp;quot;lame&amp;quot;. Vanwege licentie problemen, kunnen we dit niet toevoegen aan Mixxx. Om in MP3 op te nemen of te streamen, moet je &lt;b&gt;libmp3lame&lt;/b&gt; downloaden en installeren op jouw systeem. &lt;p&gt;Zie &lt;a href='http://mixxx.org/wiki/doku.php/internet_broadcasting#mac_osx'&gt;Mixxx Wiki&lt;/a&gt; voor meer informatie. &lt;/html&gt;</translation>
         </message>
         <message>
             <source>&lt;html&gt;Mixxx has detected that you use a modified version of libmp3lame. See &lt;a href='http://mixxx.org/wiki/doku.php/internet_broadcasting'&gt;Mixxx Wiki&lt;/a&gt; for more information.&lt;/html&gt;</source>
@@ -2054,8 +2017,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>(loading) iTunes</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>(laden) iTunes</translation>
         </message>
         <message>
             <source>Use Default Library</source>
@@ -2116,8 +2078,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Description</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Omschrijving</translation>
         </message>
     </context>
     <context>
@@ -2171,8 +2132,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Description</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Omschrijving</translation>
         </message>
         <message>
             <source>Threshold Min</source>
@@ -2397,27 +2357,23 @@ Deze informatie wordt niet gebruikt om u persoonlijk te identificeren, contact o
         </message>
         <message>
             <source>&amp;About</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>&amp;Over</translation>
         </message>
         <message>
             <source>&amp;Community Support</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>&amp;Community Ondersteuning</translation>
         </message>
         <message>
             <source>Send Us &amp;Feedback</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Stuur ons &amp;Feedback</translation>
         </message>
         <message>
             <source>&amp;Translate this application</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>&amp;Vertaal deze applicatie</translation>
         </message>
         <message>
             <source>Enable &amp;Vinyl Control 1</source>
-            <translation>&amp;Vinyl Controle 1 aaanzetten</translation>
+            <translation>Vinyl Bediening 1 Activeren</translation>
         </message>
         <message>
             <source>Ctrl+Y</source>
@@ -2425,7 +2381,7 @@ Deze informatie wordt niet gebruikt om u persoonlijk te identificeren, contact o
         </message>
         <message>
             <source>Enable &amp;Vinyl Control 2</source>
-            <translation>&amp;Vinyl Controle 2 aaanzetten</translation>
+            <translation>Vinyl Bediening 2 Activeren</translation>
         </message>
         <message>
             <source>Ctrl+U</source>
@@ -2433,8 +2389,7 @@ Deze informatie wordt niet gebruikt om u persoonlijk te identificeren, contact o
         </message>
         <message>
             <source>Enable live broadcasting</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Schakel live uitzenden in</translation>
         </message>
         <message>
             <source>Ctrl+L</source>
@@ -2528,7 +2483,7 @@ Beats markeren door geluid klikken</translation>
         </message>
         <message>
             <source>Activate Vinyl Control</source>
-            <translation>Vinyl Controle Activeren</translation>
+            <translation>Vinyl Bediening Activeren</translation>
         </message>
         <message>
             <source>Use timecoded vinyls on external turntables to control Mixxx</source>
@@ -2560,8 +2515,7 @@ Beats markeren door geluid klikken</translation>
         </message>
         <message>
             <source>Preferences</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Voorkeuren</translation>
         </message>
         <message>
             <source>Preferences
@@ -2581,25 +2535,23 @@ Krijg hulp met Mixxx</translation>
         </message>
         <message>
             <source>Send feedback to the Mixxx team.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Stuur feedback naar het Mixxx team.</translation>
         </message>
         <message>
             <source>Support
 Send feedback to the Mixxx team.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Ondersteuning
+Stuur feedback naar het Mixxx team.</translation>
         </message>
         <message>
             <source>Help translate this application into your language.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Help om deze applicatie in jouw taal te vertalen.</translation>
         </message>
         <message>
             <source>Support
 Help translate this application into your language.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Ondersteuning
+Help om deze applicatie in jouw taal te vertalen.</translation>
         </message>
         <message>
             <source>About the application</source>
@@ -2647,7 +2599,7 @@ Maakt het marco studio zichtbaar</translation>
         </message>
         <message>
             <source>&amp;Vinyl Control</source>
-            <translation>&amp;Vinyl Controle</translation>
+            <translation>Vinyl Bediening</translation>
         </message>
         <message>
             <source>Quit...</source>
@@ -2967,8 +2919,7 @@ Druk op OK om af te sluiten.</translation>
         </message>
         <message>
             <source>(loading) Traktor</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>(laden) Traktor</translation>
         </message>
         <message>
             <source>Error Loading Traktor Library</source>
@@ -3217,8 +3168,7 @@ Druk op OK om af te sluiten.</translation>
         </message>
         <message>
             <source>Reload Track Metadata</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Metadata van nummer opnieuw laden</translation>
         </message>
         <message>
             <source>Load to Deck %1</source>

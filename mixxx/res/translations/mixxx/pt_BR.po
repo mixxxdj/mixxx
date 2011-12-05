@@ -8,15 +8,14 @@ msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2011-10-31 23:15-0400\n"
-"PO-Revision-Date: 2011-10-12 15:57+0000\n"
-"Last-Translator: Emmanuel Jussier de Oliveira Pinheiro "
-"<jussier.rn@hotmail.com>\n"
+"PO-Revision-Date: 2011-11-07 21:23+0000\n"
+"Last-Translator: Wille <wille@riseup.net>\n"
 "Language-Team: Brazilian Portuguese <pt_BR@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-11-02 04:47+0000\n"
-"X-Generator: Launchpad (build 14214)\n"
+"X-Launchpad-Export-Date: 2011-11-08 05:22+0000\n"
+"X-Generator: Launchpad (build 14231)\n"
 
 #: AutoDJFeature#1
 msgid "Auto DJ"
@@ -419,7 +418,7 @@ msgstr "Mín."
 
 #: DlgBpmSchemeDlg#6
 msgid "Analyze Entire Song"
-msgstr ""
+msgstr "Analisar toda a música"
 
 #: DlgMidiLearning#1
 msgid "Skip"
@@ -622,7 +621,7 @@ msgstr "A velocidade aumenta"
 
 #: DlgPrefControls#13
 msgid "Down increases speed (Technics SL1210)"
-msgstr ""
+msgstr "Para baixo aumenta a velocidade (Technics SL1210)"
 
 #: DlgPrefControls#14
 msgctxt "DlgPrefControls#14"
@@ -723,10 +722,12 @@ msgstr "Botões Passo/Taxa temporários"
 #: DlgPrefControlsDlg#21
 msgid "Temporary rate change (between 1 and 8000) when left clicking"
 msgstr ""
+"Muda a taxa temporária (entre 1 e 8000) quando clicar com o botão esquerdo"
 
 #: DlgPrefControlsDlg#22
 msgid "Temporary rate change (between 1 and 8000) when right clicking"
 msgstr ""
+"Muda a taxa temporária (entre 1 e 8000) quando clicar com o botão direito"
 
 #: DlgPrefControlsDlg#23
 msgid "Ramping Pitchbend"
@@ -763,7 +764,7 @@ msgstr "Mixando"
 
 #: DlgPrefCrossfaderDlg#7
 msgid "Scratching"
-msgstr ""
+msgstr "Arranhando"
 
 #: DlgPrefCrossfaderDlg#8
 msgid "Linear"
@@ -880,7 +881,7 @@ msgstr "Limpar ligações de saida"
 
 #: DlgPrefMidiBindings#13
 msgid "Are you sure you want to clear all output bindings?"
-msgstr ""
+msgstr "Tem certeza de que deseja apagar todas as ligações de saída?"
 
 #: DlgPrefMidiBindingsDlg#1
 msgctxt "DlgPrefMidiBindingsDlg#1"
@@ -1041,22 +1042,22 @@ msgstr "Segundos"
 #: DlgPrefNoVinylDlg#13
 msgctxt "DlgPrefNoVinylDlg#13"
 msgid "Show Signal Quality in Skin"
-msgstr ""
+msgstr "Mostrar qualidade do sinal na Skin"
 
 #: DlgPrefNoVinylDlg#14
 msgctxt "DlgPrefNoVinylDlg#14"
 msgid "Control Mode"
-msgstr ""
+msgstr "Modo de Controle"
 
 #: DlgPrefNoVinylDlg#15
 msgctxt "DlgPrefNoVinylDlg#15"
 msgid "Absolute Mode"
-msgstr ""
+msgstr "Modo absoluto"
 
 #: DlgPrefNoVinylDlg#16
 msgctxt "DlgPrefNoVinylDlg#16"
 msgid "Relative Mode"
-msgstr ""
+msgstr "Modo Relativo"
 
 #: DlgPrefNoVinylDlg#17
 msgctxt "DlgPrefNoVinylDlg#17"
@@ -1066,22 +1067,22 @@ msgstr ""
 #: DlgPrefNoVinylDlg#18
 msgctxt "DlgPrefNoVinylDlg#18"
 msgid "Signal Quality"
-msgstr ""
+msgstr "Qualidade do Sinal"
 
 #: DlgPrefNoVinylDlg#19
 msgctxt "DlgPrefNoVinylDlg#19"
 msgid "http://www.xwax.co.uk"
-msgstr ""
+msgstr "http://www.xwax.co.uk"
 
 #: DlgPrefNoVinylDlg#20
 msgctxt "DlgPrefNoVinylDlg#20"
 msgid "Powered by xwax"
-msgstr ""
+msgstr "Desenvolvido por xwax"
 
 #: DlgPrefNoVinylDlg#21
 msgctxt "DlgPrefNoVinylDlg#21"
 msgid "Apply"
-msgstr ""
+msgstr "Aplicar"
 
 #: DlgPrefNoVinylDlg#22
 msgid ""
@@ -1423,7 +1424,7 @@ msgstr "http://www.mixxx.org"
 #: DlgPrefShoutcastDlg#23
 msgctxt "DlgPrefShoutcastDlg#23"
 msgid "Description"
-msgstr ""
+msgstr "Descrição"
 
 #: DlgPrefShoutcastDlg#24
 msgid ""
@@ -1666,7 +1667,7 @@ msgstr "Nenhum"
 
 #: DlgPrefSoundItem#2
 msgid "Channel %1"
-msgstr ""
+msgstr "Canal %1"
 
 #: DlgPrefSoundItem#3
 msgid "Channels %1 - %2"
@@ -1755,7 +1756,7 @@ msgstr ""
 #: DlgPrefVinylDlg#12
 msgctxt "DlgPrefVinylDlg#12"
 msgid "Apply"
-msgstr ""
+msgstr "Aplicar"
 
 #: DlgPrefVinylDlg#13
 msgctxt "DlgPrefVinylDlg#13"
@@ -1765,22 +1766,22 @@ msgstr ""
 #: DlgPrefVinylDlg#14
 msgctxt "DlgPrefVinylDlg#14"
 msgid "seconds"
-msgstr ""
+msgstr "segundos"
 
 #: DlgPrefVinylDlg#15
 msgctxt "DlgPrefVinylDlg#15"
 msgid "Control Mode"
-msgstr ""
+msgstr "Modo de Controle"
 
 #: DlgPrefVinylDlg#16
 msgctxt "DlgPrefVinylDlg#16"
 msgid "Absolute Mode"
-msgstr ""
+msgstr "Modo Absoluto"
 
 #: DlgPrefVinylDlg#17
 msgctxt "DlgPrefVinylDlg#17"
 msgid "Relative Mode"
-msgstr ""
+msgstr "Modo Relativo"
 
 #: DlgPrefVinylDlg#18
 msgctxt "DlgPrefVinylDlg#18"
@@ -1790,17 +1791,17 @@ msgstr ""
 #: DlgPrefVinylDlg#19
 msgctxt "DlgPrefVinylDlg#19"
 msgid "Signal Quality"
-msgstr ""
+msgstr "Qualidade do Sinal"
 
 #: DlgPrefVinylDlg#20
 msgctxt "DlgPrefVinylDlg#20"
 msgid "http://www.xwax.co.uk"
-msgstr ""
+msgstr "http://www.xwax.co.uk"
 
 #: DlgPrefVinylDlg#21
 msgctxt "DlgPrefVinylDlg#21"
 msgid "Powered by xwax"
-msgstr ""
+msgstr "Desenvolvido por xwax"
 
 #: DlgPreferences#1
 msgid "Sound Hardware"
@@ -1917,19 +1918,19 @@ msgstr "Parar gravação"
 
 #: DlgTrackInfo#1
 msgid "Track Editor"
-msgstr ""
+msgstr "Editor de Faixa"
 
 #: DlgTrackInfo#2
 msgid "Song:"
-msgstr ""
+msgstr "Música:"
 
 #: DlgTrackInfo#3
 msgid "Title:"
-msgstr ""
+msgstr "Título:"
 
 #: DlgTrackInfo#4
 msgid "Artist:"
-msgstr ""
+msgstr "Artista:"
 
 #: DlgTrackInfo#5
 msgid "Album:"
@@ -1949,7 +1950,7 @@ msgstr "Gênero:"
 
 #: DlgTrackInfo#9
 msgid "Filename:"
-msgstr ""
+msgstr "Nome do arquivo:"
 
 #: DlgTrackInfo#10
 msgid "Duration:"
@@ -1957,19 +1958,19 @@ msgstr "Duração:"
 
 #: DlgTrackInfo#11
 msgid "3:00"
-msgstr ""
+msgstr "3:00"
 
 #: DlgTrackInfo#12
 msgid "File Type:"
-msgstr ""
+msgstr "Tipo de Arquivo:"
 
 #: DlgTrackInfo#13
 msgid "77"
-msgstr ""
+msgstr "77"
 
 #: DlgTrackInfo#14
 msgid "Comments:"
-msgstr ""
+msgstr "Comentários:"
 
 #: DlgTrackInfo#15
 msgid "Reload track metadata from file."
@@ -1977,7 +1978,7 @@ msgstr "Recarregar metadados da faixa do arquivo."
 
 #: DlgTrackInfo#16
 msgid "Track Information (Click to Expand)"
-msgstr ""
+msgstr "Informação da Faixa (Clique para Expandir)"
 
 #: DlgTrackInfo#17
 msgid "Track BPM: "
@@ -2046,7 +2047,7 @@ msgstr "&Cancelar"
 
 #: DlgTrackInfo#33
 msgid "Alt+O"
-msgstr ""
+msgstr "Alt+O"
 
 #: DlgTrackInfo#34
 msgid "&Next >>"
@@ -2242,15 +2243,16 @@ msgstr "Valor de Controle"
 #: MidiInputMappingTableModel#6
 msgctxt "MidiInputMappingTableModel#6"
 msgid "Description"
-msgstr ""
+msgstr "Descrição"
 
 #: MidiMapping#1
 msgid "MIDI script function not found"
-msgstr ""
+msgstr "Função de script MIDI não encontrada"
 
 #: MidiMapping#2
 msgid "The MIDI script function '%1' was not found in loaded scripts."
 msgstr ""
+"A função de script MIDI '%1' não foi encontrada nos scripts carregados."
 
 #: MidiMapping#3
 msgid ""
@@ -2301,7 +2303,7 @@ msgstr "Valor de Controle"
 #: MidiOutputMappingTableModel#6
 msgctxt "MidiOutputMappingTableModel#6"
 msgid "Description"
-msgstr ""
+msgstr "Descrição"
 
 #: MidiOutputMappingTableModel#7
 msgid "Threshold Min"
@@ -2528,19 +2530,19 @@ msgstr "Ctrl+P"
 
 #: MixxxApp#40
 msgid "&About"
-msgstr ""
+msgstr "So&bre"
 
 #: MixxxApp#41
 msgid "&Community Support"
-msgstr ""
+msgstr "Suporte da Comunidade"
 
 #: MixxxApp#42
 msgid "Send Us &Feedback"
-msgstr ""
+msgstr "Nos dê um &Feedback"
 
 #: MixxxApp#43
 msgid "&Translate this application"
-msgstr ""
+msgstr "&Traduza este aplicativo"
 
 #: MixxxApp#44
 msgid "Enable &Vinyl Control 1"
@@ -2561,7 +2563,7 @@ msgstr "Ctrl+U"
 #: MixxxApp#48
 msgctxt "MixxxApp#48"
 msgid "Enable live broadcasting"
-msgstr ""
+msgstr "Habilitar transmissão ao vivo"
 
 #: MixxxApp#49
 msgid "Ctrl+L"
@@ -2709,7 +2711,7 @@ msgstr "Exibir o Mixxx usando Tela Cheia"
 #: MixxxApp#76
 msgctxt "MixxxApp#76"
 msgid "Preferences"
-msgstr ""
+msgstr "Preferências"
 
 #: MixxxApp#77
 msgid ""
@@ -2736,7 +2738,7 @@ msgstr ""
 
 #: MixxxApp#80
 msgid "Send feedback to the Mixxx team."
-msgstr ""
+msgstr "Envie um feedback para a equipe do Mixxx"
 
 #: MixxxApp#81
 msgid ""
@@ -2747,7 +2749,7 @@ msgstr ""
 
 #: MixxxApp#82
 msgid "Help translate this application into your language."
-msgstr ""
+msgstr "Ajude a traduzir este aplicativo para o seu idioma."
 
 #: MixxxApp#83
 msgid ""
@@ -2755,6 +2757,9 @@ msgid ""
 "\n"
 "Help translate this application into your language."
 msgstr ""
+"Suporte\n"
+"\n"
+"Ajude a traduzir este aplicativo para o seu idioma."
 
 #: MixxxApp#84
 msgid "About the application"
@@ -2888,7 +2893,7 @@ msgstr "Nova lista de reprodução"
 
 #: PlaylistFeature#2
 msgid "Add to Auto-DJ Queue"
-msgstr ""
+msgstr "Adicionar para a fila Auto-DJ"
 
 #: PlaylistFeature#3
 msgctxt "PlaylistFeature#3"
@@ -3016,31 +3021,31 @@ msgstr "Rhythmbox"
 
 #: SamplerBank#1
 msgid "Save Sampler Bank"
-msgstr ""
+msgstr "Salvar Banco de Samplers"
 
 #: SamplerBank#2
 msgid "Error Saving Sampler Bank"
-msgstr ""
+msgstr "Erro Salvando Banco de Samplers"
 
 #: SamplerBank#3
 msgid "Could not write the sampler bank to '%1'."
-msgstr ""
+msgstr "Não foi possível salvar banco de samplers em '%1'."
 
 #: SamplerBank#4
 msgid "Load Sampler Bank"
-msgstr ""
+msgstr "Carregar Banco de Samplers"
 
 #: SamplerBank#5
 msgid "Error Reading Sampler Bank"
-msgstr ""
+msgstr "Erro lendo Banco de Samplers"
 
 #: SamplerBank#6
 msgid "Could not open the sampler bank file '%1'."
-msgstr ""
+msgstr "Não foi possível abrir o arquivo de banco de samplers '%1'."
 
 #: SamplerBank#7
 msgid "Could not read the sampler bank file '%1'."
-msgstr ""
+msgstr "Não foi possível ler o arquivo de banco de samplers '%1'."
 
 #: ScriptStudio#1
 msgid "Mixxx Script Studio"

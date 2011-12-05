@@ -5,8 +5,7 @@
         <name>AutoDJFeature</name>
         <message>
             <source>Auto DJ</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Auto DJ</translation>
         </message>
     </context>
     <context>
@@ -73,7 +72,7 @@
         </message>
         <message>
             <source>#</source>
-            <translation>Nro</translation>
+            <translation>#</translation>
         </message>
         <message>
             <source>Key</source>
@@ -146,7 +145,7 @@
         </message>
         <message>
             <source>Track #</source>
-            <translation>Raita #</translation>
+            <translation>Raidan #</translation>
         </message>
         <message>
             <source>Year</source>
@@ -158,7 +157,7 @@
         </message>
         <message>
             <source>Comment</source>
-            <translation>Kommentit</translation>
+            <translation>Kommentti</translation>
         </message>
         <message>
             <source>Duration</source>
@@ -190,7 +189,7 @@
         </message>
         <message>
             <source>Could not load the following file because it is in use by Mixxx or another application.</source>
-            <translation>Seuraavaa tiedostoa ei  voitu ladata koska sitä käyttää Mixxx tai jokin muu sovellus.</translation>
+            <translation>Seuraavaa tiedostoa ei voitu ladata koska se on Mixxx:n tai jonkin muun sovelluksen käytössä.</translation>
         </message>
         <message>
             <source>Warning: This will permanently delete the following files:</source>
@@ -202,7 +201,7 @@
         </message>
         <message>
             <source>Could not delete the following file because it is in use by Mixxx or another application:</source>
-            <translation>Seuraavaa tiedostoa ei voitu poistaa koska sitä käyttää Mixxx tai jokin muu sovellus:</translation>
+            <translation>Seuraavaa tiedostoa ei voitu poistaa koska se on Mixxx:n tai jonkin muun sovelluksen käytössä.</translation>
         </message>
         <message>
             <source>Could not update file metadata.</source>
@@ -269,7 +268,7 @@
         </message>
         <message>
             <source>Playlist Files (*.m3u *.pls)</source>
-            <translation>Soittolista tiedostot (*.m3u *.pls)</translation>
+            <translation>Soittolistatiedostot (*.m3u *.pls)</translation>
         </message>
         <message>
             <source>Export Playlist</source>
@@ -289,7 +288,7 @@
         </message>
         <message>
             <source>A crate by that name already exists.</source>
-            <translation>Saman niminen levylaukku on jo olemassa.</translation>
+            <translation>Samanniminen levylaukku on jo olemassa.</translation>
         </message>
     </context>
     <context>
@@ -333,7 +332,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Manage</source>
-            <translation>Hallinta</translation>
+            <translation>Hallitse</translation>
         </message>
         <message>
             <source>Shuffle playlist</source>
@@ -986,7 +985,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>&lt;b&gt;This version of Mixxx does not support vinyl control.&lt;/b&gt; &lt;br&gt; Please visit &lt;a href=&quot;http://mixxx.org&quot;&gt;Mixxx.org&lt;/a&gt; for more information.</source>
-            <translation>&lt;b&gt;Tämä Mixxx versio ei tue vinyl control ominaisuutta.&lt;/b&gt; &lt;br&gt;Katso lisätietoja &lt;a href=&quot;http://mixxx.org&quot;&gt;Mixxx.org&lt;/a&gt; osoitteesta.</translation>
+            <translation>&lt;b&gt;Tämä Mixxx:in versio ei tue vinyl control ominaisuutta.&lt;/b&gt; &lt;br&gt;Katso lisätietoja osoitteesta &lt;a href=&quot;http://mixxx.org&quot;&gt;Mixxx.org&lt;/a&gt;.</translation>
         </message>
     </context>
     <context>
@@ -1541,8 +1540,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Channel %1</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Kanava %1</translation>
         </message>
         <message>
             <source>Channels %1 - %2</source>
@@ -1609,58 +1607,47 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Show Signal Quality in Skin</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Näytä signaalin laatu teemassa</translation>
         </message>
         <message>
             <source>Apply</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Käytä</translation>
         </message>
         <message>
             <source>Lead-in time</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Aloitusviive</translation>
         </message>
         <message>
             <source>seconds</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>sekuntia</translation>
         </message>
         <message>
             <source>Control Mode</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Toimintatila</translation>
         </message>
         <message>
             <source>Absolute Mode</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Absoluuttinen</translation>
         </message>
         <message>
             <source>Relative Mode</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Suhteellinen</translation>
         </message>
         <message>
             <source>Enable Needle Skip Prevention</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Estä neulan hyppiminen</translation>
         </message>
         <message>
             <source>Signal Quality</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Signaalin laatu</translation>
         </message>
         <message>
             <source>http://www.xwax.co.uk</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>http://www.xwax.co.uk</translation>
         </message>
         <message>
             <source>Powered by xwax</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Mahdollistanut xwax</translation>
         </message>
     </context>
     <context>
@@ -1783,23 +1770,19 @@ p, li { white-space: pre-wrap; }
         <name>DlgTrackInfo</name>
         <message>
             <source>Track Editor</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Kappalemuokkain</translation>
         </message>
         <message>
             <source>Song:</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Kappale:</translation>
         </message>
         <message>
             <source>Title:</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Nimi:</translation>
         </message>
         <message>
             <source>Artist:</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Artisti:</translation>
         </message>
         <message>
             <source>Album:</source>
@@ -1819,8 +1802,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Filename:</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Tiedostonimi</translation>
         </message>
         <message>
             <source>Duration:</source>
@@ -1828,23 +1810,19 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>3:00</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>3:00</translation>
         </message>
         <message>
             <source>File Type:</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Tiedostomuoto:</translation>
         </message>
         <message>
             <source>77</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>77</translation>
         </message>
         <message>
             <source>Comments:</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Kommentit:</translation>
         </message>
         <message>
             <source>Reload track metadata from file.</source>
@@ -1852,8 +1830,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Track Information (Click to Expand)</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Raidan tiedot (Klikkaa avataksesi)</translation>
         </message>
         <message>
             <source>Track BPM: </source>
@@ -1921,8 +1898,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Alt+O</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Alt+O</translation>
         </message>
         <message>
             <source>&amp;Next &gt;&gt;</source>
@@ -1937,18 +1913,15 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>&lt;html&gt;Mixxx cannot record or stream in MP3 without the MP3 encoder &amp;quot;lame&amp;quot;. Due to licensing issues, we cannot include this with Mixxx. To record or stream in MP3, you must download &lt;b&gt;libmp3lame&lt;/b&gt; and install it on your system. &lt;p&gt;See &lt;a href='http://mixxx.org/wiki/doku.php/internet_broadcasting#linux'&gt;Mixxx Wiki&lt;/a&gt; for more information. &lt;/html&gt;</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>&lt;html&gt;Mixxx ei voi nauhoittaa tai suoratoistaa MP3- muodossa ilman MP3 enkooderia &amp;quot;lame&amp;quot;. Lisensointiongelmista johtuen, emme voi sisällyttää tätä Mixxx:iin. Nauhoittaaksesi tai suoratoistaaksesi MP3- muodossa, sinun täytyy ladata &lt;b&gt;libmp3lame&lt;/b&gt; ja asentaa se tietokoneellesi. &lt;p&gt;Katso &lt;a href='http://mixxx.org/wiki/doku.php/internet_broadcasting#linux'&gt;Mixxx Wiki&lt;/a&gt; saadaksesi lisätietoa asiasta. &lt;/html&gt;</translation>
         </message>
         <message>
             <source>&lt;html&gt;Mixxx cannot record or stream in MP3 without the MP3 encoder &amp;quot;lame&amp;quot;. Due to licensing issues, we cannot include this with Mixxx. To record or stream in MP3, you must download &lt;b&gt;lame_enc.dll&lt;/b&gt; and install it on your system. &lt;p&gt;See &lt;a href='http://mixxx.org/wiki/doku.php/internet_broadcasting#windows'&gt;Mixxx Wiki&lt;/a&gt; for more information. &lt;/html&gt;</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>&lt;html&gt;Mixxx ei voi nauhoittaa tai suoratoistaa MP3- muodossa ilman MP3 enkooderia &amp;quot;lame&amp;quot;. Lisensointiongelmista johtuen, emme voi sisällyttää tätä Mixxx:iin. Nauhoittaaksesi tai suoratoistaaksesi MP3- muodossa, sinun täytyy ladata &lt;b&gt;libmp3lame&lt;/b&gt; ja asentaa se tietokoneellesi. &lt;p&gt;Katso &lt;a href='http://mixxx.org/wiki/doku.php/internet_broadcasting#linux'&gt;Mixxx Wiki&lt;/a&gt; saadaksesi lisätietoa asiasta. &lt;/html&gt;</translation>
         </message>
         <message>
             <source>&lt;html&gt;Mixxx cannot record or stream in MP3 without the MP3 encoder &amp;quot;lame&amp;quot;. Due to licensing issues, we cannot include this with Mixxx. To record or stream in MP3, you must download &lt;b&gt;libmp3lame&lt;/b&gt; and install it on your system. &lt;p&gt;See &lt;a href='http://mixxx.org/wiki/doku.php/internet_broadcasting#mac_osx'&gt;Mixxx Wiki&lt;/a&gt; for more information. &lt;/html&gt;</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>&lt;html&gt;Mixxx ei voi nauhoittaa tai suoratoistaa MP3- muodossa ilman MP3 enkooderia &amp;quot;lame&amp;quot;. Lisensointiongelmista johtuen, emme voi sisällyttää tätä Mixxx:iin. Nauhoittaaksesi tai suoratoistaaksesi MP3- muodossa, sinun täytyy ladata &lt;b&gt;libmp3lame&lt;/b&gt; ja asentaa se tietokoneellesi. &lt;p&gt;Katso &lt;a href='http://mixxx.org/wiki/doku.php/internet_broadcasting#linux'&gt;Mixxx Wiki&lt;/a&gt; saadaksesi lisätietoa asiasta. &lt;/html&gt;</translation>
         </message>
         <message>
             <source>&lt;html&gt;Mixxx has detected that you use a modified version of libmp3lame. See &lt;a href='http://mixxx.org/wiki/doku.php/internet_broadcasting'&gt;Mixxx Wiki&lt;/a&gt; for more information.&lt;/html&gt;</source>
@@ -2044,8 +2017,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>(loading) iTunes</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>(ladataan) iTunes:ia</translation>
         </message>
         <message>
             <source>Use Default Library</source>
@@ -2106,8 +2078,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Description</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Kuvaus</translation>
         </message>
     </context>
     <context>
@@ -2161,8 +2132,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Description</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Kuvaus</translation>
         </message>
         <message>
             <source>Threshold Min</source>
@@ -2387,23 +2357,19 @@ Tätä tietoa ei käytetä yksilöimään sinua, ottamaan yhteyttä, mainostamaa
         </message>
         <message>
             <source>&amp;About</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>&amp;Tietoja</translation>
         </message>
         <message>
             <source>&amp;Community Support</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>%Yhteisötuki</translation>
         </message>
         <message>
             <source>Send Us &amp;Feedback</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Lähetä meille &amp;palautetta</translation>
         </message>
         <message>
             <source>&amp;Translate this application</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>&amp;Käännä tätä ohjelmaa kielellesi</translation>
         </message>
         <message>
             <source>Enable &amp;Vinyl Control 1</source>
@@ -2423,8 +2389,7 @@ Tätä tietoa ei käytetä yksilöimään sinua, ottamaan yhteyttä, mainostamaa
         </message>
         <message>
             <source>Enable live broadcasting</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Salli suoratoistolähetys</translation>
         </message>
         <message>
             <source>Ctrl+L</source>
@@ -2550,8 +2515,7 @@ Merkitse tahdit äänen perusteella</translation>
         </message>
         <message>
             <source>Preferences</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Asetukset</translation>
         </message>
         <message>
             <source>Preferences
@@ -2571,25 +2535,23 @@ Saa apua Mixxx:n käyttöön</translation>
         </message>
         <message>
             <source>Send feedback to the Mixxx team.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Lähetä palautetta Mixxx- tiimille</translation>
         </message>
         <message>
             <source>Support
 Send feedback to the Mixxx team.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Tuki
+Lähetä palautetta Mixxx- tiimille</translation>
         </message>
         <message>
             <source>Help translate this application into your language.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Auta tämän ohjelman kääntämisessä kielellesi</translation>
         </message>
         <message>
             <source>Support
 Help translate this application into your language.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Tuki
+Auta tämän ohjelman kääntämisessä kielellesi</translation>
         </message>
         <message>
             <source>About the application</source>
@@ -2957,8 +2919,7 @@ Valitse OK lopettaaksesi.</translation>
         </message>
         <message>
             <source>(loading) Traktor</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>(ladataan) Traktoria</translation>
         </message>
         <message>
             <source>Error Loading Traktor Library</source>
@@ -3207,8 +3168,7 @@ Valitse OK lopettaaksesi.</translation>
         </message>
         <message>
             <source>Reload Track Metadata</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Lataa kappaleen metadata uudelleen</translation>
         </message>
         <message>
             <source>Load to Deck %1</source>
