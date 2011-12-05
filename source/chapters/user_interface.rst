@@ -37,8 +37,7 @@ track. This is the detected :term:`BPM` of the track, adjusted for the playback
 rate of the track. For example, if the track is normally 100 BPM, and it is
 playing at +5%, then the effective BPM will read 105 BPM. The number in the
 bottom right is the total elapsed time in the track or the total remaining time
-in the track. You can customize this in the `Mixxx Preferences`_ Interface
-section.
+in the track. You can customize this in the Mixxx Preferences Interface section.
 
 .. image:: ../_static/deere_deck_track_info.png
    :align: center
@@ -59,8 +58,8 @@ The rate controls allow you to change the rate at which tracks are played. This
 is very useful for :term:`beatmatching` two tracks together in a mix. The slider
 adjusts the rate of the track. The percent that the track's rate is sped up or
 slowed down is noted above the slider. At the center, it is +0.0%, which
-indicates no change. The range of this slider is customizable in the `Mixxx
-Preferences` Interface section.
+indicates no change. The range of this slider is customizable in the Mixxx
+Preferences Interface section.
 
 The :term:`Sync` button changes the :term:`rate` of the track so that the
 :term:`BPM` of the track matches that of the other deck. It also adjusts the
@@ -70,8 +69,8 @@ The plus and minus buttons increase and decrease the rate, respectively. If
 right-clicked, they adjust the pitch in smaller steps. Similarly, the left and
 right arrow buttons are :term:`pitch bend` buttons, and these adjust the pitch
 temporarily. These can act as either a fixed :term:`pitch bend` or a
-:term:`ramping pitch bend`. You can configure their functionality in the `Mixxx
-Preferences` Interface section.
+:term:`ramping pitch bend`. You can configure their functionality in the Mixxx
+Preferences Interface section.
 
 .. _interface-looping:
 .. _interface-hotcues:
