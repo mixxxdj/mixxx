@@ -133,7 +133,7 @@ MIDI controller.
    :alt: The deck waveform overview and waveform summary
 
 The six buttons at the bottom right allow you to configure the deck. Starting
-from the top-let and going counterclockwise:
+from the top-left and moving counterclockwise the buttons are as follows:
 
 * Show/Hide Vinyl Widget
 * Toggle Repeat Mode

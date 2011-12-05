@@ -1,3 +1,5 @@
+.. _configuring-mixxx:
+
 Configuring Mixxx
 *****************
 

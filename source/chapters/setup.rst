@@ -152,3 +152,5 @@ To complete your setup you must configure Mixxx properly. Make sure you have:
   :ref:`control-timecode` for the list of supported control records/CDs,)
 * enabled vinyl control via the menu under "Options -> Vinyl Control -> Enable
   Vinyl Control".
+
+For more details, see the :ref:`configuring-mixxx` section.
