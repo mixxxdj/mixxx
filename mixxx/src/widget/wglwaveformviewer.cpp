@@ -30,6 +30,9 @@ WGLWaveformViewer::WGLWaveformViewer(
 
     m_pGroup = group;
 
+    m_bScratching = false;
+    m_bBending = false;
+
     m_pScratchEnable = new ControlObjectThreadMain(
         ControlObject::getControl(ConfigKey(group, "scratch_position_enable")));
     m_pScratch = new ControlObjectThreadMain(
@@ -125,12 +128,21 @@ bool WGLWaveformViewer::eventFilter(QObject *o, QEvent *e) {
     if(e->type() == QEvent::MouseButtonPress) {
         m_iMouseStart = m->x();
         if(m->button() == Qt::LeftButton) {
+            // If we are pitch-bending then disable and reset because the two
+            // shouldn't be used at once.
+            if (m_bBending) {
+                emit(valueChangedRightDown(64));
+                m_bBending = false;
+            }
             m_bScratching = true;
             m_pScratch->slotSet(0);
             m_pScratchEnable->slotSet(1.0f);
 
             // Set the cursor to a hand while the mouse is down.
             setCursor(Qt::ClosedHandCursor);
+        } else if (m->button() == Qt::RightButton) {
+            emit(valueChangedRightDown(64));
+            m_bBending = true;
         }
     } else if(e->type() == QEvent::MouseMove) {
         // Only send signals for mouse moving if the left button is pressed
@@ -149,6 +161,16 @@ bool WGLWaveformViewer::eventFilter(QObject *o, QEvent *e) {
                     samplesPerPixel * (1 + rateAdjust);
             //qDebug() << "Target:" << targetPosition;
             m_pScratch->slotSet(targetPosition);
+        } else if (m_iMouseStart != -1 && m_bBending) {
+            // start at the middle of 0-127, and emit values based on
+            // how far the mouse has travelled horizontally
+            double v = 64 + (double)(m->x()-m_iMouseStart)/10;
+            // clamp to 0-127
+            if(v<0)
+                v = 0;
+            else if(v > 127)
+                v = 127;
+            emit(valueChangedRightDown(v));
         }
     } else if(e->type() == QEvent::MouseButtonRelease) {
         if (m_bScratching) {
@@ -157,6 +179,10 @@ bool WGLWaveformViewer::eventFilter(QObject *o, QEvent *e) {
 
             // Set the cursor back to an arrow.
             setCursor(Qt::ArrowCursor);
+        }
+        if (m_bBending) {
+            emit(valueChangedRightDown(64));
+            m_bBending = false;
         }
         m_iMouseStart = -1;
     } else {
