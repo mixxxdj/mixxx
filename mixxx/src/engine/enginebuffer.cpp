@@ -107,6 +107,13 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
             this, SLOT(slotControlPlay(double)),
             Qt::DirectConnection);
     playButtonCOT = new ControlObjectThreadMain(playButton);
+    
+    // Play and Sync
+    playSyncButton = new ControlPushButton(ConfigKey(group, "play_sync"));
+    playSyncButton->set(0);
+    connect(playSyncButton, SIGNAL(valueChanged(double)),
+            this, SLOT(slotControlPlaySync(double)),
+            Qt::DirectConnection);
 
     //Play from Start Button (for sampler)
     playStartButton = new ControlPushButton(ConfigKey(group, "start_play"));
@@ -253,6 +260,7 @@ EngineBuffer::~EngineBuffer()
 
     delete playButtonCOT;
     delete playButton;
+    delete playSyncButton;
     delete playStartButtonCOT;
     delete playStartButton;
     delete startButton;
@@ -453,6 +461,14 @@ void EngineBuffer::slotControlPlay(double v)
     if (v > 0.0 && !m_pCurrentTrack) {
         playButton->set(0.0f);
     }
+}
+
+void EngineBuffer::slotControlPlaySync(double v)
+{
+    if (v == 0.0) {
+        playButton->set(1);
+    }
+    m_pBpmControl->slotControlBeatSync(1);
 }
 
 void EngineBuffer::slotControlStart(double v)
