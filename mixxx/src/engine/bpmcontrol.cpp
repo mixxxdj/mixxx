@@ -15,7 +15,7 @@ BpmControl::BpmControl(const char* _group,
                        ConfigObject<ConfigValue>* _config) :
         EngineControl(_group, _config),
         m_tapFilter(this, filterLength, maxInterval) {
-
+    m_pPlayButton = ControlObject::getControl(ConfigKey(_group, "play"));
     m_pRateSlider = ControlObject::getControl(ConfigKey(_group, "rate"));
     connect(m_pRateSlider, SIGNAL(valueChanged(double)),
             this, SLOT(slotRateChanged(double)),
@@ -208,8 +208,11 @@ void BpmControl::slotControlBeatSync(double v) {
             // And finally, set the slider
             m_pRateSlider->set(fDesiredRate);
 
-            // Adjust the phase:
-            adjustPhase();
+            // If the player is playing, adjust its phase so that it plays in
+            // sync.
+            if (m_pPlayButton->get() > 0) {
+                adjustPhase();
+            }
         }
     }
 }
@@ -256,8 +259,36 @@ void BpmControl::adjustPhase() {
     double dOtherBeatLength = fabs(dOtherNextBeat - dOtherPrevBeat);
     double dOtherBeatFraction = (dOtherPosition - dOtherPrevBeat) / dOtherBeatLength;
 
+    double dNewPlaypos;
+    bool this_near_next = dThisNextBeat - dThisPosition <= dThisPosition - dThisPrevBeat;
+    bool other_near_next = dOtherNextBeat - dOtherPosition <= dOtherPosition - dOtherPrevBeat;
+
     // We want our beat fraction to be identical to theirs.
-    double dNewPlaypos = dThisPrevBeat + dOtherBeatFraction * dThisBeatLength;
+
+    // If the two tracks have similar alignment, adjust phase is straight-
+    // forward.  Use the same fraction for both beats, starting from the previous
+    // beat.  But if This track is nearer to the next beat and the Other track
+    // is nearer to the previous beat, use This Next beat as the starting point
+    // for the phase. (ie, we pushed the sync button late).  If This track
+    // is nearer to the previous beat, but the Other track is nearer to the
+    // next beat, we pushed the sync button early so use the double-previous
+    // beat as the basis for the adjustment.
+    //
+    // This makes way more sense when you're actually mixing.
+    //
+    // TODO(XXX) Revisit this logic once we move away from tempo-locked,
+    // infinite beatgrids because the assumption that findNthBeat(-2) always
+    // works will be wrong then.
+
+    if (this_near_next == other_near_next) {
+        dNewPlaypos = dThisPrevBeat + dOtherBeatFraction * dThisBeatLength;
+    } else if (this_near_next && !other_near_next) {
+        dNewPlaypos = dThisNextBeat + dOtherBeatFraction * dThisBeatLength;
+    } else {  //!this_near_next && other_near_next
+        dThisPrevBeat = m_pBeats->findNthBeat(dThisPosition, -2);
+        dNewPlaypos = dThisPrevBeat + dOtherBeatFraction * dThisBeatLength;
+    }
+
     emit(seekAbs(dNewPlaypos));
 }
 
