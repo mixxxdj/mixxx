@@ -28,6 +28,7 @@ LibraryScannerDlg::LibraryScannerDlg(QWidget * parent, Qt::WindowFlags f) :
 
     QVBoxLayout* pLayout = new QVBoxLayout(this);
 
+    setWindowTitle(tr("Library Scanner"));
     QLabel* pLabel = new QLabel(tr("It's taking Mixxx a minute to scan your music library, please wait..."),this);
     pLayout->addWidget(pLabel);
 

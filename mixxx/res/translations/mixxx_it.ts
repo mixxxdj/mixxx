@@ -212,7 +212,7 @@
         <name>CrateFeature</name>
         <message>
             <source>New Crate</source>
-            <translation>Nuovo Cestello</translation>
+            <translation>Nuovo Cesto</translation>
         </message>
         <message>
             <source>Remove</source>
@@ -236,11 +236,11 @@
         </message>
         <message>
             <source>Import Crate</source>
-            <translation>Importa Cestello</translation>
+            <translation>Importa il Cesto</translation>
         </message>
         <message>
             <source>Export Crate</source>
-            <translation>Esporta Cestello</translation>
+            <translation>Esporta il Cesto</translation>
         </message>
         <message>
             <source>Unlock</source>
@@ -248,23 +248,23 @@
         </message>
         <message>
             <source>Crate name:</source>
-            <translation>Nome del Cestello</translation>
+            <translation>Nome del Cesto:</translation>
         </message>
         <message>
             <source>An unknown error occurred while creating crate: </source>
-            <translation>Si è verificato un errore sconosciuto durante la creazione del Cestello </translation>
+            <translation>Si è verificato un errore sconosciuto durante la creazione del Cesto: </translation>
         </message>
         <message>
             <source>Rename Crate</source>
-            <translation>Rinomina Cestello</translation>
+            <translation>Rinomina il Cesto</translation>
         </message>
         <message>
             <source>New crate name:</source>
-            <translation>Nuovo nome Cestello</translation>
+            <translation>Nuovo nome cesto:</translation>
         </message>
         <message>
             <source>Renaming Crate Failed</source>
-            <translation>Rinomina Cestello fallita</translation>
+            <translation>Impossibile Rinominare il Cesto</translation>
         </message>
         <message>
             <source>Playlist Files (*.m3u *.pls)</source>
@@ -280,15 +280,15 @@
         </message>
         <message>
             <source>A crate cannot have a blank name.</source>
-            <translation>Un Cestello deve avere un nome</translation>
+            <translation>Il Cesto deve avere un nome.</translation>
         </message>
         <message>
             <source>Creating Crate Failed</source>
-            <translation>Impossibile creare il Cestello</translation>
+            <translation>Impossibile creare il Cesto</translation>
         </message>
         <message>
             <source>A crate by that name already exists.</source>
-            <translation>Esiste già un Cestello con lo stesso nome</translation>
+            <translation>Un Cesto deve avere un nome</translation>
         </message>
     </context>
     <context>
@@ -1913,18 +1913,15 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>&lt;html&gt;Mixxx cannot record or stream in MP3 without the MP3 encoder &amp;quot;lame&amp;quot;. Due to licensing issues, we cannot include this with Mixxx. To record or stream in MP3, you must download &lt;b&gt;libmp3lame&lt;/b&gt; and install it on your system. &lt;p&gt;See &lt;a href='http://mixxx.org/wiki/doku.php/internet_broadcasting#linux'&gt;Mixxx Wiki&lt;/a&gt; for more information. &lt;/html&gt;</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>&lt;html&gt;Mixxx non può registrare o riprodurre MP3 senza un codec MP3 &amp;quot;lame&amp;quot;. Per probelmi di licenza, non possiamo includerlo in Mixxx. Per registrare o riprodurre in MP3, è necessario scaricare &lt;b&gt;libmp3lame&lt;/b&gt; e installarlo nel tuo sistema. &lt;p&gt;Vedere &lt;a href='http://mixxx.org/wiki/doku.php/internet_broadcasting#linux'&gt;Mixxx Wiki&lt;/a&gt; per maggiori informazioni. &lt;/html&gt;</translation>
         </message>
         <message>
             <source>&lt;html&gt;Mixxx cannot record or stream in MP3 without the MP3 encoder &amp;quot;lame&amp;quot;. Due to licensing issues, we cannot include this with Mixxx. To record or stream in MP3, you must download &lt;b&gt;lame_enc.dll&lt;/b&gt; and install it on your system. &lt;p&gt;See &lt;a href='http://mixxx.org/wiki/doku.php/internet_broadcasting#windows'&gt;Mixxx Wiki&lt;/a&gt; for more information. &lt;/html&gt;</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>&lt;html&gt;Mixxx non può registrare o riprodurre MP3 senza un codec MP3 &amp;quot;lame&amp;quot;. Per probelmi di licenza, non possiamo includerlo in Mixxx. Per registrare o riprodurre in MP3, è necessario scaricar e&lt;b&gt;lame_enc.dll&lt;/b&gt; e installarlo nel tuo sistema. &lt;p&gt;Vedere  &lt;a href='http://mixxx.org/wiki/doku.php/internet_broadcasting#windows'&gt;Mixxx Wiki&lt;/a&gt; per maggiori informazioni. &lt;/html&gt;</translation>
         </message>
         <message>
             <source>&lt;html&gt;Mixxx cannot record or stream in MP3 without the MP3 encoder &amp;quot;lame&amp;quot;. Due to licensing issues, we cannot include this with Mixxx. To record or stream in MP3, you must download &lt;b&gt;libmp3lame&lt;/b&gt; and install it on your system. &lt;p&gt;See &lt;a href='http://mixxx.org/wiki/doku.php/internet_broadcasting#mac_osx'&gt;Mixxx Wiki&lt;/a&gt; for more information. &lt;/html&gt;</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>&lt;html&gt;Mixxx non può registrare o riprodurre MP3 senza un codec MP3 &amp;quot;lame&amp;quot;. Per probelmi di licenza, non possiamo includerlo in Mixxx. Per registrare o riprodurre in MP3, è necessario scaricare &lt;b&gt;libmp3lame&lt;/b&gt; e installarlo nel tuo sistema. &lt;p&gt;Vedere &lt;a href='http://mixxx.org/wiki/doku.php/internet_broadcasting#mac_osx'&gt;Mixxx Wiki&lt;/a&gt; per maggiori informazioni. &lt;/html&gt;</translation>
         </message>
         <message>
             <source>&lt;html&gt;Mixxx has detected that you use a modified version of libmp3lame. See &lt;a href='http://mixxx.org/wiki/doku.php/internet_broadcasting'&gt;Mixxx Wiki&lt;/a&gt; for more information.&lt;/html&gt;</source>
@@ -2320,7 +2317,7 @@ Queste informazioni non saranno usate per identificarti, contattarti, spedirti p
         </message>
         <message>
             <source>Add new &amp;crate</source>
-            <translation>Aggiungi nuovo &amp;Cestello</translation>
+            <translation>Aggiungi un nuovo &amp;Cesto</translation>
         </message>
         <message>
             <source>Ctrl+C</source>
@@ -2368,13 +2365,11 @@ Queste informazioni non saranno usate per identificarti, contattarti, spedirti p
         </message>
         <message>
             <source>Send Us &amp;Feedback</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Inviateci &amp;Feedback</translation>
         </message>
         <message>
             <source>&amp;Translate this application</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>&amp;Traduci questa applicazione</translation>
         </message>
         <message>
             <source>Enable &amp;Vinyl Control 1</source>
@@ -2394,8 +2389,7 @@ Queste informazioni non saranno usate per identificarti, contattarti, spedirti p
         </message>
         <message>
             <source>Enable live broadcasting</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Abilita lo Streaming live</translation>
         </message>
         <message>
             <source>Ctrl+L</source>
@@ -2465,13 +2459,13 @@ Crea una nuova playlist</translation>
         </message>
         <message>
             <source>Create a new crate</source>
-            <translation>Crea un nuovo Cestello</translation>
+            <translation>Crea un nuovo Cesto</translation>
         </message>
         <message>
             <source>New crate
 Create a new crate.</source>
-            <translation>Nuovo Cestello
-Crea un nuovo Cestello</translation>
+            <translation>Nuovo cesto
+Crea un nuovo cesto.</translation>
         </message>
         <message>
             <source>Import playlist</source>
@@ -2541,25 +2535,21 @@ Ottieni aiuto su Mixxx</translation>
         </message>
         <message>
             <source>Send feedback to the Mixxx team.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Invia feedback al team di Mixxx</translation>
         </message>
         <message>
             <source>Support
 Send feedback to the Mixxx team.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Invia feedback al team di Mixxx</translation>
         </message>
         <message>
             <source>Help translate this application into your language.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Aiutaci a tradurre questo programma nella tua lingua.</translation>
         </message>
         <message>
             <source>Support
 Help translate this application into your language.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Aiutaci a tradurre questo programma nella tua lingua.</translation>
         </message>
         <message>
             <source>About the application</source>
@@ -3156,7 +3146,7 @@ Clicca su OK per uscire.</translation>
         </message>
         <message>
             <source>Add to Crate</source>
-            <translation>Aggiungi al Cestello</translation>
+            <translation>Aggiungi al Cesto</translation>
         </message>
         <message>
             <source>Load to Sampler</source>

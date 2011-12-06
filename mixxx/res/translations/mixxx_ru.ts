@@ -56,11 +56,11 @@
         </message>
         <message>
             <source>Bitrate</source>
-            <translation>Скорость потока</translation>
+            <translation>Битрейт</translation>
         </message>
         <message>
             <source>BPM</source>
-            <translation>Ударов в минуту</translation>
+            <translation>Темп</translation>
         </message>
         <message>
             <source>Track #</source>
@@ -76,7 +76,7 @@
         </message>
         <message>
             <source>Key</source>
-            <translation>Ключ</translation>
+            <translation>Тональность</translation>
         </message>
     </context>
     <context>
@@ -157,7 +157,7 @@
         </message>
         <message>
             <source>Comment</source>
-            <translation>Описание</translation>
+            <translation>Комментарий</translation>
         </message>
         <message>
             <source>Duration</source>
@@ -165,7 +165,7 @@
         </message>
         <message>
             <source>BPM</source>
-            <translation>Ударов в минуту</translation>
+            <translation>Темп</translation>
         </message>
         <message>
             <source>Key</source>
@@ -177,7 +177,7 @@
         </message>
         <message>
             <source>Bitrate</source>
-            <translation>Частота бит</translation>
+            <translation>Битрейт</translation>
         </message>
         <message>
             <source>Location</source>
@@ -189,19 +189,19 @@
         </message>
         <message>
             <source>Could not load the following file because it is in use by Mixxx or another application.</source>
-            <translation>Не получилось загрузить данный файл так как он в данный момент занят программой Mixxx или другой программой.</translation>
+            <translation>Не получилось загрузить данный файл, так как в данный момент он используется Mixxx или другой программой.</translation>
         </message>
         <message>
             <source>Warning: This will permanently delete the following files:</source>
-            <translation>Предупреждение: Эта акция безвозвратно удалит данные файлы:</translation>
+            <translation>Предупреждение: Данные файлы будут безвозвратно удалены:</translation>
         </message>
         <message>
             <source>Are you sure you want to delete these files from your computer?</source>
-            <translation>Вы уверены что желаете удалить данные файлы с вашего компьютера?</translation>
+            <translation>Вы уверены, что желаете удалить данные файлы с вашего компьютера?</translation>
         </message>
         <message>
             <source>Could not delete the following file because it is in use by Mixxx or another application:</source>
-            <translation>Не получилось удалить данный файл так как он в данный момент занят программой Mixxx или другой программой.</translation>
+            <translation>Не получилось удалить данный файл, так как в данный момент он используется Mixxx или другой программой.</translation>
         </message>
         <message>
             <source>Could not update file metadata.</source>
@@ -220,7 +220,7 @@
         </message>
         <message>
             <source>Rename</source>
-            <translation>Переменовать</translation>
+            <translation>Переименовать</translation>
         </message>
         <message>
             <source>Lock</source>
@@ -268,11 +268,11 @@
         </message>
         <message>
             <source>Playlist Files (*.m3u *.pls)</source>
-            <translation>Файлы вида плэй-лист (*.m3u *.pls)</translation>
+            <translation>Файлы списков воспроизведения (*.m3u *.pls)</translation>
         </message>
         <message>
             <source>Export Playlist</source>
-            <translation>Экспортировать плэй-лист</translation>
+            <translation>Экспортировать список воспроизведения</translation>
         </message>
         <message>
             <source>M3U Playlist (*.m3u);;PLS Playlist (*.pls)</source>
@@ -288,7 +288,7 @@
         </message>
         <message>
             <source>A crate by that name already exists.</source>
-            <translation>Список с этим наименованием уже существует.</translation>
+            <translation>Список с ьаким именем уже существует.</translation>
         </message>
     </context>
     <context>
@@ -367,8 +367,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Analyze Entire Song</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Выполнить анализ всей композиции</translation>
         </message>
     </context>
     <context>
@@ -950,33 +949,27 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Show Signal Quality in Skin</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Отображать качество сигнала в оболочке</translation>
         </message>
         <message>
             <source>Control Mode</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Режим управления</translation>
         </message>
         <message>
             <source>Absolute Mode</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Абсолютный режим</translation>
         </message>
         <message>
             <source>Relative Mode</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Относительный режим</translation>
         </message>
         <message>
             <source>Enable Needle Skip Prevention</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Использовать защиту от пропусков иглы</translation>
         </message>
         <message>
             <source>Signal Quality</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Качество сигнала</translation>
         </message>
         <message>
             <source>http://www.xwax.co.uk</source>
@@ -984,8 +977,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Powered by xwax</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Работает на xwax</translation>
         </message>
         <message>
             <source>Apply</source>
@@ -1548,8 +1540,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Channel %1</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Канал %1</translation>
         </message>
         <message>
             <source>Channels %1 - %2</source>
@@ -1616,8 +1607,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Show Signal Quality in Skin</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Отображать качество сигнала в оболочке</translation>
         </message>
         <message>
             <source>Apply</source>
@@ -1625,38 +1615,31 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Lead-in time</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Время вступления</translation>
         </message>
         <message>
             <source>seconds</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>с</translation>
         </message>
         <message>
             <source>Control Mode</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Режим управления</translation>
         </message>
         <message>
             <source>Absolute Mode</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Абсолютный режим</translation>
         </message>
         <message>
             <source>Relative Mode</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Относительный режим</translation>
         </message>
         <message>
             <source>Enable Needle Skip Prevention</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Использовать защиту от пропусков иглы</translation>
         </message>
         <message>
             <source>Signal Quality</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Качество сигнала</translation>
         </message>
         <message>
             <source>http://www.xwax.co.uk</source>
@@ -1664,8 +1647,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Powered by xwax</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Работает на xwax</translation>
         </message>
     </context>
     <context>
@@ -1788,13 +1770,11 @@ p, li { white-space: pre-wrap; }
         <name>DlgTrackInfo</name>
         <message>
             <source>Track Editor</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Редактор дорожек</translation>
         </message>
         <message>
             <source>Song:</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Композиция:</translation>
         </message>
         <message>
             <source>Title:</source>
@@ -1850,8 +1830,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Track Information (Click to Expand)</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Сведения о дорожке (Щёлкните, чтобы развернуть)</translation>
         </message>
         <message>
             <source>Track BPM: </source>
@@ -1934,18 +1913,15 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>&lt;html&gt;Mixxx cannot record or stream in MP3 without the MP3 encoder &amp;quot;lame&amp;quot;. Due to licensing issues, we cannot include this with Mixxx. To record or stream in MP3, you must download &lt;b&gt;libmp3lame&lt;/b&gt; and install it on your system. &lt;p&gt;See &lt;a href='http://mixxx.org/wiki/doku.php/internet_broadcasting#linux'&gt;Mixxx Wiki&lt;/a&gt; for more information. &lt;/html&gt;</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>&lt;html&gt;Mixxx не может записывать или транслировать записи в формате MP3 без установленного в системе кодировщика MP3 &amp;quot;lame&amp;quot;. Из-за лицензионных проблем, мы не можем распространять этот кодировщик вместе с Mixxx. Для того, чтобы осуществлять запись или трансляцию в формате MP3, вы должны загрузить файл &lt;b&gt;libmp3lame&lt;/b&gt; и установить его в вашу систему. &lt;p&gt;См. &lt;a href='http://mixxx.org/wiki/doku.php/internet_broadcasting#windows'&gt;Mixxx Wiki&lt;/a&gt; для получения более подробной информации. &lt;/html&gt;</translation>
         </message>
         <message>
             <source>&lt;html&gt;Mixxx cannot record or stream in MP3 without the MP3 encoder &amp;quot;lame&amp;quot;. Due to licensing issues, we cannot include this with Mixxx. To record or stream in MP3, you must download &lt;b&gt;lame_enc.dll&lt;/b&gt; and install it on your system. &lt;p&gt;See &lt;a href='http://mixxx.org/wiki/doku.php/internet_broadcasting#windows'&gt;Mixxx Wiki&lt;/a&gt; for more information. &lt;/html&gt;</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>&lt;html&gt;Mixxx не может записывать или транслировать записи в формате MP3 без установленного в системе кодировщика MP3 &amp;quot;lame&amp;quot;. Из-за лицензионных проблем, мы не можем распространять этот кодировщик вместе с Mixxx. Для того, чтобы осуществлять запись или трансляцию в формате MP3, вы должны загрузить файл &lt;b&gt;lame_enc.dll&lt;/b&gt; и установить его в вашу систему. &lt;p&gt;См. &lt;a href='http://mixxx.org/wiki/doku.php/internet_broadcasting#windows'&gt;Mixxx Wiki&lt;/a&gt; для получения более подробной информации. &lt;/html&gt;</translation>
         </message>
         <message>
             <source>&lt;html&gt;Mixxx cannot record or stream in MP3 without the MP3 encoder &amp;quot;lame&amp;quot;. Due to licensing issues, we cannot include this with Mixxx. To record or stream in MP3, you must download &lt;b&gt;libmp3lame&lt;/b&gt; and install it on your system. &lt;p&gt;See &lt;a href='http://mixxx.org/wiki/doku.php/internet_broadcasting#mac_osx'&gt;Mixxx Wiki&lt;/a&gt; for more information. &lt;/html&gt;</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>&lt;html&gt;Mixxx не может записывать или транслировать записи в формате MP3 без установленного в системе кодировщика MP3 &amp;quot;lame&amp;quot;. Из-за лицензионных проблем, мы не можем распространять этот кодировщик вместе с Mixxx. Для того, чтобы осуществлять запись или трансляцию в формате MP3, вы должны загрузить файл &lt;b&gt;libmp3lame&lt;/b&gt; и установить его в вашу систему. &lt;p&gt;См. &lt;a href='http://mixxx.org/wiki/doku.php/internet_broadcasting#windows'&gt;Mixxx Wiki&lt;/a&gt; для получения более подробной информации. &lt;/html&gt;</translation>
         </message>
         <message>
             <source>&lt;html&gt;Mixxx has detected that you use a modified version of libmp3lame. See &lt;a href='http://mixxx.org/wiki/doku.php/internet_broadcasting'&gt;Mixxx Wiki&lt;/a&gt; for more information.&lt;/html&gt;</source>
@@ -2041,8 +2017,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>(loading) iTunes</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>(загружаю) iTunes</translation>
         </message>
         <message>
             <source>Use Default Library</source>
@@ -2382,23 +2357,19 @@ This information will not be used to personally identify you, contact you, adver
         </message>
         <message>
             <source>&amp;About</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>&amp;О программе</translation>
         </message>
         <message>
             <source>&amp;Community Support</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Поддержка &amp;сообщества</translation>
         </message>
         <message>
             <source>Send Us &amp;Feedback</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Обратная &amp;связь</translation>
         </message>
         <message>
             <source>&amp;Translate this application</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>&amp;Перевести это приложение</translation>
         </message>
         <message>
             <source>Enable &amp;Vinyl Control 1</source>
@@ -2418,8 +2389,7 @@ This information will not be used to personally identify you, contact you, adver
         </message>
         <message>
             <source>Enable live broadcasting</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Прямой эфир</translation>
         </message>
         <message>
             <source>Ctrl+L</source>
@@ -2544,8 +2514,7 @@ Mark beats by audio clicks</source>
         </message>
         <message>
             <source>Preferences</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Настройки</translation>
         </message>
         <message>
             <source>Preferences
@@ -2565,25 +2534,23 @@ Get help with Mixxx</source>
         </message>
         <message>
             <source>Send feedback to the Mixxx team.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Отправить отзыв команде Mixxx.</translation>
         </message>
         <message>
             <source>Support
 Send feedback to the Mixxx team.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Поддержать
+Оставить отзыв команде Mixxx.</translation>
         </message>
         <message>
             <source>Help translate this application into your language.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Помочь перевести приложение на ваш язык.</translation>
         </message>
         <message>
             <source>Support
 Help translate this application into your language.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Поддержка
+Помочь перевести приложение на ваш язык.</translation>
         </message>
         <message>
             <source>About the application</source>
@@ -2949,8 +2916,7 @@ Click OK to exit.</source>
         </message>
         <message>
             <source>(loading) Traktor</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>(загружаю) Traktor</translation>
         </message>
         <message>
             <source>Error Loading Traktor Library</source>
@@ -3199,8 +3165,7 @@ Click OK to exit.</source>
         </message>
         <message>
             <source>Reload Track Metadata</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Обновить метаданные</translation>
         </message>
         <message>
             <source>Load to Deck %1</source>

@@ -951,6 +951,7 @@ void MixxxApp::initMenuBar()
     menuBar()->addSeparator();
     menuBar()->addMenu(m_pHelpMenu);
 
+    m_NativeMenuBarSupport = menuBar()->isNativeMenuBar();
 }
 
 void MixxxApp::slotlibraryMenuAboutToShow(){
@@ -1083,8 +1084,12 @@ void MixxxApp::slotOptionsFullScreen(bool toggle)
 	
     // Making a fullscreen window on linux and windows is harder than you
     // could possibly imagine...
-    if (toggle)
-    {
+
+    if (isFullScreen() == toggle) {
+        return;
+    }
+
+    if (toggle) {
 #if defined(__LINUX__) || defined(__APPLE__)
          // this and the later move(m_winpos) doesn't seem necessary
          // here on kwin, if it's necessary with some other x11 wm, re-enable
@@ -1148,7 +1153,6 @@ void MixxxApp::slotOptionsFullScreen(bool toggle)
             m_pView->move(0,0);
 
         menuBar()->show();
-        menuBar()->setNativeMenuBar(true);
         showNormal();
         
         if (QDir(qSkinPath+"-fullscreen").exists())
@@ -1173,6 +1177,7 @@ void MixxxApp::slotOptionsFullScreen(bool toggle)
 			qDebug() << "unfullscreen DONE";
 		}
 
+        menuBar()->setNativeMenuBar(m_NativeMenuBarSupport);
 #ifdef __LINUX__
 		if (size().width() != m_pView->width() ||
 		    size().height() != m_pView->height() + menuBar()->height()) {
@@ -1323,6 +1328,8 @@ void MixxxApp::slotHelpAbout()
 "Peter V&aacute;gner<br>"
 "Thanasis Liappis<br>"
 "Jens Nachtigall<br>"
+"Scott Ullrich<br>"
+"Jonas &Aring;dahl<br>"
 
 "</p>"
 "<p align=\"center\"><b>And special thanks to:</b></p>"
@@ -1438,12 +1445,10 @@ void MixxxApp::rebootMixxxView() {
     // TODO(XXX) Make getSkinPath not public
     QString qSkinPath = m_pSkinLoader->getConfiguredSkinPath();
 
-    m_pView->hide();
-    delete m_pView;
-    m_pView = new QFrame();
+    QWidget* pNewView = new QFrame();
 
     // assignment in next line intentional
-    if (!(m_pWidgetParent = m_pSkinLoader->loadDefaultSkin(m_pView,
+    if (!(m_pWidgetParent = m_pSkinLoader->loadDefaultSkin(pNewView,
                                         m_pKeyboard,
                                         m_pPlayerManager,
                                         m_pLibrary,
@@ -1452,7 +1457,10 @@ void MixxxApp::rebootMixxxView() {
     }
 
     // don't move this before loadDefaultSkin above. bug 521509 --bkgood
-    setCentralWidget(m_pView);
+    // this hides and deletes the old CentralWidget
+    setCentralWidget(pNewView);
+
+    m_pView = pNewView;
 
     // keep gui centered (esp for fullscreen)
     // the layout will be deleted whenever m_pView gets deleted
@@ -1468,8 +1476,9 @@ void MixxxApp::rebootMixxxView() {
 
     // Set native menu bar. Fixes issue on OSX where menu bar went away after a
     // skin change.
-    menuBar()->setNativeMenuBar(true);
-
+#if __OSX__
+    menuBar()->setNativeMenuBar(m_NativeMenuBarSupport);
+#endif
     qDebug() << "rebootgui DONE";
 }
 

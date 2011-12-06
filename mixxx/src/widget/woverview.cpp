@@ -148,6 +148,17 @@ void WOverview::setup(QDomNode node)
     m_qColorSignal = WSkinColor::getCorrectColor(m_qColorSignal);
     m_qColorMarker.setNamedColor(selectNodeQString(node, "MarkerColor"));
     m_qColorMarker = WSkinColor::getCorrectColor(m_qColorMarker);
+
+    m_qColorProgress = m_qColorSignal;
+    if (!selectNode(node, "ProgressColor").isNull()) {
+        m_qColorProgress.setNamedColor(selectNodeQString(node, "ProgressColor"));
+        m_qColorProgress = WSkinColor::getCorrectColor(m_qColorProgress);
+    }
+
+    m_iProgressAlpha = 80;
+    if (!selectNode(node, "ProgressAlpha").isNull()) {
+        m_iProgressAlpha = selectNodeInt(node, "ProgressAlpha");
+    }
 }
 
 void WOverview::setValue(double fValue)
@@ -168,6 +179,8 @@ void WOverview::slotTrackLoaded(TrackPointer pTrack)
     // If the track already has been analysed slotLoadNewWaveform will reset
     // this parameter.
     m_analysing = true;
+    m_iProgress = 0;
+    update();
 
     if (pTrack) {
         TrackInfoObject* pTrackInfo = pTrack.data();
@@ -191,6 +204,7 @@ void WOverview::slotLoadNewWaveform(TrackInfoObject* pTrack)
     if (!pTrack->getWaveSummary()->isNull() && !pTrack->getWaveSummary()->isEmpty())
     {
         m_analysing = false;
+        m_iProgress = 0;
     }
 
     update();
@@ -206,6 +220,8 @@ void WOverview::slotUnloadTrack(TrackPointer pTrack) {
     }
     QByteArray ba;
     setData(&ba, 0);
+    m_analysing = false;
+    m_iProgress = 0;
     update();
 }
 
@@ -214,7 +230,7 @@ void WOverview::slotTrackProgress(TrackPointer pTrack, int progress)
     if (pTrack == m_pCurrentTrack) {
         if (progress != m_iProgress) {
             m_iProgress = progress;
-            repaint();
+            update();
         }
     }
 }
@@ -480,13 +496,13 @@ void WOverview::paintTrackProgress(QPainter& pPainter) {
     if (m_analysing) {
         // Prepare rectangle
         QRectF buf = m_pScreenBuffer->rect();
-        qreal width = buf.width() * (float)m_iProgress / 100.0f;
+        qreal width = static_cast<float>(buf.width() * m_iProgress) / 100.0f;
         qreal height = buf.height();
         QRectF bar(0, 0, width, height);
 
         // Prepare color
-        QColor color = m_qColorSignal;
-        color.setAlpha(80);
+        QColor color = m_qColorProgress;
+        color.setAlpha(m_iProgressAlpha);
 
         // Paint translucent rectangle representing analysis progress
         pPainter.fillRect(bar, color);

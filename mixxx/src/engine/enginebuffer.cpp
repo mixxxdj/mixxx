@@ -257,6 +257,7 @@ EngineBuffer::~EngineBuffer()
     delete playStartButton;
     delete startButton;
     delete endButton;
+    delete stopStartButtonCOT;
     delete stopButtonCOT;
     delete stopButton;
     delete rateEngine;

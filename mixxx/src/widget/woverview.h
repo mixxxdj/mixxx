@@ -103,6 +103,8 @@ class WOverview : public WWidget
     QColor m_qColorBackground;
     QColor m_qColorMarker;
     QColor m_qColorSignal;
+    QColor m_qColorProgress;
+    int m_iProgressAlpha;
 };
 
 #endif
