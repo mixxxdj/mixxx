@@ -827,7 +827,7 @@ void WTrackTableView::slotReloadTrackMetadata() {
     }
 
     if (QMessageBox::warning(
-        this, tr("Reload Track Metadata"),
+        NULL, tr("Reload Track Metadata"),
         tr("Reloading track metadata on a loaded track may cause abrupt volume changes. Are you sure?"),
         QMessageBox::Yes | QMessageBox::No,
         QMessageBox::No) == QMessageBox::No) {
