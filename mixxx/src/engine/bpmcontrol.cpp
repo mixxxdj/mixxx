@@ -263,16 +263,16 @@ void BpmControl::adjustPhase() {
     bool this_near_next = dThisNextBeat - dThisPosition <= dThisPosition - dThisPrevBeat;
     bool other_near_next = dOtherNextBeat - dOtherPosition <= dOtherPosition - dOtherPrevBeat;
 
-    // We want our beat fraction to be identical to theirs.
-
+    // We want our beat fraction to be identical to theirs.    
+    
     // If the two tracks have similar alignment, adjust phase is straight-
     // forward.  Use the same fraction for both beats, starting from the previous
     // beat.  But if This track is nearer to the next beat and the Other track
     // is nearer to the previous beat, use This Next beat as the starting point
     // for the phase. (ie, we pushed the sync button late).  If This track
-    // is nearer to the previous beat, but the Other track is nearer to the
+    // is nearer to the previous beat, but the Other track is nearer to the 
     // next beat, we pushed the sync button early so use the double-previous
-    // beat as the basis for the adjustment.
+    // beat as the basis for the adjustment.  
     //
     // This makes way more sense when you're actually mixing.
     //
@@ -288,7 +288,7 @@ void BpmControl::adjustPhase() {
         dThisPrevBeat = m_pBeats->findNthBeat(dThisPosition, -2);
         dNewPlaypos = dThisPrevBeat + dOtherBeatFraction * dThisBeatLength;
     }
-
+    
     emit(seekAbs(dNewPlaypos));
 }
 
