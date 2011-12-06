@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2011-10-31 23:15-0400\n"
-"PO-Revision-Date: 2011-10-07 14:24+0000\n"
-"Last-Translator: Petr Šimáček <petr.simacek@gmail.com>\n"
+"PO-Revision-Date: 2011-11-30 20:30+0000\n"
+"Last-Translator: Jakub Hadámek <Unknown>\n"
 "Language-Team: Czech <cs@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-11-02 04:45+0000\n"
-"X-Generator: Launchpad (build 14214)\n"
+"X-Launchpad-Export-Date: 2011-12-01 05:18+0000\n"
+"X-Generator: Launchpad (build 14414)\n"
 
 #: AutoDJFeature#1
 msgid "Auto DJ"
@@ -222,7 +222,7 @@ msgid ""
 "Could not load the following file because it is in use by Mixxx or another "
 "application."
 msgstr ""
-"Nemohu nahrát následující soubor. Je používán Mixxxem nebo jinou aplikací."
+"Nemohu otevřít následující soubor. Je používán Mixxxem nebo jinou aplikací."
 
 #: BrowseTableModel#17
 msgid "Warning: This will permanently delete the following files:"
@@ -416,7 +416,7 @@ msgstr "Min"
 
 #: DlgBpmSchemeDlg#6
 msgid "Analyze Entire Song"
-msgstr ""
+msgstr "Analyzovat celou skladbu"
 
 #: DlgMidiLearning#1
 msgid "Skip"
@@ -1044,47 +1044,47 @@ msgstr "sek."
 #: DlgPrefNoVinylDlg#13
 msgctxt "DlgPrefNoVinylDlg#13"
 msgid "Show Signal Quality in Skin"
-msgstr ""
+msgstr "Zobrazovat kvalitu signálu ve Vzhledu"
 
 #: DlgPrefNoVinylDlg#14
 msgctxt "DlgPrefNoVinylDlg#14"
 msgid "Control Mode"
-msgstr ""
+msgstr "Režim ovládání"
 
 #: DlgPrefNoVinylDlg#15
 msgctxt "DlgPrefNoVinylDlg#15"
 msgid "Absolute Mode"
-msgstr ""
+msgstr "Absolutní režim"
 
 #: DlgPrefNoVinylDlg#16
 msgctxt "DlgPrefNoVinylDlg#16"
 msgid "Relative Mode"
-msgstr ""
+msgstr "Relativní režim"
 
 #: DlgPrefNoVinylDlg#17
 msgctxt "DlgPrefNoVinylDlg#17"
 msgid "Enable Needle Skip Prevention"
-msgstr ""
+msgstr "Povolit prevenci přeskakování jehly"
 
 #: DlgPrefNoVinylDlg#18
 msgctxt "DlgPrefNoVinylDlg#18"
 msgid "Signal Quality"
-msgstr ""
+msgstr "Kvalita signálu"
 
 #: DlgPrefNoVinylDlg#19
 msgctxt "DlgPrefNoVinylDlg#19"
 msgid "http://www.xwax.co.uk"
-msgstr ""
+msgstr "http://www.xwax.co.uk"
 
 #: DlgPrefNoVinylDlg#20
 msgctxt "DlgPrefNoVinylDlg#20"
 msgid "Powered by xwax"
-msgstr ""
+msgstr "Powered by xwax"
 
 #: DlgPrefNoVinylDlg#21
 msgctxt "DlgPrefNoVinylDlg#21"
 msgid "Apply"
-msgstr ""
+msgstr "Použít"
 
 #: DlgPrefNoVinylDlg#22
 msgid ""
@@ -1430,7 +1430,7 @@ msgstr "http://www.mixxx.org"
 #: DlgPrefShoutcastDlg#23
 msgctxt "DlgPrefShoutcastDlg#23"
 msgid "Description"
-msgstr ""
+msgstr "Popis"
 
 #: DlgPrefShoutcastDlg#24
 msgid ""
@@ -1677,7 +1677,7 @@ msgstr "Nic"
 
 #: DlgPrefSoundItem#2
 msgid "Channel %1"
-msgstr ""
+msgstr "Kanál %1"
 
 #: DlgPrefSoundItem#3
 msgid "Channels %1 - %2"
@@ -1772,57 +1772,57 @@ msgstr "Typ vinylu plotny 2"
 #: DlgPrefVinylDlg#11
 msgctxt "DlgPrefVinylDlg#11"
 msgid "Show Signal Quality in Skin"
-msgstr ""
+msgstr "Zobrazovat kvalitu signálu ve Vzhledu"
 
 #: DlgPrefVinylDlg#12
 msgctxt "DlgPrefVinylDlg#12"
 msgid "Apply"
-msgstr ""
+msgstr "Použít"
 
 #: DlgPrefVinylDlg#13
 msgctxt "DlgPrefVinylDlg#13"
 msgid "Lead-in time"
-msgstr ""
+msgstr "Doba trvání zaváděcí stopy"
 
 #: DlgPrefVinylDlg#14
 msgctxt "DlgPrefVinylDlg#14"
 msgid "seconds"
-msgstr ""
+msgstr "sek."
 
 #: DlgPrefVinylDlg#15
 msgctxt "DlgPrefVinylDlg#15"
 msgid "Control Mode"
-msgstr ""
+msgstr "Režim ovládání"
 
 #: DlgPrefVinylDlg#16
 msgctxt "DlgPrefVinylDlg#16"
 msgid "Absolute Mode"
-msgstr ""
+msgstr "Absolutní režim"
 
 #: DlgPrefVinylDlg#17
 msgctxt "DlgPrefVinylDlg#17"
 msgid "Relative Mode"
-msgstr ""
+msgstr "Relativní režim"
 
 #: DlgPrefVinylDlg#18
 msgctxt "DlgPrefVinylDlg#18"
 msgid "Enable Needle Skip Prevention"
-msgstr ""
+msgstr "Povolit prevenci přeskakování jehly"
 
 #: DlgPrefVinylDlg#19
 msgctxt "DlgPrefVinylDlg#19"
 msgid "Signal Quality"
-msgstr ""
+msgstr "Kvalita signálu"
 
 #: DlgPrefVinylDlg#20
 msgctxt "DlgPrefVinylDlg#20"
 msgid "http://www.xwax.co.uk"
-msgstr ""
+msgstr "http://www.xwax.co.uk"
 
 #: DlgPrefVinylDlg#21
 msgctxt "DlgPrefVinylDlg#21"
 msgid "Powered by xwax"
-msgstr ""
+msgstr "Powered by xwax"
 
 #: DlgPreferences#1
 msgid "Sound Hardware"
@@ -1939,19 +1939,19 @@ msgstr "Ukončit nahrávaní"
 
 #: DlgTrackInfo#1
 msgid "Track Editor"
-msgstr ""
+msgstr "Editor skladeb"
 
 #: DlgTrackInfo#2
 msgid "Song:"
-msgstr ""
+msgstr "Skladba:"
 
 #: DlgTrackInfo#3
 msgid "Title:"
-msgstr ""
+msgstr "Název:"
 
 #: DlgTrackInfo#4
 msgid "Artist:"
-msgstr ""
+msgstr "Interpret:"
 
 #: DlgTrackInfo#5
 msgid "Album:"
@@ -1971,7 +1971,7 @@ msgstr "Žánr:"
 
 #: DlgTrackInfo#9
 msgid "Filename:"
-msgstr ""
+msgstr "Jméno souboru:"
 
 #: DlgTrackInfo#10
 msgid "Duration:"
@@ -1979,19 +1979,19 @@ msgstr "Doba trvání:"
 
 #: DlgTrackInfo#11
 msgid "3:00"
-msgstr ""
+msgstr "3:00"
 
 #: DlgTrackInfo#12
 msgid "File Type:"
-msgstr ""
+msgstr "Formát:"
 
 #: DlgTrackInfo#13
 msgid "77"
-msgstr ""
+msgstr "77"
 
 #: DlgTrackInfo#14
 msgid "Comments:"
-msgstr ""
+msgstr "Komentář:"
 
 #: DlgTrackInfo#15
 msgid "Reload track metadata from file."
@@ -1999,7 +1999,7 @@ msgstr "Obnovit metadata stopy ze souboru."
 
 #: DlgTrackInfo#16
 msgid "Track Information (Click to Expand)"
-msgstr ""
+msgstr "Informace o skladbě (rozbalit)"
 
 #: DlgTrackInfo#17
 msgid "Track BPM: "
@@ -2068,7 +2068,7 @@ msgstr "&zrušit"
 
 #: DlgTrackInfo#33
 msgid "Alt+O"
-msgstr ""
+msgstr "Alt+O"
 
 #: DlgTrackInfo#34
 msgid "&Next >>"
@@ -2087,6 +2087,12 @@ msgid ""
 "href='http://mixxx.org/wiki/doku.php/internet_broadcasting#linux'>Mixxx "
 "Wiki</a> for more information. </html>"
 msgstr ""
+"<html>Mixxx nemůže nahrávat nebo streamovat MP3 bez kodeku MP3 "
+"&quot;lame&quot;. Z licenčních důvodu jsme jej nemohli zahrnout do instalace "
+"Mixxxu. Pro nahrávání nebo streamování MP3 je potřeba stáhnout "
+"<b>libmp3lame</b> a nainstalovat do systému. <p>Navštivte <a "
+"href='http://mixxx.org/wiki/doku.php/internet_broadcasting#linux'>Mixxx "
+"Wiki</a> pro více informací. </html>"
 
 #: EncoderMp3#3
 msgid ""
@@ -2097,6 +2103,12 @@ msgid ""
 "href='http://mixxx.org/wiki/doku.php/internet_broadcasting#windows'>Mixxx "
 "Wiki</a> for more information. </html>"
 msgstr ""
+"<html>Mixxx nemůže nahrávat nebo streamovat MP3 bez kodeku MP3 "
+"&quot;lame&quot;. Z licenčních důvodu jsme jej nemohli zahrnout do instalace "
+"Mixxxu. Pro nahrávání nebo streamování MP3 je potřeba stáhnout "
+"<b>lame_enc.dll</b> a nainstalovat do systému. <p>Navštivte <a "
+"href='http://mixxx.org/wiki/doku.php/internet_broadcasting#windows'>Mixxx "
+"Wiki</a> pro více informací. </html>"
 
 #: EncoderMp3#4
 msgid ""
@@ -2107,6 +2119,12 @@ msgid ""
 "href='http://mixxx.org/wiki/doku.php/internet_broadcasting#mac_osx'>Mixxx "
 "Wiki</a> for more information. </html>"
 msgstr ""
+"<html>Mixxx nemůže nahrávat nebo streamovat MP3 bez kodeku MP3 "
+"&quot;lame&quot;. Z licenčních důvodu jsme jej nemohli zahrnout do instalace "
+"Mixxxu. Pro nahrávání nebo streamování MP3 je potřeba stáhnout "
+"<b>libmp3lame</b> a nainstalovat do systému. <p>Navštivte <a "
+"href='http://mixxx.org/wiki/doku.php/internet_broadcasting#mac_osx'>Mixxx "
+"Wiki</a> pro více informací. </html>"
 
 #: EncoderMp3#5
 msgid ""
@@ -2206,7 +2224,7 @@ msgstr "Vyberte svou knihovnu skladeb iTunes"
 
 #: ITunesFeature#3
 msgid "(loading) iTunes"
-msgstr ""
+msgstr "(načítám) iTunes"
 
 #: ITunesFeature#4
 msgid "Use Default Library"
@@ -2269,7 +2287,7 @@ msgstr "Kontrolní hodnota"
 #: MidiInputMappingTableModel#6
 msgctxt "MidiInputMappingTableModel#6"
 msgid "Description"
-msgstr ""
+msgstr "Popis"
 
 #: MidiMapping#1
 msgid "MIDI script function not found"
@@ -2330,7 +2348,7 @@ msgstr "Kontrolní hodnota"
 #: MidiOutputMappingTableModel#6
 msgctxt "MidiOutputMappingTableModel#6"
 msgid "Description"
-msgstr ""
+msgstr "Popis"
 
 #: MidiOutputMappingTableModel#7
 msgid "Threshold Min"
@@ -2513,7 +2531,7 @@ msgstr "Pokračovat"
 
 #: MixxxApp#21
 msgid "&Load Song (Player 1)..."
-msgstr "&Nabít píseň (Přehrávač 1)..."
+msgstr "Otevřít sk&ladbu (Přehrávač 1)..."
 
 #: MixxxApp#22
 msgid "Ctrl+O"
@@ -2521,7 +2539,7 @@ msgstr "Ctrl+O"
 
 #: MixxxApp#23
 msgid "&Load Song (Player 2)..."
-msgstr "&Nabít píseň (Přehrávač 2)..."
+msgstr "Otevřít sk&ladbu (Přehrávač 2)..."
 
 #: MixxxApp#24
 msgid "Ctrl+Shift+O"
@@ -2581,7 +2599,7 @@ msgstr "F11"
 
 #: MixxxApp#38
 msgid "&Preferences"
-msgstr "&Možnosti"
+msgstr "&Předvolby"
 
 #: MixxxApp#39
 msgid "Ctrl+P"
@@ -2589,19 +2607,19 @@ msgstr "Ctrl+P"
 
 #: MixxxApp#40
 msgid "&About"
-msgstr ""
+msgstr "O &aplikaci"
 
 #: MixxxApp#41
 msgid "&Community Support"
-msgstr ""
+msgstr "Podpora komunity"
 
 #: MixxxApp#42
 msgid "Send Us &Feedback"
-msgstr ""
+msgstr "Zpětná vazba"
 
 #: MixxxApp#43
 msgid "&Translate this application"
-msgstr ""
+msgstr "Přeloži&t tuto aplikaci"
 
 #: MixxxApp#44
 msgid "Enable &Vinyl Control 1"
@@ -2622,7 +2640,7 @@ msgstr "Ctrl+U"
 #: MixxxApp#48
 msgctxt "MixxxApp#48"
 msgid "Enable live broadcasting"
-msgstr ""
+msgstr "Povolit živé vysílání"
 
 #: MixxxApp#49
 msgid "Ctrl+L"
@@ -2776,7 +2794,7 @@ msgstr "Zobrazit Mixxx v režimu \"celá obrazovka\""
 #: MixxxApp#76
 msgctxt "MixxxApp#76"
 msgid "Preferences"
-msgstr ""
+msgstr "Předvolby"
 
 #: MixxxApp#77
 msgid ""
@@ -2802,7 +2820,7 @@ msgstr ""
 
 #: MixxxApp#80
 msgid "Send feedback to the Mixxx team."
-msgstr ""
+msgstr "Odeslat zpětnou vazbu vývojovému týmu."
 
 #: MixxxApp#81
 msgid ""
@@ -2810,10 +2828,13 @@ msgid ""
 "\n"
 "Send feedback to the Mixxx team."
 msgstr ""
+"Podpora\n"
+"\n"
+"Odeslat zpětnou vazbu vývojovému týmu."
 
 #: MixxxApp#82
 msgid "Help translate this application into your language."
-msgstr ""
+msgstr "Pomožte přeložit tuto aplikaci do svého jazyka."
 
 #: MixxxApp#83
 msgid ""
@@ -2821,6 +2842,9 @@ msgid ""
 "\n"
 "Help translate this application into your language."
 msgstr ""
+"Podpora\n"
+"\n"
+"Pomožte přeložit tuto aplikaci do svého jazyka."
 
 #: MixxxApp#84
 msgid "About the application"
@@ -3192,7 +3216,7 @@ msgstr "Traktor"
 
 #: TraktorFeature#2
 msgid "(loading) Traktor"
-msgstr ""
+msgstr "(načítám) Traktor"
 
 #: TraktorFeature#3
 msgid "Error Loading Traktor Library"
@@ -3446,7 +3470,7 @@ msgstr "Přidat do fronty Auto DJ"
 
 #: WTrackTableView#7
 msgid "Reload Track Metadata"
-msgstr ""
+msgstr "Znovu načíst metadata"
 
 #: WTrackTableView#8
 msgid "Load to Deck %1"

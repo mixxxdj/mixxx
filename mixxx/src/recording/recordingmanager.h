@@ -57,6 +57,7 @@ class RecordingManager : public QObject
     void slotBytesRecorded(int);
 
   private:
+    QString formatDateTimeForFilename(QDateTime dateTime) const;
     ControlObjectThread* m_recReady;
     ControlObject* m_recReadyCO;
 

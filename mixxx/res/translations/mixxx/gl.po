@@ -9,14 +9,14 @@ msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2011-10-31 23:15-0400\n"
-"PO-Revision-Date: 2011-10-07 14:24+0000\n"
-"Last-Translator: Dario <dario.villar.v@gmail.com>\n"
+"PO-Revision-Date: 2011-11-15 22:50+0000\n"
+"Last-Translator: Fran Alonso <Unknown>\n"
 "Language-Team: Galician <gl@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-11-02 04:45+0000\n"
-"X-Generator: Launchpad (build 14214)\n"
+"X-Launchpad-Export-Date: 2011-11-16 05:13+0000\n"
+"X-Generator: Launchpad (build 14291)\n"
 
 #: AutoDJFeature#1
 msgid "Auto DJ"
@@ -419,7 +419,7 @@ msgstr "Min"
 
 #: DlgBpmSchemeDlg#6
 msgid "Analyze Entire Song"
-msgstr ""
+msgstr "Analizar todo o tema"
 
 #: DlgMidiLearning#1
 msgid "Skip"
@@ -427,7 +427,7 @@ msgstr "Omitir"
 
 #: DlgMidiLearning#2
 msgid "Successfully mapped to: "
-msgstr ""
+msgstr "Asignado correctamente a: "
 
 #: DlgMidiLearning#3
 msgid "Next"
@@ -436,17 +436,19 @@ msgstr "Seguinte"
 #: DlgMidiLearning#4
 msgctxt "DlgMidiLearning#4"
 msgid "MIDI Learning Wizard"
-msgstr ""
+msgstr "Asistente de aprendizaxe MIDI"
 
 #: DlgMidiLearning#5
 msgid "Welcome to the MIDI Learning Wizard"
-msgstr ""
+msgstr "Benvido ao Asistente de aprendizaxe MIDI"
 
 #: DlgMidiLearning#6
 msgid ""
 "This wizard allows you to easily map the controls on your MIDI controller to "
 "Mixxx's controls."
 msgstr ""
+"Este asistente permítelle mappear facilmente os controis MIDI cos controis "
+"de Mixxx."
 
 #: DlgMidiLearning#7
 msgid "Begin"
@@ -454,7 +456,7 @@ msgstr "Comezar"
 
 #: DlgMidiLearning#8
 msgid "Please tweak the control for:"
-msgstr ""
+msgstr "Por favor, axuste o control para:"
 
 #: DlgMidiLearning#9
 msgid "Mixxx Control"
@@ -470,7 +472,7 @@ msgstr "Prema a barra espaciadora para proceder ou saltar."
 
 #: DlgMidiLearning#12
 msgid "MIDI learning complete!"
-msgstr ""
+msgstr "Aprendizase MIDI completado!"
 
 #: DlgMidiLearning#13
 msgid ""
@@ -508,12 +510,12 @@ msgstr "Finito!"
 
 #: DlgPluginDownloader#1
 msgid "Missing Audio Plugin Downloader"
-msgstr ""
+msgstr "Plugin de descarga de audio non atopado"
 
 #: DlgPrefBPMDlg#1
 msgctxt "DlgPrefBPMDlg#1"
 msgid "BPM Detection Settings"
-msgstr ""
+msgstr "Configuración da Detección BPM"
 
 #: DlgPrefBPMDlg#2
 msgctxt "DlgPrefBPMDlg#2"
@@ -526,19 +528,19 @@ msgstr "Habilitar detección BPM"
 
 #: DlgPrefBPMDlg#4
 msgid "Detect Song BPM on Import"
-msgstr ""
+msgstr "Detectar o BMP do tema ao importar"
 
 #: DlgPrefBPMDlg#5
 msgid "Write BPM to ID3 Tag"
-msgstr ""
+msgstr "Escribe BPM na Etiqueta ID3"
 
 #: DlgPrefBPMDlg#6
 msgid "If BPM can be detected but not within specified range"
-msgstr ""
+msgstr "Se os BPM poden detectarse pero non entre o rango específico"
 
 #: DlgPrefBPMDlg#7
 msgid "Allow BPM above the range"
-msgstr ""
+msgstr "Permitir BPM por riba do rango"
 
 #: DlgPrefBPMDlg#8
 msgid "BPM Schemes"
@@ -572,7 +574,7 @@ msgstr "Non é posíbel abrir o ficheiro %1"
 
 #: DlgPrefControls#1
 msgid "This skin does not support schemes"
-msgstr ""
+msgstr "Esta pel non permite esquemas"
 
 #: DlgPrefControls#2
 msgid "8% (Technics SL1210)"
@@ -616,11 +618,11 @@ msgstr "90%"
 
 #: DlgPrefControls#12
 msgid "Up increases speed"
-msgstr ""
+msgstr "Arriba aumenta a velociadade"
 
 #: DlgPrefControls#13
 msgid "Down increases speed (Technics SL1210)"
-msgstr ""
+msgstr "Abaixo disminúe a velocidade (Technics SL1210)"
 
 #: DlgPrefControls#14
 msgctxt "DlgPrefControls#14"
@@ -629,7 +631,7 @@ msgstr "Información"
 
 #: DlgPrefControls#15
 msgid "Mixxx must be restarted before the changes will take effect."
-msgstr ""
+msgstr "Mixxx debe reiniciarse para que os cambio teñan efecto."
 
 #: DlgPrefControlsDlg#1
 msgctxt "DlgPrefControlsDlg#1"
@@ -646,15 +648,15 @@ msgstr "Esquema"
 
 #: DlgPrefControlsDlg#4
 msgid "Waveform display"
-msgstr ""
+msgstr "Amosar Formato de Onda"
 
 #: DlgPrefControlsDlg#5
 msgid "Position display"
-msgstr ""
+msgstr "Amosar Posición"
 
 #: DlgPrefControlsDlg#6
 msgid "Tool tips"
-msgstr ""
+msgstr "Consellos emerxentes"
 
 #: DlgPrefControlsDlg#7
 msgctxt "DlgPrefControlsDlg#7"
@@ -668,27 +670,27 @@ msgstr "Desactivado"
 
 #: DlgPrefControlsDlg#9
 msgid "Pitch/Rate slider range"
-msgstr ""
+msgstr "Rango do deslizador Pitch/Rate"
 
 #: DlgPrefControlsDlg#10
 msgid "Pitch/Rate slider direction"
-msgstr ""
+msgstr "Dirección do deslizador Pitch/Rate"
 
 #: DlgPrefControlsDlg#11
 msgid "Track load behaviour"
-msgstr ""
+msgstr "Comportamento de carga da Pista"
 
 #: DlgPrefControlsDlg#12
 msgid "Cue behaviour"
-msgstr ""
+msgstr "Comportamento do Cue"
 
 #: DlgPrefControlsDlg#13
 msgid "Auto Recall Cue"
-msgstr ""
+msgstr "Autochamada do Cue"
 
 #: DlgPrefControlsDlg#14
 msgid "Permanent Pitch/Rate Buttons"
-msgstr ""
+msgstr "Botóns de Pitch/Rate permanentes"
 
 #: DlgPrefControlsDlg#15
 msgid "Left click"
@@ -700,7 +702,7 @@ msgstr "Clic co botón dereito"
 
 #: DlgPrefControlsDlg#17
 msgid "Permanent rate change (between 1 and 8000) when left clicking"
-msgstr ""
+msgstr "Cambio de Rate permanente (entre 1 e 8000) facendo clic esquerdo"
 
 #: DlgPrefControlsDlg#18
 msgid "%"
@@ -708,15 +710,15 @@ msgstr "%"
 
 #: DlgPrefControlsDlg#19
 msgid "Permanent rate change (between 1 and 8000) when right clicking"
-msgstr ""
+msgstr "Cambio de Rate permanente (entre 1 e 8000) facendo clic esquerdo"
 
 #: DlgPrefControlsDlg#20
 msgid "Temporary Pitch/Rate Buttons"
-msgstr ""
+msgstr "Botóns Pitch/Rate temporais"
 
 #: DlgPrefControlsDlg#21
 msgid "Temporary rate change (between 1 and 8000) when left clicking"
-msgstr ""
+msgstr "Cambio de Rate temporal (entre 1 e 8000) facendo clic esquerdo"
 
 #: DlgPrefControlsDlg#22
 msgid "Temporary rate change (between 1 and 8000) when right clicking"
