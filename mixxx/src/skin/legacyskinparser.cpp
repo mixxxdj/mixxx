@@ -457,7 +457,7 @@ QWidget* LegacySkinParser::parseVisual(QDomElement node) {
         ControlObject::getControl(ConfigKey(channelStr, "wheel")), widget);
 
     p->setWidget((QWidget *)widget, true, true,
-                 ControlObjectThreadWidget::EMIT_ON_PRESS, Qt::LeftButton);
+                 ControlObjectThreadWidget::EMIT_ON_PRESS, Qt::RightButton);
 
     setupWidget(node, widget);
     if (type == WAVEFORM_GL) {
@@ -655,7 +655,7 @@ QWidget* LegacySkinParser::parseTableView(QDomElement node) {
     setupSize(node, pTabWidget);
 
     // set maximum width to prevent growing to qSplitter->sizeHint()
-    // Note: sizeHint() may be greater in skins for tiny screens 
+    // Note: sizeHint() may be greater in skins for tiny screens
     int width = pTabWidget->minimumWidth();
     if (width == 0) {
         width = m_pParent->minimumWidth();
