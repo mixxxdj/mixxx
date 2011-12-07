@@ -18,6 +18,10 @@
 	the resulting work only under the same or similar license to this one.
 
 	CHANGELOG
+	v1.10.0.15	(05/12/2011)
+	* Fix: Changed stylesheets for tooltip so that they are not cut off anymore on Windows,
+	  working around a QT issue, lp:712718
+
 	v1.10.0.14	(26/11/2011)
 	* Feature: Added "ProgressColor" & "ProgressAlpha" for track analysis progress visualization 
 	  in waveform overview, lp:803740
@@ -215,8 +219,7 @@
 								<Tooltip>Track title&#10;Displays the artist and title of the loaded track.&#10;Informations are extracted from the tracks tags.&#10;</Tooltip>
 								<Style>QLabel { font: bold 12px/14px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 								background-color: transparent; color: #191F24; text-align: left; padding-left: 1px; }
-								QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-								background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+								QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }
 								</Style>
 								<Group>[Sampler1]</Group>
 								<Pos>2,3</Pos>
@@ -227,8 +230,7 @@
 								<Tooltip>Track title&#10;Displays the title of the loaded track.&#10;Informations are extracted from the tracks tags.&#10;</Tooltip>
 								<Style>QLabel { font: bold 14px/16px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 								background-color: transparent; color: #191F24; text-align: left; padding-left: 1px; }
-								QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-								background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+								QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }
 								</Style>
 								<Property>title</Property>
 								<Group>[Sampler1]</Group>
@@ -246,8 +248,7 @@
 								<Tooltip>Tempo&#10;Displays the tempo of the loaded track in BPM (beats per minute)&#10;</Tooltip>
 								<Style>QLabel { font: bold 12px/14px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 								background-color: transparent; color: #191F24; text-align: left;padding-left: 1px; }
-								QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-								background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+								QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }
 								</Style>
 								<Group>[Sampler1]</Group>
 								<Pos>164,3</Pos>
@@ -273,10 +274,7 @@
 								<Tooltip>BPM Tap&#10;When tapped repeatedly, adjusts the BPM to match the tapped BPM&#10;</Tooltip>
 							-->
 								<Tooltip>Tempo and BPM tap&#10;Displays the tempo of the loaded track in BPM (beats per minute)&#10;When tapped repeatedly, adjusts the BPM to match the tapped BPM&#10;</Tooltip>
-
-								<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-								background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-								</Style>
+								<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 								<NumberStates>1</NumberStates>
 								<State>
 									<Number>0</Number>
@@ -297,9 +295,7 @@
 							-->
 							<Overview>
 								<Tooltip>Waveform overview&#10;Shows information about the track currently loaded in this channel.&#10;Jump around in the track by clicking somewhere on the waveform.&#10;Drop tracks from library or external file manager here.&#10;</Tooltip>
-								<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-								background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-								</Style>
+								<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 								<Group>[Sampler1]</Group>
 								<Pos>5,25</Pos>
 								<Size>170,35</Size>
@@ -320,9 +316,7 @@
 							-->
 							<Knob>
 								<Tooltip>Gain&#10;Adjusts the pre-fader gain of the track (to avoid clipping)&#10;Right-click: Reset to default value&#10;</Tooltip>
-								<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-								background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-								</Style>
+								<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 								<NumberStates>64</NumberStates>
 								<Path>knobs/knob_rotary_s%1.png</Path>
 								<Pos>184,66</Pos>
@@ -338,9 +332,7 @@
 							-->
 							<StatusLight>
 								<Tooltip>Peak Indicator&#10;Indicates when the signal on the channel is clipping,&#10;(too loud for the hardware and is being distorted).&#10;</Tooltip>
-								<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-								background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-								</Style>
+								<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 								<PathStatusLight>btn_clipping_sampler_over.png</PathStatusLight>
 								<PathBack>btn_clipping_sampler.png</PathBack>
 								<Pos>219,5</Pos>
@@ -356,9 +348,7 @@
 							-->
 							<VuMeter>
 								<Tooltip>Channel volume meter&#10;Shows the current channel volume&#10;</Tooltip>
-								<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-								background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-								</Style>
+								<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 								<PathVu>btn_volume_display_sampler_over.png</PathVu>
 								<PathBack>btn_volume_display_sampler.png</PathBack>
 								<Pos>219,24</Pos>
@@ -379,9 +369,7 @@
 							-->
 							<SliderComposed>
 								<Tooltip>Pitch control&#10;Changes the tempo of the track currently loaded when it is moved&#10;Right-click: Reset to default value&#10;</Tooltip>
-								<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-								background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-								</Style>
+								<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 								<Handle>knob_pitch_sampler.png</Handle>
 								<Slider>slider_pitch_sampler.png</Slider>
 								<Pos>228,8</Pos>
@@ -399,9 +387,7 @@
 							-->
 							<PushButton>
 								<Tooltip>Play/Pause&#10;Left-click: Toggles playing or pausing the track.&#10;Right-click: Jumps to the beginning of the track.&#10;</Tooltip>
-								<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-								background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-								</Style>
+								<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 								<NumberStates>2</NumberStates>
 								<State>
 									<Number>0</Number>
@@ -433,9 +419,7 @@
 							-->
 							<PushButton>
 								<Tooltip>Hotcue&#10;Left-click: If Hotcue is set, seeks the player to Hotcue position.&#10;If Hotcue is not set, sets Hotcue to the current play position.&#10;Right-click: If Hotcue is set, clears its hotcue status (delete).&#10;</Tooltip>
-								<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-								background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-								</Style>
+								<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 								<NumberStates>2</NumberStates>
 								<LeftClickIsPushButton>true</LeftClickIsPushButton>
 								<RightClickIsPushButton>true</RightClickIsPushButton>
@@ -469,9 +453,7 @@
 							</PushButton>
 							<PushButton>
 								<Tooltip>Hotcue&#10;Left-click: If Hotcue is set, seeks the player to Hotcue position.&#10;If Hotcue is not set, sets Hotcue to the current play position.&#10;Right-click: If Hotcue is set, clears its hotcue status (delete).&#10;</Tooltip>
-								<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-								background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-								</Style>
+								<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 								<NumberStates>2</NumberStates>
 								<LeftClickIsPushButton>true</LeftClickIsPushButton>
 								<RightClickIsPushButton>true</RightClickIsPushButton>
@@ -505,9 +487,7 @@
 							</PushButton>
 							<PushButton>
 								<Tooltip>Hotcue&#10;Left-click: If Hotcue is set, seeks the player to Hotcue position.&#10;If Hotcue is not set, sets Hotcue to the current play position.&#10;Right-click: If Hotcue is set, clears its hotcue status (delete).&#10;</Tooltip>
-								<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-								background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-								</Style>
+								<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 								<NumberStates>2</NumberStates>
 								<LeftClickIsPushButton>true</LeftClickIsPushButton>
 								<RightClickIsPushButton>true</RightClickIsPushButton>
@@ -541,9 +521,7 @@
 							</PushButton>
 							<PushButton>
 								<Tooltip>Hotcue&#10;Left-click: If Hotcue is set, seeks the player to Hotcue position.&#10;If Hotcue is not set, sets Hotcue to the current play position.&#10;Right-click: If Hotcue is set, clears its hotcue status (delete).&#10;</Tooltip>
-								<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-								background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-								</Style>
+								<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 								<NumberStates>2</NumberStates>
 								<LeftClickIsPushButton>true</LeftClickIsPushButton>
 								<RightClickIsPushButton>true</RightClickIsPushButton>
@@ -583,9 +561,7 @@
 							-->
 							<PushButton>
 								<Tooltip>Headphone&#10;Sends the selected channel's audio to the Headphones output audio device&#10;selected in Preferences→Sound Hardware.&#10;</Tooltip>
-								<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-								background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-								</Style>
+								<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 								<NumberStates>2</NumberStates>
 								<State>
 									<Number>0</Number>
@@ -610,9 +586,7 @@
 							-->
 							<PushButton>
 								<Tooltip>Eject&#10;Eject currently loaded track from player.&#10;</Tooltip>
-								<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-								background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-								</Style>
+								<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 								<NumberStates>1</NumberStates>
 								<State>
 									<Number>0</Number>
@@ -635,9 +609,7 @@
 							-->
 							<PushButton>
 								<Tooltip>Repeat&#10;When active the track will repeat if you go past the end or reverse before the start.&#10;</Tooltip>
-								<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-								background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-								</Style>
+								<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 								<NumberStates>2</NumberStates>
 								<State>
 									<Number>0</Number>
@@ -662,9 +634,7 @@
 							-->
 							<PushButton>
 								<Tooltip>Mix orientation&#10;Set the channel's mix orientation.&#10;L = left side of crossfader, R = right side of crossfader, M = center (default)&#10;</Tooltip>
-								<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-								background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-								</Style>
+								<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 								<NumberStates>3</NumberStates>
 								<State>
 									<Number>0</Number>
@@ -696,9 +666,7 @@
 							-->
 							<PushButton>
 								<Tooltip>Key-lock&#10;Activates pitch-independent time stretch in the deck.&#10;Toggling key-lock during playback may result in a momentary audio glitch.&#10;</Tooltip>
-								<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-								background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-								</Style>
+								<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 								<NumberStates>2</NumberStates>
 								<State>
 									<Number>0</Number>
@@ -731,8 +699,7 @@
 								<Tooltip>Track title&#10;Displays the artist and title of the loaded track.&#10;Informations are extracted from the tracks tags.&#10;</Tooltip>
 								<Style>QLabel { font: bold 12px/14px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 								background-color: transparent; color: #191F24; text-align: left; padding-left: 1px; }
-								QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-								background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+								QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }
 								</Style>
 								<Group>[Sampler2]</Group>
 								<Pos>2,3</Pos>
@@ -743,8 +710,7 @@
 								<Tooltip>Track title&#10;Displays the title of the loaded track.&#10;Informations are extracted from the tracks tags.&#10;</Tooltip>
 								<Style>QLabel { font: bold 14px/16px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 								background-color: transparent; color: #191F24; text-align: left; padding-left: 1px; }
-								QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-								background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+								QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }
 								</Style>
 								<Property>title</Property>
 								<Group>[Sampler2]</Group>
@@ -762,8 +728,7 @@
 								<Tooltip>Tempo&#10;Displays the tempo of the loaded track in BPM (beats per minute)&#10;</Tooltip>
 								<Style>QLabel { font: bold 12px/14px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 								background-color: transparent; color: #191F24; text-align: left;padding-left: 1px; }
-								QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-								background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+								QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }
 								</Style>
 								<Group>[Sampler2]</Group>
 								<Pos>164,3</Pos>
@@ -789,10 +754,7 @@
 								<Tooltip>BPM Tap&#10;When tapped repeatedly, adjusts the BPM to match the tapped BPM&#10;</Tooltip>
 							-->
 								<Tooltip>Tempo and BPM tap&#10;Displays the tempo of the loaded track in BPM (beats per minute)&#10;When tapped repeatedly, adjusts the BPM to match the tapped BPM&#10;</Tooltip>
-
-								<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-								background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-								</Style>
+								<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 								<NumberStates>1</NumberStates>
 								<State>
 									<Number>0</Number>
@@ -813,9 +775,7 @@
 							-->
 							<Overview>
 								<Tooltip>Waveform overview&#10;Shows information about the track currently loaded in this channel.&#10;Jump around in the track by clicking somewhere on the waveform.&#10;Drop tracks from library or external file manager here.&#10;</Tooltip>
-								<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-								background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-								</Style>
+								<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 								<Group>[Sampler2]</Group>
 								<Pos>5,25</Pos>
 								<Size>170,35</Size>
@@ -836,9 +796,7 @@
 							-->
 							<Knob>
 								<Tooltip>Gain&#10;Adjusts the pre-fader gain of the track (to avoid clipping)&#10;Right-click: Reset to default value&#10;</Tooltip>
-								<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-								background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-								</Style>
+								<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 								<NumberStates>64</NumberStates>
 								<Path>knobs/knob_rotary_s%1.png</Path>
 								<Pos>184,66</Pos>
@@ -854,9 +812,7 @@
 							-->
 							<StatusLight>
 								<Tooltip>Peak Indicator&#10;Indicates when the signal on the channel is clipping,&#10;(too loud for the hardware and is being distorted).&#10;</Tooltip>
-								<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-								background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-								</Style>
+								<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 								<PathStatusLight>btn_clipping_sampler_over.png</PathStatusLight>
 								<PathBack>btn_clipping_sampler.png</PathBack>
 								<Pos>219,5</Pos>
@@ -872,9 +828,7 @@
 							-->
 							<VuMeter>
 								<Tooltip>Channel volume meter&#10;Shows the current channel volume&#10;</Tooltip>
-								<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-								background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-								</Style>
+								<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 								<PathVu>btn_volume_display_sampler_over.png</PathVu>
 								<PathBack>btn_volume_display_sampler.png</PathBack>
 								<Pos>219,24</Pos>
@@ -895,9 +849,7 @@
 							-->
 							<SliderComposed>
 								<Tooltip>Pitch control&#10;Changes the tempo of the track currently loaded when it is moved&#10;Right-click: Reset to default value&#10;</Tooltip>
-								<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-								background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-								</Style>
+								<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 								<Handle>knob_pitch_sampler.png</Handle>
 								<Slider>slider_pitch_sampler.png</Slider>
 								<Pos>228,8</Pos>
@@ -915,9 +867,7 @@
 							-->
 							<PushButton>
 								<Tooltip>Play/Pause&#10;Left-click: Toggles playing or pausing the track.&#10;Right-click: Jumps to the beginning of the track.&#10;</Tooltip>
-								<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-								background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-								</Style>
+								<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 								<NumberStates>2</NumberStates>
 								<State>
 									<Number>0</Number>
@@ -949,9 +899,7 @@
 							-->
 							<PushButton>
 								<Tooltip>Hotcue&#10;Left-click: If Hotcue is set, seeks the player to Hotcue position.&#10;If Hotcue is not set, sets Hotcue to the current play position.&#10;Right-click: If Hotcue is set, clears its hotcue status (delete).&#10;</Tooltip>
-								<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-								background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-								</Style>
+								<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 								<NumberStates>2</NumberStates>
 								<LeftClickIsPushButton>true</LeftClickIsPushButton>
 								<RightClickIsPushButton>true</RightClickIsPushButton>
@@ -985,9 +933,7 @@
 							</PushButton>
 							<PushButton>
 								<Tooltip>Hotcue&#10;Left-click: If Hotcue is set, seeks the player to Hotcue position.&#10;If Hotcue is not set, sets Hotcue to the current play position.&#10;Right-click: If Hotcue is set, clears its hotcue status (delete).&#10;</Tooltip>
-								<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-								background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-								</Style>
+								<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 								<NumberStates>2</NumberStates>
 								<LeftClickIsPushButton>true</LeftClickIsPushButton>
 								<RightClickIsPushButton>true</RightClickIsPushButton>
@@ -1021,9 +967,7 @@
 							</PushButton>
 							<PushButton>
 								<Tooltip>Hotcue&#10;Left-click: If Hotcue is set, seeks the player to Hotcue position.&#10;If Hotcue is not set, sets Hotcue to the current play position.&#10;Right-click: If Hotcue is set, clears its hotcue status (delete).&#10;</Tooltip>
-								<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-								background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-								</Style>
+								<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 								<NumberStates>2</NumberStates>
 								<LeftClickIsPushButton>true</LeftClickIsPushButton>
 								<RightClickIsPushButton>true</RightClickIsPushButton>
@@ -1057,9 +1001,7 @@
 							</PushButton>
 							<PushButton>
 								<Tooltip>Hotcue&#10;Left-click: If Hotcue is set, seeks the player to Hotcue position.&#10;If Hotcue is not set, sets Hotcue to the current play position.&#10;Right-click: If Hotcue is set, clears its hotcue status (delete).&#10;</Tooltip>
-								<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-								background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-								</Style>
+								<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 								<NumberStates>2</NumberStates>
 								<LeftClickIsPushButton>true</LeftClickIsPushButton>
 								<RightClickIsPushButton>true</RightClickIsPushButton>
@@ -1099,9 +1041,7 @@
 							-->
 							<PushButton>
 								<Tooltip>Headphone&#10;Sends the selected channel's audio to the Headphones output audio device&#10;selected in Preferences→Sound Hardware.&#10;</Tooltip>
-								<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-								background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-								</Style>
+								<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 								<NumberStates>2</NumberStates>
 								<State>
 									<Number>0</Number>
@@ -1126,9 +1066,7 @@
 							-->
 							<PushButton>
 								<Tooltip>Eject&#10;Eject currently loaded track from player.&#10;</Tooltip>
-								<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-								background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-								</Style>
+								<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 								<NumberStates>1</NumberStates>
 								<State>
 									<Number>0</Number>
@@ -1151,9 +1089,7 @@
 							-->
 							<PushButton>
 								<Tooltip>Repeat&#10;When active the track will repeat if you go past the end or reverse before the start.&#10;</Tooltip>
-								<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-								background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-								</Style>
+								<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 								<NumberStates>2</NumberStates>
 								<State>
 									<Number>0</Number>
@@ -1178,9 +1114,7 @@
 							-->
 							<PushButton>
 								<Tooltip>Mix orientation&#10;Set the channel's mix orientation.&#10;L = left side of crossfader, R = right side of crossfader, M = center (default)&#10;</Tooltip>
-								<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-								background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-								</Style>
+								<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 								<NumberStates>3</NumberStates>
 								<State>
 									<Number>0</Number>
@@ -1212,9 +1146,7 @@
 							-->
 							<PushButton>
 								<Tooltip>Key-lock&#10;Activates pitch-independent time stretch in the deck.&#10;Toggling key-lock during playback may result in a momentary audio glitch.&#10;</Tooltip>
-								<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-								background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-								</Style>
+								<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 								<NumberStates>2</NumberStates>
 								<State>
 									<Number>0</Number>
@@ -1247,8 +1179,7 @@
 								<Tooltip>Track title&#10;Displays the artist and title of the loaded track.&#10;Informations are extracted from the tracks tags.&#10;</Tooltip>
 								<Style>QLabel { font: bold 12px/14px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 								background-color: transparent; color: #191F24; text-align: left; padding-left: 1px; }
-								QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-								background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+								QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }
 								</Style>
 								<Group>[Sampler3]</Group>
 								<Pos>2,3</Pos>
@@ -1259,8 +1190,7 @@
 								<Tooltip>Track title&#10;Displays the title of the loaded track.&#10;Informations are extracted from the tracks tags.&#10;</Tooltip>
 								<Style>QLabel { font: bold 14px/16px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 								background-color: transparent; color: #191F24; text-align: left; padding-left: 1px; }
-								QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-								background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+								QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }
 								</Style>
 								<Property>title</Property>
 								<Group>[Sampler3]</Group>
@@ -1278,8 +1208,7 @@
 								<Tooltip>Tempo&#10;Displays the tempo of the loaded track in BPM (beats per minute)&#10;</Tooltip>
 								<Style>QLabel { font: bold 12px/14px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 								background-color: transparent; color: #191F24; text-align: left;padding-left: 1px; }
-								QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-								background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+								QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }
 								</Style>
 								<Group>[Sampler3]</Group>
 								<Pos>164,3</Pos>
@@ -1305,10 +1234,7 @@
 								<Tooltip>BPM Tap&#10;When tapped repeatedly, adjusts the BPM to match the tapped BPM&#10;</Tooltip>
 							-->
 								<Tooltip>Tempo and BPM tap&#10;Displays the tempo of the loaded track in BPM (beats per minute)&#10;When tapped repeatedly, adjusts the BPM to match the tapped BPM&#10;</Tooltip>
-
-								<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-								background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-								</Style>
+								<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 								<NumberStates>1</NumberStates>
 								<State>
 									<Number>0</Number>
@@ -1329,9 +1255,7 @@
 							-->
 							<Overview>
 								<Tooltip>Waveform overview&#10;Shows information about the track currently loaded in this channel.&#10;Jump around in the track by clicking somewhere on the waveform.&#10;Drop tracks from library or external file manager here.&#10;</Tooltip>
-								<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-								background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-								</Style>
+								<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 								<Group>[Sampler3]</Group>
 								<Pos>5,25</Pos>
 								<Size>170,35</Size>
@@ -1352,9 +1276,7 @@
 							-->
 							<Knob>
 								<Tooltip>Gain&#10;Adjusts the pre-fader gain of the track (to avoid clipping)&#10;Right-click: Reset to default value&#10;</Tooltip>
-								<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-								background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-								</Style>
+								<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 								<NumberStates>64</NumberStates>
 								<Path>knobs/knob_rotary_s%1.png</Path>
 								<Pos>184,66</Pos>
@@ -1370,9 +1292,7 @@
 							-->
 							<StatusLight>
 								<Tooltip>Peak Indicator&#10;Indicates when the signal on the channel is clipping,&#10;(too loud for the hardware and is being distorted).&#10;</Tooltip>
-								<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-								background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-								</Style>
+								<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 								<PathStatusLight>btn_clipping_sampler_over.png</PathStatusLight>
 								<PathBack>btn_clipping_sampler.png</PathBack>
 								<Pos>219,5</Pos>
@@ -1388,9 +1308,7 @@
 							-->
 							<VuMeter>
 								<Tooltip>Channel volume meter&#10;Shows the current channel volume&#10;</Tooltip>
-								<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-								background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-								</Style>
+								<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 								<PathVu>btn_volume_display_sampler_over.png</PathVu>
 								<PathBack>btn_volume_display_sampler.png</PathBack>
 								<Pos>219,24</Pos>
@@ -1411,9 +1329,7 @@
 							-->
 							<SliderComposed>
 								<Tooltip>Pitch control&#10;Changes the tempo of the track currently loaded when it is moved&#10;Right-click: Reset to default value&#10;</Tooltip>
-								<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-								background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-								</Style>
+								<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 								<Handle>knob_pitch_sampler.png</Handle>
 								<Slider>slider_pitch_sampler.png</Slider>
 								<Pos>228,8</Pos>
@@ -1431,9 +1347,7 @@
 							-->
 							<PushButton>
 								<Tooltip>Play/Pause&#10;Left-click: Toggles playing or pausing the track.&#10;Right-click: Jumps to the beginning of the track.&#10;</Tooltip>
-								<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-								background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-								</Style>
+								<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 								<NumberStates>2</NumberStates>
 								<State>
 									<Number>0</Number>
@@ -1465,9 +1379,7 @@
 							-->
 							<PushButton>
 								<Tooltip>Hotcue&#10;Left-click: If Hotcue is set, seeks the player to Hotcue position.&#10;If Hotcue is not set, sets Hotcue to the current play position.&#10;Right-click: If Hotcue is set, clears its hotcue status (delete).&#10;</Tooltip>
-								<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-								background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-								</Style>
+								<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 								<NumberStates>2</NumberStates>
 								<LeftClickIsPushButton>true</LeftClickIsPushButton>
 								<RightClickIsPushButton>true</RightClickIsPushButton>
@@ -1501,9 +1413,7 @@
 							</PushButton>
 							<PushButton>
 								<Tooltip>Hotcue&#10;Left-click: If Hotcue is set, seeks the player to Hotcue position.&#10;If Hotcue is not set, sets Hotcue to the current play position.&#10;Right-click: If Hotcue is set, clears its hotcue status (delete).&#10;</Tooltip>
-								<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-								background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-								</Style>
+								<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 								<NumberStates>2</NumberStates>
 								<LeftClickIsPushButton>true</LeftClickIsPushButton>
 								<RightClickIsPushButton>true</RightClickIsPushButton>
@@ -1537,9 +1447,7 @@
 							</PushButton>
 							<PushButton>
 								<Tooltip>Hotcue&#10;Left-click: If Hotcue is set, seeks the player to Hotcue position.&#10;If Hotcue is not set, sets Hotcue to the current play position.&#10;Right-click: If Hotcue is set, clears its hotcue status (delete).&#10;</Tooltip>
-								<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-								background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-								</Style>
+								<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 								<NumberStates>2</NumberStates>
 								<LeftClickIsPushButton>true</LeftClickIsPushButton>
 								<RightClickIsPushButton>true</RightClickIsPushButton>
@@ -1573,9 +1481,7 @@
 							</PushButton>
 							<PushButton>
 								<Tooltip>Hotcue&#10;Left-click: If Hotcue is set, seeks the player to Hotcue position.&#10;If Hotcue is not set, sets Hotcue to the current play position.&#10;Right-click: If Hotcue is set, clears its hotcue status (delete).&#10;</Tooltip>
-								<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-								background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-								</Style>
+								<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 								<NumberStates>2</NumberStates>
 								<LeftClickIsPushButton>true</LeftClickIsPushButton>
 								<RightClickIsPushButton>true</RightClickIsPushButton>
@@ -1615,9 +1521,7 @@
 							-->
 							<PushButton>
 								<Tooltip>Headphone&#10;Sends the selected channel's audio to the Headphones output audio device&#10;selected in Preferences→Sound Hardware.&#10;</Tooltip>
-								<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-								background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-								</Style>
+								<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 								<NumberStates>2</NumberStates>
 								<State>
 									<Number>0</Number>
@@ -1642,9 +1546,7 @@
 							-->
 							<PushButton>
 								<Tooltip>Eject&#10;Eject currently loaded track from player.&#10;</Tooltip>
-								<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-								background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-								</Style>
+								<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 								<NumberStates>1</NumberStates>
 								<State>
 									<Number>0</Number>
@@ -1667,9 +1569,7 @@
 							-->
 							<PushButton>
 								<Tooltip>Repeat&#10;When active the track will repeat if you go past the end or reverse before the start.&#10;</Tooltip>
-								<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-								background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-								</Style>
+								<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 								<NumberStates>2</NumberStates>
 								<State>
 									<Number>0</Number>
@@ -1694,9 +1594,7 @@
 							-->
 							<PushButton>
 								<Tooltip>Mix orientation&#10;Set the channel's mix orientation.&#10;L = left side of crossfader, R = right side of crossfader, M = center (default)&#10;</Tooltip>
-								<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-								background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-								</Style>
+								<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 								<NumberStates>3</NumberStates>
 								<State>
 									<Number>0</Number>
@@ -1728,9 +1626,7 @@
 							-->
 							<PushButton>
 								<Tooltip>Key-lock&#10;Activates pitch-independent time stretch in the deck.&#10;Toggling key-lock during playback may result in a momentary audio glitch.&#10;</Tooltip>
-								<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-								background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-								</Style>
+								<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 								<NumberStates>2</NumberStates>
 								<State>
 									<Number>0</Number>
@@ -1763,8 +1659,7 @@
 								<Tooltip>Track title&#10;Displays the artist and title of the loaded track.&#10;Informations are extracted from the tracks tags.&#10;</Tooltip>
 								<Style>QLabel { font: bold 12px/14px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 								background-color: transparent; color: #191F24; text-align: left; padding-left: 1px; }
-								QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-								background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+								QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }
 								</Style>
 								<Group>[Sampler4]</Group>
 								<Pos>2,3</Pos>
@@ -1775,8 +1670,7 @@
 								<Tooltip>Track title&#10;Displays the title of the loaded track.&#10;Informations are extracted from the tracks tags.&#10;</Tooltip>
 								<Style>QLabel { font: bold 14px/16px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 								background-color: transparent; color: #191F24; text-align: left; padding-left: 1px; }
-								QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-								background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+								QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }
 								</Style>
 								<Property>title</Property>
 								<Group>[Sampler4]</Group>
@@ -1794,8 +1688,7 @@
 								<Tooltip>Tempo&#10;Displays the tempo of the loaded track in BPM (beats per minute)&#10;</Tooltip>
 								<Style>QLabel { font: bold 12px/14px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 								background-color: transparent; color: #191F24; text-align: left;padding-left: 1px; }
-								QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-								background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+								QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }
 								</Style>
 								<Group>[Sampler4]</Group>
 								<Pos>164,3</Pos>
@@ -1821,10 +1714,7 @@
 								<Tooltip>BPM Tap&#10;When tapped repeatedly, adjusts the BPM to match the tapped BPM&#10;</Tooltip>
 							-->
 								<Tooltip>Tempo and BPM tap&#10;Displays the tempo of the loaded track in BPM (beats per minute)&#10;When tapped repeatedly, adjusts the BPM to match the tapped BPM&#10;</Tooltip>
-
-								<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-								background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-								</Style>
+								<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 								<NumberStates>1</NumberStates>
 								<State>
 									<Number>0</Number>
@@ -1845,9 +1735,7 @@
 							-->
 							<Overview>
 								<Tooltip>Waveform overview&#10;Shows information about the track currently loaded in this channel.&#10;Jump around in the track by clicking somewhere on the waveform.&#10;Drop tracks from library or external file manager here.&#10;</Tooltip>
-								<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-								background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-								</Style>
+								<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 								<Group>[Sampler4]</Group>
 								<Pos>5,25</Pos>
 								<Size>170,35</Size>
@@ -1868,9 +1756,7 @@
 							-->
 							<Knob>
 								<Tooltip>Gain&#10;Adjusts the pre-fader gain of the track (to avoid clipping)&#10;Right-click: Reset to default value&#10;</Tooltip>
-								<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-								background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-								</Style>
+								<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 								<NumberStates>64</NumberStates>
 								<Path>knobs/knob_rotary_s%1.png</Path>
 								<Pos>184,66</Pos>
@@ -1886,9 +1772,7 @@
 							-->
 							<StatusLight>
 								<Tooltip>Peak Indicator&#10;Indicates when the signal on the channel is clipping,&#10;(too loud for the hardware and is being distorted).&#10;</Tooltip>
-								<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-								background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-								</Style>
+								<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 								<PathStatusLight>btn_clipping_sampler_over.png</PathStatusLight>
 								<PathBack>btn_clipping_sampler.png</PathBack>
 								<Pos>219,5</Pos>
@@ -1904,9 +1788,7 @@
 							-->
 							<VuMeter>
 								<Tooltip>Channel volume meter&#10;Shows the current channel volume&#10;</Tooltip>
-								<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-								background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-								</Style>
+								<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 								<PathVu>btn_volume_display_sampler_over.png</PathVu>
 								<PathBack>btn_volume_display_sampler.png</PathBack>
 								<Pos>219,24</Pos>
@@ -1927,9 +1809,7 @@
 							-->
 							<SliderComposed>
 								<Tooltip>Pitch control&#10;Changes the tempo of the track currently loaded when it is moved&#10;Right-click: Reset to default value&#10;</Tooltip>
-								<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-								background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-								</Style>
+								<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 								<Handle>knob_pitch_sampler.png</Handle>
 								<Slider>slider_pitch_sampler.png</Slider>
 								<Pos>228,8</Pos>
@@ -1947,9 +1827,7 @@
 							-->
 							<PushButton>
 								<Tooltip>Play/Pause&#10;Left-click: Toggles playing or pausing the track.&#10;Right-click: Jumps to the beginning of the track.&#10;</Tooltip>
-								<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-								background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-								</Style>
+								<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 								<NumberStates>2</NumberStates>
 								<State>
 									<Number>0</Number>
@@ -1981,9 +1859,7 @@
 							-->
 							<PushButton>
 								<Tooltip>Hotcue&#10;Left-click: If Hotcue is set, seeks the player to Hotcue position.&#10;If Hotcue is not set, sets Hotcue to the current play position.&#10;Right-click: If Hotcue is set, clears its hotcue status (delete).&#10;</Tooltip>
-								<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-								background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-								</Style>
+								<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 								<NumberStates>2</NumberStates>
 								<LeftClickIsPushButton>true</LeftClickIsPushButton>
 								<RightClickIsPushButton>true</RightClickIsPushButton>
@@ -2017,9 +1893,7 @@
 							</PushButton>
 							<PushButton>
 								<Tooltip>Hotcue&#10;Left-click: If Hotcue is set, seeks the player to Hotcue position.&#10;If Hotcue is not set, sets Hotcue to the current play position.&#10;Right-click: If Hotcue is set, clears its hotcue status (delete).&#10;</Tooltip>
-								<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-								background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-								</Style>
+								<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 								<NumberStates>2</NumberStates>
 								<LeftClickIsPushButton>true</LeftClickIsPushButton>
 								<RightClickIsPushButton>true</RightClickIsPushButton>
@@ -2053,9 +1927,7 @@
 							</PushButton>
 							<PushButton>
 								<Tooltip>Hotcue&#10;Left-click: If Hotcue is set, seeks the player to Hotcue position.&#10;If Hotcue is not set, sets Hotcue to the current play position.&#10;Right-click: If Hotcue is set, clears its hotcue status (delete).&#10;</Tooltip>
-								<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-								background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-								</Style>
+								<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 								<NumberStates>2</NumberStates>
 								<LeftClickIsPushButton>true</LeftClickIsPushButton>
 								<RightClickIsPushButton>true</RightClickIsPushButton>
@@ -2089,9 +1961,7 @@
 							</PushButton>
 							<PushButton>
 								<Tooltip>Hotcue&#10;Left-click: If Hotcue is set, seeks the player to Hotcue position.&#10;If Hotcue is not set, sets Hotcue to the current play position.&#10;Right-click: If Hotcue is set, clears its hotcue status (delete).&#10;</Tooltip>
-								<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-								background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-								</Style>
+								<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 								<NumberStates>2</NumberStates>
 								<LeftClickIsPushButton>true</LeftClickIsPushButton>
 								<RightClickIsPushButton>true</RightClickIsPushButton>
@@ -2131,9 +2001,7 @@
 							-->
 							<PushButton>
 								<Tooltip>Headphone&#10;Sends the selected channel's audio to the Headphones output audio device&#10;selected in Preferences→Sound Hardware.&#10;</Tooltip>
-								<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-								background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-								</Style>
+								<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 								<NumberStates>2</NumberStates>
 								<State>
 									<Number>0</Number>
@@ -2158,9 +2026,7 @@
 							-->
 							<PushButton>
 								<Tooltip>Eject&#10;Eject currently loaded track from player.&#10;</Tooltip>
-								<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-								background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-								</Style>
+								<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 								<NumberStates>1</NumberStates>
 								<State>
 									<Number>0</Number>
@@ -2183,9 +2049,7 @@
 							-->
 							<PushButton>
 								<Tooltip>Repeat&#10;When active the track will repeat if you go past the end or reverse before the start.&#10;</Tooltip>
-								<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-								background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-								</Style>
+								<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 								<NumberStates>2</NumberStates>
 								<State>
 									<Number>0</Number>
@@ -2210,9 +2074,7 @@
 							-->
 							<PushButton>
 								<Tooltip>Mix orientation&#10;Set the channel's mix orientation.&#10;L = left side of crossfader, R = right side of crossfader, M = center (default)&#10;</Tooltip>
-								<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-								background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-								</Style>
+								<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 								<NumberStates>3</NumberStates>
 								<State>
 									<Number>0</Number>
@@ -2244,9 +2106,7 @@
 							-->
 							<PushButton>
 								<Tooltip>Key-lock&#10;Activates pitch-independent time stretch in the deck.&#10;Toggling key-lock during playback may result in a momentary audio glitch.&#10;</Tooltip>
-								<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-								background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-								</Style>
+								<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 								<NumberStates>2</NumberStates>
 								<State>
 									<Number>0</Number>
@@ -2286,8 +2146,7 @@
 					-->
 					<TableView>
 						<Style>
-						QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-						background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+						QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }
 
 						QTableView, QTextBrowser, QTreeView { border: 0px solid #656565; font: 12px/14px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 						background: transparent; color: #ACACAC;
@@ -2361,9 +2220,7 @@
 					-->
 					<PushButton>
 						<Tooltip>Microphone&#10;Show/hide the microphone widget.&#10;</Tooltip>
-						<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-						background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-						</Style>
+						<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 						<NumberStates>2</NumberStates>
 						<State>
 							<Number>0</Number>
@@ -2388,9 +2245,7 @@
 					-->
 					<PushButton>
 						<Tooltip>Sampler&#10;Show/hide the Sampler widget.&#10;</Tooltip>
-						<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-						background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-						</Style>
+						<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 						<NumberStates>2</NumberStates>
 						<State>
 							<Number>0</Number>
@@ -2418,9 +2273,7 @@
 					-->
 					<PushButton>
 						<Tooltip>Vinyl Control&#10;Show/hide the Vinyl Control widget.&#10;Activate Vinyl Control from the Menu→Options&#10;</Tooltip>
-						<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-						background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-						</Style>
+						<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 						<NumberStates>2</NumberStates>
 						<State>
 							<Number>0</Number>
@@ -2445,9 +2298,7 @@
 					-->
 					<SliderComposed>
 						<Tooltip>Volume control&#10;Adjust the volume of the selected channel.&#10;Right-click: Reset to default value&#10;</Tooltip>
-						<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-						background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-						</Style>
+						<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 						<Handle>knob_volume1.png</Handle>
 						<Slider>slider_volume1.png</Slider>
 						<Pos>72,91</Pos>
@@ -2459,9 +2310,7 @@
 					</SliderComposed>
 					<SliderComposed>
 						<Tooltip>Volume control&#10;Adjust the volume of the selected channel.&#10;Right-click: Reset to default value&#10;</Tooltip>
-						<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-						background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-						</Style>
+						<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 						<Handle>knob_volume2.png</Handle>
 						<Slider>slider_volume2.png</Slider>
 						<Pos>168,91</Pos>
@@ -2479,9 +2328,7 @@
 					-->
 					<SliderComposed>
 						<Tooltip>Crossfader&#10;Fade between the channels and define what you hear through the master output.&#10;Right-click: Reset to default value&#10;Change the crossfader curve in Preferences→Crossfader&#10;</Tooltip>
-						<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-						background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-						</Style>
+						<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 						<Handle>knob_crossfader.png</Handle>
 						<Slider>slider_crossfader.png</Slider>
 						<Pos>72,230</Pos>
@@ -2499,9 +2346,7 @@
 					-->
 					<PushButton>
 						<Tooltip>Play/Pause&#10;Left-click: Toggles playing or pausing the track.&#10;Right-click: Places a Cue-point at the current position on the waveform.&#10;</Tooltip>
-						<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-						background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-						</Style>
+						<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 						<NumberStates>2</NumberStates>
 						<RightClickIsPushButton>true</RightClickIsPushButton>
 						<State>
@@ -2529,9 +2374,7 @@
 					</PushButton>
 					<PushButton>
 						<Tooltip>Play/Pause&#10;Left-click: Toggles playing or pausing the track.&#10;Right-click: Places a Cue-point at the current position on the waveform.&#10;</Tooltip>
-						<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-						background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-						</Style>
+						<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 						<NumberStates>2</NumberStates>
 						<RightClickIsPushButton>true</RightClickIsPushButton>
 						<State>
@@ -2565,9 +2408,7 @@
 					-->
 					<PushButton>
 						<Tooltip>Cue&#10;Left-click (while playing): The track will seek to the cue-point and stop (=CDJ) OR play (=simple).&#10;Change the default cue behaviour in Preferences→Interface.&#10;Left-click (while stopped): Places a cue-point at the current position on the waveform.&#10;Right-click: The track will seek to the cue-point and stop.&#10;</Tooltip>
-						<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-						background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-						</Style>
+						<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 						<NumberStates>1</NumberStates>
 						<State>
 							<Number>0</Number>
@@ -2588,9 +2429,7 @@
 					</PushButton>
 					<PushButton>
 						<Tooltip>Cue&#10;Left-click (while playing): The track will seek to the cue-point and stop (=CDJ) OR play (=simple).&#10;Change the default cue behaviour in Preferences→Interface.&#10;Left-click (while stopped): Places a cue-point at the current position on the waveform.&#10;Right-click: The track will seek to the cue-point and stop.&#10;</Tooltip>
-						<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-						background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-						</Style>
+						<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 						<NumberStates>1</NumberStates>
 						<State>
 							<Number>0</Number>
@@ -2617,9 +2456,7 @@
 					-->
 					<PushButton>
 						<Tooltip>Headphone&#10;Sends the selected channel's audio to the Headphones output audio device&#10;selected in Preferences→Sound Hardware.&#10;</Tooltip>
-						<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-						background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-						</Style>
+						<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 						<NumberStates>2</NumberStates>
 						<State>
 							<Number>0</Number>
@@ -2638,9 +2475,7 @@
 					</PushButton>
 					<PushButton>
 						<Tooltip>Headphone&#10;Sends the selected channel's audio to the Headphones output audio device&#10;selected in Preferences→Sound Hardware.&#10;</Tooltip>
-						<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-						background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-						</Style>
+						<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 						<NumberStates>2</NumberStates>
 						<State>
 							<Number>0</Number>
@@ -2665,9 +2500,7 @@
 					-->
 					<PushButton>
 						<Tooltip>Flanger&#10;Toggles the flange effect. Use the depth/delay/lfo knobs to adjust&#10;</Tooltip>
-						<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-						background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-						</Style>
+						<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 						<NumberStates>2</NumberStates>
 						<State>
 							<Number>0</Number>
@@ -2686,9 +2519,7 @@
 					</PushButton>
 					<PushButton>
 						<Tooltip>Flanger&#10;Toggles the flange effect. Use the depth/delay/lfo knobs to adjust&#10;</Tooltip>
-						<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-						background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-						</Style>
+						<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 						<NumberStates>2</NumberStates>
 						<State>
 							<Number>0</Number>
@@ -2713,9 +2544,7 @@
 					-->
 					<PushButton>
 						<Tooltip>High EQ kill&#10;Holds the gain of the high EQ to zero while active.&#10;</Tooltip>
-						<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-						background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-						</Style>
+						<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 						<NumberStates>2</NumberStates>
 						<State>
 							<Number>0</Number>
@@ -2736,9 +2565,7 @@
 					</PushButton>
 					<PushButton>
 						<Tooltip>Mid EQ kill&#10;Holds the gain of the mid EQ to zero while active.&#10;</Tooltip>
-						<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-						background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-						</Style>
+						<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 						<NumberStates>2</NumberStates>
 						<State>
 							<Number>0</Number>
@@ -2759,9 +2586,7 @@
 					</PushButton>
 					<PushButton>
 						<Tooltip>Low EQ kill&#10;Holds the gain of the low EQ to zero while active.&#10;</Tooltip>
-						<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-						background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-						</Style>
+						<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 						<NumberStates>2</NumberStates>
 						<State>
 							<Number>0</Number>
@@ -2783,9 +2608,7 @@
 
 					<PushButton>
 						<Tooltip>High EQ kill&#10;Holds the gain of the high EQ to zero while active.&#10;</Tooltip>
-						<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-						background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-						</Style>
+						<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 						<NumberStates>2</NumberStates>
 						<State>
 							<Number>0</Number>
@@ -2806,9 +2629,7 @@
 					</PushButton>
 					<PushButton>
 						<Tooltip>Mid EQ kill&#10;Holds the gain of the mid EQ to zero while active.&#10;</Tooltip>
-						<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-						background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-						</Style>
+						<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 						<NumberStates>2</NumberStates>
 						<State>
 							<Number>0</Number>
@@ -2829,9 +2650,7 @@
 					</PushButton>
 					<PushButton>
 						<Tooltip>Low EQ kill&#10;Holds the gain of the low EQ to zero while active.&#10;</Tooltip>
-						<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-						background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-						</Style>
+						<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 						<NumberStates>2</NumberStates>
 						<State>
 							<Number>0</Number>
@@ -2858,9 +2677,7 @@
 					-->
 					<Knob>
 						<Tooltip>Master volume&#10;Adjusts the Master output volume.&#10;Right-click: Reset to default value&#10;</Tooltip>
-						<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-						background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-						</Style>
+						<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 						<NumberStates>64</NumberStates>
 						<Path>knobs/knob_rotary_s%1.png</Path>
 						<Pos>208,15</Pos>
@@ -2870,9 +2687,7 @@
 					</Knob>
 					<Knob>
 						<Tooltip>Balance&#10;Adjusts the left/right channel balance on the Master output.&#10;Right-click: Reset to default value&#10;</Tooltip>
-						<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-						background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-						</Style>
+						<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 						<NumberStates>63</NumberStates>
 						<Path>knobs/knob_rotary_s%1.png</Path>
 						<Pos>145,15</Pos>
@@ -2888,9 +2703,7 @@
 					-->
 					<Knob>
 						<Tooltip>Headphone volume&#10;Adjusts the headphone output volume.&#10;Right-click: Reset to default value&#10;</Tooltip>
-						<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-						background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-						</Style>
+						<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 						<NumberStates>64</NumberStates>
 						<Path>knobs/knob_rotary_s%1.png</Path>
 						<Pos>20,15</Pos>
@@ -2900,9 +2713,7 @@
 					</Knob>
 					<Knob>
 						<Tooltip>Headphone mix&#10;Controls what you hear on the headphone output.&#10;Right-click: Reset to default value&#10;</Tooltip>
-						<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-						background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-						</Style>
+						<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 						<NumberStates>64</NumberStates>
 						<Path>knobs/knob_rotary_s%1.png</Path>
 						<Pos>82,15</Pos>
@@ -2918,9 +2729,7 @@
 					-->
 					<Knob>
 						<Tooltip>Flanger delay&#10;Adjusts the phase delay of the flange effect (when active).&#10;Right-click: Reset to default value&#10;</Tooltip>
-						<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-						background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-						</Style>
+						<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 						<NumberStates>63</NumberStates>
 						<Path>knobs/knob_rotary_s%1.png</Path>
 						<Pos>171,51</Pos>
@@ -2930,9 +2739,7 @@
 					</Knob>
 					<Knob>
 						<Tooltip>Flanger depth&#10;Adjusts the intensity of the flange effect (when active).&#10;Right-click: Reset to default value&#10;</Tooltip>
-						<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-						background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-						</Style>
+						<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 						<NumberStates>63</NumberStates>
 						<Path>knobs/knob_rotary_s%1.png</Path>
 						<Pos>114,51</Pos>
@@ -2942,9 +2749,7 @@
 					</Knob>
 					<Knob>
 						<Tooltip>Flanger LFO period&#10;Adjusts the wavelength of the flange effect (when active).&#10;Right-click: Reset to default value&#10;</Tooltip>
-						<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-						background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-						</Style>
+						<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 						<NumberStates>63</NumberStates>
 						<Path>knobs/knob_rotary_s%1.png</Path>
 						<Pos>57,51</Pos>
@@ -2960,9 +2765,7 @@
 					-->
 					<Knob>
 						<Tooltip>Gain&#10;Adjusts the pre-fader gain of the track (to avoid clipping)&#10;Right-click: Reset to default value&#10;</Tooltip>
-						<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-						background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-						</Style>
+						<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 						<NumberStates>64</NumberStates>
 						<Path>knobs/knob_rotary_s%1.png</Path>
 						<Pos>32,83</Pos>
@@ -2972,9 +2775,7 @@
 					</Knob>
 					<Knob>
 						<Tooltip>High EQ&#10;Adjusts the gain of the high EQ filter.&#10;Right-click: Reset to default value&#10;</Tooltip>
-						<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-						background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-						</Style>
+						<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 						<NumberStates>64</NumberStates>
 						<Path>knobs/knob_rotary_s%1.png</Path>
 						<Pos>32,112</Pos>
@@ -2984,9 +2785,7 @@
 					</Knob>
 					<Knob>
 						<Tooltip>Mid EQ&#10;Adjusts the gain of the mid EQ filter.&#10;Right-click: Reset to default value&#10;</Tooltip>
-						<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-						background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-						</Style>
+						<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 						<NumberStates>64</NumberStates>
 						<Path>knobs/knob_rotary_s%1.png</Path>
 						<Pos>32,141</Pos>
@@ -2996,9 +2795,7 @@
 					</Knob>
 					<Knob>
 						<Tooltip>Low EQ&#10;Adjusts the gain of the low EQ filter.&#10;Right-click: Reset to default value&#10;</Tooltip>
-						<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-						background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-						</Style>
+						<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 						<NumberStates>64</NumberStates>
 						<Path>knobs/knob_rotary_s%1.png</Path>
 						<Pos>32,170</Pos>
@@ -3009,9 +2806,7 @@
 
 					<Knob>
 						<Tooltip>Gain&#10;Adjusts the pre-fader gain of the track (to avoid clipping)&#10;Right-click: Reset to default value&#10;</Tooltip>
-						<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-						background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-						</Style>
+						<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 						<NumberStates>64</NumberStates>
 						<Path>knobs/knob_rotary_s%1.png</Path>
 						<Pos>196,83</Pos>
@@ -3021,9 +2816,7 @@
 					</Knob>
 					<Knob>
 						<Tooltip>High EQ&#10;Adjusts the gain of the high EQ filter.&#10;Right-click: Reset to default value&#10;</Tooltip>
-						<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-						background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-						</Style>
+						<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 						<NumberStates>64</NumberStates>
 						<Path>knobs/knob_rotary_s%1.png</Path>
 						<Pos>196,112</Pos>
@@ -3033,9 +2826,7 @@
 					</Knob>
 					<Knob>
 						<Tooltip>Mid EQ&#10;Adjusts the gain of the mid EQ filter.&#10;Right-click: Reset to default value&#10;</Tooltip>
-						<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-						background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-						</Style>
+						<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 						<NumberStates>64</NumberStates>
 						<Path>knobs/knob_rotary_s%1.png</Path>
 						<Pos>196,141</Pos>
@@ -3045,9 +2836,7 @@
 					</Knob>
 					<Knob>
 						<Tooltip>Low EQ&#10;Adjusts the gain of the low EQ filter.&#10;Right-click: Reset to default value&#10;</Tooltip>
-						<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-						background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-						</Style>
+						<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 						<NumberStates>64</NumberStates>
 						<Path>knobs/knob_rotary_s%1.png</Path>
 						<Pos>196,170</Pos>
@@ -3063,9 +2852,7 @@
 					-->
 					<VuMeter>
 						<Tooltip>Channel volume meter&#10;Shows the current channel volume&#10;</Tooltip>
-						<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-						background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-						</Style>
+						<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 						<PathVu>btn_volume_display1_over.png</PathVu>
 						<PathBack>btn_volume_display1.png</PathBack>
 						<Pos>107,112</Pos>
@@ -3080,9 +2867,7 @@
 					</VuMeter>
 					<VuMeter>
 						<Tooltip>Channel volume meter&#10;Shows the current channel volume&#10;</Tooltip>
-						<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-						background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-						</Style>
+						<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 						<PathVu>btn_volume_display2_over.png</PathVu>
 						<PathBack>btn_volume_display2.png</PathBack>
 						<Pos>143,112</Pos>
@@ -3098,9 +2883,7 @@
 
 					<VuMeter>
 						<Tooltip>Master channel volume meter&#10;Outputs the current instantaneous master volume for the left channel.&#10;</Tooltip>
-						<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-						background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-						</Style>
+						<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 						<PathVu>btn_volume_display_master1_over.png</PathVu>
 						<PathBack>btn_volume_display_master1.png</PathBack>
 						<Pos>122,112</Pos>
@@ -3114,9 +2897,7 @@
 					</VuMeter>
 					<VuMeter>
 						<Tooltip>Master channel volume meter&#10;Outputs the current instantaneous master volume for the right channel.&#10;</Tooltip>
-						<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-						background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-						</Style>
+						<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 						<PathVu>btn_volume_display_master2_over.png</PathVu>
 						<PathBack>btn_volume_display_master2.png</PathBack>
 						<Pos>128,112</Pos>
@@ -3136,9 +2917,7 @@
 					-->
 					<StatusLight>
 						<Tooltip>Peak Indicator&#10;Indicates when the signal on the channel is clipping,&#10;(too loud for the hardware and is being distorted).&#10;</Tooltip>
-						<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-						background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-						</Style>
+						<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 						<PathStatusLight>btn_clipping1_over.png</PathStatusLight>
 						<PathBack>btn_clipping1.png</PathBack>
 						<Pos>107,93</Pos>
@@ -3148,9 +2927,7 @@
 					</StatusLight>
 					<StatusLight>
 						<Tooltip>Peak Indicator&#10;Indicates when the signal on the channel is clipping,&#10;(too loud for the hardware and is being distorted).&#10;</Tooltip>
-						<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-						background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-						</Style>
+						<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 						<PathStatusLight>btn_clipping2_over.png</PathStatusLight>
 						<PathBack>btn_clipping2.png</PathBack>
 						<Pos>143,93</Pos>
@@ -3160,9 +2937,7 @@
 					</StatusLight>
 					<StatusLight>
 						<Tooltip>Master Peak Indicator&#10;Indicates when the signal on the Master output is clipping,&#10;(too loud for the hardware and is being distorted).&#10;</Tooltip>
-						<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-						background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-						</Style>
+						<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 						<PathStatusLight>btn_clipping_master_over.png</PathStatusLight>
 						<PathBack>btn_clipping_master.png</PathBack>
 						<Pos>122,93</Pos>
@@ -3203,9 +2978,7 @@
 					-->
 					<StatusLight>
 						<Tooltip>Vinyl Status&#10;Provides visual feedback with regards to vinyl control status&#10;Green for control enabled&#10;Blinking yellow for when the needle reaches the end of the record&#10;Red for needle skip detected&#10;</Tooltip>
-						<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-						background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-						</Style>
+						<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 						<NumberPos>3</NumberPos>
 						<PathStatusLight>btn_vinylcontrol_indicator_horizontal1.png</PathStatusLight>
 						<PathStatusLight2>btn_vinylcontrol_indicator_horizontal2.png</PathStatusLight2>
@@ -3217,9 +2990,7 @@
 					</StatusLight>
 					<StatusLight>
 						<Tooltip>Vinyl Status&#10;Provides visual feedback with regards to vinyl control status&#10;Green for control enabled&#10;Blinking yellow for when the needle reaches the end of the record&#10;Red for needle skip detected&#10;</Tooltip>
-						<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-						background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-						</Style>
+						<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 						<NumberPos>3</NumberPos>
 						<PathStatusLight>btn_vinylcontrol_indicator_horizontal1.png</PathStatusLight>
 						<PathStatusLight2>btn_vinylcontrol_indicator_horizontal2.png</PathStatusLight2>
@@ -3231,9 +3002,7 @@
 					</StatusLight>
 					<StatusLight>
 						<Tooltip>Vinyl Status&#10;Provides visual feedback with regards to vinyl control status&#10;Green for control enabled&#10;Blinking yellow for when the needle reaches the end of the record&#10;Red for needle skip detected&#10;</Tooltip>
-						<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-						background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-						</Style>
+						<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 						<NumberPos>3</NumberPos>
 						<PathStatusLight>btn_vinylcontrol_indicator_vertical1.png</PathStatusLight>
 						<PathStatusLight2>btn_vinylcontrol_indicator_vertical2.png</PathStatusLight2>
@@ -3245,9 +3014,7 @@
 					</StatusLight>
 					<StatusLight>
 						<Tooltip>Vinyl Status&#10;Provides visual feedback with regards to vinyl control status&#10;Green for control enabled&#10;Blinking yellow for when the needle reaches the end of the record&#10;Red for needle skip detected&#10;</Tooltip>
-						<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-						background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-						</Style>
+						<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 						<NumberPos>3</NumberPos>
 						<PathStatusLight>btn_vinylcontrol_indicator_vertical1.png</PathStatusLight>
 						<PathStatusLight2>btn_vinylcontrol_indicator_vertical2.png</PathStatusLight2>
@@ -3281,9 +3048,7 @@
 							-->
 							<Visual>
 								<Tooltip>Waveform display&#10;Shows the loaded tracks' waveforms near the playback position.&#10;Use the mouse to scratch, halt, spin back and push forward a track.&#10;Drop tracks from library or external file manager here.&#10;</Tooltip>
-								<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-								background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-								</Style>
+								<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 								<Channel>1</Channel>
 								<Pos>0,0</Pos>
 								<!--See comment about <Size> above-->
@@ -3609,9 +3374,7 @@
 											-->
 											<Spinny>
 												<Tooltip>Spinning vinyl&#10;Rotates during playback and shows the position of a track.&#10;Use the mouse to scratch, halt, spin back and push forward a track.&#10;Drop tracks from library or external file manager here.&#10;If Vinyl control is enabled, it can display the timecoded vinyls signal quality (see Preferences→Vinyl Control).&#10;</Tooltip>
-												<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-												background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-												</Style>
+												<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 												<Channel>1</Channel>
 												<Pos>0,0</Pos>
 												<Size>i,i</Size>
@@ -3643,9 +3406,7 @@
 											<!--
 											<PushButton>
 												<Tooltip>Vinyl status&#10;Toggles whether a deck is being controlled by digital timecode vinyl/CD&#10;When enabled, a indication should appear onscreen indicating green for Enabled.&#10;</Tooltip>
-												<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-												background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-												</Style>
+												<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 												<NumberStates>2</NumberStates>
 												<State>
 													<Number>0</Number>
@@ -3676,9 +3437,7 @@
 											-->
 											<PushButton>
 												<Tooltip>Vinyl Control Mode&#10;Absolute mode - track position equals needle position and speed&#10;Relative mode - track speed equals needle speed regardless of needle position&#10;Constant mode - track speed equals last known-steady speed regardless of needle input&#10;</Tooltip>
-												<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-												background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-												</Style>
+												<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 												<NumberStates>3</NumberStates>
 												<State>
 													<Number>0</Number>
@@ -3707,9 +3466,7 @@
 											-->
 											<PushButton>
 												<Tooltip>Vinyl Cueing Mode&#10;Determines how cue points are treated in vinyl control Relative mode&#10;Off - Cue points ignored&#10;One Cue - If needle is dropped after the cue point, track will seek to that cue point&#10;Hot Cue - Track will seek to nearest previous hot cue point&#10;</Tooltip>
-												<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-												background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-												</Style>
+												<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 												<NumberStates>3</NumberStates>
 												<State>
 													<Number>0</Number>
@@ -3750,9 +3507,7 @@
 					-->
 					<Overview>
 						<Tooltip>Waveform overview&#10;Shows information about the track currently loaded in this channel.&#10;Jump around in the track by clicking somewhere on the waveform.&#10;Drop tracks from library or external file manager here.&#10;</Tooltip>
-						<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-						background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-						</Style>
+						<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 						<Channel>1</Channel>
 						<Pos>2,161</Pos>
 						<Size>250,37</Size>
@@ -3779,8 +3534,7 @@
 						<Tooltip>Track title&#10;Displays the title of the loaded track.&#10;Informations are extracted from the tracks tags.&#10;</Tooltip>
 						<Style>QLabel { font: bold 14px/12px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 						background-color: transparent; color: #191F24; text-align: left; padding-left: 1px; }
-						QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-						background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+						QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }
 						</Style>
 						<Property>title</Property>
 						<Channel>1</Channel>
@@ -3797,8 +3551,7 @@
 						<Tooltip>Track Artist&#10;Displays the artist of the loaded track.&#10;Informations are extracted from the tracks tags.&#10;</Tooltip>
 						<Style>QLabel { font: bold 14px/12px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 						background-color: transparent; color: #191F24; text-align: left; padding-left: 1px; }
-						QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-						background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+						QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }
 						</Style>
 						<Property>artist</Property>
 						<Channel>1</Channel>
@@ -3815,8 +3568,7 @@
 						<Tooltip>Tempo&#10;Displays the tempo of the loaded track in BPM (beats per minute)&#10;</Tooltip>
 						<Style>QLabel { font: bold 14px/12px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 						background-color: transparent; color: #191F24; text-align: left;padding-left: 1px; }
-						QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-						background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+						QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }
 						</Style>
 						<Channel>1</Channel>
 						<Pos>245,4</Pos>
@@ -3837,8 +3589,7 @@
 						<Tooltip>Time&#10;Displays the elapsed or remaining time of the track loaded.&#10;Click to toggle between time elapsed/remaining time.&#10;</Tooltip>
 						<Style>QLabel { font: bold 14px/12px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 						background-color: transparent; color: #191F24; text-align: left;padding-left: 1px; }
-						QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-						background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+						QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }
 						</Style>
 						<Channel>1</Channel>
 						<Pos>215,24</Pos>
@@ -3864,9 +3615,7 @@
 						<Tooltip>BPM Tap&#10;When tapped repeatedly, adjusts the BPM to match the tapped BPM&#10;</Tooltip>
 					-->
 						<Tooltip>Tempo and BPM tap&#10;Displays the tempo of the loaded track in BPM (beats per minute)&#10;When tapped repeatedly, adjusts the BPM to match the tapped BPM&#10;</Tooltip>
-						<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-						background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-						</Style>
+						<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 						<NumberStates>1</NumberStates>
 						<State>
 							<Number>0</Number>
@@ -3889,8 +3638,7 @@
 						<Tooltip>Pitch rate&#10;Displays the current pitch of the track based on the original tempo.&#10;</Tooltip>
 						<Style>QLabel { font: bold 10px/12px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 						background-color: transparent; color: #191F24; text-align: center; padding-right: 1px; }
-						QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-						background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+						QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }
 						</Style>
 						<Channel>1</Channel>
 						<Pos>316,28</Pos>
@@ -3909,9 +3657,7 @@
 					-->
 					<SliderComposed>
 						<Tooltip>Pitch control&#10;Changes the tempo of the track currently loaded when it is moved&#10;Right-click: Reset to default value&#10;</Tooltip>
-						<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-						background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-						</Style>
+						<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 						<Handle>knob_pitch1.png</Handle>
 						<Slider>slider_pitch1.png</Slider>
 						<Pos>335,45</Pos>
@@ -3929,9 +3675,7 @@
 					-->
 					<PushButton>
 						<Tooltip>Syncronize tempo&#10;Attempts to automatically match the tempo of the track in this channel&#10;with tempo of the track in the other channel, based on the calculated BPM.&#10;</Tooltip>
-						<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-						background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-						</Style>
+						<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 						<NumberStates>1</NumberStates>
 						<State>
 							<Number>0</Number>
@@ -3953,9 +3697,7 @@
 					-->
 					<PushButton>
 						<Tooltip>Raise pitch&#10;Left-click: Sets the pitch higher&#10;Right-click: Sets the pitch higher in small steps.&#10;Change the the amount of the steps in Preferences→Interface menu.&#10;</Tooltip>
-						<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-						background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-						</Style>
+						<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 						<NumberStates>1</NumberStates>
 						<State>
 							<Number>0</Number>
@@ -3976,9 +3718,7 @@
 					</PushButton>
 					<PushButton>
 						<Tooltip>Lower pitch&#10;Left-click: Sets the pitch lower&#10;Right-click: Sets the pitch lower in small steps.&#10;Change the the amount of the steps in Preferences→Interface menu.&#10;</Tooltip>
-						<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-						background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-						</Style>
+						<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 						<NumberStates>1</NumberStates>
 						<State>
 							<Number>0</Number>
@@ -4005,9 +3745,7 @@
 					-->
 					<PushButton>
 						<Tooltip>Raise pitch temporary (nudge)&#10;Left-click: Holds the pitch higher while active&#10;Right-click: Holds the pitch higher (small amount) while active&#10;Change the amount of the steps in Preferences→Interface&#10;</Tooltip>
-						<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-						background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-						</Style>
+						<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 						<NumberStates>1</NumberStates>
 						<State>
 							<Number>0</Number>
@@ -4028,9 +3766,7 @@
 					</PushButton>
 					<PushButton>
 						<Tooltip>Lower pitch temporary (nudge)&#10;Left-click: Holds the pitch lower while active&#10;Right-click: Holds the pitch lower (small amount) while active&#10;Change the amount of the steps in Preferences→Interface.&#10;</Tooltip>
-						<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-						background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-						</Style>
+						<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 						<NumberStates>1</NumberStates>
 						<State>
 							<Number>0</Number>
@@ -4057,9 +3793,7 @@
 					-->
 					<PushButton>
 						<Tooltip>Spinning vinyl&#10;Show/hide the spinning vinyl widget&#10;</Tooltip>
-						<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-						background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-						</Style>
+						<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 						<NumberStates>2</NumberStates>
 						<State>
 							<Number>0</Number>
@@ -4086,9 +3820,7 @@
 					-->
 					<PushButton>
 						<Tooltip>Adjust beatgrid&#10;Adjust beatgrid so closest beat is aligned with the current playposition.&#10;</Tooltip>
-						<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-						background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-						</Style>
+						<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 						<NumberStates>1</NumberStates>
 						<State>
 							<Number>0</Number>
@@ -4110,9 +3842,7 @@
 					-->
 					<PushButton>
 						<Tooltip>Key-lock&#10;Activates pitch-independent time stretch in the deck.&#10;Toggling key-lock during playback may result in a momentary audio glitch.&#10;</Tooltip>
-						<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-						background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-						</Style>
+						<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 						<NumberStates>2</NumberStates>
 						<State>
 							<Number>0</Number>
@@ -4137,9 +3867,7 @@
 					-->
 					<PushButton>
 						<Tooltip>Quantize&#10;Toggles quantization in loops and cues&#10;</Tooltip>
-						<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-						background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-						</Style>
+						<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 						<NumberStates>2</NumberStates>
 						<State>
 							<Number>0</Number>
@@ -4166,9 +3894,7 @@
 					-->
 					<PushButton>
 						<Tooltip>Repeat&#10;When active the track will repeat if you go past the end or reverse before the start.&#10;</Tooltip>
-						<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-						background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-						</Style>
+						<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 						<NumberStates>2</NumberStates>
 						<State>
 							<Number>0</Number>
@@ -4193,9 +3919,7 @@
 					-->
 					<PushButton>
 						<Tooltip>Eject&#10;Eject currently loaded track from player.&#10;</Tooltip>
-						<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-						background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-						</Style>
+						<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 						<NumberStates>1</NumberStates>
 						<State>
 							<Number>0</Number>
@@ -4224,9 +3948,7 @@
 							-->
 							<PushButton>
 								<Tooltip>Fast Forward&#10;Left-click: Fast forward through the track.&#10;Right-click: Jumps to the end of the track.&#10;</Tooltip>
-								<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-								background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-								</Style>
+								<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 								<NumberStates>1</NumberStates>
 								<State>
 									<Number>0</Number>
@@ -4247,9 +3969,7 @@
 							</PushButton>
 							<PushButton>
 								<Tooltip>Fast Rewind&#10;Left-click: Fast rewind through the track.&#10;Right-click: Jumps to the beginning of the track.&#10;</Tooltip>
-								<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-								background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-								</Style>
+								<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 								<NumberStates>1</NumberStates>
 								<State>
 									<Number>0</Number>
@@ -4276,9 +3996,7 @@
 							-->
 							<PushButton>
 								<Tooltip>Reverse&#10;Toggles reverse playback when pressed during regular playback&#10;</Tooltip>
-								<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-								background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-								</Style>
+								<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 								<NumberStates>1</NumberStates>
 								<State>
 									<Number>0</Number>
@@ -4300,9 +4018,7 @@
 							-->
 							<PushButton>
 								<Tooltip>Beatloop&#10;Setup a loop over X beats&#10;</Tooltip>
-								<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-								background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-								</Style>
+								<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 								<NumberStates>2</NumberStates>
 								<State>
 									<Number>0</Number>
@@ -4323,9 +4039,7 @@
 							</PushButton>
 							<PushButton>
 								<Tooltip>Beatloop&#10;Setup a loop over X beats&#10;</Tooltip>
-								<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-								background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-								</Style>
+								<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 								<NumberStates>2</NumberStates>
 								<State>
 									<Number>0</Number>
@@ -4346,9 +4060,7 @@
 							</PushButton>
 							<PushButton>
 								<Tooltip>Beatloop&#10;Setup a loop over X beats&#10;</Tooltip>
-								<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-								background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-								</Style>
+								<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 								<NumberStates>2</NumberStates>
 								<State>
 									<Number>0</Number>
@@ -4369,9 +4081,7 @@
 							</PushButton>
 							<PushButton>
 								<Tooltip>Beatloop&#10;Setup a loop over X beats&#10;</Tooltip>
-								<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-								background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-								</Style>
+								<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 								<NumberStates>2</NumberStates>
 								<State>
 									<Number>0</Number>
@@ -4392,9 +4102,7 @@
 							</PushButton>
 							<PushButton>
 								<Tooltip>Beatloop&#10;Setup a loop over X beats&#10;</Tooltip>
-								<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-								background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-								</Style>
+								<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 								<NumberStates>2</NumberStates>
 								<State>
 									<Number>0</Number>
@@ -4415,9 +4123,7 @@
 							</PushButton>
 							<PushButton>
 								<Tooltip>Beatloop&#10;Setup a loop over X beats&#10;</Tooltip>
-								<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-								background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-								</Style>
+								<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 								<NumberStates>2</NumberStates>
 								<State>
 									<Number>0</Number>
@@ -4438,9 +4144,7 @@
 							</PushButton>
 							<PushButton>
 								<Tooltip>Beatloop&#10;Setup a loop over X beats&#10;</Tooltip>
-								<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-								background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-								</Style>
+								<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 								<NumberStates>2</NumberStates>
 								<State>
 									<Number>0</Number>
@@ -4461,9 +4165,7 @@
 							</PushButton>
 							<PushButton>
 								<Tooltip>Beatloop&#10;Setup a loop over X beats&#10;</Tooltip>
-								<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-								background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-								</Style>
+								<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 								<NumberStates>2</NumberStates>
 								<State>
 									<Number>0</Number>
@@ -4490,9 +4192,7 @@
 							-->
 							<PushButton>
 								<Tooltip>Loop halve&#10;Halves the current loop's length by moving the end marker.&#10;Player immediately loops if past the new endpoint.&#10;</Tooltip>
-								<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-								background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-								</Style>
+								<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 								<NumberStates>1</NumberStates>
 								<State>
 									<Number>0</Number>
@@ -4508,9 +4208,7 @@
 							</PushButton>
 							<PushButton>
 								<Tooltip>Loop double&#10;Doubles the current loop's length by moving the end marker.&#10;</Tooltip>
-								<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-								background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-								</Style>
+								<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 								<NumberStates>1</NumberStates>
 								<State>
 									<Number>0</Number>
@@ -4532,9 +4230,7 @@
 							-->
 							<PushButton>
 								<Tooltip>Loop-In marker&#10;Sets the player loop-in position to the current play position.&#10;</Tooltip>
-								<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-								background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-								</Style>
+								<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 								<NumberStates>1</NumberStates>
 								<State>
 									<Number>0</Number>
@@ -4550,9 +4246,7 @@
 							</PushButton>
 							<PushButton>
 								<Tooltip>Loop-Out marker&#10;Sets the player loop-out position to the current play position.&#10;</Tooltip>
-								<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-								background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-								</Style>
+								<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 								<NumberStates>1</NumberStates>
 								<State>
 									<Number>0</Number>
@@ -4568,9 +4262,7 @@
 							</PushButton>
 							<PushButton>
 								<Tooltip>Reloop/Exit&#10;Toggles the current loop on or off.&#10;Works only if Loop-In and Loop-Out marker are set.&#10;</Tooltip>
-								<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-								background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-								</Style>
+								<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 								<NumberStates>2</NumberStates>
 								<LeftClickIsPushButton>true</LeftClickIsPushButton>
 								<State>
@@ -4603,9 +4295,7 @@
 							-->
 							<PushButton>
 								<Tooltip>Hotcue&#10;Left-click: If Hotcue is set, seeks the player to Hotcue position.&#10;If Hotcue is not set, sets Hotcue to the current play position.&#10;Right-click: If Hotcue is set, clears its hotcue status (delete).&#10;</Tooltip>
-								<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-								background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-								</Style>
+								<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 								<NumberStates>2</NumberStates>
 								<LeftClickIsPushButton>true</LeftClickIsPushButton>
 								<RightClickIsPushButton>true</RightClickIsPushButton>
@@ -4639,9 +4329,7 @@
 							</PushButton>
 							<PushButton>
 								<Tooltip>Hotcue&#10;Left-click: If Hotcue is set, seeks the player to Hotcue position.&#10;If Hotcue is not set, sets Hotcue to the current play position.&#10;Right-click: If Hotcue is set, clears its hotcue status (delete).&#10;</Tooltip>
-								<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-								background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-								</Style>
+								<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 								<NumberStates>2</NumberStates>
 								<LeftClickIsPushButton>true</LeftClickIsPushButton>
 								<RightClickIsPushButton>true</RightClickIsPushButton>
@@ -4675,9 +4363,7 @@
 							</PushButton>
 							<PushButton>
 								<Tooltip>Hotcue&#10;Left-click: If Hotcue is set, seeks the player to Hotcue position.&#10;If Hotcue is not set, sets Hotcue to the current play position.&#10;Right-click: If Hotcue is set, clears its hotcue status (delete).&#10;</Tooltip>
-								<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-								background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-								</Style>
+								<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 								<NumberStates>2</NumberStates>
 								<LeftClickIsPushButton>true</LeftClickIsPushButton>
 								<RightClickIsPushButton>true</RightClickIsPushButton>
@@ -4711,9 +4397,7 @@
 							</PushButton>
 							<PushButton>
 								<Tooltip>Hotcue&#10;Left-click: If Hotcue is set, seeks the player to Hotcue position.&#10;If Hotcue is not set, sets Hotcue to the current play position.&#10;Right-click: If Hotcue is set, clears its hotcue status (delete).&#10;</Tooltip>
-								<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-								background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-								</Style>
+								<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 								<NumberStates>2</NumberStates>
 								<LeftClickIsPushButton>true</LeftClickIsPushButton>
 								<RightClickIsPushButton>true</RightClickIsPushButton>
@@ -4782,9 +4466,7 @@
 					-->
 					<StatusLight>
 						<Tooltip>Vinyl Status&#10;Provides visual feedback with regards to vinyl control status&#10;Green for control enabled&#10;Blinking yellow for when the needle reaches the end of the record&#10;Red for needle skip detected&#10;</Tooltip>
-						<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-						background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-						</Style>
+						<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 						<NumberPos>3</NumberPos>
 						<PathStatusLight>btn_vinylcontrol_indicator_horizontal1.png</PathStatusLight>
 						<PathStatusLight2>btn_vinylcontrol_indicator_horizontal2.png</PathStatusLight2>
@@ -4796,9 +4478,7 @@
 					</StatusLight>
 					<StatusLight>
 						<Tooltip>Vinyl Status&#10;Provides visual feedback with regards to vinyl control status&#10;Green for control enabled&#10;Blinking yellow for when the needle reaches the end of the record&#10;Red for needle skip detected&#10;</Tooltip>
-						<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-						background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-						</Style>
+						<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 						<NumberPos>3</NumberPos>
 						<PathStatusLight>btn_vinylcontrol_indicator_horizontal1.png</PathStatusLight>
 						<PathStatusLight2>btn_vinylcontrol_indicator_horizontal2.png</PathStatusLight2>
@@ -4810,9 +4490,7 @@
 					</StatusLight>
 					<StatusLight>
 						<Tooltip>Vinyl Status&#10;Provides visual feedback with regards to vinyl control status&#10;Green for control enabled&#10;Blinking yellow for when the needle reaches the end of the record&#10;Red for needle skip detected&#10;</Tooltip>
-						<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-						background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-						</Style>
+						<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 						<NumberPos>3</NumberPos>
 						<PathStatusLight>btn_vinylcontrol_indicator_vertical1.png</PathStatusLight>
 						<PathStatusLight2>btn_vinylcontrol_indicator_vertical2.png</PathStatusLight2>
@@ -4824,9 +4502,7 @@
 					</StatusLight>
 					<StatusLight>
 						<Tooltip>Vinyl Status&#10;Provides visual feedback with regards to vinyl control status&#10;Green for control enabled&#10;Blinking yellow for when the needle reaches the end of the record&#10;Red for needle skip detected&#10;</Tooltip>
-						<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-						background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-						</Style>
+						<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 						<NumberPos>3</NumberPos>
 						<PathStatusLight>btn_vinylcontrol_indicator_vertical1.png</PathStatusLight>
 						<PathStatusLight2>btn_vinylcontrol_indicator_vertical2.png</PathStatusLight2>
@@ -4860,9 +4536,7 @@
 							-->
 							<Visual>
 								<Tooltip>Waveform display&#10;Shows the loaded tracks' waveforms near the playback position.&#10;Use the mouse to scratch, halt, spin back and push forward a track.&#10;Drop tracks from library or external file manager here.&#10;</Tooltip>
-								<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-								background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-								</Style>
+								<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 								<Channel>2</Channel>
 								<Pos>0,0</Pos>
 								<!--See comment about <Size> above-->
@@ -5188,9 +4862,7 @@
 											-->
 											<Spinny>
 												<Tooltip>Spinning vinyl&#10;Rotates during playback and shows the position of a track.&#10;Use the mouse to scratch, halt, spin back and push forward a track.&#10;Drop tracks from library or external file manager here.&#10;If Vinyl control is enabled, it can display the timecoded vinyls signal quality (see Preferences→Vinyl Control).&#10;</Tooltip>
-												<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-												background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-												</Style>
+												<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 												<Channel>2</Channel>
 												<Pos>0,0</Pos>
 												<Size>i,i</Size>
@@ -5222,9 +4894,7 @@
 											<!--
 											<PushButton>
 												<Tooltip>Vinyl status&#10;Toggles whether a deck is being controlled by digital timecode vinyl/CD&#10;When enabled, a indication should appear onscreen indicating green for Enabled.&#10;</Tooltip>
-												<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-												background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-												</Style>
+												<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 												<NumberStates>2</NumberStates>
 												<State>
 													<Number>0</Number>
@@ -5255,9 +4925,7 @@
 											-->
 											<PushButton>
 												<Tooltip>Vinyl Control Mode&#10;Absolute mode - track position equals needle position and speed&#10;Relative mode - track speed equals needle speed regardless of needle position&#10;Constant mode - track speed equals last known-steady speed regardless of needle input&#10;</Tooltip>
-												<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-												background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-												</Style>
+												<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 												<NumberStates>3</NumberStates>
 												<State>
 													<Number>0</Number>
@@ -5286,9 +4954,7 @@
 											-->
 											<PushButton>
 												<Tooltip>Vinyl Cueing Mode&#10;Determines how cue points are treated in vinyl control Relative mode&#10;Off - Cue points ignored&#10;One Cue - If needle is dropped after the cue point, track will seek to that cue point&#10;Hot Cue - Track will seek to nearest previous hot cue point&#10;</Tooltip>
-												<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-												background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-												</Style>
+												<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 												<NumberStates>3</NumberStates>
 												<State>
 													<Number>0</Number>
@@ -5329,9 +4995,7 @@
 					-->
 					<Overview>
 						<Tooltip>Waveform overview&#10;Shows information about the track currently loaded in this channel.&#10;Jump around in the track by clicking somewhere on the waveform.&#10;Drop tracks from library or external file manager here.&#10;</Tooltip>
-						<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-						background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-						</Style>
+						<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 						<Channel>2</Channel>
 						<Pos>2,161</Pos>
 						<Size>250,37</Size>
@@ -5358,8 +5022,7 @@
 						<Tooltip>Track title&#10;Displays the title of the loaded track.&#10;Informations are extracted from the tracks tags.&#10;</Tooltip>
 						<Style>QLabel { font: bold 14px/12px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 						background-color: transparent; color: #191F24; text-align: left; padding-left: 1px; }
-						QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-						background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+						QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }
 						</Style>
 						<Property>title</Property>
 						<Channel>2</Channel>
@@ -5376,8 +5039,7 @@
 						<Tooltip>Track Artist&#10;Displays the artist of the loaded track.&#10;Informations are extracted from the tracks tags.&#10;</Tooltip>
 						<Style>QLabel { font: bold 14px/12px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 						background-color: transparent; color: #191F24; text-align: left; padding-left: 1px; }
-						QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-						background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+						QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }
 						</Style>
 						<Property>artist</Property>
 						<Channel>2</Channel>
@@ -5394,8 +5056,7 @@
 						<Tooltip>Tempo&#10;Displays the tempo of the loaded track in BPM (beats per minute)&#10;</Tooltip>
 						<Style>QLabel { font: bold 14px/12px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 						background-color: transparent; color: #191F24; text-align: left;padding-left: 1px; }
-						QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-						background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+						QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }
 						</Style>
 						<Channel>2</Channel>
 						<Pos>245,4</Pos>
@@ -5416,8 +5077,7 @@
 						<Tooltip>Time&#10;Displays the elapsed or remaining time of the track loaded.&#10;Click to toggle between time elapsed/remaining time.&#10;</Tooltip>
 						<Style>QLabel { font: bold 14px/12px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 						background-color: transparent; color: #191F24; text-align: left;padding-left: 1px; }
-						QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-						background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+						QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }
 						</Style>
 						<Channel>2</Channel>
 						<Pos>215,24</Pos>
@@ -5443,9 +5103,7 @@
 						<Tooltip>BPM Tap&#10;When tapped repeatedly, adjusts the BPM to match the tapped BPM&#10;</Tooltip>
 					-->
 						<Tooltip>Tempo and BPM tap&#10;Displays the tempo of the loaded track in BPM (beats per minute)&#10;When tapped repeatedly, adjusts the BPM to match the tapped BPM&#10;</Tooltip>
-						<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-						background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-						</Style>
+						<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 						<NumberStates>1</NumberStates>
 						<State>
 							<Number>0</Number>
@@ -5468,8 +5126,7 @@
 						<Tooltip>Pitch rate&#10;Displays the current pitch of the track based on the original tempo.&#10;</Tooltip>
 						<Style>QLabel { font: bold 10px/12px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 						background-color: transparent; color: #191F24; text-align: center; padding-right: 1px; }
-						QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-						background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+						QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }
 						</Style>
 						<Channel>2</Channel>
 						<Pos>316,28</Pos>
@@ -5488,9 +5145,7 @@
 					-->
 					<SliderComposed>
 						<Tooltip>Pitch control&#10;Changes the tempo of the track currently loaded when it is moved&#10;Right-click: Reset to default value&#10;</Tooltip>
-						<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-						background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-						</Style>
+						<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 						<Handle>knob_pitch2.png</Handle>
 						<Slider>slider_pitch2.png</Slider>
 						<Pos>335,45</Pos>
@@ -5508,9 +5163,7 @@
 					-->
 					<PushButton>
 						<Tooltip>Syncronize tempo&#10;Attempts to automatically match the tempo of the track in this channel&#10;with tempo of the track in the other channel, based on the calculated BPM.&#10;</Tooltip>
-						<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-						background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-						</Style>
+						<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 						<NumberStates>1</NumberStates>
 						<State>
 							<Number>0</Number>
@@ -5532,9 +5185,7 @@
 					-->
 					<PushButton>
 						<Tooltip>Raise pitch&#10;Left-click: Sets the pitch higher&#10;Right-click: Sets the pitch higher in small steps.&#10;Change the the amount of the steps in Preferences→Interface menu.&#10;</Tooltip>
-						<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-						background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-						</Style>
+						<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 						<NumberStates>1</NumberStates>
 						<State>
 							<Number>0</Number>
@@ -5555,9 +5206,7 @@
 					</PushButton>
 					<PushButton>
 						<Tooltip>Lower pitch&#10;Left-click: Sets the pitch lower&#10;Right-click: Sets the pitch lower in small steps.&#10;Change the the amount of the steps in Preferences→Interface menu.&#10;</Tooltip>
-						<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-						background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-						</Style>
+						<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 						<NumberStates>1</NumberStates>
 						<State>
 							<Number>0</Number>
@@ -5584,9 +5233,7 @@
 					-->
 					<PushButton>
 						<Tooltip>Raise pitch temporary (nudge)&#10;Left-click: Holds the pitch higher while active&#10;Right-click: Holds the pitch higher (small amount) while active&#10;Change the amount of the steps in Preferences→Interface&#10;</Tooltip>
-						<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-						background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-						</Style>
+						<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 						<NumberStates>1</NumberStates>
 						<State>
 							<Number>0</Number>
@@ -5607,9 +5254,7 @@
 					</PushButton>
 					<PushButton>
 						<Tooltip>Lower pitch temporary (nudge)&#10;Left-click: Holds the pitch lower while active&#10;Right-click: Holds the pitch lower (small amount) while active&#10;Change the amount of the steps in Preferences→Interface.&#10;</Tooltip>
-						<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-						background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-						</Style>
+						<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 						<NumberStates>1</NumberStates>
 						<State>
 							<Number>0</Number>
@@ -5636,9 +5281,7 @@
 					-->
 					<PushButton>
 						<Tooltip>Spinning vinyl&#10;Show/hide the spinning vinyl widget&#10;</Tooltip>
-						<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-						background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-						</Style>
+						<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 						<NumberStates>2</NumberStates>
 						<State>
 							<Number>0</Number>
@@ -5665,9 +5308,7 @@
 					-->
 					<PushButton>
 						<Tooltip>Adjust beatgrid&#10;Adjust beatgrid so closest beat is aligned with the current playposition.&#10;</Tooltip>
-						<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-						background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-						</Style>
+						<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 						<NumberStates>1</NumberStates>
 						<State>
 							<Number>0</Number>
@@ -5689,9 +5330,7 @@
 					-->
 					<PushButton>
 						<Tooltip>Key-lock&#10;Activates pitch-independent time stretch in the deck.&#10;Toggling key-lock during playback may result in a momentary audio glitch.&#10;</Tooltip>
-						<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-						background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-						</Style>
+						<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 						<NumberStates>2</NumberStates>
 						<State>
 							<Number>0</Number>
@@ -5716,9 +5355,7 @@
 					-->
 					<PushButton>
 						<Tooltip>Quantize&#10;Toggles quantization in loops and cues&#10;</Tooltip>
-						<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-						background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-						</Style>
+						<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 						<NumberStates>2</NumberStates>
 						<State>
 							<Number>0</Number>
@@ -5745,9 +5382,7 @@
 					-->
 					<PushButton>
 						<Tooltip>Repeat&#10;When active the track will repeat if you go past the end or reverse before the start.&#10;</Tooltip>
-						<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-						background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-						</Style>
+						<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 						<NumberStates>2</NumberStates>
 						<State>
 							<Number>0</Number>
@@ -5772,9 +5407,7 @@
 					-->
 					<PushButton>
 						<Tooltip>Eject&#10;Eject currently loaded track from player.&#10;</Tooltip>
-						<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-						background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-						</Style>
+						<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 						<NumberStates>1</NumberStates>
 						<State>
 							<Number>0</Number>
@@ -5803,9 +5436,7 @@
 							-->
 							<PushButton>
 								<Tooltip>Fast Forward&#10;Left-click: Fast forward through the track.&#10;Right-click: Jumps to the end of the track.&#10;</Tooltip>
-								<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-								background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-								</Style>
+								<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 								<NumberStates>1</NumberStates>
 								<State>
 									<Number>0</Number>
@@ -5826,9 +5457,7 @@
 							</PushButton>
 							<PushButton>
 								<Tooltip>Fast Rewind&#10;Left-click: Fast rewind through the track.&#10;Right-click: Jumps to the beginning of the track.&#10;</Tooltip>
-								<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-								background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-								</Style>
+								<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 								<NumberStates>1</NumberStates>
 								<State>
 									<Number>0</Number>
@@ -5855,9 +5484,7 @@
 							-->
 							<PushButton>
 								<Tooltip>Reverse&#10;Toggles reverse playback when pressed during regular playback&#10;</Tooltip>
-								<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-								background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-								</Style>
+								<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 								<NumberStates>1</NumberStates>
 								<State>
 									<Number>0</Number>
@@ -5879,9 +5506,7 @@
 							-->
 							<PushButton>
 								<Tooltip>Beatloop&#10;Setup a loop over X beats&#10;</Tooltip>
-								<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-								background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-								</Style>
+								<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 								<NumberStates>2</NumberStates>
 								<State>
 									<Number>0</Number>
@@ -5902,9 +5527,7 @@
 							</PushButton>
 							<PushButton>
 								<Tooltip>Beatloop&#10;Setup a loop over X beats&#10;</Tooltip>
-								<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-								background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-								</Style>
+								<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 								<NumberStates>2</NumberStates>
 								<State>
 									<Number>0</Number>
@@ -5925,9 +5548,7 @@
 							</PushButton>
 							<PushButton>
 								<Tooltip>Beatloop&#10;Setup a loop over X beats&#10;</Tooltip>
-								<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-								background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-								</Style>
+								<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 								<NumberStates>2</NumberStates>
 								<State>
 									<Number>0</Number>
@@ -5948,9 +5569,7 @@
 							</PushButton>
 							<PushButton>
 								<Tooltip>Beatloop&#10;Setup a loop over X beats&#10;</Tooltip>
-								<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-								background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-								</Style>
+								<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 								<NumberStates>2</NumberStates>
 								<State>
 									<Number>0</Number>
@@ -5971,9 +5590,7 @@
 							</PushButton>
 							<PushButton>
 								<Tooltip>Beatloop&#10;Setup a loop over X beats&#10;</Tooltip>
-								<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-								background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-								</Style>
+								<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 								<NumberStates>2</NumberStates>
 								<State>
 									<Number>0</Number>
@@ -5994,9 +5611,7 @@
 							</PushButton>
 							<PushButton>
 								<Tooltip>Beatloop&#10;Setup a loop over X beats&#10;</Tooltip>
-								<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-								background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-								</Style>
+								<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 								<NumberStates>2</NumberStates>
 								<State>
 									<Number>0</Number>
@@ -6017,9 +5632,7 @@
 							</PushButton>
 							<PushButton>
 								<Tooltip>Beatloop&#10;Setup a loop over X beats&#10;</Tooltip>
-								<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-								background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-								</Style>
+								<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 								<NumberStates>2</NumberStates>
 								<State>
 									<Number>0</Number>
@@ -6040,9 +5653,7 @@
 							</PushButton>
 							<PushButton>
 								<Tooltip>Beatloop&#10;Setup a loop over X beats&#10;</Tooltip>
-								<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-								background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-								</Style>
+								<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 								<NumberStates>2</NumberStates>
 								<State>
 									<Number>0</Number>
@@ -6069,9 +5680,7 @@
 							-->
 							<PushButton>
 								<Tooltip>Loop halve&#10;Halves the current loop's length by moving the end marker.&#10;Player immediately loops if past the new endpoint.&#10;</Tooltip>
-								<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-								background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-								</Style>
+								<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 								<NumberStates>1</NumberStates>
 								<State>
 									<Number>0</Number>
@@ -6087,9 +5696,7 @@
 							</PushButton>
 							<PushButton>
 								<Tooltip>Loop double&#10;Doubles the current loop's length by moving the end marker.&#10;</Tooltip>
-								<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-								background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-								</Style>
+								<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 								<NumberStates>1</NumberStates>
 								<State>
 									<Number>0</Number>
@@ -6111,9 +5718,7 @@
 							-->
 							<PushButton>
 								<Tooltip>Loop-In marker&#10;Sets the player loop-in position to the current play position.&#10;</Tooltip>
-								<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-								background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-								</Style>
+								<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 								<NumberStates>1</NumberStates>
 								<State>
 									<Number>0</Number>
@@ -6129,9 +5734,7 @@
 							</PushButton>
 							<PushButton>
 								<Tooltip>Loop-Out marker&#10;Sets the player loop-out position to the current play position.&#10;</Tooltip>
-								<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-								background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-								</Style>
+								<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 								<NumberStates>1</NumberStates>
 								<State>
 									<Number>0</Number>
@@ -6147,9 +5750,7 @@
 							</PushButton>
 							<PushButton>
 								<Tooltip>Reloop/Exit&#10;Toggles the current loop on or off.&#10;Works only if Loop-In and Loop-Out marker are set.&#10;</Tooltip>
-								<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-								background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-								</Style>
+								<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 								<NumberStates>2</NumberStates>
 								<LeftClickIsPushButton>true</LeftClickIsPushButton>
 								<State>
@@ -6182,9 +5783,7 @@
 							-->
 							<PushButton>
 								<Tooltip>Hotcue&#10;Left-click: If Hotcue is set, seeks the player to Hotcue position.&#10;If Hotcue is not set, sets Hotcue to the current play position.&#10;Right-click: If Hotcue is set, clears its hotcue status (delete).&#10;</Tooltip>
-								<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-								background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-								</Style>
+								<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 								<NumberStates>2</NumberStates>
 								<LeftClickIsPushButton>true</LeftClickIsPushButton>
 								<RightClickIsPushButton>true</RightClickIsPushButton>
@@ -6218,9 +5817,7 @@
 							</PushButton>
 							<PushButton>
 								<Tooltip>Hotcue&#10;Left-click: If Hotcue is set, seeks the player to Hotcue position.&#10;If Hotcue is not set, sets Hotcue to the current play position.&#10;Right-click: If Hotcue is set, clears its hotcue status (delete).&#10;</Tooltip>
-								<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-								background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-								</Style>
+								<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 								<NumberStates>2</NumberStates>
 								<LeftClickIsPushButton>true</LeftClickIsPushButton>
 								<RightClickIsPushButton>true</RightClickIsPushButton>
@@ -6254,9 +5851,7 @@
 							</PushButton>
 							<PushButton>
 								<Tooltip>Hotcue&#10;Left-click: If Hotcue is set, seeks the player to Hotcue position.&#10;If Hotcue is not set, sets Hotcue to the current play position.&#10;Right-click: If Hotcue is set, clears its hotcue status (delete).&#10;</Tooltip>
-								<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-								background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-								</Style>
+								<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 								<NumberStates>2</NumberStates>
 								<LeftClickIsPushButton>true</LeftClickIsPushButton>
 								<RightClickIsPushButton>true</RightClickIsPushButton>
@@ -6290,9 +5885,7 @@
 							</PushButton>
 							<PushButton>
 								<Tooltip>Hotcue&#10;Left-click: If Hotcue is set, seeks the player to Hotcue position.&#10;If Hotcue is not set, sets Hotcue to the current play position.&#10;Right-click: If Hotcue is set, clears its hotcue status (delete).&#10;</Tooltip>
-								<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-								background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-								</Style>
+								<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 								<NumberStates>2</NumberStates>
 								<LeftClickIsPushButton>true</LeftClickIsPushButton>
 								<RightClickIsPushButton>true</RightClickIsPushButton>
@@ -6354,8 +5947,7 @@
 			-->
 			<StatusLight>
 				<Tooltip>Peak Indicator&#10;Indicates when the signal on the channel is clipping,&#10;(too loud for the hardware and is being distorted).&#10;</Tooltip>
-				<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-				background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+				<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }
 				</Style>
 				<PathStatusLight>btn_clipping_microphone_over.png</PathStatusLight>
 				<PathBack>btn_clipping_microphone.png</PathBack>
@@ -6372,8 +5964,7 @@
 			-->
 			<VuMeter>
 				<Tooltip>Microphone volume meter&#10;Outputs the current instantaneous microphone volume&#10;</Tooltip>
-				<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-				background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+				<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }
 				</Style>
 				<PathVu>btn_volume_display_microphone_over.png</PathVu>
 				<PathBack>btn_volume_display_microphone.png</PathBack>
@@ -6395,8 +5986,7 @@
 			-->
 			<PushButton>
 				<Tooltip>Mix orientation&#10;Set the channel's mix orientation.&#10;L = left side of crossfader, R = right side of crossfader, M = center (default)&#10;</Tooltip>
-				<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-				background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+				<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }
 				</Style>
 				<NumberStates>3</NumberStates>
 				<State>
@@ -6429,8 +6019,7 @@
 			-->
 			<Knob>
 				<Tooltip>Microphone volume&#10;Adjusts the microphone volume.&#10;Right-click: Reset to default value&#10;</Tooltip>
-				<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-				background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+				<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }
 				</Style>
 				<NumberStates>64</NumberStates>
 				<Path>knobs/knob_rotary_s%1.png</Path>
@@ -6447,8 +6036,7 @@
 			-->
 			<PushButton>
 				<Tooltip>Talkover&#10;Hold-to-talk and mix microphone input into the master output.&#10;</Tooltip>
-				<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-				background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+				<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }
 				</Style>
 				<NumberStates>1</NumberStates>
 				<State>
