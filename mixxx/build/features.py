@@ -890,7 +890,8 @@ class Tuned(Feature):
         if build.toolchain_is_gnu:
             ccv = build.env['CCVERSION'].split('.')
             if int(ccv[0]) >= 4 and int(ccv[1]) >= 2:
-                # Should we use -mtune as well?
+                # -march=native takes care of mtune
+                #   http://en.chys.info/2010/04/what-exactly-marchnative-means/
                 build.env.Append(CCFLAGS = '-march=native')
                 # Doesn't make sense as a linkflag
                 build.env.Append(LINKFLAGS = '-march=native')
