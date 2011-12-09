@@ -832,6 +832,7 @@ void MixxxApp::initActions()
 
     m_pHelpAboutApp = new QAction(tr("&About"), this);
     m_pHelpSupport = new QAction(tr("&Community Support"), this);
+    m_pHelpManual = new QAction(tr("&User Manual"), this);
     m_pHelpFeedback = new QAction(tr("Send Us &Feedback"), this);
     m_pHelpTranslation = new QAction(tr("&Translate this application"), this);
 
@@ -978,6 +979,10 @@ void MixxxApp::initActions()
     m_pHelpSupport->setWhatsThis(tr("Support\n\nGet help with Mixxx"));
     connect(m_pHelpSupport, SIGNAL(triggered()), this, SLOT(slotHelpSupport()));
 
+    m_pHelpManual->setStatusTip(tr("Read the Mixxx user manual."));
+    m_pHelpManual->setWhatsThis(tr("Support\n\nRead the Mixxx user manual."));
+    connect(m_pHelpManual, SIGNAL(triggered()), this, SLOT(slotHelpManual()));
+
     m_pHelpFeedback->setStatusTip(tr("Send feedback to the Mixxx team."));
     m_pHelpFeedback->setWhatsThis(tr("Support\n\nSend feedback to the Mixxx team."));
     connect(m_pHelpFeedback, SIGNAL(triggered()), this, SLOT(slotHelpFeedback()));
@@ -1047,6 +1052,7 @@ void MixxxApp::initMenuBar()
 
     // menuBar entry helpMenu
     m_pHelpMenu->addAction(m_pHelpSupport);
+    m_pHelpMenu->addAction(m_pHelpManual);
     m_pHelpMenu->addAction(m_pHelpFeedback);
     m_pHelpMenu->addAction(m_pHelpTranslation);
     m_pHelpMenu->addSeparator();
@@ -1436,6 +1442,32 @@ void MixxxApp::slotHelpTranslation() {
     QUrl qTranslationUrl;
     qTranslationUrl.setUrl(MIXXX_TRANSLATION_URL);
     QDesktopServices::openUrl(qTranslationUrl);
+}
+
+void MixxxApp::slotHelpManual() {
+    QDir configDir(m_pConfig->getConfigPath());
+    // Default to the mixxx.org hosted version of the manual.
+    QUrl qManualUrl(MIXXX_MANUAL_URL);
+#if defined(__APPLE__)
+    // We don't include the PDF manual in the bundle on OSX. Default to the
+    // web-hosted version.
+#elif defined(__WINDOWS__)
+    // On Windows, the manual PDF sits in the same folder as the 'skins' folder.
+    if (configDir.exists(MIXXX_MANUAL_FILENAME)) {
+        qManualUrl = QUrl::fromLocalFile(
+            configDir.absoluteFilePath(MIXXX_MANUAL_FILENAME));
+    }
+#elif defined(__LINUX__)
+    // On GNU/Linux, the manual is installed to e.g. /usr/share/mixxx/doc/
+    configDir.cd("doc");
+    if (configDir.exists(MIXXX_MANUAL_FILENAME)) {
+        qManualUrl = QUrl::fromLocalFile(
+            configDir.absoluteFilePath(MIXXX_MANUAL_FILENAME));
+    }
+#else
+    // No idea, default to the mixxx.org hosted version.
+#endif
+    QDesktopServices::openUrl(qManualUrl);
 }
 
 void MixxxApp::rebootMixxxView() {
