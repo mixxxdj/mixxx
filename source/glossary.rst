@@ -69,7 +69,7 @@ Glossary of Terms
      If you tap your foot to music you are following the “beat”.
      If you count how many taps you do in a minute you have calculated the BPM.
 
-   Beatmatching
+   beatmatching
      A mixing technique used to establish a similar tempo with two or more tracks,
      making them sound like just one track.
 
@@ -79,29 +79,29 @@ Glossary of Terms
      DJ software using physical knobs, faders, and wheels instead of using a
      keyboard.
 
-   Vinyl Control
+   vinyl control
      A method of controlling DJ applications which simulates the traditional
      DJing paradigm of two turntables. Using special vinyl records called
      "timecode records", the DJ application analyzes the timecode signal and
      simulates the sound and feel of having your music collection on vinyl.
 
-   Sync
+   sync
      Sync allows you to automatically adjust the sync'd track to be in sync with
      another deck that is playing.
 
-   Rate
+   rate
      The speed at which a track is played back, usually expressed in terms of a
      percentage of the speed relative to the tracks normal rate. Often while
      mixing, DJs adjust the rates of tracks so that they can play at the same
      tempo as other tracks. This allows DJs to beatmix, and is an essential part
      of DJing.
 
-   Phase
+   phase
      The phase of a track is its position relative to another track. If two
      tracks are sync'd to the same tempo and in-phase then they should be
      playing so that their beats are aligned.
 
-   Pitch bend
+   pitch bend
      A technique used by DJs that temporarily `bends` the rate of a track up or
      down, usually while a button is held. This technique is usually used to
      make micro-adjustments to the synchronization of tracks while

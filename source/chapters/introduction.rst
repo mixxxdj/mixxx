@@ -2,12 +2,13 @@ Introduction to Mixxx
 *********************
 
 Mixxx allows you to perform live DJ mixes with your digital music collection.
-It helps you rock the party with MIDI controllers, vinyl turntables, or even just your keyboard.
+It helps you rock the party with MIDI controllers, vinyl turntables, or even
+just your keyboard.
 
 Mixxx is used by professional DJs and bedroom DJs alike. It is designed by an
 international team of volunteer DJs who want to bring the joy of DJing to
-everyone. The project is non-profit, open-source and community driven. Together and with your
-help we aim to build the best DJ software ever created.
+everyone. The project is non-profit, open-source and community driven. Together
+and with your help we aim to build the best DJ software ever created.
 
 Project History
 ===============
@@ -27,7 +28,7 @@ As our user community grows, so does our development team - As of Mixxx 1.10.0
 over 100 Developers and artists have helped create Mixxx!
 
 What? Why?
-=========
+==========
 
 Mixxx started as an open-source project because of demand for DJing software on
 Linux, and discontent with proprietary DJ software on Windows and Mac OS
