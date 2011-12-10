@@ -77,8 +77,8 @@ void WSearchLineEdit::setup(QDomNode node)
 
 }
 
-void WSearchLineEdit::resizeEvent(QResizeEvent* e)
-{
+void WSearchLineEdit::resizeEvent(QResizeEvent* e) {
+    QLineEdit::resizeEvent(e);
     QSize sz = m_clearButton->sizeHint();
     int frameWidth = style()->pixelMetric(QStyle::PM_DefaultFrameWidth);
     m_clearButton->move(rect().right() - frameWidth - sz.width(),
@@ -86,6 +86,7 @@ void WSearchLineEdit::resizeEvent(QResizeEvent* e)
 }
 
 void WSearchLineEdit::focusInEvent(QFocusEvent* event) {
+    QLineEdit::focusInEvent(event);
     if (m_place) {
         //Must block signals here so that we don't emit a search() signal via
         //textChanged().
@@ -101,6 +102,7 @@ void WSearchLineEdit::focusInEvent(QFocusEvent* event) {
 }
 
 void WSearchLineEdit::focusOutEvent(QFocusEvent* event) {
+    QLineEdit::focusOutEvent(event);
     if (text().isEmpty()) {
         m_place = true;
         showPlaceholder();

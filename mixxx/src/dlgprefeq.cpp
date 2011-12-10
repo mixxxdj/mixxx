@@ -30,6 +30,9 @@
 
 #define CONFIG_KEY "[Mixer Profile]"
 
+const int kFrequencyUpperLimit = 20050;
+const int kFrequencyLowerLimit = 16;
+
 DlgPrefEQ::DlgPrefEQ(QWidget *pParent, ConfigObject<ConfigValue> *pConfig)
   : QWidget(pParent)
   , Ui::DlgPrefEQDlg()
@@ -79,9 +82,13 @@ void DlgPrefEQ::loadSettings()
         setDefaultShelves();
     }
     SliderHiEQ->setValue(
-        getSliderPosition(m_pConfig->getValueString(ConfigKey(CONFIG_KEY, "HiEQFrequency")).toInt()));
+        getSliderPosition(m_pConfig->getValueString(ConfigKey(CONFIG_KEY, "HiEQFrequency")).toInt(),
+                          SliderHiEQ->minimum(),
+                          SliderHiEQ->maximum()));
     SliderLoEQ->setValue(
-        getSliderPosition(m_pConfig->getValueString(ConfigKey(CONFIG_KEY, "LoEQFrequency")).toInt()));
+        getSliderPosition(m_pConfig->getValueString(ConfigKey(CONFIG_KEY, "LoEQFrequency")).toInt(),
+                          SliderLoEQ->minimum(),
+                          SliderLoEQ->maximum()));
 
     if (m_pConfig->getValueString(ConfigKey(CONFIG_KEY, "LoFiEQs")) == QString("yes")) {
         CheckBoxLoFi->setChecked(true);
@@ -124,12 +131,14 @@ void DlgPrefEQ::slotUpdateHiEQ()
     {
         SliderHiEQ->setValue(SliderLoEQ->value());
     }
-    m_highEqFreq = getEqFreq(SliderHiEQ->value());
+    m_highEqFreq = getEqFreq(SliderHiEQ->value(),
+                             SliderHiEQ->minimum(),
+                             SliderHiEQ->maximum());
     validate_levels();
     if (m_highEqFreq < 1000) {
         TextHiEQ->setText( QString("%1 Hz").arg(m_highEqFreq));
     } else {
-        TextHiEQ->setText( QString("%1 Khz").arg(m_highEqFreq / 1000.));
+        TextHiEQ->setText( QString("%1 kHz").arg(m_highEqFreq / 1000.));
     }
     m_pConfig->set(ConfigKey(CONFIG_KEY, "HiEQFrequency"), ConfigValue(m_highEqFreq));
 
@@ -142,25 +151,29 @@ void DlgPrefEQ::slotUpdateLoEQ()
     {
         SliderLoEQ->setValue(SliderHiEQ->value());
     }
-    m_lowEqFreq = getEqFreq(SliderLoEQ->value());
+    m_lowEqFreq = getEqFreq(SliderLoEQ->value(),
+                            SliderLoEQ->minimum(),
+                            SliderLoEQ->maximum());
     validate_levels();
     if (m_lowEqFreq < 1000) {
         TextLoEQ->setText(QString("%1 Hz").arg(m_lowEqFreq));
     } else {
-        TextLoEQ->setText(QString("%1 Khz").arg(m_lowEqFreq / 1000.));
+        TextLoEQ->setText(QString("%1 kHz").arg(m_lowEqFreq / 1000.));
     }
     m_pConfig->set(ConfigKey(CONFIG_KEY, "LoEQFrequency"), ConfigValue(m_lowEqFreq));
 
     slotApply();
 }
 
-int DlgPrefEQ::getSliderPosition(int eqFreq)
+int DlgPrefEQ::getSliderPosition(int eqFreq, int minValue, int maxValue)
 {
-    if(eqFreq >= 20050) {
-        return 480;
+    if(eqFreq >= kFrequencyUpperLimit) {
+        return maxValue;
+    } else if (eqFreq <= kFrequencyLowerLimit) {
+        return minValue;
     }
-    double dsliderPos = pow(eqFreq, 1./4.);
-    dsliderPos *= 40;
+    double dsliderPos = static_cast<double>(eqFreq - kFrequencyLowerLimit) / (kFrequencyUpperLimit-kFrequencyLowerLimit);
+    dsliderPos = pow(dsliderPos, 1./4.) * (maxValue - minValue) + minValue;
     return dsliderPos;
 }
 
@@ -181,23 +194,29 @@ void DlgPrefEQ::slotUpdate()
     slotLoFiChanged();
 }
 
-int DlgPrefEQ::getEqFreq(int sliderVal)
-{
-    if(sliderVal == 480) {
-        return 20050; //normalize maximum to match label
-    } else {
-        double dsliderVal = (double) sliderVal / 40;
-        double result = (dsliderVal * dsliderVal * dsliderVal * dsliderVal);
-        return (int) result;
-    }
+int DlgPrefEQ::getEqFreq(int sliderVal, int minValue, int maxValue) {
+    // We're mapping f(x) = x^4 onto the range kFrequencyLowerLimit,
+    // kFrequencyUpperLimit with x [minValue, maxValue]. First translate x into
+    // [0.0, 1.0], raise it to the 4th power, and then scale the result from
+    // [0.0, 1.0] to [kFrequencyLowerLimit, kFrequencyUpperLimit].
+    double normValue = static_cast<double>(sliderVal - minValue) /
+            (maxValue - minValue);
+    // Use a non-linear mapping between slider and frequency.
+    normValue = normValue * normValue * normValue * normValue;
+    double result = normValue * (kFrequencyUpperLimit-kFrequencyLowerLimit) +
+            kFrequencyLowerLimit;
+    return result;
 }
 
 void DlgPrefEQ::validate_levels() {
+    m_highEqFreq = math_max(math_min(m_highEqFreq, kFrequencyUpperLimit),
+                            kFrequencyLowerLimit);
+    m_lowEqFreq = math_max(math_min(m_lowEqFreq, kFrequencyUpperLimit),
+                           kFrequencyLowerLimit);
     if (m_lowEqFreq == m_highEqFreq) {
-        // magic numbers: 16 is the low, 20050 is the high
-        if (m_lowEqFreq == 16) {
+        if (m_lowEqFreq == kFrequencyLowerLimit) {
             ++m_highEqFreq;
-        } else if (m_highEqFreq == 20050) {
+        } else if (m_highEqFreq == kFrequencyUpperLimit) {
             --m_lowEqFreq;
         } else {
             ++m_highEqFreq;

@@ -246,6 +246,7 @@ EngineBuffer::~EngineBuffer()
     delete playStartButton;
     delete startButton;
     delete endButton;
+    delete stopStartButtonCOT;
     delete stopButtonCOT;
     delete stopButton;
     delete rateEngine;
@@ -705,7 +706,8 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
 
         for (int i=0; i<iBufferSize; i+=2) {
             if (bCurBufferPaused) {
-                float dither = m_pDitherBuffer[m_iDitherBufferReadIndex++ % MAX_BUFFER_LEN];
+                float dither = m_pDitherBuffer[m_iDitherBufferReadIndex];
+                m_iDitherBufferReadIndex = (m_iDitherBufferReadIndex + 1) % MAX_BUFFER_LEN;
                 pOutput[i] = m_fLastSampleValue[0] * m_fRampValue + dither;
                 pOutput[i+1] = m_fLastSampleValue[1] * m_fRampValue + dither;
             } else {
@@ -842,4 +844,17 @@ void EngineBuffer::slotEjectTrack(double v) {
     if (v > 0) {
         ejectTrack();
     }
+}
+
+void EngineBuffer::setReader(CachingReader* pReader) {
+    disconnect(m_pReader, 0, this, 0);
+    delete m_pReader;
+    m_pReader = pReader;
+    m_pReadAheadManager->setReader(pReader);
+    connect(m_pReader, SIGNAL(trackLoaded(TrackPointer, int, int)),
+            this, SLOT(slotTrackLoaded(TrackPointer, int, int)),
+            Qt::DirectConnection);
+    connect(m_pReader, SIGNAL(trackLoadFailed(TrackPointer, QString)),
+            this, SLOT(slotTrackLoadFailed(TrackPointer, QString)),
+            Qt::DirectConnection);
 }

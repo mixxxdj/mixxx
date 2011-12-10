@@ -1099,8 +1099,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Built-in</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Built-in</translation>
         </message>
         <message>
             <source>Available Online...</source>
@@ -1144,8 +1143,7 @@ playback and outbound link statistics</source>
         </message>
         <message>
             <source>Low</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Low</translation>
         </message>
         <message>
             <source>Tags</source>
@@ -1273,8 +1271,7 @@ playback and outbound link statistics</source>
         </message>
         <message>
             <source>Host</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Host</translation>
         </message>
         <message>
             <source>192.168.123.8</source>
@@ -1283,28 +1280,23 @@ playback and outbound link statistics</source>
         </message>
         <message>
             <source>Port</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Port</translation>
         </message>
         <message>
             <source>8000</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>8000</translation>
         </message>
         <message>
             <source>Login</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Login</translation>
         </message>
         <message>
             <source>source</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>source</translation>
         </message>
         <message>
             <source>Password</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Password</translation>
         </message>
         <message>
             <source>test1234</source>
@@ -1328,18 +1320,15 @@ playback and outbound link statistics</source>
         </message>
         <message>
             <source>Website</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Website</translation>
         </message>
         <message>
             <source>http://www.mixxx.org</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>http://www.mixxx.org</translation>
         </message>
         <message>
             <source>Description</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Description:</translation>
         </message>
         <message>
             <source>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
@@ -1347,13 +1336,15 @@ playback and outbound link statistics</source>
 p, li { white-space: pre-wrap; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Lucida Grande'; font-size:13pt; font-weight:400; font-style:normal;&quot;&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'DejaVu Sans'; font-size:9pt; font-style:italic;&quot;&gt;This stream is on line for testing purposes!&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Lucida Grande'; font-size:13pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'DejaVu Sans'; font-size:9pt; font-style:italic;&quot;&gt;This stream is on line for testing purposes!&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
         </message>
         <message>
             <source>Genre</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Genre</translation>
         </message>
         <message>
             <source>Live mix</source>
@@ -1362,279 +1353,231 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Public stream</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Public stream</translation>
         </message>
         <message>
             <source>Encoding</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Encoding</translation>
         </message>
         <message>
             <source>Bitrate</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Bitrate</translation>
         </message>
         <message>
             <source>320 kbps</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>320 kbps</translation>
         </message>
         <message>
             <source>256 kbps</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>256 kbps</translation>
         </message>
         <message>
             <source>224 kbps</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>224 kbps</translation>
         </message>
         <message>
             <source>192 kbps</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>192 kbps</translation>
         </message>
         <message>
             <source>160 kbps</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>160 kbps</translation>
         </message>
         <message>
             <source>128 kbps</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>128 kbps</translation>
         </message>
         <message>
             <source>112 kbps</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>112 kbps</translation>
         </message>
         <message>
             <source>96 kbps</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>96 kbps</translation>
         </message>
         <message>
             <source>80 kbps</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>80 kbps</translation>
         </message>
         <message>
             <source>64 kbps</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>64 kbps</translation>
         </message>
         <message>
             <source>48 kbps</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>48 kbps</translation>
         </message>
         <message>
             <source>Format</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Format</translation>
         </message>
         <message>
             <source>Ogg Vorbis</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Ogg Vorbis</translation>
         </message>
         <message>
             <source>MP3</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>MP3</translation>
         </message>
         <message>
             <source>Channels</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Channels</translation>
         </message>
         <message>
             <source>Stereo</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Stereo</translation>
         </message>
         <message>
             <source>Custom metadata</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Custom metadata</translation>
         </message>
         <message>
             <source>Enable custom metadata</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Enable custom metadata</translation>
         </message>
         <message>
             <source>Artist</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Artist</translation>
         </message>
         <message>
             <source>%mainartist</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>%mainartist</translation>
         </message>
         <message>
             <source>Title</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Title</translation>
         </message>
         <message>
             <source>%maintitle</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>%maintitle</translation>
         </message>
         <message>
             <source>Please note that for technical reasons changing any shoutcast settings will cause an established connection to disconnect and reconnect. </source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Please note that for technical reasons changing any shoutcast settings will cause an established connection to disconnect and reconnect. </translation>
         </message>
     </context>
     <context>
         <name>DlgPrefSound</name>
         <message>
             <source>None</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>None</translation>
         </message>
         <message>
             <source>%1 Hz</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>%1 Hz</translation>
         </message>
         <message>
             <source>a device</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>a device</translation>
         </message>
         <message>
             <source>An unknown error occurred</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>An unknown error occurred</translation>
         </message>
         <message>
             <source>sound device &quot;%1&quot;</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>sound device &quot;%1&quot;</translation>
         </message>
         <message>
             <source>Two outputs cannot share channels on %1</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Two outputs cannot share channels on %1</translation>
         </message>
         <message>
             <source>Error opening %1
 %2</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Error opening %1
+%2</translation>
         </message>
         <message>
             <source>%1 ms</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>%1 ms</translation>
         </message>
         <message>
             <source>Configuration error</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Configuration error</translation>
         </message>
     </context>
     <context>
         <name>DlgPrefSoundDlg</name>
         <message>
             <source>Sound API</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Sound API</translation>
         </message>
         <message>
             <source>Sample Rate</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Sample Rate</translation>
         </message>
         <message>
             <source>Latency Tips</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Latency Tips</translation>
         </message>
         <message>
             <source>&lt;ul&gt;
 &lt;li&gt;Increase your latency if you hear pops during playback&lt;/li&gt;
 &lt;li&gt;Reduce your latency to improve Mixxx's responsiveness&lt;/li&gt;
 &lt;/ul&gt;</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>&lt;ul&gt;
+&lt;li&gt;Increase your latency if you hear pops during playback&lt;/li&gt;
+&lt;li&gt;Reduce your latency to improve Mixxx's responsiveness&lt;/li&gt;
+&lt;/ul&gt;</translation>
         </message>
         <message>
             <source>Output</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Output</translation>
         </message>
         <message>
             <source>Input</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Input</translation>
         </message>
         <message>
             <source>Query Devices</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Query Devices</translation>
         </message>
         <message>
             <source>Reset to Defaults</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Reset to Defaults</translation>
         </message>
         <message>
             <source>Apply</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Apply</translation>
         </message>
         <message>
             <source>Latency</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Latency</translation>
         </message>
     </context>
     <context>
         <name>DlgPrefSoundItem</name>
         <message>
             <source>None</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>None</translation>
         </message>
         <message>
             <source>Channel %1</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Channel %1</translation>
         </message>
         <message>
             <source>Channels %1 - %2</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Channels %1 - %2</translation>
         </message>
         <message>
             <source>Form</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Form</translation>
         </message>
         <message>
             <source>Type (#)</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Type (#)</translation>
         </message>
     </context>
     <context>
         <name>DlgPrefVinylDlg</name>
         <message>
             <source>Form1</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Form1</translation>
         </message>
         <message>
             <source>Input</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Input</translation>
         </message>
         <message>
             <source>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
@@ -1642,318 +1585,262 @@ p, li { white-space: pre-wrap; }
 p, li { white-space: pre-wrap; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'DejaVu Sans'; font-size:9pt; font-weight:400; font-style:normal;&quot;&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Select sound devices for vinyl control in the Sound Hardware pane.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'DejaVu Sans'; font-size:9pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Select sound devices for vinyl control in the Sound Hardware pane.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
         </message>
         <message>
             <source>&lt;a href=&quot;http://www.mixxx.org/wiki/doku.php/vinyl_control#troubleshooting&quot;&gt;Troubleshooting&lt;/a&gt;</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>&lt;a href=&quot;http://www.mixxx.org/wiki/doku.php/vinyl_control#troubleshooting&quot;&gt;Troubleshooting&lt;/a&gt;</translation>
         </message>
         <message>
             <source>Turntable Preamp</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Turntable Preamp</translation>
         </message>
         <message>
             <source>1 (Off)</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>1 (Off)</translation>
         </message>
         <message>
             <source>150</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>150</translation>
         </message>
         <message>
             <source>Vinyl Configuration</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Vinyl Configuration</translation>
         </message>
         <message>
             <source>Deck 1 Vinyl Type</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Deck 1 Vinyl Type</translation>
         </message>
         <message>
             <source>Deck 2 Vinyl Type</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Deck 2 Vinyl Type</translation>
         </message>
         <message>
             <source>Show Signal Quality in Skin</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Show Signal Quality in Skin</translation>
         </message>
         <message>
             <source>Apply</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Apply</translation>
         </message>
         <message>
             <source>Lead-in time</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Lead-in time</translation>
         </message>
         <message>
             <source>seconds</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>seconds</translation>
         </message>
         <message>
             <source>Control Mode</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Control Mode</translation>
         </message>
         <message>
             <source>Absolute Mode</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Absolute Mode</translation>
         </message>
         <message>
             <source>Relative Mode</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Relative Mode</translation>
         </message>
         <message>
             <source>Enable Needle Skip Prevention</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Enable Needle Skip Prevention</translation>
         </message>
         <message>
             <source>Signal Quality</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Signal Quality</translation>
         </message>
         <message>
             <source>http://www.xwax.co.uk</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>http://www.xwax.co.uk</translation>
         </message>
         <message>
             <source>Powered by xwax</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Powered by xwax</translation>
         </message>
     </context>
     <context>
         <name>DlgPreferences</name>
         <message>
             <source>Sound Hardware</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Sound Hardware</translation>
         </message>
         <message>
             <source>MIDI Controllers</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>MIDI Controllers</translation>
         </message>
         <message>
             <source>Library</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Library</translation>
         </message>
         <message>
             <source>Interface</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Interface</translation>
         </message>
         <message>
             <source>Equalizers</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Equalizers</translation>
         </message>
         <message>
             <source>Crossfader</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Crossfader</translation>
         </message>
         <message>
             <source>Recording</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Recording</translation>
         </message>
         <message>
             <source>BPM Detection</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>BPM Detection</translation>
         </message>
         <message>
             <source>Normalization</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Normalization</translation>
         </message>
         <message>
             <source>Vinyl Control</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Vinyl Control</translation>
         </message>
         <message>
             <source>Live Broadcasting</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Live Broadcasting</translation>
         </message>
     </context>
     <context>
         <name>DlgPreferencesDlg</name>
         <message>
             <source>Dialog</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Dialog</translation>
         </message>
         <message>
             <source>1</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>1</translation>
         </message>
     </context>
     <context>
         <name>DlgPrepare</name>
         <message>
             <source>Manage</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Manage</translation>
         </message>
         <message>
             <source>Recently Added</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Recently Added</translation>
         </message>
         <message>
             <source>All Songs</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>All Songs</translation>
         </message>
         <message>
             <source>Progress</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Progress</translation>
         </message>
         <message>
             <source>Select All</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Select All</translation>
         </message>
         <message>
             <source>Analyze</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Analyze</translation>
         </message>
         <message>
             <source>Stop Analysis</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Stop Analysis</translation>
         </message>
         <message>
             <source>Analyzing %1%</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Analyzing %1%</translation>
         </message>
     </context>
     <context>
         <name>DlgRecording</name>
         <message>
             <source>Manage</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Manage</translation>
         </message>
         <message>
             <source>Status:</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Status:</translation>
         </message>
         <message>
             <source>Start Recording</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Start Recording</translation>
         </message>
         <message>
             <source>Start recording here ...</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Start recording here ...</translation>
         </message>
         <message>
             <source>Stop Recording</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Stop Recording</translation>
         </message>
     </context>
     <context>
         <name>DlgTrackInfo</name>
         <message>
             <source>Track Editor</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Track Editor</translation>
         </message>
         <message>
             <source>Song:</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Song:</translation>
         </message>
         <message>
             <source>Title:</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Title:</translation>
         </message>
         <message>
             <source>Artist:</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Artist:</translation>
         </message>
         <message>
             <source>Album:</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Album:</translation>
         </message>
         <message>
             <source>Date:</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Date:</translation>
         </message>
         <message>
             <source>Track #:</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Track #:</translation>
         </message>
         <message>
             <source>Genre:</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Genre:</translation>
         </message>
         <message>
             <source>Filename:</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Filename:</translation>
         </message>
         <message>
             <source>Duration:</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Duration:</translation>
         </message>
         <message>
             <source>3:00</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>3:00</translation>
         </message>
         <message>
             <source>File Type:</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>File Type:</translation>
         </message>
         <message>
             <source>77</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>77</translation>
         </message>
         <message>
             <source>Comments:</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Comments:</translation>
         </message>
         <message>
             <source>Reload track metadata from file.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Reload track metadata from file.</translation>
         </message>
         <message>
             <source>Track Information (Click to Expand)</source>

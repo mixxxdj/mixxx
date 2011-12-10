@@ -1,6 +1,8 @@
-mixxx (1.10.0-beta1-0ubuntu1) karmic; urgency=low
+mixxx (1.10.0-beta1-0ubuntu1) lucid; urgency=low
 
   * New upstream beta release
+  * Bump Qt requirement to 4.6.0
+  * Drop Karmic support
 
  -- RJ Ryan <rryan@mixxx.org>  Wed, 08 Jun 2011 17:28:00 -0500
 

@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2011-10-31 23:15-0400\n"
-"PO-Revision-Date: 2011-11-01 18:52+0000\n"
-"Last-Translator: jibiel <Unknown>\n"
+"PO-Revision-Date: 2011-11-10 11:34+0000\n"
+"Last-Translator: Олег Резников <Unknown>\n"
 "Language-Team: Russian <ru@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-11-02 04:46+0000\n"
-"X-Generator: Launchpad (build 14214)\n"
+"X-Launchpad-Export-Date: 2011-11-11 04:46+0000\n"
+"X-Generator: Launchpad (build 14277)\n"
 
 #: AutoDJFeature#1
 msgid "Auto DJ"
@@ -77,12 +77,12 @@ msgstr "Рейтинг"
 #: BaseSqlTableModel#12
 msgctxt "BaseSqlTableModel#12"
 msgid "Bitrate"
-msgstr "Скорость потока"
+msgstr "Битрейт"
 
 #: BaseSqlTableModel#13
 msgctxt "BaseSqlTableModel#13"
 msgid "BPM"
-msgstr "Ударов в минуту"
+msgstr "Темп"
 
 #: BaseSqlTableModel#14
 msgctxt "BaseSqlTableModel#14"
@@ -100,7 +100,7 @@ msgstr "№"
 #: BaseSqlTableModel#17
 msgctxt "BaseSqlTableModel#17"
 msgid "Key"
-msgstr "Ключ"
+msgstr "Тональность"
 
 #: BaseTrackPlayer#1
 msgid "Couldn't load track."
@@ -180,7 +180,7 @@ msgstr "Стиль"
 #: BrowseTableModel#8
 msgctxt "BrowseTableModel#8"
 msgid "Comment"
-msgstr "Описание"
+msgstr "Комментарий"
 
 #: BrowseTableModel#9
 msgctxt "BrowseTableModel#9"
@@ -190,7 +190,7 @@ msgstr "Длительность"
 #: BrowseTableModel#10
 msgctxt "BrowseTableModel#10"
 msgid "BPM"
-msgstr "Ударов в минуту"
+msgstr "Темп"
 
 #: BrowseTableModel#11
 msgctxt "BrowseTableModel#11"
@@ -205,7 +205,7 @@ msgstr "Тип"
 #: BrowseTableModel#13
 msgctxt "BrowseTableModel#13"
 msgid "Bitrate"
-msgstr "Частота бит"
+msgstr "Битрейт"
 
 #: BrowseTableModel#14
 msgctxt "BrowseTableModel#14"
@@ -222,24 +222,24 @@ msgid ""
 "Could not load the following file because it is in use by Mixxx or another "
 "application."
 msgstr ""
-"Не получилось загрузить данный файл так как он в данный момент занят "
-"программой Mixxx или другой программой."
+"Не получилось загрузить данный файл, так как в данный момент он используется "
+"Mixxx или другой программой."
 
 #: BrowseTableModel#17
 msgid "Warning: This will permanently delete the following files:"
-msgstr "Предупреждение: Эта акция безвозвратно удалит данные файлы:"
+msgstr "Предупреждение: Данные файлы будут безвозвратно удалены:"
 
 #: BrowseTableModel#18
 msgid "Are you sure you want to delete these files from your computer?"
-msgstr "Вы уверены что желаете удалить данные файлы с вашего компьютера?"
+msgstr "Вы уверены, что желаете удалить данные файлы с вашего компьютера?"
 
 #: BrowseTableModel#19
 msgid ""
 "Could not delete the following file because it is in use by Mixxx or another "
 "application:"
 msgstr ""
-"Не получилось удалить данный файл так как он в данный момент занят "
-"программой Mixxx или другой программой."
+"Не получилось удалить данный файл, так как в данный момент он используется "
+"Mixxx или другой программой."
 
 #: BrowseTableModel#20
 msgid "Could not update file metadata."
@@ -257,7 +257,7 @@ msgstr "Удалить"
 #: CrateFeature#3
 msgctxt "CrateFeature#3"
 msgid "Rename"
-msgstr "Переменовать"
+msgstr "Переименовать"
 
 #: CrateFeature#4
 msgctxt "CrateFeature#4"
@@ -309,12 +309,12 @@ msgstr "Ошибка переименования группы"
 #: CrateFeature#15
 msgctxt "CrateFeature#15"
 msgid "Playlist Files (*.m3u *.pls)"
-msgstr "Файлы вида плэй-лист (*.m3u *.pls)"
+msgstr "Файлы списков воспроизведения (*.m3u *.pls)"
 
 #: CrateFeature#16
 msgctxt "CrateFeature#16"
 msgid "Export Playlist"
-msgstr "Экспортировать плэй-лист"
+msgstr "Экспортировать список воспроизведения"
 
 #: CrateFeature#17
 msgctxt "CrateFeature#17"
@@ -331,7 +331,7 @@ msgstr "Ошибка создания списка"
 
 #: CrateFeature#20
 msgid "A crate by that name already exists."
-msgstr "Список с этим наименованием уже существует."
+msgstr "Список с ьаким именем уже существует."
 
 #: DlgAboutDlg#1
 msgid "About Mixxx"
@@ -418,7 +418,7 @@ msgstr "Мин."
 
 #: DlgBpmSchemeDlg#6
 msgid "Analyze Entire Song"
-msgstr ""
+msgstr "Выполнить анализ всей композиции"
 
 #: DlgMidiLearning#1
 msgid "Skip"
@@ -1051,32 +1051,32 @@ msgstr "секунд"
 #: DlgPrefNoVinylDlg#13
 msgctxt "DlgPrefNoVinylDlg#13"
 msgid "Show Signal Quality in Skin"
-msgstr ""
+msgstr "Отображать качество сигнала в оболочке"
 
 #: DlgPrefNoVinylDlg#14
 msgctxt "DlgPrefNoVinylDlg#14"
 msgid "Control Mode"
-msgstr ""
+msgstr "Режим управления"
 
 #: DlgPrefNoVinylDlg#15
 msgctxt "DlgPrefNoVinylDlg#15"
 msgid "Absolute Mode"
-msgstr ""
+msgstr "Абсолютный режим"
 
 #: DlgPrefNoVinylDlg#16
 msgctxt "DlgPrefNoVinylDlg#16"
 msgid "Relative Mode"
-msgstr ""
+msgstr "Относительный режим"
 
 #: DlgPrefNoVinylDlg#17
 msgctxt "DlgPrefNoVinylDlg#17"
 msgid "Enable Needle Skip Prevention"
-msgstr ""
+msgstr "Использовать защиту от пропусков иглы"
 
 #: DlgPrefNoVinylDlg#18
 msgctxt "DlgPrefNoVinylDlg#18"
 msgid "Signal Quality"
-msgstr ""
+msgstr "Качество сигнала"
 
 #: DlgPrefNoVinylDlg#19
 msgctxt "DlgPrefNoVinylDlg#19"
@@ -1086,7 +1086,7 @@ msgstr "http://www.xwax.co.uk"
 #: DlgPrefNoVinylDlg#20
 msgctxt "DlgPrefNoVinylDlg#20"
 msgid "Powered by xwax"
-msgstr ""
+msgstr "Работает на xwax"
 
 #: DlgPrefNoVinylDlg#21
 msgctxt "DlgPrefNoVinylDlg#21"
@@ -1687,7 +1687,7 @@ msgstr "Нет"
 
 #: DlgPrefSoundItem#2
 msgid "Channel %1"
-msgstr ""
+msgstr "Канал %1"
 
 #: DlgPrefSoundItem#3
 msgid "Channels %1 - %2"
@@ -1782,7 +1782,7 @@ msgstr "Дек 2 Вид Винила"
 #: DlgPrefVinylDlg#11
 msgctxt "DlgPrefVinylDlg#11"
 msgid "Show Signal Quality in Skin"
-msgstr ""
+msgstr "Отображать качество сигнала в оболочке"
 
 #: DlgPrefVinylDlg#12
 msgctxt "DlgPrefVinylDlg#12"
@@ -1792,37 +1792,37 @@ msgstr "Применить"
 #: DlgPrefVinylDlg#13
 msgctxt "DlgPrefVinylDlg#13"
 msgid "Lead-in time"
-msgstr ""
+msgstr "Время вступления"
 
 #: DlgPrefVinylDlg#14
 msgctxt "DlgPrefVinylDlg#14"
 msgid "seconds"
-msgstr ""
+msgstr "с"
 
 #: DlgPrefVinylDlg#15
 msgctxt "DlgPrefVinylDlg#15"
 msgid "Control Mode"
-msgstr ""
+msgstr "Режим управления"
 
 #: DlgPrefVinylDlg#16
 msgctxt "DlgPrefVinylDlg#16"
 msgid "Absolute Mode"
-msgstr ""
+msgstr "Абсолютный режим"
 
 #: DlgPrefVinylDlg#17
 msgctxt "DlgPrefVinylDlg#17"
 msgid "Relative Mode"
-msgstr ""
+msgstr "Относительный режим"
 
 #: DlgPrefVinylDlg#18
 msgctxt "DlgPrefVinylDlg#18"
 msgid "Enable Needle Skip Prevention"
-msgstr ""
+msgstr "Использовать защиту от пропусков иглы"
 
 #: DlgPrefVinylDlg#19
 msgctxt "DlgPrefVinylDlg#19"
 msgid "Signal Quality"
-msgstr ""
+msgstr "Качество сигнала"
 
 #: DlgPrefVinylDlg#20
 msgctxt "DlgPrefVinylDlg#20"
@@ -1832,7 +1832,7 @@ msgstr "http://www.xwax.co.uk"
 #: DlgPrefVinylDlg#21
 msgctxt "DlgPrefVinylDlg#21"
 msgid "Powered by xwax"
-msgstr ""
+msgstr "Работает на xwax"
 
 #: DlgPreferences#1
 msgid "Sound Hardware"
@@ -1949,11 +1949,11 @@ msgstr "Завершить запись"
 
 #: DlgTrackInfo#1
 msgid "Track Editor"
-msgstr ""
+msgstr "Редактор дорожек"
 
 #: DlgTrackInfo#2
 msgid "Song:"
-msgstr ""
+msgstr "Композиция:"
 
 #: DlgTrackInfo#3
 msgid "Title:"
@@ -2009,7 +2009,7 @@ msgstr "Обновить метаданные дорожки из файла."
 
 #: DlgTrackInfo#16
 msgid "Track Information (Click to Expand)"
-msgstr ""
+msgstr "Сведения о дорожке (Щёлкните, чтобы развернуть)"
 
 #: DlgTrackInfo#17
 msgid "Track BPM: "
@@ -2099,6 +2099,14 @@ msgid ""
 "href='http://mixxx.org/wiki/doku.php/internet_broadcasting#linux'>Mixxx "
 "Wiki</a> for more information. </html>"
 msgstr ""
+"<html>Mixxx не может записывать или транслировать записи в формате MP3 без "
+"установленного в системе кодировщика MP3 &quot;lame&quot;. Из-за "
+"лицензионных проблем, мы не можем распространять этот кодировщик вместе с "
+"Mixxx. Для того, чтобы осуществлять запись или трансляцию в формате MP3, вы "
+"должны загрузить файл <b>libmp3lame</b> и установить его в вашу систему. "
+"<p>См. <a "
+"href='http://mixxx.org/wiki/doku.php/internet_broadcasting#windows'>Mixxx "
+"Wiki</a> для получения более подробной информации. </html>"
 
 #: EncoderMp3#3
 msgid ""
@@ -2109,6 +2117,14 @@ msgid ""
 "href='http://mixxx.org/wiki/doku.php/internet_broadcasting#windows'>Mixxx "
 "Wiki</a> for more information. </html>"
 msgstr ""
+"<html>Mixxx не может записывать или транслировать записи в формате MP3 без "
+"установленного в системе кодировщика MP3 &quot;lame&quot;. Из-за "
+"лицензионных проблем, мы не можем распространять этот кодировщик вместе с "
+"Mixxx. Для того, чтобы осуществлять запись или трансляцию в формате MP3, вы "
+"должны загрузить файл <b>lame_enc.dll</b> и установить его в вашу систему. "
+"<p>См. <a "
+"href='http://mixxx.org/wiki/doku.php/internet_broadcasting#windows'>Mixxx "
+"Wiki</a> для получения более подробной информации. </html>"
 
 #: EncoderMp3#4
 msgid ""
@@ -2119,6 +2135,14 @@ msgid ""
 "href='http://mixxx.org/wiki/doku.php/internet_broadcasting#mac_osx'>Mixxx "
 "Wiki</a> for more information. </html>"
 msgstr ""
+"<html>Mixxx не может записывать или транслировать записи в формате MP3 без "
+"установленного в системе кодировщика MP3 &quot;lame&quot;. Из-за "
+"лицензионных проблем, мы не можем распространять этот кодировщик вместе с "
+"Mixxx. Для того, чтобы осуществлять запись или трансляцию в формате MP3, вы "
+"должны загрузить файл <b>libmp3lame</b> и установить его в вашу систему. "
+"<p>См. <a "
+"href='http://mixxx.org/wiki/doku.php/internet_broadcasting#windows'>Mixxx "
+"Wiki</a> для получения более подробной информации. </html>"
 
 #: EncoderMp3#5
 msgid ""
@@ -2218,7 +2242,7 @@ msgstr "Выберите вашу библиотеку iTunes"
 
 #: ITunesFeature#3
 msgid "(loading) iTunes"
-msgstr ""
+msgstr "(загружаю) iTunes"
 
 #: ITunesFeature#4
 msgid "Use Default Library"
@@ -2606,19 +2630,19 @@ msgstr "Ctrl+P"
 
 #: MixxxApp#40
 msgid "&About"
-msgstr ""
+msgstr "&О программе"
 
 #: MixxxApp#41
 msgid "&Community Support"
-msgstr ""
+msgstr "Поддержка &сообщества"
 
 #: MixxxApp#42
 msgid "Send Us &Feedback"
-msgstr ""
+msgstr "Обратная &связь"
 
 #: MixxxApp#43
 msgid "&Translate this application"
-msgstr ""
+msgstr "&Перевести это приложение"
 
 #: MixxxApp#44
 msgid "Enable &Vinyl Control 1"
@@ -2639,7 +2663,7 @@ msgstr "Ctrl+U"
 #: MixxxApp#48
 msgctxt "MixxxApp#48"
 msgid "Enable live broadcasting"
-msgstr ""
+msgstr "Прямой эфир"
 
 #: MixxxApp#49
 msgid "Ctrl+L"
@@ -2792,7 +2816,7 @@ msgstr "Разворачивать Mixxx на весь экран"
 #: MixxxApp#76
 msgctxt "MixxxApp#76"
 msgid "Preferences"
-msgstr ""
+msgstr "Настройки"
 
 #: MixxxApp#77
 msgid ""
@@ -2818,7 +2842,7 @@ msgstr ""
 
 #: MixxxApp#80
 msgid "Send feedback to the Mixxx team."
-msgstr ""
+msgstr "Отправить отзыв команде Mixxx."
 
 #: MixxxApp#81
 msgid ""
@@ -2826,10 +2850,13 @@ msgid ""
 "\n"
 "Send feedback to the Mixxx team."
 msgstr ""
+"Поддержать\n"
+"\n"
+"Оставить отзыв команде Mixxx."
 
 #: MixxxApp#82
 msgid "Help translate this application into your language."
-msgstr ""
+msgstr "Помочь перевести приложение на ваш язык."
 
 #: MixxxApp#83
 msgid ""
@@ -2837,6 +2864,9 @@ msgid ""
 "\n"
 "Help translate this application into your language."
 msgstr ""
+"Поддержка\n"
+"\n"
+"Помочь перевести приложение на ваш язык."
 
 #: MixxxApp#84
 msgid "About the application"
@@ -3206,7 +3236,7 @@ msgstr "Трактор"
 
 #: TraktorFeature#2
 msgid "(loading) Traktor"
-msgstr ""
+msgstr "(загружаю) Traktor"
 
 #: TraktorFeature#3
 msgid "Error Loading Traktor Library"
@@ -3462,7 +3492,7 @@ msgstr "Добавить в очередь автоматического дид
 
 #: WTrackTableView#7
 msgid "Reload Track Metadata"
-msgstr ""
+msgstr "Обновить метаданные"
 
 #: WTrackTableView#8
 msgid "Load to Deck %1"
