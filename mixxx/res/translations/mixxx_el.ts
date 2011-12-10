@@ -363,114 +363,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Analyze Entire Song</source>
-            <translation>Ανάλυση Ολόκληρου του Κομματιού</translation>
-        </message>
-    </context>
-    <context>
-        <name>DlgBpmTapDlg</name>
-        <message>
-            <source>Track Editor</source>
-            <translation>Επεξεργασία Κομματιών</translation>
-        </message>
-        <message>
-            <source>&amp;Close</source>
-            <translation>&amp;Κλείσιμο</translation>
-        </message>
-        <message>
-            <source>Alt+O</source>
-            <translation>Alt+O</translation>
-        </message>
-        <message>
-            <source>Song:</source>
-            <translation>Τραγούδι:</translation>
-        </message>
-        <message>
-            <source>Next &gt;&gt;</source>
-            <translation>Επόμενο &gt;&gt;</translation>
-        </message>
-        <message>
-            <source>&lt;&lt; Prev</source>
-            <translation>&lt;&lt; Προηγούμενο</translation>
-        </message>
-        <message>
-            <source>BPM Editor (Click to Expand)</source>
-            <translation>Επεξεργασία BPM (Κλίκ για Ανάπτυξη)</translation>
-        </message>
-        <message>
-            <source>BPM Detection</source>
-            <translation>Εντοπισμός BPM</translation>
-        </message>
-        <message>
-            <source>BPM Scheme:</source>
-            <translation>Σχήμα BPM:</translation>
-        </message>
-        <message>
-            <source>to</source>
-            <translation>σε</translation>
-        </message>
-        <message>
-            <source>BPM Range:</source>
-            <translation>Πεδίο BPM:</translation>
-        </message>
-        <message>
-            <source>&amp;Go</source>
-            <translation>Μ&amp;ετάβαση</translation>
-        </message>
-        <message>
-            <source>Alt+G</source>
-            <translation>Alt+G</translation>
-        </message>
-        <message>
-            <source>Analyze Entire Song</source>
             <translation>Ανάλυση Ολόκληρου του Τραγουδιού</translation>
-        </message>
-        <message>
-            <source>BPM:</source>
-            <translation>BPM:</translation>
-        </message>
-        <message>
-            <source>&amp;Push to tap tempo</source>
-            <translation>&amp;Πατήστε για να δώσετε τον ρυθμό</translation>
-        </message>
-        <message>
-            <source>Alt+P</source>
-            <translation>Alt+P</translation>
-        </message>
-        <message>
-            <source>Track Information (Click to Expand)</source>
-            <translation>Πληροφορίες Κομματιού (Κλίκ για Ανάπτυξη)</translation>
-        </message>
-        <message>
-            <source>Title:</source>
-            <translation>Τίτλος:</translation>
-        </message>
-        <message>
-            <source>Artist:</source>
-            <translation>Καλλιτέχνης:</translation>
-        </message>
-        <message>
-            <source>Comments:</source>
-            <translation>Σχόλια:</translation>
-        </message>
-        <message>
-            <source>Filename:</source>
-            <translation>Όνομα Αρχείου:</translation>
-        </message>
-        <message>
-            <source>3:00</source>
-            <translation>3:00</translation>
-        </message>
-        <message>
-            <source>Play Time:</source>
-            <translation>Χρόνος Αναπαραγωγής:</translation>
-        </message>
-        <message>
-            <source>File Type:</source>
-            <translation>Τύπος Αρχείου:</translation>
-        </message>
-        <message>
-            <source>77</source>
-            <translation>77</translation>
         </message>
     </context>
     <context>
@@ -725,8 +618,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Cue behaviour</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Συμπεριφορά Cue</translation>
         </message>
         <message>
             <source>Auto Recall Cue</source>
@@ -891,8 +783,8 @@ p, li { white-space: pre-wrap; }
         <message>
             <source>Your settings must be applied before starting the MIDI learning wizard.
 Apply settings and continue?</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Οι ρυθμίσεις σας πρέπει να αποθηκευτούν πρίν αρχίσει ο οδηγός εκμάθησης MIDI.
+Εφαρμογή των ρυθμίσεων και συνέχεια;</translation>
         </message>
         <message>
             <source>Overwrite existing mapping?</source>
@@ -907,8 +799,7 @@ This will overwrite your existing MIDI mapping.</source>
         </message>
         <message>
             <source>Export Mixxx MIDI Bindings</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Εξαγωγή Δεσμεύσεων MIDI του Mixxx</translation>
         </message>
         <message>
             <source>Preset Files (*.midi.xml)</source>
@@ -926,23 +817,19 @@ This will overwrite your existing MIDI mapping.</source>
         </message>
         <message>
             <source>Clear Input Bindings</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Καθαρισμός Δεσμεύσεων Εισόδου</translation>
         </message>
         <message>
             <source>Are you sure you want to clear all bindings?</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Είστε σίγουρος ότι θέλετε να καθαρίσετε όλες τις δεσμεύσεις;</translation>
         </message>
         <message>
             <source>Clear Output Bindings</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Καθαρισμός Δεσμεύσεων Εξόδου</translation>
         </message>
         <message>
             <source>Are you sure you want to clear all output bindings?</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Είστε σίγουρος ότι θέλετε να καθαρίσετε όλες τις δεσμεύσεις εξόδου;</translation>
         </message>
     </context>
     <context>
@@ -1057,18 +944,15 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Vinyl Configuration</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Ρύθμιση Βινυλίου</translation>
         </message>
         <message>
             <source>Deck 1 Vinyl Type</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Τύπος Βινυλίου του Deck 1</translation>
         </message>
         <message>
             <source>Deck 2 Vinyl Type</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Τύπος Βινυλίου του Deck 2</translation>
         </message>
         <message>
             <source>Lead-in time</source>
@@ -1080,16 +964,23 @@ p, li { white-space: pre-wrap; }
             <translation>δευτερόλεπτα</translation>
         </message>
         <message>
+            <source>Show Signal Quality in Skin</source>
+            <translation>Εμφάνιση Ποιότητας Σήματος στο Skin</translation>
+        </message>
+        <message>
             <source>Control Mode</source>
-            <translation>Τρόπος Ελέγχου</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Absolute Mode</source>
-            <translation>Απόλυτος</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Relative Mode</source>
-            <translation>Σχετικός</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Enable Needle Skip Prevention</source>
@@ -1145,8 +1036,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Choose No to use the existing iPod @ </source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Επιλέξτε Όχι για να χρησιμοποιήσετε το υπάρχον iPod στο </translation>
         </message>
         <message>
             <source> and end detection. 
@@ -1156,8 +1046,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Choose iPod mount point</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Επιλέξτε σημείο προσάρτησης του iPod</translation>
         </message>
     </context>
     <context>
@@ -1212,8 +1101,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>iPod mountpoint</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>σημείο προσάρτησης του iPod</translation>
         </message>
         <message>
             <source>Browse...</source>
@@ -1241,8 +1129,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Bundled Songs</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Πακεταρισμένα Τραγούδια</translation>
         </message>
         <message>
             <source>Support Mixxx by counting and sharing bundled songs
@@ -1302,8 +1189,7 @@ playback and outbound link statistics</source>
         </message>
         <message>
             <source>Create a CUE file</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Δημιουργία αρχείου CUE</translation>
         </message>
         <message>
             <source>File Splitting</source>
@@ -1362,8 +1248,7 @@ playback and outbound link statistics</source>
         </message>
         <message>
             <source>dB</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>dB</translation>
         </message>
         <message>
             <source>Reset</source>
@@ -1378,8 +1263,7 @@ playback and outbound link statistics</source>
         </message>
         <message>
             <source>Enable live broadcasting</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Ενεργοποίηση ζωντανής εκπομπής</translation>
         </message>
         <message>
             <source>Server connection</source>
@@ -1453,8 +1337,7 @@ playback and outbound link statistics</source>
         </message>
         <message>
             <source>Mixxx Icecast Testing</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Δοκιμή του Icecast από το Mixxx</translation>
         </message>
         <message>
             <source>Website</source>
@@ -1532,8 +1415,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>80 kbps</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>80 kbps</translation>
         </message>
         <message>
             <source>64 kbps</source>
@@ -1591,8 +1473,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Please note that for technical reasons changing any shoutcast settings will cause an established connection to disconnect and reconnect. </source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Σημειώστε ότι για τεχνικούς λόγους η αλλαγή οποιασδήποτε ρύθμισης του shoutcast θα προκαλέσει αποσύνδεση και επανασύνδεση σε όλες τις τρέχουσες συνδέσεις. </translation>
         </message>
     </context>
     <context>
@@ -1630,8 +1511,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>%1 ms</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>%1 ms</translation>
         </message>
         <message>
             <source>Configuration error</source>
@@ -1694,6 +1574,10 @@ p, li { white-space: pre-wrap; }
             <translation>Κανένα</translation>
         </message>
         <message>
+            <source>Channel %1</source>
+            <translation>Κανάλι %1</translation>
+        </message>
+        <message>
             <source>Channels %1 - %2</source>
             <translation>Κανάλια %1 - %2</translation>
         </message>
@@ -1744,18 +1628,19 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Vinyl Configuration</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Ρύθμιση Βινυλίου</translation>
         </message>
         <message>
             <source>Deck 1 Vinyl Type</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Τύπος Βινυλίου του Deck 1</translation>
         </message>
         <message>
             <source>Deck 2 Vinyl Type</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Τύπος Βινυλίου του Deck 2</translation>
+        </message>
+        <message>
+            <source>Show Signal Quality in Skin</source>
+            <translation>Εμφάνιση Ποιότητας Σήματος στο Skin</translation>
         </message>
         <message>
             <source>Apply</source>
@@ -1768,19 +1653,22 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>seconds</source>
-            <translation>δευτερόλεπτα</translation>
+            <translation>δευτερόλεπα</translation>
         </message>
         <message>
             <source>Control Mode</source>
-            <translation>Τρόπος Ελέγχου</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Absolute Mode</source>
-            <translation>Απόλυτος</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Relative Mode</source>
-            <translation>Σχετικός</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Enable Needle Skip Prevention</source>
@@ -1892,8 +1780,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Analyzing %1%</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Ανάλυση %1%</translation>
         </message>
     </context>
     <context>
@@ -2073,17 +1960,17 @@ p, li { white-space: pre-wrap; }
             <translation>Κωδικοποιητής</translation>
         </message>
         <message>
-            <source>&lt;html&gt;Mixxx is unable to load or find the MP3 encoder lame. &lt;p&gt;Please install libmp3lame (also known as lame) and check if /usr/lib/libmp3lame.so exists on your system &lt;/html&gt;</source>
+            <source>&lt;html&gt;Mixxx cannot record or stream in MP3 without the MP3 encoder &amp;quot;lame&amp;quot;. Due to licensing issues, we cannot include this with Mixxx. To record or stream in MP3, you must download &lt;b&gt;libmp3lame&lt;/b&gt; and install it on your system. &lt;p&gt;See &lt;a href='http://mixxx.org/wiki/doku.php/internet_broadcasting#linux'&gt;Mixxx Wiki&lt;/a&gt; for more information. &lt;/html&gt;</source>
             <translation type="unfinished">
             </translation>
         </message>
         <message>
-            <source>&lt;html&gt;Mixxx is unable to load or find the MP3 encoder lame. &lt;p&gt;Please put lame_enc.dll in the directory you have installed Mixxx &lt;/html&gt;</source>
+            <source>&lt;html&gt;Mixxx cannot record or stream in MP3 without the MP3 encoder &amp;quot;lame&amp;quot;. Due to licensing issues, we cannot include this with Mixxx. To record or stream in MP3, you must download &lt;b&gt;lame_enc.dll&lt;/b&gt; and install it on your system. &lt;p&gt;See &lt;a href='http://mixxx.org/wiki/doku.php/internet_broadcasting#windows'&gt;Mixxx Wiki&lt;/a&gt; for more information. &lt;/html&gt;</source>
             <translation type="unfinished">
             </translation>
         </message>
         <message>
-            <source>&lt;html&gt;Mixxx is unable to load or find the MP3 encoder lame. &lt;p&gt;Please install libmp3lame (also known as lame) and check if /usr/local/lib/libmp3lame.dylib exists on your system &lt;/html&gt;</source>
+            <source>&lt;html&gt;Mixxx cannot record or stream in MP3 without the MP3 encoder &amp;quot;lame&amp;quot;. Due to licensing issues, we cannot include this with Mixxx. To record or stream in MP3, you must download &lt;b&gt;libmp3lame&lt;/b&gt; and install it on your system. &lt;p&gt;See &lt;a href='http://mixxx.org/wiki/doku.php/internet_broadcasting#mac_osx'&gt;Mixxx Wiki&lt;/a&gt; for more information. &lt;/html&gt;</source>
             <translation type="unfinished">
             </translation>
         </message>
@@ -2133,8 +2020,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Please check your connection to the Internet and verify that your username and password are correct.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Ελέγξτε την σύνδεσή σας στο Internet και επιβεβαιώστε οτι το όνομα χρήστη και ο κωδικός είναι σωστά.</translation>
         </message>
         <message>
             <source>Live broadcasting</source>
@@ -2160,13 +2046,11 @@ p, li { white-space: pre-wrap; }
         <name>ErrorDialogHandler</name>
         <message>
             <source>Fatal error</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Κρίσιμο σφάλμα</translation>
         </message>
         <message>
             <source>Critical error</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Κρίσιμο σφάλμα</translation>
         </message>
         <message>
             <source>Warning</source>
@@ -2189,12 +2073,11 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Select your iTunes library</source>
-            <translation>Επιλέξτε την βιβλιοθήκη από το iTunes σας</translation>
+            <translation>Επιλέξτε την βιβλιοθήκη του iTunes σας</translation>
         </message>
         <message>
-            <source>iTunes (loading)</source>
-            <translation type="unfinished">
-            </translation>
+            <source>(loading) iTunes</source>
+            <translation>(φορτώνεται) iTunes</translation>
         </message>
         <message>
             <source>Use Default Library</source>
@@ -2206,13 +2089,11 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Error Loading iTunes Library</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Σφάλμα στην Φόρτωση της Βιβλιοθήκης του iTunes</translation>
         </message>
         <message>
             <source>There was an error loading your iTunes library. Some of your iTunes tracks or playlists may not have loaded.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Προκλήθηκε ένα σφάλμα κατά την φόρτωση της βιβλιοθήκης του iTunes. Κάποια από τα κομμάτια ή τις λίστες αναπαραγωγής του iTunes μπορεί να μη φορτώθηκαν.</translation>
         </message>
     </context>
     <context>
@@ -2261,6 +2142,10 @@ p, li { white-space: pre-wrap; }
             <source>Control Value</source>
             <translation type="unfinished">
             </translation>
+        </message>
+        <message>
+            <source>Description</source>
+            <translation>Περιγραφή</translation>
         </message>
     </context>
     <context>
@@ -2321,6 +2206,10 @@ p, li { white-space: pre-wrap; }
             </translation>
         </message>
         <message>
+            <source>Description</source>
+            <translation>Περιγραφή</translation>
+        </message>
+        <message>
             <source>Threshold Min</source>
             <translation type="unfinished">
             </translation>
@@ -2363,21 +2252,18 @@ p, li { white-space: pre-wrap; }
         <name>MidiStatusDelegate</name>
         <message>
             <source>Unknown</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Άγνωστο</translation>
         </message>
     </context>
     <context>
         <name>MixxxApp</name>
         <message>
             <source>Mixxx </source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Mixxx </translation>
         </message>
         <message>
             <source>Mixxx</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Mixxx</translation>
         </message>
         <message>
             <source>Mixxx's development is driven by community feedback.  At your discretion, Mixxx can automatically send data on your user experience back to the developers. Would you like to help us make Mixxx better by enabling this feature?</source>
@@ -2394,13 +2280,11 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Privacy Policy</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Πολιτική Προστασίας Προσωπικών Δεδομένων</translation>
         </message>
         <message>
             <source>Mixxx: Privacy Policy</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Mixxx: Πολιτική Προστασίας Προσωπικών Δεδομένων</translation>
         </message>
         <message>
             <source>Mixxx's development is driven by community feedback. In order to help improve future versions Mixxx will with your permission collect information on your hardware and usage of Mixxx.  This information will primarily be used to fix bugs, improve features, and determine the system requirements of later versions.  Additionally this information may be used in aggregate for statistical purposes.
@@ -2421,13 +2305,11 @@ This information will not be used to personally identify you, contact you, adver
         </message>
         <message>
             <source>Choose music library directory</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Επιλογή φακέλου μουσικής βιβλιοθήκης</translation>
         </message>
         <message>
             <source>Sound Device Busy</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Συσκευή Ήχου Απασχολημένη</translation>
         </message>
         <message>
             <source>Get &lt;b&gt;Help&lt;/b&gt; from the Mixxx Wiki.</source>
@@ -2456,13 +2338,11 @@ This information will not be used to personally identify you, contact you, adver
         </message>
         <message>
             <source>Retry</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Επανάληψη</translation>
         </message>
         <message>
             <source>Reconfigure</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Επαναρύθμιση</translation>
         </message>
         <message>
             <source>Help</source>
@@ -2483,8 +2363,7 @@ This information will not be used to personally identify you, contact you, adver
         </message>
         <message>
             <source>Ctrl+O</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Ctrl+O</translation>
         </message>
         <message>
             <source>&amp;Load Song (Player 2)...</source>
@@ -2493,18 +2372,15 @@ This information will not be used to personally identify you, contact you, adver
         </message>
         <message>
             <source>Ctrl+Shift+O</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Ctrl+Shift+O</translation>
         </message>
         <message>
             <source>&amp;Exit</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>&amp;Έξοδος</translation>
         </message>
         <message>
             <source>Ctrl+Q</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Ctrl+Q</translation>
         </message>
         <message>
             <source>&amp;Rescan Library</source>
@@ -2518,8 +2394,7 @@ This information will not be used to personally identify you, contact you, adver
         </message>
         <message>
             <source>Ctrl+N</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Ctrl+N</translation>
         </message>
         <message>
             <source>Add new &amp;crate</source>
@@ -2528,8 +2403,7 @@ This information will not be used to personally identify you, contact you, adver
         </message>
         <message>
             <source>Ctrl+C</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Ctrl+C</translation>
         </message>
         <message>
             <source>&amp;Import playlist</source>
@@ -2538,8 +2412,7 @@ This information will not be used to personally identify you, contact you, adver
         </message>
         <message>
             <source>Ctrl+I</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Ctrl+I</translation>
         </message>
         <message>
             <source>&amp;Audio Beat Marks</source>
@@ -2548,36 +2421,40 @@ This information will not be used to personally identify you, contact you, adver
         </message>
         <message>
             <source>&amp;Full Screen</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>&amp;Πλήρης Οθόνη</translation>
         </message>
         <message>
             <source>Ctrl+F</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Ctrl+F</translation>
         </message>
         <message>
             <source>F11</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>F11</translation>
         </message>
         <message>
             <source>&amp;Preferences</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>&amp;Προτιμήσεις</translation>
         </message>
         <message>
             <source>Ctrl+P</source>
+            <translation>Ctrl+P</translation>
+        </message>
+        <message>
+            <source>&amp;About</source>
+            <translation>&amp;Περί</translation>
+        </message>
+        <message>
+            <source>&amp;Community Support</source>
             <translation type="unfinished">
             </translation>
         </message>
         <message>
-            <source>&amp;About...</source>
+            <source>Send Us &amp;Feedback</source>
             <translation type="unfinished">
             </translation>
         </message>
         <message>
-            <source>&amp;Community Support...</source>
+            <source>&amp;Translate this application</source>
             <translation type="unfinished">
             </translation>
         </message>
@@ -2588,8 +2465,7 @@ This information will not be used to personally identify you, contact you, adver
         </message>
         <message>
             <source>Ctrl+Y</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Ctrl+Y</translation>
         </message>
         <message>
             <source>Enable &amp;Vinyl Control 2</source>
@@ -2598,8 +2474,7 @@ This information will not be used to personally identify you, contact you, adver
         </message>
         <message>
             <source>Ctrl+U</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Ctrl+U</translation>
         </message>
         <message>
             <source>Enable live broadcasting</source>
@@ -2608,8 +2483,7 @@ This information will not be used to personally identify you, contact you, adver
         </message>
         <message>
             <source>Ctrl+L</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Ctrl+L</translation>
         </message>
         <message>
             <source>&amp;Record Mix</source>
@@ -2618,8 +2492,7 @@ This information will not be used to personally identify you, contact you, adver
         </message>
         <message>
             <source>Ctrl+R</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Ctrl+R</translation>
         </message>
         <message>
             <source>Show Studio</source>
@@ -2650,8 +2523,7 @@ Opens a song in player 2</source>
         </message>
         <message>
             <source>Quits the application</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Έξοδος από την εφαρμογή</translation>
         </message>
         <message>
             <source>Exit
@@ -2738,13 +2610,11 @@ Mark beats by audio clicks</source>
         </message>
         <message>
             <source>Full Screen</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Πλήρης Οθόνη</translation>
         </message>
         <message>
             <source>Display Mixxx using the full screen</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Εμφάνιση του Mixxx σε πλήρη οθόνη</translation>
         </message>
         <message>
             <source>Preferences</source>
@@ -2765,6 +2635,28 @@ Playback and MIDI preferences</source>
         <message>
             <source>Support
 Get help with Mixxx</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Send feedback to the Mixxx team.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Support
+Send feedback to the Mixxx team.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Help translate this application into your language.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Support
+Help translate this application into your language.</source>
             <translation type="unfinished">
             </translation>
         </message>
@@ -2792,8 +2684,7 @@ Makes the macro studio visible</source>
         </message>
         <message>
             <source>&amp;File</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>&amp;Αρχείο</translation>
         </message>
         <message>
             <source>&amp;Options</source>
@@ -2802,23 +2693,19 @@ Makes the macro studio visible</source>
         </message>
         <message>
             <source>&amp;Library</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>&amp;Βιβλιοθήκη</translation>
         </message>
         <message>
             <source>&amp;View</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>&amp;Εμφάνιση</translation>
         </message>
         <message>
             <source>&amp;Help</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>&amp;Βοήθεια</translation>
         </message>
         <message>
             <source>&amp;Macro</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>&amp;Μακροεντολή</translation>
         </message>
         <message>
             <source>&amp;Vinyl Control</source>
@@ -2875,8 +2762,7 @@ Please select your soundcard(s) in the sound hardware preferences.</source>
         <name>MixxxLibraryFeature</name>
         <message>
             <source>Library</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Βιβλιοθήκη</translation>
         </message>
     </context>
     <context>
@@ -2907,8 +2793,7 @@ Please select your soundcard(s) in the sound hardware preferences.</source>
         <name>PlaylistFeature</name>
         <message>
             <source>New Playlist</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Νέα Λίστα Αναπαραγωγής</translation>
         </message>
         <message>
             <source>Add to Auto-DJ Queue</source>
@@ -2929,18 +2814,15 @@ Please select your soundcard(s) in the sound hardware preferences.</source>
         </message>
         <message>
             <source>Import Playlist</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Εισαγωγή Λίστας Αναπαραγωγής</translation>
         </message>
         <message>
             <source>Export Playlist</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Εξαγωγή Λίστας Αναπαραγωγής</translation>
         </message>
         <message>
             <source>Playlists</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Λίστες Αναπαραγωγής</translation>
         </message>
         <message>
             <source>Unlock</source>
@@ -2948,33 +2830,27 @@ Please select your soundcard(s) in the sound hardware preferences.</source>
         </message>
         <message>
             <source>Playlist name:</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Όνομα λίστας:</translation>
         </message>
         <message>
             <source>Playlist Creation Failed</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Η Δημιουργία Λίστας Απέτυχε</translation>
         </message>
         <message>
             <source>A playlist cannot have a blank name.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Η λίστα δεν μπορεί να έχει κενό όνομα</translation>
         </message>
         <message>
             <source>An unknown error occurred while creating playlist: </source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Προκλήθηκε άγνωστο σφάλμα κατά την δημιουργία λίστας: </translation>
         </message>
         <message>
             <source>Rename Playlist</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Μετονομασία Λίστας</translation>
         </message>
         <message>
             <source>New playlist name:</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Νέο όνομα λίστας:</translation>
         </message>
         <message>
             <source>Renaming Playlist Failed</source>
@@ -2983,18 +2859,15 @@ Please select your soundcard(s) in the sound hardware preferences.</source>
         </message>
         <message>
             <source>Playlist Files (*.m3u *.pls)</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Αρχεία Λίστας Αναπαραγωγής (*.m3u *.pls)</translation>
         </message>
         <message>
             <source>M3U Playlist (*.m3u);;PLS Playlist (*.pls)</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Λίστα Αναπαραγωγής M3U (*.m3u);;Λίστα Αναπαραγωγής PLS (*.pls)</translation>
         </message>
         <message>
             <source>A playlist by that name already exists.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Μια λίστα αναπαραγωγής με αυτό το όνομα υπάρχει ήδη.</translation>
         </message>
     </context>
     <context>
@@ -3008,13 +2881,11 @@ Please select your soundcard(s) in the sound hardware preferences.</source>
         <name>QObject</name>
         <message>
             <source>Invalid</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Μη έγκυρο</translation>
         </message>
         <message>
             <source>Master</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Πρωτεύων</translation>
         </message>
         <message>
             <source>Headphones</source>
@@ -3027,8 +2898,7 @@ Please select your soundcard(s) in the sound hardware preferences.</source>
         </message>
         <message>
             <source>Vinyl Control</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Έλεγχος Βινιλίου</translation>
         </message>
         <message>
             <source>Microphone</source>
@@ -3102,8 +2972,7 @@ Please select your soundcard(s) in the sound hardware preferences.</source>
         <name>ScriptStudio</name>
         <message>
             <source>Mixxx Script Studio</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Mixxx Script Studio</translation>
         </message>
         <message>
             <source>File</source>
@@ -3132,38 +3001,34 @@ Please select your soundcard(s) in the sound hardware preferences.</source>
         </message>
         <message>
             <source>Delete Macro</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Διαγραφή Μακροεντολής</translation>
         </message>
         <message>
             <source>New Macro...</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Νέα Μακροεντολή...</translation>
         </message>
         <message>
             <source>Run Macro</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Εκτέλεση Μακροεντολής</translation>
         </message>
     </context>
     <context>
         <name>TrackCollection</name>
         <message>
             <source>Cannot open database</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Αδυναμία ανοίγματος της βάσης δεδομένων</translation>
         </message>
         <message>
             <source>Unable to establish a database connection.
 Mixxx requires QT with SQLite support. Please read the Qt SQL driver documentation for information on how to build it.
 Click OK to exit.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Αδυναμία δημιουργίας σύνδεσης με την βάση δεδομένων.
+Το Mixxx απαιτεί την QT με υποστήριξη SQLite. Παρακαλώ διαβάστε τις οδηγίες του Qt SQL driver για να ενημερωθείτε πως να την δημιουργήσετε.
+Πατήστε OK για έξοδο.</translation>
         </message>
         <message>
             <source>Cannot upgrade database schema</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Αδυναμία αναβάθμισης σχήματος βάσης δεδομένων</translation>
         </message>
         <message>
             <source>Unable to upgrade your database schema to version %1.
@@ -3177,31 +3042,26 @@ Click OK to exit.</source>
         <name>TraktorFeature</name>
         <message>
             <source>Traktor</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Traktor</translation>
         </message>
         <message>
-            <source>Traktor (loading)</source>
-            <translation type="unfinished">
-            </translation>
+            <source>(loading) Traktor</source>
+            <translation>(φορτώνεται) Traktor</translation>
         </message>
         <message>
             <source>Error Loading Traktor Library</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Σφάλμα Φόρτωσης της Βιβλιοθήκης του Traktor</translation>
         </message>
         <message>
             <source>There was an error loading your Traktor library. Some of your Traktor tracks or playlists may not have loaded.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Προκλήθηκε ένα σφάλμα κατά την ανάγνωση της βιβλιοθήκης του Traktor. Κάποια από τα κομμάτια ή τις λίστες αναπαραγωγής του Traktor μπορεί να μη φορτώθηκαν.</translation>
         </message>
     </context>
     <context>
         <name>Ui</name>
         <message>
             <source>Position</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Θέση</translation>
         </message>
         <message>
             <source>Remaining</source>
@@ -3227,23 +3087,19 @@ Click OK to exit.</source>
         </message>
         <message>
             <source>CDJ Mode</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Λειτουργία CDJ</translation>
         </message>
         <message>
             <source>Simple</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Απλή</translation>
         </message>
         <message>
             <source>Mixxx Detected a WVGA Screen</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Το Mixxx Εντόπισε μια Οθόνη WVGA</translation>
         </message>
         <message>
             <source>Mixxx has detected that your screen has a resolution of </source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Το Mixxx εντόπισε ότι η οθόνη σας έχει ανάλυση </translation>
         </message>
         <message>
             <source>The only skin compatiable with this size display is Outline800x480-WVGA.  Would you like to use that skin?</source>
@@ -3453,13 +3309,11 @@ Click OK to exit.</source>
         <name>WTrackTableView</name>
         <message>
             <source>Add to Playlist</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Προσθήκη στη Λίστα Αναπαραγωγής</translation>
         </message>
         <message>
             <source>Add to Crate</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Προσθήκη σε Κιβώτιο</translation>
         </message>
         <message>
             <source>Load to Sampler</source>
@@ -3476,6 +3330,10 @@ Click OK to exit.</source>
         </message>
         <message>
             <source>Add to Auto DJ Queue</source>
+            <translation>Προσθήκη στη Λίστα Αυτόματου DJ</translation>
+        </message>
+        <message>
+            <source>Reload Track Metadata</source>
             <translation type="unfinished">
             </translation>
         </message>

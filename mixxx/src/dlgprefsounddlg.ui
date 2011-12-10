@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>520</width>
-    <height>517</height>
+    <height>300</height>
    </rect>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -94,47 +94,19 @@
       <attribute name="title">
        <string>Output</string>
       </attribute>
-      <layout class="QVBoxLayout" name="verticalLayout_3">
+      <layout class="QVBoxLayout" name="outputVLayout">
        <item>
-        <widget class="QScrollArea" name="outputScrollArea">
-         <property name="frameShape">
-          <enum>QFrame::NoFrame</enum>
+        <spacer name="outputVSpacer">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
          </property>
-         <property name="frameShadow">
-          <enum>QFrame::Plain</enum>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>40</height>
+          </size>
          </property>
-         <property name="widgetResizable">
-          <bool>true</bool>
-         </property>
-         <widget class="QWidget" name="outputScrollAreaContents">
-          <property name="geometry">
-           <rect>
-            <x>0</x>
-            <y>0</y>
-            <width>496</width>
-            <height>271</height>
-           </rect>
-          </property>
-          <layout class="QVBoxLayout" name="outputVLayout">
-           <property name="margin">
-            <number>0</number>
-           </property>
-           <item>
-            <spacer name="outputVSpacer">
-             <property name="orientation">
-              <enum>Qt::Vertical</enum>
-             </property>
-             <property name="sizeHint" stdset="0">
-              <size>
-               <width>20</width>
-               <height>167</height>
-              </size>
-             </property>
-            </spacer>
-           </item>
-          </layout>
-         </widget>
-        </widget>
+        </spacer>
        </item>
       </layout>
      </widget>
@@ -142,47 +114,19 @@
       <attribute name="title">
        <string>Input</string>
       </attribute>
-      <layout class="QVBoxLayout" name="verticalLayout_4">
+      <layout class="QVBoxLayout" name="inputVLayout">
        <item>
-        <widget class="QScrollArea" name="inputScrollArea">
-         <property name="frameShape">
-          <enum>QFrame::NoFrame</enum>
+        <spacer name="inputVSpacer">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
          </property>
-         <property name="frameShadow">
-          <enum>QFrame::Plain</enum>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>40</height>
+          </size>
          </property>
-         <property name="widgetResizable">
-          <bool>true</bool>
-         </property>
-         <widget class="QWidget" name="inputScrollAreaContents">
-          <property name="geometry">
-           <rect>
-            <x>0</x>
-            <y>0</y>
-            <width>496</width>
-            <height>271</height>
-           </rect>
-          </property>
-          <layout class="QVBoxLayout" name="inputVLayout">
-           <property name="margin">
-            <number>0</number>
-           </property>
-           <item>
-            <spacer name="inputVSpacer">
-             <property name="orientation">
-              <enum>Qt::Vertical</enum>
-             </property>
-             <property name="sizeHint" stdset="0">
-              <size>
-               <width>20</width>
-               <height>40</height>
-              </size>
-             </property>
-            </spacer>
-           </item>
-          </layout>
-         </widget>
-        </widget>
+        </spacer>
        </item>
       </layout>
      </widget>

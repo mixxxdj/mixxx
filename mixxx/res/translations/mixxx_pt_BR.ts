@@ -367,115 +367,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Analyze Entire Song</source>
-            <translation>Analisar toda música.</translation>
-        </message>
-    </context>
-    <context>
-        <name>DlgBpmTapDlg</name>
-        <message>
-            <source>Track Editor</source>
-            <translation>Editor de Faixa</translation>
-        </message>
-        <message>
-            <source>&amp;Close</source>
-            <translation>&amp;Fechar</translation>
-        </message>
-        <message>
-            <source>Alt+O</source>
-            <translation>Alt+O</translation>
-        </message>
-        <message>
-            <source>Song:</source>
-            <translation>Música:</translation>
-        </message>
-        <message>
-            <source>Next &gt;&gt;</source>
-            <translation>Seguinte &gt;&gt;</translation>
-        </message>
-        <message>
-            <source>&lt;&lt; Prev</source>
-            <translation>&lt;&lt; Ant</translation>
-        </message>
-        <message>
-            <source>BPM Editor (Click to Expand)</source>
-            <translation>Editor BPM (clique para expandir)</translation>
-        </message>
-        <message>
-            <source>BPM Detection</source>
-            <translation>Detecção BPM</translation>
-        </message>
-        <message>
-            <source>BPM Scheme:</source>
-            <translation>Esquema BPM:</translation>
-        </message>
-        <message>
-            <source>to</source>
-            <translation>Para</translation>
-        </message>
-        <message>
-            <source>BPM Range:</source>
-            <translation>Faixa de BPM:</translation>
-        </message>
-        <message>
-            <source>&amp;Go</source>
-            <translation>&amp;Ir</translation>
-        </message>
-        <message>
-            <source>Alt+G</source>
-            <translation>Alt+G</translation>
-        </message>
-        <message>
-            <source>Analyze Entire Song</source>
-            <translation>Analisar toda música.</translation>
-        </message>
-        <message>
-            <source>BPM:</source>
-            <translation>BPM:</translation>
-        </message>
-        <message>
-            <source>&amp;Push to tap tempo</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Alt+P</source>
-            <translation>Alt+P</translation>
-        </message>
-        <message>
-            <source>Track Information (Click to Expand)</source>
-            <translation>Informação da Faixa (Clique para Expandir)</translation>
-        </message>
-        <message>
-            <source>Title:</source>
-            <translation>Título:</translation>
-        </message>
-        <message>
-            <source>Artist:</source>
-            <translation>Artista:</translation>
-        </message>
-        <message>
-            <source>Comments:</source>
-            <translation>Comentários:</translation>
-        </message>
-        <message>
-            <source>Filename:</source>
-            <translation>Nome do Arquivo:</translation>
-        </message>
-        <message>
-            <source>3:00</source>
-            <translation>3:00</translation>
-        </message>
-        <message>
-            <source>Play Time:</source>
-            <translation>Tempo de execução:</translation>
-        </message>
-        <message>
-            <source>File Type:</source>
-            <translation>Tipo de Arquivo:</translation>
-        </message>
-        <message>
-            <source>77</source>
-            <translation>77</translation>
+            <translation>Analisar toda a música</translation>
         </message>
     </context>
     <context>
@@ -668,8 +560,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Down increases speed (Technics SL1210)</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Para baixo aumenta a velocidade (Technics SL1210)</translation>
         </message>
         <message>
             <source>Information</source>
@@ -767,13 +658,11 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Temporary rate change (between 1 and 8000) when left clicking</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Muda a taxa temporária (entre 1 e 8000) quando clicar com o botão esquerdo</translation>
         </message>
         <message>
             <source>Temporary rate change (between 1 and 8000) when right clicking</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Muda a taxa temporária (entre 1 e 8000) quando clicar com o botão direito</translation>
         </message>
         <message>
             <source>Ramping Pitchbend</source>
@@ -815,8 +704,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Scratching</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Arranhando</translation>
         </message>
         <message>
             <source>Linear</source>
@@ -934,8 +822,7 @@ Isso irá sobrescrever seu arquivo MIDI existente.</translation>
         </message>
         <message>
             <source>Are you sure you want to clear all output bindings?</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Tem certeza de que deseja apagar todas as ligações de saída?</translation>
         </message>
     </context>
     <context>
@@ -1070,12 +957,16 @@ p, li { white-space: pre-wrap; }
             <translation>Segundos</translation>
         </message>
         <message>
+            <source>Show Signal Quality in Skin</source>
+            <translation>Mostrar qualidade do sinal na Skin</translation>
+        </message>
+        <message>
             <source>Control Mode</source>
             <translation>Modo de Controle</translation>
         </message>
         <message>
             <source>Absolute Mode</source>
-            <translation>Modo Absoluto</translation>
+            <translation>Modo absoluto</translation>
         </message>
         <message>
             <source>Relative Mode</source>
@@ -1083,7 +974,8 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Enable Needle Skip Prevention</source>
-            <translation>Habilitar Prenvenção Pulo de Agulha</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Signal Quality</source>
@@ -1095,7 +987,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Powered by xwax</source>
-            <translation>Desenvolvido porxwax</translation>
+            <translation>Desenvolvido por xwax</translation>
         </message>
         <message>
             <source>Apply</source>
@@ -1382,7 +1274,7 @@ playback and outbound link statistics</source>
         </message>
         <message>
             <source>/mixxx.ogg</source>
-            <translation>Copy text 	 /mixxx.ogg</translation>
+            <translation>/mixxx.ogg</translation>
         </message>
         <message>
             <source>Host</source>
@@ -1660,6 +1552,10 @@ p, li { white-space: pre-wrap; }
             <translation>Nenhum</translation>
         </message>
         <message>
+            <source>Channel %1</source>
+            <translation>Canal %1</translation>
+        </message>
+        <message>
             <source>Channels %1 - %2</source>
             <translation>Canais %1 - %2</translation>
         </message>
@@ -1721,6 +1617,11 @@ p, li { white-space: pre-wrap; }
             <translation>Tipo Vinil Deck 2</translation>
         </message>
         <message>
+            <source>Show Signal Quality in Skin</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
             <source>Apply</source>
             <translation>Aplicar</translation>
         </message>
@@ -1747,7 +1648,8 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Enable Needle Skip Prevention</source>
-            <translation>Habilitar Prenvenção Pulo de Agulha</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Signal Quality</source>
@@ -1759,7 +1661,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Powered by xwax</source>
-            <translation>Desenvolvido porxwax</translation>
+            <translation>Desenvolvido por xwax</translation>
         </message>
     </context>
     <context>
@@ -1914,7 +1816,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Filename:</source>
-            <translation>Nome do Arquivo:</translation>
+            <translation>Nome do arquivo:</translation>
         </message>
         <message>
             <source>Duration:</source>
@@ -2025,17 +1927,17 @@ p, li { white-space: pre-wrap; }
             <translation>Codificador</translation>
         </message>
         <message>
-            <source>&lt;html&gt;Mixxx is unable to load or find the MP3 encoder lame. &lt;p&gt;Please install libmp3lame (also known as lame) and check if /usr/lib/libmp3lame.so exists on your system &lt;/html&gt;</source>
+            <source>&lt;html&gt;Mixxx cannot record or stream in MP3 without the MP3 encoder &amp;quot;lame&amp;quot;. Due to licensing issues, we cannot include this with Mixxx. To record or stream in MP3, you must download &lt;b&gt;libmp3lame&lt;/b&gt; and install it on your system. &lt;p&gt;See &lt;a href='http://mixxx.org/wiki/doku.php/internet_broadcasting#linux'&gt;Mixxx Wiki&lt;/a&gt; for more information. &lt;/html&gt;</source>
             <translation type="unfinished">
             </translation>
         </message>
         <message>
-            <source>&lt;html&gt;Mixxx is unable to load or find the MP3 encoder lame. &lt;p&gt;Please put lame_enc.dll in the directory you have installed Mixxx &lt;/html&gt;</source>
+            <source>&lt;html&gt;Mixxx cannot record or stream in MP3 without the MP3 encoder &amp;quot;lame&amp;quot;. Due to licensing issues, we cannot include this with Mixxx. To record or stream in MP3, you must download &lt;b&gt;lame_enc.dll&lt;/b&gt; and install it on your system. &lt;p&gt;See &lt;a href='http://mixxx.org/wiki/doku.php/internet_broadcasting#windows'&gt;Mixxx Wiki&lt;/a&gt; for more information. &lt;/html&gt;</source>
             <translation type="unfinished">
             </translation>
         </message>
         <message>
-            <source>&lt;html&gt;Mixxx is unable to load or find the MP3 encoder lame. &lt;p&gt;Please install libmp3lame (also known as lame) and check if /usr/local/lib/libmp3lame.dylib exists on your system &lt;/html&gt;</source>
+            <source>&lt;html&gt;Mixxx cannot record or stream in MP3 without the MP3 encoder &amp;quot;lame&amp;quot;. Due to licensing issues, we cannot include this with Mixxx. To record or stream in MP3, you must download &lt;b&gt;libmp3lame&lt;/b&gt; and install it on your system. &lt;p&gt;See &lt;a href='http://mixxx.org/wiki/doku.php/internet_broadcasting#mac_osx'&gt;Mixxx Wiki&lt;/a&gt; for more information. &lt;/html&gt;</source>
             <translation type="unfinished">
             </translation>
         </message>
@@ -2135,8 +2037,9 @@ p, li { white-space: pre-wrap; }
             <translation>Selecione a sua biblioteca iTunes</translation>
         </message>
         <message>
-            <source>iTunes (loading)</source>
-            <translation>iTunes (carregando)</translation>
+            <source>(loading) iTunes</source>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Use Default Library</source>
@@ -2196,18 +2099,20 @@ p, li { white-space: pre-wrap; }
             <source>Control Value</source>
             <translation>Valor de Controle</translation>
         </message>
+        <message>
+            <source>Description</source>
+            <translation>Descrição</translation>
+        </message>
     </context>
     <context>
         <name>MidiMapping</name>
         <message>
             <source>MIDI script function not found</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Função de script MIDI não encontrada</translation>
         </message>
         <message>
             <source>The MIDI script function '%1' was not found in loaded scripts.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>A função de script MIDI '%1' não foi encontrada nos scripts carregados.</translation>
         </message>
         <message>
             <source>The MIDI message %1 %2 will not be bound.
@@ -2247,6 +2152,10 @@ p, li { white-space: pre-wrap; }
         <message>
             <source>Control Value</source>
             <translation>Valor de Controle</translation>
+        </message>
+        <message>
+            <source>Description</source>
+            <translation>Descrição</translation>
         </message>
         <message>
             <source>Threshold Min</source>
@@ -2469,12 +2378,20 @@ This information will not be used to personally identify you, contact you, adver
             <translation>Ctrl+P</translation>
         </message>
         <message>
-            <source>&amp;About...</source>
-            <translation>&amp;Sobre</translation>
+            <source>&amp;About</source>
+            <translation>So&amp;bre</translation>
         </message>
         <message>
-            <source>&amp;Community Support...</source>
-            <translation>&amp;Suporte da Comunidade...</translation>
+            <source>&amp;Community Support</source>
+            <translation>Suporte da Comunidade</translation>
+        </message>
+        <message>
+            <source>Send Us &amp;Feedback</source>
+            <translation>Nos dê um &amp;Feedback</translation>
+        </message>
+        <message>
+            <source>&amp;Translate this application</source>
+            <translation>&amp;Traduza este aplicativo</translation>
         </message>
         <message>
             <source>Enable &amp;Vinyl Control 1</source>
@@ -2494,7 +2411,7 @@ This information will not be used to personally identify you, contact you, adver
         </message>
         <message>
             <source>Enable live broadcasting</source>
-            <translation>Habilitar difulsão ao vivo</translation>
+            <translation>Habilitar transmissão ao vivo</translation>
         </message>
         <message>
             <source>Ctrl+L</source>
@@ -2642,6 +2559,26 @@ Get help with Mixxx</source>
 Obtenha ajuda com Mixxx</translation>
         </message>
         <message>
+            <source>Send feedback to the Mixxx team.</source>
+            <translation>Envie um feedback para a equipe do Mixxx</translation>
+        </message>
+        <message>
+            <source>Support
+Send feedback to the Mixxx team.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Help translate this application into your language.</source>
+            <translation>Ajude a traduzir este aplicativo para o seu idioma.</translation>
+        </message>
+        <message>
+            <source>Support
+Help translate this application into your language.</source>
+            <translation>Suporte
+Ajude a traduzir este aplicativo para o seu idioma.</translation>
+        </message>
+        <message>
             <source>About the application</source>
             <translation>Sobre a aplicação</translation>
         </message>
@@ -2771,8 +2708,7 @@ Por favor selecione sua(s) placa(s) de som nas preferências hardware de som.</t
         </message>
         <message>
             <source>Add to Auto-DJ Queue</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Adicionar para a fila Auto-DJ</translation>
         </message>
         <message>
             <source>Remove</source>
@@ -2906,38 +2842,31 @@ Por favor selecione sua(s) placa(s) de som nas preferências hardware de som.</t
         <name>SamplerBank</name>
         <message>
             <source>Save Sampler Bank</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Salvar Banco de Samplers</translation>
         </message>
         <message>
             <source>Error Saving Sampler Bank</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Erro Salvando Banco de Samplers</translation>
         </message>
         <message>
             <source>Could not write the sampler bank to '%1'.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Não foi possível salvar banco de samplers em '%1'.</translation>
         </message>
         <message>
             <source>Load Sampler Bank</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Carregar Banco de Samplers</translation>
         </message>
         <message>
             <source>Error Reading Sampler Bank</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Erro lendo Banco de Samplers</translation>
         </message>
         <message>
             <source>Could not open the sampler bank file '%1'.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Não foi possível abrir o arquivo de banco de samplers '%1'.</translation>
         </message>
         <message>
             <source>Could not read the sampler bank file '%1'.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Não foi possível ler o arquivo de banco de samplers '%1'.</translation>
         </message>
     </context>
     <context>
@@ -3017,8 +2946,9 @@ Click OK to exit.</source>
             <translation>Traktor</translation>
         </message>
         <message>
-            <source>Traktor (loading)</source>
-            <translation>Tractor (carregando)</translation>
+            <source>(loading) Traktor</source>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Error Loading Traktor Library</source>
@@ -3297,6 +3227,11 @@ Click OK to exit.</source>
         <message>
             <source>Add to Auto DJ Queue</source>
             <translation>Adicionar a fila DJ automática</translation>
+        </message>
+        <message>
+            <source>Reload Track Metadata</source>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Load to Deck %1</source>
