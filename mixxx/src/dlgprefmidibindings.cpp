@@ -373,7 +373,11 @@ void DlgPrefMidiBindings::slotAddInputBinding()
 
     QStringList controlValues;
     if (controlGroup == CONTROLGROUP_CHANNEL1_STRING ||
-        controlGroup == CONTROLGROUP_CHANNEL2_STRING) {
+        controlGroup == CONTROLGROUP_CHANNEL2_STRING ||
+        controlGroup == CONTROLGROUP_SAMPLER1_STRING ||
+        controlGroup == CONTROLGROUP_SAMPLER2_STRING ||
+        controlGroup == CONTROLGROUP_SAMPLER3_STRING ||
+        controlGroup == CONTROLGROUP_SAMPLER4_STRING) {
         controlValues = ControlValueDelegate::getChannelControlValues();
     }
     else if (controlGroup == CONTROLGROUP_MASTER_STRING)

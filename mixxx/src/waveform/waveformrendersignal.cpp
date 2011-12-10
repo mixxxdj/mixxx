@@ -63,7 +63,7 @@ void WaveformRenderSignal::draw(QPainter *pPainter, QPaintEvent *event,
         return;
     }
 
-    float* baseBuffer = buffer->data();
+    const float* baseBuffer = buffer->constData();
 
     int numBufferSamples = buffer->size();
     int iCurPos = 0;

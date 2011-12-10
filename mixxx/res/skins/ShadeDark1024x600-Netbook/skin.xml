@@ -18,6 +18,10 @@
 	the resulting work only under the same or similar license to this one.
 
 	CHANGELOG
+	v1.10.0.14	(26/11/2011)
+	* Feature: Added "ProgressColor" & "ProgressAlpha" for track analysis progress visualization 
+	  in waveform overview, lp:803740
+
 	v1.10.0.13	(02/11/2011)
 	* Fix: use "visual_bpm" key instead "bpm" so bpm display does not updates too quickly 
 
@@ -302,6 +306,8 @@
 								<Size>170,35</Size>
 								<SignalColor>#E4E4E4</SignalColor>
 								<MarkerColor>#00FF00</MarkerColor>
+								<ProgressColor>#E4E4E4</ProgressColor>
+								<ProgressAlpha>80</ProgressAlpha>
 								<Connection>
 									<ConfigKey>[Sampler1],playposition</ConfigKey>
 									<EmitOnDownPress>false</EmitOnDownPress>
@@ -817,6 +823,8 @@
 								<Size>170,35</Size>
 								<SignalColor>#E4E4E4</SignalColor>
 								<MarkerColor>#00FF00</MarkerColor>
+								<ProgressColor>#E4E4E4</ProgressColor>
+								<ProgressAlpha>80</ProgressAlpha>
 								<Connection>
 									<ConfigKey>[Sampler2],playposition</ConfigKey>
 									<EmitOnDownPress>false</EmitOnDownPress>
@@ -1332,6 +1340,8 @@
 								<Size>170,35</Size>
 								<SignalColor>#E4E4E4</SignalColor>
 								<MarkerColor>#00FF00</MarkerColor>
+								<ProgressColor>#E4E4E4</ProgressColor>
+								<ProgressAlpha>80</ProgressAlpha>
 								<Connection>
 									<ConfigKey>[Sampler3],playposition</ConfigKey>
 									<EmitOnDownPress>false</EmitOnDownPress>
@@ -1847,6 +1857,8 @@
 								<Size>170,35</Size>
 								<SignalColor>#E4E4E4</SignalColor>
 								<MarkerColor>#00FF00</MarkerColor>
+								<ProgressColor>#E4E4E4</ProgressColor>
+								<ProgressAlpha>80</ProgressAlpha>
 								<Connection>
 									<ConfigKey>[Sampler4],playposition</ConfigKey>
 									<EmitOnDownPress>false</EmitOnDownPress>
@@ -3754,6 +3766,8 @@
 						-->
 						<SignalColor>#E4E4E4</SignalColor>
 						<MarkerColor>#00FF00</MarkerColor>
+						<ProgressColor>#E4E4E4</ProgressColor>
+						<ProgressAlpha>80</ProgressAlpha>
 						<Connection>
 							<ConfigKey>[Channel1],playposition</ConfigKey>
 							<EmitOnDownPress>false</EmitOnDownPress>
@@ -5331,6 +5345,8 @@
 						-->
 						<SignalColor>#E4E4E4</SignalColor>
 						<MarkerColor>#00FF00</MarkerColor>
+						<ProgressColor>#E4E4E4</ProgressColor>
+						<ProgressAlpha>80</ProgressAlpha>
 						<Connection>
 							<ConfigKey>[Channel2],playposition</ConfigKey>
 							<EmitOnDownPress>false</EmitOnDownPress>

@@ -20,7 +20,9 @@
 #include "treeitem.h"
 #include "soundsourceproxy.h"
 
-PlaylistFeature::PlaylistFeature(QObject* parent, TrackCollection* pTrackCollection, ConfigObject<ConfigValue>* pConfig)
+PlaylistFeature::PlaylistFeature(QObject* parent,
+                                 TrackCollection* pTrackCollection,
+                                 ConfigObject<ConfigValue>* pConfig)
         : LibraryFeature(parent),
           m_pTrackCollection(pTrackCollection),
           m_playlistDao(pTrackCollection->getPlaylistDAO()),
@@ -192,13 +194,11 @@ void PlaylistFeature::slotCreatePlaylist() {
             QMessageBox::warning(NULL,
                                  tr("Playlist Creation Failed"),
                                  tr("A playlist by that name already exists."));
-        }
-        else if (name.isEmpty()) {
+        } else if (name.isEmpty()) {
             QMessageBox::warning(NULL,
                                  tr("Playlist Creation Failed"),
                                  tr("A playlist cannot have a blank name."));
-        }
-        else {
+        } else {
             validNameGiven = true;
         }
 
@@ -461,7 +461,6 @@ void PlaylistFeature::slotExportPlaylist(){
     if (file_location.isNull() || file_location.isEmpty()) {
         return;
     }
-
 
     // Create a new table model since the main one might have an active search.
     QScopedPointer<PlaylistTableModel> pPlaylistTableModel(

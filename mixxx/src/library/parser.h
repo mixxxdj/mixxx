@@ -17,7 +17,7 @@
 /**Developer Information:
 This is the rootclass for all parser classes for the Importer class.
 It can be used to write a new type-specific parser by deriving a new class
-from it and overwrite the parse function and add class specific functions to 
+from it and overwrite the parse function and add class specific functions to
 it afterwards fro proper functioning
 **/
 
@@ -50,8 +50,7 @@ protected:
     /**Checks if the given string represents a local filepath**/
     bool isFilepath(QString );
     // check for Utf8 encoding
-    static bool isUtf8(const char * string);
-
+    static bool isUtf8(const char* string);
 };
 
 #endif
