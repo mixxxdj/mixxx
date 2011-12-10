@@ -4,6 +4,7 @@
 #include "configobject.h"
 #include "trackinfoobject.h"
 #include "baseplayer.h"
+#include "analyserqueue.h"
 #include "engine/enginechannel.h"
 
 class EngineMaster;
@@ -18,9 +19,11 @@ class BaseTrackPlayer : public BasePlayer {
                     ConfigObject<ConfigValue>* pConfig,
                     EngineMaster* pMixingEngine,
                     EngineChannel::ChannelOrientation defaultOrientation,
+                    AnalyserQueue* pAnalyserQueue,
                     QString group);
     virtual ~BaseTrackPlayer();
 
+    AnalyserQueue* getAnalyserQueue() const;
     WaveformRenderer* getWaveformRenderer() const;
     TrackPointer getLoadedTrack() const;
 
@@ -38,6 +41,7 @@ class BaseTrackPlayer : public BasePlayer {
   private:
     ConfigObject<ConfigValue>* m_pConfig;
     TrackPointer m_pLoadedTrack;
+    AnalyserQueue* m_pAnalyserQueue;
 
     ControlObjectThreadMain* m_pCuePoint;
     ControlObjectThreadMain* m_pLoopInPoint;

@@ -54,15 +54,15 @@ bool Parser::isBinary(QString filename){
     if(file.open(QIODevice::ReadOnly)){
         char c;
         unsigned char uc;
-        
+
         if(!file.getChar(&c))
         {
           qDebug() << "Parser: Error reading stream on " << filename;
           return true; //should this raise an exception?
         }
-        
+
         uc = uchar(c);
-        
+
         if(!(33<=uc && uc<=127))  //Starting byte is no character
         {
             file.close();
@@ -77,17 +77,17 @@ bool Parser::isBinary(QString filename){
     return false;
 }
 
-// Following code is taken from http://stackoverflow.com/questions/1031645/how-to-detect-utf-8-in-plain-c
+// The following public domain code is taken from
+// http://stackoverflow.com/questions/1031645/how-to-detect-utf-8-in-plain-c
 // Thank you Christoph!
 // static
-bool Parser::isUtf8(const char * string)
-{
-    if(!string)
-        return 0;
+bool Parser::isUtf8(const char* string) {
+    if (!string) {
+        return false;
+    }
 
-    const unsigned char * bytes = (const unsigned char *)string;
-    while(*bytes)
-    {
+    const unsigned char* bytes = (const unsigned char *)string;
+    while (*bytes) {
         if(     (// ASCII
                         bytes[0] == 0x09 ||
                         bytes[0] == 0x0A ||
@@ -153,8 +153,8 @@ bool Parser::isUtf8(const char * string)
                 continue;
         }
 
-        return 0;
+        return false;
     }
 
-    return 1;
+    return true;
 }
