@@ -66,6 +66,7 @@ LoopingControl::LoopingControl(const char * _group,
 
     m_pQuantizeEnabled = ControlObject::getControl(ConfigKey(_group, "quantize"));
     m_pNextBeat = ControlObject::getControl(ConfigKey(_group, "beat_next"));
+    m_pClosestBeat = ControlObject::getControl(ConfigKey(_group, "beat_closest"));
     m_pTrackSamples = ControlObject::getControl(ConfigKey(_group,"track_samples"));
 
     // Connect beatloop, which can flexibly handle different values.
@@ -268,8 +269,12 @@ void LoopingControl::slotLoopIn(double val) {
     if (val) {
         clearActiveBeatLoop();
 
-        // set loop in position
-        m_iLoopStartSample = m_pQuantizeEnabled->get() ? m_pNextBeat->get() : m_iCurrentSample;
+        // set loop-in position
+        int closestBeat = m_pClosestBeat->get();
+        m_iLoopStartSample = m_iCurrentSample;
+        if (m_pQuantizeEnabled->get() > 0.0 && closestBeat != -1)
+            m_iLoopStartSample = closestBeat;
+
         m_pCOLoopStartPosition->set(m_iLoopStartSample);
 
         // Reset the loop out position if it is before the loop in so that loops
@@ -284,7 +289,10 @@ void LoopingControl::slotLoopIn(double val) {
 
 void LoopingControl::slotLoopOut(double val) {
     if (val) {
-        int pos = m_pQuantizeEnabled->get() ? m_pNextBeat->get() : m_iCurrentSample;
+        int closestBeat = m_pClosestBeat->get();
+        int pos = m_iCurrentSample;
+        if (m_pQuantizeEnabled->get() > 0.0 && closestBeat != -1)
+            pos = closestBeat;
         // If the user is trying to set a loop-out before the loop in or without
         // having a loop-in, then ignore it.
         if (m_iLoopStartSample == -1 || pos < m_iLoopStartSample) {

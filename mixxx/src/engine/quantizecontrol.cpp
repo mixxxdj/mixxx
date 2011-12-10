@@ -19,16 +19,24 @@ QuantizeControl::QuantizeControl(const char* pGroup,
     m_pCOQuantizeEnabled = new ControlPushButton(ConfigKey(pGroup, "quantize"));
     m_pCOQuantizeEnabled->set(1.0f);
     m_pCOQuantizeEnabled->setToggleButton(true);
+    // Main CUE point should not be quantized by default
+    m_pCOCueQuantizeEnabled = new ControlPushButton(ConfigKey(pGroup, "quantize_cue"));
+    m_pCOCueQuantizeEnabled->set(0.0f);
+    m_pCOCueQuantizeEnabled->setToggleButton(true);
     m_pCONextBeat = new ControlObject(ConfigKey(pGroup, "beat_next"));
     m_pCONextBeat->set(-1);
     m_pCOPrevBeat = new ControlObject(ConfigKey(pGroup, "beat_prev"));
     m_pCOPrevBeat->set(-1);
+    m_pCOClosestBeat = new ControlObject(ConfigKey(pGroup, "beat_closest"));
+    m_pCOClosestBeat->set(-1);
 }
 
 QuantizeControl::~QuantizeControl() {
     delete m_pCOQuantizeEnabled;
+    delete m_pCOCueQuantizeEnabled;
     delete m_pCONextBeat;
     delete m_pCOPrevBeat;
+    delete m_pCOClosestBeat;
 }
 
 void QuantizeControl::trackLoaded(TrackPointer pTrack) {
@@ -53,6 +61,7 @@ void QuantizeControl::trackUnloaded(TrackPointer pTrack) {
     m_pBeats.clear();
     m_pCOPrevBeat->set(-1);
     m_pCONextBeat->set(-1);
+    m_pCOClosestBeat->set(-1);
 }
 
 void QuantizeControl::slotBeatsUpdated() {
@@ -76,6 +85,16 @@ double QuantizeControl::process(const double dRate,
 
     double prevBeat = m_pCOPrevBeat->get();
     double nextBeat = m_pCONextBeat->get();
+    double closestBeat = m_pCOClosestBeat->get();
+
+    double currentClosestBeat = floorf(m_pBeats->findClosestBeat(iCurrentSample));
+
+    if (closestBeat != currentClosestBeat) {
+//         if (!even(currentClosestBeat))
+//             currentClosestBeat--;
+
+        m_pCOClosestBeat->set(currentClosestBeat);
+    }
 
     if (prevBeat == -1 || nextBeat == -1 ||
         currentSample >= nextBeat || currentSample <= prevBeat) {

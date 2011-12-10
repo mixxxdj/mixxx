@@ -771,6 +771,7 @@ void MidiScriptEngine::trigger(QString group, QString name) {
     }
 
     // ControlObject doesn't emit ValueChanged when set to the same value,
+    //  and ControlObjectThread::emitValueChanged also has no effect
     //  so we have to call the function(s) manually with the current value
     ConfigKey key = ConfigKey(group,name);
     if(m_connectedControls.contains(key)) {
@@ -790,6 +791,9 @@ void MidiScriptEngine::trigger(QString group, QString name) {
                 if (result.isError()) {
                     qWarning()<< "MidiScriptEngine: Call to " << function << " resulted in an error:  " << result.toString();
                 }
+                // But the GUI won't update unless we do this anyway.
+                //  And emitValueChanged doesn't work for this either. WTF?
+                cot->slotSet(cot->get());
             }
             ++i;
         }

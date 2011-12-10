@@ -343,7 +343,9 @@ int CachingReader::read(int sample, int num_samples, CSAMPLE* buffer) {
     int zerosWritten = 0;
     // Check for bogus sample numbers
     //Q_ASSERT(sample >= 0);
-    Q_ASSERT(sample % 2 == 0);
+    QString temp = QString("Sample = %1").arg(sample);
+    QByteArray tempBA = QString(temp).toUtf8();
+    Q_ASSERT_X(sample % 2 == 0,"CachingReader::read",tempBA);
     Q_ASSERT(num_samples >= 0);
 
     // If asked to read 0 samples, don't do anything. (this is a perfectly
