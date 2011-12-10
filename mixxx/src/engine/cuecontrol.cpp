@@ -311,6 +311,15 @@ void CueControl::hotcueSet(HotcueControl* pControl, double v) {
     pCue->setType(Cue::CUE);
     // TODO(XXX) deal with spurious signals
     attachCue(pCue, hotcue);
+
+    // If quantize is enabled and we are not playing, jump to the cue point
+    // since it's not necessarily where we currently are. TODO(XXX) is this
+    // potentially invalid for vinyl control?
+    bool playing = m_pPlayButton->get() > 0;
+    if (!playing && m_pQuantizeEnabled->get() > 0.0) {
+        lock.unlock();  // prevent deadlock.
+        emit(seekAbs(cuePosition));
+    }
 }
 
 void CueControl::hotcueGoto(HotcueControl* pControl, double v) {
@@ -646,8 +655,8 @@ void CueControl::cueCDJ(double v) {
                 // Just in case.
                 m_bPreviewing = false;
 
-                // If quantize is enabled, jump to the cue point
-                //  since it's not necessarily where we currently are
+                // If quantize is enabled, jump to the cue point since it's not
+                // necessarily where we currently are
                 if (m_pQuantizeEnabled->get() > 0.0) {
                     lock.unlock();  // prevent deadlock.
                     emit(seekAbs(m_pCuePoint->get()));
