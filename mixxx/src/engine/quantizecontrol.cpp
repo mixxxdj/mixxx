@@ -19,10 +19,6 @@ QuantizeControl::QuantizeControl(const char* pGroup,
     m_pCOQuantizeEnabled = new ControlPushButton(ConfigKey(pGroup, "quantize"));
     m_pCOQuantizeEnabled->set(1.0f);
     m_pCOQuantizeEnabled->setToggleButton(true);
-    // Main CUE point should not be quantized by default
-    m_pCOCueQuantizeEnabled = new ControlPushButton(ConfigKey(pGroup, "quantize_cue"));
-    m_pCOCueQuantizeEnabled->set(0.0f);
-    m_pCOCueQuantizeEnabled->setToggleButton(true);
     m_pCONextBeat = new ControlObject(ConfigKey(pGroup, "beat_next"));
     m_pCONextBeat->set(-1);
     m_pCOPrevBeat = new ControlObject(ConfigKey(pGroup, "beat_prev"));
@@ -33,7 +29,6 @@ QuantizeControl::QuantizeControl(const char* pGroup,
 
 QuantizeControl::~QuantizeControl() {
     delete m_pCOQuantizeEnabled;
-    delete m_pCOCueQuantizeEnabled;
     delete m_pCONextBeat;
     delete m_pCOPrevBeat;
     delete m_pCOClosestBeat;

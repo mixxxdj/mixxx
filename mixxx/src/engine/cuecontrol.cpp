@@ -30,8 +30,7 @@ CueControl::CueControl(const char * _group,
     m_pTrackSamples = ControlObject::getControl(ConfigKey(_group, "track_samples"));
 
     m_pQuantizeEnabled = ControlObject::getControl(ConfigKey(_group, "quantize"));
-    m_pCueQuantizeEnabled = ControlObject::getControl(ConfigKey(_group, "quantize_cue"));
-    
+
     m_pNextBeat = ControlObject::getControl(ConfigKey(_group, "beat_next"));
     m_pClosestBeat = ControlObject::getControl(ConfigKey(_group, "beat_closest"));
 
@@ -533,9 +532,7 @@ void CueControl::cueSet(double v) {
         return;
 
     QMutexLocker lock(&m_mutex);
-    // TODO: Should use m_pCueQuantizeEnabled but currently no skins toggle it
-    double cue =
-            (m_pQuantizeEnabled->get() > 0.0 && m_pClosestBeat->get() != -1) ?
+    double cue = (m_pQuantizeEnabled->get() > 0.0 && m_pClosestBeat->get() != -1) ?
             floorf(m_pClosestBeat->get()) : floorf(getCurrentSample());
     if (!even(cue))
         cue--;
@@ -650,7 +647,7 @@ void CueControl::cueCDJ(double v) {
                 cueSet(v);
                 // Just in case.
                 m_bPreviewing = false;
-                
+
                 // If quantize is enabled, jump to the cue point
                 //  since it's not necessarily where we currently are
                 if (m_pQuantizeEnabled->get() > 0.0) {
