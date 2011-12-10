@@ -33,8 +33,10 @@ class QuantizeControl : public EngineControl {
 
   private:
     ControlPushButton* m_pCOQuantizeEnabled;
+    ControlPushButton* m_pCOCueQuantizeEnabled;
     ControlObject* m_pCONextBeat;
     ControlObject* m_pCOPrevBeat;
+    ControlObject* m_pCOClosestBeat;
 
     TrackPointer m_pTrack;
     BeatsPointer m_pBeats;
