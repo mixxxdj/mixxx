@@ -301,8 +301,6 @@ void CueControl::hotcueSet(HotcueControl* pControl, double v) {
     detachCue(hotcue);
     Cue* pCue = m_pLoadedTrack->addCue();
     double cuePosition =
-//             (m_pQuantizeEnabled->get() > 0.0 && m_pNextBeat->get() != -1) ?
-//             floorf(m_pNextBeat->get()) : floorf(getCurrentSample());
             (m_pQuantizeEnabled->get() > 0.0 && m_pClosestBeat->get() != -1) ?
             floorf(m_pClosestBeat->get()) : floorf(getCurrentSample());
     if (!even(cuePosition))

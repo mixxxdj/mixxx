@@ -81,13 +81,13 @@ double QuantizeControl::process(const double dRate,
     double prevBeat = m_pCOPrevBeat->get();
     double nextBeat = m_pCONextBeat->get();
     double closestBeat = m_pCOClosestBeat->get();
-
-    double currentClosestBeat = floorf(m_pBeats->findClosestBeat(iCurrentSample));
+    double currentClosestBeat =
+            floorf(m_pBeats->findClosestBeat(iCurrentSample));
 
     if (closestBeat != currentClosestBeat) {
-//         if (!even(currentClosestBeat))
-//             currentClosestBeat--;
-
+        if (!even(currentClosestBeat)) {
+            currentClosestBeat--;
+        }
         m_pCOClosestBeat->set(currentClosestBeat);
     }
 
