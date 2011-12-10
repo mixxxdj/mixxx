@@ -76,7 +76,7 @@ void CachingReader::initialize() {
 
     int total_chunks = memory_to_use / kChunkLength;
 
-    qDebug() << "CachingReader using" << memory_to_use << "bytes.";
+    //qDebug() << "CachingReader using" << memory_to_use << "bytes.";
 
     int rawMemoryBufferLength = kSamplesPerChunk * total_chunks;
     m_pRawMemoryBuffer = new CSAMPLE[rawMemoryBufferLength];
@@ -603,12 +603,12 @@ void CachingReader::loadTrack(TrackPointer pTrack) {
     }
 
     m_pCurrentSoundSource = new SoundSourceProxy(pTrack);
-    m_pCurrentSoundSource->open(); //Open the song for reading
+    bool open(m_pCurrentSoundSource->open() == OK); //Open the song for reading
     m_iTrackSampleRate = m_pCurrentSoundSource->getSampleRate();
     m_iTrackNumSamples = status.trackNumSamples =
             m_pCurrentSoundSource->length();
 
-    if (m_iTrackNumSamples == 0 || m_iTrackSampleRate == 0) {
+    if (!open || m_iTrackNumSamples == 0 || m_iTrackSampleRate == 0) {
         // Must unlock before emitting to avoid deadlock
         qDebug() << m_pGroup << "CachingReader::loadTrack() load failed for\""
                  << filename << "\", file invalid, unlocked reader lock";

@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2011-05-03 21:42-0400\n"
-"PO-Revision-Date: 2011-10-07 14:27+0000\n"
-"Last-Translator: Ferran Pujol <ferranpujolcamins@gmail.com>\n"
+"POT-Creation-Date: 2011-10-31 23:15-0400\n"
+"PO-Revision-Date: 2011-11-01 10:02+0000\n"
+"Last-Translator: VPablo <villumar@gmail.com>\n"
 "Language-Team: Catalan <ca@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-10-08 05:14+0000\n"
-"X-Generator: Launchpad (build 14110)\n"
+"X-Launchpad-Export-Date: 2011-11-02 04:45+0000\n"
+"X-Generator: Launchpad (build 14214)\n"
 
 #: AutoDJFeature#1
 msgid "Auto DJ"
@@ -418,126 +418,8 @@ msgid "Min"
 msgstr "Mínim"
 
 #: DlgBpmSchemeDlg#6
-msgctxt "DlgBpmSchemeDlg#6"
 msgid "Analyze Entire Song"
 msgstr "Analitza la cançò sencera"
-
-#: DlgBpmTapDlg#1
-msgctxt "DlgBpmTapDlg#1"
-msgid "Track Editor"
-msgstr "Editor de la cançó"
-
-#: DlgBpmTapDlg#2
-msgid "&Close"
-msgstr "&Tanca"
-
-#: DlgBpmTapDlg#3
-msgctxt "DlgBpmTapDlg#3"
-msgid "Alt+O"
-msgstr "Alt+O"
-
-#: DlgBpmTapDlg#4
-msgctxt "DlgBpmTapDlg#4"
-msgid "Song:"
-msgstr "Cançò:"
-
-#: DlgBpmTapDlg#5
-msgid "Next >>"
-msgstr "Següent >>"
-
-#: DlgBpmTapDlg#6
-msgid "<< Prev"
-msgstr "<< Anterior"
-
-#: DlgBpmTapDlg#7
-msgid "BPM Editor (Click to Expand)"
-msgstr "Editor de BPM (Cliqueja per a expandir)"
-
-#: DlgBpmTapDlg#8
-msgctxt "DlgBpmTapDlg#8"
-msgid "BPM Detection"
-msgstr "Detecció BPM"
-
-#: DlgBpmTapDlg#9
-msgid "BPM Scheme:"
-msgstr "Esquema BPM:"
-
-#: DlgBpmTapDlg#10
-msgid "to"
-msgstr "fins a"
-
-#: DlgBpmTapDlg#11
-msgid "BPM Range:"
-msgstr "Rang BPM:"
-
-#: DlgBpmTapDlg#12
-msgid "&Go"
-msgstr "&Vés"
-
-#: DlgBpmTapDlg#13
-msgid "Alt+G"
-msgstr "Alt+G"
-
-#: DlgBpmTapDlg#14
-msgctxt "DlgBpmTapDlg#14"
-msgid "Analyze Entire Song"
-msgstr "Analitza la cançò sencera"
-
-#: DlgBpmTapDlg#15
-msgid "BPM:"
-msgstr "BPM:"
-
-#: DlgBpmTapDlg#16
-msgid "&Push to tap tempo"
-msgstr "&Polse per a predir tempo"
-
-#: DlgBpmTapDlg#17
-msgid "Alt+P"
-msgstr "Alt+P"
-
-#: DlgBpmTapDlg#18
-msgctxt "DlgBpmTapDlg#18"
-msgid "Track Information (Click to Expand)"
-msgstr "Informació de la cançò (Cliqueja per a expandir)"
-
-#: DlgBpmTapDlg#19
-msgctxt "DlgBpmTapDlg#19"
-msgid "Title:"
-msgstr "Títol:"
-
-#: DlgBpmTapDlg#20
-msgctxt "DlgBpmTapDlg#20"
-msgid "Artist:"
-msgstr "Artista:"
-
-#: DlgBpmTapDlg#21
-msgctxt "DlgBpmTapDlg#21"
-msgid "Comments:"
-msgstr "Comentaris:"
-
-#: DlgBpmTapDlg#22
-msgctxt "DlgBpmTapDlg#22"
-msgid "Filename:"
-msgstr "Nom del fitxer:"
-
-#: DlgBpmTapDlg#23
-msgctxt "DlgBpmTapDlg#23"
-msgid "3:00"
-msgstr "3:00"
-
-#: DlgBpmTapDlg#24
-msgid "Play Time:"
-msgstr "Temps de reproducció:"
-
-#: DlgBpmTapDlg#25
-msgctxt "DlgBpmTapDlg#25"
-msgid "File Type:"
-msgstr "Tipus de fitxer:"
-
-#: DlgBpmTapDlg#26
-msgctxt "DlgBpmTapDlg#26"
-msgid "77"
-msgstr "77"
 
 #: DlgMidiLearning#1
 msgid "Skip"
@@ -1165,45 +1047,50 @@ msgstr "segons"
 
 #: DlgPrefNoVinylDlg#13
 msgctxt "DlgPrefNoVinylDlg#13"
-msgid "Control Mode"
-msgstr "Mode de control"
+msgid "Show Signal Quality in Skin"
+msgstr "Mostra la senyal de qualitat al tema"
 
 #: DlgPrefNoVinylDlg#14
 msgctxt "DlgPrefNoVinylDlg#14"
-msgid "Absolute Mode"
-msgstr "Mode absolut"
+msgid "Control Mode"
+msgstr "Mode de control"
 
 #: DlgPrefNoVinylDlg#15
 msgctxt "DlgPrefNoVinylDlg#15"
-msgid "Relative Mode"
-msgstr "Mode relatiu"
+msgid "Absolute Mode"
+msgstr "Mode absolut"
 
 #: DlgPrefNoVinylDlg#16
 msgctxt "DlgPrefNoVinylDlg#16"
-msgid "Enable Needle Skip Prevention"
-msgstr "Activa la prevenció de bot de l'agulla"
+msgid "Relative Mode"
+msgstr "Mode relatiu"
 
 #: DlgPrefNoVinylDlg#17
 msgctxt "DlgPrefNoVinylDlg#17"
-msgid "Signal Quality"
-msgstr "Qualitat de la senyal"
+msgid "Enable Needle Skip Prevention"
+msgstr "Habilita la prevenció de bot de pua"
 
 #: DlgPrefNoVinylDlg#18
 msgctxt "DlgPrefNoVinylDlg#18"
-msgid "http://www.xwax.co.uk"
-msgstr "http://www.xwax.co.uk"
+msgid "Signal Quality"
+msgstr "Qualitat de la senyal"
 
 #: DlgPrefNoVinylDlg#19
 msgctxt "DlgPrefNoVinylDlg#19"
-msgid "Powered by xwax"
-msgstr "Amb la tecnologia de xmax"
+msgid "http://www.xwax.co.uk"
+msgstr "http://www.xwax.co.uk"
 
 #: DlgPrefNoVinylDlg#20
 msgctxt "DlgPrefNoVinylDlg#20"
+msgid "Powered by xwax"
+msgstr "Amb tecnologia xwax"
+
+#: DlgPrefNoVinylDlg#21
+msgctxt "DlgPrefNoVinylDlg#21"
 msgid "Apply"
 msgstr "Aplica"
 
-#: DlgPrefNoVinylDlg#21
+#: DlgPrefNoVinylDlg#22
 msgid ""
 "<b>This version of Mixxx does not support vinyl control.</b> <br> Please "
 "visit <a href=\"http://mixxx.org\">Mixxx.org</a> for more information."
@@ -1546,8 +1433,9 @@ msgid "http://www.mixxx.org"
 msgstr "http://www.mixxx.org"
 
 #: DlgPrefShoutcastDlg#23
+msgctxt "DlgPrefShoutcastDlg#23"
 msgid "Description"
-msgstr "Descripció"
+msgstr "Descripció"
 
 #: DlgPrefShoutcastDlg#24
 msgid ""
@@ -1795,14 +1683,18 @@ msgid "None"
 msgstr "Cap"
 
 #: DlgPrefSoundItem#2
+msgid "Channel %1"
+msgstr "Canal %1"
+
+#: DlgPrefSoundItem#3
 msgid "Channels %1 - %2"
 msgstr "Canals %1 - %2"
 
-#: DlgPrefSoundItem#3
+#: DlgPrefSoundItem#4
 msgid "Form"
 msgstr "Fourmulari"
 
-#: DlgPrefSoundItem#4
+#: DlgPrefSoundItem#5
 msgid "Type (#)"
 msgstr "Tipus (#)"
 
@@ -1886,53 +1778,58 @@ msgstr "Deck 2 tipus vinil"
 
 #: DlgPrefVinylDlg#11
 msgctxt "DlgPrefVinylDlg#11"
-msgid "Apply"
-msgstr "Aplica"
+msgid "Show Signal Quality in Skin"
+msgstr "Mostra la senyal de qualitat al tema"
 
 #: DlgPrefVinylDlg#12
 msgctxt "DlgPrefVinylDlg#12"
-msgid "Lead-in time"
-msgstr "Termini de temps"
+msgid "Apply"
+msgstr "Aplica"
 
 #: DlgPrefVinylDlg#13
 msgctxt "DlgPrefVinylDlg#13"
-msgid "seconds"
-msgstr "segons"
+msgid "Lead-in time"
+msgstr "Termini de temps"
 
 #: DlgPrefVinylDlg#14
 msgctxt "DlgPrefVinylDlg#14"
-msgid "Control Mode"
-msgstr "Mode de control"
+msgid "seconds"
+msgstr "segons"
 
 #: DlgPrefVinylDlg#15
 msgctxt "DlgPrefVinylDlg#15"
-msgid "Absolute Mode"
-msgstr "Mode absolut"
+msgid "Control Mode"
+msgstr "Mode de control"
 
 #: DlgPrefVinylDlg#16
 msgctxt "DlgPrefVinylDlg#16"
-msgid "Relative Mode"
-msgstr "Mode relatiu"
+msgid "Absolute Mode"
+msgstr "Mode absolut"
 
 #: DlgPrefVinylDlg#17
 msgctxt "DlgPrefVinylDlg#17"
-msgid "Enable Needle Skip Prevention"
-msgstr "Activa la prevenció de bot de l'agulla"
+msgid "Relative Mode"
+msgstr "Mode relatiu"
 
 #: DlgPrefVinylDlg#18
 msgctxt "DlgPrefVinylDlg#18"
-msgid "Signal Quality"
-msgstr "Qualitat de la senyal"
+msgid "Enable Needle Skip Prevention"
+msgstr "Habilita la prevenció de bot de pua"
 
 #: DlgPrefVinylDlg#19
 msgctxt "DlgPrefVinylDlg#19"
-msgid "http://www.xwax.co.uk"
-msgstr "http://www.xwax.co.uk"
+msgid "Signal Quality"
+msgstr "Qualitat de la senyal"
 
 #: DlgPrefVinylDlg#20
 msgctxt "DlgPrefVinylDlg#20"
+msgid "http://www.xwax.co.uk"
+msgstr "http://www.xwax.co.uk"
+
+#: DlgPrefVinylDlg#21
+msgctxt "DlgPrefVinylDlg#21"
 msgid "Powered by xwax"
-msgstr "Amb la tecnologia de xwax"
+msgstr "Amb tecnologia xwax"
 
 #: DlgPreferences#1
 msgid "Sound Hardware"
@@ -2048,22 +1945,18 @@ msgid "Stop Recording"
 msgstr "Atura l'enregistrament"
 
 #: DlgTrackInfo#1
-msgctxt "DlgTrackInfo#1"
 msgid "Track Editor"
 msgstr "Editor de la pista"
 
 #: DlgTrackInfo#2
-msgctxt "DlgTrackInfo#2"
 msgid "Song:"
 msgstr "Cançò:"
 
 #: DlgTrackInfo#3
-msgctxt "DlgTrackInfo#3"
 msgid "Title:"
 msgstr "Títol:"
 
 #: DlgTrackInfo#4
-msgctxt "DlgTrackInfo#4"
 msgid "Artist:"
 msgstr "Artista:"
 
@@ -2084,31 +1977,26 @@ msgid "Genre:"
 msgstr "Gènere:"
 
 #: DlgTrackInfo#9
-msgctxt "DlgTrackInfo#9"
 msgid "Filename:"
-msgstr "Nom del fitxer:"
+msgstr "Nom de fitxer:"
 
 #: DlgTrackInfo#10
 msgid "Duration:"
 msgstr "Duració:"
 
 #: DlgTrackInfo#11
-msgctxt "DlgTrackInfo#11"
 msgid "3:00"
 msgstr "3:00"
 
 #: DlgTrackInfo#12
-msgctxt "DlgTrackInfo#12"
 msgid "File Type:"
 msgstr "Tipus de fitxer:"
 
 #: DlgTrackInfo#13
-msgctxt "DlgTrackInfo#13"
 msgid "77"
 msgstr "77"
 
 #: DlgTrackInfo#14
-msgctxt "DlgTrackInfo#14"
 msgid "Comments:"
 msgstr "Comentaris:"
 
@@ -2117,9 +2005,8 @@ msgid "Reload track metadata from file."
 msgstr "Torna a carregar les metadades de la pista des del fitxer."
 
 #: DlgTrackInfo#16
-msgctxt "DlgTrackInfo#16"
 msgid "Track Information (Click to Expand)"
-msgstr "Informació de la cançò (Cliqueja per a expandir)"
+msgstr "Informació de la pista (Click per expandir)"
 
 #: DlgTrackInfo#17
 msgid "Track BPM: "
@@ -2189,7 +2076,6 @@ msgid "&Cancel"
 msgstr "&Cancel·la"
 
 #: DlgTrackInfo#33
-msgctxt "DlgTrackInfo#33"
 msgid "Alt+O"
 msgstr "Alt+O"
 
@@ -2203,32 +2089,51 @@ msgstr "Codificador"
 
 #: EncoderMp3#2
 msgid ""
-"<html>Mixxx is unable to load or find the MP3 encoder lame. <p>Please "
-"install libmp3lame (also known as lame) and check if /usr/lib/libmp3lame.so "
-"exists on your system </html>"
+"<html>Mixxx cannot record or stream in MP3 without the MP3 encoder "
+"&quot;lame&quot;. Due to licensing issues, we cannot include this with "
+"Mixxx. To record or stream in MP3, you must download <b>libmp3lame</b> and "
+"install it on your system. <p>See <a "
+"href='http://mixxx.org/wiki/doku.php/internet_broadcasting#linux'>Mixxx "
+"Wiki</a> for more information. </html>"
 msgstr ""
-"<html>Mixxx no pot carregar o trobar el codificador LAME de MP3. <p>Per "
-"favor, instal·la libmp3lame (també conegut com a lame) i comprova si "
-"/usr/lib/libmp3lame.so existeix al teu sistema </html>"
+"<html>Mixxx no pot gravar o emetre en MP3 sense el codificador MP3 "
+"&quot;lame&quot;. Degut a problemes de llicència no podem incloure'l amb "
+"Mixxx. Per gravar o emetre en MP3, ha de descarregar <b>libmp3lame</b> i "
+"instal·lar-lo al seu sistema. <p>Mire <a "
+"href='http://mixxx.org/wiki/doku.php/internet_broadcasting#linux'>la Wiki de "
+"Mixxx</a> per més informació. </html>"
 
 #: EncoderMp3#3
 msgid ""
-"<html>Mixxx is unable to load or find the MP3 encoder lame. <p>Please put "
-"lame_enc.dll in the directory you have installed Mixxx </html>"
+"<html>Mixxx cannot record or stream in MP3 without the MP3 encoder "
+"&quot;lame&quot;. Due to licensing issues, we cannot include this with "
+"Mixxx. To record or stream in MP3, you must download <b>lame_enc.dll</b> and "
+"install it on your system. <p>See <a "
+"href='http://mixxx.org/wiki/doku.php/internet_broadcasting#windows'>Mixxx "
+"Wiki</a> for more information. </html>"
 msgstr ""
-"<html>Mixxx no pot carregar o trobar el codificador LAME de MP3. <p>PPer "
-"favor, posa el fitxer lame_enc.dll en el directori en el qual hages "
-"instal·lat Mixxx </html>"
+"<html>Mixxx no pot gravar o emetre en MP3 sense el codificador MP3 "
+"&quot;lame&quot;. Degut a problemes de llicència no podem incloure'l amb "
+"Mixxx. Per gravar o emetre en MP3, ha de descarregar <b>lame_enc.dll</b> i "
+"instal·lar-lo al seu sistema. <p>Mire <a "
+"href='http://mixxx.org/wiki/doku.php/internet_broadcasting#windows'>la Wiki "
+"de Mixxx</a> per més informació. </html>"
 
 #: EncoderMp3#4
 msgid ""
-"<html>Mixxx is unable to load or find the MP3 encoder lame. <p>Please "
-"install libmp3lame (also known as lame) and check if "
-"/usr/local/lib/libmp3lame.dylib exists on your system </html>"
+"<html>Mixxx cannot record or stream in MP3 without the MP3 encoder "
+"&quot;lame&quot;. Due to licensing issues, we cannot include this with "
+"Mixxx. To record or stream in MP3, you must download <b>libmp3lame</b> and "
+"install it on your system. <p>See <a "
+"href='http://mixxx.org/wiki/doku.php/internet_broadcasting#mac_osx'>Mixxx "
+"Wiki</a> for more information. </html>"
 msgstr ""
-"<html>Mixxx no pot carregar o trobar el codificador LAME de MP3. <p>Per "
-"favor, instal·la el libmp3lame (també conegut com a lame) i comprova que el "
-"fitxer /usr/local/lib/libmp3lame.dylib existeix al teu sistema </html>"
+"<html>Mixxx no pot gravar o emetre en MP3 sense el codificador MP3 "
+"&quot;lame&quot;. Degut a problemes de llicència no podem incloure'l amb "
+"Mixxx. Per gravar o emetre en MP3, ha de descarregar <b>libmp3lame</b> i "
+"instal·lar-lo al seu sistema. <p>Mire <a "
+"href='http://mixxx.org/wiki/doku.php/internet_broadcasting#mac_osx'>la Wiki "
+"de Mixxx</a> per més informació. </html>"
 
 #: EncoderMp3#5
 msgid ""
@@ -2329,8 +2234,8 @@ msgid "Select your iTunes library"
 msgstr "Selecciona la teua biblioteca d'iTunes"
 
 #: ITunesFeature#3
-msgid "iTunes (loading)"
-msgstr "iTunes (carregant)"
+msgid "(loading) iTunes"
+msgstr "(carregant) iTunes"
 
 #: ITunesFeature#4
 msgid "Use Default Library"
@@ -2390,6 +2295,11 @@ msgctxt "MidiInputMappingTableModel#5"
 msgid "Control Value"
 msgstr "Valor de control"
 
+#: MidiInputMappingTableModel#6
+msgctxt "MidiInputMappingTableModel#6"
+msgid "Description"
+msgstr "Descripció"
+
 #: MidiMapping#1
 msgid "MIDI script function not found"
 msgstr "No s'ha trobat la funció de l'script de MIDI"
@@ -2448,10 +2358,15 @@ msgid "Control Value"
 msgstr "Valor de control"
 
 #: MidiOutputMappingTableModel#6
+msgctxt "MidiOutputMappingTableModel#6"
+msgid "Description"
+msgstr "Descripció"
+
+#: MidiOutputMappingTableModel#7
 msgid "Threshold Min"
 msgstr "Límit mínim"
 
-#: MidiOutputMappingTableModel#7
+#: MidiOutputMappingTableModel#8
 msgid "Threshold Max"
 msgstr "Límit màxim"
 
@@ -2706,55 +2621,63 @@ msgid "Ctrl+P"
 msgstr "Ctrl+P"
 
 #: MixxxApp#40
-msgid "&About..."
-msgstr "Quant &a..."
+msgid "&About"
+msgstr "Qu&ant a"
 
 #: MixxxApp#41
-msgid "&Community Support..."
+msgid "&Community Support"
 msgstr "Suport de la &Comunitat"
 
 #: MixxxApp#42
+msgid "Send Us &Feedback"
+msgstr "&Envia'ns la teua opinió"
+
+#: MixxxApp#43
+msgid "&Translate this application"
+msgstr "&Traduïx esta aplicació"
+
+#: MixxxApp#44
 msgid "Enable &Vinyl Control 1"
 msgstr "Activar control per &vinil 1"
 
-#: MixxxApp#43
+#: MixxxApp#45
 msgid "Ctrl+Y"
 msgstr "Ctrl+Y"
 
-#: MixxxApp#44
+#: MixxxApp#46
 msgid "Enable &Vinyl Control 2"
 msgstr "Activar control per &vinil 2"
 
-#: MixxxApp#45
+#: MixxxApp#47
 msgid "Ctrl+U"
 msgstr "Ctrl+U"
 
-#: MixxxApp#46
-msgctxt "MixxxApp#46"
+#: MixxxApp#48
+msgctxt "MixxxApp#48"
 msgid "Enable live broadcasting"
 msgstr "Activa la transmissió en viu"
 
-#: MixxxApp#47
+#: MixxxApp#49
 msgid "Ctrl+L"
 msgstr "Ctrl+L"
 
-#: MixxxApp#48
+#: MixxxApp#50
 msgid "&Record Mix"
 msgstr "En&registra mescla"
 
-#: MixxxApp#49
+#: MixxxApp#51
 msgid "Ctrl+R"
 msgstr "Ctrl+R"
 
-#: MixxxApp#50
+#: MixxxApp#52
 msgid "Show Studio"
 msgstr "Mostra estudio"
 
-#: MixxxApp#51
+#: MixxxApp#53
 msgid "Opens a song in player 1"
 msgstr "Obre una cançó al reproductor 1"
 
-#: MixxxApp#52
+#: MixxxApp#54
 msgid ""
 "Open\n"
 "\n"
@@ -2764,11 +2687,11 @@ msgstr ""
 "\n"
 "Obre una cançó al reproductor 1"
 
-#: MixxxApp#53
+#: MixxxApp#55
 msgid "Opens a song in player 2"
 msgstr "Obre una cançó al reproductor 2"
 
-#: MixxxApp#54
+#: MixxxApp#56
 msgid ""
 "Open\n"
 "\n"
@@ -2778,11 +2701,11 @@ msgstr ""
 "\n"
 "Obre una cançó al reproductor 2"
 
-#: MixxxApp#55
+#: MixxxApp#57
 msgid "Quits the application"
 msgstr "Ix de l'aplicació"
 
-#: MixxxApp#56
+#: MixxxApp#58
 msgid ""
 "Exit\n"
 "\n"
@@ -2792,11 +2715,11 @@ msgstr ""
 "\n"
 "Tanca l'aplicació"
 
-#: MixxxApp#57
+#: MixxxApp#59
 msgid "Rescans the song library"
 msgstr "Torna a escanejar la biblioteca de cançons"
 
-#: MixxxApp#58
+#: MixxxApp#60
 msgid ""
 "Rescan library\n"
 "\n"
@@ -2806,11 +2729,11 @@ msgstr ""
 "\n"
 "Rescaneja la biblioteca de cançons"
 
-#: MixxxApp#59
+#: MixxxApp#61
 msgid "Create a new playlist"
 msgstr "Crea una nova llista de reproducció"
 
-#: MixxxApp#60
+#: MixxxApp#62
 msgid ""
 "New playlist\n"
 "\n"
@@ -2820,11 +2743,11 @@ msgstr ""
 "\n"
 "Crea una nova llista de reproducció"
 
-#: MixxxApp#61
+#: MixxxApp#63
 msgid "Create a new crate"
 msgstr "Crea un nou caixó"
 
-#: MixxxApp#62
+#: MixxxApp#64
 msgid ""
 "New crate\n"
 "\n"
@@ -2834,15 +2757,15 @@ msgstr ""
 "\n"
 "Crea un nou caixó."
 
-#: MixxxApp#63
+#: MixxxApp#65
 msgid "Import playlist"
 msgstr "Importa una llista de reproducció"
 
-#: MixxxApp#64
+#: MixxxApp#66
 msgid "Audio Beat Marks"
 msgstr "Marques de compàs d'àudio"
 
-#: MixxxApp#65
+#: MixxxApp#67
 msgid ""
 "Audio Beat Marks\n"
 "Mark beats by audio clicks"
@@ -2850,45 +2773,45 @@ msgstr ""
 "Marques de compàs d'àudio\n"
 "Marca el compàs a través de clicks d'àudio"
 
-#: MixxxApp#66
+#: MixxxApp#68
 msgid "Activate Vinyl Control"
 msgstr "Activa el control de vinil"
 
-#: MixxxApp#67
+#: MixxxApp#69
 msgid "Use timecoded vinyls on external turntables to control Mixxx"
 msgstr ""
 "Usa vinils amb codi de temps des de giradiscs externs per controlar Mixxx"
 
-#: MixxxApp#68
+#: MixxxApp#70
 msgid "Activate live broadcasting"
 msgstr "Activa transmissió en viu"
 
-#: MixxxApp#69
+#: MixxxApp#71
 msgid "Stream your mixes to a shoutcast or icecast server"
 msgstr "Transmet les teues mescles a un servidor de shoutcast o d'icecast"
 
-#: MixxxApp#70
+#: MixxxApp#72
 msgid "Start Recording your Mix"
 msgstr "Comença a gravar la teua mescla"
 
-#: MixxxApp#71
+#: MixxxApp#73
 msgid "Record your mix to a file"
 msgstr "Grava la teua mescla a un fitxer"
 
-#: MixxxApp#72
+#: MixxxApp#74
 msgid "Full Screen"
 msgstr "Pantalla sencera"
 
-#: MixxxApp#73
+#: MixxxApp#75
 msgid "Display Mixxx using the full screen"
 msgstr "Mostra Mixx a pantalla sencera"
 
-#: MixxxApp#74
-msgctxt "MixxxApp#74"
+#: MixxxApp#76
+msgctxt "MixxxApp#76"
 msgid "Preferences"
 msgstr "Preferències"
 
-#: MixxxApp#75
+#: MixxxApp#77
 msgid ""
 "Preferences\n"
 "Playback and MIDI preferences"
@@ -2896,11 +2819,11 @@ msgstr ""
 "Preferències\n"
 "Preferències de reproducció i de MIDI"
 
-#: MixxxApp#76
+#: MixxxApp#78
 msgid "Support..."
 msgstr "Suport..."
 
-#: MixxxApp#77
+#: MixxxApp#79
 msgid ""
 "Support\n"
 "\n"
@@ -2910,11 +2833,39 @@ msgstr ""
 "\n"
 "Obté ajuda amb Mixxx"
 
-#: MixxxApp#78
+#: MixxxApp#80
+msgid "Send feedback to the Mixxx team."
+msgstr "Envia la teua opinió a l'equip de Mixx."
+
+#: MixxxApp#81
+msgid ""
+"Support\n"
+"\n"
+"Send feedback to the Mixxx team."
+msgstr ""
+"Suport\n"
+"\n"
+"Envia la teua opinió a l'equip de Mixx."
+
+#: MixxxApp#82
+msgid "Help translate this application into your language."
+msgstr "Ajuda a traduir esta aplicació a la teua llengua."
+
+#: MixxxApp#83
+msgid ""
+"Support\n"
+"\n"
+"Help translate this application into your language."
+msgstr ""
+"Suport\n"
+"\n"
+"Ajuda a traduir esta aplicació a la teua llengua."
+
+#: MixxxApp#84
 msgid "About the application"
 msgstr "Quant a l'aplicació"
 
-#: MixxxApp#79
+#: MixxxApp#85
 msgid ""
 "About\n"
 "\n"
@@ -2924,11 +2875,11 @@ msgstr ""
 "\n"
 "Quant a l'aplicació"
 
-#: MixxxApp#80
+#: MixxxApp#86
 msgid "Shows the macro studio window"
 msgstr "Mostra la finestra del taller de macros"
 
-#: MixxxApp#81
+#: MixxxApp#87
 msgid ""
 "Show Studio\n"
 "\n"
@@ -2938,43 +2889,43 @@ msgstr ""
 "\n"
 "Fa visible l'estudio de macros"
 
-#: MixxxApp#82
+#: MixxxApp#88
 msgid "&File"
 msgstr "&Fitxer"
 
-#: MixxxApp#83
+#: MixxxApp#89
 msgid "&Options"
 msgstr "&Opcions"
 
-#: MixxxApp#84
+#: MixxxApp#90
 msgid "&Library"
 msgstr "&Biblioteca"
 
-#: MixxxApp#85
+#: MixxxApp#91
 msgid "&View"
 msgstr "&Veure"
 
-#: MixxxApp#86
+#: MixxxApp#92
 msgid "&Help"
 msgstr "&Ajuda"
 
-#: MixxxApp#87
+#: MixxxApp#93
 msgid "&Macro"
 msgstr "&Macro"
 
-#: MixxxApp#88
+#: MixxxApp#94
 msgid "&Vinyl Control"
 msgstr "Control per &vinils"
 
-#: MixxxApp#89
+#: MixxxApp#95
 msgid "Quit..."
 msgstr "Ix..."
 
-#: MixxxApp#90
+#: MixxxApp#96
 msgid "Do your really want to quit?"
 msgstr "Estàs segur que vols eixir?"
 
-#: MixxxApp#91
+#: MixxxApp#97
 msgid ""
 "Player 1 is currently playing a song.\n"
 "Are you sure you want to load a new song?"
@@ -2982,11 +2933,11 @@ msgstr ""
 "El reproductor 1 està reproduint una cançó.\n"
 "Estàs segur que vols carregar una nova cançó?"
 
-#: MixxxApp#92
+#: MixxxApp#98
 msgid "Load Song into Player 1"
 msgstr "Carregar cançó al reproductor 1"
 
-#: MixxxApp#93
+#: MixxxApp#99
 msgid ""
 "Player 2 is currently playing a song.\n"
 "Are you sure you want to load a new song?"
@@ -2994,11 +2945,11 @@ msgstr ""
 "El reproductor 2 està reproduint una cançó.\n"
 "Estàs segur que vols carregar una nova cançó?"
 
-#: MixxxApp#94
+#: MixxxApp#100
 msgid "Load Song into Player 2"
 msgstr "Carregar cançó al reproductor 2"
 
-#: MixxxApp#95
+#: MixxxApp#101
 msgid ""
 "No input device(s) select.\n"
 "Please select your soundcard(s) in the sound hardware preferences."
@@ -3007,11 +2958,11 @@ msgstr ""
 "Per favor, selecciona la teua targeta de so a les preferències del maquinari "
 "de so."
 
-#: MixxxApp#96
+#: MixxxApp#102
 msgid "Confirm Exit"
 msgstr "Confirmar eixida"
 
-#: MixxxApp#97
+#: MixxxApp#103
 msgid "A deck is currently playing. Exit Mixxx?"
 msgstr "Un plat encara està reproduint. Eixir de Mixxx?"
 
@@ -3282,8 +3233,8 @@ msgid "Traktor"
 msgstr "Traktor"
 
 #: TraktorFeature#2
-msgid "Traktor (loading)"
-msgstr "Traktor (carregant)"
+msgid "(loading) Traktor"
+msgstr "(carregant) Traktor"
 
 #: TraktorFeature#3
 msgid "Error Loading Traktor Library"
@@ -3538,10 +3489,14 @@ msgid "Add to Auto DJ Queue"
 msgstr "Afegir a la cua d'Auto DJ"
 
 #: WTrackTableView#7
+msgid "Reload Track Metadata"
+msgstr "Recarrega les metadades de la pista"
+
+#: WTrackTableView#8
 msgid "Load to Deck %1"
 msgstr "Carregar al plat %1"
 
-#: WTrackTableView#8
+#: WTrackTableView#9
 msgid "Sampler %1"
 msgstr "Sampler %1"
 
@@ -3557,3 +3512,177 @@ msgstr "Mostra o oculta columnes."
 
 #~ msgid "Crate Creation Failed"
 #~ msgstr "No s'ha pogut crear la caixa"
+
+#~ msgid "Next >>"
+#~ msgstr "Següent >>"
+
+#~ msgid "<< Prev"
+#~ msgstr "<< Anterior"
+
+#~ msgctxt "DlgBpmTapDlg#3"
+#~ msgid "Alt+O"
+#~ msgstr "Alt+O"
+
+#~ msgctxt "DlgBpmTapDlg#4"
+#~ msgid "Song:"
+#~ msgstr "Cançò:"
+
+#~ msgctxt "DlgBpmTapDlg#1"
+#~ msgid "Track Editor"
+#~ msgstr "Editor de la cançó"
+
+#~ msgid "&Close"
+#~ msgstr "&Tanca"
+
+#~ msgctxt "DlgBpmSchemeDlg#6"
+#~ msgid "Analyze Entire Song"
+#~ msgstr "Analitza la cançò sencera"
+
+#~ msgid "BPM Editor (Click to Expand)"
+#~ msgstr "Editor de BPM (Cliqueja per a expandir)"
+
+#~ msgid "Alt+P"
+#~ msgstr "Alt+P"
+
+#~ msgid "BPM Scheme:"
+#~ msgstr "Esquema BPM:"
+
+#~ msgid "&Go"
+#~ msgstr "&Vés"
+
+#~ msgid "BPM Range:"
+#~ msgstr "Rang BPM:"
+
+#~ msgctxt "DlgBpmTapDlg#14"
+#~ msgid "Analyze Entire Song"
+#~ msgstr "Analitza la cançò sencera"
+
+#~ msgid "BPM:"
+#~ msgstr "BPM:"
+
+#~ msgid "Alt+G"
+#~ msgstr "Alt+G"
+
+#~ msgctxt "DlgBpmTapDlg#8"
+#~ msgid "BPM Detection"
+#~ msgstr "Detecció BPM"
+
+#~ msgctxt "DlgBpmTapDlg#18"
+#~ msgid "Track Information (Click to Expand)"
+#~ msgstr "Informació de la cançò (Cliqueja per a expandir)"
+
+#~ msgctxt "DlgBpmTapDlg#20"
+#~ msgid "Artist:"
+#~ msgstr "Artista:"
+
+#~ msgctxt "DlgBpmTapDlg#19"
+#~ msgid "Title:"
+#~ msgstr "Títol:"
+
+#~ msgctxt "DlgBpmTapDlg#22"
+#~ msgid "Filename:"
+#~ msgstr "Nom del fitxer:"
+
+#~ msgctxt "DlgBpmTapDlg#21"
+#~ msgid "Comments:"
+#~ msgstr "Comentaris:"
+
+#~ msgid "Play Time:"
+#~ msgstr "Temps de reproducció:"
+
+#~ msgctxt "DlgBpmTapDlg#23"
+#~ msgid "3:00"
+#~ msgstr "3:00"
+
+#~ msgctxt "DlgBpmTapDlg#26"
+#~ msgid "77"
+#~ msgstr "77"
+
+#~ msgctxt "DlgBpmTapDlg#25"
+#~ msgid "File Type:"
+#~ msgstr "Tipus de fitxer:"
+
+#~ msgid "to"
+#~ msgstr "fins a"
+
+#~ msgid "&Push to tap tempo"
+#~ msgstr "&Polse per a predir tempo"
+
+#~ msgid "Description"
+#~ msgstr "Descripció"
+
+#~ msgctxt "DlgTrackInfo#2"
+#~ msgid "Song:"
+#~ msgstr "Cançò:"
+
+#~ msgctxt "DlgTrackInfo#1"
+#~ msgid "Track Editor"
+#~ msgstr "Editor de la pista"
+
+#~ msgctxt "DlgTrackInfo#9"
+#~ msgid "Filename:"
+#~ msgstr "Nom del fitxer:"
+
+#~ msgctxt "DlgTrackInfo#4"
+#~ msgid "Artist:"
+#~ msgstr "Artista:"
+
+#~ msgctxt "DlgTrackInfo#3"
+#~ msgid "Title:"
+#~ msgstr "Títol:"
+
+#~ msgctxt "DlgTrackInfo#14"
+#~ msgid "Comments:"
+#~ msgstr "Comentaris:"
+
+#~ msgctxt "DlgTrackInfo#16"
+#~ msgid "Track Information (Click to Expand)"
+#~ msgstr "Informació de la cançò (Cliqueja per a expandir)"
+
+#~ msgctxt "DlgTrackInfo#11"
+#~ msgid "3:00"
+#~ msgstr "3:00"
+
+#~ msgctxt "DlgTrackInfo#13"
+#~ msgid "77"
+#~ msgstr "77"
+
+#~ msgctxt "DlgTrackInfo#12"
+#~ msgid "File Type:"
+#~ msgstr "Tipus de fitxer:"
+
+#~ msgctxt "DlgTrackInfo#33"
+#~ msgid "Alt+O"
+#~ msgstr "Alt+O"
+
+#~ msgid ""
+#~ "<html>Mixxx is unable to load or find the MP3 encoder lame. <p>Please "
+#~ "install libmp3lame (also known as lame) and check if /usr/lib/libmp3lame.so "
+#~ "exists on your system </html>"
+#~ msgstr ""
+#~ "<html>Mixxx no pot carregar o trobar el codificador LAME de MP3. <p>Per "
+#~ "favor, instal·la libmp3lame (també conegut com a lame) i comprova si "
+#~ "/usr/lib/libmp3lame.so existeix al teu sistema </html>"
+
+#~ msgid ""
+#~ "<html>Mixxx is unable to load or find the MP3 encoder lame. <p>Please put "
+#~ "lame_enc.dll in the directory you have installed Mixxx </html>"
+#~ msgstr ""
+#~ "<html>Mixxx no pot carregar o trobar el codificador LAME de MP3. <p>PPer "
+#~ "favor, posa el fitxer lame_enc.dll en el directori en el qual hages "
+#~ "instal·lat Mixxx </html>"
+
+#~ msgid ""
+#~ "<html>Mixxx is unable to load or find the MP3 encoder lame. <p>Please "
+#~ "install libmp3lame (also known as lame) and check if "
+#~ "/usr/local/lib/libmp3lame.dylib exists on your system </html>"
+#~ msgstr ""
+#~ "<html>Mixxx no pot carregar o trobar el codificador LAME de MP3. <p>Per "
+#~ "favor, instal·la el libmp3lame (també conegut com a lame) i comprova que el "
+#~ "fitxer /usr/local/lib/libmp3lame.dylib existeix al teu sistema </html>"
+
+#~ msgid "&About..."
+#~ msgstr "Quant &a..."
+
+#~ msgid "&Community Support..."
+#~ msgstr "Suport de la &Comunitat"

@@ -132,9 +132,15 @@ void WaveformRenderBeat::draw(QPainter *pPainter, QPaintEvent *event,
 
     double subpixelsPerPixel = m_pParent->getSubpixelsPerPixel()*(1.0+rateAdjust);
 
+    QPen marksPen(colorMarks);
+    marksPen.setWidth(subpixelsPerPixel*1.5);
+    QPen highlightPen(colorHighlight);
+    highlightPen.setWidth(subpixelsPerPixel*1.5);
+
     pPainter->save();
     pPainter->scale(1.0/subpixelsPerPixel,1.0);
-    pPainter->setPen(colorMarks);
+
+    pPainter->setPen(marksPen);
 
     double subpixelWidth = m_iWidth * subpixelsPerPixel;
     double subpixelHalfWidth = subpixelWidth / 2.0;
@@ -158,7 +164,7 @@ void WaveformRenderBeat::draw(QPainter *pPainter, QPaintEvent *event,
 
         // If a beat is active, highlight the marker.
         if(m_bBeatActive && abs(i) < 20) {
-            pPainter->setPen(colorHighlight);
+            pPainter->setPen(highlightPen);
             reset = true;
         }
 
@@ -168,7 +174,7 @@ void WaveformRenderBeat::draw(QPainter *pPainter, QPaintEvent *event,
         pPainter->drawLine(QLineF(i,halfh,i,-halfh));
 
         if(reset) {
-            pPainter->setPen(colorMarks);
+            pPainter->setPen(marksPen);
             reset = false;
         }
     }

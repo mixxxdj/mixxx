@@ -70,6 +70,9 @@ DlgMidiLearning::DlgMidiLearning(QWidget * parent, MidiMapping* mapping) :  QDia
     setupDeckControl("loop_in", tr("Loop In button for Player %1"));
     setupDeckControl("loop_out", tr("Loop Out button for Player %1"));
     setupDeckControl("reloop_exit", tr("Reloop / Exit button for Player %1"));
+    setupDeckControl("beatloop_4", tr("Setup a loop over 4 beats for Player %1"));
+    setupDeckControl("loop_halve", tr("Halves the current loop's length for Player %1"));
+    setupDeckControl("loop_double", tr("Doubles the current loop's length for Player %1"));
     setupDeckControl("hotcue_1_activate", tr("Hotcue 1 button for Player %1"));
     setupDeckControl("hotcue_2_activate", tr("Hotcue 2 button for Player %1"));
     setupDeckControl("hotcue_3_activate", tr("Hotcue 3 button for Player %1"));
@@ -79,6 +82,21 @@ DlgMidiLearning::DlgMidiLearning(QWidget * parent, MidiMapping* mapping) :  QDia
     setupDeckControl("hotcue_3_clear", tr("Hotcue 3 delete button for Player %1"));
     setupDeckControl("hotcue_4_clear", tr("Hotcue 4 delete button for Player %1"));
 
+    setupSamplerControl("play", tr("Play button for Sampler %1"));
+    setupSamplerControl("pregain", tr("Gain knob for Sampler %1"));
+    setupSamplerControl("pfl", tr("Headphone listen button for Sampler %1"));
+    setupSamplerControl("bpm", tr("BPM tap button for Sampler %1"));
+    setupSamplerControl("keylock", tr("Keylock button for Sampler %1"));
+    setupSamplerControl("rate", tr("Pitch control slider for Sampler %1"));
+    setupSamplerControl("hotcue_1_activate", tr("Hotcue 1 button for Sampler %1"));
+    setupSamplerControl("hotcue_2_activate", tr("Hotcue 2 button for Sampler %1"));
+    setupSamplerControl("hotcue_3_activate", tr("Hotcue 3 button for Sampler %1"));
+    setupSamplerControl("hotcue_4_activate", tr("Hotcue 4 button for Sampler %1"));
+    setupSamplerControl("hotcue_1_clear", tr("Hotcue 1 delete button for Sampler %1"));
+    setupSamplerControl("hotcue_2_clear", tr("Hotcue 2 delete button for Sampler %1"));
+    setupSamplerControl("hotcue_3_clear", tr("Hotcue 3 delete button for Sampler %1"));
+    setupSamplerControl("hotcue_4_clear", tr("Hotcue 4 delete button for Sampler %1"));
+
     // Library Controls
     setupControl("[Playlist]", "SelectNextPlaylist", tr("Switch to the next view (library, playlist..)"));
     setupControl("[Playlist]", "SelectPrevPlaylist", tr("Switch to the previous view (library, playlist..)"));
@@ -86,7 +104,15 @@ DlgMidiLearning::DlgMidiLearning(QWidget * parent, MidiMapping* mapping) :  QDia
     setupControl("[Playlist]", "SelectPrevTrack", tr("Scroll to previous track in library/playlist"));
     setupControl("[Playlist]", "LoadSelectedIntoFirstStopped", tr("Load selected track into first stopped player"));
     setupDeckControl("LoadSelectedTrack", tr("Load selected track into Player %1"));
-    setupDeckControl("LoadSelectedTrack", tr("Load selected track into Player %1"));
+
+    // Flanger Controls
+    setupControl("[Flanger]", "lfoPeriod", tr("Adjusts the wavelength of the flange effect"));
+    setupControl("[Flanger]", "lfoDepth", tr("Adjusts the intensity of the flange effect"));
+    setupControl("[Flanger]", "lfoDelay", tr("Adjusts the phase delay of the flange effect"));
+
+    // Microphone Controls
+    setupControl("[Microphone]", "talkover", tr("Microphone on/off"));
+    setupControl("[Microphone]", "volume", tr("Microphone volume"));
 }
 
 void DlgMidiLearning::setupControl(QString group, QString control, QString description) {
@@ -98,6 +124,15 @@ void DlgMidiLearning::setupDeckControl(QString control, QString description) {
     const int iNumDecks = 2;
     for (int i = 1; i <= iNumDecks; ++i) {
         QString group = QString("[Channel%1]").arg(i);
+        m_controlsToBind.append(qMakePair(MixxxControl(group, control), description.arg(i)));
+    }
+}
+
+void DlgMidiLearning::setupSamplerControl(QString control, QString description) {
+    // TODO(rryan) get this from the PlayerManager
+    const int iNumSamplers = 4;
+    for (int i = 1; i <= iNumSamplers; ++i) {
+        QString group = QString("[Sampler%1]").arg(i);
         m_controlsToBind.append(qMakePair(MixxxControl(group, control), description.arg(i)));
     }
 }

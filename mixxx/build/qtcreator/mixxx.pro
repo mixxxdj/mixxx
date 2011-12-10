@@ -114,7 +114,6 @@ HEADERS += $$UI_DIR/ui_dlgaboutdlg.h \
     $$UI_DIR/ui_dlgprefnomididlg.h
 
 INCLUDEPATH += src \
-    lib/kissfft \
     lib/replaygain \
     lib/ladspa \
     /sw/include \
@@ -158,7 +157,6 @@ $$BASE_DIR/src/controlttrotary.h \
 $$BASE_DIR/src/controlvaluedelegate.h \
 $$BASE_DIR/src/defs_audiofiles.h \
 $$BASE_DIR/src/defs.h \
-$$BASE_DIR/src/defs_mixxxcmetrics.h \
 $$BASE_DIR/src/defs_promo.h \
 $$BASE_DIR/src/defs_urls.h \
 $$BASE_DIR/src/defs_version.h \
@@ -595,7 +593,7 @@ $$BASE_DIR/src/windowkaiser.cpp \
 $$BASE_DIR/src/wtracktableview.cpp \
 $$BASE_DIR/src/xmlparse.cpp
 
-	
+
 # Soundtouch
 INCLUDEPATH += $$BASE_DIR/lib/soundtouch-1.4.1
 SOURCES += $$BASE_DIR/lib/soundtouch-1.4.1/SoundTouch.cpp \
@@ -609,16 +607,13 @@ SOURCES += $$BASE_DIR/lib/soundtouch-1.4.1/SoundTouch.cpp \
     $$BASE_DIR/lib/soundtouch-1.4.1/cpu_detect_x86_gcc.cpp
 
 # Fidlib
-SOURCES += $$BASE_DIR/lib/fidlib-0.9.9/fidlib.c
+SOURCES += $$BASE_DIR/lib/fidlib-0.9.10/fidlib.c
 win32-g++ {
     DEFINES += T_MINGW
 }
 !win32-g++ {
     DEFINES += T_LINUX
 }
-
-# kissfft
-SOURCES += $$BASE_DIR/lib/kissfft/kiss_fft.c
 
 # ReplayGain
 
@@ -799,9 +794,6 @@ CONFIG(vinylcontrol) {
     win32:SOURCES += $$BASE_DIR/lib/xwax/timecoder_win32.c
     !win32:SOURCES += $$BASE_DIR/lib/xwax/timecoder.c
 }
-CONFIG(cmetrics):DEFINES += __C_METRICS__ \
-    client='MIXXX' \
-    server='metrics.mixxx.org'
 !CONFIG(hifieq):CXXFLAGS += -D__LOFI__ \
     -D__NO_INTTYPES__
 CONFIG(shoutcast) {
@@ -881,7 +873,7 @@ win32 {
     }
     # mixxx-winlibs DLLs
     DLLs += $$BASE_DIR/../mixxx-winlib/libogg.dll \
-        $$BASE_DIR/../mixxx-winlib/portaudio_x86.dll \	
+        $$BASE_DIR/../mixxx-winlib/portaudio_x86.dll \
 #        $$BASE_DIR/../mixxx-winlib/portaudio.dll \
         $$BASE_DIR/../mixxx-winlib/libsndfile-1.dll \
 #        $$BASE_DIR/../mixxx-winlib/sndfile.dll \

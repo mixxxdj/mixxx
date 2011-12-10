@@ -371,113 +371,6 @@ p, li { white-space: pre-wrap; }
         </message>
     </context>
     <context>
-        <name>DlgBpmTapDlg</name>
-        <message>
-            <source>Track Editor</source>
-            <translation>Nummer-editor</translation>
-        </message>
-        <message>
-            <source>&amp;Close</source>
-            <translation>&amp;Sluiten</translation>
-        </message>
-        <message>
-            <source>Alt+O</source>
-            <translation>Alt+O</translation>
-        </message>
-        <message>
-            <source>Song:</source>
-            <translation>Nummer:</translation>
-        </message>
-        <message>
-            <source>Next &gt;&gt;</source>
-            <translation>Volgende &gt;&gt;</translation>
-        </message>
-        <message>
-            <source>&lt;&lt; Prev</source>
-            <translation>&lt;&lt; Vorige</translation>
-        </message>
-        <message>
-            <source>BPM Editor (Click to Expand)</source>
-            <translation>BPM  Editor (Klik om te vergroten)</translation>
-        </message>
-        <message>
-            <source>BPM Detection</source>
-            <translation>BPM Detectie</translation>
-        </message>
-        <message>
-            <source>BPM Scheme:</source>
-            <translation>BPM Schema</translation>
-        </message>
-        <message>
-            <source>to</source>
-            <translation>tot</translation>
-        </message>
-        <message>
-            <source>BPM Range:</source>
-            <translation>BPM bereik</translation>
-        </message>
-        <message>
-            <source>&amp;Go</source>
-            <translation>&amp;Ga</translation>
-        </message>
-        <message>
-            <source>Alt+G</source>
-            <translation>Alt+G</translation>
-        </message>
-        <message>
-            <source>Analyze Entire Song</source>
-            <translation>Analyseer gehele nummer</translation>
-        </message>
-        <message>
-            <source>BPM:</source>
-            <translation>BPM</translation>
-        </message>
-        <message>
-            <source>&amp;Push to tap tempo</source>
-            <translation>&amp;Druk om het tempo te versnellen</translation>
-        </message>
-        <message>
-            <source>Alt+P</source>
-            <translation>Alt+P</translation>
-        </message>
-        <message>
-            <source>Track Information (Click to Expand)</source>
-            <translation>Nummer informatie (Klik om te vergroten)</translation>
-        </message>
-        <message>
-            <source>Title:</source>
-            <translation>Titel:</translation>
-        </message>
-        <message>
-            <source>Artist:</source>
-            <translation>Artiest:</translation>
-        </message>
-        <message>
-            <source>Comments:</source>
-            <translation>Opmerkingen:</translation>
-        </message>
-        <message>
-            <source>Filename:</source>
-            <translation>Bestandsnaam:</translation>
-        </message>
-        <message>
-            <source>3:00</source>
-            <translation>3:00</translation>
-        </message>
-        <message>
-            <source>Play Time:</source>
-            <translation>Speeltijd:</translation>
-        </message>
-        <message>
-            <source>File Type:</source>
-            <translation>Bestandstype:</translation>
-        </message>
-        <message>
-            <source>77</source>
-            <translation>77</translation>
-        </message>
-    </context>
-    <context>
         <name>DlgMidiLearning</name>
         <message>
             <source>Skip</source>
@@ -1055,20 +948,24 @@ p, li { white-space: pre-wrap; }
             <translation>seconden</translation>
         </message>
         <message>
+            <source>Show Signal Quality in Skin</source>
+            <translation>Toon signaal kwaliteit in de skin</translation>
+        </message>
+        <message>
             <source>Control Mode</source>
-            <translation>Controle modus</translation>
+            <translation>Controle Modus</translation>
         </message>
         <message>
             <source>Absolute Mode</source>
-            <translation>Absolute modus</translation>
+            <translation>Absolute Modus</translation>
         </message>
         <message>
             <source>Relative Mode</source>
-            <translation>Relatieve modus</translation>
+            <translation>Relatieve Modus</translation>
         </message>
         <message>
             <source>Enable Needle Skip Prevention</source>
-            <translation>Zet naald overslaan preventie aan</translation>
+            <translation>Zet preventie van naald verspringing aan</translation>
         </message>
         <message>
             <source>Signal Quality</source>
@@ -1080,16 +977,15 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Powered by xwax</source>
-            <translation>Mogelijk gemaakt door xwax</translation>
+            <translation>Mede mogelijk gemaakt door xwax</translation>
         </message>
         <message>
             <source>Apply</source>
-            <translation>Doorvoeren</translation>
+            <translation>Toepassen</translation>
         </message>
         <message>
             <source>&lt;b&gt;This version of Mixxx does not support vinyl control.&lt;/b&gt; &lt;br&gt; Please visit &lt;a href=&quot;http://mixxx.org&quot;&gt;Mixxx.org&lt;/a&gt; for more information.</source>
-            <translation>Copy text 	
-&lt;b&gt;Deze versie van Mixxx ondersteund geen vinyl besturing&lt;/b&gt; &lt;br&gt;Bezoek &lt;a href=&quot;http://mixxx.org&quot;&gt;Mixxx.org&lt;/a&gt; voor meer informatie.</translation>
+            <translation>&lt;b&gt;Deze versie van Mixxx ondersteund geen vinyl besturing&lt;/b&gt; &lt;br&gt;Bezoek &lt;a href=&quot;http://mixxx.org&quot;&gt;Mixxx.org&lt;/a&gt; voor meer informatie.</translation>
         </message>
     </context>
     <context>
@@ -1335,7 +1231,7 @@ afspelen en uitgaande link statistieken</translation>
         </message>
         <message>
             <source>Enable live broadcasting</source>
-            <translation>Schakel live uitzending in</translation>
+            <translation>Schakel live uitzenden in</translation>
         </message>
         <message>
             <source>Server connection</source>
@@ -1419,7 +1315,7 @@ afspelen en uitgaande link statistieken</translation>
         </message>
         <message>
             <source>Description</source>
-            <translation>Beschrijving</translation>
+            <translation>Omschrijving</translation>
         </message>
         <message>
             <source>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
@@ -1643,6 +1539,10 @@ p, li { white-space: pre-wrap; }
             <translation>Geen</translation>
         </message>
         <message>
+            <source>Channel %1</source>
+            <translation>Kanaal %1</translation>
+        </message>
+        <message>
             <source>Channels %1 - %2</source>
             <translation>Kanalen %1 - %2</translation>
         </message>
@@ -1706,8 +1606,12 @@ p, li { white-space: pre-wrap; }
             <translation>Dek 2 Vinyl Type</translation>
         </message>
         <message>
+            <source>Show Signal Quality in Skin</source>
+            <translation>Toon signaal kwaliteit in de skin</translation>
+        </message>
+        <message>
             <source>Apply</source>
-            <translation>Pas toe</translation>
+            <translation>Toepassen</translation>
         </message>
         <message>
             <source>Lead-in time</source>
@@ -1719,19 +1623,19 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Control Mode</source>
-            <translation>Controle modus</translation>
+            <translation>Controle Modus</translation>
         </message>
         <message>
             <source>Absolute Mode</source>
-            <translation>Absolute modus</translation>
+            <translation>Absolute Mmodus</translation>
         </message>
         <message>
             <source>Relative Mode</source>
-            <translation>Relatieve modus</translation>
+            <translation>Relatieve Modus</translation>
         </message>
         <message>
             <source>Enable Needle Skip Prevention</source>
-            <translation>Zet naald overslaan preventie aan</translation>
+            <translation>Zet preventie van naald verspringing aan</translation>
         </message>
         <message>
             <source>Signal Quality</source>
@@ -1743,7 +1647,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Powered by xwax</source>
-            <translation>Powered by xwax</translation>
+            <translation>Mede mogelijk gemaakt door xwax</translation>
         </message>
     </context>
     <context>
@@ -2008,16 +1912,16 @@ p, li { white-space: pre-wrap; }
             <translation>Encoder</translation>
         </message>
         <message>
-            <source>&lt;html&gt;Mixxx is unable to load or find the MP3 encoder lame. &lt;p&gt;Please install libmp3lame (also known as lame) and check if /usr/lib/libmp3lame.so exists on your system &lt;/html&gt;</source>
-            <translation>&lt;html&gt;Mixxx is niet in staat de MP3 encoder lame te laden of kan het niet vinden. &lt;p&gt;Gelieve de libmp3lame (ook wel bekend als lame) installeren en controleer of /usr/lib/libmp3lame.so bestaat op jouw systeem &lt;/html&gt;</translation>
+            <source>&lt;html&gt;Mixxx cannot record or stream in MP3 without the MP3 encoder &amp;quot;lame&amp;quot;. Due to licensing issues, we cannot include this with Mixxx. To record or stream in MP3, you must download &lt;b&gt;libmp3lame&lt;/b&gt; and install it on your system. &lt;p&gt;See &lt;a href='http://mixxx.org/wiki/doku.php/internet_broadcasting#linux'&gt;Mixxx Wiki&lt;/a&gt; for more information. &lt;/html&gt;</source>
+            <translation>&lt;html&gt;Mixxx kan niet opnemen of streamen in MP3 zonder de MP3 encoder &amp;quot;lame&amp;quot;. Vanwege licentie problemen, kunnen we dit niet toevoegen aan Mixxx. Om in MP3 op te nemen of te streamen, moet je &lt;b&gt;libmp3lame&lt;/b&gt; downloaden en installeren op jouw systeem. &lt;p&gt;Zie &lt;a href='http://mixxx.org/wiki/doku.php/internet_broadcasting#linux'&gt;Mixxx Wiki&lt;/a&gt; voor meer informatie. &lt;/html&gt;</translation>
         </message>
         <message>
-            <source>&lt;html&gt;Mixxx is unable to load or find the MP3 encoder lame. &lt;p&gt;Please put lame_enc.dll in the directory you have installed Mixxx &lt;/html&gt;</source>
-            <translation>&lt;html&gt;Mixxx is niet in staat de MP3 encoder lame te laden of kan het niet vinden. &lt;p&gt;Gelieve de lame_enc.dll te verplaatsen naar de map waar je Mixxx hebt geinstalleerd &lt;/html&gt;</translation>
+            <source>&lt;html&gt;Mixxx cannot record or stream in MP3 without the MP3 encoder &amp;quot;lame&amp;quot;. Due to licensing issues, we cannot include this with Mixxx. To record or stream in MP3, you must download &lt;b&gt;lame_enc.dll&lt;/b&gt; and install it on your system. &lt;p&gt;See &lt;a href='http://mixxx.org/wiki/doku.php/internet_broadcasting#windows'&gt;Mixxx Wiki&lt;/a&gt; for more information. &lt;/html&gt;</source>
+            <translation>&lt;html&gt;Mixxx kan niet opnemen of streamen in MP3 zonder de MP3 encoder &amp;quot;lame&amp;quot;. Vanwege licentie problemen, kunnen we dit niet toevoegen aan Mixxx. Om in MP3 op te nemen of te streamen, moet je &lt;b&gt;lame_enc.dll&lt;/b&gt; downloaden en installeren op jouw systeem. &lt;p&gt;Zie &lt;a href='http://mixxx.org/wiki/doku.php/internet_broadcasting#windows'&gt;Mixxx Wiki&lt;/a&gt; voor meer informatie. &lt;/html&gt;</translation>
         </message>
         <message>
-            <source>&lt;html&gt;Mixxx is unable to load or find the MP3 encoder lame. &lt;p&gt;Please install libmp3lame (also known as lame) and check if /usr/local/lib/libmp3lame.dylib exists on your system &lt;/html&gt;</source>
-            <translation>&lt;html&gt;Mixxx is niet in staat de MP3 encoder lame te laden of kan het niet vinden. &lt;p&gt;Gelieve de libmp3lame (ook wel bekend als lame) installeren en controleer of /usr/local/lib/libmp3lame.dylib bestaat op jouw systeem &lt;/html&gt;</translation>
+            <source>&lt;html&gt;Mixxx cannot record or stream in MP3 without the MP3 encoder &amp;quot;lame&amp;quot;. Due to licensing issues, we cannot include this with Mixxx. To record or stream in MP3, you must download &lt;b&gt;libmp3lame&lt;/b&gt; and install it on your system. &lt;p&gt;See &lt;a href='http://mixxx.org/wiki/doku.php/internet_broadcasting#mac_osx'&gt;Mixxx Wiki&lt;/a&gt; for more information. &lt;/html&gt;</source>
+            <translation>&lt;html&gt;Mixxx kan niet opnemen of streamen in MP3 zonder de MP3 encoder &amp;quot;lame&amp;quot;. Vanwege licentie problemen, kunnen we dit niet toevoegen aan Mixxx. Om in MP3 op te nemen of te streamen, moet je &lt;b&gt;libmp3lame&lt;/b&gt; downloaden en installeren op jouw systeem. &lt;p&gt;Zie &lt;a href='http://mixxx.org/wiki/doku.php/internet_broadcasting#mac_osx'&gt;Mixxx Wiki&lt;/a&gt; voor meer informatie. &lt;/html&gt;</translation>
         </message>
         <message>
             <source>&lt;html&gt;Mixxx has detected that you use a modified version of libmp3lame. See &lt;a href='http://mixxx.org/wiki/doku.php/internet_broadcasting'&gt;Mixxx Wiki&lt;/a&gt; for more information.&lt;/html&gt;</source>
@@ -2112,8 +2016,8 @@ p, li { white-space: pre-wrap; }
             <translation>Selecteer jouw iTunes bibliotheek</translation>
         </message>
         <message>
-            <source>iTunes (loading)</source>
-            <translation>iTunes (aan het laden)</translation>
+            <source>(loading) iTunes</source>
+            <translation>(laden) iTunes</translation>
         </message>
         <message>
             <source>Use Default Library</source>
@@ -2172,6 +2076,10 @@ p, li { white-space: pre-wrap; }
             <source>Control Value</source>
             <translation>Control Waarde</translation>
         </message>
+        <message>
+            <source>Description</source>
+            <translation>Omschrijving</translation>
+        </message>
     </context>
     <context>
         <name>MidiMapping</name>
@@ -2221,6 +2129,10 @@ p, li { white-space: pre-wrap; }
         <message>
             <source>Control Value</source>
             <translation>Bedieningswaarde</translation>
+        </message>
+        <message>
+            <source>Description</source>
+            <translation>Omschrijving</translation>
         </message>
         <message>
             <source>Threshold Min</source>
@@ -2444,16 +2356,24 @@ Deze informatie wordt niet gebruikt om u persoonlijk te identificeren, contact o
             <translation>Ctrl+P</translation>
         </message>
         <message>
-            <source>&amp;About...</source>
-            <translation>&amp;Over...</translation>
+            <source>&amp;About</source>
+            <translation>&amp;Over</translation>
         </message>
         <message>
-            <source>&amp;Community Support...</source>
-            <translation>&amp;Community Ondersteuning...</translation>
+            <source>&amp;Community Support</source>
+            <translation>&amp;Community Ondersteuning</translation>
+        </message>
+        <message>
+            <source>Send Us &amp;Feedback</source>
+            <translation>Stuur ons &amp;Feedback</translation>
+        </message>
+        <message>
+            <source>&amp;Translate this application</source>
+            <translation>&amp;Vertaal deze applicatie</translation>
         </message>
         <message>
             <source>Enable &amp;Vinyl Control 1</source>
-            <translation>&amp;Vinyl Controle 1 aaanzetten</translation>
+            <translation>Vinyl Bediening 1 Activeren</translation>
         </message>
         <message>
             <source>Ctrl+Y</source>
@@ -2461,7 +2381,7 @@ Deze informatie wordt niet gebruikt om u persoonlijk te identificeren, contact o
         </message>
         <message>
             <source>Enable &amp;Vinyl Control 2</source>
-            <translation>&amp;Vinyl Controle 2 aaanzetten</translation>
+            <translation>Vinyl Bediening 2 Activeren</translation>
         </message>
         <message>
             <source>Ctrl+U</source>
@@ -2469,7 +2389,7 @@ Deze informatie wordt niet gebruikt om u persoonlijk te identificeren, contact o
         </message>
         <message>
             <source>Enable live broadcasting</source>
-            <translation>Schakel live uitzending in</translation>
+            <translation>Schakel live uitzenden in</translation>
         </message>
         <message>
             <source>Ctrl+L</source>
@@ -2563,7 +2483,7 @@ Beats markeren door geluid klikken</translation>
         </message>
         <message>
             <source>Activate Vinyl Control</source>
-            <translation>Vinyl Controle Activeren</translation>
+            <translation>Vinyl Bediening Activeren</translation>
         </message>
         <message>
             <source>Use timecoded vinyls on external turntables to control Mixxx</source>
@@ -2614,6 +2534,26 @@ Get help with Mixxx</source>
 Krijg hulp met Mixxx</translation>
         </message>
         <message>
+            <source>Send feedback to the Mixxx team.</source>
+            <translation>Stuur feedback naar het Mixxx team.</translation>
+        </message>
+        <message>
+            <source>Support
+Send feedback to the Mixxx team.</source>
+            <translation>Ondersteuning
+Stuur feedback naar het Mixxx team.</translation>
+        </message>
+        <message>
+            <source>Help translate this application into your language.</source>
+            <translation>Help om deze applicatie in jouw taal te vertalen.</translation>
+        </message>
+        <message>
+            <source>Support
+Help translate this application into your language.</source>
+            <translation>Ondersteuning
+Help om deze applicatie in jouw taal te vertalen.</translation>
+        </message>
+        <message>
             <source>About the application</source>
             <translation>Over het programma</translation>
         </message>
@@ -2659,7 +2599,7 @@ Maakt het marco studio zichtbaar</translation>
         </message>
         <message>
             <source>&amp;Vinyl Control</source>
-            <translation>&amp;Vinyl Controle</translation>
+            <translation>Vinyl Bediening</translation>
         </message>
         <message>
             <source>Quit...</source>
@@ -2978,8 +2918,8 @@ Druk op OK om af te sluiten.</translation>
             <translation>Traktor</translation>
         </message>
         <message>
-            <source>Traktor (loading)</source>
-            <translation>Traktor (laden)</translation>
+            <source>(loading) Traktor</source>
+            <translation>(laden) Traktor</translation>
         </message>
         <message>
             <source>Error Loading Traktor Library</source>
@@ -3225,6 +3165,10 @@ Druk op OK om af te sluiten.</translation>
         <message>
             <source>Add to Auto DJ Queue</source>
             <translation>Toevoegen aan Auto DJ Wachtrij</translation>
+        </message>
+        <message>
+            <source>Reload Track Metadata</source>
+            <translation>Metadata van nummer opnieuw laden</translation>
         </message>
         <message>
             <source>Load to Deck %1</source>

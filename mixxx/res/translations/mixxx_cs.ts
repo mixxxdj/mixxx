@@ -189,7 +189,7 @@
         </message>
         <message>
             <source>Could not load the following file because it is in use by Mixxx or another application.</source>
-            <translation>Nemohu nahrát následující soubor. Je používán Mixxxem nebo jinou aplikací.</translation>
+            <translation>Nemohu otevřít následující soubor. Je používán Mixxxem nebo jinou aplikací.</translation>
         </message>
         <message>
             <source>Warning: This will permanently delete the following files:</source>
@@ -368,113 +368,6 @@ p, li { white-space: pre-wrap; }
         <message>
             <source>Analyze Entire Song</source>
             <translation>Analyzovat celou skladbu</translation>
-        </message>
-    </context>
-    <context>
-        <name>DlgBpmTapDlg</name>
-        <message>
-            <source>Track Editor</source>
-            <translation>Editor skladeb</translation>
-        </message>
-        <message>
-            <source>&amp;Close</source>
-            <translation>&amp;Zavřít</translation>
-        </message>
-        <message>
-            <source>Alt+O</source>
-            <translation>Alt+O</translation>
-        </message>
-        <message>
-            <source>Song:</source>
-            <translation>Skladba:</translation>
-        </message>
-        <message>
-            <source>Next &gt;&gt;</source>
-            <translation>Následující&gt;&gt;</translation>
-        </message>
-        <message>
-            <source>&lt;&lt; Prev</source>
-            <translation>&lt;&lt;Předchozí</translation>
-        </message>
-        <message>
-            <source>BPM Editor (Click to Expand)</source>
-            <translation>Editor BPM (rozbalit)</translation>
-        </message>
-        <message>
-            <source>BPM Detection</source>
-            <translation>Rozpoznání BPM</translation>
-        </message>
-        <message>
-            <source>BPM Scheme:</source>
-            <translation>Režim rozpoznání BPM:</translation>
-        </message>
-        <message>
-            <source>to</source>
-            <translation>do</translation>
-        </message>
-        <message>
-            <source>BPM Range:</source>
-            <translation>Rozsah BPM:</translation>
-        </message>
-        <message>
-            <source>&amp;Go</source>
-            <translation>Př&amp;ejít</translation>
-        </message>
-        <message>
-            <source>Alt+G</source>
-            <translation>Alt+G</translation>
-        </message>
-        <message>
-            <source>Analyze Entire Song</source>
-            <translation>Analyzovat celou skladbu</translation>
-        </message>
-        <message>
-            <source>BPM:</source>
-            <translation>BPM:</translation>
-        </message>
-        <message>
-            <source>&amp;Push to tap tempo</source>
-            <translation>Vykle&amp;pávat tempo</translation>
-        </message>
-        <message>
-            <source>Alt+P</source>
-            <translation>Alt+P</translation>
-        </message>
-        <message>
-            <source>Track Information (Click to Expand)</source>
-            <translation>Informace o skladbě (rozbalit)</translation>
-        </message>
-        <message>
-            <source>Title:</source>
-            <translation>Název:</translation>
-        </message>
-        <message>
-            <source>Artist:</source>
-            <translation>Interpret:</translation>
-        </message>
-        <message>
-            <source>Comments:</source>
-            <translation>Komentář:</translation>
-        </message>
-        <message>
-            <source>Filename:</source>
-            <translation>Název souboru:</translation>
-        </message>
-        <message>
-            <source>3:00</source>
-            <translation>3:00</translation>
-        </message>
-        <message>
-            <source>Play Time:</source>
-            <translation>Čas přehrávání:</translation>
-        </message>
-        <message>
-            <source>File Type:</source>
-            <translation>Formát:</translation>
-        </message>
-        <message>
-            <source>77</source>
-            <translation>77</translation>
         </message>
     </context>
     <context>
@@ -1055,8 +948,12 @@ p, li { white-space: pre-wrap; }
             <translation>sek.</translation>
         </message>
         <message>
+            <source>Show Signal Quality in Skin</source>
+            <translation>Zobrazovat kvalitu signálu ve Vzhledu</translation>
+        </message>
+        <message>
             <source>Control Mode</source>
-            <translation>Režim kontroly</translation>
+            <translation>Režim ovládání</translation>
         </message>
         <message>
             <source>Absolute Mode</source>
@@ -1642,6 +1539,10 @@ p, li { white-space: pre-wrap; }
             <translation>Nic</translation>
         </message>
         <message>
+            <source>Channel %1</source>
+            <translation>Kanál %1</translation>
+        </message>
+        <message>
             <source>Channels %1 - %2</source>
             <translation>Kanály %1 - %2</translation>
         </message>
@@ -1705,6 +1606,10 @@ p, li { white-space: pre-wrap; }
             <translation>Typ vinylu plotny 2</translation>
         </message>
         <message>
+            <source>Show Signal Quality in Skin</source>
+            <translation>Zobrazovat kvalitu signálu ve Vzhledu</translation>
+        </message>
+        <message>
             <source>Apply</source>
             <translation>Použít</translation>
         </message>
@@ -1718,7 +1623,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Control Mode</source>
-            <translation>Režim kontroly</translation>
+            <translation>Režim ovládání</translation>
         </message>
         <message>
             <source>Absolute Mode</source>
@@ -1909,7 +1814,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>File Type:</source>
-            <translation>Typ souboru:</translation>
+            <translation>Formát:</translation>
         </message>
         <message>
             <source>77</source>
@@ -2007,16 +1912,16 @@ p, li { white-space: pre-wrap; }
             <translation>Encoder</translation>
         </message>
         <message>
-            <source>&lt;html&gt;Mixxx is unable to load or find the MP3 encoder lame. &lt;p&gt;Please install libmp3lame (also known as lame) and check if /usr/lib/libmp3lame.so exists on your system &lt;/html&gt;</source>
-            <translation>&lt;html&gt;Mixxx nemůže najít MP3 encoder lame. &lt;p&gt;Nainstalujte prosím libmp3lame (známou jako lame) a zkontrolujte, jestli je /usr/lib/libmp3lame.so ve vašem systému &lt;/html&gt;</translation>
+            <source>&lt;html&gt;Mixxx cannot record or stream in MP3 without the MP3 encoder &amp;quot;lame&amp;quot;. Due to licensing issues, we cannot include this with Mixxx. To record or stream in MP3, you must download &lt;b&gt;libmp3lame&lt;/b&gt; and install it on your system. &lt;p&gt;See &lt;a href='http://mixxx.org/wiki/doku.php/internet_broadcasting#linux'&gt;Mixxx Wiki&lt;/a&gt; for more information. &lt;/html&gt;</source>
+            <translation>&lt;html&gt;Mixxx nemůže nahrávat nebo streamovat MP3 bez kodeku MP3 &amp;quot;lame&amp;quot;. Z licenčních důvodu jsme jej nemohli zahrnout do instalace Mixxxu. Pro nahrávání nebo streamování MP3 je potřeba stáhnout &lt;b&gt;libmp3lame&lt;/b&gt; a nainstalovat do systému. &lt;p&gt;Navštivte &lt;a href='http://mixxx.org/wiki/doku.php/internet_broadcasting#linux'&gt;Mixxx Wiki&lt;/a&gt; pro více informací. &lt;/html&gt;</translation>
         </message>
         <message>
-            <source>&lt;html&gt;Mixxx is unable to load or find the MP3 encoder lame. &lt;p&gt;Please put lame_enc.dll in the directory you have installed Mixxx &lt;/html&gt;</source>
-            <translation>&lt;html&gt;Mixxx nemůže najít MP3 encoder lame. &lt;p&gt;Vložte prosím lame_enc.dll do adresáře, který nainstaloval Mixxx &lt;/html&gt;</translation>
+            <source>&lt;html&gt;Mixxx cannot record or stream in MP3 without the MP3 encoder &amp;quot;lame&amp;quot;. Due to licensing issues, we cannot include this with Mixxx. To record or stream in MP3, you must download &lt;b&gt;lame_enc.dll&lt;/b&gt; and install it on your system. &lt;p&gt;See &lt;a href='http://mixxx.org/wiki/doku.php/internet_broadcasting#windows'&gt;Mixxx Wiki&lt;/a&gt; for more information. &lt;/html&gt;</source>
+            <translation>&lt;html&gt;Mixxx nemůže nahrávat nebo streamovat MP3 bez kodeku MP3 &amp;quot;lame&amp;quot;. Z licenčních důvodu jsme jej nemohli zahrnout do instalace Mixxxu. Pro nahrávání nebo streamování MP3 je potřeba stáhnout &lt;b&gt;lame_enc.dll&lt;/b&gt; a nainstalovat do systému. &lt;p&gt;Navštivte &lt;a href='http://mixxx.org/wiki/doku.php/internet_broadcasting#windows'&gt;Mixxx Wiki&lt;/a&gt; pro více informací. &lt;/html&gt;</translation>
         </message>
         <message>
-            <source>&lt;html&gt;Mixxx is unable to load or find the MP3 encoder lame. &lt;p&gt;Please install libmp3lame (also known as lame) and check if /usr/local/lib/libmp3lame.dylib exists on your system &lt;/html&gt;</source>
-            <translation>&lt;html&gt;Mixxx nemůže nahrát nebo nalézt MP3 enkodér lame. &lt;p&gt;Prosím nainstalujte libmp3lame (známou také jako lame) a zkontrolujte jestli /usr/local/lib/libmp3lame.dylib je ve vašem systému &lt;/html&gt;</translation>
+            <source>&lt;html&gt;Mixxx cannot record or stream in MP3 without the MP3 encoder &amp;quot;lame&amp;quot;. Due to licensing issues, we cannot include this with Mixxx. To record or stream in MP3, you must download &lt;b&gt;libmp3lame&lt;/b&gt; and install it on your system. &lt;p&gt;See &lt;a href='http://mixxx.org/wiki/doku.php/internet_broadcasting#mac_osx'&gt;Mixxx Wiki&lt;/a&gt; for more information. &lt;/html&gt;</source>
+            <translation>&lt;html&gt;Mixxx nemůže nahrávat nebo streamovat MP3 bez kodeku MP3 &amp;quot;lame&amp;quot;. Z licenčních důvodu jsme jej nemohli zahrnout do instalace Mixxxu. Pro nahrávání nebo streamování MP3 je potřeba stáhnout &lt;b&gt;libmp3lame&lt;/b&gt; a nainstalovat do systému. &lt;p&gt;Navštivte &lt;a href='http://mixxx.org/wiki/doku.php/internet_broadcasting#mac_osx'&gt;Mixxx Wiki&lt;/a&gt; pro více informací. &lt;/html&gt;</translation>
         </message>
         <message>
             <source>&lt;html&gt;Mixxx has detected that you use a modified version of libmp3lame. See &lt;a href='http://mixxx.org/wiki/doku.php/internet_broadcasting'&gt;Mixxx Wiki&lt;/a&gt; for more information.&lt;/html&gt;</source>
@@ -2111,8 +2016,8 @@ p, li { white-space: pre-wrap; }
             <translation>Vyberte svou knihovnu skladeb iTunes</translation>
         </message>
         <message>
-            <source>iTunes (loading)</source>
-            <translation>iTunes (načítání)</translation>
+            <source>(loading) iTunes</source>
+            <translation>(načítám) iTunes</translation>
         </message>
         <message>
             <source>Use Default Library</source>
@@ -2171,6 +2076,10 @@ p, li { white-space: pre-wrap; }
             <source>Control Value</source>
             <translation>Kontrolní hodnota</translation>
         </message>
+        <message>
+            <source>Description</source>
+            <translation>Popis</translation>
+        </message>
     </context>
     <context>
         <name>MidiMapping</name>
@@ -2220,6 +2129,10 @@ p, li { white-space: pre-wrap; }
         <message>
             <source>Control Value</source>
             <translation>Kontrolní hodnota</translation>
+        </message>
+        <message>
+            <source>Description</source>
+            <translation>Popis</translation>
         </message>
         <message>
             <source>Threshold Min</source>
@@ -2368,7 +2281,7 @@ Tyto informace nebudou použity pro osobní identifikaci, kontakt, reklamu, ani 
         </message>
         <message>
             <source>&amp;Load Song (Player 1)...</source>
-            <translation>&amp;Nabít píseň (Přehrávač 1)...</translation>
+            <translation>Otevřít sk&amp;ladbu (Přehrávač 1)...</translation>
         </message>
         <message>
             <source>Ctrl+O</source>
@@ -2376,7 +2289,7 @@ Tyto informace nebudou použity pro osobní identifikaci, kontakt, reklamu, ani 
         </message>
         <message>
             <source>&amp;Load Song (Player 2)...</source>
-            <translation>&amp;Nabít píseň (Přehrávač 2)...</translation>
+            <translation>Otevřít sk&amp;ladbu (Přehrávač 2)...</translation>
         </message>
         <message>
             <source>Ctrl+Shift+O</source>
@@ -2436,19 +2349,27 @@ Tyto informace nebudou použity pro osobní identifikaci, kontakt, reklamu, ani 
         </message>
         <message>
             <source>&amp;Preferences</source>
-            <translation>&amp;Možnosti</translation>
+            <translation>&amp;Předvolby</translation>
         </message>
         <message>
             <source>Ctrl+P</source>
             <translation>Ctrl+P</translation>
         </message>
         <message>
-            <source>&amp;About...</source>
-            <translation>&amp;O programu</translation>
+            <source>&amp;About</source>
+            <translation>O &amp;aplikaci</translation>
         </message>
         <message>
-            <source>&amp;Community Support...</source>
-            <translation>&amp;Komunitní podpora...</translation>
+            <source>&amp;Community Support</source>
+            <translation>Podpora komunity</translation>
+        </message>
+        <message>
+            <source>Send Us &amp;Feedback</source>
+            <translation>Zpětná vazba</translation>
+        </message>
+        <message>
+            <source>&amp;Translate this application</source>
+            <translation>Přeloži&amp;t tuto aplikaci</translation>
         </message>
         <message>
             <source>Enable &amp;Vinyl Control 1</source>
@@ -2594,7 +2515,7 @@ Označit úhozy pomocí klikání</translation>
         </message>
         <message>
             <source>Preferences</source>
-            <translation>Nastavení</translation>
+            <translation>Předvolby</translation>
         </message>
         <message>
             <source>Preferences
@@ -2611,6 +2532,26 @@ Nastavení playbacku a MIDI</translation>
 Get help with Mixxx</source>
             <translation>Podpora
 Získejte pomoc pro Mixxx</translation>
+        </message>
+        <message>
+            <source>Send feedback to the Mixxx team.</source>
+            <translation>Odeslat zpětnou vazbu vývojovému týmu.</translation>
+        </message>
+        <message>
+            <source>Support
+Send feedback to the Mixxx team.</source>
+            <translation>Podpora
+Odeslat zpětnou vazbu vývojovému týmu.</translation>
+        </message>
+        <message>
+            <source>Help translate this application into your language.</source>
+            <translation>Pomožte přeložit tuto aplikaci do svého jazyka.</translation>
+        </message>
+        <message>
+            <source>Support
+Help translate this application into your language.</source>
+            <translation>Podpora
+Pomožte přeložit tuto aplikaci do svého jazyka.</translation>
         </message>
         <message>
             <source>About the application</source>
@@ -2977,8 +2918,8 @@ Stiskněte OK pro ukončení.</translation>
             <translation>Traktor</translation>
         </message>
         <message>
-            <source>Traktor (loading)</source>
-            <translation>Traktor (nahrávání)</translation>
+            <source>(loading) Traktor</source>
+            <translation>(načítám) Traktor</translation>
         </message>
         <message>
             <source>Error Loading Traktor Library</source>
@@ -3224,6 +3165,10 @@ Stiskněte OK pro ukončení.</translation>
         <message>
             <source>Add to Auto DJ Queue</source>
             <translation>Přidat do fronty Auto DJ</translation>
+        </message>
+        <message>
+            <source>Reload Track Metadata</source>
+            <translation>Znovu načíst metadata</translation>
         </message>
         <message>
             <source>Load to Deck %1</source>

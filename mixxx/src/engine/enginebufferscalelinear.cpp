@@ -172,7 +172,6 @@ CSAMPLE * EngineBufferScaleLinear::do_scale(CSAMPLE* buf, unsigned long buf_size
     float rate_add = rate_add_new;
     float rate_add_diff = rate_add_new - rate_add_old;
     double rate_add_abs;
-    int original_raman_playposition = m_pReadAheadManager->getPlaypos();
 
     //Update the old base rate because we only need to
     //interpolate/ramp up the pitch changes once.
@@ -205,10 +204,10 @@ CSAMPLE * EngineBufferScaleLinear::do_scale(CSAMPLE* buf, unsigned long buf_size
 
     //we're calculating mono samples, so divide remaining buffer by 2;
     samples += (rate_add_abs * ((float)(buf_size - iRateLerpLength)/2));
-       unscaled_samples_needed = floor(samples);
+    unscaled_samples_needed = floor(samples);
 
-       //if the current position fraction plus the future position fraction
-       //loops over 1.0, we need to round up
+    //if the current position fraction plus the future position fraction
+    //loops over 1.0, we need to round up
     if (m_dNextSampleIndex - floor(m_dNextSampleIndex) + samples - floor(samples) > 1.0) {
         unscaled_samples_needed++;
     }

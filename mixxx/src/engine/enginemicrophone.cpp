@@ -33,7 +33,8 @@ bool EngineMicrophone::isActive() {
 }
 
 bool EngineMicrophone::isPFL() {
-    return true;
+    // You normally don't expect to hear yourself in the headphones
+    return false;
 }
 
 bool EngineMicrophone::isMaster() {
@@ -44,7 +45,7 @@ void EngineMicrophone::onInputConnected(AudioInput input) {
     if (input.getType() != AudioPath::MICROPHONE ||
         AudioInput::channelsNeededForType(input.getType()) != 1) {
         // This is an error!
-        qDebug() << "WARNING: EngineMicrophone connected to AudioInput for a non-Microphone type or a non-mono buffer!";
+        qWarning() << "EngineMicrophone connected to AudioInput for a non-Microphone type or a non-mono buffer!";
         return;
     }
     m_sampleBuffer.clear();
@@ -55,7 +56,7 @@ void EngineMicrophone::onInputDisconnected(AudioInput input) {
     if (input.getType() != AudioPath::MICROPHONE ||
         AudioInput::channelsNeededForType(input.getType()) != 1) {
         // This is an error!
-        qDebug() << "WARNING: EngineMicrophone connected to AudioInput for a non-Microphone type or a non-mono buffer!";
+        qWarning() << "EngineMicrophone connected to AudioInput for a non-Microphone type or a non-mono buffer!";
         return;
     }
     m_sampleBuffer.clear();
@@ -67,7 +68,7 @@ void EngineMicrophone::receiveBuffer(AudioInput input, const short* pBuffer, uns
     if (input.getType() != AudioPath::MICROPHONE ||
         AudioInput::channelsNeededForType(input.getType()) != 1) {
         // This is an error!
-        qDebug() << "WARNING: EngineMicrophone receieved an AudioInput for a non-Microphone type or a non-mono buffer!";
+        qWarning() << "EngineMicrophone receieved an AudioInput for a non-Microphone type or a non-mono buffer!";
         return;
     }
 
@@ -77,7 +78,7 @@ void EngineMicrophone::receiveBuffer(AudioInput input, const short* pBuffer, uns
     // Check that the number of mono samples doesn't exceed MAX_BUFFER_LEN/2
     // because thats our conversion buffer size.
     if (iNumSamples > MAX_BUFFER_LEN / 2) {
-        qDebug() << "WARNING: Dropping microphone samples because the input buffer is too large.";
+        qWarning() << "Dropping microphone samples because the input buffer is too large.";
         iNumSamples = MAX_BUFFER_LEN / 2;
     }
 
@@ -98,11 +99,12 @@ void EngineMicrophone::receiveBuffer(AudioInput input, const short* pBuffer, uns
         // Buffer overflow. We aren't processing samples fast enough. This
         // shouldn't happen since the mic spits out samples just as fast as they
         // come in, right?
-        Q_ASSERT(false);
+        qWarning() << "Microphone buffer overflow";
     }
 }
 
 void EngineMicrophone::process(const CSAMPLE* pInput, const CSAMPLE* pOutput, const int iBufferSize) {
+    Q_UNUSED(pInput);
     CSAMPLE* pOut = const_cast<CSAMPLE*>(pOutput);
 
     // If talkover is enabled, then read into the output buffer. Otherwise, skip
@@ -113,7 +115,7 @@ void EngineMicrophone::process(const CSAMPLE* pInput, const CSAMPLE* pOutput, co
             // Buffer underflow. There aren't getting samples fast enough. This
             // shouldn't happen since PortAudio should feed us samples just as fast
             // as we consume them, right?
-            Q_ASSERT(false);
+            qWarning() << "Microphone buffer underflow";
         }
     } else {
         SampleUtil::applyGain(pOut, 0.0, iBufferSize);
