@@ -270,10 +270,12 @@ void LoopingControl::slotLoopIn(double val) {
         clearActiveBeatLoop();
 
         // set loop-in position
-        int closestBeat = m_pClosestBeat->get();
-        m_iLoopStartSample = m_iCurrentSample;
-        if (m_pQuantizeEnabled->get() > 0.0 && closestBeat != -1)
-            m_iLoopStartSample = closestBeat;
+        m_iLoopStartSample =
+                (m_pQuantizeEnabled->get() > 0.0 && m_pClosestBeat->get() != -1) ?
+                static_cast<int>(floorf(m_pClosestBeat->get())) : m_iCurrentSample;
+        if (m_iLoopStartSample != -1 && !even(m_iLoopStartSample)) {
+            m_iLoopStartSample--;
+        }
 
         m_pCOLoopStartPosition->set(m_iLoopStartSample);
 
@@ -289,10 +291,13 @@ void LoopingControl::slotLoopIn(double val) {
 
 void LoopingControl::slotLoopOut(double val) {
     if (val) {
-        int closestBeat = m_pClosestBeat->get();
-        int pos = m_iCurrentSample;
-        if (m_pQuantizeEnabled->get() > 0.0 && closestBeat != -1)
-            pos = closestBeat;
+        int pos =
+                (m_pQuantizeEnabled->get() > 0.0 && m_pClosestBeat->get() != -1) ?
+                static_cast<int>(floorf(m_pClosestBeat->get())) : m_iCurrentSample;
+        if (pos != -1 && !even(pos)) {
+            pos--;
+        }
+
         // If the user is trying to set a loop-out before the loop in or without
         // having a loop-in, then ignore it.
         if (m_iLoopStartSample == -1 || pos < m_iLoopStartSample) {
