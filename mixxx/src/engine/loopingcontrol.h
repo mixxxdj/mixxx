@@ -12,6 +12,8 @@
 #include "trackinfoobject.h"
 #include "track/beats.h"
 
+#define MINIMUM_AUDIBLE_LOOP_SIZE   30  // In samples
+
 class ControlPushButton;
 class ControlObject;
 
