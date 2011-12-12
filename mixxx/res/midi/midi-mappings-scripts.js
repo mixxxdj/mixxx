@@ -51,9 +51,9 @@ function msecondstominutes(msecs)
 
 function script() {}
 script.debug = function (channel, control, value, status, group) {
-    print("Script.Debug --- channel: " + channel.toString(16) + 
-          " control: " + control.toString(16) + " value: " + value.toString(16) + 
-          " status: " + status.toString(16) + " group: " + group);
+    print("Script.Debug - channel: 0x" + channel.toString(16) +
+          " control: 0x" + control.toString(16) + " value: 0x" + value.toString(16) +
+          " status: 0x" + status.toString(16) + " group: " + group);
 }
 
 // Used to control a generic Mixxx control setting (low..high) from an absolute control (0..127)
