@@ -912,7 +912,7 @@ bool MidiScriptEngine::connectControl(QString group, QString name, QString funct
 //             qDebug() << "MidiScriptEngine::connectControl disconnected " << group << name << " from " << function;
             m_connectedControls.remove(cobj->getKey(), function);
             // Only disconnect the signal if there are no other instances of this control using it
-            if (!m_connectedControls.contains(cobj->getKey())) {
+            if (!m_connectedControls.contains(cobj->getKey()) && !m_connectedFuncControls.contains(cobj->getKey())) {
                 this->disconnect(cobj, SIGNAL(valueChanged(double)),
                                 this, SLOT(slotValueChanged(double)));
                 this->disconnect(cobj, SIGNAL(valueChangedFromEngine(double)),
@@ -932,6 +932,105 @@ bool MidiScriptEngine::connectControl(QString group, QString name, QString funct
     }
 
     return false;
+}
+
+/* -------- ------------------------------------------------------
+   Purpose: (Dis)connects a ControlObject valueChanged() signal to/from a script function
+   Input:   Control group (e.g. [Channel1]), Key name (e.g. [filterHigh]),
+                script function name, true if you want to disconnect
+   Output:  true if successful
+   -------- ------------------------------------------------------ */
+int MidiScriptEngine::connectControl(QString group, QString name, QScriptValue function) {
+    ControlObject* cobj = ControlObject::getControl(ConfigKey(group,name));
+
+    if (cobj == NULL) {
+        qWarning() << "MidiScriptEngine: script connecting [" << group << "," << name
+                   << "], which is non-existent. ignoring.";
+        return false;
+    }
+
+    // When this function runs, assert that somebody is holding the script
+    // engine lock.
+    bool lock = m_scriptEngineLock.tryLock();
+    Q_ASSERT(!lock);
+    if(lock) {
+        m_scriptEngineLock.unlock();
+    }
+
+    //qDebug() << QString("MidiScriptEngine: Connect Thread ID=%1").arg(QThread::currentThreadId(),0,16);
+
+    if(m_pEngine == NULL) {
+        return -1;
+    }
+
+    if(function.isFunction()) {
+        
+        QList<QScriptValue> *conns;
+        
+        
+        connect(cobj, SIGNAL(valueChanged(double)),
+                this, SLOT(slotValueChanged(double)),
+                Qt::QueuedConnection);
+        connect(cobj, SIGNAL(valueChangedFromEngine(double)),
+                this, SLOT(slotValueChanged(double)),
+                Qt::QueuedConnection);
+        
+        if (!m_connectedFuncControls.contains(cobj->getKey())) {
+            m_connectedFuncControls.insert(cobj->getKey(), new QList<QScriptValue>);
+        }
+        
+        conns = m_connectedFuncControls.value(cobj->getKey());
+        conns->append(function);
+        
+        return conns->size() - 1;
+    }
+    else if (function.isString()) {
+        return (int)connectControl(group, name, function.toString());
+    }
+
+    return -1;
+}
+
+void MidiScriptEngine::disconnectControl(QString group, QString name, int index) {
+    ControlObject* cobj = ControlObject::getControl(ConfigKey(group,name));
+
+    if (cobj == NULL) {
+        qWarning() << "MidiScriptEngine: script connecting [" << group << "," << name
+                   << "], which is non-existent. ignoring.";
+        return;
+    }
+
+    // When this function runs, assert that somebody is holding the script
+    // engine lock.
+    bool lock = m_scriptEngineLock.tryLock();
+    Q_ASSERT(!lock);
+    if(lock) {
+        m_scriptEngineLock.unlock();
+    }
+
+    //qDebug() << QString("MidiScriptEngine: Connect Thread ID=%1").arg(QThread::currentThreadId(),0,16);
+
+    if(m_pEngine == NULL) {
+        return;
+    }
+    
+    QList<QScriptValue> *conns = m_connectedFuncControls.value(cobj->getKey());
+    if (index >= conns->size())
+        return;
+    conns->removeAt(index);
+    
+    if (conns->size() == 0) {
+        m_connectedFuncControls.remove(cobj->getKey());
+        delete conns;
+        
+        if (!m_connectedControls.contains(cobj->getKey()) && !m_connectedFuncControls.contains(cobj->getKey())) {
+            this->disconnect(cobj, SIGNAL(valueChanged(double)),
+                            this, SLOT(slotValueChanged(double)));
+            this->disconnect(cobj, SIGNAL(valueChangedFromEngine(double)),
+                            this, SLOT(slotValueChanged(double)));
+        }
+    }
+    
 }
 
 /* -------- ------------------------------------------------------
@@ -970,10 +1069,31 @@ void MidiScriptEngine::slotValueChanged(double value) {
             }
             ++i;
         }
-    } else {
-        qWarning() << "MidiScriptEngine::slotValueChanged() Received signal from ControlObject that is not connected to a script function.";
     }
 
+    if(m_connectedFuncControls.contains(key)) {
+        int i;
+        QList<QScriptValue> *conns = m_connectedFuncControls.value(key);
+        
+        for (i = 0; i < conns->size(); i++) {
+            
+            QScriptValue function_value = conns->at(i);
+            QScriptValueList args;
+            args << QScriptValue(value);
+            args << QScriptValue(key.group); // Added by Math`
+            args << QScriptValue(key.item);  // Added by Math`
+            
+            QScriptValue result = function_value.call(QScriptValue(), args);
+            //if (result.isError()) {
+                //qWarning()<< "MidiScriptEngine: Call to " << function << " resulted in an error:  " << result.toString();
+            //}
+        }
+    }
+    
+    if (!m_connectedControls.contains(key) && !m_connectedFuncControls.contains(key)) {
+        qWarning() << "MidiScriptEngine::slotValueChanged() Received signal from ControlObject that is not connected to a script function.";
+    }
+    
     m_scriptEngineLock.unlock();
 }
 
