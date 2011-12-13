@@ -62,6 +62,8 @@ class MidiScriptEngine : public QThread {
     Q_INVOKABLE void setValue(QString group, QString name, double newValue);
     Q_INVOKABLE bool connectControl(QString group, QString name,
                                     QString function, bool disconnect = false);
+    Q_INVOKABLE int connectControl(QString group, QString name, QScriptValue function);
+    Q_INVOKABLE void disconnectControl(QString group, QString name, int index);
     Q_INVOKABLE void trigger(QString group, QString name);
     Q_INVOKABLE void log(QString message);
     Q_INVOKABLE int beginTimer(int interval, QScriptValue scriptCode, bool oneShot = false);
@@ -128,6 +130,7 @@ class MidiScriptEngine : public QThread {
     bool m_midiDebug;
     bool m_midiPopups;
     QMultiHash<ConfigKey, QString> m_connectedControls;
+    QHash<ConfigKey, QList <QScriptValue> *> m_connectedFuncControls;
     QScriptEngine *m_pEngine;
     QStringList m_scriptFunctions;
     QMap<QString,QStringList> m_scriptErrors;
