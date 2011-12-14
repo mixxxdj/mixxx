@@ -23,6 +23,8 @@ Store <http://itunes.apple.com/us/app/mixxx/id413756578?mt=12>`_. Alternatively,
 double-clicking the Mixxx DMG archive, and then dragging-and-dropping the Mixxx
 bundle into their Applications folder. Mixxx requires an Intel Mac running Mac OS X 10.5 or newer.
 
+.. note:: The Mac App Store version of Mixxx does not have :term:`vinyl control` support enabled due to licensing restrictions.
+
 GNU/Linux
 =========
 
