@@ -3648,9 +3648,6 @@
 						<Size>50,14</Size>
 						<!--CSS alignments not respected see bug lp:605530 , lets call <Alignment>-->
 						<Alignment>center</Alignment>
-						<Connection>
-							<ConfigKey>[Channel1],rate</ConfigKey>
-						</Connection>
 					</NumberRate>
 
 					<!--
@@ -5136,9 +5133,6 @@
 						<Size>50,14</Size>
 						<!--CSS alignments not respected see bug lp:605530 , lets call <Alignment>-->
 						<Alignment>center</Alignment>
-						<Connection>
-							<ConfigKey>[Channel2],rate</ConfigKey>
-						</Connection>
 					</NumberRate>
 
 					<!--
