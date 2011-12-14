@@ -18,6 +18,9 @@
 	the resulting work only under the same or similar license to this one.
 
 	CHANGELOG
+	v1.10.0.16	(14/12/2011)
+	* Update: Unify word choice in tooltips, replaces "player" with "deck", lp:879084
+
 	v1.10.0.15	(05/12/2011)
 	* Fix: Changed stylesheets for tooltip so that they are not cut off anymore on Windows,
 	  working around a QT issue, lp:712718
@@ -135,7 +138,7 @@
 	- removed "Preview" watermark
 
 	v0.81b	(18/02/2010)
-	+ Hotcues preview the Cue when the player is stopped
+	+ Hotcues preview the Cue when the deck is stopped
 
 	v0.80b	(11/02/2010)
 	Initial Developer Preview for Mixxx 1.8.x
@@ -418,7 +421,7 @@
 							**********************************************
 							-->
 							<PushButton>
-								<Tooltip>Hotcue&#10;Left-click: If Hotcue is set, seeks the player to Hotcue position.&#10;If Hotcue is not set, sets Hotcue to the current play position.&#10;Right-click: If Hotcue is set, clears its hotcue status (delete).&#10;</Tooltip>
+								<Tooltip>Hotcue&#10;Left-click: If Hotcue is set, seeks the deck to Hotcue position.&#10;If Hotcue is not set, sets Hotcue to the current play position.&#10;Right-click: If Hotcue is set, clears its hotcue status (delete).&#10;</Tooltip>
 								<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 								<NumberStates>2</NumberStates>
 								<LeftClickIsPushButton>true</LeftClickIsPushButton>
@@ -452,7 +455,7 @@
 								</Connection>
 							</PushButton>
 							<PushButton>
-								<Tooltip>Hotcue&#10;Left-click: If Hotcue is set, seeks the player to Hotcue position.&#10;If Hotcue is not set, sets Hotcue to the current play position.&#10;Right-click: If Hotcue is set, clears its hotcue status (delete).&#10;</Tooltip>
+								<Tooltip>Hotcue&#10;Left-click: If Hotcue is set, seeks the deck to Hotcue position.&#10;If Hotcue is not set, sets Hotcue to the current play position.&#10;Right-click: If Hotcue is set, clears its hotcue status (delete).&#10;</Tooltip>
 								<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 								<NumberStates>2</NumberStates>
 								<LeftClickIsPushButton>true</LeftClickIsPushButton>
@@ -486,7 +489,7 @@
 								</Connection>
 							</PushButton>
 							<PushButton>
-								<Tooltip>Hotcue&#10;Left-click: If Hotcue is set, seeks the player to Hotcue position.&#10;If Hotcue is not set, sets Hotcue to the current play position.&#10;Right-click: If Hotcue is set, clears its hotcue status (delete).&#10;</Tooltip>
+								<Tooltip>Hotcue&#10;Left-click: If Hotcue is set, seeks the deck to Hotcue position.&#10;If Hotcue is not set, sets Hotcue to the current play position.&#10;Right-click: If Hotcue is set, clears its hotcue status (delete).&#10;</Tooltip>
 								<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 								<NumberStates>2</NumberStates>
 								<LeftClickIsPushButton>true</LeftClickIsPushButton>
@@ -520,7 +523,7 @@
 								</Connection>
 							</PushButton>
 							<PushButton>
-								<Tooltip>Hotcue&#10;Left-click: If Hotcue is set, seeks the player to Hotcue position.&#10;If Hotcue is not set, sets Hotcue to the current play position.&#10;Right-click: If Hotcue is set, clears its hotcue status (delete).&#10;</Tooltip>
+								<Tooltip>Hotcue&#10;Left-click: If Hotcue is set, seeks the deck to Hotcue position.&#10;If Hotcue is not set, sets Hotcue to the current play position.&#10;Right-click: If Hotcue is set, clears its hotcue status (delete).&#10;</Tooltip>
 								<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 								<NumberStates>2</NumberStates>
 								<LeftClickIsPushButton>true</LeftClickIsPushButton>
@@ -585,7 +588,7 @@
 							**********************************************
 							-->
 							<PushButton>
-								<Tooltip>Eject&#10;Eject currently loaded track from player.&#10;</Tooltip>
+								<Tooltip>Eject&#10;Eject currently loaded track from deck.&#10;</Tooltip>
 								<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 								<NumberStates>1</NumberStates>
 								<State>
@@ -898,7 +901,7 @@
 							**********************************************
 							-->
 							<PushButton>
-								<Tooltip>Hotcue&#10;Left-click: If Hotcue is set, seeks the player to Hotcue position.&#10;If Hotcue is not set, sets Hotcue to the current play position.&#10;Right-click: If Hotcue is set, clears its hotcue status (delete).&#10;</Tooltip>
+								<Tooltip>Hotcue&#10;Left-click: If Hotcue is set, seeks the deck to Hotcue position.&#10;If Hotcue is not set, sets Hotcue to the current play position.&#10;Right-click: If Hotcue is set, clears its hotcue status (delete).&#10;</Tooltip>
 								<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 								<NumberStates>2</NumberStates>
 								<LeftClickIsPushButton>true</LeftClickIsPushButton>
@@ -932,7 +935,7 @@
 								</Connection>
 							</PushButton>
 							<PushButton>
-								<Tooltip>Hotcue&#10;Left-click: If Hotcue is set, seeks the player to Hotcue position.&#10;If Hotcue is not set, sets Hotcue to the current play position.&#10;Right-click: If Hotcue is set, clears its hotcue status (delete).&#10;</Tooltip>
+								<Tooltip>Hotcue&#10;Left-click: If Hotcue is set, seeks the deck to Hotcue position.&#10;If Hotcue is not set, sets Hotcue to the current play position.&#10;Right-click: If Hotcue is set, clears its hotcue status (delete).&#10;</Tooltip>
 								<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 								<NumberStates>2</NumberStates>
 								<LeftClickIsPushButton>true</LeftClickIsPushButton>
@@ -966,7 +969,7 @@
 								</Connection>
 							</PushButton>
 							<PushButton>
-								<Tooltip>Hotcue&#10;Left-click: If Hotcue is set, seeks the player to Hotcue position.&#10;If Hotcue is not set, sets Hotcue to the current play position.&#10;Right-click: If Hotcue is set, clears its hotcue status (delete).&#10;</Tooltip>
+								<Tooltip>Hotcue&#10;Left-click: If Hotcue is set, seeks the deck to Hotcue position.&#10;If Hotcue is not set, sets Hotcue to the current play position.&#10;Right-click: If Hotcue is set, clears its hotcue status (delete).&#10;</Tooltip>
 								<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 								<NumberStates>2</NumberStates>
 								<LeftClickIsPushButton>true</LeftClickIsPushButton>
@@ -1000,7 +1003,7 @@
 								</Connection>
 							</PushButton>
 							<PushButton>
-								<Tooltip>Hotcue&#10;Left-click: If Hotcue is set, seeks the player to Hotcue position.&#10;If Hotcue is not set, sets Hotcue to the current play position.&#10;Right-click: If Hotcue is set, clears its hotcue status (delete).&#10;</Tooltip>
+								<Tooltip>Hotcue&#10;Left-click: If Hotcue is set, seeks the deck to Hotcue position.&#10;If Hotcue is not set, sets Hotcue to the current play position.&#10;Right-click: If Hotcue is set, clears its hotcue status (delete).&#10;</Tooltip>
 								<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 								<NumberStates>2</NumberStates>
 								<LeftClickIsPushButton>true</LeftClickIsPushButton>
@@ -1065,7 +1068,7 @@
 							**********************************************
 							-->
 							<PushButton>
-								<Tooltip>Eject&#10;Eject currently loaded track from player.&#10;</Tooltip>
+								<Tooltip>Eject&#10;Eject currently loaded track from deck.&#10;</Tooltip>
 								<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 								<NumberStates>1</NumberStates>
 								<State>
@@ -1378,7 +1381,7 @@
 							**********************************************
 							-->
 							<PushButton>
-								<Tooltip>Hotcue&#10;Left-click: If Hotcue is set, seeks the player to Hotcue position.&#10;If Hotcue is not set, sets Hotcue to the current play position.&#10;Right-click: If Hotcue is set, clears its hotcue status (delete).&#10;</Tooltip>
+								<Tooltip>Hotcue&#10;Left-click: If Hotcue is set, seeks the deck to Hotcue position.&#10;If Hotcue is not set, sets Hotcue to the current play position.&#10;Right-click: If Hotcue is set, clears its hotcue status (delete).&#10;</Tooltip>
 								<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 								<NumberStates>2</NumberStates>
 								<LeftClickIsPushButton>true</LeftClickIsPushButton>
@@ -1412,7 +1415,7 @@
 								</Connection>
 							</PushButton>
 							<PushButton>
-								<Tooltip>Hotcue&#10;Left-click: If Hotcue is set, seeks the player to Hotcue position.&#10;If Hotcue is not set, sets Hotcue to the current play position.&#10;Right-click: If Hotcue is set, clears its hotcue status (delete).&#10;</Tooltip>
+								<Tooltip>Hotcue&#10;Left-click: If Hotcue is set, seeks the deck to Hotcue position.&#10;If Hotcue is not set, sets Hotcue to the current play position.&#10;Right-click: If Hotcue is set, clears its hotcue status (delete).&#10;</Tooltip>
 								<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 								<NumberStates>2</NumberStates>
 								<LeftClickIsPushButton>true</LeftClickIsPushButton>
@@ -1446,7 +1449,7 @@
 								</Connection>
 							</PushButton>
 							<PushButton>
-								<Tooltip>Hotcue&#10;Left-click: If Hotcue is set, seeks the player to Hotcue position.&#10;If Hotcue is not set, sets Hotcue to the current play position.&#10;Right-click: If Hotcue is set, clears its hotcue status (delete).&#10;</Tooltip>
+								<Tooltip>Hotcue&#10;Left-click: If Hotcue is set, seeks the deck to Hotcue position.&#10;If Hotcue is not set, sets Hotcue to the current play position.&#10;Right-click: If Hotcue is set, clears its hotcue status (delete).&#10;</Tooltip>
 								<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 								<NumberStates>2</NumberStates>
 								<LeftClickIsPushButton>true</LeftClickIsPushButton>
@@ -1480,7 +1483,7 @@
 								</Connection>
 							</PushButton>
 							<PushButton>
-								<Tooltip>Hotcue&#10;Left-click: If Hotcue is set, seeks the player to Hotcue position.&#10;If Hotcue is not set, sets Hotcue to the current play position.&#10;Right-click: If Hotcue is set, clears its hotcue status (delete).&#10;</Tooltip>
+								<Tooltip>Hotcue&#10;Left-click: If Hotcue is set, seeks the deck to Hotcue position.&#10;If Hotcue is not set, sets Hotcue to the current play position.&#10;Right-click: If Hotcue is set, clears its hotcue status (delete).&#10;</Tooltip>
 								<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 								<NumberStates>2</NumberStates>
 								<LeftClickIsPushButton>true</LeftClickIsPushButton>
@@ -1545,7 +1548,7 @@
 							**********************************************
 							-->
 							<PushButton>
-								<Tooltip>Eject&#10;Eject currently loaded track from player.&#10;</Tooltip>
+								<Tooltip>Eject&#10;Eject currently loaded track from deck.&#10;</Tooltip>
 								<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 								<NumberStates>1</NumberStates>
 								<State>
@@ -1858,7 +1861,7 @@
 							**********************************************
 							-->
 							<PushButton>
-								<Tooltip>Hotcue&#10;Left-click: If Hotcue is set, seeks the player to Hotcue position.&#10;If Hotcue is not set, sets Hotcue to the current play position.&#10;Right-click: If Hotcue is set, clears its hotcue status (delete).&#10;</Tooltip>
+								<Tooltip>Hotcue&#10;Left-click: If Hotcue is set, seeks the deck to Hotcue position.&#10;If Hotcue is not set, sets Hotcue to the current play position.&#10;Right-click: If Hotcue is set, clears its hotcue status (delete).&#10;</Tooltip>
 								<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 								<NumberStates>2</NumberStates>
 								<LeftClickIsPushButton>true</LeftClickIsPushButton>
@@ -1892,7 +1895,7 @@
 								</Connection>
 							</PushButton>
 							<PushButton>
-								<Tooltip>Hotcue&#10;Left-click: If Hotcue is set, seeks the player to Hotcue position.&#10;If Hotcue is not set, sets Hotcue to the current play position.&#10;Right-click: If Hotcue is set, clears its hotcue status (delete).&#10;</Tooltip>
+								<Tooltip>Hotcue&#10;Left-click: If Hotcue is set, seeks the deck to Hotcue position.&#10;If Hotcue is not set, sets Hotcue to the current play position.&#10;Right-click: If Hotcue is set, clears its hotcue status (delete).&#10;</Tooltip>
 								<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 								<NumberStates>2</NumberStates>
 								<LeftClickIsPushButton>true</LeftClickIsPushButton>
@@ -1926,7 +1929,7 @@
 								</Connection>
 							</PushButton>
 							<PushButton>
-								<Tooltip>Hotcue&#10;Left-click: If Hotcue is set, seeks the player to Hotcue position.&#10;If Hotcue is not set, sets Hotcue to the current play position.&#10;Right-click: If Hotcue is set, clears its hotcue status (delete).&#10;</Tooltip>
+								<Tooltip>Hotcue&#10;Left-click: If Hotcue is set, seeks the deck to Hotcue position.&#10;If Hotcue is not set, sets Hotcue to the current play position.&#10;Right-click: If Hotcue is set, clears its hotcue status (delete).&#10;</Tooltip>
 								<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 								<NumberStates>2</NumberStates>
 								<LeftClickIsPushButton>true</LeftClickIsPushButton>
@@ -1960,7 +1963,7 @@
 								</Connection>
 							</PushButton>
 							<PushButton>
-								<Tooltip>Hotcue&#10;Left-click: If Hotcue is set, seeks the player to Hotcue position.&#10;If Hotcue is not set, sets Hotcue to the current play position.&#10;Right-click: If Hotcue is set, clears its hotcue status (delete).&#10;</Tooltip>
+								<Tooltip>Hotcue&#10;Left-click: If Hotcue is set, seeks the deck to Hotcue position.&#10;If Hotcue is not set, sets Hotcue to the current play position.&#10;Right-click: If Hotcue is set, clears its hotcue status (delete).&#10;</Tooltip>
 								<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 								<NumberStates>2</NumberStates>
 								<LeftClickIsPushButton>true</LeftClickIsPushButton>
@@ -2025,7 +2028,7 @@
 							**********************************************
 							-->
 							<PushButton>
-								<Tooltip>Eject&#10;Eject currently loaded track from player.&#10;</Tooltip>
+								<Tooltip>Eject&#10;Eject currently loaded track from deck.&#10;</Tooltip>
 								<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 								<NumberStates>1</NumberStates>
 								<State>
@@ -2953,7 +2956,7 @@
 	<!--
 	############################################################################################
 	############################################################################################
-	WidgetGroup : Player 1
+	WidgetGroup : Deck 1
 	############################################################################################
 	############################################################################################
 	-->
@@ -3426,7 +3429,7 @@
 											<!--
 											**********************************************
 											Vinyl- Status 
-											// Vinyl status indicators are inside the players WidgetGroups
+											// Vinyl status indicators are inside the decks WidgetGroups
 											**********************************************
 											-->
 											<!--
@@ -3917,7 +3920,7 @@
 					**********************************************
 					-->
 					<PushButton>
-						<Tooltip>Eject&#10;Eject currently loaded track from player.&#10;</Tooltip>
+						<Tooltip>Eject&#10;Eject currently loaded track from deck.&#10;</Tooltip>
 						<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 						<NumberStates>1</NumberStates>
 						<State>
@@ -3934,7 +3937,7 @@
 						</Connection>
 					</PushButton>
 
-					<!-- Player playback control sub-widget -->
+					<!-- Playback control sub-widget -->
 					<WidgetGroup>
 						<Pos>86,204</Pos>
 						<Size>277,43</Size>
@@ -4190,7 +4193,7 @@
 							**********************************************
 							-->
 							<PushButton>
-								<Tooltip>Loop halve&#10;Halves the current loop's length by moving the end marker.&#10;Player immediately loops if past the new endpoint.&#10;</Tooltip>
+								<Tooltip>Loop halve&#10;Halves the current loop's length by moving the end marker.&#10;Deck immediately loops if past the new endpoint.&#10;</Tooltip>
 								<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 								<NumberStates>1</NumberStates>
 								<State>
@@ -4228,7 +4231,7 @@
 							**********************************************
 							-->
 							<PushButton>
-								<Tooltip>Loop-In marker&#10;Sets the player loop-in position to the current play position.&#10;</Tooltip>
+								<Tooltip>Loop-In marker&#10;Sets the deck loop-in position to the current play position.&#10;</Tooltip>
 								<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 								<NumberStates>1</NumberStates>
 								<State>
@@ -4244,7 +4247,7 @@
 								</Connection>
 							</PushButton>
 							<PushButton>
-								<Tooltip>Loop-Out marker&#10;Sets the player loop-out position to the current play position.&#10;</Tooltip>
+								<Tooltip>Loop-Out marker&#10;Sets the deck loop-out position to the current play position.&#10;</Tooltip>
 								<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 								<NumberStates>1</NumberStates>
 								<State>
@@ -4293,7 +4296,7 @@
 							**********************************************
 							-->
 							<PushButton>
-								<Tooltip>Hotcue&#10;Left-click: If Hotcue is set, seeks the player to Hotcue position.&#10;If Hotcue is not set, sets Hotcue to the current play position.&#10;Right-click: If Hotcue is set, clears its hotcue status (delete).&#10;</Tooltip>
+								<Tooltip>Hotcue&#10;Left-click: If Hotcue is set, seeks the deck to Hotcue position.&#10;If Hotcue is not set, sets Hotcue to the current play position.&#10;Right-click: If Hotcue is set, clears its hotcue status (delete).&#10;</Tooltip>
 								<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 								<NumberStates>2</NumberStates>
 								<LeftClickIsPushButton>true</LeftClickIsPushButton>
@@ -4327,7 +4330,7 @@
 								</Connection>
 							</PushButton>
 							<PushButton>
-								<Tooltip>Hotcue&#10;Left-click: If Hotcue is set, seeks the player to Hotcue position.&#10;If Hotcue is not set, sets Hotcue to the current play position.&#10;Right-click: If Hotcue is set, clears its hotcue status (delete).&#10;</Tooltip>
+								<Tooltip>Hotcue&#10;Left-click: If Hotcue is set, seeks the deck to Hotcue position.&#10;If Hotcue is not set, sets Hotcue to the current play position.&#10;Right-click: If Hotcue is set, clears its hotcue status (delete).&#10;</Tooltip>
 								<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 								<NumberStates>2</NumberStates>
 								<LeftClickIsPushButton>true</LeftClickIsPushButton>
@@ -4361,7 +4364,7 @@
 								</Connection>
 							</PushButton>
 							<PushButton>
-								<Tooltip>Hotcue&#10;Left-click: If Hotcue is set, seeks the player to Hotcue position.&#10;If Hotcue is not set, sets Hotcue to the current play position.&#10;Right-click: If Hotcue is set, clears its hotcue status (delete).&#10;</Tooltip>
+								<Tooltip>Hotcue&#10;Left-click: If Hotcue is set, seeks the deck to Hotcue position.&#10;If Hotcue is not set, sets Hotcue to the current play position.&#10;Right-click: If Hotcue is set, clears its hotcue status (delete).&#10;</Tooltip>
 								<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 								<NumberStates>2</NumberStates>
 								<LeftClickIsPushButton>true</LeftClickIsPushButton>
@@ -4395,7 +4398,7 @@
 								</Connection>
 							</PushButton>
 							<PushButton>
-								<Tooltip>Hotcue&#10;Left-click: If Hotcue is set, seeks the player to Hotcue position.&#10;If Hotcue is not set, sets Hotcue to the current play position.&#10;Right-click: If Hotcue is set, clears its hotcue status (delete).&#10;</Tooltip>
+								<Tooltip>Hotcue&#10;Left-click: If Hotcue is set, seeks the deck to Hotcue position.&#10;If Hotcue is not set, sets Hotcue to the current play position.&#10;Right-click: If Hotcue is set, clears its hotcue status (delete).&#10;</Tooltip>
 								<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 								<NumberStates>2</NumberStates>
 								<LeftClickIsPushButton>true</LeftClickIsPushButton>
@@ -4441,7 +4444,7 @@
 	<!--
 	############################################################################################
 	############################################################################################
-	WidgetGroup : Player 2
+	WidgetGroup : Deck 2
 	############################################################################################
 	############################################################################################
 	-->
@@ -4914,7 +4917,7 @@
 											<!--
 											**********************************************
 											Vinyl- Status 
-											// Vinyl status indicators are inside the players WidgetGroups
+											// Vinyl status indicators are inside the decks WidgetGroups
 											**********************************************
 											-->
 											<!--
@@ -5405,7 +5408,7 @@
 					**********************************************
 					-->
 					<PushButton>
-						<Tooltip>Eject&#10;Eject currently loaded track from player.&#10;</Tooltip>
+						<Tooltip>Eject&#10;Eject currently loaded track from deck.&#10;</Tooltip>
 						<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 						<NumberStates>1</NumberStates>
 						<State>
@@ -5422,7 +5425,7 @@
 						</Connection>
 					</PushButton>
 
-					<!-- Player playback control sub-widget -->
+					<!-- Playback control sub-widget -->
 					<WidgetGroup>
 						<Pos>86,204</Pos>
 						<Size>277,43</Size>
@@ -5678,7 +5681,7 @@
 							**********************************************
 							-->
 							<PushButton>
-								<Tooltip>Loop halve&#10;Halves the current loop's length by moving the end marker.&#10;Player immediately loops if past the new endpoint.&#10;</Tooltip>
+								<Tooltip>Loop halve&#10;Halves the current loop's length by moving the end marker.&#10;Deck immediately loops if past the new endpoint.&#10;</Tooltip>
 								<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 								<NumberStates>1</NumberStates>
 								<State>
@@ -5716,7 +5719,7 @@
 							**********************************************
 							-->
 							<PushButton>
-								<Tooltip>Loop-In marker&#10;Sets the player loop-in position to the current play position.&#10;</Tooltip>
+								<Tooltip>Loop-In marker&#10;Sets the deck loop-in position to the current play position.&#10;</Tooltip>
 								<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 								<NumberStates>1</NumberStates>
 								<State>
@@ -5732,7 +5735,7 @@
 								</Connection>
 							</PushButton>
 							<PushButton>
-								<Tooltip>Loop-Out marker&#10;Sets the player loop-out position to the current play position.&#10;</Tooltip>
+								<Tooltip>Loop-Out marker&#10;Sets the deck loop-out position to the current play position.&#10;</Tooltip>
 								<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 								<NumberStates>1</NumberStates>
 								<State>
@@ -5781,7 +5784,7 @@
 							**********************************************
 							-->
 							<PushButton>
-								<Tooltip>Hotcue&#10;Left-click: If Hotcue is set, seeks the player to Hotcue position.&#10;If Hotcue is not set, sets Hotcue to the current play position.&#10;Right-click: If Hotcue is set, clears its hotcue status (delete).&#10;</Tooltip>
+								<Tooltip>Hotcue&#10;Left-click: If Hotcue is set, seeks the deck to Hotcue position.&#10;If Hotcue is not set, sets Hotcue to the current play position.&#10;Right-click: If Hotcue is set, clears its hotcue status (delete).&#10;</Tooltip>
 								<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 								<NumberStates>2</NumberStates>
 								<LeftClickIsPushButton>true</LeftClickIsPushButton>
@@ -5815,7 +5818,7 @@
 								</Connection>
 							</PushButton>
 							<PushButton>
-								<Tooltip>Hotcue&#10;Left-click: If Hotcue is set, seeks the player to Hotcue position.&#10;If Hotcue is not set, sets Hotcue to the current play position.&#10;Right-click: If Hotcue is set, clears its hotcue status (delete).&#10;</Tooltip>
+								<Tooltip>Hotcue&#10;Left-click: If Hotcue is set, seeks the deck to Hotcue position.&#10;If Hotcue is not set, sets Hotcue to the current play position.&#10;Right-click: If Hotcue is set, clears its hotcue status (delete).&#10;</Tooltip>
 								<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 								<NumberStates>2</NumberStates>
 								<LeftClickIsPushButton>true</LeftClickIsPushButton>
@@ -5849,7 +5852,7 @@
 								</Connection>
 							</PushButton>
 							<PushButton>
-								<Tooltip>Hotcue&#10;Left-click: If Hotcue is set, seeks the player to Hotcue position.&#10;If Hotcue is not set, sets Hotcue to the current play position.&#10;Right-click: If Hotcue is set, clears its hotcue status (delete).&#10;</Tooltip>
+								<Tooltip>Hotcue&#10;Left-click: If Hotcue is set, seeks the deck to Hotcue position.&#10;If Hotcue is not set, sets Hotcue to the current play position.&#10;Right-click: If Hotcue is set, clears its hotcue status (delete).&#10;</Tooltip>
 								<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 								<NumberStates>2</NumberStates>
 								<LeftClickIsPushButton>true</LeftClickIsPushButton>
@@ -5883,7 +5886,7 @@
 								</Connection>
 							</PushButton>
 							<PushButton>
-								<Tooltip>Hotcue&#10;Left-click: If Hotcue is set, seeks the player to Hotcue position.&#10;If Hotcue is not set, sets Hotcue to the current play position.&#10;Right-click: If Hotcue is set, clears its hotcue status (delete).&#10;</Tooltip>
+								<Tooltip>Hotcue&#10;Left-click: If Hotcue is set, seeks the deck to Hotcue position.&#10;If Hotcue is not set, sets Hotcue to the current play position.&#10;Right-click: If Hotcue is set, clears its hotcue status (delete).&#10;</Tooltip>
 								<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 								<NumberStates>2</NumberStates>
 								<LeftClickIsPushButton>true</LeftClickIsPushButton>
