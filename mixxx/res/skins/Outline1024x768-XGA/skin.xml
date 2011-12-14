@@ -1525,9 +1525,6 @@
 		<Pos>50,220</Pos>
 		<Size>60,16</Size>
 		<NumberOfDigits>4</NumberOfDigits>
-		<Connection>
-			<ConfigKey>[Channel1],rate</ConfigKey>
-		</Connection>
 	</NumberRate>
 	<NumberRate>
 		<Tooltip>Pitch rate&#10;Displays the current pitch of the track based on the original tempo.&#10;</Tooltip>
@@ -1539,9 +1536,6 @@
 		<Pos>957,220</Pos>
 		<Size>60,16</Size>
 		<NumberOfDigits>4</NumberOfDigits>
-		<Connection>
-			<ConfigKey>[Channel2],rate</ConfigKey>
-		</Connection>
 	</NumberRate>
 
 	<!--

@@ -2614,9 +2614,6 @@
 						<Size>50,14</Size>
 						<!--CSS alignments not respected see bug lp:605530 , lets call <Alignment>-->
 						<Alignment>center</Alignment>
-						<Connection>
-							<ConfigKey>[Channel1],rate</ConfigKey>
-						</Connection>
 					</NumberRate>
 					<NumberRate>
 						<Tooltip>Pitch rate&#10;Displays the current pitch of the track based on the original tempo.&#10;</Tooltip>
@@ -2629,9 +2626,6 @@
 						<Size>50,14</Size>
 						<!--CSS alignments not respected see bug lp:605530 , lets call <Alignment>-->
 						<Alignment>center</Alignment>
-						<Connection>
-							<ConfigKey>[Channel2],rate</ConfigKey>
-						</Connection>
 					</NumberRate>
 
 					<!--

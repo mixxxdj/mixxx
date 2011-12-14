@@ -1087,9 +1087,6 @@
 		<NumberOfDigits>4</NumberOfDigits>
 		<!--CSS alignments not respected see bug lp:605530 , lets call <Alignment>-->
 		<Alignment>right</Alignment>
-		<Connection>
-			<ConfigKey>[Channel1],rate</ConfigKey>
-		</Connection>
 	</NumberRate>
 	<NumberRate>
 		<Tooltip>Pitch rate&#10;Displays the current pitch of the track based on the original tempo.&#10;</Tooltip>
@@ -1103,9 +1100,6 @@
 		<NumberOfDigits>4</NumberOfDigits>
 		<!--CSS alignments not respected see bug lp:605530 , lets call <Alignment>-->
 		<Alignment>right</Alignment>
-		<Connection>
-			<ConfigKey>[Channel2],rate</ConfigKey>
-		</Connection>
 	</NumberRate>
 
 	<!--
