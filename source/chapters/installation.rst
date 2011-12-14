@@ -19,12 +19,9 @@ Mac OS X
 ========
 
 Mac OS X users on Snow Leopard or greater can install Mixxx from the `Mac App
-Store <http://itunes.apple.com/us/app/mixxx/id413756578?mt=12>`_. Alternatively, Intel and PPC users can install Mixxx by downloading and
+Store <http://itunes.apple.com/us/app/mixxx/id413756578?mt=12>`_. Alternatively, users can install Mixxx by downloading and
 double-clicking the Mixxx DMG archive, and then dragging-and-dropping the Mixxx
-bundle into their Applications folder. Mixxx requires an Intel or PPC Mac
-running Mac OS X 10.4 or newer.
-
-.. note:: If you aren't sure about Intel vs. PPC, pick the Intel version.
+bundle into their Applications folder. Mixxx requires an Intel Mac running Mac OS X 10.5 or newer.
 
 GNU/Linux
 =========
