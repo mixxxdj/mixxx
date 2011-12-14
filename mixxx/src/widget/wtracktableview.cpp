@@ -500,6 +500,10 @@ void WTrackTableView::mouseMoveEvent(QMouseEvent* pEvent) {
         locationUrls.append(url);
     }
 
+    if (locationUrls.empty()) {
+        return;
+    }
+
     QMimeData* mimeData = new QMimeData();
     mimeData->setUrls(locationUrls);
 
