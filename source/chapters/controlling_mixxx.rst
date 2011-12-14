@@ -118,7 +118,7 @@ Customizing
 You can also customize the keyboard mapping. The shortcuts are defined in a text file, and can be changed.
 
 * Linux: /usr/share/mixxx/keyboard/Standard.kbd.cfg
-* MacOS X: <Mixxx bundle>/keyboard/Standard.kbd.cfg
+* Mac OS X: <Mixxx bundle>/keyboard/Standard.kbd.cfg
 * Windows: <Mixxx dir>\\keyboard\\Standard.kbd.cfg
 
 You can share custom keyboard mappings in the `Mixxx User customizations forum`_.

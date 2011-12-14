@@ -42,7 +42,7 @@ tools to create better live mixes.
 System Requirements
 ===================
 
-Mixxx is available for Windows, Mac OSX and GNU/Linux. Mixxx is designed to use
+Mixxx is available for Windows, Mac OS X and GNU/Linux. Mixxx is designed to use
 very few system resources, but the Mixxx team suggests these minimum
 requirements for having a great experience with Mixxx:
 

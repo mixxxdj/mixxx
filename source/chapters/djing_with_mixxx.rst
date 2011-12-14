@@ -19,7 +19,7 @@ Songs can be loaded into a player in several ways:
 * Drag-and-drop from external file browser: Dragging-and-dropping a song from an
   external file browser directly onto a waveform display in Mixxx will load that
   song. This function is also known to work on some platforms with other
-  applications. For example, on OS X, dragging-and-dropping a track from iTunes
+  applications. For example, on Mac OS X, dragging-and-dropping a track from iTunes
   onto one of Mixxx's waveform displays will load that song into a player.
 
 Waveform displays
