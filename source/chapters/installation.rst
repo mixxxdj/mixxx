@@ -3,7 +3,7 @@ Installing Mixxx
 
 First, you need to download Mixxx. If you haven't done this already, head on
 over to our `downloads page <http://mixxx.org/download.php>`_ and grab a copy
-for your OS.
+for your :term:`OS <operating system>`.
 
 Windows
 =======

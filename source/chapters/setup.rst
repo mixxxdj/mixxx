@@ -69,7 +69,7 @@ mouse and keyboard. For more information see :ref:`controlling mixxx`.
 Laptop, MIDI Controller, and External USB Soundcard
 ---------------------------------------------------
 
-Mixxx can work with any MIDI controller that has drivers for your OS, as long as
+Mixxx can work with any MIDI controller that has drivers for your :term:`OS <operating system>`, as long as
 there is a MIDI mapping file to tell Mixxx how to understand it. Mixxx comes
 bundled with a number of MIDI mapping presets. To see the full list, see
 :ref:`control-midi`.

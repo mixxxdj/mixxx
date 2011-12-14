@@ -143,8 +143,8 @@ Here are the steps for using one:
 #. Click *Enable* and choose the appropriate mapping from the *presets* combobox
 #. Click OK and Mixxx can now be controlled by your controller(s).
 
-Mixxx can use any MIDI controller that is recognized by your OS (some may
-require drivers,) as long as there is a MIDI mapping file to tell Mixxx how to
+Mixxx can use any MIDI controller that is recognized by your :term:`OS <operating system>` (some may
+require drivers), as long as there is a MIDI mapping file to tell Mixxx how to
 understand it.  Mixxx comes bundled with a number of mappings for the devices
 listed below.
 
@@ -205,7 +205,7 @@ forums, or :term:`IRC` channel.
 Before purchasing a controller to use with Mixxx, please consult our `Hardware
 Compatibility wiki page`_. It contains the most up-to-date information about
 which controllers work with Mixxx and the details of each.  Device support
-varies for each supported OS, so please make sure to consult the documentation.
+varies for each supported :term:`OS <operating system>`, so please make sure to consult the documentation.
 
 .. _Hardware Compatibility wiki page: http://www.mixxx.org/wiki/doku.php/hardware_compatibility
 .. _bug tracker: http://bugs.launchpad.net/mixxx
