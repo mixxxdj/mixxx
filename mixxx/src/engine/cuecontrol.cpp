@@ -680,15 +680,17 @@ void CueControl::cueCDJ(double v) {
 }
 
 void CueControl::cuePlay(double v) {
+    Q_UNUSED(v);
+    
     QMutexLocker lock(&m_mutex);
 
-    if (m_bPreviewing && !v) {
+    if (m_bPreviewing) {
     // we're previewing? Then stop previewing and go into normal play mode.
         m_pPlayButton->set(1.0);
         m_bPreviewing = false;
     }
 
-    if (m_bPreviewingHotcue && !v) {
+    if (m_bPreviewingHotcue) {
         m_pPlayButton->set(1.0);
         m_bHotcueCancel = true;
     }

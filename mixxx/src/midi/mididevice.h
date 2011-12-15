@@ -69,7 +69,9 @@ Q_OBJECT
             messages and passes them straight to a script function. */
         void receive(const unsigned char data[], unsigned int length);
 #endif
-        bool midiDebugging();
+        /** Specifies whether or not we should dump MIDI messages to the console at runtime. This is useful
+            for end-user debugging and to help people map their controllers. */
+        static bool midiDebugging();
         void setReceiveInhibit(bool inhibit);
     public slots:
         void disableMidiLearn();
@@ -96,9 +98,6 @@ Q_OBJECT
             protocol that treats input and output ports on a single device as complete separate entities. This
             helps us group those back together for sanity/usability. */
         MidiDevice* m_pCorrespondingOutputDevice;
-        /** Specifies whether or not we should dump MIDI messages to the console at runtime. This is useful
-            for end-user debugging and to help people map their controllers. */
-        bool m_midiDebug;
         /** Mutex to protect against concurrent access to member variables */
         QMutex m_mutex;
         /** Mutex to protect against concurrent access to the m_pMidiMapping _pointer. Note that MidiMapping itself is thread-safe, so we just need to protect the pointer!. */

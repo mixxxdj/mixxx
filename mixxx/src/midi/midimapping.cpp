@@ -733,7 +733,7 @@ void MidiMapping::applyPreset() {
         scriptFunctions = m_pScriptEngine->getScriptFunctions();
     }
     if (scriptFunctions.isEmpty()) loadScriptCode();
-
+    
     initializeScripts();
 #endif
 
@@ -754,6 +754,7 @@ void MidiMapping::applyPreset() {
             // Next device
             controller = controller.nextSiblingElement("controller");
         }
+        MidiLedHandler::updateAll();
     }
 }
 
@@ -859,6 +860,7 @@ void MidiMapping::clearPreset() {
         outputs.appendChild(outputNode);
     }
 
+    m_Bindings = doc.documentElement();
     return doc;
 }
 
@@ -1160,9 +1162,10 @@ void MidiMapping::restartScriptEngine()
 void MidiMapping::reset() {
 #ifdef __MIDISCRIPT__   // Can't ifdef slots in the .h file, so we just do the body.
     restartScriptEngine();
-    MidiLedHandler::destroyHandlers();
-    applyPreset();
 #endif
+    MidiLedHandler::destroyHandlers(m_pOutputMidiDevice);
+
+    applyPreset();
 }
 
 void MidiMapping::slotScriptEngineReady() {

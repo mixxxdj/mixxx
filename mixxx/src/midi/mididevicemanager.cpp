@@ -38,7 +38,6 @@ MidiDeviceManager::~MidiDeviceManager()
 {
     //Delete enumerators and they'll delete their Devices
     delete m_pPMEnumerator;
-    MidiLedHandler::destroyHandlers();
 #ifdef __HSS1394__
     delete m_pHSSEnumerator;
 #endif
