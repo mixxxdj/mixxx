@@ -123,6 +123,13 @@ void LoopingControl::slotLoopScale(double scale) {
     int loop_length = m_iLoopEndSample - m_iLoopStartSample;
     int samples = m_pTrackSamples->get();
     loop_length *= scale;
+
+    // Abandon loops that are too short of extend beyond the end of the file.
+    if (loop_length < MINIMUM_AUDIBLE_LOOP_SIZE ||
+        m_iLoopStartSample + loop_length > m_pTrackSamples->get()) {
+        return;
+    }
+
     m_iLoopEndSample = m_iLoopStartSample + loop_length;
 
     if (!even(m_iLoopEndSample)) {
