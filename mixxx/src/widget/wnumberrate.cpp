@@ -25,6 +25,8 @@ WNumberRate::WNumberRate(const char * group, QWidget * parent) : WNumber(parent)
     m_pRateControl = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey(group, "rate")));
     connect(m_pRateControl, SIGNAL(valueChanged(double)),
             this, SLOT(setValue(double)));
+    // Initialize the widget.
+    setValue(0);
 }
 
 WNumberRate::~WNumberRate()
