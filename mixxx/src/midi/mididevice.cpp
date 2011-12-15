@@ -23,6 +23,7 @@
 #include "midimessage.h"
 #include "mixxxcontrol.h"
 #include "controlobject.h"
+#include "midiledhandler.h"
 
 #ifdef __MIDISCRIPT__
 #include "midiscriptengine.h"
@@ -46,10 +47,6 @@ MidiDevice::MidiDevice(MidiMapping* mapping) : QThread()
     if (m_pMidiMapping == NULL) {
         m_pMidiMapping = new MidiMapping(this);
     }
-
-    // Get --midiDebug command line option
-    QStringList commandLineArgs = QApplication::arguments();
-    m_midiDebug = commandLineArgs.contains("--midiDebug", Qt::CaseInsensitive);
 
     connect(m_pMidiMapping, SIGNAL(midiLearningStarted()), this, SLOT(enableMidiLearn()));
     connect(m_pMidiMapping, SIGNAL(midiLearningFinished()), this, SLOT(disableMidiLearn()));
@@ -95,6 +92,7 @@ void MidiDevice::shutdown()
 #ifdef __MIDISCRIPT__
     m_pMidiMapping->shutdownScriptEngine();
 #endif
+    MidiLedHandler::destroyHandlers(this);
     setReceiveInhibit(false);
 }
 
@@ -356,10 +354,10 @@ void MidiDevice::receive(const unsigned char data[], unsigned int length) {
 #endif
 
 bool MidiDevice::midiDebugging()
-{
-    //Assumes a lock is already held. :/
-    bool debug = m_midiDebug;
-    return debug;
+{   // TODO: Should this be in MidiDeviceManager instead?
+    // Get --midiDebug command line option
+    QStringList commandLineArgs = QApplication::arguments();
+    return commandLineArgs.contains("--midiDebug", Qt::CaseInsensitive);
 }
 
 void MidiDevice::setReceiveInhibit(bool inhibit)

@@ -770,6 +770,13 @@ void MidiScriptEngine::trigger(QString group, QString name) {
         m_scriptEngineLock.unlock();
     }
 
+    ControlObjectThread *cot = getControlObjectThread(group, name);
+    
+    // The GUI won't update unless we do this
+    //  And emitValueChanged doesn't work for this either.
+    // FIXME: but this still doesn't affect MIDILEDHandlers
+    if(cot != NULL) cot->slotSet(cot->get());
+
     // ControlObject doesn't emit ValueChanged when set to the same value,
     //  and ControlObjectThread::emitValueChanged also has no effect
     //  so we have to call the function(s) manually with the current value
@@ -782,7 +789,7 @@ void MidiScriptEngine::trigger(QString group, QString name) {
             QScriptValue function_value = m_pEngine->evaluate(function);
             QScriptValueList args;
             double value;
-            ControlObjectThread *cot = getControlObjectThread(group, name);
+            
             if(cot != NULL) {
                 args << QScriptValue(cot->get());
                 args << QScriptValue(key.group);
@@ -791,9 +798,6 @@ void MidiScriptEngine::trigger(QString group, QString name) {
                 if (result.isError()) {
                     qWarning()<< "MidiScriptEngine: Call to " << function << " resulted in an error:  " << result.toString();
                 }
-                // But the GUI won't update unless we do this anyway.
-                //  And emitValueChanged doesn't work for this either. WTF?
-                cot->slotSet(cot->get());
             }
             ++i;
         }
