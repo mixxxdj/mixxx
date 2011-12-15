@@ -38,7 +38,7 @@ void MidiLedHandler::update() {
 
 void MidiLedHandler::controlChanged(double value) {
     //Guh, the valueChangedFromEngine and valueChanged signals can occur simultaneously because we're
-    //using Qt::DirectConnection. We have to block by hand to prevent re-entrancy. We can't use 
+    //using Qt::DirectConnection. We have to block by hand to prevent re-entrancy. We can't use
     //Qt::BlockingQueuedConnection because we don't have an event loop in some of the threads that
     //create MidiLedHandlers. (The underlying code is messy - On first run, the LED handlers get created
     //in the main thread, and then after you load a new binding, they get created from the Midi thread.)
@@ -85,7 +85,7 @@ void MidiLedHandler::createHandlers(QDomNode node, MidiDevice & midi) {
                 if (!light.firstChildElement("maximum").isNull()) {
                     max = WWidget::selectNodeFloat(light, "maximum");
                 }
-                if (MidiDevice::midiDebugging()) {
+                if (midi.midiDebugging()) {
                     qDebug() << QString(
                     "Creating LED handler for %1,%2 between %3 and %4 to MIDI out: 0x%5 0x%6, on: 0x%7 off: 0x%8")
                         .arg(group).arg(key).arg(min).arg(max)
@@ -94,7 +94,7 @@ void MidiLedHandler::createHandlers(QDomNode node, MidiDevice & midi) {
                         .arg(QString::number(on, 16).toUpper().rightJustified(2,'0'))
                         .arg(QString::number(off, 16).toUpper().rightJustified(2,'0'));
                 }
-                    
+
                 allhandlers.append(new MidiLedHandler(group, key, midi, min, max, status, midino, on, off));
             }
             light = light.nextSibling();

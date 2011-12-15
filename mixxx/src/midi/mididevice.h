@@ -12,7 +12,7 @@
     functions. This is a base class that cannot be instantiated on its own,
     it must be inherited by a class that implements it on top of some API.
     (See MidiDevicePortMidi, as of Nov 2009.)
-    
+
     This class is thread safe and must remain thread safe because parts of
     it may be accessed by the MIDI script engine thread as well as the
     MIDI thread concurrently.
@@ -71,7 +71,7 @@ Q_OBJECT
 #endif
         /** Specifies whether or not we should dump MIDI messages to the console at runtime. This is useful
             for end-user debugging and to help people map their controllers. */
-        static bool midiDebugging();
+        bool midiDebugging();
         void setReceiveInhibit(bool inhibit);
     public slots:
         void disableMidiLearn();
@@ -98,6 +98,9 @@ Q_OBJECT
             protocol that treats input and output ports on a single device as complete separate entities. This
             helps us group those back together for sanity/usability. */
         MidiDevice* m_pCorrespondingOutputDevice;
+        /** Specifies whether or not we should dump MIDI messages to the console at runtime. This is useful
+            for end-user debugging and to help people map their controllers. */
+        bool m_midiDebug;
         /** Mutex to protect against concurrent access to member variables */
         QMutex m_mutex;
         /** Mutex to protect against concurrent access to the m_pMidiMapping _pointer. Note that MidiMapping itself is thread-safe, so we just need to protect the pointer!. */
