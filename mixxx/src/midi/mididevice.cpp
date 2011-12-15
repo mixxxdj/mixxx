@@ -48,6 +48,11 @@ MidiDevice::MidiDevice(MidiMapping* mapping) : QThread()
         m_pMidiMapping = new MidiMapping(this);
     }
 
+    // TODO: Should this be in MidiDeviceManager instead?
+    // Get --midiDebug command line option
+    QStringList commandLineArgs = QApplication::arguments();
+    m_midiDebug = commandLineArgs.contains("--midiDebug", Qt::CaseInsensitive);
+
     connect(m_pMidiMapping, SIGNAL(midiLearningStarted()), this, SLOT(enableMidiLearn()));
     connect(m_pMidiMapping, SIGNAL(midiLearningFinished()), this, SLOT(disableMidiLearn()));
 }
@@ -177,7 +182,7 @@ void MidiDevice::receive(MidiStatusByte status, char channel, char control, char
       .arg(QString::number((status & 255)>>4, 16).toUpper())
       .arg(QString::number(control, 16).toUpper().rightJustified(2,'0'))
       .arg(QString::number(value, 16).toUpper().rightJustified(2,'0'));
-    
+
     // some status bytes can have the channel encoded in them. Take out the
     // channel when necessary. We do this because later bits of this
     // function (and perhaps its callchain) assume the channel nibble to be
@@ -229,7 +234,7 @@ void MidiDevice::receive(MidiStatusByte status, char channel, char control, char
     //qDebug() << "MidiDevice: " << mixxxControl.getControlObjectGroup() << mixxxControl.getControlObjectValue();
 
     ConfigKey configKey(mixxxControl.getControlObjectGroup(), mixxxControl.getControlObjectValue());
-    
+
     MidiOption currMidiOption = mixxxControl.getMidiOption();
 
 #ifdef __MIDISCRIPT__
@@ -282,13 +287,13 @@ void MidiDevice::receive(MidiStatusByte status, char channel, char control, char
                                                                        // computed differently.
             default: break;
         }
-        
+
         // Soft-takeover is processed in addition to any other options
         if (currMidiOption == MIDI_OPT_SOFT_TAKEOVER) {
             m_st.enable(mixxxControl);  // This is the only place to enable it if it isn't already.
             if (m_st.ignore(mixxxControl,newValue,true)) return;
         }
-        
+
         ControlObject::sync();
 
         //Super dangerous cast here... Should be fine once MidiCategory is replaced with MidiStatusByte permanently.
@@ -353,11 +358,9 @@ void MidiDevice::receive(const unsigned char data[], unsigned int length) {
 }
 #endif
 
-bool MidiDevice::midiDebugging()
-{   // TODO: Should this be in MidiDeviceManager instead?
-    // Get --midiDebug command line option
-    QStringList commandLineArgs = QApplication::arguments();
-    return commandLineArgs.contains("--midiDebug", Qt::CaseInsensitive);
+bool MidiDevice::midiDebugging() {
+    // Assumes a lock is already held. :/
+    return m_midiDebug;
 }
 
 void MidiDevice::setReceiveInhibit(bool inhibit)
