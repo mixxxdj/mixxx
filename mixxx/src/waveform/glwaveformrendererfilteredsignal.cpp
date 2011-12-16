@@ -99,7 +99,6 @@ void GLWaveformRendererFilteredSignal::draw(QPainter *painter, QPaintEvent *even
         return;
 
     const Waveform* waveform = trackInfo->getWaveForm();
-    const QVector<unsigned char>& waveformData = waveform->getConstData();
 
     double samplesPerPixel = m_waveformRenderer->getVisualSamplePerPixel();
     int numberOfSamples = m_waveformRenderer->getWidth() * samplesPerPixel;
@@ -109,7 +108,7 @@ void GLWaveformRendererFilteredSignal::draw(QPainter *painter, QPaintEvent *even
     {
         //TODO (vRince) not really accurate since waveform size une visual reasampling and
         //have two mores samples to hold the complete visual data
-        currentPosition = m_waveformRenderer->getPlayPos()*waveformData.size();
+        currentPosition = m_waveformRenderer->getPlayPos()*waveform->size();
         m_waveformRenderer->regulateVisualSample(currentPosition);
     }
 
@@ -137,7 +136,7 @@ void GLWaveformRendererFilteredSignal::draw(QPainter *painter, QPaintEvent *even
     {
         float xPos = (float)i/samplesPerPixel;
         int thisIndex = currentPosition + 2*i - numberOfSamples;
-        if(thisIndex >= 0 && (thisIndex+samplesPerPixel+1) < waveformData.size())
+        if(thisIndex >= 0 && (thisIndex+samplesPerPixel+1) < waveform->size())
             //vRince we could lost some data at the end but never more than samplesPerPixel+1 ...
         {
             unsigned char maxLow = 0;
@@ -146,9 +145,9 @@ void GLWaveformRendererFilteredSignal::draw(QPainter *painter, QPaintEvent *even
 
             for( int sampleIndex = 0; sampleIndex < (samplesPerPixel); ++sampleIndex)
             {
-                maxLow = math_max( maxLow, waveform->getConstLowData()[thisIndex+sampleIndex]);
-                maxBand = math_max( maxBand, waveform->getConstMidData()[thisIndex+sampleIndex]);
-                maxHigh = math_max( maxHigh, waveform->getConstHighData()[thisIndex+sampleIndex]);
+                maxLow = math_max( maxLow, waveform->getLow(thisIndex+sampleIndex));
+                maxBand = math_max( maxBand, waveform->getMid(thisIndex+sampleIndex));
+                maxHigh = math_max( maxHigh, waveform->getHigh(thisIndex+sampleIndex));
             }
 
             if( m_lowFilterControlObject && m_midFilterControlObject && m_highFilterControlObject)
@@ -181,7 +180,7 @@ void GLWaveformRendererFilteredSignal::draw(QPainter *painter, QPaintEvent *even
     {
         float xPos = (float)i/samplesPerPixel;
         int thisIndex = currentPosition + 2*i - numberOfSamples + 1; //take left channel
-        if(thisIndex >= 1 && (thisIndex+samplesPerPixel+1) < waveformData.size())
+        if(thisIndex >= 1 && (thisIndex+samplesPerPixel+1) < waveform->size())
         {
             unsigned char maxLow = 0;
             unsigned char maxBand = 0;
@@ -189,9 +188,9 @@ void GLWaveformRendererFilteredSignal::draw(QPainter *painter, QPaintEvent *even
 
             for( int sampleIndex = 0; sampleIndex < (samplesPerPixel); ++sampleIndex)
             {
-                maxLow = math_max( maxLow, waveform->getConstLowData()[thisIndex+sampleIndex]);
-                maxBand = math_max( maxBand, waveform->getConstMidData()[thisIndex+sampleIndex]);
-                maxHigh = math_max( maxHigh, waveform->getConstHighData()[thisIndex+sampleIndex]);
+                maxLow = math_max( maxLow, waveform->getLow(thisIndex+sampleIndex));
+                maxBand = math_max( maxBand, waveform->getMid(thisIndex+sampleIndex));
+                maxHigh = math_max( maxHigh, waveform->getHigh(thisIndex+sampleIndex));
             }
 
             if( m_lowFilterControlObject && m_midFilterControlObject && m_highFilterControlObject)

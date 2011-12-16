@@ -1,6 +1,8 @@
 #include "glwaveformrenderersignalshader.h"
 #include "shadervariable.h"
 
+#include "waveform/waveformwidgetrenderer.h"
+
 GLWaveformRendererSignalShader::GLWaveformRendererSignalShader(WaveformWidgetRenderer* waveformWidgetRenderer) :
     WaveformRendererAbstract(waveformWidgetRenderer) {
 
@@ -65,6 +67,55 @@ bool GLWaveformRendererSignalShader::loadShaders()
     return true;
 }
 
+void GLWaveformRendererSignalShader::createGeometry() {
+
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    glOrtho(-1.0, 1.0, 1.0, -1.0, -1000, 1000);
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+
+    m_quadListId = glGenLists(1);
+    glNewList(m_quadListId, GL_COMPILE);
+    {
+        glBegin(GL_QUADS);
+        {
+            glTexCoord2f( -1.0,-1.0);
+            glVertex3f(-1.0f,-1.0f, 0.0f);
+
+            glTexCoord2f( 1.0,-1.0);
+            glVertex3f( 1.0f,-1.0f, 0.0f);
+
+            glTexCoord2f( 1.0, 1.0);
+            glVertex3f( 1.0f, 1.0f, 0.0f);
+
+            glTexCoord2f(-1.0, 1.0);
+            glVertex3f(-1.0f, 1.0f, 0.0f);
+        }
+        glEnd();
+    }
+    glEndList();
+
+
+    //Create a texture to hold the waveform data in GPU memory
+    glEnable(GL_TEXTURE_2D);
+
+    glGenTextures(1,&m_textureId);
+    qDebug() << "dataLocation_" << m_textureId << "error" << glGetError();
+
+    glBindTexture(GL_TEXTURE_2D, m_textureId);
+    qDebug() << "bind error" << glGetError();
+
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+
+    //TODO
+    //glTexImage2D(GL_TEXTURE_2D,0,GL_RGBA,1024,1024,0,GL_RGBA,GL_UNSIGNED_BYTE,data_.constData());
+    qDebug() << "glTexImage2D error" << glGetError();
+
+    glDisable(GL_TEXTURE_2D);
+}
+
 void GLWaveformRendererSignalShader::init(){
 
     if( !m_shaderProgram)
@@ -79,6 +130,8 @@ void GLWaveformRendererSignalShader::init(){
     m_textureStride->setUniformValue(m_shaderProgram);
     m_indexPosition->setUniformValue(m_shaderProgram);
     m_displayRange->setUniformValue(m_shaderProgram);
+
+    createGeometry();
 }
 
 void GLWaveformRendererSignalShader::setup(const QDomNode& node) {

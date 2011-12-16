@@ -21,8 +21,11 @@ public:
     bool loadShaders();
 
 private:
+    void createGeometry();
+
+private:
     GLint m_quadListId;
-    GLint m_textureId;
+    GLuint m_textureId;
 
     //shaders
     QGLShaderProgram* m_shaderProgram;

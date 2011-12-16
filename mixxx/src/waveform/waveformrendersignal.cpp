@@ -203,14 +203,14 @@ void WaveformRenderSignal::draw(QPainter *pPainter, QPaintEvent *event,
                                   */
 
             pPainter->setPen( lowColor);
-            pPainter->drawLine( xPos, (float)-waveform->getConstLowData()[thisIndex]   * powerFactor,
-                                xPos, (float) waveform->getConstLowData()[thisIndex+1] * powerFactor);
+            pPainter->drawLine( xPos, (float) - waveform->getLow(thisIndex) * powerFactor,
+                                xPos, (float) waveform->getLow(thisIndex+1) * powerFactor);
             pPainter->setPen( lowColor);
-            pPainter->drawLine( xPos, (float)-waveform->getConstMidData()[thisIndex]   * powerFactor * 2.0f,
-                                xPos, (float) waveform->getConstMidData()[thisIndex+1] * powerFactor * 2.0f);
+            pPainter->drawLine( xPos, (float) - waveform->getMid(thisIndex) * powerFactor * 2.0f,
+                                xPos, (float) waveform->getMid(thisIndex+1) * powerFactor * 2.0f);
             pPainter->setPen( highColor);
-            pPainter->drawLine( xPos, (float)-waveform->getConstHighData()[thisIndex]   * powerFactor * 4.0f,
-                                xPos, (float) waveform->getConstHighData()[thisIndex+1] * powerFactor * 4.0f);
+            pPainter->drawLine( xPos, (float) - waveform->getHigh(thisIndex) * powerFactor * 4.0f,
+                                xPos, (float) waveform->getHigh(thisIndex+1) * powerFactor * 4.0f);
 
         }
         else
@@ -297,14 +297,14 @@ void WaveformRenderSignal::draw_point(QPainter *pPainter, QPaintEvent *event, QV
         if( currentDisplayPosition > 0 && currentDisplayPosition < waveform->size())
         {
             pPainter->setPen( lowColor);
-            pPainter->drawLine( xPos, (int)((float)-waveform->getConstLowData()[currentDisplayPosition]   * powerFactor),
-                                xPos, (int)((float) waveform->getConstLowData()[currentDisplayPosition+1] * powerFactor));
+            pPainter->drawLine( xPos, (int)((float) - waveform->getLow(currentDisplayPosition) * powerFactor),
+                                xPos, (int)((float) waveform->getLow(currentDisplayPosition+1) * powerFactor));
             pPainter->setPen( lowColor);
-            pPainter->drawLine( xPos, (int)((float)-waveform->getConstMidData()[currentDisplayPosition]   * powerFactor * 2.0f),
-                                xPos, (int)((float) waveform->getConstMidData()[currentDisplayPosition+1] * powerFactor * 2.0f));
+            pPainter->drawLine( xPos, (int)((float) - waveform->getMid(currentDisplayPosition) * powerFactor * 2.0f),
+                                xPos, (int)((float) waveform->getMid(currentDisplayPosition+1) * powerFactor * 2.0f));
             pPainter->setPen( highColor);
-            pPainter->drawLine( xPos, (int)((float)-waveform->getConstHighData()[currentDisplayPosition]   * powerFactor * 4.0f),
-                                xPos, (int)((float) waveform->getConstHighData()[currentDisplayPosition+1] * powerFactor * 4.0f));
+            pPainter->drawLine( xPos, (int)((float) - waveform->getHigh(currentDisplayPosition) * powerFactor * 4.0f),
+                                xPos, (int)((float) waveform->getHigh(currentDisplayPosition+1) * powerFactor * 4.0f));
         }
         //else
         //{

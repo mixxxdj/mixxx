@@ -36,7 +36,7 @@ private:
     int m_strideBufferPos;
     float m_currentStridePower[2];
     float m_currentStrideFiltredPower[2][3];
-
+    float m_convertionFactor;
     bool m_ready;
 
     EngineFilterButterworth8* m_filter[3];
