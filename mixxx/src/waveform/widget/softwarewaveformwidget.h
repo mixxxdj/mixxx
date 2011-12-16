@@ -10,8 +10,10 @@ public:
     virtual ~SoftwareWaveformWidget();
 
     virtual QString getWaveformWidgetName() { return "Filtered";}
-    virtual WaveformWidgetType::Type getType() const { return WaveformWidgetType::FilteredSoftwareWaveform;}
+    virtual WaveformWidgetType::Type getType() const { return WaveformWidgetType::SoftwareWaveform;}
+
     virtual bool useOpenGl() const { return false;}
+    virtual bool useOpenGLShaders() const { return false;}
 
 protected:
     virtual void castToQWidget();

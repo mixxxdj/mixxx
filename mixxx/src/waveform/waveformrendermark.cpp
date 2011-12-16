@@ -71,15 +71,15 @@ void WaveformRenderMark::draw( QPainter* painter, QPaintEvent* event)
         int samplePosition = mark.m_point->get();
         if( samplePosition > 0.0)
         {
-            m_waveformWidget->regulateVisualSample(samplePosition);
-            double currentMarkPoint = m_waveformWidget->transformSampleIndexInRendererWorld(samplePosition);
+            m_waveformRenderer->regulateVisualSample(samplePosition);
+            double currentMarkPoint = m_waveformRenderer->transformSampleIndexInRendererWorld(samplePosition);
 
             //NOTE: vRince I guess pixmap width is odd to display the center on the exact line !
             //external pixmap should respect that ...
             const int markHalfWidth = mark.m_pixmap.width()/2.0;
 
             //check if the current point need to be displayed
-            if( currentMarkPoint > -markHalfWidth && currentMarkPoint < m_waveformWidget->getWidth() + markHalfWidth)
+            if( currentMarkPoint > -markHalfWidth && currentMarkPoint < m_waveformRenderer->getWidth() + markHalfWidth)
                 painter->drawPixmap(QPoint(currentMarkPoint-markHalfWidth,0), mark.m_pixmap);
         }
     }
@@ -90,7 +90,7 @@ void WaveformRenderMark::draw( QPainter* painter, QPaintEvent* event)
 void WaveformRenderMark::setupMark( const QDomNode& node, Mark& mark)
 {
     QString item = WWidget::selectNodeQString( node, "Control");
-    mark.m_point = ControlObject::getControl( ConfigKey(m_waveformWidget->getGroup(), item));
+    mark.m_point = ControlObject::getControl( ConfigKey(m_waveformRenderer->getGroup(), item));
 
     //if there is no control the mark won't be displayed anyway ...
     if( mark.m_point == 0)
@@ -182,7 +182,7 @@ void WaveformRenderMark::generateMarkPixmap( Mark& mark)
         }
         */
 
-        mark.m_pixmap = QPixmap(labelRectWidth+1, m_waveformWidget->getHeight());
+        mark.m_pixmap = QPixmap(labelRectWidth+1, m_waveformRenderer->getHeight());
 
         // Fill with transparent pixels
         mark.m_pixmap.fill(QColor(0,0,0,0));
@@ -232,7 +232,7 @@ void WaveformRenderMark::generateMarkPixmap( Mark& mark)
     else //no text draw triangle
     {
         float triangleSize = 9.0;
-        mark.m_pixmap = QPixmap(triangleSize+1, m_waveformWidget->getHeight());
+        mark.m_pixmap = QPixmap(triangleSize+1, m_waveformRenderer->getHeight());
         mark.m_pixmap.fill(QColor(0,0,0,0));
 
         painter.begin(&mark.m_pixmap);

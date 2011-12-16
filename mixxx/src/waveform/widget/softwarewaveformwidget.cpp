@@ -13,9 +13,8 @@
 #include "waveform/waveformrendererfilteredsignal.h"
 
 SoftwareWaveformWidget::SoftwareWaveformWidget( const char* group, QWidget* parent) :
-    QWidget(parent),
-    WaveformWidgetAbstract(group)
-{
+    WaveformWidgetAbstract(group),
+    QWidget(parent) {
     qDebug() << "SoftwareWaveformWidget";
 
     m_waveformWidgetRenderer->addRenderer<WaveformRenderBackground>();
@@ -25,17 +24,14 @@ SoftwareWaveformWidget::SoftwareWaveformWidget( const char* group, QWidget* pare
     m_waveformWidgetRenderer->init();
 }
 
-SoftwareWaveformWidget::~SoftwareWaveformWidget()
-{
+SoftwareWaveformWidget::~SoftwareWaveformWidget() {
 }
 
-void SoftwareWaveformWidget::castToQWidget()
-{
+void SoftwareWaveformWidget::castToQWidget() {
     m_widget = static_cast<QWidget*>(this);
 }
 
-void SoftwareWaveformWidget::paintEvent( QPaintEvent* event)
-{
+void SoftwareWaveformWidget::paintEvent( QPaintEvent* event) {
     QPainter painter(this);
     m_waveformWidgetRenderer->draw(&painter,event);
 }

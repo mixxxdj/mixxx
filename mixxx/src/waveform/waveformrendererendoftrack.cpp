@@ -34,12 +34,12 @@ void WaveformRendererEndOfTrack::draw(QPainter* painter,
         generatePixmap();
     }
 
-    TrackPointer pTrack = m_waveformWidget->getTrackInfo();
+    TrackPointer pTrack = m_waveformRenderer->getTrackInfo();
     if (!pTrack) {
         return;
     }
 
-    double trackSamples = m_waveformWidget->getTrackSamples();
+    double trackSamples = m_waveformRenderer->getTrackSamples();
     // TODO(rryan) WARNING NOT ACCURATE! Should use track_samplerate CO
     double sampleRate = pTrack->getSampleRate();
 
@@ -47,7 +47,7 @@ void WaveformRendererEndOfTrack::draw(QPainter* painter,
         return;
     }
 
-    double dPlaypos = m_waveformWidget->getPlayPos();
+    double dPlaypos = m_waveformRenderer->getPlayPos();
     double remainingFrames = (1.0 - dPlaypos) * 0.5 * trackSamples;
     double remainingTime = remainingFrames / sampleRate;
 
@@ -63,14 +63,14 @@ void WaveformRendererEndOfTrack::draw(QPainter* painter,
             m_blinkingPeriodMillis;
     index = math_min(s_maxAlpha - 1, math_max(0, index));
 
-    int xPos = m_waveformWidget->getWidth()-m_pixmaps[index].width();
+    int xPos = m_waveformRenderer->getWidth()-m_pixmaps[index].width();
     painter->drawPixmap(QPoint(xPos, 0), m_pixmaps[index]);
 }
 
 void WaveformRendererEndOfTrack::generatePixmap() {
     for (int i = 0; i < s_maxAlpha; ++i) {
-        m_pixmaps[i] = QPixmap(m_waveformWidget->getWidth()/4,
-                               m_waveformWidget->getHeight());
+        m_pixmaps[i] = QPixmap(m_waveformRenderer->getWidth()/4,
+                               m_waveformRenderer->getHeight());
         m_pixmaps[i].fill(QColor(0, 0, 0, 0));
 
         QColor startColor = m_color;

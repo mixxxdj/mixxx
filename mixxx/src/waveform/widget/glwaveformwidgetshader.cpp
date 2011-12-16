@@ -1,4 +1,4 @@
-#include "glwaveformwidget.h"
+#include "glwaveformwidgetshader.h"
 
 #include <QPainter>
 
@@ -10,7 +10,7 @@
 #include "waveform/waveformrendererendoftrack.h"
 #include "waveform/waveformrenderbeat.h"
 
-GLWaveformWidget::GLWaveformWidget( const char* group, QWidget* parent) :
+GLWaveformWidgetShader::GLWaveformWidgetShader( const char* group, QWidget* parent) :
     WaveformWidgetAbstract(group),
     QGLWidget(parent) {
     m_waveformWidgetRenderer->addRenderer<WaveformRenderBackground>();
@@ -29,14 +29,11 @@ GLWaveformWidget::GLWaveformWidget( const char* group, QWidget* parent) :
     m_waveformWidgetRenderer->init();
 }
 
-GLWaveformWidget::~GLWaveformWidget() {
-}
-
-void GLWaveformWidget::castToQWidget() {
+void GLWaveformWidgetShader::castToQWidget() {
     m_widget = static_cast<QWidget*>(static_cast<QGLWidget*>(this));
 }
 
-void GLWaveformWidget::paintEvent( QPaintEvent* event) {
+void GLWaveformWidgetShader::paintEvent( QPaintEvent* event) {
     makeCurrent();
     QPainter painter(this);
     m_waveformWidgetRenderer->draw(&painter,event);

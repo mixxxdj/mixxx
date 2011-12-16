@@ -5,11 +5,12 @@ class WaveformWidgetType
 {
 public:
     enum Type {
-        EmptyWaveform = 0, //TODO
+        EmptyWaveform = 0,
         SimpleSoftwareWaveform, //TODO
-        FilteredSoftwareWaveform,
-        SimpleOpenGlWaveform, //TODO
-        FilteredOpenGlWaveform,
+        SoftwareWaveform, //TODO
+        SimpleGlWaveform, //TODO
+        GlWaveform,
+        GLSLWaveform,
         Count_WaveformwidgetType
     };
 };

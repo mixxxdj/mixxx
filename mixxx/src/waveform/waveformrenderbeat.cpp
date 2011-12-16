@@ -23,7 +23,7 @@ WaveformRenderBeat::~WaveformRenderBeat(){
 
 void WaveformRenderBeat::init(){
     m_beatActive = new ControlObjectThreadMain(
-                ControlObject::getControl( ConfigKey(m_waveformWidget->getGroup(),"beat_active")));
+                ControlObject::getControl( ConfigKey(m_waveformRenderer->getGroup(),"beat_active")));
 }
 
 void WaveformRenderBeat::setup( const QDomNode& node){
@@ -46,7 +46,7 @@ void WaveformRenderBeat::setup( const QDomNode& node){
 
 void WaveformRenderBeat::draw( QPainter* painter, QPaintEvent* /*event*/){
 
-    TrackPointer trackInfo = m_waveformWidget->getTrackInfo();
+    TrackPointer trackInfo = m_waveformRenderer->getTrackInfo();
 
     if(!trackInfo)
         return;
@@ -56,8 +56,8 @@ void WaveformRenderBeat::draw( QPainter* painter, QPaintEvent* /*event*/){
         return;
 
     m_beatsCache.clear();
-    trackBeats->findBeats( m_waveformWidget->getFirstDisplayedPosition() * m_waveformWidget->getTrackSamples(),
-                           m_waveformWidget->getLastDisplayedPosition() * m_waveformWidget->getTrackSamples(),
+    trackBeats->findBeats( m_waveformRenderer->getFirstDisplayedPosition() * m_waveformRenderer->getTrackSamples(),
+                           m_waveformRenderer->getLastDisplayedPosition() * m_waveformRenderer->getTrackSamples(),
                            &m_beatsCache);
 
     //if no beat do not waste time saving/restoring painter
@@ -69,16 +69,16 @@ void WaveformRenderBeat::draw( QPainter* painter, QPaintEvent* /*event*/){
     for( Const_BeatIterator it = m_beatsCache.begin(); it != m_beatsCache.end(); it++)
     {
         int beatPosition = *it;
-        m_waveformWidget->regulateVisualSample(beatPosition);
-        double xBeatPoint = m_waveformWidget->transformSampleIndexInRendererWorld(beatPosition);
+        m_waveformRenderer->regulateVisualSample(beatPosition);
+        double xBeatPoint = m_waveformRenderer->transformSampleIndexInRendererWorld(beatPosition);
 
         //NOTE (vRince) : RJ should we keep this ?
-        if( m_beatActive && m_beatActive->get() > 0.0 && abs(xBeatPoint - m_waveformWidget->getWidth()/2) < 20)
+        if( m_beatActive && m_beatActive->get() > 0.0 && abs(xBeatPoint - m_waveformRenderer->getWidth()/2) < 20)
             painter->setPen(QColor(m_highBeatColor));
         else
             painter->setPen(QColor(m_beatColor));
 
-        painter->drawLine(xBeatPoint,0.0,xBeatPoint,m_waveformWidget->getHeight());
+        painter->drawLine(xBeatPoint,0.0,xBeatPoint,m_waveformRenderer->getHeight());
     }
 
     painter->restore();
