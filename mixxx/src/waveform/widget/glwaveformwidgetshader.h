@@ -8,10 +8,10 @@ class GLWaveformWidgetShader : public WaveformWidgetAbstract, public QGLWidget
 {
 public:
     GLWaveformWidgetShader( const char* group, QWidget* parent);
-    virtual ~GLWaveformWidgetShader() {}
+    virtual ~GLWaveformWidgetShader();
 
     virtual QString getWaveformWidgetName() { return "Filtered";}
-    virtual WaveformWidgetType::Type getType() const { return WaveformWidgetType::GlWaveform;}
+    virtual WaveformWidgetType::Type getType() const { return WaveformWidgetType::GLWaveform;}
 
     virtual bool useOpenGl() const { return true;}
     virtual bool useOpenGLShaders() const { return true;}

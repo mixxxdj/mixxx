@@ -17,7 +17,7 @@ GLWaveformWidgetShader::GLWaveformWidgetShader( const char* group, QWidget* pare
     m_waveformWidgetRenderer->addRenderer<WaveformRendererEndOfTrack>();
     m_waveformWidgetRenderer->addRenderer<WaveformRenderMarkRange>();
     m_waveformWidgetRenderer->addRenderer<WaveformRenderMark>();
-    m_waveformWidgetRenderer->addRenderer<GLWaveformRendererSignalShader>();
+    m_waveformWidgetRenderer->addRenderer<GLSLWaveformRendererSignal>();
     m_waveformWidgetRenderer->addRenderer<WaveformRenderBeat>();
 
     setAttribute(Qt::WA_NoSystemBackground);
@@ -27,6 +27,10 @@ GLWaveformWidgetShader::GLWaveformWidgetShader( const char* group, QWidget* pare
 
     makeCurrent();
     m_waveformWidgetRenderer->init();
+}
+
+GLWaveformWidgetShader::~GLWaveformWidgetShader(){
+    makeCurrent();
 }
 
 void GLWaveformWidgetShader::castToQWidget() {

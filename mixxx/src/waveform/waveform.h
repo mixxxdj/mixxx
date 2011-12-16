@@ -38,9 +38,10 @@ public:
         return m_audioVisualRatio;
     }
 
-    int size() const {
-        return m_data.size();
-    }
+    int getTextureStride() const { return m_textureStride;}
+    int getTextureSize() const { return m_data.size();}
+
+    int size() const { return m_size; }
 
     void resize(int size);
     void reset(int value = 0);
@@ -54,18 +55,20 @@ public:
     inline unsigned char getHigh(int i) const { return m_data[i].filtered.high;}
     inline unsigned char getAll(int i) const { return m_data[i].filtered.all;}
 
-private:
-    std::vector<WaveformData>& data() { return m_data;}
+    WaveformData* data() { return &m_data[0];}
+    const WaveformData* data() const { return &m_data[0];}
 
+private:
     inline WaveformData& at(int i) { return m_data[i];}
     inline unsigned char& low(int i) { return m_data[i].filtered.low;}
     inline unsigned char& mid(int i) { return m_data[i].filtered.mid;}
     inline unsigned char& high(int i) { return m_data[i].filtered.high;}
     inline unsigned char& all(int i) { return m_data[i].filtered.all;}
 
-    static const unsigned int m_stride = 1024;
+    int computeTextureSize(int size);
 
-    unsigned int m_size;
+    unsigned int m_size; //actual usefull size
+    unsigned int m_textureStride;
     std::vector<WaveformData> m_data;
 
     double m_visualSampleRate;

@@ -43,10 +43,10 @@ void WaveformWidgetAbstract::prepare()
     m_waveformWidgetRenderer->preRender();
 }
 
-void WaveformWidgetAbstract::refresh()
+void WaveformWidgetAbstract::render()
 {
     //if( m_widget)
-    m_widget->update();
+    m_widget->repaint();
 }
 
 void WaveformWidgetAbstract::resize( int width, int height)

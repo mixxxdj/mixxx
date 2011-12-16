@@ -78,18 +78,6 @@ BaseTrackPlayer::BaseTrackPlayer(QObject* pParent,
 
     m_pReplayGain = new ControlObjectThreadMain(
         ControlObject::getControl(ConfigKey(getGroup(), "replaygain")));
-
-    //FIXME vRince
-    /*
-    // Create WaveformRenderer last, because it relies on controls created above
-    // (e.g. EngineBuffer)
-
-    m_pWaveformRenderer = new WaveformRenderer(pSafeGroupName);
-    connect(this, SIGNAL(newTrackLoaded(TrackPointer)),
-            m_pWaveformRenderer, SLOT(slotNewTrack(TrackPointer)));
-    connect(this, SIGNAL(unloadingTrack(TrackPointer)),
-            m_pWaveformRenderer, SLOT(slotUnloadTrack(TrackPointer)));
-            */
 }
 
 BaseTrackPlayer::~BaseTrackPlayer()
@@ -105,7 +93,6 @@ BaseTrackPlayer::~BaseTrackPlayer()
     delete m_pPlayPosition;
     delete m_pBPM;
     delete m_pReplayGain;
-    delete m_pWaveformRenderer;
     delete m_pDuration;
 }
 
@@ -237,10 +224,6 @@ void BaseTrackPlayer::slotFinishLoading(TrackPointer pTrackInfoObject)
     }
 
     emit(newTrackLoaded(m_pLoadedTrack));
-}
-
-WaveformRenderer* BaseTrackPlayer::getWaveformRenderer() const {
-    return m_pWaveformRenderer;
 }
 
 TrackPointer BaseTrackPlayer::getLoadedTrack() const {

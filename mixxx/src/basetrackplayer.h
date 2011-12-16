@@ -48,9 +48,6 @@ class BaseTrackPlayer : public BasePlayer {
     ControlObject* m_pDuration;
     ControlObjectThreadMain* m_pBPM;
     ControlObjectThreadMain* m_pReplayGain;
-
-    //TODO vRince need clean-up
-    WaveformRenderer* m_pWaveformRenderer;
 };
 
 
