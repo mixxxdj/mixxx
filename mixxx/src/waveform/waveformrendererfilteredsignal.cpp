@@ -20,9 +20,9 @@ void WaveformRendererFilteredSignal::init() {
 
 void WaveformRendererFilteredSignal::onResize() {
     qDebug() << "WaveformRendererFilteredSignal::onResize";
-    m_lowLines.reserve(2*m_waveformWidget->getWidth());
-    m_midLines.reserve(2*m_waveformWidget->getWidth());
-    m_highLines.reserve(2*m_waveformWidget->getWidth());
+    m_lowLines.reserve(2*m_waveformRenderer->getWidth());
+    m_midLines.reserve(2*m_waveformRenderer->getWidth());
+    m_highLines.reserve(2*m_waveformRenderer->getWidth());
 }
 
 void WaveformRendererFilteredSignal::setup(const QDomNode& node) {
@@ -40,7 +40,7 @@ void WaveformRendererFilteredSignal::setup(const QDomNode& node) {
 
 void WaveformRendererFilteredSignal::draw(QPainter* painter,
                                           QPaintEvent* /*event*/) {
-    const TrackInfoObject* trackInfo = m_waveformWidget->getTrackInfo().data();
+    const TrackInfoObject* trackInfo = m_waveformRenderer->getTrackInfo().data();
 
     if (!trackInfo) {
         return;
@@ -55,13 +55,13 @@ void WaveformRendererFilteredSignal::draw(QPainter* painter,
     m_midLines.clear();
     m_highLines.clear();
 
-    int samplesPerPixel = m_waveformWidget->getZoomFactor();
+    int samplesPerPixel = m_waveformRenderer->getZoomFactor();
     samplesPerPixel = math_min(2, samplesPerPixel);
-    int numberOfSamples = m_waveformWidget->getWidth() * samplesPerPixel;
+    int numberOfSamples = m_waveformRenderer->getWidth() * samplesPerPixel;
 
     int currentPosition = 0;
-    if (m_waveformWidget->getPlayPos() >= 0) {
-        currentPosition = static_cast<int>(m_waveformWidget->getPlayPos()*
+    if (m_waveformRenderer->getPlayPos() >= 0) {
+        currentPosition = static_cast<int>(m_waveformRenderer->getPlayPos()*
                                            waveformData.size());
         currentPosition -= (currentPosition % (2 * samplesPerPixel));
     }
@@ -69,7 +69,7 @@ void WaveformRendererFilteredSignal::draw(QPainter* painter,
     painter->save();
     painter->setWorldMatrixEnabled(false);
 
-    float halfHeight = m_waveformWidget->getHeight()/2.0;
+    float halfHeight = m_waveformRenderer->getHeight()/2.0;
     float heightFactor = halfHeight/255.0;
 
     const QVector<unsigned char>& lowData = waveform->getConstLowData();

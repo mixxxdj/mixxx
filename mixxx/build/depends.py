@@ -499,11 +499,12 @@ class MixxxCore(Feature):
                    "waveform/waveformwidgetrenderer.cpp",
                    "waveform/waveformrendererabstract.cpp",
                    "waveform/waveformrendererendoftrack.cpp",
-
+                   "waveform/glwaveformrenderersignalshader.cpp",
                    "waveform/widget/waveformwidgetabstract.cpp",
                    "waveform/widget/glwaveformwidget.cpp",
                    "waveform/widget/emptywaveformwidget.cpp",
                    "waveform/widget/softwarewaveformwidget.cpp",
+                   "waveform/widget/glwaveformwidgetshader.cpp",
 
                    "skin/imginvert.cpp",
                    "skin/imgloader.cpp",

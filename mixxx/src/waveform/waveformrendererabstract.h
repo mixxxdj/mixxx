@@ -25,7 +25,7 @@ class WaveformRendererAbstract {
     void setDirty(bool dirty = true) {
         m_dirty = dirty;
     }
-    WaveformWidgetRenderer* m_waveformWidget;
+    WaveformWidgetRenderer* m_waveformRenderer;
     bool m_dirty;
 
     friend class WaveformWidgetRenderer;

@@ -376,6 +376,7 @@ public:
 
     /** Pointer to visual waveform info */
     QVector<float> *m_pVisualWave;
+
     /** Wave summary info */
     QByteArray m_waveSummary;
 

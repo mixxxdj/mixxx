@@ -23,6 +23,7 @@ class WaveformWidgetAbstract
 {
 public:
     static const QString s_openGlFlag;
+    static const QString s_openGlShaderFlag;
 
     WaveformWidgetAbstract( const char* group);
     virtual ~WaveformWidgetAbstract();
@@ -52,6 +53,7 @@ public:
     //Those information enable automatic combobox creation and waveform selection
     virtual QString getWaveformWidgetName() = 0;
     virtual bool useOpenGl() const = 0;
+    virtual bool useOpenGLShaders() const = 0;
 
     WaveformWidgetRenderer* getRenderer() { return m_waveformWidgetRenderer;}
 

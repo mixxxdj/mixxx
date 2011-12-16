@@ -24,12 +24,12 @@ GLWaveformRendererFilteredSignal::GLWaveformRendererFilteredSignal( WaveformWidg
 void GLWaveformRendererFilteredSignal::init()
 {
     //create controls
-    m_lowFilterControlObject = ControlObject::getControl( ConfigKey(m_waveformWidget->getGroup(),"filterLow"));
-    m_midFilterControlObject = ControlObject::getControl( ConfigKey(m_waveformWidget->getGroup(),"filterMid"));
-    m_highFilterControlObject = ControlObject::getControl( ConfigKey(m_waveformWidget->getGroup(),"filterHigh"));
-    m_lowKillControlObject = ControlObject::getControl( ConfigKey(m_waveformWidget->getGroup(),"filterLowKill"));
-    m_midKillControlObject = ControlObject::getControl( ConfigKey(m_waveformWidget->getGroup(),"filterMidKill"));
-    m_highKillControlObject = ControlObject::getControl( ConfigKey(m_waveformWidget->getGroup(),"filterHighKill"));
+    m_lowFilterControlObject = ControlObject::getControl( ConfigKey(m_waveformRenderer->getGroup(),"filterLow"));
+    m_midFilterControlObject = ControlObject::getControl( ConfigKey(m_waveformRenderer->getGroup(),"filterMid"));
+    m_highFilterControlObject = ControlObject::getControl( ConfigKey(m_waveformRenderer->getGroup(),"filterHigh"));
+    m_lowKillControlObject = ControlObject::getControl( ConfigKey(m_waveformRenderer->getGroup(),"filterLowKill"));
+    m_midKillControlObject = ControlObject::getControl( ConfigKey(m_waveformRenderer->getGroup(),"filterMidKill"));
+    m_highKillControlObject = ControlObject::getControl( ConfigKey(m_waveformRenderer->getGroup(),"filterHighKill"));
 }
 
 void GLWaveformRendererFilteredSignal::setup( const QDomNode& node)
@@ -86,14 +86,14 @@ void GLWaveformRendererFilteredSignal::setup( const QDomNode& node)
 
 void GLWaveformRendererFilteredSignal::onResize()
 {
-    m_polygon[0].reserve(2*m_waveformWidget->getWidth()+3);
-    m_polygon[1].reserve(2*m_waveformWidget->getWidth()+3);
-    m_polygon[2].reserve(2*m_waveformWidget->getWidth()+3);
+    m_polygon[0].reserve(2*m_waveformRenderer->getWidth()+3);
+    m_polygon[1].reserve(2*m_waveformRenderer->getWidth()+3);
+    m_polygon[2].reserve(2*m_waveformRenderer->getWidth()+3);
 }
 
 void GLWaveformRendererFilteredSignal::draw(QPainter *painter, QPaintEvent *event)
 {
-    const TrackInfoObject* trackInfo = m_waveformWidget->getTrackInfo().data();
+    const TrackInfoObject* trackInfo = m_waveformRenderer->getTrackInfo().data();
 
     if( !trackInfo)
         return;
@@ -101,24 +101,25 @@ void GLWaveformRendererFilteredSignal::draw(QPainter *painter, QPaintEvent *even
     const Waveform* waveform = trackInfo->getWaveForm();
     const QVector<unsigned char>& waveformData = waveform->getConstData();
 
-    double samplesPerPixel = m_waveformWidget->getVisualSamplePerPixel();
-    int numberOfSamples = m_waveformWidget->getWidth() * samplesPerPixel;
+    double samplesPerPixel = m_waveformRenderer->getVisualSamplePerPixel();
+    int numberOfSamples = m_waveformRenderer->getWidth() * samplesPerPixel;
 
     int currentPosition = 0;
-    if( m_waveformWidget->getPlayPos() >= 0)
+    if( m_waveformRenderer->getPlayPos() >= 0)
     {
         //TODO (vRince) not really accurate since waveform size une visual reasampling and
         //have two mores samples to hold the complete visual data
-        currentPosition = m_waveformWidget->getPlayPos()*waveformData.size();
-        m_waveformWidget->regulateVisualSample(currentPosition);
+        currentPosition = m_waveformRenderer->getPlayPos()*waveformData.size();
+        m_waveformRenderer->regulateVisualSample(currentPosition);
     }
 
     painter->save();
 
     painter->setRenderHint( QPainter::Antialiasing);
+    painter->resetTransform();
 
-    painter->translate(0.0,m_waveformWidget->getHeight()/2.0);
-    painter->scale(1.0,m_waveformWidget->getGain()*2.0*(double)m_waveformWidget->getHeight()/255.0);
+    painter->translate(0.0,m_waveformRenderer->getHeight()/2.0);
+    painter->scale(1.0,m_waveformRenderer->getGain()*2.0*(double)m_waveformRenderer->getHeight()/255.0);
 
     int sampleOffset = 0;
     //vRince test in multi pass with no max comtupted (good looking, but disactivated need more work on perfs)
@@ -172,9 +173,9 @@ void GLWaveformRendererFilteredSignal::draw(QPainter *painter, QPaintEvent *even
         }
     }
 
-    m_polygon[0].push_back(QPointF(m_waveformWidget->getWidth(),0.0));
-    m_polygon[1].push_back(QPointF(m_waveformWidget->getWidth(),0.0));
-    m_polygon[2].push_back(QPointF(m_waveformWidget->getWidth(),0.0));
+    m_polygon[0].push_back(QPointF(m_waveformRenderer->getWidth(),0.0));
+    m_polygon[1].push_back(QPointF(m_waveformRenderer->getWidth(),0.0));
+    m_polygon[2].push_back(QPointF(m_waveformRenderer->getWidth(),0.0));
 
     for( int i = numberOfSamples - 1; i >= 0; i -= int(samplesPerPixel))
     {

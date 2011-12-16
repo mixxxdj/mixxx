@@ -5,7 +5,8 @@
 
 #include <QDebug>
 
-const QString WaveformWidgetAbstract::s_openGlFlag = "(OpenGl)";
+const QString WaveformWidgetAbstract::s_openGlFlag = "(GL)";
+const QString WaveformWidgetAbstract::s_openGlShaderFlag = "(GLSL)";
 
 //Default constructor is only use by the factory to evaluate dynamically WaveformWidget
 WaveformWidgetAbstract::WaveformWidgetAbstract()
@@ -50,14 +51,8 @@ void WaveformWidgetAbstract::refresh()
 
 void WaveformWidgetAbstract::resize( int width, int height)
 {
-    qDebug() << "WaveformWidgetAbstract::resize() - " << width << height;
-    //if( m_widget)
-    {
-        m_widget->resize( width, height);
-        m_waveformWidgetRenderer->resize( width, height);
-    }
-
-    qDebug() << "WaveformWidgetAbstract::resize() - " << m_widget->size();
+    m_widget->resize( width, height);
+    m_waveformWidgetRenderer->resize( width, height);
 }
 
 void WaveformWidgetAbstract::zoomIn()

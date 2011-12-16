@@ -121,14 +121,14 @@ void WaveformRenderMarkRange::draw(QPainter *painter, QPaintEvent * /*event*/)
         if( startSample < 0 || endSample < 0)
             continue;
 
-        m_waveformWidget->regulateVisualSample(startSample);
-        double startPosition = m_waveformWidget->transformSampleIndexInRendererWorld(startSample);
+        m_waveformRenderer->regulateVisualSample(startSample);
+        double startPosition = m_waveformRenderer->transformSampleIndexInRendererWorld(startSample);
 
-        m_waveformWidget->regulateVisualSample(endSample);
-        double endPosition = m_waveformWidget->transformSampleIndexInRendererWorld(endSample);
+        m_waveformRenderer->regulateVisualSample(endSample);
+        double endPosition = m_waveformRenderer->transformSampleIndexInRendererWorld(endSample);
 
         //range not in the current display
-        if( startPosition > m_waveformWidget->getWidth() ||
+        if( startPosition > m_waveformRenderer->getWidth() ||
                 endPosition < 0)
             continue;
 
@@ -141,7 +141,7 @@ void WaveformRenderMarkRange::draw(QPainter *painter, QPaintEvent * /*event*/)
 
         //draw the correcponding portion of the selected pixmap
         //this shouldn't involve *any* scaling it should be fast even in software mode
-        QRect rect(startPosition,0,endPosition-startPosition,m_waveformWidget->getHeight());
+        QRect rect(startPosition,0,endPosition-startPosition,m_waveformRenderer->getHeight());
         painter->drawPixmap( rect, *selectedPixmap, rect);
     }
 
@@ -167,19 +167,19 @@ void WaveformRenderMarkRange::setupMarkRange(const QDomNode &node, MarkRange &ma
     }
 
     markRange.m_markStartPoint = ControlObject::getControl(
-                ConfigKey(m_waveformWidget->getGroup(),
+                ConfigKey(m_waveformRenderer->getGroup(),
                           WWidget::selectNodeQString(node, "StartControl")));
     markRange.m_markEndPoint = ControlObject::getControl(
-                ConfigKey(m_waveformWidget->getGroup(),
+                ConfigKey(m_waveformRenderer->getGroup(),
                           WWidget::selectNodeQString(node, "EndControl")));
     markRange.m_markEnabled = ControlObject::getControl(
-                ConfigKey(m_waveformWidget->getGroup(),
+                ConfigKey(m_waveformRenderer->getGroup(),
                           WWidget::selectNodeQString(node, "EnabledControl")));
 }
 
 void WaveformRenderMarkRange::generatePixmaps()
 {
     for( int i = 0; i < markRanges_.size(); i++)
-        markRanges_[i].generatePixmap( m_waveformWidget->getWidth(), m_waveformWidget->getHeight());
+        markRanges_[i].generatePixmap( m_waveformRenderer->getWidth(), m_waveformRenderer->getHeight());
     setDirty(false);
 }

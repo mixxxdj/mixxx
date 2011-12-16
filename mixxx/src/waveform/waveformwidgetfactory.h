@@ -51,6 +51,8 @@ public:
     bool isOpenGLAvailable() const { return m_openGLAvailable;}
     QString getOpenGLVersion() const { return m_openGLVersion;}
 
+    bool isShaderAvailable() const { return m_shaderAvailable;}
+
     bool setWidgetType( int handleIndex);
     WaveformWidgetType::Type getType() const { return m_type;}
 
@@ -85,6 +87,7 @@ private:
 
     bool m_openGLAvailable;
     QString m_openGLVersion;
+    bool m_shaderAvailable;
 
     //Debug
     QTime* m_time;

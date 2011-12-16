@@ -11,8 +11,10 @@ public:
     virtual ~GLWaveformWidget();
 
     virtual QString getWaveformWidgetName() { return "Filtered";}
-    virtual WaveformWidgetType::Type getType() const { return WaveformWidgetType::FilteredOpenGlWaveform;}
+    virtual WaveformWidgetType::Type getType() const { return WaveformWidgetType::GLSLWaveform;}
+
     virtual bool useOpenGl() const { return true;}
+    virtual bool useOpenGLShaders() const { return false;}
 
 protected:
     virtual void castToQWidget();

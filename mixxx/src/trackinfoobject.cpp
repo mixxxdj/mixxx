@@ -44,6 +44,7 @@ TrackInfoObject::TrackInfoObject(QFileInfo& fileInfo, bool parseHeader)
         : m_qMutex(QMutex::Recursive) {
     populateLocation(fileInfo);
     initialize(parseHeader);
+    m_waveform = new Waveform;
 }
 
 TrackInfoObject::TrackInfoObject(const QDomNode &nodeHeader)
@@ -91,7 +92,7 @@ TrackInfoObject::TrackInfoObject(const QDomNode &nodeHeader)
     m_bPlayed = false;
 
     m_pVisualWave = 0;
-    m_dVisualResampleRate = 0;
+    m_dVisualResampleRate = 441; //Default value Hz
 
     //m_pWave = XmlParse::selectNodeHexCharArray(nodeHeader, QString("WaveSummaryHex"));
 
@@ -99,6 +100,8 @@ TrackInfoObject::TrackInfoObject(const QDomNode &nodeHeader)
 
     m_bDirty = false;
     m_bLocationChanged = false;
+
+    m_waveform = new Waveform;
 }
 
 void TrackInfoObject::populateLocation(QFileInfo& fileInfo) {
@@ -134,7 +137,7 @@ void TrackInfoObject::initialize(bool parseHeader) {
     m_iSampleRate = 0;
     m_iChannels = 0;
     m_fCuePoint = 0.0f;
-    m_dVisualResampleRate = 0;
+    m_dVisualResampleRate = 441; //Hz
     m_dCreateDate = m_dateAdded = QDateTime::currentDateTime();
     m_Rating = 0;
     m_key = "";
@@ -687,6 +690,7 @@ QVector<float> * TrackInfoObject::getVisualWaveform() {
     return m_pVisualWave;
 }
 
+//TODO (vRince) remove those this information belong to the waveform
 void TrackInfoObject::setVisualResampleRate(double dVisualResampleRate) {
     // Temporary, shared value that should not be saved. The only reason it
     // exists on the TIO is a temporary hack, so it does not dirty the TIO.

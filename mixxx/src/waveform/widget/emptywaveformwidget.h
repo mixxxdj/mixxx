@@ -14,7 +14,9 @@ public:
 
     virtual QString getWaveformWidgetName() { return "Empty";}
     virtual WaveformWidgetType::Type getType() const { return WaveformWidgetType::EmptyWaveform;}
+
     virtual bool useOpenGl() const { return false;}
+    virtual bool useOpenGLShaders() const { return false;}
 
 protected:
     virtual void castToQWidget();
