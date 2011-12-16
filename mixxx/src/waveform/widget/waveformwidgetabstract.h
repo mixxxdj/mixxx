@@ -41,7 +41,7 @@ public:
     void release();
 
     void prepare();
-    void refresh();
+    void render();
 
     void resize( int width, int height);
 

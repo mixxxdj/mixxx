@@ -8,17 +8,18 @@
 class QGLShaderProgram;
 template<typename T> class ShaderVariable;
 
-class GLWaveformRendererSignalShader : public WaveformRendererAbstract
+class GLSLWaveformRendererSignal : public WaveformRendererAbstract
 {
 public:
-    explicit GLWaveformRendererSignalShader(WaveformWidgetRenderer* waveformWidgetRenderer);
-    virtual ~GLWaveformRendererSignalShader();
+    explicit GLSLWaveformRendererSignal(WaveformWidgetRenderer* waveformWidgetRenderer);
+    virtual ~GLSLWaveformRendererSignal();
 
     virtual void init();
     virtual void setup(const QDomNode& node);
     virtual void draw(QPainter* painter, QPaintEvent* event);
 
     bool loadShaders();
+    bool loadTexture();
 
 private:
     void createGeometry();
@@ -31,7 +32,7 @@ private:
     QGLShaderProgram* m_shaderProgram;
 
     ShaderVariable<int>* m_waveformLength;
-    ShaderVariable<int>* m_textureLength;
+    ShaderVariable<int>* m_textureSize;
     ShaderVariable<int>* m_textureStride;
     ShaderVariable<int>* m_indexPosition;
     ShaderVariable<int>* m_displayRange;

@@ -26,12 +26,16 @@ public:
     virtual ~WWaveformViewer();
 
     const char* getGroup() const { return m_pGroup;}
+    void setup(QDomNode node = QDomNode());
 
     void dragEnterEvent(QDragEnterEvent *event);
     void dropEvent(QDropEvent *event);
-    void setup(QDomNode node = QDomNode());
 
-    bool eventFilter(QObject *o, QEvent *e);
+    void mousePressEvent(QMouseEvent *);
+    void mouseMoveEvent(QMouseEvent *);
+    void mouseReleaseEvent(QMouseEvent *);
+
+    // eventFilter(QObject *o, QEvent *e);
 
 signals:
     void valueChangedLeftDown(double);
@@ -53,7 +57,8 @@ private:
 private:
     const char *m_pGroup;
     int m_zoomZoneWidth;
-    int m_iMouseStart;
+
+    QPoint m_mouseAnchor;
 
     WaveformWidgetAbstract* m_waveformWidget;
 

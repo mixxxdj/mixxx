@@ -34,15 +34,20 @@ WaveformWidgetFactory::WaveformWidgetFactory()
 
     //setup the opengl default format
     m_openGLAvailable = false;
+    m_openGLShaderAvailable = false;
+
     if( QGLFormat::hasOpenGL())
     {
         QGLFormat glFormat;
         glFormat.setDirectRendering(true);
         glFormat.setDoubleBuffer(true);
         glFormat.setDepth(false);
-        glFormat.setSwapInterval(1); //enable vertical sync to avoid cue line to be cut
+        glFormat.setSwapInterval(0); //enable vertical sync to avoid cue line to be cut
+        glFormat.setRgba(true);
         QGLFormat::setDefaultFormat(glFormat);
+
         QGLFormat::OpenGLVersionFlags version = QGLFormat::openGLVersionFlags();
+
         int majorVersion = 0;
         int minorVersion = 0;
         if (version == QGLFormat::OpenGL_Version_None) {
@@ -74,16 +79,21 @@ WaveformWidgetFactory::WaveformWidgetFactory()
 
         m_openGLVersion = QString::number(majorVersion) + "." + QString::number(minorVersion);
         m_openGLAvailable = true;
+
+        {
+            QGLWidget glWidget;
+            glWidget.makeCurrent();
+            m_openGLShaderAvailable = QGLShaderProgram::hasOpenGLShaderPrograms();
+            glWidget.doneCurrent();
+        }
     }
 
-    m_shaderAvailable = QGLShaderProgram::hasOpenGLShaderPrograms();
-
     if( m_openGLAvailable) {
-        if( m_shaderAvailable) {
+        if( m_openGLShaderAvailable) {
             m_type = WaveformWidgetType::GLSLWaveform;
         }
         else {
-            m_type = WaveformWidgetType::GlWaveform;
+            m_type = WaveformWidgetType::GLWaveform;
         }
     }
     else {
@@ -216,7 +226,7 @@ void WaveformWidgetFactory::refresh()
         m_waveformWidgets[i]->prepare();
 
     for( int i = 0; i < m_waveformWidgets.size(); i++)
-        m_waveformWidgets[i]->refresh();
+        m_waveformWidgets[i]->render();
 
     m_lastFrameTime = m_time->elapsed();
     m_time->restart();
@@ -231,9 +241,9 @@ void WaveformWidgetFactory::evaluateWidgets()
         switch(type) {
         case WaveformWidgetType::EmptyWaveform : widget = new EmptyWaveformWidget(); break;
         case WaveformWidgetType::SimpleSoftwareWaveform : break; //TODO
-        case WaveformWidgetType::SimpleGlWaveform : break; //TODO
+        case WaveformWidgetType::SimpleGLWaveform : break; //TODO
         case WaveformWidgetType::SoftwareWaveform : widget = new SoftwareWaveformWidget(); break;
-        case WaveformWidgetType::GlWaveform : widget = new GLWaveformWidget(); break;
+        case WaveformWidgetType::GLWaveform : widget = new GLWaveformWidget(); break;
         case WaveformWidgetType::GLSLWaveform : widget = new GLWaveformWidgetShader(); break;
         }
 
@@ -251,9 +261,16 @@ void WaveformWidgetFactory::evaluateWidgets()
 
             //NOTE: For the moment non active widget are not added to available handle
             //but it could be useful to have them anyway but not selectable in the combo box
-            if( widget->useOpenGl() && !isOpenGLAvailable()) {
-                handle.m_active = false;
-                continue;
+            if( widget->useOpenGl()) {
+                if( !isOpenGLAvailable()) {
+                    handle.m_active = false;
+                    continue;
+                }
+                else if( widget->useOpenGLShaders() && !isOpenGlShaderAvailable())
+                {
+                    handle.m_active = false;
+                    continue;
+                }
             }
             m_waveformWidgetHandles.push_back( handle);
         }
@@ -269,9 +286,9 @@ WaveformWidgetAbstract* WaveformWidgetFactory::createWaveformWidget( WaveformWid
         {
         case WaveformWidgetType::EmptyWaveform : return new EmptyWaveformWidget( viewer->getGroup(), viewer);
         case WaveformWidgetType::SimpleSoftwareWaveform : return 0; //TODO
-        case WaveformWidgetType::SimpleGlWaveform : return 0; //TODO
+        case WaveformWidgetType::SimpleGLWaveform : return 0; //TODO
         case WaveformWidgetType::SoftwareWaveform : return new SoftwareWaveformWidget( viewer->getGroup(), viewer);
-        case WaveformWidgetType::GlWaveform : return new GLWaveformWidget( viewer->getGroup(), viewer);
+        case WaveformWidgetType::GLWaveform : return new GLWaveformWidget( viewer->getGroup(), viewer);
         case WaveformWidgetType::GLSLWaveform : return new GLWaveformWidgetShader( viewer->getGroup(), viewer);
         default : return 0;
         }

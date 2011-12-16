@@ -13,15 +13,15 @@
 #include "waveform/widget/waveformwidgetabstract.h"
 
 WWaveformViewer::WWaveformViewer(const char *group, QWidget * parent, Qt::WFlags f) :
-    QWidget(parent)
-{
+    QWidget(parent) {
     m_pGroup = group;
 
     setAcceptDrops(true);
 
-    installEventFilter(this);
+    //installEventFilter(this);
 
-    setAttribute(Qt::WA_OpaquePaintEvent,true);
+    setAttribute(Qt::WA_ForceUpdatesDisabled);
+    setAttribute(Qt::WA_OpaquePaintEvent);
 
     m_zoomZoneWidth = 20;
     m_waveformWidget = 0;
@@ -30,60 +30,44 @@ WWaveformViewer::WWaveformViewer(const char *group, QWidget * parent, Qt::WFlags
 WWaveformViewer::~WWaveformViewer() {
 }
 
-void WWaveformViewer::setup(QDomNode node)
-{
+void WWaveformViewer::setup(QDomNode node) {
     if( m_waveformWidget)
         m_waveformWidget->setup(node);
 }
 
-void WWaveformViewer::resizeEvent(QResizeEvent* /*event*/)
-{
-    qDebug() << "WWaveformViewer::resizeEvent" << this << size();
-    qDebug() << parent() << parentWidget() << parentWidget()->size();
-
+void WWaveformViewer::resizeEvent(QResizeEvent* /*event*/) {
     if( m_waveformWidget)
         m_waveformWidget->resize(width(),height());
 }
 
-bool WWaveformViewer::eventFilter(QObject *o, QEvent *e) {
-    if(e->type() == QEvent::MouseButtonPress) {
-        QMouseEvent *m = (QMouseEvent*)e;
-        m_iMouseStart= -1;
-        if(m->button() == Qt::LeftButton) {
-            // The left button went down, so store the start position
-            m_iMouseStart = m->x();
-            emit(valueChangedLeftDown(64));
-        }
-    } else if(e->type() == QEvent::MouseMove) {
-        // Only send signals for mouse moving if the left button is pressed
-        if(m_iMouseStart != -1) {
-            QMouseEvent *m = (QMouseEvent*)e;
-
-            // start at the middle of 0-127, and emit values based on
-            // how far the mouse has travelled horizontally
-            double v = 64 + (double)(m->x()-m_iMouseStart)/10;
-            // clamp to 0-127
-            if(v<0)
-                v = 0;
-            else if(v > 127)
-                v = 127;
-            emit(valueChangedLeftDown(v));
-
-        }
-    } else if(e->type() == QEvent::MouseButtonRelease) {
-        emit(valueChangedLeftDown(64));
-    } else {
-        return QObject::eventFilter(o,e);
-    }
-    return true;
+void WWaveformViewer::mousePressEvent(QMouseEvent* event) {
+    m_mouseAnchor = event->pos();
 }
 
-void WWaveformViewer::wheelEvent(QWheelEvent *event)
-{
-    if( m_waveformWidget)
-    {
-        if( event->x() > width() - m_zoomZoneWidth)
-        {
+void WWaveformViewer::mouseMoveEvent(QMouseEvent* event) {
+
+    if( event->buttons() & Qt::RightButton) {
+    }
+
+    if( event->buttons() & Qt::LeftButton) {
+        QPoint diff = event->pos() - m_mouseAnchor;
+        // start at the middle of 0-127, and emit values based on
+        // how far the mouse has travelled horizontally
+        double valueDiff = 64 + (double)(diff.x())/10;
+        valueDiff = math_max( 0.0, math_min( 127.0, valueDiff));
+        emit(valueChangedLeftDown(valueDiff));
+    }
+}
+
+void WWaveformViewer::mouseReleaseEvent(QMouseEvent* event){
+    if( !(event->buttons() & Qt::LeftButton)) {
+        emit(valueChangedLeftDown(64));
+    }
+}
+
+void WWaveformViewer::wheelEvent(QWheelEvent *event) {
+    if( m_waveformWidget) {
+        if( event->x() > width() - m_zoomZoneWidth) {
             if( event->delta() > 0)
                 m_waveformWidget->zoomIn();
             else
@@ -95,15 +79,13 @@ void WWaveformViewer::wheelEvent(QWheelEvent *event)
 
 /** DRAG AND DROP **/
 
-void WWaveformViewer::dragEnterEvent(QDragEnterEvent * event)
-{
+void WWaveformViewer::dragEnterEvent(QDragEnterEvent * event) {
     // Accept the enter event if the thing is a filepath.
     if (event->mimeData()->hasUrls())
         event->acceptProposedAction();
 }
 
-void WWaveformViewer::dropEvent(QDropEvent * event)
-{
+void WWaveformViewer::dropEvent(QDropEvent * event) {
     if (event->mimeData()->hasUrls()) {
         QList<QUrl> urls(event->mimeData()->urls());
         QUrl url = urls.first();
@@ -119,14 +101,12 @@ void WWaveformViewer::dropEvent(QDropEvent * event)
     }
 }
 
-void WWaveformViewer::onTrackLoaded( TrackPointer track)
-{
+void WWaveformViewer::onTrackLoaded( TrackPointer track) {
     if( m_waveformWidget)
         m_waveformWidget->setTrack(track);
 }
 
-void WWaveformViewer::onTrackUnloaded( TrackPointer /*track*/)
-{
+void WWaveformViewer::onTrackUnloaded( TrackPointer /*track*/) {
     if( m_waveformWidget)
         m_waveformWidget->setTrack( TrackPointer(0));
 }
