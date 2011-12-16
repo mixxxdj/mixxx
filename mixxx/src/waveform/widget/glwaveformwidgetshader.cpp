@@ -4,7 +4,7 @@
 
 #include "waveform/waveformwidgetrenderer.h"
 #include "waveform/waveformrenderbackground.h"
-#include "waveform/glwaveformrendererfilteredsignal.h"
+#include "waveform/glwaveformrenderersignalshader.h"
 #include "waveform/waveformrendermark.h"
 #include "waveform/waveformrendermarkrange.h"
 #include "waveform/waveformrendererendoftrack.h"
@@ -17,7 +17,7 @@ GLWaveformWidgetShader::GLWaveformWidgetShader( const char* group, QWidget* pare
     m_waveformWidgetRenderer->addRenderer<WaveformRendererEndOfTrack>();
     m_waveformWidgetRenderer->addRenderer<WaveformRenderMarkRange>();
     m_waveformWidgetRenderer->addRenderer<WaveformRenderMark>();
-    m_waveformWidgetRenderer->addRenderer<GLWaveformRendererFilteredSignal>();
+    m_waveformWidgetRenderer->addRenderer<GLWaveformRendererSignalShader>();
     m_waveformWidgetRenderer->addRenderer<WaveformRenderBeat>();
 
     setAttribute(Qt::WA_NoSystemBackground);

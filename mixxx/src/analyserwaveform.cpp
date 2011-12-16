@@ -77,6 +77,8 @@ void AnalyserWaveform::initialise(TrackPointer tio, int sampleRate, int totalSam
     m_currentStride = 0;
     m_strideBufferPos = 0;
 
+    m_convertionFactor = (float)std::numeric_limits<unsigned char>::max()/m_timePerStride;
+
     m_ready = true;
 }
 
@@ -136,14 +138,14 @@ void AnalyserWaveform::process(const CSAMPLE *buffer, const int bufferLength) {
 }
 
 void AnalyserWaveform::storeCurentStridePower() {
-    //TODO make this a member to avoid computign it on each store
-    float convertionFactor = (float)std::numeric_limits<unsigned char>::max()/m_timePerStride;
+    //TODO make this a member to avoid computing it on each store
+
     for( int i = 0; i < 2; i++)
     {
-        m_waveform->getData()[m_currentStride+i] = (unsigned char)( convertionFactor * m_currentStridePower[i]);
-        m_waveform->getLowData()[m_currentStride+i] = (unsigned char)( convertionFactor * m_currentStrideFiltredPower[i][0]);
-        m_waveform->getMidData()[m_currentStride+i] = (unsigned char)( convertionFactor * m_currentStrideFiltredPower[i][1]);
-        m_waveform->getHighData()[m_currentStride+i] = (unsigned char)( convertionFactor * m_currentStrideFiltredPower[i][2]);
+        m_waveform->all(m_currentStride+i) = (unsigned char)( m_convertionFactor * m_currentStridePower[i]);
+        m_waveform->low(m_currentStride+i) = (unsigned char)( m_convertionFactor * m_currentStrideFiltredPower[i][0]);
+        m_waveform->mid(m_currentStride+i) = (unsigned char)( m_convertionFactor * m_currentStrideFiltredPower[i][1]);
+        m_waveform->high(m_currentStride+i) = (unsigned char)( m_convertionFactor * m_currentStrideFiltredPower[i][2]);
     }
 
 }

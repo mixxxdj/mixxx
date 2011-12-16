@@ -1,5 +1,7 @@
 #include "waveform/waveform.h"
 
+#include <cstring>
+
 Waveform::Waveform()
         : m_visualSampleRate(441) {
 }
@@ -8,19 +10,13 @@ Waveform::~Waveform() {
 }
 
 void Waveform::resize(int size) {
-    for (int i = 0; i < FilteredTypeCount; ++i) {
-        m_data[i].resize(size);
-    }
+    m_data.resize(size);
 }
 
-void Waveform::reset(unsigned char value) {
-    for (int i = 0; i < FilteredTypeCount; ++i) {
-        m_data[i].fill(value);
-    }
+void Waveform::reset(int value) {
+    m_data.assign(m_data.size(),value);
 }
 
-void Waveform::assign(int size, unsigned char value) {
-    for (int i = 0; i < FilteredTypeCount; ++i) {
-        m_data[i].fill(value, size);
-    }
+void Waveform::assign(int size, int value) {
+    m_data.assign(size,value);
 }

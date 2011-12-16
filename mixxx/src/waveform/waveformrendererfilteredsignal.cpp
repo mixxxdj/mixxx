@@ -47,7 +47,6 @@ void WaveformRendererFilteredSignal::draw(QPainter* painter,
     }
 
     const Waveform* waveform = trackInfo->getWaveForm();
-    const QVector<unsigned char>& waveformData = waveform->getConstData();
 
     // TODO(rryan): clear() actually clears the memory we have reserve()'d. This
     // causes memory thrashing.
@@ -62,7 +61,7 @@ void WaveformRendererFilteredSignal::draw(QPainter* painter,
     int currentPosition = 0;
     if (m_waveformRenderer->getPlayPos() >= 0) {
         currentPosition = static_cast<int>(m_waveformRenderer->getPlayPos()*
-                                           waveformData.size());
+                                           waveform->size());
         currentPosition -= (currentPosition % (2 * samplesPerPixel));
     }
 
@@ -72,14 +71,10 @@ void WaveformRendererFilteredSignal::draw(QPainter* painter,
     float halfHeight = m_waveformRenderer->getHeight()/2.0;
     float heightFactor = halfHeight/255.0;
 
-    const QVector<unsigned char>& lowData = waveform->getConstLowData();
-    const QVector<unsigned char>& midData = waveform->getConstMidData();
-    const QVector<unsigned char>& highData = waveform->getConstHighData();
-
     for (int i = 0; i < numberOfSamples; i += 2*samplesPerPixel) {
         int xPos = i/samplesPerPixel;
         int thisIndex = currentPosition + 2*i - numberOfSamples;
-        if (thisIndex >= 0 && (thisIndex+1) < waveformData.size()) {
+        if (thisIndex >= 0 && (thisIndex+1) < waveform->size()) {
             unsigned char maxLow[2] = {0, 0};
             unsigned char maxBand[2] = {0, 0};
             unsigned char maxHigh[2] = {0, 0};
@@ -90,17 +85,17 @@ void WaveformRendererFilteredSignal::draw(QPainter* painter,
                 // profiling runs due to the bounds checking. Better to call
                 // constData() on the QVector first.
                 maxLow[0] = math_max(
-                    maxLow[0], lowData[thisIndex+sampleIndex]);
+                    maxLow[0], waveform->getLow(thisIndex+sampleIndex));
                 maxLow[1] = math_max(
-                    maxLow[1], lowData[thisIndex+sampleIndex+1]);
+                    maxLow[1], waveform->getLow(thisIndex+sampleIndex+1));
                 maxBand[0] = math_max(
-                    maxBand[0], midData[thisIndex+sampleIndex]);
+                    maxBand[0], waveform->getMid(thisIndex+sampleIndex));
                 maxBand[1] = math_max(
-                    maxBand[1], midData[thisIndex+sampleIndex+1]);
+                    maxBand[1], waveform->getMid(thisIndex+sampleIndex+1));
                 maxHigh[0] = math_max(
-                    maxHigh[0], highData[thisIndex+sampleIndex]);
+                    maxHigh[0], waveform->getHigh(thisIndex+sampleIndex));
                 maxHigh[1] = math_max(
-                    maxHigh[1], highData[thisIndex+sampleIndex+1]);
+                    maxHigh[1], waveform->getHigh(thisIndex+sampleIndex+1));
             }
 
             // TODO(rryan) push_back is allocating memory due to the clear()

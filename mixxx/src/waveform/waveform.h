@@ -1,18 +1,24 @@
 #ifndef WAVEFORM_H
 #define WAVEFORM_H
 
-#include <QVector>
-
+#include <vector>
 #include "util.h"
 
-class Waveform {
-  public:
-    enum WaveformFilteredType { NotFiltered = 0,
-                                LowPass = 1,
-                                MidPass = 2,
-                                HighPass = 3,
-                                FilteredTypeCount = 4};
+union WaveformData {
+    struct {
+        unsigned char low;
+        unsigned char mid;
+        unsigned char high;
+        unsigned char all;
+    } filtered;
+    int m_i;
 
+    WaveformData() {}
+    WaveformData(int i) { m_i = i;}
+};
+
+class Waveform {
+public:
     Waveform();
     virtual ~Waveform();
 
@@ -33,24 +39,34 @@ class Waveform {
     }
 
     int size() const {
-        return m_data[NotFiltered].size();
+        return m_data.size();
     }
 
     void resize(int size);
-    void reset(unsigned char value = 0);
-    void assign(int size, unsigned char value = 0);
+    void reset(int value = 0);
+    void assign(int size, int value = 0);
 
-    const QVector<unsigned char>& getConstData() const { return m_data[NotFiltered];}
-    const QVector<unsigned char>& getConstLowData() const { return m_data[LowPass];}
-    const QVector<unsigned char>& getConstMidData() const { return m_data[MidPass];}
-    const QVector<unsigned char>& getConstHighData() const { return m_data[HighPass];}
+    const std::vector<WaveformData>& getConstData() const { return m_data;}
 
-  private:
-    QVector<unsigned char>& getData() { return m_data[NotFiltered];}
-    QVector<unsigned char>& getLowData() { return m_data[LowPass];}
-    QVector<unsigned char>& getMidData() { return m_data[MidPass];}
-    QVector<unsigned char>& getHighData() { return m_data[HighPass];}
-    QVector<unsigned char> m_data[FilteredTypeCount];
+    inline WaveformData& get(int i) { return m_data[i];}
+    inline unsigned char getLow(int i) const { return m_data[i].filtered.low;}
+    inline unsigned char getMid(int i) const { return m_data[i].filtered.mid;}
+    inline unsigned char getHigh(int i) const { return m_data[i].filtered.high;}
+    inline unsigned char getAll(int i) const { return m_data[i].filtered.all;}
+
+private:
+    std::vector<WaveformData>& data() { return m_data;}
+
+    inline WaveformData& at(int i) { return m_data[i];}
+    inline unsigned char& low(int i) { return m_data[i].filtered.low;}
+    inline unsigned char& mid(int i) { return m_data[i].filtered.mid;}
+    inline unsigned char& high(int i) { return m_data[i].filtered.high;}
+    inline unsigned char& all(int i) { return m_data[i].filtered.all;}
+
+    static const unsigned int m_stride = 1024;
+
+    unsigned int m_size;
+    std::vector<WaveformData> m_data;
 
     double m_visualSampleRate;
     double m_audioVisualRatio;
