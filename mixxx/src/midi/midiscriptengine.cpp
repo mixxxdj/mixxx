@@ -17,7 +17,7 @@
  ***************************************************************************/
 
 #include "controlobject.h"
-#include "controlobjectthread.h"
+#include "controlobjectthreadmain.h"
 #include "mididevice.h"
 #include "midiscriptengine.h"
 #include "errordialoghandler.h"
@@ -676,7 +676,7 @@ ControlObjectThread* MidiScriptEngine::getControlObjectThread(QString group, QSt
     if(!m_controlCache.contains(key)) {
         ControlObject *co = ControlObject::getControl(key);
         if(co != NULL) {
-            cot = new ControlObjectThread(co);
+            cot = new ControlObjectThreadMain(co);
             m_controlCache.insert(key, cot);
         }
     } else {
@@ -741,6 +741,9 @@ void MidiScriptEngine::setValue(QString group, QString name, double newValue) {
 
     if(cot != NULL && !m_st.ignore(group,name,newValue)) {
         cot->slotSet(newValue);
+        // We call emitValueChanged so that script functions connected to this
+        // control will get updates.
+        cot->emitValueChanged();
     }
 
 }
@@ -809,7 +812,8 @@ void MidiScriptEngine::trigger(QString group, QString name) {
    Output:  true if successful
    -------- ------------------------------------------------------ */
 bool MidiScriptEngine::connectControl(QString group, QString name, QString function, bool disconnect) {
-    ControlObject* cobj = ControlObject::getControl(ConfigKey(group,name));
+    ControlObjectThread* cobj = getControlObjectThread(group, name);
+    ConfigKey key(group, name);
 
     if (cobj == NULL) {
         qWarning() << "MidiScriptEngine: script connecting [" << group << "," << name
@@ -817,8 +821,9 @@ bool MidiScriptEngine::connectControl(QString group, QString name, QString funct
         return false;
     }
 
+
     // Don't add duplicates
-    if (!disconnect && m_connectedControls.contains(cobj->getKey(), function)) return true;
+    if (!disconnect && m_connectedControls.contains(key, function)) return true;
 
     // When this function runs, assert that somebody is holding the script
     // engine lock.
@@ -840,23 +845,18 @@ bool MidiScriptEngine::connectControl(QString group, QString name, QString funct
     if(!checkException() && slot.isFunction()) {
         if(disconnect) {
 //             qDebug() << "MidiScriptEngine::connectControl disconnected " << group << name << " from " << function;
-            m_connectedControls.remove(cobj->getKey(), function);
+            m_connectedControls.remove(key, function);
             // Only disconnect the signal if there are no other instances of this control using it
-            if (!m_connectedControls.contains(cobj->getKey())) {
+            if (!m_connectedControls.contains(key)) {
                 this->disconnect(cobj, SIGNAL(valueChanged(double)),
-                                this, SLOT(slotValueChanged(double)));
-                this->disconnect(cobj, SIGNAL(valueChangedFromEngine(double)),
-                                this, SLOT(slotValueChanged(double)));
+                                 this, SLOT(slotValueChanged(double)));
             }
         } else {
 //             qDebug() << "MidiScriptEngine::connectControl connected " << group << name << " to " << function;
             connect(cobj, SIGNAL(valueChanged(double)),
                     this, SLOT(slotValueChanged(double)),
                     Qt::QueuedConnection);
-            connect(cobj, SIGNAL(valueChangedFromEngine(double)),
-                    this, SLOT(slotValueChanged(double)),
-                    Qt::QueuedConnection);
-            m_connectedControls.insert(cobj->getKey(), function);
+            m_connectedControls.insert(key, function);
         }
         return true;
     }
@@ -871,13 +871,17 @@ bool MidiScriptEngine::connectControl(QString group, QString name, QString funct
 void MidiScriptEngine::slotValueChanged(double value) {
     m_scriptEngineLock.lock();
 
-    ControlObject* sender = (ControlObject*)this->sender();
+    ControlObjectThread* sender = dynamic_cast<ControlObjectThread*>(this->sender());
     if(sender == NULL) {
         qWarning() << "MidiScriptEngine::slotValueChanged() Shouldn't happen -- sender == NULL";
         m_scriptEngineLock.unlock();
         return;
     }
-    ConfigKey key = sender->getKey();
+    ControlObject* pSenderCO = sender->getControlObject();
+    if (pSenderCO == NULL) {
+        return;
+    }
+    ConfigKey key = pSenderCO->getKey();
 
     //qDebug() << QString("MidiScriptEngine: slotValueChanged Thread ID=%1").arg(QThread::currentThreadId(),0,16);
 
@@ -913,7 +917,6 @@ void MidiScriptEngine::slotValueChanged(double value) {
    Output:  false if the script file has errors or doesn't exist
    -------- ------------------------------------------------------ */
 bool MidiScriptEngine::safeEvaluate(QString scriptName, QList<QString> scriptPaths) {
-
     if(m_pEngine == NULL) {
         return false;
     }
@@ -1011,7 +1014,7 @@ bool MidiScriptEngine::safeEvaluate(QString scriptName, QList<QString> scriptPat
     QScriptValue scriptFunction = m_pEngine->evaluate(scriptCode, filename);
 
     // Record errors
-    if(checkException())
+    if (checkException())
         return false;
 
     // Add the code we evaluated to our index
@@ -1177,7 +1180,6 @@ void MidiScriptEngine::timerEvent(QTimerEvent *event) {
     Output:  -
     -------- ------------------------------------------------------ */
 void MidiScriptEngine::scratchEnable(int deck, int intervalsPerRev, float rpm, float alpha, float beta) {
-
     // If we're already scratching this deck, override that with this request
     if (m_dx[deck]) {
 //         qDebug() << "Already scratching deck" << deck << ". Overriding.";
@@ -1204,8 +1206,7 @@ void MidiScriptEngine::scratchEnable(int deck, int intervalsPerRev, float rpm, f
         // If so, set the filter's initial velocity to the scratch speed
         cot = getControlObjectThread(group, "scratch2");
         if (cot != NULL) initVelocity=cot->get();
-    }
-    else {
+    } else {
         // See if deck is playing
         cot = getControlObjectThread(group, "play");
         if (cot != NULL && cot->get() == 1) {
@@ -1254,7 +1255,6 @@ void MidiScriptEngine::scratchTick(int deck, int interval) {
     Output:  -
     -------- ------------------------------------------------------ */
 void MidiScriptEngine::scratchProcess(int timerId) {
-
     int deck = m_scratchTimers[timerId];
     PitchFilter* filter = m_pitchFilter[deck];
     QString group = QString("[Channel%1]").arg(deck);
@@ -1303,14 +1303,13 @@ void MidiScriptEngine::scratchProcess(int timerId) {
     Output:  -
     -------- ------------------------------------------------------ */
 void MidiScriptEngine::scratchDisable(int deck) {
-
     QString group = QString("[Channel%1]").arg(deck);
 
     // See if deck is playing
     ControlObjectThread *cot = getControlObjectThread(group, "play");
     if (cot != NULL && cot->get() == 1) {
         // If so, set the target velocity to the playback speed
-        float rate=0;
+        float rate = 0;
         // Get the pitch slider value
         cot = getControlObjectThread(group, "rate");
         if (cot != NULL) rate = cot->get();
@@ -1324,8 +1323,9 @@ void MidiScriptEngine::scratchDisable(int deck) {
         if (cot != NULL && cot->get() == 1) rate = -rate;
 
         m_rampTo[deck] = rate;
+    } else {
+        m_rampTo[deck] = 0.0;
     }
-    else m_rampTo[deck]=0.0;
 
     m_ramp[deck] = true;    // Activate the ramping in scratchProcess()
 }
@@ -1337,7 +1337,10 @@ void MidiScriptEngine::scratchDisable(int deck) {
     Output:  -
     -------- ------------------------------------------------------ */
 void MidiScriptEngine::softTakeover(QString group, QString name, bool set) {
-    MixxxControl mc = MixxxControl(group,name);
-    if (set) m_st.enable(mc);
-    else m_st.disable(mc);
+    MixxxControl mc = MixxxControl(group, name);
+    if (set) {
+        m_st.enable(mc);
+    } else {
+        m_st.disable(mc);
+    }
 }
