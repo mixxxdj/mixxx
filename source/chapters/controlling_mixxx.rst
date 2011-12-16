@@ -246,10 +246,9 @@ For the sound inputs, you have two options: You can either use a proper DJ sound
 stereo line inputs on it, or can use two sound cards (each with a single stereo line in).
 A single multi-channel sound card is recommended.
 
-.. note:: For best scratch performance with vinyl control, we recommend using a system capable of
-          :term:`latencies <latency>` of 10ms. With higher latencies the scratch
-          sound will start to become distorted.
-
+.. note:: For best scratch performance with vinyl control, we recommend using a
+          system capable of :term:`latencies <latency>` of 10ms. With higher
+          latencies the scratch sound will start to become distorted.
 
 For timecode records or CDs, you can use any of the records supported by Mixxx:
 
