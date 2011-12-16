@@ -30,7 +30,6 @@ turntable deck. We are going to break this down into sections.
 Track Information
 -----------------
 
-
 The name of the loaded track is shown on top of each deck and the artist is
 listed below. The number at the top right is the effective :term:`BPM` of the
 track. This is the detected :term:`BPM` of the track, adjusted for the playback
@@ -168,9 +167,9 @@ adjusted (:term:`quantized`) so that they begin on a beat.
 Toggle Keylock
 ^^^^^^^^^^^^^^
 
-Keylock locks the track's pitch so that adjustments to its tempo via the rate
-slider do not affect its pitch. This is useful if you would like to speed up or
-slow down a track and avoid the "chipmunk" affect that speeding up vocals has.
+:term:`Keylock <key lock>` locks the track's pitch so that adjustments to its tempo
+via the rate slider do not affect its pitch. This is useful if you would like to
+speed up or slow down a track and avoid the "chipmunk" affect that speeding up vocals has.
 
 .. _interface-mixer:
 
@@ -188,7 +187,7 @@ mixed together.
 VU Meters and Channel Faders
 ----------------------------
 
-In the center above the Mixxx logo are 4 :term:`VU meters`. The two outer-most
+In the center above the Mixxx logo are 4 :term:`VU meters <vu meter>`. The two outer-most
 VU meters are for each deck, while the 2 inner-most VU meters are the left and
 right VU meters for the master output. The two large faders on either side of
 the VU meters are the deck volume faders. Adjusting these controls the volume of
@@ -213,8 +212,8 @@ Equalizers and Gain Knobs
 
 The low, mid, and high knobs allow you to change the filters of the audio. This
 allows you to selectively reduce or boost certain frequency ranges of the
-audio. The small boxes next to each knob are called :term:`kills` and allow you
-to fully remove that frequency range.
+audio. The small boxes next to each knob are called :term:`kills <kill switch>`
+and allow you to fully remove that frequency range.
 
 Above these knobs, the gain knob allows you to adjust the gain of the deck. In
 general, you should adjust this knob so that at full-volume the deck's audio is

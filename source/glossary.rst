@@ -86,8 +86,8 @@ Glossary of Terms
      simulates the sound and feel of having your music collection on vinyl.
 
    sync
-     Sync allows you to automatically adjust the sync'd track to be in sync with
-     another deck that is playing.
+     Sync allows you to automatically adjust the sync'd tracks :term:`tempo` 
+     and :term:`phase` to be in sync with another deck that is playing.
 
    rate
      The speed at which a track is played back, usually expressed in terms of a
@@ -108,3 +108,34 @@ Glossary of Terms
      beatmatching. Before digital DJing, this was accomplished by dragging one's
      finger alongside the turntable to slow it down or by twisting the record
      spindle to speed it up.
+
+   latency
+     Latency refers to a short period of delay (usually measured in milliseconds)
+     between when an audio signal enters and when it emerges from a system.
+     Being able to lower the Latency as much as possible makes a huge difference in
+     responsiveness. 
+
+   kill switch
+     A button to turn on and off output or individual frequency ranges within a 
+     channel, i.e. treble, mid and bass. Useful for effects where the DJ drops
+     a track out for a period or creates room for a transition.
+
+   vu meter
+     The volume unit (VU) meter is used to show the relative levels of audio signals 
+     and is subdivided across channels. Basically it represents how 'loud' a sound 
+     from a channel is.
+
+   balance
+     A balance control on a mixer allows to adjust the balance between the left and right
+     channel. The balance refers to the relative volume of the corresponding channel in a
+     stereo audio signal.
+
+   tempo
+     The speed of a track measured in :term:`bpm`.
+
+   volume
+     A term that refers to the degree of sound intensity or audibility; loudness.
+     A volume control is used to adjust the output gain setting.
+
+   reverse
+     Reverse plays a track backwards. 
