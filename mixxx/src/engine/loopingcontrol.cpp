@@ -200,8 +200,8 @@ double LoopingControl::process(const double dRate,
     if(m_bLoopingEnabled &&
        m_iLoopStartSample != kNoTrigger &&
        m_iLoopEndSample != kNoTrigger) {
-        bool outsideLoop = (currentSample > m_iLoopEndSample ||
-                            currentSample < m_iLoopStartSample);
+        bool outsideLoop = ((!reverse && currentSample > m_iLoopEndSample) ||
+                            (reverse && currentSample < m_iLoopStartSample));
         if (outsideLoop) {
             retval = reverse ? m_iLoopEndSample : m_iLoopStartSample;
         }
