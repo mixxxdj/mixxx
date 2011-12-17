@@ -1,7 +1,7 @@
 #include "glslwaveformrenderersignal.h"
-#include "shadervariable.h"
+#include "waveformwidgetrenderer.h"
 
-#include "waveform/waveformwidgetrenderer.h"
+#include "waveform/shadervariable.h"
 #include "waveform/waveform.h"
 
 GLSLWaveformRendererSignal::GLSLWaveformRendererSignal(WaveformWidgetRenderer* waveformWidgetRenderer) :

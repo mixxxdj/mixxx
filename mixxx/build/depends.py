@@ -482,29 +482,36 @@ class MixxxCore(Feature):
 
                    "soundsourceproxy.cpp",
 
-                   "widget/wvisualsimple.cpp",
                    "widget/wwaveformviewer.cpp",
+
+                   # deprecated >>>>
+                   "widget/wvisualsimple.cpp",
                    "widget/wglwaveformviewer.cpp",
+
+                   "waveform/renderobject_old.cpp",
+                   "waveform/waveformrenderer_old.cpp",
+                   "waveform/waveformrendersignal_old.cpp",
+                   # <<<< deprecated
+
+                   "waveform/waveform.cpp",
                    "waveform/waveformwidgetfactory.cpp",
-                   "waveform/renderobject.cpp",
-                   "waveform/waveformrenderer.cpp",
-                   "waveform/waveformrenderbackground.cpp",
-                   "waveform/waveformrendersignal.cpp",
-                   "waveform/waveformrendermark.cpp",
-                   "waveform/waveformrendermarkrange.cpp",
-                   "waveform/waveformrenderbeat.cpp",
-		   "waveform/waveform.cpp",
-                   "waveform/waveformrendererfilteredsignal.cpp",
-                   "waveform/glwaveformrendererfilteredsignal.cpp",
-                   "waveform/waveformwidgetrenderer.cpp",
-                   "waveform/waveformrendererabstract.cpp",
-                   "waveform/waveformrendererendoftrack.cpp",
-                   "waveform/glslwaveformrenderersignal.cpp",
-                   "waveform/widget/waveformwidgetabstract.cpp",
-                   "waveform/widget/glwaveformwidget.cpp",
-                   "waveform/widget/emptywaveformwidget.cpp",
-                   "waveform/widget/softwarewaveformwidget.cpp",
-                   "waveform/widget/glslwaveformwidget.cpp",
+
+                   "waveform/renderers/waveformwidgetrenderer.cpp",
+                   "waveform/renderers/waveformrendererabstract.cpp",
+                   "waveform/renderers/waveformrenderbackground.cpp",
+                   "waveform/renderers/waveformrendermark.cpp",
+                   "waveform/renderers/waveformrendermarkrange.cpp",
+                   "waveform/renderers/waveformrenderbeat.cpp",
+                   "waveform/renderers/waveformrendererendoftrack.cpp",
+                   "waveform/renderers/waveformrendererfilteredsignal.cpp",
+                   "waveform/renderers/glwaveformrendererfilteredsignal.cpp",
+                   "waveform/renderers/glslwaveformrenderersignal.cpp",
+
+                   "waveform/widgets/waveformwidgetabstract.cpp",
+                   "waveform/widgets/glwaveformwidget.cpp",
+                   "waveform/widgets/emptywaveformwidget.cpp",
+                   "waveform/widgets/softwarewaveformwidget.cpp",
+                   "waveform/widgets/glslwaveformwidget.cpp",
 
                    "skin/imginvert.cpp",
                    "skin/imgloader.cpp",

@@ -1,10 +1,12 @@
 #include "glwaveformrendererfilteredsignal.h"
 
 #include "waveformwidgetrenderer.h"
+#include "waveform/waveform.h"
+
 #include "widget/wskincolor.h"
 #include "trackinfoobject.h"
 #include "widget/wwidget.h"
-#include "waveform.h"
+
 #include "controlobject.h"
 #include "defs.h"
 

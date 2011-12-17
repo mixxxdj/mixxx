@@ -8,8 +8,8 @@
 #include <QLine>
 #include <qgl.h>
 
-#include "waveformrendersignal.h"
-#include "waveformrenderer.h"
+#include "waveformrendersignal_old.h"
+#include "waveformrenderer_old.h"
 #include "controlobjectthreadmain.h"
 #include "controlobject.h"
 #include "widget/wskincolor.h"

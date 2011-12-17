@@ -1,12 +1,13 @@
 #include "waveform/waveformwidgetfactory.h"
-#include "waveform/widget/waveformwidgetabstract.h"
+#include "waveform/widgets/waveformwidgetabstract.h"
+
 #include "widget/wwaveformviewer.h"
 
 //WaveformWidgets
-#include "waveform/widget/emptywaveformwidget.h"
-#include "waveform/widget/softwarewaveformwidget.h"
-#include "waveform/widget/glwaveformwidget.h"
-#include "waveform/widget/glslwaveformwidget.h"
+#include "waveform/widgets/emptywaveformwidget.h"
+#include "waveform/widgets/softwarewaveformwidget.h"
+#include "waveform/widgets/glwaveformwidget.h"
+#include "waveform/widgets/glslwaveformwidget.h"
 
 #include "defs.h"
 

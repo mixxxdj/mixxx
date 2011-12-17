@@ -8,8 +8,7 @@
 #include <QList>
 #include <QLineF>
 
-#include "renderobject.h"
-
+#include "renderobject_old.h"
 
 class QDomNode;
 class QPainter;

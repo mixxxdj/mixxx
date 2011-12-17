@@ -25,7 +25,7 @@
 #include <QPaintEvent>
 #include <QUrl>
 
-#include "waveform/waveformrenderer.h"
+#include "waveform/waveformrenderer_old.h"
 
 WVisualSimple::WVisualSimple(const char* group, QWidget * parent, WaveformRenderer* pWaveformRenderer)
         : WWidget(parent),

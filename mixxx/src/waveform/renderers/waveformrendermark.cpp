@@ -4,13 +4,13 @@
 #include <QPainterPath>
 
 #include "waveformrendermark.h"
-
 #include "waveformwidgetrenderer.h"
+#include "waveform/waveform.h"
+
 #include "widget/wskincolor.h"
 #include "trackinfoobject.h"
 #include "widget/wwidget.h"
 
-#include "waveform.h"
 #include "controlobject.h"
 
 WaveformRenderMark::WaveformRenderMark( WaveformWidgetRenderer* waveformWidgetRenderer) :

@@ -28,7 +28,7 @@
 #include "engine/enginemicrophone.h"
 #include "trackinfoobject.h"
 #include "dlgabout.h"
-#include "waveform/waveformrenderer.h"
+
 #include "soundsourceproxy.h"
 
 #include "analyserqueue.h"

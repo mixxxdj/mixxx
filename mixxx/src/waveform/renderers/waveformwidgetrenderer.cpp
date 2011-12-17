@@ -1,5 +1,5 @@
 #include "waveformwidgetrenderer.h"
-#include "waveform.h"
+#include "waveform/waveform.h"
 
 #include "controlobjectthreadmain.h"
 #include "controlobject.h"

@@ -3,7 +3,7 @@
 
 #include <singleton.h>
 
-#include "waveform/widget/waveformwidgettype.h"
+#include "waveform/widgets/waveformwidgettype.h"
 
 #include <QObject>
 #include <QVector>

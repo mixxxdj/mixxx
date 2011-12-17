@@ -1,5 +1,5 @@
 #include "waveformwidgetabstract.h"
-#include "waveform/waveformwidgetrenderer.h"
+#include "waveform/renderers/waveformwidgetrenderer.h"
 
 #include <QWidget>
 
