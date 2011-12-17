@@ -2,6 +2,8 @@
 #define WAVEFORMWIDGETABSTRACT_H
 
 #include <QString>
+
+#include "waveform/renderers/waveformwidgetrenderer.h"
 #include "waveformwidgettype.h"
 #include "trackinfoobject.h"
 
@@ -12,14 +14,9 @@
 //so they already have a common QWidget base class (ambigous polymorphism)
 //This Abstract can be directly a WaveformWidgetRenderer cause it inherist of QObjects
 
-class QDomNode;
-class WaveformWidgetRenderer;
-
-class QResizeEvent;
-class QPaintEvent;
 class QWidget;
 
-class WaveformWidgetAbstract
+class WaveformWidgetAbstract : public WaveformWidgetRenderer
 {
 public:
     static const QString s_openGlFlag;
@@ -28,11 +25,8 @@ public:
     WaveformWidgetAbstract( const char* group);
     virtual ~WaveformWidgetAbstract();
 
-    void setup( const QDomNode& node);
-
     //Type is use by the factory to safely up-cast waveform widgets
     virtual WaveformWidgetType::Type getType() const = 0;
-    virtual void castToQWidget() = 0;
 
     bool isValid() const { return m_widget;}
     QWidget* getWidget() { return m_widget;}
@@ -40,31 +34,24 @@ public:
     void hold();
     void release();
 
-    void prepare();
-    void render();
+    //void prepare();
+    virtual void render();
 
     void resize( int width, int height);
-
-    //convenience method
-    void zoomIn();
-    void zoomOut();
-    void setTrack( TrackPointer track);
 
     //Those information enable automatic combobox creation and waveform selection
     virtual QString getWaveformWidgetName() = 0;
     virtual bool useOpenGl() const = 0;
     virtual bool useOpenGLShaders() const = 0;
 
-    WaveformWidgetRenderer* getRenderer() { return m_waveformWidgetRenderer;}
-
 protected:
-    WaveformWidgetRenderer* m_waveformWidgetRenderer;
     QWidget* m_widget;
 
 protected:
     WaveformWidgetAbstract();
+    //this is the factory resposability to trigger QWidget casting after constructor
+    virtual void castToQWidget() = 0;
 
-private:
     friend class WaveformWidgetFactory;
 };
 

@@ -2,8 +2,9 @@
 #define WAVEFORMRENDERERFILTEREDSIGNAL_H
 
 #include <QColor>
-#include <QVector>
 #include <QLineF>
+
+#include <vector>
 
 #include "util.h"
 #include "waveformrendererabstract.h"
@@ -25,9 +26,9 @@ class WaveformRendererFilteredSignal : public WaveformRendererAbstract {
     QColor m_midColor;
     QColor m_highColor;
 
-    QVector<QLineF> m_lowLines;
-    QVector<QLineF> m_midLines;
-    QVector<QLineF> m_highLines;
+    std::vector<QLineF> m_lowLines;
+    std::vector<QLineF> m_midLines;
+    std::vector<QLineF> m_highLines;
 };
 
 #endif // WAVEFORMRENDERERFILTEREDSIGNAL_H

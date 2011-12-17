@@ -7,12 +7,16 @@
 
 #include <QPainter>
 
+WaveformWidgetRenderer::WaveformWidgetRenderer() :
+    m_timer(0) {
+}
+
 WaveformWidgetRenderer::WaveformWidgetRenderer( const char* group) :
     m_group(group),
     m_trackInfoObject(0),
     m_height(-1),
-    m_width(-1)
-{
+    m_width(-1) {
+
     m_timer = new QTime();
 
     m_firstDisplayedPosition = 0.0;
@@ -43,25 +47,19 @@ WaveformWidgetRenderer::WaveformWidgetRenderer( const char* group) :
     currentFrame = 0;
     m_lastFrameTime = 0;
     m_lastSystemFrameTime = 0;
-    for( int i = 0; i < 100; ++i)
-    {
+    for( int i = 0; i < 100; ++i) {
         m_lastSystemFramesTime[i] = 0;
         m_lastSystemFramesTime[i] = 0;
     }
 }
 
-WaveformWidgetRenderer::~WaveformWidgetRenderer()
-{
-    qDebug() << "WaveformWidgetRenderer::WaveformWidgetRenderer()";
-
-    delete m_timer;
+WaveformWidgetRenderer::~WaveformWidgetRenderer() {
+    if(m_timer) delete m_timer;
     for( int i = 0; i < m_rendererStack.size(); ++i)
         delete m_rendererStack[i];
 }
 
-void WaveformWidgetRenderer::init()
-{
-    qDebug() << "WaveformWidgetRenderer::init()";
+void WaveformWidgetRenderer::init() {
 
     // TODO(rryan): WARNING unsafe use of ControlObject. Must use COThreadMain
     m_playPosControlObject = ControlObject::getControl( ConfigKey(m_group,"visual_playposition"));
@@ -75,8 +73,7 @@ void WaveformWidgetRenderer::init()
         m_rendererStack[i]->init();
 }
 
-void WaveformWidgetRenderer::preRender()
-{
+void WaveformWidgetRenderer::preRender() {
     //Fetch parameters before rendering in order the display all sub-renderers with the same values
     m_playPos = m_playPosControlObject->get();
     m_rate = m_rateControlObject->get();
@@ -84,32 +81,31 @@ void WaveformWidgetRenderer::preRender()
     m_rateRange = m_rateRangeControlObject->get();
     m_gain = m_gainControlObject->get();
 
-    //rate adjst may have change sampling per
-    updateSamplingPerPixel();
+    //Legacy stuff (Ryan it that OK?) -> Limit our rate adjustment to < 99%, "Bad Things" might happen otherwise.
+    m_rateAdjust = m_rateDir * math_min(0.99, m_rate * m_rateRange);
 
-    if(m_trackInfoObject)
-    {
+    //rate adjst may have change sampling per
+    updateVisualSamplingPerPixel();
+
+    if(m_trackInfoObject) {
+        updateAudioSamplingPerPixel();
         double displayedLength = 2.0*(double)m_width * getAudioSamplePerPixel() / ((double)m_trackSamples);
         m_firstDisplayedPosition = m_playPos - displayedLength / 2.0;
         m_lastDisplayedPosition = m_playPos + displayedLength / 2.0;
         m_rendererTransformationOffset = - m_firstDisplayedPosition;
         m_rendererTransformationGain = m_width / (m_lastDisplayedPosition - m_firstDisplayedPosition);
     }
-    else
-    {
+    else {
         m_firstDisplayedPosition = 0.0;
         m_lastDisplayedPosition = 0.0;
         m_rendererTransformationOffset = 0.0;
         m_rendererTransformationGain = 0.0;
     }
 
-    //Legacy stuff (Ryan it that OK?)
-    //Limit our rate adjustment to < 99%, "Bad Things" might happen otherwise.
-    m_rateAdjust = m_rateDir * math_min(0.99, m_rate * m_rateRange);
+
 }
 
-void WaveformWidgetRenderer::draw( QPainter* painter, QPaintEvent* event)
-{
+void WaveformWidgetRenderer::draw( QPainter* painter, QPaintEvent* event) {
     m_lastSystemFrameTime = m_timer->elapsed();
     m_timer->restart();
 
@@ -152,74 +148,60 @@ void WaveformWidgetRenderer::draw( QPainter* painter, QPaintEvent* event)
     */
 }
 
-void WaveformWidgetRenderer::resize( int width, int height)
-{
+void WaveformWidgetRenderer::resize( int width, int height) {
     m_width = width;
     m_height = height;
-    for( int i = 0; i < m_rendererStack.size(); ++i)
-    {
+    for( int i = 0; i < m_rendererStack.size(); ++i) {
         m_rendererStack[i]->setDirty(true);
         m_rendererStack[i]->onResize();
     }
 }
 
-void WaveformWidgetRenderer::setup( const QDomNode& node)
-{
-    qDebug() << "WaveformWidgetRenderer::setup()";
-
+void WaveformWidgetRenderer::setup( const QDomNode& node) {
     for( int i = 0; i < m_rendererStack.size(); ++i)
         m_rendererStack[i]->setup(node);
 }
 
-bool WaveformWidgetRenderer::zoomIn()
-{
-    if( m_zoomFactor < 1.1) //limit zoom to 100%
-        return false;
-
+bool WaveformWidgetRenderer::zoomIn() {
     m_zoomFactor -= 1.0;
-    updateSamplingPerPixel();
+    m_zoomFactor = math_max( 1.0, m_zoomFactor);
+    updateVisualSamplingPerPixel();
+    updateAudioSamplingPerPixel();
     return true;
 }
 
-bool WaveformWidgetRenderer::zoomOut()
-{
-    if( m_zoomFactor > 4.9) //limit zoom to 400%
-        return false;
-
+bool WaveformWidgetRenderer::zoomOut() {
     m_zoomFactor += 1.0;
-    updateSamplingPerPixel();
+    m_zoomFactor = math_min( m_zoomFactor, 4.0); //max 400%
+    updateVisualSamplingPerPixel();
+    updateAudioSamplingPerPixel();
     return true;
 }
 
-void WaveformWidgetRenderer::updateSamplingPerPixel()
-{
-    if( m_trackInfoObject && m_trackInfoObject->getWaveForm()) {
-        //vRince for the moment only more than one sample per pixel is supported
-        //due to the fact we play the visual play pos modulo floor m_visualSamplePerPixel ...
-        m_visualSamplePerPixel = math_max( 1.0, m_zoomFactor * (1.0 + m_rateAdjust));
-        m_audioSamplePerPixel = getVisualSamplePerPixel()*m_trackInfoObject->getWaveForm()->getAudioVisualRatio();
-    }
-    else {
-        m_visualSamplePerPixel = 0.0;
-        m_audioSamplePerPixel = 0.0;
-    }
-
-    //qDebug() << "m_visualSamplePerPixel" << m_visualSamplePerPixel;
-    //qDebug() << "m_audioSamplePerPixel" << m_audioSamplePerPixel;
+//vRince for the moment only more than one sample per pixel is supported
+//due to the fact we play the visual play pos modulo floor m_visualSamplePerPixel ...
+void WaveformWidgetRenderer::updateVisualSamplingPerPixel() {
+    m_visualSamplePerPixel = m_zoomFactor * (1.0 + m_rateAdjust);
+    m_visualSamplePerPixel = math_max( 1.0, m_visualSamplePerPixel);
 }
 
-double WaveformWidgetRenderer::getVisualSamplePerPixel()
-{
+void WaveformWidgetRenderer::updateAudioSamplingPerPixel() {
+    if( !m_trackInfoObject) {
+        m_audioSamplePerPixel = 0.0;
+        return;
+    }
+    m_audioSamplePerPixel = getVisualSamplePerPixel()*m_trackInfoObject->getWaveForm()->getAudioVisualRatio();
+}
+
+double WaveformWidgetRenderer::getVisualSamplePerPixel() const {
     return m_visualSamplePerPixel;
 }
 
-double WaveformWidgetRenderer::getAudioSamplePerPixel()
-{
+double WaveformWidgetRenderer::getAudioSamplePerPixel() const {
     return m_audioSamplePerPixel;
 }
 
-void WaveformWidgetRenderer::regulateVisualSample( int& sampleIndex) const
-{
+void WaveformWidgetRenderer::regulateVisualSample( int& sampleIndex) const {
     if( m_visualSamplePerPixel < 1.0)
         return;
 
