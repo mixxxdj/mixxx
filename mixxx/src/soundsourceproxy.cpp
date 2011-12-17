@@ -365,14 +365,14 @@ QString SoundSourceProxy::supportedFileExtensionsRegex() {
 	supportedFileExtList[i] = QRegExp::escape(supportedFileExtList[i]);
     }
 
-    //Turn the list into a "\\.(mp3|wav|etc)$" style regex string
+    // Turn the list into a "\\.(mp3|wav|etc)$" style regex string
     return QString("\\.(%1)$").arg(supportedFileExtList.join("|"));
 }
 
 bool SoundSourceProxy::isFilenameSupported(QString fileName) {
     if (m_supportedFileRegex.isValid()) {
         QString regex = SoundSourceProxy::supportedFileExtensionsRegex();
-        m_supportedFileRegex = QRegExp(regex);
+        m_supportedFileRegex = QRegExp(regex, Qt::CaseInsensitive);
     }
     return fileName.contains(m_supportedFileRegex);
 }

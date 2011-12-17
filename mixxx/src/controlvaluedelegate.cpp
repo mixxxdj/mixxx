@@ -78,7 +78,7 @@ ControlValueDelegate::ControlValueDelegate(QObject *parent)
         m_channelControlValues.append("hotcue_9_activate");
         m_channelControlValues.append("hotcue_10_activate");
         m_channelControlValues.append("hotcue_11_activate");
-        m_channelControlValues.append("hotcue_12_activate");		
+        m_channelControlValues.append("hotcue_12_activate");
         m_channelControlValues.append("hotcue_13_activate");
         m_channelControlValues.append("hotcue_14_activate");
         m_channelControlValues.append("hotcue_15_activate");
@@ -93,7 +93,7 @@ ControlValueDelegate::ControlValueDelegate(QObject *parent)
         m_channelControlValues.append("hotcue_24_activate");
         m_channelControlValues.append("hotcue_25_activate");
         m_channelControlValues.append("hotcue_26_activate");
-        m_channelControlValues.append("hotcue_27_activate");		
+        m_channelControlValues.append("hotcue_27_activate");
         m_channelControlValues.append("hotcue_28_activate");
         m_channelControlValues.append("hotcue_29_activate");
         m_channelControlValues.append("hotcue_30_activate");
@@ -114,7 +114,7 @@ ControlValueDelegate::ControlValueDelegate(QObject *parent)
         m_channelControlValues.append("hotcue_9_clear");
         m_channelControlValues.append("hotcue_10_clear");
         m_channelControlValues.append("hotcue_11_clear");
-        m_channelControlValues.append("hotcue_12_clear");		
+        m_channelControlValues.append("hotcue_12_clear");
         m_channelControlValues.append("hotcue_13_clear");
         m_channelControlValues.append("hotcue_14_clear");
         m_channelControlValues.append("hotcue_15_clear");
@@ -129,7 +129,7 @@ ControlValueDelegate::ControlValueDelegate(QObject *parent)
         m_channelControlValues.append("hotcue_24_clear");
         m_channelControlValues.append("hotcue_25_clear");
         m_channelControlValues.append("hotcue_26_clear");
-        m_channelControlValues.append("hotcue_27_clear");		
+        m_channelControlValues.append("hotcue_27_clear");
         m_channelControlValues.append("hotcue_28_clear");
         m_channelControlValues.append("hotcue_29_clear");
         m_channelControlValues.append("hotcue_30_clear");
@@ -204,7 +204,11 @@ QWidget *ControlValueDelegate::createEditor(QWidget *parent,
     QComboBox *editor = new QComboBox(parent);
 
     if (controlGroup == CONTROLGROUP_CHANNEL1_STRING ||
-        controlGroup == CONTROLGROUP_CHANNEL2_STRING)
+        controlGroup == CONTROLGROUP_CHANNEL2_STRING ||
+        controlGroup == CONTROLGROUP_SAMPLER1_STRING ||
+        controlGroup == CONTROLGROUP_SAMPLER2_STRING ||
+        controlGroup == CONTROLGROUP_SAMPLER3_STRING ||
+        controlGroup == CONTROLGROUP_SAMPLER4_STRING)
     {
         //Add all the channel 1/2 items)
         editor->addItems(m_channelControlValues);
@@ -273,7 +277,11 @@ bool ControlValueDelegate::verifyControlValueValidity(QString controlGroup, QAbs
     QString value = index.data().value<QString>();
 
     if (controlGroup == CONTROLGROUP_CHANNEL1_STRING ||
-        controlGroup == CONTROLGROUP_CHANNEL2_STRING)
+        controlGroup == CONTROLGROUP_CHANNEL2_STRING ||
+        controlGroup == CONTROLGROUP_SAMPLER1_STRING ||
+        controlGroup == CONTROLGROUP_SAMPLER2_STRING ||
+        controlGroup == CONTROLGROUP_SAMPLER3_STRING ||
+        controlGroup == CONTROLGROUP_SAMPLER4_STRING)
     {
         if (m_channelControlValues.contains(value))
             return true;

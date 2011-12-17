@@ -150,7 +150,6 @@ double WWidget::getValue() {
 void WWidget::updateValue(double fValue)
 {
     setValue(fValue);
-    m_fValue = fValue;
     emit(valueChangedUp(fValue));
     emit(valueChangedDown(fValue));
 }

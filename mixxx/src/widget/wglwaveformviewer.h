@@ -65,6 +65,7 @@ class WGLWaveformViewer : public QGLWidget
     ControlObjectThreadMain* m_pRateDir;
 
     bool m_bScratching;
+    bool m_bBending;
     bool m_painting;
     QMutex m_paintMutex;
 

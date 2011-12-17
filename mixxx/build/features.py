@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 
 import os
 import util
@@ -772,7 +773,7 @@ class Optimize(Feature):
 
         if build.toolchain_is_msvs:
             if int(build.flags['msvcdebug']):
-                self.status = "Disabled (due to mscvdebug mode)"
+                self.status = "Disabled (due to msvcdebug mode)"
                 return
             # Valid values of /MACHINE are:
             # {AM33|ARM|EBC|IA64|M32R|MIPS|MIPS16|MIPSFPU|MIPSFPU16|MIPSR41XX|SH3|SH3DSP|SH4|SH5|THUMB|X86}
@@ -820,13 +821,17 @@ class Optimize(Feature):
             #    build.env.Append(CCFLAGS = '/Ox')
 
             # SSE and SSE2 are core instructions on x64
-            if not build.machine_is_64bit:
+            if build.machine_is_64bit:
+                build.env.Append(CPPDEFINES = ['__SSE__','__SSE2__'])
+            else:
                 if optimize_level == 3:
                     self.status += ", SSE Instructions Enabled"
                     build.env.Append(CCFLAGS = '/arch:SSE')
+                    build.env.Append(CPPDEFINES = '__SSE__')
                 elif optimize_level == 4:
                     self.status += ", SSE2 Instructions Enabled"
                     build.env.Append(CCFLAGS = '/arch:SSE2')
+                    build.env.Append(CPPDEFINES = ['__SSE__','__SSE2__'])
         elif build.toolchain_is_gnu:
             if int(build.flags.get('tuned',0)):
                 self.status = "Disabled (Overriden by tuned=1)"
@@ -844,24 +849,31 @@ class Optimize(Feature):
             elif optimize_level == 2:
                 self.status = "Enabled (P4 MMX/SSE)"
                 build.env.Append(CCFLAGS = '-march=pentium4 -mmmx -msse2 -mfpmath=sse')
+                build.env.Append(CPPDEFINES = ['__SSE__','__SSE2__'])
             elif optimize_level == 3:
                 self.status = "Enabled (Intel Core Solo/Duo)"
                 build.env.Append(CCFLAGS = '-march=prescott -mmmx -msse3 -mfpmath=sse')
+                build.env.Append(CPPDEFINES = ['__SSE__','__SSE2__','__SSE3__'])
             elif optimize_level == 4:
                 self.status = "Enabled (Intel Core 2)"
                 build.env.Append(CCFLAGS = '-march=nocona -mmmx -msse -msse2 -msse3 -mfpmath=sse -ffast-math -funroll-loops')
+                build.env.Append(CPPDEFINES = ['__SSE__','__SSE2__','__SSE3__'])
             elif optimize_level == 5:
                 self.status = "Enabled (Athlon Athlon-4/XP/MP)"
                 build.env.Append(CCFLAGS = '-march=athlon-4 -mmmx -msse -m3dnow -mfpmath=sse')
+                build.env.Append(CPPDEFINES = '__SSE__')
             elif optimize_level == 6:
                 self.status = "Enabled (Athlon K8/Opteron/AMD64)"
                 build.env.Append(CCFLAGS = '-march=k8 -mmmx -msse2 -m3dnow -mfpmath=sse')
+                build.env.Append(CPPDEFINES = ['__SSE__','__SSE2__'])
             elif optimize_level == 7:
                 self.status = "Enabled (Athlon K8/Opteron/AMD64 + SSE3)"
                 build.env.Append(CCFLAGS = '-march=k8-sse3 -mmmx -msse2 -msse3 -m3dnow -mfpmath=sse')
+                build.env.Append(CPPDEFINES = ['__SSE__','__SSE2__','__SSE3__'])
             elif optimize_level == 8:
                 self.status = "Enabled (Generic SSE/SSE2/SSE3)"
                 build.env.Append(CCFLAGS = '-mmmx -msse2 -msse3 -mfpmath=sse')
+                build.env.Append(CPPDEFINES = ['__SSE__','__SSE2__','__SSE3__'])
             elif optimize_level == 9:
                 self.status = "Enabled (Tuned Generic)"
                 # This option is for release builds packaged for 64-bit. We
@@ -878,10 +890,12 @@ class Optimize(Feature):
 
                 # TODO(XXX) check the soundtouch package in Ubuntu to see what they do about this.
                 build.env.Append(CCFLAGS = '-mtune=generic -mmmx -msse -mfpmath=sse')
+                build.env.Append(CPPDEFINES = '__SSE__')
 
                 # Enable SSE2 on 64-bit machines. SSE3 is not a sure thing on 64-bit
                 if build.machine_is_64bit:
                     build.env.Append(CCFLAGS = '-msse2')
+                    build.env.Append(CPPDEFINES = '__SSE2__')
 
 
 class Tuned(Feature):
@@ -908,13 +922,20 @@ class Tuned(Feature):
                 build.env.Append(CCFLAGS = '/favor:blend')
             return
 
+        # SSE and SSE2 are core instructions on x64
+        if build.machine_is_64bit:
+            build.env.Append(CPPDEFINES = ['__SSE__','__SSE2__'])
+
         if build.toolchain_is_gnu:
             ccv = build.env['CCVERSION'].split('.')
             if int(ccv[0]) >= 4 and int(ccv[1]) >= 2:
-                # Should we use -mtune as well?
+                # -march=native takes care of mtune
+                #   http://en.chys.info/2010/04/what-exactly-marchnative-means/
                 build.env.Append(CCFLAGS = '-march=native')
                 # Doesn't make sense as a linkflag
                 build.env.Append(LINKFLAGS = '-march=native')
+                # TODO(pegasus): Ask GCC if the CPU supports SSE, SSE2, SSE3, etc.
+                #   so we can add the appropriate CPPDEFINES for Mixxx code paths
             else:
                 self.status = "Disabled (requires gcc >= 4.2.0)"
         elif build.toolchain_is_msvs:

@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2011-10-31 23:15-0400\n"
-"PO-Revision-Date: 2011-11-02 08:11+0000\n"
+"PO-Revision-Date: 2011-11-03 16:42+0000\n"
 "Last-Translator: Akmal Xushvaqov <akmalxster@gmail.com>\n"
 "Language-Team: Uzbek <uz@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-11-03 05:21+0000\n"
-"X-Generator: Launchpad (build 14214)\n"
+"X-Launchpad-Export-Date: 2011-11-04 04:44+0000\n"
+"X-Generator: Launchpad (build 14231)\n"
 
 #: AutoDJFeature#1
 msgid "Auto DJ"
@@ -243,11 +243,11 @@ msgstr ""
 
 #: BrowseTableModel#20
 msgid "Could not update file metadata."
-msgstr ""
+msgstr "Файл метадатасини янгилаб бўлмади"
 
 #: CrateFeature#1
 msgid "New Crate"
-msgstr ""
+msgstr "Янги қути"
 
 #: CrateFeature#2
 msgctxt "CrateFeature#2"
@@ -271,15 +271,15 @@ msgstr "Ижро рўйхатини импорт қилиш"
 
 #: CrateFeature#6
 msgid "Crates"
-msgstr ""
+msgstr "Қутилар"
 
 #: CrateFeature#7
 msgid "Import Crate"
-msgstr ""
+msgstr "Қутини импорт қилиш"
 
 #: CrateFeature#8
 msgid "Export Crate"
-msgstr ""
+msgstr "Қутини экспорт қилиш"
 
 #: CrateFeature#9
 msgctxt "CrateFeature#9"
@@ -288,54 +288,54 @@ msgstr "Қулфдан чиқариш"
 
 #: CrateFeature#10
 msgid "Crate name:"
-msgstr ""
+msgstr "Қути номи:"
 
 #: CrateFeature#11
 msgid "An unknown error occurred while creating crate: "
-msgstr ""
+msgstr "Қути яратилаётганда номаълум зато рўй берди: "
 
 #: CrateFeature#12
 msgid "Rename Crate"
-msgstr ""
+msgstr "Қутини қайта номлаш"
 
 #: CrateFeature#13
 msgid "New crate name:"
-msgstr ""
+msgstr "Янги қути номи:"
 
 #: CrateFeature#14
 msgid "Renaming Crate Failed"
-msgstr ""
+msgstr "Қутини қайта номлаш муваффақиятсиз якунланди"
 
 #: CrateFeature#15
 msgctxt "CrateFeature#15"
 msgid "Playlist Files (*.m3u *.pls)"
-msgstr ""
+msgstr "Ижро рўйхати файллари (*.m3u *.pls)"
 
 #: CrateFeature#16
 msgctxt "CrateFeature#16"
 msgid "Export Playlist"
-msgstr ""
+msgstr "Қўшиқ рўйхатини экспорт қилиш"
 
 #: CrateFeature#17
 msgctxt "CrateFeature#17"
 msgid "M3U Playlist (*.m3u);;PLS Playlist (*.pls)"
-msgstr ""
+msgstr "M3U Қўшиқ рўйхати (*.m3u);;PLS қўшиқ рўйхати (*.pls)"
 
 #: CrateFeature#18
 msgid "A crate cannot have a blank name."
-msgstr ""
+msgstr "Қутида бўш ном бўлмайди"
 
 #: CrateFeature#19
 msgid "Creating Crate Failed"
-msgstr ""
+msgstr "Қути яратиш муваффақиятсиз якунланди"
 
 #: CrateFeature#20
 msgid "A crate by that name already exists."
-msgstr ""
+msgstr "Ушбу номли қути аллақачон мавжуд."
 
 #: DlgAboutDlg#1
 msgid "About Mixxx"
-msgstr ""
+msgstr "Mixxx ҳақида"
 
 #: DlgAboutDlg#2
 msgid ""
@@ -353,43 +353,56 @@ msgid ""
 "margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-"
 "family:'Sans Serif'; font-size:9pt;\"></p></body></html>"
 msgstr ""
+"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" "
+"\"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+"<html><head><meta name=\"qrichtext\" content=\"1\" /><style "
+"type=\"text/css\">\n"
+"p, li { white-space: pre-wrap; }\n"
+"</style></head><body style=\" font-family:'MS Shell Dlg 2'; font-"
+"size:8.25pt; font-weight:400; font-style:normal;\">\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-"
+"right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-"
+"family:'Sans Serif'; font-size:9pt;\">Credits go here</span></p>\n"
+"<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; "
+"margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-"
+"family:'Sans Serif'; font-size:9pt;\"></p></body></html>"
 
 #: DlgAboutDlg#3
 msgid "1.x.x"
-msgstr ""
+msgstr "1.x.x"
 
 #: DlgAboutDlg#4
 msgid "<a href=\"http://mixxx.org/\">Official Website</a>"
-msgstr ""
+msgstr "<a href=\"http://mixxx.org/\">Расмий веб сайти</a>"
 
 #: DlgAutoDJ#1
 msgid "Disable Auto DJ"
-msgstr ""
+msgstr "Auto DJ'ни ўчириш"
 
 #: DlgAutoDJ#2
 msgid "Enable Auto DJ"
-msgstr ""
+msgstr "Auto DJ'ни ёқиш"
 
 #: DlgAutoDJ#3
 msgctxt "DlgAutoDJ#3"
 msgid "Manage"
-msgstr ""
+msgstr "Бошқариш"
 
 #: DlgAutoDJ#4
 msgid "Shuffle playlist"
-msgstr ""
+msgstr "Shuffle қўшиқ рўйхати"
 
 #: DlgAutoDJ#5
 msgid "Add tracks to the queue below..."
-msgstr ""
+msgstr "Қуйидаги сўралганга қўшиқ қўшиш..."
 
 #: DlgBpmSchemeDlg#1
 msgid "BPM Scheme"
-msgstr ""
+msgstr "BPM схемаси"
 
 #: DlgBpmSchemeDlg#2
 msgid "Scheme Name:"
-msgstr ""
+msgstr "Схема номи"
 
 #: DlgBpmSchemeDlg#3
 msgid "BPM Range"
@@ -397,46 +410,48 @@ msgstr ""
 
 #: DlgBpmSchemeDlg#4
 msgid "Max"
-msgstr ""
+msgstr "Максимум"
 
 #: DlgBpmSchemeDlg#5
 msgid "Min"
-msgstr ""
+msgstr "Минимум"
 
 #: DlgBpmSchemeDlg#6
 msgid "Analyze Entire Song"
-msgstr ""
+msgstr "Киритилган қўшиқларнинг таҳлили"
 
 #: DlgMidiLearning#1
 msgid "Skip"
-msgstr ""
+msgstr "Ўтказиб юбориш"
 
 #: DlgMidiLearning#2
 msgid "Successfully mapped to: "
-msgstr ""
+msgstr "Муваффақиятли харитага қўшилди: "
 
 #: DlgMidiLearning#3
 msgid "Next"
-msgstr ""
+msgstr "Кейинги"
 
 #: DlgMidiLearning#4
 msgctxt "DlgMidiLearning#4"
 msgid "MIDI Learning Wizard"
-msgstr ""
+msgstr "MIDI ўргатиш устаси"
 
 #: DlgMidiLearning#5
 msgid "Welcome to the MIDI Learning Wizard"
-msgstr ""
+msgstr "MIDI ўргатиш устасига хуш келибсиз"
 
 #: DlgMidiLearning#6
 msgid ""
 "This wizard allows you to easily map the controls on your MIDI controller to "
 "Mixxx's controls."
 msgstr ""
+"Ушбу уста  MIDI бошқарувчингизни Mixxx бошқарувига осонгина харита қилишга "
+"рухсат беради."
 
 #: DlgMidiLearning#7
 msgid "Begin"
-msgstr ""
+msgstr "Бошлаш"
 
 #: DlgMidiLearning#8
 msgid "Please tweak the control for:"
@@ -444,19 +459,19 @@ msgstr ""
 
 #: DlgMidiLearning#9
 msgid "Mixxx Control"
-msgstr ""
+msgstr "Mixxx бошқаруви"
 
 #: DlgMidiLearning#10
 msgid "Previous"
-msgstr ""
+msgstr "Олдинги"
 
 #: DlgMidiLearning#11
 msgid "Press spacebar to proceed or skip."
-msgstr ""
+msgstr "Жараёнда давом этиш ёки ташлаб ўтиш учун spacebar тугмасини босинг"
 
 #: DlgMidiLearning#12
 msgid "MIDI learning complete!"
-msgstr ""
+msgstr "MIDI ўргатиш тугалланди!"
 
 #: DlgMidiLearning#13
 msgid ""
@@ -474,6 +489,19 @@ msgid ""
 "left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><br />Now "
 "go spin some beats!</p></body></html>"
 msgstr ""
+"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" "
+"\"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+"<html><head><meta name=\"qrichtext\" content=\"1\" /><style "
+"type=\"text/css\">\n"
+"p, li { white-space: pre-wrap; }\n"
+"</style></head><body style=\" font-family:'Lucida Grande'; font-size:13pt; "
+"font-weight:400; font-style:normal;\">\n"
+"<p align=\"center\" style=\" margin-top:0px; margin-bottom:0px; margin-"
+"left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">This "
+"wizard can be re-run at any time.</p>\n"
+"<p align=\"center\" style=\" margin-top:0px; margin-bottom:0px; margin-"
+"left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><br />Now "
+"go spin some beats!</p></body></html>"
 
 #: DlgMidiLearning#14
 msgid "Finito!"
@@ -481,25 +509,25 @@ msgstr ""
 
 #: DlgPluginDownloader#1
 msgid "Missing Audio Plugin Downloader"
-msgstr ""
+msgstr "Аудио плагин ёзиб олувчи вақти ўтиб кетди"
 
 #: DlgPrefBPMDlg#1
 msgctxt "DlgPrefBPMDlg#1"
 msgid "BPM Detection Settings"
-msgstr ""
+msgstr "BPM аниқлаш параметрлари"
 
 #: DlgPrefBPMDlg#2
 msgctxt "DlgPrefBPMDlg#2"
 msgid "BPM Detection"
-msgstr ""
+msgstr "BPM аниқлаш"
 
 #: DlgPrefBPMDlg#3
 msgid "Enable BPM Detection"
-msgstr ""
+msgstr "BPM аниқлашни ёқиш"
 
 #: DlgPrefBPMDlg#4
 msgid "Detect Song BPM on Import"
-msgstr ""
+msgstr "Импорт қилишда BPM қўшиқ аниқланди"
 
 #: DlgPrefBPMDlg#5
 msgid "Write BPM to ID3 Tag"

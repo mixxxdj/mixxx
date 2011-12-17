@@ -60,6 +60,7 @@ public slots:
     void constructChildModel();
     void clearChildModel();
 
+    TrackCollection* m_pTrackCollection;
     PlaylistTableModel* m_pPlaylistTableModel;
     PlaylistDAO &m_playlistDao;
     TrackDAO &m_trackDao;
