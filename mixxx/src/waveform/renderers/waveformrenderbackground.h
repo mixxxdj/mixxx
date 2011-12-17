@@ -8,7 +8,7 @@
 #include <QPixmap>
 
 #include "util.h"
-#include "waveform/waveformrendererabstract.h"
+#include "waveformrendererabstract.h"
 
 class WaveformWidgetRenderer;
 

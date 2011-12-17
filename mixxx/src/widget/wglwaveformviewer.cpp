@@ -11,7 +11,7 @@
 #include "mixxx.h"
 #include "trackinfoobject.h"
 #include "wglwaveformviewer.h"
-#include "waveform/waveformrenderer.h"
+#include "waveform/waveformrenderer_old.h"
 #include "controlobjectthreadmain.h"
 #include "sharedglcontext.h"
 

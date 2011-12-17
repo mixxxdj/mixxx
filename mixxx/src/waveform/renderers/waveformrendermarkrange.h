@@ -4,15 +4,13 @@
 #ifndef WAVEFORMRENDERMARKRANGE_H
 #define WAVEFORMRENDERMARKRANGE_H
 
+#include "waveformrendererabstract.h"
+#include "configobject.h"
+
 #include <QObject>
 #include <QColor>
 #include <QVector>
 #include <QPixmap>
-
-#include "configobject.h"
-#include "waveform/renderobject.h"
-
-#include "waveformrendererabstract.h"
 
 class QDomNode;
 class QPainter;
@@ -20,6 +18,7 @@ class QPaintEvent;
 class ConfigKey;
 class ControlObjectThreadMain;
 class WaveformRenderer;
+class ControlObject;
 
 class MarkRange
 {

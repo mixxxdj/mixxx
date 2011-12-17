@@ -3,7 +3,7 @@
 
 #include <QVector>
 
-#include "waveformrendererabstract.h"
+#include "waveform/renderers/waveformrendererabstract.h"
 #include "trackinfoobject.h"
 
 #include <QDebug>

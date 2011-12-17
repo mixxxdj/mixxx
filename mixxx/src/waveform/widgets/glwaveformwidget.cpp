@@ -1,23 +1,23 @@
-#include "glslwaveformwidget.h"
+#include "glwaveformwidget.h"
 
 #include <QPainter>
 
-#include "waveform/waveformwidgetrenderer.h"
-#include "waveform/waveformrenderbackground.h"
-#include "waveform/glslwaveformrenderersignal.h"
-#include "waveform/waveformrendermark.h"
-#include "waveform/waveformrendermarkrange.h"
-#include "waveform/waveformrendererendoftrack.h"
-#include "waveform/waveformrenderbeat.h"
+#include "waveform/renderers/waveformwidgetrenderer.h"
+#include "waveform/renderers/waveformrenderbackground.h"
+#include "waveform/renderers/glwaveformrendererfilteredsignal.h"
+#include "waveform/renderers/waveformrendermark.h"
+#include "waveform/renderers/waveformrendermarkrange.h"
+#include "waveform/renderers/waveformrendererendoftrack.h"
+#include "waveform/renderers/waveformrenderbeat.h"
 
-GLSLWaveformWidget::GLSLWaveformWidget( const char* group, QWidget* parent) :
+GLWaveformWidget::GLWaveformWidget( const char* group, QWidget* parent) :
     WaveformWidgetAbstract(group),
     QGLWidget(parent) {
     m_waveformWidgetRenderer->addRenderer<WaveformRenderBackground>();
     m_waveformWidgetRenderer->addRenderer<WaveformRendererEndOfTrack>();
     m_waveformWidgetRenderer->addRenderer<WaveformRenderMarkRange>();
     m_waveformWidgetRenderer->addRenderer<WaveformRenderMark>();
-    m_waveformWidgetRenderer->addRenderer<GLSLWaveformRendererSignal>();
+    m_waveformWidgetRenderer->addRenderer<GLWaveformRendererFilteredSignal>();
     m_waveformWidgetRenderer->addRenderer<WaveformRenderBeat>();
 
     setAttribute(Qt::WA_NoSystemBackground);
@@ -29,15 +29,14 @@ GLSLWaveformWidget::GLSLWaveformWidget( const char* group, QWidget* parent) :
     m_waveformWidgetRenderer->init();
 }
 
-GLSLWaveformWidget::~GLSLWaveformWidget(){
-    makeCurrent();
+GLWaveformWidget::~GLWaveformWidget() {
 }
 
-void GLSLWaveformWidget::castToQWidget() {
+void GLWaveformWidget::castToQWidget() {
     m_widget = static_cast<QWidget*>(static_cast<QGLWidget*>(this));
 }
 
-void GLSLWaveformWidget::paintEvent( QPaintEvent* event) {
+void GLWaveformWidget::paintEvent( QPaintEvent* event) {
     makeCurrent();
     QPainter painter(this);
     m_waveformWidgetRenderer->draw(&painter,event);

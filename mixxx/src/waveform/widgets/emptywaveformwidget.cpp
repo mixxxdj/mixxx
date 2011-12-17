@@ -2,8 +2,8 @@
 
 #include <QPainter>
 
-#include "waveform/waveformwidgetrenderer.h"
-#include "waveform/waveformrenderbackground.h"
+#include "waveform/renderers/waveformwidgetrenderer.h"
+#include "waveform/renderers/waveformrenderbackground.h"
 
 EmptyWaveformWidget::EmptyWaveformWidget( const char* group, QWidget* parent) :
     WaveformWidgetAbstract(group),

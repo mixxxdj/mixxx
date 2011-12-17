@@ -14,7 +14,6 @@
 #include "engine/cuecontrol.h"
 #include "engine/clockcontrol.h"
 #include "mathstuff.h"
-#include "waveform/waveformrenderer.h"
 
 BaseTrackPlayer::BaseTrackPlayer(QObject* pParent,
                                  ConfigObject<ConfigValue> *pConfig,

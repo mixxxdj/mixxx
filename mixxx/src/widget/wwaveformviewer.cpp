@@ -10,7 +10,7 @@
 #include "trackinfoobject.h"
 #include "wwaveformviewer.h"
 
-#include "waveform/widget/waveformwidgetabstract.h"
+#include "waveform/widgets/waveformwidgetabstract.h"
 
 WWaveformViewer::WWaveformViewer(const char *group, QWidget * parent, Qt::WFlags f) :
     QWidget(parent) {

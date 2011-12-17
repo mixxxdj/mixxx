@@ -7,12 +7,12 @@
 #include <time.h>
 
 #include "mathstuff.h"
-#include "waveformrenderer.h"
-#include "waveformrenderbackground.h"
+#include "waveformrenderer_old.h"
+#include "waveform/renderers/waveformrenderbackground.h"
 //#include "waveformrenderbeat.h"
-#include "waveformrendermark.h"
-#include "waveformrendermarkrange.h"
-#include "waveformrendersignal.h"
+#include "waveform/renderers/waveformrendermark.h"
+#include "waveform/renderers/waveformrendermarkrange.h"
+#include "waveformrendersignal_old.h"
 #include "trackinfoobject.h"
 #include "soundsourceproxy.h"
 #include "controlobjectthreadmain.h"
