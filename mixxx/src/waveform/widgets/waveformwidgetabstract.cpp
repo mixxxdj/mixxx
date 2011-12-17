@@ -9,68 +9,32 @@ const QString WaveformWidgetAbstract::s_openGlFlag = "(GL)";
 const QString WaveformWidgetAbstract::s_openGlShaderFlag = "(GLSL)";
 
 //Default constructor is only use by the factory to evaluate dynamically WaveformWidget
-WaveformWidgetAbstract::WaveformWidgetAbstract()
-{
+WaveformWidgetAbstract::WaveformWidgetAbstract() :
+    WaveformWidgetRenderer() {
     m_widget = 0;
-    m_waveformWidgetRenderer = 0;
 }
 
-WaveformWidgetAbstract::WaveformWidgetAbstract( const char* group)
-{
+WaveformWidgetAbstract::WaveformWidgetAbstract( const char* group) :
+    WaveformWidgetRenderer(group) {
     m_widget = 0;
-    m_waveformWidgetRenderer =  new WaveformWidgetRenderer(group);
 }
 
-WaveformWidgetAbstract::~WaveformWidgetAbstract()
-{
-    delete m_waveformWidgetRenderer;
+WaveformWidgetAbstract::~WaveformWidgetAbstract() {
 }
 
-void WaveformWidgetAbstract::hold()
-{
-    //if( m_widget)
+void WaveformWidgetAbstract::hold() {
     m_widget->hide();
 }
 
-void WaveformWidgetAbstract::release()
-{
-    //if( m_widget)
+void WaveformWidgetAbstract::release() {
     m_widget->show();
 }
 
-void WaveformWidgetAbstract::prepare()
-{
-    m_waveformWidgetRenderer->preRender();
+void WaveformWidgetAbstract::render() {
+    m_widget->update();
 }
 
-void WaveformWidgetAbstract::render()
-{
-    //if( m_widget)
-    m_widget->repaint();
-}
-
-void WaveformWidgetAbstract::resize( int width, int height)
-{
+void WaveformWidgetAbstract::resize( int width, int height) {
     m_widget->resize( width, height);
-    m_waveformWidgetRenderer->resize( width, height);
-}
-
-void WaveformWidgetAbstract::zoomIn()
-{
-    m_waveformWidgetRenderer->zoomIn();
-}
-
-void WaveformWidgetAbstract::zoomOut()
-{
-    m_waveformWidgetRenderer->zoomOut();
-}
-
-void WaveformWidgetAbstract::setTrack( TrackPointer track)
-{
-    m_waveformWidgetRenderer->setTrack( track);
-}
-
-void WaveformWidgetAbstract::setup( const QDomNode& node)
-{
-    m_waveformWidgetRenderer->setup(node);
+    WaveformWidgetRenderer::resize( width, height);
 }

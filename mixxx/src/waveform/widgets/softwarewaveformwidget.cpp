@@ -6,20 +6,21 @@
 #include "waveform/renderers/waveformrenderbackground.h"
 #include "waveform/renderers/waveformrendermark.h"
 #include "waveform/renderers/waveformrendermarkrange.h"
-
-//For the moment we use the same signal renderer until we build a brand new one for the GL version
-//a one that actually needs **hardware accelation**
-
 #include "waveform/renderers/waveformrendererfilteredsignal.h"
+#include "waveform/renderers/waveformrenderbeat.h"
 
 SoftwareWaveformWidget::SoftwareWaveformWidget( const char* group, QWidget* parent) :
     WaveformWidgetAbstract(group),
     QWidget(parent) {
-    m_waveformWidgetRenderer->addRenderer<WaveformRenderBackground>();
-    m_waveformWidgetRenderer->addRenderer<WaveformRenderMarkRange>();
-    m_waveformWidgetRenderer->addRenderer<WaveformRendererFilteredSignal>();
-    m_waveformWidgetRenderer->addRenderer<WaveformRenderMark>();
-    m_waveformWidgetRenderer->init();
+
+    addRenderer<WaveformRenderBackground>();
+    addRenderer<WaveformRenderMarkRange>();
+    addRenderer<WaveformRendererFilteredSignal>();
+    addRenderer<WaveformRenderMark>();
+    addRenderer<WaveformRenderMarkRange>();
+    addRenderer<WaveformRenderBeat>();
+
+    init();
 }
 
 SoftwareWaveformWidget::~SoftwareWaveformWidget() {
@@ -31,5 +32,10 @@ void SoftwareWaveformWidget::castToQWidget() {
 
 void SoftwareWaveformWidget::paintEvent( QPaintEvent* event) {
     QPainter painter(this);
-    m_waveformWidgetRenderer->draw(&painter,event);
+    draw(&painter,event);
+}
+
+void SoftwareWaveformWidget::updateVisualSamplingPerPixel() {
+    m_visualSamplePerPixel = m_zoomFactor;
+    m_visualSamplePerPixel = math_max( 1.0, m_visualSamplePerPixel);
 }

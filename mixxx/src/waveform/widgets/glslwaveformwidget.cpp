@@ -13,12 +13,13 @@
 GLSLWaveformWidget::GLSLWaveformWidget( const char* group, QWidget* parent) :
     WaveformWidgetAbstract(group),
     QGLWidget(parent) {
-    m_waveformWidgetRenderer->addRenderer<WaveformRenderBackground>();
-    m_waveformWidgetRenderer->addRenderer<WaveformRendererEndOfTrack>();
-    m_waveformWidgetRenderer->addRenderer<WaveformRenderMarkRange>();
-    m_waveformWidgetRenderer->addRenderer<WaveformRenderMark>();
-    m_waveformWidgetRenderer->addRenderer<GLSLWaveformRendererSignal>();
-    m_waveformWidgetRenderer->addRenderer<WaveformRenderBeat>();
+
+    addRenderer<WaveformRenderBackground>();
+    addRenderer<WaveformRendererEndOfTrack>();
+    addRenderer<WaveformRenderMarkRange>();
+    addRenderer<WaveformRenderMark>();
+    addRenderer<GLSLWaveformRendererSignal>();
+    addRenderer<WaveformRenderBeat>();
 
     setAttribute(Qt::WA_NoSystemBackground);
     setAttribute(Qt::WA_OpaquePaintEvent);
@@ -26,7 +27,7 @@ GLSLWaveformWidget::GLSLWaveformWidget( const char* group, QWidget* parent) :
     setAutoBufferSwap(false);
 
     makeCurrent();
-    m_waveformWidgetRenderer->init();
+    init();
 }
 
 GLSLWaveformWidget::~GLSLWaveformWidget(){
@@ -40,6 +41,6 @@ void GLSLWaveformWidget::castToQWidget() {
 void GLSLWaveformWidget::paintEvent( QPaintEvent* event) {
     makeCurrent();
     QPainter painter(this);
-    m_waveformWidgetRenderer->draw(&painter,event);
+    draw(&painter,event);
     QGLWidget::swapBuffers();
 }

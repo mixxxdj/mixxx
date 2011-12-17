@@ -21,8 +21,7 @@
 
 #include <QDebug>
 
-WaveformWidgetFactory::WaveformWidgetFactory()
-{
+WaveformWidgetFactory::WaveformWidgetFactory() {
     m_timer = new QTimer();
     connect(m_timer,SIGNAL(timeout()),this,SLOT(refresh()));
 
@@ -105,32 +104,27 @@ WaveformWidgetFactory::WaveformWidgetFactory()
     start();
 }
 
-WaveformWidgetFactory::~WaveformWidgetFactory()
-{
+WaveformWidgetFactory::~WaveformWidgetFactory() {
     delete m_timer;
     delete m_time;
 }
 
-void WaveformWidgetFactory::start()
-{
+void WaveformWidgetFactory::start() {
     qDebug() << "WaveformWidgetFactory::start";
     m_timer->start();
 }
 
-void WaveformWidgetFactory::stop()
-{
+void WaveformWidgetFactory::stop() {
     m_timer->stop();
 }
 
-void WaveformWidgetFactory::destroyWidgets()
-{
+void WaveformWidgetFactory::destroyWidgets() {
     for( int i = 0; i < m_waveformWidgets.size(); i++)
         delete m_waveformWidgets[i];
     m_waveformWidgets.clear();
 }
 
-bool WaveformWidgetFactory::setWaveformWidget( WWaveformViewer* viewer)
-{
+bool WaveformWidgetFactory::setWaveformWidget( WWaveformViewer* viewer) {
     int index = -1;
     if( viewer->getWaveformWidget())
     {
@@ -165,14 +159,12 @@ bool WaveformWidgetFactory::setWaveformWidget( WWaveformViewer* viewer)
     return true;
 }
 
-void WaveformWidgetFactory::setFrameRate( int frameRate)
-{
+void WaveformWidgetFactory::setFrameRate( int frameRate) {
     m_frameRate = math_min(60, frameRate);
     m_timer->setInterval((int)(1000.0/(double)m_frameRate));
 }
 
-bool WaveformWidgetFactory::setWidgetType( int handleIndex)
-{
+bool WaveformWidgetFactory::setWidgetType( int handleIndex) {
     if( handleIndex < 0 && handleIndex > m_waveformWidgetHandles.size())
     {
         qDebug() << "WaveformWidgetFactory::setWidgetType - invalid handle";
@@ -221,10 +213,9 @@ bool WaveformWidgetFactory::setWidgetType( int handleIndex)
     return true;
 }
 
-void WaveformWidgetFactory::refresh()
-{
+void WaveformWidgetFactory::refresh() {
     for( int i = 0; i < m_waveformWidgets.size(); i++)
-        m_waveformWidgets[i]->prepare();
+        m_waveformWidgets[i]->preRender();
 
     for( int i = 0; i < m_waveformWidgets.size(); i++)
         m_waveformWidgets[i]->render();
@@ -234,8 +225,7 @@ void WaveformWidgetFactory::refresh()
     m_actualFrameRate = 1000.0/(double)(m_lastFrameTime);
 }
 
-void WaveformWidgetFactory::evaluateWidgets()
-{
+void WaveformWidgetFactory::evaluateWidgets() {
     m_waveformWidgetHandles.clear();
     for( int type = 0; type < WaveformWidgetType::Count_WaveformwidgetType; type++) {
         WaveformWidgetAbstract* widget = 0;
@@ -267,8 +257,7 @@ void WaveformWidgetFactory::evaluateWidgets()
                     handle.m_active = false;
                     continue;
                 }
-                else if( widget->useOpenGLShaders() && !isOpenGlShaderAvailable())
-                {
+                else if( widget->useOpenGLShaders() && !isOpenGlShaderAvailable()) {
                     handle.m_active = false;
                     continue;
                 }
@@ -279,12 +268,9 @@ void WaveformWidgetFactory::evaluateWidgets()
     }
 }
 
-WaveformWidgetAbstract* WaveformWidgetFactory::createWaveformWidget( WaveformWidgetType::Type type, WWaveformViewer* viewer)
-{
-    if( viewer)
-    {
-        switch(type)
-        {
+WaveformWidgetAbstract* WaveformWidgetFactory::createWaveformWidget( WaveformWidgetType::Type type, WWaveformViewer* viewer) {
+    if( viewer) {
+        switch(type) {
         case WaveformWidgetType::EmptyWaveform : return new EmptyWaveformWidget( viewer->getGroup(), viewer);
         case WaveformWidgetType::SimpleSoftwareWaveform : return 0; //TODO
         case WaveformWidgetType::SimpleGLWaveform : return 0; //TODO

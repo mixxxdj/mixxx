@@ -19,6 +19,8 @@ protected:
     virtual void castToQWidget();
     virtual void paintEvent(QPaintEvent* event);
 
+    virtual void updateVisualSamplingPerPixel();
+
 private:
     SoftwareWaveformWidget() {}
     SoftwareWaveformWidget( const char* group, QWidget* parent);

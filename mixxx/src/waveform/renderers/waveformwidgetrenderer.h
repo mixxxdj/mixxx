@@ -34,9 +34,11 @@ public:
     bool zoomIn();
     bool zoomOut();
 
-    void updateSamplingPerPixel();
-    double getVisualSamplePerPixel();
-    double getAudioSamplePerPixel();
+    virtual void updateVisualSamplingPerPixel();
+    virtual void updateAudioSamplingPerPixel();
+
+    double getVisualSamplePerPixel() const;
+    double getAudioSamplePerPixel() const;
 
     //those function replace at its best sample position to an admissible
     //sample position according to the current visual resampling
@@ -44,7 +46,7 @@ public:
     void regulateVisualSample( int& sampleIndex) const;
     void regulateAudioSample( int& sampleIndex) const;
 
-    //this "regulate" againt visual sampling to make the position in widget
+    //this "regulate" against visual sampling to make the position in widget
     //stable and deterministic
     double transformSampleIndexInRendererWorld( int sampleIndex) const;
     double transformPositionInRendererWorld( double position) const;
@@ -104,6 +106,9 @@ protected:
     int m_lastSystemFramesTime[100];
     int currentFrame;
 
+protected:
+    WaveformWidgetRenderer();
+    friend class WaveformWidgetFactory;
 };
 
 #endif // WAVEFORMWIDGET_H

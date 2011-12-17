@@ -4,11 +4,11 @@
 
 #include <QDebug>
 
-Waveform::Waveform()
-    : m_textureStride(1024),
-      m_size(0),
-      m_visualSampleRate(441),
-      m_audioVisualRatio(100) {
+Waveform::Waveform() :
+    m_size(0),
+    m_textureStride(1024),
+    m_visualSampleRate(441),
+    m_audioVisualRatio(100) {
 }
 
 Waveform::~Waveform() {

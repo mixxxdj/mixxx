@@ -73,7 +73,7 @@ void WWaveformViewer::wheelEvent(QWheelEvent *event) {
             else
                 m_waveformWidget->zoomOut();
         }
-        update();
+        m_waveformWidget->render();
     }
 }
 
