@@ -12,7 +12,6 @@
 WNumberPos::WNumberPos(const char * group, QWidget * parent)
         : WNumber(parent),
           m_dOldValue(0.0f),
-          m_dDuration(0.0f),
           m_dTrackSamples(0.0),
           m_dTrackSampleRate(0.0f),
           m_bRemain(false) {
@@ -28,14 +27,6 @@ WNumberPos::WNumberPos(const char * group, QWidget * parent)
         ControlObject::getControl(ConfigKey(group, "rate")));
     m_pRateDirControl = new ControlObjectThreadWidget(
         ControlObject::getControl(ConfigKey(group, "rate_dir")));
-
-    m_pDuration = new ControlObjectThreadWidget(
-        ControlObject::getControl(ConfigKey(group, "duration")));
-    connect(m_pDuration, SIGNAL(valueChanged(double)),
-            this, SLOT(slotSetTrackDuration(double)));
-    // Tell the CO to re-emit its value since we could be created after it was
-    // set to a valid value.
-    m_pDuration->emitValueChanged();
 
     m_pTrackSamples = new ControlObjectThreadWidget(
         ControlObject::getControl(ConfigKey(group, "track_samples")));
@@ -60,7 +51,6 @@ WNumberPos::~WNumberPos() {
     delete m_pShowDurationRemaining;
     delete m_pRateControl;
     delete m_pRateDirControl;
-    delete m_pDuration;
 }
 
 void WNumberPos::mousePressEvent(QMouseEvent* pEvent) {
@@ -70,11 +60,6 @@ void WNumberPos::mousePressEvent(QMouseEvent* pEvent) {
         setRemain(!m_bRemain);
         m_pShowDurationRemaining->slotSet(m_bRemain ? 1.0f : 0.0f);
     }
-}
-
-void WNumberPos::slotSetTrackDuration(double dDuration) {
-    m_dDuration = dDuration;
-    setValue(m_dOldValue);
 }
 
 void WNumberPos::slotSetTrackSamples(double dSamples) {
@@ -92,10 +77,11 @@ void WNumberPos::setValue(double dValue) {
 
     double valueMillis = 0.0f;
     double durationMillis = 0.0f;
-    if (m_dTrackSamples > 0 && m_dTrackSampleRate > 0 && m_dDuration > 0) {
+    if (m_dTrackSamples > 0 && m_dTrackSampleRate > 0) {
         //map midi value taking in to account 14 = 0 and 114 = 1
+        double dDuration = m_dTrackSamples / m_dTrackSampleRate / 2.0;
         valueMillis = (dValue - 14) * 1000.0f * m_dTrackSamples / 2.0f / 100.0f / m_dTrackSampleRate;
-        durationMillis = m_dDuration * 1000.0f;
+        durationMillis = dDuration * 1000.0f;
         if (m_bRemain)
             valueMillis = math_max(durationMillis - valueMillis, 0.0f);
     }

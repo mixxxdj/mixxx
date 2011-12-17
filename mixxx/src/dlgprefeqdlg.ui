@@ -113,7 +113,7 @@
          <font/>
         </property>
         <property name="text" >
-         <string>2.045 kHz</string>
+         <string>1.014 kHz</string>
         </property>
         <property name="wordWrap" >
          <bool>false</bool>
@@ -240,7 +240,7 @@
            <font/>
           </property>
           <property name="text" >
-           <string>2.045 kHz</string>
+           <string>1.014 kHz</string>
           </property>
           <property name="wordWrap" >
            <bool>false</bool>

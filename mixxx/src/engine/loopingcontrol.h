@@ -12,6 +12,8 @@
 #include "trackinfoobject.h"
 #include "track/beats.h"
 
+#define MINIMUM_AUDIBLE_LOOP_SIZE   30  // In samples
+
 class ControlPushButton;
 class ControlObject;
 
@@ -91,6 +93,7 @@ class LoopingControl : public EngineControl {
     int m_iCurrentSample;
     ControlObject* m_pQuantizeEnabled;
     ControlObject* m_pNextBeat;
+    ControlObject* m_pClosestBeat;
     ControlObject* m_pTrackSamples;
     BeatLoopingControl* m_pActiveBeatLoop;
 

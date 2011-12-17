@@ -49,11 +49,11 @@ private slots:
 private:
     void loadSettings();
     void setDefaultShelves();
-    int getEqFreq(int value, int minimum, int maximum);
-    int getSliderPosition(int eqFreq, int minimum, int maximum);
+    double getEqFreq(int value, int minimum, int maximum);
+    int getSliderPosition(double eqFreq, int minimum, int maximum);
     void validate_levels();
 
-    int m_lowEqFreq, m_highEqFreq;
+    double m_lowEqFreq, m_highEqFreq;
     /** Pointer to config object */
     ConfigObject<ConfigValue> *m_pConfig;
 #ifndef __LOFI__

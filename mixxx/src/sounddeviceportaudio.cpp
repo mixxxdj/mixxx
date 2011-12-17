@@ -296,15 +296,12 @@ QString SoundDevicePortAudio::getError() const {
 int SoundDevicePortAudio::callbackProcess(unsigned long framesPerBuffer, float *output, short *in)
 {
     //qDebug() << "SoundDevicePortAudio::callbackProcess:" << getInternalName();
-    int iFrameSize;
-    int iVCGain;
+
     static ControlObject* pControlObjectVinylControlGain =
         ControlObject::getControl(ConfigKey("[VinylControl]", "gain"));
     static const float SHRT_CONVERSION_FACTOR = 1.0f/SHRT_MAX;
-
-    //Initialize some variables.
-    iFrameSize = m_outputParams.channelCount;
-    iVCGain = 1;
+    int iFrameSize = m_outputParams.channelCount;
+    int iVCGain = 1;
 
     // Turn on TimeCritical priority for the callback thread. If we are running
     // in Linux userland, for example, this will have no effect.
@@ -335,14 +332,16 @@ int SoundDevicePortAudio::callbackProcess(unsigned long framesPerBuffer, float *
         // soundmanager so we have all our deinterlacing in one place and
         // soundmanager gets simplified to boot
 
-        m_pSoundManager->pushBuffer(m_audioInputs, in, framesPerBuffer, m_inputParams.channelCount);
+        m_pSoundManager->pushBuffer(m_audioInputs, in, framesPerBuffer,
+                                    m_inputParams.channelCount);
     }
 
     if (output && framesPerBuffer > 0)
     {
         assert(iFrameSize > 0);
         QHash<AudioOutput, const CSAMPLE*> outputAudio
-            = m_pSoundManager->requestBuffer(m_audioOutputs, framesPerBuffer, this, Pa_GetStreamTime(m_pStream));
+            = m_pSoundManager->requestBuffer(m_audioOutputs, framesPerBuffer,
+                                             this, Pa_GetStreamTime(m_pStream));
 
         // Reset sample for each open channel
         memset(output, 0, framesPerBuffer * iFrameSize * sizeof(*output));
@@ -355,9 +354,9 @@ int SoundDevicePortAudio::callbackProcess(unsigned long framesPerBuffer, float *
                      e = m_audioOutputs.end(); i != e; ++i) {
             const AudioOutput &out = *i;
             const CSAMPLE* input = outputAudio[out];
-            ChannelGroup outChans = out.getChannelGroup();
-            int iChannelCount = outChans.getChannelCount();
-            int iChannelBase = outChans.getChannelBase();
+            const ChannelGroup outChans = out.getChannelGroup();
+            const int iChannelCount = outChans.getChannelCount();
+            const int iChannelBase = outChans.getChannelBase();
 
             for (unsigned int iFrameNo=0; iFrameNo < framesPerBuffer; ++iFrameNo) {
                 // this will make sure a sample from each channel is copied

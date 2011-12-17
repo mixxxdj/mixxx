@@ -25,11 +25,20 @@ MidiLedHandler::MidiLedHandler(QString group, QString key, MidiDevice & midi, do
 }
 
 MidiLedHandler::~MidiLedHandler() {
+    ConfigKey cKey = m_cobj->getKey();
+    if (m_midi.midiDebugging()) {
+        qDebug() << QString("Destroying static LED handler on %1 for %2,%3")
+            .arg(m_midi.getName()).arg(cKey.group).arg(cKey.item);
+    }
+}
+
+void MidiLedHandler::update() {
+    controlChanged(m_cobj->get());
 }
 
 void MidiLedHandler::controlChanged(double value) {
     //Guh, the valueChangedFromEngine and valueChanged signals can occur simultaneously because we're
-    //using Qt::DirectConnection. We have to block by hand to prevent re-entrancy. We can't use 
+    //using Qt::DirectConnection. We have to block by hand to prevent re-entrancy. We can't use
     //Qt::BlockingQueuedConnection because we don't have an event loop in some of the threads that
     //create MidiLedHandlers. (The underlying code is messy - On first run, the LED handlers get created
     //in the main thread, and then after you load a new binding, they get created from the Midi thread.)
@@ -38,12 +47,11 @@ void MidiLedHandler::controlChanged(double value) {
     unsigned char m_byte2 = m_off;
     if (value >= m_min && value <= m_max) { m_byte2 = m_on; }
 
-    if (lastStatus!=m_byte2) {
-        lastStatus=m_byte2;
-         if (m_byte2 != 0xff) {
-            // qDebug() << "MIDI bytes:" << m_status << ", " << m_midino << ", " << m_byte2 ;
-            m_midi.sendShortMsg(m_status, m_midino, m_byte2);
-        }
+    if (!m_midi.isOpen())
+        qWarning() << "MIDI device" << m_midi.getName() << "not open for output!";
+    else if (m_byte2 != 0xff) {
+//         qDebug() << "MIDI bytes:" << m_status << ", " << m_midino << ", " << m_byte2 ;
+        m_midi.sendShortMsg(m_status, m_midino, m_byte2);
     }
     m_reentracyBlock.unlock();
 }
@@ -77,7 +85,16 @@ void MidiLedHandler::createHandlers(QDomNode node, MidiDevice & midi) {
                 if (!light.firstChildElement("maximum").isNull()) {
                     max = WWidget::selectNodeFloat(light, "maximum");
                 }
-                qDebug() << "Creating LED handler hook for:" << group << key << "between"<< min << "and" << max << "to midi out:" << status << midino << "on/off:" << on << off;
+                if (midi.midiDebugging()) {
+                    qDebug() << QString(
+                    "Creating LED handler for %1,%2 between %3 and %4 to MIDI out: 0x%5 0x%6, on: 0x%7 off: 0x%8")
+                        .arg(group).arg(key).arg(min).arg(max)
+                        .arg(QString::number(status, 16).toUpper())
+                        .arg(QString::number(midino, 16).toUpper().rightJustified(2,'0'))
+                        .arg(QString::number(on, 16).toUpper().rightJustified(2,'0'))
+                        .arg(QString::number(off, 16).toUpper().rightJustified(2,'0'));
+                }
+
                 allhandlers.append(new MidiLedHandler(group, key, midi, min, max, status, midino, on, off));
             }
             light = light.nextSibling();
@@ -85,10 +102,16 @@ void MidiLedHandler::createHandlers(QDomNode node, MidiDevice & midi) {
     }
 }
 
-void MidiLedHandler::destroyHandlers() {
+void MidiLedHandler::updateAll() {
     for (int i = 0; i < allhandlers.count(); i++) {
-        delete allhandlers[i];
+        allhandlers.at(i)->update();
     }
-    allhandlers.clear();
 }
 
+void MidiLedHandler::destroyHandlers(MidiDevice *midi) {
+    for (int i = allhandlers.count()-1; i >= 0; --i) {
+        if (allhandlers.at(i)->getMidiDevice() == midi) {
+            delete allhandlers.takeAt(i);
+        }
+    }
+}
