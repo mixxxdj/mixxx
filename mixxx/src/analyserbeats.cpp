@@ -10,14 +10,14 @@
 #include <QString>
 
 #include "trackinfoobject.h"
-#include "track/beatmatrix.h"
+#include "track/beatmap.h"
 #include "track/beatfactory.h"
 #include "analyserbeats.h"
 #include "beattools.h"
 
 static bool sDebug = true;
-static bool DisableBpmCorrection = false;
-static bool DisableOffsetCorrection = false;
+static bool DisableBpmCorrection = true;
+static bool DisableOffsetCorrection = true;
 
 // libmixxxminimal:qm-tempotracker
 #define VAMP_MIXXX_MINIMAL "libmixxxminimal"
@@ -87,7 +87,7 @@ void AnalyserBeats::finalise(TrackPointer tio) {
 
    if(!beats.isEmpty()){
 
-       BeatsPointer pBeats = BeatFactory::makeBeatMatrix(tio, correctedBeats(beats,DisableBpmCorrection));
+       BeatsPointer pBeats = BeatFactory::makeBeatMap(tio, correctedBeats(beats,DisableBpmCorrection));
        tio->setBeats(pBeats);
        tio->setBpm(pBeats->getBpm());
    }
@@ -127,7 +127,7 @@ QVector<double> AnalyserBeats::correctedBeats (QVector<double> rawbeats, bool by
        }
     /*
      * BeatTools::calculateOffset compares the beats from Vamp and the beats from
-     * the beats contstructed above. See beattools.* for details.
+     * the beat grid constructed above. See beattools.* for details.
      */
     if(!DisableOffsetCorrection){
         double offset = BeatTools::calculateOffset(rawbeats, corrbeats, m_iSampleRate, m_iMinBpm,  m_iMaxBpm);

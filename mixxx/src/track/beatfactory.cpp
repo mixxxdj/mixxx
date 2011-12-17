@@ -2,6 +2,7 @@
 
 #include "track/beatgrid.h"
 #include "track/beatmatrix.h"
+#include "track/beatmap.h"
 #include "track/beatfactory.h"
 
 BeatsPointer BeatFactory::loadBeatsFromByteArray(TrackPointer pTrack,
@@ -20,6 +21,11 @@ BeatsPointer BeatFactory::loadBeatsFromByteArray(TrackPointer pTrack,
         pMatrix->setParent(pTrack.data());
         qDebug() << "Successfully deserialized BeatMatrix";
         return BeatsPointer(pMatrix, &BeatFactory::deleteBeats);
+    } else if (beatsVersion == "BeatMatrix-1.0") {
+        BeatMap* pMap = new BeatMap(pTrack, beatsSerialized);
+        pMap->moveToThread(pTrack->thread());
+        pMap->setParent(pTrack.data());
+        qDebug() << "Successfully deserialized BeatMap";
     }
     qDebug() << "BeatFactory::loadBeatsFromByteArray could not parse serialized beats.";
     return BeatsPointer();
@@ -31,10 +37,10 @@ BeatsPointer BeatFactory::makeBeatGrid(TrackPointer pTrack, double dBpm, double 
     return BeatsPointer(pGrid, &BeatFactory::deleteBeats);
 }
 
-BeatsPointer BeatFactory::makeBeatMatrix (TrackPointer pTrack, QVector <double> beats) {
-    BeatMatrix* pMatrix = new BeatMatrix(pTrack);
-    pMatrix->createFromVector(beats);
-    return BeatsPointer(pMatrix,&BeatFactory::deleteBeats);
+BeatsPointer BeatFactory::makeBeatMap (TrackPointer pTrack, QVector <double> beats) {
+    BeatMap* pBeatMap = new BeatMap(pTrack);
+    pBeatMap->createFromVector(beats);
+    return BeatsPointer(pBeatMap,&BeatFactory::deleteBeats);
 
 }
 void BeatFactory::deleteBeats(Beats* pBeats) {
