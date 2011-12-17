@@ -636,7 +636,7 @@ StantonSCS3d.B11 = function (channel, control, value, status) {
     }
 }
 
-StantonSCS3d.B12 = function (channel, control, value, status) {
+StantonSCS3d.B12 = function (channel, control, value, status, group) {
     var byte1 = 0x90 + channel;
     var currentMode = StantonSCS3d.mode_store["[Channel"+StantonSCS3d.deck+"]"];
 
