@@ -4,6 +4,7 @@
 #include "track/beats.h"
 #include "track/beatgrid.h"
 #include "track/beatmatrix.h"
+#include "track/beatmap.h"
 
 class BeatFactory {
   public:
@@ -12,7 +13,7 @@ class BeatFactory {
                                                QByteArray* beatsSerialized);
     static BeatsPointer makeBeatGrid(TrackPointer pTrack,
                                      double dBpm, double dFirstBeatSample);
-    static BeatsPointer makeBeatMatrix (TrackPointer pTrack, QVector <double> beats);
+    static BeatsPointer makeBeatMap (TrackPointer pTrack, QVector <double> beats);
   private:
     static void deleteBeats(Beats* pBeats);
 };

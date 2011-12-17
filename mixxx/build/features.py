@@ -395,6 +395,7 @@ class Vamp(Feature):
                    'analyserbeats.cpp',
                    'analysergainvamp.cpp',
                    'dlgprefanalysers.cpp',
+                   'track/beatmap.cpp',
                    'beattools.cpp']
         return sources
 
