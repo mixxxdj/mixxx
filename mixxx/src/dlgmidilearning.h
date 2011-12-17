@@ -46,6 +46,7 @@ class DlgMidiLearning : public QDialog, public Ui::DlgMidiLearning {
   private:
     void setupControl(QString group, QString control, QString helpText);
     void setupDeckControl(QString control, QString helpText);
+    void setupSamplerControl(QString control, QString helpText);
     MidiMapping* m_pMidiMapping;
     QList<QPair<MixxxControl, QString> > m_controlsToBind;
     int iCurrentControl; /** Used to iterate through the controls list */

@@ -500,6 +500,10 @@ void WTrackTableView::mouseMoveEvent(QMouseEvent* pEvent) {
         locationUrls.append(url);
     }
 
+    if (locationUrls.empty()) {
+        return;
+    }
+
     QMimeData* mimeData = new QMimeData();
     mimeData->setUrls(locationUrls);
 
@@ -823,6 +827,14 @@ void WTrackTableView::slotSendToAutoDJ() {
 
 void WTrackTableView::slotReloadTrackMetadata() {
     if (!modelHasCapabilities(TrackModel::TRACKMODELCAPS_RELOADMETADATA)) {
+        return;
+    }
+
+    if (QMessageBox::warning(
+        NULL, tr("Reload Track Metadata"),
+        tr("Reloading track metadata on a loaded track may cause abrupt volume changes. Are you sure?"),
+        QMessageBox::Yes | QMessageBox::No,
+        QMessageBox::No) == QMessageBox::No) {
         return;
     }
 

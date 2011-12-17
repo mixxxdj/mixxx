@@ -61,6 +61,16 @@ RecordingManager::~RecordingManager()
     delete m_recReady;
 }
 
+QString RecordingManager::formatDateTimeForFilename(QDateTime dateTime) const {
+    // Use a format based on ISO 8601
+    QString formatted = dateTime.toString("yyyy-MM-dd_hh'h':mm'm':ss's'");
+#ifdef __WINDOWS__
+    // Windows does not support colons in filenames.
+    formatted = formatted.replace(":", "");
+#endif
+    return formatted;
+}
+
 void RecordingManager::startRecording(bool generateFileName) {
     m_iNumberOfBytesRecored = 0;
     m_split_size = getFileSplitSize();
@@ -69,18 +79,15 @@ void RecordingManager::startRecording(bool generateFileName) {
 
     if(generateFileName) {
         m_iNumberSplits = 1;
-
-        //Construct the file pattern
-        // dd_mm_yyyy--hours-minutes-ss   or    mm_dd_yyyy --hours-minutes:seconds
-        QDateTime current_date_time = QDateTime::currentDateTime();
-        QString date_time_str = current_date_time.toString(Qt::ISODate);
         //Append file extension
-        m_recordingFile = date_time_str + "."+ encodingType.toLower();
+        QString date_time_str = formatDateTimeForFilename(QDateTime::currentDateTime());
+        m_recordingFile = QString("%1.%2")
+                .arg(date_time_str)
+                .arg(encodingType.toLower());
 
-        QString filename (m_recordingDir);
-        filename.append("/").append(date_time_str);
         //Storing the absolutePath of the recording file without file extension
-        m_recording_base_file = filename;
+        m_recording_base_file = m_recordingDir;
+        m_recording_base_file.append("/").append(date_time_str);
         //appending file extension to get the filelocation
         m_recordingLocation = m_recording_base_file + "."+ encodingType.toLower();
         m_pConfig->set(ConfigKey("[Recording]", "Path"), m_recordingLocation);

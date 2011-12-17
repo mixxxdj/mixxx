@@ -30,7 +30,9 @@ CueControl::CueControl(const char * _group,
     m_pTrackSamples = ControlObject::getControl(ConfigKey(_group, "track_samples"));
 
     m_pQuantizeEnabled = ControlObject::getControl(ConfigKey(_group, "quantize"));
+
     m_pNextBeat = ControlObject::getControl(ConfigKey(_group, "beat_next"));
+    m_pClosestBeat = ControlObject::getControl(ConfigKey(_group, "beat_closest"));
 
     m_pCuePoint = new ControlObject(ConfigKey(_group, "cue_point"));
     m_pCueMode = new ControlObject(ConfigKey(_group,"cue_mode"));
@@ -299,8 +301,8 @@ void CueControl::hotcueSet(HotcueControl* pControl, double v) {
     detachCue(hotcue);
     Cue* pCue = m_pLoadedTrack->addCue();
     double cuePosition =
-            (m_pQuantizeEnabled->get() > 0.0 && m_pNextBeat->get() != -1) ?
-            floorf(m_pNextBeat->get()) : floorf(getCurrentSample());
+            (m_pQuantizeEnabled->get() > 0.0 && m_pClosestBeat->get() != -1) ?
+            floorf(m_pClosestBeat->get()) : floorf(getCurrentSample());
     if (!even(cuePosition))
         cuePosition--;
     pCue->setPosition(cuePosition);
@@ -309,6 +311,15 @@ void CueControl::hotcueSet(HotcueControl* pControl, double v) {
     pCue->setType(Cue::CUE);
     // TODO(XXX) deal with spurious signals
     attachCue(pCue, hotcue);
+
+    // If quantize is enabled and we are not playing, jump to the cue point
+    // since it's not necessarily where we currently are. TODO(XXX) is this
+    // potentially invalid for vinyl control?
+    bool playing = m_pPlayButton->get() > 0;
+    if (!playing && m_pQuantizeEnabled->get() > 0.0) {
+        lock.unlock();  // prevent deadlock.
+        emit(seekAbs(cuePosition));
+    }
 }
 
 void CueControl::hotcueGoto(HotcueControl* pControl, double v) {
@@ -528,9 +539,8 @@ void CueControl::cueSet(double v) {
         return;
 
     QMutexLocker lock(&m_mutex);
-    double cue =
-            (m_pQuantizeEnabled->get() > 0.0 && m_pNextBeat->get() != -1) ?
-            floorf(m_pNextBeat->get()) : floorf(getCurrentSample());
+    double cue = (m_pQuantizeEnabled->get() > 0.0 && m_pClosestBeat->get() != -1) ?
+            floorf(m_pClosestBeat->get()) : floorf(getCurrentSample());
     if (!even(cue))
         cue--;
     m_pCuePoint->set(cue);
@@ -615,7 +625,7 @@ void CueControl::cueSimple(double v) {
 
 void CueControl::cueCDJ(double v) {
     /* This is how CDJ cue buttons work:
-     * If pressed while playing, stop playback at go to cue.
+     * If pressed while playing, stop playback and go to cue.
      * If pressed while stopped and at cue, play while pressed.
      * If pressed while stopped and not at cue, set new cue point.
      * If play is pressed while holding cue, the deck is now playing. (Handled in cuePlay().)
@@ -644,6 +654,13 @@ void CueControl::cueCDJ(double v) {
                 cueSet(v);
                 // Just in case.
                 m_bPreviewing = false;
+
+                // If quantize is enabled, jump to the cue point since it's not
+                // necessarily where we currently are
+                if (m_pQuantizeEnabled->get() > 0.0) {
+                    lock.unlock();  // prevent deadlock.
+                    emit(seekAbs(m_pCuePoint->get()));
+                }
             }
         }
     } else if (m_bPreviewing) {
@@ -663,15 +680,17 @@ void CueControl::cueCDJ(double v) {
 }
 
 void CueControl::cuePlay(double v) {
+    Q_UNUSED(v);
+    
     QMutexLocker lock(&m_mutex);
 
-    if (m_bPreviewing && !v) {
+    if (m_bPreviewing) {
     // we're previewing? Then stop previewing and go into normal play mode.
         m_pPlayButton->set(1.0);
         m_bPreviewing = false;
     }
 
-    if (m_bPreviewingHotcue && !v) {
+    if (m_bPreviewingHotcue) {
         m_pPlayButton->set(1.0);
         m_bHotcueCancel = true;
     }

@@ -21,6 +21,8 @@
 #define MIXXX_SUPPORT_URL       "http://www.mixxx.org/support.php"
 #define MIXXX_FEEDBACK_URL      "https://spreadsheets.google.com/a/mixxx.org/spreadsheet/viewform?formkey=dDlJeS12czk3SWtkVkNRd3UtNURUUkE6MQ"
 #define MIXXX_TRANSLATION_URL   "https://translations.launchpad.net/mixxx/trunk/+pots/mixxx"
+#define MIXXX_MANUAL_URL        "http://mixxx.org/manual/1.10"
+#define MIXXX_MANUAL_FILENAME   "Mixxx-Manual.pdf"
 #define MIXXX_PROMO_URL         "http://promo.mixxx.org/"
 
 #endif

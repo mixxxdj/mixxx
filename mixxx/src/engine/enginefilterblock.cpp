@@ -117,16 +117,16 @@ EngineFilterBlock::~EngineFilterBlock()
 
 void EngineFilterBlock::setFilters(bool forceSetting)
 {
-    if((ilowFreq != s_loEqFreq->get()) ||
-       (ihighFreq != s_hiEqFreq->get()) ||
-       (blofi != s_lofiEq->get()) || forceSetting)
+    if((ilowFreq != (int)s_loEqFreq->get()) ||
+       (ihighFreq != (int)s_hiEqFreq->get()) ||
+       (blofi != (int)s_lofiEq->get()) || forceSetting)
     {
         delete low;
         delete band;
         delete high;
-        ilowFreq = s_loEqFreq->get();
-        ihighFreq = s_hiEqFreq->get();
-        blofi = s_lofiEq->get();
+        ilowFreq = (int)s_loEqFreq->get();
+        ihighFreq = (int)s_hiEqFreq->get();
+        blofi = (int)s_lofiEq->get();
         if(blofi)
         {
             // why is this DJM800 at line ~34 (LOFI ifdef) and just
@@ -137,9 +137,9 @@ void EngineFilterBlock::setFilters(bool forceSetting)
         }
         else
         {
-            low = new EngineFilterButterworth8(FILTER_LOWPASS, 44100, s_loEqFreq->get());
-            band = new EngineFilterButterworth8(FILTER_BANDPASS, 44100, s_loEqFreq->get(), s_hiEqFreq->get());
-            high = new EngineFilterButterworth8(FILTER_HIGHPASS, 44100, s_hiEqFreq->get());
+            low = new EngineFilterButterworth8(FILTER_LOWPASS, 44100, (int)s_loEqFreq->get());
+            band = new EngineFilterButterworth8(FILTER_BANDPASS, 44100, (int)s_loEqFreq->get(), (int)s_hiEqFreq->get());
+            high = new EngineFilterButterworth8(FILTER_HIGHPASS, 44100, (int)s_hiEqFreq->get());
         }
 
     }
