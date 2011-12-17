@@ -6,7 +6,7 @@
 #include "waveform/widget/emptywaveformwidget.h"
 #include "waveform/widget/softwarewaveformwidget.h"
 #include "waveform/widget/glwaveformwidget.h"
-#include "waveform/widget/glwaveformwidgetshader.h"
+#include "waveform/widget/glslwaveformwidget.h"
 
 #include "defs.h"
 
@@ -244,7 +244,7 @@ void WaveformWidgetFactory::evaluateWidgets()
         case WaveformWidgetType::SimpleGLWaveform : break; //TODO
         case WaveformWidgetType::SoftwareWaveform : widget = new SoftwareWaveformWidget(); break;
         case WaveformWidgetType::GLWaveform : widget = new GLWaveformWidget(); break;
-        case WaveformWidgetType::GLSLWaveform : widget = new GLWaveformWidgetShader(); break;
+        case WaveformWidgetType::GLSLWaveform : widget = new GLSLWaveformWidget(); break;
         }
 
         if( widget) {
@@ -289,7 +289,7 @@ WaveformWidgetAbstract* WaveformWidgetFactory::createWaveformWidget( WaveformWid
         case WaveformWidgetType::SimpleGLWaveform : return 0; //TODO
         case WaveformWidgetType::SoftwareWaveform : return new SoftwareWaveformWidget( viewer->getGroup(), viewer);
         case WaveformWidgetType::GLWaveform : return new GLWaveformWidget( viewer->getGroup(), viewer);
-        case WaveformWidgetType::GLSLWaveform : return new GLWaveformWidgetShader( viewer->getGroup(), viewer);
+        case WaveformWidgetType::GLSLWaveform : return new GLSLWaveformWidget( viewer->getGroup(), viewer);
         default : return 0;
         }
     }
