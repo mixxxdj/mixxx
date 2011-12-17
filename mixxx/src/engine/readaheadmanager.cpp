@@ -82,8 +82,9 @@ int ReadAheadManager::getNextSamples(double dRate, CSAMPLE* buffer,
                        m_iCurrentPosition,
                        0, 0);
 
-        if ((in_reverse && m_iCurrentPosition <= loop_trigger) ||
-            (!in_reverse && m_iCurrentPosition >= loop_trigger)) {
+        if (loop_target != kNoTrigger &&
+            ((in_reverse && m_iCurrentPosition <= loop_trigger) ||
+            (!in_reverse && m_iCurrentPosition >= loop_trigger))) {
             m_iCurrentPosition = loop_target;
         }
     }
