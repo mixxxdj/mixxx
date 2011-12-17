@@ -4,11 +4,11 @@
 #include <QtOpenGL/QGLWidget>
 #include "waveformwidgetabstract.h"
 
-class GLWaveformWidgetShader : public WaveformWidgetAbstract, public QGLWidget
+class GLSLWaveformWidget : public WaveformWidgetAbstract, public QGLWidget
 {
 public:
-    GLWaveformWidgetShader( const char* group, QWidget* parent);
-    virtual ~GLWaveformWidgetShader();
+    GLSLWaveformWidget( const char* group, QWidget* parent);
+    virtual ~GLSLWaveformWidget();
 
     virtual QString getWaveformWidgetName() { return "Filtered";}
     virtual WaveformWidgetType::Type getType() const { return WaveformWidgetType::GLWaveform;}
@@ -21,7 +21,7 @@ protected:
     virtual void paintEvent(QPaintEvent* event);
 
 private:
-    GLWaveformWidgetShader() {}
+    GLSLWaveformWidget() {}
     friend class WaveformWidgetFactory;
 };
 

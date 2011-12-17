@@ -1,4 +1,4 @@
-#include "glwaveformrenderersignalshader.h"
+#include "glslwaveformrenderersignal.h"
 #include "shadervariable.h"
 
 #include "waveform/waveformwidgetrenderer.h"
