@@ -53,7 +53,7 @@ int SoundSourceCoreAudio::open() {
     CFRelease(urlStr);
     CFRelease(urlRef);
 
-    /** TODO: Use FSRef for compatibility with 10.4 Tiger. 
+    /** TODO: Use FSRef for compatibility with 10.4 Tiger.
         Note that ExtAudioFileOpen() is deprecated above Tiger, so we must maintain
         both code paths if someone finishes this part of the code.
     FSRef fsRef;
@@ -76,8 +76,8 @@ int SoundSourceCoreAudio::open() {
 	{
 		qDebug() << "SSCA: Error getting file format";
 		return ERR;
-	}    
-    
+	}
+
     //Debugging:
     //printf ("Source File format: "); inputFormat.Print();
     //printf ("Dest File format: "); outputFormat.Print();
@@ -90,7 +90,7 @@ int SoundSourceCoreAudio::open() {
 	outputFormat.mSampleRate = inputFormat.mSampleRate;
 	outputFormat.mChannelsPerFrame = 2;
 	outputFormat.mFormatFlags = kAudioFormatFlagIsSignedInteger;
-	
+
 	/*
 	switch(inputFormat.mBitsPerChannel) {
 		case 16:
@@ -117,20 +117,20 @@ int SoundSourceCoreAudio::open() {
 	clientFormat.mReserved = 0;
 	m_clientFormat = clientFormat;
     size = sizeof(clientFormat);
-    
+
     err = ExtAudioFileSetProperty(m_audioFile, kExtAudioFileProperty_ClientDataFormat, size, &clientFormat);
 	if (err != noErr)
 	{
 		qDebug() << "SSCA: Error setting file property";
 		return ERR;
 	}
-	
+
 	//Set m_iChannels and m_samples;
 	m_iChannels = clientFormat.NumberChannels();
 
 	//get the total length in frames of the audio file - copypasta: http://discussions.apple.com/thread.jspa?threadID=2364583&tstart=47
 	UInt32		dataSize;
-	SInt64		totalFrameCount;		
+	SInt64		totalFrameCount;
 	dataSize	= sizeof(totalFrameCount); //XXX: This looks sketchy to me - Albert
 	err			= ExtAudioFileGetProperty(m_audioFile, kExtAudioFileProperty_FileLengthFrames, &dataSize, &totalFrameCount);
 	if (err != noErr)
@@ -142,7 +142,7 @@ int SoundSourceCoreAudio::open() {
       //
       // WORKAROUND for bug in ExtFileAudio
       //
-      
+
       AudioConverterRef acRef;
       UInt32 acrsize=sizeof(AudioConverterRef);
       err = ExtAudioFileGetProperty(m_audioFile, kExtAudioFileProperty_AudioConverter, &acrsize, &acRef);
@@ -154,15 +154,15 @@ int SoundSourceCoreAudio::open() {
       if(err != kAudioConverterErr_PropertyNotSupported) // Only if decompressing
       {
          //_ThrowExceptionIfErr(@"kAudioConverterPrimeInfo", err);
-         
+
          m_headerFrames=primeInfo.leadingFrames;
       }
-	
+
 	m_samples = (totalFrameCount/*-m_headerFrames*/)*m_iChannels;
 	m_iDuration = m_samples / (inputFormat.mSampleRate * m_iChannels);
 	m_iSampleRate = inputFormat.mSampleRate;
 	qDebug() << m_samples << totalFrameCount << m_iChannels;
-	
+
 	//Seek to position 0, which forces us to skip over all the header frames.
 	//This makes sure we're ready to just let the Analyser rip and it'll
 	//get the number of samples it expects (ie. no header frames).
@@ -183,7 +183,7 @@ long SoundSourceCoreAudio::seek(long filepos) {
       //_ThrowExceptionIfErr(@"ExtAudioFileSeek", err);
 	//qDebug() << "SSCA: Seeking to" << segmentStart;
 
-	//err = ExtAudioFileSeek(m_audioFile, filepos / 2);		
+	//err = ExtAudioFileSeek(m_audioFile, filepos / 2);
 	if (err != noErr)
 	{
 		qDebug() << "SSCA: Error seeking to" << filepos;// << GetMacOSStatusErrorString(err) << GetMacOSStatusCommentString(err);
@@ -204,20 +204,20 @@ unsigned int SoundSourceCoreAudio::read(unsigned long size, const SAMPLE *destin
 
     while (numFramesRead < totalFramesToRead) { //FIXME: Hardcoded 2
     	numFramesToRead = totalFramesToRead - numFramesRead;
-    	
+
 		AudioBufferList fillBufList;
 		fillBufList.mNumberBuffers = 1; //Decode a single track?
 		fillBufList.mBuffers[0].mNumberChannels = m_inputFormat.mChannelsPerFrame;
 		fillBufList.mBuffers[0].mDataByteSize = math_min(1024, numFramesToRead*4);//numFramesToRead*sizeof(*destBuffer); // 2 = num bytes per SAMPLE
 		fillBufList.mBuffers[0].mData = (void*)(&destBuffer[numFramesRead*2]);
-			
+
 			// client format is always linear PCM - so here we determine how many frames of lpcm
 			// we can read/write given our buffer size
 		numFrames = numFramesToRead; //This silly variable acts as both a parameter and return value.
 		err = ExtAudioFileRead (m_audioFile, &numFrames, &fillBufList);
 		//The actual number of frames read also comes back in numFrames.
 		//(It's both a parameter to a function and a return value. wat apple?)
-		//XThrowIfError (err, "ExtAudioFileRead");	
+		//XThrowIfError (err, "ExtAudioFileRead");
 		if (!numFrames) {
 				// this is our termination condition
 			break;
@@ -228,7 +228,7 @@ unsigned int SoundSourceCoreAudio::read(unsigned long size, const SAMPLE *destin
 }
 
 inline unsigned long SoundSourceCoreAudio::length() {
-    return m_samples; 
+    return m_samples;
 }
 
 int SoundSourceCoreAudio::parseHeader() {
@@ -242,6 +242,7 @@ int SoundSourceCoreAudio::parseHeader() {
     bool result = false;
 
     if (getType() == "m4a") {
+        // No need for toLocal8Bit on Windows since CoreAudio is OS X only.
         TagLib::MP4::File f(getFilename().toUtf8().constData());
         result = processTaglibFile(f);
         TagLib::MP4::Tag* tag = f.tag();
@@ -249,7 +250,8 @@ int SoundSourceCoreAudio::parseHeader() {
             processMP4Tag(tag);
         }
     } else if (getType() == "mp3") {
-		TagLib::MPEG::File f(getFilename().toUtf8().constData());
+        // No need for toLocal8Bit on Windows since CoreAudio is OS X only.
+        TagLib::MPEG::File f(getFilename().toUtf8().constData());
 
         // Takes care of all the default metadata
         result = processTaglibFile(f);
@@ -285,8 +287,8 @@ QList<QString> SoundSourceCoreAudio::supportedFileExtensions() {
     //Can add mp3, mp2, ac3, and others here if you want.
     //See:
     //  http://developer.apple.com/library/mac/documentation/MusicAudio/Reference/AudioFileConvertRef/Reference/reference.html#//apple_ref/doc/c_ref/AudioFileTypeID
-    
-    //XXX: ... but make sure you implement handling for any new format in ParseHeader!!!!!! -- asantoni  
+
+    //XXX: ... but make sure you implement handling for any new format in ParseHeader!!!!!! -- asantoni
     return list;
 }
 
