@@ -620,7 +620,7 @@ ConfigKey BeatLoopingControl::keyForControl(const char* pGroup,
                                             QString ctrlName, double num) {
     ConfigKey key;
     key.group = pGroup;
-    key.item = QString("%1_%2").arg(ctrlName).arg(num);
+    key.item = QString("%1_%2").arg(ctrlName, QString::number(num));
     return key;
 }
 

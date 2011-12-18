@@ -381,11 +381,11 @@ bool MidiScriptEngine::internalExecute(QScriptValue thisObject,
     }
     if (error != "") {
         error = QString("%1: %2 at line %3, column %4 of script code:\n%5\n")
-        .arg(error)
-        .arg(result.errorMessage())
-        .arg(result.errorLineNumber())
-        .arg(result.errorColumnNumber())
-        .arg(scriptCode);
+                .arg(error,
+                     result.errorMessage(),
+                     QString::number(result.errorLineNumber()),
+                     QString::number(result.errorColumnNumber()),
+                     scriptCode);
 
         if (m_midiDebug) qCritical() << "MidiScriptEngine:" << error;
         else scriptErrorDialog(error);
@@ -557,14 +557,13 @@ bool MidiScriptEngine::checkException() {
         m_scriptErrors.insert((filename.isEmpty() ? "passed code" : filename), error);
 
         QString errorText = QString(tr("Uncaught exception at line %1 in file %2: %3"))
-                            .arg(line)
-                            .arg((filename.isEmpty() ? "" : filename))
-                            .arg(errorMessage);
+                .arg(QString::number(line),
+                     (filename.isEmpty() ? "" : filename),
+                     errorMessage);
 
         if (filename.isEmpty())
             errorText = QString(tr("Uncaught exception at line %1 in passed code: %2"))
-                        .arg(line)
-                        .arg(errorMessage);
+                    .arg(QString::number(line), errorMessage);
 
         if (m_midiDebug)
             qCritical() << "MidiScriptEngine:" << errorText
@@ -943,9 +942,7 @@ bool MidiScriptEngine::safeEvaluate(QString scriptName, QList<QString> scriptPat
     if (!input.open(QIODevice::ReadOnly)) {
         QString errorLog =
             QString("MidiScriptEngine: Problem opening the script file: %1, error # %2, %3")
-                .arg(filename)
-                .arg(input.error())
-                .arg(input.errorString());
+                .arg(filename, QString("%1").arg(input.error()), input.errorString());
 
         // GUI actions do not belong in the MSE. They should be passed to
         // the above layers, along with input.errorString(), and that layer
@@ -987,11 +984,10 @@ bool MidiScriptEngine::safeEvaluate(QString scriptName, QList<QString> scriptPat
     }
     if (error!="") {
         error = QString("%1 at line %2, column %3 in file %4: %5")
-                        .arg(error)
-                        .arg(result.errorLineNumber())
-                        .arg(result.errorColumnNumber())
-                        .arg(filename)
-                        .arg(result.errorMessage());
+                .arg(error,
+                     QString::number(result.errorLineNumber()),
+                     QString::number(result.errorColumnNumber()),
+                     filename, result.errorMessage());
 
         if (m_midiDebug) qCritical() << "MidiScriptEngine:" << error;
         else {

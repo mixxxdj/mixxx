@@ -99,7 +99,7 @@ void WNumberPos::setValue(double dValue) {
     // we care about. Slice it off.
     valueString = valueString.left(valueString.length() - 1);
 
-    m_pLabel->setText(QString("%1%2").arg(m_qsText).arg(valueString));
+    m_pLabel->setText(QString("%1%2").arg(m_qsText, valueString));
 }
 
 void WNumberPos::slotSetRemain(double remain) {

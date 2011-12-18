@@ -207,7 +207,7 @@ void EngineRecord::process(const CSAMPLE * pIn, const CSAMPLE * pOut, const int 
                 writeCueLine();
                 m_cuefile.flush();
             }
-            
+
             m_cuesamplepos += iBufferSize;
 
         }
@@ -241,14 +241,13 @@ void EngineRecord::writeCueLine()
     m_cuefile.write(QString("    PERFORMER %1\n")
         .arg(m_pCurrentTrack->getArtist()).toLatin1());
 
-    // Woefully inaccurate (at the seconds level anyways). 
+    // Woefully inaccurate (at the seconds level anyways).
     // We'd need a signal fired state tracker
     // for the track detection code.
-    m_cuefile.write(QString("    INDEX 01 %1:%2:%3\n")
-            .arg((double)minutes, 2, 'f', 0, '0')
-            .arg((double)seconds, 2, 'f', 0, '0')
-            .arg((double)frames, 2, 'f', 0, '0')
-        .toLatin1()
+    m_cuefile.write(QString("    INDEX 01 %1:%2:%3\n").arg(
+        QString("%1").arg((double)minutes, 2, 'f', 0, '0'),
+        QString("%1").arg((double)seconds, 2, 'f', 0, '0'),
+        QString("%1").arg((double)frames, 2, 'f', 0, '0')).toLatin1()
     );
 
 }
@@ -356,23 +355,19 @@ bool EngineRecord::openCueFile() {
     if ( m_baAuthor.length() > 0 ) {
         m_cuefile.write(QString("PERFORMER \"%1\"\n")
                 .arg(QString(m_baAuthor).replace(QString("\""), QString("\\\"")))
-            .toLatin1()
-        );
+                        .toLatin1());
     }
 
     if ( m_baTitle.length() > 0 ) {
         m_cuefile.write(QString("TITLE \"%1\"\n")
                 .arg(QString(m_baTitle).replace(QString("\""), QString("\\\"")))
-            .toLatin1()
-        );
+                        .toLatin1());
     }
 
-    m_cuefile.write(QString("FILE \"%1\" %2%3\n")
-            .arg(QString(m_filename).replace(QString("\""), QString("\\\"")))
-            .arg(QString(m_Encoding).toUpper())
-                .arg((m_Encoding == ENCODING_WAVE ? 'E' : ' '))
-        .toLatin1()
-    );
+    m_cuefile.write(QString("FILE \"%1\" %2%3\n").arg(
+        QString(m_filename).replace(QString("\""), QString("\\\"")),
+        QString(m_Encoding).toUpper(),
+        m_Encoding == ENCODING_WAVE ? "E" : " ").toLatin1());
 
     return true;
 }

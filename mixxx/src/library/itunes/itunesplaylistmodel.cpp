@@ -132,10 +132,10 @@ void ITunesPlaylistModel::setPlaylist(QString playlist_path) {
     QString queryString = QString(
         "CREATE TEMPORARY VIEW IF NOT EXISTS %1 AS "
         "SELECT %2 FROM %3 WHERE playlist_id = %4")
-            .arg(driver->formatValue(playlistNameField))
-            .arg(columns.join(","))
-            .arg("itunes_playlist_tracks")
-            .arg(playlistId);
+            .arg(driver->formatValue(playlistNameField),
+                 columns.join(","),
+                 "itunes_playlist_tracks",
+                 QString::number(playlistId));
     query.prepare(queryString);
 
     if (!query.exec()) {
