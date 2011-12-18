@@ -12,7 +12,6 @@
 //IMPORTANT all WaveformWidgetAbstract MUST inherist QWidget too !!
 //I can do it here because QWidget and QGLWidget are both QWidgets
 //so they already have a common QWidget base class (ambigous polymorphism)
-//This Abstract can be directly a WaveformWidgetRenderer cause it inherist of QObjects
 
 class QWidget;
 

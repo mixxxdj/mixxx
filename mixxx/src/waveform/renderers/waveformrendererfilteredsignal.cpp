@@ -21,7 +21,6 @@ void WaveformRendererFilteredSignal::init() {
 }
 
 void WaveformRendererFilteredSignal::onResize() {
-    qDebug() << "WaveformRendererFilteredSignal::onResize";
     m_lowLines.resize(m_waveformRenderer->getWidth());
     m_midLines.resize(m_waveformRenderer->getWidth());
     m_highLines.resize(m_waveformRenderer->getWidth());
@@ -50,8 +49,7 @@ void WaveformRendererFilteredSignal::draw(QPainter* painter,
 
     const Waveform* waveform = trackInfo->getWaveForm();
 
-    int samplesPerPixel = m_waveformRenderer->getZoomFactor();
-    //samplesPerPixel = math_min(2, samplesPerPixel);
+    int samplesPerPixel = m_waveformRenderer->getVisualSamplePerPixel();
     int numberOfSamples = m_waveformRenderer->getWidth() * samplesPerPixel;
 
     int currentPosition = 0;
@@ -65,12 +63,16 @@ void WaveformRendererFilteredSignal::draw(QPainter* painter,
 
     painter->save();
 
+    painter->setRenderHints(QPainter::Antialiasing,false);
+    painter->setRenderHints(QPainter::HighQualityAntialiasing,false);
+    painter->setRenderHints(QPainter::SmoothPixmapTransform,false);
+
     painter->setWorldMatrixEnabled(false);
 
     const float halfHeight = m_waveformRenderer->getHeight()/2.0;
     const float heightFactor = halfHeight/255.0;
 
-    for (int i = 0; i < numberOfSamples; i += 2*samplesPerPixel) {
+    for (int i = 0; i < numberOfSamples; i += samplesPerPixel) {
         const int xPos = i/samplesPerPixel;
         const int visualIndex = currentPosition + 2*i - numberOfSamples;
         if (visualIndex >= 0 && (visualIndex+1) < waveform->size()) {
@@ -88,23 +90,23 @@ void WaveformRendererFilteredSignal::draw(QPainter* painter,
             }
 
             m_lowLines[xPos].setLine(xPos, (int)(halfHeight-heightFactor*(float)maxLow[0]),
-                                     xPos, (int)(halfHeight+heightFactor*(float)maxLow[1]));
+                                     xPos, (int)(halfHeight+heightFactor*(float)maxLow[1])+1);
             m_midLines[xPos].setLine(xPos, (int)(halfHeight-heightFactor*(float)maxMid[0]),
                                      xPos, (int)(halfHeight+heightFactor*(float)maxMid[1]));
             m_highLines[xPos].setLine(xPos, (int)(halfHeight-heightFactor*(float)maxHigh[0]),
                                       xPos, (int)(halfHeight+heightFactor*(float)maxHigh[1]));
         } else {
-            m_lowLines[xPos].setLine(xPos, 0, xPos, 0);
-            m_midLines[xPos].setLine(xPos, 0, xPos, 0);
-            m_highLines[xPos].setLine(xPos, 0, xPos, 0);
+            m_lowLines[xPos].setLine(xPos, halfHeight, xPos, halfHeight+1);
+            m_midLines[xPos].setLine(xPos, halfHeight, xPos, halfHeight);
+            m_highLines[xPos].setLine(xPos, halfHeight, xPos, halfHeight);
         }
     }
 
-    painter->setPen(QPen(QBrush(m_lowColor), 2));
+    painter->setPen(QPen(QBrush(m_lowColor), 1));
     painter->drawLines(&m_lowLines[0], m_lowLines.size());
-    painter->setPen(QPen(QBrush(m_midColor), 2));
+    painter->setPen(QPen(QBrush(m_midColor), 1));
     painter->drawLines(&m_midLines[0], m_midLines.size());
-    painter->setPen(QPen(QBrush(m_highColor), 2));
+    painter->setPen(QPen(QBrush(m_highColor), 1));
     painter->drawLines(&m_highLines[0], m_highLines.size());
 
     painter->restore();

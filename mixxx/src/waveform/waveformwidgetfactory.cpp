@@ -28,7 +28,7 @@ WaveformWidgetFactory::WaveformWidgetFactory() {
     m_time = new QTime();
 
     //TODO let default and config file to setup this
-    setFrameRate(40);
+    setFrameRate(33);
     m_lastFrameTime = 0;
     m_actualFrameRate = 0;
 
