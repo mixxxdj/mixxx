@@ -91,7 +91,7 @@ void GLWaveformRendererFilteredSignal::onResize() {
     m_polygon[2].resize(2*m_waveformRenderer->getWidth()+3+1);
 }
 
-void GLWaveformRendererFilteredSignal::draw(QPainter *painter, QPaintEvent */*event*/) {
+void GLWaveformRendererFilteredSignal::draw(QPainter* painter, QPaintEvent* /*event*/) {
 
     const TrackInfoObject* trackInfo = m_waveformRenderer->getTrackInfo().data();
 
@@ -224,7 +224,7 @@ void GLWaveformRendererFilteredSignal::draw(QPainter *painter, QPaintEvent */*ev
         painter->setPen( QPen( m_lowBrush, 0.0));
         painter->setBrush( m_lowBrush);
     }
-    painter->drawPolygon(m_polygon[0].data(),pointIndex+1);
+    painter->drawPolygon(&m_polygon[0][0],pointIndex+1);
 
 
     if( m_midKillControlObject && m_midKillControlObject->get() > 0.1) {
@@ -235,7 +235,7 @@ void GLWaveformRendererFilteredSignal::draw(QPainter *painter, QPaintEvent */*ev
         painter->setPen( QPen( m_midBrush, 0.0));
         painter->setBrush( m_midBrush);
     }
-    painter->drawPolygon(m_polygon[1].data(),pointIndex+1);
+    painter->drawPolygon(&m_polygon[1][0],pointIndex+1);
 
     if( m_highKillControlObject && m_highKillControlObject->get() > 0.1) {
         painter->setPen( QPen( m_highKilledBrush, 0.0));
@@ -245,7 +245,7 @@ void GLWaveformRendererFilteredSignal::draw(QPainter *painter, QPaintEvent */*ev
         painter->setPen( QPen( m_highBrush, 0.0));
         painter->setBrush( m_highBrush);
     }
-    painter->drawPolygon(m_polygon[2].data(),pointIndex+1);
+    painter->drawPolygon(&m_polygon[2][0],pointIndex+1);
 
     //multipasstest
     //}

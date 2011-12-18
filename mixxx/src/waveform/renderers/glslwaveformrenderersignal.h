@@ -3,7 +3,7 @@
 
 #include "waveformrendererabstract.h"
 
-#include <Qt/QtOpenGL>
+#include <QtOpenGL>
 
 class QGLShaderProgram;
 template<typename T> class ShaderVariable;
