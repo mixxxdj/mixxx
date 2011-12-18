@@ -1,9 +1,11 @@
 #ifndef GLWAVEFROMRENDERERFILTEREDSIGNAL_H
 #define GLWAVEFROMRENDERERFILTEREDSIGNAL_H
 
-#include "waveformrendererfilteredsignal.h"
+#include "waveformrendererabstract.h"
 
 #include <QBrush>
+
+#include <vector>
 
 class ControlObject;
 
@@ -36,7 +38,7 @@ private:
     QBrush m_midKilledBrush;
     QBrush m_highKilledBrush;
 
-    QVector<QPointF> m_polygon[3];
+    std::vector<QPointF> m_polygon[3];
 };
 
 #endif // GLWAVEFROMRENDERERFILTEREDSIGNAL_H

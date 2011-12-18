@@ -101,8 +101,6 @@ void WaveformWidgetRenderer::preRender() {
         m_rendererTransformationOffset = 0.0;
         m_rendererTransformationGain = 0.0;
     }
-
-
 }
 
 void WaveformWidgetRenderer::draw( QPainter* painter, QPaintEvent* event) {
