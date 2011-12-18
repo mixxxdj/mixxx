@@ -62,102 +62,6 @@
             <enum>Qt::LeftToRight</enum>
            </property>
           </widget>
-          <widget class="QLabel" name="name">
-           <property name="geometry">
-            <rect>
-             <x>10</x>
-             <y>140</y>
-             <width>561</width>
-             <height>17</height>
-            </rect>
-           </property>
-           <property name="text">
-            <string>Name:</string>
-           </property>
-           <property name="wordWrap">
-            <bool>true</bool>
-           </property>
-          </widget>
-          <widget class="QLabel" name="version">
-           <property name="geometry">
-            <rect>
-             <x>10</x>
-             <y>170</y>
-             <width>561</width>
-             <height>17</height>
-            </rect>
-           </property>
-           <property name="text">
-            <string>Version:</string>
-           </property>
-           <property name="wordWrap">
-            <bool>true</bool>
-           </property>
-          </widget>
-          <widget class="QLabel" name="maker">
-           <property name="geometry">
-            <rect>
-             <x>10</x>
-             <y>200</y>
-             <width>561</width>
-             <height>16</height>
-            </rect>
-           </property>
-           <property name="text">
-            <string>Maker:</string>
-           </property>
-           <property name="wordWrap">
-            <bool>true</bool>
-           </property>
-          </widget>
-          <widget class="QLabel" name="copyright">
-           <property name="geometry">
-            <rect>
-             <x>10</x>
-             <y>230</y>
-             <width>561</width>
-             <height>17</height>
-            </rect>
-           </property>
-           <property name="text">
-            <string>Copyright:</string>
-           </property>
-           <property name="wordWrap">
-            <bool>true</bool>
-           </property>
-          </widget>
-          <widget class="QLabel" name="output">
-           <property name="geometry">
-            <rect>
-             <x>10</x>
-             <y>260</y>
-             <width>561</width>
-             <height>16</height>
-            </rect>
-           </property>
-           <property name="text">
-            <string>Output:</string>
-           </property>
-           <property name="wordWrap">
-            <bool>true</bool>
-           </property>
-          </widget>
-          <widget class="QLabel" name="description">
-           <property name="geometry">
-            <rect>
-             <x>10</x>
-             <y>290</y>
-             <width>561</width>
-             <height>17</height>
-            </rect>
-           </property>
-           <property name="text">
-            <string>Description:</string>
-           </property>
-           <property name="wordWrap">
-            <bool>true</bool>
-           </property>
-          </widget>
           <widget class="QPushButton" name="reset">
            <property name="geometry">
             <rect>
@@ -187,19 +91,6 @@
             <enum>Qt::Horizontal</enum>
            </property>
           </widget>
-          <widget class="QLabel" name="label_2">
-           <property name="geometry">
-            <rect>
-             <x>10</x>
-             <y>320</y>
-             <width>91</width>
-             <height>21</height>
-            </rect>
-           </property>
-           <property name="text">
-            <string>Parameters:</string>
-           </property>
-          </widget>
           <widget class="QLabel" name="label_3">
            <property name="geometry">
             <rect>
@@ -219,80 +110,47 @@
             <string>Beat Analysis</string>
            </property>
           </widget>
-          <widget class="QComboBox" name="paramcombo">
-           <property name="geometry">
-            <rect>
-             <x>110</x>
-             <y>320</y>
-             <width>371</width>
-             <height>27</height>
-            </rect>
-           </property>
-          </widget>
-          <widget class="QSpinBox" name="paramspinbox">
-           <property name="geometry">
-            <rect>
-             <x>500</x>
-             <y>320</y>
-             <width>71</width>
-             <height>27</height>
-            </rect>
-           </property>
-          </widget>
-          <widget class="QPushButton" name="advanced">
+          <widget class="QCheckBox" name="bfixedtempo">
            <property name="geometry">
             <rect>
              <x>10</x>
-             <y>390</y>
-             <width>97</width>
-             <height>27</height>
+             <y>180</y>
+             <width>257</width>
+             <height>22</height>
+            </rect>
+           </property>
+           <property name="text">
+            <string>Enable Fixed Tempo Optimization</string>
+           </property>
+          </widget>
+          <widget class="QCheckBox" name="boffset">
+           <property name="geometry">
+            <rect>
+             <x>10</x>
+             <y>220</y>
+             <width>281</width>
+             <height>22</height>
+            </rect>
+           </property>
+           <property name="text">
+            <string>Enable Offset Correction</string>
+           </property>
+          </widget>
+          <widget class="QCheckBox" name="banalyserenabled">
+           <property name="geometry">
+            <rect>
+             <x>10</x>
+             <y>30</y>
+             <width>569</width>
+             <height>22</height>
             </rect>
            </property>
            <property name="toolTip">
-            <string>Switch between Advanced and Basic Configuration</string>
+            <string>Enable/Disable Beat Analysis</string>
            </property>
            <property name="text">
-            <string notr="true">Advanced</string>
+            <string>Enabled</string>
            </property>
-          </widget>
-          <widget class="QWidget" name="horizontalLayoutWidget">
-           <property name="geometry">
-            <rect>
-             <x>10</x>
-             <y>19</y>
-             <width>571</width>
-             <height>51</height>
-            </rect>
-           </property>
-           <layout class="QHBoxLayout" name="horizontalLayout">
-            <item>
-             <widget class="QCheckBox" name="Analyser enabled">
-              <property name="toolTip">
-               <string>Enable/Disable Beat Analysis</string>
-              </property>
-              <property name="text">
-               <string>Enabled</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QCheckBox" name="rescan">
-              <property name="toolTip">
-               <string>Rescan </string>
-              </property>
-              <property name="text">
-               <string>Rescan</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QCheckBox" name="rescanall">
-              <property name="text">
-               <string>Rescan All</string>
-              </property>
-             </widget>
-            </item>
-           </layout>
           </widget>
          </widget>
         </item>

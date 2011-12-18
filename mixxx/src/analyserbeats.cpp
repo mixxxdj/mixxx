@@ -15,24 +15,7 @@
 #include "analyserbeats.h"
 #include "beattools.h"
 
-static bool sDebug = true;
-static bool DisableBpmCorrection = true;
-static bool DisableOffsetCorrection = true;
-
-// libmixxxminimal:qm-tempotracker
-#define VAMP_MIXXX_MINIMAL "libmixxxminimal"
-#define VAMP_PLUGIN_BEAT_TRACKER_ID "qm-tempotracker:0"
-
-
-// libmvamp:marsyas_ibt:0
-//#define VAMP_MIXXX_MINIMAL "libmvamp"
-//#define VAMP_PLUGIN_BEAT_TRACKER_ID "marsyas_ibt:0"
-
-//beatroot-vamp:beatroot:0
-
-//#define VAMP_MIXXX_MINIMAL "beatroot-vamp"
-//#define VAMP_PLUGIN_BEAT_TRACKER_ID "beatroot:0"
-
+static bool sDebug = false;
 
 AnalyserBeats::AnalyserBeats(ConfigObject<ConfigValue> *_config) {
     m_pConfigAVT = _config;
@@ -47,24 +30,34 @@ AnalyserBeats::~AnalyserBeats(){
 void AnalyserBeats::initialise(TrackPointer tio, int sampleRate, int totalSamples) {
     m_iMinBpm = m_pConfigAVT->getValueString(ConfigKey("[BPM]","BPMRangeStart")).toInt();
     m_iMaxBpm = m_pConfigAVT->getValueString(ConfigKey("[BPM]","BPMRangeEnd")).toInt();
+    int allow_above =m_pConfigAVT->getValueString(ConfigKey("[BPM]","BPMAboveRangeEnabled")).toInt();
+    if(allow_above){
+        m_iMinBpm = 0;
+        m_iMaxBpm = 999;
+    }
+    QString library = m_pConfigAVT->getValueString(ConfigKey("[Vamp]","AnalyserBeatLibrary"));
+    QString pluginID = m_pConfigAVT->getValueString(ConfigKey("[Vamp]","AnalyserBeatPluginID"));
 
-//    if(tio->getBpm() != 0)
-//        return;
-   // m_iSampleRate = sampleRate;
     m_iSampleRate = tio->getSampleRate();
     m_iTotalSamples = totalSamples;
-    qDebug()<<"Beat calculation started";
     m_bPass = false;
+    int i = m_pConfigAVT->getValueString(ConfigKey("[Vamp]","AnalyserBeatEnabled")).toInt();
+    if(i)
+        m_bPass = true;
+    qDebug()<<"Beat calculation started";
+    qDebug()<<"Beat calculation uses "<< pluginID;
+
+    BeatsPointer pBeats = tio->getBeats();
     //BeatsPointer pBeats = tio->getBeats();
     //if(pBeats)
     //    m_bPass = !(pBeats->getVersion()).contains("BeatMatrix");
-//    if(!m_bPass){
-//        qDebug()<<"BeatMatrix already exists: calculation will not start";
-//        return;
-//    }
+    if(!m_bPass){
+        qDebug()<<"Beat calculation will not start";
+        return;
+    }
       //qDebug() << "Init Vamp Beat tracker with samplerate " << tio->getSampleRate() << " " << sampleRate;
       mvamp = new VampAnalyser();
-      m_bPass = mvamp->Init(VAMP_MIXXX_MINIMAL, VAMP_PLUGIN_BEAT_TRACKER_ID, m_iSampleRate, totalSamples);
+      m_bPass = mvamp->Init(library, pluginID, m_iSampleRate, totalSamples);
 }
 
 void AnalyserBeats::process(const CSAMPLE *pIn, const int iLen) {
@@ -85,8 +78,12 @@ void AnalyserBeats::finalise(TrackPointer tio) {
    m_bPass = mvamp->End(); // This will ensure that beattracking succeeds in a beat list
    beats = mvamp->GetInitFramesVector();
 
-   if(!beats.isEmpty()){
+   bool DisableBpmCorrection = true;
+   int i = m_pConfigAVT->getValueString(ConfigKey("[Vamp]","AnalyserBeatFixedTempo")).toInt();
+   if(i)
+       DisableBpmCorrection = false;
 
+   if(!beats.isEmpty()){
        BeatsPointer pBeats = BeatFactory::makeBeatMap(tio, correctedBeats(beats,DisableBpmCorrection));
        tio->setBeats(pBeats);
        tio->setBpm(pBeats->getBpm());
@@ -129,22 +126,31 @@ QVector<double> AnalyserBeats::correctedBeats (QVector<double> rawbeats, bool by
      * BeatTools::calculateOffset compares the beats from Vamp and the beats from
      * the beat grid constructed above. See beattools.* for details.
      */
-    if(!DisableOffsetCorrection){
-        double offset = BeatTools::calculateOffset(rawbeats, corrbeats, m_iSampleRate, m_iMinBpm,  m_iMaxBpm);
+
+    double offset = 0;
+    bool EnableOffsetCorrection = static_cast<bool> (m_pConfigAVT->
+                                                        getValueString(ConfigKey("[Vamp]","AnalyserBeatOffset")).toInt());
+    if(EnableOffsetCorrection){
+        qDebug()<<"Calculating best offset";
+        offset = BeatTools::calculateOffset(rawbeats, corrbeats, m_iSampleRate, m_iMinBpm,  m_iMaxBpm);
+    }
+
         corrbeats.clear();
         double FirstFrame = offset + rawbeats.at(0);
         while (FirstFrame < 0)
             FirstFrame += BpmFrame;
         while (FirstFrame > BpmFrame)
             FirstFrame -= BpmFrame;
-        i = FirstFrame;
-        if(sDebug)
-            qDebug()<<"First Frame is at " << i <<".It was at " << rawbeats.at(0);
+        i = floor(FirstFrame + 0.5);
+        if(sDebug){
+            qDebug()<<"First Frame is at " << i;
+            qDebug()<<"It was at " << rawbeats.at(0);
+        }
         while(i < m_iTotalSamples){
             corrbeats << i;
             i += BpmFrame;
         }
-    }
+
     return corrbeats;
 
 }
