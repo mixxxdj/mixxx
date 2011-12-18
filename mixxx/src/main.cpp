@@ -81,7 +81,7 @@ void MessageHandler(QtMsgType type, const char *input)
 {
     static QMutex mutex;
     QMutexLocker locker(&mutex);
-    QString tmp = QString("[%1]: %2").arg(QThread::currentThread()->objectName()).arg(input);
+    QString tmp = QString("[%1]: %2").arg(QThread::currentThread()->objectName(), input);
     QByteArray ba = tmp.toLocal8Bit(); //necessary inner step to avoid memory corruption (otherwise the QByteArray is destroyed at the end of the next line which is BAD NEWS BEARS)
     const char* s = ba.constData();
 

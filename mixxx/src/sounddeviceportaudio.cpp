@@ -36,7 +36,7 @@ SoundDevicePortAudio::SoundDevicePortAudio(ConfigObject<ConfigValue> *config, So
     m_devId = devIndex;
     m_hostAPI = Pa_GetHostApiInfo(deviceInfo->hostApi)->name;
     m_dSampleRate = deviceInfo->defaultSampleRate;
-    m_strInternalName = QString("%1, %2").arg(QString::number(m_devId)).arg(deviceInfo->name);
+    m_strInternalName = QString("%1, %2").arg(QString::number(m_devId), deviceInfo->name);
     m_strDisplayName = QString(deviceInfo->name);
 
     m_pStream = 0;

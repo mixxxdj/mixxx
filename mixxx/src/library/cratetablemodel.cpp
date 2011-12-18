@@ -44,12 +44,12 @@ void CrateTableModel::setCrate(int crateId) {
         "SELECT %2 FROM %3 "
         "INNER JOIN library ON library.id = %3.%4 "
         "WHERE %3.%5 = %6 AND library.mixxx_deleted = 0")
-            .arg(escaper.escapeString(tableName))
-            .arg(columns.join(","))
-            .arg(CRATE_TRACKS_TABLE)
-            .arg(CRATETRACKSTABLE_TRACKID)
-            .arg(CRATETRACKSTABLE_CRATEID)
-            .arg(crateId);
+            .arg(escaper.escapeString(tableName),
+                 columns.join(","),
+                 CRATE_TRACKS_TABLE,
+                 CRATETRACKSTABLE_TRACKID,
+                 CRATETRACKSTABLE_CRATEID,
+                 QString::number(crateId));
     query.prepare(queryString);
     if (!query.exec()) {
         LOG_FAILED_QUERY(query);

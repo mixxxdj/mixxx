@@ -17,7 +17,8 @@ MidiLedHandler::MidiLedHandler(QString group, QString key, MidiDevice & midi, do
 
     //m_cobj should never be null, so Q_ASSERT here to make sure that we hear about it if it is null.
     //Q_ASSERT(m_cobj);
-    QByteArray err_tmp = QString("Invalid config group: '%1', name: '%2'").arg(group).arg(key).toAscii();
+    QByteArray err_tmp = QString("Invalid config group: '%1', name: '%2'")
+            .arg(group, key).toAscii();
     Q_ASSERT_X(m_cobj, "MidiLedHandler", err_tmp);
 
     connect(m_cobj, SIGNAL(valueChangedFromEngine(double)), this, SLOT(controlChanged(double)), Qt::DirectConnection);
@@ -28,7 +29,7 @@ MidiLedHandler::~MidiLedHandler() {
     ConfigKey cKey = m_cobj->getKey();
     if (m_midi.midiDebugging()) {
         qDebug() << QString("Destroying static LED handler on %1 for %2,%3")
-            .arg(m_midi.getName()).arg(cKey.group).arg(cKey.item);
+            .arg(m_midi.getName(), cKey.group, cKey.item);
     }
 }
 
@@ -87,12 +88,13 @@ void MidiLedHandler::createHandlers(QDomNode node, MidiDevice & midi) {
                 }
                 if (midi.midiDebugging()) {
                     qDebug() << QString(
-                    "Creating LED handler for %1,%2 between %3 and %4 to MIDI out: 0x%5 0x%6, on: 0x%7 off: 0x%8")
-                        .arg(group).arg(key).arg(min).arg(max)
-                        .arg(QString::number(status, 16).toUpper())
-                        .arg(QString::number(midino, 16).toUpper().rightJustified(2,'0'))
-                        .arg(QString::number(on, 16).toUpper().rightJustified(2,'0'))
-                        .arg(QString::number(off, 16).toUpper().rightJustified(2,'0'));
+                        "Creating LED handler for %1,%2 between %3 and %4 to MIDI out: 0x%5 0x%6, on: 0x%7 off: 0x%8")
+                            .arg(group, key,
+                                 QString::number(min), QString::number(max),
+                                 QString::number(status, 16).toUpper(),
+                                 QString::number(midino, 16).toUpper().rightJustified(2,'0'),
+                                 QString::number(on, 16).toUpper().rightJustified(2,'0'),
+                                 QString::number(off, 16).toUpper().rightJustified(2,'0'));
                 }
 
                 allhandlers.append(new MidiLedHandler(group, key, midi, min, max, status, midino, on, off));
