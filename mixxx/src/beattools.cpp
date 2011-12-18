@@ -14,7 +14,7 @@
 
 #include "beattools.h"
 
-static bool sDebug = true;
+static bool sDebug = false;
 
 double BeatTools::calculateBpm(QVector<double> beats, int SampleRate, int min_bpm, int max_bpm){
 
@@ -243,7 +243,7 @@ double BeatTools::calculateOffset(const QVector<double> beats1, const QVector<do
     double beatlength1 = (60.0 * SampleRate / bpm1);
     int MaxFreq = 1;
     double BestOffset = beats1.at(0) - beats2.at(0);
-    double offset = 0;//floor(-beatlength1 / 2 + 0.5);
+    double offset = floor(-beatlength1 / 2);
     while (offset < (beatlength1 / 2) )
     {
         double freq = 0;

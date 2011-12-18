@@ -29,9 +29,11 @@ public slots:
 
 private slots:
 
-    void pluginSelected(QString i);
+    void pluginSelected(int i);
+    void analyserEnabled(int i);
+    void fixedtempoEnabled(int i);
+    void offsetEnabled(int i);
     void setDefaults();
-    void setAdvanced();
 
 signals:
     void apply(const QString &);
@@ -40,11 +42,10 @@ private:
     void loadSettings();
     /** Pointer to config object */
     ConfigObject<ConfigValue> *m_pconfig;
-    QList<QString> m_listName, m_listVersion, m_listMaker,
-        m_listCopyright, m_listOutput, m_listDescription;
+    QList<QString> m_listName;
     QList<QString> m_listLibrary, m_listIdentifier;
-    QString m_moreless, m_selectedAnalyser;
-    bool m_bShowAll;
+    QString m_selectedAnalyser;
+    bool m_banalyserEnabled, m_bfixedtempoEnabled, m_boffsetEnabled;
 };
 
 
