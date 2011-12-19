@@ -31,7 +31,7 @@ void WaveformWidgetAbstract::release() {
 }
 
 void WaveformWidgetAbstract::render() {
-    m_widget->update();
+    m_widget->repaint();
 }
 
 void WaveformWidgetAbstract::resize( int width, int height) {

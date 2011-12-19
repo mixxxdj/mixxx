@@ -36,6 +36,7 @@ private:
     ShaderVariable<int>* m_textureStride;
     ShaderVariable<int>* m_indexPosition;
     ShaderVariable<int>* m_displayRange;
+    ShaderVariable<int>* m_viewportWidth;
 };
 
 #endif // GLWAVEFORMRENDERERSIGNALSHADER_H
