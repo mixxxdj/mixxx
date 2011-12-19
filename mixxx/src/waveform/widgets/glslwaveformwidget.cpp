@@ -44,3 +44,4 @@ void GLSLWaveformWidget::paintEvent( QPaintEvent* event) {
     draw(&painter,event);
     QGLWidget::swapBuffers();
 }
+

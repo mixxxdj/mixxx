@@ -31,7 +31,7 @@ public:
         return true;
     }
 
-    bool setUniformValue( QGLShaderProgram* program, const T& value) const {
+    bool setUniformValue( QGLShaderProgram* program, const T& value) {
         if( !isValid()) return false;
         m_value = value;
         program->setUniformValue( m_id, m_value);
@@ -49,7 +49,7 @@ public:
         return true;
     }
 
-    bool setAttributeValue( QGLShaderProgram* program, const T& value) const {
+    bool setAttributeValue( QGLShaderProgram* program, const T& value) {
         if( !isValid()) return false;
         m_value = value;
         program->setAttributeValue( m_id, m_value);

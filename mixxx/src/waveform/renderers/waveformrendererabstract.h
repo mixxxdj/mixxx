@@ -15,8 +15,8 @@ class WaveformRendererAbstract {
     virtual void init() = 0;
     virtual void setup(const QDomNode& node) = 0;
     virtual void draw(QPainter* painter, QPaintEvent* event) = 0;
-    virtual void onResize() {
-    }
+
+    virtual void onResize() {}
 
   protected:
     bool isDirty() const {

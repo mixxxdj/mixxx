@@ -16,6 +16,7 @@ GLSLWaveformRendererSignal::GLSLWaveformRendererSignal(WaveformWidgetRenderer* w
     m_textureStride = new ShaderVariable<int>("textureStride");
     m_indexPosition = new ShaderVariable<int>("indexPosition");
     m_displayRange = new ShaderVariable<int>("displayRange");
+    m_viewportWidth = new ShaderVariable<int>("viewportWidth");
 }
 
 GLSLWaveformRendererSignal::~GLSLWaveformRendererSignal() {
@@ -34,6 +35,7 @@ GLSLWaveformRendererSignal::~GLSLWaveformRendererSignal() {
     delete m_textureStride;
     delete m_indexPosition;
     delete m_displayRange;
+    delete m_viewportWidth;
 }
 
 bool GLSLWaveformRendererSignal::loadShaders()
@@ -69,6 +71,7 @@ bool GLSLWaveformRendererSignal::loadShaders()
     m_textureStride->initUniformLocation(m_shaderProgram);
     m_indexPosition->initUniformLocation(m_shaderProgram);
     m_displayRange->initUniformLocation(m_shaderProgram);
+    m_viewportWidth->initUniformLocation(m_shaderProgram);
 
     //vRince here I do not check if all location are Ok since
     //shader optimization could not provide Id for unused variable
@@ -159,13 +162,6 @@ void GLSLWaveformRendererSignal::init(){
     if( !loadShaders())
         return;
 
-    //set default values
-    m_waveformLength->setUniformValue(m_shaderProgram);
-    m_textureSize->setUniformValue(m_shaderProgram);
-    m_textureStride->setUniformValue(m_shaderProgram);
-    m_indexPosition->setUniformValue(m_shaderProgram);
-    m_displayRange->setUniformValue(m_shaderProgram);
-
     createGeometry();
     loadTexture();
 }
@@ -175,6 +171,13 @@ void GLSLWaveformRendererSignal::setup(const QDomNode& node) {
 }
 
 void GLSLWaveformRendererSignal::draw(QPainter* painter, QPaintEvent* event) {
+
+    const TrackInfoObject* trackInfo = m_waveformRenderer->getTrackInfo().data();
+
+    if( !trackInfo)
+        return;
+
+    const Waveform* waveform = trackInfo->getWaveForm();
 
     // save the GL state set for QPainter
     painter->beginNativePainting();
@@ -192,10 +195,20 @@ void GLSLWaveformRendererSignal::draw(QPainter* painter, QPaintEvent* event) {
 
     m_shaderProgram->bind();
 
-    /*
-    m_shaderProgram->setUniformValue(indexPositionLocation_,indexPosition_);
-    m_shaderProgram->setUniformValue(samplePerTextelLocation_,4);
-    */
+    int currentPosition = 0;
+    if( m_waveformRenderer->getPlayPos() >= 0)
+    {
+        //TODO (vRince) not really accurate since waveform size une visual reasampling and
+        //have two mores samples to hold the complete visual data
+        currentPosition = m_waveformRenderer->getPlayPos()*waveform->size();
+        m_waveformRenderer->regulateVisualSample(currentPosition);
+    }
+
+    m_viewportWidth->setUniformValue(m_shaderProgram,m_waveformRenderer->getWidth());
+    m_waveformLength->setUniformValue(m_shaderProgram,waveform->size());
+    m_textureStride->setUniformValue(m_shaderProgram,waveform->getTextureStride());
+    m_displayRange->setUniformValue(m_shaderProgram,m_waveformRenderer->getWidth()*m_waveformRenderer->getVisualSamplePerPixel());
+    m_indexPosition->setUniformValue(m_shaderProgram,currentPosition);
 
     glEnable(GL_TEXTURE_2D);
     glBindTexture(GL_TEXTURE_2D, m_textureId);

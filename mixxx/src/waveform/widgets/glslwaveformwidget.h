@@ -1,7 +1,7 @@
 #ifndef GLWAVEFORMWIDGETSHADER_H
 #define GLWAVEFORMWIDGETSHADER_H
 
-#include <QtOpenGL/QGLWidget>
+#include <QGLWidget>
 #include "waveformwidgetabstract.h"
 
 class GLSLWaveformWidget : public WaveformWidgetAbstract, public QGLWidget
