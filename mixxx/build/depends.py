@@ -548,6 +548,8 @@ class MixxxCore(Feature):
 
                    "util/pa_ringbuffer.c",
 
+                   "mixxxapplication.cpp",
+
                    # Add the QRC file which compiles in some extra resources
                    # (prefs icons, etc.)
                    build.env.Qrc('#res/mixxx.qrc')

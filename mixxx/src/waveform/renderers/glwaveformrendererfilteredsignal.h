@@ -20,6 +20,7 @@ public:
 
 protected:
     virtual void onResize();
+    int buildPolygon();
 
 private:
     ControlObject* m_lowFilterControlObject;
