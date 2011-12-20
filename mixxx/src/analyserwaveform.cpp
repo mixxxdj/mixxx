@@ -40,19 +40,6 @@ void AnalyserWaveform::initialise(TrackPointer tio, int sampleRate, int totalSam
     destroyFilters();
     resetFilters(tio);
 
-    /*
-    const double samplingRatio = double(sampleRate) / tio->getWaveForm()->getVisualSampleRate();
-
-    QByteArray err_tmp = QString("TrackPointer %1 returned bad data: VisualResampleRate=%2, n=%3").arg(tio->getId()).arg(visualResampleRate).arg(samplingRatio).toAscii();
-
-    if (visualResampleRate == 0 || samplingRatio <= 0) {
-        qDebug() << err_tmp
-                 << "Track must not be loaded to a player with a waveform display."
-                 << "Skipping analysis.";
-        return;
-    }
-    */
-
     const int samplesPerVisualSample = (int)((double)sampleRate / tio->getWaveForm()->getVisualSampleRate());
     const double actualVisualSamplingRate = samplesPerVisualSample;
 
@@ -106,22 +93,27 @@ void AnalyserWaveform::process(const CSAMPLE *buffer, const int bufferLength) {
     if(!m_ready)
         return;
 
-    QVector<float> lowBuffer(bufferLength), midBuffer(bufferLength), highBuffer(bufferLength);
+    //this should only append once
+    if( bufferLength > buffers_[0].size()) {
+        buffers_[0].resize(bufferLength);
+        buffers_[1].resize(bufferLength);
+        buffers_[2].resize(bufferLength);
+    }
 
-    m_filter[0]->process( buffer, lowBuffer.data(), bufferLength);
-    m_filter[1]->process( buffer, midBuffer.data(), bufferLength);
-    m_filter[2]->process( buffer, highBuffer.data(), bufferLength);
+    m_filter[0]->process( buffer, &buffers_[0][0], bufferLength);
+    m_filter[1]->process( buffer, &buffers_[1][0], bufferLength);
+    m_filter[2]->process( buffer, &buffers_[2][0], bufferLength);
 
     for( int i = 0; i < bufferLength; i+=2) {
         //accumulate signal power of the stride
         m_currentStridePower[0] += buffer[i]*buffer[i];
         m_currentStridePower[1] += buffer[i+1]*buffer[i+1];
-        m_currentStrideFiltredPower[0][0] += lowBuffer[i]*lowBuffer[i];
-        m_currentStrideFiltredPower[1][0] += lowBuffer[i+1]*lowBuffer[i+1];
-        m_currentStrideFiltredPower[0][1] += midBuffer[i]*midBuffer[i];
-        m_currentStrideFiltredPower[1][1] += midBuffer[i+1]*midBuffer[i+1];
-        m_currentStrideFiltredPower[0][2] += highBuffer[i]*highBuffer[i];
-        m_currentStrideFiltredPower[1][2] += highBuffer[i+1]*highBuffer[i+1];
+        m_currentStrideFiltredPower[0][0] += buffers_[0][i]*buffers_[0][i];
+        m_currentStrideFiltredPower[1][0] += buffers_[0][i+1]*buffers_[0][i+1];
+        m_currentStrideFiltredPower[0][1] += buffers_[1][i]*buffers_[1][i];
+        m_currentStrideFiltredPower[1][1] += buffers_[1][i+1]*buffers_[1][i+1];
+        m_currentStrideFiltredPower[0][2] += buffers_[2][i]*buffers_[2][i];
+        m_currentStrideFiltredPower[1][2] += buffers_[2][i+1]*buffers_[2][i+1];
 
         if( m_strideBufferPos >= m_strideLength) {
             if( m_currentStride >= m_waveform->size()) {
@@ -138,10 +130,7 @@ void AnalyserWaveform::process(const CSAMPLE *buffer, const int bufferLength) {
 }
 
 void AnalyserWaveform::storeCurentStridePower() {
-    //TODO make this a member to avoid computing it on each store
-
-    for( int i = 0; i < 2; i++)
-    {
+    for( int i = 0; i < 2; i++) {
         m_waveform->all(m_currentStride+i) = (unsigned char)( m_convertionFactor * m_currentStridePower[i]);
         m_waveform->low(m_currentStride+i) = (unsigned char)( m_convertionFactor * m_currentStrideFiltredPower[i][0]);
         m_waveform->mid(m_currentStride+i) = (unsigned char)( m_convertionFactor * m_currentStrideFiltredPower[i][1]);
