@@ -40,6 +40,7 @@ private:
     bool m_ready;
 
     EngineFilterButterworth8* m_filter[3];
+    std::vector<float> buffers_[3];
 
     QTime* timer_;
 };
