@@ -44,14 +44,12 @@ def get_mixxx_version():
         If nothing there, uses defs_version.h.
     """
     #have to handle out-of-tree building, that's why the '#' :(
-    buld = Script.File('#src/build.h')
     defs = Script.File('#src/defs_version.h')
     version = ""
 
-    for line in open(str(buld)).readlines():
-        if line.strip().startswith("#define VERSION"):
-            version = line
-            break
+    branch_name = get_bzr_branch_name()
+    if not version.startswith('release') and not re.match("^[1-9]\.[0-9][0-9]?$", version):
+        version = branch_name
 
     if version == "":
         for line in open(str(defs)).readlines():
