@@ -122,7 +122,9 @@ class BeatLoopingControl : public QObject {
         return m_dBeatLoopSize;
     }
   public slots:
-    void slotBeatLoopActivate(double value);
+    void slotLegacy(double value);
+    void slotActivate(double value);
+    void slotToggle(double value);
 
   signals:
     void activateBeatLoop(BeatLoopingControl*);
@@ -133,7 +135,11 @@ class BeatLoopingControl : public QObject {
     // ConfigKeys.
     ConfigKey keyForControl(const char * _group, QString ctrlName, double num);
     double m_dBeatLoopSize;
-    ControlPushButton* m_pPBActivateBeatLoop;
+    bool m_bActive;
+    ControlPushButton* m_pLegacy;
+    ControlPushButton* m_pActivate;
+    ControlPushButton* m_pToggle;
+    ControlObject* m_pEnabled;
 };
 
 #endif /* LOOPINGCONTROL_H */

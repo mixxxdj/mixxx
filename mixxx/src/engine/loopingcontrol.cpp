@@ -500,19 +500,20 @@ void LoopingControl::clearActiveBeatLoop() {
     }
 }
 
-void LoopingControl::slotBeatLoop(double beats, bool keepStartPoint)
-{
+void LoopingControl::slotBeatLoop(double beats, bool keepStartPoint) {
     // give loop_in and loop_out defaults so we can detect problems
     int loop_in = -1;
     int loop_out = -1;
     int samples = m_pTrackSamples->get();
 
     if (!m_pBeats) {
+        clearActiveBeatLoop();
         return;
     }
 
     // For now we do not handle negative beatloops.
     if (beats < 0) {
+        clearActiveBeatLoop();
         return;
     }
 
@@ -584,29 +585,56 @@ void LoopingControl::slotBeatLoop(double beats, bool keepStartPoint)
 }
 
 BeatLoopingControl::BeatLoopingControl(const char* pGroup, double size)
-        : m_dBeatLoopSize(size) {
-    m_pPBActivateBeatLoop = new ControlPushButton(
-        keyForControl(pGroup, "beatloop", size));
-    m_pPBActivateBeatLoop->setToggleButton(true);
-    m_pPBActivateBeatLoop->setStates(2);
-    connect(m_pPBActivateBeatLoop, SIGNAL(valueChanged(double)),
-            this, SLOT(slotBeatLoopActivate(double)),
+        : m_dBeatLoopSize(size),
+          m_bActive(false) {
+    // This is the original beatloop control which is now deprecated. Its value
+    // is the state of the beatloop control (1 for enabled, 0 for disabled).
+    m_pLegacy = new ControlPushButton(
+        keyForControl(pGroup, "beatloop_%1", size));
+    m_pLegacy->setStates(2);
+    m_pLegacy->setToggleButton(true);
+    connect(m_pLegacy, SIGNAL(valueChanged(double)),
+            this, SLOT(slotLegacy(double)),
             Qt::DirectConnection);
+    // A push-button which activates the beatloop.
+    m_pActivate = new ControlPushButton(
+        keyForControl(pGroup, "beatloop_%1_activate", size));
+    connect(m_pActivate, SIGNAL(valueChanged(double)),
+            this, SLOT(slotActivate(double)),
+            Qt::DirectConnection);
+    // A push-button which toggles the beatloop as active or inactive.
+    m_pToggle = new ControlPushButton(
+        keyForControl(pGroup, "beatloop_%1_toggle", size));
+    connect(m_pToggle, SIGNAL(valueChanged(double)),
+            this, SLOT(slotToggle(double)),
+            Qt::DirectConnection);
+
+    // An indicator control which is 1 if the beatloop is enabled and 0 if not.
+    m_pEnabled = new ControlObject(
+        keyForControl(pGroup, "beatloop_%1_enabled", size));
 }
 
 BeatLoopingControl::~BeatLoopingControl() {
-    delete m_pPBActivateBeatLoop;
+    delete m_pActivate;
+    delete m_pToggle;
+    delete m_pEnabled;
+    delete m_pLegacy;
 }
 
 void BeatLoopingControl::deactivate() {
-    m_pPBActivateBeatLoop->set(0);
+    m_bActive = false;
+    m_pEnabled->set(0);
+    m_pLegacy->set(0);
 }
 
 void BeatLoopingControl::activate() {
-    m_pPBActivateBeatLoop->set(1);
+    m_bActive = true;
+    m_pEnabled->set(1);
+    m_pLegacy->set(1);
 }
 
-void BeatLoopingControl::slotBeatLoopActivate(double v) {
+void BeatLoopingControl::slotLegacy(double v) {
+    //qDebug() << "slotLegacy" << m_dBeatLoopSize << "v" << v;
     if (v > 0) {
         emit(activateBeatLoop(this));
     } else {
@@ -614,11 +642,31 @@ void BeatLoopingControl::slotBeatLoopActivate(double v) {
     }
 }
 
+void BeatLoopingControl::slotActivate(double v) {
+    //qDebug() << "slotActivate" << m_dBeatLoopSize << "v" << v;
+    if (!v) {
+        return;
+    }
+    emit(activateBeatLoop(this));
+}
+
+void BeatLoopingControl::slotToggle(double v) {
+    //qDebug() << "slotToggle" << m_dBeatLoopSize << "v" << v;
+    if (!v) {
+        return;
+    }
+    if (m_bActive) {
+        emit(deactivateBeatLoop(this));
+    } else {
+        emit(activateBeatLoop(this));
+    }
+}
+
 ConfigKey BeatLoopingControl::keyForControl(const char* pGroup,
                                             QString ctrlName, double num) {
     ConfigKey key;
     key.group = pGroup;
-    key.item = QString("%1_%2").arg(ctrlName).arg(num);
+    key.item = ctrlName.arg(num);
     return key;
 }
 
