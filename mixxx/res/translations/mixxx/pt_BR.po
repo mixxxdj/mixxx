@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2011-10-31 23:15-0400\n"
-"PO-Revision-Date: 2011-11-07 21:23+0000\n"
-"Last-Translator: Wille <wille@riseup.net>\n"
+"PO-Revision-Date: 2011-12-07 19:36+0000\n"
+"Last-Translator: Mário Augusto Souza Nunes <Unknown>\n"
 "Language-Team: Brazilian Portuguese <pt_BR@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-11-08 05:22+0000\n"
-"X-Generator: Launchpad (build 14231)\n"
+"X-Launchpad-Export-Date: 2011-12-08 05:20+0000\n"
+"X-Generator: Launchpad (build 14443)\n"
 
 #: AutoDJFeature#1
 msgid "Auto DJ"
@@ -786,7 +786,7 @@ msgstr "Formulário1"
 
 #: DlgPrefEQDlg#2
 msgid "Static EQs (for slower CPUs)"
-msgstr ""
+msgstr "EQs estático (Para CPUs Lentas)"
 
 #: DlgPrefEQDlg#3
 msgid "High Shelf EQ"

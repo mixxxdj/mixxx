@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2011-10-31 23:15-0400\n"
-"PO-Revision-Date: 2011-11-05 22:58+0000\n"
-"Last-Translator: RJ Ryan <Unknown>\n"
+"PO-Revision-Date: 2011-12-16 15:34+0000\n"
+"Last-Translator: lyyser <Unknown>\n"
 "Language-Team: Estonian <et@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-11-06 05:21+0000\n"
-"X-Generator: Launchpad (build 14231)\n"
+"X-Launchpad-Export-Date: 2011-12-17 04:43+0000\n"
+"X-Generator: Launchpad (build 14525)\n"
 
 #: AutoDJFeature#1
 msgid "Auto DJ"
@@ -3062,7 +3062,7 @@ msgstr ""
 
 #: Ui#8
 msgid "Simple"
-msgstr ""
+msgstr "Lihtne"
 
 #: Ui#9
 msgid "Mixxx Detected a WVGA Screen"
@@ -3081,7 +3081,7 @@ msgstr ""
 #: Ui#12
 msgctxt "Ui#12"
 msgid "Preferences"
-msgstr ""
+msgstr "Eelistused"
 
 #: Ui#13
 msgctxt "Ui#13"
@@ -3090,7 +3090,7 @@ msgstr ""
 
 #: Ui#14
 msgid "Master volume"
-msgstr ""
+msgstr "Helitugevus"
 
 #: Ui#15
 msgid "Master balance"
@@ -3098,7 +3098,7 @@ msgstr ""
 
 #: Ui#16
 msgid "Headphones volume"
-msgstr ""
+msgstr "Paakomplekti helitugevus"
 
 #: Ui#17
 msgid "Headphones mix (pre/main)"
@@ -3238,11 +3238,11 @@ msgstr ""
 
 #: WSearchLineEdit#1
 msgid "Search..."
-msgstr ""
+msgstr "Otsi..."
 
 #: WTrackTableView#1
 msgid "Add to Playlist"
-msgstr ""
+msgstr "Lisa esitusnimekirja"
 
 #: WTrackTableView#2
 msgid "Add to Crate"
@@ -3255,11 +3255,11 @@ msgstr ""
 #: WTrackTableView#4
 msgctxt "WTrackTableView#4"
 msgid "Remove"
-msgstr ""
+msgstr "Eemalda"
 
 #: WTrackTableView#5
 msgid "Properties..."
-msgstr ""
+msgstr "Omadused..."
 
 #: WTrackTableView#6
 msgid "Add to Auto DJ Queue"
