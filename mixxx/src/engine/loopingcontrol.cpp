@@ -496,15 +496,11 @@ void LoopingControl::slotBeatLoopActivate(BeatLoopingControl* pBeatLoopControl) 
     if (!m_pTrack) {
         return;
     }
-    bool beatLoopAlreadyActive = m_pActiveBeatLoop != NULL;
-    if (beatLoopAlreadyActive && m_pActiveBeatLoop != pBeatLoopControl) {
-        m_pActiveBeatLoop->deactivate();
-    }
-    m_pActiveBeatLoop = pBeatLoopControl;
-    m_pActiveBeatLoop->activate();
 
     // Maintain the current start point if there is an active beat loop and we
-    // are currently looping
+    // are currently looping. slotBeatLoop will update m_pActiveBeatLoop if
+    // applicable
+    bool beatLoopAlreadyActive = m_pActiveBeatLoop != NULL;
     slotBeatLoop(pBeatLoopControl->getSize(),
                  beatLoopAlreadyActive && m_bLoopingEnabled);
 }
@@ -524,6 +520,20 @@ void LoopingControl::slotBeatLoop(double beats, bool keepStartPoint) {
     if (!m_pTrack) {
         return;
     }
+
+    // O(n) search, but there are only ~10-ish beatloop controls so this is
+    // fine.
+    foreach (BeatLoopingControl* pBeatLoopControl, m_beatLoops) {
+        if (pBeatLoopControl->getSize() == beats) {
+            if (m_pActiveBeatLoop &&
+                m_pActiveBeatLoop != pBeatLoopControl) {
+                m_pActiveBeatLoop->deactivate();
+            }
+            m_pActiveBeatLoop = pBeatLoopControl;
+            pBeatLoopControl->activate();
+        }
+    }
+
     // give loop_in and loop_out defaults so we can detect problems
     int loop_in = -1;
     int loop_out = -1;
