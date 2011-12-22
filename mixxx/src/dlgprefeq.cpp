@@ -90,7 +90,7 @@ void DlgPrefEQ::loadSettings()
     highEqFreq = highEqCourse.isEmpty() ? highEqFreq : highEqCourse.toDouble();
     highEqFreq = highEqPrecise.isEmpty() ? highEqFreq : highEqPrecise.toDouble();
 
-    if (lowEqFreq == 0.0 || highEqFreq == 0.0) {
+    if (lowEqFreq == 0.0 || highEqFreq == 0.0 || lowEqFreq == highEqFreq) {
         CheckBoxLoFi->setChecked(true);
         setDefaultShelves();
         lowEqFreq = m_pConfig->getValueString(ConfigKey(CONFIG_KEY, "LoEQFrequencyPrecise")).toDouble();
