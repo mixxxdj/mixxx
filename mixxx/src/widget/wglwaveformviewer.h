@@ -67,6 +67,7 @@ class WGLWaveformViewer : public QGLWidget
     ControlObjectThreadMain* m_pWaveformZoomFactor;
 
     bool m_bScratching;
+    bool m_bBending;
     bool m_painting;
     QMutex m_paintMutex;
 

@@ -66,6 +66,7 @@ LoopingControl::LoopingControl(const char * _group,
 
     m_pQuantizeEnabled = ControlObject::getControl(ConfigKey(_group, "quantize"));
     m_pNextBeat = ControlObject::getControl(ConfigKey(_group, "beat_next"));
+    m_pClosestBeat = ControlObject::getControl(ConfigKey(_group, "beat_closest"));
     m_pTrackSamples = ControlObject::getControl(ConfigKey(_group,"track_samples"));
 
     // Connect beatloop, which can flexibly handle different values.
@@ -122,6 +123,13 @@ void LoopingControl::slotLoopScale(double scale) {
     int loop_length = m_iLoopEndSample - m_iLoopStartSample;
     int samples = m_pTrackSamples->get();
     loop_length *= scale;
+
+    // Abandon loops that are too short of extend beyond the end of the file.
+    if (loop_length < MINIMUM_AUDIBLE_LOOP_SIZE ||
+        m_iLoopStartSample + loop_length > m_pTrackSamples->get()) {
+        return;
+    }
+
     m_iLoopEndSample = m_iLoopStartSample + loop_length;
 
     if (!even(m_iLoopEndSample)) {
@@ -192,8 +200,8 @@ double LoopingControl::process(const double dRate,
     if(m_bLoopingEnabled &&
        m_iLoopStartSample != kNoTrigger &&
        m_iLoopEndSample != kNoTrigger) {
-        bool outsideLoop = (currentSample > m_iLoopEndSample ||
-                            currentSample < m_iLoopStartSample);
+        bool outsideLoop = ((!reverse && currentSample > m_iLoopEndSample) ||
+                            (reverse && currentSample < m_iLoopStartSample));
         if (outsideLoop) {
             retval = reverse ? m_iLoopEndSample : m_iLoopStartSample;
         }
@@ -268,8 +276,32 @@ void LoopingControl::slotLoopIn(double val) {
     if (val) {
         clearActiveBeatLoop();
 
-        // set loop in position
-        m_iLoopStartSample = m_pQuantizeEnabled->get() ? m_pNextBeat->get() : m_iCurrentSample;
+        // set loop-in position
+        int pos =
+                (m_pQuantizeEnabled->get() > 0.0 && m_pClosestBeat->get() != -1) ?
+                static_cast<int>(floorf(m_pClosestBeat->get())) : m_iCurrentSample;
+
+        // If we're looping and the loop-in and out points are now so close
+        //  that the loop would be inaudible (which can happen easily with
+        //  quantize-to-beat enabled,) set the in point to the smallest
+        //  pre-defined beatloop size instead (when possible)
+        if (m_bLoopingEnabled &&
+            (m_iLoopEndSample - pos) < MINIMUM_AUDIBLE_LOOP_SIZE) {
+            pos = m_iLoopEndSample;
+            if (m_pQuantizeEnabled->get() > 0.0) {
+                // 1 would have just returned loop_in, so give 2 to get the beat
+                // following loop_in
+                int nextbeat = m_pBeats->findNthBeat(pos, 2);
+                pos -= (nextbeat - pos) * s_dBeatSizes[0];
+            }
+            else pos -= MINIMUM_AUDIBLE_LOOP_SIZE;
+        }
+
+        if (pos != -1 && !even(pos)) {
+            pos--;
+        }
+
+        m_iLoopStartSample = pos;
         m_pCOLoopStartPosition->set(m_iLoopStartSample);
 
         // Reset the loop out position if it is before the loop in so that loops
@@ -279,29 +311,52 @@ void LoopingControl::slotLoopIn(double val) {
             m_iLoopEndSample = -1;
             m_pCOLoopEndPosition->set(kNoTrigger);
         }
+//         qDebug() << "set loop_in to " << m_iLoopStartSample;
     }
 }
 
 void LoopingControl::slotLoopOut(double val) {
     if (val) {
-        int pos = m_pQuantizeEnabled->get() ? m_pNextBeat->get() : m_iCurrentSample;
+        int pos =
+                (m_pQuantizeEnabled->get() > 0.0 && m_pClosestBeat->get() != -1) ?
+                static_cast<int>(floorf(m_pClosestBeat->get())) : m_iCurrentSample;
+
         // If the user is trying to set a loop-out before the loop in or without
         // having a loop-in, then ignore it.
         if (m_iLoopStartSample == -1 || pos < m_iLoopStartSample) {
             return;
         }
 
+        // If the loop-in and out points are set so close that the loop would be
+        //  inaudible (which can happen easily with quantize-to-beat enabled,)
+        //  use the smallest pre-defined beatloop instead (when possible)
+        if (pos - m_iLoopStartSample < MINIMUM_AUDIBLE_LOOP_SIZE) {
+            pos = m_iLoopStartSample;
+            if (m_pQuantizeEnabled->get() > 0.0) {
+                // 1 would have just returned loop_in, so give 2 to get the beat
+                // following loop_in
+                int nextbeat = m_pBeats->findNthBeat(m_iLoopStartSample, 2);
+                pos += (nextbeat - pos) * s_dBeatSizes[0];
+            }
+            else pos += MINIMUM_AUDIBLE_LOOP_SIZE;
+        }
+
+        if (pos != -1 && !even(pos)) {
+            pos++;  // Increment to avoid shortening too-short loops
+        }
+
         clearActiveBeatLoop();
 
-        //set loop out position and start looping
+        //set loop out position
         m_iLoopEndSample = pos;
         m_pCOLoopEndPosition->set(m_iLoopEndSample);
 
+        // start looping
         if (m_iLoopStartSample != -1 &&
             m_iLoopEndSample != -1) {
             setLoopingEnabled(true);
         }
-        //qDebug() << "set loop_out to " << m_iLoopStartSample;
+//         qDebug() << "set loop_out to " << m_iLoopEndSample;
     }
 }
 
@@ -335,6 +390,7 @@ void LoopingControl::slotLoopStartPos(double pos) {
     }
 
     m_iLoopStartSample = newpos;
+    m_pCOLoopStartPosition->set(newpos);
 
     if (m_iLoopEndSample != -1 &&
         m_iLoopEndSample < m_iLoopStartSample) {
@@ -346,7 +402,6 @@ void LoopingControl::slotLoopStartPos(double pos) {
 
 void LoopingControl::slotLoopEndPos(double pos) {
     int newpos = pos;
-
     if (newpos != -1 && !even(newpos)) {
         newpos--;
     }
@@ -355,6 +410,7 @@ void LoopingControl::slotLoopEndPos(double pos) {
     // start point (but not -1).
     if (m_iLoopStartSample == -1 ||
         (newpos != -1 && newpos < m_iLoopStartSample)) {
+        m_pCOLoopEndPosition->set(m_iLoopEndSample);
         return;
     }
 
@@ -364,6 +420,7 @@ void LoopingControl::slotLoopEndPos(double pos) {
         setLoopingEnabled(false);
     }
     m_iLoopEndSample = newpos;
+    m_pCOLoopEndPosition->set(newpos);
 }
 
 void LoopingControl::notifySeek(double dNewPlaypos) {
@@ -430,7 +487,8 @@ void LoopingControl::slotBeatLoopActivate(BeatLoopingControl* pBeatLoopControl) 
 
     // Maintain the current start point if there is an active beat loop and we
     // are currently looping
-    slotBeatLoop(pBeatLoopControl->getSize(), beatLoopAlreadyActive && m_bLoopingEnabled);
+    slotBeatLoop(pBeatLoopControl->getSize(),
+                 beatLoopAlreadyActive && m_bLoopingEnabled);
 }
 
 void LoopingControl::slotBeatLoopDeactivate(BeatLoopingControl* pBeatLoopControl) {
@@ -456,49 +514,49 @@ void LoopingControl::slotBeatLoop(double beats, bool keepStartPoint)
     }
 
     // For now we do not handle negative beatloops.
-    if (beats < 0)
+    if (beats < 0) {
         return;
+    }
 
-    // For positive numbers we start from the beat before us and create the loop
-    // around X beats from there.
+    // For positive numbers we start from the current position/closest beat and
+    // create the loop around X beats from there.
     if (beats > 0) {
-        int fullbeats = (int)floorf(beats);
-        double fracbeats = beats - (double)fullbeats;
-
-        // loop_in is set to the previous beat. If we are sitting exactly on a
-        // beat then loop_in is that beat.
         if (keepStartPoint) {
             loop_in = m_iLoopStartSample;
         } else {
-            loop_in = m_pQuantizeEnabled->get() > 0.0 ?
-                    m_pBeats->findNthBeat(m_iCurrentSample, -1) :
-                    floorf(getCurrentSample());
+            // loop_in is set to the closest beat if quantize is on
+            double currentClosestBeat =
+                    floorf(m_pBeats->findClosestBeat(getCurrentSample()));
+            loop_in = (m_pQuantizeEnabled->get() > 0.0 && currentClosestBeat != -1) ?
+                    currentClosestBeat : floorf(getCurrentSample());
             if (!even(loop_in)) {
                 loop_in--;
             }
         }
 
-        int loop_out_next = -1;
+        int fullbeats = static_cast<int>(floorf(beats));
+        double fracbeats = beats - static_cast<double>(fullbeats);
+
+        // Now we need to calculate the length of the beatloop. We do this by
+        // taking the current beat and the fullbeats'th beat and measuring the
+        // distance between them.
+        loop_out = loop_in;
 
         if (fullbeats > 0) {
-            // 1 would have just returned loop_in, so we give 1+fullbeats to get
-            // the fullbeats'th next beat.
-            loop_out = m_pBeats->findNthBeat(loop_in, 1+fullbeats);
-            // And we want the beat after loop_out, 1 would just return
-            // loop_out.
-            loop_out_next = m_pBeats->findNthBeat(loop_out, 2);
-        } else {
-            loop_out = loop_in;
-            // 1 would have just returned loop_in, so give 2 to get the beat
-            // following loop_in
-            loop_out_next = m_pBeats->findNthBeat(loop_in, 2);
+            // Add the length between this beat and the fullbeats'th beat to the
+            // loop_out position;
+            double this_beat = m_pBeats->findNthBeat(loop_in, 1);
+            double nth_beat = m_pBeats->findNthBeat(loop_in, 1 + fullbeats);
+            loop_out += (nth_beat - this_beat);
         }
 
-        // qDebug() << m_iCurrentSample << "beats:" << beats << "fullbeats:" << fullbeats
-        //          << "fracbeats:" << fracbeats << "loop_in" << loop_in << "loop_out_next:" << loop_out_next
-        //          << "loop_out:" << loop_out;
-
-        loop_out += (loop_out_next - loop_out) * fracbeats;
+        if (fracbeats > 0) {
+            // Add the fraction of the beat following the current loop_out
+            // position to loop out.
+            double loop_out_beat = m_pBeats->findNthBeat(loop_out, 1);
+            double loop_out_next_beat = m_pBeats->findNthBeat(loop_out, 2);
+            loop_out += (loop_out_next_beat - loop_out_beat) * fracbeats;
+        }
     }
 
     if ((loop_in == -1) || ( loop_out == -1))
@@ -509,15 +567,16 @@ void LoopingControl::slotBeatLoop(double beats, bool keepStartPoint)
     if (!even(loop_out))
         loop_out--;
 
-    if ( loop_in == loop_out ) {
-        if ((loop_out+2) > samples)
+    if (loop_in == loop_out) {
+        if ((loop_out+2) > samples) {
             loop_in -= 2;
-        else
+        } else {
             loop_out += 2;
-    }
-    // Do not allow beat loops to go beyond the end of the track
-    else if (loop_out > samples)
+        }
+    } else if (loop_out > samples) {
+        // Do not allow beat loops to go beyond the end of the track
         loop_out = samples;
+    }
 
     m_iLoopStartSample = loop_in;
     m_pCOLoopStartPosition->set(loop_in);
@@ -528,7 +587,8 @@ void LoopingControl::slotBeatLoop(double beats, bool keepStartPoint)
 
 BeatLoopingControl::BeatLoopingControl(const char* pGroup, double size)
         : m_dBeatLoopSize(size) {
-    m_pPBActivateBeatLoop = new ControlPushButton(keyForControl(pGroup, "beatloop", size));
+    m_pPBActivateBeatLoop = new ControlPushButton(
+        keyForControl(pGroup, "beatloop", size));
     m_pPBActivateBeatLoop->setToggleButton(true);
     m_pPBActivateBeatLoop->setStates(2);
     connect(m_pPBActivateBeatLoop, SIGNAL(valueChanged(double)),
@@ -556,10 +616,11 @@ void BeatLoopingControl::slotBeatLoopActivate(double v) {
     }
 }
 
-ConfigKey BeatLoopingControl::keyForControl(const char* pGroup, QString ctrlName, double num) {
+ConfigKey BeatLoopingControl::keyForControl(const char* pGroup,
+                                            QString ctrlName, double num) {
     ConfigKey key;
     key.group = pGroup;
-    key.item = QString("%1_%2").arg(ctrlName).arg(num);
+    key.item = QString("%1_%2").arg(ctrlName, QString::number(num));
     return key;
 }
 

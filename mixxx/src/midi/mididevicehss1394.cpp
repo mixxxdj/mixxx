@@ -3,7 +3,7 @@
   * @author Sean M. Pappalardo	spappalardo@mixxx.org
   * @date Thu Feb 25 2010
   * @brief HSS1394-based MIDI backend
-  * 
+  *
   * MidiDeviceHss1394 is a class representing a physical HSS1394 device.
   * (HSS1394 is simply a way to send MIDI messages at high speed over
   * IEEE1394 (FireWire))
@@ -36,7 +36,7 @@ DeviceChannelListener::DeviceChannelListener(int id, QString name, MidiDevice* m
 }
 
 void DeviceChannelListener::Process(const hss1394::uint8 *pBuffer, hss1394::uint uBufferSize) {
-    // Called when data has arrived. 
+    // Called when data has arrived.
 	//! This call will occur inside a separate thread.
 
     unsigned int i = 0;
@@ -81,17 +81,17 @@ void DeviceChannelListener::Reconnected() {
 
 QMutex MidiDeviceHss1394::m_sHSSLock;   // HSS1394 is not thread-safe
 
-MidiDeviceHss1394::MidiDeviceHss1394(MidiMapping* mapping, 
-                                        const hss1394::TNodeInfo deviceInfo, 
+MidiDeviceHss1394::MidiDeviceHss1394(MidiMapping* mapping,
+                                        const hss1394::TNodeInfo deviceInfo,
                                         int deviceIndex)
-                                        : MidiDevice(mapping) 
+                                        : MidiDevice(mapping)
 {
     m_deviceInfo = deviceInfo;
     m_iDeviceIndex = deviceIndex;
-    
+
     //Note: We prepend the input stream's index to the device's name to prevent duplicate devices from causing mayhem.
-    m_strDeviceName = QString("H%1. %2").arg(QString::number(m_iDeviceIndex)).arg(QString(deviceInfo.sName.c_str()));
-    
+    m_strDeviceName = QString("H%1. %2").arg(QString::number(m_iDeviceIndex), QString(deviceInfo.sName.c_str()));
+
     // All HSS1394 devices are full-duplex
     m_bIsInputDevice = true;
     m_bIsOutputDevice = true;
@@ -114,9 +114,9 @@ int MidiDeviceHss1394::open()
     }
 
     setReceiveInhibit(false);
-    
+
     startup();
-    
+
     if (m_strDeviceName == MIXXX_HSS1394_NO_DEVICE_STRING)
         return -1;
 
@@ -163,14 +163,14 @@ int MidiDeviceHss1394::open()
 }
 
 int MidiDeviceHss1394::close()
-{   
+{
     setReceiveInhibit(true);    // Prevent deadlock
 
     if (!m_bIsOpen) {
         qDebug() << "HSS1394 device" << m_strDeviceName << "already closed";
         return -1;
     }
-    
+
     shutdown();
 
     //shutdown() locks so we must lock after it.
@@ -188,39 +188,37 @@ int MidiDeviceHss1394::close()
         m_pChannelListener = NULL;
 	}
     m_sHSSLock.unlock();
-    
+
     m_bIsOpen = false;
-            
+
     return 0;
 }
 
-void MidiDeviceHss1394::sendShortMsg(unsigned int word) 
-{
+void MidiDeviceHss1394::sendShortMsg(unsigned int word) {
     QMutexLocker Locker(&m_mutex);
 
-	unsigned char data[2];
-	data[0] = word & 0xFF;
+    unsigned char data[2];
+    data[0] = word & 0xFF;
     data[1] = (word >> 8) & 0xFF;
     data[2] = (word >> 16) & 0xFF;
 
-    QString message = QString("%1 %2 %3")
-                        .arg(data[0], 2, 16, QChar('0'))
-                        .arg(data[1], 2, 16, QChar('0'))
-                        .arg(data[2], 2, 16, QChar('0'));
+    QString message = QString("%1 %2 %3").arg(
+        QString("%1").arg(data[0], 2, 16, QChar('0')),
+        QString("%1").arg(data[1], 2, 16, QChar('0')),
+        QString("%1").arg(data[2], 2, 16, QChar('0')));
 
     m_sHSSLock.lock();
-    int bytesSent = m_pChannel->SendChannelBytes(data,3);
+    int bytesSent = m_pChannel->SendChannelBytes(data, 3);
 
     //if (bytesSent != 3) {
     //    qDebug()<<"ERROR: Sent" << bytesSent << "of 3 bytes:" << message;
     //    //m_pChannel->Flush();
     //}
     m_sHSSLock.unlock();
-
 }
 
 // The sysex data must already contain the start byte 0xf0 and the end byte 0xf7.
-void MidiDeviceHss1394::sendSysexMsg(unsigned char data[], unsigned int length) 
+void MidiDeviceHss1394::sendSysexMsg(unsigned char data[], unsigned int length)
 {
     QMutexLocker Locker(&m_mutex);
 
