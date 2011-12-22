@@ -273,6 +273,9 @@ void LoopingControl::hintReader(QList<Hint>& hintList) {
 }
 
 void LoopingControl::slotLoopIn(double val) {
+    if (!m_pTrack) {
+        return;
+    }
     if (val) {
         clearActiveBeatLoop();
 
@@ -288,7 +291,7 @@ void LoopingControl::slotLoopIn(double val) {
         if (m_bLoopingEnabled &&
             (m_iLoopEndSample - pos) < MINIMUM_AUDIBLE_LOOP_SIZE) {
             pos = m_iLoopEndSample;
-            if (m_pQuantizeEnabled->get() > 0.0) {
+            if (m_pQuantizeEnabled->get() > 0.0 && m_pBeats) {
                 // 1 would have just returned loop_in, so give 2 to get the beat
                 // following loop_in
                 int nextbeat = m_pBeats->findNthBeat(pos, 2);
@@ -316,6 +319,9 @@ void LoopingControl::slotLoopIn(double val) {
 }
 
 void LoopingControl::slotLoopOut(double val) {
+    if (!m_pTrack) {
+        return;
+    }
     if (val) {
         int pos =
                 (m_pQuantizeEnabled->get() > 0.0 && m_pClosestBeat->get() != -1) ?
@@ -332,13 +338,14 @@ void LoopingControl::slotLoopOut(double val) {
         //  use the smallest pre-defined beatloop instead (when possible)
         if (pos - m_iLoopStartSample < MINIMUM_AUDIBLE_LOOP_SIZE) {
             pos = m_iLoopStartSample;
-            if (m_pQuantizeEnabled->get() > 0.0) {
+            if (m_pQuantizeEnabled->get() > 0.0 && m_pBeats) {
                 // 1 would have just returned loop_in, so give 2 to get the beat
                 // following loop_in
                 int nextbeat = m_pBeats->findNthBeat(m_iLoopStartSample, 2);
                 pos += (nextbeat - pos) * s_dBeatSizes[0];
+            } else {
+                pos += MINIMUM_AUDIBLE_LOOP_SIZE;
             }
-            else pos += MINIMUM_AUDIBLE_LOOP_SIZE;
         }
 
         if (pos != -1 && !even(pos)) {
@@ -361,6 +368,9 @@ void LoopingControl::slotLoopOut(double val) {
 }
 
 void LoopingControl::slotReloopExit(double val) {
+    if (!m_pTrack) {
+        return;
+    }
     if (val) {
         // If we're looping, stop looping
         if (m_bLoopingEnabled) {
@@ -378,6 +388,10 @@ void LoopingControl::slotReloopExit(double val) {
 }
 
 void LoopingControl::slotLoopStartPos(double pos) {
+    if (!m_pTrack) {
+        return;
+    }
+
     int newpos = pos;
     if (newpos != -1 && !even(newpos)) {
         newpos--;
@@ -400,8 +414,11 @@ void LoopingControl::slotLoopStartPos(double pos) {
 }
 
 void LoopingControl::slotLoopEndPos(double pos) {
-    int newpos = pos;
+    if (!m_pTrack) {
+        return;
+    }
 
+    int newpos = pos;
     if (newpos != -1 && !even(newpos)) {
         newpos--;
     }
@@ -476,6 +493,9 @@ void LoopingControl::slotUpdatedTrackBeats()
 }
 
 void LoopingControl::slotBeatLoopActivate(BeatLoopingControl* pBeatLoopControl) {
+    if (!m_pTrack) {
+        return;
+    }
     bool beatLoopAlreadyActive = m_pActiveBeatLoop != NULL;
     if (beatLoopAlreadyActive && m_pActiveBeatLoop != pBeatLoopControl) {
         m_pActiveBeatLoop->deactivate();
@@ -501,6 +521,9 @@ void LoopingControl::clearActiveBeatLoop() {
 }
 
 void LoopingControl::slotBeatLoop(double beats, bool keepStartPoint) {
+    if (!m_pTrack) {
+        return;
+    }
     // give loop_in and loop_out defaults so we can detect problems
     int loop_in = -1;
     int loop_out = -1;
