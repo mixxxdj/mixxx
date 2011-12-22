@@ -3360,8 +3360,7 @@ Click OK to exit.</source>
         </message>
         <message>
             <source>Simple</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Lihtne</translation>
         </message>
         <message>
             <source>Mixxx Detected a WVGA Screen</source>
@@ -3380,8 +3379,7 @@ Click OK to exit.</source>
         </message>
         <message>
             <source>Preferences</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Eelistused</translation>
         </message>
         <message>
             <source>Crossfader</source>
@@ -3390,8 +3388,7 @@ Click OK to exit.</source>
         </message>
         <message>
             <source>Master volume</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Helitugevus</translation>
         </message>
         <message>
             <source>Master balance</source>
@@ -3400,8 +3397,7 @@ Click OK to exit.</source>
         </message>
         <message>
             <source>Headphones volume</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Paakomplekti helitugevus</translation>
         </message>
         <message>
             <source>Headphones mix (pre/main)</source>
@@ -3578,16 +3574,14 @@ Click OK to exit.</source>
         <name>WSearchLineEdit</name>
         <message>
             <source>Search...</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Otsi...</translation>
         </message>
     </context>
     <context>
         <name>WTrackTableView</name>
         <message>
             <source>Add to Playlist</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Lisa esitusnimekirja</translation>
         </message>
         <message>
             <source>Add to Crate</source>
@@ -3601,13 +3595,11 @@ Click OK to exit.</source>
         </message>
         <message>
             <source>Remove</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Eemalda</translation>
         </message>
         <message>
             <source>Properties...</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Omadused...</translation>
         </message>
         <message>
             <source>Add to Auto DJ Queue</source>

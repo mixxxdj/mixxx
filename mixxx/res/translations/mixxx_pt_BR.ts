@@ -727,8 +727,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Static EQs (for slower CPUs)</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>EQs estático (Para CPUs Lentas)</translation>
         </message>
         <message>
             <source>High Shelf EQ</source>

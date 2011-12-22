@@ -64,7 +64,7 @@
         </message>
         <message>
             <source>Track #</source>
-            <translation>Traccia #</translation>
+            <translation>Traccia n°</translation>
         </message>
         <message>
             <source>Date Added</source>
