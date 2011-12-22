@@ -18,7 +18,7 @@
 	the resulting work only under the same or similar license to this one.
 
 	CHANGELOG
-        v1.10.0.09	(22/12/2011)
+	v1.10.0.09	(22/12/2011)
 	* Update: Attach right-click of SYNC button to beatsync_tempo, lp:905800
 
 	v1.10.0.08	(14/12/2011)
@@ -1981,7 +1981,7 @@
 	**********************************************
 	-->
 	<PushButton>
-		<Tooltip>Syncronize tempo&#10;Attempts to automatically match the tempo of the track in this channel&#10;with tempo of the track in the other channel, based on the calculated BPM.&#10;</Tooltip>
+		<Tooltip>Syncronize&#10;Left-click: Syncs the tempo (BPM) and phase to that of the other track, &#10;if BPM is detected on both&#10;Right-click: Syncs the tempo (BPM) to that of the other track,&#10;if BPM is detected on both&#10;</Tooltip>
 		<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 		<NumberStates>1</NumberStates>
 		<State>
@@ -1995,14 +1995,14 @@
 			<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 			<ButtonState>LeftButton</ButtonState>
 		</Connection>
-                <Connection>
+		<Connection>
 			<ConfigKey>[Channel1],beatsync_tempo</ConfigKey>
 			<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 			<ButtonState>RightButton</ButtonState>
 		</Connection>
 	</PushButton>
 	<PushButton>
-		<Tooltip>Syncronize tempo&#10;Attempts to automatically match the tempo of the track in this channel&#10;with tempo of the track in the other channel, based on the calculated BPM.&#10;</Tooltip>
+		<Tooltip>Syncronize&#10;Left-click: Syncs the tempo (BPM) and phase to that of the other track, &#10;if BPM is detected on both&#10;Right-click: Syncs the tempo (BPM) to that of the other track,&#10;if BPM is detected on both&#10;</Tooltip>
 		<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 		<NumberStates>1</NumberStates>
 		<State>
@@ -2016,7 +2016,7 @@
 			<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 			<ButtonState>LeftButton</ButtonState>
 		</Connection>
-                <Connection>
+		<Connection>
 			<ConfigKey>[Channel2],beatsync_tempo</ConfigKey>
 			<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 			<ButtonState>RightButton</ButtonState>
