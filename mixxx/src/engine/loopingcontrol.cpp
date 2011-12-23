@@ -163,7 +163,13 @@ void LoopingControl::slotLoopHalve(double v) {
         if (m_pActiveBeatLoop != NULL) {
             int active_index = m_beatLoops.indexOf(m_pActiveBeatLoop);
             if (active_index - 1 >= 0) {
-                slotBeatLoopActivate(m_beatLoops[active_index - 1]);
+                if (m_bLoopingEnabled) {
+                    slotBeatLoopActivate(m_beatLoops[active_index - 1]);
+                } else {
+                    // Calling scale clears the active beatloop.
+                    slotLoopScale(0.5);
+                    m_pActiveBeatLoop = m_beatLoops[active_index - 1];
+                }
             }
         } else {
             slotLoopScale(0.5);
@@ -178,7 +184,13 @@ void LoopingControl::slotLoopDouble(double v) {
         if (m_pActiveBeatLoop != NULL) {
             int active_index = m_beatLoops.indexOf(m_pActiveBeatLoop);
             if (active_index + 1 < m_beatLoops.size()) {
-                slotBeatLoopActivate(m_beatLoops[active_index + 1]);
+                if (m_bLoopingEnabled) {
+                    slotBeatLoopActivate(m_beatLoops[active_index + 1]);
+                } else {
+                    // Calling scale clears the active beatloop.
+                    slotLoopScale(2.0);
+                    m_pActiveBeatLoop = m_beatLoops[active_index + 1];
+                }
             }
         } else {
             slotLoopScale(2.0);
