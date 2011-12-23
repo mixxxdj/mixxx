@@ -183,6 +183,9 @@ def build_app(target, source, env):
 
     strip = bool(env.get('STRIP',False))
 
+    otool_local_paths = env.get('OTOOL_LOCAL_PATHS', [])
+    otool_system_paths = env.get('OTOOL_SYSTEM_PATHS', [])
+
     "todo: expose the ability to override the list of System dirs"
     #ugh, I really don't like this... I wish I could package it up nicer. I could use a Builder but then I would have to pass in to the builder installed_bin which seems backwards since
 
@@ -233,7 +236,9 @@ def build_app(target, source, env):
     #XXX rename locals => embeds
     #precache the list of names of libs we are using so we can figure out if a lib is local or not (and therefore a ref to it needs to be updated) #XXX it seems kind of wrong to only look at the basename (even if, by the nature of libraries, that must be enough) but there is no easy way to compute the abspath
     locals = {} # [ref] => (absolute_path, embedded_path) (ref is the original reference from looking at otool -L; we use this to decide if two libs are the same)
-    for ref, path in otool.embed_dependencies(str(binary)): #XXX it would be handy if embed_dependencies returned the otool list for each ref it reads..
+
+    #XXX it would be handy if embed_dependencies returned the otool list for each ref it reads..
+    for ref, path in otool.embed_dependencies(str(binary), LOCAL=otool_local_paths, SYSTEM=otool_system_paths):
         locals[ref] = (path, embed_lib(path))
 
     plugins_l = [] #XXX bad name #list of tuples (source, embed) of plugins to stick under the plugins/ dir
@@ -249,7 +254,7 @@ def build_app(target, source, env):
     print "Scanning plugins for new dependencies:"
     for p, ep in plugins_l:
         print "Scanning plugin", p
-        for ref, path in otool.embed_dependencies(p):
+        for ref, path in otool.embed_dependencies(p, LOCAL=otool_local_paths, SYSTEM=otool_system_paths):
             if ref not in locals:
                 locals[ref] = path, embed_lib(path)
             else:
