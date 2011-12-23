@@ -5923,7 +5923,7 @@
 									<ConnectValueToWidget>false</ConnectValueToWidget>
 								</Connection>
 								<Connection>
-									<ConfigKey>[Channel1],hotcue_4_enabled</ConfigKey>
+									<ConfigKey>[Channel2],hotcue_4_enabled</ConfigKey>
 									<ConnectValueFromWidget>false</ConnectValueFromWidget>
 								</Connection>
 							</PushButton>
