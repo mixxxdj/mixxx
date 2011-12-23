@@ -277,7 +277,9 @@ if build.platform_is_osx and 'bundle' in COMMAND_LINE_TARGETS:
         if mixxx_osxlib_path:
                 otool_local_paths = [mixxx_osxlib_path,] + otool_local_paths
 
-        qtdir = env.get('QTDIR', None)
+        qtplugindir = SCons.ARGUMENTS.get('qtplugindir', None)
+        if not qtplugindir:
+                qtplugindir = '/Developer/Applications/Qt/plugins/'
 	bundle = env.App(
                 "Mixxx",
                 [mixxx_bin, '#res/osx/application.icns',
@@ -294,7 +296,7 @@ if build.platform_is_osx and 'bundle' in COMMAND_LINE_TARGETS:
                  File("#LICENSE")],
                 PLUGINS=plugins, ##XXX test what happens if we don't pass any plugins
                 #Qt plugins ((Qt *NEEDS* its plugins in specific locations or it refuses to find them, however this is clearly awkward to write out like this.. maybe))
-                QT_HACK = [(p_tgt_dir, os.path.join(qtdir, "plugins", p_tgt_dir, p)) for p_tgt_dir, p in qt_plugins], #sigh :(
+                QT_HACK = [(p_tgt_dir, os.path.join(qtplugindir, "plugins", p_tgt_dir, p)) for p_tgt_dir, p in qt_plugins], #sigh :(
                 STRIP=build.build_is_release,
                 APP_RESOURCES_MAP=resource_map,
                 IDENTIFIER="org.mixxx.mixxx",
