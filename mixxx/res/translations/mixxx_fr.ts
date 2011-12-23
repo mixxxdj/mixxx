@@ -267,16 +267,14 @@
             <translation>Échec lors du renommage du container</translation>
         </message>
         <message>
-            <source>Playlist Files (*.m3u *.pls)</source>
-            <translation>Listes de lecture (*.m3u *.pls)</translation>
+            <source>Playlist Files (*.m3u *.m3u8 *.pls)</source>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
-            <source>Export Playlist</source>
-            <translation>Exporter une liste de lecture</translation>
-        </message>
-        <message>
-            <source>M3U Playlist (*.m3u);;PLS Playlist (*.pls)</source>
-            <translation>Liste de lecture M3U (*.m3u);; Liste de lecture PLS (*.pls)</translation>
+            <source>M3U Playlist (*.m3u);;M3U8 Playlist (*.m3u8);;PLS Playlist (*.pls)</source>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>A crate cannot have a blank name.</source>
@@ -736,8 +734,9 @@ p, li { white-space: pre-wrap; }
             <translation>16 Hz</translation>
         </message>
         <message>
-            <source>2.045 kHz</source>
-            <translation>2.045 kHz</translation>
+            <source>1.014 kHz</source>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>20.05 kHz</source>
@@ -978,10 +977,6 @@ p, li { white-space: pre-wrap; }
         <message>
             <source>Powered by xwax</source>
             <translation>Propulsé par xwax</translation>
-        </message>
-        <message>
-            <source>Apply</source>
-            <translation>Appliquer</translation>
         </message>
         <message>
             <source>&lt;b&gt;This version of Mixxx does not support vinyl control.&lt;/b&gt; &lt;br&gt; Please visit &lt;a href=&quot;http://mixxx.org&quot;&gt;Mixxx.org&lt;/a&gt; for more information.</source>
@@ -1715,12 +1710,14 @@ p, li { white-space: pre-wrap; }
             <translation>Gérer</translation>
         </message>
         <message>
-            <source>Recently Added</source>
-            <translation>Récemment ajouté</translation>
+            <source>New</source>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
-            <source>All Songs</source>
-            <translation>Toutes les chansons</translation>
+            <source>All</source>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Progress</source>
@@ -2046,6 +2043,11 @@ p, li { white-space: pre-wrap; }
     <context>
         <name>LibraryScannerDlg</name>
         <message>
+            <source>Library Scanner</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
             <source>It's taking Mixxx a minute to scan your music library, please wait...</source>
             <translation>Cela prend une minute à Mixxx pour analyser votre bibliothèque musicale, veuillez patienter…</translation>
         </message>
@@ -2364,6 +2366,11 @@ Ces informations ne seront pas utilisées  personnellement pour vous identifiez,
             <translation>Support &amp;Communautaire</translation>
         </message>
         <message>
+            <source>&amp;User Manual</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
             <source>Send Us &amp;Feedback</source>
             <translation>Envoyez nous vos &amp;remarques</translation>
         </message>
@@ -2389,7 +2396,8 @@ Ces informations ne seront pas utilisées  personnellement pour vous identifiez,
         </message>
         <message>
             <source>Enable live broadcasting</source>
-            <translation>activer la diffusion en direct</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Ctrl+L</source>
@@ -2515,7 +2523,8 @@ Marquer les repères de tempo audio par un click</translation>
         </message>
         <message>
             <source>Preferences</source>
-            <translation>Préférences</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Preferences
@@ -2531,6 +2540,17 @@ Playback and MIDI preferences</source>
 Get help with Mixxx</source>
             <translation>Assistance
 Trouver de l'aide avec Mixxx</translation>
+        </message>
+        <message>
+            <source>Read the Mixxx user manual.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Support
+Read the Mixxx user manual.</source>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Send feedback to the Mixxx team.</source>
@@ -2656,8 +2676,21 @@ Vérifier les choix de carte de son dans les préférences.</translation>
             <translation>Échec de l'exportation de liste de lecture</translation>
         </message>
         <message>
+            <source>File path contains characters, not allowed in m3u playlists.
+</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Export a m3u8 playlist instead!
+</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
             <source>Could not create file</source>
-            <translation>Impossible de créer le fichier</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
     </context>
     <context>
@@ -2699,7 +2732,8 @@ Vérifier les choix de carte de son dans les préférences.</translation>
         </message>
         <message>
             <source>Export Playlist</source>
-            <translation>Exporter une liste de lecture</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Playlists</source>
@@ -2738,12 +2772,14 @@ Vérifier les choix de carte de son dans les préférences.</translation>
             <translation>Échec pour renomer la liste de lecture</translation>
         </message>
         <message>
-            <source>Playlist Files (*.m3u *.pls)</source>
-            <translation>Listes de lecture (*.m3u *.pls)</translation>
+            <source>Playlist Files (*.m3u *.m3u8 *.pls)</source>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
-            <source>M3U Playlist (*.m3u);;PLS Playlist (*.pls)</source>
-            <translation>Liste de lecture M3U (*.m3u);; Liste de lecture PLS (*.pls)</translation>
+            <source>M3U Playlist (*.m3u);;M3U8 Playlist (*.m3u8);;PLS Playlist (*.pls)</source>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>A playlist by that name already exists.</source>
@@ -3075,6 +3111,21 @@ Cliquez sur OK pour sortir.</translation>
             <translation>touche Reloop/Sortie pour le lecteur %1</translation>
         </message>
         <message>
+            <source>Setup a loop over 4 beats for Player %1</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Halves the current loop's length for Player %1</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Doubles the current loop's length for Player %1</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
             <source>Hotcue 1 button for Player %1</source>
             <translation>touche Hotcue 1 pour le lecteur %1</translation>
         </message>
@@ -3107,6 +3158,76 @@ Cliquez sur OK pour sortir.</translation>
             <translation>touche de suppression hotcue 4 pour le lecteur %1</translation>
         </message>
         <message>
+            <source>Play button for Sampler %1</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Gain knob for Sampler %1</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Headphone listen button for Sampler %1</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>BPM tap button for Sampler %1</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Keylock button for Sampler %1</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Pitch control slider for Sampler %1</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Hotcue 1 button for Sampler %1</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Hotcue 2 button for Sampler %1</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Hotcue 3 button for Sampler %1</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Hotcue 4 button for Sampler %1</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Hotcue 1 delete button for Sampler %1</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Hotcue 2 delete button for Sampler %1</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Hotcue 3 delete button for Sampler %1</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Hotcue 4 delete button for Sampler %1</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
             <source>Switch to the next view (library, playlist..)</source>
             <translation>Basculer à la prochaine vue (librairie, playliste...)</translation>
         </message>
@@ -3129,6 +3250,31 @@ Cliquez sur OK pour sortir.</translation>
         <message>
             <source>Load selected track into Player %1</source>
             <translation>Charger la piste sélectionnée dans Lecteur %1</translation>
+        </message>
+        <message>
+            <source>Adjusts the wavelength of the flange effect</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Adjusts the intensity of the flange effect</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Adjusts the phase delay of the flange effect</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Microphone on/off</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Microphone volume</source>
+            <translation type="unfinished">
+            </translation>
         </message>
     </context>
     <context>
@@ -3175,6 +3321,11 @@ Cliquez sur OK pour sortir.</translation>
         <message>
             <source>Sampler %1</source>
             <translation>Echantillon %1</translation>
+        </message>
+        <message>
+            <source>Reloading track metadata on a loaded track may cause abrupt volume changes. Are you sure?</source>
+            <translation type="unfinished">
+            </translation>
         </message>
     </context>
     <context>
