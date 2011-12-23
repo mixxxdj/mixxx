@@ -279,7 +279,7 @@ if build.platform_is_osx and 'bundle' in COMMAND_LINE_TARGETS:
 
         qtplugindir = SCons.ARGUMENTS.get('qtplugindir', None)
         if not qtplugindir:
-                qtplugindir = '/Developer/Applications/Qt/plugins/'
+                qtplugindir = '/Developer/Applications/Qt/'
 	bundle = env.App(
                 "Mixxx",
                 [mixxx_bin, '#res/osx/application.icns',
