@@ -106,6 +106,9 @@ def build_dmg(target, source, env):
             print "ERRRR", e
             raise Exception("Error copying %s: " % (a,), e)
 
+    # Symlink Applications to /Applications
+    os.system('ln -s /Applications %s' % os.path.join(dmg, 'Applications'))
+
     if env['ICON']:
         env['ICON'] = File(str(env['ICON'])) #make sure the given file is an icon; scons does this wrapping for us on sources and targets but not on environment vars (obviously, that would be stupid).
         #XXX this doesn't seem to work, at least not on MacOS 10.5
