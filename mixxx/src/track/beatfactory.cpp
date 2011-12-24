@@ -21,11 +21,14 @@ BeatsPointer BeatFactory::loadBeatsFromByteArray(TrackPointer pTrack,
         pMatrix->setParent(pTrack.data());
         qDebug() << "Successfully deserialized BeatMatrix";
         return BeatsPointer(pMatrix, &BeatFactory::deleteBeats);
-    } else if (beatsVersion == "BeatMatrix-1.0") {
+    } else if (beatsVersion.contains("BeatMap-1.0")) {
         BeatMap* pMap = new BeatMap(pTrack, beatsSerialized);
+        QString subver = beatsVersion.remove("BeatMap-1.0_");
+        pMap->setSubVersion(subver);
         pMap->moveToThread(pTrack->thread());
         pMap->setParent(pTrack.data());
         qDebug() << "Successfully deserialized BeatMap";
+        return BeatsPointer(pMap, &BeatFactory::deleteBeats);
     }
     qDebug() << "BeatFactory::loadBeatsFromByteArray could not parse serialized beats.";
     return BeatsPointer();
@@ -37,9 +40,9 @@ BeatsPointer BeatFactory::makeBeatGrid(TrackPointer pTrack, double dBpm, double 
     return BeatsPointer(pGrid, &BeatFactory::deleteBeats);
 }
 
-BeatsPointer BeatFactory::makeBeatMap (TrackPointer pTrack, QVector <double> beats) {
+BeatsPointer BeatFactory::makeBeatMap (TrackPointer pTrack, QVector <double> beats, QString subVer) {
     BeatMap* pBeatMap = new BeatMap(pTrack);
-    pBeatMap->createFromVector(beats);
+    pBeatMap->createFromVector(beats, subVer);
     return BeatsPointer(pBeatMap,&BeatFactory::deleteBeats);
 
 }
