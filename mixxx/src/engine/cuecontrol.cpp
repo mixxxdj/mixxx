@@ -681,7 +681,7 @@ void CueControl::cueCDJ(double v) {
 
 void CueControl::cuePlay(double v) {
     Q_UNUSED(v);
-    
+
     QMutexLocker lock(&m_mutex);
 
     if (m_bPreviewing) {
@@ -711,7 +711,7 @@ ConfigKey HotcueControl::keyForControl(int hotcue, QString name) {
     ConfigKey key;
     key.group = m_pGroup;
     // Add one to hotcue so that we dont have a hotcue_0
-    key.item = QString("hotcue_%1_%2").arg(hotcue+1).arg(name);
+    key.item = QString("hotcue_%1_%2").arg(QString::number(hotcue+1), name);
     return key;
 }
 

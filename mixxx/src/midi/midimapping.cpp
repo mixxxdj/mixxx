@@ -623,10 +623,8 @@ void MidiMapping::loadPreset(QDomElement root, bool forceLoad) {
                 if (midiMessage.getMidiStatusByte() == 0xE0) byte2 = "";
 
                 QString errorLog = QString("MIDI script function \"%1\" not found. "
-                                    "(Mapped to MIDI message %2 %3)")
-                                    .arg(mixxxControl.getControlObjectValue())
-                                    .arg(status)
-                                    .arg(byte2);
+                                           "(Mapped to MIDI message %2 %3)")
+                        .arg(mixxxControl.getControlObjectValue(), status, byte2);
 
                 if (m_pOutputMidiDevice != NULL
                     && m_pOutputMidiDevice->midiDebugging()) {
@@ -642,8 +640,7 @@ void MidiMapping::loadPreset(QDomElement root, bool forceLoad) {
                                     .arg(mixxxControl.getControlObjectValue()));
                     props->setInfoText(QString(tr("The MIDI message %1 %2 will not be bound."
                                     "\n(Click Show Details for hints.)"))
-                                    .arg(status)
-                                    .arg(byte2));
+                                       .arg(status, byte2));
                     QString detailsText = QString(tr("* Check to see that the "
                         "function name is spelled correctly in the mapping "
                         "file (.xml) and script file (.js)\n"));
@@ -733,7 +730,7 @@ void MidiMapping::applyPreset() {
         scriptFunctions = m_pScriptEngine->getScriptFunctions();
     }
     if (scriptFunctions.isEmpty()) loadScriptCode();
-    
+
     initializeScripts();
 #endif
 
