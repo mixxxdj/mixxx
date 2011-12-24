@@ -28,34 +28,50 @@ AnalyserBeats::~AnalyserBeats(){
 }
 
 void AnalyserBeats::initialise(TrackPointer tio, int sampleRate, int totalSamples) {
+    Q_UNUSED(sampleRate);
     m_iMinBpm = m_pConfigAVT->getValueString(ConfigKey("[BPM]","BPMRangeStart")).toInt();
     m_iMaxBpm = m_pConfigAVT->getValueString(ConfigKey("[BPM]","BPMRangeEnd")).toInt();
     int allow_above =m_pConfigAVT->getValueString(ConfigKey("[BPM]","BPMAboveRangeEnabled")).toInt();
     if(allow_above){
         m_iMinBpm = 0;
-        m_iMaxBpm = 999;
+        m_iMaxBpm = 9999;
     }
     QString library = m_pConfigAVT->getValueString(ConfigKey("[Vamp]","AnalyserBeatLibrary"));
     QString pluginID = m_pConfigAVT->getValueString(ConfigKey("[Vamp]","AnalyserBeatPluginID"));
 
+    m_sSubver = "";
     m_iSampleRate = tio->getSampleRate();
     m_iTotalSamples = totalSamples;
     m_bPass = false;
-    int i = m_pConfigAVT->getValueString(ConfigKey("[Vamp]","AnalyserBeatEnabled")).toInt();
-    if(i)
-        m_bPass = true;
+    m_bPass = static_cast<bool> (m_pConfigAVT->getValueString(ConfigKey("[Vamp]","AnalyserBeatEnabled")).toInt());
     qDebug()<<"Beat calculation started";
     qDebug()<<"Beat calculation uses "<< pluginID;
+    QString correction;
+    m_bDisableBeatCorrection = !static_cast<bool>(m_pConfigAVT->
+                                                   getValueString(ConfigKey("[Vamp]","AnalyserBeatFixedTempo")).toInt());
 
+    if(!m_bDisableBeatCorrection){
+    m_bEnableOffsetCorrection = static_cast<bool> (m_pConfigAVT->
+                                                   getValueString(ConfigKey("[Vamp]","AnalyserBeatOffset")).toInt());
+    if(m_bEnableOffsetCorrection)
+        correction = "offset";
+    else
+        correction = "const";
+    }
+    else
+        correction = "none";
+    QString pluginname = pluginID;
+    pluginname.replace(QString(":"),QString("_output="));
+    m_sSubver.append(QString("_plugin=%1_beats_correction=%2").arg(pluginname,correction));
     BeatsPointer pBeats = tio->getBeats();
-    //BeatsPointer pBeats = tio->getBeats();
-    //if(pBeats)
-    //    m_bPass = !(pBeats->getVersion()).contains("BeatMatrix");
+    if(pBeats)
+        m_bPass = ! pBeats->getVersion().contains(QString("_plugin=%1_beats_correction=%2").arg(pluginname,correction)) ;
     if(!m_bPass){
         qDebug()<<"Beat calculation will not start";
         return;
     }
       //qDebug() << "Init Vamp Beat tracker with samplerate " << tio->getSampleRate() << " " << sampleRate;
+      //qDebug()<<"SubVersion is "<<m_sSubver;
       mvamp = new VampAnalyser();
       m_bPass = mvamp->Init(library, pluginID, m_iSampleRate, totalSamples);
 }
@@ -78,13 +94,12 @@ void AnalyserBeats::finalise(TrackPointer tio) {
    m_bPass = mvamp->End(); // This will ensure that beattracking succeeds in a beat list
    beats = mvamp->GetInitFramesVector();
 
-   bool DisableBpmCorrection = true;
-   int i = m_pConfigAVT->getValueString(ConfigKey("[Vamp]","AnalyserBeatFixedTempo")).toInt();
-   if(i)
-       DisableBpmCorrection = false;
+
+
 
    if(!beats.isEmpty()){
-       BeatsPointer pBeats = BeatFactory::makeBeatMap(tio, correctedBeats(beats,DisableBpmCorrection));
+
+       BeatsPointer pBeats = BeatFactory::makeBeatMap(tio, correctedBeats(beats,m_bDisableBeatCorrection),m_sSubver);
        tio->setBeats(pBeats);
        tio->setBpm(pBeats->getBpm());
    }
@@ -93,6 +108,7 @@ void AnalyserBeats::finalise(TrackPointer tio) {
    }
 
     beats.clear();
+    m_sSubver="";
     if(m_bPass)
         qDebug()<<"Beat Calculation complete";
     else
@@ -128,10 +144,10 @@ QVector<double> AnalyserBeats::correctedBeats (QVector<double> rawbeats, bool by
      */
 
     double offset = 0;
-    bool EnableOffsetCorrection = static_cast<bool> (m_pConfigAVT->
-                                                        getValueString(ConfigKey("[Vamp]","AnalyserBeatOffset")).toInt());
-    if(EnableOffsetCorrection){
+
+    if(m_bEnableOffsetCorrection){
         qDebug()<<"Calculating best offset";
+
         offset = BeatTools::calculateOffset(rawbeats, corrbeats, m_iSampleRate, m_iMinBpm,  m_iMaxBpm);
     }
 
