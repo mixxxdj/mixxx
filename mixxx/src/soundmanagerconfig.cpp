@@ -30,10 +30,9 @@ SoundManagerConfig::SoundManagerConfig()
     : m_api("None")
     , m_sampleRate(kDefaultSampleRate)
     , m_latency(kDefaultLatency) {
-    m_configFile = QFileInfo(QString("%1/%2/%3")
-            .arg(QDir::homePath())
-            .arg(SETTINGS_PATH)
-            .arg(SOUNDMANAGERCONFIG_FILENAME));
+    m_configFile = QFileInfo(
+        QString("%1/%2/%3").arg(QDir::homePath(), SETTINGS_PATH,
+                                SOUNDMANAGERCONFIG_FILENAME));
 }
 
 SoundManagerConfig::~SoundManagerConfig() {

@@ -64,7 +64,7 @@ void MidiDeviceManager::saveMappings(bool onlyActive) {
         int i=1;
         while (filenames.contains(filename)) {
             i++;
-            filename = QString("%1--%2").arg(ofilename).arg(i);
+            filename = QString("%1--%2").arg(ofilename, QString::number(i));
         }
 
         filenames.append(filename);
@@ -139,7 +139,7 @@ int MidiDeviceManager::setupDevices()
         int i=1;
         while (filenames.contains(filename)) {
             i++;
-            filename = QString("%1--%2").arg(ofilename).arg(i);
+            filename = QString("%1--%2").arg(ofilename, QString::number(i));
         }
 
         filenames.append(filename);

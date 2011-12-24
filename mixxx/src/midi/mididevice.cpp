@@ -176,12 +176,14 @@ void MidiDevice::disableMidiLearn() {
 
 void MidiDevice::receive(MidiStatusByte status, char channel, char control, char value)
 {
-    if (midiDebugging()) qDebug() << QString("MIDI status 0x%1 (ch %2, opcode 0x%3), ctrl 0x%4, val 0x%5")
-      .arg(QString::number(status, 16).toUpper())
-      .arg(QString::number(channel+1, 10))
-      .arg(QString::number((status & 255)>>4, 16).toUpper())
-      .arg(QString::number(control, 16).toUpper().rightJustified(2,'0'))
-      .arg(QString::number(value, 16).toUpper().rightJustified(2,'0'));
+    if (midiDebugging()) {
+        qDebug() << QString("MIDI status 0x%1 (ch %2, opcode 0x%3), ctrl 0x%4, val 0x%5")
+                .arg(QString::number(status, 16).toUpper(),
+                     QString::number(channel+1, 10),
+                     QString::number((status & 255)>>4, 16).toUpper(),
+                     QString::number(control, 16).toUpper().rightJustified(2,'0'),
+                     QString::number(value, 16).toUpper().rightJustified(2,'0'));
+    }
 
     // some status bytes can have the channel encoded in them. Take out the
     // channel when necessary. We do this because later bits of this
@@ -309,10 +311,10 @@ void MidiDevice::receive(const unsigned char data[], unsigned int length) {
     QMutexLocker locker(&m_mutex); //Lots of returns in this function. Keeps things simple.
 
     QString message = m_strDeviceName+": [";
-    for(uint i=0; i<length; i++) {
-        message += QString("%1%2")
-                    .arg(data[i], 2, 16, QChar('0')).toUpper()
-                    .arg((i<(length-1))?' ':']');
+    for (uint i = 0; i < length; ++i) {
+        message += QString("%1%2").arg(
+            QString("%1").arg(data[i], 2, 16, QChar('0')).toUpper(),
+            QString("%1").arg((i < (length-1)) ? ' ' : ']'));
     }
 
     if (midiDebugging()) qDebug()<< message;

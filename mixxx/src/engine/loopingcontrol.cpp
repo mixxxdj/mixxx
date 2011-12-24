@@ -390,6 +390,7 @@ void LoopingControl::slotLoopStartPos(double pos) {
     }
 
     m_iLoopStartSample = newpos;
+    m_pCOLoopStartPosition->set(newpos);
 
     if (m_iLoopEndSample != -1 &&
         m_iLoopEndSample < m_iLoopStartSample) {
@@ -401,7 +402,6 @@ void LoopingControl::slotLoopStartPos(double pos) {
 
 void LoopingControl::slotLoopEndPos(double pos) {
     int newpos = pos;
-
     if (newpos != -1 && !even(newpos)) {
         newpos--;
     }
@@ -410,6 +410,7 @@ void LoopingControl::slotLoopEndPos(double pos) {
     // start point (but not -1).
     if (m_iLoopStartSample == -1 ||
         (newpos != -1 && newpos < m_iLoopStartSample)) {
+        m_pCOLoopEndPosition->set(m_iLoopEndSample);
         return;
     }
 
@@ -419,6 +420,7 @@ void LoopingControl::slotLoopEndPos(double pos) {
         setLoopingEnabled(false);
     }
     m_iLoopEndSample = newpos;
+    m_pCOLoopEndPosition->set(newpos);
 }
 
 void LoopingControl::notifySeek(double dNewPlaypos) {
@@ -618,7 +620,7 @@ ConfigKey BeatLoopingControl::keyForControl(const char* pGroup,
                                             QString ctrlName, double num) {
     ConfigKey key;
     key.group = pGroup;
-    key.item = QString("%1_%2").arg(ctrlName).arg(num);
+    key.item = QString("%1_%2").arg(ctrlName, QString::number(num));
     return key;
 }
 
