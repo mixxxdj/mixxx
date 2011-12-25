@@ -76,26 +76,34 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
 {
     m_pApp = a;
 
-    QString buildRevision, buildFlags;
-    #ifdef BUILD_REV
-      buildRevision = BUILD_REV;
-    #endif
+    QString buildBranch, buildRevision, buildFlags;
+#ifdef BUILD_BRANCH
+    buildBranch = BUILD_BRANCH;
+#endif
 
-    #ifdef BUILD_FLAGS
-      buildFlags = BUILD_FLAGS;
-    #endif
+#ifdef BUILD_REV
+    buildRevision = BUILD_REV;
+#endif
 
-    if (buildRevision.trimmed().length() > 0) {
-        if (buildFlags.trimmed().length() > 0)
-            buildRevision = "(bzr r" + buildRevision + "; built on: "
-                + __DATE__ + " @ " + __TIME__ + "; flags: "
-                + buildFlags.trimmed() + ") ";
-        else
-            buildRevision = "(bzr r" + buildRevision + "; built on: "
-                + __DATE__ + " @ " + __TIME__ + ") ";
+#ifdef BUILD_FLAGS
+    buildFlags = BUILD_FLAGS;
+#endif
+
+    QStringList buildInfo;
+    if (!buildBranch.isEmpty() && !buildRevision.isEmpty()) {
+        buildInfo.append(
+            QString("bzr %1 r%2").arg(buildBranch, buildRevision));
+    } else if (!buildRevision.isEmpty()) {
+        buildInfo.append(
+            QString("bzr r%2").arg(buildRevision));
     }
+    buildInfo.append("built on: " __DATE__ " @ " __TIME__);
+    if (!buildFlags.isEmpty()) {
+        buildInfo.append(QString("flags: %1").arg(buildFlags.trimmed()));
+    }
+    QString buildInfoFormatted = QString("(%1)").arg(buildInfo.join("; "));
 
-    qDebug() << "Mixxx" << VERSION << buildRevision << "is starting...";
+    qDebug() << "Mixxx" << VERSION << buildInfoFormatted << "is starting...";
     qDebug() << "Qt version is:" << qVersion();
 
     QCoreApplication::setApplicationName("Mixxx");
@@ -1150,11 +1158,31 @@ void MixxxApp::slotOptionsRecord(bool toggle)
         m_pRecordingManager->stopRecording();
 }
 
-void MixxxApp::slotHelpAbout()
-{
-
+void MixxxApp::slotHelpAbout() {
+    QString buildBranch, buildRevision;
+#ifdef BUILD_BRANCH
+    buildBranch = BUILD_BRANCH;
+#endif
+#ifdef BUILD_REV
+    buildRevision = BUILD_REV;
+#endif
     DlgAbout *about = new DlgAbout(this);
-    about->version_label->setText(VERSION);
+
+    QStringList version;
+    version.append(VERSION);
+    if (!buildBranch.isEmpty() || !buildRevision.isEmpty()) {
+        QStringList buildInfo;
+        buildInfo.append("build");
+        if (!buildBranch.isEmpty()) {
+            buildInfo.append(buildBranch);
+        }
+        if (!buildRevision.isEmpty()) {
+            buildInfo.append(QString("r%1").arg(buildRevision));
+        }
+        version.append(QString("(%1)").arg(buildInfo.join(" ")));
+    }
+    about->version_label->setText(version.join(" "));
+
     QString credits =
     QString("<p align=\"center\"><b>Mixxx %1 Development Team</b></p>"
 "<p align=\"center\">"

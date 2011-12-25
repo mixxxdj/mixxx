@@ -267,16 +267,14 @@
             <translation>Falha ao renomear Crate</translation>
         </message>
         <message>
-            <source>Playlist Files (*.m3u *.pls)</source>
-            <translation>Arquivos Lista de Reprodução</translation>
+            <source>Playlist Files (*.m3u *.m3u8 *.pls)</source>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
-            <source>Export Playlist</source>
-            <translation>Exportar Lista de Reprodução</translation>
-        </message>
-        <message>
-            <source>M3U Playlist (*.m3u);;PLS Playlist (*.pls)</source>
-            <translation>M3U Playlist (*.m3u);;PLS Playlist (*.pls)</translation>
+            <source>M3U Playlist (*.m3u);;M3U8 Playlist (*.m3u8);;PLS Playlist (*.pls)</source>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>A crate cannot have a blank name.</source>
@@ -727,8 +725,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Static EQs (for slower CPUs)</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>EQs estático (Para CPUs Lentas)</translation>
         </message>
         <message>
             <source>High Shelf EQ</source>
@@ -744,8 +741,9 @@ p, li { white-space: pre-wrap; }
             <translation>16 Hz</translation>
         </message>
         <message>
-            <source>2.045 kHz</source>
-            <translation>2.045 kHz</translation>
+            <source>1.014 kHz</source>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>20.05 kHz</source>
@@ -988,10 +986,6 @@ p, li { white-space: pre-wrap; }
         <message>
             <source>Powered by xwax</source>
             <translation>Desenvolvido por xwax</translation>
-        </message>
-        <message>
-            <source>Apply</source>
-            <translation>Aplicar</translation>
         </message>
         <message>
             <source>&lt;b&gt;This version of Mixxx does not support vinyl control.&lt;/b&gt; &lt;br&gt; Please visit &lt;a href=&quot;http://mixxx.org&quot;&gt;Mixxx.org&lt;/a&gt; for more information.</source>
@@ -1729,12 +1723,14 @@ p, li { white-space: pre-wrap; }
             <translation>Gerenciar</translation>
         </message>
         <message>
-            <source>Recently Added</source>
-            <translation>Adicionado recentemente</translation>
+            <source>New</source>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
-            <source>All Songs</source>
-            <translation>Todos os sons</translation>
+            <source>All</source>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Progress</source>
@@ -2068,6 +2064,11 @@ p, li { white-space: pre-wrap; }
     <context>
         <name>LibraryScannerDlg</name>
         <message>
+            <source>Library Scanner</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
             <source>It's taking Mixxx a minute to scan your music library, please wait...</source>
             <translation>Mixxx está levando um minuto para escanear sua biblioteca de musicas, por favor aguarde...</translation>
         </message>
@@ -2386,6 +2387,11 @@ This information will not be used to personally identify you, contact you, adver
             <translation>Suporte da Comunidade</translation>
         </message>
         <message>
+            <source>&amp;User Manual</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
             <source>Send Us &amp;Feedback</source>
             <translation>Nos dê um &amp;Feedback</translation>
         </message>
@@ -2411,7 +2417,8 @@ This information will not be used to personally identify you, contact you, adver
         </message>
         <message>
             <source>Enable live broadcasting</source>
-            <translation>Habilitar transmissão ao vivo</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Ctrl+L</source>
@@ -2540,7 +2547,8 @@ Mark beats by audio clicks</source>
         </message>
         <message>
             <source>Preferences</source>
-            <translation>Preferências</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Preferences
@@ -2557,6 +2565,17 @@ Preferências de Reprodução e MIDI</translation>
 Get help with Mixxx</source>
             <translation>Suporte
 Obtenha ajuda com Mixxx</translation>
+        </message>
+        <message>
+            <source>Read the Mixxx user manual.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Support
+Read the Mixxx user manual.</source>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Send feedback to the Mixxx team.</source>
@@ -2685,8 +2704,21 @@ Por favor selecione sua(s) placa(s) de som nas preferências hardware de som.</t
             <translation>Exportação da Lista de Reprodução falhou</translation>
         </message>
         <message>
+            <source>File path contains characters, not allowed in m3u playlists.
+</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Export a m3u8 playlist instead!
+</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
             <source>Could not create file</source>
-            <translation>Não foi possível criar o arquivo</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
     </context>
     <context>
@@ -2728,7 +2760,8 @@ Por favor selecione sua(s) placa(s) de som nas preferências hardware de som.</t
         </message>
         <message>
             <source>Export Playlist</source>
-            <translation>Exportar Lista de Reprodução</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Playlists</source>
@@ -2767,12 +2800,14 @@ Por favor selecione sua(s) placa(s) de som nas preferências hardware de som.</t
             <translation>Falha ao renomear a Lista de Reprodução</translation>
         </message>
         <message>
-            <source>Playlist Files (*.m3u *.pls)</source>
-            <translation>Arquivos Lista de Reprodução</translation>
+            <source>Playlist Files (*.m3u *.m3u8 *.pls)</source>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
-            <source>M3U Playlist (*.m3u);;PLS Playlist (*.pls)</source>
-            <translation>M3U Playlist (*.m3u);;PLS Playlist (*.pls)</translation>
+            <source>M3U Playlist (*.m3u);;M3U8 Playlist (*.m3u8);;PLS Playlist (*.pls)</source>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>A playlist by that name already exists.</source>
@@ -3129,6 +3164,21 @@ Click OK to exit.</source>
             </translation>
         </message>
         <message>
+            <source>Setup a loop over 4 beats for Player %1</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Halves the current loop's length for Player %1</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Doubles the current loop's length for Player %1</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
             <source>Hotcue 1 button for Player %1</source>
             <translation type="unfinished">
             </translation>
@@ -3169,6 +3219,76 @@ Click OK to exit.</source>
             </translation>
         </message>
         <message>
+            <source>Play button for Sampler %1</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Gain knob for Sampler %1</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Headphone listen button for Sampler %1</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>BPM tap button for Sampler %1</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Keylock button for Sampler %1</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Pitch control slider for Sampler %1</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Hotcue 1 button for Sampler %1</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Hotcue 2 button for Sampler %1</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Hotcue 3 button for Sampler %1</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Hotcue 4 button for Sampler %1</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Hotcue 1 delete button for Sampler %1</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Hotcue 2 delete button for Sampler %1</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Hotcue 3 delete button for Sampler %1</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Hotcue 4 delete button for Sampler %1</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
             <source>Switch to the next view (library, playlist..)</source>
             <translation>Mudar para a próxima visão (biblioteca, lista de reprodução...)</translation>
         </message>
@@ -3191,6 +3311,31 @@ Click OK to exit.</source>
         <message>
             <source>Load selected track into Player %1</source>
             <translation>Carregar a faixa selecionada ao Player %1</translation>
+        </message>
+        <message>
+            <source>Adjusts the wavelength of the flange effect</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Adjusts the intensity of the flange effect</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Adjusts the phase delay of the flange effect</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Microphone on/off</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Microphone volume</source>
+            <translation type="unfinished">
+            </translation>
         </message>
     </context>
     <context>
@@ -3240,6 +3385,11 @@ Click OK to exit.</source>
         </message>
         <message>
             <source>Sampler %1</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Reloading track metadata on a loaded track may cause abrupt volume changes. Are you sure?</source>
             <translation type="unfinished">
             </translation>
         </message>

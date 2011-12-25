@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2011-10-31 23:15-0400\n"
-"PO-Revision-Date: 2011-10-24 19:41+0000\n"
+"POT-Creation-Date: 2011-12-22 11:41+0200\n"
+"PO-Revision-Date: 2011-12-22 09:00+0000\n"
 "Last-Translator: psylocybina <psylocybina@gmail.com>\n"
 "Language-Team: Polish <pl@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-11-02 04:46+0000\n"
-"X-Generator: Launchpad (build 14214)\n"
+"X-Launchpad-Export-Date: 2011-12-23 07:46+0000\n"
+"X-Generator: Launchpad (build 14560)\n"
 
 #: AutoDJFeature#1
 msgid "Auto DJ"
@@ -308,28 +308,23 @@ msgstr "Zmiana nazwy skrzynki nie powiodła się"
 
 #: CrateFeature#15
 msgctxt "CrateFeature#15"
-msgid "Playlist Files (*.m3u *.pls)"
-msgstr "Pliki Listy Odtwarzania (*.m3u *.pls)"
+msgid "Playlist Files (*.m3u *.m3u8 *.pls)"
+msgstr ""
 
 #: CrateFeature#16
 msgctxt "CrateFeature#16"
-msgid "Export Playlist"
-msgstr "Eksportuj Playlistę"
+msgid "M3U Playlist (*.m3u);;M3U8 Playlist (*.m3u8);;PLS Playlist (*.pls)"
+msgstr ""
 
 #: CrateFeature#17
-msgctxt "CrateFeature#17"
-msgid "M3U Playlist (*.m3u);;PLS Playlist (*.pls)"
-msgstr "Playlista M3U (*.m3u);;Playlista PLS (*.pls)"
-
-#: CrateFeature#18
 msgid "A crate cannot have a blank name."
 msgstr "Musisz nazwać skrzynkę."
 
-#: CrateFeature#19
+#: CrateFeature#18
 msgid "Creating Crate Failed"
 msgstr "Tworzenie skrzynki nie powiodło się"
 
-#: CrateFeature#20
+#: CrateFeature#19
 msgid "A crate by that name already exists."
 msgstr "Skrzynka o tej nazwie już istnieje."
 
@@ -801,8 +796,8 @@ msgid "16 Hz"
 msgstr "16 Hz"
 
 #: DlgPrefEQDlg#6
-msgid "2.045 kHz"
-msgstr "2,045 kHz"
+msgid "1.014 kHz"
+msgstr ""
 
 #: DlgPrefEQDlg#7
 msgid "20.05 kHz"
@@ -1091,11 +1086,6 @@ msgid "Powered by xwax"
 msgstr ""
 
 #: DlgPrefNoVinylDlg#21
-msgctxt "DlgPrefNoVinylDlg#21"
-msgid "Apply"
-msgstr ""
-
-#: DlgPrefNoVinylDlg#22
 msgid ""
 "<b>This version of Mixxx does not support vinyl control.</b> <br> Please "
 "visit <a href=\"http://mixxx.org\">Mixxx.org</a> for more information."
@@ -1899,12 +1889,12 @@ msgid "Manage"
 msgstr "Zarządzaj"
 
 #: DlgPrepare#2
-msgid "Recently Added"
-msgstr "Ostatnio Dodane"
+msgid "New"
+msgstr ""
 
 #: DlgPrepare#3
-msgid "All Songs"
-msgstr "Wszystkie Utwory"
+msgid "All"
+msgstr ""
 
 #: DlgPrepare#4
 msgid "Progress"
@@ -2245,12 +2235,16 @@ msgid "Drag a preset from the list & drop it here"
 msgstr "Przeciągnij ustawienie z listy & upuść tutaj"
 
 #: LibraryScannerDlg#1
+msgid "Library Scanner"
+msgstr ""
+
+#: LibraryScannerDlg#2
 msgid "It's taking Mixxx a minute to scan your music library, please wait..."
 msgstr ""
 "To zabierze chwilę, aby Mixxx przeskanował twoją kolekcję muzyki. Poczekaj "
 "cierpliwie..."
 
-#: LibraryScannerDlg#2
+#: LibraryScannerDlg#3
 msgid "Cancel"
 msgstr "Anuluj"
 
@@ -2611,55 +2605,59 @@ msgid "&Community Support"
 msgstr ""
 
 #: MixxxApp#42
-msgid "Send Us &Feedback"
+msgid "&User Manual"
 msgstr ""
 
 #: MixxxApp#43
-msgid "&Translate this application"
+msgid "Send Us &Feedback"
 msgstr ""
 
 #: MixxxApp#44
+msgid "&Translate this application"
+msgstr ""
+
+#: MixxxApp#45
 msgid "Enable &Vinyl Control 1"
 msgstr "Włącz &Vinyl Control 1"
 
-#: MixxxApp#45
+#: MixxxApp#46
 msgid "Ctrl+Y"
 msgstr "Ctrl+Y"
 
-#: MixxxApp#46
+#: MixxxApp#47
 msgid "Enable &Vinyl Control 2"
 msgstr "Włącz &Vinyl Control 2"
 
-#: MixxxApp#47
+#: MixxxApp#48
 msgid "Ctrl+U"
 msgstr "Ctrl+U"
 
-#: MixxxApp#48
-msgctxt "MixxxApp#48"
+#: MixxxApp#49
+msgctxt "MixxxApp#49"
 msgid "Enable live broadcasting"
 msgstr ""
 
-#: MixxxApp#49
+#: MixxxApp#50
 msgid "Ctrl+L"
 msgstr "Ctrl+L"
 
-#: MixxxApp#50
+#: MixxxApp#51
 msgid "&Record Mix"
 msgstr "&Nagraj Mix"
 
-#: MixxxApp#51
+#: MixxxApp#52
 msgid "Ctrl+R"
 msgstr "Ctrl+R"
 
-#: MixxxApp#52
+#: MixxxApp#53
 msgid "Show Studio"
 msgstr "Pokaż Studio"
 
-#: MixxxApp#53
+#: MixxxApp#54
 msgid "Opens a song in player 1"
 msgstr "Otwiera utwór w player 1"
 
-#: MixxxApp#54
+#: MixxxApp#55
 msgid ""
 "Open\n"
 "\n"
@@ -2669,11 +2667,11 @@ msgstr ""
 "\n"
 "Otwiera utwór w player 1"
 
-#: MixxxApp#55
+#: MixxxApp#56
 msgid "Opens a song in player 2"
 msgstr "Otwiera utwór w player 2"
 
-#: MixxxApp#56
+#: MixxxApp#57
 msgid ""
 "Open\n"
 "\n"
@@ -2683,11 +2681,11 @@ msgstr ""
 "\n"
 "Otwiera utwór w player 2"
 
-#: MixxxApp#57
+#: MixxxApp#58
 msgid "Quits the application"
 msgstr "Zamyka aplikację"
 
-#: MixxxApp#58
+#: MixxxApp#59
 msgid ""
 "Exit\n"
 "\n"
@@ -2697,11 +2695,11 @@ msgstr ""
 "\n"
 "Zamyka aplikację"
 
-#: MixxxApp#59
+#: MixxxApp#60
 msgid "Rescans the song library"
 msgstr "Ponownie skanuje kolekcję utworów"
 
-#: MixxxApp#60
+#: MixxxApp#61
 msgid ""
 "Rescan library\n"
 "\n"
@@ -2711,11 +2709,11 @@ msgstr ""
 "\n"
 "Ponowne skanowanie kolekcji utworów"
 
-#: MixxxApp#61
+#: MixxxApp#62
 msgid "Create a new playlist"
 msgstr "Utwórz nową listę odtwarzania"
 
-#: MixxxApp#62
+#: MixxxApp#63
 msgid ""
 "New playlist\n"
 "\n"
@@ -2725,11 +2723,11 @@ msgstr ""
 "\n"
 "Stwórz nową listę odtwarzania"
 
-#: MixxxApp#63
+#: MixxxApp#64
 msgid "Create a new crate"
 msgstr "Utwórz nową Skrzynkę"
 
-#: MixxxApp#64
+#: MixxxApp#65
 msgid ""
 "New crate\n"
 "\n"
@@ -2739,15 +2737,15 @@ msgstr ""
 "\n"
 "Utwórz nową Skrzynkę."
 
-#: MixxxApp#65
+#: MixxxApp#66
 msgid "Import playlist"
 msgstr "Importuj listę odtwarzania"
 
-#: MixxxApp#66
+#: MixxxApp#67
 msgid "Audio Beat Marks"
 msgstr "Audio Beat Marks"
 
-#: MixxxApp#67
+#: MixxxApp#68
 msgid ""
 "Audio Beat Marks\n"
 "Mark beats by audio clicks"
@@ -2755,45 +2753,45 @@ msgstr ""
 "Audio Beat Marks\n"
 "Zaznacz bity audio-klikami"
 
-#: MixxxApp#68
+#: MixxxApp#69
 msgid "Activate Vinyl Control"
 msgstr "Włącz Vinyl Control"
 
-#: MixxxApp#69
+#: MixxxApp#70
 msgid "Use timecoded vinyls on external turntables to control Mixxx"
 msgstr ""
 "Użyj \"timecoded vinyls\" na zewnętrznych gramofonach aby kontrolować Mixxx'a"
 
-#: MixxxApp#70
+#: MixxxApp#71
 msgid "Activate live broadcasting"
 msgstr "Włącz nadawanie na żywo"
 
-#: MixxxApp#71
+#: MixxxApp#72
 msgid "Stream your mixes to a shoutcast or icecast server"
 msgstr "Wysyłaj strumień mixu do serwera shoutcast/icecast"
 
-#: MixxxApp#72
+#: MixxxApp#73
 msgid "Start Recording your Mix"
 msgstr "Zacznij Nagrywać swój Mix"
 
-#: MixxxApp#73
+#: MixxxApp#74
 msgid "Record your mix to a file"
 msgstr "Nagraj swój mix do pliku"
 
-#: MixxxApp#74
+#: MixxxApp#75
 msgid "Full Screen"
 msgstr "Pełny ekran"
 
-#: MixxxApp#75
+#: MixxxApp#76
 msgid "Display Mixxx using the full screen"
 msgstr "Włącz Mixxx w trybie pełnoekranowym"
 
-#: MixxxApp#76
-msgctxt "MixxxApp#76"
+#: MixxxApp#77
+msgctxt "MixxxApp#77"
 msgid "Preferences"
 msgstr ""
 
-#: MixxxApp#77
+#: MixxxApp#78
 msgid ""
 "Preferences\n"
 "Playback and MIDI preferences"
@@ -2801,11 +2799,11 @@ msgstr ""
 "Preferencje\n"
 "Odtwarzania i preferencje MIDI"
 
-#: MixxxApp#78
+#: MixxxApp#79
 msgid "Support..."
 msgstr "Wsparcie..."
 
-#: MixxxApp#79
+#: MixxxApp#80
 msgid ""
 "Support\n"
 "\n"
@@ -2815,33 +2813,44 @@ msgstr ""
 "\n"
 "Otrzymaj pomoc z Mixxx'em"
 
-#: MixxxApp#80
+#: MixxxApp#81
+msgid "Read the Mixxx user manual."
+msgstr ""
+
+#: MixxxApp#82
+msgid ""
+"Support\n"
+"\n"
+"Read the Mixxx user manual."
+msgstr ""
+
+#: MixxxApp#83
 msgid "Send feedback to the Mixxx team."
 msgstr ""
 
-#: MixxxApp#81
+#: MixxxApp#84
 msgid ""
 "Support\n"
 "\n"
 "Send feedback to the Mixxx team."
 msgstr ""
 
-#: MixxxApp#82
+#: MixxxApp#85
 msgid "Help translate this application into your language."
 msgstr ""
 
-#: MixxxApp#83
+#: MixxxApp#86
 msgid ""
 "Support\n"
 "\n"
 "Help translate this application into your language."
 msgstr ""
 
-#: MixxxApp#84
+#: MixxxApp#87
 msgid "About the application"
 msgstr "O programie"
 
-#: MixxxApp#85
+#: MixxxApp#88
 msgid ""
 "About\n"
 "\n"
@@ -2851,11 +2860,11 @@ msgstr ""
 "\n"
 "O programie"
 
-#: MixxxApp#86
+#: MixxxApp#89
 msgid "Shows the macro studio window"
 msgstr "Pokazuje okno Macro Studio"
 
-#: MixxxApp#87
+#: MixxxApp#90
 msgid ""
 "Show Studio\n"
 "\n"
@@ -2865,43 +2874,43 @@ msgstr ""
 "\n"
 "Sprawia, że Macro Studio jest widoczne"
 
-#: MixxxApp#88
+#: MixxxApp#91
 msgid "&File"
 msgstr "&Plik"
 
-#: MixxxApp#89
+#: MixxxApp#92
 msgid "&Options"
 msgstr "&Opcje"
 
-#: MixxxApp#90
+#: MixxxApp#93
 msgid "&Library"
 msgstr "&Kolekcja"
 
-#: MixxxApp#91
+#: MixxxApp#94
 msgid "&View"
 msgstr "&Widok"
 
-#: MixxxApp#92
+#: MixxxApp#95
 msgid "&Help"
 msgstr "&Pomoc"
 
-#: MixxxApp#93
+#: MixxxApp#96
 msgid "&Macro"
 msgstr "&Makro"
 
-#: MixxxApp#94
+#: MixxxApp#97
 msgid "&Vinyl Control"
 msgstr "&Vinyl Control"
 
-#: MixxxApp#95
+#: MixxxApp#98
 msgid "Quit..."
 msgstr "Wyjdź..."
 
-#: MixxxApp#96
+#: MixxxApp#99
 msgid "Do your really want to quit?"
 msgstr "Naprawdę chesz już wyjść?"
 
-#: MixxxApp#97
+#: MixxxApp#100
 msgid ""
 "Player 1 is currently playing a song.\n"
 "Are you sure you want to load a new song?"
@@ -2909,11 +2918,11 @@ msgstr ""
 "Player 1 aktualnie odtwarza utwór.\n"
 "Czy na pewno chcesz wczytać nowy utwór?"
 
-#: MixxxApp#98
+#: MixxxApp#101
 msgid "Load Song into Player 1"
 msgstr "Wczytaj Utwór do Player 1"
 
-#: MixxxApp#99
+#: MixxxApp#102
 msgid ""
 "Player 2 is currently playing a song.\n"
 "Are you sure you want to load a new song?"
@@ -2921,11 +2930,11 @@ msgstr ""
 "Player 2 aktualnie odtwarza utwór.\n"
 "Czy na pewno chcesz wczytać nowy utwór?"
 
-#: MixxxApp#100
+#: MixxxApp#103
 msgid "Load Song into Player 2"
 msgstr "Wczytaj Utwór do Player 2"
 
-#: MixxxApp#101
+#: MixxxApp#104
 msgid ""
 "No input device(s) select.\n"
 "Please select your soundcard(s) in the sound hardware preferences."
@@ -2933,11 +2942,11 @@ msgstr ""
 "Nie wybrano urządzeń wejściowych.\n"
 "Wybierz kartę/karty dźwiękowe w ustawieniach urządzeń dźwięku."
 
-#: MixxxApp#102
+#: MixxxApp#105
 msgid "Confirm Exit"
 msgstr "Potwierdź zamknięcie"
 
-#: MixxxApp#103
+#: MixxxApp#106
 msgid "A deck is currently playing. Exit Mixxx?"
 msgstr "Deck właśnie gra! Wyjść z Mixxx'a?"
 
@@ -2952,9 +2961,17 @@ msgid "Playlist Export Failed"
 msgstr "Eksport listy odtwarzania nie powiódł się"
 
 #: ParserM3u#2
-msgctxt "ParserM3u#2"
+msgid "File path contains characters, not allowed in m3u playlists.\n"
+msgstr ""
+
+#: ParserM3u#3
+msgid "Export a m3u8 playlist instead!\n"
+msgstr ""
+
+#: ParserM3u#4
+msgctxt "ParserM3u#4"
 msgid "Could not create file"
-msgstr "Nie mogę utworzyć pliku"
+msgstr ""
 
 #: ParserPls#1
 msgctxt "ParserPls#1"
@@ -2995,9 +3012,8 @@ msgid "Import Playlist"
 msgstr "Importuj Listę Odtwarzania"
 
 #: PlaylistFeature#7
-msgctxt "PlaylistFeature#7"
 msgid "Export Playlist"
-msgstr "Eksportuj Listę Odtwarzania"
+msgstr ""
 
 #: PlaylistFeature#8
 msgid "Playlists"
@@ -3038,13 +3054,13 @@ msgstr "Zmiana nazwy listy odtwarzania nie powiodła się"
 
 #: PlaylistFeature#17
 msgctxt "PlaylistFeature#17"
-msgid "Playlist Files (*.m3u *.pls)"
-msgstr "Pliki Listy Odtwarzania (*.m3u *.pls)"
+msgid "Playlist Files (*.m3u *.m3u8 *.pls)"
+msgstr ""
 
 #: PlaylistFeature#18
 msgctxt "PlaylistFeature#18"
-msgid "M3U Playlist (*.m3u);;PLS Playlist (*.pls)"
-msgstr "Lista Odtwarzania M3U (*.m3u);;Lista Odtwarzania PLS (*.pls)"
+msgid "M3U Playlist (*.m3u);;M3U8 Playlist (*.m3u8);;PLS Playlist (*.pls)"
+msgstr ""
 
 #: PlaylistFeature#19
 msgid "A playlist by that name already exists."
@@ -3375,60 +3391,148 @@ msgid "Reloop / Exit button for Player %1"
 msgstr "Przycisk Reloop / Exit dla Player %1"
 
 #: Ui#37
+msgid "Setup a loop over 4 beats for Player %1"
+msgstr ""
+
+#: Ui#38
+msgid "Halves the current loop's length for Player %1"
+msgstr ""
+
+#: Ui#39
+msgid "Doubles the current loop's length for Player %1"
+msgstr ""
+
+#: Ui#40
 msgid "Hotcue 1 button for Player %1"
 msgstr "Przycisk Hotcue 1 dla Player %1"
 
-#: Ui#38
+#: Ui#41
 msgid "Hotcue 2 button for Player %1"
 msgstr "Przycisk Hotcue 2 dla Player %1"
 
-#: Ui#39
+#: Ui#42
 msgid "Hotcue 3 button for Player %1"
 msgstr "Przycisk Hotcue 3 dla Player %1"
 
-#: Ui#40
+#: Ui#43
 msgid "Hotcue 4 button for Player %1"
 msgstr "Przycisk Hotcue 4 dla Player %1"
 
-#: Ui#41
+#: Ui#44
 msgid "Hotcue 1 delete button for Player %1"
 msgstr "Przycisk Usuń Hotcue 1 dla Player %1"
 
-#: Ui#42
+#: Ui#45
 msgid "Hotcue 2 delete button for Player %1"
 msgstr "Przycisk Usuń Hotcue 2 dla Player %1"
 
-#: Ui#43
+#: Ui#46
 msgid "Hotcue 3 delete button for Player %1"
 msgstr "Przycisk Usuń Hotcue 3 dla Player %1"
 
-#: Ui#44
+#: Ui#47
 msgid "Hotcue 4 delete button for Player %1"
 msgstr "Przycisk Usuń Hotcue 4 dla Player %1"
 
-#: Ui#45
+#: Ui#48
+msgid "Play button for Sampler %1"
+msgstr ""
+
+#: Ui#49
+msgid "Gain knob for Sampler %1"
+msgstr ""
+
+#: Ui#50
+msgid "Headphone listen button for Sampler %1"
+msgstr ""
+
+#: Ui#51
+msgid "BPM tap button for Sampler %1"
+msgstr ""
+
+#: Ui#52
+msgid "Keylock button for Sampler %1"
+msgstr ""
+
+#: Ui#53
+msgid "Pitch control slider for Sampler %1"
+msgstr ""
+
+#: Ui#54
+msgid "Hotcue 1 button for Sampler %1"
+msgstr ""
+
+#: Ui#55
+msgid "Hotcue 2 button for Sampler %1"
+msgstr ""
+
+#: Ui#56
+msgid "Hotcue 3 button for Sampler %1"
+msgstr ""
+
+#: Ui#57
+msgid "Hotcue 4 button for Sampler %1"
+msgstr ""
+
+#: Ui#58
+msgid "Hotcue 1 delete button for Sampler %1"
+msgstr ""
+
+#: Ui#59
+msgid "Hotcue 2 delete button for Sampler %1"
+msgstr ""
+
+#: Ui#60
+msgid "Hotcue 3 delete button for Sampler %1"
+msgstr ""
+
+#: Ui#61
+msgid "Hotcue 4 delete button for Sampler %1"
+msgstr ""
+
+#: Ui#62
 msgid "Switch to the next view (library, playlist..)"
 msgstr "Przełącz do następnego widoku (kolekcja, playlista...)"
 
-#: Ui#46
+#: Ui#63
 msgid "Switch to the previous view (library, playlist..)"
 msgstr "Przełącz do wcześniejszego widoku (kolekcja, playlista...)"
 
-#: Ui#47
+#: Ui#64
 msgid "Scroll to next track in library/playlist"
 msgstr "Przewiń do następnego utworu w kolekcji/playliście"
 
-#: Ui#48
+#: Ui#65
 msgid "Scroll to previous track in library/playlist"
 msgstr "Przewiń do wcześniejszego utworu w kolekcji/playliście"
 
-#: Ui#49
+#: Ui#66
 msgid "Load selected track into first stopped player"
 msgstr "Wczytaj zaznaczone utwory do pierwszego zatrzymanego playera"
 
-#: Ui#50
+#: Ui#67
 msgid "Load selected track into Player %1"
 msgstr "Wszytaj zaznaczone utwory do Player %1"
+
+#: Ui#68
+msgid "Adjusts the wavelength of the flange effect"
+msgstr ""
+
+#: Ui#69
+msgid "Adjusts the intensity of the flange effect"
+msgstr ""
+
+#: Ui#70
+msgid "Adjusts the phase delay of the flange effect"
+msgstr ""
+
+#: Ui#71
+msgid "Microphone on/off"
+msgstr ""
+
+#: Ui#72
+msgid "Microphone volume"
+msgstr ""
 
 #: WSearchLineEdit#1
 msgid "Search..."
@@ -3471,192 +3575,49 @@ msgstr "Wczytaj do Deck &1"
 msgid "Sampler %1"
 msgstr "Sampler %1"
 
+#: WTrackTableView#10
+msgid ""
+"Reloading track metadata on a loaded track may cause abrupt volume changes. "
+"Are you sure?"
+msgstr ""
+
 #: WTrackTableViewHeader#1
 msgid "Show or hide columns."
 msgstr "Pokaż lub ukryj kolumny."
 
-#~ msgid "You don't have permission to view this folder."
-#~ msgstr "Nie masz uprawnień do przegladania tego folderu."
+#~ msgctxt "CrateFeature#15"
+#~ msgid "Playlist Files (*.m3u *.pls)"
+#~ msgstr "Pliki Listy Odtwarzania (*.m3u *.pls)"
 
-#~ msgid "Permission Denied"
-#~ msgstr "Odmowa dostępu"
+#~ msgid "2.045 kHz"
+#~ msgstr "2,045 kHz"
 
-#~ msgid "Crate Creation Failed"
-#~ msgstr "Tworzenie paczki nie powiodło się"
+#~ msgctxt "PlaylistFeature#18"
+#~ msgid "M3U Playlist (*.m3u);;PLS Playlist (*.pls)"
+#~ msgstr "Lista Odtwarzania M3U (*.m3u);;Lista Odtwarzania PLS (*.pls)"
 
-#~ msgctxt "DlgPrefControls#4"
-#~ msgid "Information"
-#~ msgstr "Informacja"
+#~ msgctxt "PlaylistFeature#17"
+#~ msgid "Playlist Files (*.m3u *.pls)"
+#~ msgstr "Pliki Listy Odtwarzania (*.m3u *.pls)"
 
-#~ msgid "Next >>"
-#~ msgstr "Następny >>"
+#~ msgctxt "ParserM3u#2"
+#~ msgid "Could not create file"
+#~ msgstr "Nie mogę utworzyć pliku"
 
-#~ msgid "<< Prev"
-#~ msgstr "<< Poprzedni"
+#~ msgctxt "PlaylistFeature#7"
+#~ msgid "Export Playlist"
+#~ msgstr "Eksportuj Listę Odtwarzania"
 
-#~ msgctxt "DlgBpmTapDlg#3"
-#~ msgid "Alt+O"
-#~ msgstr "Alt+O"
+#~ msgid "Recently Added"
+#~ msgstr "Ostatnio Dodane"
 
-#~ msgctxt "DlgBpmTapDlg#4"
-#~ msgid "Song:"
-#~ msgstr "Utwór:"
+#~ msgid "All Songs"
+#~ msgstr "Wszystkie Utwory"
 
-#~ msgctxt "DlgBpmTapDlg#1"
-#~ msgid "Track Editor"
-#~ msgstr "Edycja Ścieżki"
+#~ msgctxt "CrateFeature#16"
+#~ msgid "Export Playlist"
+#~ msgstr "Eksportuj Playlistę"
 
-#~ msgid "&Close"
-#~ msgstr "&Zamknij"
-
-#~ msgctxt "DlgBpmSchemeDlg#6"
-#~ msgid "Analyze Entire Song"
-#~ msgstr "Analizuj Cały Utwór"
-
-#~ msgid "BPM Editor (Click to Expand)"
-#~ msgstr "Edycja BMP (Kliknij aby Rozwinąć)"
-
-#~ msgid "Alt+P"
-#~ msgstr "Alt+P"
-
-#~ msgid "to"
-#~ msgstr "do"
-
-#~ msgid "BPM Scheme:"
-#~ msgstr "Schemat BPM:"
-
-#~ msgid "BPM Range:"
-#~ msgstr "Zakres BPM:"
-
-#~ msgctxt "DlgBpmTapDlg#14"
-#~ msgid "Analyze Entire Song"
-#~ msgstr "Analizuj Cały Utwór"
-
-#~ msgid "Alt+G"
-#~ msgstr "Alt+G"
-
-#~ msgid "&Push to tap tempo"
-#~ msgstr "&Naciśnij aby wystukać tempo"
-
-#~ msgid "BPM:"
-#~ msgstr "BPM (uderzenia na minutę):"
-
-#~ msgctxt "DlgBpmTapDlg#8"
-#~ msgid "BPM Detection"
-#~ msgstr "Wykrywanie BPM"
-
-#~ msgid "&Go"
-#~ msgstr "&Idź"
-
-#~ msgctxt "DlgBpmTapDlg#25"
-#~ msgid "File Type:"
-#~ msgstr "Typ Pliku:"
-
-#~ msgctxt "DlgBpmTapDlg#20"
-#~ msgid "Artist:"
-#~ msgstr "Artysta:"
-
-#~ msgctxt "DlgBpmTapDlg#19"
-#~ msgid "Title:"
-#~ msgstr "Tytuł:"
-
-#~ msgctxt "DlgBpmTapDlg#22"
-#~ msgid "Filename:"
-#~ msgstr "Nazwa pliku :"
-
-#~ msgctxt "DlgBpmTapDlg#21"
-#~ msgid "Comments:"
-#~ msgstr "Komentarze:"
-
-#~ msgid "Play Time:"
-#~ msgstr "Czas:"
-
-#~ msgctxt "DlgBpmTapDlg#23"
-#~ msgid "3:00"
-#~ msgstr "3:00"
-
-#~ msgctxt "DlgBpmTapDlg#26"
-#~ msgid "77"
-#~ msgstr "77"
-
-#~ msgid "&About..."
-#~ msgstr "&O programie..."
-
-#~ msgid "Description"
-#~ msgstr "Opis"
-
-#~ msgctxt "DlgTrackInfo#1"
-#~ msgid "Track Editor"
-#~ msgstr "Edytor Ścieżek"
-
-#~ msgctxt "DlgTrackInfo#2"
-#~ msgid "Song:"
-#~ msgstr "Utwór:"
-
-#~ msgctxt "DlgTrackInfo#11"
-#~ msgid "3:00"
-#~ msgstr "3:00"
-
-#~ msgctxt "DlgTrackInfo#9"
-#~ msgid "Filename:"
-#~ msgstr "Nazwa pliku :"
-
-#~ msgctxt "DlgTrackInfo#4"
-#~ msgid "Artist:"
-#~ msgstr "Artysta:"
-
-#~ msgctxt "DlgTrackInfo#3"
-#~ msgid "Title:"
-#~ msgstr "Tytuł:"
-
-#~ msgctxt "DlgTrackInfo#14"
-#~ msgid "Comments:"
-#~ msgstr "Komentarze:"
-
-#~ msgctxt "DlgTrackInfo#16"
-#~ msgid "Track Information (Click to Expand)"
-#~ msgstr "Informacje Ścieżki (Kliknij aby Rozwinąć)"
-
-#~ msgctxt "DlgTrackInfo#13"
-#~ msgid "77"
-#~ msgstr "77"
-
-#~ msgctxt "DlgTrackInfo#12"
-#~ msgid "File Type:"
-#~ msgstr "Typ Pliku:"
-
-#~ msgctxt "DlgTrackInfo#33"
-#~ msgid "Alt+O"
-#~ msgstr "Alt+O"
-
-#~ msgid ""
-#~ "<html>Mixxx is unable to load or find the MP3 encoder lame. <p>Please "
-#~ "install libmp3lame (also known as lame) and check if /usr/lib/libmp3lame.so "
-#~ "exists on your system </html>"
-#~ msgstr ""
-#~ "<html>Mixxx nie może wczytać lub znaleźć enkodera MP3 lame.<p>Zainstaluj "
-#~ "libmp3lame (znany jako lame) i sprawdź czy instnieje /usr/lib/libmp3lame.so "
-#~ "w twoim systemie </html>"
-
-#~ msgid ""
-#~ "<html>Mixxx is unable to load or find the MP3 encoder lame. <p>Please put "
-#~ "lame_enc.dll in the directory you have installed Mixxx </html>"
-#~ msgstr ""
-#~ "<html>Mixxx nie może wczytać lub znaleźć enkodera MP3 lame.<p>Przenieś "
-#~ "lame_enc.dll do katalogu w którym zainstalowaleś Mixxx'a </html>"
-
-#~ msgid ""
-#~ "<html>Mixxx is unable to load or find the MP3 encoder lame. <p>Please "
-#~ "install libmp3lame (also known as lame) and check if "
-#~ "/usr/local/lib/libmp3lame.dylib exists on your system </html>"
-#~ msgstr ""
-#~ "<html>Mixxx nie może wczytać lub znaleźć enkodera MP3 lame.<p>Zainstaluj "
-#~ "libmp3lame (znany jako lame) i sprawdź czy instnieje "
-#~ "/usr/local/lib/libmp3lame.dylib w twoim systemie </html>"
-
-#~ msgid "&Community Support..."
-#~ msgstr "&Community Support..."
-
-#~ msgctxt "DlgBpmTapDlg#18"
-#~ msgid "Track Information (Click to Expand)"
-#~ msgstr "Informacje o Ścieżcę (Kliknij aby Rozwinąć)"
+#~ msgctxt "CrateFeature#17"
+#~ msgid "M3U Playlist (*.m3u);;PLS Playlist (*.pls)"
+#~ msgstr "Playlista M3U (*.m3u);;Playlista PLS (*.pls)"

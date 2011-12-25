@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2011-10-31 23:15-0400\n"
-"PO-Revision-Date: 2011-11-11 20:03+0000\n"
+"POT-Creation-Date: 2011-12-22 11:41+0200\n"
+"PO-Revision-Date: 2011-12-22 09:00+0000\n"
 "Last-Translator: otzy_007 <Unknown>\n"
 "Language-Team: Romanian <ro@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-11-12 04:41+0000\n"
-"X-Generator: Launchpad (build 14277)\n"
+"X-Launchpad-Export-Date: 2011-12-23 07:46+0000\n"
+"X-Generator: Launchpad (build 14560)\n"
 
 #: AutoDJFeature#1
 msgid "Auto DJ"
@@ -306,28 +306,23 @@ msgstr "Redenumirea colecției a eșuat"
 
 #: CrateFeature#15
 msgctxt "CrateFeature#15"
-msgid "Playlist Files (*.m3u *.pls)"
+msgid "Playlist Files (*.m3u *.m3u8 *.pls)"
 msgstr ""
 
 #: CrateFeature#16
 msgctxt "CrateFeature#16"
-msgid "Export Playlist"
+msgid "M3U Playlist (*.m3u);;M3U8 Playlist (*.m3u8);;PLS Playlist (*.pls)"
 msgstr ""
 
 #: CrateFeature#17
-msgctxt "CrateFeature#17"
-msgid "M3U Playlist (*.m3u);;PLS Playlist (*.pls)"
-msgstr ""
-
-#: CrateFeature#18
 msgid "A crate cannot have a blank name."
 msgstr ""
 
-#: CrateFeature#19
+#: CrateFeature#18
 msgid "Creating Crate Failed"
 msgstr "Crearea colecției a eșuat"
 
-#: CrateFeature#20
+#: CrateFeature#19
 msgid "A crate by that name already exists."
 msgstr "Există o colecție cu acest nume."
 
@@ -791,8 +786,8 @@ msgid "16 Hz"
 msgstr "16 Hz"
 
 #: DlgPrefEQDlg#6
-msgid "2.045 kHz"
-msgstr "2.045 kHz"
+msgid "1.014 kHz"
+msgstr ""
 
 #: DlgPrefEQDlg#7
 msgid "20.05 kHz"
@@ -1062,11 +1057,6 @@ msgid "Powered by xwax"
 msgstr "Powered by xwax"
 
 #: DlgPrefNoVinylDlg#21
-msgctxt "DlgPrefNoVinylDlg#21"
-msgid "Apply"
-msgstr "Aplică"
-
-#: DlgPrefNoVinylDlg#22
 msgid ""
 "<b>This version of Mixxx does not support vinyl control.</b> <br> Please "
 "visit <a href=\"http://mixxx.org\">Mixxx.org</a> for more information."
@@ -1842,12 +1832,12 @@ msgid "Manage"
 msgstr "Administrează"
 
 #: DlgPrepare#2
-msgid "Recently Added"
-msgstr "Adăugate recent"
+msgid "New"
+msgstr ""
 
 #: DlgPrepare#3
-msgid "All Songs"
-msgstr "Toate cantecele"
+msgid "All"
+msgstr ""
 
 #: DlgPrepare#4
 msgid "Progress"
@@ -2178,10 +2168,14 @@ msgid "Drag a preset from the list & drop it here"
 msgstr ""
 
 #: LibraryScannerDlg#1
-msgid "It's taking Mixxx a minute to scan your music library, please wait..."
+msgid "Library Scanner"
 msgstr ""
 
 #: LibraryScannerDlg#2
+msgid "It's taking Mixxx a minute to scan your music library, please wait..."
+msgstr ""
+
+#: LibraryScannerDlg#3
 msgid "Cancel"
 msgstr "Renunţă"
 
@@ -2501,110 +2495,114 @@ msgid "&Community Support"
 msgstr ""
 
 #: MixxxApp#42
+msgid "&User Manual"
+msgstr ""
+
+#: MixxxApp#43
 msgid "Send Us &Feedback"
 msgstr "Trimite-ne &Feedback"
 
-#: MixxxApp#43
+#: MixxxApp#44
 msgid "&Translate this application"
 msgstr "Tradu această aplicaţie"
 
-#: MixxxApp#44
+#: MixxxApp#45
 msgid "Enable &Vinyl Control 1"
 msgstr ""
 
-#: MixxxApp#45
+#: MixxxApp#46
 msgid "Ctrl+Y"
 msgstr "Ctrl+Y"
 
-#: MixxxApp#46
+#: MixxxApp#47
 msgid "Enable &Vinyl Control 2"
 msgstr ""
 
-#: MixxxApp#47
+#: MixxxApp#48
 msgid "Ctrl+U"
 msgstr "Ctrl+U"
 
-#: MixxxApp#48
-msgctxt "MixxxApp#48"
+#: MixxxApp#49
+msgctxt "MixxxApp#49"
 msgid "Enable live broadcasting"
 msgstr ""
 
-#: MixxxApp#49
+#: MixxxApp#50
 msgid "Ctrl+L"
 msgstr "Ctrl+L"
 
-#: MixxxApp#50
+#: MixxxApp#51
 msgid "&Record Mix"
 msgstr "&Înregistrează mix"
 
-#: MixxxApp#51
+#: MixxxApp#52
 msgid "Ctrl+R"
 msgstr "Ctrl+R"
 
-#: MixxxApp#52
+#: MixxxApp#53
 msgid "Show Studio"
 msgstr ""
 
-#: MixxxApp#53
+#: MixxxApp#54
 msgid "Opens a song in player 1"
 msgstr ""
 
-#: MixxxApp#54
+#: MixxxApp#55
 msgid ""
 "Open\n"
 "\n"
 "Opens a song in player 1"
 msgstr ""
 
-#: MixxxApp#55
+#: MixxxApp#56
 msgid "Opens a song in player 2"
 msgstr ""
 
-#: MixxxApp#56
+#: MixxxApp#57
 msgid ""
 "Open\n"
 "\n"
 "Opens a song in player 2"
 msgstr ""
 
-#: MixxxApp#57
+#: MixxxApp#58
 msgid "Quits the application"
 msgstr "Închide aplicația"
 
-#: MixxxApp#58
+#: MixxxApp#59
 msgid ""
 "Exit\n"
 "\n"
 "Quits the application"
 msgstr ""
 
-#: MixxxApp#59
+#: MixxxApp#60
 msgid "Rescans the song library"
 msgstr ""
 
-#: MixxxApp#60
+#: MixxxApp#61
 msgid ""
 "Rescan library\n"
 "\n"
 "Rescans the song library"
 msgstr ""
 
-#: MixxxApp#61
+#: MixxxApp#62
 msgid "Create a new playlist"
 msgstr ""
 
-#: MixxxApp#62
+#: MixxxApp#63
 msgid ""
 "New playlist\n"
 "\n"
 "Create a new playlist"
 msgstr ""
 
-#: MixxxApp#63
+#: MixxxApp#64
 msgid "Create a new crate"
 msgstr "Creează o colecţie nouă"
 
-#: MixxxApp#64
+#: MixxxApp#65
 msgid ""
 "New crate\n"
 "\n"
@@ -2614,185 +2612,196 @@ msgstr ""
 "\n"
 "Creează o colecţie nouă."
 
-#: MixxxApp#65
+#: MixxxApp#66
 msgid "Import playlist"
 msgstr ""
 
-#: MixxxApp#66
+#: MixxxApp#67
 msgid "Audio Beat Marks"
 msgstr ""
 
-#: MixxxApp#67
+#: MixxxApp#68
 msgid ""
 "Audio Beat Marks\n"
 "Mark beats by audio clicks"
 msgstr ""
 
-#: MixxxApp#68
+#: MixxxApp#69
 msgid "Activate Vinyl Control"
 msgstr ""
 
-#: MixxxApp#69
+#: MixxxApp#70
 msgid "Use timecoded vinyls on external turntables to control Mixxx"
 msgstr ""
 
-#: MixxxApp#70
+#: MixxxApp#71
 msgid "Activate live broadcasting"
 msgstr ""
 
-#: MixxxApp#71
+#: MixxxApp#72
 msgid "Stream your mixes to a shoutcast or icecast server"
 msgstr ""
 
-#: MixxxApp#72
+#: MixxxApp#73
 msgid "Start Recording your Mix"
 msgstr "Începe înregistrarea mix-ului"
 
-#: MixxxApp#73
+#: MixxxApp#74
 msgid "Record your mix to a file"
 msgstr "Înregistrează mix-ul într-un fişier"
 
-#: MixxxApp#74
+#: MixxxApp#75
 msgid "Full Screen"
 msgstr "Ecran complet"
 
-#: MixxxApp#75
+#: MixxxApp#76
 msgid "Display Mixxx using the full screen"
 msgstr ""
 
-#: MixxxApp#76
-msgctxt "MixxxApp#76"
-msgid "Preferences"
-msgstr "Preferințe"
-
 #: MixxxApp#77
+msgctxt "MixxxApp#77"
+msgid "Preferences"
+msgstr ""
+
+#: MixxxApp#78
 msgid ""
 "Preferences\n"
 "Playback and MIDI preferences"
 msgstr ""
 
-#: MixxxApp#78
+#: MixxxApp#79
 msgid "Support..."
 msgstr "Suport..."
 
-#: MixxxApp#79
+#: MixxxApp#80
 msgid ""
 "Support\n"
 "\n"
 "Get help with Mixxx"
 msgstr ""
 
-#: MixxxApp#80
+#: MixxxApp#81
+msgid "Read the Mixxx user manual."
+msgstr ""
+
+#: MixxxApp#82
+msgid ""
+"Support\n"
+"\n"
+"Read the Mixxx user manual."
+msgstr ""
+
+#: MixxxApp#83
 msgid "Send feedback to the Mixxx team."
 msgstr ""
 
-#: MixxxApp#81
+#: MixxxApp#84
 msgid ""
 "Support\n"
 "\n"
 "Send feedback to the Mixxx team."
 msgstr ""
 
-#: MixxxApp#82
+#: MixxxApp#85
 msgid "Help translate this application into your language."
 msgstr ""
 
-#: MixxxApp#83
+#: MixxxApp#86
 msgid ""
 "Support\n"
 "\n"
 "Help translate this application into your language."
 msgstr ""
 
-#: MixxxApp#84
+#: MixxxApp#87
 msgid "About the application"
 msgstr "Despre aplicaţie"
 
-#: MixxxApp#85
+#: MixxxApp#88
 msgid ""
 "About\n"
 "\n"
 "About the application"
 msgstr ""
 
-#: MixxxApp#86
+#: MixxxApp#89
 msgid "Shows the macro studio window"
 msgstr ""
 
-#: MixxxApp#87
+#: MixxxApp#90
 msgid ""
 "Show Studio\n"
 "\n"
 "Makes the macro studio visible"
 msgstr ""
 
-#: MixxxApp#88
+#: MixxxApp#91
 msgid "&File"
 msgstr "&Fișier"
 
-#: MixxxApp#89
+#: MixxxApp#92
 msgid "&Options"
 msgstr "&Opțiuni"
 
-#: MixxxApp#90
+#: MixxxApp#93
 msgid "&Library"
 msgstr "&Bibliotecă"
 
-#: MixxxApp#91
+#: MixxxApp#94
 msgid "&View"
 msgstr "&Vizualizare"
 
-#: MixxxApp#92
+#: MixxxApp#95
 msgid "&Help"
 msgstr "&Ajutor"
 
-#: MixxxApp#93
+#: MixxxApp#96
 msgid "&Macro"
 msgstr "&Macro"
 
-#: MixxxApp#94
+#: MixxxApp#97
 msgid "&Vinyl Control"
 msgstr ""
 
-#: MixxxApp#95
+#: MixxxApp#98
 msgid "Quit..."
 msgstr "Ieșire..."
 
-#: MixxxApp#96
+#: MixxxApp#99
 msgid "Do your really want to quit?"
 msgstr ""
 
-#: MixxxApp#97
+#: MixxxApp#100
 msgid ""
 "Player 1 is currently playing a song.\n"
 "Are you sure you want to load a new song?"
 msgstr ""
 
-#: MixxxApp#98
+#: MixxxApp#101
 msgid "Load Song into Player 1"
 msgstr ""
 
-#: MixxxApp#99
+#: MixxxApp#102
 msgid ""
 "Player 2 is currently playing a song.\n"
 "Are you sure you want to load a new song?"
 msgstr ""
 
-#: MixxxApp#100
+#: MixxxApp#103
 msgid "Load Song into Player 2"
 msgstr ""
 
-#: MixxxApp#101
+#: MixxxApp#104
 msgid ""
 "No input device(s) select.\n"
 "Please select your soundcard(s) in the sound hardware preferences."
 msgstr ""
 
-#: MixxxApp#102
+#: MixxxApp#105
 msgid "Confirm Exit"
 msgstr ""
 
-#: MixxxApp#103
+#: MixxxApp#106
 msgid "A deck is currently playing. Exit Mixxx?"
 msgstr ""
 
@@ -2807,7 +2816,15 @@ msgid "Playlist Export Failed"
 msgstr ""
 
 #: ParserM3u#2
-msgctxt "ParserM3u#2"
+msgid "File path contains characters, not allowed in m3u playlists.\n"
+msgstr ""
+
+#: ParserM3u#3
+msgid "Export a m3u8 playlist instead!\n"
+msgstr ""
+
+#: ParserM3u#4
+msgctxt "ParserM3u#4"
 msgid "Could not create file"
 msgstr ""
 
@@ -2850,7 +2867,6 @@ msgid "Import Playlist"
 msgstr ""
 
 #: PlaylistFeature#7
-msgctxt "PlaylistFeature#7"
 msgid "Export Playlist"
 msgstr ""
 
@@ -2893,13 +2909,13 @@ msgstr ""
 
 #: PlaylistFeature#17
 msgctxt "PlaylistFeature#17"
-msgid "Playlist Files (*.m3u *.pls)"
+msgid "Playlist Files (*.m3u *.m3u8 *.pls)"
 msgstr ""
 
 #: PlaylistFeature#18
 msgctxt "PlaylistFeature#18"
-msgid "M3U Playlist (*.m3u);;PLS Playlist (*.pls)"
-msgstr "M3U Playlist (*.m3u);;PLS Playlist (*.pls)"
+msgid "M3U Playlist (*.m3u);;M3U8 Playlist (*.m3u8);;PLS Playlist (*.pls)"
+msgstr ""
 
 #: PlaylistFeature#19
 msgid "A playlist by that name already exists."
@@ -3216,59 +3232,147 @@ msgid "Reloop / Exit button for Player %1"
 msgstr ""
 
 #: Ui#37
-msgid "Hotcue 1 button for Player %1"
+msgid "Setup a loop over 4 beats for Player %1"
 msgstr ""
 
 #: Ui#38
-msgid "Hotcue 2 button for Player %1"
+msgid "Halves the current loop's length for Player %1"
 msgstr ""
 
 #: Ui#39
-msgid "Hotcue 3 button for Player %1"
+msgid "Doubles the current loop's length for Player %1"
 msgstr ""
 
 #: Ui#40
-msgid "Hotcue 4 button for Player %1"
+msgid "Hotcue 1 button for Player %1"
 msgstr ""
 
 #: Ui#41
-msgid "Hotcue 1 delete button for Player %1"
+msgid "Hotcue 2 button for Player %1"
 msgstr ""
 
 #: Ui#42
-msgid "Hotcue 2 delete button for Player %1"
+msgid "Hotcue 3 button for Player %1"
 msgstr ""
 
 #: Ui#43
-msgid "Hotcue 3 delete button for Player %1"
+msgid "Hotcue 4 button for Player %1"
 msgstr ""
 
 #: Ui#44
-msgid "Hotcue 4 delete button for Player %1"
+msgid "Hotcue 1 delete button for Player %1"
 msgstr ""
 
 #: Ui#45
-msgid "Switch to the next view (library, playlist..)"
+msgid "Hotcue 2 delete button for Player %1"
 msgstr ""
 
 #: Ui#46
-msgid "Switch to the previous view (library, playlist..)"
+msgid "Hotcue 3 delete button for Player %1"
 msgstr ""
 
 #: Ui#47
-msgid "Scroll to next track in library/playlist"
+msgid "Hotcue 4 delete button for Player %1"
 msgstr ""
 
 #: Ui#48
-msgid "Scroll to previous track in library/playlist"
+msgid "Play button for Sampler %1"
 msgstr ""
 
 #: Ui#49
-msgid "Load selected track into first stopped player"
+msgid "Gain knob for Sampler %1"
 msgstr ""
 
 #: Ui#50
+msgid "Headphone listen button for Sampler %1"
+msgstr ""
+
+#: Ui#51
+msgid "BPM tap button for Sampler %1"
+msgstr ""
+
+#: Ui#52
+msgid "Keylock button for Sampler %1"
+msgstr ""
+
+#: Ui#53
+msgid "Pitch control slider for Sampler %1"
+msgstr ""
+
+#: Ui#54
+msgid "Hotcue 1 button for Sampler %1"
+msgstr ""
+
+#: Ui#55
+msgid "Hotcue 2 button for Sampler %1"
+msgstr ""
+
+#: Ui#56
+msgid "Hotcue 3 button for Sampler %1"
+msgstr ""
+
+#: Ui#57
+msgid "Hotcue 4 button for Sampler %1"
+msgstr ""
+
+#: Ui#58
+msgid "Hotcue 1 delete button for Sampler %1"
+msgstr ""
+
+#: Ui#59
+msgid "Hotcue 2 delete button for Sampler %1"
+msgstr ""
+
+#: Ui#60
+msgid "Hotcue 3 delete button for Sampler %1"
+msgstr ""
+
+#: Ui#61
+msgid "Hotcue 4 delete button for Sampler %1"
+msgstr ""
+
+#: Ui#62
+msgid "Switch to the next view (library, playlist..)"
+msgstr ""
+
+#: Ui#63
+msgid "Switch to the previous view (library, playlist..)"
+msgstr ""
+
+#: Ui#64
+msgid "Scroll to next track in library/playlist"
+msgstr ""
+
+#: Ui#65
+msgid "Scroll to previous track in library/playlist"
+msgstr ""
+
+#: Ui#66
+msgid "Load selected track into first stopped player"
+msgstr ""
+
+#: Ui#67
 msgid "Load selected track into Player %1"
+msgstr ""
+
+#: Ui#68
+msgid "Adjusts the wavelength of the flange effect"
+msgstr ""
+
+#: Ui#69
+msgid "Adjusts the intensity of the flange effect"
+msgstr ""
+
+#: Ui#70
+msgid "Adjusts the phase delay of the flange effect"
+msgstr ""
+
+#: Ui#71
+msgid "Microphone on/off"
+msgstr ""
+
+#: Ui#72
+msgid "Microphone volume"
 msgstr ""
 
 #: WSearchLineEdit#1
@@ -3312,6 +3416,33 @@ msgstr ""
 msgid "Sampler %1"
 msgstr ""
 
+#: WTrackTableView#10
+msgid ""
+"Reloading track metadata on a loaded track may cause abrupt volume changes. "
+"Are you sure?"
+msgstr ""
+
 #: WTrackTableViewHeader#1
 msgid "Show or hide columns."
 msgstr ""
+
+#~ msgid "2.045 kHz"
+#~ msgstr "2.045 kHz"
+
+#~ msgctxt "DlgPrefNoVinylDlg#21"
+#~ msgid "Apply"
+#~ msgstr "Aplică"
+
+#~ msgid "Recently Added"
+#~ msgstr "Adăugate recent"
+
+#~ msgid "All Songs"
+#~ msgstr "Toate cantecele"
+
+#~ msgctxt "MixxxApp#76"
+#~ msgid "Preferences"
+#~ msgstr "Preferințe"
+
+#~ msgctxt "PlaylistFeature#18"
+#~ msgid "M3U Playlist (*.m3u);;PLS Playlist (*.pls)"
+#~ msgstr "M3U Playlist (*.m3u);;PLS Playlist (*.pls)"

@@ -97,13 +97,18 @@ IonDiscoverDJ.shutdown = function() {
 }
 
 IonDiscoverDJ.toggle_scratch_mode_on = function (control, value, status) {
-    IonDiscoverDJ.scratchMode = true;
-    midi.sendShortMsg(0x90, IonDiscoverDJ.leds["scratch"] , IonDiscoverDJ.ledOn);
+    if(IonDiscoverDJ.scratchMode) {
+       IonDiscoverDJ.scratchMode = false;
+       midi.sendShortMsg(0x80, IonDiscoverDJ.leds["scratch"] , IonDiscoverDJ.ledOff);
+    } else {
+       IonDiscoverDJ.scratchMode = true;
+       midi.sendShortMsg(0x90, IonDiscoverDJ.leds["scratch"] , IonDiscoverDJ.ledOn);
+    }
 }
 
 IonDiscoverDJ.toggle_scratch_mode_off = function (control, value, status) {
-    IonDiscoverDJ.scratchMode = false;
-    midi.sendShortMsg(0x80, IonDiscoverDJ.leds["scratch"] , IonDiscoverDJ.ledOff);
+    //IonDiscoverDJ.scratchMode = false;
+    //midi.sendShortMsg(0x80, IonDiscoverDJ.leds["scratch"] , IonDiscoverDJ.ledOff);
 }
 
 IonDiscoverDJ.play = function (control, value, status) {
