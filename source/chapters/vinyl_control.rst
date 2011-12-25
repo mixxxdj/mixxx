@@ -61,14 +61,16 @@ Mode" provides Mixxx with both pitch and position information from the timecode,
 and allows you to seek by needle dropping on your vinyl or seeking on your
 CDJ. "Relative Mode" takes the position to be relative to your deck's starting
 point, and only controls the pitch in Mixxx. It is not possible to seek using
-your deck in relative mode. "Scratch Mode" is an enhanced version of relative
-mode, and only applies to FinalScratch vinyl. Scratch mode improves performance
-slightly while scratching, but is not necessary for better performing timecodes
-like Serato. Finally, "Needle-skip Prevention" allows Mixxx to detect and ignore
-small changes in needle position, such as when you've accidentally bumped your
-turntable. This can be advantageous in a live performance environment, but the
-downside is that it reduces responsiveness during scratching. Consequently,
-disabling needle-skip prevention is recommended for scratch performances.
+your deck in relative mode. "Constant Mode" is a special mode that is usually
+only activated when Mixxx needs to keep playing a track even if the vinyl 
+control signal isn't present.  Constant mode is automatically enabled when the
+needle reaches the end of a vinyl control record, or if "Needle-skip Prevention"
+is enabled and a needle skip is detected. "Needle-skip Prevention" allows Mixxx
+to detect and ignore small changes in needle position, such as when you've 
+accidentally bumped your turntable. This can be advantageous in a live
+performance environment, but the downside is that it reduces responsiveness 
+during scratching. Consequently, disabling needle-skip prevention is
+recommended for scratch performances.
 
 Signal Quality
 ==============
@@ -81,12 +83,18 @@ causing absolute mode to behave like relative mode. For more information on
 improving signal quality and troubleshooting, please see the vinyl control wiki
 page.
 
-Mixxx represents your timecode signal quality as a pair of real-time bar
-graphs. The two graphs correspond to your "Deck 1" and "Deck 2" input
-devices. The left-most column in each graph represents the overall status of the
-timecode signal. A full bar with an "OK!" indicates everything is working
-well. The latter two columns in the graph represent the raw, unprocessed stereo
-signal coming from your decks. A good signal will appear as a pair of
-fluctuating green bars, each of which will be out of phase. Red bars indicate
-the volume is too low or two high, and the "Turntable Input Preamp" setting can
+Mixxx represents your timecode signal quality as a circular representation of 
+the vinyl control audio signal itself. The two graphs correspond to your "Deck 1" and "Deck 2" input
+devices.  If your vinyl signal is working, you should see a round, green circle
+drawn with two lines. This vinyl "doughnut" should be as circular as possible,
+and the lines should be clear with a minimum amount of fuzz.  As the vinyl signal
+gets worse, you'll see the color of the doughnut change from green to red.  An
+otherwise good-looking doughnut that is solid red indicates an incorrect choice 
+of vinyl control source.  Maybe you selected side B of the Serato vinyl, but
+your record is on side A.  Also, there should be a rotating radar sweep that represents
+the direction your record is spinning.  If the radar sweep is going backwards,
+you probably have a wiring problem in your turntable.
+
+The doughnut should be about half the width of the graph.  If the volume is too low or two high, 
+the doughnut will be much smaller or much larger.  The "Turntable Input Preamp" setting can
 be adjusted to boost the volume.
