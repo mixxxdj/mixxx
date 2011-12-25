@@ -8,22 +8,22 @@ msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2011-12-22 11:41+0200\n"
-"PO-Revision-Date: 2011-12-22 09:00+0000\n"
-"Last-Translator: Max Huttunen <Unknown>\n"
+"PO-Revision-Date: 2011-12-25 04:11+0000\n"
+"Last-Translator: Ilkka Tuohela <hile@iki.fi>\n"
 "Language-Team: Finnish <fi@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-12-23 07:45+0000\n"
+"X-Launchpad-Export-Date: 2011-12-25 05:01+0000\n"
 "X-Generator: Launchpad (build 14560)\n"
 
 #: AutoDJFeature#1
 msgid "Auto DJ"
-msgstr "Auto DJ"
+msgstr "Auto-DJ"
 
 #: BaseSqlTableModel#1
 msgid "Played"
-msgstr "Soitetut"
+msgstr "Soitettu"
 
 #: BaseSqlTableModel#2
 msgctxt "BaseSqlTableModel#2"
@@ -121,7 +121,7 @@ msgstr "Irrotettavat laitteet"
 #: BrowseFeature#4
 msgctxt "BrowseFeature#4"
 msgid "Mixxx Library"
-msgstr "Mixxx kirjasto"
+msgstr "Mixxx-kirjasto"
 
 #: BrowseFeature#5
 msgid "Home"
