@@ -18,6 +18,9 @@
 	the resulting work only under the same or similar license to this one.
 
 	CHANGELOG
+	v1.10.0.17	(22/12/2011)
+	* Update: Attach right-click of SYNC button to beatsync_tempo, lp:905800
+
 	v1.10.0.16	(14/12/2011)
 	* Update: Unify word choice in tooltips, replaces "player" with "deck", lp:879084
 
@@ -26,11 +29,11 @@
 	  working around a QT issue, lp:712718
 
 	v1.10.0.14	(26/11/2011)
-	* Feature: Added "ProgressColor" & "ProgressAlpha" for track analysis progress visualization 
+	* Feature: Added "ProgressColor" & "ProgressAlpha" for track analysis progress visualization
 	  in waveform overview, lp:803740
 
 	v1.10.0.13	(02/11/2011)
-	* Fix: use "visual_bpm" key instead "bpm" so bpm display does not updates too quickly 
+	* Fix: use "visual_bpm" key instead "bpm" so bpm display does not updates too quickly
 
 	v1.10.0.12	(29/10/2011)
 	* Fix: Selected sidebar item's branch indicator shows wrong color when out of focus
@@ -80,7 +83,7 @@
 	v1.10.0.01	(21/03/2011)
 	* Introduce new version number scheme for skins that follows the target Mixxx versioning
 	  <Mixxx.major>.<Mixxx.minor>.<Mixxx.patch>.<Skin.patch>
-	* Added Mixxx 1.10.0 feature: 
+	* Added Mixxx 1.10.0 feature:
 	  Tracks duration can be displayed independent from tracks remaining time using Trackproperty
 	* Updated text positioning & tooltips accordingly
 
@@ -161,7 +164,7 @@
 	Debugging:
 	To outline WidgetGroups change all occurrences (exept this one ;-) of
 	"QGroupBox { border: 0px solid" to "QGroupBox { border: 1px solid"
-	
+
 	Parent WidgedGroups are outlined one pixel solid red;
 		Child WidgedGroups are outlined one pixel solid yellow;
 			Grandchild WidgedGroups are outlined one pixel solid green;
@@ -2973,7 +2976,7 @@
 				<Children>
 					<!--
 					**********************************************
-					Visual- Vinyl control status indicator 
+					Visual- Vinyl control status indicator
 					// we need 4 of them for top-bottom-left-right
 					// parts overlapping the waveform & spinning vinyl are not visible
 					**********************************************
@@ -3034,8 +3037,8 @@
 						<Layout>horizontal</Layout>
 						<Style>QGroupBox { border: 0px solid yellow; } QWidget { margin: 0; padding: 0; }</Style>
 						<Children>
-							<!--If you want the waveforms center to adjust when resizing in a collapsing widget 
-							(e.g. to display spinning vinyl widget like in this skin) don't put the Waveform in a widget group, 
+							<!--If you want the waveforms center to adjust when resizing in a collapsing widget
+							(e.g. to display spinning vinyl widget like in this skin) don't put the Waveform in a widget group,
 							and don't specify the Waveform's <Size>. So you would have:
 							Parent WidgetGroup
 								Waveform Widget (no Widgetgroup)
@@ -3399,7 +3402,7 @@
 										<Children>
 											<!--
 											**********************************************
-											Vinyl- Enabled 
+											Vinyl- Enabled
 											//This control is disabled to prevent turning vinylcontrol(VC) off
 											by accident. Only way to activate VC is Menu->Options (or shortcut)
 											Leaving example in here for reference
@@ -3428,7 +3431,7 @@
 											-->
 											<!--
 											**********************************************
-											Vinyl- Status 
+											Vinyl- Status
 											// Vinyl status indicators are inside the decks WidgetGroups
 											**********************************************
 											-->
@@ -3526,7 +3529,7 @@
 							<EmitOnDownPress>false</EmitOnDownPress>
 						</Connection>
 					</Overview>
-		
+
 					<!--
 					**********************************************
 					Text- Track Title
@@ -3673,7 +3676,7 @@
 					**********************************************
 					-->
 					<PushButton>
-						<Tooltip>Syncronize tempo&#10;Attempts to automatically match the tempo of the track in this channel&#10;with tempo of the track in the other channel, based on the calculated BPM.&#10;</Tooltip>
+						<Tooltip>Syncronize&#10;Left-click: Syncs the tempo (BPM) and phase to that of the other track, &#10;if BPM is detected on both&#10;Right-click: Syncs the tempo (BPM) to that of the other track,&#10;if BPM is detected on both&#10;</Tooltip>
 						<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 						<NumberStates>1</NumberStates>
 						<State>
@@ -3686,6 +3689,11 @@
 							<ConfigKey>[Channel1],beatsync</ConfigKey>
 							<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 							<ButtonState>LeftButton</ButtonState>
+						</Connection>
+						<Connection>
+							<ConfigKey>[Channel1],beatsync_tempo</ConfigKey>
+							<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+							<ButtonState>RightButton</ButtonState>
 						</Connection>
 					</PushButton>
 
@@ -4458,7 +4466,7 @@
 				<Children>
 					<!--
 					**********************************************
-					Visual- Vinyl control status indicator 
+					Visual- Vinyl control status indicator
 					// we need 4 of them for top-bottom-left-right
 					// parts overlapping the waveform & spinning vinyl are not visible
 					**********************************************
@@ -4519,8 +4527,8 @@
 						<Layout>horizontal</Layout>
 						<Style>QGroupBox { border: 0px solid yellow; } QWidget { margin: 0; padding: 0; }</Style>
 						<Children>
-							<!--If you want the waveforms center to adjust when resizing in a collapsing widget 
-							(e.g. to display spinning vinyl widget like in this skin) don't put the Waveform in a widget group, 
+							<!--If you want the waveforms center to adjust when resizing in a collapsing widget
+							(e.g. to display spinning vinyl widget like in this skin) don't put the Waveform in a widget group,
 							and don't specify the Waveform's <Size>. So you would have:
 							Parent WidgetGroup
 								Waveform Widget (no Widgetgroup)
@@ -4884,7 +4892,7 @@
 										<Children>
 											<!--
 											**********************************************
-											Vinyl- Enabled 
+											Vinyl- Enabled
 											//This control is disabled to prevent turning vinylcontrol(VC) off
 											by accident. Only way to activate VC is Menu->Options (or shortcut)
 											Leaving example in here for reference
@@ -4913,7 +4921,7 @@
 											-->
 											<!--
 											**********************************************
-											Vinyl- Status 
+											Vinyl- Status
 											// Vinyl status indicators are inside the decks WidgetGroups
 											**********************************************
 											-->
@@ -5011,7 +5019,7 @@
 							<EmitOnDownPress>false</EmitOnDownPress>
 						</Connection>
 					</Overview>
-		
+
 					<!--
 					**********************************************
 					Text- Track Title
@@ -5158,7 +5166,7 @@
 					**********************************************
 					-->
 					<PushButton>
-						<Tooltip>Syncronize tempo&#10;Attempts to automatically match the tempo of the track in this channel&#10;with tempo of the track in the other channel, based on the calculated BPM.&#10;</Tooltip>
+						<Tooltip>Syncronize&#10;Left-click: Syncs the tempo (BPM) and phase to that of the other track, &#10;if BPM is detected on both&#10;Right-click: Syncs the tempo (BPM) to that of the other track,&#10;if BPM is detected on both&#10;</Tooltip>
 						<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 						<NumberStates>1</NumberStates>
 						<State>
@@ -5171,6 +5179,11 @@
 							<ConfigKey>[Channel2],beatsync</ConfigKey>
 							<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 							<ButtonState>LeftButton</ButtonState>
+						</Connection>
+						<Connection>
+							<ConfigKey>[Channel2],beatsync_tempo</ConfigKey>
+							<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+							<ButtonState>RightButton</ButtonState>
 						</Connection>
 					</PushButton>
 
@@ -5909,7 +5922,7 @@
 									<ConnectValueToWidget>false</ConnectValueToWidget>
 								</Connection>
 								<Connection>
-									<ConfigKey>[Channel1],hotcue_4_enabled</ConfigKey>
+									<ConfigKey>[Channel2],hotcue_4_enabled</ConfigKey>
 									<ConnectValueFromWidget>false</ConnectValueFromWidget>
 								</Connection>
 							</PushButton>
@@ -5929,7 +5942,7 @@
 	WidgetGroup : Microphone
 	############################################################################################
 	############################################################################################
-	--> 
+	-->
 	<WidgetGroup>
 		<Pos>10,206</Pos>
 		<Size>80,50</Size>

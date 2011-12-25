@@ -7,6 +7,7 @@
 #include <QMessageBox>
 
 #include "library/browse/browsetablemodel.h"
+#include "library/browse/browsethread.h"
 #include "soundsourceproxy.h"
 #include "mixxxutils.cpp"
 #include "playerinfo.h"
