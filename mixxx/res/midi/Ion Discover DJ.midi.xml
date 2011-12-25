@@ -221,6 +221,24 @@
                     </options>
                 </control>
                 <control>
+                    <status>0x80</status>
+                    <midino>0x33</midino>
+                    <group>[Channel1]</group>
+                    <key>IonDiscoverDJ.reversek</key>
+                    <options>
+                        <Script-Binding/>
+                    </options>
+                </control>
+                <control>
+                    <status>0x80</status>
+                    <midino>0x3c</midino>
+                    <group>[Channel2]</group>
+                    <key>IonDiscoverDJ.reversek</key>
+                    <options>
+                        <Script-Binding/>
+                    </options>
+                </control>
+                <control>
                     <status>0x90</status>
                     <midino>0x34</midino>
                     <group>[Channel2]</group>

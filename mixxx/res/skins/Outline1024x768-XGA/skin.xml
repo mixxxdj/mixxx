@@ -17,6 +17,9 @@
 	along with this program.  If not, see http://www.gnu.org/licenses
 
 	CHANGELOG
+	v1.10.0.10	(22/12/2011)
+	* Update: Attach right-click of SYNC button to beatsync_tempo, lp:905800
+
 	v1.10.0.09	(14/12/2011)
 	* Update: Unify word choice in tooltips, replaces "player" with "deck", lp:879084
 
@@ -25,11 +28,11 @@
 	  working around a QT issue, lp:712718
 
 	v1.10.0.07	(26/11/2011)
-	* Feature: Added "ProgressColor" & "ProgressAlpha" for track analysis progress visualization 
+	* Feature: Added "ProgressColor" & "ProgressAlpha" for track analysis progress visualization
 	  in waveform overview, lp:803740
 
 	v1.10.0.06	(02/11/2011)
-	* Fix: use "visual_bpm" key instead "bpm" so bpm display does not updates too quickly 
+	* Fix: use "visual_bpm" key instead "bpm" so bpm display does not updates too quickly
 
 	v1.10.0.05	(29/10/2011)
 	* Fix: Selected sidebar item's branch indicator shows wrong color when out of focus
@@ -104,7 +107,7 @@
 	Debugging:
 	To outline WidgetGroups change all occurrences (exept this one ;-) of
 	"QGroupBox { border: 0px solid" to "QGroupBox { border: 1px solid"
-	
+
 	Parent WidgedGroups are outlined one pixel solid red;
 		Child WidgedGroups are outlined one pixel solid yellow;
 			Grandchild WidgedGroups are outlined one pixel solid green;
@@ -207,7 +210,7 @@
 		QTableView::indicator:unchecked { background: url(skin:/style/style_checkbox_unchecked.png);}
 
 		QHeaderView { font: 11px/13px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; }
-		
+
 		<!--library search bar-->
 		WSearchLineEdit { padding: 2px; border: 1px solid #656565; font: 13px/15px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;}
 		WSearchLineEdit:focus {padding: 2px; border: 2px solid #FF6600; font: 13px/15px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; background: rgba(255, 102, 0,20);}
@@ -508,7 +511,7 @@
 				<Children>
 					<!--
 					**********************************************
-					Vinyl- Status 
+					Vinyl- Status
 					// Vinyl status indicators are inside the decks WidgetGroups
 					**********************************************
 					-->
@@ -610,8 +613,8 @@
 				<Style>QGroupBox { border: 0px solid yellow; } QWidget { margin: 0; padding: 0; }</Style>
 				<Layout>vertical</Layout>
 				<Children>
-					<!--If you want the waveforms center to adjust when resizing in a collapsing widget 
-					(e.g. to display spinning vinyl widget like in this skin) don't put the Waveform in a widget group, 
+					<!--If you want the waveforms center to adjust when resizing in a collapsing widget
+					(e.g. to display spinning vinyl widget like in this skin) don't put the Waveform in a widget group,
 					and don't specify the Waveform's <Size>. So you would have:
 					Parent WidgetGroup
 						Waveform Widget (no Widgetgroup)
@@ -918,7 +921,7 @@
 							<Color>#AE5CFF</Color>
 							<TextColor>#FFFFFF</TextColor>
 						</Mark>
-				
+
 						<Mark>
 							<Control>cue_point</Control>
 							<Text> CUE </Text>
@@ -1222,7 +1225,7 @@
 							<Color>#AE5CFF</Color>
 							<TextColor>#FFFFFF</TextColor>
 						</Mark>
-				
+
 						<Mark>
 							<Control>cue_point</Control>
 							<Text> CUE </Text>
@@ -1268,7 +1271,7 @@
 				<Children>
 					<!--
 					**********************************************
-					Vinyl- Status 
+					Vinyl- Status
 					// Vinyl status indicators are inside the decks WidgetGroups
 					**********************************************
 					-->
@@ -2611,7 +2614,7 @@
 					<ConfigKey>[Channel2],repeat</ConfigKey>
 				</Connection>
 			</PushButton>
-			
+
 			<!--
 			**********************************************
 			Button- Eject
@@ -2748,7 +2751,7 @@
 	**********************************************
 	-->
 	<PushButton>
-		<Tooltip>Syncronize tempo&#10;Attempts to automatically match the tempo of the track in this channel&#10;with tempo of the track in the other channel, based on the calculated BPM.&#10;</Tooltip>
+		<Tooltip>Syncronize&#10;Left-click: Syncs the tempo (BPM) and phase to that of the other track, &#10;if BPM is detected on both&#10;Right-click: Syncs the tempo (BPM) to that of the other track,&#10;if BPM is detected on both&#10;</Tooltip>
 		<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 		<NumberStates>1</NumberStates>
 		<State>
@@ -2762,9 +2765,14 @@
 			<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 			<ButtonState>LeftButton</ButtonState>
 		</Connection>
+		<Connection>
+			<ConfigKey>[Channel1],beatsync_tempo</ConfigKey>
+			<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+			<ButtonState>RightButton</ButtonState>
+		</Connection>
 	</PushButton>
 	<PushButton>
-		<Tooltip>Syncronize tempo&#10;Attempts to automatically match the tempo of the track in this channel&#10;with tempo of the track in the other channel, based on the calculated BPM.&#10;</Tooltip>
+		<Tooltip>Syncronize&#10;Left-click: Syncs the tempo (BPM) and phase to that of the other track, &#10;if BPM is detected on both&#10;Right-click: Syncs the tempo (BPM) to that of the other track,&#10;if BPM is detected on both&#10;</Tooltip>
 		<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 		<NumberStates>1</NumberStates>
 		<State>
@@ -2777,6 +2785,11 @@
 			<ConfigKey>[Channel2],beatsync</ConfigKey>
 			<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 			<ButtonState>LeftButton</ButtonState>
+		</Connection>
+		<Connection>
+			<ConfigKey>[Channel2],beatsync_tempo</ConfigKey>
+			<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+			<ButtonState>RightButton</ButtonState>
 		</Connection>
 	</PushButton>
 

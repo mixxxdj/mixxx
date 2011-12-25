@@ -20,13 +20,16 @@ class BpmControl : public EngineControl {
     double getBpm();
 
   public slots:
-    void slotSetEngineBpm(double);
-    void slotFileBpmChanged(double);
-    void slotControlBeatSync(double);
+
     virtual void trackLoaded(TrackPointer pTrack);
     virtual void trackUnloaded(TrackPointer pTrack);
 
   private slots:
+    void slotSetEngineBpm(double);
+    void slotFileBpmChanged(double);
+    void slotControlBeatSync(double);
+    void slotControlBeatSyncPhase(double);
+    void slotControlBeatSyncTempo(double);
     void slotTapFilter(double,int);
     void slotBpmTap(double);
     void slotRateChanged(double);
@@ -34,7 +37,8 @@ class BpmControl : public EngineControl {
     void slotBeatsTranslate(double);
 
   private:
-    void adjustPhase();
+    bool syncTempo();
+    bool syncPhase();
 
     // ControlObjects that come from EngineBuffer
     ControlObject* m_pPlayButton;
@@ -53,6 +57,8 @@ class BpmControl : public EngineControl {
 
     /** Button for sync'ing with the other EngineBuffer */
     ControlPushButton* m_pButtonSync;
+    ControlPushButton* m_pButtonSyncPhase;
+    ControlPushButton* m_pButtonSyncTempo;
 
     // Button that translates the beats so the nearest beat is on the current
     // playposition.
