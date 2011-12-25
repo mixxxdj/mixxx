@@ -28,6 +28,7 @@ class AnalyserBeats: public Analyser {
     VampAnalyser* mvamp;
     int m_iSampleRate, m_iTotalSamples;
     int m_iMinBpm, m_iMaxBpm;
+    double m_dBpm;
     QString m_sSubver;
 };
 

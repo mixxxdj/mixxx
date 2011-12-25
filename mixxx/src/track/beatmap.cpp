@@ -18,12 +18,13 @@ BeatMap::BeatMap(TrackPointer pTrack, const QByteArray* pByteArray) :
     connect(pTrack.data(), SIGNAL(bpmUpdated(double)),
             this, SLOT(slotTrackBpmUpdated(double)),
             Qt::DirectConnection);
-    slotTrackBpmUpdated(pTrack->getBpm());
+    //slotTrackBpmUpdated(pTrack->getBpm());
 
     if (pByteArray != NULL) {
         readByteArray(pByteArray);
     }
     m_ssubVer="";
+    m_dLastFrame = 0;
 }
 
 BeatMap::~BeatMap() {
@@ -77,6 +78,7 @@ void BeatMap::createFromVector(QVector<double> beats, QString SubVer) {
     QMutexLocker locker(&m_mutex);
     if (beats.isEmpty())
        return;
+    m_ssubVer = SubVer;
     double previous_beatpos = -1;
     SignedBeat beat;
     QVectorIterator<double> i(beats);
@@ -94,7 +96,7 @@ void BeatMap::createFromVector(QVector<double> beats, QString SubVer) {
         }
     }
     m_dLastFrame = m_signedBeatList.last().position;
-    m_ssubVer = SubVer;
+
 
 //    locker.unlock();
 //    emit( updated());
@@ -106,6 +108,7 @@ QString BeatMap::getVersion() const {
     return QString("BeatMap-1.0_").append(m_ssubVer);
 }
 void BeatMap::setSubVersion (QString Ver){
+
     m_ssubVer = Ver;
 
 }
@@ -384,7 +387,7 @@ void BeatMap::slotTrackBpmUpdated(double dBpm) {
      *
      */
     QMutexLocker locker(&m_mutex);
-    if(!isValid())
+    if(!isValid() || m_dLastFrame == 0)
         return;
     double dtrack_Bpm = this->calculateBpm(m_signedBeatList[0], m_signedBeatList.last());
     if ( fabs(dBpm-dtrack_Bpm)<0.01 || dtrack_Bpm <= 0 || dBpm <= 0)
@@ -463,9 +466,9 @@ void BeatMap::slotTrackBpmUpdated(double dBpm) {
 
         //Adding some beats at the end if we shrank too much the BeatList.
         double frame = (m_signedBeatList.last()).position;
-        while (frame < m_dLastFrame - floor(60.0 * m_iSampleRate / dtrack_Bpm)){
+        while (frame < m_dLastFrame ){
             //qDebug()<<"Adding beats";
-            frame +=  floor(60.0 * m_iSampleRate / dtrack_Bpm);
+            frame +=  floor(60.0 * m_iSampleRate / dBpm);
             Beat.position = frame;
             Beat.isOn = true;
             m_signedBeatList.append(Beat);
