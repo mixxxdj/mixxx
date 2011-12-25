@@ -98,10 +98,10 @@ void AnalyserBeats::finalise(TrackPointer tio) {
 
 
    if(!beats.isEmpty()){
-
+       m_dBpm = BeatTools::calculateBpm(beats, m_iSampleRate, m_iMinBpm, m_iMaxBpm);
        BeatsPointer pBeats = BeatFactory::makeBeatMap(tio, correctedBeats(beats,m_bDisableBeatCorrection),m_sSubver);
        tio->setBeats(pBeats);
-       tio->setBpm(pBeats->getBpm());
+       tio->setBpm(m_dBpm);
    }
    else{
        qDebug() << "Could not detect beat positions from Vamp.";
@@ -126,10 +126,10 @@ QVector<double> AnalyserBeats::correctedBeats (QVector<double> rawbeats, bool by
      * What is the problem? Almost all modern dance music from the last decades
      * refer to 4/4 signatures. Thus, we must 'correct' the beat positions of Vamp
      */
-    double corrected_global_bpm = BeatTools::calculateBpm(rawbeats, m_iSampleRate, m_iMinBpm, m_iMaxBpm);
+
 
     QVector <double> corrbeats;
-    double BpmFrame = (60.0 * m_iSampleRate / corrected_global_bpm);
+    double BpmFrame = (60.0 * m_iSampleRate / m_dBpm);
     /*
      * We start building a grid:
      */
