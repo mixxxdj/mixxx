@@ -1709,7 +1709,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>New</source>
-            <translation>Neue</translation>
+            <translation>Neu</translation>
         </message>
         <message>
             <source>All</source>
