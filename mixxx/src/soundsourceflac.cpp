@@ -144,8 +144,20 @@ inline unsigned long SoundSourceFLAC::length() {
 
 int SoundSourceFLAC::parseHeader() {
     setType("flac");
-    QByteArray fileName(m_file.fileName().toUtf8());
-    TagLib::FLAC::File f(fileName.constData());
+#ifdef __WINDOWS__
+    /* From Tobias: A Utf-8 string did not work on my Windows XP (German edition)
+     * If you try this conversion, f.isValid() will return false in many cases
+     * and processTaglibFile() will fail
+     *
+     * The method toLocal8Bit() returns the local 8-bit representation of the string as a QByteArray.
+     * The returned byte array is undefined if the string contains characters not supported
+     * by the local 8-bit encoding.
+     */
+    QByteArray qBAFilename = m_qFilename.toLocal8Bit();
+#else
+    QByteArray qBAFilename = m_qFilename.toUtf8();
+#endif
+    TagLib::FLAC::File f(qBAFilename.constData());
     bool result = processTaglibFile(f);
     TagLib::ID3v2::Tag *id3v2(f.ID3v2Tag());
     TagLib::Ogg::XiphComment *xiph(f.xiphComment());
