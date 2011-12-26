@@ -163,8 +163,22 @@ int SoundSourceSndFile::parseHeader()
     bool is_flac = location.endsWith("flac", Qt::CaseInsensitive);
     bool is_wav = location.endsWith("wav", Qt::CaseInsensitive);
 
+#ifdef __WINDOWS__
+    /* From Tobias: A Utf-8 string did not work on my Windows XP (German edition)
+     * If you try this conversion, f.isValid() will return false in many cases
+     * and processTaglibFile() will fail
+     *
+     * The method toLocal8Bit() returns the local 8-bit representation of the string as a QByteArray.
+     * The returned byte array is undefined if the string contains characters not supported
+     * by the local 8-bit encoding.
+     */
+    QByteArray qBAFilename = m_qFilename.toLocal8Bit();
+#else
+    QByteArray qBAFilename = m_qFilename.toUtf8();
+#endif
+
     if (is_flac) {
-        TagLib::FLAC::File f(location.toUtf8().constData());
+        TagLib::FLAC::File f(qBAFilename.constData());
         result = processTaglibFile(f);
         TagLib::ID3v2::Tag* id3v2 = f.ID3v2Tag();
         TagLib::Ogg::XiphComment* xiph = f.xiphComment();
@@ -175,7 +189,7 @@ int SoundSourceSndFile::parseHeader()
             processXiphComment(xiph);
         }
     } else if (is_wav) {
-        TagLib::RIFF::WAV::File f(location.toUtf8().constData());
+        TagLib::RIFF::WAV::File f(qBAFilename.constData());
         result = processTaglibFile(f);
 
         TagLib::ID3v2::Tag* id3v2 = f.tag();
@@ -203,7 +217,7 @@ int SoundSourceSndFile::parseHeader()
         }
     } else {
         // Try AIFF
-        TagLib::RIFF::AIFF::File f(location.toUtf8().constData());
+        TagLib::RIFF::AIFF::File f(qBAFilename.constData());
         result = processTaglibFile(f);
 
         TagLib::ID3v2::Tag* id3v2 = f.tag();

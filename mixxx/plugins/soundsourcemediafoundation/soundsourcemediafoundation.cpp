@@ -377,6 +377,7 @@ int SoundSourceMediaFoundation::parseHeader()
 {
     setType("m4a");
 
+    // Must be toLocal8Bit since Windows fopen does not do UTF-8
     TagLib::MP4::File f(getFilename().toLocal8Bit().constData());
     bool result = processTaglibFile(f);
     TagLib::MP4::Tag* tag = f.tag();

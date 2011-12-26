@@ -76,17 +76,33 @@ DlgPrefEQ::~DlgPrefEQ()
 
 void DlgPrefEQ::loadSettings()
 {
-    if (m_pConfig->getValueString(ConfigKey(CONFIG_KEY, "HiEQFrequency")) == QString("")) {
-        // apparently we don't have any settings, set defaults
+    QString highEqCourse = m_pConfig->getValueString(ConfigKey(CONFIG_KEY, "HiEQFrequency"));
+    QString highEqPrecise = m_pConfig->getValueString(ConfigKey(CONFIG_KEY, "HiEQFrequencyPrecise"));
+    QString lowEqCourse = m_pConfig->getValueString(ConfigKey(CONFIG_KEY, "LoEQFrequency"));
+    QString lowEqPrecise = m_pConfig->getValueString(ConfigKey(CONFIG_KEY, "LoEQFrequencyPrecise"));
+
+    double lowEqFreq = 0.0;
+    double highEqFreq = 0.0;
+
+    // Precise takes precedence over course.
+    lowEqFreq = lowEqCourse.isEmpty() ? lowEqFreq : lowEqCourse.toDouble();
+    lowEqFreq = lowEqPrecise.isEmpty() ? lowEqFreq : lowEqPrecise.toDouble();
+    highEqFreq = highEqCourse.isEmpty() ? highEqFreq : highEqCourse.toDouble();
+    highEqFreq = highEqPrecise.isEmpty() ? highEqFreq : highEqPrecise.toDouble();
+
+    if (lowEqFreq == 0.0 || highEqFreq == 0.0 || lowEqFreq == highEqFreq) {
         CheckBoxLoFi->setChecked(true);
         setDefaultShelves();
+        lowEqFreq = m_pConfig->getValueString(ConfigKey(CONFIG_KEY, "LoEQFrequencyPrecise")).toDouble();
+        highEqFreq = m_pConfig->getValueString(ConfigKey(CONFIG_KEY, "HiEQFrequencyPrecise")).toDouble();
     }
+
     SliderHiEQ->setValue(
-        getSliderPosition(m_pConfig->getValueString(ConfigKey(CONFIG_KEY, "HiEQFrequency")).toDouble(),
+        getSliderPosition(highEqFreq,
                           SliderHiEQ->minimum(),
                           SliderHiEQ->maximum()));
     SliderLoEQ->setValue(
-        getSliderPosition(m_pConfig->getValueString(ConfigKey(CONFIG_KEY, "LoEQFrequency")).toDouble(),
+        getSliderPosition(lowEqFreq,
                           SliderLoEQ->minimum(),
                           SliderLoEQ->maximum()));
 
@@ -104,6 +120,8 @@ void DlgPrefEQ::setDefaultShelves()
 {
     m_pConfig->set(ConfigKey(CONFIG_KEY, "HiEQFrequency"), ConfigValue(2500));
     m_pConfig->set(ConfigKey(CONFIG_KEY, "LoEQFrequency"), ConfigValue(250));
+    m_pConfig->set(ConfigKey(CONFIG_KEY, "HiEQFrequencyPrecise"), ConfigValue(2500.0));
+    m_pConfig->set(ConfigKey(CONFIG_KEY, "LoEQFrequencyPrecise"), ConfigValue(250.0));
 }
 
 /** Resets settings, leaves LOFI box checked asis.
@@ -140,9 +158,10 @@ void DlgPrefEQ::slotUpdateHiEQ()
     } else {
         TextHiEQ->setText( QString("%1 kHz").arg((int)m_highEqFreq / 1000.));
     }
-    QString str;
-    str = str.setNum(m_highEqFreq, 'f');
-    m_pConfig->set(ConfigKey(CONFIG_KEY, "HiEQFrequency"), ConfigValue(str));
+    m_pConfig->set(ConfigKey(CONFIG_KEY, "HiEQFrequency"),
+                   ConfigValue(QString::number(static_cast<int>(m_highEqFreq))));
+    m_pConfig->set(ConfigKey(CONFIG_KEY, "HiEQFrequencyPrecise"),
+                   ConfigValue(QString::number(m_highEqFreq, 'f')));
 
     slotApply();
 }
@@ -162,16 +181,17 @@ void DlgPrefEQ::slotUpdateLoEQ()
     } else {
         TextLoEQ->setText(QString("%1 kHz").arg((int)m_lowEqFreq / 1000.));
     }
-    QString str;
-    str = str.setNum(m_lowEqFreq, 'f');
-    m_pConfig->set(ConfigKey(CONFIG_KEY, "LoEQFrequency"), ConfigValue(str));
+    m_pConfig->set(ConfigKey(CONFIG_KEY, "LoEQFrequency"),
+                   ConfigValue(QString::number(static_cast<int>(m_lowEqFreq))));
+    m_pConfig->set(ConfigKey(CONFIG_KEY, "LoEQFrequencyPrecise"),
+                   ConfigValue(QString::number(m_lowEqFreq, 'f')));
 
     slotApply();
 }
 
 int DlgPrefEQ::getSliderPosition(double eqFreq, int minValue, int maxValue)
 {
-    if(eqFreq >= kFrequencyUpperLimit) {
+    if (eqFreq >= kFrequencyUpperLimit) {
         return maxValue;
     } else if (eqFreq <= kFrequencyLowerLimit) {
         return minValue;

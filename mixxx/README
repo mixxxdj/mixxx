@@ -32,13 +32,15 @@ You can delete it by running:
 
 * INSTALL **************************************************
 Mixxx has the following dependencies:
-- fftw3
 - libid3tag
 - libmad
 - libogg
 - libvorbis
 - libvorbisfile
 - libsndfile
+- libflac
+- libshout
+- libhss1394
 - taglib (New in 1.9!)
 - PortAudio-v19
 - portmidi

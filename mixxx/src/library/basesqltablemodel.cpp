@@ -127,7 +127,7 @@ QString BaseSqlTableModel::orderByClause() const {
 
     QString s;
     s.append(QLatin1String("ORDER BY "));
-    QString sort_field = QString("%1.%2").arg(m_tableName).arg(field);
+    QString sort_field = QString("%1.%2").arg(m_tableName, field);
     s.append(sort_field);
 
     s.append((m_eSortOrder == Qt::AscendingOrder) ? QLatin1String(" ASC") :
@@ -170,7 +170,7 @@ void BaseSqlTableModel::select() {
     QString columns = m_tableColumnsJoined;
     QString orderBy = orderByClause();
     QString queryString = QString("SELECT %1 FROM %2 %3")
-            .arg(columns).arg(m_tableName).arg(orderBy);
+            .arg(columns, m_tableName, orderBy);
 
     if (sDebug) {
         qDebug() << this << "select() executing:" << queryString;

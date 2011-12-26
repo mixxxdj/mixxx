@@ -161,10 +161,6 @@ class Qt(Dependence):
             build.env.Append(LIBS = 'QtWebKit4')
             build.env.Append(LIBS = 'QtNetwork4')
             build.env.Append(LIBS = 'QtOpenGL4')
-            # Tobias: Don't remove this line
-            # I used the Windows API in foldertreemodel.cpp
-            # to quickly test if a folder has subfolders
-            build.env.Append(LIBS = 'shell32');
 
         # Set Qt include paths for non-OSX
         if not build.platform_is_osx:
@@ -623,6 +619,11 @@ class MixxxCore(Feature):
             # Need this on Windows until we have UTF16 support in Mixxx
             build.env.Append(CPPDEFINES='UNICODE')
             build.env.Append(CPPDEFINES='WIN%s' % build.bitwidth) # WIN32 or WIN64
+            # Tobias: Don't remove this line
+            # I used the Windows API in foldertreemodel.cpp
+            # to quickly test if a folder has subfolders
+            build.env.Append(LIBS = 'shell32');
+
 
         elif build.platform_is_linux:
             build.env.Append(CPPDEFINES='__LINUX__')

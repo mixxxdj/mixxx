@@ -18,6 +18,9 @@
 	the resulting work only under the same or similar license to this one.
 
 	CHANGELOG
+	v1.10.0.09	(22/12/2011)
+	* Update: Attach right-click of SYNC button to beatsync_tempo, lp:905800
+
 	v1.10.0.08	(14/12/2011)
 	* Update: Unify word choice in tooltips, replaces "player" with "deck", lp:879084
 
@@ -26,11 +29,11 @@
 	  working around a QT issue, lp:712718
 
 	v1.10.0.06	(26/11/2011)
-	* Feature: Added "ProgressColor" & "ProgressAlpha" for track analysis progress visualization 
+	* Feature: Added "ProgressColor" & "ProgressAlpha" for track analysis progress visualization
 	  in waveform overview, lp:803740
 
 	v1.10.0.05	(02/11/2011)
-	* Fix: use "visual_bpm" key instead "bpm" so bpm display does not updates too quickly 
+	* Fix: use "visual_bpm" key instead "bpm" so bpm display does not updates too quickly
 
 	v1.10.0.04	(29/10/2011)
 	* Fix: Selected sidebar item's branch indicator shows wrong color when out of focus
@@ -45,7 +48,7 @@
 	v1.10.0.01	(21/03/2011)
 	* Introduce new version number scheme for skins that follows the target Mixxx versioning
 	  <Mixxx.major>.<Mixxx.minor>.<Mixxx.patch>.<Skin.patch>
-	* Added Mixxx 1.10.0 feature: 
+	* Added Mixxx 1.10.0 feature:
 	  Tracks duration can be displayed independent from tracks remaining time using Trackproperty
 	* Updated text positioning & tooltips accordingly
 
@@ -1978,7 +1981,7 @@
 	**********************************************
 	-->
 	<PushButton>
-		<Tooltip>Syncronize tempo&#10;Attempts to automatically match the tempo of the track in this channel&#10;with tempo of the track in the other channel, based on the calculated BPM.&#10;</Tooltip>
+		<Tooltip>Syncronize&#10;Left-click: Syncs the tempo (BPM) and phase to that of the other track, &#10;if BPM is detected on both&#10;Right-click: Syncs the tempo (BPM) to that of the other track,&#10;if BPM is detected on both&#10;</Tooltip>
 		<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 		<NumberStates>1</NumberStates>
 		<State>
@@ -1992,9 +1995,14 @@
 			<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 			<ButtonState>LeftButton</ButtonState>
 		</Connection>
+		<Connection>
+			<ConfigKey>[Channel1],beatsync_tempo</ConfigKey>
+			<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+			<ButtonState>RightButton</ButtonState>
+		</Connection>
 	</PushButton>
 	<PushButton>
-		<Tooltip>Syncronize tempo&#10;Attempts to automatically match the tempo of the track in this channel&#10;with tempo of the track in the other channel, based on the calculated BPM.&#10;</Tooltip>
+		<Tooltip>Syncronize&#10;Left-click: Syncs the tempo (BPM) and phase to that of the other track, &#10;if BPM is detected on both&#10;Right-click: Syncs the tempo (BPM) to that of the other track,&#10;if BPM is detected on both&#10;</Tooltip>
 		<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
 		<NumberStates>1</NumberStates>
 		<State>
@@ -2008,11 +2016,16 @@
 			<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 			<ButtonState>LeftButton</ButtonState>
 		</Connection>
+		<Connection>
+			<ConfigKey>[Channel2],beatsync_tempo</ConfigKey>
+			<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+			<ButtonState>RightButton</ButtonState>
+		</Connection>
 	</PushButton>
 
 	<!--
 	**********************************************
-	Button- BPM Tap 
+	Button- BPM Tap
 	**********************************************
 	-->
 
