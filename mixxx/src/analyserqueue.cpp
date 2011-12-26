@@ -197,7 +197,7 @@ AnalyserQueue* AnalyserQueue::createAnalyserQueue(QList<Analyser*> analysers) {
         ret->addAnalyser(it.next());
     }
 
-    ret->start(QThread::IdlePriority);
+    ret->start(QThread::LowPriority);
     return ret;
 }
 
@@ -213,7 +213,7 @@ AnalyserQueue* AnalyserQueue::createDefaultAnalyserQueue(ConfigObject<ConfigValu
     ret->addAnalyser(new AnalyserBPM(_config));
     ret->addAnalyser(new AnalyserGain(_config));
 
-    ret->start(QThread::IdlePriority);
+    ret->start(QThread::LowPriority);
     return ret;
 }
 
@@ -222,7 +222,7 @@ AnalyserQueue* AnalyserQueue::createPrepareViewAnalyserQueue(ConfigObject<Config
     ret->addAnalyser(new AnalyserWavesummary());
     ret->addAnalyser(new AnalyserBPM(_config));
     ret->addAnalyser(new AnalyserGain(_config));
-    ret->start(QThread::IdlePriority);
+    ret->start(QThread::LowPriority);
     return ret;
 }
 
