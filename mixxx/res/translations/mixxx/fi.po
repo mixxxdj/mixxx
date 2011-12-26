@@ -7,23 +7,23 @@ msgid ""
 msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2011-10-31 23:15-0400\n"
+"POT-Creation-Date: 2011-12-22 11:41+0200\n"
 "PO-Revision-Date: 2011-11-27 08:38+0000\n"
 "Last-Translator: Max Huttunen <Unknown>\n"
 "Language-Team: Finnish <fi@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-11-28 05:17+0000\n"
-"X-Generator: Launchpad (build 14381)\n"
+"X-Launchpad-Export-Date: 2011-12-26 04:48+0000\n"
+"X-Generator: Launchpad (build 14560)\n"
 
 #: AutoDJFeature#1
 msgid "Auto DJ"
-msgstr "Auto DJ"
+msgstr "Auto-DJ"
 
 #: BaseSqlTableModel#1
 msgid "Played"
-msgstr "Soitetut"
+msgstr "Soitettu"
 
 #: BaseSqlTableModel#2
 msgctxt "BaseSqlTableModel#2"
@@ -121,7 +121,7 @@ msgstr "Irrotettavat laitteet"
 #: BrowseFeature#4
 msgctxt "BrowseFeature#4"
 msgid "Mixxx Library"
-msgstr "Mixxx kirjasto"
+msgstr "Mixxx-kirjasto"
 
 #: BrowseFeature#5
 msgid "Home"
@@ -195,7 +195,7 @@ msgstr "BPM"
 #: BrowseTableModel#11
 msgctxt "BrowseTableModel#11"
 msgid "Key"
-msgstr "Näppäin"
+msgstr "Sävellaji"
 
 #: BrowseTableModel#12
 msgctxt "BrowseTableModel#12"
@@ -215,14 +215,14 @@ msgstr "Sijainti"
 #: BrowseTableModel#15
 msgctxt "BrowseTableModel#15"
 msgid "Mixxx Library"
-msgstr "Mixxx kirjasto"
+msgstr "Mixxx-kirjasto"
 
 #: BrowseTableModel#16
 msgid ""
 "Could not load the following file because it is in use by Mixxx or another "
 "application."
 msgstr ""
-"Seuraavaa tiedostoa ei voitu ladata koska se on Mixxx:n tai jonkin muun "
+"Seuraavaa tiedostoa ei voitu ladata, koska se on Mixxx:n tai jonkin muun "
 "sovelluksen käytössä."
 
 #: BrowseTableModel#17
@@ -231,14 +231,14 @@ msgstr "Varoitus: tämä poistaa lopullisesti seuraavat tiedostot:"
 
 #: BrowseTableModel#18
 msgid "Are you sure you want to delete these files from your computer?"
-msgstr "Oletko varma että haluat poistaa nämä tiedostot tietokoneeltasi?"
+msgstr "Haluatko varmasti poistaa nämä tiedostot tietokoneeltasi?"
 
 #: BrowseTableModel#19
 msgid ""
 "Could not delete the following file because it is in use by Mixxx or another "
 "application:"
 msgstr ""
-"Seuraavaa tiedostoa ei voitu poistaa koska se on Mixxx:n tai jonkin muun "
+"Seuraavaa tiedostoa ei voitu poistaa, koska se on Mixxx:n tai jonkin muun "
 "sovelluksen käytössä."
 
 #: BrowseTableModel#20
@@ -292,7 +292,7 @@ msgstr "Levylaukun nimi:"
 
 #: CrateFeature#11
 msgid "An unknown error occurred while creating crate: "
-msgstr "Tuntematon virhe luotaessa levylaukkua: "
+msgstr ""
 
 #: CrateFeature#12
 msgid "Rename Crate"
@@ -308,28 +308,24 @@ msgstr "Levylaukun nimeäminen epäonnistui"
 
 #: CrateFeature#15
 msgctxt "CrateFeature#15"
-msgid "Playlist Files (*.m3u *.pls)"
-msgstr "Soittolistatiedostot (*.m3u *.pls)"
+msgid "Playlist Files (*.m3u *.m3u8 *.pls)"
+msgstr "Soittolistatiedostot (*.m3u, *.m3u8 ja *.pls)"
 
 #: CrateFeature#16
 msgctxt "CrateFeature#16"
-msgid "Export Playlist"
-msgstr "Vie soittolista"
+msgid "M3U Playlist (*.m3u);;M3U8 Playlist (*.m3u8);;PLS Playlist (*.pls)"
+msgstr ""
+"M3u-soittolista (*.m3u);; m3u8-soittolista (*.m3u8);;Pls-soittolista (*.pls)"
 
 #: CrateFeature#17
-msgctxt "CrateFeature#17"
-msgid "M3U Playlist (*.m3u);;PLS Playlist (*.pls)"
-msgstr "M3U soittolista (*.m3u);;PLS soittolista (*.pls)"
+msgid "A crate cannot have a blank name."
+msgstr ""
 
 #: CrateFeature#18
-msgid "A crate cannot have a blank name."
-msgstr "Levylaukun nimi ei voi olla tyhjä."
-
-#: CrateFeature#19
 msgid "Creating Crate Failed"
 msgstr "Levylaukun luonti epäonnistui"
 
-#: CrateFeature#20
+#: CrateFeature#19
 msgid "A crate by that name already exists."
 msgstr "Samanniminen levylaukku on jo olemassa."
 
@@ -377,11 +373,11 @@ msgstr "<a href=\"http://mixxx.org/\">Mixxxin verkkosivut</a>"
 
 #: DlgAutoDJ#1
 msgid "Disable Auto DJ"
-msgstr "Poista Auto DJ käytöstä"
+msgstr "Poista auto-DJ käytöstä"
 
 #: DlgAutoDJ#2
 msgid "Enable Auto DJ"
-msgstr "Ota Auto DJ käyttöön"
+msgstr "Ota auto-dj käyttöön"
 
 #: DlgAutoDJ#3
 msgctxt "DlgAutoDJ#3"
@@ -459,7 +455,7 @@ msgstr "Valitse säätimen toiminto:"
 
 #: DlgMidiLearning#9
 msgid "Mixxx Control"
-msgstr "Mixxx hallinta"
+msgstr "Mixxx-hallinta"
 
 #: DlgMidiLearning#10
 msgid "Previous"
@@ -467,7 +463,7 @@ msgstr "Edellinen"
 
 #: DlgMidiLearning#11
 msgid "Press spacebar to proceed or skip."
-msgstr "Paina välilyöntiä jatkaaksesi tai ohittaaksesi tämän kohdan"
+msgstr "Jatka tai ohita painamalla välilyöntiä"
 
 #: DlgMidiLearning#12
 msgid "MIDI learning complete!"
@@ -514,16 +510,16 @@ msgstr "Äänen lisäosien lataaja puuttuu"
 #: DlgPrefBPMDlg#1
 msgctxt "DlgPrefBPMDlg#1"
 msgid "BPM Detection Settings"
-msgstr "BPM tunnistuksen asetukset"
+msgstr "BPM-tunnistuksen asetukset"
 
 #: DlgPrefBPMDlg#2
 msgctxt "DlgPrefBPMDlg#2"
 msgid "BPM Detection"
-msgstr "BPM:n tunnistus"
+msgstr "BPM-tunnistus"
 
 #: DlgPrefBPMDlg#3
 msgid "Enable BPM Detection"
-msgstr "Käytä BPM tunnistusta"
+msgstr "Käytä BPM-tunnistusta"
 
 #: DlgPrefBPMDlg#4
 msgid "Detect Song BPM on Import"
@@ -675,7 +671,7 @@ msgstr "Pitch-säätimien skaala"
 
 #: DlgPrefControlsDlg#10
 msgid "Pitch/Rate slider direction"
-msgstr "Pitch-säätimien toiminta"
+msgstr "Pitch-säätimien toimintasuunta"
 
 #: DlgPrefControlsDlg#11
 msgid "Track load behaviour"
@@ -714,12 +710,10 @@ msgstr "%"
 #: DlgPrefControlsDlg#19
 msgid "Permanent rate change (between 1 and 8000) when right clicking"
 msgstr ""
-"Pysyvä nopeuden muutos (väliltä 1 ja 8000) painettaessa hiiren oikeaa "
-"painiketta"
 
 #: DlgPrefControlsDlg#20
 msgid "Temporary Pitch/Rate Buttons"
-msgstr "Tilapäisen äänen Korkeuden/Nopeuden säädön painikkeet"
+msgstr "Väliaikaisen äänen korkeuden tai nopeuden säädön painikkeet"
 
 #: DlgPrefControlsDlg#21
 msgid "Temporary rate change (between 1 and 8000) when left clicking"
@@ -805,8 +799,8 @@ msgid "16 Hz"
 msgstr "16 Hz"
 
 #: DlgPrefEQDlg#6
-msgid "2.045 kHz"
-msgstr "2,045 kHz"
+msgid "1.014 kHz"
+msgstr ""
 
 #: DlgPrefEQDlg#7
 msgid "20.05 kHz"
@@ -1095,11 +1089,6 @@ msgid "Powered by xwax"
 msgstr "Toimittanut xwax"
 
 #: DlgPrefNoVinylDlg#21
-msgctxt "DlgPrefNoVinylDlg#21"
-msgid "Apply"
-msgstr "Hyväksy"
-
-#: DlgPrefNoVinylDlg#22
 msgid ""
 "<b>This version of Mixxx does not support vinyl control.</b> <br> Please "
 "visit <a href=\"http://mixxx.org\">Mixxx.org</a> for more information."
@@ -1903,12 +1892,12 @@ msgid "Manage"
 msgstr "Hallinta"
 
 #: DlgPrepare#2
-msgid "Recently Added"
-msgstr "Äskettäin lisätyt"
+msgid "New"
+msgstr ""
 
 #: DlgPrepare#3
-msgid "All Songs"
-msgstr "Kaikki kappaleet"
+msgid "All"
+msgstr ""
 
 #: DlgPrepare#4
 msgid "Progress"
@@ -2270,10 +2259,14 @@ msgid "Drag a preset from the list & drop it here"
 msgstr "Vedä esiasetukset listasta ja pudota se tänne"
 
 #: LibraryScannerDlg#1
+msgid "Library Scanner"
+msgstr ""
+
+#: LibraryScannerDlg#2
 msgid "It's taking Mixxx a minute to scan your music library, please wait..."
 msgstr "Kokoelman skannaaminen kestää hetken. Ole hyvä ja odota..."
 
-#: LibraryScannerDlg#2
+#: LibraryScannerDlg#3
 msgid "Cancel"
 msgstr "Keskeytä"
 
@@ -2631,55 +2624,59 @@ msgid "&Community Support"
 msgstr "%Yhteisötuki"
 
 #: MixxxApp#42
+msgid "&User Manual"
+msgstr ""
+
+#: MixxxApp#43
 msgid "Send Us &Feedback"
 msgstr "Lähetä meille &palautetta"
 
-#: MixxxApp#43
+#: MixxxApp#44
 msgid "&Translate this application"
 msgstr "&Käännä tätä ohjelmaa kielellesi"
 
-#: MixxxApp#44
+#: MixxxApp#45
 msgid "Enable &Vinyl Control 1"
 msgstr "Käytä %Levyohjainta 1"
 
-#: MixxxApp#45
+#: MixxxApp#46
 msgid "Ctrl+Y"
 msgstr "Ctrl+Y"
 
-#: MixxxApp#46
+#: MixxxApp#47
 msgid "Enable &Vinyl Control 2"
 msgstr "Käytä %Levyohjainta 2"
 
-#: MixxxApp#47
+#: MixxxApp#48
 msgid "Ctrl+U"
 msgstr "Ctrl+U"
 
-#: MixxxApp#48
-msgctxt "MixxxApp#48"
-msgid "Enable live broadcasting"
-msgstr "Salli suoratoistolähetys"
-
 #: MixxxApp#49
+msgctxt "MixxxApp#49"
+msgid "Enable live broadcasting"
+msgstr ""
+
+#: MixxxApp#50
 msgid "Ctrl+L"
 msgstr "Ctrl+L"
 
-#: MixxxApp#50
+#: MixxxApp#51
 msgid "&Record Mix"
 msgstr "Miksauksen äänitys"
 
-#: MixxxApp#51
+#: MixxxApp#52
 msgid "Ctrl+R"
 msgstr "Ctrl+R"
 
-#: MixxxApp#52
+#: MixxxApp#53
 msgid "Show Studio"
 msgstr "Näytä studio"
 
-#: MixxxApp#53
+#: MixxxApp#54
 msgid "Opens a song in player 1"
 msgstr "Lataa kappaleen soittimeen 1"
 
-#: MixxxApp#54
+#: MixxxApp#55
 msgid ""
 "Open\n"
 "\n"
@@ -2689,11 +2686,11 @@ msgstr ""
 "\n"
 "Lataa kappaleen soittimeen 1"
 
-#: MixxxApp#55
+#: MixxxApp#56
 msgid "Opens a song in player 2"
 msgstr "Lataa kappaleen soittimeen 2"
 
-#: MixxxApp#56
+#: MixxxApp#57
 msgid ""
 "Open\n"
 "\n"
@@ -2703,11 +2700,11 @@ msgstr ""
 "\n"
 "Lataa kappaleen soittimeen 2"
 
-#: MixxxApp#57
+#: MixxxApp#58
 msgid "Quits the application"
 msgstr "Sulkee sovelluksen"
 
-#: MixxxApp#58
+#: MixxxApp#59
 msgid ""
 "Exit\n"
 "\n"
@@ -2717,11 +2714,11 @@ msgstr ""
 "\n"
 "Sulkee sovelluksen"
 
-#: MixxxApp#59
+#: MixxxApp#60
 msgid "Rescans the song library"
 msgstr "Hakee kappale kirjastoa uudelleen"
 
-#: MixxxApp#60
+#: MixxxApp#61
 msgid ""
 "Rescan library\n"
 "\n"
@@ -2731,11 +2728,11 @@ msgstr ""
 "\n"
 "Hakee kappale kirjastoa uudelleen"
 
-#: MixxxApp#61
+#: MixxxApp#62
 msgid "Create a new playlist"
 msgstr "Luo uusi soittolista"
 
-#: MixxxApp#62
+#: MixxxApp#63
 msgid ""
 "New playlist\n"
 "\n"
@@ -2745,11 +2742,11 @@ msgstr ""
 "\n"
 "Luo uuden soittolistan."
 
-#: MixxxApp#63
+#: MixxxApp#64
 msgid "Create a new crate"
 msgstr "Luo uusi levylaukku"
 
-#: MixxxApp#64
+#: MixxxApp#65
 msgid ""
 "New crate\n"
 "\n"
@@ -2759,15 +2756,15 @@ msgstr ""
 "\n"
 "Luo uuden levylaukun."
 
-#: MixxxApp#65
+#: MixxxApp#66
 msgid "Import playlist"
 msgstr "Tuo soittolista"
 
-#: MixxxApp#66
+#: MixxxApp#67
 msgid "Audio Beat Marks"
 msgstr "Äänen tahtimerkit"
 
-#: MixxxApp#67
+#: MixxxApp#68
 msgid ""
 "Audio Beat Marks\n"
 "Mark beats by audio clicks"
@@ -2775,44 +2772,44 @@ msgstr ""
 "Äänen tahtimerkit\n"
 "Merkitse tahdit äänen perusteella"
 
-#: MixxxApp#68
+#: MixxxApp#69
 msgid "Activate Vinyl Control"
 msgstr "Vinyyliohjaus"
 
-#: MixxxApp#69
+#: MixxxApp#70
 msgid "Use timecoded vinyls on external turntables to control Mixxx"
 msgstr "Mixxxin ohjaus aikakoodilevyjen avulla"
 
-#: MixxxApp#70
+#: MixxxApp#71
 msgid "Activate live broadcasting"
 msgstr "Aktivoi live lähetys"
 
-#: MixxxApp#71
+#: MixxxApp#72
 msgid "Stream your mixes to a shoutcast or icecast server"
 msgstr "Lähetä miksauksesi shoutcast tai icecast palvelimeen"
 
-#: MixxxApp#72
+#: MixxxApp#73
 msgid "Start Recording your Mix"
 msgstr "Aloita nauhoittamaan miksauksesi"
 
-#: MixxxApp#73
+#: MixxxApp#74
 msgid "Record your mix to a file"
 msgstr "Nauhoita miksauksesi tiedostoon"
 
-#: MixxxApp#74
+#: MixxxApp#75
 msgid "Full Screen"
 msgstr "Kokoruututila"
 
-#: MixxxApp#75
+#: MixxxApp#76
 msgid "Display Mixxx using the full screen"
 msgstr "Näytä Mixxx kokoruutu tilassa"
 
-#: MixxxApp#76
-msgctxt "MixxxApp#76"
-msgid "Preferences"
-msgstr "Asetukset"
-
 #: MixxxApp#77
+msgctxt "MixxxApp#77"
+msgid "Preferences"
+msgstr ""
+
+#: MixxxApp#78
 msgid ""
 "Preferences\n"
 "Playback and MIDI preferences"
@@ -2820,11 +2817,11 @@ msgstr ""
 "Asetukset\n"
 "Toisto ja MIDI asetukset"
 
-#: MixxxApp#78
+#: MixxxApp#79
 msgid "Support..."
 msgstr "Tuki..."
 
-#: MixxxApp#79
+#: MixxxApp#80
 msgid ""
 "Support\n"
 "\n"
@@ -2834,11 +2831,22 @@ msgstr ""
 "\n"
 "Saa apua Mixxx:n käyttöön"
 
-#: MixxxApp#80
+#: MixxxApp#81
+msgid "Read the Mixxx user manual."
+msgstr ""
+
+#: MixxxApp#82
+msgid ""
+"Support\n"
+"\n"
+"Read the Mixxx user manual."
+msgstr ""
+
+#: MixxxApp#83
 msgid "Send feedback to the Mixxx team."
 msgstr "Lähetä palautetta Mixxx- tiimille"
 
-#: MixxxApp#81
+#: MixxxApp#84
 msgid ""
 "Support\n"
 "\n"
@@ -2848,11 +2856,11 @@ msgstr ""
 "\n"
 "Lähetä palautetta Mixxx- tiimille"
 
-#: MixxxApp#82
+#: MixxxApp#85
 msgid "Help translate this application into your language."
 msgstr "Auta tämän ohjelman kääntämisessä kielellesi"
 
-#: MixxxApp#83
+#: MixxxApp#86
 msgid ""
 "Support\n"
 "\n"
@@ -2863,11 +2871,11 @@ msgstr ""
 "\n"
 "Auta tämän ohjelman kääntämisessä kielellesi"
 
-#: MixxxApp#84
+#: MixxxApp#87
 msgid "About the application"
 msgstr "Tietoja sovelluksesta"
 
-#: MixxxApp#85
+#: MixxxApp#88
 msgid ""
 "About\n"
 "\n"
@@ -2877,11 +2885,11 @@ msgstr ""
 "\n"
 "Tietoja sovelluksesta"
 
-#: MixxxApp#86
+#: MixxxApp#89
 msgid "Shows the macro studio window"
 msgstr "Näyttää makro studio ikkunan"
 
-#: MixxxApp#87
+#: MixxxApp#90
 msgid ""
 "Show Studio\n"
 "\n"
@@ -2891,43 +2899,43 @@ msgstr ""
 "\n"
 "Näyttää makro studio ikkunan"
 
-#: MixxxApp#88
+#: MixxxApp#91
 msgid "&File"
 msgstr "Tiedosto"
 
-#: MixxxApp#89
+#: MixxxApp#92
 msgid "&Options"
 msgstr "Asetukset"
 
-#: MixxxApp#90
+#: MixxxApp#93
 msgid "&Library"
 msgstr "Kokoelma"
 
-#: MixxxApp#91
+#: MixxxApp#94
 msgid "&View"
 msgstr "Näytä"
 
-#: MixxxApp#92
+#: MixxxApp#95
 msgid "&Help"
 msgstr "Ohje"
 
-#: MixxxApp#93
+#: MixxxApp#96
 msgid "&Macro"
 msgstr "Makro"
 
-#: MixxxApp#94
+#: MixxxApp#97
 msgid "&Vinyl Control"
 msgstr "&Levyohjain"
 
-#: MixxxApp#95
+#: MixxxApp#98
 msgid "Quit..."
 msgstr "Sulje..."
 
-#: MixxxApp#96
+#: MixxxApp#99
 msgid "Do your really want to quit?"
 msgstr "Haluatko todella lopettaa?"
 
-#: MixxxApp#97
+#: MixxxApp#100
 msgid ""
 "Player 1 is currently playing a song.\n"
 "Are you sure you want to load a new song?"
@@ -2935,11 +2943,11 @@ msgstr ""
 "Soitin 1 soittaa parhaillaan kappaletta.\n"
 "Haluatko varmasti ladata uuden kappaleen?"
 
-#: MixxxApp#98
+#: MixxxApp#101
 msgid "Load Song into Player 1"
 msgstr "Lataa kappale soittimeen 1"
 
-#: MixxxApp#99
+#: MixxxApp#102
 msgid ""
 "Player 2 is currently playing a song.\n"
 "Are you sure you want to load a new song?"
@@ -2947,11 +2955,11 @@ msgstr ""
 "Soitin 2 soittaa parhaillaan kappaletta.\n"
 "Haluatko varmasti ladata uuden kappaleen?"
 
-#: MixxxApp#100
+#: MixxxApp#103
 msgid "Load Song into Player 2"
 msgstr "Lataa kappale soittimeen 2"
 
-#: MixxxApp#101
+#: MixxxApp#104
 msgid ""
 "No input device(s) select.\n"
 "Please select your soundcard(s) in the sound hardware preferences."
@@ -2959,11 +2967,11 @@ msgstr ""
 "Sisääntulo laitteita ei ole valittu.\n"
 "Valitse äänikorttisi äänilaitteiden hallinnassa"
 
-#: MixxxApp#102
+#: MixxxApp#105
 msgid "Confirm Exit"
 msgstr "Varmista lopetus"
 
-#: MixxxApp#103
+#: MixxxApp#106
 msgid "A deck is currently playing. Exit Mixxx?"
 msgstr "Kanavaa toistetaan parhaillaan. Suljetaanko Mixxx?"
 
@@ -2978,9 +2986,17 @@ msgid "Playlist Export Failed"
 msgstr "Soittolistan vienti epäonnistui"
 
 #: ParserM3u#2
-msgctxt "ParserM3u#2"
+msgid "File path contains characters, not allowed in m3u playlists.\n"
+msgstr ""
+
+#: ParserM3u#3
+msgid "Export a m3u8 playlist instead!\n"
+msgstr ""
+
+#: ParserM3u#4
+msgctxt "ParserM3u#4"
 msgid "Could not create file"
-msgstr "Tiedostoa ei voitu luoda"
+msgstr ""
 
 #: ParserPls#1
 msgctxt "ParserPls#1"
@@ -3021,9 +3037,8 @@ msgid "Import Playlist"
 msgstr "Tuo soittolista"
 
 #: PlaylistFeature#7
-msgctxt "PlaylistFeature#7"
 msgid "Export Playlist"
-msgstr "Vie soittolista"
+msgstr ""
 
 #: PlaylistFeature#8
 msgid "Playlists"
@@ -3064,13 +3079,13 @@ msgstr "Soittolistan uudelleennimeäminen epäonnistui"
 
 #: PlaylistFeature#17
 msgctxt "PlaylistFeature#17"
-msgid "Playlist Files (*.m3u *.pls)"
-msgstr "Soittolista tiedostot (*.m3u *.pls)"
+msgid "Playlist Files (*.m3u *.m3u8 *.pls)"
+msgstr ""
 
 #: PlaylistFeature#18
 msgctxt "PlaylistFeature#18"
-msgid "M3U Playlist (*.m3u);;PLS Playlist (*.pls)"
-msgstr "M3U soittolista (*.m3u);;PLS soittolista (*.pls)"
+msgid "M3U Playlist (*.m3u);;M3U8 Playlist (*.m3u8);;PLS Playlist (*.pls)"
+msgstr ""
 
 #: PlaylistFeature#19
 msgid "A playlist by that name already exists."
@@ -3401,60 +3416,148 @@ msgid "Reloop / Exit button for Player %1"
 msgstr "Toista uudelleen / Lopeta painike soittimelle %1"
 
 #: Ui#37
+msgid "Setup a loop over 4 beats for Player %1"
+msgstr ""
+
+#: Ui#38
+msgid "Halves the current loop's length for Player %1"
+msgstr ""
+
+#: Ui#39
+msgid "Doubles the current loop's length for Player %1"
+msgstr ""
+
+#: Ui#40
 msgid "Hotcue 1 button for Player %1"
 msgstr "Nopea merkki 1 painike soittimelle %1"
 
-#: Ui#38
+#: Ui#41
 msgid "Hotcue 2 button for Player %1"
 msgstr "Nopea merkki 2 painike soittimelle %1"
 
-#: Ui#39
+#: Ui#42
 msgid "Hotcue 3 button for Player %1"
 msgstr "Nopea merkki 3 painike soittimelle %1"
 
-#: Ui#40
+#: Ui#43
 msgid "Hotcue 4 button for Player %1"
 msgstr "Nopea merkki 4 painike soittimelle %1"
 
-#: Ui#41
+#: Ui#44
 msgid "Hotcue 1 delete button for Player %1"
 msgstr "Nopean merkin 1 poisto painike soittimelle %1"
 
-#: Ui#42
+#: Ui#45
 msgid "Hotcue 2 delete button for Player %1"
 msgstr "Nopean merkin 2 poisto painike soittimelle %1"
 
-#: Ui#43
+#: Ui#46
 msgid "Hotcue 3 delete button for Player %1"
 msgstr "Nopean merkin 3 poisto painike soittimelle %1"
 
-#: Ui#44
+#: Ui#47
 msgid "Hotcue 4 delete button for Player %1"
 msgstr "Nopean merkin 4 poisto painike soittimelle %1"
 
-#: Ui#45
+#: Ui#48
+msgid "Play button for Sampler %1"
+msgstr ""
+
+#: Ui#49
+msgid "Gain knob for Sampler %1"
+msgstr ""
+
+#: Ui#50
+msgid "Headphone listen button for Sampler %1"
+msgstr ""
+
+#: Ui#51
+msgid "BPM tap button for Sampler %1"
+msgstr ""
+
+#: Ui#52
+msgid "Keylock button for Sampler %1"
+msgstr ""
+
+#: Ui#53
+msgid "Pitch control slider for Sampler %1"
+msgstr ""
+
+#: Ui#54
+msgid "Hotcue 1 button for Sampler %1"
+msgstr ""
+
+#: Ui#55
+msgid "Hotcue 2 button for Sampler %1"
+msgstr ""
+
+#: Ui#56
+msgid "Hotcue 3 button for Sampler %1"
+msgstr ""
+
+#: Ui#57
+msgid "Hotcue 4 button for Sampler %1"
+msgstr ""
+
+#: Ui#58
+msgid "Hotcue 1 delete button for Sampler %1"
+msgstr ""
+
+#: Ui#59
+msgid "Hotcue 2 delete button for Sampler %1"
+msgstr ""
+
+#: Ui#60
+msgid "Hotcue 3 delete button for Sampler %1"
+msgstr ""
+
+#: Ui#61
+msgid "Hotcue 4 delete button for Sampler %1"
+msgstr ""
+
+#: Ui#62
 msgid "Switch to the next view (library, playlist..)"
 msgstr "Vaihda seuraavaan näkymään (kirjasto, soittolistat..)"
 
-#: Ui#46
+#: Ui#63
 msgid "Switch to the previous view (library, playlist..)"
 msgstr "Vaihda edelliseen näkymään (kirjasto, soittolistat..)"
 
-#: Ui#47
+#: Ui#64
 msgid "Scroll to next track in library/playlist"
 msgstr "Vieritä seuraavaan kappaleeseen kirjastossa/soittolistassa"
 
-#: Ui#48
+#: Ui#65
 msgid "Scroll to previous track in library/playlist"
 msgstr "Vieritä edelliseen kappaleeseen kirjastossa/soittolistassa"
 
-#: Ui#49
+#: Ui#66
 msgid "Load selected track into first stopped player"
 msgstr "Lataa valittu kappale ensimmäisenä pysähtyneeseen soittimeen"
 
-#: Ui#50
+#: Ui#67
 msgid "Load selected track into Player %1"
 msgstr "Lataa valittu kappale soittimeen %1"
+
+#: Ui#68
+msgid "Adjusts the wavelength of the flange effect"
+msgstr ""
+
+#: Ui#69
+msgid "Adjusts the intensity of the flange effect"
+msgstr ""
+
+#: Ui#70
+msgid "Adjusts the phase delay of the flange effect"
+msgstr ""
+
+#: Ui#71
+msgid "Microphone on/off"
+msgstr ""
+
+#: Ui#72
+msgid "Microphone volume"
+msgstr ""
 
 #: WSearchLineEdit#1
 msgid "Search..."
@@ -3496,6 +3599,12 @@ msgstr "Lataa kannelle %1"
 #: WTrackTableView#9
 msgid "Sampler %1"
 msgstr "Näytesoitin %1"
+
+#: WTrackTableView#10
+msgid ""
+"Reloading track metadata on a loaded track may cause abrupt volume changes. "
+"Are you sure?"
+msgstr ""
 
 #: WTrackTableViewHeader#1
 msgid "Show or hide columns."
@@ -3551,6 +3660,12 @@ msgstr "Näytä tai piilota sarakkeita."
 #~ msgid "Vinyl Type"
 #~ msgstr "Aikakoodilevyn tyyppi"
 
+#~ msgid "Recently Added"
+#~ msgstr "Äskettäin lisätyt"
+
+#~ msgid "All Songs"
+#~ msgstr "Kaikki kappaleet"
+
 #~ msgctxt "PlaylistFeature#2"
 #~ msgid "Remove"
 #~ msgstr "Poista"
@@ -3594,6 +3709,9 @@ msgstr "Näytä tai piilota sarakkeita."
 #~ msgctxt "RhythmboxTrackModel#3"
 #~ msgid "Album"
 #~ msgstr "Julkaisu"
+
+#~ msgid "2.045 kHz"
+#~ msgstr "2,045 kHz"
 
 #~ msgctxt "DlgPrefRecordDlg#4"
 #~ msgid "Encoding"
