@@ -1,8 +1,8 @@
-mixxx (1.10.0-0ubuntu1.1) lucid; urgency=low
+mixxx (1.10.0-0ubuntu1) lucid; urgency=low
 
   * New upstream release.
 
- -- RJ Ryan <rryan@free-radical>  Sat, 24 Dec 2011 23:28:30 -0500
+ -- RJ Ryan <rryan@mixxx.org>  Sat, 24 Dec 2011 23:28:30 -0500
 
 mixxx (1.10.0-beta1-0ubuntu1) lucid; urgency=low
 
