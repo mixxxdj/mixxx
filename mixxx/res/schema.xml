@@ -285,4 +285,13 @@ METADATA
       ALTER TABLE traktor_playlist_tracks ADD COLUMN position INTEGER DEFAULT 0;
     </sql>
   </revision>
+  <revision version="14" min_compatible="3">
+    <description>
+      Add columns for BPM lock and BPM detection algorithm   
+      </description>
+    <sql>
+      ALTER TABLE Library ADD COLUMN bpm_lock INTEGER DEFAULT 0;
+      ALTER TABLE Library ADD COLUMN bpm_plugin_key varchar(30);
+     </sql>
+  </revision>
 </schema>

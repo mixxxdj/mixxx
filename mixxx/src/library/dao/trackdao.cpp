@@ -244,13 +244,13 @@ void TrackDAO::prepareLibraryInsert(QSqlQuery& query) {
                   "filetype, location, comment, url, duration, rating, key, "
                   "bitrate, samplerate, cuepoint, bpm, replaygain, wavesummaryhex, "
                   "timesplayed, "
-                  "channels, mixxx_deleted, header_parsed, beats_version, beats) "
+                  "channels, mixxx_deleted, header_parsed, beats_version, beats, bpm_plugin_key, bpm_lock) "
                   "VALUES (:artist, "
                   ":title, :album, :year, :genre, :tracknumber, "
                   ":filetype, :location, :comment, :url, :duration, :rating, :key, "
                   ":bitrate, :samplerate, :cuepoint, :bpm, :replaygain, :wavesummaryhex, "
                   ":timesplayed, "
-                  ":channels, :mixxx_deleted, :header_parsed, :beats_version, :beats)");
+                  ":channels, :mixxx_deleted, :header_parsed, :beats_version, :beats, :bpm_plugin_key, :bpm_lock)");
 }
 
 void TrackDAO::bindTrackToLibraryInsert(
@@ -270,6 +270,9 @@ void TrackDAO::bindTrackToLibraryInsert(
     query.bindValue(":bitrate", pTrack->getBitrate());
     query.bindValue(":samplerate", pTrack->getSampleRate());
     query.bindValue(":cuepoint", pTrack->getCuePoint());
+    query.bindValue(":bpm_plugin_key", pTrack->getBpmPluginKey());
+    query.bindValue(":bpm_lock", pTrack->hasBpmLock()? 1 : 0);
+    qDebug() << "Insert --> BPM lock=" << pTrack->hasBpmLock();
 
     query.bindValue(":replaygain", pTrack->getReplayGain());
     query.bindValue(":key", pTrack->getKey());
@@ -579,6 +582,9 @@ TrackPointer TrackDAO::getTrackFromDB(QSqlQuery &query) const {
         bool header_parsed = query.value(query.record().indexOf("header_parsed")).toBool();
         QDateTime date_created = query.value(query.record().indexOf("datetime_added")).toDateTime();
 
+        QString bpm_plugin_key = query.value(query.record().indexOf("bpm_plugin_key")).toString();
+        bool has_bpm_lock = query.value(query.record().indexOf("bpm_lock")).toBool();
+
        TrackPointer pTrack = TrackPointer(new TrackInfoObject(location, false), &TrackDAO::deleteTrack);
 
         // TIO already stats the file to see if it exists, what its length is,
@@ -622,6 +628,9 @@ TrackPointer TrackDAO::getTrackFromDB(QSqlQuery &query) const {
         pTrack->setDateAdded(date_created);
 
         pTrack->setCuePoints(m_cueDao.getCuesForTrack(trackId));
+        pTrack->setBpmPluginKey(bpm_plugin_key);
+        pTrack->setBpmLock(has_bpm_lock);
+
         pTrack->setDirty(false);
 
         // Listen to dirty and changed signals
@@ -708,7 +717,7 @@ TrackPointer TrackDAO::getTrack(int id, bool cacheOnly) const {
         "filetype, rating, key, track_locations.location as location, "
         "track_locations.filesize as filesize, comment, url, duration, bitrate, "
         "samplerate, cuepoint, bpm, replaygain, wavesummaryhex, channels, "
-        "header_parsed, timesplayed, played, beats_version, beats, datetime_added "
+        "header_parsed, timesplayed, played, beats_version, beats, datetime_added, bpm_plugin_key, bpm_lock "
         "FROM Library "
         "INNER JOIN track_locations "
             "ON library.location = track_locations.id "
@@ -753,7 +762,8 @@ void TrackDAO::updateTrack(TrackInfoObject* pTrack) {
                   "bpm=:bpm, replaygain=:replaygain, wavesummaryhex=:wavesummaryhex, "
                   "timesplayed=:timesplayed, played=:played, "
                   "channels=:channels, header_parsed=:header_parsed, "
-                  "beats_version=:beats_version, beats=:beats "
+                  "beats_version=:beats_version, beats=:beats, bpm_plugin_key=:bpm_plugin_key, "
+                  "bpm_lock=:bpm_lock "
                   "WHERE id="+QString("%1").arg(trackId));
     query.bindValue(":artist", pTrack->getArtist());
     query.bindValue(":title", pTrack->getTitle());
@@ -779,6 +789,9 @@ void TrackDAO::updateTrack(TrackInfoObject* pTrack) {
     query.bindValue(":channels", pTrack->getChannels());
     query.bindValue(":header_parsed", pTrack->getHeaderParsed() ? 1 : 0);
     //query.bindValue(":location", pTrack->getLocation());
+
+    query.bindValue(":bpm_lock", pTrack->hasBpmLock() ? 1 : 0);
+    query.bindValue(":bpm_plugin_key", pTrack->getBpmPluginKey());
 
     BeatsPointer pBeats = pTrack->getBeats();
     QByteArray* pBeatsBlob = NULL;

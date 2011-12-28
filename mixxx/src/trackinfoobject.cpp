@@ -97,6 +97,7 @@ TrackInfoObject::TrackInfoObject(const QDomNode &nodeHeader)
 
     m_bDirty = false;
     m_bLocationChanged = false;
+
 }
 
 void TrackInfoObject::populateLocation(QFileInfo& fileInfo) {
@@ -136,6 +137,8 @@ void TrackInfoObject::initialize(bool parseHeader) {
     m_dCreateDate = m_dateAdded = QDateTime::currentDateTime();
     m_Rating = 0;
     m_key = "";
+    m_bBpmLock = false;
+    m_bpmPluginKey = "";
 
     // parse() parses the metadata from file. This is not a quick operation!
     if (parseHeader) {
@@ -868,3 +871,28 @@ void TrackInfoObject::setKey(QString key){
         setDirty(true);
 }
 
+void TrackInfoObject::setBpmLock(bool bpmLock){
+    QMutexLocker lock(&m_qMutex);
+    bool dirty = bpmLock != m_bBpmLock;
+    m_bBpmLock = bpmLock;
+    if (dirty)
+        setDirty(true);
+}
+
+bool TrackInfoObject::hasBpmLock() const{
+    QMutexLocker lock(&m_qMutex);
+    return m_bBpmLock;
+}
+
+void TrackInfoObject::setBpmPluginKey(QString& pluginKey){
+    QMutexLocker lock(&m_qMutex);
+    bool dirty = pluginKey != m_bpmPluginKey;
+    m_bpmPluginKey = pluginKey;
+    if (dirty)
+        setDirty(true);
+}
+
+QString TrackInfoObject::getBpmPluginKey() const{
+    QMutexLocker lock(&m_qMutex);
+    return m_bpmPluginKey;
+}
