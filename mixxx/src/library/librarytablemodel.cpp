@@ -42,6 +42,9 @@ LibraryTableModel::LibraryTableModel(QObject* parent,
     //These columns are specific for native library features.
     setHeaderData(fieldIndex(LIBRARYTABLE_BPM_LOCK),
                   Qt::Horizontal, tr("BPM lock"));
+    //This is an invisible column
+    setHeaderData(fieldIndex(LIBRARYTABLE_BPM_PLUGIN_KEY),
+                  Qt::Horizontal, tr("BPM Plugin Key"));
 
     setSearch("");
     setDefaultSort(fieldIndex("artist"), Qt::AscendingOrder);
@@ -123,6 +126,7 @@ bool LibraryTableModel::isColumnInternal(int column) {
         (column == fieldIndex(LIBRARYTABLE_HEADERPARSED)) ||
         (column == fieldIndex(LIBRARYTABLE_PLAYED)) ||
         (column == fieldIndex(LIBRARYTABLE_CHANNELS)) ||
+        (column == fieldIndex(LIBRARYTABLE_BPM_PLUGIN_KEY)) ||
         (column == fieldIndex(TRACKLOCATIONSTABLE_FSDELETED))) {
         return true;
     }
