@@ -313,6 +313,7 @@ bool PlaylistTableModel::isColumnInternal(int column) {
     if (column == fieldIndex(PLAYLISTTRACKSTABLE_TRACKID) ||
         column == fieldIndex(LIBRARYTABLE_PLAYED) ||
         column == fieldIndex(LIBRARYTABLE_MIXXXDELETED) ||
+        (column == fieldIndex(LIBRARYTABLE_BPM_PLUGIN_KEY)) ||
         column == fieldIndex(TRACKLOCATIONSTABLE_FSDELETED)) {
         return true;
     }
