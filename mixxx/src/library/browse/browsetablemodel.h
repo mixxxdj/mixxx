@@ -24,6 +24,7 @@ const int COLUMN_KEY = 10;
 const int COLUMN_TYPE = 11;
 const int COLUMN_BITRATE = 12;
 const int COLUMN_LOCATION = 13;
+const int COLUMN_COMPOSER = 14;
 
 /*
  * The BrowseTable models displays tracks

@@ -75,6 +75,7 @@ public:
     virtual QString getComment();
     virtual QString getYear();
     virtual QString getGenre();
+    virtual QString getComposer();
     virtual QString getTrackNumber();
     virtual float getReplayGain();
     virtual QString getKey();
@@ -91,6 +92,7 @@ public:
     virtual void setComment(QString);
     virtual void setYear(QString);
     virtual void setGenre(QString);
+    virtual void setComposer(QString);
     virtual void setTrackNumber(QString);
     virtual void setReplayGain(float);
     virtual void setKey(QString);
@@ -122,6 +124,7 @@ protected:
     QString m_sComment;
     QString m_sYear;
     QString m_sGenre;
+    QString m_sComposer;
     QString m_sTrackNumber;
     float m_fReplayGain;
     QString m_sKey;

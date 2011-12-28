@@ -26,6 +26,7 @@ AudioTagger::AudioTagger (QString file)
     m_artist = "";
     m_title = "";
     m_genre = "";
+    m_composer = "";
     m_album = "";
     m_year = "";
     m_comment = "";
@@ -68,6 +69,11 @@ void AudioTagger::setGenre (QString genre )
     m_genre = genre;
 }
 
+
+void AudioTagger::setComposer (QString composer )
+{
+    m_composer = composer;
+}
 
 
 void AudioTagger::setYear (QString year )
@@ -218,6 +224,22 @@ void AudioTagger::addID3v2Tag(TagLib::ID3v2::Tag* id3v2)
         id3v2->addFrame(newFrame);
 
     }
+
+    TagLib::ID3v2::FrameList composerFrame = id3v2->frameListMap()["TCOM"];
+	if (!composerFrame.isEmpty())
+	{
+		composerFrame.front()->setText(m_composer.toStdString());
+
+	}
+	else
+	{
+		//add new frame
+		TagLib::ID3v2::TextIdentificationFrame* newFrame = new TagLib::ID3v2::TextIdentificationFrame("TCOM", TagLib::String::Latin1);
+
+		newFrame->setText(m_composer.toStdString());
+		id3v2->addFrame(newFrame);
+
+	}
 
 }
 void AudioTagger::addAPETag(TagLib::APE::Tag* ape)
