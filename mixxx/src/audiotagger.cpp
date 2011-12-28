@@ -252,6 +252,7 @@ void AudioTagger::addAPETag(TagLib::APE::Tag* ape)
     ape->addValue("BPM",m_bpm.toStdString(), true);
     ape->addValue("BPM",m_bpm.toStdString(), true);
 
+    ape->addValue("Composer",m_composer.toStdString(), true);
 
 }
 void AudioTagger::addXiphComment(TagLib::Ogg::XiphComment* xiph)
@@ -273,6 +274,9 @@ void AudioTagger::addXiphComment(TagLib::Ogg::XiphComment* xiph)
     xiph->addField("INITIALKEY", m_key.toStdString());
     xiph->removeField("KEY");
     xiph->addField("KEY", m_key.toStdString());
+
+    xiph->removeField("COMPOSER");
+    xiph->addField("COMPOSER", m_key.toStdString());
 
 }
 void AudioTagger::processMP4Tag(TagLib::MP4::Tag* mp4)
