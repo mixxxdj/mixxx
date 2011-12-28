@@ -537,7 +537,8 @@ Qt::ItemFlags BaseSqlTableModel::readWriteFlags(
          || column == fieldIndex(LIBRARYTABLE_BITRATE)
          || column == fieldIndex(LIBRARYTABLE_DATETIMEADDED)) {
         return defaultFlags;
-    } else if (column == fieldIndex(LIBRARYTABLE_TIMESPLAYED)) {
+    } else if (column == fieldIndex(LIBRARYTABLE_TIMESPLAYED)
+               || column == fieldIndex(LIBRARYTABLE_BPM_LOCK))  {
         return defaultFlags | Qt::ItemIsUserCheckable;
     } else {
         return defaultFlags | Qt::ItemIsEditable;
@@ -633,6 +634,8 @@ void BaseSqlTableModel::setTrackValueForColumn(TrackPointer pTrack, int column,
         pTrack->setRating(starRating.starCount());
     } else if (fieldIndex(LIBRARYTABLE_KEY) == column) {
         pTrack->setKey(value.toString());
+    } else if (fieldIndex(LIBRARYTABLE_BPM_LOCK) == column) {
+            pTrack->setBpmLock(value.toBool());
     }
 }
 

@@ -253,6 +253,16 @@ public:
     const Segmentation<QString>* getChordData();
     void setChordData(Segmentation<QString> cd);
 
+    /*
+     * A track with a locked BPM will not be re-analyzed
+     * by the beats or bpm analyzer.
+     */
+    void setBpmLock(bool hasLock);
+    bool hasBpmLock() const;
+    /** The Vamp plugin having computed the BPM value **/
+    void setBpmPluginKey(QString& pluginKey);
+    QString getBpmPluginKey() const;
+
   public slots:
     void slotCueUpdated();
 
@@ -366,6 +376,11 @@ public:
     QDateTime m_dateAdded;
 
     QString m_key;
+
+    /** BPM lock **/
+    bool m_bBpmLock;
+    /** The Vamp plugin having computed the BPM value **/
+    QString m_bpmPluginKey;
 
     // The list of cue points for the track
     QList<Cue*> m_cuePoints;
