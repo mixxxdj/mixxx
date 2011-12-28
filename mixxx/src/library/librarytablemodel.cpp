@@ -39,12 +39,6 @@ LibraryTableModel::LibraryTableModel(QObject* parent,
 
     // BaseSqlTabelModel will setup the header info
     initHeaderData();
-    //These columns are specific for native library features.
-    setHeaderData(fieldIndex(LIBRARYTABLE_BPM_LOCK),
-                  Qt::Horizontal, tr("BPM lock"));
-    //This is an invisible column
-    setHeaderData(fieldIndex(LIBRARYTABLE_BPM_PLUGIN_KEY),
-                  Qt::Horizontal, tr("BPM Plugin Key"));
 
     setSearch("");
     setDefaultSort(fieldIndex("artist"), Qt::AscendingOrder);
