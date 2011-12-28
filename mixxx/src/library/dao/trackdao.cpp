@@ -272,7 +272,6 @@ void TrackDAO::bindTrackToLibraryInsert(
     query.bindValue(":cuepoint", pTrack->getCuePoint());
     query.bindValue(":bpm_plugin_key", pTrack->getBpmPluginKey());
     query.bindValue(":bpm_lock", pTrack->hasBpmLock()? 1 : 0);
-    qDebug() << "Insert --> BPM lock=" << pTrack->hasBpmLock();
 
     query.bindValue(":replaygain", pTrack->getReplayGain());
     query.bindValue(":key", pTrack->getKey());
