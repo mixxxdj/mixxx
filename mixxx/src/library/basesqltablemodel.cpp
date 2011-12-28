@@ -438,7 +438,10 @@ QVariant BaseSqlTableModel::data(const QModelIndex& index, int role) const {
                 value = (value == "true") ? true : false;
             } else if (column == fieldIndex(LIBRARYTABLE_DATETIMEADDED)) {
                 value = value.toDateTime();
+            } else if (column == fieldIndex(LIBRARYTABLE_BPM_LOCK)) {
+                value = QVariant();
             }
+
             break;
         case Qt::EditRole:
             if (column == fieldIndex(LIBRARYTABLE_BPM)) {
@@ -456,6 +459,10 @@ QVariant BaseSqlTableModel::data(const QModelIndex& index, int role) const {
                 bool played = index.sibling(
                     row, fieldIndex(LIBRARYTABLE_PLAYED)).data().toBool();
                 value = played ? Qt::Checked : Qt::Unchecked;
+            }
+            if (column == fieldIndex(LIBRARYTABLE_BPM_LOCK)) {
+                bool locked = getBaseValue(index, Qt::DisplayRole).toBool();
+                value = locked ? Qt::Checked : Qt::Unchecked;
             }
             break;
         default:
@@ -483,7 +490,8 @@ bool BaseSqlTableModel::setData(
             QModelIndex playedIndex = index.sibling(index.row(), fieldIndex(LIBRARYTABLE_PLAYED));
             return setData(playedIndex, val, Qt::EditRole);
         }
-        return false;
+        if (column != fieldIndex(LIBRARYTABLE_BPM_LOCK))
+            return false;
     }
 
     if (row < 0 || row >= m_rowInfo.size()) {
@@ -537,10 +545,11 @@ Qt::ItemFlags BaseSqlTableModel::readWriteFlags(
          || column == fieldIndex(LIBRARYTABLE_BITRATE)
          || column == fieldIndex(LIBRARYTABLE_DATETIMEADDED)) {
         return defaultFlags;
-    } else if (column == fieldIndex(LIBRARYTABLE_TIMESPLAYED)
-               || column == fieldIndex(LIBRARYTABLE_BPM_LOCK))  {
+    } else if (column == fieldIndex(LIBRARYTABLE_TIMESPLAYED))  {
         return defaultFlags | Qt::ItemIsUserCheckable;
-    } else {
+    }else if (column == fieldIndex(LIBRARYTABLE_BPM_LOCK)){
+        return defaultFlags | Qt::ItemIsUserCheckable | Qt::ItemIsEditable;
+    }else {
         return defaultFlags | Qt::ItemIsEditable;
     }
 }
