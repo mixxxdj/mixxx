@@ -290,7 +290,7 @@ METADATA
       Add composer column to library table.
     </description>
     <sql>
-      ALTER TABLE library ADD COLUMN composer varchar(64) DEFAULT "?";
+      ALTER TABLE library ADD COLUMN composer varchar(64) DEFAULT "";
     </sql>
   </revision>
 </schema>
