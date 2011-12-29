@@ -424,7 +424,7 @@ void BeatMap::slotTrackBpmUpdated(double dBpm) {
                         m_signedBeatList.insert(it, Beat);
 
                     } else {
-                        int pos = (int) floor((i + old_index) / 2);
+                        int pos = (int) floor( ((double(i + old_index) / 2)));
                         SignedBeatList::iterator it =
                                 qLowerBound(m_signedBeatList.begin(),
                                             m_signedBeatList.end(),
