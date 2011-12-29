@@ -60,11 +60,6 @@ void VampAnalyser::initializePluginPaths() {
     QString winpath = "VAMP_PATH="+newPath;
     putenv(winpath.toAscii().data()); 
 #endif
-
-    // TODO(XXX) is this necessary?
-#ifdef __WINDOWS__  //for finding MSVCRT.dll
-    SetDllDirectory(L".");
-#endif
 }
 
 VampAnalyser::VampAnalyser() {
