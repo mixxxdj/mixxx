@@ -55,7 +55,12 @@ void VampAnalyser::initializePluginPaths() {
     QString newPath = pathElements.join(PATH_SEPARATOR);
     qDebug() << "Setting VAMP_PATH to: " << newPath;
     QByteArray newPathBA = newPath.toAscii();
+#ifndef __WINDOWS__   
     setenv("VAMP_PATH", newPathBA.data(), 1);
+#else
+    QString winpath = "VAMP_PATH="+newPath;
+    putenv(winpath.toAscii().data()); 
+#endif
 
     // TODO(XXX) is this necessary?
 #ifdef __WINDOWS__  //for finding MSVCRT.dll
