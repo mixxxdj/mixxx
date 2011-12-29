@@ -215,7 +215,7 @@ void DlgPrefAnalysers::populate() {
 
                 if (goodones){
                     m_listName << displaynametext;
-                    QString pluginlibrary = QString::fromStdString(loader->getLibraryPathForPlugin(plugins[iplugin]));
+                    QString pluginlibrary = QString::fromStdString(plugins[iplugin]).section(":",0,0);
                     m_listLibrary << pluginlibrary;
                     QString displayname = QString::fromStdString(plugin->getIdentifier()) + ":"
                             + QString::number(ioutput);
