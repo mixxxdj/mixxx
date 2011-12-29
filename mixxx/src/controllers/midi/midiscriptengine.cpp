@@ -192,7 +192,7 @@ void MidiScriptEngine::loadScriptFiles(QList<QString> scriptFileNames) {
     scriptPaths.append(QDir::homePath().append("/").append(SETTINGS_PATH).append("presets/"));
 
     ConfigObject<ConfigValue> *config = new ConfigObject<ConfigValue>(QDir::homePath().append("/").append(SETTINGS_PATH).append(SETTINGS_FILE));
-    scriptPaths.append(config->getConfigPath().append("midi/"));
+    scriptPaths.append(config->getConfigPath().append("controllers/"));
     delete config;
 
     QListIterator<QString> it(scriptFileNames);

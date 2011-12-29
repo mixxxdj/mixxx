@@ -30,11 +30,10 @@ HidEnumerator::~HidEnumerator() {
     QListIterator<Controller*> dev_it(m_devices);
     while (dev_it.hasNext()) {
         delete dev_it.next();
-    }    
+    }
 //     Node::Shutdown();
 }
 
-// Enumerate the HID MIDI devices
 QList<Controller*> HidEnumerator::queryDevices() {
     qDebug() << "Scanning HID devices:";
     
@@ -47,7 +46,7 @@ QList<Controller*> HidEnumerator::queryDevices() {
                cur_dev->product_string, cur_dev->release_number, cur_dev->serial_number,
                cur_dev->interface_number);
                printf("\n");
-        if (!cur_dev->serial_number && !cur_dev->product_string) qWarning() << "USB permissions problem (or device error.) Your account needs write access to USB devices.";
+        if (!cur_dev->serial_number && !cur_dev->product_string) qWarning() << "USB permissions problem (or device error.) Your account needs write access to USB HID controllers.";
         else {
             HidController *currentDevice = new HidController(*(cur_dev));
             m_devices.push_back((Controller*)currentDevice);

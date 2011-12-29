@@ -27,7 +27,7 @@
 
 class Controller;
 
-/** Manages creation/enumeration/deletion of (non-MIDI) hardware controllers. */
+/** Manages creation/enumeration/deletion of hardware controllers. */
 class ControllerManager : public QObject
 {
     Q_OBJECT

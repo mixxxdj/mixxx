@@ -194,7 +194,7 @@ void DlgPreferences::createIcons()
     midiButton->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
 */
     m_pMIDITreeItem = new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type);
-    m_pMIDITreeItem->setIcon(0, QIcon(":/images/preferences/ic_preferences_controllers.png"));
+    m_pMIDITreeItem->setIcon(0, QIcon(":/images/preferences/ic_preferences_midicontrollers.png"));
     m_pMIDITreeItem->setText(0, "MIDI");
     m_pMIDITreeItem->setTextAlignment(0, Qt::AlignLeft | Qt::AlignVCenter);
     m_pMIDITreeItem->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
@@ -533,7 +533,7 @@ void DlgPreferences::setupMidiWidgets()
 
         QTreeWidgetItem * midiBindingsButton = new QTreeWidgetItem(QTreeWidgetItem::Type);
         //qDebug() << curDeviceName << " QTreeWidgetItem point is " << midiBindingsButton;
-        midiBindingsButton->setIcon(0, QIcon(":/images/preferences/ic_preferences_controllers.png"));
+        midiBindingsButton->setIcon(0, QIcon(":/images/preferences/ic_preferences_midicontrollers.png"));
         midiBindingsButton->setText(0, curDeviceName);
         midiBindingsButton->setTextAlignment(0, Qt::AlignLeft | Qt::AlignVCenter);
         midiBindingsButton->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);

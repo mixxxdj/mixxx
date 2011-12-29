@@ -26,7 +26,7 @@ Controller::Controller() : QObject()
     m_bIsInputDevice = false;
     m_bIsOpen = false;
 
-    // Get --midiDebug command line option
+    // Get --controllerDebug command line option
     QStringList commandLineArgs = QApplication::arguments();
     m_bDebug = commandLineArgs.contains("--controllerDebug", Qt::CaseInsensitive);
 }

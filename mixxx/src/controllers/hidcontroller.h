@@ -28,7 +28,8 @@ class HidController : public Controller {
         ~HidController();
         int open();
         int close();
-        void send(unsigned char data[], unsigned int length);
+        //  For devices which only support a single report, reportID must be set to 0x0.
+        void send(unsigned char data[], unsigned int length, unsigned int reportID = 0);
 
     protected:
         hid_device_info m_deviceInfo;
