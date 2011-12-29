@@ -13,8 +13,8 @@
 *   (at your option) any later version.                                   *
 *                                                                         *
 ***************************************************************************/
-#ifndef HidENUMERATOR_H
-#define HidENUMERATOR_H
+#ifndef HIDENUMERATOR_H
+#define HIDENUMERATOR_H
 
 #include "controllerenumerator.h"
 

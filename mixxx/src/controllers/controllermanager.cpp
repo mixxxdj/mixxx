@@ -56,6 +56,9 @@ QList<Controller*> ControllerManager::getControllerList(bool bOutputDevices, boo
 #ifdef __HID__
         m_controllers.append(m_pHIDEnumerator->queryDevices());
 #endif
+#ifdef __OSC__
+        m_controllers.append(m_pOSCEnumerator->queryDevices());
+#endif
     }
 
     //Create a list of controllers filtered to match the given input/output options.

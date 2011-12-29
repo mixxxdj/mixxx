@@ -51,7 +51,7 @@ int HidController::open() {
     if (debugging()) qDebug() << "Opening HID device" << m_sDeviceName;
     
     // Open Device
-    m_pHidDevice = hid_open(m_deviceInfo.vendor_id, m_deviceInfo.product_id, NULL);
+    m_pHidDevice = hid_open(m_deviceInfo.vendor_id, m_deviceInfo.product_id, m_deviceInfo.serial_number);
     if (m_pHidDevice == NULL) {
         qWarning()  << "Unable to open HID device" << m_sDeviceName;
         return -1;
@@ -88,7 +88,18 @@ int HidController::close() {
     return 0;
 }
 
-void HidController::send(unsigned char data[], unsigned int length) {
+void HidController::send(unsigned char data[], unsigned int length, unsigned int reportID) {
+    
     if (debugging()) qDebug() << "Sending" << length << "data bytes to" << m_sDeviceName;
-    qWarning() << "IMPLEMENT ME! (HidController::send)";    //TODO
+
+    // Append the Report ID to the beginning of data[] per the API.
+    unsigned char * buffer = (unsigned char*) malloc( sizeof(unsigned char) * (length + 1));
+    memcpy(buffer + sizeof(unsigned char), data, length);
+    buffer[0] = (unsigned char) reportID;
+    
+    int result = hid_write(m_pHidDevice, buffer, length+1);
+    if (result==-1) qWarning() << "Unable to send data to" << m_sDeviceName << ":" << hid_error(m_pHidDevice);
+    else if (debugging()) qDebug() << "      " << result << "bytes sent";
+
+    free(buffer);
 }
