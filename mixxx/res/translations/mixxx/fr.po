@@ -3,13 +3,13 @@ msgstr ""
 "Project-Id-Version: Mixxx 1.8\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2011-12-22 11:41+0200\n"
-"PO-Revision-Date: 2011-12-10 16:33+0000\n"
-"Last-Translator: Maxime <Unknown>\n"
+"PO-Revision-Date: 2011-12-28 22:38+0000\n"
+"Last-Translator: SarahSlean <yoda4@hotmail.fr>\n"
 "Language-Team: <tezalprod@gmail.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-12-26 04:48+0000\n"
+"X-Launchpad-Export-Date: 2011-12-29 04:37+0000\n"
 "X-Generator: Launchpad (build 14560)\n"
 "X-Poedit-Country: FRANCE\n"
 "X-Poedit-Language: French\n"
@@ -308,12 +308,14 @@ msgstr "Échec lors du renommage du container"
 #: CrateFeature#15
 msgctxt "CrateFeature#15"
 msgid "Playlist Files (*.m3u *.m3u8 *.pls)"
-msgstr ""
+msgstr "Fichiers de la liste de lecture (*. m3u *. m3u8 *. pls)"
 
 #: CrateFeature#16
 msgctxt "CrateFeature#16"
 msgid "M3U Playlist (*.m3u);;M3U8 Playlist (*.m3u8);;PLS Playlist (*.pls)"
 msgstr ""
+"Liste de lecture M3U (*.m3u);; Liste de lecture M3U8 (*.m3u8);; Liste de "
+"lecture PLS (*.pls)"
 
 #: CrateFeature#17
 msgid "A crate cannot have a blank name."
@@ -361,7 +363,7 @@ msgstr ""
 "margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-"
 "family:'Sans Serif'; font-size:9pt;\"></p></body></html>"
 
-#: DlgAboutDlg#3
+#: DlgAboutDlg#2
 msgid "1.x.x"
 msgstr "1.x.x"
 
@@ -790,7 +792,7 @@ msgstr "16 Hz"
 
 #: DlgPrefEQDlg#6
 msgid "1.014 kHz"
-msgstr ""
+msgstr "1.014 kHz"
 
 #: DlgPrefEQDlg#7
 msgid "20.05 kHz"
@@ -1883,11 +1885,11 @@ msgstr "Gérer"
 
 #: DlgPrepare#2
 msgid "New"
-msgstr ""
+msgstr "Nouveau"
 
 #: DlgPrepare#3
 msgid "All"
-msgstr ""
+msgstr "Tous"
 
 #: DlgPrepare#4
 msgid "Progress"
@@ -2248,7 +2250,7 @@ msgstr "Cliquez sur un preset depuis la liste & déposez le ici"
 
 #: LibraryScannerDlg#1
 msgid "Library Scanner"
-msgstr ""
+msgstr "Scanner la bibliothèque"
 
 #: LibraryScannerDlg#2
 msgid "It's taking Mixxx a minute to scan your music library, please wait..."
@@ -2622,7 +2624,7 @@ msgstr "Support &Communautaire"
 
 #: MixxxApp#42
 msgid "&User Manual"
-msgstr ""
+msgstr "&Manuel de l'utilisateur"
 
 #: MixxxApp#43
 msgid "Send Us &Feedback"
@@ -2651,7 +2653,7 @@ msgstr "Ctrl+U"
 #: MixxxApp#49
 msgctxt "MixxxApp#49"
 msgid "Enable live broadcasting"
-msgstr ""
+msgstr "Activer la diffusion en direct"
 
 #: MixxxApp#50
 msgid "Ctrl+L"
@@ -2806,7 +2808,7 @@ msgstr "Afficher Mixxx en plein écran"
 #: MixxxApp#77
 msgctxt "MixxxApp#77"
 msgid "Preferences"
-msgstr ""
+msgstr "Préférences"
 
 #: MixxxApp#78
 msgid ""
@@ -2830,7 +2832,7 @@ msgstr ""
 
 #: MixxxApp#81
 msgid "Read the Mixxx user manual."
-msgstr ""
+msgstr "Lire le manuel de l'utilisateur de Mixxx"
 
 #: MixxxApp#82
 msgid ""
@@ -2838,6 +2840,9 @@ msgid ""
 "\n"
 "Read the Mixxx user manual."
 msgstr ""
+"Support\n"
+"\n"
+"Lisez le manuel utilisateur de Mixxx."
 
 #: MixxxApp#83
 msgid "Send feedback to the Mixxx team."
@@ -2960,11 +2965,11 @@ msgstr ""
 "Aucun périphérique d'entrée sélectionné.\n"
 "Vérifier les choix de carte de son dans les préférences."
 
-#: MixxxApp#105
+#: MixxxApp#110
 msgid "Confirm Exit"
 msgstr "Confirmer la fermeture"
 
-#: MixxxApp#106
+#: MixxxApp#111
 msgid "A deck is currently playing. Exit Mixxx?"
 msgstr "Un lecteur est actuellement actif.Quitter Mixxx?"
 
@@ -2981,15 +2986,17 @@ msgstr "Échec de l'exportation de liste de lecture"
 #: ParserM3u#2
 msgid "File path contains characters, not allowed in m3u playlists.\n"
 msgstr ""
+"Le chemin du fichier comporte des caractères, pas autorisés dans les listes "
+"de lecture M3U.\n"
 
 #: ParserM3u#3
 msgid "Export a m3u8 playlist instead!\n"
-msgstr ""
+msgstr "Exporter une liste de lecture m3u8 à la place!\n"
 
 #: ParserM3u#4
 msgctxt "ParserM3u#4"
 msgid "Could not create file"
-msgstr ""
+msgstr "Impossible de créer le fichier"
 
 #: ParserPls#1
 msgctxt "ParserPls#1"
@@ -3031,7 +3038,7 @@ msgstr "Importer une liste de lecture"
 
 #: PlaylistFeature#7
 msgid "Export Playlist"
-msgstr ""
+msgstr "Exporter la liste de lecture"
 
 #: PlaylistFeature#8
 msgid "Playlists"
@@ -3074,12 +3081,14 @@ msgstr "Échec pour renomer la liste de lecture"
 #: PlaylistFeature#17
 msgctxt "PlaylistFeature#17"
 msgid "Playlist Files (*.m3u *.m3u8 *.pls)"
-msgstr ""
+msgstr "Fichiers de la liste de lecture (*. m3u *. m3u8 *. pls)"
 
 #: PlaylistFeature#18
 msgctxt "PlaylistFeature#18"
 msgid "M3U Playlist (*.m3u);;M3U8 Playlist (*.m3u8);;PLS Playlist (*.pls)"
 msgstr ""
+"Liste de lecture M3U (*.m3u);; Liste de lecture M3U8 (*.m3u8);; Liste de "
+"lecture PLS (*.pls)"
 
 #: PlaylistFeature#19
 msgid "A playlist by that name already exists."
@@ -3411,15 +3420,16 @@ msgstr "touche Reloop/Sortie pour le lecteur %1"
 
 #: Ui#37
 msgid "Setup a loop over 4 beats for Player %1"
-msgstr ""
+msgstr "Installation d'une boucle de plus de 4 battements pour le joueur 1%"
 
 #: Ui#38
 msgid "Halves the current loop's length for Player %1"
 msgstr ""
+"Réduit de moitié la longueur de la boucle de courant pour le joueur 1%"
 
 #: Ui#39
 msgid "Doubles the current loop's length for Player %1"
-msgstr ""
+msgstr "Double la longueur de la boucle de courant pour le joueur 1%"
 
 #: Ui#40
 msgid "Hotcue 1 button for Player %1"
@@ -3455,11 +3465,11 @@ msgstr "touche de suppression hotcue 4 pour le lecteur %1"
 
 #: Ui#48
 msgid "Play button for Sampler %1"
-msgstr ""
+msgstr "Bouton Lecture pour Sampler 1%"
 
 #: Ui#49
 msgid "Gain knob for Sampler %1"
-msgstr ""
+msgstr "GAIN pour Sampler 1%"
 
 #: Ui#50
 msgid "Headphone listen button for Sampler %1"
@@ -3540,19 +3550,19 @@ msgstr ""
 
 #: Ui#69
 msgid "Adjusts the intensity of the flange effect"
-msgstr ""
+msgstr "Régler l'intensité de l'effet flanger"
 
 #: Ui#70
 msgid "Adjusts the phase delay of the flange effect"
-msgstr ""
+msgstr "Ajuste le retard de phase de l'effet flanger"
 
 #: Ui#71
 msgid "Microphone on/off"
-msgstr ""
+msgstr "Microphone en marche / arrêt"
 
 #: Ui#72
 msgid "Microphone volume"
-msgstr ""
+msgstr "Volume du microphone"
 
 #: WSearchLineEdit#1
 msgid "Search..."
@@ -3600,6 +3610,8 @@ msgid ""
 "Reloading track metadata on a loaded track may cause abrupt volume changes. "
 "Are you sure?"
 msgstr ""
+"Rechargement des métadonnées d'une piste sur une piste chargée peut "
+"provoquer des changements de volume brusques. Êtes-vous sûr?"
 
 #: WTrackTableViewHeader#1
 msgid "Show or hide columns."
