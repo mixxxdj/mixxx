@@ -13,7 +13,10 @@
 #include <stdlib.h>
 
 #ifdef __WINDOWS__
-#include <windows.h>
+    #include <windows.h>
+    #define PATH_SEPARATOR ";"
+#else
+    #define PATH_SEPARATOR ":"
 #endif
 
 using Vamp::Plugin;
@@ -27,17 +30,13 @@ void VampAnalyser::initializePluginPaths() {
     }
 
     // TODO(XXX) use correct split separator here.
-    QStringList pathElements = vampPath.length() > 0 ? vampPath.split(":")
+    QStringList pathElements = vampPath.length() > 0 ? vampPath.split(PATH_SEPARATOR)
             : QStringList();
 
     QString applicationPath = QCoreApplication::applicationDirPath();
 #ifdef __WINDOWS__
-#define PATH_SEPARATOR ";"
-    //This path is already relative to Mixxx.exe due to WIN32 API function FindFirstFile()
-    //#define DEFAULT_VAMP_PATH (QCoreApplication::applicationDirPath().replace("/","\\") +"\\plugins").toStdString().c_str()
-    pathElements << "plugins"; //Use the path where Mixxx.exe is located
+    pathElements << applicationPath.replace("/","\\"); //Use the path where Mixxx.exe is located
 #else
-#define PATH_SEPARATOR ":"
 #ifdef __APPLE__
     // Location within the OS X bundle that we store plugins.
     pathElements << applicationPath +"/../Plugins";
