@@ -272,6 +272,7 @@ public:
     void beatsUpdated();
     void ReplayGainUpdated(double replaygain);
     void cuesUpdated();
+    void BpmPluginKeyUpdated(QString ver);
     void changed(TrackInfoObject* pTrack);
     void dirty(TrackInfoObject* pTrack);
     void clean(TrackInfoObject* pTrack);

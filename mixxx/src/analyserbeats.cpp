@@ -50,10 +50,14 @@ void AnalyserBeats::initialise(TrackPointer tio, int sampleRate, int totalSample
     m_iSampleRate = tio->getSampleRate();
     m_iTotalSamples = totalSamples;
     m_bPass = false;
+    bool BpmLock = tio->hasBpmLock();
+    if(BpmLock){//Note that m_bPass had been set to false
+              qDebug()<<"Track is BpmLocked: Beat calculation will not start";
+              return;
+          }
     m_bPass = static_cast<bool> (m_pConfigAVT->getValueString(ConfigKey("[Vamp]","AnalyserBeatEnabled")).toInt());
     qDebug()<<"Beat calculation started";
     qDebug()<<"Beat calculation uses "<< pluginID;
-    qDebug()<<"isBpmLocked "<< tio->hasBpmLock();
     QString correction;
     m_bDisableBeatCorrection = !static_cast<bool>(m_pConfigAVT->
                                                    getValueString(ConfigKey("[Vamp]","AnalyserBeatFixedTempo")).toInt());
@@ -70,10 +74,11 @@ void AnalyserBeats::initialise(TrackPointer tio, int sampleRate, int totalSample
         correction = "none";
     QString pluginname = pluginID;
     pluginname.replace(QString(":"),QString("_output="));
-    m_sSubver.append(QString("_plugin=%1_beats_correction=%2").arg(pluginname,correction));
+    m_sSubver.append(QString("plugin=%1_beats_correction=%2").arg(pluginname,correction));
     BeatsPointer pBeats = tio->getBeats();
+    QString bpmpluginkey = tio->getBpmPluginKey();
     if(pBeats)
-        m_bPass = ! pBeats->getVersion().contains(QString("_plugin=%1_beats_correction=%2").arg(pluginname,correction)) ;
+        m_bPass = !bpmpluginkey.contains(QString("plugin=%1_beats_correction=%2").arg(pluginname,correction));
     if(!m_bPass){
         qDebug()<<"Beat calculation will not start";
         return;
@@ -107,8 +112,9 @@ void AnalyserBeats::finalise(TrackPointer tio) {
 
    if(!beats.isEmpty()){
        m_dBpm = BeatTools::calculateBpm(beats, m_iSampleRate, m_iMinBpm, m_iMaxBpm);
-       BeatsPointer pBeats = BeatFactory::makeBeatMap(tio, correctedBeats(beats,m_bDisableBeatCorrection),m_sSubver);
+       BeatsPointer pBeats = BeatFactory::makeBeatMap(tio, correctedBeats(beats,m_bDisableBeatCorrection));
        tio->setBeats(pBeats);
+       tio->setBpmPluginKey(m_sSubver);
        tio->setBpm(m_dBpm);
    }
    else{
@@ -116,7 +122,6 @@ void AnalyserBeats::finalise(TrackPointer tio) {
    }
 
     beats.clear();
-    m_sSubver="";
     if(m_bPass)
         qDebug()<<"Beat Calculation complete";
     else
