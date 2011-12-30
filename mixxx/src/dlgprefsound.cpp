@@ -136,7 +136,7 @@ void DlgPrefSound::slotApply() {
             error = QString(tr("Two outputs cannot share channels on %1")).arg(deviceName);
             break;
         default:
-            error = QString(tr("Error opening %1\n%2")).arg(deviceName).arg(detailedError);
+            error = QString(tr("Error opening %1\n%2")).arg(deviceName, detailedError);
             break;
         }
         QMessageBox::warning(NULL, tr("Configuration error"), error);
@@ -175,7 +175,7 @@ void DlgPrefSound::initializePaths() {
 void DlgPrefSound::addPath(AudioOutput output) {
     DlgPrefSoundItem *toInsert;
     // if we already know about this output, don't make a new entry
-    foreach (QObject *obj, outputScrollAreaContents->children()) {
+    foreach (QObject *obj, outputTab->children()) {
         DlgPrefSoundItem *item = qobject_cast<DlgPrefSoundItem*>(obj);
         if (item) {
             if (item->type() == output.getType()) {
@@ -191,10 +191,10 @@ void DlgPrefSound::addPath(AudioOutput output) {
     }
     AudioPathType type = output.getType();
     if (AudioPath::isIndexed(type)) {
-        toInsert = new DlgPrefSoundItem(outputScrollAreaContents, type,
+        toInsert = new DlgPrefSoundItem(outputTab, type,
             m_outputDevices, false, output.getIndex());
     } else {
-        toInsert = new DlgPrefSoundItem(outputScrollAreaContents, type,
+        toInsert = new DlgPrefSoundItem(outputTab, type,
             m_outputDevices, false);
     }
     connect(this, SIGNAL(refreshOutputDevices(const QList<SoundDevice*>&)),
@@ -206,7 +206,7 @@ void DlgPrefSound::addPath(AudioOutput output) {
 void DlgPrefSound::addPath(AudioInput input) {
     DlgPrefSoundItem *toInsert;
     // if we already know about this input, don't make a new entry
-    foreach (QObject *obj, inputScrollAreaContents->children()) {
+    foreach (QObject *obj, inputTab->children()) {
         DlgPrefSoundItem *item = qobject_cast<DlgPrefSoundItem*>(obj);
         if (item) {
             if (item->type() == input.getType()) {
@@ -222,10 +222,10 @@ void DlgPrefSound::addPath(AudioInput input) {
     }
     AudioPathType type = input.getType();
     if (AudioPath::isIndexed(type)) {
-        toInsert = new DlgPrefSoundItem(inputScrollAreaContents, type,
+        toInsert = new DlgPrefSoundItem(inputTab, type,
             m_inputDevices, true, input.getIndex());
     } else {
-        toInsert = new DlgPrefSoundItem(inputScrollAreaContents, type,
+        toInsert = new DlgPrefSoundItem(inputTab, type,
             m_inputDevices, true);
     }
     connect(this, SIGNAL(refreshInputDevices(const QList<SoundDevice*>&)),
@@ -247,7 +247,7 @@ void DlgPrefSound::connectSoundItem(DlgPrefSoundItem *item) {
             item, SLOT(reload()));
 }
 
-void DlgPrefSound::insertItem(DlgPrefSoundItem *pItem, QBoxLayout *pLayout) {
+void DlgPrefSound::insertItem(DlgPrefSoundItem *pItem, QVBoxLayout *pLayout) {
     int pos;
     for (pos = 0; pos < pLayout->count() - 1; ++pos) {
         DlgPrefSoundItem *pOther(qobject_cast<DlgPrefSoundItem*>(
@@ -376,9 +376,9 @@ void DlgPrefSound::updateLatencies(int sampleRateIndex) {
     for (; framesPerBuffer / sampleRate * 1000 < 1.0; framesPerBuffer *= 2);
     latencyComboBox->clear();
     for (unsigned int i = 0; i < SoundManagerConfig::kMaxLatency; ++i) {
-        unsigned int latency = framesPerBuffer / sampleRate * 1000;
+        float latency = framesPerBuffer / sampleRate * 1000;
         // i + 1 in the next line is a latency index as described in SSConfig
-        latencyComboBox->addItem(QString(tr("%1 ms")).arg(latency), i + 1);
+        latencyComboBox->addItem(QString(tr("%1 ms")).arg(latency,0,'g',3), i + 1);
         framesPerBuffer <<= 1; // *= 2
     }
     if (oldLatency < latencyComboBox->count() && oldLatency >= 0) {

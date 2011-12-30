@@ -12,7 +12,7 @@
     functions. This is a base class that cannot be instantiated on its own,
     it must be inherited by a class that implements it on top of some API.
     (See MidiDevicePortMidi, as of Nov 2009.)
-    
+
     This class is thread safe and must remain thread safe because parts of
     it may be accessed by the MIDI script engine thread as well as the
     MIDI thread concurrently.
@@ -69,6 +69,8 @@ Q_OBJECT
             messages and passes them straight to a script function. */
         void receive(const unsigned char data[], unsigned int length);
 #endif
+        /** Specifies whether or not we should dump MIDI messages to the console at runtime. This is useful
+            for end-user debugging and to help people map their controllers. */
         bool midiDebugging();
         void setReceiveInhibit(bool inhibit);
     public slots:

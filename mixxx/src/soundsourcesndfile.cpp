@@ -30,6 +30,7 @@
 SoundSourceSndFile::SoundSourceSndFile(QString qFilename) :
     Mixxx::SoundSource(qFilename)
 {
+    m_bOpened = false;
     info = new SF_INFO;
     info->format = 0;   // Must be set to 0 per the API for reading (non-RAW files)
     filelength = 0;
@@ -37,8 +38,9 @@ SoundSourceSndFile::SoundSourceSndFile(QString qFilename) :
 
 SoundSourceSndFile::~SoundSourceSndFile()
 {
-    if (filelength > 0)
+    if (m_bOpened) {
         sf_close(fh);
+    }
     delete info;
 }
 
@@ -52,9 +54,12 @@ QList<QString> SoundSourceSndFile::supportedFileExtensions()
     return list;
 }
 
-int SoundSourceSndFile::open()
-{
+int SoundSourceSndFile::open() {
+#ifdef __WINDOWS__
+    QByteArray qbaFilename = m_qFilename.toLocal8Bit();
+#else
     QByteArray qbaFilename = m_qFilename.toUtf8();
+#endif
     fh = sf_open( qbaFilename.data(), SFM_READ, info );
 
     if (fh == NULL) {   // sf_format_check is only for writes
@@ -71,7 +76,7 @@ int SoundSourceSndFile::open()
 
     filelength = channels*info->frames; // File length with two interleaved channels
     m_iSampleRate =  info->samplerate;
-
+    m_bOpened = true;
     return OK;
 }
 
@@ -158,8 +163,22 @@ int SoundSourceSndFile::parseHeader()
     bool is_flac = location.endsWith("flac", Qt::CaseInsensitive);
     bool is_wav = location.endsWith("wav", Qt::CaseInsensitive);
 
+#ifdef __WINDOWS__
+    /* From Tobias: A Utf-8 string did not work on my Windows XP (German edition)
+     * If you try this conversion, f.isValid() will return false in many cases
+     * and processTaglibFile() will fail
+     *
+     * The method toLocal8Bit() returns the local 8-bit representation of the string as a QByteArray.
+     * The returned byte array is undefined if the string contains characters not supported
+     * by the local 8-bit encoding.
+     */
+    QByteArray qBAFilename = m_qFilename.toLocal8Bit();
+#else
+    QByteArray qBAFilename = m_qFilename.toUtf8();
+#endif
+
     if (is_flac) {
-        TagLib::FLAC::File f(location.toUtf8().constData());
+        TagLib::FLAC::File f(qBAFilename.constData());
         result = processTaglibFile(f);
         TagLib::ID3v2::Tag* id3v2 = f.ID3v2Tag();
         TagLib::Ogg::XiphComment* xiph = f.xiphComment();
@@ -170,7 +189,7 @@ int SoundSourceSndFile::parseHeader()
             processXiphComment(xiph);
         }
     } else if (is_wav) {
-        TagLib::RIFF::WAV::File f(location.toUtf8().constData());
+        TagLib::RIFF::WAV::File f(qBAFilename.constData());
         result = processTaglibFile(f);
 
         TagLib::ID3v2::Tag* id3v2 = f.tag();
@@ -184,17 +203,21 @@ int SoundSourceSndFile::parseHeader()
             // XXX remove this when ubuntu ships with an sufficiently
             // intelligent version of taglib, should happen in 11.10
 
-            QByteArray qbaFilename = location.toUtf8();
-            fh = sf_open( qbaFilename.data(), SFM_READ, info );
+            // Have to open the file for info to be valid.
+            if (!m_bOpened) {
+                open();
+            }
+
             if (info->samplerate > 0) {
                 setDuration(info->frames / info->samplerate);
+            } else {
+                qDebug() << "WARNING: WAV file with invalid samplerate."
+                         << "Can't get duration using libsndfile.";
             }
-            sf_close(fh);
-            fh = NULL;
         }
     } else {
         // Try AIFF
-        TagLib::RIFF::AIFF::File f(location.toUtf8().constData());
+        TagLib::RIFF::AIFF::File f(qBAFilename.constData());
         result = processTaglibFile(f);
 
         TagLib::ID3v2::Tag* id3v2 = f.tag();

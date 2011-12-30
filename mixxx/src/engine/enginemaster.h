@@ -45,7 +45,8 @@ class EngineMaster : public EngineObject, public AudioSource {
     Q_OBJECT
   public:
     EngineMaster(ConfigObject<ConfigValue>* pConfig,
-                 const char* pGroup);
+                 const char* pGroup,
+                 bool bEnableSidechain);
     virtual ~EngineMaster();
 
     // Get access to the sample buffers. None of these are thread safe. Only to
@@ -135,8 +136,13 @@ class EngineMaster : public EngineObject, public AudioSource {
     EngineWorkerScheduler *m_pWorkerScheduler;
     SyncWorker* m_pSyncWorker;
 
-    ControlObject *m_pMasterVolume, *m_pHeadVolume;
+    ControlObject* m_pMasterVolume;
+    ControlObject* m_pHeadVolume;
+    ControlObject* m_pMasterSampleRate;
+    ControlObject* m_pMasterLatency;
+    ControlPotmeter* m_pMasterRate;
     EngineClipping *clipping, *head_clipping;
+
 #ifdef __LADSPA__
     EngineLADSPA *ladspa;
 #endif

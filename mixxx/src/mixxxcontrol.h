@@ -28,16 +28,19 @@ class MixxxControl
 {
     public:
         MixxxControl(QString controlobject_group="", QString controlobject_value="",
+                         QString controlobject_description="",
                          MidiOption midioption=MIDI_OPT_NORMAL);
         MixxxControl(QDomElement& controlNode, bool isOutputNode=false);
         ~MixxxControl() {};
         void setControlObjectGroup(QString controlobject_group) { m_strCOGroup = controlobject_group; };
         void setControlObjectValue(QString controlobject_value) { m_strCOValue = controlobject_value; };
+        void setControlObjectDescription(QString controlobject_description) { m_strCODescription = controlobject_description; };
         void setMidiOption(MidiOption midioption) { m_midiOption = midioption; };
         void setThresholdMinimum(float min) { m_thresholdMinimum = min; };
         void setThresholdMaximum(float max) { m_thresholdMaximum = max; };
         QString getControlObjectGroup() const { return m_strCOGroup; };
         QString getControlObjectValue() const { return m_strCOValue; };
+        QString getControlObjectDescription() const { return m_strCODescription; };
         MidiOption getMidiOption() const { return m_midiOption; };
         float getThresholdMinimum() const { return m_thresholdMinimum; };
         float getThresholdMaximum() const { return m_thresholdMaximum; };
@@ -45,12 +48,14 @@ class MixxxControl
         bool operator==(const MixxxControl& other) const {
             return ((m_strCOGroup == other.getControlObjectGroup()) &&
                     (m_strCOValue == other.getControlObjectValue()) &&
+                    (m_strCODescription == other.getControlObjectDescription()) &&
                     (m_midiOption == other.getMidiOption()));
         };
         bool isNull() { return (m_strCOGroup == "" && m_strCOValue == ""); };
     private:
         QString m_strCOGroup;
         QString m_strCOValue;
+        QString m_strCODescription;
         MidiOption m_midiOption;
         
         /** These next parameters are used for MIDI output, when we're monitoring

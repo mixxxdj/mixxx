@@ -169,7 +169,10 @@ void DlgTrackInfo::populateCues(TrackPointer pTrack) {
         //int hours = mins / 60; //Not going to worry about this for now. :)
 
         //Construct a nicely formatted duration string now.
-        QString duration = QString("%1:%2.%3").arg(mins).arg(seconds, 2, 10, QChar('0')).arg(fraction, 2,10, QChar('0'));
+        QString duration = QString("%1:%2.%3").arg(
+            QString::number(mins),
+            QString("%1").arg(seconds, 2, 10, QChar('0')),
+            QString("%1").arg(fraction, 2, 10, QChar('0')));
 
         QTableWidgetItem* durationItem = new QTableWidgetItem(duration);
         // Make the duration read only

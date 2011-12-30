@@ -19,14 +19,17 @@
 #include "treeitem.h"
 #include "soundsourceproxy.h"
 
-PlaylistFeature::PlaylistFeature(QObject* parent, TrackCollection* pTrackCollection, ConfigObject<ConfigValue>* pConfig)
+PlaylistFeature::PlaylistFeature(QObject* parent,
+                                 TrackCollection* pTrackCollection,
+                                 ConfigObject<ConfigValue>* pConfig)
         : LibraryFeature(parent),
-         // m_pTrackCollection(pTrackCollection),
+          m_pTrackCollection(pTrackCollection),
           m_playlistDao(pTrackCollection->getPlaylistDAO()),
           m_trackDao(pTrackCollection->getTrackDAO()),
           m_pConfig(pConfig),
           m_playlistTableModel(this, pTrackCollection->getDatabase()) {
-    m_pPlaylistTableModel = new PlaylistTableModel(this, pTrackCollection);
+    m_pPlaylistTableModel = new PlaylistTableModel(this, pTrackCollection,
+                                                   "mixxx.db.model.playlist");
 
     m_pCreatePlaylistAction = new QAction(tr("New Playlist"),this);
     connect(m_pCreatePlaylistAction, SIGNAL(triggered()),
@@ -170,13 +173,11 @@ void PlaylistFeature::slotCreatePlaylist() {
             QMessageBox::warning(NULL,
                                  tr("Playlist Creation Failed"),
                                  tr("A playlist by that name already exists."));
-        }
-        else if (name.isEmpty()) {
+        } else if (name.isEmpty()) {
             QMessageBox::warning(NULL,
                                  tr("Playlist Creation Failed"),
                                  tr("A playlist cannot have a blank name."));
-        }
-        else {
+        } else {
             validNameGiven = true;
         }
 
@@ -393,72 +394,82 @@ void PlaylistFeature::slotImportPlaylist()
 {
     qDebug() << "slotImportPlaylist() row:" ; //<< m_lastRightClickedIndex.data();
 
-    QString playlist_file = QFileDialog::getOpenFileName
-            (
-            NULL,
-            tr("Import Playlist"),
-            QDesktopServices::storageLocation(QDesktopServices::MusicLocation),
-            tr("Playlist Files (*.m3u *.pls)")
-            );
-    //Exit method if user cancelled the open dialog.
-    if (playlist_file.isNull() || playlist_file.isEmpty() ) return;
+    QString playlist_file = QFileDialog::getOpenFileName(
+        NULL,
+        tr("Import Playlist"),
+        QDesktopServices::storageLocation(QDesktopServices::MusicLocation),
+        tr("Playlist Files (*.m3u *.m3u8 *.pls)"));
+    // Exit method if user cancelled the open dialog.
+    if (playlist_file.isNull() || playlist_file.isEmpty()) {
+        return;
+    }
 
     Parser* playlist_parser = NULL;
 
-    if(playlist_file.endsWith(".m3u", Qt::CaseInsensitive))
-    {
+    if (playlist_file.endsWith(".m3u", Qt::CaseInsensitive) ||
+        playlist_file.endsWith(".m3u8", Qt::CaseInsensitive)) {
         playlist_parser = new ParserM3u();
-    }
-    else if(playlist_file.endsWith(".pls", Qt::CaseInsensitive))
-    {
+    } else if (playlist_file.endsWith(".pls", Qt::CaseInsensitive)) {
         playlist_parser = new ParserPls();
-    }
-    else
-    {
+    } else {
         return;
     }
     QList<QString> entries = playlist_parser->parse(playlist_file);
 
-    //Iterate over the List that holds URLs of playlist entires
+    // Iterate over the List that holds URLs of playlist entires
     for (int i = 0; i < entries.size(); ++i) {
         m_pPlaylistTableModel->addTrack(QModelIndex(), entries[i]);
-
     }
 
-    //delete the parser object
-    if(playlist_parser) delete playlist_parser;
+    // delete the parser object
+    if (playlist_parser) {
+        delete playlist_parser;
+    }
 }
 void PlaylistFeature::onLazyChildExpandation(const QModelIndex &index){
     //Nothing to do because the childmodel is not of lazy nature.
 }
+
 void PlaylistFeature::slotExportPlaylist(){
     qDebug() << "Export playlist" << m_lastRightClickedIndex.data();
-    QString file_location = QFileDialog::getSaveFileName(NULL,
-                                        tr("Export Playlist"),
-                                        QDesktopServices::storageLocation(QDesktopServices::MusicLocation),
-                                        tr("M3U Playlist (*.m3u);;PLS Playlist (*.pls)"));
-    //Exit method if user cancelled the open dialog.
-    if(file_location.isNull() || file_location.isEmpty()) return;
-    //create and populate a list of files of the playlist
+    QString file_location = QFileDialog::getSaveFileName(
+        NULL,
+        tr("Export Playlist"),
+        QDesktopServices::storageLocation(QDesktopServices::MusicLocation),
+        tr("M3U Playlist (*.m3u);;M3U8 Playlist (*.m3u8);;PLS Playlist (*.pls)"));
+    // Exit method if user cancelled the open dialog.
+    if (file_location.isNull() || file_location.isEmpty()) {
+        return;
+    }
+    // Create and populate a list of files of the playlist
     QList<QString> playlist_items;
-    int rows = m_pPlaylistTableModel->rowCount();
-    for(int i = 0; i < rows; ++i){
-        QModelIndex index = m_pPlaylistTableModel->index(i,0);
-        playlist_items << m_pPlaylistTableModel->getTrackLocation(index);
-    }
-    //check config if relative paths are desired
-    bool useRelativePath = (bool)m_pConfig->getValueString(ConfigKey("[Library]","UseRelativePathOnExport")).toInt();
+    // Create a new table model since the main one might have an active search.
+    QScopedPointer<PlaylistTableModel> pPlaylistTableModel(
+        new PlaylistTableModel(this, m_pTrackCollection,
+                               "mixxx.db.model.playlist_export"));
 
-    if(file_location.endsWith(".m3u", Qt::CaseInsensitive))
-    {
+    pPlaylistTableModel->setPlaylist(m_pPlaylistTableModel->getPlaylist());
+    pPlaylistTableModel->setSort(0, Qt::AscendingOrder);
+    pPlaylistTableModel->select();
+    int rows = pPlaylistTableModel->rowCount();
+    for (int i = 0; i < rows; ++i) {
+        QModelIndex index = pPlaylistTableModel->index(i, 0);
+        playlist_items << pPlaylistTableModel->getTrackLocation(index);
+    }
+
+    // check config if relative paths are desired
+    bool useRelativePath = static_cast<bool>(m_pConfig->getValueString(
+        ConfigKey("[Library]", "UseRelativePathOnExport")).toInt());
+
+    if (file_location.endsWith(".m3u", Qt::CaseInsensitive)) {
         ParserM3u::writeM3UFile(file_location, playlist_items, useRelativePath);
-    }
-    else if(file_location.endsWith(".pls", Qt::CaseInsensitive))
-    {
-        ParserPls::writePLSFile(file_location,playlist_items, useRelativePath);
-    }
-    else
-    {
+    } else if (file_location.endsWith(".pls", Qt::CaseInsensitive)) {
+        ParserPls::writePLSFile(file_location,playlist_items,
+                                useRelativePath);
+    } else if (file_location.endsWith(".m3u8", Qt::CaseInsensitive)) {
+        ParserM3u::writeM3U8File(file_location, playlist_items,
+                                 useRelativePath);
+    } else {
         //default export to M3U if file extension is missing
 
         qDebug() << "Playlist export: No file extension specified. Appending .m3u "
@@ -466,8 +477,8 @@ void PlaylistFeature::slotExportPlaylist(){
         file_location.append(".m3u");
         ParserM3u::writeM3UFile(file_location, playlist_items, useRelativePath);
     }
-
 }
+
 void PlaylistFeature::slotAddToAutoDJ() {
     //qDebug() << "slotAddToAutoDJ() row:" << m_lastRightClickedIndex.data();
 

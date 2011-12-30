@@ -57,33 +57,27 @@ script.debug = function (channel, control, value, status, group) {
 }
 
 script.midiDebug = function (channel, control, value, status, group) {
-    print("Script.midiDebug --- channel: " + channel.toString(16) + 
-          " control: " + control.toString(16) + " value: " + value.toString(16) + 
-          " status: " + status.toString(16) + " group: " + group);
+    print("Script.midiDebug - channel: 0x" + channel.toString(16) +
+          " control: 0x" + control.toString(16) + " value: 0x" + value.toString(16) +
+          " status: 0x" + status.toString(16) + " group: " + group);
 }
 
 // Used to control a generic Mixxx control setting (low..high) from an absolute control
-script.absoluteSlider = function (group, key, value, low, high, min = 0, max = 127) {
+script.absoluteSlider = function (group, key, value, low, high, min, max) {
+    if (!min) min = 0;
+    if (!max) max = 127;
+    print("min="+max);
     if (value==max) engine.setValue(group, key, high);
     else engine.setValue(group, key, (((high - low) / max) * value) + low);
 }
 
 // Returns a value for a non-linear Mixxx control (like EQs: 0..1..4) from an absolute control
-script.absoluteNonLin = function (value, low, mid, high, min = 0, max = 127) {
+script.absoluteNonLin = function (value, low, mid, high, min, max) {
+    if (!min) min = 0;
+    if (!max) max = 127;
     var center = (max-min)/2;
     if (value<=center) return value/(center/(mid-low));
     else return 1+(value-63)/(center/(high-mid));
-}
-
-// DEPRECATED
-// Used to control an EQ setting (0..1..4) from an absolute control
-script.absoluteEQ = function (group, key, value, min = 0, max = 127) {
-    var center = (max-min)/2;
-    if (value<=center) engine.setValue(group, key, value/center);
-    else engine.setValue(group, key, 1+(value-63)/(21+1/3));
-    print ("script.absoluteEQ is deprecated. " + 
-           "Use script.absoluteNonLin(value,0,1,4) instead and set the " + 
-           "MixxxControl to its return value.");
 }
 
 /* -------- ------------------------------------------------------
@@ -150,7 +144,6 @@ bpm.tapButton = function(deck) {
 //     print("Script: BPM="+average);
 }
 
-
 // ----------------- Object definitions --------------------------
 
 
@@ -201,6 +194,7 @@ function Control(mappedFunction, softMode) {
    this.softMode = softMode;
    this.maxJump = 10;
 }
+
 Control.prototype.setValue = function(group, inputValue){
    var outputValue = 0;
    if(inputValue <= this.midInput){

@@ -19,7 +19,7 @@
 #define MIDIDEVICEHSS1394_H
 
 #include <QtCore>
-#include <HSS1394/HSS1394.h>
+#include <hss1394/HSS1394.h>
 #include "mididevice.h"
 
 #define MIXXX_HSS1394_BUFFER_LEN 64 /**Number of MIDI messages to buffer*/

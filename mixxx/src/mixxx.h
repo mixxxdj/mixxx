@@ -44,10 +44,6 @@
 //#include "trackplaylist.h"
 #include "recording/recordingmanager.h"
 
-#ifdef __SCRIPT__
-#include "script/scriptengine.h"
-#endif
-
 class EngineMaster;
 class PlayerManager;
 class TrackInfoObject;
@@ -119,6 +115,8 @@ class MixxxApp : public QMainWindow
     void slotHelpSupport();
     // Visits a feedback form
     void slotHelpFeedback();
+    // Open the manual.
+    void slotHelpManual();
     // Visits translation interface on launchpad.net
     void slotHelpTranslation();
     /** Change of file to play */
@@ -192,10 +190,6 @@ class MixxxApp : public QMainWindow
     /** view_menu contains all items of the menubar entry "Help" */
     QMenu *m_pHelpMenu;
 
-#ifdef __SCRIPT__
-    QMenu *macroMenu;
-#endif
-
     QAction *m_pFileLoadSongPlayer1;
     QAction *m_pFileLoadSongPlayer2;
     QAction *m_pFileQuit;
@@ -227,22 +221,18 @@ class MixxxApp : public QMainWindow
     QAction *m_pHelpSupport;
     QAction *m_pHelpFeedback;
     QAction *m_pHelpTranslation;
-#ifdef __SCRIPT__
-    QAction *macroStudio;
-#endif
+    QAction *m_pHelpManual;
+
     int m_iNoPlaylists;
 
     /** Pointer to preference dialog */
     DlgPreferences *m_pPrefDlg;
 
-#ifdef __SCRIPT__
-    ScriptEngine *scriptEng;
-#endif
-
     int noSoundDlg(void);
     int noOutputDlg(bool *continueClicked);
     // Fullscreen patch
     QPoint m_winpos;
+    bool m_NativeMenuBarSupport;
 };
 
 //A structure to store the parsed command-line arguments

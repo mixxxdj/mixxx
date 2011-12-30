@@ -59,7 +59,7 @@ class MidiScriptEngine : public QThread {
                                     QString function, bool disconnect = false);
     Q_INVOKABLE void trigger(QString group, QString name);
     Q_INVOKABLE void log(QString message);
-    Q_INVOKABLE int beginTimer(int interval, QString scriptCode, bool oneShot = false);
+    Q_INVOKABLE int beginTimer(int interval, QScriptValue scriptCode, bool oneShot = false);
     Q_INVOKABLE void stopTimer(int timerId);
     Q_INVOKABLE void scratchEnable(int deck, int intervalsPerRev, float rpm, float alpha, float beta);
     Q_INVOKABLE void scratchTick(int deck, int interval);
@@ -97,12 +97,13 @@ class MidiScriptEngine : public QThread {
   private:
     // Only call these with the scriptEngineLock
     bool safeEvaluate(QString scriptName, QList<QString> scriptPaths);
-    bool internalExecute(QString scriptCode);
+    bool internalExecute(QScriptValue thisObject, QString scriptCode);
     bool safeExecute(QString function);
     bool safeExecute(QString function, QString data);
     bool safeExecute(QString function, const unsigned char data[], unsigned int length);
     bool safeExecute(QString function, char channel,
                      char control, char value, MidiStatusByte status, QString group);
+    bool safeExecute(QScriptValue thisObject, QScriptValue functionObject);
     void initializeScriptEngine();
 
     void scriptErrorDialog(QString detailedError);
@@ -121,7 +122,12 @@ class MidiScriptEngine : public QThread {
     QMap<QString,QStringList> m_scriptErrors;
     QMutex m_scriptEngineLock;
     QHash<ConfigKey, ControlObjectThread*> m_controlCache;
-    QHash<int, QPair<QString, bool> > m_timers;
+    struct TimerInfo {
+        QScriptValue callback;
+        QScriptValue context;
+        bool oneShot;
+    };
+    QHash<int, TimerInfo> m_timers;
     SoftTakeover m_st;
 
     // Scratching functions & variables

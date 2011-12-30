@@ -20,6 +20,7 @@
 
 #include "engine/enginebuffer.h"
 #include "cachingreader.h"
+#include "sampleutil.h"
 
 #include "controlpushbutton.h"
 #include "controlobjectthreadmain.h"
@@ -27,7 +28,6 @@
 #include "controlpotmeter.h"
 #include "engine/enginebufferscalest.h"
 #include "engine/enginebufferscalelinear.h"
-#include "engine/enginebufferscalereal.h"
 #include "engine/enginebufferscaledummy.h"
 #include "mathstuff.h"
 #include "engine/engineworkerscheduler.h"
@@ -69,6 +69,7 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
     file_length_old(-1),
     file_srate_old(0),
     m_iSamplesCalculated(0),
+    m_iUiSlowTick(0),
     m_pTrackEnd(NULL),
     m_pRepeat(NULL),
     startButton(NULL),
@@ -78,7 +79,15 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
     m_pScaleST(NULL),
     m_bScalerChanged(false),
     m_bLastBufferPaused(true),
-    m_fRampValue(0.0) {
+    m_fRampValue(0.0),
+    m_iRampState(ENGINE_RAMP_NONE),
+    m_pDitherBuffer(new CSAMPLE[MAX_BUFFER_LEN]),
+    m_iDitherBufferReadIndex(0) {
+
+    // Generate dither values
+    for (int i = 0; i < MAX_BUFFER_LEN; ++i) {
+        m_pDitherBuffer[i] = static_cast<float>(rand() % 32768) / 32768.0 - 0.5;
+    }
 
     m_fLastSampleValue[0] = 0;
     m_fLastSampleValue[1] = 0;
@@ -135,10 +144,11 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
             this, SLOT(slotControlEnd(double)),
             Qt::DirectConnection);
 
-    m_pMasterRate = ControlObject::getControl(ConfigKey("[Master]", "rate"));
-
     // Actual rate (used in visuals, not for control)
     rateEngine = new ControlObject(ConfigKey(group, "rateEngine"));
+
+    // BPM to display in the UI (updated more slowly than the actual bpm)
+    visualBpm = new ControlObject(ConfigKey(group, "visual_bpm"));
 
     // Slider to show and change song position
     //these bizarre choices map conveniently to the 0-127 range of midi
@@ -196,6 +206,7 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
 
     m_pReadAheadManager = new ReadAheadManager(m_pReader);
     m_pReadAheadManager->addEngineControl(m_pLoopingControl);
+    m_pReadAheadManager->addEngineControl(m_pRateControl);
 
     // Construct scaling objects
     m_pScaleLinear = new EngineBufferScaleLinear(m_pReadAheadManager);
@@ -235,6 +246,7 @@ EngineBuffer::~EngineBuffer()
     delete playStartButton;
     delete startButton;
     delete endButton;
+    delete stopStartButtonCOT;
     delete stopButtonCOT;
     delete stopButton;
     delete rateEngine;
@@ -254,6 +266,8 @@ EngineBuffer::~EngineBuffer()
 
     delete m_pKeylock;
     delete m_pEject;
+
+    delete [] m_pDitherBuffer;
 
     while (m_engineControls.size() > 0) {
         EngineControl* pControl = m_engineControls.takeLast();
@@ -406,16 +420,6 @@ void EngineBuffer::slotControlSeek(double change)
     if (!even((int)new_playpos))
         new_playpos--;
 
-    // Give EngineControl's a chance to veto or correct the seek target.
-
-    // Seek reader
-    Hint seek_hint;
-    seek_hint.sample = new_playpos;
-    seek_hint.length = 0;
-    seek_hint.priority = 1;
-    QList<Hint> hint_list;
-    hint_list.append(seek_hint);
-    m_pReader->hintAndMaybeWake(hint_list);
     setNewPlaypos(new_playpos);
 }
 
@@ -472,7 +476,7 @@ void EngineBuffer::slotControlStop(double v)
 
 void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBufferSize)
 {
-
+    Q_ASSERT(even(iBufferSize));
     m_pReader->process();
     // Steps:
     // - Lookup new reader information
@@ -485,18 +489,10 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
     //   miscellaneous upkeep issues.
 
     CSAMPLE * pOutput = (CSAMPLE *)pOut;
-
     bool bCurBufferPaused = false;
-    double rate;
+    double rate = 0;
 
     if (!m_pTrackEnd->get() && pause.tryLock()) {
-
-        if (m_pKeylock->get() && m_pScale != m_pScaleST) {
-            setPitchIndpTimeStretch(true);
-        } else if (!m_pKeylock->get() && m_pScale == m_pScaleST) {
-            setPitchIndpTimeStretch(false);
-        }
-
         float sr = m_pSampleRate->get();
 
         double baserate = 0.0f;
@@ -505,8 +501,22 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
 
         bool paused = playButton->get() != 0.0f ? false : true;
 
-        rate = m_pRateControl->calculateRate(baserate, paused, iBufferSize);
+        bool is_scratching = false;
+        rate = m_pRateControl->calculateRate(baserate, paused, iBufferSize,
+                                             &is_scratching);
         //qDebug() << "rate" << rate << " paused" << paused;
+
+        // Scratching always disables keylock because keylock sounds terrible
+        // when not going at a constant rate.
+        if (is_scratching && m_pScale != m_pScaleLinear) {
+            setPitchIndpTimeStretch(false);
+        } else if (!is_scratching) {
+            if (m_pKeylock->get() && m_pScale != m_pScaleST) {
+                setPitchIndpTimeStretch(true);
+            } else if (!m_pKeylock->get() && m_pScale == m_pScaleST) {
+                setPitchIndpTimeStretch(false);
+            }
+        }
 
         // If the rate has changed, set it in the scale object
         if (rate != rate_old || m_bScalerChanged) {
@@ -546,48 +556,42 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
         // If the buffer is not paused, then scale the audio.
         if (!bCurBufferPaused) {
             CSAMPLE *output;
-            double idx;
-
-            Q_ASSERT(even(iBufferSize));
 
             // The fileposition should be: (why is this thing a double anyway!?
             // Integer valued.
-            Q_ASSERT(round(filepos_play) == filepos_play);
+            double filepos_play_rounded = round(filepos_play);
+            if (filepos_play_rounded != filepos_play) {
+                qWarning() << __FILE__ << __LINE__ << "ERROR: filepos_play is not round:" << filepos_play;
+                filepos_play = filepos_play_rounded;
+            }
+
             // Even.
-            Q_ASSERT(even(filepos_play));
+            if (!even(filepos_play)) {
+                qWarning() << "ERROR: filepos_play is not even:" << filepos_play;
+                filepos_play--;
+            }
 
             // Perform scaling of Reader buffer into buffer.
             output = m_pScale->scale(0,
                                      iBufferSize,
                                      0,
                                      0);
-            idx = m_pScale->getNewPlaypos();
+            double samplesRead = m_pScale->getNewPlaypos();
 
             // qDebug() << "sourceSamples used " << iSourceSamples
-            //          <<" idx " << idx
+            //          <<" samplesRead " << samplesRead
             //          << ", buffer pos " << iBufferStartSample
             //          << ", play " << filepos_play
             //          << " bufferlen " << iBufferSize;
 
             // Copy scaled audio into pOutput
-            memcpy(pOutput, output, sizeof(CSAMPLE) * iBufferSize);
+            memcpy(pOutput, output, sizeof(pOutput[0]) * iBufferSize);
 
-            // for(int i=0; i<iBufferSize; i++) {
-            //     pOutput[i] = output[i];
-            // }
-
-            // Adjust filepos_play by the amount we processed.
-            filepos_play += idx;
-            //filepos_play = math_max(0, filepos_play);
-            //// We need the above protection against negative playpositions
-            //// in case SoundTouch/EngineBufferSoundTouch gives us too many samples.
-
-            // Get rid of annoying decimals that the scaler sometimes produces
-            filepos_play = round(filepos_play);
-
-            if (!even(filepos_play))
-                filepos_play--;
-
+            // Adjust filepos_play by the amount we processed. TODO(XXX) what
+            // happens if samplesRead is a fraction?
+            filepos_play =
+                    m_pReadAheadManager->getEffectiveVirtualPlaypositionFromLog(
+                        static_cast<int>(filepos_play), samplesRead);
         } // else (bCurBufferPaused)
 
         m_engineLock.lock();
@@ -599,8 +603,18 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
                                                     file_length_old, iBufferSize);
 
             if (control_seek != kNoTrigger) {
+                // If we have not processed loops by this point then we have a
+                // bug. RAMAN should be in charge of taking loops now. This
+                // final step is more to notify all the EngineControls of the
+                // happenings of the engine. TODO(rryan) log condition to a
+                // stats-pipe once we have them.
+
                 filepos_play = control_seek;
-                Q_ASSERT(round(filepos_play) == filepos_play);
+                double filepos_play_rounded = round(filepos_play);
+                if (filepos_play_rounded != filepos_play) {
+                    qWarning() << __FILE__ << __LINE__ << "ERROR: filepos_play is not round:" << filepos_play;
+                    filepos_play = filepos_play_rounded;
+                }
 
                 // Fix filepos_play so that it is not out of bounds.
                 if (file_length_old > 0) {
@@ -627,6 +641,10 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
 
                 //setNewPlaypos(filepos_play);
                 m_pReadAheadManager->notifySeek(filepos_play);
+                // Notify seek the rate control since it needs to track things
+                // like looping. Hacky, I know, but this helps prevent things
+                // like the scratch controller from flipping out.
+                m_pRateControl->notifySeek(filepos_play);
             }
         }
         m_engineLock.unlock();
@@ -682,33 +700,33 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
     //let's try holding the last sample value constant, and pull it
     //towards zero
     float ramp_inc = 0;
-    if (m_iRampState == ENGINE_RAMP_UP) {
-        ramp_inc = (m_iRampState * 0.2) / iBufferSize; //ramp up quickly (5 frames)
-    } else if (m_iRampState == ENGINE_RAMP_DOWN) {
-        ramp_inc = (m_iRampState * 0.08) / iBufferSize; //but down slowly
-    }
+    if (m_iRampState == ENGINE_RAMP_UP ||
+        m_iRampState == ENGINE_RAMP_DOWN) {
+        ramp_inc = m_iRampState * 300 / m_pSampleRate->get();
 
-    //float fakerate = rate * 30000 == 0 ? -5000 : rate*30000;
-    for (int i=0; i<iBufferSize; i+=2) {
-        if (bCurBufferPaused) {
-            float dither = (float)(rand() % 32768) / 32768 - 0.5; // dither
-            pOutput[i] = m_fLastSampleValue[0] * m_fRampValue + dither;
-            pOutput[i+1] = m_fLastSampleValue[1] * m_fRampValue + dither;
-        } else {
-            pOutput[i] = pOutput[i] * m_fRampValue;
-            pOutput[i+1] = pOutput[i+1] * m_fRampValue;
-        }
+        for (int i=0; i<iBufferSize; i+=2) {
+            if (bCurBufferPaused) {
+                float dither = m_pDitherBuffer[m_iDitherBufferReadIndex];
+                m_iDitherBufferReadIndex = (m_iDitherBufferReadIndex + 1) % MAX_BUFFER_LEN;
+                pOutput[i] = m_fLastSampleValue[0] * m_fRampValue + dither;
+                pOutput[i+1] = m_fLastSampleValue[1] * m_fRampValue + dither;
+            } else {
+                pOutput[i] = pOutput[i] * m_fRampValue;
+                pOutput[i+1] = pOutput[i+1] * m_fRampValue;
+            }
 
-        //writer << pOutput[i] <<  "\n";
-        m_fRampValue += ramp_inc;
-        if (m_fRampValue >= 1.0) {
-            m_iRampState = ENGINE_RAMP_NONE;
-            m_fRampValue = 1.0;
+            m_fRampValue += ramp_inc;
+            if (m_fRampValue >= 1.0) {
+                m_iRampState = ENGINE_RAMP_NONE;
+                m_fRampValue = 1.0;
+            }
+            if (m_fRampValue <= 0.0) {
+                m_iRampState = ENGINE_RAMP_NONE;
+                m_fRampValue = 0.0;
+            }
         }
-        if (m_fRampValue <= 0.0) {
-            m_iRampState = ENGINE_RAMP_NONE;
-            m_fRampValue = 0.0;
-        }
+    } else if (m_fRampValue == 0.0) {
+        SampleUtil::applyGain(pOutput, 0.0, iBufferSize);
     }
 
     if ((!bCurBufferPaused && m_iRampState == ENGINE_RAMP_NONE) ||
@@ -717,46 +735,11 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
         m_fLastSampleValue[1] = pOutput[iBufferSize-1];
     }
 
+    /*for (int i=0; i<iBufferSize; i+=2) {
+        writer << pOutput[i] <<  "\n";
+    }*/
+
     m_bLastBufferPaused = bCurBufferPaused;
-}
-
-
-void EngineBuffer::rampOut(const CSAMPLE* pOut, int iBufferSize)
-{
-    CSAMPLE * pOutput = (CSAMPLE *)pOut;
-
-    //qDebug() << "ramp out";
-
-    // Ramp to zero
-    int i=0;
-    if (m_fLastSampleValue[0]!=0.) {
-        // TODO(XXX) SSE
-        if (pOutput[0] == 0) {
-            while (i<iBufferSize) {
-                float sigmoid = sigmoid_zero((float)(iBufferSize - i), (float)iBufferSize);
-                float dither = (float)(rand() % 32768) / 32768 - 0.5; // dither
-                pOutput[i] = (float)m_fLastSampleValue[0] * sigmoid + dither;
-                pOutput[i+1] = (float)m_fLastSampleValue[1] * sigmoid + dither;
-                i+=2;
-            }
-        } else {
-            while (i<iBufferSize) {
-                float sigmoid = sigmoid_zero((float)(iBufferSize - i), (float)iBufferSize);
-                float dither = (float)(rand() % 32768) / 32768 - 0.5; // dither
-                pOutput[i] = (float)pOutput[i] * sigmoid + dither;
-                pOutput[i+1] = (float)pOutput[i+1] * sigmoid + dither;
-                i+=2;
-               }
-        }
-    }
-
-    // TODO(XXX) memset
-    // Reset rest of buffer
-    while (i<iBufferSize)
-    {
-        pOutput[i]=0.;
-        ++i;
-    }
 }
 
 void EngineBuffer::updateIndicators(double rate, int iBufferSize) {
@@ -780,6 +763,12 @@ void EngineBuffer::updateIndicators(double rate, int iBufferSize) {
 
         if(rate != rateEngine->get())
             rateEngine->set(rate);
+
+        //Update the BPM even more slowly
+        m_iUiSlowTick = (m_iUiSlowTick + 1) % kiBpmUpdateRate;
+        if (m_iUiSlowTick == 0) {
+            visualBpm->set(m_pBpmControl->getBpm());
+        }
 
         // Reset sample counter
         m_iSamplesCalculated = 0;
@@ -855,4 +844,17 @@ void EngineBuffer::slotEjectTrack(double v) {
     if (v > 0) {
         ejectTrack();
     }
+}
+
+void EngineBuffer::setReader(CachingReader* pReader) {
+    disconnect(m_pReader, 0, this, 0);
+    delete m_pReader;
+    m_pReader = pReader;
+    m_pReadAheadManager->setReader(pReader);
+    connect(m_pReader, SIGNAL(trackLoaded(TrackPointer, int, int)),
+            this, SLOT(slotTrackLoaded(TrackPointer, int, int)),
+            Qt::DirectConnection);
+    connect(m_pReader, SIGNAL(trackLoadFailed(TrackPointer, QString)),
+            this, SLOT(slotTrackLoadFailed(TrackPointer, QString)),
+            Qt::DirectConnection);
 }
