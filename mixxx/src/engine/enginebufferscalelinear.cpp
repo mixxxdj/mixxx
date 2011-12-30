@@ -105,6 +105,8 @@ CSAMPLE * EngineBufferScaleLinear::scale(double playpos, unsigned long buf_size,
 {
     float rate_add_new = m_dBaseRate;
     float rate_add_old = m_fOldBaseRate; //Smoothly interpolate to new playback rate
+    int samples_read = 0;
+    new_playpos = 0;
 
     // Guard against buf_size == 0
     if ((int)buf_size == 0)
@@ -117,7 +119,7 @@ CSAMPLE * EngineBufferScaleLinear::scale(double playpos, unsigned long buf_size,
         //first half: rate goes from old rate to zero
         m_fOldBaseRate = rate_add_old;
         m_dBaseRate = 0.0;
-        buffer = do_scale(buffer, buf_size/2, pBase, iBaseLength);
+        buffer = do_scale(buffer, buf_size/2, pBase, iBaseLength, &samples_read);
 
         //reset prev sample so we can now read in the other direction
         //(may not be necessary?)
@@ -132,11 +134,10 @@ CSAMPLE * EngineBufferScaleLinear::scale(double playpos, unsigned long buf_size,
         if (extra_samples > 0) {
             if (extra_samples % 2 != 0)
                 extra_samples++;
-            qDebug() << "extra samples" << extra_samples;
+            //qDebug() << "extra samples" << extra_samples;
 
-            m_pReadAheadManager->getNextSamples(rate_add_new,buffer_int,
-                                                 extra_samples);
-
+            samples_read += m_pReadAheadManager->getNextSamples(
+                rate_add_new, buffer_int, extra_samples);
         }
         //force a buffer read:
         buffer_int_size=0;
@@ -148,17 +149,21 @@ CSAMPLE * EngineBufferScaleLinear::scale(double playpos, unsigned long buf_size,
         m_fOldBaseRate = 0.0;
         m_dBaseRate = rate_add_new;
         //pass the address of the sample at the halfway point
-        do_scale(&buffer[buf_size/2], buf_size/2, pBase, iBaseLength);
+        do_scale(&buffer[buf_size/2], buf_size/2, pBase, iBaseLength, &samples_read);
 
+        new_playpos = samples_read;
         return buffer;
     }
 
-    return do_scale(buffer, buf_size, pBase, iBaseLength);
+    CSAMPLE* result = do_scale(buffer, buf_size, pBase, iBaseLength, &samples_read);
+    new_playpos = samples_read;
+    return result;
 }
 
 /** Stretch a specified buffer worth of audio using linear interpolation */
 CSAMPLE * EngineBufferScaleLinear::do_scale(CSAMPLE* buf, unsigned long buf_size,
-                                         CSAMPLE* pBase, unsigned long iBaseLength)
+                                            CSAMPLE* pBase, unsigned long iBaseLength,
+                                            int* samples_read)
 {
 
     long unscaled_samples_needed;
@@ -174,7 +179,6 @@ CSAMPLE * EngineBufferScaleLinear::do_scale(CSAMPLE* buf, unsigned long buf_size
 
     // Determine position in read_buffer to start from. (This is always 0 with
     // the new EngineBuffer implementation)
-    new_playpos = 0.0;
 
     int iRateLerpLength = (int)buf_size;
 
@@ -200,10 +204,10 @@ CSAMPLE * EngineBufferScaleLinear::do_scale(CSAMPLE* buf, unsigned long buf_size
 
     //we're calculating mono samples, so divide remaining buffer by 2;
     samples += (rate_add_abs * ((float)(buf_size - iRateLerpLength)/2));
-       unscaled_samples_needed = floor(samples);
+    unscaled_samples_needed = floor(samples);
 
-       //if the current position fraction plus the future position fraction
-       //loops over 1.0, we need to round up
+    //if the current position fraction plus the future position fraction
+    //loops over 1.0, we need to round up
     if (m_dNextSampleIndex - floor(m_dNextSampleIndex) + samples - floor(samples) > 1.0) {
         unscaled_samples_needed++;
     }
@@ -273,19 +277,12 @@ CSAMPLE * EngineBufferScaleLinear::do_scale(CSAMPLE* buf, unsigned long buf_size
                 buffer_int_size = m_pReadAheadManager
                                 ->getNextSamples(rate_add_old,buffer_int,
                                                  samples_to_read);
-                if (rate_add_old > 0) {
-                    new_playpos += buffer_int_size;
-                } else if (rate_add_old < 0) {
-                    new_playpos -= buffer_int_size;
-                }
+                *samples_read += buffer_int_size;
             } else {
                 buffer_int_size = m_pReadAheadManager
                                 ->getNextSamples(rate_add_new,buffer_int,
                                                  samples_to_read);
-                if (rate_add_new > 0)
-                    new_playpos += buffer_int_size;
-                else if (rate_add_new < 0)
-                    new_playpos -= buffer_int_size;
+                *samples_read += buffer_int_size;
             }
 
             if (buffer_int_size == 0 && last_read_failed) {

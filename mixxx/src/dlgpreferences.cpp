@@ -50,6 +50,7 @@
 #include <QDialog>
 #include <QtGui>
 #include <QEvent>
+#include <QScrollArea>
 
 DlgPreferences::DlgPreferences(MixxxApp * mixxx, SkinLoader* pSkinLoader,
                                SoundManager * soundman, PlayerManager* pPlayerManager,
@@ -71,51 +72,46 @@ DlgPreferences::DlgPreferences(MixxxApp * mixxx, SkinLoader* pSkinLoader,
     createIcons();
     //contentsTreeWidget->setCurrentRow(0);
 
-    // Construct widgets for use in tabs
-    wsound = new DlgPrefSound(this, soundman, pPlayerManager, config);
-    wplaylist = new DlgPrefPlaylist(this, config);
-    wcontrols = new DlgPrefControls(this, mixxx, pSkinLoader, pPlayerManager, config);
-    weq = new DlgPrefEQ(this, config);
-    wcrossfader = new DlgPrefCrossfader(this, config);
-    wbpm = new DlgPrefBpm(this, config);
-    wreplaygain = new DlgPrefReplayGain(this, config);
-    wrecord = new DlgPrefRecord(this, config);
-#ifdef __VINYLCONTROL__
-    wvinylcontrol = new DlgPrefVinyl(this, pVCManager, config);
-#else
-    wnovinylcontrol = new DlgPrefNoVinyl(this, soundman, config);
-#endif
-#ifdef __SHOUTCAST__
-    wshoutcast = new DlgPrefShoutcast(this, config);
-#endif
-    wNoControllers = new DlgPrefNoControllers(this, config);
-    wNoMidi = new DlgPrefNoMidi(this, config);
-
     while (pagesWidget->count() > 0)
     {
         pagesWidget->removeWidget(pagesWidget->currentWidget());
     }
+    m_pageSizeHint = QSize(0,0);
 
-    pagesWidget->addWidget(wsound);
-    pagesWidget->addWidget(wplaylist);
-    pagesWidget->addWidget(wcontrols);
-    pagesWidget->addWidget(weq);
-    pagesWidget->addWidget(wcrossfader);
-    pagesWidget->addWidget(wrecord);
-    pagesWidget->addWidget(wbpm);
-    pagesWidget->addWidget(wreplaygain);
+    // Construct widgets for use in tabs
+    m_wsound = new DlgPrefSound(this, soundman, pPlayerManager, config);
+    addPageWidget(m_wsound);
+    m_wplaylist = new DlgPrefPlaylist(this, config);
+    addPageWidget(m_wplaylist);
+    m_wcontrols = new DlgPrefControls(this, mixxx, pSkinLoader, pPlayerManager, config);
+    addPageWidget(m_wcontrols);
+    m_weq = new DlgPrefEQ(this, config);
+    addPageWidget(m_weq);
+    m_wcrossfader = new DlgPrefCrossfader(this, config);
+    addPageWidget(m_wcrossfader);
+    m_wbpm = new DlgPrefBpm(this, config);
+    addPageWidget(m_wbpm);
+    m_wreplaygain = new DlgPrefReplayGain(this, config);
+    addPageWidget(m_wreplaygain);
+    m_wrecord = new DlgPrefRecord(this, config);
+    addPageWidget(m_wrecord);
 #ifdef __VINYLCONTROL__
-    pagesWidget->addWidget(wvinylcontrol);
+    m_wvinylcontrol = new DlgPrefVinyl(this, pVCManager, config);
+    addPageWidget(m_wvinylcontrol);
 #else
-    pagesWidget->addWidget(wnovinylcontrol);
+    m_wnovinylcontrol = new DlgPrefNoVinyl(this, soundman, config);
+    addPageWidget(m_wnovinylcontrol);
 #endif
 #ifdef __SHOUTCAST__
-    pagesWidget->addWidget(wshoutcast);
+    m_wshoutcast = new DlgPrefShoutcast(this, config);
+    addPageWidget(m_wshoutcast);
 #endif
-
-    pagesWidget->addWidget(wNoControllers);
+    m_wNoControllers = new DlgPrefNoControllers(this, config);
+    addPageWidget(m_wNoControllers);
     setupControllerWidgets();
-    pagesWidget->addWidget(wNoMidi);
+    
+    m_wNoMidi = new DlgPrefNoMidi(this, config);
+    addPageWidget(m_wNoMidi);
     setupMidiWidgets();
 
 
@@ -128,40 +124,40 @@ DlgPreferences::DlgPreferences(MixxxApp * mixxx, SkinLoader* pSkinLoader,
     connect(m_pControllerManager, SIGNAL(devicesChanged()), this, SLOT(rescanControllers()));
     connect(m_pMidiDeviceManager, SIGNAL(devicesChanged()), this, SLOT(rescanMidi()));
 
-    connect(this, SIGNAL(showDlg()), wsound,     SLOT(slotUpdate()));
-    connect(this, SIGNAL(showDlg()), wplaylist,  SLOT(slotUpdate()));
-    connect(this, SIGNAL(showDlg()), wcontrols,  SLOT(slotUpdate()));
-    connect(this, SIGNAL(showDlg()), weq,        SLOT(slotUpdate()));
-    connect(this, SIGNAL(showDlg()),wcrossfader, SLOT(slotUpdate()));
-    connect(this, SIGNAL(showDlg()), wbpm,       SLOT(slotUpdate()));
-    connect(this, SIGNAL(showDlg()), wreplaygain,SLOT(slotUpdate()));
+    connect(this, SIGNAL(showDlg()), m_wsound,     SLOT(slotUpdate()));
+    connect(this, SIGNAL(showDlg()), m_wplaylist,  SLOT(slotUpdate()));
+    connect(this, SIGNAL(showDlg()), m_wcontrols,  SLOT(slotUpdate()));
+    connect(this, SIGNAL(showDlg()), m_weq,        SLOT(slotUpdate()));
+    connect(this, SIGNAL(showDlg()), m_wcrossfader, SLOT(slotUpdate()));
+    connect(this, SIGNAL(showDlg()), m_wbpm,       SLOT(slotUpdate()));
+    connect(this, SIGNAL(showDlg()), m_wreplaygain,SLOT(slotUpdate()));
 
-    connect(this, SIGNAL(showDlg()), wrecord,    SLOT(slotUpdate()));
+    connect(this, SIGNAL(showDlg()), m_wrecord,    SLOT(slotUpdate()));
 #ifdef __VINYLCONTROL__
-    connect(this, SIGNAL(showDlg()), wvinylcontrol, SLOT(slotShow()));
-    connect(this, SIGNAL(closeDlg()), wvinylcontrol,SLOT(slotClose()));
-    connect(this, SIGNAL(showDlg()), wvinylcontrol,    SLOT(slotUpdate()));
+    connect(this, SIGNAL(showDlg()), m_wvinylcontrol, SLOT(slotShow()));
+    connect(this, SIGNAL(closeDlg()), m_wvinylcontrol,SLOT(slotClose()));
+    connect(this, SIGNAL(showDlg()), m_wvinylcontrol,    SLOT(slotUpdate()));
     //connect(ComboBoxSoundApi,             SIGNAL(activated(int)),    this, SLOT(slotApplyApi()));
 #endif
 #ifdef __SHOUTCAST__
-    connect(this, SIGNAL(showDlg()), wshoutcast,SLOT(slotUpdate()));
+    connect(this, SIGNAL(showDlg()), m_wshoutcast,SLOT(slotUpdate()));
 #endif
 
 #ifdef __VINYLCONTROL__
-    connect(buttonBox, SIGNAL(accepted()), wvinylcontrol,    SLOT(slotApply())); //It's important for this to be before the
+    connect(buttonBox, SIGNAL(accepted()), m_wvinylcontrol,    SLOT(slotApply())); //It's important for this to be before the
                                                                                  //connect for wsound...
 #endif
-    connect(buttonBox, SIGNAL(accepted()), wsound,    SLOT(slotApply()));
-    connect(buttonBox, SIGNAL(accepted()), wplaylist, SLOT(slotApply()));
-    connect(buttonBox, SIGNAL(accepted()), wcontrols, SLOT(slotApply()));
-    connect(buttonBox, SIGNAL(accepted()), weq,       SLOT(slotApply()));
-    connect(buttonBox, SIGNAL(accepted()),wcrossfader,SLOT(slotApply()));
+    connect(buttonBox, SIGNAL(accepted()), m_wsound,    SLOT(slotApply()));
+    connect(buttonBox, SIGNAL(accepted()), m_wplaylist, SLOT(slotApply()));
+    connect(buttonBox, SIGNAL(accepted()), m_wcontrols, SLOT(slotApply()));
+    connect(buttonBox, SIGNAL(accepted()), m_weq,       SLOT(slotApply()));
+    connect(buttonBox, SIGNAL(accepted()), m_wcrossfader,SLOT(slotApply()));
     connect(buttonBox, SIGNAL(accepted()), this,      SLOT(slotApply()));
-    connect(buttonBox, SIGNAL(accepted()), wbpm,      SLOT(slotApply()));
-    connect(buttonBox, SIGNAL(accepted()),wreplaygain,SLOT(slotApply()));
-    connect(buttonBox, SIGNAL(accepted()), wrecord,   SLOT(slotApply()));
+    connect(buttonBox, SIGNAL(accepted()), m_wbpm,      SLOT(slotApply()));
+    connect(buttonBox, SIGNAL(accepted()), m_wreplaygain,SLOT(slotApply()));
+    connect(buttonBox, SIGNAL(accepted()), m_wrecord,   SLOT(slotApply()));
 #ifdef __SHOUTCAST__
-    connect(buttonBox, SIGNAL(accepted()), wshoutcast,SLOT(slotApply()));
+    connect(buttonBox, SIGNAL(accepted()), m_wshoutcast,SLOT(slotApply()));
 #endif
 
     //Update the library when you change the options
@@ -174,8 +170,8 @@ DlgPreferences::DlgPreferences(MixxxApp * mixxx, SkinLoader* pSkinLoader,
 
 DlgPreferences::~DlgPreferences()
 {
-  destroyControllerWidgets();
-  destroyMidiWidgets();
+    destroyControllerWidgets();
+    destroyMidiWidgets();
 }
 
 void DlgPreferences::createIcons()
@@ -195,7 +191,7 @@ void DlgPreferences::createIcons()
 */
     m_pMIDITreeItem = new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type);
     m_pMIDITreeItem->setIcon(0, QIcon(":/images/preferences/ic_preferences_midicontrollers.png"));
-    m_pMIDITreeItem->setText(0, "MIDI");
+    m_pMIDITreeItem->setText(0, tr("MIDI Controllers"));
     m_pMIDITreeItem->setTextAlignment(0, Qt::AlignLeft | Qt::AlignVCenter);
     m_pMIDITreeItem->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
 
@@ -219,7 +215,7 @@ void DlgPreferences::createIcons()
     m_pPlaylistButton->setTextAlignment(0, Qt::AlignLeft | Qt::AlignVCenter);
     m_pPlaylistButton->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
 
-       m_pControlsButton = new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type);
+    m_pControlsButton = new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type);
     m_pControlsButton->setIcon(0, QIcon(":/images/preferences/ic_preferences_interface.png"));
     m_pControlsButton->setText(0, tr("Interface"));
     m_pControlsButton->setTextAlignment(0, Qt::AlignLeft | Qt::AlignVCenter);
@@ -291,112 +287,98 @@ void DlgPreferences::changePage(QTreeWidgetItem * current, QTreeWidgetItem * pre
         current = previous;
 
     if (current == m_pSoundButton) {
-           wsound->slotUpdate();
-           pagesWidget->setCurrentWidget(wsound);
-       } else if (current == m_pPlaylistButton)
-           pagesWidget->setCurrentWidget(wplaylist);
-       else if (current == m_pControlsButton)
-           pagesWidget->setCurrentWidget(wcontrols);
-       else if (current == m_pEqButton)
-           pagesWidget->setCurrentWidget(weq);
-       else if (current == m_pCrossfaderButton)
-           pagesWidget->setCurrentWidget(wcrossfader);
-       else if (current == m_pRecordingButton)
-           pagesWidget->setCurrentWidget(wrecord);
-       else if (current == m_pBPMdetectButton)
-           pagesWidget->setCurrentWidget(wbpm);
-       else if (current == m_pReplayGainButton)
-           pagesWidget->setCurrentWidget(wreplaygain);
+    	m_wsound->slotUpdate();
+    	pagesWidget->setCurrentWidget(m_wsound->parentWidget()->parentWidget());
+    } else if (current == m_pPlaylistButton) {
+    	pagesWidget->setCurrentWidget(m_wplaylist->parentWidget()->parentWidget());
+    } else if (current == m_pControlsButton) {
+    	pagesWidget->setCurrentWidget(m_wcontrols->parentWidget()->parentWidget());
+    } else if (current == m_pEqButton) {
+    	pagesWidget->setCurrentWidget(m_weq->parentWidget()->parentWidget());
+    } else if (current == m_pCrossfaderButton) {
+    	pagesWidget->setCurrentWidget(m_wcrossfader->parentWidget()->parentWidget());
+    } else if (current == m_pRecordingButton) {
+    	pagesWidget->setCurrentWidget(m_wrecord->parentWidget()->parentWidget());
+    } else if (current == m_pBPMdetectButton) {
+    	pagesWidget->setCurrentWidget(m_wbpm->parentWidget()->parentWidget());
+    } else if (current == m_pReplayGainButton) {
+    	pagesWidget->setCurrentWidget(m_wreplaygain->parentWidget()->parentWidget());
 
 #ifdef __VINYLCONTROL__
-       else if (current == m_pVinylControlButton)
-           pagesWidget->setCurrentWidget(wvinylcontrol);
+    } else if (current == m_pVinylControlButton) {
+    	pagesWidget->setCurrentWidget(m_wvinylcontrol->parentWidget()->parentWidget());
 #else
-       else if (current == m_pVinylControlButton)
-           pagesWidget->setCurrentWidget(wnovinylcontrol);
+    } else if (current == m_pVinylControlButton) {
+           pagesWidget->setCurrentWidget(m_wnovinylcontrol->parentWidget()->parentWidget());
 #endif
 #ifdef __SHOUTCAST__
-       else if (current == m_pShoutcastButton)
-           pagesWidget->setCurrentWidget(wshoutcast);
+    } else if (current == m_pShoutcastButton) {
+           pagesWidget->setCurrentWidget(m_wshoutcast->parentWidget()->parentWidget());
 #endif
-       //Handle selection of controller items
-       else if (m_controllerBindingsButtons.indexOf(current) >= 0)
-       {
+    //Handle selection of controller items
+    } else if (m_controllerBindingsButtons.indexOf(current) >= 0) {
            int index = m_controllerBindingsButtons.indexOf(current);
-           pagesWidget->setCurrentWidget(wcontrollerBindingsForDevice.value(index));
+           pagesWidget->setCurrentWidget(m_wcontrollerBindingsForDevice.value(index)->parentWidget()->parentWidget());
            //Manually fire this slot since it doesn't work right...
-           wcontrollerBindingsForDevice.value(index)->slotUpdate();
-       }
-       //Handle selection of midi device items
-       else if (m_midiBindingsButtons.indexOf(current) >= 0)
-       {
-           int index = m_midiBindingsButtons.indexOf(current);
-           pagesWidget->setCurrentWidget(wmidiBindingsForDevice.value(index));
-           //Manually fire this slot since it doesn't work right...
-           wmidiBindingsForDevice.value(index)->slotUpdate();
-       }
-       //If the root "Controllers" item is clicked, select the first Controller instead.
-       //If there is no first controller, display a page that says so (just so we don't not change the page)
-       else if (current == m_pControllerTreeItem)
-       {
-           if (wcontrollerBindingsForDevice.count() > 0)
-           {
-               //Expand the MIDI subtree
-               contentsTreeWidget->setItemExpanded(m_pControllerTreeItem, true);
-               
-               /*
-               * FIXME: None of the following works right, for some reason. - Albert Feb 9/09
-               */
-               
-               //Select the first MIDI device
-               //contentsTreeWidget->setItemSelected(m_pMIDITreeItem, false);
-               /*
-               foreach(QTreeWidgetItem* item, contentsTreeWidget->selectedItems())
-               {
-                   contentsTreeWidget->setItemSelected(item, false);
-           }*/
-               //contentsTreeWidget->setItemSelected(m_midiBindingsButtons.value(0), true);
-               
-           }
-           else
-           {
-               pagesWidget->setCurrentWidget(wNoControllers);
-           }
-       }
-       //If the root "MIDI Controllers" item is clicked, select the first MIDI device instead.
-       //If there is no first MIDI device, display a page that says so (just so we don't not change the page)
-       else if (current == m_pMIDITreeItem)
-       {
-           if (wmidiBindingsForDevice.count() > 0)
-           {
-               //Expand the MIDI subtree
-               contentsTreeWidget->setItemExpanded(m_pMIDITreeItem, true);
+           m_wcontrollerBindingsForDevice.value(index)->slotUpdate();
+    //Handle selection of midi device items
+    } else if (m_midiBindingsButtons.indexOf(current) >= 0) {
+    	int index = m_midiBindingsButtons.indexOf(current);
+    	pagesWidget->setCurrentWidget(m_wmidiBindingsForDevice.value(index)->parentWidget()->parentWidget());
+    	//Manually fire this slot since it doesn't work right...
+    	m_wmidiBindingsForDevice.value(index)->slotUpdate();
+    } else if (current == m_pControllerTreeItem) {
+        //If the root "Controllers" item is clicked, select the first Controller instead.
+        //If there is no first controller, display a page that says so (just so we don't not change the page)
+        if (m_wcontrollerBindingsForDevice.count() > 0)
+        {
+            //Expand the Controller subtree
+            contentsTreeWidget->setItemExpanded(m_pControllerTreeItem, true);
 
-               /*
-               * FIXME: None of the following works right, for some reason. - Albert Feb 9/09
-               */
+            /*
+            * FIXME: None of the following works right, for some reason. - Albert Feb 9/09
+            */
 
-               //Select the first MIDI device
-               //contentsTreeWidget->setItemSelected(m_pMIDITreeItem, false);
-               /*
-               foreach(QTreeWidgetItem* item, contentsTreeWidget->selectedItems())
-               {
-                   contentsTreeWidget->setItemSelected(item, false);
-               }*/
-               //contentsTreeWidget->setItemSelected(m_midiBindingsButtons.value(0), true);
+            //Select the first MIDI device
+            //contentsTreeWidget->setItemSelected(m_pMIDITreeItem, false);
+            /*
+            foreach(QTreeWidgetItem* item, contentsTreeWidget->selectedItems())
+            {
+                contentsTreeWidget->setItemSelected(item, false);
+        }*/
+            //contentsTreeWidget->setItemSelected(m_midiBindingsButtons.value(0), true);
 
-           }
-           else
-           {
-               pagesWidget->setCurrentWidget(wNoMidi);
-           }
-       }
+        }
+        else
+        {
+            pagesWidget->setCurrentWidget(m_wNoControllers->parentWidget()->parentWidget());
+        }
+    } else if (current == m_pMIDITreeItem) {
+        //If the root "MIDI Controllers" item is clicked, select the first MIDI device instead.
+        //If there is no first MIDI device, display a page that says so (just so we don't not change the page)
+        if (m_wmidiBindingsForDevice.count() > 0) {
+            //Expand the MIDI subtree
+            contentsTreeWidget->setItemExpanded(m_pMIDITreeItem, true);
 
+            // FIXME: None of the following works right, for some reason. - Albert Feb 9/09
+
+            //Select the first MIDI device
+            //contentsTreeWidget->setItemSelected(m_pMIDITreeItem, false);
+            /*
+                foreach(QTreeWidgetItem* item, contentsTreeWidget->selectedItems())
+                {
+                contentsTreeWidget->setItemSelected(item, false);
+                }*/
+            //contentsTreeWidget->setItemSelected(m_midiBindingsButtons.value(0), true);
+        } else {
+            pagesWidget->setCurrentWidget(m_wNoMidi->parentWidget()->parentWidget());
+        }
+    }
 }
 
 void DlgPreferences::showSoundHardwarePage()
 {
-    pagesWidget->setCurrentWidget(wsound);
+    pagesWidget->setCurrentWidget(m_wsound->parentWidget()->parentWidget());
     contentsTreeWidget->setCurrentItem(m_pSoundButton);
 }
 
@@ -420,7 +402,31 @@ void DlgPreferences::slotHide()
 
 void DlgPreferences::slotShow()
 {
-  //m_pMixxx->releaseKeyboard();
+    //m_pMixxx->releaseKeyboard();
+
+    QSize optimumSize;
+    QSize deltaSize;
+    QSize pagesSize;
+    QSize saSize;
+
+    adjustSize();
+
+    optimumSize = qApp->desktop()->availableGeometry(this).size();
+
+    if (frameSize() == size()) {
+        // This code is reached in Gnome 2.3
+        qDebug() << "guess the size of the window decoration";
+        optimumSize -= QSize(2,30);
+    } else {
+        optimumSize -= (frameSize() - size());
+    }
+
+    QSize staticSize = size() - pagesWidget->size();
+    optimumSize = optimumSize.boundedTo(staticSize + m_pageSizeHint);
+
+    QRect optimumRect = geometry();
+    optimumRect.setSize(optimumSize);
+    setGeometry(optimumRect);
 }
 
 void DlgPreferences::rescanControllers()
@@ -431,8 +437,8 @@ void DlgPreferences::rescanControllers()
 
 void DlgPreferences::rescanMidi()
 {
-  destroyMidiWidgets();
-  setupMidiWidgets();
+    destroyMidiWidgets();
+    setupMidiWidgets();
 }
 
 void DlgPreferences::destroyControllerWidgets()
@@ -441,9 +447,9 @@ void DlgPreferences::destroyControllerWidgets()
     
     m_controllerBindingsButtons.clear();
     
-    while (!wcontrollerBindingsForDevice.isEmpty())
+    while (!m_wcontrollerBindingsForDevice.isEmpty())
     {
-        DlgPrefController* controllerDlg = wcontrollerBindingsForDevice.takeLast();
+        DlgPrefController* controllerDlg = m_wcontrollerBindingsForDevice.takeLast();
         pagesWidget->removeWidget(controllerDlg);
         delete controllerDlg;
     }
@@ -459,23 +465,23 @@ void DlgPreferences::destroyControllerWidgets()
 
 void DlgPreferences::destroyMidiWidgets()
 {
-//XXX this, and the corresponding code over in onShow(), is pretty bad and messy; it should be wrapped up in a class so that constructors and destructors can handle this setup/teardown
+    //XXX this, and the corresponding code over in onShow(), is pretty bad and messy; it should be wrapped up in a class so that constructors and destructors can handle this setup/teardown
 
-  m_midiBindingsButtons.clear();
+    m_midiBindingsButtons.clear();
 
-  while (!wmidiBindingsForDevice.isEmpty())
+    while (!m_wmidiBindingsForDevice.isEmpty())
     {
-      DlgPrefMidiBindings* midiDlg = wmidiBindingsForDevice.takeLast();
-      pagesWidget->removeWidget(midiDlg);
-      delete midiDlg;
+        DlgPrefMidiBindings* midiDlg = m_wmidiBindingsForDevice.takeLast();
+        pagesWidget->removeWidget(midiDlg);
+        delete midiDlg;
     }
 
-  while(m_pMIDITreeItem->childCount() > 0)
+    while(m_pMIDITreeItem->childCount() > 0)
     {
-      QTreeWidgetItem* midiBindingsButton = m_pMIDITreeItem->takeChild(0);
-      //qDebug() << " Q|T|r\e\eWidgetItem point is " << midiBindingsButton;
-      m_pMIDITreeItem->removeChild(midiBindingsButton);
-      delete midiBindingsButton;
+        QTreeWidgetItem* midiBindingsButton = m_pMIDITreeItem->takeChild(0);
+        //qDebug() << " Q|T|r\e\eWidgetItem point is " << midiBindingsButton;
+        m_pMIDITreeItem->removeChild(midiBindingsButton);
+        delete midiBindingsButton;
     }
 }
 
@@ -490,8 +496,8 @@ void DlgPreferences::setupControllerWidgets()
         QString curDeviceName = currentDevice->getName();
         //qDebug() << "curDeviceName: " << curDeviceName;
         DlgPrefController* controllerDlg = new DlgPrefController(this, currentDevice, m_pControllerManager, config);
-        wcontrollerBindingsForDevice.append(controllerDlg);
-        pagesWidget->addWidget(controllerDlg);
+        m_wcontrollerBindingsForDevice.append(controllerDlg);
+        addPageWidget(controllerDlg);
         connect(this, SIGNAL(showDlg()), controllerDlg, SLOT(slotUpdate()));
         connect(buttonBox, SIGNAL(accepted()), controllerDlg, SLOT(slotApply()));
         connect(controllerDlg, SIGNAL(deviceStateChanged(DlgPrefController*,bool)), this, SLOT(slotHighlightDevice(DlgPrefController*,bool)));
@@ -520,13 +526,13 @@ void DlgPreferences::setupMidiWidgets()
     QListIterator<MidiDevice*> it(midiDeviceList);
 
     while (it.hasNext())
-      {
+    {
         MidiDevice* currentDevice = it.next();
         QString curDeviceName = currentDevice->getName();
         //qDebug() << "curDeviceName: " << curDeviceName;
         DlgPrefMidiBindings* midiDlg = new DlgPrefMidiBindings(this, currentDevice, m_pMidiDeviceManager, config);
-        wmidiBindingsForDevice.append(midiDlg);
-        pagesWidget->addWidget(midiDlg);
+        m_wmidiBindingsForDevice.append(midiDlg);
+        addPageWidget(midiDlg);
         connect(this, SIGNAL(showDlg()), midiDlg, SLOT(slotUpdate()));
         connect(buttonBox, SIGNAL(accepted()), midiDlg, SLOT(slotApply()));
         connect(midiDlg, SIGNAL(deviceStateChanged(DlgPrefMidiBindings*,bool)), this, SLOT(slotHighlightDevice(DlgPrefMidiBindings*,bool)));
@@ -545,18 +551,18 @@ void DlgPreferences::setupMidiWidgets()
         if (currentDevice->isOpen()) temp.setBold(true);
         else temp.setBold(false);
         midiBindingsButton->setFont(0,temp);
-      }
+    }
 }
 
 void DlgPreferences::slotApply()
 {
     m_pMidiDeviceManager->saveMappings();
-//    m_pMixxx->grabKeyboard();
+    //m_pMixxx->grabKeyboard();
 }
 
 void DlgPreferences::slotHighlightDevice(DlgPrefController* dialog, bool enabled)
 {
-    QTreeWidgetItem * controllerBindingsButton = m_controllerBindingsButtons.at(wcontrollerBindingsForDevice.indexOf(dialog));
+    QTreeWidgetItem * controllerBindingsButton = m_controllerBindingsButtons.at(m_wcontrollerBindingsForDevice.indexOf(dialog));
     QFont temp = controllerBindingsButton->font(0);
     if (enabled) temp.setBold(true);
     else temp.setBold(false);
@@ -565,9 +571,26 @@ void DlgPreferences::slotHighlightDevice(DlgPrefController* dialog, bool enabled
 
 void DlgPreferences::slotHighlightDevice(DlgPrefMidiBindings* dialog, bool enabled)
 {
-    QTreeWidgetItem * midiBindingsButton = m_midiBindingsButtons.at(wmidiBindingsForDevice.indexOf(dialog));
+    QTreeWidgetItem* midiBindingsButton = m_midiBindingsButtons.at(m_wmidiBindingsForDevice.indexOf(dialog));
     QFont temp = midiBindingsButton->font(0);
     if (enabled) temp.setBold(true);
     else temp.setBold(false);
     midiBindingsButton->setFont(0,temp);
 }
+
+int DlgPreferences::addPageWidget(QWidget* w) {
+    int iret;
+
+    QScrollArea* sa = new QScrollArea(pagesWidget);
+    sa->setWidgetResizable(true);
+
+    sa->setWidget(w);
+    iret = pagesWidget->addWidget(sa);
+
+    int iframe = 2 * sa->frameWidth();
+    m_pageSizeHint = m_pageSizeHint.expandedTo(w->sizeHint()+QSize(iframe, iframe));
+
+    return iret;
+}
+
+

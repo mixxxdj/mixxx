@@ -5,14 +5,19 @@ import re
 def get_bzr_revision():
     return os.popen("bzr revno").readline().strip()
 
+def get_bzr_modified():
+    return len(os.popen("bzr modified").readline().strip())
+
 def get_bzr_branch_name():
     output_lines = os.popen("bzr info").read().splitlines()
 
-    matcher = re.compile(
-        '\s*parent branch: http://bazaar.launchpad.net/(?P<owner>.*?)/mixxx/(?P<branch_name>.*?)/$')
+    branch_matcher = re.compile(
+        r'\s*parent branch: (bzr\+ssh|http)://bazaar.launchpad.net/(?P<owner>.*?)/mixxx/(?P<branch_name>.*?)/$')
+    checkout_matcher = re.compile(
+        r'\s*checkout of branch: bzr\+ssh://bazaar.launchpad.net/%2Bbranch/(?P<project>.*?)/((?P<branch_name>.*?)/)?$')
 
     for line in output_lines:
-        match = matcher.match(line)
+        match = branch_matcher.match(line)
         if match:
             match = match.groupdict()
             owner = match['owner']
@@ -29,6 +34,17 @@ def get_bzr_branch_name():
                 return branch_name
 
             return "%s~%s" % (owner, branch_name)
+
+        match = checkout_matcher.match(line)
+        if match:
+            match = match.groupdict()
+            project = match['project']
+            branch_name = match['branch_name']
+            if project == 'mixxx':
+                if branch_name:
+                    return 'release-%s.x' % branch_name
+                return 'trunk'
+
     # Fall back on branch nick.
     return os.popen('bzr nick').readline().strip()
 
@@ -38,26 +54,15 @@ def get_build_dir(platformString, bitwidth):
     return build_dir
 
 def get_mixxx_version():
-    """
-    Figures out the current mixxx version:
-        First parses build.h which will have the version number if this is not a release branch.
-        If nothing there, uses defs_version.h.
-    """
-    #have to handle out-of-tree building, that's why the '#' :(
-    buld = Script.File('#src/build.h')
+    """Get Mixxx version number from defs_version.h"""
+    # have to handle out-of-tree building, that's why the '#' :(
     defs = Script.File('#src/defs_version.h')
     version = ""
 
-    for line in open(str(buld)).readlines():
+    for line in open(str(defs)).readlines():
         if line.strip().startswith("#define VERSION"):
             version = line
             break
-            
-    if version == "":
-        for line in open(str(defs)).readlines():
-            if line.strip().startswith("#define VERSION"):
-                version = line
-                break
 
     if version == "":
         raise ValueError("Version not found")
@@ -80,6 +85,17 @@ def get_flags(env, argflag, default=0):
             flags = default
     env[argflag] = flags
     return flags
+
+def get_mssdk_path():
+    """Look for the Microsoft SDK path checking the various environment
+    variables they set."""
+    path = os.getenv('SDKDIR', None)
+    if path is not None:
+        return path
+    path = os.getenv('MSSdk', None)
+    if path is not None:
+        return path
+    return ""
 
 # Checks for pkg-config on Linux
 def CheckForPKGConfig( context, version='0.0.0' ):

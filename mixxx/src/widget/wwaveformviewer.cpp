@@ -101,13 +101,22 @@ bool WWaveformViewer::eventFilter(QObject *o, QEvent *e) {
 void WWaveformViewer::dragEnterEvent(QDragEnterEvent * event)
 {
     // Accept the enter event if the thing is a filepath.
-    if (event->mimeData()->hasUrls())
-        event->acceptProposedAction();
+    if (event->mimeData()->hasUrls() &&
+        event->mimeData()->urls().size() > 0) {
+        ControlObject *pPlayCO = ControlObject::getControl(
+            ConfigKey(m_pGroup, "play"));
+        if (pPlayCO && pPlayCO->get()) {
+            event->ignore();
+        } else {
+            event->acceptProposedAction();
+        }
+    }
 }
 
 void WWaveformViewer::dropEvent(QDropEvent * event)
 {
-    if (event->mimeData()->hasUrls()) {
+    if (event->mimeData()->hasUrls() &&
+        event->mimeData()->urls().size() > 0) {
         QList<QUrl> urls(event->mimeData()->urls());
         QUrl url = urls.first();
         QString name = url.toLocalFile();

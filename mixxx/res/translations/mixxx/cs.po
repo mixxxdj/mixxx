@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2011-03-27 03:32-0400\n"
-"PO-Revision-Date: 2011-01-06 09:15+0000\n"
-"Last-Translator: Petr Šimáček <petr.simacek@gmail.com>\n"
+"POT-Creation-Date: 2011-12-22 11:41+0200\n"
+"PO-Revision-Date: 2011-12-22 09:00+0000\n"
+"Last-Translator: Jakub Hadámek <Unknown>\n"
 "Language-Team: Czech <cs@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-03-28 04:33+0000\n"
-"X-Generator: Launchpad (build 12559)\n"
+"X-Launchpad-Export-Date: 2011-12-23 07:45+0000\n"
+"X-Generator: Launchpad (build 14560)\n"
 
 #: AutoDJFeature#1
 msgid "Auto DJ"
@@ -23,193 +23,225 @@ msgstr "Auto DJ"
 
 #: BaseSqlTableModel#1
 msgid "Played"
-msgstr ""
+msgstr "Hráno"
 
 #: BaseSqlTableModel#2
 msgctxt "BaseSqlTableModel#2"
 msgid "Artist"
-msgstr ""
+msgstr "Interpret"
 
 #: BaseSqlTableModel#3
 msgctxt "BaseSqlTableModel#3"
 msgid "Title"
-msgstr ""
+msgstr "Název"
 
 #: BaseSqlTableModel#4
 msgctxt "BaseSqlTableModel#4"
 msgid "Album"
-msgstr ""
+msgstr "Album"
 
 #: BaseSqlTableModel#5
 msgctxt "BaseSqlTableModel#5"
 msgid "Genre"
-msgstr ""
+msgstr "Styl"
 
 #: BaseSqlTableModel#6
 msgctxt "BaseSqlTableModel#6"
 msgid "Year"
-msgstr ""
+msgstr "Rok"
 
 #: BaseSqlTableModel#7
 msgctxt "BaseSqlTableModel#7"
 msgid "Type"
-msgstr ""
+msgstr "Formát"
 
 #: BaseSqlTableModel#8
 msgctxt "BaseSqlTableModel#8"
 msgid "Location"
-msgstr ""
+msgstr "Umístění"
 
 #: BaseSqlTableModel#9
 msgctxt "BaseSqlTableModel#9"
 msgid "Comment"
-msgstr ""
+msgstr "Komentář"
 
 #: BaseSqlTableModel#10
 msgctxt "BaseSqlTableModel#10"
 msgid "Duration"
-msgstr ""
+msgstr "Délka"
 
 #: BaseSqlTableModel#11
 msgid "Rating"
-msgstr ""
+msgstr "Hodnocení"
 
 #: BaseSqlTableModel#12
 msgctxt "BaseSqlTableModel#12"
 msgid "Bitrate"
-msgstr ""
+msgstr "Datový tok"
 
 #: BaseSqlTableModel#13
 msgctxt "BaseSqlTableModel#13"
 msgid "BPM"
-msgstr ""
+msgstr "BPM"
 
 #: BaseSqlTableModel#14
 msgctxt "BaseSqlTableModel#14"
 msgid "Track #"
-msgstr ""
+msgstr "Pořadí skladby"
 
 #: BaseSqlTableModel#15
 msgid "Date Added"
-msgstr ""
+msgstr "Datum přidání"
 
 #: BaseSqlTableModel#16
 msgid "#"
-msgstr "#"
+msgstr "Pořadí"
 
 #: BaseSqlTableModel#17
 msgctxt "BaseSqlTableModel#17"
 msgid "Key"
-msgstr ""
+msgstr "Klíč"
 
 #: BaseTrackPlayer#1
 msgid "Couldn't load track."
-msgstr "Nelze načíst stopu"
+msgstr "Nelze načíst skladbu."
 
 #: BrowseFeature#1
 msgid "Quick Links"
-msgstr ""
+msgstr "Rychlé odkazy"
 
 #: BrowseFeature#2
 msgid "Devices"
-msgstr ""
+msgstr "Zařízení"
 
 #: BrowseFeature#3
 msgid "Removable Devices"
-msgstr ""
+msgstr "Přenosná zařízení"
 
 #: BrowseFeature#4
+msgctxt "BrowseFeature#4"
 msgid "Mixxx Library"
-msgstr ""
+msgstr "Knihovna Mixxxu"
 
 #: BrowseFeature#5
 msgid "Home"
-msgstr ""
+msgstr "Domovská složka"
 
 #: BrowseFeature#6
 msgid "Music"
-msgstr ""
+msgstr "Hudba"
 
 #: BrowseFeature#7
 msgid "Documents"
-msgstr ""
+msgstr "Dokumenty"
 
 #: BrowseFeature#8
 msgid "Desktop"
-msgstr ""
+msgstr "Plocha"
 
-#: BrowseFeature#1
+#: BrowseFeature#9
 msgid "Browse"
 msgstr "Prohledat"
 
 #: BrowseTableModel#1
 msgid "Filename"
-msgstr ""
+msgstr "Název souboru"
 
 #: BrowseTableModel#2
 msgctxt "BrowseTableModel#2"
 msgid "Artist"
-msgstr ""
+msgstr "Interpret"
 
 #: BrowseTableModel#3
 msgctxt "BrowseTableModel#3"
 msgid "Title"
-msgstr ""
+msgstr "Název"
 
 #: BrowseTableModel#4
 msgctxt "BrowseTableModel#4"
 msgid "Album"
-msgstr ""
+msgstr "Album"
 
 #: BrowseTableModel#5
 msgctxt "BrowseTableModel#5"
 msgid "Track #"
-msgstr ""
+msgstr "Pořadí skladby"
 
 #: BrowseTableModel#6
 msgctxt "BrowseTableModel#6"
 msgid "Year"
-msgstr ""
+msgstr "Rok"
 
 #: BrowseTableModel#7
 msgctxt "BrowseTableModel#7"
 msgid "Genre"
-msgstr ""
+msgstr "Styl"
 
 #: BrowseTableModel#8
 msgctxt "BrowseTableModel#8"
 msgid "Comment"
-msgstr ""
+msgstr "Komentář"
 
 #: BrowseTableModel#9
 msgctxt "BrowseTableModel#9"
 msgid "Duration"
-msgstr ""
+msgstr "Délka"
 
 #: BrowseTableModel#10
 msgctxt "BrowseTableModel#10"
 msgid "BPM"
-msgstr ""
+msgstr "BPM"
 
 #: BrowseTableModel#11
 msgctxt "BrowseTableModel#11"
 msgid "Key"
-msgstr ""
+msgstr "Klíč"
 
 #: BrowseTableModel#12
 msgctxt "BrowseTableModel#12"
 msgid "Type"
-msgstr ""
+msgstr "Formát"
 
 #: BrowseTableModel#13
 msgctxt "BrowseTableModel#13"
 msgid "Bitrate"
-msgstr ""
+msgstr "Datový tok"
 
 #: BrowseTableModel#14
 msgctxt "BrowseTableModel#14"
 msgid "Location"
+msgstr "Umístění"
+
+#: BrowseTableModel#15
+msgctxt "BrowseTableModel#15"
+msgid "Mixxx Library"
+msgstr "Knihovna Mixxxu"
+
+#: BrowseTableModel#16
+msgid ""
+"Could not load the following file because it is in use by Mixxx or another "
+"application."
 msgstr ""
+"Nemohu otevřít následující soubor. Je používán Mixxxem nebo jinou aplikací."
+
+#: BrowseTableModel#17
+msgid "Warning: This will permanently delete the following files:"
+msgstr "Varování: Tímto nenávratně smažete následující soubory:"
+
+#: BrowseTableModel#18
+msgid "Are you sure you want to delete these files from your computer?"
+msgstr "Opravdu chcete smazat tyto soubory ze svého počítače?"
+
+#: BrowseTableModel#19
+msgid ""
+"Could not delete the following file because it is in use by Mixxx or another "
+"application:"
+msgstr ""
+"Nelze smazat následující soubor. Je používán Mixxxem nebo jinou aplikací."
+
+#: BrowseTableModel#20
+msgid "Could not update file metadata."
+msgstr "Nelze nahrát metadata souboru."
 
 #: CrateFeature#1
 msgid "New Crate"
@@ -223,61 +255,74 @@ msgstr "Odstranit"
 #: CrateFeature#3
 msgctxt "CrateFeature#3"
 msgid "Rename"
-msgstr ""
+msgstr "Přejmenovat"
 
 #: CrateFeature#4
 msgctxt "CrateFeature#4"
 msgid "Lock"
-msgstr ""
+msgstr "Zámek"
 
 #: CrateFeature#5
 msgctxt "CrateFeature#5"
 msgid "Import Playlist"
-msgstr ""
+msgstr "Importovat seznam skladeb"
 
-#: CrateFeature#3
+#: CrateFeature#6
 msgid "Crates"
 msgstr "Přepravky"
 
 #: CrateFeature#7
-msgctxt "CrateFeature#7"
-msgid "Unlock"
-msgstr ""
+msgid "Import Crate"
+msgstr "Importovat přepravku"
 
-#: CrateFeature#4
+#: CrateFeature#8
+msgid "Export Crate"
+msgstr "Exportovat přepravku"
+
+#: CrateFeature#9
+msgctxt "CrateFeature#9"
+msgid "Unlock"
+msgstr "Odemknout"
+
+#: CrateFeature#10
 msgid "Crate name:"
 msgstr "Jméno přepravky:"
 
-#: CrateFeature#9
-msgid "An unknown error occurred while creating crate: "
-msgstr ""
-
-#: CrateFeature#10
-msgid "Rename Crate"
-msgstr ""
-
 #: CrateFeature#11
-msgid "New crate name:"
-msgstr ""
+msgid "An unknown error occurred while creating crate: "
+msgstr "Při vytváření přepravky nastala neznámá chyba. "
 
 #: CrateFeature#12
-msgid "Renaming Crate Failed"
-msgstr ""
+msgid "Rename Crate"
+msgstr "Přejmenovat přepravku"
 
 #: CrateFeature#13
-msgctxt "CrateFeature#13"
-msgid "Playlist Files (*.m3u *.pls)"
+msgid "New crate name:"
+msgstr "Jméno nové přepravky:"
+
+#: CrateFeature#14
+msgid "Renaming Crate Failed"
+msgstr "Přejmenování přepravky se nezdařilo"
+
+#: CrateFeature#15
+msgctxt "CrateFeature#15"
+msgid "Playlist Files (*.m3u *.m3u8 *.pls)"
 msgstr ""
 
-#: CrateFeature#6
+#: CrateFeature#16
+msgctxt "CrateFeature#16"
+msgid "M3U Playlist (*.m3u);;M3U8 Playlist (*.m3u8);;PLS Playlist (*.pls)"
+msgstr ""
+
+#: CrateFeature#17
 msgid "A crate cannot have a blank name."
 msgstr "Přepravka nemůže být bezejmenná."
 
-#: CrateFeature#7
+#: CrateFeature#18
 msgid "Creating Crate Failed"
 msgstr "Vytvoření přepravky se nezdařilo"
 
-#: CrateFeature#8
+#: CrateFeature#19
 msgid "A crate by that name already exists."
 msgstr "Přepravka tohoto jména už existuje"
 
@@ -301,6 +346,19 @@ msgid ""
 "margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-"
 "family:'Sans Serif'; font-size:9pt;\"></p></body></html>"
 msgstr ""
+"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" "
+"\"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+"<html><head><meta name=\"qrichtext\" content=\"1\" /><style "
+"type=\"text/css\">\n"
+"p, li { white-space: pre-wrap; }\n"
+"</style></head><body style=\" font-family:'MS Shell Dlg 2'; font-"
+"size:8.25pt; font-weight:400; font-style:normal;\">\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-"
+"right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-"
+"family:'Sans Serif'; font-size:9pt;\">Credits go here</span></p>\n"
+"<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; "
+"margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-"
+"family:'Sans Serif'; font-size:9pt;\"></p></body></html>"
 
 #: DlgAboutDlg#3
 msgid "1.x.x"
@@ -312,7 +370,7 @@ msgstr "<a href=\"http://mixxx.org/\">Oficiální webová stránka</a>"
 
 #: DlgAutoDJ#1
 msgid "Disable Auto DJ"
-msgstr "Zakázat Auto DJ"
+msgstr "Zastavit Auto DJ"
 
 #: DlgAutoDJ#2
 msgid "Enable Auto DJ"
@@ -324,6 +382,10 @@ msgid "Manage"
 msgstr "Správa"
 
 #: DlgAutoDJ#4
+msgid "Shuffle playlist"
+msgstr "Zamíchat seznam skladeb"
+
+#: DlgAutoDJ#5
 msgid "Add tracks to the queue below..."
 msgstr "Přidat stopy do fronty pod..."
 
@@ -348,126 +410,8 @@ msgid "Min"
 msgstr "Min"
 
 #: DlgBpmSchemeDlg#6
-msgctxt "DlgBpmSchemeDlg#6"
 msgid "Analyze Entire Song"
-msgstr ""
-
-#: DlgBpmTapDlg#1
-msgctxt "DlgBpmTapDlg#1"
-msgid "Track Editor"
-msgstr ""
-
-#: DlgBpmTapDlg#2
-msgid "&Close"
-msgstr ""
-
-#: DlgBpmTapDlg#3
-msgctxt "DlgBpmTapDlg#3"
-msgid "Alt+O"
-msgstr ""
-
-#: DlgBpmTapDlg#4
-msgctxt "DlgBpmTapDlg#4"
-msgid "Song:"
-msgstr ""
-
-#: DlgBpmTapDlg#5
-msgid "Next >>"
-msgstr ""
-
-#: DlgBpmTapDlg#6
-msgid "<< Prev"
-msgstr ""
-
-#: DlgBpmTapDlg#7
-msgid "BPM Editor (Click to Expand)"
-msgstr ""
-
-#: DlgBpmTapDlg#8
-msgctxt "DlgBpmTapDlg#8"
-msgid "BPM Detection"
-msgstr ""
-
-#: DlgBpmTapDlg#9
-msgid "BPM Scheme:"
-msgstr ""
-
-#: DlgBpmTapDlg#10
-msgid "to"
-msgstr ""
-
-#: DlgBpmTapDlg#11
-msgid "BPM Range:"
-msgstr ""
-
-#: DlgBpmTapDlg#12
-msgid "&Go"
-msgstr ""
-
-#: DlgBpmTapDlg#13
-msgid "Alt+G"
-msgstr ""
-
-#: DlgBpmTapDlg#14
-msgctxt "DlgBpmTapDlg#14"
-msgid "Analyze Entire Song"
-msgstr ""
-
-#: DlgBpmTapDlg#15
-msgid "BPM:"
-msgstr ""
-
-#: DlgBpmTapDlg#16
-msgid "&Push to tap tempo"
-msgstr ""
-
-#: DlgBpmTapDlg#17
-msgid "Alt+P"
-msgstr ""
-
-#: DlgBpmTapDlg#18
-msgctxt "DlgBpmTapDlg#18"
-msgid "Track Information (Click to Expand)"
-msgstr ""
-
-#: DlgBpmTapDlg#19
-msgctxt "DlgBpmTapDlg#19"
-msgid "Title:"
-msgstr ""
-
-#: DlgBpmTapDlg#20
-msgctxt "DlgBpmTapDlg#20"
-msgid "Artist:"
-msgstr ""
-
-#: DlgBpmTapDlg#21
-msgctxt "DlgBpmTapDlg#21"
-msgid "Comments:"
-msgstr ""
-
-#: DlgBpmTapDlg#22
-msgctxt "DlgBpmTapDlg#22"
-msgid "Filename:"
-msgstr ""
-
-#: DlgBpmTapDlg#23
-msgctxt "DlgBpmTapDlg#23"
-msgid "3:00"
-msgstr ""
-
-#: DlgBpmTapDlg#24
-msgid "Play Time:"
-msgstr ""
-
-#: DlgBpmTapDlg#25
-msgctxt "DlgBpmTapDlg#25"
-msgid "File Type:"
-msgstr ""
-
-#: DlgBpmTapDlg#26
-msgctxt "DlgBpmTapDlg#26"
-msgid "77"
-msgstr ""
+msgstr "Analyzovat celou skladbu"
 
 #: DlgMidiLearning#1
 msgid "Skip"
@@ -479,7 +423,7 @@ msgstr "Úspěšně namapováno na: "
 
 #: DlgMidiLearning#3
 msgid "Next"
-msgstr "Další"
+msgstr "Následující"
 
 #: DlgMidiLearning#4
 msgctxt "DlgMidiLearning#4"
@@ -538,6 +482,19 @@ msgid ""
 "left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><br />Now "
 "go spin some beats!</p></body></html>"
 msgstr ""
+"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" "
+"\"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+"<html><head><meta name=\"qrichtext\" content=\"1\" /><style "
+"type=\"text/css\">\n"
+"p, li { white-space: pre-wrap; }\n"
+"</style></head><body style=\" font-family:'Lucida Grande'; font-size:13pt; "
+"font-weight:400; font-style:normal;\">\n"
+"<p align=\"center\" style=\" margin-top:0px; margin-bottom:0px; margin-"
+"left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">Tohoto "
+"průvodce můžete kdykoliv spustit znova.</p>\n"
+"<p align=\"center\" style=\" margin-top:0px; margin-bottom:0px; margin-"
+"left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><br />A "
+"teď to pojďme roztočit!</p></body></html>"
 
 #: DlgMidiLearning#14
 msgid "Finito!"
@@ -545,16 +502,12 @@ msgstr "Finito!"
 
 #: DlgPluginDownloader#1
 msgid "Missing Audio Plugin Downloader"
-msgstr ""
-
-#: DlgPluginDownloader#2
-msgid "Mixxx has detected th"
-msgstr ""
+msgstr "Chybí součást pro stahování zásuvných audio modulů"
 
 #: DlgPrefBPMDlg#1
 msgctxt "DlgPrefBPMDlg#1"
 msgid "BPM Detection Settings"
-msgstr ""
+msgstr "Nastavení rozpoznávání BPM"
 
 #: DlgPrefBPMDlg#2
 msgctxt "DlgPrefBPMDlg#2"
@@ -575,11 +528,11 @@ msgstr "Zapsat BPM do ID3 Tagu"
 
 #: DlgPrefBPMDlg#6
 msgid "If BPM can be detected but not within specified range"
-msgstr ""
+msgstr "Pokud jsou rozpoznány BPM, ale jsou mimo udaný rozsah"
 
 #: DlgPrefBPMDlg#7
 msgid "Allow BPM above the range"
-msgstr ""
+msgstr "Povolit vyšší BPM než rozsah"
 
 #: DlgPrefBPMDlg#8
 msgid "BPM Schemes"
@@ -593,7 +546,7 @@ msgstr "Přidat"
 #: DlgPrefBPMDlg#10
 msgctxt "DlgPrefBPMDlg#10"
 msgid "Edit"
-msgstr ""
+msgstr "Upravit"
 
 #: DlgPrefBPMDlg#11
 msgid "Delete"
@@ -616,19 +569,59 @@ msgid "This skin does not support schemes"
 msgstr "Tento vzhled nepodporuje režimy"
 
 #: DlgPrefControls#2
+msgid "8% (Technics SL1210)"
+msgstr "8% (Technics SL1210)"
+
+#: DlgPrefControls#3
+msgid "10%"
+msgstr "10%"
+
+#: DlgPrefControls#4
+msgid "20%"
+msgstr "20%"
+
+#: DlgPrefControls#5
+msgid "30%"
+msgstr "30%"
+
+#: DlgPrefControls#6
+msgid "40%"
+msgstr "40%"
+
+#: DlgPrefControls#7
+msgid "50%"
+msgstr "50%"
+
+#: DlgPrefControls#8
+msgid "60%"
+msgstr "60%"
+
+#: DlgPrefControls#9
+msgid "70%"
+msgstr "70%"
+
+#: DlgPrefControls#10
+msgid "80%"
+msgstr "80%"
+
+#: DlgPrefControls#11
+msgid "90%"
+msgstr "90%"
+
+#: DlgPrefControls#12
 msgid "Up increases speed"
 msgstr "Nahoru zvyšuje rychlost"
 
-#: DlgPrefControls#3
+#: DlgPrefControls#13
 msgid "Down increases speed (Technics SL1210)"
 msgstr "Dolů zvýší rychlost (Technics SL1210)"
 
-#: DlgPrefControls#4
-msgctxt "DlgPrefControls#4"
+#: DlgPrefControls#14
+msgctxt "DlgPrefControls#14"
 msgid "Information"
 msgstr "Informace"
 
-#: DlgPrefControls#5
+#: DlgPrefControls#15
 msgid "Mixxx must be restarted before the changes will take effect."
 msgstr "Aby se změny projevily, restartujte Mixxx."
 
@@ -651,7 +644,7 @@ msgstr "Zobrazení průběhu"
 
 #: DlgPrefControlsDlg#5
 msgid "Position display"
-msgstr "Position display"
+msgstr "Zobrazení pozice"
 
 #: DlgPrefControlsDlg#6
 msgid "Tool tips"
@@ -669,63 +662,67 @@ msgstr "Vypnout"
 
 #: DlgPrefControlsDlg#9
 msgid "Pitch/Rate slider range"
-msgstr ""
+msgstr "Rozsah Pitch/Rate posuvníku"
 
 #: DlgPrefControlsDlg#10
 msgid "Pitch/Rate slider direction"
-msgstr ""
+msgstr "Směr posuvníku Pitch/Rate"
 
 #: DlgPrefControlsDlg#11
-msgid "Cue behaviour"
-msgstr ""
+msgid "Track load behaviour"
+msgstr "Chování při načítání skladeb"
 
 #: DlgPrefControlsDlg#12
-msgid "Auto Recall Cue"
-msgstr ""
+msgid "Cue behaviour"
+msgstr "Chování tlačítka CUE"
 
 #: DlgPrefControlsDlg#13
-msgid "Permanent Pitch/Rate Buttons"
-msgstr ""
+msgid "Auto Recall Cue"
+msgstr "Automaticky obnovit pozici CUE"
 
 #: DlgPrefControlsDlg#14
+msgid "Permanent Pitch/Rate Buttons"
+msgstr "Tlačítka trvalé změny Pitch/Rate"
+
+#: DlgPrefControlsDlg#15
 msgid "Left click"
 msgstr "Levý klik"
 
-#: DlgPrefControlsDlg#15
+#: DlgPrefControlsDlg#16
 msgid "Right click"
 msgstr "Pravý klik"
 
-#: DlgPrefControlsDlg#16
+#: DlgPrefControlsDlg#17
 msgid "Permanent rate change (between 1 and 8000) when left clicking"
 msgstr "Trvalá změna míry (mezi 1 až 8000) při kliku levým tlačítkem"
 
-#: DlgPrefControlsDlg#17
+#: DlgPrefControlsDlg#18
 msgid "%"
 msgstr "%"
 
-#: DlgPrefControlsDlg#18
+#: DlgPrefControlsDlg#19
 msgid "Permanent rate change (between 1 and 8000) when right clicking"
 msgstr "Trvalá změna míry (mezi 1 až 8000) při kliku pravým tlačítkem"
 
-#: DlgPrefControlsDlg#19
-msgid "Temporary Pitch/Rate Buttons"
-msgstr ""
-
 #: DlgPrefControlsDlg#20
+msgid "Temporary Pitch/Rate Buttons"
+msgstr "Tlačítka dočasné změny Pitch/Rate"
+
+#: DlgPrefControlsDlg#21
 msgid "Temporary rate change (between 1 and 8000) when left clicking"
 msgstr "Dočasná změna míry (mezi 1 až 8000) při kliku levým tlačítkem"
 
-#: DlgPrefControlsDlg#21
+#: DlgPrefControlsDlg#22
 msgid "Temporary rate change (between 1 and 8000) when right clicking"
 msgstr "Dočasná změna míry (mezi 1 až 8000) při kliku pravým tlačítkem"
 
-#: DlgPrefControlsDlg#22
-msgid "Ramping Pitchbend"
-msgstr ""
-
 #: DlgPrefControlsDlg#23
+msgid "Ramping Pitchbend"
+msgstr "Plynulá změna výšky (pitch)"
+
+#: DlgPrefControlsDlg#24
 msgid "Pitchbend sensitivity"
-msgstr ""
+msgstr "Citlivost"
 
 #: DlgPrefCrossfaderDlg#1
 msgctxt "DlgPrefCrossfaderDlg#1"
@@ -791,8 +788,8 @@ msgid "16 Hz"
 msgstr "16 Hz"
 
 #: DlgPrefEQDlg#6
-msgid "2.045 kHz"
-msgstr "2.045 kHz"
+msgid "1.014 kHz"
+msgstr ""
 
 #: DlgPrefEQDlg#7
 msgid "20.05 kHz"
@@ -842,7 +839,7 @@ msgstr ""
 
 #: DlgPrefMidiBindings#6
 msgid "Export Mixxx MIDI Bindings"
-msgstr ""
+msgstr "Exportovat MIDI vazby Mixxxu"
 
 #: DlgPrefMidiBindings#7
 msgid "Preset Files (*.midi.xml)"
@@ -862,7 +859,7 @@ msgstr "Vyčistit vazby ze vstupu"
 
 #: DlgPrefMidiBindings#11
 msgid "Are you sure you want to clear all bindings?"
-msgstr "Jste si jisti, že chcete vymazat všechny vazby?"
+msgstr "Opravdu chcete smazat všechny vazby?"
 
 #: DlgPrefMidiBindings#12
 msgid "Clear Output Bindings"
@@ -870,7 +867,7 @@ msgstr "Vyčistit odchozí vazby"
 
 #: DlgPrefMidiBindings#13
 msgid "Are you sure you want to clear all output bindings?"
-msgstr ""
+msgstr "Opravdu chcete smazat všechny vazby?"
 
 #: DlgPrefMidiBindingsDlg#1
 msgctxt "DlgPrefMidiBindingsDlg#1"
@@ -926,6 +923,9 @@ msgid ""
 "href=\"http://mixxx.org/wiki/doku.php/midi_controller_mapping_file_format\">T"
 "roubleshooting</a>"
 msgstr ""
+"<a "
+"href=\"http://mixxx.org/wiki/doku.php/midi_controller_mapping_file_format\">Ř"
+"ešení problémů</a>"
 
 #: DlgPrefMidiBindingsDlg#13
 msgid "MIDI Input"
@@ -947,6 +947,142 @@ msgstr "Formulář3"
 #: DlgPrefNoMidiDlg#2
 msgid "No MIDI devices available"
 msgstr "MIDI zařízení nebyla nalezena"
+
+#: DlgPrefNoVinylDlg#1
+msgctxt "DlgPrefNoVinylDlg#1"
+msgid "Form1"
+msgstr "Formulář1"
+
+#: DlgPrefNoVinylDlg#2
+msgctxt "DlgPrefNoVinylDlg#2"
+msgid "Input"
+msgstr "Vstup"
+
+#: DlgPrefNoVinylDlg#3
+msgctxt "DlgPrefNoVinylDlg#3"
+msgid ""
+"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" "
+"\"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+"<html><head><meta name=\"qrichtext\" content=\"1\" /><style "
+"type=\"text/css\">\n"
+"p, li { white-space: pre-wrap; }\n"
+"</style></head><body style=\" font-family:'DejaVu Sans'; font-size:9pt; font-"
+"weight:400; font-style:normal;\">\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-"
+"right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-"
+"weight:600;\">Select sound devices for vinyl control in the Sound Hardware "
+"pane.</span></p></body></html>"
+msgstr ""
+"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" "
+"\"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+"<html><head><meta name=\"qrichtext\" content=\"1\" /><style "
+"type=\"text/css\">\n"
+"p, li { white-space: pre-wrap; }\n"
+"</style></head><body style=\" font-family:'DejaVu Sans'; font-size:9pt; font-"
+"weight:400; font-style:normal;\">\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-"
+"right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-"
+"weight:600;\">Vyberte zvuková zařízení pro kontrolu vinylů v záložce Zvukový "
+"hardware</span></p></body></html>"
+
+#: DlgPrefNoVinylDlg#4
+msgctxt "DlgPrefNoVinylDlg#4"
+msgid ""
+"<a "
+"href=\"http://www.mixxx.org/wiki/doku.php/vinyl_control#troubleshooting\">Tro"
+"ubleshooting</a>"
+msgstr ""
+"<a "
+"href=\"http://www.mixxx.org/wiki/doku.php/vinyl_control#troubleshooting\">Řeš"
+"ení problémů</a>"
+
+#: DlgPrefNoVinylDlg#5
+msgctxt "DlgPrefNoVinylDlg#5"
+msgid "Turntable Preamp"
+msgstr "Předzesilovač gramofonu"
+
+#: DlgPrefNoVinylDlg#6
+msgctxt "DlgPrefNoVinylDlg#6"
+msgid "1 (Off)"
+msgstr "1 (vypnuto)"
+
+#: DlgPrefNoVinylDlg#7
+msgctxt "DlgPrefNoVinylDlg#7"
+msgid "150"
+msgstr "150"
+
+#: DlgPrefNoVinylDlg#8
+msgctxt "DlgPrefNoVinylDlg#8"
+msgid "Vinyl Configuration"
+msgstr "Nastavení vinylu"
+
+#: DlgPrefNoVinylDlg#9
+msgctxt "DlgPrefNoVinylDlg#9"
+msgid "Deck 1 Vinyl Type"
+msgstr "Typ vinylu plotny 1"
+
+#: DlgPrefNoVinylDlg#10
+msgctxt "DlgPrefNoVinylDlg#10"
+msgid "Deck 2 Vinyl Type"
+msgstr "Typ vinylu plotny 2"
+
+#: DlgPrefNoVinylDlg#11
+msgctxt "DlgPrefNoVinylDlg#11"
+msgid "Lead-in time"
+msgstr "Doba trvání zaváděcí stopy"
+
+#: DlgPrefNoVinylDlg#12
+msgctxt "DlgPrefNoVinylDlg#12"
+msgid "seconds"
+msgstr "sek."
+
+#: DlgPrefNoVinylDlg#13
+msgctxt "DlgPrefNoVinylDlg#13"
+msgid "Show Signal Quality in Skin"
+msgstr "Zobrazovat kvalitu signálu ve Vzhledu"
+
+#: DlgPrefNoVinylDlg#14
+msgctxt "DlgPrefNoVinylDlg#14"
+msgid "Control Mode"
+msgstr "Režim ovládání"
+
+#: DlgPrefNoVinylDlg#15
+msgctxt "DlgPrefNoVinylDlg#15"
+msgid "Absolute Mode"
+msgstr "Absolutní režim"
+
+#: DlgPrefNoVinylDlg#16
+msgctxt "DlgPrefNoVinylDlg#16"
+msgid "Relative Mode"
+msgstr "Relativní režim"
+
+#: DlgPrefNoVinylDlg#17
+msgctxt "DlgPrefNoVinylDlg#17"
+msgid "Enable Needle Skip Prevention"
+msgstr "Povolit prevenci přeskakování jehly"
+
+#: DlgPrefNoVinylDlg#18
+msgctxt "DlgPrefNoVinylDlg#18"
+msgid "Signal Quality"
+msgstr "Kvalita signálu"
+
+#: DlgPrefNoVinylDlg#19
+msgctxt "DlgPrefNoVinylDlg#19"
+msgid "http://www.xwax.co.uk"
+msgstr "http://www.xwax.co.uk"
+
+#: DlgPrefNoVinylDlg#20
+msgctxt "DlgPrefNoVinylDlg#20"
+msgid "Powered by xwax"
+msgstr "Powered by xwax"
+
+#: DlgPrefNoVinylDlg#21
+msgid ""
+"<b>This version of Mixxx does not support vinyl control.</b> <br> Please "
+"visit <a href=\"http://mixxx.org\">Mixxx.org</a> for more information."
+msgstr ""
+"<b>Tato verze Mixxxu nepodporuje ovládání vinylem.</b> <br> Prosím navštivte "
+"<a href=\"http://mixxx.org\">Mixxx.org</a> pro další informace."
 
 #: DlgPrefPlaylist#1
 msgctxt "DlgPrefPlaylist#1"
@@ -992,91 +1128,88 @@ msgstr "Formulář3"
 
 #: DlgPrefPlaylistDlg#2
 msgid "Audio File Formats"
-msgstr ""
+msgstr "Typy audio souborů"
 
 #: DlgPrefPlaylistDlg#3
 msgid "Additional Format Plugins:"
-msgstr ""
+msgstr "Další zásuvné moduly formátů:"
 
 #: DlgPrefPlaylistDlg#4
 msgid "MP3, Ogg Vorbis, FLAC, WAVe, AIFF"
-msgstr ""
+msgstr "MP3, Ogg Vorbis, FLAC, WAVe, AIFF"
 
 #: DlgPrefPlaylistDlg#5
 msgid "Loaded Plugins:"
-msgstr ""
+msgstr "Načtené zásuvné moduly:"
 
 #: DlgPrefPlaylistDlg#6
 msgctxt "DlgPrefPlaylistDlg#6"
 msgid "None"
-msgstr ""
+msgstr "Nic"
 
 #: DlgPrefPlaylistDlg#7
+msgctxt "DlgPrefPlaylistDlg#7"
 msgid "Miscellaneous"
-msgstr ""
+msgstr "Různé"
 
 #: DlgPrefPlaylistDlg#8
 msgid "Synchronize ID3 tags on track modifications"
-msgstr ""
+msgstr "Synchronizovat ID3 tagy při úpravě skladby"
 
 #: DlgPrefPlaylistDlg#9
 msgid "Rescan library on start-up"
-msgstr ""
+msgstr "Skenovat knihovnu skladeb při spuštění"
 
 #: DlgPrefPlaylistDlg#10
+msgid "Use relative paths for playlist export if possible"
+msgstr "Je-li to možné, pro export seznamu skladeb použít relativní cesty"
+
+#: DlgPrefPlaylistDlg#11
 msgid "iPod"
 msgstr "iPod"
 
-#: DlgPrefPlaylistDlg#11
+#: DlgPrefPlaylistDlg#12
 msgid "iPod mountpoint"
 msgstr "Bod připojení iPodu"
 
-#: DlgPrefPlaylistDlg#12
-msgctxt "DlgPrefPlaylistDlg#12"
-msgid "Browse..."
-msgstr ""
-
 #: DlgPrefPlaylistDlg#13
+msgid "Browse..."
+msgstr "Procházet…"
+
+#: DlgPrefPlaylistDlg#14
 msgid "Detect"
 msgstr "Detekovat"
 
-#: DlgPrefPlaylistDlg#14
-msgctxt "DlgPrefPlaylistDlg#14"
-msgid "Library"
-msgstr ""
-
 #: DlgPrefPlaylistDlg#15
+msgctxt "DlgPrefPlaylistDlg#15"
+msgid "Library"
+msgstr "Knihovna skladeb"
+
+#: DlgPrefPlaylistDlg#16
 msgid "Music Directory:"
 msgstr "Hudební adresář:"
 
-#: DlgPrefPlaylistDlg#16
+#: DlgPrefPlaylistDlg#17
 msgid "Built-in"
 msgstr "Vestavěný"
 
-#: DlgPrefPlaylistDlg#17
+#: DlgPrefPlaylistDlg#18
 msgid "Available Online..."
 msgstr "K dispozici Online"
 
-#: DlgPrefPlaylistDlg#18
+#: DlgPrefPlaylistDlg#19
 msgid "Bundled Songs"
 msgstr "Přibalené songy"
 
-#: DlgPrefPlaylistDlg#19
+#: DlgPrefPlaylistDlg#20
 msgid ""
 "Support Mixxx by counting and sharing bundled songs\n"
 "playback and outbound link statistics"
 msgstr ""
+"Podpořte Mixxx pomocí sdílení statistik o přehrávání\n"
+"přibalených skladeb a odkazů na webové stránky"
 
 #: DlgPrefRecord#1
-msgctxt "DlgPrefRecord#1"
-msgid "Save Recording As..."
-msgstr "Uložit nahrávku jako..."
-
-#: DlgPrefRecord#2
-msgid "Save Cue File As..."
-msgstr ""
-
-#: DlgPrefRecord#2
 msgid "kbps"
 msgstr "kbps"
 
@@ -1087,83 +1220,84 @@ msgstr "Formulář3"
 
 #: DlgPrefRecordDlg#2
 msgctxt "DlgPrefRecordDlg#2"
-msgid "File"
-msgstr ""
-
-#: DlgPrefRecordDlg#3
-msgctxt "DlgPrefRecordDlg#3"
-msgid "Browse..."
-msgstr "Procházet..."
-
-#: DlgPrefRecordDlg#4
-msgctxt "DlgPrefRecordDlg#4"
 msgid "Encoding"
 msgstr "Kódování"
 
-#: DlgPrefRecordDlg#5
+#: DlgPrefRecordDlg#3
 msgid "Quality"
 msgstr "Kvalita"
 
-#: DlgPrefRecordDlg#6
+#: DlgPrefRecordDlg#4
 msgid "High"
-msgstr ""
+msgstr "Vysoká"
 
-#: DlgPrefRecordDlg#7
+#: DlgPrefRecordDlg#5
 msgid "Low"
-msgstr ""
+msgstr "Nízká"
 
-#: DlgPrefRecordDlg#8
+#: DlgPrefRecordDlg#6
 msgid "Tags"
 msgstr "Štítky"
 
-#: DlgPrefRecordDlg#9
-msgctxt "DlgPrefRecordDlg#9"
+#: DlgPrefRecordDlg#7
+msgctxt "DlgPrefRecordDlg#7"
 msgid "Title"
-msgstr "Titul"
+msgstr "Název"
 
-#: DlgPrefRecordDlg#10
+#: DlgPrefRecordDlg#8
 msgid "Author"
 msgstr "Autor"
 
-#: DlgPrefRecordDlg#11
-msgctxt "DlgPrefRecordDlg#11"
+#: DlgPrefRecordDlg#9
+msgctxt "DlgPrefRecordDlg#9"
 msgid "Album"
 msgstr "Album"
 
-#: DlgPrefRecordDlg#12
+#: DlgPrefRecordDlg#10
+msgctxt "DlgPrefRecordDlg#10"
+msgid "Miscellaneous"
+msgstr "Různé"
+
+#: DlgPrefRecordDlg#11
 msgid "Create a CUE file"
-msgstr ""
+msgstr "Vytvořit CUE soubor"
+
+#: DlgPrefRecordDlg#12
+msgid "File Splitting"
+msgstr "Dělení souboru"
 
 #: DlgPrefRecordDlg#13
-msgid "Cue File"
-msgstr ""
+msgid "Split recordings at"
+msgstr "Rozdělit nahrávku v"
 
 #: DlgPrefReplayGainDlg#1
 msgctxt "DlgPrefReplayGainDlg#1"
 msgid "BPM Detection Settings"
-msgstr ""
+msgstr "Nastavení rozpoznávání BPM"
 
 #: DlgPrefReplayGainDlg#2
 msgid "ReplayGain Normalization"
-msgstr ""
+msgstr "Normalizace ReplayGain"
 
 #: DlgPrefReplayGainDlg#3
 msgid "Apply volume normalization to loaded songs."
-msgstr ""
+msgstr "Aplikovat normalizaci hlasitosti na načtené skladby."
 
 #: DlgPrefReplayGainDlg#4
 msgid "Enable Replay Gain"
-msgstr ""
+msgstr "Povolit ReplayGain"
 
 #: DlgPrefReplayGainDlg#5
 msgid ""
 "Calculate ReplayGain normalization for songs which are missing ReplayGain "
 "metadata."
 msgstr ""
+"Spočítat normalizaci ReplayGain pro skladby, které neobsahují ReplayGain "
+"metadata."
 
 #: DlgPrefReplayGainDlg#6
 msgid "Enable Replay Gain Analysis"
-msgstr ""
+msgstr "Povolit ReplayGain analýzu"
 
 #: DlgPrefReplayGainDlg#7
 msgid ""
@@ -1171,23 +1305,26 @@ msgid ""
 "applied to a new song. You may wish to wait before adjusting the pregain and "
 "volume."
 msgstr ""
+"Na starších počítačích může trvat několik sekund, než se normalizace "
+"hlasitosti aplikuje na novou skladbu. Možná budete chtít počkat, než "
+"nastavíte pregain a hlasitost."
 
 #: DlgPrefReplayGainDlg#8
 msgid "Initial Boost"
-msgstr ""
+msgstr "Úvodní posílení"
 
 #: DlgPrefReplayGainDlg#9
 msgid "Initial Gain Boost"
-msgstr ""
+msgstr "Úvodní zisk"
 
 #: DlgPrefReplayGainDlg#10
 msgid "dB"
-msgstr ""
+msgstr "dB"
 
 #: DlgPrefReplayGainDlg#11
 msgctxt "DlgPrefReplayGainDlg#11"
 msgid "Reset"
-msgstr ""
+msgstr "Obnovit výchozí"
 
 #: DlgPrefShoutcastDlg#1
 msgctxt "DlgPrefShoutcastDlg#1"
@@ -1230,7 +1367,7 @@ msgstr "/mixxx.ogg"
 
 #: DlgPrefShoutcastDlg#10
 msgid "Host"
-msgstr ""
+msgstr "Server"
 
 #: DlgPrefShoutcastDlg#11
 msgid "192.168.123.8"
@@ -1278,9 +1415,10 @@ msgstr "Webová stránka"
 
 #: DlgPrefShoutcastDlg#22
 msgid "http://www.mixxx.org"
-msgstr ""
+msgstr "http://www.mixxx.org"
 
 #: DlgPrefShoutcastDlg#23
+msgctxt "DlgPrefShoutcastDlg#23"
 msgid "Description"
 msgstr "Popis"
 
@@ -1291,13 +1429,24 @@ msgid ""
 "<html><head><meta name=\"qrichtext\" content=\"1\" /><style "
 "type=\"text/css\">\n"
 "p, li { white-space: pre-wrap; }\n"
-"</style></head><body style=\" font-family:'Sans'; font-size:10pt; font-"
-"weight:400; font-style:normal;\">\n"
+"</style></head><body style=\" font-family:'Lucida Grande'; font-size:13pt; "
+"font-weight:400; font-style:normal;\">\n"
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-"
 "right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-"
 "family:'DejaVu Sans'; font-size:9pt; font-style:italic;\">This stream is on "
 "line for testing purposes!</span></p></body></html>"
 msgstr ""
+"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" "
+"\"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+"<html><head><meta name=\"qrichtext\" content=\"1\" /><style "
+"type=\"text/css\">\n"
+"p, li { white-space: pre-wrap; }\n"
+"</style></head><body style=\" font-family:'Lucida Grande'; font-size:13pt; "
+"font-weight:400; font-style:normal;\">\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-"
+"right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-"
+"family:'DejaVu Sans'; font-size:9pt; font-style:italic;\">This stream is on "
+"line for testing purposes!</span></p></body></html>"
 
 #: DlgPrefShoutcastDlg#25
 msgctxt "DlgPrefShoutcastDlg#25"
@@ -1417,56 +1566,49 @@ msgid ""
 "Please note that for technical reasons changing any shoutcast settings will "
 "cause an established connection to disconnect and reconnect. "
 msgstr ""
+"Upozorňujeme, že z technických důvodů jakákoli změna shoutcast nastavení "
+"způsobí odpojení a další připojení. "
 
 #: DlgPrefSound#1
 msgctxt "DlgPrefSound#1"
 msgid "None"
-msgstr ""
+msgstr "Nic"
 
 #: DlgPrefSound#2
 msgid "%1 Hz"
-msgstr ""
+msgstr "%1 Hz"
 
 #: DlgPrefSound#3
-msgid "Mixxx Error"
-msgstr ""
+msgid "a device"
+msgstr "zařízení"
 
 #: DlgPrefSound#4
-msgid ""
-"FinalScratch records currently only work properly with a 44100 Hz sample "
-"rate.\n"
-"The sample rate has been reset to 44100 Hz."
-msgstr ""
+msgid "An unknown error occurred"
+msgstr "Došlo k neznámé chybě"
 
 #: DlgPrefSound#5
-msgid "a device"
-msgstr ""
+msgid "sound device \"%1\""
+msgstr "zvukové zařízení \"%1\""
 
 #: DlgPrefSound#6
-msgid "An unknown error occurred"
-msgstr ""
+msgid "Two outputs cannot share channels on %1"
+msgstr "Dva výstupy nemohou sdílet kanály na %1"
 
 #: DlgPrefSound#7
-msgid "sound device \"%1\""
-msgstr ""
-
-#: DlgPrefSound#8
-msgid "Two outputs cannot share channels on %1"
-msgstr ""
-
-#: DlgPrefSound#9
 msgid ""
 "Error opening %1\n"
 "%2"
 msgstr ""
+"Chyba při otevírání %1\n"
+"%2"
 
-#: DlgPrefSound#10
+#: DlgPrefSound#8
 msgid "%1 ms"
-msgstr ""
+msgstr "%1 ms"
 
-#: DlgPrefSound#11
+#: DlgPrefSound#9
 msgid "Configuration error"
-msgstr ""
+msgstr "Chyba konfigurace"
 
 #: DlgPrefSoundDlg#1
 msgid "Sound API"
@@ -1474,11 +1616,11 @@ msgstr "Zvukové API"
 
 #: DlgPrefSoundDlg#2
 msgid "Sample Rate"
-msgstr ""
+msgstr "Vzorkovací frekvence"
 
 #: DlgPrefSoundDlg#3
 msgid "Latency Tips"
-msgstr ""
+msgstr "Tipy pro úpravu zpoždění"
 
 #: DlgPrefSoundDlg#4
 msgid ""
@@ -1487,27 +1629,32 @@ msgid ""
 "<li>Reduce your latency to improve Mixxx's responsiveness</li>\n"
 "</ul>"
 msgstr ""
+"<ul>\n"
+"<li>Pokud slyšíte praskání v průběhu přehrávání, zvyšte zpoždění</li>\n"
+"<li>Menší zpoždění vylepší rychlost reakcí Mixxxu</li>\n"
+"</ul>"
 
 #: DlgPrefSoundDlg#5
 msgid "Output"
-msgstr ""
+msgstr "Výstup"
 
 #: DlgPrefSoundDlg#6
 msgctxt "DlgPrefSoundDlg#6"
 msgid "Input"
-msgstr ""
+msgstr "Vstup"
 
 #: DlgPrefSoundDlg#7
 msgid "Query Devices"
-msgstr ""
+msgstr "Oslovit zařízení"
 
 #: DlgPrefSoundDlg#8
 msgid "Reset to Defaults"
-msgstr ""
+msgstr "Obnovit výchozí hodnoty"
 
 #: DlgPrefSoundDlg#9
+msgctxt "DlgPrefSoundDlg#9"
 msgid "Apply"
-msgstr ""
+msgstr "Použít"
 
 #: DlgPrefSoundDlg#10
 msgid "Latency"
@@ -1516,17 +1663,21 @@ msgstr "Latence"
 #: DlgPrefSoundItem#1
 msgctxt "DlgPrefSoundItem#1"
 msgid "None"
-msgstr ""
+msgstr "Nic"
 
 #: DlgPrefSoundItem#2
-msgid "Channels %1 - %2"
-msgstr ""
+msgid "Channel %1"
+msgstr "Kanál %1"
 
 #: DlgPrefSoundItem#3
+msgid "Channels %1 - %2"
+msgstr "Kanály %1 - %2"
+
+#: DlgPrefSoundItem#4
 msgid "Form"
 msgstr "Formulář"
 
-#: DlgPrefSoundItem#4
+#: DlgPrefSoundItem#5
 msgid "Type (#)"
 msgstr "Typ (#)"
 
@@ -1538,9 +1689,10 @@ msgstr "Formulář1"
 #: DlgPrefVinylDlg#2
 msgctxt "DlgPrefVinylDlg#2"
 msgid "Input"
-msgstr ""
+msgstr "Vstup"
 
 #: DlgPrefVinylDlg#3
+msgctxt "DlgPrefVinylDlg#3"
 msgid ""
 "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" "
 "\"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
@@ -1554,8 +1706,20 @@ msgid ""
 "weight:600;\">Select sound devices for vinyl control in the Sound Hardware "
 "pane.</span></p></body></html>"
 msgstr ""
+"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" "
+"\"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+"<html><head><meta name=\"qrichtext\" content=\"1\" /><style "
+"type=\"text/css\">\n"
+"p, li { white-space: pre-wrap; }\n"
+"</style></head><body style=\" font-family:'DejaVu Sans'; font-size:9pt; font-"
+"weight:400; font-style:normal;\">\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-"
+"right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-"
+"weight:600;\">Vyberte zvuková zařízení pro kontrolu vinylů v záložce Zvukový "
+"hardware</span></p></body></html>"
 
 #: DlgPrefVinylDlg#4
+msgctxt "DlgPrefVinylDlg#4"
 msgid ""
 "<a "
 "href=\"http://www.mixxx.org/wiki/doku.php/vinyl_control#troubleshooting\">Tro"
@@ -1566,62 +1730,87 @@ msgstr ""
 "ení problémů</a>"
 
 #: DlgPrefVinylDlg#5
+msgctxt "DlgPrefVinylDlg#5"
 msgid "Turntable Preamp"
 msgstr "Předzesilovač gramofonu"
 
 #: DlgPrefVinylDlg#6
+msgctxt "DlgPrefVinylDlg#6"
 msgid "1 (Off)"
 msgstr "1 (vypnuto)"
 
 #: DlgPrefVinylDlg#7
+msgctxt "DlgPrefVinylDlg#7"
 msgid "150"
 msgstr "150"
 
 #: DlgPrefVinylDlg#8
+msgctxt "DlgPrefVinylDlg#8"
 msgid "Vinyl Configuration"
 msgstr "Nastavení vinylu"
 
 #: DlgPrefVinylDlg#9
-msgid "Vinyl Type"
-msgstr "Typ vinylu"
+msgctxt "DlgPrefVinylDlg#9"
+msgid "Deck 1 Vinyl Type"
+msgstr "Typ vinylu plotny 1"
 
 #: DlgPrefVinylDlg#10
-msgid "Lead-in time"
-msgstr ""
+msgctxt "DlgPrefVinylDlg#10"
+msgid "Deck 2 Vinyl Type"
+msgstr "Typ vinylu plotny 2"
 
 #: DlgPrefVinylDlg#11
-msgid "seconds"
-msgstr "sekundy"
+msgctxt "DlgPrefVinylDlg#11"
+msgid "Show Signal Quality in Skin"
+msgstr "Zobrazovat kvalitu signálu ve Vzhledu"
 
 #: DlgPrefVinylDlg#12
-msgid "Control Mode"
-msgstr "Režim kontroly"
+msgctxt "DlgPrefVinylDlg#12"
+msgid "Apply"
+msgstr "Použít"
 
 #: DlgPrefVinylDlg#13
+msgctxt "DlgPrefVinylDlg#13"
+msgid "Lead-in time"
+msgstr "Doba trvání zaváděcí stopy"
+
+#: DlgPrefVinylDlg#14
+msgctxt "DlgPrefVinylDlg#14"
+msgid "seconds"
+msgstr "sek."
+
+#: DlgPrefVinylDlg#15
+msgctxt "DlgPrefVinylDlg#15"
+msgid "Control Mode"
+msgstr "Režim ovládání"
+
+#: DlgPrefVinylDlg#16
+msgctxt "DlgPrefVinylDlg#16"
 msgid "Absolute Mode"
 msgstr "Absolutní režim"
 
-#: DlgPrefVinylDlg#14
+#: DlgPrefVinylDlg#17
+msgctxt "DlgPrefVinylDlg#17"
 msgid "Relative Mode"
 msgstr "Relativní režim"
 
-#: DlgPrefVinylDlg#15
-msgid "Scratch Mode"
-msgstr "Scratch režim"
-
-#: DlgPrefVinylDlg#16
+#: DlgPrefVinylDlg#18
+msgctxt "DlgPrefVinylDlg#18"
 msgid "Enable Needle Skip Prevention"
-msgstr ""
+msgstr "Povolit prevenci přeskakování jehly"
 
-#: DlgPrefVinylDlg#17
+#: DlgPrefVinylDlg#19
+msgctxt "DlgPrefVinylDlg#19"
 msgid "Signal Quality"
 msgstr "Kvalita signálu"
 
-#: DlgPrefVinylDlg#18
+#: DlgPrefVinylDlg#20
+msgctxt "DlgPrefVinylDlg#20"
 msgid "http://www.xwax.co.uk"
 msgstr "http://www.xwax.co.uk"
 
-#: DlgPrefVinylDlg#19
+#: DlgPrefVinylDlg#21
+msgctxt "DlgPrefVinylDlg#21"
 msgid "Powered by xwax"
 msgstr "Powered by xwax"
 
@@ -1631,7 +1820,7 @@ msgstr "Zvukový hardware"
 
 #: DlgPreferences#2
 msgid "MIDI Controllers"
-msgstr ""
+msgstr "Ovladače MIDI"
 
 #: DlgPreferences#3
 msgctxt "DlgPreferences#3"
@@ -1649,7 +1838,7 @@ msgstr "Ekvalizéry"
 #: DlgPreferences#6
 msgctxt "DlgPreferences#6"
 msgid "Crossfader"
-msgstr ""
+msgstr "Crossfader"
 
 #: DlgPreferences#7
 msgctxt "DlgPreferences#7"
@@ -1663,12 +1852,12 @@ msgstr "Detekce BPM"
 
 #: DlgPreferences#9
 msgid "Normalization"
-msgstr ""
+msgstr "Normalizace"
 
 #: DlgPreferences#10
 msgctxt "DlgPreferences#10"
 msgid "Vinyl Control"
-msgstr ""
+msgstr "Ovládání vinylem"
 
 #: DlgPreferences#11
 msgid "Live Broadcasting"
@@ -1689,12 +1878,12 @@ msgid "Manage"
 msgstr "Správa"
 
 #: DlgPrepare#2
-msgid "Recently Added"
-msgstr "Nedávno přidané"
+msgid "New"
+msgstr ""
 
 #: DlgPrepare#3
-msgid "All Songs"
-msgstr "Všechny songy"
+msgid "All"
+msgstr ""
 
 #: DlgPrepare#4
 msgid "Progress"
@@ -1711,31 +1900,48 @@ msgstr "Analýza"
 
 #: DlgPrepare#7
 msgid "Stop Analysis"
-msgstr ""
+msgstr "Zastavit analýzu"
 
 #: DlgPrepare#8
 msgid "Analyzing %1%"
-msgstr ""
+msgstr "Analyzuji %1%"
+
+#: DlgRecording#1
+msgctxt "DlgRecording#1"
+msgid "Manage"
+msgstr "Správa"
+
+#: DlgRecording#2
+msgid "Status:"
+msgstr "Stav:"
+
+#: DlgRecording#3
+msgid "Start Recording"
+msgstr "Začít nahrávat"
+
+#: DlgRecording#4
+msgid "Start recording here ..."
+msgstr "Začít nahrávat zde..."
+
+#: DlgRecording#5
+msgid "Stop Recording"
+msgstr "Ukončit nahrávaní"
 
 #: DlgTrackInfo#1
-msgctxt "DlgTrackInfo#1"
 msgid "Track Editor"
-msgstr ""
+msgstr "Editor skladeb"
 
 #: DlgTrackInfo#2
-msgctxt "DlgTrackInfo#2"
 msgid "Song:"
-msgstr ""
+msgstr "Skladba:"
 
 #: DlgTrackInfo#3
-msgctxt "DlgTrackInfo#3"
 msgid "Title:"
-msgstr ""
+msgstr "Název:"
 
 #: DlgTrackInfo#4
-msgctxt "DlgTrackInfo#4"
 msgid "Artist:"
-msgstr ""
+msgstr "Interpret:"
 
 #: DlgTrackInfo#5
 msgid "Album:"
@@ -1754,42 +1960,36 @@ msgid "Genre:"
 msgstr "Žánr:"
 
 #: DlgTrackInfo#9
-msgctxt "DlgTrackInfo#9"
 msgid "Filename:"
-msgstr ""
+msgstr "Jméno souboru:"
 
 #: DlgTrackInfo#10
 msgid "Duration:"
 msgstr "Doba trvání:"
 
 #: DlgTrackInfo#11
-msgctxt "DlgTrackInfo#11"
 msgid "3:00"
-msgstr ""
+msgstr "3:00"
 
 #: DlgTrackInfo#12
-msgctxt "DlgTrackInfo#12"
 msgid "File Type:"
-msgstr ""
+msgstr "Formát:"
 
 #: DlgTrackInfo#13
-msgctxt "DlgTrackInfo#13"
 msgid "77"
-msgstr ""
+msgstr "77"
 
 #: DlgTrackInfo#14
-msgctxt "DlgTrackInfo#14"
 msgid "Comments:"
-msgstr ""
+msgstr "Komentář:"
 
 #: DlgTrackInfo#15
 msgid "Reload track metadata from file."
 msgstr "Obnovit metadata stopy ze souboru."
 
 #: DlgTrackInfo#16
-msgctxt "DlgTrackInfo#16"
 msgid "Track Information (Click to Expand)"
-msgstr ""
+msgstr "Informace o skladbě (rozbalit)"
 
 #: DlgTrackInfo#17
 msgid "Track BPM: "
@@ -1805,7 +2005,7 @@ msgstr "/2"
 
 #: DlgTrackInfo#20
 msgid "Tap to Beat"
-msgstr ""
+msgstr "Rytmické bouchání"
 
 #: DlgTrackInfo#21
 msgid "Hint: Use the Library Analyze view to run BPM detection."
@@ -1817,7 +2017,7 @@ msgstr "BPM stopy"
 
 #: DlgTrackInfo#23
 msgid "Cue Id"
-msgstr ""
+msgstr "CUE id"
 
 #: DlgTrackInfo#24
 msgctxt "DlgTrackInfo#24"
@@ -1826,7 +2026,7 @@ msgstr "Pozice"
 
 #: DlgTrackInfo#25
 msgid "Hotcue"
-msgstr ""
+msgstr "Hotcue"
 
 #: DlgTrackInfo#26
 msgid "Label"
@@ -1834,19 +2034,19 @@ msgstr "Štítek"
 
 #: DlgTrackInfo#27
 msgid "Activate Cue"
-msgstr ""
+msgstr "Aktivovat CUE"
 
 #: DlgTrackInfo#28
 msgid "Delete Cue"
-msgstr ""
+msgstr "Smazat CUE"
 
 #: DlgTrackInfo#29
 msgid "Track Cuepoints"
-msgstr ""
+msgstr "CUE pozice ve skladbě"
 
 #: DlgTrackInfo#30
 msgid "<< &Prev"
-msgstr ""
+msgstr "<<&Předchozí"
 
 #: DlgTrackInfo#31
 msgid "&Apply"
@@ -1857,9 +2057,8 @@ msgid "&Cancel"
 msgstr "&zrušit"
 
 #: DlgTrackInfo#33
-msgctxt "DlgTrackInfo#33"
 msgid "Alt+O"
-msgstr ""
+msgstr "Alt+O"
 
 #: DlgTrackInfo#34
 msgid "&Next >>"
@@ -1871,31 +2070,51 @@ msgstr "Encoder"
 
 #: EncoderMp3#2
 msgid ""
-"<html>Mixxx is unable to load or find the MP3 encoder lame. <p>Please "
-"install libmp3lame (also known as lame) and check if /usr/lib/libmp3lame.so "
-"exists on your system </html>"
+"<html>Mixxx cannot record or stream in MP3 without the MP3 encoder "
+"&quot;lame&quot;. Due to licensing issues, we cannot include this with "
+"Mixxx. To record or stream in MP3, you must download <b>libmp3lame</b> and "
+"install it on your system. <p>See <a "
+"href='http://mixxx.org/wiki/doku.php/internet_broadcasting#linux'>Mixxx "
+"Wiki</a> for more information. </html>"
 msgstr ""
-"<html>Mixxx nemůže najít MP3 encoder lame. <p>Nainstalujte prosím libmp3lame "
-"(známou jako lame) a zkontrolujte, jestli je /usr/lib/libmp3lame.so ve vašem "
-"systému </html>"
+"<html>Mixxx nemůže nahrávat nebo streamovat MP3 bez kodeku MP3 "
+"&quot;lame&quot;. Z licenčních důvodu jsme jej nemohli zahrnout do instalace "
+"Mixxxu. Pro nahrávání nebo streamování MP3 je potřeba stáhnout "
+"<b>libmp3lame</b> a nainstalovat do systému. <p>Navštivte <a "
+"href='http://mixxx.org/wiki/doku.php/internet_broadcasting#linux'>Mixxx "
+"Wiki</a> pro více informací. </html>"
 
 #: EncoderMp3#3
 msgid ""
-"<html>Mixxx is unable to load or find the MP3 encoder lame. <p>Please put "
-"lame_enc.dll in the directory you have installed Mixxx </html>"
+"<html>Mixxx cannot record or stream in MP3 without the MP3 encoder "
+"&quot;lame&quot;. Due to licensing issues, we cannot include this with "
+"Mixxx. To record or stream in MP3, you must download <b>lame_enc.dll</b> and "
+"install it on your system. <p>See <a "
+"href='http://mixxx.org/wiki/doku.php/internet_broadcasting#windows'>Mixxx "
+"Wiki</a> for more information. </html>"
 msgstr ""
-"<html>Mixxx nemůže najít MP3 encoder lame. <p>Vložte prosím lame_enc.dll do "
-"adresáře, který nainstaloval Mixxx </html>"
+"<html>Mixxx nemůže nahrávat nebo streamovat MP3 bez kodeku MP3 "
+"&quot;lame&quot;. Z licenčních důvodu jsme jej nemohli zahrnout do instalace "
+"Mixxxu. Pro nahrávání nebo streamování MP3 je potřeba stáhnout "
+"<b>lame_enc.dll</b> a nainstalovat do systému. <p>Navštivte <a "
+"href='http://mixxx.org/wiki/doku.php/internet_broadcasting#windows'>Mixxx "
+"Wiki</a> pro více informací. </html>"
 
 #: EncoderMp3#4
 msgid ""
-"<html>Mixxx is unable to load or find the MP3 encoder lame. <p>Please "
-"install libmp3lame (also known as lame) and check if "
-"/usr/local/lib/libmp3lame.dylib exists on your system </html>"
+"<html>Mixxx cannot record or stream in MP3 without the MP3 encoder "
+"&quot;lame&quot;. Due to licensing issues, we cannot include this with "
+"Mixxx. To record or stream in MP3, you must download <b>libmp3lame</b> and "
+"install it on your system. <p>See <a "
+"href='http://mixxx.org/wiki/doku.php/internet_broadcasting#mac_osx'>Mixxx "
+"Wiki</a> for more information. </html>"
 msgstr ""
-"<html>Mixxx nemůže nahrát nebo nalézt MP3 enkodér lame. <p>Prosím "
-"nainstalujte libmp3lame (známou také jako lame) a zkontrolujte jestli "
-"/usr/local/lib/libmp3lame.dylib je ve vašem systému </html>"
+"<html>Mixxx nemůže nahrávat nebo streamovat MP3 bez kodeku MP3 "
+"&quot;lame&quot;. Z licenčních důvodu jsme jej nemohli zahrnout do instalace "
+"Mixxxu. Pro nahrávání nebo streamování MP3 je potřeba stáhnout "
+"<b>libmp3lame</b> a nainstalovat do systému. <p>Navštivte <a "
+"href='http://mixxx.org/wiki/doku.php/internet_broadcasting#mac_osx'>Mixxx "
+"Wiki</a> pro více informací. </html>"
 
 #: EncoderMp3#5
 msgid ""
@@ -1934,11 +2153,11 @@ msgstr "Nelze alokovat shout_metadata_t"
 
 #: EngineShoutcast#4
 msgid "Error setting non-blocking mode:"
-msgstr ""
+msgstr "Chyba při nastavování neblokujícího módu:"
 
 #: EngineShoutcast#5
 msgid "Lost connection to streaming server"
-msgstr ""
+msgstr "Ztraceno spojení se streaming serverem"
 
 #: EngineShoutcast#6
 msgid ""
@@ -1958,7 +2177,7 @@ msgstr "Mixxx se úspěšně připojil k Shoutcast serveru"
 
 #: EngineShoutcast#9
 msgid "Mixxx could not connect to streaming server"
-msgstr ""
+msgstr "Mixxx se nemůže připojit ke streaming serveru"
 
 #: EngineShoutcast#10
 msgid "Mixxx has successfully disconnected to the shoutcast server"
@@ -1989,69 +2208,80 @@ msgstr "Otázka"
 msgid "iTunes"
 msgstr "iTunes"
 
-#: ITunesFeature#4
+#: ITunesFeature#2
 msgid "Select your iTunes library"
-msgstr ""
+msgstr "Vyberte svou knihovnu skladeb iTunes"
 
 #: ITunesFeature#3
-msgid "iTunes (loading)"
-msgstr ""
+msgid "(loading) iTunes"
+msgstr "(načítám) iTunes"
 
-#: ITunesFeature#7
+#: ITunesFeature#4
 msgid "Use Default Library"
-msgstr ""
-
-#: ITunesFeature#8
-msgid "Choose Library..."
-msgstr ""
+msgstr "Použít standardní knihovnu"
 
 #: ITunesFeature#5
-msgid "Error Loading iTunes Library"
-msgstr ""
+msgid "Choose Library..."
+msgstr "Zvolit knihovnu..."
 
 #: ITunesFeature#6
+msgid "Error Loading iTunes Library"
+msgstr "Chyba při načítání knihovny skladeb iTunes"
+
+#: ITunesFeature#7
 msgid ""
 "There was an error loading your iTunes library. Some of your iTunes tracks "
 "or playlists may not have loaded."
 msgstr ""
+"Při načítání knihovny skladeb iTunes se objevila chyba. Některé z vašich "
+"skladeb nebo seznamů skladeb možná nejsou načteny."
 
 #: LADSPAPresetSlot#1
 msgid "Drag a preset from the list & drop it here"
 msgstr "Chyťte šablonu ze seznamu a upusťte ji zde"
 
 #: LibraryScannerDlg#1
+msgid "Library Scanner"
+msgstr ""
+
+#: LibraryScannerDlg#2
 msgid "It's taking Mixxx a minute to scan your music library, please wait..."
 msgstr ""
 "Bude chvílit trvat, než Mixxx naskenuje vaši hudební sbírku, čekejte "
 "prosím...."
 
-#: LibraryScannerDlg#2
+#: LibraryScannerDlg#3
 msgid "Cancel"
 msgstr "Zrušit"
 
 #: MidiInputMappingTableModel#1
 msgid "Midi Status Type"
-msgstr ""
+msgstr "Typ MIDI stavu"
 
 #: MidiInputMappingTableModel#2
 msgctxt "MidiInputMappingTableModel#2"
 msgid "Midi Note"
-msgstr ""
+msgstr "MIDI nota"
 
 #: MidiInputMappingTableModel#3
 msgctxt "MidiInputMappingTableModel#3"
 msgid "Midi Channel"
-msgstr ""
+msgstr "MIDI kanál"
 
 #: MidiInputMappingTableModel#4
 msgctxt "MidiInputMappingTableModel#4"
 msgid "Control Group"
-msgstr ""
+msgstr "Kontrolní skupina"
 
 #: MidiInputMappingTableModel#5
 msgctxt "MidiInputMappingTableModel#5"
 msgid "Control Value"
-msgstr ""
+msgstr "Kontrolní hodnota"
+
+#: MidiInputMappingTableModel#6
+msgctxt "MidiInputMappingTableModel#6"
+msgid "Description"
+msgstr "Popis"
 
 #: MidiMapping#1
 msgid "MIDI script function not found"
@@ -2066,27 +2296,33 @@ msgid ""
 "The MIDI message %1 %2 will not be bound.\n"
 "(Click Show Details for hints.)"
 msgstr ""
+"MIDI zpráva %1 %2 nebude svázána\n"
+"(klikněte na Zobrazit detaily pro nápovědu)."
 
 #: MidiMapping#4
 msgid ""
 "* Check to see that the function name is spelled correctly in the mapping "
 "file (.xml) and script file (.js)\n"
 msgstr ""
+"* Zašktněte pro kontrolu, že je jméno funkce správně zapsáno v souboru "
+"mapování (.xml) a souboru skriptu (.js)\n"
 
 #: MidiMapping#5
 msgid ""
 "* Check to see that the script file name (.js) is spelled correctly in the "
 "mapping file (.xml)"
 msgstr ""
+"* Zašktněte pro kontrolu, že je název souboru skriptu (.js) správně zapsán v "
+"souboru mapování (.xml)"
 
 #: MidiOutputMappingTableModel#1
 msgid "Midi Status"
-msgstr ""
+msgstr "Stav MIDI"
 
 #: MidiOutputMappingTableModel#2
 msgctxt "MidiOutputMappingTableModel#2"
 msgid "Midi Note"
-msgstr ""
+msgstr "MIDI nota"
 
 #: MidiOutputMappingTableModel#3
 msgctxt "MidiOutputMappingTableModel#3"
@@ -2104,20 +2340,25 @@ msgid "Control Value"
 msgstr "Kontrolní hodnota"
 
 #: MidiOutputMappingTableModel#6
-msgid "Threshold Min"
-msgstr ""
+msgctxt "MidiOutputMappingTableModel#6"
+msgid "Description"
+msgstr "Popis"
 
 #: MidiOutputMappingTableModel#7
+msgid "Threshold Min"
+msgstr "Minimum rozsahu"
+
+#: MidiOutputMappingTableModel#8
 msgid "Threshold Max"
-msgstr ""
+msgstr "Maximum rozsahu"
 
 #: MidiScriptEngine#1
 msgid "Uncaught exception at line %1 in file %2: %3"
-msgstr ""
+msgstr "Nedeklarovaná chyba na řádku %1 v souboru %2: %3"
 
 #: MidiScriptEngine#2
 msgid "Uncaught exception at line %1 in passed code: %2"
-msgstr ""
+msgstr "Nedeklarovaná chyba na řádku %1 v zaslaném kódu: %2:"
 
 #: MidiScriptEngine#3
 msgid "MIDI script error"
@@ -2125,7 +2366,7 @@ msgstr "Chyba MIDI skriptu"
 
 #: MidiScriptEngine#4
 msgid "A MIDI control you just used is not working properly."
-msgstr ""
+msgstr "MIDI kontrolér, který byl právě použit, nefunguje správně."
 
 #: MidiScriptEngine#5
 msgid ""
@@ -2134,10 +2375,14 @@ msgid ""
 "erratic behavior</li><li>Try to recover by resetting your "
 "controller</li></ul></html>"
 msgstr ""
+"<html>(Soubor skriptu MIDI je potřeba opravit)<br>Zatím "
+"můžete:<ul><li>Ignorovat chybu pro toto sezení. Můžete ale být svědky "
+"nestandardního chování</li><li>Pokusit se problém vyřešit restartováním "
+"kontroléru</li></ul></html>"
 
 #: MidiStatusDelegate#1
 msgid "Unknown"
-msgstr ""
+msgstr "Neznámý"
 
 #: MixxxApp#1
 msgid "Mixxx "
@@ -2145,7 +2390,7 @@ msgstr "Mixxx "
 
 #: MixxxApp#2
 msgid "Mixxx"
-msgstr ""
+msgstr "Mixxx"
 
 #: MixxxApp#3
 msgid ""
@@ -2154,6 +2399,9 @@ msgid ""
 "developers. Would you like to help us make Mixxx better by enabling this "
 "feature?"
 msgstr ""
+"Vývoj programu Mixxx je řízen komunitou. Pokud budete chtít, Mixxx může "
+"automaticky posílat data o vaší uživatelské zkušenosti zpět vývojářům. "
+"Chcete nám pomoci dále zlepšovat Mixxx zapnutím této vlastnosti?"
 
 #: MixxxApp#4
 msgid "Yes"
@@ -2195,6 +2443,26 @@ msgid ""
 "This information will not be used to personally identify you, contact you, "
 "advertise to you, or otherwise bother you in any way.\n"
 msgstr ""
+"Vývoj programu Mixxx je řízen komunitou. Pro zlepšení budoucích verzí bude "
+"Mixxx s Vaším svolením sbírat informace o hardwaru, na kterém běží a o svém "
+"využití. Tyto informace budou použity k opravám chyb, zlepšování vlastností "
+"programu a pro určení hardwarových nároků budoucích verzí. Navíc mohou tyto "
+"informace sloužit jako podklad pro souhrnné statistiky.\n"
+"\n"
+"Informace o hardware zahrnují:\n"
+"\t-model CPU a jeho vlastnosti\n"
+"\t-Velikost paměti RAM a její zaplnění\n"
+"\t-Volné místo na disku\n"
+"\t-Verzi a druh operačního systému\n"
+"\n"
+"Informace o používání zahrnují:\n"
+"\t-Nastavení/Volby programu\n"
+"\t-Vnitřní chyby programu\n"
+"\t-Vnitřní ladící informace\n"
+"\t-Statistiky výkonu (zpoždění, zátěž CPU)\n"
+"\n"
+"Tyto informace nebudou použity pro osobní identifikaci, kontakt, reklamu, "
+"ani nebudete obtěžován/a žádným jiným způsobem.\n"
 
 #: MixxxApp#9
 msgctxt "MixxxApp#9"
@@ -2215,20 +2483,25 @@ msgid ""
 "application is using a sound device Mixxx is configured to use or a device "
 "is not plugged in."
 msgstr ""
+"Mixxx nemohl získat přístup ke všem nakonfigurovaným zvukovým zařízením. "
+"Jiná aplikace některé takové zařízení používá, nebo některé z těchto "
+"zařízení není zapojeno."
 
 #: MixxxApp#13
 msgid ""
 "<b>Retry</b> after closing the other application or reconnecting a sound "
 "device"
 msgstr ""
+"<b>Znovu</b> se pokusit o připojení až zavřete jinou aplikaci, nebo až "
+"připojíte zvukové zařízení"
 
 #: MixxxApp#14
 msgid "<b>Reconfigure</b> Mixxx's sound device settings."
-msgstr ""
+msgstr "<b>Změnit</b> nastavení zvukových zařízení programu Mixxx"
 
 #: MixxxApp#15
 msgid "<b>Exit</b> Mixxx."
-msgstr ""
+msgstr "Opustit Mixxx"
 
 #: MixxxApp#16
 msgid "Retry"
@@ -2248,11 +2521,11 @@ msgstr "Ukončit"
 
 #: MixxxApp#20
 msgid "Continue"
-msgstr ""
+msgstr "Pokračovat"
 
 #: MixxxApp#21
 msgid "&Load Song (Player 1)..."
-msgstr "&Nabít píseň (Přehrávač 1)..."
+msgstr "Otevřít sk&ladbu (Přehrávač 1)..."
 
 #: MixxxApp#22
 msgid "Ctrl+O"
@@ -2260,7 +2533,7 @@ msgstr "Ctrl+O"
 
 #: MixxxApp#23
 msgid "&Load Song (Player 2)..."
-msgstr "&Nabít píseň (Přehrávač 2)..."
+msgstr "Otevřít sk&ladbu (Přehrávač 2)..."
 
 #: MixxxApp#24
 msgid "Ctrl+Shift+O"
@@ -2288,7 +2561,7 @@ msgstr "Ctrl+N"
 
 #: MixxxApp#30
 msgid "Add new &crate"
-msgstr ""
+msgstr "Přidat novou krabi&ci"
 
 #: MixxxApp#31
 msgid "Ctrl+C"
@@ -2304,7 +2577,7 @@ msgstr "Ctrl+I"
 
 #: MixxxApp#34
 msgid "&Audio Beat Marks"
-msgstr ""
+msgstr "Zn&ačky úhozů"
 
 #: MixxxApp#35
 msgid "&Full Screen"
@@ -2320,54 +2593,74 @@ msgstr "F11"
 
 #: MixxxApp#38
 msgid "&Preferences"
-msgstr "&Možnosti"
+msgstr "&Předvolby"
 
 #: MixxxApp#39
 msgid "Ctrl+P"
 msgstr "Ctrl+P"
 
 #: MixxxApp#40
-msgid "&About..."
-msgstr "&O programu"
+msgid "&About"
+msgstr "O &aplikaci"
 
 #: MixxxApp#41
-msgid "&Community Support..."
-msgstr "&Komunitní podpora..."
+msgid "&Community Support"
+msgstr "Podpora komunity"
 
 #: MixxxApp#42
-msgid "Enable &Vinyl Control"
+msgid "&User Manual"
 msgstr ""
 
 #: MixxxApp#43
+msgid "Send Us &Feedback"
+msgstr "Zpětná vazba"
+
+#: MixxxApp#44
+msgid "&Translate this application"
+msgstr "Přeloži&t tuto aplikaci"
+
+#: MixxxApp#45
+msgid "Enable &Vinyl Control 1"
+msgstr "Zapnout ovládání &vinylem 1"
+
+#: MixxxApp#46
 msgid "Ctrl+Y"
 msgstr "Ctrl+Y"
 
-#: MixxxApp#44
-msgctxt "MixxxApp#44"
+#: MixxxApp#47
+msgid "Enable &Vinyl Control 2"
+msgstr "Zapnout ovládání &vinylem 2"
+
+#: MixxxApp#48
+msgid "Ctrl+U"
+msgstr "Ctrl+U"
+
+#: MixxxApp#49
+msgctxt "MixxxApp#49"
 msgid "Enable live broadcasting"
 msgstr ""
 
-#: MixxxApp#45
+#: MixxxApp#50
 msgid "Ctrl+L"
 msgstr "Ctrl+L"
 
-#: MixxxApp#46
+#: MixxxApp#51
 msgid "&Record Mix"
-msgstr ""
+msgstr "Nah&rát Mix"
 
-#: MixxxApp#47
+#: MixxxApp#52
 msgid "Ctrl+R"
 msgstr "Ctrl+R"
 
-#: MixxxApp#48
+#: MixxxApp#53
 msgid "Show Studio"
 msgstr "Ukázat studio"
 
-#: MixxxApp#49
+#: MixxxApp#54
 msgid "Opens a song in player 1"
 msgstr "Otevře song v přehrávači 1"
 
-#: MixxxApp#50
+#: MixxxApp#55
 msgid ""
 "Open\n"
 "\n"
@@ -2377,11 +2670,11 @@ msgstr ""
 "\n"
 "Otevře song v přehrávači 1"
 
-#: MixxxApp#51
+#: MixxxApp#56
 msgid "Opens a song in player 2"
 msgstr "Otevře song v přehrávači 2"
 
-#: MixxxApp#52
+#: MixxxApp#57
 msgid ""
 "Open\n"
 "\n"
@@ -2391,11 +2684,11 @@ msgstr ""
 "\n"
 "Otevře song v přehrávači 2"
 
-#: MixxxApp#53
+#: MixxxApp#58
 msgid "Quits the application"
 msgstr "Ukončí aplikaci"
 
-#: MixxxApp#54
+#: MixxxApp#59
 msgid ""
 "Exit\n"
 "\n"
@@ -2405,11 +2698,11 @@ msgstr ""
 "\n"
 "Zavře program"
 
-#: MixxxApp#55
+#: MixxxApp#60
 msgid "Rescans the song library"
 msgstr "Přeskenuje hudební knihovnu"
 
-#: MixxxApp#56
+#: MixxxApp#61
 msgid ""
 "Rescan library\n"
 "\n"
@@ -2419,11 +2712,11 @@ msgstr ""
 "\n"
 "Přeskenuje hudební knihovnu"
 
-#: MixxxApp#57
+#: MixxxApp#62
 msgid "Create a new playlist"
 msgstr "Vytvořit nový playlist"
 
-#: MixxxApp#58
+#: MixxxApp#63
 msgid ""
 "New playlist\n"
 "\n"
@@ -2433,69 +2726,75 @@ msgstr ""
 "\n"
 "Vytvořit nový playlist"
 
-#: MixxxApp#59
+#: MixxxApp#64
 msgid "Create a new crate"
-msgstr ""
+msgstr "Vytvořit novou krabici"
 
-#: MixxxApp#60
+#: MixxxApp#65
 msgid ""
 "New crate\n"
 "\n"
 "Create a new crate."
 msgstr ""
+"Nová krabice\n"
+"\n"
+"Vytvořit novou krabici."
 
-#: MixxxApp#61
+#: MixxxApp#66
 msgid "Import playlist"
 msgstr "Importovat playlist"
 
-#: MixxxApp#62
+#: MixxxApp#67
 msgid "Audio Beat Marks"
-msgstr ""
+msgstr "Značky úhozů"
 
-#: MixxxApp#63
+#: MixxxApp#68
 msgid ""
 "Audio Beat Marks\n"
 "Mark beats by audio clicks"
 msgstr ""
+"Značky úhozů\n"
+"Označit úhozy pomocí klikání"
 
-#: MixxxApp#64
+#: MixxxApp#69
 msgid "Activate Vinyl Control"
 msgstr "Aktivovat ovládání vinylu"
 
-#: MixxxApp#65
+#: MixxxApp#70
 msgid "Use timecoded vinyls on external turntables to control Mixxx"
 msgstr ""
+"Použít vinyl s časovým kódem na externím gramofonu k ovládání programu Mixxx"
 
-#: MixxxApp#66
+#: MixxxApp#71
 msgid "Activate live broadcasting"
 msgstr "Zahájit živé vysílání"
 
-#: MixxxApp#67
+#: MixxxApp#72
 msgid "Stream your mixes to a shoutcast or icecast server"
 msgstr "Streamovat vaše mixy na shoutcast nebo icecast serveru"
 
-#: MixxxApp#68
+#: MixxxApp#73
 msgid "Start Recording your Mix"
 msgstr "Začněte nahrávat mixování"
 
-#: MixxxApp#69
+#: MixxxApp#74
 msgid "Record your mix to a file"
 msgstr "Nahrát mixování do souboru"
 
-#: MixxxApp#70
+#: MixxxApp#75
 msgid "Full Screen"
 msgstr "Celá obrazovka"
 
-#: MixxxApp#71
+#: MixxxApp#76
 msgid "Display Mixxx using the full screen"
 msgstr "Zobrazit Mixxx v režimu \"celá obrazovka\""
 
-#: MixxxApp#72
-msgctxt "MixxxApp#72"
+#: MixxxApp#77
+msgctxt "MixxxApp#77"
 msgid "Preferences"
 msgstr ""
 
-#: MixxxApp#73
+#: MixxxApp#78
 msgid ""
 "Preferences\n"
 "Playback and MIDI preferences"
@@ -2503,11 +2802,11 @@ msgstr ""
 "Nastavení\n"
 "Nastavení playbacku a MIDI"
 
-#: MixxxApp#74
+#: MixxxApp#79
 msgid "Support..."
 msgstr "Podpora..."
 
-#: MixxxApp#75
+#: MixxxApp#80
 msgid ""
 "Support\n"
 "\n"
@@ -2517,11 +2816,50 @@ msgstr ""
 "\n"
 "Získejte pomoc pro Mixxx"
 
-#: MixxxApp#76
+#: MixxxApp#81
+msgid "Read the Mixxx user manual."
+msgstr ""
+
+#: MixxxApp#82
+msgid ""
+"Support\n"
+"\n"
+"Read the Mixxx user manual."
+msgstr ""
+
+#: MixxxApp#83
+msgid "Send feedback to the Mixxx team."
+msgstr "Odeslat zpětnou vazbu vývojovému týmu."
+
+#: MixxxApp#84
+msgid ""
+"Support\n"
+"\n"
+"Send feedback to the Mixxx team."
+msgstr ""
+"Podpora\n"
+"\n"
+"Odeslat zpětnou vazbu vývojovému týmu."
+
+#: MixxxApp#85
+msgid "Help translate this application into your language."
+msgstr "Pomožte přeložit tuto aplikaci do svého jazyka."
+
+#: MixxxApp#86
+msgid ""
+"Support\n"
+"\n"
+"Help translate this application into your language."
+msgstr ""
+"Podpora\n"
+"\n"
+"Pomožte přeložit tuto aplikaci do svého jazyka."
+
+#: MixxxApp#87
 msgid "About the application"
 msgstr "O aplikaci"
 
-#: MixxxApp#77
+#: MixxxApp#88
 msgid ""
 "About\n"
 "\n"
@@ -2531,11 +2869,11 @@ msgstr ""
 "\n"
 "O programu"
 
-#: MixxxApp#78
+#: MixxxApp#89
 msgid "Shows the macro studio window"
 msgstr "Zobrazí makro okno studia"
 
-#: MixxxApp#79
+#: MixxxApp#90
 msgid ""
 "Show Studio\n"
 "\n"
@@ -2545,39 +2883,43 @@ msgstr ""
 "\n"
 "Umožní vidět makro studio"
 
-#: MixxxApp#80
+#: MixxxApp#91
 msgid "&File"
 msgstr "&Soubor"
 
-#: MixxxApp#81
+#: MixxxApp#92
 msgid "&Options"
 msgstr "&Možnosti"
 
-#: MixxxApp#82
+#: MixxxApp#93
 msgid "&Library"
 msgstr "&Knihovna"
 
-#: MixxxApp#83
+#: MixxxApp#94
 msgid "&View"
 msgstr "&Pohled"
 
-#: MixxxApp#84
+#: MixxxApp#95
 msgid "&Help"
 msgstr "&Nápověda"
 
-#: MixxxApp#85
+#: MixxxApp#96
 msgid "&Macro"
 msgstr "&Makro"
 
-#: MixxxApp#86
+#: MixxxApp#97
+msgid "&Vinyl Control"
+msgstr "Ovládání &vinylem"
+
+#: MixxxApp#98
 msgid "Quit..."
 msgstr "Ukončit..."
 
-#: MixxxApp#87
+#: MixxxApp#99
 msgid "Do your really want to quit?"
 msgstr "Opravdu chcete program ukončit?"
 
-#: MixxxApp#88
+#: MixxxApp#100
 msgid ""
 "Player 1 is currently playing a song.\n"
 "Are you sure you want to load a new song?"
@@ -2585,11 +2927,11 @@ msgstr ""
 "Přehrávač 1 právě přehrává hudbu.\n"
 "Chcete opravdu vložit nový?"
 
-#: MixxxApp#89
+#: MixxxApp#101
 msgid "Load Song into Player 1"
 msgstr "Vložit hudbu do Přehrávače 1"
 
-#: MixxxApp#90
+#: MixxxApp#102
 msgid ""
 "Player 2 is currently playing a song.\n"
 "Are you sure you want to load a new song?"
@@ -2597,45 +2939,58 @@ msgstr ""
 "Přehrávač 2 právě přehrává hudbu.\n"
 "Chcete opravdu vložit nový song?"
 
-#: MixxxApp#91
+#: MixxxApp#103
 msgid "Load Song into Player 2"
 msgstr "Vložit hudbu do Přehrávače 1"
 
-#: MixxxApp#92
+#: MixxxApp#104
 msgid ""
-"No input device(s) selected.\n"
+"No input device(s) select.\n"
 "Please select your soundcard(s) in the sound hardware preferences."
 msgstr ""
+"Nebylo zvoleno žádné vstupní zařízení.\n"
+"Prosím vyberte svou zvukovou kartu v nastavení zvukového hardware."
 
-#: MixxxApp#93
+#: MixxxApp#105
 msgid "Confirm Exit"
-msgstr ""
+msgstr "Potvrďte ukončení"
 
-#: MixxxApp#94
+#: MixxxApp#106
 msgid "A deck is currently playing. Exit Mixxx?"
-msgstr ""
-
-#: MixxxApp#95
-msgctxt "MixxxApp#95"
-msgid "Save Recording As..."
-msgstr "Uložit nahrávku jako..."
-
-#: MixxxApp#96
-msgid "Mixxx Recording"
-msgstr "Mixxx nahrává"
-
-#: MixxxApp#97
-msgid ""
-"The file %1 already exists. Would you like to overwrite it?\n"
-"Selecting \"No\" will abort the recording."
-msgstr ""
-"Soubor %1 existuje. Chcete ho přepsat?\n"
-"Vybrání \"Ne\" přeruší nahrávání."
+msgstr "Některá z ploten hraje. Opravdu chcete vypnout Mixxx?"
 
 #: MixxxLibraryFeature#1
 msgctxt "MixxxLibraryFeature#1"
 msgid "Library"
+msgstr "Knihovna skladeb"
+
+#: ParserM3u#1
+msgctxt "ParserM3u#1"
+msgid "Playlist Export Failed"
+msgstr "Export seznamu skladeb selhal"
+
+#: ParserM3u#2
+msgid "File path contains characters, not allowed in m3u playlists.\n"
 msgstr ""
+
+#: ParserM3u#3
+msgid "Export a m3u8 playlist instead!\n"
+msgstr ""
+
+#: ParserM3u#4
+msgctxt "ParserM3u#4"
+msgid "Could not create file"
+msgstr ""
+
+#: ParserPls#1
+msgctxt "ParserPls#1"
+msgid "Playlist Export Failed"
+msgstr "Export seznamu skladeb selhal"
+
+#: ParserPls#2
+msgctxt "ParserPls#2"
+msgid "Could not create file"
+msgstr "Nelze vytvořit soubor"
 
 #: PlaylistFeature#1
 msgid "New Playlist"
@@ -2643,71 +2998,80 @@ msgstr "Nový playlist"
 
 #: PlaylistFeature#2
 msgid "Add to Auto-DJ Queue"
-msgstr ""
+msgstr "Přidat do fronty Auto DJ"
 
 #: PlaylistFeature#3
 msgctxt "PlaylistFeature#3"
 msgid "Remove"
-msgstr ""
+msgstr "Odstranit"
 
 #: PlaylistFeature#4
 msgctxt "PlaylistFeature#4"
 msgid "Rename"
-msgstr ""
+msgstr "Přejmenovat"
 
 #: PlaylistFeature#5
 msgctxt "PlaylistFeature#5"
 msgid "Lock"
-msgstr ""
+msgstr "Zámek"
 
 #: PlaylistFeature#6
 msgctxt "PlaylistFeature#6"
 msgid "Import Playlist"
+msgstr "Importovat seznam skladeb"
+
+#: PlaylistFeature#7
+msgid "Export Playlist"
 msgstr ""
 
-#: PlaylistFeature#3
+#: PlaylistFeature#8
 msgid "Playlists"
 msgstr "Playlisty"
 
-#: PlaylistFeature#8
-msgctxt "PlaylistFeature#8"
+#: PlaylistFeature#9
+msgctxt "PlaylistFeature#9"
 msgid "Unlock"
-msgstr ""
+msgstr "Odemknout"
 
-#: PlaylistFeature#4
+#: PlaylistFeature#10
 msgid "Playlist name:"
 msgstr "Název playlistu:"
 
-#: PlaylistFeature#5
+#: PlaylistFeature#11
 msgid "Playlist Creation Failed"
 msgstr "Playlist nebyl vytvořen"
 
-#: PlaylistFeature#6
+#: PlaylistFeature#12
 msgid "A playlist cannot have a blank name."
 msgstr "Playlist nemůže být nepojmenovaný."
 
-#: PlaylistFeature#7
+#: PlaylistFeature#13
 msgid "An unknown error occurred while creating playlist: "
 msgstr "Při vytváření playlistu došlo k neznámé chybě. "
 
-#: PlaylistFeature#13
-msgid "Rename Playlist"
-msgstr ""
-
 #: PlaylistFeature#14
-msgid "New playlist name:"
-msgstr ""
+msgid "Rename Playlist"
+msgstr "Přejmenovat seznam skladeb"
 
 #: PlaylistFeature#15
-msgid "Renaming Playlist Failed"
-msgstr ""
+msgid "New playlist name:"
+msgstr "Jméno nového seznamu skladeb:"
 
 #: PlaylistFeature#16
-msgctxt "PlaylistFeature#16"
-msgid "Playlist Files (*.m3u *.pls)"
+msgid "Renaming Playlist Failed"
+msgstr "Přejmenování seznamu skladeb selhalo"
+
+#: PlaylistFeature#17
+msgctxt "PlaylistFeature#17"
+msgid "Playlist Files (*.m3u *.m3u8 *.pls)"
 msgstr ""
 
-#: PlaylistFeature#8
+#: PlaylistFeature#18
+msgctxt "PlaylistFeature#18"
+msgid "M3U Playlist (*.m3u);;M3U8 Playlist (*.m3u8);;PLS Playlist (*.pls)"
+msgstr ""
+
+#: PlaylistFeature#19
 msgid "A playlist by that name already exists."
 msgstr "Playlist tohoto jména již existuje"
 
@@ -2718,7 +3082,7 @@ msgstr "Analýza"
 
 #: QObject#1
 msgid "Invalid"
-msgstr ""
+msgstr "Nepl."
 
 #: QObject#2
 msgid "Master"
@@ -2730,24 +3094,28 @@ msgstr "Sluchátka"
 
 #: QObject#4
 msgid "Deck"
-msgstr ""
+msgstr "Plotna"
 
 #: QObject#5
 msgctxt "QObject#5"
 msgid "Vinyl Control"
-msgstr ""
+msgstr "Ovládání vinylem"
 
 #: QObject#6
 msgid "Microphone"
-msgstr ""
+msgstr "Mikrofon"
 
 #: QObject#7
 msgid "Passthrough"
-msgstr ""
+msgstr "Propustit skrz"
 
 #: QObject#8
 msgid "Unknown path type %1"
-msgstr ""
+msgstr "Neznámý typ cesty %1"
+
+#: RecordingFeature#1
+msgid "Recordings"
+msgstr "Nahrávky"
 
 #: RhythmboxFeature#1
 msgid "Rhythmbox"
@@ -2755,73 +3123,72 @@ msgstr "Rhythmbox"
 
 #: SamplerBank#1
 msgid "Save Sampler Bank"
-msgstr ""
+msgstr "Uložit rejstřík sampleru"
 
 #: SamplerBank#2
 msgid "Error Saving Sampler Bank"
-msgstr ""
+msgstr "Chyba při ukládání rejstříku sapleru"
 
 #: SamplerBank#3
 msgid "Could not write the sampler bank to '%1'."
-msgstr ""
+msgstr "Nelze zapsat rejstřík sampleru do '%1'."
 
 #: SamplerBank#4
 msgid "Load Sampler Bank"
-msgstr ""
+msgstr "Načíst rejstřík sampleru"
 
 #: SamplerBank#5
 msgid "Error Reading Sampler Bank"
-msgstr ""
+msgstr "Chyba při načítání rejstříku sampleru"
 
 #: SamplerBank#6
 msgid "Could not open the sampler bank file '%1'."
-msgstr ""
+msgstr "Nelze otevřít soubor rejstříku sampleru '%1'."
 
 #: SamplerBank#7
 msgid "Could not read the sampler bank file '%1'."
-msgstr ""
+msgstr "Nelze přečíst soubor rejstříku sampleru '%1'."
 
 #: ScriptStudio#1
 msgid "Mixxx Script Studio"
-msgstr ""
+msgstr "Skriptovací studio Mixxxu"
 
 #: ScriptStudio#2
-msgctxt "ScriptStudio#2"
 msgid "File"
-msgstr ""
+msgstr "Soubor"
 
 #: ScriptStudio#3
 msgctxt "ScriptStudio#3"
 msgid "Edit"
-msgstr ""
+msgstr "Upravit"
 
 #: ScriptStudio#4
 msgid "Run"
-msgstr ""
+msgstr "Spustit"
 
 #: ScriptStudio#5
 msgid "Close"
-msgstr ""
+msgstr "Zavřít"
 
 #: ScriptStudio#6
 msgid "Import..."
-msgstr ""
+msgstr "Import..."
 
 #: ScriptStudio#7
 msgid "Export..."
-msgstr ""
+msgstr "Export..."
 
 #: ScriptStudio#8
 msgid "Delete Macro"
-msgstr ""
+msgstr "Smazat makro"
 
 #: ScriptStudio#9
 msgid "New Macro..."
-msgstr ""
+msgstr "Nové makro..."
 
 #: ScriptStudio#10
 msgid "Run Macro"
-msgstr ""
+msgstr "Spustit makro"
 
 #: TrackCollection#1
 msgid "Cannot open database"
@@ -2835,10 +3202,15 @@ msgid ""
 "\n"
 "Click OK to exit."
 msgstr ""
+"Nelze se spojit s databází.\n"
+"Mixxx vyžaduje QT s podporou SQLite. Prosím, přečtěte si dokumentaci QT "
+"SQLite řadiče pro informace o sestavování.\n"
+"\n"
+"Stiskněte OK pro ukončení."
 
 #: TrackCollection#3
 msgid "Cannot upgrade database schema"
-msgstr ""
+msgstr "Nelze upgradovat databázové schéma"
 
 #: TrackCollection#4
 msgid ""
@@ -2848,24 +3220,31 @@ msgid ""
 "\n"
 "Click OK to exit."
 msgstr ""
+"Nelze upgradovat databázové schéma na verzi %1.\n"
+"Váš soubor mixxx.db je možná poškozen.\n"
+"Pokuste se ho přejmenovat a pak restartovat Mixxx.\n"
+"\n"
+"Stiskněte OK pro ukončení."
 
 #: TraktorFeature#1
 msgid "Traktor"
-msgstr ""
+msgstr "Traktor"
 
 #: TraktorFeature#2
-msgid "Traktor (loading)"
-msgstr ""
+msgid "(loading) Traktor"
+msgstr "(načítám) Traktor"
 
 #: TraktorFeature#3
 msgid "Error Loading Traktor Library"
-msgstr ""
+msgstr "Chyba při nahrávání knihovny skladeb Traktoru"
 
 #: TraktorFeature#4
 msgid ""
 "There was an error loading your Traktor library. Some of your Traktor tracks "
 "or playlists may not have loaded."
 msgstr ""
+"Při nahrávání vaší knihovny skladeb Traktoru nastala chyba. Některé z vašich "
+"skladeb Traktoru se nemusely načíst."
 
 #: Ui#1
 msgctxt "Ui#1"
@@ -2887,775 +3266,379 @@ msgid "Off"
 msgstr "Vypnout"
 
 #: Ui#5
-msgid "CDJ Mode"
-msgstr ""
+msgid "Don't load tracks into a playing deck"
+msgstr "Nenahrávat skladby"
 
 #: Ui#6
+msgid "Load tracks into playing decks"
+msgstr "Načíst skladby do ploten"
+
+#: Ui#7
+msgid "CDJ Mode"
+msgstr "Mód CDJ"
+
+#: Ui#8
 msgid "Simple"
 msgstr "Jednoduchý"
 
-#: Ui#7
+#: Ui#9
 msgid "Mixxx Detected a WVGA Screen"
 msgstr "Mixxx detekoval a WVGA obrazovku"
 
-#: Ui#8
+#: Ui#10
 msgid "Mixxx has detected that your screen has a resolution of "
 msgstr "Mixxx detekoval obrazovku s rozlišením "
 
-#: Ui#9
+#: Ui#11
 msgid ""
 "The only skin compatiable with this size display is Outline800x480-WVGA.  "
 "Would you like to use that skin?"
 msgstr ""
-
-#: Ui#10
-msgctxt "Ui#10"
-msgid "Preferences"
-msgstr "Nastavení"
-
-#: Ui#11
-msgctxt "Ui#11"
-msgid "Crossfader"
-msgstr ""
+"Jediný vzhled kompatibilní s touto velikostí displeje je Outline800x480-"
+"WVGA. Chcete použít tento vzhled?"
 
 #: Ui#12
-msgid "Master volume"
-msgstr ""
+msgctxt "Ui#12"
+msgid "Preferences"
+msgstr "Předvolby"
 
 #: Ui#13
-msgid "Master balance"
-msgstr ""
+msgctxt "Ui#13"
+msgid "Crossfader"
+msgstr "Crossfader"
 
 #: Ui#14
-msgid "Headphones volume"
-msgstr ""
+msgid "Master volume"
+msgstr "Hl. ovladač hlasitosti"
 
 #: Ui#15
-msgid "Headphones mix (pre/main)"
-msgstr ""
+msgid "Master balance"
+msgstr "Hl. ovladač vyvážení"
 
 #: Ui#16
-msgid "Cue button for Player %1"
-msgstr ""
+msgid "Headphones volume"
+msgstr "Hlasitost sluchátek"
 
 #: Ui#17
-msgid "Play button for Player %1"
-msgstr ""
+msgid "Headphones mix (pre/main)"
+msgstr "Mix do sluchátek (pre/main)"
 
 #: Ui#18
-msgid "Fast rewind button for Player %1"
-msgstr ""
+msgid "Cue button for Player %1"
+msgstr "Tlačítko CUE přehrávače %1"
 
 #: Ui#19
-msgid "Fast forward button for Player %1"
-msgstr ""
+msgid "Play button for Player %1"
+msgstr "Tlačítko PLAY přehrávače %1"
 
 #: Ui#20
-msgid "Play reverse button for Player %1"
-msgstr ""
+msgid "Fast rewind button for Player %1"
+msgstr "Rychlé přetáčení vzad přehrávače %1"
 
 #: Ui#21
-msgid "Headphone listen button for Player %1"
-msgstr ""
+msgid "Fast forward button for Player %1"
+msgstr "Rychlé přetáčení vpřed přehrávače %1"
 
 #: Ui#22
-msgid "Beat sync button for Player %1"
-msgstr ""
+msgid "Play reverse button for Player %1"
+msgstr "Změna směru přehrávání přehrávače %1"
 
 #: Ui#23
-msgid "BPM tap button for Player %1"
-msgstr ""
+msgid "Headphone listen button for Player %1"
+msgstr "Odposlech do sluchátek přehrávače %1"
 
 #: Ui#24
-msgid "Keylock button for Player %1"
-msgstr ""
+msgid "Beat sync button for Player %1"
+msgstr "Synchronizace úhozů přehrávače %1"
 
 #: Ui#25
-msgid "Pitch control slider for Player %1"
-msgstr ""
+msgid "BPM tap button for Player %1"
+msgstr "Vyklepávání BPM přehrávače %1"
 
 #: Ui#26
-msgid "Flanger effect button for Player %1"
-msgstr ""
+msgid "Keylock button for Player %1"
+msgstr "Tlačítko KEYLOCK pro přehrávač %1"
 
 #: Ui#27
-msgid "Channel 2 volume fader"
-msgstr ""
+msgid "Pitch control slider for Player %1"
+msgstr "Ovládání výšky tónu (pitch) přehrávače %1"
 
 #: Ui#28
-msgid "Gain knob for Channel 2"
-msgstr ""
+msgid "Flanger effect button for Player %1"
+msgstr "Tlačítko efektu Flanger přehrávače %1"
 
 #: Ui#29
-msgid "High EQ knob for Channel 2"
-msgstr ""
+msgid "Channel %1 volume fader"
+msgstr "Tlumení hlasitosti kanálu %1"
 
 #: Ui#30
-msgid "Mid EQ knob for Channel 2"
-msgstr ""
+msgid "Gain knob for Channel %1"
+msgstr "Ovládání zisku kanálu %1"
 
 #: Ui#31
-msgid "Low EQ knob for Channel 2"
-msgstr ""
+msgid "High EQ knob for Channel %1"
+msgstr "Ovládání výšek kanálu %1"
 
 #: Ui#32
-msgid "Loop In button for Player %1"
-msgstr ""
+msgid "Mid EQ knob for Channel %1"
+msgstr "Ovládání středů kanálu %1"
 
 #: Ui#33
-msgid "Loop Out button for Player %1"
-msgstr ""
+msgid "Low EQ knob for Channel %1"
+msgstr "Ovládání basů kanálu %1"
 
 #: Ui#34
-msgid "Reloop / Exit button for Player %1"
-msgstr ""
+msgid "Loop In button for Player %1"
+msgstr "Začátek smyčky v přehrávači %1"
 
 #: Ui#35
-msgid "Hotcue 1 button for Player %1"
-msgstr ""
+msgid "Loop Out button for Player %1"
+msgstr "Konec smyčky v přehrávači %1"
 
 #: Ui#36
-msgid "Hotcue 2 button for Player %1"
-msgstr ""
+msgid "Reloop / Exit button for Player %1"
+msgstr "Znovu přehrát smyčku/Opuštění smyčky v přehrávači %1"
 
 #: Ui#37
-msgid "Hotcue 3 button for Player %1"
+msgid "Setup a loop over 4 beats for Player %1"
 msgstr ""
 
 #: Ui#38
-msgid "Hotcue 4 button for Player %1"
+msgid "Halves the current loop's length for Player %1"
 msgstr ""
 
 #: Ui#39
-msgid "Hotcue 1 delete button for Player %1"
+msgid "Doubles the current loop's length for Player %1"
 msgstr ""
 
 #: Ui#40
-msgid "Hotcue 2 delete button for Player %1"
-msgstr ""
+msgid "Hotcue 1 button for Player %1"
+msgstr "Tlačítko HOTCUE 1 přehrávače %1"
 
 #: Ui#41
-msgid "Hotcue 3 delete button for Player %1"
-msgstr ""
+msgid "Hotcue 2 button for Player %1"
+msgstr "Tlačítko HOTCUE 2 přehrávače %1"
 
 #: Ui#42
-msgid "Hotcue 4 delete button for Player %1"
-msgstr ""
+msgid "Hotcue 3 button for Player %1"
+msgstr "Tlačítko HOTCUE 3 přehrávače %1"
 
 #: Ui#43
-msgid "Switch to the next view (library, playlist..)"
-msgstr ""
+msgid "Hotcue 4 button for Player %1"
+msgstr "Tlačítko HOTCUE 4 přehrávače %1"
 
 #: Ui#44
-msgid "Switch to the previous view (library, playlist..)"
-msgstr ""
+msgid "Hotcue 1 delete button for Player %1"
+msgstr "Smazat HOTCUE 1 přehrávače %1"
 
 #: Ui#45
-msgid "Scroll to next track in library/playlist"
-msgstr ""
+msgid "Hotcue 2 delete button for Player %1"
+msgstr "Smazat HOTCUE 2 přehrávače %1"
 
 #: Ui#46
-msgid "Scroll to previous track in library/playlist"
-msgstr ""
+msgid "Hotcue 3 delete button for Player %1"
+msgstr "Smazat HOTCUE 3 přehrávače %1"
 
 #: Ui#47
-msgid "Load selected track into first stopped player"
-msgstr ""
+msgid "Hotcue 4 delete button for Player %1"
+msgstr "Smazat HOTCUE 4 přehrávače %1"
 
 #: Ui#48
-msgid "Load selected track into Player %1"
+msgid "Play button for Sampler %1"
 msgstr ""
 
-#: VinylControlSignalWidget#1
-msgid "OK"
-msgstr "OK"
+#: Ui#49
+msgid "Gain knob for Sampler %1"
+msgstr ""
+
+#: Ui#50
+msgid "Headphone listen button for Sampler %1"
+msgstr ""
+
+#: Ui#51
+msgid "BPM tap button for Sampler %1"
+msgstr ""
+
+#: Ui#52
+msgid "Keylock button for Sampler %1"
+msgstr ""
+
+#: Ui#53
+msgid "Pitch control slider for Sampler %1"
+msgstr ""
+
+#: Ui#54
+msgid "Hotcue 1 button for Sampler %1"
+msgstr ""
+
+#: Ui#55
+msgid "Hotcue 2 button for Sampler %1"
+msgstr ""
+
+#: Ui#56
+msgid "Hotcue 3 button for Sampler %1"
+msgstr ""
+
+#: Ui#57
+msgid "Hotcue 4 button for Sampler %1"
+msgstr ""
+
+#: Ui#58
+msgid "Hotcue 1 delete button for Sampler %1"
+msgstr ""
+
+#: Ui#59
+msgid "Hotcue 2 delete button for Sampler %1"
+msgstr ""
+
+#: Ui#60
+msgid "Hotcue 3 delete button for Sampler %1"
+msgstr ""
+
+#: Ui#61
+msgid "Hotcue 4 delete button for Sampler %1"
+msgstr ""
+
+#: Ui#62
+msgid "Switch to the next view (library, playlist..)"
+msgstr "Přejít na následující pohled (knihovna skladeb, seznam skladeb...)"
+
+#: Ui#63
+msgid "Switch to the previous view (library, playlist..)"
+msgstr "Přejít na předchozí pohled (knihovna skladeb, seznam skladeb...)"
+
+#: Ui#64
+msgid "Scroll to next track in library/playlist"
+msgstr "Přejít na následující skladbu v knihovně/seznamu"
+
+#: Ui#65
+msgid "Scroll to previous track in library/playlist"
+msgstr "Přejít na předcházející skladbu v knihovně/seznamu"
+
+#: Ui#66
+msgid "Load selected track into first stopped player"
+msgstr "Načíst vybranou skladbu do prvního zastaveného přehrávače"
+
+#: Ui#67
+msgid "Load selected track into Player %1"
+msgstr "Načíst vybranou skladbu do přehrávače %1"
+
+#: Ui#68
+msgid "Adjusts the wavelength of the flange effect"
+msgstr ""
+
+#: Ui#69
+msgid "Adjusts the intensity of the flange effect"
+msgstr ""
+
+#: Ui#70
+msgid "Adjusts the phase delay of the flange effect"
+msgstr ""
+
+#: Ui#71
+msgid "Microphone on/off"
+msgstr ""
+
+#: Ui#72
+msgid "Microphone volume"
+msgstr ""
 
 #: WSearchLineEdit#1
 msgid "Search..."
-msgstr ""
+msgstr "Vyhledat..."
 
 #: WTrackTableView#1
 msgid "Add to Playlist"
-msgstr ""
+msgstr "Přidat do seznamu skladeb"
 
 #: WTrackTableView#2
 msgid "Add to Crate"
-msgstr ""
+msgstr "Přidat do přepravky"
 
 #: WTrackTableView#3
 msgid "Load to Sampler"
-msgstr ""
+msgstr "Načíst do Sampleru"
 
 #: WTrackTableView#4
 msgctxt "WTrackTableView#4"
 msgid "Remove"
-msgstr ""
+msgstr "Odstranit"
 
 #: WTrackTableView#5
 msgid "Properties..."
-msgstr ""
+msgstr "Vlastnosti..."
 
 #: WTrackTableView#6
 msgid "Add to Auto DJ Queue"
-msgstr ""
+msgstr "Přidat do fronty Auto DJ"
 
 #: WTrackTableView#7
-msgid "Load to Deck %1"
-msgstr ""
+msgid "Reload Track Metadata"
+msgstr "Znovu načíst metadata"
 
 #: WTrackTableView#8
+msgid "Load to Deck %1"
+msgstr "Načíst do plotny %1"
+
+#: WTrackTableView#9
 msgid "Sampler %1"
+msgstr "Sampler %1"
+
+#: WTrackTableView#10
+msgid ""
+"Reloading track metadata on a loaded track may cause abrupt volume changes. "
+"Are you sure?"
 msgstr ""
 
 #: WTrackTableViewHeader#1
 msgid "Show or hide columns."
-msgstr ""
+msgstr "Ukázat nebo skrýt sloupce."
 
-#~ msgid "You don't have permission to view this folder."
-#~ msgstr "Nemáte oprávnění procházet tuto složku."
+#~ msgid "2.045 kHz"
+#~ msgstr "2.045 kHz"
 
-#~ msgid "Permission Denied"
-#~ msgstr "Oprávnění byla odepřena"
+#~ msgid "Recently Added"
+#~ msgstr "Nedávno přidané"
 
-#~ msgctxt "CrateTableModel#6"
-#~ msgid "Year"
-#~ msgstr "Rok"
+#~ msgid "All Songs"
+#~ msgstr "Všechny songy"
 
-#~ msgctxt "CrateTableModel#7"
-#~ msgid "Type"
-#~ msgstr "Typ"
+#~ msgctxt "CrateFeature#17"
+#~ msgid "M3U Playlist (*.m3u);;PLS Playlist (*.pls)"
+#~ msgstr "Seznam skladeb M3U (*.m3u);;Seznam skladeb PLS (*.pls)"
 
-#~ msgctxt "CrateTableModel#8"
-#~ msgid "Location"
-#~ msgstr "Umístění"
+#~ msgctxt "CrateFeature#15"
+#~ msgid "Playlist Files (*.m3u *.pls)"
+#~ msgstr "Seznamy skladeb (*.m3u *.pls)"
 
-#~ msgctxt "CrateTableModel#5"
-#~ msgid "Genre"
-#~ msgstr "Styl"
+#~ msgctxt "ParserM3u#2"
+#~ msgid "Could not create file"
+#~ msgstr "Nelze vytvořit soubor"
 
-#~ msgctxt "CrateTableModel#4"
-#~ msgid "Album"
-#~ msgstr "Album"
+#~ msgctxt "PlaylistFeature#18"
+#~ msgid "M3U Playlist (*.m3u);;PLS Playlist (*.pls)"
+#~ msgstr "Seznam skladeb M3U (*.m3u);;Seznam skladeb PLS (*.pls)"
 
-#~ msgctxt "CrateTableModel#3"
-#~ msgid "Title"
-#~ msgstr "Název"
+#~ msgctxt "PlaylistFeature#17"
+#~ msgid "Playlist Files (*.m3u *.pls)"
+#~ msgstr "Seznamy skladeb (*.m3u *.pls)"
 
-#~ msgctxt "CrateTableModel#2"
-#~ msgid "Artist"
-#~ msgstr "Umělec"
+#~ msgctxt "PlaylistFeature#7"
+#~ msgid "Export Playlist"
+#~ msgstr "Export seznamu skladeb"
 
-#~ msgid "ID"
-#~ msgstr "ID"
+#~ msgctxt "CrateFeature#16"
+#~ msgid "Export Playlist"
+#~ msgstr "Exportovat seznam skladeb"
 
-#~ msgctxt "CrateTableModel#14"
-#~ msgid "Date Added"
-#~ msgstr "Datum přidání"
+#~ msgctxt "DlgPrefNoVinylDlg#21"
+#~ msgid "Apply"
+#~ msgstr "Použít"
 
-#~ msgctxt "CrateTableModel#9"
-#~ msgid "Comment"
-#~ msgstr "Komentář"
-
-#~ msgctxt "CrateTableModel#10"
-#~ msgid "Duration"
-#~ msgstr "Prolnutí"
-
-#~ msgctxt "CrateTableModel#11"
-#~ msgid "Track #"
-#~ msgstr "Stopa #"
-
-#~ msgctxt "CrateTableModel#12"
-#~ msgid "Bitrate"
-#~ msgstr "Datový tok"
-
-#~ msgctxt "CrateTableModel#13"
-#~ msgid "BPM"
-#~ msgstr "BPM"
-
-#~ msgid "Analyze Entire Song"
-#~ msgstr "Analyzovat celý song"
-
-#~ msgid "BPM Detection Settings"
-#~ msgstr "Nastavení detekce BPM"
-
-#~ msgid "Edit"
-#~ msgstr "Upravit"
-
-#~ msgid "Crate Creation Failed"
-#~ msgstr "Přepravka nebyla vytvořena"
-
-#~ msgctxt "DlgPrefPlaylistDlg#6"
-#~ msgid "Library"
-#~ msgstr "Knihovna"
-
-#~ msgctxt "DlgPrefPlaylistDlg#4"
-#~ msgid "Browse..."
-#~ msgstr "Procházet..."
-
-#~ msgid "MP3, Ogg Vorbis, FLAC, Wave, Aiff Playback:"
-#~ msgstr "MP3, Ogg Vorbis, FLAC, Wave, Aiff Playback:"
-
-#~ msgid "Extra Playback Plugins:"
-#~ msgstr "Extra Playback pluginy:"
-
-#~ msgid "Audio Playback Plugins"
-#~ msgstr "Audio Playback pluginy"
-
-#~ msgid "File"
-#~ msgstr "Soubor"
-
-#~ msgid "Quality: "
-#~ msgstr "Kvalita "
-
-#~ msgctxt "DlgPrefRecordDlg#6"
-#~ msgid "High"
-#~ msgstr "Vysoká"
-
-#~ msgctxt "DlgPrefRecordDlg#7"
-#~ msgid "Low"
-#~ msgstr "Nízká"
-
-#~ msgid "http://mixxx.sf.net"
-#~ msgstr "http://mixxx.sf.net"
-
-#~ msgid "Configuration problem"
-#~ msgstr "Problém s konfigurací"
-
-#~ msgctxt "DlgPrefSound#9"
-#~ msgid "Audio device could not be opened"
-#~ msgstr "Zvukové zařízení nelze otevřít"
-
-#~ msgid "Audio Output"
-#~ msgstr "Zvukový výstup"
-
-#~ msgid "Mixxx - Master and Headphones sharing the same channels"
-#~ msgstr "Mixxx - Master a sluchátka sdílejí stejný kanál"
-
-#~ msgid "Sample rate (Hz)"
-#~ msgstr "Sample rate"
-
-#~ msgctxt "DlgPrefSoundDlg#1"
-#~ msgid "Form1"
-#~ msgstr "Formulář1"
-
-#~ msgid "Sound API could not be initialized"
-#~ msgstr "Zvukové API nemohlo být inicializováno"
-
-#~ msgid "Vinyl emulation"
-#~ msgstr "Emulace vinylu"
-
-#~ msgid "256 ms"
-#~ msgstr "256 ms"
-
-#~ msgid "Fast CPU"
-#~ msgstr "Rychlý procesor"
-
-#~ msgid ""
-#~ "Tips:<ul><li>Increase your latency if you hear pops during "
-#~ "playback</li><li>Reduce your latency to improve Mixxx's "
-#~ "responsiveness</li></ul>"
-#~ msgstr ""
-#~ "Tipy:<ul><li>Zvyšte latenci, pokud slyšíte pukání během "
-#~ "přehrávání</li><li>Snižte latenci pro zlepšení odezvy Mixxxu</li></ul>"
-
-#~ msgctxt "DlgPrefVinyl#4"
-#~ msgid "You cannot use a single pair of channels for both decks"
-#~ msgstr "Nelze použít jeden pár kanálů pro oba \"decky\""
-
-#~ msgctxt "DlgPrefVinyl#3"
-#~ msgid "You cannot send multiple outputs to a single channel"
-#~ msgstr "Není možné poslat více výstupů do jednoho kanálu"
-
-#~ msgctxt "DlgPrefVinyl#5"
-#~ msgid "Audio device could not be opened"
-#~ msgstr "Zvukové zařízení nelze otevřít"
-
-#~ msgid "Slow CPU"
-#~ msgstr "Pomalý procesor"
-
-#~ msgctxt "DlgPrefVinyl#2"
-#~ msgid "Configuration error"
-#~ msgstr "Chyba nastavení"
-
-#~ msgid "Input"
-#~ msgstr "Vstup"
-
-#~ msgid "Deck 1"
-#~ msgstr "Deck 1"
-
-#~ msgid "Deck 2"
-#~ msgstr "Deck 2"
-
-#~ msgid "Crossfader"
-#~ msgstr "Crossfader"
-
-#~ msgid "Vinyl Control"
-#~ msgstr "Kontrola vinylu"
-
-#~ msgid "Song:"
-#~ msgstr "Song:"
-
-#~ msgid "Track Editor"
-#~ msgstr "Editor stopy"
-
-#~ msgid "Artist:"
-#~ msgstr "Umělec:"
-
-#~ msgid "Title:"
-#~ msgstr "Titul:"
-
-#~ msgid "Filename:"
-#~ msgstr "Jméno souboru:"
-
-#~ msgid "Track Information (Click to Expand)"
-#~ msgstr "Informace o stopě (klikněte pro rozbalení)"
-
-#~ msgid "Comments:"
-#~ msgstr "Komentáře:"
-
-#~ msgid "File Type:"
-#~ msgstr "Typ souboru:"
-
-#~ msgid "77"
-#~ msgstr "77"
-
-#~ msgid "3:00"
-#~ msgstr "3:00"
-
-#~ msgid "Alt+O"
-#~ msgstr "Alt+O"
-
-#~ msgid "Mixxx could not connect to the server"
-#~ msgstr "Mixxx se nemohl spojit se serverem"
-
-#~ msgid "Shoutcast aborted connect after 3 tries"
-#~ msgstr "Připojení k Shoutcast bylo přerušeno po třetím  pokusu"
-
-#~ msgctxt "DlgPrefSound#7"
-#~ msgid "You cannot send multiple outputs to a single channel"
-#~ msgstr "Není možné poslat více výstupů do jednoho kanálu"
-
-#~ msgctxt "DlgPrefSound#6"
-#~ msgid "Configuration error"
-#~ msgstr "Chyba nastavení"
-
-#~ msgid "Load iTunes Library?"
-#~ msgstr "Nahrát knihovnu iTunes?"
-
-#~ msgid "Would you like to load your iTunes library?"
-#~ msgstr "Chcete nahrát knihovnu iTunes?"
-
-#~ msgctxt "ITunesPlaylistModel#1"
-#~ msgid "Artist"
-#~ msgstr "Interpret"
-
-#~ msgctxt "ITunesPlaylistModel#4"
-#~ msgid "Date"
-#~ msgstr "Datum"
-
-#~ msgctxt "ITunesPlaylistModel#5"
-#~ msgid "BPM"
-#~ msgstr "BPM"
-
-#~ msgctxt "ITunesPlaylistModel#2"
-#~ msgid "Title"
-#~ msgstr "Název"
-
-#~ msgctxt "ITunesPlaylistModel#3"
-#~ msgid "Album"
-#~ msgstr "Album"
-
-#~ msgctxt "ITunesPlaylistModel#9"
-#~ msgid "Unknown"
-#~ msgstr "Neznámý"
-
-#~ msgctxt "ITunesPlaylistModel#6"
-#~ msgid "Genre"
-#~ msgstr "Styl"
-
-#~ msgctxt "ITunesPlaylistModel#7"
-#~ msgid "Location"
-#~ msgstr "Umístění"
-
-#~ msgctxt "ITunesPlaylistModel#8"
-#~ msgid "Duration"
-#~ msgstr "Prolnutí"
-
-#~ msgctxt "LibraryTableModel#8"
-#~ msgid "Comment"
-#~ msgstr "Komentář"
-
-#~ msgctxt "LibraryTableModel#1"
-#~ msgid "Artist"
-#~ msgstr "Interpret"
-
-#~ msgctxt "LibraryTableModel#3"
-#~ msgid "Album"
-#~ msgstr "Album"
-
-#~ msgctxt "LibraryTableModel#2"
-#~ msgid "Title"
-#~ msgstr "Název"
-
-#~ msgctxt "LibraryTableModel#5"
-#~ msgid "Year"
-#~ msgstr "Rok"
-
-#~ msgctxt "LibraryTableModel#4"
-#~ msgid "Genre"
-#~ msgstr "Styl"
-
-#~ msgctxt "LibraryTableModel#7"
-#~ msgid "Location"
-#~ msgstr "Umístění"
-
-#~ msgctxt "LibraryTableModel#6"
-#~ msgid "Type"
-#~ msgstr "Typ"
-
-#~ msgctxt "LibraryTableModel#9"
-#~ msgid "Duration"
-#~ msgstr "Prolnutí"
-
-#~ msgctxt "LibraryTableModel#11"
-#~ msgid "BPM"
-#~ msgstr "BPM"
-
-#~ msgctxt "LibraryTableModel#10"
-#~ msgid "Bitrate"
-#~ msgstr "Datový tok"
-
-#~ msgctxt "LibraryTableModel#13"
-#~ msgid "Date Added"
-#~ msgstr "Datum přidání"
-
-#~ msgctxt "LibraryTableModel#12"
-#~ msgid "Track #"
-#~ msgstr "Stopa #"
-
-#~ msgctxt "MissingTableModel#1"
-#~ msgid "Location"
-#~ msgstr "Umístění"
-
-#~ msgctxt "MidiStatusDelegate#1"
-#~ msgid "Unknown"
-#~ msgstr "Neznámý"
-
-#~ msgctxt "MissingTableModel#7"
-#~ msgid "Type"
-#~ msgstr "Typ"
-
-#~ msgctxt "MissingTableModel#5"
-#~ msgid "Genre"
-#~ msgstr "Styl"
-
-#~ msgctxt "MissingTableModel#4"
-#~ msgid "Album"
-#~ msgstr "Album"
-
-#~ msgctxt "MissingTableModel#6"
-#~ msgid "Year"
-#~ msgstr "Rok"
-
-#~ msgctxt "MissingTableModel#8"
-#~ msgid "Comment"
-#~ msgstr "Komentář"
-
-#~ msgctxt "MissingTableModel#9"
-#~ msgid "Duration"
-#~ msgstr "Prolnutí"
-
-#~ msgctxt "MissingTableModel#10"
-#~ msgid "Track #"
-#~ msgstr "Stopa #"
-
-#~ msgctxt "MissingTableModel#11"
-#~ msgid "Bitrate"
-#~ msgstr "Datový tok"
-
-#~ msgctxt "MissingTableModel#3"
-#~ msgid "Title"
-#~ msgstr "Název"
-
-#~ msgctxt "MissingTableModel#2"
-#~ msgid "Artist"
-#~ msgstr "Interpret"
-
-#~ msgctxt "MixxxApp#2"
-#~ msgid "Mixxx"
-#~ msgstr "Mixxx"
-
-#~ msgctxt "MissingTableModel#12"
-#~ msgid "BPM"
-#~ msgstr "BPM"
-
-#~ msgctxt "MissingTableModel#13"
-#~ msgid "Date Added"
-#~ msgstr "Datum přidání"
-
-#~ msgid "<b>Exit</b> without saving your settings."
-#~ msgstr "<b>Zavřít</b> bez uložení nastavení."
-
-#~ msgid "or reconnecting the sound device"
-#~ msgstr "nebo znovu připojte zvukové zařízení"
-
-#~ msgid "<html>Mixxx cannot access the sound device <b>"
-#~ msgstr "<html>Mixxx nemůže přistoupit ke zvukovému zařízení <b>"
-
-#~ msgid "not plugged in."
-#~ msgstr "není zapojen."
-
-#~ msgid "<b>Retry</b> after closing the other application "
-#~ msgstr "<b>Zkuste znovu</b> po zavření jiné aplikace. "
-
-#~ msgctxt "MixxxApp#46"
+#~ msgctxt "MixxxApp#48"
 #~ msgid "Enable live broadcasting"
 #~ msgstr "Povolit živé vysílání"
 
-#~ msgctxt "MixxxApp#74"
+#~ msgctxt "MixxxApp#76"
 #~ msgid "Preferences"
-#~ msgstr "Nastavení"
-
-#~ msgid "Missing Songs"
-#~ msgstr "Chybějící hudba"
-
-#~ msgctxt "PlaylistFeature#2"
-#~ msgid "Remove"
-#~ msgstr "Odstranit"
-
-#~ msgctxt "MixxxLibraryFeature#2"
-#~ msgid "Library"
-#~ msgstr "Knihovna"
-
-#~ msgctxt "PlaylistTableModel#7"
-#~ msgid "Type"
-#~ msgstr "Typ"
-
-#~ msgctxt "PlaylistTableModel#2"
-#~ msgid "Artist"
-#~ msgstr "Interpret"
-
-#~ msgctxt "PlaylistTableModel#4"
-#~ msgid "Album"
-#~ msgstr "Album"
-
-#~ msgctxt "PlaylistTableModel#3"
-#~ msgid "Title"
-#~ msgstr "Název"
-
-#~ msgctxt "PlaylistTableModel#6"
-#~ msgid "Year"
-#~ msgstr "Rok"
-
-#~ msgctxt "PlaylistTableModel#5"
-#~ msgid "Genre"
-#~ msgstr "Styl"
-
-#~ msgctxt "PlaylistTableModel#8"
-#~ msgid "Location"
-#~ msgstr "Umístění"
-
-#~ msgctxt "PlaylistTableModel#10"
-#~ msgid "Duration"
-#~ msgstr "Prolnutí"
-
-#~ msgctxt "PlaylistTableModel#9"
-#~ msgid "Comment"
-#~ msgstr "Komentář"
-
-#~ msgctxt "RhythmboxPlaylistModel#1"
-#~ msgid "Artist"
-#~ msgstr "Interpret"
-
-#~ msgctxt "RhythmboxPlaylistModel#2"
-#~ msgid "Title"
-#~ msgstr "Název"
-
-#~ msgctxt "PlaylistTableModel#11"
-#~ msgid "Track #"
-#~ msgstr "Stopa #"
-
-#~ msgctxt "PlaylistTableModel#12"
-#~ msgid "Bitrate"
-#~ msgstr "Datový tok"
-
-#~ msgctxt "PlaylistTableModel#13"
-#~ msgid "Date Added"
-#~ msgstr "Datum přidání"
-
-#~ msgctxt "PlaylistTableModel#14"
-#~ msgid "BPM"
-#~ msgstr "BPM"
-
-#~ msgid "Load Rhythmbox Library?"
-#~ msgstr "Nahrát knihovnu z Rhythmboxu?"
-
-#~ msgid "Would you like to load your Rhythmbox library?"
-#~ msgstr "Chcete nahrát knihovnu z Rhythmboxu?"
-
-#~ msgctxt "RhythmboxTrackModel#2"
-#~ msgid "Title"
-#~ msgstr "Název"
-
-#~ msgctxt "RhythmboxPlaylistModel#6"
-#~ msgid "Location"
-#~ msgstr "Umístění"
-
-#~ msgctxt "RhythmboxTrackModel#1"
-#~ msgid "Artist"
-#~ msgstr "Interpret"
-
-#~ msgctxt "RhythmboxPlaylistModel#8"
-#~ msgid "Unknown"
-#~ msgstr "Neznámý"
-
-#~ msgctxt "RhythmboxPlaylistModel#7"
-#~ msgid "Duration"
-#~ msgstr "Prolnutí"
-
-#~ msgctxt "RhythmboxPlaylistModel#5"
-#~ msgid "Genre"
-#~ msgstr "Styl"
-
-#~ msgctxt "RhythmboxPlaylistModel#4"
-#~ msgid "Year"
-#~ msgstr "Rok"
-
-#~ msgctxt "RhythmboxPlaylistModel#3"
-#~ msgid "Album"
-#~ msgstr "Album"
-
-#~ msgctxt "RhythmboxTrackModel#4"
-#~ msgid "Date"
-#~ msgstr "Datum"
-
-#~ msgctxt "RhythmboxTrackModel#3"
-#~ msgid "Album"
-#~ msgstr "Album"
-
-#~ msgctxt "RhythmboxTrackModel#7"
-#~ msgid "Duration"
-#~ msgstr "Prolnutí"
-
-#~ msgctxt "RhythmboxTrackModel#5"
-#~ msgid "Genre"
-#~ msgstr "Styl"
-
-#~ msgctxt "RhythmboxTrackModel#6"
-#~ msgid "Location"
-#~ msgstr "Umístění"
-
-#~ msgctxt "WBrowseTableView#1"
-#~ msgid "Load in Player 1"
-#~ msgstr "Vložit do Přehrávače 1"
-
-#~ msgctxt "WBrowseTableView#2"
-#~ msgid "Load in Player 2"
-#~ msgstr "Vložit do Přehrávače 2"
-
-#~ msgid ""
-#~ "The only skin compatiable with this size display is OutlineMini (800x480).  "
-#~ "Would you like to use that skin?"
-#~ msgstr ""
-#~ "Pouze vzhled OutlineMini (800x480) je kompatibilní s velikostí displeje. "
-#~ "Chcete ho použít?"
+#~ msgstr "Předvolby"

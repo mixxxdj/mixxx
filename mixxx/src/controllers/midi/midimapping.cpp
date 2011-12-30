@@ -72,7 +72,8 @@ MidiMapping::MidiMapping(MidiDevice* outputMidiDevice)
 }
 
 MidiMapping::~MidiMapping() {
-
+    delete m_pMidiInputMappingTableModel;
+    delete m_pMidiOutputMappingTableModel;
 }
 
 #ifdef __MIDISCRIPT__
@@ -622,10 +623,8 @@ void MidiMapping::loadPreset(QDomElement root, bool forceLoad) {
                 if (midiMessage.getMidiStatusByte() == 0xE0) byte2 = "";
 
                 QString errorLog = QString("MIDI script function \"%1\" not found. "
-                                    "(Mapped to MIDI message %2 %3)")
-                                    .arg(mixxxControl.getControlObjectValue())
-                                    .arg(status)
-                                    .arg(byte2);
+                                           "(Mapped to MIDI message %2 %3)")
+                        .arg(mixxxControl.getControlObjectValue(), status, byte2);
 
                 if (m_pOutputMidiDevice != NULL
                     && m_pOutputMidiDevice->midiDebugging()) {
@@ -641,8 +640,7 @@ void MidiMapping::loadPreset(QDomElement root, bool forceLoad) {
                                     .arg(mixxxControl.getControlObjectValue()));
                     props->setInfoText(QString(tr("The MIDI message %1 %2 will not be bound."
                                     "\n(Click Show Details for hints.)"))
-                                    .arg(status)
-                                    .arg(byte2));
+                                       .arg(status, byte2));
                     QString detailsText = QString(tr("* Check to see that the "
                         "function name is spelled correctly in the mapping "
                         "file (.xml) and script file (.js)\n"));
@@ -753,6 +751,7 @@ void MidiMapping::applyPreset() {
             // Next device
             controller = controller.nextSiblingElement("controller");
         }
+        MidiLedHandler::updateAll();
     }
 }
 
@@ -858,6 +857,7 @@ void MidiMapping::clearPreset() {
         outputs.appendChild(outputNode);
     }
 
+    m_Bindings = doc.documentElement();
     return doc;
 }
 
@@ -946,11 +946,11 @@ void MidiMapping::addOutput(QDomElement &output, QString device) {
 
 bool MidiMapping::addInputControl(MidiStatusByte midiStatus, int midiNo, int midiChannel,
                                   QString controlObjectGroup, QString controlObjectKey,
-                                  MidiOption midiOption)
+                                  QString controlObjectDescription, MidiOption midiOption)
 {
     return addInputControl(MidiMessage(midiStatus, midiNo, midiChannel),
                            MixxxControl(controlObjectGroup, controlObjectKey,
-                                        midiOption));
+                                        controlObjectDescription, midiOption));
 }
 
 bool MidiMapping::addInputControl(MidiMessage message, MixxxControl control)
@@ -1159,9 +1159,10 @@ void MidiMapping::restartScriptEngine()
 void MidiMapping::reset() {
 #ifdef __MIDISCRIPT__   // Can't ifdef slots in the .h file, so we just do the body.
     restartScriptEngine();
-    MidiLedHandler::destroyHandlers();
-    applyPreset();
 #endif
+    MidiLedHandler::destroyHandlers(m_pOutputMidiDevice);
+
+    applyPreset();
 }
 
 void MidiMapping::slotScriptEngineReady() {

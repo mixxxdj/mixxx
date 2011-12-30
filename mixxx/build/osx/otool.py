@@ -45,10 +45,10 @@ def system(s):
 	result = os.system(s)
 	print
 	return result
-	
-	
 
-SYSTEM_FRAMEWORKS = ["/System/Library/Frameworks"] 
+
+
+SYSTEM_FRAMEWORKS = ["/System/Library/Frameworks"]
 SYSTEM_LIBPATH = ["/usr/lib"] #anything else?
 #paths to libs that we should copy in
 LOCAL_FRAMEWORKS = [os.path.expanduser("~/Library/Frameworks"), "/Library/Frameworks", "/Network/Library/Frameworks"]
@@ -64,6 +64,7 @@ def otool(binary):
 	"Do not run this on object code archive (.a) files, it is not designed for that."
 	#if not os.path.exists(binary): raise Exception("'%s' not found." % binary)
 	if not type(binary) == str: raise ValueError("otool() requires a path (as a string)")
+	print "otool(%s)" % binary
 	stdin, stdout, stderr = os.popen3('otool -L "%s"' % binary)
 	try:
 		header = stdout.readline() #discard the first line since it is just the name of the file or an error message (or if reading .as, the first item on the list)
@@ -84,7 +85,7 @@ def otool(binary):
 
 def dependencies(binary):
 	l = otool(binary)
-	
+
 	#sometimes otool -L outputs the -id field, as the first row, which is not what we are trying to ask for here. Strip it out.
 	#XXX this is NOT strictly correct; IF there is a library with the exact same filename as this library
 	#AND we depend on it AND it happens to be the first in the loadlist, then this will break mysteriously
@@ -99,14 +100,22 @@ def dependencies(binary):
 
 
 
-  
+
 
 
 #TODO: allow passing a heuristic function (or maybe even just a list of prefixes) that will decide whether to add a lib to the dependency list. It's taking waay too long to search out everything.
 def embed_dependencies(binary,
-			LOCAL=[os.path.expanduser("~/Library/Frameworks"), "/Library/Frameworks", "/Network/Library/Frameworks", ##from http://www.kernelthread.com/mac/osx/programming.html
-			"/usr/local/lib", "/opt/local/lib", "/sw/local/lib"],
-			SYSTEM=["/System/Library/Frameworks", "/Network/Library/Frameworks", "/usr/lib"]):
+                       # Defaults from
+                       # http://www.kernelthread.com/mac/osx/programming.html
+                       LOCAL=[os.path.expanduser("~/Library/Frameworks"),
+                              "/Library/Frameworks",
+                              "/Network/Library/Frameworks",
+                              "/usr/local/lib",
+                              "/opt/local/lib",
+                              "/sw/local/lib"],
+                       SYSTEM=["/System/Library/Frameworks",
+                               "/Network/Library/Frameworks",
+                               "/usr/lib"]):
 
 	#Todo: split out the detection of frameworks vs regular dylibs -- return them as separate lists
 	"recursively locates all the dependent libs of a binary using `otool -L`"
@@ -123,11 +132,11 @@ def embed_dependencies(binary,
 	done = []
 	orig = []
 	#aaah this code is so bad. it can be factored but i can't can't can't so TODO: REFACTOR
-	
+
 	while todo: #this was written with recursion before, but because of the possibility of loops in the network of libs recursion would require passing a collector variable around in the recursion and when you get to that point you might as well just use a loop
 		e = todo.pop() #because of how this is written, popping from the end is a depth-first search. Popping from the front would be a breadth-first search. Neat!
 		#Figure out the absolute path to the library
-		#todo: this would make sense as a separate function, but the @ case would be awkward to handle and it's iffy about what it should 
+		#todo: this would make sense as a separate function, but the @ case would be awkward to handle and it's iffy about what it should
 		if e.startswith('/'):
 			p = e
 		elif e.startswith('@'): #it's a relative load path
@@ -135,7 +144,7 @@ def embed_dependencies(binary,
 		else:
 			#experiments show that giving an unspecified path is asking dyld(1) to find the library for us. This covers that case.
 			#i will not do further experiments to figure out what dyld(1)'s specific search algorithm is (whether it looks at frameworks separate from dylibs) because that's not the public interface
-			
+
 			for P in ['']+LOCAL+SYSTEM: #XXX should local have priority over system or vice versa? (also, '' is the handle the relative case)
 				p = os.path.abspath(os.path.join(P, e))
 				#print "SEARCHING IN LIBPATH; TRYING", p
@@ -143,10 +152,10 @@ def embed_dependencies(binary,
 					break
 			else:
 				p = e #fallthrough to the exception below #XXX icky bad logic, there must be a way to avoid saying exists() twice
-		
+
 		if not os.path.exists(p):
-			raise Exception("Dependent library '%s' not found. Make sure it is installed." % e)		
-			
+			raise Exception("Dependent library '%s' not found. Make sure it is installed." % e)
+
 		#sometimes the todo list will have redundant items placed on it; in the case that the items are named the same that could be avoided by relying on set() semantics
 		#however there are many equivalent ways to name files in Unix, so we have to check here after getting abspath
 		#proof that this makes the algorithm terminate: we record the absolute path to the file; even if there are multiple abspaths to one file (as can happen with symlinks sometimes) each differnt path means a different symlink file, of which there are only a finite number (since it's a finite disk)
@@ -154,7 +163,7 @@ def embed_dependencies(binary,
 			done.append(p)
 			orig.append(e)
 			todo.extend(dependencies(p))
-		
+
 	assert all(e.startswith("/") for e in done), "embed_dependencies() is broken, some path in this list is not absolute: %s" % (done,)
 	return sorted(zip(orig, done))
 

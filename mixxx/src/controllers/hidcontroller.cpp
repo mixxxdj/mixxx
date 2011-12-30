@@ -47,11 +47,13 @@ int HidController::open() {
         qDebug() << "HID device" << m_sDeviceName << "already open";
         return -1;
     }
-    
+
     if (debugging()) qDebug() << "Opening HID device" << m_sDeviceName;
     
     // Open Device
-    m_pHidDevice = hid_open(m_deviceInfo.vendor_id, m_deviceInfo.product_id, m_deviceInfo.serial_number);
+    // FIXME: figure out why trying to open the device including the serial number fails
+//     m_pHidDevice = hid_open(m_deviceInfo.vendor_id, m_deviceInfo.product_id, m_deviceInfo.serial_number);
+    m_pHidDevice = hid_open(m_deviceInfo.vendor_id, m_deviceInfo.product_id, NULL);
     if (m_pHidDevice == NULL) {
         qWarning()  << "Unable to open HID device" << m_sDeviceName;
         return -1;

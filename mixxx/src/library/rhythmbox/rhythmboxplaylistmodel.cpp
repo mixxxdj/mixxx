@@ -37,22 +37,46 @@ TrackPointer RhythmboxPlaylistModel::getTrack(const QModelIndex& index) const {
     QString location = index.sibling(
         index.row(), fieldIndex("location")).data().toString();
 
-    TrackInfoObject* pTrack = new TrackInfoObject(location);
-    pTrack->setArtist(artist);
-    pTrack->setTitle(title);
-    pTrack->setAlbum(album);
-    pTrack->setYear(year);
-    pTrack->setGenre(genre);
-    pTrack->setBpm(bpm);
-    TrackPointer track(pTrack, &QObject::deleteLater);
-
-    // If the track has a BPM, then give it a static beatgrid.
-    if (bpm > 0) {
-        BeatsPointer pBeats = BeatFactory::makeBeatGrid(track, bpm, 0);
-        track->setBeats(pBeats);
+    if (location.isEmpty()) {
+        // Track is lost
+        return TrackPointer();
     }
 
-    return track;
+    TrackDAO& track_dao = m_pTrackCollection->getTrackDAO();
+    int track_id = track_dao.getTrackId(location);
+    bool track_already_in_library = track_id >= 0;
+    if (track_id < 0) {
+        // Add Track to library
+        track_id = track_dao.addTrack(location, true);
+    }
+
+    TrackPointer pTrack;
+
+    if (track_id < 0) {
+        // Add Track to library failed, create a transient TrackInfoObject
+        pTrack = TrackPointer(new TrackInfoObject(location), &QObject::deleteLater);
+    } else {
+        pTrack = track_dao.getTrack(track_id);
+    }
+
+    // If this track was not in the Mixxx library it is now added and will be
+    // saved with the metadata from iTunes. If it was already in the library
+    // then we do not touch it so that we do not over-write the user's metadata.
+    if (!track_already_in_library) {
+        pTrack->setArtist(artist);
+        pTrack->setTitle(title);
+        pTrack->setAlbum(album);
+        pTrack->setYear(year);
+        pTrack->setGenre(genre);
+        pTrack->setBpm(bpm);
+
+        // If the track has a BPM, then give it a static beatgrid.
+        if (bpm > 0) {
+            BeatsPointer pBeats = BeatFactory::makeBeatGrid(pTrack, bpm, 0);
+            pTrack->setBeats(pBeats);
+        }
+    }
+    return pTrack;
 }
 
 void RhythmboxPlaylistModel::search(const QString& searchText) {
@@ -106,10 +130,10 @@ void RhythmboxPlaylistModel::setPlaylist(QString playlist_path) {
     QString queryString = QString(
         "CREATE TEMPORARY VIEW IF NOT EXISTS %1 AS "
         "SELECT %2 FROM %3 WHERE playlist_id = %4")
-            .arg(driver->formatValue(playlistNameField))
-            .arg(columns.join(","))
-            .arg("rhythmbox_playlist_tracks")
-            .arg(playlistId);
+            .arg(driver->formatValue(playlistNameField),
+                 columns.join(","),
+                 "rhythmbox_playlist_tracks",
+                 QString::number(playlistId));
     query.prepare(queryString);
 
     if (!query.exec()) {
@@ -128,5 +152,17 @@ void RhythmboxPlaylistModel::setPlaylist(QString playlist_path) {
 }
 
 bool RhythmboxPlaylistModel::isColumnHiddenByDefault(int column) {
+    Q_UNUSED(column);
     return false;
+}
+
+
+TrackModel::CapabilitiesFlags RhythmboxPlaylistModel::getCapabilities() const {
+    // See src/library/trackmodel.h for the list of TRACKMODELCAPS
+    return TRACKMODELCAPS_NONE
+            | TRACKMODELCAPS_ADDTOPLAYLIST
+            | TRACKMODELCAPS_ADDTOCRATE
+            | TRACKMODELCAPS_ADDTOAUTODJ
+            | TRACKMODELCAPS_LOADTODECK
+            | TRACKMODELCAPS_LOADTOSAMPLER;
 }

@@ -33,6 +33,7 @@
 #include "widget/wvumeter.h"
 #include "widget/wstatuslight.h"
 #include "widget/wlabel.h"
+#include "widget/wtime.h"
 #include "widget/wtracktext.h"
 #include "widget/wtrackproperty.h"
 #include "widget/wnumber.h"
@@ -269,6 +270,8 @@ QWidget* LegacySkinParser::parseNode(QDomElement node, QWidget *pGrandparent) {
         return parseStyle(node);
     } else if (nodeName == "Spinny") {
         return parseSpinny(node);
+    } else if (nodeName == "Time") {
+        return parseTime(node);
     } else {
         qDebug() << "Invalid node name in skin:" << nodeName;
     }
@@ -410,13 +413,21 @@ QWidget* LegacySkinParser::parseOverview(QDomElement node) {
 
     // Connect the player's load and unload signals to the overview widget.
     connect(pPlayer, SIGNAL(newTrackLoaded(TrackPointer)),
-            p, SLOT(slotLoadNewWaveform(TrackPointer)));
+            p, SLOT(slotTrackLoaded(TrackPointer)));
     connect(pPlayer, SIGNAL(unloadingTrack(TrackPointer)),
             p, SLOT(slotUnloadTrack(TrackPointer)));
 
+    // Connect the load progress of waveforms signals so that we can use this
+    // widget as a progress bar.
+    AnalyserQueue* pAnalyserQueue = pPlayer->getAnalyserQueue();
+    if (pAnalyserQueue) {
+        connect(pAnalyserQueue, SIGNAL(trackProgress(TrackPointer, int)),
+                p, SLOT(slotTrackProgress(TrackPointer, int)));
+    }
+
     TrackPointer pTrack = pPlayer->getLoadedTrack();
     if (pTrack) {
-        p->slotLoadNewWaveform(pTrack);
+        p->slotTrackLoaded(pTrack);
     }
 
     return p;
@@ -440,11 +451,13 @@ QWidget* LegacySkinParser::parseVisual(QDomElement node) {
     widget->installEventFilter(m_pKeyboard);
 
     // Hook up the wheel Control Object to the Visual Controller
+
+    // Connect control proxy to widget, so delete can be handled by the QT object tree
     ControlObjectThreadWidget * p = new ControlObjectThreadWidget(
-        ControlObject::getControl(ConfigKey(channelStr, "wheel")));
+        ControlObject::getControl(ConfigKey(channelStr, "wheel")), widget);
 
     p->setWidget((QWidget *)widget, true, true,
-                 ControlObjectThreadWidget::EMIT_ON_PRESS, Qt::LeftButton);
+                 ControlObjectThreadWidget::EMIT_ON_PRESS, Qt::RightButton);
 
     setupWidget(node, widget);
     if (type == WAVEFORM_GL) {
@@ -600,6 +613,15 @@ QWidget* LegacySkinParser::parseLabel(QDomElement node) {
     return p;
 }
 
+QWidget* LegacySkinParser::parseTime(QDomElement node) {
+   WTime *p = new WTime(m_pParent);
+   setupWidget(node, p);
+   p->setup(node);
+   setupConnections(node, p);
+   p->installEventFilter(m_pKeyboard);
+   return p;
+}
+
 QWidget* LegacySkinParser::parseKnob(QDomElement node) {
     WKnob * p = new WKnob(m_pParent);
     setupWidget(node, p);
@@ -631,6 +653,14 @@ QWidget* LegacySkinParser::parseTableView(QDomElement node) {
 
     setupPosition(node, pTabWidget);
     setupSize(node, pTabWidget);
+
+    // set maximum width to prevent growing to qSplitter->sizeHint()
+    // Note: sizeHint() may be greater in skins for tiny screens
+    int width = pTabWidget->minimumWidth();
+    if (width == 0) {
+        width = m_pParent->minimumWidth();
+    }
+    pTabWidget->setMaximumWidth(width);
 
     QWidget* pLibraryPage = new QWidget(pTabWidget);
 

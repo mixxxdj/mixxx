@@ -18,6 +18,9 @@ class CrateTableModel : public BaseSqlTableModel {
     virtual ~CrateTableModel();
 
     void setCrate(int crateId);
+    int getCrate() const {
+        return m_iCrateId;
+    }
 
     // From TrackModel
     virtual TrackPointer getTrack(const QModelIndex& index) const;
