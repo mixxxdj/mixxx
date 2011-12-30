@@ -15,15 +15,19 @@
 BeatMap::BeatMap(TrackPointer pTrack, const QByteArray* pByteArray) :
     QObject(), m_mutex(QMutex::Recursive),
             m_iSampleRate(pTrack->getSampleRate()) {
+    connect(pTrack.data(), SIGNAL(BpmPluginKeyUpdated(QString)),
+                   this, SLOT(slotTrackBpmPluginKey(QString)),
+                   Qt::DirectConnection);
+    slotTrackBpmPluginKey(pTrack->getBpmPluginKey());
     connect(pTrack.data(), SIGNAL(bpmUpdated(double)),
             this, SLOT(slotTrackBpmUpdated(double)),
             Qt::DirectConnection);
+
     //slotTrackBpmUpdated(pTrack->getBpm());
 
     if (pByteArray != NULL) {
         readByteArray(pByteArray);
     }
-    m_ssubVer="";
     m_dLastFrame = 0;
 }
 
@@ -74,11 +78,10 @@ void BeatMap::readByteArray(const QByteArray* pByteArray) {
     m_dLastFrame = m_signedBeatList.last().position;
 }
 
-void BeatMap::createFromVector(QVector<double> beats, QString SubVer) {
+void BeatMap::createFromVector(QVector<double> beats) {
     QMutexLocker locker(&m_mutex);
     if (beats.isEmpty())
        return;
-    m_ssubVer = SubVer;
     double previous_beatpos = -1;
     SignedBeat beat;
     QVectorIterator<double> i(beats);
@@ -105,12 +108,7 @@ void BeatMap::createFromVector(QVector<double> beats, QString SubVer) {
 QString BeatMap::getVersion() const {
     QMutexLocker locker(&m_mutex);
 
-    return QString("BeatMap-1.0_").append(m_ssubVer);
-}
-void BeatMap::setSubVersion (QString Ver){
-
-    m_ssubVer = Ver;
-
+    return QString("BeatMap-1.0_");
 }
 double BeatMap::findNextBeat(double dSamples) const {
     return findNthBeat(dSamples, 1);
@@ -452,7 +450,7 @@ void BeatMap::slotTrackBpmUpdated(double dBpm) {
             dtrack_Bpm /= 2;
         }
     }
-    else if(m_ssubVer.contains("beats_correction=offset")||m_ssubVer.contains("beats_correction=const"))
+    else
     {
         //qDebug()<<"Constant Grid: Scaling";
         double scale = dtrack_Bpm / dBpm;
@@ -478,6 +476,11 @@ void BeatMap::slotTrackBpmUpdated(double dBpm) {
     }
 
 
+}
+
+void BeatMap::slotTrackBpmPluginKey(QString ver){
+    QMutexLocker locker(&m_mutex);
+    m_ssubVer = ver;
 }
 double BeatMap::calculateBpm( SignedBeat startBeat, SignedBeat stopBeat) const {
 

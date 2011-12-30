@@ -890,6 +890,9 @@ void TrackInfoObject::setBpmPluginKey(QString& pluginKey){
     m_bpmPluginKey = pluginKey;
     if (dirty)
         setDirty(true);
+    lock.unlock();
+    emit(BpmPluginKeyUpdated(pluginKey));
+
 }
 
 QString TrackInfoObject::getBpmPluginKey() const{

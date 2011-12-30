@@ -28,17 +28,15 @@ DlgTrackInfo::DlgTrackInfo(QWidget* parent) :
             this, SLOT(slotBpmDouble()));
     connect(bpmHalve, SIGNAL(clicked()),
             this, SLOT(slotBpmHalve()));
-    connect(bpmTap, SIGNAL(pressed()),
-            this, SLOT(slotBpmTap()));
 
     connect(btnCueActivate, SIGNAL(clicked()),
             this, SLOT(cueActivate()));
     connect(btnCueDelete, SIGNAL(clicked()),
             this, SLOT(cueDelete()));
-
+    connect(bpmTap, SIGNAL(pressed()),
+            this, SLOT(slotBpmTap()));
     connect(btnReloadFromFile, SIGNAL(clicked()),
             this, SLOT(reloadTrackMetadata()));
-
     m_bpmTapTimer.start();
     for (int i = 0; i < filterLength; ++i) {
         m_bpmTapFilter[i] = 0.0f;
@@ -113,6 +111,15 @@ void DlgTrackInfo::populateFields(TrackPointer pTrack) {
     txtFilepath->setText(pTrack->getFilename());
     txtFilepath->setCursorPosition(0);
     txtType->setText(pTrack->getType());
+    if(pTrack->getBpmPluginKey().contains(QString("beats_correction=none"))){
+           spinBpm->setEnabled(false);
+           bpmTap->setEnabled(false);
+       }
+       else{
+           spinBpm->setEnabled(true);
+           bpmTap->setEnabled(true);
+       }
+
 }
 
 void DlgTrackInfo::loadTrack(TrackPointer pTrack) {

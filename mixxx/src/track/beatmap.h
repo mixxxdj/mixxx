@@ -42,8 +42,7 @@ class BeatMap : public QObject, public Beats {
 
     virtual QByteArray* toByteArray() const;
     virtual QString getVersion() const;
-    virtual void setSubVersion (QString ver);
-    virtual void createFromVector(QVector <double> beats, QString subVer);
+    virtual void createFromVector(QVector <double> beats);
 
     ////////////////////////////////////////////////////////////////////////////
     // Beat calculations
@@ -73,6 +72,7 @@ class BeatMap : public QObject, public Beats {
 
   private slots:
     void slotTrackBpmUpdated(double bpm);
+    void slotTrackBpmPluginKey(QString ver);
 
   private:
     void readByteArray(const QByteArray* pByteArray);

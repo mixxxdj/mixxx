@@ -13,7 +13,7 @@ class BeatFactory {
                                                QByteArray* beatsSerialized);
     static BeatsPointer makeBeatGrid(TrackPointer pTrack,
                                      double dBpm, double dFirstBeatSample);
-    static BeatsPointer makeBeatMap (TrackPointer pTrack, QVector <double> beats, QString subVer);
+    static BeatsPointer makeBeatMap (TrackPointer pTrack, QVector <double> beats);
   private:
     static void deleteBeats(Beats* pBeats);
 };
