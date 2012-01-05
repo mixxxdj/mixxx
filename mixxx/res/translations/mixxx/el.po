@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2011-12-22 11:41+0200\n"
-"PO-Revision-Date: 2011-11-15 08:58+0000\n"
-"Last-Translator: Andreas Ntakas <Unknown>\n"
+"PO-Revision-Date: 2012-01-04 13:46+0000\n"
+"Last-Translator: christos karayannidis <Unknown>\n"
 "Language-Team: Greek <el@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-12-26 04:48+0000\n"
-"X-Generator: Launchpad (build 14560)\n"
+"X-Launchpad-Export-Date: 2012-01-05 05:24+0000\n"
+"X-Generator: Launchpad (build 14625)\n"
 
 #: AutoDJFeature#1
 msgid "Auto DJ"
@@ -311,12 +311,14 @@ msgstr "Η Μετονομασία του Κιβωτίου Απέτυχε"
 #: CrateFeature#15
 msgctxt "CrateFeature#15"
 msgid "Playlist Files (*.m3u *.m3u8 *.pls)"
-msgstr ""
+msgstr "Αρχεία Λίστας Αναπαραγωγής (*.m3u *.m3u8 *.pls)"
 
 #: CrateFeature#16
 msgctxt "CrateFeature#16"
 msgid "M3U Playlist (*.m3u);;M3U8 Playlist (*.m3u8);;PLS Playlist (*.pls)"
 msgstr ""
+"Λίστα Αναπαραγωγής M3U (*.m3u);;Λίστα Αναπαραγωγής M3U8  (*.m3u8);;Λίστα "
+"Αναπαραγωγής PLS(*.pls)"
 
 #: CrateFeature#17
 msgid "A crate cannot have a blank name."
@@ -350,8 +352,21 @@ msgid ""
 "margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-"
 "family:'Sans Serif'; font-size:9pt;\"></p></body></html>"
 msgstr ""
+"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" "
+"\"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+"<html><head><meta name=\"qrichtext\" content=\"1\" /><style "
+"type=\"text/css\">\n"
+"p, li { white-space: pre-wrap; }\n"
+"</style></head><body style=\" font-family:'MS Shell Dlg 2'; font-"
+"size:8.25pt; font-weight:400; font-style:normal;\">\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-"
+"right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-"
+"family:'Sans Serif'; font-size:9pt;\">Credits go here</span></p>\n"
+"<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; "
+"margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-"
+"family:'Sans Serif'; font-size:9pt;\"></p></body></html>"
 
-#: DlgAboutDlg#3
+#: DlgAboutDlg#2
 msgid "1.x.x"
 msgstr "1.x.x"
 
@@ -726,19 +741,19 @@ msgstr ""
 
 #: DlgPrefCrossfaderDlg#3
 msgid "Slow fade"
-msgstr ""
+msgstr "Αργή εξασθένιση"
 
 #: DlgPrefCrossfaderDlg#4
 msgid "Fast cut"
-msgstr ""
+msgstr "Γρήγορο κόψιμο"
 
 #: DlgPrefCrossfaderDlg#5
 msgid "Constant power"
-msgstr ""
+msgstr "Συνεχής Ισχύς"
 
 #: DlgPrefCrossfaderDlg#6
 msgid "Mixing"
-msgstr ""
+msgstr "Μείξη"
 
 #: DlgPrefCrossfaderDlg#7
 msgid "Scratching"
@@ -780,7 +795,7 @@ msgstr "16 Hz"
 
 #: DlgPrefEQDlg#6
 msgid "1.014 kHz"
-msgstr ""
+msgstr "1.014 kHz"
 
 #: DlgPrefEQDlg#7
 msgid "20.05 kHz"
@@ -837,7 +852,7 @@ msgstr "Αρχεία Ρυθμίσεων (*.midi.xml)"
 
 #: DlgPrefMidiBindings#8
 msgid "Select Control Group"
-msgstr ""
+msgstr "Επιλογή ομάδας ελέγχου"
 
 #: DlgPrefMidiBindings#9
 msgid "Select Control"
@@ -2795,11 +2810,11 @@ msgid ""
 "Please select your soundcard(s) in the sound hardware preferences."
 msgstr ""
 
-#: MixxxApp#105
+#: MixxxApp#110
 msgid "Confirm Exit"
 msgstr "Επιβεβαίωση εξόδου"
 
-#: MixxxApp#106
+#: MixxxApp#111
 msgid "A deck is currently playing. Exit Mixxx?"
 msgstr ""
 
