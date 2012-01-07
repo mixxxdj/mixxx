@@ -57,6 +57,7 @@ double BeatTools::calculateBpm(QVector<double> beats, int SampleRate, int min_bp
      */
     int max_frequency = 0;
     double most_freq_bpm = 0;
+    double avg_bpm = 0;
     for(int i=N; i < beats.size(); i+=N){
         //get start and end sample of the beats
         double start_sample = beats.at(i-N);
@@ -64,7 +65,7 @@ double BeatTools::calculateBpm(QVector<double> beats, int SampleRate, int min_bp
 
         //Time needed to count a bar (4 beats)
         double time = (end_sample - start_sample)/(SampleRate);
-        double avg_bpm = 60*N / time;
+        avg_bpm = 60*N / time;
 
         if(avg_bpm < min_bpm)
         {
@@ -105,6 +106,8 @@ double BeatTools::calculateBpm(QVector<double> beats, int SampleRate, int min_bp
      * see http://en.wikipedia.org/wiki/Median#The_sample_median
      */
     double median = 0;
+    if(average_bpm_list.size()==0)
+        return avg_bpm;
     if(average_bpm_list.size() % 2 == 0){
         //build avg of {(n)/2} and {(n)/2}+1 in the sorted list
         int item_position = (average_bpm_list.size())/2;
