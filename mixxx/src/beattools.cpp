@@ -57,7 +57,9 @@ double BeatTools::calculateBpm(QVector<double> beats, int SampleRate, int min_bp
      */
     int max_frequency = 0;
     double most_freq_bpm = 0;
-    double avg_bpm = 0;
+    if(beats.size()<2)
+        return 0;
+    double avg_bpm = 60*beats.size()*SampleRate/(beats.last() - beats[0]);
     for(int i=N; i < beats.size(); i+=N){
         //get start and end sample of the beats
         double start_sample = beats.at(i-N);
