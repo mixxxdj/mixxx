@@ -106,11 +106,12 @@ void TraktorPlaylistModel::setPlaylist(QString playlist_path) {
     int playlistId = -1;
     QSqlQuery finder_query(m_database);
     finder_query.prepare(
-        "SELECT id from traktor_playlists where name='"+playlist_path+"'");
+        "SELECT id from traktor_playlists where name='"+playlist_path.replace("'", "''")+"'");
 
     if (!finder_query.exec()) {
         qDebug() << "SQL Error in TraktorPlaylistModel.cpp: line" << __LINE__
                  << finder_query.lastError();
+        return;
     }
     while (finder_query.next()) {
         playlistId = finder_query.value(
