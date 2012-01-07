@@ -58,6 +58,7 @@ SoundSource::SoundSource(QString qFilename)
     m_iBitrate = 0;
     m_iChannels = 0;
     m_sKey = "";
+    m_sComposer = "";
 }
 
 SoundSource::~SoundSource()
@@ -109,6 +110,10 @@ QString SoundSource::getYear()
 QString SoundSource::getGenre()
 {
     return m_sGenre;
+}
+QString SoundSource::getComposer()
+{
+    return m_sComposer;
 }
 QString SoundSource::getTrackNumber()
 {
@@ -166,6 +171,10 @@ void SoundSource::setYear(QString year)
 void SoundSource::setGenre(QString genre)
 {
     m_sGenre = genre;
+}
+void SoundSource::setComposer(QString composer)
+{
+    m_sComposer = composer;
 }
 void SoundSource::setTrackNumber(QString trackNumber)
 {
@@ -234,7 +243,7 @@ bool SoundSource::processTaglibFile(TagLib::File& f) {
             int iTrack = tag->track();
             QString trackNumber = "";
             if (iTrack > 0) {
-                trackNumber = QString("%1").arg(tag->track());
+                trackNumber = QString("%1").arg(iTrack);
                 setTrackNumber(trackNumber);
             }
 
@@ -326,6 +335,12 @@ bool SoundSource::processID3v2Tag(TagLib::ID3v2::Tag* id3v2) {
             }
         }
     }
+    TagLib::ID3v2::FrameList composerFrame = id3v2->frameListMap()["TCOM"];
+    if (!composerFrame.isEmpty()) {
+        QString sComposer = TStringToQString(composerFrame.front()->toString());
+        setComposer(sComposer);
+    }
+
     return true;
 }
 
