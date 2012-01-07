@@ -27,11 +27,12 @@
 #include "defs.h"
 #include <QString>
 
-#define MIXXX_SOUNDSOURCE_API_VERSION 3
+#define MIXXX_SOUNDSOURCE_API_VERSION 4
 /** @note SoundSource API Version history:
            1 - Mixxx 1.8.0 Beta 2
            2 - Mixxx 1.9.0 Pre (added key code)
            3 - Mixxx 1.10.0 Pre (added freeing function for extensions)
+           4 - Mixxx 1.11.0 Pre (added composer field to SoundSource)
   */
 
 /** Getter function to be declared by all SoundSource plugins */
