@@ -146,28 +146,38 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
         locale = QLocale::system().name();
     }
 
-    // Load Qt translations for this locale
+    // Load Qt translations for this locale from the system translation
+    // path. This is the lowest precedence QTranslator.
     QTranslator* qtTranslator = new QTranslator(a);
-   if( qtTranslator->load("qt_" + locale,
-           QLibraryInfo::location(QLibraryInfo::TranslationsPath))) {
-       a->installTranslator(qtTranslator);
-   }
-   else{
-       delete qtTranslator;
-   }
+    if (qtTranslator->load("qt_" + locale,
+                          QLibraryInfo::location(QLibraryInfo::TranslationsPath))) {
+        a->installTranslator(qtTranslator);
+    } else {
+        delete qtTranslator;
+    }
 
-    // Load Mixxx specific translations for this locale
+    // Load Qt translations for this locale from the Mixxx translations
+    // folder.
+    QTranslator* mixxxQtTranslator = new QTranslator(a);
+    if (mixxxQtTranslator->load("qt_" + locale, translationsFolder)) {
+        a->installTranslator(mixxxQtTranslator);
+    } else {
+        delete mixxxQtTranslator;
+    }
+
+    // Load Mixxx specific translations for this locale from the Mixxx
+    // translations folder.
     QTranslator* mixxxTranslator = new QTranslator(a);
-    bool mixxxLoaded = mixxxTranslator->load("mixxx_" + locale, translationsFolder);
+    bool mixxxLoaded = mixxxTranslator->load("mixxx_" + locale,
+                                             translationsFolder);
     qDebug() << "Loading translations for locale" << locale
-            << "from translations folder" << translationsFolder << ":"
-            << (mixxxLoaded ? "success" : "fail");
-   if (mixxxLoaded) {
-       a->installTranslator(mixxxTranslator);
-   }
-   else {
-       delete mixxxTranslator;
-   }
+             << "from translations folder" << translationsFolder << ":"
+             << (mixxxLoaded ? "success" : "fail");
+    if (mixxxLoaded) {
+        a->installTranslator(mixxxTranslator);
+    } else {
+        delete mixxxTranslator;
+    }
 
 #ifdef __C_METRICS__
     // Initialize Case Metrics if User is OK with that
