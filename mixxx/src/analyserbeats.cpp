@@ -19,7 +19,7 @@ static bool sDebug = false;
 
 AnalyserBeats::AnalyserBeats(ConfigObject<ConfigValue> *_config) {
     m_pConfigAVT = _config;
-    m_bPass = 0;
+    m_bPass = false;
     m_iSampleRate = 0;
     m_iTotalSamples = 0;
 }
@@ -29,6 +29,9 @@ AnalyserBeats::~AnalyserBeats(){
 
 void AnalyserBeats::initialise(TrackPointer tio, int sampleRate, int totalSamples) {
     Q_UNUSED(sampleRate);
+    m_bPass = false;
+    if (totalSamples==0)
+        return;
     m_iMinBpm = m_pConfigAVT->getValueString(ConfigKey("[BPM]","BPMRangeStart")).toInt();
     m_iMaxBpm = m_pConfigAVT->getValueString(ConfigKey("[BPM]","BPMRangeEnd")).toInt();
     int allow_above =m_pConfigAVT->getValueString(ConfigKey("[BPM]","BPMAboveRangeEnabled")).toInt();
@@ -49,7 +52,6 @@ void AnalyserBeats::initialise(TrackPointer tio, int sampleRate, int totalSample
     m_sSubver = "";
     m_iSampleRate = tio->getSampleRate();
     m_iTotalSamples = totalSamples;
-    m_bPass = false;
     bool BpmLock = tio->hasBpmLock();
     if(BpmLock){//Note that m_bPass had been set to false
               qDebug()<<"Track is BpmLocked: Beat calculation will not start";
@@ -72,6 +74,7 @@ void AnalyserBeats::initialise(TrackPointer tio, int sampleRate, int totalSample
     }
     else
         correction = "none";
+
     QString pluginname = pluginID;
     pluginname.replace(QString(":"),QString("_output="));
     m_sSubver.append(QString("plugin=%1_beats_correction=%2").arg(pluginname,correction));
@@ -106,8 +109,6 @@ void AnalyserBeats::finalise(TrackPointer tio) {
     */
    m_bPass = mvamp->End(); // This will ensure that beattracking succeeds in a beat list
    beats = mvamp->GetInitFramesVector();
-
-
 
 
    if(!beats.isEmpty()){
@@ -147,10 +148,12 @@ QVector<double> AnalyserBeats::correctedBeats (QVector<double> rawbeats, bool by
      * We start building a grid:
      */
     double i = rawbeats.at(0);
-    while(i < m_iTotalSamples){
+    while(i <= m_iTotalSamples){
            corrbeats << i;
            i += BpmFrame;
        }
+    if (rawbeats.size()==1 || corrbeats.size()==1 )
+            return corrbeats;
     /*
      * BeatTools::calculateOffset compares the beats from Vamp and the beats from
      * the beat grid constructed above. See beattools.* for details.
