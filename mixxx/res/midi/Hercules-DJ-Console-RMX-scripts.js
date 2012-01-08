@@ -203,9 +203,18 @@ HerculesRMX.Deck.prototype.keypad1Handler = function(value) {
       } else if(this.shiftMode) {
          engine.setValue(this.group,"hotcue_1_clear", 1);
       } else {
-         engine.setValue(this.group,"hotcue_1_activate", 1);
+         engine.setValue(this.group, "hotcue_1_activate", 1);
       }
    }
+   else { // On button release
+    if(!HerculesRMX.shiftMode) {
+      if(this.shiftMode) {
+         engine.setValue(this.group,"hotcue_1_clear", 0);
+      } else {
+         engine.setValue(this.group,"hotcue_1_activate", 0);
+      }
+  }
+}
 };
 
 HerculesRMX.Deck.prototype.keypad2Handler = function(value) {
@@ -216,6 +225,16 @@ HerculesRMX.Deck.prototype.keypad2Handler = function(value) {
          engine.setValue(this.group,"hotcue_2_activate", 1);
       }
    }
+
+   else { // On button release
+    if(!HerculesRMX.shiftMode) {
+      if(this.shiftMode) {
+         engine.setValue(this.group,"hotcue_2_clear", 0);
+      } else {
+         engine.setValue(this.group,"hotcue_2_activate", 0);
+      }
+  }
+}
 };
 
 HerculesRMX.Deck.prototype.keypad3Handler = function(value) {
@@ -226,6 +245,15 @@ HerculesRMX.Deck.prototype.keypad3Handler = function(value) {
          engine.setValue(this.group,"hotcue_3_activate", 1);
       }
    }
+   else { // On button release
+    if(!HerculesRMX.shiftMode) {
+      if(this.shiftMode) {
+         engine.setValue(this.group,"hotcue_3_clear", 0);
+      } else {
+         engine.setValue(this.group,"hotcue_3_activate", 0);
+      }
+  }
+}
 };
 
 HerculesRMX.Deck.prototype.keypad4Handler = function(value) {
