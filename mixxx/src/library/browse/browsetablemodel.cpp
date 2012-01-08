@@ -31,6 +31,7 @@ BrowseTableModel::BrowseTableModel(QObject* parent, TrackCollection* pTrackColle
     header_data.insert(COLUMN_TRACK_NUMBER, tr("Track #"));
     header_data.insert(COLUMN_YEAR, tr("Year"));
     header_data.insert(COLUMN_GENRE, tr("Genre"));
+    header_data.insert(COLUMN_COMPOSER, tr("Composer"));
     header_data.insert(COLUMN_COMMENT, tr("Comment"));
     header_data.insert(COLUMN_DURATION, tr("Duration"));
     header_data.insert(COLUMN_BPM, tr("BPM"));
@@ -44,6 +45,7 @@ BrowseTableModel::BrowseTableModel(QObject* parent, TrackCollection* pTrackColle
     addSearchColumn(COLUMN_ALBUM);
     addSearchColumn(COLUMN_TITLE);
     addSearchColumn(COLUMN_GENRE);
+    addSearchColumn(COLUMN_COMPOSER);
     addSearchColumn(COLUMN_KEY);
     addSearchColumn(COLUMN_COMMENT);
 
@@ -336,6 +338,7 @@ bool BrowseTableModel::setData(const QModelIndex &index, const QVariant &value, 
     tagger.setTracknumber(this->index(row,COLUMN_TRACK_NUMBER).data().toString());
     tagger.setYear(this->index(row,COLUMN_YEAR).data().toString());
     tagger.setGenre(this->index(row,COLUMN_GENRE).data().toString());
+    tagger.setComposer(this->index(row,COLUMN_COMPOSER).data().toString());
 
     //check if one the item were edited
     if(col == COLUMN_ARTIST) {
@@ -354,6 +357,8 @@ bool BrowseTableModel::setData(const QModelIndex &index, const QVariant &value, 
         tagger.setComment(value.toString());
     } else if(col == COLUMN_GENRE) {
         tagger.setGenre(value.toString());
+    } else if(col == COLUMN_COMPOSER) {
+        tagger.setComposer(value.toString());
     } else if(col == COLUMN_YEAR) {
         tagger.setYear(value.toString());
     }
