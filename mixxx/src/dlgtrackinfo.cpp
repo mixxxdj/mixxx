@@ -101,6 +101,7 @@ void DlgTrackInfo::populateFields(TrackPointer pTrack) {
     txtArtist->setText(pTrack->getArtist());
     txtAlbum->setText(pTrack->getAlbum());
     txtGenre->setText(pTrack->getGenre());
+    txtComposer->setText(pTrack->getComposer());
     txtYear->setText(pTrack->getYear());
     txtTrackNumber->setText(pTrack->getTrackNumber());
     txtComment->setText(pTrack->getComment());
@@ -205,6 +206,7 @@ void DlgTrackInfo::unloadTrack(bool save) {
         m_pLoadedTrack->setArtist(txtArtist->text());
         m_pLoadedTrack->setAlbum(txtAlbum->text());
         m_pLoadedTrack->setGenre(txtGenre->text());
+        m_pLoadedTrack->setComposer(txtComposer->text());
         m_pLoadedTrack->setYear(txtYear->text());
         m_pLoadedTrack->setTrackNumber(txtTrackNumber->text());
         m_pLoadedTrack->setBpm(spinBpm->value());
@@ -260,6 +262,7 @@ void DlgTrackInfo::clear() {
     txtArtist->setText("");
     txtAlbum->setText("");
     txtGenre->setText("");
+    txtComposer->setText("");
     txtYear->setText("");
     txtTrackNumber->setText("");
     txtComment->setText("");
