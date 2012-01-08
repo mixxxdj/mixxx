@@ -188,7 +188,7 @@ void WaveformWidgetRenderer::updateAudioSamplingPerPixel() {
         m_audioSamplePerPixel = 0.0;
         return;
     }
-    m_audioSamplePerPixel = getVisualSamplePerPixel()*m_trackInfoObject->getWaveForm()->getAudioVisualRatio();
+    m_audioSamplePerPixel = getVisualSamplePerPixel()*m_trackInfoObject->getWaveform()->getAudioVisualRatio();
 }
 
 double WaveformWidgetRenderer::getVisualSamplePerPixel() const {

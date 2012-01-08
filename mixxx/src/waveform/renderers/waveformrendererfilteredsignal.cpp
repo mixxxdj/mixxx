@@ -47,7 +47,7 @@ void WaveformRendererFilteredSignal::draw(QPainter* painter,
         return;
     }
 
-    const Waveform* waveform = trackInfo->getWaveForm();
+    const Waveform* waveform = trackInfo->getWaveform();
 
     int samplesPerPixel = m_waveformRenderer->getVisualSamplePerPixel();
     int numberOfSamples = m_waveformRenderer->getWidth() * samplesPerPixel;

@@ -172,7 +172,7 @@ void WaveformRenderSignal::draw(QPainter *pPainter, QPaintEvent *event,
 
     //QVector<QLineF> linesLow(subpixelWidth), linesMid(subpixelWidth), linesHigh(subpixelWidth);
 
-    const Waveform* waveform = m_pTrack->getWaveForm();
+    const Waveform* waveform = m_pTrack->getWaveform();
 
     int h,s,l;
     signalColor.getHsl(&h,&s,&l);
@@ -272,7 +272,7 @@ void WaveformRenderSignal::draw_point(QPainter *pPainter, QPaintEvent *event, QV
     //if((currentPosition % 2) != 0)
     currentPosition -= (currentPosition % (int)(2*subpixelsPerPixel));
 
-    const Waveform* waveform = m_pTrack->getWaveForm();
+    const Waveform* waveform = m_pTrack->getWaveform();
 
     int h,s,l;
     signalColor.getHsl(&h,&s,&l);

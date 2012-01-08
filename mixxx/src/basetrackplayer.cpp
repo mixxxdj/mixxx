@@ -190,9 +190,13 @@ void BaseTrackPlayer::slotFinishLoading(TrackPointer pTrackInfoObject)
     //TODO: Consider reworking this visual resample stuff... need to ask rryan about this -- Albert.
     // TODO(rryan) : fix this crap -- the waveform renderers should be owned by
     // Player so they can just set this directly or something.
+
+    //TODO (vrince) remove this now
+    /*
     ControlObjectThreadMain* pVisualResampleCO = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey(getGroup(),"VisualResample")));
     m_pLoadedTrack->setVisualResampleRate(pVisualResampleCO->get());
     delete pVisualResampleCO;
+    */
 
     //Update the BPM and duration values that are stored in ControlObjects
     m_pDuration->set(m_pLoadedTrack->getDuration());

@@ -38,6 +38,7 @@ TrackInfoObject::TrackInfoObject(const QString sLocation, bool parseHeader)
     populateLocation(fileInfo);
     initialize(parseHeader);
     m_waveform = new Waveform;
+    m_waveformSummary = new Waveform;
 }
 
 TrackInfoObject::TrackInfoObject(QFileInfo& fileInfo, bool parseHeader)
@@ -45,6 +46,7 @@ TrackInfoObject::TrackInfoObject(QFileInfo& fileInfo, bool parseHeader)
     populateLocation(fileInfo);
     initialize(parseHeader);
     m_waveform = new Waveform;
+    m_waveformSummary = new Waveform;
 }
 
 TrackInfoObject::TrackInfoObject(const QDomNode &nodeHeader)
@@ -91,9 +93,6 @@ TrackInfoObject::TrackInfoObject(const QDomNode &nodeHeader)
     m_fCuePoint = XmlParse::selectNodeQString(nodeHeader, "CuePoint").toFloat();
     m_bPlayed = false;
 
-    m_pVisualWave = 0;
-    m_dVisualResampleRate = 441; //Default value Hz
-
     //m_pWave = XmlParse::selectNodeHexCharArray(nodeHeader, QString("WaveSummaryHex"));
 
     m_bIsValid = true;
@@ -102,6 +101,7 @@ TrackInfoObject::TrackInfoObject(const QDomNode &nodeHeader)
     m_bLocationChanged = false;
 
     m_waveform = new Waveform;
+    m_waveformSummary = new Waveform;
 }
 
 void TrackInfoObject::populateLocation(QFileInfo& fileInfo) {
@@ -133,11 +133,9 @@ void TrackInfoObject::initialize(bool parseHeader) {
     m_bHeaderParsed = false;
     m_fBeatFirst = -1.;
     m_iId = -1;
-    m_pVisualWave = 0;
     m_iSampleRate = 0;
     m_iChannels = 0;
     m_fCuePoint = 0.0f;
-    m_dVisualResampleRate = 441; //Hz
     m_dCreateDate = m_dateAdded = QDateTime::currentDateTime();
     m_Rating = 0;
     m_key = "";
@@ -151,6 +149,7 @@ void TrackInfoObject::initialize(bool parseHeader) {
 TrackInfoObject::~TrackInfoObject() {
     //qDebug() << "~TrackInfoObject()" << m_iId << getInfo();
     delete m_waveform;
+    delete m_waveformSummary;
 }
 
 void TrackInfoObject::doSave() {
@@ -685,35 +684,12 @@ void TrackInfoObject::setId(int iId) {
         setDirty(true);
 }
 
-QVector<float> * TrackInfoObject::getVisualWaveform() {
-    QMutexLocker lock(&m_qMutex);
-    return m_pVisualWave;
-}
 
-//TODO (vRince) remove those this information belong to the waveform
-void TrackInfoObject::setVisualResampleRate(double dVisualResampleRate) {
-    // Temporary, shared value that should not be saved. The only reason it
-    // exists on the TIO is a temporary hack, so it does not dirty the TIO.
-    QMutexLocker lock(&m_qMutex);
-    m_dVisualResampleRate = dVisualResampleRate;
-}
-
-double TrackInfoObject::getVisualResampleRate() {
-    QMutexLocker lock(&m_qMutex);
-    return m_dVisualResampleRate;
-}
-
+//TODO (vrince) remove clen-up when new summary is ready
 const QByteArray *TrackInfoObject::getWaveSummary()
 {
     QMutexLocker lock(&m_qMutex);
     return &m_waveSummary;
-}
-
-void TrackInfoObject::setVisualWaveform(QVector<float> *pWave) {
-    // The visual waveform is not serialized currently so it does not dirty a
-    // TIO.
-    QMutexLocker lock(&m_qMutex);
-    m_pVisualWave = pWave;
 }
 
 void TrackInfoObject::setWaveSummary(const QByteArray* pWave, bool updateUI)

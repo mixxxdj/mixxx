@@ -398,7 +398,8 @@ bool WaveformRenderer::fetchWaveformFromTrack() {
     if(!m_pTrack)
         return false;
 
-    QVector<float> *buffer = m_pTrack->getVisualWaveform();
+    //NOTE (vrince) getVisualWaveform() is deprecated
+    QVector<float> *buffer = 0; /*m_pTrack->getVisualWaveform();*/
 
     if(buffer == NULL)
         return false;
