@@ -2,11 +2,62 @@
 #define ANALYSER_WAVEFORM_H
 
 #include "analyser.h"
+#include "waveform/waveform.h"
+
+#include <limits>
+
+//NOTS vrince some test to segment sound, to apply color in the waveform
+//#define TEST_HEAT_MAP
+
+class QImage;
 
 class EngineFilterButterworth8;
 class Waveform;
 
 class QTime;
+
+enum FilterIndex { Low = 0, Mid = 1, High = 2, FilterCount = 3};
+enum ChannelIndex { Right = 0, Left = 1, ChannelCount = 2};
+
+class WaveformStride {
+
+    inline void init( int samples) {
+        m_length = samples*2;
+        m_convertionFactor = (float)std::numeric_limits<unsigned char>::max()/(float)samples;
+        reset();
+    }
+
+    inline void reset() {
+        m_position = 0;
+        for( int i = 0; i < ChannelCount; i++) {
+            m_overallData[i] = 0.0f;
+            for( int f = 0; f < FilterCount; f++) {
+                m_filteredData[i][f] = 0.0f;
+            }
+        }
+    }
+
+    inline void store( Waveform* waveform, int index) {
+        for( int i = 0; i < ChannelCount; i++) {
+            waveform->all(index+i)  = (unsigned char)( m_convertionFactor * m_overallData[i]);
+            waveform->low(index+i)  = (unsigned char)( m_convertionFactor * m_filteredData[i][ Low]);
+            waveform->mid(index+i)  = (unsigned char)( m_convertionFactor * m_filteredData[i][ Mid]);
+            waveform->high(index+i) = (unsigned char)( m_convertionFactor * m_filteredData[i][High]);
+        }
+    }
+
+private:
+    int m_length;
+    int m_position;
+
+    float m_overallData[ChannelCount];
+    float m_filteredData[ChannelCount][FilterCount];
+
+    float m_convertionFactor;
+
+private:
+    friend class AnalyserWaveform;
+};
 
 class AnalyserWaveform : public Analyser {
 
@@ -16,7 +67,7 @@ public:
 
     void initialise(TrackPointer tio, int sampleRate, int totalSamples);
 
-    void process(const CSAMPLE *pIn, const int iLen);
+    void process(const CSAMPLE *buffer, const int bufferLength);
     void finalise(TrackPointer tio);
 
 private:
@@ -28,21 +79,22 @@ private:
 
 private:
     Waveform* m_waveform;
+    Waveform* m_waveformSummary;
 
-    // Current stride
+    WaveformStride m_stride;
+    WaveformStride m_strideSummary;
+
     int m_currentStride;
-    float m_timePerStride;
-    int m_strideLength;
-    int m_strideBufferPos;
-    float m_currentStridePower[2];
-    float m_currentStrideFiltredPower[2][3];
-    float m_convertionFactor;
-    bool m_ready;
+    int m_currentSummaryStride;
 
-    EngineFilterButterworth8* m_filter[3];
-    std::vector<float> buffers_[3];
+    EngineFilterButterworth8* m_filter[FilterCount];
+    std::vector<float> m_buffers[FilterCount];
 
-    QTime* timer_;
+    QTime* m_timer;
+
+#ifdef TEST_HEAT_MAP
+    QImage* test_heatMap;
+#endif
 };
 
 #endif

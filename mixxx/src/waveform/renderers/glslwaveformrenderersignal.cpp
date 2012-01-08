@@ -99,7 +99,7 @@ bool GLSLWaveformRendererSignal::loadTexture()
 
     TrackPointer trackPoint = m_waveformRenderer->getTrackInfo();
     if( trackPoint) {
-        Waveform* waveform = trackPoint->getWaveForm();
+        Waveform* waveform = trackPoint->getWaveform();
 
         if( waveform) {
             int textureWidth = waveform->getTextureStride();
@@ -177,7 +177,7 @@ void GLSLWaveformRendererSignal::draw(QPainter* painter, QPaintEvent* event) {
     if( !trackInfo)
         return;
 
-    const Waveform* waveform = trackInfo->getWaveForm();
+    const Waveform* waveform = trackInfo->getWaveform();
 
     // save the GL state set for QPainter
     painter->beginNativePainting();

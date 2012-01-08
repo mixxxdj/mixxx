@@ -90,7 +90,9 @@ WaveformWidgetFactory::WaveformWidgetFactory() {
 
     if( m_openGLAvailable) {
         if( m_openGLShaderAvailable) {
-            m_type = WaveformWidgetType::GLSLWaveform;
+            //TODO(vrince) enable when ready
+            //m_type = WaveformWidgetType::GLSLWaveform;
+            m_type = WaveformWidgetType::GLWaveform;
         }
         else {
             m_type = WaveformWidgetType::GLWaveform;

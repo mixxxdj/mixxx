@@ -21,7 +21,6 @@
 #include "trackinfoobject.h"
 #include "widget/wwidget.h"
 
-
 /**
 Waveform overview display
 
@@ -29,11 +28,12 @@ Waveform overview display
 */
 
 class ControlObject;
+class Waveform;
 
 class WOverview : public WWidget
 {
     Q_OBJECT
-  public:
+public:
     WOverview(const char* pGroup, QWidget *parent=NULL);
     virtual ~WOverview();
     void setup(QDomNode node);
@@ -46,28 +46,52 @@ class WOverview : public WWidget
     QColor getMarkerColor();
     QColor getSignalColor();
 
-  public slots:
+protected:
+    void timerEvent(QTimerEvent *);
+
+public slots:
     void setValue(double);
     void slotLoadNewWaveform(TrackInfoObject* pTrack);
     void slotLoadNewWaveform(TrackPointer pTrack);
     void slotUnloadTrack(TrackPointer pTrack);
 
-  signals:
+signals:
     void trackDropped(QString filename, QString group);
 
-  protected:
+protected:
     virtual void dragEnterEvent(QDragEnterEvent* event);
     virtual void dropEvent(QDropEvent* event);
 
-  private slots:
+private slots:
     void cueChanged(double v);
     void loopStartChanged(double v);
     void loopEndChanged(double v);
     void loopEnabledChanged(double v);
 
-  private:
+private:
+    /** append the waveform overviw pixmap according to available data in waveform */
+    bool drawNextPixmapPart();
+
+private:
     const char* m_pGroup;
+
+    Waveform* m_waveform;
+    QPixmap* m_waveformPixmap;
+
+    /** Hold the last visual sample processed to generate the pixmap*/
+    unsigned int m_actualCompletion;
+    double m_visualSamplesByPixel;
+    int m_maxPaintingTime;
+
+    int m_timerPixmapRefresh;
+
+    //TODO(vRince) to be removed
     bool waveformChanged;
+    /** Array containing waveform summary */
+    QByteArray m_waveformSummary;
+    /** Duration of current track in samples */
+    int m_liSampleDuration;
+    //--------------------------
 
     // Loop controls and values
     ControlObject* m_pLoopStart;
@@ -81,10 +105,6 @@ class WOverview : public WWidget
     QMap<QObject*, int> m_hotcueMap;
     QList<int> m_hotcues;
 
-    /** Array containing waveform summary */
-    QByteArray m_waveformSummary;
-    /** Duration of current track in samples */
-    int m_liSampleDuration;
     /** True if slider is dragged. Only used when m_bEventWhileDrag is false */
     bool m_bDrag;
     /** Internal storage of slider position in pixels */

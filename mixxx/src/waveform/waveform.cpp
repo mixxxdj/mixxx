@@ -7,11 +7,29 @@
 Waveform::Waveform() :
     m_size(0),
     m_textureStride(1024),
-    m_visualSampleRate(441),
-    m_audioVisualRatio(100) {
+    m_completion(0),
+    m_audioSamplesPerVisualSample(0),
+    m_visualSampleRate(0),
+    m_audioVisualRatio(0) {
 }
 
 Waveform::~Waveform() {
+}
+
+void Waveform::computeBestVisualSampleRate( int audioSampleRate, double desiredVisualSampleRate) {
+
+    m_audioSamplesPerVisualSample = (int)((double)audioSampleRate / desiredVisualSampleRate);
+    const double actualVisualSamplingRate = (double)audioSampleRate / (double)(m_audioSamplesPerVisualSample);
+
+    m_visualSampleRate = actualVisualSamplingRate;
+    m_audioVisualRatio = (double)audioSampleRate / (double)m_visualSampleRate;
+}
+
+void Waveform::allocate( int audioSamples) {
+    int numberOfVisualSamples = audioSamples / m_audioSamplesPerVisualSample + 1;
+    numberOfVisualSamples += numberOfVisualSamples%2;
+    assign(numberOfVisualSamples,0);
+    setCompletion(0);
 }
 
 void Waveform::resize(int size) {
@@ -51,4 +69,14 @@ int Waveform::computeTextureSize(int size) {
         m_textureStride = 4096;
         return 4096*4096;
     }
+}
+
+void Waveform::dump() const {
+    qDebug() << "Waveform" << this
+             << "size("+QString::number(m_size)+")"
+             << "textureStride("+QString::number(m_textureStride)+")"
+             << "completion("+QString::number(m_completion)+")"
+             << "audioSamplesPerVisualSample("+QString::number(m_audioSamplesPerVisualSample)+")"
+             << "visualSampleRate("+QString::number(m_visualSampleRate)+")"
+             << "audioVisualRatio("+QString::number(m_audioVisualRatio)+")";
 }

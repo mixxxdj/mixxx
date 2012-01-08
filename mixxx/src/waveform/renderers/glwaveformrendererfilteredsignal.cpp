@@ -93,7 +93,7 @@ void GLWaveformRendererFilteredSignal::onResize() {
 
 int GLWaveformRendererFilteredSignal::buildPolygon() {
 
-    const Waveform* waveform = m_waveformRenderer->getTrackInfo()->getWaveForm();
+    const Waveform* waveform = m_waveformRenderer->getTrackInfo()->getWaveform();
 
     int pointIndex = 0;
 

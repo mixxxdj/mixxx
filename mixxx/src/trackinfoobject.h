@@ -204,23 +204,19 @@ public:
     QString getURL();
     /** Set URL for track */
     void setURL(QString url);
-    /** Set pointer to visual waveform data */
-    void setVisualWaveform(QVector<float> *pWave);
-    /** Get pointer to visual waveform data */
-    QVector<float> * getVisualWaveform();
 
-    /** Set and get this track's desired visual resample rate */
-    void setVisualResampleRate(double dVisualResampleRate);
-    double getVisualResampleRate();
-
+    //TODO (vrince) remove when new summary ready
     /** Set pointer to waveform summary -- updates UI by default */
     void setWaveSummary(const QByteArray* pWave, bool updateUI = true);
-
     /** Returns a pointer to waveform summary */
     const QByteArray* getWaveSummary();
+    //----------------------------
 
-    Waveform* getWaveForm() { return m_waveform;}
-    const Waveform* getWaveForm() const { return m_waveform;}
+    Waveform* getWaveform() { return m_waveform;}
+    const Waveform* getWaveform() const { return m_waveform;}
+
+    Waveform* getWaveformSummary() { return m_waveformSummary;}
+    const Waveform* getWaveformSummary() const { return m_waveformSummary;}
 
     /** Set pointer to ControlObject holding BPM value in engine */
     void setBpmControlObject(ControlObject *p);
@@ -374,9 +370,8 @@ public:
     // The list of cue points for the track
     QList<Cue*> m_cuePoints;
 
-    /** Pointer to visual waveform info */
-    QVector<float> *m_pVisualWave;
 
+    //TODO (vrince) remove
     /** Wave summary info */
     QByteArray m_waveSummary;
 
@@ -386,19 +381,14 @@ public:
     /** True if object contains valid information */
     bool m_bIsValid;
 
-    double m_dVisualResampleRate;
     Segmentation<QString> m_chordData;
 
     // Storage for the track's beats
     BeatsPointer m_pBeats;
 
-    //Visual power
+    //Visual waveform
     Waveform* m_waveform;
-
-    QVector<float> m_power;
-    QVector<unsigned char> m_lowPower;
-    QVector<unsigned char> m_midPower;
-    QVector<unsigned char> m_highPower;
+    Waveform* m_waveformSummary;
 
     friend class TrackDAO;
 };

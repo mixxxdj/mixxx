@@ -22,34 +22,18 @@ public:
     Waveform();
     virtual ~Waveform();
 
-    void setVisualSampleRate(double rate) {
-        m_visualSampleRate = rate;
-    }
-
-    double getVisualSampleRate() const {
-        return m_visualSampleRate;
-    }
-
-    void setAudioVisualRatio(double ratio) {
-        m_audioVisualRatio = ratio;
-    }
-
-    double getAudioVisualRatio() const {
-        return m_audioVisualRatio;
-    }
-
+    double getVisualSampleRate() const { return m_visualSampleRate;}
+    double getAudioVisualRatio() const { return m_audioVisualRatio;}
+    int getAudioSamplesPerVisualSample() const { return m_audioSamplesPerVisualSample;}
+    unsigned int getCompletion() const { return m_completion;}
     int getTextureStride() const { return m_textureStride;}
     int getTextureSize() const { return m_data.size();}
 
     int size() const { return m_size; }
 
-    void resize(int size);
-    void reset(int value = 0);
-    void assign(int size, int value = 0);
-
     const std::vector<WaveformData>& getConstData() const { return m_data;}
 
-    inline WaveformData& get(int i) { return m_data[i];}
+    inline const WaveformData& get(int i) const { return m_data[i];}
     inline unsigned char getLow(int i) const { return m_data[i].filtered.low;}
     inline unsigned char getMid(int i) const { return m_data[i].filtered.mid;}
     inline unsigned char getHigh(int i) const { return m_data[i].filtered.high;}
@@ -58,7 +42,16 @@ public:
     WaveformData* data() { return &m_data[0];}
     const WaveformData* data() const { return &m_data[0];}
 
+    void dump() const;
+
 private:
+    void resize(int size);
+    void reset(int value = 0);
+    void assign(int size, int value = 0);
+
+    void computeBestVisualSampleRate( int audioSampleRate, double desiredVisualSampleRate);
+    void allocate( int audioSamples);
+
     inline WaveformData& at(int i) { return m_data[i];}
     inline unsigned char& low(int i) { return m_data[i].filtered.low;}
     inline unsigned char& mid(int i) { return m_data[i].filtered.mid;}
@@ -66,15 +59,19 @@ private:
     inline unsigned char& all(int i) { return m_data[i].filtered.all;}
 
     int computeTextureSize(int size);
+    void setCompletion( unsigned int completion) { m_completion = completion;}
 
-    unsigned int m_size; //actual usefull size
+    unsigned int m_size; //actual useful size
     unsigned int m_textureStride;
     std::vector<WaveformData> m_data;
+    unsigned int m_completion;
 
+    int m_audioSamplesPerVisualSample;
     double m_visualSampleRate;
     double m_audioVisualRatio;
 
     friend class AnalyserWaveform;
+    friend class WaveformStride;
     DISALLOW_COPY_AND_ASSIGN(Waveform);
 };
 
