@@ -121,12 +121,16 @@ int SoundSourceMp3::open()
 
         // Grab data from Header
 
-        // This warns us only when the reported sample rate changes. (and when it is first set)
-        if(m_iSampleRate != Header.samplerate) {
-            //qDebug() << "SSMP3() :: Setting m_iSampleRate to " << Header.samplerate << " from " << m_iSampleRate;
+        // This warns us only when the reported sample rate changes. (and when
+        // it is first set)
+        if (m_iSampleRate == 0 && Header.samplerate > 0) {
+            setSampleRate(Header.samplerate);
+        } else if (m_iSampleRate != Header.samplerate) {
+            qDebug() << "SSMP3: file has differing samplerate in some headers:"
+                     << m_qFilename
+                     << m_iSampleRate << "vs" << Header.samplerate;
         }
 
-        setSampleRate(Header.samplerate);
         m_iChannels = MAD_NCHANNELS(&Header);
         mad_timer_add (&filelength, Header.duration);
         bitrate += Header.bitrate;
