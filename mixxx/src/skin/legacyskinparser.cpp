@@ -341,7 +341,7 @@ QWidget* LegacySkinParser::parseBackground(QDomElement node, QWidget* pGrandpare
     QPixmap* background = WPixmapStore::getPixmapNoCache(WWidget::getPath(filename));
 
     bg->move(0, 0);
-    if (background != NULL) {
+    if (background != NULL && !background->isNull()) {
         bg->setPixmap(*background);
     }
 
@@ -349,7 +349,7 @@ QWidget* LegacySkinParser::parseBackground(QDomElement node, QWidget* pGrandpare
 
     // yes, this is confusing. Sorry. See ::parseSkin.
     m_pParent->move(0,0);
-    if (background != NULL) {
+    if (background != NULL && !background->isNull()) {
         m_pParent->setFixedSize(background->width(), background->height());
         pGrandparent->setMinimumSize(background->width(), background->height());
     }
