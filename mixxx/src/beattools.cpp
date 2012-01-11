@@ -11,7 +11,7 @@
 #include <QMap>
 #include <math.h>
 #define BPM_ERROR 0.05f //we are generous and assume the global_BPM to be at most 0.12 BPM far away from the correct one
-
+#define N 8 //the raw beatgrid is divided into blocks of size N from which the local bpm is computed.
 #include "beattools.h"
 
 static bool sDebug = false;
@@ -32,7 +32,7 @@ double BeatTools::calculateBpm(QVector<double> beats, int SampleRate, int min_bp
      QList<double> average_bpm_list;
      //mapping local bpm values to their frequencies
      QMap<QString, int> frequency_table;
-     const int N = 8; //computes the avg BPM from N subsequent beats --> should be a DEFINE later on
+
 
 
     /*
@@ -274,4 +274,28 @@ double BeatTools::calculateOffset(const QVector<double> beats1, const QVector<do
     }
 
     return floor(BestOffset + (.02 * (60*SampleRate/bpm1)));
+}
+double BeatTools::findFirstCorrectBeat(QVector<double> rawbeats, int SampleRate, double global_bpm){
+    //detect first correct beat
+    for(int i=N; i < rawbeats.size(); i+=N){
+        //get start and end sample of the beats
+        double start_sample = rawbeats.at(i-N);
+        double end_sample = rawbeats.at(i);
+
+        //Time needed to count a bar (4 beats)
+        double time = (end_sample - start_sample)/(SampleRate);
+        double avg_bpm = 60 * N / time;
+
+        //qDebug() << "Local BPM between beat " << (i-N) << " and " << i << " is " << avg_bpm;
+        if(global_bpm <= avg_bpm +0.2 && global_bpm >=avg_bpm -0.2){
+            //qDebug() << "Using beat " << (i-1) << " as first beat";
+            return start_sample;
+        }
+
+    }
+    if(rawbeats.size() > 0)
+        return rawbeats.at(0);
+    else{
+        return 0.0f;
+    }
 }
