@@ -21,6 +21,7 @@ public:
      * a pretty good guess of the global BPM value.
      */
     static double calculateBpm(QVector<double> beats, int SampleRate, int min_bpm, int max_bpm);
+    static double findFirstCorrectBeat(QVector<double> rawBeats, int SampleRate, double global_bpm);
 
     /* This implement a method to find the best offset so that
      * the grid generated from bpm is close enough to the one we get from vamp.

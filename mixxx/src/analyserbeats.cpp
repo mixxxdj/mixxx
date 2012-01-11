@@ -146,7 +146,7 @@ QVector<double> AnalyserBeats::correctedBeats (QVector<double> rawbeats, bool by
     /*
      * We start building a grid:
      */
-    double i = rawbeats.at(0);
+    double i = BeatTools::findFirstCorrectBeat(rawbeats,m_iSampleRate,m_dBpm);
     while(i <= m_iTotalSamples){
            corrbeats << i;
            i += BpmFrame;
@@ -167,7 +167,7 @@ QVector<double> AnalyserBeats::correctedBeats (QVector<double> rawbeats, bool by
     }
 
         corrbeats.clear();
-        double FirstFrame = offset + rawbeats.at(0);
+        double FirstFrame = offset + BeatTools::findFirstCorrectBeat(rawbeats,m_iSampleRate,m_dBpm);
         while (FirstFrame < 0)
             FirstFrame += BpmFrame;
         while (FirstFrame > BpmFrame)
