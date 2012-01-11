@@ -28,7 +28,6 @@ AnalyserBeats::~AnalyserBeats(){
 }
 
 void AnalyserBeats::initialise(TrackPointer tio, int sampleRate, int totalSamples) {
-    Q_UNUSED(sampleRate);
     m_bPass = false;
     if (totalSamples==0)
         return;
@@ -50,7 +49,7 @@ void AnalyserBeats::initialise(TrackPointer tio, int sampleRate, int totalSample
         pluginID="qm-tempotracker:0";
 
     m_sSubver = "";
-    m_iSampleRate = tio->getSampleRate();
+    m_iSampleRate = sampleRate;
     m_iTotalSamples = totalSamples;
     bool BpmLock = tio->hasBpmLock();
     if(BpmLock){//Note that m_bPass had been set to false
