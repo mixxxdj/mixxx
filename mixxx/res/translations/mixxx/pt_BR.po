@@ -8,13 +8,13 @@ msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2011-12-26 09:32+0200\n"
-"PO-Revision-Date: 2012-01-06 04:50+0000\n"
-"Last-Translator: leo523 <Unknown>\n"
+"PO-Revision-Date: 2012-01-12 02:46+0000\n"
+"Last-Translator: Flavio Henrique Araque Gurgel <fhagur@gmail.com>\n"
 "Language-Team: Brazilian Portuguese <pt_BR@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-01-07 05:56+0000\n"
+"X-Launchpad-Export-Date: 2012-01-12 06:08+0000\n"
 "X-Generator: Launchpad (build 14640)\n"
 
 #: AutoDJFeature#1
@@ -2720,7 +2720,7 @@ msgstr "Exibir o Mixxx usando Tela Cheia"
 #: MixxxApp#77
 msgctxt "MixxxApp#77"
 msgid "Preferences"
-msgstr ""
+msgstr "Preferências"
 
 #: MixxxApp#78
 msgid ""
@@ -2923,7 +2923,7 @@ msgstr ""
 #: ParserM3u#4
 msgctxt "ParserM3u#4"
 msgid "Could not create file"
-msgstr ""
+msgstr "Não foi possível criar o arquivo"
 
 #: ParserPls#1
 msgctxt "ParserPls#1"
@@ -2965,7 +2965,7 @@ msgstr "Importar lista de reprodução"
 
 #: PlaylistFeature#7
 msgid "Export Playlist"
-msgstr ""
+msgstr "Exportar Lista de Reprodução"
 
 #: PlaylistFeature#8
 msgid "Playlists"
@@ -3009,12 +3009,14 @@ msgstr "Falha ao renomear a Lista de Reprodução"
 #: PlaylistFeature#17
 msgctxt "PlaylistFeature#17"
 msgid "Playlist Files (*.m3u *.m3u8 *.pls)"
-msgstr ""
+msgstr "Listas de Reprodução (*.m3u *.m3u8 *.pls)"
 
 #: PlaylistFeature#18
 msgctxt "PlaylistFeature#18"
 msgid "M3U Playlist (*.m3u);;M3U8 Playlist (*.m3u8);;PLS Playlist (*.pls)"
 msgstr ""
+"Lista de Reprodução M3U (*.m3u);;Lista de Reprodução M3U8 (*.m3u8);;Lista re "
+"Reprodução PLS (*.pls)"
 
 #: PlaylistFeature#19
 msgid "A playlist by that name already exists."
