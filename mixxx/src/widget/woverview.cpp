@@ -166,8 +166,11 @@ void WOverview::setValue(double fValue)
     if (!m_bDrag)
     {
         // Calculate handle position
-        m_iPos = (int)(((fValue-14.)/100.)*((double)width()-2.));
-        update();
+        int iPos = (int)(((fValue-14.)/100.)*((double)width()-2.));
+        if (iPos != m_iPos) {
+            m_iPos = iPos;
+            update();
+        }
     }
 }
 
