@@ -18,6 +18,9 @@
 	the resulting work only under the same or similar license to this one.
 
 	CHANGELOG
+	v1.11.0.02	(15/01/2012)
+	* Fix: Oops, deactivate debugging borders for widgetgroups
+
 	v1.11.0.01	(15/01/2012)
 	* Update: 1st step to 4-Deck tech demo	
 
@@ -165,7 +168,7 @@
 
 	Debugging:
 	To outline WidgetGroups change all occurrences (exept this one ;-) of
-	"QGroupBox { border: 1px solid" to "QGroupBox { border: 1px solid"
+	"QGroupBox { border: 0px solid" to "QGroupBox { border: 1px solid"
 
 	Parent WidgedGroups are outlined one pixel solid red;
 		Child WidgedGroups are outlined one pixel solid yellow;
@@ -202,21 +205,21 @@
 		<Size>1920,337</Size>
 		<Layout>vertical</Layout>
 		<!--deactivate the standard
-		<Style>QGroupBox { border: 1px solid red; } QWidget { margin: 0; padding: 0; }</Style>
+		<Style>QGroupBox { border: 0px solid red; } QWidget { margin: 0; padding: 0; }</Style>
 		cause push buttons in library will show up with wrong margin/padding -->
-		<Style>QGroupBox { border: 1px solid red; }</Style>
+		<Style>QGroupBox { border: 0px solid red; }</Style>
 		<Children>
 			<!-- Sampler Bank sub-widget -->
 			<WidgetGroup>
 				<Size>i,110</Size>
 				<Layout>horizontal</Layout>
-				<Style>QGroupBox { border: 1px solid yellow; margin: 0px 0px 8px 0px;} </Style>
+				<Style>QGroupBox { border: 0px solid yellow; margin: 0px 0px 8px 0px;} </Style>
 				<Children>
 					<!-- all sub-widgets for the 4 samplers -->
 					<WidgetGroup>
 						<Pos>0,0</Pos>
 						<Size>312,110</Size>
-						<Style>QGroupBox { border: 1px solid green;  margin: -0px 0px 0px 0px; background: url(skin:/style/style_bg_sampler.png); } </Style>
+						<Style>QGroupBox { border: 0px solid green;  margin: -0px 0px 0px 0px; background: url(skin:/style/style_bg_sampler.png); } </Style>
 						<Children>
 							<!--
 							**********************************************
@@ -697,7 +700,7 @@
 					<WidgetGroup>
 						<Pos>0,0</Pos>
 						<Size>312,110</Size>
-						<Style>QGroupBox { border: 1px solid green;  margin: -0px 0px 0px 0px; background: url(skin:/style/style_bg_sampler.png); } </Style>
+						<Style>QGroupBox { border: 0px solid green;  margin: -0px 0px 0px 0px; background: url(skin:/style/style_bg_sampler.png); } </Style>
 						<Children>
 							<!--
 							**********************************************
@@ -1178,7 +1181,7 @@
 					<WidgetGroup>
 						<Pos>0,0</Pos>
 						<Size>312,110</Size>
-						<Style>QGroupBox { border: 1px solid green;  margin: -0px 0px 0px 0px; background: url(skin:/style/style_bg_sampler.png); } </Style>
+						<Style>QGroupBox { border: 0px solid green;  margin: -0px 0px 0px 0px; background: url(skin:/style/style_bg_sampler.png); } </Style>
 						<Children>
 							<!--
 							**********************************************
@@ -1659,7 +1662,7 @@
 					<WidgetGroup>
 						<Pos>0,0</Pos>
 						<Size>312,110</Size>
-						<Style>QGroupBox { border: 1px solid green;  margin: -0px 0px 0px 0px; background: url(skin:/style/style_bg_sampler.png); } </Style>
+						<Style>QGroupBox { border: 0px solid green;  margin: -0px 0px 0px 0px; background: url(skin:/style/style_bg_sampler.png); } </Style>
 						<Children>
 							<!--
 							**********************************************
@@ -2148,7 +2151,7 @@
 				<Pos>0,0</Pos>
 				<Size>1920,i</Size>
 				<Layout>horizontal</Layout>
-				<Style>QGroupBox { border: 1px solid yellow; margin: 0px 0px 0px 0px;}</Style>
+				<Style>QGroupBox { border: 0px solid yellow; margin: 0px 0px 0px 0px;}</Style>
 				<Children>
 					<!--
 					**********************************************
@@ -2213,13 +2216,13 @@
 	<WidgetGroup>
 		<Pos>0,0</Pos>
 		<Size>1920,20</Size>
-		<Style>QGroupBox { border: 1px solid red; } QWidget { margin: 0; padding: 0; }</Style>
+		<Style>QGroupBox { border: 0px solid red; } QWidget { margin: 0; padding: 0; }</Style>
 		<!--<Layout>horizontal</Layout>-->
 		<Children>
     		<WidgetGroup>
 				<Pos>0,0</Pos>
 				<Size>i,i</Size>
-				<Style>QGroupBox { border: 1px solid yellow;} QWidget { margin: 0; padding: 0; }</Style>
+				<Style>QGroupBox { border: 0px solid yellow;} QWidget { margin: 0; padding: 0; }</Style>
 				<!--<Layout>horizontal</Layout>-->
 				<Children>
 					<!--
@@ -2382,9 +2385,9 @@
 	############################################################################################
 	-->
 	<WidgetGroup>
-		<Pos>374,576</Pos>
+		<Pos>372,576</Pos>
 		<Size>280,58</Size>
-		<Style>QGroupBox { border: 1px solid yellow; background: url(skin:/style/style_bg_microphone.png) no-repeat;} QWidget { margin: 0; padding: 0; }</Style>
+		<Style>QGroupBox { border: 0px solid yellow; background: url(skin:/style/style_bg_microphone.png) no-repeat;} QWidget { margin: 0; padding: 0; }</Style>
 		<!--<Layout>horizontal</Layout>-->
 		<Children>
 			<!--
@@ -2515,7 +2518,7 @@
 	<WidgetGroup>
 		<Pos>735,0</Pos>
 		<Size>449,638</Size>
-		<Style>QGroupBox { border: 1px solid red; } QWidget { margin: 0; padding: 0; }</Style>
+		<Style>QGroupBox { border: 0px solid red; } QWidget { margin: 0; padding: 0; }</Style>
 		<Children>
 
 			<!-- if we dont put all this in an extra child widget, the <NumberRate> will somehow
@@ -2524,7 +2527,7 @@
 			<WidgetGroup>
 				<Pos>1,-1</Pos>
 				<Size>449,353</Size>
-				<Style>QGroupBox { border: 1px solid yellow; } QWidget { margin: 0; padding: 0; } </Style>
+				<Style>QGroupBox { border: 0px solid yellow; } QWidget { margin: 0; padding: 0; } </Style>
 				<Children>
 					<!--
 					**********************************************
@@ -4253,7 +4256,7 @@
 	<WidgetGroup>
 		<Pos>1,16</Pos>
 		<Size>736,279</Size>
-		<Style>QGroupBox { border: 1px solid red; } QWidget { margin: 0; padding: 0; }</Style>
+		<Style>QGroupBox { border: 0px solid red; } QWidget { margin: 0; padding: 0; }</Style>
 		<Children>
 			<!--
 			**********************************************
@@ -4320,7 +4323,7 @@
 				<Pos>0,50</Pos>
 				<Size>735,119</Size>
 				<Layout>horizontal</Layout>
-				<Style>QGroupBox { border: 1px solid yellow; } QWidget { margin: 0; padding: 0; }</Style>
+				<Style>QGroupBox { border: 0px solid yellow; } QWidget { margin: 0; padding: 0; }</Style>
 				<Children>
 					<!--If you want the waveforms center to adjust when resizing in a collapsing widget
 					(e.g. to display spinning vinyl widget like in this skin) don't put the Waveform in a widget group,
@@ -4652,7 +4655,7 @@
 					<WidgetGroup>
 						<!--<Pos>296,0</Pos>-->
 						<Size>119,119</Size>
-						<Style>QGroupBox { border: 1px solid green; } QWidget { margin: 0; padding: 0;} </Style>
+						<Style>QGroupBox { border: 0px solid green; } QWidget { margin: 0; padding: 0;} </Style>
 						<Children>
 							<!--
 							**********************************************
@@ -4967,7 +4970,7 @@
 			<WidgetGroup>
 				<Pos>233,222</Pos>
 				<Size>494,54</Size>
-				<Style>QGroupBox { border: 1px solid yellow; } QWidget { margin: 0; padding: 0; }</Style>
+				<Style>QGroupBox { border: 0px solid yellow; } QWidget { margin: 0; padding: 0; }</Style>
 				<Children>
 
 					<!--
@@ -5536,7 +5539,7 @@
 	<WidgetGroup>
 		<Pos>1185,16</Pos>
 		<Size>736,279</Size>
-		<Style>QGroupBox { border: 1px solid red; } QWidget { margin: 0; padding: 0; }</Style>
+		<Style>QGroupBox { border: 0px solid red; } QWidget { margin: 0; padding: 0; }</Style>
 		<Children>
 			<!--
 			**********************************************
@@ -5603,7 +5606,7 @@
 				<Pos>0,50</Pos>
 				<Size>733,119</Size>
 				<Layout>horizontal</Layout>
-				<Style>QGroupBox { border: 1px solid yellow; } QWidget { margin: 0; padding: 0; }</Style>
+				<Style>QGroupBox { border: 0px solid yellow; } QWidget { margin: 0; padding: 0; }</Style>
 				<Children>
 					<!--If you want the waveforms center to adjust when resizing in a collapsing widget
 					(e.g. to display spinning vinyl widget like in this skin) don't put the Waveform in a widget group,
@@ -5935,7 +5938,7 @@
 					<WidgetGroup>
 						<!--<Pos>296,0</Pos>-->
 						<Size>119,119</Size>
-						<Style>QGroupBox { border: 1px solid green; } QWidget { margin: 0; padding: 0;} </Style>
+						<Style>QGroupBox { border: 0px solid green; } QWidget { margin: 0; padding: 0;} </Style>
 						<Children>
 							<!--
 							**********************************************
@@ -6250,7 +6253,7 @@
 			<WidgetGroup>
 				<Pos>6,222</Pos>
 				<Size>494,54</Size>
-				<Style>QGroupBox { border: 1px solid yellow; } QWidget { margin: 0; padding: 0; }</Style>
+				<Style>QGroupBox { border: 0px solid yellow; } QWidget { margin: 0; padding: 0; }</Style>
 				<Children>
 
 					<!--
@@ -6819,7 +6822,7 @@
 	<WidgetGroup>
 		<Pos>1,296</Pos>
 		<Size>736,279</Size>
-		<Style>QGroupBox { border: 1px solid red; } QWidget { margin: 0; padding: 0; }</Style>
+		<Style>QGroupBox { border: 0px solid red; } QWidget { margin: 0; padding: 0; }</Style>
 		<Children>
 			<!--
 			**********************************************
@@ -6886,7 +6889,7 @@
 				<Pos>0,50</Pos>
 				<Size>735,119</Size>
 				<Layout>horizontal</Layout>
-				<Style>QGroupBox { border: 1px solid yellow; } QWidget { margin: 0; padding: 0; }</Style>
+				<Style>QGroupBox { border: 0px solid yellow; } QWidget { margin: 0; padding: 0; }</Style>
 				<Children>
 					<!--If you want the waveforms center to adjust when resizing in a collapsing widget
 					(e.g. to display spinning vinyl widget like in this skin) don't put the Waveform in a widget group,
@@ -7218,7 +7221,7 @@
 					<WidgetGroup>
 						<!--<Pos>296,0</Pos>-->
 						<Size>119,119</Size>
-						<Style>QGroupBox { border: 1px solid green; } QWidget { margin: 0; padding: 0;} </Style>
+						<Style>QGroupBox { border: 0px solid green; } QWidget { margin: 0; padding: 0;} </Style>
 						<Children>
 							<!--
 							**********************************************
@@ -7533,7 +7536,7 @@
 			<WidgetGroup>
 				<Pos>233,222</Pos>
 				<Size>494,54</Size>
-				<Style>QGroupBox { border: 1px solid yellow; } QWidget { margin: 0; padding: 0; }</Style>
+				<Style>QGroupBox { border: 0px solid yellow; } QWidget { margin: 0; padding: 0; }</Style>
 				<Children>
 
 					<!--
@@ -8102,7 +8105,7 @@
 	<WidgetGroup>
 		<Pos>1185,296</Pos>
 		<Size>736,279</Size>
-		<Style>QGroupBox { border: 1px solid red; } QWidget { margin: 0; padding: 0; }</Style>
+		<Style>QGroupBox { border: 0px solid red; } QWidget { margin: 0; padding: 0; }</Style>
 		<Children>
 			<!--
 			**********************************************
@@ -8169,7 +8172,7 @@
 				<Pos>0,50</Pos>
 				<Size>733,119</Size>
 				<Layout>horizontal</Layout>
-				<Style>QGroupBox { border: 1px solid yellow; } QWidget { margin: 0; padding: 0; }</Style>
+				<Style>QGroupBox { border: 0px solid yellow; } QWidget { margin: 0; padding: 0; }</Style>
 				<Children>
 					<!--If you want the waveforms center to adjust when resizing in a collapsing widget
 					(e.g. to display spinning vinyl widget like in this skin) don't put the Waveform in a widget group,
@@ -8501,7 +8504,7 @@
 					<WidgetGroup>
 						<!--<Pos>296,0</Pos>-->
 						<Size>119,119</Size>
-						<Style>QGroupBox { border: 1px solid green; } QWidget { margin: 0; padding: 0;} </Style>
+						<Style>QGroupBox { border: 0px solid green; } QWidget { margin: 0; padding: 0;} </Style>
 						<Children>
 							<!--
 							**********************************************
@@ -8816,7 +8819,7 @@
 			<WidgetGroup>
 				<Pos>6,222</Pos>
 				<Size>494,54</Size>
-				<Style>QGroupBox { border: 1px solid yellow; } QWidget { margin: 0; padding: 0; }</Style>
+				<Style>QGroupBox { border: 0px solid yellow; } QWidget { margin: 0; padding: 0; }</Style>
 				<Children>
 
 					<!--
