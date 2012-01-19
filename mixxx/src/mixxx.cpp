@@ -281,6 +281,14 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
     m_pPlayerManager->addSampler();
     m_pPlayerManager->addSampler();
 
+    // Set up display defaults for skins.
+    (new ControlObject(ConfigKey("[Samplers]", "show_samplers")))->set(1);
+    (new ControlObject(ConfigKey("[Microphone]", "show_microphone")))->set(1);
+    (new ControlObject(ConfigKey("[Spinny1]", "show_spinny")))->set(1);
+    (new ControlObject(ConfigKey("[Spinny2]", "show_spinny")))->set(1);
+    (new ControlObject(ConfigKey("[Spinny3]", "show_spinny")))->set(1);
+    (new ControlObject(ConfigKey("[Spinny4]", "show_spinny")))->set(1);
+
     // register the engine's outputs
     m_pSoundManager->registerOutput(AudioOutput(AudioOutput::MASTER),
         m_pEngine);
