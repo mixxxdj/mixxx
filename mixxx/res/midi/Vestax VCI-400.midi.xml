@@ -473,6 +473,42 @@
                     <Script-Binding />
                 </options>
             </control>
+            <control>
+                <status>0x94</status>
+                <midino>0x23</midino>
+                <group>[Sampler1]</group>
+                <key>start_play</key>
+                <description></description>
+                <options>
+                </options>
+            </control>
+            <control>
+                <status>0x94</status>
+                <midino>0x24</midino>
+                <group>[Sampler2]</group>
+                <key>start_play</key>
+                <description></description>
+                <options>
+                </options>
+            </control>
+            <control>
+                <status>0x95</status>
+                <midino>0x25</midino>
+                <group>[Sampler3]</group>
+                <key>start_play</key>
+                <description></description>
+                <options>
+                </options>
+            </control>
+            <control>
+                <status>0x95</status>
+                <midino>0x26</midino>
+                <group>[Sampler4]</group>
+                <key>start_play</key>
+                <description></description>
+                <options>
+                </options>
+            </control>
 
              <!-- CUE buttons -->
              <control>
@@ -1016,6 +1052,26 @@
                     <normal/>
                 </options>
             </control>
+                        <control>
+                <status>0x92</status>
+                <midino>0x1</midino>
+                <group>[Channel1]</group>
+                <key>beatsync</key>
+                <description></description>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <status>0x92</status>
+                <midino>0x2</midino>
+                <group>[Channel1]</group>
+                <key>LoadSelectedTrack</key>
+                <description></description>
+                <options>
+                    <normal/>
+                </options>
+            </control>
             <!-- PFL buttons -->
             <control>
                 <status>0x92</status>
@@ -1150,26 +1206,6 @@
             </control>
 
             <!-- End looping -->
-            <control>
-                <status>0x92</status>
-                <midino>0x1</midino>
-                <group>[Channel1]</group>
-                <key>beatsync</key>
-                <description></description>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <status>0x92</status>
-                <midino>0x2</midino>
-                <group>[Channel1]</group>
-                <key>LoadSelectedTrack</key>
-                <description></description>
-                <options>
-                    <normal/>
-                </options>
-            </control>
             <control>
                 <status>0x9d</status>
                 <midino>0x1</midino>

@@ -10,6 +10,7 @@
 
 class ControlObject;
 class ControlPushButton;
+class EngineBuffer;
 
 class BpmControl : public EngineControl {
     Q_OBJECT
@@ -37,6 +38,7 @@ class BpmControl : public EngineControl {
     void slotBeatsTranslate(double);
 
   private:
+    EngineBuffer* pickSyncTarget();
     bool syncTempo();
     bool syncPhase();
 
