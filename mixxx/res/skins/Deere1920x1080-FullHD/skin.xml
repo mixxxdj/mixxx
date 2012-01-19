@@ -22,7 +22,7 @@
 	* Fix: Oops, deactivate debugging borders for widgetgroups
 
 	v1.11.0.01	(15/01/2012)
-	* Update: 1st step to 4-Deck tech demo	
+	* Update: 1st step to 4-Deck tech demo
 
 	v1.10.0.17	(22/12/2011)
 	* Update: Attach right-click of SYNC button to beatsync_tempo, lp:905800
@@ -2586,7 +2586,7 @@
 					-->
 					<!-- The Mac App Store Version of Mixxx does not support vinyl control.
 					Comment out this tabs that no broken widget are displayed to the user
-					
+
 					<PushButton>
 						<Tooltip>Vinyl Control&#10;Show/hide the Vinyl Control widget.&#10;Activate Vinyl Control from the Menu→Options&#10;</Tooltip>
 						<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
@@ -2946,9 +2946,9 @@
 					**********************************************
 					-->
 					<PushButton>
-						<Tooltip>Mix orientation&#10;Set the channel's mix orientation.&#10;</Tooltip>
+						<Tooltip>Mix orientation&#10;Set the deck's mix orientation to the left.&#10;</Tooltip>
 						<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
-						<NumberStates>2</NumberStates>
+						<NumberStates>3</NumberStates>
 						<State>
 							<Number>0</Number>
 							<Pressed>btn_orientation_crossfader_1.png</Pressed>
@@ -2956,41 +2956,65 @@
 						</State>
 						<State>
 							<Number>1</Number>
-							<Pressed>btn_orientation_crossfader_1_over.png</Pressed>
+							<Pressed>btn_orientation_crossfader_1.png</Pressed>
+							<Unpressed>btn_orientation_crossfader_1.png</Unpressed>
+						</State>
+                                                <State>
+							<Number>2</Number>
+                                                        <Pressed>btn_orientation_crossfader_1.png</Pressed>
 							<Unpressed>btn_orientation_crossfader_1.png</Unpressed>
 						</State>
 						<Pos>85,590</Pos>
+                                                <LeftClickIsPushButton>true</LeftClickIsPushButton>
+						<RightClickIsPushButton>false</RightClickIsPushButton>
 						<Connection>
-							<ConfigKey>[Channel1],orientation</ConfigKey>
-							<EmitOnDownPress>true</EmitOnDownPress>
+							<ConfigKey>[Channel1],orientation_left</ConfigKey>
+							<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 							<ButtonState>LeftButton</ButtonState>
+                                                        <ConnectValueToWidget>false</ConnectValueToWidget>
+						</Connection>
+                                                <Connection>
+							<ConfigKey>[Channel1],orientation</ConfigKey>
+                                                        <ConnectValueFromWidget>false</ConnectValueFromWidget>
 						</Connection>
 					</PushButton>
 					<PushButton>
-						<Tooltip>Mix orientation&#10;Set the channel's mix orientation.&#10;</Tooltip>
+						<Tooltip>Mix orientation&#10;Set the deck's mix orientation to the left.&#10;</Tooltip>
 						<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
-						<NumberStates>2</NumberStates>
+						<NumberStates>3</NumberStates>
 						<State>
 							<Number>0</Number>
-							<Pressed>btn_orientation_crossfader_2_over.png</Pressed>
+							<Pressed>btn_orientation_crossfader_2.png</Pressed>
 							<Unpressed>btn_orientation_crossfader_2_over.png</Unpressed>
 						</State>
 						<State>
 							<Number>1</Number>
-							<Pressed>btn_orientation_crossfader_2_over.png</Pressed>
+							<Pressed>btn_orientation_crossfader_2.png</Pressed>
+							<Unpressed>btn_orientation_crossfader_2.png</Unpressed>
+						</State>
+                                                <State>
+							<Number>2</Number>
+                                                        <Pressed>btn_orientation_crossfader_2.png</Pressed>
 							<Unpressed>btn_orientation_crossfader_2.png</Unpressed>
 						</State>
 						<Pos>103,590</Pos>
+                                                <LeftClickIsPushButton>true</LeftClickIsPushButton>
+						<RightClickIsPushButton>false</RightClickIsPushButton>
 						<Connection>
-							<ConfigKey>[Channel2],orientation</ConfigKey>
-							<EmitOnDownPress>true</EmitOnDownPress>
+							<ConfigKey>[Channel2],orientation_left</ConfigKey>
+							<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 							<ButtonState>LeftButton</ButtonState>
+                                                        <ConnectValueToWidget>false</ConnectValueToWidget>
+						</Connection>
+                                                <Connection>
+							<ConfigKey>[Channel2],orientation</ConfigKey>
+                                                        <ConnectValueFromWidget>false</ConnectValueFromWidget>
 						</Connection>
 					</PushButton>
 					<PushButton>
-						<Tooltip>Mix orientation&#10;Set the channel's mix orientation.&#10;</Tooltip>
+						<Tooltip>Mix orientation&#10;Set the deck's mix orientation to the left.&#10;</Tooltip>
 						<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
-						<NumberStates>2</NumberStates>
+						<NumberStates>3</NumberStates>
 						<State>
 							<Number>0</Number>
 							<Pressed>btn_orientation_crossfader_3.png</Pressed>
@@ -2998,20 +3022,32 @@
 						</State>
 						<State>
 							<Number>1</Number>
-							<Pressed>btn_orientation_crossfader_3_over.png</Pressed>
+							<Pressed>btn_orientation_crossfader_3.png</Pressed>
+							<Unpressed>btn_orientation_crossfader_3.png</Unpressed>
+						</State>
+                                                <State>
+							<Number>2</Number>
+                                                        <Pressed>btn_orientation_crossfader_3.png</Pressed>
 							<Unpressed>btn_orientation_crossfader_3.png</Unpressed>
 						</State>
 						<Pos>85,608</Pos>
+                                                <LeftClickIsPushButton>true</LeftClickIsPushButton>
+						<RightClickIsPushButton>false</RightClickIsPushButton>
 						<Connection>
-							<ConfigKey>[Channel3],orientation</ConfigKey>
-							<EmitOnDownPress>true</EmitOnDownPress>
+							<ConfigKey>[Channel3],orientation_left</ConfigKey>
+							<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 							<ButtonState>LeftButton</ButtonState>
+                                                        <ConnectValueToWidget>false</ConnectValueToWidget>
+						</Connection>
+                                                <Connection>
+							<ConfigKey>[Channel3],orientation</ConfigKey>
+                                                        <ConnectValueFromWidget>false</ConnectValueFromWidget>
 						</Connection>
 					</PushButton>
 					<PushButton>
-						<Tooltip>Mix orientation&#10;Set the channel's mix orientation.&#10;</Tooltip>
+						<Tooltip>Mix orientation&#10;Set the deck's mix orientation to the left.&#10;</Tooltip>
 						<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
-						<NumberStates>2</NumberStates>
+						<NumberStates>3</NumberStates>
 						<State>
 							<Number>0</Number>
 							<Pressed>btn_orientation_crossfader_4.png</Pressed>
@@ -3019,99 +3055,159 @@
 						</State>
 						<State>
 							<Number>1</Number>
-							<Pressed>btn_orientation_crossfader_4_over.png</Pressed>
+							<Pressed>btn_orientation_crossfader_4.png</Pressed>
+							<Unpressed>btn_orientation_crossfader_4.png</Unpressed>
+						</State>
+                                                <State>
+							<Number>2</Number>
+                                                        <Pressed>btn_orientation_crossfader_4.png</Pressed>
 							<Unpressed>btn_orientation_crossfader_4.png</Unpressed>
 						</State>
 						<Pos>103,608</Pos>
+                                                <LeftClickIsPushButton>true</LeftClickIsPushButton>
+						<RightClickIsPushButton>false</RightClickIsPushButton>
 						<Connection>
-							<ConfigKey>[Channel4],orientation</ConfigKey>
-							<EmitOnDownPress>true</EmitOnDownPress>
+							<ConfigKey>[Channel4],orientation_left</ConfigKey>
+							<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 							<ButtonState>LeftButton</ButtonState>
+                                                        <ConnectValueToWidget>false</ConnectValueToWidget>
+						</Connection>
+                                                <Connection>
+							<ConfigKey>[Channel4],orientation</ConfigKey>
+                                                        <ConnectValueFromWidget>false</ConnectValueFromWidget>
 						</Connection>
 					</PushButton>
 
 					<PushButton>
-						<Tooltip>Mix orientation&#10;Set the channel's mix orientation.&#10;</Tooltip>
+						<Tooltip>Mix orientation&#10;Set the deck's mix orientation to the right.&#10;</Tooltip>
 						<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
-						<NumberStates>2</NumberStates>
-						<State>
+						<NumberStates>3</NumberStates>
+                                                <State>
 							<Number>0</Number>
 							<Pressed>btn_orientation_crossfader_1.png</Pressed>
-							<Unpressed>btn_orientation_crossfader_1_over.png</Unpressed>
-						</State>
-						<State>
-							<Number>1</Number>
-							<Pressed>btn_orientation_crossfader_1_over.png</Pressed>
 							<Unpressed>btn_orientation_crossfader_1.png</Unpressed>
 						</State>
+						<State>
+							<Number>1</Number>
+							<Pressed>btn_orientation_crossfader_1.png</Pressed>
+							<Unpressed>btn_orientation_crossfader_1.png</Unpressed>
+						</State>
+                                                <State>
+							<Number>2</Number>
+                                                        <Pressed>btn_orientation_crossfader_1.png</Pressed>
+							<Unpressed>btn_orientation_crossfader_1_over.png</Unpressed>
+						</State>
 						<Pos>335,590</Pos>
-						<Connection>
-							<ConfigKey>[Channel1],orientation</ConfigKey>
-							<EmitOnDownPress>true</EmitOnDownPress>
+                                                <LeftClickIsPushButton>true</LeftClickIsPushButton>
+						<RightClickIsPushButton>false</RightClickIsPushButton>
+                                                <Connection>
+							<ConfigKey>[Channel1],orientation_right</ConfigKey>
+							<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 							<ButtonState>LeftButton</ButtonState>
+                                                        <ConnectValueToWidget>false</ConnectValueToWidget>
+						</Connection>
+                                                <Connection>
+							<ConfigKey>[Channel1],orientation</ConfigKey>
+                                                        <ConnectValueFromWidget>false</ConnectValueFromWidget>
 						</Connection>
 					</PushButton>
 					<PushButton>
-						<Tooltip>Mix orientation&#10;Set the channel's mix orientation.&#10;</Tooltip>
+						<Tooltip>Mix orientation&#10;Set the deck's mix orientation to the right.&#10;</Tooltip>
 						<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
-						<NumberStates>2</NumberStates>
-						<State>
+						<NumberStates>3</NumberStates>
+                                                <State>
 							<Number>0</Number>
-							<Pressed>btn_orientation_crossfader_2_over.png</Pressed>
-							<Unpressed>btn_orientation_crossfader_2_over.png</Unpressed>
-						</State>
-						<State>
-							<Number>1</Number>
-							<Pressed>btn_orientation_crossfader_2_over.png</Pressed>
+							<Pressed>btn_orientation_crossfader_2.png</Pressed>
 							<Unpressed>btn_orientation_crossfader_2.png</Unpressed>
 						</State>
+						<State>
+							<Number>1</Number>
+							<Pressed>btn_orientation_crossfader_2.png</Pressed>
+							<Unpressed>btn_orientation_crossfader_2.png</Unpressed>
+						</State>
+                                                <State>
+							<Number>2</Number>
+                                                        <Pressed>btn_orientation_crossfader_2.png</Pressed>
+							<Unpressed>btn_orientation_crossfader_2_over.png</Unpressed>
+						</State>
 						<Pos>353,590</Pos>
-						<Connection>
-							<ConfigKey>[Channel2],orientation</ConfigKey>
-							<EmitOnDownPress>true</EmitOnDownPress>
+                                                <LeftClickIsPushButton>true</LeftClickIsPushButton>
+						<RightClickIsPushButton>false</RightClickIsPushButton>
+                                                <Connection>
+							<ConfigKey>[Channel2],orientation_right</ConfigKey>
+							<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 							<ButtonState>LeftButton</ButtonState>
+                                                        <ConnectValueToWidget>false</ConnectValueToWidget>
+						</Connection>
+                                                <Connection>
+							<ConfigKey>[Channel2],orientation</ConfigKey>
+                                                        <ConnectValueFromWidget>false</ConnectValueFromWidget>
 						</Connection>
 					</PushButton>
 					<PushButton>
-						<Tooltip>Mix orientation&#10;Set the channel's mix orientation.&#10;</Tooltip>
+						<Tooltip>Mix orientation&#10;Set the deck's mix orientation to the right.&#10;</Tooltip>
 						<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
-						<NumberStates>2</NumberStates>
-						<State>
+						<NumberStates>3</NumberStates>
+                                                <State>
 							<Number>0</Number>
 							<Pressed>btn_orientation_crossfader_3.png</Pressed>
-							<Unpressed>btn_orientation_crossfader_3_over.png</Unpressed>
+							<Unpressed>btn_orientation_crossfader_3.png</Unpressed>
 						</State>
 						<State>
 							<Number>1</Number>
-							<Pressed>btn_orientation_crossfader_3_over.png</Pressed>
+							<Pressed>btn_orientation_crossfader_3.png</Pressed>
 							<Unpressed>btn_orientation_crossfader_3.png</Unpressed>
 						</State>
-						<Pos>335,608</Pos>
-						<Connection>
-							<ConfigKey>[Channel3],orientation</ConfigKey>
-							<EmitOnDownPress>true</EmitOnDownPress>
+                                                <State>
+							<Number>2</Number>
+                                                        <Pressed>btn_orientation_crossfader_3.png</Pressed>
+							<Unpressed>btn_orientation_crossfader_3_over.png</Unpressed>
+						</State>
+                                                <Pos>335,608</Pos>
+                                                <LeftClickIsPushButton>true</LeftClickIsPushButton>
+						<RightClickIsPushButton>false</RightClickIsPushButton>
+                                                <Connection>
+							<ConfigKey>[Channel3],orientation_right</ConfigKey>
+							<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 							<ButtonState>LeftButton</ButtonState>
+                                                        <ConnectValueToWidget>false</ConnectValueToWidget>
+						</Connection>
+                                                <Connection>
+							<ConfigKey>[Channel3],orientation</ConfigKey>
+                                                        <ConnectValueFromWidget>false</ConnectValueFromWidget>
 						</Connection>
 					</PushButton>
 					<PushButton>
-						<Tooltip>Mix orientation&#10;Set the channel's mix orientation.&#10;</Tooltip>
+						<Tooltip>Mix orientation&#10;Set the deck's mix orientation to the right.&#10;</Tooltip>
 						<Style>QToolTip { background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; }</Style>
-						<NumberStates>2</NumberStates>
-						<State>
+                                                <NumberStates>3</NumberStates>
+                                                <State>
 							<Number>0</Number>
 							<Pressed>btn_orientation_crossfader_4.png</Pressed>
-							<Unpressed>btn_orientation_crossfader_4_over.png</Unpressed>
+							<Unpressed>btn_orientation_crossfader_4.png</Unpressed>
 						</State>
 						<State>
 							<Number>1</Number>
-							<Pressed>btn_orientation_crossfader_4_over.png</Pressed>
+							<Pressed>btn_orientation_crossfader_4.png</Pressed>
 							<Unpressed>btn_orientation_crossfader_4.png</Unpressed>
 						</State>
+                                                <State>
+							<Number>2</Number>
+                                                        <Pressed>btn_orientation_crossfader_4.png</Pressed>
+							<Unpressed>btn_orientation_crossfader_4_over.png</Unpressed>
+						</State>
 						<Pos>353,608</Pos>
-						<Connection>
-							<ConfigKey>[Channel4],orientation</ConfigKey>
-							<EmitOnDownPress>true</EmitOnDownPress>
+                                                <LeftClickIsPushButton>true</LeftClickIsPushButton>
+						<RightClickIsPushButton>false</RightClickIsPushButton>
+                                                <Connection>
+							<ConfigKey>[Channel4],orientation_right</ConfigKey>
+							<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 							<ButtonState>LeftButton</ButtonState>
+                                                        <ConnectValueToWidget>false</ConnectValueToWidget>
+						</Connection>
+                                                <Connection>
+							<ConfigKey>[Channel4],orientation</ConfigKey>
+                                                        <ConnectValueFromWidget>false</ConnectValueFromWidget>
 						</Connection>
 					</PushButton>
 

@@ -27,6 +27,15 @@ EngineChannel::EngineChannel(const char* pGroup,
     m_pPFL->setToggleButton(true);
     m_pOrientation = new ControlObject(ConfigKey(m_group, "orientation"));
     m_pOrientation->set(defaultOrientation);
+    m_pOrientationLeft = new ControlPushButton(ConfigKey(m_group, "orientation_left"));
+    connect(m_pOrientationLeft, SIGNAL(valueChanged(double)),
+            this, SLOT(slotOrientationLeft(double)));
+    m_pOrientationRight = new ControlPushButton(ConfigKey(m_group, "orientation_right"));
+    connect(m_pOrientationRight, SIGNAL(valueChanged(double)),
+            this, SLOT(slotOrientationRight(double)));
+    m_pOrientationCenter = new ControlPushButton(ConfigKey(m_group, "orientation_center"));
+    connect(m_pOrientationCenter, SIGNAL(valueChanged(double)),
+            this, SLOT(slotOrientationCenter(double)));
 }
 
 EngineChannel::~EngineChannel() {
@@ -44,6 +53,24 @@ bool EngineChannel::isPFL() {
 
 bool EngineChannel::isMaster() {
     return true;
+}
+
+void EngineChannel::slotOrientationLeft(double v) {
+    if (v > 0) {
+        m_pOrientation->set(LEFT);
+    }
+}
+
+void EngineChannel::slotOrientationRight(double v) {
+    if (v > 0) {
+        m_pOrientation->set(RIGHT);
+    }
+}
+
+void EngineChannel::slotOrientationCenter(double v) {
+    if (v > 0) {
+        m_pOrientation->set(CENTER);
+    }
 }
 
 EngineChannel::ChannelOrientation EngineChannel::getOrientation() {
