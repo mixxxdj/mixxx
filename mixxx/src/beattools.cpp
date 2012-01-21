@@ -10,8 +10,8 @@
 #include <QList>
 #include <QMap>
 #include <math.h>
-#define BPM_ERROR 0.05f //we are generous and assume the global_BPM to be at most 0.12 BPM far away from the correct one
-#define N 8 //the raw beatgrid is divided into blocks of size N from which the local bpm is computed.
+#define BPM_ERROR 0.05f //we are generous and assume the global_BPM to be at most 0.05 BPM far away from the correct one
+#define N 12 //the raw beatgrid is divided into blocks of size N from which the local bpm is computed.
 #include "beattools.h"
 
 static bool sDebug = false;
@@ -30,7 +30,6 @@ double BeatTools::calculateBpm(QVector<double> beats, int SampleRate, int min_bp
      * BPM value in many case but not worse than +-0.2 BPM
      */
      QList<double> average_bpm_list;
-     //mapping local bpm values to their frequencies
      QMap<QString, int> frequency_table;
 
 
@@ -76,26 +75,27 @@ double BeatTools::calculateBpm(QVector<double> beats, int SampleRate, int min_bp
         if(avg_bpm > max_bpm){
             avg_bpm /=2;
         }
-
+        //round BPM to have two decimal places
+        float roundedBPM = floorf(avg_bpm * 100 + 0.5) / 100;
 
         //add to local BPM to list
-        average_bpm_list << avg_bpm;
+        average_bpm_list << roundedBPM;
 
-        QString local_bpm_str = QString::number(avg_bpm,'g',6);
+        QString rounded_bpm_str = QString::number(roundedBPM,'g',6);
         //qDebug() << "Local BPM: " << avg_bpm << " StringVal: " << local_bpm_str;
-        if(frequency_table.contains(local_bpm_str)){
-            int newFreq = frequency_table.value(local_bpm_str) + 1;
+        if(frequency_table.contains(rounded_bpm_str)){
+            int newFreq = frequency_table.value(rounded_bpm_str) + 1;
             //Set new Frequency
-            frequency_table.insert(local_bpm_str, newFreq);
+            frequency_table.insert(rounded_bpm_str, newFreq);
 
             if(newFreq > max_frequency){
                 max_frequency = newFreq;
-                most_freq_bpm = avg_bpm;
+                most_freq_bpm = roundedBPM;
             }
 
         }
         else{
-            frequency_table.insert(local_bpm_str, 1);
+            frequency_table.insert(rounded_bpm_str, 1);
         }
         //qDebug() << "Average Bar BPM: " << avg_bpm;
     }
@@ -144,15 +144,19 @@ double BeatTools::calculateBpm(QVector<double> beats, int SampleRate, int min_bp
     qDebug() << "BPM range between " << min_bpm << " and " << max_bpm;
     qDebug() << "Max BPM Frequency=" << most_freq_bpm;
     int sum = 0;
+    QMap<QString, int> filtered_bpm_frequency_table;  //a subset of the 'frequency_table', where the bpm values are +-1 1 from the median away
      while (i.hasNext()) {
          i.next();
          double bpmVal = i.key().toDouble();
 
          if( (bpmVal >= median -1.0) && (bpmVal <= median+1.0)){
-             sum += i.value();
-             avg_weighted_bpm += bpmVal * i.value();
-             if(sDebug)
-                qDebug() << "BPM:" << bpmVal << " Frequency: " << i.value();
+             if(i.value() > 1){
+                 sum += i.value();
+                 avg_weighted_bpm += bpmVal * i.value();
+                 filtered_bpm_frequency_table.insert(i.key(), i.value());
+                 if(sDebug)
+                    qDebug() << "BPM:" << bpmVal << " Frequency: " << i.value();
+             }
          }
      }
      double global_bpm = (avg_weighted_bpm / (double) sum);
@@ -180,15 +184,15 @@ double BeatTools::calculateBpm(QVector<double> beats, int SampleRate, int min_bp
       */
 
 
-     double perfect_bpm = global_bpm;
-     // Calculate beat length as sample offsets based on our estimated 'global_bpm'
-     double dBeatLength = (60.0 * SampleRate  / global_bpm);
-     double reference_beat = 0;
+     double perfect_bpm = 0;
+     double firstCorrectBeatSample = 0.0f;
+     bool foundFirstCorrectBeat = false;
 
      if(beats.size() > 0)
-         reference_beat = beats[0]; //we assume the first beat to be wrong
+         firstCorrectBeatSample = beats.at(0);
 
-
+     int counter = 0;
+     int perfectBeats = 0;
      for(int i=N; i < beats.size(); i+=N){
          //get start and end sample of the beats
          double beat_start = beats.at(i-N);
@@ -197,43 +201,47 @@ double BeatTools::calculateBpm(QVector<double> beats, int SampleRate, int min_bp
          //Time needed to count a bar (N beats)
          double time = (beat_end - beat_start)/(SampleRate);
          double local_bpm = 60*N / time;
-         //qDebug() << "Local BPM beat " << i << ": " << local_bpm;
+         //round BPM to have two decimal places
+         local_bpm = floorf(local_bpm * 100 + 0.5) / 100;
 
-         if(local_bpm <= global_bpm + BPM_ERROR && local_bpm >= global_bpm - BPM_ERROR){
+         qDebug() << "Local BPM beat " << i << ": " << local_bpm;
+         QString local_bpm_str = QString::number(local_bpm,'g',6);
+         if(filtered_bpm_frequency_table.contains(local_bpm_str) && fabs(local_bpm - median) < BPM_ERROR){
+             if(!foundFirstCorrectBeat){
+                firstCorrectBeatSample = beat_start;
+                foundFirstCorrectBeat = true;
+                if(sDebug)
+                    qDebug() << "Beat # " << (i-N) << "is considered as reference beat with BPM: " << local_bpm;
+            }
+         }
+         if(foundFirstCorrectBeat){
+              counter += N;
+              double time2 = (beat_end - firstCorrectBeatSample)/(SampleRate);
+              double correctedBpm = 60*counter / time2;
 
-             /*
-              * Let's try to replace 'reference_beat_end' by approaching the beat using the global BPM
-              */
-               double estimated_beat = beat_start + N * dBeatLength;
-               //compute the beat number
-               double dBeatPos = (estimated_beat / dBeatLength);
-               double iBeatPos =  floor(dBeatPos + 0.5); //rounding up or down
+              if(fabs(correctedBpm - global_bpm) <= BPM_ERROR){
+                  perfect_bpm += correctedBpm;
+                  ++perfectBeats;
+                  if(sDebug)
+                      qDebug() << "Beat # " << (i-N) << "is considered as correct -->BPM improved to: " << correctedBpm;
 
-               //get BPM for estimated_beat
-               double time2 = (estimated_beat - reference_beat)/(SampleRate);
-               double exact_BPM = 60 * iBeatPos / time2;
-
-               if(exact_BPM  <= global_bpm + BPM_ERROR && exact_BPM >= global_bpm - BPM_ERROR){
-                   if(sDebug)
-                       qDebug() << "Vamp beat " << i<< " might be correct: " << dBeatPos << " = " << exact_BPM << "BPM"  ;
-                   perfect_bpm = exact_BPM;
-               }
-
-
+              }
          }
      }
+     if(perfectBeats > 0)
+         global_bpm = perfect_bpm / perfectBeats;
 
       //last guess to make BPM more accurate: rounding values like 127.96 or 128.01 to 128.0
-     double rounded_bpm = floor(perfect_bpm+0.5);
-     double bpm_diff = rounded_bpm - perfect_bpm;
+     double rounded_bpm = floor(global_bpm + 0.5);
+     double bpm_diff = rounded_bpm - global_bpm;
      if(sDebug){
-         qDebug() << "Perfect BPM=" << perfect_bpm;
+         qDebug() << "Perfect BPM=" << global_bpm;
          qDebug() << "Rounded Perfect BPM=" << rounded_bpm;
          qDebug() << "Rounded difference=" << fabs(bpm_diff);
          qDebug() << "Perform rounding=" << ((fabs(bpm_diff) <= BPM_ERROR)? true: false);
      }
 
-     return (fabs(bpm_diff) <= BPM_ERROR)? rounded_bpm : perfect_bpm;
+     return (fabs(bpm_diff) <= BPM_ERROR)? rounded_bpm : global_bpm;
 
 }
 
