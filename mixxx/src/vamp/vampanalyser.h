@@ -13,6 +13,7 @@
 #include <QVector>
 
 #include <vamp-hostsdk/vamp-hostsdk.h>
+#include "vamppluginloader.h"
 #include "sampleutil.h"
 
 class VampAnalyser {

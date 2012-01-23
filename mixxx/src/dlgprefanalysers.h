@@ -9,6 +9,7 @@
 #define DLGPREFANALYSERS_H_
 
 #include "ui_dlgprefanalysersdlg.h"
+#include "vamp/vamppluginloader.h"
 #include "configobject.h"
 #include <qstring.h>
 #include <qlist.h>
