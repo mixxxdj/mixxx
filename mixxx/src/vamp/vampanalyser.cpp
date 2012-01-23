@@ -100,8 +100,7 @@ bool VampAnalyser::Init(const QString pluginlibrary, const QString pluginid,
         delete mPlugin;
         qDebug() << "VampAnalyser: kill plugin";
     }
-    Vamp::HostExt::PluginLoader *loader =
-            Vamp::HostExt::PluginLoader::getInstance();
+    VampPluginLoader *loader = VampPluginLoader::getInstance();
     QStringList pluginlist = pluginid.split(":");
     if (pluginlist.size() != 2) {
         qDebug() << "VampAnalyser: got malformed pluginid: " << pluginid;

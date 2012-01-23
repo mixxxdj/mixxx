@@ -182,7 +182,7 @@ void DlgPrefAnalysers::populate() {
     plugincombo->setDuplicatesEnabled(false);
     connect(plugincombo, SIGNAL(currentIndexChanged(int)),
             this, SLOT(pluginSelected(int)));
-    PluginLoader *loader = PluginLoader::getInstance();
+    VampPluginLoader *loader = VampPluginLoader::getInstance();
     std::vector<PluginLoader::PluginKey> plugins = loader->listPlugins();
     for (unsigned int iplugin=0; iplugin < plugins.size(); iplugin++) {
         Plugin *plugin = loader->loadPlugin(plugins[iplugin], 48000);
