@@ -255,6 +255,12 @@ SectionEnd
 
 ; Optional sections (can be disabled by the user)
 
+Section "Translations" SecTranslations
+    SetOutPath "$INSTDIR\translations"
+    File /r ${BASE_BUILD_DIR}\dist${BITWIDTH}\translations\*.qm
+    File /r ${QTDIR}\translations\qt_*.qm
+SectionEnd
+
 SectionGroup "MIDI controller mappings" SecControllerMappings
 
   SectionGroup "Certified mappings" SecCertifiedMappings
@@ -381,11 +387,6 @@ SectionGroup "Additional Skins" SecAddlSkins
 	SectionEnd
 
 SectionGroupEnd
-
-Section "Translations" SecTranslations
-    SetOutPath "$INSTDIR\translations"
-    File /nonfatal /r ${BASE_BUILD_DIR}\dist${BITWIDTH}\translations\*.qm
-SectionEnd
 
 Section "Start Menu Shortcuts" SecStartMenu
 
