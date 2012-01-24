@@ -16,7 +16,7 @@
  ***************************************************************************/
 
 #include "enginerecord.h"
-#include "defs_recording.h"
+#include "recording/defs_recording.h"
 #include "controllogpotmeter.h"
 #include "configobject.h"
 #include "controlobjectthread.h"
@@ -24,8 +24,8 @@
 #include "trackinfoobject.h"
 #include "dlgprefrecord.h"
 #ifdef __SHOUTCAST__
-#include "encodervorbis.h"
-#include "encodermp3.h"
+#include "recording/encodervorbis.h"
+#include "recording/encodermp3.h"
 #endif
 
 /***************************************************************************

@@ -562,7 +562,7 @@ class MixxxCore(Feature):
                    "dlgprefrecord.cpp",
                    "playerinfo.cpp",
 
-                   "recording/enginerecord.cpp",
+                   "engine/sidechain/enginerecord.cpp",
                    "recording/encoder.cpp",
 
                    "segmentation.cpp",

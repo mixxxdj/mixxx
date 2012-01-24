@@ -26,7 +26,7 @@
 #include "engine/engineabstractrecord.h"
 #include "configobject.h"
 #include "engine/engineobject.h"
-#include "encoder.h"
+#include "recording/encoder.h"
 #include "errordialoghandler.h"
 
 #include "trackinfoobject.h"
