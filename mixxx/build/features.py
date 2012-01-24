@@ -719,7 +719,7 @@ class Shoutcast(Feature):
     def sources(self, build):
         build.env.Uic4('dlgprefshoutcastdlg.ui')
         return ['dlgprefshoutcast.cpp',
-                'engine/engineshoutcast.cpp',
+                'engine/sidechain/engineshoutcast.cpp',
                 'recording/encodervorbis.cpp',
                 'recording/encodermp3.cpp']
 

@@ -24,7 +24,7 @@
 
 #include <shout/shout.h>
 
-#include "engineabstractrecord.h"
+#include "engine/engineabstractrecord.h"
 #include "configobject.h"
 #include "controlobject.h"
 #include "controlobjectthreadmain.h"

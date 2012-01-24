@@ -361,7 +361,7 @@ class MixxxCore(Feature):
                    "engine/engineflanger.cpp",
                    "engine/enginevumeter.cpp",
                    "engine/enginevinylsoundemu.cpp",
-                   "engine/enginesidechain.cpp",
+                   "engine/sidechain/enginesidechain.cpp",
                    "engine/enginefilterbutterworth8.cpp",
                    "engine/enginexfader.cpp",
                    "engine/enginemicrophone.cpp",

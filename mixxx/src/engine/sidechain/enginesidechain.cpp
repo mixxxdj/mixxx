@@ -27,12 +27,12 @@
 #include <QtCore>
 #include <QtDebug>
 
-#include "engine/enginesidechain.h"
+#include "engine/sidechain/enginesidechain.h"
 #include "engine/enginebuffer.h"
 #include "recording/enginerecord.h"
 
 #ifdef __SHOUTCAST__
-#include "engine/engineshoutcast.h"
+#include "engine/sidechain/engineshoutcast.h"
 #endif
 
 EngineSideChain::EngineSideChain(ConfigObject<ConfigValue> * pConfig) {

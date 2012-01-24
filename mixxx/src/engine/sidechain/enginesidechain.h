@@ -22,7 +22,7 @@
 #include "configobject.h"
 #include "controlobject.h"
 #include "controlobjectthreadmain.h"
-#include "../recording/defs_recording.h"
+#include "recording/defs_recording.h"
 #include "errordialoghandler.h"
 #include "recording/recordingmanager.h"
 

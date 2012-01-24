@@ -31,7 +31,7 @@
 #include "engineclipping.h"
 #include "enginevumeter.h"
 #include "enginexfader.h"
-#include "enginesidechain.h"
+#include "sidechain/enginesidechain.h"
 #include "engine/syncworker.h"
 #include "sampleutil.h"
 
