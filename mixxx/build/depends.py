@@ -229,22 +229,42 @@ class SoundTouch(Dependence):
                    '#lib/%s/FIFOSampleBuffer.cpp' % self.SOUNDTOUCH_PATH,
                    '#lib/%s/FIRFilter.cpp' % self.SOUNDTOUCH_PATH,
                    '#lib/%s/PeakFinder.cpp' % self.SOUNDTOUCH_PATH,
-                   '#lib/%s/BPMDetect.cpp' % self.SOUNDTOUCH_PATH,
-                   '#lib/%s/mmx_optimized.cpp' % self.SOUNDTOUCH_PATH,
-                   '#lib/%s/sse_optimized.cpp' % self.SOUNDTOUCH_PATH,]
+                   '#lib/%s/BPMDetect.cpp' % self.SOUNDTOUCH_PATH]
 
         # SoundTouch CPU optimizations are only for x86
         # architectures. SoundTouch automatically ignores these files when it is
         # not being built for an architecture that supports them.
-        cpu_detection = '#lib/%s/cpu_detect_x86_win.cpp' if build.toolchain_is_msvs else '#lib/%s/cpu_detect_x86_gcc.cpp'
+        cpu_detection = '#lib/%s/cpu_detect_x86_win.cpp' if build.toolchain_is_msvs else \
+                '#lib/%s/cpu_detect_x86_gcc.cpp'
         sources.append(cpu_detection % self.SOUNDTOUCH_PATH)
+
+		# Check if the compiler has SSE extention enabled 
+        # Allways the case on x64 (core instructions)
+        optimize = int(util.get_flags(build.env, 'optimize', 1))
+        if build.machine_is_64bit or \
+                (build.toolchain_is_msvs and optimize > 2) or \
+                (build.toolchain_is_gnu and optimize > 1):
+            sources.extend(
+                 ['#lib/%s/mmx_optimized.cpp' % self.SOUNDTOUCH_PATH,
+                  '#lib/%s/sse_optimized.cpp' % self.SOUNDTOUCH_PATH,
+                  ])
+
         return sources
 
+       
     def configure(self, build, conf):
         if build.platform_is_windows:
             # Regardless of the bitwidth, ST checks for WIN32
             build.env.Append(CPPDEFINES = 'WIN32')
         build.env.Append(CPPPATH=['#lib/%s' % self.SOUNDTOUCH_PATH])
+
+		# Check if the compiler has SSE extention enabled 
+        # Allways the case on x64 (core instructions)
+        optimize = int(util.get_flags(build.env, 'optimize', 1))
+        if build.machine_is_64bit or \
+                (build.toolchain_is_msvs and optimize > 2) or \
+                (build.toolchain_is_gnu and optimize > 1):
+            build.env.Append(CPPDEFINES='SOUNDTOUCH_ALLOW_X86_OPTIMIZATIONS')
 
 class TagLib(Dependence):
     def configure(self, build, conf):
@@ -430,6 +450,10 @@ class MixxxCore(Feature):
                    "library/rhythmbox/rhythmboxfeature.cpp",
                    "library/rhythmbox/rhythmboxtrackmodel.cpp",
                    "library/rhythmbox/rhythmboxplaylistmodel.cpp",
+
+                   "library/banshee/bansheefeature.cpp",
+                   "library/banshee/bansheeplaylistmodel.cpp",
+				   "library/banshee/bansheedbconnection.cpp",
 
                    "library/itunes/itunesfeature.cpp",
                    "library/itunes/itunestrackmodel.cpp",

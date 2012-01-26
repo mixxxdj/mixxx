@@ -12,6 +12,7 @@
 #include "library/browse/browsefeature.h"
 #include "library/cratefeature.h"
 #include "library/rhythmbox/rhythmboxfeature.h"
+#include "library/banshee/bansheefeature.h"
 #include "library/recording/recordingfeature.h"
 #include "library/itunes/itunesfeature.h"
 #include "library/mixxxlibraryfeature.h"
@@ -60,15 +61,21 @@ Library::Library(QObject* parent, ConfigObject<ConfigValue>* pConfig, bool first
     addFeature(m_pCrateFeature);
     addFeature(new BrowseFeature(this, pConfig, m_pTrackCollection, m_pRecordingManager));
     addFeature(new RecordingFeature(this, pConfig, m_pTrackCollection, m_pRecordingManager));
-    addFeature(new PrepareFeature(this, pConfig, m_pTrackCollection));
+    m_pPrepareFeature = new PrepareFeature(this, pConfig, m_pTrackCollection);
+    addFeature(m_pPrepareFeature);
     //iTunes and Rhythmbox should be last until we no longer have an obnoxious
     //messagebox popup when you select them. (This forces you to reach for your
     //mouse or keyboard if you're using MIDI control and you scroll through them...)
-    if (RhythmboxFeature::isSupported())
+    if (RhythmboxFeature::isSupported() && pConfig->getValueString(ConfigKey("[Library]","ShowRhythmboxLibrary"),"1").toInt())
         addFeature(new RhythmboxFeature(this, m_pTrackCollection));
-    if (ITunesFeature::isSupported())
+    if (pConfig->getValueString(ConfigKey("[Library]","ShowBansheeLibrary"),"1").toInt()) {
+        BansheeFeature::prepareDbPath(pConfig);
+        if (BansheeFeature::isSupported())
+            addFeature(new BansheeFeature(this, m_pTrackCollection, pConfig));
+    }
+    if (ITunesFeature::isSupported() && pConfig->getValueString(ConfigKey("[Library]","ShowItunesLibrary"),"1").toInt())
         addFeature(new ITunesFeature(this, m_pTrackCollection));
-    if (TraktorFeature::isSupported())
+    if (TraktorFeature::isSupported() && pConfig->getValueString(ConfigKey("[Library]","ShowTracktorLibrary"),"1").toInt())
         addFeature(new TraktorFeature(this, m_pTrackCollection));
 
     //Show the promo tracks view on first run, otherwise show the library

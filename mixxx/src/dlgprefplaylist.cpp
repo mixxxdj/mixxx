@@ -147,15 +147,14 @@ void DlgPrefPlaylist::slotUpdate()
 {
     // Song path
     LineEditSongfiles->setText(config->getValueString(ConfigKey("[Playlist]","Directory")));
-    // iPod mount point
-    LineEditiPodMountPoint->setText(config->getValueString(ConfigKey("[iPod]","MountPoint")));
     //Bundled songs stat tracking
     checkBoxPromoStats->setChecked((bool)config->getValueString(ConfigKey("[Promo]","StatTracking")).toInt());
     checkBox_library_scan->setChecked((bool)config->getValueString(ConfigKey("[Library]","RescanOnStartup")).toInt());
     checkbox_ID3_sync->setChecked((bool)config->getValueString(ConfigKey("[Library]","WriteAudioTags")).toInt());
     checkBox_use_relative_path->setChecked((bool)config->getValueString(ConfigKey("[Library]","UseRelativePathOnExport")).toInt());
-
-
+    checkBox_show_rhythmbox->setChecked((bool)config->getValueString(ConfigKey("[Library]","ShowRhythmboxLibrary"),"1").toInt());
+    checkBox_show_itunes->setChecked((bool)config->getValueString(ConfigKey("[Library]","ShowItunesLibrary"),"1").toInt());
+    checkBox_show_tracktor->setChecked((bool)config->getValueString(ConfigKey("[Library]","ShowTracktorLibrary"),"1").toInt());
 }
 
 void DlgPrefPlaylist::slotBrowseDir()
@@ -167,65 +166,6 @@ void DlgPrefPlaylist::slotBrowseDir()
         LineEditSongfiles->setText(fd);
     }
 }
-
-void DlgPrefPlaylist::slotDetectiPodMountPoint()
-{
-QString iPodMountPoint;
-QFileInfoList mountpoints;
-#ifdef __WINDOWS__
-  // Windows iPod Detection
-  mountpoints = QDir::drives();
-#elif __LINUX__
-  // Linux
-  mountpoints = QDir("/media").entryInfoList();
-  mountpoints += QDir("/mnt").entryInfoList();
-#elif __OSX__
-  // Mac OSX
-  mountpoints = QDir("/Volumes").entryInfoList();
-#endif
-
-QListIterator<QFileInfo> i(mountpoints);
-QFileInfo mp;
-while (i.hasNext()) {
-    mp = (QFileInfo) i.next();
-    qDebug() << "mp:" << mp.filePath();
-    if (QDir( QString(mp.filePath() + "/iPod_Control") ).exists() ) {
-       qDebug() << "iPod found at" << mp.filePath(); 
-
-       // Multiple iPods
-       if (!iPodMountPoint.isEmpty()) {
-         int ret = QMessageBox::warning(this, tr("Multiple iPods Detected"), 
-                   tr("Mixxx has detected another iPod. \n\n")+
-                   tr("Choose Yes to use the newly found iPod @ ")+ mp.filePath()+ 
-                   tr(" or to continue to search for other iPods. \n")+
-                   tr("Choose No to use the existing iPod @ ")+ iPodMountPoint+ 
-                   tr( " and end detection. \n"),
-                   QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes);
-         if (ret == QMessageBox::No) {
-           break;
-         }
-       }
-
-       iPodMountPoint = mp.filePath() + "/";
-    }
-}
-if (!iPodMountPoint.isEmpty()) {
-  LineEditiPodMountPoint->setText(iPodMountPoint);
-}
-}
-
-void DlgPrefPlaylist::slotBrowseiPodMountPoint()
-{
-    
-    QString fd = QFileDialog::getExistingDirectory(this, tr("Choose iPod mount point"), 
-                                                   config->getValueString(ConfigKey("[iPod]","MountPoint")));
-    if (fd != "")
-    {
-        LineEditiPodMountPoint->setText(fd);
-    }
-}
-
-
 
 void DlgPrefPlaylist::slotApply()
 {
@@ -242,6 +182,14 @@ void DlgPrefPlaylist::slotApply()
     config->set(ConfigKey("[Library]","UseRelativePathOnExport"),
                    ConfigValue((int)checkBox_use_relative_path->isChecked()));
 
+    config->set(ConfigKey("[Library]","ShowRhythmboxLibrary"),
+                   ConfigValue((int)checkBox_show_rhythmbox->isChecked()));
+
+    config->set(ConfigKey("[Library]","ShowItunesLibrary"),
+                   ConfigValue((int)checkBox_show_itunes->isChecked()));
+
+    config->set(ConfigKey("[Library]","ShowTracktorLibrary"),
+                   ConfigValue((int)checkBox_show_tracktor->isChecked()));
 
     config->Save();
 
@@ -255,14 +203,6 @@ void DlgPrefPlaylist::slotApply()
         // Save preferences
         config->Save();
 
-        // Emit apply signal
-        emit(apply());
-    }
-    if (LineEditiPodMountPoint->text() != config->getValueString(ConfigKey("[iPod]","MountPoint")))
-    {
-        config->set(ConfigKey("[iPod]","MountPoint"), LineEditiPodMountPoint->text());
-        // Save preferences
-        config->Save();
         // Emit apply signal
         emit(apply());
     }
