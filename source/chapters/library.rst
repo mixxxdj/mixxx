@@ -14,7 +14,7 @@ displays the songs in those collections.
 
 The Search box in the top-left the current view for songs that match your query.
 
-The Library is displays a sortable list of all the songs in your music
+The Library displays a sortable list of all the songs in your music
 library. Mixxx imports your music library automatically when it is run for the
 first time, and automatically detects newly added songs on each subsequent
 run. If you want to manually refresh your library without exiting (for example
