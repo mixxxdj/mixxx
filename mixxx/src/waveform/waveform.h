@@ -4,6 +4,8 @@
 #include <vector>
 #include "util.h"
 
+class QMutex;
+
 union WaveformData {
     struct {
         unsigned char low;
@@ -25,7 +27,7 @@ public:
     double getVisualSampleRate() const { return m_visualSampleRate;}
     double getAudioVisualRatio() const { return m_audioVisualRatio;}
     int getAudioSamplesPerVisualSample() const { return m_audioSamplesPerVisualSample;}
-    unsigned int getCompletion() const { return m_completion;}
+    int getCompletion() const { return m_completion;}
     int getTextureStride() const { return m_textureStride;}
     int getTextureSize() const { return m_data.size();}
 
@@ -42,15 +44,16 @@ public:
     WaveformData* data() { return &m_data[0];}
     const WaveformData* data() const { return &m_data[0];}
 
+    QMutex* getMutex() { return m_mutex;}
+
     void dump() const;
 
 private:
     void resize(int size);
-    void reset(int value = 0);
     void assign(int size, int value = 0);
 
     void computeBestVisualSampleRate( int audioSampleRate, double desiredVisualSampleRate);
-    void allocate( int audioSamples);
+    void allocateForAudioSamples( int audioSamples);
 
     inline WaveformData& at(int i) { return m_data[i];}
     inline unsigned char& low(int i) { return m_data[i].filtered.low;}
@@ -59,16 +62,18 @@ private:
     inline unsigned char& all(int i) { return m_data[i].filtered.all;}
 
     int computeTextureSize(int size);
-    void setCompletion( unsigned int completion) { m_completion = completion;}
+    void setCompletion(int completion) { m_completion = completion;}
 
     unsigned int m_size; //actual useful size
     unsigned int m_textureStride;
     std::vector<WaveformData> m_data;
-    unsigned int m_completion;
+    int m_completion;
 
     int m_audioSamplesPerVisualSample;
     double m_visualSampleRate;
     double m_audioVisualRatio;
+
+    QMutex* m_mutex;
 
     friend class AnalyserWaveform;
     friend class WaveformStride;

@@ -2,18 +2,21 @@
 
 #include <cstring>
 
+#include <QMutex>
 #include <QDebug>
 
 Waveform::Waveform() :
     m_size(0),
     m_textureStride(1024),
-    m_completion(0),
+    m_completion(-1),
     m_audioSamplesPerVisualSample(0),
     m_visualSampleRate(0),
-    m_audioVisualRatio(0) {
+    m_audioVisualRatio(0),
+    m_mutex(new QMutex()){
 }
 
 Waveform::~Waveform() {
+    delete m_mutex;
 }
 
 void Waveform::computeBestVisualSampleRate( int audioSampleRate, double desiredVisualSampleRate) {
@@ -25,7 +28,7 @@ void Waveform::computeBestVisualSampleRate( int audioSampleRate, double desiredV
     m_audioVisualRatio = (double)audioSampleRate / (double)m_visualSampleRate;
 }
 
-void Waveform::allocate( int audioSamples) {
+void Waveform::allocateForAudioSamples( int audioSamples) {
     int numberOfVisualSamples = audioSamples / m_audioSamplesPerVisualSample + 1;
     numberOfVisualSamples += numberOfVisualSamples%2;
     assign(numberOfVisualSamples,0);

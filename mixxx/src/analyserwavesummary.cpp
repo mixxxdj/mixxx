@@ -20,10 +20,13 @@ AnalyserWavesummary::AnalyserWavesummary() {
 void AnalyserWavesummary::initialise(TrackPointer tio, int sampleRate, int totalSamples) {
     Q_UNUSED(sampleRate);
     // Check if the preview has already been generated
+
+    //vrince comment cause of wavesummaty deprecation
+    /*
     const QByteArray* p = tio->getWaveSummary();
     if(p != NULL && p->size() > 0) {
         return;
-    }
+    }*/
 
     // Initialize kiSummaryBufferSize bytes to 0
     m_pData = new QByteArray(kiSummaryBufferSize, 0);
@@ -72,7 +75,10 @@ void AnalyserWavesummary::process(const CSAMPLE *pIn, const int iLen) {
 void AnalyserWavesummary::finalise(TrackPointer tio) {
     if(m_pData == NULL)
         return;
-    tio->setWaveSummary(m_pData, true);
+
+    //vrince cooment cause to deprecation
+    //tio->setWaveSummary(m_pData, true);
+
     //setWaveSummary copies the waveform from the pointer we pass it, so it's safe
     //to delete the pointer.
     delete m_pData;

@@ -108,7 +108,7 @@ int GLWaveformRendererFilteredSignal::buildPolygon() {
     const double gain = (lastVisualIndex - firstVisualIndex) / (double)m_waveformRenderer->getWidth();
 
     const double visualSamplePerPixel = m_waveformRenderer->getVisualSamplePerPixel();
-    const int visaulSamplePerDemiPixel = int(visualSamplePerPixel / 2.0); //this brings viaul stability (less flickering)
+    const int visualSamplePerDemiPixel = ceil(visualSamplePerPixel / 2.0); //this brings viul stability (less flickering)
 
     float lowGain(1.0), midGain(1.0), highGain(1.0);
     if( m_lowFilterControlObject && m_midFilterControlObject && m_highFilterControlObject){
@@ -126,12 +126,12 @@ int GLWaveformRendererFilteredSignal::buildPolygon() {
         visualIndexStart -= visualIndexStart%2; //rigth channel
         int visualIndexStop = int( gain * (double)(x) + offset + visualSamplePerPixel/2.0);
 
-        if( visualIndexStart > 0 && visualIndexStop + visaulSamplePerDemiPixel < waveform->size() -1) {
+        if( visualIndexStart > 0 && visualIndexStop + visualSamplePerDemiPixel < waveform->size() -1) {
             unsigned char maxLow = 0;
             unsigned char maxBand = 0;
             unsigned char maxHigh = 0;
 
-            for( int i = visualIndexStart; i <= visualIndexStop + visaulSamplePerDemiPixel; i+=2) {
+            for( int i = visualIndexStart; i <= visualIndexStop + visualSamplePerDemiPixel; i+=2) {
                 maxLow = math_max( maxLow, waveform->getLow(i));
                 maxBand = math_max( maxBand, waveform->getMid(i));
                 maxHigh = math_max( maxHigh, waveform->getHigh(i));
@@ -163,12 +163,12 @@ int GLWaveformRendererFilteredSignal::buildPolygon() {
         visualIndexStart -= visualIndexStart%2 + 1; //left channel
         int visualIndexStop = int( gain * (double)(x) + offset + visualSamplePerPixel/2.0);
 
-        if( visualIndexStart > 0 && visualIndexStop + visaulSamplePerDemiPixel < waveform->size() -1) {
+        if( visualIndexStart > 0 && visualIndexStop + visualSamplePerDemiPixel < waveform->size() -1) {
             unsigned char maxLow = 0;
             unsigned char maxBand = 0;
             unsigned char maxHigh = 0;
 
-            for( int i = visualIndexStart; i <= visualIndexStop + visaulSamplePerDemiPixel; i+=2) {
+            for( int i = visualIndexStart; i <= visualIndexStop + visualSamplePerDemiPixel; i+=2) {
                 maxLow = math_max( maxLow, waveform->getLow(i));
                 maxBand = math_max( maxBand, waveform->getMid(i));
                 maxHigh = math_max( maxHigh, waveform->getHigh(i));

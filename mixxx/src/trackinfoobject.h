@@ -207,9 +207,9 @@ public:
 
     //TODO (vrince) remove when new summary ready
     /** Set pointer to waveform summary -- updates UI by default */
-    void setWaveSummary(const QByteArray* pWave, bool updateUI = true);
+    //void setWaveSummary(const QByteArray* pWave, bool updateUI = true);
     /** Returns a pointer to waveform summary */
-    const QByteArray* getWaveSummary();
+    //const QByteArray* getWaveSummary();
     //----------------------------
 
     Waveform* getWaveform() { return m_waveform;}

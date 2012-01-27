@@ -31,11 +31,10 @@
 WOverview::WOverview(const char *pGroup, QWidget * parent)
     : WWidget(parent),
       m_pGroup(pGroup) {
-    m_waveformSummary = QByteArray();
-    m_liSampleDuration = 0;
+
+    m_sampleDuration = 0;
     m_iPos = 0;
     m_bDrag = false;
-    m_pScreenBuffer = 0;
 
     setAcceptDrops(true);
 
@@ -86,8 +85,6 @@ WOverview::WOverview(const char *pGroup, QWidget * parent)
         pControl = ControlObject::getControl(hotcueKey);
     }
 
-    waveformChanged = false;
-
     //vrince
     m_waveform = 0;
     m_waveformPixmap = 0;
@@ -95,16 +92,11 @@ WOverview::WOverview(const char *pGroup, QWidget * parent)
     m_visualSamplesByPixel = 0.0;
     m_maxPaintingTime = 16;
 
-    m_timerPixmapRefresh = -1;
+    m_timerPixmapRefresh = 0;
 }
 
 WOverview::~WOverview()
 {
-    if(m_pScreenBuffer != NULL) {
-        delete m_pScreenBuffer;
-        m_pScreenBuffer = NULL;
-    }
-
     if(m_waveformPixmap)
         delete m_waveformPixmap;
 }
@@ -139,26 +131,10 @@ void WOverview::setup(QDomNode node)
     palette.setColor(this->backgroundRole(), m_qColorBackground);
     setPalette(palette);
 
-    // If we're doing a warm boot, free the pixmap, and flag it to be regenerated.
-    if(m_pScreenBuffer != NULL) {
-
-        // Since setup is called from MixxxView, we know that
-        // the current thread is the GUI thread. That way we know
-        // that paintEvent is not going on right now, and m_pScreenBuffer
-        // is therefore safe to delete.
-
-        delete m_pScreenBuffer;
-    }
-
-    m_pScreenBuffer = new QPixmap(size());
-    // Flag the pixmap for regeneration.
-    waveformChanged = true;
-
     m_qColorSignal.setNamedColor(selectNodeQString(node, "SignalColor"));
     m_qColorSignal = WSkinColor::getCorrectColor(m_qColorSignal);
     m_qColorMarker.setNamedColor(selectNodeQString(node, "MarkerColor"));
     m_qColorMarker = WSkinColor::getCorrectColor(m_qColorMarker);
-
 
     qDebug() << "WOverview::setup" << m_qColorSignal;
 
@@ -178,23 +154,18 @@ void WOverview::setValue(double fValue)
     }
 }
 
-void WOverview::slotLoadNewWaveform(TrackPointer pTrack)
-{
-    qDebug() << "WOverview::slotLoadNewWaveform";
+void WOverview::slotLoadNewTrack(TrackPointer pTrack) {
+
+    //qDebug() << "WOverview::slotLoadNewTrack(TrackPointer pTrack)";
 
     if (pTrack) {
-        // Connect wavesummaryUpdated signals to our update slots.
-        connect(pTrack.data(), SIGNAL(wavesummaryUpdated(TrackInfoObject*)),
-                this, SLOT(slotLoadNewWaveform(TrackInfoObject*)));
+        m_sampleDuration = pTrack->getDuration()*pTrack->getSampleRate()*pTrack->getChannels();
 
-        // Now in case the track's wavesummary is already done, load it.
-        slotLoadNewWaveform(pTrack.data());
-
-        qDebug() << "WOverview::slotLoadNewWaveform - startTimer";
-
-        m_timerPixmapRefresh = startTimer(m_maxPaintingTime);
         //m_waveform = pTrack->getWaveform();
         m_waveform = pTrack->getWaveformSummary();
+
+        //qDebug() << "WOverview::slotLoadNewTrack - startTimer";
+        m_timerPixmapRefresh = startTimer(m_maxPaintingTime);
     }
 
     m_actualCompletion = 0;
@@ -204,27 +175,15 @@ void WOverview::slotLoadNewWaveform(TrackPointer pTrack)
     update();
 }
 
-void WOverview::slotLoadNewWaveform(TrackInfoObject* pTrack)
-{
-    //Update this widget with new waveform summary data from the new track.
-    setData(pTrack->getWaveSummary(),
-            pTrack->getDuration()*pTrack->getSampleRate()*pTrack->getChannels());
-}
-
-void WOverview::slotUnloadTrack(TrackPointer pTrack) {
-    if (pTrack) {
-        disconnect(pTrack.data(), SIGNAL(wavesummaryUpdated(TrackInfoObject*)),
-                   this, SLOT(slotLoadNewWaveform(TrackInfoObject*)));
-    }
-    QByteArray ba;
-    setData(&ba, 0);
-    update();
+void WOverview::slotUnloadTrack(TrackPointer /*pTrack*/) {
 
     m_waveform = 0;
     m_actualCompletion = 0;
     m_visualSamplesByPixel = 0.0;
 
-    qDebug() << "WOverview::slotUnloadTrack - kill Timer";
+    update();
+
+    //qDebug() << "WOverview::slotUnloadTrack - kill Timer";
     killTimer(m_timerPixmapRefresh);
 }
 
@@ -258,29 +217,23 @@ void WOverview::loopEnabledChanged(double v) {
     update();
 }
 
-void WOverview::setData(const QByteArray* pWaveformSummary, long liSampleDuration)
-{
-    //COPY THE EFFING WAVESUMMARY BYTES so we don't end up with
-    //a bad pointer in case the TrackInfoObject that pWavefromSummary originates
-    //from is deallocated. -- Albert Dec 22, 2009
-    m_waveformSummary = *pWaveformSummary;
-    m_liSampleDuration = liSampleDuration;
-
-    waveformChanged = true;
-}
-
 bool WOverview::drawNextPixmapPart() {
 
-    if( !m_waveform)
+    //qDebug() << "WOverview::drawNextPixmapPart() - m_waveform" << m_waveform;
+
+    if( !m_waveform || m_waveform->size() == 0)
         return false;
 
     //test id there is some new to draw (at least of pixel width)
-    const unsigned int waveformCompletion = m_waveform->getCompletion();
-    const double nextCompletion = (double)waveformCompletion - (double)m_actualCompletion;
+    const int waveformCompletion = m_waveform->getCompletion();
+    const int nextCompletion = waveformCompletion - m_actualCompletion;
 
     //qDebug() << "WOverview::drawNextPixmapPart() - nextCompletion" << nextCompletion;
 
-    if( nextCompletion < m_visualSamplesByPixel)
+    if( (double)nextCompletion < m_visualSamplesByPixel)
+        return false;
+
+    if( !m_waveform->getMutex()->tryLock())
         return false;
 
     //qDebug() << "WOverview::drawNextPixmapPart() - m_actualCompletion" << m_actualCompletion
@@ -309,19 +262,19 @@ bool WOverview::drawNextPixmapPart() {
     QTime timer;
     timer.start();
 
-    unsigned int sampleIndex;
-    for( sampleIndex = m_actualCompletion; sampleIndex <= waveformCompletion;
-         sampleIndex += 2, pixelPosition += 2.0*pixelByVisualSamples) {
+    int currentCompletion;
+    for( currentCompletion = m_actualCompletion; currentCompletion < waveformCompletion;
+         currentCompletion += 2, pixelPosition += 2.0*pixelByVisualSamples) {
         //accumulate in current pixel
 
         painter.setPen( lineColor.darker(100));
-        painter.drawLine( pixelPosition, - m_waveform->getAll(sampleIndex+1), pixelPosition, m_waveform->getLow(sampleIndex));
+        painter.drawLine( pixelPosition, - m_waveform->getAll(currentCompletion+1), pixelPosition, m_waveform->getLow(currentCompletion));
 
         painter.setPen( lineColor);
-        painter.drawLine( pixelPosition, - m_waveform->getMid(sampleIndex+1), pixelPosition, m_waveform->getMid(sampleIndex));
+        painter.drawLine( pixelPosition, - m_waveform->getMid(currentCompletion+1), pixelPosition, m_waveform->getMid(currentCompletion));
 
         painter.setPen( lineColor.lighter(100));
-        painter.drawLine( pixelPosition, - m_waveform->getHigh(sampleIndex+1), pixelPosition, m_waveform->getHigh(sampleIndex));
+        painter.drawLine( pixelPosition, - m_waveform->getHigh(currentCompletion+1), pixelPosition, m_waveform->getHigh(currentCompletion));
 
         //painter.setPen( QColor::fromRgbF(0.0,0.0,0.0,0.1));
         //painter.drawLine( pixelPosition, - m_waveform->getHigh(sampleIndex+1), pixelPosition, m_waveform->getHigh(sampleIndex));
@@ -330,101 +283,11 @@ bool WOverview::drawNextPixmapPart() {
             break;
     }
 
-    m_actualCompletion = sampleIndex;
+    m_actualCompletion = currentCompletion;
+
+    m_waveform->getMutex()->unlock();
 
     return true;
-}
-
-void WOverview::redrawPixmap() {
-    // Fill with transparent pixels
-    m_pScreenBuffer->fill(m_qColorBackground);
-
-    QPainter paint(m_pScreenBuffer);
-    if (!m_backgroundPixmap.isNull()) {
-        paint.drawTiledPixmap(m_pScreenBuffer->rect(), m_backgroundPixmap, QPoint(0,0));
-    } else {
-        paint.fillRect(m_pScreenBuffer->rect(), m_qColorBackground);
-    }
-
-    if (!m_waveformSummary.size()) {
-        update();
-        return;
-    }
-
-    float yscale = (((float)(height()-2)/2.)/128.); //32768.;
-    float xscale = (float)m_waveformSummary.size()/width();
-
-    float hfcMax = 0.;
-    for (unsigned int i=2; i<m_waveformSummary.size(); i=i+3)
-    {
-        if (m_waveformSummary.at(i)+128>hfcMax)
-            hfcMax = m_waveformSummary.at(i)+128;
-    }
-
-    // Draw waveform using hfc to determine color
-    for (int i=0; i<width(); ++i)
-    {
-        //const QColor kqLightColor("#2bff00");
-        const QColor kqLightColor = m_qColorSignal;
-        const QColor kqDarkColor("#1ba200");
-
-        float fMin = 0.;
-        float fMax = 0.;
-
-        if ((unsigned int)width()>m_waveformSummary.size()/3)
-        {
-            float pos = (float)(m_waveformSummary.size()-3)/3.*(float)i/(float)width();
-            int idx = (int)floor(pos);
-            float fraction = pos-(float)idx;
-
-            char v1, v2;
-
-            float hfc = (m_waveformSummary.at(idx*3+2)+128.)/hfcMax;
-
-            int r = kqDarkColor.red()  + (int)((kqLightColor.red()-kqDarkColor.red())*hfc);
-            int g = kqDarkColor.green()+ (int)((kqLightColor.green()-kqDarkColor.green())*hfc);
-            int b = kqDarkColor.blue() + (int)((kqLightColor.blue()-kqDarkColor.blue())*hfc);
-            paint.setPen(QColor(r,g,b));
-
-            v1 = m_waveformSummary.at(idx*3);
-            v2 = m_waveformSummary.at((idx+1)*3);
-            fMin = v1 + (v2-v1)*fraction;
-
-            v1 = m_waveformSummary.at(idx*3+1);
-            v2 = m_waveformSummary.at((idx+1)*3+1);
-            fMax = v1 + (v2-v1)*fraction;
-        }
-        else
-        {
-            int idxStart = (int)(i*xscale);
-            while (idxStart%3!=0 && idxStart>0)
-                idxStart--;
-
-            int idxEnd = (int)math_min((i+1)*xscale,m_waveformSummary.size());
-            while (idxEnd%3!=0 && idxEnd>0)
-                idxEnd--;
-
-            for (int j=idxStart; j<idxEnd; j+=3)
-            {
-                fMin += m_waveformSummary.at(j);
-                fMax += m_waveformSummary.at(j+1);
-            }
-            fMin /= ((idxEnd-idxStart)/2.);
-            fMax /= ((idxEnd-idxStart)/2.);
-
-            float hfc = (m_waveformSummary.at(idxStart+2)+128.)/hfcMax;
-            //qDebug() << "hfc " << hfc;
-            int r = kqDarkColor.red()  + (int)((kqLightColor.red()-kqDarkColor.red())*hfc);
-            int g = kqDarkColor.green()+ (int)((kqLightColor.green()-kqDarkColor.green())*hfc);
-            int b = kqDarkColor.blue() + (int)((kqLightColor.blue()-kqDarkColor.blue())*hfc);
-            paint.setPen(QColor(r,g,b));
-        }
-        //         qDebug() << "min " << fMin << ", max " << fMax;
-        paint.drawLine(i, height()/2-(int)(fMin*yscale), i, height()/2-(int)(fMax*yscale));
-    }
-
-    paint.end();
-    update();
 }
 
 void WOverview::mouseMoveEvent(QMouseEvent * e)
@@ -465,27 +328,15 @@ void WOverview::mousePressEvent(QMouseEvent * e)
 
 void WOverview::paintEvent(QPaintEvent *)
 {
-
-    if(!m_pScreenBuffer)
-        return;
-
-    /*
-    if (waveformChanged) {
-        redrawPixmap();
-        waveformChanged = false;
-    }
-    */
-
     QPainter painter(this);
     // Fill with transparent pixels
-    //painter.fillRect(rect(), QColor(0,0,0,0));
     painter.drawPixmap(rect(),m_backgroundPixmap);
 
     // Draw waveform, then playpos
-    //paint.drawPixmap(rect(), *m_pScreenBuffer, m_pScreenBuffer->rect());
-    painter.drawPixmap(rect(),*m_waveformPixmap);
+    if( m_waveform)
+        painter.drawPixmap(rect(),*m_waveformPixmap);
 
-    if (m_liSampleDuration > 0) {
+    if (m_sampleDuration > 0) {
         // Draw play position
         painter.setPen(m_qColorMarker);
         painter.drawLine(m_iPos,   0, m_iPos,   height());
@@ -501,11 +352,11 @@ void WOverview::paintEvent(QPaintEvent *)
         }
         painter.setPen(loopColor);
         if (m_dLoopStart != -1.0) {
-            fPos = m_dLoopStart * (width() - 2) / m_liSampleDuration;
+            fPos = m_dLoopStart * (width() - 2) / m_sampleDuration;
             painter.drawLine(fPos, 0, fPos, height());
         }
         if (m_dLoopEnd != -1.0) {
-            fPos = m_dLoopEnd * (width() - 2) / m_liSampleDuration;
+            fPos = m_dLoopEnd * (width() - 2) / m_sampleDuration;
             painter.drawLine(fPos, 0, fPos, height());
         }
 
@@ -514,8 +365,8 @@ void WOverview::paintEvent(QPaintEvent *)
             painter.setOpacity(0.5);
             //paint.setPen(loopColor);
             painter.setBrush(QBrush(loopColor));
-            float sPos = m_dLoopStart * (width() - 2) / m_liSampleDuration;
-            float ePos = m_dLoopEnd * (width() - 2) / m_liSampleDuration;
+            float sPos = m_dLoopStart * (width() - 2) / m_sampleDuration;
+            float ePos = m_dLoopEnd * (width() - 2) / m_sampleDuration;
             QRectF rect(QPointF(sPos, 0), QPointF(ePos, height()-1));
             painter.drawRect(rect);
             painter.setOpacity(1.0);
@@ -534,7 +385,7 @@ void WOverview::paintEvent(QPaintEvent *)
             int position = m_hotcues[i];
             if (position == -1)
                 continue;
-            fPos = float(position) * (width()-2) / m_liSampleDuration;
+            fPos = float(position) * (width()-2) / m_sampleDuration;
             //qDebug() << "Drawing cue" << i << "at" << fPos;
 
             painter.drawLine(fPos, 0,
@@ -565,8 +416,11 @@ void WOverview::timerEvent(QTimerEvent* timer) {
 
         //qDebug() << "timerEvent - m_actualCompletion" << m_actualCompletion << "m_waveform->size()" << m_waveform->size();
 
-        if( m_actualCompletion + m_visualSamplesByPixel >= m_waveform->size()) {
-            qDebug() << "timerEvent - kill timer";
+        //if m_waveform is empty ... actual computation do not start !
+        //it must be in the analyser queue, we need to wait until it ready to display
+        if( m_waveform->size() > 0 && m_actualCompletion + m_visualSamplesByPixel >= m_waveform->size()) {
+
+            //qDebug() << " WOverview::timerEvent - kill timer";
             killTimer(m_timerPixmapRefresh);
         }
     }

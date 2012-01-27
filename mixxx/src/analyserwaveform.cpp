@@ -42,21 +42,27 @@ void AnalyserWaveform::initialise(TrackPointer tio, int sampleRate, int totalSam
         return;
     }
 
+    m_waveform->getMutex()->lock();
+    m_waveformSummary->getMutex()->lock();
+
     destroyFilters();
     resetFilters(tio);
 
     //TODO (vrince) Do we want to expose this as settings or whatever ?
     const double mainWaveformSampleRate = 441;
-    const int mainSummaryRatio = 50;
-    const double summaryWaveformSampleRate = mainWaveformSampleRate / (double)mainSummaryRatio;
+    //two visual sample per pixel in full width overview in full hd
+    int summaryWaveformSample = 2*1920;
+
+    const double summaryWaveformSampleRate = (double)sampleRate * (double)summaryWaveformSample / (double)totalSamples;
 
     m_waveform->computeBestVisualSampleRate(sampleRate,mainWaveformSampleRate);
     m_waveformSummary->computeBestVisualSampleRate(sampleRate,summaryWaveformSampleRate);
 
-    m_waveform->allocate(totalSamples);
-    m_waveformSummary->allocate(totalSamples);
+    m_waveform->allocateForAudioSamples(totalSamples);
+    m_waveformSummary->allocateForAudioSamples(totalSamples);
 
     m_stride.init(m_waveform->getAudioSamplesPerVisualSample());
+    const double mainSummaryRatio = m_waveform->getVisualSampleRate() / m_waveformSummary->getVisualSampleRate();
     const int summaryStrideLength = mainSummaryRatio;
     m_strideSummary.init(summaryStrideLength);
     m_strideSummary.m_convertionFactor /= mainSummaryRatio;
@@ -72,6 +78,9 @@ void AnalyserWaveform::initialise(TrackPointer tio, int sampleRate, int totalSam
     test_heatMap = new QImage(256,256,QImage::Format_RGB32);
     test_heatMap->fill(0xFFFFFFFF);
 #endif
+
+    m_waveform->getMutex()->unlock();
+    m_waveformSummary->getMutex()->unlock();
 }
 
 void AnalyserWaveform::resetFilters(TrackPointer tio) {
