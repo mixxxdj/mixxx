@@ -37,12 +37,12 @@ public:
     WOverview(const char* pGroup, QWidget *parent=NULL);
     virtual ~WOverview();
     void setup(QDomNode node);
-    void setData(const QByteArray *pWaveformSummary, long liSampleDuration);
+
     void mouseMoveEvent(QMouseEvent *e);
     void mouseReleaseEvent(QMouseEvent *e);
     void mousePressEvent(QMouseEvent *e);
     void paintEvent(QPaintEvent *);
-    void redrawPixmap();
+
     QColor getMarkerColor();
     QColor getSignalColor();
 
@@ -51,8 +51,8 @@ protected:
 
 public slots:
     void setValue(double);
-    void slotLoadNewWaveform(TrackInfoObject* pTrack);
-    void slotLoadNewWaveform(TrackPointer pTrack);
+
+    void slotLoadNewTrack(TrackPointer pTrack);
     void slotUnloadTrack(TrackPointer pTrack);
 
 signals:
@@ -79,19 +79,12 @@ private:
     QPixmap* m_waveformPixmap;
 
     /** Hold the last visual sample processed to generate the pixmap*/
-    unsigned int m_actualCompletion;
+    int m_sampleDuration;
+    int m_actualCompletion;
     double m_visualSamplesByPixel;
     int m_maxPaintingTime;
 
     int m_timerPixmapRefresh;
-
-    //TODO(vRince) to be removed
-    bool waveformChanged;
-    /** Array containing waveform summary */
-    QByteArray m_waveformSummary;
-    /** Duration of current track in samples */
-    int m_liSampleDuration;
-    //--------------------------
 
     // Loop controls and values
     ControlObject* m_pLoopStart;
@@ -109,8 +102,7 @@ private:
     bool m_bDrag;
     /** Internal storage of slider position in pixels */
     int m_iPos, m_iStartMousePos;
-    /** Pointer to screen buffer */
-    QPixmap *m_pScreenBuffer;
+
     QPixmap m_backgroundPixmap;
     QString m_backgroundPixmapPath;
     QColor m_qColorBackground;

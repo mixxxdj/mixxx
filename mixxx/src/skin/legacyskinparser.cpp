@@ -62,12 +62,12 @@ LegacySkinParser::LegacySkinParser(ConfigObject<ConfigValue>* pConfig,
                                    PlayerManager* pPlayerManager,
                                    Library* pLibrary,
                                    VinylControlManager* pVCMan)
-        : m_pConfig(pConfig),
-          m_pKeyboard(pKeyboard),
-          m_pPlayerManager(pPlayerManager),
-          m_pLibrary(pLibrary),
-          m_pVCManager(pVCMan),
-          m_pParent(NULL) {
+    : m_pConfig(pConfig),
+      m_pKeyboard(pKeyboard),
+      m_pPlayerManager(pPlayerManager),
+      m_pLibrary(pLibrary),
+      m_pVCManager(pVCMan),
+      m_pParent(NULL) {
 }
 
 LegacySkinParser::~LegacySkinParser() {
@@ -407,28 +407,26 @@ QWidget* LegacySkinParser::parseOverview(QDomElement node) {
     if (pPlayer == NULL)
         return NULL;
 
-    WOverview* p = new WOverview(pSafeChannelStr, m_pParent);
+    WOverview* overviewWidget = new WOverview(pSafeChannelStr, m_pParent);
 
-    connect(p, SIGNAL(trackDropped(QString, QString)),
+    connect(overviewWidget, SIGNAL(trackDropped(QString, QString)),
             m_pPlayerManager, SLOT(slotLoadToPlayer(QString, QString)));
 
-    setupWidget(node, p);
-    p->setup(node);
-    setupConnections(node, p);
-    p->installEventFilter(m_pKeyboard);
+    setupWidget(node, overviewWidget);
+    overviewWidget->setup(node);
+    setupConnections(node, overviewWidget);
+    overviewWidget->installEventFilter(m_pKeyboard);
 
     // Connect the player's load and unload signals to the overview widget.
     connect(pPlayer, SIGNAL(newTrackLoaded(TrackPointer)),
-            p, SLOT(slotLoadNewWaveform(TrackPointer)));
+            overviewWidget, SLOT(slotLoadNewTrack(TrackPointer)));
     connect(pPlayer, SIGNAL(unloadingTrack(TrackPointer)),
-            p, SLOT(slotUnloadTrack(TrackPointer)));
+            overviewWidget, SLOT(slotUnloadTrack(TrackPointer)));
 
-    TrackPointer pTrack = pPlayer->getLoadedTrack();
-    if (pTrack) {
-        p->slotLoadNewWaveform(pTrack);
-    }
+    //just in case track already loaded
+    overviewWidget->slotLoadNewTrack(pPlayer->getLoadedTrack());
 
-    return p;
+    return overviewWidget;
 }
 
 QWidget* LegacySkinParser::parseVisual(QDomElement node) {
@@ -453,7 +451,7 @@ QWidget* LegacySkinParser::parseVisual(QDomElement node) {
 
     // Connect control proxy to widget, so delete can be handled by the QT object tree
     ControlObjectThreadWidget * p = new ControlObjectThreadWidget(
-        ControlObject::getControl(ConfigKey(channelStr, "wheel"))/*, viewer*/);
+                ControlObject::getControl(ConfigKey(channelStr, "wheel"))/*, viewer*/);
 
     p->setWidget((QWidget *)viewer, true, true,
                  ControlObjectThreadWidget::EMIT_ON_PRESS, Qt::LeftButton);
@@ -618,12 +616,12 @@ QWidget* LegacySkinParser::parseLabel(QDomElement node) {
 }
 
 QWidget* LegacySkinParser::parseTime(QDomElement node) {
-   WTime *p = new WTime(m_pParent);
-   setupWidget(node, p);
-   p->setup(node);
-   setupConnections(node, p);
-   p->installEventFilter(m_pKeyboard);
-   return p;
+    WTime *p = new WTime(m_pParent);
+    setupWidget(node, p);
+    p->setup(node);
+    setupConnections(node, p);
+    p->installEventFilter(m_pKeyboard);
+    return p;
 }
 
 QWidget* LegacySkinParser::parseKnob(QDomElement node) {

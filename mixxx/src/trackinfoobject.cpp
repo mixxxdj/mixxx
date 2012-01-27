@@ -686,6 +686,7 @@ void TrackInfoObject::setId(int iId) {
 
 
 //TODO (vrince) remove clen-up when new summary is ready
+/*
 const QByteArray *TrackInfoObject::getWaveSummary()
 {
     QMutexLocker lock(&m_qMutex);
@@ -699,7 +700,7 @@ void TrackInfoObject::setWaveSummary(const QByteArray* pWave, bool updateUI)
     setDirty(true);
     lock.unlock();
     emit(wavesummaryUpdated(this));
-}
+}*/
 
 void TrackInfoObject::setURL(QString url)
 {

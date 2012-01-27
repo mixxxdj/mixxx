@@ -273,8 +273,13 @@ void TrackDAO::bindTrackToLibraryInsert(
 
     query.bindValue(":replaygain", pTrack->getReplayGain());
     query.bindValue(":key", pTrack->getKey());
-    const QByteArray* pWaveSummary = pTrack->getWaveSummary();
-    query.bindValue(":wavesummaryhex", pWaveSummary ? *pWaveSummary : QVariant(QVariant::ByteArray));
+
+    //TODO(vrince) re-introduce save waveform
+    //const QByteArray* pWaveSummary = pTrack->getWaveSummary();
+    //query.bindValue(":wavesummaryhex", pWaveSummary ? *pWaveSummary : QVariant(QVariant::ByteArray));
+
+    query.bindValue(":wavesummaryhex", QVariant(QVariant::ByteArray));
+
     query.bindValue(":timesplayed", pTrack->getTimesPlayed());
     //query.bindValue(":datetime_added", pTrack->getDateAdded());
     query.bindValue(":channels", pTrack->getChannels());
@@ -603,7 +608,10 @@ TrackPointer TrackDAO::getTrackFromDB(QSqlQuery &query) const {
         pTrack->setCuePoint((float)cuepoint);
         pTrack->setBpm(bpm.toFloat());
         pTrack->setReplayGain(replaygain.toFloat());
-        pTrack->setWaveSummary(wavesummaryhex, false);
+
+        //TODO(vrince) reintroduce waveform in bd
+        //pTrack->setWaveSummary(wavesummaryhex, false);
+
         delete wavesummaryhex;
 
         QString beatsVersion = query.value(query.record().indexOf("beats_version")).toString();
@@ -772,8 +780,12 @@ void TrackDAO::updateTrack(TrackInfoObject* pTrack) {
     query.bindValue(":replaygain", pTrack->getReplayGain());
     query.bindValue(":key", pTrack->getKey());
     query.bindValue(":rating", pTrack->getRating());
-    const QByteArray* pWaveSummary = pTrack->getWaveSummary();
-    query.bindValue(":wavesummaryhex", pWaveSummary ? *pWaveSummary : QVariant(QVariant::ByteArray));
+
+    //TODO(vrince) reintroduce waveform in db
+    //const QByteArray* pWaveSummary = pTrack->getWaveSummary();
+    //query.bindValue(":wavesummaryhex", pWaveSummary ? *pWaveSummary : QVariant(QVariant::ByteArray));
+    query.bindValue(":wavesummaryhex", QVariant(QVariant::ByteArray));
+
     query.bindValue(":timesplayed", pTrack->getTimesPlayed());
     query.bindValue(":played", pTrack->getPlayed());
     query.bindValue(":channels", pTrack->getChannels());
