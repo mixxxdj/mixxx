@@ -23,6 +23,7 @@
 #include "controller.h"
 
 class HidController : public Controller {
+Q_OBJECT    // For Q_INVOKABLE
     public:
         HidController(const hid_device_info deviceInfo);
         ~HidController();
@@ -30,6 +31,7 @@ class HidController : public Controller {
         int close();
         //  For devices which only support a single report, reportID must be set to 0x0.
         void send(unsigned char data[], unsigned int length, unsigned int reportID = 0);
+        Q_INVOKABLE void send(QList<int> data, unsigned int length, unsigned int reportID = 0);
 
     protected:
         hid_device_info m_deviceInfo;

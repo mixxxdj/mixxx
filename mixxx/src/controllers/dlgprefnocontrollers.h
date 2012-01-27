@@ -18,7 +18,7 @@
 #ifndef DLGPREFNOCONTROLLERS_H
 #define DLGPREFNOCONTROLLERS_H
 
-#include "ui_dlgprefnocontrollersdlg.h"
+#include "controllers/ui_dlgprefnocontrollersdlg.h"
 #include "configobject.h"
 
 //class QWidget;

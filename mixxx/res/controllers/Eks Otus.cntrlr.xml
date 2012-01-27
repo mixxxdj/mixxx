@@ -7,7 +7,7 @@
     </info>
         <controller id="EKS Otus">
             <scriptfiles>
-                <file filename="EKS-Otus.js" functionprefix="EksOtus"/>
+                <file filename="EKS Otus.js" functionprefix="EksOtus"/>
             </scriptfiles>
         </controller>
-</MixxxMIDIPreset> 
+</MixxxControllerPreset>

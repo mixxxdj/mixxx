@@ -18,7 +18,7 @@
 #define DLGPREFMIDIBINDINGS_H_
 
 #include <QtGui>
-#include "ui_dlgprefmidibindingsdlg.h"
+#include "controllers/midi/ui_dlgprefmidibindingsdlg.h"
 #include "dlgmidilearning.h"
 #include "configobject.h"
 

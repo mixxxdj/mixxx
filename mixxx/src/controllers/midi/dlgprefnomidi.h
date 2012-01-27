@@ -18,7 +18,7 @@
 #ifndef DLGPREFNOMIDI_H
 #define DLGPREFNOMIDI_H
 
-#include "ui_dlgprefnomididlg.h"
+#include "controllers/midi/ui_dlgprefnomididlg.h"
 #include "configobject.h"
 
 //class QWidget;

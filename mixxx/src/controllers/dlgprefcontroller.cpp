@@ -17,9 +17,10 @@
 #include <QtGui>
 #include <QDebug>
 #include "dlgprefcontroller.h"
-#include "controllers/controller.h"
-#include "controllers/controllermanager.h"
+#include "controller.h"
+#include "controllermanager.h"
 #include "configobject.h"
+#include "defs_controllers.h"
 
 DlgPrefController::DlgPrefController(QWidget *parent, Controller* controller,
                                          ControllerManager* controllerManager,
@@ -35,6 +36,7 @@ DlgPrefController::DlgPrefController(QWidget *parent, Controller* controller,
 
     labelDeviceName->setText(m_pController->getName());
 
+    connect(comboBoxPreset, SIGNAL(activated(const QString&)), this, SLOT(slotLoadPreset(const QString&)));
     connect(comboBoxPreset, SIGNAL(activated(const QString&)), this, SLOT(slotDirty()));
     
     //Load the list of presets into the presets combobox.
@@ -94,7 +96,7 @@ void DlgPrefController::slotUpdate() {
  */
 void DlgPrefController::slotApply() {
     /* User has pressed OK, so enable or disable the device, write the
-     * controls to the DOM, and reload the MIDI bindings.  FIXED: only
+     * controls to the DOM, and reload the presets.  FIXED: only
      * do this if the user has changed the preferences.
      */
     if (m_bDirty)
@@ -102,11 +104,29 @@ void DlgPrefController::slotApply() {
         if (chkEnabledDevice->isChecked()) {
             //Enable the device.
             enableDevice();
-//             m_pController->getMidiMapping()->applyPreset();
+            m_pController->applyPreset();
         }
         else disableDevice();
     }
-    m_bDirty = false;    
+    m_bDirty = false;
+}
+
+/* slotLoadPreset()
+* Loads the specified XML preset.
+*/
+void DlgPrefController::slotLoadPreset(const QString &name) {
+    
+    if (name == "...")
+        return;
+    
+    QString filename = LPRESETS_PATH + name + CONTROLLER_PRESET_EXTENSION;
+    QFile ftest(filename);
+    if ( !ftest.exists() ) filename = m_pConfig->getConfigPath().append("controllers/") + name + CONTROLLER_PRESET_EXTENSION;
+    
+    if (!filename.isNull()) m_pController->loadPreset(filename, true);    // It's applied on prefs close
+
+    // Save the file path/name in the config so it can be auto-loaded at startup next time
+    m_pConfig->set(ConfigKey("[ControllerPreset]", m_pController->getName().replace(" ", "_")), filename);
 }
 
 void DlgPrefController::slotDeviceState(int state) {

@@ -16,12 +16,7 @@
 
 // #include <QtCore>
 #include "controllermanager.h"
-
-#define LPRESETS_PATH QDir::homePath().append("/").append(SETTINGS_PATH).append("presets/")
-#define CONTROLLER_PRESET_EXTENSION ".cntrlr.xml"
-#define MIDI_MAPPING_EXTENSION ".midi.xml"
-#define DEFAULT_DEVICE_PRESET BINDINGS_PATH.append(m_deviceName.replace(" ", "_") + CONTROLLER_PRESET_EXTENSION)
-#define DEFAULT_MIDI_DEVICE_PRESET BINDINGS_PATH.append(m_deviceName.right(m_deviceName.size()-m_deviceName.indexOf(" ")-1).replace(" ", "_") + MIDI_MAPPING_EXTENSION)
+#include "defs_controllers.h"
 
 ControllerManager::ControllerManager(ConfigObject<ConfigValue> * pConfig) : QObject()
 {
@@ -45,6 +40,8 @@ ControllerManager::~ControllerManager()
 #ifdef __OSC__
     delete m_pOSCEnumerator;
 #endif
+    // Stop Engine thread
+    
 }
 
 QList<Controller*> ControllerManager::getControllerList(bool bOutputDevices, bool bInputDevices)
@@ -83,10 +80,13 @@ QList<Controller*> ControllerManager::getControllerList(bool bOutputDevices, boo
 /** Open whatever controllers are selected in the preferences. */
 int ControllerManager::setupDevices()
 {
+    qDebug() << "ControllerManager: Setting up devices";
+
+    // Start thread under which all ControllerEngines will run
+    
+    
     QList<Controller*> deviceList = getControllerList(false, true);
     QListIterator<Controller*> it(deviceList);
-
-    qDebug() << "ControllerManager: Setting up devices";
 
     QList<QString> filenames;
     int error = 0;
@@ -109,7 +109,9 @@ int ControllerManager::setupDevices()
         }
 
         filenames.append(filename);
-//         mapping->loadPreset(BINDINGS_PATH.append(filename + MIDI_MAPPING_EXTENSION),true);
+        m_pConfig->getValueString(ConfigKey("[ControllerPreset]", name.replace(" ", "_")));
+        qDebug() << "ControllerPreset" << m_pConfig->getValueString(ConfigKey("[ControllerPreset]", name.replace(" ", "_")));
+        cur->loadPreset(PRESETS_PATH.append(filename + CONTROLLER_PRESET_EXTENSION),true);
 
         if ( m_pConfig->getValueString(ConfigKey("[Controller]", name.replace(" ", "_"))) != "1" )
             continue;
@@ -122,7 +124,7 @@ int ControllerManager::setupDevices()
             if (error==0) error=value;
             continue;
         }
-//         mapping->applyPreset();
+        cur->applyPreset();
     }
     return error;
 }
@@ -145,19 +147,12 @@ QList<QString> ControllerManager::getPresetList(bool midi)
         {
             it.next(); //Advance iterator. We get the filename from the next line. (It's a bit weird.)
             QString curMapping = it.fileName();
-            if(midi) {
-                if (curMapping.endsWith(MIDI_MAPPING_EXTENSION)) //blah, thanks for nothing Qt
-                {
-                    curMapping.chop(QString(MIDI_MAPPING_EXTENSION).length()); //chop off the extension
-                    presets.append(curMapping);
-                }
-            }
-            else {
-                if (curMapping.endsWith(CONTROLLER_PRESET_EXTENSION)) //blah, thanks for nothing Qt
-                {
-                    curMapping.chop(QString(CONTROLLER_PRESET_EXTENSION).length()); //chop off the extension
-                    presets.append(curMapping);
-                }
+            QString extension = CONTROLLER_PRESET_EXTENSION;
+            if(midi) extension = MIDI_MAPPING_EXTENSION;
+            if (curMapping.endsWith(extension)) //blah, thanks for nothing Qt
+            {
+                curMapping.chop(QString(extension).length()); //chop off the extension
+                presets.append(curMapping);
             }
         }
     }

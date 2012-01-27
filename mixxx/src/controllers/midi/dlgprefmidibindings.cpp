@@ -179,7 +179,7 @@ void DlgPrefMidiBindings::enumeratePresets()
     // paths to search for midi presets
     QList<QString> midiDirPaths;
     midiDirPaths.append(LPRESETS_PATH);
-    midiDirPaths.append(m_pConfig->getConfigPath().append("midi/"));
+    midiDirPaths.append(m_pConfig->getConfigPath().append("controllers/"));
 
     QListIterator<QString> itpth(midiDirPaths);
     while (itpth.hasNext()) {
