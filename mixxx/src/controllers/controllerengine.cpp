@@ -54,6 +54,8 @@ ControllerEngine::ControllerEngine(Controller* controller) :
         m_pitchFilter[i]=new PitchFilter(); // allocate RAM at startup
         m_ramp[i] = false;
     }
+
+    initializeScriptEngine();
 }
 
 ControllerEngine::~ControllerEngine() {
@@ -85,12 +87,6 @@ void ControllerEngine::gracefulShutdown() {
     // Clear the m_connectedControls hash so we stop responding
     // to signals.
     m_connectedControls.clear();
-
-    // Disconnect the function call signal
-    if (m_pController)
-        disconnect(m_pController, SIGNAL(callControllerFunction(QString, char, char,
-                                                                char, MidiStatusByte, QString)),
-                   this, SLOT(execute(QString, char, char, char, MidiStatusByte, QString)));
 
     // Stop all timers
     stopAllTimers();
@@ -137,9 +133,9 @@ bool ControllerEngine::isReady() {
     
     return ret;
 }
-
+// 
 void ControllerEngine::initializeScriptEngine() {
-    // Create the ControllerEngine
+    // Create the script engine
     m_pEngine = new QScriptEngine(this);
 
     // Make this ControllerEngine instance available to scripts as
@@ -179,6 +175,7 @@ void ControllerEngine::loadScriptFiles(QList<QString> scriptFileNames) {
     QListIterator<QString> it(scriptFileNames);
     
     while (it.hasNext()) {
+        
         QString curScriptFileName = it.next();
         evaluate(curScriptFileName, scriptPaths);
 
@@ -292,17 +289,23 @@ bool ControllerEngine::internalExecute(QString scriptCode) {
 
     QScriptValue scriptFunction = m_pEngine->evaluate(scriptCode);
 
-    if (checkException())
+    if (checkException()) {
+        qDebug() << "Exception";
         return false;
+    }
 
     // If it's not a function, we're done.
-    if (!scriptFunction.isFunction())
+    if (!scriptFunction.isFunction()) {
+        qDebug() << "Not a function";
         return true;
+    }
 
     // If it does happen to be a function, call it.
     scriptFunction.call(QScriptValue());
-    if (checkException())
+    if (checkException()) {
+        qDebug() << "Exception";
         return false;
+    }
 
     return true;
 }
@@ -315,22 +318,29 @@ bool ControllerEngine::internalExecute(QString scriptCode) {
 bool ControllerEngine::execute(QString function, QString data) {
 
     if(m_pEngine == NULL) {
+        qDebug() << "ControllerEngine::execute: No script engine exists!";
         return false;
     }
 
     QScriptValue scriptFunction = m_pEngine->evaluate(function);
 
-    if (checkException())
+    if (checkException()){
+        qDebug() << "ControllerEngine::execute: Exception";
         return false;
-    if (!scriptFunction.isFunction())
+    }
+    if (!scriptFunction.isFunction()){
+        qDebug() << "ControllerEngine::execute: Not a function";
         return false;
+    }
 
     QScriptValueList args;
     args << QScriptValue(data);
 
     scriptFunction.call(QScriptValue(), args);
-    if (checkException())
+    if (checkException()){
+        qDebug() << "ControllerEngine::execute: Exception";
         return false;
+    }
     return true;
 }
 

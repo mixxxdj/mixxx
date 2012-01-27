@@ -283,11 +283,12 @@ class MixxxCore(Feature):
                    "dlgpreferences.cpp",
                    "dlgprefsound.cpp",
                    "dlgprefsounditem.cpp",
-                   "dlgprefcontroller.cpp",
-                   "dlgprefmidibindings.cpp",
+                   "controllers/dlgprefcontroller.cpp",
+                   "controllers/dlgprefnocontrollers.cpp",
+                   "controllers/midi/dlgprefnomidi.cpp",
+                   "controllers/midi/dlgprefmidibindings.cpp",
+                   "controllers/midi/dlgmidilearning.cpp",
                    "dlgprefplaylist.cpp",
-                   "dlgprefnocontrollers.cpp",
-                   "dlgprefnomidi.cpp",
                    "dlgprefcontrols.cpp",
                    "dlgprefbpm.cpp",
                    "dlgprefreplaygain.cpp",
@@ -296,7 +297,6 @@ class MixxxCore(Feature):
                    "dlgabout.cpp",
                    "dlgprefeq.cpp",
                    "dlgprefcrossfader.cpp",
-                   "dlgmidilearning.cpp",
                    "dlgtrackinfo.cpp",
                    "dlgprepare.cpp",
                    "dlgautodj.cpp",
@@ -543,11 +543,14 @@ class MixxxCore(Feature):
         # the code for the QT UI forms
         build.env.Uic4('dlgpreferencesdlg.ui')
         build.env.Uic4('dlgprefsounddlg.ui')
-        build.env.Uic4('dlgprefcontrollerdlg.ui')
-        build.env.Uic4('dlgprefmidibindingsdlg.ui')
+        
+        build.env.Uic4('controllers/dlgprefcontrollerdlg.ui')
+        build.env.Uic4('controllers/dlgprefnocontrollersdlg.ui')
+        build.env.Uic4('controllers/midi/dlgprefnomididlg.ui')
+        build.env.Uic4('controllers/midi/dlgprefmidibindingsdlg.ui')
+        build.env.Uic4('controllers/midi/dlgmidilearning.ui')
+        
         build.env.Uic4('dlgprefplaylistdlg.ui')
-        build.env.Uic4('dlgprefnocontrollersdlg.ui')
-        build.env.Uic4('dlgprefnomididlg.ui')
         build.env.Uic4('dlgprefcontrolsdlg.ui')
         build.env.Uic4('dlgprefeqdlg.ui')
         build.env.Uic4('dlgprefcrossfaderdlg.ui')
@@ -559,7 +562,6 @@ class MixxxCore(Feature):
         build.env.Uic4('dlgprefnovinyldlg.ui')
         build.env.Uic4('dlgprefrecorddlg.ui')
         build.env.Uic4('dlgaboutdlg.ui')
-        build.env.Uic4('dlgmidilearning.ui')
         build.env.Uic4('dlgtrackinfo.ui')
         build.env.Uic4('dlgprepare.ui')
         build.env.Uic4('dlgautodj.ui')

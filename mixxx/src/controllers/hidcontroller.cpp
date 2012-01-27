@@ -51,7 +51,7 @@ int HidController::open() {
     if (debugging()) qDebug() << "Opening HID device" << m_sDeviceName;
     
     // Open Device
-    // FIXME: figure out why trying to open the device including the serial number fails
+    // FIXME: figure out why trying to open the device including the serial number fails on Linux
 //     m_pHidDevice = hid_open(m_deviceInfo.vendor_id, m_deviceInfo.product_id, m_deviceInfo.serial_number);
     m_pHidDevice = hid_open(m_deviceInfo.vendor_id, m_deviceInfo.product_id, NULL);
     if (m_pHidDevice == NULL) {
@@ -66,6 +66,7 @@ int HidController::open() {
     
     // ControllerManager starts the script engine at the appropriate time,
     //  so don't do it here.
+    startEngine();
     
     return 0;
 }
@@ -90,6 +91,19 @@ int HidController::close() {
     return 0;
 }
 
+void HidController::send(QList<int> data, unsigned int length, unsigned int reportID) {
+    
+    unsigned char * msg;
+    msg = new unsigned char [length];
+    
+    for (unsigned int i=0; i<length; i++) {
+        msg[i] = data.at(i);
+    }
+    
+    send(msg,length,reportID);
+    delete[] msg;
+}
+
 void HidController::send(unsigned char data[], unsigned int length, unsigned int reportID) {
     
     if (debugging()) qDebug() << "Sending" << length << "data bytes to" << m_sDeviceName;
@@ -101,7 +115,7 @@ void HidController::send(unsigned char data[], unsigned int length, unsigned int
     
     int result = hid_write(m_pHidDevice, buffer, length+1);
     if (result==-1) qWarning() << "Unable to send data to" << m_sDeviceName << ":" << hid_error(m_pHidDevice);
-    else if (debugging()) qDebug() << "      " << result << "bytes sent";
+    else if (debugging()) qDebug() << "       " << result << "bytes sent (including report ID of" << reportID << ")";
 
     free(buffer);
 }

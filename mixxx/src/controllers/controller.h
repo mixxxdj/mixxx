@@ -43,6 +43,12 @@ Q_OBJECT
         void receive(const unsigned char data[], unsigned int length);
         bool debugging() { return m_bDebug; };
 
+        void loadPreset(bool forceLoad=false);
+        void loadPreset(QString path, bool forceLoad=false);
+        void loadPreset(QDomElement root, bool forceLoad=false);
+
+        void applyPreset();
+
     protected:
         /** Verbose device name, in format "[index]. [device name]". Suitable for display in GUI. */
         QString m_sDeviceName;
@@ -57,7 +63,12 @@ Q_OBJECT
         bool m_bDebug;
         
     private:
-        ControllerEngine *m_pScriptEngine;
+        /** Adds a script file name and function prefix to the list to be loaded */
+        void addScriptFile(QString filename, QString functionprefix);
+        
+        QList<QString> m_scriptFileNames;
+        QList<QString> m_scriptFunctionPrefixes;
+        ControllerEngine *m_pControllerEngine;
 };
 
 #endif

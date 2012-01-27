@@ -77,7 +77,12 @@ script.absoluteNonLin = function (value, low, mid, high, min, max) {
     if (!max) max = 127;
     var center = (max-min)/2;
     if (value<=center) return value/(center/(mid-low));
-    else return 1+(value-63)/(center/(high-mid));
+    else return 1+(value-center)/(center/(high-mid));
+}
+
+
+script.pitch = function (LSB, MSB, status) {
+    script.midiPitch(LSB, MSB, status);
 }
 
 /* -------- ------------------------------------------------------
@@ -89,10 +94,6 @@ script.absoluteNonLin = function (value, low, mid, high, min, max) {
    Output:  Value for a "rate" control, or false if the input MIDI
             message was not a Pitch message (0xE#)
    -------- ------------------------------------------------------ */
-script.pitch = function (LSB, MSB, status) {
-    script.midiPitch(LSB, MSB, status);
-}
-
 script.midiPitch = function (LSB, MSB, status) {
     if ((status & 0xF0) != 0xE0) {  // Mask the upper nybble so we can check the opcode regardless of the channel
         print("Script.midiPitch: Error, not a MIDI pitch (0xEn) message: "+status);
@@ -147,8 +148,8 @@ bpm.tapButton = function(deck) {
 // ----------------- Object definitions --------------------------
 
 
-ButtonState = {"released":0x00, "pressed":0x7F};
-LedState =  {"off": 0x00, "on": 0x7F};
+MidiButtonState = {"released":0x00, "pressed":0x7F};
+MidiLedState =  {"off": 0x00, "on": 0x7F};
 
 //Controller
 function Controller () {
@@ -184,9 +185,12 @@ Button.prototype.handleEvent = function(value) {
 
 //Control
 function Control(mappedFunction, softMode) {
+   // These defaults are for MIDI controllers
    this.minInput = 0;
    this.midInput = 0x3F;
    this.maxInput = 0x7F;
+   // ----
+   
    this.minOutput = -1.0;
    this.midOutput = 0.0;
    this.maxOutput = 1.0;
@@ -226,5 +230,18 @@ Deck = function (deckNumber, group) {
 }
 Deck.prototype.setControlValue = Controller.prototype.setControlValue;
 Deck.prototype.addButton = Controller.prototype.addButton;
+
+// Data packet
+function Packet(length, initialValue) {
+    this.length = length;
+    this.data = new Array(length);  // Size the array
+
+    if (!initialValue) initialValue=0;
+
+    // Initialize data values
+    for (i=0; i<this.length; i++) {
+        this.data[i]=initialValue;
+    }
+}
 
 // ----------------- END Object definitions ----------------------

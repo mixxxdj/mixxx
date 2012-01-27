@@ -36,7 +36,7 @@
 class MidiInputMappingTableModel;
 class MidiOutputMappingTableModel;
 
-#define BINDINGS_PATH QDir::homePath().append("/").append(SETTINGS_PATH).append("midi/")
+#define BINDINGS_PATH QDir::homePath().append("/").append(SETTINGS_PATH).append("controllers/")
 // local midi mapping presets
 #ifndef LPRESETS_PATH
     #define LPRESETS_PATH QDir::homePath().append("/").append(SETTINGS_PATH).append("presets/")

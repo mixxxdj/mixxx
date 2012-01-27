@@ -18,7 +18,7 @@
 #define DLGPREFCONTROLLER_H_
 
 #include <QtGui>
-#include "ui_dlgprefcontrollerdlg.h"
+#include "controllers/ui_dlgprefcontrollerdlg.h"
 #include "configobject.h"
 
 //Forward declarations
@@ -30,7 +30,7 @@ class DlgPrefController : public QWidget, public Ui::DlgPrefControllerDlg  {
 public:
     DlgPrefController(QWidget *parent, Controller* controller,
                         ControllerManager* controllerManager,
-    					ConfigObject<ConfigValue> *pConfig);
+                        ConfigObject<ConfigValue> *pConfig);
     ~DlgPrefController();
 
 
@@ -38,6 +38,7 @@ public slots:
     void slotUpdate();
     void slotApply();
     void slotDeviceState(int state);
+    void slotLoadPreset(const QString &name);
 
     //Mark that we need to apply the settings.
     void slotDirty ();

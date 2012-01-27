@@ -22,7 +22,7 @@
 #include <QtGui>
 #include <QPair>
 
-#include "ui_dlgmidilearning.h"
+#include "controllers/midi/ui_dlgmidilearning.h"
 #include "configobject.h"
 #include "mixxxcontrol.h"
 #include "controllers/midi/midimessage.h"
