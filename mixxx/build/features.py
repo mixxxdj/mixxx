@@ -72,17 +72,17 @@ class HID(Feature):
         build.env.Append(CPPDEFINES = '__HID__')
 
     def sources(self, build):
-        build.env.Append(CPPPATH=['#lib/hidapi-0.6.0/hidapi'])
+        build.env.Append(CPPPATH=['#lib/hidapi-0.7.0/hidapi'])
         build.env.ParseConfig('pkg-config libusb-1.0 --silence-errors --cflags --libs')
         sources = SCons.Split("""controllers/hidcontroller.cpp
                             controllers/hidenumerator.cpp
                             """)
         if build.platform_is_windows:
-            sources.append("#lib/hidapi-0.6.0/windows/hid.cpp")
+            sources.append("#lib/hidapi-0.7.0/windows/hid.c")
         elif build.platform_is_osx:
-            sources.append("#lib/hidapi-0.6.0/mac/hid.c")
+            sources.append("#lib/hidapi-0.7.0/mac/hid.c")
         else:
-            sources.append("#lib/hidapi-0.6.0/linux/hid-libusb.c")
+            sources.append("#lib/hidapi-0.7.0/linux/hid-libusb.c")
         return sources
 
 class Mad(Feature):
