@@ -51,7 +51,7 @@ int HidController::open() {
     if (debugging()) qDebug() << "Opening HID device" << m_sDeviceName;
     
     // Open Device
-    // FIXME: figure out why trying to open the device including the serial number fails on Linux
+    // FIXME: figure out why trying to open the device including the serial number fails (on Linux at least)
 //     m_pHidDevice = hid_open(m_deviceInfo.vendor_id, m_deviceInfo.product_id, m_deviceInfo.serial_number);
     m_pHidDevice = hid_open(m_deviceInfo.vendor_id, m_deviceInfo.product_id, NULL);
     if (m_pHidDevice == NULL) {
@@ -63,9 +63,7 @@ int HidController::open() {
     hid_set_nonblocking(m_pHidDevice, 1);
         
     m_bIsOpen = true;
-    
-    // ControllerManager starts the script engine at the appropriate time,
-    //  so don't do it here.
+
     startEngine();
     
     return 0;
@@ -79,7 +77,7 @@ int HidController::close() {
     
     qDebug() << "Shutting down HID device" << m_sDeviceName;
     
-    // Stop script engine here to ensure it's done before the device is closed
+    // Stop controller engine here to ensure it's done before the device is closed
     stopEngine();
     
     // Close device
