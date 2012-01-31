@@ -11,14 +11,14 @@ msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2011-12-26 09:32+0200\n"
-"PO-Revision-Date: 2011-12-26 15:52+0000\n"
-"Last-Translator: Monkey <monkey.libre@gmail.com>\n"
+"PO-Revision-Date: 2012-01-30 05:42+0000\n"
+"Last-Translator: Fitoschido <fitoschido@gmail.com>\n"
 "Language-Team: Galician <gl@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-12-27 05:07+0000\n"
-"X-Generator: Launchpad (build 14560)\n"
+"X-Launchpad-Export-Date: 2012-01-31 05:27+0000\n"
+"X-Generator: Launchpad (build 14734)\n"
 
 #: AutoDJFeature#1
 msgid "Auto DJ"
@@ -550,11 +550,11 @@ msgstr "Predeterminado"
 
 #: DlgPrefBpm#1
 msgid "Error"
-msgstr "Erro"
+msgstr "Error"
 
 #: DlgPrefBpm#2
 msgid "Cannot open file %1"
-msgstr "Non é posíbel abrir o ficheiro %1"
+msgstr "No se puede abrir el archivo %1"
 
 #: DlgPrefControls#1
 msgid "This skin does not support schemes"
@@ -1516,7 +1516,7 @@ msgstr "Formato"
 
 #: DlgPrefShoutcastDlg#42
 msgid "Ogg Vorbis"
-msgstr "Ogg-Vorbis"
+msgstr "Ogg Vorbis"
 
 #: DlgPrefShoutcastDlg#43
 msgid "MP3"
@@ -1878,7 +1878,7 @@ msgstr "Xestionar"
 
 #: DlgPrepare#2
 msgid "New"
-msgstr ""
+msgstr "Nuevo"
 
 #: DlgPrepare#3
 msgid "All"
@@ -2799,7 +2799,7 @@ msgstr "Mostra Mixxx usando a pantalla completa"
 #: MixxxApp#77
 msgctxt "MixxxApp#77"
 msgid "Preferences"
-msgstr ""
+msgstr "Preferencias"
 
 #: MixxxApp#78
 msgid ""
@@ -3201,11 +3201,11 @@ msgstr "Cerrar"
 
 #: ScriptStudio#6
 msgid "Import..."
-msgstr "importar..."
+msgstr "Importar…"
 
 #: ScriptStudio#7
 msgid "Export..."
-msgstr "Exportar..."
+msgstr "Exportar…"
 
 #: ScriptStudio#8
 msgid "Delete Macro"
