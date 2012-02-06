@@ -28,6 +28,9 @@ Q_OBJECT
         ControllerEnumerator();
         virtual ~ControllerEnumerator();
         virtual QList<Controller*> queryDevices() = 0;
+        /** Sub-classes return true here if their devices must be polled
+            to get data from the controler. */
+        virtual bool needPolling() { return false; };
 };
 
 #endif

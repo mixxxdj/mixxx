@@ -45,6 +45,10 @@ public slots:
     
 signals:
     void deviceStateChanged(DlgPrefController*, bool);
+    void openController();
+    void closeController();
+    void loadPreset(QString filename, bool forceLoad);
+    void applyPreset();
 
 private:
     void savePreset(QString path);

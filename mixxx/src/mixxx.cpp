@@ -358,9 +358,12 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
     qRegisterMetaType<MidiMessage>("MidiMessage");
     qRegisterMetaType<MidiStatusByte>("MidiStatusByte");
 
-    // Initialize controllers
+    // Initialize controller sub-system,
+    //  but do not set up controllers until the end of the application startup
+    qDebug() << "Creating ControllerManager";
     m_pControllerManager = new ControllerManager(m_pConfig);
-    m_pControllerManager->setupDevices();
+    m_pControllerManager->startThread();
+
     // Initialise midi
     m_pMidiDeviceManager = new MidiDeviceManager(m_pConfig);
     m_pMidiDeviceManager->setupDevices();
@@ -470,6 +473,10 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
             "+bug/521509)";
         rebootMixxxView();
     } */
+
+    // Wait until all other ControlObjects are set up
+    //  before initializing controllers
+    m_pControllerManager->setUpDevices();
 }
 
 MixxxApp::~MixxxApp()
@@ -479,7 +486,7 @@ MixxxApp::~MixxxApp()
 
     qDebug() << "Destroying MixxxApp";
 
-    qDebug() << "save config, " << qTime.elapsed();
+    qDebug() << "save config " << qTime.elapsed();
     m_pConfig->Save();
 
     // Save state of End of track controls in config database
@@ -487,52 +494,53 @@ MixxxApp::~MixxxApp()
     //m_pConfig->set(ConfigKey("[Controls]","TrackEndModeCh2"), ConfigValue((int)ControlObject::getControl(ConfigKey("[Channel2]","TrackEndMode"))->get()));
 
     // SoundManager depend on Engine and Config
-    qDebug() << "delete soundmanager, " << qTime.elapsed();
+    qDebug() << "delete soundmanager " << qTime.elapsed();
     delete m_pSoundManager;
 
 #ifdef __VINYLCONTROL__
     // VinylControlManager depends on a CO the engine owns
     // (vinylcontrol_enabled in VinylControlControl)
-    qDebug() << "delete vinylcontrolmanager, " << qTime.elapsed();
+    qDebug() << "delete vinylcontrolmanager " << qTime.elapsed();
     delete m_pVCManager;
 #endif
 
     // View depends on MixxxKeyboard, PlayerManager, Library
-    qDebug() << "delete view, " << qTime.elapsed();
+    qDebug() << "delete view " << qTime.elapsed();
     delete m_pView;
 
     // SkinLoader depends on Config
-    qDebug() << "delete SkinLoader";
+    qDebug() << "delete SkinLoader " << qTime.elapsed();
     delete m_pSkinLoader;
 
     // MIDIDeviceManager depends on Config
-    qDebug() << "delete MidiDeviceManager";
+    qDebug() << "delete MidiDeviceManager " << qTime.elapsed();
     delete m_pMidiDeviceManager;
     
     // ControllerManager depends on Config
-    qDebug() << "delete ControllerManager";
+    qDebug() << "shutdown & delete ControllerManager " << qTime.elapsed();
+    m_pControllerManager->shutdown();
     delete m_pControllerManager;
 
     // PlayerManager depends on Engine, Library, and Config
-    qDebug() << "delete playerManager" << qTime.elapsed();
+    qDebug() << "delete playerManager " << qTime.elapsed();
     delete m_pPlayerManager;
 
     // EngineMaster depends on Config
-    qDebug() << "delete m_pEngine, " << qTime.elapsed();
+    qDebug() << "delete m_pEngine " << qTime.elapsed();
     delete m_pEngine;
 
     // LibraryScanner depends on Library
-    qDebug() << "delete library scanner" <<  qTime.elapsed();
+    qDebug() << "delete library scanner " <<  qTime.elapsed();
     delete m_pLibraryScanner;
 
     // Delete the library after the view so there are no dangling pointers to
     // Depends on RecordingManager
     // the data models.
-    qDebug() << "delete library" << qTime.elapsed();
+    qDebug() << "delete library " << qTime.elapsed();
     delete m_pLibrary;
 
     // RecordingManager depends on config
-    qDebug() << "delete RecordingManager" << qTime.elapsed();
+    qDebug() << "delete RecordingManager " << qTime.elapsed();
     delete m_pRecordingManager;
 
     // HACK: Save config again. We saved it once before doing some dangerous
@@ -545,7 +553,7 @@ MixxxApp::~MixxxApp()
     m_pConfig->Save();
     delete m_pPrefDlg;
 
-    qDebug() << "delete config, " << qTime.elapsed();
+    qDebug() << "delete config " << qTime.elapsed();
     delete m_pConfig;
 
     // Check for leaked ControlObjects and give warnings.

@@ -39,6 +39,11 @@ DlgPrefController::DlgPrefController(QWidget *parent, Controller* controller,
     connect(comboBoxPreset, SIGNAL(activated(const QString&)), this, SLOT(slotLoadPreset(const QString&)));
     connect(comboBoxPreset, SIGNAL(activated(const QString&)), this, SLOT(slotDirty()));
     
+    connect(this, SIGNAL(openController()), m_pController, SLOT(open()));
+    connect(this, SIGNAL(closeController()), m_pController, SLOT(close()));
+    connect(this, SIGNAL(loadPreset(QString,bool)), m_pController, SLOT(loadPreset(QString,bool)));
+    connect(this, SIGNAL(applyPreset()), m_pController, SLOT(applyPreset()));
+    
     //Load the list of presets into the presets combobox.
     enumeratePresets();
 }
@@ -104,9 +109,12 @@ void DlgPrefController::slotApply() {
         if (chkEnabledDevice->isChecked()) {
             //Enable the device.
             enableDevice();
-            m_pController->applyPreset();
+            emit(applyPreset());
         }
         else disableDevice();
+
+        //Select the "..." item again in the combobox.
+        comboBoxPreset->setCurrentIndex(0);
     }
     m_bDirty = false;
 }
@@ -123,7 +131,7 @@ void DlgPrefController::slotLoadPreset(const QString &name) {
     QFile ftest(filename);
     if ( !ftest.exists() ) filename = m_pConfig->getConfigPath().append("controllers/") + name + CONTROLLER_PRESET_EXTENSION;
     
-    if (!filename.isNull()) m_pController->loadPreset(filename, true);    // It's applied on prefs close
+    if (!filename.isNull()) emit(loadPreset(filename, true));    // It's applied on prefs close
 
     // Save the file path/name in the config so it can be auto-loaded at startup next time
     m_pConfig->set(ConfigKey("[ControllerPreset]", m_pController->getName().replace(" ", "_")), filename);
@@ -142,8 +150,8 @@ void DlgPrefController::slotDeviceState(int state) {
 
 void DlgPrefController::enableDevice()
 {
-    m_pController->close();
-    m_pController->open();
+    emit(closeController());
+    emit(openController());
     m_pConfig->set(ConfigKey("[Controller]", m_pController->getName().replace(" ", "_")), 1);
 
     //TODO: Should probably check if open() actually succeeded.
@@ -151,7 +159,7 @@ void DlgPrefController::enableDevice()
 
 void DlgPrefController::disableDevice()
 {
-    m_pController->close();
+    emit(closeController());
     m_pConfig->set(ConfigKey("[Controller]", m_pController->getName().replace(" ", "_")), 0);
 
     //TODO: Should probably check if close() actually succeeded.

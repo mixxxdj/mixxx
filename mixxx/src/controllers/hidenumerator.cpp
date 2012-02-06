@@ -31,7 +31,7 @@ HidEnumerator::~HidEnumerator() {
     while (dev_it.hasNext()) {
         delete dev_it.next();
     }
-//     Node::Shutdown();
+    hid_exit();
 }
 
 QList<Controller*> HidEnumerator::queryDevices() {
