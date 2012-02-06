@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2011-12-26 09:32+0200\n"
-"PO-Revision-Date: 2012-02-05 01:46+0000\n"
+"PO-Revision-Date: 2012-02-05 17:51+0000\n"
 "Last-Translator: gitarra eskola <gitarraeskola@gmail.com>\n"
 "Language-Team: Basque <eu@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-02-05 04:43+0000\n"
-"X-Generator: Launchpad (build 14738)\n"
+"X-Launchpad-Export-Date: 2012-02-06 04:43+0000\n"
+"X-Generator: Launchpad (build 14747)\n"
 
 #: AutoDJFeature#1
 msgid "Auto DJ"
@@ -116,7 +116,7 @@ msgstr "Gailuak"
 
 #: BrowseFeature#3
 msgid "Removable Devices"
-msgstr ""
+msgstr "Gailu aldagarriak"
 
 #: BrowseFeature#4
 msgctxt "BrowseFeature#4"
@@ -230,6 +230,7 @@ msgstr "Kontuz: Honek behin betiko ezabatuko ditu ondorengo fitxategiak:"
 #: BrowseTableModel#18
 msgid "Are you sure you want to delete these files from your computer?"
 msgstr ""
+"Seguru zaude fitxategi hauek zure ordenagailutik ezabatu nahi dituzula?"
 
 #: BrowseTableModel#19
 msgid ""
@@ -271,11 +272,11 @@ msgstr "Kaxak"
 
 #: CrateFeature#7
 msgid "Import Crate"
-msgstr "Kaxa Inportatu"
+msgstr "Inportatu kaxa"
 
 #: CrateFeature#8
 msgid "Export Crate"
-msgstr "Kaxa Esportatu"
+msgstr "Esportatu kaxa"
 
 #: CrateFeature#9
 msgctxt "CrateFeature#9"
@@ -292,7 +293,7 @@ msgstr ""
 
 #: CrateFeature#12
 msgid "Rename Crate"
-msgstr "Kaxa Berrizendatu"
+msgstr "Berrizendatu kaxa"
 
 #: CrateFeature#13
 msgid "New crate name:"
@@ -456,7 +457,7 @@ msgstr "Aurrekoa"
 
 #: DlgMidiLearning#11
 msgid "Press spacebar to proceed or skip."
-msgstr ""
+msgstr "Sakatu space ekin edo salto egiteko"
 
 #: DlgMidiLearning#12
 msgid "MIDI learning complete!"
@@ -516,7 +517,7 @@ msgstr "Gaitu BPM Detekzioa"
 
 #: DlgPrefBPMDlg#4
 msgid "Detect Song BPM on Import"
-msgstr "BPMak detektatuinportatzerakoan"
+msgstr "Detektatu BPMak inportatzerakoan"
 
 #: DlgPrefBPMDlg#5
 msgid "Write BPM to ID3 Tag"
@@ -558,7 +559,7 @@ msgstr "Akatsa"
 
 #: DlgPrefBpm#2
 msgid "Cannot open file %1"
-msgstr ""
+msgstr "Ezin izan da %1 fitxategia ireki"
 
 #: DlgPrefControls#1
 msgid "This skin does not support schemes"
@@ -644,7 +645,7 @@ msgstr "Posizio ikuspegia"
 
 #: DlgPrefControlsDlg#6
 msgid "Tool tips"
-msgstr ""
+msgstr "Tresnen gomendioak"
 
 #: DlgPrefControlsDlg#7
 msgctxt "DlgPrefControlsDlg#7"
@@ -769,7 +770,7 @@ msgstr "Form1"
 
 #: DlgPrefEQDlg#2
 msgid "Static EQs (for slower CPUs)"
-msgstr ""
+msgstr "EQ Estatikoak ( CPU motelentzat)"
 
 #: DlgPrefEQDlg#3
 msgid "High Shelf EQ"
@@ -835,7 +836,7 @@ msgstr ""
 
 #: DlgPrefMidiBindings#7
 msgid "Preset Files (*.midi.xml)"
-msgstr ""
+msgstr "Preset Fitxategiak (*.midi.xml)"
 
 #: DlgPrefMidiBindings#8
 msgid "Select Control Group"
@@ -1073,6 +1074,8 @@ msgid ""
 "<b>This version of Mixxx does not support vinyl control.</b> <br> Please "
 "visit <a href=\"http://mixxx.org\">Mixxx.org</a> for more information."
 msgstr ""
+"<b> Mixxx-en bertsio honek ez du binilo-kontrola onartzenl.</b> <br> Jo "
+"mesedez<a href=\"http://mixxx.org\">Mixxx.org-era</a> informazio gehiagorako."
 
 #: DlgPrefPlaylist#1
 msgctxt "DlgPrefPlaylist#1"
@@ -1319,7 +1322,7 @@ msgstr ""
 
 #: DlgPrefShoutcastDlg#3
 msgid "Server connection"
-msgstr ""
+msgstr "Konekzioa Zerbitzariarekin"
 
 #: DlgPrefShoutcastDlg#4
 msgctxt "DlgPrefShoutcastDlg#4"
@@ -2019,7 +2022,7 @@ msgstr "Pistaren Cue-puntuak"
 
 #: DlgTrackInfo#30
 msgid "<< &Prev"
-msgstr ""
+msgstr "<< &Prev"
 
 #: DlgTrackInfo#31
 msgid "&Apply"
@@ -2117,7 +2120,7 @@ msgstr ""
 
 #: EngineShoutcast#7
 msgid "Live broadcasting"
-msgstr ""
+msgstr "Zuzeneko Broadcasting-a"
 
 #: EngineShoutcast#8
 msgid "Mixxx has successfully connected to the shoutcast server"
@@ -2229,7 +2232,7 @@ msgstr "Deskribapena"
 
 #: MidiMapping#1
 msgid "MIDI script function not found"
-msgstr ""
+msgstr "Ez da MIDI script funtzioa aurkitu"
 
 #: MidiMapping#2
 msgid "The MIDI script function '%1' was not found in loaded scripts."
@@ -2407,7 +2410,7 @@ msgstr ""
 
 #: MixxxApp#15
 msgid "<b>Exit</b> Mixxx."
-msgstr ""
+msgstr "<b>atera</b> Mixxx-etik."
 
 #: MixxxApp#16
 msgid "Retry"
@@ -2431,7 +2434,7 @@ msgstr "Jarraitu"
 
 #: MixxxApp#21
 msgid "&Load Song (Player 1)..."
-msgstr ""
+msgstr "&Kargatu Kanta (1 Erreproduktorea)"
 
 #: MixxxApp#22
 msgid "Ctrl+O"
@@ -2439,7 +2442,7 @@ msgstr "Ctrl+O"
 
 #: MixxxApp#23
 msgid "&Load Song (Player 2)..."
-msgstr ""
+msgstr "Kargatu Kanta (2 Erreproduktorea)"
 
 #: MixxxApp#24
 msgid "Ctrl+Shift+O"
@@ -2447,7 +2450,7 @@ msgstr "Ctrl+Shift+O"
 
 #: MixxxApp#25
 msgid "&Exit"
-msgstr ""
+msgstr "&irten"
 
 #: MixxxApp#26
 msgid "Ctrl+Q"
@@ -2455,11 +2458,11 @@ msgstr "Ctrl+Q"
 
 #: MixxxApp#27
 msgid "&Rescan Library"
-msgstr ""
+msgstr "&Liburutegia Berreskaneatu"
 
 #: MixxxApp#28
 msgid "Add &new playlist"
-msgstr ""
+msgstr "Gehitu &Erreprodukzio-Zerrenda berria"
 
 #: MixxxApp#29
 msgid "Ctrl+N"
@@ -2467,7 +2470,7 @@ msgstr "Ctrl+N"
 
 #: MixxxApp#30
 msgid "Add new &crate"
-msgstr ""
+msgstr "Gehitu &Kaxa berria"
 
 #: MixxxApp#31
 msgid "Ctrl+C"
@@ -2475,7 +2478,7 @@ msgstr "Ctrl+C"
 
 #: MixxxApp#32
 msgid "&Import playlist"
-msgstr ""
+msgstr "&Inportatu Erreprodukzio-Zerrenda"
 
 #: MixxxApp#33
 msgid "Ctrl+I"
@@ -2511,11 +2514,11 @@ msgstr "&Honi buruz"
 
 #: MixxxApp#41
 msgid "&Community Support"
-msgstr ""
+msgstr "&Komunitatearen Laguntza"
 
 #: MixxxApp#42
 msgid "&User Manual"
-msgstr ""
+msgstr "&Erabiltzaile Liburua"
 
 #: MixxxApp#43
 msgid "Send Us &Feedback"
@@ -2594,10 +2597,13 @@ msgid ""
 "\n"
 "Quits the application"
 msgstr ""
+"Irten\n"
+"\n"
+"Aplikazioa ixten du"
 
 #: MixxxApp#60
 msgid "Rescans the song library"
-msgstr ""
+msgstr "Kanta Liburutegia berraztertzen du"
 
 #: MixxxApp#61
 msgid ""
@@ -2605,6 +2611,9 @@ msgid ""
 "\n"
 "Rescans the song library"
 msgstr ""
+"Liburutegia Berraztertu\n"
+"\n"
+"Kanta Liburutegia berraztertzen du"
 
 #: MixxxApp#62
 msgid "Create a new playlist"
@@ -2616,10 +2625,13 @@ msgid ""
 "\n"
 "Create a new playlist"
 msgstr ""
+"Erreprodukzio-Zerrenda berria\n"
+"\n"
+"Erreprodukzio-zerrenda berria sortu"
 
 #: MixxxApp#64
 msgid "Create a new crate"
-msgstr ""
+msgstr "Kaxa berria sortu"
 
 #: MixxxApp#65
 msgid ""
@@ -2627,6 +2639,9 @@ msgid ""
 "\n"
 "Create a new crate."
 msgstr ""
+"Kaxa berria\n"
+"\n"
+"Kaxa berria sortu"
 
 #: MixxxApp#66
 msgid "Import playlist"
@@ -2672,7 +2687,7 @@ msgstr "Pantaila Osoa"
 
 #: MixxxApp#76
 msgid "Display Mixxx using the full screen"
-msgstr ""
+msgstr "Erakutsi Mixxx pantaila osoa erabiliz"
 
 #: MixxxApp#77
 msgctxt "MixxxApp#77"
@@ -2687,7 +2702,7 @@ msgstr ""
 
 #: MixxxApp#79
 msgid "Support..."
-msgstr ""
+msgstr "Laguntza..."
 
 #: MixxxApp#80
 msgid ""
@@ -2698,7 +2713,7 @@ msgstr ""
 
 #: MixxxApp#81
 msgid "Read the Mixxx user manual."
-msgstr ""
+msgstr "Mixxx-en erabiltzaile liburua irakurri"
 
 #: MixxxApp#82
 msgid ""
@@ -2720,7 +2735,7 @@ msgstr ""
 
 #: MixxxApp#85
 msgid "Help translate this application into your language."
-msgstr ""
+msgstr "Lagundu aplikazio hau zure hizkuntzara itzultzen"
 
 #: MixxxApp#86
 msgid ""
@@ -2739,10 +2754,13 @@ msgid ""
 "\n"
 "About the application"
 msgstr ""
+"Honi Buruz\n"
+"\n"
+"Aplikazioari buruz"
 
 #: MixxxApp#89
 msgid "Shows the macro studio window"
-msgstr ""
+msgstr "Macro Studio leihoa erakusten du"
 
 #: MixxxApp#90
 msgid ""
@@ -2777,7 +2795,7 @@ msgstr "&Macro"
 
 #: MixxxApp#97
 msgid "&Vinyl Control"
-msgstr ""
+msgstr "&Binilo Kontrola"
 
 #: MixxxApp#98
 msgid "Quit..."
@@ -2785,7 +2803,7 @@ msgstr "Irten..."
 
 #: MixxxApp#99
 msgid "Do your really want to quit?"
-msgstr ""
+msgstr "Benetan irten nahi duzu?"
 
 #: MixxxApp#100
 msgid ""
@@ -2795,7 +2813,7 @@ msgstr ""
 
 #: MixxxApp#101
 msgid "Load Song into Player 1"
-msgstr ""
+msgstr "Kanta kargatu 1 Erreproduktorean"
 
 #: MixxxApp#102
 msgid ""
@@ -2805,7 +2823,7 @@ msgstr ""
 
 #: MixxxApp#103
 msgid "Load Song into Player 2"
-msgstr ""
+msgstr "Kanta kargatu 2 Erreproduktorean"
 
 #: MixxxApp#104
 msgid ""
@@ -2815,27 +2833,27 @@ msgstr ""
 
 #: MixxxApp#105
 msgid "Mixxx %1 Development Team"
-msgstr ""
+msgstr "Mixxx %1 Garapen Taldea"
 
 #: MixxxApp#106
 msgid "With contributions from:"
-msgstr ""
+msgstr "Ondorengoen laguntzarekin:"
 
 #: MixxxApp#107
 msgid "And special thanks to:"
-msgstr ""
+msgstr "Eta Eskerrik Asko hauei:"
 
 #: MixxxApp#108
 msgid "Past Developers"
-msgstr ""
+msgstr "Lehengo Garatzaileak"
 
 #: MixxxApp#109
 msgid "Past Contributors"
-msgstr ""
+msgstr "Lehengo"
 
 #: MixxxApp#110
 msgid "Confirm Exit"
-msgstr ""
+msgstr "Irtetzea konfirmatu"
 
 #: MixxxApp#111
 msgid "A deck is currently playing. Exit Mixxx?"
@@ -2849,7 +2867,7 @@ msgstr "Liburutegia"
 #: ParserM3u#1
 msgctxt "ParserM3u#1"
 msgid "Playlist Export Failed"
-msgstr ""
+msgstr "Ezin izan da Erreprodukzio-Zerrenda Esportatu"
 
 #: ParserM3u#2
 msgid "File path contains characters, not allowed in m3u playlists.\n"
@@ -2857,7 +2875,7 @@ msgstr ""
 
 #: ParserM3u#3
 msgid "Export a m3u8 playlist instead!\n"
-msgstr ""
+msgstr "Esportatu m3u8 erreprodukzio-zerrenda bat horren ordez!\n"
 
 #: ParserM3u#4
 msgctxt "ParserM3u#4"
@@ -2867,7 +2885,7 @@ msgstr "Ezin izan da fitxategia sortu"
 #: ParserPls#1
 msgctxt "ParserPls#1"
 msgid "Playlist Export Failed"
-msgstr ""
+msgstr "Ezin izan da Erreprodukzio-Zerrenda Esportatu"
 
 #: ParserPls#2
 msgctxt "ParserPls#2"
@@ -2880,7 +2898,7 @@ msgstr "Erreprodukzio-zerrenda berria"
 
 #: PlaylistFeature#2
 msgid "Add to Auto-DJ Queue"
-msgstr ""
+msgstr "Auto DJ zerrendara gehitu"
 
 #: PlaylistFeature#3
 msgctxt "PlaylistFeature#3"
@@ -2925,7 +2943,7 @@ msgstr "Ezin izan da erreprodukzio-zerrenda sortu"
 
 #: PlaylistFeature#12
 msgid "A playlist cannot have a blank name."
-msgstr ""
+msgstr "Erreprodukzio-Zerrenda batek ezin du izen hutsik izan"
 
 #: PlaylistFeature#13
 msgid "An unknown error occurred while creating playlist: "
@@ -2937,11 +2955,11 @@ msgstr "Erreprodukzio-zerrenda berrizendatu"
 
 #: PlaylistFeature#15
 msgid "New playlist name:"
-msgstr ""
+msgstr "Erreproiukzio-Zerrendaren Ien Berria"
 
 #: PlaylistFeature#16
 msgid "Renaming Playlist Failed"
-msgstr ""
+msgstr "Ezin izan zaio Erreprodukzi-Zerrendari izena aldatu"
 
 #: PlaylistFeature#17
 msgctxt "PlaylistFeature#17"
@@ -3005,11 +3023,11 @@ msgstr "Rhythmbox"
 
 #: SamplerBank#1
 msgid "Save Sampler Bank"
-msgstr ""
+msgstr "Sampler Bankua Gorde"
 
 #: SamplerBank#2
 msgid "Error Saving Sampler Bank"
-msgstr ""
+msgstr "Akatsa Sampler Bankua Goretzerakoan"
 
 #: SamplerBank#3
 msgid "Could not write the sampler bank to '%1'."
@@ -3017,19 +3035,19 @@ msgstr ""
 
 #: SamplerBank#4
 msgid "Load Sampler Bank"
-msgstr ""
+msgstr "Kargatu Sampler Bankua"
 
 #: SamplerBank#5
 msgid "Error Reading Sampler Bank"
-msgstr ""
+msgstr "Akatsa Sampler Bankua Irakurtzerakoan"
 
 #: SamplerBank#6
 msgid "Could not open the sampler bank file '%1'."
-msgstr ""
+msgstr "Ezin izan da '%1' Sampler Bankua Ireki"
 
 #: SamplerBank#7
 msgid "Could not read the sampler bank file '%1'."
-msgstr ""
+msgstr "Ezin izan da '%1' Sampler Bankua Irakurri"
 
 #: ScriptStudio#1
 msgid "Mixxx Script Studio"
@@ -3149,7 +3167,7 @@ msgstr "CDJ amodua"
 
 #: Ui#8
 msgid "Simple"
-msgstr ""
+msgstr "Sinplea"
 
 #: Ui#9
 msgid "Mixxx Detected a WVGA Screen"
@@ -3253,11 +3271,11 @@ msgstr ""
 
 #: Ui#33
 msgid "Low EQ knob for Channel %1"
-msgstr ""
+msgstr "Grabeak EQ knob-a %1 Kanalerako"
 
 #: Ui#34
 msgid "Loop In button for Player %1"
-msgstr ""
+msgstr "Loop HAsiera botoia %1 Erreproduktorean"
 
 #: Ui#35
 msgid "Loop Out button for Player %1"
@@ -3317,7 +3335,7 @@ msgstr ""
 
 #: Ui#49
 msgid "Gain knob for Sampler %1"
-msgstr ""
+msgstr "Gain Knob-a %1 Sampler-arentzat"
 
 #: Ui#50
 msgid "Headphone listen button for Sampler %1"
@@ -3369,11 +3387,11 @@ msgstr ""
 
 #: Ui#62
 msgid "Switch to the next view (library, playlist..)"
-msgstr ""
+msgstr "Hurrengo Ikuspegira aldatu (liburutegia, erreprodukzio-zerrenda...)"
 
 #: Ui#63
 msgid "Switch to the previous view (library, playlist..)"
-msgstr ""
+msgstr "Aurreko Ikuspegira aldatu (liburutegia, erreprodukzio-zerrenda...)"
 
 #: Ui#64
 msgid "Scroll to next track in library/playlist"
@@ -3397,7 +3415,7 @@ msgstr ""
 
 #: Ui#69
 msgid "Adjusts the intensity of the flange effect"
-msgstr ""
+msgstr "Flange Efektuaren intentsitatea kontrolatzen du"
 
 #: Ui#70
 msgid "Adjusts the phase delay of the flange effect"
@@ -3421,11 +3439,11 @@ msgstr "Gehitu erreprodukzio-zerrendara"
 
 #: WTrackTableView#2
 msgid "Add to Crate"
-msgstr ""
+msgstr "Gehitu Kaxara"
 
 #: WTrackTableView#3
 msgid "Load to Sampler"
-msgstr ""
+msgstr "Sampler-ean Kargatu"
 
 #: WTrackTableView#4
 msgctxt "WTrackTableView#4"
@@ -3450,7 +3468,7 @@ msgstr ""
 
 #: WTrackTableView#9
 msgid "Sampler %1"
-msgstr ""
+msgstr "Sampler %1"
 
 #: WTrackTableView#10
 msgid ""
@@ -3460,4 +3478,4 @@ msgstr ""
 
 #: WTrackTableViewHeader#1
 msgid "Show or hide columns."
-msgstr ""
+msgstr "Erakutsi ala ezkutatu Zutabeak"
