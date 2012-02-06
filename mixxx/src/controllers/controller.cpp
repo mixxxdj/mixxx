@@ -165,7 +165,12 @@ void Controller::savePreset() {
 
 void Controller::savePreset(QString path) {
     qDebug() << "Writing controller preset file" << path;
-    QFile output(path);
+	
+    // Need to do this on Windows
+    QDir directory;
+	directory.mkpath(path.left(path.lastIndexOf("/")));
+	
+	QFile output(path);
     if (!output.open(QIODevice::WriteOnly | QIODevice::Truncate)) return;
     QTextStream outputstream(&output);
     // Construct the DOM from the table
@@ -177,7 +182,7 @@ void Controller::savePreset(QString path) {
 
 QDomDocument Controller::buildDomElement() {
 
-    QDomDocument doc("Bindings");
+    QDomDocument doc("Preset");
     QString blank = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"
         "<MixxxControllerPreset schemaVersion=\"" + QString(XML_SCHEMA_VERSION) + "\">\n"
         "</MixxxControllerPreset>\n";

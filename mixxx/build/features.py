@@ -65,20 +65,27 @@ class HID(Feature):
     def configure(self, build, conf):
         if not self.enabled(build):
             return
-        if not conf.CheckLib(['libusb-1.0', 'usb-1.0']) or not conf.CheckHeader('libusb-1.0/libusb.h'):
+        if build.platform_is_linux and (not conf.CheckLib(['libusb-1.0', 'usb-1.0']) or not conf.CheckHeader('libusb-1.0/libusb.h')):
             raise Exception('Did not find the libusb 1.0 development library or its header file, exiting!')
             return
+        elif build.platform_is_windows:
+            if not conf.CheckLib(['hidapi', 'libhidapi']):
+                raise Exception('Did not find HIDAPI development library, exiting!')
+                return
 
         build.env.Append(CPPDEFINES = '__HID__')
 
     def sources(self, build):
         build.env.Append(CPPPATH=['#lib/hidapi-0.7.0/hidapi'])
-        build.env.ParseConfig('pkg-config libusb-1.0 --silence-errors --cflags --libs')
+        if build.platform_is_linux:
+            build.env.ParseConfig('pkg-config libusb-1.0 --silence-errors --cflags --libs')
         sources = SCons.Split("""controllers/hidcontroller.cpp
                             controllers/hidenumerator.cpp
                             """)
         if build.platform_is_windows:
-            sources.append("#lib/hidapi-0.7.0/windows/hid.c")
+            # This doesn't work. You need to build it in MSVS like all the other dependencies
+            # sources.append("#lib/hidapi-0.7.0/windows/hid.c")
+            return sources
         elif build.platform_is_osx:
             sources.append("#lib/hidapi-0.7.0/mac/hid.c")
         else:
