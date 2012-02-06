@@ -22,14 +22,17 @@
 #include "configobject.h"
 #include "pitchfilter.h"
 #include "softtakeover.h"
-
-class Controller;
+#include "qtscript-bytearray/bytearrayclass.h"
 
 //Forward declaration(s)
+class Controller;
 class ControlObjectThread;
 
 class ControllerEngine : public QObject {
-    Q_OBJECT
+Q_OBJECT
+
+  friend class Controller;    // so our timerEvent() can remain protected
+
   public:
     ControllerEngine(Controller* controller);
     virtual ~ControllerEngine();
@@ -46,11 +49,16 @@ class ControllerEngine : public QObject {
         m_bPopups = bPopups;
     }
 
-    // Lookup registered script functions
+    /** Look up registered script functions */
     QStringList getScriptFunctions();
+    /** Look up registered script function prefixes */
+    QList<QString>& getScriptFunctionPrefixes() { return m_scriptFunctionPrefixes; };
+    
 
-    /* DO NOT CALL DIRECTLY,
-       SHOULD ONLY BE CALLED FROM WITHIN SCRIPTS */
+  protected:
+    /** Pass in a timer event that scripts might be waiting on */
+    void timerEvent(QTimerEvent *event);
+      
     Q_INVOKABLE double getValue(QString group, QString name);
     Q_INVOKABLE void setValue(QString group, QString name, double newValue);
     Q_INVOKABLE bool connectControl(QString group, QString name,
@@ -61,7 +69,7 @@ class ControllerEngine : public QObject {
     Q_INVOKABLE void stopTimer(int timerId);
     Q_INVOKABLE void scratchEnable(int deck, int intervalsPerRev, float rpm, float alpha, float beta);
     Q_INVOKABLE void scratchTick(int deck, int interval);
-    Q_INVOKABLE void scratchDisable(int deck);
+    Q_INVOKABLE void scratchDisable(int deck, bool ramp = true);
     Q_INVOKABLE void softTakeover(QString group, QString name, bool set);
 
   public slots:
@@ -81,9 +89,6 @@ class ControllerEngine : public QObject {
   signals:
     void initialized();
     void resetController();
-
-  protected:
-    void timerEvent(QTimerEvent *event);
 
   private slots:
     void errorDialogButton(QString key, QMessageBox::StandardButton button);
@@ -111,6 +116,8 @@ class ControllerEngine : public QObject {
     QHash<ConfigKey, ControlObjectThread*> m_controlCache;
     QHash<int, QPair<QString, bool> > m_timers;
     SoftTakeover m_st;
+
+    ByteArrayClass *m_pBaClass;
 
     // Scratching functions & variables
     void scratchProcess(int timerId);

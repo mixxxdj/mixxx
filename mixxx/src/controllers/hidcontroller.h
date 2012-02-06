@@ -22,24 +22,50 @@
 #include <hidapi.h>
 #include "controller.h"
 
+class HidReader : public QThread {
+    Q_OBJECT    // For signals
+    public:
+        HidReader(hid_device* device);
+        ~HidReader();
+        void stop() { m_bStop=true; };
+
+    signals:
+        /** WARNING: Receiving slot must delete the data array! */
+        void incomingData(unsigned char* data, unsigned int length);
+
+    protected:
+        void run();
+
+    private:
+        hid_device* m_pHidDevice;
+        bool m_bStop;
+};
+
 class HidController : public Controller {
-Q_OBJECT    // For Q_INVOKABLE
+    Q_OBJECT    // For Q_INVOKABLE
     public:
         HidController(const hid_device_info deviceInfo);
         ~HidController();
-        int open();
-        int close();
-        //  For devices which only support a single report, reportID must be set to 0x0.
-        void send(unsigned char data[], unsigned int length, unsigned int reportID = 0);
-        Q_INVOKABLE void send(QList<int> data, unsigned int length, unsigned int reportID = 0);
 
     protected:
+        Q_INVOKABLE void send(QList<int> data, unsigned int length, unsigned int reportID = 0);
+        /** ByteArray version */
+        Q_INVOKABLE void sendBa(QByteArray data, unsigned int length, unsigned int reportID = 0);
+        
         hid_device_info m_deviceInfo;
         QString m_sUID;
         static QList<QString> m_deviceList;
+
+    private slots:
+        int open();
+        int close();
         
     private:
+        //  For devices which only support a single report, reportID must be set to 0x0.
+        void send(unsigned char data[], unsigned int length, unsigned int reportID = 0);
+        
         hid_device* m_pHidDevice;
+        HidReader* m_pReader;
 };
 
 #endif

@@ -97,7 +97,7 @@ void ControllerEngine::gracefulShutdown() {
         QString shutName = prefixIt.next();
         if (shutName!="") {
             shutName.append(".shutdown");
-            if (m_bDebug) qDebug() << "ControllerEngine: Executing" << shutName;
+            if (m_bDebug) qDebug() << "  Executing" << shutName;
             if (!internalExecute(shutName))
                 qWarning() << "ControllerEngine: No" << shutName << "function in script";
         }
@@ -108,7 +108,7 @@ void ControllerEngine::gracefulShutdown() {
     QHashIterator<int, int> i(m_scratchTimers);
     while (i.hasNext()) {
         i.next();
-        qDebug() << "Aborting scratching on deck" << i.value();
+        qDebug() << "  Aborting scratching on deck" << i.value();
         // Clear scratch2_enable
         QString group = QString("[Channel%1]").arg(i.value());
         ControlObjectThread *cot = getControlObjectThread(group, "scratch2_enable");
@@ -125,6 +125,8 @@ void ControllerEngine::gracefulShutdown() {
         delete cot;
         it++;
     }
+
+    delete m_pBaClass;
 }
 
 bool ControllerEngine::isReady() {
@@ -149,6 +151,10 @@ void ControllerEngine::initializeScriptEngine() {
         // Make the Controller instance available to scripts
         engineGlobalObject.setProperty("controller", m_pEngine->newQObject(m_pController));
     }
+
+    m_pBaClass = new ByteArrayClass(m_pEngine);
+    engineGlobalObject.setProperty("ByteArray", m_pBaClass->constructor());
+
 }
 
 /* -------- ------------------------------------------------------
@@ -295,10 +301,7 @@ bool ControllerEngine::internalExecute(QString scriptCode) {
     }
 
     // If it's not a function, we're done.
-    if (!scriptFunction.isFunction()) {
-        qDebug() << "Not a function";
-        return true;
-    }
+    if (!scriptFunction.isFunction()) return true;
 
     // If it does happen to be a function, call it.
     scriptFunction.call(QScriptValue());
@@ -368,16 +371,10 @@ bool ControllerEngine::execute(QString function, const unsigned char data[],
     if (!scriptFunction.isFunction())
         return false;
 
-    // These funky conversions are required in order to
-    //  get the byte array into ECMAScript complete and unharmed.
-    //  Don't change this or I will hurt you -- Sean
-    QVector<QChar> temp(length);
-    for (uint i=0; i < length; i++) {
-        temp[i]=data[i];
-    }
-    QString buffer = QString(temp.constData(),length);
+    const char* buffer=reinterpret_cast<const char*>(data);
+    
     QScriptValueList args;
-    args << QScriptValue(buffer);
+    args << QScriptValue(m_pBaClass->newInstance(QByteArray::fromRawData(buffer,length)));
     args << QScriptValue(length);
 
     scriptFunction.call(QScriptValue(), args);
@@ -892,8 +889,6 @@ void ControllerEngine::stopAllTimers() {
 void ControllerEngine::timerEvent(QTimerEvent *event) {
     int timerId = event->timerId();
 
-    
-
     // See if this is a scratching timer
     if (m_scratchTimers.contains(timerId)) {
         
@@ -911,7 +906,6 @@ void ControllerEngine::timerEvent(QTimerEvent *event) {
     if (timerTarget.second) stopTimer(timerId);
 
     internalExecute(timerTarget.first);
-    
 }
 
 /* -------- ------------------------------------------------------
@@ -1049,31 +1043,45 @@ void ControllerEngine::scratchProcess(int timerId) {
     Input:   Virtual deck to stop scratching
     Output:  -
     -------- ------------------------------------------------------ */
-void ControllerEngine::scratchDisable(int deck) {
+void ControllerEngine::scratchDisable(int deck, bool ramp) {
 
     QString group = QString("[Channel%1]").arg(deck);
 
-    // See if deck is playing
-    ControlObjectThread *cot = getControlObjectThread(group, "play");
-    if (cot != NULL && cot->get() == 1) {
-        // If so, set the target velocity to the playback speed
-        float rate=0;
-        // Get the pitch slider value
-        cot = getControlObjectThread(group, "rate");
-        if (cot != NULL) rate = cot->get();
-        // Multiply by the pitch range
-        cot = getControlObjectThread(group, "rateRange");
-        if (cot != NULL) rate = rate * cot->get();
-        // Add 1 since the deck is playing
-        rate++;
-        // See if we're in reverse play
-        cot = getControlObjectThread(group, "reverse");
-        if (cot != NULL && cot->get() == 1) rate = -rate;
+    m_rampTo[deck]=0.0;
 
-        m_rampTo[deck] = rate;
+    // If no ramping is desired, disable scratching immediately
+    if (!ramp) {
+        // Clear scratch2_enable
+        ControlObjectThread *cot = getControlObjectThread(group, "scratch2_enable");
+        if(cot != NULL) cot->slotSet(0);
+        // Can't return here because we need scratchProcess to stop the timer.
+        //  So it's still actually ramping, we just won't hear or see it.
     }
-    else m_rampTo[deck]=0.0;
-
+    else {
+        // See if deck is playing
+        ControlObjectThread *cot = getControlObjectThread(group, "play");
+        if (cot != NULL && cot->get() == 1) {
+            // If so, set the target velocity to the playback speed
+            float rate=0;
+            // Get the pitch slider value
+            cot = getControlObjectThread(group, "rate");
+            if (cot != NULL) rate = cot->get();
+            // Get the pitch slider directions
+            cot = getControlObjectThread(group, "rate_dir");
+            if (cot != NULL && cot->get() == -1) rate = -rate;
+            // Multiply by the pitch range
+            cot = getControlObjectThread(group, "rateRange");
+            if (cot != NULL) rate = rate * cot->get();
+            // Add 1 since the deck is playing
+            rate++;
+            // See if we're in reverse play
+            cot = getControlObjectThread(group, "reverse");
+            if (cot != NULL && cot->get() == 1) rate = -rate;
+            
+            m_rampTo[deck] = rate;
+        }
+    }
+    
     m_ramp[deck] = true;    // Activate the ramping in scratchProcess()
 }
 

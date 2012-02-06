@@ -60,7 +60,7 @@ void Controller::stopEngine()
     m_pControllerEngine = NULL;
 }
 
-/* loadPreset()
+/** loadPreset()
 * Overloaded function for convenience, uses the default device path
 * @param forceLoad Forces the preset to be loaded, regardless of whether or not the controller id
 *        specified within matches the name of this Controller.
@@ -69,7 +69,7 @@ void Controller::loadPreset(bool forceLoad) {
     loadPreset(DEFAULT_DEVICE_PRESET, forceLoad);
 }
 
-/* loadPreset(QString)
+/** slotLoadPreset(QString)
 * Overloaded function for convenience
 * @param path The path to a controller preset XML file.
 * @param forceLoad Forces the preset to be loaded, regardless of whether or not the controller id
@@ -80,15 +80,14 @@ void Controller::loadPreset(QString path, bool forceLoad) {
     loadPreset(WWidget::openXMLFile(path, "controller"), forceLoad);
 }
 
-/* loadPreset(QDomElement)
+/** slotLoadPreset(QDomElement)
 * Loads a controller preset from a QDomElement structure.
 * @param root The root node of the XML document for the MIDI mapping.
 * @param forceLoad Forces the preset to be loaded, regardless of whether or not the controller id
 *        specified within matches the name of this Controller.
 */
 void Controller::loadPreset(QDomElement root, bool forceLoad) {
-    //qDebug() << QString("Controller: loadPreset() called in thread ID=%1").arg(this->thread()->currentThreadId(),0,16);
-    
+
     if (root.isNull()) return;
 
     m_scriptFileNames.clear();
@@ -104,7 +103,7 @@ void Controller::loadPreset(QDomElement root, bool forceLoad) {
     while (!controller.isNull()) {
         // Get deviceid
         device = controller.attribute("id","");
-        if (device != m_sDeviceName && !forceLoad) {
+        if (device != m_sDeviceName.left(m_sDeviceName.size()-m_sDeviceName.indexOf(" ")-3) && !forceLoad) {
             controller = controller.nextSiblingElement("controller");
         }
         else
@@ -113,7 +112,7 @@ void Controller::loadPreset(QDomElement root, bool forceLoad) {
     
     if (!controller.isNull()) {
         
-        qDebug() << device << " settings found";
+        qDebug() << device << "settings found";
         // Build a list of script files to load
         
         QDomElement scriptFile = controller.firstChildElement("scriptfiles").firstChildElement("file");
@@ -132,9 +131,6 @@ void Controller::loadPreset(QDomElement root, bool forceLoad) {
     }
 }   // END loadPreset(QDomElement)
 
-/* applyPreset()
-* Initializes the controller engine
-*/
 void Controller::applyPreset() {
     qDebug() << "Controller::applyPreset()";
 
@@ -163,10 +159,61 @@ void Controller::addScriptFile(QString filename, QString functionprefix) {
     m_scriptFunctionPrefixes.append(functionprefix);
 }
 
+void Controller::savePreset() {
+    savePreset(DEFAULT_DEVICE_PRESET);
+}
+
+void Controller::savePreset(QString path) {
+    qDebug() << "Writing controller preset file" << path;
+    QFile output(path);
+    if (!output.open(QIODevice::WriteOnly | QIODevice::Truncate)) return;
+    QTextStream outputstream(&output);
+    // Construct the DOM from the table
+    QDomDocument docBindings = buildDomElement();
+    // Save the DOM to the XML file
+    docBindings.save(outputstream, 4);
+    output.close();
+}
+
+QDomDocument Controller::buildDomElement() {
+
+    QDomDocument doc("Bindings");
+    QString blank = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"
+        "<MixxxControllerPreset schemaVersion=\"" + QString(XML_SCHEMA_VERSION) + "\">\n"
+        "</MixxxControllerPreset>\n";
+
+    doc.setContent(blank);
+
+    QDomElement rootNode = doc.documentElement();
+    QDomElement controller = doc.createElement("controller");
+    // Strip off the serial number
+    controller.setAttribute("id", m_sDeviceName.left(m_sDeviceName.size()-m_sDeviceName.indexOf(" ")-3));
+    rootNode.appendChild(controller);
+
+    QDomElement scriptFiles = doc.createElement("scriptfiles");
+    controller.appendChild(scriptFiles);
+
+    for (int i = 0; i < m_scriptFileNames.count(); i++) {
+        QString filename = m_scriptFileNames[i];
+
+        //Don't need to write anything for the required mapping file.
+        if (filename != REQUIRED_SCRIPT_FILE) {
+            qDebug() << "  writing script block for" << filename;
+            QString functionPrefix = m_scriptFunctionPrefixes[i];
+            QDomElement scriptFile = doc.createElement("file");
+
+            scriptFile.setAttribute("filename", filename);
+            scriptFile.setAttribute("functionprefix", functionPrefix);
+
+            scriptFiles.appendChild(scriptFile);
+        }
+    }
+    return doc;
+}
 
 void Controller::send(QList<int> data, unsigned int length) {
 
-    // If you change this implementation, also change it in HidController::send()
+    // If you change this implementation, also change it in HidController
     //  (That function is required due to HID devices having report IDs)
     
     unsigned char * msg;
@@ -174,37 +221,73 @@ void Controller::send(QList<int> data, unsigned int length) {
 
     for (unsigned int i=0; i<length; i++) {
         msg[i] = data.at(i);
-//         qDebug() << "msg" << i << "=" << msg[i] << ", data=" << data.at(i);
     }
 
     send(msg,length);
     delete[] msg;
 }
 
+void Controller::sendBa(QByteArray data, unsigned int length) {
+    
+    // If you change this implementation, also change it in HidController
+    //  (That function is required due to HID devices having report IDs)
+    
+    unsigned char* msg = reinterpret_cast<unsigned char*>(data.data());
+    send(msg,length);
+}
+
 void Controller::send(unsigned char data[], unsigned int length) {
+    Q_UNUSED(data);
+    Q_UNUSED(length);
     qWarning() << "Error: data sending not yet implemented for this API or platform!";
+}
+
+void Controller::receivePointer(unsigned char* data, unsigned int length) {
+    receive(data,length);
+    // Deleted here even though created in controllers' read threads
+    delete[] data;
 }
 
 void Controller::receive(const unsigned char data[], unsigned int length) {
 
+    if (m_pControllerEngine == NULL) {
+//         qWarning() << "Controller::receive called with no active engine!";
+        // Don't complain, since this will always show after closing a device as
+        //  queued signals flush out
+        return;
+    }
+
     if (debugging()) {
         // Formatted packet display
-        QString message = m_sDeviceName+": "+length+" bytes:\n";
+        QString message = QString("%1: %2 bytes:\n").arg(m_sDeviceName).arg(length);
         for(uint i=0; i<length; i++) {
             QString spacer=" ";
             if ((i+1) % 4 == 0) spacer="  ";
             if ((i+1) % 16 == 0) spacer="\n";
-            message += QString("  %1%2")
+            message += QString("%1%2")
                         .arg(data[i], 2, 16, QChar('0')).toUpper()
                         .arg(spacer);
         }
         qDebug()<< message;
     }
-    
-    QString function = m_sDeviceName + ".incomingData";
 
-    if (!m_pControllerEngine->execute(function, data, length)) {
-        qWarning() << "Controller: Invalid script function" << function;
+    QListIterator<QString> prefixIt(m_pControllerEngine->getScriptFunctionPrefixes());
+    while (prefixIt.hasNext()) {
+        QString function = prefixIt.next();
+        if (function!="") {
+            function.append(".incomingData");
+
+            if (!m_pControllerEngine->execute(function, data, length)) {
+                qWarning() << "Controller: Invalid script function" << function;
+            }
+        }
     }
     return;
+}
+
+void Controller::timerEvent(QTimerEvent *event, bool poll) {
+    if (poll) return; // Sub-classes use the poll flag
+
+    // Pass it on to the engine
+    m_pControllerEngine->timerEvent(event);
 }

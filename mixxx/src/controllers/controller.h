@@ -24,32 +24,31 @@
 
 #include "controllerengine.h"
 
-class Controller : public QObject
-{
+class Controller : public QObject {
 Q_OBJECT
+    friend class ControllerManager; // accesses lots of our stuff, but in the same thread
+    friend class ControllerProcessor;   // so our timerEvent() can remain protected
+    
     public:
         Controller();
         virtual ~Controller();  // Subclass should call close() at minimum.
-        virtual int open() = 0;
-        virtual int close() = 0;
-        void startEngine();
-        void stopEngine();
         bool isOpen() { return m_bIsOpen; };
         bool isOutputDevice() { return m_bIsOutputDevice; };
         bool isInputDevice() { return m_bIsInputDevice; };
         QString getName() { return m_sDeviceName; };
-        virtual void send(unsigned char data[], unsigned int length);
-        Q_INVOKABLE void send(QList<int> data, unsigned int length);
-        void receive(const unsigned char data[], unsigned int length);
         bool debugging() { return m_bDebug; };
 
-        void loadPreset(bool forceLoad=false);
-        void loadPreset(QString path, bool forceLoad=false);
-        void loadPreset(QDomElement root, bool forceLoad=false);
-
-        void applyPreset();
-
     protected:
+        void startEngine();
+        void stopEngine();
+        /** By default, this passes the event on to the engine.
+            APIs that are not thread-safe or are only non-blocking should poll
+            when 'poll' is true and pass the event on to the engine when not. */
+        virtual void timerEvent(QTimerEvent *event, bool poll);
+        Q_INVOKABLE void send(QList<int> data, unsigned int length);
+        /** ByteArray version */
+        Q_INVOKABLE void sendBa(QByteArray data, unsigned int length);
+        
         /** Verbose device name, in format "[index]. [device name]". Suitable for display in GUI. */
         QString m_sDeviceName;
         /** Flag indicating if this device supports output (receiving data from Mixxx)*/
@@ -61,10 +60,37 @@ Q_OBJECT
         /** Specifies whether or not we should dump incoming data to the console at runtime. This is useful
             for end-user debugging and script-writing. */
         bool m_bDebug;
+
+    // Making these slots protected/private ensures that other parts of Mixxx
+    //  can only signal them, preventing thread contention
+    protected slots:
+        void receivePointer(unsigned char* data, unsigned int length);
+
+    private slots:
+        virtual int open() = 0;
+        virtual int close() = 0;
+        
+        void loadPreset(bool forceLoad=false);
+        void loadPreset(QString path, bool forceLoad=false);
+
+        /** Initializes the controller engine */
+        virtual void applyPreset();
         
     private:
-        /** Adds a script file name and function prefix to the list to be loaded */
+        void receive(const unsigned char data[], unsigned int length);
+        virtual void send(unsigned char data[], unsigned int length);
+        
+        void loadPreset(QDomElement root, bool forceLoad=false);
+        /** Adds a script file name and function prefix to the list to be loaded. */
         void addScriptFile(QString filename, QString functionprefix);
+        /** Saves the current preset to the default device XML file. */
+        void savePreset();
+        /** Given a path, saves the current preset to an XML file. */
+        void savePreset(QString path);
+        /** Updates the DOM with what script files are currently loaded.
+            Sub-classes need to re-implement this if they need to add any other
+            items. */
+        virtual QDomDocument buildDomElement();
         
         QList<QString> m_scriptFileNames;
         QList<QString> m_scriptFunctionPrefixes;

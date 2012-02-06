@@ -348,6 +348,9 @@ class MixxxCore(Feature):
                    "controllers/controllermanager.cpp",
                    "controllers/controllerenumerator.cpp",
                    "controllers/controllerengine.cpp",
+
+                   "controllers/qtscript-bytearray/bytearrayclass.cpp",
+                   "controllers/qtscript-bytearray/bytearrayprototype.cpp",
                    
                    "controllers/midi/mididevice.cpp",
                    "controllers/midi/mididevicemanager.cpp",
