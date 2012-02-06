@@ -11,43 +11,42 @@ def get_bzr_modified():
 def get_bzr_branch_name():
     output_lines = os.popen("bzr info").read().splitlines()
 
-    branch_matcher = re.compile(
-        r'\s*parent branch: (bzr\+ssh|http)://bazaar.launchpad.net/(?P<owner>.*?)/mixxx/(?P<branch_name>.*?)/$')
+    parent_matcher = re.compile(
+        r'\s*parent branch: (bzr\+ssh|http)://bazaar.launchpad.net/(?P<owner>.*?)/(?P<project>.*?)/(?P<branch_name>.*?)/$')
     checkout_matcher = re.compile(
-        r'\s*checkout of branch: bzr\+ssh://bazaar.launchpad.net/%2Bbranch/(?P<project>.*?)/((?P<branch_name>.*?)/)?$')
+        r'\s*checkout of branch: (bzr\+ssh|http)://bazaar.launchpad.net/(?P<owner>.*?)/(?P<project>.*?)/((?P<branch_name>.*?)/)?$')
 
     for line in output_lines:
-        match = branch_matcher.match(line)
+        match = checkout_matcher.match(line)
+        if not match:
+            match = parent_matcher.match(line)
         if match:
             match = match.groupdict()
-            owner = match['owner']
+            project = match['project']
             branch_name = match['branch_name']
+            owner = match['owner']
 
             # Strip ~ from owner name
             owner = owner.replace('~', '')
 
             # Underscores are not ok in version names, dashes are fine though.
-            branch_name = branch_name.replace('_', '-')
+            if branch_name:
+                branch_name = branch_name.replace('_', '-')
+
+            # Detect release Branch
+            if owner == '%2Bbranch' and project == 'mixxx':
+                if branch_name:
+                    return 'release-%s.x' % branch_name
+                return 'trunk'
 
             # Don't include the default owner
             if owner == 'mixxxdevelopers':
                 return branch_name
 
             return "%s~%s" % (owner, branch_name)
-
-        match = checkout_matcher.match(line)
-        if match:
-            match = match.groupdict()
-            project = match['project']
-            branch_name = match['branch_name']
-            if project == 'mixxx':
-                if branch_name:
-                    return 'release-%s.x' % branch_name
-                return 'trunk'
-
     # Fall back on branch nick.
+    print "ERROR: Could not determine branch name from output of 'bzr info'. Please file a bug with the output of 'bzr info' attached."
     return os.popen('bzr nick').readline().strip()
-
 
 def get_build_dir(platformString, bitwidth):
     build_dir = '%s%s_build' % (platformString[0:3],bitwidth)

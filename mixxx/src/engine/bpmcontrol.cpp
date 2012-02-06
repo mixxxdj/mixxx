@@ -71,9 +71,11 @@ BpmControl::BpmControl(const char* _group,
             this, SLOT(slotControlBeatSyncTempo(double)),
             Qt::DirectConnection);
 
-    m_pTranslateBeats = new ControlPushButton(ConfigKey(_group, "beats_translate_curpos"));
+    m_pTranslateBeats = new ControlPushButton(
+        ConfigKey(_group, "beats_translate_curpos"));
     connect(m_pTranslateBeats, SIGNAL(valueChanged(double)),
-            this, SLOT(slotBeatsTranslate(double)));
+            this, SLOT(slotBeatsTranslate(double)),
+            Qt::DirectConnection);
 
     connect(&m_tapFilter, SIGNAL(tapped(double,int)),
             this, SLOT(slotTapFilter(double,int)),

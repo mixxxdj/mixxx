@@ -74,7 +74,9 @@ int SoundSourceSndFile::open() {
 
     channels = info->channels;
 
-    filelength = channels*info->frames; // File length with two interleaved channels
+    // This is the 'virtual' filelength. No matter how many channels the file
+    // actually has, we pretend it has 2.
+    filelength = 2*info->frames; // File length with two interleaved channels
     m_iSampleRate =  info->samplerate;
     m_bOpened = true;
     return OK;

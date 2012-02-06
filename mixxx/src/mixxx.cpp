@@ -141,28 +141,38 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
         locale = QLocale::system().name();
     }
 
-    // Load Qt translations for this locale
+    // Load Qt translations for this locale from the system translation
+    // path. This is the lowest precedence QTranslator.
     QTranslator* qtTranslator = new QTranslator(a);
-   if( qtTranslator->load("qt_" + locale,
-           QLibraryInfo::location(QLibraryInfo::TranslationsPath))) {
-       a->installTranslator(qtTranslator);
-   }
-   else{
-       delete qtTranslator;
-   }
+    if (qtTranslator->load("qt_" + locale,
+                          QLibraryInfo::location(QLibraryInfo::TranslationsPath))) {
+        a->installTranslator(qtTranslator);
+    } else {
+        delete qtTranslator;
+    }
 
-    // Load Mixxx specific translations for this locale
+    // Load Qt translations for this locale from the Mixxx translations
+    // folder.
+    QTranslator* mixxxQtTranslator = new QTranslator(a);
+    if (mixxxQtTranslator->load("qt_" + locale, translationsFolder)) {
+        a->installTranslator(mixxxQtTranslator);
+    } else {
+        delete mixxxQtTranslator;
+    }
+
+    // Load Mixxx specific translations for this locale from the Mixxx
+    // translations folder.
     QTranslator* mixxxTranslator = new QTranslator(a);
-    bool mixxxLoaded = mixxxTranslator->load("mixxx_" + locale, translationsFolder);
+    bool mixxxLoaded = mixxxTranslator->load("mixxx_" + locale,
+                                             translationsFolder);
     qDebug() << "Loading translations for locale" << locale
-            << "from translations folder" << translationsFolder << ":"
-            << (mixxxLoaded ? "success" : "fail");
-   if (mixxxLoaded) {
-       a->installTranslator(mixxxTranslator);
-   }
-   else {
-       delete mixxxTranslator;
-   }
+             << "from translations folder" << translationsFolder << ":"
+             << (mixxxLoaded ? "success" : "fail");
+    if (mixxxLoaded) {
+        a->installTranslator(mixxxTranslator);
+    } else {
+        delete mixxxTranslator;
+    }
 
     // Store the path in the config database
     m_pConfig->set(ConfigKey("[Config]", "Path"), ConfigValue(qConfigPath));
@@ -1199,8 +1209,14 @@ void MixxxApp::slotHelpAbout() {
     }
     about->version_label->setText(version.join(" "));
 
+    QString s_devTeam=QString(tr("Mixxx %1 Development Team")).arg(VERSION);
+    QString s_contributions=tr("With contributions from:");
+    QString s_specialThanks=tr("And special thanks to:");
+    QString s_pastDevs=tr("Past Developers");
+    QString s_pastContribs=tr("Past Contributors");
+
     QString credits =
-    QString("<p align=\"center\"><b>Mixxx %1 Development Team</b></p>"
+    QString("<p align=\"center\"><b>%1</b></p>"
 "<p align=\"center\">"
 "Adam Davison<br>"
 "Albert Santoni<br>"
@@ -1215,7 +1231,7 @@ void MixxxApp::slotHelpAbout() {
 "Vittorio Colao<br>"
 
 "</p>"
-"<p align=\"center\"><b>With contributions from:</b></p>"
+"<p align=\"center\"><b>%2</b></p>"
 "<p align=\"center\">"
 "Mark Hills<br>"
 "Andre Roth<br>"
@@ -1261,9 +1277,11 @@ void MixxxApp::slotHelpAbout() {
 "Jens Nachtigall<br>"
 "Scott Ullrich<br>"
 "Jonas &Aring;dahl<br>"
+"Jonathan Costers<br>"
+"Daniel Lindenfelser<br>"
 
 "</p>"
-"<p align=\"center\"><b>And special thanks to:</b></p>"
+"<p align=\"center\"><b>%3</b></p>"
 "<p align=\"center\">"
 "Vestax<br>"
 "Stanton<br>"
@@ -1281,7 +1299,7 @@ void MixxxApp::slotHelpAbout() {
 "Joseph Mattiello<br>"
 "</p>"
 
-"<p align=\"center\"><b>Past Developers</b></p>"
+"<p align=\"center\"><b>%4</b></p>"
 "<p align=\"center\">"
 "Tue Haste Andersen<br>"
 "Ken Haste Andersen<br>"
@@ -1301,7 +1319,7 @@ void MixxxApp::slotHelpAbout() {
 "Ryan Baker<br>"
 "</p>"
 
-"<p align=\"center\"><b>Past Contributors</b></p>"
+"<p align=\"center\"><b>%5</b></p>"
 "<p align=\"center\">"
 "Ludek Hor&#225;cek<br>"
 "Svein Magne Bang<br>"
@@ -1335,7 +1353,7 @@ void MixxxApp::slotHelpAbout() {
 "Michael Pujos<br>"
 "Claudio Bantaloukas<br>"
 "Pavol Rusnak<br>"
-    "</p>").arg(VERSION);
+    "</p>").arg(s_devTeam,s_contributions,s_specialThanks,s_pastDevs,s_pastContribs);
 
     about->textBrowser->setHtml(credits);
     about->show();
