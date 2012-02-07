@@ -4,13 +4,13 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2011-12-26 09:32+0200\n"
-"PO-Revision-Date: 2012-02-05 13:57+0000\n"
+"PO-Revision-Date: 2012-02-06 05:19+0000\n"
 "Last-Translator: jus <Unknown>\n"
 "Language-Team: Hello\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-02-06 05:01+0000\n"
+"X-Launchpad-Export-Date: 2012-02-07 05:02+0000\n"
 "X-Generator: Launchpad (build 14747)\n"
 "X-Project-Style: kde\n"
 "Language: de\n"
@@ -1262,7 +1262,7 @@ msgstr "Titel"
 
 #: DlgPrefRecordDlg#8
 msgid "Author"
-msgstr "MIDIr"
+msgstr "Autor"
 
 #: DlgPrefRecordDlg#9
 msgctxt "DlgPrefRecordDlg#9"
@@ -3207,7 +3207,7 @@ msgstr "Die Sampler-Bank '%1' konnte nicht gelesen werden."
 
 #: ScriptStudio#1
 msgid "Mixxx Script Studio"
-msgstr "Mixxx SKript Studio"
+msgstr "Mixxx Skript Studio"
 
 #: ScriptStudio#2
 msgid "File"
