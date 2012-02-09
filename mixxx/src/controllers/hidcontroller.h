@@ -51,10 +51,6 @@ class HidController : public Controller {
         Q_INVOKABLE void send(QList<int> data, unsigned int length, unsigned int reportID = 0);
         /** ByteArray version */
         Q_INVOKABLE void sendBa(QByteArray data, unsigned int length, unsigned int reportID = 0);
-        
-        hid_device_info m_deviceInfo;
-        QString m_sUID;
-        static QList<QString> m_deviceList;
 
     private slots:
         int open();
@@ -64,6 +60,9 @@ class HidController : public Controller {
         //  For devices which only support a single report, reportID must be set to 0x0.
         void send(unsigned char data[], unsigned int length, unsigned int reportID = 0);
         
+        hid_device_info m_deviceInfo;
+        QString m_sUID;
+        static QList<QString> m_deviceList;
         hid_device* m_pHidDevice;
         HidReader* m_pReader;
 };
