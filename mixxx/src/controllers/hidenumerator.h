@@ -1,5 +1,5 @@
 /**
-* @file controllermanager.h
+* @file hidenumerator.h
 * @author Sean Pappalardo spappalardo@mixxx.org
 * @date Sat Apr 30 2011
 * @brief This class handles discovery and enumeration of DJ controllers that use the USB-HID protocol

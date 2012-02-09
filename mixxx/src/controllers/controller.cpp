@@ -165,18 +165,18 @@ void Controller::savePreset() {
 
 void Controller::savePreset(QString path) {
     qDebug() << "Writing controller preset file" << path;
-	
+    
     // Need to do this on Windows
     QDir directory;
-	directory.mkpath(path.left(path.lastIndexOf("/")));
-	
-	QFile output(path);
+    directory.mkpath(path.left(path.lastIndexOf("/")));
+    
+    QFile output(path);
     if (!output.open(QIODevice::WriteOnly | QIODevice::Truncate)) return;
     QTextStream outputstream(&output);
     // Construct the DOM from the table
-    QDomDocument docBindings = buildDomElement();
+    QDomDocument docPreset = buildDomElement();
     // Save the DOM to the XML file
-    docBindings.save(outputstream, 4);
+    docPreset.save(outputstream, 4);
     output.close();
 }
 

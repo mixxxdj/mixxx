@@ -18,6 +18,7 @@
 #define CONTROLLERMANAGER_H
 
 #include "configobject.h"
+// #include "midienumerator.h"  // TODO
 #ifdef __HID__
     #include "hidenumerator.h"
 #endif
@@ -81,7 +82,7 @@ Q_OBJECT
         ControllerProcessor *m_pProcessor;
         QMutex m_mControllerList;
 
-//        MidiEnumerator *m_pMIDIEnumerator;   // TODO
+//         MidiEnumerator *m_pMIDIEnumerator;   // TODO
 #ifdef __HID__
         HidEnumerator *m_pHIDEnumerator;
 #endif

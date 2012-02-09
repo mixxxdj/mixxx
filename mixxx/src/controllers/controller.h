@@ -1,5 +1,5 @@
 /**
-* @file controllermanager.h
+* @file controller.h
 * @author Sean Pappalardo spappalardo@mixxx.org
 * @date Sat Apr 30 2011
 * @brief Base class representing a physical controller.
@@ -39,7 +39,11 @@ Q_OBJECT
         bool debugging() { return m_bDebug; };
 
     protected:
+        /** To be called in sub-class' open() functions after opening the
+            device but before starting any input polling/processing. */
         void startEngine();
+        /** To be called in sub-class' close() functions after stopping any
+            input polling/processing but before closing the device. */
         void stopEngine();
         /** By default, this passes the event on to the engine.
             APIs that are not thread-safe or are only non-blocking should poll
@@ -49,7 +53,7 @@ Q_OBJECT
         /** ByteArray version */
         Q_INVOKABLE void sendBa(QByteArray data, unsigned int length);
         
-        /** Verbose device name, in format "[index]. [device name]". Suitable for display in GUI. */
+        /** Verbose and unique device name suitable for display. */
         QString m_sDeviceName;
         /** Flag indicating if this device supports output (receiving data from Mixxx)*/
         bool m_bIsOutputDevice;
@@ -77,7 +81,13 @@ Q_OBJECT
         virtual void applyPreset();
         
     private:
-        void receive(const unsigned char data[], unsigned int length);
+        /** Handles packets of raw bytes and passes them to an ".incomingData"
+            script function that is assumed to exist.
+            (Sub-classes may want to reimplement this if they have an alternate
+            way of handling such data.) */
+        virtual void receive(const unsigned char data[], unsigned int length);
+        /** This must be reimplmented by sub-classes desiring to send raw bytes
+            to a controller. */
         virtual void send(unsigned char data[], unsigned int length);
         
         void loadPreset(QDomElement root, bool forceLoad=false);
@@ -88,8 +98,8 @@ Q_OBJECT
         /** Given a path, saves the current preset to an XML file. */
         void savePreset(QString path);
         /** Updates the DOM with what script files are currently loaded.
-            Sub-classes need to re-implement this if they need to add any other
-            items. */
+            Sub-classes need to re-implement this (and call it first) if they
+            need to add any other items. */
         virtual QDomDocument buildDomElement();
         
         QList<QString> m_scriptFileNames;
