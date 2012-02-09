@@ -101,13 +101,20 @@ int HidController::open() {
     
     // Open Device
     // FIXME: figure out why trying to open the device including the serial number fails (on Linux at least)
-//     m_pHidDevice = hid_open(m_deviceInfo.vendor_id, m_deviceInfo.product_id, m_deviceInfo.serial_number);
-    m_pHidDevice = hid_open(m_deviceInfo.vendor_id, m_deviceInfo.product_id, NULL);
+    m_pHidDevice = hid_open(m_deviceInfo.vendor_id, m_deviceInfo.product_id, m_deviceInfo.serial_number);
+
+    // If it does fail, try without serial number
+    if (m_pHidDevice == NULL) m_pHidDevice = hid_open(m_deviceInfo.vendor_id, m_deviceInfo.product_id, NULL);
+
+    // If that fails, try to open by path
+    if (m_pHidDevice == NULL) m_pHidDevice = hid_open_path(m_deviceInfo.path);
+
+    // If that fails, we give up!
     if (m_pHidDevice == NULL) {
         qWarning()  << "Unable to open HID device" << m_sDeviceName;
         return -1;
     }
-        
+    
     m_bIsOpen = true;
 
     startEngine();
