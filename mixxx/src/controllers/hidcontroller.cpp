@@ -60,18 +60,26 @@ void HidReader::run() {
 // ------ HidController ------
 
 HidController::HidController(const hid_device_info deviceInfo) {
+    
     m_deviceInfo = deviceInfo;
+
+    // Set the Unique IDentifier to the serial_number
+    //  (plus the interface number if applicable)
+    m_sUID = QString::fromWCharArray(deviceInfo.serial_number);
     
     //Note: We include the last 4 digits of the serial number and the interface number to
     //  allow the user (and Mixxx!) to keep track of which is which
-    m_sDeviceName = QString("%1 %2_%3").arg(QString::fromWCharArray(deviceInfo.product_string))
-                    .arg(QString::fromWCharArray(deviceInfo.serial_number).right(4))
-                    .arg(QString::number(deviceInfo.interface_number));
-    
-    // Set the Unique IDentifier to the serial_number plus the interface number
-    m_sUID = QString::fromWCharArray(deviceInfo.serial_number);
-    m_sUID.append(QString::number(deviceInfo.interface_number));
-    
+    if (deviceInfo.interface_number < 0) {
+        m_sDeviceName = QString("%1 %2").arg(QString::fromWCharArray(deviceInfo.product_string),
+                                             QString::fromWCharArray(deviceInfo.serial_number).right(4));
+    }
+    else {
+        m_sDeviceName = QString("%1 %2_%3").arg(QString::fromWCharArray(deviceInfo.product_string),
+                                                QString::fromWCharArray(deviceInfo.serial_number).right(4),
+                                                QString::number(deviceInfo.interface_number));
+        m_sUID.append(QString::number(deviceInfo.interface_number));
+    }
+
     // All HID devices are full-duplex
     m_bIsInputDevice = true;
     m_bIsOutputDevice = true;
