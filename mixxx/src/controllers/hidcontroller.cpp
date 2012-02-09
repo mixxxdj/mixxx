@@ -132,7 +132,8 @@ int HidController::close() {
 
     // Stop the reading thread
     if (m_pReader == NULL) {
-        qWarning() << "HidReader not present for"<<m_sDeviceName<<"yet the device is open!";
+        qWarning() << "HidReader not present for" << m_sDeviceName
+                   << "yet the device is open!";
     }
     else {
         disconnect(m_pReader, SIGNAL(incomingData(unsigned char*, unsigned int)),
@@ -185,7 +186,11 @@ void HidController::send(unsigned char data[], unsigned int length, unsigned int
     buffer[0] = (unsigned char) reportID;
     
     int result = hid_write(m_pHidDevice, buffer, length+1);
-    if (result==-1) qWarning() << "Unable to send data to" << m_sDeviceName << ":" << hid_error(m_pHidDevice);
+    
+    if (result==-1) {
+        qWarning() << "Unable to send data to" << m_sDeviceName << ":"
+                   << QString::fromWCharArray(hid_error(m_pHidDevice));
+    }
     else if (debugging()) qDebug() << result << "bytes sent to" << m_sDeviceName << "(including report ID of" << reportID << ")";
 
     free(buffer);
