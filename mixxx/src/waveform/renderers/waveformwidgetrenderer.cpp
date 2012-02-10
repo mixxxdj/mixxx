@@ -233,6 +233,10 @@ void WaveformWidgetRenderer::setTrack(TrackPointer track)
         m_trackSamples = (int)m_trackSamplesControlObject->get();
     else
         m_trackSamples = 0;
+
+    for( int i = 0; i < m_rendererStack.size(); ++i) {
+        m_rendererStack[i]->onSetTrack();
+    }
 }
 
 

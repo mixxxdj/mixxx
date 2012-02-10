@@ -11,12 +11,15 @@ GLSLWaveformRendererSignal::GLSLWaveformRendererSignal(WaveformWidgetRenderer* w
     m_textureId = 0;
     m_quadListId = -1;
 
+    m_loadedWaveform = 0;
+
     m_waveformLength = new ShaderVariable<int>("waveformLength");
     m_textureSize = new ShaderVariable<int>("textureSize");
     m_textureStride = new ShaderVariable<int>("textureStride");
-    m_indexPosition = new ShaderVariable<int>("indexPosition");
-    m_displayRange = new ShaderVariable<int>("displayRange");
+    m_indexPosition = new ShaderVariable<float>("indexPosition");
+    m_displayRange = new ShaderVariable<float>("displayRange");
     m_viewportWidth = new ShaderVariable<int>("viewportWidth");
+    m_viewportHeigth =  new ShaderVariable<int>("viewportHeight");
 }
 
 GLSLWaveformRendererSignal::~GLSLWaveformRendererSignal() {
@@ -36,6 +39,7 @@ GLSLWaveformRendererSignal::~GLSLWaveformRendererSignal() {
     delete m_indexPosition;
     delete m_displayRange;
     delete m_viewportWidth;
+    delete m_viewportHeigth;
 }
 
 bool GLSLWaveformRendererSignal::loadShaders()
@@ -71,7 +75,9 @@ bool GLSLWaveformRendererSignal::loadShaders()
     m_textureStride->initUniformLocation(m_shaderProgram);
     m_indexPosition->initUniformLocation(m_shaderProgram);
     m_displayRange->initUniformLocation(m_shaderProgram);
+
     m_viewportWidth->initUniformLocation(m_shaderProgram);
+    m_viewportHeigth->initUniformLocation(m_shaderProgram);
 
     //vRince here I do not check if all location are Ok since
     //shader optimization could not provide Id for unused variable
@@ -80,19 +86,23 @@ bool GLSLWaveformRendererSignal::loadShaders()
 
 bool GLSLWaveformRendererSignal::loadTexture()
 {
+    qDebug() << "GLSLWaveformRendererSignal::loadTexture()";
+
     glEnable(GL_TEXTURE_2D);
 
     if( m_textureId == 0) {
         glGenTextures(1,&m_textureId);
 
-        if( glGetError())
-            qDebug() << "GLSLWaveformRendererSignal::loadTexture - m_textureId" << m_textureId << "error" << glGetError();
+        int error = glGetError();
+        if( error)
+            qDebug() << "GLSLWaveformRendererSignal::loadTexture - m_textureId" << m_textureId << "error" << error;
     }
 
     glBindTexture(GL_TEXTURE_2D, m_textureId);
 
-    if( glGetError())
-        qDebug() << "GLSLWaveformRendererSignal::loadTexture - bind error" << glGetError();
+    int error = glGetError();
+    if( error)
+        qDebug() << "GLSLWaveformRendererSignal::loadTexture - bind error" << error;
 
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
@@ -107,13 +117,14 @@ bool GLSLWaveformRendererSignal::loadTexture()
 
             glTexImage2D(GL_TEXTURE_2D,0,GL_RGBA,textureWidth,textureHeigth,0,GL_RGBA,GL_UNSIGNED_BYTE,waveform->data());
 
-            if( glGetError())
-                qDebug() << "GLSLWaveformRendererSignal::loadTexture - glTexImage2D error" << glGetError();
+            int error = glGetError();
+            if( error)
+                qDebug() << "GLSLWaveformRendererSignal::loadTexture - glTexImage2D error" << error;
         }
     }
     else {
-        //dont do anything it will come back soon
-        //no need to trash anything
+        glDeleteTextures(1,&m_textureId);
+        m_textureId = 0;
     }
 
     glDisable(GL_TEXTURE_2D);
@@ -128,7 +139,7 @@ void GLSLWaveformRendererSignal::createGeometry() {
 
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
-    glOrtho(-1.0, 1.0, 1.0, -1.0, -1000, 1000);
+    glOrtho(-1.0, 1.0, -1.0, 1.0, -1000, 1000);
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
 
@@ -137,17 +148,17 @@ void GLSLWaveformRendererSignal::createGeometry() {
     {
         glBegin(GL_QUADS);
         {
-            glTexCoord2f( -1.0,-1.0);
-            glVertex3f(-1.0f,-1.0f, 0.0f);
+            glTexCoord2f(0.0,0.0);
+            glVertex3f(-1.0f,-1.0f,0.0f);
 
-            glTexCoord2f( 1.0,-1.0);
-            glVertex3f( 1.0f,-1.0f, 0.0f);
+            glTexCoord2f(1.0, 0.0);
+            glVertex3f(1.0f,-1.0f,0.0f);
 
-            glTexCoord2f( 1.0, 1.0);
-            glVertex3f( 1.0f, 1.0f, 0.0f);
+            glTexCoord2f(1.0,1.0);
+            glVertex3f(1.0f,1.0f, 0.0f);
 
-            glTexCoord2f(-1.0, 1.0);
-            glVertex3f(-1.0f, 1.0f, 0.0f);
+            glTexCoord2f(0.0,1.0);
+            glVertex3f(-1.0f,1.0f,0.0f);
         }
         glEnd();
     }
@@ -162,12 +173,19 @@ void GLSLWaveformRendererSignal::init(){
     if( !loadShaders())
         return;
 
+    m_loadedWaveform = 0;
+
     createGeometry();
     loadTexture();
 }
 
 void GLSLWaveformRendererSignal::setup(const QDomNode& node) {
+    //TODO(vrince)
+}
 
+void GLSLWaveformRendererSignal::onSetTrack(){
+    m_loadedWaveform = 0;
+    loadTexture();
 }
 
 void GLSLWaveformRendererSignal::draw(QPainter* painter, QPaintEvent* event) {
@@ -182,6 +200,15 @@ void GLSLWaveformRendererSignal::draw(QPainter* painter, QPaintEvent* event) {
     // save the GL state set for QPainter
     painter->beginNativePainting();
 
+    //NOTE(vRince) completion can change during laodTexture
+    //do not remove currenCompletion
+    const int currentCompletion = waveform->getCompletion();
+    if( m_loadedWaveform < waveform->getCompletion())
+    {
+        loadTexture();
+        m_loadedWaveform = currentCompletion;
+    }
+
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
     glFrustum(-1.0, 1.0, -1.0, 1.0, -1000, 1000);
@@ -195,23 +222,22 @@ void GLSLWaveformRendererSignal::draw(QPainter* painter, QPaintEvent* event) {
 
     m_shaderProgram->bind();
 
-    int currentPosition = 0;
-    if( m_waveformRenderer->getPlayPos() >= 0)
-    {
-        //TODO (vRince) not really accurate since waveform size une visual reasampling and
-        //have two mores samples to hold the complete visual data
-        currentPosition = m_waveformRenderer->getPlayPos()*waveform->size();
-        m_waveformRenderer->regulateVisualSample(currentPosition);
-    }
+    const float currentPosition = m_waveformRenderer->getPlayPos()*waveform->size();
+    const float range = (float)m_waveformRenderer->getWidth()*m_waveformRenderer->getVisualSamplePerPixel();
+
+    m_waveformLength->setUniformValue(m_shaderProgram,waveform->size());
+    m_textureSize->setUniformValue(m_shaderProgram,waveform->getTextureSize());
+    m_textureStride->setUniformValue(m_shaderProgram,waveform->getTextureStride());
+    m_displayRange->setUniformValue(m_shaderProgram,range);
+    m_indexPosition->setUniformValue(m_shaderProgram,currentPosition);
 
     m_viewportWidth->setUniformValue(m_shaderProgram,m_waveformRenderer->getWidth());
-    m_waveformLength->setUniformValue(m_shaderProgram,waveform->size());
-    m_textureStride->setUniformValue(m_shaderProgram,waveform->getTextureStride());
-    m_displayRange->setUniformValue(m_shaderProgram,m_waveformRenderer->getWidth()*m_waveformRenderer->getVisualSamplePerPixel());
-    m_indexPosition->setUniformValue(m_shaderProgram,currentPosition);
+    m_viewportHeigth->setUniformValue(m_shaderProgram,m_waveformRenderer->getHeight());
 
     glEnable(GL_TEXTURE_2D);
     glBindTexture(GL_TEXTURE_2D, m_textureId);
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
     glCallList(m_quadListId);
     glDisable(GL_TEXTURE_2D);
 

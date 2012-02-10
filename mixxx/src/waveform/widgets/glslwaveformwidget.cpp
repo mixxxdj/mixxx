@@ -18,7 +18,7 @@ GLSLWaveformWidget::GLSLWaveformWidget( const char* group, QWidget* parent) :
     addRenderer<WaveformRendererEndOfTrack>();
     addRenderer<WaveformRenderMarkRange>();
     addRenderer<WaveformRenderMark>();
-    addRenderer<GLSLWaveformRendererSignal>();
+    signalRenderer_ = addRenderer<GLSLWaveformRendererSignal>();
     addRenderer<WaveformRenderBeat>();
 
     setAttribute(Qt::WA_NoSystemBackground);
@@ -45,3 +45,10 @@ void GLSLWaveformWidget::paintEvent( QPaintEvent* event) {
     QGLWidget::swapBuffers();
 }
 
+void GLSLWaveformWidget::mouseDoubleClickEvent(QMouseEvent *event)
+{
+    if( event->button() == Qt::RightButton) {
+        makeCurrent();
+        signalRenderer_->loadShaders();
+    }
+}
