@@ -4,6 +4,8 @@
 #include <QGLWidget>
 #include "waveformwidgetabstract.h"
 
+class GLSLWaveformRendererSignal;
+
 class GLSLWaveformWidget : public WaveformWidgetAbstract, public QGLWidget
 {
 public:
@@ -19,6 +21,10 @@ public:
 protected:
     virtual void castToQWidget();
     virtual void paintEvent(QPaintEvent* event);
+    virtual void mouseDoubleClickEvent(QMouseEvent *);
+
+private:
+    GLSLWaveformRendererSignal* signalRenderer_;
 
 private:
     GLSLWaveformWidget() {}

@@ -18,6 +18,8 @@ public:
     virtual void setup(const QDomNode& node);
     virtual void draw(QPainter* painter, QPaintEvent* event);
 
+    virtual void onSetTrack();
+
     bool loadShaders();
     bool loadTexture();
 
@@ -28,15 +30,19 @@ private:
     GLint m_quadListId;
     GLuint m_textureId;
 
+    int m_loadedWaveform;
+
     //shaders
     QGLShaderProgram* m_shaderProgram;
 
     ShaderVariable<int>* m_waveformLength;
     ShaderVariable<int>* m_textureSize;
     ShaderVariable<int>* m_textureStride;
-    ShaderVariable<int>* m_indexPosition;
-    ShaderVariable<int>* m_displayRange;
+    ShaderVariable<float>* m_indexPosition;
+    ShaderVariable<float>* m_displayRange;
+
     ShaderVariable<int>* m_viewportWidth;
+    ShaderVariable<int>* m_viewportHeigth;
 };
 
 #endif // GLWAVEFORMRENDERERSIGNALSHADER_H

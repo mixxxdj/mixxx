@@ -62,7 +62,11 @@ public:
     int getWidth() const { return m_width;}
 
     template< class T_Renderer>
-    inline void addRenderer() { m_rendererStack.push_back( new T_Renderer(this));}
+    inline T_Renderer* addRenderer() {
+        T_Renderer* renderer = new T_Renderer(this);
+        m_rendererStack.push_back(renderer);
+        return renderer;
+    }
 
     void setTrack( TrackPointer track);
 

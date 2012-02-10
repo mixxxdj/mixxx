@@ -17,6 +17,7 @@ class WaveformRendererAbstract {
     virtual void draw(QPainter* painter, QPaintEvent* event) = 0;
 
     virtual void onResize() {}
+    virtual void onSetTrack() {}
 
   protected:
     bool isDirty() const {
