@@ -153,6 +153,31 @@ div.sphinxsidebar input[type=text]{
 
 /* -- body styles ----------------------------------------------------------- */
 
+
+/*Custom class for use with the "figure" directive 
+  Makes basically nice borders around screenshots// jus 2012-02 
+*/
+.pretty-figures {
+       border: none;
+      }
+
+.pretty-figures img {
+       background-color: #FFFFFF;
+       padding: 5px 5px 5px 5px;
+       margin-right: 10px;
+       box-shadow: 0 5px 5px -5px rgba(0, 0, 0, 0.5);
+       border: 1px solid #AAAAAA;
+       }
+
+.pretty-figures p.caption {
+       align: center;
+       font: normal 13px/15px Arial, Helvetica, sans-serif !important;;
+       color: #AAAAAA;
+       margin: 0;
+       padding: 10px;
+       }
+
+
 a {
     color: #005B81;
     text-decoration: none;
