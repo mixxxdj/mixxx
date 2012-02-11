@@ -256,13 +256,13 @@ Timecode Support
 ----------------
 
 +----------------------------------------+---------------------+
-| Vinyl                                  | Responsiveness      |
+| Type                                   | Responsiveness      |
 +========================================+=====================+
-| Serato CV02                            | Very high           |
+| Serato CV02 Vinyl                      | Very high           |
 +----------------------------------------+---------------------+
-| Serato CD                              | Very high           |
+| Serato CV02 CD                         | Very high           |
 +----------------------------------------+---------------------+
-| Traktor Scratch                        | Very high           |
+| Traktor Scratch Vinyl MK1              | Very high           |
 +----------------------------------------+---------------------+
 | FinalScratch (Standard)                | Not supported       |
 +----------------------------------------+---------------------+

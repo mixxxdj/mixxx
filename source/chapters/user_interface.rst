@@ -257,6 +257,8 @@ Samplers are miniature decks. They allow you to play short samples and jingles
 in your mix. They come with a small overview waveform and a limited number of
 controls. The title of the track and its BPM are displayed along the top row.
 
+.. hint:: Tap the BPM to set the BPM to the speed you are tapping.
+
 The numbered buttons are hotcues and work just like deck hotcues as described in
 :ref:`interface-hotcues`. The headphone button is a :term:`PFL` button and the
 knob to the right of it is a :term:`volume` knob for the sampler. The fader on

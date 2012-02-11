@@ -176,8 +176,8 @@ Some vinyl control records have a special portion of grooves near the center
 of the record for selecting and loading tracks in the user interface.  You can
 see these grooves because there is a gap between the main timecode area and the
 inner circle.  Some control records have not been tested with Mixxx, and their 
-control areas are not supported.  Serato Vinyl and Traktor Vinyl (v1) are
-known to work.  Serato CDs are known not to work.
+control areas are not supported.  Serato CV02 Vinyl and Traktor Vinyl MK1 are
+known to work. Serato CV02 CDs are known not to work.
 
 Just drop the needle in the control area and let the record play forward or
 backward.  The highlighted row in the library should move up or down.  Simply
