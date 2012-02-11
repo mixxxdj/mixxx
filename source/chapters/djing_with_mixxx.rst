@@ -82,15 +82,27 @@ crossfader.
 Recording your Mix
 ==================
 
-You can record Mixxx's master output in WAV, AIFF, OGG, or MP3 by doing the
-following:
+You can record Mixxx's master output in WAV, AIFF, OGG or MP3.
+The recordings settings can be changed in Mixxx Preferences->Recording.
 
-1. On the menu bar, click “Options”
-2. Click “Record Mix”
-3. Choose where to save it and what to call it then click OK
+.. image:: ../_static/Mixxx-1.10-Preferences-Recording.png
+   :width: 100%
+   :alt: Setting up recording
+   :align: center
 
-Mixxx will then wait until you start playing some music before it begins
-recording. The recording will begin about two seconds after that. (If you want
-it to get your first sounds, just press Play then Cue (or Pause) to start it,
-then begin mixing two seconds later. You can remove the initial silence with an
-audio editing program like Audacity after you finish mixing.)
+.. note:: MP3 recordings are not supported out of the box in Mixxx since we do not
+          license the MP3 encoding patents. In order to enable MP3 recording you must
+          install the LAME MP3 encoding tool yourself.
+          For information how to do this, see :ref:`MP3 streaming` .
+
+.. image:: ../_static/Mixxx-1.10-Library-Recordings.png
+   :width: 100%
+   :alt: Recordings item in the library
+   :align: center
+
+If you click on the recording sidebar item, the right track table view displays the content
+of "<Your Music Folder>/Mixxx/Recordings". New recordings are automatically saved in this
+folder as well as CUE files if you choose to create them in the recording preferences.
+
+Switch to the "Recording" sidebar item, then click the "Start Recording". Alternatively
+you can click “Options” on the menu bar and click “Record Mix”. While recording, Mixxx displays how much data has been recorded.
