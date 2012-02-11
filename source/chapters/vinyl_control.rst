@@ -90,8 +90,7 @@ Control Mode
 
 Mixxx has three control modes regardless of which control records you use. 
 
-"Absolute
-Mode" provides Mixxx with both pitch and position information from the timecode,
+"Absolute Mode" provides Mixxx with both pitch and position information from the timecode,
 and allows you to seek by needle dropping on your vinyl or seeking on your
 CDJ.  Once a track is playing, Mixxx will not allow you to select Absolute mode.
 Otherwise, the track would suddenly jump to a new position.  Make sure the 
@@ -162,7 +161,7 @@ Mixxx has two optional cueing modes for vinyl control which only apply to
 in a track without touching the laptop.  Turntablists often need to find a
 break or a vocal sample, and cueing modes make these easy to find.
 
-The first is just called "Cue."  In this mode, when you 
+The first is just called "Cue".  In this mode, when you 
 drop the needle on the record *after* the Cue point, Mixxx will seek to that
 cue point.  In the second mode, "Hot Cue," when the needle is dropped Mixxx will
 seek to the nearest hotcue point, working backwards.  So if you have a hotcue at
