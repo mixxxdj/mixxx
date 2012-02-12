@@ -7,10 +7,14 @@ preferences dialogue, you can simply supply Mixxx with all information needed to
 establish a server connection. To enable live broadcasting you can either use
 the options menu or the checkbox within the preference dialogue.
 
-.. image:: ../_static/shoutcast.png
-   :width: 100%
-   :alt: Setting up live broadcasting
+.. figure:: ../_static/Mixxx-1.10-Preferences-Livebroadcasting.png
    :align: center
+   :width: 100%
+   :figwidth: 90%
+   :alt: Mixxx preferences - Setting up live broadcasting
+   :figclass: pretty-figures
+
+   Mixxx preferences - Setting up live broadcasting
 
 By default, Mixxx broadcasts artist and title information to your listeners. You
 can disable this behavior by selecting “enable custom metadata”.
@@ -66,11 +70,11 @@ Windows
 
 To activate MP3 streaming on Windows, follow these steps:
 
-1. Download LAME 3.98.4 binaries from http://lame.bakerweb.biz/. The ZIP file includes x86 and x64 DLLs
-2. Unpack the archive
-3. If you have the 32-bit version of Mixxx, copy libmp3lame.dll from the x86 folder to the location you have installed Mixxx.
-4. If you have the 64-bit version of Mixxx, copy libmp3lame.dll from the x64 folder to the location you have installed Mixxx.
-5. Rename the DLL to lame_enc.dll
+     1. Download LAME 3.98.4 binaries from http://lame.bakerweb.biz/ . The ZIP file includes x86 and x64 DLLs
+     #. Unpack the archive
+     #. If you have the 32-bit version of Mixxx, copy libmp3lame.dll from the x86 folder to the location you have installed Mixxx.
+     #. If you have the 64-bit version of Mixxx, copy libmp3lame.dll from the x64 folder to the location you have installed Mixxx.
+     #. Rename the DLL to lame_enc.dll
 
 Please note that Audacity and other web sites provide lame binaries too. **DO
 NOT USE THESE VERSIONS**.  If you do, Mixxx will show an error when activating
@@ -81,10 +85,8 @@ Mac OS X
 
 To activate MP3 streaming on Mac OS X, follow these steps:
 
-1. Download `LAME 3.98.4 <http://www.mediafire.com/?7v9s8g0ip93s9dd>`_ Intel (Mac OS
-X 10.5+ 32-bit & 64-bit) or `LAME 3.98.4
-<http://www.mediafire.com/?6ifaj2b7cwpf3ag>`_ PowerPC (Mac OS X 10.5 32-bit)
-2. Unpack and install the archive.
+     1. Download `LAME 3.98.4 <http://www.mediafire.com/?7v9s8g0ip93s9dd>`_ Intel (Mac OS X 10.5+ 32-bit & 64-bit) or `LAME 3.98.4 <http://www.mediafire.com/?6ifaj2b7cwpf3ag>`_ PowerPC (Mac OS X 10.5 32-bit)
+     #. Unpack and install the archive.
 
 Another easy way to achieve MP3 streaming is to use `MacPorts
 <http://www.macports.org/>`_ which is a repository manager (like apt on
