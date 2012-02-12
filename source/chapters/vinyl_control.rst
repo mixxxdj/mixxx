@@ -7,6 +7,15 @@ having your digital music collection on vinyl. Many DJs prefer the tactile feel
 of vinyl, and vinyl control allows that feel to be preserved while retaining the
 benefits of using digital audio.
 
+.. figure:: ../_static/Mixxx-1.10-Preferences-Vinylcontrol.png
+   :align: center
+   :width: 100%
+   :figwidth: 90%
+   :alt: Mixxx preferences - Setting up vinyl control
+   :figclass: pretty-figures
+
+   Mixxx preferences - Setting up vinyl control
+
 You can configure vinyl control through the Vinyl Control pane in the
 preferences. More information about Mixxx's vinyl control and supported hardware
 configurations is available on the `vinyl control wiki page

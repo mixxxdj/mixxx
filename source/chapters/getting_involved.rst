@@ -17,7 +17,7 @@ As a non-developer
 * `Make MIDI mappings
   <http://mixxx.org/wiki/doku.php/midi_controller_mapping_file_format>`_ for
   your controller
-* `Report bugs <http://bugs.launchpad.net/mixxx>`_
+* `Report bugs <https://bugs.launchpad.net/mixxx>`_
 * Update our `Ẁiki <http://mixxx.org/wiki>`_ to make sure the information on it
   is up to date.
 * Translate Mixxx using `Launchpad Translations
