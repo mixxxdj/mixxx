@@ -21,10 +21,14 @@ The default mapping for English keyboards is depicted in the figure below. It's
 divided into a left-hand side for deck 1 and right-hand side for deck 2. Please
 note that you can also access the functions through Mixxx's interface.
 
-.. image:: ../_static/keyboard_mapping.png
-   :width: 100%
-   :alt: Keyboard shortcuts
+.. figure:: ../_static/Mixxx-1.10-Keyboard-Mapping.png
    :align: center
+   :width: 100%
+   :figwidth: 100%
+   :alt: Keyboard shortcuts
+   :figclass: pretty-figures
+
+   Keyboard shortcuts (for en-us keyboard layout) 
 
 +----------------------------------------+---------------------+---------------------+--------------+
 | Function                               | Deck 1              | Deck 2              | Master       |
@@ -274,7 +278,7 @@ Timecode Support
 +----------------------------------------+---------------------+
 
 At the present time, Serato records are recommended if you are looking to buy vinyl. If you want
-to use CDs, you can download a free copy from `Rane`_.
+to use CDs, you can download a free copy from `Serato`_.
 
-.. _Rane: http://serato.com/downloads/scratchlive-controlcd/
+.. _Serato: http://serato.com/downloads/scratchlive-controlcd/
 
