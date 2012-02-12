@@ -85,20 +85,28 @@ Recording your Mix
 You can record Mixxx's master output in WAV, AIFF, OGG or MP3.
 The recordings settings can be changed in Mixxx Preferences->Recording.
 
-.. image:: ../_static/Mixxx-1.10-Preferences-Recording.png
-   :width: 100%
-   :alt: Setting up recording
+.. figure:: ../_static/Mixxx-1.10-Preferences-Recording.png
    :align: center
+   :width: 100%
+   :figwidth: 100%
+   :alt: Mixxx preferences - Setting up recordings
+   :figclass: pretty-figures
+
+   Mixxx preferences - Setting up recordings
 
 .. note:: MP3 recordings are not supported out of the box in Mixxx since we do not
           license the MP3 encoding patents. In order to enable MP3 recording you must
           install the LAME MP3 encoding tool yourself.
           For information how to do this, see :ref:`MP3 streaming` .
 
-.. image:: ../_static/Mixxx-1.10-Library-Recordings.png
-   :width: 100%
-   :alt: Recordings item in the library
+.. figure:: ../_static/Mixxx-1.10-Library-Recordings.png
    :align: center
+   :width: 100%
+   :figwidth: 100%
+   :alt: Mixxx library - Recordings view
+   :figclass: pretty-figures
+
+   Mixxx library - Recordings view
 
 If you click on the recording sidebar item, the right track table view displays the content
 of "<Your Music Folder>/Mixxx/Recordings". New recordings are automatically saved in this
