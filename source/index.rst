@@ -13,10 +13,12 @@ your MIDI controllers, or even just your keyboard.
 
 That's right, this is you after learning how to DJ with Mixxx:
 
-.. image:: _static/armin-jesus.jpg
-   :width: 400px
-   :alt: Armin van Buuren doing the Jesus pose.
+.. figure:: _static/armin-jesus.jpg
    :align: center
+   :width: 60%
+   :figwidth: 100%
+   :alt: Armin van Buuren doing the Jesus pose.
+   :figclass: pretty-figures
 
 Table of Contents
 -----------------
