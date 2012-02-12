@@ -33,10 +33,14 @@ There is absolutely no need to buy an additional, expensive sound card **if you
 do not require headphone cueing**. The built-in soundcard on most computers and
 laptops comes with a single line-out and microphone input.
 
- .. image:: ../_static/mixxx_standalone-setup_dlg.png
-   :width: 90%
-   :alt: Using Mixxx with your built-in sound card
+.. figure:: ../_static/Mixxx-1.10-Preferences-Soundhardware.png
    :align: center
+   :width: 90%
+   :figwidth: 100%
+   :alt: Using Mixxx with your built-in sound card
+   :figclass: pretty-figures
+
+   Using Mixxx with your built-in sound card
 
 The figure above depicts how the sound configuration might look. The stereo
 output of your soundcard (channels 1-2) will be connected to the **master
@@ -56,11 +60,14 @@ outputs (4 channels). The first stereo output (channels 1-2) is used as the
 your soundcard does not have 2 stereo outputs, you can use multiple soundcards
 to achieve the same setup.
 
-.. image:: ../_static/mixxx_setup_ext_soundcard.png
-   :width: 100%
-   :alt: Using Mixxx together with an external soundcard
+.. figure:: ../_static/mixxx_setup_ext_soundcard.png
    :align: center
+   :width: 90%
+   :figwidth: 100%
+   :alt: Using Mixxx together with an external soundcard
+   :figclass: pretty-figures
 
+   Using Mixxx together with an external soundcard
 
 The depicted configuration above uses two soundcards. This setup is the bare
 minimum for serious DJing. Without any extra gear, the DJ can control Mixxx via
@@ -74,20 +81,27 @@ there is a MIDI mapping file to tell Mixxx how to understand it. Mixxx comes
 bundled with a number of MIDI mapping presets. To see the full list, see
 :ref:`control-midi`.
 
-.. image:: ../_static/mixxx_setup_midi_with_ext_sound.png
-   :width: 100%
-   :alt: Using Mixxx together with a MIDI controller and external soundcard
+.. figure:: ../_static/mixxx_setup_midi_with_ext_sound.png
    :align: center
+   :width: 90%
+   :figwidth: 100%
+   :alt: Using Mixxx together with a MIDI controller and external soundcard
+   :figclass: pretty-figures
 
+   Using Mixxx together with a MIDI controller and external soundcard
 
 Your MIDI controller may have an integrated *multi-channel* soundcard. If yours
 does not, your sound setup may look like the figure above. Otherwise, an
 alternative sound setup may look like the figure below:
 
-.. image:: ../_static/mixxx_setup_midi_integrated_sound.png
-   :width: 100%
-   :alt: Using Mixxx together with a MIDI controller and integrated soundcard
+.. figure:: ../_static/mixxx_setup_midi_integrated_sound.png
    :align: center
+   :width: 90%
+   :figwidth: 100%
+   :alt: Using Mixxx together with a MIDI controller and integrated soundcard
+   :figclass: pretty-figures
+
+   Using Mixxx together with a MIDI controller and integrated soundcard
 
 .. note:: You can connect as many MIDI controllers as you have ports on your
           computer. Just follow the steps in :ref:`control-midi` for each
@@ -121,10 +135,14 @@ connect the outputs of your sound card to the inputs on your mixer.
           switch.  If yours does, make sure it matches the input or switch
           setting on your sound card.
 
-.. image:: ../_static/mixxx_setup_timecode_vc.png
-   :width: 100%
-   :alt: Using Mixxx together with a turntable and external mixer
+.. figure:: ../_static/mixxx_setup_timecode_vc.png
    :align: center
+   :width: 90%
+   :figwidth: 100%
+   :alt: Using Mixxx together with turntables and external mixer
+   :figclass: pretty-figures
+
+   Using Mixxx together with turntables and external mixer
 
 CDJs
 ^^^^
@@ -135,10 +153,14 @@ connect the RCA cables of the CDJs to an inputs of your sound card. Second,
 connect the inputs of your mixer to the outputs of your sound card. Make sure
 the input mode of your sound card is set to *Line*.
 
-.. image:: ../_static/mixxx_setup_timecode_cdj.png
-   :width: 100%
-   :alt: Using Mixxx together with a MIDI controller and external soundcard
+.. figure:: ../_static/mixxx_setup_timecode_cdj.png
    :align: center
+   :width: 90%
+   :figwidth: 100%
+   :alt: Using Mixxx together with CDJs and external mixer
+   :figclass: pretty-figures
+
+   Using Mixxx together with CDJs and external mixer
 
 Configuring Mixxx
 =================
