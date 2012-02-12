@@ -6,10 +6,14 @@ You are going to want to get very familiar with this interface because it is
 the main way to use Mixxx. In this chapter, we present the default interface of Mixxx
 and describe its elements, knobs and faders.
 
-.. image:: ../_static/deere_large.png
+.. figure:: ../_static/deere_large.png
    :align: center
    :width: 100%
-   :alt: The Mixxx Deere skin
+   :figwidth: 100%
+   :alt: The Mixxx interface - Deere skin
+   :figclass: pretty-figures
+
+   The Mixxx interface - Deere skin
 
 This is the Deere skin. It is the default skin supplied with Mixxx. There are a
 variety of others skins included with Mixxx. You should explore them all to
@@ -21,11 +25,14 @@ The Deck Sections
 The :term:`deck` section allows you to control everything relating to a virtual
 turntable deck. We are going to break this down into sections.
 
-.. image:: ../_static/deere_deck_section.png
+.. figure:: ../_static/deere_deck_section.png
    :align: center
    :width: 70%
+   :figwidth: 100%
    :alt: A deck
+   :figclass: pretty-figures
 
+   A deck
 
 Track Information
 -----------------
@@ -38,20 +45,28 @@ playing at +5%, then the effective BPM will read 105 BPM. The number in the
 bottom right is the total elapsed time in the track or the total remaining time
 in the track. You can customize this in the Mixxx Preferences Interface section.
 
-.. image:: ../_static/deere_deck_track_info.png
+.. figure:: ../_static/deere_deck_track_info.png
    :align: center
    :width: 70%
-   :alt: The track information section
+   :figwidth: 100%
+   :alt: The track information section of the deck
+   :figclass: pretty-figures
+
+   The track information section of the deck
 
 .. hint:: Tap the BPM to set the BPM to the speed you are tapping.
 
 Rate Controls
 -------------
 
-.. image:: ../_static/deere_deck_rate_control.png
+.. figure:: ../_static/deere_deck_rate_control.png
    :align: left
-   :width: 10%
+   :width: 70%
+   :figwidth: 15%
    :alt: The rate control section of the deck
+   :figclass: pretty-figures
+
+   Rate control
 
 The rate controls allow you to change the rate at which tracks are played. This
 is very useful for :term:`beatmatching` two tracks together in a mix. The slider
@@ -71,16 +86,21 @@ temporarily. These can act as either a fixed :term:`pitch bend` or a
 :term:`ramping pitch bend`. You can configure their functionality in the Mixxx
 Preferences Interface section.
 
+
 .. _interface-looping:
 .. _interface-hotcues:
 
 Loop Controls and Hotcues
 -------------------------
 
-.. image:: ../_static/deere_deck_loop_hotcue.png
+.. figure:: ../_static/deere_deck_loop_hotcue.png
    :align: center
    :width: 70%
-   :alt: The looping, beatloop, hotcue, and fast-forward/rewind controls.
+   :figwidth: 100%
+   :alt: The looping, beatloop, hotcue, and fast-forward/rewind controls of the deck.
+   :figclass: pretty-figures
+
+   The looping, beatloop, hotcue, and fast-forward/rewind controls of the deck.
 
 In this section, you can control loops, beatloops, hotcues and the playback
 speed.  On the far left, you can :term:`fast-rewind`, :term:`fast-forward`, or
@@ -125,10 +145,14 @@ playback point of the deck. Clicking on either the waveform or the spinning
 vinyl widget allows you to scratch the track as if you were using vinyl or a
 MIDI controller.
 
-.. image:: ../_static/deere_deck_waveform.png
+.. figure:: ../_static/deere_deck_waveform.png
    :align: center
    :width: 70%
+   :figwidth: 100%
    :alt: The deck waveform overview and waveform summary
+   :figclass: pretty-figures
+
+   The waveform overview and waveform summary of the deck
 
 The six buttons at the bottom right allow you to configure the deck. Starting
 from the top-left and moving counterclockwise the buttons are as follows:
@@ -166,7 +190,6 @@ adjusted (:term:`quantized`) so that they begin on a beat.
 
 Toggle Keylock
 ^^^^^^^^^^^^^^
-
 :term:`Keylock <key lock>` locks the track's pitch so that adjustments to its tempo
 via the rate slider do not affect its pitch. This is useful if you would like to
 speed up or slow down a track and avoid the "chipmunk" affect that speeding up vocals has.
@@ -179,10 +202,14 @@ The Mixer Section
 The mixer section allows you to control how the different decks and samplers are
 mixed together.
 
-.. image:: ../_static/deere_mixer.png
+.. figure:: ../_static/deere_mixer.png
    :align: center
-   :width: 70%
+   :width: 60%
+   :figwidth: 100%
    :alt: The mixer section
+   :figclass: pretty-figures
+
+   The mixer section
 
 VU Meters and Channel Faders
 ----------------------------
@@ -230,10 +257,14 @@ your headphones.
 Crossfader and Channel Volume
 -----------------------------
 
-.. image:: ../_static/deere_mixer_crossfader.png
+.. figure:: ../_static/deere_mixer_crossfader.png
    :align: center
    :width: 70%
+   :figwidth: 100%
    :alt: The crossfader section of the mixer
+   :figclass: pretty-figures
+
+   The crossfader section of the mixer
 
 This section allows you control the playback of each deck and the fraction of
 each deck that is mixed into the master output. The play/pause buttons play or
@@ -248,10 +279,14 @@ decks and samplers oriented towards the right.
 The Sampler Section
 ===================
 
-.. image:: ../_static/deere_sampler.png
+.. figure:: ../_static/deere_sampler.png
    :align: center
    :width: 70%
+   :figwidth: 100%
    :alt: A sample deck
+   :figclass: pretty-figures
+
+   A sample deck
 
 Samplers are miniature decks. They allow you to play short samples and jingles
 in your mix. They come with a small overview waveform and a limited number of
@@ -273,16 +308,3 @@ The 4 configure buttons (in clockwise order from the top left) are:
 * Mix Orientation: M for Middle, L for Left, R for Right. Clicking cycles
   through all the options.
 * Keylock: Enable or disable keylock for the sampler.
-
-.. The Library
-.. ===========
-
-.. .. image:: ../_static/deere_library.png
-..   :align: center
-..   :width: 100%
-..   :alt: The Mixxx Library
-
-
-
-
-
