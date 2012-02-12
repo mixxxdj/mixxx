@@ -1,10 +1,14 @@
 The Library
 ***********
 
-.. image:: ../_static/deere_library.png
+.. figure:: ../_static/Mixxx-1.10-Library.png
    :align: center
    :width: 100%
+   :figwidth: 100%
    :alt: The Mixxx Library
+   :figclass: pretty-figures
+
+   The Mixxx Library
 
 The library manages all your music files. This is where you can find the tracks
 you want to play and load them into a channel. Alternatively, you can also use
