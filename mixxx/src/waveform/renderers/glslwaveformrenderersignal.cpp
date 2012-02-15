@@ -234,6 +234,9 @@ void GLSLWaveformRendererSignal::draw(QPainter* painter, QPaintEvent* event) {
     m_viewportWidth->setUniformValue(m_shaderProgram,m_waveformRenderer->getWidth());
     m_viewportHeigth->setUniformValue(m_shaderProgram,m_waveformRenderer->getHeight());
 
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
     glEnable(GL_TEXTURE_2D);
     glBindTexture(GL_TEXTURE_2D, m_textureId);
     glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
@@ -243,8 +246,6 @@ void GLSLWaveformRendererSignal::draw(QPainter* painter, QPaintEvent* event) {
 
     m_shaderProgram->release();
 
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glDisable(GL_ALPHA_TEST);
 
     glBegin(GL_LINE_LOOP);
