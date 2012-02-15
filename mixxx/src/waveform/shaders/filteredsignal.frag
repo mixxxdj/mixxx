@@ -1,3 +1,6 @@
+//#version 100
+#extension GL_EXT_gpu_shader4 : enable
+
 uniform int waveformLength;
 uniform int textureSize;
 uniform int textureStride;
@@ -32,7 +35,11 @@ void main(void)
     //gl_FragColor = texture2D( waveformDataTexture, uv);
     //return;
 
-    float currentIndex = indexPosition + (uv.x - 0.5) * 2.0 * displayRange;
+    float currentIndex = indexPosition + 2.0*(uv.x - 0.5) * displayRange;
+
+    //place current index to left channel
+    int diff = int(floor(currentIndex+0.5));
+    currentIndex -= float(diff%2);
 
     //gl_FragColor = vec4( (currentIndex - firstIndex)/(2.0*(float)displayRange), firstIndex/float(waveformLength), 1.0, 1.0);
     //return;
@@ -42,28 +49,46 @@ void main(void)
 
     vec4 outputColor = vec4(0.0,0.0,0.0,0.0);
 
-    float firstPixelPosition = currentIndex - pixelRange;
-    float lastPixelPosition = currentIndex + pixelRange;
+    float firstPixelPosition = currentIndex - pixelRange/2.0;
+    float lastPixelPosition = currentIndex + pixelRange/2.0;
 
-    float accumulatedWaveformData[3] = {0.0,0.0,0.0};
+    vec3 accumulatedData = vec3(0.0,0.0,0.0);
+
     for( float i = firstPixelPosition; i <= lastPixelPosition; i += 2)
     {
-        vec4 currentData = getWaveformData(i);
-        if( currentData.x > uv.y) //low
-            accumulatedWaveformData[0] += pixelWeigth;
-        if( currentData.y > uv.y) //Mid
-            accumulatedWaveformData[1] += pixelWeigth;
-        if( currentData.z > uv.y) //High
-            accumulatedWaveformData[2] += pixelWeigth;
-        //if( currentData.a > uv.y) //All
-        //    accumulatedWaveformData += vec4(1.0,1.0,1.0,pixelWeigth);
+        vec4 currentData;
+        if( uv.y > 0.5)
+        {
+            currentData = getWaveformData(i);
+
+            if( currentData.x > uv.y-0.5) //low
+                accumulatedData.x += pixelWeigth;
+            if( currentData.y > uv.y-0.5) //Mid
+                accumulatedData.y += pixelWeigth;
+            if( currentData.z > uv.y-0.5) //High
+                accumulatedData.z += pixelWeigth;
+        }
+        else
+        {
+            currentData = getWaveformData(i+1);
+
+            if( currentData.x > -uv.y+0.5) //low
+                accumulatedData.x += pixelWeigth;
+            if( currentData.y > -uv.y+0.5) //Mid
+                accumulatedData.y += pixelWeigth;
+            if( currentData.z > -uv.y+0.5) //High
+                accumulatedData.z += pixelWeigth;
+        }
     }
 
-    outputColor = accumulatedWaveformData[0] * vec4(1.0,0.0,0.0,0.5);
+    outputColor += vec4(1.0,0.0,0.0,accumulatedData.x) * accumulatedData.x;
+    outputColor += vec4(0.0,1.0,0.0,accumulatedData.y) * accumulatedData.y;
+    outputColor += vec4(0.0,0.0,1.0,accumulatedData.z) * accumulatedData.z;
 
     gl_FragColor = outputColor;
     return;
 
+    //SOME TEST
     //////////////////////////////////////////////////////////
 
     //to texture1D point
