@@ -8,6 +8,8 @@
 class QGLShaderProgram;
 template<typename T> class ShaderVariable;
 
+class QGLFramebufferObject;
+
 class GLSLWaveformRendererSignal : public WaveformRendererAbstract
 {
 public:
@@ -25,12 +27,16 @@ public:
 
 private:
     void createGeometry();
+    void createFrameBuffer();
 
 private:
     GLint m_quadListId;
     GLuint m_textureId;
 
     int m_loadedWaveform;
+
+    //Frame buffer for two pass rendering
+    QGLFramebufferObject* m_signalFramebuffer;
 
     //shaders
     QGLShaderProgram* m_shaderProgram;
