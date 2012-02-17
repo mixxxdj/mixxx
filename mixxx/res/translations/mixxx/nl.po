@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2011-10-31 23:15-0400\n"
-"PO-Revision-Date: 2011-10-07 14:26+0000\n"
-"Last-Translator: RJ Ryan <Unknown>\n"
+"PO-Revision-Date: 2011-11-21 00:05+0000\n"
+"Last-Translator: colobot <engelbertmercelis@gmail.com>\n"
 "Language-Team: Dutch <nl@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-11-02 04:45+0000\n"
-"X-Generator: Launchpad (build 14214)\n"
+"X-Launchpad-Export-Date: 2011-11-22 04:44+0000\n"
+"X-Generator: Launchpad (build 14299)\n"
 
 #: AutoDJFeature#1
 msgid "Auto DJ"
@@ -416,7 +416,7 @@ msgstr "Min."
 
 #: DlgBpmSchemeDlg#6
 msgid "Analyze Entire Song"
-msgstr ""
+msgstr "Analyseer gehele nummer"
 
 #: DlgMidiLearning#1
 msgid "Skip"
@@ -1046,47 +1046,47 @@ msgstr "seconden"
 #: DlgPrefNoVinylDlg#13
 msgctxt "DlgPrefNoVinylDlg#13"
 msgid "Show Signal Quality in Skin"
-msgstr ""
+msgstr "Toon signaal kwaliteit in de skin"
 
 #: DlgPrefNoVinylDlg#14
 msgctxt "DlgPrefNoVinylDlg#14"
 msgid "Control Mode"
-msgstr ""
+msgstr "Controle Modus"
 
 #: DlgPrefNoVinylDlg#15
 msgctxt "DlgPrefNoVinylDlg#15"
 msgid "Absolute Mode"
-msgstr ""
+msgstr "Absolute Modus"
 
 #: DlgPrefNoVinylDlg#16
 msgctxt "DlgPrefNoVinylDlg#16"
 msgid "Relative Mode"
-msgstr ""
+msgstr "Relatieve Modus"
 
 #: DlgPrefNoVinylDlg#17
 msgctxt "DlgPrefNoVinylDlg#17"
 msgid "Enable Needle Skip Prevention"
-msgstr ""
+msgstr "Zet preventie van naald verspringing aan"
 
 #: DlgPrefNoVinylDlg#18
 msgctxt "DlgPrefNoVinylDlg#18"
 msgid "Signal Quality"
-msgstr ""
+msgstr "Signaalkwaliteit"
 
 #: DlgPrefNoVinylDlg#19
 msgctxt "DlgPrefNoVinylDlg#19"
 msgid "http://www.xwax.co.uk"
-msgstr ""
+msgstr "http://www.xwax.co.uk"
 
 #: DlgPrefNoVinylDlg#20
 msgctxt "DlgPrefNoVinylDlg#20"
 msgid "Powered by xwax"
-msgstr ""
+msgstr "Mede mogelijk gemaakt door xwax"
 
 #: DlgPrefNoVinylDlg#21
 msgctxt "DlgPrefNoVinylDlg#21"
 msgid "Apply"
-msgstr ""
+msgstr "Toepassen"
 
 #: DlgPrefNoVinylDlg#22
 msgid ""
@@ -1346,7 +1346,7 @@ msgstr "Form3"
 #: DlgPrefShoutcastDlg#2
 msgctxt "DlgPrefShoutcastDlg#2"
 msgid "Enable live broadcasting"
-msgstr "Schakel live uitzending in"
+msgstr "Schakel live uitzenden in"
 
 #: DlgPrefShoutcastDlg#3
 msgid "Server connection"
@@ -1432,7 +1432,7 @@ msgstr "http://www.mixxx.org"
 #: DlgPrefShoutcastDlg#23
 msgctxt "DlgPrefShoutcastDlg#23"
 msgid "Description"
-msgstr ""
+msgstr "Omschrijving"
 
 #: DlgPrefShoutcastDlg#24
 msgid ""
@@ -1681,7 +1681,7 @@ msgstr "Geen"
 
 #: DlgPrefSoundItem#2
 msgid "Channel %1"
-msgstr ""
+msgstr "Kanaal %1"
 
 #: DlgPrefSoundItem#3
 msgid "Channels %1 - %2"
@@ -1776,57 +1776,57 @@ msgstr "Dek 2 Vinyl Type"
 #: DlgPrefVinylDlg#11
 msgctxt "DlgPrefVinylDlg#11"
 msgid "Show Signal Quality in Skin"
-msgstr ""
+msgstr "Toon signaal kwaliteit in de skin"
 
 #: DlgPrefVinylDlg#12
 msgctxt "DlgPrefVinylDlg#12"
 msgid "Apply"
-msgstr ""
+msgstr "Toepassen"
 
 #: DlgPrefVinylDlg#13
 msgctxt "DlgPrefVinylDlg#13"
 msgid "Lead-in time"
-msgstr ""
+msgstr "Lead-in tijd"
 
 #: DlgPrefVinylDlg#14
 msgctxt "DlgPrefVinylDlg#14"
 msgid "seconds"
-msgstr ""
+msgstr "seconden"
 
 #: DlgPrefVinylDlg#15
 msgctxt "DlgPrefVinylDlg#15"
 msgid "Control Mode"
-msgstr ""
+msgstr "Controle Modus"
 
 #: DlgPrefVinylDlg#16
 msgctxt "DlgPrefVinylDlg#16"
 msgid "Absolute Mode"
-msgstr ""
+msgstr "Absolute Mmodus"
 
 #: DlgPrefVinylDlg#17
 msgctxt "DlgPrefVinylDlg#17"
 msgid "Relative Mode"
-msgstr ""
+msgstr "Relatieve Modus"
 
 #: DlgPrefVinylDlg#18
 msgctxt "DlgPrefVinylDlg#18"
 msgid "Enable Needle Skip Prevention"
-msgstr ""
+msgstr "Zet preventie van naald verspringing aan"
 
 #: DlgPrefVinylDlg#19
 msgctxt "DlgPrefVinylDlg#19"
 msgid "Signal Quality"
-msgstr ""
+msgstr "Signaalkwaliteit"
 
 #: DlgPrefVinylDlg#20
 msgctxt "DlgPrefVinylDlg#20"
 msgid "http://www.xwax.co.uk"
-msgstr ""
+msgstr "http://www.xwax.co.uk"
 
 #: DlgPrefVinylDlg#21
 msgctxt "DlgPrefVinylDlg#21"
 msgid "Powered by xwax"
-msgstr ""
+msgstr "Mede mogelijk gemaakt door xwax"
 
 #: DlgPreferences#1
 msgid "Sound Hardware"
@@ -1943,19 +1943,19 @@ msgstr "Opname stoppen"
 
 #: DlgTrackInfo#1
 msgid "Track Editor"
-msgstr ""
+msgstr "Nummer-editor"
 
 #: DlgTrackInfo#2
 msgid "Song:"
-msgstr ""
+msgstr "Nummer:"
 
 #: DlgTrackInfo#3
 msgid "Title:"
-msgstr ""
+msgstr "Titel:"
 
 #: DlgTrackInfo#4
 msgid "Artist:"
-msgstr ""
+msgstr "Artiest:"
 
 #: DlgTrackInfo#5
 msgid "Album:"
@@ -1975,7 +1975,7 @@ msgstr "Genre:"
 
 #: DlgTrackInfo#9
 msgid "Filename:"
-msgstr ""
+msgstr "Bestandsnaam:"
 
 #: DlgTrackInfo#10
 msgid "Duration:"
@@ -1983,19 +1983,19 @@ msgstr "Duur:"
 
 #: DlgTrackInfo#11
 msgid "3:00"
-msgstr ""
+msgstr "3:00"
 
 #: DlgTrackInfo#12
 msgid "File Type:"
-msgstr ""
+msgstr "Bestandstype:"
 
 #: DlgTrackInfo#13
 msgid "77"
-msgstr ""
+msgstr "77"
 
 #: DlgTrackInfo#14
 msgid "Comments:"
-msgstr ""
+msgstr "Opmerkingen:"
 
 #: DlgTrackInfo#15
 msgid "Reload track metadata from file."
@@ -2003,7 +2003,7 @@ msgstr "Herlaad nummer metagegevens van bestand"
 
 #: DlgTrackInfo#16
 msgid "Track Information (Click to Expand)"
-msgstr ""
+msgstr "Nummer informatie (Klik om te vergroten)"
 
 #: DlgTrackInfo#17
 msgid "Track BPM: "
@@ -2074,7 +2074,7 @@ msgstr "&Annuleren"
 
 #: DlgTrackInfo#33
 msgid "Alt+O"
-msgstr ""
+msgstr "Alt+O"
 
 #: DlgTrackInfo#34
 msgid "&Next >>"
@@ -2093,6 +2093,12 @@ msgid ""
 "href='http://mixxx.org/wiki/doku.php/internet_broadcasting#linux'>Mixxx "
 "Wiki</a> for more information. </html>"
 msgstr ""
+"<html>Mixxx kan niet opnemen of streamen in MP3 zonder de MP3 encoder "
+"&quot;lame&quot;. Vanwege licentie problemen, kunnen we dit niet toevoegen "
+"aan Mixxx. Om in MP3 op te nemen of te streamen, moet je <b>libmp3lame</b> "
+"downloaden en installeren op jouw systeem. <p>Zie <a "
+"href='http://mixxx.org/wiki/doku.php/internet_broadcasting#linux'>Mixxx "
+"Wiki</a> voor meer informatie. </html>"
 
 #: EncoderMp3#3
 msgid ""
@@ -2103,6 +2109,12 @@ msgid ""
 "href='http://mixxx.org/wiki/doku.php/internet_broadcasting#windows'>Mixxx "
 "Wiki</a> for more information. </html>"
 msgstr ""
+"<html>Mixxx kan niet opnemen of streamen in MP3 zonder de MP3 encoder "
+"&quot;lame&quot;. Vanwege licentie problemen, kunnen we dit niet toevoegen "
+"aan Mixxx. Om in MP3 op te nemen of te streamen, moet je <b>lame_enc.dll</b> "
+"downloaden en installeren op jouw systeem. <p>Zie <a "
+"href='http://mixxx.org/wiki/doku.php/internet_broadcasting#windows'>Mixxx "
+"Wiki</a> voor meer informatie. </html>"
 
 #: EncoderMp3#4
 msgid ""
@@ -2113,6 +2125,12 @@ msgid ""
 "href='http://mixxx.org/wiki/doku.php/internet_broadcasting#mac_osx'>Mixxx "
 "Wiki</a> for more information. </html>"
 msgstr ""
+"<html>Mixxx kan niet opnemen of streamen in MP3 zonder de MP3 encoder "
+"&quot;lame&quot;. Vanwege licentie problemen, kunnen we dit niet toevoegen "
+"aan Mixxx. Om in MP3 op te nemen of te streamen, moet je <b>libmp3lame</b> "
+"downloaden en installeren op jouw systeem. <p>Zie <a "
+"href='http://mixxx.org/wiki/doku.php/internet_broadcasting#mac_osx'>Mixxx "
+"Wiki</a> voor meer informatie. </html>"
 
 #: EncoderMp3#5
 msgid ""
@@ -2213,7 +2231,7 @@ msgstr "Selecteer jouw iTunes bibliotheek"
 
 #: ITunesFeature#3
 msgid "(loading) iTunes"
-msgstr ""
+msgstr "(laden) iTunes"
 
 #: ITunesFeature#4
 msgid "Use Default Library"
@@ -2276,7 +2294,7 @@ msgstr "Control Waarde"
 #: MidiInputMappingTableModel#6
 msgctxt "MidiInputMappingTableModel#6"
 msgid "Description"
-msgstr ""
+msgstr "Omschrijving"
 
 #: MidiMapping#1
 msgid "MIDI script function not found"
@@ -2338,7 +2356,7 @@ msgstr "Bedieningswaarde"
 #: MidiOutputMappingTableModel#6
 msgctxt "MidiOutputMappingTableModel#6"
 msgid "Description"
-msgstr ""
+msgstr "Omschrijving"
 
 #: MidiOutputMappingTableModel#7
 msgid "Threshold Min"
@@ -2601,23 +2619,23 @@ msgstr "Ctrl+P"
 
 #: MixxxApp#40
 msgid "&About"
-msgstr ""
+msgstr "&Over"
 
 #: MixxxApp#41
 msgid "&Community Support"
-msgstr ""
+msgstr "&Community Ondersteuning"
 
 #: MixxxApp#42
 msgid "Send Us &Feedback"
-msgstr ""
+msgstr "Stuur ons &Feedback"
 
 #: MixxxApp#43
 msgid "&Translate this application"
-msgstr ""
+msgstr "&Vertaal deze applicatie"
 
 #: MixxxApp#44
 msgid "Enable &Vinyl Control 1"
-msgstr "&Vinyl Controle 1 aaanzetten"
+msgstr "Vinyl Bediening 1 Activeren"
 
 #: MixxxApp#45
 msgid "Ctrl+Y"
@@ -2625,7 +2643,7 @@ msgstr "Ctrl+Y"
 
 #: MixxxApp#46
 msgid "Enable &Vinyl Control 2"
-msgstr "&Vinyl Controle 2 aaanzetten"
+msgstr "Vinyl Bediening 2 Activeren"
 
 #: MixxxApp#47
 msgid "Ctrl+U"
@@ -2634,7 +2652,7 @@ msgstr "Ctrl+U"
 #: MixxxApp#48
 msgctxt "MixxxApp#48"
 msgid "Enable live broadcasting"
-msgstr ""
+msgstr "Schakel live uitzenden in"
 
 #: MixxxApp#49
 msgid "Ctrl+L"
@@ -2754,7 +2772,7 @@ msgstr ""
 
 #: MixxxApp#68
 msgid "Activate Vinyl Control"
-msgstr "Vinyl Controle Activeren"
+msgstr "Vinyl Bediening Activeren"
 
 #: MixxxApp#69
 msgid "Use timecoded vinyls on external turntables to control Mixxx"
@@ -2788,7 +2806,7 @@ msgstr "Geef Mixxx weer in volledig scherm"
 #: MixxxApp#76
 msgctxt "MixxxApp#76"
 msgid "Preferences"
-msgstr ""
+msgstr "Voorkeuren"
 
 #: MixxxApp#77
 msgid ""
@@ -2814,7 +2832,7 @@ msgstr ""
 
 #: MixxxApp#80
 msgid "Send feedback to the Mixxx team."
-msgstr ""
+msgstr "Stuur feedback naar het Mixxx team."
 
 #: MixxxApp#81
 msgid ""
@@ -2822,10 +2840,13 @@ msgid ""
 "\n"
 "Send feedback to the Mixxx team."
 msgstr ""
+"Ondersteuning\n"
+" \n"
+"Stuur feedback naar het Mixxx team."
 
 #: MixxxApp#82
 msgid "Help translate this application into your language."
-msgstr ""
+msgstr "Help om deze applicatie in jouw taal te vertalen."
 
 #: MixxxApp#83
 msgid ""
@@ -2833,6 +2854,9 @@ msgid ""
 "\n"
 "Help translate this application into your language."
 msgstr ""
+"Ondersteuning\n"
+"\n"
+"Help om deze applicatie in jouw taal te vertalen."
 
 #: MixxxApp#84
 msgid "About the application"
@@ -2888,7 +2912,7 @@ msgstr "&Macro"
 
 #: MixxxApp#94
 msgid "&Vinyl Control"
-msgstr "&Vinyl Controle"
+msgstr "Vinyl Bediening"
 
 #: MixxxApp#95
 msgid "Quit..."
@@ -3204,7 +3228,7 @@ msgstr "Traktor"
 
 #: TraktorFeature#2
 msgid "(loading) Traktor"
-msgstr ""
+msgstr "(laden) Traktor"
 
 #: TraktorFeature#3
 msgid "Error Loading Traktor Library"
@@ -3459,7 +3483,7 @@ msgstr "Toevoegen aan Auto DJ Wachtrij"
 
 #: WTrackTableView#7
 msgid "Reload Track Metadata"
-msgstr ""
+msgstr "Metadata van nummer opnieuw laden"
 
 #: WTrackTableView#8
 msgid "Load to Deck %1"

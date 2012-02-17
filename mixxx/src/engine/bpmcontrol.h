@@ -37,6 +37,7 @@ class BpmControl : public EngineControl {
     void adjustPhase();
 
     // ControlObjects that come from EngineBuffer
+    ControlObject* m_pPlayButton;
     ControlObject* m_pRateSlider;
     ControlObject* m_pRateRange;
     ControlObject* m_pRateDir;

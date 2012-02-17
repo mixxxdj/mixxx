@@ -8,18 +8,18 @@ msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2011-10-31 23:15-0400\n"
-"PO-Revision-Date: 2011-11-02 08:53+0000\n"
-"Last-Translator: Jukka Salotaipale <Unknown>\n"
+"PO-Revision-Date: 2011-11-27 08:38+0000\n"
+"Last-Translator: Max Huttunen <Unknown>\n"
 "Language-Team: Finnish <fi@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2011-11-03 05:21+0000\n"
-"X-Generator: Launchpad (build 14214)\n"
+"X-Launchpad-Export-Date: 2011-11-28 05:17+0000\n"
+"X-Generator: Launchpad (build 14381)\n"
 
 #: AutoDJFeature#1
 msgid "Auto DJ"
-msgstr ""
+msgstr "Auto DJ"
 
 #: BaseSqlTableModel#1
 msgid "Played"
@@ -95,7 +95,7 @@ msgstr "Lisäyspäivä"
 
 #: BaseSqlTableModel#16
 msgid "#"
-msgstr "Nro"
+msgstr "#"
 
 #: BaseSqlTableModel#17
 msgctxt "BaseSqlTableModel#17"
@@ -165,7 +165,7 @@ msgstr "Julkaisu"
 #: BrowseTableModel#5
 msgctxt "BrowseTableModel#5"
 msgid "Track #"
-msgstr "Raita #"
+msgstr "Raidan #"
 
 #: BrowseTableModel#6
 msgctxt "BrowseTableModel#6"
@@ -180,7 +180,7 @@ msgstr "Tyylilaji"
 #: BrowseTableModel#8
 msgctxt "BrowseTableModel#8"
 msgid "Comment"
-msgstr "Kommentit"
+msgstr "Kommentti"
 
 #: BrowseTableModel#9
 msgctxt "BrowseTableModel#9"
@@ -222,8 +222,8 @@ msgid ""
 "Could not load the following file because it is in use by Mixxx or another "
 "application."
 msgstr ""
-"Seuraavaa tiedostoa ei  voitu ladata koska sitä käyttää Mixxx tai jokin muu "
-"sovellus."
+"Seuraavaa tiedostoa ei voitu ladata koska se on Mixxx:n tai jonkin muun "
+"sovelluksen käytössä."
 
 #: BrowseTableModel#17
 msgid "Warning: This will permanently delete the following files:"
@@ -238,8 +238,8 @@ msgid ""
 "Could not delete the following file because it is in use by Mixxx or another "
 "application:"
 msgstr ""
-"Seuraavaa tiedostoa ei voitu poistaa koska sitä käyttää Mixxx tai jokin muu "
-"sovellus:"
+"Seuraavaa tiedostoa ei voitu poistaa koska se on Mixxx:n tai jonkin muun "
+"sovelluksen käytössä."
 
 #: BrowseTableModel#20
 msgid "Could not update file metadata."
@@ -309,7 +309,7 @@ msgstr "Levylaukun nimeäminen epäonnistui"
 #: CrateFeature#15
 msgctxt "CrateFeature#15"
 msgid "Playlist Files (*.m3u *.pls)"
-msgstr "Soittolista tiedostot (*.m3u *.pls)"
+msgstr "Soittolistatiedostot (*.m3u *.pls)"
 
 #: CrateFeature#16
 msgctxt "CrateFeature#16"
@@ -331,7 +331,7 @@ msgstr "Levylaukun luonti epäonnistui"
 
 #: CrateFeature#20
 msgid "A crate by that name already exists."
-msgstr "Saman niminen levylaukku on jo olemassa."
+msgstr "Samanniminen levylaukku on jo olemassa."
 
 #: DlgAboutDlg#1
 msgid "About Mixxx"
@@ -386,7 +386,7 @@ msgstr "Ota Auto DJ käyttöön"
 #: DlgAutoDJ#3
 msgctxt "DlgAutoDJ#3"
 msgid "Manage"
-msgstr "Hallinta"
+msgstr "Hallitse"
 
 #: DlgAutoDJ#4
 msgid "Shuffle playlist"
@@ -1104,8 +1104,8 @@ msgid ""
 "<b>This version of Mixxx does not support vinyl control.</b> <br> Please "
 "visit <a href=\"http://mixxx.org\">Mixxx.org</a> for more information."
 msgstr ""
-"<b>Tämä Mixxx versio ei tue vinyl control ominaisuutta.</b> <br>Katso "
-"lisätietoja <a href=\"http://mixxx.org\">Mixxx.org</a> osoitteesta."
+"<b>Tämä Mixxx:in versio ei tue vinyl control ominaisuutta.</b> <br>Katso "
+"lisätietoja osoitteesta <a href=\"http://mixxx.org\">Mixxx.org</a>."
 
 #: DlgPrefPlaylist#1
 msgctxt "DlgPrefPlaylist#1"
@@ -1692,7 +1692,7 @@ msgstr "Ei määritelty"
 
 #: DlgPrefSoundItem#2
 msgid "Channel %1"
-msgstr ""
+msgstr "Kanava %1"
 
 #: DlgPrefSoundItem#3
 msgid "Channels %1 - %2"
@@ -1787,57 +1787,57 @@ msgstr "Ohjainlevyn 2 tyyppi"
 #: DlgPrefVinylDlg#11
 msgctxt "DlgPrefVinylDlg#11"
 msgid "Show Signal Quality in Skin"
-msgstr ""
+msgstr "Näytä signaalin laatu teemassa"
 
 #: DlgPrefVinylDlg#12
 msgctxt "DlgPrefVinylDlg#12"
 msgid "Apply"
-msgstr ""
+msgstr "Käytä"
 
 #: DlgPrefVinylDlg#13
 msgctxt "DlgPrefVinylDlg#13"
 msgid "Lead-in time"
-msgstr ""
+msgstr "Aloitusviive"
 
 #: DlgPrefVinylDlg#14
 msgctxt "DlgPrefVinylDlg#14"
 msgid "seconds"
-msgstr ""
+msgstr "sekuntia"
 
 #: DlgPrefVinylDlg#15
 msgctxt "DlgPrefVinylDlg#15"
 msgid "Control Mode"
-msgstr ""
+msgstr "Toimintatila"
 
 #: DlgPrefVinylDlg#16
 msgctxt "DlgPrefVinylDlg#16"
 msgid "Absolute Mode"
-msgstr ""
+msgstr "Absoluuttinen"
 
 #: DlgPrefVinylDlg#17
 msgctxt "DlgPrefVinylDlg#17"
 msgid "Relative Mode"
-msgstr ""
+msgstr "Suhteellinen"
 
 #: DlgPrefVinylDlg#18
 msgctxt "DlgPrefVinylDlg#18"
 msgid "Enable Needle Skip Prevention"
-msgstr ""
+msgstr "Estä neulan hyppiminen"
 
 #: DlgPrefVinylDlg#19
 msgctxt "DlgPrefVinylDlg#19"
 msgid "Signal Quality"
-msgstr ""
+msgstr "Signaalin laatu"
 
 #: DlgPrefVinylDlg#20
 msgctxt "DlgPrefVinylDlg#20"
 msgid "http://www.xwax.co.uk"
-msgstr ""
+msgstr "http://www.xwax.co.uk"
 
 #: DlgPrefVinylDlg#21
 msgctxt "DlgPrefVinylDlg#21"
 msgid "Powered by xwax"
-msgstr ""
+msgstr "Mahdollistanut xwax"
 
 #: DlgPreferences#1
 msgid "Sound Hardware"
@@ -1954,19 +1954,19 @@ msgstr "Lopeta tallennus"
 
 #: DlgTrackInfo#1
 msgid "Track Editor"
-msgstr ""
+msgstr "Kappalemuokkain"
 
 #: DlgTrackInfo#2
 msgid "Song:"
-msgstr ""
+msgstr "Kappale:"
 
 #: DlgTrackInfo#3
 msgid "Title:"
-msgstr ""
+msgstr "Nimi:"
 
 #: DlgTrackInfo#4
 msgid "Artist:"
-msgstr ""
+msgstr "Artisti:"
 
 #: DlgTrackInfo#5
 msgid "Album:"
@@ -1986,7 +1986,7 @@ msgstr "Tyylilaji:"
 
 #: DlgTrackInfo#9
 msgid "Filename:"
-msgstr ""
+msgstr "Tiedostonimi"
 
 #: DlgTrackInfo#10
 msgid "Duration:"
@@ -1994,19 +1994,19 @@ msgstr "Kesto:"
 
 #: DlgTrackInfo#11
 msgid "3:00"
-msgstr ""
+msgstr "3:00"
 
 #: DlgTrackInfo#12
 msgid "File Type:"
-msgstr ""
+msgstr "Tiedostomuoto:"
 
 #: DlgTrackInfo#13
 msgid "77"
-msgstr ""
+msgstr "77"
 
 #: DlgTrackInfo#14
 msgid "Comments:"
-msgstr ""
+msgstr "Kommentit:"
 
 #: DlgTrackInfo#15
 msgid "Reload track metadata from file."
@@ -2014,7 +2014,7 @@ msgstr "Päivitä metadata tiedostosta."
 
 #: DlgTrackInfo#16
 msgid "Track Information (Click to Expand)"
-msgstr ""
+msgstr "Raidan tiedot (Klikkaa avataksesi)"
 
 #: DlgTrackInfo#17
 msgid "Track BPM: "
@@ -2084,7 +2084,7 @@ msgstr "&Peruuta"
 
 #: DlgTrackInfo#33
 msgid "Alt+O"
-msgstr ""
+msgstr "Alt+O"
 
 #: DlgTrackInfo#34
 msgid "&Next >>"
@@ -2103,6 +2103,13 @@ msgid ""
 "href='http://mixxx.org/wiki/doku.php/internet_broadcasting#linux'>Mixxx "
 "Wiki</a> for more information. </html>"
 msgstr ""
+"<html>Mixxx ei voi nauhoittaa tai suoratoistaa MP3- muodossa ilman MP3 "
+"enkooderia &quot;lame&quot;. Lisensointiongelmista johtuen, emme voi "
+"sisällyttää tätä Mixxx:iin. Nauhoittaaksesi tai suoratoistaaksesi MP3- "
+"muodossa, sinun täytyy ladata <b>libmp3lame</b> ja asentaa se "
+"tietokoneellesi. <p>Katso <a "
+"href='http://mixxx.org/wiki/doku.php/internet_broadcasting#linux'>Mixxx "
+"Wiki</a> saadaksesi lisätietoa asiasta. </html>"
 
 #: EncoderMp3#3
 msgid ""
@@ -2113,6 +2120,13 @@ msgid ""
 "href='http://mixxx.org/wiki/doku.php/internet_broadcasting#windows'>Mixxx "
 "Wiki</a> for more information. </html>"
 msgstr ""
+"<html>Mixxx ei voi nauhoittaa tai suoratoistaa MP3- muodossa ilman MP3 "
+"enkooderia &quot;lame&quot;. Lisensointiongelmista johtuen, emme voi "
+"sisällyttää tätä Mixxx:iin. Nauhoittaaksesi tai suoratoistaaksesi MP3- "
+"muodossa, sinun täytyy ladata <b>libmp3lame</b> ja asentaa se "
+"tietokoneellesi. <p>Katso <a "
+"href='http://mixxx.org/wiki/doku.php/internet_broadcasting#linux'>Mixxx "
+"Wiki</a> saadaksesi lisätietoa asiasta. </html>"
 
 #: EncoderMp3#4
 msgid ""
@@ -2123,6 +2137,13 @@ msgid ""
 "href='http://mixxx.org/wiki/doku.php/internet_broadcasting#mac_osx'>Mixxx "
 "Wiki</a> for more information. </html>"
 msgstr ""
+"<html>Mixxx ei voi nauhoittaa tai suoratoistaa MP3- muodossa ilman MP3 "
+"enkooderia &quot;lame&quot;. Lisensointiongelmista johtuen, emme voi "
+"sisällyttää tätä Mixxx:iin. Nauhoittaaksesi tai suoratoistaaksesi MP3- "
+"muodossa, sinun täytyy ladata <b>libmp3lame</b> ja asentaa se "
+"tietokoneellesi. <p>Katso <a "
+"href='http://mixxx.org/wiki/doku.php/internet_broadcasting#linux'>Mixxx "
+"Wiki</a> saadaksesi lisätietoa asiasta. </html>"
 
 #: EncoderMp3#5
 msgid ""
@@ -2222,7 +2243,7 @@ msgstr "Valitse iTunes kirjastosi"
 
 #: ITunesFeature#3
 msgid "(loading) iTunes"
-msgstr ""
+msgstr "(ladataan) iTunes:ia"
 
 #: ITunesFeature#4
 msgid "Use Default Library"
@@ -2283,7 +2304,7 @@ msgstr "Ohjainarvo"
 #: MidiInputMappingTableModel#6
 msgctxt "MidiInputMappingTableModel#6"
 msgid "Description"
-msgstr ""
+msgstr "Kuvaus"
 
 #: MidiMapping#1
 msgid "MIDI script function not found"
@@ -2344,7 +2365,7 @@ msgstr "Ohjainarvo"
 #: MidiOutputMappingTableModel#6
 msgctxt "MidiOutputMappingTableModel#6"
 msgid "Description"
-msgstr ""
+msgstr "Kuvaus"
 
 #: MidiOutputMappingTableModel#7
 msgid "Threshold Min"
@@ -2603,19 +2624,19 @@ msgstr "Ctrl+P"
 
 #: MixxxApp#40
 msgid "&About"
-msgstr ""
+msgstr "&Tietoja"
 
 #: MixxxApp#41
 msgid "&Community Support"
-msgstr ""
+msgstr "%Yhteisötuki"
 
 #: MixxxApp#42
 msgid "Send Us &Feedback"
-msgstr ""
+msgstr "Lähetä meille &palautetta"
 
 #: MixxxApp#43
 msgid "&Translate this application"
-msgstr ""
+msgstr "&Käännä tätä ohjelmaa kielellesi"
 
 #: MixxxApp#44
 msgid "Enable &Vinyl Control 1"
@@ -2636,7 +2657,7 @@ msgstr "Ctrl+U"
 #: MixxxApp#48
 msgctxt "MixxxApp#48"
 msgid "Enable live broadcasting"
-msgstr ""
+msgstr "Salli suoratoistolähetys"
 
 #: MixxxApp#49
 msgid "Ctrl+L"
@@ -2789,7 +2810,7 @@ msgstr "Näytä Mixxx kokoruutu tilassa"
 #: MixxxApp#76
 msgctxt "MixxxApp#76"
 msgid "Preferences"
-msgstr ""
+msgstr "Asetukset"
 
 #: MixxxApp#77
 msgid ""
@@ -2815,7 +2836,7 @@ msgstr ""
 
 #: MixxxApp#80
 msgid "Send feedback to the Mixxx team."
-msgstr ""
+msgstr "Lähetä palautetta Mixxx- tiimille"
 
 #: MixxxApp#81
 msgid ""
@@ -2823,10 +2844,13 @@ msgid ""
 "\n"
 "Send feedback to the Mixxx team."
 msgstr ""
+"Tuki\n"
+"\n"
+"Lähetä palautetta Mixxx- tiimille"
 
 #: MixxxApp#82
 msgid "Help translate this application into your language."
-msgstr ""
+msgstr "Auta tämän ohjelman kääntämisessä kielellesi"
 
 #: MixxxApp#83
 msgid ""
@@ -2834,6 +2858,10 @@ msgid ""
 "\n"
 "Help translate this application into your language."
 msgstr ""
+"Tuki\n"
+"\n"
+"\n"
+"Auta tämän ohjelman kääntämisessä kielellesi"
 
 #: MixxxApp#84
 msgid "About the application"
@@ -3205,7 +3233,7 @@ msgstr "Traktor"
 
 #: TraktorFeature#2
 msgid "(loading) Traktor"
-msgstr ""
+msgstr "(ladataan) Traktoria"
 
 #: TraktorFeature#3
 msgid "Error Loading Traktor Library"
@@ -3459,7 +3487,7 @@ msgstr "Lisää Auto-DJ jonoon"
 
 #: WTrackTableView#7
 msgid "Reload Track Metadata"
-msgstr ""
+msgstr "Lataa kappaleen metadata uudelleen"
 
 #: WTrackTableView#8
 msgid "Load to Deck %1"

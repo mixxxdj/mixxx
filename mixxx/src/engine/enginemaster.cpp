@@ -41,7 +41,8 @@
 
 
 EngineMaster::EngineMaster(ConfigObject<ConfigValue> * _config,
-                           const char * group) {
+                           const char * group,
+                           bool bEnableSidechain) {
 
     m_pWorkerScheduler = new EngineWorkerScheduler(this);
     m_pWorkerScheduler->start();
@@ -94,11 +95,14 @@ EngineMaster::EngineMaster(ConfigObject<ConfigValue> * _config,
     memset(m_pMaster, 0, sizeof(CSAMPLE) * MAX_BUFFER_LEN);
 
     //Starts a thread for recording and shoutcast
-    sidechain = new EngineSideChain(_config);
-    connect(sidechain, SIGNAL(isRecording(bool)),
-            this, SIGNAL(isRecording(bool)));
-    connect(sidechain, SIGNAL(bytesRecorded(int)),
-            this, SIGNAL(bytesRecorded(int)));
+    sidechain = NULL;
+    if (bEnableSidechain) {
+        sidechain = new EngineSideChain(_config);
+        connect(sidechain, SIGNAL(isRecording(bool)),
+                this, SIGNAL(isRecording(bool)));
+        connect(sidechain, SIGNAL(bytesRecorded(int)),
+                this, SIGNAL(bytesRecorded(int)));
+    }
 
     //X-Fader Setup
     xFaderCurve = new ControlPotmeter(
@@ -407,7 +411,9 @@ void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
 
     //Submit master samples to the side chain to do shoutcasting, recording,
     //etc.  (cpu intensive non-realtime tasks)
-    sidechain->submitSamples(m_pMaster, iBufferSize);
+    if (sidechain != NULL) {
+        sidechain->submitSamples(m_pMaster, iBufferSize);
+    }
 
     // Add master to headphone with appropriate gain
     SampleUtil::addWithGain(m_pHead, m_pMaster, cmaster_gain, iBufferSize);

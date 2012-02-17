@@ -34,7 +34,8 @@ DlgAutoDJ::DlgAutoDJ(QWidget* parent, ConfigObject<ConfigValue>* pConfig,
     m_pTrackTablePlaceholder->hide();
     box->insertWidget(1, m_pTrackTableView);
 
-    m_pAutoDJTableModel =  new PlaylistTableModel(this, pTrackCollection);
+    m_pAutoDJTableModel =  new PlaylistTableModel(this, pTrackCollection,
+                                                  "mixxx.db.model.autodj");
     int playlistId = m_playlistDao.getPlaylistIdFromName(AUTODJ_TABLE);
     if (playlistId < 0) {
         m_playlistDao.createPlaylist(AUTODJ_TABLE, true);
@@ -156,7 +157,6 @@ void DlgAutoDJ::moveSelection(int delta) {
 void DlgAutoDJ::shufflePlaylist(bool buttonChecked)
 {
     Q_UNUSED(buttonChecked);
-    m_pTrackTableView->sortByColumn(0, Qt::AscendingOrder);
     qDebug() << "Shuffling AutoDJ playlist";
     m_pAutoDJTableModel->shuffleTracks(m_pAutoDJTableModel->index(0, 0));
     qDebug() << "Shuffling done";

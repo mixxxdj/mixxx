@@ -451,18 +451,17 @@ void LoopingControl::slotBeatLoop(double beats, bool keepStartPoint)
     int loop_out = -1;
     int samples = m_pTrackSamples->get();
 
-    if ( !m_pBeats ) {
+    if (!m_pBeats) {
         return;
     }
 
     // For now we do not handle negative beatloops.
-    if ( beats < 0 )
+    if (beats < 0)
         return;
 
     // For positive numbers we start from the beat before us and create the loop
     // around X beats from there.
-    if ( beats > 0 )
-    {
+    if (beats > 0) {
         int fullbeats = (int)floorf(beats);
         double fracbeats = beats - (double)fullbeats;
 
@@ -471,7 +470,12 @@ void LoopingControl::slotBeatLoop(double beats, bool keepStartPoint)
         if (keepStartPoint) {
             loop_in = m_iLoopStartSample;
         } else {
-            loop_in = m_pBeats->findNthBeat(m_iCurrentSample, -1);
+            loop_in = m_pQuantizeEnabled->get() > 0.0 ?
+                    m_pBeats->findNthBeat(m_iCurrentSample, -1) :
+                    floorf(getCurrentSample());
+            if (!even(loop_in)) {
+                loop_in--;
+            }
         }
 
         int loop_out_next = -1;
