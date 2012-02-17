@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2011-12-26 09:32+0200\n"
-"PO-Revision-Date: 2011-08-12 10:17+0000\n"
-"Last-Translator: Kristjan SCHMIDT <Unknown>\n"
+"PO-Revision-Date: 2012-02-16 15:26+0000\n"
+"Last-Translator: Michael Moroni <michael.moroni@mailoo.org>\n"
 "Language-Team: Esperanto <eo@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-01-08 04:49+0000\n"
-"X-Generator: Launchpad (build 14640)\n"
+"X-Launchpad-Export-Date: 2012-02-17 04:54+0000\n"
+"X-Generator: Launchpad (build 14814)\n"
 
 #: AutoDJFeature#1
 msgid "Auto DJ"
@@ -43,7 +43,7 @@ msgstr "Albumo"
 #: BaseSqlTableModel#5
 msgctxt "BaseSqlTableModel#5"
 msgid "Genre"
-msgstr "Ĝenro"
+msgstr "Ĝenro"
 
 #: BaseSqlTableModel#6
 msgctxt "BaseSqlTableModel#6"
