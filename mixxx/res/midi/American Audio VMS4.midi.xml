@@ -162,33 +162,57 @@
          </control>
          <control><!-- on -->
             <group>[Channel1]</group>
-            <key>cue_default</key>
+            <key>VMS4.cue</key>
             <status>0x90</status>
             <midino>0x0C</midino>
             <options>
-               <Button />
+               <Script-Binding/>
             </options>
          </control>
          <control><!-- off -->
             <group>[Channel1]</group>
-            <key>cue_default</key>
+            <key>VMS4.cue</key>
             <status>0x80</status>
             <midino>0x0C</midino>
             <options>
-               <Spread64 />
+               <Script-Binding/>
             </options>
          </control>
          <control><!-- on -->
             <group>[Channel1]</group>
-            <key>play</key>
+            <key>VMS4.play</key>
             <status>0x90</status>
             <midino>0x0D</midino>
+            <options>
+               <Script-Binding/>
+            </options>
          </control>
          <control><!-- off -->
             <group>[Channel1]</group>
-            <key>play</key>
+            <key>VMS4.play</key>
             <status>0x80</status>
             <midino>0x0D</midino>
+            <options>
+               <Script-Binding/>
+            </options>
+         </control>
+         <control><!-- Shifted Play -->
+            <group>[Channel1]</group>
+            <key>VMS4.play</key>
+            <status>0x91</status>
+            <midino>0x0D</midino>
+            <options>
+               <Script-Binding/>
+            </options>
+         </control>
+         <control><!-- Shifted Play -->
+            <group>[Channel1]</group>
+            <key>VMS4.play</key>
+            <status>0x81</status>
+            <midino>0x0D</midino>
+            <options>
+               <Script-Binding/>
+            </options>
          </control>
          <control><!-- on -->
             <group>[Channel1]</group>
@@ -208,148 +232,149 @@
                <Script-Binding/>
             </options>
          </control>
+         <!-- Hot Cues, deck 1 -->
          <control><!-- on -->
             <group>[Channel1]</group>
-            <key>hotcue_1_activate</key>
+            <key>VMS4.hotCue</key>
             <status>0x90</status>
             <midino>0x12</midino>
             <options>
-               <Button />
+               <Script-Binding />
             </options>
          </control>
          <control><!-- off -->
             <group>[Channel1]</group>
-            <key>hotcue_1_activate</key>
+            <key>VMS4.hotCue</key>
             <status>0x80</status>
             <midino>0x12</midino>
             <options>
-               <Spread64 />
+               <Script-Binding />
             </options>
          </control>
          <control><!-- on -->
             <group>[Channel1]</group>
-            <key>hotcue_2_activate</key>
+            <key>VMS4.hotCue</key>
             <status>0x90</status>
             <midino>0x13</midino>
             <options>
-               <Button />
+               <Script-Binding />
             </options>
          </control>
          <control><!-- off -->
             <group>[Channel1]</group>
-            <key>hotcue_2_activate</key>
+            <key>VMS4.hotCue</key>
             <status>0x80</status>
             <midino>0x13</midino>
             <options>
-               <Spread64 />
+               <Script-Binding />
             </options>
          </control>
          <control><!-- on -->
             <group>[Channel1]</group>
-            <key>hotcue_3_activate</key>
+            <key>VMS4.hotCue</key>
             <status>0x90</status>
             <midino>0x14</midino>
             <options>
-               <Button />
+               <Script-Binding />
             </options>
          </control>
          <control><!-- off -->
             <group>[Channel1]</group>
-            <key>hotcue_3_activate</key>
+            <key>VMS4.hotCue</key>
             <status>0x80</status>
             <midino>0x14</midino>
             <options>
-               <Spread64 />
+               <Script-Binding />
             </options>
          </control>
          <control><!-- on -->
             <group>[Channel1]</group>
-            <key>hotcue_4_activate</key>
+            <key>VMS4.hotCue</key>
             <status>0x90</status>
             <midino>0x15</midino>
             <options>
-               <Button />
+               <Script-Binding />
             </options>
          </control>
          <control><!-- off -->
             <group>[Channel1]</group>
-            <key>hotcue_4_activate</key>
+            <key>VMS4.hotCue</key>
             <status>0x80</status>
             <midino>0x15</midino>
             <options>
-               <Spread64 />
+               <Script-Binding />
             </options>
          </control>
          <control><!-- on -->
             <group>[Channel1]</group>
-            <key>hotcue_1_clear</key>
+            <key>VMS4.hotCue</key>
             <status>0x90</status>
             <midino>0x17</midino>
             <options>
-               <Button />
+               <Script-Binding />
             </options>
          </control>
          <control><!-- off -->
             <group>[Channel1]</group>
-            <key>hotcue_1_clear</key>
+            <key>VMS4.hotCue</key>
             <status>0x80</status>
             <midino>0x17</midino>
             <options>
-               <Spread64 />
+               <Script-Binding />
             </options>
          </control>
          <control><!-- on -->
             <group>[Channel1]</group>
-            <key>hotcue_2_clear</key>
+            <key>VMS4.hotCue</key>
             <status>0x90</status>
             <midino>0x18</midino>
             <options>
-               <Button />
+               <Script-Binding />
             </options>
          </control>
          <control><!-- off -->
             <group>[Channel1]</group>
-            <key>hotcue_2_clear</key>
+            <key>VMS4.hotCue</key>
             <status>0x80</status>
             <midino>0x18</midino>
             <options>
-               <Spread64 />
+               <Script-Binding />
             </options>
          </control>
          <control><!-- on -->
             <group>[Channel1]</group>
-            <key>hotcue_3_clear</key>
+            <key>VMS4.hotCue</key>
             <status>0x90</status>
             <midino>0x19</midino>
             <options>
-               <Button />
+               <Script-Binding />
             </options>
          </control>
          <control><!-- off -->
             <group>[Channel1]</group>
-            <key>hotcue_3_clear</key>
+            <key>VMS4.hotCue</key>
             <status>0x80</status>
             <midino>0x19</midino>
             <options>
-               <Spread64 />
+               <Script-Binding />
             </options>
          </control>
          <control><!-- on -->
             <group>[Channel1]</group>
-            <key>hotcue_4_clear</key>
+            <key>VMS4.hotCue</key>
             <status>0x90</status>
             <midino>0x1A</midino>
             <options>
-               <Button />
+               <Script-Binding />
             </options>
          </control>
          <control><!-- off -->
             <group>[Channel1]</group>
-            <key>hotcue_4_clear</key>
+            <key>VMS4.hotCue</key>
             <status>0x80</status>
             <midino>0x1A</midino>
             <options>
-               <Spread64 />
+               <Script-Binding />
             </options>
          </control>
          <control><!-- on -->
@@ -408,18 +433,27 @@
          </control>
          <control><!-- on -->
             <group>[Channel1]</group>
-            <key>repeat</key>
+            <key>beatloop_4</key>
             <status>0x90</status>
             <midino>0x22</midino>
             <options>
                <Button />
             </options>
          </control>
+         <control><!-- on -->
+            <group>[Channel1]</group>
+            <key>quantize</key>
+            <status>0x90</status>
+            <midino>0x26</midino>
+            <options>
+               <Button />
+            </options>
+         </control>
          <control><!-- off -->
             <group>[Channel1]</group>
-            <key>repeat</key>
+            <key>quantize</key>
             <status>0x80</status>
-            <midino>0x22</midino>
+            <midino>0x26</midino>
             <options>
                <Spread64 />
             </options>
@@ -462,20 +496,74 @@
          </control>
          <control><!-- on -->
             <group>[Channel1]</group>
-            <key>keylock</key>
+            <key>loop_halve</key>
+            <status>0x91</status>
+            <midino>0x28</midino>
+            <options>
+               <Button />
+            </options>
+         </control>
+         <control><!-- off -->
+            <group>[Channel1]</group>
+            <key>loop_halve</key>
+            <status>0x81</status>
+            <midino>0x28</midino>
+            <options>
+               <Spread64 />
+            </options>
+         </control>
+         <control><!-- on -->
+            <group>[Channel1]</group>
+            <key>loop_double</key>
+            <status>0x91</status>
+            <midino>0x29</midino>
+            <options>
+               <Button />
+            </options>
+         </control>
+         <control><!-- off -->
+            <group>[Channel1]</group>
+            <key>loop_double</key>
+            <status>0x81</status>
+            <midino>0x29</midino>
+            <options>
+               <Spread64 />
+            </options>
+         </control>
+         <control><!-- on -->
+            <group>[Channel1]</group>
+            <key>VMS4.keylock</key>
             <status>0x91</status>
             <midino>0x27</midino>
             <options>
-               <Button />
+               <Script-Binding/>
             </options>
          </control>
          <control><!-- off -->
             <group>[Channel1]</group>
-            <key>keylock</key>
+            <key>VMS4.keylock</key>
             <status>0x81</status>
             <midino>0x27</midino>
             <options>
-               <Spread64 />
+               <Script-Binding/>
+            </options>
+         </control>
+         <control><!-- on -->
+            <group>[Channel1]</group>
+            <key>VMS4.vinyl</key>
+            <status>0x90</status>
+            <midino>0x27</midino>
+            <options>
+               <Script-Binding/>
+            </options>
+         </control>
+         <control><!-- off -->
+            <group>[Channel1]</group>
+            <key>VMS4.vinyl</key>
+            <status>0x80</status>
+            <midino>0x27</midino>
+            <options>
+               <Script-Binding/>
             </options>
          </control>
          <control><!-- on -->
@@ -691,33 +779,57 @@
          </control>
          <control><!-- on -->
             <group>[Channel2]</group>
-            <key>cue_default</key>
+            <key>VMS4.cue</key>
             <status>0x90</status>
             <midino>0x2E</midino>
             <options>
-               <Button />
+               <Script-Binding/>
             </options>
          </control>
          <control><!-- off -->
             <group>[Channel2]</group>
-            <key>cue_default</key>
+            <key>VMS4.cue</key>
             <status>0x80</status>
             <midino>0x2E</midino>
             <options>
-               <Spread64 />
+               <Script-Binding/>
             </options>
          </control>
          <control><!-- on -->
             <group>[Channel2]</group>
-            <key>play</key>
+            <key>VMS4.play</key>
             <status>0x90</status>
             <midino>0x2F</midino>
+            <options>
+               <Script-Binding/>
+            </options>
          </control>
          <control><!-- off -->
             <group>[Channel2]</group>
-            <key>play</key>
+            <key>VMS4.play</key>
             <status>0x80</status>
             <midino>0x2F</midino>
+            <options>
+               <Script-Binding/>
+            </options>
+         </control>
+         <control><!-- Shifted Play -->
+            <group>[Channel2]</group>
+            <key>VMS4.play</key>
+            <status>0x91</status>
+            <midino>0x2F</midino>
+            <options>
+               <Script-Binding/>
+            </options>
+         </control>
+         <control><!-- Shifted Play -->
+            <group>[Channel2]</group>
+            <key>VMS4.play</key>
+            <status>0x81</status>
+            <midino>0x2F</midino>
+            <options>
+               <Script-Binding/>
+            </options>
          </control>
          <control><!-- on -->
             <group>[Channel2]</group>
@@ -737,150 +849,152 @@
                <Script-Binding/>
             </options>
          </control>
+        <!-- Hot Cues, deck 2 -->
          <control><!-- on -->
             <group>[Channel2]</group>
-            <key>hotcue_1_activate</key>
+            <key>VMS4.hotCue</key>
             <status>0x90</status>
             <midino>0x34</midino>
             <options>
-               <Button />
+               <Script-Binding />
             </options>
          </control>
          <control><!-- off -->
             <group>[Channel2]</group>
-            <key>hotcue_1_activate</key>
+            <key>VMS4.hotCue</key>
             <status>0x80</status>
             <midino>0x34</midino>
             <options>
-               <Spread64 />
+               <Script-Binding />
             </options>
          </control>
          <control><!-- on -->
             <group>[Channel2]</group>
-            <key>hotcue_2_activate</key>
+            <key>VMS4.hotCue</key>
             <status>0x90</status>
             <midino>0x35</midino>
             <options>
-               <Button />
+               <Script-Binding />
             </options>
          </control>
          <control><!-- off -->
             <group>[Channel2]</group>
-            <key>hotcue_2_activate</key>
+            <key>VMS4.hotCue</key>
             <status>0x80</status>
             <midino>0x35</midino>
             <options>
-               <Spread64 />
+               <Script-Binding />
             </options>
          </control>
          <control><!-- on -->
             <group>[Channel2]</group>
-            <key>hotcue_3_activate</key>
+            <key>VMS4.hotCue</key>
             <status>0x90</status>
             <midino>0x36</midino>
             <options>
-               <Button />
+               <Script-Binding />
             </options>
          </control>
          <control><!-- off -->
             <group>[Channel2]</group>
-            <key>hotcue_3_activate</key>
+            <key>VMS4.hotCue</key>
             <status>0x80</status>
             <midino>0x36</midino>
             <options>
-               <Spread64 />
+               <Script-Binding />
             </options>
          </control>
          <control><!-- on -->
             <group>[Channel2]</group>
-            <key>hotcue_4_activate</key>
+            <key>VMS4.hotCue</key>
             <status>0x90</status>
             <midino>0x37</midino>
             <options>
-               <Button />
+               <Script-Binding />
             </options>
          </control>
          <control><!-- off -->
             <group>[Channel2]</group>
-            <key>hotcue_4_activate</key>
+            <key>VMS4.hotCue</key>
             <status>0x80</status>
             <midino>0x37</midino>
             <options>
-               <Spread64 />
+               <Script-Binding />
             </options>
          </control>
          <control><!-- on -->
             <group>[Channel2]</group>
-            <key>hotcue_1_clear</key>
+            <key>VMS4.hotCue</key>
             <status>0x90</status>
             <midino>0x39</midino>
             <options>
-               <Button />
+               <Script-Binding />
             </options>
          </control>
          <control><!-- off -->
             <group>[Channel2]</group>
-            <key>hotcue_1_clear</key>
+            <key>VMS4.hotCue</key>
             <status>0x80</status>
             <midino>0x39</midino>
             <options>
-               <Spread64 />
+               <Script-Binding />
             </options>
          </control>
          <control><!-- on -->
             <group>[Channel2]</group>
-            <key>hotcue_2_clear</key>
+            <key>VMS4.hotCue</key>
             <status>0x90</status>
             <midino>0x3A</midino>
             <options>
-               <Button />
+               <Script-Binding />
             </options>
          </control>
          <control><!-- off -->
             <group>[Channel2]</group>
-            <key>hotcue_2_clear</key>
+            <key>VMS4.hotCue</key>
             <status>0x80</status>
             <midino>0x3A</midino>
             <options>
-               <Spread64 />
+               <Script-Binding />
             </options>
          </control>
          <control><!-- on -->
             <group>[Channel2]</group>
-            <key>hotcue_3_clear</key>
+            <key>VMS4.hotCue</key>
             <status>0x90</status>
             <midino>0x3B</midino>
             <options>
-               <Button />
+               <Script-Binding />
             </options>
          </control>
          <control><!-- off -->
             <group>[Channel2]</group>
-            <key>hotcue_3_clear</key>
+            <key>VMS4.hotCue</key>
             <status>0x80</status>
             <midino>0x3B</midino>
             <options>
-               <Spread64 />
+               <Script-Binding />
             </options>
          </control>
          <control><!-- on -->
             <group>[Channel2]</group>
-            <key>hotcue_4_clear</key>
+            <key>VMS4.hotCue</key>
             <status>0x90</status>
             <midino>0x3C</midino>
             <options>
-               <Button />
+               <Script-Binding />
             </options>
          </control>
          <control><!-- off -->
             <group>[Channel2]</group>
-            <key>hotcue_4_clear</key>
+            <key>VMS4.hotCue</key>
             <status>0x80</status>
             <midino>0x3C</midino>
             <options>
-               <Spread64 />
+               <Script-Binding />
             </options>
          </control>
+         
          <control><!-- on -->
             <group>[Channel2]</group>
             <key>loop_in</key>
@@ -937,6 +1051,33 @@
          </control>
          <control><!-- on -->
             <group>[Channel2]</group>
+            <key>beatloop_4</key>
+            <status>0x90</status>
+            <midino>0x44</midino>
+            <options>
+               <Button />
+            </options>
+         </control>
+         <control><!-- on -->
+            <group>[Channel2]</group>
+            <key>quantize</key>
+            <status>0x90</status>
+            <midino>0x48</midino>
+            <options>
+               <Button />
+            </options>
+         </control>
+         <control><!-- off -->
+            <group>[Channel2]</group>
+            <key>quantize</key>
+            <status>0x80</status>
+            <midino>0x48</midino>
+            <options>
+               <Spread64 />
+            </options>
+         </control>
+         <control><!-- on -->
+            <group>[Channel2]</group>
             <key>back</key>
             <status>0x90</status>
             <midino>0x4A</midino>
@@ -973,20 +1114,74 @@
          </control>
          <control><!-- on -->
             <group>[Channel2]</group>
-            <key>keylock</key>
+            <key>loop_halve</key>
+            <status>0x91</status>
+            <midino>0x4A</midino>
+            <options>
+               <Button />
+            </options>
+         </control>
+         <control><!-- off -->
+            <group>[Channel2]</group>
+            <key>loop_halve</key>
+            <status>0x81</status>
+            <midino>0x4A</midino>
+            <options>
+               <Spread64 />
+            </options>
+         </control>
+         <control><!-- on -->
+            <group>[Channel2]</group>
+            <key>loop_double</key>
+            <status>0x91</status>
+            <midino>0x4B</midino>
+            <options>
+               <Button />
+            </options>
+         </control>
+         <control><!-- off -->
+            <group>[Channel2]</group>
+            <key>loop_double</key>
+            <status>0x81</status>
+            <midino>0x4B</midino>
+            <options>
+               <Spread64 />
+            </options>
+         </control>
+         <control><!-- on -->
+            <group>[Channel2]</group>
+            <key>VMS4.keylock</key>
             <status>0x91</status>
             <midino>0x49</midino>
             <options>
-               <Button />
+               <Script-Binding/>
             </options>
          </control>
          <control><!-- off -->
             <group>[Channel2]</group>
-            <key>keylock</key>
+            <key>VMS4.keylock</key>
             <status>0x81</status>
             <midino>0x49</midino>
             <options>
-               <Spread64 />
+               <Script-Binding/>
+            </options>
+         </control>
+         <control><!-- on -->
+            <group>[Channel2]</group>
+            <key>VMS4.vinyl</key>
+            <status>0x90</status>
+            <midino>0x49</midino>
+            <options>
+               <Script-Binding/>
+            </options>
+         </control>
+         <control><!-- off -->
+            <group>[Channel2]</group>
+            <key>VMS4.vinyl</key>
+            <status>0x80</status>
+            <midino>0x49</midino>
+            <options>
+               <Script-Binding/>
             </options>
          </control>
          <control><!-- on -->
@@ -1065,24 +1260,36 @@
             <key>headMix</key>
             <status>0xB0</status>
             <midino>0x22</midino>
+            <options>
+                <soft-takeover />
+            </options>
          </control>
          <control>
             <group>[Master]</group>
             <key>headVolume</key>
             <status>0xB0</status>
             <midino>0x23</midino>
+            <options>
+                <soft-takeover />
+            </options>
          </control>
          <control>
             <group>[Master]</group>
             <key>volume</key>
             <status>0xB0</status>
             <midino>0x1C</midino>
+            <options>
+                <soft-takeover />
+            </options>
          </control>
          <control>
             <group>[Master]</group>
             <key>balance</key>
             <status>0xB0</status>
             <midino>0x1D</midino>
+            <options>
+                <soft-takeover />
+            </options>
          </control>
          
          <!-- Mixer channel 1 -->
@@ -1091,30 +1298,45 @@
             <key>pregain</key>
             <status>0xB0</status>
             <midino>0x05</midino>
+            <options>
+                <soft-takeover />
+            </options>
          </control>
          <control>
             <group>[Channel1]</group>
             <key>filterHigh</key>
             <status>0xB0</status>
             <midino>0x06</midino>
+            <options>
+                <soft-takeover />
+            </options>
          </control>
          <control>
             <group>[Channel1]</group>
             <key>filterMid</key>
             <status>0xB0</status>
             <midino>0x07</midino>
+            <options>
+                <soft-takeover />
+            </options>
          </control>
          <control>
             <group>[Channel1]</group>
             <key>filterLow</key>
             <status>0xB0</status>
             <midino>0x08</midino>
+            <options>
+                <soft-takeover />
+            </options>
          </control>
          <control>
             <group>[Channel1]</group>
             <key>volume</key>
             <status>0xB0</status>
             <midino>0x09</midino>
+            <options>
+                <soft-takeover />
+            </options>
          </control>
          <control><!-- on -->
             <group>[Channel1]</group>
@@ -1141,30 +1363,45 @@
             <key>pregain</key>
             <status>0xB0</status>
             <midino>0x0A</midino>
+            <options>
+                <soft-takeover />
+            </options>
          </control>
          <control>
             <group>[Channel2]</group>
             <key>filterHigh</key>
             <status>0xB0</status>
             <midino>0x0B</midino>
+            <options>
+                <soft-takeover />
+            </options>
          </control>
          <control>
             <group>[Channel2]</group>
             <key>filterMid</key>
             <status>0xB0</status>
             <midino>0x0C</midino>
+            <options>
+                <soft-takeover />
+            </options>
          </control>
          <control>
             <group>[Channel2]</group>
             <key>filterLow</key>
             <status>0xB0</status>
             <midino>0x0D</midino>
+            <options>
+                <soft-takeover />
+            </options>
          </control>
          <control>
             <group>[Channel2]</group>
             <key>volume</key>
             <status>0xB0</status>
             <midino>0x0E</midino>
+            <options>
+                <soft-takeover />
+            </options>
          </control>
          <control><!-- on -->
             <group>[Channel2]</group>
@@ -1180,6 +1417,189 @@
             <key>pfl</key>
             <status>0x80</status>
             <midino>0x2C</midino>
+            <options>
+               <Spread64 />
+            </options>
+         </control>
+         <!-- Samplers -->
+         <!-- 1 -->
+         <control>
+            <group>[Channel1]</group>
+            <key>VMS4.sampleSelect</key>
+            <status>0xB0</status>
+            <midino>0x26</midino>
+            <options>
+               <Script-Binding />
+            </options>
+         </control>
+         <control>
+            <group>[Sampler1]</group>
+            <key>LoadSelectedTrack</key>
+            <status>0x90</status>
+            <midino>0x54</midino>
+            <options>
+               <Button />
+            </options>
+         </control>
+         <control>
+            <group>[Sampler1]</group>
+            <key>LoadSelectedTrack</key>
+            <status>0x80</status>
+            <midino>0x54</midino>
+            <options>
+               <Spread64 />
+            </options>
+         </control>
+         <control> <!-- Shifted knob press -->
+            <group>[Sampler1]</group>
+            <key>eject</key>
+            <status>0x91</status>
+            <midino>0x54</midino>
+            <options>
+               <Button />
+            </options>
+         </control>
+         <control> <!-- Shifted knob press -->
+            <group>[Sampler1]</group>
+            <key>eject</key>
+            <status>0x81</status>
+            <midino>0x54</midino>
+            <options>
+               <Spread64 />
+            </options>
+         </control>
+         <control>
+            <group>[Sampler1]</group>
+            <key>pregain</key>
+            <status>0xB0</status>
+            <midino>0x27</midino>
+            <options>
+                <soft-takeover />
+            </options>
+         </control>
+         <control> <!-- on -->
+            <group>[Sampler1]</group>
+            <key>start_play</key>
+            <status>0x90</status>
+            <midino>0x1D</midino>
+            <options>
+               <Button />
+            </options>
+         </control>
+         <control> <!-- off -->
+            <group>[Sampler1]</group>
+            <key>start_play</key>
+            <status>0x80</status>
+            <midino>0x1D</midino>
+            <options>
+               <Spread64 />
+            </options>
+         </control>
+         <control> <!-- on -->
+            <group>[Sampler1]</group>
+            <key>start_stop</key>
+            <status>0x91</status>
+            <midino>0x1D</midino>
+            <options>
+               <Button />
+            </options>
+         </control>
+         <control> <!-- off -->
+            <group>[Sampler1]</group>
+            <key>start_stop</key>
+            <status>0x81</status>
+            <midino>0x1D</midino>
+            <options>
+               <Spread64 />
+            </options>
+         </control>
+         <!-- 2 -->
+         <control>
+            <group>[Channel2]</group>
+            <key>VMS4.sampleSelect</key>
+            <status>0xB0</status>
+            <midino>0x2B</midino>
+            <options>
+               <Script-Binding />
+            </options>
+         </control>
+         <control>
+            <group>[Sampler2]</group>
+            <key>LoadSelectedTrack</key>
+            <status>0x90</status>
+            <midino>0x56</midino>
+            <options>
+               <Button />
+            </options>
+         </control>
+         <control>
+            <group>[Sampler2]</group>
+            <key>LoadSelectedTrack</key>
+            <status>0x80</status>
+            <midino>0x56</midino>
+            <options>
+               <Spread64 />
+            </options>
+         </control>
+         <control> <!-- Shifted knob press -->
+            <group>[Sampler2]</group>
+            <key>eject</key>
+            <status>0x91</status>
+            <midino>0x56</midino>
+            <options>
+               <Button />
+            </options>
+         </control>
+         <control> <!-- Shifted knob press -->
+            <group>[Sampler2]</group>
+            <key>eject</key>
+            <status>0x81</status>
+            <midino>0x56</midino>
+            <options>
+               <Spread64 />
+            </options>
+         </control>
+         <control>
+            <group>[Sampler2]</group>
+            <key>pregain</key>
+            <status>0xB0</status>
+            <midino>0x2C</midino>
+            <options>
+                <soft-takeover />
+            </options>
+         </control>
+         <control> <!-- on -->
+            <group>[Sampler2]</group>
+            <key>start_play</key>
+            <status>0x90</status>
+            <midino>0x3F</midino>
+            <options>
+               <Button />
+            </options>
+         </control>
+         <control> <!-- off -->
+            <group>[Sampler2]</group>
+            <key>start_play</key>
+            <status>0x80</status>
+            <midino>0x3F</midino>
+            <options>
+               <Spread64 />
+            </options>
+         </control>
+         <control> <!-- on -->
+            <group>[Sampler2]</group>
+            <key>start_stop</key>
+            <status>0x91</status>
+            <midino>0x3F</midino>
+            <options>
+               <Button />
+            </options>
+         </control>
+         <control> <!-- off -->
+            <group>[Sampler2]</group>
+            <key>start_stop</key>
+            <status>0x81</status>
+            <midino>0x3F</midino>
             <options>
                <Spread64 />
             </options>
@@ -1479,9 +1899,30 @@
         </output>
         <output>
             <group>[Channel1]</group>
-            <key>repeat</key>
+            <key>loop_halve</key>
+            <status>0x90</status>
+            <midino>0x28</midino>
+            <minimum>0.5</minimum>
+        </output>
+        <output>
+            <group>[Channel1]</group>
+            <key>loop_double</key>
+            <status>0x90</status>
+            <midino>0x29</midino>
+            <minimum>0.5</minimum>
+        </output>
+        <output>
+            <group>[Channel1]</group>
+            <key>beatloop_4</key>
             <status>0x90</status>
             <midino>0x22</midino>
+            <minimum>0.5</minimum>
+        </output>
+        <output>
+            <group>[Channel1]</group>
+            <key>quantize</key>
+            <status>0x90</status>
+            <midino>0x26</midino>
             <minimum>0.5</minimum>
         </output>
         <output>
@@ -1507,9 +1948,44 @@
         </output>
         <output>
             <group>[Channel2]</group>
-            <key>repeat</key>
+            <key>loop_halve</key>
+            <status>0x90</status>
+            <midino>0x4A</midino>
+            <minimum>0.5</minimum>
+        </output>
+        <output>
+            <group>[Channel2]</group>
+            <key>loop_double</key>
+            <status>0x90</status>
+            <midino>0x4B</midino>
+            <minimum>0.5</minimum>
+        </output>
+        <output>
+            <group>[Channel2]</group>
+            <key>beatloop_4</key>
             <status>0x90</status>
             <midino>0x44</midino>
+            <minimum>0.5</minimum>
+        </output>
+        <output>
+            <group>[Channel2]</group>
+            <key>quantize</key>
+            <status>0x90</status>
+            <midino>0x48</midino>
+            <minimum>0.5</minimum>
+        </output>
+        <output>
+            <group>[Sampler1]</group>
+            <key>play</key>
+            <status>0x90</status>
+            <midino>0x1D</midino>
+            <minimum>0.5</minimum>
+        </output>
+        <output>
+            <group>[Sampler2]</group>
+            <key>play</key>
+            <status>0x90</status>
+            <midino>0x3F</midino>
             <minimum>0.5</minimum>
         </output>
       </outputs>

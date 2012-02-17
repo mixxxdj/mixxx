@@ -103,6 +103,7 @@ void DlgTrackInfo::populateFields(TrackPointer pTrack) {
     txtArtist->setText(pTrack->getArtist());
     txtAlbum->setText(pTrack->getAlbum());
     txtGenre->setText(pTrack->getGenre());
+    txtComposer->setText(pTrack->getComposer());
     txtYear->setText(pTrack->getYear());
     txtTrackNumber->setText(pTrack->getTrackNumber());
     txtComment->setText(pTrack->getComment());
@@ -169,7 +170,10 @@ void DlgTrackInfo::populateCues(TrackPointer pTrack) {
         //int hours = mins / 60; //Not going to worry about this for now. :)
 
         //Construct a nicely formatted duration string now.
-        QString duration = QString("%1:%2.%3").arg(mins).arg(seconds, 2, 10, QChar('0')).arg(fraction, 2,10, QChar('0'));
+        QString duration = QString("%1:%2.%3").arg(
+            QString::number(mins),
+            QString("%1").arg(seconds, 2, 10, QChar('0')),
+            QString("%1").arg(fraction, 2, 10, QChar('0')));
 
         QTableWidgetItem* durationItem = new QTableWidgetItem(duration);
         // Make the duration read only
@@ -195,6 +199,7 @@ void DlgTrackInfo::unloadTrack(bool save) {
         m_pLoadedTrack->setArtist(txtArtist->text());
         m_pLoadedTrack->setAlbum(txtAlbum->text());
         m_pLoadedTrack->setGenre(txtGenre->text());
+        m_pLoadedTrack->setComposer(txtComposer->text());
         m_pLoadedTrack->setYear(txtYear->text());
         m_pLoadedTrack->setTrackNumber(txtTrackNumber->text());
         m_pLoadedTrack->setBpm(spinBpm->value());
@@ -250,6 +255,7 @@ void DlgTrackInfo::clear() {
     txtArtist->setText("");
     txtAlbum->setText("");
     txtGenre->setText("");
+    txtComposer->setText("");
     txtYear->setText("");
     txtTrackNumber->setText("");
     txtComment->setText("");

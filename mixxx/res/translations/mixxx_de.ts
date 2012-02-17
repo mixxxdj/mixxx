@@ -267,16 +267,12 @@
             <translation>Umbenennen der Kiste fehlgeschlagen</translation>
         </message>
         <message>
-            <source>Playlist Files (*.m3u *.pls)</source>
-            <translation>Wiedergabelisten (*.m3u *.pls)</translation>
+            <source>Playlist Files (*.m3u *.m3u8 *.pls)</source>
+            <translation>Wiedergabeliste-Dateien (*.m3u *.m3u8 *.pls)</translation>
         </message>
         <message>
-            <source>Export Playlist</source>
-            <translation>Wiedergabeliste exportieren</translation>
-        </message>
-        <message>
-            <source>M3U Playlist (*.m3u);;PLS Playlist (*.pls)</source>
-            <translation>M3U Wiedergabeliste (*.m3u);;PLS Wiedergabeliste (*.pls)</translation>
+            <source>M3U Playlist (*.m3u);;M3U8 Playlist (*.m3u8);;PLS Playlist (*.pls)</source>
+            <translation>M3U Wiedergabeliste (*.m3u);;M3U8 Wiedergabeliste (*.m3u8);;PLS Wiedergabeliste (*.pls)</translation>
         </message>
         <message>
             <source>A crate cannot have a blank name.</source>
@@ -736,8 +732,8 @@ p, li { white-space: pre-wrap; }
             <translation>16 Hz</translation>
         </message>
         <message>
-            <source>2.045 kHz</source>
-            <translation>2.045 kHz</translation>
+            <source>1.014 kHz</source>
+            <translation>1.014 kHz</translation>
         </message>
         <message>
             <source>20.05 kHz</source>
@@ -978,10 +974,6 @@ p, li { white-space: pre-wrap; }
         <message>
             <source>Powered by xwax</source>
             <translation>Powered by xwax</translation>
-        </message>
-        <message>
-            <source>Apply</source>
-            <translation>Anwenden</translation>
         </message>
         <message>
             <source>&lt;b&gt;This version of Mixxx does not support vinyl control.&lt;/b&gt; &lt;br&gt; Please visit &lt;a href=&quot;http://mixxx.org&quot;&gt;Mixxx.org&lt;/a&gt; for more information.</source>
@@ -1716,12 +1708,12 @@ p, li { white-space: pre-wrap; }
             <translation>Verwalten</translation>
         </message>
         <message>
-            <source>Recently Added</source>
-            <translation>Zuletzt hinzugefügt</translation>
+            <source>New</source>
+            <translation>Neu</translation>
         </message>
         <message>
-            <source>All Songs</source>
-            <translation>Alle Titel</translation>
+            <source>All</source>
+            <translation>Alle</translation>
         </message>
         <message>
             <source>Progress</source>
@@ -1827,7 +1819,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Reload track metadata from file.</source>
-            <translation>Metadaten aus der Datei laden.</translation>
+            <translation>Metadaten aus der Datei neu laden.</translation>
         </message>
         <message>
             <source>Track Information (Click to Expand)</source>
@@ -2046,6 +2038,10 @@ p, li { white-space: pre-wrap; }
     </context>
     <context>
         <name>LibraryScannerDlg</name>
+        <message>
+            <source>Library Scanner</source>
+            <translation>Bibliothek-Scanner</translation>
+        </message>
         <message>
             <source>It's taking Mixxx a minute to scan your music library, please wait...</source>
             <translation>Mixxx benötigt einen Moment um Ihre Musikbibliothek zu scannen, bitte warten...</translation>
@@ -2365,6 +2361,10 @@ Die gesammelten Informationen werden nicht benutzt um Sie persönlich zu identif
             <translation>&amp;Community Support</translation>
         </message>
         <message>
+            <source>&amp;User Manual</source>
+            <translation>&amp;Benutzerhandbuch</translation>
+        </message>
+        <message>
             <source>Send Us &amp;Feedback</source>
             <translation>Sende uns &amp;Feedback</translation>
         </message>
@@ -2535,6 +2535,16 @@ Get help with Mixxx</source>
 Hilfe bei Problemen mit Mixxx</translation>
         </message>
         <message>
+            <source>Read the Mixxx user manual.</source>
+            <translation>Das Mixxx-Benutzerhandbuch lesen.</translation>
+        </message>
+        <message>
+            <source>Support
+Read the Mixxx user manual.</source>
+            <translation>Support
+Das Mixxx-Benutzerhandbuch lesen.</translation>
+        </message>
+        <message>
             <source>Send feedback to the Mixxx team.</source>
             <translation>Sende Feedback an das Mixxx Team.</translation>
         </message>
@@ -2659,6 +2669,18 @@ Bitte wählen Sie die Soundkarte(n) für die Vinyl-Steuerung in den Sound-Hardwa
             <translation>Exportieren der Wiedergabeliste fehlgeschlagen</translation>
         </message>
         <message>
+            <source>File path contains characters, not allowed in m3u playlists.
+</source>
+            <translation>Dateipfad enthält Zeichen die in m3u Wiedergabelisten nicht erlaubt sind.
+</translation>
+        </message>
+        <message>
+            <source>Export a m3u8 playlist instead!
+</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
             <source>Could not create file</source>
             <translation>Datei konnte nicht erstellt werden</translation>
         </message>
@@ -2741,12 +2763,12 @@ Bitte wählen Sie die Soundkarte(n) für die Vinyl-Steuerung in den Sound-Hardwa
             <translation>Umbenennen der Wiedergabeliste fehlgeschlagen</translation>
         </message>
         <message>
-            <source>Playlist Files (*.m3u *.pls)</source>
-            <translation>Wiedergabelisten (*.m3u *.pls)</translation>
+            <source>Playlist Files (*.m3u *.m3u8 *.pls)</source>
+            <translation>Wiedergabeliste-Dateien (*.m3u *.m3u8 *.pls)</translation>
         </message>
         <message>
-            <source>M3U Playlist (*.m3u);;PLS Playlist (*.pls)</source>
-            <translation>M3U Wiedergabeliste (*.m3u);;PLS Wiedergabeliste (*.pls)</translation>
+            <source>M3U Playlist (*.m3u);;M3U8 Playlist (*.m3u8);;PLS Playlist (*.pls)</source>
+            <translation>M3U Wiedergabeliste (*.m3u);;M3U8 Wiedergabeliste (*.m3u8);;PLS Wiedergabeliste (*.pls)</translation>
         </message>
         <message>
             <source>A playlist by that name already exists.</source>
@@ -3007,7 +3029,7 @@ Zum Beenden OK drücken.</translation>
         </message>
         <message>
             <source>Play button for Player %1</source>
-            <translation>Wiedergabe-Knopf for Player %1</translation>
+            <translation>Wiedergabe-Knopf für Player %1</translation>
         </message>
         <message>
             <source>Fast rewind button for Player %1</source>
@@ -3078,6 +3100,18 @@ Zum Beenden OK drücken.</translation>
             <translation>Reloop / Beenden-Knopf für Player %1</translation>
         </message>
         <message>
+            <source>Setup a loop over 4 beats for Player %1</source>
+            <translation>Einen Loop über 4 Beats einrichten für Player %1</translation>
+        </message>
+        <message>
+            <source>Halves the current loop's length for Player %1</source>
+            <translation>Halbiert die Länge des aktuellen Loops für Player %1</translation>
+        </message>
+        <message>
+            <source>Doubles the current loop's length for Player %1</source>
+            <translation>Verdoppelt die Länge des aktuellen Loops für Player %1</translation>
+        </message>
+        <message>
             <source>Hotcue 1 button for Player %1</source>
             <translation>Hotcue 1-Knopf für Player %1</translation>
         </message>
@@ -3110,6 +3144,62 @@ Zum Beenden OK drücken.</translation>
             <translation>Hotcue 4 löschen-Knopf für Player %1</translation>
         </message>
         <message>
+            <source>Play button for Sampler %1</source>
+            <translation>Wiedergabe-Knopf für Sampler %1</translation>
+        </message>
+        <message>
+            <source>Gain knob for Sampler %1</source>
+            <translation>Gain-Regler für Sampler %1</translation>
+        </message>
+        <message>
+            <source>Headphone listen button for Sampler %1</source>
+            <translation>Kopfhörer-Knopf für Sampler %1</translation>
+        </message>
+        <message>
+            <source>BPM tap button for Sampler %1</source>
+            <translation>BPM Tipp-Knopf für Sampler %1</translation>
+        </message>
+        <message>
+            <source>Keylock button for Sampler %1</source>
+            <translation>Keylock-Knopf für Sampler %1</translation>
+        </message>
+        <message>
+            <source>Pitch control slider for Sampler %1</source>
+            <translation>Tonhöhen-Regler für Sampler %1</translation>
+        </message>
+        <message>
+            <source>Hotcue 1 button for Sampler %1</source>
+            <translation>Hotcue 1-Knopf für Sampler %1</translation>
+        </message>
+        <message>
+            <source>Hotcue 2 button for Sampler %1</source>
+            <translation>Hotcue 2-Knopf für Sampler %1</translation>
+        </message>
+        <message>
+            <source>Hotcue 3 button for Sampler %1</source>
+            <translation>Hotcue 3-Knopf für Sampler %1</translation>
+        </message>
+        <message>
+            <source>Hotcue 4 button for Sampler %1</source>
+            <translation>Hotcue 4-Knopf für Sampler %1</translation>
+        </message>
+        <message>
+            <source>Hotcue 1 delete button for Sampler %1</source>
+            <translation>Hotcue 1 löschen-Knopf für Sampler %1</translation>
+        </message>
+        <message>
+            <source>Hotcue 2 delete button for Sampler %1</source>
+            <translation>Hotcue 2 löschen-Knopf für Sampler %1</translation>
+        </message>
+        <message>
+            <source>Hotcue 3 delete button for Sampler %1</source>
+            <translation>Hotcue 3 löschen-Knopf für Sampler %1</translation>
+        </message>
+        <message>
+            <source>Hotcue 4 delete button for Sampler %1</source>
+            <translation>Hotcue 4 löschen-Knopf für Sampler %1</translation>
+        </message>
+        <message>
             <source>Switch to the next view (library, playlist..)</source>
             <translation>Zur nächsten Ansicht wechseln (Bibliothek, Wiedergabeliste...)</translation>
         </message>
@@ -3132,6 +3222,26 @@ Zum Beenden OK drücken.</translation>
         <message>
             <source>Load selected track into Player %1</source>
             <translation>Ausgewählten Titel in Player %1 laden</translation>
+        </message>
+        <message>
+            <source>Adjusts the wavelength of the flange effect</source>
+            <translation>Anpassen der Wellenlänge des Flange-Effekts</translation>
+        </message>
+        <message>
+            <source>Adjusts the intensity of the flange effect</source>
+            <translation>Anpassen der Intensität des Flange-Effekts</translation>
+        </message>
+        <message>
+            <source>Adjusts the phase delay of the flange effect</source>
+            <translation>Anpassen der Phasenverzögerung des Flange-Effekts</translation>
+        </message>
+        <message>
+            <source>Microphone on/off</source>
+            <translation>Mikrofon an/aus</translation>
+        </message>
+        <message>
+            <source>Microphone volume</source>
+            <translation>Mikrofon-Lautstärke</translation>
         </message>
     </context>
     <context>
@@ -3178,6 +3288,10 @@ Zum Beenden OK drücken.</translation>
         <message>
             <source>Sampler %1</source>
             <translation>Sampler %1</translation>
+        </message>
+        <message>
+            <source>Reloading track metadata on a loaded track may cause abrupt volume changes. Are you sure?</source>
+            <translation>Erneutes Laden der Metadaten eines geladenen Titels kann plötzliche Lautstärkeänderungen verursachen. Sind Sie sicher?</translation>
         </message>
     </context>
     <context>
