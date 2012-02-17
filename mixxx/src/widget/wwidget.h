@@ -65,7 +65,6 @@ signals:
     void valueChangedRightDown(double);
     void valueChangedRightUp(double);
 protected:
-    bool event(QEvent*);
     /** Value/state of widget */
     double m_fValue;
     /** Is true if widget is off */

@@ -411,7 +411,7 @@ bool MidiScriptEngine::execute(QScriptValue function, char channel,
 bool MidiScriptEngine::safeExecute(QString function) {
     //qDebug() << QString("MidiScriptEngine: Exec1 Thread ID=%1").arg(QThread::currentThreadId(),0,16);
 
-    if(m_pEngine == NULL)
+    if (m_pEngine == NULL)
         return false;
 
     QScriptValue scriptFunction = m_pEngine->evaluate(function);
@@ -432,10 +432,11 @@ bool MidiScriptEngine::safeExecute(QString function) {
 
 /* -------- ------------------------------------------------------
 Purpose: Evaluate & run script code
-Input:   Code string
+Input:   'this' object if applicable, Code string
 Output:  false if an exception
 -------- ------------------------------------------------------ */
-bool MidiScriptEngine::internalExecute(QString scriptCode) {
+bool MidiScriptEngine::internalExecute(QScriptValue thisObject,
+                                       QString scriptCode) {
     // A special version of safeExecute since we're evaluating strings, not actual functions
     //  (execute() would print an error that it's not a function every time a timer fires.)
     if(m_pEngine == NULL)
@@ -453,7 +454,7 @@ bool MidiScriptEngine::internalExecute(QString scriptCode) {
             error = "Syntax error";
             break;
     }
-    if (error!="") {
+    if (error != "") {
         error = QString("%1: %2 at line %3, column %4 of script code:\n%5\n")
         .arg(error)
         .arg(result.errorMessage())
@@ -476,7 +477,7 @@ bool MidiScriptEngine::internalExecute(QString scriptCode) {
         return true;
 
     // If it does happen to be a function, call it.
-    scriptFunction.call(QScriptValue());
+    scriptFunction.call(thisObject);
     if (checkException())
         return false;
 
@@ -517,7 +518,7 @@ bool MidiScriptEngine::safeExecute(QString function, QString data) {
    Output:  false if an invalid function or an exception
    -------- ------------------------------------------------------ */
 bool MidiScriptEngine::safeExecute(QString function, const unsigned char data[],
-                                    unsigned int length) {
+                                   unsigned int length) {
 
     if(m_pEngine == NULL) {
         return false;
@@ -595,25 +596,6 @@ bool MidiScriptEngine::safeExecute(QString function, char channel,
 
 /* -------- ------------------------------------------------------
    Purpose: Evaluate & call a script function
-   Input:   This Object (context), Function name
-   Output:  false if an invalid function or an exception
-   Notes:   used for closure calls using native functions (ie: timers)
-   -------- ------------------------------------------------------ */
-bool MidiScriptEngine::safeExecute(QScriptValue thisObject, QScriptValue functionObject) {
-    
-    if(m_pEngine == NULL) {
-        return false;
-    }
-    QScriptValueList args;
-    
-    functionObject.call(thisObject, args);
-    if (checkException())
-        return false;
-    return true;
-}
-
-/* -------- ------------------------------------------------------
-   Purpose: Evaluate & call a script function
    Input:   Function Object
    Output:  false if an invalid function or an exception
    Notes:   used for closure calls using native functions (ie: timers)
@@ -644,6 +626,27 @@ bool MidiScriptEngine::safeExecute(QScriptValue functionObject,
         qDebug() << "QScriptValue is not a function or ...";
     if (checkException())
         return false;
+    return true;
+}
+
+/* -------- ------------------------------------------------------
+   Purpose: Evaluate & call a script function
+   Input:   This Object (context), Function name
+   Output:  false if an invalid function or an exception
+   Notes:   used for closure calls using native functions (ie: timers)
+   -------- ------------------------------------------------------ */
+bool MidiScriptEngine::safeExecute(QScriptValue thisObject,
+                                   QScriptValue functionObject) {
+    if (m_pEngine == NULL) {
+        return false;
+    }
+
+    QScriptValueList args;
+
+    functionObject.call(thisObject, args);
+    if (checkException()) {
+        return false;
+    }
     return true;
 }
 
@@ -853,8 +856,9 @@ void MidiScriptEngine::log(QString message) {
 }
 
 /* -------- ------------------------------------------------------
-   Purpose: Emits valueChanged() so device outputs update
-   Input:   -
+   Purpose: Calls script function(s) linked to a particular ControlObject
+            so controller outputs update
+   Input:   ControlObject Group and Name strings
    Output:  -
    -------- ------------------------------------------------------ */
 void MidiScriptEngine::trigger(QString group, QString name) {
@@ -866,9 +870,29 @@ void MidiScriptEngine::trigger(QString group, QString name) {
         m_scriptEngineLock.unlock();
     }
 
-    ControlObjectThread *cot = getControlObjectThread(group, name);
-    if(cot != NULL) {
-        cot->slotSet(cot->get());
+    // ControlObject doesn't emit ValueChanged when set to the same value,
+    //  so we have to call the function(s) manually with the current value
+    ConfigKey key = ConfigKey(group,name);
+    if(m_connectedControls.contains(key)) {
+        QMultiHash<ConfigKey, QString>::iterator i = m_connectedControls.find(key);
+        while (i != m_connectedControls.end() && i.key() == key) {
+            QString function = i.value();
+
+            QScriptValue function_value = m_pEngine->evaluate(function);
+            QScriptValueList args;
+            double value;
+            ControlObjectThread *cot = getControlObjectThread(group, name);
+            if(cot != NULL) {
+                args << QScriptValue(cot->get());
+                args << QScriptValue(key.group);
+                args << QScriptValue(key.item);
+                QScriptValue result = function_value.call(QScriptValue(), args);
+                if (result.isError()) {
+                    qWarning()<< "MidiScriptEngine: Call to " << function << " resulted in an error:  " << result.toString();
+                }
+            }
+            ++i;
+        }
     }
 }
 
@@ -1227,35 +1251,44 @@ const QStringList MidiScriptEngine::getErrors(QString filename) {
                 whether it should fire just once
    Output:  The timer's ID, 0 if starting it failed
    -------- ------------------------------------------------------ */
-int MidiScriptEngine::beginTimer(int interval, QScriptValue timerCallback, bool oneShot) {
+int MidiScriptEngine::beginTimer(int interval, QScriptValue timerCallback,
+                                 bool oneShot) {
     // When this function runs, assert that somebody is holding the script
     // engine lock.
     bool lock = m_scriptEngineLock.tryLock();
     Q_ASSERT(!lock);
-    if(lock) {
+    if (lock) {
         m_scriptEngineLock.unlock();
     }
 
-    if (interval<20) {
-        qWarning() << "Timer request for" << interval << "ms is too short. Setting to the minimum of 20ms.";
-        interval=20;
+    if (!timerCallback.isFunction() && !timerCallback.isString()) {
+        qWarning() << "Invalid timer callback provided to beginTimer."
+                   << "Valid callbacks are strings and functions.";
+        return 0;
     }
-    // This makes use of every QObject's internal timer mechanism. Nice, clean, and simple.
-    // See http://doc.trolltech.com/4.6/qobject.html#startTimer for details
+
+    if (interval < 20) {
+        qWarning() << "Timer request for" << interval
+                   << "ms is too short. Setting to the minimum of 20ms.";
+        interval = 20;
+    }
+    // This makes use of every QObject's internal timer mechanism. Nice, clean,
+    // and simple. See http://doc.trolltech.com/4.6/qobject.html#startTimer for
+    // details
     int timerId = startTimer(interval);
-    QPair<QList<QScriptValue>, bool> timerTarget;
-    if (timerCallback.isFunction()) {
-        QScriptContext *ctxt = m_pEngine->currentContext();
-        QScriptContext *pCtxt = ctxt->parentContext();
-        timerTarget.first.append(pCtxt->thisObject());
-    }
-    timerTarget.first.append(timerCallback);
-    timerTarget.second = oneShot;
-    m_timers[timerId]=timerTarget;
-    if (timerId==0) qWarning() << "MIDI Script timer could not be created";
-    else if (m_midiDebug) {
-        if (oneShot) qDebug() << "Starting one-shot timer:" << timerId;
-        else qDebug() << "Starting timer:" << timerId;
+    TimerInfo info;
+    info.callback = timerCallback;
+    QScriptContext *ctxt = m_pEngine->currentContext();
+    info.context = ctxt ? ctxt->thisObject() : QScriptValue();
+    info.oneShot = oneShot;
+    m_timers[timerId] = info;
+    if (timerId == 0) {
+        qWarning() << "MIDI Script timer could not be created";
+    } else if (m_midiDebug) {
+        if (oneShot)
+            qDebug() << "Starting one-shot timer:" << timerId;
+        else
+            qDebug() << "Starting timer:" << timerId;
     }
     return timerId;
 }
@@ -1294,7 +1327,7 @@ void MidiScriptEngine::stopAllTimers() {
     Q_ASSERT(!lock);
     if(lock) m_scriptEngineLock.unlock();
 
-    QMutableHashIterator<int, QPair<QList<QScriptValue>, bool> > i(m_timers);
+    QMutableHashIterator<int, TimerInfo> i(m_timers);
     while (i.hasNext()) {
         i.next();
         stopTimer(i.key());
@@ -1324,14 +1357,13 @@ void MidiScriptEngine::timerEvent(QTimerEvent *event) {
         return;
     }
 
-    QPair<QList<QScriptValue>, bool> timerTarget = m_timers[timerId];
-    if (timerTarget.second) stopTimer(timerId);
+    TimerInfo timerTarget = m_timers[timerId];
+    if (timerTarget.oneShot) stopTimer(timerId);
 
-    if (timerTarget.first.size() == 1) {
-        internalExecute(timerTarget.first[0].toString());
-    }
-    else {
-        safeExecute(timerTarget.first[0], timerTarget.first[1]);
+    if (timerTarget.callback.isString()) {
+        internalExecute(timerTarget.context, timerTarget.callback.toString());
+    } else if (timerTarget.callback.isFunction()) {
+        safeExecute(timerTarget.context, timerTarget.callback);
     }
     m_scriptEngineLock.unlock();
 }

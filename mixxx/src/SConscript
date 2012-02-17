@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+from __future__ import with_statement
+
 import os
 import sys
 import SCons
@@ -171,7 +173,7 @@ dll_files += Split("""$QTDIR/lib/QtCore4.dll $QTDIR/lib/QtGui4.dll $QTDIR/lib/Qt
 if int(flags.get('sqlitedll', 0)):
 	sqldll_files = Split("""$QTDIR/plugins/sqldrivers/qsqlite4.dll""") #Qt SQLite plugin
 
-if int(flags['script']) or int(flags['midiscript']):
+if int(flags['midiscript']):
 	dll_files += Split("""$QTDIR/lib/QtScript4.dll""")
 
 
@@ -446,7 +448,7 @@ def BuildRelease(target, source, env):
                  'winlibpath': mixxx_winlib_path,
                  '64bit': buildwin64}
             print "Using command:" + command
-            os.system(command)
+            subprocess.check_call(command)
     else:
         print "Aborted building installer"
 
@@ -460,17 +462,17 @@ if 'makerelease' in COMMAND_LINE_TARGETS:
 
 def ubuntu_append_changelog(debian_dir,
 			    package_name, package_version,
-			    branch_name, bazaar_revision,
+			    description,
 			    distro='karmic',
-			    urgency='low'):
+			    urgency='low',
+                            author="Mixxx Buildbot <builds@mixxx.org>"):
 	now_formatted = time.strftime("%a,  %d %b %Y %H:%M:%S +0000", time.gmtime())
 	new_entry = [
 		"%s (%s) %s; urgency=%s" % (package_name, package_version, distro, urgency),
 		"",
-		"  * Experimental build of branch '%s' at Bazaar revision %s" % (branch_name,
-                                                                                 bazaar_revision),
+		description,
 		"",
-		" -- Mixxx Buildbot <builds@mixxx.org>  %s" % now_formatted,
+		" -- %s  %s" % (author, now_formatted),
 		"",
 		]
 	lines = []
@@ -572,8 +574,15 @@ def BuildUbuntuPackage(target, source, env):
 
 	# Add a changelog record for this package
 	if build.build_is_debug:
+                description = "  * Experimental build of branch '%s' at Bazaar revision %s" % (branch_name, bazaar_revision)
 		ubuntu_append_changelog('debian', package_name, package_version,
-                                        branch_name, bazaar_revision)
+                                        description, distro=ubuntu_distro)
+        else:
+                description = "  * New upstream release."
+                ubuntu_append_changelog('debian', package_name, package_version,
+                                        description,
+                                        distro=ubuntu_distro,
+                                        author="RJ Ryan <rryan@mixxx.org>")
 
 	# Run pbuilder
 	print "* Starting pbuilder ...  (cwd: %s)" % os.getcwd()

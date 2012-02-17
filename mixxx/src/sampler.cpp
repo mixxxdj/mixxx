@@ -5,7 +5,7 @@ Sampler::Sampler(QObject* pParent,
                  EngineMaster* pMixingEngine,
                  EngineChannel::ChannelOrientation defaultOrientation,
                  QString group)
-        : BaseTrackPlayer(pParent, pConfig, pMixingEngine, defaultOrientation, group) {
+        : BaseTrackPlayer(pParent, pConfig, pMixingEngine, defaultOrientation, NULL, group) {
 
 }
 

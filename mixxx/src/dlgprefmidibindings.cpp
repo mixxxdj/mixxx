@@ -373,7 +373,11 @@ void DlgPrefMidiBindings::slotAddInputBinding()
 
     QStringList controlValues;
     if (controlGroup == CONTROLGROUP_CHANNEL1_STRING ||
-        controlGroup == CONTROLGROUP_CHANNEL2_STRING) {
+        controlGroup == CONTROLGROUP_CHANNEL2_STRING ||
+        controlGroup == CONTROLGROUP_SAMPLER1_STRING ||
+        controlGroup == CONTROLGROUP_SAMPLER2_STRING ||
+        controlGroup == CONTROLGROUP_SAMPLER3_STRING ||
+        controlGroup == CONTROLGROUP_SAMPLER4_STRING) {
         controlValues = ControlValueDelegate::getChannelControlValues();
     }
     else if (controlGroup == CONTROLGROUP_MASTER_STRING)
@@ -383,6 +387,14 @@ void DlgPrefMidiBindings::slotAddInputBinding()
     else if (controlGroup == CONTROLGROUP_PLAYLIST_STRING)
     {
         controlValues = ControlValueDelegate::getPlaylistControlValues();
+    }
+    else if (controlGroup == CONTROLGROUP_FLANGER_STRING)
+    {
+        controlValues = ControlValueDelegate::getFlangerControlValues();
+    }
+    else if (controlGroup == CONTROLGROUP_MICROPHONE_STRING)
+    {
+        controlValues = ControlValueDelegate::getMicrophoneControlValues();
     }
     else
     {
