@@ -5,7 +5,7 @@ NumarkTotalControl.init = function(id) {	// called when the MIDI device is opene
 	
 	NumarkTotalControl.directoryMode = false;
 	
-	NumarkTotalControl.scratchMode = [false, false];
+	NumarkTotalControl.scratchMode = false;
 	NumarkTotalControl.scratchTimer = [-1, -1];
 	
 	NumarkTotalControl.simpleCue = false;
@@ -19,20 +19,30 @@ NumarkTotalControl.init = function(id) {	// called when the MIDI device is opene
 	NumarkTotalControl.extendedLoopingLEDTimer = [-1, -1];
 	NumarkTotalControl.extendedLoopingJogCarryOver = [0, 0];
 	
+	NumarkTotalControl.quantizeLEDState = false;
+	NumarkTotalControl.quantizeLEDTimer = -1;
+	
 	NumarkTotalControl.leds = [
 		// Common
-		{ "directory": 0x56, "simpleCue": 0x33, "extendedLooping": 0x44 },
+		{ "directory": 0x56, "simpleCue": 0x33, "scratchMode": 0x31, "extendedLooping": 0x44, "quantize": 0x45 },
 		// Deck 1
-		{ "rate": 0x34, "tap": 0x30, "scratchMode": 0x31, "loopIn": 0x3a, "loopOut": 0x3b, "loopHalve": 0x38, "loopDouble": 0x39 },
+		{ "rate": 0x34, "tap": 0x30, "loopIn": 0x3a, "loopOut": 0x3b, "loopHalve": 0x38, "loopDouble": 0x39 },
 		// Deck 2
-		{ "rate": 0x43, "tap": 0x47, "scratchMode": 0x45, "loopIn": 0x4a, "loopOut": 0x4b, "loopHalve": 0x48, "loopDouble": 0x49 }
+		{ "rate": 0x43, "tap": 0x47, "loopIn": 0x4a, "loopOut": 0x4b, "loopHalve": 0x48, "loopDouble": 0x49 }
 	];
+	
+	// Doesn't work ?!?
+	engine.softTakeover("[Channel1]", "rate", true);
+	engine.softTakeover("[Channel2]", "rate", true);
 	
 	NumarkTotalControl.setLED(NumarkTotalControl.leds[1]["rate"], true);	// Turn on 0 rate lights
 	NumarkTotalControl.setLED(NumarkTotalControl.leds[2]["rate"], true);	// Turn on 0 rate lights
 	
 	engine.connectControl("[Channel1]", "loop_enabled", "NumarkTotalControl.loopLEDs");
 	engine.connectControl("[Channel2]", "loop_enabled", "NumarkTotalControl.loopLEDs");
+	
+	engine.connectControl("[Channel1]", "quantize", "NumarkTotalControl.quantizeLED");
+	engine.connectControl("[Channel2]", "quantize", "NumarkTotalControl.quantizeLED");
 }
 
 NumarkTotalControl.shutdown = function(id) {	// called when the MIDI device is closed
@@ -56,8 +66,8 @@ NumarkTotalControl.groupToDeck = function(group) {
 }
 
 NumarkTotalControl.samplesPerBeat = function(group) {
-	// FIXME: Get correct samplerate and channels for current deck
-	var sampleRate = 44100;
+	var sampleRate = engine.getValue(group, "track_samplerate");
+	// FIXME: Get correct channel count for current deck
 	var channels = 2;
 	var bpm = engine.getValue(group, "file_bpm");
 	return channels * sampleRate * 60 / bpm;
@@ -149,9 +159,9 @@ NumarkTotalControl.loopExtendedAdjustment = function(group) {
 	var beatSamples = NumarkTotalControl.samplesPerBeat(group);
 	var lenInBeats = len / beatSamples;
 	if (lenInBeats > 1) {
-		print("Full: " + Math.ceil(lenInBeats));
-		print("Mult2: " + (Math.ceil(lenInBeats / 2) * 2));
-		print("Pot2: " + Math.pow(2, Math.ceil(Math.log(lenInBeats) / Math.log(2))));
+		//print("Full: " + Math.ceil(lenInBeats));
+		//print("Mult2: " + (Math.ceil(lenInBeats / 2) * 2));
+		//print("Pot2: " + Math.pow(2, Math.ceil(Math.log(lenInBeats) / Math.log(2))));
 		
 		// Round to full beats
 		//lenInBeats = Math.ceil(lenInBeats);
@@ -162,9 +172,9 @@ NumarkTotalControl.loopExtendedAdjustment = function(group) {
 		// Round to 2^x beats
 		lenInBeats = Math.pow(2, Math.ceil(Math.log(lenInBeats) / Math.log(2)));
 	} else {
-		print("Full: 1 / " + Math.floor(1 / lenInBeats));
-		print("Mult2: 1 / " + (Math.floor(1 / lenInBeats / 2) * 2));
-		print("Pot2: 1 / " + Math.pow(2, Math.floor(Math.log(1 / lenInBeats) / Math.log(2))));
+		//print("Full: 1 / " + Math.floor(1 / lenInBeats));
+		//print("Mult2: 1 / " + (Math.floor(1 / lenInBeats / 2) * 2));
+		//print("Pot2: 1 / " + Math.pow(2, Math.floor(Math.log(1 / lenInBeats) / Math.log(2))));
 		
 		// Round to beat fragments
 		//lenInBeats = 1 / Math.floor(1 / lenInBeats);
@@ -249,8 +259,8 @@ NumarkTotalControl.extendedFunctionButton = function(normalFunction, extendedLoo
 				NumarkTotalControl.extendedLoopingState[deck-1] = extendedLoopingType;
 				NumarkTotalControl.extendedLoopingChanged[deck-1] = false;
 				NumarkTotalControl.extendedLoopingJogCarryOver[deck-1] = 0;
-				// Start alternative function timer -> activated after button was 1sec pressed or jog wheel movement (see jogWheel function)
-				NumarkTotalControl.extendedLoopingLEDTimer[deck-1] = engine.beginTimer(1000, "NumarkTotalControl.loopExtendedChange('" + group + "', true)", true);
+				// Start alternative function timer -> activated after button was 500msec pressed or jog wheel movement (see jogWheel function)
+				NumarkTotalControl.extendedLoopingLEDTimer[deck-1] = engine.beginTimer(500, "NumarkTotalControl.loopExtendedChange('" + group + "', true)", true);
 			}
 		} else {
 			// Check if alternative function wasn't used
@@ -283,6 +293,28 @@ NumarkTotalControl.leftFunction = function(channel, control, value, status, grou
 
 NumarkTotalControl.rightFunction = function(channel, control, value, status, group) {
 	NumarkTotalControl.extendedFunctionButton("rate_temp_up", 2, NumarkTotalControl.extendedLoopingType.SetLength, group, value);
+}
+
+// Set LED to current quantize status
+NumarkTotalControl.quantizeLED = function(value, group, key) {
+	var deck1 = engine.getValue("[Channel1]", "quantize");
+	var deck2 = engine.getValue("[Channel2]", "quantize");
+	if (deck1 == deck2) {
+		if (NumarkTotalControl.quantizeLEDTimer != -1) {
+			engine.stopTimer(NumarkTotalControl.quantizeLEDTimer);
+			NumarkTotalControl.quantizeLEDTimer = -1;
+		}
+		NumarkTotalControl.setLED(NumarkTotalControl.leds[0]["quantize"], deck1);
+	} else if (NumarkTotalControl.quantizeLEDTimer == -1) {
+		NumarkTotalControl.quantizeLEDBlink();
+		NumarkTotalControl.quantizeLEDTimer = engine.beginTimer(333, "NumarkTotalControl.quantizeLEDBlink()");
+	}
+}
+
+// Let LED blink on unequal quantize status
+NumarkTotalControl.quantizeLEDBlink = function() {
+	NumarkTotalControl.quantizeLEDStatus = !NumarkTotalControl.quantizeLEDStatus;
+	NumarkTotalControl.setLED(NumarkTotalControl.leds[0]["quantize"], NumarkTotalControl.quantizeLEDStatus);
 }
 
 NumarkTotalControl.finePitch = function(channel, control, value, status, group) {
@@ -341,9 +373,9 @@ NumarkTotalControl.jogWheel = function(channel, control, value, status, group) {
 			// Activate alternative function SetBegin
 			NumarkTotalControl.loopExtendedChange(group, false);
 			// Adjust jog speed
-			// FIXME: Get correct sample rate and channels from deck
+			// FIXME: Get correct channel count from deck
 			var channels = 2;
-			var sampleRate = 44100;
+			var sampleRate = engine.getValue(group, "track_samplerate");
 			adjustedJog = adjustedJog * channels * sampleRate / 600;
 			// Move loop
 			engine.setValue(group, "loop_start_position", start + adjustedJog);
@@ -369,7 +401,7 @@ NumarkTotalControl.jogWheel = function(channel, control, value, status, group) {
 			// Set new loop end
 			engine.setValue(group, "loop_end_position", end + beats * NumarkTotalControl.samplesPerBeat(group));
 		}
-	} else if (NumarkTotalControl.scratchMode[deck-1]) {
+	} else if (NumarkTotalControl.scratchMode) {
 		if (NumarkTotalControl.scratchTimer[deck-1] == -1) {
 			engine.scratchEnable(deck, 128, 33+1/3, 1.0/8, (1.0/8)/32);
 		} else {
@@ -409,36 +441,23 @@ NumarkTotalControl.tap = function(channel, control, value, status, group) {
 NumarkTotalControl.toggleDirectoryMode = function(channel, control, value, status, group) {
 	// Toggle setting and light
 	if (value) {
-		if (NumarkTotalControl.directoryMode) {
-			NumarkTotalControl.directoryMode = false;
-		} else {
-			NumarkTotalControl.directoryMode = true;
-		}
+		NumarkTotalControl.directoryMode = !NumarkTotalControl.directoryMode;
 		NumarkTotalControl.setLED(NumarkTotalControl.leds[0]["directory"], NumarkTotalControl.directoryMode);
 	}
 }
 
 NumarkTotalControl.toggleScratchMode = function(channel, control, value, status, group) {
-	var deck = NumarkTotalControl.groupToDeck(group);
 	// Toggle setting and light
 	if (value) {
-		if (NumarkTotalControl.scratchMode[deck-1]) {
-			NumarkTotalControl.scratchMode[deck-1] = false;
-		} else {
-			NumarkTotalControl.scratchMode[deck-1] = true;
-		}
-		NumarkTotalControl.setLED(NumarkTotalControl.leds[deck]["scratchMode"], NumarkTotalControl.scratchMode[deck-1]);
+		NumarkTotalControl.scratchMode = !NumarkTotalControl.scratchMode;
+		NumarkTotalControl.setLED(NumarkTotalControl.leds[0]["scratchMode"], NumarkTotalControl.scratchMode);
 	}
 }
 
 NumarkTotalControl.toggleSimpleCue = function(channel, control, value, status, group) {
 	// Toggle setting and light
 	if (value) {
-		if (NumarkTotalControl.simpleCue) {
-			NumarkTotalControl.simpleCue = false;
-		} else {
-			NumarkTotalControl.simpleCue = true;
-		}
+		NumarkTotalControl.simpleCue = !NumarkTotalControl.simpleCue;
 		NumarkTotalControl.setLED(NumarkTotalControl.leds[0]["simpleCue"], NumarkTotalControl.simpleCue);
 	}
 }
@@ -446,13 +465,18 @@ NumarkTotalControl.toggleSimpleCue = function(channel, control, value, status, g
 NumarkTotalControl.toggleExtendedLooping = function(channel, control, value, status, group) {
 	// Toggle setting and light
 	if (value) {
-		if (NumarkTotalControl.extendedLooping) {
-			NumarkTotalControl.extendedLooping = false;
-		} else {
-			NumarkTotalControl.extendedLooping = true;
-		}
+		NumarkTotalControl.extendedLooping = !NumarkTotalControl.extendedLooping;
 		NumarkTotalControl.setLED(NumarkTotalControl.leds[0]["extendedLooping"], NumarkTotalControl.extendedLooping);
 		NumarkTotalControl.loopLEDs(engine.getValue("[Channel1]", "loop_enabled"), "[Channel1]", "loop_enabled");
 		NumarkTotalControl.loopLEDs(engine.getValue("[Channel2]", "loop_enabled"), "[Channel2]", "loop_enabled");
+	}
+}
+
+NumarkTotalControl.toggleQuantize = function(channel, control, value, status, group) {
+	// Toggle setting
+	if (value) {
+		var newValue = !(engine.getValue("[Channel1]", "quantize") && engine.getValue("[Channel2]", "quantize"));
+		engine.setValue("[Channel1]", "quantize", newValue);
+		engine.setValue("[Channel2]", "quantize", newValue);
 	}
 }

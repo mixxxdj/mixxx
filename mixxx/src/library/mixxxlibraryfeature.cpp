@@ -28,6 +28,7 @@ MixxxLibraryFeature::MixxxLibraryFeature(QObject* parent,
             << "library." + LIBRARYTABLE_DURATION
             << "library." + LIBRARYTABLE_RATING
             << "library." + LIBRARYTABLE_GENRE
+            << "library." + LIBRARYTABLE_COMPOSER
             << "library." + LIBRARYTABLE_FILETYPE
             << "library." + LIBRARYTABLE_TRACKNUMBER
             << "library." + LIBRARYTABLE_KEY
@@ -45,8 +46,7 @@ MixxxLibraryFeature::MixxxLibraryFeature(QObject* parent,
         "CREATE TEMPORARY VIEW IF NOT EXISTS %1 AS "
         "SELECT %2 FROM library "
         "INNER JOIN track_locations ON library.location = track_locations.id")
-            .arg(tableName)
-            .arg(columns.join(","));
+            .arg(tableName, columns.join(","));
     query.prepare(queryString);
     if (!query.exec()) {
         LOG_FAILED_QUERY(query);

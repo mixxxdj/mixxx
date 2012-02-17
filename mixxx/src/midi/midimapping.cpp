@@ -605,6 +605,9 @@ void MidiMapping::doScriptError(MixxxControl mixxxControl, MidiMessage midiMessa
     QString byte2 = QString("%1").arg(midiMessage.getMidiNo(), 0, 16).toUpper();
     byte2 = "0x"+byte2;
     
+    // If status is MIDI pitch, the 2nd byte is part of the payload so don't display it
+    if (midiMessage.getMidiStatusByte() == 0xE0) byte2 = "";
+    
     qDebug() << "Unable to Map Scripted MIDI thingamabob";
     
     // If status is MIDI pitch, the 2nd byte is part of the payload so don't display it
@@ -879,6 +882,7 @@ void MidiMapping::applyPreset() {
             // Next device
             controller = controller.nextSiblingElement("controller");
         }
+        MidiLedHandler::updateAll();
     }
 }
 
@@ -984,6 +988,7 @@ void MidiMapping::clearPreset() {
         outputs.appendChild(outputNode);
     }
 
+    m_Bindings = doc.documentElement();
     return doc;
 }
 
@@ -1285,9 +1290,10 @@ void MidiMapping::restartScriptEngine()
 void MidiMapping::reset() {
 #ifdef __MIDISCRIPT__   // Can't ifdef slots in the .h file, so we just do the body.
     restartScriptEngine();
-    MidiLedHandler::destroyHandlers();
-    applyPreset();
 #endif
+    MidiLedHandler::destroyHandlers(m_pOutputMidiDevice);
+
+    applyPreset();
 }
 
 void MidiMapping::slotScriptEngineReady() {

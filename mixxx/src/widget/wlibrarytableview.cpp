@@ -43,6 +43,8 @@ WLibraryTableView::WLibraryTableView(QWidget* parent,
     setAlternatingRowColors(true);
 
     loadVScrollBarPosState();
+
+    setTabKeyNavigation(false);
 }
 
 WLibraryTableView::~WLibraryTableView() {
