@@ -44,8 +44,9 @@ private:
     ShaderVariable<int>* m_waveformLength;
     ShaderVariable<int>* m_textureSize;
     ShaderVariable<int>* m_textureStride;
+    ShaderVariable<int>* m_zoomFactor;
+
     ShaderVariable<float>* m_indexPosition;
-    ShaderVariable<float>* m_displayRange;
 
     ShaderVariable<int>* m_viewportWidth;
     ShaderVariable<int>* m_viewportHeigth;

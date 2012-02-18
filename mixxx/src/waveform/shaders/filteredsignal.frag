@@ -5,7 +5,8 @@ uniform int waveformLength;
 uniform int textureSize;
 uniform int textureStride;
 uniform float indexPosition;
-uniform float displayRange;
+
+uniform int zoomFactor;
 
 uniform int viewportWidth;
 uniform int viewportHeigth;
@@ -44,9 +45,6 @@ vec4 getWaveformData_linearInterpolation( float index)
 
 void main(void)
 {
-    float pixelRange = float(displayRange) / float(viewportWidth);
-    float pixelWeigth = 2.0 / pixelRange;
-
     ///////////////////
 
     vec2 uv = gl_TexCoord[0].st;
@@ -57,10 +55,15 @@ void main(void)
     //gl_FragColor = texture2D( waveformDataTexture, uv);
     //return;
 
-    float currentIndex = indexPosition + 2.0*(uv.x - 0.5) * displayRange;
+    int visualSampleRange = zoomFactor * viewportWidth;
+    float pixelWeigth = 300.0 / float(visualSampleRange);
 
-    float previousIndex = indexPosition + 2.0*(uv.x - (texel_x / 2.0) - 0.5) * displayRange;
-    float nextIndex = indexPosition + 2.0*(uv.x + (texel_x / 2.0) - 0.5) * displayRange;
+    float currentIndex = indexPosition + 2.0*(uv.x - 0.5) * visualSampleRange;
+    int nearestCurrentIndex = floor(currentIndex);
+    currentIndex -= float(nearestCurrentIndex%(2*zoomFactor));
+
+    float previousIndex = currentIndex - float(2*zoomFactor);
+    float nextIndex = currentIndex + float(2*zoomFactor);
 
 
     //gl_FragColor = vec4( (currentIndex - firstIndex)/(2.0*(float)displayRange), firstIndex/float(waveformLength), 1.0, 1.0);
@@ -76,12 +79,6 @@ void main(void)
 
     float firstPixelPosition = previousIndex;
     float lastPixelPosition = nextIndex;
-
-    int firstIndex = int(floor(firstPixelPosition));
-    firstPixelPosition -= float(firstIndex%2);
-
-    int lastIndex = int(floor(lastPixelPosition));
-    lastPixelPosition -= float(lastIndex%2);
 
     vec3 accumulatedData = vec3(0.0,0.0,0.0);
     //vec3 meanData = vec3(0.0);
