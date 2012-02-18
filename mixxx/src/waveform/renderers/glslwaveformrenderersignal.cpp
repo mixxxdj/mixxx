@@ -21,9 +21,11 @@ GLSLWaveformRendererSignal::GLSLWaveformRendererSignal(WaveformWidgetRenderer* w
     m_textureSize = new ShaderVariable<int>("textureSize");
     m_textureStride = new ShaderVariable<int>("textureStride");
     m_indexPosition = new ShaderVariable<float>("indexPosition");
-    m_displayRange = new ShaderVariable<float>("displayRange");
+    m_zoomFactor = new ShaderVariable<int>("zoomFactor");
+
     m_viewportWidth = new ShaderVariable<int>("viewportWidth");
     m_viewportHeigth =  new ShaderVariable<int>("viewportHeight");
+
 }
 
 GLSLWaveformRendererSignal::~GLSLWaveformRendererSignal() {
@@ -44,7 +46,7 @@ GLSLWaveformRendererSignal::~GLSLWaveformRendererSignal() {
     delete m_textureSize;
     delete m_textureStride;
     delete m_indexPosition;
-    delete m_displayRange;
+    delete m_zoomFactor;
     delete m_viewportWidth;
     delete m_viewportHeigth;
 }
@@ -81,7 +83,7 @@ bool GLSLWaveformRendererSignal::loadShaders()
     m_textureSize->initUniformLocation(m_shaderProgram);
     m_textureStride->initUniformLocation(m_shaderProgram);
     m_indexPosition->initUniformLocation(m_shaderProgram);
-    m_displayRange->initUniformLocation(m_shaderProgram);
+    m_zoomFactor->initUniformLocation(m_shaderProgram);
 
     m_viewportWidth->initUniformLocation(m_shaderProgram);
     m_viewportHeigth->initUniformLocation(m_shaderProgram);
@@ -146,7 +148,7 @@ void GLSLWaveformRendererSignal::createGeometry() {
 
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
-    glOrtho(-1.0, 1.0, -1.0, 1.0, -1000, 1000);
+    glOrtho(-1.0, 1.0, -1.0, 1.0, -10.0, 10.0);
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
 
@@ -177,7 +179,7 @@ void GLSLWaveformRendererSignal::createFrameBuffer()
     if( m_signalFramebuffer)
         delete m_signalFramebuffer;
 
-    m_signalFramebuffer = new QGLFramebufferObject(1024,128);
+    m_signalFramebuffer = new QGLFramebufferObject(2048,128);
 
     if( !m_signalFramebuffer->isValid())
         qDebug() << "GLSLWaveformRendererSignal::createFrameBuffer - PBO not valid";
@@ -231,12 +233,16 @@ void GLSLWaveformRendererSignal::draw(QPainter* painter, QPaintEvent* event) {
 
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
-    glFrustum(-1.0, 1.0, -1.0, 1.0, -1000, 1000);
+    glOrtho(-1.0, 1.0, -1.0, 1.0, -10.0, 10.0);
 
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
     glTranslatef(.0f,.0f,.0f);
-    glScalef(1.0,1.0,1.0);
+
+    //pbo/viewport scaling & pitch scaling
+    float scale = (float)m_signalFramebuffer->width()/(float)m_waveformRenderer->getWidth();
+    scale /= (1.0+m_waveformRenderer->getRateAdjust());
+    glScalef(scale, 1.0, 1.0);
 
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -248,13 +254,14 @@ void GLSLWaveformRendererSignal::draw(QPainter* painter, QPaintEvent* event) {
 
         glViewport(0, 0, m_signalFramebuffer->width(), m_signalFramebuffer->height());
 
-        const float currentPosition = m_waveformRenderer->getPlayPos()*waveform->size();
-        const float range = (float)m_signalFramebuffer->width()*m_waveformRenderer->getVisualSamplePerPixel();
+        const float currentPosition = m_waveformRenderer->getPlayPos()*(float)waveform->size();
 
         m_waveformLength->setUniformValue(m_shaderProgram,waveform->size());
         m_textureSize->setUniformValue(m_shaderProgram,waveform->getTextureSize());
         m_textureStride->setUniformValue(m_shaderProgram,waveform->getTextureStride());
-        m_displayRange->setUniformValue(m_shaderProgram,range);
+
+        m_zoomFactor->setUniformValue(m_shaderProgram,(int)m_waveformRenderer->getZoomFactor());
+
         m_indexPosition->setUniformValue(m_shaderProgram,currentPosition);
 
         m_viewportWidth->setUniformValue(m_shaderProgram,m_signalFramebuffer->width());
@@ -275,6 +282,9 @@ void GLSLWaveformRendererSignal::draw(QPainter* painter, QPaintEvent* event) {
     //debug
     //m_signalFramebuffer->toImage().save("signalPBO.png");
 
+    glLoadIdentity();
+    glScalef(1.0, 1.0, 1.0);
+
     //paint buffer into viewport
     {
         glViewport(0, 0, m_waveformRenderer->getWidth(), m_waveformRenderer->getHeight());
@@ -287,15 +297,18 @@ void GLSLWaveformRendererSignal::draw(QPainter* painter, QPaintEvent* event) {
     glDisable(GL_TEXTURE_2D);
     glDisable(GL_ALPHA_TEST);
 
+    //DEBUG
+    /*
     glBegin(GL_LINE_LOOP);
     {
-        glColor4f(0.1,0.1,0.1,0.5);
+        glColor4f(0.5,1.0,0.5,0.75);
         glVertex3f(-1.0f,-1.0f, 0.0f);
         glVertex3f( 1.0f, 1.0f, 0.0f);
         glVertex3f( 1.0f,-1.0f, 0.0f);
         glVertex3f(-1.0f, 1.0f, 0.0f);
     }
     glEnd();
+    */
 
     glDisable(GL_BLEND);
 
