@@ -63,15 +63,22 @@ contents of a playlist to the Auto DJ queue, and use automatic mixing.
 Crates
 ======
 
-Crates are unordered collections of songs, and are similar to playlists. A crate
-can be created by right-clicking on “Crates” in the sidebar, and selecting “New
-Crate”.
+Crates are unordered collections of songs, and are similar to playlists. Unlike
+playlist they cannot contain duplicate entries and do not support drack-and-drop
+within them. Crates can be created by right-clicking on “Crates” in the sidebar
+and selecting “New Crate”.
 
 Browse
 ======
 
 Browse mode works like a file-manager and allows you to load songs that are not
 necessarily already in your Mixxx library.
+
+Recordings
+==========
+
+In this section of the library you can start and stop recordings well as view
+previous recordings and the dates they were made.
 
 Analyze
 =======
