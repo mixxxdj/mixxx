@@ -106,10 +106,10 @@ void MessageHandler(QtMsgType type, const char *input)
             if (logbackup.exists())
             {
                 QString olderlogname = QString("%1.%2").arg(logFileName).arg(i+1);
-                //this will fail if the file doesn't exist, but that's ok.
-                //write errors will be caught by the next operation
-                QFile::remove(olderlogname);
-                if (!QFile::copy(oldlogname, olderlogname))
+                // this should only happen with number 10
+                if (QFileInfo(olderlogname).exists())
+                    QFile::remove(olderlogname);
+                if (!QFile::rename(oldlogname, olderlogname))
                     cout << "Error backing up old logfile\n" << oldlogname.toStdString();
             }
         }
@@ -117,8 +117,9 @@ void MessageHandler(QtMsgType type, const char *input)
         if (log.exists())
         {
             QString olderlogname = QString("%1.1").arg(logFileName);
-            QFile::remove(olderlogname);
-            if (!QFile::copy(logFileName, olderlogname))
+            if(QFileInfo(olderlogname).exists())
+                QFile::remove(olderlogname);
+            if (!QFile::rename(logFileName, olderlogname))
                 cout << "Error backing up logfile\n" << logFileName.toStdString();
         }
         // XXX will there ever be a case that we can't write to our current
