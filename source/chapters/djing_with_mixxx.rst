@@ -112,5 +112,7 @@ If you click on the recording sidebar item, the right track table view displays 
 of "<Your Music Folder>/Mixxx/Recordings". New recordings are automatically saved in this
 folder as well as CUE files if you choose to create them in the recording preferences.
 
-Switch to the "Recording" sidebar item, then click the "Start Recording". Alternatively
-you can click “Options” on the menu bar and click “Record Mix”. While recording, Mixxx displays how much data has been recorded.
+Switch to the "Recording" sidebar item, then click the "Start Recording" button. Alternatively
+you can click “Options” on the menu bar and click “Record Mix”. Mixxx records the audio you hear
+from the speakers including the microphone. While recording, a text displays how much data
+has been recorded. If your mix is done, click the "Stop recording" button.
