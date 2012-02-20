@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2011-12-26 09:32+0200\n"
-"PO-Revision-Date: 2012-01-20 19:20+0000\n"
-"Last-Translator: Damian Betlej <adasqu0524@gmail.com>\n"
+"PO-Revision-Date: 2012-02-19 12:06+0000\n"
+"Last-Translator: Damian Betlej <damian0524@wp.pl>\n"
 "Language-Team: Polish <pl@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-01-21 06:13+0000\n"
-"X-Generator: Launchpad (build 14700)\n"
+"X-Launchpad-Export-Date: 2012-02-20 05:52+0000\n"
+"X-Generator: Launchpad (build 14833)\n"
 
 #: AutoDJFeature#1
 msgid "Auto DJ"
@@ -1049,7 +1049,7 @@ msgstr "sekund(-y)"
 #: DlgPrefNoVinylDlg#13
 msgctxt "DlgPrefNoVinylDlg#13"
 msgid "Show Signal Quality in Skin"
-msgstr ""
+msgstr "Pokaż jakość w skórce"
 
 #: DlgPrefNoVinylDlg#14
 msgctxt "DlgPrefNoVinylDlg#14"
@@ -2841,7 +2841,7 @@ msgid ""
 "Support\n"
 "\n"
 "Read the Mixxx user manual."
-msgstr ""
+msgstr "Przeczytaj instrukcję Mixxx."
 
 #: MixxxApp#83
 msgid "Send feedback to the Mixxx team."
@@ -2852,7 +2852,7 @@ msgid ""
 "Support\n"
 "\n"
 "Send feedback to the Mixxx team."
-msgstr ""
+msgstr "Wyślij opinię do zespołu Mixxx."
 
 #: MixxxApp#85
 msgid "Help translate this application into your language."
@@ -2863,7 +2863,7 @@ msgid ""
 "Support\n"
 "\n"
 "Help translate this application into your language."
-msgstr ""
+msgstr "Pomóż przetłumaczyć tę aplikację w swoim języku."
 
 #: MixxxApp#87
 msgid "About the application"
