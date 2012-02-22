@@ -35,53 +35,68 @@ void GLWaveformRendererFilteredSignal::init() {
 
 void GLWaveformRendererFilteredSignal::setup( const QDomNode& node) {
 
-    m_signalColor.setNamedColor(WWidget::selectNodeQString(node, "SignalColor"));
-    m_signalColor = WSkinColor::getCorrectColor(m_signalColor);
+    m_colors.setup(node);
 
-    //TODO vRince: fetch color from skin
-    int h,s,l;
-    m_signalColor.getHsl(&h,&s,&l);
+    QColor low = m_colors.getLowColor();
+    QColor mid = m_colors.getMidColor();
+    QColor high = m_colors.getHighColor();
+
+    QColor lowCenter = low;
+    QColor midCenter = mid;
+    QColor highCenter = high;
+
+    low.setAlphaF(0.6);
+    mid.setAlphaF(0.6);
+    high.setAlphaF(0.6);
+
+    lowCenter.setAlphaF(0.2);
+    midCenter.setAlphaF(0.3);
+    highCenter.setAlphaF(0.3);
 
     QLinearGradient gradientLow(QPointF(0.0,-255.0/2.0),QPointF(0.0,255.0/2.0));
-    gradientLow.setColorAt(0.0, QColor::fromHsl(h,s,60,120));
-    gradientLow.setColorAt(0.25,QColor::fromHsl(h,s,50,120));
-    gradientLow.setColorAt(0.5, QColor::fromHsl(h,s,30,120));
-    gradientLow.setColorAt(0.75,QColor::fromHsl(h,s,50,120));
-    gradientLow.setColorAt(1.0, QColor::fromHsl(h,s,60,120));
+    gradientLow.setColorAt(0.0, low);
+    gradientLow.setColorAt(0.25,low.lighter(85));
+    gradientLow.setColorAt(0.5, lowCenter.darker(115));
+    gradientLow.setColorAt(0.75,low.lighter(85));
+    gradientLow.setColorAt(1.0, low);
     m_lowBrush = QBrush(gradientLow);
 
     QLinearGradient gradientMid(QPointF(0.0,-255.0/2.0),QPointF(0.0,255.0/2.0));
-    gradientMid.setColorAt(0.0, QColor::fromHsl(h-5,s,110,120));
-    gradientMid.setColorAt(0.25,QColor::fromHsl(h-5,s,100,120));
-    gradientMid.setColorAt(0.5, QColor::fromHsl(h-5,s, 80,120));
-    gradientMid.setColorAt(0.75,QColor::fromHsl(h-5,s,100,120));
-    gradientMid.setColorAt(1.0, QColor::fromHsl(h-5,s,100,120));
+    gradientMid.setColorAt(0.0, mid);
+    gradientMid.setColorAt(0.35,mid.lighter(85));
+    gradientMid.setColorAt(0.5, midCenter.darker(115));
+    gradientMid.setColorAt(0.65,mid.lighter(85));
+    gradientMid.setColorAt(1.0, mid);
     m_midBrush = QBrush(gradientMid);
 
     QLinearGradient gradientHigh(QPointF(0.0,-255.0/2.0),QPointF(0.0,255.0/2.0));
-    gradientHigh.setColorAt(0.0, QColor::fromHsl(h+5,s,210,120));
-    gradientHigh.setColorAt(0.25,QColor::fromHsl(h+5,s,200,120));
-    gradientHigh.setColorAt(0.5, QColor::fromHsl(h+5,s,180,120));
-    gradientHigh.setColorAt(0.75,QColor::fromHsl(h+5,s,200,120));
-    gradientHigh.setColorAt(1.0, QColor::fromHsl(h+5,s,210,120));
+    gradientHigh.setColorAt(0.0, high);
+    gradientHigh.setColorAt(0.45,high.lighter(85));
+    gradientHigh.setColorAt(0.5, highCenter.darker(115));
+    gradientHigh.setColorAt(0.55,high.lighter(85));
+    gradientHigh.setColorAt(1.0, high);
     m_highBrush = QBrush(gradientHigh);
 
+    low.setAlphaF(0.3);
+    mid.setAlphaF(0.3);
+    high.setAlphaF(0.3);
+
     QLinearGradient gradientKilledLow(QPointF(0.0,-255.0/2.0),QPointF(0.0,255.0/2.0));
-    gradientKilledLow.setColorAt(0.0, QColor::fromHsl(h,s,30,80));
-    gradientKilledLow.setColorAt(0.5, QColor(200,200,200,10));
-    gradientKilledLow.setColorAt(1.0, QColor::fromHsl(h,s,30,70));
+    gradientKilledLow.setColorAt(0.0,low.darker(80));
+    gradientKilledLow.setColorAt(0.5,lowCenter.darker(150));
+    gradientKilledLow.setColorAt(1.0,low.darker(80));
     m_lowKilledBrush = QBrush(gradientKilledLow);
 
     QLinearGradient gradientKilledMid(QPointF(0.0,-255.0/2.0),QPointF(0.0,255.0/2.0));
-    gradientKilledMid.setColorAt(0.0, QColor::fromHsl(h-5,s, 80,80));
-    gradientKilledMid.setColorAt(0.5, QColor(200,200,200,10));
-    gradientKilledMid.setColorAt(1.0, QColor::fromHsl(h-5,s, 80,70));
+    gradientKilledMid.setColorAt(0.0,mid.darker(80));
+    gradientKilledMid.setColorAt(0.5,midCenter.darker(150));
+    gradientKilledMid.setColorAt(1.0,mid.darker(80));
     m_midKilledBrush = QBrush(gradientKilledMid);
 
     QLinearGradient gradientKilledHigh(QPointF(0.0,-255.0/2.0),QPointF(0.0,255.0/2.0));
-    gradientKilledHigh.setColorAt(0.0, QColor::fromHsl(h+5,s,180,80));
-    gradientKilledHigh.setColorAt(0.5, QColor(200,200,200,10));
-    gradientKilledHigh.setColorAt(1.0, QColor::fromHsl(h+5,s,180,70));
+    gradientKilledHigh.setColorAt(0.0,high.darker(80));
+    gradientKilledHigh.setColorAt(0.5,highCenter.darker(150));
+    gradientKilledHigh.setColorAt(1.0,high.darker(80));
     m_highKilledBrush = QBrush(gradientKilledHigh);
 }
 

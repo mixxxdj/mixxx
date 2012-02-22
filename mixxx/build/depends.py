@@ -506,6 +506,7 @@ class MixxxCore(Feature):
                    "waveform/renderers/waveformrendererfilteredsignal.cpp",
                    "waveform/renderers/glwaveformrendererfilteredsignal.cpp",
                    "waveform/renderers/glslwaveformrenderersignal.cpp",
+                   "waveform/renderers/waveformsignalcolors.cpp",
 
                    "waveform/widgets/waveformwidgetabstract.cpp",
                    "waveform/widgets/glwaveformwidget.cpp",

@@ -2,6 +2,7 @@
 #define GLWAVEFROMRENDERERFILTEREDSIGNAL_H
 
 #include "waveformrendererabstract.h"
+#include "waveformsignalcolors.h"
 
 #include <QBrush>
 
@@ -31,7 +32,8 @@ private:
     ControlObject* m_midKillControlObject;
     ControlObject* m_highKillControlObject;
 
-    QColor m_signalColor;
+    WaveformSignalColors m_colors;
+
     QBrush m_lowBrush;
     QBrush m_midBrush;
     QBrush m_highBrush;

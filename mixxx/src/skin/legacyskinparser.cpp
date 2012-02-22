@@ -191,6 +191,8 @@ QWidget* LegacySkinParser::parseSkin(QString skinPath, QWidget* pParent) {
     m_pParent = new QWidget; // this'll get deleted with pParent
     QDomElement skinDocument = openSkin(skinPath);
 
+    qDebug() << skinPath;
+
     if (skinDocument.isNull()) {
         // TODO error message
         qDebug() << "Could not load skin.";

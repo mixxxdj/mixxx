@@ -3909,6 +3909,9 @@
 						<BgPixmap>style/style_bg_waveform.png</BgPixmap>
 						<HfcColor>#1b1b1b</HfcColor>
 						<SignalColor>#0099FF</SignalColor>
+               					<SignalLowColor>#0099FF</SignalLowColor>
+						<SignalMidColor>#65C1FF</SignalMidColor>
+						<SignalHighColor>#65C1FF</SignalHighColor>
 						<BeatColor>#ffffff</BeatColor>
 						<BeatHighlightColor>#00FF00</BeatHighlightColor>
 						<MarkerColor>#00FF00</MarkerColor>
@@ -5189,6 +5192,9 @@
 						<BgPixmap>style/style_bg_waveform.png</BgPixmap>
 						<HfcColor>#1b1b1b</HfcColor>
 						<SignalColor>#E17800</SignalColor>
+               					<SignalLowColor>#E17800</SignalLowColor>
+						<SignalMidColor>#FFA947</SignalMidColor>
+						<SignalHighColor>#FFD9AE</SignalHighColor>
 						<BeatColor>#ffffff</BeatColor>
 						<BeatHighlightColor>#00FF00</BeatHighlightColor>
 						<MarkerColor>#00FF00</MarkerColor>
