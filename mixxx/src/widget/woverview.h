@@ -20,6 +20,7 @@
 
 #include "trackinfoobject.h"
 #include "widget/wwidget.h"
+#include "waveform/renderers/waveformsignalcolors.h"
 
 /**
 Waveform overview display
@@ -44,7 +45,6 @@ public:
     void paintEvent(QPaintEvent *);
 
     QColor getMarkerColor();
-    QColor getSignalColor();
 
 protected:
     void timerEvent(QTimerEvent *);
@@ -107,7 +107,8 @@ private:
     QString m_backgroundPixmapPath;
     QColor m_qColorBackground;
     QColor m_qColorMarker;
-    QColor m_qColorSignal;
+
+    WaveformSignalColors m_signalColors;
 };
 
 #endif

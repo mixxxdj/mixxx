@@ -4261,7 +4261,10 @@
 				<BgColor>#1C1C1C</BgColor>
 				<BgPixmap>style/style_bg_woverview.png</BgPixmap>
 				<SignalColor>#0099FF</SignalColor>
-				<MarkerColor>#00FF00</MarkerColor>
+               			<SignalLowColor>#0099FF</SignalLowColor>
+				<SignalMidColor>#65C1FF</SignalMidColor>
+				<SignalHighColor>#65C1FF</SignalHighColor>
+				<MarkerColor>#FFFFFF</MarkerColor>
 				<Connection>
 					<ConfigKey>[Channel1],playposition</ConfigKey>
 					<EmitOnDownPress>false</EmitOnDownPress>
@@ -5544,7 +5547,10 @@
 				<BgColor>#1C1C1C</BgColor>
 				<BgPixmap>style/style_bg_woverview.png</BgPixmap>
 				<SignalColor>#E17800</SignalColor>
-				<MarkerColor>#00FF00</MarkerColor>
+             			<SignalLowColor>#E17800</SignalLowColor>
+				<SignalMidColor>#FFA947</SignalMidColor>
+				<SignalHighColor>#FFD9AE</SignalHighColor>
+				<MarkerColor>#FFFFFF</MarkerColor>
 				<Connection>
 					<ConfigKey>[Channel2],playposition</ConfigKey>
 					<EmitOnDownPress>false</EmitOnDownPress>

@@ -131,12 +131,10 @@ void WOverview::setup(QDomNode node)
     palette.setColor(this->backgroundRole(), m_qColorBackground);
     setPalette(palette);
 
-    m_qColorSignal.setNamedColor(selectNodeQString(node, "SignalColor"));
-    m_qColorSignal = WSkinColor::getCorrectColor(m_qColorSignal);
+    m_signalColors.setup(node);
+
     m_qColorMarker.setNamedColor(selectNodeQString(node, "MarkerColor"));
     m_qColorMarker = WSkinColor::getCorrectColor(m_qColorMarker);
-
-    qDebug() << "WOverview::setup" << m_qColorSignal;
 
     if(!m_waveformPixmap)
         m_waveformPixmap = new QPixmap(size());
@@ -253,11 +251,14 @@ bool WOverview::drawNextPixmapPart() {
 
     const float alpha = math_min( 255.0, math_max( 1.0, pixelByVisualSamples*255.0));
 
-    QColor lineColor = m_qColorSignal;
-    lineColor.setAlphaF(alpha/255.0);
-    //lineColor.setAlphaF(0.1);
+    QColor lowColor = m_signalColors.getLowColor();
+    lowColor.setAlphaF(alpha/255.0);
 
-    painter.setPen( lineColor);
+    QColor midColor = m_signalColors.getMidColor();
+    midColor.setAlphaF(alpha/255.0);
+
+    QColor highColor = m_signalColors.getHighColor();
+    highColor.setAlphaF(alpha/255.0);
 
     QTime timer;
     timer.start();
@@ -267,17 +268,17 @@ bool WOverview::drawNextPixmapPart() {
          currentCompletion += 2, pixelPosition += 2.0*pixelByVisualSamples) {
         //accumulate in current pixel
 
-        painter.setPen( lineColor.darker(100));
-        painter.drawLine( pixelPosition, - m_waveform->getAll(currentCompletion+1), pixelPosition, m_waveform->getLow(currentCompletion));
+        painter.setPen( lowColor);
+        painter.drawLine( pixelPosition, - m_waveform->getAll(currentCompletion+1),
+                          pixelPosition, m_waveform->getLow(currentCompletion));
 
-        painter.setPen( lineColor);
-        painter.drawLine( pixelPosition, - m_waveform->getMid(currentCompletion+1), pixelPosition, m_waveform->getMid(currentCompletion));
+        painter.setPen( midColor);
+        painter.drawLine( pixelPosition, - m_waveform->getMid(currentCompletion+1),
+                          pixelPosition, m_waveform->getMid(currentCompletion));
 
-        painter.setPen( lineColor.lighter(100));
-        painter.drawLine( pixelPosition, - m_waveform->getHigh(currentCompletion+1), pixelPosition, m_waveform->getHigh(currentCompletion));
-
-        //painter.setPen( QColor::fromRgbF(0.0,0.0,0.0,0.1));
-        //painter.drawLine( pixelPosition, - m_waveform->getHigh(sampleIndex+1), pixelPosition, m_waveform->getHigh(sampleIndex));
+        painter.setPen( highColor);
+        painter.drawLine( pixelPosition, - m_waveform->getHigh(currentCompletion+1),
+                          pixelPosition, m_waveform->getHigh(currentCompletion));
 
         if( timer.elapsed() > m_maxPaintingTime)
             break;
@@ -338,17 +339,30 @@ void WOverview::paintEvent(QPaintEvent *)
 
     if (m_sampleDuration > 0) {
         // Draw play position
+        //TODO(vrince) could be nice to have a precomputed pixmap for that
         painter.setPen(m_qColorMarker);
+        painter.setOpacity(0.9);
         painter.drawLine(m_iPos,   0, m_iPos,   height());
+
+        painter.drawLine(m_iPos-2,0,m_iPos,2);
+        painter.drawLine(m_iPos,2,m_iPos+2,0);
+        painter.drawLine(m_iPos-2,0,m_iPos+2,0);
+
+        painter.drawLine(m_iPos-2,height()-1,m_iPos,height()-3);
+        painter.drawLine(m_iPos,height()-3,m_iPos+2,height()-1);
+        painter.drawLine(m_iPos-2,height()-1,m_iPos+2,height()-1);
+
+        painter.setPen(m_qColorMarker.darker(200));
+        painter.setOpacity(0.4);
         painter.drawLine(m_iPos+1, 0, m_iPos+1, height());
-        //paint.drawLine(m_iPos-1, 0, m_iPos-1, height());
+        painter.drawLine(m_iPos-1, 0, m_iPos-1, height());
 
         float fPos;
 
         // Draw loop markers
         QColor loopColor = m_qColorMarker;
         if (!m_bLoopEnabled) {
-            loopColor = m_qColorSignal;
+            loopColor = loopColor.darker(150);
         }
         painter.setPen(loopColor);
         if (m_dLoopStart != -1.0) {
@@ -428,10 +442,6 @@ void WOverview::timerEvent(QTimerEvent* timer) {
 
 QColor WOverview::getMarkerColor() {
     return m_qColorMarker;
-}
-
-QColor WOverview::getSignalColor() {
-    return m_qColorSignal;
 }
 
 void WOverview::dragEnterEvent(QDragEnterEvent* event) {
