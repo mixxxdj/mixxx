@@ -11,14 +11,14 @@ msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2011-12-26 09:32+0200\n"
-"PO-Revision-Date: 2012-02-14 01:15+0000\n"
-"Last-Translator: Leo Combes <Unknown>\n"
+"PO-Revision-Date: 2012-02-25 03:21+0000\n"
+"Last-Translator: Fitoschido <fitoschido@gmail.com>\n"
 "Language-Team: Galician <gl@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-02-15 05:23+0000\n"
-"X-Generator: Launchpad (build 14781)\n"
+"X-Launchpad-Export-Date: 2012-02-25 04:44+0000\n"
+"X-Generator: Launchpad (build 14860)\n"
 
 #: AutoDJFeature#1
 msgid "Auto DJ"
@@ -2608,11 +2608,11 @@ msgstr "Ctrl+P"
 
 #: MixxxApp#40
 msgid "&About"
-msgstr "&Acerca"
+msgstr "&Acerca de"
 
 #: MixxxApp#41
 msgid "&Community Support"
-msgstr "Soporte de la &Comunidad"
+msgstr "Soporte &comunitario"
 
 #: MixxxApp#42
 msgid "&User Manual"
@@ -2620,11 +2620,11 @@ msgstr "Manual de &usuario"
 
 #: MixxxApp#43
 msgid "Send Us &Feedback"
-msgstr "&Envíanos tu Opinión"
+msgstr "&Envíenos su opinión"
 
 #: MixxxApp#44
 msgid "&Translate this application"
-msgstr "&Traduce esta aplicación"
+msgstr "&Traducir esta aplicación"
 
 #: MixxxApp#45
 msgid "Enable &Vinyl Control 1"
