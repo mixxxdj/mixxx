@@ -456,11 +456,11 @@ QWidget* LegacySkinParser::parseVisual(QDomElement node) {
                 ControlObject::getControl(ConfigKey(channelStr, "wheel"))/*, viewer*/);
 
     p->setWidget((QWidget *)viewer, true, true,
-                 ControlObjectThreadWidget::EMIT_ON_PRESS, Qt::LeftButton);
+                 ControlObjectThreadWidget::EMIT_ON_PRESS, Qt::RightButton);
 
     setupWidget(node, viewer);
 
-    viewer->setup( node);
+    viewer->setup(node);
 
     // connect display with loading/unloading of tracks
     QObject::connect(pPlayer, SIGNAL(newTrackLoaded(TrackPointer)),
@@ -473,7 +473,7 @@ QWidget* LegacySkinParser::parseVisual(QDomElement node) {
     connect(viewer, SIGNAL(trackDropped(QString, QString)),
             m_pPlayerManager, SLOT(slotLoadToPlayer(QString, QString)));
 
-    //if any already loaded (skin/waveform type swithing)
+    // if any already loaded (skin/waveform type swithing)
     viewer->onTrackLoaded(pPlayer->getLoadedTrack());
 
     return viewer;
