@@ -53,19 +53,17 @@ void WaveformRendererFilteredSignal::draw(QPainter* painter,
     int numberOfSamples = m_waveformRenderer->getWidth() * samplesPerPixel;
 
     int currentPosition = 0;
-    if( m_waveformRenderer->getPlayPos() >= 0)
-    {
-        //TODO (vRince) not really accurate since waveform size une visual reasampling and
-        //have two mores samples to hold the complete visual data
-        currentPosition = m_waveformRenderer->getPlayPos()*waveform->size();
-        m_waveformRenderer->regulateVisualSample(currentPosition);
-    }
+
+    //TODO (vRince) not really accurate since waveform size une visual reasampling and
+    //have two mores samples to hold the complete visual data
+    currentPosition = m_waveformRenderer->getPlayPos()*waveform->size();
+    m_waveformRenderer->regulateVisualSample(currentPosition);
 
     painter->save();
 
-    painter->setRenderHints(QPainter::Antialiasing,false);
-    painter->setRenderHints(QPainter::HighQualityAntialiasing,false);
-    painter->setRenderHints(QPainter::SmoothPixmapTransform,false);
+    painter->setRenderHints(QPainter::Antialiasing, false);
+    painter->setRenderHints(QPainter::HighQualityAntialiasing, false);
+    painter->setRenderHints(QPainter::SmoothPixmapTransform, false);
 
     painter->setWorldMatrixEnabled(false);
 
