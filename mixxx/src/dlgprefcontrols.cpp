@@ -520,7 +520,7 @@ void DlgPrefControls::slotSetFrameRate(int frameRate)
 
 void DlgPrefControls::slotSetWaveformType(int index)
 {
-     if( WaveformWidgetFactory::instance()->setWidgetType(index))
+     if (WaveformWidgetFactory::instance()->setWidgetType(index))
      {
          //it actually change to a valid type
          m_mixxx->rebootMixxxView();
@@ -538,7 +538,7 @@ void DlgPrefControls::initWaveformControl()
     waveformTypeComboBox->clear();
     WaveformWidgetFactory* factory = WaveformWidgetFactory::instance();
 
-    if( factory->isOpenGLAvailable())
+    if (factory->isOpenGLAvailable())
         openGlSatatusIcon->setText(factory->getOpenGLVersion());
     else
         openGlSatatusIcon->setText("X");
@@ -551,16 +551,18 @@ void DlgPrefControls::initWaveformControl()
     for( int i = 0; i < handles.size(); i++)
     {
         waveformTypeComboBox->addItem( handles[i].getDisplayName());
-        if( handles[i].getType() == currentType)
+        if (handles[i].getType() == currentType)
             currentIndex = i;
     }
 
-    if( currentIndex != -1)
+    if (currentIndex != -1)
         waveformTypeComboBox->setCurrentIndex(currentIndex);
 
     frameRateSpinBox->setValue(factory->getFrameRate());
 
-    connect(frameRateSpinBox,SIGNAL(valueChanged(int)),this,SLOT(slotSetFrameRate(int)));
-    connect(waveformTypeComboBox,SIGNAL(currentIndexChanged(int)),this,SLOT(slotSetWaveformType(int)));
+    connect(frameRateSpinBox, SIGNAL(valueChanged(int)),
+            this, SLOT(slotSetFrameRate(int)));
+    connect(waveformTypeComboBox, SIGNAL(currentIndexChanged(int)),
+            this, SLOT(slotSetWaveformType(int)));
 }
 
