@@ -103,6 +103,7 @@ bool CrateFeature::dropAcceptChild(const QModelIndex& index, QUrl url) {
 }
 
 bool CrateFeature::dragMoveAccept(QUrl url) {
+    Q_UNUSED(url)
     return false;
 }
 
@@ -121,6 +122,8 @@ bool CrateFeature::dragMoveAcceptChild(const QModelIndex& index, QUrl url) {
 void CrateFeature::bindWidget(WLibrarySidebar* sidebarWidget,
                               WLibrary* libraryWidget,
                               MixxxKeyboard* keyboard) {
+    Q_UNUSED(sidebarWidget);
+    Q_UNUSED(keyboard);
     WLibraryTextBrowser* edit = new WLibraryTextBrowser(libraryWidget);
     connect(this, SIGNAL(showPage(const QUrl&)),
             edit, SLOT(setSource(const QUrl&)));
@@ -379,22 +382,19 @@ void CrateFeature::slotImportPlaylist()
         NULL,
         tr("Import Playlist"),
         QDesktopServices::storageLocation(QDesktopServices::MusicLocation),
-        tr("Playlist Files (*.m3u *.pls)"));
-    //Exit method if user cancelled the open dialog.
+        tr("Playlist Files (*.m3u *.m3u8 *.pls)"));
+    // Exit method if user cancelled the open dialog.
     if (playlist_file.isNull() || playlist_file.isEmpty() ) return;
 
     Parser* playlist_parser = NULL;
 
-    if(playlist_file.endsWith(".m3u", Qt::CaseInsensitive))
-    {
+    if (playlist_file.endsWith(".m3u", Qt::CaseInsensitive) ||
+        playlist_file.endsWith(".m3u8", Qt::CaseInsensitive)) {
+        // .m3u8 is Utf8 representation of an m3u playlist
         playlist_parser = new ParserM3u();
-    }
-    else if(playlist_file.endsWith(".pls", Qt::CaseInsensitive))
-    {
+    } else if (playlist_file.endsWith(".pls", Qt::CaseInsensitive)) {
         playlist_parser = new ParserPls();
-    }
-    else
-    {
+    } else {
         return;
     }
 
@@ -405,49 +405,59 @@ void CrateFeature::slotImportPlaylist()
     for (int i = 0; i < entries.size(); ++i) {
         m_crateTableModel.addTrack(QModelIndex(), entries[i]);
         //qDebug() << "Playlist entry: " << entries[i];
-
     }
 
     //delete the parser object
     if(playlist_parser)
         delete playlist_parser;
 }
+
 void CrateFeature::onLazyChildExpandation(const QModelIndex &index){
+    Q_UNUSED(index);
     //Nothing to do because the childmodel is not of lazy nature.
 }
+
 void CrateFeature::slotExportPlaylist(){
-    qDebug() << "Export playlist" << m_lastRightClickedIndex.data();
-    QString file_location = QFileDialog::getSaveFileName(NULL,
-                                        tr("Export Playlist"),
-                                        QDesktopServices::storageLocation(QDesktopServices::MusicLocation),
-                                        tr("M3U Playlist (*.m3u);;PLS Playlist (*.pls)"));
-    //Exit method if user cancelled the open dialog.
-    if(file_location.isNull() || file_location.isEmpty()) return;
-    //create and populate a list of files of the playlist
+    qDebug() << "Export crate" << m_lastRightClickedIndex.data();
+    QString file_location = QFileDialog::getSaveFileName(
+        NULL,
+        tr("Export Crate"),
+        QDesktopServices::storageLocation(QDesktopServices::MusicLocation),
+        tr("M3U Playlist (*.m3u);;M3U8 Playlist (*.m3u8);;PLS Playlist (*.pls)"));
+    // Exit method if user cancelled the open dialog.
+    if (file_location.isNull() || file_location.isEmpty())
+        return;
+    // check config if relative paths are desired
+    bool useRelativePath = static_cast<bool>(
+        m_pConfig->getValueString(
+            ConfigKey("[Library]", "UseRelativePathOnExport")).toInt());
+
+    // Create and populate a list of files of the crate
     QList<QString> playlist_items;
-    int rows = m_crateTableModel.rowCount();
+    // Create a new table model since the main one might have an active search.
+    QScopedPointer<CrateTableModel> pCrateTableModel(
+        new CrateTableModel(this, m_pTrackCollection));
+    pCrateTableModel->setCrate(m_crateTableModel.getCrate());
+    pCrateTableModel->select();
+    int rows = pCrateTableModel->rowCount();
     for (int i = 0; i < rows; ++i) {
-        QModelIndex index = m_crateTableModel.index(i, 0);
-        playlist_items << m_crateTableModel.getTrackLocation(index);
+        QModelIndex index = pCrateTableModel->index(i, 0);
+        playlist_items << pCrateTableModel->getTrackLocation(index);
     }
-    //check config if relative paths are desired
-    bool useRelativePath = (bool)m_pConfig->getValueString(ConfigKey("[Library]","UseRelativePathOnExport")).toInt();
 
-    if(file_location.endsWith(".m3u", Qt::CaseInsensitive))
-    {
-        ParserM3u::writeM3UFile(file_location, playlist_items, useRelativePath);
-    }
-    else if(file_location.endsWith(".pls", Qt::CaseInsensitive))
-    {
-        ParserPls::writePLSFile(file_location,playlist_items, useRelativePath);
-    }
-    else
-    {
-        //default export to M3U if file extension is missing
-
-        qDebug() << "Crate export: No file extension specified. Appending .m3u "
-                 << "and exporting to M3U.";
-        file_location.append(".m3u");
+    if (file_location.endsWith(".pls", Qt::CaseInsensitive)) {
+        ParserPls::writePLSFile(file_location, playlist_items, useRelativePath);
+    } else if (file_location.endsWith(".m3u8", Qt::CaseInsensitive)) {
+        ParserM3u::writeM3U8File(file_location, playlist_items,
+                                 useRelativePath);
+    } else {
+        // Default export to M3U if file extension is missing
+        if (!file_location.endsWith(".m3u", Qt::CaseInsensitive)) {
+            qDebug() << "Crate export: No valid file extension specified. Appending .m3u "
+                     << "and exporting to M3U.";
+            file_location.append(".m3u");
+        }
         ParserM3u::writeM3UFile(file_location, playlist_items, useRelativePath);
     }
 }
+

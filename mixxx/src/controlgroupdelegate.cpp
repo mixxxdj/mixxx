@@ -19,11 +19,15 @@ ControlGroupDelegate::ControlGroupDelegate(QObject *parent)
          : QItemDelegate(parent)
 {
     //This QList is static, so it's shared across all objects of this class. We only want to
-    //fill it once then... 
+    //fill it once then...
     if (m_controlGroups.isEmpty())
     {
         m_controlGroups.append(CONTROLGROUP_CHANNEL1_STRING);
         m_controlGroups.append(CONTROLGROUP_CHANNEL2_STRING);
+        m_controlGroups.append(CONTROLGROUP_SAMPLER1_STRING);
+        m_controlGroups.append(CONTROLGROUP_SAMPLER2_STRING);
+        m_controlGroups.append(CONTROLGROUP_SAMPLER3_STRING);
+        m_controlGroups.append(CONTROLGROUP_SAMPLER4_STRING);
         m_controlGroups.append(CONTROLGROUP_MASTER_STRING);
         m_controlGroups.append(CONTROLGROUP_PLAYLIST_STRING);
         m_controlGroups.append(CONTROLGROUP_FLANGER_STRING);
@@ -60,10 +64,14 @@ QWidget *ControlGroupDelegate::createEditor(QWidget *parent,
     QComboBox *editor = new QComboBox(parent);
     editor->addItem(CONTROLGROUP_CHANNEL1_STRING);
     editor->addItem(CONTROLGROUP_CHANNEL2_STRING);
+    editor->addItem(CONTROLGROUP_SAMPLER1_STRING);
+    editor->addItem(CONTROLGROUP_SAMPLER2_STRING);
+    editor->addItem(CONTROLGROUP_SAMPLER3_STRING);
+    editor->addItem(CONTROLGROUP_SAMPLER4_STRING);
     editor->addItem(CONTROLGROUP_MASTER_STRING);
     editor->addItem(CONTROLGROUP_PLAYLIST_STRING);
     editor->addItem(CONTROLGROUP_FLANGER_STRING);
-    editor->addItem(CONTROLGROUP_MICROPHONE_STRING);    
+    editor->addItem(CONTROLGROUP_MICROPHONE_STRING);
 
     return editor;
 }
@@ -83,13 +91,13 @@ void ControlGroupDelegate::setModelData(QWidget *editor, QAbstractItemModel *mod
     QString midiType = 0;
     QComboBox *comboBox = static_cast<QComboBox*>(editor);
     //comboBox->interpretText();
-    
+
     //Get the text from the combobox and shoot it into the data model.
     QString group = comboBox->currentText();
 
     model->setData(index, group, Qt::EditRole);
-    
-    //Verify that the ControlValue in the next column is valid for the 
+
+    //Verify that the ControlValue in the next column is valid for the
     //newly selected ControlGroup. For example, switching from "[Channel1]"
     //to "[Master]" means that a ControlValue of "play" is no longer valid.
     //If it isn't, then blank that column's value.

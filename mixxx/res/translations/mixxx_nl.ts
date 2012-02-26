@@ -267,16 +267,14 @@
             <translation>Hernoemen van de krat is mislukt</translation>
         </message>
         <message>
-            <source>Playlist Files (*.m3u *.pls)</source>
-            <translation>Afspeellijst bestanden (*.m3u *.pls)</translation>
+            <source>Playlist Files (*.m3u *.m3u8 *.pls)</source>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
-            <source>Export Playlist</source>
-            <translation>Afspeellijst exporteren</translation>
-        </message>
-        <message>
-            <source>M3U Playlist (*.m3u);;PLS Playlist (*.pls)</source>
-            <translation>M3U Afspeellijst (*.m3u);;PLS Afspeellijst (*.pls)</translation>
+            <source>M3U Playlist (*.m3u);;M3U8 Playlist (*.m3u8);;PLS Playlist (*.pls)</source>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>A crate cannot have a blank name.</source>
@@ -367,8 +365,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Analyze Entire Song</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Analyseer gehele nummer</translation>
         </message>
     </context>
     <context>
@@ -737,8 +734,9 @@ p, li { white-space: pre-wrap; }
             <translation>16 Hz</translation>
         </message>
         <message>
-            <source>2.045 kHz</source>
-            <translation>2.045 kHz</translation>
+            <source>1.014 kHz</source>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>20.05 kHz</source>
@@ -950,48 +948,35 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Show Signal Quality in Skin</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Toon signaal kwaliteit in de skin</translation>
         </message>
         <message>
             <source>Control Mode</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Controle Modus</translation>
         </message>
         <message>
             <source>Absolute Mode</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Absolute Modus</translation>
         </message>
         <message>
             <source>Relative Mode</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Relatieve Modus</translation>
         </message>
         <message>
             <source>Enable Needle Skip Prevention</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Zet preventie van naald verspringing aan</translation>
         </message>
         <message>
             <source>Signal Quality</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Signaalkwaliteit</translation>
         </message>
         <message>
             <source>http://www.xwax.co.uk</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>http://www.xwax.co.uk</translation>
         </message>
         <message>
             <source>Powered by xwax</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Apply</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Mede mogelijk gemaakt door xwax</translation>
         </message>
         <message>
             <source>&lt;b&gt;This version of Mixxx does not support vinyl control.&lt;/b&gt; &lt;br&gt; Please visit &lt;a href=&quot;http://mixxx.org&quot;&gt;Mixxx.org&lt;/a&gt; for more information.</source>
@@ -1241,7 +1226,7 @@ afspelen en uitgaande link statistieken</translation>
         </message>
         <message>
             <source>Enable live broadcasting</source>
-            <translation>Schakel live uitzending in</translation>
+            <translation>Schakel live uitzenden in</translation>
         </message>
         <message>
             <source>Server connection</source>
@@ -1325,8 +1310,7 @@ afspelen en uitgaande link statistieken</translation>
         </message>
         <message>
             <source>Description</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Omschrijving</translation>
         </message>
         <message>
             <source>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
@@ -1551,8 +1535,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Channel %1</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Kanaal %1</translation>
         </message>
         <message>
             <source>Channels %1 - %2</source>
@@ -1619,58 +1602,47 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Show Signal Quality in Skin</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Toon signaal kwaliteit in de skin</translation>
         </message>
         <message>
             <source>Apply</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Toepassen</translation>
         </message>
         <message>
             <source>Lead-in time</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Lead-in tijd</translation>
         </message>
         <message>
             <source>seconds</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>seconden</translation>
         </message>
         <message>
             <source>Control Mode</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Controle Modus</translation>
         </message>
         <message>
             <source>Absolute Mode</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Absolute Mmodus</translation>
         </message>
         <message>
             <source>Relative Mode</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Relatieve Modus</translation>
         </message>
         <message>
             <source>Enable Needle Skip Prevention</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Zet preventie van naald verspringing aan</translation>
         </message>
         <message>
             <source>Signal Quality</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Signaalkwaliteit</translation>
         </message>
         <message>
             <source>http://www.xwax.co.uk</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>http://www.xwax.co.uk</translation>
         </message>
         <message>
             <source>Powered by xwax</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Mede mogelijk gemaakt door xwax</translation>
         </message>
     </context>
     <context>
@@ -1738,12 +1710,14 @@ p, li { white-space: pre-wrap; }
             <translation>Beheren</translation>
         </message>
         <message>
-            <source>Recently Added</source>
-            <translation>Recentelijk toegevoegd</translation>
+            <source>New</source>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
-            <source>All Songs</source>
-            <translation>Alle Nummers</translation>
+            <source>All</source>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Progress</source>
@@ -1793,23 +1767,19 @@ p, li { white-space: pre-wrap; }
         <name>DlgTrackInfo</name>
         <message>
             <source>Track Editor</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Nummer-editor</translation>
         </message>
         <message>
             <source>Song:</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Nummer:</translation>
         </message>
         <message>
             <source>Title:</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Titel:</translation>
         </message>
         <message>
             <source>Artist:</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Artiest:</translation>
         </message>
         <message>
             <source>Album:</source>
@@ -1829,8 +1799,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Filename:</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Bestandsnaam:</translation>
         </message>
         <message>
             <source>Duration:</source>
@@ -1838,23 +1807,19 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>3:00</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>3:00</translation>
         </message>
         <message>
             <source>File Type:</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Bestandstype:</translation>
         </message>
         <message>
             <source>77</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>77</translation>
         </message>
         <message>
             <source>Comments:</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Opmerkingen:</translation>
         </message>
         <message>
             <source>Reload track metadata from file.</source>
@@ -1862,8 +1827,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Track Information (Click to Expand)</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Nummer informatie (Klik om te vergroten)</translation>
         </message>
         <message>
             <source>Track BPM: </source>
@@ -1931,8 +1895,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Alt+O</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Alt+O</translation>
         </message>
         <message>
             <source>&amp;Next &gt;&gt;</source>
@@ -1947,18 +1910,15 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>&lt;html&gt;Mixxx cannot record or stream in MP3 without the MP3 encoder &amp;quot;lame&amp;quot;. Due to licensing issues, we cannot include this with Mixxx. To record or stream in MP3, you must download &lt;b&gt;libmp3lame&lt;/b&gt; and install it on your system. &lt;p&gt;See &lt;a href='http://mixxx.org/wiki/doku.php/internet_broadcasting#linux'&gt;Mixxx Wiki&lt;/a&gt; for more information. &lt;/html&gt;</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>&lt;html&gt;Mixxx kan niet opnemen of streamen in MP3 zonder de MP3 encoder &amp;quot;lame&amp;quot;. Vanwege licentie problemen, kunnen we dit niet toevoegen aan Mixxx. Om in MP3 op te nemen of te streamen, moet je &lt;b&gt;libmp3lame&lt;/b&gt; downloaden en installeren op jouw systeem. &lt;p&gt;Zie &lt;a href='http://mixxx.org/wiki/doku.php/internet_broadcasting#linux'&gt;Mixxx Wiki&lt;/a&gt; voor meer informatie. &lt;/html&gt;</translation>
         </message>
         <message>
             <source>&lt;html&gt;Mixxx cannot record or stream in MP3 without the MP3 encoder &amp;quot;lame&amp;quot;. Due to licensing issues, we cannot include this with Mixxx. To record or stream in MP3, you must download &lt;b&gt;lame_enc.dll&lt;/b&gt; and install it on your system. &lt;p&gt;See &lt;a href='http://mixxx.org/wiki/doku.php/internet_broadcasting#windows'&gt;Mixxx Wiki&lt;/a&gt; for more information. &lt;/html&gt;</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>&lt;html&gt;Mixxx kan niet opnemen of streamen in MP3 zonder de MP3 encoder &amp;quot;lame&amp;quot;. Vanwege licentie problemen, kunnen we dit niet toevoegen aan Mixxx. Om in MP3 op te nemen of te streamen, moet je &lt;b&gt;lame_enc.dll&lt;/b&gt; downloaden en installeren op jouw systeem. &lt;p&gt;Zie &lt;a href='http://mixxx.org/wiki/doku.php/internet_broadcasting#windows'&gt;Mixxx Wiki&lt;/a&gt; voor meer informatie. &lt;/html&gt;</translation>
         </message>
         <message>
             <source>&lt;html&gt;Mixxx cannot record or stream in MP3 without the MP3 encoder &amp;quot;lame&amp;quot;. Due to licensing issues, we cannot include this with Mixxx. To record or stream in MP3, you must download &lt;b&gt;libmp3lame&lt;/b&gt; and install it on your system. &lt;p&gt;See &lt;a href='http://mixxx.org/wiki/doku.php/internet_broadcasting#mac_osx'&gt;Mixxx Wiki&lt;/a&gt; for more information. &lt;/html&gt;</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>&lt;html&gt;Mixxx kan niet opnemen of streamen in MP3 zonder de MP3 encoder &amp;quot;lame&amp;quot;. Vanwege licentie problemen, kunnen we dit niet toevoegen aan Mixxx. Om in MP3 op te nemen of te streamen, moet je &lt;b&gt;libmp3lame&lt;/b&gt; downloaden en installeren op jouw systeem. &lt;p&gt;Zie &lt;a href='http://mixxx.org/wiki/doku.php/internet_broadcasting#mac_osx'&gt;Mixxx Wiki&lt;/a&gt; voor meer informatie. &lt;/html&gt;</translation>
         </message>
         <message>
             <source>&lt;html&gt;Mixxx has detected that you use a modified version of libmp3lame. See &lt;a href='http://mixxx.org/wiki/doku.php/internet_broadcasting'&gt;Mixxx Wiki&lt;/a&gt; for more information.&lt;/html&gt;</source>
@@ -2054,8 +2014,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>(loading) iTunes</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>(laden) iTunes</translation>
         </message>
         <message>
             <source>Use Default Library</source>
@@ -2083,6 +2042,11 @@ p, li { white-space: pre-wrap; }
     </context>
     <context>
         <name>LibraryScannerDlg</name>
+        <message>
+            <source>Library Scanner</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
         <message>
             <source>It's taking Mixxx a minute to scan your music library, please wait...</source>
             <translation>Het duurt een minuut voordat Mixxx je music bibliotheek scant, even geduld a.u.b...</translation>
@@ -2116,8 +2080,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Description</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Omschrijving</translation>
         </message>
     </context>
     <context>
@@ -2171,8 +2134,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Description</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Omschrijving</translation>
         </message>
         <message>
             <source>Threshold Min</source>
@@ -2397,27 +2359,28 @@ Deze informatie wordt niet gebruikt om u persoonlijk te identificeren, contact o
         </message>
         <message>
             <source>&amp;About</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>&amp;Over</translation>
         </message>
         <message>
             <source>&amp;Community Support</source>
+            <translation>&amp;Community Ondersteuning</translation>
+        </message>
+        <message>
+            <source>&amp;User Manual</source>
             <translation type="unfinished">
             </translation>
         </message>
         <message>
             <source>Send Us &amp;Feedback</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Stuur ons &amp;Feedback</translation>
         </message>
         <message>
             <source>&amp;Translate this application</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>&amp;Vertaal deze applicatie</translation>
         </message>
         <message>
             <source>Enable &amp;Vinyl Control 1</source>
-            <translation>&amp;Vinyl Controle 1 aaanzetten</translation>
+            <translation>Vinyl Bediening 1 Activeren</translation>
         </message>
         <message>
             <source>Ctrl+Y</source>
@@ -2425,7 +2388,7 @@ Deze informatie wordt niet gebruikt om u persoonlijk te identificeren, contact o
         </message>
         <message>
             <source>Enable &amp;Vinyl Control 2</source>
-            <translation>&amp;Vinyl Controle 2 aaanzetten</translation>
+            <translation>Vinyl Bediening 2 Activeren</translation>
         </message>
         <message>
             <source>Ctrl+U</source>
@@ -2528,7 +2491,7 @@ Beats markeren door geluid klikken</translation>
         </message>
         <message>
             <source>Activate Vinyl Control</source>
-            <translation>Vinyl Controle Activeren</translation>
+            <translation>Vinyl Bediening Activeren</translation>
         </message>
         <message>
             <source>Use timecoded vinyls on external turntables to control Mixxx</source>
@@ -2580,26 +2543,35 @@ Get help with Mixxx</source>
 Krijg hulp met Mixxx</translation>
         </message>
         <message>
-            <source>Send feedback to the Mixxx team.</source>
+            <source>Read the Mixxx user manual.</source>
             <translation type="unfinished">
             </translation>
+        </message>
+        <message>
+            <source>Support
+Read the Mixxx user manual.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Send feedback to the Mixxx team.</source>
+            <translation>Stuur feedback naar het Mixxx team.</translation>
         </message>
         <message>
             <source>Support
 Send feedback to the Mixxx team.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Ondersteuning
+Stuur feedback naar het Mixxx team.</translation>
         </message>
         <message>
             <source>Help translate this application into your language.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Help om deze applicatie in jouw taal te vertalen.</translation>
         </message>
         <message>
             <source>Support
 Help translate this application into your language.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Ondersteuning
+Help om deze applicatie in jouw taal te vertalen.</translation>
         </message>
         <message>
             <source>About the application</source>
@@ -2647,7 +2619,7 @@ Maakt het marco studio zichtbaar</translation>
         </message>
         <message>
             <source>&amp;Vinyl Control</source>
-            <translation>&amp;Vinyl Controle</translation>
+            <translation>Vinyl Bediening</translation>
         </message>
         <message>
             <source>Quit...</source>
@@ -2706,8 +2678,21 @@ Selecteer a.u.b. je geluidskaart(en) bij de geluid hardware voorkeuren.</transla
             <translation>Afspeellijst Exporteren Mislukt</translation>
         </message>
         <message>
+            <source>File path contains characters, not allowed in m3u playlists.
+</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Export a m3u8 playlist instead!
+</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
             <source>Could not create file</source>
-            <translation>Kon bestand niet maken</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
     </context>
     <context>
@@ -2749,7 +2734,8 @@ Selecteer a.u.b. je geluidskaart(en) bij de geluid hardware voorkeuren.</transla
         </message>
         <message>
             <source>Export Playlist</source>
-            <translation>Afspeellijst exporteren</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Playlists</source>
@@ -2788,12 +2774,14 @@ Selecteer a.u.b. je geluidskaart(en) bij de geluid hardware voorkeuren.</transla
             <translation>Afspeellijst Hernoemen Mislukt</translation>
         </message>
         <message>
-            <source>Playlist Files (*.m3u *.pls)</source>
-            <translation>Afspeellijst bestanden (*.m3u *.pls)</translation>
+            <source>Playlist Files (*.m3u *.m3u8 *.pls)</source>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
-            <source>M3U Playlist (*.m3u);;PLS Playlist (*.pls)</source>
-            <translation>M3U Afspeellijst (*.m3u);;PLS Afspeellijst (*.pls)</translation>
+            <source>M3U Playlist (*.m3u);;M3U8 Playlist (*.m3u8);;PLS Playlist (*.pls)</source>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>A playlist by that name already exists.</source>
@@ -2967,8 +2955,7 @@ Druk op OK om af te sluiten.</translation>
         </message>
         <message>
             <source>(loading) Traktor</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>(laden) Traktor</translation>
         </message>
         <message>
             <source>Error Loading Traktor Library</source>
@@ -3126,6 +3113,21 @@ Druk op OK om af te sluiten.</translation>
             <translation>Reloop / Sluit knop voor Speler %1</translation>
         </message>
         <message>
+            <source>Setup a loop over 4 beats for Player %1</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Halves the current loop's length for Player %1</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Doubles the current loop's length for Player %1</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
             <source>Hotcue 1 button for Player %1</source>
             <translation>Hotcue 1 knop voor Speler %1</translation>
         </message>
@@ -3158,6 +3160,76 @@ Druk op OK om af te sluiten.</translation>
             <translation>Hotcue 4 verwijder knop voor Speler %1</translation>
         </message>
         <message>
+            <source>Play button for Sampler %1</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Gain knob for Sampler %1</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Headphone listen button for Sampler %1</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>BPM tap button for Sampler %1</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Keylock button for Sampler %1</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Pitch control slider for Sampler %1</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Hotcue 1 button for Sampler %1</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Hotcue 2 button for Sampler %1</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Hotcue 3 button for Sampler %1</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Hotcue 4 button for Sampler %1</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Hotcue 1 delete button for Sampler %1</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Hotcue 2 delete button for Sampler %1</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Hotcue 3 delete button for Sampler %1</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Hotcue 4 delete button for Sampler %1</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
             <source>Switch to the next view (library, playlist..)</source>
             <translation>Schakel over naar de volgende weergave (bibliotheek, afspeellijst ..)</translation>
         </message>
@@ -3180,6 +3252,31 @@ Druk op OK om af te sluiten.</translation>
         <message>
             <source>Load selected track into Player %1</source>
             <translation>Laad geselecteerde nummer in Speler %1</translation>
+        </message>
+        <message>
+            <source>Adjusts the wavelength of the flange effect</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Adjusts the intensity of the flange effect</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Adjusts the phase delay of the flange effect</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Microphone on/off</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Microphone volume</source>
+            <translation type="unfinished">
+            </translation>
         </message>
     </context>
     <context>
@@ -3217,8 +3314,7 @@ Druk op OK om af te sluiten.</translation>
         </message>
         <message>
             <source>Reload Track Metadata</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Metadata van nummer opnieuw laden</translation>
         </message>
         <message>
             <source>Load to Deck %1</source>
@@ -3227,6 +3323,11 @@ Druk op OK om af te sluiten.</translation>
         <message>
             <source>Sampler %1</source>
             <translation>Sampler %1</translation>
+        </message>
+        <message>
+            <source>Reloading track metadata on a loaded track may cause abrupt volume changes. Are you sure?</source>
+            <translation type="unfinished">
+            </translation>
         </message>
     </context>
     <context>

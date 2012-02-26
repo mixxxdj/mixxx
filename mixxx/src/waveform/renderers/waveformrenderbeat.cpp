@@ -66,6 +66,11 @@ void WaveformRenderBeat::draw( QPainter* painter, QPaintEvent* /*event*/){
 
     painter->save();
 
+    QPen beatPen(m_beatColor);
+    beatPen.setWidth(1.5);
+    QPen highBeatPen(m_highBeatColor);
+    highBeatPen.setWidth(1.5);
+
     for( Const_BeatIterator it = m_beatsCache.begin(); it != m_beatsCache.end(); it++)
     {
         int beatPosition = *it;
@@ -74,9 +79,9 @@ void WaveformRenderBeat::draw( QPainter* painter, QPaintEvent* /*event*/){
 
         //NOTE (vRince) : RJ should we keep this ?
         if( m_beatActive && m_beatActive->get() > 0.0 && abs(xBeatPoint - m_waveformRenderer->getWidth()/2) < 20)
-            painter->setPen(QColor(m_highBeatColor));
+            painter->setPen(highBeatPen);
         else
-            painter->setPen(QColor(m_beatColor));
+            painter->setPen(beatPen);
 
         painter->drawLine(xBeatPoint,0.0,xBeatPoint,m_waveformRenderer->getHeight());
     }

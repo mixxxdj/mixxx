@@ -36,6 +36,10 @@ WOverview::WOverview(const char *pGroup, QWidget * parent)
     m_iPos = 0;
     m_bDrag = false;
 
+    // Analyse progress
+    m_iProgress = 0;
+    m_analysing = false;
+
     setAcceptDrops(true);
 
     m_pLoopStart = ControlObject::getControl(
@@ -147,8 +151,11 @@ void WOverview::setValue(double fValue)
     if (!m_bDrag)
     {
         // Calculate handle position
-        m_iPos = (int)(((fValue-14.)/100.)*((double)width()-2.));
-        update();
+        int iPos = (int)(((fValue-14.)/100.)*((double)width()-2.));
+        if (iPos != m_iPos) {
+            m_iPos = iPos;
+            update();
+        }
     }
 }
 
@@ -183,6 +190,16 @@ void WOverview::slotUnloadTrack(TrackPointer /*pTrack*/) {
 
     //qDebug() << "WOverview::slotUnloadTrack - kill Timer";
     killTimer(m_timerPixmapRefresh);
+}
+
+void WOverview::slotTrackProgress(TrackPointer pTrack, int progress)
+{
+    if (pTrack == m_pCurrentTrack) {
+        if (progress != m_iProgress) {
+            m_iProgress = progress;
+            update();
+        }
+    }
 }
 
 void WOverview::cueChanged(double v) {
@@ -447,7 +464,8 @@ QColor WOverview::getMarkerColor() {
 void WOverview::dragEnterEvent(QDragEnterEvent* event) {
     // Accept the enter event if the thing is a filepath and nothing's playing
     // in this deck.
-    if (event->mimeData()->hasUrls()) {
+    if (event->mimeData()->hasUrls() &&
+        event->mimeData()->urls().size() > 0) {
         ControlObject *pPlayCO = ControlObject::getControl(
                     ConfigKey(m_pGroup, "play"));
         if (pPlayCO && pPlayCO->get()) {
@@ -459,7 +477,8 @@ void WOverview::dragEnterEvent(QDragEnterEvent* event) {
 }
 
 void WOverview::dropEvent(QDropEvent* event) {
-    if (event->mimeData()->hasUrls()) {
+    if (event->mimeData()->hasUrls() &&
+        event->mimeData()->urls().size() > 0) {
         QList<QUrl> urls(event->mimeData()->urls());
         QUrl url = urls.first();
         QString name = url.toLocalFile();

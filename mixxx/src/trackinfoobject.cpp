@@ -513,6 +513,22 @@ void TrackInfoObject::setGenre(QString s)
         setDirty(true);
 }
 
+QString TrackInfoObject::getComposer()  const
+{
+    QMutexLocker lock(&m_qMutex);
+    return m_sComposer;
+}
+
+void TrackInfoObject::setComposer(QString s)
+{
+    QMutexLocker lock(&m_qMutex);
+    s = s.trimmed();
+    bool dirty = m_sComposer != s;
+    m_sComposer = s;
+    if (dirty)
+        setDirty(true);
+}
+
 QString TrackInfoObject::getTrackNumber()  const
 {
     QMutexLocker lock(&m_qMutex);
@@ -813,7 +829,7 @@ void TrackInfoObject::setDirty(bool bDirty) {
     if (bDirty)
         emit(changed(this));
 
-    //qDebug() << QString("TrackInfoObject %1 %2 set to %3").arg(m_iId).arg(m_sLocation).arg(m_bDirty ? "dirty" : "clean");
+    //qDebug() << QString("TrackInfoObject %1 %2 set to %3").arg(QString::number(m_iId), m_sLocation, m_bDirty ? "dirty" : "clean");
 }
 
 bool TrackInfoObject::isDirty() {

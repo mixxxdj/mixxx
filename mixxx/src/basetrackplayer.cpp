@@ -19,8 +19,10 @@ BaseTrackPlayer::BaseTrackPlayer(QObject* pParent,
                                  ConfigObject<ConfigValue> *pConfig,
                                  EngineMaster* pMixingEngine,
                                  EngineChannel::ChannelOrientation defaultOrientation,
+                                 AnalyserQueue* pAnalyserQueue,
                                  QString group)
         : BasePlayer(pParent, group),
+          m_pAnalyserQueue(pAnalyserQueue),
           m_pConfig(pConfig),
           m_pLoadedTrack() {
 
@@ -227,6 +229,10 @@ void BaseTrackPlayer::slotFinishLoading(TrackPointer pTrackInfoObject)
     }
 
     emit(newTrackLoaded(m_pLoadedTrack));
+}
+
+AnalyserQueue* BaseTrackPlayer::getAnalyserQueue() const {
+    return m_pAnalyserQueue;
 }
 
 TrackPointer BaseTrackPlayer::getLoadedTrack() const {
