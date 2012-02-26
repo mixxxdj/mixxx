@@ -338,7 +338,6 @@ class MixxxCore(Feature):
 
                    "analyserrg.cpp",
                    "analyserqueue.cpp",
-                   "analyserwavesummary.cpp",
                    "analyserbpm.cpp",
                    "analyserwaveform.cpp",
 
@@ -479,16 +478,6 @@ class MixxxCore(Feature):
                    "soundsourceproxy.cpp",
 
                    "widget/wwaveformviewer.cpp",
-
-                   # deprecated >>>>
-                   "widget/wvisualsimple.cpp",
-                   "widget/wglwaveformviewer.cpp",
-
-                   "waveform/renderobject_old.cpp",
-                   "waveform/waveformrenderer_old.cpp",
-                   "waveform/waveformrendersignal_old.cpp",
-                   # <<<< deprecated
-
                    "waveform/waveform.cpp",
                    "waveform/waveformwidgetfactory.cpp",
 

@@ -40,17 +40,11 @@
 #include "widget/wnumberrate.h"
 #include "widget/woverview.h"
 #include "widget/wspinny.h"
-
-#include "widget/wvisualsimple.h"
-#include "widget/wglwaveformviewer.h"
 #include "widget/wwaveformviewer.h"
-
 #include "waveform/waveformwidgetfactory.h"
-
 #include "widget/wsearchlineedit.h"
 #include "widget/wlibrary.h"
 #include "widget/wlibrarysidebar.h"
-
 #include "widget/wskincolor.h"
 #include "widget/wpixmapstore.h"
 
