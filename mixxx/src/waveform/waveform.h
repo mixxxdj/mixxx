@@ -1,10 +1,10 @@
 #ifndef WAVEFORM_H
 #define WAVEFORM_H
 
+#include <QMutex>
 #include <vector>
-#include "util.h"
 
-class QMutex;
+#include "util.h"
 
 union WaveformData {
     struct {
@@ -20,7 +20,7 @@ union WaveformData {
 };
 
 class Waveform {
-public:
+  public:
     Waveform();
     virtual ~Waveform();
 
@@ -48,7 +48,7 @@ public:
 
     void dump() const;
 
-private:
+  private:
     void resize(int size);
     void assign(int size, int value = 0);
 
@@ -72,7 +72,6 @@ private:
     int m_audioSamplesPerVisualSample;
     double m_visualSampleRate;
     double m_audioVisualRatio;
-
     QMutex* m_mutex;
 
     friend class AnalyserWaveform;

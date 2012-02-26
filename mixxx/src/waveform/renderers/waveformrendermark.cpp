@@ -1,17 +1,15 @@
-
 #include <QDomNode>
 #include <QPainter>
 #include <QPainterPath>
 
-#include "waveformrendermark.h"
-#include "waveformwidgetrenderer.h"
-#include "waveform/waveform.h"
-
-#include "widget/wskincolor.h"
-#include "trackinfoobject.h"
-#include "widget/wwidget.h"
+#include "waveform/renderers/waveformrendermark.h"
 
 #include "controlobject.h"
+#include "trackinfoobject.h"
+#include "waveform/renderers/waveformwidgetrenderer.h"
+#include "waveform/waveform.h"
+#include "widget/wskincolor.h"
+#include "widget/wwidget.h"
 
 WaveformRenderMark::WaveformRenderMark( WaveformWidgetRenderer* waveformWidgetRenderer) :
     WaveformRendererAbstract(waveformWidgetRenderer)

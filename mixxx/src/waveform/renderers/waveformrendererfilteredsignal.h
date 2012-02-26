@@ -6,6 +6,7 @@
 
 #include <vector>
 
+#include "util.h"
 #include "waveformrendererabstract.h"
 
 class WaveformRendererFilteredSignal : public WaveformRendererAbstract {
@@ -29,6 +30,8 @@ class WaveformRendererFilteredSignal : public WaveformRendererAbstract {
     std::vector<QLineF> m_lowLines;
     std::vector<QLineF> m_midLines;
     std::vector<QLineF> m_highLines;
+
+    DISALLOW_COPY_AND_ASSIGN(WaveformRendererFilteredSignal);
 };
 
 #endif // WAVEFORMRENDERERFILTEREDSIGNAL_H

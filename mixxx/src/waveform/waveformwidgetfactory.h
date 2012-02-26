@@ -13,11 +13,9 @@ class WaveformWidgetAbstract;
 class QTimer;
 class QTime;
 
-class WaveformWidgetAbstractHandle
-{
-public:
-    WaveformWidgetAbstractHandle()
-    {
+class WaveformWidgetAbstractHandle {
+  public:
+    WaveformWidgetAbstractHandle() {
         m_active = true;
         m_type = WaveformWidgetType::Count_WaveformwidgetType;
     }
@@ -26,7 +24,7 @@ public:
     QString getDisplayName() const { return m_displayString;}
     bool isActive() const { return m_active;}
 
-private:
+  private:
     bool m_active;
     WaveformWidgetType::Type m_type;
     QString m_displayString;
@@ -35,11 +33,10 @@ private:
 
 //########################################
 
-class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFactory>
-{
+class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFactory> {
     Q_OBJECT
 
-public:
+  public:
     //creates the waveform widget and bind it to the viewer
     //clean-up every thing if needed
     bool setWaveformWidget( WWaveformViewer* viewer);
@@ -59,24 +56,23 @@ public:
     const QVector<WaveformWidgetAbstractHandle> getAvailableTypes() const { return m_waveformWidgetHandles;}
     void destroyWidgets();
 
-public slots:
+  public slots:
     void start();
     void stop();
 
-protected:
+  protected:
     WaveformWidgetFactory();
     virtual ~WaveformWidgetFactory();
 
     friend class Singleton<WaveformWidgetFactory>;
 
-private slots:
+  private slots:
     void refresh();
 
-private:
+  private:
     void evaluateWidgets();
     WaveformWidgetAbstract* createWaveformWidget( WaveformWidgetType::Type type, WWaveformViewer* viewer);
 
-private:
     QVector<WaveformWidgetAbstractHandle> m_waveformWidgetHandles;
     QVector<WaveformWidgetAbstract*> m_waveformWidgets;
 
