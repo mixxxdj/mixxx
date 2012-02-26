@@ -121,12 +121,16 @@ int SoundSourceMp3::open()
 
         // Grab data from Header
 
-        // This warns us only when the reported sample rate changes. (and when it is first set)
-        if(m_iSampleRate != Header.samplerate) {
-            //qDebug() << "SSMP3() :: Setting m_iSampleRate to " << Header.samplerate << " from " << m_iSampleRate;
+        // This warns us only when the reported sample rate changes. (and when
+        // it is first set)
+        if (m_iSampleRate == 0 && Header.samplerate > 0) {
+            setSampleRate(Header.samplerate);
+        } else if (m_iSampleRate != Header.samplerate) {
+            qDebug() << "SSMP3: file has differing samplerate in some headers:"
+                     << m_qFilename
+                     << m_iSampleRate << "vs" << Header.samplerate;
         }
 
-        setSampleRate(Header.samplerate);
         m_iChannels = MAD_NCHANNELS(&Header);
         mad_timer_add (&filelength, Header.duration);
         bitrate += Header.bitrate;
@@ -553,20 +557,20 @@ unsigned SoundSourceMp3::read(unsigned long samples_wanted, const SAMPLE * _dest
 int SoundSourceMp3::parseHeader()
 {
     setType("mp3");
-
-    #ifdef __WINDOWS__
-		/* From Tobias: A Utf-8 string did not work on my Windows XP (German edition)
-		 * If you try this conversion, f.isValid() will return false in many cases
-		 * and processTaglibFile() will fail
-		 *
-		 * The method toLocal8Bit() returns the local 8-bit representation of the string as a QByteArray.
-		 * The returned byte array is undefined if the string contains characters not supported
-		 * by the local 8-bit encoding.
-		 */
-		TagLib::MPEG::File f(getFilename().toLocal8Bit().constData());
-	#else
-		TagLib::MPEG::File f(getFilename().toUtf8().constData());
-	#endif
+#ifdef __WINDOWS__
+    /* From Tobias: A Utf-8 string did not work on my Windows XP (German edition)
+     * If you try this conversion, f.isValid() will return false in many cases
+     * and processTaglibFile() will fail
+     *
+     * The method toLocal8Bit() returns the local 8-bit representation of the string as a QByteArray.
+     * The returned byte array is undefined if the string contains characters not supported
+     * by the local 8-bit encoding.
+     */
+    QByteArray qBAFilename = m_qFilename.toLocal8Bit();
+#else
+    QByteArray qBAFilename = m_qFilename.toUtf8();
+#endif
+    TagLib::MPEG::File f(qBAFilename.constData());
 
     // Takes care of all the default metadata
     bool result = processTaglibFile(f);

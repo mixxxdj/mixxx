@@ -24,28 +24,16 @@
 #include <qstring.h>
 #include <qpushbutton.h>
 
-
-DlgAbout::DlgAbout(QWidget * parent) :  QDialog(parent), Ui::DlgAboutDlg()
-{
-   // config = _config;
-
+DlgAbout::DlgAbout(QWidget* parent) :  QDialog(parent), Ui::DlgAboutDlg() {
     setupUi(this);
-
 }
 
-DlgAbout::~DlgAbout()
-{
+DlgAbout::~DlgAbout() {
 }
 
-
-
-
-
-void DlgAbout::slotApply()
-{
+void DlgAbout::slotApply() {
 }
 
-void DlgAbout::slotUpdate()
-{
+void DlgAbout::slotUpdate() {
 }
 

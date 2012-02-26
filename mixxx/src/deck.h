@@ -10,6 +10,7 @@ class Deck : public BaseTrackPlayer {
          ConfigObject<ConfigValue> *pConfig,
          EngineMaster* pMixingEngine,
          EngineChannel::ChannelOrientation defaultOrientation,
+         AnalyserQueue* pAnalyserQueue,
          QString group);
     virtual ~Deck();
 };

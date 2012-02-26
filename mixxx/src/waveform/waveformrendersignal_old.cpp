@@ -72,7 +72,7 @@ void WaveformRenderSignal::draw_old(QPainter *pPainter, QPaintEvent *event, QVec
         return;
     }
 
-    float* baseBuffer = buffer->data();
+    const float* baseBuffer = buffer->constData();
 
     int numBufferSamples = buffer->size();
     int iCurPos = 0;

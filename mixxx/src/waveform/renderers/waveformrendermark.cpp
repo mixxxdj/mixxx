@@ -98,6 +98,7 @@ void WaveformRenderMark::setupMark( const QDomNode& node, Mark& mark)
 
     mark.m_color = WWidget::selectNodeQString( node, "Color");
     if( mark.m_color == "") {
+
         // As a fallback, grab the mark color from the parent's MarkerColor
         mark.m_color = WWidget::selectNodeQString(node.parentNode(), "MarkerColor");
         qDebug() << "Didn't get mark Color, using parent's MarkerColor:" << mark.m_color;

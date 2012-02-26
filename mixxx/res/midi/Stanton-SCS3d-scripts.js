@@ -1,5 +1,5 @@
 /****************************************************************/
-/*      Stanton SCS.3d MIDI controller script v1.70             */
+/*      Stanton SCS.3d MIDI controller script v1.71             */
 /*          Copyright (C) 2009-2011, Sean M. Pappalardo         */
 /*      but feel free to tweak this to your heart's content!    */
 /*      For Mixxx version 1.9.x                                 */
@@ -636,7 +636,7 @@ StantonSCS3d.B11 = function (channel, control, value, status) {
     }
 }
 
-StantonSCS3d.B12 = function (channel, control, value, status) {
+StantonSCS3d.B12 = function (channel, control, value, status, group) {
     var byte1 = 0x90 + channel;
     var currentMode = StantonSCS3d.mode_store["[Channel"+StantonSCS3d.deck+"]"];
 
@@ -679,18 +679,22 @@ StantonSCS3d.B12 = function (channel, control, value, status) {
                 if ((status & 0xF0) == 0x90) {    // If button down
                     // Round to two decimal places to avoid double-precision comparison problems
                     var currentRange = Math.round(engine.getValue("[Channel"+StantonSCS3d.deck+"]","rateRange")*100)/100;
+                    print ("Current range="+currentRange);
                     switch (true) {
-                        case (currentRange<=StantonSCS3d.pitchRanges[0]):
-                                engine.setValue("[Channel"+StantonSCS3d.deck+"]","rateRange",StantonSCS3d.pitchRanges[1]);
+                        case (currentRange<StantonSCS3d.pitchRanges[0]):
+                            engine.setValue("[Channel"+StantonSCS3d.deck+"]","rateRange",StantonSCS3d.pitchRanges[0]);
                             break;
-                        case (currentRange<=StantonSCS3d.pitchRanges[1]):
-                                engine.setValue("[Channel"+StantonSCS3d.deck+"]","rateRange",StantonSCS3d.pitchRanges[2]);
+                        case (currentRange<StantonSCS3d.pitchRanges[1]):
+                            engine.setValue("[Channel"+StantonSCS3d.deck+"]","rateRange",StantonSCS3d.pitchRanges[1]);
                             break;
-                        case (currentRange<=StantonSCS3d.pitchRanges[2]):
-                                engine.setValue("[Channel"+StantonSCS3d.deck+"]","rateRange",StantonSCS3d.pitchRanges[3]);
+                        case (currentRange<StantonSCS3d.pitchRanges[2]):
+                            engine.setValue("[Channel"+StantonSCS3d.deck+"]","rateRange",StantonSCS3d.pitchRanges[2]);
+                            break;
+                        case (currentRange<StantonSCS3d.pitchRanges[3]):
+                            engine.setValue("[Channel"+StantonSCS3d.deck+"]","rateRange",StantonSCS3d.pitchRanges[3]);
                             break;
                         case (currentRange>=StantonSCS3d.pitchRanges[3]):
-                                engine.setValue("[Channel"+StantonSCS3d.deck+"]","rateRange",StantonSCS3d.pitchRanges[0]);
+                            engine.setValue("[Channel"+StantonSCS3d.deck+"]","rateRange",StantonSCS3d.pitchRanges[0]);
                             break;
                     }
                     // Update the screen display
@@ -802,7 +806,7 @@ StantonSCS3d.modeButton = function (channel, control, status, modeName) {
     }
     StantonSCS3d.connectSurfaceSignals(channel,true);  // Disconnect previous ones
     StantonSCS3d.softButtonsColor(channel,0x02);  // Make the soft buttons blue
-    switch (currentMode) {    // Special recovery from certain modesZ
+    switch (currentMode) {    // Special recovery from certain modes
         case "vinyl2":
             // So we don't get stuck at some strange speed when switching from a scratching mode
             engine.scratchDisable(StantonSCS3d.deck);
@@ -1776,20 +1780,20 @@ StantonSCS3d.pitchSliderLED = function (value) {
     var byte1 = 0x90 + StantonSCS3d.channel;
     switch (true) {
         case (value<=StantonSCS3d.pitchRanges[0]):
-                midi.sendShortMsg(byte1,0x3D,0x00);  // Pitch LED black
-                midi.sendShortMsg(byte1,0x3E,0x00);
+            midi.sendShortMsg(byte1,0x3D,0x00);  // Pitch LED black
+            midi.sendShortMsg(byte1,0x3E,0x00);
             break;
         case (value<=StantonSCS3d.pitchRanges[1]):
-                midi.sendShortMsg(byte1,0x3D,0x00);  // Pitch LED blue
-                midi.sendShortMsg(byte1,0x3E,0x01);
+            midi.sendShortMsg(byte1,0x3D,0x00);  // Pitch LED blue
+            midi.sendShortMsg(byte1,0x3E,0x01);
             break;
         case (value<=StantonSCS3d.pitchRanges[2]):
-                midi.sendShortMsg(byte1,0x3D,0x01);  // Pitch LED purple
-                midi.sendShortMsg(byte1,0x3E,0x01);
+            midi.sendShortMsg(byte1,0x3D,0x01);  // Pitch LED purple
+            midi.sendShortMsg(byte1,0x3E,0x01);
             break;
-        case (value>=StantonSCS3d.pitchRanges[3]):
-                midi.sendShortMsg(byte1,0x3D,0x01);  // Pitch LED red
-                midi.sendShortMsg(byte1,0x3E,0x00);
+        default:
+            midi.sendShortMsg(byte1,0x3D,0x01);  // Pitch LED red
+            midi.sendShortMsg(byte1,0x3E,0x00);
             break;
     }
 }
@@ -1822,6 +1826,8 @@ StantonSCS3d.circleFlash = function (deck) {
 }
 
 StantonSCS3d.circleLEDs = function (value) {
+    
+    if (value<0) return;
     
     var deck = StantonSCS3d.deck;
 

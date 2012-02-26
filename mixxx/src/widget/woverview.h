@@ -43,7 +43,6 @@ public:
     void mouseReleaseEvent(QMouseEvent *e);
     void mousePressEvent(QMouseEvent *e);
     void paintEvent(QPaintEvent *);
-
     QColor getMarkerColor();
 
 protected:
@@ -54,6 +53,7 @@ public slots:
 
     void slotLoadNewTrack(TrackPointer pTrack);
     void slotUnloadTrack(TrackPointer pTrack);
+    void slotTrackProgress(TrackPointer pTrack, int progress);
 
 signals:
     void trackDropped(QString filename, QString group);
@@ -85,6 +85,11 @@ private:
     int m_maxPaintingTime;
 
     int m_timerPixmapRefresh;
+
+    // Current active track
+    TrackPointer m_pCurrentTrack;
+    bool m_analysing;
+    int m_iProgress;
 
     // Loop controls and values
     ControlObject* m_pLoopStart;

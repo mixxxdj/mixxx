@@ -82,6 +82,21 @@ DlgMidiLearning::DlgMidiLearning(QWidget * parent, MidiMapping* mapping) :  QDia
     setupDeckControl("hotcue_3_clear", tr("Hotcue 3 delete button for Player %1"));
     setupDeckControl("hotcue_4_clear", tr("Hotcue 4 delete button for Player %1"));
 
+    setupSamplerControl("play", tr("Play button for Sampler %1"));
+    setupSamplerControl("pregain", tr("Gain knob for Sampler %1"));
+    setupSamplerControl("pfl", tr("Headphone listen button for Sampler %1"));
+    setupSamplerControl("bpm", tr("BPM tap button for Sampler %1"));
+    setupSamplerControl("keylock", tr("Keylock button for Sampler %1"));
+    setupSamplerControl("rate", tr("Pitch control slider for Sampler %1"));
+    setupSamplerControl("hotcue_1_activate", tr("Hotcue 1 button for Sampler %1"));
+    setupSamplerControl("hotcue_2_activate", tr("Hotcue 2 button for Sampler %1"));
+    setupSamplerControl("hotcue_3_activate", tr("Hotcue 3 button for Sampler %1"));
+    setupSamplerControl("hotcue_4_activate", tr("Hotcue 4 button for Sampler %1"));
+    setupSamplerControl("hotcue_1_clear", tr("Hotcue 1 delete button for Sampler %1"));
+    setupSamplerControl("hotcue_2_clear", tr("Hotcue 2 delete button for Sampler %1"));
+    setupSamplerControl("hotcue_3_clear", tr("Hotcue 3 delete button for Sampler %1"));
+    setupSamplerControl("hotcue_4_clear", tr("Hotcue 4 delete button for Sampler %1"));
+
     // Library Controls
     setupControl("[Playlist]", "SelectNextPlaylist", tr("Switch to the next view (library, playlist..)"));
     setupControl("[Playlist]", "SelectPrevPlaylist", tr("Switch to the previous view (library, playlist..)"));
@@ -109,6 +124,15 @@ void DlgMidiLearning::setupDeckControl(QString control, QString description) {
     const int iNumDecks = 2;
     for (int i = 1; i <= iNumDecks; ++i) {
         QString group = QString("[Channel%1]").arg(i);
+        m_controlsToBind.append(qMakePair(MixxxControl(group, control), description.arg(i)));
+    }
+}
+
+void DlgMidiLearning::setupSamplerControl(QString control, QString description) {
+    // TODO(rryan) get this from the PlayerManager
+    const int iNumSamplers = 4;
+    for (int i = 1; i <= iNumSamplers; ++i) {
+        QString group = QString("[Sampler%1]").arg(i);
         m_controlsToBind.append(qMakePair(MixxxControl(group, control), description.arg(i)));
     }
 }

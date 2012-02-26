@@ -279,7 +279,6 @@ int SoundSourceProxy::parseHeader()
 
 int SoundSourceProxy::ParseHeader(TrackInfoObject* p)
 {
-
     QString qFilename = p->getLocation();
     SoundSource* sndsrc = initialize(qFilename);
     if (sndsrc == NULL)
@@ -302,7 +301,8 @@ int SoundSourceProxy::ParseHeader(TrackInfoObject* p)
         p->setType(sndsrc->getType());
         p->setYear(sndsrc->getYear());
         p->setGenre(sndsrc->getGenre());
-	p->setComment(sndsrc->getComment());
+        p->setComposer(sndsrc->getComposer());
+        p->setComment(sndsrc->getComment());
         p->setTrackNumber(sndsrc->getTrackNumber());
         p->setReplayGain(sndsrc->getReplayGain());
         p->setBpm(sndsrc->getBPM());
@@ -365,14 +365,14 @@ QString SoundSourceProxy::supportedFileExtensionsRegex() {
 	supportedFileExtList[i] = QRegExp::escape(supportedFileExtList[i]);
     }
 
-    //Turn the list into a "\\.(mp3|wav|etc)$" style regex string
+    // Turn the list into a "\\.(mp3|wav|etc)$" style regex string
     return QString("\\.(%1)$").arg(supportedFileExtList.join("|"));
 }
 
 bool SoundSourceProxy::isFilenameSupported(QString fileName) {
     if (m_supportedFileRegex.isValid()) {
         QString regex = SoundSourceProxy::supportedFileExtensionsRegex();
-        m_supportedFileRegex = QRegExp(regex);
+        m_supportedFileRegex = QRegExp(regex, Qt::CaseInsensitive);
     }
     return fileName.contains(m_supportedFileRegex);
 }

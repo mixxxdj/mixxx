@@ -28,7 +28,7 @@
         </message>
         <message>
             <source>Genre</source>
-            <translation>Genre</translation>
+            <translation>Style</translation>
         </message>
         <message>
             <source>Year</source>
@@ -193,7 +193,7 @@
         </message>
         <message>
             <source>Warning: This will permanently delete the following files:</source>
-            <translation>Avertissement : Les fichiers suivants seront définitivement supprimés :</translation>
+            <translation>Attention : ceci supprimera définitivement les fichiers suivants :</translation>
         </message>
         <message>
             <source>Are you sure you want to delete these files from your computer?</source>
@@ -205,14 +205,14 @@
         </message>
         <message>
             <source>Could not update file metadata.</source>
-            <translation>Les métadonnées n'ont pas pu être mises à jour.</translation>
+            <translation>Impossible de mettre à jour les métadonnées du fichier</translation>
         </message>
     </context>
     <context>
         <name>CrateFeature</name>
         <message>
             <source>New Crate</source>
-            <translation>Nouveau container</translation>
+            <translation>Nouveau bac</translation>
         </message>
         <message>
             <source>Remove</source>
@@ -232,7 +232,7 @@
         </message>
         <message>
             <source>Crates</source>
-            <translation>Containers</translation>
+            <translation>Bacs</translation>
         </message>
         <message>
             <source>Import Crate</source>
@@ -260,23 +260,21 @@
         </message>
         <message>
             <source>New crate name:</source>
-            <translation>Nouveau nom du container :</translation>
+            <translation>Nouveau nom du bac :</translation>
         </message>
         <message>
             <source>Renaming Crate Failed</source>
             <translation>Échec lors du renommage du container</translation>
         </message>
         <message>
-            <source>Playlist Files (*.m3u *.pls)</source>
-            <translation>Listes de lecture (*.m3u *.pls)</translation>
+            <source>Playlist Files (*.m3u *.m3u8 *.pls)</source>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
-            <source>Export Playlist</source>
-            <translation>Exporter une liste de lecture</translation>
-        </message>
-        <message>
-            <source>M3U Playlist (*.m3u);;PLS Playlist (*.pls)</source>
-            <translation>Liste de lecture M3U (*.m3u);; Liste de lecture PLS (*.pls)</translation>
+            <source>M3U Playlist (*.m3u);;M3U8 Playlist (*.m3u8);;PLS Playlist (*.pls)</source>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>A crate cannot have a blank name.</source>
@@ -284,11 +282,11 @@
         </message>
         <message>
             <source>Creating Crate Failed</source>
-            <translation>La création du container a échoué</translation>
+            <translation>La création du bac a échoué</translation>
         </message>
         <message>
             <source>A crate by that name already exists.</source>
-            <translation>Un container de ce nom existe déjà.</translation>
+            <translation>Un bac avec ce nom existe déjà.</translation>
         </message>
     </context>
     <context>
@@ -317,7 +315,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>&lt;a href=&quot;http://mixxx.org/&quot;&gt;Official Website&lt;/a&gt;</source>
-            <translation>&lt;a href=&quot;http://mixxx.org/&quot;&gt;Site Internet Officiel [ENG]&lt;/a&gt;</translation>
+            <translation>&lt;a href=&quot;http://mixxx.org/&quot;&gt;Site Officiel [ENG]&lt;/a&gt;</translation>
         </message>
     </context>
     <context>
@@ -378,7 +376,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Successfully mapped to: </source>
-            <translation>Réussite du mappage de : </translation>
+            <translation>Associé avec succès à : </translation>
         </message>
         <message>
             <source>Next</source>
@@ -394,7 +392,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>This wizard allows you to easily map the controls on your MIDI controller to Mixxx's controls.</source>
-            <translation>Cet assistant vous aide à programmer votre contrôleur MIDI pour fonctionner avec Mixxx</translation>
+            <translation>Cet assistant vous permet d'associer facilement votre contrôleur MIDI aux contrôles avec Mixxx.</translation>
         </message>
         <message>
             <source>Begin</source>
@@ -736,8 +734,9 @@ p, li { white-space: pre-wrap; }
             <translation>16 Hz</translation>
         </message>
         <message>
-            <source>2.045 kHz</source>
-            <translation>2.045 kHz</translation>
+            <source>1.014 kHz</source>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>20.05 kHz</source>
@@ -965,8 +964,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Enable Needle Skip Prevention</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Activer la prévention du saut d'aiguille</translation>
         </message>
         <message>
             <source>Signal Quality</source>
@@ -979,10 +977,6 @@ p, li { white-space: pre-wrap; }
         <message>
             <source>Powered by xwax</source>
             <translation>Propulsé par xwax</translation>
-        </message>
-        <message>
-            <source>Apply</source>
-            <translation>Appliquer</translation>
         </message>
         <message>
             <source>&lt;b&gt;This version of Mixxx does not support vinyl control.&lt;/b&gt; &lt;br&gt; Please visit &lt;a href=&quot;http://mixxx.org&quot;&gt;Mixxx.org&lt;/a&gt; for more information.</source>
@@ -1616,8 +1610,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Lead-in time</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Temps d'introduction</translation>
         </message>
         <message>
             <source>seconds</source>
@@ -1637,8 +1630,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Enable Needle Skip Prevention</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Activer la prévention du saut d'aiguille</translation>
         </message>
         <message>
             <source>Signal Quality</source>
@@ -1718,12 +1710,14 @@ p, li { white-space: pre-wrap; }
             <translation>Gérer</translation>
         </message>
         <message>
-            <source>Recently Added</source>
-            <translation>Récemment ajouté</translation>
+            <source>New</source>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
-            <source>All Songs</source>
-            <translation>Toutes les chansons</translation>
+            <source>All</source>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Progress</source>
@@ -1916,18 +1910,15 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>&lt;html&gt;Mixxx cannot record or stream in MP3 without the MP3 encoder &amp;quot;lame&amp;quot;. Due to licensing issues, we cannot include this with Mixxx. To record or stream in MP3, you must download &lt;b&gt;libmp3lame&lt;/b&gt; and install it on your system. &lt;p&gt;See &lt;a href='http://mixxx.org/wiki/doku.php/internet_broadcasting#linux'&gt;Mixxx Wiki&lt;/a&gt; for more information. &lt;/html&gt;</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>&lt;html&gt;Mixxx ne peut enregistrer ou streamer en MP3 sans l'encodeur MP3 &amp;quot;lame&amp;quot;. Pour des questions de licences, nous ne pouvons pas l'inclure avec Mixxx. Pour enregistrer ou streamer en MP3, vous devez télécharger &lt;b&gt;libmp3lame&lt;/b&gt; et l'installer sur votre système. &lt;p&gt;Consultez &lt;a href='http://mixxx.org/wiki/doku.php/internet_broadcasting#linux'&gt;le Mixxx Wiki&lt;/a&gt; pour plus d'informations. &lt;/html&gt;</translation>
         </message>
         <message>
             <source>&lt;html&gt;Mixxx cannot record or stream in MP3 without the MP3 encoder &amp;quot;lame&amp;quot;. Due to licensing issues, we cannot include this with Mixxx. To record or stream in MP3, you must download &lt;b&gt;lame_enc.dll&lt;/b&gt; and install it on your system. &lt;p&gt;See &lt;a href='http://mixxx.org/wiki/doku.php/internet_broadcasting#windows'&gt;Mixxx Wiki&lt;/a&gt; for more information. &lt;/html&gt;</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>&lt;html&gt;Mixxx ne peut enregistrer ou streamer en MP3 sans l'encodeur MP3 &amp;quot;lame&amp;quot;. Pour des questions de licences, nous ne pouvons pas l'inclure avec Mixxx. Pour enregistrer ou streamer en MP3, vous devez télécharger &lt;b&gt;libmp3lame&lt;/b&gt; et l'installer sur votre système. &lt;p&gt;Consultez &lt;a href='http://mixxx.org/wiki/doku.php/internet_broadcasting#windows'&gt;le Mixxx Wiki&lt;/a&gt; pour plus d'informations. &lt;/html&gt;</translation>
         </message>
         <message>
             <source>&lt;html&gt;Mixxx cannot record or stream in MP3 without the MP3 encoder &amp;quot;lame&amp;quot;. Due to licensing issues, we cannot include this with Mixxx. To record or stream in MP3, you must download &lt;b&gt;libmp3lame&lt;/b&gt; and install it on your system. &lt;p&gt;See &lt;a href='http://mixxx.org/wiki/doku.php/internet_broadcasting#mac_osx'&gt;Mixxx Wiki&lt;/a&gt; for more information. &lt;/html&gt;</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>&lt;html&gt;Mixxx ne peut enregistrer ou streamer en MP3 sans l'encodeur MP3 &amp;quot;lame&amp;quot;. Pour des questions de licences, nous ne pouvons pas l'inclure avec Mixxx. Pour enregistrer ou streamer en MP3, vous devez télécharger &lt;b&gt;libmp3lame&lt;/b&gt; et l'installer sur votre système. &lt;p&gt;Consultez &lt;a href='http://mixxx.org/wiki/doku.php/internet_broadcasting#mac_osx'&gt;le Mixxx Wiki&lt;/a&gt; pour plus d'informations. &lt;/html&gt;</translation>
         </message>
         <message>
             <source>&lt;html&gt;Mixxx has detected that you use a modified version of libmp3lame. See &lt;a href='http://mixxx.org/wiki/doku.php/internet_broadcasting'&gt;Mixxx Wiki&lt;/a&gt; for more information.&lt;/html&gt;</source>
@@ -2051,6 +2042,11 @@ p, li { white-space: pre-wrap; }
     </context>
     <context>
         <name>LibraryScannerDlg</name>
+        <message>
+            <source>Library Scanner</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
         <message>
             <source>It's taking Mixxx a minute to scan your music library, please wait...</source>
             <translation>Cela prend une minute à Mixxx pour analyser votre bibliothèque musicale, veuillez patienter…</translation>
@@ -2370,6 +2366,11 @@ Ces informations ne seront pas utilisées  personnellement pour vous identifiez,
             <translation>Support &amp;Communautaire</translation>
         </message>
         <message>
+            <source>&amp;User Manual</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
             <source>Send Us &amp;Feedback</source>
             <translation>Envoyez nous vos &amp;remarques</translation>
         </message>
@@ -2395,7 +2396,8 @@ Ces informations ne seront pas utilisées  personnellement pour vous identifiez,
         </message>
         <message>
             <source>Enable live broadcasting</source>
-            <translation>activer la diffusion en direct</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Ctrl+L</source>
@@ -2521,7 +2523,8 @@ Marquer les repères de tempo audio par un click</translation>
         </message>
         <message>
             <source>Preferences</source>
-            <translation>Préférences</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Preferences
@@ -2537,6 +2540,17 @@ Playback and MIDI preferences</source>
 Get help with Mixxx</source>
             <translation>Assistance
 Trouver de l'aide avec Mixxx</translation>
+        </message>
+        <message>
+            <source>Read the Mixxx user manual.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Support
+Read the Mixxx user manual.</source>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Send feedback to the Mixxx team.</source>
@@ -2662,8 +2676,21 @@ Vérifier les choix de carte de son dans les préférences.</translation>
             <translation>Échec de l'exportation de liste de lecture</translation>
         </message>
         <message>
+            <source>File path contains characters, not allowed in m3u playlists.
+</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Export a m3u8 playlist instead!
+</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
             <source>Could not create file</source>
-            <translation>Impossible de créer le fichier</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
     </context>
     <context>
@@ -2705,7 +2732,8 @@ Vérifier les choix de carte de son dans les préférences.</translation>
         </message>
         <message>
             <source>Export Playlist</source>
-            <translation>Exporter une liste de lecture</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Playlists</source>
@@ -2744,12 +2772,14 @@ Vérifier les choix de carte de son dans les préférences.</translation>
             <translation>Échec pour renomer la liste de lecture</translation>
         </message>
         <message>
-            <source>Playlist Files (*.m3u *.pls)</source>
-            <translation>Listes de lecture (*.m3u *.pls)</translation>
+            <source>Playlist Files (*.m3u *.m3u8 *.pls)</source>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
-            <source>M3U Playlist (*.m3u);;PLS Playlist (*.pls)</source>
-            <translation>Liste de lecture M3U (*.m3u);; Liste de lecture PLS (*.pls)</translation>
+            <source>M3U Playlist (*.m3u);;M3U8 Playlist (*.m3u8);;PLS Playlist (*.pls)</source>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>A playlist by that name already exists.</source>
@@ -2923,8 +2953,7 @@ Cliquez sur OK pour sortir.</translation>
         </message>
         <message>
             <source>(loading) Traktor</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>(chargement) Traktor</translation>
         </message>
         <message>
             <source>Error Loading Traktor Library</source>
@@ -3082,6 +3111,21 @@ Cliquez sur OK pour sortir.</translation>
             <translation>touche Reloop/Sortie pour le lecteur %1</translation>
         </message>
         <message>
+            <source>Setup a loop over 4 beats for Player %1</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Halves the current loop's length for Player %1</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Doubles the current loop's length for Player %1</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
             <source>Hotcue 1 button for Player %1</source>
             <translation>touche Hotcue 1 pour le lecteur %1</translation>
         </message>
@@ -3114,6 +3158,76 @@ Cliquez sur OK pour sortir.</translation>
             <translation>touche de suppression hotcue 4 pour le lecteur %1</translation>
         </message>
         <message>
+            <source>Play button for Sampler %1</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Gain knob for Sampler %1</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Headphone listen button for Sampler %1</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>BPM tap button for Sampler %1</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Keylock button for Sampler %1</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Pitch control slider for Sampler %1</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Hotcue 1 button for Sampler %1</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Hotcue 2 button for Sampler %1</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Hotcue 3 button for Sampler %1</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Hotcue 4 button for Sampler %1</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Hotcue 1 delete button for Sampler %1</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Hotcue 2 delete button for Sampler %1</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Hotcue 3 delete button for Sampler %1</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Hotcue 4 delete button for Sampler %1</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
             <source>Switch to the next view (library, playlist..)</source>
             <translation>Basculer à la prochaine vue (librairie, playliste...)</translation>
         </message>
@@ -3136,6 +3250,31 @@ Cliquez sur OK pour sortir.</translation>
         <message>
             <source>Load selected track into Player %1</source>
             <translation>Charger la piste sélectionnée dans Lecteur %1</translation>
+        </message>
+        <message>
+            <source>Adjusts the wavelength of the flange effect</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Adjusts the intensity of the flange effect</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Adjusts the phase delay of the flange effect</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Microphone on/off</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Microphone volume</source>
+            <translation type="unfinished">
+            </translation>
         </message>
     </context>
     <context>
@@ -3173,8 +3312,7 @@ Cliquez sur OK pour sortir.</translation>
         </message>
         <message>
             <source>Reload Track Metadata</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Recharger les métadonnées de la piste</translation>
         </message>
         <message>
             <source>Load to Deck %1</source>
@@ -3183,6 +3321,11 @@ Cliquez sur OK pour sortir.</translation>
         <message>
             <source>Sampler %1</source>
             <translation>Echantillon %1</translation>
+        </message>
+        <message>
+            <source>Reloading track metadata on a loaded track may cause abrupt volume changes. Are you sure?</source>
+            <translation type="unfinished">
+            </translation>
         </message>
     </context>
     <context>

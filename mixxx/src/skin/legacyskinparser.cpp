@@ -349,7 +349,7 @@ QWidget* LegacySkinParser::parseBackground(QDomElement node, QWidget* pGrandpare
     QPixmap* background = WPixmapStore::getPixmapNoCache(WWidget::getPath(filename));
 
     bg->move(0, 0);
-    if (background != NULL) {
+    if (background != NULL && !background->isNull()) {
         bg->setPixmap(*background);
     }
 
@@ -357,7 +357,7 @@ QWidget* LegacySkinParser::parseBackground(QDomElement node, QWidget* pGrandpare
 
     // yes, this is confusing. Sorry. See ::parseSkin.
     m_pParent->move(0,0);
-    if (background != NULL) {
+    if (background != NULL && !background->isNull()) {
         m_pParent->setFixedSize(background->width(), background->height());
         pGrandparent->setMinimumSize(background->width(), background->height());
     }
@@ -453,7 +453,7 @@ QWidget* LegacySkinParser::parseVisual(QDomElement node) {
 
     // Connect control proxy to widget, so delete can be handled by the QT object tree
     ControlObjectThreadWidget * p = new ControlObjectThreadWidget(
-                ControlObject::getControl(ConfigKey(channelStr, "wheel"))/*, viewer*/);
+        ControlObject::getControl(ConfigKey(channelStr, "wheel"))/*, viewer*/);
 
     p->setWidget((QWidget *)viewer, true, true,
                  ControlObjectThreadWidget::EMIT_ON_PRESS, Qt::RightButton);
@@ -878,14 +878,14 @@ void LegacySkinParser::setupSize(QDomNode node, QWidget* pWidget) {
         QString ys = size.mid(comma+1);
         QSizePolicy sizePolicy;
 
-        if (xs.endsWith("e")) {
-            //qDebug() << "horizontal expanding";
-            sizePolicy.setHorizontalPolicy(QSizePolicy::Expanding);
-            xs = xs.left(xs.size()-1);
-        } else if (xs.endsWith("me")) {
+        if (xs.endsWith("me")) {
             //qDebug() << "horizontal minimum expanding";
             sizePolicy.setHorizontalPolicy(QSizePolicy::MinimumExpanding);
             xs = xs.left(xs.size()-2);
+        } else if (xs.endsWith("e")) {
+            //qDebug() << "horizontal expanding";
+            sizePolicy.setHorizontalPolicy(QSizePolicy::Expanding);
+            xs = xs.left(xs.size()-1);
         } else if (xs.endsWith("i")) {
             //qDebug() << "horizontal ignored";
             sizePolicy.setHorizontalPolicy(QSizePolicy::Ignored);
@@ -901,14 +901,14 @@ void LegacySkinParser::setupSize(QDomNode node, QWidget* pWidget) {
             pWidget->setMinimumWidth(x);
         }
 
-        if (ys.endsWith("e")) {
-            //qDebug() << "vertical expanding";
-            sizePolicy.setVerticalPolicy(QSizePolicy::Expanding);
-            ys = ys.left(ys.size()-1);
-        } else if (ys.endsWith("me")) {
+        if (ys.endsWith("me")) {
             //qDebug() << "vertical minimum expanding";
             sizePolicy.setVerticalPolicy(QSizePolicy::MinimumExpanding);
             ys = ys.left(ys.size()-2);
+        } else if (ys.endsWith("e")) {
+            //qDebug() << "vertical expanding";
+            sizePolicy.setVerticalPolicy(QSizePolicy::Expanding);
+            ys = ys.left(ys.size()-1);
         } else if (ys.endsWith("i")) {
             //qDebug() << "vertical ignored";
             sizePolicy.setVerticalPolicy(QSizePolicy::Ignored);

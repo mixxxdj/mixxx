@@ -17,7 +17,7 @@
  ***************************************************************************/
 
 #include "controlobject.h"
-#include "controlobjectthread.h"
+#include "controlobjectthreadmain.h"
 #include "mididevice.h"
 #include "midiscriptengine.h"
 #include "errordialoghandler.h"
@@ -105,7 +105,7 @@ void MidiScriptEngine::gracefulShutdown(QList<QString> scriptFunctionPrefixes) {
         if (shutName!="") {
             shutName.append(".shutdown");
             if (m_midiDebug) qDebug() << "MidiScriptEngine: Executing" << shutName;
-            if (!internalExecute(shutName))
+            if (!internalExecute(QScriptValue(), shutName))
                 qWarning() << "MidiScriptEngine: No" << shutName << "function in script";
         }
     }
@@ -336,7 +336,7 @@ bool MidiScriptEngine::execute(QString function, char channel,
 bool MidiScriptEngine::safeExecute(QString function) {
     //qDebug() << QString("MidiScriptEngine: Exec1 Thread ID=%1").arg(QThread::currentThreadId(),0,16);
 
-    if(m_pEngine == NULL)
+    if (m_pEngine == NULL)
         return false;
 
     QScriptValue scriptFunction = m_pEngine->evaluate(function);
@@ -357,10 +357,11 @@ bool MidiScriptEngine::safeExecute(QString function) {
 
 /* -------- ------------------------------------------------------
 Purpose: Evaluate & run script code
-Input:   Code string
+Input:   'this' object if applicable, Code string
 Output:  false if an exception
 -------- ------------------------------------------------------ */
-bool MidiScriptEngine::internalExecute(QString scriptCode) {
+bool MidiScriptEngine::internalExecute(QScriptValue thisObject,
+                                       QString scriptCode) {
     // A special version of safeExecute since we're evaluating strings, not actual functions
     //  (execute() would print an error that it's not a function every time a timer fires.)
     if(m_pEngine == NULL)
@@ -378,13 +379,13 @@ bool MidiScriptEngine::internalExecute(QString scriptCode) {
             error = "Syntax error";
             break;
     }
-    if (error!="") {
+    if (error != "") {
         error = QString("%1: %2 at line %3, column %4 of script code:\n%5\n")
-        .arg(error)
-        .arg(result.errorMessage())
-        .arg(result.errorLineNumber())
-        .arg(result.errorColumnNumber())
-        .arg(scriptCode);
+                .arg(error,
+                     result.errorMessage(),
+                     QString::number(result.errorLineNumber()),
+                     QString::number(result.errorColumnNumber()),
+                     scriptCode);
 
         if (m_midiDebug) qCritical() << "MidiScriptEngine:" << error;
         else scriptErrorDialog(error);
@@ -401,7 +402,7 @@ bool MidiScriptEngine::internalExecute(QString scriptCode) {
         return true;
 
     // If it does happen to be a function, call it.
-    scriptFunction.call(QScriptValue());
+    scriptFunction.call(thisObject);
     if (checkException())
         return false;
 
@@ -442,7 +443,7 @@ bool MidiScriptEngine::safeExecute(QString function, QString data) {
    Output:  false if an invalid function or an exception
    -------- ------------------------------------------------------ */
 bool MidiScriptEngine::safeExecute(QString function, const unsigned char data[],
-                                    unsigned int length) {
+                                   unsigned int length) {
 
     if(m_pEngine == NULL) {
         return false;
@@ -514,6 +515,27 @@ bool MidiScriptEngine::safeExecute(QString function, char channel,
 }
 
 /* -------- ------------------------------------------------------
+   Purpose: Evaluate & call a script function
+   Input:   This Object (context), Function name
+   Output:  false if an invalid function or an exception
+   Notes:   used for closure calls using native functions (ie: timers)
+   -------- ------------------------------------------------------ */
+bool MidiScriptEngine::safeExecute(QScriptValue thisObject,
+                                   QScriptValue functionObject) {
+    if (m_pEngine == NULL) {
+        return false;
+    }
+
+    QScriptValueList args;
+
+    functionObject.call(thisObject, args);
+    if (checkException()) {
+        return false;
+    }
+    return true;
+}
+
+/* -------- ------------------------------------------------------
    Purpose: Check to see if a script threw an exception
    Input:   QScriptValue returned from call(scriptFunctionName)
    Output:  true if there was an exception
@@ -535,14 +557,13 @@ bool MidiScriptEngine::checkException() {
         m_scriptErrors.insert((filename.isEmpty() ? "passed code" : filename), error);
 
         QString errorText = QString(tr("Uncaught exception at line %1 in file %2: %3"))
-                            .arg(line)
-                            .arg((filename.isEmpty() ? "" : filename))
-                            .arg(errorMessage);
+                .arg(QString::number(line),
+                     (filename.isEmpty() ? "" : filename),
+                     errorMessage);
 
         if (filename.isEmpty())
             errorText = QString(tr("Uncaught exception at line %1 in passed code: %2"))
-                        .arg(line)
-                        .arg(errorMessage);
+                    .arg(QString::number(line), errorMessage);
 
         if (m_midiDebug)
             qCritical() << "MidiScriptEngine:" << errorText
@@ -654,7 +675,7 @@ ControlObjectThread* MidiScriptEngine::getControlObjectThread(QString group, QSt
     if(!m_controlCache.contains(key)) {
         ControlObject *co = ControlObject::getControl(key);
         if(co != NULL) {
-            cot = new ControlObjectThread(co);
+            cot = new ControlObjectThreadMain(co);
             m_controlCache.insert(key, cot);
         }
     } else {
@@ -719,6 +740,9 @@ void MidiScriptEngine::setValue(QString group, QString name, double newValue) {
 
     if(cot != NULL && !m_st.ignore(group,name,newValue)) {
         cot->slotSet(newValue);
+        // We call emitValueChanged so that script functions connected to this
+        // control will get updates.
+        cot->emitValueChanged();
     }
 
 }
@@ -734,8 +758,9 @@ void MidiScriptEngine::log(QString message) {
 }
 
 /* -------- ------------------------------------------------------
-   Purpose: Emits valueChanged() so device outputs update
-   Input:   -
+   Purpose: Calls script function(s) linked to a particular ControlObject
+            so controller outputs update
+   Input:   ControlObject Group and Name strings
    Output:  -
    -------- ------------------------------------------------------ */
 void MidiScriptEngine::trigger(QString group, QString name) {
@@ -748,8 +773,34 @@ void MidiScriptEngine::trigger(QString group, QString name) {
     }
 
     ControlObjectThread *cot = getControlObjectThread(group, name);
-    if(cot != NULL) {
-        cot->slotSet(cot->get());
+
+    if (cot == NULL) {
+        return;
+    }
+
+    // ControlObject doesn't emit ValueChanged when set to the same value,
+    //  and ControlObjectThread::emitValueChanged also has no effect
+    //  so we have to call the function(s) manually with the current value
+    ConfigKey key = ConfigKey(group,name);
+    if(m_connectedControls.contains(key)) {
+        QMultiHash<ConfigKey, QString>::iterator i = m_connectedControls.find(key);
+        while (i != m_connectedControls.end() && i.key() == key) {
+            QString function = i.value();
+
+            QScriptValue function_value = m_pEngine->evaluate(function);
+            QScriptValueList args;
+            double value;
+
+            args << QScriptValue(cot->get());
+            args << QScriptValue(key.group);
+            args << QScriptValue(key.item);
+            QScriptValue result = function_value.call(QScriptValue(), args);
+            if (result.isError()) {
+                qWarning()<< "MidiScriptEngine: Call to" << function
+                          << "resulted in an error:" << result.toString();
+            }
+            ++i;
+        }
     }
 }
 
@@ -760,7 +811,8 @@ void MidiScriptEngine::trigger(QString group, QString name) {
    Output:  true if successful
    -------- ------------------------------------------------------ */
 bool MidiScriptEngine::connectControl(QString group, QString name, QString function, bool disconnect) {
-    ControlObject* cobj = ControlObject::getControl(ConfigKey(group,name));
+    ControlObjectThread* cobj = getControlObjectThread(group, name);
+    ConfigKey key(group, name);
 
     if (cobj == NULL) {
         qWarning() << "MidiScriptEngine: script connecting [" << group << "," << name
@@ -768,8 +820,9 @@ bool MidiScriptEngine::connectControl(QString group, QString name, QString funct
         return false;
     }
 
+
     // Don't add duplicates
-    if (!disconnect && m_connectedControls.contains(cobj->getKey(), function)) return true;
+    if (!disconnect && m_connectedControls.contains(key, function)) return true;
 
     // When this function runs, assert that somebody is holding the script
     // engine lock.
@@ -791,23 +844,18 @@ bool MidiScriptEngine::connectControl(QString group, QString name, QString funct
     if(!checkException() && slot.isFunction()) {
         if(disconnect) {
 //             qDebug() << "MidiScriptEngine::connectControl disconnected " << group << name << " from " << function;
-            m_connectedControls.remove(cobj->getKey(), function);
+            m_connectedControls.remove(key, function);
             // Only disconnect the signal if there are no other instances of this control using it
-            if (!m_connectedControls.contains(cobj->getKey())) {
+            if (!m_connectedControls.contains(key)) {
                 this->disconnect(cobj, SIGNAL(valueChanged(double)),
-                                this, SLOT(slotValueChanged(double)));
-                this->disconnect(cobj, SIGNAL(valueChangedFromEngine(double)),
-                                this, SLOT(slotValueChanged(double)));
+                                 this, SLOT(slotValueChanged(double)));
             }
         } else {
 //             qDebug() << "MidiScriptEngine::connectControl connected " << group << name << " to " << function;
             connect(cobj, SIGNAL(valueChanged(double)),
                     this, SLOT(slotValueChanged(double)),
                     Qt::QueuedConnection);
-            connect(cobj, SIGNAL(valueChangedFromEngine(double)),
-                    this, SLOT(slotValueChanged(double)),
-                    Qt::QueuedConnection);
-            m_connectedControls.insert(cobj->getKey(), function);
+            m_connectedControls.insert(key, function);
         }
         return true;
     }
@@ -822,13 +870,17 @@ bool MidiScriptEngine::connectControl(QString group, QString name, QString funct
 void MidiScriptEngine::slotValueChanged(double value) {
     m_scriptEngineLock.lock();
 
-    ControlObject* sender = (ControlObject*)this->sender();
+    ControlObjectThread* sender = dynamic_cast<ControlObjectThread*>(this->sender());
     if(sender == NULL) {
         qWarning() << "MidiScriptEngine::slotValueChanged() Shouldn't happen -- sender == NULL";
         m_scriptEngineLock.unlock();
         return;
     }
-    ConfigKey key = sender->getKey();
+    ControlObject* pSenderCO = sender->getControlObject();
+    if (pSenderCO == NULL) {
+        return;
+    }
+    ConfigKey key = pSenderCO->getKey();
 
     //qDebug() << QString("MidiScriptEngine: slotValueChanged Thread ID=%1").arg(QThread::currentThreadId(),0,16);
 
@@ -864,7 +916,6 @@ void MidiScriptEngine::slotValueChanged(double value) {
    Output:  false if the script file has errors or doesn't exist
    -------- ------------------------------------------------------ */
 bool MidiScriptEngine::safeEvaluate(QString scriptName, QList<QString> scriptPaths) {
-
     if(m_pEngine == NULL) {
         return false;
     }
@@ -891,9 +942,7 @@ bool MidiScriptEngine::safeEvaluate(QString scriptName, QList<QString> scriptPat
     if (!input.open(QIODevice::ReadOnly)) {
         QString errorLog =
             QString("MidiScriptEngine: Problem opening the script file: %1, error # %2, %3")
-                .arg(filename)
-                .arg(input.error())
-                .arg(input.errorString());
+                .arg(filename, QString("%1").arg(input.error()), input.errorString());
 
         // GUI actions do not belong in the MSE. They should be passed to
         // the above layers, along with input.errorString(), and that layer
@@ -935,11 +984,10 @@ bool MidiScriptEngine::safeEvaluate(QString scriptName, QList<QString> scriptPat
     }
     if (error!="") {
         error = QString("%1 at line %2, column %3 in file %4: %5")
-                        .arg(error)
-                        .arg(result.errorLineNumber())
-                        .arg(result.errorColumnNumber())
-                        .arg(filename)
-                        .arg(result.errorMessage());
+                .arg(error,
+                     QString::number(result.errorLineNumber()),
+                     QString::number(result.errorColumnNumber()),
+                     filename, result.errorMessage());
 
         if (m_midiDebug) qCritical() << "MidiScriptEngine:" << error;
         else {
@@ -962,7 +1010,7 @@ bool MidiScriptEngine::safeEvaluate(QString scriptName, QList<QString> scriptPat
     QScriptValue scriptFunction = m_pEngine->evaluate(scriptCode, filename);
 
     // Record errors
-    if(checkException())
+    if (checkException())
         return false;
 
     // Add the code we evaluated to our index
@@ -1001,30 +1049,44 @@ const QStringList MidiScriptEngine::getErrors(QString filename) {
                 whether it should fire just once
    Output:  The timer's ID, 0 if starting it failed
    -------- ------------------------------------------------------ */
-int MidiScriptEngine::beginTimer(int interval, QString scriptCode, bool oneShot) {
+int MidiScriptEngine::beginTimer(int interval, QScriptValue timerCallback,
+                                 bool oneShot) {
     // When this function runs, assert that somebody is holding the script
     // engine lock.
     bool lock = m_scriptEngineLock.tryLock();
     Q_ASSERT(!lock);
-    if(lock) {
+    if (lock) {
         m_scriptEngineLock.unlock();
     }
 
-    if (interval<20) {
-        qWarning() << "Timer request for" << interval << "ms is too short. Setting to the minimum of 20ms.";
-        interval=20;
+    if (!timerCallback.isFunction() && !timerCallback.isString()) {
+        qWarning() << "Invalid timer callback provided to beginTimer."
+                   << "Valid callbacks are strings and functions.";
+        return 0;
     }
-    // This makes use of every QObject's internal timer mechanism. Nice, clean, and simple.
-    // See http://doc.trolltech.com/4.6/qobject.html#startTimer for details
+
+    if (interval < 20) {
+        qWarning() << "Timer request for" << interval
+                   << "ms is too short. Setting to the minimum of 20ms.";
+        interval = 20;
+    }
+    // This makes use of every QObject's internal timer mechanism. Nice, clean,
+    // and simple. See http://doc.trolltech.com/4.6/qobject.html#startTimer for
+    // details
     int timerId = startTimer(interval);
-    QPair<QString, bool> timerTarget;
-    timerTarget.first = scriptCode;
-    timerTarget.second = oneShot;
-    m_timers[timerId]=timerTarget;
-    if (timerId==0) qWarning() << "MIDI Script timer could not be created";
-    else if (m_midiDebug) {
-        if (oneShot) qDebug() << "Starting one-shot timer:" << timerId;
-        else qDebug() << "Starting timer:" << timerId;
+    TimerInfo info;
+    info.callback = timerCallback;
+    QScriptContext *ctxt = m_pEngine->currentContext();
+    info.context = ctxt ? ctxt->thisObject() : QScriptValue();
+    info.oneShot = oneShot;
+    m_timers[timerId] = info;
+    if (timerId == 0) {
+        qWarning() << "MIDI Script timer could not be created";
+    } else if (m_midiDebug) {
+        if (oneShot)
+            qDebug() << "Starting one-shot timer:" << timerId;
+        else
+            qDebug() << "Starting timer:" << timerId;
     }
     return timerId;
 }
@@ -1063,7 +1125,7 @@ void MidiScriptEngine::stopAllTimers() {
     Q_ASSERT(!lock);
     if(lock) m_scriptEngineLock.unlock();
 
-    QMutableHashIterator<int, QPair<QString, bool> > i(m_timers);
+    QMutableHashIterator<int, TimerInfo> i(m_timers);
     while (i.hasNext()) {
         i.next();
         stopTimer(i.key());
@@ -1093,10 +1155,14 @@ void MidiScriptEngine::timerEvent(QTimerEvent *event) {
         return;
     }
 
-    QPair<QString, bool> timerTarget = m_timers[timerId];
-    if (timerTarget.second) stopTimer(timerId);
+    TimerInfo timerTarget = m_timers[timerId];
+    if (timerTarget.oneShot) stopTimer(timerId);
 
-    internalExecute(timerTarget.first);
+    if (timerTarget.callback.isString()) {
+        internalExecute(timerTarget.context, timerTarget.callback.toString());
+    } else if (timerTarget.callback.isFunction()) {
+        safeExecute(timerTarget.context, timerTarget.callback);
+    }
     m_scriptEngineLock.unlock();
 }
 
@@ -1110,7 +1176,6 @@ void MidiScriptEngine::timerEvent(QTimerEvent *event) {
     Output:  -
     -------- ------------------------------------------------------ */
 void MidiScriptEngine::scratchEnable(int deck, int intervalsPerRev, float rpm, float alpha, float beta) {
-
     // If we're already scratching this deck, override that with this request
     if (m_dx[deck]) {
 //         qDebug() << "Already scratching deck" << deck << ". Overriding.";
@@ -1137,8 +1202,7 @@ void MidiScriptEngine::scratchEnable(int deck, int intervalsPerRev, float rpm, f
         // If so, set the filter's initial velocity to the scratch speed
         cot = getControlObjectThread(group, "scratch2");
         if (cot != NULL) initVelocity=cot->get();
-    }
-    else {
+    } else {
         // See if deck is playing
         cot = getControlObjectThread(group, "play");
         if (cot != NULL && cot->get() == 1) {
@@ -1187,7 +1251,6 @@ void MidiScriptEngine::scratchTick(int deck, int interval) {
     Output:  -
     -------- ------------------------------------------------------ */
 void MidiScriptEngine::scratchProcess(int timerId) {
-
     int deck = m_scratchTimers[timerId];
     PitchFilter* filter = m_pitchFilter[deck];
     QString group = QString("[Channel%1]").arg(deck);
@@ -1236,14 +1299,13 @@ void MidiScriptEngine::scratchProcess(int timerId) {
     Output:  -
     -------- ------------------------------------------------------ */
 void MidiScriptEngine::scratchDisable(int deck) {
-
     QString group = QString("[Channel%1]").arg(deck);
 
     // See if deck is playing
     ControlObjectThread *cot = getControlObjectThread(group, "play");
     if (cot != NULL && cot->get() == 1) {
         // If so, set the target velocity to the playback speed
-        float rate=0;
+        float rate = 0;
         // Get the pitch slider value
         cot = getControlObjectThread(group, "rate");
         if (cot != NULL) rate = cot->get();
@@ -1257,8 +1319,9 @@ void MidiScriptEngine::scratchDisable(int deck) {
         if (cot != NULL && cot->get() == 1) rate = -rate;
 
         m_rampTo[deck] = rate;
+    } else {
+        m_rampTo[deck] = 0.0;
     }
-    else m_rampTo[deck]=0.0;
 
     m_ramp[deck] = true;    // Activate the ramping in scratchProcess()
 }
@@ -1270,7 +1333,10 @@ void MidiScriptEngine::scratchDisable(int deck) {
     Output:  -
     -------- ------------------------------------------------------ */
 void MidiScriptEngine::softTakeover(QString group, QString name, bool set) {
-    MixxxControl mc = MixxxControl(group,name);
-    if (set) m_st.enable(mc);
-    else m_st.disable(mc);
+    MixxxControl mc = MixxxControl(group, name);
+    if (set) {
+        m_st.enable(mc);
+    } else {
+        m_st.disable(mc);
+    }
 }

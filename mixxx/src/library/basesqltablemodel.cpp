@@ -43,6 +43,8 @@ void BaseSqlTableModel::initHeaderData() {
                   Qt::Horizontal, tr("Album"));
     setHeaderData(fieldIndex(LIBRARYTABLE_GENRE),
                   Qt::Horizontal, tr("Genre"));
+    setHeaderData(fieldIndex(LIBRARYTABLE_COMPOSER),
+                  Qt::Horizontal, tr("Composer"));
     setHeaderData(fieldIndex(LIBRARYTABLE_YEAR),
                   Qt::Horizontal, tr("Year"));
     setHeaderData(fieldIndex(LIBRARYTABLE_FILETYPE),
@@ -127,7 +129,7 @@ QString BaseSqlTableModel::orderByClause() const {
 
     QString s;
     s.append(QLatin1String("ORDER BY "));
-    QString sort_field = QString("%1.%2").arg(m_tableName).arg(field);
+    QString sort_field = QString("%1.%2").arg(m_tableName, field);
     s.append(sort_field);
 
     s.append((m_eSortOrder == Qt::AscendingOrder) ? QLatin1String(" ASC") :
@@ -170,7 +172,7 @@ void BaseSqlTableModel::select() {
     QString columns = m_tableColumnsJoined;
     QString orderBy = orderByClause();
     QString queryString = QString("SELECT %1 FROM %2 %3")
-            .arg(columns).arg(m_tableName).arg(orderBy);
+            .arg(columns, m_tableName, orderBy);
 
     if (sDebug) {
         qDebug() << this << "select() executing:" << queryString;
@@ -238,17 +240,25 @@ void BaseSqlTableModel::select() {
                                  sortColumn, m_eSortOrder,
                                  &m_trackSortOrder);
 
-    // Only re-sort results if the sort column was a track column.
-    if (sortColumn > 0) {
-        for (QVector<RowInfo>::iterator it = rowInfo.begin();
-             it != rowInfo.end(); ++it) {
+    // Re-sort the track IDs since filterAndSort can change their order or mark
+    // them for removal (by setting their row to -1).
+    for (QVector<RowInfo>::iterator it = rowInfo.begin();
+         it != rowInfo.end(); ++it) {
+        // If the sort column is not a track column then we will sort only to
+        // separate removed tracks (order == -1) from present tracks (order ==
+        // 0). Otherwise we sort by the order that filterAndSort returned to us.
+        if (sortColumn == 0) {
+            it->order = m_trackSortOrder.contains(it->trackId) ? 0 : -1;
+        } else {
             it->order = m_trackSortOrder.value(it->trackId, -1);
         }
-
-        // RowInfo::operator< sorts by the order field, except -1 is placed at the
-        // end so we can easily slice off rows that are no longer present.
-        qSort(rowInfo.begin(), rowInfo.end());
     }
+
+    // RowInfo::operator< sorts by the order field, except -1 is placed at the
+    // end so we can easily slice off rows that are no longer present. Stable
+    // sort is necessary because the tracks may be in pre-sorted order so we
+    // should not disturb that if we are only removing tracks.
+    qStableSort(rowInfo.begin(), rowInfo.end());
 
     m_trackIdToRows.clear();
     for (int i = 0; i < rowInfo.size(); ++i) {
@@ -520,7 +530,6 @@ Qt::ItemFlags BaseSqlTableModel::readWriteFlags(
     // waveform widget to load a track into a Player).
     defaultFlags |= Qt::ItemIsDragEnabled;
 
-    int row = index.row();
     int column = index.column();
 
     if ( column == fieldIndex(LIBRARYTABLE_FILETYPE)
@@ -601,6 +610,8 @@ void BaseSqlTableModel::setTrackValueForColumn(TrackPointer pTrack, int column,
         pTrack->setYear(value.toString());
     } else if (fieldIndex(LIBRARYTABLE_GENRE) == column) {
         pTrack->setGenre(value.toString());
+    } else if (fieldIndex(LIBRARYTABLE_COMPOSER) == column) {
+        pTrack->setComposer(value.toString());
     } else if (fieldIndex(LIBRARYTABLE_FILETYPE) == column) {
         pTrack->setType(value.toString());
     } else if (fieldIndex(LIBRARYTABLE_TRACKNUMBER) == column) {

@@ -11,8 +11,6 @@
 #include <QStandardItem>
 #include <QList>
 
-#include "library/browse/browsetablemodel.h"
-
 /*
  * This class is a singleton and represents a thread
  * that is used to read ID3 metadata
