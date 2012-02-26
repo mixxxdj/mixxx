@@ -1,9 +1,6 @@
 #include "waveform/waveform.h"
 
-#include <cstring>
-
-#include <QMutex>
-#include <QDebug>
+#include <QtDebug>
 
 Waveform::Waveform() :
     m_size(0),
@@ -12,7 +9,7 @@ Waveform::Waveform() :
     m_audioSamplesPerVisualSample(0),
     m_visualSampleRate(0),
     m_audioVisualRatio(0),
-    m_mutex(new QMutex()){
+    m_mutex(new QMutex()) {
 }
 
 Waveform::~Waveform() {
@@ -20,7 +17,6 @@ Waveform::~Waveform() {
 }
 
 void Waveform::computeBestVisualSampleRate( int audioSampleRate, double desiredVisualSampleRate) {
-
     m_audioSamplesPerVisualSample = (int)((double)audioSampleRate / desiredVisualSampleRate);
     const double actualVisualSamplingRate = (double)audioSampleRate / (double)(m_audioSamplesPerVisualSample);
 

@@ -3,16 +3,14 @@
 
 #include "waveformrendererabstract.h"
 
+#include <QGLFramebufferObject>
+#include <QGLShaderProgram>
 #include <QtOpenGL>
 
-class QGLShaderProgram;
 template<typename T> class ShaderVariable;
 
-class QGLFramebufferObject;
-
-class GLSLWaveformRendererSignal : public WaveformRendererAbstract
-{
-public:
+class GLSLWaveformRendererSignal : public WaveformRendererAbstract {
+  public:
     explicit GLSLWaveformRendererSignal(WaveformWidgetRenderer* waveformWidgetRenderer);
     virtual ~GLSLWaveformRendererSignal();
 
@@ -25,11 +23,10 @@ public:
     bool loadShaders();
     bool loadTexture();
 
-private:
+  private:
     void createGeometry();
     void createFrameBuffer();
 
-private:
     GLint m_quadListId;
     GLuint m_textureId;
 

@@ -10,20 +10,19 @@
 
 class ControlObject;
 
-class GLWaveformRendererFilteredSignal : public WaveformRendererAbstract
-{
-public:
-    GLWaveformRendererFilteredSignal( WaveformWidgetRenderer* waveformWidgetRenderer);
+class GLWaveformRendererFilteredSignal : public WaveformRendererAbstract {
+  public:
+    explicit GLWaveformRendererFilteredSignal( WaveformWidgetRenderer* waveformWidgetRenderer);
 
     virtual void init();
     virtual void setup(const QDomNode &node);
     virtual void draw(QPainter* painter, QPaintEvent* event);
 
-protected:
+  protected:
     virtual void onResize();
     int buildPolygon();
 
-private:
+  private:
     ControlObject* m_lowFilterControlObject;
     ControlObject* m_midFilterControlObject;
     ControlObject* m_highFilterControlObject;

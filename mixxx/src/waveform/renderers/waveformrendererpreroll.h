@@ -3,11 +3,12 @@
 
 #include <QColor>
 
+#include "util.h"
 #include "waveform/renderers/waveformrendererabstract.h"
 
 class WaveformRendererPreroll : public WaveformRendererAbstract {
   public:
-    WaveformRendererPreroll(WaveformWidgetRenderer* waveformWidgetRenderer);
+    explicit WaveformRendererPreroll(WaveformWidgetRenderer* waveformWidgetRenderer);
     virtual ~WaveformRendererPreroll();
 
     virtual void init();
@@ -16,6 +17,8 @@ class WaveformRendererPreroll : public WaveformRendererAbstract {
 
   private:
     QColor m_color;
+
+    DISALLOW_COPY_AND_ASSIGN(WaveformRendererPreroll);
 };
 
 #endif /* WAVEFORMRENDERPREROLL_H */

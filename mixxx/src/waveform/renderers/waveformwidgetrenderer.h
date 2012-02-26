@@ -1,29 +1,27 @@
-#ifndef WAVEFORMWIDGET_H
-#define WAVEFORMWIDGET_H
+#ifndef WAVEFORMWIDGETRENDERER_H
+#define WAVEFORMWIDGETRENDERER_H
 
+#include <QPainter>
+#include <QTime>
 #include <QVector>
+#include <QtDebug>
 
-#include "waveform/renderers/waveformrendererabstract.h"
 #include "trackinfoobject.h"
+#include "util.h"
+#include "waveform/renderers/waveformrendererabstract.h"
 
-#include <QDebug>
-
-class QTime;
-class QPainter;
 class TrackInfoObject;
-class WaveformRendererAbstract;
 class ControlObjectThreadMain;
 
-class WaveformWidgetRenderer
-{
-public:
-    WaveformWidgetRenderer( const char* group);
+class WaveformWidgetRenderer {
+  public:
+    explicit WaveformWidgetRenderer(const char* group);
     virtual ~WaveformWidgetRenderer();
 
     void init();
-    void setup( const QDomNode& node);
+    void setup(const QDomNode& node);
     void preRender();
-    void draw( QPainter* painter, QPaintEvent* event);
+    void draw(QPainter* painter, QPaintEvent* event);
 
     const char* getGroup() const { return m_group;}
     const TrackPointer getTrackInfo() const { return m_trackInfoObject;}
@@ -43,13 +41,13 @@ public:
     //those function replace at its best sample position to an admissible
     //sample position according to the current visual resampling
     //this make mark and signal deterministic
-    void regulateVisualSample( int& sampleIndex) const;
-    void regulateAudioSample( int& sampleIndex) const;
+    void regulateVisualSample(int& sampleIndex) const;
+    void regulateAudioSample(int& sampleIndex) const;
 
     //this "regulate" against visual sampling to make the position in widget
     //stable and deterministic
-    double transformSampleIndexInRendererWorld( int sampleIndex) const;
-    double transformPositionInRendererWorld( double position) const;
+    double transformSampleIndexInRendererWorld(int sampleIndex) const;
+    double transformPositionInRendererWorld(double position) const;
 
     double getPlayPos() const { return m_playPos;}
     double getZoomFactor() const { return m_zoomFactor;}
@@ -57,7 +55,7 @@ public:
     double getGain() const { return m_gain;}
     int getTrackSamples() const { return m_trackSamples;}
 
-    void resize( int width, int height);
+    void resize(int width, int height);
     int getHeight() const { return m_height;}
     int getWidth() const { return m_width;}
 
@@ -68,9 +66,9 @@ public:
         return renderer;
     }
 
-    void setTrack( TrackPointer track);
+    void setTrack(TrackPointer track);
 
-protected:
+  protected:
     const char* m_group;
     TrackPointer m_trackInfoObject;
     QVector<WaveformRendererAbstract*> m_rendererStack;
@@ -110,9 +108,10 @@ protected:
     int m_lastSystemFramesTime[100];
     int currentFrame;
 
-protected:
     WaveformWidgetRenderer();
+  private:
+    DISALLOW_COPY_AND_ASSIGN(WaveformWidgetRenderer);
     friend class WaveformWidgetFactory;
 };
 
-#endif // WAVEFORMWIDGET_H
+#endif // WAVEFORMWIDGETRENDERER_H

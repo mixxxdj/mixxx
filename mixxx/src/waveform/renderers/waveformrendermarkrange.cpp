@@ -1,6 +1,3 @@
-// waveformrendermarkrange.cpp
-// Created 11/14/2009 by RJ Ryan (rryan@mit.edu)
-
 #include <QDebug>
 #include <QColor>
 #include <QDomNode>
@@ -9,16 +6,15 @@
 #include <QObject>
 #include <QVector>
 
-#include "waveformrendermarkrange.h"
+#include "waveform/renderers/waveformrendermarkrange.h"
 
 #include "configobject.h"
-#include "controlobjectthreadmain.h"
 #include "controlobject.h"
+#include "controlobjectthreadmain.h"
+#include "trackinfoobject.h"
+#include "waveform/renderers/waveformwidgetrenderer.h"
 #include "widget/wskincolor.h"
 #include "widget/wwidget.h"
-#include "trackinfoobject.h"
-
-#include "waveformwidgetrenderer.h"
 
 MarkRange::MarkRange()
 {
@@ -27,10 +23,13 @@ MarkRange::MarkRange()
     m_markEnabled = 0;
 }
 
-void MarkRange::generatePixmap( int weidth, int height)
+MarkRange::~MarkRange() {
+}
+
+void MarkRange::generatePixmap(int weidth, int height)
 {
-    m_activePixmap = QPixmap( weidth, height);
-    m_disabledPixmap = QPixmap( weidth, height);
+    m_activePixmap = QPixmap(weidth, height);
+    m_disabledPixmap = QPixmap(weidth, height);
 
     //fill needed cause they remain transparent
     m_activePixmap.fill(QColor(0,0,0,0));
@@ -74,9 +73,12 @@ void MarkRange::generatePixmap( int weidth, int height)
 
 /////////////////////////////////
 
-WaveformRenderMarkRange::WaveformRenderMarkRange( WaveformWidgetRenderer* waveformWidgetRenderer) :
+WaveformRenderMarkRange::WaveformRenderMarkRange(WaveformWidgetRenderer* waveformWidgetRenderer) :
     WaveformRendererAbstract(waveformWidgetRenderer)
 {
+}
+
+WaveformRenderMarkRange::~WaveformRenderMarkRange() {
 }
 
 void WaveformRenderMarkRange::init()
@@ -93,7 +95,7 @@ void WaveformRenderMarkRange::setup(const QDomNode &node)
     {
         if (child.nodeName() == "MarkRange")
         {
-            markRanges_.push_back( MarkRange());
+            markRanges_.push_back(MarkRange());
             setupMarkRange(child,markRanges_.back());
         }
         child = child.nextSibling();
@@ -106,19 +108,19 @@ void WaveformRenderMarkRange::draw(QPainter *painter, QPaintEvent * /*event*/)
 
     painter->setWorldMatrixEnabled(false);
 
-    if( isDirty())
+    if (isDirty())
         generatePixmaps();
 
-    for( int i = 0; i < markRanges_.size(); i++)
+    for (int i = 0; i < markRanges_.size(); i++)
     {
         MarkRange& markRange = markRanges_[i];
 
-        if( !markRange.isValid())
+        if (!markRange.isValid())
             continue;
 
         int startSample = markRange.m_markStartPoint->get();
         int endSample = markRange.m_markEndPoint->get();
-        if( startSample < 0 || endSample < 0)
+        if (startSample < 0 || endSample < 0)
             continue;
 
         m_waveformRenderer->regulateVisualSample(startSample);
@@ -128,13 +130,13 @@ void WaveformRenderMarkRange::draw(QPainter *painter, QPaintEvent * /*event*/)
         double endPosition = m_waveformRenderer->transformSampleIndexInRendererWorld(endSample);
 
         //range not in the current display
-        if( startPosition > m_waveformRenderer->getWidth() ||
+        if (startPosition > m_waveformRenderer->getWidth() ||
                 endPosition < 0)
             continue;
 
         QPixmap* selectedPixmap = 0;
 
-        if( markRange.m_markEnabled && markRange.m_markEnabled->get() < 0.5)
+        if (markRange.m_markEnabled && markRange.m_markEnabled->get() < 0.5)
             selectedPixmap = &markRange.m_disabledPixmap;
         else
             selectedPixmap = &markRange.m_activePixmap;
@@ -142,7 +144,7 @@ void WaveformRenderMarkRange::draw(QPainter *painter, QPaintEvent * /*event*/)
         //draw the correcponding portion of the selected pixmap
         //this shouldn't involve *any* scaling it should be fast even in software mode
         QRect rect(startPosition,0,endPosition-startPosition,m_waveformRenderer->getHeight());
-        painter->drawPixmap( rect, *selectedPixmap, rect);
+        painter->drawPixmap(rect, *selectedPixmap, rect);
     }
 
     painter->restore();
@@ -151,7 +153,7 @@ void WaveformRenderMarkRange::draw(QPainter *painter, QPaintEvent * /*event*/)
 void WaveformRenderMarkRange::setupMarkRange(const QDomNode &node, MarkRange &markRange)
 {
     markRange.m_activeColor = WWidget::selectNodeQString(node, "Color");
-    if( markRange.m_activeColor == "") {
+    if (markRange.m_activeColor == "") {
         //vRince kind of legacy fallback ...
         // As a fallback, grab the mark color from the parent's MarkerColor
         markRange.m_activeColor = WWidget::selectNodeQString(node.parentNode(), "MarkerColor");
@@ -159,7 +161,7 @@ void WaveformRenderMarkRange::setupMarkRange(const QDomNode &node, MarkRange &ma
     }
 
     markRange.m_disabledColor = WWidget::selectNodeQString(node, "DisabledColor");
-    if( markRange.m_disabledColor == "") {
+    if (markRange.m_disabledColor == "") {
         //vRince kind of legacy fallback ...
         // Read the text color, otherwise use the parent's SignalColor.
         markRange.m_disabledColor = WWidget::selectNodeQString(node.parentNode(), "SignalColor");
@@ -179,7 +181,7 @@ void WaveformRenderMarkRange::setupMarkRange(const QDomNode &node, MarkRange &ma
 
 void WaveformRenderMarkRange::generatePixmaps()
 {
-    for( int i = 0; i < markRanges_.size(); i++)
-        markRanges_[i].generatePixmap( m_waveformRenderer->getWidth(), m_waveformRenderer->getHeight());
+    for (int i = 0; i < markRanges_.size(); i++)
+        markRanges_[i].generatePixmap(m_waveformRenderer->getWidth(), m_waveformRenderer->getHeight());
     setDirty(false);
 }
