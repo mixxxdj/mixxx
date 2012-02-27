@@ -1067,13 +1067,20 @@ void MidiScriptEngine::slotValueChanged(double value) {
     //qDebug() << QString("MidiScriptEngine: slotValueChanged Thread ID=%1").arg(QThread::currentThreadId(),0,16);
 
     if(m_connectedControls.contains(key)) {
-        QHash<ConfigKey, MidiScriptEngineControllerConnection>::iterator i = 
+        QHash<ConfigKey, MidiScriptEngineControllerConnection>::iterator iter = 
             m_connectedControls.find(key);
+        QList<MidiScriptEngineControllerConnection> conns;
 
-        while (i != m_connectedControls.end() && i.key() == key) {
-            MidiScriptEngineControllerConnection conn = i.value();
+        // Create a temporary list to allow callbacks to disconnect
+        // -Phillip Whelan
+        while (iter != m_connectedControls.end() && iter.key() == key) {
+            conns.append(iter.value());
+            ++iter;
+        }
+
+        for (int i = 0; i < conns.size(); i++) {
+            MidiScriptEngineControllerConnection conn = conns.at(i);
             QScriptValueList args;
-            double value;
 
             args << QScriptValue(value);
             args << QScriptValue(key.group);
@@ -1083,11 +1090,9 @@ void MidiScriptEngine::slotValueChanged(double value) {
                 qWarning()<< "MidiScriptEngine: Call to callback" << conn.id
                           << "resulted in an error:" << result.toString();
             }
-            ++i;
         }
     }
-    
-    if (!m_connectedControls.contains(key)) {
+    else {
         qWarning() << "MidiScriptEngine::slotValueChanged() Received signal from ControlObject that is not connected to a script function.";
     }
     
