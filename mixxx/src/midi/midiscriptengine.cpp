@@ -24,6 +24,10 @@
 
 // #include <QScriptSyntaxCheckResult>
 
+// Used for id's inside controlConnection objects 
+// (closure compatible version of connectControl)
+#include <QUuid>
+
 #ifdef _MSC_VER
     #include <float.h>  // for _isnan() on VC++
     #define isnan(x) _isnan(x)  // VC++ uses _isnan() instead of isnan()
@@ -883,20 +887,19 @@ void MidiScriptEngine::trigger(QString group, QString name) {
     //  so we have to call the function(s) manually with the current value
     ConfigKey key = ConfigKey(group,name);
     if(m_connectedControls.contains(key)) {
-        QMultiHash<ConfigKey, QString>::iterator i = m_connectedControls.find(key);
+        QMultiHash<ConfigKey, MidiScriptEngineControllerConnection>::iterator i = 
+            m_connectedControls.find(key);
         while (i != m_connectedControls.end() && i.key() == key) {
-            QString function = i.value();
-
-            QScriptValue function_value = m_pEngine->evaluate(function);
+            MidiScriptEngineControllerConnection conn = i.value();
             QScriptValueList args;
             double value;
 
             args << QScriptValue(cot->get());
             args << QScriptValue(key.group);
             args << QScriptValue(key.item);
-            QScriptValue result = function_value.call(QScriptValue(), args);
+            QScriptValue result = conn.function.call(conn.context, args);
             if (result.isError()) {
-                qWarning()<< "MidiScriptEngine: Call to" << function
+                qWarning()<< "MidiScriptEngine: Call to callback" << conn.id
                           << "resulted in an error:" << result.toString();
             }
             ++i;
@@ -910,19 +913,18 @@ void MidiScriptEngine::trigger(QString group, QString name) {
                 script function name, true if you want to disconnect
    Output:  true if successful
    -------- ------------------------------------------------------ */
-bool MidiScriptEngine::connectControl(QString group, QString name, QString function, bool disconnect) {
+QScriptValue MidiScriptEngine::connectControl(QString group, QString name, QScriptValue callback, bool disconnect) {
     ControlObjectThread* cobj = getControlObjectThread(group, name);
     ConfigKey key(group, name);
+    MidiScriptEngineControllerConnection conn;
+    QScriptValue function;
 
     if (cobj == NULL) {
         qWarning() << "MidiScriptEngine: script connecting [" << group << "," << name
                    << "], which is non-existent. ignoring.";
-        return false;
+        return QScriptValue();
     }
 
-
-    // Don't add duplicates
-    if (!disconnect && m_connectedControls.contains(key, function)) return true;
 
     // When this function runs, assert that somebody is holding the script
     // engine lock.
@@ -936,31 +938,68 @@ bool MidiScriptEngine::connectControl(QString group, QString name, QString funct
 
 
     if(m_pEngine == NULL) {
-        return false;
+        return QScriptValue(FALSE);
     }
 
-    QScriptValue slot = m_pEngine->evaluate(function);
+    if (callback.isString()) {
+        MidiScriptEngineControllerConnection cb = 
+            MidiScriptEngineControllerConnection(callback.toString());
+        function = m_pEngine->evaluate(callback.toString());
+        
+        if (checkException() || !function.isFunction()) {
+            return QScriptValue(FALSE);
+        }
 
-    if(!checkException() && slot.isFunction()) {
         if(disconnect) {
-//             qDebug() << "MidiScriptEngine::connectControl disconnected " << group << name << " from " << function;
-            m_connectedControls.remove(key, function);
-            // Only disconnect the signal if there are no other instances of this control using it
-            if (!m_connectedControls.contains(key) && !m_connectedFuncControls.contains(key)) {
-                this->disconnect(cobj, SIGNAL(valueChanged(double)),
-                                 this, SLOT(slotValueChanged(double)));
-            }
-        } else {
-//             qDebug() << "MidiScriptEngine::connectControl connected " << group << name << " to " << function;
-            connect(cobj, SIGNAL(valueChanged(double)),
+            disconnectControl(cb);
+            return QScriptValue(TRUE);
+        }
+        // Do not allow multiple connections to named functions
+        else if (m_connectedControls.contains(key, cb)) {
+            // Return a wrapper to the conn
+            QHash<ConfigKey, MidiScriptEngineControllerConnection>::iterator i = 
+                m_connectedControls.find(key);
+            
+            MidiScriptEngineControllerConnection conn = i.value();
+            return m_pEngine->newQObject(
+                        new MidiScriptEngineControllerConnectionScriptValueProxy(conn), 
+                        QScriptEngine::ScriptOwnership
+                    );
+        }
+    }
+    else if (callback.isFunction()) {
+        function = callback;
+    }
+
+    if (function.isFunction()) {
+        //qDebug() << "MidiScriptEngine::connectControl connected " << group << name << " to " << function;
+        connect(cobj, SIGNAL(valueChanged(double)),
                     this, SLOT(slotValueChanged(double)),
                     Qt::QueuedConnection);
-            m_connectedControls.insert(key, function);
+
+        MidiScriptEngineControllerConnection conn;
+        conn.key = key;
+        conn.mse = this;
+        conn.function = function;
+        QScriptContext *ctxt = m_pEngine->currentContext();
+        conn.context = ctxt ? ctxt->thisObject() : QScriptValue();
+
+        if (callback.isString()) {
+            conn.id = callback.toString();
         }
-        return true;
+        else {
+            QUuid uuid = QUuid::createUuid();
+            conn.id = uuid.toString();
+        }
+
+        m_connectedControls.insert(key, conn);
+        return m_pEngine->newQObject(
+                    new MidiScriptEngineControllerConnectionScriptValueProxy(conn), 
+                    QScriptEngine::ScriptOwnership
+                );
     }
 
-    return false;
+    return QScriptValue(FALSE);
 }
 
 /* -------- ------------------------------------------------------
@@ -969,14 +1008,9 @@ bool MidiScriptEngine::connectControl(QString group, QString name, QString funct
                 script function name, true if you want to disconnect
    Output:  true if successful
    -------- ------------------------------------------------------ */
-int MidiScriptEngine::connectControl(QString group, QString name, QScriptValue function) {
-    ControlObject* cobj = ControlObject::getControl(ConfigKey(group,name));
-
-    if (cobj == NULL) {
-        qWarning() << "MidiScriptEngine: script connecting [" << group << "," << name
-                   << "], which is non-existent. ignoring.";
-        return false;
-    }
+void MidiScriptEngine::disconnectControl(MidiScriptEngineControllerConnection conn) {
+    ControlObjectThread* cobj = getControlObjectThread(conn.key.group, conn.key.item);
+    
 
     // When this function runs, assert that somebody is holding the script
     // engine lock.
@@ -988,78 +1022,27 @@ int MidiScriptEngine::connectControl(QString group, QString name, QScriptValue f
 
     //qDebug() << QString("MidiScriptEngine: Connect Thread ID=%1").arg(QThread::currentThreadId(),0,16);
 
-    if(m_pEngine == NULL) {
-        return -1;
-    }
-
-    if(function.isFunction()) {
-        
-        QList<QScriptValue> *conns;
-        
-        
-        connect(cobj, SIGNAL(valueChanged(double)),
-                this, SLOT(slotValueChanged(double)),
-                Qt::QueuedConnection);
-        connect(cobj, SIGNAL(valueChangedFromEngine(double)),
-                this, SLOT(slotValueChanged(double)),
-                Qt::QueuedConnection);
-        
-        if (!m_connectedFuncControls.contains(cobj->getKey())) {
-            m_connectedFuncControls.insert(cobj->getKey(), new QList<QScriptValue>);
-        }
-        
-        conns = m_connectedFuncControls.value(cobj->getKey());
-        conns->append(function);
-        
-        return conns->size() - 1;
-    }
-    else if (function.isString()) {
-        return (int)connectControl(group, name, function.toString());
-    }
-
-    return -1;
-}
-
-void MidiScriptEngine::disconnectControl(QString group, QString name, int index) {
-    ControlObject* cobj = ControlObject::getControl(ConfigKey(group,name));
-
-    if (cobj == NULL) {
-        qWarning() << "MidiScriptEngine: script connecting [" << group << "," << name
-                   << "], which is non-existent. ignoring.";
-        return;
-    }
-
-    // When this function runs, assert that somebody is holding the script
-    // engine lock.
-    bool lock = m_scriptEngineLock.tryLock();
-    Q_ASSERT(!lock);
-    if(lock) {
-        m_scriptEngineLock.unlock();
-    }
-
-    //qDebug() << QString("MidiScriptEngine: Connect Thread ID=%1").arg(QThread::currentThreadId(),0,16);
 
     if(m_pEngine == NULL) {
         return;
     }
-    
-    QList<QScriptValue> *conns = m_connectedFuncControls.value(cobj->getKey());
-    if (index >= conns->size())
-        return;
-    conns->removeAt(index);
-    
-    if (conns->size() == 0) {
-        m_connectedFuncControls.remove(cobj->getKey());
-        delete conns;
-        
-        if (!m_connectedControls.contains(cobj->getKey()) && !m_connectedFuncControls.contains(cobj->getKey())) {
+
+    if (m_connectedControls.contains(conn.key, conn)) {
+        m_connectedControls.remove(conn.key, conn);
+        // Only disconnect the signal if there are no other instances of this control using it
+        if (!m_connectedControls.contains(conn.key)) {
             this->disconnect(cobj, SIGNAL(valueChanged(double)),
                             this, SLOT(slotValueChanged(double)));
-            this->disconnect(cobj, SIGNAL(valueChangedFromEngine(double)),
-                            this, SLOT(slotValueChanged(double)));
         }
     }
-    
+}
+
+MidiScriptEngineControllerConnection::MidiScriptEngineControllerConnection(QString id) {
+    this->id = id;
+}
+
+void MidiScriptEngineControllerConnectionScriptValueProxy::disconnect() {
+    this->conn.mse->disconnectControl(this->conn);
 }
 
 /* -------- ------------------------------------------------------
@@ -1084,46 +1067,27 @@ void MidiScriptEngine::slotValueChanged(double value) {
     //qDebug() << QString("MidiScriptEngine: slotValueChanged Thread ID=%1").arg(QThread::currentThreadId(),0,16);
 
     if(m_connectedControls.contains(key)) {
-        QMultiHash<ConfigKey, QString>::iterator i = m_connectedControls.find(key);
+        QHash<ConfigKey, MidiScriptEngineControllerConnection>::iterator i = 
+            m_connectedControls.find(key);
+
         while (i != m_connectedControls.end() && i.key() == key) {
-            QString function = i.value();
-
-//             qDebug() << "MidiScriptEngine::slotValueChanged() received signal from " << key.group << key.item << " ... firing : " << function;
-
-            // Could branch to safeExecute from here, but for now do it this way.
-            QScriptValue function_value = m_pEngine->evaluate(function);
+            MidiScriptEngineControllerConnection conn = i.value();
             QScriptValueList args;
+            double value;
+
             args << QScriptValue(value);
-            args << QScriptValue(key.group); // Added by Math`
-            args << QScriptValue(key.item);  // Added by Math`
-            QScriptValue result = function_value.call(QScriptValue(), args);
+            args << QScriptValue(key.group);
+            args << QScriptValue(key.item);
+            QScriptValue result = conn.function.call(conn.context, args);
             if (result.isError()) {
-                qWarning()<< "MidiScriptEngine: Call to " << function << " resulted in an error:  " << result.toString();
+                qWarning()<< "MidiScriptEngine: Call to callback" << conn.id
+                          << "resulted in an error:" << result.toString();
             }
             ++i;
         }
     }
-
-    if(m_connectedFuncControls.contains(key)) {
-        int i;
-        QList<QScriptValue> *conns = m_connectedFuncControls.value(key);
-        
-        for (i = 0; i < conns->size(); i++) {
-            
-            QScriptValue function_value = conns->at(i);
-            QScriptValueList args;
-            args << QScriptValue(value);
-            args << QScriptValue(key.group); // Added by Math`
-            args << QScriptValue(key.item);  // Added by Math`
-            
-            QScriptValue result = function_value.call(QScriptValue(), args);
-            //if (result.isError()) {
-                //qWarning()<< "MidiScriptEngine: Call to " << function << " resulted in an error:  " << result.toString();
-            //}
-        }
-    }
     
-    if (!m_connectedControls.contains(key) && !m_connectedFuncControls.contains(key)) {
+    if (!m_connectedControls.contains(key)) {
         qWarning() << "MidiScriptEngine::slotValueChanged() Received signal from ControlObject that is not connected to a script function.";
     }
     
