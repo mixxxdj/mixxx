@@ -269,17 +269,16 @@ void DlgPrefMidiBindings::slotShowMidiLearnDialog() {
         QMessageBox::StandardButton result = QMessageBox::question(this,
                     tr("Apply MIDI device settings?"),
                     tr("Your settings must be applied before starting the MIDI learning wizard.\n"
-                        "Apply settings and continue?"));
-        if (result == QMessageBox::Cancel)
-        {
-            return;
-        }
-        else
-        {
-            slotApply();
-        }
+                        "Apply settings and continue?"),
+                    QMessageBox::Ok | QMessageBox::Cancel, //Buttons to be displayed
+                    QMessageBox::Ok);                      //Default button
+        //Stop if the user has not pressed the Ok button,
+        //which could be the Cancel or the Close Button.
+        if (result != QMessageBox::Ok) return;
     }
-
+    
+    slotApply();
+    
     //Note that DlgMidiLearning is set to delete itself on
     //close using the Qt::WA_DeleteOnClose attribute (so this "new" doesn't leak memory)
     m_pDlgMidiLearning = new DlgMidiLearning(this, m_pMidiDevice->getMidiMapping());
