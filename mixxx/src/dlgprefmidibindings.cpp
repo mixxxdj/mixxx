@@ -349,7 +349,9 @@ void DlgPrefMidiBindings::slotDeviceState(int state) {
 
 void DlgPrefMidiBindings::enableDevice()
 {
-    m_pMidiDevice->close();
+    if (m_pMidiDevice->isOpen()) {
+        m_pMidiDevice->close();
+    }
     m_pMidiDevice->open();
     m_pConfig->set(ConfigKey("[Midi]", m_pMidiDevice->getName().replace(" ", "_")), 1);
 

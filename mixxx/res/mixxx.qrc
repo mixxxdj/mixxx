@@ -59,17 +59,24 @@
         <file>translations/mixxx_is.qm</file>
         <file>translations/mixxx_it.qm</file>
         <file>translations/mixxx_ja.qm</file>
+        <file>translations/mixxx_lb.qm</file>
         <file>translations/mixxx_ml.qm</file>
+        <file>translations/mixxx_mn.qm</file>
+        <file>translations/mixxx_ms.qm</file>
         <file>translations/mixxx_nl.qm</file>
         <file>translations/mixxx_nn.qm</file>
+        <file>translations/mixxx_oc.qm</file>
         <file>translations/mixxx_pl.qm</file>
         <file>translations/mixxx_pt_BR.qm</file>
         <file>translations/mixxx_pt.qm</file>
+        <file>translations/mixxx_ro.qm</file>
         <file>translations/mixxx_ru.qm</file>
         <file>translations/mixxx_sl.qm</file>
         <file>translations/mixxx_sr.qm</file>
         <file>translations/mixxx_sv.qm</file>
         <file>translations/mixxx_tr.qm</file>
+        <file>translations/mixxx_uk.qm</file>
+        <file>translations/mixxx_uz.qm</file>
         <file>translations/mixxx_zh_CN.qm</file>
     </qresource>
 </RCC>

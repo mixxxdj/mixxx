@@ -141,6 +141,9 @@ void BrowseThread::populateModel() {
         item = new QStandardItem(tio.getGenre());
         row_data.insert(COLUMN_GENRE, item);
 
+        item = new QStandardItem(tio.getComposer());
+        row_data.insert(COLUMN_COMPOSER, item);
+
         item = new QStandardItem(tio.getComment());
         row_data.insert(COLUMN_COMMENT, item);
 

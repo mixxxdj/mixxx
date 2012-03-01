@@ -47,7 +47,7 @@ MidiDevicePortMidi::MidiDevicePortMidi(MidiMapping* mapping,
     m_iOutputDeviceIndex = outputDeviceIndex;
 
     //Note: We prepend the input stream's index to the device's name to prevent duplicate devices from causing mayhem.
-    m_strDeviceName = QString("%1. %2").arg(QString::number(m_iInputDeviceIndex)).arg(inputDeviceInfo->name);
+    m_strDeviceName = QString("%1. %2").arg(QString::number(m_iInputDeviceIndex), inputDeviceInfo->name);
 
     if (inputDeviceInfo) {
         m_bIsInputDevice = m_pInputDeviceInfo->input;
