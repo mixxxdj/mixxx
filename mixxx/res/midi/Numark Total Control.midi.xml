@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<MixxxMIDIPreset mixxxVersion="1.8.0" schemaVersion="1">
+<MixxxMIDIPreset mixxxVersion="1.10.0" schemaVersion="1">
 	<info>
 		<name>Numark Total Control</name>
 		<author>Smashuu / David Gnedt</author>
@@ -170,13 +170,13 @@
 			<!-- Keylock -->
 			<control>
 				<group>[Channel1]</group>
-				<key>reverse</key>
+				<key>keylock</key>
 				<status>0x90</status>
 				<midino>0x38</midino>
 			</control>
 			<control>
 				<group>[Channel2]</group>
-				<key>reverse</key>
+				<key>keylock</key>
 				<status>0x90</status>
 				<midino>0x3f</midino>
 			</control>
@@ -321,16 +321,6 @@
 					<script-binding/>
 				</options>
 			</control>
-			<!-- Filter On/Off -->
-			<control>
-				<group>[Channel2]</group>
-				<key>NumarkTotalControl.toggleScratchMode</key>
-				<status>0x90</status>
-				<midino>0x36</midino>
-				<options>
-					<script-binding/>
-				</options>
-			</control>
 			<control>
 				<group>[Channel1]</group>
 				<key>NumarkTotalControl.jogWheel</key>
@@ -465,6 +455,16 @@
 				<key>NumarkTotalControl.toggleExtendedLooping</key>
 				<status>0x90</status>
 				<midino>0x35</midino>
+				<options>
+					<script-binding/>
+				</options>
+			</control>
+			<!-- Filter On/Off -->
+			<control>
+				<group>[Channel2]</group>
+				<key>NumarkTotalControl.toggleQuantize</key>
+				<status>0x90</status>
+				<midino>0x36</midino>
 				<options>
 					<script-binding/>
 				</options>
@@ -615,7 +615,7 @@
 			<!-- Keylock -->
 			<output>
 				<group>[Channel1]</group>
-				<key>reverse</key>
+				<key>keylock</key>
 				<status>0x90</status>
 				<midino>0x36</midino>
 				<on>0x64</on>
@@ -625,7 +625,7 @@
 			</output>
 			<output>
 				<group>[Channel2]</group>
-				<key>reverse</key>
+				<key>keylock</key>
 				<status>0x90</status>
 				<midino>0x41</midino>
 				<on>0x64</on>
@@ -658,23 +658,23 @@
 			<!-- Sync -->
 			<output>
 				<group>[Channel1]</group>
-				<key>VuMeter</key>
+				<key>beat_active</key>
 				<status>0x90</status>
 				<midino>0x37</midino>
 				<off>0x00</off>
 				<on>0x64</on>
 				<maximum>1.0</maximum>
-				<minimum>0.8</minimum>
+				<minimum>0.1</minimum>
 			</output>
 			<output>
 				<group>[Channel2]</group>
-				<key>VuMeter</key>
+				<key>beat_active</key>
 				<status>0x90</status>
 				<midino>0x42</midino>
 				<off>0x00</off>
 				<on>0x64</on>
 				<maximum>1.0</maximum>
-				<minimum>0.8</minimum>
+				<minimum>0.1</minimum>
 			</output>
 			<output>
 				<group>[Channel1]</group>

@@ -61,9 +61,21 @@ BpmControl::BpmControl(const char* _group,
             this, SLOT(slotControlBeatSync(double)),
             Qt::DirectConnection);
 
-    m_pTranslateBeats = new ControlPushButton(ConfigKey(_group, "beats_translate_curpos"));
+    m_pButtonSyncPhase = new ControlPushButton(ConfigKey(_group, "beatsync_phase"));
+    connect(m_pButtonSyncPhase, SIGNAL(valueChanged(double)),
+            this, SLOT(slotControlBeatSyncPhase(double)),
+            Qt::DirectConnection);
+
+    m_pButtonSyncTempo = new ControlPushButton(ConfigKey(_group, "beatsync_tempo"));
+    connect(m_pButtonSyncTempo, SIGNAL(valueChanged(double)),
+            this, SLOT(slotControlBeatSyncTempo(double)),
+            Qt::DirectConnection);
+
+    m_pTranslateBeats = new ControlPushButton(
+        ConfigKey(_group, "beats_translate_curpos"));
     connect(m_pTranslateBeats, SIGNAL(valueChanged(double)),
-            this, SLOT(slotBeatsTranslate(double)));
+            this, SLOT(slotBeatsTranslate(double)),
+            Qt::DirectConnection);
 
     connect(&m_tapFilter, SIGNAL(tapped(double,int)),
             this, SLOT(slotTapFilter(double,int)),
@@ -74,6 +86,8 @@ BpmControl::~BpmControl() {
     delete m_pEngineBpm;
     delete m_pFileBpm;
     delete m_pButtonSync;
+    delete m_pButtonSyncTempo;
+    delete m_pButtonSyncPhase;
     delete m_pButtonTap;
     delete m_pTranslateBeats;
 }
@@ -123,14 +137,34 @@ void BpmControl::slotTapFilter(double averageLength, int numSamples) {
     slotFileBpmChanged(averageBpm);
 }
 
+void BpmControl::slotControlBeatSyncPhase(double v) {
+    if (!v)
+        return;
+    syncPhase();
+}
+
+void BpmControl::slotControlBeatSyncTempo(double v) {
+    if (!v)
+        return;
+    syncTempo();
+}
+
 void BpmControl::slotControlBeatSync(double v) {
     if (!v)
         return;
 
+    // If the player is playing, and adjusting its tempo succeeded, adjust its
+    // phase so that it plays in sync.
+    if (syncTempo() && m_pPlayButton->get() > 0) {
+        syncPhase();
+    }
+}
+
+bool BpmControl::syncTempo() {
     EngineBuffer* pOtherEngineBuffer = getOtherEngineBuffer();
 
     if(!pOtherEngineBuffer)
-        return;
+        return false;
 
     double fThisBpm  = m_pEngineBpm->get();
     //double fThisRate = m_pRateDir->get() * m_pRateSlider->get() * m_pRateRange->get();
@@ -207,24 +241,20 @@ void BpmControl::slotControlBeatSync(double v) {
 
             // And finally, set the slider
             m_pRateSlider->set(fDesiredRate);
-
-            // If the player is playing, adjust its phase so that it plays in
-            // sync.
-            if (m_pPlayButton->get() > 0) {
-                adjustPhase();
-            }
+            return true;
         }
     }
+    return false;
 }
 
-void BpmControl::adjustPhase() {
+bool BpmControl::syncPhase() {
     EngineBuffer* pOtherEngineBuffer = getOtherEngineBuffer();
     TrackPointer otherTrack = pOtherEngineBuffer->getLoadedTrack();
     BeatsPointer otherBeats = otherTrack ? otherTrack->getBeats() : BeatsPointer();
 
     // If either track does not have beats, then we can't adjust the phase.
     if (!m_pBeats || !otherBeats) {
-        return;
+        return false;
     }
 
     // Get the file BPM of each song.
@@ -290,6 +320,7 @@ void BpmControl::adjustPhase() {
     }
 
     emit(seekAbs(dNewPlaypos));
+    return true;
 }
 
 void BpmControl::slotRateChanged(double) {

@@ -251,7 +251,7 @@ if build.platform_is_osx and 'bundle' in COMMAND_LINE_TARGETS:
 	qt_plugins = ([("iconengines", e) for e in ["libqsvgicon.dylib"]] +
                       [("imageformats", e) for e in ["libqgif.dylib", "libqjpeg.dylib", "libqsvg.dylib"]] +
                       [("sqldrivers", e) for e in ["libqsqlite.dylib"]] +
-                      [("accessible", e) for e in ["libqtaccessiblecompatwidgets.dylib", "libqtaccessiblewidgets.dylib"]])
+                      [("accessible", e) for e in ["libqtaccessiblewidgets.dylib"]])
 	#Left out libqmng and libqtiff to save space.
 
 	# Concatenate the SoundSource plugins to our list of plugins (converting
@@ -264,6 +264,22 @@ if build.platform_is_osx and 'bundle' in COMMAND_LINE_TARGETS:
         for tfile in translation_files:
                 resource_map[str(tfile)] = 'translations'
 
+        otool_local_paths = [os.path.expanduser("~/Library/Frameworks"),
+                             "/Library/Frameworks",
+                             "/Network/Library/Frameworks",
+                             "/usr/local/lib",
+                             "/opt/local/lib",
+                             "/sw/local/lib"]
+        otool_system_paths = ["/System/Library/Frameworks",
+                              "/Network/Library/Frameworks",
+                              "/usr/lib"]
+        mixxx_osxlib_path = SCons.ARGUMENTS.get('osxlib', None)
+        if mixxx_osxlib_path:
+                otool_local_paths = [mixxx_osxlib_path,] + otool_local_paths
+
+        qtplugindir = SCons.ARGUMENTS.get('qtplugindir', None)
+        if not qtplugindir:
+                qtplugindir = '/Developer/Applications/Qt/'
 	bundle = env.App(
                 "Mixxx",
                 [mixxx_bin, '#res/osx/application.icns',
@@ -280,14 +296,17 @@ if build.platform_is_osx and 'bundle' in COMMAND_LINE_TARGETS:
                  File("#LICENSE")],
                 PLUGINS=plugins, ##XXX test what happens if we don't pass any plugins
                 #Qt plugins ((Qt *NEEDS* its plugins in specific locations or it refuses to find them, however this is clearly awkward to write out like this.. maybe))
-                QT_HACK = [(p_tgt_dir, os.path.join("/Developer/Applications/Qt/plugins/", p_tgt_dir, p)) for p_tgt_dir, p in qt_plugins], #sigh :(
+                QT_HACK = [(p_tgt_dir, os.path.join(qtplugindir, "plugins", p_tgt_dir, p)) for p_tgt_dir, p in qt_plugins], #sigh :(
                 STRIP=build.build_is_release,
                 APP_RESOURCES_MAP=resource_map,
                 IDENTIFIER="org.mixxx.mixxx",
                 DISPLAY_NAME="Mixxx",
                 SHORT_VERSION=mixxx_version, #FIXME: parse defs_version.h???
                 COPYRIGHT="Copyright © 2011 Mixxx Development Team", #FIXME: datetime.year()
-                CATEGORY="public.app-category.music")
+                CATEGORY="public.app-category.music",
+                OTOOL_LOCAL_PATHS=otool_local_paths,
+                OTOOL_SYSTEM_PATHS=otool_system_paths
+                )
 	#env.Default(mixxx_bin) #todo: make the Default() just the program itself *globally* (not just for OS X); bundle should be a separate target
 	env.Alias('bundle', bundle)
 
