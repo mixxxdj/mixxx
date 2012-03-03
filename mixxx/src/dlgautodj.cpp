@@ -24,7 +24,7 @@ DlgAutoDJ::DlgAutoDJ(QWidget* parent, ConfigObject<ConfigValue>* pConfig,
           m_pTrackCollection(pTrackCollection),
           m_pTrackTableView(
               new WTrackTableView(this, pConfig, m_pTrackCollection)),
-          m_playlistDao(pTrackCollection->getPlaylistDAO())
+          m_playlistDao(pTrackCollection->getPlaylistDAO()),
           m_bAutoDJEnabled(false),
           m_bFadeNow(false),
           m_eState(ADJ_IDLE),
