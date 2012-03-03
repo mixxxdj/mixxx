@@ -222,18 +222,25 @@ void DlgAutoDJ::fadeNow(bool buttonChecked) {
 }
 
 void DlgAutoDJ::toggleAutoDJ(bool toggle) {
+    bool deck1Playing = m_pCOPlay1Fb->get() == 1.0f;
+    bool deck2Playing = m_pCOPlay2Fb->get() == 1.0f;
+
     if (toggle) {  // Enable Auto DJ
-        if (m_pCOPlay1Fb->get() == 1.0f && m_pCOPlay2Fb->get() == 1.0f) {
+        if (deck1Playing && deck2Playing) {
+            QMessageBox::warning(
+                NULL, tr("Auto-DJ"),
+                tr("One player must be stopped to enable Auto-DJ mode."),
+                QMessageBox::Ok);
             qDebug() << "One player must be stopped before enabling Auto DJ mode";
             pushButtonAutoDJ->setChecked(false);
             return;
         }
 
         // Never load the same track if it is already playing
-        if (m_pCOPlay1Fb->get() == 1.0f) {
+        if (deck1Playing) {
             removePlayingTrackFromQueue("[Channel1]");
         }
-        if (m_pCOPlay2Fb->get() == 1.0f) {
+        if (deck2Playing) {
             removePlayingTrackFromQueue("[Channel2]");
         }
 
@@ -260,12 +267,12 @@ void DlgAutoDJ::toggleAutoDJ(bool toggle) {
         connect(m_pCOPlay2Fb, SIGNAL(valueChanged(double)),
                 this, SLOT(player2PlayChanged(double)));
 
-        if (m_pCOPlay1Fb->get() == 0.0f && m_pCOPlay2Fb->get() == 0.0f) {
+        if (!deck1Playing && !deck2Playing) {
             // both decks are stopped
             m_eState = ADJ_ENABLE_P1LOADED;
             // Force Update on load Track
             m_pCOPlayPos1->slotSet(-0.001f);
-        } else if (m_pCOPlay1Fb->get() == 1.0f) {
+        } else if (deck1Playing) {
             // deck 1 is already playing
             m_eState = ADJ_IDLE;
             player1PlayChanged(1.0f);
@@ -529,7 +536,10 @@ bool DlgAutoDJ::removePlayingTrackFromQueue(QString group) {
 }
 
 void DlgAutoDJ::player1PlayChanged(double value) {
-    qDebug() << "player1PlayChanged(" << value << ")";
+    //qDebug() << "player1PlayChanged(" << value << ")";
+    if (!m_bAutoDJEnabled) {
+        return;
+    }
 
     if (value == 1.0f && m_eState == ADJ_IDLE) {
         TrackPointer loadedTrack =
@@ -559,7 +569,10 @@ void DlgAutoDJ::player1PlayChanged(double value) {
 }
 
 void DlgAutoDJ::player2PlayChanged(double value) {
-    qDebug() << "player2PlayChanged(" << value << ")";
+    //qDebug() << "player2PlayChanged(" << value << ")";
+    if (!m_bAutoDJEnabled) {
+        return;
+    }
 
     if (value == 1.0f && m_eState == ADJ_IDLE) {
         TrackPointer loadedTrack =
@@ -589,17 +602,16 @@ void DlgAutoDJ::player2PlayChanged(double value) {
 }
 
 void DlgAutoDJ::transitionValueChanged(int value) {
-    if (m_bAutoDJEnabled) {
-        if (m_bAutoDJEnabled && m_eState == ADJ_IDLE) {
-            if (m_pCOPlay1Fb->get() == 1.0f) {
-                player1PlayChanged(1.0f);
-            }
-            if (m_pCOPlay2Fb->get() == 1.0f) {
-                player2PlayChanged(1.0f);
-            }
+    if (m_bAutoDJEnabled && m_eState == ADJ_IDLE) {
+        if (m_pCOPlay1Fb->get() == 1.0f) {
+            player1PlayChanged(1.0f);
+        }
+        if (m_pCOPlay2Fb->get() == 1.0f) {
+            player2PlayChanged(1.0f);
         }
     }
-    m_pConfig->set(ConfigKey(CONFIG_KEY, "Transition"), ConfigValue(value));
+    m_pConfig->set(ConfigKey(CONFIG_KEY, kTransitionPreferenceName),
+                   ConfigValue(value));
 }
 
 bool DlgAutoDJ::appendTrack(int trackId) {
