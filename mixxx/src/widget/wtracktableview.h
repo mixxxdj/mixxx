@@ -19,10 +19,9 @@ const QString WTRACKTABLEVIEW_VSCROLLBARPOS_KEY = "VScrollBarPos"; /** ConfigVal
 const QString LIBRARY_CONFIGVALUE = "[Library]"; /** ConfigValue "value" (wtf) for library stuff */
 
 
-class WTrackTableView : public WLibraryTableView
-{
+class WTrackTableView : public WLibraryTableView {
     Q_OBJECT
- 	public:
+  public:
     WTrackTableView(QWidget* parent, ConfigObject<ConfigValue>* pConfig,
                     TrackCollection* pTrackCollection);
     virtual ~WTrackTableView();
