@@ -399,9 +399,11 @@ void PlaylistDAO::insertTrackIntoPlaylist(int trackId, int playlistId, int posit
 }
 
 void PlaylistDAO::addToAutoDJQueue(int playlistId, bool bTop) {
-    //qDebug() << "Adding tracks from playlist " << playlistId << " to the Auto-DJ Queue";
+    // qDebug() << "Adding tracks from playlist " << playlistId
+    //          << " to the Auto-DJ Queue";
 
-    // Query the PlaylistTracks database to locate tracks in the selected playlist
+    // Query the PlaylistTracks database to locate tracks in the selected
+    // playlist
     QSqlQuery query(m_database);
     query.prepare("SELECT track_id FROM PlaylistTracks "
                   "WHERE playlist_id = :plid");
@@ -414,14 +416,14 @@ void PlaylistDAO::addToAutoDJQueue(int playlistId, bool bTop) {
     int autoDJId = getPlaylistIdFromName(AUTODJ_TABLE);
     // Loop through the tracks, adding them to the Auto-DJ Queue
 
-    int i = 2; // Start at position 2 because position 1 was already loaded to the deck
+    // Start at position 2 because position 1 was already loaded to the deck
+    int i = 2;
 
     while (query.next()) {
-    	if (bTop) {
-    		insertTrackIntoPlaylist(query.value(0).toInt(), autoDJId, i++);
-    	}
-    	else {
-    		appendTrackToPlaylist(query.value(0).toInt(), autoDJId);
-    	}
+        if (bTop) {
+            insertTrackIntoPlaylist(query.value(0).toInt(), autoDJId, i++);
+        } else {
+            appendTrackToPlaylist(query.value(0).toInt(), autoDJId);
+        }
     }
 }
