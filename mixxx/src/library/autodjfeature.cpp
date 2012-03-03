@@ -23,7 +23,7 @@ AutoDJFeature::AutoDJFeature(QObject* parent,
           m_pConfig(pConfig),
           m_pTrackCollection(pTrackCollection),
           m_playlistDao(pTrackCollection->getPlaylistDAO()) {
-	m_pAutoDJView = NULL;
+    m_pAutoDJView = NULL;
 }
 
 AutoDJFeature::~AutoDJFeature() {
@@ -40,11 +40,10 @@ QIcon AutoDJFeature::getIcon() {
 void AutoDJFeature::bindWidget(WLibrarySidebar* /*sidebarWidget*/,
                                WLibrary* libraryWidget,
                                MixxxKeyboard* keyboard) {
-
     m_pAutoDJView = new DlgAutoDJ(libraryWidget,
-                                           m_pConfig,
-                                           m_pTrackCollection,
-                                           keyboard);
+                                  m_pConfig,
+                                  m_pTrackCollection,
+                                  keyboard);
     m_pAutoDJView->installEventFilter(keyboard);
     libraryWidget->registerView(m_sAutoDJViewName, m_pAutoDJView);
     connect(m_pAutoDJView, SIGNAL(loadTrack(TrackPointer)),
@@ -54,7 +53,7 @@ void AutoDJFeature::bindWidget(WLibrarySidebar* /*sidebarWidget*/,
 }
 
 TreeItemModel* AutoDJFeature::getChildModel() {
-	return &m_childModel;
+    return &m_childModel;
 }
 
 void AutoDJFeature::activate() {
@@ -70,13 +69,11 @@ void AutoDJFeature::onRightClick(const QPoint& /*globalPos*/) {
 }
 
 void AutoDJFeature::onRightClickChild(const QPoint& /*globalPos*/,
-                                            QModelIndex /*index*/) {
+                                      QModelIndex /*index*/) {
 }
 
 bool AutoDJFeature::dropAccept(QUrl url) {
-
     //TODO: Filter by supported formats regex and reject anything that doesn't match.
-
     TrackDAO &trackDao = m_pTrackCollection->getTrackDAO();
 
     //If a track is dropped onto a playlist's name, but the track isn't in the library,
@@ -98,12 +95,11 @@ bool AutoDJFeature::dropAccept(QUrl url) {
     }
 
     // TODO(XXX) No feedback on whether this worked.
-    if( m_pAutoDJView ){
-    	m_pAutoDJView->appendTrack(trackId);
-    }
-    else{
-    	int playlistId = m_playlistDao.getPlaylistIdFromName(AUTODJ_TABLE);
-    	m_playlistDao.appendTrackToPlaylist(trackId, playlistId);
+    if (m_pAutoDJView) {
+        m_pAutoDJView->appendTrack(trackId);
+    } else {
+        int playlistId = m_playlistDao.getPlaylistIdFromName(AUTODJ_TABLE);
+        m_playlistDao.appendTrackToPlaylist(trackId, playlistId);
     }
 
     return true;
@@ -119,7 +115,7 @@ bool AutoDJFeature::dragMoveAccept(QUrl url) {
 }
 
 bool AutoDJFeature::dragMoveAcceptChild(const QModelIndex& /*index*/,
-                                              QUrl /*url*/) {
+                                        QUrl /*url*/) {
     return false;
 }
 void AutoDJFeature::onLazyChildExpandation(const QModelIndex& /*index*/){
