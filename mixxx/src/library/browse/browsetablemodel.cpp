@@ -22,7 +22,7 @@ BrowseTableModel::BrowseTableModel(QObject* parent, TrackCollection* pTrackColle
                      "mixxx.db.model.browse"),
           QStandardItemModel(parent),
           m_pTrackCollection(pTrackCollection),
-         m_pRecordingManager(pRecordingManager) {
+          m_pRecordingManager(pRecordingManager) {
     QStringList header_data;
     header_data.insert(COLUMN_FILENAME, tr("Filename"));
     header_data.insert(COLUMN_ARTIST, tr("Artist"));
@@ -177,9 +177,9 @@ void BrowseTableModel::removeTracks(QStringList trackLocations) {
 
     // Ask user if s/he is sure
     if (QMessageBox::question(NULL, tr("Mixxx Library"),
-                             tr("Warning: This will permanently delete the following files:")
-                             + "\n" + trackLocations.join("\n") + "\n" +
-                             tr("Are you sure you want to delete these files from your computer?"),
+                              tr("Warning: This will permanently delete the following files:")
+                              + "\n" + trackLocations.join("\n") + "\n" +
+                              tr("Are you sure you want to delete these files from your computer?"),
                               QMessageBox::Yes, QMessageBox::Abort) == QMessageBox::Abort) {
         return;
     }
