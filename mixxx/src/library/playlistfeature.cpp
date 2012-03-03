@@ -35,11 +35,11 @@ PlaylistFeature::PlaylistFeature(QObject* parent,
     connect(m_pCreatePlaylistAction, SIGNAL(triggered()),
             this, SLOT(slotCreatePlaylist()));
 
-    m_pAddToAutoDJAction = new QAction(tr("Add to Auto-DJ bottom"),this);
+    m_pAddToAutoDJAction = new QAction(tr("Add to Auto-DJ Queue (bottom)"),this);
     connect(m_pAddToAutoDJAction, SIGNAL(triggered()),
             this, SLOT(slotAddToAutoDJ()));
 
-    m_pAddToAutoDJTopAction = new QAction(tr("Add to Auto-DJ top 2"),this);
+    m_pAddToAutoDJTopAction = new QAction(tr("Add to Auto-DJ Queue (top)"),this);
     connect(m_pAddToAutoDJTopAction, SIGNAL(triggered()),
             this, SLOT(slotAddToAutoDJTop()));
 
@@ -69,7 +69,7 @@ PlaylistFeature::PlaylistFeature(QObject* parent,
                                  Qt::AscendingOrder);
     m_playlistTableModel.select();
 
-    //construct child model
+    // construct child model
     TreeItem *rootItem = new TreeItem();
     m_childModel.setRootItem(rootItem);
     constructChildModel();
@@ -487,16 +487,13 @@ void PlaylistFeature::slotExportPlaylist() {
 
 void PlaylistFeature::slotAddToAutoDJ() {
     //qDebug() << "slotAddToAutoDJ() row:" << m_lastRightClickedIndex.data();
-	addToAutoDJ(false); // Top = True
+    addToAutoDJ(false); // Top = True
 }
-
 
 void PlaylistFeature::slotAddToAutoDJTop() {
     //qDebug() << "slotAddToAutoDJTop() row:" << m_lastRightClickedIndex.data();
-	addToAutoDJ(true); // bTop = True
+    addToAutoDJ(true); // bTop = True
 }
-
-
 
 void PlaylistFeature::addToAutoDJ(bool bTop) {
     //qDebug() << "slotAddToAutoDJ() row:" << m_lastRightClickedIndex.data();
@@ -505,8 +502,8 @@ void PlaylistFeature::addToAutoDJ(bool bTop) {
         int playlistId = m_playlistDao.getPlaylistIdFromName(
             m_lastRightClickedIndex.data().toString());
         if (playlistId >= 0) {
-       		// Insert this playlist
-        	m_playlistDao.addToAutoDJQueue(playlistId, bTop);
+            // Insert this playlist
+            m_playlistDao.addToAutoDJQueue(playlistId, bTop);
         }
     }
     emit(featureUpdated());
