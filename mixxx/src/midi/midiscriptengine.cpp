@@ -942,18 +942,21 @@ QScriptValue MidiScriptEngine::connectControl(QString group, QString name, QScri
     }
 
     if (callback.isString()) {
-        MidiScriptEngineControllerConnection cb = 
-            MidiScriptEngineControllerConnection(callback.toString());
-        function = m_pEngine->evaluate(callback.toString());
+        MidiScriptEngineControllerConnection cb;
+        cb.key = key;
+        cb.id = callback.toString();
         
+        if(disconnect) {
+            cb.key = key;
+            disconnectControl(cb);
+            return QScriptValue(TRUE);
+        }
+
+        function = m_pEngine->evaluate(callback.toString());
         if (checkException() || !function.isFunction()) {
             return QScriptValue(FALSE);
         }
 
-        if(disconnect) {
-            disconnectControl(cb);
-            return QScriptValue(TRUE);
-        }
         // Do not allow multiple connections to named functions
         else if (m_connectedControls.contains(key, cb)) {
             // Return a wrapper to the conn
@@ -970,9 +973,12 @@ QScriptValue MidiScriptEngine::connectControl(QString group, QString name, QScri
     else if (callback.isFunction()) {
         function = callback;
     }
+    else {
+        qWarning() << "Invalid callback";
+        return QScriptValue(FALSE);
+    }
 
     if (function.isFunction()) {
-        //qDebug() << "MidiScriptEngine::connectControl connected " << group << name << " to " << function;
         connect(cobj, SIGNAL(valueChanged(double)),
                     this, SLOT(slotValueChanged(double)),
                     Qt::QueuedConnection);
@@ -1035,10 +1041,9 @@ void MidiScriptEngine::disconnectControl(MidiScriptEngineControllerConnection co
                             this, SLOT(slotValueChanged(double)));
         }
     }
-}
-
-MidiScriptEngineControllerConnection::MidiScriptEngineControllerConnection(QString id) {
-    this->id = id;
+    else {
+        qWarning() << "Could not Disconnect connection" << conn.id;
+    }
 }
 
 void MidiScriptEngineControllerConnectionScriptValueProxy::disconnect() {
