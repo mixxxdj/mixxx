@@ -33,9 +33,6 @@ class MidiScriptEngine;
 
 class MidiScriptEngineControllerConnection {
   public:
-    // Used to make comparisons for named functions, bla bla bla
-    MidiScriptEngineControllerConnection(QString id = "");
-
     ConfigKey key;
     QString id;
     QScriptValue function;
@@ -64,7 +61,7 @@ class MidiScriptEngineControllerConnectionScriptValueProxy : public QObject {
 
 /* comparison function for ConfigKeys. Used by a QHash in ControlObject */
 inline bool operator==(const MidiScriptEngineControllerConnection &c1, const MidiScriptEngineControllerConnection &c2) {
-    return c1.id == c2.id;
+    return c1.id == c2.id && c1.key.group == c2.key.group && c1.key.item == c2.key.item;
 }
 
 class MidiScriptEngine : public QThread {
