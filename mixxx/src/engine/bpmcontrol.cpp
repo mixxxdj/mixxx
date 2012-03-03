@@ -272,6 +272,10 @@ bool BpmControl::syncPhase() {
     double dThisPrevBeat = m_pBeats->findPrevBeat(dThisPosition);
     double dThisNextBeat = m_pBeats->findNextBeat(dThisPosition);
 
+    if (dThisPrevBeat == -1 || dThisNextBeat == -1) {
+        return false;
+    }
+
     // Protect against the case where we are sitting exactly on the beat.
     if (dThisPrevBeat == dThisNextBeat) {
         dThisNextBeat = m_pBeats->findNthBeat(dThisPosition, 2);
@@ -279,6 +283,10 @@ bool BpmControl::syncPhase() {
 
     double dOtherPrevBeat = otherBeats->findPrevBeat(dOtherPosition);
     double dOtherNextBeat = otherBeats->findNextBeat(dOtherPosition);
+
+    if (dOtherPrevBeat == -1 || dOtherNextBeat == -1) {
+        return false;
+    }
 
     // Protect against the case where we are sitting exactly on the beat.
     if (dOtherPrevBeat == dOtherNextBeat) {
