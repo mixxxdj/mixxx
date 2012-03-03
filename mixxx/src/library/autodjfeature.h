@@ -18,7 +18,7 @@ class TrackCollection;
 
 class AutoDJFeature : public LibraryFeature {
     Q_OBJECT
-    public:
+  public:
     AutoDJFeature(QObject* parent,
                   ConfigObject<ConfigValue>* pConfig,
                   TrackCollection* pTrackCollection);
@@ -38,14 +38,14 @@ class AutoDJFeature : public LibraryFeature {
 
     TreeItemModel* getChildModel();
 
-public slots:
+  public slots:
     void activate();
     void activateChild(const QModelIndex& index);
     void onRightClick(const QPoint& globalPos);
     void onRightClickChild(const QPoint& globalPos, QModelIndex index);
     void onLazyChildExpandation(const QModelIndex& index);
 
-private:
+  private:
     ConfigObject<ConfigValue>* m_pConfig;
     TrackCollection* m_pTrackCollection;
     PlaylistDAO& m_playlistDao;
