@@ -1389,6 +1389,7 @@ void MixxxApp::slotHelpAbout() {
 "Jens Nachtigall<br>"
 "Scott Ullrich<br>"
 "Jonas &Aring;dahl<br>"
+"Maxime Bochon<br>"
 
 "</p>"
 "<p align=\"center\"><b>%3</b></p>"
