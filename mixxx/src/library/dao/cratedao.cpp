@@ -199,9 +199,9 @@ bool CrateDAO::addTrackToCrate(int trackId, int crateId) {
 void CrateDAO::removeTrackFromCrates(int trackId) {
     QSqlQuery query(m_database);
     QString queryString = QString("DELETE FROM %1 WHERE %2 = %3")
-            .arg(CRATE_TRACKS_TABLE)
-            .arg(CRATETRACKSTABLE_TRACKID)
-            .arg(QString::number(trackId));
+            .arg(CRATE_TRACKS_TABLE,
+                 CRATETRACKSTABLE_TRACKID,
+                 QString::number(trackId));
     query.prepare(queryString);
     if (!query.exec()) {
         LOG_FAILED_QUERY(query);

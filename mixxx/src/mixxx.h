@@ -114,6 +114,8 @@ class MixxxApp : public QMainWindow
     void slotHelpSupport();
     // Visits a feedback form
     void slotHelpFeedback();
+    // Open the manual.
+    void slotHelpManual();
     // Visits translation interface on launchpad.net
     void slotHelpTranslation();
     /** Change of file to play */
@@ -218,6 +220,8 @@ class MixxxApp : public QMainWindow
     QAction *m_pHelpSupport;
     QAction *m_pHelpFeedback;
     QAction *m_pHelpTranslation;
+    QAction *m_pHelpManual;
+
     int m_iNoPlaylists;
 
     /** Pointer to preference dialog */

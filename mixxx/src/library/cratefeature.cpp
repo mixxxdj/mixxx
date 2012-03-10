@@ -438,6 +438,7 @@ void CrateFeature::slotExportPlaylist(){
 
     // Create list of files of the crate
     QList<QString> playlist_items;
+    // Create a new table model since the main one might have an active search.
     QScopedPointer<CrateTableModel> pCrateTableModel(
         new CrateTableModel(this, m_pTrackCollection));
     pCrateTableModel->setCrate(m_crateTableModel.getCrate());

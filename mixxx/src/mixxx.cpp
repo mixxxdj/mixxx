@@ -76,26 +76,34 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
 {
     m_pApp = a;
 
-    QString buildRevision, buildFlags;
-    #ifdef BUILD_REV
-      buildRevision = BUILD_REV;
-    #endif
+    QString buildBranch, buildRevision, buildFlags;
+#ifdef BUILD_BRANCH
+    buildBranch = BUILD_BRANCH;
+#endif
 
-    #ifdef BUILD_FLAGS
-      buildFlags = BUILD_FLAGS;
-    #endif
+#ifdef BUILD_REV
+    buildRevision = BUILD_REV;
+#endif
 
-    if (buildRevision.trimmed().length() > 0) {
-        if (buildFlags.trimmed().length() > 0)
-            buildRevision = "(bzr r" + buildRevision + "; built on: "
-                + __DATE__ + " @ " + __TIME__ + "; flags: "
-                + buildFlags.trimmed() + ") ";
-        else
-            buildRevision = "(bzr r" + buildRevision + "; built on: "
-                + __DATE__ + " @ " + __TIME__ + ") ";
+#ifdef BUILD_FLAGS
+    buildFlags = BUILD_FLAGS;
+#endif
+
+    QStringList buildInfo;
+    if (!buildBranch.isEmpty() && !buildRevision.isEmpty()) {
+        buildInfo.append(
+            QString("bzr %1 r%2").arg(buildBranch, buildRevision));
+    } else if (!buildRevision.isEmpty()) {
+        buildInfo.append(
+            QString("bzr r%2").arg(buildRevision));
     }
+    buildInfo.append("built on: " __DATE__ " @ " __TIME__);
+    if (!buildFlags.isEmpty()) {
+        buildInfo.append(QString("flags: %1").arg(buildFlags.trimmed()));
+    }
+    QString buildInfoFormatted = QString("(%1)").arg(buildInfo.join("; "));
 
-    qDebug() << "Mixxx" << VERSION << buildRevision << "is starting...";
+    qDebug() << "Mixxx" << VERSION << buildInfoFormatted << "is starting...";
     qDebug() << "Qt version is:" << qVersion();
 
     QCoreApplication::setApplicationName("Mixxx");
@@ -132,28 +140,38 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
         locale = QLocale::system().name();
     }
 
-    // Load Qt translations for this locale
+    // Load Qt translations for this locale from the system translation
+    // path. This is the lowest precedence QTranslator.
     QTranslator* qtTranslator = new QTranslator(a);
-   if( qtTranslator->load("qt_" + locale,
-           QLibraryInfo::location(QLibraryInfo::TranslationsPath))) {
-       a->installTranslator(qtTranslator);
-   }
-   else{
-       delete qtTranslator;
-   }
+    if (qtTranslator->load("qt_" + locale,
+                          QLibraryInfo::location(QLibraryInfo::TranslationsPath))) {
+        a->installTranslator(qtTranslator);
+    } else {
+        delete qtTranslator;
+    }
 
-    // Load Mixxx specific translations for this locale
+    // Load Qt translations for this locale from the Mixxx translations
+    // folder.
+    QTranslator* mixxxQtTranslator = new QTranslator(a);
+    if (mixxxQtTranslator->load("qt_" + locale, translationsFolder)) {
+        a->installTranslator(mixxxQtTranslator);
+    } else {
+        delete mixxxQtTranslator;
+    }
+
+    // Load Mixxx specific translations for this locale from the Mixxx
+    // translations folder.
     QTranslator* mixxxTranslator = new QTranslator(a);
-    bool mixxxLoaded = mixxxTranslator->load("mixxx_" + locale, translationsFolder);
+    bool mixxxLoaded = mixxxTranslator->load("mixxx_" + locale,
+                                             translationsFolder);
     qDebug() << "Loading translations for locale" << locale
-            << "from translations folder" << translationsFolder << ":"
-            << (mixxxLoaded ? "success" : "fail");
-   if (mixxxLoaded) {
-       a->installTranslator(mixxxTranslator);
-   }
-   else {
-       delete mixxxTranslator;
-   }
+             << "from translations folder" << translationsFolder << ":"
+             << (mixxxLoaded ? "success" : "fail");
+    if (mixxxLoaded) {
+        a->installTranslator(mixxxTranslator);
+    } else {
+        delete mixxxTranslator;
+    }
 
     // Store the path in the config database
     m_pConfig->set(ConfigKey("[Config]", "Path"), ConfigValue(qConfigPath));
@@ -727,6 +745,7 @@ void MixxxApp::initActions()
 
     m_pHelpAboutApp = new QAction(tr("&About"), this);
     m_pHelpSupport = new QAction(tr("&Community Support"), this);
+    m_pHelpManual = new QAction(tr("&User Manual"), this);
     m_pHelpFeedback = new QAction(tr("Send Us &Feedback"), this);
     m_pHelpTranslation = new QAction(tr("&Translate this application"), this);
 
@@ -869,6 +888,10 @@ void MixxxApp::initActions()
     m_pHelpSupport->setWhatsThis(tr("Support\n\nGet help with Mixxx"));
     connect(m_pHelpSupport, SIGNAL(triggered()), this, SLOT(slotHelpSupport()));
 
+    m_pHelpManual->setStatusTip(tr("Read the Mixxx user manual."));
+    m_pHelpManual->setWhatsThis(tr("Support\n\nRead the Mixxx user manual."));
+    connect(m_pHelpManual, SIGNAL(triggered()), this, SLOT(slotHelpManual()));
+
     m_pHelpFeedback->setStatusTip(tr("Send feedback to the Mixxx team."));
     m_pHelpFeedback->setWhatsThis(tr("Support\n\nSend feedback to the Mixxx team."));
     connect(m_pHelpFeedback, SIGNAL(triggered()), this, SLOT(slotHelpFeedback()));
@@ -927,6 +950,7 @@ void MixxxApp::initMenuBar()
 
     // menuBar entry helpMenu
     m_pHelpMenu->addAction(m_pHelpSupport);
+    m_pHelpMenu->addAction(m_pHelpManual);
     m_pHelpMenu->addAction(m_pHelpFeedback);
     m_pHelpMenu->addAction(m_pHelpTranslation);
     m_pHelpMenu->addSeparator();
@@ -1144,13 +1168,39 @@ void MixxxApp::slotOptionsRecord(bool toggle)
         m_pRecordingManager->stopRecording();
 }
 
-void MixxxApp::slotHelpAbout()
-{
-
+void MixxxApp::slotHelpAbout() {
+    QString buildBranch, buildRevision;
+#ifdef BUILD_BRANCH
+    buildBranch = BUILD_BRANCH;
+#endif
+#ifdef BUILD_REV
+    buildRevision = BUILD_REV;
+#endif
     DlgAbout *about = new DlgAbout(this);
-    about->version_label->setText(VERSION);
+
+    QStringList version;
+    version.append(VERSION);
+    if (!buildBranch.isEmpty() || !buildRevision.isEmpty()) {
+        QStringList buildInfo;
+        buildInfo.append("build");
+        if (!buildBranch.isEmpty()) {
+            buildInfo.append(buildBranch);
+        }
+        if (!buildRevision.isEmpty()) {
+            buildInfo.append(QString("r%1").arg(buildRevision));
+        }
+        version.append(QString("(%1)").arg(buildInfo.join(" ")));
+    }
+    about->version_label->setText(version.join(" "));
+
+    QString s_devTeam=QString(tr("Mixxx %1 Development Team")).arg(VERSION);
+    QString s_contributions=tr("With contributions from:");
+    QString s_specialThanks=tr("And special thanks to:");
+    QString s_pastDevs=tr("Past Developers");
+    QString s_pastContribs=tr("Past Contributors");
+
     QString credits =
-    QString("<p align=\"center\"><b>Mixxx %1 Development Team</b></p>"
+    QString("<p align=\"center\"><b>%1</b></p>"
 "<p align=\"center\">"
 "Adam Davison<br>"
 "Albert Santoni<br>"
@@ -1165,7 +1215,7 @@ void MixxxApp::slotHelpAbout()
 "Vittorio Colao<br>"
 
 "</p>"
-"<p align=\"center\"><b>With contributions from:</b></p>"
+"<p align=\"center\"><b>%2</b></p>"
 "<p align=\"center\">"
 "Mark Hills<br>"
 "Andre Roth<br>"
@@ -1211,9 +1261,11 @@ void MixxxApp::slotHelpAbout()
 "Jens Nachtigall<br>"
 "Scott Ullrich<br>"
 "Jonas &Aring;dahl<br>"
+"Jonathan Costers<br>"
+"Daniel Lindenfelser<br>"
 
 "</p>"
-"<p align=\"center\"><b>And special thanks to:</b></p>"
+"<p align=\"center\"><b>%3</b></p>"
 "<p align=\"center\">"
 "Vestax<br>"
 "Stanton<br>"
@@ -1231,7 +1283,7 @@ void MixxxApp::slotHelpAbout()
 "Joseph Mattiello<br>"
 "</p>"
 
-"<p align=\"center\"><b>Past Developers</b></p>"
+"<p align=\"center\"><b>%4</b></p>"
 "<p align=\"center\">"
 "Tue Haste Andersen<br>"
 "Ken Haste Andersen<br>"
@@ -1251,7 +1303,7 @@ void MixxxApp::slotHelpAbout()
 "Ryan Baker<br>"
 "</p>"
 
-"<p align=\"center\"><b>Past Contributors</b></p>"
+"<p align=\"center\"><b>%5</b></p>"
 "<p align=\"center\">"
 "Ludek Hor&#225;cek<br>"
 "Svein Magne Bang<br>"
@@ -1285,7 +1337,7 @@ void MixxxApp::slotHelpAbout()
 "Michael Pujos<br>"
 "Claudio Bantaloukas<br>"
 "Pavol Rusnak<br>"
-    "</p>").arg(VERSION);
+    "</p>").arg(s_devTeam,s_contributions,s_specialThanks,s_pastDevs,s_pastContribs);
 
     about->textBrowser->setHtml(credits);
     about->show();
@@ -1308,6 +1360,32 @@ void MixxxApp::slotHelpTranslation() {
     QUrl qTranslationUrl;
     qTranslationUrl.setUrl(MIXXX_TRANSLATION_URL);
     QDesktopServices::openUrl(qTranslationUrl);
+}
+
+void MixxxApp::slotHelpManual() {
+    QDir configDir(m_pConfig->getConfigPath());
+    // Default to the mixxx.org hosted version of the manual.
+    QUrl qManualUrl(MIXXX_MANUAL_URL);
+#if defined(__APPLE__)
+    // We don't include the PDF manual in the bundle on OSX. Default to the
+    // web-hosted version.
+#elif defined(__WINDOWS__)
+    // On Windows, the manual PDF sits in the same folder as the 'skins' folder.
+    if (configDir.exists(MIXXX_MANUAL_FILENAME)) {
+        qManualUrl = QUrl::fromLocalFile(
+            configDir.absoluteFilePath(MIXXX_MANUAL_FILENAME));
+    }
+#elif defined(__LINUX__)
+    // On GNU/Linux, the manual is installed to e.g. /usr/share/mixxx/doc/
+    configDir.cd("doc");
+    if (configDir.exists(MIXXX_MANUAL_FILENAME)) {
+        qManualUrl = QUrl::fromLocalFile(
+            configDir.absoluteFilePath(MIXXX_MANUAL_FILENAME));
+    }
+#else
+    // No idea, default to the mixxx.org hosted version.
+#endif
+    QDesktopServices::openUrl(qManualUrl);
 }
 
 void MixxxApp::rebootMixxxView() {

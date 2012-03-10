@@ -81,7 +81,7 @@ void MessageHandler(QtMsgType type, const char *input)
 {
     static QMutex mutex;
     QMutexLocker locker(&mutex);
-    QString tmp = QString("[%1]: %2").arg(QThread::currentThread()->objectName()).arg(input);
+    QString tmp = QString("[%1]: %2").arg(QThread::currentThread()->objectName(), input);
     QByteArray ba = tmp.toLocal8Bit(); //necessary inner step to avoid memory corruption (otherwise the QByteArray is destroyed at the end of the next line which is BAD NEWS BEARS)
     const char* s = ba.constData();
 
@@ -140,6 +140,11 @@ int main(int argc, char * argv[])
     // Check if an instance of Mixxx is already running
     // See http://qt.nokia.com/products/appdev/add-on-products/catalog/4/Utilities/qtsingleapplication
 
+    // These need to be set early on (not sure how early) in order to trigger
+    // logic in the OS X appstore support patch from QTBUG-16549.
+    QCoreApplication::setOrganizationDomain("mixxx.org");
+    QCoreApplication::setOrganizationName("Mixxx");
+
 //it seems like this code should be inline in MessageHandler() but for some reason having it there corrupts the messages sometimes -kousu 2/2009
 
 
@@ -176,24 +181,24 @@ int main(int argc, char * argv[])
     QRegExp fileRx(SoundSourceProxy::supportedFileExtensionsRegex(), Qt::CaseInsensitive);
 
    for (int i = 0; i < argc; ++i) {
-       if (   argv[i] == QString("-h") 
-            || argv[i] == QString("--h") 
+       if (   argv[i] == QString("-h")
+            || argv[i] == QString("--h")
             || argv[i] == QString("--help")
     ) {
-           puts("Mixxx digital DJ software v");
-           puts(VERSION);
-           puts(" - Command line options");
-           puts(
+           fputs("Mixxx digital DJ software v",stdout);
+           fputs(VERSION,stdout);
+           fputs(" - Command line options",stdout);
+           fputs(
                    "\n(These are case-sensitive.)\n\n\
     [FILE]                  Load the specified music file(s) at start-up.\n\
                             Each must be one of the following file types:\n\
-                            ");
+                            ",stdout);
 
             QString fileExtensions = SoundSourceProxy::supportedFileExtensionsString();
             QByteArray fileExtensionsBA = QString(fileExtensions).toUtf8();
-            puts(fileExtensionsBA.constData());
-            puts("\n\n");
-            puts("\
+            fputs(fileExtensionsBA.constData(),stdout);
+            fputs("\n\n",stdout);
+            fputs("\
                             Each file you specify will be loaded into the\n\
                             next virtual deck.\n\
 \n\
@@ -213,9 +218,9 @@ int main(int argc, char * argv[])
 \n\
     -f, --fullScreen        Starts Mixxx in full-screen mode\n\
 \n\
-    -h, --help              Display this help message and exit");
+    -h, --help              Display this help message and exit",stdout);
 
-            puts("\n\n(For more information, see http://mixxx.org/wiki/doku.php/command_line_options)\n");
+            fputs("\n\n(For more information, see http://mixxx.org/wiki/doku.php/command_line_options)\n",stdout);
             return(0);
         }
 

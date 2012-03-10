@@ -312,9 +312,9 @@ bool PlaylistDAO::isHidden(int playlistId) {
 void PlaylistDAO::removeTrackFromPlaylists(int trackId) {
     QSqlQuery query(m_database);
     QString queryString = QString("SELECT %1, %2 FROM %3 ORDER BY %2 DESC")
-            .arg(PLAYLISTTRACKSTABLE_PLAYLISTID)
-            .arg(PLAYLISTTRACKSTABLE_POSITION)
-            .arg(PLAYLIST_TRACKS_TABLE);
+            .arg(PLAYLISTTRACKSTABLE_PLAYLISTID,
+                 PLAYLISTTRACKSTABLE_POSITION,
+                 PLAYLIST_TRACKS_TABLE);
     query.prepare(queryString);
     if (!query.exec()) {
         LOG_FAILED_QUERY(query);
@@ -371,7 +371,8 @@ void PlaylistDAO::removeTrackFromPlaylist(int playlistId, int position)
     QString queryString;
     queryString = QString("UPDATE PlaylistTracks SET position=position-1 "
                           "WHERE position>=%1 AND "
-                          "playlist_id=%2").arg(position).arg(playlistId);
+                          "playlist_id=%2").arg(QString::number(position),
+                                                QString::number(playlistId));
     if (!query.exec(queryString)) {
         LOG_FAILED_QUERY(query);
     }
@@ -392,7 +393,8 @@ void PlaylistDAO::insertTrackIntoPlaylist(int trackId, int playlistId, int posit
     QString queryString =
             QString("UPDATE PlaylistTracks SET position=position+1 "
                     "WHERE position>=%1 AND "
-                    "playlist_id=%2").arg(position).arg(playlistId);
+                    "playlist_id=%2").arg(QString::number(position),
+                                          QString::number(playlistId));
 
     QSqlQuery query(m_database);
     if (!query.exec(queryString)) {

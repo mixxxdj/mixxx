@@ -33,7 +33,7 @@ Hss1394Enumerator::~Hss1394Enumerator() {
         delete dev_it.next();
     }
     using namespace hss1394;
-	Node::Shutdown();
+    Node::Shutdown();
 }
 
 // Enumerate the HSS1394 MIDI devices
@@ -47,22 +47,20 @@ QList<MidiDevice*> Hss1394Enumerator::queryDevices() {
     for(hss1394::uint i=0; i<40; i++) {
         TNodeInfo tNodeInfo;
         bool bInstalled;
-		if (true == Node::Instance()->GetNodeInfo(tNodeInfo, i, NULL, &bInstalled)) {
+        if (Node::Instance()->GetNodeInfo(tNodeInfo, i, NULL, &bInstalled)) {
             QString message = QString("Node %1 (%2): Name = <%3>, GUID = %4 %5, FW[%6]")
-                .arg(i)
-                .arg((bInstalled)?"installed":"not installed")
-                .arg(tNodeInfo.sName.c_str())
-                .arg(tNodeInfo.uGUID.mu32High, 0, 16)
-                .arg(tNodeInfo.uGUID.mu32Low, 0 ,16)
-                .arg(tNodeInfo.uProtocolVersion, 0, 16);
+                    .arg(QString::number(i),
+                         (bInstalled)?"installed":"not installed",
+                         tNodeInfo.sName.c_str(),
+                         QString("%1").arg(tNodeInfo.uGUID.mu32High, 0, 16),
+                         QString("%1").arg(tNodeInfo.uGUID.mu32Low, 0, 16),
+                         QString("%1").arg(tNodeInfo.uProtocolVersion, 0, 16));
             qDebug() << " " << message;
             MidiDeviceHss1394 *currentDevice = new MidiDeviceHss1394(/*new MidiControlProcessor(NULL)*/ NULL,
-                                                                          tNodeInfo,
-                                                                          i);
+                                                                     tNodeInfo,
+                                                                     i);
             m_devices.push_back((MidiDevice*)currentDevice);
-		}
-
-	}
-
+        }
+    }
     return m_devices;
 }

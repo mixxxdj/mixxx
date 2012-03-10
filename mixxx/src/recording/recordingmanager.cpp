@@ -82,8 +82,7 @@ void RecordingManager::startRecording(bool generateFileName) {
         //Append file extension
         QString date_time_str = formatDateTimeForFilename(QDateTime::currentDateTime());
         m_recordingFile = QString("%1.%2")
-                .arg(date_time_str)
-                .arg(encodingType.toLower());
+                .arg(date_time_str, encodingType.toLower());
 
         //Storing the absolutePath of the recording file without file extension
         m_recording_base_file = m_recordingDir;

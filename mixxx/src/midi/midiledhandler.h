@@ -1,4 +1,5 @@
 // By Adam Davison
+//  Heavily modified (hell, nearly rewritten) by Sean M. Pappalardo
 // Code to listen to a control object and send a midi message based on the value
 
 #ifndef MIDILEDHANDLER_H
@@ -15,14 +16,19 @@ public:
 		unsigned char status, unsigned char midino, unsigned char on, unsigned char off);
     ~MidiLedHandler();
 
+    void update();
+
 	static void createHandlers(QDomNode node, MidiDevice & midi);
-	static void destroyHandlers();
+    static void updateAll();
+    static void destroyHandlers(MidiDevice* midi);
 	static QList<MidiLedHandler*> allhandlers;
 
 public slots:
 	void controlChanged(double value);
 
 private:
+    MidiDevice* getMidiDevice() { return &m_midi; };
+    
 	MidiDevice& m_midi;
 	double m_min;
 	double m_max;
@@ -31,7 +37,6 @@ private:
 	unsigned char m_midino;
 	unsigned char m_on;
 	unsigned char m_off;
-	unsigned char lastStatus;
 	QMutex m_reentracyBlock;
 };
 

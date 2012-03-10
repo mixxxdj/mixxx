@@ -267,16 +267,14 @@
             <translation>Hernoemen van de krat is mislukt</translation>
         </message>
         <message>
-            <source>Playlist Files (*.m3u *.pls)</source>
-            <translation>Afspeellijst bestanden (*.m3u *.pls)</translation>
+            <source>Playlist Files (*.m3u *.m3u8 *.pls)</source>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
-            <source>Export Playlist</source>
-            <translation>Afspeellijst exporteren</translation>
-        </message>
-        <message>
-            <source>M3U Playlist (*.m3u);;PLS Playlist (*.pls)</source>
-            <translation>M3U Afspeellijst (*.m3u);;PLS Afspeellijst (*.pls)</translation>
+            <source>M3U Playlist (*.m3u);;M3U8 Playlist (*.m3u8);;PLS Playlist (*.pls)</source>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>A crate cannot have a blank name.</source>
@@ -736,8 +734,9 @@ p, li { white-space: pre-wrap; }
             <translation>16 Hz</translation>
         </message>
         <message>
-            <source>2.045 kHz</source>
-            <translation>2.045 kHz</translation>
+            <source>1.014 kHz</source>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>20.05 kHz</source>
@@ -978,10 +977,6 @@ p, li { white-space: pre-wrap; }
         <message>
             <source>Powered by xwax</source>
             <translation>Mede mogelijk gemaakt door xwax</translation>
-        </message>
-        <message>
-            <source>Apply</source>
-            <translation>Toepassen</translation>
         </message>
         <message>
             <source>&lt;b&gt;This version of Mixxx does not support vinyl control.&lt;/b&gt; &lt;br&gt; Please visit &lt;a href=&quot;http://mixxx.org&quot;&gt;Mixxx.org&lt;/a&gt; for more information.</source>
@@ -1715,12 +1710,14 @@ p, li { white-space: pre-wrap; }
             <translation>Beheren</translation>
         </message>
         <message>
-            <source>Recently Added</source>
-            <translation>Recentelijk toegevoegd</translation>
+            <source>New</source>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
-            <source>All Songs</source>
-            <translation>Alle Nummers</translation>
+            <source>All</source>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Progress</source>
@@ -2046,6 +2043,11 @@ p, li { white-space: pre-wrap; }
     <context>
         <name>LibraryScannerDlg</name>
         <message>
+            <source>Library Scanner</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
             <source>It's taking Mixxx a minute to scan your music library, please wait...</source>
             <translation>Het duurt een minuut voordat Mixxx je music bibliotheek scant, even geduld a.u.b...</translation>
         </message>
@@ -2364,6 +2366,11 @@ Deze informatie wordt niet gebruikt om u persoonlijk te identificeren, contact o
             <translation>&amp;Community Ondersteuning</translation>
         </message>
         <message>
+            <source>&amp;User Manual</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
             <source>Send Us &amp;Feedback</source>
             <translation>Stuur ons &amp;Feedback</translation>
         </message>
@@ -2389,7 +2396,8 @@ Deze informatie wordt niet gebruikt om u persoonlijk te identificeren, contact o
         </message>
         <message>
             <source>Enable live broadcasting</source>
-            <translation>Schakel live uitzenden in</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Ctrl+L</source>
@@ -2515,7 +2523,8 @@ Beats markeren door geluid klikken</translation>
         </message>
         <message>
             <source>Preferences</source>
-            <translation>Voorkeuren</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Preferences
@@ -2532,6 +2541,17 @@ Afspeel en MIDI voorkeuren</translation>
 Get help with Mixxx</source>
             <translation>Ondersteuning
 Krijg hulp met Mixxx</translation>
+        </message>
+        <message>
+            <source>Read the Mixxx user manual.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Support
+Read the Mixxx user manual.</source>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Send feedback to the Mixxx team.</source>
@@ -2658,8 +2678,21 @@ Selecteer a.u.b. je geluidskaart(en) bij de geluid hardware voorkeuren.</transla
             <translation>Afspeellijst Exporteren Mislukt</translation>
         </message>
         <message>
+            <source>File path contains characters, not allowed in m3u playlists.
+</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Export a m3u8 playlist instead!
+</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
             <source>Could not create file</source>
-            <translation>Kon bestand niet maken</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
     </context>
     <context>
@@ -2701,7 +2734,8 @@ Selecteer a.u.b. je geluidskaart(en) bij de geluid hardware voorkeuren.</transla
         </message>
         <message>
             <source>Export Playlist</source>
-            <translation>Afspeellijst exporteren</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Playlists</source>
@@ -2740,12 +2774,14 @@ Selecteer a.u.b. je geluidskaart(en) bij de geluid hardware voorkeuren.</transla
             <translation>Afspeellijst Hernoemen Mislukt</translation>
         </message>
         <message>
-            <source>Playlist Files (*.m3u *.pls)</source>
-            <translation>Afspeellijst bestanden (*.m3u *.pls)</translation>
+            <source>Playlist Files (*.m3u *.m3u8 *.pls)</source>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
-            <source>M3U Playlist (*.m3u);;PLS Playlist (*.pls)</source>
-            <translation>M3U Afspeellijst (*.m3u);;PLS Afspeellijst (*.pls)</translation>
+            <source>M3U Playlist (*.m3u);;M3U8 Playlist (*.m3u8);;PLS Playlist (*.pls)</source>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>A playlist by that name already exists.</source>
@@ -3077,6 +3113,21 @@ Druk op OK om af te sluiten.</translation>
             <translation>Reloop / Sluit knop voor Speler %1</translation>
         </message>
         <message>
+            <source>Setup a loop over 4 beats for Player %1</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Halves the current loop's length for Player %1</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Doubles the current loop's length for Player %1</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
             <source>Hotcue 1 button for Player %1</source>
             <translation>Hotcue 1 knop voor Speler %1</translation>
         </message>
@@ -3109,6 +3160,76 @@ Druk op OK om af te sluiten.</translation>
             <translation>Hotcue 4 verwijder knop voor Speler %1</translation>
         </message>
         <message>
+            <source>Play button for Sampler %1</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Gain knob for Sampler %1</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Headphone listen button for Sampler %1</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>BPM tap button for Sampler %1</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Keylock button for Sampler %1</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Pitch control slider for Sampler %1</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Hotcue 1 button for Sampler %1</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Hotcue 2 button for Sampler %1</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Hotcue 3 button for Sampler %1</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Hotcue 4 button for Sampler %1</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Hotcue 1 delete button for Sampler %1</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Hotcue 2 delete button for Sampler %1</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Hotcue 3 delete button for Sampler %1</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Hotcue 4 delete button for Sampler %1</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
             <source>Switch to the next view (library, playlist..)</source>
             <translation>Schakel over naar de volgende weergave (bibliotheek, afspeellijst ..)</translation>
         </message>
@@ -3131,6 +3252,31 @@ Druk op OK om af te sluiten.</translation>
         <message>
             <source>Load selected track into Player %1</source>
             <translation>Laad geselecteerde nummer in Speler %1</translation>
+        </message>
+        <message>
+            <source>Adjusts the wavelength of the flange effect</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Adjusts the intensity of the flange effect</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Adjusts the phase delay of the flange effect</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Microphone on/off</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Microphone volume</source>
+            <translation type="unfinished">
+            </translation>
         </message>
     </context>
     <context>
@@ -3177,6 +3323,11 @@ Druk op OK om af te sluiten.</translation>
         <message>
             <source>Sampler %1</source>
             <translation>Sampler %1</translation>
+        </message>
+        <message>
+            <source>Reloading track metadata on a loaded track may cause abrupt volume changes. Are you sure?</source>
+            <translation type="unfinished">
+            </translation>
         </message>
     </context>
     <context>

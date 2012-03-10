@@ -51,9 +51,9 @@ void PlaylistTableModel::setPlaylist(int playlistId) {
         "SELECT %2 FROM PlaylistTracks "
         "INNER JOIN library ON library.id = PlaylistTracks.track_id "
         "WHERE PlaylistTracks.playlist_id = %3 AND library.mixxx_deleted = 0")
-            .arg(escaper.escapeString(playlistTableName))
-            .arg(columns.join(","))
-            .arg(playlistId);
+            .arg(escaper.escapeString(playlistTableName),
+                 columns.join(","),
+                 QString::number(playlistId));
     query.prepare(queryString);
     if (!query.exec()) {
         LOG_FAILED_QUERY(query);
@@ -211,41 +211,55 @@ void PlaylistTableModel::moveTrack(const QModelIndex& sourceIndex,
         queryString =
             QString("UPDATE PlaylistTracks SET position=-1 "
                     "WHERE position=%1 AND "
-                    "playlist_id=%2").arg(oldPosition).arg(m_iPlaylistId);
+                    "playlist_id=%2").arg(QString::number(oldPosition),
+                                          QString::number(m_iPlaylistId));
         query.exec(queryString);
         //qDebug() << queryString;
 
         queryString = QString("UPDATE PlaylistTracks SET position=position-1 "
                             "WHERE position > %1 AND "
-                            "playlist_id=%2").arg(oldPosition).arg(m_iPlaylistId);
+                              "playlist_id=%2").arg(
+                                  QString::number(oldPosition),
+                                  QString::number(m_iPlaylistId));
         query.exec(queryString);
 
         queryString = QString("UPDATE PlaylistTracks SET position=position+1 "
                             "WHERE position >= %1 AND " //position < %2 AND "
-                            "playlist_id=%3").arg(newPosition).arg(m_iPlaylistId);
+                            "playlist_id=%3").arg(
+                                QString::number(newPosition),
+                                QString::number(m_iPlaylistId));
         query.exec(queryString);
 
         queryString = QString("UPDATE PlaylistTracks SET position=%1 "
                             "WHERE position=-1 AND "
-                            "playlist_id=%2").arg(newPosition).arg(m_iPlaylistId);
+                            "playlist_id=%2").arg(
+                                QString::number(newPosition),
+                                QString::number(m_iPlaylistId));
         query.exec(queryString);
     }
     else if (newPosition > oldPosition)
     {
         queryString = QString("UPDATE PlaylistTracks SET position=-1 "
                               "WHERE position = %1 AND "
-                              "playlist_id=%2").arg(oldPosition).arg(m_iPlaylistId);
+                              "playlist_id=%2").arg(
+                                  QString::number(oldPosition),
+                                  QString::number(m_iPlaylistId));
         //qDebug() << queryString;
         query.exec(queryString);
 
         queryString = QString("UPDATE PlaylistTracks SET position=position-1 "
                               "WHERE position > %1 AND position <= %2 AND "
-                              "playlist_id=%3").arg(oldPosition).arg(newPosition).arg(m_iPlaylistId);
+                              "playlist_id=%3").arg(
+                                  QString::number(oldPosition),
+                                  QString::number(newPosition),
+                                  QString::number(m_iPlaylistId));
         query.exec(queryString);
 
         queryString = QString("UPDATE PlaylistTracks SET position=%1 "
                               "WHERE position=-1 AND "
-                              "playlist_id=%2").arg(newPosition).arg(m_iPlaylistId);
+                              "playlist_id=%2").arg(
+                                  QString::number(newPosition),
+                                  QString::number(m_iPlaylistId));
         query.exec(queryString);
     }
 
@@ -276,9 +290,15 @@ void PlaylistTableModel::shuffleTracks(const QModelIndex& currentIndex) {
         int random = int(qrand() / (RAND_MAX + 1.0) * (numOfTracks + 1 - shuffleStartIndex) + shuffleStartIndex);
         qDebug() << "Swapping tracks " << i << " and " << random;
         QString swapQuery = "UPDATE PlaylistTracks SET position=%1 WHERE position=%2 AND playlist_id=%3";
-        query.exec(swapQuery.arg(-1).arg(i).arg(m_iPlaylistId));
-        query.exec(swapQuery.arg(i).arg(random).arg(m_iPlaylistId));
-        query.exec(swapQuery.arg(random).arg(-1).arg(m_iPlaylistId));
+        query.exec(swapQuery.arg(QString::number(-1),
+                                 QString::number(i),
+                                 QString::number(m_iPlaylistId)));
+        query.exec(swapQuery.arg(QString::number(i),
+                                 QString::number(random),
+                                 QString::number(m_iPlaylistId)));
+        query.exec(swapQuery.arg(QString::number(random),
+                                 QString::number(-1),
+                                 QString::number(m_iPlaylistId)));
 
         if (query.lastError().isValid())
             qDebug() << query.lastError();
