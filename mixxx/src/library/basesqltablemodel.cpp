@@ -43,6 +43,8 @@ void BaseSqlTableModel::initHeaderData() {
                   Qt::Horizontal, tr("Album"));
     setHeaderData(fieldIndex(LIBRARYTABLE_GENRE),
                   Qt::Horizontal, tr("Genre"));
+    setHeaderData(fieldIndex(LIBRARYTABLE_COMPOSER),
+                  Qt::Horizontal, tr("Composer"));
     setHeaderData(fieldIndex(LIBRARYTABLE_YEAR),
                   Qt::Horizontal, tr("Year"));
     setHeaderData(fieldIndex(LIBRARYTABLE_FILETYPE),
@@ -127,7 +129,7 @@ QString BaseSqlTableModel::orderByClause() const {
 
     QString s;
     s.append(QLatin1String("ORDER BY "));
-    QString sort_field = QString("%1.%2").arg(m_tableName).arg(field);
+    QString sort_field = QString("%1.%2").arg(m_tableName, field);
     s.append(sort_field);
 
     s.append((m_eSortOrder == Qt::AscendingOrder) ? QLatin1String(" ASC") :
@@ -170,7 +172,7 @@ void BaseSqlTableModel::select() {
     QString columns = m_tableColumnsJoined;
     QString orderBy = orderByClause();
     QString queryString = QString("SELECT %1 FROM %2 %3")
-            .arg(columns).arg(m_tableName).arg(orderBy);
+            .arg(columns, m_tableName, orderBy);
 
     if (sDebug) {
         qDebug() << this << "select() executing:" << queryString;
@@ -528,7 +530,6 @@ Qt::ItemFlags BaseSqlTableModel::readWriteFlags(
     // waveform widget to load a track into a Player).
     defaultFlags |= Qt::ItemIsDragEnabled;
 
-    int row = index.row();
     int column = index.column();
 
     if ( column == fieldIndex(LIBRARYTABLE_FILETYPE)
@@ -609,6 +610,8 @@ void BaseSqlTableModel::setTrackValueForColumn(TrackPointer pTrack, int column,
         pTrack->setYear(value.toString());
     } else if (fieldIndex(LIBRARYTABLE_GENRE) == column) {
         pTrack->setGenre(value.toString());
+    } else if (fieldIndex(LIBRARYTABLE_COMPOSER) == column) {
+        pTrack->setComposer(value.toString());
     } else if (fieldIndex(LIBRARYTABLE_FILETYPE) == column) {
         pTrack->setType(value.toString());
     } else if (fieldIndex(LIBRARYTABLE_TRACKNUMBER) == column) {

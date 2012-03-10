@@ -136,7 +136,7 @@ void DlgPrefSound::slotApply() {
             error = QString(tr("Two outputs cannot share channels on %1")).arg(deviceName);
             break;
         default:
-            error = QString(tr("Error opening %1\n%2")).arg(deviceName).arg(detailedError);
+            error = QString(tr("Error opening %1\n%2")).arg(deviceName, detailedError);
             break;
         }
         QMessageBox::warning(NULL, tr("Configuration error"), error);

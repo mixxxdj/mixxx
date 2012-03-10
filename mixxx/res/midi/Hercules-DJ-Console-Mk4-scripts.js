@@ -22,7 +22,7 @@ HerculesMk4.jogFastPosition=[0,0];
 
 
 
-HerculesMk4.init = function (id) { 
+HerculesMk4.init = function (id) {
 	// Switch off all LEDs
 	for (var i=1; i<95; i++) midi.sendShortMsg(0x90, i, 0x00);
 	// Switch-on the LEDs for improve the usability
@@ -39,7 +39,7 @@ HerculesMk4.shutdown = function (id) {
 
 
 HerculesMk4.loadTrack = function (midino, control, value, status, group) {
-	// Load the selected track in the corresponding deck only if the track is 
+	// Load the selected track in the corresponding deck only if the track is
 	// paused
 
 	if(value && engine.getValue(group, "play") != 1) {
@@ -47,7 +47,7 @@ HerculesMk4.loadTrack = function (midino, control, value, status, group) {
 		engine.setValue(group, "rate", 0);
 		}
 	else engine.setValue(group, "LoadSelectedTrack", 0);
-};		
+};
 
 
 HerculesMk4.scroll = function (midino, control, value, status, group) {
@@ -56,7 +56,7 @@ HerculesMk4.scroll = function (midino, control, value, status, group) {
 	// This function scroll up or down 10 tracks on the playlist, like the mouse
 	// scroll.
 
-	if(control == 0x2C && value == 0x7F) {	
+	if(control == 0x2C && value == 0x7F) {
 		engine.setValue("[Playlist]", "SelectPrevTrack", "1");
 		engine.setValue("[Playlist]", "SelectPrevTrack", "1");
 		engine.setValue("[Playlist]", "SelectPrevTrack", "1");
@@ -69,7 +69,7 @@ HerculesMk4.scroll = function (midino, control, value, status, group) {
 		engine.setValue("[Playlist]", "SelectPrevTrack", "1");
 		engine.setValue("[Playlist]", "SelectPrevTrack", "0");
 		}
-	if (control == 0x2B && value == 0x7F) {	
+	if (control == 0x2B && value == 0x7F) {
 		engine.setValue("[Playlist]", "SelectNextTrack", "1");
 		engine.setValue("[Playlist]", "SelectNextTrack", "1");
 		engine.setValue("[Playlist]", "SelectNextTrack", "1");
@@ -88,7 +88,7 @@ HerculesMk4.scroll = function (midino, control, value, status, group) {
 
 HerculesMk4.keyButton = function (midino, control, value, status, group) {
 	// Loop command for the first 4 Key, Hotcues command for the latest 4
-	
+
 	switch (control) {
 
 	// Loop buttons
@@ -158,7 +158,7 @@ HerculesMk4.knobIncrement = function (group, action, minValue, maxValue, central
 	}
 
 	var newValue;
-	
+
 	if (sign == 1 && actual < maxValue) 	newValue = actual + increment;
 	if (sign == -1 && actual > minValue)	newValue = actual + increment;
 	return newValue;
@@ -167,13 +167,13 @@ HerculesMk4.knobIncrement = function (group, action, minValue, maxValue, central
 
 HerculesMk4.deck=function(group){
  //channel 1 -->deck 0
- //channel 2 -->deck 1	
+ //channel 2 -->deck 1
  return (group=="[Channel1]") ? 0 : 1;
 }
 
 HerculesMk4.selectLed=function(group,led){
  //channel 1 -->led 0
- //channel 2 -->led + 20	
+ //channel 2 -->led + 20
  return (group=="[Channel1]") ? led : led+20;
 }
 
@@ -181,15 +181,15 @@ HerculesMk4.selectLed=function(group,led){
 
 HerculesMk4.pitch = function (midino, control, value, status, group) {
 	// Simple: pitch slider
-	
-		
+
+
 	if (HerculesMk4.scratchButton == 1) {
-		var sign = (value == 0x01) ? 1 : -1;				
+		var sign = (value == 0x01) ? 1 : -1;
 		var newValue = HerculesMk4.knobIncrement(group, "pregain", 0, 4, 1, 60, sign);
 		engine.setValue(group, "pregain", newValue);
 	}
-	else {			
-		       
+	else {
+
 		var increment = 0.005 * HerculesMk4.sensivityPitch[HerculesMk4.deck(group)];
 		increment = (value == 0x01) ? increment : increment * -1;
 		engine.setValue(group, "rate", engine.getValue(group, "rate") + increment);
@@ -200,24 +200,24 @@ HerculesMk4.pitch = function (midino, control, value, status, group) {
 HerculesMk4.pfl = function (midino, control, value, status, group) {
 
 	if(value){
-	
+
 		engine.setValue(group,"pfl",(engine.getValue(group,"pfl")) ? 0 :1 );
-	
+
 		var pfl1=engine.getValue("[Channel1]","pfl");
 		var pfl2=engine.getValue("[Channel2]","pfl");
-	
-		
+
+
 		var actualMixCue=engine.getValue("[Master]","headMix");
-		
+
 		if(pfl1==0 && pfl2==0){
 			HerculesMk4.antiguoMixCue=actualMixCue;
 			engine.setValue("[Master]","headMix",1);
-		}else{			
+		}else{
 			if(actualMixCue==1){
-				engine.setValue("[Master]","headMix",antiguoMixCue);
-			}			
+				engine.setValue("[Master]","headMix",HerculesMk4.antiguoMixCue);
+			}
 		};
-	};	
+	};
 };
 
 
@@ -226,62 +226,62 @@ HerculesMk4.pfl = function (midino, control, value, status, group) {
 HerculesMk4.pitchbend = function (midino, control, value, status, group) {
 	// Pitch - : set pitch sensivity
 	// Pitch +:  set jog fast position
-	
+
 	//ignore when releasing the button
 	if(value==0x00) return;
-	
+
 	if (control == 0x0B || control == 0x1F) { // Pitchbend +
 		var newValue = (HerculesMk4.jogFastPosition[HerculesMk4.deck(group)]==1)? 0 : 1;
-		
+
 		HerculesMk4.jogFastPosition[HerculesMk4.deck(group)]=newValue;
-		
+
 		if(newValue==1){
 			midi.sendShortMsg(0x90, HerculesMk4.selectLed(group,11), 0x7f);
 		}else{
 			midi.sendShortMsg(0x90, HerculesMk4.selectLed(group,11), 0x00);
-		}		
+		}
 	}
-	else { // Pitchbend -		
+	else { // Pitchbend -
 		HerculesMk4.sensivityPitch[HerculesMk4.deck(group)]=HerculesMk4.toglePitchSensivity(group,HerculesMk4.sensivityPitch[HerculesMk4.deck(group)]);
-		
+
 	}
-	
+
 };
 
 
 HerculesMk4.toglePitchSensivity=function (group,sensivity) {
-	
+
 	sensivity=sensivity+2;
-	
-	if(sensivity>5){ 
+
+	if(sensivity>5){
 		sensivity=1;
 	}
-	
-	
-	
+
+
+
 	if(sensivity==1){
 		//pitch very fine
 		midi.sendShortMsg(0x90, HerculesMk4.selectLed(group,10), 0x00);	// minus led off
 		midi.sendShortMsg(0x90, HerculesMk4.selectLed(group,58), 0x7F);	// Blink minus led
-		
+
 	} else if (sensivity==3){
 		//pitch fine
 		midi.sendShortMsg(0x90, HerculesMk4.selectLed(group,58), 0x00);	// Blink minus led off
 		midi.sendShortMsg(0x90, HerculesMk4.selectLed(group,10), 0x7F);	// minus led
-		
+
 	} else {
 		//pitch coarse
 		midi.sendShortMsg(0x90, HerculesMk4.selectLed(group,58), 0x00);	// Blink minus led off
 		midi.sendShortMsg(0x90, HerculesMk4.selectLed(group,10), 0x00);	// minus led off
 	}
-	
+
 	return sensivity;
-	
+
 }
-		
+
 HerculesMk4.cue = function (midino, control, value, status, group) {
 	// Don't set Cue accidentaly at the end of the song
-	
+
 	if(engine.getValue(group, "playposition") <= 0.97) {
 		engine.setValue(group, "cue_default", value ? 1 : 0);
 	}
@@ -289,12 +289,12 @@ HerculesMk4.cue = function (midino, control, value, status, group) {
 };
 
 HerculesMk4.scratch = function (midino, control, value, status, group) {
-	// The "scratch" button is used like a shift button only for enable the scratch mode on the 
+	// The "scratch" button is used like a shift button only for enable the scratch mode on the
 	// deck A and/or B with the "sync" buttons
 	if (value) {
 		HerculesMk4.scratchButton = 1;
 		//Switch-on the LEDs of Sync buttons while the "scratch" button is hold down
-		midi.sendShortMsg(0x90, 18, 0x7F); 
+		midi.sendShortMsg(0x90, 18, 0x7F);
 		midi.sendShortMsg(0x90, 38, 0x7F);
 		}
 	else {
@@ -305,9 +305,9 @@ HerculesMk4.scratch = function (midino, control, value, status, group) {
 };
 
 HerculesMk4.sync = function (midino, control, value, status, group) {
-	
+
 	if (HerculesMk4.scratchButton && value) { // If the "scratch" button is hold down
-		
+
 		if(HerculesMk4.scratchMode[HerculesMk4.deck(group)]==0) {
 			engine.scratchEnable(HerculesMk4.deck(group)+1, 128, HerculesMk4.standardRpm, HerculesMk4.alpha, HerculesMk4.beta); // Enable the scratch mode on Deck A
 			HerculesMk4.scratchMode[HerculesMk4.deck(group)] = 1;
@@ -317,30 +317,30 @@ HerculesMk4.sync = function (midino, control, value, status, group) {
 			engine.scratchDisable(HerculesMk4.deck(group)+1);
 			HerculesMk4.scratchMode[HerculesMk4.deck(group)] = 0;
 			midi.sendShortMsg(0x90, HerculesMk4.selectLed(group,66), 0x00); // Switch-off the sync led
-		}	
-		
+		}
+
 	}
 	else engine.setValue(group, "beatsync", value ? 1 : 0);
 };
 
 HerculesMk4.jogWheel = function (midino, control, value, status, group) {
 	// This function is called everytime the jog is moved
-	
+
 	var direction=(value == 0x01)? 1: -1;
-	
+
 	engine.scratchTick(HerculesMk4.deck(group)+1, direction);
-	
+
 	var turboSeek=engine.getValue(group,"play")==0 && HerculesMk4.jogFastPosition[HerculesMk4.deck(group)]==1 && HerculesMk4.scratchMode[HerculesMk4.deck(group)]==0;
-		
-	if(turboSeek) {		
+
+	if(turboSeek) {
 		var new_position = engine.getValue(group,"playposition")+ 0.008*direction;
 		if(new_position<0) new_position=0;
 		if(new_position>1) new_position=1;
-		
+
 		engine.setValue(group,"playposition",new_position);
 	}
-	
-	
+
+
 	if( !turboSeek){
 		engine.setValue(group, "jog", direction);
 	}

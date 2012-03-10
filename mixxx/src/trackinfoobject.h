@@ -77,6 +77,7 @@ public:
     Q_PROPERTY(QString title READ getTitle WRITE setTitle)
     Q_PROPERTY(QString album READ getAlbum WRITE setAlbum)
     Q_PROPERTY(QString genre READ getGenre WRITE setGenre)
+    Q_PROPERTY(QString composer READ getComposer WRITE setComposer)
     Q_PROPERTY(QString year READ getYear WRITE setYear)
     Q_PROPERTY(QString track_number READ getTrackNumber WRITE setTrackNumber)
     Q_PROPERTY(int times_played READ getTimesPlayed)
@@ -172,6 +173,10 @@ public:
     QString getGenre() const;
     /** Set genre */
     void setGenre(QString);
+    /** Return composer */
+    QString getComposer() const;
+    /** Set composer */
+    void setComposer(QString);
     /** Return Track Number */
     QString getTrackNumber() const;
     /** Set Track Number */
@@ -319,6 +324,8 @@ public:
     QString m_sTitle;
     /** Genre */
     QString m_sGenre;
+    /** Composer */
+    QString m_sComposer;
     /** Year */
     QString m_sYear;
     /** Track Number */

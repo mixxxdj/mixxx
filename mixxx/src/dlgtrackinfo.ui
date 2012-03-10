@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>448</width>
-    <height>571</height>
+    <height>615</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -135,7 +135,22 @@
          <item row="5" column="1" colspan="3">
           <widget class="QLineEdit" name="txtGenre"/>
          </item>
+         
          <item row="6" column="0">
+          <widget class="QLabel" name="label_11">
+           <property name="text">
+            <string>Composer:</string>
+           </property>
+           <property name="buddy" >
+            <cstring>txtComposer</cstring>
+           </property>
+          </widget>
+         </item>
+         <item row="6" column="1" colspan="3">
+          <widget class="QLineEdit" name="txtComposer"/>
+         </item>
+         
+         <item row="7" column="0">
           <widget class="QLabel" name="label_5">
            <property name="text">
             <string>Filename:</string>
@@ -145,7 +160,7 @@
            </property>
           </widget>
          </item>
-         <item row="6" column="1" colspan="3">
+         <item row="7" column="1" colspan="3">
           <widget class="QLineEdit" name="txtFilepath">
            <property name="enabled">
             <bool>true</bool>
@@ -169,21 +184,21 @@
            </property>
           </widget>
          </item>
-         <item row="8" column="2">
+         <item row="9" column="2">
           <widget class="QLabel" name="Type">
            <property name="text">
             <string>File Type:</string>
            </property>
           </widget>
          </item>
-         <item row="8" column="3">
+         <item row="9" column="3">
           <widget class="QLabel" name="txtType">
            <property name="text">
             <string>77</string>
            </property>
           </widget>
          </item>
-         <item row="9" column="0">
+         <item row="10" column="0">
           <widget class="QLabel" name="label_4">
            <property name="text">
             <string>Comments:</string>
@@ -193,7 +208,7 @@
            </property>
           </widget>
          </item>
-         <item row="9" column="1" colspan="3">
+         <item row="10" column="1" colspan="3">
           <widget class="QTextEdit" name="txtComment">
             <property name="tabChangesFocus">
               <bool>true</bool>
