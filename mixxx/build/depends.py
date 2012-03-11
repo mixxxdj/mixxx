@@ -416,6 +416,7 @@ class MixxxCore(Feature):
                    "library/preparefeature.cpp",
                    "library/autodjfeature.cpp",
                    "library/mixxxlibraryfeature.cpp",
+                   "library/baseplaylistfeature.cpp",
                    "library/playlistfeature.cpp",
                    "library/setlogfeature.cpp",
 
