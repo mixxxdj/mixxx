@@ -143,7 +143,6 @@ void Library::bindWidget(WLibrarySidebar* pSidebarWidget,
         ->select(m_pSidebarModel->getDefaultSelection(),
                  QItemSelectionModel::SelectCurrent);
     m_pSidebarModel->activateDefaultSelection();
-
 }
 
 void Library::addFeature(LibraryFeature* feature) {

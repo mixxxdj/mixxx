@@ -21,8 +21,7 @@
 #include "controlobjectthread.h"
 #include "engine/enginexfader.h"
 
-PlayerInfo::PlayerInfo()
-{
+PlayerInfo::PlayerInfo() {
     int i;
     m_iNumDecks = ControlObject::getControl(ConfigKey("[Master]","num_decks"))->get();
 
@@ -86,7 +85,7 @@ int PlayerInfo::getCurrentPlayingDeck()
     int MaxVolume = 0;
     int MaxDeck = 0;
     int i;
-    
+
 
     for (i = 1; i <= m_iNumDecks; i++) {
         QString chan = QString("[Channel%1]").arg(i);
@@ -106,7 +105,7 @@ int PlayerInfo::getCurrentPlayingDeck()
 
         EngineXfader::getXfadeGains(xfl, xfr, m_COxfader->get(), 1.0, 0.0);
 
-        // Orientation goes: left is 0, center is 1, right is 2. 
+        // Orientation goes: left is 0, center is 1, right is 2.
         // Leave math out of it...
         orient = m_listCOOrientation[chan]->get();
         if ( orient == 0 )
