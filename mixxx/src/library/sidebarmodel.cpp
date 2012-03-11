@@ -18,7 +18,7 @@ SidebarModel::~SidebarModel() {
 void SidebarModel::addLibraryFeature(LibraryFeature* feature) {
     m_sFeatures.push_back(feature);
     connect(feature, SIGNAL(featureUpdated()),
-    		this, SLOT(refreshData()));
+            this, SLOT(refreshData()));
     connect(feature, SIGNAL(featureIsLoading(LibraryFeature*)),
             this, SLOT(slotFeatureIsLoading(LibraryFeature*)));
     connect(feature, SIGNAL(featureLoadingFinished(LibraryFeature*)),
@@ -115,18 +115,18 @@ QModelIndex SidebarModel::parent(const QModelIndex& index) const {
             // if we have selected an item at the first level of a childnode
 
             if (tree_item_parent) {
-				if (tree_item_parent->data() == "$root"){
-					LibraryFeature* feature = tree_item->getFeature();
-					for (int i = 0; i < m_sFeatures.size(); ++i) {
-						if (feature == m_sFeatures[i]) {
-							 // create a ModelIndex for parent 'this' having a
-							 // library feature at position 'i'
-							return createIndex(i, 0, (void*)this);
-						}
-					}
-				}
-				// if we have selected an item at some deeper level of a childnode
-				return createIndex(tree_item_parent->row(), 0 , tree_item_parent);
+                if (tree_item_parent->data() == "$root"){
+                    LibraryFeature* feature = tree_item->getFeature();
+                    for (int i = 0; i < m_sFeatures.size(); ++i) {
+                        if (feature == m_sFeatures[i]) {
+                            // create a ModelIndex for parent 'this' having a
+                            // library feature at position 'i'
+                            return createIndex(i, 0, (void*)this);
+                        }
+                    }
+                }
+                // if we have selected an item at some deeper level of a childnode
+                return createIndex(tree_item_parent->row(), 0 , tree_item_parent);
             }
         }
     }
@@ -152,7 +152,7 @@ int SidebarModel::rowCount(const QModelIndex& parent) const {
 
 int SidebarModel::columnCount(const QModelIndex& parent) const {
     Q_UNUSED(parent);
-	//qDebug() << "SidebarModel::columnCount parent=" << parent;
+    //qDebug() << "SidebarModel::columnCount parent=" << parent;
     // TODO(rryan) will we ever have columns? I don't think so.
     return 1;
 }
@@ -320,8 +320,8 @@ QModelIndex SidebarModel::translateSourceIndex(const QModelIndex& index) {
 }
 
 void SidebarModel::slotDataChanged(const QModelIndex& topLeft, const QModelIndex& bottomRight) {
-	Q_UNUSED(topLeft);
-	Q_UNUSED(bottomRight);
+    Q_UNUSED(topLeft);
+    Q_UNUSED(bottomRight);
     //qDebug() << "slotDataChanged topLeft:" << topLeft << "bottomRight:" << bottomRight;
 }
 
@@ -340,19 +340,19 @@ void SidebarModel::slotRowsAboutToBeRemoved(const QModelIndex& parent, int start
 }
 
 void SidebarModel::slotRowsInserted(const QModelIndex& parent, int start, int end) {
-	Q_UNUSED(parent);
-	Q_UNUSED(start);
-	Q_UNUSED(end);
-	// qDebug() << "slotRowsInserted" << parent << start << end;
+    Q_UNUSED(parent);
+    Q_UNUSED(start);
+    Q_UNUSED(end);
+    // qDebug() << "slotRowsInserted" << parent << start << end;
     //QModelIndex newParent = translateSourceIndex(parent);
     endInsertRows();
 }
 
 void SidebarModel::slotRowsRemoved(const QModelIndex& parent, int start, int end) {
-	Q_UNUSED(parent);
-	Q_UNUSED(start);
-	Q_UNUSED(end);
-	//qDebug() << "slotRowsRemoved" << parent << start << end;
+    Q_UNUSED(parent);
+    Q_UNUSED(start);
+    Q_UNUSED(end);
+    //qDebug() << "slotRowsRemoved" << parent << start << end;
     //QModelIndex newParent = translateSourceIndex(parent);
     endRemoveRows();
 }
@@ -371,7 +371,7 @@ void SidebarModel::slotModelReset() {
  */
 void SidebarModel::slotFeatureIsLoading(LibraryFeature * feature)
 {
-	featureRenamed(feature);
+    featureRenamed(feature);
     slotFeatureSelect(feature);
 }
 
@@ -379,7 +379,7 @@ void SidebarModel::slotFeatureIsLoading(LibraryFeature * feature)
  * to leave it for code readability reasons
  */
 void SidebarModel::slotFeatureLoadingFinished(LibraryFeature * feature){
-	featureRenamed(feature);
+    featureRenamed(feature);
     slotFeatureSelect(feature);
 }
 
@@ -392,19 +392,18 @@ void SidebarModel::featureRenamed(LibraryFeature* pFeature){
     }
 }
 
-void SidebarModel::slotFeatureSelect(LibraryFeature* pFeature, const QModelIndex& featureIndex)
-{
-	QModelIndex ind;
-	if (featureIndex.isValid()) {
-	    TreeItem* item = (TreeItem*)featureIndex.internalPointer();
-	    ind = createIndex(featureIndex.row(), featureIndex.column(), item);
+void SidebarModel::slotFeatureSelect(LibraryFeature* pFeature, const QModelIndex& featureIndex) {
+    QModelIndex ind;
+    if (featureIndex.isValid()) {
+        TreeItem* item = (TreeItem*)featureIndex.internalPointer();
+        ind = createIndex(featureIndex.row(), featureIndex.column(), item);
     } else {
-		for (int i=0; i < m_sFeatures.size(); ++i) {
-			if (m_sFeatures[i] == pFeature) {
-				ind = index(i, 0);
-				break;
-			}
-		}
+        for (int i=0; i < m_sFeatures.size(); ++i) {
+            if (m_sFeatures[i] == pFeature) {
+                ind = index(i, 0);
+                break;
+            }
+        }
     }
-	emit(selectIndex(ind));
+    emit(selectIndex(ind));
 }

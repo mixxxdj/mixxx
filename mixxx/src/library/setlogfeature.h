@@ -1,5 +1,4 @@
 // setlogfeature.h
-// Created 8/17/09 by RJ Ryan (rryan@mit.edu)
 
 #ifndef SETLOGFEATURE_H
 #define SETLOGFEATURE_H
@@ -15,8 +14,6 @@
 #include "configobject.h"
 #include "controlobject.h"
 #include "controlobjectthreadmain.h"
-
-
 
 class PlaylistTableModel;
 class TrackCollection;
@@ -43,7 +40,7 @@ public:
   signals:
     void showPage(const QUrl& page);
 
-public slots:
+  public slots:
     void activate();
     void activateChild(const QModelIndex& index);
     void onRightClick(const QPoint& globalPos);
@@ -66,6 +63,7 @@ public slots:
     void clearChildModel();
     void addToAutoDJ(bool bTop);
 
+    ConfigObject<ConfigValue>* m_pConfig;
     TrackCollection* m_pTrackCollection;
     PlaylistTableModel* m_pPlaylistTableModel;
     PlaylistDAO &m_playlistDao;
@@ -81,7 +79,6 @@ public slots:
     ControlObjectThreadMain* m_pCOPlayPos2;
     QModelIndex m_lastRightClickedIndex;
     TreeItemModel m_childModel;
-    ConfigObject<ConfigValue>* m_pConfig;
     QSqlTableModel m_playlistTableModel;
     const static QString m_sSetlogViewName;
     int m_playlistId;

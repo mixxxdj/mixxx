@@ -28,7 +28,7 @@ CrateFeature::CrateFeature(QObject* parent,
           m_crateTableModel(this, pTrackCollection),
           m_pConfig(pConfig) {
     Q_UNUSED(parent);
-	m_pCreateCrateAction = new QAction(tr("New Crate"),this);
+    m_pCreateCrateAction = new QAction(tr("New Crate"),this);
     connect(m_pCreateCrateAction, SIGNAL(triggered()),
             this, SLOT(slotCreateCrate()));
 
@@ -94,7 +94,7 @@ QIcon CrateFeature::getIcon() {
 }
 
 bool CrateFeature::dropAccept(QUrl url) {
-	Q_UNUSED(url)
+    Q_UNUSED(url)
     return false;
 }
 
@@ -334,10 +334,10 @@ void CrateFeature::slotToggleCrateLock()
 */
 QModelIndex CrateFeature::constructChildModel(int selected_id)
 {
-	QList<TreeItem*> data_list;
+    QList<TreeItem*> data_list;
     int nameColumn = m_crateListTableModel.record().indexOf("name");
     int idColumn = m_crateListTableModel.record().indexOf("id");
-	int selected_row = -1;
+    int selected_row = -1;
     // Access the invisible root item
     TreeItem* root = m_childModel.getItem(QModelIndex());
 
@@ -347,9 +347,9 @@ QModelIndex CrateFeature::constructChildModel(int selected_id)
             ind = m_crateListTableModel.index(row, idColumn);
             int crate_id = m_crateListTableModel.data(ind).toInt();
 
-            if ( selected_id == crate_id) {
-            	// save index for selection
-            	selected_row = row;  m_childModel.index(selected_row, 0);
+            if (selected_id == crate_id) {
+                // save index for selection
+                selected_row = row;  m_childModel.index(selected_row, 0);
             }
 
             // Create the TreeItem whose parent is the invisible root item
@@ -361,7 +361,7 @@ QModelIndex CrateFeature::constructChildModel(int selected_id)
     // Append all the newly created TreeItems in a dynamic way to the childmodel
     m_childModel.insertRows(data_list, 0, m_crateListTableModel.rowCount());
     if (selected_row == -1) {
-    	return QModelIndex();
+        return QModelIndex();
     }
     return m_childModel.index(selected_row, 0);
 }
@@ -476,12 +476,12 @@ void CrateFeature::slotExportPlaylist(){
 }
 
 void CrateFeature::slotCrateTableChanged(int crateId) {
-	//qDebug() << "slotPlaylistTableChanged() playlistId:" << playlistId;
+    //qDebug() << "slotPlaylistTableChanged() playlistId:" << playlistId;
     clearChildModel();
     m_crateListTableModel.select();
     m_lastRightClickedIndex = constructChildModel(crateId);
     // Switch the view to the crate.
     m_crateTableModel.setCrate(crateId);
     // Update selection
- 	emit(featureSelect(this, m_lastRightClickedIndex));
+    emit(featureSelect(this, m_lastRightClickedIndex));
 }

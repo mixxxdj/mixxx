@@ -55,7 +55,6 @@ public slots:
     void slotTogglePlaylistLock();
     void slotImportPlaylist();
     void slotExportPlaylist();
-
     void slotPlaylistTableChanged(int playlistId);
 
  private:
@@ -63,6 +62,7 @@ public slots:
     void clearChildModel();
     void addToAutoDJ(bool bTop);
 
+    ConfigObject<ConfigValue>* m_pConfig;
     TrackCollection* m_pTrackCollection;
     PlaylistTableModel* m_pPlaylistTableModel;
     PlaylistDAO &m_playlistDao;
@@ -78,7 +78,7 @@ public slots:
     QSqlTableModel m_playlistTableModel;
     QModelIndex m_lastRightClickedIndex;
     TreeItemModel m_childModel;
-    ConfigObject<ConfigValue>* m_pConfig;
+
 };
 
 #endif /* PLAYLISTFEATURE_H */

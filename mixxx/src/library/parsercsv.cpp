@@ -15,21 +15,17 @@
 #include <QDebug>
 #include <QDir>
 #include <QMessageBox>
-#include "parsercsv.h"
 #include <QUrl>
 
-ParserCsv::ParserCsv() : Parser()
-{
+#include "library/parsercsv.h"
+
+ParserCsv::ParserCsv() : Parser() {
 }
 
-ParserCsv::~ParserCsv()
-{
-
+ParserCsv::~ParserCsv() {
 }
 
-
-QList<QString> ParserCsv::parse(QString sFilename)
-{
+QList<QString> ParserCsv::parse(QString sFilename) {
     QFile file(sFilename);
     QString basepath = sFilename.section('/', 0, -2);
 
@@ -59,7 +55,6 @@ QList<QString> ParserCsv::parse(QString sFilename)
                         fi.setFile(basepath,fi.filePath());
                     }
                     m_sLocations.append(fi.filePath());
-
                 }
             }
         }

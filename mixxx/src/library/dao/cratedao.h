@@ -56,4 +56,3 @@ class CrateDAO : public QObject, public virtual DAO {
 };
 
 #endif /* CRATEDAO_H */
-

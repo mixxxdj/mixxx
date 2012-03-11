@@ -10,7 +10,6 @@
 #include "library/parserpls.h"
 #include "library/parsercsv.h"
 
-
 #include "widget/wlibrary.h"
 #include "widget/wlibrarysidebar.h"
 #include "widget/wlibrarytextbrowser.h"
@@ -24,11 +23,11 @@ PlaylistFeature::PlaylistFeature(QObject* parent,
                                  TrackCollection* pTrackCollection,
                                  ConfigObject<ConfigValue>* pConfig)
         : LibraryFeature(parent),
+          m_pConfig(pConfig),
           m_pTrackCollection(pTrackCollection),
           m_playlistDao(pTrackCollection->getPlaylistDAO()),
           m_trackDao(pTrackCollection->getTrackDAO()),
-          m_playlistTableModel(this, pTrackCollection->getDatabase()),
-          m_pConfig(pConfig) {
+          m_playlistTableModel(this, pTrackCollection->getDatabase()) {
     m_pPlaylistTableModel = new PlaylistTableModel(this, pTrackCollection,
                                                    "mixxx.db.model.playlist");
 
@@ -36,11 +35,11 @@ PlaylistFeature::PlaylistFeature(QObject* parent,
     connect(m_pCreatePlaylistAction, SIGNAL(triggered()),
             this, SLOT(slotCreatePlaylist()));
 
-    m_pAddToAutoDJAction = new QAction(tr("Add to Auto DJ bottom"),this);
+    m_pAddToAutoDJAction = new QAction(tr("Add to Auto DJ Queue (bottom)"), this);
     connect(m_pAddToAutoDJAction, SIGNAL(triggered()),
             this, SLOT(slotAddToAutoDJ()));
 
-    m_pAddToAutoDJTopAction = new QAction(tr("Add to Auto DJ top 2"),this);
+    m_pAddToAutoDJTopAction = new QAction(tr("Add to Auto DJ Queue (top)"), this);
     connect(m_pAddToAutoDJTopAction, SIGNAL(triggered()),
             this, SLOT(slotAddToAutoDJTop()));
 
@@ -218,16 +217,14 @@ void PlaylistFeature::slotCreatePlaylist() {
     }
 }
 
-void PlaylistFeature::slotRenamePlaylist()
-{
-    qDebug() << "slotRenamePlaylist()";
-
+void PlaylistFeature::slotRenamePlaylist() {
     QString oldName = m_lastRightClickedIndex.data().toString();
     int playlistId = m_playlistDao.getPlaylistIdFromName(oldName);
     bool locked = m_playlistDao.isPlaylistLocked(playlistId);
 
     if (locked) {
-        qDebug() << "Skipping playlist rename because playlist" << playlistId << "is locked.";
+        qDebug() << "Skipping playlist rename because playlist" << playlistId
+                 << "is locked.";
         return;
     }
 
@@ -265,12 +262,10 @@ void PlaylistFeature::slotRenamePlaylist()
     } while (!validNameGiven);
 
     m_playlistDao.renamePlaylist(playlistId, newName);
-	emit(featureUpdated());
+    emit(featureUpdated());
 }
 
-
-void PlaylistFeature::slotTogglePlaylistLock()
-{
+void PlaylistFeature::slotTogglePlaylistLock() {
     QString playlistName = m_lastRightClickedIndex.data().toString();
     int playlistId = m_playlistDao.getPlaylistIdFromName(playlistName);
     bool locked = !m_playlistDao.isPlaylistLocked(playlistId);
@@ -379,7 +374,7 @@ QModelIndex PlaylistFeature::constructChildModel(int selected_id)
         int playlist_id = m_playlistTableModel.data(ind).toInt();
         bool locked = m_playlistDao.isPlaylistLocked(playlist_id);
 
-        if ( selected_id == playlist_id) {
+        if (selected_id == playlist_id) {
             // save index for selection
             selected_row = row;
         }
@@ -414,7 +409,7 @@ void PlaylistFeature::slotImportPlaylist()
         tr("Import Playlist"),
         QDesktopServices::storageLocation(QDesktopServices::MusicLocation),
         tr("Playlist Files (*.m3u *.m3u8 *.pls *.csv)"));
-    //Exit method if user cancelled the open dialog.
+    // Exit method if user cancelled the open dialog.
     if (playlist_file.isNull() || playlist_file.isEmpty()) {
         return;
     }
@@ -522,7 +517,7 @@ void PlaylistFeature::addToAutoDJ(bool bTop) {
         int playlistId = m_playlistDao.getPlaylistIdFromName(
             m_lastRightClickedIndex.data().toString());
         if (playlistId >= 0) {
-       	    // Insert this playlist
+            // Insert this playlist
             m_playlistDao.addToAutoDJQueue(playlistId, bTop);
         }
     }
@@ -531,15 +526,14 @@ void PlaylistFeature::addToAutoDJ(bool bTop) {
 
 void PlaylistFeature::slotPlaylistTableChanged(int playlistId) {
     //qDebug() << "slotPlaylistTableChanged() playlistId:" << playlistId;
-    enum PlaylistDAO::hidden_type type = m_playlistDao.getHiddenType(playlistId);
-    if (   type == PlaylistDAO::PLHT_NOT_HIDDEN
-        || type == PlaylistDAO::PLHT_UNKNOWN      // In case of a deleted Playlist
-    ){
+    PlaylistDAO::HiddenType type = m_playlistDao.getHiddenType(playlistId);
+    if (type == PlaylistDAO::PLHT_NOT_HIDDEN ||
+        type == PlaylistDAO::PLHT_UNKNOWN) {  // In case of a deleted Playlist
         clearChildModel();
         m_playlistTableModel.select();
         m_lastRightClickedIndex = constructChildModel(playlistId);
 
-        if(type != PlaylistDAO::PLHT_UNKNOWN) {
+        if (type != PlaylistDAO::PLHT_UNKNOWN) {
             // Switch the view to the playlist.
             m_pPlaylistTableModel->setPlaylist(playlistId);
             // Update selection
