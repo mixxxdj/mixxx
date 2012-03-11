@@ -11,7 +11,7 @@
 // Copyright: See COPYING file that comes with this distribution
 //
 //
-#include "parser.h"
+#include "library/parser.h"
 #include "library/basesqltablemodel.h"
 
 #ifndef PARSERCSV_H

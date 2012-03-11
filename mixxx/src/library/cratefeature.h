@@ -48,13 +48,12 @@ class CrateFeature : public LibraryFeature {
     void slotToggleCrateLock();
     void slotImportPlaylist();
     void slotExportPlaylist();
-
     void slotCrateTableChanged(int playlistId);
 
   private:
     QModelIndex constructChildModel(int selected_id);
     void clearChildModel();
-  
+
     TrackCollection* m_pTrackCollection;
     CrateDAO& m_crateDao;
     QAction *m_pCreateCrateAction;
