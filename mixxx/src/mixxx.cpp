@@ -263,8 +263,6 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
         QDir().mkpath(QDir::homePath().append("/").append(SETTINGS_PATH));
     }
 
-
-
     m_pLibrary = new Library(this, m_pConfig,
                              bFirstRun || bUpgraded,
                              m_pRecordingManager);
@@ -440,12 +438,9 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
 
     m_pWidgetParent = NULL;
     // Loads the skin as a child of m_pView
-    // assignment itentional in next line
-    if (!(m_pWidgetParent = m_pSkinLoader->loadDefaultSkin(m_pView,
-                                        m_pKeyboard,
-                                        m_pPlayerManager,
-                                        m_pLibrary,
-                                        m_pVCManager))) {
+    // assignment intentional in next line
+    if (!(m_pWidgetParent = m_pSkinLoader->loadDefaultSkin(
+        m_pView, m_pKeyboard, m_pPlayerManager, m_pLibrary, m_pVCManager))) {
         qDebug() << "Could not load default skin.";
     }
 
@@ -1221,6 +1216,7 @@ void MixxxApp::slotHelpAbout() {
 "Bill Good<br>"
 "Owen Williams<br>"
 "Vittorio Colao<br>"
+"Daniel Sch&uuml;rmann<br>"
 
 "</p>"
 "<p align=\"center\"><b>%2</b></p>"
@@ -1263,7 +1259,6 @@ void MixxxApp::slotHelpAbout() {
 "Joe Colosimo<br>"
 "Shashank Kumar<br>"
 "Till Hofmann<br>"
-"Daniel Sch&uuml;rmann<br>"
 "Peter V&aacute;gner<br>"
 "Thanasis Liappis<br>"
 "Jens Nachtigall<br>"
