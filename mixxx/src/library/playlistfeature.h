@@ -50,7 +50,6 @@ public slots:
     void slotCreatePlaylist();
     void slotDeletePlaylist();
     void slotAddToAutoDJ();
-    void slotAddToAutoDJTop();
     void slotRenamePlaylist();
     void slotTogglePlaylistLock();
     void slotImportPlaylist();
@@ -60,7 +59,6 @@ public slots:
  private:
     void constructChildModel();
     void clearChildModel();
-    void addToAutoDJ(bool bTop);
 
     TrackCollection* m_pTrackCollection;
     PlaylistTableModel* m_pPlaylistTableModel;
@@ -69,7 +67,6 @@ public slots:
     QAction *m_pCreatePlaylistAction;
     QAction *m_pDeletePlaylistAction;
     QAction *m_pAddToAutoDJAction;
-    QAction *m_pAddToAutoDJTopAction;
     QAction *m_pRenamePlaylistAction;
     QAction *m_pLockPlaylistAction;
     QAction *m_pImportPlaylistAction;
