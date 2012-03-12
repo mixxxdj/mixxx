@@ -28,7 +28,7 @@ class CrateDAO : public QObject, public virtual DAO {
     void initialize();
 
     unsigned int crateCount();
-    bool createCrate(const QString& name);
+    int createCrate(const QString& name);
     bool deleteCrate(int crateId);
     bool renameCrate(int crateId, const QString& newName);
     bool setCrateLocked(int crateId, bool locked);
@@ -56,4 +56,3 @@ class CrateDAO : public QObject, public virtual DAO {
 };
 
 #endif /* CRATEDAO_H */
-
