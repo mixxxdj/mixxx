@@ -5,6 +5,7 @@
         <file>images/autodj/bottom.svg</file>
         <file>html/crates.html</file>
         <file>html/playlists.html</file>
+        <file>html/setlogs.html</file>
         <file>images/mixxx-icon.png</file>
         <file>images/ic_mixxx_window.png</file>
         <file>images/templates/logo_mixxx.png</file>
@@ -35,6 +36,8 @@
         <file>images/library/ic_library_rhythmbox.png</file>
         <file>images/library/ic_library_traktor.png</file>
         <file>images/library/ic_library_recordings.png</file>
+        <file>images/library/ic_library_setlog.png</file>
+        <file>images/library/ic_library_setlog_current.png</file>
         <file>translations/mixxx_ar.qm</file>
         <file>translations/mixxx_bg.qm</file>
         <file>translations/mixxx_br.qm</file>

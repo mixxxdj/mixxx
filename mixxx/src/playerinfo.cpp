@@ -22,7 +22,7 @@
 #include "engine/enginexfader.h"
 
 PlayerInfo::PlayerInfo()
-{
+        : m_currentlyPlayingDeck(0) {
     int i;
     m_iNumDecks = ControlObject::getControl(ConfigKey("[Master]","num_decks"))->get();
 
@@ -36,13 +36,12 @@ PlayerInfo::PlayerInfo()
     }
 
     m_COxfader = new ControlObjectThread(ControlObject::getControl(ConfigKey("[Master]","crossfader")));
+
+    startTimer(2000);
 }
 
-PlayerInfo::~PlayerInfo()
-{
+PlayerInfo::~PlayerInfo() {
     int i;
-
-
     m_loadedTrackMap.clear();
 
     for (i = 1; i <= m_iNumDecks; i++) {
@@ -57,14 +56,12 @@ PlayerInfo::~PlayerInfo()
     delete m_COxfader;
 }
 
-PlayerInfo &PlayerInfo::Instance()
-{
+PlayerInfo &PlayerInfo::Instance() {
     static PlayerInfo playerInfo;
     return playerInfo;
 }
 
-TrackPointer PlayerInfo::getTrackInfo(QString group)
-{
+TrackPointer PlayerInfo::getTrackInfo(QString group) {
     QMutexLocker locker(&m_mutex);
 
     if (m_loadedTrackMap.contains(group)) {
@@ -80,13 +77,15 @@ void PlayerInfo::setTrackInfo(QString group, TrackPointer track)
     m_loadedTrackMap[group] = track;
 }
 
-int PlayerInfo::getCurrentPlayingDeck()
-{
+void PlayerInfo::timerEvent(QTimerEvent* pTimerEvent) {
+    updateCurrentPlayingDeck();
+}
+
+void PlayerInfo::updateCurrentPlayingDeck() {
     QMutexLocker locker(&m_mutex);
     int MaxVolume = 0;
     int MaxDeck = 0;
     int i;
-    
 
     for (i = 1; i <= m_iNumDecks; i++) {
         QString chan = QString("[Channel%1]").arg(i);
@@ -95,10 +94,10 @@ int PlayerInfo::getCurrentPlayingDeck()
         float dvol;
         int orient;
 
-        if ( m_listCOPlay[chan]->get() == 0.0 )
+        if (m_listCOPlay[chan]->get() == 0.0 )
             continue;
 
-        if ( m_listCOpregain[chan]->get() <= 0.5 )
+        if (m_listCOpregain[chan]->get() <= 0.5 )
             continue;
 
         if ((fvol = m_listCOVolume[chan]->get()) == 0.0 )
@@ -106,7 +105,7 @@ int PlayerInfo::getCurrentPlayingDeck()
 
         EngineXfader::getXfadeGains(xfl, xfr, m_COxfader->get(), 1.0, 0.0);
 
-        // Orientation goes: left is 0, center is 1, right is 2. 
+        // Orientation goes: left is 0, center is 1, right is 2.
         // Leave math out of it...
         orient = m_listCOOrientation[chan]->get();
         if ( orient == 0 )
@@ -117,23 +116,30 @@ int PlayerInfo::getCurrentPlayingDeck()
             xfvol = 1;
 
         dvol = fvol * xfvol;
-        if ( dvol > MaxVolume ) {
+        if (dvol > MaxVolume ) {
             MaxDeck = i;
             MaxVolume = dvol;
         }
     }
 
-    return MaxDeck;
+    if (MaxDeck != m_currentlyPlayingDeck) {
+        m_currentlyPlayingDeck = MaxDeck;
+        m_mutex.unlock();
+        emit(currentPlayingDeckChanged(MaxDeck));
+    }
 }
 
-TrackPointer PlayerInfo::getCurrentPlayingTrack()
-{
+int PlayerInfo::getCurrentPlayingDeck() {
+    QMutexLocker locker(&m_mutex);
+    return m_currentlyPlayingDeck;
+}
+
+TrackPointer PlayerInfo::getCurrentPlayingTrack() {
     int deck = getCurrentPlayingDeck();
-    if ( deck ) {
+    if (deck) {
         QString chan = QString("[Channel%1]").arg(deck);
         return getTrackInfo(chan);
     }
-
     return TrackPointer();
 }
 
