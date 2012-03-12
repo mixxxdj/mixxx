@@ -1390,6 +1390,7 @@ void MixxxApp::slotHelpAbout() {
 "Scott Ullrich<br>"
 "Jonas &Aring;dahl<br>"
 "Maxime Bochon<br>"
+"Akash Shetye<br>"
 
 "</p>"
 "<p align=\"center\"><b>%3</b></p>"
@@ -1653,7 +1654,9 @@ void MixxxApp::checkDirectRendering() {
 
 bool MixxxApp::confirmExit() {
     bool playing(false);
+    bool playingSampler(false);
     unsigned int deckCount = m_pPlayerManager->numDecks();
+    unsigned int samplerCount = m_pPlayerManager->numSamplers();
     for (unsigned int i = 0; i < deckCount; ++i) {
         ControlObject *pPlayCO(
             ControlObject::getControl(
@@ -1665,10 +1668,29 @@ bool MixxxApp::confirmExit() {
             break;
         }
     }
+    for (unsigned int i = 0; i < samplerCount; ++i) {
+        ControlObject *pPlayCO(
+            ControlObject::getControl(
+                ConfigKey(QString("[Sampler%1]").arg(i + 1), "play")
+            )
+        );
+        if (pPlayCO && pPlayCO->get()) {
+            playingSampler = true;
+            break;
+        }
+    }
     if (playing) {
         QMessageBox::StandardButton btn = QMessageBox::question(this,
             tr("Confirm Exit"),
             tr("A deck is currently playing. Exit Mixxx?"),
+            QMessageBox::Yes | QMessageBox::No, QMessageBox::No);
+        if (btn == QMessageBox::No) {
+            return false;
+        }
+    } else if (playingSampler) {
+        QMessageBox::StandardButton btn = QMessageBox::question(this,
+            tr("Confirm Exit"),
+            tr("A sampler is currently playing. Exit Mixxx?"),
             QMessageBox::Yes | QMessageBox::No, QMessageBox::No);
         if (btn == QMessageBox::No) {
             return false;
