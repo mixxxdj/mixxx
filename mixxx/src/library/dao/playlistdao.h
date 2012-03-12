@@ -53,15 +53,13 @@ class PlaylistDAO : public QObject, public virtual DAO {
     /** Insert a track into a specific position in a playlist */
     void insertTrackIntoPlaylist(int trackId, int playlistId, int position);
     /** Add a playlist to the Auto-DJ Queue */
-    void addToAutoDJQueue(int playlistId, bool bTop);
+    void addToAutoDJQueue(int playlistId);
   signals:
     void added(int playlistId);
     void deleted(int playlistId);
     void changed(int playlistId);
     void trackAdded(int playlistId, int trackId, int position);
     void trackRemoved(int playlistId, int trackId, int position);
-    void renamed(int playlistId);
-    void lockChanged(int playlistId);
   private:
     QSqlDatabase& m_database;
     DISALLOW_COPY_AND_ASSIGN(PlaylistDAO);

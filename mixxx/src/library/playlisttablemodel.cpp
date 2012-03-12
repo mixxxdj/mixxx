@@ -94,17 +94,6 @@ bool PlaylistTableModel::addTrack(const QModelIndex& index, QString location) {
     return true;
 }
 
-bool PlaylistTableModel::appendTrack(int trackId) {
-    if (trackId < 0) {
-        return false;
-    }
-
-    m_playlistDao.appendTrackToPlaylist(trackId, m_iPlaylistId);
-
-    select();  // Repopulate the data model.
-    return true;
-}
-
 TrackPointer PlaylistTableModel::getTrack(const QModelIndex& index) const {
     //FIXME: use position instead of location for playlist tracks?
 
@@ -337,7 +326,6 @@ bool PlaylistTableModel::isColumnHiddenByDefault(int column) {
 }
 
 QItemDelegate* PlaylistTableModel::delegateForColumn(const int i) {
-    Q_UNUSED(i);
     return NULL;
 }
 
