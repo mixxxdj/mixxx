@@ -236,7 +236,8 @@ class SoundTouch(Dependence):
         # SoundTouch CPU optimizations are only for x86
         # architectures. SoundTouch automatically ignores these files when it is
         # not being built for an architecture that supports them.
-        cpu_detection = '#lib/%s/cpu_detect_x86_win.cpp' if build.toolchain_is_msvs else '#lib/%s/cpu_detect_x86_gcc.cpp'
+        cpu_detection = '#lib/%s/cpu_detect_x86_win.cpp' if build.toolchain_is_msvs else \
+                '#lib/%s/cpu_detect_x86_gcc.cpp'
         sources.append(cpu_detection % self.SOUNDTOUCH_PATH)
         return sources
 
@@ -415,7 +416,9 @@ class MixxxCore(Feature):
                    "library/preparefeature.cpp",
                    "library/autodjfeature.cpp",
                    "library/mixxxlibraryfeature.cpp",
+                   "library/baseplaylistfeature.cpp",
                    "library/playlistfeature.cpp",
+                   "library/setlogfeature.cpp",
 
                    "library/browse/browsetablemodel.cpp",
                    "library/browse/browsethread.cpp",
@@ -473,6 +476,7 @@ class MixxxCore(Feature):
                    "library/parser.cpp",
                    "library/parserpls.cpp",
                    "library/parserm3u.cpp",
+                   "library/parsercsv.cpp",
 
                    "bpm/bpmscheme.cpp",
 

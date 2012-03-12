@@ -221,9 +221,6 @@ Section "Mixxx (required)" SecMixxx
   SetOutPath $INSTDIR\plugins\soundsource
   File /nonfatal /r "${BASE_BUILD_DIR}\dist${BITWIDTH}\plugins\soundsource\*.dll"
 
-  SetOutPath $INSTDIR\translations
-  File /nonfatal /r "${BASE_BUILD_DIR}\dist${BITWIDTH}\translations\*"
-
   SetOutPath $INSTDIR\keyboard
   File "${BASE_BUILD_DIR}\dist${BITWIDTH}\keyboard\Standard.kbd.cfg"
 
@@ -257,6 +254,12 @@ Section "Mixxx (required)" SecMixxx
 SectionEnd
 
 ; Optional sections (can be disabled by the user)
+
+Section "Translations" SecTranslations
+    SetOutPath "$INSTDIR\translations"
+    File /r ${BASE_BUILD_DIR}\dist${BITWIDTH}\translations\*.qm
+    File /r ${QTDIR}\translations\qt_*.qm
+SectionEnd
 
 SectionGroup "MIDI controller mappings" SecControllerMappings
 
@@ -383,8 +386,6 @@ SectionGroup "Additional Skins" SecAddlSkins
 	  File /r /x ".svn" /x ".bzr" /x "Outline*" /x "${DEFAULT_SKIN}" ${BASE_BUILD_DIR}\dist${BITWIDTH}\skins\*-WUXGA
 	SectionEnd
 
-
-
 SectionGroupEnd
 
 Section "Start Menu Shortcuts" SecStartMenu
@@ -408,9 +409,10 @@ SectionEnd
 ; Descriptions
 
   ; Language strings
-  LangString DESC_SecMixxx ${LANG_ENGLISH} "Mixxx itself with the default 1280x800 Deere skin"
+  LangString DESC_SecMixxx ${LANG_ENGLISH} "Mixxx itself in US English with the default 1280x800 Deere skin"
   LangString DESC_SecStartMenu ${LANG_ENGLISH} "Mixxx program group containing useful shortcuts appearing under the [All] Programs section under the Start menu"
   LangString DESC_SecDesktop ${LANG_ENGLISH} "Shortcut to Mixxx placed on the Desktop"
+  LangString DESC_SecTranslations ${LANG_ENGLISH} "Translations for all available languages"
 
   ; Controller mapping descriptions
   LangString DESC_SecControllerMappings ${LANG_ENGLISH} "Mappings that enable popular MIDI controllers to be used with Mixxx"
@@ -437,6 +439,7 @@ SectionEnd
     !insertmacro MUI_DESCRIPTION_TEXT ${SecMixxx} $(DESC_SecMixxx)
     !insertmacro MUI_DESCRIPTION_TEXT ${SecStartMenu} $(DESC_SecStartMenu)
     !insertmacro MUI_DESCRIPTION_TEXT ${SecDesktop} $(DESC_SecDesktop)
+    !insertmacro MUI_DESCRIPTION_TEXT ${SecTranslations} $(DESC_SecTranslations)
     !insertmacro MUI_DESCRIPTION_TEXT ${SecControllerMappings} $(DESC_SecControllerMappings)
     !insertmacro MUI_DESCRIPTION_TEXT ${SecCertifiedMappings} $(DESC_SecCertifiedMappings)
     !insertmacro MUI_DESCRIPTION_TEXT ${SecCommunityMappings} $(DESC_SecCommunityMappings)
@@ -504,12 +507,17 @@ Section "Uninstall"
   ; TODO: Only delete files that were not changed since install
   ; Get this list with dir /b /s <build_dir>\res\midi >> filestodelete.txt  and creative search & replace
   Delete "$INSTDIR\midi\Akai MPD24.midi.xml"
+  Delete "$INSTDIR\midi\American Audio RADIUS 2000 CH1.midi.xml"
+  Delete "$INSTDIR\midi\American Audio RADIUS 2000 CH2.midi.xml"
+  Delete "$INSTDIR\midi\American-Audio-RADIUS-2000-scripts.js"
   Delete "$INSTDIR\midi\American Audio VMS4.midi.xml"
   Delete "$INSTDIR\midi\American-Audio-VMS4-scripts.js"
   Delete "$INSTDIR\midi\Behringer BCD3000.midi.xml"
   Delete "$INSTDIR\midi\Behringer-BCD3000-scripts.js"
   Delete "$INSTDIR\midi\BindableConfigKeys.txt"
   Delete "$INSTDIR\midi\convertToXMLSchemaV1.php"
+  Delete "$INSTDIR\midi\DJ-Tech i-Mix Reload.midi.xml"
+  Delete "$INSTDIR\midi\DJ-Tech-i-Mix-Reload-scripts.js"
   Delete "$INSTDIR\midi\DJTechTools MIDI Fighter.midi.xml"
   Delete "$INSTDIR\midi\DJTechTools-MIDIFighter-scripts.js"
   Delete "$INSTDIR\midi\Evolution_Xsession.midi.xml"
@@ -517,22 +525,22 @@ Section "Uninstall"
   Delete "$INSTDIR\midi\format.txt"
   Delete "$INSTDIR\midi\Hercules DJ Console Mac Edition.midi.xml"
   Delete "$INSTDIR\midi\Hercules DJ Console Mk2.midi.xml"
+  Delete "$INSTDIR\midi\Hercules-DJ-Console-Mk2-scripts.js"
   Delete "$INSTDIR\midi\Hercules DJ Console Mk4.midi.xml"
+  Delete "$INSTDIR\midi\Hercules-DJ-Console-Mk4-scripts.js"
   Delete "$INSTDIR\midi\Hercules DJ Console RMX Advanced.midi.xml"
   Delete "$INSTDIR\midi\Hercules DJ Console RMX.midi.xml"
-  Delete "$INSTDIR\midi\Hercules DJ Control MP3 e2-scripts.js"
-  Delete "$INSTDIR\midi\Hercules DJ Control MP3 e2.midi.xml"
-  Delete "$INSTDIR\midi\Hercules DJ Control MP3.midi.xml"
-  Delete "$INSTDIR\midi\Hercules DJ Control Steel.midi.xml"
-  Delete "$INSTDIR\midi\Hercules-DJ-Console-Mk2-scripts.js"
-  Delete "$INSTDIR\midi\Hercules-DJ-Console-Mk4-scripts.js"
   Delete "$INSTDIR\midi\Hercules-DJ-Console-RMX-scripts.js"
+  Delete "$INSTDIR\midi\Hercules DJ Control MP3 e2.midi.xml"
+  Delete "$INSTDIR\midi\Hercules DJ Control MP3 e2-scripts.js"
+  Delete "$INSTDIR\midi\Hercules DJ Control MP3.midi.xml"
   Delete "$INSTDIR\midi\Hercules-DJ-Control-MP3-scripts.js"
+  Delete "$INSTDIR\midi\Hercules DJ Control Steel.midi.xml"
   Delete "$INSTDIR\midi\Hercules-DJ-Control-Steel-scripts.js"
   Delete "$INSTDIR\midi\Ion Discover DJ.midi.xml"
   Delete "$INSTDIR\midi\Ion-Discover-DJ-scripts.js"
-  Delete "$INSTDIR\midi\M-Audio-Xponent-scripts.js"
   Delete "$INSTDIR\midi\M-Audio_Xponent.midi.xml"
+  Delete "$INSTDIR\midi\M-Audio-Xponent-scripts.js"
   Delete "$INSTDIR\midi\M-Audio_Xsession_pro.midi.xml"
   Delete "$INSTDIR\midi\Midi-Keyboard.midi.xml"
   Delete "$INSTDIR\midi\midi-mappings-scripts.js"
@@ -543,31 +551,39 @@ Section "Uninstall"
   Delete "$INSTDIR\midi\Mixman DM2 (OS X).midi.xml"
   Delete "$INSTDIR\midi\Mixman DM2 (Windows).midi.xml"
   Delete "$INSTDIR\midi\Numark MIXTRACK.midi.xml"
-  Delete "$INSTDIR\midi\Numark NS7.midi.xml"
-  Delete "$INSTDIR\midi\Numark Total Control.midi.xml"
   Delete "$INSTDIR\midi\Numark-MixTrack-scripts.js"
+  Delete "$INSTDIR\midi\Numark NS7.midi.xml"
   Delete "$INSTDIR\midi\Numark-NS7-scripts.js"
+  Delete "$INSTDIR\midi\Numark Total Control.midi.xml"
   Delete "$INSTDIR\midi\Numark-Total-Control-scripts.js"
+  Delete "$INSTDIR\midi\Pioneer CDJ-2000.midi.xml"
+  Delete "$INSTDIR\midi\Pioneer-CDJ-2000-scripts.js"
   Delete "$INSTDIR\midi\Pioneer CDJ-350 Ch1.midi.xml"
   Delete "$INSTDIR\midi\Pioneer CDJ-350 Ch2.midi.xml"
   Delete "$INSTDIR\midi\Pioneer-CDJ-350-scripts.js"
+  Delete "$INSTDIR\midi\Pioneer CDJ-850.midi.xml"
+  Delete "$INSTDIR\midi\Pioneer-CDJ-850-scripts.js"
   Delete "$INSTDIR\midi\Reloop Digital Jockey 2 Controller Edition.midi.xml"
   Delete "$INSTDIR\midi\Reloop-Digital-Jockey2-Controller-scripts.js"
   Delete "$INSTDIR\midi\Stanton SCS.1d.midi.xml"
-  Delete "$INSTDIR\midi\Stanton SCS.1m.midi.xml"
-  Delete "$INSTDIR\midi\Stanton SCS.3d.midi.xml"
-  Delete "$INSTDIR\midi\Stanton SCS.3m.midi.xml"
   Delete "$INSTDIR\midi\Stanton-SCS1d-scripts.js"
+  Delete "$INSTDIR\midi\Stanton SCS.1m.midi.xml"
   Delete "$INSTDIR\midi\Stanton-SCS1m-scripts.js"
+  Delete "$INSTDIR\midi\Stanton SCS.3d.midi.xml"
   Delete "$INSTDIR\midi\Stanton-SCS3d-scripts.js"
+  Delete "$INSTDIR\midi\Stanton SCS.3m.midi.xml"
   Delete "$INSTDIR\midi\Stanton-SCS3m-scripts.js"
+  Delete "$INSTDIR\midi\TrakProDJ iPad.midi.xml"
+  Delete "$INSTDIR\midi\TrakProDJ-iPad-scripts.js"
   Delete "$INSTDIR\midi\us428.midi.xml"
   Delete "$INSTDIR\midi\Vestax Spin.midi.xml"
-  Delete "$INSTDIR\midi\Vestax Typhoon.midi.xml"
-  Delete "$INSTDIR\midi\Vestax VCI-100.midi.xml"
   Delete "$INSTDIR\midi\Vestax-Spin-scripts.js"
+  Delete "$INSTDIR\midi\Vestax Typhoon.midi.xml"
   Delete "$INSTDIR\midi\Vestax-Typhoon-scripts.js"
+  Delete "$INSTDIR\midi\Vestax VCI-100.midi.xml"
   Delete "$INSTDIR\midi\Vestax-VCI-100-scripts.js"
+  Delete "$INSTDIR\midi\Vestax VCI-400.midi.xml"
+  Delete "$INSTDIR\midi\Vestax-VCI-400-scripts.js"
   Delete "$INSTDIR\midi\Wireless DJ App.midi.xml"
   Delete "$INSTDIR\midi\Wireless-DJ-scripts.js"
   ;Delete $INSTDIR\midi\*.* ; Avoid this since it will delete customized files too
