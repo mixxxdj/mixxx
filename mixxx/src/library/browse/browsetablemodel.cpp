@@ -22,7 +22,7 @@ BrowseTableModel::BrowseTableModel(QObject* parent, TrackCollection* pTrackColle
                      "mixxx.db.model.browse"),
           QStandardItemModel(parent),
           m_pTrackCollection(pTrackCollection),
-         m_pRecordingManager(pRecordingManager) {
+          m_pRecordingManager(pRecordingManager) {
     QStringList header_data;
     header_data.insert(COLUMN_FILENAME, tr("Filename"));
     header_data.insert(COLUMN_ARTIST, tr("Artist"));
@@ -61,12 +61,9 @@ BrowseTableModel::BrowseTableModel(QObject* parent, TrackCollection* pTrackColle
     connect(BrowseThread::getInstance(), SIGNAL(rowsAppended(const QList< QList<QStandardItem*> >&, BrowseTableModel*)),
             this, SLOT(slotInsert(const QList< QList<QStandardItem*> >&, BrowseTableModel*)),
             Qt::QueuedConnection);
-
 }
 
-BrowseTableModel::~BrowseTableModel()
-{
-
+BrowseTableModel::~BrowseTableModel() {
 }
 
 const QList<int>& BrowseTableModel::searchColumns() const {
