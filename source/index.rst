@@ -3,7 +3,7 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to Mixxx!
+Mixxx User Manual
 *****************
 
 Mixxx is Free [#f1]_ DJ software for Windows, Mac OS X, and Linux.  **Mixxx gives
