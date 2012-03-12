@@ -560,7 +560,7 @@ void TrackInfoObject::setTimesPlayed(int t)
 
 void TrackInfoObject::incTimesPlayed()
 {
-    setPlayed(true); //setPlayed increases play count
+    setPlayedAndUpdatePlaycount(true);
 }
 
 bool TrackInfoObject::getPlayed() const
@@ -570,18 +570,27 @@ bool TrackInfoObject::getPlayed() const
     return bPlayed;
 }
 
-void TrackInfoObject::setPlayed(bool bPlayed)
+void TrackInfoObject::setPlayedAndUpdatePlaycount(bool bPlayed)
 {
     QMutexLocker lock(&m_qMutex);
     if (bPlayed) {
         ++m_iTimesPlayed;
-	setDirty(true);
+        setDirty(true);
     }
     else if (m_bPlayed && !bPlayed) {
         --m_iTimesPlayed;
-	setDirty(true);
+        setDirty(true);
     }
     m_bPlayed = bPlayed;
+}
+
+void TrackInfoObject::setPlayed(bool bPlayed)
+{
+    QMutexLocker lock(&m_qMutex);
+    if (bPlayed != m_bPlayed) {
+        m_bPlayed = bPlayed;
+        setDirty(true);
+    }
 }
 
 QString TrackInfoObject::getComment() const

@@ -82,6 +82,7 @@ WTrackTableView::~WTrackTableView()
 
     delete m_pReloadMetadataAct;
     delete m_pAutoDJAct;
+    delete m_pAutoDJTopAct;
     delete m_pRemoveAct;
     delete m_pPropertiesAct;
     delete m_pMenu;
@@ -241,7 +242,8 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel *model) {
 void WTrackTableView::disableSorting() {
     // We have to manually do this because setSortingEnabled(false) does not
     // properly disconnect the signals for some reason.
-    disconnect(horizontalHeader(), SIGNAL(sortIndicatorChanged(int, Qt::SortOrder)),
+    disconnect(horizontalHeader(),
+               SIGNAL(sortIndicatorChanged(int, Qt::SortOrder)),
                this, SLOT(doSortByColumn(int)));
     horizontalHeader()->setSortIndicatorShown(false);
 }
@@ -250,17 +252,23 @@ void WTrackTableView::createActions() {
     Q_ASSERT(m_pMenu);
     Q_ASSERT(m_pSamplerMenu);
 
-    m_pRemoveAct = new QAction(tr("Remove"),this);
+    m_pRemoveAct = new QAction(tr("Remove"), this);
     connect(m_pRemoveAct, SIGNAL(triggered()), this, SLOT(slotRemove()));
 
     m_pPropertiesAct = new QAction(tr("Properties..."), this);
-    connect(m_pPropertiesAct, SIGNAL(triggered()), this, SLOT(slotShowTrackInfo()));
+    connect(m_pPropertiesAct, SIGNAL(triggered()),
+            this, SLOT(slotShowTrackInfo()));
 
-    m_pAutoDJAct = new QAction(tr("Add to Auto DJ Queue"),this);
+    m_pAutoDJAct = new QAction(tr("Add to Auto-DJ Queue (bottom)"), this);
     connect(m_pAutoDJAct, SIGNAL(triggered()), this, SLOT(slotSendToAutoDJ()));
 
+    m_pAutoDJTopAct = new QAction(tr("Add to Auto-DJ Queue (top)"), this);
+    connect(m_pAutoDJTopAct, SIGNAL(triggered()),
+            this, SLOT(slotSendToAutoDJTop()));
+
     m_pReloadMetadataAct = new QAction(tr("Reload Track Metadata"), this);
-    connect(m_pReloadMetadataAct, SIGNAL(triggered()), this, SLOT(slotReloadTrackMetadata()));
+    connect(m_pReloadMetadataAct, SIGNAL(triggered()),
+            this, SLOT(slotReloadTrackMetadata()));
 }
 
 void WTrackTableView::slotMouseDoubleClicked(const QModelIndex &index) {
@@ -345,8 +353,7 @@ void WTrackTableView::showTrackInfo(QModelIndex index) {
     m_pTrackInfo->show();
 }
 
-void WTrackTableView::contextMenuEvent(QContextMenuEvent * event)
-{
+void WTrackTableView::contextMenuEvent(QContextMenuEvent* event) {
     QModelIndexList indices = selectionModel()->selectedRows();
 
     // Gray out some stuff if multiple songs were selected.
@@ -356,6 +363,7 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent * event)
 
     if (modelHasCapabilities(TrackModel::TRACKMODELCAPS_ADDTOAUTODJ)) {
         m_pMenu->addAction(m_pAutoDJAct);
+        m_pMenu->addAction(m_pAutoDJTopAct);
         m_pMenu->addSeparator();
     }
 
@@ -800,6 +808,15 @@ void WTrackTableView::loadSelectedTrackToGroup(QString group) {
 }
 
 void WTrackTableView::slotSendToAutoDJ() {
+    // append to auto DJ
+    sendToAutoDJ(false);  // bTop = false
+}
+
+void WTrackTableView::slotSendToAutoDJTop() {
+    sendToAutoDJ(true);  // bTop = true
+}
+
+void WTrackTableView::sendToAutoDJ(bool bTop) {
     if (!modelHasCapabilities(TrackModel::TRACKMODELCAPS_ADDTOAUTODJ)) {
         return;
     }
@@ -819,7 +836,15 @@ void WTrackTableView::slotSendToAutoDJ() {
             (pTrack = trackModel->getTrack(index))) {
             int iTrackId = pTrack->getId();
             if (iTrackId != -1) {
-                playlistDao.appendTrackToPlaylist(iTrackId, iAutoDJPlaylistId);
+                if (bTop) {
+                    // Load track to position two because position one is
+                    // already loaded to the player
+                    playlistDao.insertTrackIntoPlaylist(iTrackId,
+                                                        iAutoDJPlaylistId, 2);
+                } else {
+                    playlistDao.appendTrackToPlaylist(
+                        iTrackId, iAutoDJPlaylistId);
+                }
             }
         }
     }
