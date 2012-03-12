@@ -17,17 +17,12 @@ SetlogFeature::SetlogFeature(QObject* parent,
                              ConfigObject<ConfigValue>* pConfig,
                              TrackCollection* pTrackCollection)
         : BasePlaylistFeature(parent, pConfig, pTrackCollection,
-                              "SETLOGHOME", "qrc:/html/setlogs.html"),
-          m_pCOPlayPos1(NULL),
-          m_pCOPlayPos2(NULL) {
+                              "SETLOGHOME", "qrc:/html/setlogs.html") {
     m_pPlaylistTableModel = new PlaylistTableModel(this, pTrackCollection,
                                                    "mixxx.db.model.setlog");
     m_pJoinWithPreviousAction = new QAction(tr("Join with previous"), this);
     connect(m_pJoinWithPreviousAction, SIGNAL(triggered()),
             this, SLOT(slotJoinWithPrevious()));
-
-    m_oldTrackIdPlayer[0] = 0;
-    m_oldTrackIdPlayer[1] = 0;
 
     //create a new playlist for today
     QString set_log_name_format;
@@ -64,8 +59,6 @@ SetlogFeature::SetlogFeature(QObject* parent,
 }
 
 SetlogFeature::~SetlogFeature() {
-    delete m_pCOPlayPos1;
-    delete m_pCOPlayPos2;
 }
 
 QVariant SetlogFeature::title() {
@@ -82,18 +75,8 @@ void SetlogFeature::bindWidget(WLibrarySidebar* sidebarWidget,
     BasePlaylistFeature::bindWidget(sidebarWidget,
                                     libraryWidget,
                                     keyboard);
-    if (m_pCOPlayPos1 == NULL) {
-        m_pCOPlayPos1 = new ControlObjectThreadMain(
-            ControlObject::getControl(ConfigKey("[Channel1]", "playposition")));
-        connect(m_pCOPlayPos1, SIGNAL(valueChanged(double)),
-                this, SLOT(slotPositionChanged(double)));
-    }
-    if (m_pCOPlayPos2 == NULL) {
-        m_pCOPlayPos2 = new ControlObjectThreadMain(
-            ControlObject::getControl(ConfigKey("[Channel2]", "playposition")));
-        connect(m_pCOPlayPos2, SIGNAL(valueChanged(double)),
-                this, SLOT(slotPositionChanged(double)));
-    }
+    connect(&PlayerInfo::Instance(), SIGNAL(currentPlayingDeckChanged(int)),
+            this, SLOT(slotPlayingDeckChanged(int)));
 }
 
 void SetlogFeature::onRightClick(const QPoint& globalPos) {
@@ -251,33 +234,30 @@ void SetlogFeature::slotJoinWithPrevious() {
     }
 }
 
-void SetlogFeature::slotPositionChanged(double value) {
-    Q_UNUSED(value);
-    TrackPointer currendPlayingTrack;
-    int currendPlayingTrackId = 0;
-
-    int deck = PlayerInfo::Instance().getCurrentPlayingDeck();
-    if ( deck && deck <= 2) {
+void SetlogFeature::slotPlayingDeckChanged(int deck) {
+    if (deck > 0) {
         QString chan = QString("[Channel%1]").arg(deck);
-        currendPlayingTrack = PlayerInfo::Instance().getTrackInfo(chan);
-        if (currendPlayingTrack) {
-            currendPlayingTrackId = currendPlayingTrack->getId();
+        TrackPointer currentPlayingTrack =
+                PlayerInfo::Instance().getTrackInfo(chan);
+        if (!currentPlayingTrack) {
+            return;
         }
-        if (m_oldTrackIdPlayer[deck-1] != currendPlayingTrackId) {
-            // The audience listens to a new track
+        int currentPlayingTrackId = currentPlayingTrack->getId();
+        // We can only add tracks that are Mixxx library tracks, not external
+        // sources.
+        if (currentPlayingTrackId < 0) {
+            return;
+        }
 
-            qDebug() << "The audience listens to track " << currendPlayingTrackId;
-            currendPlayingTrack->setPlayedAndUpdatePlaycount(true); // Here the song is realy played, not only loaded.
+        // Here the song is realy played, not only loaded.
+        currentPlayingTrack->setPlayedAndUpdatePlaycount(true);
 
-            if (m_pPlaylistTableModel->getPlaylist() == m_playlistId) {
-                // View needs a refresh
-                m_pPlaylistTableModel->appendTrack(currendPlayingTrackId);
-            }
-            else {
-                m_playlistDao.appendTrackToPlaylist(currendPlayingTrackId, m_playlistId);
-            }
-            m_oldTrackIdPlayer[deck-1] = currendPlayingTrackId;
+        if (m_pPlaylistTableModel->getPlaylist() == m_playlistId) {
+            // View needs a refresh
+            m_pPlaylistTableModel->appendTrack(currentPlayingTrackId);
+        } else {
+            m_playlistDao.appendTrackToPlaylist(currentPlayingTrackId,
+                                                m_playlistId);
         }
     }
 }
-

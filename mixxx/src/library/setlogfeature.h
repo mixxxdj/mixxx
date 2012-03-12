@@ -33,17 +33,16 @@ public:
     void onRightClick(const QPoint& globalPos);
     void onRightClickChild(const QPoint& globalPos, QModelIndex index);
     void slotJoinWithPrevious();
-    void slotPositionChanged(double /*value*/);
 
   protected:
     QModelIndex constructChildModel(int selected_id);
 
+  private slots:
+    void slotPlayingDeckChanged(int deck);
+
   private:
     QAction *m_pJoinWithPreviousAction;
-    ControlObjectThreadMain* m_pCOPlayPos1;
-    ControlObjectThreadMain* m_pCOPlayPos2;
     int m_playlistId;
-    int m_oldTrackIdPlayer[2];
 };
 
 #endif /* SETLOGFEATURE_H */
