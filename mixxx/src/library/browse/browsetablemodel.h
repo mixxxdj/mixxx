@@ -17,13 +17,14 @@ const int COLUMN_ALBUM = 3;
 const int COLUMN_TRACK_NUMBER = 4;
 const int COLUMN_YEAR = 5;
 const int COLUMN_GENRE = 6;
-const int COLUMN_COMMENT = 7;
-const int COLUMN_DURATION = 8;
-const int COLUMN_BPM = 9;
-const int COLUMN_KEY = 10;
-const int COLUMN_TYPE = 11;
-const int COLUMN_BITRATE = 12;
-const int COLUMN_LOCATION = 13;
+const int COLUMN_COMPOSER = 7;
+const int COLUMN_COMMENT = 8;
+const int COLUMN_DURATION = 9;
+const int COLUMN_BPM = 10;
+const int COLUMN_KEY = 11;
+const int COLUMN_TYPE = 12;
+const int COLUMN_BITRATE = 13;
+const int COLUMN_LOCATION = 14;
 
 /*
  * The BrowseTable models displays tracks
@@ -65,7 +66,7 @@ class BrowseTableModel : public QStandardItemModel, public virtual TrackModel {
     void removeTracks(QStringList trackLocations);
 
     void addSearchColumn(int index);
-    bool isTrackInUse(QString& file) const;
+    bool isTrackInUse(const QString& file) const;
     QList<int> m_searchColumns;
     QString m_current_path;
     TrackCollection* m_pTrackCollection;

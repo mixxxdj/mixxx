@@ -66,7 +66,8 @@ class LibraryFeature : public QObject {
     void featureIsLoading(LibraryFeature*);
     /** emit this signal if the foreign music collection has been imported/parsed. **/
     void featureLoadingFinished(LibraryFeature*s);
-
+    /** emit this signal to select pFeature **/
+    void featureSelect(LibraryFeature* pFeature, const QModelIndex& index);
 
 };
 

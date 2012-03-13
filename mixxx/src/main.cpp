@@ -216,20 +216,20 @@ int main(int argc, char * argv[])
             || argv[i] == QString("--h")
             || argv[i] == QString("--help")
     ) {
-           puts("Mixxx digital DJ software v");
-           puts(VERSION);
-           puts(" - Command line options");
-           puts(
+           fputs("Mixxx digital DJ software v",stdout);
+           fputs(VERSION,stdout);
+           fputs(" - Command line options",stdout);
+           fputs(
                    "\n(These are case-sensitive.)\n\n\
     [FILE]                  Load the specified music file(s) at start-up.\n\
                             Each must be one of the following file types:\n\
-                            ");
+                            ",stdout);
 
             QString fileExtensions = SoundSourceProxy::supportedFileExtensionsString();
             QByteArray fileExtensionsBA = QString(fileExtensions).toUtf8();
-            puts(fileExtensionsBA.constData());
-            puts("\n\n");
-            puts("\
+            fputs(fileExtensionsBA.constData(),stdout);
+            fputs("\n\n",stdout);
+            fputs("\
                             Each file you specify will be loaded into the\n\
                             next virtual deck.\n\
 \n\
@@ -249,9 +249,9 @@ int main(int argc, char * argv[])
 \n\
     -f, --fullScreen        Starts Mixxx in full-screen mode\n\
 \n\
-    -h, --help              Display this help message and exit");
+    -h, --help              Display this help message and exit",stdout);
 
-            puts("\n\n(For more information, see http://mixxx.org/wiki/doku.php/command_line_options)\n");
+            fputs("\n\n(For more information, see http://mixxx.org/wiki/doku.php/command_line_options)\n",stdout);
             return(0);
         }
 

@@ -39,7 +39,7 @@ class SidebarModel : public QAbstractItemModel {
     void doubleClicked(const QModelIndex& index);
     void rightClicked(const QPoint& globalPos, const QModelIndex& index);
     void refreshData();
-    void selectFeature(LibraryFeature* pFeature);
+    void slotFeatureSelect(LibraryFeature* pFeature, const QModelIndex& index = QModelIndex());
 
     // Slots for every single QAbstractItemModel signal
     // void slotColumnsAboutToBeInserted(const QModelIndex& parent, int start, int end);

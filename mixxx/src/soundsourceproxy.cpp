@@ -279,7 +279,6 @@ int SoundSourceProxy::parseHeader()
 
 int SoundSourceProxy::ParseHeader(TrackInfoObject* p)
 {
-
     QString qFilename = p->getLocation();
     SoundSource* sndsrc = initialize(qFilename);
     if (sndsrc == NULL)
@@ -302,7 +301,8 @@ int SoundSourceProxy::ParseHeader(TrackInfoObject* p)
         p->setType(sndsrc->getType());
         p->setYear(sndsrc->getYear());
         p->setGenre(sndsrc->getGenre());
-	p->setComment(sndsrc->getComment());
+        p->setComposer(sndsrc->getComposer());
+        p->setComment(sndsrc->getComment());
         p->setTrackNumber(sndsrc->getTrackNumber());
         p->setReplayGain(sndsrc->getReplayGain());
         p->setBpm(sndsrc->getBPM());

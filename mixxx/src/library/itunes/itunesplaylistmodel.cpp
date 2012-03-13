@@ -104,8 +104,8 @@ Qt::ItemFlags ITunesPlaylistModel::flags(const QModelIndex &index) const {
 void ITunesPlaylistModel::setPlaylist(QString playlist_path) {
     int playlistId = -1;
     QSqlQuery finder_query(m_database);
-    finder_query.prepare(
-        "SELECT id from itunes_playlists where name='"+playlist_path+"'");
+    finder_query.prepare("SELECT id from itunes_playlists where name=:name");
+    finder_query.bindValue(":name", playlist_path);
 
     if (!finder_query.exec()) {
         qDebug() << "SQL Error in ITunesPlaylistModel.cpp: line" << __LINE__

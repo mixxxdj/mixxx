@@ -28,6 +28,7 @@ MixxxLibraryFeature::MixxxLibraryFeature(QObject* parent,
             << "library." + LIBRARYTABLE_DURATION
             << "library." + LIBRARYTABLE_RATING
             << "library." + LIBRARYTABLE_GENRE
+            << "library." + LIBRARYTABLE_COMPOSER
             << "library." + LIBRARYTABLE_FILETYPE
             << "library." + LIBRARYTABLE_TRACKNUMBER
             << "library." + LIBRARYTABLE_KEY

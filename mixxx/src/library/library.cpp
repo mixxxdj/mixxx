@@ -21,6 +21,7 @@
 #include "library/promotracksfeature.h"
 #include "library/traktor/traktorfeature.h"
 #include "library/librarycontrol.h"
+#include "library/setlogfeature.h"
 
 #include "widget/wtracktableview.h"
 #include "widget/wlibrary.h"
@@ -62,6 +63,7 @@ Library::Library(QObject* parent, ConfigObject<ConfigValue>* pConfig, bool first
     addFeature(m_pCrateFeature);
     addFeature(new BrowseFeature(this, pConfig, m_pTrackCollection, m_pRecordingManager));
     addFeature(new RecordingFeature(this, pConfig, m_pTrackCollection, m_pRecordingManager));
+    addFeature(new SetlogFeature(this, pConfig, m_pTrackCollection));
     addFeature(new PrepareFeature(this, pConfig, m_pTrackCollection));
     //iTunes and Rhythmbox should be last until we no longer have an obnoxious
     //messagebox popup when you select them. (This forces you to reach for your
@@ -147,7 +149,6 @@ void Library::bindWidget(WLibrarySidebar* pSidebarWidget,
         ->select(m_pSidebarModel->getDefaultSelection(),
                  QItemSelectionModel::SelectCurrent);
     m_pSidebarModel->activateDefaultSelection();
-
 }
 
 void Library::addFeature(LibraryFeature* feature) {

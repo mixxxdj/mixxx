@@ -105,12 +105,13 @@ Qt::ItemFlags TraktorPlaylistModel::flags(const QModelIndex &index) const {
 void TraktorPlaylistModel::setPlaylist(QString playlist_path) {
     int playlistId = -1;
     QSqlQuery finder_query(m_database);
-    finder_query.prepare(
-        "SELECT id from traktor_playlists where name='"+playlist_path+"'");
+    finder_query.prepare("SELECT id from traktor_playlists where name=:name");
+    finder_query.bindValue(":name", playlist_path);
 
     if (!finder_query.exec()) {
         qDebug() << "SQL Error in TraktorPlaylistModel.cpp: line" << __LINE__
                  << finder_query.lastError();
+        return;
     }
     while (finder_query.next()) {
         playlistId = finder_query.value(

@@ -521,6 +521,22 @@ void TrackInfoObject::setGenre(QString s)
         setDirty(true);
 }
 
+QString TrackInfoObject::getComposer()  const
+{
+    QMutexLocker lock(&m_qMutex);
+    return m_sComposer;
+}
+
+void TrackInfoObject::setComposer(QString s)
+{
+    QMutexLocker lock(&m_qMutex);
+    s = s.trimmed();
+    bool dirty = m_sComposer != s;
+    m_sComposer = s;
+    if (dirty)
+        setDirty(true);
+}
+
 QString TrackInfoObject::getTrackNumber()  const
 {
     QMutexLocker lock(&m_qMutex);
@@ -554,7 +570,7 @@ void TrackInfoObject::setTimesPlayed(int t)
 
 void TrackInfoObject::incTimesPlayed()
 {
-    setPlayed(true); //setPlayed increases play count
+    setPlayedAndUpdatePlaycount(true);
 }
 
 bool TrackInfoObject::getPlayed() const
@@ -564,18 +580,18 @@ bool TrackInfoObject::getPlayed() const
     return bPlayed;
 }
 
-void TrackInfoObject::setPlayed(bool bPlayed)
+void TrackInfoObject::setPlayedAndUpdatePlaycount(bool bPlayed)
 {
     QMutexLocker lock(&m_qMutex);
     bool dirty = false;
     if (bPlayed) {
         ++m_iTimesPlayed;
-	    dirty = true;
+        setDirty(true);
     }
     else if (m_bPlayed && !bPlayed) {
         --m_iTimesPlayed;
-	    dirty = true;
-    } 
+        setDirty(true);
+    }
     m_bPlayed = bPlayed;
 	if (dirty)
    	{
@@ -589,6 +605,15 @@ void TrackInfoObject::setPlayed(bool bPlayed)
 	    }
 		setDirty(true);
 	}
+}
+
+void TrackInfoObject::setPlayed(bool bPlayed)
+{
+    QMutexLocker lock(&m_qMutex);
+    if (bPlayed != m_bPlayed) {
+        m_bPlayed = bPlayed;
+        setDirty(true);
+    }
 }
 
 QString TrackInfoObject::getComment() const
