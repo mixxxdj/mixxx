@@ -835,7 +835,7 @@ void MixxxApp::initActions()
     m_pOptionsFullScreen = new QAction(tr("&Full Screen"), this);
 
 #ifdef __APPLE__
-    m_pOptionsFullScreen->setShortcut(tr("Ctrl+F"));
+    m_pOptionsFullScreen->setShortcut(tr("Ctrl+Shift+F"));
 #else
     m_pOptionsFullScreen->setShortcut(tr("F11"));
 #endif
