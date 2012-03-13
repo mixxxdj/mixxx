@@ -804,11 +804,11 @@ int MixxxApp::noOutputDlg(bool *continueClicked)
 /** initializes all QActions of the application */
 void MixxxApp::initActions()
 {
-    m_pFileLoadSongPlayer1 = new QAction(tr("&Load Song (Player 1)..."), this);
+    m_pFileLoadSongPlayer1 = new QAction(tr("Load Song (Player &1)..."), this);
     m_pFileLoadSongPlayer1->setShortcut(tr("Ctrl+O"));
     m_pFileLoadSongPlayer1->setShortcutContext(Qt::ApplicationShortcut);
 
-    m_pFileLoadSongPlayer2 = new QAction(tr("&Load Song (Player 2)..."), this);
+    m_pFileLoadSongPlayer2 = new QAction(tr("Load Song (Player &2)..."), this);
     m_pFileLoadSongPlayer2->setShortcut(tr("Ctrl+Shift+O"));
     m_pFileLoadSongPlayer2->setShortcutContext(Qt::ApplicationShortcut);
 
@@ -855,17 +855,17 @@ void MixxxApp::initActions()
     m_pHelpTranslation = new QAction(tr("&Translate this application"), this);
 
 #ifdef __VINYLCONTROL__
-    m_pOptionsVinylControl = new QAction(tr("Enable &Vinyl Control 1"), this);
+    m_pOptionsVinylControl = new QAction(tr("Enable Vinyl Control &1"), this);
     m_pOptionsVinylControl->setShortcut(tr("Ctrl+Y"));
     m_pOptionsVinylControl->setShortcutContext(Qt::ApplicationShortcut);
 
-    m_pOptionsVinylControl2 = new QAction(tr("Enable &Vinyl Control 2"), this);
+    m_pOptionsVinylControl2 = new QAction(tr("Enable Vinyl Control &2"), this);
     m_pOptionsVinylControl2->setShortcut(tr("Ctrl+U"));
     m_pOptionsVinylControl2->setShortcutContext(Qt::ApplicationShortcut);
 #endif
 
 #ifdef __SHOUTCAST__
-    m_pOptionsShoutcast = new QAction(tr("Enable live broadcasting"), this);
+    m_pOptionsShoutcast = new QAction(tr("Enable live &broadcasting"), this);
     m_pOptionsShoutcast->setShortcut(tr("Ctrl+L"));
     m_pOptionsShoutcast->setShortcutContext(Qt::ApplicationShortcut);
 #endif
