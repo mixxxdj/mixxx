@@ -44,7 +44,7 @@ class HSS1394(Feature):
         build.env.Append(CPPDEFINES = '__HSS1394__')
 
     def sources(self, build):
-        sources = SCons.Split("""controllers/midi/mididevicehss1394.cpp
+        sources = SCons.Split("""controllers/midi/hss1394controller.cpp
                             controllers/midi/hss1394enumerator.cpp
                             """)
         return sources
@@ -179,35 +179,6 @@ class MediaFoundation(Feature):
             raise Exception('Did not find Mfreadwrite.lib - exiting!')
         build.env.Append(CPPDEFINES='__MEDIAFOUNDATION__')
         return
-
-class MIDIScript(Feature):
-    def description(self):
-        return "MIDI Scripting"
-
-    def enabled(self, build):
-        build.flags['midiscript'] = util.get_flags(build.env, 'midiscript', 0)
-        if int(build.flags['midiscript']):
-            return True
-        return False
-
-    def add_options(self, build, vars):
-        vars.Add('midiscript', 'Set to 1 to enable MIDI Scripting support.', 1)
-
-    def configure(self, build, conf):
-        if not self.enabled(build):
-            return
-        if build.platform_is_windows:
-            build.env.Append(LIBS = 'QtScript4')
-        elif build.platform_is_linux:
-                build.env.Append(LIBS = 'QtScript')
-        elif build.platform_is_osx:
-                # TODO(XXX) put in logic here to add a -framework QtScript
-                pass
-        build.env.Append(CPPPATH = '$QTDIR/include/QtScript')
-        build.env.Append(CPPDEFINES = '__MIDISCRIPT__')
-
-    def sources(self, build):
-        return ["controllers/midi/midiscriptengine.cpp"]
 
 class LADSPA(Feature):
 

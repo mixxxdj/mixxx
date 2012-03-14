@@ -62,7 +62,7 @@ public slots:
     void decSmallValue(double);
 
 protected:
-    void setValueFromMidi(MidiCategory c, double v);
+    void setValueFromMidi(double v);
 
     double m_dMaxValue, m_dMinValue, m_dValueRange, m_dStep, m_dSmallStep;
 };

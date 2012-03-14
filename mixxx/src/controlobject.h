@@ -21,7 +21,6 @@
 #include <QObject>
 #include <QEvent>
 #include <QMutex>
-#include "controllers/midi/midimessage.h"
 #include "configobject.h"
 #include "controlobjectthread.h"
 
@@ -38,7 +37,6 @@ struct QueueObjectThread
 struct QueueObjectMidi
 {
     ControlObject *pControlObject;
-    MidiCategory category;
     double value;
 };
 
@@ -92,7 +90,7 @@ public:
     /** Queue a control change from a widget. Thread safe. Blocking. */
     void queueFromThread(double dValue, ControlObjectThread *pControlObjectThread=0);
     /** Queue a control change from MIDI. Thread safe. Blocking. */
-    void queueFromMidi(MidiCategory c, double v);
+    void queueFromMidi(double v);
     /** Return a ControlObject value, corresponding to the widget input value. Thread safe. */
     virtual double getValueFromWidget(double dValue);
     /** Return a widget value corresponding to the ControlObject input value. Thread safe. */
@@ -112,7 +110,7 @@ protected:
     /** Sets the value of the object. Not thread safe. */
     virtual void setValueFromEngine(double dValue);
     /** Called when a widget has changed value. Not thread safe. */
-    virtual void setValueFromMidi(MidiCategory, double v);
+    virtual void setValueFromMidi(double v);
     /** Called when another thread has changed value. Not thread safe. */
     virtual void setValueFromThread(double dValue);
 

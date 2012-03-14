@@ -18,49 +18,49 @@
 ***************************************************************************/
 
 #include <qapplication.h>   // For command line arguments
-#include "widget/wwidget.h"    // FIXME: This should be xmlparse.h
+// #include "widget/wwidget.h"    // FIXME: This should be xmlparse.h
+#include "xmlparse.h"
 #include "controller.h"
 #include "defs_controllers.h"
 
-Controller::Controller() : QObject()
-{
+Controller::Controller() : QObject() {
     m_bIsOutputDevice = false;
     m_bIsInputDevice = false;
     m_bIsOpen = false;
-    m_pControllerEngine = NULL;
+    m_pEngine = NULL;
 
     // Get --controllerDebug command line option
     QStringList commandLineArgs = QApplication::arguments();
     m_bDebug = commandLineArgs.contains("--controllerDebug", Qt::CaseInsensitive);
 }
 
-Controller::~Controller()
-{
+Controller::~Controller() {
+//     close(); // I wish I could put this here to enforce it automatically
 }
 
 void Controller::startEngine()
 {
     if (debugging()) qDebug() << "  Starting engine";
-    if (m_pControllerEngine != NULL) {
+    if (m_pEngine != NULL) {
         qWarning() << "Controller: Engine already exists! Restarting:";
         stopEngine();
     }
-    m_pControllerEngine = new ControllerEngine(this);
+    m_pEngine = new ControllerEngine(this);
 }
 
 void Controller::stopEngine()
 {
     if (debugging()) qDebug() << "  Shutting down engine";
-    if (m_pControllerEngine == NULL) {
+    if (m_pEngine == NULL) {
         qWarning() << "Controller::stopEngine(): No engine exists!";
         return;
     }
-    m_pControllerEngine->gracefulShutdown();
-    delete m_pControllerEngine;
-    m_pControllerEngine = NULL;
+    m_pEngine->gracefulShutdown();
+    delete m_pEngine;
+    m_pEngine = NULL;
 }
 
-/** loadPreset()
+/** loadPreset(bool)
 * Overloaded function for convenience, uses the default device path
 * @param forceLoad Forces the preset to be loaded, regardless of whether or not the controller id
 *        specified within matches the name of this Controller.
@@ -69,7 +69,7 @@ void Controller::loadPreset(bool forceLoad) {
     loadPreset(DEFAULT_DEVICE_PRESET, forceLoad);
 }
 
-/** slotLoadPreset(QString)
+/** loadPreset(QString,bool)
 * Overloaded function for convenience
 * @param path The path to a controller preset XML file.
 * @param forceLoad Forces the preset to be loaded, regardless of whether or not the controller id
@@ -77,18 +77,18 @@ void Controller::loadPreset(bool forceLoad) {
 */
 void Controller::loadPreset(QString path, bool forceLoad) {
     qDebug() << "Loading controller preset from" << path;
-    loadPreset(WWidget::openXMLFile(path, "controller"), forceLoad);
+    loadPreset(XmlParse::openXMLFile(path, "controller"), forceLoad);
 }
 
-/** slotLoadPreset(QDomElement)
+/** loadPreset(QDomElement,bool)
 * Loads a controller preset from a QDomElement structure.
-* @param root The root node of the XML document for the MIDI mapping.
+* @param root The root node of the XML document for the preset.
 * @param forceLoad Forces the preset to be loaded, regardless of whether or not the controller id
 *        specified within matches the name of this Controller.
 */
-void Controller::loadPreset(QDomElement root, bool forceLoad) {
+QDomElement Controller::loadPreset(QDomElement root, bool forceLoad) {
 
-    if (root.isNull()) return;
+    if (root.isNull()) return root;
 
     m_scriptFileNames.clear();
     m_scriptFunctionPrefixes.clear();
@@ -129,6 +129,7 @@ void Controller::loadPreset(QDomElement root, bool forceLoad) {
             scriptFile = scriptFile.nextSiblingElement("file");
         }
     }
+    return controller;
 }   // END loadPreset(QDomElement)
 
 void Controller::applyPreset() {
@@ -136,20 +137,20 @@ void Controller::applyPreset() {
 
     // Load the script code into the engine
     QStringList scriptFunctions;
-    if (m_pControllerEngine != NULL) {
-        scriptFunctions = m_pControllerEngine->getScriptFunctions();
+    if (m_pEngine != NULL) {
+        scriptFunctions = m_pEngine->getScriptFunctions();
         if (scriptFunctions.isEmpty() && m_scriptFileNames.isEmpty()) {
             qWarning() << "No script functions available! Did the XML file(s) load successfully? See above for any errors.";
         }
         else {
-            if (scriptFunctions.isEmpty()) m_pControllerEngine->loadScriptFiles(m_scriptFileNames);
-            m_pControllerEngine->initializeScripts(m_scriptFunctionPrefixes);
+            if (scriptFunctions.isEmpty()) m_pEngine->loadScriptFiles(m_scriptFileNames);
+            m_pEngine->initializeScripts(m_scriptFunctionPrefixes);
         }
     }
     else qWarning() << "Controller::applyPreset(): No engine exists!";
 }
 
-/* addScriptFile(QString,QString)
+/** addScriptFile(QString,QString)
 * Adds an entry to the list of script file names & associated list of function prefixes
 * @param filename Name of the XML file to add
 * @param functionprefix Function prefix to add
@@ -255,7 +256,7 @@ void Controller::receivePointer(unsigned char* data, unsigned int length) {
 
 void Controller::receive(const unsigned char data[], unsigned int length) {
 
-    if (m_pControllerEngine == NULL) {
+    if (m_pEngine == NULL) {
 //         qWarning() << "Controller::receive called with no active engine!";
         // Don't complain, since this will always show after closing a device as
         //  queued signals flush out
@@ -276,13 +277,13 @@ void Controller::receive(const unsigned char data[], unsigned int length) {
         qDebug()<< message;
     }
 
-    QListIterator<QString> prefixIt(m_pControllerEngine->getScriptFunctionPrefixes());
+    QListIterator<QString> prefixIt(m_pEngine->getScriptFunctionPrefixes());
     while (prefixIt.hasNext()) {
         QString function = prefixIt.next();
         if (function!="") {
             function.append(".incomingData");
 
-            if (!m_pControllerEngine->execute(function, data, length)) {
+            if (!m_pEngine->execute(function, data, length)) {
                 qWarning() << "Controller: Invalid script function" << function;
             }
         }
@@ -294,5 +295,5 @@ void Controller::timerEvent(QTimerEvent *event, bool poll) {
     if (poll) return; // Sub-classes use the poll flag
 
     // Pass it on to the engine
-    m_pControllerEngine->timerEvent(event);
+    m_pEngine->timerEvent(event);
 }

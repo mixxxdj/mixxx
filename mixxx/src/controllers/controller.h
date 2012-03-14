@@ -39,9 +39,10 @@ Q_OBJECT
         bool debugging() { return m_bDebug; };
 
     protected:
+        QDomElement loadPreset(QDomElement root, bool forceLoad=false);
         /** To be called in sub-class' open() functions after opening the
             device but before starting any input polling/processing. */
-        void startEngine();
+        virtual void startEngine();
         /** To be called in sub-class' close() functions after stopping any
             input polling/processing but before closing the device. */
         void stopEngine();
@@ -52,6 +53,10 @@ Q_OBJECT
         Q_INVOKABLE void send(QList<int> data, unsigned int length);
         /** ByteArray version */
         Q_INVOKABLE void sendBa(QByteArray data, unsigned int length);
+        /** Updates the DOM with what script files are currently loaded.
+            Sub-classes need to re-implement this (and call it first) if they
+            need to add any other items. */
+        virtual QDomDocument buildDomElement();
         
         /** Verbose and unique device name suitable for display. */
         QString m_sDeviceName;
@@ -65,10 +70,14 @@ Q_OBJECT
             for end-user debugging and script-writing. */
         bool m_bDebug;
 
+        QList<QString> m_scriptFileNames;
+
     // Making these slots protected/private ensures that other parts of Mixxx
     //  can only signal them, preventing thread contention
     protected slots:
         void receivePointer(unsigned char* data, unsigned int length);
+        /** Initializes the controller engine */
+        virtual void applyPreset();
 
     private slots:
         virtual int open() = 0;
@@ -76,9 +85,6 @@ Q_OBJECT
         
         void loadPreset(bool forceLoad=false);
         void loadPreset(QString path, bool forceLoad=false);
-
-        /** Initializes the controller engine */
-        virtual void applyPreset();
         
     private:
         /** Handles packets of raw bytes and passes them to an ".incomingData"
@@ -90,21 +96,17 @@ Q_OBJECT
             to a controller. */
         virtual void send(unsigned char data[], unsigned int length);
         
-        void loadPreset(QDomElement root, bool forceLoad=false);
         /** Adds a script file name and function prefix to the list to be loaded. */
         void addScriptFile(QString filename, QString functionprefix);
         /** Saves the current preset to the default device XML file. */
         void savePreset();
         /** Given a path, saves the current preset to an XML file. */
         void savePreset(QString path);
-        /** Updates the DOM with what script files are currently loaded.
-            Sub-classes need to re-implement this (and call it first) if they
-            need to add any other items. */
-        virtual QDomDocument buildDomElement();
-        
-        QList<QString> m_scriptFileNames;
+
+        ControllerEngine *m_pEngine;
+
         QList<QString> m_scriptFunctionPrefixes;
-        ControllerEngine *m_pControllerEngine;
+        
 };
 
 #endif

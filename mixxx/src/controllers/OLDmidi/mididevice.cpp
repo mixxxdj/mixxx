@@ -298,8 +298,7 @@ void MidiDevice::receive(MidiStatusByte status, char channel, char control, char
 
         ControlObject::sync();
 
-        //Super dangerous cast here... Should be fine once MidiCategory is replaced with MidiStatusByte permanently.
-        p->queueFromMidi((MidiCategory)status, newValue);
+        p->queueFromMidi(newValue);
     }
 
     return;
