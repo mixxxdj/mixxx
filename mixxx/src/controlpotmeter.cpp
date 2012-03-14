@@ -36,25 +36,58 @@ ControlPotmeter::ControlPotmeter(ConfigKey key, double dMinValue, double dMaxVal
     // These controls are deleted when this ControlPotmeter is since we set
     // their parent as this.
     ControlPushButton* controlUp = new ControlPushButton(
-        ConfigKey(key.group, QString(key.item)+"_up"));
+        ConfigKey(key.group, QString(key.item) + "_up"));
     controlUp->setParent(this);
     connect(controlUp, SIGNAL(valueChanged(double)),
             this, SLOT(incValue(double)));
+
     ControlPushButton* controlDown = new ControlPushButton(
-        ConfigKey(key.group, QString(key.item)+"_down"));
+        ConfigKey(key.group, QString(key.item) + "_down"));
     controlDown->setParent(this);
     connect(controlDown, SIGNAL(valueChanged(double)),
             this, SLOT(decValue(double)));
+
     ControlPushButton* controlUpSmall = new ControlPushButton(
-        ConfigKey(key.group, QString(key.item)+"_up_small"));
+        ConfigKey(key.group, QString(key.item) + "_up_small"));
     controlUpSmall->setParent(this);
     connect(controlUpSmall, SIGNAL(valueChanged(double)),
             this, SLOT(incSmallValue(double)));
+
     ControlPushButton* controlDownSmall = new ControlPushButton(
-        ConfigKey(key.group, QString(key.item)+"_down_small"));
+        ConfigKey(key.group, QString(key.item) + "_down_small"));
     controlDownSmall->setParent(this);
     connect(controlDownSmall, SIGNAL(valueChanged(double)),
             this, SLOT(decSmallValue(double)));
+
+    ControlPushButton* controlZero = new ControlPushButton(
+        ConfigKey(key.group, QString(key.item) + "_set_zero"));
+    controlZero->setParent(this);
+    connect(controlZero, SIGNAL(valueChanged(double)),
+            this, SLOT(setToZero(double)));
+
+    ControlPushButton* controlOne = new ControlPushButton(
+        ConfigKey(key.group, QString(key.item) + "_set_one"));
+    controlOne->setParent(this);
+    connect(controlOne, SIGNAL(valueChanged(double)),
+            this, SLOT(setToOne(double)));
+
+    ControlPushButton* controlMinusOne = new ControlPushButton(
+        ConfigKey(key.group, QString(key.item) + "_set_minus_one"));
+    controlMinusOne->setParent(this);
+    connect(controlMinusOne, SIGNAL(valueChanged(double)),
+            this, SLOT(setToMinusOne(double)));
+
+    ControlPushButton* controlToggle = new ControlPushButton(
+        ConfigKey(key.group, QString(key.item) + "_toggle"));
+    controlToggle->setParent(this);
+    connect(controlToggle, SIGNAL(valueChanged(double)),
+            this, SLOT(toggleValue(double)));
+
+    ControlPushButton* controlMinusToggle = new ControlPushButton(
+        ConfigKey(key.group, QString(key.item) + "_minus_toggle"));
+    controlMinusToggle->setParent(this);
+    connect(controlMinusToggle, SIGNAL(valueChanged(double)),
+            this, SLOT(toggleMinusValue(double)));
 }
 
 ControlPotmeter::~ControlPotmeter()
@@ -194,3 +227,69 @@ void ControlPotmeter::decSmallValue(double keypos)
         updateProxies(0);
     }
 }
+
+void ControlPotmeter::setToZero(double keypos)
+{
+    if (keypos>0)
+    {
+        m_dValue = 0.0;
+        emit(valueChanged(m_dValue));
+        updateProxies(0);
+    }
+}
+
+void ControlPotmeter::setToOne(double keypos)
+{
+    if (keypos>0)
+    {
+        m_dValue = 1.0;
+        emit(valueChanged(m_dValue));
+        updateProxies(0);
+    }
+}
+
+void ControlPotmeter::setToMinusOne(double keypos)
+{
+    if (keypos>0)
+    {
+        m_dValue = -1.0;
+        emit(valueChanged(m_dValue));
+        updateProxies(0);
+    }
+}
+
+
+void ControlPotmeter::toggleValue(double keypos)
+{
+    if (keypos>0)
+    {
+        if (m_dValue > 0.0)
+        {
+            m_dValue = 0.0;
+        }
+        else
+        {
+            m_dValue = 1.0;
+        }
+        emit(valueChanged(m_dValue));
+        updateProxies(0);
+    }
+}
+
+void ControlPotmeter::toggleMinusValue(double keypos)
+{
+    if (keypos>0)
+    {
+        if (m_dValue > 0.0)
+        {
+            m_dValue = -1.0;
+        }
+        else
+        {
+            m_dValue = 1.0;
+        }
+        emit(valueChanged(m_dValue));
+        updateProxies(0);
+    }
+}
+
