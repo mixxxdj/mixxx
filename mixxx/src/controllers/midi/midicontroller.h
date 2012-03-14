@@ -65,7 +65,7 @@ Q_OBJECT    // For signals & slots
         void loadPreset(QDomElement root, bool forceLoad=false);
         /** Updates the DOM with what is currently in the table */
         QDomDocument buildDomElement();
-        void mappingToXML(QDomElement& parentNode, QString group, QString item, char status, uchar control) const;
+        void mappingToXML(QDomElement& parentNode, QString group, QString item, char status, unsigned char control) const;
         void outputMappingToXML(QDomElement& parentNode, char on, char off, float max, float min) const;
 
         void createOutputHandlers(QDomNode node);

@@ -729,7 +729,8 @@ QDomDocument MidiController::buildDomElement() {
     return doc;
 }
 
-void MidiController::mappingToXML(QDomElement& parentNode, QString group, QString item, char status, uchar control) const
+void MidiController::mappingToXML(QDomElement& parentNode, QString group,
+                                  QString item, char status, unsigned char control) const
 {
     QDomText text;
     QDomDocument nodeMaker;
