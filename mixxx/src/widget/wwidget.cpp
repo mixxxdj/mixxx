@@ -123,26 +123,6 @@ void WWidget::setPixmapPath(QString qPath)
     m_qPath = qPath;
 }
 
-QDomElement WWidget::openXMLFile(QString path, QString name)
-{
-    QDomDocument doc(name);
-    QFile file(path);
-    if (!file.open(QIODevice::ReadOnly))
-    {
-        qDebug() << "Could not open xml file:" << file.fileName();
-        return QDomElement();
-    }
-    if (!doc.setContent(&file))
-    {
-        qWarning() << "Error parsing xml file:" << file.fileName();
-        file.close();
-        return QDomElement();
-    }
-
-    file.close();
-    return doc.documentElement();
-}
-
 double WWidget::getValue() {
    return m_fValue;
 }

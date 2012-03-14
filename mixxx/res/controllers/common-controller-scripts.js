@@ -177,7 +177,7 @@ Controller.prototype.setControlValue = function(control, value) {
 //Button
 function Button(controlId) {
    this.controlId = controlId;
-   this.state = ButtonState.released;
+   this.state = MidiButtonState.released;
 }
 Button.prototype.handleEvent = function(value) {
    this.handler(value);

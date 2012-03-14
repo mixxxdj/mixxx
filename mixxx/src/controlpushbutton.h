@@ -19,6 +19,7 @@
 #define CONTROLPUSHBUTTON_H
 
 #include "controlobject.h"
+#include "controllers/midi/midimessage.h"
 #include "defs.h"
 
 /**
@@ -35,7 +36,7 @@ public:
     void setStates(int num_states);
 
 protected:
-    void setValueFromMidi(MidiCategory c, double v);
+    void setValueFromMidi(MidiOpCode o, double v);
 
 private:
     bool m_bIsToggleButton;

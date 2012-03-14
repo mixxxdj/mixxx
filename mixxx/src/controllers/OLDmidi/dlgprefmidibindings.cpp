@@ -315,7 +315,7 @@ void DlgPrefMidiBindings::slotLoadMidiMapping(const QString &name) {
 
     QString filename = LPRESETS_PATH + name + MIDI_MAPPING_EXTENSION;
     QFile ftest(filename);
-    if ( !ftest.exists() ) filename = m_pConfig->getConfigPath().append("midi/") + name + MIDI_MAPPING_EXTENSION;
+    if ( !ftest.exists() ) filename = m_pConfig->getConfigPath().append("controllers/") + name + MIDI_MAPPING_EXTENSION;
 
     if (!filename.isNull()) m_pMidiDevice->getMidiMapping()->loadPreset(filename, true);    // It's applied on prefs close
     m_pInputMappingTableView->update();
@@ -329,7 +329,7 @@ void DlgPrefMidiBindings::slotLoadMidiMapping(const QString &name) {
  */
 void DlgPrefMidiBindings::slotExportXML() {
     QString fileName = QFileDialog::getSaveFileName(this,
-            tr("Export Mixxx MIDI Bindings"), m_pConfig->getConfigPath().append("midi/"),
+            tr("Export Mixxx MIDI Bindings"), m_pConfig->getConfigPath().append("controllers/"),
             tr("Preset Files (*.midi.xml)"));
     if (!fileName.isNull()) m_pMidiDevice->getMidiMapping()->savePreset(fileName);
 }

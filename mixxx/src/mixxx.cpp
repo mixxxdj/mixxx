@@ -45,7 +45,7 @@
 #include "recording/defs_recording.h"
 
 #include "controllers/controllermanager.h"
-#include "controllers/midi/mididevicemanager.h"
+// #include "controllers/midi/mididevicemanager.h"
 
 #include "upgrade.h"
 #include "mixxxkeyboard.h"
@@ -123,7 +123,7 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
     m_pSoundManager = 0;
     m_pPrefDlg = 0;
     m_pControllerManager = 0;
-    m_pMidiDeviceManager = 0;
+//     m_pMidiDeviceManager = 0;
     m_pRecordingManager = 0;
 
     // Check to see if this is the first time this version of Mixxx is run
@@ -365,8 +365,8 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
     //ControlObject::getControl(ConfigKey("[Channel1]","TrackEndMode"))->queueFromThread(m_pConfig->getValueString(ConfigKey("[Controls]","TrackEndModeCh1")).toDouble());
     //ControlObject::getControl(ConfigKey("[Channel2]","TrackEndMode"))->queueFromThread(m_pConfig->getValueString(ConfigKey("[Controls]","TrackEndModeCh2")).toDouble());
 
-    qRegisterMetaType<MidiMessage>("MidiMessage");
-    qRegisterMetaType<MidiStatusByte>("MidiStatusByte");
+//     qRegisterMetaType<MidiMessage>("MidiMessage");
+//     qRegisterMetaType<MidiStatusByte>("MidiStatusByte");
 
     // Initialize controller sub-system,
     //  but do not set up controllers until the end of the application startup
@@ -375,14 +375,15 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
     m_pControllerManager->startThread();
 
     // Initialise midi
-    m_pMidiDeviceManager = new MidiDeviceManager(m_pConfig);
-    m_pMidiDeviceManager->setupDevices();
+//     m_pMidiDeviceManager = new MidiDeviceManager(m_pConfig);
+//     m_pMidiDeviceManager->setupDevices();
 
     m_pSkinLoader = new SkinLoader(m_pConfig);
 
     // Initialize preference dialog
     m_pPrefDlg = new DlgPreferences(this, m_pSkinLoader, m_pSoundManager, m_pPlayerManager,
-                                    m_pControllerManager, m_pMidiDeviceManager, m_pVCManager, m_pConfig);
+//                                     m_pControllerManager, m_pMidiDeviceManager, m_pVCManager, m_pConfig);
+                                    m_pControllerManager, m_pVCManager, m_pConfig);
     m_pPrefDlg->setWindowIcon(QIcon(":/images/ic_mixxx_window.png"));
     m_pPrefDlg->setHidden(true);
 
@@ -523,8 +524,8 @@ MixxxApp::~MixxxApp()
     delete m_pSkinLoader;
 
     // MIDIDeviceManager depends on Config
-    qDebug() << "delete MidiDeviceManager " << qTime.elapsed();
-    delete m_pMidiDeviceManager;
+//     qDebug() << "delete MidiDeviceManager " << qTime.elapsed();
+//     delete m_pMidiDeviceManager;
     
     // ControllerManager depends on Config
     qDebug() << "shutdown & delete ControllerManager " << qTime.elapsed();
@@ -896,7 +897,7 @@ void MixxxApp::initActions()
 
     m_pOptionsPreferences->setStatusTip(tr("Preferences"));
     m_pOptionsPreferences->setWhatsThis(
-        tr("Preferences\nPlayback and MIDI preferences"));
+        tr("Preferences\nPlayback and controller preferences"));
     connect(m_pOptionsPreferences, SIGNAL(triggered()),
             this, SLOT(slotOptionsPreferences()));
 

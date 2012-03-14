@@ -29,7 +29,8 @@ class PortMIDI(Dependence):
             raise Exception('Did not find PortMidi or its development headers.')
 
     def sources(self, build):
-        return ['controllers/midi/portmidienumerator.cpp', 'controllers/midi/midideviceportmidi.cpp']
+        return  # temporary
+        return ['controllers/midi/portmidienumerator.cpp', 'controllers/midi/portmidicontroller.cpp']
 
 class OpenGL(Dependence):
 
@@ -158,6 +159,7 @@ class Qt(Dependence):
             build.env.Append(LIBS = 'QtSql4')
             build.env.Append(LIBS = 'QtGui4')
             build.env.Append(LIBS = 'QtCore4')
+            build.env.Append(LIBS = 'QtScript4')
             build.env.Append(LIBS = 'QtWebKit4')
             build.env.Append(LIBS = 'QtNetwork4')
             build.env.Append(LIBS = 'QtOpenGL4')
@@ -285,9 +287,9 @@ class MixxxCore(Feature):
                    "dlgprefsounditem.cpp",
                    "controllers/dlgprefcontroller.cpp",
                    "controllers/dlgprefnocontrollers.cpp",
-                   "controllers/midi/dlgprefnomidi.cpp",
-                   "controllers/midi/dlgprefmidibindings.cpp",
-                   "controllers/midi/dlgmidilearning.cpp",
+                   #"controllers/midi/dlgprefnomidi.cpp",
+                   #"controllers/midi/dlgprefmidibindings.cpp",
+                   #"controllers/midi/dlgmidilearning.cpp",
                    "dlgprefplaylist.cpp",
                    "dlgprefcontrols.cpp",
                    "dlgprefbpm.cpp",
@@ -351,25 +353,32 @@ class MixxxCore(Feature):
 
                    "controllers/qtscript-bytearray/bytearrayclass.cpp",
                    "controllers/qtscript-bytearray/bytearrayprototype.cpp",
+
+                   #MIDI controllers
+                   #"controllers/midi/midienumerator.cpp", # To be done
+                   "controllers/midi/midicontroller.cpp",
+                   "controllers/midi/midicontrollerengine.cpp",
+                   "controllers/midi/midioutputhandler.cpp",
                    
-                   "controllers/midi/mididevice.cpp",
-                   "controllers/midi/mididevicemanager.cpp",
-                   "controllers/midi/midideviceenumerator.cpp",
-                   "controllers/midi/midimapping.cpp",
-                   "controllers/midi/midiinputmappingtablemodel.cpp",
-                   "controllers/midi/midioutputmappingtablemodel.cpp",
-                   "controllers/midi/midichanneldelegate.cpp",
-                   "controllers/midi/midistatusdelegate.cpp",
-                   "controllers/midi/midinodelegate.cpp",
-                   "controllers/midi/midioptiondelegate.cpp",
-                   "controllers/midi/midimessage.cpp",
-                   "controllers/midi/midiledhandler.cpp",
+                   #"controllers/midi/mididevice.cpp",
+                   #"controllers/midi/mididevicemanager.cpp",
+                   #"controllers/midi/midideviceenumerator.cpp",
+                   #"controllers/midi/midimapping.cpp",
+                   #"controllers/midi/midiinputmappingtablemodel.cpp",
+                   #"controllers/midi/midioutputmappingtablemodel.cpp",
+                   #"controllers/midi/midichanneldelegate.cpp",
+                   #"controllers/midi/midistatusdelegate.cpp",
+                   #"controllers/midi/midinodelegate.cpp",
+                   #"controllers/midi/midioptiondelegate.cpp",
+                   #"controllers/midi/midimessage.cpp",
+                   #"controllers/midi/midiledhandler.cpp",
+                   #"controlgroupdelegate.cpp",
+                   #"controlvaluedelegate.cpp",
+                   
+                   "mixxxcontrol.cpp",
                    "softtakeover.cpp",
 
                    "main.cpp",
-                   "controlgroupdelegate.cpp",
-                   "controlvaluedelegate.cpp",
-                   "mixxxcontrol.cpp",
                    "mixxx.cpp",
                    "errordialoghandler.cpp",
                    "upgrade.cpp",
@@ -549,9 +558,9 @@ class MixxxCore(Feature):
         
         build.env.Uic4('controllers/dlgprefcontrollerdlg.ui')
         build.env.Uic4('controllers/dlgprefnocontrollersdlg.ui')
-        build.env.Uic4('controllers/midi/dlgprefnomididlg.ui')
-        build.env.Uic4('controllers/midi/dlgprefmidibindingsdlg.ui')
-        build.env.Uic4('controllers/midi/dlgmidilearning.ui')
+        #build.env.Uic4('controllers/midi/dlgprefnomididlg.ui')
+        #build.env.Uic4('controllers/midi/dlgprefmidibindingsdlg.ui')
+        #build.env.Uic4('controllers/midi/dlgmidilearning.ui')
         
         build.env.Uic4('dlgprefplaylistdlg.ui')
         build.env.Uic4('dlgprefcontrolsdlg.ui')

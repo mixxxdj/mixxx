@@ -72,6 +72,11 @@ Q_OBJECT
     Q_INVOKABLE void scratchDisable(int deck, bool ramp = true);
     Q_INVOKABLE void softTakeover(QString group, QString name, bool set);
 
+    // Below is protected so MidiControllerEngine can access them
+    bool checkException();
+
+    QScriptEngine *m_pEngine;
+
   public slots:
     void slotValueChanged(double value);
     // Evaluate a script file
@@ -100,7 +105,6 @@ Q_OBJECT
 
     void scriptErrorDialog(QString detailedError);
     void generateScriptFunctions(QString code);
-    bool checkException();
     void stopAllTimers();
 
     ControlObjectThread* getControlObjectThread(QString group, QString name);
@@ -109,7 +113,6 @@ Q_OBJECT
     bool m_bDebug;
     bool m_bPopups;
     QMultiHash<ConfigKey, QString> m_connectedControls;
-    QScriptEngine *m_pEngine;
     QStringList m_scriptFunctions;
     QList<QString> m_scriptFunctionPrefixes;
     QMap<QString,QStringList> m_scriptErrors;
