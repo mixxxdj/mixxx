@@ -3,14 +3,14 @@ msgstr ""
 "Project-Id-Version: Mixxx 1.8\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2011-12-26 09:32+0200\n"
-"PO-Revision-Date: 2012-02-14 14:38+0000\n"
-"Last-Translator: Olivier FEBWIN <febwin@free.fr>\n"
+"PO-Revision-Date: 2012-03-14 12:45+0000\n"
+"Last-Translator: Maxime <Unknown>\n"
 "Language-Team: <tezalprod@gmail.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-02-15 05:23+0000\n"
-"X-Generator: Launchpad (build 14781)\n"
+"X-Launchpad-Export-Date: 2012-03-15 04:37+0000\n"
+"X-Generator: Launchpad (build 14933)\n"
 "X-Poedit-Country: FRANCE\n"
 "X-Poedit-Language: French\n"
 
@@ -97,7 +97,7 @@ msgstr "#"
 #: BaseSqlTableModel#17
 msgctxt "BaseSqlTableModel#17"
 msgid "Key"
-msgstr "Clé"
+msgstr "Tonalité"
 
 #: BaseTrackPlayer#1
 msgid "Couldn't load track."
@@ -273,11 +273,11 @@ msgstr "Bacs"
 
 #: CrateFeature#7
 msgid "Import Crate"
-msgstr "Importer container"
+msgstr "Importer un bac"
 
 #: CrateFeature#8
 msgid "Export Crate"
-msgstr "Exporter container"
+msgstr "Export un bac"
 
 #: CrateFeature#9
 msgctxt "CrateFeature#9"
@@ -286,16 +286,15 @@ msgstr "Déverrouiller"
 
 #: CrateFeature#10
 msgid "Crate name:"
-msgstr "Nom du container :"
+msgstr "Nom du bac :"
 
 #: CrateFeature#11
 msgid "An unknown error occurred while creating crate: "
-msgstr ""
-"Une erreur inconnue s'est produite lors de la création du container : "
+msgstr "Une erreur inconnue s'est produite lors de la création du bac : "
 
 #: CrateFeature#12
 msgid "Rename Crate"
-msgstr "Renommer container"
+msgstr "Renommer le bac"
 
 #: CrateFeature#13
 msgid "New crate name:"
@@ -303,7 +302,7 @@ msgstr "Nouveau nom du bac :"
 
 #: CrateFeature#14
 msgid "Renaming Crate Failed"
-msgstr "Échec lors du renommage du container"
+msgstr "Le renommage du bac a échoué"
 
 #: CrateFeature#15
 msgctxt "CrateFeature#15"
@@ -319,7 +318,7 @@ msgstr ""
 
 #: CrateFeature#17
 msgid "A crate cannot have a blank name."
-msgstr "Un container doit avoir un nom."
+msgstr "Le nom d'un bac ne doit pas être vide."
 
 #: CrateFeature#18
 msgid "Creating Crate Failed"
