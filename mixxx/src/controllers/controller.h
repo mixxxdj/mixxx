@@ -49,7 +49,7 @@ Q_OBJECT
         virtual QDomElement loadPreset(QDomElement root, bool forceLoad=false);
         /** To be called in sub-class' open() functions after opening the
             device but before starting any input polling/processing. */
-        virtual void startEngine();
+        void startEngine();
         /** To be called in sub-class' close() functions after stopping any
             input polling/processing but before closing the device. */
         void stopEngine();

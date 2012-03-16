@@ -108,7 +108,7 @@ QDomElement Controller::loadPreset(QDomElement root, bool forceLoad) {
     while (!controller.isNull()) {
         // Get deviceid
         device = controller.attribute("id","");
-        if (device != m_sDeviceName.left(m_sDeviceName.size()-m_sDeviceName.indexOf(" ")-3) && !forceLoad) {
+        if (device != m_sDeviceName.left(m_sDeviceName.size()-m_sDeviceName.indexOf(" ")-1) && !forceLoad) {
             controller = controller.nextSiblingElement("controller");
         }
         else
@@ -133,12 +133,13 @@ QDomElement Controller::loadPreset(QDomElement root, bool forceLoad) {
             
             scriptFile = scriptFile.nextSiblingElement("file");
         }
+
     }
     return controller;
 }   // END loadPreset(QDomElement)
 
 void Controller::applyPreset() {
-    qDebug() << "Controller::applyPreset()";
+    qDebug() << "Applying controller preset...";
 
     // Load the script code into the engine
     QStringList scriptFunctions;
@@ -198,7 +199,7 @@ QDomDocument Controller::buildDomElement() {
     QDomElement rootNode = doc.documentElement();
     QDomElement controller = doc.createElement("controller");
     // Strip off the serial number
-    controller.setAttribute("id", m_sDeviceName.left(m_sDeviceName.size()-m_sDeviceName.indexOf(" ")-3));
+    controller.setAttribute("id", m_sDeviceName.left(m_sDeviceName.size()-m_sDeviceName.indexOf(" ")-1));
     rootNode.appendChild(controller);
 
     QDomElement scriptFiles = doc.createElement("scriptfiles");

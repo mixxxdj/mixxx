@@ -23,6 +23,7 @@
 #include "../defs_controllers.h"   // For MIDI_MAPPING_EXTENSION
 
 MidiController::MidiController() : Controller() {
+    m_bMidiLearn = false;
 }
 
 MidiController::~MidiController(){
@@ -398,13 +399,17 @@ QDomElement MidiController::loadPreset(QDomElement root, bool forceLoad) {
 
     if (!controller.isNull()) {
 
+        /*
         // We actually need to load any script code now to verify function
         //  names against those in the XML
+        qDebug() << "Supposed to load" << m_scriptFileNames.size() << "script files here";
         QStringList scriptFunctions;
         if (m_pEngine != NULL) {
             m_pEngine->loadScriptFiles(m_scriptFileNames);
             scriptFunctions = m_pEngine->getScriptFunctions();
         }
+        else qWarning() << "No engine!";
+        */
 
         QDomElement control = controller.firstChildElement("controls").firstChildElement("control");
 
@@ -462,14 +467,15 @@ QDomElement MidiController::loadPreset(QDomElement root, bool forceLoad) {
                 optionsNode = optionsNode.nextSiblingElement();
             }
 
+            /*
             // Verify script functions are loaded
-            if (options.script && scriptFunctions.indexOf(controlKey)==-1) {
+            if (options.script && !scriptFunctions.isEmpty() && scriptFunctions.indexOf(controlKey)==-1) {
 
                 QString status = QString("0x%1").arg(midiStatusByte, 0, 16, QChar('0')).toUpper();
                 QString byte2 = QString("0x%1").arg(midiControl, 0, 16, QChar('0')).toUpper();
 
                 // If status is MIDI pitch, the 2nd byte is part of the payload so don't display it
-                if ((midiStatusByte & 0x0F) == MIDI_PITCH_BEND) byte2 = "";
+                if ((midiStatusByte & 0xF0) == MIDI_PITCH_BEND) byte2 = "";
 
                 QString errorLog = QString("MIDI script function \"%1\" not found. "
                                            "(Mapped to MIDI message %2 %3)")
@@ -499,7 +505,9 @@ QDomElement MidiController::loadPreset(QDomElement root, bool forceLoad) {
 
                     ErrorDialogHandler::instance()->requestErrorDialog(props);
                 }
-            } else {
+            } else
+            */
+            {
                 // Add the static mapping
                 QPair<ConfigKey, MidiOptions> target;
                 target.first = ConfigKey(controlGroup, controlKey);
@@ -533,10 +541,11 @@ QDomElement MidiController::loadPreset(QDomElement root, bool forceLoad) {
                     // Signifies that the second byte is part of the payload, default
                     key.control = 0xFF;
                 }
-                qDebug() << "New mapping:" << QString::number(key.key, 16).toUpper()
-//                          << QString::number(key.status, 16).toUpper()
-//                          << QString::number(key.control, 16).toUpper()
-                         << target.first.group << target.first.item;
+/*                qDebug() << "New mapping:" << QString::number(key.key, 16).toUpper()
+                          << QString::number(key.status, 16).toUpper()
+                          << QString::number(key.control, 16).toUpper()
+                          << target.first.group << target.first.item;
+*/
                 m_mappings.insert(key.key, target);
                 // Notify the GUI and anyone else who cares
 //                 emit(newMapping());  // TODO
@@ -630,7 +639,7 @@ QDomDocument MidiController::buildDomElement() {
     // The XML header and script stuff is handled by the superclass
     QDomDocument doc = Controller::buildDomElement();
 
-    QDomElement controller = doc.firstChildElement("controller");
+    QDomElement controller = doc.documentElement().firstChildElement("controller");
     QDomElement controls = doc.createElement("controls");
     controller.appendChild(controls);
 
@@ -649,6 +658,10 @@ QDomDocument MidiController::buildDomElement() {
         MidiKey package;
         package.key = it.key();
 
+//         qDebug() << QString::number(package.key, 16).toUpper()
+//                  << QString::number(package.status, 16).toUpper()
+//                  << QString::number(package.control, 16).toUpper()
+//                  << target.first.group << target.first.item;
         mappingToXML(controlNode, target.first.group, target.first.item,
                      package.status, package.control);
 
@@ -711,7 +724,7 @@ QDomDocument MidiController::buildDomElement() {
                 optionsNode.appendChild(singleOption);
             }
         }
-        
+
         controlNode.appendChild(optionsNode);
 
         //Add the control node we just created to the XML document in the proper spot
@@ -741,7 +754,7 @@ QDomDocument MidiController::buildDomElement() {
 }
 
 void MidiController::mappingToXML(QDomElement& parentNode, QString group,
-                                  QString item, char status, unsigned char control) const
+                                  QString item, unsigned char status, unsigned char control) const
 {
     QDomText text;
     QDomDocument nodeMaker;
@@ -774,7 +787,8 @@ void MidiController::mappingToXML(QDomElement& parentNode, QString group,
     }
 }
 
-void MidiController::outputMappingToXML(QDomElement& parentNode, char on, char off, float max, float min) const
+void MidiController::outputMappingToXML(QDomElement& parentNode, unsigned char on,
+                                        unsigned char off, float max, float min) const
 {
     QDomText text;
     QDomDocument nodeMaker;

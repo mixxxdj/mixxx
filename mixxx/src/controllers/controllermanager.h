@@ -72,8 +72,9 @@ Q_OBJECT
         void requestSave(bool onlyActive);
     public slots:
         void updateControllerList();
-        /** Signaled from DlgController, this enables or disables polling as
-            needed */
+        /** This enables or disables polling as needed.
+            To conserve CPU resources, this should be called with FALSE
+            when a controller is closed. */
         void enablePolling(bool enable);
         /** Writes out presets for currently connected input devices */
         void slotSavePresets(bool onlyActive=false);
