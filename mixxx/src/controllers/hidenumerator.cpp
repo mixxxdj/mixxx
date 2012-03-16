@@ -47,6 +47,7 @@ QList<Controller*> HidEnumerator::queryDevices() {
             << "USB permissions problem (or device error.) Your account needs write access to USB HID controllers.";
         else {
             HidController *currentDevice = new HidController(*(cur_dev));
+            currentDevice->setPolling(needPolling());
             m_devices.push_back((Controller*)currentDevice);
         }
         

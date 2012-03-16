@@ -38,9 +38,11 @@ DlgPrefController::DlgPrefController(QWidget *parent, Controller* controller,
 
     connect(comboBoxPreset, SIGNAL(activated(const QString&)), this, SLOT(slotLoadPreset(const QString&)));
     connect(comboBoxPreset, SIGNAL(activated(const QString&)), this, SLOT(slotDirty()));
-    
-    connect(this, SIGNAL(openController()), m_pController, SLOT(open()));
-    connect(this, SIGNAL(closeController()), m_pController, SLOT(close()));
+
+    connect(this, SIGNAL(openController(bool)), m_pController, SLOT(open()));
+    connect(this, SIGNAL(openController(bool)), m_pControllerManager, SLOT(enablePolling(bool)));
+    connect(this, SIGNAL(closeController(bool)), m_pController, SLOT(close()));
+    connect(this, SIGNAL(closeController(bool)), m_pControllerManager, SLOT(enablePolling(bool)));
     connect(this, SIGNAL(loadPreset(QString,bool)), m_pController, SLOT(loadPreset(QString,bool)));
     connect(this, SIGNAL(applyPreset()), m_pController, SLOT(applyPreset()));
     
@@ -101,9 +103,8 @@ void DlgPrefController::slotUpdate() {
  * Called when the OK button is pressed.
  */
 void DlgPrefController::slotApply() {
-    /* User has pressed OK, so enable or disable the device, write the
-     * controls to the DOM, and reload the presets.  FIXED: only
-     * do this if the user has changed the preferences.
+    /* User has pressed OK, so if anything has been changed, enable or disable
+     * the device, write the controls to the DOM, and reload the presets.
      */
     if (m_bDirty)
     {
@@ -151,8 +152,8 @@ void DlgPrefController::slotDeviceState(int state) {
 
 void DlgPrefController::enableDevice()
 {
-    emit(closeController());
-    emit(openController());
+    emit(closeController(false));
+    emit(openController(m_pController->needPolling()));
     m_pConfig->set(ConfigKey("[Controller]", m_pController->getName().replace(" ", "_")), 1);
 
     //TODO: Should probably check if open() actually succeeded.
@@ -160,7 +161,7 @@ void DlgPrefController::enableDevice()
 
 void DlgPrefController::disableDevice()
 {
-    emit(closeController());
+    emit(closeController(false));
     m_pConfig->set(ConfigKey("[Controller]", m_pController->getName().replace(" ", "_")), 0);
 
     //TODO: Should probably check if close() actually succeeded.

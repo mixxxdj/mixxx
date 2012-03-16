@@ -28,6 +28,7 @@ Controller::Controller() : QObject() {
     m_bIsInputDevice = false;
     m_bIsOpen = false;
     m_pEngine = NULL;
+    m_bPolling = false;
 
     // Get --controllerDebug command line option
     QStringList commandLineArgs = QApplication::arguments();

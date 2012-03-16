@@ -23,27 +23,24 @@
 ControllerProcessor::ControllerProcessor(ControllerManager * pManager) : QObject(pManager) {
     m_pManager = pManager;
     m_pollingTimerId = 0;
-    polling = false;
 }
 
 ControllerProcessor::~ControllerProcessor() {
 }
 
 void ControllerProcessor::startPolling() {
-    if (polling) {
+    // Set up polling timer
+
+    // This makes use of every QObject's internal timer mechanism. Nice, clean, and simple.
+    // See http://doc.trolltech.com/4.6/qobject.html#startTimer for details
+
+    // Poll every 1ms (where possible) for good controller response
+    if (m_pollingTimerId == 0) {
         qDebug() << "Starting controller polling";
-        // Set up polling timer
-
-        // This makes use of every QObject's internal timer mechanism. Nice, clean, and simple.
-        // See http://doc.trolltech.com/4.6/qobject.html#startTimer for details
-
-        // Poll every 1ms (where possible) for good controller response
-        if (m_pollingTimerId == 0) {
-            m_pollingTimerId = startTimer(1);
-            if (m_pollingTimerId == 0) qWarning() << "Could not start polling timer!";
-        }
-        else qWarning() << "Polling timer already running!";
+        m_pollingTimerId = startTimer(1);
+        if (m_pollingTimerId == 0) qWarning() << "Could not start polling timer!";
     }
+//     else qWarning() << "Polling timer already running!";
 }
 
 void ControllerProcessor::stopPolling() {
@@ -75,29 +72,22 @@ ControllerManager::ControllerManager(ConfigObject<ConfigValue> * pConfig) : QObj
     m_pConfig = pConfig;
 //     m_pDeviceSettings = new ConfigObject<ConfigValue>(DEVICE_CONFIG_PATH);
 
-    bool polling = false;
-    
     // Instantiate all enumerators
     m_pPMEnumerator = new PortMidiEnumerator();
-    if (m_pPMEnumerator->needPolling()) polling=true;
 #ifdef __HSS1394__
     m_pHSSEnumerator = new Hss1394Enumerator();
-    if (m_pHSSEnumerator->needPolling()) polling=true;
 #endif
 #ifdef __HID__
     m_pHIDEnumerator = new HidEnumerator();
-    if (m_pHIDEnumerator->needPolling()) polling=true;
 #endif
 #ifdef __OSC__
     m_pOSCEnumerator = new OscEnumerator();
-    if (m_pOSCEnumerator->needPolling()) polling=true;
 #endif
 
     m_pThread = new QThread;
     m_pThread->setObjectName("Controller");
 
     m_pProcessor = new ControllerProcessor(this);
-    m_pProcessor->polling=polling;
 
     this->moveToThread(m_pThread); // implies m_pProcessor->moveToThread(m_pThread);
     
@@ -187,6 +177,8 @@ QList<Controller*> ControllerManager::getControllerList(bool bOutputDevices, boo
 }
 
 /** Open whatever controllers are selected in the preferences. */
+// This currently only runs on start-up but maybe should instead be signaled by
+//  the preferences dialog on apply, and only open/close changed devices
 int ControllerManager::slotSetUpDevices() {
     qDebug() << "ControllerManager: Setting up devices";
 
@@ -196,6 +188,8 @@ int ControllerManager::slotSetUpDevices() {
 
     QList<QString> filenames;
     int error = 0;
+
+    bool polling = false;
 
     while (it.hasNext())
     {
@@ -231,12 +225,30 @@ int ControllerManager::slotSetUpDevices() {
             continue;
         }
         cur->applyPreset();
+
+        // Only enable polling when open controllers actually need it
+        if (!polling && cur->needPolling()) polling = true;
     }
 
     // Start polling of applicable controller APIs
-    m_pProcessor->startPolling();
+    enablePolling(polling);
     
     return error;
+}
+
+void ControllerManager::enablePolling(bool enable) {
+    if (enable) m_pProcessor->startPolling();
+    else {
+        // This controller doesn't need it, but check to make sure others don't
+        //  before disabling it
+        QListIterator<Controller*> it(m_controllers);
+        while (it.hasNext()) {
+            Controller *cur = it.next();
+            // (re-using enable here)
+            if (cur->isOpen() && cur->needPolling()) enable = true;
+        }
+        if (!enable) m_pProcessor->stopPolling();
+    }
 }
 
 QList<QString> ControllerManager::getPresetList(QString extension)
