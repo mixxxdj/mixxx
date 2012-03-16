@@ -37,9 +37,13 @@ Q_OBJECT
         bool isInputDevice() { return m_bIsInputDevice; };
         QString getName() { return m_sDeviceName; };
         bool debugging() { return m_bDebug; };
+        /** Returns the extension for the controller (type) preset files.
+            This is used by the ControllerManager to display only relevant
+            preset files for the controller (type.) */
+        virtual QString presetExtension();
 
     protected:
-        QDomElement loadPreset(QDomElement root, bool forceLoad=false);
+        virtual QDomElement loadPreset(QDomElement root, bool forceLoad=false);
         /** To be called in sub-class' open() functions after opening the
             device but before starting any input polling/processing. */
         virtual void startEngine();
@@ -69,6 +73,8 @@ Q_OBJECT
         /** Specifies whether or not we should dump incoming data to the console at runtime. This is useful
             for end-user debugging and script-writing. */
         bool m_bDebug;
+
+        ControllerEngine *m_pEngine;
 
         QList<QString> m_scriptFileNames;
 
@@ -102,8 +108,6 @@ Q_OBJECT
         void savePreset();
         /** Given a path, saves the current preset to an XML file. */
         void savePreset(QString path);
-
-        ControllerEngine *m_pEngine;
 
         QList<QString> m_scriptFunctionPrefixes;
         

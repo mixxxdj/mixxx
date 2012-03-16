@@ -20,7 +20,7 @@
 
 // http://developer.qt.nokia.com/wiki/Threads_Events_QObjects
 
-ControllerProcessor::ControllerProcessor(ControllerManager * pManager) : QThread() {
+ControllerProcessor::ControllerProcessor(ControllerManager * pManager) : QObject(pManager) {
     m_pManager = pManager;
     m_pollingTimerId = 0;
     polling = false;
@@ -78,8 +78,12 @@ ControllerManager::ControllerManager(ConfigObject<ConfigValue> * pConfig) : QObj
     bool polling = false;
     
     // Instantiate all enumerators
-//     m_pMIDIEnumerator = new MidiEnumerator();    // TODO
-//     if (m_pMIDIEnumerator->needPolling()) polling=true;
+    m_pPMEnumerator = new PortMidiEnumerator();
+    if (m_pPMEnumerator->needPolling()) polling=true;
+#ifdef __HSS1394__
+    m_pHSSEnumerator = new Hss1394Enumerator();
+    if (m_pHSSEnumerator->needPolling()) polling=true;
+#endif
 #ifdef __HID__
     m_pHIDEnumerator = new HidEnumerator();
     if (m_pHIDEnumerator->needPolling()) polling=true;
@@ -89,24 +93,37 @@ ControllerManager::ControllerManager(ConfigObject<ConfigValue> * pConfig) : QObj
     if (m_pOSCEnumerator->needPolling()) polling=true;
 #endif
 
+    m_pThread = new QThread;
+    m_pThread->setObjectName("Controller");
+
     m_pProcessor = new ControllerProcessor(this);
-    m_pProcessor->setObjectName("CntrlrProc");
     m_pProcessor->polling=polling;
 
+    this->moveToThread(m_pThread); // implies m_pProcessor->moveToThread(m_pThread);
+    
+    // Controller processing needs to be prioritized since it can affect the audio
+    //  directly, like when scratching
+    m_pThread->start(QThread::HighPriority);
+    
     connect(this, SIGNAL(requestSetUpDevices()), this, SLOT(slotSetUpDevices()));
     connect(this, SIGNAL(requestShutdown()), this, SLOT(slotShutdown()));
     connect(this, SIGNAL(requestSave(bool)), this, SLOT(slotSavePresets(bool)));
 }
 
 ControllerManager::~ControllerManager() {
-    m_pProcessor->wait();
+    m_pThread->wait();
     delete m_pProcessor;
+    delete m_pThread;
 }
 
 void ControllerManager::slotShutdown() {
     m_pProcessor->stopPolling();
+    
     //Delete enumerators and they'll delete their Devices
-//     delete m_pMIDIEnumerator;    // TODO
+    delete m_pPMEnumerator;
+#ifdef __HSS1394__
+    delete m_pHSSEnumerator;
+#endif
 #ifdef __HID__
     delete m_pHIDEnumerator;
 #endif
@@ -114,20 +131,16 @@ void ControllerManager::slotShutdown() {
     delete m_pOSCEnumerator;
 #endif
     // Stop the processor after the enumerators since the engines live in it
-    m_pProcessor->quit();
-}
-
-void ControllerManager::startThread() {
-    moveToThread(m_pProcessor);
-    // Controller processing needs to be prioritized since it can affect the audio
-    //  directly, like when scratching
-    m_pProcessor->start(QThread::HighPriority);
+    m_pThread->quit();
 }
 
 void ControllerManager::updateControllerList() {
     
     QList<Controller*> newDeviceList;
-//    newDeviceList.append(m_pMIDIEnumerator->queryDevices()); // TODO
+    newDeviceList.append(m_pPMEnumerator->queryDevices());
+#ifdef __HSS1394__
+    newDeviceList.append(m_pHSSEnumerator->queryDevices());
+#endif
 #ifdef __HID__
     newDeviceList.append(m_pHIDEnumerator->queryDevices());
 #endif
@@ -204,7 +217,7 @@ int ControllerManager::slotSetUpDevices() {
         filenames.append(filename);
         m_pConfig->getValueString(ConfigKey("[ControllerPreset]", name.replace(" ", "_")));
         qDebug() << "ControllerPreset" << m_pConfig->getValueString(ConfigKey("[ControllerPreset]", name.replace(" ", "_")));
-        cur->loadPreset(PRESETS_PATH.append(filename + CONTROLLER_PRESET_EXTENSION),true);
+        cur->loadPreset(PRESETS_PATH.append(filename + cur->presetExtension()),true);
 
         if ( m_pConfig->getValueString(ConfigKey("[Controller]", name.replace(" ", "_"))) != "1" )
             continue;
@@ -226,7 +239,7 @@ int ControllerManager::slotSetUpDevices() {
     return error;
 }
 
-QList<QString> ControllerManager::getPresetList(bool midi)
+QList<QString> ControllerManager::getPresetList(QString extension)
 {
     QList<QString> presets;
     // Make sure list is empty
@@ -244,9 +257,7 @@ QList<QString> ControllerManager::getPresetList(bool midi)
         {
             it.next(); //Advance iterator. We get the filename from the next line. (It's a bit weird.)
             QString curMapping = it.fileName();
-            QString extension = CONTROLLER_PRESET_EXTENSION;
-            if(midi) extension = MIDI_MAPPING_EXTENSION;
-            if (curMapping.endsWith(extension)) //blah, thanks for nothing Qt
+            if (curMapping.endsWith(extension))
             {
                 curMapping.chop(QString(extension).length()); //chop off the extension
                 presets.append(curMapping);
@@ -281,6 +292,6 @@ void ControllerManager::slotSavePresets(bool onlyActive) {
         }
         
         filenames.append(filename);
-        cur->savePreset(PRESETS_PATH.append(filename + CONTROLLER_PRESET_EXTENSION));
+        cur->savePreset(PRESETS_PATH.append(filename + cur->presetExtension()));
     }
 }

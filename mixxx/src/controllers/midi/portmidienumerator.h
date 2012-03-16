@@ -1,11 +1,8 @@
 /**
-* @file midienumerator.h
+* @file portmidienumerator.h
 * @author Sean Pappalardo spappalardo@mixxx.org
-* @date Tue 7 Feb 2012
-* @brief Base class handling discovery and enumeration of DJ controllers that use the MIDI protocol.
-*
-* This class handles discovery and enumeration of MIDI DJ controllers and
-*   must be inherited by a class that implements it on some API.
+* @date Thu 15 Mar 2012
+* @brief This class handles discovery and enumeration of DJ controllers that appear under the PortMIDI cross-platform API.
 */
 
 /***************************************************************************
@@ -16,20 +13,18 @@
 *   (at your option) any later version.                                   *
 *                                                                         *
 ***************************************************************************/
+#ifndef PORTMIDIENUMERATOR_H
+#define PORTMIDIENUMERATOR_H
 
-#ifndef MIDIENUMERATOR_H
-#define MIDIENUMERATOR_H
+#include "midienumerator.h"
 
-#include "controllers/controllerenumerator.h"
-#include "midicontroller.h"
-
-class MidiEnumerator : public ControllerEnumerator
+class PortMidiEnumerator : public MidiEnumerator
 {
     public:
-        MidiEnumerator();
-        virtual ~MidiEnumerator();
-        virtual QList<Controller*> queryDevices() = 0;
-//         virtual bool needPolling() { return false; };
+        PortMidiEnumerator();
+        ~PortMidiEnumerator();
+        QList<Controller*> queryDevices();
+        bool needPolling() { return true; };
     private:
         QList<Controller*> m_devices;
 };

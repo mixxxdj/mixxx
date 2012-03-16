@@ -31,7 +31,7 @@ class ControlObjectThread;
 class ControllerEngine : public QObject {
 Q_OBJECT
 
-  friend class Controller;    // so our timerEvent() can remain protected
+//   friend class Controller;    // so our timerEvent() can remain protected
 
   public:
     ControllerEngine(Controller* controller);
@@ -49,6 +49,9 @@ Q_OBJECT
         m_bPopups = bPopups;
     }
 
+    /** Pass in a timer event that scripts might be waiting on */
+    void timerEvent(QTimerEvent *event);    // Needs to be public otherwise we'd have to friend Controller and all derived classes explicitly
+
     /** Look up registered script functions */
     QStringList getScriptFunctions();
     /** Look up registered script function prefixes */
@@ -56,9 +59,6 @@ Q_OBJECT
     
 
   protected:
-    /** Pass in a timer event that scripts might be waiting on */
-    void timerEvent(QTimerEvent *event);
-      
     Q_INVOKABLE double getValue(QString group, QString name);
     Q_INVOKABLE void setValue(QString group, QString name, double newValue);
     Q_INVOKABLE bool connectControl(QString group, QString name,
@@ -83,6 +83,8 @@ Q_OBJECT
     bool evaluate(QString filepath);
     // Execute a particular function
     bool execute(QString function);
+    // Execute a particular function with a list of arguments
+    bool execute(QString function, QScriptValueList args);
     // Execute a particular function with a data string (e.g. a device ID)
     bool execute(QString function, QString data);
     // Execute a particular function with a data buffer

@@ -1,11 +1,8 @@
 /**
-* @file midienumerator.h
+* @file hss1394enumerator.h
 * @author Sean Pappalardo spappalardo@mixxx.org
-* @date Tue 7 Feb 2012
-* @brief Base class handling discovery and enumeration of DJ controllers that use the MIDI protocol.
-*
-* This class handles discovery and enumeration of MIDI DJ controllers and
-*   must be inherited by a class that implements it on some API.
+* @date Thu 15 Mar 2012
+* @brief This class handles discovery and enumeration of DJ controllers that appear under the HSS1394 cross-platform API.
 */
 
 /***************************************************************************
@@ -16,20 +13,17 @@
 *   (at your option) any later version.                                   *
 *                                                                         *
 ***************************************************************************/
+#ifndef HSS1394ENUMERATOR_H
+#define HSS1394ENUMERATOR_H
 
-#ifndef MIDIENUMERATOR_H
-#define MIDIENUMERATOR_H
+#include "midienumerator.h"
 
-#include "controllers/controllerenumerator.h"
-#include "midicontroller.h"
-
-class MidiEnumerator : public ControllerEnumerator
+class Hss1394Enumerator : public MidiEnumerator
 {
     public:
-        MidiEnumerator();
-        virtual ~MidiEnumerator();
-        virtual QList<Controller*> queryDevices() = 0;
-//         virtual bool needPolling() { return false; };
+        Hss1394Enumerator();
+        ~Hss1394Enumerator();
+        QList<Controller*> queryDevices();
     private:
         QList<Controller*> m_devices;
 };

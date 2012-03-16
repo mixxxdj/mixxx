@@ -64,10 +64,10 @@ struct MidiOutput
         uint32_t    message;
         struct
         {
-            char    status  : 8;
-            char    control : 8;
-            char    on      : 8;
-            char    off     : 8;
+            unsigned char    status  : 8;
+            unsigned char    control : 8;
+            unsigned char    on      : 8;
+            unsigned char    off     : 8;
         };
     };
 };
@@ -79,8 +79,8 @@ struct MidiKey
         uint16_t    key;
         struct
         {
-            char    status  : 8;
-            char    control : 8;
+            unsigned char    status  : 8;
+            unsigned char    control : 8;
         };
     };
 };

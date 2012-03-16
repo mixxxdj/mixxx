@@ -150,6 +150,8 @@ void ControllerEngine::initializeScriptEngine() {
 
         // Make the Controller instance available to scripts
         engineGlobalObject.setProperty("controller", m_pEngine->newQObject(m_pController));
+        // ...under the legacy name as well
+        engineGlobalObject.setProperty("midi", m_pEngine->newQObject(m_pController));
     }
 
     m_pBaClass = new ByteArrayClass(m_pEngine);
@@ -313,7 +315,32 @@ bool ControllerEngine::internalExecute(QString scriptCode) {
     return true;
 }
 
-/* -------- ------------------------------------------------------
+/**-------- ------------------------------------------------------
+   Purpose: Evaluate & call a script function with argument list
+   Input:   Function name, argument list
+   Output:  false if an invalid function or an exception
+   -------- ------------------------------------------------------ */
+bool ControllerEngine::execute(QString function, QScriptValueList args) {
+    
+    if(m_pEngine == NULL) {
+        qDebug() << "ControllerEngine::execute: No script engine exists!";
+        return false;
+    }
+    
+    QScriptValue scriptFunction = m_pEngine->evaluate(function);
+    
+    if (checkException())
+        return false;
+    if (!scriptFunction.isFunction())
+        return false;
+
+    scriptFunction.call(QScriptValue(), args);
+    if (checkException())
+        return false;
+    return true;
+}
+
+/**-------- ------------------------------------------------------
    Purpose: Evaluate & call a script function
    Input:   Function name, data string (e.g. device ID)
    Output:  false if an invalid function or an exception

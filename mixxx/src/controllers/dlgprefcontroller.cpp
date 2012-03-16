@@ -66,7 +66,8 @@ void DlgPrefController::enumeratePresets()
     comboBoxPreset->addItem("...");
     
     // Ask the controller manager for a list of applicable presets
-    QList<QString> presetsList = m_pControllerManager->getPresetList();   
+    QList<QString> presetsList =
+        m_pControllerManager->getPresetList(m_pController->presetExtension());
     
     //Sort in alphabetical order
     qSort(presetsList);
@@ -127,9 +128,9 @@ void DlgPrefController::slotLoadPreset(const QString &name) {
     if (name == "...")
         return;
     
-    QString filename = LPRESETS_PATH + name + CONTROLLER_PRESET_EXTENSION;
+    QString filename = LPRESETS_PATH + name + m_pController->presetExtension();
     QFile ftest(filename);
-    if ( !ftest.exists() ) filename = m_pConfig->getConfigPath().append("controllers/") + name + CONTROLLER_PRESET_EXTENSION;
+    if ( !ftest.exists() ) filename = m_pConfig->getConfigPath().append("controllers/") + name + m_pController->presetExtension();
     
     if (!filename.isNull()) emit(loadPreset(filename, true));    // It's applied on prefs close
 
