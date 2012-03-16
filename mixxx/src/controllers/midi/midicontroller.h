@@ -69,7 +69,7 @@ Q_OBJECT    // For signals & slots
         void outputMappingToXML(QDomElement& parentNode, unsigned char on,
                                 unsigned char off, float max, float min) const;
 
-        void createOutputHandlers(QDomNode node);
+        void createOutputHandlers();
         void updateAllOutputs();
         void destroyOutputHandlers();
 
