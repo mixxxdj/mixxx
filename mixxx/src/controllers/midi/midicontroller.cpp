@@ -44,66 +44,42 @@ void MidiController::applyPreset() {
 
         if (m_outputs.count()>0) destroyOutputHandlers();
 
-        QDomElement controller = m_bindings.firstChildElement("controller");
-        // For each device
-        while (!controller.isNull()) {
-            // Device Outputs - LEDs
-            QString deviceId = controller.attribute("id","");
-            
-            qDebug() << "MidiController: Processing output bindings for" << deviceId;
-            createOutputHandlers(controller.namedItem("outputs").firstChild());
-            
-            // Next device
-            controller = controller.nextSiblingElement("controller");
-        }
+        createOutputHandlers();
         updateAllOutputs();
     }
 }
 
-void MidiController::createOutputHandlers(QDomNode node) {
-    if (!node.isNull() && node.isElement()) {
-        QDomNode light = node;
-        while (!light.isNull()) {
-            if(light.nodeName() == "output") {
-                QString group = XmlParse::selectNodeQString(light, "group");
-                QString key = XmlParse::selectNodeQString(light, "key");
+void MidiController::createOutputHandlers() {
+    if (m_outputMappings.isEmpty()) return;
 
-                unsigned char status = (unsigned char)XmlParse::selectNodeInt(light, "status");
-                unsigned char midino = (unsigned char)XmlParse::selectNodeInt(light, "midino");
-                unsigned char on = 0x7f;    // Compatible with Hercules and others
-                unsigned char off = 0x00;
-                float min = 0.0f;
-                float max = 1.0f;
-                if (!light.firstChildElement("on").isNull()) {
-                    on = (unsigned char)XmlParse::selectNodeInt(light, "on");
-                }
-                if (!light.firstChildElement("off").isNull()) {
-                    off = (unsigned char)XmlParse::selectNodeInt(light, "off");
-                }
-                if (!light.firstChildElement("threshold").isNull()) { //Deprecated as of 1.7.0
-                    min = XmlParse::selectNodeFloat(light, "threshold");
-                }
-                if (!light.firstChildElement("minimum").isNull()) {
-                    min = XmlParse::selectNodeFloat(light, "minimum");
-                }
-                if (!light.firstChildElement("maximum").isNull()) {
-                    max = XmlParse::selectNodeFloat(light, "maximum");
-                }
-                if (debugging()) {
-                    qDebug() << QString(
-                        "Creating output handler for %1,%2 between %3 and %4 to MIDI out: 0x%5 0x%6, on: 0x%7 off: 0x%8")
-                            .arg(group, key,
-                                 QString::number(min), QString::number(max),
-                                 QString::number(status, 16).toUpper(),
-                                 QString::number(midino, 16).toUpper().rightJustified(2,'0'),
-                                 QString::number(on, 16).toUpper().rightJustified(2,'0'),
-                                 QString::number(off, 16).toUpper().rightJustified(2,'0'));
-                }
+    QHashIterator<ConfigKey, MidiOutput> outIt(m_outputMappings);
+    while (outIt.hasNext()) {
+        outIt.next();
 
-                m_outputs.append(new MidiOutputHandler(group, key, this, min, max, status, midino, on, off));
-            }
-            light = light.nextSibling();
+        MidiOutput outputPack = outIt.value();
+
+        QString group = outIt.key().group;
+        QString key = outIt.key().item;
+
+        unsigned char status = outputPack.status;
+        unsigned char control = outputPack.control;
+        unsigned char on = outputPack.on;
+        unsigned char off = outputPack.off;
+        float min = outputPack.min;
+        float max = outputPack.max;
+
+        if (debugging()) {
+            qDebug() << QString(
+                "Creating output handler for %1,%2 between %3 and %4 to MIDI out: 0x%5 0x%6, on: 0x%7 off: 0x%8")
+                    .arg(group, key,
+                            QString::number(min), QString::number(max),
+                            QString::number(status, 16).toUpper(),
+                            QString::number(control, 16).toUpper().rightJustified(2,'0'),
+                            QString::number(on, 16).toUpper().rightJustified(2,'0'),
+                            QString::number(off, 16).toUpper().rightJustified(2,'0'));
         }
+
+        m_outputs.append(new MidiOutputHandler(group, key, this, min, max, status, control, on, off));
     }
 }
 
@@ -471,8 +447,8 @@ QDomElement MidiController::loadPreset(QDomElement root, bool forceLoad) {
             // Verify script functions are loaded
             if (options.script && !scriptFunctions.isEmpty() && scriptFunctions.indexOf(controlKey)==-1) {
 
-                QString status = QString("0x%1").arg(midiStatusByte, 0, 16, QChar('0')).toUpper();
-                QString byte2 = QString("0x%1").arg(midiControl, 0, 16, QChar('0')).toUpper();
+                QString status = QString("0x%1").arg(midiStatusByte, 2, 16, QChar('0')).toUpper();
+                QString byte2 = QString("0x%1").arg(midiControl, 2, 16, QChar('0')).toUpper();
 
                 // If status is MIDI pitch, the 2nd byte is part of the payload so don't display it
                 if ((midiStatusByte & 0xF0) == MIDI_PITCH_BEND) byte2 = "";
@@ -618,6 +594,14 @@ QDomElement MidiController::loadPreset(QDomElement root, bool forceLoad) {
 //             MixxxControl mixxxControl(output, true);
 
             // Add the static output mapping.
+            /*
+            qDebug() << "New output mapping:"
+                          << QString::number(outputMessage.status, 16).toUpper()
+                          << QString::number(outputMessage.control, 16).toUpper()
+                          << QString::number(outputMessage.on, 16).toUpper()
+                          << QString::number(outputMessage.off, 16).toUpper()
+                          << controlGroup << controlKey;
+            */
             m_outputMappings.insert(ConfigKey(controlGroup, controlKey),outputMessage);
             
 //             internalSetOutputMidiMapping(mixxxControl, midiMessage, true);
@@ -774,14 +758,14 @@ void MidiController::mappingToXML(QDomElement& parentNode, QString group,
     
     //Midi status byte
     tagNode = nodeMaker.createElement("status");
-    text = nodeMaker.createTextNode(QString("0x%1").arg(status, 0, 16, QChar('0')).toUpper());
+    text = nodeMaker.createTextNode(QString("0x%1").arg(QString::number(status, 16).toUpper().rightJustified(2,'0')));
     tagNode.appendChild(text);
     parentNode.appendChild(tagNode);
     
     if (control != 0xFF) {
         //Midi no
         tagNode = nodeMaker.createElement("midino");
-        text = nodeMaker.createTextNode(QString("0x%1").arg(control, 0, 16, QChar('0')).toUpper());
+        text = nodeMaker.createTextNode(QString("0x%1").arg(QString::number(control, 16).toUpper().rightJustified(2,'0')));
         tagNode.appendChild(text);
         parentNode.appendChild(tagNode);
     }
@@ -796,13 +780,13 @@ void MidiController::outputMappingToXML(QDomElement& parentNode, unsigned char o
     
     // Second MIDI byte for turning on the LED
     tagNode = nodeMaker.createElement("on");
-    text = nodeMaker.createTextNode(QString("0x%1").arg(on, 0, 16, QChar('0')).toUpper());
+    text = nodeMaker.createTextNode(QString("0x%1").arg(QString::number(on, 16).toUpper().rightJustified(2,'0')));
     tagNode.appendChild(text);
     parentNode.appendChild(tagNode);
     
     // Second MIDI byte for turning off the LED
     tagNode = nodeMaker.createElement("off");
-    text = nodeMaker.createTextNode(QString("0x%1").arg(off, 0, 16, QChar('0')).toUpper());
+    text = nodeMaker.createTextNode(QString("0x%1").arg(QString::number(off, 16).toUpper().rightJustified(2,'0')));
     tagNode.appendChild(text);
     parentNode.appendChild(tagNode);
 
@@ -819,7 +803,7 @@ void MidiController::outputMappingToXML(QDomElement& parentNode, unsigned char o
 
     // Lower value, below which the 'off' value is sent
     //  0 is the default, so we don't bother writing it in that case
-    if (min != 0.0f) {
+    if (min != 0.5f) {
         tagNode = nodeMaker.createElement("minimum");
         QString value;
         value.setNum(min);
