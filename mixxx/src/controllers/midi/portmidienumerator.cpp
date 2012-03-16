@@ -118,14 +118,14 @@ QList<Controller*> PortMidiEnumerator::queryDevices() {
                                                                        outputDeviceInfo,
                                                                        inputDevIndex,
                                                                        outputDevIndex);
+            currentDevice->setPolling(needPolling());
             m_devices.push_back((Controller*)currentDevice);
-            
         }
 
         // Is there a use-case for output-only devices (such as message displays?)
         //  If so, handle them here.
 //         else if (deviceInfo->output) {
-//             PortMidiController *currentDevice = new PortMidiController(new MidiControlProcessor(NULL), deviceInfo, i);
+//             PortMidiController *currentDevice = new PortMidiController(deviceInfo, i);
 //             m_devices.push_back((MidiController*)currentDevice);
 //         }
     }

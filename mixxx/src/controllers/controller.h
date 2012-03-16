@@ -2,9 +2,9 @@
 * @file controller.h
 * @author Sean Pappalardo spappalardo@mixxx.org
 * @date Sat Apr 30 2011
-* @brief Base class representing a physical controller.
+* @brief Base class representing a physical (or software) controller.
 *
-* This is a base class representing a physical controller.
+* This is a base class representing a physical (or software) controller.
 *   It must be inherited by a class that implements it on some API.
 *
 *   Note that the subclass' destructor should call close() at a minimum.
@@ -41,6 +41,9 @@ Q_OBJECT
             This is used by the ControllerManager to display only relevant
             preset files for the controller (type.) */
         virtual QString presetExtension();
+        
+        void setPolling(bool needPolling) { m_bPolling = needPolling; };
+        bool needPolling() { return m_bPolling; };
 
     protected:
         virtual QDomElement loadPreset(QDomElement root, bool forceLoad=false);
@@ -110,7 +113,8 @@ Q_OBJECT
         void savePreset(QString path);
 
         QList<QString> m_scriptFunctionPrefixes;
-        
+
+        bool m_bPolling;
 };
 
 #endif

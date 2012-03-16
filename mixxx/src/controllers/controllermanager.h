@@ -40,10 +40,10 @@ Q_OBJECT
     public:
         ControllerProcessor(ControllerManager *pManager);
         ~ControllerProcessor();
+        /** Starts controller polling if it hasn't already been started */
         void startPolling();
         void stopPolling();
-        
-        bool polling;
+
     protected:
         void timerEvent(QTimerEvent *event);
     private:
@@ -60,7 +60,7 @@ Q_OBJECT
         QList<Controller*> getControllers() { return m_controllers; };
         QList<Controller*> getControllerList(bool outputDevices=true, bool inputDevices=true);
         QList<QString> getPresetList(QString extension);
-        ConfigObject<ConfigValue>* getDeviceSettings() { return m_pDeviceSettings; };
+//         ConfigObject<ConfigValue>* getDeviceSettings() { return m_pDeviceSettings; };
         // Prevent other parts of Mixxx from having to manually connect to our slots
         void setUpDevices() { emit(requestSetUpDevices()); };
         void savePresets(bool onlyActive=false) { emit(requestSave(onlyActive)); };
@@ -72,6 +72,9 @@ Q_OBJECT
         void requestSave(bool onlyActive);
     public slots:
         void updateControllerList();
+        /** Signaled from DlgController, this enables or disables polling as
+            needed */
+        void enablePolling(bool enable);
         /** Writes out presets for currently connected input devices */
         void slotSavePresets(bool onlyActive=false);
     protected:
@@ -81,7 +84,7 @@ Q_OBJECT
         void slotShutdown();
         
     private:
-        ConfigObject<ConfigValue> *m_pDeviceSettings;
+//         ConfigObject<ConfigValue> *m_pDeviceSettings;
         ConfigObject<ConfigValue> *m_pConfig;
         ControllerProcessor *m_pProcessor;
         QMutex m_mControllerList;
