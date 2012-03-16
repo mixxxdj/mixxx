@@ -374,7 +374,7 @@ bool ControllerEngine::execute(QString function, QString data) {
     return true;
 }
 
-/* -------- ------------------------------------------------------
+/**-------- ------------------------------------------------------
    Purpose: Evaluate & call a script function
    Input:   Function name, ponter to data buffer, length of buffer
    Output:  false if an invalid function or an exception
@@ -491,6 +491,7 @@ void ControllerEngine::scriptErrorDialog(QString detailedError) {
     Output:  -
     -------- ------------------------------------------------------ */
 void ControllerEngine::errorDialogButton(QString key, QMessageBox::StandardButton button) {
+    Q_UNUSED(key);
 
     // Something was clicked, so disable this signal now
     disconnect(ErrorDialogHandler::instance(), SIGNAL(stdButtonClicked(QString, QMessageBox::StandardButton)),
