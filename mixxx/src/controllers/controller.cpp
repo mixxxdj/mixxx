@@ -38,6 +38,10 @@ Controller::~Controller() {
 //     close(); // I wish I could put this here to enforce it automatically
 }
 
+QString Controller::presetExtension() {
+    return CONTROLLER_PRESET_EXTENSION;
+}
+
 void Controller::startEngine()
 {
     if (debugging()) qDebug() << "  Starting engine";

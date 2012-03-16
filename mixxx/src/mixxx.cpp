@@ -370,7 +370,6 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
     //  but do not set up controllers until the end of the application startup
     qDebug() << "Creating ControllerManager";
     m_pControllerManager = new ControllerManager(m_pConfig);
-    m_pControllerManager->startThread();
 
     // Initialise midi
 //     m_pMidiDeviceManager = new MidiDeviceManager(m_pConfig);

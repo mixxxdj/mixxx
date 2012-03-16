@@ -212,14 +212,7 @@ StantonSCS3d.init = function (id) {    // called when the MIDI device is opened 
     
     // Find out the firmware version
     if (!StantonSCS3d.state["flat"]) midi.sendSysexMsg([0xF0, 0x7E, StantonSCS3d.channel, 0x06, 0x01, 0xF7],6);
-    
-    // TODO: Remove this once the deadlock issue is resolved
-    //  where you have to send something from the controller in order for the init2
-    //  function to run after the .statusResponse() calls it
-    StantonSCS3d.init2();
-}
 
-StantonSCS3d.init2 = function () {    // called when the MIDI device is opened & set up
     // Set the device's MIDI channel to a known value
 //     midi.sendSysexMsg(StantonSCS3d.sysex.concat([0x02, StantonSCS3d.channel, 0xF7]),7);
 

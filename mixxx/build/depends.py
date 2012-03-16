@@ -29,7 +29,6 @@ class PortMIDI(Dependence):
             raise Exception('Did not find PortMidi or its development headers.')
 
     def sources(self, build):
-        return  # temporary
         return ['controllers/midi/portmidienumerator.cpp', 'controllers/midi/portmidicontroller.cpp']
 
 class OpenGL(Dependence):
@@ -356,9 +355,8 @@ class MixxxCore(Feature):
                    "controllers/qtscript-bytearray/bytearrayprototype.cpp",
 
                    #MIDI controllers
-                   #"controllers/midi/midienumerator.cpp", # To be done
+                   "controllers/midi/midienumerator.cpp",
                    "controllers/midi/midicontroller.cpp",
-                   "controllers/midi/midicontrollerengine.cpp",
                    "controllers/midi/midioutputhandler.cpp",
                    
                    #"controllers/midi/mididevice.cpp",

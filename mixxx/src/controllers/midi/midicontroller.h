@@ -25,7 +25,6 @@
 #include "controllers/controller.h"
 #include "midioutputhandler.h"
 #include "softtakeover.h"
-#include "midicontrollerengine.h"
 
 #include "midimessage.h"
 
@@ -37,6 +36,7 @@ Q_OBJECT    // For signals & slots
     public:
         MidiController();
         virtual ~MidiController();
+        virtual QString presetExtension();
 
     signals:
         void midiEvent(MidiKey message);
@@ -44,6 +44,10 @@ Q_OBJECT    // For signals & slots
     protected:
         Q_INVOKABLE void sendShortMsg(unsigned char status, unsigned char byte1, unsigned char byte2);
         Q_INVOKABLE void sendSysexMsg(QList<int> data, unsigned int length) { Controller::send(data,length); }  // Alias
+
+        void receive(unsigned char status, unsigned char control = 0, unsigned char value = 0);
+        /** For System Exclusive message reception */
+        void receive(const unsigned char data[], unsigned int length);
 
     private slots:
 //         virtual int open() = 0;
@@ -54,15 +58,10 @@ Q_OBJECT    // For signals & slots
 
     private:
         virtual void send(unsigned int word);
-        void receive(char status, char control = 0, char value = 0);
-        /** For System Exclusive message reception */
-        void receive(const unsigned char data[], unsigned int length);
-
-        void startEngine();
 
         double computeValue(MidiOptions options, double _prevmidivalue, double _newmidivalue);
 
-        void loadPreset(QDomElement root, bool forceLoad=false);
+        QDomElement loadPreset(QDomElement root, bool forceLoad=false);
         /** Updates the DOM with what is currently in the table */
         QDomDocument buildDomElement();
         void mappingToXML(QDomElement& parentNode, QString group, QString item, char status, unsigned char control) const;
@@ -77,8 +76,6 @@ Q_OBJECT    // For signals & slots
 
         QHash<uint16_t, QPair<ConfigKey, MidiOptions> > m_mappings;
         QHash<ConfigKey, MidiOutput> m_outputMappings;
-
-        MidiControllerEngine *m_pEngine;
 
         SoftTakeover m_st;
 

@@ -18,7 +18,12 @@
 #define CONTROLLERMANAGER_H
 
 #include "configobject.h"
-// #include "midienumerator.h"  // TODO
+
+#include "midi/portmidienumerator.h"
+#ifdef __HSS1394__
+    #include "midi/hss1394enumerator.h"
+#endif
+
 #ifdef __HID__
     #include "hidenumerator.h"
 #endif
@@ -30,7 +35,7 @@
 class Controller;
 class ControllerManager;
 
-class ControllerProcessor : public QThread {
+class ControllerProcessor : public QObject {
 Q_OBJECT
     public:
         ControllerProcessor(ControllerManager *pManager);
@@ -54,9 +59,8 @@ Q_OBJECT
         ~ControllerManager();
         QList<Controller*> getControllers() { return m_controllers; };
         QList<Controller*> getControllerList(bool outputDevices=true, bool inputDevices=true);
-        QList<QString> getPresetList(bool midi=false);
+        QList<QString> getPresetList(QString extension);
         ConfigObject<ConfigValue>* getDeviceSettings() { return m_pDeviceSettings; };
-        void startThread();
         // Prevent other parts of Mixxx from having to manually connect to our slots
         void setUpDevices() { emit(requestSetUpDevices()); };
         void savePresets(bool onlyActive=false) { emit(requestSave(onlyActive)); };
@@ -82,7 +86,13 @@ Q_OBJECT
         ControllerProcessor *m_pProcessor;
         QMutex m_mControllerList;
 
-//         MidiEnumerator *m_pMIDIEnumerator;   // TODO
+        QThread *m_pThread;
+
+        PortMidiEnumerator *m_pPMEnumerator;
+#ifdef __HSS1394__
+        Hss1394Enumerator *m_pHSSEnumerator;
+#endif
+        
 #ifdef __HID__
         HidEnumerator *m_pHIDEnumerator;
 #endif
@@ -90,5 +100,5 @@ Q_OBJECT
         OscEnumerator *m_pOSCEnumerator;
 #endif
 };
-    
+
 #endif  // CONTROLLERMANAGER_H

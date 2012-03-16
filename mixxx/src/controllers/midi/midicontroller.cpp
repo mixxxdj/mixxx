@@ -20,8 +20,9 @@
 #include "controlobject.h"
 #include "errordialoghandler.h"
 
-// MidiController::MidiController() : Controller() {
-MidiController::MidiController() {
+#include "../defs_controllers.h"   // For MIDI_MAPPING_EXTENSION
+
+MidiController::MidiController() : Controller() {
 }
 
 MidiController::~MidiController(){
@@ -29,14 +30,8 @@ MidiController::~MidiController(){
 //     close(); // I wish I could put this here to enforce it automatically
 }
 
-void MidiController::startEngine()
-{
-    if (debugging()) qDebug() << "  Starting engine";
-    if (m_pEngine != NULL) {
-        qWarning() << "MidiController: Engine already exists! Restarting:";
-        stopEngine();
-    }
-    m_pEngine = new MidiControllerEngine(this);
+QString MidiController::presetExtension() {
+    return MIDI_MAPPING_EXTENSION;
 }
 
 void MidiController::applyPreset() {
@@ -123,7 +118,8 @@ void MidiController::destroyOutputHandlers() {
     }
 }
 
-void MidiController::receive(char status, char control, char value) {
+void MidiController::receive(unsigned char status, unsigned char control,
+                             unsigned char value) {
 
     unsigned char channel = status & 0x0F;
     unsigned char opCode = status & 0xF0;
@@ -207,7 +203,15 @@ void MidiController::receive(char status, char control, char value) {
 
     if (options.script) {
         if (m_pEngine == NULL) return;
-        m_pEngine->execute(ckey.item, status, control, value, ckey.group);
+        
+        QScriptValueList args;
+        args << QScriptValue(status & 0x0F);
+        args << QScriptValue(control);
+        args << QScriptValue(value);
+        args << QScriptValue(status);
+        args << QScriptValue(ckey.group);
+        
+        m_pEngine->execute(ckey.item, args);
         return;
     }
 
@@ -359,10 +363,11 @@ void MidiController::receive(const unsigned char data[], unsigned int length) {
     // Custom script handler
     if (options.script) {
         if (m_pEngine == NULL) return;
-        // Up-cast to ControllerEngine since this version of execute() is not in MCE
-        //  (polymorphism doesn't work across class boundaries)
-        ControllerEngine *pEngine = m_pEngine;
-        if (!pEngine->execute(ckey.item, data, length)) {
+//         // Up-cast to ControllerEngine since this version of execute() is not in MCE
+//         //  (polymorphism doesn't work across class boundaries)
+//         ControllerEngine *pEngine = m_pEngine;
+//         if (!pEngine->execute(ckey.item, data, length)) {
+        if (!m_pEngine->execute(ckey.item, data, length)) {
             qDebug() << "MidiController: Invalid script function" << ckey.item;
         }
         return;
@@ -382,9 +387,9 @@ void MidiController::send(unsigned int word) {
     qDebug() << "MIDI short message sending not yet implemented for this API or platform";
 }
 
-void MidiController::loadPreset(QDomElement root, bool forceLoad) {
+QDomElement MidiController::loadPreset(QDomElement root, bool forceLoad) {
 
-    if (root.isNull()) return;
+    if (root.isNull()) return root;
 
     m_bindings = root;
 
@@ -415,10 +420,10 @@ void MidiController::loadPreset(QDomElement root, bool forceLoad) {
             bool ok = false;
 
             //Use QString with toInt base of 0 to auto convert hex values
-            char midiStatusByte = strMidiStatus.toInt(&ok, 0);
+            unsigned char midiStatusByte = strMidiStatus.toInt(&ok, 0);
             if (!ok) midiStatusByte = 0x00;
 
-            char midiControl = midiNo.toInt(&ok, 0);
+            unsigned char midiControl = midiNo.toInt(&ok, 0);
             if (!ok) midiControl = 0x00;
 
 //             MixxxControl mixxxControl(control);
@@ -528,6 +533,10 @@ void MidiController::loadPreset(QDomElement root, bool forceLoad) {
                     // Signifies that the second byte is part of the payload, default
                     key.control = 0xFF;
                 }
+                qDebug() << "New mapping:" << QString::number(key.key, 16).toUpper()
+//                          << QString::number(key.status, 16).toUpper()
+//                          << QString::number(key.control, 16).toUpper()
+                         << target.first.group << target.first.item;
                 m_mappings.insert(key.key, target);
                 // Notify the GUI and anyone else who cares
 //                 emit(newMapping());  // TODO
@@ -612,6 +621,8 @@ void MidiController::loadPreset(QDomElement root, bool forceLoad) {
 
         qDebug() << "MidiController: Output mapping parsing complete.";
     }
+
+    return m_bindings;
 }
 
 QDomDocument MidiController::buildDomElement() {
