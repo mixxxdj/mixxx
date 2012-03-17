@@ -22,6 +22,11 @@
 
 #include "../defs_controllers.h"   // For MIDI_MAPPING_EXTENSION
 
+#define DEFAULT_OUTPUT_MAX  1.0f
+#define DEFAULT_OUTPUT_MIN  0.0f    // Anything above 0 is "on"
+#define DEFAULT_OUTPUT_ON   0x7F
+#define DEFAULT_OUTPUT_OFF  0x00
+
 MidiController::MidiController() : Controller() {
     m_bMidiLearn = false;
 }
@@ -200,6 +205,8 @@ void MidiController::receive(unsigned char status, unsigned char control,
 
         double newValue = value;
 
+//         qDebug() << "MIDI Options" << QString::number(options.all, 2).rightJustified(16,'0');
+
         // compute 14-bit number for pitch bend messages
         if (opCode == MIDI_PITCH_BEND) {
             unsigned int ivalue;
@@ -219,8 +226,8 @@ void MidiController::receive(unsigned char status, unsigned char control,
         }
 
         ControlObject::sync();
-
-        p->queueFromMidi(newValue);
+        
+        p->queueFromMidi(static_cast<MidiOpCode>(opCode), newValue);
     }
     return;
 }
@@ -282,7 +289,7 @@ double MidiController::computeValue(MidiOptions options, double _prevmidivalue, 
     if (options.sw) { _newmidivalue = 1; }
     
     if (options.spread64) {
-        //qDebug() << "MIDI_OPT_SPREAD64";
+//         qDebug() << "MIDI_OPT_SPREAD64";
         // BJW: Spread64: Distance away from centre point (aka "relative CC")
         // Uses a similar non-linear scaling formula as ControlTTRotary::getValueFromWidget()
         // but with added sensitivity adjustment. This formula is still experimental.
@@ -374,6 +381,9 @@ QDomElement MidiController::loadPreset(QDomElement root, bool forceLoad) {
     QDomElement controller = Controller::loadPreset(root,forceLoad);
 
     if (!controller.isNull()) {
+
+        m_mappings.clear();
+        m_outputMappings.clear();
 
         /*
         // We actually need to load any script code now to verify function
@@ -562,10 +572,10 @@ QDomElement MidiController::loadPreset(QDomElement root, bool forceLoad) {
             if (!ok) outputMessage.control = 0x00;
 
             outputMessage.on = midiOn.toInt(&ok, 0);
-            if (!ok) outputMessage.on = 0x7F;
+            if (!ok) outputMessage.on = DEFAULT_OUTPUT_ON;
 
             outputMessage.off = midiOff.toInt(&ok, 0);
-            if (!ok) outputMessage.off = 0x00;
+            if (!ok) outputMessage.off = DEFAULT_OUTPUT_OFF;
 
             QDomElement minNode = output.firstChildElement("minimum");
             QDomElement maxNode = output.firstChildElement("maximum");
@@ -578,7 +588,7 @@ QDomElement MidiController::loadPreset(QDomElement root, bool forceLoad) {
             }
 
             if (!ok) //If not a float, or node wasn't defined
-                outputMessage.min = 0.0f;
+                outputMessage.min = DEFAULT_OUTPUT_MIN;
 
             if (!maxNode.isNull()) {
                 outputMessage.max = maxNode.text().toFloat(&ok);
@@ -587,7 +597,7 @@ QDomElement MidiController::loadPreset(QDomElement root, bool forceLoad) {
             }
 
             if (!ok) //If not a float, or node wasn't defined
-                outputMessage.max = 1.0f;
+                outputMessage.max = DEFAULT_OUTPUT_MAX;
 
             // END unserialize output
             
@@ -602,7 +612,9 @@ QDomElement MidiController::loadPreset(QDomElement root, bool forceLoad) {
                           << QString::number(outputMessage.off, 16).toUpper()
                           << controlGroup << controlKey;
             */
-            m_outputMappings.insert(ConfigKey(controlGroup, controlKey),outputMessage);
+            // We use insertMulti because certain tricks are done with multiple
+            //  entries for the same ConfigKey
+            m_outputMappings.insertMulti(ConfigKey(controlGroup, controlKey),outputMessage);
             
 //             internalSetOutputMidiMapping(mixxxControl, midiMessage, true);
             /*Old code: m_outputMapping.insert(mixxxControl, midiMessage);
@@ -756,14 +768,14 @@ void MidiController::mappingToXML(QDomElement& parentNode, QString group,
     tagNode.appendChild(text);
     parentNode.appendChild(tagNode);
     
-    //Midi status byte
+    //MIDI status byte
     tagNode = nodeMaker.createElement("status");
     text = nodeMaker.createTextNode(QString("0x%1").arg(QString::number(status, 16).toUpper().rightJustified(2,'0')));
     tagNode.appendChild(text);
     parentNode.appendChild(tagNode);
     
     if (control != 0xFF) {
-        //Midi no
+        //MIDI control number
         tagNode = nodeMaker.createElement("midino");
         text = nodeMaker.createTextNode(QString("0x%1").arg(QString::number(control, 16).toUpper().rightJustified(2,'0')));
         tagNode.appendChild(text);
@@ -778,21 +790,25 @@ void MidiController::outputMappingToXML(QDomElement& parentNode, unsigned char o
     QDomDocument nodeMaker;
     QDomElement tagNode;
     
-    // Second MIDI byte for turning on the LED
-    tagNode = nodeMaker.createElement("on");
-    text = nodeMaker.createTextNode(QString("0x%1").arg(QString::number(on, 16).toUpper().rightJustified(2,'0')));
-    tagNode.appendChild(text);
-    parentNode.appendChild(tagNode);
+    // Third MIDI byte for turning on the LED
+    if (on != DEFAULT_OUTPUT_ON) {
+        tagNode = nodeMaker.createElement("on");
+        text = nodeMaker.createTextNode(QString("0x%1").arg(QString::number(on, 16).toUpper().rightJustified(2,'0')));
+        tagNode.appendChild(text);
+        parentNode.appendChild(tagNode);
+    }
     
-    // Second MIDI byte for turning off the LED
-    tagNode = nodeMaker.createElement("off");
-    text = nodeMaker.createTextNode(QString("0x%1").arg(QString::number(off, 16).toUpper().rightJustified(2,'0')));
-    tagNode.appendChild(text);
-    parentNode.appendChild(tagNode);
+    // Third MIDI byte for turning off the LED
+    if (off != DEFAULT_OUTPUT_OFF) {
+        tagNode = nodeMaker.createElement("off");
+        text = nodeMaker.createTextNode(QString("0x%1").arg(QString::number(off, 16).toUpper().rightJustified(2,'0')));
+        tagNode.appendChild(text);
+        parentNode.appendChild(tagNode);
+    }
 
     // Upper value, above which the 'off' value is sent
-    //  1.0 is the default, so we don't bother writing it in that case
-    if (max != 1.0f) {
+    //  (We don't bother writing it if it's the default value.)
+    if (max != DEFAULT_OUTPUT_MAX) {
         tagNode = nodeMaker.createElement("maximum");
         QString value;
         value.setNum(max);
@@ -802,8 +818,8 @@ void MidiController::outputMappingToXML(QDomElement& parentNode, unsigned char o
     }
 
     // Lower value, below which the 'off' value is sent
-    //  0 is the default, so we don't bother writing it in that case
-    if (min != 0.5f) {
+    //  (We don't bother writing it if it's the default value.)
+    if (min != DEFAULT_OUTPUT_MIN) {
         tagNode = nodeMaker.createElement("minimum");
         QString value;
         value.setNum(min);
