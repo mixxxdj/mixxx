@@ -1,8 +1,8 @@
 /****************************************************************/
-/*      Stanton SCS.1d MIDI controller script v1.01             */
-/*          Copyright (C) 2009-2011, Sean M. Pappalardo         */
+/*      Stanton SCS.1d MIDI controller script v1.02             */
+/*          Copyright (C) 2009-2012, Sean M. Pappalardo         */
 /*      but feel free to tweak this to your heart's content!    */
-/*      For Mixxx version 1.9.x, controller firmware v1.25      */
+/*      For Mixxx version 1.11.x, controller firmware v1.25     */
 /****************************************************************/
 
 function StantonSCS1d() {}
@@ -23,22 +23,22 @@ StantonSCS1d.looseLoops = true;         // Re-define loop points while set (for 
 StantonSCS1d.debug = false;  // Enable/disable debugging messages to the console
 StantonSCS1d.id = "";   // The ID for the particular device being controlled for use in debugging, set at init time
 StantonSCS1d.channel = 0;   // MIDI channel the device is on
-StantonSCS1d.swVersion = "1.9";   // Mixxx version for display
-StantonSCS1d.buttons = { "control":27, "browse":28, "vinyl":29, "deckSelect":64 };
+StantonSCS1d.swVersion = "1.11";   // Mixxx version for display
+StantonSCS1d.platterMode = { "default":"vinyl" };   // Set vinyl mode on all decks
+StantonSCS1d.padBank = { "deck":1, "default":1 };
+StantonSCS1d.triggerBank = { "default":1 };    // Default trigger button bank
 
-StantonSCS1d.platterMode = { "[Channel1]":"vinyl", "[Channel2]":"vinyl" };   // Set vinyl mode on both decks
-StantonSCS1d.newPlatterMode;
-StantonSCS1d.knobMode = { "[Channel1]":1, "[Channel2]":1 }; // 1=Low,Mid,High EQ,Vol; 2=Depth,Delay,LFO,Gain; 3=Cuemix,Headvol,Balance,MasterVol
-StantonSCS1d.padBank = { "deck":1, "bank1":1, "bank2":1 };
-StantonSCS1d.triggerBank = { 1:1, 2:1 };    // Trigger button bank for each deck
 StantonSCS1d.deck = 1;  // Currently active virtual deck
-StantonSCS1d.trackDuration = [0,0]; // Duration of the song on each deck (used for jog LCD and displays)
-StantonSCS1d.lastLight = [-1,-1];    // Last circle LCD values
+StantonSCS1d.buttons = { "control":27, "browse":28, "vinyl":29, "deckSelect":64 };
+StantonSCS1d.newPlatterMode;
+StantonSCS1d.knobMode = { }; // 1=Low,Mid,High EQ,Vol; 2=Depth,Delay,LFO,Gain; 3=Cuemix,Headvol,Balance,MasterVol
+StantonSCS1d.trackDuration = [ ]; // Duration of the song on each deck (used for jog LCD and displays)
+StantonSCS1d.lastLight = [ ];    // Last circle LCD values
 StantonSCS1d.modifier = { "cue":0, "play":0, "trigger":-1 };  // Modifier buttons (allowing alternate controls) defined on-the-fly if needed
 // Temporary state variables
 StantonSCS1d.state = { "pitchAbs":0, "dontMove":0, "browseTicks":0, "loopFlash":0, "control":false };
 StantonSCS1d.timer = { "loop":-1, "deckChange":-1 };  // Temporary storage of timer IDs
-StantonSCS1d.loopActive = [-1, -1, -1]; // Mark which loop is active on each deck, if any
+StantonSCS1d.loopActive = [ ]; // Mark which loop is active on each deck, if any
 StantonSCS1d.mutex = { };   // Temporary mutual exclusion variables
 StantonSCS1d.prevValues = { };  // Temporary previous value storage
 StantonSCS1d.inSetup = false;   // Flag for if the device is in setup mode
@@ -83,7 +83,9 @@ StantonSCS1d.deckSignals = [    ["CurrentChannel", "rateRange", "StantonSCS1d.pi
                                 ["CurrentChannel", "pfl", "StantonSCS1d.headphoneLED"],
                                 ["CurrentChannel", "loop_enabled", "StantonSCS1d.loopEnabled"],
                                 ["CurrentChannel", "reloop_exit", "StantonSCS1d.activateLoop"],
-                                ["CurrentChannel", "bpm_tap", "StantonSCS1d.bpmLED"]
+                                ["CurrentChannel", "bpm_tap", "StantonSCS1d.bpmLED"],
+                                ["CurrentChannel", "visual_playposition", "StantonSCS1d.circleBars"],
+                                ["CurrentChannel", "duration","StantonSCS1d.durationChange"]
                             ];
 // When Mixxx gets multiple loop capability, just change the key values here for the respective buttons
 StantonSCS1d.trigSignals = [ [],    // Bank 0 (non-existent)
@@ -107,18 +109,21 @@ StantonSCS1d.knobText =    [  ["Low EQ","Mid EQ","High EQ","Volume"],
 StantonSCS1d.knobSignals = [  [ ["CurrentChannel", "filterLow", "StantonSCS1d.encoder1EQLEDs"],
                                 ["CurrentChannel", "filterMid", "StantonSCS1d.encoder2EQLEDs"],
                                 ["CurrentChannel", "filterHigh", "StantonSCS1d.encoder3EQLEDs"],
-                                ["CurrentChannel", "volume", "StantonSCS1d.encoder4VolumeLEDs"] ],
+                                ["CurrentChannel", "volume", "StantonSCS1d.encoder4VolumeLEDs"]
+                              ],
                               [ ["[Flanger]", "lfoDepth", "StantonSCS1d.FXDepthLEDs"],
                                 ["[Flanger]", "lfoDelay", "StantonSCS1d.FXDelayLEDs"],
                                 ["[Flanger]", "lfoPeriod", "StantonSCS1d.FXPeriodLEDs"],
-                                ["CurrentChannel", "pregain", "StantonSCS1d.encoder4EQLEDs"] ],
+                                ["CurrentChannel", "pregain", "StantonSCS1d.encoder4EQLEDs"]
+                              ],
                               [ ["[Master]", "headMix", "StantonSCS1d.encoder1BalanceLEDs"],
                                 ["[Master]", "headVolume", "StantonSCS1d.encoder2MVolumeLEDs"],
                                 ["[Master]", "balance", "StantonSCS1d.encoder3BalanceLEDs"],
-                                ["[Master]", "volume", "StantonSCS1d.encoder4MVolumeLEDs"] ],
-                            ];
+                                ["[Master]", "volume", "StantonSCS1d.encoder4MVolumeLEDs"]
+                              ]
+                           ];
 StantonSCS1d.padSignals = [    [],    // Bank 0 (non-existent)
-                            [    ["CurrentChannel", "hotcue_1_position", "StantonSCS1d.Pad1LCD"],
+                            [   ["CurrentChannel", "hotcue_1_position", "StantonSCS1d.Pad1LCD"],
                                 ["CurrentChannel", "hotcue_2_position", "StantonSCS1d.Pad2LCD"],
                                 ["CurrentChannel", "hotcue_3_position", "StantonSCS1d.Pad3LCD"],
                                 ["CurrentChannel", "hotcue_4_position", "StantonSCS1d.Pad4LCD"],
@@ -126,7 +131,7 @@ StantonSCS1d.padSignals = [    [],    // Bank 0 (non-existent)
                                 ["CurrentChannel", "hotcue_2_activate", "StantonSCS1d.Pad2aLED"],
                                 ["CurrentChannel", "hotcue_3_activate", "StantonSCS1d.Pad3aLED"],
                                 ["CurrentChannel", "hotcue_4_activate", "StantonSCS1d.Pad4aLED"] ],
-                            [    ["CurrentChannel", "hotcue_5_position", "StantonSCS1d.Pad1LCD"],
+                            [   ["CurrentChannel", "hotcue_5_position", "StantonSCS1d.Pad1LCD"],
                                 ["CurrentChannel", "hotcue_6_position", "StantonSCS1d.Pad2LCD"],
                                 ["CurrentChannel", "hotcue_7_position", "StantonSCS1d.Pad3LCD"],
                                 ["CurrentChannel", "hotcue_8_position", "StantonSCS1d.Pad4LCD"],
@@ -134,7 +139,7 @@ StantonSCS1d.padSignals = [    [],    // Bank 0 (non-existent)
                                 ["CurrentChannel", "hotcue_6_activate", "StantonSCS1d.Pad2aLED"],
                                 ["CurrentChannel", "hotcue_7_activate", "StantonSCS1d.Pad3aLED"],
                                 ["CurrentChannel", "hotcue_8_activate", "StantonSCS1d.Pad4aLED"] ],
-                            [    ["CurrentChannel", "hotcue_9_position", "StantonSCS1d.Pad1LCD"],
+                            [   ["CurrentChannel", "hotcue_9_position", "StantonSCS1d.Pad1LCD"],
                                 ["CurrentChannel", "hotcue_10_position", "StantonSCS1d.Pad2LCD"],
                                 ["CurrentChannel", "hotcue_11_position", "StantonSCS1d.Pad3LCD"],
                                 ["CurrentChannel", "hotcue_12_position", "StantonSCS1d.Pad4LCD"],
@@ -184,12 +189,6 @@ StantonSCS1d.init = function (id) {    // called when the MIDI device is opened 
 
     // Ask for firmware version
     midi.sendSysexMsg(StantonSCS1d.sysex.concat([StantonSCS1d.channel, 0x0C, 0xF7]),7);
-    
-    // TODO: Remove this once the deadlock issue is resolved
-    //  where you have to send something from the controller in order for the init2
-    //  function to run after the .statusResponse() calls it
-    //  The issue also prevents LEDs and scratching from working on startup
-    StantonSCS1d.init2();
 }
 
 StantonSCS1d.init2 = function () {
@@ -198,18 +197,11 @@ StantonSCS1d.init2 = function () {
     StantonSCS1d.state["Oldknob"]=1;
     // Set active deck to last available so the below will switch to #1.
     StantonSCS1d.deck = engine.getValue("[Master]","num_decks");
+    // Set the default platter mode for this last deck
+    if (!StantonSCS1d.platterMode["[Channel"+StantonSCS1d.deck+"]"])
+        StantonSCS1d.platterMode["[Channel"+StantonSCS1d.deck+"]"] = StantonSCS1d.platterMode["default"];
     StantonSCS1d.DeckChange(StantonSCS1d.channel, StantonSCS1d.buttons["deckSelect"], 0x7F, 0x90+StantonSCS1d.channel);
     StantonSCS1d.DeckChange(StantonSCS1d.channel, StantonSCS1d.buttons["deckSelect"], 0x00, 0x80+StantonSCS1d.channel);
-    
-    // Connect the playposition functions permanently since they disrupt playback if connected on the fly
-    engine.connectControl("[Channel1]","visual_playposition","StantonSCS1d.circleBars1");
-    engine.connectControl("[Channel2]","visual_playposition","StantonSCS1d.circleBars2");
-    engine.connectControl("[Channel1]","duration","StantonSCS1d.durationChange1");
-    engine.connectControl("[Channel2]","duration","StantonSCS1d.durationChange2");
-    
-    //  Initialize the jog LCD if the mapping is loaded after a song is
-    StantonSCS1d.durationChange1(engine.getValue("[Channel1]","duration"));
-    StantonSCS1d.durationChange2(engine.getValue("[Channel2]","duration"));
     
     //midi.sendSysexMsg(StantonSCS1d.sysex.concat([StantonSCS1d.channel, 16, 0xF7]),7); // Light all LEDs
     
@@ -250,7 +242,6 @@ StantonSCS1d.shutdown = function () {   // called when the MIDI device is closed
 }
 
 StantonSCS1d.firmwareResponse = function (data, length) {
-    //print("-------------------------SCS.1d firmware="+data);
     var i=0;
     var out="";
     while (i<(length-6)) {
@@ -262,7 +253,7 @@ StantonSCS1d.firmwareResponse = function (data, length) {
     // TODO: Check firmware version if possible. Platter behaves very differently after v1.25!
     //StantonSCS1d.fwVersion = 
 
-//     StantonSCS1d.init2();
+    StantonSCS1d.init2();
 }
 
 StantonSCS1d.checkInSetup = function () {
@@ -349,7 +340,11 @@ StantonSCS1d.vinylButton = function (channel, control, value, status) {
 StantonSCS1d.connectKnobSignals = function (channel, disconnect) {
     if (StantonSCS1d.debug) print("     StantonSCS1d: "+(disconnect?"DISCONNECT":"connect")+"KnobSignals:");
 
+    // Set default mode
+    if (!StantonSCS1d.knobMode["[Channel"+StantonSCS1d.deck+"]"]) StantonSCS1d.knobMode["[Channel"+StantonSCS1d.deck+"]"] = 1;
+    
     var signalList = StantonSCS1d.knobSignals[StantonSCS1d.knobMode["[Channel"+StantonSCS1d.deck+"]"]-1];
+    
     for (var i=0; i<signalList.length; i++) {
         var group = signalList[i][0];
         if (group=="CurrentChannel") group = "[Channel"+StantonSCS1d.deck+"]";
@@ -391,6 +386,9 @@ StantonSCS1d.connectPadSignals = function (channel, disconnect) {
     if (StantonSCS1d.debug) print("     StantonSCS1d: "+(disconnect?"DISCONNECT":"connect")+"PadSignals:");
     var deck = StantonSCS1d.padBank["deck"];
     var bank = StantonSCS1d.padBank["bank"+deck];
+    // Set the default bank if not present
+    if (!bank)
+        bank = StantonSCS1d.padBank["bank"+deck] = StantonSCS1d.padBank["default"];
     
     var signalList = StantonSCS1d.padSignals[bank];
     for (var i=0; i<signalList.length; i++) {
@@ -429,6 +427,9 @@ StantonSCS1d.connectPadSignals = function (channel, disconnect) {
 StantonSCS1d.connectTrigSignals = function (channel, disconnect) {
     if (StantonSCS1d.debug) print("     StantonSCS1d: "+(disconnect?"DISCONNECT":"connect")+"TrigSignals:");
     var bank = StantonSCS1d.triggerBank[StantonSCS1d.deck];
+    // Set the default bank if not present
+    if (!bank)
+        bank = StantonSCS1d.triggerBank[StantonSCS1d.deck] = StantonSCS1d.triggerBank["default"];
     
     var signalList = StantonSCS1d.trigSignals[bank];
     for (var i=0; i<signalList.length; i++) {
@@ -649,8 +650,8 @@ StantonSCS1d.pitchReset = function (channel, control, value, status) {
 
 StantonSCS1d.vinylMoved = function (data, length) {
     // Re-construct the 32-bit word
-    var iInfo = (data.charCodeAt(0) << 24) | (data.charCodeAt(1) << 16) | 
-                (data.charCodeAt(2) << 8) | data.charCodeAt(3);
+    var iInfo = (data[0] << 24) | (data[1] << 16) | 
+                (data[2] << 8) | data[3];
     
     //// Unpack the data - Firmware v1.24 and lower
     //var iTimeStamp = (iInfo >>> 5);
@@ -664,7 +665,7 @@ StantonSCS1d.vinylMoved = function (data, length) {
     
     // Unpack the data - Firmware 1.25 and higher
     var iTimeStamp = (iInfo >>> 8);
-    var iState = data.charCodeAt(3);
+    var iState = data[3];
     if (isNaN(iState)) return;
     var iMoved = (iState - StantonSCS1d.scratch["prevState"] + 384) % 256 - 128;
     var iSpeed = iMoved/(iTimeStamp - StantonSCS1d.scratch["prevTimeStamp"]);
@@ -776,7 +777,12 @@ StantonSCS1d.DeckChange = function (channel, control, value, status) {
         midi.sendSysexMsg(StantonSCS1d.sysex.concat([channel, 36, deckNr, 0xF7]),8);
         
         if (StantonSCS1d.globalMode) StantonSCS1d.knobMode["[Channel"+StantonSCS1d.deck+"]"] = StantonSCS1d.state["Oldknob"];
-        else StantonSCS1d.newPlatterMode = StantonSCS1d.platterMode["[Channel"+StantonSCS1d.deck+"]"];
+        else {
+            // Set the platter mode to default if not present
+            if (!StantonSCS1d.platterMode["[Channel"+StantonSCS1d.deck+"]"])
+                StantonSCS1d.platterMode["[Channel"+StantonSCS1d.deck+"]"] = StantonSCS1d.platterMode["default"];
+            StantonSCS1d.newPlatterMode = StantonSCS1d.platterMode["[Channel"+StantonSCS1d.deck+"]"];
+        }
         
         StantonSCS1d.platterMode["[Channel"+StantonSCS1d.deck+"]"] = ""; // Force mode change
         
@@ -815,6 +821,7 @@ StantonSCS1d.DeckChangeFinish = function(channel) {
     else midi.sendShortMsg(byte1,64,32); // Deck select button green
     StantonSCS1d.connectDeckSignals(channel);    // Connect static signals
     // Update jog circle
+    StantonSCS1d.durationChange(engine.getValue("[Channel"+StantonSCS1d.deck+"]","duration"));
     StantonSCS1d.lastLight[StantonSCS1d.deck]=-1;
     StantonSCS1d.circleBars(engine.getValue("[Channel"+StantonSCS1d.deck+"]","visual_playposition"));
 }
@@ -839,11 +846,6 @@ StantonSCS1d.DeckChangeP2 = function (channel, value) {
     }
     
     switch (StantonSCS1d.triggerBank[StantonSCS1d.deck]) {
-        case 1:
-            StantonSCS1d.triggerBank[StantonSCS1d.deck]=-1; // Force LEDs to update
-            StantonSCS1d.triggerBankSelect(channel, 22, 1, 0x90);
-            StantonSCS1d.triggerBankSelect(channel, 22, 1, 0x80);
-            break;
         case 2: 
             StantonSCS1d.triggerBankSelect(channel, 23, 1, 0x90);
             StantonSCS1d.triggerBankSelect(channel, 23, 1, 0x80);
@@ -851,6 +853,12 @@ StantonSCS1d.DeckChangeP2 = function (channel, value) {
         case 3: 
             StantonSCS1d.triggerBankSelect(channel, 5, 1, 0x90);
             StantonSCS1d.triggerBankSelect(channel, 5, 1, 0x80);
+            break;
+        case 1:
+        default:
+            StantonSCS1d.triggerBank[StantonSCS1d.deck]=-1; // Force LEDs to update
+            StantonSCS1d.triggerBankSelect(channel, 22, 1, 0x90);
+            StantonSCS1d.triggerBankSelect(channel, 22, 1, 0x80);
             break;
     }
     
@@ -1659,7 +1667,8 @@ StantonSCS1d.activateLoop = function (value) {
 
 StantonSCS1d.loopEnabled = function (value) {
     if (value>0 && StantonSCS1d.timer["loop"]==-1) {
-        if (StantonSCS1d.loopActive[StantonSCS1d.deck]==-1) StantonSCS1d.activateLoop(1);
+        if (!StantonSCS1d.loopActive[StantonSCS1d.deck] || 
+            StantonSCS1d.loopActive[StantonSCS1d.deck]==-1) StantonSCS1d.activateLoop(1);
         StantonSCS1d.timer["loop"] = engine.beginTimer(500,"StantonSCS1d.loopFlash()");
     }
     
@@ -1675,7 +1684,7 @@ StantonSCS1d.loopFlash = function (end) {
     var target;
     
     var activeLoop = StantonSCS1d.loopActive[StantonSCS1d.deck];
-    if (activeLoop==-1) return;
+    if (!activeLoop || activeLoop==-1) return;
     target = buttons[activeLoop];
     if (StantonSCS1d.state["loopFlash"] < 1) {
         StantonSCS1d.state["loopFlash"]++;
@@ -1904,13 +1913,13 @@ StantonSCS1d.pitchRangeLEDs = function (value) {
     var on = 0x90 + StantonSCS1d.channel;
     var off = 0x80 + StantonSCS1d.channel;
     switch (true) {
-        case (value<0.08):
+        case (value<=0.07):
                 midi.sendShortMsg(off,65,0);   // 8%
                 midi.sendShortMsg(off,66,0);   // 16%
                 midi.sendShortMsg(off,67,0);   // 25%
                 midi.sendShortMsg(off,68,0);   // 50%
             break;
-        case (value==0.08):
+        case (value>0.07 && value<=0.08):
                 midi.sendShortMsg(on,65,1);   // 8%
                 midi.sendShortMsg(off,66,0);   // 16%
                 midi.sendShortMsg(off,67,0);   // 25%
@@ -1961,19 +1970,9 @@ StantonSCS1d.pitchRangeLEDs = function (value) {
     }
 }
 
-StantonSCS1d.circleBars1 = function (value) {
-    if (StantonSCS1d.deck!=1) return;
-    StantonSCS1d.circleBars(value);
-}
-
-StantonSCS1d.circleBars2 = function (value) {
-    if (StantonSCS1d.deck!=2) return;
-    StantonSCS1d.circleBars(value);
-}
-
-StantonSCS1d.durationChange1 = function (value) {
+StantonSCS1d.durationChange = function (value) {
     // Stop any leftover end-of-track-flash timers
-    var deck = 1;
+    var deck = StantonSCS1d.deck;
     if (StantonSCS1d.timer["15s-d"+deck] != -1) {
         engine.stopTimer(StantonSCS1d.timer["15s-d"+deck]);
         StantonSCS1d.timer["15s-d"+deck] = -1;
@@ -1988,28 +1987,7 @@ StantonSCS1d.durationChange1 = function (value) {
         midi.sendSysexMsg(StantonSCS1d.sysex.concat([StantonSCS1d.channel, 13, 1, 0xF7]),8); // Jog backlight on
     }
     
-    StantonSCS1d.trackDuration[1]=value;
-    StantonSCS1d.padRefresh();    // Update hot cues
-}
-
-StantonSCS1d.durationChange2 = function (value) {
-    // Stop any leftover end-of-track-flash timers
-    var deck = 2;
-    if (StantonSCS1d.timer["15s-d"+deck] != -1) {
-        engine.stopTimer(StantonSCS1d.timer["15s-d"+deck]);
-        StantonSCS1d.timer["15s-d"+deck] = -1;
-    }
-    if (StantonSCS1d.timer["30s-d"+deck] != -1) {
-        engine.stopTimer(StantonSCS1d.timer["30s-d"+deck]);
-        StantonSCS1d.timer["30s-d"+deck] = -1;
-    }
-    // Make sure jog is lit
-    if (StantonSCS1d.state["jogFlash"]!=false) {
-        StantonSCS1d.state["jogFlash"]=false;
-        midi.sendSysexMsg(StantonSCS1d.sysex.concat([StantonSCS1d.channel, 13, 1, 0xF7]),8); // Jog backlight on
-    }
-    
-    StantonSCS1d.trackDuration[2]=value;
+    StantonSCS1d.trackDuration[deck]=value;
     StantonSCS1d.padRefresh();    // Update hot cues
 }
 
@@ -2077,6 +2055,12 @@ StantonSCS1d.circleBars = function (value) {
 //     var light = ((revolutions-(revolutions|0))*18)|0;    // Use this for two bars
     var light = ((revolutions-(revolutions|0))*36)|0;   // OR with 0 replaces Math.floor and is faster
 
+    if (!StantonSCS1d.lastLight[deck]) {
+        // Set default value
+        StantonSCS1d.lastLight[StantonSCS1d.deck]=-1;
+        return;
+    }
+    
     if (StantonSCS1d.lastLight[deck]==light) return;   // Don't send light commands if there's no visible change
     
     var byte1 = 0xB0 + StantonSCS1d.channel;
@@ -2098,6 +2082,4 @@ BUGS:
 - Dragging the window/tooltips screw up speed - use timestamps
 - Sticker drift - timestamps?
 - Manipulating other controls in vinyl mode makes speed jiggly - timestamps??
-
-- Pads get stuck in playback mode when you rapid-fire hammer them
 */
