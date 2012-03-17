@@ -32,8 +32,8 @@ public:
     double getValueFromWidget(double dValue);
     double getValueToWidget(double dValue);
     
-    protected:
-    void setValueFromMidi(double v);
+protected:
+    void setValueFromMidi(MidiOpCode o, double v);
 };
 
 #endif

@@ -37,7 +37,7 @@ public:
 
     double GetMidiValue();
     
-	void setValueFromMidi(double v);
+    void setValueFromMidi(MidiOpCode o, double v);
 
 protected:
 

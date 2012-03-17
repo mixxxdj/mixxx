@@ -44,7 +44,7 @@ class ControlBeat : public ControlObject {
     virtual ~ControlBeat();
 
   protected:
-    void setValueFromMidi(double v);
+    void setValueFromMidi(MidiOpCode o, double v);
     void setValueFromThread(double dValue);
   private:
     void beatTap();
