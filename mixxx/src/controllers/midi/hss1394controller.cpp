@@ -54,11 +54,11 @@ void DeviceChannelListener::Process(const hss1394::uint8 *pBuffer, hss1394::uint
                 break;
             default:
                 // Handle platter messages and any others that are not 3 bytes
-				// Copy the array to avoid thread contention
-				unsigned char *temp = new unsigned char[uBufferSize];
-				memcpy(temp, pBuffer, uBufferSize);
-				// WARNING: Receiving slot must delete[] temp!
-				emit(incomingData(temp,uBufferSize));
+                // Copy the array to avoid thread contention
+                unsigned char *temp = new unsigned char[uBufferSize];
+                memcpy(temp, pBuffer, uBufferSize);
+                // WARNING: Receiving slot must delete[] temp!
+                emit(incomingData(temp,uBufferSize));
                 i=uBufferSize;
                 break;
         }
@@ -82,7 +82,7 @@ Hss1394Controller::Hss1394Controller(const hss1394::TNodeInfo deviceInfo,
 
     //Note: We prepend the input stream's index to the device's name to prevent duplicate devices from causing mayhem.
     //m_sDeviceName = QString("H%1. %2").arg(QString::number(m_iDeviceIndex), QString(deviceInfo.sName.c_str()));
-	m_sDeviceName = QString("%1").arg(QString(deviceInfo.sName.c_str()));
+    m_sDeviceName = QString("%1").arg(QString(deviceInfo.sName.c_str()));
 
     // All HSS1394 devices are full-duplex
     m_bIsInputDevice = true;
@@ -117,12 +117,12 @@ int Hss1394Controller::open()
     }
 
     m_pChannelListener = new DeviceChannelListener(m_iDeviceIndex, m_sDeviceName, this);
-	
-	connect(m_pChannelListener, SIGNAL(incomingData(unsigned char*, unsigned int)),
+    
+    connect(m_pChannelListener, SIGNAL(incomingData(unsigned char*, unsigned int)),
             this, SLOT(receivePointer(unsigned char*, unsigned int)));
-	connect(m_pChannelListener, SIGNAL(incomingData(unsigned char, unsigned char, unsigned char)),
+    connect(m_pChannelListener, SIGNAL(incomingData(unsigned char, unsigned char, unsigned char)),
             this, SLOT(receive(unsigned char, unsigned char, unsigned char)));
-	
+    
     if (false == m_pChannel->InstallChannelListener(m_pChannelListener)) {
         qDebug() << "HSS1394 channel listener could not be installed for device" << m_sDeviceName;
         delete m_pChannelListener;
@@ -158,10 +158,10 @@ int Hss1394Controller::close()
         qDebug() << "HSS1394 device" << m_sDeviceName << "already closed";
         return -1;
     }
-	
-	disconnect(m_pChannelListener, SIGNAL(incomingData(unsigned char*, unsigned int)),
+    
+    disconnect(m_pChannelListener, SIGNAL(incomingData(unsigned char*, unsigned int)),
             this, SLOT(receivePointer(unsigned char*, unsigned int)));
-	disconnect(m_pChannelListener, SIGNAL(incomingData(unsigned char, unsigned char, unsigned char)),
+    disconnect(m_pChannelListener, SIGNAL(incomingData(unsigned char, unsigned char, unsigned char)),
             this, SLOT(receive(unsigned char, unsigned char, unsigned char)));
     
     stopEngine();
