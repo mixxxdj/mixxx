@@ -21,7 +21,7 @@
 
 DeviceChannelListener::DeviceChannelListener(int id, QString name,
                                              MidiController* controller)
-                                             : hss1394::ChannelListener() {
+                                             : QObject(),hss1394::ChannelListener() {
     m_iId = id;
     m_sName = name;
     m_pController = controller;
@@ -41,20 +41,24 @@ void DeviceChannelListener::Process(const hss1394::uint8 *pBuffer, hss1394::uint
         unsigned char note;
         unsigned char velocity;
         switch (status & 0xF0) {
-            case MIDI_STATUS_NOTE_OFF:
-            case MIDI_STATUS_NOTE_ON:
-            case MIDI_STATUS_AFTERTOUCH:
-            case MIDI_STATUS_CC:
-            case MIDI_STATUS_PITCH_BEND:
+            case MIDI_NOTE_OFF:
+            case MIDI_NOTE_ON:
+            case MIDI_AFTERTOUCH:
+            case MIDI_CC:
+            case MIDI_PITCH_BEND:
                 note = pBuffer[i+1];
                 velocity = pBuffer[i+2];
 
-                m_pController->receive(status, note, velocity);
+                emit(incomingData(status, note, velocity));
                 i+=3;
                 break;
             default:
                 // Handle platter messages and any others that are not 3 bytes
-                m_pController->receive(pBuffer, uBufferSize);
+				// Copy the array to avoid thread contention
+				unsigned char *temp = new unsigned char[uBufferSize];
+				memcpy(temp, pBuffer, uBufferSize);
+				// WARNING: Receiving slot must delete[] temp!
+				emit(incomingData(temp,uBufferSize));
                 i=uBufferSize;
                 break;
         }
@@ -77,7 +81,8 @@ Hss1394Controller::Hss1394Controller(const hss1394::TNodeInfo deviceInfo,
     m_iDeviceIndex = deviceIndex;
 
     //Note: We prepend the input stream's index to the device's name to prevent duplicate devices from causing mayhem.
-    m_sDeviceName = QString("H%1. %2").arg(QString::number(m_iDeviceIndex), QString(deviceInfo.sName.c_str()));
+    //m_sDeviceName = QString("H%1. %2").arg(QString::number(m_iDeviceIndex), QString(deviceInfo.sName.c_str()));
+	m_sDeviceName = QString("%1").arg(QString(deviceInfo.sName.c_str()));
 
     // All HSS1394 devices are full-duplex
     m_bIsInputDevice = true;
@@ -99,7 +104,7 @@ int Hss1394Controller::open()
     if (m_sDeviceName == MIXXX_HSS1394_NO_DEVICE_STRING)
         return -1;
 
-    if (midiDebugging()) qDebug() << "Hss1394Controller: Opening" << m_sDeviceName << "index" << m_iDeviceIndex;
+    if (debugging()) qDebug() << "Hss1394Controller: Opening" << m_sDeviceName << "index" << m_iDeviceIndex;
 
     using namespace hss1394;
 
@@ -112,6 +117,12 @@ int Hss1394Controller::open()
     }
 
     m_pChannelListener = new DeviceChannelListener(m_iDeviceIndex, m_sDeviceName, this);
+	
+	connect(m_pChannelListener, SIGNAL(incomingData(unsigned char*, unsigned int)),
+            this, SLOT(receivePointer(unsigned char*, unsigned int)));
+	connect(m_pChannelListener, SIGNAL(incomingData(unsigned char, unsigned char, unsigned char)),
+            this, SLOT(receive(unsigned char, unsigned char, unsigned char)));
+	
     if (false == m_pChannel->InstallChannelListener(m_pChannelListener)) {
         qDebug() << "HSS1394 channel listener could not be installed for device" << m_sDeviceName;
         delete m_pChannelListener;
@@ -147,6 +158,11 @@ int Hss1394Controller::close()
         qDebug() << "HSS1394 device" << m_sDeviceName << "already closed";
         return -1;
     }
+	
+	disconnect(m_pChannelListener, SIGNAL(incomingData(unsigned char*, unsigned int)),
+            this, SLOT(receivePointer(unsigned char*, unsigned int)));
+	disconnect(m_pChannelListener, SIGNAL(incomingData(unsigned char, unsigned char, unsigned char)),
+            this, SLOT(receive(unsigned char, unsigned char, unsigned char)));
     
     stopEngine();
     
@@ -187,7 +203,7 @@ void Hss1394Controller::send(unsigned int word) {
 }
 
 // The sysex data must already contain the start byte 0xf0 and the end byte 0xf7.
-void Hss1394Controller::sendSysexMsg(unsigned char data[], unsigned int length)
+void Hss1394Controller::send(unsigned char data[], unsigned int length)
 {
     int bytesSent = m_pChannel->SendChannelBytes(data,length);
 

@@ -44,10 +44,11 @@ Q_OBJECT    // For signals & slots
     protected:
         Q_INVOKABLE void sendShortMsg(unsigned char status, unsigned char byte1, unsigned char byte2);
         Q_INVOKABLE void sendSysexMsg(QList<int> data, unsigned int length) { Controller::send(data,length); }  // Alias
-
-        void receive(unsigned char status, unsigned char control = 0, unsigned char value = 0);
-        /** For System Exclusive message reception */
+		/** For System Exclusive message reception */
         void receive(const unsigned char data[], unsigned int length);
+
+	protected slots:
+        void receive(unsigned char status, unsigned char control = 0, unsigned char value = 0);
 
     private slots:
 //         virtual int open() = 0;

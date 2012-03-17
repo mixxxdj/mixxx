@@ -25,16 +25,22 @@
 #define HSS1394CONTROLLER_H
 
 #include <hss1394/HSS1394.h>
+#include "midicontroller.h"
 
 #define MIXXX_HSS1394_BUFFER_LEN 64 /**Number of MIDI messages to buffer*/
 #define MIXXX_HSS1394_NO_DEVICE_STRING "None" /**String to display for no HSS1394 devices present */
 
-class DeviceChannelListener : public hss1394::ChannelListener {
+class DeviceChannelListener : public QObject, public hss1394::ChannelListener {
+Q_OBJECT    // For signals
     public:
         DeviceChannelListener(int id, QString name, MidiController* controller);
         void Process(const hss1394::uint8 *pBuffer, hss1394::uint uBufferSize);
         void Disconnected();
         void Reconnected();
+	signals:
+		void incomingData(unsigned char status, unsigned char control, unsigned char value);
+        /** WARNING: Receiving slot must delete the data array! */
+        void incomingData(unsigned char* data, unsigned int length);
     private:
         int m_iId;
         QString m_sName;

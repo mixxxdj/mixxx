@@ -169,6 +169,7 @@ class Qt(Dependence):
                                       '$QTDIR/include/QtGui',
                                       '$QTDIR/include/QtXml',
                                       '$QTDIR/include/QtNetwork',
+                                      '$QTDIR/include/QtScript',
                                       '$QTDIR/include/QtSql',
                                       '$QTDIR/include/QtOpenGL',
                                       '$QTDIR/include/QtWebKit',
