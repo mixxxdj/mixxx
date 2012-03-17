@@ -23,8 +23,11 @@ class MidiOutputHandler : QObject {
                           unsigned char status, unsigned char midino,
                           unsigned char on, unsigned char off);
         ~MidiOutputHandler();
-
+        
+        bool validate();
         void update();
+        
+        bool dupes;
 
     public slots:
         void controlChanged(double value);
@@ -40,6 +43,8 @@ class MidiOutputHandler : QObject {
 
         MidiController* m_pController;
         unsigned char m_controlno;
+        
+        double m_lastVal;
 };
 
 #endif
