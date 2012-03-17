@@ -192,10 +192,11 @@ void ControlObject::queueFromThread(double dValue, ControlObjectThread * pContro
     m_sqQueueMutexThread.unlock();
 }
 
-void ControlObject::queueFromMidi(double v)
+void ControlObject::queueFromMidi(MidiOpCode o, double v)
 {
     QueueObjectMidi * p = new QueueObjectMidi;
     p->pControlObject = this;
+    p->opcode = o;
     p->value = v;
 
     m_sqQueueMutexMidi.lock();
@@ -209,7 +210,7 @@ void ControlObject::setValueFromEngine(double dValue)
     emit(valueChangedFromEngine(m_dValue));
 }
 
-void ControlObject::setValueFromMidi(double v)
+void ControlObject::setValueFromMidi(MidiOpCode o, double v)
 {
     m_dValue = v;
     emit(valueChanged(m_dValue));
@@ -310,7 +311,7 @@ void ControlObject::sync()
                 qDebug() << "Midi object with null control object!";
                 delete obj;
             } else {
-                obj->pControlObject->setValueFromMidi(obj->value);
+                obj->pControlObject->setValueFromMidi(obj->opcode,obj->value);
                 obj->pControlObject->updateProxies(0);
                 delete obj;
             }

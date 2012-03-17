@@ -97,14 +97,12 @@ bool MixxxKeyboard::kbdPress(QKeySequence k, bool release, bool autoRepeat)
         {
             if (release) {
                 //qDebug() << "Sending MIDI NOTE_OFF";
-//                 ControlObject::getControl(*pConfigKey)->queueFromMidi(NOTE_OFF, 0);
-                ControlObject::getControl(*pConfigKey)->queueFromMidi(0);
+                ControlObject::getControl(*pConfigKey)->queueFromMidi(MIDI_NOTE_OFF, 0);
             }
             else
             {
                 //qDebug() << "Sending MIDI NOTE_ON";
-//                 ControlObject::getControl(*pConfigKey)->queueFromMidi(NOTE_ON, 1);
-                ControlObject::getControl(*pConfigKey)->queueFromMidi(1);
+                ControlObject::getControl(*pConfigKey)->queueFromMidi(MIDI_NOTE_ON, 1);
             }
         }
     }

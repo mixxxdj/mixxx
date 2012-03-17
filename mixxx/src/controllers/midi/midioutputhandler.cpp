@@ -60,7 +60,7 @@ void MidiOutputHandler::controlChanged(double value) {
 
     if (!m_pController->isOpen())
         qWarning() << "MIDI device" << m_pController->getName() << "not open for output!";
-    else if (byte3 != 0xff) {
+    else if (byte3 != 0xFF) {
 //         qDebug() << "MIDI bytes:" << m_status << ", " << m_controllerno << ", " << m_byte2 ;
         m_pController->sendShortMsg(m_status, m_controlno, byte3);
     }
