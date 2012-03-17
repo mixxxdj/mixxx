@@ -37,8 +37,8 @@ Q_OBJECT    // For signals
         void Process(const hss1394::uint8 *pBuffer, hss1394::uint uBufferSize);
         void Disconnected();
         void Reconnected();
-	signals:
-		void incomingData(unsigned char status, unsigned char control, unsigned char value);
+    signals:
+        void incomingData(unsigned char status, unsigned char control, unsigned char value);
         /** WARNING: Receiving slot must delete the data array! */
         void incomingData(unsigned char* data, unsigned int length);
     private:
