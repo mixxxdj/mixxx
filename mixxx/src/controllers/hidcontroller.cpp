@@ -61,34 +61,51 @@ void HidReader::run() {
 
 HidController::HidController(const hid_device_info deviceInfo) {
     
-    m_deviceInfo = deviceInfo;
+    // Copy required variables from deviceInfo, which will be freed after
+    // this class is initialized by caller.
+    hid_vendor_id = deviceInfo.vendor_id;
+    hid_product_id = deviceInfo.product_id;
+    hid_interface_number = deviceInfo.interface_number;
+    hid_path = strndup(deviceInfo.path,strlen(deviceInfo.path));
+    hid_serial = new wchar_t[wcslen(deviceInfo.serial_number)+1];
+    wcscpy(hid_serial,deviceInfo.serial_number);
+    hid_manufacturer = QString::fromWCharArray(
+        deviceInfo.manufacturer_string,
+        wcslen(deviceInfo.manufacturer_string)
+    );
+    hid_product = QString::fromWCharArray(
+        deviceInfo.product_string,
+        wcslen(deviceInfo.product_string)
+    );
 
-    // Set the Unique IDentifier to the serial_number
-    //  (plus the interface number if applicable)
-    m_sUID = QString::fromWCharArray(deviceInfo.serial_number);
-    
-    //Note: We include the last 4 digits of the serial number and the interface number to
-    //  allow the user (and Mixxx!) to keep track of which is which
-    if (deviceInfo.interface_number < 0) {
-        m_sDeviceName = QString("%1 %2").arg(QString::fromWCharArray(deviceInfo.product_string),
-                                             QString::fromWCharArray(deviceInfo.serial_number).right(4));
-    }
+    // Set the Unique Identifier to the serial_number
+    m_sUID = QString::fromWCharArray(hid_serial,wcslen(hid_serial));
+
+    //Note: We include the last 4 digits of the serial number and the 
+    // interface number to allow the user (and Mixxx!) to keep track of 
+    // which is which
+    if (hid_interface_number < 0) {
+        m_sDeviceName = QString("%1 %2").arg(hid_product)
+            .arg(QString::fromWCharArray(hid_serial,wcslen(hid_serial)).right(4));
+    } 
     else {
-        m_sDeviceName = QString("%1 %2_%3").arg(QString::fromWCharArray(deviceInfo.product_string),
-                                                QString::fromWCharArray(deviceInfo.serial_number).right(4),
-                                                QString::number(deviceInfo.interface_number));
-        m_sUID.append(QString::number(deviceInfo.interface_number));
+        m_sDeviceName = QString("%1 %2_%3").arg(hid_product)
+            .arg(QString::fromWCharArray(hid_serial,wcslen(hid_serial)).right(4))
+            .arg(QString::number(hid_interface_number));
+        m_sUID.append(QString::number(hid_interface_number));
     }
 
     // All HID devices are full-duplex
     m_bIsInputDevice = true;
     m_bIsOutputDevice = true;
-
+    
     m_pReader = NULL;
 }
 
 HidController::~HidController() {
     close();
+    free(hid_path);
+    delete [] hid_serial;
 }
 
 int HidController::open() {
@@ -97,16 +114,18 @@ int HidController::open() {
         return -1;
     }
 
-    if (debugging()) qDebug() << "Opening HID device" << m_sDeviceName;
+    // Open device by path
+    if (debugging()) 
+        qDebug() << "Opening HID device" 
+            << m_sDeviceName << "by HID path" << hid_path;
+    m_pHidDevice = hid_open_path(hid_path);
     
-    // Open Device
-    // FIXME: figure out why trying to open the device including the serial number fails (on Linux at least)
-    m_pHidDevice = hid_open(m_deviceInfo.vendor_id, m_deviceInfo.product_id, m_deviceInfo.serial_number);
-
-    // If that fails, try to open by path
+    // If that fails, try to open device with vendor/product/serial #
     if (m_pHidDevice == NULL) {
-        if (debugging()) qDebug() << "Opening with serial number failed. Trying to open by path.";
-        m_pHidDevice = hid_open_path(m_deviceInfo.path);
+        if (debugging()) 
+            qDebug() << "Failed. Trying to open with make, model & serial no:"
+                << hid_vendor_id << hid_product_id << hid_serial;
+        m_pHidDevice = hid_open(hid_vendor_id,hid_product_id,hid_serial);
     }
 
     // If it does fail, try without serial number
@@ -115,7 +134,7 @@ int HidController::open() {
         qWarning() << "Unable to open specific HID device" << m_sDeviceName
                    << "Trying now with just make and model."
                    << "(This may only open the first of multiple identical devices.)";
-        m_pHidDevice = hid_open(m_deviceInfo.vendor_id, m_deviceInfo.product_id, NULL);
+        m_pHidDevice = hid_open(hid_vendor_id, hid_product_id, NULL);
     }
 
     // If that fails, we give up!
@@ -210,12 +229,24 @@ void HidController::send(unsigned char data[], unsigned int length, unsigned int
     buffer[0] = (unsigned char) reportID;
     
     int result = hid_write(m_pHidDevice, buffer, length+1);
+
+    QString serial = QString::fromWCharArray(hid_serial);
     
     if (result==-1) {
-        qWarning() << "Unable to send data to" << m_sDeviceName << ":"
-                   << QString::fromWCharArray(hid_error(m_pHidDevice));
+        if (debugging()) {
+            qWarning() << "Unable to send data to" << m_sDeviceName
+                << "serial #" << serial << ":"
+                << QString::fromWCharArray(hid_error(m_pHidDevice));
+        }
+        else {
+            qWarning() << "Unable to send data to" << m_sDeviceName << ":"
+                << QString::fromWCharArray(hid_error(m_pHidDevice));
+        }
     }
-    else if (debugging()) qDebug() << result << "bytes sent to" << m_sDeviceName << "(including report ID of" << reportID << ")";
+    else if (debugging()) 
+        qDebug() << result << "bytes sent to" << m_sDeviceName 
+            << "serial #" << serial
+            << "(including report ID of" << reportID << ")";
 
     free(buffer);
 }
