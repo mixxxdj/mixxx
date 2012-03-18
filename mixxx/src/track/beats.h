@@ -63,7 +63,7 @@ class Beats {
     // negative values of n. Calling findNthBeat with n=0 is invalid. Calling
     // findNthBeat with n=1 or n=-1 is equivalent to calling findNextBeat and
     // findPrevBeat, respectively. If dSamples refers to the location of a beat,
-    // then dSamples is returned. If no beat can be found, returns -1.<
+    // then dSamples is returned. If no beat can be found, returns -1.
     virtual double findNthBeat(double dSamples, int n) const = 0;
 
     // Adds to pBeatsList the position in samples of every beat occuring between
