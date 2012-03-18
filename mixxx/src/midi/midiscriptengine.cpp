@@ -946,6 +946,17 @@ QScriptValue MidiScriptEngine::connectControl(QString group, QString name, QScri
     else if (callback.isFunction()) {
         function = callback;
     }
+    // Assume a MidiScriptEngineControllerConnection
+    else if (callback.isQObject()) {
+        QObject *qobject = callback.toQObject();
+        const QMetaObject *qmeta = qobject->metaObject();
+        
+        if (!strcmp(qmeta->className(), "MidiScriptEngineControllerConnectionScriptValueProxy")) {
+            MidiScriptEngineControllerConnectionScriptValueProxy *proxy = 
+                (MidiScriptEngineControllerConnectionScriptValueProxy *)qobject;
+            proxy->disconnect();
+        }
+    }
     else {
         qWarning() << "Invalid callback";
         return QScriptValue(FALSE);

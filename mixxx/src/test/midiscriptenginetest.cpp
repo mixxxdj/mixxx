@@ -14,12 +14,16 @@ namespace {
 
 class MidiScriptEngineTest : public testing::Test {
   protected:
-    virtual void SetUp() {
+    static void SetUpTestCase() {
+        QApplication *app;
         qDebug() << "SetUp";
         static int argc = 1;
-        static char** argv = NULL;
+        static char* argv[2] = { "test", NULL };
         app = new QApplication(argc, argv);
         new ControlPotmeter(ConfigKey("[Test]", "potmeter"),-1.,1.);
+    }
+
+    virtual void SetUp() {
         MidiDevice* pDevice = NULL;
         scriptEngine = new MidiScriptEngine(pDevice);
         scriptEngine->setMidiDebug(false);
@@ -29,15 +33,16 @@ class MidiScriptEngineTest : public testing::Test {
         while(!scriptEngine->isReady()) { }
     }
 
+    static void TearDownTestCase() {
+    }
+
     virtual void TearDown() {
         qDebug() << "TearDown";
         scriptEngine->gracefulShutdown(QList<QString>());
         scriptEngine->wait();
         delete scriptEngine;
-        delete app;
     }
 
-    QApplication *app;
     MidiScriptEngine *scriptEngine;
 };
 
@@ -231,5 +236,39 @@ TEST_F(MidiScriptEngineTest, scriptConnectDisconnectControlIsDisconnectedByName)
     f.remove();
 }
 
+TEST_F(MidiScriptEngineTest, scriptConnectDisconnectControlIsDisconnectedByObject) {
+    QString script = "test.js";
+    QFile f(script);
+    f.open(QIODevice::ReadWrite | QIODevice::Truncate);
+    f.write(
+        "var executed = false;\n"
+        "var connection;\n"
+        "testConnectDisconnectControl = function() { \n"
+        "    connection = engine.connectControl('[Test]', 'potmeter', \n"
+        "        function() { executed = true; }\n"
+        "    );\n"
+        "    if (typeof connection == 'undefined')\n"
+        "        throw 'Unable to Connect controller';\n"
+        "    engine.connectControl('[Test]', 'potmeter', connection, 1);\n"
+        "    engine.trigger('[Test]', 'potmeter');\n"
+        "    return true;\n"
+        "};\n"
+        "checkConnectDisconnectControl = function() {\n"
+        "    if (executed) {\n"
+        "        throw 'Callback was executed';\n"
+        "    }\n"
+        "    return executed==false;\n"
+        "};\n"
+    );
+    f.close();
+
+    scriptEngine->evaluate(script);
+    EXPECT_FALSE(scriptEngine->hasErrors(script));
+
+    EXPECT_TRUE(scriptEngine->execute("testConnectDisconnectControl"));
+    EXPECT_TRUE(scriptEngine->execute("checkConnectDisconnectControl"));
+
+    f.remove();
+}
 
 }
