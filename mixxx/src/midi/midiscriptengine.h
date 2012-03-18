@@ -59,7 +59,7 @@ class MidiScriptEngineControllerConnectionScriptValueProxy : public QObject {
     MidiScriptEngineControllerConnection conn;
 };
 
-/* comparison function for ConfigKeys. Used by a QHash in ControlObject */
+/* comparison function for MidiScriptEngineControllerConnection; Used by a QHash in ControlObject */
 inline bool operator==(const MidiScriptEngineControllerConnection &c1, const MidiScriptEngineControllerConnection &c2) {
     return c1.id == c2.id && c1.key.group == c2.key.group && c1.key.item == c2.key.item;
 }
@@ -97,7 +97,7 @@ class MidiScriptEngine : public QThread {
     Q_INVOKABLE QScriptValue connectControl(QString group, QString name,
                                     QScriptValue function, bool disconnect = false);
     // Called indirectly by the objects returned by connectControl
-    void disconnectControl(MidiScriptEngineControllerConnection conn);
+    void disconnectControl(const MidiScriptEngineControllerConnection conn);
     Q_INVOKABLE void trigger(QString group, QString name);
     Q_INVOKABLE void log(QString message);
     Q_INVOKABLE int beginTimer(int interval, QScriptValue scriptCode, bool oneShot = false);
