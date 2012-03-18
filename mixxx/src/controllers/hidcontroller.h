@@ -60,7 +60,15 @@ class HidController : public Controller {
         //  For devices which only support a single report, reportID must be set to 0x0.
         void send(unsigned char data[], unsigned int length, unsigned int reportID = 0);
         
-        hid_device_info m_deviceInfo;
+        // Local copies of things we need from hid_device_info
+        int hid_interface_number;
+        unsigned short hid_vendor_id;
+        unsigned short hid_product_id;
+        char * hid_path;
+        wchar_t *hid_serial;
+        QString hid_manufacturer;
+        QString hid_product;
+        
         QString m_sUID;
         static QList<QString> m_deviceList;
         hid_device* m_pHidDevice;
