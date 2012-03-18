@@ -8,8 +8,8 @@
 *
 */
 
-#ifndef MIDIHOUTPUTHANDLER_H
-#define MIDIHOUTPUTHANDLER_H
+#ifndef MIDIOUTPUTHANDLER_H
+#define MIDIOUTPUTHANDLER_H
 
 #include "controlobject.h"
 
