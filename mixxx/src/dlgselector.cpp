@@ -3,7 +3,6 @@
 #include "widget/wskincolor.h"
 #include "library/selectorlibrarytablemodel.h"
 #include "transposeproxymodel.h"
-#include "widget/wselectorcratestableview.h"
 #include "widget/wselectorlibrarytableview.h"
 #include "library/trackcollection.h"
 #include "dlgselector.h"

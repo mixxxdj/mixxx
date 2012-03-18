@@ -5,7 +5,7 @@
 #include "selectorlibrarytablemodel.h"
 #include "library/trackcollection.h"
 
-const QString RECENT_FILTER = "datetime_added > datetime('now', '-7 days')";
+const QString RECENT_FILTER = "genre == 'Trance')";
 
 SelectorLibraryTableModel::SelectorLibraryTableModel(QObject* parent,
                                                    TrackCollection* pTrackCollection)
