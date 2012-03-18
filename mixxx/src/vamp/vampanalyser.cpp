@@ -62,9 +62,11 @@ void VampAnalyser::initializePluginPaths() {
 #endif
 }
 
-VampAnalyser::VampAnalyser() {
+VampAnalyser::VampAnalyser(ConfigObject<ConfigValue> *pconfig) {
     m_pluginbuf = new CSAMPLE*[2];
     mPlugin = NULL;
+    m_bDoNotAnalyseMoreSamples = false;
+    m_pconfig = pconfig;
 
 }
 
@@ -166,6 +168,21 @@ bool VampAnalyser::Init(const QString pluginlibrary, const QString pluginid,
     m_pluginbuf[0] = new CSAMPLE[m_iBlockSize];
     m_pluginbuf[1] = new CSAMPLE[m_iBlockSize];
 
+    int fastAnalyis = m_pconfig->getValueString(ConfigKey("[Vamp]","FastAnalysisEnabled")).toInt();
+    m_FastAnalysisEnabled = static_cast<bool>(fastAnalyis);
+
+    if(m_FastAnalysisEnabled)
+    {
+        qDebug() << "Using fast analysis methods for BPM and Replay Gain.";
+        m_iMaxSamplesToAnalys = 120 * mRate; //only consider the first minute
+    }
+    else
+    {
+        //Analyse 10 minutes otherwise. If track is longer than 10 min
+        // do not care. It might be some recorded mix.
+        m_iMaxSamplesToAnalys = 1200 * mRate;
+    }
+
     return true;
 }
 
@@ -174,6 +191,7 @@ bool VampAnalyser::Process(const CSAMPLE *pIn, const int iLen) {
         qDebug() << "VampAnalyser: Plugin not loaded";
         return false;
     }
+
     int iIN = 0;
     bool lastsamples = false;
     m_iRemainingSamples -= iLen;
@@ -181,6 +199,14 @@ bool VampAnalyser::Process(const CSAMPLE *pIn, const int iLen) {
         qDebug() << "VampAnalyser: Buffer points to NULL";
         return false;
     }
+
+    /*
+     * If a track has a duration of more than 10minutes
+     * do not analyse more. It may be a recorded mix.
+     */
+    if(m_bDoNotAnalyseMoreSamples)
+        return true;
+
     while (iIN < iLen / 2) { //4096
         m_pluginbuf[0][m_iOUT] = pIn[2 * iIN]; //* 32767;
         m_pluginbuf[1][m_iOUT] = pIn[2 * iIN + 1]; //* 32767;
@@ -237,10 +263,19 @@ bool VampAnalyser::Process(const CSAMPLE *pIn, const int iLen) {
                 m_iOUT++;
             }
 
+            /*
+             * If a track has a duration of more than 10minutes
+             * do not analyse more. It may be a recorded mix.
+             */
+            if(m_iSampleCount >= m_iMaxSamplesToAnalys)
+            {
+                m_bDoNotAnalyseMoreSamples = true;
+                m_iRemainingSamples = 0;
+            }
+
         }
 
     }
-
     return true;
 }
 

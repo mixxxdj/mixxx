@@ -87,7 +87,7 @@ void AnalyserBeats::initialise(TrackPointer tio, int sampleRate, int totalSample
     }
       //qDebug() << "Init Vamp Beat tracker with samplerate " << tio->getSampleRate() << " " << sampleRate;
       //qDebug()<<"SubVersion is "<<m_sSubver;
-      mvamp = new VampAnalyser();
+      mvamp = new VampAnalyser(m_pConfigAVT);
       m_bPass = mvamp->Init(library, pluginID, m_iSampleRate, totalSamples);
 }
 

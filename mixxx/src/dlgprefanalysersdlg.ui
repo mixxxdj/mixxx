@@ -152,6 +152,19 @@
             <string>Enabled</string>
            </property>
           </widget>
+          <widget class="QCheckBox" name="bFastAnalysis">
+           <property name="geometry">
+            <rect>
+             <x>10</x>
+             <y>260</y>
+             <width>451</width>
+             <height>20</height>
+            </rect>
+           </property>
+           <property name="text">
+            <string>Enable Fast Analysis (For slow computers but may be less accurate)</string>
+           </property>
+          </widget>
          </widget>
         </item>
        </layout>

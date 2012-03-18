@@ -15,10 +15,11 @@
 #include <vamp-hostsdk/vamp-hostsdk.h>
 #include "vamppluginloader.h"
 #include "sampleutil.h"
+#include "configobject.h"
 
 class VampAnalyser {
   public:
-    VampAnalyser();
+    VampAnalyser(ConfigObject<ConfigValue> *pconfig);
     virtual ~VampAnalyser();
 
     bool Init(const QString pluginlibrary, const QString pluginid,
@@ -49,6 +50,12 @@ class VampAnalyser {
     Vamp::Plugin *mPlugin;
     Vamp::Plugin::ParameterList mParameters;
     Vamp::Plugin::FeatureList m_Results;
+
+    bool m_bDoNotAnalyseMoreSamples;
+    bool m_FastAnalysisEnabled;
+    int m_iMaxSamplesToAnalys;
+    /** Pointer to config object */
+    ConfigObject<ConfigValue> *m_pconfig;
 };
 
 #endif /* VAMPANALYSER_H_ */

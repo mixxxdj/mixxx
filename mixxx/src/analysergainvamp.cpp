@@ -21,7 +21,7 @@ AnalyserGainVamp::~AnalyserGainVamp() {
 }
 
 void AnalyserGainVamp::initialise(TrackPointer tio, int sampleRate, int totalSamples) {
-    mvamprg = new VampAnalyser();
+    mvamprg = new VampAnalyser(m_pConfigAVR);
     m_bPass = false;
     bool bAnalyserEnabled = (bool)m_pConfigAVR->getValueString(ConfigKey("[ReplayGain]","ReplayGainAnalyserEnabled")).toInt();
     float fReplayGain = tio->getReplayGain();
