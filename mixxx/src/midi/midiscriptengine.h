@@ -31,7 +31,7 @@ class MidiDevice;
 class ControlObjectThread;
 class MidiScriptEngine;
 
-class MidiScriptEngineControllerConnection {
+class ScriptEngineConnection {
   public:
     ConfigKey key;
     QString id;
@@ -40,7 +40,7 @@ class MidiScriptEngineControllerConnection {
     QScriptValue context;
 };
 
-class MidiScriptEngineControllerConnectionScriptValueProxy : public QObject {
+class ScriptEngineConnectionScriptValue : public QObject {
     Q_OBJECT
     Q_PROPERTY(QString id READ readId)
     // We cannot expose ConfigKey directly since it's not a
@@ -49,18 +49,18 @@ class MidiScriptEngineControllerConnectionScriptValueProxy : public QObject {
     // There's little use in exposing the function...
     //Q_PROPERTY(QScriptValue function READ function)
   public:
-    MidiScriptEngineControllerConnectionScriptValueProxy(MidiScriptEngineControllerConnection conn) {
+    ScriptEngineConnectionScriptValue(ScriptEngineConnection conn) {
         this->conn = conn;
     }
     QString readId() const { return this->conn.id; }
     Q_INVOKABLE void disconnect();
     
   private:
-    MidiScriptEngineControllerConnection conn;
+    ScriptEngineConnection conn;
 };
 
-/* comparison function for MidiScriptEngineControllerConnection; Used by a QHash in ControlObject */
-inline bool operator==(const MidiScriptEngineControllerConnection &c1, const MidiScriptEngineControllerConnection &c2) {
+/* comparison function for ScriptEngineConnection; Used by a QHash in ControlObject */
+inline bool operator==(const ScriptEngineConnection &c1, const ScriptEngineConnection &c2) {
     return c1.id == c2.id && c1.key.group == c2.key.group && c1.key.item == c2.key.item;
 }
 
@@ -97,7 +97,7 @@ class MidiScriptEngine : public QThread {
     Q_INVOKABLE QScriptValue connectControl(QString group, QString name,
                                     QScriptValue function, bool disconnect = false);
     // Called indirectly by the objects returned by connectControl
-    void disconnectControl(const MidiScriptEngineControllerConnection conn);
+    void disconnectControl(const ScriptEngineConnection conn);
     Q_INVOKABLE void trigger(QString group, QString name);
     Q_INVOKABLE void log(QString message);
     Q_INVOKABLE int beginTimer(int interval, QScriptValue scriptCode, bool oneShot = false);
@@ -164,7 +164,7 @@ class MidiScriptEngine : public QThread {
     MidiDevice* m_pMidiDevice;
     bool m_midiDebug;
     bool m_midiPopups;
-    QMultiHash<ConfigKey, MidiScriptEngineControllerConnection> m_connectedControls;
+    QMultiHash<ConfigKey, ScriptEngineConnection> m_connectedControls;
     QScriptEngine *m_pEngine;
     QStringList m_scriptFunctions;
     QMap<QString,QStringList> m_scriptErrors;
