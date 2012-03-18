@@ -861,10 +861,10 @@ void MidiScriptEngine::trigger(QString group, QString name) {
         // Cache the CO value across iterations
         double value = cot->get();
 
-        QMultiHash<ConfigKey, MidiScriptEngineControllerConnection>::iterator i = 
+        QMultiHash<ConfigKey, ScriptEngineConnection>::iterator i = 
             m_connectedControls.find(key);
         while (i != m_connectedControls.end() && i.key() == key) {
-            MidiScriptEngineControllerConnection conn = i.value();
+            ScriptEngineConnection conn = i.value();
             QScriptValueList args;
 
             args << QScriptValue(value);
@@ -889,7 +889,7 @@ void MidiScriptEngine::trigger(QString group, QString name) {
 QScriptValue MidiScriptEngine::connectControl(QString group, QString name, QScriptValue callback, bool disconnect) {
     ControlObjectThread* cobj = getControlObjectThread(group, name);
     ConfigKey key(group, name);
-    MidiScriptEngineControllerConnection conn;
+    ScriptEngineConnection conn;
     QScriptValue function;
 
     if (cobj == NULL) {
@@ -915,7 +915,7 @@ QScriptValue MidiScriptEngine::connectControl(QString group, QString name, QScri
     }
 
     if (callback.isString()) {
-        MidiScriptEngineControllerConnection cb;
+        ScriptEngineConnection cb;
         cb.key = key;
         cb.id = callback.toString();
         
@@ -933,12 +933,12 @@ QScriptValue MidiScriptEngine::connectControl(QString group, QString name, QScri
         // Do not allow multiple connections to named functions
         else if (m_connectedControls.contains(key, cb)) {
             // Return a wrapper to the conn
-            QHash<ConfigKey, MidiScriptEngineControllerConnection>::iterator i = 
+            QHash<ConfigKey, ScriptEngineConnection>::iterator i = 
                 m_connectedControls.find(key);
             
-            MidiScriptEngineControllerConnection conn = i.value();
+            ScriptEngineConnection conn = i.value();
             return m_pEngine->newQObject(
-                        new MidiScriptEngineControllerConnectionScriptValueProxy(conn), 
+                        new ScriptEngineConnectionScriptValue(conn), 
                         QScriptEngine::ScriptOwnership
                     );
         }
@@ -946,14 +946,14 @@ QScriptValue MidiScriptEngine::connectControl(QString group, QString name, QScri
     else if (callback.isFunction()) {
         function = callback;
     }
-    // Assume a MidiScriptEngineControllerConnection
+    // Assume a ScriptEngineConnection
     else if (callback.isQObject()) {
         QObject *qobject = callback.toQObject();
         const QMetaObject *qmeta = qobject->metaObject();
         
-        if (!strcmp(qmeta->className(), "MidiScriptEngineControllerConnectionScriptValueProxy")) {
-            MidiScriptEngineControllerConnectionScriptValueProxy *proxy = 
-                (MidiScriptEngineControllerConnectionScriptValueProxy *)qobject;
+        if (!strcmp(qmeta->className(), "ScriptEngineConnectionScriptValue")) {
+            ScriptEngineConnectionScriptValue *proxy = 
+                (ScriptEngineConnectionScriptValue *)qobject;
             proxy->disconnect();
         }
     }
@@ -967,7 +967,7 @@ QScriptValue MidiScriptEngine::connectControl(QString group, QString name, QScri
                     this, SLOT(slotValueChanged(double)),
                     Qt::QueuedConnection);
 
-        MidiScriptEngineControllerConnection conn;
+        ScriptEngineConnection conn;
         conn.key = key;
         conn.mse = this;
         conn.function = function;
@@ -984,7 +984,7 @@ QScriptValue MidiScriptEngine::connectControl(QString group, QString name, QScri
 
         m_connectedControls.insert(key, conn);
         return m_pEngine->newQObject(
-                    new MidiScriptEngineControllerConnectionScriptValueProxy(conn), 
+                    new ScriptEngineConnectionScriptValue(conn), 
                     QScriptEngine::ScriptOwnership
                 );
     }
@@ -998,7 +998,7 @@ QScriptValue MidiScriptEngine::connectControl(QString group, QString name, QScri
                 script function name, true if you want to disconnect
    Output:  true if successful
    -------- ------------------------------------------------------ */
-void MidiScriptEngine::disconnectControl(const MidiScriptEngineControllerConnection conn) {
+void MidiScriptEngine::disconnectControl(const ScriptEngineConnection conn) {
     ControlObjectThread* cobj = getControlObjectThread(conn.key.group, conn.key.item);
     
 
@@ -1030,7 +1030,7 @@ void MidiScriptEngine::disconnectControl(const MidiScriptEngineControllerConnect
     }
 }
 
-void MidiScriptEngineControllerConnectionScriptValueProxy::disconnect() {
+void ScriptEngineConnectionScriptValue::disconnect() {
     this->conn.mse->disconnectControl(this->conn);
 }
 
@@ -1056,9 +1056,9 @@ void MidiScriptEngine::slotValueChanged(double value) {
     //qDebug() << QString("MidiScriptEngine: slotValueChanged Thread ID=%1").arg(QThread::currentThreadId(),0,16);
 
     if(m_connectedControls.contains(key)) {
-        QHash<ConfigKey, MidiScriptEngineControllerConnection>::iterator iter = 
+        QHash<ConfigKey, ScriptEngineConnection>::iterator iter = 
             m_connectedControls.find(key);
-        QList<MidiScriptEngineControllerConnection> conns;
+        QList<ScriptEngineConnection> conns;
 
         // Create a temporary list to allow callbacks to disconnect
         // -Phillip Whelan
@@ -1068,7 +1068,7 @@ void MidiScriptEngine::slotValueChanged(double value) {
         }
 
         for (int i = 0; i < conns.size(); i++) {
-            MidiScriptEngineControllerConnection conn = conns.at(i);
+            ScriptEngineConnection conn = conns.at(i);
             QScriptValueList args;
 
             args << QScriptValue(value);
