@@ -4,6 +4,7 @@
 #include <QApplication>
 #include <QObject>
 #include <QFile>
+#include <QThread>
 
 #include "controlobject.h"
 #include "controlpotmeter.h"
@@ -19,6 +20,7 @@ class MidiScriptEngineTest : public testing::Test {
         qDebug() << "SetUp";
         static int argc = 1;
         static char* argv[2] = { "test", NULL };
+        QThread::currentThread()->setObjectName("Main");
         app = new QApplication(argc, argv);
         new ControlPotmeter(ConfigKey("[Test]", "potmeter"),-1.,1.);
     }
