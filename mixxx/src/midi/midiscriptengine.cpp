@@ -1014,7 +1014,7 @@ QScriptValue MidiScriptEngine::connectControl(QString group, QString name, QScri
                 script function name, true if you want to disconnect
    Output:  true if successful
    -------- ------------------------------------------------------ */
-void MidiScriptEngine::disconnectControl(MidiScriptEngineControllerConnection conn) {
+void MidiScriptEngine::disconnectControl(const MidiScriptEngineControllerConnection conn) {
     ControlObjectThread* cobj = getControlObjectThread(conn.key.group, conn.key.item);
     
 
