@@ -49,6 +49,9 @@ DlgPrefAnalysers::DlgPrefAnalysers(QWidget *parent, ConfigObject<ConfigValue> *_
             this, SLOT(offsetEnabled(int)));
     connect(reset, SIGNAL(clicked(bool)),     this, SLOT(setDefaults()));
 
+    connect(bFastAnalysis, SIGNAL(stateChanged(int)),
+            this, SLOT(fastAnalysisEnabled(int)));
+
 
 }
 
@@ -71,6 +74,9 @@ void DlgPrefAnalysers::loadSettings(){
         i = m_pconfig->getValueString(ConfigKey(CONFIG_KEY,"AnalyserBeatOffset")).toInt();
         m_boffsetEnabled = static_cast<bool>(i);
 
+        i = m_pconfig->getValueString(ConfigKey(CONFIG_KEY,"FastAnalysisEnabled")).toInt();
+        m_FastAnalysisEnabled = static_cast<bool>(i);
+
         if(m_listIdentifier.indexOf(pluginid)==-1){
             setDefaults();
         }
@@ -88,6 +94,7 @@ void DlgPrefAnalysers::setDefaults(){
     m_banalyserEnabled = true;
     m_bfixedtempoEnabled = true;
     m_boffsetEnabled = true;
+    m_FastAnalysisEnabled = false;
     //slotApply();
     slotUpdate();
 }
@@ -125,12 +132,14 @@ void DlgPrefAnalysers::slotUpdate(){
     boffset->setEnabled((m_banalyserEnabled && m_bfixedtempoEnabled));
     plugincombo->setEnabled(m_banalyserEnabled);
     banalyserenabled->setChecked(m_banalyserEnabled);
+    bFastAnalysis->setEnabled(m_banalyserEnabled);
     if(!m_banalyserEnabled)
         return;
 
 
     bfixedtempo->setChecked(m_bfixedtempoEnabled);
     boffset->setChecked(m_boffsetEnabled);
+    bFastAnalysis->setChecked(m_FastAnalysisEnabled);
 
     int comboselected = m_listIdentifier.indexOf(m_selectedAnalyser);
     if( comboselected==-1){
@@ -141,6 +150,12 @@ void DlgPrefAnalysers::slotUpdate(){
     plugincombo->setCurrentIndex(comboselected);
 
 
+}
+
+void DlgPrefAnalysers::fastAnalysisEnabled(int i)
+{
+    m_FastAnalysisEnabled = static_cast<bool>(i);
+    slotUpdate();
 }
 
 void DlgPrefAnalysers::slotApply(){
@@ -158,6 +173,11 @@ void DlgPrefAnalysers::slotApply(){
         m_pconfig->set(ConfigKey(CONFIG_KEY,"AnalyserBeatFixedTempo"), ConfigValue(1));
     else
         m_pconfig->set(ConfigKey(CONFIG_KEY,"AnalyserBeatFixedTempo"), ConfigValue(0));
+
+    if (m_FastAnalysisEnabled)
+        m_pconfig->set(ConfigKey(CONFIG_KEY,"FastAnalysisEnabled"), ConfigValue(1));
+    else
+        m_pconfig->set(ConfigKey(CONFIG_KEY,"FastAnalysisEnabled"), ConfigValue(0));
 
 
     if (m_boffsetEnabled)
