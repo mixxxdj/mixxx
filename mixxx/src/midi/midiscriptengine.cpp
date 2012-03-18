@@ -887,14 +887,16 @@ void MidiScriptEngine::trigger(QString group, QString name) {
     //  so we have to call the function(s) manually with the current value
     ConfigKey key = ConfigKey(group,name);
     if(m_connectedControls.contains(key)) {
+        // Cache the CO value across iterations
+        double value = cot->get();
+
         QMultiHash<ConfigKey, MidiScriptEngineControllerConnection>::iterator i = 
             m_connectedControls.find(key);
         while (i != m_connectedControls.end() && i.key() == key) {
             MidiScriptEngineControllerConnection conn = i.value();
             QScriptValueList args;
-            double value;
 
-            args << QScriptValue(cot->get());
+            args << QScriptValue(value);
             args << QScriptValue(key.group);
             args << QScriptValue(key.item);
             QScriptValue result = conn.function.call(conn.context, args);
