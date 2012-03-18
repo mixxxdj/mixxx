@@ -436,8 +436,6 @@ QDomElement MidiController::loadPreset(QDomElement root, bool forceLoad) {
         while (!control.isNull()) {
 
             //Unserialize these objects from the XML
-//             MidiMessage midiMessage(control);
-
             QString strMidiStatus = control.firstChildElement("status").text();
             QString midiNo = control.firstChildElement("midino").text();
 
@@ -450,7 +448,6 @@ QDomElement MidiController::loadPreset(QDomElement root, bool forceLoad) {
             unsigned char midiControl = midiNo.toInt(&ok, 0);
             if (!ok) midiControl = 0x00;
 
-//             MixxxControl mixxxControl(control);
             QDomElement groupNode = control.firstChildElement("group");
             QDomElement keyNode = control.firstChildElement("key");
             QDomElement descriptionNode = control.firstChildElement("description");
@@ -634,8 +631,6 @@ QDomElement MidiController::loadPreset(QDomElement root, bool forceLoad) {
 
             // END unserialize output
             
-//             MixxxControl mixxxControl(output, true);
-
             // Add the static output mapping.
             /*
             qDebug() << "New output mapping:"
@@ -649,11 +644,6 @@ QDomElement MidiController::loadPreset(QDomElement root, bool forceLoad) {
             //  entries for the same ConfigKey
             m_outputMappings.insertMulti(ConfigKey(controlGroup, controlKey),outputMessage);
             
-//             internalSetOutputMidiMapping(mixxxControl, midiMessage, true);
-            /*Old code: m_outputMapping.insert(mixxxControl, midiMessage);
-              Reason why this is bad: Don't want to access this directly because the
-                                      model doesn't get notified about the update */
-
             output = output.nextSiblingElement("output");
         }
 
@@ -803,14 +793,16 @@ void MidiController::mappingToXML(QDomElement& parentNode, QString group,
     
     //MIDI status byte
     tagNode = nodeMaker.createElement("status");
-    text = nodeMaker.createTextNode(QString("0x%1").arg(QString::number(status, 16).toUpper().rightJustified(2,'0')));
+    text = nodeMaker.createTextNode(
+        QString("0x%1").arg(QString::number(status, 16).toUpper().rightJustified(2,'0')));
     tagNode.appendChild(text);
     parentNode.appendChild(tagNode);
     
     if (control != 0xFF) {
         //MIDI control number
         tagNode = nodeMaker.createElement("midino");
-        text = nodeMaker.createTextNode(QString("0x%1").arg(QString::number(control, 16).toUpper().rightJustified(2,'0')));
+        text = nodeMaker.createTextNode(
+            QString("0x%1").arg(QString::number(control, 16).toUpper().rightJustified(2,'0')));
         tagNode.appendChild(text);
         parentNode.appendChild(tagNode);
     }
@@ -826,7 +818,8 @@ void MidiController::outputMappingToXML(QDomElement& parentNode, unsigned char o
     // Third MIDI byte for turning on the LED
     if (on != DEFAULT_OUTPUT_ON) {
         tagNode = nodeMaker.createElement("on");
-        text = nodeMaker.createTextNode(QString("0x%1").arg(QString::number(on, 16).toUpper().rightJustified(2,'0')));
+        text = nodeMaker.createTextNode(
+            QString("0x%1").arg(QString::number(on, 16).toUpper().rightJustified(2,'0')));
         tagNode.appendChild(text);
         parentNode.appendChild(tagNode);
     }
@@ -834,7 +827,8 @@ void MidiController::outputMappingToXML(QDomElement& parentNode, unsigned char o
     // Third MIDI byte for turning off the LED
     if (off != DEFAULT_OUTPUT_OFF) {
         tagNode = nodeMaker.createElement("off");
-        text = nodeMaker.createTextNode(QString("0x%1").arg(QString::number(off, 16).toUpper().rightJustified(2,'0')));
+        text = nodeMaker.createTextNode(
+            QString("0x%1").arg(QString::number(off, 16).toUpper().rightJustified(2,'0')));
         tagNode.appendChild(text);
         parentNode.appendChild(tagNode);
     }
