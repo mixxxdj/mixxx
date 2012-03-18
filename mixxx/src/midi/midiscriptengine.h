@@ -154,7 +154,6 @@ class MidiScriptEngine : public QThread {
     void initializeScriptEngine();
 
     void scriptErrorDialog(QString detailedError);
-    void generateScriptFunctions(QString code);
     bool checkException();
     void stopAllTimers();
 
