@@ -742,35 +742,6 @@ void MidiScriptEngine::errorDialogButton(QString key, QMessageBox::StandardButto
     if (button == QMessageBox::Retry) emit(resetController());
 }
 
-void MidiScriptEngine::generateScriptFunctions(QString scriptCode) {
-    
-    //     QStringList functionList;
-    QStringList codeLines = scriptCode.split("\n");
-    //     qDebug() << "MidiScriptEngine: m_scriptCode=" << m_scriptCode;
-
-    if (m_midiDebug)
-        qDebug() << "MidiScriptEngine:" << codeLines.count() << "lines of code being searched for functions";
-
-    // grep 'function' midi/midi-mappings-scripts.js|grep -i '(msg)'|sed -e 's/function \(.*\)(msg).*/\1/i' -e 's/[= ]//g'
-    QRegExp rx("*.*function*(*)*");    // Find all lines with function names in them
-    rx.setPatternSyntax(QRegExp::Wildcard);
-
-    int position = codeLines.indexOf(rx);
-
-    while (position != -1) {    // While there are more matches
-
-        QString line = codeLines.takeAt(position);    // Pull & remove the current match from the list.
-
-        if (line.indexOf('#') != 0 && line.indexOf("//") != 0) {    // ignore commented out lines
-            QStringList field = line.split(" ");
-            if (m_midiDebug) qDebug() << "MidiScriptEngine: Found function:" << field[0]
-                                      << "at line" << position;
-            m_scriptFunctions.append(field[0]);
-        }
-        position = codeLines.indexOf(rx);
-    }
-}
-
 ControlObjectThread* MidiScriptEngine::getControlObjectThread(QString group, QString name) {
 
     ConfigKey key = ConfigKey(group, name);
