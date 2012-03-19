@@ -39,6 +39,7 @@ public:
     // Returns the current engine rate.
     double calculateRate(double baserate, bool paused, int iSamplesPerBuffer, bool* isScratching);
     double getRawRate();
+    double getCurrentRate();
 
     // Set rate change when temp rate button is pressed
     static void setTemp(double v);
@@ -66,6 +67,11 @@ public:
     void slotControlFastForward(double);
     void slotControlFastBack(double);
     void slotControlVinyl(double);
+    
+  private slots:
+    void slotFileBpmChanged(double);
+    void slotMasterScratchChanged(double);
+    void slotMasterScratchEnabledChanged(double);
 
   private:
     double getJogFactor();
@@ -108,6 +114,11 @@ public:
     Rotary* m_pJogFilter;
 
     ControlObject *m_pSampleRate;
+    ControlObject *m_pMasterScratch, m_pMasterScratchEnabled;
+    
+    /** The current loaded file's detected BPM */
+    ControlObject* m_pFileBpm;
+    double m_dFileBpm; // cache it
 
     // Enumerations which hold the state of the pitchbend buttons.
     // These enumerations can be used like a bitmask.
@@ -163,8 +174,7 @@ public:
       * pressed, because there is a fixed limit on the range of the pitch
       * slider */
     double m_dOldRate;
-
-
+    
     /** Handle for configuration */
     ConfigObject<ConfigValue>* m_pConfig;
 };

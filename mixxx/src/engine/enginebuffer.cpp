@@ -202,7 +202,7 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
     // Create the BPM Controller
     m_pBpmControl = new BpmControl(_group, _config);
     addControl(m_pBpmControl);
-
+    
     m_pReadAheadManager = new ReadAheadManager(m_pReader);
     m_pReadAheadManager->addEngineControl(m_pLoopingControl);
     m_pReadAheadManager->addEngineControl(m_pRateControl);
@@ -303,6 +303,12 @@ void EngineBuffer::setPitchIndpTimeStretch(bool b)
 double EngineBuffer::getBpm()
 {
     return m_pBpmControl->getBpm();
+}
+
+double EngineBuffer::getExactBpm()
+{
+    //TODO (XXX): right now we hammer bpm over and over, stupidly
+    return m_pRateControl->getCurrentRate() * m_pBpmControl->getFileBpm();
 }
 
 void EngineBuffer::setEngineMaster(EngineMaster * pEngineMaster)

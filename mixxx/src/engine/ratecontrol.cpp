@@ -37,7 +37,7 @@ RateControl::RateControl(const char* _group,
     m_dRateTemp(0.0),
     m_eRampBackMode(RATERAMP_RAMPBACK_NONE),
     m_dRateTempRampbackChange(0.0),
-    m_dOldRate(0.0f),
+    m_dOldRate(1.0f),
     m_pConfig(_config) {
     m_pScratchController = new PositionScratchController(_group);
 
@@ -147,6 +147,14 @@ RateControl::RateControl(const char* _group,
     // Set the Sensitivity
     m_iRateRampSensitivity =
         m_pConfig->getValueString(ConfigKey("[Controls]","RateRampSensitivity")).toInt();
+    
+    
+    // We need this so we can sync to master sync    
+    m_pFileBpm = new ControlObject(ConfigKey(_group, "file_bpm"));
+    connect(m_pFileBpm, SIGNAL(valueChanged(double)),
+            this, SLOT(slotFileBpmChanged(double)),
+            Qt::DirectConnection);
+
 
 #ifdef __VINYLCONTROL__
     ControlObject* pVCEnabled = ControlObject::getControl(ConfigKey(_group, "vinylcontrol_enabled"));
@@ -190,6 +198,20 @@ RateControl::~RateControl() {
     delete m_pJogFilter;
     delete m_pScratchController;
 }
+
+void RateControl::setEngineMaster(EngineMaster* pEngineMaster) {
+    m_pEngineMaster = pEngineMaster;
+    m_pMasterScratch = ControlObject::getControl(ConfigKey("[Master]","scratch"));
+    connect(m_pMasterScratch, SIGNAL(valueChanged(double)),
+                this, SLOT(slotMasterScratchChanged(double)),
+                Qt::DirectConnection);
+                
+    m_pMasterScratchEnabled = ControlObject::getControl(ConfigKey("[Master]","scratch_enable"));
+    connect(m_pMasterScratchEnabled, SIGNAL(valueChanged(double)),
+                this, SLOT(slotMasterScratchEnabledChanged(double)),
+                Qt::DirectConnection);
+}
+
 
 void RateControl::setRateRamp(bool linearMode)
 {
@@ -334,10 +356,43 @@ void RateControl::slotControlRateTempUpSmall(double)
     }
 }
 
+void BpmControl::slotFileBpmChanged(double bpm) {
+    m_dFileBpm = bpm;
+}
+
+
+void RateControl::slotMasterScratchChanged(double scratchbpm)
+{
+    if (m_iSyncState == SYNC_SLAVE)
+    {
+        // if we're a slave, update the rate value -- we don't set anything here,
+        // this comes into effect in the return from calculaterate
+        //TODO: let's ignore x2, /2 issues for now
+        //this is reproduced from bpmcontrol::syncTempo -- should break this out
+        double dDesiredRate = otherBpm / m_dFileBpm;
+        //normalize around 1
+        dDesiredRate -= 1.0;
+        //scale to range?
+        //dDesiredRate = dDesiredRate/(m_pRateRange->get() * m_pRateDir->get());
+        m_dMasterScratch = dDesiredRate;
+    }
+}
+
+void RateControl::slotMasterScratchChanged(double enabled)
+{
+    m_bMasterScratchEnabled = bool(enabled);
+}
+
+
 double RateControl::getRawRate() {
     return m_pRateSlider->get() *
         m_pRateRange->get() *
         m_pRateDir->get();
+}
+
+double RateControl::getCurrentRate()
+{
+    return m_dOldRate;
 }
 
 double RateControl::getWheelFactor() {
@@ -366,6 +421,19 @@ double RateControl::getJogFactor() {
 double RateControl::calculateRate(double baserate, bool paused, int iSamplesPerBuffer,
                                   bool* isScratching) {
     double rate = 0.0;
+    
+    if (m_iSyncState == SYNC_SLAVE)
+    {
+        //no work needs to be done, just return
+        m_dOldRate = rate;
+        if (m_bMasterScratchEnabled) {
+            return m_dMasterScratch * baserate;
+        } else {
+            return m_dMasterRate * baserate;
+        }
+    }
+    
+    
     double wheelFactor = getWheelFactor();
     double jogFactor = getJogFactor();
     bool searching = m_pRateSearch->get() != 0.;
@@ -430,9 +498,10 @@ double RateControl::calculateRate(double baserate, bool paused, int iSamplesPerB
         }
     }
 
+    m_dOldRate = rate;
+
     // Scale the rate by the engine samplerate
     rate *= baserate;
-
     return rate;
 }
 

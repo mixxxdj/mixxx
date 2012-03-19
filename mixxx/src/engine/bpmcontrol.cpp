@@ -19,6 +19,9 @@ const int filterLength = 5;
 BpmControl::BpmControl(const char* _group,
                        ConfigObject<ConfigValue>* _config) :
         EngineControl(_group, _config),
+        m_pMasterSync(NULL),
+        m_iSyncState(0),
+        m_dSyncFactor(0.0),
         m_tapFilter(this, filterLength, maxInterval) {
     m_pPlayButton = ControlObject::getControl(ConfigKey(_group, "play"));
     m_pRateSlider = ControlObject::getControl(ConfigKey(_group, "rate"));
@@ -97,8 +100,23 @@ BpmControl::~BpmControl() {
     delete m_pTranslateBeats;
 }
 
+void BpmControl::setEngineMaster(EngineMaster* pEngineMaster) {
+    m_pEngineMaster = pEngineMaster;
+    
+    // Connect to the Master Sync
+    //m_pMasterRate = pEngineMaster->getMasterRateSync();
+    m_pMasterRate = ControlObject::getControl(ConfigKey("[Master]","rate"));
+    connect(m_pMasterRate, SIGNAL(valueChanged(double)),
+                this, SLOT(slotMasterRateChanged(double)),
+                Qt::DirectConnection);
+}
+
 double BpmControl::getBpm() {
     return m_pEngineBpm->get();
+}
+
+double BpmControl::getFileBpm() {
+    return m_dFileBpm;
 }
 
 void BpmControl::slotFileBpmChanged(double bpm) {
@@ -107,6 +125,7 @@ void BpmControl::slotFileBpmChanged(double bpm) {
     // engine BPM.
     double dRate = 1.0 + m_pRateDir->get() * m_pRateRange->get() * m_pRateSlider->get();
     m_pEngineBpm->set(bpm * dRate);
+    m_dFileBpm = bpm;
 }
 
 void BpmControl::slotSetEngineBpm(double bpm) {
@@ -115,6 +134,7 @@ void BpmControl::slotSetEngineBpm(double bpm) {
     if (filebpm != 0.0) {
         double newRate = bpm / filebpm - 1.0f;
         newRate = math_max(-1.0f, math_min(1.0f, newRate));
+        m_dFileBpm = newRate;
         m_pRateSlider->set(newRate * m_pRateDir->get());
     }
 }
@@ -139,6 +159,7 @@ void BpmControl::slotTapFilter(double averageLength, int numSamples) {
     // beat) = Y beats/minute
     double averageBpm = 60.0 * 1000.0 / averageLength;
     m_pFileBpm->set(averageBpm);
+    m_dFileBpm = averageBpm;
     slotFileBpmChanged(averageBpm);
 }
 
@@ -162,6 +183,24 @@ void BpmControl::slotControlBeatSync(double v) {
     // phase so that it plays in sync.
     if (syncTempo() && m_pPlayButton->get() > 0) {
         syncPhase();
+    }
+}
+
+
+void BpmControl::slotMasterRateChanged(double otherBpm)
+{
+    if (m_iSyncState == SYNC_SLAVE)
+    {
+        // Just set the slider -- ratecontrol.cpp takes care of rate
+        
+        //TODO: let's ignore x2, /2 issues for now
+        //this is reproduced from syncTempo -- should break this out
+        double dDesiredRate = otherBpm / m_dFileBpm;
+        //normalize around 1
+        dDesiredRate -= 1.0;
+        //scale to range
+        dDesiredRate = dDesiredRate/(m_pRateRange->get() * m_pRateDir->get());
+        m_pRateSlider->set(dDesiredRate);
     }
 }
 
@@ -377,8 +416,10 @@ bool BpmControl::syncPhase() {
 }
 
 void BpmControl::slotRateChanged(double) {
+    //wait, always???  Are we hammering this??
     double dFileBpm = m_pFileBpm->get();
     slotFileBpmChanged(dFileBpm);
+    m_dFileBpm = dFileBpm;
 }
 
 void BpmControl::trackLoaded(TrackPointer pTrack) {

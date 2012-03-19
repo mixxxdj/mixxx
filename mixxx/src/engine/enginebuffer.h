@@ -206,7 +206,7 @@ private:
 
     ControlObject *rateEngine;
     ControlObject *visualBpm;
-    ControlObject *m_pMasterRate;
+    
     ControlPotmeter *playposSlider;
     ControlPotmeter *visualPlaypos;
     ControlObject *m_pSampleRate;
@@ -234,7 +234,7 @@ private:
     EngineBufferScaleST *m_pScaleST;
     // Indicates whether the scaler has changed since the last process()
     bool m_bScalerChanged;
-
+    
     /** Holds the last sample value of the previous buffer. This is used when ramping to
       * zero in case of an immediate stop of the playback */
     float m_fLastSampleValue[2];

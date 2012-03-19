@@ -32,6 +32,7 @@
 #include "enginevumeter.h"
 #include "enginexfader.h"
 #include "enginesidechain.h"
+#include "enginesync.h"
 #include "engine/syncworker.h"
 #include "sampleutil.h"
 
@@ -57,6 +58,9 @@ EngineMaster::EngineMaster(ConfigObject<ConfigValue> * _config,
 
     // Master rate
     m_pMasterRate = new ControlPotmeter(ConfigKey(group, "rate"), -1.0, 1.0);
+    
+    // Master sync controller
+    m_pMasterSync = new EngineSync(group);
 
 #ifdef __LADSPA__
     // LADSPA
@@ -156,6 +160,11 @@ const CSAMPLE* EngineMaster::getMasterBuffer() const
 const CSAMPLE* EngineMaster::getHeadphoneBuffer() const
 {
     return m_pHead;
+}
+
+EngineSync* EngineMaster::getMasterSync(void)
+{
+    return m_pMasterSync;
 }
 
 void EngineMaster::mixChannels(unsigned int channelBitvector, unsigned int maxChannels,
@@ -338,12 +347,57 @@ void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
     float cmaster_gain = 0.5*(cf_val+1.);
     // qDebug() << "head val " << cf_val << ", head " << chead_gain
     //          << ", master " << cmaster_gain;
-
+    
+    
+    //find the Sync Master and process it first
+    //then process all the slaves (and skip the master)
+    
     QList<ChannelInfo*>::iterator it = m_channels.begin();
+    QList<ChannelInfo*>::iterator master_it = NULL;
+    for (unsigned int channel_number = 0;
+         it != m_channels.end(); ++it, ++channel_number) {
+         EngineChannel* pChannel = pChannelInfo->m_pChannel;
+         if (pChannel && pChannel->isActive())
+         {
+            EngineBuffer* pBuffer = pChannel->getEngineBuffer();
+            if (pBuffer == m_pMasterSync->getMaster())
+            {
+                master_it = it;
+                
+                //proceed with the processing as below
+                bool needsProcessing = false;
+                if (pChannel->isMaster()) {
+                    masterOutput |= (1 << channel_number);
+                    needsProcessing = true;
+                }
+
+                // If the channel is enabled for previewing in headphones, copy it
+                // over to the headphone buffer
+                if (pChannel->isPFL()) {
+                    headphoneOutput |= (1 << channel_number);
+                    needsProcessing = true;
+                }
+
+                // Process the buffer if necessary, which it damn well better be
+                Q_ASSERT(needsProcessing);
+                if (needsProcessing) {
+                    pChannel->process(NULL, pChannelInfo->m_pBuffer, iBufferSize);
+                }
+            }
+        }
+    }
+    
+
+    it = m_channels.begin();
     for (unsigned int channel_number = 0;
          it != m_channels.end(); ++it, ++channel_number) {
         ChannelInfo* pChannelInfo = *it;
         EngineChannel* pChannel = pChannelInfo->m_pChannel;
+        
+        if (it == master_it) {
+            //we already processed this
+            continue;
+        }
 
         if (!pChannel->isActive()) {
             continue;
