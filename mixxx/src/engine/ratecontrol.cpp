@@ -365,6 +365,11 @@ void RateControl::slotMasterScratchChanged(double scratchbpm)
 {
     if (m_iSyncState == SYNC_SLAVE)
     {
+        //XXX: this doesn't work because we're only using scratch2, and we
+        //don't know about controller scratch or ramping pitchbend.... we have
+        //to use the output of calculaterate itself.
+    
+    
         // if we're a slave, update the rate value -- we don't set anything here,
         // this comes into effect in the return from calculaterate
         //TODO: let's ignore x2, /2 issues for now
@@ -378,7 +383,7 @@ void RateControl::slotMasterScratchChanged(double scratchbpm)
     }
 }
 
-void RateControl::slotMasterScratchChanged(double enabled)
+void RateControl::slotMasterScratchEnabledChanged(double enabled)
 {
     m_bMasterScratchEnabled = bool(enabled);
 }
