@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2011-12-26 09:32+0200\n"
-"PO-Revision-Date: 2011-12-25 23:51+0000\n"
-"Last-Translator: L. Post <Unknown>\n"
+"PO-Revision-Date: 2012-03-18 10:33+0000\n"
+"Last-Translator: computergeoffrey <Unknown>\n"
 "Language-Team: Dutch <nl@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-01-08 04:49+0000\n"
-"X-Generator: Launchpad (build 14640)\n"
+"X-Launchpad-Export-Date: 2012-03-19 04:37+0000\n"
+"X-Generator: Launchpad (build 14969)\n"
 
 #: AutoDJFeature#1
 msgid "Auto DJ"
@@ -306,12 +306,14 @@ msgstr "Hernoemen van de krat is mislukt"
 #: CrateFeature#15
 msgctxt "CrateFeature#15"
 msgid "Playlist Files (*.m3u *.m3u8 *.pls)"
-msgstr ""
+msgstr "Afspeellijstbestanden (*.m3u *.m3u8 *.pls)"
 
 #: CrateFeature#16
 msgctxt "CrateFeature#16"
 msgid "M3U Playlist (*.m3u);;M3U8 Playlist (*.m3u8);;PLS Playlist (*.pls)"
 msgstr ""
+"M3U-afspeellijst (*.m3u);;M3U8-afspeellijst (*.m3u8);;PLS-afspeellijst "
+"(*.pls)"
 
 #: CrateFeature#17
 msgid "A crate cannot have a blank name."
@@ -2503,7 +2505,7 @@ msgstr "<b>Sluit</b> Mixxx."
 
 #: MixxxApp#16
 msgid "Retry"
-msgstr "Probeer opnieuw"
+msgstr "Opnieuw proberen"
 
 #: MixxxApp#17
 msgid "Reconfigure"
@@ -2993,10 +2995,11 @@ msgstr "Afspeellijst Exporteren Mislukt"
 #: ParserM3u#2
 msgid "File path contains characters, not allowed in m3u playlists.\n"
 msgstr ""
+"Bestandspad bevat karakters die niet toegelaten zijn in m3u-afspeellijsten.\n"
 
 #: ParserM3u#3
 msgid "Export a m3u8 playlist instead!\n"
-msgstr ""
+msgstr "Exporteer in plaats daarvan een m3u8-afspeellijst!\n"
 
 #: ParserM3u#4
 msgctxt "ParserM3u#4"
@@ -3085,12 +3088,14 @@ msgstr "Afspeellijst Hernoemen Mislukt"
 #: PlaylistFeature#17
 msgctxt "PlaylistFeature#17"
 msgid "Playlist Files (*.m3u *.m3u8 *.pls)"
-msgstr ""
+msgstr "Afspeellijstbestanden (*.m3u *.m3u8 *.pls)"
 
 #: PlaylistFeature#18
 msgctxt "PlaylistFeature#18"
 msgid "M3U Playlist (*.m3u);;M3U8 Playlist (*.m3u8);;PLS Playlist (*.pls)"
 msgstr ""
+"M3U-afspeellijst (*.m3u);;M3U8-afspeellijst (*.m3u8);;PLS-afspeellijst "
+"(*.pls)"
 
 #: PlaylistFeature#19
 msgid "A playlist by that name already exists."
@@ -3422,15 +3427,15 @@ msgstr "Reloop / Sluit knop voor Speler %1"
 
 #: Ui#37
 msgid "Setup a loop over 4 beats for Player %1"
-msgstr ""
+msgstr "Maak een lus met 4 beats voor speler %1"
 
 #: Ui#38
 msgid "Halves the current loop's length for Player %1"
-msgstr ""
+msgstr "Halveert de huidige luslengte voor speler %1"
 
 #: Ui#39
 msgid "Doubles the current loop's length for Player %1"
-msgstr ""
+msgstr "Verdubbelt de huidige luslengte voor speler %1"
 
 #: Ui#40
 msgid "Hotcue 1 button for Player %1"
@@ -3466,15 +3471,15 @@ msgstr "Hotcue 4 verwijder knop voor Speler %1"
 
 #: Ui#48
 msgid "Play button for Sampler %1"
-msgstr ""
+msgstr "Afspeelknop voor sampler %1"
 
 #: Ui#49
 msgid "Gain knob for Sampler %1"
-msgstr ""
+msgstr "Gainknop voor sampler %1"
 
 #: Ui#50
 msgid "Headphone listen button for Sampler %1"
-msgstr ""
+msgstr "Luister via hoofdtelefoon-knop voor sampler %1"
 
 #: Ui#51
 msgid "BPM tap button for Sampler %1"
@@ -3514,7 +3519,7 @@ msgstr ""
 
 #: Ui#60
 msgid "Hotcue 3 delete button for Sampler %1"
-msgstr ""
+msgstr "Hotcue 3-verwijderknop voor sampler %1"
 
 #: Ui#61
 msgid "Hotcue 4 delete button for Sampler %1"
