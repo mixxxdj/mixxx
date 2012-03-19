@@ -6,6 +6,7 @@
 #include <QModelIndexList>
 #include "librarytablemodel.h"
 
+
 class SelectorLibraryTableModel : public LibraryTableModel
 {
     Q_OBJECT
@@ -21,10 +22,20 @@ class SelectorLibraryTableModel : public LibraryTableModel
     void filterByBpm();
   private slots:
     void slotSearch(const QString& searchText);
+    void slotFilterByGenre(const QString& genre);
+    void slotFilterByBpm(const float& bpm);
   signals:
     void doSearch(const QString& searchText);
+    void doFilterByGenre(const QString& genre);
+    void doFilterByBpm(const float& bpm);
   private:
-    bool m_bShowRecentSongs;
+    QString currentGenre() const;
+    //void filterByGenre();
+    float currentBpm() const;
+    //void filterByBpm();
 };
 
 #endif
+
+
+
