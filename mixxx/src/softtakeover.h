@@ -32,7 +32,7 @@ class SoftTakeover {
         /** Check to see if the new value for the Control should be ignored */
         bool ignore(MixxxControl control, float newValue, bool midiVal = false);
         /** For legacy Controls */
-        bool ignore(QString group, QString name, float newValue);
+        bool ignore(QString group, QString name, float newValue, bool midiVal = false);
     
     private:
         /** If a new value is received within this amount of time,

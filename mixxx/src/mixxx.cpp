@@ -44,8 +44,8 @@
 #include "defs_urls.h"
 #include "recording/defs_recording.h"
 
-
-#include "midi/mididevicemanager.h"
+#include "controllers/controllermanager.h"
+// #include "controllers/midi/mididevicemanager.h"
 
 #include "upgrade.h"
 #include "mixxxkeyboard.h"
@@ -122,7 +122,8 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
     //Reset pointer to players
     m_pSoundManager = 0;
     m_pPrefDlg = 0;
-    m_pMidiDeviceManager = 0;
+    m_pControllerManager = 0;
+//     m_pMidiDeviceManager = 0;
     m_pRecordingManager = 0;
 
     // Check to see if this is the first time this version of Mixxx is run
@@ -263,8 +264,6 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
         QDir().mkpath(QDir::homePath().append("/").append(SETTINGS_PATH));
     }
 
-
-
     m_pLibrary = new Library(this, m_pConfig,
                              bFirstRun || bUpgraded,
                              m_pRecordingManager);
@@ -364,18 +363,24 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
     //ControlObject::getControl(ConfigKey("[Channel1]","TrackEndMode"))->queueFromThread(m_pConfig->getValueString(ConfigKey("[Controls]","TrackEndModeCh1")).toDouble());
     //ControlObject::getControl(ConfigKey("[Channel2]","TrackEndMode"))->queueFromThread(m_pConfig->getValueString(ConfigKey("[Controls]","TrackEndModeCh2")).toDouble());
 
-    qRegisterMetaType<MidiMessage>("MidiMessage");
-    qRegisterMetaType<MidiStatusByte>("MidiStatusByte");
+//     qRegisterMetaType<MidiMessage>("MidiMessage");
+//     qRegisterMetaType<MidiStatusByte>("MidiStatusByte");
+
+    // Initialize controller sub-system,
+    //  but do not set up controllers until the end of the application startup
+    qDebug() << "Creating ControllerManager";
+    m_pControllerManager = new ControllerManager(m_pConfig);
 
     // Initialise midi
-    m_pMidiDeviceManager = new MidiDeviceManager(m_pConfig);
-    m_pMidiDeviceManager->setupDevices();
+//     m_pMidiDeviceManager = new MidiDeviceManager(m_pConfig);
+//     m_pMidiDeviceManager->setupDevices();
 
     m_pSkinLoader = new SkinLoader(m_pConfig);
 
     // Initialize preference dialog
     m_pPrefDlg = new DlgPreferences(this, m_pSkinLoader, m_pSoundManager, m_pPlayerManager,
-                                 m_pMidiDeviceManager, m_pVCManager, m_pConfig);
+//                                     m_pControllerManager, m_pMidiDeviceManager, m_pVCManager, m_pConfig);
+                                    m_pControllerManager, m_pVCManager, m_pConfig);
     m_pPrefDlg->setWindowIcon(QIcon(":/images/ic_mixxx_window.png"));
     m_pPrefDlg->setHidden(true);
 
@@ -432,12 +437,9 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
 
     m_pWidgetParent = NULL;
     // Loads the skin as a child of m_pView
-    // assignment itentional in next line
-    if (!(m_pWidgetParent = m_pSkinLoader->loadDefaultSkin(m_pView,
-                                        m_pKeyboard,
-                                        m_pPlayerManager,
-                                        m_pLibrary,
-                                        m_pVCManager))) {
+    // assignment intentional in next line
+    if (!(m_pWidgetParent = m_pSkinLoader->loadDefaultSkin(
+        m_pView, m_pKeyboard, m_pPlayerManager, m_pLibrary, m_pVCManager))) {
         qDebug() << "Could not load default skin.";
     }
 
@@ -476,6 +478,10 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
             "+bug/521509)";
         rebootMixxxView();
     } */
+
+    // Wait until all other ControlObjects are set up
+    //  before initializing controllers
+    m_pControllerManager->setUpDevices();
 }
 
 MixxxApp::~MixxxApp()
@@ -485,7 +491,7 @@ MixxxApp::~MixxxApp()
 
     qDebug() << "Destroying MixxxApp";
 
-    qDebug() << "save config, " << qTime.elapsed();
+    qDebug() << "save config " << qTime.elapsed();
     m_pConfig->Save();
 
     // Save state of End of track controls in config database
@@ -493,48 +499,53 @@ MixxxApp::~MixxxApp()
     //m_pConfig->set(ConfigKey("[Controls]","TrackEndModeCh2"), ConfigValue((int)ControlObject::getControl(ConfigKey("[Channel2]","TrackEndMode"))->get()));
 
     // SoundManager depend on Engine and Config
-    qDebug() << "delete soundmanager, " << qTime.elapsed();
+    qDebug() << "delete soundmanager " << qTime.elapsed();
     delete m_pSoundManager;
 
 #ifdef __VINYLCONTROL__
     // VinylControlManager depends on a CO the engine owns
     // (vinylcontrol_enabled in VinylControlControl)
-    qDebug() << "delete vinylcontrolmanager, " << qTime.elapsed();
+    qDebug() << "delete vinylcontrolmanager " << qTime.elapsed();
     delete m_pVCManager;
 #endif
 
     // View depends on MixxxKeyboard, PlayerManager, Library
-    qDebug() << "delete view, " << qTime.elapsed();
+    qDebug() << "delete view " << qTime.elapsed();
     delete m_pView;
 
     // SkinLoader depends on Config
-    qDebug() << "delete SkinLoader";
+    qDebug() << "delete SkinLoader " << qTime.elapsed();
     delete m_pSkinLoader;
 
     // MIDIDeviceManager depends on Config
-    qDebug() << "delete MidiDeviceManager";
-    delete m_pMidiDeviceManager;
+//     qDebug() << "delete MidiDeviceManager " << qTime.elapsed();
+//     delete m_pMidiDeviceManager;
+    
+    // ControllerManager depends on Config
+    qDebug() << "shutdown & delete ControllerManager " << qTime.elapsed();
+    m_pControllerManager->shutdown();
+    delete m_pControllerManager;
 
     // PlayerManager depends on Engine, Library, and Config
-    qDebug() << "delete playerManager" << qTime.elapsed();
+    qDebug() << "delete playerManager " << qTime.elapsed();
     delete m_pPlayerManager;
 
     // EngineMaster depends on Config
-    qDebug() << "delete m_pEngine, " << qTime.elapsed();
+    qDebug() << "delete m_pEngine " << qTime.elapsed();
     delete m_pEngine;
 
     // LibraryScanner depends on Library
-    qDebug() << "delete library scanner" <<  qTime.elapsed();
+    qDebug() << "delete library scanner " <<  qTime.elapsed();
     delete m_pLibraryScanner;
 
     // Delete the library after the view so there are no dangling pointers to
     // Depends on RecordingManager
     // the data models.
-    qDebug() << "delete library" << qTime.elapsed();
+    qDebug() << "delete library " << qTime.elapsed();
     delete m_pLibrary;
 
     // RecordingManager depends on config
-    qDebug() << "delete RecordingManager" << qTime.elapsed();
+    qDebug() << "delete RecordingManager " << qTime.elapsed();
     delete m_pRecordingManager;
 
     // HACK: Save config again. We saved it once before doing some dangerous
@@ -547,7 +558,7 @@ MixxxApp::~MixxxApp()
     m_pConfig->Save();
     delete m_pPrefDlg;
 
-    qDebug() << "delete config, " << qTime.elapsed();
+    qDebug() << "delete config " << qTime.elapsed();
     delete m_pConfig;
 
     // Check for leaked ControlObjects and give warnings.
@@ -880,7 +891,7 @@ void MixxxApp::initActions()
 
     m_pOptionsPreferences->setStatusTip(tr("Preferences"));
     m_pOptionsPreferences->setWhatsThis(
-        tr("Preferences\nPlayback and MIDI preferences"));
+        tr("Preferences\nPlayback and controller preferences"));
     connect(m_pOptionsPreferences, SIGNAL(triggered()),
             this, SLOT(slotOptionsPreferences()));
 
@@ -1213,6 +1224,7 @@ void MixxxApp::slotHelpAbout() {
 "Bill Good<br>"
 "Owen Williams<br>"
 "Vittorio Colao<br>"
+"Daniel Sch&uuml;rmann<br>"
 
 "</p>"
 "<p align=\"center\"><b>%2</b></p>"
@@ -1255,7 +1267,6 @@ void MixxxApp::slotHelpAbout() {
 "Joe Colosimo<br>"
 "Shashank Kumar<br>"
 "Till Hofmann<br>"
-"Daniel Sch&uuml;rmann<br>"
 "Peter V&aacute;gner<br>"
 "Thanasis Liappis<br>"
 "Jens Nachtigall<br>"

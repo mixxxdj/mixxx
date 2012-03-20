@@ -55,9 +55,9 @@ void SoftTakeover::disable(MixxxControl control) {
 }
 
 // For legacy Controls
-bool SoftTakeover::ignore(QString group, QString name, float newValue) {
+bool SoftTakeover::ignore(QString group, QString name, float newValue, bool midiVal) {
     MixxxControl mixxxControl = MixxxControl(group,name);
-    return ignore(mixxxControl,newValue);
+    return ignore(mixxxControl,newValue,midiVal);
 }
 
 bool SoftTakeover::ignore(MixxxControl mc, float newValue, bool midiVal) {

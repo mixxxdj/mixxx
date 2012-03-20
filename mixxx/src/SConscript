@@ -120,8 +120,8 @@ soundsource_plugin_files = soundsource_plugins
 #Skins
 skin_files = Glob('#res/skins/*')
 
-#MIDI mappings
-midimappings_files = Glob('#res/midi/*')
+#Controller mappings
+controllermappings_files = Glob('#res/controllers/*')
 
 # Translation files
 translation_files = Glob('#res/translations/*.qm')
@@ -173,8 +173,8 @@ dll_files += Split("""$QTDIR/lib/QtCore4.dll $QTDIR/lib/QtGui4.dll $QTDIR/lib/Qt
 if int(flags.get('sqlitedll', 0)):
 	sqldll_files = Split("""$QTDIR/plugins/sqldrivers/qsqlite4.dll""") #Qt SQLite plugin
 
-if int(flags['midiscript']):
-	dll_files += Split("""$QTDIR/lib/QtScript4.dll""")
+#if int(flags['script']) or int(flags['midiscript']):
+dll_files += Split("""$QTDIR/lib/QtScript4.dll""")  # Required for non-midi controllers
 
 
 
@@ -200,7 +200,7 @@ if build.platform_is_linux or build.platform_is_bsd:
 		soundsource_plugins = env.Install(
                         os.path.join(unix_lib_path, 'mixxx', 'plugins', 'soundsource'),
                         soundsource_plugin_files)
-		midimappings = env.Install(os.path.join(unix_share_path, 'mixxx', 'midi'), midimappings_files)
+		controllermappings = env.Install(os.path.join(unix_share_path, 'mixxx', 'controllers'), controllermappings_files)
                 translations = env.Install(os.path.join(unix_share_path, 'mixxx', 'translations'), translation_files)
 		keyboardmappings = env.Install(os.path.join(unix_share_path, 'mixxx', 'keyboard'), keyboardmappings_files)
 		if int(flags['ladspa']):
@@ -216,7 +216,7 @@ if build.platform_is_linux or build.platform_is_bsd:
 		env.Alias('install', resource)
 		env.Alias('install', skins)
 		env.Alias('install', soundsource_plugins)
-		env.Alias('install', midimappings)
+		env.Alias('install', controllermappings)
                 env.Alias('install', translations)
 		env.Alias('install', keyboardmappings)
 		if int(flags['ladspa']):
@@ -235,7 +235,7 @@ if build.platform_is_linux or build.platform_is_bsd:
 			#Copy(unix_share_path + "/.ixxx/skins", skin_files)
 			#Delete(unix_bin_path + "mixxx")
 
-			#Delete(unix_share_path + "/mixxx/midi")
+			#Delete(unix_share_path + "/mixxx/controllers")
 			#Delete(unix_share_path + "/mixxx/keyboard")
 
 #Build the Mixxx.app bundle
@@ -287,7 +287,7 @@ if build.platform_is_osx and 'bundle' in COMMAND_LINE_TARGETS:
                 [mixxx_bin, '#res/osx/application.icns',
                  Dir('#res/skins/'),
                  File('#res/schema.xml'),
-                 Dir('#res/midi/'),
+		 Dir('#res/controllers/'),
                  translation_files,
                  Dir('#res/keyboard/'),
                  Dir('#res/ladspa_presets'),
@@ -322,7 +322,7 @@ if build.platform_is_windows:
         base_dist_dir = '#' + dist_dir
 	skins = env.Install(os.path.join(base_dist_dir, "skins"), skin_files)
 	resource = env.Install(base_dist_dir+"/", resource_files)
-        midimappings = env.Install(os.path.join(base_dist_dir, "midi"), midimappings_files)
+	controllermappings = env.Install(os.path.join(base_dist_dir, "controllers"), controllermappings_files)
         translations = env.Install(os.path.join(base_dist_dir, "translations"), translation_files)
 	keyboardmappings = env.Install(os.path.join(base_dist_dir, "keyboard"), keyboardmappings_files)
 	if int(flags['ladspa']):
@@ -337,7 +337,7 @@ if build.platform_is_windows:
 	#Always trigger these install builders when compiling on Windows
 	env.Alias('mixxx', skins)
 	env.Alias('mixxx', resource)
-	env.Alias('mixxx', midimappings)
+	env.Alias('mixxx', controllermappings)
         env.Alias('mixxx', translations)
 	env.Alias('mixxx', keyboardmappings)
 	if int(flags['ladspa']):

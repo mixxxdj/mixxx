@@ -210,6 +210,9 @@ int main(int argc, char * argv[])
                             for sound source plugins in addition to default\n\
                             locations.\n\
 \n\
+    --controllerDebug       Causes Mixxx to display/log all of the controller\n\
+                            data it receives and script functions it loads\n\
+\n\
     --midiDebug             Causes Mixxx to display/log all of the MIDI\n\
                             messages it receives and script functions it loads\n\
 \n\
