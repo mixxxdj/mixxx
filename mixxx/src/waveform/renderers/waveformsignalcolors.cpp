@@ -11,10 +11,12 @@ WaveformSignalColors::WaveformSignalColors()
 
 bool WaveformSignalColors::setup(const QDomNode &node)
 {
+/*
     QString string;
     QTextStream textStr(&string);
     node.save(textStr,4);
     qDebug() << string;
+*/
 
     m_signalColor.setNamedColor(WWidget::selectNodeQString(node, "SignalColor"));
     m_signalColor = WSkinColor::getCorrectColor(m_signalColor);

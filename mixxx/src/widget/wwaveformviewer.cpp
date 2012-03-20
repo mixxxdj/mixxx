@@ -45,6 +45,13 @@ WWaveformViewer::WWaveformViewer(const char *group, QWidget * parent, Qt::WFlags
 }
 
 WWaveformViewer::~WWaveformViewer() {
+    delete m_pScratchEnable;
+    delete m_pScratch;
+    delete m_pTrackSamples;
+    delete m_pTrackSampleRate;
+    delete m_pRate;
+    delete m_pRateRange;
+    delete m_pRateDir;
 }
 
 void WWaveformViewer::setup(QDomNode node) {
