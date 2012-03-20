@@ -1,6 +1,6 @@
 /***************************************************************************
-                      dlgpreferences.cpp  -  description
-                         -------------------
+                         dlgpreferences.cpp  -  description
+                         ------------------
    begin                : Sun Jun 30 2002
    copyright            : (C) 2002 by Tue & Ken Haste Andersen
    email                : haste@diku.dk
@@ -29,17 +29,20 @@
 #include "dlgprefbpm.h"
 #include "dlgpreferences.h"
 #include "dlgprefsound.h"
-#include "dlgprefmidibindings.h"
+#include "controllers/dlgprefcontroller.h"
+#include "controllers/dlgprefnocontrollers.h"
+// #include "controllers/midi/dlgprefnomidi.h"
+// #include "controllers/midi/dlgprefmidibindings.h"
 #include "dlgprefplaylist.h"
-#include "dlgprefnomidi.h"
 #include "dlgprefcontrols.h"
 #include "dlgprefeq.h"
 #include "dlgprefcrossfader.h"
 #include "dlgprefrecord.h"
 #include "dlgprefreplaygain.h"
 #include "mixxx.h"
-#include "midi/mididevicemanager.h"
-#include "midi/mididevice.h"
+#include "controllers/controllermanager.h"
+// #include "controllers/midi/mididevicemanager.h"
+// #include "controllers/midi/mididevice.h"
 #include "skin/skinloader.h"
 #include <QTabWidget>
 
@@ -51,11 +54,13 @@
 
 DlgPreferences::DlgPreferences(MixxxApp * mixxx, SkinLoader* pSkinLoader,
                                SoundManager * soundman, PlayerManager* pPlayerManager,
-                               MidiDeviceManager * midi, VinylControlManager *pVCManager,
+//                                ControllerManager * controllers, MidiDeviceManager * midi, VinylControlManager *pVCManager,
+                               ControllerManager * controllers, VinylControlManager *pVCManager,
                                ConfigObject<ConfigValue> * _config)
         :  QDialog(), Ui::DlgPreferencesDlg() {
     m_pMixxx = mixxx;
-    m_pMidiDeviceManager = midi;
+    m_pControllerManager = controllers;
+//     m_pMidiDeviceManager = midi;
 
     setupUi(this);
 #if QT_VERSION >= 0x040400 //setHeaderHidden is a qt4.4 addition so having it in the .ui file breaks the build on OpenBSD4.4 (FIXME: revisit this when OpenBSD4.5 comes out?)
@@ -102,10 +107,15 @@ DlgPreferences::DlgPreferences(MixxxApp * mixxx, SkinLoader* pSkinLoader,
     m_wshoutcast = new DlgPrefShoutcast(this, config);
     addPageWidget(m_wshoutcast);
 #endif
+    m_wNoControllers = new DlgPrefNoControllers(this, config);
+    addPageWidget(m_wNoControllers);
+    setupControllerWidgets();
+
+    /*
     m_wNoMidi = new DlgPrefNoMidi(this, config);
     addPageWidget(m_wNoMidi);
     setupMidiWidgets();
-
+    */
 
     // Install event handler to generate closeDlg signal
     installEventFilter(this);
@@ -113,7 +123,8 @@ DlgPreferences::DlgPreferences(MixxxApp * mixxx, SkinLoader* pSkinLoader,
     // Connections
     connect(this, SIGNAL(showDlg()), this,      SLOT(slotShow()));
     connect(this, SIGNAL(closeDlg()), this,      SLOT(slotHide()));
-    connect(m_pMidiDeviceManager, SIGNAL(devicesChanged()), this, SLOT(rescanMidi()));
+    connect(m_pControllerManager, SIGNAL(devicesChanged()), this, SLOT(rescanControllers()));
+//     connect(m_pMidiDeviceManager, SIGNAL(devicesChanged()), this, SLOT(rescanMidi()));
 
     connect(this, SIGNAL(showDlg()), m_wsound,     SLOT(slotUpdate()));
     connect(this, SIGNAL(showDlg()), m_wplaylist,  SLOT(slotUpdate()));
@@ -161,7 +172,8 @@ DlgPreferences::DlgPreferences(MixxxApp * mixxx, SkinLoader* pSkinLoader,
 
 DlgPreferences::~DlgPreferences()
 {
-    destroyMidiWidgets();
+    destroyControllerWidgets();
+//     destroyMidiWidgets();
 }
 
 void DlgPreferences::createIcons()
@@ -179,12 +191,19 @@ void DlgPreferences::createIcons()
     midiButton->setTextAlignment(Qt::AlignLeft | Qt::AlignVCenter);
     midiButton->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
 */
+/*
     m_pMIDITreeItem = new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type);
-    m_pMIDITreeItem->setIcon(0, QIcon(":/images/preferences/ic_preferences_controllers.png"));
+    m_pMIDITreeItem->setIcon(0, QIcon(":/images/preferences/ic_preferences_midicontrollers.png"));
     m_pMIDITreeItem->setText(0, tr("MIDI Controllers"));
     m_pMIDITreeItem->setTextAlignment(0, Qt::AlignLeft | Qt::AlignVCenter);
     m_pMIDITreeItem->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
-
+*/
+    m_pControllerTreeItem = new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type);
+    m_pControllerTreeItem->setIcon(0, QIcon(":/images/preferences/ic_preferences_controllers.png"));
+    m_pControllerTreeItem->setText(0, tr("Controllers"));
+    m_pControllerTreeItem->setTextAlignment(0, Qt::AlignLeft | Qt::AlignVCenter);
+    m_pControllerTreeItem->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
+//     m_pControllerTreeItem->addChild(m_pMIDITreeItem);
 /*
     QTreeWidgetItem * midiBindingsButton = new QTreeWidgetItem(m_pMIDITreeItem, QTreeWidgetItem::Type);
     midiBindingsButton->setIcon(0, QIcon(":/images/preferences/controllers.png"));
@@ -299,15 +318,52 @@ void DlgPreferences::changePage(QTreeWidgetItem * current, QTreeWidgetItem * pre
     } else if (current == m_pShoutcastButton) {
            pagesWidget->setCurrentWidget(m_wshoutcast->parentWidget()->parentWidget());
 #endif
-
-       //Handle selection of midi device items
-    } else if (m_midiBindingsButtons.indexOf(current) >= 0) {
+    //Handle selection of controller items
+    } else if (m_controllerBindingsButtons.indexOf(current) >= 0) {
+           int index = m_controllerBindingsButtons.indexOf(current);
+           pagesWidget->setCurrentWidget(m_wcontrollerBindingsForDevice.value(index)->parentWidget()->parentWidget());
+           //Manually fire this slot since it doesn't work right...
+           m_wcontrollerBindingsForDevice.value(index)->slotUpdate();
+    //Handle selection of midi device items
+    }
+    /*
+    else if (m_midiBindingsButtons.indexOf(current) >= 0) {
     	int index = m_midiBindingsButtons.indexOf(current);
     	pagesWidget->setCurrentWidget(m_wmidiBindingsForDevice.value(index)->parentWidget()->parentWidget());
     	//Manually fire this slot since it doesn't work right...
     	m_wmidiBindingsForDevice.value(index)->slotUpdate();
-    } else if (current == m_pMIDITreeItem) {
-        //If the root "MIDI Device" item is clicked, select the first MIDI device instead.
+    }
+    */
+    else if (current == m_pControllerTreeItem) {
+        //If the root "Controllers" item is clicked, select the first Controller instead.
+        //If there is no first controller, display a page that says so (just so we don't not change the page)
+        if (m_wcontrollerBindingsForDevice.count() > 0)
+        {
+            //Expand the Controller subtree
+            contentsTreeWidget->setItemExpanded(m_pControllerTreeItem, true);
+
+            /*
+            * FIXME: None of the following works right, for some reason. - Albert Feb 9/09
+            */
+
+            //Select the first MIDI device
+            //contentsTreeWidget->setItemSelected(m_pMIDITreeItem, false);
+            /*
+            foreach(QTreeWidgetItem* item, contentsTreeWidget->selectedItems())
+            {
+                contentsTreeWidget->setItemSelected(item, false);
+        }*/
+            //contentsTreeWidget->setItemSelected(m_midiBindingsButtons.value(0), true);
+
+        }
+        else
+        {
+            pagesWidget->setCurrentWidget(m_wNoControllers->parentWidget()->parentWidget());
+        }
+    }
+    /*
+    else if (current == m_pMIDITreeItem) {
+        //If the root "MIDI Controllers" item is clicked, select the first MIDI device instead.
         //If there is no first MIDI device, display a page that says so (just so we don't not change the page)
         if (m_wmidiBindingsForDevice.count() > 0) {
             //Expand the MIDI subtree
@@ -317,16 +373,17 @@ void DlgPreferences::changePage(QTreeWidgetItem * current, QTreeWidgetItem * pre
 
             //Select the first MIDI device
             //contentsTreeWidget->setItemSelected(m_pMIDITreeItem, false);
-            /*
-              foreach(QTreeWidgetItem* item, contentsTreeWidget->selectedItems())
-              {
-              contentsTreeWidget->setItemSelected(item, false);
-              }*/
+            
+//                 foreach(QTreeWidgetItem* item, contentsTreeWidget->selectedItems())
+//                 {
+//                 contentsTreeWidget->setItemSelected(item, false);
+//                 }
             //contentsTreeWidget->setItemSelected(m_midiBindingsButtons.value(0), true);
         } else {
             pagesWidget->setCurrentWidget(m_wNoMidi->parentWidget()->parentWidget());
         }
     }
+    */
 }
 
 void DlgPreferences::showSoundHardwarePage()
@@ -382,12 +439,40 @@ void DlgPreferences::slotShow()
     setGeometry(optimumRect);
 }
 
+void DlgPreferences::rescanControllers()
+{
+    destroyControllerWidgets();
+    setupControllerWidgets();
+}
+/*
 void DlgPreferences::rescanMidi()
 {
     destroyMidiWidgets();
     setupMidiWidgets();
 }
-
+*/
+void DlgPreferences::destroyControllerWidgets()
+{
+    //XXX this, and the corresponding code over in onShow(), is pretty bad and messy; it should be wrapped up in a class so that constructors and destructors can handle this setup/teardown
+    
+    m_controllerBindingsButtons.clear();
+    
+    while (!m_wcontrollerBindingsForDevice.isEmpty())
+    {
+        DlgPrefController* controllerDlg = m_wcontrollerBindingsForDevice.takeLast();
+        pagesWidget->removeWidget(controllerDlg);
+        delete controllerDlg;
+    }
+    
+    while(m_pControllerTreeItem->childCount() > 0)
+    {
+        QTreeWidgetItem* controllerBindingsButton = m_pControllerTreeItem->takeChild(0);
+        //qDebug() << " Q|T|r\e\eWidgetItem point is " << controllerBindingsButton;
+        m_pControllerTreeItem->removeChild(controllerBindingsButton);
+        delete controllerBindingsButton;
+    }
+}
+/*
 void DlgPreferences::destroyMidiWidgets()
 {
     //XXX this, and the corresponding code over in onShow(), is pretty bad and messy; it should be wrapped up in a class so that constructors and destructors can handle this setup/teardown
@@ -409,12 +494,46 @@ void DlgPreferences::destroyMidiWidgets()
         delete midiBindingsButton;
     }
 }
-
+*/
+void DlgPreferences::setupControllerWidgets()
+{
+    //For each controller, create a dialog and put a little link to it in the treepane on the left
+    QList<Controller*> controllerList = m_pControllerManager->getControllerList(false, true);
+    QListIterator<Controller*> ctrlr(controllerList);
+    while (ctrlr.hasNext())
+    {
+        Controller* currentDevice = ctrlr.next();
+        QString curDeviceName = currentDevice->getName();
+        //qDebug() << "curDeviceName: " << curDeviceName;
+        DlgPrefController* controllerDlg = new DlgPrefController(this, currentDevice, m_pControllerManager, config);
+        m_wcontrollerBindingsForDevice.append(controllerDlg);
+        addPageWidget(controllerDlg);
+        connect(this, SIGNAL(showDlg()), controllerDlg, SLOT(slotUpdate()));
+        connect(buttonBox, SIGNAL(accepted()), controllerDlg, SLOT(slotApply()));
+        connect(controllerDlg, SIGNAL(deviceStateChanged(DlgPrefController*,bool)), this, SLOT(slotHighlightDevice(DlgPrefController*,bool)));
+        
+        QTreeWidgetItem * controllerBindingsButton = new QTreeWidgetItem(QTreeWidgetItem::Type);
+        //qDebug() << curDeviceName << " QTreeWidgetItem point is " << controllerBindingsButton;
+        controllerBindingsButton->setIcon(0, QIcon(":/images/preferences/ic_preferences_controllers.png"));
+        controllerBindingsButton->setText(0, curDeviceName);
+        controllerBindingsButton->setTextAlignment(0, Qt::AlignLeft | Qt::AlignVCenter);
+        controllerBindingsButton->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
+        m_pControllerTreeItem->addChild(controllerBindingsButton);
+        m_controllerBindingsButtons.append(controllerBindingsButton);
+        
+        // Set the font correctly
+        QFont temp = controllerBindingsButton->font(0);
+        if (currentDevice->isOpen()) temp.setBold(true);
+        else temp.setBold(false);
+        controllerBindingsButton->setFont(0,temp);
+    }
+}
+/*
 void DlgPreferences::setupMidiWidgets()
 {
     //For each MIDI device, create a MIDI dialog and put a little link to it in the treepane on the left
-    QList<MidiDevice*> deviceList = m_pMidiDeviceManager->getDeviceList(false, true);
-    QListIterator<MidiDevice*> it(deviceList);
+    QList<MidiDevice*> midiDeviceList = m_pMidiDeviceManager->getDeviceList(false, true);
+    QListIterator<MidiDevice*> it(midiDeviceList);
 
     while (it.hasNext())
     {
@@ -430,7 +549,7 @@ void DlgPreferences::setupMidiWidgets()
 
         QTreeWidgetItem * midiBindingsButton = new QTreeWidgetItem(QTreeWidgetItem::Type);
         //qDebug() << curDeviceName << " QTreeWidgetItem point is " << midiBindingsButton;
-        midiBindingsButton->setIcon(0, QIcon(":/images/preferences/ic_preferences_controllers.png"));
+        midiBindingsButton->setIcon(0, QIcon(":/images/preferences/ic_preferences_midicontrollers.png"));
         midiBindingsButton->setText(0, curDeviceName);
         midiBindingsButton->setTextAlignment(0, Qt::AlignLeft | Qt::AlignVCenter);
         midiBindingsButton->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
@@ -444,13 +563,23 @@ void DlgPreferences::setupMidiWidgets()
         midiBindingsButton->setFont(0,temp);
     }
 }
-
+*/
 void DlgPreferences::slotApply()
 {
-    m_pMidiDeviceManager->saveMappings();
+    m_pControllerManager->savePresets();
+//     m_pMidiDeviceManager->saveMappings();
     //m_pMixxx->grabKeyboard();
 }
 
+void DlgPreferences::slotHighlightDevice(DlgPrefController* dialog, bool enabled)
+{
+    QTreeWidgetItem * controllerBindingsButton = m_controllerBindingsButtons.at(m_wcontrollerBindingsForDevice.indexOf(dialog));
+    QFont temp = controllerBindingsButton->font(0);
+    if (enabled) temp.setBold(true);
+    else temp.setBold(false);
+    controllerBindingsButton->setFont(0,temp);
+}
+/*
 void DlgPreferences::slotHighlightDevice(DlgPrefMidiBindings* dialog, bool enabled)
 {
     QTreeWidgetItem* midiBindingsButton = m_midiBindingsButtons.at(m_wmidiBindingsForDevice.indexOf(dialog));
@@ -459,7 +588,7 @@ void DlgPreferences::slotHighlightDevice(DlgPrefMidiBindings* dialog, bool enabl
     else temp.setBold(false);
     midiBindingsButton->setFont(0,temp);
 }
-
+*/
 int DlgPreferences::addPageWidget(QWidget* w) {
     int iret;
 

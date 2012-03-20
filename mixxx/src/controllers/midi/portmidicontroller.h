@@ -1,0 +1,67 @@
+/**
+  * @file portmidicontroller.h
+  * @author Albert Santoni alberts@mixxx.org
+  * @author Sean M. Pappalardo  spappalardo@mixxx.org
+  * @date Thu 15 Mar 2012
+  * @brief PortMidi-based MIDI backend
+  *
+  * This class is represents a MIDI device, either physical or software.
+  * It uses the PortMidi API to send and receive MIDI messages to/from the device.
+  * It's important to note that PortMidi treats input and output on a single
+  * physical device as two separate half-duplex devices. In this class, we wrap
+  * those together into a single device, which is why the constructor takes
+  * both arguments pertaining to both input and output "devices".
+  *
+  */
+
+/***************************************************************************
+*                                                                         *
+*   This program is free software; you can redistribute it and/or modify  *
+*   it under the terms of the GNU General Public License as published by  *
+*   the Free Software Foundation; either version 2 of the License, or     *
+*   (at your option) any later version.                                   *
+*                                                                         *
+***************************************************************************/
+
+#ifndef PORTMIDICONTROLLER_H
+#define PORTMIDICONTROLLER_H
+
+#include <portmidi.h>
+// #include <porttime.h>
+#include "midicontroller.h"
+
+#define MIXXX_PORTMIDI_BUFFER_LEN 64 /**Number of MIDI messages to buffer*/
+#define MIXXX_PORTMIDI_NO_DEVICE_STRING "None" /**String to display for no MIDI devices present */
+
+/** A PortMidi-based implementation of MidiController */
+class PortMidiController : public MidiController {
+    public:
+        PortMidiController(const PmDeviceInfo* inputDeviceInfo,
+                        const PmDeviceInfo* outputDeviceInfo,
+                        int inputDeviceIndex,
+                        int outputDeviceIndex);
+        ~PortMidiController();
+        int open();
+        int close();
+        void send(unsigned int word);
+        void send(unsigned char data[], unsigned int length);
+    private:
+        void timerEvent(QTimerEvent *event, bool poll);
+
+        const PmDeviceInfo* m_pInputDeviceInfo;
+        const PmDeviceInfo* m_pOutputDeviceInfo;
+        int m_iInputDeviceIndex;
+        int m_iOutputDeviceIndex;
+        PortMidiStream *m_pInputStream;
+        PortMidiStream *m_pOutputStream;
+        PmEvent m_midiBuffer[MIXXX_PORTMIDI_BUFFER_LEN];
+        static QList<QString> m_deviceList;
+
+        // Storage for SysEx messages
+        unsigned char m_cReceiveMsg[1024];
+        int m_cReceiveMsg_index;
+        bool m_bInSysex;
+        bool m_bEndSysex;
+};
+
+#endif

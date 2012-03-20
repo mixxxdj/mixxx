@@ -12,6 +12,9 @@
 
 #include "xmlparse.h"
 
+#include <QFile>
+#include <QDebug>
+
 XmlParse::XmlParse()
 {
 }
@@ -138,6 +141,26 @@ QDomElement XmlParse::addElement(QDomDocument &doc, QDomElement &header, QString
     element.appendChild(doc.createTextNode(sText));
     header.appendChild(element);
     return element;
+}
+
+QDomElement XmlParse::openXMLFile(QString path, QString name)
+{
+    QDomDocument doc(name);
+    QFile file(path);
+    if (!file.open(QIODevice::ReadOnly))
+    {
+        qDebug() << "Could not open xml file:" << file.fileName();
+        return QDomElement();
+    }
+    if (!doc.setContent(&file))
+    {
+        qWarning() << "Error parsing xml file:" << file.fileName();
+        file.close();
+        return QDomElement();
+    }
+
+    file.close();
+    return doc.documentElement();
 }
 
 QDomElement XmlParse::addElement(QDomDocument &doc, QDomElement &header, QString sElementName, QList<long> * pData)
