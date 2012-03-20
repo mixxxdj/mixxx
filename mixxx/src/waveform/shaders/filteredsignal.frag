@@ -11,6 +11,10 @@ uniform int zoomFactor;
 uniform int viewportWidth;
 uniform int viewportHeigth;
 
+uniform vec4 lowColor;
+uniform vec4 midColor;
+uniform vec4 highColor;
+
 uniform sampler2D waveformDataTexture;
 
 vec4 getWaveformData( float index)
@@ -56,7 +60,7 @@ void main(void)
     //return;
 
     int visualSampleRange = zoomFactor * viewportWidth;
-    float pixelWeigth = 300.0 / float(visualSampleRange);
+    float pixelWeigth = 0.8f / float(zoomFactor);
 
     float currentIndex = indexPosition + 2.0*(uv.x - 0.5) * visualSampleRange;
     int nearestCurrentIndex = floor(currentIndex);
@@ -83,11 +87,9 @@ void main(void)
     vec3 accumulatedData = vec3(0.0,0.0,0.0);
     //vec3 meanData = vec3(0.0);
 
-    for( float i = firstPixelPosition; i < lastPixelPosition; i += 2.0)
-    {
+    for( float i = firstPixelPosition; i < lastPixelPosition; i += 2.0) {
         vec4 currentData;
-        if( uv.y > 0.5)
-        {
+        if( uv.y > 0.5) {
             //currentData = getWaveformData_linearInterpolation(i);
             currentData = getWaveformData(i);
 
@@ -98,8 +100,7 @@ void main(void)
             if( currentData.z > uv.y-0.5) //High
                 accumulatedData.z += pixelWeigth;
         }
-        else
-        {
+        else {
             currentData = getWaveformData(i+1);
 
             if( currentData.x > -uv.y+0.5) //low
@@ -111,57 +112,25 @@ void main(void)
         }
     }
 
-    if( accumulatedData.x > uv.y-0.5)
-        outputColor += vec4(1.0,0.0,0.0,0.25+0.75*accumulatedData.x);
+    vec4 low = lowColor;
+    //low.a = 0.25+3.0*abs(uv.y-0.5)/accumulatedData.x;
+    low.a = accumulatedData.x;
 
-    outputColor += vec4(0.0,accumulatedData.y,0.0,accumulatedData.y);
-    outputColor += vec4(0.0,0.0,accumulatedData.z,accumulatedData.z);
+    vec4 mid = midColor;
+    //mid.a = 0.5+3.0*abs(uv.y-0.5)/accumulatedData.y;
+    mid.a = accumulatedData.y;
+
+    vec4 high = highColor;
+    //high.a = clamp(0.25+(1.0-abs(uv.y-0.5)-0.1*accumulatedData.z)/accumulatedData.z,0.f,1.f);
+    high.a = accumulatedData.z;
+
+    if( accumulatedData.x > 0)
+        outputColor = mix( outputColor, low, clamp(accumulatedData.x,0.1f,0.9f));
+    if( accumulatedData.y > 0)
+        outputColor = mix( outputColor, mid, clamp(accumulatedData.y,0.1f,0.9f));
+    if( accumulatedData.z > 0)
+        outputColor = mix( outputColor, high, clamp(accumulatedData.z,0.1f,0.9f));
 
     gl_FragColor = outputColor;
     return;
-
-    //SOME TEST
-    //////////////////////////////////////////////////////////
-
-    //to texture1D point
-    //float u = floor(currentIndex/textureStride);
-    //float v = floor(currentIndex - u * textureStride);
-
-    //vec2 data_uv = vec2(v,u);
-
-    //gl_FragColor = vec4( u / textureStride, v / textureStride, 1.0, 1.0);
-    //return;
-
-    //vec2 uv_data;
-    //uv_data.y = floor( currentIndex / float(textureStride));
-    //uv_data.x = currentIndex - uv_data.y * float(textureStride);
-    //vec4 data = texture2D( waveformDataTexture, uv_data / float(textureStride));
-
-    gl_FragColor = getWaveformData(currentIndex);
-    return;
-
-    //vec4 data = getWaveformData(currentIndex);
-
-    //gl_FragColor = vec4( data.x, data.y, data.z, 1.0);
-    //return;
-
-    vec4 data;
-    if( data.x < uv.y)
-        outputColor += vec4( 1.0, 0.0, 0.0, 0.33);
-
-    if( data.y < uv.y)
-        outputColor += vec4( 0.0, 1.0, 0.0, 0.33);
-
-    if( data.z < uv.y)
-        outputColor += vec4( 0.0, 0.0, 1.0, 0.33);
-
-    gl_FragColor = outputColor;
-
-    //gl_FragColor = vec4( 0.5 + 0.5*t.x, 0.5 + 0.5*t.y, t.z, 1.0);
-
-    //gl_FragColor = t;
-
-    //vec4 coord = 0.1*gl_FragCoord;
-
-    //gl_FragColor = coord;
 }
