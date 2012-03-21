@@ -20,6 +20,7 @@ class SelectorLibraryTableModel : public LibraryTableModel
   public slots:
     void filterByGenre(bool value);
     void filterByBpm(bool value);
+    void filterByYear(bool value);
   private slots:
     void slotSearch(const QString& searchText);
     void slotPlayingDeckChanged(int deck);
@@ -28,8 +29,10 @@ class SelectorLibraryTableModel : public LibraryTableModel
   private:
     bool m_bFilterGenre;
     bool m_bFilterBpm;
+    bool m_bFilterYear;
     QString m_pFilterGenre;
     QString m_pFilterBpm;
+    QString m_pFilterYear;
 };
 
 

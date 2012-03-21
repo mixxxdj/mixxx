@@ -56,9 +56,9 @@
       </widget>
      </item>
      <item>
-      <widget class="QSlider" name="horizontalSliderBpm">
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
+      <widget class="QCheckBox" name="checkBoxYear">
+       <property name="text">
+        <string>Year</string>
        </property>
       </widget>
      </item>

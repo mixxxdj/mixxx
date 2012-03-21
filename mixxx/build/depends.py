@@ -561,6 +561,7 @@ class MixxxCore(Feature):
         build.env.Uic4('dlgmidilearning.ui')
         build.env.Uic4('dlgtrackinfo.ui')
         build.env.Uic4('dlgprepare.ui')
+        build.env.Uic4('dlgselector.ui')
         build.env.Uic4('dlgautodj.ui')
         build.env.Uic4('dlgprefsounditem.ui')
         build.env.Uic4('dlgrecording.ui')
