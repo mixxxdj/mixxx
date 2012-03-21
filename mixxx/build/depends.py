@@ -673,7 +673,7 @@ class MixxxCore(Feature):
         if build.platform_is_linux or \
                 build.platform_is_bsd:
             mixxx_files = [
-                ('SETTINGS_PATH','.mixxx/'),
+                ('SETTINGS_PATH','.mixxx-trunk/'),
                 ('BPMSCHEME_FILE','mixxxbpmscheme.xml'),
                 ('SETTINGS_FILE', 'mixxx.cfg'),
                 ('TRACK_FILE', 'mixxxtrack.xml')]
