@@ -147,6 +147,8 @@ void Controller::applyPreset() {
         m_pEngine->initializeScripts(m_scriptFunctionPrefixes);
     }
     else qWarning() << "Controller::applyPreset(): No engine exists!";
+
+    bindScriptFunctions();
 }
 
 /** addScriptFile(QString,QString)
