@@ -187,6 +187,8 @@ bool CrateDAO::addTrackToCrate(int trackId, int crateId) {
     query.bindValue(":track_id", trackId);
 
     if (!query.exec()) {
+        // It's normal for this query to fail with a constraint violation
+        // (e.g. the track is already in the crate)
         LOG_FAILED_QUERY(query);
         return false;
     }
