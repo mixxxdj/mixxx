@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>500</width>
+    <width>466</width>
     <height>399</height>
    </rect>
   </property>
@@ -42,16 +42,23 @@
       </spacer>
      </item>
      <item>
-      <widget class="QRadioButton" name="radioButtonGenre">
+      <widget class="QCheckBox" name="checkBoxGenre">
        <property name="text">
         <string>Genre</string>
        </property>
       </widget>
      </item>
      <item>
-      <widget class="QRadioButton" name="radioButtonBpm">
+      <widget class="QCheckBox" name="checkBoxBpm">
        <property name="text">
         <string>BPM</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QSlider" name="horizontalSliderBpm">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
        </property>
       </widget>
      </item>

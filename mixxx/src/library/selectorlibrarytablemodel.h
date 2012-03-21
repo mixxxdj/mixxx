@@ -18,22 +18,22 @@ class SelectorLibraryTableModel : public LibraryTableModel
     virtual bool isColumnInternal(int column);
 
   public slots:
-    void filterByGenre();
-    void filterByBpm();
+    void filterByGenre(bool value);
+    void filterByBpm(bool value);
   private slots:
     void slotSearch(const QString& searchText);
-    void slotFilterByGenre(const QString& genre);
-    void slotFilterByBpm(const float& bpm);
+    void slotPlayingDeckChanged(int deck);
   signals:
     void doSearch(const QString& searchText);
-    void doFilterByGenre(const QString& genre);
-    void doFilterByBpm(const float& bpm);
   private:
-    QString currentGenre() const;
-    //void filterByGenre();
-    float currentBpm() const;
-    //void filterByBpm();
+    bool m_bFilterGenre;
+    bool m_bFilterBpm;
+    QString m_pFilterGenre;
+    QString m_pFilterBpm;
 };
+
+
+
 
 #endif
 

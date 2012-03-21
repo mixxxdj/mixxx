@@ -15,8 +15,8 @@ DlgSelector::DlgSelector(QWidget* parent,
           m_pConfig(pConfig),
           m_pTrackCollection(pTrackCollection) {
     setupUi(this);
-    m_songsButtonGroup.addButton(radioButtonGenre);
-    m_songsButtonGroup.addButton(radioButtonBpm);
+    //m_songsButtonGroup.addButton(checkBoxGenre);
+    //m_songsButtonGroup.addButton(checkBoxBpm);
 
     m_pSelectorLibraryTableView = new WSelectorLibraryTableView(this, pConfig, pTrackCollection,
                                                               ConfigKey(), ConfigKey());
@@ -60,12 +60,12 @@ DlgSelector::DlgSelector(QWidget* parent,
     m_pSelectorCratesTableView->setModel(m_pCratesTableModel);
 */
 
-    connect(radioButtonGenre, SIGNAL(clicked()),
+    connect(checkBoxGenre, SIGNAL(clicked()),
             this,  SLOT(filterByGenre()));
-    connect(radioButtonBpm, SIGNAL(clicked()),
+    connect(checkBoxBpm, SIGNAL(clicked()),
             this,  SLOT(filterByBpm()));
 
-    radioButtonGenre->click();
+    checkBoxGenre->click();
 
     connect(m_pSelectorLibraryTableView->selectionModel(),
             SIGNAL(selectionChanged(const QItemSelection &, const QItemSelection&)),
@@ -128,12 +128,12 @@ void DlgSelector::filterByGenre()
     // select()'s. Use setSort() on the model, and it will take effect when
     // showRecentSongs() select()'s.
     m_pSelectorLibraryTableModel->setSort(datetimeColumn, Qt::DescendingOrder);
-    m_pSelectorLibraryTableModel->filterByGenre();
+    m_pSelectorLibraryTableModel->filterByGenre(checkBoxGenre->isChecked());
 }
 
 void DlgSelector::filterByBpm()
 {
-    m_pSelectorLibraryTableModel->filterByBpm();
+    m_pSelectorLibraryTableModel->filterByBpm(checkBoxBpm->isChecked());
 }
 
 void DlgSelector::installEventFilter(QObject* pFilter) {

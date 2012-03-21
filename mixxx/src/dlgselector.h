@@ -46,7 +46,7 @@ class DlgSelector : public QWidget, public Ui::DlgSelector, public virtual Libra
     //Note m_pTrackTablePlaceholder is defined in the .ui file
     ConfigObject<ConfigValue>* m_pConfig;
     TrackCollection* m_pTrackCollection;
-    QButtonGroup m_songsButtonGroup;
+    //QButtonGroup m_songsButtonGroup;
     WSelectorLibraryTableView* m_pSelectorLibraryTableView;
     SelectorLibraryTableModel* m_pSelectorLibraryTableModel;
     WSelectorCratesTableView* m_pSelectorCratesTableView;

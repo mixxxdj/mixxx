@@ -12,9 +12,6 @@
 #include "trackinfoobject.h"
 
 
-const QString GENRE_FILTER = "Genre == '%1'";
-
-
 SelectorLibraryTableModel::SelectorLibraryTableModel(QObject* parent,
                                                    TrackCollection* pTrackCollection)
         : LibraryTableModel(parent, pTrackCollection,
@@ -23,14 +20,9 @@ SelectorLibraryTableModel::SelectorLibraryTableModel(QObject* parent,
     connect(this, SIGNAL(doSearch(const QString&)),
             this, SLOT(slotSearch(const QString&)));
 
-    connect(this, SIGNAL(doFilterByGenre(const QString&)),
-            this, SLOT(slotFilterByGenre(const QString&)));
-
-    connect(this, SIGNAL(doFilterByBpm(const float&)),
-            this, SLOT(slotFilterByBpm(const float&)));
-
-    filterByGenre();
-
+    // Getting info on current decks playing etc
+    connect(&PlayerInfo::Instance(), SIGNAL(currentPlayingDeckChanged(int)),
+           this, SLOT(slotPlayingDeckChanged(int)));
 }
 
 
@@ -41,6 +33,33 @@ bool SelectorLibraryTableModel::isColumnInternal(int column) {
     return LibraryTableModel::isColumnInternal(column);
 }
 
+void SelectorLibraryTableModel::slotPlayingDeckChanged(int deck) {
+    TrackPointer loaded_track = PlayerInfo::Instance().getTrackInfo(QString("[Channel%1]").arg(deck));
+    if (loaded_track) {
+        if (m_bFilterGenre) {
+            // Genre - need a bool for checkbox value
+            QString TrackGenre = loaded_track->getGenre();
+            m_pFilterGenre = QString(
+                "Genre == '%1'").arg(TrackGenre);
+        } else {
+            m_pFilterGenre = QString("1");
+        }
+        if (m_bFilterBpm) {
+            // Bpm
+            float TrackBpm = loaded_track->getBpm();
+            m_pFilterBpm = QString(
+                "Bpm > %1 AND Bpm < %2").arg(
+                TrackBpm - 1).arg(TrackBpm + 1);
+        } else {
+            m_pFilterBpm = QString("1"); 
+        }
+    }
+    //qDebug() << "slotPlayingDeckChanged(" << deck 
+    //    << ") m_pFilterGenre = " << m_pFilterGenre
+    //    << ", m_pFilterBpm = " << m_pFilterBpm;
+    emit(doSearch(""));
+}
+
 void SelectorLibraryTableModel::search(const QString& searchText) {
     // qDebug() << "SelectorLibraryTableModel::search()" << searchText
     //          << QThread::currentThread();
@@ -48,69 +67,41 @@ void SelectorLibraryTableModel::search(const QString& searchText) {
 }
 
 void SelectorLibraryTableModel::slotSearch(const QString& searchText) {
-    BaseSqlTableModel::search(searchText, QString());
+    QString filterText = "";
+    QString filterTextA = (m_bFilterGenre) ? m_pFilterGenre : "";
+    QString filterTextB = (m_bFilterBpm) ? m_pFilterBpm : "";
+    QString filterJoin = (filterTextA != NULL && filterTextB != NULL) ? " AND " : "";
+    filterText = filterTextA + filterJoin + filterTextB;
+
+    qDebug() << "slotSearch()" << filterText;
+    BaseSqlTableModel::search(searchText, filterText);
 }
 
-void SelectorLibraryTableModel::slotFilterByGenre(const QString& genre) {
-    BaseSqlTableModel::search("", QString("Genre == '%1'").arg(genre));
-}
-
-void SelectorLibraryTableModel::slotFilterByBpm(const float& bpm) {
-    BaseSqlTableModel::search("", QString("Bpm == '%1'").arg(bpm));
-}
-
-QString SelectorLibraryTableModel::currentGenre() const {
-    /*int decks = ControlObject::getControl(
-        ConfigKey("[Master]", "num_decks"))->get();
-    // check if file is loaded to a deck
-    for (int i = 1; i <= decks; ++i) {
-        TrackPointer loaded_track = PlayerInfo::Instance().getTrackInfo(
-            QString("[Channel%1]").arg(i));
-        if (loaded_track) {
-            return QString("Got Here");
-        }
+/*
+void SelectorLibraryTableModel::slotSearch(const QString& searchText) {
+    QString filterText = QString("%1 AND %2").arg(m_pFilterGenre,m_pFilterBpm);
+    QString filterText = "";
+    if (m_bFilterGenre) {
+        filterText = m_pFilterGenre;
     }
-    return QString();
-    */
-    // Just use deck 1 for now
-    TrackPointer loadedTrack =
-                PlayerInfo::Instance().getTrackInfo("[Channel1]");
-
-    if (loadedTrack) {
-      QString TrackGenre = loadedTrack->getGenre();
-      return TrackGenre;
+    if (m_bFilterBpm) {
+        if (filterText != "") {
+            filterText << " AND ";
+        } 
+        filterText << m_pFilterGenre;
     }
-    return QString();
+    qDebug() << "slotSearch() filterText = " << filterText; 
+    BaseSqlTableModel::search(searchText, filterText);
+}*/
+
+void SelectorLibraryTableModel::filterByGenre(bool value) {
+    m_bFilterGenre = value;
+    qDebug() << "filterByGenre(" << value << ")";
+    emit(doSearch(QString()));
 }
 
-void SelectorLibraryTableModel::filterByGenre() {
-  emit(doFilterByGenre(currentGenre()));
-}
-
-float SelectorLibraryTableModel::currentBpm() const {
-    /*int decks = ControlObject::getControl(
-        ConfigKey("[Master]", "num_decks"))->get();
-    // check if file is loaded to a deck
-    for (int i = 1; i <= decks; ++i) {
-        TrackPointer loaded_track = PlayerInfo::Instance().getTrackInfo(
-            QString("[Channel%1]").arg(i));
-        if (loaded_track) {
-            return QString("Got Here");
-        }
-    }
-    return QString();
-    */
-    // Just use deck 1 for now
-    TrackPointer loadedTrack =
-                PlayerInfo::Instance().getTrackInfo("[Channel1]");
-
-    if (loadedTrack) {
-      float TrackBpm = loadedTrack->getBpm();
-      return TrackBpm;
-    }
-    return float();
-}
-
-void SelectorLibraryTableModel::filterByBpm() {
-  emit(doFilterByBpm(currentBpm()));
+void SelectorLibraryTableModel::filterByBpm(bool value) {
+    m_bFilterBpm = value;
+    qDebug() << "filterByBpm(" << value << ")";
+    emit(doSearch(QString()));
 }
