@@ -268,9 +268,7 @@ void MidiController::receive(unsigned char status, unsigned char control,
 
 void MidiController::bindScriptFunctions() {
     if (m_pEngine == NULL) {
-	// qWarning() << "Controller::receive called with no active engine!";
-        // Don't complain, since this will always show after closing a device as
-        //  queued signals flush out
+        qWarning() << "MidiController::bindScriptFunctions called with no active engine!";
         return;
     }
 
@@ -278,14 +276,15 @@ void MidiController::bindScriptFunctions() {
     for (mapping = m_mappings.constBegin(); mapping != m_mappings.constEnd(); ++mapping) {
         QPair<ConfigKey, MidiOptions> cfg = mapping.value();
         ConfigKey ckey = cfg.first;
-	    MidiOptions options = cfg.second;
+        MidiOptions options = cfg.second;
 
         if (options.script) {
             QScriptValue binding = m_pEngine->resolveFunction(ckey.item);
             if (!binding.isValid() || !binding.isFunction()) {
-            	qWarning() << "Controller: unable to resolve function:" << ckey.item;
-            	continue;
+                qWarning() << "Controller: unable to resolve function:" << ckey.item;
+                continue;
             }
+            qDebug() << "MidiController::binding" << ckey.item;
             m_scriptBindings.insert(ckey.item, binding);
         }
     }
@@ -410,7 +409,8 @@ void MidiController::receive(const unsigned char data[], unsigned int length) {
 //         //  (polymorphism doesn't work across class boundaries)
 //         ControllerEngine *pEngine = m_pEngine;
 //         if (!pEngine->execute(ckey.item, data, length)) {
-        if (!m_pEngine->execute(ckey.item, data, length)) {
+        QScriptValue function = m_scriptBindings.value(ckey.item);
+        if (!m_pEngine->execute(function, data, length)) {
             qDebug() << "MidiController: Invalid script function" << ckey.item;
         }
         return;
