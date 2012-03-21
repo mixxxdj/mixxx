@@ -205,8 +205,6 @@ void ControllerEngine::initializeScriptEngine() {
 
     m_pBaClass = new ByteArrayClass(m_pEngine);
     engineGlobalObject.setProperty("ByteArray", m_pBaClass->constructor());
-
-    m_pController->bindScriptFunctions();
 }
 
 /* -------- ------------------------------------------------------
@@ -679,8 +677,8 @@ void ControllerEngine::trigger(QString group, QString name) {
    Output:  true if successful
    -------- ------------------------------------------------------ */
 QScriptValue ControllerEngine::connectControl(QString group, QString name, QScriptValue callback, bool disconnect) {
-    ControlObjectThread* cobj = getControlObjectThread(group, name);
     ConfigKey key(group, name);
+    ControlObject* cobj = ControlObject::getControl(key);
     ControllerEngineConnection conn;
     QScriptValue function;
 
@@ -743,6 +741,7 @@ QScriptValue ControllerEngine::connectControl(QString group, QString name, QScri
     }
 
     if (function.isFunction()) {
+    	qDebug() << "Connection:" << group << name;
         connect(cobj, SIGNAL(valueChanged(double)),
                     this, SLOT(slotValueChanged(double)),
                     Qt::QueuedConnection);
@@ -779,7 +778,7 @@ QScriptValue ControllerEngine::connectControl(QString group, QString name, QScri
    Output:  true if successful
    -------- ------------------------------------------------------ */
 void ControllerEngine::disconnectControl(const ControllerEngineConnection conn) {
-    ControlObjectThread* cobj = getControlObjectThread(conn.key.group, conn.key.item);
+    ControlObject* cobj = ControlObject::getControl(ConfigKey(conn.key.group, conn.key.item));
 
     if(m_pEngine == NULL) {
         return;
@@ -808,18 +807,14 @@ void ControllerEngineConnectionScriptValue::disconnect() {
    -------- ------------------------------------------------------ */
 void ControllerEngine::slotValueChanged(double value) {
 
-    ControlObjectThread* sender = dynamic_cast<ControlObjectThread*>(this->sender());
+    ControlObject* sender = (ControlObject*)this->sender();
     if(sender == NULL) {
         qWarning() << "MidiScriptEngine::slotValueChanged() Shouldn't happen -- sender == NULL";
         return;
     }
-    ControlObject* pSenderCO = sender->getControlObject();
-    if (pSenderCO == NULL) {
-        return;
-    }
-    ConfigKey key = pSenderCO->getKey();
+    ConfigKey key = sender->getKey();
 
-    //qDebug() << QString("MidiScriptEngine: slotValueChanged Thread ID=%1").arg(QThread::currentThreadId(),0,16);
+    qDebug() << "[Controller]: SlotValueChanged" << key.group << key.item;
 
     if(m_connectedControls.contains(key)) {
         QHash<ConfigKey, ControllerEngineConnection>::iterator iter = 
@@ -844,6 +839,9 @@ void ControllerEngine::slotValueChanged(double value) {
             if (result.isError()) {
                 qWarning()<< "MidiScriptEngine: Call to callback" << conn.id
                           << "resulted in an error:" << result.toString();
+            }
+            else {
+            	qDebug() << "Called Connection for" << conn.id;
             }
         }
     }
