@@ -23,6 +23,11 @@ SelectorLibraryTableModel::SelectorLibraryTableModel(QObject* parent,
     // Getting info on current decks playing etc
     connect(&PlayerInfo::Instance(), SIGNAL(currentPlayingDeckChanged(int)),
            this, SLOT(slotPlayingDeckChanged(int)));
+
+    m_bFilterGenre = true;
+    m_bFilterBpm = false;
+    m_bFilterYear = false;
+
 }
 
 
@@ -40,24 +45,22 @@ void SelectorLibraryTableModel::slotPlayingDeckChanged(int deck) {
 
         // Genre
         QString TrackGenre = loaded_track->getGenre();
-        m_pFilterGenre = QString(
-            "Genre == '%1'").arg(TrackGenre);
+        m_pFilterGenre = (TrackGenre != "") ? QString(
+            "Genre == '%1'").arg(TrackGenre) : QString();
 
         // Bpm
         float TrackBpm = loaded_track->getBpm();
-        m_pFilterBpm = QString(
+        m_pFilterBpm = (TrackBpm > 0) ? QString(
             "Bpm > %1 AND Bpm < %2").arg(
-            TrackBpm - 1).arg(TrackBpm + 1);
+            TrackBpm - 1).arg(TrackBpm + 1) : QString();
 
         // Year
         QString TrackYear = loaded_track->getYear();
-        m_pFilterYear = QString(
-            "Year == '%1'").arg(TrackYear);
+        m_pFilterYear = (TrackYear!="") ? QString(
+            "Year == '%1'").arg(TrackYear) : QString();
 
     }
-    //qDebug() << "slotPlayingDeckChanged(" << deck 
-    //    << ") m_pFilterGenre = " << m_pFilterGenre
-    //    << ", m_pFilterBpm = " << m_pFilterBpm;
+    //qDebug() << "slotPlayingDeckChanged(" << deck;
     emit(doSearch(""));
 }
 
@@ -72,6 +75,11 @@ void SelectorLibraryTableModel::slotSearch(const QString& searchText) {
     if (m_bFilterGenre && m_pFilterGenre != "") { filters << m_pFilterGenre; }
     if (m_bFilterBpm && m_pFilterBpm != "") { filters << m_pFilterBpm; }
     if (m_bFilterYear && m_pFilterYear != "") { filters << m_pFilterYear; }
+
+    //qDebug() << "slotSearch()m_pFilterGenre = [" << m_pFilterGenre << "] " << (m_pFilterGenre != "");   
+    //qDebug() << "slotSearch()m_pFilterBpm = [" << m_pFilterBpm << "] " << (m_pFilterBpm != "");   
+    //qDebug() << "slotSearch()m_pFilterYear = [" << m_pFilterYear << "] " << (m_pFilterYear != "");   
+
     QString filterText = filters.join(" AND ");
  
     qDebug() << "slotSearch()" << filterText;

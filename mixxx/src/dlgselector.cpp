@@ -125,11 +125,6 @@ void DlgSelector::selectAll() {
 
 void DlgSelector::filterByGenre()
 {
-    int datetimeColumn = m_pSelectorLibraryTableModel->fieldIndex(LIBRARYTABLE_DATETIMEADDED);
-    // Don't tell the TableView to sortByColumn() because this generates excess
-    // select()'s. Use setSort() on the model, and it will take effect when
-    // showRecentSongs() select()'s.
-    m_pSelectorLibraryTableModel->setSort(datetimeColumn, Qt::DescendingOrder);
     m_pSelectorLibraryTableModel->filterByGenre(checkBoxGenre->isChecked());
 }
 
@@ -140,7 +135,7 @@ void DlgSelector::filterByBpm()
 
 void DlgSelector::filterByYear()
 {
-    m_pSelectorLibraryTableModel->filterByYear(checkBoxBpm->isChecked());
+    m_pSelectorLibraryTableModel->filterByYear(checkBoxYear->isChecked());
 }
 
 void DlgSelector::installEventFilter(QObject* pFilter) {
