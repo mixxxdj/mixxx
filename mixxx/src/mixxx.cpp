@@ -695,11 +695,11 @@ int MixxxApp::noOutputDlg(bool *continueClicked)
 /** initializes all QActions of the application */
 void MixxxApp::initActions()
 {
-    m_pFileLoadSongPlayer1 = new QAction(tr("&Load Song (Player 1)..."), this);
+    m_pFileLoadSongPlayer1 = new QAction(tr("Load Song (Player &1)..."), this);
     m_pFileLoadSongPlayer1->setShortcut(tr("Ctrl+O"));
     m_pFileLoadSongPlayer1->setShortcutContext(Qt::ApplicationShortcut);
 
-    m_pFileLoadSongPlayer2 = new QAction(tr("&Load Song (Player 2)..."), this);
+    m_pFileLoadSongPlayer2 = new QAction(tr("Load Song (Player &2)..."), this);
     m_pFileLoadSongPlayer2->setShortcut(tr("Ctrl+Shift+O"));
     m_pFileLoadSongPlayer2->setShortcutContext(Qt::ApplicationShortcut);
 
@@ -726,7 +726,7 @@ void MixxxApp::initActions()
     m_pOptionsFullScreen = new QAction(tr("&Full Screen"), this);
 
 #ifdef __APPLE__
-    m_pOptionsFullScreen->setShortcut(tr("Ctrl+F"));
+    m_pOptionsFullScreen->setShortcut(tr("Ctrl+Shift+F"));
 #else
     m_pOptionsFullScreen->setShortcut(tr("F11"));
 #endif
@@ -746,17 +746,17 @@ void MixxxApp::initActions()
     m_pHelpTranslation = new QAction(tr("&Translate this application"), this);
 
 #ifdef __VINYLCONTROL__
-    m_pOptionsVinylControl = new QAction(tr("Enable &Vinyl Control 1"), this);
+    m_pOptionsVinylControl = new QAction(tr("Enable Vinyl Control &1"), this);
     m_pOptionsVinylControl->setShortcut(tr("Ctrl+Y"));
     m_pOptionsVinylControl->setShortcutContext(Qt::ApplicationShortcut);
 
-    m_pOptionsVinylControl2 = new QAction(tr("Enable &Vinyl Control 2"), this);
+    m_pOptionsVinylControl2 = new QAction(tr("Enable Vinyl Control &2"), this);
     m_pOptionsVinylControl2->setShortcut(tr("Ctrl+U"));
     m_pOptionsVinylControl2->setShortcutContext(Qt::ApplicationShortcut);
 #endif
 
 #ifdef __SHOUTCAST__
-    m_pOptionsShoutcast = new QAction(tr("Enable live broadcasting"), this);
+    m_pOptionsShoutcast = new QAction(tr("Enable live &broadcasting"), this);
     m_pOptionsShoutcast->setShortcut(tr("Ctrl+L"));
     m_pOptionsShoutcast->setShortcutContext(Qt::ApplicationShortcut);
 #endif
@@ -1259,6 +1259,9 @@ void MixxxApp::slotHelpAbout() {
 "Jonas &Aring;dahl<br>"
 "Jonathan Costers<br>"
 "Daniel Lindenfelser<br>"
+"Maxime Bochon<br>"
+"Akash Shetye<br>"
+"Pascal Bleser<br>"
 
 "</p>"
 "<p align=\"center\"><b>%3</b></p>"
@@ -1522,7 +1525,9 @@ void MixxxApp::checkDirectRendering() {
 
 bool MixxxApp::confirmExit() {
     bool playing(false);
+    bool playingSampler(false);
     unsigned int deckCount = m_pPlayerManager->numDecks();
+    unsigned int samplerCount = m_pPlayerManager->numSamplers();
     for (unsigned int i = 0; i < deckCount; ++i) {
         ControlObject *pPlayCO(
             ControlObject::getControl(
@@ -1534,10 +1539,29 @@ bool MixxxApp::confirmExit() {
             break;
         }
     }
+    for (unsigned int i = 0; i < samplerCount; ++i) {
+        ControlObject *pPlayCO(
+            ControlObject::getControl(
+                ConfigKey(QString("[Sampler%1]").arg(i + 1), "play")
+            )
+        );
+        if (pPlayCO && pPlayCO->get()) {
+            playingSampler = true;
+            break;
+        }
+    }
     if (playing) {
         QMessageBox::StandardButton btn = QMessageBox::question(this,
             tr("Confirm Exit"),
             tr("A deck is currently playing. Exit Mixxx?"),
+            QMessageBox::Yes | QMessageBox::No, QMessageBox::No);
+        if (btn == QMessageBox::No) {
+            return false;
+        }
+    } else if (playingSampler) {
+        QMessageBox::StandardButton btn = QMessageBox::question(this,
+            tr("Confirm Exit"),
+            tr("A sampler is currently playing. Exit Mixxx?"),
             QMessageBox::Yes | QMessageBox::No, QMessageBox::No);
         if (btn == QMessageBox::No) {
             return false;
