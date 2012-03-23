@@ -204,12 +204,13 @@ void WOverview::slotLoadNewWaveform(TrackInfoObject* pTrack)
             pTrack->getDuration()*pTrack->getSampleRate()*pTrack->getChannels());
 
     // If no data is available, we can expect it to be analysed.
+    /*
     if (!pTrack->getWaveSummary()->isNull() && !pTrack->getWaveSummary()->isEmpty())
     {
         m_analysing = false;
         m_iProgress = 0;
     }
-
+    */
     update();
 }
 
