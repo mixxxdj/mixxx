@@ -37,6 +37,8 @@ class DlgSelector : public QWidget, public Ui::DlgSelector, public virtual Libra
     void filterByGenre();
     void filterByBpm();
     void filterByYear();
+    void filterByRating();
+    void filterByKey();
     void installEventFilter(QObject* pFilter);
 
   signals:

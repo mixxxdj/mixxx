@@ -27,9 +27,10 @@ SelectorLibraryTableModel::SelectorLibraryTableModel(QObject* parent,
     m_bFilterGenre = true;
     m_bFilterBpm = false;
     m_bFilterYear = false;
+    m_bFilterRating = false;
+    m_bFilterKey = false;
 
 }
-
 
 SelectorLibraryTableModel::~SelectorLibraryTableModel() {
 }
@@ -59,6 +60,16 @@ void SelectorLibraryTableModel::slotPlayingDeckChanged(int deck) {
         m_pFilterYear = (TrackYear!="") ? QString(
             "Year == '%1'").arg(TrackYear) : QString();
 
+        // Rating
+        int TrackRating = loaded_track->getRating();
+        m_pFilterRating = (TrackRating > 0) ? QString(
+            "Rating >= %1").arg(TrackRating) : QString();
+
+        // Key
+        QString TrackKey = loaded_track->getKey();
+        m_pFilterKey = (TrackKey!="") ? QString(
+            "Key >= '%1'").arg(TrackKey) : QString();
+
     }
     //qDebug() << "slotPlayingDeckChanged(" << deck;
     emit(doSearch(""));
@@ -75,6 +86,8 @@ void SelectorLibraryTableModel::slotSearch(const QString& searchText) {
     if (m_bFilterGenre && m_pFilterGenre != "") { filters << m_pFilterGenre; }
     if (m_bFilterBpm && m_pFilterBpm != "") { filters << m_pFilterBpm; }
     if (m_bFilterYear && m_pFilterYear != "") { filters << m_pFilterYear; }
+    if (m_bFilterRating && m_pFilterRating != "") { filters << m_pFilterRating; }
+    if (m_bFilterKey && m_pFilterKey != "") { filters << m_pFilterKey; }
 
     //qDebug() << "slotSearch()m_pFilterGenre = [" << m_pFilterGenre << "] " << (m_pFilterGenre != "");   
     //qDebug() << "slotSearch()m_pFilterBpm = [" << m_pFilterBpm << "] " << (m_pFilterBpm != "");   
@@ -98,5 +111,15 @@ void SelectorLibraryTableModel::filterByBpm(bool value) {
 
 void SelectorLibraryTableModel::filterByYear(bool value) {
     m_bFilterYear = value;
+    emit(doSearch(QString()));
+}
+
+void SelectorLibraryTableModel::filterByRating(bool value) {
+    m_bFilterRating = value;
+    emit(doSearch(QString()));
+}
+
+void SelectorLibraryTableModel::filterByKey(bool value) {
+    m_bFilterKey = value;
     emit(doSearch(QString()));
 }

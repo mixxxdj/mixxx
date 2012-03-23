@@ -66,6 +66,10 @@ DlgSelector::DlgSelector(QWidget* parent,
             this,  SLOT(filterByBpm()));
     connect(checkBoxYear, SIGNAL(clicked()),
             this,  SLOT(filterByYear()));
+    connect(checkBoxRating, SIGNAL(clicked()),
+            this,  SLOT(filterByRating()));
+    connect(checkBoxKey, SIGNAL(clicked()),
+            this,  SLOT(filterByKey()));
 
     checkBoxGenre->click();
 
@@ -136,6 +140,16 @@ void DlgSelector::filterByBpm()
 void DlgSelector::filterByYear()
 {
     m_pSelectorLibraryTableModel->filterByYear(checkBoxYear->isChecked());
+}
+
+void DlgSelector::filterByRating()
+{
+    m_pSelectorLibraryTableModel->filterByRating(checkBoxRating->isChecked());
+}
+
+void DlgSelector::filterByKey()
+{
+    m_pSelectorLibraryTableModel->filterByKey(checkBoxKey->isChecked());
 }
 
 void DlgSelector::installEventFilter(QObject* pFilter) {
