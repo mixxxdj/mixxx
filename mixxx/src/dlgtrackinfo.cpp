@@ -112,13 +112,18 @@ void DlgTrackInfo::populateFields(TrackPointer pTrack) {
     txtFilepath->setText(pTrack->getFilename());
     txtFilepath->setCursorPosition(0);
     txtType->setText(pTrack->getType());
-    if(pTrack->getBpmPluginKey().contains(QString("beats_correction=none"))){
+    if(pTrack->getBpmPluginKey().contains(QString("beats_correction=none"))
+        || pTrack->hasBpmLock()){
            spinBpm->setEnabled(false);
            bpmTap->setEnabled(false);
+           bpmDouble->setEnabled(false);
+           bpmHalve->setEnabled(false);
        }
        else{
            spinBpm->setEnabled(true);
            bpmTap->setEnabled(true);
+           bpmDouble->setEnabled(true);
+           bpmHalve->setEnabled(true);
        }
 
 }
