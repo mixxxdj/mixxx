@@ -444,7 +444,8 @@ QVariant BaseSqlTableModel::data(const QModelIndex& index, int role) const {
                 value = (value == "true") ? true : false;
             } else if (column == fieldIndex(LIBRARYTABLE_DATETIMEADDED)) {
                 value = value.toDateTime();
-            } else if (column == fieldIndex(LIBRARYTABLE_BPM_LOCK)) {
+            }
+            else if (column == fieldIndex(LIBRARYTABLE_BPM_LOCK)) {
                 value = QVariant();
             }
 
@@ -458,6 +459,9 @@ QVariant BaseSqlTableModel::data(const QModelIndex& index, int role) const {
             } else if (column == fieldIndex(LIBRARYTABLE_RATING)) {
                 if (qVariantCanConvert<int>(value))
                     value = qVariantFromValue(StarRating(value.toInt()));
+            }
+            else if (column == fieldIndex(LIBRARYTABLE_BPM_LOCK)) {
+                value = QVariant();
             }
             break;
         case Qt::CheckStateRole:
@@ -553,7 +557,14 @@ Qt::ItemFlags BaseSqlTableModel::readWriteFlags(
     } else if (column == fieldIndex(LIBRARYTABLE_TIMESPLAYED))  {
         return defaultFlags | Qt::ItemIsUserCheckable;
     }else if (column == fieldIndex(LIBRARYTABLE_BPM_LOCK)){
-        return defaultFlags | Qt::ItemIsUserCheckable | Qt::ItemIsEditable;
+        return defaultFlags | Qt::ItemIsUserCheckable;
+    }else if(column == fieldIndex(LIBRARYTABLE_BPM)){
+        //disable BPM field when BPM is locked
+        bool locked = getBaseValue(index, Qt::CheckStateRole).toBool();
+        locked = this->index(index.row(), fieldIndex(LIBRARYTABLE_BPM_LOCK)).data(Qt::CheckStateRole).toBool();
+        //locked = index.data(Qt::CheckStateRole).toBool();
+        return (locked)? defaultFlags : defaultFlags | Qt::ItemIsEditable;
+
     }else {
         return defaultFlags | Qt::ItemIsEditable;
     }
