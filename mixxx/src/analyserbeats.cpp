@@ -57,6 +57,11 @@ void AnalyserBeats::initialise(TrackPointer tio, int sampleRate, int totalSample
               return;
           }
     m_bPass = static_cast<bool> (m_pConfigAVT->getValueString(ConfigKey("[Vamp]","AnalyserBeatEnabled")).toInt());
+    if(!m_bPass)
+    {
+        qDebug()<<"Beat calculation is deactivated";
+        return;
+    }
     qDebug()<<"Beat calculation started";
     qDebug()<<"Beat calculation uses "<< pluginID;
     QString correction;
