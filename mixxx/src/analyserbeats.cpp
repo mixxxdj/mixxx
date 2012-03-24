@@ -80,7 +80,7 @@ void AnalyserBeats::initialise(TrackPointer tio, int sampleRate, int totalSample
     BeatsPointer pBeats = tio->getBeats();
     QString bpmpluginkey = tio->getBpmPluginKey();
     if(pBeats)
-        m_bPass = true; //!bpmpluginkey.contains(QString("plugin=%1_beats_correction=%2").arg(pluginname,correction));
+        m_bPass = !bpmpluginkey.contains(QString("plugin=%1_beats_correction=%2").arg(pluginname,correction));
     if(!m_bPass){
         qDebug()<<"Beat calculation will not start";
         return;

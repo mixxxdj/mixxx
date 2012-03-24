@@ -141,8 +141,8 @@ double BeatTools::calculateBpm(QVector<double> beats, int SampleRate, int min_bp
      */
     QMapIterator<QString, int> i(frequency_table);
     double avg_weighted_bpm = 0.0;
-    qDebug() << "BPM range between " << min_bpm << " and " << max_bpm;
-    qDebug() << "Max BPM Frequency=" << most_freq_bpm;
+    //qDebug() << "BPM range between " << min_bpm << " and " << max_bpm;
+    //qDebug() << "Max BPM Frequency=" << most_freq_bpm;
     int sum = 0;
     QMap<QString, int> filtered_bpm_frequency_table;  //a subset of the 'frequency_table', where the bpm values are +-1 1 from the median away
      while (i.hasNext()) {
@@ -204,7 +204,7 @@ double BeatTools::calculateBpm(QVector<double> beats, int SampleRate, int min_bp
          //round BPM to have two decimal places
          local_bpm = floorf(local_bpm * 100 + 0.5) / 100;
 
-         qDebug() << "Local BPM beat " << i << ": " << local_bpm;
+         //qDebug() << "Local BPM beat " << i << ": " << local_bpm;
          QString local_bpm_str = QString::number(local_bpm,'g',6);
          if(filtered_bpm_frequency_table.contains(local_bpm_str) && fabs(local_bpm - median) < BPM_ERROR){
              if(!foundFirstCorrectBeat){

@@ -806,7 +806,7 @@ void TrackDAO::updateTrack(TrackInfoObject* pTrack) {
         beatsVersion = pBeats->getVersion();
         dBpm = pBeats->getBpm();
     }
-
+    //qDebug() << "Update track beat version is: " << beatsVersion;
     query.bindValue(":beats", pBeatsBlob ? *pBeatsBlob : QVariant(QVariant::ByteArray));
     query.bindValue(":beats_version", beatsVersion);
     query.bindValue(":bpm", dBpm);

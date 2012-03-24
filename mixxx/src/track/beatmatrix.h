@@ -7,6 +7,8 @@
 #include "trackinfoobject.h"
 #include "track/beats.h"
 
+#define BEAT_MATRIX_VERSION "BeatMatrix-1.0"
+
 // BeatMatrix is an implementation of the Beats interface that implements a list
 // of finite beats that have been extracted or otherwise annotated for a track.
 class BeatMatrix : public QObject, public Beats {

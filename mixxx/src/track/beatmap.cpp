@@ -107,8 +107,7 @@ void BeatMap::createFromVector(QVector<double> beats) {
 
 QString BeatMap::getVersion() const {
     QMutexLocker locker(&m_mutex);
-
-    return QString("BeatMap-1.0_");
+    return BEAT_MAP_VERSION;
 }
 double BeatMap::findNextBeat(double dSamples) const {
     return findNthBeat(dSamples, 1);

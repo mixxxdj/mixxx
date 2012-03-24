@@ -59,7 +59,7 @@ void BeatGrid::readByteArray(const QByteArray* pByteArray) {
 
 QString BeatGrid::getVersion() const {
     QMutexLocker locker(&m_mutex);
-    return "BeatGrid-1.0";
+    return BEAT_GRID_VERSION;
 }
 
 // internal use only
