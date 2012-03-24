@@ -8,7 +8,7 @@ public:
         EmptyWaveform = 0,
         SimpleSoftwareWaveform, //TODO
         SoftwareWaveform, //TODO
-        SimpleGLWaveform, //TODO
+        GLSimpleWaveform,
         GLWaveform,
         GLSLWaveform,
         Count_WaveformwidgetType

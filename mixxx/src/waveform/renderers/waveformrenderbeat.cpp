@@ -76,7 +76,7 @@ void WaveformRenderBeat::draw(QPainter* painter, QPaintEvent* /*event*/) {
         m_waveformRenderer->regulateVisualSample(beatPosition);
         double xBeatPoint = m_waveformRenderer->transformSampleIndexInRendererWorld(beatPosition);
 
-        //NOTE (vRince) : RJ should we keep this ?
+        //NOTE: (vRince) RJ should we keep this ?
         if (m_beatActive && m_beatActive->get() > 0.0 && abs(xBeatPoint - m_waveformRenderer->getWidth()/2) < 20)
             painter->setPen(highBeatPen);
         else

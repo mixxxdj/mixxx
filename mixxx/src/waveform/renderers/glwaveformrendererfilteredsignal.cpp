@@ -23,6 +23,9 @@ GLWaveformRendererFilteredSignal::GLWaveformRendererFilteredSignal( WaveformWidg
     m_highKillControlObject = 0;
 }
 
+GLWaveformRendererFilteredSignal::~GLWaveformRendererFilteredSignal() {
+}
+
 void GLWaveformRendererFilteredSignal::init() {
     //create controls
     m_lowFilterControlObject = ControlObject::getControl( ConfigKey(m_waveformRenderer->getGroup(),"filterLow"));
@@ -152,14 +155,14 @@ int GLWaveformRendererFilteredSignal::buildPolygon() {
                 maxHigh = math_max( maxHigh, waveform->getHigh(i));
             }
 
-            m_polygon[0][pointIndex] = QPointF(x,(float)maxLow*lowGain);
-            m_polygon[1][pointIndex] = QPointF(x,(float)maxBand*midGain);
-            m_polygon[2][pointIndex] = QPointF(x,(float)maxHigh*highGain);
+            m_polygon[0][pointIndex] = QPointF(x+0.5,(float)maxLow*lowGain);
+            m_polygon[1][pointIndex] = QPointF(x+0.5,(float)maxBand*midGain);
+            m_polygon[2][pointIndex] = QPointF(x+0.5,(float)maxHigh*highGain);
         }
         else {
-            m_polygon[0][pointIndex] = QPointF(x,0.0);
-            m_polygon[1][pointIndex] = QPointF(x,0.0);
-            m_polygon[2][pointIndex] = QPointF(x,0.0);
+            m_polygon[0][pointIndex] = QPointF(x+0.5,0.0);
+            m_polygon[1][pointIndex] = QPointF(x+0.5,0.0);
+            m_polygon[2][pointIndex] = QPointF(x+0.5,0.0);
         }
     }
 
@@ -188,14 +191,14 @@ int GLWaveformRendererFilteredSignal::buildPolygon() {
                 maxBand = math_max( maxBand, waveform->getMid(i));
                 maxHigh = math_max( maxHigh, waveform->getHigh(i));
             }
-            m_polygon[0][pointIndex] = QPointF(x,-(float)maxLow*lowGain);
-            m_polygon[1][pointIndex] = QPointF(x,-(float)maxBand*midGain);
-            m_polygon[2][pointIndex] = QPointF(x,-(float)maxHigh*highGain);
+            m_polygon[0][pointIndex] = QPointF(x+0.5,-(float)maxLow*lowGain);
+            m_polygon[1][pointIndex] = QPointF(x+0.5,-(float)maxBand*midGain);
+            m_polygon[2][pointIndex] = QPointF(x+0.5,-(float)maxHigh*highGain);
         }
         else {
-            m_polygon[0][pointIndex] = QPointF(x,0.0);
-            m_polygon[1][pointIndex] = QPointF(x,0.0);
-            m_polygon[2][pointIndex] = QPointF(x,0.0);
+            m_polygon[0][pointIndex] = QPointF(x+0.5,0.0);
+            m_polygon[1][pointIndex] = QPointF(x+0.5,0.0);
+            m_polygon[2][pointIndex] = QPointF(x+0.5,0.0);
         }
     }
 
