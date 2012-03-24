@@ -13,6 +13,7 @@ class ControlObject;
 class GLWaveformRendererFilteredSignal : public WaveformRendererAbstract {
   public:
     explicit GLWaveformRendererFilteredSignal( WaveformWidgetRenderer* waveformWidgetRenderer);
+    virtual ~GLWaveformRendererFilteredSignal();
 
     virtual void init();
     virtual void setup(const QDomNode &node);
@@ -22,7 +23,7 @@ class GLWaveformRendererFilteredSignal : public WaveformRendererAbstract {
     virtual void onResize();
     int buildPolygon();
 
-  private:
+  protected:
     ControlObject* m_lowFilterControlObject;
     ControlObject* m_midFilterControlObject;
     ControlObject* m_highFilterControlObject;

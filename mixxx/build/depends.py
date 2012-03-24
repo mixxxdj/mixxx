@@ -493,12 +493,14 @@ class MixxxCore(Feature):
                    "waveform/renderers/glwaveformrendererfilteredsignal.cpp",
                    "waveform/renderers/glslwaveformrenderersignal.cpp",
                    "waveform/renderers/waveformsignalcolors.cpp",
+                   "waveform/renderers/glwaveformrenderersimplesignal.cpp",
 
                    "waveform/widgets/waveformwidgetabstract.cpp",
                    "waveform/widgets/glwaveformwidget.cpp",
                    "waveform/widgets/emptywaveformwidget.cpp",
                    "waveform/widgets/softwarewaveformwidget.cpp",
                    "waveform/widgets/glslwaveformwidget.cpp",
+                   "waveform/widgets/glsimplewaveformwidget.cpp",
 
                    "skin/imginvert.cpp",
                    "skin/imgloader.cpp",

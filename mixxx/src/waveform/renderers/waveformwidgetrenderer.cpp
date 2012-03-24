@@ -202,7 +202,7 @@ void WaveformWidgetRenderer::regulateVisualSample( int& sampleIndex) const {
     if( m_visualSamplePerPixel < 1.0)
         return;
 
-    sampleIndex -= sampleIndex%(2*(int)m_visualSamplePerPixel);
+    sampleIndex -= sampleIndex%(2*int(m_visualSamplePerPixel));
 }
 
 void WaveformWidgetRenderer::regulateAudioSample(int& sampleIndex) const

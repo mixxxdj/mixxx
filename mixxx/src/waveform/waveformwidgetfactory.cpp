@@ -8,6 +8,7 @@
 #include "waveform/widgets/softwarewaveformwidget.h"
 #include "waveform/widgets/glwaveformwidget.h"
 #include "waveform/widgets/glslwaveformwidget.h"
+#include "waveform/widgets/glsimplewaveformwidget.h"
 
 #include "defs.h"
 
@@ -222,8 +223,8 @@ void WaveformWidgetFactory::evaluateWidgets() {
         WaveformWidgetAbstract* widget = 0;
         switch(type) {
         case WaveformWidgetType::EmptyWaveform : widget = new EmptyWaveformWidget(); break;
-        case WaveformWidgetType::SimpleSoftwareWaveform : break; //TODO
-        case WaveformWidgetType::SimpleGLWaveform : break; //TODO
+        case WaveformWidgetType::SimpleSoftwareWaveform : break; //TODO: (vrince)
+        case WaveformWidgetType::GLSimpleWaveform : widget = new GLSimpleWaveformWidget(); break;
         case WaveformWidgetType::SoftwareWaveform : widget = new SoftwareWaveformWidget(); break;
         case WaveformWidgetType::GLWaveform : widget = new GLWaveformWidget(); break;
         case WaveformWidgetType::GLSLWaveform : widget = new GLSLWaveformWidget(); break;
@@ -260,8 +261,8 @@ WaveformWidgetAbstract* WaveformWidgetFactory::createWaveformWidget(WaveformWidg
     if (viewer) {
         switch(type) {
         case WaveformWidgetType::EmptyWaveform : return new EmptyWaveformWidget(viewer->getGroup(), viewer);
-        case WaveformWidgetType::SimpleSoftwareWaveform : return 0; //TODO
-        case WaveformWidgetType::SimpleGLWaveform : return 0; //TODO
+        case WaveformWidgetType::SimpleSoftwareWaveform : return 0; //TODO: (vrince)
+        case WaveformWidgetType::GLSimpleWaveform : return new GLSimpleWaveformWidget(viewer->getGroup(), viewer);
         case WaveformWidgetType::SoftwareWaveform : return new SoftwareWaveformWidget(viewer->getGroup(), viewer);
         case WaveformWidgetType::GLWaveform : return new GLWaveformWidget(viewer->getGroup(), viewer);
         case WaveformWidgetType::GLSLWaveform : return new GLSLWaveformWidget(viewer->getGroup(), viewer);
