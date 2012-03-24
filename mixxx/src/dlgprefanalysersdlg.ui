@@ -119,8 +119,11 @@
              <height>22</height>
             </rect>
            </property>
+           <property name="toolTip">
+            <string>Most modern dance music follows a 4/4 signature. Beat detection returns in betters results if checked.</string>
+           </property>
            <property name="text">
-            <string>Enable Fixed Tempo Optimization</string>
+            <string>Assume 4/4 signature </string>
            </property>
           </widget>
           <widget class="QCheckBox" name="boffset">
@@ -146,7 +149,7 @@
             </rect>
            </property>
            <property name="toolTip">
-            <string>Enable/Disable Beat Analysis</string>
+            <string>Enable beat detection. If activated Mixxx alignes the beat grid for your tracks. Using SYNC button, Mixxx can synchronize the tempo of  the playing tracks.</string>
            </property>
            <property name="text">
             <string>Enabled</string>
@@ -160,6 +163,9 @@
              <width>451</width>
              <height>20</height>
             </rect>
+           </property>
+           <property name="toolTip">
+            <string>Enable fast beat detection. If activated Mixxx analyzes the first minute of a track. This may affect negatively the quality of the BPM and beat detection. But it accelerates the track analyzing process drastically on slow computers.</string>
            </property>
            <property name="text">
             <string>Enable Fast Analysis (For slow computers but may be less accurate)</string>
