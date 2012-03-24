@@ -15,7 +15,7 @@
 #include "track/beats.h"
 
 
-
+#define BEAT_MAP_VERSION "BeatMap-1.0"
 struct SignedBeat{
 
     double position;

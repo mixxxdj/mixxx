@@ -48,7 +48,7 @@ void BeatMatrix::readByteArray(const QByteArray* pByteArray) {
 
 QString BeatMatrix::getVersion() const {
     QMutexLocker locker(&m_mutex);
-    return "BeatMatrix-1.0";
+    return BEAT_MATRIX_VERSION;
 }
 
 // internal use only

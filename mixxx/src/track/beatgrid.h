@@ -7,6 +7,8 @@
 #include "trackinfoobject.h"
 #include "track/beats.h"
 
+#define BEAT_GRID_VERSION "BeatGrid-1.0"
+
 // BeatGrid is an implementation of the Beats interface that implements an
 // infinite grid of beats, aligned to a song simply by a starting offset of the
 // first beat and the song's average beats-per-minute.
