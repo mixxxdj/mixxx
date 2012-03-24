@@ -5,7 +5,10 @@
 
 #include <QModelIndexList>
 #include "librarytablemodel.h"
+#include "controlobjectthreadmain.h"
 
+
+class ControlObjectThreadMain;
 
 class SelectorLibraryTableModel : public LibraryTableModel
 {
@@ -27,6 +30,7 @@ class SelectorLibraryTableModel : public LibraryTableModel
   private slots:
     void slotSearch(const QString& searchText);
     void slotPlayingDeckChanged(int deck);
+    void slotChannel1BpmChanged(double value);    
   signals:
     void doSearch(const QString& searchText);
   private:
@@ -43,6 +47,9 @@ class SelectorLibraryTableModel : public LibraryTableModel
     QString m_pFilterRating;
     QString m_pFilterKey;
     QString m_pFilterHarmonicKey;
+    QString m_pChannel;
+    TrackPointer m_pLoadedTrack;
+    ControlObjectThreadMain* m_pChannelBpm;
 };
 
 
