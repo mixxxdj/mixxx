@@ -70,6 +70,8 @@ DlgSelector::DlgSelector(QWidget* parent,
             this,  SLOT(filterByRating()));
     connect(checkBoxKey, SIGNAL(clicked()),
             this,  SLOT(filterByKey()));
+    connect(checkBoxHarmonicKey, SIGNAL(clicked()),
+            this,  SLOT(filterByHarmonicKey()));
 
     checkBoxGenre->click();
 
@@ -150,6 +152,11 @@ void DlgSelector::filterByRating()
 void DlgSelector::filterByKey()
 {
     m_pSelectorLibraryTableModel->filterByKey(checkBoxKey->isChecked());
+}
+
+void DlgSelector::filterByHarmonicKey()
+{
+    m_pSelectorLibraryTableModel->filterByHarmonicKey(checkBoxHarmonicKey->isChecked());
 }
 
 void DlgSelector::installEventFilter(QObject* pFilter) {

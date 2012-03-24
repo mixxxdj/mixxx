@@ -29,6 +29,8 @@ SelectorLibraryTableModel::SelectorLibraryTableModel(QObject* parent,
     m_bFilterYear = false;
     m_bFilterRating = false;
     m_bFilterKey = false;
+    m_bFilterHarmonicKey = false;
+
 
 }
 
@@ -40,6 +42,35 @@ bool SelectorLibraryTableModel::isColumnInternal(int column) {
 }
 
 void SelectorLibraryTableModel::slotPlayingDeckChanged(int deck) {
+
+    // TODO - move this somewhere sensible...
+    QHash<QString, QString> harmonics;
+    harmonics["Abm"] = "'Dbm', 'B',  'Ebm'";
+    harmonics["Ebm"] = "'Abm', 'F#', 'Bbm'";
+    harmonics["Bbm"] = "'Ebm', 'Db', 'Fm'";
+    harmonics["Fm"]  = "'Bbm', 'Ab', 'Cm'";
+    harmonics["Cm"]  = "'Fm',  'Eb', 'Gm'";
+    harmonics["Gm"]  = "'Cm',  'Bb', 'Dm'";
+    harmonics["Dm"]  = "'Gm',  'F',  'Am'";
+    harmonics["Am"]  = "'Dm',  'C',  'Em'";
+    harmonics["Em"]  = "'Am',  'G',  'Bm'";
+    harmonics["Bm"]  = "'Em',  'D',  'F#m'";
+    harmonics["F#m"] = "'Bm',  'A',  'Dbm'";
+    harmonics["Dbm"] = "'F#m', 'E',  'Abm'";
+
+    harmonics["B"]  = "'E',  'Abm', 'F#'";
+    harmonics["F#"] = "'B',  'Ebm', 'Db'";
+    harmonics["Db"] = "'F#', 'Bbm', 'Ab'";
+    harmonics["Ab"] = "'Db', 'Fm',  'Eb'";
+    harmonics["Eb"] = "'Ab', 'Cm',  'Bb'";
+    harmonics["Bb"] = "'Eb', 'Gm',  'F'";
+    harmonics["F"]  = "'Bb', 'Dm',  'C'";
+    harmonics["C"]  = "'F',  'Am',  'G'";
+    harmonics["G"]  = "'C',  'Em',  'D'";
+    harmonics["D"]  = "'G',  'Bm',  'A'";
+    harmonics["A"]  = "'D',  'F#m', 'E'";
+    harmonics["E"]  = "'A',  'Dbm', 'B'";
+
     TrackPointer loaded_track = PlayerInfo::Instance(
         ).getTrackInfo(QString("[Channel%1]").arg(deck));
     if (loaded_track) {
@@ -68,7 +99,15 @@ void SelectorLibraryTableModel::slotPlayingDeckChanged(int deck) {
         // Key
         QString TrackKey = loaded_track->getKey();
         m_pFilterKey = (TrackKey!="") ? QString(
-            "Key >= '%1'").arg(TrackKey) : QString();
+            "Key == '%1'").arg(TrackKey) : QString();
+
+        // Harmonic Key
+        //QString TrackKey = loaded_track->getKey();
+        QString keys = harmonics[TrackKey];
+        m_pFilterHarmonicKey = (keys!="") ? QString(
+            "Key in (%1)").arg(keys) : QString();
+
+        // Hack
 
     }
     //qDebug() << "slotPlayingDeckChanged(" << deck;
@@ -87,7 +126,16 @@ void SelectorLibraryTableModel::slotSearch(const QString& searchText) {
     if (m_bFilterBpm && m_pFilterBpm != "") { filters << m_pFilterBpm; }
     if (m_bFilterYear && m_pFilterYear != "") { filters << m_pFilterYear; }
     if (m_bFilterRating && m_pFilterRating != "") { filters << m_pFilterRating; }
-    if (m_bFilterKey && m_pFilterKey != "") { filters << m_pFilterKey; }
+
+    // hack if both
+    if ((m_bFilterKey && m_pFilterKey != "") 
+        && (m_bFilterHarmonicKey && m_pFilterHarmonicKey != "")) {
+        filters << QString("(%1 OR %2)").arg(m_pFilterKey).arg(m_pFilterHarmonicKey);
+    } else {
+        if (m_bFilterKey && m_pFilterKey != "") { filters << m_pFilterKey; }
+        if (m_bFilterHarmonicKey && m_pFilterHarmonicKey != "") { filters << m_pFilterHarmonicKey; }
+    }
+
 
     //qDebug() << "slotSearch()m_pFilterGenre = [" << m_pFilterGenre << "] " << (m_pFilterGenre != "");   
     //qDebug() << "slotSearch()m_pFilterBpm = [" << m_pFilterBpm << "] " << (m_pFilterBpm != "");   
@@ -121,5 +169,10 @@ void SelectorLibraryTableModel::filterByRating(bool value) {
 
 void SelectorLibraryTableModel::filterByKey(bool value) {
     m_bFilterKey = value;
+    emit(doSearch(QString()));
+}
+
+void SelectorLibraryTableModel::filterByHarmonicKey(bool value) {
+    m_bFilterHarmonicKey = value;
     emit(doSearch(QString()));
 }

@@ -23,6 +23,7 @@ class SelectorLibraryTableModel : public LibraryTableModel
     void filterByYear(bool value);
     void filterByRating(bool value);
     void filterByKey(bool value);
+    void filterByHarmonicKey(bool value);
   private slots:
     void slotSearch(const QString& searchText);
     void slotPlayingDeckChanged(int deck);
@@ -34,11 +35,14 @@ class SelectorLibraryTableModel : public LibraryTableModel
     bool m_bFilterYear;
     bool m_bFilterRating;
     bool m_bFilterKey;
+    bool m_bFilterHarmonicKey;
+    QHash<QString, QString> harmonics;
     QString m_pFilterGenre;
     QString m_pFilterBpm;
     QString m_pFilterYear;
     QString m_pFilterRating;
     QString m_pFilterKey;
+    QString m_pFilterHarmonicKey;
 };
 
 
