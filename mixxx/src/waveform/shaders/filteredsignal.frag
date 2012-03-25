@@ -1,13 +1,3 @@
-//#version 100
-#extension GL_EXT_gpu_shader4 : enable
-
-uniform int waveformLength;
-uniform int textureSize;
-uniform int textureStride;
-uniform float indexPosition;
-
-uniform int zoomFactor;
-
 uniform int viewportWidth;
 uniform int viewportHeigth;
 
@@ -15,75 +5,22 @@ uniform vec4 lowColor;
 uniform vec4 midColor;
 uniform vec4 highColor;
 
-uniform sampler2D waveformDataTexture;
-
-vec4 getWaveformData( float index)
-{
-    vec2 uv_data;
-    uv_data.y = floor( index / float(textureStride));
-    uv_data.x = floor( index - uv_data.y * float(textureStride));
-    return texture2D( waveformDataTexture, uv_data / float(textureStride));
-}
-
-vec4 getWaveformData_linearInterpolation( float index)
-{
-    float ratio = index - floor(index);
-
-    float firstIndex = floor(index);
-    float secondIndex = index + 2.0;
-
-    vec2 uv_data_first;
-    uv_data_first.y = floor( firstIndex / float(textureStride));
-    uv_data_first.x = floor( firstIndex - uv_data_first.y * float(textureStride));
-
-    vec2 uv_data_second;
-    uv_data_second.y = floor( secondIndex / float(textureStride));
-    uv_data_second.x = floor( secondIndex - uv_data_second.y * float(textureStride));
-
-    return mix( texture2D( waveformDataTexture, uv_data_first / float(textureStride)),
-                texture2D( waveformDataTexture, uv_data_second / float(textureStride)),
-                ratio);
-}
-
-#define texel_x 1.0/viewportWidth
+uniform int textureSize;
+uniform sampler2D signalTexture;
 
 void main(void)
 {
-    ///////////////////
-
     vec2 uv = gl_TexCoord[0].st;
 
-    //gl_FragColor = vec4( uv.x, uv.y, 0.0, 1.0);
-    //return;
+    gl_FragColor = texture2D(signalTexture,uv);
+    return;
 
-    //gl_FragColor = texture2D( waveformDataTexture, uv);
-    //return;
+    /*
+    uv.y = 0.25;
+    vec4 signalRigth = texture2D(signalTexture,uv);
 
-    int visualSampleRange = zoomFactor * viewportWidth;
-    float pixelWeigth = 0.8f / float(zoomFactor);
-
-    float currentIndex = indexPosition + 2.0*(uv.x - 0.5) * visualSampleRange;
-    int nearestCurrentIndex = floor(currentIndex);
-    currentIndex -= float(nearestCurrentIndex%(2*zoomFactor));
-
-    float previousIndex = currentIndex - float(2*zoomFactor);
-    float nextIndex = currentIndex + float(2*zoomFactor);
-
-
-    //gl_FragColor = vec4( (currentIndex - firstIndex)/(2.0*(float)displayRange), firstIndex/float(waveformLength), 1.0, 1.0);
-    //return;
-
-    //gl_FragColor = getWaveformData(currentIndex);
-    //return;
 
     vec4 outputColor = vec4(0.0,0.0,0.0,0.0);
-
-    //float firstPixelPosition = currentIndex - pixelRange/2.0;
-    //float lastPixelPosition = firstPixelPosition + pixelRange;
-
-    float firstPixelPosition = previousIndex;
-    float lastPixelPosition = nextIndex;
-
     vec3 accumulatedData = vec3(0.0,0.0,0.0);
     //vec3 meanData = vec3(0.0);
 
@@ -133,4 +70,5 @@ void main(void)
 
     gl_FragColor = outputColor;
     return;
+    */
 }
