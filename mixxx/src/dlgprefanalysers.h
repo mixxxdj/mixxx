@@ -36,6 +36,9 @@ private slots:
     void offsetEnabled(int i);
     void setDefaults();
     void fastAnalysisEnabled(int i);
+    void minBpmRangeChanged(int value);
+    void maxBpmRangeChanged(int value);
+
 
 signals:
     void apply(const QString &);
@@ -47,6 +50,10 @@ private:
     QList<QString> m_listName;
     QList<QString> m_listLibrary, m_listIdentifier;
     QString m_selectedAnalyser;
+
+    int m_minBpm;
+    int m_maxBpm;
+
     bool m_banalyserEnabled, m_bfixedtempoEnabled, m_boffsetEnabled, m_FastAnalysisEnabled;
 };
 
