@@ -8,22 +8,22 @@ msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2011-12-26 09:32+0200\n"
-"PO-Revision-Date: 2011-08-31 09:09+0000\n"
-"Last-Translator: Dimitar Dimitrov <Unknown>\n"
+"PO-Revision-Date: 2012-03-25 02:53+0000\n"
+"Last-Translator: Boyan Alexandrov <boyan.alexandrov@gmail.com>\n"
 "Language-Team: Bulgarian <bg@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-01-08 04:49+0000\n"
-"X-Generator: Launchpad (build 14640)\n"
+"X-Launchpad-Export-Date: 2012-03-25 04:45+0000\n"
+"X-Generator: Launchpad (build 14981)\n"
 
 #: AutoDJFeature#1
 msgid "Auto DJ"
-msgstr "Автоматичен DJ"
+msgstr "Авто DJ"
 
 #: BaseSqlTableModel#1
 msgid "Played"
-msgstr "Слушано"
+msgstr "Пускано"
 
 #: BaseSqlTableModel#2
 msgctxt "BaseSqlTableModel#2"
@@ -77,7 +77,7 @@ msgstr "Оценка"
 #: BaseSqlTableModel#12
 msgctxt "BaseSqlTableModel#12"
 msgid "Bitrate"
-msgstr "Качество"
+msgstr "Побитова скорост"
 
 #: BaseSqlTableModel#13
 msgctxt "BaseSqlTableModel#13"
@@ -87,7 +87,7 @@ msgstr "Темпо"
 #: BaseSqlTableModel#14
 msgctxt "BaseSqlTableModel#14"
 msgid "Track #"
-msgstr "Песен #"
+msgstr "Песен №"
 
 #: BaseSqlTableModel#15
 msgid "Date Added"
@@ -95,12 +95,12 @@ msgstr "Дата на добавяне"
 
 #: BaseSqlTableModel#16
 msgid "#"
-msgstr "#"
+msgstr "№"
 
 #: BaseSqlTableModel#17
 msgctxt "BaseSqlTableModel#17"
 msgid "Key"
-msgstr "Ключ"
+msgstr "Тоналност"
 
 #: BaseTrackPlayer#1
 msgid "Couldn't load track."
@@ -165,7 +165,7 @@ msgstr "Албум"
 #: BrowseTableModel#5
 msgctxt "BrowseTableModel#5"
 msgid "Track #"
-msgstr "Песен #"
+msgstr "Песен №"
 
 #: BrowseTableModel#6
 msgctxt "BrowseTableModel#6"
@@ -195,7 +195,7 @@ msgstr "Темпо"
 #: BrowseTableModel#11
 msgctxt "BrowseTableModel#11"
 msgid "Key"
-msgstr "Ключ"
+msgstr "Тоналност"
 
 #: BrowseTableModel#12
 msgctxt "BrowseTableModel#12"
@@ -205,7 +205,7 @@ msgstr "Тип"
 #: BrowseTableModel#13
 msgctxt "BrowseTableModel#13"
 msgid "Bitrate"
-msgstr "Качество"
+msgstr "Побитова скорост"
 
 #: BrowseTableModel#14
 msgctxt "BrowseTableModel#14"
@@ -227,20 +227,20 @@ msgstr ""
 
 #: BrowseTableModel#17
 msgid "Warning: This will permanently delete the following files:"
-msgstr "Внимание: Това ще изтритие безвъзвратно следните файлове:"
+msgstr "Внимание - това ще изтрие безвъзвратно следните файлове:"
 
 #: BrowseTableModel#18
 msgid "Are you sure you want to delete these files from your computer?"
 msgstr ""
-"Сигурни ли сте, че желаете да изтриете тези файлове от вашия компютър?"
+"Сигурни ли сте, че желаете да изтриете тези файлове от Вашия компютър?"
 
 #: BrowseTableModel#19
 msgid ""
 "Could not delete the following file because it is in use by Mixxx or another "
 "application:"
 msgstr ""
-"Следният файл не може да бъде изтрит, защото се използва отMixxx или друго "
-"приложение."
+"Следният файл не може да бъде изтрит, защото се използва от Mixxx или друго "
+"приложение:"
 
 #: BrowseTableModel#20
 msgid "Could not update file metadata."
@@ -268,7 +268,7 @@ msgstr "Заключване"
 #: CrateFeature#5
 msgctxt "CrateFeature#5"
 msgid "Import Playlist"
-msgstr "Внасяне на списък за изпълнение"
+msgstr "Внасяне на списък с песни"
 
 #: CrateFeature#6
 msgid "Crates"
@@ -293,41 +293,41 @@ msgstr "Име на колекцията:"
 
 #: CrateFeature#11
 msgid "An unknown error occurred while creating crate: "
-msgstr ""
+msgstr "Неочаквана грешка при създаване на колекция: "
 
 #: CrateFeature#12
 msgid "Rename Crate"
-msgstr ""
+msgstr "Преименуване на колекция"
 
 #: CrateFeature#13
 msgid "New crate name:"
-msgstr ""
+msgstr "Име на нова колекция:"
 
 #: CrateFeature#14
 msgid "Renaming Crate Failed"
-msgstr ""
+msgstr "Колекцията не бе преименувана успешно."
 
 #: CrateFeature#15
 msgctxt "CrateFeature#15"
 msgid "Playlist Files (*.m3u *.m3u8 *.pls)"
-msgstr ""
+msgstr "Списъци с песни"
 
 #: CrateFeature#16
 msgctxt "CrateFeature#16"
 msgid "M3U Playlist (*.m3u);;M3U8 Playlist (*.m3u8);;PLS Playlist (*.pls)"
-msgstr ""
+msgstr "M3U списък (*.m3u);;M3U8 списък (*.m3u8);;PLS списък (*.pls)"
 
 #: CrateFeature#17
 msgid "A crate cannot have a blank name."
-msgstr ""
+msgstr "Колекцията не може да има празно име."
 
 #: CrateFeature#18
 msgid "Creating Crate Failed"
-msgstr ""
+msgstr "Колекцията не бе създадена успешно."
 
 #: CrateFeature#19
 msgid "A crate by that name already exists."
-msgstr ""
+msgstr "Съществува друга колекция с това име."
 
 #: DlgAboutDlg#1
 msgid "About Mixxx"
@@ -360,11 +360,11 @@ msgstr "<a href=\"http://mixxx.org/\">Официална уеб страница
 
 #: DlgAutoDJ#1
 msgid "Disable Auto DJ"
-msgstr "Изключване на автоматичен DJ"
+msgstr "Изключване на авто DJ"
 
 #: DlgAutoDJ#2
 msgid "Enable Auto DJ"
-msgstr "Включване на автоматичен DJ"
+msgstr "ключване на авто DJ"
 
 #: DlgAutoDJ#3
 msgctxt "DlgAutoDJ#3"
@@ -381,27 +381,27 @@ msgstr "Добавяне на песни към опашката по-долу..
 
 #: DlgBpmSchemeDlg#1
 msgid "BPM Scheme"
-msgstr "Схема на темпото"
+msgstr "Диапазон на темпото"
 
 #: DlgBpmSchemeDlg#2
 msgid "Scheme Name:"
-msgstr "Име на схемата:"
+msgstr "Име на диапазона"
 
 #: DlgBpmSchemeDlg#3
 msgid "BPM Range"
-msgstr "Обхват на темпото"
+msgstr "Диапазон (BPM)"
 
 #: DlgBpmSchemeDlg#4
 msgid "Max"
-msgstr "Макс."
+msgstr "от"
 
 #: DlgBpmSchemeDlg#5
 msgid "Min"
-msgstr "Мин."
+msgstr "до"
 
 #: DlgBpmSchemeDlg#6
 msgid "Analyze Entire Song"
-msgstr ""
+msgstr "Цялостен анализ на песни"
 
 #: DlgMidiLearning#1
 msgid "Skip"
@@ -409,7 +409,7 @@ msgstr "Пропускане"
 
 #: DlgMidiLearning#2
 msgid "Successfully mapped to: "
-msgstr ""
+msgstr "Успешно насочване към: "
 
 #: DlgMidiLearning#3
 msgid "Next"
@@ -429,6 +429,8 @@ msgid ""
 "This wizard allows you to easily map the controls on your MIDI controller to "
 "Mixxx's controls."
 msgstr ""
+"Помощникът позволява насочване на копчетата на MIDI регулатор към бутоните "
+"на Mixxx."
 
 #: DlgMidiLearning#7
 msgid "Begin"
@@ -436,11 +438,11 @@ msgstr "Начало"
 
 #: DlgMidiLearning#8
 msgid "Please tweak the control for:"
-msgstr ""
+msgstr "Моля използвайте копчето за:"
 
 #: DlgMidiLearning#9
 msgid "Mixxx Control"
-msgstr "Mixxx контрол"
+msgstr "Mixxx функция"
 
 #: DlgMidiLearning#10
 msgid "Previous"
@@ -448,7 +450,7 @@ msgstr "Предишна"
 
 #: DlgMidiLearning#11
 msgid "Press spacebar to proceed or skip."
-msgstr "Натиснете интервал за продължаване или пропускане."
+msgstr "Натиснете интервала за продължаване или пропускане."
 
 #: DlgMidiLearning#12
 msgid "MIDI learning complete!"
@@ -470,6 +472,19 @@ msgid ""
 "left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><br />Now "
 "go spin some beats!</p></body></html>"
 msgstr ""
+"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" "
+"\"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+"<html><head><meta name=\"qrichtext\" content=\"1\" /><style "
+"type=\"text/css\">\n"
+"p, li { white-space: pre-wrap; }\n"
+"</style></head><body style=\" font-family:'Lucida Grande'; font-size:13pt; "
+"font-weight:400; font-style:normal;\">\n"
+"<p align=\"center\" style=\" margin-top:0px; margin-bottom:0px; margin-"
+"left:0px; margin-right:0px; -qt-block-indent:0; text-"
+"indent:0px;\">Помощникът може да бъде пуснат отново по всяко време.</p>\n"
+"<p align=\"center\" style=\" margin-top:0px; margin-bottom:0px; margin-"
+"left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><br />А "
+"сега можете да пускате с вашето MIDI устройство!</p></body></html>"
 
 #: DlgMidiLearning#14
 msgid "Finito!"
@@ -503,7 +518,7 @@ msgstr "Записване на темпото в ID3 етикета"
 
 #: DlgPrefBPMDlg#6
 msgid "If BPM can be detected but not within specified range"
-msgstr "Ако темпото може да бъде засечено, но не е в указанията обхват"
+msgstr "При засечено темпо извън определения диапазон"
 
 #: DlgPrefBPMDlg#7
 msgid "Allow BPM above the range"
@@ -511,7 +526,7 @@ msgstr "Разрешаване на темпо извън обхвата"
 
 #: DlgPrefBPMDlg#8
 msgid "BPM Schemes"
-msgstr "Схеми на темпото"
+msgstr "Диапазони на темпото"
 
 #: DlgPrefBPMDlg#9
 msgctxt "DlgPrefBPMDlg#9"
@@ -585,11 +600,11 @@ msgstr "90%"
 
 #: DlgPrefControls#12
 msgid "Up increases speed"
-msgstr "Нагоре увеличава скоростта"
+msgstr "Нагоре"
 
 #: DlgPrefControls#13
 msgid "Down increases speed (Technics SL1210)"
-msgstr "Надолу увеличава скоростта (Technics SL1210)"
+msgstr "Надолу (Technics SL1210)"
 
 #: DlgPrefControls#14
 msgctxt "DlgPrefControls#14"
@@ -637,19 +652,19 @@ msgstr "Изключено"
 
 #: DlgPrefControlsDlg#9
 msgid "Pitch/Rate slider range"
-msgstr "Обхват на плъзгача височина/скорост"
+msgstr "Диапазон на плъзгачите за тон/скорост"
 
 #: DlgPrefControlsDlg#10
 msgid "Pitch/Rate slider direction"
-msgstr "Посока на плъзгача височина/скорост"
+msgstr "Посока на увеличаване на тон/скорост"
 
 #: DlgPrefControlsDlg#11
 msgid "Track load behaviour"
-msgstr "Поведение при зареждане на песен"
+msgstr "При зареждане на песен"
 
 #: DlgPrefControlsDlg#12
 msgid "Cue behaviour"
-msgstr ""
+msgstr "При встъпване (Cue)"
 
 #: DlgPrefControlsDlg#13
 msgid "Auto Recall Cue"
@@ -657,20 +672,19 @@ msgstr ""
 
 #: DlgPrefControlsDlg#14
 msgid "Permanent Pitch/Rate Buttons"
-msgstr "Постоянни бутони за височина/скорост"
+msgstr "Бутони за промяна на тон/скорост"
 
 #: DlgPrefControlsDlg#15
 msgid "Left click"
-msgstr "Щракване с ляв бутон на мишката"
+msgstr "при щракане с ляв бутон"
 
 #: DlgPrefControlsDlg#16
 msgid "Right click"
-msgstr "Щракване с десен бутон на мишката"
+msgstr "при щракане с десен бутон"
 
 #: DlgPrefControlsDlg#17
 msgid "Permanent rate change (between 1 and 8000) when left clicking"
-msgstr ""
-"Постоянна промяна на скоростта (между 1 и 8000) при щракане с ляв бутон"
+msgstr "промяна на скоростта при щракане с ляв бутон"
 
 #: DlgPrefControlsDlg#18
 msgid "%"
@@ -678,22 +692,19 @@ msgstr "%"
 
 #: DlgPrefControlsDlg#19
 msgid "Permanent rate change (between 1 and 8000) when right clicking"
-msgstr ""
-"Постоянна промяна на скоростта (между 1 и 8000) при щракане с десен бутон"
+msgstr "промяна на скоростта при щракане с десен бутон"
 
 #: DlgPrefControlsDlg#20
 msgid "Temporary Pitch/Rate Buttons"
-msgstr "Бутони за вренна височина/скорост"
+msgstr "Бутони за краткотрайна промяна на тон/скорост"
 
 #: DlgPrefControlsDlg#21
 msgid "Temporary rate change (between 1 and 8000) when left clicking"
-msgstr ""
-"Временна промяна на скоростта (между 1 и 8000) при щракане с ляв бутон"
+msgstr "краткотрайна промяна на скоростта при щракане с ляв бутон"
 
 #: DlgPrefControlsDlg#22
 msgid "Temporary rate change (between 1 and 8000) when right clicking"
-msgstr ""
-"Временна промяна на скоростта (между 1 и 8000) при щракане с десен бутон"
+msgstr "краткотрайна промяна на скоростта при щракане с десен бутон"
 
 #: DlgPrefControlsDlg#23
 msgid "Ramping Pitchbend"
