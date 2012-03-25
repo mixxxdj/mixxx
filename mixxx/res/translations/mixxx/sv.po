@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2011-12-26 09:32+0200\n"
-"PO-Revision-Date: 2012-02-19 12:21+0000\n"
-"Last-Translator: jonatan johansson <Unknown>\n"
+"PO-Revision-Date: 2012-03-24 15:18+0000\n"
+"Last-Translator: Rikard Edgren <Unknown>\n"
 "Language-Team: Swedish <sv@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2012-02-20 05:52+0000\n"
-"X-Generator: Launchpad (build 14833)\n"
+"X-Launchpad-Export-Date: 2012-03-25 05:15+0000\n"
+"X-Generator: Launchpad (build 14981)\n"
 
 #: AutoDJFeature#1
 msgid "Auto DJ"
@@ -400,7 +400,7 @@ msgstr "Min"
 
 #: DlgBpmSchemeDlg#6
 msgid "Analyze Entire Song"
-msgstr ""
+msgstr "Analysera hela låten"
 
 #: DlgMidiLearning#1
 msgid "Skip"
@@ -1628,7 +1628,7 @@ msgstr "Återställ till standardvärden"
 #: DlgPrefSoundDlg#9
 msgctxt "DlgPrefSoundDlg#9"
 msgid "Apply"
-msgstr "Verktställ"
+msgstr "Verkställ"
 
 #: DlgPrefSoundDlg#10
 msgid "Latency"
