@@ -30,6 +30,7 @@ enum RateControl::RATERAMP_MODE RateControl::m_eRateRampMode = RateControl::RATE
 RateControl::RateControl(const char* _group,
                          ConfigObject<ConfigValue>* _config) :
     EngineControl(_group, _config),
+    m_sGroup(_group),
     m_ePbCurrent(0),
     m_ePbPressed(0),
     m_bTempStarted(false),
@@ -148,20 +149,26 @@ RateControl::RateControl(const char* _group,
     // Set the Sensitivity
     m_iRateRampSensitivity =
         m_pConfig->getValueString(ConfigKey("[Controls]","RateRampSensitivity")).toInt();
-    
-    
-    // We need this so we can sync to master sync    
-    m_pFileBpm = new ControlObject(ConfigKey(_group, "file_bpm"));
-    connect(m_pFileBpm, SIGNAL(valueChanged(double)),
-            this, SLOT(slotFileBpmChanged(double)),
-            Qt::DirectConnection);
+     
 
+    qDebug() << "creating the true rate object" << _group;
     m_pTrueRate = new ControlObject(ConfigKey(_group, "true_rate"));
             
-    m_pSyncState = ControlObject::getControl(ConfigKey(_group, "sync_state"));
+    /*m_pSyncState = ControlObject::getControl(ConfigKey(_group, "sync_state"));
     connect(m_pSyncState, SIGNAL(valueChanged(double)),
                 this, SLOT(slotSyncStateChanged(double)),
-                Qt::DirectConnection);
+                Qt::DirectConnection);*/
+                
+    //(XXX) TEMP DEBUG
+    qDebug() << "===========================================GROUP" << _group;
+    if (QString("[Channel1]") != _group)
+    {
+        m_iSyncState = SYNC_SLAVE;
+    }
+    else
+    {
+        m_iSyncState = SYNC_MASTER;
+    }
 
 
 #ifdef __VINYLCONTROL__
@@ -208,12 +215,27 @@ RateControl::~RateControl() {
 }
 
 void RateControl::setEngineMaster(EngineMaster* pEngineMaster) {
+    qDebug() << "*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=v setting engine master";
     EngineControl::setEngineMaster(pEngineMaster);
     //m_pEngineMaster = pEngineMaster;
     m_pMasterBpm = ControlObject::getControl(ConfigKey("[Master]","sync_bpm"));
-    connect(m_pMasterBpm, SIGNAL(valueChanged(double)),
+    connect(m_pMasterBpm, SIGNAL(valueChangedFromEngine(double)),
                 this, SLOT(slotMasterBpmChanged(double)),
                 Qt::DirectConnection);
+                
+    // We need this so we can sync to master sync    
+    m_pFileBpm = ControlObject::getControl(ConfigKey(m_sGroup, "file_bpm"));
+    connect(m_pFileBpm, SIGNAL(valueChanged(double)),
+            this, SLOT(slotFileBpmChanged(double)),
+            Qt::DirectConnection);
+
+                
+    //(XXX) temp debug
+    if (m_iSyncState == SYNC_MASTER)
+    {
+        qDebug() << "forcibly setting ourselves as master";
+        pEngineMaster->setMasterSync("[Channel1]");
+    }
 }
 
 
@@ -361,6 +383,7 @@ void RateControl::slotControlRateTempUpSmall(double)
 }
 
 void RateControl::slotFileBpmChanged(double bpm) {
+    qDebug() << "======================FILE BPM UPDATED" << bpm;
     m_dFileBpm = bpm;
 }
 
@@ -373,11 +396,29 @@ void RateControl::slotMasterBpmChanged(double syncbpm)
         // this comes into effect in the return from calculaterate
         //TODO: let's ignore x2, /2 issues for now
         //this is reproduced from bpmcontrol::syncTempo -- should break this out
-        double dDesiredRate = syncbpm / m_dFileBpm;
-        //normalize around 1
-        dDesiredRate -= 1.0;
-        //scale to range?
-        //dDesiredRate = dDesiredRate/(m_pRateRange->get() * m_pRateDir->get());
+        double dDesiredRate;
+        /*if (m_dFileBpm == 0.0)
+        {
+            //make sure we have something just in case?
+            m_dFileBpm = m_pFileBpm->get();
+        }*/
+        if (m_dFileBpm == 0.0)
+        {
+            //XXX TODO: what to do about this case
+            //qDebug() << "well fuck, what are we supposed to do with zero bpm????";
+            dDesiredRate = 0.0;
+        }
+        else {
+            qDebug() << "yay non-zero" << syncbpm << m_dFileBpm;
+            dDesiredRate = syncbpm / m_dFileBpm;
+            qDebug() << "so how about" << dDesiredRate;
+            //normalize around 1
+            //dDesiredRate -= 1.0;
+        }
+        if (m_dSyncedRate != dDesiredRate)
+        {
+            qDebug() << "Updating slave rate to:" << dDesiredRate;
+        }
         m_dSyncedRate = dDesiredRate;
     }
 }
@@ -429,9 +470,14 @@ double RateControl::calculateRate(double baserate, bool paused, int iSamplesPerB
     // if master sync is on, respond to it
     if (m_iSyncState == SYNC_SLAVE)
     {
-        //no work needs to be done, just return
-        m_dOldRate = rate;
-        m_pRateSlider->set(m_dSyncedRate * m_pRateDir->get());
+        if (m_dSyncedRate != 0) {
+            if (m_dSyncedRate != m_dOldRate) {
+                qDebug() << "we are a slave, set rate to " << m_dSyncedRate << baserate;
+            }
+        }
+        m_dOldRate = m_dSyncedRate;
+        m_pRateSlider->set(((m_dSyncedRate - 1.0f) / m_pRateRange->get()) * m_pRateDir->get());
+        m_pTrueRate->set(m_dSyncedRate);
         return m_dSyncedRate * baserate;
     }
     

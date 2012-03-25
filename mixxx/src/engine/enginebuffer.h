@@ -144,8 +144,6 @@ public:
                          int iSampleRate, int iNumSamples);
     void slotTrackLoadFailed(TrackPointer pTrack,
                              QString reason);
-    //void slotMasterScratchChanged(double);
-    //void slotMasterScratchEnabledChanged(double);
 
 
 private:
@@ -204,8 +202,6 @@ private:
 
     ControlObject* m_pTrackSamples;
     ControlObject* m_pTrackSampleRate;
-    //ControlObject *m_pMasterScratch, *m_pMasterScratchEnabled;
-    //ControlObject *m_pSyncState;
 
     ControlPushButton *playButton, *buttonBeatSync, *playStartButton, *stopStartButton, *stopButton;
     ControlObjectThreadMain *playButtonCOT, *playStartButtonCOT, *stopStartButtonCOT, *m_pTrackEndCOT, *stopButtonCOT;

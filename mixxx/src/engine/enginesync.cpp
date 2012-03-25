@@ -27,6 +27,8 @@ EngineSync::EngineSync(EngineMaster *master,
 {
     qDebug() << "group should be master" << _group;
     m_pEngineMaster = master;
+    m_pSourceRate = NULL;
+    m_dOldMasterRate = 0.0f;
     m_pMasterBpm = new ControlObject(ConfigKey(_group, "sync_bpm"));
     //m_pMasterRate = new ControlObject(ConfigKey(_group, "rate"));
     //m_pMasterRateEnabled = new ControlObject(ConfigKey(_group, "scratch_enable"));
@@ -36,22 +38,36 @@ bool EngineSync::setMaster(QString deck)
 {
     if (deck == NULL || deck == "")
     {
-        qDebug() << "unsetting master (got null)";
-        m_pSourceRate->disconnect();
+        qDebug() << "----------------------------------------------------unsetting master (got null)";
+        if (m_pSourceRate != NULL)
+        {
+            m_pSourceRate->disconnect();
+            delete m_pSourceRate;
+        }
         m_pMasterBuffer = NULL;
         emit(setSyncMaster(""));
+        return true;
     }
     
     EngineChannel* pChannel = m_pEngineMaster->getChannel(deck);
     // Only consider channels that have a track loaded and are in the master
     // mix.
-    if (pChannel && pChannel->isActive() && pChannel->isMaster()) {
+
+    qDebug() << "**************************************************************************asked to set a new master:" << deck;
+    
+    if (pChannel) {
         m_pMasterBuffer = pChannel->getEngineBuffer();
             
-        m_pSourceRate->disconnect();
-        delete m_pSourceRate;
+        if (m_pSourceRate != NULL) {
+            m_pSourceRate->disconnect();
+            delete m_pSourceRate;
+        }
         m_pSourceRate = ControlObject::getControl(ConfigKey(deck, "true_rate"));
-        connect(m_pSourceRate, SIGNAL(valueChanged(double)),
+        if (m_pSourceRate == NULL)
+        {
+            qDebug() << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!! source true rate was null";
+        }
+        connect(m_pSourceRate, SIGNAL(valueChangedFromEngine(double)),
                 this, SLOT(slotSourceRateChanged(double)),
                 Qt::DirectConnection);
 
@@ -69,9 +85,18 @@ bool EngineSync::setMaster(QString deck)
                 this, SLOT(slotScratchEnabledChanged(double)),
                 Qt::DirectConnection);
           */      
+        qDebug() << "----------------------------setting new master" << deck;
         emit(setSyncMaster(deck));
         
         return true;
+    }
+    else
+    {
+        qDebug() << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!did not set master";
+        if (pChannel == NULL)
+            qDebug() << "well, it was null!";
+        else
+            qDebug() << pChannel << pChannel->isActive() << pChannel->isMaster();
     }
     
     return false;
@@ -113,8 +138,16 @@ EngineBuffer* EngineSync::chooseMasterBuffer(void)
 
 void EngineSync::slotSourceRateChanged(double true_rate)
 {
-    double bpm = m_pMasterBuffer->getFileBpm();
-    m_pMasterBpm->set(true_rate * bpm); //this will trigger all of the slaves to change rate
+    qDebug() << "we got a true rate update";
+    if (true_rate != m_dOldMasterRate)
+    {
+        m_dOldMasterRate = true_rate;
+        
+        double filebpm = m_pMasterBuffer->getFileBpm();
+        double bpm = true_rate * filebpm;
+        qDebug() << "got rate update from source" << true_rate << "which in bpm is" << bpm;
+        m_pMasterBpm->set(bpm); //this will trigger all of the slaves to change rate
+    }
 }
 
 /*void EngineSync::slotScratchChanged(double scratch)

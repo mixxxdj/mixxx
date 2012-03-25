@@ -100,17 +100,6 @@ BpmControl::~BpmControl() {
     delete m_pTranslateBeats;
 }
 
-/*void BpmControl::setEngineMaster(EngineMaster* pEngineMaster) {
-    m_pEngineMaster = pEngineMaster;
-    
-    // Connect to the Master Sync
-    //m_pMasterRate = pEngineMaster->getMasterRateSync();
-    /*m_pMasterRate = ControlObject::getControl(ConfigKey("[Master]","rate"));
-    connect(m_pMasterRate, SIGNAL(valueChanged(double)),
-                this, SLOT(slotMasterRateChanged(double)),
-                Qt::DirectConnection);
-}*/
-
 double BpmControl::getBpm() {
     return m_pEngineBpm->get();
 }
@@ -185,24 +174,6 @@ void BpmControl::slotControlBeatSync(double v) {
         syncPhase();
     }
 }
-
-
-/*void BpmControl::slotMasterRateChanged(double otherBpm)
-{
-    if (m_iSyncState == SYNC_SLAVE)
-    {
-        // Just set the slider -- ratecontrol.cpp takes care of rate
-        
-        //TODO: let's ignore x2, /2 issues for now
-        //this is reproduced from syncTempo -- should break this out
-        double dDesiredRate = otherBpm / m_dFileBpm;
-        //normalize around 1
-        dDesiredRate -= 1.0;
-        //scale to range
-        dDesiredRate = dDesiredRate/(m_pRateRange->get() * m_pRateDir->get());
-        m_pRateSlider->set(dDesiredRate);
-    }
-}*/
 
 bool BpmControl::syncTempo() {
     EngineBuffer* pOtherEngineBuffer = pickSyncTarget();

@@ -55,6 +55,8 @@ class EngineSync : public EngineControl {
         ControlObject *m_pSourceRate, *m_pMasterBpm;
         /*ControlObject* m_pSourceRate, m_pSourceScratch, m_pSourceScratchEnabled;
         ControlObject* m_pMasterRate, m_pMasterScratch, m_pMasterScratchEnabled;*/
+        
+        double m_dOldMasterRate;
 };
 
 #endif

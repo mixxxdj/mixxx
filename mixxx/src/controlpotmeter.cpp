@@ -59,7 +59,7 @@ ControlPotmeter::ControlPotmeter(ConfigKey key, double dMinValue, double dMaxVal
     connect(controlDownSmall, SIGNAL(valueChanged(double)),
             this, SLOT(decSmallValue(double)));
 
-    ControlPushButton* controlZero = new ControlPushButton(
+/*    ControlPushButton* controlZero = new ControlPushButton(
         ConfigKey(key.group, QString(key.item) + "_set_zero"));
     controlZero->setParent(this);
     connect(controlZero, SIGNAL(valueChanged(double)),
@@ -87,7 +87,7 @@ ControlPotmeter::ControlPotmeter(ConfigKey key, double dMinValue, double dMaxVal
         ConfigKey(key.group, QString(key.item) + "_minus_toggle"));
     controlMinusToggle->setParent(this);
     connect(controlMinusToggle, SIGNAL(valueChanged(double)),
-            this, SLOT(toggleMinusValue(double)));
+            this, SLOT(toggleMinusValue(double)));*/
 }
 
 ControlPotmeter::~ControlPotmeter()

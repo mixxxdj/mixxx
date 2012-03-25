@@ -42,6 +42,10 @@ ControlObject::ControlObject(ConfigKey key, bool bIgnoreNops) :
     m_Key(key),
     m_bIgnoreNops(bIgnoreNops) {
     m_sqCOHashMutex.lock();
+    if (m_sqCOHash.contains(key))
+    {
+        qDebug() << "WARNING: Trying to create a control object with a key that's already in use! " << key.group << " " << key.item;
+    }
     m_sqCOHash.insert(key,this);
     m_sqCOHashMutex.unlock();
 }

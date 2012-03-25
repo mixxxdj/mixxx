@@ -207,12 +207,6 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
     m_pReadAheadManager->addEngineControl(m_pLoopingControl);
     m_pReadAheadManager->addEngineControl(m_pRateControl);
     
-    // Sync Control
-    /*m_pSyncState = new ControlObject(ConfigKey(group, "sync_state"));
-    connect(m_pSyncState, SIGNAL(valueChanged(double)),
-            this, SLOT(slotSyncStateChanged(double)),
-            Qt::DirectConnection);*/
-
     // Construct scaling objects
     m_pScaleLinear = new EngineBufferScaleLinear(m_pReadAheadManager);
 
@@ -318,8 +312,7 @@ double EngineBuffer::getFileBpm()
 
 void EngineBuffer::setEngineMaster(EngineMaster * pEngineMaster)
 {
-    //m_pBpmControl->setEngineMaster(pEngineMaster);
-    //m_pMasterTrueRate = ControlObject::getControl(ConfigKey("[Master]","true_rate"));
+    m_pRateControl->setEngineMaster(pEngineMaster);
 }
 
 void EngineBuffer::setNewPlaypos(double newpos)
@@ -511,7 +504,6 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
         bool is_scratching = false;
         rate = m_pRateControl->calculateRate(baserate, paused, iBufferSize,
                                              &is_scratching);
-        //qDebug() << "rate" << rate << " paused" << paused;
 
         // Scratching always disables keylock because keylock sounds terrible
         // when not going at a constant rate.

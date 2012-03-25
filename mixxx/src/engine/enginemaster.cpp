@@ -61,6 +61,8 @@ EngineMaster::EngineMaster(ConfigObject<ConfigValue> * _config,
     
     // Master sync controller
     m_pMasterSync = new EngineSync(this, group, _config);
+    //(XXX) DEBUG TEMP
+    m_pMasterSync->setMaster("[Channel1]");
 
 #ifdef __LADSPA__
     // LADSPA
@@ -165,6 +167,11 @@ const CSAMPLE* EngineMaster::getHeadphoneBuffer() const
 EngineSync* EngineMaster::getMasterSync(void)
 {
     return m_pMasterSync;
+}
+
+void EngineMaster::setMasterSync(QString deck)
+{
+    m_pMasterSync->setMaster(deck);
 }
 
 void EngineMaster::mixChannels(unsigned int channelBitvector, unsigned int maxChannels,

@@ -75,6 +75,8 @@ public:
     void slotSyncStateChanged(double);
 
   private:
+    QString m_sGroup;
+  
     double getJogFactor();
     double getWheelFactor();
 
