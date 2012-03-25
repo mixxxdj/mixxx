@@ -12,6 +12,7 @@
 #include <qstring.h>
 #include <qpushbutton.h>
 #include <qcombobox.h>
+#include <qspinbox.h>
 #include <QVector>
 #include <QList>
 #include <QtCore>
@@ -52,6 +53,11 @@ DlgPrefAnalysers::DlgPrefAnalysers(QWidget *parent, ConfigObject<ConfigValue> *_
     connect(bFastAnalysis, SIGNAL(stateChanged(int)),
             this, SLOT(fastAnalysisEnabled(int)));
 
+    connect(txtMinBpm, SIGNAL(valueChanged(int)),
+            this, SLOT(minBpmRangeChanged(int)));
+    connect(txtMaxBpm, SIGNAL(valueChanged(int)),
+            this, SLOT(maxBpmRangeChanged(int)));
+
 
 }
 
@@ -60,9 +66,12 @@ DlgPrefAnalysers::~DlgPrefAnalysers() {
 
 
 void DlgPrefAnalysers::loadSettings(){
-    if(m_pconfig->getValueString(ConfigKey(CONFIG_KEY,"AnalyserBeatPluginID"))==QString("")) {
+    if(m_pconfig->getValueString(ConfigKey(CONFIG_KEY,"AnalyserBeatPluginID"))==QString(""))
+    {
         setDefaults();
-    } else {
+    }
+    else
+    {
         QString pluginid = m_pconfig->getValueString(ConfigKey(CONFIG_KEY,"AnalyserBeatPluginID"));
         m_selectedAnalyser = pluginid;
         int i = m_pconfig->getValueString(ConfigKey(CONFIG_KEY,"AnalyserBeatEnabled")).toInt();
@@ -80,6 +89,9 @@ void DlgPrefAnalysers::loadSettings(){
         if(m_listIdentifier.indexOf(pluginid)==-1){
             setDefaults();
         }
+        m_minBpm = m_pconfig->getValueString(ConfigKey("[BPM]","BPMRangeStart")).toInt();
+        m_maxBpm = m_pconfig->getValueString(ConfigKey("[BPM]","BPMRangeEnd")).toInt();
+
         slotUpdate();
     }
 }
@@ -95,6 +107,8 @@ void DlgPrefAnalysers::setDefaults(){
     m_bfixedtempoEnabled = true;
     m_boffsetEnabled = true;
     m_FastAnalysisEnabled = false;
+    m_minBpm = 70;
+    m_maxBpm = 140;
     //slotApply();
     slotUpdate();
 }
@@ -125,6 +139,13 @@ void DlgPrefAnalysers::offsetEnabled(int i){
 
 }
 
+void DlgPrefAnalysers::minBpmRangeChanged(int value){
+    m_minBpm = value;
+}
+
+void DlgPrefAnalysers::maxBpmRangeChanged(int value){
+    m_maxBpm = value;
+}
 
 void DlgPrefAnalysers::slotUpdate(){
 
@@ -133,6 +154,8 @@ void DlgPrefAnalysers::slotUpdate(){
     plugincombo->setEnabled(m_banalyserEnabled);
     banalyserenabled->setChecked(m_banalyserEnabled);
     bFastAnalysis->setEnabled(m_banalyserEnabled);
+    txtMaxBpm->setEnabled(m_banalyserEnabled);
+    txtMinBpm->setEnabled(m_banalyserEnabled);
     if(!m_banalyserEnabled)
         return;
 
@@ -148,6 +171,8 @@ void DlgPrefAnalysers::slotUpdate(){
     }
 
     plugincombo->setCurrentIndex(comboselected);
+    txtMaxBpm->setValue(m_maxBpm);
+    txtMinBpm->setValue(m_minBpm);
 
 
 }
@@ -187,6 +212,10 @@ void DlgPrefAnalysers::slotApply(){
 
     m_pconfig->set(ConfigKey(CONFIG_KEY,"AnalyserBeatLibrary"), ConfigValue(m_listLibrary[selected]));
     m_pconfig->set(ConfigKey(CONFIG_KEY,"AnalyserBeatPluginID"), ConfigValue(m_selectedAnalyser));
+
+    m_pconfig->set(ConfigKey("[BPM]","BPMRangeEnd"),ConfigValue(m_maxBpm));
+    m_pconfig->set(ConfigKey("[BPM]","BPMRangeStart"),ConfigValue(m_minBpm));
+
     m_pconfig->Save();
 }
 

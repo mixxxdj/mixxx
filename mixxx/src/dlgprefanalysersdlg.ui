@@ -6,177 +6,218 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>634</width>
-    <height>480</height>
+    <width>690</width>
+    <height>509</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Analysers Settings</string>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout">
-   <item>
-    <widget class="QGroupBox" name="grpRP">
-     <property name="minimumSize">
-      <size>
-       <width>409</width>
-       <height>200</height>
-      </size>
+  <layout class="QGridLayout" name="gridLayout">
+   <item row="0" column="0">
+    <widget class="QCheckBox" name="banalyserenabled">
+     <property name="toolTip">
+      <string>Enable beat detection. If activated Mixxx alignes the beat grid for your tracks. Using SYNC button, Mixxx can synchronize the tempo of  the playing tracks.</string>
      </property>
+     <property name="text">
+      <string>Enable BPM and Beat Detection</string>
+     </property>
+    </widget>
+   </item>
+   <item row="2" column="0">
+    <widget class="QGroupBox" name="groupBox">
      <property name="title">
-      <string/>
+      <string>Choose Analyzer</string>
      </property>
-     <layout class="QGridLayout">
-      <item row="0" column="0">
-       <layout class="QHBoxLayout" name="_5">
-        <item>
-         <widget class="QFrame" name="frame">
-          <property name="locale">
-           <locale language="English" country="UnitedStates"/>
-          </property>
-          <widget class="QLabel" name="label">
-           <property name="geometry">
-            <rect>
-             <x>10</x>
-             <y>100</y>
-             <width>51</width>
-             <height>21</height>
-            </rect>
-           </property>
-           <property name="text">
-            <string>Plugin:</string>
-           </property>
-          </widget>
-          <widget class="QComboBox" name="plugincombo">
-           <property name="geometry">
-            <rect>
-             <x>70</x>
-             <y>100</y>
-             <width>501</width>
-             <height>27</height>
-            </rect>
-           </property>
-           <property name="toolTip">
-            <string>Choose beween different algorithms to calculate beats position</string>
-           </property>
-           <property name="layoutDirection">
-            <enum>Qt::LeftToRight</enum>
-           </property>
-          </widget>
-          <widget class="QPushButton" name="reset">
-           <property name="geometry">
-            <rect>
-             <x>480</x>
-             <y>390</y>
-             <width>98</width>
-             <height>27</height>
-            </rect>
-           </property>
-           <property name="toolTip">
-            <string>Reset to Default Values</string>
-           </property>
-           <property name="text">
-            <string>Reset</string>
-           </property>
-          </widget>
-          <widget class="Line" name="line">
-           <property name="geometry">
-            <rect>
-             <x>0</x>
-             <y>60</y>
-             <width>591</width>
-             <height>20</height>
-            </rect>
-           </property>
-           <property name="orientation">
-            <enum>Qt::Horizontal</enum>
-           </property>
-          </widget>
-          <widget class="QLabel" name="label_3">
-           <property name="geometry">
-            <rect>
-             <x>0</x>
-             <y>0</y>
-             <width>101</width>
-             <height>20</height>
-            </rect>
-           </property>
-           <property name="font">
-            <font>
-             <weight>75</weight>
-             <bold>true</bold>
-            </font>
-           </property>
-           <property name="text">
-            <string>Beat Analysis</string>
-           </property>
-          </widget>
-          <widget class="QCheckBox" name="bfixedtempo">
-           <property name="geometry">
-            <rect>
-             <x>10</x>
-             <y>180</y>
-             <width>257</width>
-             <height>22</height>
-            </rect>
-           </property>
-           <property name="toolTip">
-            <string>Most modern dance music follows a 4/4 signature. Beat detection returns in betters results if checked.</string>
-           </property>
-           <property name="text">
-            <string>Assume 4/4 signature </string>
-           </property>
-          </widget>
-          <widget class="QCheckBox" name="boffset">
-           <property name="geometry">
-            <rect>
-             <x>10</x>
-             <y>220</y>
-             <width>281</width>
-             <height>22</height>
-            </rect>
-           </property>
-           <property name="text">
-            <string>Enable Offset Correction</string>
-           </property>
-          </widget>
-          <widget class="QCheckBox" name="banalyserenabled">
-           <property name="geometry">
-            <rect>
-             <x>10</x>
-             <y>30</y>
-             <width>569</width>
-             <height>22</height>
-            </rect>
-           </property>
-           <property name="toolTip">
-            <string>Enable beat detection. If activated Mixxx alignes the beat grid for your tracks. Using SYNC button, Mixxx can synchronize the tempo of  the playing tracks.</string>
-           </property>
-           <property name="text">
-            <string>Enabled</string>
-           </property>
-          </widget>
-          <widget class="QCheckBox" name="bFastAnalysis">
-           <property name="geometry">
-            <rect>
-             <x>10</x>
-             <y>260</y>
-             <width>451</width>
-             <height>20</height>
-            </rect>
-           </property>
-           <property name="toolTip">
-            <string>Enable fast beat detection. If activated Mixxx analyzes the first minute of a track. This may affect negatively the quality of the BPM and beat detection. But it accelerates the track analyzing process drastically on slow computers.</string>
-           </property>
-           <property name="text">
-            <string>Enable Fast Analysis (For slow computers but may be less accurate)</string>
-           </property>
-          </widget>
-         </widget>
-        </item>
-       </layout>
+     <property name="alignment">
+      <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+     </property>
+     <layout class="QHBoxLayout" name="horizontalLayout">
+      <item>
+       <widget class="QLabel" name="label">
+        <property name="minimumSize">
+         <size>
+          <width>150</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>120</width>
+          <height>16777215</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>BPM Analyser:</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QComboBox" name="plugincombo">
+        <property name="minimumSize">
+         <size>
+          <width>200</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>2600</width>
+          <height>26</height>
+         </size>
+        </property>
+        <property name="toolTip">
+         <string>Choose beween different algorithms to calculate beats position</string>
+        </property>
+        <property name="layoutDirection">
+         <enum>Qt::LeftToRight</enum>
+        </property>
+       </widget>
       </item>
      </layout>
     </widget>
+   </item>
+   <item row="3" column="0">
+    <widget class="QGroupBox" name="groupBox_2">
+     <property name="title">
+      <string>Analyzer Settings</string>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayout">
+      <item>
+       <widget class="QCheckBox" name="bFastAnalysis">
+        <property name="toolTip">
+         <string>Enable fast beat detection. If activated Mixxx analyzes the first minute of a track. This may affect negatively the quality of the BPM and beat detection. But it accelerates the track analyzing process drastically on slow computers.</string>
+        </property>
+        <property name="text">
+         <string>Enable Fast Analysis (For slow computers but may be less accurate)</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QCheckBox" name="bfixedtempo">
+        <property name="toolTip">
+         <string>Most modern dance music follows a 4/4 signature. Beat detection returns in betters results if checked.</string>
+        </property>
+        <property name="text">
+         <string>Assume 4/4 signature </string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QCheckBox" name="boffset">
+        <property name="text">
+         <string>Enable Offset Correction</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item row="4" column="0">
+    <widget class="QGroupBox" name="groupBox_3">
+     <property name="title">
+      <string>BPM Range</string>
+     </property>
+     <layout class="QHBoxLayout" name="horizontalLayout_2">
+      <item>
+       <widget class="QLabel" name="label_2">
+        <property name="text">
+         <string>Min:</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QSpinBox" name="txtMinBpm">
+        <property name="minimum">
+         <number>50</number>
+        </property>
+        <property name="maximum">
+         <number>200</number>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="label_3">
+        <property name="text">
+         <string>Max:</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QSpinBox" name="txtMaxBpm">
+        <property name="minimum">
+         <number>50</number>
+        </property>
+        <property name="maximum">
+         <number>200</number>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <spacer name="horizontalSpacer">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item row="6" column="0">
+    <spacer name="verticalSpacer">
+     <property name="orientation">
+      <enum>Qt::Vertical</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>20</width>
+       <height>40</height>
+      </size>
+     </property>
+    </spacer>
+   </item>
+   <item row="5" column="0">
+    <layout class="QHBoxLayout" name="horizontalLayout_3">
+     <item>
+      <spacer name="horizontalSpacer_2">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item>
+      <widget class="QPushButton" name="reset">
+       <property name="text">
+        <string>Reset</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <spacer name="horizontalSpacer_3">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+    </layout>
    </item>
   </layout>
  </widget>
