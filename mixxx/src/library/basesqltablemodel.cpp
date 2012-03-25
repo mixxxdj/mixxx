@@ -474,6 +474,11 @@ QVariant BaseSqlTableModel::data(const QModelIndex& index, int role) const {
                 bool locked = getBaseValue(index, Qt::DisplayRole).toBool();
                 value = locked ? Qt::Checked : Qt::Unchecked;
             }
+            if (column == fieldIndex(LIBRARYTABLE_BPM)) {
+                bool locked = index.sibling(
+                        row, fieldIndex(LIBRARYTABLE_BPM_LOCK)).data(Qt::CheckStateRole).toBool();
+                value = locked ? Qt::Checked : Qt::Unchecked;
+            }
             break;
         default:
             break;
@@ -494,12 +499,20 @@ bool BaseSqlTableModel::setData(
     }
 
     // Over-ride sets to TIMESPLAYED and re-direct them to PLAYED
-    if (role == Qt::CheckStateRole) {
+    if (role == Qt::CheckStateRole)
+    {
+        QString val = value.toInt() > 0 ? QString("true") : QString("false");
         if (column == fieldIndex(LIBRARYTABLE_TIMESPLAYED)) {
-            QString val = value.toInt() > 0 ? QString("true") : QString("false");
             QModelIndex playedIndex = index.sibling(index.row(), fieldIndex(LIBRARYTABLE_PLAYED));
             return setData(playedIndex, val, Qt::EditRole);
         }
+        if (column == fieldIndex(LIBRARYTABLE_BPM))
+        {
+            //invisible system column
+            QModelIndex bpm_lock_column_index = index.sibling(index.row(), fieldIndex(LIBRARYTABLE_BPM_LOCK));
+            return setData(bpm_lock_column_index, val, Qt::CheckStateRole);
+        }
+
         if (column != fieldIndex(LIBRARYTABLE_BPM_LOCK))
             return false;
     }
@@ -562,7 +575,7 @@ Qt::ItemFlags BaseSqlTableModel::readWriteFlags(
         //disable BPM field when BPM is locked
         bool locked = getBaseValue(index, Qt::CheckStateRole).toBool();
         locked = this->index(index.row(), fieldIndex(LIBRARYTABLE_BPM_LOCK)).data(Qt::CheckStateRole).toBool();
-        //locked = index.data(Qt::CheckStateRole).toBool();
+        defaultFlags |= Qt::ItemIsUserCheckable;
         return (locked)? defaultFlags : defaultFlags | Qt::ItemIsEditable;
 
     }else {
