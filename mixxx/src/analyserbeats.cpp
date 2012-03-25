@@ -57,11 +57,27 @@ void AnalyserBeats::initialise(TrackPointer tio, int sampleRate, int totalSample
               return;
           }
     m_bPass = static_cast<bool> (m_pConfigAVT->getValueString(ConfigKey("[Vamp]","AnalyserBeatEnabled")).toInt());
+
     if(!m_bPass)
     {
         qDebug()<<"Beat calculation is deactivated";
         return;
     }
+
+    // If the track has a BeatGrid rather than a BeatMap return unless it is specified in the preferences
+    if(tio->getBeats() != NULL)
+    {
+        if(tio->getBeats()->getVersion() == BEAT_GRID_VERSION)
+        {
+            m_bPass = static_cast<bool>(m_pConfigAVT->getValueString(ConfigKey("[Vamp]","ReanalyzeOldBPM")).toInt());
+            if(!m_bPass)
+            {
+                qDebug()<<"Beat calculation skips analyzing because the track has a BPM computed by a previous Mixxx version.";
+                return;
+            }
+        }
+    }
+
     qDebug()<<"Beat calculation started";
     qDebug()<<"Beat calculation uses "<< pluginID;
     QString correction;
@@ -79,21 +95,24 @@ void AnalyserBeats::initialise(TrackPointer tio, int sampleRate, int totalSample
     else
         correction = "none";
 
+    //Check if BPM algorithm has changed
     QString pluginname = pluginID;
     pluginname.replace(QString(":"),QString("_output="));
     m_sSubver.append(QString("plugin=%1_beats_correction=%2").arg(pluginname,correction));
     BeatsPointer pBeats = tio->getBeats();
     QString bpmpluginkey = tio->getBpmPluginKey();
+
     if(pBeats)
         m_bPass = !bpmpluginkey.contains(QString("plugin=%1_beats_correction=%2").arg(pluginname,correction));
-    if(!m_bPass){
+
+    if(!m_bPass)
+    {
         qDebug()<<"Beat calculation will not start";
         return;
     }
-      //qDebug() << "Init Vamp Beat tracker with samplerate " << tio->getSampleRate() << " " << sampleRate;
-      //qDebug()<<"SubVersion is "<<m_sSubver;
-      mvamp = new VampAnalyser(m_pConfigAVT);
-      m_bPass = mvamp->Init(library, pluginID, m_iSampleRate, totalSamples);
+
+    mvamp = new VampAnalyser(m_pConfigAVT);
+    m_bPass = mvamp->Init(library, pluginID, m_iSampleRate, totalSamples);
 }
 
 void AnalyserBeats::process(const CSAMPLE *pIn, const int iLen) {

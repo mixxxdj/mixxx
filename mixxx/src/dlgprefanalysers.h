@@ -38,6 +38,7 @@ private slots:
     void fastAnalysisEnabled(int i);
     void minBpmRangeChanged(int value);
     void maxBpmRangeChanged(int value);
+    void slotReanalyzeChanged(int value);
 
 
 signals:
@@ -54,7 +55,7 @@ private:
     int m_minBpm;
     int m_maxBpm;
 
-    bool m_banalyserEnabled, m_bfixedtempoEnabled, m_boffsetEnabled, m_FastAnalysisEnabled;
+    bool m_banalyserEnabled, m_bfixedtempoEnabled, m_boffsetEnabled, m_FastAnalysisEnabled, m_bReanalyze;
 };
 
 

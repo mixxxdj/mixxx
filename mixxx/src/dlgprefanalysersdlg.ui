@@ -110,6 +110,13 @@
         </property>
        </widget>
       </item>
+      <item>
+       <widget class="QCheckBox" name="bReanalyse">
+        <property name="text">
+         <string>Reanalyze BPM values originating from previous Mixxx versions or 3rd party software</string>
+        </property>
+       </widget>
+      </item>
      </layout>
     </widget>
    </item>
