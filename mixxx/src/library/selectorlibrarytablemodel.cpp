@@ -30,6 +30,43 @@ SelectorLibraryTableModel::SelectorLibraryTableModel(QObject* parent,
     m_bFilterRating = false;
     m_bFilterKey = false;
     m_bFilterHarmonicKey = false;
+    m_pChannelBpm = NULL;
+
+    // TODO - move this somewhere sensible...
+    m_pHarmonics["Abm"] = "'Dbm', 'C#m', 'B',  'Ebm', 'D#m'";
+    m_pHarmonics["G#m"] = m_pHarmonics["Abm"];
+    m_pHarmonics["Ebm"] = "'Abm', 'G#m', 'F#', 'Bbm', 'A#m'";
+    m_pHarmonics["D#m"] = m_pHarmonics["Ebm"];
+    m_pHarmonics["Bbm"] = "'Ebm', 'D#m', 'Db', 'C#',  'Fm'";
+    m_pHarmonics["A#m"] = m_pHarmonics["Bbm"];
+    m_pHarmonics["Fm"]  = "'Bbm', 'A#m', 'Ab', 'G#',  'Cm'";
+    m_pHarmonics["Cm"]  = "'Fm',  'Eb',  'D#', 'Gm'";
+    m_pHarmonics["Gm"]  = "'Cm',  'Bb',  'A#', 'Dm'";
+    m_pHarmonics["Dm"]  = "'Gm',  'F',   'Am'";
+    m_pHarmonics["Am"]  = "'Dm',  'C',   'Em'";
+    m_pHarmonics["Em"]  = "'Am',  'G',   'Bm'";
+    m_pHarmonics["Bm"]  = "'Em',  'D',   'F#m', 'Gbm'";
+    m_pHarmonics["F#m"] = "'Bm',  'A',   'Dbm', 'C#m'";
+    m_pHarmonics["Gbm"] = m_pHarmonics["F#m"];
+    m_pHarmonics["Dbm"] = "'F#m', 'Gbm', 'F#m', 'E', 'Abm', 'G#m'";
+    m_pHarmonics["C#m"] = m_pHarmonics["Dbm"];
+
+    m_pHarmonics["B"]  = "'E',  'Abm', 'G#m', 'F#'";
+    m_pHarmonics["F#"] = "'B',  'Ebm', 'D#m', 'Db', 'C#'";
+    m_pHarmonics["Db"] = "'F#', 'Bbm', 'A#m', 'Ab', 'G#'";
+    m_pHarmonics["C#"] = m_pHarmonics["Db"];
+    m_pHarmonics["Ab"] = "'Db', 'C#',  'Fm',  'Eb', 'D#'";
+    m_pHarmonics["G#"] = m_pHarmonics["Ab"];
+    m_pHarmonics["Eb"] = "'Ab', 'G#',  'Cm',  'Bb'";
+    m_pHarmonics["D#"] = m_pHarmonics["Eb"];
+    m_pHarmonics["Bb"] = "'Eb', 'D#',  'Gm',  'F'";
+    m_pHarmonics["A#"] = m_pHarmonics["Bb"];
+    m_pHarmonics["F"]  = "'Bb', 'Dm',  'C'";
+    m_pHarmonics["C"]  = "'F',  'Am',  'G'";
+    m_pHarmonics["G"]  = "'C',  'Em',  'D'";
+    m_pHarmonics["D"]  = "'G',  'Bm',  'A'";
+    m_pHarmonics["A"]  = "'D',  'F#m', 'Gbm', 'E'";
+    m_pHarmonics["E"]  = "'A',  'Dbm', 'C#m', 'B'";
 
 
 }
@@ -42,44 +79,6 @@ bool SelectorLibraryTableModel::isColumnInternal(int column) {
 }
 
 void SelectorLibraryTableModel::slotPlayingDeckChanged(int deck) {
-
-
-    // TODO - move this somewhere sensible...
-    QHash<QString, QString> harmonics;
-    harmonics["Abm"] = "'Dbm', 'C#m', 'B',  'Ebm', 'D#m'";
-    harmonics["G#m"] = harmonics["Abm"];
-    harmonics["Ebm"] = "'Abm', 'G#m', 'F#', 'Bbm', 'A#m'";
-    harmonics["D#m"] = harmonics["Ebm"];
-    harmonics["Bbm"] = "'Ebm', 'D#m', 'Db', 'C#',  'Fm'";
-    harmonics["A#m"] = harmonics["Bbm"];
-    harmonics["Fm"]  = "'Bbm', 'A#m', 'Ab', 'G#',  'Cm'";
-    harmonics["Cm"]  = "'Fm',  'Eb',  'D#', 'Gm'";
-    harmonics["Gm"]  = "'Cm',  'Bb',  'A#', 'Dm'";
-    harmonics["Dm"]  = "'Gm',  'F',   'Am'";
-    harmonics["Am"]  = "'Dm',  'C',   'Em'";
-    harmonics["Em"]  = "'Am',  'G',   'Bm'";
-    harmonics["Bm"]  = "'Em',  'D',   'F#m', 'Gbm'";
-    harmonics["F#m"] = "'Bm',  'A',   'Dbm', 'C#m'";
-    harmonics["Gbm"] = harmonics["F#m"];
-    harmonics["Dbm"] = "'F#m', 'Gbm', 'F#m', 'E', 'Abm', 'G#m'";
-    harmonics["C#m"] = harmonics["Dbm"];
-
-    harmonics["B"]  = "'E',  'Abm', 'G#m', 'F#'";
-    harmonics["F#"] = "'B',  'Ebm', 'D#m', 'Db', 'C#'";
-    harmonics["Db"] = "'F#', 'Bbm', 'A#m', 'Ab', 'G#'";
-    harmonics["C#"] = harmonics["Db"];
-    harmonics["Ab"] = "'Db', 'C#',  'Fm',  'Eb', 'D#'";
-    harmonics["G#"] = harmonics["Ab"];
-    harmonics["Eb"] = "'Ab', 'G#',  'Cm',  'Bb'";
-    harmonics["D#"] = harmonics["Eb"];
-    harmonics["Bb"] = "'Eb', 'D#',  'Gm',  'F'";
-    harmonics["A#"] = harmonics["Bb"];
-    harmonics["F"]  = "'Bb', 'Dm',  'C'";
-    harmonics["C"]  = "'F',  'Am',  'G'";
-    harmonics["G"]  = "'C',  'Em',  'D'";
-    harmonics["D"]  = "'G',  'Bm',  'A'";
-    harmonics["A"]  = "'D',  'F#m', 'Gbm', 'E'";
-    harmonics["E"]  = "'A',  'Dbm', 'C#m', 'B'";
 
     m_pChannel = QString("[Channel%1]").arg(deck);
     m_pLoadedTrack = PlayerInfo::Instance(
@@ -116,9 +115,9 @@ void SelectorLibraryTableModel::slotPlayingDeckChanged(int deck) {
             "Genre == '%1'").arg(TrackGenre) : QString();
 
         // Bpm
-        float TrackBpm = m_pLoadedTrack->getBpm();
-        float bpm = TrackBpm * (1 + rateSlider->get() * rateRange->get() * rateDirection->get());
-        //float TrackBpm = pChannel1Bpm->get();
+        float trackBpm = m_pLoadedTrack->getBpm();
+        float bpm = trackBpm * (1 + rateSlider->get() * rateRange->get() * rateDirection->get());
+        //float trackBpm = pChannel1Bpm->get();
         m_pFilterBpm = (bpm > 0) ? QString(
             "Bpm > %1 AND Bpm < %2").arg(
             bpm - 1).arg(bpm + 1) : QString();
@@ -140,7 +139,7 @@ void SelectorLibraryTableModel::slotPlayingDeckChanged(int deck) {
 
         // Harmonic Key
         //QString TrackKey = m_pLoadedTrack->getKey();
-        QString keys = harmonics[TrackKey];
+        QString keys = m_pHarmonics[TrackKey];
         m_pFilterHarmonicKey = (keys!="") ? QString(
             "Key in (%1)").arg(keys) : QString();
 
@@ -160,18 +159,77 @@ void SelectorLibraryTableModel::slotChannel1BpmChanged(double value) {
         ControlObject::getControl(ConfigKey(m_pChannel, "rateRange")));
     ControlObjectThreadMain* rateDirection = new ControlObjectThreadMain(
         ControlObject::getControl(ConfigKey(m_pChannel, "rate_dir")));
-    ControlObjectThreadMain* pChannel1Bpm = new ControlObjectThreadMain(
-        ControlObject::getControl(ConfigKey(m_pChannel, "bpm")));
+    //ControlObjectThreadMain* pChannel1Bpm = new ControlObjectThreadMain(
+    //    ControlObject::getControl(ConfigKey(m_pChannel, "bpm")));
 
-    float TrackBpm = m_pLoadedTrack->getBpm();
-    float bpm = TrackBpm * (1 + rateSlider->get() * rateRange->get() * rateDirection->get());
-    //float TrackBpm = pChannel1Bpm->get();
-    m_pFilterBpm = (bpm > 0) ? QString(
+    float trackBpm = m_pLoadedTrack->getBpm();
+    float currentBpm = trackBpm * (1 + rateSlider->get() * rateRange->get() * rateDirection->get());
+    //float trackBpm = pChannel1Bpm->get();
+    m_pFilterBpm = (currentBpm > 0) ? QString(
         "Bpm > %1 AND Bpm < %2").arg(
-        bpm - 1).arg(bpm + 1) : QString();
+        currentBpm - 1).arg(currentBpm + 1) : QString();
+
+    float semitoneOffset = frequencyRatioToOctaveDifference(currentBpm, trackBpm);
+    qDebug() << "slotChannelBpmChanged() semitones offset = " << semitoneOffset;
+
+    QString TrackKey = adjustPitchBy(m_pLoadedTrack->getKey(), semitoneOffset);
+    qDebug() << "slotChannelBpmChanged() adjusted key = " << TrackKey;
+    // Key
+    m_pFilterKey = (TrackKey!="") ? QString(
+        "Key == '%1'").arg(TrackKey) : QString();
+
+    // Harmonic Key
+    //QString TrackKey = m_pLoadedTrack->getKey();
+    QString keys = m_pHarmonics[TrackKey];
+    m_pFilterHarmonicKey = (keys!="") ? QString(
+        "Key in (%1)").arg(keys) : QString();
 
     //qDebug() << "getActiveProperties(" << deck;
     emit(doSearch(""));
+}
+
+QString SelectorLibraryTableModel::adjustPitchBy(QString pitch, int change) {
+    QList<QString> semitones_major;
+    semitones_major <<"C"<<"C#"<<"D"<<"Eb"<<"E"<<"F"<<"F#"<<"G"<<"G#"<<"A"<<"Bb"<<"B";
+    QList<QString> semitones_minor;
+    semitones_minor <<"Cm"<<"C#m"<<"Dm"<<"Ebm"<<"Em"<<"Fm"<<"F#m"<<"Gm"<<"G#m"<<"Am"<<"Bbm"<<"Bm";
+
+    qDebug() << "adjustPitchBy pitch = " << pitch;
+    int position = semitones_major.indexOf(pitch);
+    if (position>0){
+        qDebug() << "major adjustPitchBy position = " << position;
+        int newpos = position + change;
+        qDebug() << "major adjustPitchBy newpos = " << newpos;
+        if (newpos >= 12) {
+            newpos = newpos - 12;
+        }
+        QString newpitch = semitones_major.at(newpos);
+        return newpitch;
+    } else {
+        position = semitones_minor.indexOf(pitch);
+        qDebug() << "minor adjustPitchBy position = " << position;
+        int newpos = position + change;
+        qDebug() << "minor adjustPitchBy newpos = " << newpos;
+        if (newpos >= 12) {
+            newpos = newpos - 12;
+        }
+        QString newpitch = semitones_minor.at(newpos);
+        return newpitch;
+    }
+}
+
+// calculate the new pitch
+// To change pitch by one semitone, multiply or divide BPM by 
+//    the 12th root of 2, depending on which direction you want
+//    to go. The 12th root of 2 is approximately 1.0594631.
+//    6% == 1 semitone
+// float 12TH_ROOT_OF_2 = 2^(1/12); //1.05946309435929
+float SelectorLibraryTableModel::frequencyRatioToOctaveDifference(
+    float currentBpm, float originalBpm) {
+    const int semitonesPerOctave = 12;
+    float frequencyRatio = currentBpm / originalBpm;
+    float semitones = 12 * log(frequencyRatio) / log(2);
+    return semitones;
 }
 
 void SelectorLibraryTableModel::search(const QString& searchText) {

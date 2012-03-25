@@ -30,7 +30,10 @@ class SelectorLibraryTableModel : public LibraryTableModel
   private slots:
     void slotSearch(const QString& searchText);
     void slotPlayingDeckChanged(int deck);
-    void slotChannel1BpmChanged(double value);    
+    void slotChannel1BpmChanged(double value);
+    float frequencyRatioToOctaveDifference(
+        float currentBpm, float originalBpm);
+    QString adjustPitchBy(QString pitch, int change);
   signals:
     void doSearch(const QString& searchText);
   private:
@@ -40,7 +43,7 @@ class SelectorLibraryTableModel : public LibraryTableModel
     bool m_bFilterRating;
     bool m_bFilterKey;
     bool m_bFilterHarmonicKey;
-    QHash<QString, QString> harmonics;
+    QHash<QString, QString> m_pHarmonics;
     QString m_pFilterGenre;
     QString m_pFilterBpm;
     QString m_pFilterYear;
@@ -50,6 +53,7 @@ class SelectorLibraryTableModel : public LibraryTableModel
     QString m_pChannel;
     TrackPointer m_pLoadedTrack;
     ControlObjectThreadMain* m_pChannelBpm;
+
 };
 
 
