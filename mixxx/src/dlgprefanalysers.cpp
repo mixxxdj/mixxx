@@ -58,6 +58,9 @@ DlgPrefAnalysers::DlgPrefAnalysers(QWidget *parent, ConfigObject<ConfigValue> *_
     connect(txtMaxBpm, SIGNAL(valueChanged(int)),
             this, SLOT(maxBpmRangeChanged(int)));
 
+    connect(bReanalyse,SIGNAL(stateChanged(int)),
+            this, SLOT(slotReanalyzeChanged(int)));
+
 
 }
 
@@ -92,6 +95,9 @@ void DlgPrefAnalysers::loadSettings(){
         m_minBpm = m_pconfig->getValueString(ConfigKey("[BPM]","BPMRangeStart")).toInt();
         m_maxBpm = m_pconfig->getValueString(ConfigKey("[BPM]","BPMRangeEnd")).toInt();
 
+        i = m_pconfig->getValueString(ConfigKey(CONFIG_KEY,"ReanalyzeOldBPM")).toInt();
+        m_bReanalyze =  static_cast<bool>(i);
+
         slotUpdate();
     }
 }
@@ -107,6 +113,8 @@ void DlgPrefAnalysers::setDefaults(){
     m_bfixedtempoEnabled = true;
     m_boffsetEnabled = true;
     m_FastAnalysisEnabled = false;
+    m_bReanalyze = false;
+
     m_minBpm = 70;
     m_maxBpm = 140;
     //slotApply();
@@ -141,10 +149,12 @@ void DlgPrefAnalysers::offsetEnabled(int i){
 
 void DlgPrefAnalysers::minBpmRangeChanged(int value){
     m_minBpm = value;
+    slotUpdate();
 }
 
 void DlgPrefAnalysers::maxBpmRangeChanged(int value){
     m_maxBpm = value;
+    slotUpdate();
 }
 
 void DlgPrefAnalysers::slotUpdate(){
@@ -156,6 +166,8 @@ void DlgPrefAnalysers::slotUpdate(){
     bFastAnalysis->setEnabled(m_banalyserEnabled);
     txtMaxBpm->setEnabled(m_banalyserEnabled);
     txtMinBpm->setEnabled(m_banalyserEnabled);
+    bReanalyse->setEnabled(m_banalyserEnabled);
+
     if(!m_banalyserEnabled)
         return;
 
@@ -173,8 +185,15 @@ void DlgPrefAnalysers::slotUpdate(){
     plugincombo->setCurrentIndex(comboselected);
     txtMaxBpm->setValue(m_maxBpm);
     txtMinBpm->setValue(m_minBpm);
+    bReanalyse->setChecked(m_bReanalyze);
 
 
+}
+
+void DlgPrefAnalysers::slotReanalyzeChanged(int value)
+{
+    m_bReanalyze = static_cast<bool>(value);
+    slotUpdate();
 }
 
 void DlgPrefAnalysers::fastAnalysisEnabled(int i)
@@ -215,6 +234,11 @@ void DlgPrefAnalysers::slotApply(){
 
     m_pconfig->set(ConfigKey("[BPM]","BPMRangeEnd"),ConfigValue(m_maxBpm));
     m_pconfig->set(ConfigKey("[BPM]","BPMRangeStart"),ConfigValue(m_minBpm));
+
+    if(m_bReanalyze)
+        m_pconfig->set(ConfigKey(CONFIG_KEY,"ReanalyzeOldBPM"),ConfigValue(1));
+    else
+        m_pconfig->set(ConfigKey(CONFIG_KEY,"ReanalyzeOldBPM"),ConfigValue(0));
 
     m_pconfig->Save();
 }
