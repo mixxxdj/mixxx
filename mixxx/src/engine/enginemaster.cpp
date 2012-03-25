@@ -60,7 +60,7 @@ EngineMaster::EngineMaster(ConfigObject<ConfigValue> * _config,
     m_pMasterRate = new ControlPotmeter(ConfigKey(group, "rate"), -1.0, 1.0);
     
     // Master sync controller
-    m_pMasterSync = new EngineSync(group);
+    m_pMasterSync = new EngineSync(this, group, _config);
 
 #ifdef __LADSPA__
     // LADSPA
@@ -356,6 +356,7 @@ void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
     QList<ChannelInfo*>::iterator master_it = NULL;
     for (unsigned int channel_number = 0;
          it != m_channels.end(); ++it, ++channel_number) {
+         ChannelInfo* pChannelInfo = *it;
          EngineChannel* pChannel = pChannelInfo->m_pChannel;
          if (pChannel && pChannel->isActive())
          {

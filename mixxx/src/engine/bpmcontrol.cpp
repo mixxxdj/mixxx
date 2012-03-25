@@ -19,9 +19,9 @@ const int filterLength = 5;
 BpmControl::BpmControl(const char* _group,
                        ConfigObject<ConfigValue>* _config) :
         EngineControl(_group, _config),
-        m_pMasterSync(NULL),
-        m_iSyncState(0),
-        m_dSyncFactor(0.0),
+        //m_pMasterSync(NULL),
+        //m_iSyncState(0),
+        //m_dSyncFactor(0.0),
         m_tapFilter(this, filterLength, maxInterval) {
     m_pPlayButton = ControlObject::getControl(ConfigKey(_group, "play"));
     m_pRateSlider = ControlObject::getControl(ConfigKey(_group, "rate"));
@@ -100,16 +100,16 @@ BpmControl::~BpmControl() {
     delete m_pTranslateBeats;
 }
 
-void BpmControl::setEngineMaster(EngineMaster* pEngineMaster) {
+/*void BpmControl::setEngineMaster(EngineMaster* pEngineMaster) {
     m_pEngineMaster = pEngineMaster;
     
     // Connect to the Master Sync
     //m_pMasterRate = pEngineMaster->getMasterRateSync();
-    m_pMasterRate = ControlObject::getControl(ConfigKey("[Master]","rate"));
+    /*m_pMasterRate = ControlObject::getControl(ConfigKey("[Master]","rate"));
     connect(m_pMasterRate, SIGNAL(valueChanged(double)),
                 this, SLOT(slotMasterRateChanged(double)),
                 Qt::DirectConnection);
-}
+}*/
 
 double BpmControl::getBpm() {
     return m_pEngineBpm->get();
@@ -187,7 +187,7 @@ void BpmControl::slotControlBeatSync(double v) {
 }
 
 
-void BpmControl::slotMasterRateChanged(double otherBpm)
+/*void BpmControl::slotMasterRateChanged(double otherBpm)
 {
     if (m_iSyncState == SYNC_SLAVE)
     {
@@ -202,7 +202,7 @@ void BpmControl::slotMasterRateChanged(double otherBpm)
         dDesiredRate = dDesiredRate/(m_pRateRange->get() * m_pRateDir->get());
         m_pRateSlider->set(dDesiredRate);
     }
-}
+}*/
 
 bool BpmControl::syncTempo() {
     EngineBuffer* pOtherEngineBuffer = pickSyncTarget();

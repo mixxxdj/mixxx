@@ -8,6 +8,7 @@
 
 #include "configobject.h"
 #include "engine/enginecontrol.h"
+#include "engine/enginesync.h"
 
 const int RATE_TEMP_STEP = 500;
 const int RATE_TEMP_STEP_SMALL = RATE_TEMP_STEP * 10.;
@@ -29,7 +30,7 @@ class RateControl : public EngineControl {
 public:
     RateControl(const char* _group, ConfigObject<ConfigValue>* _config);
     virtual ~RateControl();
-
+    void setEngineMaster(EngineMaster* pEngineMaster);
     // Must be called during each callback of the audio thread so that
     // RateControl has a chance to update itself.
     double process(const double dRate,
@@ -70,8 +71,8 @@ public:
     
   private slots:
     void slotFileBpmChanged(double);
-    void slotMasterScratchChanged(double);
-    void slotMasterScratchEnabledChanged(double);
+    void slotMasterBpmChanged(double);
+    void slotSyncStateChanged(double);
 
   private:
     double getJogFactor();
@@ -114,7 +115,11 @@ public:
     Rotary* m_pJogFilter;
 
     ControlObject *m_pSampleRate;
-    ControlObject *m_pMasterScratch, m_pMasterScratchEnabled;
+    
+    //For Master Sync
+    ControlObject *m_pTrueRate, *m_pMasterBpm, *m_pSyncState;
+    double m_dSyncedRate;
+    int m_iSyncState;
     
     /** The current loaded file's detected BPM */
     ControlObject* m_pFileBpm;

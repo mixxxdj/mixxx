@@ -99,6 +99,8 @@ public:
     double getRate();
     /** Returns current bpm value (not thread-safe) */
     double getBpm();
+    /** Returns current file bpm value (thread safety???)*/
+    double getFileBpm();
     /** Sets pointer to other engine buffer/channel */
     void setEngineMaster(EngineMaster*);
 
@@ -142,6 +144,9 @@ public:
                          int iSampleRate, int iNumSamples);
     void slotTrackLoadFailed(TrackPointer pTrack,
                              QString reason);
+    //void slotMasterScratchChanged(double);
+    //void slotMasterScratchEnabledChanged(double);
+
 
 private:
     void setPitchIndpTimeStretch(bool b);
@@ -199,6 +204,8 @@ private:
 
     ControlObject* m_pTrackSamples;
     ControlObject* m_pTrackSampleRate;
+    //ControlObject *m_pMasterScratch, *m_pMasterScratchEnabled;
+    //ControlObject *m_pSyncState;
 
     ControlPushButton *playButton, *buttonBeatSync, *playStartButton, *stopStartButton, *stopButton;
     ControlObjectThreadMain *playButtonCOT, *playStartButtonCOT, *stopStartButtonCOT, *m_pTrackEndCOT, *stopButtonCOT;

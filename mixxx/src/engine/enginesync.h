@@ -19,6 +19,7 @@
 #ifndef ENGINESYNC_H
 #define ENGINESYNC_H
 
+#include "engine/enginecontrol.h"
 #include "engine/enginebuffer.h"
 #include "engine/enginechannel.h"
 #include "engine/enginemaster.h"
@@ -27,14 +28,13 @@ enum SYNC_STATE {
         SYNC_NONE = 0,
         SYNC_SLAVE = 1,
         SYNC_MASTER = 2
-};
+};  
 
-class EngineMaster : public EngineControl { 
+class EngineSync : public EngineControl { 
     Q_OBJECT
     
     public:
-        EngineSync(ConfigObject<ConfigValue>* pConfig,
-                   const char* pGroup);
+        EngineSync(EngineMaster *master, const char* pGroup, ConfigObject<ConfigValue>* pConfig);
         bool setMaster(QString deck);
         bool setNone(QString deck);
         EngineBuffer* getMaster();
@@ -43,16 +43,18 @@ class EngineMaster : public EngineControl {
         void setSyncMaster(QString deck);
         
     private slots:
-        void slotRateChanged(double);
-        void slotScratchChanged(double);
-        void slotScratchEnabledChanged(double);
+        void slotSourceRateChanged(double);
+        //void slotScratchChanged(double);
+        //void slotScratchEnabledChanged(double);
         
     protected:
         EngineBuffer* chooseMasterBuffer(void);
-    
+
+        EngineMaster* m_pEngineMaster;    
         EngineBuffer* m_pMasterBuffer;
-        ControlObject* m_pSourceRate, m_pSourceScratch, m_pSourceScratchEnabled;
-        ControlObject* m_pMasterRate, m_pMasterScratch, m_pMasterScratchEnabled;
+        ControlObject *m_pSourceRate, *m_pMasterBpm;
+        /*ControlObject* m_pSourceRate, m_pSourceScratch, m_pSourceScratchEnabled;
+        ControlObject* m_pMasterRate, m_pMasterScratch, m_pMasterScratchEnabled;*/
 };
 
 #endif

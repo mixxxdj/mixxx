@@ -16,15 +16,20 @@
 *                                                                         *
 ***************************************************************************/
 
+#include <QStringList>
 
-EngineSync::EngineSync(const char* _group,
+#include "engine/enginesync.h"
+
+EngineSync::EngineSync(EngineMaster *master,
+                       const char* _group,
                        ConfigObject<ConfigValue>* _config) :
         EngineControl(_group, _config)
 {
     qDebug() << "group should be master" << _group;
-    m_pMasterRate = new ControlObject(ConfigKey(_group, "rate"));
-    m_pMasterScratch = new ControlObject(ConfigKey(_group, "scratch"));
-    m_pMasterScratchEnabled = new ControlObject(ConfigKey(_group, "scratch_enable"));
+    m_pEngineMaster = master;
+    m_pMasterBpm = new ControlObject(ConfigKey(_group, "sync_bpm"));
+    //m_pMasterRate = new ControlObject(ConfigKey(_group, "rate"));
+    //m_pMasterRateEnabled = new ControlObject(ConfigKey(_group, "scratch_enable"));
 }
 
 bool EngineSync::setMaster(QString deck)
@@ -37,7 +42,7 @@ bool EngineSync::setMaster(QString deck)
         emit(setSyncMaster(""));
     }
     
-    EngineChannel* pChannel = pMaster->getChannel(deck);
+    EngineChannel* pChannel = m_pEngineMaster->getChannel(deck);
     // Only consider channels that have a track loaded and are in the master
     // mix.
     if (pChannel && pChannel->isActive() && pChannel->isMaster()) {
@@ -45,12 +50,12 @@ bool EngineSync::setMaster(QString deck)
             
         m_pSourceRate->disconnect();
         delete m_pSourceRate;
-        m_pSourceRate = ControlObject::getControl(ConfigKey(deck, "rate"));
+        m_pSourceRate = ControlObject::getControl(ConfigKey(deck, "true_rate"));
         connect(m_pSourceRate, SIGNAL(valueChanged(double)),
-                this, SLOT(slotRateChanged(double)),
+                this, SLOT(slotSourceRateChanged(double)),
                 Qt::DirectConnection);
 
-        m_pSourceScratch->disconnect();
+        /*m_pSourceScratch->disconnect();
         delete m_pSourceScratch;
         m_pSourceScratch = ControlObject::getControl(ConfigKey(deck, "scratch2"));
         connect(m_pSourceScratch, SIGNAL(valueChanged(double)),
@@ -63,7 +68,7 @@ bool EngineSync::setMaster(QString deck)
         connect(m_pSourceScratchEnabled, SIGNAL(valueChanged(double)),
                 this, SLOT(slotScratchEnabledChanged(double)),
                 Qt::DirectConnection);
-                
+          */      
         emit(setSyncMaster(deck));
         
         return true;
@@ -75,11 +80,12 @@ bool EngineSync::setMaster(QString deck)
 EngineBuffer* EngineSync::chooseMasterBuffer(void)
 {
     //TODO (XXX): n-deck
+    QStringList decks;
     decks << "[Channel1]"
           << "[Channel2]"
           << "[Channel3]"
           << "[Channel4]";
-    QString fallback = "";
+    /*QString fallback = "";
     foreach (QString deck, decks)
     {
         EngineChannel* pChannel = pMaster->getChannel(deck);
@@ -99,25 +105,28 @@ EngineBuffer* EngineSync::chooseMasterBuffer(void)
     }    
     
     qDebug() << "picked a new master deck (fallback):" << fallback;
-    return fallback;
+    return fallback;*/
+    
+    
+    return m_pEngineMaster->getChannel("[Channel1]")->getEngineBuffer();
 }
 
-void EngineSync::slotRateChanged(double slider_pos)
+void EngineSync::slotSourceRateChanged(double true_rate)
 {
-    double bpm = m_pMasterBuffer->getBpm();
-    m_pMasterRate->set(bpm); //this will trigger all of the slaves to change rate
+    double bpm = m_pMasterBuffer->getFileBpm();
+    m_pMasterBpm->set(true_rate * bpm); //this will trigger all of the slaves to change rate
 }
 
-void EngineSync::slotScratchChanged(double scratch)
+/*void EngineSync::slotScratchChanged(double scratch)
 {
     double scratchbpm = m_pMasterBuffer->getExactBpm();
-    m_pMasterScratch->set(scratchbpm);
+    m_pMasterRate->set(scratchbpm);
 }
 
 void EngineSync::slotScratchEnabledChanged(double enabled)
 {
-    m_pMasterScratchEnabled->set(bool(enabled));
-}
+    m_pMasterRateEnabled->set(bool(enabled));
+}*/
 
 EngineBuffer* EngineSync::getMaster()
 {

@@ -38,7 +38,7 @@ class BpmControl : public EngineControl {
     void slotRateChanged(double);
     void slotUpdatedTrackBeats();
     void slotBeatsTranslate(double);
-    void slotControlSync(double);
+    //void slotControlSync(double);
 
   private:
     EngineBuffer* pickSyncTarget();
@@ -70,9 +70,9 @@ class BpmControl : public EngineControl {
     ControlPushButton* m_pTranslateBeats;
     
     /** What is our sync state? **/
-    int m_iSyncState;
-    double m_dSyncRate;
-    ControlObject *m_pMasterRate;
+    //int m_iSyncState;
+    //double m_dSyncRate;
+    //ControlObject *m_pMasterRate;
     double m_dFileBpm; // cache it
 
     TapFilter m_tapFilter;

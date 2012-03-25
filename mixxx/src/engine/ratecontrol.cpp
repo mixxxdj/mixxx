@@ -38,6 +38,7 @@ RateControl::RateControl(const char* _group,
     m_eRampBackMode(RATERAMP_RAMPBACK_NONE),
     m_dRateTempRampbackChange(0.0),
     m_dOldRate(1.0f),
+    m_iSyncState(0),
     m_pConfig(_config) {
     m_pScratchController = new PositionScratchController(_group);
 
@@ -155,6 +156,13 @@ RateControl::RateControl(const char* _group,
             this, SLOT(slotFileBpmChanged(double)),
             Qt::DirectConnection);
 
+    m_pTrueRate = new ControlObject(ConfigKey(_group, "true_rate"));
+            
+    m_pSyncState = ControlObject::getControl(ConfigKey(_group, "sync_state"));
+    connect(m_pSyncState, SIGNAL(valueChanged(double)),
+                this, SLOT(slotSyncStateChanged(double)),
+                Qt::DirectConnection);
+
 
 #ifdef __VINYLCONTROL__
     ControlObject* pVCEnabled = ControlObject::getControl(ConfigKey(_group, "vinylcontrol_enabled"));
@@ -200,15 +208,11 @@ RateControl::~RateControl() {
 }
 
 void RateControl::setEngineMaster(EngineMaster* pEngineMaster) {
-    m_pEngineMaster = pEngineMaster;
-    m_pMasterScratch = ControlObject::getControl(ConfigKey("[Master]","scratch"));
-    connect(m_pMasterScratch, SIGNAL(valueChanged(double)),
-                this, SLOT(slotMasterScratchChanged(double)),
-                Qt::DirectConnection);
-                
-    m_pMasterScratchEnabled = ControlObject::getControl(ConfigKey("[Master]","scratch_enable"));
-    connect(m_pMasterScratchEnabled, SIGNAL(valueChanged(double)),
-                this, SLOT(slotMasterScratchEnabledChanged(double)),
+    EngineControl::setEngineMaster(pEngineMaster);
+    //m_pEngineMaster = pEngineMaster;
+    m_pMasterBpm = ControlObject::getControl(ConfigKey("[Master]","sync_bpm"));
+    connect(m_pMasterBpm, SIGNAL(valueChanged(double)),
+                this, SLOT(slotMasterBpmChanged(double)),
                 Qt::DirectConnection);
 }
 
@@ -356,36 +360,31 @@ void RateControl::slotControlRateTempUpSmall(double)
     }
 }
 
-void BpmControl::slotFileBpmChanged(double bpm) {
+void RateControl::slotFileBpmChanged(double bpm) {
     m_dFileBpm = bpm;
 }
 
 
-void RateControl::slotMasterScratchChanged(double scratchbpm)
+void RateControl::slotMasterBpmChanged(double syncbpm)
 {
     if (m_iSyncState == SYNC_SLAVE)
     {
-        //XXX: this doesn't work because we're only using scratch2, and we
-        //don't know about controller scratch or ramping pitchbend.... we have
-        //to use the output of calculaterate itself.
-    
-    
         // if we're a slave, update the rate value -- we don't set anything here,
         // this comes into effect in the return from calculaterate
         //TODO: let's ignore x2, /2 issues for now
         //this is reproduced from bpmcontrol::syncTempo -- should break this out
-        double dDesiredRate = otherBpm / m_dFileBpm;
+        double dDesiredRate = syncbpm / m_dFileBpm;
         //normalize around 1
         dDesiredRate -= 1.0;
         //scale to range?
         //dDesiredRate = dDesiredRate/(m_pRateRange->get() * m_pRateDir->get());
-        m_dMasterScratch = dDesiredRate;
+        m_dSyncedRate = dDesiredRate;
     }
 }
 
-void RateControl::slotMasterScratchEnabledChanged(double enabled)
+void RateControl::slotSyncStateChanged(double state)
 {
-    m_bMasterScratchEnabled = bool(enabled);
+    m_iSyncState = int(state);
 }
 
 
@@ -427,15 +426,13 @@ double RateControl::calculateRate(double baserate, bool paused, int iSamplesPerB
                                   bool* isScratching) {
     double rate = 0.0;
     
+    // if master sync is on, respond to it
     if (m_iSyncState == SYNC_SLAVE)
     {
         //no work needs to be done, just return
         m_dOldRate = rate;
-        if (m_bMasterScratchEnabled) {
-            return m_dMasterScratch * baserate;
-        } else {
-            return m_dMasterRate * baserate;
-        }
+        m_pRateSlider->set(m_dSyncedRate * m_pRateDir->get());
+        return m_dSyncedRate * baserate;
     }
     
     
@@ -504,6 +501,9 @@ double RateControl::calculateRate(double baserate, bool paused, int iSamplesPerB
     }
 
     m_dOldRate = rate;
+    
+    // update our true rate in case we are the master deck
+    m_pTrueRate->set(rate);
 
     // Scale the rate by the engine samplerate
     rate *= baserate;

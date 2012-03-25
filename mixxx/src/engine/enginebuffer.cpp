@@ -206,6 +206,12 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
     m_pReadAheadManager = new ReadAheadManager(m_pReader);
     m_pReadAheadManager->addEngineControl(m_pLoopingControl);
     m_pReadAheadManager->addEngineControl(m_pRateControl);
+    
+    // Sync Control
+    /*m_pSyncState = new ControlObject(ConfigKey(group, "sync_state"));
+    connect(m_pSyncState, SIGNAL(valueChanged(double)),
+            this, SLOT(slotSyncStateChanged(double)),
+            Qt::DirectConnection);*/
 
     // Construct scaling objects
     m_pScaleLinear = new EngineBufferScaleLinear(m_pReadAheadManager);
@@ -305,15 +311,15 @@ double EngineBuffer::getBpm()
     return m_pBpmControl->getBpm();
 }
 
-double EngineBuffer::getExactBpm()
+double EngineBuffer::getFileBpm()
 {
-    //TODO (XXX): right now we hammer bpm over and over, stupidly
-    return m_pRateControl->getCurrentRate() * m_pBpmControl->getFileBpm();
+    return m_pBpmControl->getFileBpm();
 }
 
 void EngineBuffer::setEngineMaster(EngineMaster * pEngineMaster)
 {
-    m_pBpmControl->setEngineMaster(pEngineMaster);
+    //m_pBpmControl->setEngineMaster(pEngineMaster);
+    //m_pMasterTrueRate = ControlObject::getControl(ConfigKey("[Master]","true_rate"));
 }
 
 void EngineBuffer::setNewPlaypos(double newpos)
