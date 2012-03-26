@@ -67,8 +67,15 @@ HidController::HidController(const hid_device_info deviceInfo) {
     hid_product_id = deviceInfo.product_id;
     hid_interface_number = deviceInfo.interface_number;
     hid_path = strndup(deviceInfo.path,strlen(deviceInfo.path));
-    hid_serial = new wchar_t[wcslen(deviceInfo.serial_number)+1];
-    wcscpy(hid_serial,deviceInfo.serial_number);
+    // TODO: Verify that this is the correct thing to do and allows a device
+    //  with a null serial number to be used
+    if (deviceInfo.serial_number!=NULL) {
+        hid_serial = new wchar_t[wcslen(deviceInfo.serial_number)+1];
+        wcscpy(hid_serial,deviceInfo.serial_number);
+    } else {
+        hid_serial = new wchar_t[1];
+        hid_serial[0] = '\0';
+    }
     hid_manufacturer = QString::fromWCharArray(
         deviceInfo.manufacturer_string,
         wcslen(deviceInfo.manufacturer_string)

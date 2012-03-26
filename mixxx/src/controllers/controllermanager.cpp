@@ -210,7 +210,7 @@ int ControllerManager::slotSetUpDevices() {
 
         filenames.append(filename);
         m_pConfig->getValueString(ConfigKey("[ControllerPreset]", name.replace(" ", "_")));
-        qDebug() << "ControllerPreset" << m_pConfig->getValueString(ConfigKey("[ControllerPreset]", name.replace(" ", "_")));
+//         qDebug() << "ControllerPreset" << m_pConfig->getValueString(ConfigKey("[ControllerPreset]", name.replace(" ", "_")));
         cur->loadPreset(PRESETS_PATH.append(filename + cur->presetExtension()),true);
 
         if ( m_pConfig->getValueString(ConfigKey("[Controller]", name.replace(" ", "_"))) != "1" )

@@ -112,6 +112,11 @@ Q_OBJECT
         /** Given a path, saves the current preset to an XML file. */
         void savePreset(QString path);
 
+        /** Returns just the name of a given device (everything before the first space) */
+        QString rootDeviceName(QString deviceName) {
+            return deviceName.left(deviceName.indexOf(" "));
+        }
+
         QList<QString> m_scriptFunctionPrefixes;
 
         bool m_bPolling;
