@@ -189,6 +189,7 @@ void SelectorLibraryTableModel::slotChannel1BpmChanged(double value) {
 }
 
 QString SelectorLibraryTableModel::adjustPitchBy(QString pitch, int change) {
+    if (pitch == "") return pitch;
     QList<QString> semitones_major;
     semitones_major <<"C"<<"C#"<<"D"<<"Eb"<<"E"<<"F"<<"F#"<<"G"<<"G#"<<"A"<<"Bb"<<"B";
     QList<QString> semitones_minor;
@@ -197,7 +198,7 @@ QString SelectorLibraryTableModel::adjustPitchBy(QString pitch, int change) {
     qDebug() << "adjustPitchBy pitch = " << pitch;
     int position = semitones_major.indexOf(pitch);
     if (position>0){
-        qDebug() << "major adjustPitchBy position = " << position;
+        //qDebug() << "major adjustPitchBy position = " << position;
         int newpos = position + change;
         qDebug() << "major adjustPitchBy newpos = " << newpos;
         if (newpos >= 12) {
@@ -207,14 +208,19 @@ QString SelectorLibraryTableModel::adjustPitchBy(QString pitch, int change) {
         return newpitch;
     } else {
         position = semitones_minor.indexOf(pitch);
-        qDebug() << "minor adjustPitchBy position = " << position;
-        int newpos = position + change;
-        qDebug() << "minor adjustPitchBy newpos = " << newpos;
-        if (newpos >= 12) {
-            newpos = newpos - 12;
+        if (position>0) {
+            //qDebug() << "minor adjustPitchBy position = " << position;
+            int newpos = position + change;
+            qDebug() << "minor adjustPitchBy newpos = " << newpos;
+            if (newpos >= 12) {
+                newpos = newpos - 12;
+            }
+            QString newpitch = semitones_minor.at(newpos);
+            return newpitch;
+        } else {
+            qDebug() << "Pitch " << pitch << " not found in config. Either change config or file meta data.";
+            return pitch;
         }
-        QString newpitch = semitones_minor.at(newpos);
-        return newpitch;
     }
 }
 
