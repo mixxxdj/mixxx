@@ -190,38 +190,22 @@ void SelectorLibraryTableModel::slotChannel1BpmChanged(double value) {
 
 QString SelectorLibraryTableModel::adjustPitchBy(QString pitch, int change) {
     if (pitch == "") return pitch;
-    QList<QString> semitones_major;
-    semitones_major <<"C"<<"C#"<<"D"<<"Eb"<<"E"<<"F"<<"F#"<<"G"<<"G#"<<"A"<<"Bb"<<"B";
-    QList<QString> semitones_minor;
-    semitones_minor <<"Cm"<<"C#m"<<"Dm"<<"Ebm"<<"Em"<<"Fm"<<"F#m"<<"Gm"<<"G#m"<<"Am"<<"Bbm"<<"Bm";
+    QStringList list = QString("C,Cm,C#,C#m,D,Dm,Eb,Ebm,E,Em,F,Fm,F#,F#m,G,Gm,G#,G#m,A,Am,Bb,Bbm,B,Bm").split(",");
 
     qDebug() << "adjustPitchBy pitch = " << pitch;
-    int position = semitones_major.indexOf(pitch);
-    if (position>0){
-        //qDebug() << "major adjustPitchBy position = " << position;
-        int newpos = position + change;
-        qDebug() << "major adjustPitchBy newpos = " << newpos;
-        if (newpos >= 12) {
-            newpos = newpos - 12;
-        }
-        QString newpitch = semitones_major.at(newpos);
-        return newpitch;
-    } else {
-        position = semitones_minor.indexOf(pitch);
-        if (position>0) {
-            //qDebug() << "minor adjustPitchBy position = " << position;
-            int newpos = position + change;
-            qDebug() << "minor adjustPitchBy newpos = " << newpos;
-            if (newpos >= 12) {
-                newpos = newpos - 12;
-            }
-            QString newpitch = semitones_minor.at(newpos);
-            return newpitch;
-        } else {
-            qDebug() << "Pitch " << pitch << " not found in config. Either change config or file meta data.";
-            return pitch;
-        }
+    int position = list.indexOf(pitch);
+    if (position<0){
+        qDebug() << "Pitch " << pitch << " not found in config. Either change config or file meta data.";
+        return pitch;
     }
+
+    int newpos = position + (change * 2);
+    qDebug() << "adjustPitchBy newpos = " << newpos;
+    if (newpos >= 24) {
+        newpos = newpos - 24;
+    }
+    QString newpitch = list.at(newpos);
+    return newpitch;
 }
 
 // calculate the new pitch
